@@ -33,6 +33,16 @@ export type RuntimeQaOp =
       readonly state: "present" | "absent";
       readonly timeoutMs?: number;
     }
+  | { readonly kind: "playerRoute"; readonly moves: readonly unknown[] }
+  | {
+      readonly kind: "waitForLift";
+      /** 기본 1 — "떠 있다". */
+      readonly minPx?: number;
+      readonly maxPx?: number;
+      readonly timeoutMs?: number;
+    }
+  | { readonly kind: "waitForGrounded"; readonly timeoutMs?: number }
+  | { readonly kind: "captureShadowSample" }
   | {
       readonly kind: "pressUntil";
       readonly key: string;
@@ -56,6 +66,45 @@ export type RuntimeQaExpect = {
   readonly playerSpriteTextureLoaded?: boolean;
   readonly battleTextClean?: boolean;
   readonly battlerGeometry?: RuntimeQaBattlerGeometrySpec;
+  /** 체공 높이 하한(px). 리프트는 원점 채널에 있어 x/y 로는 보이지 않는다. */
+  readonly playerLiftPxAtLeast?: number;
+  /** 체공 높이 정확값(px). 착지 증명은 0 을 쓴다. */
+  readonly playerLiftPx?: number;
+  /** 접지선(월드 px). 체공 중에도 타일 경계에 남아야 깊이·카메라·조명이 깨지지 않는다. */
+  readonly playerSpriteY?: number;
+  /** 발밑 그림자 가시성. true 면 깊이 띠(0~100k)와 alpha>0 도 함께 본다. */
+  readonly playerShadowVisible?: boolean;
+  /** 그림자 타원 **아래 끝**의 월드 Y. 접지선과 같아야 한다(±1px). */
+  readonly playerShadowGroundY?: number;
+  /** 체공 상태기 생존 여부. 착지 판정은 반올림된 liftPx 가 아니라 이 값으로 한다. */
+  readonly playerAirborne?: boolean;
+  /** 렌더된 픽셀로 잰 그림자 농도(대조 상자 대비 어두워진 비율). 오브젝트가 있는데도
+   *  한 픽셀도 그려지지 않는 거짓 통과를 잡는 유일한 축이다. */
+  readonly playerShadowInkAtLeast?: number;
+};
+
+export type RuntimeQaShadow = {
+  readonly x: number;
+  readonly y: number;
+  readonly depth: number;
+  readonly alpha: number;
+  readonly scaleX: number;
+  readonly visible: boolean;
+  /** 타원 아래 끝(y + displayHeight/2). 접지 판정용. */
+  readonly bottomY: number;
+  readonly displayWidth: number;
+  readonly displayHeight: number;
+};
+
+/** 월드 → 화면 변환. 렌더된 픽셀을 재는 데만 쓴다. */
+export type RuntimeQaCanvasView = {
+  readonly left: number;
+  readonly top: number;
+  readonly cssScaleX: number;
+  readonly cssScaleY: number;
+  readonly scrollX: number;
+  readonly scrollY: number;
+  readonly zoom: number;
 };
 
 export type RuntimeQaRect = {
@@ -144,6 +193,13 @@ export type RuntimeQaObserved = {
   readonly testids: readonly string[];
   readonly playerSpriteResourceId: string | null;
   readonly playerSpriteTextureKey: string | null;
+  /** 캐릭터 스프라이트 훅 설치 전에는 null. */
+  readonly playerLiftPx?: number | null;
+  readonly playerSpriteY?: number | null;
+  readonly playerDepth?: number | null;
+  readonly playerShadow?: RuntimeQaShadow | null;
+  readonly playerAirborne?: boolean | null;
+  readonly canvasView?: RuntimeQaCanvasView | null;
   /** `battleTextClean` 을 요구한 비트에서만 칸다. */
   readonly battleText?: {
     readonly mounted: boolean;
@@ -160,6 +216,8 @@ export type RuntimeQaBeatReport = {
   readonly failures: readonly string[];
   readonly state: RuntimeQaCompactState | null;
   readonly battlers?: RuntimeQaBattlerGeometry;
+  /** 그림자 농도 측정값(요구한 비트에만 있다). */
+  readonly shadowInk?: number;
 };
 
 export type RuntimeQaReport = {

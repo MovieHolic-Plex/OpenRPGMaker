@@ -7,6 +7,64 @@
 
 Use the lightest command that proves the change.
 
+## 체공(점프·낙하) focused gate (2026-08-29)
+
+- `test/characterHop.test.ts`: 순수 곡선·클램프 계약. 아크 대칭성과 양끝 0, 낙하의 감가속 비대칭, `hopOriginY` 가 `height × scaleY` 로 나누는지(`hopOriginY(16,32,2) === 1.25`), 착지 충격 계획이 `MIN_IMPACT_LIFT_PX` 미만이면 `null` 인지, `prefers-reduced-motion` 에서 흔들림·먼지가 빠지고 SE 만 남는지.
+- `test/runtimeCharacterHop.test.ts`: NPC 체공. 리프트가 최고점까지 오르는 동안 `sprite.y` 와 `sprite.depth` 가 **불변**인지(깊이 y-소트·카메라·조명이 이 값을 읽는다), 점프가 이동 속도가 아니라 자기 `durationMs` 를 쓰는지, `dropIn` 이 타일을 바꾸지 않는지.
+- `test/runtimePlayerHop.test.ts`: 주인공 체공. 목적지 커밋(`tileX`/`session.x`), 맵 밖 점프는 건너뛰고 다음 명령을 소비, 낙하가 끝날 때까지 다음 걸음을 시작하지 않음. 이 파일의 `playerMock.setFrame` 은 Phaser 처럼 원점을 `[0.5, 1]` 로 되돌린다 — **리프트는 프레임 갱신 뒤에 적용해야 한다**는 호출 순서 계약을 테스트가 직접 지킨다.
+- `test/hopPersistence.test.ts`: 저작한 `heightPx`/`durationMs`/`dx`/`dy` 의 저장 왕복(두 저작면 모두). 문자열 높이는 `deserialize` 가 던져야 한다.
+- `test/moveRouteCatalogPersistence.test.ts`: 팔레트 44 버튼이 만드는 커맨드 전부를 하나씩·통째로 왕복시킨다(범인 버튼의 `testId` 를 실어 실패). 그리고 「효과음 재생」 기본값이 `collectResourceIds` 안에 있는지 잠근다 — 이 한 줄이 "없는 리소스 기본값이 이벤트 저장을 통째로 막는" 결함의 회귀 게이트다.
+- 회귀는 `test/runtimeNpcRoute*.test.ts`, `test/runtimeMoveRoute*.test.ts`, `test/e2e/oprn-move-route-focused.spec.ts`(카탈로그 버튼/행 수) 까지. 그 스펙의 스윕 시험은 **스위치·효과음 칸을 채우지 않는다** — 없는 id 를 넣으면 「적용」이 이벤트를 저장하지 않아 내보내기가 빈 채로 나온다(예전 `sw_route_seen`/`se_route_chime` 이 그래서 0 개를 뱉었다).
+
+### 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
+
+jsdom 이 못 하는 것만 본다. 리프트는 Phaser 의 `displayOrigin` 에 실리고 `setFrame` 이 그것을
+되돌리므로, **원점 계약의 최종 판정은 실제 Phaser 뿐이다.**
+
+- 새 op: `playerRoute`(이동 경로를 주인공에게 직접 물린다), `waitForLift`(리프트 창을 조건으로
+  대기), `waitForGrounded`(체공 상태기 소멸을 대기), `captureShadowSample`(픽셀 대조용 표본 프레임).
+- 새 expect: `playerLiftPx(AtLeast)`, `playerSpriteY`(접지선), `playerAirborne`,
+  `playerShadowVisible`(깊이 띠 0~100k + alpha>0 동시 확인), `playerShadowGroundY`(타원 아래 끝),
+  `playerShadowInkAtLeast`(렌더된 픽셀 농도).
+- **착지 판정은 `liftPx` 로 하지 마라.** 훅이 정수로 반올림하므로 착지 직전 프레임도 0 으로
+  보인다 — `playerAirborne` / `waitForGrounded` 가 유일한 진실이다.
+
+#### 오브젝트 축 검사는 "한 픽셀도 안 그려진 상태" 를 통과시킨다 (2026-08-29 실측)
+
+그림자가 `visible=true`, alpha>0, 깊이 띠 안, 카메라 안인데도 화면에 전혀 없었다(원인은
+`textures.createCanvas` + 나중에 그리기, `openwiki/runtime-battle.md` 참고). 그래서
+`playerShadowInkAtLeast` 는 **렌더된 픽셀**을 잰다. 여기까지 오는 데 실패한 설계 두 개를 기록한다.
+
+1. 같은 프레임에서 상자를 **위로** 옮겨 잡은 대조군 → 캐릭터의 발이 늘 거기 있어 측정이
+   뒤집혔다(-0.036).
+2. 같은 프레임에서 상자를 **아래로** 옮겨 잡은 대조군 → 지형 자체가 5% 어두워서 **완전 투명한
+   그림자도 통과**했다(0.050 > 0.03).
+
+지금 쓰는 방식은 같은 **월드 사각형**을 두 프레임에서 비교한다: 그림자가 떠 있던 프레임 대
+캐릭터가 그 자리를 걸어서 떠난 뒤의 프레임. 지형이 동일하므로 차이는 그림자뿐이다.
+눈금(실측): 정상 0.10~0.15 / 완전 투명 0.026~0.030(두 프레임의 카메라 스크롤 차이에서 오는
+서브픽셀 잡음 바닥) → 하한 0.06. 측정은 고고도에서만 유효하다 — 낮은 고도에서는 캐릭터의 발이
+상자를 덮는다.
+
+### 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
+
+`.herdr` 워크트리는 `node_modules` 를 공유하지 않고 `.vite` 캐시만 갖는 경우가 있어 `npm test`/`npm run typecheck` 가 바로 죽는다. 본 레포의 도구를 워크트리에 겨누면 된다.
+
+```bash
+cd /home/main/z-project/rpg-zzu
+node node_modules/vitest/vitest.mjs run --configLoader bundle \
+  --root /home/main/.herdr/worktrees/rpg-zzu/<name> test/characterHop.test.ts
+```
+
+타입체크는 워크트리 tsconfig 를 상속한 임시 설정에 `node_modules` 경로를 얹는다. `"*": ["*", ".../node_modules/*"]` 매핑을 빼면 `phaser` 가 TS2307 로 터지면서 수백 개 가짜 에러가 번진다.
+
+```json
+{ "extends": "/home/main/.herdr/worktrees/rpg-zzu/<name>/tsconfig.json",
+  "compilerOptions": { "paths": {
+    "@/*": ["src/*"],
+    "*": ["*", "/home/main/z-project/rpg-zzu/node_modules/*"] } } }
+```
+
 ## Roguelike run Phase 0–3 coverage (2026-08-24)
 
 - `test/roguelikeRun.test.ts`: real interpreter lifecycle plus save-snapshot roundtrip.
@@ -209,6 +267,8 @@ Evidence expectations:
   매 실행 재생성되며 gitignore 대상이다.
 - 시나리오는 `scripts/qa/runtime/<name>.scenario.mjs`. 좌표 기대치는 추측하지 말고
   `scripts/_dump-event-tiles.mjs` 로 실물에서 읽어라.
+- 체공(점프·낙하) 시나리오와 그 전용 op/expect 는 위 "체공 런타임 QA" 절에 있다. 거기서
+  얻은 일반 교훈: **오브젝트가 존재한다는 검사는 그것이 그려졌다는 뜻이 아니다.**
 - 전투 주스가 맵을 드러내는 회귀는 `test/runtime/battle-flash-map.spec.ts` 가 잠근다. 같은 QA
   서버로 `player.html` 을 띄워 `battle-v3.json` 시작 맵(0,0) 오른쪽 `battleProcessing` 이벤트로
   **실전투 DOM** 에 들어간 뒤, 한 번의 rAF 샘플 시리즈에서 세 가지를 같이 본다: 루트

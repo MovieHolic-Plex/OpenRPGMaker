@@ -159,6 +159,8 @@ function moveLabel(command: MoveCommand): string {
       return "한 걸음 전진";
     case "jump":
       return "점프";
+    case "dropIn":
+      return "위에서 낙하";
     case "land":
       return "착지";
     case "turn":

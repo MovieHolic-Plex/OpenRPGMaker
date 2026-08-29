@@ -124,6 +124,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   walkTimer = 0;
   lastActionTargetKey = "";
   playerRoute: PlayerRouteState | null = null;
+  playerHop: import("@/player/playSceneTypes").PlayerHopState | null = null;
+  characterShadows: Map<string, import("@/player/characterShadow").ShadowImage> = new Map();
   autonomousNPCs: Map<string, AutonomousMover> = new Map();
   runtimeTimers: Map<string, RuntimeTimer> = new Map();
   fieldSpawnState: FieldSpawnRuntimeState | null = null;

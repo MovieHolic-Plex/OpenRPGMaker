@@ -1,3 +1,4 @@
+import { fallHop, jumpHop } from "@/player/characterHop";
 import type { Dir } from "@/player/input";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { AutonomousMover } from "@/player/playSceneTypes";
@@ -78,8 +79,16 @@ export function movementDeltaForCommand(
       return { ...commandDelta(context.mover.facing), face: context.mover.facing };
     case "jump": {
       const delta = jumpDelta(context.mover, command);
-      return { ...delta, face: facingForDelta(delta.x, delta.y, context.mover.facing), jump: true };
+      return {
+        ...delta,
+        face: facingForDelta(delta.x, delta.y, context.mover.facing),
+        jump: true,
+        hop: jumpHop(command),
+      };
     }
+    case "dropIn":
+      // 타일 이동이 없다(dx=dy=0) — 보간은 제자리고 리프트만 H→0 으로 내려온다.
+      return { x: 0, y: 0, face: context.mover.facing, jump: true, hop: fallHop(command) };
     case "land":
     case "turn":
     case "turnRelative":
@@ -179,6 +188,7 @@ export function executeInstantCommand(
     case "moveAwayFromPlayer":
     case "stepForward":
     case "jump":
+    case "dropIn":
       return false;
     default:
       return assertNever(command);

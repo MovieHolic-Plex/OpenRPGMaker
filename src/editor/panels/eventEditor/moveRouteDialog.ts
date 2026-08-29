@@ -6,6 +6,8 @@ import { previewMoveRoute } from "./previewMoveRoute";
 import {
   DIRECTIONAL_MOVE_TEST_IDS,
   MOVE_ROUTE_COMMAND_ROWS,
+  defaultRouteSoundId,
+  inferHopParameters,
   moveCommandLabel,
   type MoveRouteCommandContext,
 } from "./moveRouteCommandCatalog";
@@ -38,11 +40,16 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
   // 프로젝트에 실재하는 스위치를 기본값으로 (원시 문자열 "sw_route_seen" 은 없는 id 일 수 있다).
   let switchId = store.getCurrent().switches[0]?.id ?? "";
   let spriteId = "tex_easyrpg_charset_people1";
-  let soundId = "se_route_chime";
+  let soundId = defaultRouteSoundId();
   let npcTargetMapId = inferNpcTargetMapId(moves);
   let npcTargetX = inferNpcTargetX(moves);
   let npcTargetY = inferNpcTargetY(moves);
   let npcTargetDirection = inferNpcTargetDirection(moves);
+  const initialHop = inferHopParameters(moves);
+  let hopDx = initialHop.hopDx;
+  let hopDy = initialHop.hopDy;
+  let hopHeightPx = initialHop.hopHeightPx;
+  let hopDurationMs = initialHop.hopDurationMs;
 
   const commandList = el("div", {
     class: "event-page-move-route-command-list",
@@ -142,6 +149,22 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
             onNpcTargetDirection: (next) => {
               npcTargetDirection = next;
             },
+            hopDx,
+            hopDy,
+            hopHeightPx,
+            hopDurationMs,
+            onHopDx: (next) => {
+              hopDx = next;
+            },
+            onHopDy: (next) => {
+              hopDy = next;
+            },
+            onHopHeightPx: (next) => {
+              hopHeightPx = next;
+            },
+            onHopDurationMs: (next) => {
+              hopDurationMs = next;
+            },
           }
         ),
         el("div", {
@@ -151,7 +174,19 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
               class: "event-page-move-route-list-panel",
               children: [el("legend", { text: "이동 명령" }), commandList, preview],
             }),
-            renderCommandGrid(appendCommand, () => ({ switchId, spriteId, soundId, npcTargetMapId, npcTargetX, npcTargetY, npcTargetDirection })),
+            renderCommandGrid(appendCommand, () => ({
+              switchId,
+              spriteId,
+              soundId,
+              npcTargetMapId,
+              npcTargetX,
+              npcTargetY,
+              npcTargetDirection,
+              hopDx,
+              hopDy,
+              hopHeightPx,
+              hopDurationMs,
+            })),
           ],
         }),
         el("div", {
@@ -290,3 +325,4 @@ function latestNpcTransfer(moves: readonly MoveCommand[]): Extract<MoveCommand, 
   }
   return undefined;
 }
+
