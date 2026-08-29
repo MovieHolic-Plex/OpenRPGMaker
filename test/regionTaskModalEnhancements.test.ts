@@ -242,7 +242,7 @@ describe("safe harness review surface", () => {
     restoreDom = installFakeDom();
   });
 
-  it("shows checkpoint timeline, gameplay metrics, and structured issues in review", async () => {
+  it("shows only blocking checkpoints, warn metrics, and structured issues in review", async () => {
     const base = stubProject();
     const clipped = stubProject([120, 120, 120]);
     const pending = setPendingRegionApply({
@@ -283,7 +283,8 @@ describe("safe harness review surface", () => {
       projectForContext: () => base,
     });
     await flush();
-    expect(findByTestId(root, "region-task-checkpoint-timeline")?.textContent).toContain("분리 초안");
+    // 통과한 검사("분리 초안" done)는 더 이상 화면에 쓰지 않는다 — 손봐야 하는 것만 남는다.
+    expect(findByTestId(root, "region-task-checkpoint-timeline")?.className).toContain("hidden");
     expect(findByTestId(root, "region-task-review-metrics")?.textContent).toContain("NPC 일정 1명");
     expect(findByTestId(root, "region-task-review-issues")?.textContent).toContain("NPC 일정 확인");
   });
@@ -323,7 +324,8 @@ describe("quota-independent interior entry", () => {
     expect(findByTestId(root, "region-task-room-controls")).not.toBeNull();
     expect(findByTestId(root, "region-task-room-checkpoint-preview")?.textContent).toContain("완성 실내 미리보기");
     expect(findByTestId(root, "region-task-room-checkpoint-5")?.classList.contains("is-selected")).toBe(true);
-    expect(findByTestId(root, "region-task-checkpoint-timeline")?.textContent).toContain("게임플레이 사전검사");
+    // 사전검사를 통과했으면 그 사실을 화면에 쓰지 않는다(초록 체크 줄 없음).
+    expect(findByTestId(root, "region-task-checkpoint-timeline")?.textContent ?? "").not.toContain("게임플레이 사전검사");
     expect(findByTestId(root, "region-task-partial-apply")).toBeNull();
     expect(JSON.stringify(base)).toBe(before);
 

@@ -148,9 +148,12 @@ test("검토 단계 — 부분 적용 본문 노출·지표 칩·결정 대기",
   await expect(page.getByTestId("region-task-chunk-tree")).toBeVisible();
   await shotOf(page, "region-task-modal", "10-review-modal.png");
 
-  // 진단 펼침 — 지표 칩 + 「내 결정 대기」 체크포인트.
-  await page.getByTestId("region-task-verdict").click();
-  await expect(page.getByTestId("region-task-review-metrics")).toBeVisible();
+  // 진단 줄은 할 말이 있을 때만 뜬다 — 통과했으면 아예 없다(그 상태 자체가 증거다).
+  const verdict = page.getByTestId("region-task-verdict");
+  if (await verdict.count() > 0) {
+    await verdict.click();
+    await expect(page.getByTestId("region-task-review-metrics")).toBeVisible();
+  }
   await shotOf(page, "region-task-modal", "11-review-diagnostics.png");
 
   // 고급(실행 로그)까지 펼친 상태.

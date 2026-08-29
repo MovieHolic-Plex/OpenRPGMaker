@@ -114,7 +114,9 @@ describe("검토 화면", () => {
     restoreDom = installFakeDom();
   });
 
-  async function openReview(): Promise<FakeElement> {
+  // clean=true 는 "아무 문제 없음" 검토 — 경고 지표도 이슈도 없다.
+  async function openReview(options?: { readonly clean?: boolean }): Promise<FakeElement> {
+    const clean = options?.clean === true;
     const base = stubProject([0, 0, 0, 0, 0, 0, 0, 0, 0]);
     const clipped = stubProject([120, 120, 120, 0, 0, 0, 0, 0, 0]);
     const pending = setPendingRegionApply({
@@ -127,17 +129,23 @@ describe("검토 화면", () => {
       instruction: "물 채우기",
       getCurrentProject: () => base,
       report: {
-        issues: [],
+        issues: clean ? [] : [{ code: "schedule", severity: "warning", message: "NPC 일정 확인" }],
         blockers: [],
         checkpoints: [
           { id: "draft", label: "분리 초안", status: "done", detail: "ready" },
           { id: "approval", label: "내 결정 대기", status: "pending", detail: "적용 또는 버리기 선택" },
         ],
-        metrics: {
-          changedCells: 3, changedEvents: 0, passableChangedCells: 3, isolatedChangedCells: 0,
-          scheduledNpcs: 1, scheduleEntries: 1, timeSystemEnabled: false, roomSessions: 0,
-          roomScoreAverage: null, deterministicRepairs: 0, unreachableObjectives: 2,
-        },
+        metrics: clean
+          ? {
+            changedCells: 3, changedEvents: 0, passableChangedCells: 3, isolatedChangedCells: 0,
+            scheduledNpcs: 0, scheduleEntries: 0, timeSystemEnabled: true, roomSessions: 0,
+            roomScoreAverage: null, deterministicRepairs: 0, unreachableObjectives: 0,
+          }
+          : {
+            changedCells: 3, changedEvents: 0, passableChangedCells: 3, isolatedChangedCells: 0,
+            scheduledNpcs: 1, scheduleEntries: 1, timeSystemEnabled: false, roomSessions: 0,
+            roomScoreAverage: null, deterministicRepairs: 0, unreachableObjectives: 2,
+          },
         repairLimit: 8,
       },
       onApply: () => {},
@@ -179,36 +187,56 @@ describe("검토 화면", () => {
     expect(insideAdvanced).toBe(false);
   });
 
-  it("「승인 대기」는 통과 체크가 아니라 대기 상태로 그린다", async () => {
+  it("통과한 검사는 화면에 쓰지 않는다", async () => {
+    // 예전에는 분리 초안·영역 경계·결정론 수리·배치 규칙·게임플레이 사전검사·내 결정 대기가
+    // 초록 체크 6개로 깔렸다. 사용자에게 없는 개념이고, 다 통과해도 읽을 것만 늘었다.
     const root = await openReview();
     const timeline = findByTestId(root, "region-task-checkpoint-timeline");
-    // fakeDom 은 복합 클래스 선택자(.a.b)를 지원하지 않는다 — 한 클래스로 뽑고 걸러 본다.
-    const checkpoints = Array.from(timeline?.querySelectorAll(".region-task-checkpoint") ?? []);
-    const pending = checkpoints.find((chip) => chip.className.includes("is-pending"));
-    expect(pending).toBeTruthy();
-    expect(pending?.textContent).toContain("결정 대기");
-    // 통과 체크와 같은 클래스를 쓰지 않는다.
-    expect(pending?.className).not.toContain("is-done");
+    expect(timeline?.className).toContain("hidden");
+    expect(timeline?.textContent ?? "").not.toContain("분리 초안");
+    expect(timeline?.textContent ?? "").not.toContain("결정 대기");
   });
 
-  it("지표는 항목 칩이고 나쁜 값만 강조한다", async () => {
-    // 예전에는 "변경 3칸 · 이벤트 0 · 통행 3칸 · 수리 0 · 목표 0개 도달 · 조합 100점 …" 한 줄이라
-    // 무엇이 문제인지 읽을 수 없었다.
+  it("지표는 손봐야 하는 값만 남긴다", async () => {
+    // 예전에는 한 줄 문자열("변경 3칸 · 이벤트 0 · 통행 3칸 · 조합 100점 …") 이었고,
+    // 그다음엔 칩 8개였다. 개수는 변경 목록이 이미 말한다.
     const root = await openReview();
     const metrics = findByTestId(root, "region-task-review-metrics");
     const chips = Array.from(metrics?.querySelectorAll(".region-task-metric") ?? []);
-    expect(chips.length).toBeGreaterThan(1);
-    const warned = chips
-      .filter((chip) => chip.className.includes("is-warn"))
-      .map((chip) => chip.textContent ?? "");
-    // 못 가는 목표 2개 + 시간 시스템 꺼짐(NPC 일정이 있는데) 둘 다 경고다.
-    expect(warned.join("|")).toContain("못 가는 목표 2개");
-    expect(warned.join("|")).toContain("시간 시스템 꺼짐");
-    expect(metrics?.textContent).toContain("바뀐 칸 3칸");
+    expect(chips.length).toBe(2);
+    expect(chips.every((chip) => chip.className.includes("is-warn"))).toBe(true);
+    const text = metrics?.textContent ?? "";
+    expect(text).toContain("못 가는 목표 2개");
+    expect(text).toContain("시간 시스템 꺼짐");
+    // 변경 목록이 하는 말을 되풀이하지 않는다.
+    expect(text).not.toContain("바뀐 칸");
+    expect(text).not.toContain("타일 조합");
   });
 
-  it("미리보기에 비교 방법 안내가 있다", async () => {
+  it("문제가 없으면 진단 줄 자체가 없다", async () => {
+    // "검사 통과 · 검사 상세" 는 눌러도 초록 체크와 "막는 문제·주의 없음" 만 나오는 줄이었다.
+    const root = await openReview({ clean: true });
+    expect(findByTestId(root, "region-task-diagnostics")).toBeNull();
+    expect(findByTestId(root, "region-task-verdict")).toBeNull();
+  });
+
+  it("문제가 있으면 판정 줄은 건수만 말한다", async () => {
     const root = await openReview();
-    expect(findByTestId(root, "region-task-preview-hint")?.textContent).toContain("이전");
+    expect(findByTestId(root, "region-task-verdict")?.textContent).toBe("주의 1건");
+  });
+
+  it("검토 요약 줄은 변경 목록과 같은 말을 하지 않는다", async () => {
+    // 예전: "제안 준비 — 3칸 타일 · 적용 여부를 선택하세요" + 변경 목록 "타일 3칸" + 지표
+    // "바뀐 칸 3칸" — 같은 숫자를 세 번 읽혔다.
+    const root = await openReview();
+    // 요약 줄은 비어 있고(변경 목록·미리보기가 말한다), 진행 칩도 남지 않는다.
+    expect((findByTestId(root, "region-task-summary")?.textContent ?? "").trim()).toBe("");
+    expect((findByTestId(root, "region-task-live-progress")?.textContent ?? "").trim()).toBe("");
+  });
+
+  it("미리보기 비교는 문장이 아니라 동작으로 알린다", async () => {
+    const root = await openReview();
+    expect(findByTestId(root, "region-task-preview-hint")).toBeNull();
+    expect(findByTestId(root, "region-task-preview-ab-before")?.getAttribute?.("title")).toContain("비교");
   });
 });
