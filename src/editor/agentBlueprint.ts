@@ -179,9 +179,11 @@ export function syncAgentBlueprintWithSpec(spec: BuildSpec | null): void {
 /**
  * 공간 쓰기 툴콜 하나가 들어왔을 때 청사진 진행을 갱신한다.
  *
- * 판정은 누적 커버리지 퍼센트가 아니라 **인과 순서**다: 이번 호출이 가장 잘 맞아떨어지는 칸
- * (bestOverlapIndex, IoU 기준)을 `building` 으로 올리고, 그 전에 `building` 이던 다른 칸은
- * `done` 으로 내린다. 누적 퍼센트를 쓰지 않는 이유는 한 에셋이 여러 툴콜로 쪼개져 들어오기
+ * 판정은 누적 커버리지 퍼센트가 아니라 **인과 순서**다: 이번 호출이 가장 잘 맞아떨어지는
+ * 칸들(bestOverlapIndices — 칸이 덮인 비율로 뽑고 덮은 만큼 벗겨내며 되풀이한다)을 `building`
+ * 으로 올리고, 그 전에 `building` 이던 다른 칸은 `done` 으로 내린다. 한 호출이 여러 칸을
+ * 올릴 수 있다 — 집 여러 채를 한 호출로 짓는 `author_house kind=lots` 가 그 경로다.
+ * 누적 퍼센트를 쓰지 않는 이유는 한 에셋이 여러 툴콜로 쪼개져 들어오기
  * 때문이다(집 한 채 = paint 여러 번) — 비율은 그럴 때 조용히 거짓말을 하고, 순서는 그러지 않는다.
  *
  * 영역은 `blueprintRegionsForToolCall`(청사진 전용 추출)이 뽑는다 — 스펙 게이트의
@@ -260,6 +262,23 @@ function advanceAllPlanned(regions: readonly AffectedRegion[]): void {
 }
 
 /**
+ * 턴이 시작됐다 — 지난 턴의 "이번 턴에 올린 칸" 기록을 버린다.
+ *
+ * `turnAdvanced` 는 턴 끝 정산(settleAgentBlueprintTurn)이나 마일스톤 확정
+ * (commitAgentBlueprintProgress)에서 비워진다. 그런데 패널에는 그 둘 중 **아무것도 지나지 않는**
+ * 종료 경로가 있다: `!ownsTurn(true)` 반환(프로젝트 전환·패널 폐기로 소유권을 잃은 턴)은 정산을
+ * 건너뛰고 바로 나간다. 그러면 지난 턴의 기록이 다음 턴의 정산까지 살아남아, 이번 턴이 손대지도
+ * 않은 칸을 "적용 안 됨" 으로 planned 로 되돌린다. 오늘 그 일이 실제로 안 나는 이유는
+ * dropSession/dispose 가 `clearAgentBlueprint()` 로 청사진을 함께 지우기 때문이다 — **결합에
+ * 의한 안전**이라 그 호출이 하나 빠지는 순간 조용히 깨진다. 턴 시작에서 명시적으로 끊는다.
+ *
+ * 상태(칸)는 건드리지 않으므로 emit 하지 않는다 — 이 기록은 공개 상태가 아니다.
+ */
+export function beginAgentBlueprintTurn(): void {
+  turnAdvanced = new Set();
+}
+
+/**
  * 턴이 끝났다 — 이번 턴에 올린 칸을 **적용이 실제로 들어갔는지**로 가른다.
  * 들어간 영역에 걸리면 `done`, 걸리지 않으면 `planned` 로 되돌린다.
  *
@@ -319,25 +338,25 @@ export function clearAgentBlueprint(): void {
  *
  * 실측 결함: 시스템 프롬프트는 집 2채 이상을 `author_house kind=lots + houses[]` **한 호출**로
  * 짓게 글자 그대로 지시한다(contextBuilder: "개별 single 반복 금지"). 그 호출의 게이트 영역은
- * 집마다 몸통+마당 2장씩 정확히 나오는데(buildSpec.wingsRegions), 전체를 합쳐 IoU 승자 하나만
+ * 집마다 몸통+마당 2장씩 정확히 나오는데(buildSpec.wingsRegions), 전체를 합쳐 승자 하나만
  * 고르면 집 3채 중 1채만 building 이 되고 나머지 2채는 뒤에 오는 호출이 없으므로 영원히
  * 파랑으로 남았다(3채 호출 실측: {house_a:"building", house_b:"planned", house_c:"planned"}).
  *
  * 그렇다고 영역마다 독립으로 승자를 고르면 1차 리뷰가 고친 결함이 다른 얼굴로 돌아온다:
- * 1×1 점의 IoU 는 "그 점을 담은 가장 작은 칸" 을 뽑으므로, 집 사각형을 지나는 길을 칠하면
+ * 1×1 점 하나만 보면 "그 점을 담은 가장 작은 칸" 이 이기므로, 집 사각형을 지나는 길을 칠하면
  * 집 안을 통과하는 점들이 길 대신 집을 뽑아 집까지 building 으로 올라간다(이 모듈의 첫
  * 테스트가 그 상황이다 — main_road(0,12,30,2) 와 house_a(10,10,6,5) 는 12칸 겹친다).
  *
- * 그래서 **덮은 만큼 벗겨내는** 탐욕법을 쓴다: 남은 영역 전체로 IoU 승자를 뽑고(합산 판정이라
+ * 그래서 **덮은 만큼 벗겨내는** 탐욕법을 쓴다: 남은 영역 전체로 승자를 뽑고(합산 판정이라
  * 여러 호출로 쪼개진 한 에셋을 하나로 본다), 그 칸이 덮는 영역을 빼고 남은 것이 있으면 다시
  * 뽑는다. 길 60칸은 첫 승자(길)가 60칸을 모두 덮으므로 한 칸으로 끝나고, 서로 안 겹치는 집
- * 3채는 세 칸이 다 나온다. 매 회 최소 한 영역이 사라지므로 칸 수만큼 돌면 멈춘다.
+ * N채는 N칸이 다 나온다. 매 회 최소 한 영역이 사라지므로 칸 수만큼 돌면 멈춘다.
  */
 function bestOverlapIndices(candidates: readonly BlueprintEntry[], regions: readonly AffectedRegion[]): number[] {
   const winners: number[] = [];
   let remaining: readonly AffectedRegion[] = regions;
   while (remaining.length > 0) {
-    const index = bestOverlapIndex(candidates, remaining);
+    const index = bestCoveredIndex(candidates, remaining);
     if (index === -1) break;
     winners.push(index);
     const winner = candidates[index];
@@ -347,27 +366,37 @@ function bestOverlapIndices(candidates: readonly BlueprintEntry[], regions: read
 }
 
 /**
- * 이번 호출과 가장 잘 맞아떨어지는 칸의 인덱스 — 겹침 면적이 아니라 **IoU**(겹침 / 합집합)로 고른다.
+ * 이번 호출과 가장 잘 맞아떨어지는 칸 — **그 칸이 얼마나 덮였는지**(겹침 / 칸 면적)로 고른다.
+ * 동점이면 겹침 면적이 큰 칸, 그래도 같으면 순번이 앞선 칸(strict `>`).
  *
  * 절대 면적으로 고르면 큰 칸이 항상 이긴다: 마을 계획은 보통 맵 전체를 덮는 `clear` 에셋을
  * 1번 칸으로 두는데, 길 60칸을 칠하면 길과의 겹침도 60, clear 와의 겹침도 60 이라 동점이 되고
- * 순서가 앞선 clear 가 계속 building 으로 남는다(실측: 이 테스트가 처음 잡은 결함). IoU 는
- * 길 60/60=1.0 대 clear 60/600=0.1 로 갈라주고, 맵 전체를 치우는 호출에서는 반대로 clear 가
- * 1.0 으로 이긴다.
+ * 순서가 앞선 clear 가 계속 building 으로 남는다(1차 리뷰가 잡은 결함). 커버리지는 길 60/60=1.0
+ * 대 clear 60/600=0.1 로 갈라주고, 맵 전체를 치우는 호출에서는 전 칸이 1.0 으로 동점이 되므로
+ * 겹침 면적 타이브레이크가 clear(600)를 골라 준다 — 나머지 칸은 벗겨내기에서 사라져 올라가지
+ * 않는다(맵을 잔디로 덮는 것은 집을 짓는 것이 아니다).
  *
- * 영역이 여러 개면 겹침과 영역 면적을 각각 합쳐서 계산한다 — 영역끼리 겹치면 이중 계산이
- * 되지만 진행 표시용 어림이므로 정확한 합집합을 구하는 비용을 쓰지 않는다.
- * 면적이 0 인 영역은 호출자가 이미 걸러 낸다(markAgentBlueprintProgress 주석 2번).
+ * **왜 IoU 를 버렸는가(3차 리뷰의 미완 수정)**: IoU 는 분모에 영역 합계가 들어가므로 한 호출이
+ * 영역을 많이 낼수록 개별 칸의 점수가 1/N 로 깎인다. 집 N채 lots 호출에서 집의 IoU = 자기
+ * 면적/Σ영역, `clear` 의 IoU = Σ영역/맵면적 이라 **N 이 커지는 순간 clear 가 이기고** 벗겨내기가
+ * 첫 회에 영역 전량을 먹어 집이 한 칸도 안 올라갔다. 실측(맵 30×20, 몸통 5×6+마당 3행):
+ * N=2 → 2/2, N=3 → 3/3, **N=4 → 0/4, N=5 → 0/5, 40×30 N=6 → 0/6, 100×100 N=20 → 0/20**.
+ * 3차 리뷰가 붙인 테스트가 N=3(교차점 N≈3.65 바로 아래)에 앉아 있어 통과했을 뿐이고,
+ * `author_village` 의 기본값은 `houseCount: 4` 다 — 즉 주경로가 전부 깨진 상태였다.
+ * 커버리지는 분모가 칸 면적이라 N 과 무관하다. `clear` 가 집을 이기려면
+ * Σ(칸 안에 칠해진 면적)/맵면적 > 자기 면적/자기 칸면적 이어야 하는데, 계획의 칸들은 맵 안에
+ * 서로 겹치지 않게 들어가므로(validateBuildSpec) Σ칸면적 ≤ 맵면적 이고, 집이 자기 칸을 그대로
+ * 칠하는 정상 경로에서는 집이 1.0 으로 절대 지지 않는다.
+ *
+ * 영역이 여러 개면 겹침을 합쳐서 계산한다 — 영역끼리 겹치면 이중 계산이 되므로 1.0 으로
+ * 자른다(자르지 않으면 같은 칸을 두 번 지나는 경로가 칸 면적보다 큰 겹침을 만들어 정확히
+ * 일치하는 다른 칸을 이긴다). 면적이 0 인 영역은 호출자가 이미 걸러 낸다.
  * 아무 칸도 안 걸리면 -1.
  */
-function bestOverlapIndex(candidates: readonly BlueprintEntry[], regions: readonly AffectedRegion[]): number {
-  let regionArea = 0;
-  for (const region of regions) {
-    if (region.w > 0 && region.h > 0) regionArea += region.w * region.h;
-  }
-
+function bestCoveredIndex(candidates: readonly BlueprintEntry[], regions: readonly AffectedRegion[]): number {
   let bestIndex = -1;
   let bestScore = 0;
+  let bestIntersection = 0;
   for (let index = 0; index < candidates.length; index += 1) {
     const entry = candidates[index];
     let intersection = 0;
@@ -375,10 +404,11 @@ function bestOverlapIndex(candidates: readonly BlueprintEntry[], regions: readon
       intersection += overlapArea(entry, region);
     }
     if (intersection <= 0) continue;
-    const union = entry.w * entry.h + regionArea - intersection;
-    const score = union > 0 ? intersection / union : 0;
-    if (score > bestScore) {
+    const entryArea = entry.w * entry.h;
+    const score = entryArea > 0 ? Math.min(1, intersection / entryArea) : 0;
+    if (score > bestScore || (score === bestScore && intersection > bestIntersection)) {
       bestScore = score;
+      bestIntersection = intersection;
       bestIndex = index;
     }
   }

@@ -28,6 +28,7 @@ import {
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
 import {
+  beginAgentBlueprintTurn,
   clearAgentBlueprint,
   commitAgentBlueprintProgress,
   markAgentBlueprintProgress,
@@ -1008,6 +1009,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
     sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
+    // 지난 턴의 "이번 턴에 올린 칸" 기록을 끊는다 — 아래 두 곳의 `!ownsTurn(true)` 반환은 정산을
+    // 지나지 않으므로(소유권을 잃은 턴) 그 기록이 이번 턴 정산까지 살아남아 손대지도 않은 칸을
+    // planned 로 되돌릴 수 있다. 지금은 dropSession/dispose 가 청사진을 함께 지워서 드러나지
+    // 않지만 그건 결합에 의한 안전이다.
+    beginAgentBlueprintTurn();
     // 청사진을 세션 스펙에 다시 맞춘다 — set_build_spec 은 계획을 세운 턴에만 오므로(스펙은
     // 턴 간 유지된다) 이 재동기화가 없으면 두 번째 턴부터 맵에 밑그림이 사라진다.
     syncAgentBlueprintWithSpec(activeSpecAtTurnStart);

@@ -14,6 +14,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { clearConversations } from "@/ai/conversationStore";
 import { clearAgentBlueprint, getAgentBlueprintState } from "@/editor/agentBlueprint";
+import { clearAiActivityLogs, getLatestAiActivityLog } from "@/ai/activityLog";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
@@ -61,6 +62,7 @@ beforeEach(() => {
     },
   });
   clearConversations();
+  clearAiActivityLogs(); // 턴 결과(stoppedReason)를 이 링버퍼로 읽으므로 앞 케이스의 기록을 지운다.
   // chat 모드 = 턴 1개(플래너 라운드 없음). 스크립트 라운드 수를 예측 가능하게 만든다.
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", agentMode: "chat", maxToolCalls: 4 }));
 });
@@ -126,6 +128,9 @@ function sseTextResponse(text: string): Response {
   return new Response(body, { status: 200, headers: { "Content-Type": "text/event-stream" } });
 }
 
+/** 진행을 옮기지 않는 읽기 툴콜 — 루프를 한 라운드 더 돌리되 제안은 만들지 않는다. */
+const READ_ARGS = { mapId: MAP_ID, x: 0, y: 0, w: 6, h: 5 } as const;
+
 /**
  * 1라운드는 밑그림 확정 + 집 칸 시공, 2라운드부터는 `afterFirstRound()` 가 턴을 끝낸다.
  * (중단이면 abort 를 누르고 던지고, 오류면 401 을 돌려준다.)
@@ -141,6 +146,16 @@ function scriptTurn(afterFirstRound: () => Response | never): void {
       ]);
     }
     return afterFirstRound();
+  }));
+}
+
+/** 라운드별 응답을 그대로 지정한다 — 마지막 응답은 남은 라운드에서 되쓴다. */
+function scriptRounds(rounds: readonly (() => Response | never)[]): void {
+  let round = 0;
+  vi.stubGlobal("fetch", vi.fn(async () => {
+    const step = rounds[Math.min(round, rounds.length - 1)];
+    round += 1;
+    return step();
   }));
 }
 
@@ -204,5 +219,56 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
 
     expect(store.getCurrent()).not.toBe(before);
     expect(statusById()).toEqual({ house_a: "done" });
+  });
+
+  // 4차 리뷰 N4-7: 위 세 케이스는 전송이 **던지는** 중단만 태운다 — 즉 catch 안의 중단 분기다.
+  // 세션에는 라운드 머리에서 signal.aborted 를 보고 `stoppedReason: "aborted"` 로 **정상 반환**
+  // 하는 길이 따로 있고, 패널은 그 결과를 try 안의 다른 분기에서 처리한다. 두 분기는 서로 다른
+  // 코드라 한쪽만 pin 하면 다른 쪽이 정산을 잃어도 초록이 유지된다.
+  it("전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다", async () => {
+    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    const before = store.getCurrent();
+    scriptRounds([
+      () => sseToolCallsResponse([{ name: "set_build_spec", args: SPEC }, { name: "fill_region", args: FILL_ARGS }]),
+      () => {
+        // 응답은 정상으로 돌려준다 — 다음 라운드 머리의 중단 검사가 턴을 끝낸다.
+        (findByTestId(panel, "ai-abort") as unknown as HTMLElement).click();
+        return sseToolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]);
+      },
+      () => sseTextResponse("여기까지 했습니다."),
+    ]);
+
+    await runTurn(panel);
+
+    // 이 분기를 지났다는 증거: 결과가 실제로 반환됐고(catch 로 빠진 턴은 turnResult 가 없어
+    // stoppedReason 이 undefined 다) 그 값이 aborted 다.
+    expect(getLatestAiActivityLog()?.result.stoppedReason).toBe("aborted");
+    // 1라운드의 쓰기 제안은 살아 있었지만 중단은 적용 경로 앞에서 끝난다.
+    expect((getLatestAiActivityLog()?.result.proposedCalls ?? 0) > 0).toBe(true);
+    expect(store.getCurrent()).toBe(before);
+    expect(statusById()).toEqual({ house_a: "planned" });
+  });
+
+  // 4차 리뷰 N4-7: 쓰기 제안이 0건인 종료(변경 없음 분기)도 정산을 부른다. 그 분기가 정산을
+  // 잃으면 "이번 턴에 올린 칸" 이 그대로 남아 다음 턴 정산이 남의 칸을 되돌린다.
+  it("쓰기 제안 0건으로 끝난 턴은 진행을 하나도 남기지 않는다", async () => {
+    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    const before = store.getCurrent();
+    scriptRounds([
+      // 밑그림만 확정하고 읽기만 한 턴 — 쓰기 툴콜이 없으니 제안이 0건이다.
+      () => sseToolCallsResponse([{ name: "set_build_spec", args: SPEC }, { name: "get_map_region", args: READ_ARGS }]),
+      () => sseTextResponse("먼저 지형을 확인했습니다."),
+    ]);
+
+    await runTurn(panel);
+
+    const logText = (findByTestId(panel, "ai-chat-log") as unknown as FakeElement).textContent ?? "";
+    // 변경 없음 분기의 표지 — 적용 분기로 가지 않았다.
+    expect(logText).toContain("변경 제안 없음(0건)");
+    expect(logText).not.toContain("적용했습니다");
+    expect(store.getCurrent()).toBe(before);
+    // 읽기는 진행을 올리지 않으므로 계획 그대로여야 한다 — 확인 호출이 완료를 찍으면 거짓이다.
+    expect(getAgentBlueprintState().entries).toHaveLength(1);
+    expect(statusById()).toEqual({ house_a: "planned" });
   });
 });

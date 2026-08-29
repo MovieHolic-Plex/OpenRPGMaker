@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   agentBlueprintForMap,
+  beginAgentBlueprintTurn,
   blueprintKindLabel,
   clearAgentBlueprint,
   commitAgentBlueprintProgress,
@@ -11,9 +12,10 @@ import {
   subscribeAgentBlueprint,
   syncAgentBlueprintWithSpec,
 } from "@/editor/agentBlueprint";
-import { blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
+import { appliedBlueprintRegions, blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { affectedRegions, type AffectedRegion, type BuildSpec } from "@/ai/buildSpec";
+import type { ChangeSummary } from "@/editor/tools/types";
 
 /** 아무것도 적용되지 않은 턴 끝(중단·오류·적용 실패·변경 0건). */
 const APPLIED_NOTHING = { regions: [] as readonly AffectedRegion[], wholeTargetMapIds: [] as readonly string[] };
@@ -320,6 +322,10 @@ describe("markAgentBlueprintProgress — 좌표를 wrapper 키에 담는 쓰기 
 // author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지)"). 그 호출의 게이트
 // 영역은 집마다 몸통+마당 2장씩 정확히 나오는데, 전체를 합쳐 승자 하나만 고르던 시절에는 세
 // 채 중 한 채만 building 이 되고 나머지 두 채는 뒤에 오는 호출이 없어 영원히 파랑으로 남았다.
+//
+// 이 블록은 **스키마 그대로의 인자 모양**(invalidArgsExample) 을 지키는 자리다. 채 수·맵 크기에
+// 대한 보장은 아래 매개변수 블록이 한다 — 여기 하나만 두면 특정 N 에서만 통과하는 상태를
+// 다시 못 보고 지나친다(4차 리뷰 N4-1 이 그 사고였다).
 describe("markAgentBlueprintProgress — 집 여러 채를 한 호출로 짓는 author_house(kind=lots)", () => {
   /** authorHouseToolDef.ts 의 invalidArgsExample 그대로(mapId 만 이 테스트 맵으로). */
   const LOTS_CALL: Record<string, unknown> = {
@@ -356,12 +362,130 @@ describe("markAgentBlueprintProgress — 집 여러 채를 한 호출로 짓는 
   });
 
   it("영역이 여러 개여도 맵 전체를 덮는 정리 칸을 훔쳐 가지 않는다", () => {
-    // 영역마다 독립으로 승자를 고르면 1×1 점의 IoU 가 "그 점을 담은 가장 작은 칸"을 뽑는 성질
-    // 때문에 집 사각형을 지나는 길 60칸 중 12칸이 길 대신 집을 뽑는다(SPEC 의 main_road 와
-    // house_a 는 12칸 겹친다). 그래서 남은 영역을 벗겨 가며 합산 IoU 로 뽑는다 — 길은 한 칸이다.
+    // 영역마다 독립으로 승자를 고르면 1×1 점 하나만 보고 "그 점을 담은 가장 작은 칸"을 뽑게
+    // 되므로 집 사각형을 지나는 길 60칸 중 12칸이 길 대신 집을 뽑는다(SPEC 의 main_road 와
+    // house_a 는 12칸 겹친다). 그래서 남은 영역을 벗겨 가며 합산 커버리지로 뽑는다 — 길 60/60
+    // = 1.0 이 집 12/30 = 0.4 를 이기고, 첫 승자가 60칸을 다 덮으므로 길 한 칸으로 끝난다.
     setAgentBlueprintFromSpec(SPEC);
     markAgentBlueprintProgress("paint_road", { mapId: "m1", points: roadPoints() }, WRITE);
     expect(statusById()).toEqual({ site: "planned", main_road: "building", house_a: "planned" });
+  });
+});
+
+// 4차 리뷰 N4-1: 위의 3채 fixture 는 **경계 바로 아래**에 앉아 있었다. IoU 판정은 분모에 영역
+// 합계가 들어가므로 집의 점수가 1/N 로 깎이고 맵 전체를 덮는 정리 칸이 N² 로 커진다 — 실측
+// 교차점은 30×20 에서 N≈3.65 였다. 즉 N=3 만 통과하고 **N=4 부터 집이 한 채도 올라가지 않았다**
+// (실측: 30×20 N=4 → 0/4, N=5 → 0/5, 40×30 N=6 → 0/6, 100×100 N=20 → 0/20). `author_village` 의
+// 기본값이 `houseCount: 4` 이고 시스템 프롬프트가 2채 이상을 한 호출로 지시하므로 주경로가
+// 전부 깨진 상태였다. 그래서 N 과 맵 크기를 **매개변수로** 돈다 — 한 N 에서만 통과하는 테스트는
+// 없는 테스트보다 나쁘다.
+describe("markAgentBlueprintProgress — author_house(kind=lots) 는 N·맵 크기와 무관하게 전 채를 올린다", () => {
+  /** 몸통 5×6 + 문 앞 마당 3행(buildSpec.wingsRegions 의 lots 모양) 을 맵 안에 격자로 깐다. */
+  function lotsFixture(houses: number, mapW: number, mapH: number, withRoad: boolean) {
+    const columns = Math.floor(mapW / 6);
+    const wings = Array.from({ length: houses }, (_, index) => ({
+      x: (index % columns) * 6,
+      y: Math.floor(index / columns) * 10,
+      w: 5,
+      h: 6,
+    }));
+    const spec: BuildSpec = {
+      mapId: "m1",
+      title: `${houses}채 마을`,
+      buildOrder: withRoad ? ["clear", "road", "house"] : ["clear", "house"],
+      assets: [
+        { id: "site", kind: "clear", x: 0, y: 0, w: mapW, h: mapH },
+        ...(withRoad ? [{ id: "main_road", kind: "road", x: 0, y: mapH - 2, w: mapW, h: 2 }] : []),
+        // 칸 = 몸통 + 마당(게이트가 내는 영역 2장의 합집합).
+        ...wings.map((wing, index) => ({ id: `house_${index}`, kind: "house", x: wing.x, y: wing.y, w: wing.w, h: wing.h + 3 })),
+      ],
+    };
+    const call: Record<string, unknown> = {
+      kind: "lots",
+      mapId: "m1",
+      houses: wings.map((wing) => ({
+        kitId: "blue-stone",
+        wings: [wing],
+        interior: "exterior-only",
+        door: true,
+        yard: ["firewood"],
+      })),
+      seed: 42,
+    };
+    return { spec, call };
+  }
+
+  for (const [houses, mapW, mapH] of [[2, 30, 20], [3, 30, 20], [4, 30, 20], [6, 30, 20], [4, 40, 30], [6, 40, 30], [20, 100, 100]] as const) {
+    it(`집 ${houses}채 · 맵 ${mapW}×${mapH} — 전 채가 building, 정리 칸은 계획 그대로`, () => {
+      const { spec, call } = lotsFixture(houses, mapW, mapH, false);
+      // 게이트는 집마다 몸통+마당 2장을 정확히 낸다 — 결함은 언제나 그것을 접는 쪽이었다.
+      expect(affectedRegions("author_house", call)).toHaveLength(houses * 2);
+
+      setAgentBlueprintFromSpec(spec);
+      markAgentBlueprintProgress("author_house", call, WRITE);
+
+      const status = statusById();
+      for (let index = 0; index < houses; index += 1) {
+        expect(status[`house_${index}`]).toBe("building");
+      }
+      expect(status.site).toBe("planned");
+    });
+  }
+
+  it("계획에 길 칸이 있어도 집 4채가 모두 올라간다", () => {
+    const { spec, call } = lotsFixture(4, 30, 20, true);
+    setAgentBlueprintFromSpec(spec);
+    markAgentBlueprintProgress("author_house", call, WRITE);
+    expect(statusById()).toEqual({
+      site: "planned",
+      main_road: "planned",
+      house_0: "building",
+      house_1: "building",
+      house_2: "building",
+      house_3: "building",
+    });
+  });
+
+  // 더 아픈 변종: 정리 칸이 **앞선 호출로 이미 building** 이면 IoU 승자가 그 칸 하나로 뽑히고
+  // advancing 이 비어 markAgentBlueprintProgress 가 첫 return 으로 빠져나갔다 — 집 4채를 실제로
+  // 짓고 커밋해도 청사진은 한 칸도 움직이지 않았다(실측: 호출 전후 상태가 완전히 동일).
+  it("맵 전체 정리가 이미 짓는 중이어도 집 4채가 올라가고 정리 칸은 done 으로 내려간다", () => {
+    const { spec, call } = lotsFixture(4, 30, 20, false);
+    setAgentBlueprintFromSpec(spec);
+    markAgentBlueprintProgress("fill_region", { mapId: "m1", rect: { x: 0, y: 0, w: 30, h: 20 }, material: "잔디" }, WRITE);
+    expect(statusById().site).toBe("building");
+    const revisionBefore = getAgentBlueprintState().revision;
+
+    markAgentBlueprintProgress("author_house", call, WRITE);
+
+    expect(getAgentBlueprintState().revision).toBeGreaterThan(revisionBefore);
+    expect(statusById()).toEqual({
+      site: "done",
+      house_0: "building",
+      house_1: "building",
+      house_2: "building",
+      house_3: "building",
+    });
+  });
+
+  // 커버리지 판정이 1차 리뷰의 보호를 유지하는지 — 맵 전체를 치우는 호출은 정리 칸 **하나만**
+  // 올려야 한다(전 칸이 100% 덮이므로 동점이고, 겹침 면적 타이브레이크가 정리 칸을 고른다).
+  it("맵 전체를 치우는 호출은 정리 칸만 올린다 — 나머지 칸을 함께 끌고 가지 않는다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("tile_erase", { mapId: "m1", rect: { x: 0, y: 0, w: 30, h: 20 } }, WRITE);
+    expect(statusById()).toEqual({ site: "building", main_road: "planned", house_a: "planned", grove: "planned" });
+  });
+
+  it("한 영역이 크기 다른 두 칸을 모두 덮으면 겹침이 큰 칸이 이긴다 — 순번이 아니라 면적이다", () => {
+    setAgentBlueprintFromSpec({
+      mapId: "m1",
+      assets: [
+        { id: "small_first", kind: "prop", x: 0, y: 0, w: 2, h: 2 },
+        { id: "big_second", kind: "house", x: 4, y: 0, w: 8, h: 4 },
+      ],
+    });
+    markAgentBlueprintProgress("fill_region", { mapId: "m1", rect: { x: 0, y: 0, w: 12, h: 4 }, material: "잔디" }, WRITE);
+    expect(statusById()).toEqual({ small_first: "planned", big_second: "building" });
   });
 });
 
@@ -548,6 +672,126 @@ describe("settleAgentBlueprintTurn", () => {
     markAgentBlueprintProgress("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }, WRITE);
     settleAgentBlueprintTurn({ regions: [], wholeTargetMapIds: ["m2"] });
     expect(statusById()).toEqual({ site: "planned", main_road: "planned", house_a: "planned", grove: "planned" });
+  });
+
+  // 4차 리뷰 N4-4: 정산·마일스톤 확정을 **지나지 않는** 종료 경로가 있다(패널의 `!ownsTurn(true)`
+  // 반환 두 곳). 그 턴의 기록이 남으면 다음 턴 정산이 이번 턴과 무관한 칸을 되돌린다. 오늘
+  // dropSession/dispose 가 청사진을 지워서 드러나지 않을 뿐이므로 턴 시작에서 명시적으로 끊는다.
+  it("턴 시작은 지난 턴의 미정산 기록을 버린다 — 이번 턴 정산이 남의 칸을 되돌리지 않는다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("fill_region", VILLAGE_HOUSE_FILL, WRITE);
+    expect(statusById().house_a).toBe("building");
+    // 소유권을 잃은 턴이 정산 없이 끝났다.
+
+    beginAgentBlueprintTurn();
+    markAgentBlueprintProgress("paint_road", VILLAGE_ROAD, WRITE);
+    settleAgentBlueprintTurn(APPLIED_NOTHING);
+
+    // 이번 턴이 올린 것은 길뿐이다 — 길만 planned 로 돌아가고 집은 이번 턴 정산의 대상이 아니다.
+    expect(statusById()).toEqual({ site: "planned", main_road: "planned", house_a: "done", grove: "planned" });
+  });
+
+  it("턴 시작 자체는 화면 상태를 건드리지 않는다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("fill_region", VILLAGE_HOUSE_FILL, WRITE);
+    const revision = getAgentBlueprintState().revision;
+    beginAgentBlueprintTurn();
+    expect(getAgentBlueprintState().revision).toBe(revision);
+    expect(statusById().house_a).toBe("building");
+  });
+});
+
+// 4차 리뷰 N4-2: 정산의 근거가 진행 판정보다 **약했다**. `appliedBlueprintRegions` 는 완성도
+// 린트의 추출(proposalChangedRegions → affectedRegions)만 봤는데, 그것은 좌표를 wrapper 키에
+// 담는 쓰기 툴을 면적 0 으로 떨어뜨리는 fail-closed 함수다 — 즉 청사진 전용 추출이 있어야
+// 진행이 올라가는 쓰기 툴 11종은 전부 정산에서 "안 들어갔다" 로 판정돼 planned 로 되감겼다.
+// 사용자가 보는 것: plant_tree_clusters 로 숲을 심고 타일이 실제로 바뀌는데 맵이 파랑으로 되감긴다.
+describe("appliedBlueprintRegions — 진행을 올린 근거는 정산도 볼 수 있어야 한다", () => {
+  function changed(overrides: Partial<ChangeSummary> = {}): ChangeSummary {
+    return {
+      tilesChanged: 12,
+      eventsAdded: 0,
+      eventsModified: 0,
+      eventsRemoved: 0,
+      mapsAdded: 0,
+      mapsRemoved: 0,
+      dbRecordsChanged: 0,
+      tilesetsChanged: 0,
+      switchesAdded: 0,
+      variablesAdded: 0,
+      worldEntitiesAdded: 0,
+      worldEntitiesModified: 0,
+      palettePresetsAdded: 0,
+      palettePresetsModified: 0,
+      endingsChanged: 0,
+      sessionChanged: false,
+      systemChanged: false,
+      warnings: [],
+      ...overrides,
+    };
+  }
+
+  function okCall(name: string, args: Record<string, unknown>, diff: ChangeSummary = changed()) {
+    return { name, args, result: { ok: true, diff } };
+  }
+
+  /** 린트 추출이 영역을 못 뽑는 쓰기 툴들 — 전부 청사진 전용 추출로만 위치가 나온다. */
+  const SETTLE_BLIND_CALLS = [
+    okCall("plant_tree_clusters", { mapId: "m1", area: { x: 20, y: 2, w: 6, h: 6 }, style: "conifer", count: 8 }),
+    okCall("create_farm_plot", { mapId: "m1", area: { x: 20, y: 2, w: 6, h: 6 } }),
+    okCall("place_examine_hotspots", { mapId: "m1", hotspots: [{ at: { x: 21, y: 3 }, name: "낡은 액자" }] }),
+    okCall("set_lighting_volume", { mapId: "m1", area: { x: 20, y: 2, w: 6, h: 6 }, mood: "dusk" }),
+  ] as const;
+
+  it("린트가 영역을 못 뽑아도 실제 변경이 있으면 청사진 추출로 되읽는다", () => {
+    for (const call of SETTLE_BLIND_CALLS) {
+      // 린트 추출은 여전히 면적 0 폴백이다 — 게이트 쪽은 한 글자도 바꾸지 않았다.
+      expect(affectedRegions(call.name, call.args)).toEqual([{ mapId: "m1", x: 0, y: 0, w: 0, h: 0 }]);
+      const applied = appliedBlueprintRegions([call]);
+      expect(applied.regions.length).toBeGreaterThan(0);
+      expect(applied.regions.every((region) => region.mapId === "m1")).toBe(true);
+    }
+  });
+
+  it("진행을 올린 칸이 그 근거로 done 이 된다 — 심어 놓고 파랑으로 되감기지 않는다", () => {
+    const call = SETTLE_BLIND_CALLS[0];
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress(call.name, call.args, WRITE);
+    expect(statusById().grove).toBe("building");
+
+    settleAgentBlueprintTurn(appliedBlueprintRegions([call]));
+    expect(statusById()).toEqual({ site: "planned", main_road: "planned", house_a: "planned", grove: "done" });
+  });
+
+  it("무변경 호출은 폴백에 닿지 않는다 — 손도 안 댄 칸이 done 이 되지 않는다", () => {
+    // 폴백의 문지기는 proposalCallChangedSomething(성공 + 의미 있는 diff)이다. diff 가 비면
+    // 영역이 나오지 않고 정산이 그 칸을 planned 로 되돌린다.
+    const noop = okCall(
+      "plant_tree_clusters",
+      { mapId: "m1", area: { x: 20, y: 2, w: 6, h: 6 }, style: "conifer" },
+      changed({ tilesChanged: 0 })
+    );
+    expect(appliedBlueprintRegions([noop]).regions).toEqual([]);
+
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress(noop.name, noop.args, WRITE);
+    settleAgentBlueprintTurn(appliedBlueprintRegions([noop]));
+    expect(statusById().grove).toBe("planned");
+  });
+
+  it("실패한 호출도 폴백에 닿지 않는다", () => {
+    const failed = { name: "plant_tree_clusters", args: { mapId: "m1", area: { x: 20, y: 2, w: 6, h: 6 } }, result: { ok: false, diff: changed() } };
+    expect(appliedBlueprintRegions([failed]).regions).toEqual([]);
+  });
+
+  it("린트가 영역을 뽑는 호출은 그 영역을 그대로 쓴다 — 두 표면이 같은 근거를 본다", () => {
+    const fill = okCall("fill_region", { mapId: "m1", rect: { x: 4, y: 4, w: 6, h: 5 }, material: "흰 집 벽" });
+    expect(appliedBlueprintRegions([fill]).regions).toEqual([{ mapId: "m1", x: 4, y: 4, w: 6, h: 5 }]);
+  });
+
+  it("bounds 없는 author_village 는 대상 맵 id 로 인정된다", () => {
+    const village = okCall("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" });
+    expect(appliedBlueprintRegions([village]).wholeTargetMapIds).toEqual(["m1"]);
   });
 });
 

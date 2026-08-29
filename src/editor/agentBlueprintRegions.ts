@@ -12,7 +12,7 @@
 // 2026-08-29 실측(가장 아픈 경로): 시스템 프롬프트가 마을을 만들 때 쓰라고 **글자 그대로** 지시하는
 // `author_village(target:{kind:"existing",mapId})` 는 `bounds` 가 선택이라(스키마·파서·
 // invalidArgsExample 모두 생략) 인자에 좌표가 없다. 마을이 다 지어져도 청사진은 100% planned
-// (파랑)로 남고 finishAgentBlueprint 는 building 이 없어 아무것도 안 했다.
+// (파랑)로 남고 진행 갱신(markAgentBlueprintProgress)은 올릴 칸을 하나도 찾지 못했다.
 //
 // 게이트 판정을 흔들면 안 되므로 `affectedRegions` 는 **손대지 않는다**. 여기서 그 결과를 먼저
 // 쓰고, 면적 0 폴백으로 떨어진 경우에만 이 모듈의 추가 규약으로 다시 읽는다.
@@ -179,23 +179,55 @@ function rectFromEntry(mapId: string, entry: unknown): AffectedRegion | null {
 /**
  * 이번 턴에 **저장소로 들어간** 영역 — 청사진 턴 정산(agentBlueprint.settleAgentBlueprintTurn)의 근거.
  *
- * 완성도 린트가 쓰는 함수를 그대로 쓴다(proposalChangedRegions). 정산이 따로 계산하면 한 화면에서
- * 채팅은 "⚠ 미이행", 맵은 "완료 ✓" 가 되어 사용자가 어느 쪽을 믿을지 알 수 없다.
+ * 기준은 완성도 린트가 쓰는 함수다(proposalChangedRegions). 정산이 아무 근거로나 계산하면 한
+ * 화면에서 채팅은 "⚠ 미이행", 맵은 "완료 ✓" 가 되어 사용자가 어느 쪽을 믿을지 알 수 없다.
  *
- * 다만 린트가 영역을 못 뽑는 자리가 하나 있다: `bounds` 없는 `author_village` 는 대상 맵 전체를
- * 지었는데 인자에 사각형이 없다(스키마·파서·invalidArgsExample 모두에서 bounds 는 선택). 영역만
- * 보면 마을을 다 짓고 적용까지 끝나도 청사진이 전부 planned 로 되감긴다 — 6f3342df 가 고친
- * "마을을 지어도 100% 파랑" 의 재발이다. 그래서 그 파사드가 실제 변경을 내고 적용됐으면 대상
- * 맵 id 를 따로 알려 준다.
+ * 그런데 린트의 추출은 **이 모듈이 존재하는 이유인 바로 그 fail-closed 추출**로 떨어진다
+ * (proposalCompleteness.changedRegionsForCall → affectedRegions). 즉 진행을 올리려면 이 모듈의
+ * 풍부한 추출이 필요했던 쓰기 툴은 전부 정산에서 "아무것도 안 들어갔다" 로 판정돼 planned 로
+ * 되돌아갔다. 실측(같은 호출을 진행 → 정산까지 통과시켰다):
+ *   place_examine_hotspots  진행영역 2 · 정산영역 0 → grove   building → **planned**
+ *   stamp_structure_kit     진행영역 1 · 정산영역 0 → house_a building → **planned**
+ *   build_castle            진행영역 1 · 정산영역 0 → house_a building → **planned**
+ * 레지스트리 훑기로 같은 함정에 빠지는 쓰기 툴이 11종이다 — build_castle · stamp_structure_kit ·
+ * plant_tree_clusters · create_farm_plot · make_hunting_ground · make_gallery_room ·
+ * make_horror_loop · place_examine_hotspots · set_lighting_volume · author_story_arc ·
+ * compile_puzzle. 앞의 셋은 핵심 공간 시공이다. 사용자가 보는 것: `plant_tree_clusters` 로 숲을
+ * 심고 턴이 정상 적용되고 타일이 **실제로** 바뀌는데 맵은 짓는 중을 파랑 계획으로 되감는다
+ * (46f64610 대비 행위 회귀 — 그 시절엔 done 으로 끝났고 그게 사실이었다).
+ *
+ * 그래서 `author_village` 에만 있던 예외를 규칙으로 올린다: 호출이 **실제로 무언가를 바꿨는데**
+ * (proposalCallChangedSomething = 성공 + 의미 있는 diff) 린트가 영역을 한 장도 못 뽑으면 이
+ * 모듈의 추출로 되읽는다. 무변경을 done 으로 만들 수 없는 이유가 그 게이트다 — diff 가 비면
+ * 폴백에 닿지 않으므로 영역이 없고, 정산은 그 칸을 planned 로 되돌린다.
+ *
+ * 남은 비대칭은 하나다: 채팅의 "⚠ 미이행" 은 여전히 린트 추출만 보므로 위 11종에 대해 경고를
+ * 낼 수 있다. 그 경우 **맵이 맞고 채팅이 틀렸다**. 린트 쪽을 같이 고치려면 ai/proposalCompleteness
+ * 가 editor/agentBlueprintRegions 를 import 해야 하는데 이 모듈이 이미 그쪽을 import 하므로
+ * 순환이 된다 — 층을 뒤집는 일이라 별도 변경으로 미룬다.
+ *
+ * `bounds` 없는 `author_village` 는 여전히 특별하다: 대상 맵 전체를 지었는데 인자에 사각형이
+ * 아예 없어(스키마·파서·invalidArgsExample 모두에서 bounds 는 선택) 어느 추출도 영역을 못 만든다.
+ * 그 파사드가 실제 변경을 내고 적용됐으면 대상 맵 id 를 따로 알려 준다 — 6f3342df 가 고친
+ * "마을을 지어도 100% 파랑" 의 재발을 막는다.
  */
 export function appliedBlueprintRegions(calls: readonly ProposalCompletenessCall[]): AppliedBlueprintRegions {
   const wholeTargetMapIds: string[] = [];
+  const regions: AffectedRegion[] = [];
   for (const call of calls) {
-    if (!WHOLE_TARGET_FACADES.has(call.name) || !proposalCallChangedSomething(call)) continue;
+    const changedSomething = proposalCallChangedSomething(call);
+    // 한 호출씩 본다 — 어느 호출이 영역을 못 냈는지 알아야 그 호출만 되읽을 수 있다.
+    const lintRegions = proposalChangedRegions([call]);
+    if (lintRegions.length > 0) {
+      regions.push(...lintRegions);
+    } else if (changedSomething) {
+      regions.push(...blueprintRegionsForToolCall(call.name, call.args).regions);
+    }
+    if (!WHOLE_TARGET_FACADES.has(call.name) || !changedSomething) continue;
     const targetMapId = blueprintRegionsForToolCall(call.name, call.args).mapId;
     if (targetMapId !== null) wholeTargetMapIds.push(targetMapId);
   }
-  return { regions: proposalChangedRegions(calls), wholeTargetMapIds };
+  return { regions, wholeTargetMapIds };
 }
 
 function positiveSize(value: unknown): number | null {
