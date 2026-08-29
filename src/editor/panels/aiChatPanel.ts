@@ -1188,6 +1188,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     };
 
+    /**
+     * 턴이 끝났다 — 마지막까지 building 이던 칸을 done 으로 확정한다.
+     *
+     * **모든** 종료 경로(정상·중단·오류·throw)에서 부른다. 종전에는 정상 분기에만 있어서
+     * 시공 중에 중단하거나 턴이 오류로 끝나면 칸 하나가 노란 2px(짓는 중)로 남았고, 다음 턴
+     * 시작의 syncAgentBlueprintWithSpec 이 같은 사각형이면 상태를 물려받으므로 세션을 버릴
+     * 때까지(새 대화·대화 복원·프로젝트 전환) 풀리지 않았다 — 영구 "짓는 중" 이다.
+     * 중단/오류에서도 고스트만 지우고 청사진은 남긴다(수명이 세션 스펙이다). 그 남은 청사진의
+     * 상태는 실제로 들어간 시공을 가리켜야 하므로 done 으로 내리는 것이 정직하다.
+     */
+    const settleBlueprintForTurnEnd = (): void => {
+      finishAgentBlueprint();
+    };
+
     try {
       const result = await exec(onEvent, abortController.signal);
       if (!ownsTurn(true)) {
@@ -1199,6 +1213,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (abortController.signal.aborted || result.stoppedReason === "aborted") {
         ghostPreviewUpdater.cancel();
         clearAgentGhostPreview();
+        // 중단도 정산한다(청사진은 고스트와 달리 지우지 않는다) — 들어간 시공은 들어갔다.
+        settleBlueprintForTurnEnd();
         setStatus("대기");
         streamedBubbles.forEach(renderStreamedMarkdown);
         return;
@@ -1207,11 +1223,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         turnFailed = true;
         ghostPreviewUpdater.cancel();
         clearAgentGhostPreview();
+        settleBlueprintForTurnEnd();
       } else {
         ghostPreviewUpdater.flush();
-        // 마지막까지 building 이던 칸을 끝난 것으로 확정한다 — 다음 툴콜이 없으므로
-        // markAgentBlueprintProgress 가 스스로 내려줄 기회가 없다.
-        finishAgentBlueprint();
+        settleBlueprintForTurnEnd();
       }
       const completenessWarnings = result.stoppedReason === "error"
         ? []
@@ -1279,6 +1294,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } catch (cause) {
       if (!ownsTurn(true)) return;
       if (abortController.signal.aborted) {
+        settleBlueprintForTurnEnd();
         setStatus("대기");
         return;
       }
@@ -1287,6 +1303,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       endTurnProgress();
       ghostPreviewUpdater.cancel();
       clearAgentGhostPreview();
+      settleBlueprintForTurnEnd();
       setStatus("오류");
       const errorBubble = appendBubble("system", `오류: ${turnCatchError}`);
       // Any transport throw mounts settings opener — covers connection refused / 401 / network throw

@@ -20,7 +20,7 @@ import {
 } from "@/editor/editorCameraFocus";
 import { subscribeAgentBlueprint } from "@/editor/agentBlueprint";
 import { AgentBlueprintRenderer } from "@/editor/agentBlueprintRenderer";
-import { subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
@@ -152,6 +152,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
   private unsubAgentBlueprint: (() => void) | null = null;
+  /** 원본 보기(꾹 누름) 마지막 값 — 토글이 바뀐 순간에만 청사진을 다시 그린다. */
+  private lastGhostHidden = false;
   private agentBlueprintRenderer: AgentBlueprintRenderer | null = null;
   private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
   private agentFocusRenderer: AgentFocusRenderer | null = null;
@@ -286,7 +288,16 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
-    this.unsubAgentGhost = subscribeAgentGhostPreview(() => this.renderAgentGhostPreview());
+    this.unsubAgentGhost = subscribeAgentGhostPreview(() => {
+      this.renderAgentGhostPreview();
+      // 원본 보기(꾹 누름) 토글은 고스트 스토어에서 발화한다 — 청사진도 같은 토글을 따르므로
+      // 값이 **바뀐 순간에만** 다시 그린다. 매 프리뷰 갱신(150ms 스로틀)마다 다시 그리면
+      // 사각형·라벨 최대 40장을 계속 새로 만든다.
+      const hidden = isAgentGhostPreviewHidden();
+      if (hidden === this.lastGhostHidden) return;
+      this.lastGhostHidden = hidden;
+      this.renderAgentBlueprint();
+    });
     this.unsubAgentBlueprint = subscribeAgentBlueprint(() => this.renderAgentBlueprint());
 
     this.scale.on("resize", this.handleResize, this);
