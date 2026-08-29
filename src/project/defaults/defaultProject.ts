@@ -14,6 +14,7 @@ import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
+import { defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import {
   defaultAssetSet,
@@ -77,11 +78,16 @@ export function createBlankProject(): Project {
 /** 예제 데모: 《이슬 마을의 종》 — 에디터 작성 export fixture. 별등 마을 코드 생성기는 제거됨. */
 export function createSampleAdventureProject(): Project {
   const project = structuredClone(dewVillageDemoFixture as unknown as Project);
-  // Fixture는 blank 시드에서 왔으므로 시작 파티가 1명일 수 있다. DB에 배우가 더 있으면 2인 파티로 맞춘다.
+  // Fixture는 blank 시드에서 왔으므로 시작 파티가 1명일 수 있다. 정규 스타터 파티
+  // (`STARTER_ACTOR_IDS`, 4인)를 DB에 실제로 있는 배우로 걸러 맞춘다. 예전에는 `slice(0, 2)` 로
+  // 2인만 채웠는데, 로스터가 6인·정규 파티가 4인이 된 뒤에도 2인에 머물러 데모가 스타터 파티를
+  // 절반만 보여줬다(2026-08-30 실측: startActorIds ['actor_hero'] → 2인).
   const actorIds = project.database.actors.map((actor) => actor.id).filter(Boolean);
-  if (actorIds.length >= 2 && project.system.startActorIds.length < 2) {
-    project.system = { ...project.system, startActorIds: actorIds.slice(0, 2) };
-    project.session = { ...project.session, partyActorIds: actorIds.slice(0, 2) };
+  const starterParty = defaultStarterActorIds().filter((id) => actorIds.includes(id));
+  const desiredParty = starterParty.length > 0 ? starterParty : actorIds.slice(0, 4);
+  if (desiredParty.length > project.system.startActorIds.length) {
+    project.system = { ...project.system, startActorIds: desiredParty };
+    project.session = { ...project.session, partyActorIds: desiredParty };
   }
   ensureSwitchVariableSlots(project);
   // 낡은 export 잔재 정리 — 적 elementRates 의 state_death 등(legacyRateKeyRepair.ts 주석 참조).
