@@ -10,6 +10,7 @@ import { moveEvent } from "@/editor/eventActions";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
 import { paintTilesBulk } from "@/editor/actions";
 import { editorWorkingEvents } from "@/project/eventDrafts";
+import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -119,7 +120,7 @@ export class DragOperationHandler {
     if (!map) return;
     const point = this.deps.pointerToTile(ptr);
     if (!isInsideMapPoint(point, map)) return;
-    const existing = editorWorkingEvents(map.events).find((event) => event.x === point.x && event.y === point.y);
+    const existing = findEventCoveringPoint(editorWorkingEvents(map.events), point.x, point.y);
     if (!existing) return;
     this.eventDragCandidate = { mapId, eventId: existing.id, origin: point };
   }
@@ -208,9 +209,13 @@ export class DragOperationHandler {
       toast(mapEditLockNotice(operation.mapId), "error");
       return;
     }
-    const occupied = editorWorkingEvents(map.events).some(
-      (event) => event.id !== operation.eventId && event.x === point.x && event.y === point.y
-    );
+    // 끌어다 놓을 칸이 남의 **몸 사각**에 걸리면 거절한다. 앵커만 보던 시절에는 2x2
+    // 이벤트의 비앵커 칸으로 다른 이벤트를 밀어 넣을 수 있었다.
+    const occupied = findEventCoveringPoint(
+      editorWorkingEvents(map.events).filter((event) => event.id !== operation.eventId),
+      point.x,
+      point.y
+    ) !== undefined;
     if (occupied) {
       toast("이미 다른 이벤트가 있는 칸입니다.", "error");
       return;

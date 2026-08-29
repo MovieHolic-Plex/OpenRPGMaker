@@ -27,6 +27,7 @@ import {
   type BasicFlyoutId,
   type BasicFlyoutState,
 } from "@/editor/panels/basicRailFlyout";
+import { eventAtPoint } from "@/project/eventFootprintQuery";
 
 type BasicTool = {
   readonly id: Tool;
@@ -273,7 +274,7 @@ function makePendingEventCta(coordinate: { readonly mapId: string; readonly x: n
         const pending = editorState.get().pendingEventCoordinate;
         if (!pending || pending.mapId !== coordinate.mapId || pending.x !== coordinate.x || pending.y !== coordinate.y) return;
         const map = store.getCurrent().maps[pending.mapId];
-        const occupied = map?.events.some((event) => event.x === pending.x && event.y === pending.y);
+        const occupied = map ? eventAtPoint(map, pending.x, pending.y) !== undefined : false;
         if (!map || !canEditMap(pending.mapId) || pending.x < 0 || pending.y < 0 || pending.x >= map.width || pending.y >= map.height || occupied) {
           editorState.set({ pendingEventCoordinate: null });
           return;

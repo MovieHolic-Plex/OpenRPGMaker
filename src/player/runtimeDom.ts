@@ -43,6 +43,21 @@ function nowMs(): number {
     : 0;
 }
 
+/**
+ * 마커를 이벤트의 몸 사각 크기·위치로 맞춘다. 좌표는 dataset 에 맵 픽셀로 남기고
+ * `placeMarker` 가 카메라 기준으로 환산한다 — 카메라가 움직여도 크기는 다시 안 잰다.
+ */
+function applyMarkerBodyRect(marker: HTMLElement, view: RuntimeEventView): void {
+  const width = (view.bodyRect.right - view.bodyRect.left + 1) * TILE_SIZE;
+  const height = (view.bodyRect.bottom - view.bodyRect.top + 1) * TILE_SIZE;
+  marker.dataset.mapX = `${view.bodyRect.left * TILE_SIZE}`;
+  marker.dataset.mapY = `${view.bodyRect.top * TILE_SIZE}`;
+  marker.dataset.mapW = `${width}`;
+  marker.dataset.mapH = `${height}`;
+  marker.style.width = `${width}px`;
+  marker.style.height = `${height}px`;
+}
+
 export interface RuntimeEventSnapshot {
   readonly x: number;
   readonly y: number;
@@ -134,8 +149,12 @@ export class RuntimeDomOverlay {
     const screenX = mapX - this.cameraX;
     const screenY = mapY - this.cameraY;
     const { width: stageWidth, height: stageHeight } = this.stageSize();
+    // 마커 자기 크기로 가시성을 본다. 한 칸으로 고정하면 3x3 이벤트가 왼쪽·위로 두 칸
+    // 걸쳐 있을 때 아직 화면에 보이는데도 접혀 클릭이 죽는다.
+    const markerW = Number(marker.dataset.mapW ?? TILE_SIZE) || TILE_SIZE;
+    const markerH = Number(marker.dataset.mapH ?? TILE_SIZE) || TILE_SIZE;
     const visible =
-      screenX > -TILE_SIZE && screenY > -TILE_SIZE && screenX < stageWidth && screenY < stageHeight;
+      screenX > -markerW && screenY > -markerH && screenX < stageWidth && screenY < stageHeight;
     marker.dataset.offscreen = visible ? "" : "1";
     marker.style.left = `${visible ? screenX : 0}px`;
     marker.style.top = `${visible ? screenY : 0}px`;
@@ -167,10 +186,9 @@ export class RuntimeDomOverlay {
       this.eventMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    marker.dataset.mapX = `${view.x * TILE_SIZE}`;
-    marker.dataset.mapY = `${view.y * TILE_SIZE}`;
-    marker.style.width = `${TILE_SIZE}px`;
-    marker.style.height = `${TILE_SIZE}px`;
+    // 히트박스는 **몸 사각**이다. 앵커 한 칸으로 두면 3x3 골렘의 머리를 클릭해도 아무 일이
+    // 없다 — 이 마커가 `pointer-events: auto` 실행 히트박스이기 때문이다.
+    applyMarkerBodyRect(marker, view);
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     marker.dataset.trigger = view.trigger.kind;
@@ -204,10 +222,7 @@ export class RuntimeDomOverlay {
       this.spriteMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    marker.dataset.mapX = `${view.x * TILE_SIZE}`;
-    marker.dataset.mapY = `${view.y * TILE_SIZE}`;
-    marker.style.width = `${TILE_SIZE}px`;
-    marker.style.height = `${TILE_SIZE}px`;
+    applyMarkerBodyRect(marker, view);
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     this.placeMarker(marker);
