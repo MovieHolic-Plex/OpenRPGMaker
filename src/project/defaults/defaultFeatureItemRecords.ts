@@ -77,7 +77,13 @@ export function defaultFeatureItemRecords(): ItemRecord[] {
   ];
 }
 
-/** 새 작물 씨앗이 농사 권위자에서 실제로 심어지도록 잇는 최소 작물 정의다. */
+/**
+ * 새 작물 씨앗이 농사 권위자에서 실제로 심어지도록 잉는 최소 작물 정의다.
+ *
+ * 기본 DB도 농사 데모도 이걸 싣지 않는다. 농사는 옵트인 시스템이어서 미사용 상트에서
+ * 경고가 나고(`systemOptInLint`), 데모 작물은 단계별 스프라이트를 요구하는데(`farmingSprites`)
+ * 이 네 종은 아직 전용 아트가 없다. 작가가 농사를 켜는 시점에 이 템플릿을 싣으면 된다.
+ */
 export function defaultFeatureCropRecords(): CropRecord[] {
   return [
     normalizeCropRecord({ id: "crop_gen2_turnip", name: "순무 종자밭", seedItemId: "item_gen2_turnip_seed", harvestItemId: "item_gen2_turnip_seed", harvestCount: 1, stages: [{ days: 1 }, { days: 1 }], seasons: ["spring"] }),

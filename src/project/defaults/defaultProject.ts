@@ -12,7 +12,6 @@ import { SCHEMA_VERSION } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
-import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import {
@@ -352,8 +351,6 @@ export function createFarmingDemoProject(): Project {
   ]);
   attachFarmMonsterRewards(project);
   project.database.crops = [
-    // gen2 씨앗 4종이 실제로 심어지는 종자밭. 농사 데모가 농사 시스템을 켜는 레이어라 여기 둔다.
-    ...defaultFeatureCropRecords(),
     normalizeCropRecord({
       id: "crop_potato",
       name: "감자",
