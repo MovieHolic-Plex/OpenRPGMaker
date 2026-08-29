@@ -2,6 +2,7 @@ import { editorState } from "@/editor/editorState";
 import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { setWorkspacePreset } from "@/editor/workspace/workspaceStore";
+import { uiLabel } from "@/editor/uiCopy";
 
 export type AuthoringTaskId = "map" | "event" | "data" | "test";
 
@@ -16,7 +17,9 @@ export const AUTHORING_TASKS: readonly AuthoringTask[] = [
   { id: "map", label: "맵", hint: "타일 도구와 맵 작업 화면 열기", keywords: ["map", "tile", "맵", "타일"] },
   { id: "event", label: "이벤트", hint: "이벤트 레이어와 배치 도구 열기", keywords: ["event", "scene", "이벤트", "장면"] },
   { id: "data", label: "데이터", hint: "데이터베이스 열기", keywords: ["data", "database", "db", "데이터", "자료"] },
-  { id: "test", label: "테스트", hint: "현재 프로젝트 시연 실행", keywords: ["test", "play", "run", "테스트", "시연"] },
+  // 톱바에 그리는 힌트도 헤더 문구다 — 이 항목은 "현재 프로젝트 시연 실행" 이라 톱바 테스트
+  // 버튼·게임 메뉴와 다른 이름을 내고 있었다. 정본은 uiCopy 가 가진다.
+  { id: "test", label: "테스트", hint: `현재 프로젝트 ${uiLabel("testPlay")}`, keywords: ["test", "play", "run", "테스트", "시연"] },
 ] as const;
 
 /**

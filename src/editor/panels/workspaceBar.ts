@@ -308,7 +308,9 @@ function renderCommandPaletteChip(): HTMLElement {
     class: "oprn-menu-item workspace-command-chip",
     attrs: {
       type: "button",
-      title: "명령·맵·스킬 찾기 (Ctrl+K)",
+      // 구 title 은 "명령·맵·스킬 찾기 (Ctrl+K)" 였다. 조수 스킬은 2026-08-27 에 삭제된 기능이라
+      // 없는 것을 가리쪼고, `찾기` 는 헤더의 맵·이벤트 찾기 표면 이름이라 같은 헤더에서 맞부딪다.
+      title: "명령 팜레트 (Ctrl+K)",
       "aria-label": "명령 팔레트 열기 (Ctrl+K)",
       "aria-keyshortcuts": "Control+K",
     },
