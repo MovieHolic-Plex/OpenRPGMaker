@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아이템 런타임 QA · 메뉴 · 전투 · 장비 증거 보고서</title>
+<style>
+  :root{
+    --bg:#0e1117; --panel:#161b24; --panel2:#1d2431; --line:#2a3342;
+    --fg:#e6edf3; --dim:#9aa7b8; --dimmer:#6e7d90;
+    --ok:#3fb950; --bad:#f85149; --warn:#d29922; --accent:#58a6ff; --violet:#a371f7;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1140px; margin:0 auto; padding:56px 28px 96px}
+  header.top{border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:40px}
+  .eyebrow{font:600 12px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--accent)}
+  h1{margin:14px 0 10px; font-size:34px; line-height:1.25; letter-spacing:-.02em}
+  .sub{color:var(--dim); font-size:15px; max-width:74ch; margin:0}
+  .meta{margin-top:18px; font:12px/1.9 var(--mono); color:var(--dimmer)}
+  .meta b{color:var(--dim); font-weight:600}
+
+  h2{margin:56px 0 6px; font-size:21px; letter-spacing:-.01em; display:flex; align-items:center; gap:11px}
+  h2 .n{font:700 12px/22px var(--mono); min-width:22px; height:22px; text-align:center;
+        border-radius:6px; background:var(--panel2); color:var(--accent); border:1px solid var(--line)}
+  h3{margin:30px 0 8px; font-size:15px; color:var(--fg)}
+  .lede{color:var(--dim); font-size:14.5px; margin:0 0 22px; max-width:80ch}
+  p{margin:0 0 14px}
+  code{font:12.5px/1.5 var(--mono); background:var(--panel2); border:1px solid var(--line);
+       border-radius:5px; padding:1px 5px}
+
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr)); gap:14px; margin:26px 0 8px}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:11px; padding:16px 18px}
+  .card .k{font:11px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--dimmer)}
+  .card .v{font-size:27px; font-weight:650; margin-top:9px; letter-spacing:-.02em}
+  .card .u{font-size:12px; color:var(--dim); margin-top:3px}
+  .v.ok{color:var(--ok)} .v.bad{color:var(--bad)} .v.acc{color:var(--accent)} .v.vio{color:var(--violet)}
+
+  figure{margin:22px 0 0; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+  figure img{display:block; width:100%; height:auto; background:#000}
+  figcaption{padding:12px 16px; font-size:13px; color:var(--dim); border-top:1px solid var(--line); background:var(--panel2)}
+  figcaption b{color:var(--fg); font-weight:600}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:22px}
+  .grid2 figure{margin-top:0}
+  @media (max-width:820px){ .grid2{grid-template-columns:1fr} }
+
+  table{width:100%; border-collapse:collapse; margin:18px 0 0; font-size:13.5px}
+  th,td{padding:10px 13px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font:600 11px/1.5 var(--mono); letter-spacing:.07em; text-transform:uppercase; color:var(--dimmer); background:var(--panel2)}
+  tbody tr:hover{background:#1a212c}
+  td.num{font:13px/1.5 var(--mono); text-align:right; white-space:nowrap}
+
+  .tag{display:inline-block; font:600 11px/18px var(--mono); padding:0 7px; border-radius:5px; border:1px solid var(--line)}
+  .tag.ok{color:var(--ok); border-color:#1c4a28; background:#0f2416}
+  .tag.bad{color:var(--bad); border-color:#5c2320; background:#26100f}
+  .tag.acc{color:var(--accent); border-color:#1f3a5c; background:#0f1b2b}
+
+  .note{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent);
+        border-radius:0 10px 10px 0; padding:14px 18px; margin:22px 0 0; font-size:14px; color:var(--dim)}
+  .note b{color:var(--fg)}
+  .note.warn{border-left-color:var(--warn)}
+  .note.bad{border-left-color:var(--bad)}
+  .note.ok{border-left-color:var(--ok)}
+
+  pre{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+      overflow-x:auto; font:12.5px/1.7 var(--mono); color:var(--fg); margin:18px 0 0}
+  ul{margin:0 0 14px; padding-left:22px; color:var(--dim)} li{margin:5px 0}
+  li b, ul b{color:var(--fg)}
+  footer{margin-top:72px; padding-top:22px; border-top:1px solid var(--line); color:var(--dimmer); font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">Runtime QA Evidence</div>
+  <h1>아이템 런타임 QA — 메뉴 · 전투 · 장비</h1>
+  <p class="sub">
+    출하 카탈로그로 만든 프로젝트를 실제 플레이어로 부팅해, 아이템이 메뉴에서 회복하고 전투에서 효과를 내고
+    장비 축이 피해에 반영되는지를 화면 수치로 확인했다. 검증 과정에서 런타임 결함 3건을 찾아 고쳤고,
+    모든 주장은 수정 후 다시 촬영한 스크린샷에 근거한다.
+  </p>
+  <div class="meta">
+    <b>시나리오</b> item-menu · item-battle · item-equipment(rapier/whip) · item-care &nbsp;|&nbsp;
+    <b>뷰포트</b> 1024×768 &nbsp;|&nbsp; <b>시드</b> 1 / 101(장비 A·B 공통)<br>
+    <b>프로젝트</b> <code>test/fixtures/projects/item-runtime-qa-v3.json</code> 외 3종 &nbsp;|&nbsp;
+    <b>실행</b> <code>npm run qa:runtime -- --scenario &lt;name&gt;</code>
+  </div>
+</header>
+
+<div class="cards">
+  <div class="card"><div class="k">시나리오</div><div class="v acc">4</div><div class="u">런 5회 · 장비는 A/B 2회</div></div>
+  <div class="card"><div class="k">검증 비트</div><div class="v ok">34 / 34</div><div class="u">실패 0 · 런타임 에러 0</div></div>
+  <div class="card"><div class="k">고친 결함</div><div class="v bad">3</div><div class="u">전부 출하 경로</div></div>
+  <div class="card"><div class="k">증거 샷</div><div class="v vio">18</div><div class="u">GREEN 16 · 수정 전 대조 2</div></div>
+</div>
+
+<h2><span class="n">1</span>검증 방식</h2>
+<p class="lede">
+  단위 테스트가 아니라 플레이어를 그대로 띄우고 키 입력만으로 진행했다. 상태를 코드로 밀어넣어 화면을 만드는 대신,
+  타이틀에서 새 게임을 시작해 메뉴를 열고 아이템을 골라 대상을 지정하는 실제 경로를 밟는다.
+</p>
+<ul>
+  <li>준비 단계에서만 QA 부트 훅으로 초기 조건을 만든다(HP·MP 낮추기, 시드 주입, 고정 전투 이벤트 앞으로 이동). 효과 판정은 건드리지 않는다.</li>
+  <li>각 비트는 <b>기대 문자열이 실제 DOM에 있는지</b>로 통과·실패를 가른다. 예: <code>HP 100/514</code> → 사용 후 <code>HP 150/514</code>.</li>
+  <li>스크린샷은 판정 근거가 아니라 사람이 눈으로 재확인하는 증거다. 판정이 통과여도 화면이 깨졌으면 결함으로 처리했다(§5의 두 건이 여기서 나왔다).</li>
+</ul>
+
+<h2><span class="n">2</span>메뉴에서 쓰는 회복 아이템</h2>
+<p class="lede">
+  필드에서 상태 메뉴 → 아이템 목록으로 들어가 회복약·마력약·연대의 물약을 실제로 사용했다.
+  단일 대상 HP, 단일 대상 MP, 파티 전체 회복의 세 갈래를 각각 사용 전후로 붙여 확인한다.
+</p>
+
+<div class="grid2">
+  <figure><img src="assets/menu-hp-before.png" alt="회복약 사용 전 주인공 HP 100/514">
+    <figcaption><b>회복약 · 전</b> 주인공 <code>HP 100/514</code></figcaption></figure>
+  <figure><img src="assets/menu-hp-after.png" alt="회복약 사용 후 주인공 HP 150/514">
+    <figcaption><b>회복약 · 후</b> <code>HP 150/514</code> — 정액 +50이 그대로 반영</figcaption></figure>
+</div>
+<div class="grid2">
+  <figure><img src="assets/menu-mp-before.png" alt="마력약 사용 전 주인공 MP 5/43">
+    <figcaption><b>마력약 · 전</b> 주인공 <code>MP 5/43</code></figcaption></figure>
+  <figure><img src="assets/menu-mp-after.png" alt="마력약 사용 후 주인공 MP 35/43">
+    <figcaption><b>마력약 · 후</b> <code>MP 35/43</code> — MP 회복이 HP와 분리되어 동작</figcaption></figure>
+</div>
+<div class="grid2">
+  <figure><img src="assets/menu-party-before.png" alt="연대의 물약 사용 전 파티원 HP 100/514">
+    <figcaption><b>연대의 물약 · 전</b> 나머지 세 파티원 <code>HP 100/514</code></figcaption></figure>
+  <figure><img src="assets/menu-party-after.png" alt="연대의 물약 사용 후 파티 전원 HP 상승">
+    <figcaption><b>연대의 물약 · 후</b> 주인공 150→<code>210</code>, 나머지 100→<code>160</code> — 전체 대상 판정이 한 번의 사용으로 4명에게 적용</figcaption></figure>
+</div>
+
+<table>
+  <thead><tr><th>아이템</th><th>대상 범위</th><th class="num">전</th><th class="num">후</th><th>확인</th></tr></thead>
+  <tbody>
+    <tr><td>회복약</td><td>아군 1명</td><td class="num">HP 100</td><td class="num">150</td><td><span class="tag ok">통과</span></td></tr>
+    <tr><td>마력약</td><td>아군 1명</td><td class="num">MP 5</td><td class="num">35</td><td><span class="tag ok">통과</span></td></tr>
+    <tr><td>연대의 물약</td><td>아군 전체</td><td class="num">HP 150 / 100×3</td><td class="num">210 / 160×3</td><td><span class="tag ok">통과</span></td></tr>
+  </tbody>
+</table>
+
+<h2><span class="n">3</span>전투에서 쓰는 아이템</h2>
+<p class="lede">
+  달빛우물 숲의 고정 봉인 이벤트로 실제 전투에 진입해, 적을 대상으로 하는 속성 소모품과 아군을 대상으로 하는
+  버프 소모품을 각각 사용했다. 전투 커맨드 → 아이템 → 대상 선택까지 전부 키 입력이다.
+</p>
+
+<div class="grid2">
+  <figure><img src="assets/battle-elemental-before.png" alt="서리 유리병 대상 선택, 슬라임 HP 18/18">
+    <figcaption><b>서리 유리병 · 전</b> 대상 선택 화면에서 슬라임 <code>HP 18/18</code></figcaption></figure>
+  <figure><img src="assets/battle-elemental-after.png" alt="서리 유리병 사용 후 슬라임 HP 0/18">
+    <figcaption><b>서리 유리병 · 후</b> <code>HP 0/18</code> — 적 대상 속성 피해가 적용</figcaption></figure>
+</div>
+<div class="grid2">
+  <figure><img src="assets/battle-buff-before.png" alt="전투의 묘약 대상 선택, 상태 아이콘 없음">
+    <figcaption><b>전투의 묘약 · 전</b> 주인공에게 상태 아이콘이 없다</figcaption></figure>
+  <figure><img src="assets/battle-buff-after.png" alt="전투의 묘약 사용 후 공격 상승 배지">
+    <figcaption><b>전투의 묘약 · 후</b> 공격 상승 배지가 붙는다 — §5.3에서 고친 배지 표기가 적용된 화면</figcaption></figure>
+</div>
+
+<h2><span class="n">4</span>장비 축이 피해에 반영되는가 (A/B)</h2>
+<p class="lede">
+  무기 하나만 바꾼 두 프로젝트를 같은 시드로 돌려 비교했다. 픽스처 생성기가
+  <code>database.actors[id=actor_hero].initialEquipment.weapon</code> 한 경로만 다르다는 것을 만들 때 검증하므로,
+  화면에 찍힌 피해 차이는 무기 축 차이로만 설명된다.
+</p>
+
+<table>
+  <thead><tr><th>축</th><th>고귀한 레이피어</th><th>가죽 채찍</th><th>차이의 의미</th></tr></thead>
+  <tbody>
+    <tr><td>공격력</td><td class="num">15</td><td class="num">15</td><td>동일 — 통제 변수</td></tr>
+    <tr><td>명중률</td><td class="num">100</td><td class="num">92</td><td>채찍은 빗나갈 여지가 있다</td></tr>
+    <tr><td>치명타율</td><td class="num">9</td><td class="num">0</td><td>레이피어만 급소가 뜬다</td></tr>
+    <tr><td>공격 속성</td><td><code>sword</code></td><td><code>hit</code></td><td>슬라임 내성 <code>sword=A</code>(약점) / <code>hit=D</code>(저항)</td></tr>
+  </tbody>
+</table>
+
+<div class="grid2">
+  <figure><img src="assets/equip-rapier-attack1.png" alt="레이피어 첫 공격 급소 218 피해">
+    <figcaption><b>레이피어 · 1턴</b> <code>급소에 맞았다! 슬라임에게 218 피해!</code></figcaption></figure>
+  <figure><img src="assets/equip-rapier-attack2.png" alt="레이피어 둘째 공격 162 피해">
+    <figcaption><b>레이피어 · 2턴</b> 급소 없이 <code>162 피해</code></figcaption></figure>
+</div>
+<div class="grid2">
+  <figure><img src="assets/equip-whip-attack1.png" alt="채찍 첫 공격 34 피해">
+    <figcaption><b>채찍 · 1턴</b> <code>34 피해</code> — 같은 시드, 같은 공격력</figcaption></figure>
+  <figure><img src="assets/equip-whip-attack2.png" alt="채찍 둘째 공격 49 피해">
+    <figcaption><b>채찍 · 2턴</b> <code>49 피해</code> — 급소 메시지가 한 번도 나오지 않는다</figcaption></figure>
+  </div>
+
+<div class="note ok">
+  <b>읽는 법</b> 레이피어 162 대 채찍 49는 약점(A)·저항(D) 속성 배율이 지배하고, 218은 그 위에 치명타가 얹힌 값이다.
+  치명타율 0인 채찍에서는 두 턴 모두 급소 메시지가 없다. 즉 <b>속성·치명타 축이 각각 다른 방식으로 결과에 도달</b>한다.
+</div>
+
+<h2><span class="n">5</span>찾아서 고친 결함 3건</h2>
+<p class="lede">
+  세 건 모두 QA 전용 경로가 아니라 출하 플레이어에서 재현된다. 각각 재현 → 원인 → 수정 → 재촬영 순서로 닫았다.
+</p>
+
+<h3>5.1 돌봄 아이템이 몬스터에게 쓰이지 않았다</h3>
+<p>
+  상태 메뉴에서 돌봄 아이템을 고르고 몬스터를 지정해도 항상 <code>대상을 선택하세요</code>로 되돌아왔다.
+  메뉴가 몬스터 대상 ID를 사용 요청에 넘기지 않아, 아이템은 소모되지 않고 친밀도도 그대로였다.
+  대상 ID를 전달하도록 고친 뒤 순한 사료가 정상적으로 소모되고 친밀도가 오른다.
+</p>
+<div class="grid2">
+  <figure><img src="assets/care-before.png" alt="순한 사료 사용 전 돌봄 슬라임 친밀도 70">
+    <figcaption><b>전</b> 돌봄 슬라임 친밀도 <code>70</code></figcaption></figure>
+  <figure><img src="assets/care-after.png" alt="순한 사료 사용 후 친밀도 78">
+    <figcaption><b>후</b> 친밀도 <code>78</code> <span class="tag ok">수정 후</span></figcaption></figure>
+</div>
+
+<h3>5.2 전투 메시지 두 줄이 위아래로 잘렸다</h3>
+<p>
+  급소가 뜨면 메시지가 <code>주인공의 공격!</code> + <code>급소에 맞았다! … 218 피해!</code> 두 줄이 된다.
+  기본 스킨 <code>rm2003</code>의 메시지 배너가 <code>height</code>/<code>max-height</code> 44px에 <code>overflow:hidden</code>이라,
+  16px × 1.4 두 줄(44.8px)이 상하로 깎여 첫 줄 윗변과 둘째 줄 밑변이 사라졌다. 기본 스킨이므로 모든 전투가 영향을 받았다.
+  <code>min-height</code>로 바꿔 한 줄 외형은 유지하고 두 줄이면 늘어나게 했다.
+</p>
+<div class="grid2">
+  <figure><img src="assets/red-message-clipped.png" alt="수정 전 두 줄 메시지가 잘린 화면">
+    <figcaption><b>수정 전</b> 두 줄이 배너 높이에 갇혀 글자가 잘린다 <span class="tag bad">RED</span></figcaption></figure>
+  <figure><img src="assets/equip-rapier-attack1.png" alt="수정 후 두 줄 메시지가 온전히 보이는 화면">
+    <figcaption><b>수정 후</b> 두 줄이 온전히 읽힌다 <span class="tag ok">GREEN</span></figcaption></figure>
+</div>
+
+<h3>5.3 공격 상승 상태가 붉은 전투불능 배지로 표시됐다</h3>
+<p>
+  상태 아이콘 토큰 판정이 <code>state_attack_down</code>의 <code>down</code> 문자열을 전투불능(KO)으로 읽어,
+  능력 증감 상태에 붉은 KO 배지를 그렸다. 상승·하락 구분도 없어 <code>공격 상승</code>과 <code>공격 하락</code>이 같은 모양이었다.
+  능력 증감을 먼저 분기해 방향까지(<code>atk·def·agi·mag × up·down</code>) 배지에 싣고,
+  상승은 파랑 + 위 화살표, 하락은 붉은색으로 갈랐다.
+</p>
+<div class="grid2">
+  <figure><img src="assets/red-buff-after.png" alt="수정 전 공격 상승이 붉은 KO 배지로 표시">
+    <figcaption><b>수정 전</b> 공격 상승인데 전투불능과 같은 붉은 배지 <span class="tag bad">RED</span></figcaption></figure>
+  <figure><img src="assets/battle-buff-after.png" alt="수정 후 공격 상승 배지">
+    <figcaption><b>수정 후</b> 상승 방향이 드러나는 배지 <span class="tag ok">GREEN</span></figcaption></figure>
+</div>
+
+<div class="note warn">
+  <b>왜 단위 테스트로 안 잡혔나</b> 5.2는 CSS 높이 제약이라 DOM 문자열 검사로는 통과한다.
+  5.3은 토큰 문자열 자체가 유효해서 스냅샷이 초록이었다. 둘 다 <b>실제 화면을 눈으로 본 뒤에야</b> 드러났고,
+  그래서 이 QA의 판정 비트에는 “두 줄 메시지가 배너 안에 다 들어오는가”가 아니라 사람 확인용 샷이 함께 남는다.
+</div>
+
+<h2><span class="n">6</span>회귀 확인</h2>
+<p class="lede">
+  수정 3건이 다른 경로를 깨지 않았는지 런타임 게이트와 전수 테스트 두 축으로 확인했다.
+  단위 테스트 전수는 <b>이 환경에서 브랜치·기준선 양쪽 모두 대규모로 실패한다</b>.
+  그래서 통과 여부가 아니라 <b>기준선과의 실패 파일 집합 차이</b>로 회귀를 판정했다.
+</p>
+<table>
+  <thead><tr><th>확인</th><th>명령</th><th>결과</th></tr></thead>
+  <tbody>
+    <tr><td>플레이라이트 런타임 게이트</td><td><code>npm run qa:runtime:gate</code></td>
+        <td><span class="tag ok">11 / 11 통과</span> · 4.0분</td></tr>
+    <tr><td>전수 단위·통합 (브랜치)</td><td><code>verify-gates.mjs --only tests</code></td>
+        <td>9,963개 중 <b>209 실패</b> · 파일 89개</td></tr>
+    <tr><td>같은 명령 (origin/main <code>be171a32</code>)</td><td>동일</td>
+        <td>9,985개 중 <b>234 실패</b> · 파일 97개</td></tr>
+    <tr><td>실패 파일 집합 차이</td><td>집합 연산</td>
+        <td>공통 87 · 브랜치 전용 <b>2</b> · 기준선 전용 10</td></tr>
+    <tr><td>브랜치 전용 2건 단독 재현</td><td>해당 파일만 재실행</td>
+        <td><span class="tag ok">회귀 아님</span></td></tr>
+  </tbody>
+</table>
+<div class="note">
+  <b>브랜치 전용 실패 2건을 닫은 과정</b><br>
+  <code>playerBootFactory.test.ts</code>는 단독 재실행에서 그대로 통과했다.
+  <code>transactionalNewRemoteProject.test.ts</code>는 같은 코드로 1회차 실패 · 2회차 통과로 갈렸고,
+  런타임 수정 이전 커밋(<code>77d0e0d2</code>)에서도 통과한다. 실패하는 케이스는 스토리지 할당량 초과 경로여서
+  이 작업이 건드린 전투 렌더·상태 배지와 접점이 없다. 두 건 다 <b>플래키</b>로 본다.<br>
+  기준선 전용 실패 10건(하우스킷·타일 스프린트 계열)은 브랜치에서 보이지 않지만, 이 브랜치가 그것을 고쳤다고 주장하지 않는다.
+  기준선 커밋이 분기점보다 앞서 테스트 수 자체가 다를 만큼(9,963 ≠ 9,985) 구성이 다르다.
+</div>
+<div class="note warn">
+  <b>전수 테스트는 초록이 아니다.</b> 브랜치도 기준선도 200개 이상 실패한다.
+  이 작업은 그 상태를 고치지 않았고, <b>악화시키지 않았다는 것만</b> 확인했다. 전수 복구는 이 범위 밖의 별도 과제다.
+</div>
+<h2><span class="n">7</span>남긴 것 · 한계</h2>
+<ul>
+  <li>장비 A/B는 <b>무기 축</b>만 비교했다. 방어구의 회피·속성 저항 축은 같은 방식으로 확장할 수 있게 픽스처 생성기를 스크립트로 남겼다(<code>scripts/build-item-equipment-qa-fixtures.mjs</code>).</li>
+  <li>피해 수치는 시드 101에 묶인 관측값이다. 수식 자체의 정확성 검증이 아니라 <b>축이 결과에 도달하는지</b>의 증거로 읽어야 한다.</li>
+  <li>상태 배지 색·화살표는 rm2003과 VXAce 계열 스킨에서 확인했다. 나머지 스킨은 동일 토큰을 쓰지만 눈으로 확인하지 않았다.</li>
+  <li>전수 테스트에서 <code>transactionalNewRemoteProject.test.ts</code>가 플래키인 것을 확인했다. 이 작업의 원인은 아니지만 별도로 안정화할 값어치가 있다.</li>
+  <li>WCAG 적합성은 이 QA 범위가 아니다. 배지 구분에 색 외에 화살표 기호를 함께 넣었지만, 정식 검증은 보조기술 실사용 테스트가 필요하다.</li>
+</ul>
+
+<footer>
+  증거 원본: <code>verify-shots/runtime-qa/&lt;scenario&gt;/</code> (git 무시 대상) · 보고서 사본: <code>reports/item-runtime-qa/assets/</code><br>
+  재현: <code>npm run qa:runtime -- --scenario item-menu</code> · <code>item-battle</code> · <code>item-care</code><br>
+  장비 A/B: <code>--scenario item-equipment</code> (기본 rapier) 와 <code>--scenario item-equipment --project test/fixtures/projects/item-equipment-whip-qa-v3.json</code>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 // 같은 시드와 같은 입력을 두 장비 픽스처에 반복해 normal attack의 장비 축을 실전에서 비교한다.
 // 생성기(scripts/build-item-equipment-qa-fixtures.mjs)는 두 JSON이 hero weapon 외에는 같음을 검사한다.
-// seed 101의 첫 공격은 두 무기 모두 명중하되 레이피어만 급소, 둘째 공격은 레이피어만 명중한다.
+// seed 101 관측: 레이피어는 218(급소)/162, 채찍은 34/49. 급소는 치명타율 9인 레이피어에서만 뜬다.
+// 채찍의 명중 판정(92)은 턴에 따라 빗나갈 수 있어 둘째 공격 비트는 명중·빗나감 메시지를 모두 허용한다.
 
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export const itemEquipmentScenario = {
