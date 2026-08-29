@@ -13,7 +13,16 @@ export type UiCopyKey =
   | "layerEvent"
   | "onlineSave"
   | "resources"
-  | "world";
+  | "resourceLibrary"
+  | "world"
+  | "audio"
+  | "audioShort"
+  | "mapEventSearch"
+  | "mapEventSearchShort"
+  | "testPlay"
+  | "testPlayShort"
+  | "battleTest"
+  | "battleTestShort";
 
 // 2026-08-21 용어 정리 라운드: technical 쪽 값이 곧 RM 유래 용어였다 — 하위/상위는 下層/上層의
 // 직역이다. **레이어 이름은 두 스타일을 하나로 통일**한다(감독 지시: 초보 용어를 전 모드
@@ -25,7 +34,10 @@ export type UiCopyKey =
 // 화면에서 두 뜻이 겹친다. "덧그림"은 그 레이어가 실제로 하는 일(캐릭터 위에 덧그린다)이다.
 const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   database: { plain: "자료집", technical: "데이터베이스" },
-  databaseShort: { plain: "자료", technical: "DB" },
+  // `databaseShort.plain` 은 2026-08-30 까지 `"자료"` 였다. 축약형인데 정본(`자료집`)의 축약으로
+  // 읽히지 않고 **다른 낱말**로 보였고, 같은 헤더의 `자료 보관함`(소재 보관함으로 개칭)과 앞
+  // 두 글자가 겹쳐 서로 다른 두 개념이 한 이름처럼 보였다. `자료집`은 4글자라 툴바에 들어간다.
+  databaseShort: { plain: "자료집", technical: "DB" },
   tilesetMissing: { plain: "그림이 없습니다", technical: "타일 그림판이 없습니다" },
   layerLower: { plain: "바닥", technical: "바닥" },
   layerUpper: { plain: "덧그림", technical: "덧그림" },
@@ -35,7 +47,26 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   // 같은 메뉴에 라벨이 똑같은 항목이 두 개 뜨는 사고가 있었다(standard ⋯ 메뉴). 자료집(DB)과
   // 소재(그림·소리 파일)는 다른 것이므로 이름도 다르게 둔다. 클래식 툴바는 이미 "소재"를 썼다.
   resources: { plain: "소재", technical: "리소스" },
-  world: { plain: "세계", technical: "월드" },
+  // 보관함 표면의 정본. 도구 메뉴는 `자료 보관함` 이라는 제3의 이름을 쓰고 있었다 —
+  // 툴바는 `소재`, uiCopy 는 `소재/리소스` 라서 한 개념에 세 이름이었다. 정본은 축약(`소재`)을
+  // 포함해야 하므로 `${resources} 보관함` 형태로 파생한다.
+  resourceLibrary: { plain: "소재 보관함", technical: "리소스 보관함" },
+  // 화면에 실제로 나가는 이름은 언제나 `세계관` 이었는데 이 표만 `세계/월드` 를 들고 있었다 —
+  // 아무도 참조하지 않는 죽은 값이어서 다음 사람이 이 표를 믿고 `세계` 를 쓰면 분열이 생긴다.
+  world: { plain: "세계관", technical: "세계관" },
+  // 음악·효과음 표면은 메뉴 `음악·효과음`, 툴바 라벨 `음악`, 툴바 title `음악/효과음`,
+  // 모달 제목 `음악/효과음 테스트` 로 네 갈래였다. 구분자는 가운뎃점 하나로 통일한다.
+  audio: { plain: "음악·효과음", technical: "음악·효과음" },
+  audioShort: { plain: "음악", technical: "음악" },
+  // 찾기 표면은 메뉴 `맵·이벤트 찾기`, 툴바 `찾기`/title `맵/이벤트 찾기`, 모달 제목 `검색`,
+  // aria-label `맵/이벤트 검색` 으로 갈라져 `찾기`와 `검색`이 같은 화면에서 섞였다.
+  mapEventSearch: { plain: "맵·이벤트 찾기", technical: "맵·이벤트 찾기" },
+  mapEventSearchShort: { plain: "찾기", technical: "찾기" },
+  // 테스트 실행은 메뉴 `시연 실행`, 톱바 버튼 `테스트`, 클래식 툴바 `실행` 세 이름이었다.
+  testPlay: { plain: "테스트 실행", technical: "테스트 실행" },
+  testPlayShort: { plain: "테스트", technical: "테스트" },
+  battleTest: { plain: "랜덤 전투 테스트", technical: "랜덤 전투 테스트" },
+  battleTestShort: { plain: "전투", technical: "전투" },
 };
 
 export function uiLabel(key: UiCopyKey, style: UiCopyStyle = "plain"): string {
