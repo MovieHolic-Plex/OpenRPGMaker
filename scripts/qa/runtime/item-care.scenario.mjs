@@ -34,7 +34,10 @@ export const itemCareScenario = {
         { kind: "key", key: "z" },
         { kind: "waitFor", testid: "status-menu-monster-monster_care_qa", state: "present" },
       ],
-      expect: { testidPresent: ["status-menu-monster-monster_care_qa"] },
+      expect: {
+        testidPresent: ["status-menu-monster-monster_care_qa"],
+        visibleText: { "status-menu-monster-monster_care_qa": "친밀도 70" },
+      },
       shot: true,
     },
     {
@@ -46,7 +49,10 @@ export const itemCareScenario = {
         { kind: "key", key: "z" },
         { kind: "waitFor", testid: "status-menu-monster-monster_care_qa", state: "present" },
       ],
-      expect: { testidPresent: ["status-menu-monster-monster_care_qa"] },
+      expect: {
+        testidPresent: ["status-menu-monster-monster_care_qa"],
+        visibleText: { "status-menu-monster-monster_care_qa": "친밀도 78" },
+      },
       shot: true,
     },
   ],
