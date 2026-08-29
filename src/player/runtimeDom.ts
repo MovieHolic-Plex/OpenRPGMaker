@@ -1,6 +1,6 @@
 import { TILE_SIZE } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
-import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
+import { takePendingPictureTransition, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { M2RuntimeState } from "@/project/sessionRuntimeTypes"
 import type { RuntimeEventView } from "@/project/runtimeEventState"
@@ -18,9 +18,9 @@ import {
   type PictureTransform,
 } from "@/player/pictures/pictureTween";
 import { store } from "@/project/store";
-import type { Project } from "@/project/types";
+import type { CharacterFootprint, FootprintRect, Project } from "@/project/types";
 import { formatGameTime, type GameTime, type TimePhase } from "@/project/gameTime";
-import { resolvePlayResolution } from "@/project/playResolution";
+import type { PlayResolution } from "@/project/types";
 
 type RuntimeAssetProject = Pick<Project, "assets">;
 
@@ -43,6 +43,29 @@ function nowMs(): number {
     : 0;
 }
 
+/**
+ * 마커를 이벤트의 몸 사각 크기·위치로 맞춘다. 좌표는 dataset 에 맵 픽셀로 남기고
+ * `placeMarker` 가 카메라 기준으로 환산한다 — 카메라가 움직여도 크기는 다시 안 잰다.
+ */
+function applyMarkerBodyRect(marker: HTMLElement, view: RuntimeEventView): void {
+  const width = (view.bodyRect.right - view.bodyRect.left + 1) * TILE_SIZE;
+  const height = (view.bodyRect.bottom - view.bodyRect.top + 1) * TILE_SIZE;
+  marker.dataset.mapX = `${view.bodyRect.left * TILE_SIZE}`;
+  marker.dataset.mapY = `${view.bodyRect.top * TILE_SIZE}`;
+  marker.dataset.mapW = `${width}`;
+  marker.dataset.mapH = `${height}`;
+  marker.style.width = `${width}px`;
+  marker.style.height = `${height}px`;
+}
+
+/**
+ * `__oprnDebug` 가 노출하는 이벤트 상태. QA 시나리오가 단정할 수 있는 것은 여기 있는 것뿐이다.
+ *
+ * 사각을 **파생값까지 실어 보내는** 이유: 크기(footprint/passRows)만 주면 소비자가 발밑 앵커
+ * 규약(top = y - (height-1), 짝수 폭은 앵커가 중앙 왼쪽)을 손으로 다시 구현해야 하고, 그 계산이
+ * 어긋나면 시나리오가 조용히 엉뚱한 칸을 단정한다. 실제로 1차 QA 는 발자국 좌표를 시나리오
+ * 주석에 손으로 적어 두는 것이 전부였다.
+ */
 export interface RuntimeEventSnapshot {
   readonly x: number;
   readonly y: number;
@@ -50,6 +73,14 @@ export interface RuntimeEventSnapshot {
   readonly priority: string;
   readonly trigger: string;
   readonly direction?: string;
+  /** 활성 페이지의 몸 크기(타일). 저작이 없으면 1x1. */
+  readonly footprint: CharacterFootprint;
+  /** 몸 사각 하단 몇 행이 통행을 막는가. 생략 저작이면 몸 높이와 같다. */
+  readonly passRows: number;
+  /** 조사·전투·클릭이 쓰는 사각. */
+  readonly bodyRect: FootprintRect;
+  /** 통행 차단이 쓰는 사각. passRows 가 몸 높이면 bodyRect 와 같다. */
+  readonly passRect: FootprintRect;
 }
 
 export interface RuntimeStateSnapshot {
@@ -78,6 +109,9 @@ export interface RuntimeStateSnapshot {
   readonly camera?: PlaySession["camera"];
   readonly lighting?: PlaySession["lighting"];
   readonly actorEquipment: PlaySession["actorEquipment"];
+  readonly shopLoyaltySpend?: PlaySession["shopLoyaltySpend"];
+  readonly shopTradeCounts?: PlaySession["shopTradeCounts"];
+  readonly shopMileagePoints?: PlaySession["shopMileagePoints"];
   readonly actorRows: PlaySession["actorRows"];
   readonly classOverrides: PlaySession["classOverrides"];
   readonly audio: AudioCommandState;
@@ -91,13 +125,69 @@ export interface RuntimeStateSnapshot {
   readonly lifeCalendarHudLines?: readonly string[];
 }
 
+export type RuntimeDomOverlayOptions = {
+  readonly qaInstrumentation?: boolean;
+  readonly playResolution?: PlayResolution;
+  /** Test seam for deterministic picture tween timing. */
+  readonly pictureNow?: () => number;
+  /** Test seam for proving resize reads are cached outside marker write batches. */
+  readonly stageSizeProvider?: (resolution: PlayResolution) => PlayResolution;
+  /** Test seam for counting marker write operations without depending on DOM internals. */
+  readonly onMarkerWrite?: (marker: HTMLElement) => void;
+};
+
 export class RuntimeDomOverlay {
   private readonly eventMarkers: Map<string, HTMLElement> = new Map();
   private readonly spriteMarkers: Map<string, HTMLElement> = new Map();
   private readonly pictureSlots: Map<string, PictureSlot> = new Map();
+  private readonly qaInstrumentation: boolean;
+  private readonly playResolution: PlayResolution;
+  private readonly stageSizeProvider: (resolution: PlayResolution) => PlayResolution;
+  private readonly onMarkerWrite: ((marker: HTMLElement) => void) | undefined;
+  private readonly pictureNow: () => number;
+  private stageBounds: PlayResolution;
   private pictureRafId = 0;
 
-  constructor(private readonly host: () => HTMLElement | undefined) {}
+  constructor(
+    private readonly host: () => HTMLElement | undefined,
+    options: RuntimeDomOverlayOptions = {},
+  ) {
+    this.qaInstrumentation = options.qaInstrumentation === true;
+    this.playResolution = options.playResolution ?? { width: 320, height: 240 };
+    this.stageSizeProvider = options.stageSizeProvider ?? ((resolution) => resolution);
+    this.onMarkerWrite = options.onMarkerWrite;
+    this.pictureNow = options.pictureNow ?? nowMs;
+    this.stageBounds = this.qaInstrumentation
+      ? this.stageSizeProvider(this.playResolution)
+      : this.playResolution;
+  }
+
+  /** True only under an explicit export-QA boot capability. Never true for a shipped player. */
+  get instrumented(): boolean {
+    return this.qaInstrumentation;
+  }
+
+  /**
+   * Visible runtime HUD only (timer + calendar). This is the production path: it must not
+   * depend on the debug snapshot, which exists solely for QA instrumentation.
+   */
+  syncVisibleHud(state: {
+    readonly timers: Record<string, number>;
+    readonly timerActive: Record<string, boolean>;
+    readonly gameTime?: GameTime;
+    readonly timePhase?: TimePhase;
+    readonly lifeCalendarHudLines?: readonly string[];
+  }): void {
+    this.syncTimerHud(state.timers, state.timerActive);
+    this.syncTimeHud(state.gameTime, state.timePhase, state.lifeCalendarHudLines);
+  }
+
+  /** Refresh cached logical bounds after an explicit play-surface resize signal. */
+  signalResize(): void {
+    if (!this.qaInstrumentation) return;
+    this.stageBounds = this.stageSizeProvider(this.playResolution);
+    this.placeAllMarkers();
+  }
 
   /**
    * 카메라 스크롤(px). 마커를 **화면 좌표**로 놓기 위해 필요하다.
@@ -116,9 +206,13 @@ export class RuntimeDomOverlay {
 
   /** 매 프레임 카메라 스크롤을 반영해 마커를 화면 좌표로 재배치한다. */
   syncCameraOffset(cameraX: number, cameraY: number): void {
-    if (cameraX === this.cameraX && cameraY === this.cameraY) return;
+    if (!this.qaInstrumentation || (cameraX === this.cameraX && cameraY === this.cameraY)) return;
     this.cameraX = cameraX;
     this.cameraY = cameraY;
+    this.placeAllMarkers();
+  }
+
+  private placeAllMarkers(): void {
     for (const marker of this.eventMarkers.values()) this.placeMarker(marker);
     for (const marker of this.spriteMarkers.values()) this.placeMarker(marker);
   }
@@ -133,28 +227,25 @@ export class RuntimeDomOverlay {
     const mapY = Number(marker.dataset.mapY ?? "0");
     const screenX = mapX - this.cameraX;
     const screenY = mapY - this.cameraY;
-    const { width: stageWidth, height: stageHeight } = this.stageSize();
+    // 마커 자기 크기로 가시성을 본다. 한 칸으로 고정하면 3x3 이벤트가 왼쪽·위로 두 칸
+    // 걸쳐 있을 때 아직 화면에 보이는데도 접혀 클릭이 죽는다.
+    const markerW = Number(marker.dataset.mapW ?? TILE_SIZE) || TILE_SIZE;
+    const markerH = Number(marker.dataset.mapH ?? TILE_SIZE) || TILE_SIZE;
     const visible =
-      screenX > -TILE_SIZE && screenY > -TILE_SIZE && screenX < stageWidth && screenY < stageHeight;
+      screenX > -markerW
+      && screenY > -markerH
+      && screenX < this.stageBounds.width
+      && screenY < this.stageBounds.height;
     marker.dataset.offscreen = visible ? "" : "1";
     marker.style.left = `${visible ? screenX : 0}px`;
     marker.style.top = `${visible ? screenY : 0}px`;
     marker.style.visibility = visible ? "" : "hidden";
     marker.style.pointerEvents = visible ? "" : "none";
-  }
-
-  private stageSize(): { readonly width: number; readonly height: number } {
-    const host = this.host();
-    const width = host?.clientWidth || Number.parseFloat(host?.style.width ?? "");
-    const height = host?.clientHeight || Number.parseFloat(host?.style.height ?? "");
-    const fallback = resolvePlayResolution(store.getCurrent().system);
-    return {
-      width: Number.isFinite(width) && width > 0 ? width : fallback.width,
-      height: Number.isFinite(height) && height > 0 ? height : fallback.height,
-    };
+    this.onMarkerWrite?.(marker);
   }
 
   upsertEventMarker(view: RuntimeEventView, onActivate?: (eventId: string) => void): void {
+    if (!this.qaInstrumentation) return;
     const host = this.host();
     if (!host) return;
     let marker = this.eventMarkers.get(view.event.id);
@@ -167,10 +258,9 @@ export class RuntimeDomOverlay {
       this.eventMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    marker.dataset.mapX = `${view.x * TILE_SIZE}`;
-    marker.dataset.mapY = `${view.y * TILE_SIZE}`;
-    marker.style.width = `${TILE_SIZE}px`;
-    marker.style.height = `${TILE_SIZE}px`;
+    // 히트박스는 **몸 사각**이다. 앵커 한 칸으로 두면 3x3 골렘의 머리를 클릭해도 아무 일이
+    // 없다 — 이 마커가 `pointer-events: auto` 실행 히트박스이기 때문이다.
+    applyMarkerBodyRect(marker, view);
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     marker.dataset.trigger = view.trigger.kind;
@@ -204,10 +294,7 @@ export class RuntimeDomOverlay {
       this.spriteMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    marker.dataset.mapX = `${view.x * TILE_SIZE}`;
-    marker.dataset.mapY = `${view.y * TILE_SIZE}`;
-    marker.style.width = `${TILE_SIZE}px`;
-    marker.style.height = `${TILE_SIZE}px`;
+    applyMarkerBodyRect(marker, view);
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     this.placeMarker(marker);
@@ -228,6 +315,13 @@ export class RuntimeDomOverlay {
   syncRuntimeState(snapshot: RuntimeStateSnapshot): void {
     const host = this.host();
     if (!host) return;
+    // The hidden JSON mirror is QA instrumentation, not player-visible UI. A shipped player
+    // must not create the node or serialize session state; visible HUD sync still runs.
+    if (!this.qaInstrumentation) {
+      this.syncTimerHud(snapshot.timers, snapshot.timerActive);
+      this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
+      return;
+    }
     const existing = host.querySelector("[data-testid='runtime-state-json']");
     const node = existing instanceof HTMLElement ? existing : document.createElement("pre");
     if (!existing) {
@@ -243,6 +337,8 @@ export class RuntimeDomOverlay {
   syncAudioState(audio: AudioCommandState): void {
     const host = this.host();
     if (!host) return;
+    // QA-only mirror; audio playback itself is owned by the audio engine.
+    if (!this.qaInstrumentation) return;
     const existing = host.querySelector("[data-testid='audio-state-json']");
     const node = existing instanceof HTMLElement ? existing : document.createElement("pre");
     if (!existing) {
@@ -255,7 +351,7 @@ export class RuntimeDomOverlay {
 
   // 픽처 레이어를 실제 이미지로 렌더한다. 리소스가 이미지로 해석되면 <img> 슬롯을,
   // 아니면 기존 텍스트 라벨을 배치한다(폴백/테스트 호환). z-order 는 픽처 번호로 유도하고,
-  // durationMs 가 있으면 Move Picture 트윈(이동/스케일/불투명/회전)을 시작한다.
+  // durationMs 와 실행 중인 Show/Move Picture 의 일회성 의도가 함께 있을 때만 트윈한다.
   syncPictureLayer(pictures: Record<string, PictureState>): void {
     const host = this.host();
     if (!host) return;
@@ -287,6 +383,8 @@ export class RuntimeDomOverlay {
   ): void {
     const target = pictureTransformFromState(picture);
     let slot = this.pictureSlots.get(picture.pictureId);
+    // 슬롯이 이 호출에서 처음 만들어졌는지. 첫 표시는 트윈 분기 조건이 다르다(아래 주석).
+    const created = !slot;
     if (!slot) {
       const container = document.createElement("div");
       container.className = "picture-layer-item";
@@ -301,7 +399,7 @@ export class RuntimeDomOverlay {
         displayed: target,
         from: target,
         to: target,
-        startedAt: nowMs(),
+        startedAt: this.pictureNow(),
         durationMs: 0,
       };
       this.pictureSlots.set(picture.pictureId, slot);
@@ -309,12 +407,21 @@ export class RuntimeDomOverlay {
     this.syncPictureMedia(slot, picture, project);
     slot.container.style.zIndex = String(20 + pictureZIndex(picture.pictureId));
     const duration = picture.durationMs ?? 0;
-    if (duration > 0 && !pictureTransformsEqual(slot.displayed, target)) {
+    const transitionRequested = takePendingPictureTransition(picture);
+    if (created && duration > 0 && transitionRequested) {
+      const from: PictureTransform = { ...target, opacity: 0 };
+      slot.from = from;
+      slot.to = target;
+      slot.startedAt = this.pictureNow();
+      slot.durationMs = duration;
+      slot.displayed = from;
+      applyPictureTransform(slot.container, from);
+    } else if (duration > 0 && transitionRequested && !pictureTransformsEqual(slot.to, target)) {
       slot.from = slot.displayed;
       slot.to = target;
-      slot.startedAt = nowMs();
+      slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
-    } else if (duration <= 0) {
+    } else if (created || duration <= 0 || !pictureTransformsEqual(slot.to, target)) {
       slot.from = target;
       slot.to = target;
       slot.durationMs = 0;
@@ -375,7 +482,7 @@ export class RuntimeDomOverlay {
 
   private stepPictureTweens(): boolean {
     let animating = false;
-    const now = nowMs();
+    const now = this.pictureNow();
     for (const slot of this.pictureSlots.values()) {
       if (slot.durationMs <= 0) continue;
       const progress = tweenProgress(now - slot.startedAt, slot.durationMs);

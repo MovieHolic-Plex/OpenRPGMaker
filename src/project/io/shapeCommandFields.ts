@@ -77,6 +77,14 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
       requireNumber(`${label}.delta`, command.delta);
       return;
+    case "changeFactionStance": {
+      requireString(`${label}.a`, command.a);
+      requireString(`${label}.b`, command.b);
+      const op = requireString(`${label}.op`, command.op);
+      if (op !== "=" && op !== "+=" && op !== "-=") throw new ProjectFormatError(`${label}.op가 잘못되었습니다.`);
+      requireNumber(`${label}.value`, command.value);
+      return;
+    }
     case "getFriendship":
       if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
       requireString(`${label}.variableId`, command.variableId);
@@ -605,6 +613,11 @@ function validateMoveCommandShape(label: string, value: unknown): void {
     case "jump":
       requireNumber(`${label}.dx`, command.dx);
       requireNumber(`${label}.dy`, command.dy);
+      validateHopFields(label, command);
+      return;
+    case "dropIn":
+      validateHopFields(label, command);
+      if (command.impact !== undefined) requireBoolean(`${label}.impact`, command.impact);
       return;
     case "turnRelative":
       requireRelativeTurn(`${label}.turn`, command.turn);
@@ -648,6 +661,13 @@ function validateMoveCommandShape(label: string, value: unknown): void {
     default:
       throw new ProjectFormatError(`${label}: 알 수 없는 move command kind: ${kind}`);
   }
+}
+
+/** jump·dropIn 이 공유하는 체공 옵션. 세 필드 모두 생략 가능하고, 값 범위는 런타임이 clamp 한다. */
+function validateHopFields(label: string, command: Record<string, unknown>): void {
+  if (command.heightPx !== undefined) requireNumber(`${label}.heightPx`, command.heightPx);
+  if (command.durationMs !== undefined) requireNumber(`${label}.durationMs`, command.durationMs);
+  if (command.se !== undefined) requireString(`${label}.se`, command.se);
 }
 
 function requireDir(label: string, value: unknown): void {

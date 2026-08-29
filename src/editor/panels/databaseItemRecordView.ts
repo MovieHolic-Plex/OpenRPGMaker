@@ -15,7 +15,7 @@ import {
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { emptyState, sectionCard } from "@/editor/panels/databaseWorkspace";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
-import { itemFields } from "@/editor/panels/databaseBasicRecordFields";
+import { itemCaptureFields, itemPriceField, itemScopeField, skillPicker } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { FARM_TOOLS, isFarmTool } from "@/project/farmModel";
@@ -157,13 +157,6 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
   });
   const refreshStory = (): void => fillItemEffectStory(storyHost, store.getCurrent(), currentItem(record));
   refreshStory();
-  const specCard = isEquipmentItemType(record.type)
-    ? []
-    : [sectionCard({
-      title: "수치",
-      testid: "db-item-card-spec",
-      children: [itemSpecStrip(record)],
-    })];
   // 공용 상세 창 골격: 히어로는 고정, 본문(.db-ws-detail-body)만 스크롤한다.
   // 카드는 db-ws-stack(auto-fit minmax) 이라 폭이 남으면 열이 늘고, 좁아지면 접힌다.
   form.classList.add("db-item-ws");
@@ -175,40 +168,170 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
         el("div", {
           class: "db-items-oprn-workbench db-ws-stack",
           dataset: { testid: "db-items-oprn-workbench" },
-          children: [
-            spanCard(sectionCard({
-              title: "이 아이템을 사용하면",
-              testid: "db-item-card-story",
-              children: [storyHost],
-            })),
-            sectionCard({
-              title: "기본 설정",
-              testid: "db-item-card-basics",
-              children: [
-                textField("설명", "db-field-item-description", record.description, (description) =>
-                  updateDatabaseRecord("items", record.id, { description })
-                ),
-                selectLiteral("종류", "db-field-item-type", record.type, ITEM_TYPES, (type) => {
-                  updateItemType(record, type);
-                  rerender();
-                }),
-                consumptionLimitField(record, refreshStory),
-                farmToolField(record, refreshStory),
-              ],
-            }),
-            ...specCard,
-            sectionCard({
-              title: "아이템 그래픽",
-              testid: "db-item-card-graphic",
-              children: [resourcePanel(record, rerender)],
-            }),
-            ...typePanels(record, form, refreshStory),
-            spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile")),
-          ],
+          children: itemWorkbenchCards(record, form, rerender, storyHost, refreshStory),
         }),
       ],
     }),
   );
+}
+
+/**
+ * 카드 순서 = 정보 위계. 오름차순으로 쌓지 않고 세 단계로 나눠 밝혀둔다:
+ *   요약(무엇이 일어나는가) → 정의(이게 무엇인가) → 효과(무엇을 하는가) → 사용 제한.
+ *
+ * 이전 배열은 [요약][기본 설정][수치][그래픽][범위][옵션][회복량][상태 회복][사용 가능] 이라
+ * (1) 그래픽 카드가 효과 카드들 사이에 끼어 있었고,
+ * (2) "수치" 한 장에 가격·범위·포획 배율·볼 등급·연결 스킬이 섞여 이름이 내용을 설명하지 못했고,
+ * (3) scope 컨트롤이 "수치 → 범위" 셀렉트와 "범위 → 대상" 세그먼트로 **두 개** 있었고,
+ * (4) "사용 가능" 카드가 종류별 패널 4곳에 각각 복제돼 있었다.
+ */
+function itemWorkbenchCards(
+  record: ItemRecord,
+  form: HTMLElement,
+  rerender: () => void,
+  storyHost: HTMLElement,
+  refreshStory: () => void,
+): HTMLElement[] {
+  const story = spanCard(sectionCard({
+    title: "이 아이템을 사용하면",
+    testid: "db-item-card-story",
+    children: [storyHost],
+  }));
+  if (isEquipmentItemType(record.type)) {
+    return [story, basicsCard(record, rerender, refreshStory), graphicCard(record, rerender), equipmentRedirect(form), supportNotice()];
+  }
+  return [
+    story,
+    sectionLabel("정의", "definition"),
+    basicsCard(record, rerender, refreshStory),
+    graphicCard(record, rerender),
+    sectionLabel("효과", "effect"),
+    targetingCard(record, refreshStory),
+    ...typePanels(record, refreshStory),
+    linkedSkillCard(record),
+    sectionLabel("사용 제한", "limits"),
+    ...(hasActorRestrictions(record.type) ? [usableCard(record, refreshStory)] : []),
+    captureCard(record),
+    supportNotice(),
+  ];
+}
+
+/** 카드 제목(2단계)·필드 라벨(3단계) 위에 한 단계를 더한 카드 묶음 구분자. */
+function sectionLabel(text: string, slug: string): HTMLElement {
+  return el("h4", {
+    class: "db-item-section-label db-ws-span",
+    text,
+    dataset: { testid: `db-item-section-${slug}` },
+  });
+}
+
+function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () => void): HTMLElement {
+  return sectionCard({
+    title: "기본",
+    testid: "db-item-card-basics",
+    children: [
+      textField("설명", "db-field-item-description", record.description, (description) =>
+        updateDatabaseRecord("items", record.id, { description })
+      ),
+      selectLiteral("종류", "db-field-item-type", record.type, ITEM_TYPES, (type) => {
+        updateItemType(record, type);
+        rerender();
+      }),
+      ...(isEquipmentItemType(record.type)
+        ? []
+        : [itemPriceField(record.id), consumptionLimitField(record, refreshStory), farmToolField(record, refreshStory)]),
+    ],
+  });
+}
+
+function graphicCard(record: ItemRecord, rerender: () => void): HTMLElement {
+  return sectionCard({
+    title: "아이템 그래픽",
+    testid: "db-item-card-graphic",
+    children: [resourcePanel(record, rerender)],
+  });
+}
+
+/**
+ * 대상·사용 시점을 한 카드가 소유한다. **한 화면에 scope 컨트롤은 하나만 생긴다** — 약
+ * 계열은 자신의 2지 세그먼트(`db-field-item-scope`)가 권위자이므로 공용 `db-field-scope`
+ * 셀렉트를 그리지 않는다. 두 컨트롤이 같은 record.scope 를 각각 쓰면 한쪽을 바꿔도 다른
+ * 쪽은 재렌더 전까지 옛 값을 보여준다(장비 부위 중복 P0 와 같은 모양).
+ */
+function targetingCard(record: ItemRecord, refreshStory: () => void): HTMLElement {
+  const children: HTMLElement[] = record.type === "medicine"
+    ? [segmentedControl("대상", "db-field-item-scope", record.scope, MEDICINE_SCOPE_OPTIONS, (scope) =>
+      updateItemAndRefresh(record, { scope: scope as ItemScope }, refreshStory)
+    )]
+    : [itemScopeField(record.id)];
+  if (record.type === "medicine") {
+    children.push(
+      toggleSwitch("메뉴에서만 사용", "db-field-item-only-menu", record.onlyUsableInMenu, (onlyUsableInMenu) => {
+        updateDatabaseRecord("items", record.id, { onlyUsableInMenu, occasion: onlyUsableInMenu ? "field" : currentItem(record).occasion });
+        refreshStory();
+      }),
+      toggleSwitch("전투불능 대상에게만 유효", "db-field-item-only-dead", record.onlyEffectiveOnDeadActors, (onlyEffectiveOnDeadActors) =>
+        updateItemAndRefresh(record, { onlyEffectiveOnDeadActors }, refreshStory)
+      ),
+    );
+  }
+  if (record.type === "switch") {
+    children.push(
+      toggleSwitch("필드", "db-field-item-occasion-field", record.occasionField, (occasionField) => {
+        updateDatabaseRecord("items", record.id, {
+          occasionField,
+          occasion: occasionFromFlags(occasionField, currentItem(record).occasionBattle),
+        });
+        refreshStory();
+      }),
+      toggleSwitch("전투", "db-field-item-occasion-battle", record.occasionBattle, (occasionBattle) => {
+        updateDatabaseRecord("items", record.id, {
+          occasionBattle,
+          occasion: occasionFromFlags(currentItem(record).occasionField, occasionBattle),
+        });
+        refreshStory();
+      }),
+    );
+  }
+  return sectionCard({ title: "대상과 사용 시점", testid: "db-item-card-targeting", children });
+}
+
+/** 레거시 공유 필드 `item.skillId`. 상점·이벤트가 참조하는 보조 필드라 효과 구역 끝에 둔다. */
+function linkedSkillCard(record: ItemRecord): HTMLElement {
+  const host = el("div", { class: "db-item-grid" });
+  skillPicker(host, "items", record.id);
+  return sectionCard({
+    title: "연결 스킬",
+    testid: "db-item-card-skill",
+    children: [host],
+  });
+}
+
+/** 포획 수치는 어떤 종류든 가질 수 있지만 대부분의 아이템에서 0 이다 — 맨 뒤로 물러난다. */
+function captureCard(record: ItemRecord): HTMLElement {
+  return sectionCard({
+    title: "포획",
+    hint: "몬스터 포획용 아이템일 때만 적용됩니다",
+    testid: "db-item-card-capture",
+    children: [el("div", { class: "db-item-grid", children: itemCaptureFields(record.id) })],
+  });
+}
+
+function usableCard(record: ItemRecord, refreshStory: () => void): HTMLElement {
+  return spanCard(sectionCard({
+    title: "사용 가능",
+    testid: "db-item-card-usable",
+    children: actorClassChoices(record, refreshStory),
+  }));
+}
+
+/** 배우/직업 허용 목록이 의미를 갖는 종류 — 사용자가 직접 쓰는 아이템만. */
+function hasActorRestrictions(type: ItemType): boolean {
+  return type === "medicine" || type === "book" || type === "seed" || type === "special";
+}
+
+function supportNotice(): HTMLElement {
+  return spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile"));
 }
 
 /** `db-ws-stack` 안에서 한 행을 다 쓰는 카드로 표시한다. */
@@ -217,8 +340,7 @@ function spanCard(node: HTMLElement): HTMLElement {
   return node;
 }
 
-function typePanels(record: ItemRecord, form: HTMLElement, refreshStory: () => void): HTMLElement[] {
-  if (isEquipmentItemType(record.type)) return [equipmentRedirect(form)];
+function typePanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   if (record.type === "medicine") return medicinePanels(record, refreshStory);
   if (record.type === "book") return bookPanels(record, refreshStory);
   if (record.type === "seed") return seedPanels(record, refreshStory);
@@ -253,12 +375,6 @@ function equipmentRedirect(form: HTMLElement): HTMLElement {
       }),
     ],
   });
-}
-
-function itemSpecStrip(record: ItemRecord): HTMLElement {
-  const spec = el("div", { class: "db-item-grid", dataset: { testid: "db-item-spec-strip" } });
-  if (!isEquipmentItemType(record.type)) itemFields(spec, record.id);
-  return spec;
 }
 
 function itemHeader(record: ItemRecord): HTMLElement {
@@ -333,28 +449,6 @@ function typePanelGroup(testid: string, cards: readonly HTMLElement[]): HTMLElem
 function medicinePanels(record: ItemRecord, refreshStory: () => void): HTMLElement[] {
   return [
     typePanelGroup("db-items-medicine-panel", [
-      sectionCard({
-        title: "범위",
-        testid: "db-item-card-scope",
-        children: [
-          segmentedControl("대상", "db-field-item-scope", record.scope, MEDICINE_SCOPE_OPTIONS, (scope) =>
-            updateItemAndRefresh(record, { scope: scope as ItemScope }, refreshStory)
-          ),
-        ],
-      }),
-      sectionCard({
-        title: "옵션",
-        testid: "db-item-card-options",
-        children: [
-          toggleSwitch("메뉴에서만 사용", "db-field-item-only-menu", record.onlyUsableInMenu, (onlyUsableInMenu) => {
-            updateDatabaseRecord("items", record.id, { onlyUsableInMenu, occasion: onlyUsableInMenu ? "field" : currentItem(record).occasion });
-            refreshStory();
-          }),
-          toggleSwitch("전투불능 대상에게만 유효", "db-field-item-only-dead", record.onlyEffectiveOnDeadActors, (onlyEffectiveOnDeadActors) =>
-            updateItemAndRefresh(record, { onlyEffectiveOnDeadActors }, refreshStory)
-          ),
-        ],
-      }),
       // HP·MP 는 같은 두 필드(%, 고정값)라 카드 두 장으로 나누면 격자에 홀수 칸이
       // 남는다 — 한 카드 안에서 소제목으로 나눈다.
       sectionCard({
@@ -370,11 +464,6 @@ function medicinePanels(record: ItemRecord, refreshStory: () => void): HTMLEleme
         title: "상태 회복",
         testid: "db-item-card-heal-states",
         children: [choiceList("상태", healStateChoices(record, refreshStory))],
-      })),
-      spanCard(sectionCard({
-        title: "사용 가능",
-        testid: "db-item-card-usable",
-        children: actorClassChoices(record, refreshStory),
       })),
     ]),
   ];
@@ -393,11 +482,6 @@ function bookPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[]
           }),
         ],
       }),
-      spanCard(sectionCard({
-        title: "사용 가능",
-        testid: "db-item-card-usable",
-        children: actorClassChoices(record, refreshStory),
-      })),
     ]),
   ];
 }
@@ -410,11 +494,6 @@ function seedPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[]
         testid: "db-item-card-seed-bonuses",
         children: [el("div", { class: "db-item-grid", children: statBonusFields(record, record.seedParameterBonuses, "seedParameterBonuses", "db-field-item-seed", refreshStory) })],
       }),
-      spanCard(sectionCard({
-        title: "사용 가능",
-        testid: "db-item-card-usable",
-        children: actorClassChoices(record, refreshStory),
-      })),
     ]),
   ];
 }
@@ -441,11 +520,6 @@ function specialPanels(record: ItemRecord, refreshStory: () => void): HTMLElemen
           ),
         ],
       }),
-      spanCard(sectionCard({
-        title: "사용 가능",
-        testid: "db-item-card-usable",
-        children: actorClassChoices(record, refreshStory),
-      })),
     ]),
   ];
 }
@@ -460,26 +534,6 @@ function switchPanels(record: ItemRecord, refreshStory: () => void): HTMLElement
           selectField("스위치", "db-picker-item-switch", record.switchId ?? "", switchOptions(), (switchId) =>
             updateItemAndRefresh(record, { switchId: emptyToUndefined(switchId) }, refreshStory)
           ),
-        ],
-      }),
-      sectionCard({
-        title: "사용 조건",
-        testid: "db-item-card-occasion",
-        children: [
-          toggleSwitch("필드", "db-field-item-occasion-field", record.occasionField, (occasionField) => {
-            updateDatabaseRecord("items", record.id, {
-              occasionField,
-              occasion: occasionFromFlags(occasionField, currentItem(record).occasionBattle),
-            });
-            refreshStory();
-          }),
-          toggleSwitch("전투", "db-field-item-occasion-battle", record.occasionBattle, (occasionBattle) => {
-            updateDatabaseRecord("items", record.id, {
-              occasionBattle,
-              occasion: occasionFromFlags(currentItem(record).occasionField, occasionBattle),
-            });
-            refreshStory();
-          }),
         ],
       }),
     ]),

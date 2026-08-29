@@ -7,6 +7,64 @@
 
 Use the lightest command that proves the change.
 
+## 체공(점프·낙하) focused gate (2026-08-29)
+
+- `test/characterHop.test.ts`: 순수 곡선·클램프 계약. 아크 대칭성과 양끝 0, 낙하의 감가속 비대칭, `hopOriginY` 가 `height × scaleY` 로 나누는지(`hopOriginY(16,32,2) === 1.25`), 착지 충격 계획이 `MIN_IMPACT_LIFT_PX` 미만이면 `null` 인지, `prefers-reduced-motion` 에서 흔들림·먼지가 빠지고 SE 만 남는지.
+- `test/runtimeCharacterHop.test.ts`: NPC 체공. 리프트가 최고점까지 오르는 동안 `sprite.y` 와 `sprite.depth` 가 **불변**인지(깊이 y-소트·카메라·조명이 이 값을 읽는다), 점프가 이동 속도가 아니라 자기 `durationMs` 를 쓰는지, `dropIn` 이 타일을 바꾸지 않는지.
+- `test/runtimePlayerHop.test.ts`: 주인공 체공. 목적지 커밋(`tileX`/`session.x`), 맵 밖 점프는 건너뛰고 다음 명령을 소비, 낙하가 끝날 때까지 다음 걸음을 시작하지 않음. 이 파일의 `playerMock.setFrame` 은 Phaser 처럼 원점을 `[0.5, 1]` 로 되돌린다 — **리프트는 프레임 갱신 뒤에 적용해야 한다**는 호출 순서 계약을 테스트가 직접 지킨다.
+- `test/hopPersistence.test.ts`: 저작한 `heightPx`/`durationMs`/`dx`/`dy` 의 저장 왕복(두 저작면 모두). 문자열 높이는 `deserialize` 가 던져야 한다.
+- `test/moveRouteCatalogPersistence.test.ts`: 팔레트 44 버튼이 만드는 커맨드 전부를 하나씩·통째로 왕복시킨다(범인 버튼의 `testId` 를 실어 실패). 그리고 「효과음 재생」 기본값이 `collectResourceIds` 안에 있는지 잠근다 — 이 한 줄이 "없는 리소스 기본값이 이벤트 저장을 통째로 막는" 결함의 회귀 게이트다.
+- 회귀는 `test/runtimeNpcRoute*.test.ts`, `test/runtimeMoveRoute*.test.ts`, `test/e2e/oprn-move-route-focused.spec.ts`(카탈로그 버튼/행 수) 까지. 그 스펙의 스윕 시험은 **스위치·효과음 칸을 채우지 않는다** — 없는 id 를 넣으면 「적용」이 이벤트를 저장하지 않아 내보내기가 빈 채로 나온다(예전 `sw_route_seen`/`se_route_chime` 이 그래서 0 개를 뱉었다).
+
+### 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
+
+jsdom 이 못 하는 것만 본다. 리프트는 Phaser 의 `displayOrigin` 에 실리고 `setFrame` 이 그것을
+되돌리므로, **원점 계약의 최종 판정은 실제 Phaser 뿐이다.**
+
+- 새 op: `playerRoute`(이동 경로를 주인공에게 직접 물린다), `waitForLift`(리프트 창을 조건으로
+  대기), `waitForGrounded`(체공 상태기 소멸을 대기), `captureShadowSample`(픽셀 대조용 표본 프레임).
+- 새 expect: `playerLiftPx(AtLeast)`, `playerSpriteY`(접지선), `playerAirborne`,
+  `playerShadowVisible`(깊이 띠 0~100k + alpha>0 동시 확인), `playerShadowGroundY`(타원 아래 끝),
+  `playerShadowInkAtLeast`(렌더된 픽셀 농도).
+- **착지 판정은 `liftPx` 로 하지 마라.** 훅이 정수로 반올림하므로 착지 직전 프레임도 0 으로
+  보인다 — `playerAirborne` / `waitForGrounded` 가 유일한 진실이다.
+
+#### 오브젝트 축 검사는 "한 픽셀도 안 그려진 상태" 를 통과시킨다 (2026-08-29 실측)
+
+그림자가 `visible=true`, alpha>0, 깊이 띠 안, 카메라 안인데도 화면에 전혀 없었다(원인은
+`textures.createCanvas` + 나중에 그리기, `openwiki/runtime-battle.md` 참고). 그래서
+`playerShadowInkAtLeast` 는 **렌더된 픽셀**을 잰다. 여기까지 오는 데 실패한 설계 두 개를 기록한다.
+
+1. 같은 프레임에서 상자를 **위로** 옮겨 잡은 대조군 → 캐릭터의 발이 늘 거기 있어 측정이
+   뒤집혔다(-0.036).
+2. 같은 프레임에서 상자를 **아래로** 옮겨 잡은 대조군 → 지형 자체가 5% 어두워서 **완전 투명한
+   그림자도 통과**했다(0.050 > 0.03).
+
+지금 쓰는 방식은 같은 **월드 사각형**을 두 프레임에서 비교한다: 그림자가 떠 있던 프레임 대
+캐릭터가 그 자리를 걸어서 떠난 뒤의 프레임. 지형이 동일하므로 차이는 그림자뿐이다.
+눈금(실측): 정상 0.10~0.15 / 완전 투명 0.026~0.030(두 프레임의 카메라 스크롤 차이에서 오는
+서브픽셀 잡음 바닥) → 하한 0.06. 측정은 고고도에서만 유효하다 — 낮은 고도에서는 캐릭터의 발이
+상자를 덮는다.
+
+### 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
+
+`.herdr` 워크트리는 `node_modules` 를 공유하지 않고 `.vite` 캐시만 갖는 경우가 있어 `npm test`/`npm run typecheck` 가 바로 죽는다. 본 레포의 도구를 워크트리에 겨누면 된다.
+
+```bash
+cd /home/main/z-project/rpg-zzu
+node node_modules/vitest/vitest.mjs run --configLoader bundle \
+  --root /home/main/.herdr/worktrees/rpg-zzu/<name> test/characterHop.test.ts
+```
+
+타입체크는 워크트리 tsconfig 를 상속한 임시 설정에 `node_modules` 경로를 얹는다. `"*": ["*", ".../node_modules/*"]` 매핑을 빼면 `phaser` 가 TS2307 로 터지면서 수백 개 가짜 에러가 번진다.
+
+```json
+{ "extends": "/home/main/.herdr/worktrees/rpg-zzu/<name>/tsconfig.json",
+  "compilerOptions": { "paths": {
+    "@/*": ["src/*"],
+    "*": ["*", "/home/main/z-project/rpg-zzu/node_modules/*"] } } }
+```
+
 ## Roguelike run Phase 0–3 coverage (2026-08-24)
 
 - `test/roguelikeRun.test.ts`: real interpreter lifecycle plus save-snapshot roundtrip.
@@ -14,6 +72,18 @@ Use the lightest command that proves the change.
 - `test/commandContracts/runControl.contract.test.ts`: all action variants, inactive no-op behavior, non-blocking completion, and project serialization.
 - `test/roguelikeRooms.test.ts`: exact deterministic slot selection, generation invalidation after floor/reset changes and same-seed restart, real `run_scene_test` enemy and one-shot loot reset behavior, live event-surface rebuild, save/load generation stability, event-reset opt-out, real-time enemy HP/projectile cleanup, active-run kill persistence isolation, AI tool authoring, import validation, and project roundtrip.
 - Registry/shape coverage includes `runControl` and `run`; native manifest counts are 75 commands and 16 conditions at this phase.
+- **Condition coverage (2026-08-29).** `test/conditionEvaluatorParity.test.ts` is the parity spine: it feeds identical `(condition, state)` pairs for all 16 kinds, in both a satisfying and a non-satisfying state, to all three evaluators (`pageResolution.evalPageCondition`, `session.evalCondition`, the battle runtime's `evaluateCondition`) and asserts identical verdicts. It also asserts `Object.keys(CASES)` equals `CONDITION_KINDS` in order, so a new union member fails the test until it is classified. `ALLOWLISTED_DIVERGENCES` is currently empty — record evidence before adding to it.
+  `test/commandContracts/fork.contract.test.ts` covers all 16 kinds through the real interpreter drain; it previously covered only 10, with `timePhase`/`season`/`npcActivity`/`friendshipAtLeast`/`battleResult`/`run` proven at the `evalCondition` unit level but never through branch selection. It also pins that an empty friendship `npcKey` resolves via the host event's `characterId`.
+  `test/pageConditionAuthoringIntegrity.test.ts` pins that a page condition survives an emptied reference (inline error, not deletion) and that touching a disabled row activates it visibly. `test/conditionEvalPreview.test.ts` pins the three-state 판정 불가 verdict. `test/conditionCopyTokens.test.ts` is the internal-token gate for condition copy.
+
+### 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
+
+`.omo/gates-baseline.json` 은 `baselineTrustworthy: false` 이고 이유가 적혀 있다 — 동일 코드로
+연속 실행해도 실패 수가 170/187/195/203 으로 흔들리고 `failedFiles` 는 **합집합**이다.
+실측: playwright 시간 QA 가 dev 서버를 돎리는 동시에 `npm run gates` 를 돌렸다가 24개 파일이
+「새로 실패」로 찍혔고, 그 중에는 바로 전에 개별 실행으로 두 번 초록을 본 파일도 섞여 있었다.
+따라서 게이트 회귀 파정은 **조용한 상태에서 해당 파일을 개별 재실행**해서 마무리해야 한다.
+`typecheck:app` 은 기준선이 0 오류 + `baselineTrustworthy: true` 이므로 그곳의 오류는 바로 회귀다.
 
 ## Agent validation rule
 
@@ -23,6 +93,7 @@ Pick validation based on the touched boundary:
 
 - Type-only or low-risk helper changes: run `npm run typecheck` plus a focused unit test if one exists.
 - Project schema, migration, persistence, defaults, or references: run focused Vitest coverage for the changed path and include save/load or migration evidence.
+- Default item/equipment catalog changes run `test/defaultItemCatalogQuality.test.ts` for Korean copy and shape coherence plus `test/itemRuntimeUsability.test.ts` for real field-menu/battle effect and consumption behavior. Keep the icon-coverage and default-database suites in the same focused gate.
 - Terms/runtime label changes should cover `resolveTerms` defaults and overrides, old JSON with missing `meta.terms`, unknown term roundtrips, and focused DOM/model checks for battle command labels, shop text, inn text, and status/common labels when touched.
 - Cluster-rule changes should include a focused validator test plus a commit-gate proof: a hard rule must still produce a `projectLint` error, `commitChangeset` must return `ok:true` for cluster-rule-only hard violations, and the fixed map should return `ok:true` without cluster-rule issues.
 - Editor UI/workflow changes: run focused tests and drive the browser/editor surface with Playwright or an equivalent browser check.
@@ -120,6 +191,25 @@ Evidence expectations:
 - Event draft/editor changes should run `npm run typecheck:app` plus: `npx vitest run test/eventDrafts.test.ts test/eventDraftVault.test.ts test/eventDraftValidator.test.ts test/eventBeginnerTemplates.test.ts test/eventTestSandbox.test.ts test/eventEditorTrustLoop.test.ts test/selectedEventTestModal.test.ts --configLoader runner`.
 - Required assertions are canonical projection while editing, crash/replace recovery, Cancel rollback, Apply/OK/Test fatal blocking, recursive nested validation and navigation, safe record-backed beginner templates, newest-first recents and roving tabs, focus/caret/details/scroll restoration, sandbox-only selected draft injection, deterministic spawn, real `initialEventTestId` player wiring, and zero `store.flush()` calls on the selected-event path. Follow with `npm run gates`, `npm run build`, and a practical browser smoke for merge-ready UI work.
 
+## 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
+
+- 게이트: `npx playwright test test/e2e/event-face-command-visual.spec.ts` + `npm run gates:css`(graph 고아 0건, 예산 래칫 회귀 0건).
+- 이 스펙이 잡는 것은 **얼굴이 두 장 겹쳐 보이는** 회귀다. `facesetPreview.faceImage()` 는
+  얼굴 상자에 `--face-url` CSS 배경(로드 실패 폴백)을 깔고 그 안에 실제 `<img>` 를 넣는다.
+  두 규칙(`<img>` 절대 배치 + 배경 끄기)을 담고 있던
+  `event-editor.command-preview/07-identifiable-previews.css` 가 **어떤 배럴에도 @import 되지
+  않은 고아 파일**이라 `<img>` 가 `position:static` 원본 크기(48×48)로 흘러가고 배경은 상자
+  전체(96×96)에 `contain` 으로 깔렸다. 실측: 얼굴 상자 115개 중 114개가 이중 페인트.
+- 계약 3줄: (1) `<img>` 가 있으면 상자의 computed `background-image` 는 `none`,
+  (2) `<img>` 는 `position:absolute` 로 상자 내부를 정확히 채운다, (3) `<img>` 를 떼면
+  배경 폴백이 되살아난다. 배경/`<img>` 를 **같은 크기로 맞추는 것만으로는 부족하다** —
+  nearest-neighbour 래스터화 결과가 미묘하게 달라 배경이 테두리에서 1px 새어나온다.
+- 대비는 computed 색이 아니라 **렌더된 픽셀**로 본다. `.ecp-message-window` 가 불투명
+  `--bg-surface` 층을 어두운 유리 색 위에 깔고 있던 동안 computed 대비는 17.8:1 로
+  보였지만 실제 페인트는 #FFF6E2 on #F7F8F8 = **1.0:1** 이었다.
+- 배경/전경 층 순서를 만질 때는 `.ecp-message-window` 를 공유하는 문장 표시·선택지·문장
+  표시 설정 미리보기도 같이 눈으로 확인한다.
+
 ## P2 spatial focused gate (2026-08-25)
 
 - Schema/legacy/roundtrip: `test/p2SpatialSchema.test.ts`.
@@ -177,6 +267,8 @@ Evidence expectations:
   매 실행 재생성되며 gitignore 대상이다.
 - 시나리오는 `scripts/qa/runtime/<name>.scenario.mjs`. 좌표 기대치는 추측하지 말고
   `scripts/_dump-event-tiles.mjs` 로 실물에서 읽어라.
+- 체공(점프·낙하) 시나리오와 그 전용 op/expect 는 위 "체공 런타임 QA" 절에 있다. 거기서
+  얻은 일반 교훈: **오브젝트가 존재한다는 검사는 그것이 그려졌다는 뜻이 아니다.**
 - 전투 주스가 맵을 드러내는 회귀는 `test/runtime/battle-flash-map.spec.ts` 가 잠근다. 같은 QA
   서버로 `player.html` 을 띄워 `battle-v3.json` 시작 맵(0,0) 오른쪽 `battleProcessing` 이벤트로
   **실전투 DOM** 에 들어간 뒤, 한 번의 rAF 샘플 시리즈에서 세 가지를 같이 본다: 루트

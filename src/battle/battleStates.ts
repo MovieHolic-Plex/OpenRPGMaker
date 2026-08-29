@@ -21,13 +21,16 @@ function rollPercent(chance: number, rng: Rng): boolean {
 export interface StateBehavior {
   readonly stateId: string;
   readonly name: string;
-  // 수면/마비 등 행동 불가 여부.
+  // 수면/마비 등 행동 불가 여부와 침묵의 스킬 사용 제한.
   readonly restrictsAction: boolean;
-  // 매 턴 최대 HP 대비 지속 피해 비율(%). 0 이면 지속 피해 없음.
+  readonly blocksSkillUse: boolean;
+  // 매 턴 최대 HP 대비 지속 피해/회복 비율(%). 0 이면 효과 없음.
   readonly hpDamagePercentPerTurn: number;
-  // 공격/방어 배율(공격 상승 = 2, 방어 하락 = 0.5 등). 기본 1.
+  readonly hpHealPercentPerTurn: number;
+  // 공격/방어/민첩 배율(공격 상승 = 2, 방어 하락 = 0.5 등). 기본 1.
   readonly attackMultiplier: number;
   readonly defenseMultiplier: number;
+  readonly agilityMultiplier: number;
   // 전투 종료 시 해제 여부(독처럼 "유지" 이면 false).
   readonly removeOnBattleEnd: boolean;
   // 피격 시 해제 확률(%). 수면 등.
@@ -60,9 +63,12 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     stateId: record.id,
     name: record.name,
     restrictsAction: runtime?.restrictsAction ?? restrictsActionFrom(record.id, resolved.restriction),
+    blocksSkillUse: runtime?.blocksSkillUse ?? blocksSkillUseFrom(record.id, resolved.restriction),
     hpDamagePercentPerTurn: runtime?.hpDamagePercentPerTurn ?? hpDamagePercentFrom(resolved.hpTurn),
+    hpHealPercentPerTurn: runtime?.hpHealPercentPerTurn ?? 0,
     attackMultiplier: runtime?.attackMultiplier ?? attackMultiplierFrom(record.id, resolved.actorStatus),
     defenseMultiplier: runtime?.defenseMultiplier ?? defenseMultiplierFrom(record.id, resolved.actorStatus),
+    agilityMultiplier: runtime?.agilityMultiplier ?? 1,
     removeOnBattleEnd: runtime?.removeOnBattleEnd ?? removeOnBattleEndFrom(record.id, resolved.removalCondition),
     recoverWhenHitChance: resolved.recoverWhenHitChance,
     recoverNaturallyFromTurn: resolved.recoverNaturallyFromTurn,
@@ -73,6 +79,11 @@ export function stateBehavior(record: StateRecord): StateBehavior {
 function restrictsActionFrom(stateId: string, value: string): boolean {
   if (stateId === "state_sleep") return true;
   return /\b(cannot act|stun|sleep|paraly[sz]ed|immobilized)\b/i.test(value);
+}
+
+function blocksSkillUseFrom(stateId: string, value: string): boolean {
+  if (stateId === "state_silence") return true;
+  return /스킬 사용 불가/.test(value) || /\b(cannot use skills?|silence[dn]?)\b/i.test(value);
 }
 
 function attackMultiplierFrom(stateId: string, value: string): number {
@@ -165,6 +176,7 @@ function equipmentResistsState(target: MutableBattler, stateId: string, rng: Rng
 
 export interface UpkeepResult {
   readonly hpDamage: number;
+  readonly hpHealing: number;
   readonly removedStateIds: readonly string[];
 }
 
@@ -172,6 +184,7 @@ export interface UpkeepResult {
 // 지속 피해는 HP 를 1 미만으로 떨어뜨리지 않는다(상태이상만으로 전투불능 방지, RM2K3 방식).
 export function runStateUpkeep(project: Project, battler: MutableBattler, rng: Rng = defaultRng): UpkeepResult {
   let hpDamage = 0;
+  let hpHealing = 0;
   const removedStateIds: string[] = [];
   for (const stateId of [...battler.stateIds]) {
     const behavior = behaviorFor(project, stateId);
@@ -183,18 +196,29 @@ export function runStateUpkeep(project: Project, battler: MutableBattler, rng: R
       battler.hp -= applied;
       hpDamage += applied;
     }
+    if (behavior.hpHealPercentPerTurn > 0 && battler.hp > 0 && battler.hp < battler.maxHp) {
+      const tick = Math.max(1, Math.floor((battler.maxHp * behavior.hpHealPercentPerTurn) / 100));
+      const applied = Math.min(tick, battler.maxHp - battler.hp);
+      battler.hp += applied;
+      hpHealing += applied;
+    }
     const turns = battler.stateTurns[stateId] ?? 0;
     if (turns >= behavior.recoverNaturallyFromTurn && rollPercent(behavior.recoverNaturallyChance, rng)) {
       removeState(battler, stateId);
       removedStateIds.push(stateId);
     }
   }
-  return { hpDamage, removedStateIds };
+  return { hpDamage, hpHealing, removedStateIds };
 }
 
 // 행동 가능 여부. 행동 불가 상태가 하나라도 있으면 false.
 export function canBattlerAct(project: Project, battler: MutableBattler): boolean {
   return !battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.restrictsAction);
+}
+
+export function stateBlocksSkillUse(project: Project, battler: { readonly stateIds?: readonly string[] }): boolean {
+  // 몬스터·적 배틀러는 stateIds 를 들고 오지 않는 경로가 있다(Gen1 PP 경로에서 실측).
+  return (battler.stateIds ?? []).some((stateId) => behaviorFor(project, stateId)?.blocksSkillUse);
 }
 
 // 피격 시 상태 해제 판정(수면 등). 해제된 상태 id 목록 반환.
@@ -227,6 +251,11 @@ function clampStateMultiplier(value: number): number {
 
 export function attackMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.attackMultiplier ?? 1), 1);
+  return clampStateMultiplier(raw);
+}
+
+export function agilityMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+  const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.agilityMultiplier ?? 1), 1);
   return clampStateMultiplier(raw);
 }
 

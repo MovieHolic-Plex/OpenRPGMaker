@@ -136,11 +136,20 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
     numberField("턴당 HP 피해(%)", "db-state-rt-hp-percent", behavior.hpDamagePercentPerTurn, (hpDamagePercentPerTurn) =>
       patchEffects({ hpDamagePercentPerTurn }), { min: 0, max: 100, step: 0.05 }
     ),
+    numberField("턴당 HP 회복(%)", "db-state-rt-hp-heal-percent", behavior.hpHealPercentPerTurn, (hpHealPercentPerTurn) =>
+      patchEffects({ hpHealPercentPerTurn }), { min: 0, max: 100, step: 0.05 }
+    ),
+    checkControl("스킬 사용 불가", "db-state-rt-blocks-skill", behavior.blocksSkillUse, (blocksSkillUse) =>
+      patchEffects({ blocksSkillUse })
+    ),
     numberField("공격 배율", "db-state-rt-attack-mult", behavior.attackMultiplier, (attackMultiplier) =>
       patchEffects({ attackMultiplier }), { min: 0, max: 10, step: 0.05 }
     ),
     numberField("방어 배율", "db-state-rt-defense-mult", behavior.defenseMultiplier, (defenseMultiplier) =>
       patchEffects({ defenseMultiplier }), { min: 0, max: 10, step: 0.05 }
+    ),
+    numberField("민첩 배율", "db-state-rt-agility-mult", behavior.agilityMultiplier, (agilityMultiplier) =>
+      patchEffects({ agilityMultiplier }), { min: 0, max: 10, step: 0.05 }
     ),
     checkControl("전투 종료 시 해제", "db-state-rt-remove-on-end", behavior.removeOnBattleEnd, (removeOnBattleEnd) =>
       patchEffects({ removeOnBattleEnd })

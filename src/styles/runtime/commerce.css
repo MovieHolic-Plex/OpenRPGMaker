@@ -66,10 +66,10 @@
   background: var(--runtime-window-fill-fallback);
   color: var(--runtime-window-text);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
-  cursor: pointer;
+  cursor: default;
 }
 
-.runtime-commerce-actions button:hover {
+.runtime-commerce-actions button:focus-visible {
   background: var(--runtime-window-selected-bg);
   color: var(--runtime-window-text);
 }
@@ -100,345 +100,9 @@
   font-weight: 700;
 }
 
-/* ── 상점 창 ──
-   오버레이 자신은 **창이 아니다** — 장면을 어둡게 덮는 스크림 + 배치 상자다.
-   예전에는 이 오버레이가 윈도스킨 fill 로 플레이 영역 전체를 칠하고 그 안에 다시
-   패널을 깔아 '파란 상자 속 파란 상자'가 됐다. 이제 창 표면은 개별 패널만 가진다.
-   표면 재료는 자료집 System 윈도스킨(--runtime-window-skin) — 고정 파랑 hex 가 아니다.
-   내용이 넘치면 창 전체가 아니라 '아이템 목록만' 스크롤한다. */
-.runtime-shop-overlay {
-  position: absolute;
-  /* 상점은 .play-viewport(스케일 변환 밖) 레이어에 마운트된다(playSceneShop.ts). */
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  background: rgba(6, 10, 18, 0.46);
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  color: var(--runtime-window-text);
-  font-family: var(--runtime-pixel-font);
-  font-size: var(--runtime-font-size-11);
-  overflow: hidden;
-}
-
-/* 셸: 오버레이 안에서 세로 플렉스. 아이템 뷰는 높이를 채우고, 메뉴 뷰는 내용 크기. */
-.runtime-shop-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 0;
-}
-.runtime-shop-items-shell {
-  flex: 1 1 auto;
-}
-.runtime-shop-menu-shell {
-  flex: 0 0 auto;
-}
-
-/* 공통 서브 프레임. 비어 있는 패널(메뉴 뷰의 상/중단)은 감춘다. */
-.runtime-shop-panel {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
-  font-size: var(--runtime-font-size-11);
-  padding: 4px 6px;
-}
-.runtime-shop-panel:empty {
-  display: none;
-}
-
-/* ── 메뉴 뷰: 인사말 + 구입/판매/취소 ── */
-.runtime-shop-menu {
-  display: grid;
-  gap: 14px;
-  justify-items: center;
-  padding: 6px;
-}
-.runtime-shop-message {
-  font-size: var(--runtime-font-size-11);
-  text-align: center;
-}
-.runtime-shop-menu-choices {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.runtime-shop-menu-choice,
-.runtime-shop-cancel {
-  min-width: 72px;
-  padding: 4px 10px;
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
-  background: var(--runtime-window-fill-fallback);
-  color: var(--runtime-window-text);
-  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
-  cursor: pointer;
-}
-.runtime-shop-menu-choice:hover,
-.runtime-shop-cancel:hover {
-  background: var(--runtime-window-selected-bg);
-  color: var(--runtime-window-text);
-}
-
-/* ── 아이템 뷰: 메시지 / (목록 | 사이드) / 프롬프트 ── */
-.runtime-shop-message-panel {
-  flex: 0 0 auto;
-  font-size: var(--runtime-font-size-11);
-  color: var(--runtime-window-muted);
-}
-/* 도움말 창은 커서가 얹힌 물건의 설명이다 — 두 줄까지 보여주고 넘치면 자른다. */
-.runtime-shop-help-line {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  min-height: calc(var(--runtime-font-size-11) * 1.35);
-  overflow: hidden;
-  text-align: left;
-}
-
-.runtime-shop-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(150px, 188px);
-  gap: 10px;
-  align-items: stretch;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-/* 목록 패널: 높이를 그리드 행에 맞추고 목록만 스크롤한다. */
-.runtime-shop-list-panel {
-  display: flex;
-  min-height: 0;
-  padding: 6px;
-}
-.runtime-shop-item-list {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-}
-.runtime-shop-item-row {
-  display: grid;
-  grid-template-columns: 20px minmax(0, 1fr) 3.6em 5.8em;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 8px;
-  border: 1px solid transparent;
-  border-radius: 0;
-  background: transparent;
-  color: var(--runtime-window-text);
-  font-size: var(--runtime-font-size-11);
-  text-align: left;
-  white-space: nowrap;
-  cursor: pointer;
-  width: 100%;
-}
-
-/* 가게는 글자 목록이 아니다 — 자료집 아이콘을 행마다 그린다. */
-.runtime-shop-item-icon {
-  width: 20px;
-  height: 20px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  image-rendering: pixelated;
-}
-
-.runtime-shop-item-icon-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(8, 14, 26, 0.42);
-  color: var(--runtime-window-muted);
-  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
-}
-
-.runtime-shop-item-owned {
-  color: var(--runtime-window-muted);
-  font-size: var(--runtime-font-size-11);
-  text-align: right;
-}
-
-.runtime-shop-panel-title {
-  color: var(--runtime-window-muted);
-  font-weight: 700;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.runtime-shop-item-row:hover,
-.runtime-shop-item-row.selected {
-  background: var(--runtime-window-selected-bg);
-  border-color: rgba(245, 251, 255, 0.76);
-}
-.runtime-shop-item-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.runtime-shop-item-price {
-  color: var(--runtime-window-highlight);
-  font-weight: 600;
-  text-align: right;
-}
-
-/* 살 수 없는(또는 상인이 못 사주는) 행. 커서는 얹히되 값이 죽어 보여야 한다 —
-   예전에는 300G 로 9999G 왕관이 살 수 있는 물건과 똑같이 그려졌다. */
-.runtime-shop-item-row.is-unaffordable .runtime-shop-item-name,
-.runtime-shop-item-row.is-unaffordable .runtime-shop-item-owned {
-  opacity: 0.5;
-}
-.runtime-shop-item-row.is-unaffordable .runtime-shop-item-price {
-  color: var(--runtime-window-muted);
-  opacity: 0.72;
-  text-decoration: line-through;
-}
-.runtime-shop-item-row.is-unaffordable .runtime-shop-item-icon {
-  opacity: 0.45;
-}
-
-/* 키보드 포커스 표시 — 커서 강조와 별개로 브라우저 포커스가 어디인지 보여야 한다. */
-.runtime-shop-item-row:focus-visible,
-.runtime-shop-menu-choice:focus-visible,
-.runtime-shop-cancel:focus-visible,
-.runtime-commerce-quantity-input:focus-visible {
-  outline: 2px solid var(--runtime-window-highlight, #ffe07a);
-  outline-offset: -2px;
-}
-
-.runtime-shop-gold {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-weight: 700;
-}
-.runtime-shop-gold-line {
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
-  white-space: nowrap;
-}
-.runtime-shop-gold-label {
-  color: var(--runtime-window-muted);
-  font-weight: 600;
-}
-.runtime-shop-gold-value {
-  font-weight: 700;
-}
-.runtime-shop-merchant-gold {
-  color: var(--runtime-window-highlight, #ffe07a);
-  font-size: var(--runtime-font-size-11, 11px);
-  opacity: 0.95;
-}
-.runtime-shop-empty {
-  padding: 12px;
-  color: var(--runtime-window-muted);
-  text-align: center;
-}
-
-/* 사이드: 파티 / 보유 / 소지금 서브 패널 세로 배치 */
-.runtime-shop-side {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 0;
-}
-.runtime-shop-party {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-.runtime-shop-party-sprite {
-  width: 24px;
-  height: 24px;
-  background-color: rgba(8, 14, 26, 0.42);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  border-radius: 0;
-  image-rendering: pixelated;
-}
-.runtime-shop-party-sprite-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--runtime-window-muted);
-  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
-}
-.runtime-shop-owned {
-  display: grid;
-  gap: 4px;
-}
-.runtime-shop-stat-line {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-.runtime-shop-gold {
-  font-weight: 700;
-  font-size: var(--runtime-font-size-11);
-  color: var(--runtime-window-highlight);
-  text-align: right;
-}
-
-/* 프롬프트: 안내문 + 취소 버튼 */
-.runtime-shop-prompt-panel {
-  flex: 0 0 auto;
-}
-.runtime-shop-prompt {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.runtime-shop-status {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-/* 수량·합계는 프롬프트 줄에 둔다 — 목록 마지막 자식이던 예전 자리에서는 화면 밖이었다. */
-.runtime-shop-quantity-wrap {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-  gap: 8px;
-}
-.runtime-shop-quantity-label {
-  color: var(--runtime-window-muted);
-  font-weight: 600;
-}
-.runtime-shop-quantity-total {
-  color: var(--runtime-window-highlight);
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.runtime-commerce-quantity-input {
-  width: 64px;
-  padding: 6px 8px;
-  border: 1px solid rgba(245, 251, 255, 0.78);
-  border-radius: 0;
-  background: rgba(3, 18, 55, 0.82);
-  color: var(--runtime-window-text);
-  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
-}
+/* ── 상점 ──
+   가게 창 스타일은 규모가 커서 ./shop.css 로 분리했다(모던 유리 카드 + 윈도스킨 폴백).
+   여기 남은 것은 여관·선물·보관상자 등 나머지 상거래 창이다. ── */
 
 /* ── 선물 선택 창: 대화 중 인벤토리에서 줄 아이템 선택 ── */
 .runtime-gift-overlay {
@@ -492,12 +156,12 @@
   color: var(--runtime-window-text);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
   text-align: left;
-  cursor: pointer;
+  cursor: default;
 }
 
-.runtime-gift-item:hover,
+.runtime-gift-item:focus-visible,
 .runtime-gift-item.selected,
-.runtime-gift-cancel:hover {
+.runtime-gift-cancel:focus-visible {
   background: var(--runtime-window-selected-bg);
   border-color: rgba(245, 251, 255, 0.76);
 }
@@ -588,12 +252,12 @@
   color: var(--runtime-window-text);
   font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
   text-align: left;
-  cursor: pointer;
+  cursor: default;
 }
 
-.runtime-chest-item:hover,
+.runtime-chest-item:focus-visible,
 .runtime-chest-item.selected,
-.runtime-chest-cancel:hover {
+.runtime-chest-cancel:focus-visible {
   background: var(--runtime-window-selected-bg);
   border-color: rgba(245, 251, 255, 0.76);
 }

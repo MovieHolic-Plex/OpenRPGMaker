@@ -411,15 +411,20 @@ export function sectionCard(options: SectionCardOptions): HTMLElement {
 
   const toggle = el("button", {
     class: "db-ws-card-toggle",
-    attrs: { type: "button", "aria-expanded": options.collapsed ? "false" : "true" },
+    attrs: {
+      type: "button",
+      "aria-expanded": options.collapsed ? "false" : "true",
+      "aria-label": `${options.title} ${options.collapsed ? "펼치기" : "접기"}`,
+    },
     text: options.collapsed ? "▸" : "▾",
   });
   toggle.addEventListener("click", () => {
-    const collapsed = body.hasAttribute("hidden");
+    const collapsed = body.getAttribute("hidden") !== null;
     if (collapsed) body.removeAttribute("hidden");
     else body.setAttribute("hidden", "");
     toggle.textContent = collapsed ? "▾" : "▸";
     toggle.setAttribute("aria-expanded", collapsed ? "true" : "false");
+    toggle.setAttribute("aria-label", `${options.title} ${collapsed ? "접기" : "펼치기"}`);
     card.classList.toggle("collapsed", !collapsed);
   });
   head.prepend(toggle);

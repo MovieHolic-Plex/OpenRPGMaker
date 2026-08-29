@@ -30,9 +30,7 @@
 
 .ai-rising-overlay .ai-chat-log,
 .ai-rising-sticky-zone .ai-completion-strip,
-.ai-rising-sticky-zone .ai-proposal-pill,
-.ai-rising-sticky-zone .ai-proposal-notice-host > *,
-.ai-rising-sticky-zone .ai-proposal-host > * {
+.ai-rising-sticky-zone .ai-proposal-notice-host > * {
   pointer-events: auto;
 }
 
@@ -104,21 +102,6 @@
 }
 .ai-silenced-banner button:hover { background: var(--bg-raised); transform: translateY(-1px); }
 
-.ai-approval-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-}
-
-.ai-approval-badge.destructive { background: color-mix(in srgb, #C6403D 18%, var(--bg-panel)); border-color: color-mix(in srgb, #C6403D 40%, transparent); }
-.ai-approval-badge.vocab { background: color-mix(in srgb, #4A57D6 16%, var(--bg-panel)); border-color: color-mix(in srgb, #4A57D6 35%, transparent); }
-.ai-approval-badge.auto { background: color-mix(in srgb, #18764F 14%, var(--bg-panel)); border-color: color-mix(in srgb, #18764F 35%, transparent); }
-
 .ai-rising-overlay .ai-chat-log {
   background: color-mix(in srgb, var(--bg-inset) 92%, transparent);
   backdrop-filter: blur(10px);
@@ -175,19 +158,14 @@
   display: block;
 }
 
-/* 제안 pill·완료 스트립 밴드. 오버레이 안에 있던 동안은 사이드 도크에서만 존재해서, 기본
-   도크인 유리와 float 에서는 최소화한 제안으로 되돌아갈 pill 이 아예 없었다(2026-08-23 실측).
-   이제 도크와 무관하게 패널 자식이고 컴포저 바로 위 블록이다. */
+/* 완료 스트립·0건 알림 밴드. 도크와 무관하게 패널 자식이며 컴포저 바로 위에 둔다. */
 .ai-rising-sticky-zone {
   max-height: min(38vh, 420px);
   overflow-y: auto;
 }
 
 /* float 만 컴포저가 절대 위치라 흐름 위치가 캔버스 최상단으로 튄다 — 이 도크에서만 바 위
-   고정 밴드로 띄운다. 컨테이너는 클릭을 삼키지 않고 인터랙티브 자식만 되살린다(빈 밴드가
-   맵 클릭을 먹던 2026-08-19 P0 과 같은 함정). 유리 카드 안에서 fixed 를 쓰면 backdrop-filter
-   가 만든 컨테이닝 블록 + overflow:hidden 에 갇혀 pill 이 47px 폭으로 눌리고 클릭도 안 잡힌다
-   (실측). 그래서 유리·사이드는 흐름 배치를 그대로 쓴다. */
+   고정 밴드로 띄운다. 컨테이너는 클릭을 삼키지 않고 인터랙티브 자식만 되살린다. */
 .ai-chat-panel.chat-dock-float .ai-rising-sticky-zone {
   bottom: var(--ai-command-bar-clearance, 76px);
   left: calc(var(--editor-left-safe, 264px) + 12px);
@@ -251,38 +229,6 @@
 
 .ai-chat-panel.chat-dock-side .ai-completion-strip {
   box-shadow: none;
-}
-
-/* 최소화 pill — 승인 대기를 잃지 않는 재진입점. */
-.ai-proposal-pill {
-  align-items: center;
-  animation: ai-proposal-pill-in 180ms ease-out;
-  background: color-mix(in srgb, var(--accent, #4A57D6) 18%, var(--bg-panel, var(--bg-surface)));
-  border: 1px solid color-mix(in srgb, var(--accent, var(--accent)) 45%, transparent);
-  border-radius: 999px;
-  box-shadow: 0 6px 22px rgba(60, 48, 32, 0.14);
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  font-size: 13px;
-  font-weight: 600;
-  gap: 6px;
-  margin: 0 auto;
-  padding: 8px 16px;
-  width: fit-content;
-}
-
-.ai-proposal-pill:hover {
-  filter: brightness(1.15);
-}
-
-.ai-proposal-pill[hidden] {
-  display: none;
-}
-
-@keyframes ai-proposal-pill-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
 }
 
 .ai-rising-sticky-zone .ai-action-zone {

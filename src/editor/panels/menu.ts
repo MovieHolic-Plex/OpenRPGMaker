@@ -13,7 +13,7 @@ import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { openHelpModal } from "@/editor/panels/helpModal";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
-import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
+import { openDbConnectionSettings, renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
@@ -29,10 +29,11 @@ import {
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
-import { store } from "@/project/store";
+import { store, type AutoSaveState } from "@/project/store";
 import type { Project } from "@/project/types";
 import { downloadBlob } from "@/util/downloadBlob";
-import { el } from "@/util/dom";
+import { clearChildren, el } from "@/util/dom";
+import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { toolLabel, uiLabel } from "@/editor/uiCopy";
@@ -52,6 +53,8 @@ const MENU_ITEMS = [
 
 const TOOLBAR_COLLAPSED_KEY = "oprn:toolbar-collapsed";
 
+const autoSaveLog = createLogger("autosave");
+
 type MenuId = (typeof MENU_ITEMS)[number]["id"];
 
 type MenuCommand =
@@ -67,10 +70,20 @@ let activeMenuTrigger: HTMLElement | null = null;
 // installToolbarOverflow를 걸므로, 이전 호출이 남긴 document 리스너/ResizeObserver를
 // 재구축 직전에 반드시 해제해야 세션 내 리스너 누적을 막을 수 있다.
 let disposeToolbarOverflows: (() => void)[] = [];
+// 저장 상태 칩의 autosave 구독도 같은 이유로 재구축 직전에 끊는다. renderTopbar는 한 세션에서
+// 여러 번 불린다(mode.ts: editorState 구독 / enterMode / 신원·워크스페이스·UI모드 구독) —
+// 구독을 끊지 않으면 편집 몇 분 만에 같은 리스너가 수십 개 쌓여 죽은 DOM을 계속 그린다.
+let disposeSaveStatus: (() => void) | null = null;
+let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
+// 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
+// 칩을 붙잡아 두는 데 쓴다. 톱바가 다시 그려져도 에피소드는 이어져야 하므로 모듈 상태다.
+let saveFailureEpisode = false;
 
 export function renderTopbar(topbar: HTMLElement): void {
   for (const dispose of disposeToolbarOverflows) dispose();
   disposeToolbarOverflows = [];
+  disposeSaveStatus?.();
+  disposeSaveStatus = null;
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   applyToolbarCollapsed(readToolbarCollapsed());
   const mode = getMode();
@@ -94,6 +107,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     dataset: { testid: "editor-topbar-trailing" },
   });
   trailing.append(
+    renderTopbarSaveStatus(topbar),
     ...(mode === "edit" ? [renderTestPlayButton(), renderTopbarAiSettingsButton()] : []),
     renderQuickBattleTestButton(),
     renderCommitHistoryButton(),
@@ -137,6 +151,77 @@ function renderTopbarAiSettingsButton(): HTMLElement {
     ],
     on: { click: () => openAiSettingsModal() },
   });
+}
+
+/**
+ * 저장 상태 칩의 호스트. 톱바가 이 칩이 붙을 수 있는 유일하게 살아 있는 면이다.
+ *
+ * 실측 배경(2026-08-29): `AutoSaveState`는 error/retryCount까지 갖추고 있고 그걸 그리는
+ * `renderDbConnectionStatus`도 CSS 8종과 함께 이미 있었는데, 하단 상태바 폐지(2026-08-25)로
+ * 호스트를 잃어 **프로덕션 호출 사이트가 0건**이었다. 남은 `renderPersistenceModeBanner`는
+ * `status.kind !== "disabled"`면 null이라 autosave 실패를 아예 다루지 않는다. 그래서 오토세이브가
+ * 몇 시간 연속 실패해도 화면에는 흔적이 없고 console.error만 남았다. 여기서 다시 마운트한다.
+ *
+ * 칩 본체는 새로 만들지 않고 기존 구현을 그대로 쓴다 — 라벨·색·`다시 저장` 버튼·testid
+ * (`db-connection-status` / `db-autosave-state` / `db-autosave-retry`)가 전부 거기 있다.
+ */
+function renderTopbarSaveStatus(topbar: HTMLElement): HTMLElement {
+  const host = el("div", {
+    class: "topbar-save-status",
+    // 라이브 리전은 **내용이 바뀌기 전부터** DOM에 있어야 읽힌다. 그래서 조용한 상태에서도
+    // 호스트는 남겨두고 안만 비운다(칩째로 붙였다 떼면 스크린리더가 변화를 못 읽는다).
+    attrs: { role: "status", "aria-live": "polite" },
+    dataset: { testid: "topbar-save-status" },
+  });
+  paintSaveStatus(host, topbar);
+  disposeSaveStatus = store.subscribeAutoSave((state) => {
+    logAutoSaveTransition(state);
+    paintSaveStatus(host, topbar);
+  });
+  return host;
+}
+
+function paintSaveStatus(host: HTMLElement, topbar: HTMLElement): void {
+  const state = store.getAutoSaveState();
+  // 평상시의 pending·saving 은 접는다 — 실측(브라우저 캡처): 칩 폭이 281px 이라 타일 한 칸
+  // 칠할 때마다 pending 으로 떴다가 4초 뒤 사라지면서 바로 옆 `테스트`·`AI 설정` 버튼이 그만큼
+  // 좌우로 튄다. 그리는 중에 버튼이 커서 밑에서 움직이는 건 오히려 오조작을 만든다. 진행 상황은
+  // 명시적 저장(Ctrl+S)의 토스트가, 미저장 종료는 beforeunload 경고가 이미 알려준다.
+  //
+  // 단, **실패 에피소드가 시작된 뒤**의 pending·saving 은 계속 보여 준다. 그러지 않으면
+  // `다시 저장`을 누른 직후 칩이 사라졌다가 빨간 채로 다시 나타나 사용자가 결과를 오해한다.
+  if (state.kind === "error") saveFailureEpisode = true;
+  else if (state.kind === "saved" || state.kind === "idle") saveFailureEpisode = false;
+  const quiet = state.kind !== "error" && !saveFailureEpisode;
+  clearChildren(host);
+  host.dataset.autosaveKind = state.kind;
+  host.hidden = quiet;
+  // hidden 속성만으로는 클래스 규칙의 display에 밀릴 수 있다(특이도 함정 실측) — 인라인으로 못박는다.
+  host.style.display = quiet ? "none" : "inline-flex";
+  host.style.alignItems = "center";
+  if (quiet) return;
+  // 충돌은 별도 kind가 아니다: store의 `autoSaveStateForFlushResult`가 flush 결과 conflict를
+  // 충돌 안내 문구를 담은 kind:"error"로 접어 보낸다. 따라서 error 한 분기가 실패·충돌을 함께 덮고
+  // CSS `.db-connection-status.autosave-error .db-autosave-state`가 --status-error로 칠한다.
+  host.append(renderDbConnectionStatus(store.getDbPersistenceStatus(), () => renderTopbar(topbar)));
+}
+
+/**
+ * 화면을 안 보고 있었을 때를 위한 흔적. 링버퍼는 레벨과 무관하게 전량 적재되므로
+ * 진행 상태는 debug로 남겨 콘솔을 조용히 두고, 실패만 error로 올린다.
+ * 실패는 같은 kind가 이어져도 매번 남긴다 — retryCount가 늘어나는 게 그 자체로 정보다.
+ */
+function logAutoSaveTransition(state: AutoSaveState): void {
+  if (state.kind === lastLoggedAutoSaveKind && state.kind !== "error") return;
+  lastLoggedAutoSaveKind = state.kind;
+  if (state.kind === "error") {
+    autoSaveLog.error("자동 저장 실패 — 톱바 저장 상태 칩에 노출한다", {
+      message: state.message,
+      retryCount: state.retryCount ?? 0,
+    });
+    return;
+  }
+  autoSaveLog.debug(`자동 저장 상태 → ${state.kind}`, state.kind === "saved" ? { at: state.at } : undefined);
 }
 
 export function readableTopbarIdentityLabel(label: string): string {

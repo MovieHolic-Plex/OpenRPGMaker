@@ -31,10 +31,20 @@ const BODY_OWNED_PREVIEW_SELECTOR = [
 
 let host: HTMLElement | undefined;
 let selectedPath: number[] | undefined;
+let selectionListener: (() => void) | undefined;
 
 /** content.ts 가 인스펙터 컬럼을 만들 때 호출한다. */
 export function setCommandInspectorHost(next: HTMLElement | undefined): void {
   host = next;
+}
+
+/**
+ * 선택이 바뀔 때 알림을 받는다. 툴바의 이동/복사 `disabled` 상태는 렌더 시점에 한 번
+ * 구워지므로, 선택이 바뀌었는데 아무도 알려 주지 않으면 버튼이 계속 비활성으로 남아
+ * 클릭 자체가 삼켜진다(측정된 결함 D3 의 두 번째 얼굴).
+ */
+export function setCommandSelectionListener(listener: (() => void) | undefined): void {
+  selectionListener = listener;
 }
 
 /** 현재 선택된 명령 경로. 재렌더 후 선택 복원에 쓴다. */
@@ -49,6 +59,7 @@ export function sameInspectorPath(a: readonly number[], b: readonly number[] | u
 /** 선택 자체를 버린다(다른 이벤트/페이지로 이동 등). */
 export function clearCommandInspector(): void {
   selectedPath = undefined;
+  selectionListener?.();
   if (host) {
     const fallback = host.ownerDocument?.querySelector<HTMLElement>("[data-cmd-path].is-selected");
     hideInspector(host);
@@ -149,6 +160,7 @@ export function showCommandInspector(target: InspectorTarget): void {
   });
 
   host.replaceChildren(head, ...(bodyOwnsPreview ? [] : [previewHost]), previewActions, formBody);
+  selectionListener?.();
 }
 
 function hideInspector(target: HTMLElement): void {

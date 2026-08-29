@@ -1,3 +1,4 @@
+import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState } from "@/editor/editorState";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
@@ -18,13 +19,18 @@ import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import {
-  navigateToEventDraftIssue,
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
   renderEventEditorStable,
 } from "./content";
+import {
+  navigateToEventDraftIssue,
+  refreshEventValidationBell,
+  renderEventValidationBell,
+} from "./validationBell";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
-import { clearCommandInspector, setCommandInspectorHost } from "./commandInspector";
+import { clearCommandInspector, setCommandInspectorHost, setCommandSelectionListener } from "./commandInspector";
+import { resetEventViewSession } from "./storyboardView";
 import { installEventEditorCustomSelects } from "./customSelect";
 import { attachWindowDrag } from "./modalDrag";
 import { attachWindowFullscreen } from "./modalFullscreen";
@@ -89,9 +95,15 @@ function guardedCloseExistingEventEditorModal(next: () => void): void {
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
+  // 그래픽/얼굴 피커는 이 모달 안에서 열린다 — 여는 순간이 아니라 지금 받아 둔다.
+  void warmEditorPickerAssets();
   clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
+  // 리스너를 먼저 떼고 비운다 — 지난 렌더의 툴바를 다시 계산하려 들지 않게.
+  setCommandSelectionListener(undefined);
   clearCommandInspector();
   setCommandInspectorHost(undefined);
+  // 미리보기는 확인용 보기라서 다음 열기까지 남기지 않는다 — 검색어도 같이 비운다.
+  resetEventViewSession();
   const backdrop = el("div", {
     class: "event-editor-modal-backdrop",
     dataset: { testid: EVENT_EDITOR_MODAL_TEST_ID, mapId: request.mapId, eventId: request.eventId },
@@ -112,6 +124,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const closeHandler = (saved = false): void => {
     if (closed) return;
     closed = true;
+    setCommandSelectionListener(undefined);
     clearCommandInspector();
     setCommandInspectorHost(undefined);
     unregisterModal(backdrop);
@@ -196,6 +209,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     restoreEventEditorScroll(dynamicBody, scrollSnapshots);
     restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
     refreshHeaderPageSegments(header, request);
+    refreshEventValidationBell(header, validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
     refreshModalFooterStatus(footer, request);
     refreshModalHeaderSaveState(header, footer);
   };
@@ -331,6 +345,7 @@ function renderModalHeader(
       el("div", {
         class: "header-actions",
         children: [
+          renderEventValidationBell(),
           el("button", {
             class: "btn ghost event-editor-header-test",
             text: "테스트",

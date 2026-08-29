@@ -1,8 +1,15 @@
-import { canMove } from "@/project/collision";
+import { canMoveFootprint, inBounds } from "@/project/collision";
+// 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
+// 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
+export { startPlayerRoute } from "@/player/playerRouteState";
+import { footprintBounds, nearestCellInRect } from "@/project/footprint";
+import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
-import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
+import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
+import { fallHop, jumpHop } from "@/player/characterHop";
+import { applyHopFrame, finishHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyFacing } from "@/player/playSceneAutonomousCommands";
 import { facingForDelta } from "@/player/playSceneAutonomousRouteDirection";
 import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
@@ -10,7 +17,7 @@ import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
 import type { Dir, InputState } from "@/player/input";
 import { facingForStep, resolveDiagonalStep } from "@/player/input";
 import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
-import { findBlockingRuntimeEventAtInMap,
+import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
 import type { RuntimeEventView } from "@/project/runtimeEventState"
@@ -55,13 +62,16 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   scene.session.playTimeSeconds += deltaMs / 1000;
   const input = scene.input_.update();
   const cutsceneInputLocked = isCutsceneInputLocked(scene.session);
-  if (!scene.moving) {
+  // 체공 중에는 새 이동을 시작하지 않는다 — 공중에서 입력을 받으면 낙하가 취소된다.
+  if (!scene.moving && !scene.playerHop) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
     else if (!cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) tryStartMove(scene, input);
   }
   if (scene.moving) {
     updatePlayerMovement(scene, deltaMs);
+  } else if (scene.playerHop) {
+    updatePlayerStationaryHop(scene, deltaMs);
   } else {
     scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   }
@@ -69,9 +79,10 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   // 있으면 대화가 우선하고, 없을 때만 스윙한다(적대 리뷰 10: Space 만 공격이고
   // Z 는 조사로 남아 결정 키가 둘로 쪼개져 있었다).
   let interacted = false;
-  if (!cutsceneInputLocked && input.actionPressed && !scene.moving) interacted = handleAction(scene);
-  if (!cutsceneInputLocked && input.attackPressed && !interacted) tryActionCombatSwing(scene);
-  if (!cutsceneInputLocked && input.skillPressed) tryActionSkillCast(scene);
+  const airborne = scene.playerHop !== null;
+  if (!cutsceneInputLocked && input.actionPressed && !scene.moving && !airborne) interacted = handleAction(scene);
+  if (!cutsceneInputLocked && input.attackPressed && !interacted && !airborne) tryActionCombatSwing(scene);
+  if (!cutsceneInputLocked && input.skillPressed && !airborne) tryActionSkillCast(scene);
   scene.input_.resetEdges();
   if (canUpdateWaitingEvents(scene)) {
     scene.updateAutonomousNPCs(deltaMs);
@@ -100,11 +111,22 @@ function canUpdateWaitingEvents(scene: PlaySceneContext): boolean {
 // 주기를 같은 비율로 단축해 애니메이션이 자연스럽게 빨라진다.
 const DASH_SPEED_FACTOR = 1.8;
 const WALK_FRAME_MS = 90;
+/** dx/dy 를 안 준 점프의 거리. NPC 의 DEFAULT_JUMP_DISTANCE 와 같은 2 칸이다. */
+const PLAYER_JUMP_DISTANCE = 2;
 
 function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
+  const hopState = scene.playerHop;
   const dashFactor = scene.dashing ? DASH_SPEED_FACTOR : 1;
-  const moveDurationMs = scene.moveDurationMs / dashFactor;
-  scene.moveProgress += deltaMs / moveDurationMs;
+  // 점프는 자기 지속 시간으로 난다 — 대시 배속이나 이동 속도에 끌려가지 않는다.
+  const moveDurationMs = hopState ? Math.max(1, hopState.hop.durationMs) : scene.moveDurationMs / dashFactor;
+  // 스프라이트 가로 위치는 «몸 중앙» 이다 — 폭 2 이상이면 타일 중앙과 다르다(#250).
+  const footprint = resolvePlayerBody(store.getCurrent(), scene.session).footprint;
+  if (hopState) {
+    hopState.elapsedMs = Math.min(moveDurationMs, hopState.elapsedMs + Math.max(0, deltaMs));
+    scene.moveProgress = hopState.elapsedMs / moveDurationMs;
+  } else {
+    scene.moveProgress += deltaMs / moveDurationMs;
+  }
   if (scene.moveProgress >= 1) {
     scene.moveProgress = 1;
     scene.tileX = scene.movingTo.x;
@@ -116,9 +138,14 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     applyWalkCareTicks(project, scene.session, 1);
     applyGen1FieldPoisonStep(project, scene.session);
     scene.moving = false;
-    scene.player.x = characterSpriteX(scene.tileX);
+    scene.player.x = footprintSpriteX(scene.tileX, footprint);
     scene.player.y = characterSpriteY(scene.tileY);
     updateCharacterDepth(scene.player, "same");
+    if (hopState) {
+      scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
+      finishHop(scene, PLAYER_SHADOW_KEY, scene.player, scene.player.x, scene.player.y, hopState.hop);
+      scene.playerHop = null;
+    }
     syncFollowerSprites(scene);
     fireTouchTriggers(scene);
     maybeTriggerRandomEncounter(scene);
@@ -126,9 +153,23 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
   }
   const px = linear(scene.movingFrom.x, scene.movingTo.x, scene.moveProgress);
   const py = linear(scene.movingFrom.y, scene.movingTo.y, scene.moveProgress);
-  scene.player.x = characterSpriteX(px);
+  scene.player.x = footprintSpriteX(px, footprint);
   scene.player.y = characterSpriteY(py);
   updateCharacterDepth(scene.player, "same");
+  if (hopState) {
+    // 공중에서는 걸음을 젓지 않는다. 리프트는 setFrame 뒤에 얹어야 원점이 살아남는다.
+    scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
+    applyHopFrame(
+      scene,
+      PLAYER_SHADOW_KEY,
+      scene.player,
+      scene.player.x,
+      scene.player.y,
+      hopState.hop,
+      scene.moveProgress
+    );
+    return;
+  }
   scene.walkTimer += deltaMs;
   if (scene.walkTimer > WALK_FRAME_MS / dashFactor) {
     scene.walkTimer = 0;
@@ -137,21 +178,31 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
   scene.player.setFrame(scene.playerSprite.walkFrameFor(scene.facing, scene.walkFrame));
 }
 
+/** 낙하(dropIn) 는 타일 이동이 없다 — `moving` 을 쓰지 않고 리프트만 내려온다. */
+function updatePlayerStationaryHop(scene: PlaySceneContext, deltaMs: number): void {
+  const hopState = scene.playerHop;
+  if (!hopState) return;
+  const durationMs = Math.max(1, hopState.hop.durationMs);
+  hopState.elapsedMs = Math.min(durationMs, hopState.elapsedMs + Math.max(0, deltaMs));
+  // 점프 중에도 가로 위치는 몸 중앙이다 — 폭 2 이상인 주인공이 착지에서 반 칸 튀지 않게 한다.
+  const groundX = footprintSpriteX(scene.tileX, resolvePlayerBody(store.getCurrent(), scene.session).footprint);
+  const groundY = characterSpriteY(scene.tileY);
+  scene.player.x = groundX;
+  scene.player.y = groundY;
+  updateCharacterDepth(scene.player, "same");
+  scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
+  if (hopState.elapsedMs < durationMs) {
+    applyHopFrame(scene, PLAYER_SHADOW_KEY, scene.player, groundX, groundY, hopState.hop, hopState.elapsedMs / durationMs);
+    return;
+  }
+  finishHop(scene, PLAYER_SHADOW_KEY, scene.player, groundX, groundY, hopState.hop);
+  scene.playerHop = null;
+}
+
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   const project = store.getCurrent();
-  // 현재 칸에서 (dx,dy) 칸으로 갈 수 있나. 직교는 canMove 한 번.
-  // 대각선은 NPC(canNpcMove)와 같은 L자 2구간 판정: 중간 칸(가로 또는 세로)을 거쳐
-  // 목적지로 진입할 수 있어야 한다. 첫 구간은 호출자(resolveDiagonalStep)가 이미 보므로
-  // 여기서는 중간 칸 → 목적지 구간을 확인한다.
-  const canStep = (dx: number, dy: number): boolean => {
-    if (dx !== 0 && dy !== 0) {
-      return (
-        canMove(project, scene.map, scene.tileX + dx, scene.tileY, scene.tileX + dx, scene.tileY + dy) ||
-        canMove(project, scene.map, scene.tileX, scene.tileY + dy, scene.tileX + dx, scene.tileY + dy)
-      );
-    }
-    return canMove(project, scene.map, scene.tileX, scene.tileY, scene.tileX + dx, scene.tileY + dy);
-  };
+  const body = resolvePlayerBody(project, scene.session);
+  const canStep = (dx: number, dy: number): boolean => playerCanStep(scene, body, dx, dy);
   // 4방향 모드(서바이벌 호러 감각): 대각 입력을 한 축으로 직교화한다.
   let moveX = input.x;
   let moveY = input.y;
@@ -168,7 +219,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   scene.facing = facingForStep(step.dx, step.dy);
   const nx = scene.tileX + step.dx;
   const ny = scene.tileY + step.dy;
-  const blockingEvent = findBlockingRuntimeEventInScene(scene, nx, ny);
+  const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {
     scene.facing = facingForStep(step.dx, step.dy);
     firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
@@ -187,19 +238,13 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
 // ── 주인공 강제 이동 루트(이동 루트 설정 → 주인공) ──
 // moveEvent 명령이 주인공을 대상으로 하면 이동 단계를 큐에 넣고, 주인공이 정지할 때마다
 // 다음 단계를 자연스러운 걷기로 실행한다. 장소 이동(transfer)과 달리 한 칸씩 이동한다.
-export function startPlayerRoute(scene: PlaySceneContext, moves: readonly MoveCommand[], repeat: boolean): void {
-  if (moves.length === 0) {
-    scene.playerRoute = null;
-    return;
-  }
-  scene.playerRoute = { moves: [...moves], index: 0, repeat };
-}
+
 
 function advancePlayerRoute(scene: PlaySceneContext): void {
   // 이동을 시작하지 않는 명령(회전/스위치 등)은 같은 프레임에 연속 소비한다.
   // repeat + 이동 없는 루트의 프레임당 무한 루프를 막기 위해 상한을 둔다.
   let guard = 0;
-  while (scene.playerRoute && !scene.moving && guard < 64) {
+  while (scene.playerRoute && !scene.moving && !scene.playerHop && guard < 64) {
     guard += 1;
     const route = scene.playerRoute;
     if (route.index >= route.moves.length) {
@@ -223,6 +268,10 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand):
       return startPlayerRouteStep(scene, command.dir);
     case "stepForward":
       return startPlayerRouteStep(scene, scene.facing);
+    case "jump":
+      return startPlayerJump(scene, command);
+    case "dropIn":
+      return startPlayerDropIn(scene, command);
     case "turn":
       scene.facing = command.dir;
       return false;
@@ -238,10 +287,44 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand):
     case "changeSpeed":
       scene.moveDurationMs = clampPlayerMoveDuration(scene.moveDurationMs, command.delta);
       return false;
-    // 주인공에게 의미 없거나 MVP 범위 밖(jump/그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
+    // 주인공에게 의미 없거나 MVP 범위 밖(그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
     default:
       return false;
   }
+}
+
+/**
+ * 주인공 점프. NPC 와 같은 규칙이다 — dx/dy 가 0 이면 바라보는 방향 2 칸이고,
+ * 통행 판정은 건너뛰고 맵 경계만 본다(RM2K3 의 점프도 지형을 무시한다).
+ */
+function startPlayerJump(scene: PlaySceneContext, command: Extract<MoveCommand, { kind: "jump" }>): boolean {
+  const delta =
+    command.dx !== 0 || command.dy !== 0
+      ? { x: command.dx, y: command.dy }
+      : scaleDelta(directionDelta(scene.facing), PLAYER_JUMP_DISTANCE);
+  const nx = scene.tileX + delta.x;
+  const ny = scene.tileY + delta.y;
+  if (!inBounds(scene.map, nx, ny)) return false; // 맵 밖으로는 뛰지 않는다(건너뛴다)
+  scene.facing = facingForDelta(delta.x, delta.y, scene.facing);
+  scene.dashing = false;
+  scene.movingFrom = { x: scene.tileX, y: scene.tileY };
+  scene.movingTo = { x: nx, y: ny };
+  scene.moving = true;
+  scene.moveProgress = 0;
+  scene.walkFrame = 0;
+  scene.walkTimer = 0;
+  scene.playerHop = { hop: jumpHop(command), elapsedMs: 0, countsAsStep: true };
+  return true;
+}
+
+/** 낙하 등장. 제자리에서 떨어지므로 걸음 부수효과(발소리·인카운터)를 만들지 않는다. */
+function startPlayerDropIn(scene: PlaySceneContext, command: Extract<MoveCommand, { kind: "dropIn" }>): boolean {
+  scene.playerHop = { hop: fallHop(command), elapsedMs: 0, countsAsStep: false };
+  return true;
+}
+
+function scaleDelta(delta: { x: number; y: number }, factor: number): { x: number; y: number } {
+  return { x: delta.x * factor, y: delta.y * factor };
 }
 
 function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {
@@ -249,9 +332,11 @@ function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {
   const delta = directionDelta(dir);
   const nx = scene.tileX + delta.x;
   const ny = scene.tileY + delta.y;
-  if (!canMove(store.getCurrent(), scene.map, scene.tileX, scene.tileY, nx, ny)) return false; // 막히면 건너뜀
+  const body = resolvePlayerBody(store.getCurrent(), scene.session);
+  // 강제 이동 루트도 몸 크기를 존중한다 — 3x3 주인공이 커맨드로는 벽을 뚫으면 안 된다.
+  if (!playerCanStep(scene, body, delta.x, delta.y)) return false; // 막히면 건너뜀
   // Force-move routes still respect same-as-characters solid events (RM2K3 character collision).
-  const blockingEvent = findBlockingRuntimeEventInScene(scene, nx, ny);
+  const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {
     firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     return false;
@@ -284,13 +369,17 @@ export function handleAction(scene: ActionEventSceneContext): boolean {
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const key = `${tx},${ty}`;
   const event = findRuntimeEventInScene(scene, tx, ty, "action");
   if (event) {
     // 같은 대상 연타 디바운스. 실행은 안 하지만 정면에 대상이 있는 건 맞으므로
     // 상호작용으로 보고한다(여기서 false 를 주면 대화 중에 칼을 휘두른다).
-    if (key === scene.lastActionTargetKey) return true;
-    scene.lastActionTargetKey = key;
+    //
+    // 키는 **이벤트 단위**다. 타일 단위였을 때는 다중 타일 이벤트가 제자리 회전만으로
+    // 재발동했다 — 3x3 NPC 앞에서 방향만 바꾸면 정면 칸(tx,ty)이 달라지지만 여전히 같은 몸을
+    // 가리키므로, 타일 키로는 매번 새 대상으로 보였다. 1x1 에서는 대상 이벤트와 정면 칸이
+    // 1:1 이라 동작이 같다(이동을 시작하면 어느 쪽이든 키가 비워진다).
+    if (event.event.id === scene.lastActionTargetKey) return true;
+    scene.lastActionTargetKey = event.event.id;
     turnActionEventTowardPlayer(scene, event);
     void scene.runEvent(event.event.id);
     return true;
@@ -302,9 +391,8 @@ export function handleAction(scene: ActionEventSceneContext): boolean {
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
   const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
   if (underfoot) {
-    const underfootKey = `${scene.tileX},${scene.tileY}`;
-    if (underfootKey === scene.lastActionTargetKey) return true;
-    scene.lastActionTargetKey = underfootKey;
+    if (underfoot.event.id === scene.lastActionTargetKey) return true;
+    scene.lastActionTargetKey = underfoot.event.id;
     void scene.runEvent(underfoot.event.id);
     return true;
   }
@@ -369,8 +457,24 @@ function canActionTurn(animationType: EventAnimationType): boolean {
   }
 }
 
+/**
+ * 조사당한 이벤트가 플레이어를 향해 돌 방향.
+ *
+ * 델타를 앵커에서 뽑으면 안 된다 — 발자국이 여러 칸이면 앵커는 최근접 칸이 아니다.
+ * 2x2 앵커 (15,18) 의 발자국은 (15,17)(16,17)(15,18)(16,18) 이고, 플레이어가 (16,19)
+ * 에서 (16,18) 을 조사하면 앵커 델타는 (1,1) 이 된다. facingForDelta 는 |dx| >= |dy|
+ * 에서 가로를 우선하므로 "right" 가 나온다 — 플레이어가 정남향에 있는데 옆을 본다.
+ * 히트테스트는 발자국 사각으로 올라갔으니 그 결과를 쓰는 이 계산도 사각을 봐야 한다.
+ *
+ * 1x1 에서는 사각이 그 칸 자신이라 클램프가 항등이고 기존 동작과 같다.
+ */
 function directionTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): Dir {
-  return facingForDelta(scene.tileX - event.x, scene.tileY - event.y, event.direction ?? "down");
+  const near = nearestCellInRect(
+    footprintBounds(event.x, event.y, event.footprint),
+    scene.tileX,
+    scene.tileY
+  );
+  return facingForDelta(scene.tileX - near.x, scene.tileY - near.y, event.direction ?? "down");
 }
 
 function setActionEventRuntimeDirection(
@@ -400,12 +504,55 @@ function findRuntimeEventInScene(
   return findRuntimeEventAtInMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions, x, y, triggerKind);
 }
 
-function findBlockingRuntimeEventInScene(
+/**
+ * 주인공이 (dx,dy) 로 한 걸음 갈 수 있나 — **통행 사각**의 선행 모서리로 지형을 본다.
+ * 자유 이동과 강제 이동 루트가 **같은 판정식**을 쓰도록 여기 한 곳에 둔다.
+ *
+ * 1x1 직교는 canMove 1회로 환원되고, 대각도 예전 식과 **같은 값**이 나온다(항등).
+ * 예전 코드는 호출부에서 대각을 L자 2구간으로 손수 분해했는데, `resolveDiagonalStep` 이
+ * 이미 첫 구간 두 개(H1·V1)를 따로 물어보므로 전체 조건은 `H1 && V1 && (H2 || V2)` 였다.
+ * canMoveFootprint 의 대각은 `(H1 && H2) || (V1 && V2)` 이고 바깥 게이트가 `H1 && V1`
+ * 이라, 합치면 `H1 && V1 && (H2 || V2)` — 같은 식이다. 분해가 두 곳에 있을 이유가 없다.
+ */
+export function playerCanStep(
+  scene: Pick<PlaySceneContext, "map" | "tileX" | "tileY">,
+  body: PlayerBody,
+  dx: number,
+  dy: number
+): boolean {
+  return canMoveFootprint(
+    store.getCurrent(),
+    scene.map,
+    scene.tileX,
+    scene.tileY,
+    body.footprint,
+    scene.tileX + dx,
+    scene.tileY + dy,
+    body.passRows
+  );
+}
+
+/**
+ * 목적지에서 주인공의 **통행 사각**을 막는 이벤트. 1x1 이면 목적지 한 칸 질의와 같다(항등).
+ *
+ * 몸 사각이 아니라 통행 사각인 이유: passRows 로 열어 둔 상체 칸에는 NPC 가 실제로 들어와
+ * 서 있을 수 있고(그게 사각을 둘로 쪼갠 목적이다), 그걸 막힘으로 세면 주인공이 자기 상체에
+ * 갇힌다. 선행 모서리만 보지 않고 목적지 사각 전체를 보는 것은 워프 착지 검사
+ * (resolveFootprintLanding)와 같은 판정을 쓰기 위한 것이고, 더 막는 쪽이 fail-closed 다.
+ */
+export function findBlockingEventForPlayerBody(
   scene: Pick<PlaySceneContext, "map" | "session" | "eventPositions">,
+  body: PlayerBody,
   x: number,
   y: number
 ): RuntimeEventView | undefined {
-  return findBlockingRuntimeEventAtInMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions, x, y);
+  return findBlockingEventOverlappingRect(
+    store.getCurrent(),
+    scene.map,
+    scene.session,
+    scene.eventPositions,
+    playerPassageRect(body, x, y)
+  );
 }
 
 function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: Trigger["kind"]): void {

@@ -104,7 +104,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="number"],
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="search"],
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select {
-  background: var(--db-studio-surface, var(--db-studio-surface));
+  background-color: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 7px;
   box-sizing: border-box;
@@ -115,6 +115,11 @@
   min-width: 0;
   padding: 4px 9px;
   width: 100%;
+}
+
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 9px 로 덮어 글자가 화살표를 침범한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select {
+  padding-right: 24px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input:focus-visible,

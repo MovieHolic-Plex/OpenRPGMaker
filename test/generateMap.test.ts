@@ -70,6 +70,8 @@ describe("generate_map", () => {
     expect(ctx.project.maps.gen_huge).toBeUndefined();
   });
 
+  // border:"wall" 로 고정한다 — 이 케이스가 검증하는 것은 프로필 디스패치와
+  // "장애물 팔레트가 통행 불가로 등록되는가"이고, 그 관측점이 외곽 (0,0)이다.
   it("모든 번들 타일셋을 서로 다른 생성 프로필로 디스패치한다", () => {
     const profileKeys = new Set<string>();
 
@@ -84,6 +86,7 @@ describe("generate_map", () => {
         width: 20,
         height: 16,
         seed: 7,
+        border: "wall",
       });
 
       expect(result.ok, `${tilesetId}: ${result.summary}`).toBe(true);
@@ -100,6 +103,73 @@ describe("generate_map", () => {
     }
 
     expect(profileKeys.size).toBe(BUNDLED_EASYRPG_CHIPSET_ASSETS.length);
+  });
+
+  // 사용자 보고 2026-08-29: "타일 깔라 하면 항상 외곽에 벽을 깐다".
+  // blankThemedMap 이 테마·인자와 무관하게 맵 4변을 palette.obstacle 로 두르고 있었고,
+  // obstacle 은 생성 프로필 13종 전부 벽/솔리드 타일이다. create_map 은 이미
+  // 2026-07-08(47b0d51d)에 옵션으로 강등됐는데 generate_map 만 남아 있었다.
+  describe("외곽 테두리는 옵션이다(기본 none)", () => {
+    function borderTiles(map: { width: number; height: number; lowerTiles: number[] }): number[] {
+      const tiles: number[] = [];
+      for (let x = 0; x < map.width; x += 1) {
+        tiles.push(map.lowerTiles[x]!, map.lowerTiles[(map.height - 1) * map.width + x]!);
+      }
+      for (let y = 0; y < map.height; y += 1) {
+        tiles.push(map.lowerTiles[y * map.width]!, map.lowerTiles[y * map.width + map.width - 1]!);
+      }
+      return tiles;
+    }
+
+    for (const theme of THEMES) {
+      it(`${theme}: border 생략 시 외곽에 장애물 벽을 두르지 않는다`, () => {
+        const ctx: ToolContext = { project: createEmptyToolProject() };
+        const result = runTool(
+          ctx,
+          "generate_map",
+          { theme, width: 20, height: 16, chokepoints: 0, seed: 3, id: `gen_open_${theme}` },
+          { dryRun: false },
+        );
+        expect(result.ok, result.summary).toBe(true);
+        expect((result.data as { border: string }).border).toBe("none");
+
+        const map = ctx.project.maps[`gen_open_${theme}`]!;
+        // chokepoints:0 이라 산포 장애물이 없다 — 외곽이 막혀 있으면 그건 강제 테두리다.
+        const blocked: string[] = [];
+        for (let x = 0; x < map.width; x += 1) {
+          for (const y of [0, map.height - 1]) if (!isPassable(ctx.project, map, x, y)) blocked.push(`${x},${y}`);
+        }
+        for (let y = 0; y < map.height; y += 1) {
+          for (const x of [0, map.width - 1]) if (!isPassable(ctx.project, map, x, y)) blocked.push(`${x},${y}`);
+        }
+        expect(blocked, `외곽 타일: ${[...new Set(borderTiles(map))].join(",")}`).toEqual([]);
+      });
+    }
+
+    it("border:\"wall\" 은 종전처럼 외곽 4변을 봉인한다", () => {
+      const ctx: ToolContext = { project: createEmptyToolProject() };
+      const result = runTool(
+        ctx,
+        "generate_map",
+        { theme: "cave", width: 20, height: 16, chokepoints: 0, seed: 3, id: "gen_sealed", border: "wall" },
+        { dryRun: false },
+      );
+      expect(result.ok, result.summary).toBe(true);
+      expect((result.data as { border: string }).border).toBe("wall");
+
+      const map = ctx.project.maps.gen_sealed!;
+      for (const [x, y] of [[0, 0], [map.width - 1, 0], [0, map.height - 1], [map.width - 1, map.height - 1]]) {
+        expect(isPassable(ctx.project, map, x!, y!), `(${x},${y})`).toBe(false);
+      }
+    });
+
+    it("알 수 없는 border 값은 조용히 무시되지 않고 거부된다", () => {
+      const ctx: ToolContext = { project: createEmptyToolProject() };
+      const result = runTool(ctx, "generate_map", { theme: "village", width: 20, height: 16, id: "gen_bad", border: "walls" });
+      expect(result.ok).toBe(false);
+      expect(result.issues?.map((issue) => issue.message).join(" ")).toContain("border");
+      expect(ctx.project.maps.gen_bad).toBeUndefined();
+    });
   });
 
   it("등록되지 않은 타일셋은 다른 타일 문법으로 대체하지 않는다", () => {

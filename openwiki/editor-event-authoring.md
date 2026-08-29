@@ -78,9 +78,25 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **Option A 계층 구조:** 헤더(타이틀 + 페이지 세그먼트 + 테스트) + 본문 워크벤치(좌측 4그룹 요약 아코디언 레일 228px, 중앙 명령 목록, 우측 통합 인스펙터 340px) + 단일 primary 저장 액션 푸터. 검증 피드백은 세그먼트 배지 및 푸터 상태 텍스트로 전달된다.
 - **Event editor shell density (Option A layout, 2026-08-27):** `src/editor/panels/eventEditor/` chrome aligns to Option A layout. The titlebar holds the editable name (`event-editor-name`), ID, coords, header page segments (`[data-testid^=evt-page-segment]`), and `테스트` action. The legacy wide page-tab strip in the modal body is removed (`.event-page-number-tabs`, `event-page-strip`, `event-page-tab-*` absent). The left settings rail (`event-editor-settings-column`) is organized into a 4-group summary accordion (`details > summary` for conditions, graphic, trigger/priority, autonomous movement) with live summary copy. Command editing uses click-select to highlight rows, double-click or Enter to open the edit dialog (removing per-row 편집 buttons). The right integrated inspector shows the selected command details and preview directly. Footer contains exactly one primary save action `저장하고 닫기` (`event-editor-save`). Modal root testid stays `event-editor-modal`. Tests: `test/e2e/event-layout-optiona.spec.ts`, `test/eventEditorHierarchyShell.test.ts`, `test/eventEditorBalancedShell.test.ts`, `test/eventEditorSettingsLayout.test.ts`, `test/eventEditorStoryboardBranches.test.ts`, `test/eventEditorUiDensity.test.ts`, `test/eventEditorModal.test.ts`.
 - **Current hierarchy (Option A):** titlebar with integrated page segments + workbench + footer with single primary save. Workbench starts two-column (`228px / minmax(0,1fr)`) with a 4-group summary accordion rail on the left; inspector (`340px`) opens on row selection. Validation is a segment badge plus footer status line, not a full-width identity band. Retained actions remain mounted and keyboard reachable.
+- **Event AI 명령 도크 (2026-08-28, 아래 「Event AI assist card」 항목을 상위 갱신한다):** `aiAssist.ts` 는 **「이 페이지가 하는 일」 칼럼의 마지막 그리드 행에 붙는 인플로우 도크**다. 예전에는 도구 팝오버 안의 칩이 `position:absolute` 카드로 열려 **자기가 명령을 넣을 목록을 덮었다** (실측: 1440 폭에서 cmd-list 면적의 46%, 1024 폭에서는 전폭). 삽입 위치를 못 보면서 삽입 위치를 고르라는 구조였다. 계약:
+  - **진입점은 하나** — 툴바 `event-command-quick-ai` 가 도크를 토글한다(`aria-expanded` 반영). 도구 팝오버에는 AI 칩이 없다. 예전에는 같은 「AI 명령」 라벨이 툴바와 팝오버에 동시에 떠 있었다.
+  - **칼럼 그리드는 `auto minmax(0,1fr) auto`** (`event-editor.balanced.css`). 암시 행으로 내버려 두면 1fr 이 줄지 않아 도크가 모달 밑밖으로 밀려난다(실측: 900 높이에서 도크 밑이 1016).
+  - `event-editor-ai.css` 가 도크를 `max-height: min(46vh, 420px)` 로 묶어 cmd-list 행이 항상 남는다. cmd-list 와의 겹침 면적은 **0** 이어야 한다.
+  - **Escape 는 도크만 닫는다** — 열릴 때 `registerModal` 로 모달 스택 최상단이 된다. 예전에는 프롬프트를 쓰다 Escape 를 누르면 이벤트 에디터 전체가 닫혔다.
+  - 열면 프롬프트에 **포커스**가 가고, **Ctrl/Cmd+Enter** 로 생성한다.
+  - **삽입 위치를 항상 말한다** (`ai-event-target`): 선택이 없으면 「맨 아래에 이어서 넣습니다」, 있으면 「「<명령 이름>」 다음에 넣습니다」. 삽입 버튼 라벨도 같이 바뀐다. 선택은 스토어 갱신 없이 클래스만 바뀌므로 cmd-list 클릭·도크 열기마다 다시 읽는다.
+  - **상태 배지는 한국어**(`생성 중`/`오류`/`초안 N개`/`작성 중`) — 예전엔 `busy`/`error`/`ready`/`draft` 영문 토큰이 노출됐다. 오류 문구는 사람이 다음에 할 일을 앞에 두고 검증기 원문을 `—` 뒤에 붙인다. 사용자가 입력을 고치면 지난 오류는 스스로 사라진다.
+  - 프롬프트 예시 칩(`ai-event-example-*`)은 입력만 채운다(자동 생성 금지).
+  - 가드: `test/eventCommandAssist.test.ts`, `test/e2e/event-editor-aux-non-occlusion.spec.ts`(겹침 0 · Escape 범위 · 포커스), 증거는 `output/evidence/event-ai-assist-ux/960x900-compact.png`.
 - **Event AI assist card (2026-08-24):** `aiAssist.ts` presents the flow as prompt → draft generation → result review → explicit insertion. The prompt has a visible `<label>`, its helper copy is connected with `aria-describedby`, generation feedback uses a polite status region, and the result region stays hidden until commands exist. `event-editor-ai.css` owns the readable rhythm (`13px/1.65`, 96px minimum prompt height, `12px/1.65` preview rows); `03-legend-toolbar.css` caps the floating card at 680px and keeps it out of command-list flow. At `1180px` or below, opening the AI chip must raise the aux tools above the compact command inspector instead of letting the inspector cover the prompt. Guards: `test/eventCommandAssist.test.ts` and `test/e2e/event-editor-aux-non-occlusion.spec.ts`; the latter writes `output/evidence/event-ai-assist-ux/960x900-compact.png`.
 - **Event editor background persistence:** nested command/page/picker dialogs use a translucent warm scrim so the event editor remains visible behind them. Full view keeps a narrow scrim edge, and Escape exits full view without dropping the editor from `modalStack`. `test/e2e/event-editor-backdrop-persistence.spec.ts` tours the mounted button families and guards the same root backdrop across interactions.
 - **Mockup parity maintenance (2026-08-24):** `eventEditorMockupShots.spec.ts` guards the `실행 내용 · N개` header, compact toolbar menus, conditional validation control, and the initial/selected viewport matrix at 1586, 1440, 1280, 1024, 960, and 800px widths. Historical screenshots and `new-editor/REPORT.html` document the earlier layout only; they must not force removed legend, recommendation, or bottom-strip chrome back into the product.
+- **미리보기는 「이 페이지가 하는 일」 컬럼의 세 번째 보기 (2026-08-28):** 보기 토글은 `목록 / 스토리 / 미리보기`(`event-view-toggle-list|storyboard|preview`) 세 칸이고, 미리보기를 고르면 `event-page-preview-host` > `event-page-preview` 가 명령 컬럼 전체 폭·높이를 그대로 쓴다. 툴바 aux 버튼 `event-command-quick-preview` 는 라벨이 `▶ 미리보기` 이고 이 보기로 전환한다. 미리보기 모드는 `oprn:storyboard-mode` 에 **저장되지 않는다**(저작 보기 = 목록/스토리만 남는다).
+
+  왜 옮겼는가 (실측 2026-08-28, `verify-shots/page-preview-probe/02-preview-open.png`): 예전 미리보기는 `도구` 팝오버 안 `event-script-live-preview` details 였고, 그 본문에 `position: absolute; max-height: min(280px, 42vh)` 가 걸려 있었다. 무대는 486px 로 자라는데 본문이 280px 이라 무대 아래쪽과 캡션이 잘렸고, 팝오버가 스토리보드 위에 겹쳐 글자가 서로 뚫고 나왔다. 즉 미리보기가 열려도 볼 수 없었다.
+
+  구성: `renderEventPagePreview({ mapId, eventId, page })` 가 미리보기 패널을, `renderEventScriptFlowchart(...)` 가 도구 팝오버의 플로우차트를 만든다(예전 `renderEventScriptModernViews` 는 둘을 한 번에 만들었다). 스텝 조작 testid(`event-script-live-prev|next|play`)와 무대·캡션 testid(`event-script-live-stage|caption`)는 그대로다. `auxOpenController` 의 `"preview"` 슬롯은 더 이상 바인딩되지 않는다 — 컨트롤러는 범용이라 슬롯 자체는 남겨 뒀다.
+
 - **Storyboard trust surface (2026-08-25):** **Storyboard is the default authoring view**; List remains the complete reorder/context-menu surface. Storyboard is a vertical scan view: top-level commands keep full authored dialogue in the DOM, and every path-bearing branch (choice/fork/loop/shop/inn/promotion/evolution/battle) recursively exposes descendants at arbitrary depth with exact selectable command paths. Selected cards publish `.is-selected` plus `aria-current="step"`. The inspector's current-edit action switches persisted card density back to the mounted form before focusing it; closing returns focus to the selected Storyboard control. “미리보기 새로고침” rerenders from current command data rather than claiming runtime playback restart. The add card opens the normal command picker and is labelled as command addition, not scene or AI generation.
 - **Event editor windowing (2026-08-24):** the title bar exposes full view (`Alt+Enter`, title-bar double click); Escape restores windowed geometry before a later Escape reaches the modal close guard. The settings/canvas separator supports pointer drag, Arrow keys (`Shift` for the large step), Home/End, and double-click reset with separator ARIA values. Full view disables outer drag/resize and restores the previous inline width/height/transform.
 - **적대적 UI/UX 정리 (2026-08-27, 위의 「명령 툴바」 항목을 상위 갱신한다):**
@@ -93,6 +109,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - **문구·프리뷰 정직성.** 좌측 레일 「움직임과 속도」 요약은 raw enum(`fixed`) 대신 `movementTypeChipLabel()` 의 한국어 라벨을 쓴다. m2 명령 본문의 리소스 프리뷰는 종류를 보고 렌더한다 — 오디오(music/sound) 필드는 640×500 "그림을 고르세요" 이미지 우물을 만들지 않고 선택한 음악을 한 줄로 알린다. 도움말도 staged 폼의 현실대로 "값을 고르고 확인을 누르면 적용됩니다." 로 바뀌었다.
   - **적대적 프로브:** `scripts/qa-event-editor-ux.mjs --label <tag>` 가 위 계약 9개를 실제 브라우저에서 판정하고 하나라도 깨지면 exit 1 이다. 증거는 `.omo/evidence/event-editor-ux/<tag>/`.
 - **셀프 스위치 조건 행:** `selfSwitch`는 간단 행에 표시된다(고급 전용 아님). 컨트롤은 `conditionForm.selfSwitchControl` — 세그먼트 A/B/C/D 버튼 + ON/OFF 토글. 첫 번째 selfSwitch는 간단 행, 초과분은 고급 목록. `setSelfSwitch` 명령 본문도 동일 컨트롤 사용.
+- **호감도 조건은 NPC 관계 게이트를 UI 에서도 말한다 (2026-08-28):** 런타임 `resolveSocialKey` 는 `event.id` 로 폴백하지 않으므로 NPC 키가 비었고 이벤트에 `characterId` 도 없으면 `friendshipAtLeast` 는 **항상 거짓**이다(`docs/specs/2026-07-14-character-id-relationship-gate.md` §1-7). 예전에는 `renderPageConditions` 의 event 인자가 `_event` 로 미사용이라 조건 행이 이 사실을 감췄고 자리표시자는 "비우면 이 이벤트" 라고 거짓말했다. 지금은 `renderPageConditions` → 컨텍스트 `hostHasCharacterId` → `renderFriendshipAtLeastCondition({ hostHasCharacterId })` 로 흐르고, 미연결 + NPC 키 공백이면 자리표시자가 "NPC 키를 적어야 합니다" 로 바뀌며 `event-condition-friendship-requires-character-id` 힌트가 붙는다(고급 목록 행은 `event-page-advanced-condition-friendship-requires-character-id-<i>`). **행을 숨기거나 잠그지는 않는다** — NPC 키를 직접 적는 저작 경로는 미연결에서도 유효하고, RM 계약상 핵심 조건 행은 항상 자리를 지킨다. 같은 조합은 검증기가 `condition.friendship.no-character-id` 경고로도 잡는다. 계약 테스트: `test/friendshipConditionGate.test.ts`.
+- **검증 이슈 앵커는 닫힌 레일 그룹을 연다:** 좌측 레일 그룹은 `<details>` 가 아니라 `is-open` 클래스라서 `navigateToEventDraftIssue` 의 details 여는 로직만으로는 못 열었다. `openEventRailGroupFor(target)`(`pageProps.ts`)이 앵커가 속한 그룹을 활성 그룹으로 바꾼 뒤 포커스한다. 조건·그래픽·이동 이슈 전부가 이 경로를 탄다.
 
 
 ## Condition / Loop / Variable command trust fixes (2026-08-07)
@@ -120,6 +138,14 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **전수 감사:** 명령 피커 3탭 45항목을 playwright로 전부 열어 스크린샷(`.omo/evidence/event-map-items/before|after/`)과 항목별 감사(`audit-before.md`)로 남겼다. 고유 다이얼로그 44개가 A형(설명카드+요약+미리보기)과 B형 레거시(기타 명령 껍데기, 9건: m2-026/030/066/078/201/202/205/207/212)로 갈라진다. B형 껍데기 통일은 아직 미착수 — 후속 과제.
 - **적용된 픽스:** (1) `isM2CatalogEntrySelectableInMap`이 m2-055(Show Animation 중복 등재)를 맵 피커에서 제외 — 카탈로그 엔트리는 저장 프로젝트 호환을 위해 유지. (2) 조명 설정(setLighting) 입력을 0~1 → 밝기(%)/100 스케일로 통일하고 암전/AMB/주변광 3중 용어를 "밝기"로 정리(`commandBodyPage3Native.ts`, `commandPreview.ts` lightingStage/caption). (3) 카메라 프리뷰의 내부 토큰(panTo 등)은 `CAMERA_MODE_LABELS`로 한국어화. (4) 타일 변경(changeTile)에 실맵 캔버스 미리보기 추가(`change-tile-map-canvas`, drawTransferMapPreview 재사용). (5) 프리셋 칩 세로 쪼개짐 방지 CSS(`05-force-modern-actor-page3.css`: nowrap+min-width fit-content). (6) parallax 병기 문구 정리.
 - **계약 테스트:** `test/eventMapItemsBeginnerUx.test.ts`. e2e 증거: `_event-map-items-after.spec.ts`.
+
+## 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+
+- 정본은 `src/project/eventCommands/m2CatalogData.ts` 의 **`DEPRECATED_M2_COMMAND_IDS`** 다: `카탈로그 id → { supersededBy, reason }`. 엔트리는 `entry.deprecated` 로 굽혀 나오고, `isM2CatalogEntrySelectableInMap` · `isM2CatalogEntrySelectableInBattleEvent` · `commandPicker` 의 `COMMAND_PAGES` 세 곳이 모든 피커(탭 그리드 + 전교 검색)에서 그 행을 배제한다. 카탈로그 엔트리와 런타임 실행 경로는 남는다 — **저장된 프로젝트는 계속 열리고 돌아간다**. 새로 저작하는 경로만 사라진다.
+- 현재 등록: `m2-055-show-animation` → `m2-054-show-animation` (중복 등재, 종전 `entry.index === 55` 하드코딩을 대체), `m2-209-advanced-dialogue` → `m2-001-show-text` (「고급 대화」를 「문장 표시」로 통합).
+- **라벨 문자열로 걸지 말 것.** 종전 `commandPicker` 는 `entry.pickerLabel !== "고급 대화"` 로 걸렀는데, `pickerLabelFor` 가 말줄임을 붙여 실제 라벨은 `"고급 대화..."` 이다 — 필터가 한 번도 맞지 않아 "통합했다"고 적어둔 명령이 탭 1 「말하기」에 그대로 살아있었다(실측 2026-08-28).
+- 레지스트리 무결성은 카탈로그 모듈을 로드하는 자리에서 즉시 터리는 방식으로 강제한다(없는 id · 없는 `supersededBy` · `supersededBy` 가 다시 은퇴 행). 계약 테스트는 `test/advancedDialogueMerge.test.ts`, e2e 는 `test/e2e/oprn-modern-event-commands.spec.ts` 의 `DEPRECATED_COMMAND_TEST_IDS` 전 탭 부재 단언이다(라벨이 아니라 버튼 testid 로 건다 — 라벨로 걸면 말줄임 드리파트에 단언이 공허하게 통과한다).
+- 고급 대화가 남긴 것: 감정·자동 넘김은 문장 표시 폼의 고급 옵션(`event-command-text-advanced`)이고 얼굴은 「얼굴 바꾸기」 명령이다. 저장된 m2-209 행은 로드 시 `rewriteLegacyAdvancedDialogueInProject` (`src/project/io/rewriteLegacyDialogue.ts`) 가 맵 이벤트·페이지·공통 이벤트·전투 이벤트의 최상위 명령 배열과 `commandBranches` 가 열거하는 모든 중첩 분기 배열을 네이티브 `text` 로 1회 정규화하고, 그전에 남은 행은 `m2ModernRuntime` · `commandPreview` 가 그대로 받아 연산한다. `test/advancedDialogueMerge.test.ts` 는 중첩 위치를 `commandBranches` 에서 파생하므로 새 분기 종류가 추가되면 정규화 누락을 분기 이름과 함께 실패시킨다.
 
 ## Companion roster in the command picker (2026-08-27)
 
@@ -161,3 +187,120 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   `event-page-item-condition-present`, `event-page-actor-condition-present`(present/absent).
   체크박스 재활성 경로는 기존 `condition.value` 를 보존한다. 계약은 `test/eventPageConditionOffValue.test.ts`.
 - 이동 속도 select 는 런타임 `clampSetting` 과 같은 1~8 범위를 제시해야 한다(이전에는 1~6 이라 7·8 저작 불가).
+
+## 「움직임과 속도」 부피 정리 (2026-08-29)
+
+- **생활 이동은 두 행이다.** 예전에는 233px 레일에 컨트롤 13개(목적지 5 + 맵 연결 8)를
+  `auto-fit minmax(148px, 1fr)` 로 깔았고, 그 폭에서 그리드는 1열이 되므로 실측 13행 세로 스택이었다.
+  지금은 「목적지」 행(맵 select + 「맵에서 찍기」)과 X/Y/방향/반복 4칸 행으로 조인다.
+  실측(1440 뷰포트, 편집면 529px): 같은 맵 목적지 **10행**, 연결이 있는 다른 맵 목적지 **11행**.
+- **맵 연결은 조건부다.** 목적지가 같은 맵이면 `renderMapLinkBlock` 이 빈 블록을 낸다
+  (`.event-page-map-link-block:empty { display: none }`) — 같은 맵에서 맵 연결은 뜻이 없다.
+  다른 맵인데 연결이 없으면 한 줄로 「‘X’로 나가는 연결이 없습니다」(`--danger`) 만 알리고 폼을 펼친다.
+  연결이 이미 있으면 폼을 접고 `event-page-map-link-toggle`(연결 편집/연결 접기) 로만 연다.
+  **연결이 없을 때 토글을 같이 내지 말 것** — 할 일이 「연결 추가」 하나인데 버튼 두 개는 어느 쪽이
+  본 행동인지 흐린다. 펼침 상태는 `openEventMapLink`(`eventEditorOpenState.ts`) 가 들고 있다.
+  패널은 `<details>` 가 아니라 `hidden` 이다 — 레일 그룹이 `<details>` 를 `<div>` 로 갈아치우므로.
+- **좌표는 찍는다.** `mapPointDialog.ts` 의 `openMapPointDialog()` 가 「장소 이동」 과 같은
+  `drawTransferMapPreview` 미리보기를 띄우고 클릭한 칸을 돌려준다(testid 접두사 방식:
+  `<prefix>-dialog|-canvas|-status|-map|-ok|-cancel`). 「맵에서 찍기」 는 숨은 필드가 아니라
+  **보이는 select/X/Y 를 갱신**한다 — 검증기 앵커(`event-page-living-target-map`/`-x`)와 손입력
+  e2e 경로가 둘 다 살아야 한다.
+- **선택 칸 표시는 십자선이다.** 캔버스는 맵 해상도로 그린 뒤 CSS 로 축소되므로, 100×100 맵을 상자에
+  맞추면 배율이 0.4 밑으로 내려가 타일 한 칸 테두리(2px)가 1px 미만이 되어 사실상 보이지 않았다.
+  `drawMarker()` 는 맵 전체를 가로지르는 십자 안내선(어두운 밑선 + 흰 선) 뒤에 반투명 채움과 2겹
+  테두리를 **마지막에** 올린다. 「장소 이동」 미리보기도 같은 함수를 쓴다.
+- **사용자 지정 경로는 궤적으로 읽는다.** `previewMoveRoute.ts` 의 `tracePath`/`renderTrajectory`/
+  `renderTape`/`svgSupported` 를 내보내 레일에서 재사용한다 — 궤적 썸네일(`event-page-route-thumb`,
+  누르면 경로 편집) + 화살표 칩 테이프 + 전체 라벨 한 줄이 가로로 나란히 선다.
+  전체 라벨(`event-page-movement-route-summary`) 의 한국어 텍스트는 그대로 둘 것 —
+  `test/e2e/oprn-event-pages.spec.ts` 가 "오른쪽 이동" 을 이 요소에서 찾는다.
+- **`.event-page-movement-label` 은 `.event-editor` 를 앞에 붙여야 산다.** `core.part-2.css` 의
+  `.event-editor label { display: block }` 은 특이도 (0,1,1) 이라 (0,1,0) 짜리 `display: grid` 를
+  이기고 있었고, 그래서 이동 그룹의 모든 라벨 행이 세로로 쌓여 높이를 두 배로 먹었다.
+- **시각 QA:** `node scripts/qa-event-movement-ux.mjs --label <tag>` 가 정지 → 사용자 지정 →
+  생활 이동(같은 맵) → 맵 찍기 → 다른 맵 → 연결 생성 8단계를 실제 브라우저에서 캡처하고
+  섹션 높이·행 수·`overflowX` 를 잰다. 증거는 `.omo/evidence/event-movement-ux/<tag>/`.
+  기준선(main)에서도 돌아가야 하므로 새 testid 는 optional 로만 본다.
+
+## 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+
+같은 16종 `Condition` 유니온(`src/project/types/events.ts:32-55`, 정본 목록
+`src/project/commandKindRegistry.ts:103-120`)을 **세 곳**이 각자 평가한다:
+
+| 평가기 | 위치 | 쓰는 곳 |
+|---|---|---|
+| `evalPageCondition` | `src/project/io/pageResolution.ts:31` | 이벤트 페이지 출현 판정 |
+| `evalCondition` | `src/project/session.ts:735` | 맵 조건 분기(`interpreter/commandCatalog.ts` fork) |
+| `evaluateCondition` | `src/battle/battleEvents.ts` (내부 함수) | 전투 분기 + 트룹 페이지 |
+
+**활동 조건은 프로젝트의 실제 일정에서 후보를 받는다 (2026-08-29).** `activity` 는 자유 문자열이고
+매칭은 완전 일치다. 저작자가 유효한 값을 추측해야 했던 문제를 `collectNpcActivitySuggestions`
+(`panels/eventEditor/options.ts`) 로 없앴다 — 모든 맵 이벤트의 `schedule[].activity` 를 모아
+`<datalist>` 로 건다. 페이지 간단 행은 `event-page-npc-activity-condition-options`, 분기 폼과 고급
+목록은 `${activityTestId}-options` 를 쓴다(고급 목록은 행마다 id 가 달라야 하므로 testId 에서 파생).
+**기본값 `work` 는 그대로 둔다** — `editor/tools/eventTools.ts` 의 `dailyRoutine` 이 생성하는 일정이
+`activity: "home" | "work"` 를 쓰고 `defaultActivityLine` 이 그 키를 한국어 대사로 번역한다. 즉 `work`
+는 이 레포가 인정하는 어휘이지 자리표시자가 아니다. 저작된 기본 콘텐츠는 한국어(`저녁 장터`, `귀가`)를
+쓰므로 두 어휘가 공존한다 — 그래서 "영어 기본값" 을 결함으로 보고 빈 값으로 바꾸면 도구가 만든 NPC 를
+가리키는 가장 흔한 경우가 깨진다.
+
+**셋이 갈라져 있었다(실측).** `npcActivity` 는 전투에서 하드코딩 `false` 였고,
+`friendshipAtLeast` 는 빈 `npcKey` 를 소유 이벤트 `characterId` 로 해석하지 않아 항상 거짓이었다.
+둘 다 `src/editor/tools/troopBattlePageTools.ts` 가 모든 `CONDITION_KINDS` 를 받으므로
+**저작은 되는데 절대 참이 될 수 없는** 상태였다. 지금은 전투도 소유 이벤트의 활동을 보고,
+`resolveSocialKey` 를 **재사용**한다(두 번째 해석 규칙을 만들지 않는다).
+
+**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 16종 × (만족/불만족) 을 세 평가기에
+동일 입력으로 먹여 판정 일치를 단언하고, `Object.keys(CASES)` 를 `CONDITION_KINDS` 와 순서까지
+비교하므로 **종류를 빠뜨리면 실패한다**. 허용 예외 목록(`ALLOWLISTED_DIVERGENCES`)은 현재 **비어 있다** —
+지우거나 채우기 전에 왜 갈라져야 하는지 근거를 남겨라.
+
+### 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+
+세 평가기 모두 `(timers[timerId] ?? 0) <= condition.seconds` 다. 따라서 **타이머가 한 번도 켜지지
+않았어도** `seconds >= 0` 조건은 참이다(`0초 이하` 도 참). 이것은 이 엔진의 **의도된 계약**이며
+`test/pageConditionsGuarantee.test.ts`, `test/commandContracts/fork.contract.test.ts`,
+`test/selfSwitch.test.ts` 가 고정하고 있다 — 거짓으로 만드는 유일한 방법은 **음수** 임계값이다.
+
+RM2K3/EasyRPG 와는 다르다(그쪽은 타이머가 **작동 중**이어야 한다). `PlaySession.timers` 에 running
+비트가 없고 `timer stop` 이 값을 지우지 않으므로, RM 정합은 스키마 변경이다. **"고치지" 말고**
+저작 시점 경고(`condition.timer.always-true`)로 보이게 두라.
+
+### 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+
+`pageAdvancedConditions.ts` 의 오버플로 행(3번째 스위치, 2번째 아이템/주인공)은 한때
+`showValue: false` + `forceTrueOnSwitchChange: true` 로 극성을 **강제**했다. 그래서 그 행은
+꺼짐/보유 안 함/파티에 없음을 저작할 수 없었고, 대상 id 를 바꾸면 저장된 `false` 가 조용히 `true` 로
+뒤집혔다. 이것은 `ab8f9714` 가 단순 행에서 이미 고친 **P0 결함 D08 이 다른 목록에 남아 있던** 것이다.
+계약: `test/eventPageConditionOffValue.test.ts` (오버플로 조건까지 왕복 단언).
+
+### 참조를 비워도 조건을 삭제하지 않는다
+
+대상 id 가 비면 조건을 지우는 대신 **인라인 오류**를 띄운다(분기 폼과 같은 규약).
+DB 에서 지워진 유령 참조는 `<id> (없음)` 라벨로 **계속 보인다** — 안 보이게 하면 저작자가 설정한
+극성이 조용히 유실된다. 회귀: `test/pageItemCondition.test.ts`(유령 itemId 표시),
+`test/pageConditionAuthoringIntegrity.test.ts`(빈 참조 보존 + 비활성 행 조작 시 자동 활성화).
+
+### 조건 미리보기는 모르면 모른다고 말한다
+
+`conditionEvalPreview` 의 판정값은 `boolean | undefined` **3상태**다. 편집기 상태로 판정할 수 없는
+조건은 「판정 불가」(`event-condition-eval-undetermined`)를 띄우고, `all`/`any`/`not` 은 3값 논리로
+전파한다. 리프는 **값이 아니라 존재**로 게이트한다 — `timer` 는 `Object.hasOwn(timers, timerId)` 일
+때만 판정한다. 종전에는 빈 세션으로 평가해서 16종 중 **7종**(timer/timePhase/season/npcActivity/
+friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모든 타이머 조건이 「충족」으로
+보였다. 계약: `test/conditionEvalPreview.test.ts`.
+
+### 조건 문구에 내부 토큰을 넣지 마라
+
+`ON`/`OFF`, `AND()`/`OR()`/`NOT`, 생 비교 연산자, `timer1`/`timer2`, `run`,
+`completed`/`failed`/`abandoned` 는 사용자에게 보이면 안 된다. 통일 어휘는 켜짐/꺼짐,
+보유 중/보유 안 함, 파티에 있음/파티에 없음, 타이머 1/타이머 2,
+모두 맞을 때/하나라도 맞을 때/아닐 때, 완료/실패/포기 다. 문장·배지·탭 요약·명령 요약이 전부
+대상이며(`pageConditionSentence.ts`, `pageProps.ts`, `commandSummary.ts`) 게이트는
+`test/conditionCopyTokens.test.ts` 다.
+
+**조건 행을 접거나 숨기지 마라.** 접기 안은 D09(battleResult·all·any·not 이 화면에서 통째로
+사라진 P1 결함)로 되돌아가는 일이라며 명시적으로 거부됐다
+(`docs/proposals/2026-08-28-event-editor-ui-improvement.html`). `all`/`any`/`not` 은 페이지 표면에서
+읽기 전용 요약 + 삭제로 유지되며, 중첩 저작은 분기(fork) 폼이 담당한다.

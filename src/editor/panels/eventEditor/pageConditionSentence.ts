@@ -65,7 +65,7 @@ function clauseParts(condition: EventPageCondition, project: Project): SentenceP
         text(condition.present ? " 파티에 있음" : " 파티에 없음")];
     case "item":
       return [value(quoted(recordLabel(project.database.items, condition.itemId))),
-        text(condition.present ? " 보유 중" : " 없음")];
+        text(condition.present ? " 보유 중" : " 보유 안 함")];
     case "gold":
       return [text("소지금 "), value(compareLabel(condition.op, condition.amount))];
     case "timer":
@@ -82,6 +82,8 @@ function clauseParts(condition: EventPageCondition, project: Project): SentenceP
         value(`${condition.value} 이상`)];
     case "battleResult":
       return [text("전투 "), value(battleResultLabel(condition.result))];
+    case "run":
+      return runClauseParts(condition);
     case "all":
       return [text("하위 조건 "), value(`${condition.conditions.length}개 모두 참`)];
     case "any":
@@ -117,9 +119,41 @@ function compareLabel(op: string, amount: number): string {
     case "<":
       return `${amount} 미만`;
     case "!=":
-      return `${amount} 아님`;
+      return `${amount} 다름`;
+    case "==":
+      return `${amount} 같음`;
     default:
       return `${amount}`;
+  }
+}
+
+function runClauseParts(condition: Extract<EventPageCondition, { kind: "run" }>): SentencePart[] {
+  const value = (text: string): SentencePart => ({ kind: "value", text });
+  const text = (raw: string): SentencePart => ({ kind: "text", text: raw });
+  switch (condition.query) {
+    case "active":
+      return [text("탐험 "), value(condition.value === false ? "중이 아님" : "중")];
+    case "floor":
+      return [text("탐험 층 "), value(compareLabel(condition.op, condition.value))];
+    case "flag":
+      return [
+        text("탐험 기억 "),
+        value(quoted(condition.flag.trim() || "(없음)")),
+        text(condition.value ? " 켜짐" : " 꺼짐"),
+      ];
+    case "result":
+      return [text("탐험 결과 "), value(runResultLabel(condition.result))];
+  }
+}
+
+function runResultLabel(result: "completed" | "failed" | "abandoned"): string {
+  switch (result) {
+    case "completed":
+      return "완료";
+    case "failed":
+      return "실패";
+    case "abandoned":
+      return "포기";
   }
 }
 

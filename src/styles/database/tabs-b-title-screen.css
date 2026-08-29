@@ -166,7 +166,7 @@
     0 0 0 4px rgba(6, 26, 79, 0.45);
   outline: none;
 }
-.rm-title-menu-button:active {
+.rm-title-menu-button:focus-visible {
   transform: translateY(1px);
 }
 .rm-title-menu-button.selected::before {
@@ -229,14 +229,14 @@
   border-image-width: var(--runtime-window-border-tight);
   border-radius: 0;
   color: var(--runtime-window-text);
-  cursor: pointer;
+  cursor: default;
   font: 700 var(--runtime-font-size-11)/1.25 var(--runtime-pixel-font);
   min-height: 30px;
   padding: 6px 10px;
 }
-.system-shell-button:hover,
-.main-menu-button:hover,
-.game-over-panel button:hover {
+.system-shell-button:focus-visible,
+.main-menu-button:focus-visible,
+.game-over-panel button:focus-visible {
   background: var(--runtime-window-selected-bg);
   border-color: var(--runtime-window-focus);
 }

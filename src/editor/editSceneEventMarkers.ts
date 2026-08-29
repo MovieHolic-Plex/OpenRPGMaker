@@ -3,9 +3,26 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
 import { resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
 import { editorWorkingEvents } from "@/project/eventDrafts";
+import { overlappingEventPairs } from "@/project/eventFootprintQuery";
+import {
+  UNIT_FOOTPRINT,
+  footprintBounds,
+  normalizeCharacterFootprint,
+  normalizeCharacterScale,
+  normalizePassRows,
+  passageBounds,
+} from "@/project/footprint";
 import { store } from "@/project/store";
 import { projectFontStack } from "@/project/fontRegistry";
-import type { EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
+import type {
+  CharacterFootprint,
+  EventPage,
+  EventPageGraphic,
+  GameEvent,
+  GameMap,
+  MapId,
+  Project,
+} from "@/project/types";
 
 const SELECTED_EVENT_RING_COLOR = 0x69db7c;
 const EVENT_TILE_FILL_COLOR = 0x1f2937;
@@ -13,6 +30,12 @@ const EVENT_TILE_FILL_ALPHA = 0.34;
 const EVENT_TILE_SPRITE_FILL_ALPHA = 0;
 const EVENT_TILE_STROKE_COLOR = 0xffffff;
 const EVENT_TILE_STROKE_ALPHA = 0.95;
+/** 다중 타일 몸 사각은 채움을 옅게 — 안에 든 타일 그림이 보여야 한다. */
+const EVENT_BODY_FILL_ALPHA = 0.12;
+const EVENT_PASS_FILL_COLOR = 0x0a246a;
+const EVENT_PASS_FILL_ALPHA = 0.38;
+/** 몸 사각이 겹친 이벤트의 외곽선. 저작 시점 경고이고 lint 와 같은 판정식을 쓴다(D5). */
+const EVENT_OVERLAP_STROKE_COLOR = 0xff6b6b;
 const EVENT_BADGE_FILL_COLOR = 0x1f2937;
 const EVENT_BADGE_FILL_ALPHA = 0.38;
 const EVENT_BADGE_STROKE_COLOR = 0xcbd5e1;
@@ -70,28 +93,113 @@ export function editorEventMarkerTexture(project: Project, graphic: EventPageGra
   return sprite ? resolveEventSpriteTexture(project, sprite.id, graphic.pattern) : null;
 }
 
+/**
+ * 배율 없는 그림을 타일 한 칸에 밀어 넣는 축소율. **1x1 폴백과 레이어 배지 전용**이다.
+ * 발자국·배율이 있는 이벤트는 `editorSpriteScale` 로 실제 크기를 그린다 — 여기로 보내면
+ * 3x3 골렘이 16px 로 쪼그라들어 편집 맵이 크기를 못 보여준다.
+ */
 export function eventMarkerTileScale(width: number, height: number): number {
   return Math.min((TILE_SIZE - 2) / width, (TILE_SIZE - 2) / height, 1);
+}
+
+/**
+ * 편집 맵 스프라이트 배율. 저장된 `graphic.scale` 을 그대로 쓴다 — 플레이 화면과 같은 크기로
+ * 보이는 것이 목적이므로 타일에 맞춰 줄이지 않는다. 배율이 없으면 기존 축소 폴백으로 돌아간다.
+ */
+export function editorSpriteScale(
+  graphic: EventPageGraphic | undefined,
+  width: number,
+  height: number
+): number {
+  if (graphic?.scale === undefined) return eventMarkerTileScale(width, height);
+  return normalizeCharacterScale(graphic.scale);
 }
 
 export function renderEventMarkers(context: EventMarkerRenderContext, map: GameMap, activeLayer: Layer): void {
   const project = store.getCurrent();
   const state = editorState.get();
   const selectedId = state.selectedEventId;
-  for (const event of editorWorkingEvents(map.events)) {
+  const events = editorWorkingEvents(map.events);
+  const overlapping = activeLayer === "event" ? overlappingEventIds(events) : new Set<string>();
+  for (const event of events) {
     const cx = event.x * TILE_SIZE + TILE_SIZE / 2;
     const cy = event.y * TILE_SIZE + TILE_SIZE / 2;
     const position = { x: cx, y: cy };
     if (activeLayer === "event") {
-      const graphic = eventGraphicForEditorMarker(event, selectedId, state.selectedEventPageId);
+      const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId);
+      const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
+      const body = normalizeCharacterFootprint(page?.footprint);
+      const passRows = normalizePassRows(page?.passRows, body.height);
       const spriteTexture = editorEventMarkerTexture(project, graphic);
-      context.overlayLayer.add(createEditableEventMarker(context.scene, position, spriteTexture !== null));
-      if (spriteTexture) context.overlayLayer.add(createEditableEventSprite(context.scene, position, spriteTexture));
+      // 몸 사각이 1x1 을 넘으면 사각 오버레이가 크기를 말해 주므로 한 칸 마커는 접는다.
+      if (isUnitBody(body)) {
+        context.overlayLayer.add(createEditableEventMarker(context.scene, position, spriteTexture !== null));
+      } else {
+        addFootprintOverlay(context, event, body, passRows, overlapping.has(event.id));
+      }
+      if (spriteTexture) {
+        context.overlayLayer.add(
+          createEditableEventSprite(context.scene, event, body, graphic, spriteTexture)
+        );
+      }
     } else {
       context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy));
     }
     if (event.id === selectedId) addSelectedEventRing(context, position);
   }
+}
+
+function isUnitBody(body: CharacterFootprint): boolean {
+  return body.width === UNIT_FOOTPRINT.width && body.height === UNIT_FOOTPRINT.height;
+}
+
+/** 몸 사각이 겹치는 이벤트 id. 겹침 경고 배지가 lint 와 같은 판정식을 쓴다(D5). */
+function overlappingEventIds(events: readonly GameEvent[]): Set<string> {
+  const ids = new Set<string>();
+  for (const pair of overlappingEventPairs(events)) {
+    ids.add(pair.a.id);
+    ids.add(pair.b.id);
+  }
+  return ids;
+}
+
+/** 몸 사각 외곽선 + 통행 차단 행 음영. 앵커 칸은 따로 표시해 발밑이 어디인지 남긴다. */
+function addFootprintOverlay(
+  context: EventMarkerRenderContext,
+  event: GameEvent,
+  body: CharacterFootprint,
+  passRows: number,
+  overlapping: boolean
+): void {
+  const bodyRect = footprintBounds(event.x, event.y, body);
+  const passRect = passageBounds(event.x, event.y, body, passRows);
+  const pass = context.scene.add.rectangle(
+    passRect.left * TILE_SIZE,
+    passRect.top * TILE_SIZE,
+    (passRect.right - passRect.left + 1) * TILE_SIZE,
+    (passRect.bottom - passRect.top + 1) * TILE_SIZE,
+    EVENT_PASS_FILL_COLOR,
+    EVENT_PASS_FILL_ALPHA
+  );
+  pass.setOrigin(0, 0);
+  context.overlayLayer.add(pass);
+
+  const outline = context.scene.add.rectangle(
+    bodyRect.left * TILE_SIZE,
+    bodyRect.top * TILE_SIZE,
+    (bodyRect.right - bodyRect.left + 1) * TILE_SIZE,
+    (bodyRect.bottom - bodyRect.top + 1) * TILE_SIZE,
+    EVENT_TILE_FILL_COLOR,
+    EVENT_BODY_FILL_ALPHA
+  );
+  outline.setOrigin(0, 0);
+  outline.setStrokeStyle(
+    2,
+    overlapping ? EVENT_OVERLAP_STROKE_COLOR : EVENT_TILE_STROKE_COLOR,
+    EVENT_TILE_STROKE_ALPHA
+  );
+  outline.setData("testid", overlapping ? "event-body-overlap" : "event-body-rect");
+  context.overlayLayer.add(outline);
 }
 
 export function renderEventLayerClickFeedback(
@@ -160,28 +268,60 @@ function createEditableEventMarker(
   return marker;
 }
 
+/**
+ * 작성자가 크기를 지정했는가. 지정하지 않은 이벤트는 **예전 그대로** 타일 중앙에 축소해
+ * 그린다 — 발자국 없는 기존 맵의 모습이 한 픽셀도 바뀌면 안 된다(항등 게이트).
+ */
+function usesAuthoredSize(body: CharacterFootprint, graphic: EventPageGraphic | undefined): boolean {
+  return !isUnitBody(body) || graphic?.scale !== undefined;
+}
+
+/**
+ * 크기를 지정한 이벤트는 실제 배율로, 몸 사각의 **발밑 중앙**에 세운다.
+ *
+ * 원점이 (0.5, 1) 인 이유: 플레이 화면과 같다. 발이 몸 사각 밑변에 닿고 머리가 위로 자라야
+ * 3x3 골렘의 상체가 자기 위 칸을 덮는 모습이 편집 맵에서도 그대로 보인다. 지정 안 한
+ * 이벤트는 (0.5, 0.5) + 한 칸 축소 — 1차와 같다.
+ */
 function createEditableEventSprite(
   scene: Phaser.Scene,
-  position: EventMarkerPosition,
+  event: GameEvent,
+  body: CharacterFootprint,
+  graphic: EventPageGraphic | undefined,
   spriteTexture: EventSpriteTexture
 ): Phaser.GameObjects.Image {
-  const sprite = scene.add.image(position.x, position.y, spriteTexture.texture, spriteTexture.frame);
-  sprite.setOrigin(0.5, 0.5);
-  sprite.setScale(eventMarkerTileScale(sprite.width, sprite.height));
+  if (!usesAuthoredSize(body, graphic)) {
+    const legacy = scene.add.image(
+      event.x * TILE_SIZE + TILE_SIZE / 2,
+      event.y * TILE_SIZE + TILE_SIZE / 2,
+      spriteTexture.texture,
+      spriteTexture.frame
+    );
+    legacy.setOrigin(0.5, 0.5);
+    legacy.setScale(eventMarkerTileScale(legacy.width, legacy.height));
+    return legacy;
+  }
+  const rect = footprintBounds(event.x, event.y, body);
+  const sprite = scene.add.image(
+    event.x * TILE_SIZE + TILE_SIZE / 2,
+    (rect.bottom + 1) * TILE_SIZE,
+    spriteTexture.texture,
+    spriteTexture.frame
+  );
+  sprite.setOrigin(0.5, 1);
+  sprite.setScale(editorSpriteScale(graphic, sprite.width, sprite.height));
   return sprite;
 }
 
-function eventGraphicForEditorMarker(
+function eventPageForEditorMarker(
   event: GameEvent,
   selectedEventId: string | null,
   selectedEventPageId: string | null
-): EventPageGraphic | undefined {
+): EventPage | undefined {
   const selectedPage = event.id === selectedEventId && selectedEventPageId
     ? event.pages?.find((page) => page.id === selectedEventPageId)
     : undefined;
-  const page = selectedPage ?? event.pages?.[0];
-  if (page) return page.graphic;
-  return event.sprite ? { sprite: event.sprite } : undefined;
+  return selectedPage ?? event.pages?.[0];
 }
 
 function createEventBadgeMarker(scene: Phaser.Scene, x: number, y: number): Phaser.GameObjects.Container {

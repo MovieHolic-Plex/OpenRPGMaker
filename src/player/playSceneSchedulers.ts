@@ -112,6 +112,7 @@ function createParallelProcess(
     currentEventId: event.event.id,
     interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent(), {
       currentEventId: event.event.id,
+      onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
     }),
     waitMs: 0,
     started: false,
@@ -125,12 +126,18 @@ function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent
   const project = store.getCurrent();
   const process = {
     pageId: event.id,
-    interpreter: createInterpreter(event.commands, scene.session, project),
+    interpreter: createInterpreter(event.commands, scene.session, project, {
+      onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
+    }),
     waitMs: 0,
     started: false,
   };
   scene.parallelProcesses.set(`common:${event.id}`, process);
   return process;
+}
+
+function invalidateFactionRetargetCache(scene: PlaySceneContext): void {
+  for (const combatant of scene.actionCombatState?.enemies.values() ?? []) combatant.retargetMs = 0;
 }
 
 function consumeParallelSteps(

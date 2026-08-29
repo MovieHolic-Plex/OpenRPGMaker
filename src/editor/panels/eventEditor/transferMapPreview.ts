@@ -155,13 +155,44 @@ function drawEventMarkers(context: CanvasRenderingContext2D, map: GameMap): void
   }
 }
 
+/**
+ * 고른 칸 표시. 타일 테두리 2겹 + 맵 전체를 가로지르는 십자 안내선.
+ *
+ * 왜 십자선인가 (실측): 캔버스는 맵 해상도로 그린 뒤 CSS 로 축소된다. 100×100 맵을 창에
+ * 맞추면 배율이 0.4 밑으로 내려가 타일 한 칸 테두리(2px)는 1px 미만이 되어 사실상 보이지
+ * 않았다. 안내선은 배율과 무관하게 화면을 가로지르므로 어느 줌에서도 고른 칸을 찾을 수 있다.
+ */
 function drawMarker(context: CanvasRenderingContext2D, map: GameMap, selection: TransferPreviewSelection): void {
-  context.strokeStyle = "#ffffff";
-  context.lineWidth = 2;
-  context.strokeRect(selection.x * map.tileSize + 1, selection.y * map.tileSize + 1, map.tileSize - 2, map.tileSize - 2);
+  const centerX = selection.x * map.tileSize + map.tileSize / 2;
+  const centerY = selection.y * map.tileSize + map.tileSize / 2;
+  const width = map.width * map.tileSize;
+  const height = map.height * map.tileSize;
+  const guide = Math.max(3, Math.round(map.tileSize / 5));
+  context.save();
+  for (const [color, lineWidth] of [["#111111", guide * 2], ["#ffffff", guide]] as const) {
+    context.strokeStyle = color;
+    context.lineWidth = lineWidth;
+    context.beginPath();
+    context.moveTo(0, centerY);
+    context.lineTo(width, centerY);
+    context.moveTo(centerX, 0);
+    context.lineTo(centerX, height);
+    context.stroke();
+  }
+  context.restore();
+  // 십자선이 칸 자체를 덮지 않도록 칸 강조를 마지막에 그린다. 축소 배율에서 테두리만으로는
+  // 칸이 사라지므로 반투명 채움을 함께 올린다.
+  const left = selection.x * map.tileSize;
+  const top = selection.y * map.tileSize;
+  context.fillStyle = "rgba(255, 255, 255, 0.45)";
+  context.fillRect(left, top, map.tileSize, map.tileSize);
+  const box = Math.max(3, Math.round(map.tileSize / 6));
   context.strokeStyle = "#111111";
-  context.lineWidth = 1;
-  context.strokeRect(selection.x * map.tileSize + 3, selection.y * map.tileSize + 3, map.tileSize - 6, map.tileSize - 6);
+  context.lineWidth = box * 2;
+  context.strokeRect(left, top, map.tileSize, map.tileSize);
+  context.strokeStyle = "#ffffff";
+  context.lineWidth = box;
+  context.strokeRect(left, top, map.tileSize, map.tileSize);
 }
 
 function loadImage(url: string): Promise<HTMLImageElement> {

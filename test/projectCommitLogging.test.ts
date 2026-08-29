@@ -89,7 +89,9 @@ describe("project commit logging", () => {
 
     expect(results.every((result) => result.ok)).toBe(true);
     expect(store.getCurrent().maps[mapId]?.name).toBe("Still Applied");
-    expect(warnings).toHaveBeenCalledWith("[projectCommits] record failed:", expect.any(Error));
+    // 로거 이관(2026-08-29): 메시지 접두사(`[project-commits]`)는 createLogger 가 붙이므로
+    // 문자열 전체를 고정하지 않는다. 계약은 "기록 실패가 warn 으로 보고된다" 이다.
+    expect(warnings).toHaveBeenCalledWith(expect.stringContaining("커밋 기록 실패"), expect.any(Error));
   });
 
   it("dedupes manual autosave commit logging when nothing changed since the previous record", async () => {

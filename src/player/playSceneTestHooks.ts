@@ -2,6 +2,9 @@ import type Phaser from "phaser";
 import type { Dir, Input } from "@/player/input";
 import { reseedSessionRng, type PlaySession } from "@/project/session";
 import { applyDebugOp, applyStatePreset, type DebugOp, type StatePreset } from "@/testing/debugSession";
+import { startPlayerRoute } from "@/player/playerRouteState";
+import type { MoveCommand } from "@/project/types";
+import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 
 // 런타임 디버그 쓰기 훅. 플레이 중 스위치/변수/아이템/골드/회복/텔레포트를 조작한다.
@@ -12,6 +15,9 @@ export type RuntimeDebugHook = {
   setGold: (amount: number) => void;
   heal: () => void;
   teleport: (mapId: string, x: number, y: number) => void;
+  /** 주인공에게 이동 경로를 그대로 물린다. 체공(jump/dropIn)은 실제 Phaser 원점 계약을
+   *  브라우저에서만 검증할 수 있어 QA 시나리오가 이 훅으로 직접 발동한다. */
+  playerRoute: (moves: readonly MoveCommand[]) => void;
   applyPreset: (preset: StatePreset) => void;
   setSeed: (seed: number) => void;
   readState: () => {
@@ -51,7 +57,14 @@ type TestHookWindow = Window & {
 };
 
 type ActionCombatDebug = {
-  readonly enemies: readonly { readonly eventId: string; readonly hp: number; readonly maxHp: number; readonly mode: string }[];
+  readonly enemies: readonly {
+    readonly eventId: string;
+    readonly hp: number;
+    readonly maxHp: number;
+    readonly mode: string;
+    readonly factionId: string;
+    readonly targetId: string | null;
+  }[];
   readonly projectiles: number;
   readonly swingCooldownMs: number;
   readonly stamina: number;
@@ -94,7 +107,26 @@ type CharacterSpriteDebug = {
     readonly x: number;
     readonly y: number;
     readonly depth: number;
+    /** 체공 높이(px). 리프트는 원점 채널에 있어 x/y 로는 보이지 않는다. */
+    readonly liftPx: number;
+    /** 체공 상태기가 살아 있는가. liftPx 는 정수로 반올림되므로 착지 직전 프레임에서
+     *  0 으로 보일 수 있다 — 착지 판정은 이 값으로 한다. */
+    readonly airborne: boolean;
   };
+  /** 체공 중인 캐릭터의 발밑 그림자. 접지하면 visible=false 로 남는다(풀 재사용). */
+  readonly shadows: Record<string, {
+    readonly x: number;
+    readonly y: number;
+    readonly depth: number;
+    readonly alpha: number;
+    readonly scaleX: number;
+    readonly visible: boolean;
+    /** 타원 아래 끝. 원점이 (0.5,0.5) 라 y 는 접지선보다 반 높이 위다 — 접지 판정은 이 값. */
+    readonly bottomY: number;
+    /** 화면 픽셀 검사용 실측 크기(월드 px). */
+    readonly displayWidth: number;
+    readonly displayHeight: number;
+  }>;
   readonly events: Record<string, {
     readonly alpha: number;
     readonly frame: string | number;
@@ -102,6 +134,7 @@ type CharacterSpriteDebug = {
     readonly x: number;
     readonly y: number;
     readonly depth: number;
+    readonly liftPx: number;
   }>;
 };
 
@@ -123,6 +156,22 @@ type SpriteDebugScene = Phaser.Scene & {
   };
   readonly moving?: boolean;
   readonly eventSprites?: Map<string, Phaser.GameObjects.Sprite>;
+  readonly characterShadows?: Map<string, ShadowDebugTarget>;
+  /** 체공 상태기(PlayerHopState | null). 반올림된 liftPx 와 달리 착지 커밋의 유일한 진실이다. */
+  readonly playerHop?: unknown;
+};
+
+// 체공 그림자. 리프트와 달리 별개의 게임오브젝트라 존재 자체가 관측 대상이다 —
+// 깊이 띠(하부 타일 0 < 그림자 < below 캐릭터 100k)를 브라우저에서 확인하는 근거가 된다.
+type ShadowDebugTarget = {
+  readonly x: number;
+  readonly y: number;
+  readonly depth: number;
+  readonly alpha: number;
+  readonly scaleX: number;
+  readonly displayWidth: number;
+  readonly displayHeight: number;
+  readonly visible: boolean;
 };
 
 export function installPlaySceneTestHooks(
@@ -174,14 +223,16 @@ export function installPlaySceneTestHooks(
       // 맵 전환 비트가 세션 값만 보고 통과하고 있었다).
       const previousMapId = context.getMapId?.();
       applyAndSync({ kind: "teleport", mapId, x, y });
+      // Exactly one load per changed map. A merge of two independent fixes left this branch
+      // duplicated, which loaded the destination twice and weakened QA evidence.
       if (typeof context.loadMap === "function" && previousMapId !== mapId) {
         context.loadMap(mapId);
       }
       context.tileX = x;
       context.tileY = y;
-      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
-        context.loadMap(mapId);
-      }
+    },
+    playerRoute: (moves) => {
+      startPlayerRoute(scene as unknown as PlaySceneContext, moves, false);
     },
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);
@@ -302,6 +353,7 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
     readonly x: number;
     readonly y: number;
     readonly depth: number;
+    readonly liftPx: number;
   }> = {};
   for (const [eventId, sprite] of scene.eventSprites?.entries() ?? []) {
     events[eventId] = {
@@ -311,12 +363,54 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
       x: sprite.x,
       y: sprite.y,
       depth: sprite.depth,
+      liftPx: spriteLiftPx(sprite),
+    };
+  }
+  const shadows: Record<string, {
+    readonly x: number;
+    readonly y: number;
+    readonly depth: number;
+    readonly alpha: number;
+    readonly scaleX: number;
+    readonly visible: boolean;
+    readonly bottomY: number;
+    readonly displayWidth: number;
+    readonly displayHeight: number;
+  }> = {};
+  for (const [key, shadow] of scene.characterShadows?.entries() ?? []) {
+    shadows[key] = {
+      x: shadow.x,
+      y: shadow.y,
+      depth: shadow.depth,
+      alpha: shadow.alpha,
+      scaleX: shadow.scaleX,
+      visible: shadow.visible,
+      bottomY: shadow.y + shadow.displayHeight / 2,
+      displayWidth: shadow.displayWidth,
+      displayHeight: shadow.displayHeight,
     };
   }
   return {
-    player: { x: player.x, y: player.y, depth: player.depth },
+    player: {
+      x: player.x,
+      y: player.y,
+      depth: player.depth,
+      liftPx: spriteLiftPx(player),
+      airborne: scene.playerHop != null,
+    },
+    shadows,
     events,
   };
+}
+
+/**
+ * 원점 채널에 실린 체공 높이를 되읽는다. `applyCharacterLift` 의 역함수 —
+ * originY = 1 + lift/(height×scaleY) 이므로 lift = (originY − 1) × height × scaleY 다.
+ */
+function spriteLiftPx(sprite: Phaser.GameObjects.Sprite): number {
+  const denominator = sprite.height * sprite.scaleY;
+  if (!Number.isFinite(denominator)) return 0;
+  return Math.max(0, Math.round((sprite.originY - 1) * denominator));
 }
 
 function isSpriteDebugScene(scene: Phaser.Scene): scene is SpriteDebugScene {
@@ -338,7 +432,7 @@ function parseDirection(value: string | null): Dir | null {
 function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
   const context = scene as unknown as {
     actionCombatState?: {
-      enemies: Map<string, { hp: number; maxHp: number; mode: string }>;
+      enemies: Map<string, { hp: number; maxHp: number; mode: string; factionId: string; targetId?: string }>;
       projectiles: unknown[];
       swingCooldownMs: number;
       stamina: number;
@@ -358,6 +452,8 @@ function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
       hp: enemy.hp,
       maxHp: enemy.maxHp,
       mode: enemy.mode,
+      factionId: enemy.factionId,
+      targetId: enemy.targetId ?? null,
     })),
     projectiles: state.projectiles.length,
     swingCooldownMs: state.swingCooldownMs,

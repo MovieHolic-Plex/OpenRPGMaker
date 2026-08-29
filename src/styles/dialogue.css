@@ -18,6 +18,9 @@
   --runtime-dialogue-full-width: 92px;
 }
 
+/* 런타임 z-index 밴드: 픽처 레이어 26 < 타이머 29
+   < 미니맵·핸드 슬롯·존 피드백 30 < 대사창 39 < action-hud 40. 이 값이 없으면 대사창은
+   인라인 z-index 를 갖는 픽처 슬롯이 대사를 덮는다(스프링 초상·이벤트 CG 전부 해당). */
 .dialogue-overlay {
   align-items: stretch;
   bottom: 0;
@@ -29,6 +32,7 @@
   pointer-events: none;
   position: absolute;
   right: 0;
+  z-index: 39;
 }
 
 .dialogue-overlay.position-top {
@@ -120,7 +124,7 @@
   border-radius: var(--runtime-dialogue-radius);
   box-shadow: var(--runtime-dialogue-glass-shadow);
   box-sizing: border-box;
-  cursor: pointer;
+  cursor: default;
   image-rendering: pixelated;
   margin: 0;
   display: flex;
@@ -208,7 +212,6 @@
 }
 
 .dialogue-overlay.choices-active .choice-list .choice-btn.selected,
-.dialogue-overlay.choices-active .choice-list .choice-btn:hover,
 .dialogue-overlay.choices-active .choice-list .choice-btn:focus-visible {
   background: var(--runtime-dialogue-glass-accent-soft);
   border-color: var(--runtime-dialogue-glass-border);
@@ -575,7 +578,7 @@
   border-image: none;
   border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
-  cursor: pointer;
+  cursor: default;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-font-size-18);
   font-weight: 700;
@@ -585,7 +588,7 @@
   transition: border-color 0.12s, background 0.12s;
 }
 
-.choices .choice-btn:hover {
+.choices .choice-btn:focus-visible {
   background: var(--runtime-dialogue-glass-accent-soft);
   border-color: var(--runtime-dialogue-glass-border-strong);
 }
@@ -673,7 +676,7 @@
   border: 1px solid var(--runtime-dialogue-glass-border);
   border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
-  cursor: pointer;
+  cursor: default;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-font-size-18);
   font-weight: 700;
@@ -681,7 +684,7 @@
   padding: 2px 4px;
 }
 
-.number-input-pad-key:hover {
+.number-input-pad-key:focus-visible {
   background: var(--runtime-dialogue-glass-accent-soft);
   border-color: var(--runtime-dialogue-glass-border-strong);
 }
@@ -701,7 +704,7 @@
   border-image: none;
   border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
-  cursor: pointer;
+  cursor: default;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-font-size-18);
   font-weight: 700;
@@ -709,7 +712,7 @@
   padding: 2px 8px;
 }
 
-.number-input-ok:hover {
+.number-input-ok:focus-visible {
   background: var(--runtime-dialogue-glass-accent-soft);
 }
 

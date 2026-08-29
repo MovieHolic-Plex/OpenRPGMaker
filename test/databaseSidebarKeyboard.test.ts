@@ -30,6 +30,7 @@ const TAB_TESTID: Record<string, string> = {
   enemies: "db-tab-enemies",
   monsterSpecies: "db-tab-monster-species",
   troops: "db-tab-troops",
+  factions: "db-tab-factions",
   crops: "db-tab-crops",
   characters: "db-tab-characters",
   lifeCrafting: "db-tab-life-crafting",

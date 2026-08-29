@@ -1,13 +1,42 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 // SIZE_OK: This proof keeps editor-authoring helpers and screenshot assertions
 // together so the generated gameplay evidence remains reproducible.
 
-// 명령을 하나 추가할 때마다 편집 모달이 자동으로 열려 닫아 줘야 한다 — 저작 흐름이
-// 길어져 60초로는 모자란다(실측 2026-08-28: 헬퍼 도중 페이지가 강제로 닫혔다).
-// 같은 계열의 oprn-dialogue-choice-ux-cert 도 120초를 쓴다.
-test.setTimeout(120_000);
+/*
+ * 저작 손잡이의 실측 계약(2026-08-29, 진단 프로브로 확인):
+ *  - 명령을 고르면 종류별 전용 다이얼로그가 아니라 **공용 편집 모달**
+ *    (`event-command-edit-dialog`)이 열리고 확인은 `event-command-edit-ok` 다.
+ *    `event-command-text-dialog` / `-faceset-dialog` / `-display-options-dialog` 는
+ *    DOM 에 아예 없다(count=0) — 프로덕션에서 호출되지 않는 유산이었다.
+ *  - 표시 형식·위치의 `select` 는 `hidden` 이라 `selectOption` 이 액셔너빌리티에서
+ *    막힌다. 실물 손잡이는 `...-segment-<key>` 버튼이고 선택 상태는 `aria-pressed` 다.
+ *  - 기본 보기는 스토리라 평면 명령 줄이 `hidden` 이다. `.cmd-head` 를 두 번 눌러
+ *    편집하려면 목록 보기로 먼저 바꿔야 한다(스토리 카드는 한 번 클릭이 편집).
+ *
+ * 명령마다 모달을 한 번 여닫으므로 30초 기본값으로는 모자라다. 옵션 설정을 추가와 같은
+ * 모달에서 끝내 왕복을 줄였지만, 부하가 높은 공유 머신에서는 액션당 1초를 넘길 때가 있어
+ * 여유를 둔다(같은 계열의 oprn-dialogue-choice-ux-cert 도 120초를 쓴다).
+ */
+test.setTimeout(180_000);
+
+/*
+ * 첫 테스트가 dev 서버의 콜드 변환을 자기 예산으로 물지 않게 파일 시작에 한 번 띄운다.
+ * 실측 2026-08-29(공유 머신, load 70): 첫 로드에서 `layer-event` 가 3분 안에 안 나와
+ * 첫 테스트만 죽었다 — 두 번째·세 번째는 같은 흐름으로 통과했다. 훅 기본 예산은 테스트
+ * 예산과 같으므로 개별 대기는 그 안에 들어가게 잡고, 늘려주는 환경에서는 여유를 더 쓴다.
+ */
+test.beforeAll(async ({ browser }) => {
+  test.setTimeout(300_000);
+  const page = await browser.newPage();
+  try {
+    await page.goto("/?freshProject=1&warmup=1", { timeout: 150_000 });
+    await page.getByTestId("layer-event").waitFor({ state: "visible", timeout: 25_000 });
+  } finally {
+    await page.close();
+  }
+});
 
 type EventCommand = {
   readonly kind: string;
@@ -111,12 +140,21 @@ async function openEventEditor(page: Page): Promise<void> {
   await expect(editor).toBeVisible();
 }
 
+/** 평면 명령 줄은 스토리 보기에서 `hidden` 이다 — 줄을 눌러 편집하려면 목록 보기로 바꾼다. */
+async function useCommandListView(page: Page): Promise<void> {
+  const toggle = page.getByTestId("event-view-toggle-list");
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute("aria-pressed")) === "true") return;
+  await toggle.click();
+  // 목록 보기에서는 마지막 줄에 "빈 명령 줄"이 항상 있어 추가 진입점이 된다.
+  await expect(page.getByTestId("event-command-empty-line")).toBeVisible();
+}
+
 async function openRootCommandPicker(page: Page): Promise<void> {
   const picker = page.getByTestId("event-command-picker");
   if (await picker.isVisible().catch(() => false)) return;
-  // 명령 목록에는 두 가지 추가 진입점이 있고, 어느 쪽이 보이는지는 목록/스토리 뷰에 따라
-  // 다르다. 기본이 스토리 뷰라 event-command-empty-line 은 없고 "+ 첫 명령 추가"
-  // (event-storyboard-add)만 있다(실측 2026-08-28).
+  // 추가 진입점은 보기 방식에 따라 다르다: 목록은 빈 명령 줄(두 번 클릭),
+  // 스토리는 "+ 다음 명령"(한 번 클릭). 둘 다 같은 피커를 연다.
   const emptyLine = page.getByTestId("event-command-empty-line");
   const storyboardAdd = page.getByTestId("event-storyboard-add");
   if (await emptyLine.isVisible().catch(() => false)) await emptyLine.dblclick();
@@ -127,148 +165,114 @@ async function openRootCommandPicker(page: Page): Promise<void> {
   await expect(picker).toBeVisible();
 }
 
+const commandEditDialog = (page: Page): Locator => page.getByTestId("event-command-edit-dialog");
+
+/** 피커에서 종류를 고르면 곧바로 공용 편집 모달이 열린다. 그 모달을 돌려준다. */
+async function pickCommand(page: Page, kind: string): Promise<Locator> {
+  await openRootCommandPicker(page);
+  const picker = page.getByTestId("event-command-picker");
+  await picker.getByTestId(`command-picker-add-${kind}`).click();
+  await expect(picker).toBeHidden();
+  const dialog = commandEditDialog(page);
+  await expect(dialog).toBeVisible();
+  return dialog;
+}
+
 /**
- * 명령을 고르면 곧바로 명령 편집 모달이 열린다. 목록/스토리의 명령 줄은 그 모달이 닫혀야
- * 나타나므로, 추가 직후 확인으로 닫아 준다(실측 2026-08-28). 전용 서브다이얼로그
- * (문장 표시 / 표시 옵션 등)를 이미 닫은 경로에서는 아무 일도 하지 않는다.
+ * 이미 추가된 명령 줄에서 같은 공용 편집 모달을 연다(목록 보기 전제).
+ * 두 번 클릭은 쓰지 않는다 — 첫 클릭이 오른쪽 "선택한 명령" 칼럼을 펼쳐 목록 폭이 줄고,
+ * 좌표가 미리 정해진 두 번째 클릭이 딴 곳에 떨어진다(실측 2026-08-29: dblclick 은 성공으로
+ * 보고되지만 모달이 안 열린다). 한 번 눌러 선택한 뒤 `.cmd-head` 가 스스로 광고하는
+ * 손잡이(`aria-keyshortcuts="Enter Space"`)의 Space 를 쓴다.
  */
-async function closeCommandEditDialog(page: Page): Promise<void> {
-  const backdrop = page.getByTestId("event-command-edit-dialog");
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    if (!(await backdrop.first().isVisible().catch(() => false))) return;
-    const ok = page.getByRole("button", { name: "확인", exact: true });
-    if (await ok.first().isVisible().catch(() => false)) await ok.first().click();
-    else await page.keyboard.press("Escape");
-    await page.waitForTimeout(300);
-  }
+async function openCommandEdit(page: Page, kind: string): Promise<Locator> {
+  const head = page.getByTestId(`event-command-${kind}`).last().locator(".cmd-head");
+  await head.click();
+  await head.press(" ");
+  const dialog = commandEditDialog(page);
+  await expect(dialog).toBeVisible();
+  return dialog;
+}
+
+async function confirmCommandEdit(page: Page): Promise<void> {
+  await page.getByTestId("event-command-edit-ok").click();
+  await expect(commandEditDialog(page)).toBeHidden();
 }
 
 async function addFaceCommand(page: Page): Promise<void> {
-  await openRootCommandPicker(page);
-  const picker = page.getByTestId("event-command-picker");
-  await picker.getByTestId("command-picker-add-changeFace").click();
-  await expect(picker).toBeHidden();
-  await closeCommandEditDialog(page);
-  await expect(page.getByTestId("event-command-changeFace")).toContainText("얼굴 바꾸기");
+  await pickCommand(page, "changeFace");
+  // 기본값이 곧 증거가 요구하는 값이다(easyrpg-faceset-actor1-00 · 왼쪽).
+  await confirmCommandEdit(page);
+  await expect(page.getByTestId("event-command-changeFace").last()).toContainText("얼굴 바꾸기");
 }
 
 async function addTextCommand(page: Page, body = FACE_TEXT_BODY): Promise<void> {
-  await openRootCommandPicker(page);
-  const picker = page.getByTestId("event-command-picker");
-  await picker.getByTestId("command-picker-add-text").click();
-  // 전용 「문장 표시」 다이얼로그로 열릴 수도, 공용 명령 편집 모달 안에 같은 입력들이
-  // 들어올 수도 있다(실측 2026-08-28: 지금은 후자다). 필드는 testid 가 같으므로 어느
-  // 쪽이든 그대로 채우고, 열려 있는 창을 닫는다.
-  const dialog = page.getByTestId("event-command-text-dialog");
-  const speaker = page.getByTestId("event-command-text-speaker");
-  await expect(speaker.first()).toBeVisible();
-  await speaker.first().fill("증거 NPC");
-  await page.getByTestId("event-command-text-body").first().fill(body);
-  const ok = page.getByTestId("event-command-text-ok");
-  if (await ok.first().isVisible().catch(() => false)) {
-    await ok.first().click();
-    await expect(dialog).toBeHidden();
-  }
-  await expect(picker).toBeHidden();
-  await closeCommandEditDialog(page);
-  await expect(page.getByTestId("event-command-text")).toContainText(body);
+  const dialog = await pickCommand(page, "text");
+  await dialog.getByTestId("event-command-text-speaker").fill("증거 NPC");
+  await dialog.getByTestId("event-command-text-body").fill(body);
+  await confirmCommandEdit(page);
+  await expect(page.getByTestId("event-command-text").last()).toContainText(body);
 }
 
-async function addDisplayTextSettingsCommand(page: Page): Promise<void> {
-  await openRootCommandPicker(page);
-  const picker = page.getByTestId("event-command-picker");
-  await picker.getByTestId("command-picker-add-displayTextSettings").click();
-  await expect(picker).toBeHidden();
-  await closeCommandEditDialog(page);
-  await expect(page.getByTestId("event-command-displayTextSettings")).toContainText("문장 표시 설정");
+/** 문장 표시 설정을 기본값(일반·하단·가림 방지·이동 금지)인지 확인만 하고 추가한다. */
+async function addDefaultDisplayTextSettings(page: Page): Promise<void> {
+  const dialog = await pickCommand(page, "displayTextSettings");
+  await expect(dialog.getByTestId("event-command-message-format-segment-normal")).toHaveAttribute(
+    "aria-pressed",
+    "true"
+  );
+  await expect(dialog.getByTestId("event-command-message-position-segment-bottom")).toHaveAttribute(
+    "aria-pressed",
+    "true"
+  );
+  await expect(dialog.getByTestId("event-command-message-prevent-obscuring")).toBeChecked();
+  await expect(dialog.getByTestId("event-command-message-allow-movement")).not.toBeChecked();
+  await confirmCommandEdit(page);
+  await expect(page.getByTestId("event-command-displayTextSettings").last()).toContainText("일반");
 }
 
-async function addDisplayOptionsViaDialog(page: Page): Promise<void> {
-  await openRootCommandPicker(page);
-  const picker = page.getByTestId("event-command-picker");
-  await picker.getByTestId("command-picker-add-displayTextSettings").click();
-  const dialog = page.getByTestId("event-command-display-options-dialog");
-  await expect(dialog).toBeVisible();
-  await expect(dialog.getByTestId("display-options-format-normal")).toBeChecked();
-  await expect(dialog.getByTestId("display-options-position-bottom")).toBeChecked();
-  await expect(dialog.getByTestId("display-options-prevent-obscuring")).toBeChecked();
-  await expect(dialog.getByTestId("display-options-allow-movement")).not.toBeChecked();
-  await dialog.getByTestId("display-options-ok").click();
-  await expect(dialog).toBeHidden();
-  await expect(picker).toBeHidden();
-  await closeCommandEditDialog(page);
-  await expect(page.getByTestId("event-command-displayTextSettings")).toContainText("일반");
+/** 증거용 옵션(투명·상단·가림 방지 해제·이동 허용)까지 추가와 같은 모달에서 끝낸다. */
+async function addTransparentTopDisplayTextSettings(page: Page): Promise<void> {
+  const dialog = await pickCommand(page, "displayTextSettings");
+  const transparent = dialog.getByTestId("event-command-message-format-segment-transparent");
+  const top = dialog.getByTestId("event-command-message-position-segment-top");
+  await transparent.click();
+  await top.click();
+  await dialog.getByTestId("event-command-message-prevent-obscuring").uncheck();
+  await dialog.getByTestId("event-command-message-allow-movement").check();
+  await expect(transparent).toHaveAttribute("aria-pressed", "true");
+  await expect(top).toHaveAttribute("aria-pressed", "true");
+  await confirmCommandEdit(page);
+  const row = page.getByTestId("event-command-displayTextSettings").last();
+  await expect(row).toContainText("투명");
+  await expect(row).toContainText("상단");
+  await expect(row).toContainText("이동 허용");
 }
 
-async function addFacesetViaDialog(page: Page): Promise<void> {
-  await openRootCommandPicker(page);
-  const picker = page.getByTestId("event-command-picker");
-  await picker.getByTestId("command-picker-add-changeFace").click();
-  const dialog = page.getByTestId("event-command-faceset-dialog");
-  await expect(dialog).toBeVisible();
-  await dialog.getByTestId("faceset-position-left").check();
-  await dialog.getByTestId("faceset-flip-horizontal").check();
-  await dialog.getByTestId("faceset-ok").click();
-  await expect(dialog).toBeHidden();
-  await expect(picker).toBeHidden();
-  await expect(page.getByTestId("event-command-changeFace")).toContainText("얼굴 바꾸기");
+/** 얼굴 바꾸기: 왼쪽 기본값을 확인하고 좌우 반전만 켠다. */
+async function addFlippedFaceCommand(page: Page): Promise<void> {
+  const dialog = await pickCommand(page, "changeFace");
+  await expect(dialog.getByTestId("event-command-face-position")).toHaveValue("left");
+  await dialog.getByTestId("event-command-face-flip-horizontal").check();
+  await confirmCommandEdit(page);
+  const row = page.getByTestId("event-command-changeFace").last();
+  await expect(row).toContainText("얼굴 바꾸기");
+  await expect(row).toContainText("좌우 반전");
 }
 
-async function openChoicesInlineEditor(page: Page): Promise<void> {
-  const command = page.getByTestId("event-command-choices");
-  const editor = command.getByTestId("event-command-choices-inline-editor");
-  if (!(await editor.isVisible().catch(() => false))) {
-    await command.locator(".cmd-head").dblclick();
-  }
-  await expect(editor).toBeVisible();
-}
-
-async function fillChoiceInlineField(page: Page, testId: string, value: string): Promise<void> {
-  await openChoicesInlineEditor(page);
-  const input = page.getByTestId(testId);
-  await input.fill(value);
-  await input.blur();
-}
-
-async function addChoicesInline(page: Page): Promise<void> {
-  await openRootCommandPicker(page);
-  const picker = page.getByTestId("event-command-picker");
-  await picker.getByTestId("command-picker-add-choices").click();
-  await expect(picker).toBeHidden();
-  await fillChoiceInlineField(page, "event-choice-prompt", DISPLAY_OPTIONS_CHOICES_PROMPT);
-  await fillChoiceInlineField(page, "event-choice-option-1", "예");
-  await fillChoiceInlineField(page, "event-choice-option-2", "아니오");
-  await openChoicesInlineEditor(page);
-  await page.getByTestId("event-choice-cancel-choice2").check();
-  await expect(page.getByTestId("event-command-choices")).toContainText("예 / 아니오");
-}
-
-async function openDisplayTextSettingsInlineEditor(page: Page): Promise<void> {
-  const command = page.getByTestId("event-command-displayTextSettings");
-  const format = command.getByTestId("event-command-message-format");
-  if (!(await format.isVisible().catch(() => false))) {
-    await command.locator(".cmd-head").dblclick();
-  }
-  await expect(format).toBeVisible();
-}
-
-async function setDisplayTextSettingsProofOptions(page: Page): Promise<void> {
-  const command = page.getByTestId("event-command-displayTextSettings");
-
-  await openDisplayTextSettingsInlineEditor(page);
-  await command.getByTestId("event-command-message-format").selectOption("transparent");
-  await expect(command).toContainText("투명");
-
-  await openDisplayTextSettingsInlineEditor(page);
-  await command.getByTestId("event-command-message-position").selectOption("top");
-  await expect(command).toContainText("상단");
-
-  await openDisplayTextSettingsInlineEditor(page);
-  await command.getByTestId("event-command-message-prevent-obscuring").uncheck();
-
-  await openDisplayTextSettingsInlineEditor(page);
-  await command.getByTestId("event-command-message-allow-movement").check();
-  await expect(command).toContainText("이동 허용");
+/** 선택지: 2지(예/아니오)와 취소=선택지2 는 기본값이라 확인만 하고 질문만 채운다. */
+async function addChoicesCommand(page: Page): Promise<void> {
+  const dialog = await pickCommand(page, "choices");
+  await dialog.getByTestId("event-choice-prompt").fill(DISPLAY_OPTIONS_CHOICES_PROMPT);
+  await expect(dialog.getByTestId("event-choice-option-1")).toHaveValue("예");
+  await expect(dialog.getByTestId("event-choice-option-2")).toHaveValue("아니오");
+  await expect(dialog.getByTestId("event-choice-cancel-choice2")).toBeChecked();
+  await confirmCommandEdit(page);
+  // 요약은 "선택지 표시: <질문>  1.예 2.아니오" 형태다.
+  const row = page.getByTestId("event-command-choices").last();
+  await expect(row).toContainText(DISPLAY_OPTIONS_CHOICES_PROMPT);
+  await expect(row).toContainText("1.예");
+  await expect(row).toContainText("2.아니오");
 }
 
 async function authoredEventId(page: Page): Promise<string> {
@@ -404,6 +408,15 @@ async function expectBottomDialogueLayout(page: Page): Promise<void> {
   expect(Math.abs(dialogueBox.x - stageBox.x)).toBeLessThanOrEqual(stageBox.width * 0.08);
 }
 
+/**
+ * 대사 본문은 타이핑 연출로 한 글자씩 채워진다. 창 전체 텍스트를 보면 화자 이름표와 커서가
+ * 본문 중간값에 섞여 매칭이 깨지므로(실측 2026-08-29: "…상단 투증거 NPC▼") 본문만 보고,
+ * 부하가 높으면 타이핑이 5초를 넘기므로 여유를 준다.
+ */
+async function expectDialogueBody(page: Page, body: string): Promise<void> {
+  await expect(page.getByTestId("dialogue-box").locator(".body")).toContainText(body, { timeout: 20_000 });
+}
+
 async function expectRuntimeDialogueFont(page: Page): Promise<void> {
   const fontFamily = await page.getByTestId("dialogue-box").locator(".body").evaluate((node) =>
     getComputedStyle(node).fontFamily
@@ -493,6 +506,7 @@ test("editor-authored face graphic and show text render together in actual play 
   await page.goto("/?freshProject=1&faceTextProof=1");
 
   await openEventEditor(page);
+  await useCommandListView(page);
   await expect(page.getByTestId("event-command-text")).toHaveCount(0);
   await addFaceCommand(page);
   await addTextCommand(page);
@@ -508,7 +522,7 @@ test("editor-authored face graphic and show text render together in actual play 
 
   const dialogue = page.getByTestId("dialogue-box");
   await expect(dialogue).toContainText("증거 NPC");
-  await expect(dialogue).toContainText(FACE_TEXT_BODY);
+  await expectDialogueBody(page, FACE_TEXT_BODY);
   await expect(page.getByTestId("dialogue-face")).toBeVisible();
   await expectBottomDialogueLayout(page);
   await expectRuntimeDialogueFont(page);
@@ -522,11 +536,14 @@ test("editor-authored display text settings render as a top transparent message 
   await page.goto("/?freshProject=1&displayTextSettingsProof=1");
 
   await openEventEditor(page);
-  await addDisplayTextSettingsCommand(page);
-  await setDisplayTextSettingsProofOptions(page);
+  await useCommandListView(page);
+  await addTransparentTopDisplayTextSettings(page);
   await addTextCommand(page, DISPLAY_TEXT_SETTINGS_BODY);
-  await page.getByTestId("event-command-text").last().locator(".cmd-head").dblclick();
+  // 저작 증거: 설정 명령을 다시 열어 실제 편집면을 찍고 닫는다(모달이 열린 채로는
+  // 적용 버튼을 누를 수 없다).
+  await openCommandEdit(page, "displayTextSettings");
   await page.screenshot({ path: DISPLAY_TEXT_SETTINGS_EDITOR_SCREENSHOT, fullPage: true });
+  await confirmCommandEdit(page);
   await page.getByTestId("event-editor-apply").click();
 
   const eventId = await authoredDisplayTextSettingsEventId(page);
@@ -536,8 +553,7 @@ test("editor-authored display text settings render as a top transparent message 
   await expect(page.getByTestId(`event-${eventId}`)).toBeVisible();
   await page.getByTestId(`event-${eventId}`).click();
 
-  const dialogue = page.getByTestId("dialogue-box");
-  await expect(dialogue).toContainText(DISPLAY_TEXT_SETTINGS_BODY);
+  await expectDialogueBody(page, DISPLAY_TEXT_SETTINGS_BODY);
   await expectTopTransparentDialogueLayout(page);
   await page.screenshot({ path: DISPLAY_TEXT_SETTINGS_PLAY_SCREENSHOT, fullPage: true });
 });
@@ -547,10 +563,11 @@ test("display text options faceset and choices apply to real gameplay from the e
   await page.goto("/?freshProject=1&displayOptionsFacesetChoicesProof=1");
 
   await openEventEditor(page);
-  await addDisplayOptionsViaDialog(page);
-  await addFacesetViaDialog(page);
+  await useCommandListView(page);
+  await addDefaultDisplayTextSettings(page);
+  await addFlippedFaceCommand(page);
   await addTextCommand(page, DISPLAY_OPTIONS_FACESET_BODY);
-  await addChoicesInline(page);
+  await addChoicesCommand(page);
   await page.getByTestId("event-editor-apply").click();
 
   const eventId = await authoredDisplayOptionsFacesetChoicesEventId(page);
@@ -560,7 +577,7 @@ test("display text options faceset and choices apply to real gameplay from the e
   await expect(page.getByTestId(`event-${eventId}`)).toBeVisible();
   await page.getByTestId(`event-${eventId}`).click();
 
-  await expect(page.getByTestId("dialogue-box")).toContainText(DISPLAY_OPTIONS_FACESET_BODY);
+  await expectDialogueBody(page, DISPLAY_OPTIONS_FACESET_BODY);
   await expectFramedBottomDialogueWithFace(page);
   await page.screenshot({ path: DISPLAY_OPTIONS_FACESET_TEXT_SCREENSHOT, fullPage: true });
 

@@ -4,9 +4,9 @@ import type { ChatResult } from "@/ai/llmClient";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 
-const CHAT_AUTO_APPROVE_CONFIG = {
+const CHAT_CONFIG = {
+  authMode: "apiKey" as const,
   agentMode: "chat" as const,
-  autoApprove: true,
   baseUrl: "x",
   model: "test-model",
   liteModel: "test-model",
@@ -14,15 +14,6 @@ const CHAT_AUTO_APPROVE_CONFIG = {
   maxToolCalls: 4,
   maxTokens: 2048,
 };
-
-function scriptedChat(steps: readonly ChatResult[]) {
-  let index = 0;
-  return async (): Promise<ChatResult> => {
-    const step = steps[index++];
-    if (!step) throw new Error("scripted chat exhausted");
-    return step;
-  };
-}
 
 function toolCall(name: string, args: unknown): ChatResult {
   return {
@@ -36,7 +27,7 @@ function finalMessage(): ChatResult {
 }
 
 describe("AI editor-wide tool safety", () => {
-  it("auto mode still marks destructive editor-wide tools as approval-required", async () => {
+  it("destructive editor-wide tools remain marked for audit but are not gated", async () => {
     const context = { project: createBlankProject() };
     const created = runTool(context, "create_map", { id: "map_delete_me", name: "삭제 대상", width: 8, height: 8 });
     expect(created.ok, created.summary).toBe(true);
@@ -48,7 +39,7 @@ describe("AI editor-wide tool safety", () => {
     };
     calls.push(toolCall("remove_map", { mapId: "map_delete_me" }), finalMessage());
     const session = new AssistantSession(context.project, {
-      config: CHAT_AUTO_APPROVE_CONFIG,
+      config: CHAT_CONFIG,
       chat,
     });
 
@@ -56,6 +47,7 @@ describe("AI editor-wide tool safety", () => {
 
     expect(result.proposedCalls, JSON.stringify(session.getAuditEntries())).toHaveLength(1);
     expect(result.proposedCalls[0]).toMatchObject({ name: "remove_map", destructive: true, requiresApproval: true });
+    expect(session.getProposedProject().maps.map_delete_me).toBeUndefined();
   });
 
   it("unknown and malformed calls return typed failures instead of throwing", () => {

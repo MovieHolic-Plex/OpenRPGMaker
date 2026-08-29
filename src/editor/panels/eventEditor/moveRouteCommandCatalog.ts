@@ -1,3 +1,4 @@
+import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import type { Dir, MapId, MoveCommand } from "@/project/types";
 
 export type MoveRouteButton = {
@@ -16,18 +17,37 @@ export type MoveRouteCommandContext = {
   readonly npcTargetX: number;
   readonly npcTargetY: number;
   readonly npcTargetDirection: Dir;
+  /** 점프가 건너뛸 타일 오프셋. (0,0) 이면 제자리 홉. */
+  readonly hopDx: number;
+  readonly hopDy: number;
+  /**
+   * 체공 높이·시간. **0 은 "저작하지 않음"** 이라 필드를 아예 빼고 런타임 기본값을 쓴다
+   * (점프 12px·300ms, 낙하 128px·620ms — `src/player/characterHop.ts`).
+   * 0 높이 점프·0ms 체공은 어차피 의미가 없어서 센티널로 쓰기에 안전하다.
+   */
+  readonly hopHeightPx: number;
+  readonly hopDurationMs: number;
 };
 
 export const MOVE_ROUTE_COMMAND_ROWS: readonly (readonly MoveRouteButton[])[] = [
   [
     commandButton("위로 이동", "move-up", "↑", { kind: "move", dir: "up" }),
     commandButton("위로 향함", "turn-up", "△", { kind: "turn", dir: "up" }),
-    commandButton("점프", "jump", "⤴", { kind: "jump", dx: 0, dy: 0 }),
+    contextCommandButton("점프", "jump", "⤴", (context) => ({
+      kind: "jump",
+      dx: context.hopDx,
+      dy: context.hopDy,
+      ...hopOptions(context),
+    })),
   ],
   [
     commandButton("오른쪽으로 이동", "move-right", "→", { kind: "move", dir: "right" }),
     commandButton("오른쪽으로 향함", "turn-right", "▷", { kind: "turn", dir: "right" }),
     commandButton("착지", "land", "⤵", { kind: "land" }),
+    contextCommandButton("위에서 낙하", "drop-in", "⤓", (context) => ({
+      kind: "dropIn",
+      ...hopOptions(context),
+    })),
   ],
   [
     commandButton("아래로 이동", "move-down", "↓", { kind: "move", dir: "down" }),
@@ -144,6 +164,51 @@ export const DIRECTIONAL_MOVE_TEST_IDS: ReadonlySet<string> = new Set([
   "step-forward",
 ]);
 
+/**
+ * 「효과음 재생」 버튼의 기본 효과음. **반드시 실재하는 리소스 id 여야 한다** —
+ * 예전 기본값 `"se_route_chime"` 은 어느 카탈로그에도 없는 문자열이었고, 사용자가 효과음 칸을
+ * 손대지 않고 버튼만 누르면 `playSe` 가 없는 리소스를 가리켰다. 그러면 「적용」이
+ * `reference.resource.missing` 오류 하나로 **이벤트 전체 저장을 거부**한다(새 이벤트는 통째로
+ * 사라진다). 검증기가 보는 집합(`collectResourceIds` → `seCatalogResourceIds`)에서 직접
+ * 가져와 카탈로그가 재생성돼도 기본값이 낡지 않게 한다.
+ */
+export function defaultRouteSoundId(): string {
+  return seCatalogResourceIds()[0] ?? "";
+}
+
+export type MoveRouteHopParameters = Pick<
+  MoveRouteCommandContext,
+  "hopDx" | "hopDy" | "hopHeightPx" | "hopDurationMs"
+>;
+
+/**
+ * 이미 저작된 경로에서 체공값을 되읽는다. 편집창을 다시 열었을 때 0(기본값) 으로 리셋되면
+ * 같은 높이의 낙하를 두 번 넣을 방법이 없다.
+ *
+ * dx/dy 는 점프만 가지므로 마지막 **점프**에서, 높이·시간은 둘이 공유하므로 마지막 **체공**에서 온다.
+ */
+export function inferHopParameters(moves: readonly MoveCommand[]): MoveRouteHopParameters {
+  let jump: Extract<MoveCommand, { kind: "jump" }> | undefined;
+  let hop: Extract<MoveCommand, { kind: "jump" | "dropIn" }> | undefined;
+  for (let index = moves.length - 1; index >= 0; index -= 1) {
+    const move = moves[index];
+    if (move === undefined) continue;
+    if (move.kind === "jump") {
+      jump ??= move;
+      hop ??= move;
+    } else if (move.kind === "dropIn") {
+      hop ??= move;
+    }
+    if (jump !== undefined && hop !== undefined) break;
+  }
+  return {
+    hopDx: jump?.dx ?? 0,
+    hopDy: jump?.dy ?? 0,
+    hopHeightPx: hop?.heightPx ?? 0,
+    hopDurationMs: hop?.durationMs ?? 0,
+  };
+}
+
 export function moveCommandLabel(command: MoveCommand): string {
   switch (command.kind) {
     case "move":
@@ -159,7 +224,11 @@ export function moveCommandLabel(command: MoveCommand): string {
     case "stepForward":
       return "한 걸음 전진";
     case "jump":
-      return command.dx === 0 && command.dy === 0 ? "점프" : `점프 (${command.dx}, ${command.dy})`;
+      return command.dx === 0 && command.dy === 0
+        ? `점프${hopLabelSuffix(command)}`
+        : `점프 (${command.dx}, ${command.dy})${hopLabelSuffix(command)}`;
+    case "dropIn":
+      return `위에서 낙하${hopLabelSuffix(command)}`;
     case "land":
       return "착지";
     case "turn":
@@ -195,6 +264,25 @@ export function moveCommandLabel(command: MoveCommand): string {
     case "wait":
       return "대기";
   }
+}
+
+/**
+ * 저작된 체공 옵션만 골라 담는다. 0 은 센티널이라 필드를 아예 만들지 않는다 —
+ * 저장 JSON 에 런타임 기본값을 복사해 두면 나중에 기본값을 조정해도 옛 프로젝트가 따라오지 않는다.
+ */
+function hopOptions(context: MoveRouteCommandContext): { heightPx?: number; durationMs?: number } {
+  return {
+    ...(context.hopHeightPx > 0 ? { heightPx: context.hopHeightPx } : {}),
+    ...(context.hopDurationMs > 0 ? { durationMs: context.hopDurationMs } : {}),
+  };
+}
+
+/** 저작값이 있을 때만 꼬리를 붙인다 — 기본값 점프의 리스트 라벨은 예전과 같아야 한다. */
+function hopLabelSuffix(command: { readonly heightPx?: number; readonly durationMs?: number }): string {
+  const parts: string[] = [];
+  if (command.heightPx !== undefined) parts.push(`${command.heightPx}px`);
+  if (command.durationMs !== undefined) parts.push(`${command.durationMs}ms`);
+  return parts.length === 0 ? "" : ` ${parts.join(" ")}`;
 }
 
 function commandButton(label: string, testId: string, icon: string, command: MoveCommand): MoveRouteButton {

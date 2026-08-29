@@ -198,13 +198,18 @@ function renderField(
     }
 
     case "number": {
+      const min = typeof spec.min === "function" ? spec.min(cmd) : spec.min;
+      const max = typeof spec.max === "function" ? spec.max(cmd) : spec.max;
       const input = numberInput(asNumber(value), spec.label, `${testid}-input`);
-      if (spec.min !== undefined) input.setAttribute("min", String(spec.min));
-      if (spec.max !== undefined) input.setAttribute("max", String(spec.max));
-      input.addEventListener("change", () =>
-        patch({ [key]: clamp(Number.parseInt(input.value, 10) || 0, spec.min, spec.max) })
-      );
-      return amountStepper(input, { testidBase: testid, min: spec.min ?? 0 });
+      if (min !== undefined) input.setAttribute("min", String(min));
+      if (max !== undefined) input.setAttribute("max", String(max));
+      if (spec.step !== undefined) input.setAttribute("step", String(spec.step));
+      input.addEventListener("change", () => {
+        // 평판 가중치는 소수다. 스키마 전환 뒤 parseInt가 0.25를 0으로 만들지 않게 숫자 필드 전체가 실수를 보존한다.
+        const parsed = Number(input.value);
+        patch({ [key]: clamp(Number.isFinite(parsed) ? parsed : 0, min, max) });
+      });
+      return amountStepper(input, { testidBase: testid, min: min ?? 0 });
     }
 
     case "range": {

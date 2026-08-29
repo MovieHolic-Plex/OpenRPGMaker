@@ -122,11 +122,15 @@
   font: 400 19px/26px "Malgun Gothic", sans-serif;
 }
 
+/* 한 줄 유지가 중요하다 — 둘째 줄로 흐르면 상단 바가 40px 커지고 그만큼 아래 명령 버튼
+   격자가 짧아진다. 뒤 4 트랙은 체공(점프 dx·dy / 높이 / 시간)이라 좁게 잡는다. */
 .event-page-move-route-parameters {
   align-items: stretch;
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(3, minmax(96px, 1fr)) minmax(220px, 1.5fr) 76px 76px minmax(116px, 0.8fr);
+  grid-template-columns:
+    repeat(3, minmax(96px, 1fr)) minmax(200px, 1.5fr) 68px 68px minmax(104px, 0.8fr)
+    60px 60px 68px 76px;
 }
 
 .event-page-move-route-parameters label {
@@ -189,12 +193,15 @@
   color: var(--text-1);
 }
 
+/* 44 개 버튼이 14 행이라 고정 높이 다이얼로그에서는 반드시 넘친다. hidden 이면 아래쪽 절반
+   (대기 · 속도 · 효과음 재생 · NPC 맵 이동 …)이 클릭 불가로 사라진다 — 스크롤로 둔다. */
 .event-page-move-route-grid {
+  align-content: start;
   display: grid;
   gap: 0;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .event-page-move-route-command,

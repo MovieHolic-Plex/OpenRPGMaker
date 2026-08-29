@@ -37,6 +37,12 @@ function clickAddButton(dialog: FakeElement, id: string): void {
   mustFind(dialog, `event-page-move-route-add-${id}`).click();
 }
 
+function typeNumber(dialog: FakeElement, testId: string, value: string): void {
+  const input = mustFind(dialog, testId);
+  input.value = value;
+  input.dispatchEvent(new Event("input"));
+}
+
 describe("move route dialog rich UI", () => {
   let restoreDom: (() => void) | undefined;
 
@@ -137,5 +143,59 @@ describe("move route dialog rich UI", () => {
     expect(graphicChip.dataset.spriteId).toBe("tex_easyrpg_charset_actor1");
     clickAddButton(dialog, "change-graphic");
     expect(commandList.textContent).toContain("그래픽 tex_easyrpg_charset_actor1");
+  });
+
+  // 체공 저작 경로: 스키마(heightPx/durationMs/dx/dy)는 있었지만 버튼이 기본값만 뱉어서
+  // "보스가 8칸 위에서 떨어진다" 나 "두 칸 건너뛴다" 를 에디터로 만들 수 없었다.
+  it("feeds hop parameters into jump and drop-in commands, omitting untouched defaults", () => {
+    const onApply = vi.fn();
+    const dialog = openDialog(onApply);
+    const commandList = mustFind(dialog, "event-page-move-route-command-list");
+
+    // 손대지 않은 상태(0)는 "저작하지 않음" — 예전과 같은 제자리 점프가 나온다.
+    clickAddButton(dialog, "jump");
+    expect(commandList.textContent).toContain("점프");
+
+    typeNumber(dialog, "event-page-move-route-hop-dx", "2");
+    typeNumber(dialog, "event-page-move-route-hop-dy", "-1");
+    typeNumber(dialog, "event-page-move-route-hop-height", "48");
+    typeNumber(dialog, "event-page-move-route-hop-duration", "1200");
+    clickAddButton(dialog, "jump");
+    clickAddButton(dialog, "drop-in");
+    // 저작값은 리스트 라벨에도 보여야 한다 — 안 그러면 낙하 두 개를 구분할 수 없다.
+    expect(commandList.textContent).toContain("점프 (2, -1) 48px 1200ms");
+    expect(commandList.textContent).toContain("위에서 낙하 48px 1200ms");
+
+    mustFind(dialog, "event-page-move-route-ok").click();
+    const movement = onApply.mock.calls[0]?.[0] as EventPageMovement;
+    expect(movement.route?.moves).toEqual([
+      { kind: "jump", dx: 0, dy: 0 },
+      { kind: "jump", dx: 2, dy: -1, heightPx: 48, durationMs: 1200 },
+      { kind: "dropIn", heightPx: 48, durationMs: 1200 },
+    ]);
+  });
+
+  it("prefills the hop fields from the route being edited", () => {
+    openPageMoveRouteDialog({
+      movement: {
+        type: "custom",
+        speed: 3,
+        frequency: 3,
+        route: {
+          moves: [
+            { kind: "jump", dx: 3, dy: 0, heightPx: 40, durationMs: 700 },
+            { kind: "dropIn", heightPx: 128, durationMs: 1500 },
+          ],
+          repeat: true,
+        },
+      },
+      onApply: vi.fn(),
+    });
+    const dialog = findByTestId(fakeBody(), "event-page-move-route-dialog");
+    if (!dialog) throw new Error("move route dialog did not open");
+    // dx/dy 는 점프만 가지므로 마지막 점프에서, 높이·시간은 둘이 공유하므로 마지막 체공에서 온다.
+    expect(mustFind(dialog, "event-page-move-route-hop-dx").value).toBe("3");
+    expect(mustFind(dialog, "event-page-move-route-hop-height").value).toBe("128");
+    expect(mustFind(dialog, "event-page-move-route-hop-duration").value).toBe("1500");
   });
 });

@@ -67,6 +67,7 @@ type MockSprite = MockTileImage & {
   play(key: string): MockSprite;
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
+  setScale(value: number): void;
   destroy(): void;
 };
 
@@ -89,6 +90,7 @@ function mockSprite(): MockSprite {
       sprite.y = y;
     },
     setFrame: () => undefined,
+    setScale: () => undefined,
     destroy: () => undefined,
   };
   return sprite;

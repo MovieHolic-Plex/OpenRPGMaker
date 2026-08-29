@@ -85,6 +85,7 @@ export function playBattle(
       inventory: scene.session.inventory,
       selfSwitches: scene.session.selfSwitches,
       battleResult: scene.session.battleResult,
+      roguelikeRun: scene.session.roguelikeRun,
       itemUseCharges: scene.session.itemUseCharges,
       gold: scene.session.gold,
       partyActorIds: scene.session.partyActorIds,
@@ -95,7 +96,10 @@ export function playBattle(
       // Step 3d: 전투 이벤트 changeEquipment/promoteActor 의 기준 상태(오버레이 시드).
       actorEquipment: scene.session.actorEquipment,
       classOverrides: scene.session.classOverrides,
+      timers: scene.session.timers,
       gameTime: scene.session.gameTime,
+      npcActivities: scene.session.npcActivities,
+      friendship: scene.session.friendship,
     },
     partyMonsters: monsterPartyMode ? partyMonsters : undefined,
     // Terrain at the player's tile feeds battle backdrop when troop has no preview.

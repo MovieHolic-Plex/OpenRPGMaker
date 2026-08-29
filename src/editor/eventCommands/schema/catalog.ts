@@ -223,6 +223,23 @@ defineCommand({
 });
 
 defineCommand({
+  kind: "changeFactionStance",
+  family: "social",
+  label: "진영 태도",
+  fields: {
+    a: f.text("진영 A", { placeholder: "player" }),
+    b: f.text("진영 B", { placeholder: "enemy" }),
+    op: f.op("연산", AMOUNT_OPS),
+    value: f.number("값", {
+      min: (command) => command.op === "=" ? -2 : 0,
+      max: (command) => command.op === "=" ? 2 : 4,
+      step: 0.25,
+    }),
+  },
+  summary: (c) => `${str(c.a)} ↔ ${str(c.b)} ${str(c.op) || "="} ${num(c.value)}`,
+});
+
+defineCommand({
   kind: "getFriendship",
   family: "social",
   label: "호감도 읽기",

@@ -779,17 +779,18 @@
   position: relative;
 }
 
-.event-script-modern-views {
-  display: contents;
-  min-width: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.event-script-live-preview-body {
+.event-page-preview {
   display: grid;
   gap: 8px;
-  padding: 10px 12px 12px;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+  padding: 10px 2px 12px;
+}
+
+.event-page-preview > .event-script-live-stage {
+  min-height: 0;
+  overflow: auto;
 }
 
 .event-script-preview-disclaimer {

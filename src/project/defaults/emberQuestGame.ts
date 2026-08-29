@@ -4,7 +4,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import type { ActorParameterCurves, Command, EnemyStats, EventPage, GameEvent, GameMap, Project } from "../types";
 import { SCHEMA_VERSION } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { normalizeItemRecord } from "../databaseRecordModel";
+import { dropCropsWithMissingItems, normalizeItemRecord } from "../databaseRecordModel";
 import {
   DEFAULT_ACTOR_ID,
   DEFAULT_CLASS_ID,
@@ -250,6 +250,8 @@ function emberDatabase(): Project["database"] {
       consumable: false,
     }),
   ];
+  // 아이템을 화이트리스트로 좁혔으니 사라진 씨앗·수확물을 참조하는 작물 행도 같은 기준으로 걷어낸다.
+  dropCropsWithMissingItems(db);
   // 기본 몬스터 스탯은 저레벨 스케일이라 영웅 파라미터 곡선(레벨1 HP 514/공 45/방 59)과 맞지 않는다.
   // 데미지 공식(power + stat/2 - def/2) 기준으로 전투가 2~8합이 되도록 재보정한다.
   const enemyTuning: Record<string, { stats: Partial<EnemyStats>; exp: number; gold: number }> = {

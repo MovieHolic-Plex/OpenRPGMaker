@@ -9,7 +9,7 @@ import {
   resolveVocabForBuild,
 } from "@/project/tileVocabulary";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
-import { collectVocabSoftConfirms, markSoftVocabApprovalsOnProject, proposalAcceptButtonLabel } from "@/editor/panels/aiProposalFusion";
+import { collectVocabSoftConfirms, markSoftVocabApprovalsOnProject } from "@/editor/panels/aiProposalFusion";
 import type { ProposedCall } from "@/ai/assistantSession";
 
 const MAP_ID = "map_soft";
@@ -46,7 +46,7 @@ describe("vocab soft-confirm", () => {
     expect(resolveVocabForBuild(tileset, { groupId: "missing-xyz" }).status).toBe("missing");
   });
 
-  it("place_props soft result carries confirm payload; accept marks origin:user", () => {
+  it("place_props soft result carries confirm payload; immediate apply marks origin:user", () => {
     const ctx = makeCtx();
     const result = runTool(ctx, "place_props", {
       mapId: MAP_ID,
@@ -71,13 +71,12 @@ describe("vocab soft-confirm", () => {
       requiresApproval: true,
     };
     expect(collectVocabSoftConfirms([call])).toHaveLength(1);
-    expect(proposalAcceptButtonLabel(1, 1)).toBe("이 맵에 넣기");
 
     const marked = markSoftVocabApprovalsOnProject(ctx.project, [call]);
     expect(marked).toBeGreaterThan(0);
     expect(isApprovedGroup(ctx.project.tilesets[tilesetId], TREE)).toBe(true);
 
-    // second accept is idempotent
+    // 두 번째 자동 합의는 멱등이다.
     expect(applyVocabSoftConfirmApprovals(ctx.project, [soft!])).toBe(0);
   });
 });

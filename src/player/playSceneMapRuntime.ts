@@ -22,11 +22,13 @@ import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
+import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
+import { destroyAllCharacterShadows } from "@/player/characterShadow";
 import { startMapBgm } from "@/player/mapBgm";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import {
-  characterSpriteX,
   characterSpriteY,
+  footprintSpriteX,
   isAlwaysAboveCharacterUpperTile,
   mapUpperTileDepth,
   placeCharacterSprite,
@@ -62,6 +64,7 @@ interface RenderedEventSprite extends RenderedTileImage {
   play(key: string): this;
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
+  setScale(value: number): void;
   destroy(): void;
 }
 
@@ -86,6 +89,8 @@ interface RenderTilesSceneContext<
   };
   /** optional host identity for WeakMap tracking of root y-sort tiles */
   readonly sceneHost?: object;
+  /** 체공 그림자 풀. 이벤트 스프라이트를 파괴할 때 같이 비워야 고아 그림자가 남지 않는다. */
+  characterShadows?: Map<string, import("@/player/characterShadow").ShadowImage>;
   readonly eventSprites: {
     values(): IterableIterator<TSprite>;
     clear(): void;
@@ -138,6 +143,7 @@ export function renderTiles<
   clearRootYSortTiles(scene);
   for (const sprite of scene.eventSprites.values()) sprite.destroy();
   scene.eventSprites.clear();
+  destroyAllCharacterShadows(scene);
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
   const map = scene.map;
@@ -342,12 +348,13 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
         ? overrideFrame
         : eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
     const marker = scene.add.sprite(
-      characterSpriteX(view.x),
+      footprintSpriteX(view.x, view.footprint),
       characterSpriteY(view.y),
       spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
       frame
     );
     placeCharacterSprite(marker, view.priority);
+    marker.setScale(view.scale);
     scene.eventSprites.set(event.id, marker);
   }
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
@@ -372,6 +379,10 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.fieldSpawnState = null;
   for (const animation of scene.activeMapAnimations) animation.destroy(true);
   scene.activeMapAnimations.clear();
+  // 체공 상태와 그림자는 스프라이트 풀과 수명이 같다 — 남기면 새 맵에서 주인공이 떠 있다.
+  scene.playerHop = null;
+  abortHop(scene, PLAYER_SHADOW_KEY, scene.player);
+  destroyAllCharacterShadows(scene);
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
 }
@@ -386,6 +397,21 @@ export function activeRuntimeEvents(
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
   const project = store.getCurrent();
+  // Production boundary: the broad debug snapshot (all runtime event views, session records,
+  // mover snapshots) exists only for QA instrumentation. A shipped player syncs the visible
+  // HUD and picture layer directly and never builds or serializes that payload.
+  if (!scene.runtimeDom.instrumented) {
+    const timed = resolveTimeSystem(project);
+    scene.runtimeDom.syncVisibleHud({
+      timers: scene.session.timers,
+      timerActive: runtimeTimerActivity(scene.runtimeTimers),
+      gameTime: timed ? scene.session.gameTime : undefined,
+      timePhase: timed ? timePhaseFor(scene.session.gameTime) : undefined,
+      lifeCalendarHudLines: timed ? lifeCalendarHudLines(project, scene.session) : undefined,
+    });
+    scene.runtimeDom.syncPictureLayer(scene.session.pictures);
+    return;
+  }
   const events: Record<string, RuntimeEventSnapshot> = {};
   for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
     events[view.event.id] = {
@@ -395,6 +421,12 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
       priority: view.priority,
       trigger: view.trigger.kind,
       direction: view.direction,
+      // 사각은 view 가 이미 계산해 둔 것을 그대로 싣는다 — 여기서 다시 파생하면 런타임 판정과
+      // 디버그 표면이 갈라진다(그러면 QA 가 통과해도 게임은 틀린 사각으로 돌 수 있다).
+      footprint: view.footprint,
+      passRows: view.passRows,
+      bodyRect: view.bodyRect,
+      passRect: view.passRect,
     };
   }
   scene.runtimeDom.syncRuntimeState({
@@ -427,6 +459,11 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     classOverrides: scene.session.classOverrides,
     audio: scene.session.audio,
     pictures: scene.session.pictures,
+    // 상점 경제 상태. 세이브에는 진작 들어 있었지만(saveSlots.ts) 런타임 상태 덤프에는
+    // 없어서 마일리지·누적 지출이 실제로 쌓이는지 밖에서 확인할 방법이 없었다.
+    shopLoyaltySpend: scene.session.shopLoyaltySpend,
+    shopTradeCounts: scene.session.shopTradeCounts,
+    shopMileagePoints: scene.session.shopMileagePoints,
     m2Runtime: scene.session.m2Runtime,
     events,
     movers: runtimeMoverSnapshots(scene.autonomousNPCs),

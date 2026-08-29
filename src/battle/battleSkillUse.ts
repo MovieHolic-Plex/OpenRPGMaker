@@ -1,16 +1,17 @@
 import type { BattleBattlerSnapshot } from "@/battle/types";
 import type { MutableBattler } from "@/battle/battleBattlers";
+import { stateBlocksSkillUse } from "@/battle/battleStates";
 import type { Project, SkillId, SkillRecord } from "@/project/types";
 
 export type BattleSkillUser = Pick<
   MutableBattler | BattleBattlerSnapshot,
-  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp"
+  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp" | "stateIds"
 >;
 export type MutableBattleSkillUser = Pick<
   MutableBattler,
   "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp"
 >;
-export type BattleSkillUseFailure = "missingSkill" | "notLearned" | "insufficientMp" | "noPp";
+export type BattleSkillUseFailure = "missingSkill" | "notLearned" | "skillBlocked" | "insufficientMp" | "noPp";
 export type BattleSkillResourceConsumption =
   | { readonly kind: "pp" | "mp"; readonly remaining: number }
   | { readonly kind: "none" };
@@ -30,6 +31,7 @@ export function battleSkillUseFailure(
   const skill = project.database.skills.find((record) => record.id === skillId);
   if (!skill) return "missingSkill";
   if (options.requireLearned !== false && !user.skillIds.includes(skillId)) return "notLearned";
+  if (stateBlocksSkillUse(project, user)) return "skillBlocked";
   if (usesSkillPp(project, user, skill)) {
     const currentPp = user.skillPp?.[skillId] ?? Math.max(1, Math.trunc(skill.maxPp ?? 1));
     if (currentPp <= 0) return "noPp";
@@ -79,6 +81,8 @@ export function battleSkillUseFailureLabel(
       return "스킬 데이터가 없습니다.";
     case "notLearned":
       return "아직 습득하지 않은 스킬입니다.";
+    case "skillBlocked":
+      return "침묵 상태라 스킬을 사용할 수 없습니다.";
     case "insufficientMp": {
       const cost = skill ? battleSkillMpCost(skill, user.maxMp) : 0;
       return `MP 부족 (필요 ${cost} / 현재 ${user.mp})`;

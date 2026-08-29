@@ -94,7 +94,7 @@ describe("database system studio", () => {
     expect(findByTestId(host, "db-system-studio-card-display")?.textContent).toContain("640×360");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("라운드 전투");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("2명");
-    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("군청 창 · 사이드뷰");
+    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("유리 창 · 사이드뷰");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("Gen1");
     expect(findByTestId(host, "db-system-studio-card-features")?.textContent).toContain("생활 스킬사용");
     expect(findByTestId(host, "db-system-studio-card-features")?.textContent).toContain("액션 전투사용");

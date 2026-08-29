@@ -1,3 +1,8 @@
+import {
+  adjustEffectiveFactionStance,
+  setEffectiveFactionStance,
+} from "@/project/factionRuntime";
+import { resolveFactionTable } from "@/project/factions";
 import type { Command, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
 
 import { craftRecipe } from "@/project/craftRecipes";
@@ -539,6 +544,14 @@ export function executeCommand(
         messageType: command.messageType,
         merchantGold: command.merchantGold,
         branchOnTransaction: command.branchOnTransaction,
+        // 아래 필드들이 빠져 있어서 에디터의 「빈 상점 분기」·「추가 서비스」 카드가
+        // 저장은 되지만 런타임에 도달하지 않았다(설정해도 게임이 달라지지 않음).
+        branchOnFailedTransaction: command.branchOnFailedTransaction,
+        shopServiceKind: command.shopServiceKind,
+        appraisalUnidentifiedPool: command.appraisalUnidentifiedPool,
+        loyaltyTierId: command.loyaltyTierId,
+        mileageRate: command.mileageRate,
+        investmentLevel: command.investmentLevel,
       });
 
     case "inn": {
@@ -689,6 +702,19 @@ export function executeCommand(
     case "changeFriendship":
       changeFriendship(state.session, command.npcKey, command.delta, resolveSocialHost(state));
       return resumeNext(frame);
+    case "changeFactionStance": {
+      if (!state.project) return resumeNext(frame);
+      const table = resolveFactionTable(state.project.factions);
+      const delta = command.op === "-=" ? -command.value : command.value;
+      const next = command.op === "="
+        ? setEffectiveFactionStance(table, state.session.factionStanceOverrides, command.a, command.b, command.value)
+        : adjustEffectiveFactionStance(table, state.session.factionStanceOverrides, command.a, command.b, delta);
+      state.session.factionStanceOverrides ??= {};
+      for (const key of Object.keys(state.session.factionStanceOverrides)) delete state.session.factionStanceOverrides[key];
+      Object.assign(state.session.factionStanceOverrides, next);
+      state.onFactionStanceChanged?.();
+      return resumeNext(frame);
+    }
     case "getFriendship":
       setVariable(state.session, command.variableId, "=", getFriendship(state.session, command.npcKey, resolveSocialHost(state)));
       return resumeNext(frame);

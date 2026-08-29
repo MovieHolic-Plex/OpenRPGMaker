@@ -23,6 +23,8 @@ import { openNpcGraphicDialog } from "./graphicDialog";
 import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
 import { pageConditionSentence } from "./pageConditionSentence";
+import { renderPageFootprint } from "./pageFootprint";
+import { UNIT_FOOTPRINT, normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { renderPageMovement } from "./pageMovement";
 import {
   type EventEditorTriggerKind,
@@ -30,6 +32,9 @@ import {
   PAGE_COMMAND_BUTTONS,
   TRIGGER_OPTIONS,
   commandKindLabel,
+  compareAmountLabel,
+  runResultLabel,
+  timerIdLabel,
 } from "./options";
 import { openCharacterIdPicker } from "./characterIdPickerDialog";
 import { attachCharacterIdAutocomplete } from "./characterIdAutocomplete";
@@ -211,17 +216,17 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "switch":
       return `${switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "")} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable":
-      return `${switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "")} ${condition.op} ${condition.value}`;
+      return `${switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "")} ${compareAmountLabel(condition.op, condition.value)}`;
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "actor":
       return `주인공 [${recordName(store.getCurrent().database.actors, condition.actorId)}] ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":
-      return `아이템 ${recordName(store.getCurrent().database.items, condition.itemId)} ${condition.present ? "있음" : "없음"}`;
+      return `아이템 ${recordName(store.getCurrent().database.items, condition.itemId)} ${condition.present ? "보유 중" : "보유 안 함"}`;
     case "gold":
-      return `소지금 ${condition.op} ${condition.amount}`;
+      return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초 이하`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초 이하`;
     case "timePhase":
       return `시간대 ${timePhaseLabel(condition.phase)}`;
     case "season":
@@ -229,17 +234,17 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "npcActivity":
       return `활동 ${condition.activity}`;
     case "friendshipAtLeast":
-      return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
+      return `호감도 ${condition.npcKey || "이 이벤트"} ${condition.value} 이상`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
     case "run":
       return runConditionText(condition);
     case "all":
-      return condition.conditions.length ? `모두(${condition.conditions.length})` : "모두(비어있음)";
+      return condition.conditions.length ? `모두 맞을 때(${condition.conditions.length})` : "모두 맞을 때(없음)";
     case "any":
-      return condition.conditions.length ? `하나(${condition.conditions.length})` : "하나(비어있음)";
+      return condition.conditions.length ? `하나라도 맞을 때(${condition.conditions.length})` : "하나라도 맞을 때(없음)";
     case "not":
-      return `아님`;
+      return "아닐 때";
   }
 }
 
@@ -253,18 +258,17 @@ function pageConditionCompactSummary(condition: EventPageCondition): string {
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable": {
       const named = switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "").trim();
-      return `${named || "변수"} ${condition.op} ${condition.value}`;
+      return `${named || "변수"} ${compareAmountLabel(condition.op, condition.value)}`;
     }
     case "item":
-      return condition.present ? "아이템 보유" : "아이템 미보유";
+      return condition.present ? "아이템 보유 중" : "아이템 보유 안 함";
     case "actor":
-      return condition.present ? "주인공 참여" : "주인공 이탈";
+      return condition.present ? "파티에 있음" : "파티에 없음";
     case "gold": {
-      const op = condition.op === ">=" ? "≥" : condition.op === "<=" ? "≤" : condition.op;
-      return `소지금 ${op} ${condition.amount}`;
+      return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     }
     case "timer":
-      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초`;
     default:
       return pageConditionBadgeText(condition);
   }
@@ -638,6 +642,9 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     dataset: { testid: "event-page-overlap-forbidden" },
   }) as HTMLInputElement;
   overlap.checked = page.overlapForbidden ?? true;
+  // 런타임 통행 판정은 `priority === "same" && overlapForbidden` 이다 — 다른 층에서는 이 체크가
+  // 아무 일도 하지 않는다. 살아있는 것처럼 보이게 두면 «켰는데 안 막힌다» 가 된다.
+  overlap.disabled = !overlapForbiddenApplies(page);
   overlap.addEventListener("change", () => {
     updateEventPage(mapId, eventId, page.id, { overlapForbidden: overlap.checked });
   });
@@ -689,24 +696,40 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       }),
     }),
     rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+    rm2k3Fieldset("크기와 통행", renderPageFootprint(mapId, eventId, page), "event-classic-footprint"),
     el("div", {
       class: "event-page-behavior-sections",
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
         rm2k3Fieldset("시작 방식", trigger, "event-classic-trigger"),
-        rm2k3Fieldset("우선순위", priority, "event-classic-priority"),
         renderEventPageSafetyWarning(page),
       ],
     }),
-    rm2k3Fieldset(
-      "겹침",
-      el("label", {
-        class: "event-overlap-label",
-        attrs: { title: "켜면 다른 추인공·NPC 가 이 칸을 지나갈 수 없습니다" },
-        children: [overlap, el("span", { text: "겹침 금지(같은 칸 통행 차단)" })],
-      }),
-      "event-classic-overlap"
-    ),
+    // 우선순위와 겹침은 한 판정식(`priority === "same" && overlapForbidden`)의 두 반쪽이다.
+    // 예전에는 우선순위가 «언제 보이나요» 그룹, 겹침이 «겹침과 통행» 그룹에 떨어져 있어서
+    // 저작자가 둘의 관계를 볼 수 없었다.
+    el("div", {
+      class: "event-page-behavior-sections",
+      dataset: { testid: "event-page-priority-overlap-stack" },
+      children: [
+        rm2k3Fieldset("우선순위", priority, "event-classic-priority"),
+        rm2k3Fieldset(
+          "겹침",
+          el("div", {
+            class: "event-priority-block",
+            children: [
+              el("label", {
+                class: "event-overlap-label",
+                attrs: { title: "켜면 다른 주인공·NPC 가 이 칸을 지나갈 수 없습니다" },
+                children: [overlap, el("span", { text: "겹침 금지(같은 칸 통행 차단)" })],
+              }),
+              renderOverlapPriorityHint(page),
+            ],
+          }),
+          "event-classic-overlap"
+        ),
+      ],
+    }),
     collapsibleSection({
       title: "움직임",
       testId: "event-classic-movement-section",
@@ -820,6 +843,18 @@ function selectRailGroup(group: HTMLElement, slug: string, openKey: string): voi
   activeEventRailGroup.set(openKey, slug);
 }
 
+/**
+ * 이 앵커를 가진 레일 그룹을 열어 준다. 그룹은 `<details>` 가 아니라 CSS 해생(`is-open`) 이라
+ * 검증 이슈 네뱄게이션의 details 여는 로직은 그룹을 못 여는다 — 닫힌 그룹 속 입력에 포서스를 주면
+ * 사용자 눈에는 아무 일도 안 어나나는 것으로 보인다.
+ */
+export function openEventRailGroupFor(target: HTMLElement): void {
+  const group = target.closest<HTMLElement>(".event-editor-settings-accordion-group");
+  const slug = group?.dataset.railGroup;
+  if (!group || !slug) return;
+  selectRailGroup(group, slug, group.parentElement?.dataset.railKey ?? "");
+}
+
 export function appendEventRailGroup(
   propsRoot: HTMLElement,
   spec: EventRailGroupSpec,
@@ -846,7 +881,10 @@ function wrapPageSettingsAsAccordion(
   const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
   const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
-  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap'], [data-testid='event-page-fact-overlap']"));
+  // 우선순위는 겹침과 한 판정식이라 memory 그룹이 함께 claim 한다(예전에는 when 그룹이었다).
+  // 「크기와 통행」도 같은 그룹이다 — 미분류로 남기면 "기타" 그룹이 생겨 레일이 4칸 계약을
+  // 깬다(eventRailGroupComposition.test.ts 가 그 계약을 고정한다).
+  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-page-priority-overlap-stack'], [data-testid='event-classic-overlap'], [data-testid='event-classic-footprint'], [data-testid='event-page-fact-overlap']"));
   // 레일은 한 번에 한 그룹만 연다 — 저장된 활성 slug 가 없으면 「모습과 대화」로 시작한다.
   const activeSlug = activeRailGroupSlug(openKey, "look-talk");
   const groups = [
@@ -854,8 +892,15 @@ function wrapPageSettingsAsAccordion(
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, authored: conditions.length > 0, nodes: when },
     // RM 계약상 새 이벤트의 기본 이동은 «정지»다. 그 밖이면 저작자가 고른 값이다.
     { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), authored: page.movement.type !== "fixed", nodes: move },
-    // 기본값은 «겹침 금지»(overlapForbidden !== false). 통행을 허용했다면 손댄 것이다.
-    { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), authored: page.overlapForbidden === false, nodes: memory },
+    // 기본값은 «캐릭터와 같은 층 + 겹침 금지 + 1x1 몸». 통행을 허용했거나 층을 옮겼거나
+    // 몸을 키웠다면 손댄 것이다.
+    {
+      slug: "memory",
+      title: "겹침과 통행",
+      summary: passageRailSummary(page),
+      authored: page.overlapForbidden === false || page.priority !== "same" || bodyAuthored(page),
+      nodes: memory,
+    },
   ].map((group) => ({ ...group, open: group.slug === activeSlug }));
   const rail = el("div", {
     class: "event-editor-settings-accordion",
@@ -902,8 +947,51 @@ function wrapPageSettingsAsAccordion(
 
 const CONDITION_BADGE_LIMIT = 3;
 
+/** 겹침 금지가 실제로 통행을 막는 조건. 런타임 판정식과 같은 자리에서 한 번만 정한다. */
+function overlapForbiddenApplies(page: EventPage): boolean {
+  return page.priority === "same";
+}
+
+/** 우선순위 select 에 실제로 적힌 라벨. 안내문이 화면과 다른 말을 쓰면 안 된다. */
+function priorityOptionLabel(priority: EventPage["priority"]): string {
+  return EVENT_PRIORITY_OPTIONS.find((option) => option.value === priority)?.label ?? priorityLabel(priority);
+}
+
 function overlapSummary(page: EventPage): string {
+  if (!overlapForbiddenApplies(page)) return `${priorityOptionLabel(page.priority)} · 통행 허용`;
   return page.overlapForbidden !== false ? "겹침 금지" : "겹침 허용";
+}
+
+/**
+ * 우선순위가 «같은 층» 이 아닐 때 겹침 체크가 왜 죽어 있는지 말해 준다.
+ * 자리는 항상 잡아 둔다 — 나타났다 사라지면 레일 높이가 튄다.
+ */
+function renderOverlapPriorityHint(page: EventPage): HTMLElement {
+  const applies = overlapForbiddenApplies(page);
+  return el("p", {
+    class: `event-page-overlap-hint${applies ? " is-quiet" : ""}`,
+    dataset: { testid: "event-page-overlap-priority-hint" },
+    text: applies
+      ? "같은 층이므로 이 설정이 통행 판정에 쓰입니다."
+      : `우선순위가 «${priorityOptionLabel(page.priority)}» 라 통행을 막지 않습니다. 막으려면 «캐릭터와 같은 층» 으로 바꾸세요.`,
+  });
+}
+
+/** 몸을 1x1 밖으로 키웠는가. 레일 헤더의 «손댔음» 배지 판정에 쓴다. */
+function bodyAuthored(page: EventPage): boolean {
+  const body = normalizeCharacterFootprint(page.footprint);
+  return body.width !== UNIT_FOOTPRINT.width || body.height !== UNIT_FOOTPRINT.height;
+}
+
+/**
+ * 레일 헤더 요약. 1x1 은 `overlapSummary` 그대로 — 몸 크기를 안 만진 페이지의 요약 문구가
+ * 바뀌면 안 된다(기존 계약이 문자열 동등으로 고정돼 있다). 다중 타일일 때만 크기를 덧붙인다.
+ */
+function passageRailSummary(page: EventPage): string {
+  const body = normalizeCharacterFootprint(page.footprint);
+  if (!bodyAuthored(page)) return overlapSummary(page);
+  const rows = normalizePassRows(page.passRows, body.height);
+  return `${overlapSummary(page)} · ${body.width}x${body.height} 중 ${rows}행`;
 }
 
 function renderConditionSummaryBadges(conditions: readonly EventPageCondition[]): HTMLElement {
@@ -944,13 +1032,13 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch": {
       const id = truncateBadgeToken(switchVariableName("switch", condition.switchId), 12);
-      return `${id} ${condition.value ? "ON" : "OFF"}`;
+      return `${id} ${condition.value ? "켜짐" : "꺼짐"}`;
     }
     case "selfSwitch":
-      return `셀프${condition.key} ${condition.value ? "ON" : "OFF"}`;
+      return `기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable": {
       const id = truncateBadgeToken(switchVariableName("variable", condition.variableId), 10);
-      return `${id} ${condition.op} ${condition.value}`;
+      return `${id} ${compareAmountLabel(condition.op, condition.value)}`;
     }
     case "actor": {
       const name = truncateBadgeToken(recordName(store.getCurrent().database.actors, condition.actorId), 10);
@@ -961,9 +1049,9 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return condition.present ? name : `!${name}`;
     }
     case "gold":
-      return `G ${condition.op} ${condition.amount}`;
+      return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `T${condition.timerId === "timer1" ? "1" : "2"} ${condition.seconds}s`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초`;
     case "timePhase":
       return timePhaseLabel(condition.phase);
     case "season":
@@ -977,24 +1065,24 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
     case "run":
       return runConditionText(condition);
     case "all":
-      return `AND(${condition.conditions.length})`;
+      return condition.conditions.length ? `모두 맞을 때 ${condition.conditions.length}` : "모두 맞을 때";
     case "any":
-      return `OR(${condition.conditions.length})`;
+      return condition.conditions.length ? `하나라도 맞을 때 ${condition.conditions.length}` : "하나라도 맞을 때";
     case "not":
-      return `NOT`;
+      return "아닐 때";
   }
 }
 
 function runConditionText(condition: Extract<EventPageCondition, { kind: "run" }>): string {
   switch (condition.query) {
     case "active":
-      return `런 ${condition.value === false ? "비활성" : "진행 중"}`;
+      return condition.value === false ? "탐험 중이 아님" : "탐험 중";
     case "floor":
-      return `런 층 ${condition.op} ${condition.value}`;
+      return `탐험 층 ${compareAmountLabel(condition.op, condition.value)}`;
     case "flag":
-      return `런 ${condition.flag || "플래그"} ${condition.value ? "ON" : "OFF"}`;
+      return `탐험 기억 ${condition.flag || "기억"} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "result":
-      return `런 결과 ${condition.result}`;
+      return `탐험 결과 ${runResultLabel(condition.result)}`;
   }
 }
 

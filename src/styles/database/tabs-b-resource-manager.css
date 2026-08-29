@@ -11,11 +11,12 @@
   text-transform: uppercase;
 }
 .rm-import-row select {
-  background: var(--bg-panel-2);
+  background-color: var(--bg-panel-2);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 3px 6px;
+  /* 오른쪽은 chevron 밴드(오른쪽 7~17px) 몫이다 — 6px 로 두면 글자가 화살표를 덮는다. */
+  padding: 3px 24px 3px 6px;
   font-size: 12px;
   font-family: inherit;
 }

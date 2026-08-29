@@ -686,11 +686,8 @@ function commandButton(
     button.dataset.previewOnly = "true";
     button.disabled = true;
     const reason = disabledReason || hint || detail || "현재 사용할 수 없습니다.";
-    button.title = reason;
     button.setAttribute("aria-label", `${label}: ${reason}`);
   } else if (hint) {
-    // 행에 보이는 설명은 한 토막으로 줄이고, 전체 설명(범위·효과·상태)은 여기로 옮긴다.
-    button.title = hint;
     button.setAttribute("aria-label", `${label}: ${hint}`);
   }
   const iconNode = document.createElement("span");

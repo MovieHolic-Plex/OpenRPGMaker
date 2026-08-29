@@ -17,6 +17,8 @@ if (!app) {
 interface OpenRpgBootConfig {
   readonly projectUrl?: string;
   readonly saveNamespace?: string;
+  /** Private export-QA capability; omitted by all production host shells. */
+  readonly qaInstrumentation?: boolean;
   // 호스트 주입값은 신뢰하지 않는다 — hostBridge.parseHostBridge 가 방어적으로 파싱한다.
   readonly returnUrl?: unknown;
   readonly hostFeatures?: unknown;
@@ -46,7 +48,11 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
     const host = parseHostBridge(boot);
-    renderPlayer(root, { hostBridge: host, onExit: () => exitToHost(root, host) });
+    renderPlayer(root, {
+      qaInstrumentation: boot.qaInstrumentation === true,
+      hostBridge: host,
+      onExit: () => exitToHost(root, host),
+    });
   } catch (error) {
     renderBootError(root, error instanceof Error ? error.message : String(error));
   }

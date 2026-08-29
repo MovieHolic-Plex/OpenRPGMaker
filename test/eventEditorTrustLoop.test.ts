@@ -3,7 +3,7 @@ import { editorState } from "@/editor/editorState";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
 import { readEventCommandPickerPreferences } from "@/editor/panels/eventEditor/commandPickerPreferences";
 import { renderEventEditorContent, renderEventEditorStable } from "@/editor/panels/eventEditor/content";
-import { renderEventScriptModernViews } from "@/editor/panels/eventEditor/eventScriptModernViews";
+import { renderEventPagePreview } from "@/editor/panels/eventEditor/eventScriptModernViews";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { PAGE_COMMAND_BUTTONS } from "@/editor/panels/eventEditor/options";
 import { createBlankProject } from "@/project/defaults";
@@ -351,7 +351,7 @@ describe("event editor trust loop", () => {
     openEventEditorModal(mapId, "event-1");
 
     const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-page-name-input"]');
-    const details = document.querySelector<HTMLDetailsElement>('[data-testid="event-script-live-preview"]');
+    const details = document.querySelector<HTMLDetailsElement>('[data-testid="event-script-flowchart"]');
     const commandList = document.querySelector<HTMLElement>(".cmd-list");
     if (!nameInput || !details || !commandList) throw new Error("expected event editor interaction surfaces");
     nameInput.focus();
@@ -365,7 +365,7 @@ describe("event editor trust loop", () => {
     });
 
     const restoredInput = document.querySelector<HTMLInputElement>('[data-testid="event-page-name-input"]');
-    const restoredDetails = document.querySelector<HTMLDetailsElement>('[data-testid="event-script-live-preview"]');
+    const restoredDetails = document.querySelector<HTMLDetailsElement>('[data-testid="event-script-flowchart"]');
     const restoredList = document.querySelector<HTMLElement>(".cmd-list");
     expect(document.activeElement).toBe(restoredInput);
     expect(restoredInput?.selectionStart).toBe(2);
@@ -376,12 +376,15 @@ describe("event editor trust loop", () => {
   });
 
   it("labels script browsing as non-runtime simulation with loop/choice/goto caveats", () => {
-    const host = renderEventScriptModernViews(page([
-      { kind: "loop", body: [{ kind: "gotoLabel", name: "again" }] },
-      { kind: "choices", prompt: "선택", options: [{ text: "예", branch: [] }] },
-    ]));
+    const host = renderEventPagePreview({
+      mapId: "map_start",
+      eventId: "event-1",
+      page: page([
+        { kind: "loop", body: [{ kind: "gotoLabel", name: "again" }] },
+        { kind: "choices", prompt: "선택", options: [{ text: "예", branch: [] }] },
+      ]),
+    });
 
-    expect(host.textContent).toContain("스크립트 둘러보기");
     expect(host.textContent).toContain("실제 게임 실행이 아닌");
     expect(host.textContent).toContain("반복은 한 번");
     expect(host.textContent).toContain("선택지는 모든 분기");

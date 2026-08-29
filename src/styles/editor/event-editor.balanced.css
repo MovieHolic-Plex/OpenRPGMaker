@@ -943,7 +943,9 @@ footer {
 .event-editor .event-editor-commands-column {
   display: grid;
   gap: 0;
-  grid-template-rows: auto minmax(0, 1fr);
+  /* 3번 행 = AI 명령 도크. 암시 행으로 내버려 두면 1fr 이 줄지 않아
+     도크가 모달 밑밖으로 밀려난다(실직: 900 높이에서 도크 밑이 1016). */
+  grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 0;
 }
 
@@ -1159,9 +1161,429 @@ footer {
   padding-left: 6px;
 }
 
-/* The validation control keeps its own row instead of being squeezed off-screen. */
-.event-editor-modal-dynamic .event-editor > .event-draft-validation {
+/* ============================================================================
+   설정 레일 — 요약 목록 + 넓은 편집면 (2026-08-28)
+
+   문제(실측, 1680×1000): 설정 컬럼 268px 안에 「언제 보이나요」 조건 12행이 통째로
+   들어가 각 행이 두 줄로 접혔다. 레일 실제 높이 1370px(가시 영역 밖으로 넘침),
+   라벨 잘림 3건(`이상`→`이..`, `파티에 있음`→`파티...`, `이 이벤트 기억`).
+   같은 화면에서 명령 컬럼 ~1400px 는 거의 비어 있었다.
+
+   해결: 그룹 헤더만 좌측 레일에 세우고, 열린 그룹의 본문은 그 오른쪽 넓은 면에 놓는다.
+   `display: contents` 로 그룹 자신은 레이아웃에서 빠지므로 DOM 계층(그룹이 헤더와 본문을
+   소유)은 그대로다 — eventRailGroupComposition.test.ts 의 소속 계약이 이에 의존한다.
+
+   기본값은 기존 세로 아코디언이고, 두 면이 나란히 설 폭이 있을 때만 갈라 놓는다.
+   ========================================================================= */
+
+.event-editor .event-editor-settings-accordion-header {
+  text-align: left;
+  width: 100%;
+}
+
+.event-editor .event-editor-settings-accordion-header:hover {
+  background: var(--bg-hover);
+}
+
+.event-editor .event-editor-settings-accordion-group.is-open
+  > .event-editor-settings-accordion-header {
+  background: var(--accent-muted);
+}
+
+.event-editor .event-editor-settings-accordion-group.is-open
+  > .event-editor-settings-accordion-header
+  .event-editor-settings-accordion-title {
+  color: var(--accent);
+}
+
+/* 접힌 그룹의 본문은 감춘다 (예전 <details> 의 open 속성 역할). */
+.event-editor .event-editor-settings-accordion-group:not(.is-open)
+  > .event-editor-settings-accordion-body {
+  display: none;
+}
+
+@media (min-width: 1321px) {
+  .event-editor-modal-window {
+    --balanced-settings-width: 772px;
+    --balanced-rail-width: 196px;
+  }
+
+  /* 시트가 세로로 꽉 차려면 조상 체인이 높이를 넘겨줘야 한다. */
+  .event-editor .event-editor-settings-main > .event-page-props {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .event-editor .event-editor-settings-accordion {
+    align-content: start;
+    display: grid;
+    flex: 1;
+    grid-template-columns: var(--balanced-rail-width);
+    min-height: 0;
+    position: relative;
+    row-gap: 4px;
+  }
+
+  /* 그룹은 레이아웃에서 빠지고 헤더·본문이 직접 자식처럼 배치된다. */
+  .event-editor .event-editor-settings-accordion-group {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    display: contents;
+    overflow: visible;
+  }
+
+  .event-editor .event-editor-settings-accordion-header {
+    align-self: start;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    grid-column: 1;
+  }
+
+  .event-editor .event-editor-settings-accordion-group.is-open
+    > .event-editor-settings-accordion-header {
+    border-color: var(--accent-border, var(--accent));
+  }
+
+  /* 시트는 그리드 흐름에서 빼낸다. 행을 가로질러 span 시키면 그 높이가 레일 헤더 행들에
+     분배돼 헤더가 세로로 부푼다(실측: 첫 헤더가 640px 가 됐다). */
+  .event-editor .event-editor-settings-accordion-body {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    bottom: 0;
+    left: calc(var(--balanced-rail-width) + 12px);
+    min-width: 0;
+    overflow-y: auto;
+    padding: 12px 14px 14px;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .event-editor .event-editor-settings-accordion-group.is-open
+    > .event-editor-settings-accordion-body {
+    display: flex;
+  }
+
+  /* 조건 12행은 넓어진 면에서 2열로 눕는다 — 세로 넘침의 직접 원인이었다. */
+  .event-editor .event-conditions-grid {
+    display: grid;
+    gap: 6px 14px;
+    grid-template-columns: repeat(auto-fit, minmax(218px, 1fr));
+  }
+
+  /* 조건 라벨 칸(4.75rem)이 «이 이벤트 기억»(72px 필요)을 잘랐다. */
+  .event-editor .event-editor-settings-accordion-body .event-condition-row {
+    grid-template-columns: 16px 5.5rem minmax(0, 1fr) auto;
+  }
+}
+
+/* 좁은 폭(레일 아래로 펼치는 폴백)에서 남던 잘림 2건.
+   268px 컬럼에서는 라벨 칸을 넓힐 여유가 없으므로 줄바꿈을 허용하고,
+   컨트롤에는 접미사 칸까지 내준다. 실측: `이 이벤트 기억` 67/72px,
+   `파티에 있음`(커스텀 셀렉트 값) 44/63px. */
+@media (max-width: 1320px) {
+  /* 라벨은 줄바꿈이 되므로 칸을 좁혀도 잘리지 않는다. 아낀 폭은 컨트롤로 간다. */
+  .event-editor .event-editor-settings-accordion-body .event-condition-row {
+    grid-template-columns: 16px 3rem minmax(0, 1fr) auto;
+  }
+
+  .event-editor .event-editor-settings-accordion-body .event-condition-label {
+    line-height: 1.25;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+}
+
+/* 그룹에 저작한 값이 있음을 접힌 채로 알리는 점. */
+.event-editor .event-editor-settings-accordion-title {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-editor .event-editor-settings-accordion-dot {
+  background: var(--accent);
+  border-radius: 50%;
   flex: 0 0 auto;
+  height: 5px;
+  width: 5px;
+}
+
+/* 조건 요약 문장 — 켜진 조건을 저장 직전에 한 줄로 확인한다. */
+.event-editor .event-conditions-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-editor .event-conditions-sentence {
+  background: var(--bg-inset);
+  border-radius: 8px;
+  color: var(--text-2);
+  font-size: 12.5px;
+  line-height: 1.7;
+  margin: 0;
+  padding: 9px 12px;
+}
+
+.event-editor .event-conditions-sentence.is-empty {
+  color: var(--text-3);
+}
+
+.event-editor .event-conditions-sentence-value {
+  background: var(--accent-muted);
+  border-radius: 5px;
+  color: var(--text-1);
+  font-style: normal;
+  font-weight: 650;
+  padding: 1px 5px;
+}
+
+/* 커스텀 셀렉트는 콘텐츠 폭을 요구하지 않아 그리드가 0까지 눌러 버린다.
+   «이상» 이 «이..» 로 잘리던 원인. */
+.event-editor .event-conditions-grid select,
+.event-editor .event-conditions-grid .event-custom-select,
+.event-editor .event-conditions-grid .event-custom-select-trigger {
+  min-width: 76px;
+}
+
+/* 숫자 칸도 같은 이유로 눌린다. 타이머 «0» 자리표시자가 반만 그려져 «(» 처럼 보였다. */
+.event-editor .event-conditions-grid input[type="number"],
+.event-editor .event-conditions-grid input[type="text"] {
+  min-width: 54px;
+}
+
+.event-editor .event-custom-select-trigger[data-custom-select-for="event-page-advanced-condition-kind"] {
+  min-width: 124px;
+}
+
+/* ============================================================================
+   검토 알림 종 — 타이틀바 오른쪽 (2026-08-28)
+
+   문제(실측): 검증 요약은 창 **맨 아래** `.event-editor` 마지막 자식으로 붙었고, 스타일은
+   존재하지 않는 래퍼 `.event-editor-command-header` 아래에만 선언돼 있었다. 즉 출하된 화면은
+   브라우저 기본 `<details>` — 삼각형 마커 + 링크색 없는 검은 글씨였다. 경고가 있어도 화면
+   맨 아래 한 줄이라 눈에 걸리지 않았다.
+
+   해결: 개수 배지를 단 종을 타이틀바 오른쪽(테스트 버튼 왼쪽)에 세우고, 목록은 종 아래
+   팝오버로 연다. 색은 심각도 하나로 결정한다 — 오류·경고는 --danger, 안내만 있을 때는
+   --accent. 톤을 지역 변수 하나(--ev-bell-tone)로 두면 배지·테두리·호버가 함께 따라온다.
+
+   종 흔들림은 **오류가 있고 아직 열어보지 않았을 때만** 3회 돌고 멈춘다. 무한 애니메이션은
+   편집 중 계속 시야를 잡아먹고, prefers-reduced-motion 사용자에게는 아예 돌지 않는다.
+   ========================================================================= */
+
+/* 팝오버는 헤더를 벗어나 본문 위로 내려온다. 그런데 헤더가 쌓임 문맥을 만들지 않으면
+   **뒤 형제**인 `.event-editor-modal-body`(자체 쌓임 문맥)가 팝오버 위에 그려진다 —
+   실측: 페이지 탭 줄이 팝오버 첫 줄(제목·집계)을 덮어 잘린 것처럼 보였다.
+   자손의 z-index 로는 못 이긴다. 헤더 자신을 올려야 한다. */
+.event-editor-modal-header {
+  position: relative;
+  z-index: var(--z-popover-high);
+}
+
+.event-editor-modal-header .event-draft-validation {
+  --ev-bell-tone: var(--accent);
+  --ev-bell-wash: var(--accent-muted);
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.event-editor-modal-header .event-draft-validation[data-severity="warning"],
+.event-editor-modal-header .event-draft-validation[data-severity="error"] {
+  --ev-bell-tone: var(--danger);
+  --ev-bell-wash: var(--danger-muted);
+}
+
+.event-editor-modal-header .event-draft-validation-summary {
+  align-items: center;
+  background: var(--ev-bell-wash);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--ev-bell-tone);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 5px;
+  height: 30px;
+  list-style: none;
+  padding: 0 7px 0 8px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.event-editor-modal-header .event-draft-validation-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor-modal-header .event-draft-validation-summary::marker {
+  content: "";
+}
+
+.event-editor-modal-header .event-draft-validation-summary:hover {
+  background: color-mix(in srgb, var(--ev-bell-tone) 15%, transparent);
+  border-color: color-mix(in srgb, var(--ev-bell-tone) 38%, transparent);
+}
+
+.event-editor-modal-header .event-draft-validation-summary:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-summary {
+  background: color-mix(in srgb, var(--ev-bell-tone) 18%, transparent);
+  border-color: color-mix(in srgb, var(--ev-bell-tone) 45%, transparent);
+}
+
+.event-editor-modal-header .event-draft-validation-bell {
+  align-items: center;
+  display: inline-flex;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.event-editor-modal-header .event-draft-validation-count {
+  background: var(--ev-bell-tone);
+  border-radius: 999px;
+  color: var(--on-accent);
+  font: 700 11px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  min-width: 18px;
+  padding: 4px 5px;
+  text-align: center;
+}
+
+@keyframes event-validation-bell-ring {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(13deg); }
+  20% { transform: rotate(-11deg); }
+  30% { transform: rotate(8deg); }
+  40% { transform: rotate(-6deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.event-editor-modal-header
+  .event-draft-validation[data-severity="error"]:not([open])
+  .event-draft-validation-bell {
+  animation: event-validation-bell-ring 1.6s ease-in-out 3;
+  transform-origin: 50% 18%;
+}
+
+.event-editor-modal-header .event-draft-validation-popover {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(420px, 76vw);
+  z-index: var(--z-popover-high);
+}
+
+.event-editor-modal-header .event-draft-validation:not([open]) > .event-draft-validation-popover {
+  display: none;
+}
+
+@keyframes event-validation-popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-popover {
+  animation: event-validation-popover-in var(--transition-med);
+}
+
+.event-editor-modal-header .event-draft-validation-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.event-editor-modal-header .event-draft-validation-title {
+  color: var(--text-1);
+  font: 650 12px/1.2 var(--font-ui);
+}
+
+.event-editor-modal-header .event-draft-validation-tally {
+  background: var(--ev-bell-wash);
+  border-radius: 999px;
+  color: var(--ev-bell-tone);
+  font: 700 10.5px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+}
+
+.event-editor-modal-header .event-draft-validation-issues {
+  display: grid;
+  gap: 2px;
+  max-height: min(320px, 46vh);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.event-editor-modal-header .event-draft-validation-issue {
+  --ev-issue-tone: var(--accent);
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: 500 12px/1.45 var(--font-ui);
+  gap: 8px;
+  grid-template-columns: 38px minmax(0, 1fr);
+  padding: 7px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-editor-modal-header .event-draft-validation-issue[data-severity="error"] {
+  --ev-issue-tone: var(--danger);
+}
+
+.event-editor-modal-header .event-draft-validation-issue[data-severity="warning"] {
+  --ev-issue-tone: var(--warning);
+}
+
+.event-editor-modal-header .event-draft-validation-issue:hover,
+.event-editor-modal-header .event-draft-validation-issue:focus-visible {
+  background: color-mix(in srgb, var(--ev-issue-tone) 8%, transparent);
+  border-color: color-mix(in srgb, var(--ev-issue-tone) 30%, transparent);
+  outline: none;
+}
+
+.event-editor-modal-header .event-draft-validation-severity {
+  background: color-mix(in srgb, var(--ev-issue-tone) 12%, transparent);
+  border-radius: 999px;
+  color: var(--ev-issue-tone);
+  font: 700 10px/1 var(--font-ui);
+  padding: 4px 0;
+  text-align: center;
+}
+
+.event-editor-modal-header .event-draft-validation-message {
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-editor-modal-header .event-draft-validation-bell,
+  .event-editor-modal-header .event-draft-validation[open] > .event-draft-validation-popover {
+    animation: none;
+  }
 }
 
 /* ============================================================================
@@ -1366,4 +1788,543 @@ footer {
 
 .event-editor .event-custom-select-trigger[data-custom-select-for="event-page-advanced-condition-kind"] {
   min-width: 124px;
+}
+
+/* =========================================================================
+   「NPC와 일정」 레일 그룹 표면 (2026-08-29)
+
+   문제(실측, 1536×1024 / 설정 시트 528px): 일정 행이 **읽을 수 없는 상태**로 출하됐다.
+   `compactLabel()` 이 만드는 `.event-schedule-label` 은 `display:flex` 인데, 그 안의
+   셀렉트는 `customSelect` 가 `.event-custom-select`(width:100%) 로 감싼다. 콘텐츠 폭을
+   요구하지 않는 래퍼가 남은 공간을 전부 먹어 라벨 글자칸이 0 으로 눌리고, 「시간대」
+   「계절」「방향」과 조건 경고문이 한 글자씩 세로로 흘러 서로 겹쳐 그려졌다
+   (event-editor.conditions-grid 가 min-width 로 막아 놓은 것과 같은 함정).
+   NPC 관계 카드 쪽은 `.event-character-id-label-text` 가 `.event-editor-card` 하위에서만
+   스타일을 받아, 카드가 사라진 레일에서는 굵기 없는 본문 글자로 떠 있었다.
+
+   해결: 라벨을 캡션-위/컨트롤-아래 그리드로 세우고(라벨 폭 경쟁 자체를 없앤다),
+   일정 편집기를 헤더+행 카드 구조로 묶는다. 행 번호는 CSS 카운터, 「언제」「어디로」
+   구분은 생성 콘텐츠라 DOM·testid 는 그대로다.
+   ========================================================================= */
+
+/* ── NPC 관계 연결 줄 ─────────────────────────────────────────────────── */
+.event-editor .event-editor-settings-accordion-body .event-character-id-field-inline {
+  align-items: center;
+  display: grid;
+  gap: 4px 10px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-editor .event-editor-settings-accordion-body .event-character-id-label-text {
+  color: var(--text-2);
+  font: 700 10.5px/1.2 var(--font-ui);
+  letter-spacing: .04em;
+  min-width: 0;
+}
+
+/* ── 관계 설정 카드 ───────────────────────────────────────────────────── */
+.event-editor .event-editor-settings-accordion-body .event-character-social-extras {
+  margin: 0;
+}
+
+/* 카드 제목이 바로 위 연결 줄과 같은 이름을 반복한다 — 굵기를 낮춰 위계를 만든다. */
+.event-editor .event-character-social-heading > strong {
+  font: 650 12.5px/1.25 var(--font-ui);
+}
+
+/* 「고급 설정」은 details 로 저작됐지만 설정 컬럼이 div 로 바꿔 심는다(content.ts).
+   그래서 `[open]` 을 보는 화살표는 항상 «접힘» 을 가리키면서 본문은 열려 있었다.
+   div 인 경우에만 화살표를 지우고 소제목으로 읽히게 한다. */
+.event-editor div.event-character-social-advanced > summary {
+  color: var(--text-2);
+  cursor: default;
+  font: 700 10.5px/1.2 var(--font-ui);
+  letter-spacing: .04em;
+}
+
+.event-editor div.event-character-social-advanced > summary::after {
+  content: none;
+}
+
+/* 화살표가 빠지면 space-between 이 키 칩을 오른쪽 끝까지 밀어낸다. */
+.event-editor div.event-character-social-advanced > summary {
+  justify-content: flex-start;
+}
+
+/* ── 일정 편집기 셸 ───────────────────────────────────────────────────── */
+.event-editor .event-schedule-editor {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  display: block;
+  min-width: 0;
+  overflow: clip;
+  padding: 0;
+}
+
+.event-editor .event-schedule-editor[open] {
+  background: var(--bg-raised);
+  border-color: var(--border-default);
+}
+
+.event-editor .event-schedule-summary {
+  align-items: center;
+  background: var(--bg-inset);
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: 700 12px/1.2 var(--font-ui);
+  gap: 7px;
+  list-style: none;
+  min-width: 0;
+  padding: 9px 12px;
+  transition: background var(--transition-fast);
+}
+
+.event-editor .event-schedule-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor .event-schedule-summary:hover {
+  background: var(--bg-active);
+}
+
+.event-editor .event-schedule-summary::before {
+  color: var(--text-3);
+  content: "▾";
+  font-size: 9px;
+  transition: transform var(--transition-fast);
+}
+
+.event-editor .event-schedule-editor:not([open]) > .event-schedule-summary::before {
+  transform: rotate(-90deg);
+}
+
+.event-editor .event-schedule-editor[open] > .event-schedule-summary {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ── 툴바 / 빈 상태 ───────────────────────────────────────────────────── */
+.event-editor .event-schedule-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.event-editor .event-schedule-help {
+  color: var(--text-2);
+  font: 400 11px/1.45 var(--font-ui);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-toolbar [data-testid="event-schedule-add"] {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* 일정이 하나도 없으면 툴바가 그 자체로 빈 상태 카드가 된다. */
+.event-editor .event-schedule-editor:has(.event-schedule-rows:empty) .event-schedule-toolbar {
+  border: 1px dashed var(--border-default);
+  border-radius: 8px;
+  flex-direction: column;
+  gap: 9px;
+  margin: 10px 12px 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.event-editor .event-schedule-rows:empty {
+  display: none;
+}
+
+/* ── 행 카드 ──────────────────────────────────────────────────────────── */
+.event-editor .event-schedule-rows {
+  counter-reset: event-schedule-row;
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.event-editor .event-schedule-row {
+  align-items: start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  counter-increment: event-schedule-row;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  padding: 32px 12px 12px;
+  position: relative;
+}
+
+.event-editor .event-schedule-row::before {
+  background: var(--accent-muted);
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  content: "일정 " counter(event-schedule-row);
+  font: 700 10px/1 var(--font-ui);
+  left: 12px;
+  letter-spacing: .03em;
+  padding: 5px 9px;
+  position: absolute;
+  top: 9px;
+}
+
+.event-editor .event-schedule-row [data-testid^="event-schedule-delete-"] {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--danger);
+  font: 650 10.5px/1 var(--font-ui);
+  padding: 4px 8px;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+}
+
+.event-editor .event-schedule-row [data-testid^="event-schedule-delete-"]:hover {
+  background: var(--danger-muted);
+  border-color: var(--danger);
+}
+
+/* ── 「언제」 / 「어디로」 블록 ────────────────────────────────────────── */
+.event-editor .event-schedule-condition-grid,
+.event-editor .event-schedule-target-grid {
+  align-items: start;
+  background: var(--bg-inset);
+  border-radius: 7px;
+  display: grid;
+  gap: 8px 10px;
+  min-width: 0;
+  padding: 9px 10px 10px;
+}
+
+.event-editor .event-schedule-condition-grid::before,
+.event-editor .event-schedule-target-grid::before {
+  color: var(--text-2);
+  font: 700 10px/1 var(--font-ui);
+  grid-column: 1 / -1;
+  letter-spacing: .06em;
+}
+
+.event-editor .event-schedule-condition-grid::before {
+  content: "언제";
+}
+
+.event-editor .event-schedule-target-grid::before {
+  content: "어디로";
+}
+
+/* 기본은 1열(레일이 아래로 접히는 좁은 폭). 여러 열은 넓은 시트에서만 켠다 —
+   1열에서 explicit `grid-row` 가 남으면 방향·활동이 같은 칸에 겹친다(실측). */
+.event-editor .event-schedule-condition-grid,
+.event-editor .event-schedule-target-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1321px) {
+  .event-editor .event-schedule-condition-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* 맵 | X | Y  /  활동 | 방향 —
+     자유 입력인 「활동」이 넓은 칸을, 값이 네 개뿐인 「방향」이 좁은 칸을 쓴다. */
+  .event-editor .event-schedule-target-grid {
+    grid-template-columns: minmax(0, 1fr) 72px 72px;
+  }
+
+  /* 방향(4번째)과 활동(5번째)의 자리를 시각적으로 맞바꾼다. */
+  .event-editor .event-schedule-target-grid > .event-schedule-label:nth-child(4) {
+    grid-column: 2 / -1;
+    grid-row: 3;
+  }
+
+  .event-editor .event-schedule-target-grid > .event-schedule-label:nth-child(5) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+
+/* ── 라벨: 캡션 위 · 컨트롤 아래 ──────────────────────────────────────── */
+.event-editor .event-schedule-label {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-label > span:first-child {
+  color: var(--text-2);
+  font: 600 10.5px/1.2 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-schedule-label .event-custom-select,
+.event-editor .event-schedule-label .event-custom-select-trigger,
+.event-editor .event-schedule-row select,
+.event-editor .event-schedule-row input[type="text"],
+.event-editor .event-schedule-row input[type="number"] {
+  max-width: none;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-editor .event-schedule-row input[type="text"],
+.event-editor .event-schedule-row input[type="number"] {
+  box-sizing: border-box;
+  font: 500 12px/18px var(--font-ui);
+  padding: 5px 7px;
+}
+
+.event-editor .event-schedule-row input:disabled {
+  color: var(--text-disabled);
+  opacity: .6;
+}
+
+/* 체크박스 + 시작–끝: 체크박스는 고정, 숫자칸이 남은 폭을 나눈다. */
+.event-editor .event-schedule-range {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-editor .event-schedule-range > input[type="checkbox"] {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.event-editor .event-schedule-range > span {
+  color: var(--text-3);
+  font: 500 11px/1 var(--font-ui);
+  text-align: center;
+}
+
+/* ── 뒤 일정을 가리는 무조건 행 경고 ──────────────────────────────────── */
+.event-editor .event-schedule-shadow-warning {
+  background: var(--warning-muted);
+  border-left: 3px solid var(--warning);
+  border-radius: 6px;
+  color: var(--warning);
+  font: 600 11px/1.45 var(--font-ui);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 7px 10px;
+}
+
+/* 레일이 아래로 접히는 좁은 폭(본문 ~230px) 보정. */
+@media (max-width: 1320px) {
+  /* 230px 안에서는 도움말과 추가 버튼이 한 줄에 못 선다. */
+  .event-editor .event-schedule-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  /* 「일정 N」 배지와 삭제 버튼이 겹치기 직전이므로 삭제를 배지 아래 줄로 내린다. */
+  .event-editor .event-schedule-row {
+    padding-top: 56px;
+  }
+
+  .event-editor .event-schedule-row [data-testid^="event-schedule-delete-"] {
+    left: 10px;
+    right: auto;
+    top: 30px;
+  }
+}
+
+/* ============================================================================
+   3뷰 토글(목록/스토리/미리보기) 수정 — 2026-08-29
+
+   측정된 결함과 이 블록이 담당하는 부분:
+    · 스토리 카드가 클릭 대상으로 안 보였다 → hover/focus 표시를 준다.
+    · 스토리에는 순서 변경·삭제 수단이 아예 없었다 → 목록의 `.cmd-actions` 와 같은
+      hover 노출 액션 트랙을 카드/분기 줄 오른쪽에 붙인다.
+    · 카테고리 색 레일이 목록에만 있었다 → 같은 시각 언어의 배지를 카드에 준다.
+    · 검색창과 실제 필터가 어긋났다 → 일치 개수·지우기 버튼으로 상태를 보이게 한다.
+    · 편집 팝오버의 이동/복사가 조용히 죽어 있었다 → 대상 문구 + disabled 로 정직하게.
+   새 색은 만들지 않는다 — 전부 기존 토큰(`--cmdcat-*`, `--control-bg`, `--danger`)이다.
+   ========================================================================= */
+
+/* 스토리 카드 트랙: 번호 · 카테고리 배지 · 종류 · 요약 · 액션 */
+.event-editor .event-storyboard-card {
+  grid-template-columns: 28px auto 52px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-storyboard-branch-command {
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-storyboard-card:hover,
+.event-editor .event-storyboard-branch-command:hover {
+  background: var(--control-bg);
+}
+
+.event-editor .event-storyboard-card:focus-visible,
+.event-editor .event-storyboard-branch-command:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.event-editor .event-storyboard-card-cat {
+  align-items: center;
+  align-self: start;
+  background: color-mix(in srgb, var(--blk-cat, var(--text-3)) 12%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--blk-cat, var(--text-3)) 28%, var(--border));
+  border-radius: 999px;
+  color: var(--blk-cat, var(--text-3));
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 700;
+  gap: 3px;
+  height: 20px;
+  justify-content: center;
+  margin-top: 2px;
+  padding: 0 7px;
+  white-space: nowrap;
+}
+
+.event-editor .event-storyboard-card-cat::before { content: attr(data-glyph); }
+.event-editor .event-storyboard-card-cat::after { content: attr(data-label); }
+
+/* 좁은 폭에서는 글리프만 남긴다 — 목록의 `.cmd-cat-icon` 과 같은 규칙. */
+@media (max-width: 1050px) {
+  .event-editor .event-storyboard-card-cat { padding: 0 5px; }
+  .event-editor .event-storyboard-card-cat::after { display: none; }
+}
+
+/* 줄 액션 — 평소 숨기고 hover/선택/포커스에서만. 목록 `.cmd-actions` 와 같은 계약. */
+.event-editor .event-storyboard-row-actions {
+  align-items: center;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.event-editor .event-storyboard-card:hover > .event-storyboard-row-actions,
+.event-editor .event-storyboard-card.is-selected > .event-storyboard-row-actions,
+.event-editor .event-storyboard-card:focus-within > .event-storyboard-row-actions,
+.event-editor .event-storyboard-branch-command:hover > .event-storyboard-row-actions,
+.event-editor .event-storyboard-branch-command.is-selected > .event-storyboard-row-actions,
+.event-editor .event-storyboard-branch-command:focus-within > .event-storyboard-row-actions {
+  opacity: 1;
+}
+
+.event-editor .event-storyboard-row-action {
+  appearance: none;
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  min-height: 24px;
+  min-width: 24px;
+  padding: 0 4px;
+}
+
+.event-editor .event-storyboard-row-action:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.event-editor .event-storyboard-row-action.is-danger:hover {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+.event-editor .event-storyboard-row-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-editor .event-storyboard-row-actions { transition: none; }
+}
+
+/* 검색 — 입력창 하나가 아니라 "입력 + 지우기 + 일치 개수" 한 벌이다. */
+.event-editor .event-editor-command-toolbar > .event-editor-command-search-field {
+  order: 1;
+}
+
+.event-editor .event-editor-command-search-field {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.event-editor .event-editor-command-search:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.event-editor .event-editor-command-search-clear {
+  appearance: none;
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  min-height: 26px;
+  min-width: 26px;
+  padding: 0;
+}
+
+.event-editor .event-editor-command-search-clear:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.event-editor .event-editor-command-search-count {
+  color: var(--text-3);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-command-search-count[data-state="miss"] {
+  color: var(--danger);
+}
+
+/* 편집 팝오버 — 무엇에 적용되는지 먼저 말한다. */
+.event-editor .event-editor-command-edit-target {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 0 0 6px;
+  max-width: 240px;
+}
+
+.event-editor .event-editor-command-edit-target[data-state="empty"] {
+  color: var(--warning);
+}
+
+.event-editor .event-editor-command-tool:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* 편집·도구 팝오버가 스토리 카드 밑으로 깔려서 「위로 이동」 클릭이 카드에 먹혔다.
+   원인은 팝오버가 아니라 툴바다: 03-legend-toolbar.css 가 `position: static` 과 함께 적어 둔
+   (그래서 무해했던) `z-index: 1` 이, mockup.css 가 나중에 `position: relative` 를 주면서 살아나
+   툴바를 쌓임 문맥으로 만든다. 그러면 팝오버의 `z-index: 16` 은 툴바 안에 갇히고, 툴바(1)와
+   카드(1)가 같은 값이라 DOM 에서 뒤에 오는 카드가 이긴다 — 실측: elementFromPoint 가
+   버튼 자리에서 `div.row.event-storyboard-card` 를 반환했고 Playwright 클릭이 타임아웃했다.
+   툴바는 카드와 겹치지 않는 그리드 행에 있으니 쌓임 문맥일 이유가 없다. 문맥을 풀어
+   팝오버가 원래 의도대로 자기 z-index 로 카드 위에 서게 한다. */
+.event-editor .event-contents-fieldset > .event-editor-command-toolbar,
+.event-editor .event-editor-command-toolbar {
+  z-index: auto;
 }

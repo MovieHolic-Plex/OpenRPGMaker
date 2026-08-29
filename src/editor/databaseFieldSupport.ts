@@ -73,6 +73,20 @@ export const DATABASE_FIELD_SUPPORT = Object.freeze([
     help: "장비 전환 시 양손 슬롯을 원자적으로 점유하고 인벤토리 카피는 한 번만 계산합니다.",
   },
   {
+    field: "accuracy",
+    owner: "equipment",
+    support: "runtime",
+    label: "명중률",
+    help: "일반 공격 명중률에 장착 장비의 명중률 보정을 곱해 적용합니다.",
+  },
+  {
+    field: "criticalRate",
+    owner: "equipment",
+    support: "runtime",
+    label: "치명타율",
+    help: "일반 공격과 스킬의 치명타율에 장착 장비의 수치를 더해 적용합니다.",
+  },
+  {
     field: "usableAsItemSkillId",
     owner: "equipment",
     support: "runtime",

@@ -1,5 +1,10 @@
 # Editor Validation Expectations
 
+## 이벤트 초안 검증 표면 (2026-08-28)
+
+- 이벤트 편집기 검증 결과는 창 아래쪽 스트립이 아니라 타이틀바 오른쪽 **검토 알림 종**이다. 회귀: `test/eventEditorValidationBell.test.ts`(hidden/개수/최악 심각도/99+ 상한/항목 클릭 이동 + 팝오버 닫힘/바깥 클릭 닫힘) + `test/eventEditorUiDensity.test.ts`(편집면에 검증 chrome 이 없음). 심각도 계산과 개수는 `data-severity` / `data-count` 로 노출되므로 테스트는 문구가 아니라 이 값을 검사한다.
+- `validateEventDraft` 자체의 판정 규칙은 아래 「Event editor aggregate gate」 절이 정본이다. 종은 그 결과의 표시 계층일 뿐이며 severity contract(error 는 Apply/OK/Test 차단, warning 은 진행 가능)를 바꾸지 않는다.
+
 ## event-unreachable lint rule (2026-08-27)
 
 - `projectLint`는 모든 맵 이벤트에 대해 자신의 칸과 4방향 이웃이 전부 통행 불가인 경우 warning 코드 `event-unreachable` 을 보고한다(mapId·event id·좌표 포함, 수정 지시: "통행 가능한 칸으로 옮기세요"). RM2K3 의미상 action 트리거 이벤트(문·간판)는 통행 불가 타일 위에 있어도 되므로, 통행 가능한 이웃이 하나라도 있으면 진단하지 않는다. `playerTouch-impassable` 과 대상이 겹칠 수 있지만 의미가 다르고 둘 다 발화해도 무방하다. 회귀: `test/projectLint.test.ts` 의 `event-unreachable` describe.
@@ -39,6 +44,18 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 - The run itself is runtime session state and the Phase 0–3 work is engine/editor code only, so it does not require Supabase content persistence. Any demo/map authored with these commands or room slots still falls under the mandatory Supabase save-and-reload rule.
 
 ## Validation Expectations
+
+- Draft validation reports a friendship page/fork condition that can never be true as warning code `condition.friendship.no-character-id` — empty `npcKey` plus a host event without `characterId` fails closed at runtime (`resolveSocialKey` never falls back to `event.id`). The issue field anchor is `event-page-friendship-condition-npc-key`, and the editor shows the same fact inline through `event-condition-friendship-requires-character-id`. Contract test: `test/friendshipConditionGate.test.ts`.
+
+- **Always-true / always-false condition traps are author-visible (2026-08-29).** `validateCondition` used to `return` with no checks at all for `selfSwitch`, `gold`, `timer`, `timePhase`, `season`, `npcActivity`, and `battleResult`, so a condition that could never do what the author meant produced no issue. New codes, all `warning` severity because the projects that contain them are still valid and must not be blocked from Apply/OK:
+  - `condition.timer.always-true` — a `N초 이하` threshold is satisfied when no timer is running, because all three evaluators read an absent timer as `0`. The runtime rule is a deliberate pinned contract; this warning is the author-facing half of it.
+  - `condition.npcActivity.empty` — an empty activity string can never match `session.npcActivities[eventId]`.
+  - `condition.npcActivity.unknown` — the activity is not written by any NPC schedule in the project. This one **is** provable, unlike the removed `battleResult` inference below: `session.npcActivities[eventId]` has exactly one shipping writer, `setActivity` in `src/player/npcSchedules.ts`, and it only ever stores a schedule entry's `activity` field (`src/testing/sceneTestRunner.ts` mirrors it for the scene harness). An activity string that appears in no schedule therefore has no producer. The set is built once per validation run by `collectNpcActivitySuggestions` and carried on `referenceSets().npcActivities`. Wording stays advisory rather than claiming "항상 거짓", because a save file written before the author renamed a schedule activity can still hold the old value until the schedule pass clears it. Contract test: `test/npcActivitySuggestions.test.ts`.
+  - `condition.timePhase.no-time-system` / `condition.season.no-time-system` — without `system.timeSystem`, `gameTime` is undefined and `conditionMatchesTimePhase` / `conditionMatchesSeason` are permanently false.
+  - `condition.gold.impossible` — the comparison cannot hold anywhere in the reachable gold range.
+  Contract test: `test/eventDraftValidator.test.ts`.
+
+- **`battleResult` gets no impossibility check at all, and must not get one back (2026-08-29).** Both forms of the former `condition.battleResult.no-preceding-battle` warning were removed, together with the project-wide `battleProcessing` scan and the same-page preceding-battle walk that existed only to support them. The inference is unsound in every form: `battleResult` is *persistent session state*, so a battle in a different event or a common event sets it and it survives, which makes command order inside one page irrelevant. Battles also start with no `battleProcessing` command at all — random map encounters and field spawns produce a battle step whose `ownerEventId` is undefined (`src/player/playSceneBattle.ts`), so a project whose battles are all random encounters contains zero `battleProcessing` commands and the project-wide form false-positived on every page-level `battleResult` condition in it. This warning had already been narrowed once for the same reason; needing a second narrowing was the signal that the inference itself was wrong rather than its threshold. `battleResult` stays in the `validateCondition` switch as an explicit no-check case so the `const exhaustive: never` gate keeps compiling. Do not reintroduce this warning in any form — an unprovable warning on a legitimate authoring pattern is noise.
 
 - Database visual-shell changes must enumerate every registered tab from the product registry rather than a hand-picked subset. At desktop and narrow acceptance widths, assert one invariant `.db-shared-workspace` frame, stable sidebar/workspace geometry, and no document overflow, then capture and inspect screenshots for every tab. Title-screen changes additionally require the real test-play window at its authored runtime viewport.
 

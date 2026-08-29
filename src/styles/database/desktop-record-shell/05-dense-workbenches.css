@@ -262,7 +262,7 @@
 
   .database-modal-body .db-animation-top-grid :is(input, select),
   .database-modal-body .db-animation-panel :is(input, select) {
-    background: var(--bg-raised);
+    background-color: var(--bg-raised);
     border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 4px;
     box-sizing: border-box;
@@ -461,7 +461,7 @@
   }
 
   .database-modal-body .db-parity-form :is(input, select, code) {
-    background: var(--bg-raised);
+    background-color: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     box-sizing: border-box;
@@ -471,6 +471,11 @@
     min-width: 0;
     padding: 4px 8px;
     width: 100%;
+  }
+
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .database-modal-body .db-parity-form select {
+    padding-right: 24px;
   }
 
   .database-modal-body .db-parity-form code {
@@ -611,7 +616,7 @@
   }
 
   .database-modal-body .db-common-event-editor :is(input, select) {
-    background: var(--bg-raised);
+    background-color: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     border-radius: 4px;
     color: var(--db-modern-text);
@@ -619,6 +624,11 @@
     min-height: 32px;
     padding: 4px 8px;
     width: 100%;
+  }
+
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .database-modal-body .db-common-event-editor select {
+    padding-right: 24px;
   }
 
   .database-modal-body .db-common-event-editor .btn {

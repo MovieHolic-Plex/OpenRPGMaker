@@ -282,14 +282,25 @@
   font: 400 11px/1.2 "Malgun Gothic", system-ui, sans-serif;
 }
 
-.database-modal-backdrop .database-modal-window .db-animation-studio-inspector :is(input[type="text"], input[type="number"], select) {
-  background: var(--db-studio-surface);
+/* select 를 `:is()` 안에 함께 두면 특이성이 (0,4,1) 로 올라간다 — `:is()` 는 인자 중 가장
+   높은 것(여기선 `input[type="text"]` 의 속성 선택자)을 따르기 때문이다. 그러면 아래
+   select 전용 padding 보정이 (0,3,1) 로 밀려 진다(실측: computed padding-right 8px).
+   그래서 select 를 선택자 목록으로 빼 두 갈래가 각자의 특이성을 갖게 한다. 선언은 공유. */
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector :is(input[type="text"], input[type="number"]),
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector select {
+  background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-1);
   font: 400 12px/1.2 "Malgun Gothic", system-ui, sans-serif;
   min-height: 30px;
   padding: 0 8px;
+}
+
+/* 위 단축이 오른쪽 8px 로 덮어 chevron 밴드(오른쪽 7~17px)를 글자에 내주므로,
+   select 만 밴드를 되찾는다. 특이성은 위 select 갈래와 같은 (0,3,1) 이고 뒤에 와서 이긴다. */
+.database-modal-backdrop .database-modal-window .db-animation-studio-inspector select {
+  padding-right: 24px;
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector .db-animation-panel,
@@ -640,7 +651,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-terrain-record :is(input, select) {
-  background: var(--db-studio-surface);
+  background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-1);
@@ -648,6 +659,11 @@
   min-height: 30px;
   padding: 0 8px;
   width: 100%;
+}
+
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+.database-modal-backdrop .database-modal-window .db-terrain-record select {
+  padding-right: 24px;
 }
 
 /* Battle screen */
@@ -688,7 +704,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-screen-inspector :is(input, select) {
-  background: var(--db-studio-surface);
+  background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-1);
@@ -905,7 +921,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-command-card :is(input, select) {
-  background: var(--db-studio-surface);
+  background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   box-sizing: border-box;
@@ -915,6 +931,11 @@
   min-width: 0;
   padding: 0 8px;
   width: 100%;
+}
+
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+.database-modal-backdrop .database-modal-window .db-battle-command-card select {
+  padding-right: 24px;
 }
 
 .database-modal-backdrop .database-modal-window .db-studio-summary-strip {

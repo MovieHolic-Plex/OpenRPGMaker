@@ -10,6 +10,7 @@ import {
   GHOST_WIPE_DURATION_MS,
   GHOST_WIPE_HOLD_MS,
   type AgentGhostCell,
+  appendAgentGhostPreviewForToolCall,
   clearAgentGhostPreview,
   replaceAgentGhostPreviewFromProjectDiff,
 } from "@/editor/agentGhostPreview";
@@ -107,7 +108,7 @@ describe("ghostPhaseChipInfo helper", () => {
       isScheduleComplete: true,
     });
     expect(doneInfo.spinner).toBe(false);
-    expect(doneInfo.text).toBe("초안 완성 · 검토 대기");
+    expect(doneInfo.text).toBe("초안 완성");
   });
 });
 
@@ -308,6 +309,43 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     expect(schedule[0].cell.x).toBe(0);
     expect(schedule[1].cell.x).toBe(1);
     expect(schedule[0].startMs).toBeLessThan(schedule[1].startMs);
+  });
+
+  it("(b2) 같은 셀이 프리뷰 두 장에 겹쳐 들어와도 사라진 셀의 공개 시각은 버린다", () => {
+    // 청소 조건의 비교 대상은 프리뷰 셀의 **개수**가 아니라 서로 다른 키의 수여야 한다.
+    // appendAgentGhostPreviewForToolCall 경로는 같은 맵에 프리뷰를 여러 장 얹으므로(id 가
+    // 도구명·인자까지 포함해 달라진다) 같은 좌표가 중복 계수되고, 개수로 비교하면 청소가
+    // 건너뛰어져 되돌아온 셀이 **이미 지나간 시각**을 물려받아 와이프 없이 튀어나온다.
+    let now = 1000;
+    const renderer = new AgentGhostPreviewRenderer(mockScene, mockLayer, () => "m1", { clock: () => now });
+
+    const base = createBlankProject();
+    base.maps["m1"] = createBlankMap("m1", 10, 10);
+    const draft = structuredClone(base);
+    draft.maps["m1"].lowerTiles[0] = 5; // (0,0) — 첫 열
+    draft.maps["m1"].lowerTiles[9] = 6; // (9,0) — 마지막 열
+    store.replace(base);
+
+    replaceAgentGhostPreviewFromProjectDiff(base, draft);
+    renderer.render();
+    const firstAtX0 = renderer.getCurrentSchedule().find((step) => step.cell.x === 0)?.startMs;
+    const firstAtX9 = renderer.getCurrentSchedule().find((step) => step.cell.x === 9)?.startMs;
+    expect(firstAtX0).toBe(0);
+    expect(firstAtX9).toBe(GHOST_WIPE_DURATION_MS);
+
+    // 프리뷰가 (0,0) 한 칸으로 줄어드는데, 그 한 칸이 서로 다른 프리뷰 두 장에 들어 있다.
+    clearAgentGhostPreview();
+    appendAgentGhostPreviewForToolCall(base, "clear_region", { mapId: "m1", x: 0, y: 0, w: 1, h: 1 });
+    appendAgentGhostPreviewForToolCall(base, "mirror_region", { mapId: "m1", x: 0, y: 0, w: 1, h: 1 });
+    now += 5000;
+    renderer.render();
+
+    // (9,0) 이 다시 들어온다 — 사라졌던 셀이므로 지금 시각부터 새 와이프를 받아야 한다.
+    replaceAgentGhostPreviewFromProjectDiff(base, draft);
+    renderer.render();
+    const again = renderer.getCurrentSchedule();
+    expect(again.find((step) => step.cell.x === 0)?.startMs).toBe(firstAtX0);
+    expect(again.find((step) => step.cell.x === 9)?.startMs).toBe(5000);
   });
 
   it("(d) 씬 update 이벤트가 공개 애니메이션을 진행시키고 완료 후 스스로 떨어진다", () => {

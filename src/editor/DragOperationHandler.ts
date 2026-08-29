@@ -10,6 +10,7 @@ import { moveEvent } from "@/editor/eventActions";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
 import { paintTilesBulk } from "@/editor/actions";
 import { editorWorkingEvents } from "@/project/eventDrafts";
+import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -70,6 +71,17 @@ export class DragOperationHandler {
     return this.dragOperation !== null;
   }
 
+  /**
+   * 드래그를 하고 있거나, 이벤트를 누른 채 아직 이동으로 승격되지 않은 후보를 들고 있다.
+   *
+   * `active()` 와 나누는 이유: 후보 상태에서도 `tryPromoteEventDrag` 가 살아 있는 카메라로
+   * 타일을 다시 구하므로, 손을 대지 않았는데 카메라가 움직이면 눌린 자리와 다른 타일이 나와
+   * 유령 이벤트 이동이 시작된다. 카메라 양보 판정은 이 넓은 쪽을 봐야 한다.
+   */
+  busy(): boolean {
+    return this.dragOperation !== null || this.eventDragCandidate !== null;
+  }
+
   clear(): void {
     this.dragOperation = null;
     this.eventDragCandidate = null;
@@ -119,7 +131,7 @@ export class DragOperationHandler {
     if (!map) return;
     const point = this.deps.pointerToTile(ptr);
     if (!isInsideMapPoint(point, map)) return;
-    const existing = editorWorkingEvents(map.events).find((event) => event.x === point.x && event.y === point.y);
+    const existing = findEventCoveringPoint(editorWorkingEvents(map.events), point.x, point.y);
     if (!existing) return;
     this.eventDragCandidate = { mapId, eventId: existing.id, origin: point };
   }
@@ -208,9 +220,13 @@ export class DragOperationHandler {
       toast(mapEditLockNotice(operation.mapId), "error");
       return;
     }
-    const occupied = editorWorkingEvents(map.events).some(
-      (event) => event.id !== operation.eventId && event.x === point.x && event.y === point.y
-    );
+    // 끌어다 놓을 칸이 남의 **몸 사각**에 걸리면 거절한다. 앵커만 보던 시절에는 2x2
+    // 이벤트의 비앵커 칸으로 다른 이벤트를 밀어 넣을 수 있었다.
+    const occupied = findEventCoveringPoint(
+      editorWorkingEvents(map.events).filter((event) => event.id !== operation.eventId),
+      point.x,
+      point.y
+    ) !== undefined;
     if (occupied) {
       toast("이미 다른 이벤트가 있는 칸입니다.", "error");
       return;

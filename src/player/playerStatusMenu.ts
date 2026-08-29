@@ -426,7 +426,7 @@ function renderFooter(
   footer.append(el("span", {
     class: "status-menu-gold",
     text: snapshot.goldLabel,
-    attrs: { title: snapshot.goldLabel },
+    attrs: { "aria-label": snapshot.goldLabel },
     dataset: { testid: "status-menu-gold" },
   }));
   footer.append(el("div", {

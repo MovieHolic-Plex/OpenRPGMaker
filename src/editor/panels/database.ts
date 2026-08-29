@@ -8,6 +8,7 @@ import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView"
 import { renderDailyWeatherTab } from "@/editor/panels/databaseDailyWeatherView";
 import { renderFarmAnimalsTab } from "@/editor/panels/databaseFarmAnimalsView";
 import { renderFarmSpatialTab } from "@/editor/panels/databaseFarmSpatialView";
+import { renderFactionsTab } from "@/editor/panels/databaseFactionView";
 import { renderLifeCollectionsTab } from "@/editor/panels/databaseLifeCollectionsView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
@@ -23,9 +24,11 @@ import {
   renderTerrainTab,
 } from "@/editor/panels/databaseUtilityRecordViews";
 import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
+import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
-import { uiLabel } from "@/editor/uiCopy";
+import {} from "@/editor/uiCopy";
+import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -43,6 +46,7 @@ export type DatabaseTab =
   | "dailyWeather"
   | "farmAnimals"
   | "farmSpatial"
+  | "factions"
   | "lifeCollections"
   | "elements"
   | "monsterSpecies"
@@ -75,6 +79,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
   { id: "monsterSpecies", label: "몬스터 종족", testid: "db-tab-monster-species" },
   { id: "troops", label: "적 그룹", testid: "db-tab-troops" },
+  { id: "factions", label: "진영", testid: "db-tab-factions" },
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
@@ -86,61 +91,36 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "variables", label: "변수", testid: "db-tab-variables" },
 ];
 
-const tabOrder: readonly DatabaseTab[] = [
-  "overview",
-  "actors",
-  "classes",
-  "skills",
-  "items",
-  "equipment",
-  "enemies",
-  "monsterSpecies",
-  "troops",
-  "elements",
-  "states",
-  "animations",
-  "battleScreen",
-  "battleCommands",
-  "terrain",
-  "crops",
-  "characters",
-  "lifeCrafting",
-  "dailyWeather",
-  "farmAnimals",
-  "lifeCollections",
-  "farmSpatial",
-  "tilesets",
-  "structureKits",
-  "commonEvents",
-  "system",
-  "terms",
-  "switches",
-  "variables",
-];
-
-const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map(tabFor);
-const COMMON_TAB_IDS: readonly DatabaseTab[] = ["overview", "actors", "items", "enemies", "troops", "system"];
-
 export type DatabaseTabGroup = {
   readonly label: string;
   readonly slug: string;
   readonly tabs: readonly DatabaseTab[];
 };
 
-// 사이드바 그룹 라벨/순서만 정의한다 — 탭 id는 tabs/tabOrder 레지스트리에서 역참조하므로
+// 사이드바 그룹 라벨/순서만 정의한다 — 탭 id는 tabs 레지스트리에서 역참조하므로
 // 라벨·testid는 여기서 중복 정의하지 않는다.
+//
+// 이 배열이 레일 순서의 **유일한** 출처다. 전에는 `tabOrder` 가 손으로 쓴 두 번째 순서였고
+// 둘이 이미 어긋나 있었다(`terrain` 이 tabOrder 에선 battleCommands 뒤, TAB_GROUPS 에선
+// 전투 그룹 끝). 한쪽만 고치면 조용히 다시 갈라지므로 파생으로 묶는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "파티", slug: "party", tabs: ["actors", "classes", "skills", "items", "equipment"] },
+  { label: "몬스터", slug: "monster", tabs: ["enemies", "monsterSpecies", "troops", "factions"] },
   {
-    label: "전투·몬스터",
+    label: "전투 규칙",
     slug: "battle",
-    tabs: ["enemies", "monsterSpecies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
+    tabs: ["elements", "states", "animations", "battleScreen", "battleCommands"],
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
-  { label: "맵", slug: "map", tabs: ["tilesets", "structureKits", "commonEvents"] },
+  // 지형은 전투 데이터가 아니라 맵 데이터다 — 타일셋·구조물과 같은 그룹에 둔다.
+  { label: "세계", slug: "world", tabs: ["tilesets", "structureKits", "terrain", "commonEvents"] },
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
 
+// 개요는 그룹 밖에 고정되므로 앞에 붙인다.
+const tabOrder: readonly DatabaseTab[] = ["overview", ...TAB_GROUPS.flatMap((group) => group.tabs)];
+
+const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map(tabFor);
 function groupForTab(id: DatabaseTab): DatabaseTabGroup | undefined {
   return TAB_GROUPS.find((group) => group.tabs.includes(id));
 }
@@ -155,13 +135,24 @@ function collapsedGroupSlugs(): Set<string> {
   return collapsedGroups;
 }
 
+/** 저장된 접힘 상태. 그룹 구성이 바뀌면(`전투·몬스터` 분할, `map`→`world` 개명) 예전 배열은
+ *  더 이상 아코디언 불변식을 만족하지 않는다 — 새 slug 가 집합에 없으니 펼쳐진 채로 렌더되어
+ *  두 그룹이 동시에 열리고 레일이 다시 스크롤된다. 그래서 죽은 slug 를 버리고, 남은 상태가
+ *  "한 그룹만 열림" 을 깨면 저장값을 폐기해 기본값으로 떨어진다. 테스트는 빈 스토리지에서
+ *  시작하므로 이 경로는 오래된 사용자만 밟는다. */
 function readStoredCollapsedGroups(): Set<string> | null {
   try {
     const raw = window.localStorage.getItem(DATABASE_COLLAPSED_GROUPS_KEY);
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return null;
-    return new Set(parsed.filter((slug): slug is string => typeof slug === "string"));
+    const known = new Set(TAB_GROUPS.map((group) => group.slug));
+    const collapsed = new Set(
+      parsed.filter((slug): slug is string => typeof slug === "string" && known.has(slug)),
+    );
+    // `> 1` 이다 — 전부 접힌 상태는 사용자가 실제로 만들 수 있는 정당한 상태이므로 보존한다.
+    if (TAB_GROUPS.length - collapsed.size > 1) return null;
+    return collapsed;
   } catch {
     return null;
   }
@@ -273,16 +264,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
   });
   // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 모드와 무관하게 유지한다.
   const chrome = getEditorChrome();
-  if (chrome.databaseNav === "common") {
-    for (const id of COMMON_TAB_IDS) appendTabButton(header, body, container, tabFor(id));
-
-    const allTabs = el("details", { dataset: { testid: "db-nav-all" } });
-    allTabs.append(el("summary", { text: `모든 ${uiLabel("databaseShort", chrome.jargonStyle)}` }));
-    for (const tab of orderedTabs) {
-      if (!COMMON_TAB_IDS.includes(tab.id)) appendTabButton(allTabs, body, container, tab);
-    }
-    header.append(allTabs);
-  } else if (chrome.databaseNav === "grouped") {
+  if (chrome.databaseNav === "grouped") {
     appendTabSearch(header);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {
@@ -385,6 +367,10 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return project.variables.filter((record) => record.name.trim().length > 0).length;
     case "commonEvents":
       return project.commonEvents.length;
+    case "factions":
+      return 2 + new Set((project.factions?.defs ?? [])
+        .map((def) => def.id)
+        .filter((id) => id !== PLAYER_FACTION_ID && id !== DEFAULT_ENEMY_FACTION_ID)).size;
     case "tilesets":
       return Object.keys(project.tilesets).length;
     case "structureKits":
@@ -460,12 +446,15 @@ function appendTabButton(
   header.append(
     el("button", {
       class: `db-tab${activeTab === tab.id ? " active" : ""}`,
-      text: tab.label,
+      // 아이콘은 `children` 으로만 넣는다 — el() 은 `text` 를 먼저 배정하고 children 을
+      // 나중에 append 하므로 둘을 섞으면 라벨이 아이콘 앞으로 온다. <path> 는 텍스트
+      // 노드를 안 가지므로 button.textContent 는 라벨 그대로 남는다(G006 라벨 계약).
+      children: [makeDatabaseTabIcon(tab.id), tab.label],
       attrs: { type: "button", title: tab.label, "aria-label": tab.label },
       dataset:
         count === null || count === 0
-          ? { testid: tab.testid, short: tab.label.slice(0, 1) }
-          : { testid: tab.testid, short: tab.label.slice(0, 1), count: String(count) },
+          ? { testid: tab.testid }
+          : { testid: tab.testid, count: String(count) },
       on: {
         click: () => {
           if (activeTab === tab.id) return;
@@ -575,6 +564,9 @@ function renderActiveTab(
       break;
     case "lifeCollections":
       renderLifeCollectionsTab(body, rerender);
+      break;
+    case "factions":
+      renderFactionsTab(body, rerender);
       break;
     case "switches":
       renderSwitchesTab(body, rerender);

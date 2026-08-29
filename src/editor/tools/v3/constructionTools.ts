@@ -32,6 +32,16 @@ import {
   type CellEdit,
   type Rect,
 } from "./rmTypeExpander";
+import {
+  atomFromGroup,
+  fillRun,
+  hardAdjacencyViolation,
+  mirrorTile,
+  planRows,
+  type AisleAxis,
+  type RowAtom,
+  type RunCell,
+} from "./rowArrangement";
 
 const WALL_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 6, h: 4 }, material: "흰 집 벽" };
 const ROOF_EXAMPLE = { mapId: "map_1", material: "빨간 지붕", wallRect: { x: 8, y: 6, w: 6, h: 4 } };
@@ -52,6 +62,15 @@ const FILL_CIRCLE_EXAMPLE = {
   material: "물",
   layer: "lower",
   shape: "circle",
+};
+const ARRANGE_EXAMPLE = {
+  mapId: "map_1",
+  rect: { x: 6, y: 4, w: 14, h: 12 },
+  material: "벤치",
+  axis: "vertical",
+  aisleWidth: 2,
+  rowGap: 1,
+  symmetric: true,
 };
 
 export type FillRegionShape = "rect" | "ellipse" | "circle";
@@ -850,4 +869,192 @@ const tileErase: ToolDefinition = {
   },
 };
 
-export const CONSTRUCTION_TOOLS_V3: readonly ToolDefinition[] = [buildWall, buildRoof, placeDoor, placeWindow, layPath, placeProps, fillRegion, tileErase];
+interface RowMaterial {
+  readonly atom: RowAtom;
+  /** 낱장 타일 재료면 null — hard 규칙·거울 교체는 그룹 어휘에서만 나온다. */
+  readonly group: TileGroupMetadata | null;
+  readonly home: VocabLayerHome;
+  readonly label: string;
+  readonly softConfirm?: VocabSoftConfirm;
+}
+
+function coerceAisleAxis(value: unknown): AisleAxis {
+  if (value === undefined || value === null || value === "") return "vertical";
+  if (value === "vertical" || value === "horizontal") return value;
+  failWithExample(
+    "axis는 vertical(통로가 세로 — 좌우로 줄이 갈림) 또는 horizontal(통로가 가로 — 상하로 갈림)이어야 합니다",
+    ARRANGE_EXAMPLE,
+  );
+}
+
+/** 줄 배치 재료 — 그룹이면 문법에서 원자를 파생하고, 낱장 타일이면 1칸 원자로 쓴다. */
+function requireRowMaterial(
+  tileset: TilesetDef,
+  material: unknown,
+  options: { readonly axis: AisleAxis; readonly symmetric: boolean },
+): RowMaterial {
+  if (typeof material !== "string" || material.trim().length === 0) {
+    failWithExample("material(타일 라벨/설명, 예: \"벤치\"·\"의자(단독)\"·\"탁자(가로)\")이 필요합니다", ARRANGE_EXAMPLE);
+  }
+  const access = resolveMaterialByLabel(tileset, material, { preferGroup: true });
+  if (access.status === "missing") {
+    const suggestions = access.suggestions.length > 0 ? access.suggestions : suggestMaterialsByLabel(tileset, material, 5);
+    const hint = suggestions.length > 0
+      ? ` 비슷한 라벨: ${suggestions.map((entry) => `"${entry.label}"`).join(", ")} — material에 이 문자열을 넣으세요.`
+      : ` tile_query ask:"labels" 로 타일 라벨/설명을 조회하세요.`;
+    throw new ToolError(`${access.message}${hint} — 다시 보낼 형식 예시: ${JSON.stringify(ARRANGE_EXAMPLE)}`, {
+      code: "material-not-found",
+    });
+  }
+  if (access.kind === "group") {
+    return {
+      atom: atomFromGroup(tileset, access.group, options, ARRANGE_EXAMPLE),
+      group: access.group,
+      home: vocabLayerHomeFor(access.group, tilesetGrammarProfile(tileset)),
+      label: access.group.name || access.matchedLabel,
+      softConfirm: access.softConfirm,
+    };
+  }
+  return {
+    atom: { kind: "fixed", w: 1, h: 1, cells: [{ dx: 0, dy: 0, tile: access.tileId }], shape: "1칸" },
+    group: null,
+    home: "perCell",
+    label: access.matchedLabel,
+    softConfirm: access.softConfirm,
+  };
+}
+
+// 통로를 두고 줄을 반복하는 결정론 배치. 기존 프리미티브는 면 채우기(fill_region)와 랜덤
+// 산포(place_props)뿐이어서 "좌우로 줄지어 앉히는" 문법이 없었다(2026-08-29).
+const arrangeRows: ToolDefinition = {
+  name: "arrange_rows",
+  description:
+    "통로 하나를 두고 좌우(또는 상하)로 같은 줄을 반복 배치한다(v3) — 교회 신도석·극장 좌석·강의실 책상·병영 침상처럼 자리를 줄지어 놓는 결정론 배치. "
+    + "material은 타일 라벨/설명(예: \"벤치\"·\"의자(단독)\"), 그룹 id 금지. axis는 통로가 뻗는 방향이고 줄은 통로와 수직으로 놓인다. "
+    + "면을 통째로 채우려면 fill_region, 숲/들판 랜덤 산포는 place_props.",
+  mode: "write",
+  version: 3,
+  invalidArgsExample: ARRANGE_EXAMPLE,
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      rect: {
+        type: "object", description: "배치 영역(맵 좌표) — 통로까지 포함한 전체 구획",
+        properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
+        required: ["x", "y", "w", "h"],
+      },
+      material: { type: "string", description: "자리 재료: 타일 라벨/설명(예: \"벤치\", \"의자(단독)\", \"탁자(가로)\"). 그룹 id 금지" },
+      axis: {
+        type: "string",
+        enum: ["horizontal", "vertical"],
+        description: "통로가 뻗는 방향. 기본 vertical(통로가 세로로 뻗고 줄은 가로로 놓여 좌우로 갈린다)",
+      },
+      aisleWidth: { type: "integer", description: "가운데 통로 폭(칸). 기본 2. 0이면 통로 없이 한 덩어리" },
+      rowGap: { type: "integer", description: "줄 사이 빈 칸. 기본 1" },
+      symmetric: { type: "boolean", description: "통로 건너편 줄의 방향 타일을 거울상으로 바꿔 서로 마주보게 한다. 기본 false" },
+    },
+    required: ["mapId", "rect", "material"],
+  },
+  run(draft: Project, args: Record<string, unknown>): ToolExecResult {
+    const { map, tileset } = requireMapContext(draft, args, ARRANGE_EXAMPLE);
+    const rect = coerceRect(args.rect, "rect", ARRANGE_EXAMPLE);
+    requireRectInMap(map, rect, "rect", ARRANGE_EXAMPLE);
+    const axis = coerceAisleAxis(args.axis);
+    const symmetric = args.symmetric === true;
+    const aisleWidth = args.aisleWidth === undefined ? 2 : coerceInt(args.aisleWidth, "aisleWidth", ARRANGE_EXAMPLE);
+    const rowGap = args.rowGap === undefined ? 1 : coerceInt(args.rowGap, "rowGap", ARRANGE_EXAMPLE);
+    if (aisleWidth < 0) failWithExample("aisleWidth는 0 이상이어야 합니다(0=통로 없이 한 덩어리)", ARRANGE_EXAMPLE);
+    if (rowGap < 0) failWithExample("rowGap은 0 이상이어야 합니다", ARRANGE_EXAMPLE);
+
+    const material = requireRowMaterial(tileset, args.material, { axis, symmetric });
+    const plan = planRows(rect, axis, aisleWidth, rowGap, material.atom);
+    if (plan.lines.length === 0) {
+      throw new ToolError(
+        `rect ${rect.w}×${rect.h}에 '${material.label}' 줄(${material.atom.shape}, 두께 ${plan.thickness})을 놓을 자리가 없습니다`
+          + ` — 영역을 넓히거나 aisleWidth(${aisleWidth})/rowGap(${rowGap})을 줄이세요. — 다시 보낼 형식 예시: ${JSON.stringify(ARRANGE_EXAMPLE)}`,
+        { code: "rect-too-small" },
+      );
+    }
+
+    const protectedCells = protectedPassageCells(draft, map);
+    const placed: RunCell[] = [];
+    let leftover = 0;
+    let mirrored = 0;
+    let skipped = 0;
+    for (const line of plan.lines) {
+      const fill = fillRun(material.atom, line.rect, plan.runAxis);
+      leftover += fill.leftover;
+      for (const unit of fill.units) {
+        // 거울 교체는 타일만 바꾸고 원자 내부 셀 순서는 건드리지 않는다 — 벤치처럼 hard
+        // adjacency(327은 328 바로 왼쪽)가 방향을 고정한 원자는 뒤집으면 규칙 위반이 된다.
+        const cells = symmetric && line.side === "b" && material.group !== null
+          ? unit.map((cell) => {
+            const flipped = mirrorTile(tileset, material.group as TileGroupMetadata, cell.tile, axis);
+            if (flipped === null) return cell;
+            mirrored += 1;
+            return { ...cell, tile: flipped };
+          })
+          : unit;
+        if (cells.some((cell) => !inMapBounds(map, cell.x, cell.y) || protectedCells.has(pointKey(cell)))) {
+          skipped += 1;
+          continue;
+        }
+        placed.push(...cells);
+      }
+    }
+
+    if (placed.length === 0) {
+      throw new ToolError(
+        `'${material.label}' 줄을 한 칸도 놓지 못했습니다(자리 ${plan.lines.length}줄, 통행 보호로 건너뜀 ${skipped}개)`
+          + ` — 시작 지점·이벤트가 없는 영역을 고르거나 rect를 옮기세요.`,
+        { code: "no-placement" },
+      );
+    }
+    if (material.group) {
+      const violation = hardAdjacencyViolation(material.group, placed);
+      if (violation) throw new ToolError(violation, { code: "cluster-rule-violation" });
+    }
+
+    const applied = applyEdits(map, placed.map((cell) => ({
+      x: cell.x,
+      y: cell.y,
+      layer: layerForVocabTile(tileset, material.home, cell.tile),
+      tile: cell.tile,
+    })));
+
+    const warnings: string[] = [];
+    if (leftover > 0) {
+      warnings.push(
+        `'${material.label}'은 ${material.atom.shape} 원자라 줄 끝 ${leftover}칸이 나눠떨어지지 않아 비워 뒀습니다`
+          + ` — 딱 맞추려면 rect 크기나 aisleWidth를 조정하세요.`,
+      );
+    }
+    if (skipped > 0) warnings.push(`통행 보호 칸(시작 지점·이벤트)과 겹쳐 자리 ${skipped}개를 건너뛰었습니다.`);
+    if (symmetric && mirrored === 0) {
+      warnings.push(
+        `symmetric을 켰지만 '${material.label}'에는 ${axis === "vertical" ? "좌우" : "상하"} 방향 구분 타일이 없어`
+          + ` 거울 교체 없이 같은 자리를 대칭으로만 놓았습니다.`,
+      );
+    }
+
+    return withSoftConfirm({
+      summary: `${map.name}에 '${material.label}' 줄 배치 — ${plan.lines.length}줄 ${applied}칸`
+        + `(${axis === "vertical" ? "통로 세로" : "통로 가로"} ${aisleWidth}칸, 줄 간격 ${rowGap}${symmetric ? ", 대칭" : ""}).`,
+      warnings: warnings.length > 0 ? warnings : undefined,
+      data: {
+        lines: plan.lines.length,
+        cells: applied,
+        aisle: plan.aisle,
+        axis,
+        atom: material.atom.shape,
+        groupId: material.group?.id,
+        leftover,
+        mirrored,
+        skipped,
+      },
+    }, material.softConfirm);
+  },
+};
+
+export const CONSTRUCTION_TOOLS_V3: readonly ToolDefinition[] = [buildWall, buildRoof, placeDoor, placeWindow, layPath, placeProps, fillRegion, arrangeRows, tileErase];

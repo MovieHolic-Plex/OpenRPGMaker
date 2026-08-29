@@ -1,6 +1,7 @@
 import type {
   AssetSet,
   ActorId,
+  CharacterFootprint,
   Dir,
   FlagName,
   MapId,
@@ -167,6 +168,48 @@ export interface EncounterConditions {
   season?: Season;
 }
 
+/**
+ * 진영 간 태도. -2 최악의 적 / -1 적 / 0 중립 / 1 우호 / 2 동맹.
+ * 태도는 "싸워도 되는가"만 정한다. 실제 선공은 FactionAggression 이 정한다.
+ */
+export type FactionStance = -2 | -1 | 0 | 1 | 2;
+
+/** 적대를 실제 선공으로 바꾸는 성향. 0 비공격 / 1 공격적 / 2 매우 공격적 / 3 광폭. */
+export type FactionAggression = 0 | 1 | 2 | 3;
+
+export interface FactionDef {
+  id: string;
+  name: string;
+  /** 진영 식별 색(#RRGGBB). 난전에서 누가 어느 편인지 읽히게 하는 유일한 UI 수단이다. */
+  color?: string;
+  /** 생략 시 1(공격적) — 적(-1 이하) 에게만 선공한다. */
+  aggression?: FactionAggression;
+  /** 이 진영 멤버는 다른 NPC 에게 죽지 않는다(HP 1 에서 버틴다). 플레이어는 죽일 수 있다. */
+  protectedFromNpcs?: boolean;
+}
+
+export interface FactionRelationDef {
+  a: string;
+  b: string;
+  stance: FactionStance;
+}
+
+/**
+ * 저작된 진영 레지스트리. optional 이라 마이그레이션 불필요.
+ * 생략하면 예약 진영(player/enemy)만 존재해 기존 프로젝트 동작이 그대로 유지된다.
+ */
+export interface PlayerKillReputationConfig {
+  /** 처치 1회가 각 관련 진영의 플레이어 태도에 더해지는 양. 생략 시 0.25. */
+  readonly weight?: number;
+}
+
+export interface ProjectFactions {
+  defs: FactionDef[];
+  relations: FactionRelationDef[];
+  /** 플레이어의 NPC 처치가 평판에 번지는 규칙. 필드가 없으면 기존처럼 자동 변화가 전혀 없다. */
+  playerKillReputation?: PlayerKillReputationConfig;
+}
+
 export interface FieldSpawnDef {
   id: string;
   troopId: TroopId;
@@ -174,7 +217,13 @@ export interface FieldSpawnDef {
   maxAlive?: number;
   respawnSec?: number;
   graphic?: EventPageGraphic;
+  /** 스폰되는 몸 크기(타일). 생략하면 1x1 — 기존 스폰과 같다. */
+  footprint?: CharacterFootprint;
+  /** 몸 사각 하단 몇 행이 길을 막는가. 생략하면 몸 높이 전체(항등). */
+  passRows?: number;
   chase?: boolean;
+  /** 이 스폰 인스턴스의 진영. 생략 시 EnemyRecord.factionId, 그것도 없으면 예약 진영 enemy. */
+  factionId?: string;
   /** 처치 수를 세이브에 영속한다. 로드/맵 재진입 시 처치 수만큼 배치 상한이 줄어, 전부 처치한 방은 계속 비어 있다(생존 호러용). */
   persistKill?: boolean;
   /** 인스턴스 처치 시 켜는 스위치(킬 리액션 이벤트용). */
@@ -399,6 +448,9 @@ export interface Project {
   aiDocuments?: AiDocument[];
   world?: ProjectWorld;
   worldGraph?: WorldGraph;
+  // 런타임 진영 레지스트리 + 태도 행렬. world(세계관 lore 그래프)와 달리 전투 런타임이 직접 읽는다.
+  // optional이라 마이그레이션 불필요.
+  factions?: ProjectFactions;
   // 선언적 퀘스트 정의(Phase 3). questCompiler가 스위치/변수/이벤트로 컴파일하며,
   // 플레이어 퀘스트 로그가 이 메타 + 세션 상태로 단계를 표시한다. optional이라 마이그레이션 불필요.
   quests?: AnyQuestDef[];

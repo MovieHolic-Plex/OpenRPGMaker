@@ -8,6 +8,7 @@ import {
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
   TEX_DIALOGUE_FRAME,
 } from "@/assets/bundled";
+import { imageWarmSupported, warmImageUrls } from "@/assets/imageWarmQueue";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import type { Project } from "@/project/types";
 
@@ -42,7 +43,7 @@ export function listBundledPlayAssetPaths(project?: Project): readonly string[] 
  * 동일 프로젝트 키에 대해 in-flight 를 공유하고, 실패해도 throw 하지 않는다.
  */
 export function warmBundledPlayAssets(project?: Project): Promise<void> {
-  if (typeof window === "undefined" || typeof Image === "undefined") {
+  if (!imageWarmSupported()) {
     return Promise.resolve();
   }
   const paths = listBundledPlayAssetPaths(project);
@@ -50,9 +51,7 @@ export function warmBundledPlayAssets(project?: Project): Promise<void> {
   if (warmPromise && warmKey === key) return warmPromise;
 
   warmKey = key;
-  warmPromise = Promise.all(paths.map((path) => preloadImage(path)))
-    .then(() => undefined)
-    .catch(() => undefined);
+  warmPromise = warmImageUrls(paths).catch(() => undefined);
 
   return warmPromise;
 }
@@ -61,28 +60,6 @@ export function warmBundledPlayAssets(project?: Project): Promise<void> {
 export function resetBundledPlayAssetWarmup(): void {
   warmPromise = null;
   warmKey = "";
-}
-
-function preloadImage(path: string): Promise<void> {
-  return new Promise((resolve) => {
-    // happy-dom / 일부 테스트 환경에서는 Image onload 가 영원히 안 올 수 있어 상한을 둔다.
-    const timeout = globalThis.setTimeout(() => resolve(), 2_000);
-    const finish = (): void => {
-      globalThis.clearTimeout(timeout);
-      resolve();
-    };
-    try {
-      const image = new Image();
-      image.onload = finish;
-      image.onerror = finish;
-      // Vite public/ 루트 기준 절대 경로 — Phaser scene.load.image 와 동일한 URL 공간.
-      image.src = path.startsWith("/") || /^https?:/i.test(path) ? path : `/${path}`;
-      // 이미 캐시된 경우 complete 가 동기 true 일 수 있다.
-      if (image.complete) finish();
-    } catch {
-      finish();
-    }
-  });
 }
 
 function projectReferencedTextureKeys(project: Project): Set<string> {

@@ -62,6 +62,22 @@ export function proposalHasChangedMap(calls: readonly ProposalCompletenessCall[]
   return calls.some((call) => changedRegionsForCall(call).some((region) => region.mapId === mapId));
 }
 
+/**
+ * 이 호출들이 실제로 바꾼 영역 — "⚠ 미이행" 경고가 밑그림 에셋 이행을 판정할 때 쓰는 그 신호다.
+ *
+ * 청사진 턴 정산(editor/agentBlueprintRegions.appliedBlueprintRegions)이 같은 함수를 쓴다.
+ * 두 표면이 서로 다른 계산으로 "이 에셋은 지어졌나" 를 답하면 한 화면에서 채팅은 "미이행",
+ * 맵은 "완료 ✓" 가 되어 사용자가 어느 쪽을 믿을지 알 수 없다.
+ */
+export function proposalChangedRegions(calls: readonly ProposalCompletenessCall[]): AffectedRegion[] {
+  return calls.flatMap(changedRegionsForCall);
+}
+
+/** 이 호출이 무언가를 바꿨는가 — 성공 + 의미 있는 diff. 영역을 못 뽑는 호출과 구분해야 한다. */
+export function proposalCallChangedSomething(call: ProposalCompletenessCall): boolean {
+  return call.result.ok && hasMeaningfulDiff(call.result.diff);
+}
+
 export function requestLikelyExpectsChange(text: string): boolean {
   const normalized = text.trim().toLowerCase();
   if (!normalized) return false;

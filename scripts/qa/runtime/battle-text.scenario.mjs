@@ -25,7 +25,7 @@ export const battleTextScenario = {
       note: "새 게임 → 등대 마을 시작 지점",
       ops: [
         { kind: "key", key: "Enter" },
-        { kind: "wait", ms: 3000 },
+        { kind: "waitForRuntime" },
         { kind: "seed", seed: 1 },
       ],
       expect: { mapId: "map_lantern_village", x: 14, y: 18, testidAbsent: ["title-screen"] },
@@ -34,13 +34,8 @@ export const battleTextScenario = {
       id: "walk-to-training",
       note: "훈련 이벤트 앞칸(20,15)까지 걸어간다",
       ops: [
-        { kind: "dir", dir: "right" },
-        { kind: "wait", ms: 1400 },
-        { kind: "dir", dir: null },
-        { kind: "dir", dir: "up" },
-        { kind: "wait", ms: 1000 },
-        { kind: "dir", dir: null },
-        { kind: "wait", ms: 400 },
+        { kind: "teleport", mapId: "map_lantern_village", x: 20, y: 15 },
+        { kind: "waitForPosition", mapId: "map_lantern_village", x: 20, y: 15 },
       ],
       expect: { mapId: "map_lantern_village" },
       shot: true,
@@ -51,9 +46,7 @@ export const battleTextScenario = {
       ops: [
         { kind: "face", dir: "up" },
         { kind: "action" },
-        { kind: "wait", ms: 600 },
         { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 12 },
-        { kind: "wait", ms: 1200 },
       ],
       expect: { testidPresent: ["battle-scene"], battleTextClean: true },
       shot: true,
@@ -63,7 +56,6 @@ export const battleTextScenario = {
       note: "루트 커맨드 메뉴 — 공격/스킬/방어/아이템/도주",
       ops: [
         { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 20000 },
-        { kind: "wait", ms: 400 },
       ],
       expect: { testidPresent: ["actor-command-attack"], battleTextClean: true },
       shot: true,
@@ -74,7 +66,6 @@ export const battleTextScenario = {
       ops: [
         { kind: "key", key: "ArrowDown" },
         { kind: "key", key: "Enter" },
-        { kind: "wait", ms: 600 },
       ],
       expect: { battleTextClean: true },
       shot: true,
@@ -84,7 +75,6 @@ export const battleTextScenario = {
       note: "대상 선택 — 동명 슬라임 2마리의 구분 숫자가 살아 있어야 한다",
       ops: [
         { kind: "key", key: "Enter" },
-        { kind: "wait", ms: 800 },
       ],
       expect: { battleTextClean: true },
       shot: true,
@@ -93,8 +83,7 @@ export const battleTextScenario = {
       id: "result",
       note: "승리 결과 패널. resolved 국면이 되면 입력을 멈추고 패널을 기다린다",
       ops: [
-        { kind: "pressUntil", key: "Enter", testid: "battle-result-panel", state: "present", maxPresses: 80, delayMs: 200 },
-        { kind: "wait", ms: 600 },
+        { kind: "pressUntil", key: "Enter", testid: "battle-result-panel", state: "present", maxPresses: 80 },
       ],
       expect: { testidPresent: ["battle-result-panel"], battleTextClean: true },
       shot: true,

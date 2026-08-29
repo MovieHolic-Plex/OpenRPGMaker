@@ -134,7 +134,8 @@ function isHarmfulState(project: Project, stateId: string): boolean {
   const state = project.database.states.find((record) => record.id === stateId);
   if (!state) return false;
   const behavior = stateBehavior(state);
-  return behavior.restrictsAction || behavior.hpDamagePercentPerTurn > 0 || behavior.attackMultiplier < 1 || behavior.defenseMultiplier < 1;
+  return behavior.restrictsAction || behavior.blocksSkillUse || behavior.hpDamagePercentPerTurn > 0
+    || behavior.attackMultiplier < 1 || behavior.defenseMultiplier < 1 || behavior.agilityMultiplier < 1;
 }
 
 function pickBest<T>(values: readonly T[], score: (value: T) => number, rng: Rng): T | undefined {

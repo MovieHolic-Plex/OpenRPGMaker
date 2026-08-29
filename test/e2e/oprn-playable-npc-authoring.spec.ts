@@ -106,11 +106,11 @@ async function addTextCommand(page: Page, speaker: string, body: string): Promis
   await expect(picker).toBeVisible();
   await picker.getByTestId("command-picker-add-text").click();
 
-  const dialog = page.getByTestId("event-command-text-dialog");
+  const dialog = page.getByTestId("event-command-edit-dialog");
   await expect(dialog).toBeVisible();
   await dialog.getByTestId("event-command-text-speaker").fill(speaker);
   await dialog.getByTestId("event-command-text-body").fill(body);
-  await dialog.getByTestId("event-command-text-ok").click();
+  await dialog.getByTestId("event-command-edit-ok").click();
   await expect(dialog).toBeHidden();
   await expect(picker).toBeHidden();
 }

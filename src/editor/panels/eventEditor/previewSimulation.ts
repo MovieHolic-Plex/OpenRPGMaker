@@ -2,15 +2,26 @@ import { evalCondition, startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Command, Condition, VariableOperand } from "@/project/types";
 import type { PlaySession } from "@/project/session";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 
 export interface PreviewSimState {
   switches: Record<string, boolean>;
   variables: Record<string, number>;
+  timers: Record<string, number>;
   gold: number;
   inventory: Record<string, number>;
   partyActorIds: string[];
   selfSwitches: Record<string, Partial<Record<string, boolean>>>;
   flags: Record<string, boolean>;
+  actorVitals: PlaySession["actorVitals"];
+  currentMapId: PlaySession["currentMapId"];
+  x: number;
+  y: number;
+  gameTime?: PlaySession["gameTime"];
+  npcActivities?: PlaySession["npcActivities"];
+  friendship?: PlaySession["friendship"];
+  battleResult?: PlaySession["battleResult"];
+  roguelikeRun?: PlaySession["roguelikeRun"];
 }
 
 export interface SimulatedStep {
@@ -86,11 +97,21 @@ function snapshotSession(session: PlaySession): PreviewSimState {
   return {
     switches: { ...session.switches },
     variables: { ...session.variables },
+    timers: { ...session.timers },
     gold: session.gold,
     inventory: { ...session.inventory },
     partyActorIds: [...session.partyActorIds],
-    selfSwitches: JSON.parse(JSON.stringify(session.selfSwitches)),
+    selfSwitches: structuredClone(session.selfSwitches),
     flags: { ...session.flags },
+    actorVitals: structuredClone(session.actorVitals),
+    currentMapId: session.currentMapId,
+    x: session.x,
+    y: session.y,
+    ...(session.gameTime ? { gameTime: { ...session.gameTime } } : {}),
+    ...(session.npcActivities ? { npcActivities: { ...session.npcActivities } } : {}),
+    ...(session.friendship ? { friendship: { ...session.friendship } } : {}),
+    ...(session.battleResult ? { battleResult: session.battleResult } : {}),
+    ...(session.roguelikeRun ? { roguelikeRun: structuredClone(session.roguelikeRun) } : {}),
   };
 }
 
@@ -98,11 +119,43 @@ function cloneState(state: PreviewSimState): PreviewSimState {
   return {
     switches: { ...state.switches },
     variables: { ...state.variables },
+    timers: { ...state.timers },
     gold: state.gold,
     inventory: { ...state.inventory },
     partyActorIds: [...state.partyActorIds],
-    selfSwitches: JSON.parse(JSON.stringify(state.selfSwitches)),
+    selfSwitches: structuredClone(state.selfSwitches),
     flags: { ...state.flags },
+    actorVitals: structuredClone(state.actorVitals),
+    currentMapId: state.currentMapId,
+    x: state.x,
+    y: state.y,
+    ...(state.gameTime ? { gameTime: { ...state.gameTime } } : {}),
+    ...(state.npcActivities ? { npcActivities: { ...state.npcActivities } } : {}),
+    ...(state.friendship ? { friendship: { ...state.friendship } } : {}),
+    ...(state.battleResult ? { battleResult: state.battleResult } : {}),
+    ...(state.roguelikeRun ? { roguelikeRun: structuredClone(state.roguelikeRun) } : {}),
+  };
+}
+
+export function previewSessionFromSimState(state: PreviewSimState): PlaySessionLike {
+  return {
+    switches: state.switches,
+    selfSwitches: state.selfSwitches,
+    variables: state.variables,
+    timers: state.timers,
+    gold: state.gold,
+    inventory: state.inventory,
+    partyActorIds: state.partyActorIds,
+    flags: state.flags,
+    actorVitals: state.actorVitals,
+    currentMapId: state.currentMapId,
+    x: state.x,
+    y: state.y,
+    gameTime: state.gameTime,
+    npcActivities: state.npcActivities,
+    friendship: state.friendship,
+    battleResult: state.battleResult,
+    roguelikeRun: state.roguelikeRun,
   };
 }
 
@@ -206,21 +259,7 @@ function evalForkCondition(
   state: PreviewSimState,
   hostEventId: string | undefined
 ): "then" | "else" {
-  const sessionLike = {
-    switches: state.switches,
-    selfSwitches: state.selfSwitches,
-    variables: state.variables,
-    timers: {} as Record<string, number>,
-    gold: state.gold,
-    inventory: state.inventory,
-    partyActorIds: state.partyActorIds,
-    flags: state.flags,
-    actorVitals: {},
-    currentMapId: "",
-    x: 0,
-    y: 0,
-  };
-  const result = evalCondition(sessionLike, condition, hostEventId);
+  const result = evalCondition(previewSessionFromSimState(state), condition, hostEventId);
   return result ? "then" : "else";
 }
 

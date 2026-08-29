@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createBattleRuntime } from "@/battle/runtime";
+import dewVillageDemo from "./fixtures/projects/dew-village-demo.json";
 import {
   DEFAULT_SUPABASE_PROJECT_ID,
   hydrateLastRemoteCommitTip,
@@ -127,6 +129,245 @@ describe("Supabase project sync", () => {
 
     expect(project?.startMapId).toBe(source.startMapId);
     expect(String(calls[0]?.input)).toContain(`project_id=eq.${DEFAULT_SUPABASE_PROJECT_ID}`);
+  });
+
+  it("옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다", async () => {
+    const source = structuredClone(dewVillageDemo) as unknown as Record<string, unknown>;
+    const database = source.database as { battleAnimations: { id: string }[] };
+    expect(database.battleAnimations).toHaveLength(12);
+    expect(database.battleAnimations.some((animation) => animation.id.startsWith("anim_gen_"))).toBe(false);
+    vi.stubGlobal("fetch", supabaseRowFetch(source));
+
+    const project = await loadProjectFromSupabase(TEST_CONFIG);
+    if (!project) throw new Error("복구된 프로젝트가 없습니다");
+
+    expect(project.database.items.map((item) => item.id)).toEqual(expect.arrayContaining([
+      "item_holy_water",
+      "item_thunder_stone",
+    ]));
+    expect(project.database.skills.map((skill) => skill.id)).toEqual(expect.arrayContaining([
+      "skill_item_holy_water",
+      "skill_item_thunder_stone",
+    ]));
+    expect(project.database.items.find((item) => item.id === "item_holy_water")).toMatchObject({
+      name: "정화 성수",
+      occasion: "battle",
+      consumable: true,
+      skillId: "skill_item_holy_water",
+    });
+    expect(project.database.items.find((item) => item.id === "item_thunder_stone")).toMatchObject({
+      name: "뇌전석",
+      occasion: "battle",
+      consumable: true,
+      skillId: "skill_item_thunder_stone",
+    });
+    for (const skillId of ["skill_item_holy_water", "skill_item_thunder_stone"]) {
+      const skill = project.database.skills.find((record) => record.id === skillId);
+      expect(skill?.animationId, skillId).toMatch(/^anim_gen_/);
+      expect(project.database.battleAnimations.some((animation) => animation.id === skill?.animationId), skillId).toBe(true);
+    }
+
+    const runtime = createBattleRuntime({
+      project,
+      troopId: project.system.initialTroopId ?? project.database.troops[0]!.id,
+      canEscape: true,
+      canLose: true,
+      rng: () => 0,
+      sessionState: { switches: {}, variables: {}, inventory: { item_holy_water: 1 } },
+      party: {
+        levels: { actor_hero: 1 },
+        experience: { actor_hero: 0 },
+        vitals: { actor_hero: { hp: 100, mp: 100 } },
+        stateIds: {},
+        partyActorIds: ["actor_hero"],
+      },
+    });
+    runtime.tick(1_000);
+    const targetEnemyId = runtime.snapshot().enemies[0]?.id;
+    if (!targetEnemyId) throw new Error("성수 사용 대상이 없습니다");
+    runtime.performActorCommand({ kind: "item", itemId: "item_holy_water", targetEnemyId });
+    expect(runtime.snapshot().eventState.inventory.item_holy_water ?? 0).toBe(0);
+  });
+
+  it("참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다", async () => {
+    const source = structuredClone(dewVillageDemo) as unknown as Record<string, unknown>;
+    const expectedNames: Readonly<Record<string, string>> = {
+      item_bronze_sword: "청동 검",
+      item_iron_sword: "철 검",
+      item_steel_sword: "강철 검",
+      item_scout_dagger: "정찰 단검",
+      item_mage_staff: "수습 지팡이",
+      item_oak_shield: "참나무 방패",
+      item_leather_armor: "가죽 갑옷",
+      item_mystic_robe: "견습 로브",
+      item_traveler_hat: "여행자 모자",
+      item_focus_charm: "집중 부적",
+      item_iron_shield: "용병 철갑 방패",
+      item_steel_armor: "용병대 강철 흉갑",
+      item_mage_hat: "별무늬 수습모",
+      item_gloves: "검객 손보호대",
+      item_boots: "바람길 가죽 장화",
+      item_cloak: "순례자 방풍 망토",
+      item_ring: "마력 각인 반지",
+      item_necklace: "청옥 수호 목걸이",
+      item_focus_ring: "푸른별 집중 반지",
+    };
+    const inventory = (source.session as { inventory: Record<string, number> }).inventory;
+    for (const itemId of Object.keys(expectedNames)) inventory[itemId] = 1;
+    vi.stubGlobal("fetch", supabaseRowFetch(source));
+
+    const project = await loadProjectFromSupabase(TEST_CONFIG);
+    if (!project) throw new Error("복구된 프로젝트가 없습니다");
+
+    for (const [itemId, name] of Object.entries(expectedNames)) {
+      expect(project.database.items.find((item) => item.id === itemId), itemId).toMatchObject({
+        name,
+        occasion: "never",
+        consumable: false,
+      });
+      expect(project.database.items.find((item) => item.id === itemId)?.description, itemId).toContain("장비 탭");
+    }
+  });
+
+  it("액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다", async () => {
+    const source = structuredClone(dewVillageDemo) as unknown as Record<string, unknown>;
+    const database = source.database as { skills: Record<string, unknown>[] };
+    database.skills[0]!.actionSkill = {
+      kind: "projectile",
+      damage: 1,
+      range: 1,
+      itemCost: { itemId: "item_ring", amount: 1 },
+    };
+    const maps = source.maps as Record<string, { events: { pages?: { commands: unknown[] }[] }[] }>;
+    const page = Object.values(maps).flatMap((map) => map.events).flatMap((event) => event.pages ?? [])[0];
+    if (!page) throw new Error("참조 명령을 넣을 이벤트 페이지가 없습니다");
+    page.commands.push({
+      kind: "shop",
+      itemIds: [],
+      buyback: [{ itemId: "item_necklace", price: 1 }],
+      cartLines: [{ itemId: "item_boots", qty: 1, unitPrice: 1 }],
+      consignments: [{ id: "consignment-1", itemId: "item_cloak", askPrice: 1, listedDayKey: "1" }],
+      pawnTickets: [{ id: "pawn-1", itemId: "item_gloves", pawnPrice: 1, dueDayKey: "2" }],
+      appraisalUnidentifiedPool: ["item_focus_ring"],
+    });
+    vi.stubGlobal("fetch", supabaseRowFetch(source));
+
+    const project = await loadProjectFromSupabase(TEST_CONFIG);
+    if (!project) throw new Error("복구된 프로젝트가 없습니다");
+
+    expect(project.database.items.map((item) => item.id)).toEqual(expect.arrayContaining([
+      "item_ring",
+      "item_necklace",
+      "item_boots",
+      "item_cloak",
+      "item_gloves",
+      "item_focus_ring",
+    ]));
+  });
+
+  it("손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다", async () => {
+    const source = JSON.parse(serialize(minimalValidProject()));
+    const currentItems = new Map(
+      (source.database.items as { id: string }[]).map((item) => [item.id, item]),
+    );
+    const legacyStub = (id: string, slug: string) => ({
+      ...currentItems.get(id),
+      id,
+      name: slug.replaceAll("-", " "),
+      description: `${slug} 기본 아이템입니다.`,
+      type: "normalGoods",
+      scope: "none",
+      price: 20,
+      occasion: "never",
+      occasionField: false,
+      occasionBattle: false,
+      consumable: false,
+      skillId: undefined,
+      activateSkillId: undefined,
+      farmTool: undefined,
+      hpRecovery: { flat: 0, percentMax: 0 },
+      mpRecovery: { flat: 0, percentMax: 0 },
+      healStateIds: [],
+      stateEffects: [],
+    });
+    source.database.items = (source.database.items as { id: string }[]).filter(
+      (item) => ![
+        "item_ale",
+        "item_apple",
+        "item_bomb",
+        "item_hoe",
+        "item_holy_water",
+        "item_watering_can",
+        "item_pickaxe",
+        "item_thunder_stone",
+      ].includes(item.id),
+    );
+    source.database.items.push(
+      legacyStub("item_ale", "ale"),
+      legacyStub("item_bomb", "bomb"),
+      legacyStub("item_hoe", "hoe"),
+      legacyStub("item_holy_water", "holy-water"),
+      legacyStub("item_watering_can", "watering-can"),
+      legacyStub("item_pickaxe", "pickaxe"),
+      legacyStub("item_thunder_stone", "thunder-stone"),
+    );
+    source.database.items.push({
+      ...legacyStub("item_apple", "apple"),
+      name: "사과 상인의 기념품",
+      description: "작가가 직접 고친 설명입니다.",
+    });
+    const removedEquipmentIds = [
+      "equip_iron_shield",
+      "equip_steel_armor",
+      "equip_mage_hat",
+      "equip_gloves",
+      "equip_boots",
+      "equip_cloak",
+      "equip_ring",
+      "equip_necklace",
+      "equip_focus_ring",
+    ];
+    source.database.equipment = (source.database.equipment as { id: string }[]).filter(
+      (equipment) => !removedEquipmentIds.includes(equipment.id),
+    );
+    source.database.skills = (source.database.skills as { id: string }[]).filter(
+      (skill) => !["skill_item_holy_water", "skill_item_thunder_stone"].includes(skill.id),
+    );
+    source.database.items = (source.database.items as { id: string }[]).filter(
+      (item) => !["item_gen_holy_water", "item_gen_thunder_rod"].includes(item.id),
+    );
+    vi.stubGlobal("fetch", (async (input) => {
+      if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
+      return new Response(JSON.stringify([{ current_json: source }]), { status: 200 });
+    }) satisfies typeof fetch);
+
+    const project = await loadProjectFromSupabase(TEST_CONFIG);
+    if (!project) throw new Error("복구된 프로젝트가 없습니다");
+
+    expect(project.database.items.find((item) => item.id === "item_ale")).toMatchObject({
+      name: "맥아주",
+      occasion: "field",
+      consumable: true,
+      hpRecovery: { flat: 25, percentMax: 0 },
+    });
+    expect(project.database.items.find((item) => item.id === "item_bomb")).toMatchObject({
+      name: "철제 폭탄",
+      occasion: "battle",
+      skillId: "skill_throwing_knife",
+    });
+    expect(project.database.items.find((item) => item.id === "item_pickaxe")).toMatchObject({
+      name: "곡괭이",
+      farmTool: "pickaxe",
+    });
+    expect(project.database.items.filter((item) => item.id === "item_apple")).toEqual([
+      expect.objectContaining({ name: "사과 상인의 기념품", description: "작가가 직접 고친 설명입니다." }),
+    ]);
+    expect(project.database.equipment.map((equipment) => equipment.id)).not.toEqual(
+      expect.arrayContaining(removedEquipmentIds),
+    );
+    expect(project.database.skills.map((skill) => skill.id)).toEqual(
+      expect.arrayContaining(["skill_item_holy_water", "skill_item_thunder_stone"]),
+    );
   });
 
   it("treats Supabase current_json as canonical — does not backfill removed database records", async () => {
@@ -944,6 +1185,13 @@ describe("Supabase project sync", () => {
   });
 
 });
+
+function supabaseRowFetch(source: unknown): typeof fetch {
+  return (async (input) => {
+    if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
+    return new Response(JSON.stringify([{ current_json: source }]), { status: 200 });
+  }) satisfies typeof fetch;
+}
 
 function minimalValidProject(): Project {
   // Unit-test asset env lacks generated monster art; strip those resource refs so

@@ -19,6 +19,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
 2. Read `openwiki/quickstart.md` for the repo shape and first files to inspect.
 3. Read the focused page for the area being changed:
    - Editor pre-edit routing & cautions (read first): `openwiki/editor-pre-edit-routing.md`
+   - Editor observability (mutation 계측 초크포인트, 편집 감사 로그, 오류 트랩, 디버깅 레시피): `openwiki/editor-observability.md`
    - Editor event authoring: `openwiki/editor-event-authoring.md`, `openwiki/editor-event-commands.md`, `openwiki/editor-event-command-fixes.md`
    - Editor database: `openwiki/editor-database.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md`, `openwiki/editor-ai-tools.md`, `openwiki/ai-context-compaction.md`

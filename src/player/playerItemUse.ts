@@ -1,5 +1,5 @@
 import { applyCareItem } from "@/project/monsterCare";
-import { learnSkill, type PlaySession } from "@/project/session";
+import { learnSkill, setSwitch, type PlaySession } from "@/project/session";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import type { ActorParameterKey, ItemRecord, Project, SkillId } from "@/project/types";
 import { transitionItemState } from "@/project/itemTransitions";
@@ -27,6 +27,13 @@ export function useItemFromMenu(
   const learnedSkillId = item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
   if (learnedSkillId) {
     return useSkillBook(project, session, item, learnedSkillId, targetActorId);
+  }
+
+  if (item.type === "switch" && item.switchId) {
+    if (session.switches[item.switchId] === true) return { kind: "unusable", message: `${item.name}의 장치는 이미 작동했습니다` };
+    setSwitch(session, item.switchId, true);
+    commitSuccessfulUse(project, session, item);
+    return { kind: "used", message: `${item.name}으로 장치를 작동했습니다` };
   }
 
   const targets = hasSeedBonus(item)

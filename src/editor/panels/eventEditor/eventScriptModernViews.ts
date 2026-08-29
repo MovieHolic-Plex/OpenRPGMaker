@@ -1,8 +1,10 @@
-// [P2] 모던 전용 파생 뷰 2종 — RM2003 보존 원칙 7(기본 접힘 + 명시적 토글) 준수.
-//  1) 라이브 미리보기: 페이지 커맨드를 스크립트 순서로 펼쳐 commandPreview 렌더러를
+// [P2] 모던 전용 파생 뷰 2종.
+//  1) 미리보기: 페이지 커맨드를 스크립트 순서로 펼쳐 commandPreview 렌더러를
 //     스텝 재생(이전/다음/자동)하는 시퀀서. 320x240 런타임을 흉내내는 목업이 아니라
-//     기존 프리뷰 렌더러의 재사용이다.
+//     기존 프리뷰 렌더러의 재사용이다. 「이 페이지가 하는 일」 컬럼의 세 번째 보기
+//     방식이라 열 전체 높이를 쓴다 — 예전처럼 도구 팝오버 안 280px 오버레이가 아니다.
 //  2) 플로우차트: 조건 분기/선택지/반복을 노드 그래프로 보여주는 읽기 전용 뷰.
+//     RM2003 보존 원칙 7(기본 접힘 + 명시적 토글)을 지키는 도구 팝오버 아코디언.
 //     데이터 모델은 Command union 그대로 두고(원칙 5) 전부 파생 렌더다.
 import { clearChildren, el } from "@/util/dom";
 import type { Command, EventPage, MapId } from "@/project/types";
@@ -20,79 +22,35 @@ export type EventScriptModernViewsOptions = {
 
 const stepByPage = new Map<string, number>();
 
-export function renderEventScriptModernViews(
-  optionsOrMapId: EventScriptModernViewsOptions | EventPage | MapId,
-  eventIdOrPage?: string | EventPage,
-  pageArg?: EventPage
-): HTMLElement {
-  // ({ mapId, eventId, page }) | (mapId, eventId, page) | (page) 테스트 호환
-  let mapId: string;
-  let eventId: string;
-  let page: EventPage;
-  if (typeof optionsOrMapId === "object" && optionsOrMapId !== null && "page" in optionsOrMapId) {
-    ({ mapId, eventId, page } = optionsOrMapId as EventScriptModernViewsOptions);
-  } else if (typeof optionsOrMapId === "string" && typeof eventIdOrPage === "string" && pageArg) {
-    mapId = optionsOrMapId;
-    eventId = eventIdOrPage;
-    page = pageArg;
-  } else {
-    page = optionsOrMapId as EventPage;
-    mapId = "";
-    eventId = "";
-  }
-  const key = auxCompositeKey(mapId, eventId, page.id);
-  const wrap = el("div", { class: "event-script-modern-views" });
-  wrap.append(renderLivePreview(key, page, mapId, eventId), renderFlowchart(key, page));
-  return wrap;
+export function renderEventScriptFlowchart(options: EventScriptModernViewsOptions): HTMLElement {
+  const { mapId, eventId, page } = options;
+  return renderFlowchart(auxCompositeKey(mapId, eventId, page.id), page);
 }
 
-/* ---------------------------------------------------------------- 라이브 미리보기 */
+/* ---------------------------------------------------------------- 미리보기 */
 
-function renderLivePreview(key: string, page: EventPage, _mapId: MapId, eventId: string): HTMLElement {
-  const details = el("details", {
-    class: "event-script-live-preview",
-    dataset: { testid: "event-script-live-preview" },
-  }) as HTMLDetailsElement;
+export function renderEventPagePreview(options: EventScriptModernViewsOptions): HTMLElement {
+  const { mapId, eventId, page } = options;
+  const key = auxCompositeKey(mapId, eventId, page.id);
+  const panel = el("section", {
+    class: "event-page-preview",
+    attrs: { "aria-label": "이 페이지 미리보기" },
+    dataset: { testid: "event-page-preview" },
+  });
   const hostEventId = eventId;
-  const simResult = simulatePageCommands(page.commands, hostEventId);
-  const steps = simResult.steps;
-  let statusText = "empty";
-  let statusKind = "empty";
-  if (steps.length > 0) {
-    statusKind = "ready";
-    const first = commandSummary(steps[0]!.command).trim();
-    statusText = first.length > 0 && first.length <= 18 ? first : `${steps.length}단계`;
-  }
-  const summary = el("summary", {
-    class: "event-aux-chip-summary",
-    children: [
-      el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, text: "▶" }),
-      el("span", { class: "event-aux-chip-label", text: "스크립트 둘러보기" }),
-      el("span", {
-        class: "event-aux-chip-status",
-        text: statusText,
-        dataset: { testid: "event-preview-chip-status", kind: statusKind },
-      }),
-    ],
-  });
-  details.append(summary);
-  bindAuxDetails(key, "preview", details);
-  details.addEventListener("toggle", () => {
-    if (isAuxOpenApplying()) return;
-    if (details.open) setAuxOpen(key, "preview");
-    else setAuxClosed(key, "preview");
-  });
-
-  const body = el("div", { class: "event-script-live-preview-body" });
-  body.append(el("div", {
+  const steps = simulatePageCommands(page.commands, hostEventId).steps;
+  panel.append(el("div", {
     class: "event-script-preview-disclaimer",
-    text: "실제 게임 실행이 아닌 스크립트 둘러보기입니다. 반복은 한 번만 펼치고, 선택지는 모든 분기를 나열하며, 라벨/라벨 이동은 실제 점프를 수행하지 않습니다.",
+    text: "실제 게임 실행이 아닌 스크립트 미리보기입니다. 반복은 한 번만 펼치고, 선택지는 모든 분기를 나열하며, 라벨/라벨 이동은 실제 점프를 수행하지 않습니다.",
     dataset: { testid: "event-script-preview-disclaimer" },
   }));
   if (steps.length === 0) {
-    body.append(el("div", { class: "empty-hint", text: "둘러볼 명령이 없습니다." }));
-    details.append(body);
-    return details;
+    panel.append(el("div", {
+      class: "empty-hint",
+      text: "미리볼 명령이 없습니다. 명령을 추가하면 여기에서 차례대로 볼 수 있습니다.",
+      dataset: { testid: "event-page-preview-empty" },
+    }));
+    return panel;
   }
 
   let index = Math.min(stepByPage.get(key) ?? 0, steps.length - 1);
@@ -142,7 +100,7 @@ function renderLivePreview(key: string, page: EventPage, _mapId: MapId, eventId:
         playButton.textContent = "정지";
         playButton.setAttribute("aria-pressed", "true");
         playTimer = setInterval(() => {
-          if (!details.isConnected || !details.open || index >= steps.length - 1) {
+          if (!panel.isConnected || index >= steps.length - 1) {
             stopPlayback();
             return;
           }
@@ -187,10 +145,9 @@ function renderLivePreview(key: string, page: EventPage, _mapId: MapId, eventId:
     ],
   });
 
-  body.append(controls, stage, caption);
-  details.append(body);
+  panel.append(controls, stage, caption);
   renderStep();
-  return details;
+  return panel;
 }
 
 const faceCacheByPage = new Map<string, Map<number, ActiveFace | undefined>>();

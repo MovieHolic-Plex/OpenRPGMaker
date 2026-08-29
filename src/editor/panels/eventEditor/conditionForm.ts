@@ -1,7 +1,9 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
+import { editorState } from "@/editor/editorState";
+import { hasCharacterId } from "@/project/socialKey";
 import { selectedOptionValue, selectWithOptions } from "./dom";
-import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS } from "./options";
+import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, collectNpcActivitySuggestions } from "./options";
 import { databasePicker } from "./switchVariablePicker";
 import { actorPickerControl, itemPickerControl } from "./sharedPickers";
 import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
@@ -22,15 +24,12 @@ const CONDITION_MODE_OPTIONS = [
   { value: "friendshipAtLeast", label: "호감도" },
   { value: "battleResult", label: "전투 결과" },
   { value: "run", label: "탐험" },
-  { value: "all", label: "모두(AND)" },
-  { value: "any", label: "하나(OR)" },
-  { value: "not", label: "아님(NOT)" },
+  { value: "all", label: "모두 맞을 때" },
+  { value: "any", label: "하나라도 맞을 때" },
+  { value: "not", label: "아닐 때" },
 ] as const;
 
-const SWITCH_STATE_OPTIONS = [
-  { value: "true", label: "켜기" },
-  { value: "false", label: "끄기" },
-] as const;
+const SWITCH_STATE_OPTIONS = BOOLEAN_OPTIONS;
 
 export const TIME_PHASE_OPTIONS = [
   { value: "morning", label: "아침" },
@@ -83,7 +82,7 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
         onChange({ kind: "gold", op: ">=", amount: 100 });
         return;
       case "timer":
-        onChange({ kind: "timer", timerId: "timer1", seconds: 60 });
+        onChange({ kind: "timer", timerId: "timer1", seconds: 0 });
         return;
       case "timePhase":
         onChange({ kind: "timePhase", phase: "day" });
@@ -146,7 +145,7 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       wrap.append(field("계절", renderSeasonCondition(cond, onChange)));
       break;
     case "npcActivity":
-      wrap.append(field("활동 ID", renderNpcActivityCondition(cond, onChange)));
+      wrap.append(field("지금 하는 일", renderNpcActivityCondition(cond, onChange)));
       break;
     case "friendshipAtLeast":
       wrap.append(labeledFriendship(cond, onChange));
@@ -295,14 +294,14 @@ function labeledItem(
   syncError();
   const present = el("select", { dataset: { testid: "event-condition-item-present" } }) as HTMLSelectElement;
   present.append(
-    el("option", { text: "소지함", attrs: { value: "true" } }),
-    el("option", { text: "소지 안 함", attrs: { value: "false" } })
+    el("option", { text: "보유 중", attrs: { value: "true" } }),
+    el("option", { text: "보유 안 함", attrs: { value: "false" } })
   );
   present.value = String(cond.present);
   present.addEventListener("change", () => {
     onChange({ kind: "item", itemId: currentItemId, present: present.value === "true" });
   });
-  box.append(field("아이템", sel), error, field("소지 여부", present));
+  box.append(field("아이템", sel), error, field("보유", present));
   return box;
 }
 
@@ -335,27 +334,7 @@ function labeledTimer(
   onChange: (condition: Condition) => void
 ): HTMLElement {
   const box = el("div", { class: "event-condition-detail" });
-  const timerId = el("select", { dataset: { testid: "event-condition-timer-id" } }) as HTMLSelectElement;
-  timerId.append(
-    el("option", { text: "타이머 1", attrs: { value: "timer1" } }),
-    el("option", { text: "타이머 2", attrs: { value: "timer2" } })
-  );
-  timerId.value = cond.timerId;
-  const seconds = el("input", {
-    attrs: { type: "number", min: "0" },
-    value: String(cond.seconds),
-    dataset: { testid: "event-condition-timer-seconds" },
-  }) as HTMLInputElement;
-  const apply = (): void => {
-    onChange({
-      kind: "timer",
-      timerId: timerId.value === "timer2" ? "timer2" : "timer1",
-      seconds: parseInt(seconds.value, 10) || 0,
-    });
-  };
-  timerId.addEventListener("change", apply);
-  seconds.addEventListener("change", apply);
-  box.append(field("타이머", timerId), field("남은 초 ≤", seconds));
+  box.append(renderTimerCondition(cond, onChange, { minutesSeconds: true }));
   return box;
 }
 
@@ -384,6 +363,8 @@ function labeledFriendship(
   npcKey.addEventListener("change", apply);
   value.addEventListener("change", apply);
   box.append(field("누구", npcKey), field("최소 호감도", value));
+  const hint = friendshipAlwaysFalseHint(cond.npcKey, currentHostHasCharacterId());
+  if (hint) box.append(hint);
   return box;
 }
 
@@ -511,7 +492,9 @@ function labeledGroup(
   });
   const emptyWarning = el("p", {
     class: "event-condition-warning",
-    text: cond.kind === "all" ? "하위 조건이 없습니다 — 빈 AND는 항상 참입니다." : "하위 조건이 없습니다 — 빈 OR는 항상 거짓입니다.",
+    text: cond.kind === "all"
+      ? "하위 조건이 없습니다 — 빈 「모두 맞을 때」는 항상 참입니다."
+      : "하위 조건이 없습니다 — 빈 「하나라도 맞을 때」는 항상 거짓입니다.",
     dataset: { testid: `event-condition-group-empty-${cond.kind}` },
   });
   emptyWarning.hidden = cond.conditions.length > 0;
@@ -599,7 +582,7 @@ function field(label: string, control: HTMLElement): HTMLElement {
 function conditionHint(kind: Condition["kind"]): string {
   switch (kind) {
     case "switch":
-      return "선택한 스위치가 ON/OFF 인 경우 참 분기로 들어갑니다.";
+      return "선택한 스위치가 켜짐/꺼짐인 경우 참 분기로 들어갑니다.";
     case "variable":
       return "변수 값과 비교 값의 관계가 맞으면 참 분기로 들어갑니다.";
     case "selfSwitch":
@@ -617,7 +600,7 @@ function conditionHint(kind: Condition["kind"]): string {
     case "season":
       return "현재 계절을 검사합니다.";
     case "npcActivity":
-      return "NPC 스케줄 활동 ID가 일치하는지 검사합니다.";
+      return "지금 하는 일이 일치하는지 검사합니다.";
     case "friendshipAtLeast":
       return "호감도가 지정 값 이상인지 검사합니다. 누구를 비우면 이 이벤트 기준입니다.";
     case "battleResult":
@@ -625,11 +608,11 @@ function conditionHint(kind: Condition["kind"]): string {
     case "run":
       return "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.";
     case "all":
-      return "하위 조건을 모두 만족해야 참입니다 (AND).";
+      return "하위 조건을 모두 맞아야 참입니다.";
     case "any":
-      return "하위 조건 중 하나라도 만족하면 참입니다 (OR).";
+      return "하위 조건 중 하나라도 맞으면 참입니다.";
     case "not":
-      return "하위 조건의 반대입니다 (NOT).";
+      return "하위 조건이 아닐 때 참입니다.";
     default:
       return "조건을 설정하면 우측 미리보기에 요약이 표시됩니다.";
   }
@@ -850,8 +833,8 @@ export function renderItemCondition(
   }
   const present = el("select", { dataset: { testid: "event-condition-item-present" } }) as HTMLSelectElement;
   present.append(
-    el("option", { text: "소지함", attrs: { value: "true" } }),
-    el("option", { text: "소지 안 함", attrs: { value: "false" } })
+    el("option", { text: "보유 중", attrs: { value: "true" } }),
+    el("option", { text: "보유 안 함", attrs: { value: "false" } })
   );
   present.value = String(cond.present);
   present.addEventListener("change", () => {
@@ -978,21 +961,33 @@ export function renderSeasonCondition(
   return row;
 }
 
+export function npcActivitySuggestionList(listId: string): HTMLElement {
+  return el("datalist", {
+    attrs: { id: listId },
+    dataset: { testid: listId },
+    children: collectNpcActivitySuggestions(store.getCurrent()).map((activity) =>
+      el("option", { attrs: { value: activity } })
+    ),
+  });
+}
+
 export function renderNpcActivityCondition(
   cond: Extract<Condition, { kind: "npcActivity" }>,
   onChange: (condition: Condition) => void,
   options: { readonly className?: string; readonly activityTestId?: string } = {}
 ): HTMLElement {
   const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const activityTestId = options.activityTestId ?? "event-condition-npc-activity";
+  const listId = `${activityTestId}-options`;
   const activity = el("input", {
-    attrs: { type: "text", placeholder: "일" },
+    attrs: { type: "text", placeholder: "일", list: listId },
     value: cond.activity,
-    dataset: { testid: options.activityTestId ?? "event-condition-npc-activity" },
+    dataset: { testid: activityTestId },
   }) as HTMLInputElement;
   activity.addEventListener("change", () => {
     onChange({ kind: "npcActivity", activity: activity.value.trim() || cond.activity });
   });
-  row.append(activity);
+  row.append(activity, npcActivitySuggestionList(listId));
   return row;
 }
 
@@ -1020,14 +1015,30 @@ export function renderBattleResultCondition(
   return row;
 }
 
+/**
+ * 호감도 조건 컨트롤.
+ *
+ * 런타임은 하드 게이트다: `resolveSocialKey` 는 `event.id` 로 폴백하지 않으므로 NPC 키가 비고
+ * 이 이벤트에 NPC 관계(`characterId`)도 없으면 이 조건은 **항상 거짓**이다
+ * (docs/specs/2026-07-14-character-id-relationship-gate.md §1-7). 그래서 미연결 상태에서는
+ * 자리표시자로 "이 이벤트" 를 약속하지 않고, 왜 안 켜지는지 행 안에서 말한다(§1-8 UI 게이트).
+ * 행을 숨기거나 잠그지는 않는다 — NPC 키를 직접 적는 저작 경로는 미연결에서도 유효하다.
+ */
 export function renderFriendshipAtLeastCondition(
   cond: Extract<Condition, { kind: "friendshipAtLeast" }>,
   onChange: (condition: Condition) => void,
-  options: { readonly className?: string; readonly npcKeyTestId?: string; readonly valueTestId?: string } = {}
+  options: {
+    readonly className?: string;
+    readonly npcKeyTestId?: string;
+    readonly valueTestId?: string;
+    readonly hostHasCharacterId?: boolean;
+    readonly hintTestId?: string;
+  } = {}
 ): HTMLElement {
+  const unlinked = options.hostHasCharacterId === false;
   const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
   const npcKey = el("input", {
-    attrs: { type: "text", placeholder: "비우면 이 이벤트" },
+    attrs: { type: "text", placeholder: unlinked ? "NPC 키를 적어야 합니다" : "비우면 이 이벤트" },
     value: cond.npcKey ?? "",
     dataset: { testid: options.npcKeyTestId ?? "event-condition-friendship-npc-key" },
   }) as HTMLInputElement;
@@ -1046,9 +1057,37 @@ export function renderFriendshipAtLeastCondition(
   npcKey.addEventListener("change", apply);
   value.addEventListener("change", apply);
   row.append(npcKey, value);
+  const hint = friendshipAlwaysFalseHint(
+    cond.npcKey,
+    options.hostHasCharacterId,
+    options.hintTestId ?? "event-condition-friendship-requires-character-id",
+  );
+  if (hint) row.append(hint);
   return row;
 }
 
+function currentHostHasCharacterId(): boolean | undefined {
+  const eventId = editorState.get().selectedEventId;
+  if (!eventId) return undefined;
+  for (const map of Object.values(store.getCurrent().maps)) {
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (event) return hasCharacterId(event);
+  }
+  return undefined;
+}
+
+function friendshipAlwaysFalseHint(
+  npcKey: string | undefined,
+  hostHasCharacterId: boolean | undefined,
+  hintTestId = "event-condition-friendship-requires-character-id",
+): HTMLElement | undefined {
+  if (hostHasCharacterId !== false || (npcKey ?? "").trim()) return undefined;
+  return el("span", {
+    class: "empty-hint event-condition-friendship-hint",
+    dataset: { testid: hintTestId },
+    text: "이 이벤트에 NPC 관계가 없어 항상 거짓입니다. 「NPC와 일정」에서 연결하거나 NPC 키를 적으세요.",
+  });
+}
 
 function firstActorId(): ActorId {
   return store.getCurrent().database.actors[0]?.id ?? "";

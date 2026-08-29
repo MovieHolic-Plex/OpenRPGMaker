@@ -34,18 +34,6 @@
   grid-column: 2;
   min-width: 0;
 }
-.ai-proposal-pin .ai-command-row-body {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  white-space: normal;
-}
-.ai-proposal-pin-actions {
-  display: flex;
-  gap: 6px;
-}
-
 /* 채팅 버블 — 프리미엄 가독성 (여백·대비·꼬리) */
 .ai-chat-bubble {
   border-radius: 14px;

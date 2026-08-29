@@ -1,6 +1,6 @@
-import { canMove, inBounds } from "@/project/collision";
+import { canMove, canMoveFootprint, inBounds } from "@/project/collision";
 import { resolveKiteIntent, type KiteBand } from "@/battle/action/kiting";
-import type { Dir, GameMap, Project, Rect } from "@/project/types";
+import type { CharacterFootprint, Dir, GameMap, Project, Rect } from "@/project/types";
 
 const REPATH_INTERVAL_MS = 500;
 const DIRECTIONS: readonly { readonly dir: Dir; readonly x: number; readonly y: number }[] = [
@@ -33,6 +33,10 @@ export function nextChaseDecision(input: {
   readonly project: Project;
   readonly map: GameMap;
   readonly from: ChasePoint;
+  /**
+   * 추겁 대상 칸. 거의 항상 플레이어지만, 진영 전투에서는 AutonomousMover.chaseTarget 로
+   * 다른 NPC 좌표가 들어온다. 그 때 touch 는 이벤트 트리거가 아니라 "닿았다"만 의무한다.
+   */
   readonly player: ChasePoint;
   readonly deltaMs: number;
   readonly mover: ChaseRuntimeState;
@@ -41,6 +45,8 @@ export function nextChaseDecision(input: {
   readonly pathfind?: boolean;
   /** 원거리 적의 거리 유지 밴드. 주면 붙지 않고 선호 거리를 지킨다. */
   readonly kite?: KiteBand;
+  /** 추격자 자신의 통행 사각. 생략 시 1x1 — 기존 호출부는 동작이 안 바뀐다. */
+  readonly pass?: ChasePassSize;
 }): ChaseDecision {
   const { mover } = input;
   mover.chaseHome ??= { ...input.from };
@@ -75,7 +81,7 @@ export function nextChaseDecision(input: {
     }
     if (intent === "retreat") {
       mover.chasePath = [];
-      const step = retreatStep(input.project, input.map, input.from, input.player);
+      const step = retreatStep(input.project, input.map, input.from, input.player, input.pass);
       if (!step) return { kind: "wait" };
       const away = directionForDelta(step.x - input.from.x, step.y - input.from.y);
       if (!away) return { kind: "wait" };
@@ -86,8 +92,8 @@ export function nextChaseDecision(input: {
 
   if (mover.chaseRepathTimerMs >= REPATH_INTERVAL_MS || !mover.chasePath || mover.chasePath.length === 0) {
     mover.chasePath = input.pathfind === false
-      ? directStepPath(input.project, input.map, input.from, input.player)
-      : findChasePath(input.project, input.map, input.from, input.player);
+      ? directStepPath(input.project, input.map, input.from, input.player, input.pass)
+      : findChasePath(input.project, input.map, input.from, input.player, input.pass);
     mover.chaseRepathTimerMs = 0;
   }
 
@@ -107,11 +113,33 @@ export function nextChaseDecision(input: {
   return { kind: "move", x: next.x, y: next.y, dir };
 }
 
+/**
+ * 추격자 자신의 통행 사각 크기. 생략하면 1x1 이고, 그 경우 `chasePassable` 은
+ * `canMove` 1회로 환원된다 — 기존 추격 동작이 그대로다.
+ */
+export type ChasePassSize = {
+  readonly footprint: CharacterFootprint;
+  readonly passRows: number;
+};
+
+/** 추격자의 통행 사각으로 한 칸 이동 가능한가. pass 생략 시 canMove 와 같다. */
+function chasePassable(
+  project: Project,
+  map: GameMap,
+  from: ChasePoint,
+  to: ChasePoint,
+  pass: ChasePassSize | undefined
+): boolean {
+  if (!pass) return canMove(project, map, from.x, from.y, to.x, to.y);
+  return canMoveFootprint(project, map, from.x, from.y, pass.footprint, to.x, to.y, pass.passRows);
+}
+
 export function findChasePath(
   project: Project,
   map: GameMap,
   from: ChasePoint,
-  to: ChasePoint
+  to: ChasePoint,
+  pass?: ChasePassSize
 ): ChasePoint[] {
   if (!inBounds(map, from.x, from.y) || !inBounds(map, to.x, to.y)) return [];
   if (from.x === to.x && from.y === to.y) return [];
@@ -135,7 +163,7 @@ export function findChasePath(
 
     for (const direction of DIRECTIONS) {
       const next = { x: current.point.x + direction.x, y: current.point.y + direction.y };
-      if (!canMove(project, map, current.point.x, current.point.y, next.x, next.y)) continue;
+      if (!chasePassable(project, map, current.point, next, pass)) continue;
       const key = pointKey(next);
       if (closed.has(key)) continue;
       const g = current.g + 1;
@@ -170,20 +198,32 @@ export function isInSafeZone(safeZones: readonly Rect[] | undefined, point: Chas
   ));
 }
 
-function directStepPath(project: Project, map: GameMap, from: ChasePoint, to: ChasePoint): ChasePoint[] {
+function directStepPath(
+  project: Project,
+  map: GameMap,
+  from: ChasePoint,
+  to: ChasePoint,
+  pass: ChasePassSize | undefined
+): ChasePoint[] {
   const candidates = [...DIRECTIONS]
     .map((direction) => ({ x: from.x + direction.x, y: from.y + direction.y }))
-    .filter((point) => canMove(project, map, from.x, from.y, point.x, point.y))
+    .filter((point) => chasePassable(project, map, from, point, pass))
     .sort((a, b) => manhattan(a, to) - manhattan(b, to));
   return candidates[0] ? [candidates[0]] : [];
 }
 
 // 후퇴 한 걸음. 플레이어에서 가장 멀어지는 통행 가능 칸을 고른다(체비셰프 우선, 맨해튼 타이브레이크).
 // 뒷걸짐이 생기지 않으면(모리 끌입) null — 그럴 땐 그자리에서 버틴다.
-function retreatStep(project: Project, map: GameMap, from: ChasePoint, player: ChasePoint): ChasePoint | null {
+function retreatStep(
+  project: Project,
+  map: GameMap,
+  from: ChasePoint,
+  player: ChasePoint,
+  pass: ChasePassSize | undefined
+): ChasePoint | null {
   const candidates = [...DIRECTIONS]
     .map((direction) => ({ x: from.x + direction.x, y: from.y + direction.y }))
-    .filter((point) => canMove(project, map, from.x, from.y, point.x, point.y))
+    .filter((point) => chasePassable(project, map, from, point, pass))
     .filter((point) => !(point.x === player.x && point.y === player.y))
     .sort((a, b) => (
       (chebyshev(b, player) - chebyshev(a, player)) || (manhattan(b, player) - manhattan(a, player))

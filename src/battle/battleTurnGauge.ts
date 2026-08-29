@@ -1,5 +1,7 @@
 import type { MutableBattler } from "@/battle/battleBattlers";
 
+export type BattlerRateMultiplier = (battler: MutableBattler) => number;
+
 export type ReadyBattler =
   | { readonly kind: "actor"; readonly battler: MutableBattler; readonly timeMs: number }
   | { readonly kind: "enemy"; readonly battler: MutableBattler; readonly timeMs: number };
@@ -8,10 +10,11 @@ export function nextReadyBattler(
   actors: readonly MutableBattler[],
   enemies: readonly MutableBattler[],
   deltaMs: number,
-  hasteMultiplier = 1
+  hasteMultiplier = 1,
+  battlerMultiplier: BattlerRateMultiplier = () => 1
 ): ReadyBattler | undefined {
-  const readyActors = actors.filter((entry) => entry.hp > 0).map((battler) => readyActor(battler, hasteMultiplier));
-  const readyEnemies = enemies.filter((entry) => entry.hp > 0).map((battler) => readyEnemy(battler, hasteMultiplier));
+  const readyActors = actors.filter((entry) => entry.hp > 0).map((battler) => readyActor(battler, hasteMultiplier * battlerMultiplier(battler)));
+  const readyEnemies = enemies.filter((entry) => entry.hp > 0).map((battler) => readyEnemy(battler, hasteMultiplier * battlerMultiplier(battler)));
   const ordered = [...readyActors, ...readyEnemies].sort((left, right) => {
     const delta = left.timeMs - right.timeMs;
     if (delta !== 0) return delta;
@@ -26,10 +29,11 @@ export function chargeBattlers(
   actors: readonly MutableBattler[],
   enemies: readonly MutableBattler[],
   deltaMs: number,
-  hasteMultiplier = 1
+  hasteMultiplier = 1,
+  battlerMultiplier: BattlerRateMultiplier = () => 1
 ): void {
-  for (const actor of actors) charge(actor, deltaMs, hasteMultiplier);
-  for (const enemy of enemies) charge(enemy, deltaMs, hasteMultiplier);
+  for (const actor of actors) charge(actor, deltaMs, hasteMultiplier * battlerMultiplier(actor));
+  for (const enemy of enemies) charge(enemy, deltaMs, hasteMultiplier * battlerMultiplier(enemy));
 }
 
 function readyActor(battler: MutableBattler, hasteMultiplier = 1): ReadyBattler {

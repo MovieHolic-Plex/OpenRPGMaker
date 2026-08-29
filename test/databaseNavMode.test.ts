@@ -5,14 +5,6 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const COMMON_TABS = [
-  "db-tab-overview",
-  "db-tab-actors",
-  "db-tab-items",
-  "db-tab-enemies",
-  "db-tab-troops",
-  "db-tab-system",
-];
 
 let restoreDom: (() => void) | null = null;
 
@@ -42,33 +34,32 @@ function directTabIds(node: FakeElement): string[] {
 }
 
 describe("database navigation by editor mode", () => {
-  it("shows exactly six common tabs before a closed all-data disclosure in beginner mode", () => {
+  it("groups the rail by category in beginner mode too — no all-data disclosure", () => {
     const host = renderPanel("beginner");
     const nav = host.querySelector(".db-tabs");
     if (!nav) throw new Error("missing database navigation");
 
-    expect(directTabIds(nav)).toEqual(COMMON_TABS);
-    const all = findByTestId(nav, "db-nav-all");
-    if (!all) throw new Error("missing all-data disclosure");
-    expect(all.tagName).toBe("DETAILS");
-    expect(all.getAttribute("open")).toBeNull();
-    expect(all.children[0]?.tagName).toBe("SUMMARY");
-    expect(all.children[0]?.textContent).toBe("모든 자료");
-    expect(all.children[0]?.textContent).not.toContain("DB");
+    // 예전 초보 레일은 자주 쓰는 6개만 깔고 남은 24개를 <details>「모든 자료」에 몰아넣었다.
+    // 찾는 경로가 모드마다 갈리면 초보가 배운 자리가 표준에서 통하지 않는다 — 그룹으로 통일한다.
+    expect(findByTestId(host, "db-nav-all")).toBeNull();
+    const groups = Array.from(nav.querySelectorAll(".db-tab-group")).map((group) => group.textContent);
+    expect(groups).toContain("파티");
+    expect(groups).toContain("몬스터");
+    expect(groups).toContain("시스템");
 
-    const switches = findByTestId(all, "db-tab-switches");
-    expect(switches).not.toBeNull();
-    expect(findByTestId(nav, "db-tab-switches")?.closest("details")).toBe(all);
-
-    all.setAttribute("open", "");
-    expect(all.getAttribute("open")).toBe("");
-    expect(findByTestId(all, "db-tab-switches")?.textContent).toBe("스위치");
+    // 접힌 그룹 안에 있어도 모든 탭이 레일에 존재해야 한다(교차 탭 이동 계약).
+    for (const testId of ["db-tab-overview", "db-tab-actors", "db-tab-items", "db-tab-switches"]) {
+      expect(findByTestId(nav, testId)).not.toBeNull();
+    }
+    expect(findByTestId(nav, "db-tab-switches")?.closest("details")).toBeNull();
   });
 
   it("keeps grouped navigation with explicit monster and life domains in standard mode", () => {
     const host = renderPanel("standard");
     const groups = host.querySelectorAll(".db-tab-group").map((group) => group.textContent);
-    expect(groups).toContain("전투·몬스터");
+    // 몬스터는 전투 규칙과 분리된 독립 그룹이다 — 예전 `전투·몬스터` 한 덩어리(9탭)가 아니다.
+    expect(groups).toContain("몬스터");
+    expect(groups).toContain("전투 규칙");
     expect(groups).toContain("생활");
     expect(findByTestId(host, "db-nav-all")).toBeNull();
   });
