@@ -117,7 +117,9 @@
   padding: 0;
 }
 
-.battle-enemy > .battle-status-icons {
+/* 직계 자식 선택자였는데 `.battle-enemy-chrome` 겹이 들어와서 안 먹었다.
+   배틀러 목록(.battle-enemy-list) 안의 아이콘과는 여전히 구분해야 하므로 chrome 으로 스코프한다. */
+.battle-enemy-chrome > .battle-status-icons {
   display: flex;
   gap: 4px;
   justify-content: center;
