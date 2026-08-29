@@ -5,6 +5,7 @@ import {
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { editorState } from "@/editor/editorState";
+import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
 import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/project/types";
@@ -802,15 +803,120 @@ function renderMinimapTab(host: HTMLElement, map: import("@/project/types").Game
 }
 
 // ── 필드 스폰 탭 ──
+// 같은 적 레코드를 한쪽에서는 산적, 다른 쪽에서는 경비대로 배치하려면 스폰별 진영이 필요하다.
+// 그 한 필드만 구조화 컨트롤로 올리고, 나머지 필드(영역·트룹·그래픽 등)는 JSON 해치에 남긴다.
 function renderSpawnsTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
+  const project = store.getCurrent();
+  const spawns = map.fieldSpawns ?? [];
+  const troops = project.database.troops;
+  const table = resolveFactionTable(project.factions);
+
   const section = el("div", { class: "panel-section map-props-section" });
-  section.append(jsonArrayField(
+  section.append(el("label", { class: "map-encounter-heading", text: "스폰별 진영 덮어쓰기" }));
+
+  if (spawns.length === 0) {
+    section.append(el("p", {
+      class: "map-props-hint",
+      text: "이 맵에는 필드 스폰이 없습니다. 아래 JSON으로 추가하거나 맵 툴로 배치하세요.",
+      dataset: { testid: "map-spawn-empty" },
+    }));
+  } else {
+    for (const [index, spawn] of spawns.entries()) {
+      section.append(spawnFactionRow(map, spawns, index, spawn, table, troops, host));
+    }
+    section.append(el("p", {
+      class: "map-props-hint",
+      text: "상속(기본값)은 스폰에 값을 저장하지 않는다는 뜻입니다 — 몬스터 레코드의 소속 진영이 적용되고, 그것도 없으면 예약 진영 적(enemy)으로 싸웁니다.",
+      dataset: { testid: "map-spawn-inherit-hint" },
+    }));
+  }
+
+  // JSON 탈출구 — 영역·트룹·그래픽 등 나머지 필드의 대량 편집용
+  const advanced = el("details", { class: "map-encounter-advanced" });
+  advanced.append(el("summary", { text: "JSON으로 직접 편집 (영역·트룹·그래픽 등 전체 필드)" }));
+  advanced.append(jsonArrayField(
     "필드 스폰",
     "map-field-spawns-input",
-    map.fieldSpawns ?? [],
-    (entries) => setMapFieldSpawns(map.id, entries as FieldSpawnDef[]),
+    spawns,
+    (entries) => { setMapFieldSpawns(map.id, entries as FieldSpawnDef[]); rerender(host); },
   ));
+  section.append(advanced);
+
   host.append(section);
+}
+
+function spawnFactionRow(
+  map: import("@/project/types").GameMap,
+  spawns: readonly FieldSpawnDef[],
+  index: number,
+  spawn: FieldSpawnDef,
+  table: ReturnType<typeof resolveFactionTable>,
+  troops: readonly import("@/project/types").TroopRecord[],
+  host: HTMLElement
+): HTMLElement {
+  const storedId = spawn.factionId;
+  const dangling = Boolean(storedId && !table.ids.includes(storedId));
+
+  const select = el("select", {
+    attrs: { "aria-label": `${spawn.id} 진영` },
+    dataset: { testid: `map-spawn-faction-${index}` },
+  }) as HTMLSelectElement;
+  // 빈 값은 "진영 없음"이 아니라 "스폰에 저장값 없음(상속)"이다. 첫 옵션으로 두어 기본값임을 드러낸다.
+  select.append(el("option", { attrs: { value: "" }, text: "상속 — 몬스터 레코드의 진영 (없으면 적 enemy)" }));
+  if (dangling && storedId) {
+    // 삭제된 ID를 렌더만으로 조용히 고치지 않는다. 결손 상태를 그대로 보여주고, 다른 진영을 고르면 명시적으로 복구된다.
+    select.append(el("option", {
+      attrs: { value: storedId, disabled: "" },
+      text: `${storedId} · 존재하지 않는 진영 (enemy로 전투)`,
+    }));
+  }
+  for (const id of table.ids) {
+    select.append(el("option", {
+      attrs: { value: id },
+      text: `${factionName(table, id)} (${id})${id === DEFAULT_ENEMY_FACTION_ID ? " · 예약" : ""}`,
+    }));
+  }
+  select.value = storedId ?? "";
+  select.addEventListener("change", () => {
+    const chosen = select.value;
+    const next = spawns.map((item, i) => {
+      if (i !== index) return item;
+      // 상속으로 되돌리면 기본값을 저장하는 대신 키를 지워 저작 데이터를 희소하게 유지한다.
+      if (chosen === "") {
+        const { factionId: _dropped, ...rest } = item;
+        return rest;
+      }
+      return { ...item, factionId: chosen };
+    });
+    setMapFieldSpawns(map.id, next as FieldSpawnDef[]);
+    rerender(host);
+  });
+
+  const row = el("div", { class: "map-encounter-row map-spawn-row", dataset: { testid: `map-spawn-row-${index}` } });
+  const troopName = troops.find((troop) => troop.id === spawn.troopId)?.name;
+  const title = el("div", { class: "map-spawn-row-title" });
+  title.append(el("span", { class: "map-spawn-row-id", text: spawn.id }));
+  title.append(el("span", {
+    class: "map-spawn-row-meta",
+    text: `${troopName ?? `${spawn.troopId} (없는 트룹)`} · ${spawn.area.w}×${spawn.area.h} @ ${spawn.area.x},${spawn.area.y}`,
+  }));
+  row.append(title);
+
+  const main = el("div", { class: "map-encounter-row-main" });
+  main.append(select);
+  row.append(main);
+
+  row.append(el("p", {
+    class: `map-props-hint map-spawn-row-effect${dangling ? " map-spawn-row-warning" : ""}`,
+    dataset: { testid: `map-spawn-faction-effective-${index}` },
+    text: dangling && storedId
+      ? `저장된 진영 ID '${storedId}'가 존재하지 않습니다. 런타임에서는 적(enemy)으로 싸웁니다.`
+      : storedId
+        ? `이 스폰은 ${factionName(table, storedId)} 진영으로 싸웁니다.`
+        : "몬스터 레코드의 진영을 따릅니다.",
+  }));
+
+  return row;
 }
 
 // ── 헬퍼 ──

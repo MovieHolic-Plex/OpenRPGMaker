@@ -20,6 +20,8 @@ const MAX_LOGS = 100;
 const MAX_TEXT = 4000;
 const MAX_ARGS_JSON = 12_000;
 const MAX_KEEPALIVE_BYTES = 60 * 1024;
+/** 진단 한 줄에 붙일 issue 개수. 앞 몇 건이 거의 항상 원인이고, 다 붙이면 요약이 로그가 된다. */
+const DIAGNOSTIC_ISSUE_LIMIT = 3;
 
 function getStorage(): Storage | null {
   return typeof localStorage === "undefined" ? null : localStorage;
@@ -76,6 +78,32 @@ export function deriveAiActivityDiagnostics(
   const messages: string[] = [];
   const failedTools = new Set<string>();
 
+  // 실패한 도구의 검증/lint issue 를 도구 이름으로 찾아 둔다.
+  //
+  // 왜 필요한가 (2026-08-29 실측) — `toolRunner` 의 커밋 거부 summary 는 어느 lint 가 터졌든
+  // `'<tool>' 커밋 거부(무결성 오류)` 로 **고정**이다. 그 한 줄만 진단에 실리면 진단력이 0 이라,
+  // `run_interior_room_pipeline` 실패 3건의 원인(`시작 위치가 통행 불가 타일입니다: (10, 12)`)을
+  // 알아내려고 코드를 역추적해야 했다. 정작 그 메시지는 `audit[].issues` 에 이미 있었다.
+  //
+  // toolCalls 쪽은 issues 를 싣지 않으므로(sanitizeToolCalls) audit 에서 끌어온다. 그리고
+  // 아래 audit 루프는 "같은 도구 이름으로 이미 메시지가 있으면" 건너뛰기 때문에, toolCalls 가
+  // 먼저 밋밋한 한 줄을 넣으면 issue 가 붙은 줄은 영원히 안 들어갔다.
+  const issuesByTool = new Map<string, readonly string[]>();
+  for (const entry of input.audit ?? []) {
+    if (entry.kind !== "tool" || entry.ok !== false) continue;
+    if (!entry.issues || entry.issues.length === 0) continue;
+    if (!issuesByTool.has(entry.name)) issuesByTool.set(entry.name, entry.issues);
+  }
+  const toolFailureMessage = (name: string, summary: string): string => {
+    const base = clipText(`${name}: ${summary}`, 500);
+    const issues = issuesByTool.get(name);
+    if (!issues || issues.length === 0) return base;
+    // summary 와 별도로 클립한다 — 한 예산으로 합치면 긴 summary 가 issue 를 밀어낸다.
+    const head = issues.slice(0, DIAGNOSTIC_ISSUE_LIMIT);
+    const rest = issues.length - head.length;
+    return `${base} — ${clipText(head.join(" / "), 400)}${rest > 0 ? ` (+${rest}건)` : ""}`;
+  };
+
   if (!input.result.ok) {
     kinds.add("turn-error");
     messages.push(
@@ -91,9 +119,7 @@ export function deriveAiActivityDiagnostics(
     failedTools.add(call.name);
     if (call.name === "complete_work_item" || call.name === "skip_work_item")
       kinds.add("work-plan");
-    messages.push(
-      clipText(`${call.name}: ${call.summary ?? "도구 호출 실패"}`, 500),
-    );
+    messages.push(toolFailureMessage(call.name, call.summary ?? "도구 호출 실패"));
   }
   for (const entry of input.audit ?? []) {
     if (entry.kind === "tool" && entry.ok === false) {
@@ -102,7 +128,7 @@ export function deriveAiActivityDiagnostics(
       if (entry.name === "complete_work_item" || entry.name === "skip_work_item")
         kinds.add("work-plan");
       if (!messages.some((message) => message.startsWith(`${entry.name}:`))) {
-        messages.push(clipText(`${entry.name}: ${entry.summary}`, 500));
+        messages.push(toolFailureMessage(entry.name, entry.summary));
       }
       continue;
     }

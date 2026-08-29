@@ -228,3 +228,24 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 `src/project/io/commandReferenceValidation.ts:116` `collectConditionItemReferenceIds` 에서 가져왔다.
 계약 테스트: `test/databaseReferenceGuards.test.ts` (all 안 스위치 / not 안 변수 / any 안 아이템 +
 참조 없는 스위치는 여전히 삭제되는 회귀 케이스).
+## '진영' 탭과 몬스터 소속 진영 (2026-08-29)
+
+전투 태도표(`project.factions`)를 사람이 저작하는 화면. 데이터 규약은 `openwiki/runtime-project-schema.md`, 전투 판정은 `openwiki/runtime-action-combat.md` 가 소유한다.
+
+- **탭 등록**: `factions`(`db-tab-factions`, 라벨 `진영`)는 `몬스터` 그룹의 `enemies` · `monsterSpecies` · `troops` 뒤에 온다. 카운트는 `2 + 예약 id 를 뺀 저작 진영 수`라서 아무것도 만들지 않은 프로젝트도 `2`(예약 `player`/`enemy`)로 나온다. 화면은 `databaseFactionView.ts`(공용 `workspaceShell`/`listPane`/`detailPane` 빌더), 순수 변경 모델은 `databaseFactionModel.ts`.
+- **기본값과 대칭 판정을 UI 가 다시 구현하지 않는다.** 표시값은 전부 `resolveFactionTable` → `factionStance` 를 거쳐 나오고(`authoredFactionStance`), 관계가 없을 때의 값도 관계를 비운 테이블에서 구한다(`defaultFactionStance`). 편집기가 자체 기본값을 세우면 "우호로 바꿨는데 계속 적대"처럼 전투와 어긋나는 화면이 생긴다. 목록 순서도 `table.ids` 라 예약 진영이 항상 앞자리(번호표 `예약`)이고, 삭제 버튼은 예약 id 에서 disabled 다.
+- **태도 행렬은 한 쌍을 대칭으로 쓴다.** `db-faction-matrix` 의 셀 `db-faction-stance-<rowId>-<columnId>` 은 누를 때 -2 → -1 → 0 → 1 → 2 로 순환하고 `data-authored` 로 저작/기본값을 구분한다. `setSparseFactionStance` 는 (1) 값이 기본값과 같아지면 관계 항목을 아예 쓰지 않고 (2) 순서가 뒤집힌 중복 관계를 걷어 한 쌍으로 합친다 — N² 화면이 프로젝트 JSON 을 N² 데이터로 부풀리지 않게 막는 유일한 장치다. 안내문 `db-faction-hostility-notice` 는 외부 JSON 의 양방향 값이 다를 때 전투와 같이 더 적대적인 쪽이 이긴다는 사실을 적는다.
+- **셀 색은 런타임 `stanceBarColor` 를 그대로 쓴다** — 의도적인 비토큰 값이다. 같은 관계가 편집기와 플레이 화면에서 다른 색으로 읽히면 안 되기 때문이고, 색만 신호로 두지 않고 숫자·라벨·저작 표식(`● 저작` / `○ 기본`)을 함께 둔다.
+- **ID 변경은 참조를 함께 옮긴다.** `renameFaction` 이 관계의 양 끝, `EnemyRecord.factionId`, 모든 맵의 `FieldSpawnDef.factionId`, 그리고 `changeFactionStance` 명령의 두 피연산자(`visitProjectCommands` 로 맵 이벤트·페이지·커먼 이벤트·트룹 전투 페이지까지)를 다시 쓴다. 삭제(`deleteFaction`)는 같은 참조를 사람이 읽는 목록(`몬스터 '…'`, `맵 '…'의 필드 스폰 '…'`, 이벤트 위치)으로 만들어 막고, 예약 id 는 아예 거부한다. 복제는 정체성만 복사하고 관계는 물려주지 않는다 — 원본의 동맹·적을 조용히 상속하는 쪽이 더 위험하다.
+- 세계관에서 구체화된 진영은 `FactionDef.worldEntityId` 에 출처(`WorldEntity.id`)를 들고 있어서, 이 탭에서 전투 ID 를 바꿔도 세계관 재반영이 같은 세력의 진영을 하나 더 만들지 않는다.
+- **플레이어 처치 평판은 진영 속성이 아니라 프로젝트 전체 규칙**이라 별도 카드 `db-faction-reputation` 에 있다: 켜면 `factions.playerKillReputation { weight }`(기본 0.25, 음수는 0 으로 조인다), 끄면 키를 지운다(`setPlayerKillReputation`). 실제 적용은 런타임 `applyPlayerKillReputation` 이 세션 오버레이에만 쓴다.
+- 구조 변경(추가·복제·삭제·ID·선공 성향·보호·평판)은 `recordProjectSnapshot`, 이름·색처럼 연속으로 들어오는 입력은 `recordCoalescedSnapshot` 이라 DB 모달의 dirty/undo 계약을 그대로 따른다. 필드·행렬·평판 쓰기는 `replaceFactions` 를 지나 `normalizeProjectFactions` 로 정규화되고, ID 변경·삭제는 모델이 만든 프로젝트를 `store.replace` 로 반영한다. 어느 경로든 남는 값이 없으면 `project.factions` 키 자체를 지운다.
+- 커버리지: `test/databaseFactionModel.test.ts`(희소 쓰기, 역순 중복 제거, 비대칭 입력, ID 변경 시 명령·몬스터·스폰 재작성, 참조 있는 삭제 차단), `test/databaseFactionView.test.ts`(공용 빌더, 예약 진영 셀 접근성, 셀 순환과 저작 표식).
+
+### 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
+
+- 드롭다운(`db-picker-enemy-faction`)은 `enemy` 를 "진영 없음"이 아니라 **런타임 기본 진영**으로 보여 준다(`… · 기본값`). 기본값을 고르면 레코드에서 `factionId` 키를 지워 희소하게 유지하고, 힌트 `db-enemy-faction-default-clears` 가 그 동작을 적는다.
+- 결과 카드 `db-enemy-faction-effective` 는 유효 진영·식별 색(`db-enemy-faction-color`)·출처(`레코드에 저장됨` / `미저장 · enemy로 전투`)와 플레이어 기준 태도를 함께 보여 준다. 저장값이 없는 진영을 가리키면 렌더가 조용히 고치지 않고 결손 항목을 선택된 채로 남기며, 경고 `db-enemy-faction-missing` 과 `저장값 지우기`(`db-enemy-faction-clear-missing`)로 명시적 복구만 제공한다.
+- **실제로 서로 선공하는 관계는 미리보기 제한으로 접지 않는다.** 관계 목록은 `willAttackOnSight(stance, aggression)`를 양쪽 방향으로 평가해 이 몬스터 진영이 상대를 공격하거나 상대 진영이 이쪽을 공격하면 **전부** `db-enemy-faction-relationships-primary` 에 먼저 놓는다. 따라서 매우 공격적(2)의 중립 대상과 광폭(3) 진영도 숨지 않는다. 제한(`FACTION_RELATION_PREVIEW_LIMIT = 6`)은 양쪽 모두 선공하지 않는 관계에만 적용하고, 접히는 카드 `db-enemy-faction-relationships-more`의 제목도 `서로 선공하지 않는 관계 N개`로 판정 범위를 정확히 적는다.
+- 예약 진영만 있는 프로젝트에는 `db-enemy-faction-guide` 안내와 `진영 탭 열기`(`db-enemy-open-factions`)가 붙고, 점프는 모달을 다시 열지 않고 `switchDatabaseActiveTab`(G006)을 쓴다.
+- 커버리지: `test/databaseEnemyFactionPanel.test.ts`.

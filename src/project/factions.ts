@@ -68,6 +68,9 @@ export function normalizeProjectFactions(input: Partial<ProjectFactions> | undef
       id: raw.id,
       name: typeof raw.name === "string" && raw.name.length > 0 ? raw.name : raw.id,
     };
+    if (typeof raw.worldEntityId === "string" && raw.worldEntityId.length > 0) {
+      def.worldEntityId = raw.worldEntityId;
+    }
     if (typeof raw.color === "string" && raw.color.length > 0) def.color = raw.color;
     if (raw.aggression !== undefined) def.aggression = clampAggression(raw.aggression);
     if (raw.protectedFromNpcs === true) def.protectedFromNpcs = true;
@@ -131,13 +134,22 @@ export function resolveFactionTable(factions: ProjectFactions | undefined): Reso
   stances[0 * size + 1] = STANCE_ENEMY;
   stances[1 * size + 0] = STANCE_ENEMY;
 
+  const authoredStances = new Uint8Array(size * size);
   for (const relation of factions?.relations ?? []) {
     const a = index.get(relation.a);
     const b = index.get(relation.b);
     if (a === undefined || b === undefined) continue;
-    const stance = clampStance(relation.stance);
-    stances[a * size + b] = stance;
-    stances[b * size + a] = stance;
+    const forward = a * size + b;
+    const backward = b * size + a;
+    const incoming = clampStance(relation.stance);
+    // 기본 중립/대각선/예약 적대값은 첫 저작값으로 덮고, 중복 저작끼리만 더 적대적인 값을 보존한다.
+    const stance = authoredStances[forward] === 1
+      ? Math.min(stances[forward], incoming) as FactionStance
+      : incoming;
+    stances[forward] = stance;
+    stances[backward] = stance;
+    authoredStances[forward] = 1;
+    authoredStances[backward] = 1;
   }
 
   return {

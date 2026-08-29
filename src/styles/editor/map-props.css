@@ -300,6 +300,37 @@
   border-top: 1px dashed var(--border-color, rgba(42, 37, 33, 0.20));
 }
 
+/* ── 필드 스폰 탭 ── (인사운터 행 모양을 그대로 재사용하고 제목줄만 더한다) */
+.map-spawn-row-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.map-spawn-row-id {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary, #2A2521);
+}
+
+.map-spawn-row-meta {
+  font-size: 11px;
+  color: var(--text-muted, #6B5F52);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-spawn-row-effect {
+  margin: 0;
+}
+
+.map-spawn-row-warning {
+  color: var(--danger, #C4453A);
+}
+
 /* 하위 추가 + 버튼(초보 전용)은 editor/map-panel.modern.css 의 is-basic-flyout 절로
    이관됐다(2026-08, Task 6 후속) — 여기서는 스코프 없는 전역 셀렉터였다. */
 
