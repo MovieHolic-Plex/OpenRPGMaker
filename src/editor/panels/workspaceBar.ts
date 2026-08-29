@@ -308,9 +308,12 @@ function renderCommandPaletteChip(): HTMLElement {
     class: "oprn-menu-item workspace-command-chip",
     attrs: {
       type: "button",
-      // 구 title 은 "명령·맵·스킬 찾기 (Ctrl+K)" 였다. 조수 스킬은 2026-08-27 에 삭제된 기능이라
-      // 없는 것을 가리쪼고, `찾기` 는 헤더의 맵·이벤트 찾기 표면 이름이라 같은 헤더에서 맞부딪다.
-      title: "명령 팜레트 (Ctrl+K)",
+      // 이름은 팔레트가 실제로 색인하는 것에서 나온다 — `commandPalette.ts` 의 KIND_HEADERS 는
+      // `command`(명령)와 `map`(맵 이동) 둘뿐이다. 구 title 「명령·맵·스킬 찾기 (Ctrl+K)」는
+      // (1) 2026-08-27 에 삭제된 조수 스킬을 광고했고 (2) 도구 메뉴의 「맵·이벤트 찾기」와 같은
+      // 헤더에서 두 개의 `찾기` 표면을 만들어 둘 다 맵을 찾는다고 말했다. 팔레트는 찾기 표면이
+      // 아니라 명령 실행기 + 맵 이동이므로 이름도 그렇게 말한다.
+      title: "명령 실행 · 맵 이동 (Ctrl+K)",
       "aria-label": "명령 팔레트 열기 (Ctrl+K)",
       "aria-keyshortcuts": "Control+K",
     },

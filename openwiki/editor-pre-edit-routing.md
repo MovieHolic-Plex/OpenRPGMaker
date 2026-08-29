@@ -121,7 +121,8 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 | 선택 이벤트 테스트 | `toolbar-event-test` | 단독 | 선택 이벤트가 없으면 disabled + 안내 title |
 | 저장 상태·재시도 | `topbar-save-status`(→ `db-autosave-retry`) | 단독 | 하단 상태바 폐지 후 유일한 호스트 |
 | 커밋 히스토리 / 신원 | `commit-history-toggle`, `topbar-identity` | 단독 | 트레일링 아이콘 클러스터 |
-| 명령 팔레트 | `workspace-command-palette-button` | 단독(예외) | Ctrl+K 팔레트는 전 표면 검색이라 IA 계약의 예외. title 은 `명령 팔레트 (Ctrl+K)` — 구 `명령·맵·스킬 찾기` 는 삭제된 조수 스킬을 가리키고 `찾기` 표면과 충돌했다 |
+| 명령 실행 · 맵 이동 (Ctrl+K 팔레트) | `workspace-command-palette-button` | 단독(예외) | Ctrl+K 팔레트는 전 표면을 훑으므로 사이드바/헤더 IA 계약의 예외다. `commandPalette.ts` 의 `KIND_HEADERS` 는 `command`(명령) · `map`(맵 이동) 둘뿐 — title 은 그 둘을 말하는 `명령 실행 · 맵 이동 (Ctrl+K)` 다 |
+| **이름 충돌 (해소)**: 찾기 표면 | `workspace-command-palette-button` ↔ `menu-tools-search` / `toolbar-search` | 중복 이름 → 해소 | 구 팔레트 title `명령·맵·스킬 찾기 (Ctrl+K)` 가 (1) 2026-08-27 에 삭제된 조수 스킬을 광고하고 (2) 도구 메뉴의 `맵·이벤트 찾기` 와 함께 한 헤더에 `찾기` 표면을 둘 만들어 둘 다 "맵을 찾는다" 고 말했다. 역할이 다르므로 이름도 다르게 둔다 — **팔레트 = 명령 실행기 + 맵 이동, `맵·이벤트 찾기` = 프로젝트 데이터(맵·이벤트) 찾기**. 진입점은 둘 다 유지한다. 회귀 단정: `test/editorHeaderTerminology.test.ts` 「헤더에 찾기 표면은 하나다」 |
 | 패널·밀도·편집 모드 | `workspace-panels-button` → `workspace-panels-menu` | 단독 | 편집 모드 전환의 집(2026-08-26) |
 | 창 컨트롤 | `window-toolbar-collapse`, `window-fullscreen` | 단독 | — |
 | 레이어·도구 현재 상태 | `layer-selector` (visually-hidden) | 표시 전용 | 전환은 좌측 사이드바가 소유한다. 문구는 `aiAgentBrief.layerShortLabel` 정본 |

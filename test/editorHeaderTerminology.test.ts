@@ -253,6 +253,32 @@ describe("에디터 헤더 용어", () => {
     }
   });
 
+  it("헤더에 찾기 표면은 하나다 — 커맨드 팔레트는 명령 실행기로 이름을 낸다", () => {
+    // Break: 팔레트 버튼이 다시 `명령·맵·스킬 찾기` 처럼 말하면 한 헤더에 찾기 표면이 둘이 되고,
+    // 둘 다 "맵을 찾는다" 고 주장해 사용자가 어느 것을 쓸지 구별할 수 없다.
+    // 게다가 조수 스킬은 2026-08-27 에 삭제된 기능이라 없는 것을 광고하는 이름이다.
+    const topbar = renderExpertTopbar();
+    const style = getEditorChrome().jargonStyle;
+    const canonical = uiLabel("mapEventSearch", style);
+
+    const palette = findByTestId(fake(topbar), "workspace-command-palette-button");
+    expect(palette, "workspace-command-palette-button").not.toBeNull();
+    const paletteTitle = palette?.getAttribute("title") ?? "";
+    expect(paletteTitle, "삭제된 조수 스킬을 광고하면 안 된다").not.toContain("스킬");
+    expect(paletteTitle, "찾기 표면 이름을 나눠 쓰면 안 된다").not.toBe(canonical);
+    expect(paletteTitle, "팔레트는 찾기 표면이 아니다").not.toMatch(/찾기/u);
+
+    // 헤더 전체에서 `…찾기` 로 끝나는 이름은 맵·이벤트 찾기 정본과 그 축약뿐이다.
+    const allowed = new Set([canonical, uiLabel("mapEventSearchShort", style)]);
+    const findingSurfaces = new Set(
+      headerStrings(topbar)
+        .map(({ text }) => displayName(text))
+        .filter((name) => name.endsWith("찾기")),
+    );
+    const strays = [...findingSurfaces].filter((name) => !allowed.has(name));
+    expect(strays, `찾기 표면이 둘 이상이다: ${strays.join(" / ")}`).toEqual([]);
+  });
+
   it("layer-selector 는 uiCopy 레이어 이름을 읽어 준다", () => {
     // Break: menu.ts 가 다시 자기만의 layerShortLabel 사본으로 "하위"/"상위" 를 만든다.
     const topbar = renderExpertTopbar();
