@@ -58,7 +58,7 @@ export type PictureState = {
   readonly durationMs?: number;
 };
 
-const pendingPictureMountTransitions = new WeakSet<PictureState>();
+const pendingPictureTransitions = new WeakSet<PictureState>();
 
 export type ActorRowPosition = "front" | "back";
 
@@ -717,12 +717,12 @@ export function showPictureState<T extends PictureState>(
   picture: T,
 ): void {
   session.pictures[picture.pictureId] = picture;
-  if ((picture.durationMs ?? 0) > 0) pendingPictureMountTransitions.add(picture);
+  if ((picture.durationMs ?? 0) > 0) pendingPictureTransitions.add(picture);
 }
 
-export function takePendingPictureMountTransition(picture: PictureState): boolean {
-  const pending = pendingPictureMountTransitions.has(picture);
-  pendingPictureMountTransitions.delete(picture);
+export function takePendingPictureTransition(picture: PictureState): boolean {
+  const pending = pendingPictureTransitions.has(picture);
+  pendingPictureTransitions.delete(picture);
   return pending;
 }
 

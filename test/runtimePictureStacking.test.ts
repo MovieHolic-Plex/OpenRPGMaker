@@ -45,9 +45,15 @@ describe("런타임 computed z-index 밴드", () => {
       const css = await readFile(cssFile, "utf8");
       browser = await chromium.launch({ headless: true });
       const page = await browser.newPage();
-      await page.setContent(`<style>${css}</style><div class="play-stage">${STACK_SELECTORS.map(
-        (selector) => `<div class="${selector.slice(1)}"></div>`,
-      ).join("")}</div>`);
+      await page.setContent(`<style>${css}</style>
+        <div class="player-layout system-shell">
+          <div class="play-viewport">
+            <div class="play-stage">
+              <div class="phaser-container"></div>
+              ${STACK_SELECTORS.map((selector) => `<div class="${selector.slice(1)}"></div>`).join("")}
+            </div>
+          </div>
+        </div>`);
       computed = await page.evaluate((selectors) => Object.fromEntries(selectors.map((selector) => {
         const element = document.querySelector(selector);
         if (!(element instanceof HTMLElement)) throw new Error(`missing fixture element: ${selector}`);
