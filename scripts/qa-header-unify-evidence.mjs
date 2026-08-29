@@ -107,17 +107,24 @@ record("C1-헤더에-폐기용어-없음", retiredHits.length === 0, { retiredHi
 
 // 같은 개념이 한 이름으로만 나타나는지 — 개념별 허용 집합(정본 + 축약)을 넘는 변종을 잡는다.
 const CONCEPTS = {
-  보관함: { allowed: ["소재 보관함", "소재"], probe: /보관함|소재|리소스/ },
-  음악: { allowed: ["음악·효과음", "음악"], probe: /음악|효과음/ },
+  보관함: { canonical: "리소스 보관함", short: "리소스", probe: /보관함|소재|리소스/ },
+  음악: { canonical: "음악·효과음", short: "음악", probe: /음악|효과음/ },
   // 찾기 표면은 둘이다 — 맵·이벤트 찾기(프로젝트 데이터)와 커먼드 팔레트(전역 명령 실행).
   // 팔레트 이름은 terms 노드가 정하므로 여기서는 "맵·이벤트 찾기"와 가려지는 변종(맵/이벤트,
   // 이미 삭제된 스킬을 광고하는 이름)만 위반으로 본다.
-  찾기: { allowed: ["맵·이벤트 찾기", "찾기"], probe: /맵[·\/]이벤트|검색|스킬 찾기/ },
-  실행: { allowed: ["테스트 실행", "테스트"], probe: /시연|테스트 실행/ },
+  찾기: { canonical: "맵·이벤트 찾기", short: "찾기", probe: /맵[·\/]이벤트|검색|스킬 찾기/ },
+  실행: { canonical: "테스트 실행", short: "테스트", probe: /시연|테스트 실행/ },
 };
+// **expert 모드는 jargonStyle 이 technical 이다** — 이 하네스는 expert 로 부트하므로 정본도
+// technical 쪽 값(리소스 보관함/리소스)이다. plain(소재 보관함)으로 적어두면 정본을 제대로 쓴
+// 화면을 위반으로 보고하는 오탄이 난다(실제로 난 사고).
+// 또 정본을 **포함하는** 설명문은 분열이 아니다 — 작업 런처 힌트 `현재 프로젝트 테스트 실행` 은
+// 정본 `테스트 실행` 을 그대로 쓴 것이므로 통과시킨다.
 const conceptViolations = {};
 for (const [name, spec] of Object.entries(CONCEPTS)) {
-  const variants = allNorm.filter((s) => spec.probe.test(s) && !spec.allowed.includes(s));
+  const variants = allNorm.filter(
+    (s) => spec.probe.test(s) && s !== spec.canonical && s !== spec.short && !s.includes(spec.canonical)
+  );
   if (variants.length) conceptViolations[name] = [...new Set(variants)];
 }
 record("C1-개념별-이름-단일", Object.keys(conceptViolations).length === 0, { conceptViolations });
@@ -143,13 +150,11 @@ const readState = () =>
   page.evaluate(() => {
     const fn = window.__oprnAudioState;
     const engine = typeof fn === "function" ? fn() : null;
-    const media = Array.from(document.querySelectorAll("audio")).map((a) => ({
-      volume: a.volume,
-      playbackRate: a.playbackRate,
-      paused: a.paused,
-      src: (a.currentSrc || a.src || "").split("/").pop(),
-    }));
-    return { engine, media };
+    // `new Audio(url)` 는 **DOM 에 붙지 않는 detached 엘리먼트**다(audioEngine.ts 의 createElement).
+    // 그러니 document.querySelectorAll("audio") 는 **항상 불 배열**이고, 거기에 교차 검증을
+    // 걸었다가 항상 실패하는 사고가 난다. 엘리먼트 실제값은 엔진이 스냅샷의 tracks[] 로
+    // 노출하는 것만이 관측 경로다.
+    return { engine, tracks: engine?.tracks ?? null };
   });
 
 const beforeSliders = await readState();
@@ -173,21 +178,39 @@ await page.waitForTimeout(500);
 const afterSliders = await readState();
 await page.screenshot({ path: path.join(OUT, "c3-audio-sliders.png") });
 
-const vol = afterSliders.media[0]?.volume;
-const rate = afterSliders.media[0]?.playbackRate;
-record("C3-음량이-실제-반영", typeof vol === "number" && Math.abs(vol - 0.4) < 0.12, {
-  before: beforeSliders.media[0]?.volume,
-  after: vol,
+// 슬라이더 값 → 엔진 값 매핑은 대화상자가 정하는 것이다(audioTestDialog):
+//   음량 0..100  → volume  = value / 100
+//   템포 50..150 → rate    = value / 100
+//   밸런스 -50..50 → pan    = value / 50    ← /100 이 아니다(처음엔 -0.4 를 기대해 오탄이 나왔다)
+//   페이드인 0..10초 → fadeInMs = value * 1000
+const EXPECT = { volume: 0.4, rate: 1.35, pan: -40 / 50, fadeInMs: 4000 };
+const engineAfter = afterSliders.engine;
+record("C3-음량이-엔진에-반영", Math.abs((engineAfter?.volume?.bgm ?? -1) - EXPECT.volume) < 0.02, {
+  before: beforeSliders.engine?.volume?.bgm,
+  after: engineAfter?.volume?.bgm,
+  expected: EXPECT.volume,
 });
-record("C3-템포가-실제-반영", typeof rate === "number" && Math.abs(rate - 1.35) < 0.06, {
-  before: beforeSliders.media[0]?.playbackRate,
-  after: rate,
+record("C3-템포가-엔진에-반영", Math.abs((engineAfter?.playbackRate ?? -1) - EXPECT.rate) < 0.02, {
+  before: beforeSliders.engine?.playbackRate,
+  after: engineAfter?.playbackRate,
+  expected: EXPECT.rate,
 });
-record("C3-밸런스가-엔진에-반영", Math.abs((afterSliders.engine?.pan ?? 0) - -0.4) < 0.06, {
-  engine: afterSliders.engine,
+record("C3-밸런스가-엔진에-반영", Math.abs((engineAfter?.pan ?? 0) - EXPECT.pan) < 0.02, {
+  after: engineAfter?.pan,
+  expected: EXPECT.pan,
 });
-record("C3-페이드인이-엔진에-반영", (afterSliders.engine?.fadeInMs ?? -1) === 4000, {
-  engine: afterSliders.engine,
+record("C3-페이드인이-엔진에-반영", (engineAfter?.fadeInMs ?? -1) === EXPECT.fadeInMs, {
+  after: engineAfter?.fadeInMs,
+  expected: EXPECT.fadeInMs,
+});
+// 엔진 필드에만 잡힐 들어가고 **미디어에는 안 닿는** 회귀를 잡는 교차 검증.
+// tracks[] 가 없으면 그 자실을 사실로 기록한다(몰래 통과시키지 않는다).
+const liveTrack = (afterSliders.tracks ?? [])[0] ?? null;
+record("C3-엔진값이-실제-미디어에-닿는다", liveTrack !== null
+  && Math.abs(liveTrack.playbackRate - EXPECT.rate) < 0.02
+  && Math.abs(liveTrack.volume - EXPECT.volume) < 0.05, {
+  liveTrack,
+  note: liveTrack === null ? "__oprnAudioState().tracks 미노출 — 엔진/미디어 일치를 증명할 수 없다" : undefined,
 });
 
 await page.getByTestId("audio-test-stop").click();
@@ -298,7 +321,15 @@ record("C5-보이는-설명이-있다", (aiShape?.descriptions ?? 0) > 0, {
 await page.keyboard.press("Escape");
 await page.waitForTimeout(300);
 
-record("콘솔-에러-없음", consoleErrors.length === 0, { consoleErrors: consoleErrors.slice(0, 10) });
+// 로컬 동반 AI 서버(기본 :17832)가 이 호스트에 없으면 연결 거부가 당연하게 난다 — 이 변경과
+// 무관한 환경 사사이므로 사실로 기록하고 통과/실패 판정에서는 끈다. 그 외의 콘솔 오류는 실패다.
+const envRefused = consoleErrors.filter((m) => /ERR_CONNECTION_REFUSED/.test(m));
+const realErrors = consoleErrors.filter((m) => !/ERR_CONNECTION_REFUSED/.test(m));
+record("콘솔-오류-없음", realErrors.length === 0, {
+  realErrors: realErrors.slice(0, 10),
+  envRefusedCount: envRefused.length,
+  note: "ERR_CONNECTION_REFUSED 는 로컬 동반 AI 서버 부재(환경) — 판정 제외",
+});
 
 const summary = { base: BASE, at: new Date().toISOString(), findings, failures };
 fs.writeFileSync(path.join(OUT, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`);

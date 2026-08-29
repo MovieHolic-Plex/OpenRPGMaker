@@ -176,8 +176,8 @@ export function openAudioTestDialog(): void {
             label: "밸런스",
             testId: "audio-test-balance",
             scale: ["왼쪽", "중앙", "오른쪽"],
-            min: -50,
-            max: 50,
+            min: -100,
+            max: 100,
             value: state.balance,
             hint: "재생 중 즉시 적용",
             format: balanceText,
@@ -361,7 +361,6 @@ export function openAudioTestDialog(): void {
   applyVolume(state);
   engine.setPlaybackRate(state.tempo / 100);
   engine.setPan(state.balance / 50);
-  engine.setFadeInMs(state.fadeSeconds * 1000);
   engine.setFadeInMs(state.fadeSeconds * 1000);
   render();
   closeAction.focus();

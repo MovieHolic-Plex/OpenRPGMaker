@@ -318,7 +318,21 @@ export class AudioEngine {
     audio.preload = "auto";
     audio.playbackRate = this.playbackRate;
     this.applyPan(audio);
+    this.attachToDocument(audio);
     return audio;
+  }
+
+  // 생성한 오디오 요소를 문서에 달아도 재생 동작은 변하지 않는다(controls 없는 audio 는
+  // 렌더링되지 않는다). 대싼 볼륨·재생속도가 실제 반영됐는지를 브라우저 QA 가
+  // `document.querySelector("audio")` 로 교차 검증할 수 있게 된다.
+  private attachToDocument(audio: HTMLAudioElement): void {
+    if (typeof document === "undefined" || !document.body) return;
+    try {
+      audio.setAttribute("data-oprn-audio", "1");
+      document.body.append(audio);
+    } catch {
+      // 향상 DOM 구현이 아닌 환경(단위 테스트 mock) — 재생 경로에는 아무 어향도 없다.
+    }
   }
 
   // 재생 중인 모든 요소(루프 트랙 + 원샷).
@@ -451,6 +465,7 @@ export class AudioEngine {
       audio.pause();
       audio.currentTime = 0;
       audio.src = "";
+      if (typeof audio.remove === "function") audio.remove();
     } catch {
       // 일부 환경에서 src 리셋이 예외를 던질 수 있으나 정지 목적은 달성됨.
     }
