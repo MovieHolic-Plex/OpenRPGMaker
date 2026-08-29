@@ -72,7 +72,12 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             name: { type: "string" },
             width: { type: "integer" },
             height: { type: "integer" },
-            bounds: RECT_SCHEMA,
+            bounds: {
+              ...RECT_SCHEMA,
+              description:
+                "kind=\"existing\" 일 때 시공 범위. **생략하면 그 맵 전체가 재포장 대상이 된다** — "
+                + "기존 마을의 일부만 손보라는 요청이면 반드시 그 영역을 지정하라.",
+            },
             plannedMap: {
               type: "object",
               properties: {
@@ -146,12 +151,13 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       assertVillagePostconditions(request, inspection);
       restoreExistingTargetStart(baseline, draft, request);
       const state = { baseline, draft, request, inspection };
-      assertVillageMutationScope(state);
+      const scopeWarnings = assertVillageMutationScope(state);
       const data = buildVillageFacadeData(state, result);
+      const warnings = [...data.construction.warnings, ...scopeWarnings];
       return {
         summary: `Village authored: ${inspection.actualHouseCount}/${request.houseCount} houses on ${request.target.mapId}.`,
         data,
-        ...(data.construction.warnings.length === 0 ? {} : { warnings: [...data.construction.warnings] }),
+        ...(warnings.length === 0 ? {} : { warnings }),
       };
     },
   };

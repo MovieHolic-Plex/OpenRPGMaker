@@ -232,6 +232,18 @@ Evidence expectations:
 - 브라우저 QA 중에 다른 에이전트가 `src/` 를 편집하면 HMR 리로드가 끼어들어
   `ERR_NETWORK_CHANGED` 가 쏟아지고 편집기 부팅이 깨진다. 소스가 조용할 때 브라우저 증거를 잡아라.
 
+### `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
+
+Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` 를 한다. **사람은 화면 밖이라 못 누르는 버튼도 테스트는 스크롤해서 누른다.** 그래서 "클릭 성공"은 그 버튼이 보인다는 증거가 되지 못한다. DB 구조물 탭의 `[편집]` 이 화면 밖 67px 에 있었는데 e2e 가 초록불이었던 이유가 이것이다.
+
+- 판정은 **좌표로** 해라: `scroller.scrollTop = 0` 으로 되돌린 뒤 `getBoundingClientRect()` 를 재고,
+  `document.elementFromPoint(중심)` 이 그 버튼(또는 그 자손)인지 본다. 그리고 `scrollHeight - clientHeight === 0`(스크롤 여지 없음)을 함께 확인한다. 마지막 증명은 `page.mouse.click(좌표)` — 이건 자동 스크롤을 거치지 않는다.
+- `toBeVisible()` 도 부족하다. Playwright 의 "visible" 은 `display`/`visibility`/크기만 보고 **조상의 `overflow` 로 잘렸는지는 보지 않는다.**
+- **접두사가 겹치는 testid 를 `^=` 로 잡지 마라.** `[data-testid^="structure-kit-edit-"]` 는 `structure-kit-editor`·`-editor-close`·`-editor-canvas` 까지 다 잡아 strict 위반이 난다. 컨테이너 클래스로 좁혀라(`.structure-kit-actions [data-testid^=...]`).
+- **탭 전환은 헤딩 가시성으로 확인하면 안 된다.** DB 사이드바 탭을 누른 직후 초기화 경합에 밀려 `activeTab` 이 기본값으로 되돌아가는 것을 실측했다(구조물 → 파티). 공용 헬퍼 `switchDatabaseTab`(`test/e2e/oprn-database-helpers.ts`)을 써라 — 그룹을 순회해 찾고 **탭 버튼의 `.active`** 까지 확인한다. 그룹 슬러그를 직접 박아 넣으면(`db-tab-group-map` 같은 존재하지 않는 값) 헬퍼가 통째로 죽어도 아무도 모른다.
+- **점 한 번 찍는 `count() > 0` 은 렌더 경합에 진다.** 다이얼로그가 그려지기 전에 0 을 읽고 그냥 지나쳐 버린다. `expect(async () => {...}).toPass()` 로 감싸라.
+- 케이스마다 앱을 통째로 부팅하는 스펙은 `--workers=1` 로 돌려라. 병렬로 겹치면 다운로드 이벤트·다이얼로그 렌더가 밀려 간헐 실패한다(실측: 병렬 2건 실패 → 직렬 4건 전부 통과).
+
 ### `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
 
 - 증상: `page.goto` 는 성공했는데 화면이 **완전 백지**이고 aria 스냅샷이 비어 있다. 콘솔에 앱
@@ -334,3 +346,37 @@ Evidence expectations:
   페이지 이동은 굴리지 않는다. 그래서 `{ kind: "expect", eventAt: <원래 좌표> }` 는 NPC 가
   실제로 움직이든 안 움직이든 통과한다 — "안 움직인다" 류 회귀를 이 러너로 증명하지 말라.
   단위 레벨은 `test/runtimeEventPageMovement.test.ts`, 실물은 브라우저 Test Play 로 잡는다.
+
+## fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+
+`vitest.config.ts` 는 `environment: "node"` 라서 DOM 전역이 하나도 없다. `test/fakeDom.ts` 의
+`installFakeDom()` 이 주는 것만 존재한다. 그 목록에 **생성자 전역 `Image` 가 빠져 있었다** —
+`HTMLImageElement` 는 `instanceof` 용으로 매핑돼 있었는데(`defineDomGlobal("HTMLImageElement", FakeElement)`)
+`new Image()` 가 쓰는 생성자는 없었다. 실측: 전체 스위트 오류 230건 중 **222건이
+`ReferenceError: Image is not defined`** 였고, 발화점은 `src/editor/panels/chromaKey.ts:110`
+(`getAutoKeyedDataUrl`) **한 곳**, 귀속 파일은 `databaseWorkbench`·`databaseFilterChips`·
+`databaseRecordThumbnails`·`eventEditorTrustLoop` **4개**였다.
+
+핵심은 스텁이 **무엇을 발화하는가**다. `getAutoKeyedDataUrl` 은 `load` 와 `error` 양쪽에서
+resolve 하고 error 분기는 원본 URL 을 캐시·반환한다. 그래서 `FakeImage` 는 `src` 대입 시
+`queueMicrotask` 로 `error` 를 **딱 한 번** 발화한다(`addEventListener` 가 `{ once: true }` 를
+무시하므로 발화 횟수는 스텁이 보장한다). 아무 이벤트도 쏘지 않는 스텁을 넣으면 222건의 rejection 이
+222건의 **무한 pending** 으로 바뀐다 — 오류가 타임아웃으로 옷만 갈아입는 셈이다. 계약 테스트:
+`test/fakeDomImageGlobal.test.ts`.
+
+Unhandled Rejection 은 그 순간 실행 중이던 아무 파일에 귀속되므로, 이 종류의 누락은
+**비결정적 오귀속**의 원인이 된다. 새 브라우저 전역을 프로덕션이 쓰기 시작하면 `fakeDom` 의
+`DomGlobalName` 유니온·save/restore 목록·`defineDomGlobal` 세 곳을 같이 늘려야 한다.
+
+## bugfix-sweep 실제 표면 하네스 (2026-08-29)
+
+`node scripts/qa-bugfix-sweep-evidence.mjs` 는 **프로젝트의 Vite SSR 모듈 파이프라인**으로
+프로덕션 함수를 끝까지 실행해 관측값을 `.omo/evidence/bugfix-sweep/real-surface.txt` 에 남긴다.
+검사 4건: 프로젝트 교체 후 Ctrl+Z / 묶음 조건 안 스위치의 삭제 가드 / `inputNumber` 만 쓰는 변수의
+prune 판정 / 명시적 초안 저장 뒤 중복 쓰기.
+
+왜 vitest 가 아니라 별도 러너인가: 이 네 가지는 **한 흐름으로 이어 태워야** 사용자가 겪는 순서가
+되고, 산출물이 사람이 읽는 증거로 커밋된다. 왜 `npx tsx` 가 아닌가: `supabaseProjectConfig()` 의
+`env` 기본값이 `import.meta.env` 라서 tsx 에서 `undefined` 로 터진다 — Vite 파이프라인을 타면 앱과
+같은 해석 경로가 된다. `createServer` 에 `watch: null` 을 준 이유는 워처가 시스템 inotify 한도를
+넘겨(ENOSPC) 죽었기 때문이다(스위트와 동시에 돌 때 특히).

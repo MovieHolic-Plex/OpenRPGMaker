@@ -186,8 +186,12 @@ const getMapRegion: ToolDefinition = {
       ? `물 ${water.cellCount}칸 bounds=(${water.x},${water.y}) ${water.w}×${water.h}`
       : "물 0칸";
     return {
-      summary: `${map.name} 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, ${waterSummary}`,
+      summary: `${map.name}(${map.id}) 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, ${waterSummary}`,
       data: {
+        // 읽은 맵 id 를 결과에 되돌려준다 — 수정 요청에서 모델이 "무엇을 읽었는지"와 "무엇에 쓸지"를
+        // 다른 맵으로 잘못 잇는 사고를 줄인다(2026-08-29 modify 진단 근본원인 15).
+        mapId: map.id,
+        mapName: map.name,
         grid: rows,
         legend: { "#": "통행 불가/벽", ".": "통행 가능", "~": "물/호수", T: "나무", E: "이벤트" },
         events,
@@ -476,7 +480,8 @@ const findLayoutRegionsTool: ToolDefinition = {
   name: "find_layout_regions",
   description:
     "맵의 설계 bbox 영역(layoutPlan.regions)을 질의로 검색한다. 한국어/영문 부분일치(상점·시장·장터→market, 집→house, 파란→blue, 가운데/중앙→중심 영역). " +
-    "query에 '가운데'/'중앙'이 있으면 맵 중앙에 가까운 순으로 정렬한다. 영역 bbox를 특정하거나 시공 좌표를 추론할 때 쓴다.",
+    "query에 '가운데'/'중앙'이 있으면 맵 중앙에 가까운 순으로 정렬한다. 영역 bbox를 특정하거나 시공 좌표를 추론할 때 쓴다. " +
+    "주의: 이 도구는 마을 빌더의 설계 기록(layoutPlan.regions)만 본다 — stamp_structure_kit/팔레트로 찍은 구조물 배치(map.structurePlacements)는 보이지 않는다.",
   mode: "read",
   parameters: {
     type: "object",

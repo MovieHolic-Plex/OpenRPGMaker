@@ -19,7 +19,11 @@ describe("evals", () => {
     }
     expect(passRate).toBe(1);
     expect(avgScore).toBe(1);
-  }, 15000);
+    // 15,000ms → 60,000ms. 수정 과제 2종(road-fix / npc-line-fix)이 붙으며 스위트가 한계선에
+    // 걸터앉았다(실측 15.7초/15초) — 두 과제 모두 잿불 마을 프로젝트 전체를 생성해 채점한다.
+    // 병렬 실행 부하에 따라 통과/실패가 갈리는 경계값이라 여유를 준다. 이 테스트는 벽시계
+    // 성능이 아니라 정답 시퀀스의 정합을 보는 것이므로 상한을 늘려도 잃는 신호가 없다.
+  }, 60000);
 
   it("빈 프로젝트(아무 것도 안 함)는 태스크를 통과하지 못한다", async () => {
     const result = await runGoldenTask(GOLDEN_INN, (task) => ({ project: task.initialProject() }));

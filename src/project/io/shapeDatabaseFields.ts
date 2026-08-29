@@ -420,6 +420,9 @@ export function validateSession(value: unknown): void {
   requireRecord("session.variables", session.variables);
   requireRecord("session.inventory", session.inventory);
   requireArray("session.partyActorIds", session.partyActorIds);
+  if (session.monsterInstances !== undefined) requireRecord("session.monsterInstances", session.monsterInstances);
+  if (session.monsterParty !== undefined) requireArray("session.monsterParty", session.monsterParty);
+  if (session.monsterBox !== undefined) requireArray("session.monsterBox", session.monsterBox);
   if (session.farmAnimals !== undefined) validateFarmAnimalStarts(session.farmAnimals);
   if (session.farmBuildingPlacements !== undefined) validateSpatialPlacements("session.farmBuildingPlacements", session.farmBuildingPlacements, true);
   if (session.homeDecorationPlacements !== undefined) validateSpatialPlacements("session.homeDecorationPlacements", session.homeDecorationPlacements, false);

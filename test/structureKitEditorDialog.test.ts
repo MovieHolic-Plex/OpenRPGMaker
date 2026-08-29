@@ -186,7 +186,9 @@ describe("편집기 부위 편집", () => {
     expect(stored.parts![0]!.dy).toBe(0);
   });
 
-  it("부위 목록에서 종류를 바꾸고 지울 수 있다", () => {
+  it("부위 행의 ✕ 로 지우고, ✎ 로 종류 팝오버를 연다", () => {
+    // 종류 <select> 는 ✎ 팝오버로 바뀌었다(설계 §5.4 목업). 팝오버 자체는 window 가
+    // 필요해 여기서는 버튼 존재만 보고, 실제 종류 변경은 structureKitPartKindMenu.test.ts 가 본다.
     seedKit();
     openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
 
@@ -198,18 +200,15 @@ describe("편집기 부위 편집", () => {
     const partId = (store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
       .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef).parts![0]!.id;
 
-    const kindSelect = document.querySelector(`[data-testid='structure-kit-editor-part-kind-${partId}']`) as unknown as FakeElement;
-    expect(kindSelect).not.toBeNull();
-    (kindSelect as unknown as HTMLSelectElement).value = "window";
-    kindSelect.dispatchEvent(new Event("change"));
-
-    let stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
-      .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
-    expect(stored.parts![0]!.kind).toBe("window");
+    const editBtn = document.querySelector(`[data-testid='structure-kit-editor-part-edit-${partId}']`);
+    expect(editBtn).not.toBeNull();
+    expect(editBtn!.getAttribute("aria-label")).toBe("부위 편집");
+    // 종류 이름은 행에 글로 남는다 — 아이콘만 있으면 무슨 부위인지 알 수 없다.
+    expect(document.querySelector("[data-testid='structure-kit-editor-parts']")!.textContent).toContain("입구");
 
     (document.querySelector(`[data-testid='structure-kit-editor-part-delete-${partId}']`) as unknown as FakeElement).click();
 
-    stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+    const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
       .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
     expect(stored.parts ?? []).toHaveLength(0);
   });

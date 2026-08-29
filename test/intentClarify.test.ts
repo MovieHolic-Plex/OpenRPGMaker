@@ -57,6 +57,22 @@ describe("resolveIntentClarification — 집 vs 실내", () => {
     expect(requestMentionsHouseLike("아이템 수집 시스템 만들어줘")).toBe(false);
   });
 
+  // 건물 명사가 직업 이름의 일부인 요청은 사람 배치다 — 되물으면 툴이 한 번도 안 돈다.
+  it("'여관 주인'·'대장간 주인'은 시공 요청이 아니다", () => {
+    expect(requestMentionsHouseLike("15G에 숙박시키는 여관 주인 NPC를 배치해줘")).toBe(false);
+    expect(resolveIntentClarification("빈 프로젝트에 마을 맵을 하나 만들고, 15G에 숙박시키는 여관 주인 NPC를 배치해줘.")).toBeNull();
+    expect(resolveIntentClarification("대장간 주인이랑 상점 점원 배치해줘")).toBeNull();
+    // 진짜 건물 요청은 그대로 되묻는다.
+    expect(resolveIntentClarification("여관 하나 지어줘")).not.toBeNull();
+  });
+
+  // 수정 요청은 "새로 무엇을 만들까" 질문 자체가 성립하지 않는다.
+  it("수정 요청은 되묻지 않는다", () => {
+    for (const text of ["이 집 좀 고쳐줘", "여관 외벽 타일을 석재로 바꿔줘", "이 건물 지붕 좀 손봐줘"]) {
+      expect(resolveIntentClarification(text), text).toBeNull();
+    }
+  });
+
   it("맵 크기·다수 채·NPC 마을 맥락은 야외로 보고 되묻지 않는다", () => {
     expect(resolveIntentClarification("40x40 맵에 작은 집 3채 NPC 5명 배치해줘")).toBeNull();
   });

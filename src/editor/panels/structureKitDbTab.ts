@@ -8,7 +8,11 @@
 // 5. 원본(source) 칩은 앨범 안의 세 갈래 — 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물. 실내 오브젝트는 실내 칩셋 전용.
 
 import { editorState } from "@/editor/editorState";
-import { createBlankStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import {
+  createBlankStructureKit,
+  deleteStructureKit,
+  duplicateIntoTileset,
+} from "@/editor/harnessSuggestion/structureKitActions";
 import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnessSuggestion/structureKitFile";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
@@ -74,6 +78,89 @@ export function resetStructureKitsTabSession(): void {
   session.searchQuery = "";
   session.themeFilter = null;
   session.checkedKitIds.clear();
+}
+
+/**
+ * 방금 만든(또는 복제한) 내 구조물로 선택을 옮긴다.
+ *
+ * **세 값을 함께 바꿔야 한다.** 선택 하나만 옮기면 다음 렌더에서 그 킷이 화면에서 사라진다:
+ * 1. `selectedKitId` — 인스펙터가 볼 대상.
+ * 2. `source` — 원본 칩이 "내장 건물"·"실내 오브젝트" 로 남아 있으면 `entriesForSource()` 가
+ *    사용자 킷을 통째로 걸러내 사본이 `visibleEntries` 에 없다. ("전체" 는 사본도 보여 주니 그대로 둔다.)
+ * 3. `searchQuery` — 검색어가 남아 있으면 `matchesQuery()` 가 사본 이름을 걸러낼 수 있다.
+ *
+ * 둘 중 하나만 어긋나도 renderStructureKitsTab 의 선택 복구 로직이 사본을 못 찾고
+ * 즉시 `visibleEntries[0]` 으로 갈아치워, 선택 이동이 그 자리에서 무효화된다.
+ */
+export function focusUserStructureKit(kitId: string): void {
+  session.selectedKitId = kitId;
+  session.selectedObjectId = null;
+  if (session.source !== "all" && session.source !== "user") session.source = "user";
+  session.searchQuery = "";
+  session.themeFilter = null;
+  setInspectorSelectedPartId(null);
+}
+
+/** 새 킷·사본 공통 후처리 — 선택을 그 킷으로 옮기고 편집기까지 이어 준다. */
+function enterStructureKitEditor(
+  tilesetId: string,
+  kitId: string,
+  host: HTMLElement,
+  rerender: () => void,
+): void {
+  focusUserStructureKit(kitId);
+  rerender();
+  refresh(host, rerender);
+  openStructureKitEditor(tilesetId, kitId, () => {
+    rerender();
+    refresh(host, rerender);
+  });
+}
+
+/** 내장 킷·실내 오브젝트를 내 구조물로 굳히고 그 사본을 바로 편집한다. */
+function duplicateAndEdit(
+  tilesetId: string,
+  source: StructureKitDef | InteriorObjectDef,
+  host: HTMLElement,
+  rerender: () => void,
+): void {
+  const copy = duplicateIntoTileset(tilesetId, source);
+  // 실내 오브젝트 사본은 그림만 가져온다 — 인스펙터 경로와 같은 단서를 여기서도 준다.
+  toast(
+    "cells" in source
+      ? `'${copy.name}' 을 만들었습니다 — 사본은 그림만 가져옵니다. AI 실내 방 채우기는 원본 카탈로그만 씁니다.`
+      : `'${copy.name}' 을 만들었습니다 — 사본을 편집합니다`,
+    "cells" in source ? "info" : "ok",
+  );
+  enterStructureKitEditor(tilesetId, copy.id, host, rerender);
+}
+
+/**
+ * 표 행의 hover 액션 아이콘. mapList 의 `.map-tree-action` 규약을 그대로 따른다 —
+ * 기본 `opacity:.55`, 행 hover/focus-within 에서 1.
+ * `display:none` 으로 숨기지 않는다: 숨기면 키보드 포커스가 못 닿고,
+ * 유닛 테스트의 FakeDom 은 `:hover` 같은 의사클래스를 몰라 요소를 아예 못 찾는다.
+ */
+function rowActionButton(
+  glyph: string,
+  label: string,
+  testid: string,
+  onClick: () => void,
+  extraClass?: string,
+): HTMLElement {
+  return el("button", {
+    class: extraClass ? `structure-kit-row-action ${extraClass}` : "structure-kit-row-action",
+    attrs: { type: "button", title: label, "aria-label": label },
+    text: glyph,
+    dataset: { testid },
+    on: {
+      click: (event: Event) => {
+        // 행 클릭(인스펙터 선택)·더블클릭과 겹치지 않게 한다.
+        event.stopPropagation();
+        onClick();
+      },
+    },
+  });
 }
 
 export function renderStructureKitsTab(host: HTMLElement, rerender: () => void): void {
@@ -220,14 +307,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
             const tilesetId = session.tilesetId;
             if (!tilesetId) return;
             const openEditorFor = (kitId: string): void => {
-              session.selectedKitId = kitId;
-              session.selectedObjectId = null;
-              rerender();
-              refresh(host, rerender);
-              openStructureKitEditor(tilesetId, kitId, () => {
-                rerender();
-                refresh(host, rerender);
-              });
+              enterStructureKitEditor(tilesetId, kitId, host, rerender);
             };
             if (tilesetId !== DEFAULT_TILESET_ID) {
               openEditorFor(createBlankStructureKit(tilesetId).id);
@@ -321,6 +401,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
               el("th", { attrs: { style: "width: 50%;" }, text: "이름" }),
               el("th", { text: "크기" }),
               el("th", { text: lastColumnLabel }),
+              el("th", { class: "structure-kit-action-col", attrs: { "aria-label": "행 동작" } }),
             ],
           }),
         ],
@@ -393,6 +474,38 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           el("td", {
             children: renderPartBadges(kit.parts),
           }),
+          el("td", {
+            class: "structure-kit-action-col",
+            children: [
+              el("div", {
+                class: "structure-kit-row-actions",
+                children: entry.source === "user"
+                  ? [
+                      rowActionButton("✎", "편집", `structure-kit-row-edit-${kit.id}`, () => {
+                        enterStructureKitEditor(activeTileset!.id, kit.id, host, rerender);
+                      }),
+                      rowActionButton("⧉", "복제", `structure-kit-row-duplicate-${kit.id}`, () => {
+                        duplicateAndEdit(activeTileset!.id, kit, host, rerender);
+                      }),
+                      rowActionButton("↓", "내보내기", `structure-kit-export-${kit.id}`, () => {
+                        exportOneKit(activeTileset!, kit);
+                      }),
+                      rowActionButton("✕", "삭제", `structure-kit-db-delete-${kit.id}`, () => {
+                        deleteStructureKit(activeTileset!.id, kit.id);
+                        toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
+                        setInspectorSelectedPartId(null);
+                        rerender();
+                        refresh(host, rerender);
+                      }, "structure-kit-delete"),
+                    ]
+                  : [
+                      rowActionButton("⧉", "내 구조물로 복제", `structure-kit-row-duplicate-${kit.id}`, () => {
+                        duplicateAndEdit(activeTileset!.id, kit, host, rerender);
+                      }),
+                    ],
+              }),
+            ],
+          }),
         ],
         on: {
           click: () => {
@@ -402,11 +515,14 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
             refresh(host, rerender);
           },
           dblclick: () => {
-            if (entry.source !== "user") return;
-            openStructureKitEditor(activeTileset!.id, kit.id, () => {
-              rerender();
-              refresh(host, rerender);
-            });
+            // 내장 행은 고칠 수 없다. 예전엔 조용히 return 해서 "더블클릭했는데 아무 일도
+            // 안 남" 이었다 — 편집하겠다는 뜻을 그대로 받아 사본을 만들고 그 사본을 연다.
+            // 원본은 그대로 남고, 사본 생성은 DB 모달 취소·Ctrl+Z 로 되돌릴 수 있다.
+            if (entry.source !== "user") {
+              duplicateAndEdit(activeTileset!.id, kit, host, rerender);
+              return;
+            }
+            enterStructureKitEditor(activeTileset!.id, kit.id, host, rerender);
           },
         },
       });
@@ -434,16 +550,31 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   // 3. 인스펙터 (오른쪽 열)
   if (selectedObject && activeTileset) {
     workspace.append(
-      renderObjectInspector(activeTileset, selectedObject, () => refresh(host, rerender), rerender)
+      renderObjectInspector(activeTileset, selectedObject, (kitId) =>
+        enterStructureKitEditor(activeTileset.id, kitId, host, rerender))
     );
   } else if (selectedKit && activeTileset) {
     // 편집 잠금의 축은 "어떻게 만들어졌나"(learnedFrom)가 아니라 "프로젝트 데이터에 있나"(source)다.
     // learnedFrom 으로 판정하면 내장 킷을 내보낸 파일을 가져왔을 때 영구히 잠긴 유령 킷이 생긴다.
     const editable = selectedEntry?.source === "user";
     workspace.append(
-      renderInspector(activeTileset, selectedKit, editable, () => refresh(host, rerender), rerender)
+      renderInspector(
+        activeTileset,
+        selectedKit,
+        editable,
+        () => refresh(host, rerender),
+        rerender,
+        (kitId) => enterStructureKitEditor(activeTileset.id, kitId, host, rerender),
+      )
     );
   }
+}
+
+/** 한 구조물만 파일로. 예전엔 인스펙터 액션 줄이었고, 지금은 행의 ↓ 아이콘이다. */
+function exportOneKit(tileset: TilesetDef, kit: StructureKitDef): void {
+  const text = serializeStructureKitFile(tileset, [kit], new Date().toISOString());
+  downloadBlob(new Blob([text], { type: "application/json" }), structureKitFileName(tileset.name, [kit]));
+  toast(`'${kit.name ?? "구조물"}'을 내보냈습니다`, "ok");
 }
 
 /** 지금 고른 원본 칩의 한국어 이름. */
@@ -575,6 +706,19 @@ function renderObjectRow(
         text: `${object.width}×${object.height}`,
       }),
       el("td", { children: renderThemeBadges(object) }),
+      el("td", {
+        class: "structure-kit-action-col",
+        children: [
+          el("div", {
+            class: "structure-kit-row-actions",
+            children: [
+              rowActionButton("⧉", "내 구조물로 복제", `structure-kit-row-duplicate-${object.id}`, () => {
+                duplicateAndEdit(tileset.id, object, host, rerender);
+              }),
+            ],
+          }),
+        ],
+      }),
     ],
     on: {
       click: () => {
@@ -582,6 +726,10 @@ function renderObjectRow(
         session.selectedKitId = null;
         setInspectorSelectedPartId(null);
         refresh(host, rerender);
+      },
+      dblclick: () => {
+        // 카탈로그는 코드문이라 고칠 수 없다 — 킷 행과 같은 규약으로 사본을 만들어 연다.
+        duplicateAndEdit(tileset.id, object, host, rerender);
       },
     },
   });

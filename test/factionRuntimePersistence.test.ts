@@ -48,6 +48,50 @@ describe("faction runtime persistence", () => {
     expect(restored.factionStanceOverrides).toEqual(session.factionStanceOverrides);
   });
 
+  it("discards overlay keys for factions that no longer exist", () => {
+    const project = createBlankProject();
+    project.factions = { defs: [{ id: "guard", name: "옛 경비대" }], relations: [] };
+    const session = startSession(project);
+    session.factionStanceOverrides = adjustEffectiveFactionStance(
+      resolveFactionTable(project.factions),
+      session.factionStanceOverrides,
+      "guard",
+      PLAYER_FACTION_ID,
+      -2,
+    );
+    const snapshot = createSaveSnapshot(project, session);
+
+    project.factions = { defs: [], relations: [] };
+    const restored = applySaveSnapshot(project, snapshot);
+
+    expect(restored.factionStanceOverrides).toEqual({});
+  });
+
+  it("inherits an overlay when a faction id is deliberately reused", () => {
+    const project = createBlankProject();
+    project.factions = { defs: [{ id: "guard", name: "옛 경비대" }], relations: [] };
+    const session = startSession(project);
+    session.factionStanceOverrides = adjustEffectiveFactionStance(
+      resolveFactionTable(project.factions),
+      session.factionStanceOverrides,
+      "guard",
+      PLAYER_FACTION_ID,
+      -2,
+    );
+    const snapshot = createSaveSnapshot(project, session);
+
+    project.factions = { defs: [{ id: "guard", name: "새 경비대" }], relations: [] };
+    const restored = applySaveSnapshot(project, snapshot);
+
+    // killedFieldSpawns·switches와 같은 세션 규칙: id가 정체성이므로 같은 id를 재사용하면 상태를 이어받는다.
+    expect(effectiveFactionStance(
+      resolveFactionTable(project.factions),
+      restored.factionStanceOverrides,
+      "guard",
+      PLAYER_FACTION_ID,
+    )).toBe(-2);
+  });
+
   it("loads old snapshots without an overlay through the known-field parser", () => {
     const project = createBlankProject();
     const snapshot = createSaveSnapshot(project, startSession(project));

@@ -1,0 +1,418 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RPG ZZU · 조수 수정/신규 축 — "고쳐줘"가 새 맵을 만드는 문제</title>
+<style>
+:root{--bg:#0b1020;--text:#eaf0ff;--muted:#9fb0d4;--dim:#6f80a6;--accent:#5b7cfa;--accent2:#7ee7d0;
+--bad:#ff5d73;--warn:#ffb84d;--good:#3dd68c;--line:rgba(255,255,255,.1);--shadow:0 18px 48px rgba(0,0,0,.45)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(1100px 520px at 15% -10%,#1b2a5a 0,transparent 60%),radial-gradient(900px 460px at 95% 0,#163a52 0,transparent 55%),var(--bg);
+color:var(--text);font-family:Pretendard,"Noto Sans KR",system-ui,-apple-system,sans-serif;line-height:1.7;font-size:15px}
+.wrap{max-width:1140px;margin:0 auto;padding:26px 20px 70px}
+.top{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px) saturate(160%);background:linear-gradient(180deg,rgba(11,16,32,.97),rgba(11,16,32,.7));border-bottom:1px solid var(--line)}
+.top-in{max-width:1140px;margin:0 auto;padding:11px 20px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;gap:11px;align-items:center}.logo{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:900;
+background:conic-gradient(from 210deg,var(--accent),#8b7cff,var(--accent2),var(--accent));box-shadow:0 8px 22px rgba(91,124,250,.35)}
+.brand h1{margin:0;font-size:14px;letter-spacing:-.2px}.brand p{margin:0;font-size:11.5px;color:var(--muted)}
+.nav{display:flex;gap:6px;flex-wrap:wrap}.nav a{font-size:11.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+background:rgba(255,255,255,.04);color:var(--text);text-decoration:none}.nav a:hover{background:rgba(91,124,250,.18)}
+h2{font-size:21px;margin:0;letter-spacing:-.3px}h3{font-size:15.5px;margin:22px 0 8px}
+section{margin-top:18px;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);
+background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02))}
+.sec-head{padding:17px 20px 0;display:flex;gap:12px;align-items:flex-start}
+.sec-num{flex:0 0 auto;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:900;color:#fff;
+background:linear-gradient(135deg,var(--accent),#8b7cff);box-shadow:0 8px 20px rgba(91,124,250,.35)}
+.sec-head p{margin:4px 0 0;color:var(--muted);font-size:13px}.sec-body{padding:14px 20px 22px}
+.hero{display:grid;grid-template-columns:1.35fr .85fr;gap:14px;margin-top:16px;align-items:start}@media(max-width:960px){.hero{grid-template-columns:1fr}}
+.card{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:16px;padding:14px}
+.hero-card{border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02))}
+.kicker{font-size:11px;letter-spacing:.13em;color:var(--accent2);font-weight:800}
+.h-title{font-size:27px;line-height:1.2;margin:8px 0;font-weight:900;letter-spacing:-.6px}
+.h-sub{color:var(--muted);font-size:13.5px;margin:0}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px}@media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:13px;padding:10px}
+.metric .n{font-size:19px;font-weight:900}.metric .l{font-size:11px;color:var(--muted)}
+.toc{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.03)}
+.toc h3{margin:0;padding:13px 15px;font-size:12.5px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.05)}
+.toc a{display:flex;gap:10px;align-items:center;padding:9px 14px;text-decoration:none;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
+.toc a:hover{color:var(--text);background:rgba(91,124,250,.1)}
+.num{flex:0 0 auto;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:rgba(91,124,250,.16);color:#a9c4ff;font-weight:900;font-size:11.5px}
+table{width:100%;border-collapse:collapse;font-size:12.8px;margin:10px 0}
+th{text-align:left;color:var(--muted);font-size:11px;font-weight:700;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.8px;background:rgba(126,231,208,.1);color:#9df0dd;padding:1px 5px;border-radius:5px}
+.sev{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:800;border:1px solid var(--line);white-space:nowrap}
+.sev.p0{background:rgba(255,93,115,.16);color:#ff97a6;border-color:rgba(255,93,115,.4)}
+.sev.p1{background:rgba(255,184,77,.14);color:#ffd08a;border-color:rgba(255,184,77,.36)}
+.sev.p2{background:rgba(91,124,250,.14);color:#aec6ff;border-color:rgba(91,124,250,.32)}
+.sev.ok{background:rgba(61,214,140,.14);color:#8af0bf;border-color:rgba(61,214,140,.32)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:900px){.grid3{grid-template-columns:1fr}}
+.figure{margin:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(6,10,20,.6)}
+figcaption{font-size:11.5px;color:var(--muted);padding:9px 11px;border-top:1px solid var(--line);line-height:1.55}
+.callout{border-left:3px solid var(--accent);background:rgba(91,124,250,.09);padding:11px 13px;border-radius:10px;font-size:13px;color:#cfdcff;margin:12px 0}
+.callout.bad{border-color:var(--bad);background:rgba(255,93,115,.09)}
+.callout.good{border-color:var(--good);background:rgba(61,214,140,.09)}
+.callout.warn{border-color:var(--warn);background:rgba(255,184,77,.09)}
+.callout b{color:#fff}
+pre{background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:12px;padding:12px 13px;overflow-x:auto;font-size:11.8px;line-height:1.6;color:#cfe3ff}
+ul{padding-left:20px}li{margin:5px 0}
+footer{color:var(--dim);font-size:11.5px;text-align:center;margin-top:20px;line-height:1.8}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.chip{font-size:11px;padding:5px 9px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--muted)}
+.chip b{color:var(--text)}
+svg{display:block;width:100%;height:auto}
+</style></head><body>
+<div class="top"><div class="top-in">
+<div class="brand"><div class="logo">Z</div><div><h1>RPG ZZU · 조수 수정/신규 축</h1><p>2026-08-30 · 브랜치 <code>agent/ai-modify-intent</code> · PR #262</p></div></div>
+<nav class="nav">
+<a href="#s1">증상</a><a href="#s2">인과 사슬</a><a href="#s3">근본원인 15</a><a href="#s4">계측</a><a href="#s5">가드·테스트</a><a href="#s6">게이트</a><a href="#s7">결정·남은 것</a><a href="#s8">경로</a>
+</nav></div></div>
+
+<div class="wrap">
+
+<div class="hero">
+<div class="hero-card">
+<div class="kicker">수정 요청 진단 · P0~P4 전량 구현</div>
+<h1 class="h-title">"고쳐줘"라고 하면 조수가 맵을 새로 만들었다</h1>
+<p class="h-sub">지목한 맵은 한 칸도 바뀌지 않고 새 맵이 하나 생긴다. 원인은 모델의 판단 착오가 아니라
+<b>파이프라인 어디에도 modify 개념이 없었다</b>는 것이다. 플래너 프롬프트·툴 설명·완료 게이트·승인 마찰·툴 노출
+정책이 전부 신축을 전제로 짜여 있어서, 각 층이 독립적으로 "새로 만드는" 쪽을 밀었다.</p>
+<div class="metrics">
+<div class="metric"><div class="n">15</div><div class="l">막은 신축 경로</div></div>
+<div class="metric"><div class="n">7장</div><div class="l">회귀 가드 테스트</div></div>
+<div class="metric"><div class="n">+2</div><div class="l">골든 수정 과제</div></div>
+<div class="metric"><div class="n">0</div><div class="l">typecheck 오류</div></div>
+</div>
+<div class="chips">
+<span class="chip">판정 단일화 <b>src/ai/modifyIntent.ts</b></span>
+<span class="chip">실패 파일 <b>90 → 86</b></span>
+<span class="chip">신규 가드 <b>71 케이스</b></span>
+<span class="chip">커밋 <b>2</b></span>
+</div>
+</div>
+<div class="toc"><h3>목차</h3>
+<a href="#s1"><span class="num">1</span> 사용자가 본 것</a>
+<a href="#s2"><span class="num">2</span> 인과 사슬 — 어느 층에서 새는가</a>
+<a href="#s3"><span class="num">3</span> 근본원인 15건과 조치</a>
+<a href="#s4"><span class="num">4</span> 계측값</a>
+<a href="#s5"><span class="num">5</span> 가드와 테스트</a>
+<a href="#s6"><span class="num">6</span> 게이트 결과와 실패 추적</a>
+<a href="#s7"><span class="num">7</span> 결정 2건 · 남은 것</a>
+<a href="#s8"><span class="num">8</span> 절대 경로</a>
+</div>
+</div>
+
+<section id="s1"><div class="sec-head"><div class="sec-num">1</div><div>
+<h2>사용자가 본 것</h2><p>"에디터 내의 조수에게 수정을 요구하면 맵을 아예 새로 만들어버린다"</p></div></div>
+<div class="sec-body">
+<div class="grid2">
+<div class="card">
+<h3 style="margin-top:4px">요청</h3>
+<pre>이 마을 담장이 엉망으로 깔렸어.
+새로 만들지는 말고 지금 있는 것만 손봐줘.
+
+[컨텍스트] 현재 맵: 잿불 마을 (map_ember_village)
+         · 사용자 선택 영역: (2,2) 10×8</pre>
+<p style="color:var(--muted);font-size:12.5px;margin:6px 0 0">요청문에 <b>신규 금지</b>가 명시돼 있고, 대상 맵 id 도 footer 로 붙어 있다.</p>
+</div>
+<div class="card">
+<h3 style="margin-top:4px">일어난 일</h3>
+<ul style="font-size:13px">
+<li>플래너가 <code>successTools=["author_village"]</code> 항목을 만든다 — <code>author_village</code> 는 <code>houseCount</code> 최소 1 이라 "담장 수정" 항목이 <b>집 최소 1채 신축</b>을 완료 조건으로 갖는다.</li>
+<li>생성기가 그 조건을 만족시키려면 신축을 해야 한다. 새 맵을 만들어 거기에 짓는다.</li>
+<li>완료 게이트는 통과한다 — successTools 이름 매칭이 전부 맞았다.</li>
+<li>승인 카드는 마찰 없이 지나간다 — 파괴성 판정이 <b>툴 이름 목록</b>이라 "새로 만들기"는 파괴가 아니다.</li>
+<li>지목된 맵은 그대로 남는다. 사용자 눈에는 "새 맵이 하나 생겼다".</li>
+</ul>
+</div>
+</div>
+<div class="callout bad"><b>핵심:</b> 모델이 지시를 무시한 것이 아니다. 하니스가 "신축을 해야 항목이 완료되는" 상태로
+계획을 만들어 줬고, 모델은 그 계약을 충실히 따랐다.</div>
+</div></section>
+
+<section id="s2"><div class="sec-head"><div class="sec-num">2</div><div>
+<h2>인과 사슬 — 어느 층에서 새는가</h2><p>요청이 결과에 닿기까지 통과하는 6개 층. 붉은 층은 modify 개념이 0건이던 곳</p></div></div>
+<div class="sec-body">
+<figure class="figure">
+<svg viewBox="0 0 1080 430" role="img" aria-label="요청부터 결과까지 6개 층 다이어그램. 프롬프트, 플래너, 노출, 생성기, 완료 게이트, 승인 층 모두에 modify 개념이 없었다.">
+<defs>
+<linearGradient id="gBad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5d73" stop-opacity=".28"/><stop offset="1" stop-color="#ff5d73" stop-opacity=".08"/></linearGradient>
+<linearGradient id="gGood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3dd68c" stop-opacity=".28"/><stop offset="1" stop-color="#3dd68c" stop-opacity=".08"/></linearGradient>
+<marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#6f80a6"/></marker>
+</defs>
+<text x="20" y="26" fill="#9fb0d4" font-size="13" font-family="sans-serif">이전 — 모든 층이 신축을 전제</text>
+<g font-family="sans-serif" font-size="12.5">
+<g>
+<rect x="20" y="42" width="150" height="62" rx="12" fill="url(#gBad)" stroke="rgba(255,93,115,.45)"/>
+<text x="34" y="66" fill="#ffd7dd" font-weight="700">프롬프트</text><text x="34" y="88" fill="#ffb0bc" font-size="11">대상 선택 규칙 0건</text>
+</g>
+<line x1="176" y1="73" x2="200" y2="73" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="206" y="42" width="150" height="62" rx="12" fill="url(#gBad)" stroke="rgba(255,93,115,.45)"/>
+<text x="220" y="66" fill="#ffd7dd" font-weight="700">플래너</text><text x="220" y="88" fill="#ffb0bc" font-size="11">예시 툴이 전부 생성계</text>
+</g>
+<line x1="362" y1="73" x2="386" y2="73" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="392" y="42" width="150" height="62" rx="12" fill="url(#gBad)" stroke="rgba(255,93,115,.45)"/>
+<text x="406" y="66" fill="#ffd7dd" font-weight="700">툴 노출</text><text x="406" y="88" fill="#ffb0bc" font-size="11">in-place 경로가 트림됨</text>
+</g>
+<line x1="548" y1="73" x2="572" y2="73" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="578" y="42" width="150" height="62" rx="12" fill="url(#gBad)" stroke="rgba(255,93,115,.45)"/>
+<text x="592" y="66" fill="#ffd7dd" font-weight="700">완료 게이트</text><text x="592" y="88" fill="#ffb0bc" font-size="11">툴 이름만 확인</text>
+</g>
+<line x1="734" y1="73" x2="758" y2="73" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="764" y="42" width="150" height="62" rx="12" fill="url(#gBad)" stroke="rgba(255,93,115,.45)"/>
+<text x="778" y="66" fill="#ffd7dd" font-weight="700">승인 마찰</text><text x="778" y="88" fill="#ffb0bc" font-size="11">이름 목록 기반</text>
+</g>
+<line x1="920" y1="73" x2="944" y2="73" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="950" y="42" width="110" height="62" rx="12" fill="rgba(255,93,115,.2)" stroke="rgba(255,93,115,.6)"/>
+<text x="964" y="66" fill="#ffd7dd" font-weight="700">새 맵</text><text x="964" y="88" fill="#ffb0bc" font-size="11">원본 무변</text>
+</g>
+</g>
+
+<text x="20" y="176" fill="#9fb0d4" font-size="13" font-family="sans-serif">이후 — 각 층에 수정 축을 꽂았다</text>
+<g font-family="sans-serif" font-size="12.5">
+<g>
+<rect x="20" y="192" width="150" height="76" rx="12" fill="url(#gGood)" stroke="rgba(61,214,140,.45)"/>
+<text x="34" y="216" fill="#c9f7e0" font-weight="700">프롬프트</text>
+<text x="34" y="236" fill="#8af0bf" font-size="11">대상 선택 규칙</text><text x="34" y="254" fill="#8af0bf" font-size="11">현재 맵 header 고정</text>
+</g>
+<line x1="176" y1="230" x2="200" y2="230" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="206" y="192" width="150" height="76" rx="12" fill="url(#gGood)" stroke="rgba(61,214,140,.45)"/>
+<text x="220" y="216" fill="#c9f7e0" font-weight="700">플래너</text>
+<text x="220" y="236" fill="#8af0bf" font-size="11">Target selection</text><text x="220" y="254" fill="#8af0bf" font-size="11">targetMapId 재주입</text>
+</g>
+<line x1="362" y1="230" x2="386" y2="230" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="392" y="192" width="150" height="76" rx="12" fill="url(#gGood)" stroke="rgba(61,214,140,.45)"/>
+<text x="406" y="216" fill="#c9f7e0" font-weight="700">툴 노출</text>
+<text x="406" y="236" fill="#8af0bf" font-size="11">furnish 핀</text><text x="406" y="254" fill="#8af0bf" font-size="11">reset 미끼 제거</text>
+</g>
+<line x1="548" y1="230" x2="572" y2="230" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="578" y="192" width="150" height="76" rx="12" fill="url(#gGood)" stroke="rgba(61,214,140,.45)"/>
+<text x="592" y="216" fill="#c9f7e0" font-weight="700">완료 게이트</text>
+<text x="592" y="236" fill="#8af0bf" font-size="11">대상 맵 변경 검사</text><text x="592" y="254" fill="#8af0bf" font-size="11">세션 시작도 생성으로</text>
+</g>
+<line x1="734" y1="230" x2="758" y2="230" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="764" y="192" width="150" height="76" rx="12" fill="url(#gGood)" stroke="rgba(61,214,140,.45)"/>
+<text x="778" y="216" fill="#c9f7e0" font-weight="700">승인 마찰</text>
+<text x="778" y="236" fill="#8af0bf" font-size="11">결과 diff 기반</text><text x="778" y="254" fill="#8af0bf" font-size="11">맵 교체 = 파괴</text>
+</g>
+<line x1="920" y1="230" x2="944" y2="230" stroke="#6f80a6" stroke-width="1.5" marker-end="url(#ar)"/>
+<g>
+<rect x="950" y="192" width="110" height="76" rx="12" fill="rgba(61,214,140,.2)" stroke="rgba(61,214,140,.6)"/>
+<text x="964" y="220" fill="#c9f7e0" font-weight="700">그 맵이</text><text x="964" y="242" fill="#c9f7e0" font-weight="700">고쳐짐</text>
+</g>
+</g>
+
+<g font-family="sans-serif">
+<rect x="20" y="300" width="1040" height="110" rx="14" fill="rgba(0,0,0,.28)" stroke="rgba(255,255,255,.09)"/>
+<text x="38" y="326" fill="#9fb0d4" font-size="12">판정 단일화 — 15개 조치가 같은 한 함수를 본다</text>
+<rect x="38" y="340" width="230" height="52" rx="10" fill="rgba(126,231,208,.12)" stroke="rgba(126,231,208,.35)"/>
+<text x="52" y="362" fill="#9df0dd" font-size="12.5" font-weight="700">src/ai/modifyIntent.ts</text>
+<text x="52" y="382" fill="#7ee7d0" font-size="10.5">어휘 · 부정 표현 · footer 파싱</text>
+<g stroke="#6f80a6" stroke-width="1.2" fill="none">
+<path d="M268 356 H320" marker-end="url(#ar)"/><path d="M268 366 H320 V342" marker-end="url(#ar)"/><path d="M268 376 H320 V390" marker-end="url(#ar)"/>
+</g>
+<text x="332" y="348" fill="#cfdcff" font-size="11.5">플래너 폴백 · 계획 대상 고정 · 영역 작업 라우터</text>
+<text x="332" y="368" fill="#cfdcff" font-size="11.5">의도 명확화 스킵 · 제안 완결성 경고 · 도메인 기억 유지</text>
+<text x="332" y="388" fill="#cfdcff" font-size="11.5">완료 게이트 대상 검사 · 실내 편집 안내 · 컨텍스트 압축 보존</text>
+</g>
+</svg>
+<figcaption>층별 결손과 조치. 아래 상자는 판정이 한 파일로 모였다는 점 — 어휘를 고치면 15곳이 같이 움직인다.</figcaption>
+</figure>
+</div></section>
+
+<section id="s3"><div class="sec-head"><div class="sec-num">3</div><div>
+<h2>근본원인 15건과 조치</h2><p>층 · 증상 · 조치 · 파일</p></div></div>
+<div class="sec-body">
+<table>
+<thead><tr><th>#</th><th>층</th><th>증상</th><th>조치</th><th>파일</th></tr></thead>
+<tbody>
+<tr><td><span class="sev p0">1</span></td><td>방 하네스</td><td><code>maps[id] = createEmptyMap()</code> 에 존재 검사 없음 — 저작물이 무음 소실</td><td>map-exists 가드 + <code>replaceExisting</code> 옵트인 + 실수치 경고</td><td><code>roomHarness/engine.ts</code></td></tr>
+<tr><td><span class="sev p0">2</span></td><td>완료 게이트</td><td>새 맵에 시공해도 successTools 이름 매칭 통과, 대상 맵 무변</td><td><code>verifyTargetMapChanged</code></td><td><code>ai/workItemOutcome.ts</code></td></tr>
+<tr><td><span class="sev p0">3</span></td><td>플래너 폴백</td><td>"새로 만들지 말고"가 <code>successTools=["author_village"]</code>(집 1채 신축)로 굳음</td><td>수정 요청에서 건설 의도 강제 해제 + 대상 규칙 동봉</td><td><code>ai/workPlan.ts</code></td></tr>
+<tr><td><span class="sev p0">4</span></td><td>승인</td><td>정직한 수정은 재승인 벽, 기존 맵 교체는 마찰 0 — 역전</td><td><code>isDestructiveOutcome</code> (결과 diff 기반)</td><td><code>ai/approvalPolicy.ts</code></td></tr>
+<tr><td><span class="sev p1">5</span></td><td>플래너 프롬프트</td><td>"무엇을 대상으로 삼아라"는 문장 0건, 예시 툴 전부 생성계</td><td>Target selection 규칙 + 수정 툴 어휘 + Repair 레이어</td><td><code>ai/workPlan.ts</code></td></tr>
+<tr><td><span class="sev p1">6</span></td><td>UX 정책</td><td>정책 표면에 대상 선택 조항 없음</td><td>"수정 vs 신규(필수)" 조항 신설</td><td><code>ai/promptPolicies.ts</code></td></tr>
+<tr><td><span class="sev p1">7</span></td><td>시스템 프롬프트</td><td>현재 맵 지시 대상이 예산 꼬리 잘림에 사라짐</td><td>현재 맵 header 를 예산 밖에 고정 + 대상 선택 규칙 상단 배치</td><td><code>ai/contextBuilder.ts</code></td></tr>
+<tr><td><span class="sev p1">8</span></td><td>실내 편집</td><td>세션이 직렬화되지 않아 다음 턴엔 <code>sessionId</code> 소멸 → 신축 툴만 남음</td><td><code>furnish_interior_space</code> 를 <code>mapId</code> 만으로, 맵에 플랜 박기, 세션 조회 툴</td><td><code>tools/interiorRoomSession.ts</code></td></tr>
+<tr><td><span class="sev p1">9</span></td><td>author_village</td><td><code>bounds</code> 생략 시 기존 맵 전면 재포장이 스코프 검사 통과</td><td>변경 칸수·bbox 실수치 경고 + 스키마 설명 명시</td><td><code>tools/authorVillageScope.ts</code></td></tr>
+<tr><td><span class="sev p1">10</span></td><td>맵 생성 5경로</td><td>중복 id 메시지가 툴마다 다르고 다음 행동을 안 알려줌 → id 에 숫자 붙여 우회</td><td>문구 통일 + 편집 경로 안내(<code>assertMapIdAvailable</code>)</td><td><code>tools/mapHelpers.ts</code> 외 4</td></tr>
+<tr><td><span class="sev p1">11</span></td><td>의도 스캔</td><td><code>[컨텍스트]</code> footer 의 맵 이름이 도메인 키워드로 오인</td><td>스캔 입력에서 footer 제거(LLM 원문은 유지)</td><td><code>editor/assistantToolMode.ts</code></td></tr>
+<tr><td><span class="sev p1">12</span></td><td>의도 스캔</td><td>안내문의 <code>evaluate_interior_room</code> 이 system 도메인을 열어 <code>reset_project</code> 노출</td><td>snake_case 툴 이름 토큰 제거</td><td><code>editor/assistantToolMode.ts</code></td></tr>
+<tr><td><span class="sev p1">13</span></td><td>툴 설명·도메인</td><td><code>reset_project</code> 설명의 "처음부터/초기화"가 부분 재작업 요청을 낚음</td><td>낚싯말 제거 + map 도메인·핀에서 제외 + 승격 denylist</td><td><code>tools/projectTools.ts</code>, <code>ai/capabilityEscalation.ts</code></td></tr>
+<tr><td><span class="sev p2">14</span></td><td>계획 지속</td><td>footer 없는 자율 계속 턴에서 대상 맵 상실</td><td><code>WorkPlan.targetMapId</code> + 매 스프린트 <code>Target map:</code> 재주입</td><td><code>ai/workPlan.ts</code>, <code>ai/assistantSession.ts</code></td></tr>
+<tr><td><span class="sev p2">15</span></td><td>컨텍스트 압축</td><td>요약이 대상 맵 id·수정 의도를 떨어뜨림</td><td>압축 프롬프트에 보존 지시 추가</td><td><code>ai/contextCompaction.ts</code></td></tr>
+</tbody>
+</table>
+<div class="callout warn"><b>부수 발견:</b> 12번을 파고들다 노출 상한(40)의 자기모순을 찾았다 —
+<code>evaluate_interior_room</code> 이라는 <b>이름</b>이 system 도메인을 열고, 그 도메인의 핀된 툴 3종이
+라운드로빈 슬롯을 먹어 <b>정작 그 툴 자신이 노출에서 밀려났다.</b></div>
+</div></section>
+
+<section id="s4"><div class="sec-head"><div class="sec-num">4</div><div>
+<h2>계측값</h2><p>추정이 아니라 실행해서 재본 수치</p></div></div>
+<div class="sec-body">
+<div class="grid2">
+<div class="card">
+<h3 style="margin-top:4px">방 하네스 무음 교체 (근본원인 1)</h3>
+<table>
+<thead><tr><th></th><th>이전</th><th>이후</th></tr></thead>
+<tbody>
+<tr><td>같은 mapId 로 세션 시작</td><td><code>ok:true</code></td><td><code>map-exists</code> 거부</td></tr>
+<tr><td>20×15 · 타일 300칸 · 이벤트 1</td><td>16×13 빈 방</td><td>보존</td></tr>
+<tr><td>경고</td><td>0건</td><td>거부 + 편집 경로 안내</td></tr>
+</tbody></table>
+</div>
+<div class="card">
+<h3 style="margin-top:4px">도메인 개방 (근본원인 12)</h3>
+<p style="font-size:12.5px;color:var(--muted);margin:0 0 6px">영역 작업 지시문 "연금술사의 집 이라는 실내 를 하나 만드렁줘"</p>
+<pre>이전  core, tile, database, event, <b style="color:#ff97a6">system</b>, map
+이후  core, tile, database, event, map</pre>
+<p style="font-size:12.5px;color:var(--muted);margin:6px 0 0">system 이 닫히자 노출 상한 안으로 <code>evaluate_interior_room</code> 이 복귀했다.</p>
+</div>
+</div>
+<div class="grid2" style="margin-top:14px">
+<div class="card">
+<h3 style="margin-top:4px">프롬프트 예산</h3>
+<table>
+<thead><tr><th>항목</th><th>값</th></tr></thead>
+<tbody>
+<tr><td>조립분 (이전 / 이후)</td><td>11,978자 → 13,011자</td></tr>
+<tr><td><code>DEFAULT_BUDGET_CHARS</code></td><td>12,000 → 13,200</td></tr>
+<tr><td>12,000 유지 시 대가</td><td>밸런스·리소스·집 키트·클러스터 규칙 섹션 통째 소실</td></tr>
+</tbody></table>
+</div>
+<div class="card">
+<h3 style="margin-top:4px">"내 구조물" 섹션 생존 (드롭 순서)</h3>
+<table>
+<thead><tr><th>예산</th><th>순서 변경 전</th><th>변경 후</th></tr></thead>
+<tbody>
+<tr><td>12,000</td><td><span class="sev p0">소실</span></td><td><span class="sev p0">소실</span></td></tr>
+<tr><td>13,200</td><td><span class="sev p0">소실</span></td><td><span class="sev ok">생존</span></td></tr>
+<tr><td>14,000</td><td><span class="sev ok">생존</span></td><td><span class="sev ok">생존</span></td></tr>
+</tbody></table>
+<p style="font-size:12px;color:var(--muted);margin:6px 0 0">사용자가 직접 등록한 킷 다이제스트가 정적 조언보다 먼저 버려지고 있었다.</p>
+</div>
+</div>
+</div></section>
+
+<section id="s5"><div class="sec-head"><div class="sec-num">5</div><div>
+<h2>가드와 테스트</h2><p>신규 7장 71케이스 + 골든 수정 과제 2종</p></div></div>
+<div class="sec-body">
+<table>
+<thead><tr><th>파일</th><th>케이스</th><th>무엇을 잠그는가</th></tr></thead>
+<tbody>
+<tr><td><code>test/modifyIntent.test.ts</code></td><td>23</td><td>수정/신규 어휘·부정 표현·footer 파싱의 경계</td></tr>
+<tr><td><code>test/assistantToolModeModify.test.ts</code></td><td>17</td><td>맵 이름 A/B 쌍이 같은 툴 집합을 열고, 수정 요청이 도메인 기억을 지우지 않음</td></tr>
+<tr><td><code>test/workItemOutcomeTargetMap.test.ts</code></td><td>12</td><td>대상 맵 무변 + 새 맵 생성 = 항목 완료 거부</td></tr>
+<tr><td><code>test/roomHarnessOverwriteGuard.test.ts</code></td><td>7</td><td>기존 맵 무음 교체 차단, 옵트인 경로의 경고</td></tr>
+<tr><td><code>test/approvalDestructiveOutcome.test.ts</code></td><td>7</td><td>결과 diff 기반 파괴성 판정</td></tr>
+<tr><td><code>test/assistantMapPreservationGuard.test.ts</code></td><td>5</td><td>세션을 통과할 때 맵 집합 불변 + 우회로(같은 id 새 맵/복제) 차단</td></tr>
+<tr><td><code>test/aiMapEditLive.live.test.ts</code></td><td>env 게이트</td><td>실제 LLM 으로 수정 과제 2종 — 맵 집합 불변을 하드 단언</td></tr>
+</tbody></table>
+<div class="grid2" style="margin-top:8px">
+<div class="card">
+<h3 style="margin-top:4px">골든 수정 과제</h3>
+<ul style="font-size:12.8px">
+<li><b>road-fix</b> — 잿불 마을 서쪽 흙길을 4칸×2줄 끊어 두고 "새 맵 만들지 말고 이어줘". 매처: 맵 집합 불변 · 끊긴 구간이 흙길 · 이벤트 보존.</li>
+<li><b>npc-line-fix</b> — '꼬마 미루' 첫 대사만 교체. 매처: 맵 집합 불변 · 이벤트 수 불변(중복 배치 없음) · 새 대사 존재 · 옛 대사 소멸.</li>
+</ul>
+</div>
+<div class="card">
+<h3 style="margin-top:4px">기존 스위트 보강</h3>
+<ul style="font-size:12.8px">
+<li><code>workPlan</code> +9 — 계획 단계에서 신축으로 새지 않는지</li>
+<li><code>authorVillageFacade</code> +4 — bounds 생략 경고</li>
+<li><code>regionIntentRouter</code>·<code>intentClarify</code>·<code>proposalCompleteness</code>·<code>aiCapabilityEscalation</code>·<code>contextBuilder</code>·<code>aiSpecGate</code> 보강</li>
+</ul>
+</div>
+</div>
+</div></section>
+
+<section id="s6"><div class="sec-head"><div class="sec-num">6</div><div>
+<h2>게이트 결과와 실패 추적</h2><p><code>npm run gates</code> — typecheck:app + 전체 vitest + 기준선 대비 회귀 판정</p></div></div>
+<div class="sec-body">
+<div class="metrics" style="grid-template-columns:repeat(4,1fr)">
+<div class="metric"><div class="n" style="color:#8af0bf">0</div><div class="l">typecheck:app 오류</div></div>
+<div class="metric"><div class="n">86</div><div class="l">실패 파일 (기준선 90)</div></div>
+<div class="metric"><div class="n">8,755</div><div class="l">통과 테스트</div></div>
+<div class="metric"><div class="n">0</div><div class="l">내 소관 신규 실패</div></div>
+</div>
+<h3>기준선 대비 신규 실패 5건 — 전부 추적 완료</h3>
+<table>
+<thead><tr><th>파일</th><th>격리 재현</th><th>판정</th></tr></thead>
+<tbody>
+<tr><td><code>pageItemCondition</code></td><td>실패</td><td><span class="sev p1">HEAD 에서도 실패</span> — 깨끗한 워크트리(<code>5a4ff059</code>)에서 동일 재현. 이 작업 소관 아님</td></tr>
+<tr><td><code>aiWorkItemOutcomeGateSmoke</code></td><td>통과</td><td><span class="sev ok">부하 플레이크</span></td></tr>
+<tr><td><code>databaseBattleCommandsTab</code></td><td>통과</td><td><span class="sev ok">부하 플레이크</span></td></tr>
+<tr><td><code>houseKit</code></td><td>통과</td><td><span class="sev ok">부하 플레이크</span></td></tr>
+<tr><td><code>mapEditLockScratchSession</code></td><td>통과</td><td><span class="sev ok">부하 플레이크</span></td></tr>
+</tbody></table>
+<div class="callout"><b>파일 수는 줄고 테스트 수는 늘었다(170→197).</b> 파일 단위 게이트가 못 보는 구간이라
+프롬프트·노출에 민감한 기준선 실패 파일 12장을 <b>깨끗한 HEAD 워크트리와 1:1 대조</b>했다.
+차이는 정확히 1건 — <code>docs/tool-catalog.md</code> 드리프트(새 툴 추가로 문서 미갱신). 재생성해 해결.
+나머지 증가분은 부하 플레이크와 HEAD 자체 회귀다.</div>
+<h3>추적 중 발견해 고친 내 몫 3건</h3>
+<table>
+<thead><tr><th>증상</th><th>원인</th><th>조치</th></tr></thead>
+<tbody>
+<tr><td><code>structureKitTools</code> — "내 구조물" 다이제스트 소실</td><td>INTRO 증가분이 섹션을 예산에서 밀어냄</td><td>드롭 순서 교정(정적 조언 먼저 버림)</td></tr>
+<tr><td><code>regionIntentExposure</code> — <code>evaluate_interior_room</code> 미노출</td><td>핀 +1 로 라운드로빈 꼬리 밀림</td><td>툴 이름 토큰 제거로 system 도메인 오개방 차단 + 조회 툴 핀 해제</td></tr>
+<tr><td><code>evals</code> — 골든 스위트 타임아웃</td><td>수정 과제 2종이 15초 경계선에 걸터앉음(실측 15.7초)</td><td>상한 60초 (이 테스트는 벽시계가 아니라 정합을 본다)</td></tr>
+</tbody></table>
+<div class="callout good"><b>곁들여:</b> 제공자 카탈로그 축소(<code>13f806e5</code>) 이후 모델 id 가 기본값으로 스냅되며
+깨져 있던 <code>clusterAiModal</code>·<code>regionTaskRun</code> 의 낡은 모델 픽스처를 카탈로그 유효 모델로 교체했다.</div>
+</div></section>
+
+<section id="s7"><div class="sec-head"><div class="sec-num">7</div><div>
+<h2>결정 2건 · 남은 것</h2><p>봐 주셔야 할 판단과, 손대지 않은 것</p></div></div>
+<div class="sec-body">
+<div class="grid2">
+<div class="card">
+<h3 style="margin-top:4px">봐 주셔야 할 결정</h3>
+<ul style="font-size:13px">
+<li><b>예산 12,000 → 13,200.</b> 요청당 비용이 조금 오른다. 유지하면 초과분을 밸런스 상수·리소스 조회·집 키트·클러스터 규칙 섹션을 통째로 버려서 메꾼다 — 수정 축을 넣은 대가로 다른 지침이 조용히 사라지는 교환이라 예산을 올렸다.</li>
+<li><b>드롭 순서 변경.</b> "내 구조물"을 정적 조언 뒤로 옮겼다. 파일이 스스로 적어 둔 원칙("값싼 정적 조언부터 버린다")과 실제 순서가 어긋나 있었다.</li>
+</ul>
+</div>
+<div class="card">
+<h3 style="margin-top:4px">남은 것 (이 PR 밖)</h3>
+<ul style="font-size:13px">
+<li><code>pageItemCondition</code> 실패 — HEAD 자체 회귀. 조수 띠 작업 쪽에서 봐야 한다.</li>
+<li><code>evaluate_interior_room</code> 은 여전히 <code>sessionId</code> 필수다. 복원 세션이 프로젝트에 저장되므로 <code>furnish_interior_space</code> 한 번 뒤에는 잡히지만, <code>mapId</code> 직접 지원이 더 깔끔하다.</li>
+<li>실제 LLM 게이트(<code>RPG_ZZU_AI_MAP_EDIT=1</code>)는 이 세션에서 돌리지 않았다 — 키가 필요한 라이브 호출이라 env 게이트로 남겼다.</li>
+<li>루트 tsconfig 의 <code>aiSpecGate</code> <code>authMode</code> 오류 18건은 기존 상태 그대로다(게이트는 <code>tsconfig.app.json</code>).</li>
+</ul>
+</div>
+</div>
+</div></section>
+
+<section id="s8"><div class="sec-head"><div class="sec-num">8</div><div>
+<h2>절대 경로</h2><p>산출물 위치</p></div></div>
+<div class="sec-body">
+<table>
+<thead><tr><th>항목</th><th>경로 / 링크</th></tr></thead>
+<tbody>
+<tr><td>작업 워크트리</td><td><code>/home/main/z-project/rpg-zzu/.claude/worktrees/ai-modify</code></td></tr>
+<tr><td>브랜치</td><td><code>agent/ai-modify-intent</code> (베이스 <code>ai-chat</code>)</td></tr>
+<tr><td>PR</td><td><a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/262">https://github.com/MovieHolic-Plex/rpg-zzu/pull/262</a></td></tr>
+<tr><td>이 보고서</td><td><code>/home/main/z-project/rpg-zzu/.claude/worktrees/ai-modify/reports/2026-08-30-assistant-modify-axis-report.html</code></td></tr>
+<tr><td>판정 단일화</td><td><code>/home/main/z-project/rpg-zzu/.claude/worktrees/ai-modify/src/ai/modifyIntent.ts</code></td></tr>
+<tr><td>게이트 로그</td><td><code>/tmp/gates-final.log</code> · 리포트 <code>.omo/gates-vitest-report.json</code></td></tr>
+</tbody></table>
+</div></section>
+
+<footer>
+RPG ZZU · 조수 수정/신규 축 진단 및 구현 보고 · 2026-08-30<br/>
+커밋 <code>048f8246</code>, <code>4576178f</code> · 베이스 <code>5a4ff059</code>
+</footer>
+</div></body></html>

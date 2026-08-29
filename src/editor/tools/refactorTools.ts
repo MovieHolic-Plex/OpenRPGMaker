@@ -72,6 +72,20 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
     case "getFriendship":
       refs.variables.add(command.variableId);
       break;
+    // wait/inputWait는 variableId가 옵셔널이므로 있을 때만 수집한다.
+    case "wait":
+    case "inputWait":
+      if (command.variableId !== undefined) refs.variables.add(command.variableId);
+      break;
+    case "inputNumber":
+      refs.variables.add(command.variableId);
+      break;
+    // 이동 경로 안의 setSwitch 무브도 스위치 참조다(databaseCommandReferences와 동일 규약).
+    case "moveEvent":
+      for (const move of command.route.moves) {
+        if (move.kind === "setSwitch") refs.switches.add(move.switchId);
+      }
+      break;
     case "fork":
       addConditionRefs(command.condition, refs);
       break;

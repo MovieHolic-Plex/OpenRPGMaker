@@ -9,9 +9,9 @@ export type StatusMenuMutationResult =
   | { readonly kind: "used"; readonly message: string }
   | { readonly kind: "unusable"; readonly message: string };
 
-export function useStatusMenuItem(scene: PlayScene, itemId: string, actorId?: string): StatusMenuMutationResult {
+export function useStatusMenuItem(scene: PlayScene, itemId: string, actorId?: string, monsterInstanceId?: string): StatusMenuMutationResult {
   const session = scene.getSession();
-  const result = useItemFromMenu(store.getCurrent(), session, itemId, actorId);
+  const result = useItemFromMenu(store.getCurrent(), session, itemId, actorId, monsterInstanceId);
   if (result.kind === "used") setAudioState(session, { channel: "se", resourceId: "easyrpg-sound-item1", loop: false });
   scene.syncRuntimeState();
   return result;

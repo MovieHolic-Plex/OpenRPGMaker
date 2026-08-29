@@ -92,22 +92,29 @@ describe("페이지 조건 저작 무결성", () => {
     expect(validation.issues.some((issue) => issue.code === issueCode)).toBe(true);
   });
 
-  it("비활성 아이템 행에서 대상을 바꾸면 행을 눈에 보이게 활성화하고 조건을 추가한다", () => {
+  it("칩으로 아이템 조건을 담으면 행이 생기고, 다시 빼면 안내 한 줄로 돌아간다", () => {
     const { mapId, page } = seedPage([]);
-    const root = render(mapId, page);
-    const row = findByTestId(root, "event-condition-row-아이템");
-    const picker = findByTestId(root, "event-page-item-condition-input");
-    const checkbox = row?.querySelector("input");
-    if (!row || !picker || !checkbox) throw new Error("disabled item row missing");
+    const emptyRoot = render(mapId, page);
+    expect(findByTestId(emptyRoot, "event-condition-empty")).not.toBeNull();
+    expect(findByTestId(emptyRoot, "event-condition-row-아이템")).toBeNull();
+    const chip = findByTestId(emptyRoot, "event-condition-chip-item");
+    if (!chip) throw new Error("item chip missing");
+    expect(chip.getAttribute("aria-pressed")).toBe("false");
 
-    expect(checkbox.checked).toBe(false);
-    expect(row.dataset.conditionActive).toBe("false");
-    picker.value = DEFAULT_ITEM_ID;
-    picker.dispatchEvent(new Event("change"));
+    chip.click();
 
-    expect(checkbox.checked).toBe(true);
+    expect(livePage(mapId).conditions).toEqual([{ kind: "item", itemId: DEFAULT_ITEM_ID, present: true }]);
+    const openRoot = render(mapId, livePage(mapId));
+    const row = findByTestId(openRoot, "event-condition-row-아이템");
+    if (!row) throw new Error("enabled item row missing after chip toggle");
     expect(row.dataset.conditionActive).toBe("true");
     expect(row.classList.contains("disabled")).toBe(false);
-    expect(livePage(mapId).conditions).toEqual([{ kind: "item", itemId: DEFAULT_ITEM_ID, present: true }]);
+    expect(findByTestId(openRoot, "event-condition-chip-item")?.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(openRoot, "event-page-item-condition-input")).not.toBeNull();
+
+    findByTestId(openRoot, "event-condition-chip-item")?.click();
+
+    expect(livePage(mapId).conditions).toEqual([]);
+    expect(findByTestId(render(mapId, livePage(mapId)), "event-condition-empty")).not.toBeNull();
   });
 });

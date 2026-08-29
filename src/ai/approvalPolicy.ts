@@ -6,6 +6,7 @@
 // 되돌리기가 실제 복구 경로인 근거: 적용은 `applyProposedProject` 한 곳을 지나고 그 함수의
 // `recordProjectSnapshot` 은 **프로젝트 전체** 스냅샷을 undo 스택에 쌓는다(옵션 없이 부르면
 // kind:"project"). 맵 삭제·reset_project 도 되돌리기 한 번으로 원복된다.
+import type { ChangeSummary } from "@/project/types";
 import type { ProposedCall } from "./assistantSession";
 
 /** 타일 지식(메타데이터) 전용 툴 — 변경 카드 없이 즉시 반영되는 계열(aiChatPanelHelpers 공유). */
@@ -45,4 +46,28 @@ export function isSilencedSuccess(calls: readonly ProposedCall[], assistantText:
   const autoExpanded = calls.some((c) => c.approvalWarning?.includes("auto-expanded") || c.summary.includes("자동 확장"));
   if (autoExpanded) return { silenced: true, kind: "auto_expanded", message: "스펙 밖 영역을 자동 확장으로 채웠습니다 — 위치를 확인하세요." };
   return null;
+}
+
+// #262 판 목록. main 의 라벨용 목록은 3종이었는데, clear_region·delete_resource·
+// delete_database_record 도 소실을 만든다 — diff 가 타일 소실을 구분하지 못하므로 이름으로 잡는다.
+const DESTRUCTIVE_TOOLS: ReadonlySet<string> = new Set([
+  "remove_event", "remove_map", "delete_database_record", "delete_resource", "clear_region", "reset_project",
+]);
+
+/**
+ * **결과 기반 파괴성 판정** (#262 진단 근본원인 9).
+ *
+ * 이름 목록만 보면 "지우고 제대로 다시 놓는다"(`remove_event`)는 파괴로 잡히고, "새 맵을 만들어
+ * 거기 짓는다"(실제로는 기존 맵을 통째로 교체하던 `run_interior_room_pipeline`)는 무해로 지나갔다.
+ * 이름 목록은 유지하되 diff 가 소실을 보고하면 이름과 무관하게 파괴로 본다.
+ */
+export function isDestructiveOutcome(
+  name: string,
+  args: Record<string, unknown> | undefined,
+  diff: ChangeSummary | undefined,
+): boolean {
+  if (DESTRUCTIVE_TOOLS.has(name)) return true;
+  if (args?.replaceExisting === true) return true;
+  if (!diff) return false;
+  return diff.mapsRemoved > 0 || diff.eventsRemoved > 0;
 }

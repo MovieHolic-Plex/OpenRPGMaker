@@ -32,6 +32,9 @@ import type { Command, Project } from "@/project/types";
 function threeRoomArgs(mapId: string): Record<string, unknown> {
   return {
     mapId,
+    // #262 의 map-exists 가드는 기존 맵 교체를 기본 거부한다. 이 스위트는 **교체 경로**의
+    // 시작 좌표 보정을 검사하므로 가드가 알려주는 옵트인을 그대로 켠다.
+    replaceExisting: true,
     name: "3룸 주택",
     width: 16,
     height: 14,
@@ -145,6 +148,8 @@ describe("시작 맵을 교체하는 원샷 파이프라인", () => {
       "run_interior_room_pipeline",
       {
         mapId,
+        // 교체 경로 검사 — #262 가드의 옵트인.
+        replaceExisting: true,
         name: "넓은 집",
         width: 20,
         height: 15,

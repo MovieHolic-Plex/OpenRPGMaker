@@ -127,8 +127,12 @@ export function adjustEffectiveFactionStance(
 }
 
 /** 알려진 JSON 튜플 키와 유한 범위 값만 받아 세이브의 임의 필드가 런타임으로 새지 않게 한다. */
-export function parseFactionStanceOverrides(value: unknown): FactionStanceOverrides {
+export function parseFactionStanceOverrides(
+  value: unknown,
+  table?: ResolvedFactionTable,
+): FactionStanceOverrides {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const knownFactionIds = table ? new Set(table.ids) : undefined;
   const parsed: FactionStanceOverrides = {};
   for (const [key, rawStance] of Object.entries(value)) {
     let pair: unknown;
@@ -138,6 +142,8 @@ export function parseFactionStanceOverrides(value: unknown): FactionStanceOverri
       continue;
     }
     if (!Array.isArray(pair) || pair.length !== 2 || pair.some((id) => typeof id !== "string" || id.length === 0)) continue;
+    // 현재 없는 진영 키는 누적되거나 예약 enemy 슬롯으로 별칭되지 않게 버린다. 같은 id 재사용은 의도대로 상태를 잇는다.
+    if (knownFactionIds && pair.some((id) => !knownFactionIds.has(id as string))) continue;
     if (typeof rawStance !== "number" || !Number.isFinite(rawStance)) continue;
     parsed[factionStancePairKey(pair[0] as string, pair[1] as string)] = clampRuntimeFactionStance(rawStance);
   }

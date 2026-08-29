@@ -5,6 +5,7 @@ import type {
   Dir,
   FlagName,
   MapId,
+  MonsterInstanceId,
   ResourceProfile,
   SCHEMA_VERSION,
   SwitchDef,
@@ -80,10 +81,42 @@ export interface GameMap {
    */
   layoutPlan?: MapLayoutPlan;
   /**
+   * 방 하네스(실내 villager-room-v1 / 던전 dungeon-room-v1)가 이 맵을 시공할 때 쓴 플랜 원본.
+   *
+   * 세션(RoomSession)은 에디터 메모리(WeakMap)에만 살고 Project JSON 에 직렬화되지 않는다. 그래서
+   * 프로젝트를 다시 열면 `furnish_interior_space` 처럼 sessionId 를 요구하는 in-place 툴의 진입로가
+   * 사라졌다(2026-08-29 modify 진단 근본원인 8). 플랜을 맵에 남겨 mapId 만으로 세션을 재수립한다.
+   * `plan` 은 킷별 플랜 타입이라 여기서는 JSON 값으로만 다룬다(project → editor 역참조 금지).
+   */
+  roomHarnessPlan?: { kitId: string; plan: unknown };
+  /**
    * 제작자가 맵마다 켜고 끄는 미니맵 설정. optional — 없으면 미니맵 off(기존 맵 호환).
    * v1은 1회 정적 썸네일 + 플레이어 점만 갱신; fogOfWar는 자리만 두고 추후 확장.
    */
   minimap?: MapMinimapSetting;
+  /**
+   * 맵에 찍힌 구조물 킷 배치 기록. "여기에 이 집이 있다"를 남겨 다시 고르고·고치고·지울 수 있게 한다.
+   * 기록 범위는 구조물 킷 스탬프만 — 사람이 팔레트로 찍은 것 + AI 도구 stamp_structure_kit.
+   * 마을 자동 생성(빌더)의 집 시공은 layoutPlan.regions 가 담당하며 여기에 들어오지 않는다.
+   * 배열 순서가 곧 시간 순서다 — 겹칠 때는 뒤(나중)가 이긴다. optional 이라 마이그레이션 불필요.
+   */
+  structurePlacements?: StructurePlacement[];
+}
+
+/** 맵에 찍힌 구조물 킷 한 채. 좌상단(x,y) + 크기(w,h)는 찍은 순간의 킷 크기다. */
+export interface StructurePlacement {
+  id: string;
+  /** tileset.structureKits[].id 또는 내장 파라메트릭 킷 id(kit_house_*). */
+  kitId: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  stampedAt?: string;
+  /** 찍기 직전 그 자리의 타일 (길이 w*h) — 지우기 복원용. 행 우선(y*w+x). */
+  before: { lower: number[]; upper: number[] };
+  /** 찍은 직후 맵에서 되읽은 타일의 해시 — 이후 덧칠 감지용(soft hint). */
+  afterHash: string;
 }
 
 /** 맵 배경(패럴랙스) 설정 — RM2003 Background 탭 대응. */
@@ -180,6 +213,8 @@ export type FactionAggression = 0 | 1 | 2 | 3;
 export interface FactionDef {
   id: string;
   name: string;
+  /** 세계관에서 구체화된 진영이면 원본 WorldEntity.id. 전투 ID를 바꿔도 출처 정체성을 유지한다. */
+  worldEntityId?: string;
   /** 진영 식별 색(#RRGGBB). 난전에서 누가 어느 편인지 읽히게 하는 유일한 UI 수단이다. */
   color?: string;
   /** 생략 시 1(공격적) — 적(-1 이하) 에게만 선공한다. */
@@ -274,6 +309,10 @@ export interface ProjectSession {
   timers?: Record<string, number>;
   inventory: Record<string, number>;
   partyActorIds: ActorId[];
+  /** Optional authored monster collection seed for new games. */
+  monsterInstances?: Record<MonsterInstanceId, import("@/project/session").MonsterInstance>;
+  monsterParty?: MonsterInstanceId[];
+  monsterBox?: MonsterInstanceId[];
   gold?: number;
   /**
    * 시작 시 세계에 놓인 설치물(바위·나무 등), `mapId:x,y` 키.

@@ -19,6 +19,11 @@ export interface GoldenTask {
   initialProject(): Project;
   readonly matchers: readonly SpecMatcher[];
   readonly reachability?: readonly ReachabilitySpec[];
+  /**
+   * 세션 컨텍스트(현재 열린 맵 등). 수정 과제는 **"이 맵"이 무엇인지**가 과제의 절반이라
+   * 이것 없이는 에디터에서 실제로 일어나는 일을 재현할 수 없다(2026-08-29 modify 진단 P4).
+   */
+  readonly contextOptions?: { readonly currentMapId?: string };
 }
 
 export interface EvalScore {
@@ -56,6 +61,30 @@ function safeCheck(matcher: SpecMatcher, project: Project): boolean {
 
 export function mapCountAtLeast(n: number): SpecMatcher {
   return { describe: `맵이 ${n}개 이상`, check: (project) => Object.keys(project.maps).length >= n };
+}
+
+// 상한·불변 매처(2026-08-29 modify 진단 P4). 종전 매처는 전부 단조 증가형("N개 이상", "존재")이라
+// **더 만들어서 통과하는** 것이 언제나 가능했다 — 수정 요청에 맵을 하나 더 만들어도 만점이 나온다.
+// 수정 과제는 "무엇이 늘지 않았나"를 반드시 같이 봐야 한다.
+
+export function mapCountAtMost(n: number): SpecMatcher {
+  return { describe: `맵이 ${n}개 이하`, check: (project) => Object.keys(project.maps).length <= n };
+}
+
+export function mapCountExactly(n: number): SpecMatcher {
+  return { describe: `맵이 정확히 ${n}개`, check: (project) => Object.keys(project.maps).length === n };
+}
+
+/** 맵 집합이 그대로인지 — 새 맵도, 사라진 맵도 없어야 한다(id 집합 동일). */
+export function mapIdsUnchanged(ids: readonly string[]): SpecMatcher {
+  const expected = [...ids].sort();
+  return {
+    describe: `맵 집합 불변(${expected.join(", ")})`,
+    check: (project) => {
+      const actual = Object.keys(project.maps).sort();
+      return actual.length === expected.length && actual.every((id, index) => id === expected[index]);
+    },
+  };
 }
 
 export function switchNamed(id: string): SpecMatcher {

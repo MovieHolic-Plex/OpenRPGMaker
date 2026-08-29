@@ -143,6 +143,14 @@ describe("isRegionEscapingIntent / routeRegionIntent — 실내·새 맵", () =>
     expect(routed).toContain("interior");
     expect(routed).not.toContain("structure");
   });
+
+  // 실내 명사 부분일치만으로 우회시키면 선택 영역과 하드클립이 함께 버려진다 —
+  // "실내 시공은 영역 밖 작업"이라는 전제는 새로 만들 때만 맞다.
+  it("실내 수정 요청은 영역 경로에 남는다", () => {
+    for (const text of ["이 침실 좀 수정해줘", "침실 가구 배치를 개선해줘", "실내 조명 좀 어둡게 바꿔줘"]) {
+      expect(isRegionEscapingIntent(text), text).toBe(false);
+    }
+  });
 });
 
 describe("countInRegionChangedCells", () => {
@@ -170,9 +178,12 @@ describe("runRegionTask", () => {
           ? JSON.stringify({
               apiKey: "sk-test",
               baseUrl: "https://example.test/v1",
-              liteModel: "gpt-5.4-mini",
+              // 카탈로그에 있는 모델이어야 한다 — loadAiConfig 는 제공자 카탈로그에 없는 id 를
+              // 기본값으로 스냅하므로(제공자 2종 한정 이후) 옛 gpt-5.6-sol/gpt-5.4-mini 로는
+              // 감독/보조 이원화 자체가 관측되지 않는다.
+              liteModel: "gemini-2.5-flash-lite",
               maxTokens: 1024,
-              model: "gpt-5.6-sol",
+              model: "gemini-3.1-pro",
               reasoningEffort: "medium",
             })
           : null,
@@ -197,7 +208,7 @@ describe("runRegionTask", () => {
       const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "여기 채워" });
       expect(result.ok).toBe(true);
       expect(result.applied).toBe(false);
-      expect(JSON.parse(bodies[0]).model).toBe("gpt-5.4-mini");
+      expect(JSON.parse(bodies[0]).model).toBe("gemini-2.5-flash-lite");
     } finally {
       if (fetchDescriptor) Object.defineProperty(globalThis, "fetch", fetchDescriptor);
       else Reflect.deleteProperty(globalThis, "fetch");

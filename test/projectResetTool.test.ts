@@ -1,9 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { reassembleSelectedProposalProject } from "@/editor/panels/aiChatPanel";
+import { resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { runTool, type ToolContext } from "@/editor/tools";
+import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
+import { store } from "@/project/store";
 import type { ChatResult } from "@/ai/llmClient";
 
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
@@ -107,5 +110,34 @@ describe("reset_project", () => {
 
     expect(excludedReset.ok).toBe(false);
     expect(excludedDownstream.ok).toBe(false);
+  });
+
+  it("keeps the pre-reset project available through undo after applying a reset proposal", async () => {
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
+    vi.stubEnv("VITE_SUPABASE_URL", "");
+    try {
+      const before = createBlankProject();
+      before.meta.title = "되돌릴 프로젝트";
+      store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+      store.replaceProject(before);
+      resetMapEditHistory();
+      const proposed = createBlankProject();
+      proposed.meta.title = "초기화된 프로젝트";
+
+      const result = await applyProposedProject(proposed, {
+        source: "agent",
+        summary: "프로젝트 초기화",
+        toolNames: ["reset_project"],
+        resetProject: true,
+      });
+
+      expect(result.ok).toBe(true);
+      expect(store.getCurrent().meta.title).toBe("초기화된 프로젝트");
+      expect(undoMapEdit()).toBe(true);
+      expect(store.getCurrent().meta.title).toBe("되돌릴 프로젝트");
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 });

@@ -19,7 +19,6 @@ import {
   AUTHORING_TEST_BOOT_SUCCESS_EVENT,
   authoringProjectFingerprint,
 } from "@/editor/authoringJourney";
-import { passesAuthoringTestGate } from "@/editor/authoringTestGate";
 import { STORAGE_PREFIX } from "@/util/appStorage";
 
 let modalRoot: HTMLElement | null = null;
@@ -58,7 +57,6 @@ function writeTestPlayAutoStart(autoStart: boolean): void {
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
 export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
-  if (!passesAuthoringTestGate()) return;
   // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — 제품명 고정 문구를 쓰면
   // 프로젝트를 여러 개 열어두면 어느 창이 무엇인지 구분이 안 된다.
   const projectTitle = store.getCurrent().meta.title?.trim();
@@ -109,7 +107,6 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
 }
 
 export async function openSelectedEventTestModal(mapId: MapId, eventId: string): Promise<boolean> {
-  if (!passesAuthoringTestGate()) return false;
   const liveProject = store.getCurrent();
   const validation = validateEventDraft(liveProject, mapId, eventId);
   if (!validation.canCommit) {
@@ -151,7 +148,6 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
 }
 
 export async function openTroopBattleTestModal(troopId: string): Promise<void> {
-  if (!passesAuthoringTestGate()) return;
   await openTroopBattleTestModalAfterGate(troopId);
 }
 
@@ -235,7 +231,6 @@ export function pickRandomTroopId(
 export async function openRandomTroopBattleTestModal(
   random: () => number = Math.random
 ): Promise<void> {
-  if (!passesAuthoringTestGate()) return;
   const project = store.getCurrent();
   const troopId = pickRandomTroopId(project, random);
   if (!troopId) {

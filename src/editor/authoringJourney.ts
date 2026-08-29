@@ -34,7 +34,6 @@ export type AuthoringJourneyStage = {
 
 const STORAGE_KEY = `${STORAGE_PREFIX}authoring-journey:v1`;
 export const AUTHORING_TEST_BOOT_SUCCESS_EVENT = "oprn:authoring-test-boot-success";
-export const AUTHORING_TEST_GATE_BLOCKED_EVENT = "oprn:authoring-test-gate-blocked";
 
 export function emptyAuthoringJourneyProgress(): AuthoringJourneyProgress {
   return {
@@ -56,13 +55,6 @@ export function authoringProjectFingerprint(project: Project): string {
   return `v1:${(hash >>> 0).toString(16).padStart(8, "0")}:${source.length}`;
 }
 
-export function evaluateAuthoringTestGate(
-  project: Project,
-  referenceIssues: readonly string[] = collectProjectReferenceIssues(project),
-): Readonly<{ allowed: boolean; referenceIssues: readonly string[] }> {
-  return { allowed: referenceIssues.length === 0, referenceIssues };
-}
-
 export function evaluateAuthoringJourney(
   project: Project,
   progress: AuthoringJourneyProgress,
@@ -73,8 +65,8 @@ export function evaluateAuthoringJourney(
   const committedEventCount = Object.values(project.maps)
     .reduce((count, map) => count + committedEvents(map.events).length, 0);
   const referenceIssueCount = referenceIssues.length;
-  const testComplete = referenceIssueCount === 0
-    && progress.testedProjectFingerprint !== null
+  // 참조 문제는 테스트를 막지 않는다 — 지적은 데이터 단계가 하고, 테스트 완료는 실제 부팅으로 판정한다.
+  const testComplete = progress.testedProjectFingerprint !== null
     && progress.testedProjectFingerprint === authoringProjectFingerprint(project);
 
   return [
@@ -125,7 +117,7 @@ export function evaluateAuthoringJourney(
       acknowledgement: null,
       detail: testComplete
         ? "현재 버전 플레이어 시작 확인"
-        : referenceIssueCount > 0 ? "참조 문제를 먼저 해결" : "플레이어 시작 전",
+        : "플레이어 시작 전",
       referenceIssueCount,
     },
   ];
@@ -162,9 +154,10 @@ export function recordSuccessfulTestBoot(
   progress: AuthoringJourneyProgress,
   evidenceFingerprint: string,
   currentFingerprint: string,
-  referenceIssues: readonly string[],
 ): AuthoringJourneyProgress {
-  if (!evidenceFingerprint || evidenceFingerprint !== currentFingerprint || referenceIssues.length > 0) return progress;
+  // 참조 문제가 남아 있어도 «지금 이 버전으로 플레이어가 떴다» 는 사실은 사실이다 —
+  // 예전에는 여기서 증거를 버려, 끊긴 참조 하나가 테스트 단계를 영구히 미완료로 묶었다.
+  if (!evidenceFingerprint || evidenceFingerprint !== currentFingerprint) return progress;
   return progress.testedProjectFingerprint === evidenceFingerprint
     ? progress
     : { ...progress, testedProjectFingerprint: evidenceFingerprint };

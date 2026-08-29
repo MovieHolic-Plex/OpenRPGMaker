@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import { computeActiveToolDomains } from "@/editor/assistantToolMode";
 import { toOpenAiTools, activeTools, allTools } from "@/editor/tools";
 import {
+  ESCALATION_DENYLIST,
   MAX_CAPABILITY_ESCALATED_TOOLS,
   MAX_TURN_TOOL_SCHEMAS,
   capabilityEscalationSchemas,
@@ -74,6 +75,25 @@ describe("자연어 능력 승격 리졸버", () => {
     // 승격 후보가 먼저 떨어진다 — 확정 툴은 승격 추측 때문에 밀리지 않는다.
     for (const name of escalated) expect(names(clamped)).not.toContain(name);
     expect(clampTurnToolSchemas(all.slice(0, 10), escalated)).toEqual(all.slice(0, 10));
+  });
+
+  // 되돌릴 수 없는 폐기 툴은 어휘가 아무리 맞아도 자동으로 얹히지 않는다.
+  it("폐기 툴은 이름·설명을 그대로 던져도 승격되지 않는다", () => {
+    const byName = new Map(allTools().map((tool) => [tool.name, tool] as const));
+    for (const name of ESCALATION_DENYLIST) {
+      const tool = byName.get(name);
+      expect(tool, name).toBeDefined();
+      const returned = names(capabilityEscalationSchemas(`${name} ${tool!.description}`, new Set()));
+      expect(returned, name).not.toContain(name);
+    }
+  });
+
+  it("부분 재작업 요청이 프로젝트 폐기 툴을 끌어오지 않는다", () => {
+    for (const text of ["이 맵 상점 재고를 초기화해줘", "이 맵 처음부터 다시 칠해줘", "여기 지워버리고 다시 깔아줘"]) {
+      const returned = names(capabilityEscalationSchemas(text, new Set()));
+      expect(returned, text).not.toContain("reset_project");
+      expect(returned, text).not.toContain("remove_map");
+    }
   });
 
   it("같은 입력은 같은 순서를 낸다", () => {

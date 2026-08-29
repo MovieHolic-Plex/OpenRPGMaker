@@ -65,7 +65,7 @@ type SeedOptions = {
  * and **no** authored `battleFlow` — the gate asserts what the defaults render.
  *
  * Why the default database instead of the battle-v3 fixture project itself: the
- * editor's test-play entry is fail-closed behind `passesAuthoringTestGate()`
+ * editor's test-play entry used to be fail-closed behind a reference gate (removed)
  * (`src/editor/authoringTestGate.ts`), and boot normalization injects the whole
  * default item catalog (`ensureDefaultDatabaseIconResources`) into any project.
  * On the minimal battle-v3 fixture those injected items reference skills/states/
