@@ -134,7 +134,7 @@ function defaultActorRecords(): ActorRecord[] {
     {
       ...createActorRecord(ACTOR_CLERIC_ID, CLASS_CLERIC_ID, {
         characterResourceId: "easyrpg-charset-actor1",
-        battleCharacterResourceId: "generated-actor-hero-02-battle",
+        battleCharacterResourceId: "generated-actor-hero-05-battle",
         defaultSkillId: "skill_heal",
         unarmedAnimationId: DEFAULT_ANIMATION_ID,
       }),
@@ -142,7 +142,7 @@ function defaultActorRecords(): ActorRecord[] {
       nickname: "치유",
       faceResourceId: faceIdForSheetCell("easyrpg-faceset-people1", 0),
       characterResourceId: "easyrpg-charset-actor1",
-      battleCharacterResourceId: "generated-actor-hero-02-battle",
+      battleCharacterResourceId: "generated-actor-hero-05-battle",
       initialEquipment: {
         weapon: EQUIPMENT_MAGE_STAFF_ID,
         shield: EQUIPMENT_OAK_SHIELD_ID,
@@ -154,7 +154,7 @@ function defaultActorRecords(): ActorRecord[] {
     {
       ...createActorRecord(ACTOR_RANGER_ID, CLASS_RANGER_ID, {
         characterResourceId: "easyrpg-charset-actor2",
-        battleCharacterResourceId: "generated-actor-hero-01-battle",
+        battleCharacterResourceId: "generated-actor-hero-06-battle",
         defaultSkillId: "skill_sword_slash",
         unarmedAnimationId: DEFAULT_ANIMATION_ID,
       }),
@@ -162,7 +162,7 @@ function defaultActorRecords(): ActorRecord[] {
       nickname: "초원",
       faceResourceId: faceIdForSheetCell("easyrpg-faceset-people2", 0),
       characterResourceId: "easyrpg-charset-actor2",
-      battleCharacterResourceId: "generated-actor-hero-01-battle",
+      battleCharacterResourceId: "generated-actor-hero-06-battle",
       initialEquipment: {
         weapon: EQUIPMENT_SCOUT_DAGGER_ID,
         armor: EQUIPMENT_LEATHER_ARMOR_ID,

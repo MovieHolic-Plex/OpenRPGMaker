@@ -51,11 +51,19 @@ export const RESOURCE_SLICING = {
     sheetHeight: 256,
   },
   battle: { kind: "whole-image", unit: "image" },
+  // 48px 셀 3열×8행 = 24프레임(144×384). battleWeapon 과 같은 3×8 구조이고,
+  // 런타임의 backgroundSize 산식(src/player/battleFieldDom.ts)이 이 값에 의존한다.
+  // 어느 프레임에 어느 포즈가 들어가는지는 src/battle/battlePose.ts 가 정한다.
   battleCharset: {
     kind: "grid",
     unit: "battle-character",
     cellWidth: 48,
     cellHeight: 48,
+    columns: 3,
+    rows: 8,
+    count: 24,
+    sheetWidth: 144,
+    sheetHeight: 384,
   },
   battleWeapon: {
     kind: "grid",

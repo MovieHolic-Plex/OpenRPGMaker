@@ -67,6 +67,8 @@ describe("default database starter party", () => {
     const guardian = restored.database.actors.find((actor) => actor.id === "actor_guardian");
     const mage = restored.database.actors.find((actor) => actor.id === "actor_mage");
     const scout = restored.database.actors.find((actor) => actor.id === "actor_scout");
+    const cleric = restored.database.actors.find((actor) => actor.id === "actor_cleric");
+    const ranger = restored.database.actors.find((actor) => actor.id === "actor_ranger");
     const sword = restored.database.equipment.find((entry) => entry.id === "equip_sword");
     const shield = restored.database.equipment.find((entry) => entry.id === "equip_oak_shield");
     const staff = restored.database.equipment.find((entry) => entry.id === "equip_mage_staff");
@@ -93,6 +95,13 @@ describe("default database starter party", () => {
       characterResourceId: "easyrpg-charset-actor4",
       battleCharacterResourceId: "generated-actor-hero-04-battle",
     });
+    // 성직자·궁수는 시작 파티(startActorIds) 밖이라 위 4명 검사에 안 걸리지만, DB 액터로
+    // 존재하므로 작성자가 파티에 넣는 순간 전투 화면에 선다. 2026-08-29 전까지 hero-02 /
+    // hero-01 시트를 돌려 써서 같은 그림이 두 번 섰고, 전용 시트를 그려 끊었다.
+    expect(cleric).toMatchObject({ battleCharacterResourceId: "generated-actor-hero-05-battle" });
+    expect(ranger).toMatchObject({ battleCharacterResourceId: "generated-actor-hero-06-battle" });
+    const allBattleResourceIds = restored.database.actors.map((actor) => actor.battleCharacterResourceId);
+    expect(new Set(allBattleResourceIds).size).toBe(restored.database.actors.length);
     const starterBattleResourceIds = restored.system.startActorIds.map(
       (id) => restored.database.actors.find((actor) => actor.id === id)?.battleCharacterResourceId
     );

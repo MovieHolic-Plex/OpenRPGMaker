@@ -47,6 +47,13 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // 가드가 얼굴 노드를 제거하는 쪽으로 처리한다.
   "generated-actor-hero-03-face": "/assets/generated/starter/hero-03-face.png",
   "generated-actor-hero-04-battle": "/assets/generated/starter/hero-04-battle.png",
+  // 성직자·궁수 배틀러(2026-08-29). DB 액터 actor_cleric / actor_ranger 가 여태 hero-02 /
+  // hero-01 시트를 돌려 썼다 — 시작 파티는 아니지만 작성자가 파티에 넣으면 전투 화면에
+  // 같은 그림이 두 번 선다.
+  // charset/face 는 아직 없다 — hero-03 처럼 없는 파일을 등록하면 404 가드에 의존해야 하므로
+  // 만들 때 같이 등록한다.
+  "generated-actor-hero-05-battle": "/assets/generated/starter/hero-05-battle.png",
+  "generated-actor-hero-06-battle": "/assets/generated/starter/hero-06-battle.png",
   "generated-enemy-bat-01": "/assets/generated/starter/monster-bat-01.png",
   "generated-enemy-dragon-01": "/assets/generated/starter/monster-dragon-01.png",
   "generated-enemy-golem-01": "/assets/generated/starter/monster-golem-01.png",
@@ -226,6 +233,18 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "bskin-party-mage-front": "/assets/generated/battle-skins/sprites/party-mage-front.png",
   "bskin-party-mage-back": "/assets/generated/battle-skins/sprites/party-mage-back.png",
   "bskin-ally-creature-back": "/assets/generated/battle-skins/sprites/ally-creature-back.png",
+  // 액터별 뒷모습 배틀러(2026-08-29). 위의 `bskin-ally-creature-back` 은 **파티 전원이 돌려 쓰는
+  // 한 장**이라 어느 액터를 넣어도 같은 보라색 생물이 뒤통수를 보였다. 액터마다 하나씩 나눈다.
+  //
+  // 규격은 `bskin-ally-creature-back` 과 같은 712×712 통짜 이미지다 — 144×384 전투 캐릭터셋이
+  // 아니므로 oprnGeneratedAssetPlan.json 에는 넣지 않는다(기존 `bskin-*` 스프라이트도 전부
+  // 리졸버 전용이다). 만든 방법은 scripts/asset-gen/gen-hero-back-grok.mjs 에 있다.
+  "generated-actor-hero-01-back": "/assets/generated/battle-skins/sprites/hero-01-back.png",
+  "generated-actor-hero-02-back": "/assets/generated/battle-skins/sprites/hero-02-back.png",
+  "generated-actor-hero-03-back": "/assets/generated/battle-skins/sprites/hero-03-back.png",
+  "generated-actor-hero-04-back": "/assets/generated/battle-skins/sprites/hero-04-back.png",
+  "generated-actor-hero-05-back": "/assets/generated/battle-skins/sprites/hero-05-back.png",
+  "generated-actor-hero-06-back": "/assets/generated/battle-skins/sprites/hero-06-back.png",
   // Side-view battle field art (not EasyRPG sky panoramas).
   "generated-battle-reference-forest": "/generated/battle-reference-forest.png",
   // CSS 9-slice windowskin (EasyRPG System/*.png sheets are icon strips, not windowskins).

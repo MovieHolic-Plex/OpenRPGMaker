@@ -53,17 +53,17 @@
         "width": 144,
         "height": 384
       },
-      "prompt": "Battle charset extracted from bundled actor charset 1, chroma-key background removed, packed into a 3x8 battle sheet",
+      "prompt": "Battle charset extracted from bundled actor charset 1, chroma-key background removed, packed into a 3x8 battle sheet Row 1 defend/dead frames added 2026-08-29 by scripts/asset-gen/gen-hero-battle-grok.mjs (grok image_gen, magenta chroma-key, row-0 idle cell as character reference); row 0 unchanged.",
       "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
       "status": "promoted",
       "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-01-battle-from-actor1.png",
       "promotedPath": "public/assets/generated/starter/hero-01-battle.png",
       "resourceId": "generated-actor-hero-01-battle",
-      "sha256": "5748ad849d7c18cb31db0e3e6a1f20239e99b4bd45db1728ba8317eee49f8de1",
+      "sha256": "9277bb1f195fc44844febf72c66151e24249d50e45503f937b8ea2fcf1f95bc9",
       "provenance": {
         "generator": "imagegen",
         "mode": "fake",
-        "promptVersion": "bundled-charset-extract-v1",
+        "promptVersion": "bundled-charset-extract-v1+grok-row1-v1",
         "createdAt": "2026-06-28T00:00:00.000+09:00"
       }
     },
@@ -141,17 +141,17 @@
         "width": 144,
         "height": 384
       },
-      "prompt": "Battle charset extracted from bundled actor charset 2, chroma-key background removed, packed into a 3x8 battle sheet",
+      "prompt": "Battle charset extracted from bundled actor charset 2, chroma-key background removed, packed into a 3x8 battle sheet Row 1 defend/dead frames added 2026-08-29 by scripts/asset-gen/gen-hero-battle-grok.mjs (grok image_gen, magenta chroma-key, row-0 idle cell as character reference); row 0 unchanged.",
       "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
       "status": "promoted",
       "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-02-battle-from-actor2.png",
       "promotedPath": "public/assets/generated/starter/hero-02-battle.png",
       "resourceId": "generated-actor-hero-02-battle",
-      "sha256": "7ee0ea5f875de899dc765e5e872a30d156bdbe535d0a71d541b175c58102fad8",
+      "sha256": "fd2523652e7a97c4067331c676dfa297a4122dfb08d1858c24bee400f8ee82e7",
       "provenance": {
         "generator": "imagegen",
         "mode": "fake",
-        "promptVersion": "bundled-charset-extract-v1",
+        "promptVersion": "bundled-charset-extract-v1+grok-row1-v1",
         "createdAt": "2026-06-28T00:00:00.000+09:00"
       }
     },
@@ -163,17 +163,17 @@
         "width": 144,
         "height": 384
       },
-      "prompt": "Battle charset extracted from bundled actor charset 3, chroma-key background removed, packed into a 3x8 battle sheet",
+      "prompt": "Battle charset extracted from bundled actor charset 3, chroma-key background removed, packed into a 3x8 battle sheet Row 1 defend/dead frames added 2026-08-29 by scripts/asset-gen/gen-hero-battle-grok.mjs (grok image_gen, magenta chroma-key, row-0 idle cell as character reference); row 0 unchanged.",
       "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
       "status": "promoted",
       "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-03-battle-from-actor3.png",
       "promotedPath": "public/assets/generated/starter/hero-03-battle.png",
       "resourceId": "generated-actor-hero-03-battle",
-      "sha256": "ff5d5bb0486080f627adb995bcb4bbc5861157dc896be2642cd984cc53494948",
+      "sha256": "eaa10613ff589a2c8a036ad9c41ff488fd80062b6a7b9718c6e83d6df52daa77",
       "provenance": {
         "generator": "imagegen",
         "mode": "fake",
-        "promptVersion": "bundled-charset-extract-v1",
+        "promptVersion": "bundled-charset-extract-v1+grok-row1-v1",
         "createdAt": "2026-06-28T00:00:00.000+09:00"
       }
     },
@@ -185,18 +185,62 @@
         "width": 144,
         "height": 384
       },
-      "prompt": "Battle charset extracted from bundled actor charset 4, chroma-key background removed, packed into a 3x8 battle sheet",
+      "prompt": "Battle charset extracted from bundled actor charset 4, chroma-key background removed, packed into a 3x8 battle sheet Row 1 defend/dead frames added 2026-08-29 by scripts/asset-gen/gen-hero-battle-grok.mjs (grok image_gen, magenta chroma-key, row-0 idle cell as character reference); row 0 unchanged.",
       "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
       "status": "promoted",
       "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-04-battle-from-actor4.png",
       "promotedPath": "public/assets/generated/starter/hero-04-battle.png",
       "resourceId": "generated-actor-hero-04-battle",
-      "sha256": "2ab49b10fe9dbf4af9f5d8bdbb74ca4fad640c536afa65625ca0731a85af39b7",
+      "sha256": "a1b28cdee3bb8b0e252e717f22aa2c32f28b6a89783786f95872a5e388a1cf93",
       "provenance": {
         "generator": "imagegen",
         "mode": "fake",
-        "promptVersion": "bundled-charset-extract-v1",
+        "promptVersion": "bundled-charset-extract-v1+grok-row1-v1",
         "createdAt": "2026-06-28T00:00:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-05-battle",
+      "target": "actorBattleCharset",
+      "resourceKind": "battleCharset",
+      "expectedDimensions": {
+        "width": 144,
+        "height": 384
+      },
+      "prompt": "A calm human cleric in a flowing white robe with teal sash, gold sun emblem, mace and tome, side-view left-facing 16-bit JRPG battle sprite on flat magenta, chroma-key background removed, packed into a 3x8 battle sheet with only row 0 filled Row 1 defend/dead frames added 2026-08-29 by scripts/asset-gen/gen-hero-battle-grok.mjs (grok image_gen, magenta chroma-key, row-0 idle cell as character reference); row 0 unchanged.",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges, front-facing walking sprite",
+      "status": "promoted",
+      "rawPath": ".omo/asset-gen-tmp/hero-battle-grok/sessions/hero-05-idle-v1/raw.png",
+      "promotedPath": "public/assets/generated/starter/hero-05-battle.png",
+      "resourceId": "generated-actor-hero-05-battle",
+      "sha256": "f3ea3f7f5237a15f3d5fae0b55294b5a1c5390586889872453ac9543e8a4264e",
+      "provenance": {
+        "generator": "grok",
+        "mode": "live",
+        "promptVersion": "battler-grok-reference-v1+grok-row1-v1",
+        "createdAt": "2026-08-29T00:00:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-06-battle",
+      "target": "actorBattleCharset",
+      "resourceKind": "battleCharset",
+      "expectedDimensions": {
+        "width": 144,
+        "height": 384
+      },
+      "prompt": "A broad-shouldered human archer in a russet quilted gambeson with a longbow and back quiver, side-view left-facing 16-bit JRPG battle sprite on flat magenta, chroma-key background removed, packed into a 3x8 battle sheet with only row 0 filled Row 1 defend/dead frames added 2026-08-29 by scripts/asset-gen/gen-hero-battle-grok.mjs (grok image_gen, magenta chroma-key, row-0 idle cell as character reference); row 0 unchanged.",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges, front-facing walking sprite",
+      "status": "promoted",
+      "rawPath": ".omo/asset-gen-tmp/hero-battle-grok/sessions/hero-06-idle-v1/raw.png",
+      "promotedPath": "public/assets/generated/starter/hero-06-battle.png",
+      "resourceId": "generated-actor-hero-06-battle",
+      "sha256": "ed360e0f82b42ab5d8acec913313a5d9812a6f332b4fb7f39b35ed7ef3f38ad6",
+      "provenance": {
+        "generator": "grok",
+        "mode": "live",
+        "promptVersion": "battler-grok-reference-v1+grok-row1-v1",
+        "createdAt": "2026-08-29T00:00:00.000+09:00"
       }
     },
     {

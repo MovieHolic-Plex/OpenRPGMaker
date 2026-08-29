@@ -1,6 +1,7 @@
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
+import { POSE_FRAME } from "@/battle/battlePose";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 import type { DamageFeedback } from "@/player/battleSequencer";
@@ -108,13 +109,44 @@ function skinEnemySpriteUrl(): string | null {
   return resolveAssetResourceUrl(`bskin-enemy-${activeSkin().id}`, { project: store.getCurrent() });
 }
 
-/** 스킨 파티 스프라이트(정면/후면). 포켓몬은 몬스터 뒷모습을 쓴다. */
-function skinPartySpriteUrl(index: number, facing: PartyFacing): string | null {
+/**
+ * 액터별 뒷모습 배틀러 리소스 id. 저작된 전투 시트 id 에서 슬러그만 떼어낸다 —
+ * `generated-actor-hero-03-battle` → `generated-actor-hero-03-back`.
+ *
+ * 왜 스키마에 필드를 안 더하나: 뒷모습은 정면 시트와 **같은 인물의 다른 시점**이라 파생
+ * 관계가 이미 id 에 들어 있다. 필드를 더하면 스키마·에디터·직렬화·픽스처가 다 따라와야 하고,
+ * 작성자가 두 칸을 따로 채워 어긋나게 만들 여지도 생긴다. 여기서 유도하면 그 전부가 0 이다.
+ */
+function actorBackSpriteId(actor: BattleBattlerSnapshot): string | null {
+  const slug = /^generated-actor-(hero-\d+)-battle$/.exec(actor.battleCharacterResourceId ?? "")?.[1];
+  return slug ? `generated-actor-${slug}-back` : null;
+}
+
+/**
+ * 스킨 파티 스프라이트(정면/후면).
+ *
+ * 후면 스킨의 폴백은 액터를 구분하지 못한다 — 포켓몬은 파티 전원에게 보라색 생물 한 장을,
+ * 나머지는 전사/마법사 두 장을 번갈아 돌려 준다. 그래서 액터별 뒷모습이 있으면 그걸 먼저 쓴다.
+ * 없는 액터(작성자가 직접 넣은 시트 등)는 예전 폴백 그대로 간다.
+ */
+function skinPartySpriteUrl(
+  index: number,
+  facing: PartyFacing,
+  actor?: BattleBattlerSnapshot,
+): { url: string; perActor: boolean } | null {
   if (facing === "hidden") return null;
+  const project = store.getCurrent();
+  if (facing === "back" && actor) {
+    const backId = actorBackSpriteId(actor);
+    // id 가 만들어졌다고 그림이 있는 건 아니다 — 리졸브까지 성공해야 액터별로 쓴 것이다.
+    const backUrl = backId ? resolveAssetResourceUrl(backId, { project }) : null;
+    if (backUrl) return { url: backUrl, perActor: true };
+  }
   const id = activeSkin().id === "pokemon"
     ? "bskin-ally-creature-back"
     : `bskin-party-${index % 2 === 0 ? "warrior" : "mage"}-${facing}`;
-  return resolveAssetResourceUrl(id, { project: store.getCurrent() });
+  const url = resolveAssetResourceUrl(id, { project });
+  return url ? { url, perActor: false } : null;
 }
 
 
@@ -372,6 +404,14 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   syncStatusIcons(node, enemy);
 }
 
+/**
+ * 테스트 전용 진입점 — `test/battlerPoseFrame.test.ts` 가 backgroundPosition 산식을 잰다.
+ * 전투 스냅샷 하나를 굴리지 않고 포즈만 바꿔볼 수 있어야 회귀가 산식 단위에서 잡힌다.
+ */
+export function applyBattlerPoseForTest(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]): void {
+  applyBattlerPose(node, pose);
+}
+
 function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]): void {
   node.dataset.battlePose = pose;
   node.classList.toggle("battle-pose-idle", pose === "idle");
@@ -381,12 +421,18 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
   node.classList.toggle("battle-pose-dead", pose === "dead");
   const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite, .battle-enemy-image, .battle-actor-image");
   if (sprite?.classList.contains("battle-actor-sprite")) {
-    // Generated battle sheets: 3 columns × idle/attack/hit along X.
-    // Frame width must match actorBattleImage display frame (BATTLE_SHEET_CELL × BATTLE_ASSET_PIXEL_SCALE).
-    const frameW = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-width"))
-      || BATTLE_SHEET_CELL * BATTLE_ASSET_PIXEL_SCALE;
-    const col = pose === "attack" ? 1 : pose === "hit" || pose === "dead" ? 2 : 0;
-    sprite.style.backgroundPosition = `-${col * frameW}px 0`;
+    // 생성 전투 시트는 5포즈가 (열, 행) 좌표를 갖는다 — POSE_FRAME 이 정본이다.
+    // 2026-08-29 까지는 X 만 움직여 defend 가 idle 칸을, dead 가 hit 칸을 돌려 썼다.
+    // 프레임 크기는 actorBattleImage 가 심은 인라인 커스텀 프로퍼티와 같아야 한다
+    // (BATTLE_SHEET_CELL × BATTLE_ASSET_PIXEL_SCALE).
+    const fallback = BATTLE_SHEET_CELL * BATTLE_ASSET_PIXEL_SCALE;
+    const frameW = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-width")) || fallback;
+    const frameH = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-height")) || fallback;
+    const frame = POSE_FRAME[pose] ?? POSE_FRAME.idle;
+    // 0 에는 음수 부호를 붙이지 않는다 — CSSOM 이 "-0px" 를 "0px" 로 정규화하므로 그대로 두면
+    // 우리가 쓴 값과 읽히는 값이 달라진다(실측: happy-dom).
+    const offset = (value: number) => (value === 0 ? "0px" : `-${value}px`);
+    sprite.style.backgroundPosition = `${offset(frame.col * frameW)} ${offset(frame.row * frameH)}`;
   }
 }
 
@@ -661,12 +707,15 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
     return node;
   }
   // authored 정면 시트가 없거나 후면 구도가 필요한 스킨만 스킨 공용 파티 스프라이트로 폴백한다.
-  const skinSprite = skinPartySpriteUrl(index, place.partyFacing);
+  // 후면이면 액터별 뒷모습이 먼저 잡힌다(skinPartySpriteUrl).
+  const skinSprite = skinPartySpriteUrl(index, place.partyFacing, actor);
   if (skinSprite) {
     const image = document.createElement("img");
     image.className = "battle-actor-image battle-skin-actor-image";
     image.alt = actor.name;
-    image.src = skinSprite;
+    image.src = skinSprite.url;
+    // 액터별 뒷모습이 잡혔는지 테스트·디버깅에서 구별할 수 있게 표시한다.
+    if (skinSprite.perActor) node.dataset.actorBackBattler = "true";
     node.append(image);
     applyBattlerPose(node, actor.pose);
     node.append(statusIconCluster(actor));

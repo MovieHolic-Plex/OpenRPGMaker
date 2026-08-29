@@ -4,11 +4,16 @@ import { createBlankProject } from "@/project/defaults";
 import { seedHomeDungeonComplexTroops } from "@/project/defaults/complexMonsterAuthoring";
 
 describe("database image matching", () => {
-  it("assigns unique matching monster graphics for extra enemies and species", () => {
+  it("assigns unique matching monster graphics for default enemies and species", () => {
     const project = createBlankProject();
-    const extras = project.database.enemies.filter((enemy) => enemy.id.startsWith("enemy_extra_"));
-    const monsterIds = extras.map((enemy) => enemy.monsterResourceId);
-    expect(new Set(monsterIds).size).toBe(monsterIds.length);
+    // enemy_extra_* filler was removed (2026-08-28). Uniqueness is asserted over the
+    // generated battler roster, where 1:1 art mapping is the contract; the six
+    // hand-authored starters intentionally share slime art across related names
+    // (enemy_slime / enemy_meadow_slime -> generated-enemy-slime-01).
+    const monsterIds = project.database.enemies.map((enemy) => enemy.monsterResourceId);
+    const generatedIds = monsterIds.filter((id) => id?.startsWith("generated-enemy-") && !id.endsWith("-01"));
+    expect(generatedIds.length).toBeGreaterThanOrEqual(100);
+    expect(new Set(generatedIds).size).toBe(generatedIds.length);
     for (const id of monsterIds) {
       expect(resolveAssetResourceUrl(id), id).toBeTruthy();
     }
