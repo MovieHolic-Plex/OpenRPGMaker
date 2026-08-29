@@ -476,6 +476,12 @@
     padding: 3px 8px;
   }
 
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮어 글자가 화살표를 침범한다.
+     보정은 같은 @media 안에 둬야 이 규칙이 켜지는 폭에서만 함께 적용된다. */
+  .database-modal-body .oprn-record-detail-pane .oprn-detail-form select {
+    padding-right: 24px;
+  }
+
   .database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(button, .btn) {
     border-radius: 4px;
     font-family: var(--font-ui);
@@ -867,6 +873,11 @@
     min-width: 0;
     padding: 4px 8px;
     width: 100%;
+  }
+
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .database-modal-body :is(.db-system-form, .db-terms-form) select {
+    padding-right: 24px;
   }
 
   .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(5) {

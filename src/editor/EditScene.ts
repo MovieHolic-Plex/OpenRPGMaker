@@ -12,8 +12,10 @@ import {
 import { subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
 import {
   planCameraFocus,
+  shouldDeferCameraFocus,
   subscribeEditorCameraFocus,
   type CameraFocusTarget,
+  type PointerGestureState,
   type VisibleTileRect,
 } from "@/editor/editorCameraFocus";
 import { subscribeAgentBlueprint } from "@/editor/agentBlueprint";
@@ -1184,6 +1186,11 @@ export class EditScene extends PhaserRuntime.Scene {
     renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, tileIndex: this.tileIndex, resetCamera });
     this.renderEventLayerClickFeedback();
     this.renderAgentGhostPreview();
+    // 청사진도 고스트와 같이 다시 그린다 — 청사진 스토어 구독만으로는 부족하다. 맵 전환은
+    // editorState/store 만 흔들므로, 다시 그리지 않으면 A 맵의 "2/7 집" 사각형이 B 맵의 같은
+    // 타일 좌표 위에 그대로 남고(레이어는 맵을 따라 비워지지 않는다), 계획이 굳은 뒤 A 로
+    // 돌아오면 다음 상태 변화까지 아무것도 안 보인다.
+    this.renderAgentBlueprint();
     this.publishMapViewport();
     if (!mapChanged && this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.renderBuildPaletteOverlay();
@@ -1416,10 +1423,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mid || target.mapId !== mid) return;
     const map = store.getCurrent().maps[target.mapId];
     if (!map) return;
-    // 사용자의 손이 화면 위에 있으면 카메라를 빼앗지 않는다. pointerToTile 이 **라이브**
-    // 카메라로 타일을 계산하므로(아래 pointerToTile), 칠하는 중에 카메라가 움직이면 다음
-    // pointermove 가 다른 타일로 떨어져 페인트가 번진다. 취향 문제가 아니라 데이터 손상이다.
-    if (this.isPainting || this.cameraPanController?.active()) return;
+    // 사용자의 손이 화면 위에 있으면 카메라를 빼앗지 않는다 — 판정 근거는
+    // shouldDeferCameraFocus 주석(드래그 커밋이 라이브 카메라로 타일을 다시 구한다).
+    if (shouldDeferCameraFocus(this.pointerGestureState())) return;
     const plan = planCameraFocus(target, map, this.visibleTileRect());
     if (!plan) return;
     const worldX = (plan.tileX + 0.5) * TILE_SIZE;
@@ -1427,9 +1433,25 @@ export class EditScene extends PhaserRuntime.Scene {
     // 카메라가 움직이면 DOM 마커·선택 팔레트 오버레이·AI 뷰포트 스냅샷이 전부 낡는다.
     // 손 팬은 onPanMove 에서 이미 이 셋을 되맞추는데 프로그램 팬은 아무것도 하지 않아
     // 조수가 데려간 화면에서 마커가 엉뚱한 자리에 남고 AI 는 이전 위치를 계속 읽었다.
-    this.cameras.main.pan(worldX, worldY, 300, "Cubic.easeOut", true, () => {
+    this.cameras.main.pan(worldX, worldY, 300, "Cubic.easeOut", true, (_camera, progress: number) => {
+      // 6번째 인자는 onComplete 가 아니라 **onUpdate** 다(phaser Pan.js: "invoked every frame
+      // for the duration of the effect"). 그대로 두면 300ms 동안 열여덟 번쯤 불려 매 프레임
+      // 고스트 DOM 마커를 지웠다 다시 만든다 — 영역 작업의 인라인 승인 툴바가 그 사이에 갈려
+      // pointerdown/up 이 다른 노드에 떨어질 수 있다. 마지막 프레임(progress 1)에만 정리한다.
+      if (progress < 1) return;
       this.afterCameraMoved();
     });
+  }
+
+  /** 카메라 양보 판정에 넘길 제스처 스냅샷 — 판정 자체는 순수 함수가 한다. */
+  private pointerGestureState(): PointerGestureState {
+    return {
+      painting: this.isPainting,
+      panning: this.cameraPanController?.active() ?? false,
+      dragging: this.dragOperationHandler?.busy() ?? false,
+      rightRegionGesture: this.rightRegionGesture !== null,
+      pastePreview: editorState.get().pastePreview !== null,
+    };
   }
 
   /** 프로그램 팬이 끝난 뒤 카메라 좌표에 의존하는 표면을 다시 맞춘다(손 팬의 onPanMove 와 같은 몸). */

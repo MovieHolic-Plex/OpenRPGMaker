@@ -23,6 +23,7 @@
 
    전제: select 를 잡는 규칙 20건의 `background:` 단축을 `background-color:` 로
    바꿔 두었다. 단축은 background-image 를 리셋해서 아래 chevron 을 지운다.
+   `test/databaseSelectChevronGuard.test.ts` 가 그 두 전제를 기계로 고정한다.
    ========================================================================= */
 
 /* ── select: OS 위젯 → 에디터 chevron ──────────────────────────────────── */
@@ -38,28 +39,36 @@
   background-position: right 12px center, right 7px center;
   background-repeat: no-repeat;
   background-size: 5px 5px;
-  /* 탭별 규칙이 padding 단축으로 덮으면 이 값은 진다. chevron 이 오른쪽 7~17px
-     구간만 쓰므로 그 경우에도 짧은 값은 겹치지 않는다. */
+  /* chevron 은 패딩 박스 오른쪽 **7~17px** 밴드를 쓴다(7px 오프셋 + 5px+5px 두 삼각형).
+     텍스트는 콘텐츠 박스 오른쪽 끝까지 갈 수 있으므로, 밴드를 비우려면 오른쪽 패딩이
+     17px 이상이어야 한다. 이 규칙의 특이성은 (0,2,1) 이라 탭별 규칙의 `padding` 단축이
+     이긴다 — 즉 **짧은 padding 이 바로 겹침의 원인**이다(8px → 9px 침범, 9px → 8px).
+     그래서 짧은 단축을 쓰는 탭 규칙마다 바로 뒤에 select 전용 `padding-right: 24px`
+     보정을 붙여 뒀다(`.left-panel-stack select` 의 선례와 같은 형태). 새 탭을 추가할
+     때도 같이 붙여야 하며, 빠뜨리면 위 가드 테스트가 파일:행과 함께 실패한다. */
   padding-right: 24px;
 }
 
-/* 화살표만 있고 목록이 없는 상태(비활성)에서는 커서를 되돌린다. */
+/* 비활성 상태의 시각 신호.
+   `appearance: none` 이 OS 위젯을 지우면서 UA 의 disabled 렌더링(회색 글자/눌린 위젯)도
+   같이 사라졌고, 탭별 규칙이 (0,4,1) 특이성으로 `color` 를 무조건 선언해 UA 의 GrayText
+   까지 이긴다 — 실측에서 disabled 와 enabled 의 computed 값이 완전히 같았다.
+   `color` 로 되받으면 그 특이성 싸움을 다시 해야 하므로, 아무 탭도 select 에 선언하지
+   않는 `opacity` 로 글자·테두리·chevron 을 한꺼번에 흐린다. */
 .database-modal-backdrop .database-modal-window select:disabled {
   cursor: default;
+  opacity: 0.55;
 }
 
-/* ── number: 브라우저 스피너 제거 ──────────────────────────────────────── */
+/* ── number: 스피너는 그대로 둔다 ──────────────────────────────────────── */
 
-.database-modal-backdrop .database-modal-window input[type="number"] {
-  /* 스피너를 지운다. 키보드 위/아래 증감은 그대로 동작한다. */
-  appearance: textfield;
-}
-
-.database-modal-backdrop .database-modal-window input[type="number"]::-webkit-outer-spin-button,
-.database-modal-backdrop .database-modal-window input[type="number"]::-webkit-inner-spin-button {
-  appearance: none;
-  margin: 0;
-}
+/* 여기 있던 세 규칙(`appearance: textfield` + `::-webkit-*-spin-button { appearance: none }`)
+   은 되돌렸다. DB 모달의 number 입력은 생성 지점만 187곳인데(브레인스토밍 문서 §2 (2)),
+   마우스로 증감할 대안(슬라이더·스테퍼 버튼)이 붙은 곳은 range 헬퍼 6곳뿐이다(§0.5).
+   스피너를 지우면 나머지는 키보드 위/아래만 남아 **마우스 전용 사용자에게 회귀**가 된다.
+   이 저장소의 선례도 대안이 있을 때만 지운다 — `.rich-stepper > input`(±버튼 동반),
+   `.runtime-commerce-quantity-input`(±버튼 동반). 스테퍼를 전 지점에 붙이는 후속 작업에서
+   대안과 함께 다시 지운다. */
 
 /* ── checkbox / radio / range: 액센트 통일 ─────────────────────────────── */
 
@@ -72,7 +81,13 @@
 
 /* ── 공통: 좁은 격자에서 컨트롤이 넘치지 않게 ──────────────────────────── */
 
-.database-modal-backdrop .database-modal-window :is(select, input, textarea) {
+/* 목적은 "min-width 를 아무도 안 잡은 flex/grid 아이템의 auto 최소 크기를 푼다" 뿐이다.
+   그런데 (0,2,1) 로 쓰면 클래스 하나로 잡던 기존 규칙까지 이겨 버린다 — 실제로
+   `skill-item-visuals.css` 의 `.db-skill-state-effect-row select { min-width: 96px }`
+   (0,1,1) 가 무력화돼 computed 가 0px 로 떨어졌다(상태 변화 행의 드롭다운이 라벨 폭까지
+   찌그러진다). 스코프는 그대로 두고 특이성만 (0,0,1) 로 내려서, min-width 를 직접
+   선언한 규칙은 전부 이기게 한다. `:where()` 는 특이성 0 이다. */
+:where(.database-modal-backdrop .database-modal-window) :is(select, input, textarea) {
   min-width: 0;
 }
 

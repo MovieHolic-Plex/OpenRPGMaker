@@ -507,6 +507,11 @@
     padding: 4px 8px;
   }
 
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .database-modal-body .db-troops-classic-workbench select {
+    padding-right: 24px;
+  }
+
   .database-modal-body .db-troops-classic-workbench input[type="checkbox"],
   .database-modal-body .db-troops-classic-workbench input[type="radio"] {
     accent-color: var(--accent);
