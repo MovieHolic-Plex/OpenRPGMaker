@@ -114,8 +114,10 @@ function dismiss(): void {
 }
 
 function resolveStepAnchor(step: CoachMarkStep): DOMRect | undefined {
+  // `ai-collapsed-restore` 는 세 번째 후보였다 — 접힘 상태가 삭제되면서 함께 사라졌다.
+  // 띠는 항상 상주하므로 `ai-input` 이 늘 보이고, `ai-command-bar` 는 그 폴백이다.
   const anchorTestIds = step.id === "ai"
-    ? ["ai-input", "ai-command-bar", "ai-collapsed-restore"]
+    ? ["ai-input", "ai-command-bar"]
     : [step.anchorTestId];
   for (const testId of anchorTestIds) {
     const rect = document
@@ -232,10 +234,11 @@ function placeWelcomeOnCanvas(card: HTMLElement): void {
     document.querySelector<HTMLElement>("[data-testid='edit-canvas']");
   const region = canvas?.getBoundingClientRect();
   if (region && region.width > 80 && region.height > 80) {
-    const glass = document.querySelector<HTMLElement>(".ai-chat-panel.chat-dock-glass:not(.is-collapsed)");
-    const glassRight = glass?.getBoundingClientRect().right ?? 0;
-    const preferredLeft = glassRight > region.left ? glassRight + 12 : region.left + 12;
-    const left = Math.min(Math.max(preferredLeft, MARGIN), Math.max(MARGIN, viewportWidth - width - MARGIN));
+    // 캔버스 좌상단에 붙인다. 예전에는 `.ai-chat-panel.chat-dock-glass:not(.is-collapsed)` 의
+    // 오른쪽 끝을 찾아 그만큼 오른쪽으로 밀었다 — 유리 도크가 캔버스 왼쪽을 덮고 있었기
+    // 때문이다. 그 선택자는 클래스 둘이 다 삭제돼 항상 null 이었고(즉 밀기가 죽어 있었다),
+    // 띠는 우하단에 있으므로 좌상단과 애초에 겹치지 않는다.
+    const left = Math.min(Math.max(region.left + 12, MARGIN), Math.max(MARGIN, viewportWidth - width - MARGIN));
     const top = Math.min(Math.max(region.top + 12, MARGIN), Math.max(MARGIN, viewportHeight - height - MARGIN));
     card.style.left = `${left}px`;
     card.style.top = `${top}px`;

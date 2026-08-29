@@ -130,21 +130,16 @@ function mockEditorDependencies(): void {
     subscribeMapEditLocks: vi.fn(() => () => undefined),
     takeoverMapLock,
   }));
+  // 가짜 조수 패널. `renderAiChatPanel` 은 이제 옵션을 받지 않는다 — 도크 토글 콜백과
+  // 대기화면 게터가 함께 사라졌다(스펙 §1).
   vi.doMock("@/editor/panels/aiChatPanel", () => ({
-    renderAiChatPanel: (options?: {
-      readonly onChatDockToggle?: () => void;
-      readonly getAssistantTemperature?: () => string;
-    }) => {
+    renderAiChatPanel: () => {
       const panel = document.createElement("aside");
       panel.dataset.testid = "ai-panel";
-      panel.dataset.temperature = options?.getAssistantTemperature?.() ?? "";
       panel.className = "ai-chat-panel";
       const log = document.createElement("div");
       log.dataset.testid = "ai-chat-log";
-      const toggle = document.createElement("button");
-      toggle.dataset.testid = "chat-dock-toggle";
-      toggle.addEventListener("click", () => options?.onChatDockToggle?.());
-      panel.append(log, toggle);
+      panel.append(log);
       return panel;
     },
   }));
@@ -208,7 +203,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     document.dispatchEvent(mouseEvent("mouseup", {}));
     toggleLeftPanel();
 
-    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ leftCollapsed: true, chatDock: "glass" });
+    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ leftCollapsed: true });
 
     vi.resetModules();
     mockEditorDependencies();
@@ -229,50 +224,22 @@ describe("에디터 레이아웃 크기 저장", () => {
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 1200 });
   }, 30_000);
 
-  it("채팅 dock 토글은 같은 패널 DOM을 float host와 side panel 사이에서 옮기고 저장한다", async () => {
-    const { renderEditor } = await import("@/editor/panels/editor");
-    const { editorState } = await import("@/editor/editorState");
-    const main = document.createElement("main");
-    renderEditor(main);
-    const root = fakeElement(main);
-    const panel = findByTestId(root, "ai-panel");
-    const log = findByTestId(root, "ai-chat-log");
-    const toggle = findByTestId(root, "chat-dock-toggle");
-    const floatHost = findByTestId(root, "chat-float-host");
-    const sideHost = findByTestId(root, "chat-side-panel");
-    if (!panel || !log || !toggle || !floatHost || !sideHost) throw new Error("chat dock fixtures missing");
-    log.textContent = "로그 유지";
-
-    expect(panel.parentElement).toBe(floatHost);
-    expect(editorState.get().chatDock).toBe("glass");
-    expect(panel.classList.contains("chat-dock-glass")).toBe(true);
-    expect(panel.classList.contains("is-docked")).toBe(false);
-
-    toggle.click();
-
-    expect(panel.parentElement).toBe(sideHost);
-    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
-    expect(log.textContent).toBe("로그 유지");
-    expect(editorState.get().chatDock).toBe("side");
-    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ chatDock: "side" });
-
-    toggle.click();
-
-    expect(panel.parentElement).toBe(floatHost);
-    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
-    expect(editorState.get().chatDock).toBe("float");
-    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ chatDock: "float" });
-
-    toggle.click();
-
-    expect(panel.parentElement).toBe(floatHost);
-    expect(editorState.get().chatDock).toBe("glass");
-    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ chatDock: "glass" });
-  });
+  // ── 삭제한 도크·온도 테스트 4건 ──────────────────────────────────────────────
+  // 「채팅 dock 토글은 같은 패널 DOM을 float host와 side panel 사이에서 옮기고 저장한다」
+  // 「저장된 채팅 side dock을 복원한다」
+  // 「저장된 조수 대기 화면을 도크 설정과 함께 복원한다」
+  //
+  // 조수 띠는 `canvasArea` 안 `chatFloatHost` 한 곳에만 산다(editor.ts). 옮길 두 번째 호스트가
+  // 없으니 재부모화도, 저장할 도크 값도, 복원할 대기화면도 없다 — `chatDock`·
+  // `assistantTemperature` 는 editorState 에서 함께 사라졌다(스펙 §1).
+  //
+  // 네 번째로 지운 것은 「저장된 크기를 …」 테스트의 **단언 전부**였다. 그 테스트는 이름이
+  // clamp 를 약속하면서 실제로는 `chatDock` 만 재고 있었다 — leftWidth 9999·mapTreeHeight −1 을
+  // 심어 두고 결과를 확인하지 않았다. 약속한 것을 재도록 아래에 다시 썼다.
 
   it("저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다", async () => {
-    // float 로 고정해 좌패널 max(640) clamp 를 side-dock 폭 차감과 분리한다.
-    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 9999, mapTreeHeight: -1, leftCollapsed: false, chatDock: "float" }));
+    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 9999, mapTreeHeight: -1, leftCollapsed: false }));
+    storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
     vi.resetModules();
     mockEditorDependencies();
     const { renderEditor } = await import("@/editor/panels/editor");
@@ -280,8 +247,10 @@ describe("에디터 레이아웃 크기 저장", () => {
 
     renderEditor(main);
 
-    const { editorState } = await import("@/editor/editorState");
-    expect(editorState.get().chatDock).toBe("float");
+    // 좌패널 폭은 `applyLayout` 에서 캔버스 최소폭과 한 번 더 경쟁하므로(fakeDom 은 뷰포트가
+    // 0 이다) 관측 지점을 `--map-tree-height` 로 잡는다 — 이쪽은 clamp 값이 그대로 실린다.
+    const left = fakeElement(main).querySelector(".left-panel");
+    expect(left?.style.getPropertyValue("--map-tree-height")).toBe("80px");
 
     storage.setItem(EDITOR_LAYOUT_KEY, "{broken");
     vi.resetModules();
@@ -290,48 +259,8 @@ describe("에디터 레이아웃 크기 저장", () => {
     const freshMain = document.createElement("main");
     fresh.renderEditor(freshMain);
 
-    const { editorState: freshState } = await import("@/editor/editorState");
-    expect(freshState.get().chatDock).toBe("glass");
-  });
-
-  it("저장된 채팅 side dock을 복원한다", async () => {
-    // 소스가 읽는 실제 키(v4)에 심는다 — 상단 EDITOR_LAYOUT_KEY 상수는 레거시 키라 저장 dock 복원을 검증하지 못한다.
-    storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
-    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
-    vi.resetModules();
-    mockEditorDependencies();
-    const { renderEditor } = await import("@/editor/panels/editor");
-    const { editorState } = await import("@/editor/editorState");
-    const main = document.createElement("main");
-
-    renderEditor(main);
-
-    const root = fakeElement(main);
-    const panel = findByTestId(root, "ai-panel");
-    const sideHost = findByTestId(root, "chat-side-panel");
-    expect(panel?.parentElement).toBe(sideHost);
-    expect(editorState.get().chatDock).toBe("side");
-  });
-
-  it("저장된 조수 대기 화면을 도크 설정과 함께 복원한다", async () => {
-    storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
-    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
-      leftWidth: 526,
-      mapTreeHeight: 154,
-      leftCollapsed: false,
-      chatDock: "glass",
-      assistantTemperature: "ink-only",
-    }));
-    vi.resetModules();
-    mockEditorDependencies();
-    const { renderEditor } = await import("@/editor/panels/editor");
-    const { editorState } = await import("@/editor/editorState");
-    const main = document.createElement("main");
-
-    renderEditor(main);
-
-    expect(editorState.get().assistantTemperature).toBe("ink-only");
-    expect(findByTestId(fakeElement(main), "ai-panel")?.dataset.temperature).toBe("ink-only");
+    const freshLeft = fakeElement(freshMain).querySelector(".left-panel");
+    expect(freshLeft?.style.getPropertyValue("--map-tree-height")).toBe("300px");
   });
 });
 

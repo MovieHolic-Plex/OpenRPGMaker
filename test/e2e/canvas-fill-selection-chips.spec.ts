@@ -43,11 +43,11 @@ async function dragMapFromVisiblePoint(page: Page, dxTiles: number, dyTiles: num
 test("canvas fills chrome-safe area and selection chips overlay without reflow", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1601, height: 769 });
-  // Expert density so side AI dock + dense chrome match the reported layout.
+  // Expert density so the dense chrome matches the reported layout. The assistant no longer
+  // takes a column, so there is no dock to pin open — the old `oprn:ai-panel-collapsed`
+  // seeding went away with the collapse state machine (spec §1).
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-ui-mode", "expert");
-    // AI dock starts collapsed by design — pin it open so the docked layout is measured.
-    localStorage.setItem("oprn:ai-panel-collapsed", "0");
   });
   await page.goto("/?freshProject=1&m1MapEditor=1");
 
@@ -160,29 +160,35 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
   });
   await page.screenshot({ path: testInfo.outputPath("02-selection-chips.png"), fullPage: true });
 
-  // Side AI dock should not look like a free-floating canvas card when docked side.
+  // The assistant strip floats over the canvas — it must not consume canvas width.
+  // This probe used to branch on `chat-dock-side` / `chat-dock-float`; both classes are gone
+  // (spec §1), so the `isSide` branch could never fire and the whole block measured nothing.
   const aiDock = await page.evaluate(() => {
     const panel = document.querySelector(".ai-chat-panel") as HTMLElement | null;
-    if (!panel) return null;
+    const canvas = document.querySelector(".canvas-area") as HTMLElement | null;
+    if (!panel || !canvas) return null;
     const style = getComputedStyle(panel);
     const rect = panel.getBoundingClientRect();
+    const host = canvas.getBoundingClientRect();
     return {
       classes: panel.className,
       position: style.position,
       width: rect.width,
       height: rect.height,
-      isSide: panel.classList.contains("chat-dock-side"),
-      isFloat: panel.classList.contains("chat-dock-float"),
+      // 우하단 앵커까지의 거리. `inset: auto 16px 16px auto` 라 둘 다 16px 이어야 한다.
+      gapRight: Math.round(host.right - rect.right),
+      gapBottom: Math.round(host.bottom - rect.bottom),
+      insideCanvas: rect.left >= host.left - 1 && rect.right <= host.right + 1,
     };
   });
   expect(aiDock).toBeTruthy();
-  if (aiDock?.isSide) {
-    expect(aiDock.position).toBe("relative");
-    expect(aiDock.width).toBeGreaterThan(200);
-  }
+  expect(aiDock!.position).toBe("absolute");
+  expect(aiDock!.insideCanvas).toBe(true);
+  expect(aiDock!.gapRight).toBe(16);
+  expect(aiDock!.gapBottom).toBe(16);
 
   await page.screenshot({
-    path: path.join(EVIDENCE_DIR, "03-ai-dock.png"),
+    path: path.join(EVIDENCE_DIR, "03-ai-strip.png"),
     fullPage: true,
   });
 

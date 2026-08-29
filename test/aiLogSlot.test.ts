@@ -1,10 +1,13 @@
-// 로그 마운트 단일 출처 회귀 스펙 — 3단계(도크·로그 마운트 단일화).
+// 로그 마운트 단일 출처 회귀 스펙.
 //
-// 고정하는 것: 같은 `log` 엘리먼트의 배치를 결정하는 코드가 세 함수(도크 정책·기록 열기·
-// 스튜디오)에 흩어져 있어, 상태 조합마다 어느 마운트에 붙는지 코드로 알 수 없었다. 이제
+// 고정하는 것: 같은 `log` 엘리먼트의 배치를 정하는 코드가 한 곳에만 있다는 것. 원래는
+// 세 함수(도크 정책 · 기록 열기 · 스튜디오)가 제각기 `remove()` + `append()` 로 재부모화해서,
+// 상태 조합마다 어느 마운트에 붙는지 코드로 알 수 없었다 — 기록을 닫으면 휘발 존에 넣었다가
+// 바로 뒤이어 도크 정책이 유리 마운트로 다시 집어오는 이중 이동까지 있었다. 이제
 // `mountLog()` 하나가 정하고 결과를 `panel.dataset.logSlot` 으로 노출한다.
 //
-// 표는 2026-08-23 브라우저 실측(verify-shots/ai-dock-log-mount/matrix-before.json)과 같다.
+// 조수 띠로 넘어오면서 슬롯이 3종(glass · volatile · history)에서 **2종**으로 줄었다.
+// `glass` 는 유리 도크와 함께 사라졌고, 스튜디오 토글도 없어졌다. 남은 축은 기록 하나다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
@@ -36,7 +39,6 @@ beforeEach(() => {
     layer: "lower",
     tool: "paint",
     selection: null,
-    chatDock: "float",
   });
 });
 
@@ -47,21 +49,7 @@ afterEach(() => {
 });
 
 function renderPanel(): FakeElement {
-  const panel = renderWithFakeDom(() => renderAiChatPanel());
-  // 부팅 접힘 상태에서는 도크 정책이 돌지 않는다 — 펼쳐서 잰다.
-  findByTestId(panel, "ai-collapsed-restore")?.click();
-  return panel;
-}
-
-/** 도크를 원하는 값까지 순환시킨다(glass → side → float → glass). */
-function setDock(panel: FakeElement, want: string): void {
-  const toggle = findByTestId(panel, "chat-dock-toggle");
-  if (!toggle) throw new Error("dock toggle missing");
-  for (let i = 0; i < 4; i += 1) {
-    if (panel.dataset.chatDock === want) return;
-    toggle.click();
-  }
-  throw new Error(`dock ${want} 로 못 갔다`);
+  return renderWithFakeDom(() => renderAiChatPanel());
 }
 
 function logParentClass(panel: FakeElement): string {
@@ -70,93 +58,119 @@ function logParentClass(panel: FakeElement): string {
   return log.parentNode instanceof FakeElement ? log.parentNode.className : "(detached)";
 }
 
+function historyToggle(panel: FakeElement): FakeElement {
+  const button = findByTestId(panel, "ai-chat-history");
+  if (!button) throw new Error("history toggle missing");
+  return button;
+}
+
 describe("로그 슬롯은 한 곳에서 정해진다", () => {
-  it("도크별 기본 뷰: 유리는 카드 본문, 사이드는 휘발 존, float 은 유리 로그를 유지", () => {
+  it("기본 슬롯은 휘발 존이다", () => {
     const panel = renderPanel();
 
-    setDock(panel, "glass");
-    expect(panel.dataset.logSlot).toBe("glass");
-    expect(logParentClass(panel)).toContain("ai-glass-log");
-
-    setDock(panel, "side");
     expect(panel.dataset.logSlot).toBe("volatile");
     expect(logParentClass(panel)).toContain("ai-rising-volatile-zone");
-
-    setDock(panel, "float");
-    expect(panel.dataset.logSlot).toBe("glass");
-    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
-    expect(logParentClass(panel)).toContain("ai-glass-log");
   });
 
-  it("기록을 열면 도크와 무관하게 기록 마운트로 간다", () => {
+  it("기록을 열면 기록 마운트로 가고 닫으면 휘발 존으로 돌아온다", () => {
     const panel = renderPanel();
-    const history = findByTestId(panel, "ai-dock-toggle");
-    if (!history) throw new Error("history toggle missing");
+    const history = historyToggle(panel);
 
-    for (const dock of ["glass", "side", "float"]) {
-      setDock(panel, dock);
-      history.click();
-      expect(panel.dataset.logSlot, dock).toBe("history");
-      expect(logParentClass(panel), dock).toContain("ai-history-log-mount");
-      history.click();
-      // 닫으면 그 도크의 기본 슬롯으로 되돌아온다 — 예전에는 닫는 쪽이 항상 휘발 존에
-      // 넣고 뒤이어 도크 정책이 다시 옮기는 이중 이동이었다.
-      expect(panel.dataset.logSlot, dock).toBe(dock === "glass" ? "glass" : dock === "side" ? "volatile" : "glass");
-    }
-  });
-
-  it("스튜디오도 기록 마운트를 쓰고, 끄면 도크 기본으로 돌아온다", () => {
-    const panel = renderPanel();
-    setDock(panel, "side");
-    const studio = findByTestId(panel, "ai-studio-toggle");
-    if (!studio) throw new Error("studio toggle missing");
-
-    studio.click();
+    history.click();
     expect(panel.dataset.logSlot).toBe("history");
     expect(logParentClass(panel)).toContain("ai-history-log-mount");
 
-    studio.click();
+    history.click();
+    // 예전에는 닫는 쪽이 항상 휘발 존에 넣고 뒤이어 도크 정책이 다시 옮기는 이중 이동이었다.
     expect(panel.dataset.logSlot).toBe("volatile");
     expect(logParentClass(panel)).toContain("ai-rising-volatile-zone");
   });
 
-  it("오버레이는 사이드 도크만 가진다", () => {
+  it("여러 번 여닫아도 로그 엘리먼트는 하나뿐이다", () => {
+    // 재부모화가 여러 곳에서 일어나면 복제본이 남는다 — 슬롯이 하나면 개수가 늘 1 이다.
+    const panel = renderPanel();
+    const history = historyToggle(panel);
+
+    for (let i = 0; i < 3; i += 1) history.click();
+    expect(panel.querySelectorAll('[data-testid="ai-chat-log"]').length).toBe(1);
+    expect(panel.dataset.logSlot).toBe("history");
+
+    history.click();
+    expect(panel.querySelectorAll('[data-testid="ai-chat-log"]').length).toBe(1);
+    expect(panel.dataset.logSlot).toBe("volatile");
+  });
+
+  it("오버레이와 스티키 존은 띠에 상주한다", () => {
+    // 구 구현에서 오버레이는 사이드 도크 전용이었다 — 도크가 하나뿐이니 조건이 사라진다.
     const panel = renderPanel();
 
-    setDock(panel, "side");
     expect(findByTestId(panel, "ai-rising-overlay")).toBeTruthy();
-
-    setDock(panel, "float");
-    expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
-
-    setDock(panel, "glass");
-    expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
+    expect(findByTestId(panel, "ai-rising-sticky-zone")).toBeTruthy();
+    expect(findByTestId(panel, "ai-completion-host")).toBeTruthy();
+    expect(findByTestId(panel, "ai-proposal-pin-host")).toBeTruthy();
   });
 
-  it("완료 스트립은 모든 도크에 남고 제안 reopen pill은 인라인 결정 카드로 대체된다", () => {
+  it("제안 reopen pill 은 인라인 결정 카드로 대체돼 노출되지 않는다", () => {
     const panel = renderPanel();
 
-    for (const dock of ["glass", "side", "float"]) {
-      setDock(panel, dock);
-      expect(findByTestId(panel, "ai-rising-sticky-zone"), dock).toBeTruthy();
-      expect(findByTestId(panel, "ai-completion-host"), dock).toBeTruthy();
-      // pill은 항상 마운트되나 hidden — 인라인 결정 카드가 대신 보이므로 노출되지 않아야 한다
-      const pill = findByTestId(panel, "ai-proposal-reopen");
-      const pillHidden = pill == null || pill.hidden === true || (pill as { attrs?: { hidden?: string } }).attrs?.hidden !== undefined;
-      expect(pillHidden, dock).toBe(true);
-      expect(findByTestId(panel, "ai-proposal-pin-host"), dock).toBeTruthy();
-    }
+    const pill = findByTestId(panel, "ai-proposal-reopen");
+    const pillHidden = pill == null
+      || pill.hidden === true
+      || (pill as { attrs?: { hidden?: string } }).attrs?.hidden !== undefined;
+    expect(pillHidden).toBe(true);
   });
 
-  it("혼발 존은 페이드 클래스를 다시 달지 않는다", () => {
-    // 페이드(is-faded, opacity .42)는 삭제됐다 — 오버레이가 사이드 전용이 된 뒤로는
-    // 사이드 CSS 가 항상 opacity:1 로 덮어 쓰는 죽은 효과었고, 상주하는 패널을 흐리는 것은
-    // 자체로 오답이다. 타이머 둔 것도 둘(컨트롤러 + 로컬)이었다.
+  it("휘발 존은 페이드 클래스를 다시 달지 않는다", () => {
+    // 페이드(is-faded, opacity .42)는 삭제됐다 — 상주하는 패널을 흐리는 것 자체가 오답이고,
+    // 타이머를 둔 곳도 둘(컨트롤러 + 로컬)이었다.
     const panel = renderPanel();
-    setDock(panel, "side");
     const zone = findByTestId(panel, "ai-rising-volatile-zone");
 
-    expect(zone?.hidden).toBe(false);
     expect(zone?.className).not.toContain("is-faded");
+  });
+
+  it("유휴에서는 휘발 존이 접히고 자라면 열린다", () => {
+    // 유휴 56px 에 빈 로그 껍데기를 두면 그 높이가 그대로 공백이 된다(스펙 §2).
+    const panel = renderPanel();
+    const zone = findByTestId(panel, "ai-rising-volatile-zone");
+    const input = findByTestId(panel, "ai-input");
+    if (!zone || !input) throw new Error("zone/input missing");
+
+    expect(panel.classList.contains("is-risen")).toBe(false);
+    expect(zone.hidden).toBe(true);
+
+    (input as unknown as { value: string }).value = "안녕";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+
+    expect(panel.classList.contains("is-risen")).toBe(true);
+    expect(zone.hidden).toBe(false);
+  });
+
+  /**
+   * 스펙 §6 게이트 4 — `ai-new-session` 은 **동작** 테스트가 0건이었다.
+   *
+   * 이 파일이 자연스러운 집이다: ＋ 가 하는 일의 핵심이 `log.replaceChildren()` 이라 로그
+   * 마운트 계약과 같은 대상을 만진다. 기존 `aiAssistantUxP0P2.test.ts` 는 aria-label 만
+   * 재고 있었다 — 버튼이 있다는 것만 알려 주고, 눌러서 비워지는지는 아무도 보지 않았다.
+   */
+  it("＋ 새 대화는 로그를 비우고 휘발 존 슬롯으로 되돌린다", () => {
+    const panel = renderPanel();
+    const log = findByTestId(panel, "ai-chat-log");
+    const history = historyToggle(panel);
+    const newSession = findByTestId(panel, "ai-new-session");
+    if (!log || !newSession) throw new Error("log/new-session missing");
+
+    // 대화가 있는 상태를 만든다(로그에 줄이 있고, 기록 슬롯으로 옮겨 둔 상태).
+    log.append(new FakeElement("div"));
+    history.click();
+    expect(panel.dataset.logSlot).toBe("history");
+    expect(log.childNodes.length).toBe(1);
+
+    newSession.click();
+
+    expect(log.childNodes.length).toBe(0);
+    // 로그 엘리먼트 자체는 살아 있어야 한다 — 지워 버리면 다음 턴이 붙을 자리가 없다.
+    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
+    expect(panel.querySelectorAll('[data-testid="ai-chat-log"]').length).toBe(1);
   });
 });

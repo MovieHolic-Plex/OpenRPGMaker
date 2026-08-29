@@ -143,8 +143,9 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
 
     await bootEditor(page);
 
-    // 복원된 대화는 추가 조작 없이 보여야 한다 — 이전엔 패널이 is-glass-idle 로 남아
-    // .ai-glass-log 가 display:none 이라 복원된 대화가 보이지 않았다.
+    // 복원된 대화는 추가 조작 없이 보여야 한다. 옛 결함은 패널이 `is-glass-idle` 로 남아
+    // `.ai-glass-log` 가 `display: none` 이던 것 — 클래스 둘 다 삭제됐고, 지금 이 계약을
+    // 지키는 것은 `syncRisen` 의 `hasTurn` 이다(로그에 턴 행이 있으면 자람을 유지한다).
     const userRow = page.getByTestId("ai-command-row-user").first();
     await expect(userRow).toBeVisible({ timeout: 20_000 });
 

@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type ProposedCall, type TurnResult } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
-import type { ChatDock } from "@/editor/chatDock";
 import { createProposalPin } from "@/editor/panels/aiProposalPin";
 import { proposalAcceptButtonLabel } from "@/editor/panels/aiProposalFusion";
 import { editorState } from "@/editor/editorState";
@@ -84,11 +83,11 @@ function installBrowserGlobals(): void {
   Object.defineProperty(document, "documentElement", { configurable: true, value: document.createElement("html") });
 }
 
-function renderPanel(dock: ChatDock = "side"): FakeElement {
+function renderPanel(): FakeElement {
   // 이 파일은 대기 제안 카드/핀을 검증하므로 자동 적용을 명시적으로 끈다
   // (기본값은 승인 없이 즉시 적용 — approvalPolicy.resolveProposalApplyMode).
   storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", baseUrl: "x", model: "m", agentMode: "chat", autoApprove: false }));
-  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 1_000}) as unknown as FakeElement;
 }
 
 async function flushAsync(): Promise<void> {
@@ -104,12 +103,12 @@ function turn(result: Partial<TurnResult>): TurnResult {
   };
 }
 
-async function renderPendingProposal(dock: ChatDock = "side"): Promise<FakeElement> {
+async function renderPendingProposal(): Promise<FakeElement> {
   const mapId = store.getCurrent().startMapId;
   const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
   vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
   vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-  const panel = renderPanel(dock);
+  const panel = renderPanel();
   const input = findByTestId(panel, "ai-input") as FakeElement;
   input.value = "초안";
   findByTestId(panel, "ai-send")?.click();
@@ -187,7 +186,7 @@ describe("createProposalPin", () => {
 
 describe("proposal pin on the work log", () => {
   it("side dock shows the decision card in the pin host instead of a compact pin", async () => {
-    const panel = await renderPendingProposal("side");
+    const panel = await renderPendingProposal();
     const card = findByTestId(panel, "ai-proposal-card");
     expect(findByTestId(panel, "ai-proposal-modal")?.hidden).toBe(true);
     expect(findByTestId(panel, "ai-proposal-pin")).toBeNull();
@@ -195,7 +194,7 @@ describe("proposal pin on the work log", () => {
   });
 
   it("click 취소 on the inline card discards the pending proposal", async () => {
-    const panel = await renderPendingProposal("side");
+    const panel = await renderPendingProposal();
 
     findByTestId(panel, "ai-proposal-reject")?.click();
 

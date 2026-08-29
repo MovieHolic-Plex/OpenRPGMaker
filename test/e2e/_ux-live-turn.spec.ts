@@ -38,8 +38,6 @@ async function boot(page: Page): Promise<void> {
     const btn = page.getByRole("button", { name: label }).first();
     if (await btn.isVisible().catch(() => false)) await btn.click().catch(() => undefined);
   }
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible().catch(() => false)) await restore.click();
   await page.waitForTimeout(800);
 }
 
@@ -87,7 +85,7 @@ async function surfaceSnapshot(page: Page): Promise<unknown> {
         (n) => n.textContent?.trim() ?? "",
       ),
       lastAssistant: text("[data-testid=ai-command-row-assistant]:last-of-type"),
-      logText: text(".ai-chat-log, .ai-glass-log"),
+      logText: text(".ai-chat-log"),
     };
   });
 }

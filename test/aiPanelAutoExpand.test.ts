@@ -1,9 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
-import {
-  AUTO_COLLAPSE_AFTER_AI_MS,
-  renderAiChatPanel,
-} from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
@@ -118,12 +115,6 @@ function renderPanel(): FakeElement {
   return renderWithFakeDom(() => renderAiChatPanel());
 }
 
-function expandPanel(panel: FakeElement): void {
-  // Restore click is a no-op when first visit already boots open.
-  if (!panel.classList.contains("is-collapsed")) return;
-  findByTestId(panel, "ai-collapsed-restore")?.click();
-}
-
 beforeEach(() => {
   assistantMock.reset();
   store.replace(createBlankProject());
@@ -143,56 +134,37 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
-describe("AI 패널 자동 펼침/접기", () => {
-  it("부팅 시 저장된 접힘 선택('1')을 복원한다", () => {
-    storage.set("oprn:ai-panel-collapsed", "1");
+// 접힘/자동 접기는 삭제됐다 — 유휴가 56px 한 줄이면 접어서 아낄 공간이 없고, 자동 접기는
+// 이미 무효 정책이었다(`AUTO_COLLAPSE_AFTER_AI_MS = 0` 이라 타이머가 플래그만 내렸다).
+//
+// 남는 계약은 그 셋이 실제로 지키려던 것 하나다: **바깥에서 온 작업 신호가 띠를 자라게 한다.**
+// 브리지 전송과 어시스트 이벤트 둘 다 유휴에서 시작해 `is-risen` 으로 끝나야 한다.
+describe("AI 패널 자동 자람", () => {
+  it("유휴에서 브리지로 전송하면 자라고, 턴이 끝나도 답을 읽도록 자란 채 남는다", async () => {
     const panel = renderPanel();
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
-  });
-
-  it("접힌 채 전송하면 펼치고, 턴이 끝나도 답을 읽도록 열어 둔다", async () => {
-    storage.set("oprn:ai-panel-collapsed", "1");
-    const panel = renderPanel();
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(panel.classList.contains("is-risen")).toBe(false);
 
     const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
     expect(bridge).toBeTruthy();
     await bridge!.send("안녕");
     await flushAsync();
 
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
+    expect(panel.classList.contains("is-risen")).toBe(true);
     expect(assistantMock.sentMessages).toHaveLength(1);
 
-    await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
+    // 예전에는 여기서 자동 접기 타이머를 기다렸다. 타이머가 없어졌어도 결과는 같아야 한다 —
+    // 대화가 남아 있는 동안 유휴로 되돌아가면 방금 받은 답이 사라진다.
+    await vi.advanceTimersByTimeAsync(5_000);
     await flushAsync();
 
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
-  });
-
-  it("이미 펼친 첫 방문은 턴 종료 후 자동으로 접히지 않는다 — 키를 쓰지 않는다", async () => {
-    // Break: first visit still boots collapsed, or an already-open panel auto-collapses after idle.
-    const panel = renderPanel();
-    expandPanel(panel);
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
-
-    const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
-    await bridge!.send("지도 그려줘");
-    await flushAsync();
-
-    await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
-    await flushAsync();
-
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(panel.classList.contains("is-risen")).toBe(true);
+    // 접힘 키는 아무도 쓰지 않는다 — 상태 기계와 함께 삭제됐으므로 되살아나면 회귀다.
     expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
   });
 
-  it("스킬 어시스트 이벤트도 자동 펼침 경로를 탄다", async () => {
-    storage.set("oprn:ai-panel-collapsed", "1");
+  it("스킬 어시스트 이벤트도 자람 경로를 탄다", async () => {
     const panel = renderPanel();
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(panel.classList.contains("is-risen")).toBe(false);
 
     window.dispatchEvent(
       new CustomEvent("oprn:ai-assist", {
@@ -201,6 +173,6 @@ describe("AI 패널 자동 펼침/접기", () => {
     );
     await flushAsync();
 
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(panel.classList.contains("is-risen")).toBe(true);
   });
 });

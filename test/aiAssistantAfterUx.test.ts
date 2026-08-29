@@ -85,7 +85,7 @@ function installBrowserGlobals(): void {
   Object.defineProperty(document, "documentElement", { configurable: true, value: document.createElement("html") });
 }
 
-function renderPanel(dock: "glass" | "side" | "float" = "glass"): FakeElement {
+function renderPanel(): FakeElement {
   storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
     ...defaultAiConfig(),
     apiKey: "sk-test",
@@ -94,7 +94,7 @@ function renderPanel(dock: "glass" | "side" | "float" = "glass"): FakeElement {
     agentMode: "chat",
     autoApprove: false,
   }));
-  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 1_000}) as unknown as FakeElement;
 }
 
 async function flushAsync(): Promise<void> {
@@ -118,7 +118,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_SUPABASE_URL", "");
   vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
   store.replace(createBlankProject());
-  editorState.set({ currentMapId: null, selection: null, chatDock: "glass" });
+  editorState.set({ currentMapId: null, selection: null });
   resetMapEditHistory();
 });
 
@@ -133,30 +133,13 @@ afterEach(() => {
 });
 
 describe("Assistant After UX contracts", () => {
-  it("glass dock clamps more menu inside card without is-viewport-anchored and does not use 360px fallback height", () => {
-    const panel = renderPanel("glass");
-    const menu = findByTestId(panel, "ai-more-menu") as FakeElement;
-    if (menu) menu.hidden = true;
-
-    findByTestId(panel, "ai-more-menu-toggle")?.click();
-    expect(menu?.hidden).toBe(false);
-    // In glass dock, menu should prefer in-card positioning rather than viewport fixed
-    expect(menu?.classList.contains("is-viewport-anchored")).toBe(false);
-  });
-
-  it("folds header undo/dock actions under 작업 so the idle-view menu hugs", () => {
-    const panel = renderPanel("glass");
-    findByTestId(panel, "ai-more-menu-toggle")?.click();
-    const menu = findByTestId(panel, "ai-more-menu") as FakeElement;
-    const fold = findByTestId(menu, "ai-more-actions");
-    expect(fold).not.toBeNull();
-    expect(fold?.textContent ?? "").toContain("작업");
-    expect(findByTestId(fold!, "ai-more-dock")).not.toBeNull();
-    expect(findByTestId(fold!, "ai-more-export")).not.toBeNull();
-    // 대기 화면 라디오는 접기 밖 — 펼치지 않아도 바로 보인다.
-    expect(findByTestId(fold!, "ai-temperature-quiet-gold")).toBeNull();
-    expect(findByTestId(menu, "ai-temperature-quiet-gold")).not.toBeNull();
-  });
+  // ── 삭제한 헤더 ☰ 테스트 2건 ────────────────────────────────────────────────
+  //   glass dock clamps more menu inside card without is-viewport-anchored …
+  //   folds header undo/dock actions under 작업 so the idle-view menu hugs
+  //
+  // 둘 다 `ai-more-menu` 를 열어서 재고 있었다. 그 메뉴는 숨은 툴바(`hidden` + `inert`) 안에
+  // 있어 실제로는 열 수 없었고, 조수 띠에서 삭제됐다 — 남은 ☰ 는 컴포저 액션 행의 것 하나이며
+  // 유리 카드 안 클램프(`is-viewport-anchored`)도 유리 도크와 함께 사라졌다.
 
   it("folds lint and quality verification dumps into details labeled 작업 기록", async () => {
     const mapId = store.getCurrent().startMapId;
@@ -167,7 +150,7 @@ describe("Assistant After UX contracts", () => {
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText, proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
 
-    const panel = renderPanel("glass");
+    const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "동굴 입구 만들어줘";
     findByTestId(panel, "ai-send")?.click();
@@ -188,7 +171,7 @@ describe("Assistant After UX contracts", () => {
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "적용 준비", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
 
-    const panel = renderPanel("glass");
+    const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "길 깔아";
     findByTestId(panel, "ai-send")?.click();

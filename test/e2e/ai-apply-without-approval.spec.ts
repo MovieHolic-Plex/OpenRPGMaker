@@ -166,12 +166,38 @@ function readCell(page: Page, mapId: string, x: number, y: number): Promise<numb
   }, { id: mapId, cx: x, cy: y });
 }
 
-/** 채팅 도크를 접어 맵 캔버스를 가리지 않게 한다 — 증거 스크린샷에 타일이 보여야 한다. */
-async function collapseChatDock(page: Page): Promise<void> {
-  const collapse = page.getByTestId("ai-collapse");
-  if (!(await collapse.isVisible().catch(() => false))) return;
-  await collapse.click();
-  await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible({ timeout: 10_000 });
+/**
+ * 조수 띠가 맵을 가리지 않는지 잰다 — 증거 스크린샷에 타일이 보여야 한다.
+ *
+ * 예전에는 `collapseChatDock` 이 `ai-collapse` 를 눌러 도크를 접고 나서 찍었다. 띠에는
+ * 접힘이 없고(스펙 §1) 턴이 하나라도 로그에 있으면 `is-risen` 이 유지되므로 되돌릴 수도
+ * 없다. 그래서 "치운 뒤 찍는다" 대신 **"치우지 않아도 안 가린다"** 를 잰다 — 우하단
+ * 앵커와 480px 상한의 존재 이유가 정확히 이것이다.
+ *
+ * 재는 자리는 캔버스 좌상단 **1/4 박스**다. 처음엔 좌상단 **사분면**(1/2 × 1/2)을 썼는데
+ * 그건 통과할 수 없는 계약이었다: 폭 640px 띠가 우측 16px 에 붙으면 왼쪽 끝은
+ * `canvas.right - 656` 이라, 캔버스가 1312px 보다 좁은 순간 좌측 절반과 겹친다. 기본
+ * 뷰포트(1280×720)에서 캔버스는 1280px 이므로 정확히 16px 이 물렸다 — 결함이 아니라
+ * 자의 눈금이 틀렸던 것이다.
+ *
+ * 1/4 박스는 480px 상한이 지켜 준다: 720px 뷰포트에서 자란 띠의 윗변은 최악이어도
+ * `720 - 16 - 480 = 224px` 이고 박스 아랫변은 `49 + 671/4 ≈ 217px` 다. 즉 이 단정이
+ * 깨지는 첫 신호는 상한이 무너지는 것이고, 그게 재고 싶은 회귀다.
+ */
+async function assertStripClearsMap(page: Page): Promise<void> {
+  const strip = await page.getByTestId("ai-panel").boundingBox();
+  const canvas = await page.locator(".canvas-area").boundingBox();
+  expect(strip, "조수 띠가 마운트되지 않았다").toBeTruthy();
+  expect(canvas, "캔버스 영역을 찾지 못했다").toBeTruthy();
+  const corner = { x: canvas!.x, y: canvas!.y, width: canvas!.width / 4, height: canvas!.height / 4 };
+  const overlapW = Math.max(0, Math.min(strip!.x + strip!.width, corner.x + corner.width) - Math.max(strip!.x, corner.x));
+  const overlapH = Math.max(0, Math.min(strip!.y + strip!.height, corner.y + corner.height) - Math.max(strip!.y, corner.y));
+  expect(overlapW * overlapH, "조수 띠가 캔버스 좌상단 1/4 박스를 덮고 있다").toBe(0);
+  // 우하단 앵커 — 띠가 캔버스의 오른쪽·아래쪽에 붙어 있어야 맵 본문이 트인다.
+  expect(Math.round(canvas!.x + canvas!.width - (strip!.x + strip!.width)), "우측 앵커").toBeLessThanOrEqual(18);
+  expect(Math.round(canvas!.y + canvas!.height - (strip!.y + strip!.height)), "하단 앵커").toBeLessThanOrEqual(18);
+  // 자란 띠도 캔버스의 절반을 넘게 먹지 않는다(구 사이드 도크는 열을 통째로 먹었다).
+  expect(strip!.width * strip!.height).toBeLessThan(canvas!.width * canvas!.height * 0.5);
 }
 
 function startTurn(page: Page, text: string): Promise<{ ok?: boolean; error?: string }> {
@@ -218,13 +244,15 @@ test.describe("AI 제안 즉시 적용 + 좌하단 되돌리기", () => {
       const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
       if (hit === node || (hit instanceof Node && node.contains(hit))) return "reachable";
       const blocker = hit instanceof HTMLElement ? (hit.dataset.testid ?? hit.className) : String(hit);
-      const shell = node.closest<HTMLElement>(".ai-glass-log");
+      // 실패 메시지용 좌표. `.ai-glass-log` 였다 — 유리 도크와 함께 사라진 클래스라
+      // 항상 null 이었고, 그래서 "무엇이 덮었나" 진단에서 shellBottom 이 늘 -1 로 나왔다.
+      const shell = node.closest<HTMLElement>(".ai-rising-volatile-zone");
       const shellBottom = shell ? Math.round(shell.getBoundingClientRect().bottom) : -1;
       return `covered by ${blocker} | undo=${Math.round(rect.top)}..${Math.round(rect.bottom)} shellBottom=${shellBottom}`;
     });
     expect(reachable).toBe("reachable");
     await page.screenshot({ path: path.join(EVIDENCE, "applied-without-approval.png"), animations: "disabled" });
-    await collapseChatDock(page);
+    await assertStripClearsMap(page);
     await page.screenshot({ path: path.join(EVIDENCE, "applied-map.png"), animations: "disabled" });
 
     // 경계 2: 좌하단 되돌리기 한 번으로 원복 — 승인 대신 쓰는 복구 경로.

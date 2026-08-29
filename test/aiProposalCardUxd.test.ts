@@ -24,7 +24,6 @@ import {
   subscribeAgentGhostPreview,
 } from "@/editor/agentGhostPreview";
 import { classifyProposalSafety } from "@/editor/proposalSafety";
-import type { ChatDock } from "@/editor/chatDock";
 import { readableTopbarIdentityLabel, renderTopbar } from "@/editor/panels/menu";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
@@ -122,9 +121,9 @@ function fakeElement(node: HTMLElement | null): FakeElement {
 /** 검토 카드 경로: 자동 적용을 명시적으로 끈 설정. 기본값은 즉시 적용이다. */
 const REVIEW_MODE: Partial<AiConfig> = { agentMode: "chat", autoApprove: false };
 
-function renderPanel(dock: ChatDock = "side", config: Partial<AiConfig> = {}): FakeElement {
+function renderPanel(config: Partial<AiConfig> = {}): FakeElement {
   storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", baseUrl: "x", model: "m", ...config }));
-  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 1_000}) as unknown as FakeElement;
 }
 
 async function flushAsync(): Promise<void> {
@@ -234,15 +233,14 @@ describe("UXD proposal summary helpers", () => {
     expect(proposalTechnicalDetailLines(calls)[0]).toContain("paint_road — 도로 3칸");
   });
 
-  it("결정 카드는 도크 인라인이고 캔버스 우선만 모달을 연다", () => {
-    expect(resolveProposalPresentation("modal", "glass")).toBe("inline");
-    expect(resolveProposalPresentation("modal", "side")).toBe("inline");
-    expect(resolveProposalPresentation("modal", "float")).toBe("inline");
-    expect(resolveProposalPresentation("canvas", "glass")).toBe("inline");
-    expect(resolveProposalPresentation("canvas", "side")).toBe("inline");
-    expect(resolveProposalPresentation("canvas", "float")).toBe("inline");
-    expect(resolveProposalPresentation("inline", "float")).toBe("inline");
-    expect(resolveProposalPresentation("canvas", "glass", true)).toBe("canvas");
+  it("결정 카드는 요청 모드와 무관하게 인라인이고, 재열기 알약만 캔버스로 간다", () => {
+    // 시그니처에서 `dock: ChatDock` 이 빠졌다. 예전 이 테스트는 세 도크로 같은 답을 세 번
+    // 확인하고 있었다 — 도크 값이 결과를 바꾼 적이 없었으므로 죽은 분기였다.
+    expect(resolveProposalPresentation("modal")).toBe("inline");
+    expect(resolveProposalPresentation("canvas")).toBe("inline");
+    expect(resolveProposalPresentation("inline")).toBe("inline");
+    expect(resolveProposalPresentation("canvas", true)).toBe("canvas");
+    expect(resolveProposalPresentation("modal", true)).toBe("inline");
   });
 
   it("결정 제목은 짧은 명사구를 쓰고 채팅체·툴 id는 버린다", () => {
@@ -339,7 +337,7 @@ describe("UXD proposal panel integration", () => {
     ];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "강가 오두막 3채", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "강가에 오두막 세 채";
     findByTestId(panel, "ai-send")?.click();
@@ -382,7 +380,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] })];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "길 초안을 제안합니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "길 깔아줘";
 
@@ -403,7 +401,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
 
@@ -423,7 +421,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
     findByTestId(panel, "ai-send")?.click();
@@ -444,7 +442,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel("float", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
     findByTestId(panel, "ai-send")?.click();
@@ -477,7 +475,7 @@ describe("UXD proposal panel integration", () => {
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => after);
     editorState.set({ currentMapId: mapId, selection: null });
     try {
-      const panel = renderPanel("float", REVIEW_MODE);
+      const panel = renderPanel(REVIEW_MODE);
       const input = findByTestId(panel, "ai-input") as FakeElement;
       input.value = "초안";
       findByTestId(panel, "ai-send")?.click();
@@ -509,7 +507,7 @@ describe("UXD proposal panel integration", () => {
       .mockResolvedValueOnce(turn({ assistantText: "초안입니다.", proposedCalls: calls }))
       .mockResolvedValueOnce(turn({ assistantText: "추가로 설명만 할게요.", proposedCalls: [] }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
 
     input.value = "맵 고쳐줘";
@@ -577,7 +575,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
 
@@ -623,7 +621,7 @@ describe("UXD proposal panel integration", () => {
     ];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "두 칸을 제안합니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "두 칸";
 
@@ -648,7 +646,7 @@ describe("UXD proposal panel integration", () => {
     const calls = [runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] })];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "한 칸 제안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "한 칸";
 
@@ -799,7 +797,7 @@ describe("AI 제안 즉시 적용 (승인 카드 없음)", () => {
     );
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
     editorState.set({ currentMapId: mapId, selection: null });
-    const panel = renderPanel("side", REVIEW_MODE);
+    const panel = renderPanel(REVIEW_MODE);
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "길 깔아줘";
     findByTestId(panel, "ai-send")?.click();

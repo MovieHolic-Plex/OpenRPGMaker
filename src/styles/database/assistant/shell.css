@@ -45,7 +45,6 @@
   gap: var(--ai-strip-gap);
   inset: auto var(--ai-strip-gutter) var(--ai-strip-gutter) auto;
   max-height: var(--ai-strip-max-height);
-  max-width: calc(100vw - 2 * var(--ai-strip-gutter));
   /* `overflow: hidden` 을 쓰지 않는다 — 컴포저 팝오버(☰ 메뉴 · 추천 칩)가 바 위쪽으로
    * 열리므로 잘려 나간다. 높이 상한은 내부 스크롤러(로그 · sticky 존)가 지키고,
    * 그 사이의 flex 자식들은 `min-height: 0` 으로 줄어든다. */
@@ -53,9 +52,15 @@
   padding: var(--ai-strip-gap);
   pointer-events: auto;
   position: absolute;
-  /* 폭: 제안 카드 + 두 버튼이 한 줄에 들어가는 최소폭. 좌측 레일(0~73px)과 겹치지 않도록
-   * 96px 를 뺀다 — 겹치면 복귀 알약이 `…수` 로 잘렸던 것과 같은 결함이 된다. */
-  width: min(640px, calc(100vw - 96px));
+  /* 폭: 제안 카드 + 두 버튼이 한 줄에 들어가는 최소폭(640px), 단 캔버스를 넘지 않는다.
+   *
+   * 기준이 **담는 블록(`100%` = `.canvas-area`)** 이지 뷰포트가 아니다. 처음엔
+   * `min(640px, 100vw - 96px)` 였다 — 좌측 레일 0~73px 를 피하려고 뷰포트에서 96px 를 뺀 값.
+   * 띠가 `canvasArea` 안에 사는 지금 그 뺄셈은 틀렸다: 1024px 전문가 모드에서 좌패널이
+   * 498px 를 먹어 캔버스는 520px 인데 폭은 min(640, 928) = 640px 로 계산돼, 캔버스의
+   * `overflow: hidden` 에 왼쪽 136px 가 잘려 나갔다. 캔버스는 이미 레일·좌패널을 제외한
+   * 영역이므로 `100%` 를 쓰면 회피 계산 자체가 필요 없다. */
+  width: min(640px, calc(100% - 2 * var(--ai-strip-gutter)));
   z-index: 1;
 }
 
@@ -96,6 +101,18 @@
   width: var(--ai-history-width);
 }
 
+/* 기록에서 휘발 오버레이는 문서에서 빠진다.
+ *
+ * 왜: 기록을 열면 `mountLog()` 가 로그를 `.ai-history-log-mount` 로 옮긴다. 그러면 오버레이의
+ * 유일한 자식(휘발 마운트)이 빈다 — 그런데 아래 기반 규칙이 오버레이에도 `flex: 1 1 auto` 를
+ * 줘서, **빈 통이 남는 높이의 절반을 차지한다**. 실측으로 951px 패널 안에 377px 짜리 공백
+ * 밴드가 잡힌 두 자리 중 하나가 정확히 이것이다(스펙 §6 게이트 2).
+ *
+ * 유휴 규칙(위)과 같은 이유·같은 처방이다: 빈 껍데기를 남기면 그 높이가 그대로 공백이 된다. */
+.ai-chat-panel.is-history-open .ai-rising-overlay {
+  display: none;
+}
+
 .ai-chat-panel > .ai-command-bar {
   flex: 0 0 auto;
 }
@@ -127,12 +144,13 @@
   }
 }
 
-/* 좁은 뷰포트: 좌측 레일을 피할 여유가 없으므로 거터만 남기고 폭을 다 쓴다. */
+/* 좁은 뷰포트: 거터를 줄이고 높이 상한을 화면에 맞춘다. 폭은 손대지 않는다 —
+ * 기반 규칙의 `min(640px, 100% - 2*거터)` 가 이미 캔버스를 넘지 않으므로, 여기서
+ * 폭을 다시 쓰면 같은 속성을 두 규칙이 소유하게 된다. */
 @media (max-width: 720px) {
   .ai-chat-panel {
     --ai-strip-gutter: 8px;
     --ai-strip-max-height: min(480px, 70vh);
-    width: calc(100vw - 2 * var(--ai-strip-gutter));
   }
 }
 

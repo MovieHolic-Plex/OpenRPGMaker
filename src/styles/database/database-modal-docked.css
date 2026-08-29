@@ -13,6 +13,8 @@
 }
 
 .database-modal-backdrop.is-docked .database-modal-window {
+  /* `dvh` 를 모르는 브라우저용 폴백. 두 줄 다 있어야 하며, 순서가 뒤바뀌면 폴백이 이긴다. */
+  height: 100vh !important;
   height: 100dvh !important;
   max-width: none !important;
   pointer-events: auto !important;

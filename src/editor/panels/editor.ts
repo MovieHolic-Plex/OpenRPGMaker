@@ -634,22 +634,6 @@ async function requestMapLockTakeover(status: Extract<MapEditLockStatus, { reado
   void takeoverMapLock(status.mapId, status.mapName).then(() => refreshPanels());
 }
 
-export function normalizeAiDockButtonChrome(panel: HTMLElement): void {
-  const button = panel.querySelector<HTMLElement>('[data-testid="ai-dock-toggle"]');
-  if (!button) return;
-  const update = (): void => {
-    if (panel.classList.contains("is-docked")) {
-      button.setAttribute("title", "패널 분리");
-      button.setAttribute("aria-label", "패널 분리");
-    } else {
-      button.setAttribute("title", "오른쪽 사이드바에 고정");
-      button.setAttribute("aria-label", "오른쪽 사이드바에 고정");
-    }
-  };
-  button.addEventListener("click", update);
-  update();
-}
-
 function onTestPlayWindowRequest(event: Event): void {
   const detail = event instanceof CustomEvent ? event.detail : undefined;
   if (isMapTestRequest(detail)) {

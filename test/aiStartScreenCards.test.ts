@@ -4,17 +4,10 @@ import { installFakeDom, findByTestId, renderWithFakeDom } from "./fakeDom";
 import {
   AI_AUTHORING_EXAMPLES,
   buildAiAuthoringExamples,
-  buildRecentAiWorkCard,
-  buildTryRegionCard,
-  buildVisualStartGallery,
   defaultAiVisualStartPrompts,
-  formatRelativeTime,
-  summarizeActivityResult,
 } from "@/editor/panels/aiStartScreenCards";
-import type { AiActivityLogRecord } from "@/ai/activityLog";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 
 let restoreDom: (() => void) | null = null;
@@ -39,7 +32,6 @@ beforeEach(() => {
     layer: "lower",
     tool: "paint",
     selection: null,
-    chatDock: "float",
   });
 });
 
@@ -49,52 +41,12 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
-const NOW = new Date("2026-07-10T12:00:00Z");
-
-function record(overrides: Partial<AiActivityLogRecord> = {}): AiActivityLogRecord {
-  return {
-    id: "log1",
-    at: "2026-07-10T11:55:00Z",
-    channel: "region",
-    instruction: "이 영역을 잔디로 채워줘",
-    result: { ok: true, applied: true, changedCells: 34, changedEvents: 2 },
-    toolCalls: [],
-    audit: [],
-    ...overrides,
-  } as AiActivityLogRecord;
-}
-
-describe("formatRelativeTime", () => {
-  it("분/시간/일 단위", () => {
-    expect(formatRelativeTime("2026-07-10T11:59:40Z", NOW)).toBe("방금 전");
-    expect(formatRelativeTime("2026-07-10T11:55:00Z", NOW)).toBe("5분 전");
-    expect(formatRelativeTime("2026-07-10T09:00:00Z", NOW)).toBe("3시간 전");
-    expect(formatRelativeTime("2026-07-08T12:00:00Z", NOW)).toBe("2일 전");
-  });
-});
-
-describe("summarizeActivityResult", () => {
-  it("적용/오류/무변경을 요약한다", () => {
-    expect(summarizeActivityResult(record())).toBe("34칸 · 이벤트 2건");
-    expect(summarizeActivityResult(record({ result: { ok: false, applied: false, error: "boom" } as never }))).toBe("오류");
-    expect(summarizeActivityResult(record({ result: { ok: true, applied: false, changedCells: 0, changedEvents: 0 } as never }))).toBe("변경 없음");
-  });
-});
-
-describe("buildTryRegionCard", () => {
-  it("예시 칩 클릭 시 onPick에 instruction을 넘긴다", () => {
-    const picked: string[] = [];
-    const card = renderWithFakeDom(() =>
-      buildTryRegionCard({
-        commands: [{ id: "c1", label: "🌊 호수", instruction: "둥근 호수를 만들어줘", category: "타일" }],
-        onPick: (instruction) => picked.push(instruction),
-      }),
-    );
-    expect(findByTestId(card, "ai-start-try-region")).not.toBeNull();
-    findByTestId(card, "ai-start-try-c1")!.dispatchEvent(new Event("click"));
-    expect(picked).toEqual(["둥근 호수를 만들어줘"]);
-  });
-});
+// ── 삭제한 describe 3개 ──────────────────────────────────────────────────────
+//   formatRelativeTime · summarizeActivityResult · buildTryRegionCard
+//
+// 셋 다 대기화면 카드(빠른 예시 · 최근 작업)의 부품이었다. 카드 표면이 폐기되면서 함수도
+// 함께 사라졌다 — 남은 것은 "무엇을 만들 수 있는지 알려주는 문구" 뿐이고, 그 일은 컴포저
+// 추천 칩이 한다.
 
 describe("buildAiAuthoringExamples", () => {
   it("길·NPC·상점·상자·집·퀘스트 예제를 빠짐없이 제공하고 클릭한 문장을 넘긴다", () => {
@@ -120,40 +72,22 @@ describe("buildAiAuthoringExamples", () => {
   });
 });
 
-describe("buildRecentAiWorkCard", () => {
-  it("기록이 있으면 최근 항목을 렌더, 없으면 null", () => {
-    const built = buildRecentAiWorkCard([record()], NOW);
-    expect(built).not.toBeNull();
-    const card = renderWithFakeDom(() => built!);
-    expect(findByTestId(card, "ai-start-recent-work")).not.toBeNull();
-    expect(card.textContent).toContain("34칸");
-    expect(card.textContent).toContain("5분 전");
-    expect(buildRecentAiWorkCard([], NOW)).toBeNull();
-  });
-});
-
-describe("buildVisualStartGallery", () => {
-  it("모자이크 헬퍼는 호출 시에만 썸을 만들고 5열 갤러리를 부팅 빈 면으로 쓰지 않는다", () => {
-    // Break: panel boot still mounts ai-start-visual-gallery as the empty product.
-    const project = createBlankProject();
-    const tileset = project.tilesets[DEFAULT_TILESET_ID] ?? Object.values(project.tilesets)[0] ?? null;
-    const gallery = renderWithFakeDom(() =>
-      buildVisualStartGallery({
-        tileset,
-        onPick: () => undefined,
-      }),
-    );
-    expect(findByTestId(gallery, "ai-start-visual-stage-place")).toBeTruthy();
-    expect(defaultAiVisualStartPrompts().length).toBeGreaterThanOrEqual(3);
-
+// ── 삭제한 describe 2개 ──────────────────────────────────────────────────────
+//   buildRecentAiWorkCard · buildVisualStartGallery
+//
+// 최근 작업 카드와 5열 비주얼 갤러리. 둘 다 대기화면이었고 폐기됐다(스펙 §3) — 갤러리가
+// 쓰던 타일 모자이크 배열 ~80줄도 함께 지웠다. 아래는 그 둘이 지키려던 것 중 살아남은 부분:
+// 부팅 빈 면에 카드가 아니라 **추천 칩**이 온다.
+describe("부팅 빈 면", () => {
+  it("대기화면 카드 대신 추천 칩 3개를 세운다", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel());
-    if (panel.classList.contains("is-collapsed")) {
-      findByTestId(panel, "ai-collapsed-restore")?.click();
-    }
     const chips = findByTestId(panel, "ai-composer-chips");
+
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-start-recent-work")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
     expect(chips?.querySelectorAll("button").length).toBe(3);
     expect(chips?.hidden).toBe(false);
+    expect(defaultAiVisualStartPrompts().length).toBeGreaterThanOrEqual(3);
   });
 });

@@ -49,7 +49,7 @@ async function flushAsync(): Promise<void> {
 }
 
 function renderPanel(options: Parameters<typeof renderAiChatPanel>[0] = {}): FakeElement {
-  return renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "side", ...options }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 37_000, ...options }) as unknown as FakeElement;
 }
 
 function installFakeWindow(): void {
@@ -119,6 +119,12 @@ describe("선택 영역 AI 직결 칩", () => {
     expect(findByTestId(panel, "ai-selection-chip")).toBeNull();
 
     requestAiSelectionContext(editorState.get().selection);
+    // Escape 우선순위(aiChatPanel keydown): 열린 팝오버 → 선택 영역. 예전에는 추천 팝오버가
+    // float 도크 전용이라(`readChatDock() === "float"`) 유리 도크 테스트에서 열리지 않았고,
+    // 그래서 첫 Escape 가 곧바로 선택을 지웠다. 표면이 하나가 된 지금은 포커스만으로 팝오버가
+    // 뜨므로 첫 Escape 가 그것을 닫는다 — 우선순위 자체는 그대로다.
+    dispatchInputKey(input, "Escape");
+    expect(findByTestId(panel, "ai-selection-chip")).toBeTruthy();
     dispatchInputKey(input, "Escape");
     expect(findByTestId(panel, "ai-selection-chip")).toBeNull();
 
@@ -316,11 +322,15 @@ describe("키 온보딩과 설정 접근성", () => {
     expect(menu?.hidden).toBe(false);
     expect(findByTestId(menu!, "ai-command-menu-undo")).toBeTruthy();
     expect(findByTestId(menu!, "ai-command-menu-export")).toBeTruthy();
-    expect(findByTestId(menu!, "ai-command-menu-dock")).toBeTruthy();
     expect(findByTestId(menu!, "ai-command-menu-tools")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-command-menu-history")).toBeTruthy();
+    // 도크 전환 항목은 전환할 대상이 없어져 사라졌다. ＋ 새 대화와 스튜디오는 여전히 ☰ 밖이다.
+    expect(findByTestId(menu!, "ai-command-menu-dock")).toBeNull();
     expect(findByTestId(menu!, "ai-new-session")).toBeNull();
     expect(findByTestId(menu!, "ai-studio-toggle")).toBeNull();
-    expect((globalThis.document as unknown as { body: FakeElement }).body.classList.contains("ai-command-bar-active")).toBe(true);
+    // body 클래스 `ai-command-bar-active` 는 캔버스를 밀어내던 인셋 계산에만 쓰였다 —
+    // 그 reflow 경로가 스펙 §2 로 금지되면서 클래스 자체가 사라졌다.
+    expect((globalThis.document as unknown as { body: FakeElement }).body.classList.contains("ai-command-bar-active")).toBe(false);
   });
 
   it("OAuth 는 전송 전에 'API 키' 안내로 막지 않는다 (키 온보딩 개념 자체가 없다)", () => {
@@ -342,7 +352,6 @@ describe("키 온보딩과 설정 접근성", () => {
   });
 
   it("401 오류 버블에도 설정 열기 버튼을 붙인다", async () => {
-    editorState.set({ chatDock: "float" });
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "bad-key" }));
     vi.stubGlobal("fetch", vi.fn(async () => new Response("no key", { status: 401 })));
     const panel = renderPanel();
@@ -356,20 +365,28 @@ describe("키 온보딩과 설정 접근성", () => {
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("Gemini");
   });
 
-  it("설정 아이콘은 전용 모달을 열고 첫 입력에 포커스한다", () => {
-    // Break: settings still expands an inline ai-config details instead of the modal.
-    const panel = renderPanel();
-    findByTestId(panel, "ai-settings-toggle")?.click();
-
-    const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
-    expect(modal).not.toBeNull();
-    expect(findByTestId(panel, "ai-config")).toBeNull();
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-auth-oauth"));
-  });
+  // 「설정 아이콘은 전용 모달을 열고 첫 입력에 포커스한다」는 삭제했다.
+  //
+  // 눌렀던 대상(`ai-settings-toggle`, 패널 헤더의 ⚙)이 띠와 함께 사라졌고 — 띠에는 헤더가
+  // 없다 — 테스트는 `?.click()` 으로 **없는 요소를 조용히 안 누르고** 있었다. 즉 이미
+  // 아무것도 재고 있지 않았다.
+  //
+  // 두 주장은 각각 다른 곳에 살아 있다:
+  //   - 모달이 열리고 첫 입력에 포커스가 간다 → `aiChatPanelSettings.test.ts`
+  //     (`openAiSettingsModal()` 을 직접 부른다 — 진입점과 무관한 모달 자신의 계약이다).
+  //   - 패널 안에 설정 버튼/인라인 폼이 없다 → `aiAssistantUxP0P2.test.ts` 의
+  //     "keeps routine AI settings out of the assistant panel chrome" 와
+  //     `aiChatPanelSettings.test.ts:62`.
+  // 401 버블의 「설정 열기」 경로로 옮겨 살릴 수도 있었지만, 바로 위 테스트가 그 경로에서
+  // 이미 fakeDom 해체 레이스로 빨감이다(비동기 턴이 afterEach 뒤에 도착한다). 같은 레이스에
+  // 테스트를 하나 더 얹지 않는다.
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {
+    // 구 목록 넷 중 셋(`ai-settings-toggle` · `ai-collapse` · `ai-studio-toggle`)이 삭제됐다.
+    // 그래서 이 테스트는 존재하지 않는 요소에 `?.` 로 접근해 `undefined` 를 재고 있었다 —
+    // 살아 있는 아이콘 버튼으로 목록을 갈아 끼운다(글자 없는 버튼은 라벨이 유일한 이름이다).
     const panel = renderPanel();
-    for (const testId of ["ai-settings-toggle", "ai-collapse", "ai-studio-toggle", "ai-new-session"]) {
+    for (const testId of ["ai-new-session", "ai-chat-history", "ai-command-menu-toggle", "ai-abort"]) {
       expect(findByTestId(panel, testId)?.getAttribute("aria-label"), testId).toBeTruthy();
     }
   });

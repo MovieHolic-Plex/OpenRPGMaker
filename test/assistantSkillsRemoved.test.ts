@@ -51,11 +51,6 @@ function renderPanel(): FakeElement {
   return renderWithFakeDom(() => renderAiChatPanel());
 }
 
-function expandPanel(panel: FakeElement): void {
-  if (!panel.classList.contains("is-collapsed")) return;
-  findByTestId(panel, "ai-collapsed-restore")?.click();
-}
-
 describe("조수 스킬 기능 제거", () => {
   it("@/ai/skills 모듈이 더 이상 존재하지 않는다", async () => {
     await expect(import("@/ai/skills")).rejects.toThrow();
@@ -72,7 +67,6 @@ describe("조수 스킬 기능 제거", () => {
 
   it("입력창의 선행 / 는 일반 텍스트다 — 슬래시 팝오버가 없고 스킬 저장 키도 쓰지 않는다", () => {
     const panel = renderPanel();
-    expandPanel(panel);
     const input = findByTestId(panel, "ai-input");
     if (!input) throw new Error("input missing");
 

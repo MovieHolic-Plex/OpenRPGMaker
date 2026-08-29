@@ -122,24 +122,10 @@ import {
 export {
   AI_FONT_SIZE_KEY,
   AI_FONT_SIZE_SCALE,
-  AUTO_COLLAPSE_AFTER_AI_MS,
-  MAP_FIRST_MIGRATION_KEY,
-  PANEL_SIZE_LIMITS,
   applyAiFontSize,
-  clampPanelSize,
-  clampPanelSizeToViewport,
-  clearDockPanelSize,
   loadAiFontSize,
-  loadDockPanelSize,
-  loadPanelCollapsed,
-  loadPanelSize,
   saveAiFontSize,
-  saveDockPanelSize,
-  savePanelCollapsed,
-  savePanelSize,
   type AiFontSize,
-  type PanelDock,
-  type PanelSize,
 } from "./aiPanelLayout";
 export {
   fallbackDiffParts,
@@ -380,12 +366,28 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 이미 무효화된 정책이었다(AUTO_COLLAPSE_AFTER_AI_MS = 0, scheduleCollapseAfterAiWork 가
   // 플래그만 내리고 실제로 접지 않았다).
   let volatileZone: HTMLElement | null = null;
+  /**
+   * 자람의 **명시 요청 걸쇠**. `syncRisen` 의 조건 목록에 OR 로 들어간다.
+   *
+   * 나머지 조건(대화 내역·진행 중 턴·대기 제안·포커스·입력 내용)은 모두 관측이지만, 이것은
+   * 요청이다 — 브리지 `openPanel` 처럼 "아직 아무 일도 없지만 지금 열어라" 는 경로가 쓴다.
+   * blur 에서 내려가므로 빈 입력으로 자리를 떠나면 유휴로 돌아온다.
+   */
+  let forcedRisen = false;
   // 원탭 답변 칩 — 컨트롤러보다 먼저 만들어 질문 대기 중 페이드를 막는다.
   const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
   // 자람은 syncRisen 이 소유한다. 이 함수는 "턴이 시작됐으니 지금 펼쳐라" 는 즉시 요청 —
   // syncRisen 이 패널 크롬 조립 후에 바인딩되므로 늦은 바인딩으로 둔다.
+  /**
+   * "지금 조수를 보여라" 는 외부 요청(브리지 `openPanel`, 입력창 포커스).
+   *
+   * 걸쇠를 쓰는 이유: `volatileZone.hidden` 은 `syncRisen` 이 소유한다. 예전 이 함수는
+   * `hidden = false` 를 직접 쓰고 곧바로 `syncRisen()` 을 불렀는데, 그 안에서 다시
+   * `hidden = !risen` 로 덮여 **아무 일도 하지 않았다**. 소유자를 우회하는 대신 자람 조건을
+   * 하나 더 켠다 — 빈 입력으로 포커스를 잃으면 blur 가 걸쇠를 내린다.
+   */
   const revealVolatileZone = (): void => {
-    if (volatileZone) volatileZone.hidden = false;
+    forcedRisen = true;
     syncRisen();
   };
   let exportButton: HTMLButtonElement | null = null;
@@ -1571,6 +1573,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncInputHeight();
     refreshComposerChips();
     refreshSendEnabled();
+    // 입력 내용은 `syncRisen` 의 조건 중 하나다 — 여기서 부르지 않으면 값이 바뀌어도
+    // 유휴/자람이 재평가되지 않는다(포커스 이벤트가 먼저 온 경우에만 우연히 맞았다).
+    syncRisen();
   });
   // 입력창 포커스 시 휘발 존(웰컴/대화)을 펼치고, 빈 대화 상태로 포커스를 잃으면 접어 맵을 비운다.
   input.addEventListener("focus", () => {
@@ -1578,6 +1583,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncSuggestPopover();
   });
   input.addEventListener("blur", () => {
+    // 걸쇠는 "열어 달라" 는 요청의 수명이다 — 자리를 떠나면 끝난다. 내용이 남아 있으면
+    // `syncRisen` 의 다른 조건이 자람을 유지한다.
+    forcedRisen = false;
     if (typeof window === "undefined" || typeof window.setTimeout !== "function") return;
     // 오버레이 안(스킬 카드 등) 클릭이 blur보다 먼저 처리되도록 잠깐 늦춘 뒤 접는다.
     window.setTimeout(() => {
@@ -1593,6 +1601,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-next-steps",
     dataset: { testid: "ai-next-steps" },
   });
+  /**
+   * 자람 여부의 **TS 쪽 사본**. 쓰는 곳은 `syncRisen` 하나(패널 클래스와 같은 자리에서 쓴다).
+   *
+   * 왜 `panel.classList.contains("is-risen")` 를 읽지 않나: `refreshNextSteps` 는 패널 크롬이
+   * 조립되기 전(`refreshComposerChips()` 부트 호출)에 한 번 돈다. `panel` 은 그보다 아래에서
+   * 선언되므로 DOM 을 읽으면 TDZ 로 터진다. 부트 시점의 정답은 유휴(false)라 초기값이 그대로
+   * 맞는다.
+   */
+  let risenNow = false;
   const refreshNextSteps = (): void => {
     if (typeof document === "undefined") return;
     const brief = readAgentBrief();
@@ -1605,7 +1622,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 유휴는 56px 한 줄이고 칩 행이 거기 들어가면 그 자체로 높이 계약이 깨진다(스펙 §2).
     // CSS 도 유휴에서 `.ai-chat-body` 를 숨기므로, 여기서 같은 조건을 걸어 TS 가 보이지 않는
     // DOM 을 만들지 않게 한다(두 곳이 서로 다른 답을 들면 반드시 갈라진다).
-    const show = !busy && input.value.trim() === "" && panel.classList.contains("is-risen");
+    const show = !busy && input.value.trim() === "" && risenNow;
     nextSteps.hidden = !show;
     if (!show) {
       nextSteps.replaceChildren();
@@ -2006,11 +2023,29 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [volatileLogMount],
   });
   const historyLogMount = el("div", { class: "ai-history-log-mount" });
+  // 기록이 비었을 때의 안내. 없으면 전체 기록이 **951px 짜리 빈 흰 판**으로 열린다 —
+  // 스펙 §6 게이트 2 의 공백 밴드 검사가 실측으로 377px 를 두 번 잡아냈다(빈 프로젝트에서
+  // ＋ 를 누르지 않고 기록을 열면 재현). 구 구현의 600px 공백이 표면만 바꿔 살아 있던 자리다.
+  // 가시성은 CSS 가 `is-history-open` + `data-ai-conversation="empty"` 로 정한다 — TS 가
+  // hidden 을 직접 만지면 두 곳이 같은 상태를 들고 갈라진다.
+  const historyEmpty = el("p", {
+    class: "ai-history-empty",
+    dataset: { testid: "ai-history-empty" },
+    text: "아직 저장된 대화가 없습니다. 아래에 무엇을 만들지 한 문장으로 적어 보세요.",
+  });
+  // 기록 오버레이의 액션 줄. 내보내기는 스펙 §3 에서 띠 상시 노출을 잃고 이 화면으로 내려왔다 —
+  // 대화 로그를 파일로 뽑는 일은 지난 대화를 보고 있을 때 하는 일이다. 기록이 닫혀 있으면
+  // history.css 가 `display: none` 으로 문서에서 뺀다(유휴 56px 에 빈 줄을 남기지 않는다).
+  const historyActions = el("div", {
+    class: "ai-history-actions",
+    dataset: { testid: "ai-history-actions" },
+    children: [exportButton],
+  });
   // 구 `ai-glass-log` 마운트는 유리 도크와 함께 삭제됐다. 로그 슬롯은 둘뿐이다:
   // 자람 상태의 휘발 존(`ai-rising-volatile-zone`) 과 기록 오버레이(`ai-history-log-mount`).
   const mainColumn = el("div", {
     class: "ai-chat-main",
-    children: [nextSteps, historyLogMount, chipsHost],
+    children: [nextSteps, historyActions, historyEmpty, historyLogMount, chipsHost],
   });
   const body = el("div", { class: "ai-chat-body", children: [mainColumn] });
 
@@ -2078,12 +2113,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const hasTurn = Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row-user]"));
     const risen = hasTurn
+      || forcedRisen
       || panel.classList.contains("is-turn-running")
       || Boolean(panel.querySelector("[data-testid=ai-proposal-pin]"))
       || Boolean(turnBusy || runningProgress)
       || (typeof document !== "undefined" && document.activeElement === input)
       || input.value.trim() !== "";
     panel.classList.toggle("is-risen", risen);
+    risenNow = risen; // refreshNextSteps 가 읽는 사본 — 클래스와 같은 자리에서 함께 쓴다.
     // 결과 점은 사용자가 입력을 잡는 순간 "확인한 것"으로 본다. 예전에는 접힘을 펼치는
     // 동작이 그 역할을 했다.
     if (typeof document !== "undefined" && document.activeElement === input) {
@@ -2119,13 +2156,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const unsubscribeCompletion = subscribeAiApplyCompletion(renderCompletion);
 
-  // 기록 오버레이 — 우측 520px 전면. 내보내기는 여기 사는 액션이다(스펙 §3 이관).
-  const historyActions = el("div", {
-    class: "ai-history-actions",
-    dataset: { testid: "ai-history-actions" },
-    children: [exportButton],
-  });
-  historyLogMount.before(historyActions);
+  // 기록 오버레이 — 우측 520px 전면. 액션 줄(`historyActions`)은 `mainColumn` 조립 때 같이
+  // 넣는다. 예전에는 여기서 `historyLogMount.before(...)` 로 뒤늦게 끼웠다 — 형제 순서를
+  // 두 곳에서 정하면 어느 쪽이 이기는지 코드로 알 수 없다.
   applyHistoryOpen = (next: boolean): void => {
     historyOpen = next;
     // `is-docked` 는 삭제됐다 — 구 구현은 fixed 오버레이용 body inset 과 side flex 열을 같이
