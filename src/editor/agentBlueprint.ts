@@ -14,7 +14,8 @@
 // `syncAgentBlueprintWithSpec(session.getActiveSpec())` 로 맞추고, 새 대화·패널 폐기에서
 // `clearAgentBlueprint()` 로 지운다. 자세한 사고 기록은 syncAgentBlueprintWithSpec 주석에 있다.
 
-import { affectedRegions, orderedAssets, type AffectedRegion, type BuildSpec, type SpecAsset } from "@/ai/buildSpec";
+import { orderedAssets, type AffectedRegion, type BuildSpec, type SpecAsset } from "@/ai/buildSpec";
+import { blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
 import type { MapId } from "@/project/types";
 
 export type BlueprintEntryStatus = "planned" | "building" | "done";
@@ -61,6 +62,10 @@ const KIND_LABELS: Readonly<Record<string, string>> = {
   path: "길",
   house: "집",
   building: "건물",
+  // 스펙 자동 확장(assistantSession.autoExpandedAssetKind)의 기본값 — 코드가 정하는 7종
+  // (clear·road·terrain·npc·prop·house·structure) 중 유일하게 번역이 없어 맵에 "3/9 structure"
+  // 라는 영어 원문이 찍혔다. 나머지 6종은 위에 있다.
+  structure: "구조물",
   yard: "마당",
   wall: "벽",
   fence: "울타리",
@@ -169,15 +174,20 @@ export function syncAgentBlueprintWithSpec(spec: BuildSpec | null): void {
  * `done` 으로 내린다. 누적 퍼센트를 쓰지 않는 이유는 한 에셋이 여러 툴콜로 쪼개져 들어오기
  * 때문이다(집 한 채 = paint 여러 번) — 비율은 그럴 때 조용히 거짓말을 하고, 순서는 그러지 않는다.
  *
+ * 영역은 `blueprintRegionsForToolCall`(청사진 전용 추출)이 뽑는다 — 스펙 게이트의
+ * `affectedRegions` 는 좌표를 wrapper 키(`area`/`at`/`wallRect`/`origin`)에 담는 툴을 면적 0 으로
+ * 떨어뜨리는데(게이트에는 맞는 fail-closed 동작이다) 청사진이 그대로 받으면 진행이 한 칸도
+ * 안 움직인다. 사유는 그 모듈 머리말에 있다.
+ *
  * 세 가지를 막는다. 전부 실측된 오작동이다.
  * 1. **읽기 툴**(`mode !== "write"`): 패널의 tool_call 훅은 성공한 모든 툴콜에서 발화하고
  *    show_map_region/get_map_region 은 `{mapId,x,y,w,h}` 를 그대로 받는다. show_map_region 의
  *    설명이 "맵에 뭔가 깐 뒤 이 툴로 눈으로 확인하라" 이므로 시공 직후의 정상 경로인데,
  *    영역이 진짜 사각형이라 IoU 승자가 바뀌어 **아직 짓는 중인 칸이 done 으로 밀려났다**.
- * 2. **면적 0 영역**: affectedRegions 는 args 에서 사각형을 못 뽑으면 `{x:0,y:0,w:0,h:0}` 을
- *    낸다(author_house 의 wings 없는 호출, bounds 없는 author_village, place_examine_hotspots).
- *    이 (0,0) 은 시공 위치가 아니라 폴백 상수라서 점으로 귀속하면 맵 전체를 덮는 1번 칸
- *    (clear)이 항상 이기고 나머지 칸이 전부 done 으로 밀려난다. 위치를 모르면 침묵한다.
+ * 2. **위치를 모르는 호출**: 인자에 좌표가 아예 없는 쓰기 툴이 있다(wallRect 없는 build_roof 는
+ *    맵의 벽 어휘 셀을 스캔해 자리를 스스로 찾는다). 폴백 `(0,0)` 은 시공 위치가 아니라 상수라서
+ *    점으로 귀속하면 맵 전체를 덮는 1번 칸(clear)이 항상 이기고 나머지 칸이 전부 done 으로
+ *    밀려난다. 위치를 모르면 침묵한다.
  * 3. **done → building 역주행**: 끝난 칸을 다시 짓는 중으로 표시하면 그 사이 칸들이 done 으로
  *    확정돼 "다 지었다"는 거짓 표시가 남는다.
  */
@@ -188,8 +198,14 @@ export function markAgentBlueprintProgress(
 ): void {
   if (!mode.write) return;
   if (entries.length === 0 || mapId === null) return;
-  const regions = affectedRegions(toolName, args)
-    .filter((region) => region.mapId === mapId && region.w > 0 && region.h > 0);
+  const call = blueprintRegionsForToolCall(toolName, args);
+  if (call.mapId !== mapId) return;
+  const regions = call.regions.filter((region) => region.mapId === mapId && region.w > 0 && region.h > 0);
+  // 대상 전체를 한 호출로 짓는 파사드(author_village)는 한 칸으로 귀속하지 않는다 — 아래 함수 주석.
+  if (call.wholeTarget) {
+    advanceAllPlanned(regions);
+    return;
+  }
   if (regions.length === 0) return;
   const targetIndex = bestOverlapIndex(entries, regions);
   if (targetIndex === -1) return;
@@ -201,6 +217,27 @@ export function markAgentBlueprintProgress(
     if (entry.status === "building") return { ...entry, status: "done" };
     return entry;
   });
+  emit();
+}
+
+/**
+ * 대상 전체를 짓는 파사드 한 호출 — 걸리는 planned 칸을 **전부** 짓는 중으로 올린다.
+ *
+ * 왜 한 칸을 고르지 않는가: `author_village` 한 호출이 정리·길·집·소품·주민을 다 만든다. 후보
+ * 사각형을 하나 만들어 IoU 로 고르면(맵 사각형을 대신 넣든 target.bounds 를 쓰든) 맵 전체를
+ * 덮는 `clear` 칸이 이기고 나머지 칸은 계획 상태로 남는다 — 1차 리뷰에서 고친 결함(큰 칸이
+ * 항상 이긴다)의 재발이다. "이 호출이 모든 칸을 건드렸다"를 그대로 표시하는 것이 실제로 일어난
+ * 일에 가장 가깝다.
+ *
+ * `regions` 가 비어 있으면(bounds 없는 호출 = 대상 전체) 그 맵의 planned 칸 전부, 있으면 그
+ * 영역에 걸리는 칸만 올린다 — 북쪽 절반에 지은 마을이 남쪽 계획을 끌고 가지 않는다.
+ * done 은 되돌리지 않고(역주행 금지), 확정은 종전대로 턴 끝의 finishAgentBlueprint 가 한다.
+ */
+function advanceAllPlanned(regions: readonly AffectedRegion[]): void {
+  const touched = (entry: BlueprintEntry): boolean =>
+    entry.status === "planned" && (regions.length === 0 || regions.some((region) => overlapArea(entry, region) > 0));
+  if (!entries.some(touched)) return;
+  entries = entries.map((entry) => (touched(entry) ? { ...entry, status: "building" } : entry));
   emit();
 }
 
