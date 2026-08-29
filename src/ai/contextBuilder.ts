@@ -208,7 +208,8 @@ function mapRegionSection(
   if (!result.ok || result.data === undefined) return empty;
   const headerParts: string[] = [];
   if (viewport && viewport.mapId === map.id) {
-    headerParts.push(formatViewportContextBlock(viewport, map.name, project));
+    // 시스템 프롬프트는 baseline으로 재조립될 수 있으므로, live draft 전용 통행 격자는 매 턴 사용자 블록에만 둔다.
+    headerParts.push(formatViewportContextBlock(viewport, map.name));
   }
   headerParts.push(
     // mapId 를 머리에 박는다 — "이/여기"가 어느 맵인지 모델이 되묻거나 새 맵을 만들지 않게.

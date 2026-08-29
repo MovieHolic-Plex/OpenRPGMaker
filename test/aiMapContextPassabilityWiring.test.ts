@@ -1,9 +1,7 @@
-// 통행 그리드가 **출하 경로**에 실제로 실리는지의 계약.
+// 통행 그리드가 **항상 최신인 턴 컨텍스트에만** 실리는지의 계약.
 //
-// 왜 별 파일인가: `formatViewportContextBlock` 은 project 를 optional 로 받는다. 인자를
-// 넘기지 않으면 그리드가 조용히 빠지고, 단위 테스트(aiMapContextPassability)는 인자를 직접
-// 넘기므로 그 누락을 못 본다. 실제로 모델이 보는 문자열은 (1) buildSystemPrompt 의 뷰포트
-// 머리 블록과 (2) AssistantSession 이 턴마다 붙이는 뷰포트 블록 두 곳이다 — 여기를 고정한다.
+// 시스템 프롬프트는 세션 baseline으로 재조립될 수 있으므로 그리드를 넣으면 현재 draft와
+// 모순된다. 모델이 배치에 쓰는 격자는 매 턴 live draft로 만드는 사용자 블록 하나뿐이어야 한다.
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
 import { AssistantSession } from "@/ai/assistantSession";
@@ -68,15 +66,14 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("통행 그리드는 출하되는 컨텍스트에 실린다", () => {
-  it("buildSystemPrompt 의 뷰포트 머리 블록이 물 칸을 막힘으로 표시한다", () => {
+describe("통행 그리드는 항상 최신 턴 컨텍스트에만 실린다", () => {
+  it("buildSystemPrompt 의 뷰포트 머리 블록에는 통행 그리드를 넣지 않는다", () => {
     const { project, viewport } = waterProject();
 
     const prompt = buildSystemPrompt(project, { viewport, currentMapId: viewport.mapId });
 
-    expect(prompt).toContain(VIEWPORT_PASSABILITY_ORIGIN_PREFIX);
-    expect(markAt(prompt, viewport, 3, 3)).toBe(VIEWPORT_PASSABILITY_MARK.blocked);
-    expect(markAt(prompt, viewport, 4, 4)).toBe(VIEWPORT_PASSABILITY_MARK.open);
+    expect(prompt).not.toContain(VIEWPORT_PASSABILITY_ORIGIN_PREFIX);
+    expect(prompt).toContain(`## 현재 맵 요약(${project.maps[viewport.mapId].name}`);
   });
 
   it("AssistantSession 이 턴마다 붙이는 뷰포트 블록도 그리드를 담는다", async () => {
