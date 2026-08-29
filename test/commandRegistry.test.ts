@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { listEditorCommands, listMapCommands, matchEditorCommands } from "@/editor/commandRegistry";
 import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests, getEditorUiMode } from "@/editor/editorUiMode";
@@ -8,12 +8,36 @@ import { getWorkspaceLayout, resetWorkspaceForTests } from "@/editor/workspace/w
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
+const WORKSPACE_KEY = "oprn:workspace:v1";
+const UI_MODE_KEY = "oprn:editor-ui-mode";
+
+class MemoryStorage implements Storage {
+  private readonly values = new Map<string, string>();
+  get length(): number { return this.values.size; }
+  clear(): void { this.values.clear(); }
+  getItem(key: string): string | null { return this.values.get(key) ?? null; }
+  key(index: number): string | null { return Array.from(this.values.keys())[index] ?? null; }
+  removeItem(key: string): void { this.values.delete(key); }
+  setItem(key: string, value: string): void { this.values.set(key, value); }
+}
+
+function installDockHosts(): void {
+  vi.stubGlobal("document", {
+    body: { classList: { add: vi.fn(), remove: vi.fn() }, dataset: {} },
+    querySelectorAll: vi.fn(() => [{}]),
+  });
+}
+
 describe("commandRegistry", () => {
   beforeEach(() => {
     store.replace(createBlankProject());
     resetEditorUiModeForTests("beginner");
     resetWorkspaceForTests();
     editorState.set({ tool: "paint", layer: "lower" });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("도구 명령 실행이 editorState를 바꾼다", () => {
@@ -60,6 +84,8 @@ describe("commandRegistry", () => {
   });
 
   it("패널 명령이 도크를 옮기고 닫는다", () => {
+    resetEditorUiModeForTests("standard");
+    installDockHosts();
     const commands = listEditorCommands();
     commands.find((c) => c.id === "workspace-preset-map")!.run();
     commands.find((c) => c.id === "workspace-panel-tiles-right")!.run();
@@ -68,6 +94,28 @@ describe("commandRegistry", () => {
 
     commands.find((c) => c.id === "workspace-panel-tiles")!.run();
     expect(getWorkspaceLayout().docks.right).not.toContain("tiles");
+  });
+
+  it("초보 모드의 고정 타일 패널 명령은 저장된 도크를 바꾸지 않는다", () => {
+    const storage = new MemoryStorage();
+    vi.stubGlobal("localStorage", storage);
+    installDockHosts();
+    resetEditorUiModeForTests("standard");
+    const commands = listEditorCommands();
+
+    storage.setItem(UI_MODE_KEY, "beginner");
+    storage.setItem(WORKSPACE_KEY, JSON.stringify({
+      presetId: "map",
+      docks: { left: ["tiles", "maps"], right: ["assistant"], bottom: [] },
+    }));
+    resetEditorUiModeForTests("beginner");
+    resetWorkspaceForTests();
+    commands.find((command) => command.id === "workspace-panel-tiles")!.run();
+    commands.find((command) => command.id === "workspace-panel-tiles-right")!.run();
+
+    const persisted = JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}");
+    expect(persisted.docks.left).toContain("tiles");
+    expect(persisted.docks.right).not.toContain("tiles");
   });
 
   // 예전 이름으로 검색하던 손을 막지 않는다.
@@ -107,6 +155,8 @@ describe("commandRegistry", () => {
   });
 
   it("워크스페이스 명령이 프리셋 3개 · 밀도 3개 · 패널마다 3개씩 정확히 한 번 등록된다", () => {
+    resetEditorUiModeForTests("standard");
+    installDockHosts();
     const ids = listEditorCommands().map((command) => command.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const preset of WORKSPACE_PRESETS) {
