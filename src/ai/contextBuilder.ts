@@ -11,6 +11,7 @@ import { structureKitRepeatable } from "@/editor/harnessSuggestion/structureKitM
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
+import { aiInstructionsSection } from "./projectInstructions";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
 import {
@@ -464,7 +465,15 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   }
   // 현재 맵 머리는 예산 밖 고정 버지 — 절단 뒤에 붙인다(#262).
   if (mapRegion.header) assembled += `\n\n${mapRegion.header}`;
-  return withCapabilityIndex(assembled);
+  // 감독 지침도 능력 색인과 같은 **예산 밖 고정분**이다. 예산 안에 두면 tokenBudget 보정이
+  // 예산을 6,000자까지 줄인 세션에서 슬라이싱에 통째로 잘려, 사용자가 박아 둔 규칙이 조용히
+  // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
+  return withProjectInstructions(withCapabilityIndex(assembled), project.aiInstructions);
+}
+
+function withProjectInstructions(assembled: string, instructions: string | undefined): string {
+  const section = aiInstructionsSection(instructions);
+  return section ? `${assembled}\n\n${section}` : assembled;
 }
 
 // 색인 삽입 지점: INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.

@@ -4,7 +4,14 @@
 // - 제안 수락은 세션 draft를 store에 반영 → projectLint 게이트 → undo 체크포인트.
 // - ChatGPT OAuth 토큰은 브라우저에 저장하지 않는다. API 키 폴백만 설정 localStorage를 쓴다.
 
-import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, peekPreviousProject, undoMapEdit } from "@/editor/mapEditHistory";
+import {
+  getMapEditHistoryMarker,
+  getMapEditHistoryState,
+  MAP_EDIT_HISTORY_EVENT,
+  peekPreviousProject,
+  revertToHistoryMarker,
+  undoMapEdit,
+} from "@/editor/mapEditHistory";
 import {
   clearAiApplyCompletion,
   publishAiApplyCompletion,
@@ -69,6 +76,11 @@ import {
   saveConversation,
   type ConversationRecord,
 } from "@/ai/conversationStore";
+import { serializeAuditTranscript } from "@/ai/conversationReplay";
+import { EMPTY_SESSION_USAGE } from "@/ai/sessionUsage";
+import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot } from "./aiContextMeter";
+import { openAiConversationHistoryModal } from "./aiConversationHistoryModal";
+import { openAiInstructionsModal } from "./aiInstructionsModal";
 import { recordAiActivity } from "@/ai/activityLog";
 import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
 import {
@@ -541,11 +553,34 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appendChangeCard(card);
   };
 
+  /**
+   * 다음 세션에 주입할 이전 대화 기록. 대화 복원·턴 되감기가 채우고, 세션이 만들어질 때
+   * 한 번 소비된다(새 대화는 비운다).
+   *
+   * 이것이 없으면 복원은 **화면만** 복원이다: 복원 경로는 dropSession 을 지나므로 다음 턴의
+   * 세션은 시스템 프롬프트 하나로 시작하고, 사용자에게는 대화가 이어진 것처럼 보이는데 모델은
+   * 직전에 무엇을 했는지 전혀 모른다.
+   */
+  let pendingPriorTranscript: string | null = null;
+
+  // 맥락 게이지는 컴포저가 만들어질 때(파일 아래쪽) 붙는다. 복원·턴 종료 같은 이른 경로도
+  // 갱신을 호출하므로 홀더 + 널 가드 한 겹을 둔다(선언 순서에 걸려 TDZ 로 죽지 않게).
+  let contextMeter: AiContextMeterHandle | null = null;
+  const refreshContextMeter = (): void => {
+    // 갱신은 DOM 노드를 만든다 — 문서가 없으면(테스트 해체 이후에 늦게 정착한 턴 등) 그릴
+    // 대상이 없다. 이 지점은 턴 정산(finally) 안에서도 불리므로, 여기서 던지면 표시가 턴을 죽인다.
+    if (typeof document === "undefined") return;
+    contextMeter?.refresh();
+  };
+
   const ensureSession = (): AssistantSession => {
     if (!controller.session) {
       backupProjectSnapshot();
+      const priorTranscript = pendingPriorTranscript;
+      pendingPriorTranscript = null;
       controller.session = new AssistantSession(store.getCurrent(), {
         config: loadAiConfig(),
+        ...(priorTranscript ? { priorTranscript } : {}),
         contextOptions: {
           currentMapId: editorState.get().currentMapId ?? undefined,
           getViewport: () => getEditorMapViewport(),
@@ -614,6 +649,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual"): void => {
     dropSession(controller);
     endAutonomousRun(); // 대화 전환 — 진행 중이던 자율 런 표면을 정리한다(스테일 상태 방지).
+    // 화면만 복원하면 사용자는 이어졌다고 믿고 모델은 아무것도 모른다 — 다음 세션에 기록 요약을
+    // 함께 밀어 넣어 "이어가기"를 모델 쪽에서도 참으로 만든다.
+    pendingPriorTranscript = serializeAuditTranscript(record.entries) || null;
     controller.auditHistory = [...record.entries];
     conversationId = record.id;
     setPendingProposalMessage(null);
@@ -632,6 +670,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
     syncConversationState();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
+    refreshContextMeter();
   };
 
   /**
@@ -656,6 +695,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     persistConversation();
     dropSession(controller);
     endAutonomousRun(); // 새 대화 — 이전 자율 런의 계획/예산/피드를 버린다.
+    // 새 대화는 정말로 빈 대화다 — 복원/되감기가 예약해 둔 기록 주입이 남아 있으면 버린다.
+    pendingPriorTranscript = null;
     controller.auditHistory = [];
     controller.statusTimeline = [];
     conversationId = genId("conv");
@@ -680,12 +721,165 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } else if (hadConversation) {
       toast("프로젝트가 바뀌어 새 대화를 시작합니다. 이전 대화는 그 프로젝트 기록에 저장됐습니다.", "ok");
     }
+    refreshContextMeter();
   };
 
-  // 수동 대화 복원(id 지정)은 호출 지점이 없다 — 감독 콘솔 전환에서 오버레이 시작 화면의
-  // '이전 대화 이어가기' 버튼과 대화 기록 검색 카드가 함께 사라졌기 때문. 부팅 시 자동 복원
-  // (restoreConversationRecord(..., "auto"))만 남아 있다. 기록 열기 UI를 다시 붙일 때
-  // loadConversation + restoreConversationRecord(record, "manual") 조합을 되살리면 된다.
+  // 수동 대화 복원의 호출 지점. 감독 콘솔 전환에서 오버레이 시작 화면의 '이전 대화 이어가기'
+  // 버튼과 기록 검색 카드가 함께 사라져 `loadConversation`/`searchConversations` 가 죽은 코드로
+  // 남아 있었다(저장 쪽은 계속 돌고 있었다). 모달이 그 조합을 되살린다.
+  const openConversationHistory = (): void => {
+    // 지금 대화를 먼저 보관한다 — 열기 직후 dropSession 이 세션을 버리므로 여기서 저장하지
+    // 않으면 방금까지의 턴이 어디에도 남지 않는다.
+    persistConversation();
+    openAiConversationHistoryModal({
+      scopeKey: conversationScope,
+      currentConversationId: conversationId,
+      onOpen: (record) => {
+        restoreConversationRecord(record, "manual");
+      },
+    });
+  };
+
+  // 수동 압축은 요약 LLM 콜 1회다 — 진행 중 턴과 겹치면 같은 messages 배열을 두 곳이 만진다.
+  let compacting = false;
+
+  /**
+   * 세션이 그 표면을 실제로 갖췄는지 보고 부른다.
+   *
+   * 왜 낙관적으로 부르지 않는가 (실측): 이 패널의 세션 슬롯에는 전체 AssistantSession 대신
+   * 부분 대역이 들어오는 경로가 있다(브리지 테스트가 sendUserMessage 만 가진 객체를 꽂는다).
+   * 게이지는 읽기 전용 표시인데, 없는 메서드를 부르면 그 예외가 턴 정산(finally)까지 타고
+   * 올라가 **턴 자체를 죽인다** — 표시가 실행을 죽이는 방향은 절대 허용하지 않는다.
+   */
+  const sessionMethod = (name: string): boolean =>
+    typeof (controller.session as unknown as Record<string, unknown> | null | undefined)?.[name] === "function";
+
+  const readContextSnapshot = (): AiContextSnapshot => {
+    const session = controller.session;
+    return {
+      usage: session && sessionMethod("getContextUsage") ? session.getContextUsage() : null,
+      totals: session && sessionMethod("getUsageTotals") ? session.getUsageTotals() : EMPTY_SESSION_USAGE,
+      summary: session && sessionMethod("getLatestCompactionSummary") ? session.getLatestCompactionSummary() : null,
+      canUndoCompaction: session !== null && sessionMethod("canUndoCompaction") && session.canUndoCompaction(),
+      busy: turnBusy || compacting,
+    };
+  };
+  const compactContextNow = async (): Promise<void> => {
+    const session = controller.session;
+    if (!session || !sessionMethod("compactNow")) {
+      toast("압축할 대화가 없습니다.", "info");
+      return;
+    }
+    if (turnBusy || compacting) {
+      toast("진행 중인 응답이 끝난 뒤 압축하세요", "info");
+      return;
+    }
+    compacting = true;
+    setStatus("맥락 압축 중…");
+    refreshContextMeter();
+    try {
+      const outcome = await session.compactNow((event) => {
+        if (event.type === "status") setStatus(event.text);
+      });
+      if (outcome.kind === "done") {
+        appendBubble(
+          "system",
+          `맥락을 압축했습니다: ${outcome.beforeTokens.toLocaleString()} → ${outcome.afterTokens.toLocaleString()} 토큰 (요약 1건으로 접음).`,
+        );
+        setStatus("압축 완료");
+        toast("맥락을 압축했습니다.", "ok");
+      } else {
+        appendBubble("system", `압축하지 않았습니다 — ${outcome.reason}`);
+        setStatus("압축 건너뜀");
+      }
+    } catch (error) {
+      appendBubble("system", `압축 실패: ${error instanceof Error ? error.message : String(error)}`);
+      setStatus("압축 실패");
+    } finally {
+      compacting = false;
+      refreshContextMeter();
+      refreshExportButton();
+    }
+  };
+
+  const undoContextCompaction = (): void => {
+    const session = controller.session;
+    if (!session || !sessionMethod("undoLastCompaction") || turnBusy || compacting) return;
+    if (!session.undoLastCompaction()) {
+      toast("되돌릴 압축이 없습니다.", "info");
+      return;
+    }
+    appendBubble("system", "직전 압축을 되돌렸습니다. 요약 전 원문 대화로 돌아갔습니다.");
+    setStatus("압축 되돌림");
+    refreshContextMeter();
+  };
+
+  /**
+   * 턴 되감기 — 이 지시 **직전** 상태로 대화와 프로젝트를 함께 되돌린다.
+   *
+   * 왜 둘을 같이 되돌리는가: 대화만 자르면 그 턴이 맵에 깔아 놓은 타일은 남는다. 사용자가 보는
+   * "여기서 다시" 는 "그 시도를 없던 일로" 이므로 편집 기록 마커(mapEditHistory)도 같은 지점으로
+   * 되감는다. 되돌릴 스냅샷이 없으면(그 턴이 아무것도 안 바꿨거나 링버퍼에서 밀려났으면)
+   * 대화만 자르고 그 사실을 말한다 — 조용히 반쪽만 되감는 것이 가장 나쁘다.
+   */
+  const rewindToTurn = (turn: {
+    readonly marker: number;
+    readonly entries: readonly AuditEntry[];
+    readonly text: string;
+  }): void => {
+    if (turnBusy || compacting) {
+      toast("진행 중인 응답이 끝난 뒤 되감으세요", "info");
+      return;
+    }
+    const reverted = revertToHistoryMarker(turn.marker);
+    dropSession(controller);
+    endAutonomousRun();
+    // 잘린 대화도 모델에게는 이어져야 한다 — 남긴 앞부분을 다음 세션에 다시 주입한다.
+    pendingPriorTranscript = serializeAuditTranscript(turn.entries) || null;
+    controller.auditHistory = [...turn.entries];
+    setPendingProposalMessage(null);
+    setLastAppliedProposalMessage(null);
+    proposalNoticeHost.replaceChildren();
+    chipsHost.replaceChildren();
+    log.replaceChildren();
+    startScreen = null;
+    closeToolActivity();
+    for (const entry of turn.entries) renderConversationEntry(entry);
+    appendBubble(
+      "system",
+      reverted
+        ? "이 지시 직전으로 되감았습니다. 그 뒤의 편집은 되돌렸고 지시는 입력창에 돌려놨습니다."
+        : "이 지시 직전으로 대화를 되감았습니다. 되돌릴 편집 기록은 남아 있지 않았습니다.",
+    );
+    setStatus("되감음");
+    input.value = turn.text;
+    input.focus?.();
+    syncGlassIdle();
+    refreshExportButton();
+    syncConversationState();
+    persistConversation();
+    refreshContextMeter();
+  };
+
+  /**
+   * 사용자 버블에 「여기서 다시」를 붙인다. 마커와 앞부분 기록은 **버블을 만드는 순간**(=이 턴이
+   * 아무것도 하기 전)에 캡처해야 한다 — 클릭 시점에 다시 읽으면 이미 이 턴의 결과가 섞여 있다.
+   */
+  const attachRewindAffordance = (bubble: HTMLElement, text: string): void => {
+    const marker = getMapEditHistoryMarker();
+    const entries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
+    const button = el("button", {
+      class: "ai-assistant-action ai-turn-rewind",
+      text: "여기서 다시",
+      attrs: {
+        type: "button",
+        title: "이 지시 이후의 대화와 편집을 되돌리고 지시를 입력창에 돌려놓습니다",
+      },
+      dataset: { testid: "ai-turn-rewind" },
+      on: { click: () => rewindToTurn({ marker, entries, text }) },
+    });
+    bubble.append(el("div", { class: "ai-retry-row ai-turn-rewind-row", children: [button] }));
+  };
 
   const renderQuickReplies = (assistantText: string): void => {
     chipsHost.replaceChildren();
@@ -965,7 +1159,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     chipsHost.replaceChildren();
     closeToolActivity();
     revealVolatileZone();
-    if (!opts?.replay) appendBubble("user", displayAs ?? trimmed);
+    if (!opts?.replay) attachRewindAffordance(appendBubble("user", displayAs ?? trimmed), trimmed);
     const session = ensureSession();
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
@@ -1007,6 +1201,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     revealVolatileZone();
     beginTurnProgress();
     refreshAbortButton();
+    refreshContextMeter(); // 진행 중에는 압축 버튼이 잠긴다(busy) — 그 상태를 즉시 반영한다.
     sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
     // 지난 턴의 "이번 턴에 올린 칸" 기록을 끊는다 — 아래 두 곳의 `!ownsTurn(true)` 반환은 정산을
@@ -1353,6 +1548,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (activeAbortController === abortController) activeAbortController = null;
       turnBusy = false;
       refreshAbortButton();
+      // 턴이 끝나면 맥락/사용량이 움직였다 — 게이지는 여기서만 갱신하면 항상 최신이다.
+      refreshContextMeter();
       // 자율 런 종료(정상 완료·중단·적용 실패 포함): 런 표면을 정리하고 자동 접기를 재개한다.
       // 다음 사용자 턴이 autonomous 로 시작되면 beginAutonomousRun 이 새 표면을 만든다.
       if (runOpts?.autonomous) endAutonomousRun();
@@ -2275,6 +2472,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       applyHistoryOpen(true);
     },
     openTools: () => toolsButton.click(),
+    openConversations: openConversationHistory,
+    openInstructions: () => {
+      openAiInstructionsModal({
+        // 진행 중인 세션의 시스템 프롬프트를 그 자리에서 갈아끼운다 — 저장했는데 다음 대화까지
+        // 기다려야 적용되는 지침은 "항상 주는 규칙" 이라고 할 수 없다.
+        onSaved: () => controller.session?.refreshProjectContext(store.getCurrent()),
+      });
+    },
+    compactContext: () => {
+      void compactContextNow();
+    },
     // 가르치기 진입점 — 사라진 스킬 서러에 업혀 있었지만 기능 자신은 살아 있다.
     startInterview: () => {
       const state = editorState.get();
@@ -2367,6 +2575,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   toolbar.inert = true;
 
+  // 맥락 게이지: 숫자는 전부 세션이 계산한다(자동 압축 임계와 동일 입력). 세션이 아직 없으면
+  // usage 는 null 이고 게이지는 "맥락 —" 으로 남는다.
+  contextMeter = createAiContextMeter({
+    read: readContextSnapshot,
+    onCompact: () => {
+      void compactContextNow();
+    },
+    onUndoCompaction: undoContextCompaction,
+    onToggle: () => {
+      openComposerPopover?.(composerPopoverKind?.() === "context" ? null : "context");
+      contextMeter?.refresh();
+    },
+  });
+
   // 하단 컴포저: 입력 + 고정 액션 행 한 줄(세로 레일 없음).
   // 추천 칩·액션 메뉴는 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
   const composerShell: ComposerElements = createComposerElements({
@@ -2378,6 +2600,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerChips,
     queueIndicator,
     statusGroup,
+    contextMeterButton: contextMeter.button,
+    contextMeterPopover: contextMeter.popover,
     onNewChat: () => startNewConversation("manual"),
     onPopoverChange: () => syncCommandBarClearance(),
   });

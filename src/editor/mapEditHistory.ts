@@ -305,6 +305,24 @@ export function peekPreviousProject(steps = 1): Project | null {
   return project;
 }
 
+/**
+ * marker(getMapEditHistoryMarker) 시점 **이후**에 기록된 편집을 전부 되돌린다.
+ * 되돌릴 것이 있었으면 true.
+ *
+ * 조수 턴 되감기의 프로젝트 쪽 절반이다: 턴 시작 직전에 marker 를 잡아 두고, 그 턴이 만든
+ * 스냅샷들(자동 적용은 recordProjectSnapshot 을 지난다)을 한 번에 되돌린다.
+ *
+ * 한계: MAX_HISTORY 포화로 marker 이후 엔트리 일부가 이미 shift 되어 나갔다면 남아 있는 것까지만
+ * 되돌아간다(스택 밖 상태는 어차피 복원 불가). truncateMapEditHistoryFromMarker 와 달리
+ * 엔트리를 버리기만 하는 게 아니라 프로젝트 상태를 실제로 그 시점으로 되돌린다.
+ */
+export function revertToHistoryMarker(marker: number): boolean {
+  if (!Number.isFinite(marker)) return false;
+  const index = undoStack.findIndex((entry) => entry.at >= marker);
+  if (index < 0) return false;
+  return revertToHistoryIndex(index);
+}
+
 export function revertToHistoryIndex(index: number): boolean {
   if (!Number.isInteger(index) || index < 0 || index >= undoStack.length) return false;
   const target = undoStack[index];

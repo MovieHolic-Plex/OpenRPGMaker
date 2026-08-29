@@ -44,13 +44,18 @@ import {
   buildCompactedMessages,
   buildSummarizationRequest,
   DEFAULT_COMPACTION_SETTINGS,
+  MANUAL_COMPACTION_SETTINGS,
+  describeContextUsage,
   estimateContextTokens,
   findCompactionCutPoint,
   findPreviousSummary,
   resolveContextWindow,
   resolveThresholdContextTokens,
   shouldCompact,
+  type ContextUsage,
 } from "./contextCompaction";
+import { restoredTranscriptMessage } from "./conversationReplay";
+import { addSessionUsage, EMPTY_SESSION_USAGE, type SessionUsageTotals } from "./sessionUsage";
 import {
   calibratedBudgetChars,
   estimatePromptChars,
@@ -661,7 +666,18 @@ export interface AssistantSessionOptions {
    * 시스템 프롬프트에는 들어가지 않는다 — 그래서 ContextOptions 가 아니라 여기 있다.
    */
   getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
+  /**
+   * 복원/되감기로 들어온 세션에 주입할 이전 대화 기록(conversationReplay.serializeAuditTranscript).
+   * 시스템 프롬프트 바로 뒤 role "user" 한 덩어리로 들어간다 — 화면만 복원하고 모델은 아무것도
+   * 기억하지 못하던 상태를 메꾸는 유일한 입력이다.
+   */
+  priorTranscript?: string;
 }
+
+/** 수동 압축(compactNow) 결과. 건너뜀은 사유를 사람 문장으로 돌려준다(UI 가 그대로 보여준다). */
+export type CompactionOutcome =
+  | { readonly kind: "done"; readonly beforeTokens: number; readonly afterTokens: number; readonly summary: string }
+  | { readonly kind: "skipped"; readonly reason: string };
 
 export class AssistantSession {
   private config: AiConfig;
@@ -746,6 +762,21 @@ export class AssistantSession {
    * 소모하지 않고, 반복 실패만 회로 차단기가 막는다 — circuit-breaker.js).
    */
   private compactionFailedThisTurn = false;
+  /**
+   * 직전 압축을 되돌리기 위한 압축 **전** 메시지 사본과 그때의 계량.
+   *
+   * 압축은 앞부분 원문을 요약 1건으로 바꿔치우는 비가역 연산이다 — 요약이 중요한 사실을
+   * 빠뜨렸다는 것은 대개 다음 턴이 헛짓을 한 뒤에야 드러나고, 그때는 원문이 이미 없다.
+   * 한 단계짜리 사본을 들고 있는 값이 그 손실보다 싸다(사본은 다음 압축 때 교체된다).
+   */
+  private lastCompaction: {
+    readonly messagesBefore: readonly ChatMessage[];
+    readonly summary: string;
+    readonly beforeTokens: number;
+    readonly afterTokens: number;
+  } | null = null;
+  /** 세션이 태운 LLM 호출/토큰 집계(sessionUsage). 모든 chat 호출이 this.chat 한 곳을 지난다. */
+  private usageTotals: SessionUsageTotals = EMPTY_SESSION_USAGE;
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
   private workPlan: WorkPlan | null = null;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
@@ -773,7 +804,14 @@ export class AssistantSession {
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
-    this.chat = options.chat ?? chatCompletion;
+    // 계량은 로그 파싱이 아니라 호출 지점에서 센다(sessionUsage.ts). 본문·플래너·검수·요약 콜이
+    // 모두 이 한 겹을 지나므로, 여기서 세면 어떤 경로도 빠지지 않는다.
+    const rawChat = options.chat ?? chatCompletion;
+    this.chat = async (config, req) => {
+      const result = await rawChat(config, req);
+      this.usageTotals = addSessionUsage(this.usageTotals, config.model, result.usage);
+      return result;
+    };
     this.peekPendingUserMessage = options.peekPendingUserMessage;
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
@@ -788,10 +826,77 @@ export class AssistantSession {
       role: "system",
       content: buildSystemPrompt(project, { ...this.contextOptions, budgetChars: this.appliedBudgetChars }),
     });
+    // 복원/되감기로 만든 세션: 이전 대화를 시스템 프롬프트 바로 뒤에 한 덩어리로 꽂는다.
+    const prior = options.priorTranscript?.trim();
+    if (prior) {
+      this.messages.push(restoredTranscriptMessage(prior));
+      this.pushAudit({ kind: "status", text: `이전 대화 기록 주입: ${prior.length}자` });
+    }
   }
 
   getMessages(): readonly ChatMessage[] {
     return this.messages;
+  }
+
+  /** 세션이 태운 LLM 호출/토큰 집계. */
+  getUsageTotals(): SessionUsageTotals {
+    return this.usageTotals;
+  }
+
+  /**
+   * 지금 대화가 모델 창의 어디쯤인가 — 자동 압축 임계와 **같은 입력**으로 계산한다.
+   * 게이지가 다른 식으로 세면 표시와 실제 압축 시점이 어긋난다.
+   */
+  getContextUsage(): ContextUsage {
+    return describeContextUsage({
+      messages: this.messages,
+      model: this.config.model,
+      usageTokens: this.lastPromptTokens,
+    });
+  }
+
+  /** 대화에 살아 있는 최신 압축 요약(없으면 null). UI 가 "무엇이 잊혔는지" 를 보여주는 원문. */
+  getLatestCompactionSummary(): string | null {
+    return findPreviousSummary(this.messages);
+  }
+
+  /** 직전 압축을 되돌릴 수 있는가(한 단계). */
+  canUndoCompaction(): boolean {
+    return this.lastCompaction !== null;
+  }
+
+  /**
+   * 직전 압축을 되돌린다 — 요약으로 갈아치우기 **전** 메시지 배열로 복귀한다.
+   * 되돌릴 압축이 없으면 false.
+   */
+  undoLastCompaction(): boolean {
+    const snapshot = this.lastCompaction;
+    if (!snapshot) return false;
+    this.lastCompaction = null;
+    // messages 는 세션이 계속 참조하는 배열이다 — 재할당 대신 제자리 교체로 동일성을 유지한다.
+    this.messages.splice(0, this.messages.length, ...snapshot.messagesBefore);
+    this.pushAudit({
+      kind: "status",
+      text: `압축 되돌림: ${snapshot.afterTokens} -> ${snapshot.beforeTokens} 토큰 (요약 1건 폐기)`,
+    });
+    return true;
+  }
+
+  /**
+   * 사용자가 지금 누른 수동 압축. 임계와 무관하게 돌고, 이번 턴의 요약 실패 회로차단기
+   * (compactionFailedThisTurn)도 무시한다 — 사람이 명시로 요청한 것이므로 한 번은 시도한다.
+   */
+  async compactNow(onEvent?: (event: SessionEvent) => void, signal?: AbortSignal): Promise<CompactionOutcome> {
+    return this.runCompaction(onEvent ?? (() => undefined), signal, true);
+  }
+
+  /**
+   * 감독 지침이 바뀌었을 때처럼 프로젝트 쪽 컨텍스트만 갈아끼운다. 대화(messages 꼬리·감사
+   * 로그)는 건드리지 않고 시스템 프롬프트만 최신 프로젝트로 재조립한다.
+   */
+  refreshProjectContext(project: Project): void {
+    this.baselineProject = structuredClone(project);
+    this.rebuildSystemPrompt();
   }
 
   // 설정 폼에서 저장한 새 설정(API 키/모델 등)을 진행 중인 세션에도 반영한다.
@@ -1903,13 +2008,32 @@ export class AssistantSession {
    * 빈 응답이면 대화를 손대지 않고 조용히 돌아가고, 요청은 기존 문자 클램프가 감당한다.
    */
   private async maybeCompactConversation(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
-    if (this.compactionFailedThisTurn) return;
+    await this.runCompaction(onEvent, signal, false);
+  }
+
+  /**
+   * 압축 본체. force=false 는 턴 루프의 자동 경로(임계 + 턴당 1회 회로차단기), force=true 는
+   * 사용자가 누른 수동 경로(임계·회로차단기 무시, 더 좁은 잔존 창)다.
+   */
+  private async runCompaction(
+    onEvent: (event: SessionEvent) => void,
+    signal: AbortSignal | undefined,
+    force: boolean,
+  ): Promise<CompactionOutcome> {
+    if (!force && this.compactionFailedThisTurn) {
+      return { kind: "skipped", reason: "이번 턴에 요약이 이미 실패했습니다" };
+    }
+    const settings = force ? MANUAL_COMPACTION_SETTINGS : DEFAULT_COMPACTION_SETTINGS;
     const estimate = estimateContextTokens(this.messages);
     const contextTokens = resolveThresholdContextTokens(this.lastPromptTokens, estimate);
-    if (!shouldCompact(contextTokens, resolveContextWindow(this.config.model), DEFAULT_COMPACTION_SETTINGS)) return;
-    const cutPoint = findCompactionCutPoint(this.messages, DEFAULT_COMPACTION_SETTINGS.keepRecentTokens);
+    if (!force && !shouldCompact(contextTokens, resolveContextWindow(this.config.model), settings)) {
+      return { kind: "skipped", reason: "아직 자동 압축 임계에 닿지 않았습니다" };
+    }
+    const cutPoint = findCompactionCutPoint(this.messages, settings.keepRecentTokens);
     // 요약할 앞부분이 없다(시스템 프롬프트 직후가 곧 잔존 창) — LLM 을 부를 이유가 없다.
-    if (cutPoint.firstKeptIndex <= 1) return;
+    if (cutPoint.firstKeptIndex <= 1) {
+      return { kind: "skipped", reason: "요약할 앞부분이 없습니다(대화가 짧습니다)" };
+    }
 
     onEvent({ type: "status", text: "대화가 길어져 이전 맥락을 요약 중…" });
     let summary: string | null = null;
@@ -1929,24 +2053,27 @@ export class AssistantSession {
         : cause instanceof Error ? cause.message : String(cause);
       this.compactionFailedThisTurn = true;
       this.pushAudit({ kind: "status", text: `대화 압축 건너뜀: 요약 실패 — ${reason}` });
-      return;
+      return { kind: "skipped", reason: `요약 실패 — ${reason}` };
     }
     if (signal?.aborted) {
       this.compactionFailedThisTurn = true;
       this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 사용자가 중단했습니다" });
-      return;
+      return { kind: "skipped", reason: "사용자가 중단했습니다" };
     }
     if (summary === null) {
       this.compactionFailedThisTurn = true;
       this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 요약 응답이 비어 있습니다" });
-      return;
+      return { kind: "skipped", reason: "요약 응답이 비어 있습니다" };
     }
 
+    const before = this.messages.map((message) => message);
     const compacted = buildCompactedMessages({ messages: this.messages, cutPoint, summary });
     const compactedTokens = estimateContextTokens(compacted);
     // messages 는 세션이 계속 참조하는 배열이다 — 재할당 대신 제자리 교체로 동일성을 유지한다.
     this.messages.splice(0, this.messages.length, ...compacted);
+    this.lastCompaction = { messagesBefore: before, summary, beforeTokens: contextTokens, afterTokens: compactedTokens };
     this.pushAudit({ kind: "status", text: `대화 압축: ${contextTokens} -> ${compactedTokens} 토큰 (요약 1건)` });
+    return { kind: "done", beforeTokens: contextTokens, afterTokens: compactedTokens, summary };
   }
 
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {

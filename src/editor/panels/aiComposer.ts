@@ -21,7 +21,7 @@
 import { el } from "@/util/dom";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
-export type ComposerPopover = "suggest" | "menu";
+export type ComposerPopover = "suggest" | "menu" | "context";
 
 export interface ComposerElements {
   /** 패널에 마운트되는 바 루트(기존 `.ai-command-bar` testid 유지). */
@@ -48,6 +48,9 @@ export interface ComposerOptions {
   readonly composerChips: HTMLElement;
   readonly queueIndicator: HTMLElement;
   readonly statusGroup: HTMLElement;
+  /** 맥락 게이지 버튼 + 그 팝오버(aiContextMeter). 둘 다 있어야 슬롯이 붙는다. */
+  readonly contextMeterButton?: HTMLButtonElement;
+  readonly contextMeterPopover?: HTMLElement;
   readonly onNewChat: () => void;
   readonly onPopoverChange?: (kind: ComposerPopover | null) => void;
 }
@@ -103,7 +106,16 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         class: "ai-composer-actions-lead",
         // 접기(#5efa6611) 와 새 대화(#198) 는 둘 다 이 고정 행의 왼쪽에 산다 — 한쪽이 다른 쪽을
         // 밀어내면 도크별 접기나 새 대화 진입점이 사라진다.
-        children: [options.collapseButton, newChatButton, commandMenuToggle, options.contextChips, options.queueIndicator],
+        // 맥락 게이지는 ☰ 바로 뒤 = 스크롤되는 칩들 **앞**이다. 칩 뒤에 두면 컨텍스트 꼬리표가
+        // 길어진 좁은 도크에서 가로 스크롤 밖으로 밀려 사실상 사라진다(lead 는 overflow-x:auto).
+        children: [
+          options.collapseButton,
+          newChatButton,
+          commandMenuToggle,
+          ...(options.contextMeterButton ? [options.contextMeterButton] : []),
+          options.contextChips,
+          options.queueIndicator,
+        ],
       }),
       el("div", {
         class: "ai-composer-actions-trail",
@@ -122,7 +134,12 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     class: "ai-command-bar",
     dataset: { testid: "ai-command-bar" },
     // 팝오버는 셸의 형제로 두고 absolute 로 띄운다 — 흐름 밖.
-    children: [suggestPopover, commandMenu, composer],
+    children: [
+      suggestPopover,
+      commandMenu,
+      ...(options.contextMeterPopover ? [options.contextMeterPopover] : []),
+      composer,
+    ],
   });
 
   // 키 힌트는 입력 중에만 필요한 안내다. 상시 노출은 액션 행을 영구 점유했다(실측 160x15).
@@ -133,22 +150,31 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   options.input.addEventListener("focus", onInputFocus);
   options.input.addEventListener("blur", onInputBlur);
 
-  const popoverOf = (kind: ComposerPopover): HTMLElement =>
-    kind === "suggest" ? suggestPopover : commandMenu;
-  const toggleOf = (kind: ComposerPopover): HTMLElement | null =>
-    kind === "suggest" ? null : commandMenuToggle;
+  // 맥락 팝오버는 호출자가 안 주면 없는 종류다 — 없는 종류를 열어도 조용히 무시된다.
+  const popoverOf = (kind: ComposerPopover): HTMLElement | null => {
+    if (kind === "suggest") return suggestPopover;
+    if (kind === "menu") return commandMenu;
+    return options.contextMeterPopover ?? null;
+  };
+  const toggleOf = (kind: ComposerPopover): HTMLElement | null => {
+    if (kind === "menu") return commandMenuToggle;
+    if (kind === "context") return options.contextMeterButton ?? null;
+    return null;
+  };
 
   const openPopover = (kind: ComposerPopover | null): void => {
     if (openState === kind) return;
-    openState = kind;
-    for (const candidate of ["suggest", "menu"] as const) {
-      const open = candidate === kind;
-      popoverOf(candidate).hidden = !open;
+    const resolved = kind !== null && popoverOf(kind) === null ? null : kind;
+    openState = resolved;
+    for (const candidate of ["suggest", "menu", "context"] as const) {
+      const open = candidate === resolved;
+      const popover = popoverOf(candidate);
+      if (popover) popover.hidden = !open;
       toggleOf(candidate)?.setAttribute("aria-expanded", String(open));
       toggleOf(candidate)?.classList.toggle("is-active", open);
     }
-    commandBar.classList.toggle("has-popover", kind !== null);
-    options.onPopoverChange?.(kind);
+    commandBar.classList.toggle("has-popover", resolved !== null);
+    options.onPopoverChange?.(resolved);
   };
 
   // 바깥 클릭·Escape 로 닫힌다 — 이전엔 토글 재클릭만이 유일한 닫기 경로여서
@@ -172,7 +198,9 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   const measuredTop = (): number => {
     const barTop = commandBar.getBoundingClientRect().top;
     if (openState === null) return barTop;
-    const popoverRect = popoverOf(openState).getBoundingClientRect();
+    const popover = popoverOf(openState);
+    if (!popover) return barTop;
+    const popoverRect = popover.getBoundingClientRect();
     return popoverRect.height > 0 ? Math.min(barTop, popoverRect.top) : barTop;
   };
 

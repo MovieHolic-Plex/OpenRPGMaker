@@ -485,6 +485,9 @@ export interface Project {
   villageInfoDocuments?: VillageInfoDocument[];
   // AI 리치 설명 문서(채팅 present_doc 툴 산출물). optional이라 마이그레이션 불필요.
   aiDocuments?: AiDocument[];
+  // 조수에게 항상 주는 사용자 고정 지침(ai/projectInstructions.ts). 시스템 프롬프트의 예산 밖
+  // 고정분으로 들어가 압축·새 대화·복원에도 살아남는다. optional이라 마이그레이션 불필요.
+  aiInstructions?: string;
   world?: ProjectWorld;
   worldGraph?: WorldGraph;
   // 런타임 진영 레지스트리 + 태도 행렬. world(세계관 lore 그래프)와 달리 전투 런타임이 직접 읽는다.
