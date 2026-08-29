@@ -137,6 +137,43 @@ describe("NPC-player character collision", () => {
     expect(mover.activeMove).toBeNull();
   });
 
+  it("blocks an NPC from stepping into any cell of a 2x3 solid event's footprint, not just its anchor", () => {
+    // 앵커 (6,4) 의 2x3(가로2·세로3) 발자국은 footprintBounds 로 x 6..7 / y 2..4 를 덮는다.
+    // NPC 는 (5,2) 에서 오른쪽으로 한 칸 움직여 (6,2) 로 가려 한다 — 이건 발자국의 좌상단 칸이고 앵커가 아니다.
+    // 폭·높이가 다른 발자국을 쓰는 이유: footprintContains 의 인자가 뒤바뀌면(주체↔조사점)
+    // 대칭이 아니라 (top = y - (height-1)) 편향 때문에 이 사례에서 결과가 갈린다.
+    const scene = twoNpcMovementScene(
+      {
+        movement: {
+          type: "custom",
+          speed: 6,
+          frequency: 6,
+          route: { moves: [{ kind: "move", dir: "right" }], repeat: false },
+        },
+      },
+      { id: "blocker", x: 6, y: 4, overlapForbidden: true, priority: "same", footprint: { width: 2, height: 3 } },
+      { x: 5, y: 2 }
+    );
+    registerPageMoveRoutes(scene);
+    const runtimeScene = {
+      ...scene,
+      tileX: 9,
+      tileY: 9,
+      moving: false,
+      movingTo: { x: 9, y: 9 },
+      eventSprites: new Map(),
+      runtimeDom: { upsertEventMarker: () => undefined },
+      runEvent: async () => undefined,
+    };
+    const mover = scene.autonomousNPCs.get("npc");
+    if (!mover) throw new Error("missing mover");
+
+    updateAutonomousNPCs(runtimeScene, mover.moveIntervalMs);
+
+    expect(scene.eventPositions.npc).toEqual({ x: 5, y: 2 });
+    expect(mover.activeMove).toBeNull();
+  });
+
   it("isPlayerOccupyingTile covers committed and mid-move destination tiles", () => {
     expect(isPlayerOccupyingTile({ tileX: 4, tileY: 5 }, 4, 5)).toBe(true);
     expect(isPlayerOccupyingTile({ tileX: 4, tileY: 5, moving: false, movingTo: { x: 5, y: 5 } }, 5, 5)).toBe(false);
@@ -189,15 +226,23 @@ describe("NPC-player character collision", () => {
 
 function twoNpcMovementScene(
   walkerPage: Partial<EventPage>,
-  blocker: { id: string; x: number; y: number; overlapForbidden: boolean; priority: EventPage["priority"] }
+  blocker: {
+    id: string;
+    x: number;
+    y: number;
+    overlapForbidden: boolean;
+    priority: EventPage["priority"];
+    footprint?: { width: number; height: number };
+  },
+  npcStart: { x: number; y: number } = { x: 1, y: 1 }
 ): Parameters<typeof registerPageMoveRoutes>[0] {
   const project = createBlankProject();
   const map = project.maps[project.startMapId]!;
   map.events = [
     {
       id: "npc",
-      x: 1,
-      y: 1,
+      x: npcStart.x,
+      y: npcStart.y,
       trigger: { kind: "action" },
       commands: [],
       pages: [pageWith(walkerPage)],
@@ -213,6 +258,7 @@ function twoNpcMovementScene(
           id: `${blocker.id}_page`,
           priority: blocker.priority,
           overlapForbidden: blocker.overlapForbidden,
+          footprint: blocker.footprint,
           movement: { type: "fixed", speed: 3, frequency: 3 },
         }),
       ],

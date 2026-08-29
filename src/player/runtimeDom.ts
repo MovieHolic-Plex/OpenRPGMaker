@@ -78,6 +78,9 @@ export interface RuntimeStateSnapshot {
   readonly camera?: PlaySession["camera"];
   readonly lighting?: PlaySession["lighting"];
   readonly actorEquipment: PlaySession["actorEquipment"];
+  readonly shopLoyaltySpend?: PlaySession["shopLoyaltySpend"];
+  readonly shopTradeCounts?: PlaySession["shopTradeCounts"];
+  readonly shopMileagePoints?: PlaySession["shopMileagePoints"];
   readonly actorRows: PlaySession["actorRows"];
   readonly classOverrides: PlaySession["classOverrides"];
   readonly audio: AudioCommandState;

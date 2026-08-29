@@ -497,7 +497,7 @@
 
   .database-modal-body .db-troops-classic-workbench input,
   .database-modal-body .db-troops-classic-workbench select {
-    background: var(--bg-raised);
+    background-color: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);

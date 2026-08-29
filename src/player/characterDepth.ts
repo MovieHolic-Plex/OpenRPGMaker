@@ -1,6 +1,8 @@
 import { TILE_SIZE } from "@/assets/bundled";
 import type { EventPriority, TilesetDef } from "@/project/types";
 import { passageMarkForTile } from "@/project/tilesetPassage";
+import { footprintBounds } from "@/project/footprint";
+import type { CharacterFootprint } from "@/project/types";
 
 const PRIORITY_DEPTH_BASE: Record<EventPriority, number> = {
   below: 100_000,
@@ -31,6 +33,26 @@ export function characterSpriteX(tileX: number): number {
 
 export function characterSpriteY(tileY: number): number {
   return tileY * TILE_SIZE + TILE_SIZE;
+}
+
+/**
+ * 발자국 가로 중앙의 월드 X. 스프라이트 원점이 (0.5, 1) 이라 이 값이 곧 중심선이다.
+ * 1x1·홀수 폭이면 characterSpriteX 와 같고, 짝수 폭이면 두 칸 경계에 온다.
+ *
+ * Y 는 별도 함수가 필요 없다 — 발자국 하단은 언제나 y 이므로 characterSpriteY 가 그대로 맞는다.
+ *
+ * ⚠️ 적용 범위는 **최초 렌더(`renderEvents`) 하나뿐이다.** 이벤트 스프라이트를 *다시*
+ * 놓는 경로들은 아직 `characterSpriteX` 를 쓴다 — `playSceneAutonomous.ts` 의
+ * `updateAutonomousNPCs`·`updateChaseNpc`·`updateActiveNpcMove`, 그리고
+ * `playSceneActionCombat.ts` 의 `applyKnockback`·`startWindup`·`stepDash`.
+ * 그래서 폭이 2 이상인 이벤트가 움직이면 발자국 중앙에서 타일 중앙으로 튄다.
+ *
+ * 의도된 경계이지 누락이 아니다. `EventPage.footprint` 를 쓰는 편집 UI 가 아직 없어
+ * (2차 계획) 움직이는 다중 타일 이벤트를 저작할 방법 자체가 없고, 이 경로들은 게임에서
+ * 가장 타이밍에 민감한 코드다. 2차에서 `canMoveFootprint` 전환과 함께 옮긴다.
+ */
+export function footprintSpriteX(tileX: number, footprint: CharacterFootprint): number {
+  return (footprintBounds(tileX, 0, footprint).left + footprint.width / 2) * TILE_SIZE;
 }
 
 export function characterDepth(priority: EventPriority, worldY: number): number {

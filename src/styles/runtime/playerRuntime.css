@@ -3,6 +3,7 @@
 @import "./battle.css";
 @import "./battle-skins/index.css";
 @import "./commerce.css";
+@import "./shop.css";
 @import "./title.css";
 @import "../database/tabs-b-title-screen.css";
 @import "../database/tabs-b-status-menu-base.css";

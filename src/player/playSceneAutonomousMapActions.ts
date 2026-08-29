@@ -1,4 +1,5 @@
 import { canMove, inBounds } from "@/project/collision";
+import { footprintContains } from "@/project/footprint";
 import { store } from "@/project/store";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
 import type { MoveCommand } from "@/project/types";
@@ -70,8 +71,7 @@ function isCharacterBlockedTile(request: NpcMoveCollision, x: number, y: number)
     request.scene.eventPositions
   ).some(
     (view) =>
-      view.x === x &&
-      view.y === y &&
+      footprintContains(view.x, view.y, view.footprint, x, y) &&
       view.event.id !== request.eventId &&
       view.priority === "same" &&
       view.overlapForbidden

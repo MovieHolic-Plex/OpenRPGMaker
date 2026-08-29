@@ -11,7 +11,7 @@
   text-transform: uppercase;
 }
 .rm-import-row select {
-  background: var(--bg-panel-2);
+  background-color: var(--bg-panel-2);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);

@@ -104,7 +104,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="number"],
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="search"],
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select {
-  background: var(--db-studio-surface, var(--db-studio-surface));
+  background-color: var(--db-studio-surface, var(--db-studio-surface));
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 7px;
   box-sizing: border-box;

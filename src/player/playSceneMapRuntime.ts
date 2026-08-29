@@ -25,8 +25,8 @@ import { runCommands } from "@/player/playSceneInterpreter";
 import { startMapBgm } from "@/player/mapBgm";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import {
-  characterSpriteX,
   characterSpriteY,
+  footprintSpriteX,
   isAlwaysAboveCharacterUpperTile,
   mapUpperTileDepth,
   placeCharacterSprite,
@@ -62,6 +62,7 @@ interface RenderedEventSprite extends RenderedTileImage {
   play(key: string): this;
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
+  setScale(value: number): void;
   destroy(): void;
 }
 
@@ -342,12 +343,13 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
         ? overrideFrame
         : eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
     const marker = scene.add.sprite(
-      characterSpriteX(view.x),
+      footprintSpriteX(view.x, view.footprint),
       characterSpriteY(view.y),
       spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
       frame
     );
     placeCharacterSprite(marker, view.priority);
+    marker.setScale(view.scale);
     scene.eventSprites.set(event.id, marker);
   }
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
@@ -442,6 +444,11 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     classOverrides: scene.session.classOverrides,
     audio: scene.session.audio,
     pictures: scene.session.pictures,
+    // 상점 경제 상태. 세이브에는 진작 들어 있었지만(saveSlots.ts) 런타임 상태 덤프에는
+    // 없어서 마일리지·누적 지출이 실제로 쌓이는지 밖에서 확인할 방법이 없었다.
+    shopLoyaltySpend: scene.session.shopLoyaltySpend,
+    shopTradeCounts: scene.session.shopTradeCounts,
+    shopMileagePoints: scene.session.shopMileagePoints,
     m2Runtime: scene.session.m2Runtime,
     events,
     movers: runtimeMoverSnapshots(scene.autonomousNPCs),

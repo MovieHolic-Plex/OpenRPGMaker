@@ -1,0 +1,24 @@
+{
+  "enemies": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 29,
+    "emptyState": false,
+    "deadSpace": 0.335,
+    "detailDead": 0.42,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 782,
+    "violations": []
+  }
+}

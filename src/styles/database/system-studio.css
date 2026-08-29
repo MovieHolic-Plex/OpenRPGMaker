@@ -16,6 +16,18 @@
   --studio-accent: var(--db-studio-accent);
   --studio-accent-soft: var(--db-studio-accent-soft);
   --studio-accent-border: var(--db-studio-accent-border);
+  /* b8f78991 이 violet/surface-2/surface-3 계열을 accent/inset/well 로 개명하면서
+     사용처 27곳을 함께 고치지 않았다. 정의 없는 var() 는 계산값 무효(IACVT)라
+     선언이 통째로 죽는데, 그중 13곳이 !important 와 결합돼 있어 뒤따르는 어떤
+     규칙으로도 복구되지 않았다 — 배경이 지워진 채로 출하됐다.
+     전부 @media (min-width:1100px) 안이라 데스크톱 폭에서만 발현한다.
+     리터럴 대신 형제 별칭과 같은 --db-studio-* 프리미티브로 되돌린다(래칫 영향 0). */
+  --studio-surface-2: var(--db-studio-inset);
+  --studio-surface-3: var(--db-studio-surface);
+  --studio-violet: var(--db-studio-accent);
+  --studio-violet-soft: var(--db-studio-accent-soft);
+  --studio-mint: var(--db-studio-success);
+  --studio-amber: var(--db-studio-warning);
 }
 
 .database-modal-backdrop:has(.db-system-studio) .database-modal-window {
@@ -85,10 +97,13 @@
   margin: 0 auto !important;
 }
 
-.database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab::before {
+/* 아이콘은 이 시트가 배분하지 않는다 — `databaseTabIcons.ts` 가 심은 .db-tab-icon 이다.
+   전에는 여기서 ::before 를 `content: attr(data-short)` 로 잡고 1100px 이상에서
+   `content: none !important` 로 껐다. index.css 가 sidebar.css(42행)를 이 시트(50행)보다
+   먼저 로드하므로 이쪽이 이겼고, 그래서 **시스템 탭을 열면 넓은 창에서 레일 아이콘 29개가
+   전부 사라졌다**. 레일 아이콘은 어떤 탭에서도 꺼지지 않아야 한다. */
+.database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab > .db-tab-icon {
   color: var(--db-studio-text-2);
-  content: attr(data-short);
-  font: 700 16px/1 "Malgun Gothic", system-ui, sans-serif;
 }
 
 @media (min-width: 1100px) {
@@ -100,10 +115,6 @@
     padding: 0 10px !important;
     width: 100% !important;
   }
-  .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab::before {
-    content: none !important;
-    display: none !important;
-  }
 }
 
 .database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab.active {
@@ -112,7 +123,7 @@
   color: var(--db-studio-accent) !important;
 }
 
-.database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab.active::before {
+.database-modal-backdrop:has(.db-system-studio) .db-tabs > .db-tab.active > .db-tab-icon {
   color: var(--db-studio-accent) !important;
 }
 
@@ -613,7 +624,7 @@
   }
 
   .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea, code) {
-    background: var(--studio-surface-2) !important;
+    background-color: var(--studio-surface-2) !important;
     border-color: var(--studio-line) !important;
     color: var(--studio-text) !important;
   }
@@ -1301,7 +1312,7 @@
 }
 
 .database-modal-backdrop:has(.db-system-studio) .db-system-section :is(input, select, textarea, code) {
-  background: var(--db-studio-surface) !important;
+  background-color: var(--db-studio-surface) !important;
   border-color: var(--db-studio-border-default) !important;
   color: var(--db-studio-text-1) !important;
 }

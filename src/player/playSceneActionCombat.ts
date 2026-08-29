@@ -33,6 +33,9 @@ import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { nextSessionRandom } from "@/project/session";
+// 데미지 숫자·파티클·텔레그래프·스윙 아크는 타일 중앙이 맞다. 다만 적 스프라이트를 다시
+// 놓는 applyKnockback·startWindup·stepDash 는 폭 2 이상이면 발자국 중앙(footprintSpriteX)
+// 이어야 한다 — 2차에서 옮긴다. characterDepth.ts 의 footprintSpriteX 주석 참고.
 import { characterSpriteX, characterSpriteY, MAP_UPPER_LAYER_DEPTH } from "@/player/characterDepth";
 import { TILE_SIZE } from "@/assets/bundled";
 import { inBounds, isPassable } from "@/project/collision";

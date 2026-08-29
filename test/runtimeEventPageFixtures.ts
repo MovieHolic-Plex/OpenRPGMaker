@@ -27,6 +27,7 @@ export type MockSprite = MockTileImage & {
   setFrame(frame: string | number): void;
   setAlpha(alpha: number): void;
   setTexture(texture: string, frame?: string | number): void;
+  setScale(value: number): void;
   destroy(): void;
 };
 
@@ -118,6 +119,7 @@ export function mockSprite(x = 0, y = 0, textureKey = "tex_easyrpg_charset_peopl
       sprite.texture.key = texture;
       if (frame !== undefined) sprite.frame = frame;
     },
+    setScale: () => undefined,
     destroy: () => undefined,
   };
   return sprite;

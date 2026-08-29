@@ -5,7 +5,76 @@
    스코프 규칙은 light-theme.css 와 동일 — 모든 규칙이 `.database-modal-backdrop`
    하위에만 적용되고, 팔레트는 light-theme.css 가 정의한 --db-light-* 변수만
    소비한다(:root / 전역 토큰 재정의 금지). 앱 셸은 다크 유지.
+
+   추가(2026-08): 파일 앞머리에 **네이티브 폼 컨트롤 기준선**이 붙었다. 아래 첫
+   섹션이 그것이고, W4 프리미티브와 달리 전용 클래스가 아니라 요소 선택자를 쓴다.
+   신규 규칙은 studio-theme.css 의 --db-studio-* 를 소비한다(--db-light-* 는 레거시).
    ========================================================================= */
+
+/* ============================================================================
+   네이티브 폼 컨트롤 기준선 — "그냥 html 느낌" 제거
+   ----------------------------------------------------------------------------
+   데이터베이스 모달은 databaseModal.ts 가 backdrop 을 document.body 직속으로
+   붙이므로, 여기 한 곳에서 모든 탭의 네이티브 컨트롤 외형을 잡을 수 있다.
+
+   의도적으로 **낮은 특이성**(0,2,1)을 쓴다. 탭별 규칙이 크기·색을 이미 정해 둔
+   곳에서는 그쪽이 이기고, 아무도 안 잡던 곳에만 기준선이 적용된다. 특이성 싸움을
+   새로 만들지 않는 게 목적이다.
+
+   전제: select 를 잡는 규칙 20건의 `background:` 단축을 `background-color:` 로
+   바꿔 두었다. 단축은 background-image 를 리셋해서 아래 chevron 을 지운다.
+   ========================================================================= */
+
+/* ── select: OS 위젯 → 에디터 chevron ──────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window select {
+  appearance: none;
+  cursor: pointer;
+  /* chevron 을 순수 CSS 로 그린다. currentColor 라서 글자색(및 disabled 흐림)을
+     그대로 따라가고, 하드코딩 색이나 data-URI 가 필요 없다. */
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 12px center, right 7px center;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+  /* 탭별 규칙이 padding 단축으로 덮으면 이 값은 진다. chevron 이 오른쪽 7~17px
+     구간만 쓰므로 그 경우에도 짧은 값은 겹치지 않는다. */
+  padding-right: 24px;
+}
+
+/* 화살표만 있고 목록이 없는 상태(비활성)에서는 커서를 되돌린다. */
+.database-modal-backdrop .database-modal-window select:disabled {
+  cursor: default;
+}
+
+/* ── number: 브라우저 스피너 제거 ──────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window input[type="number"] {
+  /* 스피너를 지운다. 키보드 위/아래 증감은 그대로 동작한다. */
+  appearance: textfield;
+}
+
+.database-modal-backdrop .database-modal-window input[type="number"]::-webkit-outer-spin-button,
+.database-modal-backdrop .database-modal-window input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* ── checkbox / radio / range: 액센트 통일 ─────────────────────────────── */
+
+/* 워크벤치별로 흩어져 있던 accent-color 를 기준선으로 올린다. 이 규칙에 안 걸려
+   브라우저 기본 회색으로 남아 있던 탭들(states·skills·crops·characters·
+   lifeCrafting·farmSpatial·lifeCollections·switches·variables 등)이 함께 잡힌다. */
+.database-modal-backdrop .database-modal-window input:is([type="checkbox"], [type="radio"], [type="range"]) {
+  accent-color: var(--db-studio-accent);
+}
+
+/* ── 공통: 좁은 격자에서 컨트롤이 넘치지 않게 ──────────────────────────── */
+
+.database-modal-backdrop .database-modal-window :is(select, input, textarea) {
+  min-width: 0;
+}
 
 /* ── 공통: 신규 컨트롤 래퍼(.db-field 내부 2번째 슬롯) ─────────────────── */
 
