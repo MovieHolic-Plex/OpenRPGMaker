@@ -1675,5 +1675,34 @@ export function defaultItemRecords(): ItemRecord[] {
     ...generatedItemRecords(),
   ];
   applyGeneratedBattleEffectItemBindings(records);
-  return records;
+  return dedupeById(records);
+}
+
+/**
+ * id 충돌을 없앤다. 큐레이션 레코드가 id 를 지키고, 뒤늦게 같은 id 로 들어온 아이콘 자동 생성
+ * 채움 레코드는 `item_gen_…` 로 개명한다(장비 쪽 `equip_gen_…` 와 같은 규약).
+ *
+ * 예전에는 `item_warp_scroll`(귀환 주문서 250G)과 `item_traveler_badge`(여행자 표식)가
+ * 큐레이션 + 자동 생성으로 각각 두 번 들어 있어 179개 중 유일 id 는 177개였다. 구매 경로는
+ * `find()` 라서 안 드러났지만 상점 판매 목록은 items 전체를 훑어 같은 물건이 두 줄로 나왔고,
+ * `data-testid` 까지 겹쳐 e2e strict 모드가 터질 수 있었다.
+ *
+ * 그냥 버리지 않는 이유: 두 레코드의 아이콘이 다르다(`cc0-jetrel-badge` vs
+ * `cc0-jetrel-traveler-badge`). 버리면 자료집에서 닿을 수 없는 아이콘이 생긴다.
+ */
+function dedupeById(records: readonly ItemRecord[]): ItemRecord[] {
+  const seen = new Set<string>();
+  const unique: ItemRecord[] = [];
+  for (const record of records) {
+    if (!seen.has(record.id)) {
+      seen.add(record.id);
+      unique.push(record);
+      continue;
+    }
+    const renamed = `${record.id.replace(/^item_/, "item_gen_")}`;
+    if (seen.has(renamed)) continue;
+    seen.add(renamed);
+    unique.push({ ...record, id: renamed });
+  }
+  return unique;
 }

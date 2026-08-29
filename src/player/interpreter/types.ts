@@ -129,6 +129,16 @@ export type StepResult =
       merchantGold?: number;
       branchOnTransaction?: boolean;
       branchOnFailedTransaction?: boolean;
+      /** 추가 서비스. 예전에는 pause 페이로드에서 빠져 에디터 설정이 런타임에 도달하지 않았다. */
+      shopServiceKind?: "repair" | "appraisal" | "pawn";
+      /** 감정 대상 풀 — 비면 "해 드릴 일이 없습니다". */
+      appraisalUnidentifiedPool?: readonly string[];
+      /** 누적 지출 집계 키. 생략 시 "global". */
+      loyaltyTierId?: string;
+      /** 구매액 대비 마일리지 적립률(0..0.1). */
+      mileageRate?: number;
+      /** 가게 투자 레벨 0..5 — 상인 매입 예산 배수. */
+      investmentLevel?: number;
     }
   | {
       kind: "inn";
