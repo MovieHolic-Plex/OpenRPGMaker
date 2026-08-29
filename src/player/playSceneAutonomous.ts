@@ -1,8 +1,8 @@
 import { store } from "@/project/store";
-// characterSpriteX 는 타일 중앙이다. 폭 2 이상 발자국의 중앙은 footprintSpriteX 이고 아직
-// renderEvents 만 쓴다 — 아래 updateAutonomousNPCs·updateChaseNpc·updateActiveNpcMove 의
-// 걸음 보간은 2차에서 함께 옮긴다. characterDepth.ts 의 footprintSpriteX 주석 참고.
-import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
+// 스프라이트 가로 좌표는 **발자국 중앙**(footprintSpriteX)이다. 타일 중앙(characterSpriteX)을
+// 쓰면 폭 2 이상 이벤트가 움직일 때마다 최초 렌더 위치에서 반 칸씩 튄다 — 1차가 남긴 경계였다.
+import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
+import { UNIT_FOOTPRINT } from "@/project/footprint";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import {
   applyFacing,
@@ -73,7 +73,7 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
       moveAutonomousRuntimePosition(scene, eventId, nx, ny, frameDir);
       mover.activeMove = { fromX: position.x, fromY: position.y, toX: nx, toY: ny, dir: frameDir, baseFrame, elapsedMs: 0 };
       if (sprite) {
-        sprite.setPosition(characterSpriteX(position.x), characterSpriteY(position.y));
+        sprite.setPosition(footprintSpriteX(position.x, view.footprint), characterSpriteY(position.y));
         updateCharacterDepth(sprite, view.priority);
         applySpriteAlpha(sprite, mover.opacity);
         setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
@@ -147,7 +147,7 @@ function updateChaseNpc(
   moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
   mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0 };
   if (sprite) {
-    sprite.setPosition(characterSpriteX(view.x), characterSpriteY(view.y));
+    sprite.setPosition(footprintSpriteX(view.x, view.footprint), characterSpriteY(view.y));
     updateCharacterDepth(sprite, view.priority);
     applySpriteAlpha(sprite, mover.opacity);
     setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
@@ -191,9 +191,11 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
     .find((entry) => entry.event.id === eventId);
   const animationType = view?.animationType ?? "normal";
   const priority = view?.priority ?? "same";
+  // 뷰를 못 찾으면 1x1 — footprintSpriteX 는 그때 characterSpriteX 와 같은 값이 된다.
+  const footprint = view?.footprint ?? UNIT_FOOTPRINT;
   if (sprite) {
     sprite.setPosition(
-      characterSpriteX(lerp(move.fromX, move.toX, progress)),
+      footprintSpriteX(lerp(move.fromX, move.toX, progress), footprint),
       characterSpriteY(lerp(move.fromY, move.toY, progress))
     );
     updateCharacterDepth(sprite, priority);
@@ -202,7 +204,7 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   }
   if (move.elapsedMs < mover.moveDurationMs) return;
   if (sprite) {
-    sprite.setPosition(characterSpriteX(move.toX), characterSpriteY(move.toY));
+    sprite.setPosition(footprintSpriteX(move.toX, footprint), characterSpriteY(move.toY));
     updateCharacterDepth(sprite, priority);
     applySpriteAlpha(sprite, mover.opacity);
     setNpcIdleFrame(sprite, move.baseFrame, move.dir, animationType, mover.animationEnabled);
