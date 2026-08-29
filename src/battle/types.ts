@@ -245,6 +245,7 @@ export type BattleTimelineEntryKind =
   | "capture"
   | "switch"
   | "stateUpkeep"
+  | "stateRecovery"
   | "stateAdded"
   | "stateRemoved"
   | "incapacitated"

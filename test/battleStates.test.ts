@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  agilityMultiplierForStates,
   applyStateEffects,
   attackMultiplierForStates,
   canBattlerAct,
@@ -66,6 +67,7 @@ describe("battleStates — DB 상태 레코드 기반 행동", () => {
   it("공격 상승/방어 하락은 능력치 배율로 해석된다", () => {
     const project = createBlankProject();
     expect(stateBehavior(stateRecord(project, "state_attack_up")).attackMultiplier).toBe(2);
+    expect(stateBehavior(stateRecord(project, "state_attack_down")).attackMultiplier).toBe(0.5);
     expect(stateBehavior(stateRecord(project, "state_defense_down")).defenseMultiplier).toBe(0.5);
   });
 
@@ -114,6 +116,7 @@ describe("battleStates — 턴 처리/제약/회복", () => {
     const target = makeBattler({ maxHp: 100, hp: 100, stateIds: ["state_poison"] });
     const upkeep = runStateUpkeep(project, target, never); // 자연 회복은 실패시켜 피해만 검증
     expect(upkeep.hpDamage).toBe(6);
+    expect(upkeep.hpHealing).toBe(0);
     expect(target.hp).toBe(94);
     // HP가 1일 때는 더 깎이지 않는다.
     target.hp = 1;
@@ -158,7 +161,10 @@ describe("battleStates — 턴 처리/제약/회복", () => {
   it("공격 상승/방어 하락 상태 배율을 곱으로 산출한다", () => {
     const project = createBlankProject();
     expect(attackMultiplierForStates(project, makeBattler({ stateIds: ["state_attack_up"] }))).toBe(2);
+    expect(attackMultiplierForStates(project, makeBattler({ stateIds: ["state_attack_down"] }))).toBe(0.5);
     expect(defenseMultiplierForStates(project, makeBattler({ stateIds: ["state_defense_down"] }))).toBe(0.5);
+    expect(agilityMultiplierForStates(project, makeBattler({ stateIds: ["state_agility_up"] }))).toBe(2);
+    expect(agilityMultiplierForStates(project, makeBattler({ stateIds: ["state_agility_down"] }))).toBe(0.5);
     expect(attackMultiplierForStates(project, makeBattler({ stateIds: [] }))).toBe(1);
   });
 });

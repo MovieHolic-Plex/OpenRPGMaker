@@ -437,9 +437,12 @@ const enemyActionSchema = objectSchema({
 const troopMemberSchema = objectSchema({ enemyId: stringSchema(), x: integerSchema(), y: integerSchema(), hidden: booleanSchema() });
 const stateRuntimeEffectsSchema = objectSchema({
   restrictsAction: booleanSchema(),
+  blocksSkillUse: booleanSchema(),
   hpDamagePercentPerTurn: numberSchema(),
+  hpHealPercentPerTurn: numberSchema(),
   attackMultiplier: numberSchema(),
   defenseMultiplier: numberSchema(),
+  agilityMultiplier: numberSchema(),
   removeOnBattleEnd: booleanSchema(),
 });
 

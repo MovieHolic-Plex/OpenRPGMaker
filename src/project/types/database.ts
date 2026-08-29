@@ -354,6 +354,10 @@ export interface EquipmentRecord {
   equippableClassIds: ClassId[];
   cursed: boolean;
   twoHanded: boolean;
+  /** 일반 공격 명중률에 곱하는 0~100% 장비 보정. */
+  accuracy: number;
+  /** 액터/적 기본 치명타율에 더하는 0~100%p 장비 보정. */
+  criticalRate: number;
   usableAsItemSkillId?: SkillId;
   attackElementIds: string[];
   stateInflictIds: StateId[];
@@ -607,9 +611,12 @@ export interface StateRecord {
 
 export interface StateRuntimeEffects {
   restrictsAction?: boolean;
+  blocksSkillUse?: boolean;
   hpDamagePercentPerTurn?: number;
+  hpHealPercentPerTurn?: number;
   attackMultiplier?: number;
   defenseMultiplier?: number;
+  agilityMultiplier?: number;
   removeOnBattleEnd?: boolean;
 }
 

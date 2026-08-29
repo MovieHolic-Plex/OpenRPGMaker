@@ -4,6 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { startSession } from "@/project/session";
 import { placeableKey } from "@/project/placeables";
+import { giveMonster } from "@/project/monsterCollection";
 import { setEquippedTool } from "@/project/toolActions";
 import type { ItemRecord, Project } from "@/project/types";
 import { interactWithFarmPlot } from "@/player/farming";
@@ -23,7 +24,16 @@ describe("default item runtime usability", () => {
       session.inventory[item.id] = 1;
       session.actorVitals[actorId] = { hp: 1, mp: 0, maxHp: 500, maxMp: 200 };
       session.actorStateIds ??= {};
-      session.actorStateIds[actorId] = [POISON, SLEEP];
+      session.actorStateIds[actorId] = [
+        POISON,
+        SLEEP,
+        "state_paralysis",
+        "state_deep_poison",
+        "state_silence",
+        "state_attack_down",
+        "state_defense_down",
+        "state_agility_down",
+      ];
       session.actorSkillIds ??= {};
       session.actorSkillIds[actorId] = project.database.skills
         .map((skill) => skill.id)
@@ -31,10 +41,23 @@ describe("default item runtime usability", () => {
 
       if (item.onlyEffectiveOnDeadActors) session.actorVitals[actorId]!.hp = 0;
       const before = session.inventory[item.id] ?? 0;
-      const result = useItemFromMenu(project, session, item.id, actorId);
+      let targetMonsterInstanceId: string | undefined;
+      if (item.careProfile) {
+        project.system.monsterCollection = true;
+        const speciesId = project.database.monsterSpecies?.[0]?.id;
+        if (!speciesId) throw new Error("default monster species is missing");
+        const given = giveMonster(project, session, { speciesId, level: 1 });
+        if (!given.ok) throw new Error("default monster could not be added");
+        targetMonsterInstanceId = given.instance.instanceId;
+      }
+      const result = useItemFromMenu(project, session, item.id, actorId, targetMonsterInstanceId);
 
       expect(result.kind, item.id).toBe("used");
-      expect(session.inventory[item.id] ?? 0, item.id).toBe(before - 1);
+      const expectedAfter = item.consumptionLimit === "noLimit" ? before - 1 : before;
+      expect(session.inventory[item.id] ?? 0, item.id).toBe(expectedAfter);
+      if (item.consumptionLimit !== "noLimit") {
+        expect(session.itemUseCharges?.[item.id], item.id).toBe(1);
+      }
     }
   });
 
@@ -108,7 +131,11 @@ describe("default item runtime usability", () => {
       });
       const after = runtime.snapshot();
 
-      expect(after.eventState.inventory[item.id] ?? 0, item.id).toBe(1);
+      const expectedAfter = item.consumptionLimit === "noLimit" ? 1 : 2;
+      expect(after.eventState.inventory[item.id] ?? 0, item.id).toBe(expectedAfter);
+      if (item.consumptionLimit !== "noLimit") {
+        expect(after.eventState.itemUseCharges?.[item.id], item.id).toBe(1);
+      }
       expect(battleEffectLanded(before, after), item.id).toBe(true);
     }
   });
@@ -156,7 +183,18 @@ function battleRuntimeFor(project: Project, troopId: string, actorId: string, ta
         [actorId]: { hp: 500, mp: 200 },
         [targetActorId]: { hp: 1, mp: 0 },
       },
-      stateIds: { [targetActorId]: [POISON, SLEEP] },
+      stateIds: {
+        [targetActorId]: [
+          POISON,
+          SLEEP,
+          "state_paralysis",
+          "state_deep_poison",
+          "state_silence",
+          "state_attack_down",
+          "state_defense_down",
+          "state_agility_down",
+        ],
+      },
       partyActorIds: [actorId, targetActorId],
     },
   });

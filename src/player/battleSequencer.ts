@@ -270,7 +270,7 @@ export function createBattleSequencer(
         ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot) : timelineDirectorState(entry));
     const feedback = feedbackFromTimeline(entry);
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
-      || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep";
+      || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep" || entry.kind === "stateRecovery";
     if (!visual) {
       hooks.onDirectorState(directorBase);
       hooks.onSyncView();
@@ -343,6 +343,7 @@ export function createBattleSequencer(
     const detail = entry.kind === "stateAdded" ? `상태가 부여되었다: ${entry.stateId ?? "상태"}`
       : entry.kind === "stateRemoved" ? `상태가 해제되었다: ${entry.stateId ?? "상태"}`
       : entry.kind === "stateUpkeep" ? `상태 지속 피해 ${entry.amount ?? 0}`
+      : entry.kind === "stateRecovery" ? `상태 지속 회복 ${entry.amount ?? 0}`
       : entry.kind === "incapacitated" ? "상태 이상으로 행동할 수 없다."
       : entry.kind === "switch" ? "전열을 교체했다."
       : entry.kind === "capture" ? (entry.success ? "포획에 성공했다!" : "포획에 실패했다.")
