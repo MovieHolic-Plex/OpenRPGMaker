@@ -9,7 +9,6 @@ const PLACEMENT_CALLS = new Set([
   "resolveEventPlacement",
   "passableLanding",
   "nearestPassableCell",
-  "isPassable",
 ]);
 
 /**
@@ -25,9 +24,11 @@ const ALLOWLIST: Readonly<Record<string, string>> = {
     "마을 내부 배선용 id 기준 저장 헬퍼 — 좌표는 집 배치 단계에서 이미 확정된 문 좌표다.",
   "src/editor/tools/lightingTools.ts#upsertSceneMoodAutoEvent":
     "맵 전체 분위기용 auto 트리거 — (0,0) 고정이고 플레이어가 밟거나 말을 거는 좌표가 아니다.",
+  "src/editor/tools/lightingTools.ts#run":
+    "영역 조명 루프는 통행 불가 칸을 재배치하지 않고 건너뛴 뒤 건너뛴 수를 경고한다.",
 };
 
-type InsertionKind = "events.push" | "events-array-assignment" | "events-index-assignment";
+type InsertionKind = "events.push" | "events-array-assignment" | "events-index-assignment" | "upsertEventIntoMap";
 
 type InsertionHit = {
   readonly file: string;
@@ -82,10 +83,16 @@ function terminalName(expression: ts.Expression): string | undefined {
   return undefined;
 }
 
-function insertionKind(node: ts.Node): InsertionKind | undefined {
-  if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-    const receiver = node.expression.expression;
-    if (node.expression.name.text === "push" && terminalName(receiver) === "events") return "events.push";
+function insertionKind(node: ts.Node, eventArrayAliases: ReadonlySet<string>): InsertionKind | undefined {
+  if (ts.isCallExpression(node)) {
+    if (callName(node) === "upsertEventIntoMap") return "upsertEventIntoMap";
+    if (ts.isPropertyAccessExpression(node.expression)) {
+      const receiver = node.expression.expression;
+      const receiverName = terminalName(receiver);
+      if (node.expression.name.text === "push" && (receiverName === "events" || (receiverName && eventArrayAliases.has(receiverName)))) {
+        return "events.push";
+      }
+    }
   }
   if (!ts.isBinaryExpression(node) || node.operatorToken.kind !== ts.SyntaxKind.EqualsToken) return undefined;
   if (ts.isElementAccessExpression(node.left) && terminalName(node.left.expression) === "events") {
@@ -152,9 +159,22 @@ function isGuarded(declaration: ts.FunctionLikeDeclaration, helpers: Map<string,
 function classifySource(file: string, source: string): InsertionHit[] {
   const parsed = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   const helpers = localFunctions(parsed);
+  const eventArrayAliases = new Set<string>();
+  const collectAliases = (node: ts.Node): void => {
+    if (
+      ts.isVariableDeclaration(node)
+      && ts.isIdentifier(node.name)
+      && node.initializer
+      && terminalName(node.initializer) === "events"
+    ) {
+      eventArrayAliases.add(node.name.text);
+    }
+    ts.forEachChild(node, collectAliases);
+  };
+  collectAliases(parsed);
   const hits: InsertionHit[] = [];
   const visit = (node: ts.Node): void => {
-    const kind = insertionKind(node);
+    const kind = insertionKind(node, eventArrayAliases);
     if (kind) {
       const declaration = containingFunction(node);
       const line = parsed.getLineAndCharacterOfPosition(node.getStart(parsed)).line + 1;
@@ -218,6 +238,68 @@ describe("AI 이벤트 배치 표면 게이트", () => {
     expect(failureMessage(hits)).toContain("resolveEventPlacement를 통해");
   });
 
+  it("무관한 isPassable 호출로 삽입 좌표 검사를 가장할 수 없다", () => {
+    const source = [
+      "function createEvent(project: Project, map: GameMap): void {",
+      "  const unrelated = isPassable(project, map, 9, 9);",
+      "  map.events.push({ id: 'probe', x: 0, y: 0, unrelated });",
+      "}",
+    ].join("\n");
+
+    expect(classifySource("src/editor/tools/probeTools.ts", source)).toMatchObject([{ guarded: false }]);
+  });
+
+  it("events 배열 별칭 push도 삽입으로 잡는다", () => {
+    const source = [
+      "function createEvent(map: GameMap): void {",
+      "  const queue = map.events;",
+      "  queue.push({ id: 'probe', x: 0, y: 0 });",
+      "}",
+    ].join("\n");
+
+    expect(classifySource("src/editor/tools/probeTools.ts", source)).toMatchObject([
+      { line: 3, functionName: "createEvent", kind: "events.push", guarded: false },
+    ]);
+  });
+
+  it("중첩 콜백의 무방비 삽입도 잡는다", () => {
+    const source = [
+      "function createEvents(map: GameMap, cells: Point[]): void {",
+      "  cells.forEach(() => {",
+      "    map.events.push({ id: 'probe', x: 0, y: 0 });",
+      "  });",
+      "}",
+    ].join("\n");
+
+    expect(classifySource("src/editor/tools/probeTools.ts", source)).toMatchObject([
+      { line: 3, functionName: "<forEach 콜백>", guarded: false },
+    ]);
+  });
+
+  it("두 단계 헬퍼 뒤의 무방비 삽입도 실제 삽입 함수에서 잡는다", () => {
+    const source = [
+      "function c(map: GameMap): void { map.events.push({ id: 'probe', x: 0, y: 0 }); }",
+      "function b(map: GameMap): void { c(map); }",
+      "function a(map: GameMap): void { b(map); }",
+    ].join("\n");
+
+    expect(classifySource("src/editor/tools/probeTools.ts", source)).toMatchObject([
+      { line: 1, functionName: "c", guarded: false },
+    ]);
+  });
+
+  it("upsertEventIntoMap 호출도 삽입 지점으로 심사한다", () => {
+    const source = [
+      "function createEvent(map: GameMap, event: GameEvent): void {",
+      "  upsertEventIntoMap(map, event);",
+      "}",
+    ].join("\n");
+
+    expect(classifySource("src/editor/tools/probeTools.ts", source)).toMatchObject([
+      { line: 2, functionName: "createEvent", kind: "upsertEventIntoMap", guarded: false },
+    ]);
+  });
+
   it("같은 함수에서 배치 계약을 거친 삽입은 통과한다", () => {
     const source = [
       "function createEvent(project: Project, map: GameMap): void {",
@@ -266,7 +348,9 @@ describe("AI 이벤트 배치 표면 게이트", () => {
     // 계약을 통과하는 대표 지점(단일 배치 / 묶음 배치 각각).
     expect(find("src/editor/tools/storyArcTools.ts", "run").every((hit) => hit.guarded)).toBe(true);
     expect(find("src/editor/tools/investigationTools.ts", "compilePushSwitches").every((hit) => hit.guarded)).toBe(true);
-    expect(find("src/editor/tools/lightingTools.ts", "run").every((hit) => hit.guarded)).toBe(true);
+    const lighting = find("src/editor/tools/lightingTools.ts", "run");
+    expect(lighting.length).toBeGreaterThan(0);
+    expect(lighting.every((hit) => !hit.guarded && allowlistKey(hit) in ALLOWLIST)).toBe(true);
     // 공통 저장 헬퍼는 좌표를 정하지 않으므로 오지 예외 목록으로만 통과해야 한다.
     const shared = find("src/editor/tools/eventTools.ts", "upsertEventIntoMap");
     expect(shared.length).toBeGreaterThan(0);
