@@ -77,7 +77,9 @@ describe("AgentBlueprintRenderer", () => {
     const renderer = new AgentBlueprintRenderer(mockScene, mockLayer, () => "m1");
     renderer.render();
     expect(mockScene.add.container).not.toHaveBeenCalled();
-    expect(mockLayer.removeAll).toHaveBeenCalled();
+    // removeAll(true) — 인자를 빼면 Graphics/Text 가 파괴되지 않고 텍스처가 새면서
+    // 리렌더마다 GPU 텍스처가 쌓인다. 인자까지 봐야 그 회귀를 잡는다.
+    expect(mockLayer.removeAll).toHaveBeenCalledWith(true);
   });
 
   it("다른 맵을 보고 있으면 그리지 않는다", () => {
@@ -101,7 +103,7 @@ describe("AgentBlueprintRenderer", () => {
 
   it("진행 중인 칸은 더 굵은 선으로 그려진다", () => {
     setAgentBlueprintFromSpec(spec());
-    markAgentBlueprintProgress("build_house", { mapId: "m1", x: 10, y: 10, w: 4, h: 4 });
+    markAgentBlueprintProgress("build_house", { mapId: "m1", x: 10, y: 10, w: 4, h: 4 }, { write: true });
     const renderer = new AgentBlueprintRenderer(mockScene, mockLayer, () => "m1");
     renderer.render();
     const [roadStroke, houseStroke] = graphicsCalls.map((record) => record.strokes[0][0]);
@@ -154,7 +156,11 @@ function makeContainer(): any {
       children.push(child);
       return child;
     }),
-    removeAll: vi.fn(() => {
+    // 인자를 기록한다 — destroyChild 를 무시하면 removeAll(true) 누락을 못 본다.
+    removeAll: vi.fn((destroyChild?: boolean) => {
+      for (const child of children) {
+        if (destroyChild) child.destroy?.();
+      }
       children.length = 0;
     }),
     setName: vi.fn(),

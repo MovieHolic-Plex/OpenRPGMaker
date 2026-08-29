@@ -112,6 +112,43 @@ export function planCameraFocus(
   return centerInCore ? null : { tileX: centerX, tileY: centerY };
 }
 
+/** 지금 진행 중인 사용자 제스처. EditScene 이 자기 상태를 그대로 채워 넣는다. */
+export interface PointerGestureState {
+  /** 좌클릭 페인트 스트로크 중. */
+  readonly painting: boolean;
+  /** 카메라 팬(스페이스·휠클릭 드래그) 중. */
+  readonly panning: boolean;
+  /** 사각형/선/타원 드래그, 선택 드래그, 이벤트 이동 드래그 중이거나 그 후보를 잡고 있다. */
+  readonly dragging: boolean;
+  /** 우클릭 영역 제스처(영역 AI) 중. */
+  readonly rightRegionGesture: boolean;
+  /** 붙여넣기 미리보기가 커서를 따라다니는 중. */
+  readonly pastePreview: boolean;
+}
+
+/**
+ * 프로그램 카메라 이동을 미뤄야 하는가 — 사용자의 손이 화면 위에 있으면 카메라를 빼앗지 않는다.
+ *
+ * 취향 문제가 아니라 **데이터 손상**이다. 드래그의 끝 타일은 `pointerToTile(ptr)` 이 살아 있는
+ * 카메라로 계산하므로(EditScene.pointerToTile), 드래그 중에 카메라가 300ms 팬하면
+ * `DragOperationHandler.finish` 가 팬 거리만큼 밀린 타일을 커밋한다 — 도형은 엉뚱한 자리에
+ * 칠해지고(commitShapeDrag → paintTilesBulk) 이벤트는 다른 칸에 놓인다(commitEventMoveDrag →
+ * moveEvent). 우클릭 영역 제스처(finishRightRegionGesture)와 붙여넣기 확정도 같은 경로다.
+ *
+ * `painting` 만 보면 안 되는 이유: pointerdown 은 `beginDragOperation` 이 true 를 돌려주면
+ * `isPainting = true` 를 **세우기 전에** 반환하고, `beginRightRegionGesture` 는 오히려
+ * `isPainting = false` 로 내린다. 즉 모든 드래그 제스처에서 painting 은 거짓이다.
+ * 조수의 자동 카메라 이동(focusAcceptedAgentChanges)은 사용자 클릭 없이 비동기로 들어오므로
+ * 이 조합이 실제로 겹친다.
+ */
+export function shouldDeferCameraFocus(gesture: PointerGestureState): boolean {
+  return gesture.painting
+    || gesture.panning
+    || gesture.dragging
+    || gesture.rightRegionGesture
+    || gesture.pastePreview;
+}
+
 function focusRect(target: CameraFocusTarget): CameraFocusBounds | null {
   const bounds = target.bounds;
   if (bounds && bounds.width > 0 && bounds.height > 0) {

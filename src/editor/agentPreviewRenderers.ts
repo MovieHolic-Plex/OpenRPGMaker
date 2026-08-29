@@ -201,9 +201,11 @@ export class AgentGhostPreviewRenderer {
     }
 
     // 사라진 셀의 공개 시각은 버린다 — 프리뷰가 줄어든 뒤 같은 좌표가 다시 들어오면
-    // 새 와이프를 받아야 한다.
-    if (this.cellStartMs.size > keyed.length) {
-      const present = new Set(keyed.map((item) => item.key));
+    // 새 와이프를 받아야 한다. 비교 대상은 keyed.length 가 아니라 **서로 다른 키의 수**다:
+    // 같은 맵에 프리뷰가 두 장 들어오면(appendAgentGhostPreviewForToolCall 경로) 같은 키가
+    // 중복 계수돼 청소가 건너뛰어지고, 다시 추가된 셀이 와이프 없이 나타난다.
+    const present = new Set(keyed.map((item) => item.key));
+    if (this.cellStartMs.size > present.size) {
       for (const key of [...this.cellStartMs.keys()]) {
         if (!present.has(key)) this.cellStartMs.delete(key);
       }

@@ -16,6 +16,7 @@ import {
 import { isProxyAuth, loadAiConfig } from "@/ai/llmClient";
 import type { AiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
+import { clearAgentBlueprint } from "@/editor/agentBlueprint";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { getTool } from "@/editor/tools";
 import { showConfirm } from "@/editor/ui/modal";
@@ -234,6 +235,9 @@ export function dropSession(controller: ChatController): void {
   if (controller.session) controller.auditHistory.push(...controller.session.getAuditEntries());
   controller.session = null;
   clearAgentGhostPreview();
+  // 세션이 사라지면 그 세션의 밑그림(BuildSpec)도 사라진다 — 청사진의 수명은 스펙에 매여 있고
+  // 새 대화·대화 복원·프로젝트 전환이 모두 이 함수를 지나간다.
+  clearAgentBlueprint();
 }
 
 export function downloadJson(filename: string, json: string): void {
