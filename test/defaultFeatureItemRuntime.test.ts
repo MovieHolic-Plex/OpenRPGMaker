@@ -1,11 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults";
-import { defaultFeatureCropRecords } from "@/project/defaults/defaultFeatureItemRecords";
 import { giveMonster } from "@/project/monsterCollection";
 import { startSession } from "@/project/session";
-import { setEquippedTool } from "@/project/toolActions";
-import { interactWithFarmPlot } from "@/player/farming";
 import { useItemFromMenu } from "@/player/playerItemUse";
 import type { ItemRecord, Project } from "@/project/types";
 
@@ -87,35 +84,38 @@ describe("확장 기본 아이템 실행 경로", () => {
     expect(session.inventory.item_gen2_might_seed ?? 0).toBe(0);
   });
 
-  it("작물 씨앗은 연결된 기본 작물로 실제 밭에 심어진다", () => {
-    // 농사는 옵트인이라 빈 프로젝트에는 작물이 없다 — 출하되는 작물 레코드를 켜고 검증한다.
+  it("확장 카탈로그는 출하 프로젝트에 연결되지 않은 작물 씨앗을 약속하지 않는다", () => {
     const project = createBlankProject();
-    project.database.crops = defaultFeatureCropRecords();
-    const session = startSession(project);
-    const sourceMap = project.maps[project.startMapId];
-    if (!sourceMap) throw new Error("기본 맵이 없습니다.");
-    const map = { ...sourceMap, farmableArea: [{ x: 2, y: 2, w: 1, h: 1 }] };
-    session.inventory.item_hoe = 1;
-    session.inventory.item_gen2_turnip_seed = 1;
-    setEquippedTool(session, "item_hoe");
-    expect(interactWithFarmPlot(project, session, map, 2, 2, "till").kind).toBe("tilled");
-    setEquippedTool(session, "item_gen2_turnip_seed");
+    const droppedSeedIds = [
+      "item_gen2_turnip_seed",
+      "item_gen2_moonbean_seed",
+      "item_gen2_firepepper_seed",
+      "item_gen2_stargrain_seed",
+    ];
 
-    expect(interactWithFarmPlot(project, session, map, 2, 2, "plant")).toMatchObject({
-      kind: "planted",
-      cropId: "crop_gen2_turnip",
-      itemId: "item_gen2_turnip_seed",
-    });
-    expect(session.inventory.item_gen2_turnip_seed ?? 0).toBe(0);
+    expect(project.database.items.filter((item) => droppedSeedIds.includes(item.id))).toEqual([]);
   });
 
-  it("스위치 아이템은 연결 스위치를 켜고 재사용을 거부한다", () => {
+  it("스위치 아이템은 서로 겹치지 않는 전용 스위치를 켜고 재사용을 거부한다", () => {
     const project = createBlankProject();
+    const relaySwitches = Object.fromEntries(
+      project.database.items
+        .filter((item) => item.id.endsWith("_relay"))
+        .map((item) => [item.id, item.switchId]),
+    );
+    expect(relaySwitches).toEqual({
+      item_gen2_sun_relay: "sw_gen2_sun_relay",
+      item_gen2_moon_relay: "sw_gen2_moon_relay",
+      item_gen2_bridge_relay: "sw_gen2_bridge_relay",
+      item_gen2_seal_relay: "sw_gen2_seal_relay",
+    });
+    expect(new Set(Object.values(relaySwitches)).size).toBe(4);
+
     const session = startSession(project);
     session.inventory.item_gen2_sun_relay = 2;
 
     expect(useItemFromMenu(project, session, "item_gen2_sun_relay").kind).toBe("used");
-    expect(session.switches.sw_0001).toBe(true);
+    expect(session.switches.sw_gen2_sun_relay).toBe(true);
     expect(session.inventory.item_gen2_sun_relay).toBe(1);
     expect(useItemFromMenu(project, session, "item_gen2_sun_relay").kind).toBe("unusable");
     expect(session.inventory.item_gen2_sun_relay).toBe(1);

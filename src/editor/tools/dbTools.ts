@@ -610,6 +610,8 @@ const equipmentRecordSchema = objectSchema({
   equippableClassIds: stringArraySchema(),
   cursed: booleanSchema(),
   twoHanded: booleanSchema(),
+  accuracy: integerSchema("일반 공격 명중률 보정 0~100%"),
+  criticalRate: integerSchema("치명타율 가산 0~100%p"),
   usableAsItemSkillId: stringSchema(),
   stateInflictIds: stringArraySchema(),
   attackElementIds: stringArraySchema(),

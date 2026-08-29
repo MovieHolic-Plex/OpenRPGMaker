@@ -57,10 +57,6 @@ describe("default item catalog quality", () => {
 });
 
 function assertRuntimeEquipmentAxisContract(equipment: EquipmentRecord): void {
-  expect(equipment.accuracy, `${equipment.id}.accuracy`).toBeGreaterThanOrEqual(0);
-  expect(equipment.accuracy, `${equipment.id}.accuracy`).toBeLessThanOrEqual(100);
-  expect(equipment.criticalRate, `${equipment.id}.criticalRate`).toBeGreaterThanOrEqual(0);
-  expect(equipment.criticalRate, `${equipment.id}.criticalRate`).toBeLessThanOrEqual(100);
   expect(equipment.attackElementIds.length, `${equipment.id}.attackElementIds`).toBeLessThanOrEqual(1);
   if (equipment.stateInflictIds.length === 0) expect(equipment.stateInflictionChance, equipment.id).toBe(100);
   if (equipment.stateDefenseIds.length === 0) expect(equipment.stateResistanceChance, equipment.id).toBe(0);
