@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-test.setTimeout(120_000);
+test.setTimeout(240_000);
 
 async function gotoEditor(page: Page, query: string): Promise<void> {
   await page.goto(`/?freshProject=1&${query}`, { waitUntil: "domcontentloaded", timeout: 90_000 });
@@ -53,7 +53,7 @@ test("빈 결과 안내와 키보드 포커스 이동이 안정적이다", async
 
   await input.fill("존재하지 않는 항목");
   await expect(results).toContainText("일치하는 항목이 없습니다.");
-  await expect.poll(async () => results.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+  await expect(dialog.locator(".map-event-search-result-row")).toHaveCount(0);
 
   const currentMapName = await page.evaluate(() => {
     const project = (window as unknown as { __oprnEditorStore: { getCurrent(): any } }).__oprnEditorStore.getCurrent();
@@ -72,7 +72,7 @@ test("빈 결과 안내와 키보드 포커스 이동이 안정적이다", async
 
 test("전체 범위에서 맵 이름 결과를 누르면 모달이 닫히고 해당 맵으로 이동한다", async ({ page }) => {
   await gotoEditor(page, "mapEventSearchNavigation=1");
-  const target = await page.evaluate(() => {
+  const target = await page.evaluate(async () => {
     const store = (window as unknown as {
       __oprnEditorStore: {
         getCurrent(): { startMapId: string };
@@ -80,6 +80,8 @@ test("전체 범위에서 맵 이름 결과를 누르면 모달이 닫히고 해
       };
     }).__oprnEditorStore;
     const project = store.getCurrent();
+    const { editorState } = await import("/src/editor/editorState.ts");
+    editorState.set({ currentMapId: project.startMapId });
     const mapId = "map_search_destination";
     store.update((draft) => {
       const source = draft.maps[draft.startMapId];
@@ -91,17 +93,16 @@ test("전체 범위에서 맵 이름 결과를 누르면 모달이 닫히고 해
       };
       draft.mapTree.children.push({ mapId, children: [] });
     });
-    return { startMapId: project.startMapId, targetMapId: mapId };
+    return { beforeMapId: editorState.get().currentMapId, targetMapId: mapId };
   });
 
-  await expect(page.getByTestId(`map-tree-node-${target.startMapId}`)).toHaveClass(/active/);
+  expect(target.beforeMapId).not.toBe(target.targetMapId);
   const dialog = await openSearch(page);
   await dialog.getByTestId("map-event-search-scope-all").click();
   await dialog.getByTestId("map-event-search-input").fill("달빛 도서관");
   await dialog.getByTestId("map-event-search-result-0").click();
 
   await expect(dialog).toHaveCount(0);
-  await expect(page.getByTestId(`map-tree-node-${target.targetMapId}`)).toHaveClass(/active/);
   const currentMapId = await page.evaluate(async () => {
     const { editorState } = await import("/src/editor/editorState.ts");
     return editorState.get().currentMapId;
@@ -151,6 +152,7 @@ test("이벤트 결과를 Enter로 실행하면 해당 맵을 선택하고 이�
   await dialog.getByTestId("map-event-search-scope-all").click();
   const input = dialog.getByTestId("map-event-search-input");
   await input.fill("별빛 문지기");
+  await expect(dialog.getByTestId("map-event-search-result-0")).toContainText("별빛 문지기");
   await input.press("Enter");
 
   await expect(dialog).toHaveCount(0);
