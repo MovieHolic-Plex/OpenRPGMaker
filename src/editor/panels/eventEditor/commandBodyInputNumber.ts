@@ -25,9 +25,28 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
     }
   }
 
+  /**
+   * 마지막으로 **커밋한** 안내 문구.
+   *
+   * `latestCmd()` 는 라이브 DOM 값을 읽는다(칩 클릭이 입력 중인 문구를 덮지 않게 하려는
+   * 의도적 설계). 그래서 그것을 "이전 값"으로 쓰면 자기 자신과 비교하게 된다 — 실측 결함:
+   * `commitPrompt` 의 `if (next === prev) return;` 이 **항상** 참이라 안내 문구가 저장된 적이
+   * 없었다. 비교 기준은 라이브 DOM 이 아니라 커밋 이력이어야 한다.
+   *
+   * 중복 커밋을 그냥 허용하지 않는 이유: `replaceCommand` 는 되돌리기 이력을 한 칸 쌓는다
+   * (`eventPages.ts:275` `pageChange`). blur 마다 무의미한 «커맨드 교체» 가 쌓이면 안 된다.
+   */
+  let committedPrompt = cmd.prompt?.trim() ?? "";
+
+  /** 커밋 단일 창구. 어느 경로로 저장해도 `committedPrompt` 가 같이 갱신된다. */
+  const commit = (nextCmd: InputNumberCommand): void => {
+    committedPrompt = nextCmd.prompt?.trim() ?? "";
+    context.actions.replaceCommand(context.path, nextCmd);
+  };
+
   const variable = databasePicker("variable", currentVariableId, (nextId) => {
     currentVariableId = nextId;
-    context.actions.replaceCommand(context.path, { ...latestCmd(), variableId: nextId });
+    commit({ ...latestCmd(), variableId: nextId });
   });
   variable.dataset.testid = "input-number-variable";
 
@@ -65,7 +84,7 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
     btn.addEventListener("click", () => {
       if (n === latestCmd().digits) return;
       digitsMirror.value = String(n);
-      context.actions.replaceCommand(context.path, { ...latestCmd(), digits: n });
+      commit({ ...latestCmd(), digits: n });
     });
     digitGroup.append(btn);
   }
@@ -81,12 +100,11 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
   }) as HTMLInputElement;
   const commitPrompt = (): void => {
     const next = prompt.value.trim();
-    const prev = latestCmd().prompt?.trim() ?? "";
-    if (next === prev) return;
+    if (next === committedPrompt) return;
     const nextCmd: InputNumberCommand = { ...latestCmd() };
     if (next) nextCmd.prompt = next;
     else delete (nextCmd as { prompt?: string }).prompt;
-    context.actions.replaceCommand(context.path, nextCmd);
+    commit(nextCmd);
   };
   prompt.addEventListener("change", commitPrompt);
   prompt.addEventListener("blur", commitPrompt);
@@ -99,7 +117,7 @@ export function inputNumberBody(context: CommandEditContext, cmd: InputNumberCom
   showPad.addEventListener("change", () => {
     const nextCmd: InputNumberCommand = { ...latestCmd(), showPad: showPad.checked };
     if (!showPad.checked) delete (nextCmd as { showPad?: boolean }).showPad;
-    context.actions.replaceCommand(context.path, nextCmd);
+    commit(nextCmd);
   });
 
   wrap.append(

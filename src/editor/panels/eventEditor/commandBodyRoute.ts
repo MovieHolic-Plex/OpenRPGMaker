@@ -208,11 +208,16 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     apply();
     renderPreview();
   });
-  repeat.addEventListener("change", () => {
-    apply();
-    renderPreview();
-  });
-  wait.addEventListener("change", apply);
+  // 세 체크박스는 전부 `apply()` 가 읽고(`route.repeat/wait/skippable`) 미리보기 배지로도
+  // 나타난다(`previewMoveRoute.ts:38-40`). 그래서 배선도 셋이 같아야 한다.
+  // 실측 결함: `skippable` 은 리스너가 아예 없어서 토글해도 저장되지 않았고, `wait` 는
+  // 저장만 하고 배지를 다시 그리지 않아 "완료까지 대기"가 다른 조작 전까지 안 보였다.
+  for (const box of [repeat, wait, skippable]) {
+    box.addEventListener("change", () => {
+      apply();
+      renderPreview();
+    });
+  }
   for (const input of [switchIdIn, graphicIdIn, soundIdIn, npcTargetMap, npcTargetX, npcTargetY, npcTargetDirection]) {
     input.addEventListener("input", persistParameters);
     input.addEventListener("change", persistParameters);
