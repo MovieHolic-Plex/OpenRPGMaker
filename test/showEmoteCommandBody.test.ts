@@ -44,7 +44,7 @@ describe("showEmote 편집 폼", () => {
       expect(swatch, kind).not.toBeNull();
       const icon = swatch?.querySelector<HTMLElement>(".emote-swatch-icon");
       // CSSOM 이 값을 정규화한다: "-0px 0" → "0px 0px". 기하값 자체를 같은 형식으로 비교한다.
-      expect(icon?.style.backgroundPosition).toBe(`${-(emoteFrameIndex(kind) * 16)}px 0px`);
+      expect(icon?.style.backgroundPosition).toBe(`${-(emoteFrameIndex(kind) * 48)}px 0px`);
     }
   });
 
@@ -65,16 +65,19 @@ describe("showEmote 편집 폼", () => {
     const select = q<HTMLSelectElement>(root, "show-emote-target-kind-select");
     expect(select).not.toBeNull();
     expect((q(root, "show-emote-event-field") as HTMLElement).hidden).toBe(true);
+    expect(getComputedStyle(q(root, "show-emote-event-field") as HTMLElement).display).toBe("none");
 
     select!.value = "player";
     select!.dispatchEvent(new Event("change"));
 
     expect(replaced.at(-1)).toMatchObject({ target: "player" });
     expect((q(root, "show-emote-event-field") as HTMLElement).hidden).toBe(true);
+    expect(getComputedStyle(q(root, "show-emote-event-field") as HTMLElement).display).toBe("none");
 
     select!.value = "event";
     select!.dispatchEvent(new Event("change"));
     expect((q(root, "show-emote-event-field") as HTMLElement).hidden).toBe(false);
+    expect(getComputedStyle(q(root, "show-emote-event-field") as HTMLElement).display).not.toBe("none");
   });
 
   it("표시 시간은 상한으로 잘려서 커밋된다", () => {

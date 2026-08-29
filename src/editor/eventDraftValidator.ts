@@ -721,6 +721,11 @@ function validateCommand(
         }
       }
       return;
+    case "showEmote":
+      if (typeof command.target === "object") {
+        require("reference.event.missing", "이모트 대상 이벤트", command.target.eventId, refs.events, true);
+      }
+      return;
     case "showPicture": require("reference.resource.missing", "그림 리소스", command.resourceId, refs.resources); return;
     case "playAudio": require("reference.resource.missing", "오디오 리소스", command.resourceId, refs.resources); return;
     // 동영상도 그림·오디오와 같은 기준이다 — 미지정·없는 리소스는 둘 다 오류로 말한다.
@@ -797,7 +802,6 @@ function validateCommand(
     case "returnToTitle":
     case "setFlag":
     case "setSelfSwitch":
-    case "showEmote":
       return;
   }
   const exhaustive: never = command;

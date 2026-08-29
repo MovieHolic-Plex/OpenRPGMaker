@@ -170,6 +170,7 @@ function buildReferenceContext(project: Project): ReferenceContext {
     troopIds: new Set(project.database.troops.map((record) => record.id)),
     speciesIds: new Set((project.database.monsterSpecies ?? []).map((record) => record.id)),
     resourceIds: collectResourceIds(project),
+    eventIds: new Set(Object.values(project.maps).flatMap((map) => map.events.map((event) => event.id))),
   };
 }
 

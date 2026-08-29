@@ -66,6 +66,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     troopIds,
     speciesIds,
     resourceIds,
+    eventIds: new Set(Object.values(project.maps).flatMap((map) => map.events.map((event) => event.id))),
   };
 
   validateActorRecords(project, classIds, animationIds, context, issues);

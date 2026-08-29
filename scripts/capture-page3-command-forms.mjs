@@ -46,6 +46,13 @@ const COMMANDS = [
       "[data-testid='remove-light-command-body'], [data-testid='remove-light-id-input'], [data-testid='page3-command-body']",
   },
   {
+    id: "03b-show-emote",
+    label: "이모트 표시",
+    build: () => ({ kind: "showEmote", target: { eventId: "" }, emote: "heart", durationMs: 1200 }),
+    assert:
+      "[data-testid='show-emote-command-body'], [data-testid='show-emote-swatch-grid'], [data-testid='page3-command-body']",
+  },
+  {
     id: "04-set-weather",
     label: "날씨 설정",
     build: () => ({ kind: "setWeather", weather: "rain", intensity: 0.7, transitionMs: 600 }),

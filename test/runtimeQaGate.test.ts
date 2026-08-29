@@ -48,6 +48,24 @@ describe("evaluateExpect", () => {
     expect(failures).toEqual(["testid 잔존: dialogue-window"]);
   });
 
+  it("대상과 프레임이 같은 이모트만 대상별 기대를 만족한다", () => {
+    const emotes = [
+      { target: "town-npc", frame: "0", x: 1, y: 2, alpha: 1 },
+      { target: "player", frame: "4", x: 3, y: 4, alpha: 1 },
+    ];
+
+    expect(evaluateExpect(
+      { emoteTargets: [{ target: "town-npc", frame: 0 }, { target: "player", frame: 4 }] },
+      { ...observed, emotes },
+    )).toEqual([]);
+    expect(evaluateExpect(
+      { emoteTargets: [{ target: "wrong-target", frame: 0 }] },
+      { ...observed, emotes },
+    )).toEqual([
+      "대상별 이모트 누락: wrong-target:0 (실제 town-npc:0,player:4)",
+    ]);
+  });
+
   it("플레이어 스프라이트 리소스가 비면 보고한다", () => {
     const failures = evaluateExpect(
       { playerSpriteResourceNonEmpty: true },

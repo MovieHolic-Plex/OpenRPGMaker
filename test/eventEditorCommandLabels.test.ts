@@ -65,6 +65,7 @@ const EXPECTED_COMMAND_KINDS = [
   "erasePicture",
   "playAudio",
   "stopAudio",
+  "playMovie",
   "cutsceneControl",
   "shop",
   "inn",

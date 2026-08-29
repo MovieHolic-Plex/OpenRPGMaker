@@ -6,7 +6,7 @@
 //   - town-npc(1,1) 는 말을 걸면 하트를 띄우고 곧바로 대사를 낸다(대기 없는 명령임을 증명).
 //   - switch-puzzle(2,1) 은 플레이어 정수리에 물음표를 띄운다(target: "player").
 //
-// 이모트는 Phaser 스프라이트라 DOM testid 로 볼 수 없다 — emoteCountAtLeast / emoteFrames 는
+// 이모트는 Phaser 스프라이트라 DOM testid 로 볼 수 없다 — emoteCountAtLeast / emoteFrames / emoteTargets 는
 // __oprnEmotes 훅 관측치로 판정한다(프레임 인덱스 = EMOTE_KINDS 순서).
 
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
@@ -34,14 +34,14 @@ export const emoteScenario = {
       id: "npc-heart-with-dialogue",
       note: "town-npc 에게 말걸기 → 하트가 뜨고 대사창도 함께 열린다(이모트가 진행을 막지 않는다)",
       ops: [
+        { kind: "wait", ms: 4000 },
         { kind: "face", dir: "right" },
         { kind: "action" },
         { kind: "waitFor", testid: "dialogue-box", state: "present" },
       ],
       expect: {
         testidPresent: ["dialogue-box"],
-        emoteFrames: [0],
-        emoteCountAtLeast: 12,
+        emoteTargets: [{ target: "town-npc", frame: 0 }],
       },
       shot: true,
     },
@@ -57,7 +57,7 @@ export const emoteScenario = {
       ],
       expect: {
         testidPresent: ["dialogue-box"],
-        emoteFrames: [4],
+        emoteTargets: [{ target: "player", frame: 4 }],
       },
       shot: true,
     },

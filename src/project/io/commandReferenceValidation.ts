@@ -25,6 +25,7 @@ export type ReferenceContext = {
   troopIds: ReadonlySet<string>;
   speciesIds: ReadonlySet<string>;
   resourceIds: ReadonlySet<string>;
+  eventIds: ReadonlySet<string>;
 };
 
 export function validateEventPages(pages: readonly EventPage[], context: ReferenceContext): void {
@@ -224,6 +225,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "showAnimation":
       assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
+      return;
+    case "showEmote":
+      if (typeof command.target === "object" && command.target.eventId.trim().length > 0) {
+        assert(context.eventIds.has(command.target.eventId), `showEmote: 대상 eventId가 존재하지 않습니다: ${command.target.eventId}`);
+      }
       return;
     case "shop":
       requireExistingIds("shop: item", command.itemIds, context.itemIds);

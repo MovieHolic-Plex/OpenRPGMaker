@@ -702,9 +702,9 @@ function emoteSwatchGrid(selected: EmoteKind, onPick: (kind: EmoteKind) => void)
       class: "emote-swatch-icon",
       attrs: { "aria-hidden": "true" },
     });
-    // 배경 위치는 기하값이라 토큰화 대상이 아니다(색 리터럴 아님).
+    // 배경 위치는 3배로 확대한 프레임 기하값이라 토큰화 대상이 아니다(색 리터럴 아님).
     swatch.style.backgroundImage = `url("/${EMOTE_ASSET_PATH}")`;
-    swatch.style.backgroundPosition = `-${emoteFrameIndex(kind) * EMOTE_FRAME_SIZE}px 0`;
+    swatch.style.backgroundPosition = `-${emoteFrameIndex(kind) * EMOTE_FRAME_SIZE * 3}px 0`;
     const button = el("button", {
       class: "emote-swatch",
       attrs: { type: "button", role: "radio", title: EMOTE_LABELS[kind], "aria-checked": "false" },
@@ -761,6 +761,7 @@ export function showEmoteBody(
   };
   const syncVisibility = () => {
     eventField.hidden = target.select.value !== "event";
+    eventField.style.display = eventField.hidden ? "none" : "";
   };
 
   const grid = emoteSwatchGrid(emote, (picked) => {

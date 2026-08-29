@@ -38,7 +38,10 @@ function projectWithCommands(commands: readonly Command[]): Project {
       },
     ],
   };
-  project.maps[mapId]!.events = [event];
+  project.maps[mapId]!.events = [
+    event,
+    { id: "ev_partner", x: 2, y: 1, trigger: { kind: "action" }, commands: [] },
+  ];
   return project;
 }
 

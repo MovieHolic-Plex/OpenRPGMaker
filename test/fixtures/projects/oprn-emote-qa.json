@@ -673,7 +673,7 @@
                     "eventId": ""
                   },
                   "emote": "heart",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -755,7 +755,7 @@
                     "eventId": ""
                   },
                   "emote": "heartBroken",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -837,7 +837,7 @@
                     "eventId": ""
                   },
                   "emote": "smile",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -919,7 +919,7 @@
                     "eventId": ""
                   },
                   "emote": "exclamation",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -1001,7 +1001,7 @@
                     "eventId": ""
                   },
                   "emote": "question",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -1083,7 +1083,7 @@
                     "eventId": ""
                   },
                   "emote": "music",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -1165,7 +1165,7 @@
                     "eventId": ""
                   },
                   "emote": "sweat",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -1247,7 +1247,7 @@
                     "eventId": ""
                   },
                   "emote": "anger",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -1329,7 +1329,7 @@
                     "eventId": ""
                   },
                   "emote": "ellipsis",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -1411,7 +1411,7 @@
                     "eventId": ""
                   },
                   "emote": "sleep",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -1493,7 +1493,7 @@
                     "eventId": ""
                   },
                   "emote": "sparkle",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",
@@ -1575,7 +1575,7 @@
                     "eventId": ""
                   },
                   "emote": "idea",
-                  "durationMs": 10000
+                  "durationMs": 3500
                 },
                 {
                   "kind": "setSelfSwitch",

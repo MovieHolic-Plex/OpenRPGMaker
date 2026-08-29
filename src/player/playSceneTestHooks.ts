@@ -210,6 +210,7 @@ export function installPlaySceneTestHooks(
     delete w.__oprnPlayerSprite;
     delete w.__oprnCharacterSprites;
     delete w.__oprnCamera;
+    delete w.__oprnEmotes;
     delete w.__oprnSetActorVitals;
     delete w.__oprnSetMediaState;
     delete w.__oprnDebug;

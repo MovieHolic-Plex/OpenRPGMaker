@@ -40,6 +40,11 @@ export type RuntimeQaExpect = {
   readonly emoteCountAtLeast?: number;
   /** 떠 있어야 하는 이모트 프레임 인덱스(EMOTE_KINDS 순서). */
   readonly emoteFrames?: readonly (number | string)[];
+  /** 특정 주인에게 붙어 있어야 하는 이모트(target + EMOTE_KINDS 프레임 인덱스). */
+  readonly emoteTargets?: readonly {
+    readonly target: string;
+    readonly frame: number | string;
+  }[];
   /** Phaser 텍스처가 실제로 로드됐는지(__MISSING 플레이스홀더 검출). */
   readonly playerSpriteTextureLoaded?: boolean;
 };

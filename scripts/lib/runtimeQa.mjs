@@ -166,6 +166,23 @@ export function evaluateExpect(expected, observed) {
       if (!frames.includes(String(frame))) failures.push(`이모트 프레임 누락: ${frame} (실제 ${frames.join(",") || "없음"})`);
     }
   }
+  if (expected.emoteTargets !== undefined) {
+    const emotes = observed.emotes;
+    if (emotes === null || emotes === undefined) failures.push("이모트 훅 없음 — 대상별 정수리 이모트를 확인할 수 없다");
+    else {
+      for (const expectedEmote of expected.emoteTargets) {
+        const found = emotes.some(
+          (emote) => emote.target === expectedEmote.target && emote.frame === String(expectedEmote.frame),
+        );
+        if (!found) {
+          const actual = emotes.map((emote) => `${emote.target}:${emote.frame}`).join(",") || "없음";
+          failures.push(
+            `대상별 이모트 누락: ${expectedEmote.target}:${expectedEmote.frame} (실제 ${actual})`,
+          );
+        }
+      }
+    }
+  }
   if (expected.playerSpriteResourceNonEmpty && !playerSpriteResourceId) {
     failures.push("playerSprite: 리소스 ID 가 비어 있다(스프라이트 누락)");
   }

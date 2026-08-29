@@ -530,11 +530,10 @@
 
 .emote-swatch-icon {
   background-repeat: no-repeat;
-  block-size: 16px;
+  background-size: 576px 48px;
+  block-size: 48px;
   image-rendering: pixelated;
-  inline-size: 16px;
-  transform: scale(3);
-  transform-origin: center;
+  inline-size: 48px;
 }
 
 .emote-swatch-label {

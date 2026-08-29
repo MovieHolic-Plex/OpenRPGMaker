@@ -53,6 +53,14 @@ describe("showEmote 계약", () => {
       { kind: "showEmote", target: { eventId: "ev_partner" }, emote: "anger" },
     ];
 
-    expect(roundtripCommands(commands)).toEqual(commands);
+    expect(roundtripCommands(commands, (project) => {
+      project.maps[project.startMapId].events.push({
+        id: "ev_partner",
+        x: 1,
+        y: 0,
+        trigger: { kind: "action" },
+        commands: [],
+      });
+    })).toEqual(commands);
   });
 });
