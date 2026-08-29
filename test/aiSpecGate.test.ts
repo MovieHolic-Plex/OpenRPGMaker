@@ -38,7 +38,8 @@ function finalMsg(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
 
-const CONFIG = { baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
+// authMode 는 AiConfig 필수 필드다 — 빠뜨리면 이 상수를 쓰는 모든 세션 생성 지점이 타입 에러가 된다.
+const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
 
 // 20×20 맵 m1이 있는 프로젝트.
 function projectWithMap() {
@@ -727,6 +728,50 @@ describe("스펙 게이트 — 배치 전 주변 정리 확인", () => {
     const project = projectWithHouse();
     const spec: BuildSpec = { mapId: "m1", assets: [{ id: "새집", kind: "house", x: 12, y: 11, w: 6, h: 7 }] };
     expect(validateBuildSpec(project, spec).filter((i) => i.severity === "error")).toEqual([]);
+  });
+
+  // 2026-08-29 실측 회귀("나무를 굉장히 많이 심어라"): 검증기가 overExisting 을 요구하는데
+  // SET_BUILD_SPEC_TOOL 스키마에 그 필드가 없어 모델이 9회 연속 재제출에서 단 한 번도 낼 수 없었고,
+  // 좌표·키 순서만 흔든 같은 명세가 재시도 예산을 깎아 턴이 max-tool-calls 로 잘렸다(313칸 미적용).
+  // 스키마 선언은 toolSchemaProviderCompat 가 지킨다. 여기서는 거부 메시지가 채울 필드 이름을
+  // 짚는지, 내용이 같은 재제출을 같은 것으로 보는지, 그리고 그 탈출구가 실제로 통과되는지를 고정한다.
+  it("동일 명세 재제출을 '직전과 동일'로 짚고, 거부 메시지가 채울 필드 이름을 준다", async () => {
+    const conflicting = { mapId: "m1", title: "숲", assets: [{ id: "나무숲", kind: "prop", x: 3, y: 3, w: 6, h: 7 }] };
+    // 같은 내용, 키 순서만 다르다 — 실측 로그에서 모델이 실제로 한 재제출이다.
+    const reshuffled = { assets: [{ w: 6, kind: "prop", x: 3, h: 7, y: 3, id: "나무숲" }], title: "숲", mapId: "m1" };
+    const remedied = {
+      mapId: "m1",
+      title: "숲",
+      assets: [{ id: "나무숲", kind: "prop", x: 3, y: 3, w: 6, h: 7, overExisting: "keep" }],
+    };
+    const chat = scriptedChat([
+      toolCallMsg("set_build_spec", conflicting, "c1"),
+      toolCallMsg("set_build_spec", reshuffled, "c2"),
+      toolCallMsg("set_build_spec", remedied, "c3"),
+      toolCallMsg("paint_tiles", { mapId: "m1", from: { x: 3, y: 3 }, to: { x: 5, y: 5 }, mode: "rect", layer: "lower", tile: 240 }, "c4"),
+      finalMsg("나무를 배치했습니다."),
+    ]);
+    const session = new AssistantSession(projectWithHouse(), { config: CONFIG, chat });
+    const specCalls: { ok: boolean; summary: string; issues: string }[] = [];
+    await session.sendUserMessage("나무를 굉장히 많이 심어라", (event) => {
+      if (event.type === "tool_call" && event.name === "set_build_spec") {
+        specCalls.push({
+          ok: event.result.ok,
+          summary: event.result.summary ?? "",
+          issues: (event.result.issues ?? []).map((issue) => issue.message).join(" "),
+        });
+      }
+    });
+
+    expect(specCalls.map((call) => call.ok)).toEqual([false, false, true]);
+    // 1회 거부: "스스로 판단해" 산문만 주는 대신 채울 필드 이름을 준다.
+    expect(specCalls[0].issues).toContain("overExisting");
+    expect(specCalls[0].issues).toContain("필드를 넣어");
+    // 2회: 키 순서만 바꾼 재제출은 같은 것으로 본다.
+    expect(specCalls[1].summary).toContain("직전과 동일");
+    expect(specCalls[1].issues).toContain("직전과 내용이 같은 명세");
+    // 탈출구가 실제로 열린다 — 스키마가 이 필드를 표현할 수 있어야 의미가 있다.
+    expect(specCalls[2].summary).toContain("밑그림 확정");
   });
 
   it("같은 스펙에 clear 에셋으로 정리를 명시하면 배치 에셋은 통과", () => {

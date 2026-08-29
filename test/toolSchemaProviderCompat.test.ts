@@ -11,11 +11,18 @@
 // 스펙 게이트가 fill_region/place_npc 까지 차단해 한 턴이 통째로 헛돌았다. 배열 개수(1,2,3,6,5)만
 // 바뀌고 내용은 항상 비어 있었다는 점이 모델이 아니라 스키마가 벽이라는 증거다.
 // 실제 shape 를 description 문자열에만 적어두는 것은 계약이 아니다 — properties 로 선언해야 한다.
+//
+// 2026-08-29 추가: 같은 벽을 노드가 아니라 **필드 단위**로 또 밟았다. 검증기가 재제출 때
+// overExisting 을 요구하는데 SET_BUILD_SPEC_TOOL 의 assets.items.properties 에 그 이름이 없어
+// 모델이 9회 연속 재제출에서 단 한 번도 낼 수 없었다. 같은 턴의 confirmDestroy(선언돼 있음)는
+// 정상적으로 나왔다 — 차이는 오직 선언 여부였다. 결과: 영역 턴이 24콜 예산을 태우고
+// max-tool-calls 로 잘려 313칸이 미적용으로 남았다. 검증기가 이름을 부르는 필드는 선언돼야 한다.
 import { describe, expect, it } from "vitest";
 import { allTools } from "@/editor/tools/toolRegistry";
-import { SET_BUILD_SPEC_TOOL, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
+import { SET_BUILD_SPEC_TOOL, SPEC_REMEDY_FIELDS, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
 type SchemaNode = {
   readonly type?: unknown;
+  readonly enum?: readonly unknown[];
   readonly properties?: Record<string, SchemaNode>;
   readonly items?: SchemaNode;
   readonly additionalProperties?: unknown;
@@ -93,5 +100,19 @@ describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
     expect(Object.keys(assetItem?.properties ?? {})).toEqual(
       expect.arrayContaining(["id", "kind", "x", "y", "w", "h"]),
     );
+  });
+
+  it("실측 회귀: 검증기가 재제출을 요구하는 필드(SPEC_REMEDY_FIELDS)가 set_build_spec.assets 에 선언돼 있다", () => {
+    const assetItem = (SET_BUILD_SPEC_TOOL.function.parameters as SchemaNode).properties?.assets?.items;
+    const declared = Object.keys(assetItem?.properties ?? {});
+    // 선언되지 않은 필드를 요구하면 모델이 낼 방법이 없어 거부 루프가 예산을 태운다.
+    expect(declared).toEqual(expect.arrayContaining([...SPEC_REMEDY_FIELDS]));
+  });
+
+  it("overExisting 은 clear|keep 로 열거돼 모델이 값까지 정확히 낼 수 있다", () => {
+    const assetItem = (SET_BUILD_SPEC_TOOL.function.parameters as SchemaNode).properties?.assets?.items;
+    const overExisting = assetItem?.properties?.overExisting;
+    expect(overExisting?.type).toBe("string");
+    expect(overExisting?.enum).toEqual(["clear", "keep"]);
   });
 });
