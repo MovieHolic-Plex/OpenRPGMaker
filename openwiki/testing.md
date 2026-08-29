@@ -355,3 +355,16 @@ resolve 하고 error 분기는 원본 URL 을 캐시·반환한다. 그래서 `F
 Unhandled Rejection 은 그 순간 실행 중이던 아무 파일에 귀속되므로, 이 종류의 누락은
 **비결정적 오귀속**의 원인이 된다. 새 브라우저 전역을 프로덕션이 쓰기 시작하면 `fakeDom` 의
 `DomGlobalName` 유니온·save/restore 목록·`defineDomGlobal` 세 곳을 같이 늘려야 한다.
+
+## bugfix-sweep 실제 표면 하네스 (2026-08-29)
+
+`node scripts/qa-bugfix-sweep-evidence.mjs` 는 **프로젝트의 Vite SSR 모듈 파이프라인**으로
+프로덕션 함수를 끝까지 실행해 관측값을 `.omo/evidence/bugfix-sweep/real-surface.txt` 에 남긴다.
+검사 4건: 프로젝트 교체 후 Ctrl+Z / 묶음 조건 안 스위치의 삭제 가드 / `inputNumber` 만 쓰는 변수의
+prune 판정 / 명시적 초안 저장 뒤 중복 쓰기.
+
+왜 vitest 가 아니라 별도 러너인가: 이 네 가지는 **한 흐름으로 이어 태워야** 사용자가 겪는 순서가
+되고, 산출물이 사람이 읽는 증거로 커밋된다. 왜 `npx tsx` 가 아닌가: `supabaseProjectConfig()` 의
+`env` 기본값이 `import.meta.env` 라서 tsx 에서 `undefined` 로 터진다 — Vite 파이프라인을 타면 앱과
+같은 해석 경로가 된다. `createServer` 에 `watch: null` 을 준 이유는 워처가 시스템 inotify 한도를
+넘겨(ENOSPC) 죽었기 때문이다(스위트와 동시에 돌 때 특히).
