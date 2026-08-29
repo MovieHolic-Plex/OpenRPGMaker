@@ -121,8 +121,8 @@
 
 <header class="hero">
   <div class="wrap">
-    <h1>전투가 재미없던 이유 10가지, 고치고 실제로 녹화했다</h1>
-    <p>2026-08-29 적대적 감사에서 <b>실제로 재본</b> 결함 21건 중, 엔진이 원인인 <b>10건</b>을 고쳤다.
+    <h1>전투가 재미없던 이유, 고치고 실제로 녹화했다</h1>
+    <p>2026-08-29 적대적 감사에서 <b>실제로 재본</b> 결함 21건 중, 엔진이 원인인 <b>13건</b>을 고쳤고, 그 GIF를 본 사용자가 잡아낸 <b>1건</b>(몬스터가 튀는 문제)을 더 고쳤다.
        고친 뒤에 <b>진짜 전투를 플레이해서 영상으로 녹화</b>하고, 그 영상을 잘라 GIF 로 만들었다.
        아래 움직이는 그림은 모두 <b>손으로 만든 게 아니라 실제 게임 화면</b>이다.</p>
     <div class="meta">
@@ -131,7 +131,8 @@
       <span>커밋 ce24fb1f</span>
       <span>PR #253</span>
       <span>측정 경로 player.html (출하 경로)</span>
-      <span>GIF 4개 · 스크린샷 12장</span>
+      <span>GIF 4개 · 스크린샷 13장</span>
+      <span>수정 14건</span>
     </div>
   </div>
 </header>
@@ -148,6 +149,7 @@
     <li><a href="#info">정보 — 적이 얼마나 남았는지 알 수 없었다</a></li>
     <li><a href="#text">글씨 — 두 번째 줄이 잘려 있었다</a></li>
     <li><a href="#balance">숫자 — 0 이 나오고 급소는 안 터졌다</a></li>
+    <li><a href="#anchor">몬스터가 흰 박스에 따라 튀었다 (GIF로 발견)</a></li>
     <li><a href="#howto">어떻게 녹화했나</a></li>
     <li><a href="#honest">정정과 못 한 것</a></li>
   </ol>
@@ -177,6 +179,7 @@
   <div class="card"><h5>통상공격 애니메이션</h5><div class="big num-move"><span class="was">없음</span> → <span class="now">타격</span></div><p>전 구간 아무 효과도 안 떴다</p></div>
   <div class="card"><h5>급소(크리티컬) 확률</h5><div class="big num-move"><span class="was">4%</span> → <span class="now">10%</span></div><p>25대에 한 번은 못 느낀다</p></div>
   <div class="card"><h5>피해 0 이 되는 적</h5><div class="big num-move"><span class="was">24종 중 12종</span> → <span class="now">0종</span></div><p>Lv1 주인공을 아무리 때려도 0 이었다</p></div>
+  <div class="card"><h5>몬스터 흔들림</h5><div class="big num-move"><span class="was">75px</span> → <span class="now">0px</span></div><p>HUD가 펼쳐질 때마다 스프라이트가 튀었다</p></div>
   <div class="card"><h5>맞은 적 체력 표시</h5><div class="big num-move"><span class="was">선택 중만</span> → <span class="now">계속</span></div><p>"한 방 더면 죽는다" 판단이 가능해졌다</p></div>
 </div>
 
@@ -388,7 +391,80 @@
 <p>"공격 / 스킬 / 아이템" 은 용어 사전에서 바꿀 수 있었는데 <b>"방어 / 도주" 는 코드에 박혀</b> 있었다.
    그래서 테스트 프로젝트가 앞 세 개만 영어로 바꿨더니 <b>메뉴가 반은 영어, 반은 한국어</b>가 됐다(위 01 절의 왼쪽 사진).
    <code>defend</code> · <code>escape</code> 를 용어 사전에 넣어서 이제 둘 다 바꿀 수 있다.</p>
-<h2 id="howto"><span class="n">08</span>어떻게 녹화했나</h2>
+
+<h2 id="anchor"><span class="n">08</span>몬스터가 흰 박스에 따라 튀었다</h2>
+
+<p class="lede">이건 GIF를 사용자가 보고 잡아낸 결함이다. 슬라임이 흰 조준 테두리가 커지고 작아지는 데 맞춰
+   위아래로 눈에 보이게 <b>튀었다</b>. 스프라이트 좌표를 실제로 재보니 한 턴에 <b>75px</b> 움직였다.</p>
+
+<h4>실측 — 출하 경로에서 120ms 간격으로 채집한 스프라이트 좌표</h4>
+<table>
+  <tr><th>상태</th><th>적 HUD</th><th>노드 높이</th><th>스프라이트 y</th><th></th></tr>
+  <tr><td>커맨드 메뉴</td><td class="num">접힘</td><td class="num">230</td><td class="num">103</td><td></td></tr>
+  <tr><td>대상 선택</td><td class="num">펼침</td><td class="num">273</td><td class="num">59</td><td><span class="chip hi">44px 위로</span></td></tr>
+  <tr><td>타격 순간</td><td class="num">펼침</td><td class="num">295</td><td class="num">134</td><td><span class="chip hi">75px 아래로</span></td></tr>
+  <tr><td>그 뒤 계속</td><td class="num">펼침</td><td class="num">295</td><td class="num">134</td><td><span class="chip hi">31px 어긋난 채 고정</span></td></tr>
+</table>
+
+<h3>원인 — 발을 맞추려던 보정이 원인이었다</h3>
+<p>적 노드는 <b>아래쪽을 기준점</b>으로 쓴다(<code>translate(-50%, -100%)</code>). 그런데 이름표와 HP HUD가
+   스프라이트 <b>아래에 흐름으로 쌓여</b> 있어서, 기준점이 스프라이트의 발이 아니라 그 스택 아래에 잡혔다.
+   그래서 예전 코드는 <b>스택 높이를 매번 실측해서</b> 노드를 그만큼 내려 보정했다. 그 코드의 주석은 이렇게 적어놨다.</p>
+
+<pre><code>  <span class="cmt">/* 오프셋은 노드 <b>높이</b>를 바꾸지 않으므로 (node.bottom − image.bottom) 이
+      불변이고, 한 번의 패스로 수렴한다(재진입해도 같은 값). */</span>
+  function alignEnemyFeetToAuthoredY(group) { ... }</code></pre>
+
+<p>전제가 <b>"노드 높이는 불변"</b>이다. 그런데 HUD는 <code>display:none</code> ↔ <code>display:grid</code>로
+   토글된다 — 높이가 <b>변한다.</b> 전제가 깨지면 측정값이 바뀌고, 그 값이 <code>top</code>에 들어가 스프라이트가 점프한다.
+   게다가 보정은 한 프레임 늦게 반영되므로 위로도 튀고(−44px) 아래로도 튀었다(+31px).</p>
+
+<div class="note warn"><b>흰 박스는 무엇이었나.</b> <code>.battle-target-selected</code>의
+  <code>outline: 4px solid</code>다. outline은 노드 박스를 따라 그려지므로 HUD가 펼쳐지면 박스도 같이 커졌다.
+  사용자가 "흰색 박스에 따라 움직인다"고 한 건 정확한 관찰이었다 — 둘은 같은 원인의 두 증상이다.</div>
+
+<div class="note bad"><b>내 책임 부분.</b> 이 결함은 제가 만든 게 아니라 원래 있었지만,
+  제가 "때린 적은 체력을 계속 보여준다"로 바꾸면서 HUD 토글이 훨씬 자주 일어나 <b>눈에 보이게 끌어냈다.</b>
+  전에는 대상 선택 중에만 펼쳤으니 덜 띄었던 것이다.</div>
+
+<h3>수정 — 땜질을 지우고 구조로 바꿨다</h3>
+<p>이름표·순번 배지·상태 아이콘·HP HUD를 <code>.battle-enemy-chrome</code> 한 겹으로 묶어 <b>흐름에서 빼냈다.</b>
+   그러면 노드 높이가 <b>항상 스프라이트 높이와 같아지고</b>, 아래쪽 기준점이 곧 발이 된다.
+   실측 보정이 필요 없어졌으므로 <code>alignEnemyFeetToAuthoredY</code>와
+   <code>--battle-enemy-label-drop</code>을 <b>지웠다.</b></p>
+
+<pre><code>  <span class="del">- top: calc(var(--battle-node-y) + var(--battle-enemy-label-drop, 0px));</span>
+  <span class="add">+ top: var(--battle-node-y);</span>
+
+  <span class="add">+ .battle-enemy-chrome {        /* 이름표·HUD 를 흐름 밖으로 */
+  +   position: absolute;
+  +   top: calc(100% + 6px);
+  +   left: 50%;
+  +   transform: translateX(-50%);
+  +   display: flex; flex-direction: column;   /* 스킨의 order 를 보존한다 */
+  + }</span></code></pre>
+
+<p>겹을 flex 열로 둔 이유는 vxace 스킨이 자식에 걸어둔 <code>order</code>(배지 1 / HUD 2)가 계속 먹어야 하기 때문이다.
+   16종 스킨을 조사해 흐름 배치에 의존하는 스킨(vxace · mv · rm2003)을 먼저 확인하고 바꿨다.</p>
+
+<h3>결과 — 25개 표본 전부 같은 좌표</h3>
+<table>
+  <tr><th></th><th>전</th><th>후</th></tr>
+  <tr><td>스프라이트 좌표 (전 상태)</td><td class="num">103 / 59 / 134</td><td class="num"><b>92 하나뿐</b></td></tr>
+  <tr><td>노드 높이</td><td class="num">230 / 273 / 295</td><td class="num"><b>210 불변</b></td></tr>
+  <tr><td>HUD 토글</td><td class="num">접힘↔펼침</td><td class="num">접힘↔펼침 (그대로)</td></tr>
+</table>
+
+<div class="note ok"><b>가드가 진짜 잡는지 확인했다.</b> chrome을 다시 흐름으로 되돌려서
+  테스트가 <b>실제로 실패하는 것</b>까지 봤다. 의도된 모션(달려들기·넉백)은 transform으로 일부러 움직이므로
+  그 표본은 제외하고, <b>정지 상태끼리만</b> 좌표가 같은지 본다. HUD가 접힘·펼침을 실제로 왕복했는지도
+  같이 검사한다 — 안 그러면 이 가드가 공허하게 통과한다.</div>
+
+<div class="note"><b>딸린 조정 2건.</b> 노드가 작아진 만큼 이름표 알약이 outline 선을 물어서 겹을 6px 내렸고,
+  rm2003 조준 괄호의 <code>top: calc(50% + 16px)</code>를 <code>50%</code>로 바꿨다 —
+  이제 50%가 곧 스프라이트의 중심이다(예전에는 노드가 HUD까지 품어서 그렇지 않았다).</div>
+
+<h2 id="howto"><span class="n">09</span>어떻게 녹화했나</h2>
 
 <p>"고쳤다" 는 말만으로는 못 믿는다. 그래서 <b>사람이 하는 것과 똑같은 방식</b>으로 게임을 플레이하는
    자동 테스트를 만들고, 그 화면을 영상으로 남겼다.</p>
@@ -438,7 +514,7 @@
   </figure>
 </div>
 
-<h2 id="honest"><span class="n">09</span>정정과 못 한 것</h2>
+<h2 id="honest"><span class="n">10</span>정정과 못 한 것</h2>
 
 <h3>지난 보고서에서 내가 틀린 것</h3>
 <div class="note bad"><b>F03 "확인 소리가 두 번 난다" 는 오독이었다.</b>
@@ -476,7 +552,7 @@
 <div class="note"><b>이 저장소의 테스트는 원래 크게 빨갛다.</b> 손대지 않은 main 에서도 84~85개 파일이 실패한다.
   그래서 전체 숫자로는 회귀를 판단할 수 없고, <b>내가 건드린 경로의 테스트가 초록인지</b>로 판단했다.</div>
 
-<h2><span class="n">10</span>고친 것 한눈에</h2>
+<h2><span class="n">11</span>고친 것 한눈에</h2>
 <table>
   <tr><th>#</th><th>무엇이 문제였나</th><th>어디를 고쳤나</th></tr>
   <tr><td class="num">1</td><td>한 대에 소리 4겹</td><td><code>src/player/battleJuice.ts</code> · <code>battleDom.ts</code></td></tr>
@@ -492,6 +568,7 @@
   <tr><td class="num">11</td><td>뺄셈식 방어가 0 으로 붕괴</td><td><code>src/battle/battleDamage.ts</code></td></tr>
   <tr><td class="num">12</td><td>급소가 안 보일 만큼 드물었다</td><td><code>src/battle/battleDamage.ts</code></td></tr>
   <tr><td class="num">13</td><td>방어·도주를 바꿀 수 없었다</td><td><code>src/project/terms.ts</code> 외 3개</td></tr>
+  <tr><td class="num">14</td><td>몬스터가 HUD에 따라 75px 튀었다</td><td><code>src/player/battleFieldDom.ts</code> · <code>01-scene-base.css</code> · <code>03-vxace-status-nodes.css</code> · <code>_rm2003.css</code></td></tr>
 </table>
 
 <footer>
