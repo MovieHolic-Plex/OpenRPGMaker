@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import type { ItemRecord } from "@/project/types";
+import type { EquipmentRecord, ItemEquipmentEffectFlags, ItemRecord } from "@/project/types";
 
 const HANGUL = /[가-힣]/;
 const ASCII_ONLY_NAME = /^[A-Za-z][A-Za-z\s-]*$/;
@@ -22,6 +22,7 @@ describe("default item catalog quality", () => {
     );
     expect(new Set(equipmentKeys).size).toBe(equipmentKeys.length);
     expect(new Set(records.map((record) => record.description)).size).toBe(records.length);
+    for (const equipment of project.database.equipment) assertRuntimeEquipmentAxisContract(equipment);
   });
 
   it("사용 시점과 소모 여부, 실행 효과, 애니메이션 참조가 서로 맞는다", () => {
@@ -53,6 +54,22 @@ describe("default item catalog quality", () => {
     }
   });
 });
+
+function assertRuntimeEquipmentAxisContract(equipment: EquipmentRecord): void {
+  expect(equipment.accuracy, `${equipment.id}.accuracy`).toBeGreaterThanOrEqual(0);
+  expect(equipment.accuracy, `${equipment.id}.accuracy`).toBeLessThanOrEqual(100);
+  expect(equipment.criticalRate, `${equipment.id}.criticalRate`).toBeGreaterThanOrEqual(0);
+  expect(equipment.criticalRate, `${equipment.id}.criticalRate`).toBeLessThanOrEqual(100);
+  expect(equipment.attackElementIds.length, `${equipment.id}.attackElementIds`).toBeLessThanOrEqual(1);
+  if (equipment.stateInflictIds.length === 0) expect(equipment.stateInflictionChance, equipment.id).toBe(100);
+  if (equipment.stateDefenseIds.length === 0) expect(equipment.stateResistanceChance, equipment.id).toBe(0);
+  expect(equipment.stateDefenseMode, `${equipment.id}.stateDefenseMode`).toBe("resist");
+
+  const authoredFlags = Object.entries(equipment.effectFlags)
+    .filter(([, value]) => value)
+    .map(([key]) => key as keyof ItemEquipmentEffectFlags);
+  expect(authoredFlags.every((flag) => flag === "doubleAttack" || flag === "attackAll" || flag === "fixedEquipment"), equipment.id).toBe(true);
+}
 
 function isBattleUsable(item: ItemRecord): boolean {
   if (item.occasion === "never" || item.occasion === "field" || item.captureProfile) return false;

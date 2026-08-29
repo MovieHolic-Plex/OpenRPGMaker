@@ -551,6 +551,8 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
     equippableClassIds: cleanIds(record.equippableClassIds),
     cursed: record.cursed ?? false,
     twoHanded: record.twoHanded ?? false,
+    accuracy: clampInteger(record.accuracy ?? 100, 0, 100),
+    criticalRate: clampInteger(record.criticalRate ?? 0, 0, 100),
     usableAsItemSkillId: cleanOptionalId(record.usableAsItemSkillId),
     attackElementIds: cleanIds(record.attackElementIds),
     stateInflictIds: cleanIds(record.stateInflictIds),
