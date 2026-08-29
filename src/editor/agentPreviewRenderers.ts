@@ -155,6 +155,8 @@ export class AgentGhostPreviewRenderer {
   private animGroup: Phaser.GameObjects.Container | null = null;
   private scheduleKey: string = "";
   private tickerBound: (() => void) | null = null;
+  /** 셀별 공개 시각(turn 시작 기준 ms) — 이미 드러난 셀이 다시 처음부터 나오지 않게 한다. */
+  private readonly cellStartMs = new Map<string, number>();
 
   constructor(
     private readonly scene: SceneWithPhaserObjects,
@@ -173,6 +175,49 @@ export class AgentGhostPreviewRenderer {
     return this.schedule;
   }
 
+  /**
+   * 누적 스케줄 — 이미 드러난 셀은 공개 시각을 그대로 유지하고, 이번에 새로 들어온 셀만
+   * 지금 시점을 기준으로 좌→우 와이프를 새로 받는다.
+   *
+   * 각 셀의 `startMs` 는 턴 시작(`startTime`) 기준 경과 시간이라 `computeGhostAnimationState`
+   * 의 계약(상대 경과 시간)이 그대로 유지된다. 오름차순 정렬은 bbox 경로의 이분 탐색 전제다.
+   */
+  private accumulateSchedule(previews: readonly AgentGhostPreview[]): readonly GhostRevealStep[] {
+    const keyed = previews.flatMap((preview) =>
+      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}` }))
+    );
+    if (this.startTime === null) this.startTime = this.clock();
+    const elapsedNow = Math.max(0, this.clock() - this.startTime);
+
+    const fresh = keyed.filter((item) => !this.cellStartMs.has(item.key));
+    if (fresh.length > 0) {
+      const offsets = new Map<AgentGhostCell, number>();
+      for (const step of buildGhostRevealSchedule(fresh.map((item) => item.cell))) {
+        offsets.set(step.cell, step.startMs);
+      }
+      for (const item of fresh) {
+        this.cellStartMs.set(item.key, elapsedNow + (offsets.get(item.cell) ?? 0));
+      }
+    }
+
+    // 사라진 셀의 공개 시각은 버린다 — 프리뷰가 줄어든 뒤 같은 좌표가 다시 들어오면
+    // 새 와이프를 받아야 한다.
+    if (this.cellStartMs.size > keyed.length) {
+      const present = new Set(keyed.map((item) => item.key));
+      for (const key of [...this.cellStartMs.keys()]) {
+        if (!present.has(key)) this.cellStartMs.delete(key);
+      }
+    }
+
+    return keyed
+      .map((item) => ({
+        cell: item.cell,
+        startMs: this.cellStartMs.get(item.key) ?? elapsedNow,
+        kind: item.cell.layer === "event" ? ("event" as const) : ("tile" as const),
+      }))
+      .sort((left, right) => left.startMs - right.startMs);
+  }
+
   render(): void {
     this.layer.removeAll(true);
     this.clearDomMarkers();
@@ -182,6 +227,7 @@ export class AgentGhostPreviewRenderer {
       this.schedule = [];
       this.scheduleKey = "";
       this.startTime = null;
+      this.cellStartMs.clear();
       this.animGroup = null;
       this.tileLayerParent = null;
       this.tileLayer = null; // layer.removeAll(true) 가 파괴했다 — 참조와 키를 반드시 리셋
@@ -190,15 +236,11 @@ export class AgentGhostPreviewRenderer {
       return;
     }
 
-    const allCells = previews.flatMap((p) => p.cells);
-    this.schedule = buildGhostRevealSchedule(allCells);
-    // 같은 셀 집합으로 다시 렌더되면(스토어 emit, 카메라 변경 등) 시작 시각을 유지한다.
-    // 아니면 공개 애니메이션이 매 emit 마다 처음으로 되돌아가 첫 프레임에서 얼어붙는다.
-    const nextKey = ghostScheduleKey(this.schedule);
-    if (this.startTime === null || nextKey !== this.scheduleKey) {
-      this.startTime = this.clock();
-    }
-    this.scheduleKey = nextKey;
+    this.schedule = this.accumulateSchedule(previews);
+    // 셀 집합 지문은 타일 레이어를 다시 빌드할지 판단하는 데만 쓴다. 예전에는 이 지문이
+    // 바뀔 때 startTime 까지 되감았는데, 라이브 프리뷰는 150ms 스로틀로 셀이 계속 늘어나므로
+    // 툴 12개짜리 턴이 "왼쪽부터 쏵"을 12번 반복했다 — 쌓여가는 게 아니라 깜빡임으로 읽혔다.
+    this.scheduleKey = ghostScheduleKey(this.schedule);
     this.currentToolName = preferredGhostToolName(previews[0]?.toolName ?? "", this.currentState().runningToolName ?? "");
 
     if (!isAgentGhostPreviewHidden()) {
@@ -470,6 +512,7 @@ export class AgentGhostPreviewRenderer {
     this.schedule = [];
     this.scheduleKey = "";
     this.startTime = null;
+    this.cellStartMs.clear();
     this.animGroup = null;
     this.tileLayer = null;
     this.tileLayerParent = null;

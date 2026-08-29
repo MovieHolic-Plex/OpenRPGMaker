@@ -1,4 +1,5 @@
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
+import { clearAgentBlueprint } from "@/editor/agentBlueprint";
 import { lineCells, type Point } from "@/editor/tools/mapHelpers";
 
 export type AgentGhostLayer = "lower" | "upper" | "event";
@@ -174,6 +175,12 @@ export function agentGhostPreviewsForMap(state: AgentGhostPreviewState, mapId: M
 }
 
 export function clearAgentGhostPreview(): void {
+  // 청사진(밑그림)과 고스트는 수명이 같다 — 계획을 세우고 초안을 그렸다가 수락·거절·중단으로
+  // 함께 끝난다. 청사진 정리를 여기 묶는 이유는 openwiki/editor-ai-panel.md 의 불변식
+  // ("수락/거절/새 세션/모달 닫기와 모든 오류·중단 경로가 clearAgentGhostPreview 를 부른다")
+  // 를 그대로 물려받아 호출 지점을 다시 뒤지지 않기 위해서다. 아래 조기 반환보다 앞에 둔다 —
+  // 스펙만 확정되고 타일은 아직 없는 상태에서 거절되면 조기 반환이 청사진을 남긴다.
+  clearAgentBlueprint();
   if (previews.length === 0 && runningToolName === "") return;
   previews = [];
   runningToolName = "";

@@ -1,3 +1,4 @@
+import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
@@ -52,6 +53,18 @@ export function focusAcceptedAgentChanges(before: Project, after: Project): Agen
   const currentMapId = editorState.get().currentMapId ?? before.startMapId ?? null;
   selectEditorMap(target.mapId, { clearEventSelection: currentMapId !== target.mapId });
   requestAgentFocusHighlight(target);
+  // 하이라이트만 켜고 카메라를 두면 변경 영역이 화면 밖일 때 "아무 일도 안 일어난 것"으로
+  // 보인다 — bbox 는 이미 손에 있으니 화면 밖일 때만 데려간다. 판정은 씬이 실제 카메라로
+  // 한다(planCameraFocus). 사용자가 지금 칠하거나 화면을 끌고 있으면 씬이 요청을 무시한다.
+  if (target.bounds) {
+    requestEditorCameraFocus({
+      mapId: target.mapId,
+      tileX: Math.floor(target.bounds.x + target.bounds.width / 2),
+      tileY: Math.floor(target.bounds.y + target.bounds.height / 2),
+      bounds: target.bounds,
+      onlyIfOffscreen: true,
+    });
+  }
   return target;
 }
 
