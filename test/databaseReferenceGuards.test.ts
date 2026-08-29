@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { deleteSwitch, deleteVariable } from "@/editor/actions";
 import { addDatabaseRecord, deleteDatabaseRecord, updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourceReferenceMessage, switchVariableReferenceMessage } from "@/editor/databaseReferences";
 import { createBlankProject, DEFAULT_TROOP_ID } from "@/project/defaults";
@@ -204,5 +205,87 @@ describe("database reference guards for command-bearing records", () => {
     expect(deleteDatabaseRecord("actors", referencedActorId)).toMatchObject({ ok: false });
     expect(deleteDatabaseRecord("actors", unreferencedActorId)).toEqual({ ok: true });
     expect(store.getCurrent().database.actors.some((actor) => actor.id === unreferencedActorId)).toBe(false);
+  });
+
+  // fix(db): 복합 조건(all/any/not) 안에만 있는 참조도 삭제 가드가 봐야 한다.
+  // 예전에는 leaf 조건만 검사해서, AND 그룹 안의 스위치가 경고 없이 삭제되고
+  // 남은 조건이 조용히 절대 발동하지 않는 상태가 됐다.
+  function pushPageWithConditions(mapId: string, eventId: string, conditions: unknown[]): void {
+    store.update((project) => {
+      project.maps[mapId]?.events.push({
+        id: eventId,
+        x: 4,
+        y: 4,
+        trigger: { kind: "action" },
+        pages: [{
+          id: `${eventId}_page`,
+          name: "복합 조건 페이지",
+          conditions: conditions as never,
+          graphic: {},
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [],
+        }],
+        commands: [],
+      });
+    });
+  }
+
+  it("blocks deleting a switch referenced only inside an 'all' page condition group", () => {
+    const mapId = firstMapId();
+    store.update((project) => {
+      project.switches = [{ id: "sw_in_all", name: "All Switch" }];
+    });
+    pushPageWithConditions(mapId, "ev_all_group", [
+      { kind: "all", conditions: [{ kind: "switch", switchId: "sw_in_all", value: true }] },
+    ]);
+
+    expect(switchVariableReferenceMessage("switch", "sw_in_all")).not.toBeNull();
+    expect(deleteSwitch("sw_in_all")).toMatchObject({ ok: false });
+    expect(store.getCurrent().switches.some((entry) => entry.id === "sw_in_all")).toBe(true);
+  });
+
+  it("blocks deleting a variable referenced only inside a 'not' page condition", () => {
+    const mapId = firstMapId();
+    store.update((project) => {
+      project.variables = [{ id: "var_in_not", name: "Not Variable" }];
+    });
+    pushPageWithConditions(mapId, "ev_not_group", [
+      { kind: "not", condition: { kind: "variable", variableId: "var_in_not", op: ">=", value: 3 } },
+    ]);
+
+    expect(switchVariableReferenceMessage("variable", "var_in_not")).not.toBeNull();
+    expect(deleteVariable("var_in_not")).toMatchObject({ ok: false });
+    expect(store.getCurrent().variables.some((entry) => entry.id === "var_in_not")).toBe(true);
+  });
+
+  it("blocks deleting an item referenced only inside an 'any' page condition group", () => {
+    const itemId = addDatabaseRecord("items");
+    const mapId = firstMapId();
+    pushPageWithConditions(mapId, "ev_any_group", [
+      {
+        kind: "any",
+        conditions: [
+          { kind: "gold", op: ">=", amount: 10 },
+          { kind: "item", itemId, present: true },
+        ],
+      },
+    ]);
+
+    expect(deleteDatabaseRecord("items", itemId)).toMatchObject({ ok: false });
+    expect(store.getCurrent().database.items.some((item) => item.id === itemId)).toBe(true);
+  });
+
+  it("still deletes a switch that has no references at all", () => {
+    store.update((project) => {
+      project.switches = [{ id: "sw_orphan", name: "Orphan Switch" }];
+    });
+
+    expect(switchVariableReferenceMessage("switch", "sw_orphan")).toBeNull();
+    expect(deleteSwitch("sw_orphan")).toEqual({ ok: true });
+    // 세션 슬롯이 남아 있으면 ensureSwitchVariableSlots가 이름 없는 슬롯을 되살리므로
+    // "정의가 사라졌다"는 이름으로 확인한다.
+    expect(store.getCurrent().switches.some((entry) => entry.name === "Orphan Switch")).toBe(false);
   });
 });
