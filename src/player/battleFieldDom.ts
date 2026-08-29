@@ -36,12 +36,13 @@ interface SkinBattlerPlacement {
 }
 
 // 세로 배치의 단일 규칙(12종 공통):
-//  · 저작 y 는 **스프라이트의 발**이다. 노드는 `translate(-50%, -100%)` 라 앵커가 원래
-//    이름표+HUD 스택 **아래**에 잡혔고(그래서 스프라이트가 그만큼 떠 있었다), 지금은
-//    `alignEnemyFeetToAuthoredY` 가 그 스택 높이를 실측해 노드를 내려 보정한다.
-//    실측 스택 높이: rm2003 33px · vxace 60 · rm2000·dragonquest 97 · octopath·bravely 109
-//    · mv 115 · chrono·ff·mother·goldensun 133.
-//  · 그래서 y 의 상한은 "발 + 스택이 필드 안" 이다 — 스택이 두꺼운 스킨은 y 를 더 못 내린다.
+//  · 저작 y 는 **스프라이트의 발**이다. 노드는 `translate(-50%, -100%)` 로 아래쪽을 앵커로
+//    쓰고, 이름표·HUD 는 `.battle-enemy-chrome` 이 흐름에서 빼내 겹쳐 놓으므로
+//    노드 높이 = 스프라이트 높이다. 즉 앵커가 곧 발이고 보정이 필요 없다.
+//    (옛 실측 보정 시절 스택 높이: rm2003 33px · vxace 60 · rm2000·dragonquest 97
+//     · octopath·bravely 109 · mv 115 · chrono·ff·mother·goldensun 133. HUD 를 펼칠 때마다
+//     이 값이 변해 몬스터가 튀었다 — 그래서 구조로 없앴다.)
+//  · y 의 상한은 이제 "발이 필드 안" 이다 — chrome 은 필드 밖으로 넘쳐도 레이아웃을 안 민다.
 //    ff·goldensun 은 접지 띠(발 ≥ 60%)와 그 상한 사이가 36px 뿐이라 두 줄을 세우면 줄 간격이
 //    이름표 높이(38px)보다 좁아 이름이 겹쳤다(실측 교차 109×4px) → 1열로 바꿨다.
 //  · 좌표계는 필드에서 `--battle-stage-inset-top` 만큼 들어간 배틀러 그룹 박스다
@@ -279,27 +280,15 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
   }
-  alignEnemyFeetToAuthoredY(group);
 }
 
-/** 저작 y 가 **스프라이트의 발**을 뜻하도록 노드를 라벨 스택 높이만큼 내린다.
- *  `.battle-enemy` 는 이미지 → 이름 → HUD 순 흐름 열인데 노드가 `translate(-50%, -100%)` 라
- *  앵커가 라벨 스택 **아래**에 잡힌다. 그래서 스프라이트는 저작 y 보다 라벨 높이만큼 떠 있었다
- *  (실측 node.bottom − image.bottom: rm2003 33px, rm2000 97px, octopath·bravely 109px,
- *  chrono 133px). 이게 "몬스터가 너무 위에 달려 있다"의 뿌리다 — y 값을 스킨마다 만지는 건
- *  증상 치료였다.
- *  라벨 높이는 스킨·이름 길이·게이지 수마다 달라 CSS 상수로 박을 수 없어 실측해서 심는다.
- *  오프셋은 노드 **높이**를 바꾸지 않으므로 (node.bottom − image.bottom) 이 불변이고,
- *  한 번의 패스로 수렴한다(재진입해도 같은 값). jsdom 은 rect 가 0 이라 자동으로 무해하다. */
-function alignEnemyFeetToAuthoredY(group: Element): void {
-  for (const node of group.querySelectorAll<HTMLElement>(".battle-enemy")) {
-    const image = node.querySelector<HTMLElement>(".battle-enemy-image");
-    if (!image) continue;
-    const drop = node.getBoundingClientRect().bottom - image.getBoundingClientRect().bottom;
-    if (!Number.isFinite(drop) || drop <= 0) continue;
-    node.style.setProperty("--battle-enemy-label-drop", `${Math.round(drop)}px`);
-  }
-}
+/* 옛 `alignEnemyFeetToAuthoredY` 가 여기 있었다.
+ *
+ * 저작 y 를 스프라이트의 **발**로 읽히게 하려고 (node.bottom − image.bottom) 을 실측해
+ * 노드 top 에 더했다. 전제는 "노드 높이는 불변" 이었는데, 적 HUD 를 펼치고 접을 때마다
+ * 높이가 변해서 전제가 깨졌다 — 그래서 몬스터가 흰 HUD 박스에 따라 눈에 보이게 튀었다.
+ * 이제 이름·HUD 를 `.battle-enemy-chrome` 으로 흐름에서 빼내 노드 높이 = 스프라이트 높이가
+ * 되므로, 실측 보정 자체가 필요 없다. CSS 의 `--battle-enemy-label-drop` 도 함께 지웠다. */
 
 function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   const group = field.querySelector(".battle-actor-group");
@@ -362,7 +351,8 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
     existingBrackets?.remove();
   }
   if (!node.querySelector(".battle-enemy-hud")) {
-    node.append(enemyHpHud(enemy));
+    // chrome 겹 안에 넣는다 — 노드 직계로 붙이면 흐름 높이가 늘어 발 위치가 흔들린다.
+    (node.querySelector<HTMLElement>(".battle-enemy-chrome") ?? node).append(enemyHpHud(enemy));
   }
   // 한 번이라도 피해를 입은 적은 HP 를 계속 보여준다.
   //
@@ -524,7 +514,10 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   const name = document.createElement("span");
   name.className = "battle-enemy-name";
   name.textContent = enemy.name;
-  enemyNode.append(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy));
+  // 이름·순번·상태·HP 는 스프라이트 **아래에 겹쳐** 놓는다(.battle-enemy-chrome 이 절대 배치).
+  // 흐름에 두면 HUD 를 펼칠 때 노드 높이가 변하고, 그 높이로 스프라이트 top 을 보정하던
+  // 옛 코드(alignEnemyFeetToAuthoredY) 때문에 몬스터가 눈에 보이게 튀었다.
+  enemyNode.append(enemyChrome(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy)));
   if (snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id) {
     const brackets = document.createElement("span");
     brackets.className = "battle-target-brackets";
@@ -535,6 +528,23 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   if (enemy.defeated) enemyNode.classList.add("defeated");
   enemyNode.disabled = enemy.defeated || snapshot.targetSelection?.side !== "enemy" || !snapshot.targetSelection.targetIds.includes(enemy.id);
   return enemyNode;
+}
+
+/**
+ * 적 스프라이트 아래에 붙는 UI 를 한 겹으로 묶는다.
+ *
+ * 이 겹이 있어야 `.battle-enemy` 의 높이가 **스프라이트 높이와 같게** 유지된다.
+ * 노드는 `translate(-50%, -100%)` 로 아래쪽 앵커를 쓰므로, 높이가 곧 발 위치다.
+ * 겹이 없던 시절에는 HUD 를 펼칠 때마다 노드가 자라 발 위치가 흔들렸다.
+ *
+ * flex 열로 두는 이유: 스킨이 자식에 걸어둔 `order`(vxace 배지 1 / HUD 2)가
+ * 계속 먹어야 한다. 흐름 순서를 그대로 보존한다.
+ */
+function enemyChrome(...children: HTMLElement[]): HTMLElement {
+  const chrome = document.createElement("span");
+  chrome.className = "battle-enemy-chrome";
+  chrome.append(...children);
+  return chrome;
 }
 
 /** 적 스프라이트 위의 순번 배지(1-base). 기본은 CSS 로 숨기고 vxace 스킨에서만 노출한다. */
