@@ -1,46 +1,72 @@
 // editor/panels/eventEditor/aiAssist.ts
 // 이벤트 에디터 「AI 명령」 작성기. 「이 페이지가 하는 일」 칼럼 **맨 아래에 붙는 인플로우 도크**다.
-// 자연어 입력 → runEventCommandAssist(순수 로직) → 프리뷰(commandSummaryParts 요약)
-// → [넣기] 시 CommandListActions 로 반영. LLM 설정은 loadAiConfig 재사용.
+// 자연어 입력 → runEventCommandAssist(순수 로직) → **목록 자리에 겹쳐 보이는 초안**
+// (commandDiff + stagedDiffView) → [이대로 하기] 시 목록 전체를 한 번에 교체.
+// LLM 설정은 loadAiConfig 재사용.
 //
 // 왜 도크인가(실측): 예전에는 도구 팝오버 안의 칩이 `position:absolute` 카드로 열려
 // **자기가 명령을 넣을 목록을 덮었다**(1440 폭에서 목록 면적의 46%, 1024 폭에서는 전폭).
-// 삽입 위치를 못 보면서 삽입 위치를 고르라고 하는 구조였다. 도크는 목록을 밀어 올리므로
-// 프롬프트를 쓰는 동안에도 선택한 명령과 삽입 지점이 계속 보인다.
+// 삽입 위치를 못 보면서 삽입 위치를 고르라고 하는 구조였다.
 //
-// 스토어 갱신 때마다 에디터 본문이 통째로 재렌더되므로, 입력 초안/펼침 상태/프리뷰는
+// 왜 「삽입」이 아니라 「고치기」인가 —
+// 예전 계약은 "새 명령 배열을 받아 선택 뒤에 끼워 넣기" 하나였다. 그래서 (1) 고치기·지우기·
+// 순서 바꾸기를 표현할 수 없었고, (2) 사용자가 "이미 열었으면 비어있다고 하게 고쳐" 라고 쓰면
+// 모델이 페이지를 다시 써서 돌려주는데 앱이 그걸 끝에 덧붙여 이벤트가 두 번 실행됐고,
+// (3) 명령 개수만큼 insertCommand 를 불러 되돌리기 스냅샷이 그만큼 쌓여
+// "되돌리려면 ↶" 안내가 거짓이었다(8개 넣으면 ↶ 8번).
+// 지금은 항상 "고친 뒤 최종 목록"을 만들어 목록과 대조해 보여주고, 적용은 replaceAll 한 번이다.
+//
+// 스토어 갱신 때마다 에디터 본문이 통째로 재렌더되므로, 입력 초안/펼침 상태/초안 diff 는
 // 모듈 레벨 캐시(이벤트+페이지 키)로 보존해 재렌더 후 복원한다.
 
-import { runEventCommandAssist } from "@/ai/eventCommandAssist";
+import { runEventCommandAssist, resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
+import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
 import { modalStackDepthForTest, modalStackEntryCountForTest, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { auxCompositeKey } from "./auxOpenController";
-import { commandSummaryParts, type CommandSummaryPart } from "./commandSummary";
-import type { CommandListActions } from "./types";
+import { commandSummaryParts } from "./commandSummary";
+import {
+  applyCommandDiff,
+  countCommandDiff,
+  diffCommandLists,
+  hasCommandDiffChanges,
+  type CommandDiffRow,
+} from "./commandDiff";
+import { renderStagedDiff, stagedDiffSummary } from "./stagedDiffView";
 
 export interface EventAiAssistOptions {
   readonly mapId: MapId;
   readonly eventId: string;
   readonly page: EventPage;
-  readonly actions: CommandListActions;
   // 현재 선택 커맨드 조회용 커맨드 리스트 루트(.cmd-item.selected 탐색).
   readonly cmdList: HTMLElement;
+  // 초안을 목록 자리에 그릴 컨테이너(content.ts 가 cmdList 바로 앞에 둔다).
+  readonly stagedHost: HTMLElement;
+  // 초안 유무에 따라 목록/초안 중 무엇을 보일지 다시 계산하게 한다(content.ts 의 applyViewMode).
+  readonly refreshListVisibility: () => void;
+  // 목록 전체를 되돌리기 한 칸으로 교체(commandToolbarHistory.replaceAll).
+  readonly replaceAll: (commands: readonly Command[]) => void;
   // 테스트 주입용 설정 로더(생략 시 loadAiConfig).
   readonly loadConfig?: () => AiConfig;
 }
 
 type StatusKind = "" | "error" | "busy";
 
+type StagedDraft = {
+  readonly rows: readonly CommandDiffRow[];
+  readonly excluded: Set<string>;
+  readonly scope: AssistScope;
+};
+
 // 재렌더를 살아남는 패널 상태(이벤트+페이지 단위).
 type PanelState = {
   open: boolean;
   draft: string;
-  preview: Command[] | null;
+  staged: StagedDraft | null;
   status: string;
   statusKind: StatusKind;
 };
@@ -70,6 +96,19 @@ const PROMPT_EXAMPLES: readonly { readonly label: string; readonly prompt: strin
   },
 ];
 
+// 명령이 이미 있는 페이지에서는 「고치기」 예시가 더 쓸모 있다 — 고정 3개는 늘 "새로 만들기"였다.
+const EDIT_EXAMPLES: readonly { readonly label: string; readonly prompt: string }[] = [
+  { label: "한 번만", prompt: "이미 한 번 실행했으면 다시 실행되지 않게 고쳐 줘." },
+  { label: "대사 다듬기", prompt: "대사를 더 짧고 자연스럽게 다듬어 줘. 내용은 그대로." },
+  { label: "조건 붙이기", prompt: "보상을 주기 전에 조건 검사를 붙여 줘." },
+];
+
+function stateKeyOf(mapId: MapId, eventId: string, pageId: string): { projectKey: string; key: string } {
+  const identity = store.getProjectIdentity();
+  const projectKey = `${identity.kind}:${identity.id}`;
+  return { projectKey, key: `${projectKey}:${auxCompositeKey(mapId, eventId, pageId)}` };
+}
+
 function stateOf(projectKey: string, key: string): PanelState {
   // Prompt text is private to the loaded project. Keep only the current project's
   // entries so a long editing session cannot grow this module cache without bound.
@@ -79,9 +118,19 @@ function stateOf(projectKey: string, key: string): PanelState {
   }
   const existing = panelStates.get(key);
   if (existing) return existing;
-  const fresh: PanelState = { open: false, draft: "", preview: null, status: "", statusKind: "" };
+  const fresh: PanelState = { open: false, draft: "", staged: null, status: "", statusKind: "" };
   panelStates.set(key, fresh);
   return fresh;
+}
+
+/**
+ * 이 페이지에 적용 대기 중인 AI 초안이 있는가. content.ts 의 applyViewMode 가 목록을 숨기고
+ * 초안을 보일지 결정할 때 읽는다(렌더 순서에 상관없이 같은 답을 내야 하므로 모듈 상태를 본다).
+ */
+export function hasEventAiStagedDraft(mapId: MapId, eventId: string, pageId: string): boolean {
+  const { projectKey, key } = stateKeyOf(mapId, eventId, pageId);
+  if (panelStatesProjectKey !== projectKey) return false;
+  return Boolean(panelStates.get(key)?.staged);
 }
 
 // 칩 배지는 한국어만 쓴다. 예전에는 `busy`/`error`/`ready`/`draft` 영문 기계 토큰이
@@ -89,19 +138,18 @@ function stateOf(projectKey: string, key: string): PanelState {
 function chipStatusOf(state: PanelState): { text: string; kind: string; quiet: boolean } {
   if (state.statusKind === "busy") return { text: "생성 중", kind: "busy", quiet: false };
   if (state.statusKind === "error") return { text: "오류", kind: "error", quiet: false };
-  if (state.preview && state.preview.length > 0) {
-    return { text: `초안 ${state.preview.length}개`, kind: "ready", quiet: false };
+  if (state.staged) {
+    return { text: stagedDiffSummary(state.staged.rows, state.staged.excluded), kind: "ready", quiet: false };
   }
   if (state.draft.trim().length > 0) return { text: "작성 중", kind: "idle", quiet: false };
   return { text: "", kind: "idle", quiet: true };
 }
 
 export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsElement {
-  const { mapId, eventId, page, actions, cmdList } = options;
-  const identity = store.getProjectIdentity();
-  const projectKey = `${identity.kind}:${identity.id}`;
-  const key = `${projectKey}:${auxCompositeKey(mapId, eventId, page.id)}`;
+  const { mapId, eventId, page, cmdList, stagedHost, refreshListVisibility, replaceAll } = options;
+  const { projectKey, key } = stateKeyOf(mapId, eventId, page.id);
   const state = stateOf(projectKey, key);
+  const scope = resolveAssistScope(page);
   const instanceId = ++panelInstanceId;
   const headingId = `event-ai-heading-${instanceId}`;
   const inputId = `event-ai-input-${instanceId}`;
@@ -120,7 +168,9 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       id: inputId,
       rows: "3",
       "aria-describedby": promptHelpId,
-      placeholder: "예) 열면 회복약 2개를 주고, 이미 열었으면 «비어 있다»고 말한다",
+      placeholder: page.commands.length > 0
+        ? "예) 이미 열었으면 «비어 있다»고 말하게 고쳐 줘"
+        : "예) 열면 회복약 2개를 주고, 이미 열었으면 «비어 있다»고 말한다",
     },
     dataset: { testid: "ai-event-input" },
   });
@@ -161,23 +211,24 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   // 재렌더 시 기존 statusKind 클래스 복원.
   if (state.statusKind) status.className = `ai-event-status ${state.statusKind}`;
 
-  // ── 삽입 위치 표시 ─────────────────────────────────────────────────────────
+  // ── 무엇을 하게 되는지 표시 ───────────────────────────────────────────────
+  // "page" 는 목록을 고치는 것이고, "append"(너무 긴 페이지)는 뒤에 새로 붙이는 것이다.
   // 선택 상태는 스토어 갱신 없이 클래스만 바뀌므로 목록 클릭·패널 열기 때마다 다시 읽는다.
   const target = el("span", {
     class: "ai-event-target",
     dataset: { testid: "ai-event-target" },
   });
-  const insertBtn = button("맨 아래에 넣기", "ai-event-insert", "primary");
   const refreshTarget = (): void => {
-    const path = selectedCommandPath(cmdList);
-    const name = path ? commandNameAtPath(page.commands, path) : null;
-    if (name) {
-      target.textContent = `「${name}」 다음에 넣습니다`;
-      insertBtn.textContent = "선택한 명령 다음에 넣기";
-    } else {
-      target.textContent = "맨 아래에 이어서 넣습니다";
-      insertBtn.textContent = "맨 아래에 넣기";
+    if (scope === "page") {
+      target.textContent = page.commands.length > 0
+        ? "이 페이지의 명령 목록을 고칩니다"
+        : "이 페이지의 명령 목록을 만듭니다";
+      return;
     }
+    const name = selectedCommandName(cmdList, page.commands);
+    target.textContent = name
+      ? `페이지가 길어 「${name}」 다음에 새로 넣기만 합니다`
+      : "페이지가 길어 맨 아래에 새로 넣기만 합니다";
   };
   refreshTarget();
   bindCurrentDockRoot(root, cmdList, refreshTarget);
@@ -190,56 +241,57 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     else refreshChip();
   });
 
-  const previewHost = el("div", {
-    class: "ai-event-preview",
-    dataset: { testid: "ai-event-preview" },
-  });
+  // ── 초안(목록 자리에 겹쳐 보이는 diff) ────────────────────────────────────
 
-  const discardBtn = button("버리기", "ai-event-discard");
-  const previewFooter = el("div", { class: "ai-event-preview-actions", children: [insertBtn, discardBtn] });
+  const applyBtn = button("이대로 하기", "ai-event-apply", "primary");
+  const cancelBtn = button("취소", "ai-event-discard");
+  const resultMeta = el("span", { class: "ai-event-result-meta", dataset: { testid: "ai-event-result-meta" } });
   const resultTitle = el("h4", {
     class: "ai-event-result-title",
-    text: "만든 명령",
+    text: "위 목록에 표시했어요",
     attrs: { id: resultTitleId },
     dataset: { testid: "ai-event-result-title" },
   });
-  const resultMeta = el("span", { class: "ai-event-result-meta" });
   const resultSection = el("section", {
     class: "ai-event-result",
     attrs: { role: "region", "aria-labelledby": resultTitleId },
     dataset: { testid: "ai-event-result" },
     children: [
       el("div", { class: "ai-event-result-header", children: [resultTitle, resultMeta] }),
-      previewHost,
-      previewFooter,
+      el("div", { class: "ai-event-preview-actions", children: [applyBtn, cancelBtn] }),
     ],
   });
 
-  const renderPreview = (): void => {
-    previewHost.textContent = "";
-    const commands = state.preview;
-    if (!commands) {
+  const renderStaged = (): void => {
+    stagedHost.replaceChildren();
+    const staged = state.staged;
+    if (!staged) {
       resultSection.hidden = true;
-      previewHost.hidden = true;
-      previewFooter.hidden = true;
       resultMeta.textContent = "";
       refreshChip();
+      refreshListVisibility();
       return;
     }
     resultSection.hidden = false;
-    previewHost.hidden = false;
-    previewFooter.hidden = false;
-    refreshTarget();
-    resultMeta.textContent = `${commands.length}개 · 넣기 전에 확인하세요`;
-    for (const line of previewLines(commands, 0)) {
-      const row = el("div", { class: "ai-event-preview-line" });
-      row.style.setProperty("--cmd-depth", String(line.depth));
-      for (const part of line.parts) {
-        row.append(el("span", { class: `cmd-summary-token ${part.tone}`, text: part.text }));
-      }
-      previewHost.append(row);
-    }
+    stagedHost.append(renderStagedDiff({
+      rows: staged.rows,
+      excluded: staged.excluded,
+      onToggle: (id) => {
+        if (staged.excluded.has(id)) staged.excluded.delete(id);
+        else staged.excluded.add(id);
+        renderStaged();
+      },
+    }));
+    const counts = countCommandDiff(staged.rows, staged.excluded);
+    const changing = hasCommandDiffChanges(staged.rows, staged.excluded);
+    resultTitle.textContent = staged.scope === "page" ? "위 목록에 표시했어요" : "위 목록 끝에 표시했어요";
+    resultMeta.textContent = changing
+      ? `${stagedDiffSummary(staged.rows, staged.excluded)} · 「이대로 하기」를 누르면 반영돼요`
+      : "적용할 것을 모두 뺐어요";
+    applyBtn.disabled = !changing;
+    applyBtn.textContent = counts.removed > 0 ? "이대로 하기(지우는 것 포함)" : "이대로 하기";
     refreshChip();
+    refreshListVisibility();
   };
 
   const generateBtn = el("button", {
@@ -247,7 +299,10 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     attrs: { type: "button", title: "초안 만들기 (Ctrl+Enter)" },
     dataset: { testid: "ai-event-generate" },
     children: [
-      el("span", { class: "ai-event-generate-label", text: "초안 만들기" }),
+      el("span", {
+        class: "ai-event-generate-label",
+        text: state.staged ? "다시 만들기" : "초안 만들기",
+      }),
       el("kbd", { class: "ai-event-kbd", text: "Ctrl↵" }),
     ],
   }) as HTMLButtonElement;
@@ -275,17 +330,33 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     try {
       const project = store.getCurrent();
       const event = project.maps[mapId]?.events.find((entry) => entry.id === eventId);
+      const selection = selectedCommandPath(cmdList);
       const result = await runEventCommandAssist({
         config,
         prompt,
-        context: { project, mapId, event, page, selection: selectedCommandPath(cmdList) },
+        context: {
+          project,
+          mapId,
+          event,
+          page,
+          selection,
+          selectionLabel: selectedCommandName(cmdList, page.commands) ?? undefined,
+        },
       });
-      state.preview = result.commands;
+      // 모델 출력이 "page" 면 그게 곧 최종 목록이고, "append" 면 기존 목록에 끼워 최종 목록을 만든다.
+      // 어느 쪽이든 아래 diff 는 같은 일을 한다 — 무엇이 달라지는지 목록 위에 그린다.
+      const after = result.scope === "page"
+        ? result.commands
+        : withAppended(page.commands, selection, result.commands);
+      const rows = diffCommandLists(page.commands, after);
+      state.staged = { rows, excluded: new Set<string>(), scope: result.scope };
+      const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
       setStatus(
-        `명령 ${result.commands.length}개를 만들었어요. 아래에서 확인하세요.`
-          + (result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "")
+        hasCommandDiffChanges(rows)
+          ? `${stagedDiffSummary(rows, new Set())} — 위 목록에서 확인하세요.${fixedNote}`
+          : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`
       );
-      renderPreview();
+      renderStaged();
     } catch (cause) {
       // 검증기 원문(kind/필드 이름)은 원인 추적에 필요하니 버리지 않고, 사용자가 다음에
       // 무엇을 할지 아는 한 줄을 앞에 붙인다.
@@ -305,38 +376,33 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     }
   });
 
-  insertBtn.addEventListener("click", () => {
-    const commands = state.preview;
-    if (!commands || commands.length === 0) return;
-    // 삽입 전에 캐시를 비워, 스토어 갱신으로 재생성될 패널이 빈 프리뷰로 복원되게 한다.
-    state.preview = null;
-    const base = selectedCommandPath(cmdList);
-    state.status = `명령 ${commands.length}개를 넣었어요. 되돌리려면 툴바의 ↶ 되돌리기.`;
+  applyBtn.addEventListener("click", () => {
+    const staged = state.staged;
+    if (!staged || !hasCommandDiffChanges(staged.rows, staged.excluded)) return;
+    const commands = applyCommandDiff(staged.rows, staged.excluded);
+    const summary = stagedDiffSummary(staged.rows, staged.excluded);
+    // 적용 전에 초안을 비워, 스토어 갱신으로 재생성될 패널이 목록을 다시 보이게 한다.
+    state.staged = null;
+    state.status = `${summary} 반영했어요. 되돌리려면 툴바의 ↶ 되돌리기 한 번.`;
     state.statusKind = "";
-    if (base && base.length > 0) {
-      // 선택된 커맨드 "바로 뒤"부터 순서대로 삽입.
-      const prefix = base.slice(0, -1);
-      const start = base[base.length - 1] + 1;
-      commands.forEach((command, index) => actions.insertCommand([...prefix, start + index], command));
-    } else {
-      // 선택이 없으면 페이지 끝에 순서대로 추가.
-      for (const command of commands) actions.addCommand([], command);
-    }
-    renderPreview();
+    // 명령 하나씩 넣지 않고 목록을 통째로 교체한다 — 되돌리기 스냅샷이 정확히 한 칸 쌓인다.
+    replaceAll(commands);
+    renderStaged();
     setStatus(state.status);
   });
 
-  discardBtn.addEventListener("click", () => {
-    state.preview = null;
+  cancelBtn.addEventListener("click", () => {
+    state.staged = null;
     setStatus("초안을 버렸어요.");
-    renderPreview();
+    renderStaged();
   });
 
+  const exampleSource = page.commands.length > 0 ? EDIT_EXAMPLES : PROMPT_EXAMPLES;
   const examples = el("div", {
     class: "ai-event-examples",
     attrs: { role: "group", "aria-label": "예시 문장" },
     dataset: { testid: "ai-event-examples" },
-    children: PROMPT_EXAMPLES.map((example, index) => el("button", {
+    children: exampleSource.map((example, index) => el("button", {
       class: "ai-event-example",
       text: example.label,
       attrs: { type: "button", title: example.prompt },
@@ -390,7 +456,9 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
           children: [
             el("label", {
               class: "ai-event-prompt-label",
-              text: "이 페이지가 무엇을 하면 되나요?",
+              text: page.commands.length > 0
+                ? "이 페이지를 어떻게 고치면 되나요?"
+                : "이 페이지가 무엇을 하면 되나요?",
               attrs: { for: inputId, id: headingId },
               dataset: { testid: "ai-event-prompt-label" },
             }),
@@ -400,7 +468,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
               children: [
                 el("span", {
                   class: "ai-event-prompt-help",
-                  text: "대사·조건·보상을 한 문장으로 적어도 됩니다.",
+                  text: "고칠 점·지울 것·새로 넣을 것을 한 문장으로 적어도 됩니다.",
                   attrs: { id: promptHelpId },
                 }),
                 examples,
@@ -413,7 +481,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       ],
     })
   );
-  renderPreview();
+  renderStaged();
   return root;
 }
 
@@ -422,6 +490,12 @@ export function eventAiDockModalStackForTest(): { readonly entries: number; read
     entries: modalStackEntryCountForTest(),
     live: modalStackDepthForTest(),
   };
+}
+
+/** 테스트용: 이 페이지의 초안 상태를 비운다. */
+export function resetEventAiStagedForTest(): void {
+  panelStates.clear();
+  panelStatesProjectKey = "";
 }
 
 function bindCurrentDockRoot(
@@ -472,48 +546,41 @@ function selectedCommandPath(cmdList: HTMLElement): number[] | null {
   }
 }
 
-// 삽입 위치 라벨용 짧은 명령 이름.
+function selectedCommandName(cmdList: HTMLElement, commands: Command[]): string | null {
+  const path = selectedCommandPath(cmdList);
+  return path ? commandNameAtPath(commands, path) : null;
+}
+
+// 라벨용 짧은 명령 이름. 프롬프트의 "사용자가 고른 명령" 표기에도 같은 문구를 쓴다.
 function commandNameAtPath(commands: Command[], path: readonly number[]): string | null {
   const command = resolveCommandAtPath(commands, path);
   if (!command) return null;
   const parts = commandSummaryParts(command);
-  const name = parts.map((part) => part.text).join(" ").replace(/\s+/gu, " ").trim();
+  const name = parts
+    .map((part) => ("text" in part ? part.text : ""))
+    .join(" ")
+    .replace(/\s+/gu, " ")
+    .trim();
   if (!name) return null;
   return name.length > TARGET_NAME_MAX ? `${name.slice(0, TARGET_NAME_MAX)}…` : name;
 }
 
-// ── 프리뷰 요약(중첩은 들여쓰기 라인으로 평탄화) ─────────────────────────────
-
-type PreviewLine = { readonly parts: readonly CommandSummaryPart[]; readonly depth: number };
-
-function markerLine(text: string, depth: number): PreviewLine {
-  return { parts: [{ text, tone: "plain" }], depth };
-}
-
-function previewLines(commands: readonly Command[], depth: number): PreviewLine[] {
-  const lines: PreviewLine[] = [];
-  for (const command of commands) {
-    lines.push({ parts: commandSummaryParts(command), depth });
-    if (command.kind === "fork") {
-      lines.push(...previewLines(command.then, depth + 1));
-      if (command.else && command.else.length > 0) {
-        lines.push(markerLine(": 그 외의 경우", depth));
-        lines.push(...previewLines(command.else, depth + 1));
-      }
-    } else if (command.kind === "choices") {
-      command.options.forEach((option, index) => {
-        lines.push(markerLine(`: ${option.text || `선택지 ${index + 1}`}`, depth));
-        lines.push(...previewLines(option.branch, depth + 1));
-      });
-      if (command.cancelBranch && command.cancelBranch.length > 0) {
-        lines.push(markerLine(": 취소할 때", depth));
-        lines.push(...previewLines(command.cancelBranch, depth + 1));
-      }
-    } else if (command.kind === "loop") {
-      lines.push(...previewLines(command.body, depth + 1));
-    }
-  }
-  return lines;
+/**
+ * "append" scope(너무 긴 페이지)에서 새 명령을 선택 위치 뒤에 끼운 최종 목록을 만든다.
+ * 삽입도 결국 "최종 목록"으로 환산해 diff 를 태운다 — 표시·적용·되돌리기 경로가 하나로 유지된다.
+ */
+function withAppended(
+  before: readonly Command[],
+  selection: readonly number[] | null,
+  added: readonly Command[],
+): Command[] {
+  const next = structuredClone(before as Command[]);
+  const fresh = added.map((command) => structuredClone(command));
+  if (!selection || selection.length === 0) return [...next, ...fresh];
+  const list = resolveCommandListAtPath(next, selection);
+  if (!list) return [...next, ...fresh];
+  list.splice(selection[selection.length - 1] + 1, 0, ...fresh);
+  return next;
 }
 
 function button(text: string, testid: string, variant?: "primary"): HTMLButtonElement {

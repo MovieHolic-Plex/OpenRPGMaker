@@ -18,6 +18,12 @@ export type CommandToolbarHistory = {
   readonly wrapActions: (actions: CommandListActions) => CommandListActions;
   readonly copySelected: (path: readonly number[]) => void;
   readonly cutSelected: (path: readonly number[], actions: CommandListActions) => void;
+  /**
+   * 목록 전체를 **되돌리기 한 칸으로** 교체한다. AI 초안 적용처럼 여러 곳이 한꺼번에 바뀌는
+   * 편집용. 예전 AI 삽입은 명령 개수만큼 insertCommand 를 불러 스냅샷이 그만큼 쌓였고,
+   * "되돌리려면 ↶" 안내와 달리 8개를 넣으면 ↶ 를 8번 눌러야 했다.
+   */
+  readonly replaceAll: (commands: readonly Command[]) => void;
   readonly undo: () => void;
   readonly redo: () => void;
   readonly canUndo: () => boolean;
@@ -87,6 +93,10 @@ export function createCommandToolbarHistory(options: CommandToolbarHistoryOption
       if (!command) return;
       copyEventCommandToClipboard(command);
       actions.deleteCommand(path);
+    },
+    replaceAll: (commands) => {
+      recordBeforeChange();
+      options.replaceCommands(cloneCommands(commands as Command[]));
     },
     undo: () => restorePrevious(options, history()),
     redo: () => restoreNext(options, history()),
