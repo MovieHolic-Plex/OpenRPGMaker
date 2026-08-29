@@ -165,6 +165,56 @@
   display: grid;
 }
 
+/* 조건 칩 팔레트 — 종류는 늘 다 보이고, 켠 것만 아래 목록에 행으로 내려간다.
+   토큰만 쓴다(하드코딩 색 금지, TOKENS.md §4.1). */
+.event-condition-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding-bottom: 3px;
+}
+
+.event-condition-chip {
+  appearance: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 1.5;
+  padding: 1px 8px;
+}
+
+.event-condition-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--text-1);
+}
+
+.event-condition-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.event-condition-chip.active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.event-condition-list {
+  display: grid;
+  gap: 3px;
+}
+
+.event-condition-empty {
+  color: var(--text-3);
+  font-size: 11.5px;
+  margin: 0;
+  padding: 2px 0 3px;
+}
+
 .event-editor-modal-body [data-testid="event-classic-conditions"].event-oprn-fieldset {
   padding: 4px 5px 3px;
 }

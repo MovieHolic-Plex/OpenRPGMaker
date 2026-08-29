@@ -44,94 +44,168 @@ export function renderPageConditions(
 ): HTMLElement[] {
   // 호감도 조건은 이 이벤트의 NPC 관계 연결 여부에 따라 살아있는지가 갈린다 — 컨트롤에 그 사실을 준다.
   const context = { mapId, eventId, page, hostHasCharacterId: hasCharacterId(event) };
-  // RM 계약: 핵심 조건 행은 항상 표시. 체크 OFF여도 라벨·컨트롤 자리 유지.
+  // 조건 12종을 늘 펼쳐 두면 첫 화면이 «체크 안 된 행» 으로 덮인다. 칩으로 골라 켠 것만 목록에 남긴다 —
+  // 발견 가능성은 칩이 지고(종류가 늘 다 보인다), 화면 부피는 켠 개수만큼만 든다.
+  const specs: readonly ConditionRowSpec[] = [
+    {
+      key: "switch1",
+      chipLabel: "스위치",
+      label: "스위치",
+      build: (markActive) => switchConditionInputs({ ...context, slot: 0, testPrefix: "event-page-switch-condition" }, markActive),
+      enabled: switchConditionAt(page, 0) !== undefined,
+      suffix: "",
+      toggle: (enabled) => toggleSwitchCondition({ ...context, slot: 0 }, enabled),
+    },
+    {
+      key: "switch2",
+      chipLabel: "스위치 2",
+      label: "스위치",
+      build: (markActive) => switchConditionInputs({ ...context, slot: 1, testPrefix: "event-page-switch2-condition" }, markActive),
+      enabled: switchConditionAt(page, 1) !== undefined,
+      suffix: "",
+      toggle: (enabled) => toggleSwitchCondition({ ...context, slot: 1 }, enabled),
+    },
+    {
+      key: "variable",
+      chipLabel: "변수",
+      label: "변수",
+      build: (markActive) => variableConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "variable"),
+      suffix: "이",
+      toggle: (enabled) => toggleSimpleCondition(context, "variable", enabled),
+    },
+    {
+      key: "item",
+      chipLabel: "아이템",
+      label: "아이템",
+      build: (markActive) => itemConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "item"),
+      suffix: "",
+      toggle: (enabled) => toggleSimpleCondition(context, "item", enabled),
+    },
+    {
+      key: "actor",
+      chipLabel: "주인공",
+      label: "주인공",
+      build: (markActive) => actorConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "actor"),
+      suffix: "",
+      toggle: (enabled) => toggleSimpleCondition(context, "actor", enabled),
+    },
+    {
+      key: "timer1",
+      chipLabel: "타이머 1",
+      label: "타이머 1",
+      build: (markActive) => timerConditionInputs(context, "timer1", markActive),
+      enabled: timerCondition(context, "timer1") !== undefined,
+      suffix: "이하",
+      toggle: (enabled) => toggleTimerCondition(context, "timer1", enabled),
+    },
+    {
+      key: "timer2",
+      chipLabel: "타이머 2",
+      label: "타이머 2",
+      build: (markActive) => timerConditionInputs(context, "timer2", markActive),
+      enabled: timerCondition(context, "timer2") !== undefined,
+      suffix: "이하",
+      toggle: (enabled) => toggleTimerCondition(context, "timer2", enabled),
+    },
+    {
+      key: "timePhase",
+      chipLabel: "시간대",
+      label: "시간대",
+      build: (markActive) => timePhaseConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "timePhase"),
+      suffix: "일 때",
+      toggle: (enabled) => toggleSimpleCondition(context, "timePhase", enabled),
+    },
+    {
+      key: "season",
+      chipLabel: "계절",
+      label: "계절",
+      build: (markActive) => seasonConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "season"),
+      suffix: "일 때",
+      toggle: (enabled) => toggleSimpleCondition(context, "season", enabled),
+    },
+    {
+      key: "npcActivity",
+      chipLabel: "활동",
+      label: "활동",
+      build: (markActive) => npcActivityConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "npcActivity"),
+      suffix: "일 때",
+      toggle: (enabled) => toggleSimpleCondition(context, "npcActivity", enabled),
+    },
+    {
+      key: "friendship",
+      chipLabel: "호감도",
+      label: "호감도",
+      build: (markActive) => friendshipConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "friendshipAtLeast"),
+      suffix: "이상",
+      toggle: (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled),
+    },
+    {
+      key: "selfSwitch",
+      chipLabel: "이 이벤트 기억",
+      label: "이 이벤트 기억",
+      build: (markActive) => selfSwitchConditionInputs(context, markActive),
+      enabled: selfSwitchConditionAt(page) !== undefined,
+      suffix: "",
+      toggle: (enabled) => toggleSelfSwitchCondition(context, enabled),
+    },
+  ];
+
+  const palette = el("div", {
+    class: "event-condition-palette",
+    dataset: { testid: "event-condition-palette" },
+    children: specs.map((spec) => conditionChip(spec)),
+  });
+
+  const picked = specs.filter((spec) => spec.enabled);
+  const list = el("div", {
+    class: "event-condition-list",
+    dataset: { testid: "event-condition-list" },
+    children: picked.length
+      ? picked.map((spec) => conditionRow(spec.label, spec.build, spec.enabled, spec.suffix, spec.toggle))
+      : [
+          el("p", {
+            class: "event-condition-empty",
+            dataset: { testid: "event-condition-empty" },
+            text: "조건을 안 걸면 이 페이지가 늘 쓰입니다. 위에서 골라 담으세요.",
+          }),
+        ],
+  });
+
   return [
-    conditionRow(
-      "스위치",
-      (markActive) => switchConditionInputs({ ...context, slot: 0, testPrefix: "event-page-switch-condition" }, markActive),
-      switchConditionAt(page, 0) !== undefined,
-      "",
-      (enabled) => toggleSwitchCondition({ ...context, slot: 0 }, enabled),
-    ),
-    conditionRow(
-      "스위치",
-      (markActive) => switchConditionInputs({ ...context, slot: 1, testPrefix: "event-page-switch2-condition" }, markActive),
-      switchConditionAt(page, 1) !== undefined,
-      "",
-      (enabled) => toggleSwitchCondition({ ...context, slot: 1 }, enabled),
-    ),
-    conditionRow(
-      "변수",
-      (markActive) => variableConditionInputs(context, markActive),
-      page.conditions.some((item) => item.kind === "variable"),
-      "이",
-      (enabled) => toggleSimpleCondition(context, "variable", enabled),
-    ),
-    conditionRow(
-      "아이템",
-      (markActive) => itemConditionInputs(context, markActive),
-      page.conditions.some((item) => item.kind === "item"),
-      "",
-      (enabled) => toggleSimpleCondition(context, "item", enabled),
-    ),
-    conditionRow(
-      "주인공",
-      (markActive) => actorConditionInputs(context, markActive),
-      page.conditions.some((item) => item.kind === "actor"),
-      "",
-      (enabled) => toggleSimpleCondition(context, "actor", enabled),
-    ),
-    conditionRow(
-      "타이머 1",
-      (markActive) => timerConditionInputs(context, "timer1", markActive),
-      timerCondition(context, "timer1") !== undefined,
-      "이하",
-      (enabled) => toggleTimerCondition(context, "timer1", enabled),
-    ),
-    conditionRow(
-      "타이머 2",
-      (markActive) => timerConditionInputs(context, "timer2", markActive),
-      timerCondition(context, "timer2") !== undefined,
-      "이하",
-      (enabled) => toggleTimerCondition(context, "timer2", enabled),
-    ),
-    conditionRow(
-      "시간대",
-      (markActive) => timePhaseConditionInputs(context, markActive),
-      page.conditions.some((item) => item.kind === "timePhase"),
-      "일 때",
-      (enabled) => toggleSimpleCondition(context, "timePhase", enabled),
-    ),
-    conditionRow(
-      "계절",
-      (markActive) => seasonConditionInputs(context, markActive),
-      page.conditions.some((item) => item.kind === "season"),
-      "일 때",
-      (enabled) => toggleSimpleCondition(context, "season", enabled),
-    ),
-    conditionRow(
-      "활동",
-      (markActive) => npcActivityConditionInputs(context, markActive),
-      page.conditions.some((item) => item.kind === "npcActivity"),
-      "일 때",
-      (enabled) => toggleSimpleCondition(context, "npcActivity", enabled),
-    ),
-    conditionRow(
-      "호감도",
-      (markActive) => friendshipConditionInputs(context, markActive),
-      page.conditions.some((item) => item.kind === "friendshipAtLeast"),
-     "이상",
-     (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled),
-   ),
-    conditionRow(
-      "이 이벤트 기억",
-      (markActive) => selfSwitchConditionInputs(context, markActive),
-      selfSwitchConditionAt(page) !== undefined,
-      "",
-      (enabled) => toggleSelfSwitchCondition(context, enabled),
-    ),
+    palette,
+    list,
     renderAdvancedConditions(context),
   ];
+}
+
+interface ConditionRowSpec {
+  readonly key: string;
+  /** 칩에 적는 이름. 같은 라벨을 쓰는 스위치 두 슬롯을 칩에서는 갈라 적는다. */
+  readonly chipLabel: string;
+  readonly label: string;
+  readonly build: (markActive: () => void) => HTMLElement;
+  readonly enabled: boolean;
+  readonly suffix: string;
+  readonly toggle: (enabled: boolean) => void;
+}
+
+/** 조건 종류를 담고/빼는 칩. 켠 칩은 aria-pressed 로 상태를 말한다. */
+function conditionChip(spec: ConditionRowSpec): HTMLElement {
+  const chip = el("button", {
+    class: `event-condition-chip${spec.enabled ? " active" : ""}`,
+    attrs: { type: "button", "aria-pressed": spec.enabled ? "true" : "false" },
+    dataset: { testid: `event-condition-chip-${spec.key}` },
+    text: spec.chipLabel,
+  });
+  chip.addEventListener("click", () => spec.toggle(!spec.enabled));
+  return chip;
 }
 
 function conditionRow(
