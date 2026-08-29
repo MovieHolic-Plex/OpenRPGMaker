@@ -123,6 +123,18 @@ export function renderSummary(report) {
 }
 
 /**
+ * 스칼라는 동등, 객체는 **키 집합까지** 동등. JSON.stringify 비교를 안 쓰는 이유는 키 순서에
+ * 의존해서다 — 사각을 `{top,left,...}` 순으로 적었을 때 조용히 실패하면 진짜 결함처럼 보인다.
+ */
+function sameShape(actual, wanted) {
+  if (wanted === null || typeof wanted !== "object") return actual === wanted;
+  if (actual === null || typeof actual !== "object") return false;
+  const wantedKeys = Object.keys(wanted);
+  if (wantedKeys.length !== Object.keys(actual).length) return false;
+  return wantedKeys.every((key) => sameShape(actual[key], wanted[key]));
+}
+
+/**
  * 비트의 기대치를 관측값과 대조해 실패 사유를 모은다.
  * 빈 배열 = 통과. 게이트는 이 결과만 보고 판정한다.
  */
@@ -162,6 +174,27 @@ export function evaluateExpect(expected, observed) {
   };
   scalarNot("xNot", (s) => s.x);
   scalarNot("yNot", (s) => s.y);
+
+  // 이벤트 사각 기대치 — 런타임이 **스스로 계산한** 몸/통행 사각을 그대로 단정한다.
+  // 좌표 이동으로 "막혔다 / 지나갔다" 를 보는 것과는 다른 축이다: 저건 판정의 결과고, 이건
+  // 판정의 입력이다. 결과만 보면 우연히 맞을 수 있다(다른 이유로 막혔거나, 사각이 틀렸는데도
+  // 그 칸만 우연히 통행 가능이거나). 사각을 직접 읽으면 그 우연이 배제된다.
+  //
+  // 사각 하나는 네 변을 **전부** 적어야 한다. 일부만 적으면 나머지가 조용히 통과해서,
+  // "top 만 단정했는데 통과했다" 가 사각 전체를 검증한 것처럼 읽힌다.
+  for (const [eventId, wanted] of Object.entries(expected.eventRects ?? {})) {
+    const actual = observed.events?.[eventId];
+    if (!actual) {
+      failures.push(`이벤트 스냅샷 없음: ${eventId} — 활성 페이지가 없거나 다른 맵이다`);
+      continue;
+    }
+    for (const [field, want] of Object.entries(wanted)) {
+      const got = actual[field];
+      if (!sameShape(got, want)) {
+        failures.push(`${eventId}.${field}: 기대 ${JSON.stringify(want)}, 실제 ${JSON.stringify(got)}`);
+      }
+    }
+  }
 
   for (const testid of expected.testidPresent ?? []) {
     if (!testids.includes(testid)) failures.push(`testid 누락: ${testid}`);

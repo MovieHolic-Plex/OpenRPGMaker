@@ -148,8 +148,13 @@ async function applyOp(page, op) {
   }
 }
 
-async function readObserved(page) {
-  return await page.evaluate(() => {
+/**
+ * @param watchedEventIds 사각을 실어 올 이벤트 id. 시나리오가 이름을 댄 것만 싣는다 —
+ *   맵마다 이벤트가 수십 개라 전량은 매니페스트를 노이즈로 덮는다(이 하네스의 목적은
+ *   컨텍스트 절약이다).
+ */
+async function readObserved(page, watchedEventIds = []) {
+  return await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
     // 매니페스트에는 압축 상태만 남긴다 — switches/inventory 전량은 노이즈이고
@@ -164,13 +169,39 @@ async function readObserved(page) {
         }
       : null;
     const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
+
+    // 이벤트 발자국 사각은 __oprnDebug.readState() 에 없다 — 그쪽은 세션 상태(스위치·소지품)만
+    // 담는다. 사각은 runtimeDom.syncRuntimeState 가 직렬화해 넣는 `runtime-state-json` 노드에
+    // 있다. 출하 경로에 이미 있는 표면이라 QA 전용 훅을 새로 뚫지 않는다.
+    const events = {};
+    if (watched.length > 0) {
+      const node = document.querySelector("[data-testid='runtime-state-json']");
+      let all = {};
+      try {
+        all = node ? (JSON.parse(node.textContent || "{}").events ?? {}) : {};
+      } catch {
+        all = {};
+      }
+      for (const id of watched) {
+        const event = all[id];
+        if (!event) continue;
+        events[id] = {
+          footprint: event.footprint,
+          passRows: event.passRows,
+          bodyRect: event.bodyRect,
+          passRect: event.passRect,
+        };
+      }
+    }
+
     return {
       state,
+      events,
       testids: [...document.querySelectorAll("[data-testid]")].map((node) => node.dataset.testid),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
     };
-  });
+  }, watchedEventIds);
 }
 
 /** 리포트를 디스크에 쓴다. SUMMARY.md 가 에이전트가 먼저 읽는 진입점이다. */
@@ -221,6 +252,13 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
 
+  // 시나리오 전체가 이름을 댄 이벤트를 한 번만 모은다. 비트마다 다시 걷지 않는 이유는
+  // 관측이 비트 사이에 달라지면 안 되기 때문이다 — 어떤 비트에서는 사각을 읽고 어떤 비트에서는
+  // 안 읽으면 매니페스트가 비교 불가능해진다.
+  const watchedEventIds = [
+    ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.eventRects ?? {}))),
+  ];
+
   let hooksReady = false;
   const beats = [];
   for (const [index, beat] of scenario.beats.entries()) {
@@ -241,14 +279,19 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
         break; // 같은 비트의 남은 op 은 전제가 깨졌으므로 건너뛴다.
       }
     }
-    const observed = await readObserved(page);
+    const observed = await readObserved(page, watchedEventIds);
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
     if (shouldCaptureShot(beat, failures)) {
       shot = shotFileName(index, beat.id);
       await page.screenshot({ path: join(outDir, shot) });
     }
-    beats.push({ index, id: beat.id, note: beat.note, shot, failures, state: observed.state });
+    beats.push({
+      index, id: beat.id, note: beat.note, shot, failures, state: observed.state,
+      // 사각을 단정한 비트에만 싣는다. 안 쓰는 비트에 빈 객체를 남기면 매니페스트가
+      // "사각을 봤다" 처럼 읽힌다.
+      ...(Object.keys(observed.events).length > 0 ? { events: observed.events } : {}),
+    });
   }
 
   const report = {
