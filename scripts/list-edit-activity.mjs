@@ -15,6 +15,7 @@
 // AI 턴 로그(`npm run ai:log`)와 채널이 분리돼 있다 — 편집은 분당 수십 건이라 섞으면 AI 턴이 묻힌다.
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { clockOf, pad } from "./lib/terminal-table.mjs";
 
 const DIR = join(process.cwd(), "output", "edit-activity");
 const INDEX_PATH = join(DIR, "index.json");
@@ -78,47 +79,6 @@ function readRows() {
     seen.add(row.seq);
     return true;
   });
-}
-
-/** `2026-08-29T04:05:06.789Z` → `04:05:06` (로컬 시각). 표에서 날짜는 소음이다. */
-function clockOf(at) {
-  const ms = Date.parse(at ?? "");
-  if (!Number.isFinite(ms)) return "--:--:--";
-  return new Date(ms).toTimeString().slice(0, 8);
-}
-
-/**
- * 터미널 표시 폭. 한글·CJK 는 한 글자가 두 칸을 먹으므로 `String.length` 로 패딩하면
- * 라벨이 거의 전부 한국어인 이 표에서 열이 통째로 어긋난다(실측: 라벨 열이 10칸 이상 밀렸다).
- */
-function displayWidth(text) {
-  let width = 0;
-  for (const char of text) {
-    const code = char.codePointAt(0);
-    const wide =
-      (code >= 0x1100 && code <= 0x115f) || // 한글 자모
-      (code >= 0x2e80 && code <= 0xa4cf) || // CJK 부수·한자·かな
-      (code >= 0xac00 && code <= 0xd7a3) || // 한글 음절
-      (code >= 0xf900 && code <= 0xfaff) ||
-      (code >= 0xfe30 && code <= 0xfe6f) ||
-      (code >= 0xff00 && code <= 0xff60) || // 전각
-      (code >= 0xffe0 && code <= 0xffe6);
-    width += wide ? 2 : 1;
-  }
-  return width;
-}
-
-function pad(text, width) {
-  const value = String(text ?? "");
-  let out = "";
-  let used = 0;
-  for (const char of value) {
-    const charWidth = displayWidth(char);
-    if (used + charWidth > width) return out + " ".repeat(width - used);
-    out += char;
-    used += charWidth;
-  }
-  return out + " ".repeat(width - used);
 }
 
 if (!existsSync(DIR)) {
