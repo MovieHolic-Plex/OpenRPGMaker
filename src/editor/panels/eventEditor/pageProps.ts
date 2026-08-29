@@ -30,6 +30,9 @@ import {
   PAGE_COMMAND_BUTTONS,
   TRIGGER_OPTIONS,
   commandKindLabel,
+  compareAmountLabel,
+  runResultLabel,
+  timerIdLabel,
 } from "./options";
 import { openCharacterIdPicker } from "./characterIdPickerDialog";
 import { attachCharacterIdAutocomplete } from "./characterIdAutocomplete";
@@ -211,17 +214,17 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "switch":
       return `${switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "")} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable":
-      return `${switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "")} ${condition.op} ${condition.value}`;
+      return `${switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "")} ${compareAmountLabel(condition.op, condition.value)}`;
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "actor":
       return `주인공 [${recordName(store.getCurrent().database.actors, condition.actorId)}] ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":
-      return `아이템 ${recordName(store.getCurrent().database.items, condition.itemId)} ${condition.present ? "있음" : "없음"}`;
+      return `아이템 ${recordName(store.getCurrent().database.items, condition.itemId)} ${condition.present ? "보유 중" : "보유 안 함"}`;
     case "gold":
-      return `소지금 ${condition.op} ${condition.amount}`;
+      return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초 이하`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초 이하`;
     case "timePhase":
       return `시간대 ${timePhaseLabel(condition.phase)}`;
     case "season":
@@ -229,17 +232,17 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "npcActivity":
       return `활동 ${condition.activity}`;
     case "friendshipAtLeast":
-      return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
+      return `호감도 ${condition.npcKey || "이 이벤트"} ${condition.value} 이상`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
     case "run":
       return runConditionText(condition);
     case "all":
-      return condition.conditions.length ? `모두(${condition.conditions.length})` : "모두(비어있음)";
+      return condition.conditions.length ? `모두 맞을 때(${condition.conditions.length})` : "모두 맞을 때(없음)";
     case "any":
-      return condition.conditions.length ? `하나(${condition.conditions.length})` : "하나(비어있음)";
+      return condition.conditions.length ? `하나라도 맞을 때(${condition.conditions.length})` : "하나라도 맞을 때(없음)";
     case "not":
-      return `아님`;
+      return "아닐 때";
   }
 }
 
@@ -253,18 +256,17 @@ function pageConditionCompactSummary(condition: EventPageCondition): string {
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable": {
       const named = switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "").trim();
-      return `${named || "변수"} ${condition.op} ${condition.value}`;
+      return `${named || "변수"} ${compareAmountLabel(condition.op, condition.value)}`;
     }
     case "item":
-      return condition.present ? "아이템 보유" : "아이템 미보유";
+      return condition.present ? "아이템 보유 중" : "아이템 보유 안 함";
     case "actor":
-      return condition.present ? "주인공 참여" : "주인공 이탈";
+      return condition.present ? "파티에 있음" : "파티에 없음";
     case "gold": {
-      const op = condition.op === ">=" ? "≥" : condition.op === "<=" ? "≤" : condition.op;
-      return `소지금 ${op} ${condition.amount}`;
+      return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     }
     case "timer":
-      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초`;
     default:
       return pageConditionBadgeText(condition);
   }
@@ -956,13 +958,13 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
   switch (condition.kind) {
     case "switch": {
       const id = truncateBadgeToken(switchVariableName("switch", condition.switchId), 12);
-      return `${id} ${condition.value ? "ON" : "OFF"}`;
+      return `${id} ${condition.value ? "켜짐" : "꺼짐"}`;
     }
     case "selfSwitch":
-      return `셀프${condition.key} ${condition.value ? "ON" : "OFF"}`;
+      return `기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable": {
       const id = truncateBadgeToken(switchVariableName("variable", condition.variableId), 10);
-      return `${id} ${condition.op} ${condition.value}`;
+      return `${id} ${compareAmountLabel(condition.op, condition.value)}`;
     }
     case "actor": {
       const name = truncateBadgeToken(recordName(store.getCurrent().database.actors, condition.actorId), 10);
@@ -973,9 +975,9 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return condition.present ? name : `!${name}`;
     }
     case "gold":
-      return `G ${condition.op} ${condition.amount}`;
+      return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `T${condition.timerId === "timer1" ? "1" : "2"} ${condition.seconds}s`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초`;
     case "timePhase":
       return timePhaseLabel(condition.phase);
     case "season":
@@ -989,24 +991,24 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
     case "run":
       return runConditionText(condition);
     case "all":
-      return `AND(${condition.conditions.length})`;
+      return condition.conditions.length ? `모두 맞을 때 ${condition.conditions.length}` : "모두 맞을 때";
     case "any":
-      return `OR(${condition.conditions.length})`;
+      return condition.conditions.length ? `하나라도 맞을 때 ${condition.conditions.length}` : "하나라도 맞을 때";
     case "not":
-      return `NOT`;
+      return "아닐 때";
   }
 }
 
 function runConditionText(condition: Extract<EventPageCondition, { kind: "run" }>): string {
   switch (condition.query) {
     case "active":
-      return `런 ${condition.value === false ? "비활성" : "진행 중"}`;
+      return condition.value === false ? "탐험 중이 아님" : "탐험 중";
     case "floor":
-      return `런 층 ${condition.op} ${condition.value}`;
+      return `탐험 층 ${compareAmountLabel(condition.op, condition.value)}`;
     case "flag":
-      return `런 ${condition.flag || "플래그"} ${condition.value ? "ON" : "OFF"}`;
+      return `탐험 기억 ${condition.flag || "기억"} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "result":
-      return `런 결과 ${condition.result}`;
+      return `탐험 결과 ${runResultLabel(condition.result)}`;
   }
 }
 
