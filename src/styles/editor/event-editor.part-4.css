@@ -353,6 +353,104 @@
   min-height: 66px;
 }
 
+/* 몸 크기와 통행 행 — 2차 스펙 §5. */
+.event-footprint-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-footprint-body {
+  align-items: end;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.event-footprint-grid {
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* 몸 사각 격자 + 실제 배율 스프라이트. 통행 행만 진하게 칠해 "발밑 한 줄만 막힘" 을 보인다. */
+.event-footprint-preview-host {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.event-footprint-preview {
+  flex: none;
+  position: relative;
+}
+
+.event-footprint-preview-grid {
+  display: grid;
+  position: absolute;
+}
+
+.event-footprint-preview-cell {
+  border: 1px solid color-mix(in srgb, currentcolor 26%, transparent);
+  box-sizing: border-box;
+}
+
+.event-footprint-preview-cell[data-pass="true"] {
+  background: color-mix(in srgb, currentcolor 22%, transparent);
+}
+
+.event-footprint-preview-cell[data-anchor="true"] {
+  border-color: color-mix(in srgb, currentcolor 62%, transparent);
+}
+
+.event-footprint-preview-sprite {
+  image-rendering: pixelated;
+  position: absolute;
+}
+
+.event-footprint-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.event-footprint-field > span {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.event-footprint-field input {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-footprint-summary {
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.event-footprint-scale {
+  align-items: end;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: minmax(0, 1fr) 96px;
+}
+
+.event-footprint-scale-manual {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  min-height: 20px;
+  white-space: nowrap;
+}
+
+.event-footprint-control input:disabled {
+  opacity: 0.5;
+}
+
 .event-graphic-preview {
   align-self: center;
   background: var(--event-rm-field);

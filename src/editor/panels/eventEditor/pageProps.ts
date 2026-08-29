@@ -22,6 +22,8 @@ import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { openNpcGraphicDialog } from "./graphicDialog";
 import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
+import { renderPageFootprint } from "./pageFootprint";
+import { UNIT_FOOTPRINT, normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { renderPageMovement } from "./pageMovement";
 import {
   type EventEditorTriggerKind,
@@ -682,6 +684,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
     }),
     rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+    rm2k3Fieldset("크기와 통행", renderPageFootprint(mapId, eventId, page), "event-classic-footprint"),
     el("div", {
       class: "event-page-behavior-sections",
       dataset: { testid: "event-page-trigger-priority-stack" },
@@ -800,14 +803,16 @@ function wrapPageSettingsAsAccordion(
   const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
   const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
-  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap'], [data-testid='event-page-fact-overlap']"));
+  // 「크기와 통행」은 memory("겹침과 통행") 그룹 소속이다. 미분류로 남기면 "기타" 그룹이
+  // 생겨 레일이 5칸 계약을 깬다 — eventRailGroupComposition.test.ts 가 그 계약을 고정한다.
+  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap'], [data-testid='event-classic-footprint'], [data-testid='event-page-fact-overlap']"));
   // 레일은 한 번에 한 그룹만 연다 — 저장된 활성 slug 가 없으면 「모습과 대화」로 시작한다.
   const activeSlug = activeRailGroupSlug(openKey, "look-talk");
   const groups = [
     { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", nodes: look },
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, nodes: when },
     { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), nodes: move },
-    { slug: "memory", title: "겹침과 통행", summary: overlapSummary(page), nodes: memory },
+    { slug: "memory", title: "겹침과 통행", summary: passageRailSummary(page), nodes: memory },
   ].map((group) => ({ ...group, open: group.slug === activeSlug }));
   const rail = el("div", {
     class: "event-editor-settings-accordion",
@@ -856,6 +861,19 @@ const CONDITION_BADGE_LIMIT = 3;
 
 function overlapSummary(page: EventPage): string {
   return page.overlapForbidden !== false ? "겹침 금지" : "겹침 허용";
+}
+
+/**
+ * 레일 헤더 요약. 1x1 은 `overlapSummary` 그대로 — 몸 크기를 안 만진 페이지의 요약 문구가
+ * 바뀌면 안 된다(기존 계약이 문자열 동등으로 고정돼 있다). 다중 타일일 때만 크기를 덧붙인다.
+ */
+function passageRailSummary(page: EventPage): string {
+  const body = normalizeCharacterFootprint(page.footprint);
+  if (body.width === UNIT_FOOTPRINT.width && body.height === UNIT_FOOTPRINT.height) {
+    return overlapSummary(page);
+  }
+  const rows = normalizePassRows(page.passRows, body.height);
+  return `${overlapSummary(page)} · ${body.width}x${body.height} 중 ${rows}행`;
 }
 
 function renderConditionSummaryBadges(conditions: readonly EventPageCondition[]): HTMLElement {
