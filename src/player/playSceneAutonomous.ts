@@ -113,6 +113,8 @@ function updateChaseNpc(
     giveUpRange: mover.giveUpRange,
     pathfind: mover.pathfind,
     kite: mover.kite,
+    // 추격자 자신의 통행 사각. 1x1 이면 canMove 1회로 환원돼 기존 경로와 같다.
+    pass: { footprint: view.footprint, passRows: view.passRows },
   });
   if (decision.kind === "wait") {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);

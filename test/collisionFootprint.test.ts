@@ -178,3 +178,50 @@ describe("대각에서는 canMove 와 갈린다 — 주석이 약속하는 범�
       .toBe(false);
   });
 });
+
+// 2차 스펙 §3 — 지형 통행은 통행 사각으로 판정한다.
+describe("passRows — 상체가 걸치는 칸의 지형은 보지 않는다", () => {
+  const BODY = { width: 1, height: 3 };
+
+  it("상체 높이의 벽은 통행을 막지 않는다", () => {
+    const { project, map } = scene();
+    // (5,7) 에 선 1x3 의 몸 사각은 y 5..7. 오른쪽으로 갈 때 몸 전체라면 (6,5) (6,6) (6,7)
+    // 셋을 밟는다. passRows 1 이면 (6,7) 하나만 밟는다.
+    setLower(map, 6, 5, TILE.WALL); // 머리 높이
+    setLower(map, 6, 6, TILE.WALL); // 가슴 높이
+    expect(canMoveFootprint(project, map, 5, 7, BODY, 6, 7), "몸 전체로 보면 막힌다").toBe(false);
+    expect(canMoveFootprint(project, map, 5, 7, BODY, 6, 7, 1), "발밑만 보면 지나간다").toBe(true);
+  });
+
+  it("발밑 벽은 passRows 1 에서도 막는다", () => {
+    const { project, map } = scene();
+    setLower(map, 6, 7, TILE.WALL);
+    expect(canMoveFootprint(project, map, 5, 7, BODY, 6, 7, 1)).toBe(false);
+  });
+
+  it("passRows 가 몸 높이와 같으면 생략과 완전히 같다", () => {
+    const { project, map } = scene();
+    for (const [x, y] of [[6, 5], [6, 6], [6, 7], [4, 6]]) setLower(map, x, y, TILE.WALL);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      expect(
+        canMoveFootprint(project, map, 5, 7, BODY, 5 + dx, 7 + dy, 3),
+        `(${dx},${dy})`
+      ).toBe(canMoveFootprint(project, map, 5, 7, BODY, 5 + dx, 7 + dy));
+    }
+  });
+
+  it("비정규 passRows 는 몸 전체로 검사한다 — fail-closed", () => {
+    const { project, map } = scene();
+    setLower(map, 6, 5, TILE.WALL);
+    for (const bad of [0, -1, Number.NaN]) {
+      expect(canMoveFootprint(project, map, 5, 7, BODY, 6, 7, bad), `행 수 ${bad}`).toBe(false);
+    }
+  });
+
+  it("대각도 통행 사각으로 분해한다", () => {
+    const { project, map } = scene();
+    setLower(map, 6, 5, TILE.WALL); // 상체가 걸치는 칸만 막는다
+    expect(canMoveFootprint(project, map, 5, 7, BODY, 6, 6), "몸 전체").toBe(false);
+    expect(canMoveFootprint(project, map, 5, 7, BODY, 6, 6, 1), "발밑만").toBe(true);
+  });
+});

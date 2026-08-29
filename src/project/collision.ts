@@ -3,10 +3,10 @@
 // v2: 4방향 passability 기반(RM2K3 정석). TilesetDef.passability 사용.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.3.
 
-import type { GameMap, Project, TilesetDef, Dir, PassFlag, CharacterFootprint } from "./types";
+import type { GameMap, Project, TilesetDef, Dir, PassFlag, CharacterFootprint, FootprintRect } from "./types";
 import { topTileInStack } from "./mapOverlayTiles";
 import { passageMarkForTile } from "./tilesetPassage";
-import { footprintBounds } from "./footprint";
+import { footprintBounds, passageBounds } from "./footprint";
 
 // 주어진 타일 좌표가 맵 경계 안인가?
 export function inBounds(map: GameMap, x: number, y: number): boolean {
@@ -118,6 +118,10 @@ export function isPassable(
  * 발자국 전체가 통과 가능한가. 이동 방향의 **선행 모서리**만 검사한다 —
  * 3x3 이 오른쪽으로 갈 때 새로 밟는 건 오른쪽 열 3칸뿐이고 9칸 전부가 아니다.
  *
+ * `passRows` 를 주면 몸 사각이 아니라 **통행 사각**(하단 N행)으로 검사한다. 3x3 몸에
+ * passRows 1 이면 발밑 한 줄만 밟으므로 상체가 걸치는 칸의 지형은 보지 않는다.
+ * 생략하면 몸 사각 전체다(= 1차 동작). 2차 스펙 §3.
+ *
  * canMove 와 같이 **인접 한 칸 이동**을 전제한다.
  *
  * 1x1 · **직교** 이동이면 정확히 canMove 1회 호출로 환원된다(= 기존 동작 동일).
@@ -133,7 +137,8 @@ export function canMoveFootprint(
   fromY: number,
   fp: CharacterFootprint,
   toX: number,
-  toY: number
+  toY: number,
+  passRows?: number
 ): boolean {
   const dx = toX - fromX;
   const dy = toY - fromY;
@@ -142,29 +147,47 @@ export function canMoveFootprint(
     // 기존 대각 관례(playSceneMovement.ts / playSceneAutonomousMapActions.ts):
     // H·V 로 분해해 둘 중 한 경로가 열려 있으면 통과한다.
     const horizontalFirst =
-      canMoveFootprint(project, map, fromX, fromY, fp, fromX + dx, fromY) &&
-      canMoveFootprint(project, map, fromX + dx, fromY, fp, toX, toY);
+      canMoveFootprint(project, map, fromX, fromY, fp, fromX + dx, fromY, passRows) &&
+      canMoveFootprint(project, map, fromX + dx, fromY, fp, toX, toY, passRows);
     if (horizontalFirst) return true;
     return (
-      canMoveFootprint(project, map, fromX, fromY, fp, fromX, fromY + dy) &&
-      canMoveFootprint(project, map, fromX, fromY + dy, fp, toX, toY)
+      canMoveFootprint(project, map, fromX, fromY, fp, fromX, fromY + dy, passRows) &&
+      canMoveFootprint(project, map, fromX, fromY + dy, fp, toX, toY, passRows)
     );
   }
-  for (const cell of leadingEdgeCells(fromX, fromY, fp, dx, dy)) {
+  const rect = passRows === undefined
+    ? footprintBounds(fromX, fromY, fp)
+    : passageBounds(fromX, fromY, fp, passRows);
+  return canMoveRect(project, map, rect, dx, dy);
+}
+
+/**
+ * 사각의 선행 모서리가 전부 한 칸 이동 가능한가. 직교 이동만 받는다
+ * (대각 분해는 canMoveFootprint 가 한다).
+ *
+ * 지형 통행은 **통행 사각**으로 판정한다 — 3x3 몸에 passRows 1 이면 발밑 한 줄만
+ * 밟고 지나가므로 상체가 걸치는 칸의 지형은 보지 않는다. 2차 스펙 §3.
+ */
+export function canMoveRect(
+  project: Project,
+  map: GameMap,
+  rect: FootprintRect,
+  dx: number,
+  dy: number
+): boolean {
+  if ((dx === 0) === (dy === 0)) return false;
+  for (const cell of leadingEdgeCellsOfRect(rect, dx, dy)) {
     if (!canMove(project, map, cell.x, cell.y, cell.x + dx, cell.y + dy)) return false;
   }
   return true;
 }
 
-/** 이동 방향에서 새로 칸을 밟게 되는 발자국 모서리 셀들. */
-function leadingEdgeCells(
-  x: number,
-  y: number,
-  fp: CharacterFootprint,
+/** 이동 방향에서 새로 칸을 밟게 되는 사각 모서리 셀들. */
+function leadingEdgeCellsOfRect(
+  rect: FootprintRect,
   dx: number,
   dy: number
 ): { x: number; y: number }[] {
-  const rect = footprintBounds(x, y, fp);
   const cells: { x: number; y: number }[] = [];
   if (dx !== 0) {
     const column = dx > 0 ? rect.right : rect.left;
