@@ -19,8 +19,8 @@
 
 | 불만 | 실제 원인 | 확정 근거 |
 |---|---|---|
-| "그냥 html 느낌" | 네이티브 폼 컨트롤이 스타일 없이 노출 | select 에 `appearance:none` 을 주는 규칙 **0건** |
-| "글자가 잘리거나 안 보인다" | overflow 버그가 **아니다**. 원인 6종(§3) | 컨테이너 잘림 **0건** / lh 선언 134건 / 11px 미만 341노드 / 미정의 토큰 29회 |
+| "그냥 html 느낌" | 네이티브 폼 컨트롤이 스타일 없이 노출 | select 에 `appearance:none` 을 주는 규칙 **0건** (진단 시점 = PR #227 직전. #227 이 기준선 1건을 추가했다) |
+| "글자가 잘리거나 안 보인다" | overflow 버그가 **아니다**. 원인 6종(§3) | 컨테이너 잘림 **0건** / lh 선언 134건 / 11px 미만 341노드 / 미정의 토큰 8종(§3 D — 그 뒤 `ac4d0ee7` 이 6종 해소) |
 | "탭마다 헤더가 공간을 먹는다" | 헤더 빌더 난립 + 스크롤로 사라지지 않는 상시 비용 | 작업 영역 출렁임 **275px** (497~772px) |
 
 가장 중요한 사실 두 개.
@@ -37,7 +37,7 @@
 
 | 1차 주장 | 정정 | 왜 틀렸나 |
 |---|---|---|
-| 네이티브 select "95곳" | **29곳** (`database*`+`actorRecord*` 직접 생성). 헬퍼 호출은 src/editor 전체 92 | 95 는 select 를 포함한 **CSS 규칙 수**였다 |
+| 네이티브 select "95곳" | 분모를 분리해 적어야 한다. **직접 생성 지점 29곳**(`database*`+`actorRecord*`) / 헬퍼 호출 92(src/editor 전체) / **런타임 합계 141개**(2026-08-29 Playwright 재측정: 29탭을 순회하며 각 탭의 `.database-modal-window` 안 select 를 더한 값) | "95 = select 를 포함한 CSS 규칙 수" 라는 설명은 **어떤 분모로도 재현되지 않는다** — database 의 select 규칙은 62건이고(§2 (1)) 런타임 합계는 141개다. 95 자체의 출처는 **미확인** |
 | number 입력 190곳 | **187곳** | 113파일 임포트 클로저 기준의 과대 집계 |
 | "슬라이더+스테퍼 3곳" 이 대안 | **드래그 스크럽 0곳** (66파일에 `pointermove`/`wheel` 0건). range 헬퍼 4종 6곳 | `sliderStepperField` 만 셌다 |
 | `.db-field` 2열은 탭별 오버라이드만, 1열 되돌림 5건 | **최소 6개 뷰가 2열이다.** 진짜 결함은 42규칙이 라벨 트랙을 **24~112px 로 산포**시킨 비일관성. 진짜 되돌림은 `modern/troops.css:91` **1건** | 나머지 4건은 컬럼 미선언(기본값 방치) 또는 필드 1개 한정 예외였다 |
@@ -72,21 +72,23 @@
 
 ### (1) 드롭다운이 OS 위젯이다 — 단일 최대 원인
 
+아래 (1)·(2) 의 카운트는 모두 **PR #227(네이티브 폼 컨트롤 기준선) 직전** 상태다. #227 이 `modern-controls.css` 에 `appearance:none` + CSS chevron 기준선 1건을 넣었으므로 "0건/1건" 류는 지금 그대로 재현되지 않는다.
+
 `appearance:none` 을 select 에 주는 규칙은 저장소 전체에서 `.left-panel-stack select`(`src/styles/shell/figma-editor/03-layout-left-palette.css:153`) 하나뿐이고, 이건 워크스페이스 좌측 도크용이다. 데이터베이스 모달은 `databaseModal.ts:428` 에서 `document.body` 직속으로 붙으므로 매치 경로가 없다. `src/styles/database/**` 의 `appearance:none` 12건은 전부 버튼·셀·체크박스 대상이다.
 
-database 쪽 select 규칙 47건(`modern/troops.css:106-118`, `modern/enemies.css:153-163` 등)은 배경·테두리·폰트만 바꾸고 chevron 은 OS 그대로다.
+`src/styles/database/**` 에서 **주체가 select 인 규칙 블록은 62건**(2026-08-29 기준, 주석 제거 후 규칙 단위 파싱. #227 이 추가한 기준선과 그 후속 보정을 포함하고, 진단 시점 값은 미확인)이고, 기준선 1건을 빼면 나머지는 배경·테두리·폰트만 바꾸고 chevron 은 OS 그대로다(`modern/troops.css:106-118`, `modern/enemies.css:153-163` 등). 초판의 "47건" 은 재현되지 않는다.
 
 사용자가 지목한 배우 탭 "시작 직업"은 **1차 진단보다 더 나쁘다.** 경로는 `actorRecordView.ts:436` → `actorRecordControls.ts:186` → `:195` 의 순수 `el("select")` 인데, 기본 뷰 모드가 list(`databaseRecordViewSession.ts:106`)여서 `actorStudioActive` 분기(`actorRecordView.ts:62-77`)가 `classicSheet`(:47-60)를 append 하지 않는다. 따라서 `actors.css:57` 의 껍데기 스타일에도 매치되지 않는 **완전 무스타일 네이티브 위젯**이다.
 
 ### (2) 숫자 입력이 브라우저 스피너다
 
-`type="number"` 생성 187곳(numberField 128 `databaseControls.ts:102`, numberControl 21, numberInput 10, 인라인 28)에 대해 스피너를 지우는 규칙은 `styles/editor/event-editor-rich-forms/01-ev-ux-tokens.css:201-204` 1건이고 `.rich-stepper > input` 스코프다. `rich-stepper` 를 붙이는 TS 는 `eventEditor/recordPicker.ts:636,643,649` 뿐 — database 66파일 중 **0개**.
+`type="number"` **생성 지점** 187곳(numberField 128 `databaseControls.ts:102`, numberControl 21, numberInput 10, 인라인 28 — 128+21+10+28=187)에 대해 스피너를 지우는 규칙은 `styles/editor/event-editor-rich-forms/01-ev-ux-tokens.css:201-204` 1건이고 `.rich-stepper > input` 스코프다. `rich-stepper` 를 붙이는 TS 는 `eventEditor/recordPicker.ts:636,643,649` 뿐 — database 66파일 중 **0개**.
 
 드래그 스크럽은 **0곳**이다. 능력치 커브 편집조차 그래프 드래그가 아니라 number 격자다(`actorRecordCurveEditors.ts:296`, `databaseClassCurveEditors.ts:224`, `databaseClassExperienceCurveEditor.ts:154`). 게임 에디터 기대치와 가장 크게 벌어지는 지점이다.
 
 ### (3) 라벨 트랙이 규칙마다 다르다 — 정정된 진단
 
-2열이 없는 게 아니다. `db-ws-card` 를 쓰는 19개 sectionCard 뷰 중 최소 6개가 2열이다.
+2열이 없는 게 아니다. `db-ws-card` 를 쓰는 19개 sectionCard 뷰 중 최소 6개가 2열이다 — 아래 표는 5행이지만 equipment/items 행이 한 규칙으로 두 뷰를 덮으므로 뷰 기준 6개다.
 
 | 뷰 | 라벨 트랙 | 규칙 |
 |---|---|---|
@@ -129,7 +131,7 @@ database 쪽 select 규칙 47건(`modern/troops.css:106-118`, `modern/enemies.cs
 | A. line-height < 글꼴 잉크 | 선언 134 (단축 111 + 롱핸드 23), 111 중 106이 1.05 미만 | `battle-studio.css:53-55` — 25px/1.15 = 28.75 line box, scrollHeight 31 vs clientHeight 29 → **2px 초과** | 하한 1.3. **계측 하네스 먼저** |
 | B. nowrap + ellipsis 로 대피로 없음 | 2계열 (호출 22 + 카드값) | `workspace-modern.css:292-301` `.db-ws-hero-title`, `11-life-authoring.css:121-123` `.db-life-card-value` | 2줄 clamp 또는 최소 `title` 속성 |
 | C. 고정 상자 + clip | height 240 / overflow:hidden 286 / ellipsis 107 / nowrap 167 | `actors.css:64-68` (`height:20px`, 단 기본 경로 미렌더) | min-height 전환 |
-| D. **색 소실 = "안 보임"** | 미정의 토큰 8종 29회 | `system-studio.css:166` `background: var(--studio-surface-2) !important` → invalid-at-computed-value-time → **transparent** | `:6-19` 별칭 블록에 8개 매핑 |
+| D. **색 소실 = "안 보임"** | 미정의 토큰 8종 (측정 시점) | `system-studio.css:166` `background: var(--studio-surface-2) !important` → invalid-at-computed-value-time → **transparent** | **이미 처리됨** — `ac4d0ee7`(2026-08-29 14:09)이 `system-studio.css:25-30` 에 6종을 `--db-studio-*` 로 매핑했다. 남은 미정의는 `--studio-play`·`--studio-select` 2종이고 둘 다 `shell/editor-ui-modes.css:65-66` 에서 fallback 을 달고 쓰인다 |
 | E. 고쳐도 안 바뀜 | 216 선언 사망 / 109 생존 | `system-studio.css` L118-658 이 L850-1332 에 덮임 | 삭제 |
 | F. UA 스타일로 위계 역전 | 1탭 | `structureKitDbTab.ts:98-100` — h3 13px < p 14px | `db-tab-note` 로 전환 |
 
@@ -151,7 +153,7 @@ database 쪽 select 규칙 47건(`modern/troops.css:106-118`, `modern/enemies.cs
 
 ### E 는 부분 오해를 피해야 한다
 
-L118-658 이 전멸한 게 아니다. rule block 77개 중 **57개가 덮이고 29개 전멸, 17개는 온전히 살아 있다**(`:146`, `:246-248`, `:412`, `:475`, `:527`, `:580`, `:585`, `:653`). 산 줄과 죽은 줄이 섞여 파일을 통째로 읽지 않으면 구분이 불가능한 것이 진짜 문제다. 그리고 순서를 바꿔도 복구되지 않는다 — 그 블록의 27개 선언이 정의 0건인 `--studio-surface-2/-3`, `--studio-violet(-soft)`, `--studio-mint`, `--studio-amber` 를 읽으므로 캐스케이드에서 이겨도 무효값이다. **복구 대상이 아니라 삭제 대상이다.**
+L118-658 이 전멸한 게 아니다. rule block 77개 중 **57개가 덮이고(그중 29개는 전멸), 20개는 온전히 살아 있다**(살아 있는 예: `:146`, `:246-248`, `:412`, `:475`, `:527`, `:580`, `:585`, `:653`). 초판은 "17개" 로 적어 57+17=74 가 되며 77 과 맞지 않았다. 재현: 같은 선택자가 658행 이후에서 같은 속성을 다시 선언하면 사망으로 세면 선언 기준 **216 사망 / 109 생존**(§3 E 행과 같은 값)이 나온다. 산 줄과 죽은 줄이 섞여 파일을 통째로 읽지 않으면 구분이 불가능한 것이 진짜 문제다. 그리고 순서를 바꿔도 복구되지 않는다 — 그 블록의 27개 선언이 정의 0건인 `--studio-surface-2/-3`, `--studio-violet(-soft)`, `--studio-mint`, `--studio-amber` 를 읽으므로 캐스케이드에서 이겨도 무효값이다. **복구 대상이 아니라 삭제 대상이다.**
 
 ### B 는 미확인
 
@@ -229,18 +231,20 @@ life-panel 카드 47줄은 헤더와 무관하므로(§0.5) **DOM 유지 + CSS �
 
 ### 5.1 규모와 부채
 
+아래는 **2026-08-29 재측정값**이다(분모를 줄마다 명시했다 — 초판은 몇 줄에서 분모를 적지 않아 백분율이 재현되지 않았다).
+
 | 지표 | 값 |
 |---|---|
-| database CSS | 94파일 / 31,557줄 / 936KB (전체 styles 의 42%) |
+| database CSS | 95파일 / 31,662줄 / 947KB. 전체 `src/styles` 대비 **파일 36.5%(95/260) · 줄 39.4% · 바이트 41.7%** (초판의 "42%" 는 바이트 기준) |
 | `database*.ts` | 62개 |
-| `!important` (database / 전체) | **476 / 1,008** (system-studio 243, studio-theme 115, sidebar 43) |
-| 하드코딩 색 / `var(--)` | 756 (hex 323 + rgba 433) / 4,778 = **13.7%** (파일별 최대 54%) |
-| `font:` 단축 중 리터럴 글꼴 | **413 / 439** (`var(--font-*)` 는 49) |
-| 3클래스 이상 선택자 | 1,975 / 4,085 = **48.3%** (리추얼 접두사 832건 / 19파일) |
-| 미정의 `--studio-*` 토큰 | 8종 29회 참조, 정의 0건 |
+| `!important` (database / 전체) | **463 / 986** — 예산 게이트 기준선(`.omo/css-budget-baseline.json`, 전체 = `src/styles` + `player.css`) 기준. 파일별 최다는 system-studio 242, studio-theme 115, sidebar 41 |
+| 하드코딩 색 (database) | hex 287 + rgba/rgb 424 = **711**. 같은 범위 `var(--)` 참조 4,788 → 색 / (색 + var) = **12.9%** (초판의 "756 / 4,778 = 13.7%" 은 나눗셈이 성립하지 않는다 — 13.7% 는 색/(색+var) 분모로 계산된 값이었다) |
+| `font:` 단축 중 리터럴 글꼴 | **456 / 482** (`var(--font-*)` 는 26). 초판의 "413 / 439 (토큰 49)" 는 413+49=462 로 분모와 맞지 않았다 |
+| 3클래스 이상 선택자 | **2,470 / 4,989 = 49.5%** (쉼표로 분리한 선택자 단위, 주석 제거 후. 초판의 "1,975 / 4,085 = 48.3%" 는 분모 정의가 적혀 있지 않아 재현되지 않는다 — 비율만 같은 자리) |
+| 미정의 `--studio-*` 토큰 | **2종** (`--studio-play`·`--studio-select`, 참조 2회 · 둘 다 fallback 있음). 진단 시점의 8종 중 6종은 `ac4d0ee7` 이 `system-studio.css:25-30` 에 매핑했다 |
 | `@layer` 사용 파일 | 11 (components 3·shell 1·editor 3·runtime 4), **database 0** |
 
-**CSS 예산 게이트가 있다.** `.omo/css-budget-baseline.json` 기준선(hex 1817 / important 981 / undefinedVars 73 / globalRoot 10 / cssFileCount 259)에 대해 `scripts/check-css-budget.mjs:38-44` 가 다섯 지표 모두 "내려가거나 그대로"만 허용하고 `cssFileCount` 도 래칫이다. **개선을 먼저 하고 여유를 만든 뒤 파일을 신설하는 순서**가 게이트와 협력한다.
+**CSS 예산 게이트가 있다.** `.omo/css-budget-baseline.json` 기준선(hex 1,761 / important 986 / undefinedVars 63 / globalRootFiles 10 / cssFileCount 260 — 2026-08-29 재저장분)에 대해 `scripts/check-css-budget.mjs:38-44` 가 다섯 지표 모두 "내려가거나 그대로"만 허용하고 `cssFileCount` 도 래칫이다. **개선을 먼저 하고 여유를 만든 뒤 파일을 신설하는 순서**가 게이트와 협력한다.
 
 ### 5.2 토큰만 바꿔도 안 먹는다 — 이유 3개
 
@@ -250,7 +254,7 @@ life-panel 카드 47줄은 헤더와 무관하므로(§0.5) **DOM 유지 + CSS �
 
 ### 5.3 `@layer` 는 답이 아니다 — 정정
 
-normal 선언에서 **unlayered 가 모든 layered 를 이긴다.** 커스텀 시트를 `@layer overrides` 에 넣으면 database 의 언레이어 규칙에 무조건 진다. 반대로 database 를 레이어로 감싸면 지금 싸울 일이 없는 `!important` 476건이 트리에 남은 언레이어 `!important` 532건에 전부 진다.
+normal 선언에서 **unlayered 가 모든 layered 를 이긴다.** 커스텀 시트를 `@layer overrides` 에 넣으면 database 의 언레이어 규칙에 무조건 진다. 반대로 database 를 레이어로 감싸면 지금 싸울 일이 없는 `!important` **463**건이 database 밖에 남는 **523**건(986 − 463) 중 언레이어 몫에 진다. `!important` 는 레이어 순서를 뒤집으므로 방향 자체는 확실하고, 523건의 언레이어/레이어 분해는 **미확인**이다(§5.1 기준 `@layer` 사용 파일은 11개).
 
 이 저장소의 캐스케이드 제어 수단은 `@layer` 가 아니라 `@import` 로드 순서이고, 그 계약이 최소 9곳에 문서화돼 있다(`index.css:1, 52, 54-55, 57-58, 71, 90-91` 등). `runtime/battle-skins/index.css:4-5` 는 *"do NOT wrap these partials in @layer, or every override would lose to battle.css"* 로 언레이어 유지가 의식적 결정임을 못박는다.
 
@@ -292,7 +296,7 @@ normal 선언에서 **unlayered 가 모든 layered 를 이긴다.** 커스텀 �
 | Phase | 내용 | 검증 | 예산 영향 |
 |---|---|---|---|
 | 0 | 죽은 코드 제거: `system-studio.css` L118-658(생존 17블록 이관), `light-theme.css` 토큰 블록, `databaseSystemView.ts:122` + `system-studio.css:669`, `desktop.css:2-4` height 선언 | 게이트 개선 + 시각 무변화 스냅샷 | important·hex 하강 → `--save-baseline` 으로 조임 |
-| 1 | 미정의 `--studio-*` 8종 매핑 | system 탭 카드 hover 배경 복원 | undefinedVars 하강 |
+| 1 | ~~미정의 `--studio-*` 8종 매핑~~ **완료** (`ac4d0ee7`, 6종 매핑 / 남은 2종은 fallback 보유) | system 탭 카드 hover 배경 복원 | undefinedVars 73 → 63 |
 | 2 | 네이티브 컨트롤 스킨 | 탭별 select·number 시각 확인 + 기존 e2e | `modern-controls.css` 병합으로 cssFileCount 유지 |
 | 3 | 계측 하네스 작성 → lh 하한 1.3 (134건) | 하네스가 잉크 초과 0 보고 | 변화 없음 |
 | 4 | `db-field` 라벨 트랙 통일 (42규칙) | 탭별 폼 스크린샷 대조 | important 하강 가능 |
@@ -335,7 +339,7 @@ body.editor-ui-beginner { --db-row-h: 30px; --db-font-size: 13px; --db-label-w: 
 body.editor-ui-expert   { --db-row-h: 22px; --db-font-size: 11.5px; --db-label-w: 64px; --db-header-prose: none; }
 ```
 
-미정의 토큰 8종은 같은 작업에서 매핑한다: `--studio-violet` → accent, `--studio-mint` → success, `--studio-amber` → warning, `--studio-surface-2/-3` → inset/well, `--studio-play`·`--studio-select` 는 소비 지점 확인 후 결정.
+미정의 토큰 매핑은 `ac4d0ee7` 에서 이미 끝났다(`--studio-violet(-soft)` → accent 계열, `--studio-mint` → success, `--studio-amber` → warning, `--studio-surface-2/-3` → inset/surface). 남은 `--studio-play`·`--studio-select` 는 fallback 으로 동작 중이고 소비 지점이 셸(`editor-ui-modes.css`)이라 이 축의 대상이 아니다.
 
 ### Q2. 헤더 설명문 11건 유지 판정
 
