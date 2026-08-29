@@ -1,8 +1,8 @@
 import { store } from "@/project/store";
-// characterSpriteX 는 타일 중앙이다. 폭 2 이상 발자국의 중앙은 footprintSpriteX 이고 아직
-// renderEvents 만 쓴다 — 아래 updateAutonomousNPCs·updateChaseNpc·updateActiveNpcMove 의
-// 걸음 보간은 2차에서 함께 옮긴다. characterDepth.ts 의 footprintSpriteX 주석 참고.
-import { characterSpriteX, characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
+// 스프라이트 가로 좌표는 발자국 중앙(footprintSpriteX)이다 — 타일 중앙(characterSpriteX)을
+// 쓰면 폭 2 이상인 몸이 반 칸 왼쪽으로 붙는다. 걸음 보간·착지·첫 프레임 모두 같은 규칙이다.
+import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
+import { UNIT_FOOTPRINT } from "@/project/footprint";
 import { abortHop, applyHopFrame, finishHop } from "@/player/characterHopRuntime";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import {
@@ -84,7 +84,7 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
         durationMs: movement.hop?.durationMs,
       };
       if (sprite) {
-        const startX = characterSpriteX(position.x);
+        const startX = footprintSpriteX(position.x, view.footprint);
         const startY = characterSpriteY(position.y);
         sprite.setPosition(startX, startY);
         updateCharacterDepth(sprite, view.priority);
@@ -221,7 +221,9 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   const priority = view?.priority ?? "same";
   const hop = move.hop;
   if (sprite) {
-    const groundX = characterSpriteX(lerp(move.fromX, move.toX, progress));
+    // 뷰를 못 찾으면 1x1 — footprintSpriteX 는 그때 타일 중앙과 같은 값이 된다.
+    const footprint = view?.footprint ?? UNIT_FOOTPRINT;
+    const groundX = footprintSpriteX(lerp(move.fromX, move.toX, progress), footprint);
     const groundY = characterSpriteY(lerp(move.fromY, move.toY, progress));
     sprite.setPosition(groundX, groundY);
     updateCharacterDepth(sprite, priority);
@@ -234,7 +236,7 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   }
   if (move.elapsedMs < durationMs) return;
   if (sprite) {
-    const landX = characterSpriteX(move.toX);
+    const landX = footprintSpriteX(move.toX, footprint);
     const landY = characterSpriteY(move.toY);
     sprite.setPosition(landX, landY);
     updateCharacterDepth(sprite, priority);
