@@ -2,6 +2,14 @@ import type Phaser from "phaser";
 import { startPlayGame, destroyGame } from "@/app/mode";
 import { store } from "@/project/store";
 import { warnIfPlayBootIssues } from "@/project/playBootValidation";
+import { preflightProjectForPlay } from "@/project/playPreflight";
+import {
+  describeBootFailure,
+  installBootProject,
+  repairSummaries,
+  safeModeProject,
+  type PlayBootFailureContext,
+} from "@/player/playBootRecovery";
 import { startSession, type PlaySession } from "@/project/session";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
@@ -99,6 +107,20 @@ export type RenderPlayerOptions = {
   readonly autoStartRun?: boolean;
   // 호스트가 다시 시작 / 타이틀부터를 구동할 수 있도록 런 조작 손잡이를 넘긴다.
   readonly onRunControlsReady?: (controls: PlayerRunControls) => void;
+  // 안전 모드로 부팅한다(자율 이동·자동/병렬 이벤트 억제). 복구 패널의 «안전 모드로 시작» 과
+  // 같은 경로이며, 호스트가 처음부터 안전 모드로 열 때 쓴다.
+  readonly safeMode?: boolean;
+  // 예비검사가 자동으로 고친 항목. 호스트(편집기 창)가 토스트로 드러낸다 — 부팅은 막지 않는다.
+  readonly onBootRepairs?: (repairs: readonly string[]) => void;
+};
+
+/** 한 번의 부팅 요청. 복구 «다시 시도» 는 이 요청을 새 세대로 그대로 다시 돌린다. */
+type PlayBootRequest = {
+  // 이미 만들어진 세션(저장 불러오기 / 선택-이벤트 테스트). 없으면 예비검사 뒤에 새로 만든다.
+  readonly session?: PlaySession;
+  readonly spawn?: { readonly mapId: string; readonly x: number; readonly y: number };
+  readonly eventTestId?: string;
+  readonly safeMode?: boolean;
 };
 
 const MENU_CLOSE_JUICE_MS = 250;
@@ -118,6 +140,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let touchPad: TouchPadHandle | null = null;
   let playStage: HTMLElement | null = null;
   let hostFullscreenCleanup: (() => void) | null = null;
+  // 예비검사로 고친(또는 안전 모드로 깎은) 프로젝트를 런타임에 올려 둔 동안의 해제 손잡이.
+  let releaseBootProject: (() => void) | null = null;
+  // 마지막 부팅 요청 — 복구 패널의 다시 시도 / 안전 모드가 같은 런을 재현하는 근거.
+  let lastBootRequest: PlayBootRequest = { safeMode: options.safeMode === true };
   // teardownPlayer 이후에 호스트 버튼/F5 가 들어와도 새 런(타이머·리스너)을 만들지 않는다.
   let shellActive = true;
   const surfaceScaleMode: PlaySurfaceScaleMode = options.surfaceScaleMode ?? "integer";
@@ -154,6 +180,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface = null;
     playStage = null;
     playStartedAt = 0;
+    // 고친 프로젝트 스냅숏은 런과 수명이 같다. LIFO 로 풀어야 호스트(테스트 플레이 창)가
+    // 올려 둔 샌드박스 스냅숏이 되돌아온다.
+    releaseBootProject?.();
+    releaseBootProject = null;
     statusMenu.reset();
     if (game) {
       if (options.trackGlobalGame === false) {
@@ -182,20 +212,35 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     return isPlayScene(scene) ? scene : undefined;
   };
 
-  // 새 세션 생성. startOverride가 있으면 시작 맵/좌표를 오버라이드한다("여기서 테스트").
-  const newSession = (): PlaySession => {
+  // 새 세션 생성. spawn 이 있으면 시작 맵/좌표를 오버라이드한다("여기서 테스트").
+  // 반드시 예비검사가 프로젝트를 고친 **뒤에** 불러야 한다 — 없는 시작 맵을 세션이 다시 물어온다.
+  const newSession = (spawn = options.startOverride): PlaySession => {
     const project = store.getCurrent();
     const session = startSession(project);
-    if (options.startOverride) {
-      applyStatePreset(session, testHerePreset(options.startOverride.mapId, options.startOverride.x, options.startOverride.y));
+    if (spawn) {
+      applyStatePreset(session, testHerePreset(spawn.mapId, spawn.x, spawn.y));
     }
     return session;
   };
 
-  const startGame = (session?: PlaySession, eventTestId = ""): void => {
+  const startGame = (request: PlayBootRequest = {}): void => {
     stopGame();
     // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
     resetAutosaveDebounce();
+    lastBootRequest = request;
+    const eventTestId = request.eventTestId ?? "";
+    // 예비검사: 없는 시작 맵/타일셋, 빈 파티, 통행 불가 시작 좌표를 Phaser 앞에서 고친다.
+    const preflight = preflightProjectForPlay(store.getCurrent(), request.spawn ?? options.startOverride);
+    const bootProject = request.safeMode === true ? safeModeProject(preflight.project) : preflight.project;
+    releaseBootProject = installBootProject(bootProject);
+    const repairs = repairSummaries(preflight.repairs);
+    if (repairs.length > 0) {
+      try {
+        options.onBootRepairs?.(repairs);
+      } catch (repairReportError) {
+        console.error("[player] onBootRepairs callback failed:", repairReportError);
+      }
+    }
     warnIfPlayBootIssues(store.getCurrent());
     const run = ++startRun;
     const startedAt = performance.now();
@@ -212,7 +257,56 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape
     // 합성 이벤트로 기존 키보드 입력 경로(이동/대사/메뉴)를 그대로 구동한다.
     touchPad = createTouchPad(surface.stage);
-    void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt);
+    if (preflight.blockers.length > 0) {
+      // 고칠 수 없는 상태(맵 0개 등)는 Phaser 를 띄우지 않는다 — 왜 못 노는지를 그대로 말한다.
+      presentRecovery(loading, run, {
+        kind: "preflight-blocked",
+        blockers: preflight.blockers,
+        detail: "preflightProjectForPlay",
+      }, repairs);
+      return;
+    }
+    // 세션은 고친 프로젝트에서 만든다(요청이 세션을 들고 왔으면 그것을 그대로 쓴다).
+    const session = request.session ?? newSession(effectiveSpawn(request, bootProject));
+    void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
+  };
+
+  // 예비검사가 시작 맵/좌표를 재배선했으면 그 결과가 곧 이번 런의 스폰이다.
+  const effectiveSpawn = (
+    request: PlayBootRequest,
+    bootProject: ReturnType<typeof store.getCurrent>,
+  ): { readonly mapId: string; readonly x: number; readonly y: number } | undefined => {
+    const requested = request.spawn ?? options.startOverride;
+    if (!requested) return undefined;
+    return { mapId: bootProject.startMapId, x: bootProject.startPos.x, y: bootProject.startPos.y };
+  };
+
+  // 세 갈래 막다른 문구를 대신하는 단 하나의 출구. 낡은 런은 조용히 접는다(새 런을 덮지 않는다).
+  const presentRecovery = (
+    loading: PlayLoadingOverlay,
+    run: number,
+    context: PlayBootFailureContext,
+    repairs: readonly string[],
+  ): void => {
+    if (run !== startRun) return;
+    const described = describeBootFailure(context);
+    // 부팅이 ready 를 지나 오버레이를 이미 걷어낸 뒤 터졌을 수도 있다 → 그때는 새로 올린다.
+    const overlay = loading.root.isConnected ? loading : mountPlayLoadingOverlay(layout, "error");
+    overlay.showRecovery({
+      title: described.title,
+      reason: described.reason,
+      diagnostics: described.diagnostics,
+      ...(repairs.length > 0 ? { repairs } : {}),
+      onRetry: () => retryBoot(),
+      // 안전 모드는 저작 내용 문제를 우회하는 수단이다 — 맵이 아예 없는 상태는 우회할 수 없다.
+      ...(context.kind === "preflight-blocked" ? {} : { onSafeMode: () => retryBoot(true) }),
+    });
+  };
+
+  // 다시 시도 / 안전 모드: 마지막 요청을 **새 세대로** 처음부터 다시 돌린다.
+  const retryBoot = (safeMode?: boolean): void => {
+    if (!shellActive) return;
+    startGame({ ...lastBootRequest, safeMode: safeMode ?? lastBootRequest.safeMode === true });
   };
 
   const bootPlayGame = async (
@@ -221,7 +315,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     eventTestId: string,
     loading: PlayLoadingOverlay,
     run: number,
-    startedAt: number
+    startedAt: number,
+    repairs: readonly string[]
   ): Promise<void> => {
     let resolveReady: (() => void) | null = null;
     const readyPromise = new Promise<void>((resolve) => {
@@ -310,7 +405,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       }
       if (!ready.ok) {
         bootDiag("timeout", false, { detail: ready.reason });
-        loading.setStage("error", "플레이 씬을 시작하지 못했습니다.");
+        presentRecovery(loading, run, {
+          kind: "ready-timeout",
+          readyReason: ready.reason,
+          mapId,
+          elapsedMs: performance.now() - startedAt,
+          detail: "waitForPlaySceneReady",
+        }, repairs);
         return;
       }
       // ready 이후 무거운 refresh 가 오버레이를 가두지 않도록 이미 remove 한 뒤 실행.
@@ -335,9 +436,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     } catch (error) {
       console.error("[player] failed to start play game:", error);
       bootDiag("error", false, { error, detail: "bootPlayGame catch" });
-      if (run === startRun) {
-        loading.setStage("error", "플레이를 시작하지 못했습니다");
-      }
+      presentRecovery(loading, run, {
+        kind: "boot-threw",
+        error,
+        mapId,
+        elapsedMs: performance.now() - startedAt,
+        detail: "bootPlayGame catch",
+      }, repairs);
     }
   };
 
@@ -354,7 +459,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
     if (fromTitle || !game) {
-      startGame(restored);
+      startGame({ session: restored });
       return;
     }
     activeScene()?.applySession(restored);
@@ -376,7 +481,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
     if (fromTitle || !game) {
-      startGame(restored);
+      startGame({ session: restored });
       return;
     }
     activeScene()?.applySession(restored);
@@ -597,7 +702,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const activateTitleOption = (id: TitleMenuOptionId | undefined): void => {
     switch (id) {
       case "newGame":
-        startGame(newSession());
+        startGame({ safeMode: options.safeMode === true });
         return;
       case "resume":
         loadAutosave(true);
@@ -651,11 +756,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 호스트 "다시 시작": 타이틀을 거치지 않고 진행 상태 없는 런을 다시 띄운다.
   const restartRun = (): void => {
     if (!shellActive) return;
-    const session = newSession();
-    if (restartSpawn && !options.startOverride) {
-      applyStatePreset(session, testHerePreset(restartSpawn.mapId, restartSpawn.x, restartSpawn.y));
-    }
-    startGame(session, options.initialEventTestId ?? "");
+    startGame({
+      ...(restartSpawn ? { spawn: restartSpawn } : {}),
+      eventTestId: options.initialEventTestId ?? "",
+      safeMode: options.safeMode === true,
+    });
   };
 
   const returnToTitle = (): void => {
@@ -674,9 +779,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 우선순위: 선택-이벤트 테스트(initialSession) → "여기서 테스트"(startOverride)
   //          → 자동 시작(에디터 테스트 플레이 창) → 타이틀.
   if (options.initialSession) {
-    startGame(options.initialSession, options.initialEventTestId ?? "");
+    startGame({
+      session: options.initialSession,
+      eventTestId: options.initialEventTestId ?? "",
+      safeMode: options.safeMode === true,
+    });
   } else if (options.startOverride || options.autoStartRun) {
-    startGame(newSession());
+    startGame({ safeMode: options.safeMode === true });
   } else {
     renderTitle();
   }
