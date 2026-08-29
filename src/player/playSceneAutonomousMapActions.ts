@@ -1,5 +1,5 @@
 import { canMove, inBounds } from "@/project/collision";
-import { footprintContains } from "@/project/footprint";
+import { pointRect } from "@/project/footprint";
 import { store } from "@/project/store";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
 import type { MoveCommand } from "@/project/types";
@@ -7,7 +7,7 @@ import type { AutonomousMover } from "@/player/playSceneTypes";
 import type { AutonomousNpcSceneContext, MovementDelta } from "@/player/playSceneAutonomousTypes";
 import { applySpriteAlpha } from "@/player/playSceneAutonomousSprites";
 import type { NpcCommandTarget, NpcRouteCommandContext } from "@/player/playSceneAutonomousCommands";
-import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
+import { findBlockingEventOverlappingRect } from "@/project/runtimeEventState"
 import type { Project } from "@/project/types/project";
 
 export type NpcMoveCollision = {
@@ -64,18 +64,16 @@ export function canNpcMove(
 
 function isCharacterBlockedTile(request: NpcMoveCollision, x: number, y: number): boolean {
   if (isPlayerOccupyingTile(request.scene, x, y)) return true;
-  return runtimeEventViewsForMap(
+  // 예전에는 맵 전체 뷰 배열을 만든 뒤 some() 했다. 대각 이동 판정은 이 함수를 최대 3번
+  // 부르므로 NPC 한 명이 한 걸음 옮길 때마다 배열이 3개 생겼다. 이제는 첫 차단에서 멈춘다.
+  return findBlockingEventOverlappingRect(
     request.project,
     request.scene.map,
     request.scene.session,
-    request.scene.eventPositions
-  ).some(
-    (view) =>
-      footprintContains(view.x, view.y, view.footprint, x, y) &&
-      view.event.id !== request.eventId &&
-      view.priority === "same" &&
-      view.overlapForbidden
-  );
+    request.scene.eventPositions,
+    pointRect(x, y),
+    request.eventId
+  ) !== undefined;
 }
 
 export function applyNpcTransfer(

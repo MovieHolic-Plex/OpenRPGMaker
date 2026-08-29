@@ -428,6 +428,9 @@ body[data-editor-tool="pan"] .editor-layout [data-testid="edit-canvas"]:active {
   background: var(--surface-recessed);
   font-size: 1px;
   z-index: 1;
+  /* player.css 와 같은 이유 — 수십 KB 짜리 세션 JSON 의 줄 상자 계산을 건너뛴다.
+     상자는 1×1 로 남아 헤드리스 가시성 판정과 textContent 읽기에 영향이 없다. */
+  content-visibility: hidden;
 }
 .runtime-missing-resource {
   position: absolute;

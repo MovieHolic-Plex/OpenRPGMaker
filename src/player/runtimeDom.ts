@@ -116,6 +116,12 @@ export class RuntimeDomOverlay {
   private readonly pictureNow: () => number;
   private stageBounds: PlayResolution;
   private pictureRafId = 0;
+  // QA 거울 노드와 직전에 쓴 문자열. 매 프레임 querySelector + textContent 쓰기를 하면
+  // 세션 JSON 이 그대로 바뀌지 않았어도 노드가 무효화된다(실측 고정세 5.4ms).
+  private stateJsonNode: HTMLElement | undefined;
+  private stateJsonText: string | undefined;
+  private audioJsonNode: HTMLElement | undefined;
+  private audioJsonText: string | undefined;
 
   constructor(
     private readonly host: () => HTMLElement | undefined,
@@ -291,14 +297,17 @@ export class RuntimeDomOverlay {
       this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
       return;
     }
-    const existing = host.querySelector("[data-testid='runtime-state-json']");
-    const node = existing instanceof HTMLElement ? existing : document.createElement("pre");
-    if (!existing) {
-      node.className = "runtime-state-json";
-      node.dataset.testid = "runtime-state-json";
-      host.append(node);
+    const node = this.mirrorNode(host, this.stateJsonNode, "runtime-state-json", "runtime-state-json");
+    // 노드가 새로 잡혔으면 직전 문자열 기억은 버린다 — 안 그러면 새 노드가 빈 채로 남는다.
+    if (node !== this.stateJsonNode) {
+      this.stateJsonNode = node;
+      this.stateJsonText = undefined;
     }
-    node.textContent = JSON.stringify(snapshot);
+    const serialized = JSON.stringify(snapshot);
+    if (serialized !== this.stateJsonText) {
+      node.textContent = serialized;
+      this.stateJsonText = serialized;
+    }
     this.syncTimerHud(snapshot.timers, snapshot.timerActive);
     this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
   }
@@ -308,14 +317,41 @@ export class RuntimeDomOverlay {
     if (!host) return;
     // QA-only mirror; audio playback itself is owned by the audio engine.
     if (!this.qaInstrumentation) return;
-    const existing = host.querySelector("[data-testid='audio-state-json']");
-    const node = existing instanceof HTMLElement ? existing : document.createElement("pre");
-    if (!existing) {
-      node.className = "runtime-state-json runtime-audio-state-json";
-      node.dataset.testid = "audio-state-json";
-      host.append(node);
+    const node = this.mirrorNode(
+      host,
+      this.audioJsonNode,
+      "audio-state-json",
+      "runtime-state-json runtime-audio-state-json"
+    );
+    if (node !== this.audioJsonNode) {
+      this.audioJsonNode = node;
+      this.audioJsonText = undefined;
     }
-    node.textContent = JSON.stringify(audio);
+    const serialized = JSON.stringify(audio);
+    if (serialized !== this.audioJsonText) {
+      node.textContent = serialized;
+      this.audioJsonText = serialized;
+    }
+  }
+
+  /**
+   * QA 거울 노드를 찾거나 만든다. 캐시한 노드가 여전히 이 host 의 자식이면 그대로 쓴다 —
+   * host 가 바뀌거나(새 재생 세션) 노드가 떨어져 나가면 다시 질의한다.
+   */
+  private mirrorNode(
+    host: HTMLElement,
+    cached: HTMLElement | undefined,
+    testId: string,
+    className: string
+  ): HTMLElement {
+    if (cached && cached.parentElement === host) return cached;
+    const existing = host.querySelector(`[data-testid='${testId}']`);
+    if (existing instanceof HTMLElement) return existing;
+    const node = document.createElement("pre");
+    node.className = className;
+    node.dataset.testid = testId;
+    host.append(node);
+    return node;
   }
 
   // 픽처 레이어를 실제 이미지로 렌더한다. 리소스가 이미지로 해석되면 <img> 슬롯을,

@@ -16,7 +16,7 @@ import { nextChaseDecision } from "@/player/chaseAi";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
 import { moveRuntimeEventPosition,
 runtimeEventView,
-runtimeEventViewsForMap, } from "@/project/runtimeEventState"
+runtimeEventViewById, } from "@/project/runtimeEventState"
 
 export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: number): void {
   const project = store.getCurrent();
@@ -36,8 +36,7 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
     mover.timer += Math.max(0, deltaMs);
     if (mover.timer < mover.moveIntervalMs) continue;
     mover.timer = 0;
-    const view = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
-      .find((entry) => entry.event.id === eventId);
+    const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
     if (!view) {
       completeRouteCommand(mover);
       continue;
@@ -93,8 +92,7 @@ function updateChaseNpc(
   deltaMs: number
 ): void {
   const project = store.getCurrent();
-  const view = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
-    .find((entry) => entry.event.id === eventId);
+  const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
   if (!view) return;
   const baseFrame = view.page?.graphic.pattern ?? 0;
   const sprite = scene.eventSprites.get(eventId);
@@ -192,8 +190,7 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   move.elapsedMs = Math.min(mover.moveDurationMs, move.elapsedMs + Math.max(0, deltaMs));
   const progress = move.elapsedMs / mover.moveDurationMs;
   const sprite = scene.eventSprites.get(eventId);
-  const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
-    .find((entry) => entry.event.id === eventId);
+  const view = runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, eventId);
   const animationType = view?.animationType ?? "normal";
   const priority = view?.priority ?? "same";
   if (sprite) {

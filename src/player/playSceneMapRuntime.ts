@@ -47,11 +47,15 @@ import { initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
 import type { RuntimeEventSnapshot } from "@/player/runtimeDom";
+import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 
 interface RenderedTileImage {
   setOrigin(x: number, y: number): void;
   setDepth(depth: number): void;
   destroy?(removeFromDisplayList?: boolean): void;
+  /** 화면 밖 컬링용. Phaser GameObject 는 모두 갖지만 테스트 스텁은 생략한다. */
+  visible?: boolean;
+  setVisible?(value: boolean): unknown;
 }
 
 /** root display list 에 올린 솔리드 upper 가구 — container removeAll 대상이 아니라 직접 destroy. */
@@ -137,10 +141,8 @@ export function renderTiles<
   scene.tileLayer.removeAll(true);
   scene.upperTileLayer?.removeAll(true);
   clearRootYSortTiles(scene);
-  for (const sprite of scene.eventSprites.values()) sprite.destroy();
-  scene.eventSprites.clear();
-  scene.runtimeDom.clearEventMarkers();
-  scene.missingResources.clear();
+  clearEventSprites(scene);
+  resetCullableTiles(rootYSortHost(scene));
   const map = scene.map;
   const tileset = store.getCurrent().tilesets[map.tilesetId];
   if (!tileset) return;
@@ -155,6 +157,31 @@ export function renderTiles<
   }
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
   renderPlaceableOverlays(scene);
+  renderEvents(scene);
+}
+
+function clearEventSprites<
+  TImage extends RenderedTileImage,
+  TSprite extends RenderedEventSprite,
+>(scene: RenderTilesSceneContext<TImage, TSprite>): void {
+  for (const sprite of scene.eventSprites.values()) sprite.destroy();
+  scene.eventSprites.clear();
+  scene.runtimeDom.clearEventMarkers();
+  scene.missingResources.clear();
+}
+
+/**
+ * 이벤트 스프라이트·마커만 다시 만든다 — 타일·농지·설치물은 건드리지 않는다.
+ *
+ * 왜: NPC 가 움직이거나 시간표가 바뀔 때마다 renderTiles 를 부르면 맵 전체 GameObject
+ * (100×100 = 1만~2.1만개) 를 파괴하고 다시 만든다(실측 15.9~26ms/호출). 그 갱신이
+ * 필요한 것은 이벤트 계층뿐이다.
+ */
+export function renderEventLayer<
+  TImage extends RenderedTileImage,
+  TSprite extends RenderedEventSprite,
+>(scene: RenderTilesSceneContext<TImage, TSprite>): void {
+  clearEventSprites(scene);
   renderEvents(scene);
 }
 
@@ -214,12 +241,15 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   image: TImage,
   tileset: TilesetDef,
   tile: number,
+  x: number,
   y: number,
   layer: "lower" | "upper",
 ): void {
   const alwaysAbove = layer === "upper" && isAlwaysAboveCharacterUpperTile(tileset, tile);
   image.setOrigin(0, 0);
   applyTileDepth(image, tileset, tile, y, layer);
+  // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고).
+  trackCullableTile(rootYSortHost(scene), image, x, y);
   if (layer === "upper" && !alwaysAbove) {
     // root display list — same-priority 캐릭터와 y-sort.
     trackRootYSortTile(scene, image);
@@ -258,14 +288,14 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     && isTransparentChipsetTile(tile)
   ) {
     const grass = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${TILE.GRASS}`);
-    placeMapTileImage(scene, grass, tileset, TILE.GRASS, y, layer);
+    placeMapTileImage(scene, grass, tileset, TILE.GRASS, x, y, layer);
   }
   const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
     ? scene.add.sprite(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`).play(animationKey)
     : scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`);
-  placeMapTileImage(scene, image, tileset, tile, y, layer);
+  placeMapTileImage(scene, image, tileset, tile, x, y, layer);
 }
 
 function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
@@ -283,7 +313,7 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
       ? scene.add.sprite(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName).play(animationKey)
       : scene.add.image(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName);
     // 쿼터 소스는 맵 셀 좌표 기준 depth 를 공유한다.
-    placeMapTileImage(scene, image, tileset, part.tile, y, layer);
+    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer);
   }
 }
 
@@ -299,7 +329,7 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
 ): void {
   if (composition.underlayTile !== undefined) {
     const underlay = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${composition.underlayTile}`);
-    placeMapTileImage(scene, underlay, tileset, composition.underlayTile, y, layer);
+    placeMapTileImage(scene, underlay, tileset, composition.underlayTile, x, y, layer);
   }
   for (const part of composition.sources) {
     const image = scene.add.image(
@@ -308,7 +338,7 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
       textureKey,
       `tile_${part.tile}_${part.quarter}`
     );
-    placeMapTileImage(scene, image, tileset, part.tile, y, layer);
+    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer);
   }
 }
 
@@ -463,6 +493,17 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
 
 export function refreshRuntimeSurfaces(scene: PlaySceneContext): void {
   scene.renderTiles();
+  scene.registerPageMoveRoutes();
+  syncScreenEffects(scene);
+  void fireAutoTriggers(scene);
+}
+
+/**
+ * refreshRuntimeSurfaces 의 이벤트 전용 판. 타일 재생성을 뺀 것 말고는 같다.
+ * NPC 위치·페이지·시간표처럼 이벤트 계층만 달라진 갱신에 쓴다.
+ */
+export function refreshRuntimeEntities(scene: PlaySceneContext): void {
+  renderEventLayer(scene);
   scene.registerPageMoveRoutes();
   syncScreenEffects(scene);
   void fireAutoTriggers(scene);

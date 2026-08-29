@@ -173,6 +173,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   renderTiles(): void;
   syncRuntimeState(): void;
   refreshRuntimeSurfaces(): void;
+  /** 이벤트 계층만 갱신한다(타일 재생성 없음). NPC·시간표 변경에 쓴다. */
+  refreshRuntimeEntities(): void;
   centerCamera(): void;
   setInputEnabled(enabled: boolean): void;
   activeRuntimeEvents(triggerKind: Trigger["kind"]): RuntimeEventView[];
