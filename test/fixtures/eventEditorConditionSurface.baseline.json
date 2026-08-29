@@ -1241,6 +1241,7 @@
    "event-condition-hint",
    "event-condition-mode",
    "event-condition-npc-activity",
+   "event-condition-npc-activity-options",
    "event-fork-body-hint",
    "event-fork-branch-summary",
    "event-fork-condition-title",
@@ -1303,6 +1304,7 @@
    "지금 하는 일"
   ],
   "tags": {
+   "datalist": 1,
    "div": 14,
    "input": 2,
    "label": 3,
@@ -1323,6 +1325,7 @@
    "event-condition-hint": "p",
    "event-condition-mode": "select",
    "event-condition-npc-activity": "input",
+   "event-condition-npc-activity-options": "datalist",
    "event-fork-body-hint": "p",
    "event-fork-branch-summary": "div",
    "event-fork-condition-title": "div",
@@ -1340,7 +1343,7 @@
    "event-fork-summary-else": "그 외 · #개 명령",
    "event-fork-summary-then": "참일 때 · #개 명령"
   },
-  "testidCount": 16,
+  "testidCount": 17,
   "controlCount": 3
  },
  "fork:friendshipAtLeast": {

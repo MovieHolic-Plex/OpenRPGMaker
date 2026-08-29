@@ -2534,16 +2534,20 @@
   "reactions": {
    "move-route-event-id-input": "검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게__probe__시작점 · 오른쪽에서 이동 명령을 추가하세요이동 \", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게__probe__시작점 · 오른쪽에서 이동 명령을 추가하세요이동 \"]",
    "move-route-graphic-id-input": "no-change",
+   "move-route-hop-duration-input": "no-change",
+   "move-route-hop-dx-input": "no-change",
+   "move-route-hop-dy-input": "no-change",
+   "move-route-hop-height-input": "no-change",
    "move-route-npc-target-direction-input": "no-change",
    "move-route-npc-target-map-input": "single-option",
    "move-route-npc-target-x-input": "no-change",
    "move-route-npc-target-y-input": "no-change",
-   "move-route-repeat-checkbox": "태그 개수 [div 25→26, span 100→101] | 컨트롤 값 변경 1개 [move-route-repeat-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음반\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령…(절단: 총 394자)",
-   "move-route-skippable-checkbox": "태그 개수 [div 25→26, span 100→101] | 컨트롤 값 변경 1개 [move-route-skippable-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음불\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동…(절단: 총 397자)",
+   "move-route-repeat-checkbox": "태그 개수 [div 25→26, span 106→107] | 컨트롤 값 변경 1개 [move-route-repeat-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음반\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령…(절단: 총 394자)",
+   "move-route-skippable-checkbox": "태그 개수 [div 25→26, span 106→107] | 컨트롤 값 변경 1개 [move-route-skippable-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음불\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동…(절단: 총 397자)",
    "move-route-sound-id-input": "no-change",
    "move-route-switch-id-input": "no-change",
    "move-route-target-select": "컨트롤 값 변경 1개 [move-route-event-id-input: input[text]{}→input[text]{nodisplay}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게이 이벤트시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게이 이벤트시작점 · 오른쪽에서 이동 명령을 추가하세요이동…(절단: 총 307자)",
-   "move-route-wait-checkbox": "태그 개수 [div 25→26, span 100→101] | 컨트롤 값 변경 1개 [move-route-wait-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음완\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없…(절단: 총 392자)"
+   "move-route-wait-checkbox": "태그 개수 [div 25→26, span 106→107] | 컨트롤 값 변경 1개 [move-route-wait-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음완\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없…(절단: 총 392자)"
   },
   "initial": {
    "testids": [
@@ -2559,6 +2563,7 @@
     "move-route-add-decrease-speed",
     "move-route-add-direction-fix-off",
     "move-route-add-direction-fix-on",
+    "move-route-add-drop-in",
     "move-route-add-increase-frequency",
     "move-route-add-increase-opacity",
     "move-route-add-increase-speed",
@@ -2601,6 +2606,10 @@
     "move-route-event-id-input",
     "move-route-graphic-id-input",
     "move-route-help",
+    "move-route-hop-duration-input",
+    "move-route-hop-dx-input",
+    "move-route-hop-dy-input",
+    "move-route-hop-height-input",
     "move-route-npc-target-direction-input",
     "move-route-npc-target-map-input",
     "move-route-npc-target-x-input",
@@ -2670,6 +2679,7 @@
     "move-route-add-decrease-speed": "button{}",
     "move-route-add-direction-fix-off": "button{}",
     "move-route-add-direction-fix-on": "button{}",
+    "move-route-add-drop-in": "button{}",
     "move-route-add-increase-frequency": "button{}",
     "move-route-add-increase-opacity": "button{}",
     "move-route-add-increase-speed": "button{}",
@@ -2709,6 +2719,10 @@
     "move-route-delete-selected": "button{disabled}",
     "move-route-event-id-input": "input[text]{}",
     "move-route-graphic-id-input": "input[text]{}",
+    "move-route-hop-duration-input": "input[number]{}",
+    "move-route-hop-dx-input": "input[number]{}",
+    "move-route-hop-dy-input": "input[number]{}",
+    "move-route-hop-height-input": "input[number]{}",
     "move-route-npc-target-direction-input": "select{}",
     "move-route-npc-target-map-input": "select{}",
     "move-route-npc-target-x-input": "input[number]{}",
@@ -2780,10 +2794,15 @@
     "왼쪽으로 향함",
     "위로 이동",
     "위로 향함",
-    "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동)",
+    "위에서 낙하",
+    "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동 · 체공)",
     "점프",
+    "점프 dx",
+    "점프 dy",
     "좌우 90도 회전",
     "착지",
+    "체공 높이(px)",
+    "체공 시간(ms)",
     "통과 OFF",
     "통과 ON",
     "플레이어 반대로 향함",
@@ -2795,16 +2814,16 @@
     "효과음 재생..."
    ],
    "tags": {
-    "button": 45,
+    "button": 46,
     "circle": 10,
     "details": 1,
     "div": 25,
-    "input": 9,
-    "label": 10,
+    "input": 13,
+    "label": 14,
     "option": 8,
     "p": 2,
     "select": 3,
-    "span": 100,
+    "span": 106,
     "summary": 1,
     "svg": 1
    },
@@ -2821,6 +2840,7 @@
     "move-route-add-decrease-speed": "button",
     "move-route-add-direction-fix-off": "button",
     "move-route-add-direction-fix-on": "button",
+    "move-route-add-drop-in": "button",
     "move-route-add-increase-frequency": "button",
     "move-route-add-increase-opacity": "button",
     "move-route-add-increase-speed": "button",
@@ -2863,6 +2883,10 @@
     "move-route-event-id-input": "input",
     "move-route-graphic-id-input": "input",
     "move-route-help": "p",
+    "move-route-hop-duration-input": "input",
+    "move-route-hop-dx-input": "input",
+    "move-route-hop-dy-input": "input",
+    "move-route-hop-height-input": "input",
     "move-route-npc-target-direction-input": "select",
     "move-route-npc-target-map-input": "select",
     "move-route-npc-target-x-input": "input",
@@ -2884,8 +2908,8 @@
     "move-route-path-preview": "누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음",
     "move-route-summary": "(이동 단계 없음)"
    },
-   "testidCount": 68,
-   "controlCount": 57
+   "testidCount": 73,
+   "controlCount": 62
   },
   "classes": [
    "btn",
@@ -2934,7 +2958,7 @@
    "move-route-toolbar",
    "small"
   ],
-  "probeCount": 12,
+  "probeCount": 16,
   "reactingCount": 5
  },
  "setEventGraphicPattern": {
@@ -5819,12 +5843,20 @@
     "inline-field"
    ],
    "controls": {
-    "event-command-faction-a": "input[text]{}",
-    "event-command-faction-b": "input[text]{}",
+    "event-command-faction-a": "select{}",
+    "event-command-faction-b": "select{}",
     "event-command-faction-op": "select{}",
     "event-command-faction-value": "input[number]{}"
    },
    "selectOptions": {
+    "event-command-faction-a": [
+     "player",
+     "enemy"
+    ],
+    "event-command-faction-b": [
+     "player",
+     "enemy"
+    ],
     "event-command-faction-op": [
      "=",
      "+=",
@@ -5834,21 +5866,21 @@
    "labels": [
     "값",
     "연산설정올리기내리기",
-    "진영 A",
-    "진영 B"
+    "진영 A플레이어 (player)적 (enemy)",
+    "진영 B플레이어 (player)적 (enemy)"
    ],
    "tags": {
     "div": 4,
-    "input": 3,
+    "input": 1,
     "label": 4,
-    "option": 3,
-    "select": 1,
+    "option": 7,
+    "select": 3,
     "span": 4
    },
    "tagByTestid": {
     "event-command-edit-summary": "div",
-    "event-command-faction-a": "input",
-    "event-command-faction-b": "input",
+    "event-command-faction-a": "select",
+    "event-command-faction-b": "select",
     "event-command-faction-op": "select",
     "event-command-faction-value": "input"
    },

@@ -196,11 +196,15 @@
    "move-route-npc-target-map-input": "single-option",
    "move-route-npc-target-x-input": "no-commit",
    "move-route-npc-target-y-input": "no-commit",
-   "move-route-npc-target-direction-input": "no-commit"
+   "move-route-npc-target-direction-input": "no-commit",
+   "move-route-hop-dx-input": "no-commit",
+   "move-route-hop-dy-input": "no-commit",
+   "move-route-hop-height-input": "no-commit",
+   "move-route-hop-duration-input": "no-commit"
   },
-  "probeCount": 12,
+  "probeCount": 16,
   "commitCount": 5,
-  "noCommitCount": 6
+  "noCommitCount": 10
  },
  "setEventGraphicPattern": {
   "probes": {
@@ -426,8 +430,8 @@
  },
  "changeFactionStance": {
   "probes": {
-   "event-command-faction-a": "replaceCommand {\"a\":\"__p_ad07ae__\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",
-   "event-command-faction-b": "replaceCommand {\"a\":\"player\",\"b\":\"__p_71a039__\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",
+   "event-command-faction-a": "replaceCommand {\"a\":\"enemy\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",
+   "event-command-faction-b": "replaceCommand {\"a\":\"player\",\"b\":\"player\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",
    "event-command-faction-op": "replaceCommand {\"a\":\"player\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"-=\",\"value\":0}",
    "event-command-faction-value": "replaceCommand {\"a\":\"player\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}"
   },
