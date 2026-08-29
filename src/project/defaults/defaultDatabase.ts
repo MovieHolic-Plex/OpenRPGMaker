@@ -8,7 +8,6 @@ import {
   defaultStateRecords,
 } from "./defaultDatabaseStarterRecords";
 import { defaultItemRecords } from "./defaultDatabaseItemRecords";
-import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import {
   defaultBattleCommandRecords,
   defaultElementRecords,
@@ -84,7 +83,8 @@ export function defaultDatabase(): ProjectDatabaseRecords {
     terrains: defaultTerrainRecords(),
     battleCommands: defaultBattleCommandRecords(),
     monsterSpecies: battle.monsterSpecies,
-    crops: defaultFeatureCropRecords(),
+    // 농사는 옵트인 시스템이다 — 빈 프로젝트는 작물을 싣지 않는다(systemOptInLint 계약).
+    crops: [],
     lifeSkills: [],
   };
 }

@@ -216,8 +216,9 @@ export function canBattlerAct(project: Project, battler: MutableBattler): boolea
   return !battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.restrictsAction);
 }
 
-export function stateBlocksSkillUse(project: Project, battler: { readonly stateIds: readonly string[] }): boolean {
-  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.blocksSkillUse);
+export function stateBlocksSkillUse(project: Project, battler: { readonly stateIds?: readonly string[] }): boolean {
+  // 몬스터·적 배틀러는 stateIds 를 들고 오지 않는 경로가 있다(Gen1 PP 경로에서 실측).
+  return (battler.stateIds ?? []).some((stateId) => behaviorFor(project, stateId)?.blocksSkillUse);
 }
 
 // 피격 시 상태 해제 판정(수면 등). 해제된 상태 id 목록 반환.

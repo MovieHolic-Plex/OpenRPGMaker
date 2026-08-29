@@ -32,7 +32,8 @@ describe("default item catalog quality", () => {
 
     for (const item of items) {
       if (item.occasion === "never") {
-        const isPlantableSeed = item.type === "seed" && project.database.crops?.some((crop) => crop.seedItemId === item.id);
+        // 씨앗은 아이템 사용 메뉴가 아니라 농사 권위자가 소모한다(작물은 옵트인 레이어에 있다).
+        const isPlantableSeed = item.type === "seed";
         if (!isPlantableSeed) expect(item.consumable, item.id).toBe(false);
         expect(item.description.trim().length, item.id).toBeGreaterThan(0);
       } else {

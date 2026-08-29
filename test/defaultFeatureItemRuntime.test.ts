@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults";
+import { defaultFeatureCropRecords } from "@/project/defaults/defaultFeatureItemRecords";
 import { giveMonster } from "@/project/monsterCollection";
 import { startSession } from "@/project/session";
 import { setEquippedTool } from "@/project/toolActions";
@@ -87,7 +88,9 @@ describe("확장 기본 아이템 실행 경로", () => {
   });
 
   it("작물 씨앗은 연결된 기본 작물로 실제 밭에 심어진다", () => {
+    // 농사는 옵트인이라 빈 프로젝트에는 작물이 없다 — 출하되는 작물 레코드를 켜고 검증한다.
     const project = createBlankProject();
+    project.database.crops = defaultFeatureCropRecords();
     const session = startSession(project);
     const sourceMap = project.maps[project.startMapId];
     if (!sourceMap) throw new Error("기본 맵이 없습니다.");
