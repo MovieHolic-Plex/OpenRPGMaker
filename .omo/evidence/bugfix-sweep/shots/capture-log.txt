@@ -1,0 +1,9 @@
+OK   01-editor.png
+OK   02-db-switches.png
+OK   04-event-editor.png
+FAIL 05 condition palette — TimeoutError: locator.scrollIntoViewIfNeeded: Timeout 14721.523000000001ms exceeded.
+FAIL 06 advanced group — TimeoutError: locator.scrollIntoViewIfNeeded: Timeout 14683.719000000005ms exceeded.
+OK   07-history.png
+OK   02-db-switches.png
+FAIL A switches with rows — Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeHidden[2m([22m[2m)[22m failed
+FAIL B advanced group — TimeoutError: locator.click: Timeout 15000ms exceeded.
