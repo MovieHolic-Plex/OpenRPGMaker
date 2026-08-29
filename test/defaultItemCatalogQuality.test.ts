@@ -31,7 +31,8 @@ describe("default item catalog quality", () => {
 
     for (const item of items) {
       if (item.occasion === "never") {
-        expect(item.consumable, item.id).toBe(false);
+        const isPlantableSeed = item.type === "seed" && project.database.crops?.some((crop) => crop.seedItemId === item.id);
+        if (!isPlantableSeed) expect(item.consumable, item.id).toBe(false);
         expect(item.description.trim().length, item.id).toBeGreaterThan(0);
       } else {
         expect(item.consumable, item.id).toBe(true);
@@ -70,6 +71,8 @@ function hasExecutableEffect(item: ItemRecord): boolean {
       item.activateSkillId ||
       item.captureProfile ||
       item.careProfile ||
+      (item.type === "switch" && item.switchId) ||
+      (item.type === "seed" && item.occasion === "never") ||
       item.learnedSkillId ||
       (item.type === "book" && item.skillId) ||
       Object.values(item.seedParameterBonuses).some((value) => value !== 0)

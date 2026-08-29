@@ -3,6 +3,7 @@ import { normalizeItemRecord } from "../databaseRecordModel";
 import { DEFAULT_ITEM_ID, DEFAULT_STATE_ID } from "./constants";
 import { generatedItemRecords } from "./generatedItemRecords";
 import { expandedDefaultItemRecords } from "./defaultExpandedItemRecords";
+import { defaultFeatureItemRecords } from "./defaultFeatureItemRecords";
 import { applyGeneratedBattleEffectItemBindings } from "./generatedBattleEffectBindings";
 
 export function defaultItemRecords(): ItemRecord[] {
@@ -317,6 +318,7 @@ export function defaultItemRecords(): ItemRecord[] {
       consumable: false,
     }),
     ...expandedDefaultItemRecords(),
+    ...defaultFeatureItemRecords(),
     // 생성 아이콘 100종 중 소비품·재료·열쇠 계열 (무기·방어구·장식은 equipment 로 분리).
     ...generatedItemRecords(),
   ];

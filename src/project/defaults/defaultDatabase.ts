@@ -8,6 +8,7 @@ import {
   defaultStateRecords,
 } from "./defaultDatabaseStarterRecords";
 import { defaultItemRecords } from "./defaultDatabaseItemRecords";
+import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import {
   defaultBattleCommandRecords,
   defaultElementRecords,
@@ -83,7 +84,7 @@ export function defaultDatabase(): ProjectDatabaseRecords {
     terrains: defaultTerrainRecords(),
     battleCommands: defaultBattleCommandRecords(),
     monsterSpecies: battle.monsterSpecies,
-    crops: [],
+    crops: defaultFeatureCropRecords(),
     lifeSkills: [],
   };
 }
