@@ -540,38 +540,21 @@ describe("always-true / always-false condition traps", () => {
     expect(result.canCommit).toBe(true);
   });
 
-  it("warns when a page-level battle result has no preceding battle path", () => {
+  // 페이지 조건의 battleResult 는 지속되는 세션 상태를 읽는다 — 랜덤 인카운터·필드 스폰은
+  // battleProcessing 없이도 전투를 열고, 다른 이벤트·공통 이벤트가 남긴 결과도 살아남는다.
+  // 명령 순서나 프로젝트 스캔으로 "항상 거짓"을 증명할 수 없어 이 추론 자체를 걷어냈다.
+  it("does not warn for persistent battle results without a battleProcessing command", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
     const event = gameEvent(page({
       conditions: [{ kind: "battleResult", result: "victory" }],
+      commands: [{
+        kind: "fork",
+        condition: { kind: "battleResult", result: "defeat" },
+        then: [{ kind: "text", body: "recover" }],
+      }],
     }));
     project.maps[mapId].events = [event];
-
-    const result = validateEventDraftBody(project, mapId, event);
-    const issue = issueOf(result, "condition.battleResult.no-preceding-battle");
-
-    expect(issue.severity).toBe("warning");
-    expect(issue.pageId).toBe("page-1");
-    expect(issue.field).toEqual({ testId: "event-condition-battle-result" });
-    expect(result.canCommit).toBe(true);
-  });
-
-  // 페이지 조건의 battleResult 는 다른 이벤트·공통 이벤트가 생산한 결과를 봐도 된다 —
-  // 상위 새 플롬이 자습 이상이 아니다. 프로젝트에 전통 경로가 있는한 증명할 수 없으므로
-  // 경고하지 않는다(무조건 경고는 정상 사용만 쉼지 앉는 소음이 된다).
-  it("does not warn on a page-level battle result when the project has a battle path", () => {
-    const project = createBlankProject();
-    const mapId = project.startMapId;
-    const battler = gameEvent(page({
-      id: "page-battle",
-      commands: [{ kind: "battleProcessing", troopId: "troop_any", canEscape: false, canLose: false }],
-    }));
-    battler.id = "ev_battle_source";
-    const event = gameEvent(page({
-      conditions: [{ kind: "battleResult", result: "victory" }],
-    }));
-    project.maps[mapId].events = [battler, event];
 
     const result = validateEventDraftBody(project, mapId, event);
 
