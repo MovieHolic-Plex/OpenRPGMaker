@@ -6,8 +6,7 @@
 //   "새 맵을 만들어 거기 짓는다"(기존 맵을 통째로 교체) → 마찰 0으로 즉시 적용
 
 import { describe, expect, it } from "vitest";
-import { classifyApproval, isDestructiveOutcome } from "@/ai/approvalPolicy";
-import type { ProposedCall } from "@/ai/assistantSession";
+import { isDestructiveOutcome } from "@/ai/approvalPolicy";
 import type { ChangeSummary } from "@/project/types";
 
 function diff(overrides: Partial<ChangeSummary> = {}): ChangeSummary {
@@ -75,22 +74,6 @@ describe("isDestructiveOutcome", () => {
   });
 });
 
-describe("classifyApproval — 결과 기반 파괴성이 승인 경로에 반영된다", () => {
-  it("기존 맵을 교체한 호출은 이름이 생성계여도 재승인 벽에 걸린다", () => {
-    const verdict = classifyApproval(
-      [call("run_interior_room_pipeline", { destructive: isDestructiveOutcome("run_interior_room_pipeline", {}, diff({ eventsRemoved: 5 })) })],
-      { autoApproveEnabled: true },
-    );
-    expect(verdict.decision).toBe("require_approval");
-    expect(verdict.requiresUserConfirm).toBe(true);
-    expect(verdict.reason).toContain("기존 맵 교체");
-  });
-
-  it("소실 없는 수정 제안은 자동 승인을 유지한다", () => {
-    const calls = [
-      call("tile_erase", { destructive: isDestructiveOutcome("tile_erase", {}, diff({ tilesChanged: 12 })) }),
-      call("paint_tiles", { destructive: isDestructiveOutcome("paint_tiles", {}, diff({ tilesChanged: 12 })) }),
-    ];
-    expect(classifyApproval(calls, { autoApproveEnabled: true }).decision).toBe("auto");
-  });
-});
+// classifyApproval 블록은 지웠다 — main 에는 승인 게이트가 없다(감독 지시 2026-08-28로
+// 폐기, `approvalPolicy.ts` 머리말 참조). 적용은 즉시 반영되고 복구는 되돌리기다. 결과 기반
+// 파괴성 판정 자체는 위 블록이 지키고, 그 값은 변경 카드의 파괴 라벨과 경고에 쓰인다.

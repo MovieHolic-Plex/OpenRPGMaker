@@ -8,8 +8,8 @@ import { getTool, runTool } from "@/editor/tools";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { isDestructiveOutcome } from "@/ai/approvalPolicy";
 import { contextFooterMapId, requestLikelyExpectsExistingChange, stripContextFooter } from "@/ai/modifyIntent";
-import type { ChangeSummary } from "@/project/types";
 import { store } from "@/project/store";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import {
@@ -218,25 +218,6 @@ type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 // 여기 있던 3개짜리 지역 목록은 approvalPolicy 의 6개짜리 정본과 어긋나 있었다.
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
 
-const DESTRUCTIVE_TOOLS: ReadonlySet<string> = new Set(["remove_event", "remove_map", "reset_project"]);
-
-/**
- * **결과 기반 파괴성 판정** (#262 진단 근본원인 9).
- *
- * 이름 목록만 보면 "지우고 제대로 다시 놓는다"(`remove_event`)는 파괴로 잡히고, "새 맵을 만들어
- * 거기 짓는다"(실제로는 기존 맵을 통째로 교체하던 `run_interior_room_pipeline`)는 무해로 지나갔다.
- * 이름 목록은 유지하되 diff 가 소실을 보고하면 이름과 무관하게 파괴로 본다.
- */
-function isDestructiveOutcome(
-  name: string,
-  args: Record<string, unknown> | undefined,
-  diff: ChangeSummary | undefined,
-): boolean {
-  if (DESTRUCTIVE_TOOLS.has(name)) return true;
-  if (args?.replaceExisting === true) return true;
-  if (!diff) return false;
-  return diff.mapsRemoved > 0 || diff.eventsRemoved > 0;
-}
 // 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인)이 적용될 때 origin:user 로 확정된다
 // (적용 경로가 markSoftVocabApprovalsOnProject 를 부른다 — 승인 버튼은 없다).
 export const VOCABULARY_PROPOSAL_TOOLS: ReadonlySet<string> = new Set(["propose_tile_vocabulary"]);
