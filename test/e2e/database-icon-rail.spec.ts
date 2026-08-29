@@ -8,7 +8,8 @@ import { DATABASE_TAB_SPECS, openDatabase, switchDatabaseTab } from "./oprn-data
  * 버리고, 살아 있는 계약만 남긴다:
  *   - 탭을 바꿔도 레일 기하가 흔들리지 않는다 (원래 이 파일이 지키려던 것)
  *   - 모든 탭이 title + aria-label 을 유지한다
- *   - sidebar.css 의 per-testid 글리프가 데스크톱에서 보인다 (#160 계약)
+ *   - 모든 탭이 데스크톱에서 아이콘을 보인다 (#160 계약). 아이콘 소유자는 이제
+ *     sidebar.css 의 per-testid 글리프가 아니라 databaseTabIcons.ts 의 SVG 다.
  *   - System 이 콘텐츠 앞에서 내비게이션 폭을 독식하지 않는다
  *   - System 이 DB 모달과 같은 표면/텍스트 토큰을 쓴다 (별도 다크 앱으로 갈라지지 않는다) */
 
@@ -45,24 +46,57 @@ test("the labeled rail keeps identical geometry on every tab", async ({ page }) 
   expect(labels, "every tab keeps title + aria-label").toBe(0);
 });
 
-test("per-tab glyphs stay visible in the labeled rail", async ({ page }) => {
-  // Break named: the desktop glyph rule and its @media fallback twin disagree, so icons
-  // silently vanish at the width users actually run (that is exactly what #160 fixed).
-  await switchDatabaseTab(page, ACTORS_TAB);
-  const glyph = async (testId: string): Promise<{ content: string; display: string }> =>
-    page.getByTestId(testId).evaluate((node) => ({
-      content: getComputedStyle(node, "::before").content,
-      display: getComputedStyle(node, "::before").display,
-    }));
+test("every tab keeps a painted SVG icon in the labeled rail", async ({ page }) => {
+  // Break named: a sheet kills the rail icon at the width users actually run. This is not
+  // hypothetical — system-studio.css did exactly that above 1100px with `content: none
+  // !important` on the old ::before, so opening 시스템 wiped all 29 icons.
+  const iconFacts = async (): Promise<{
+    readonly total: number;
+    readonly missing: readonly string[];
+    readonly unpainted: readonly string[];
+    readonly transparent: readonly string[];
+  }> =>
+    page.evaluate(() => {
+      const tabs = Array.from(document.querySelectorAll<HTMLElement>(".db-tabs .db-tab"));
+      const missing: string[] = [];
+      const unpainted: string[] = [];
+      const transparent: string[] = [];
+      for (const tab of tabs) {
+        const id = tab.dataset.testid ?? "(no testid)";
+        const icon = tab.querySelector<SVGSVGElement>("svg.db-tab-icon");
+        if (!icon) {
+          missing.push(id);
+          continue;
+        }
+        // 접힌 그룹의 탭은 `hidden` 이라 상자가 0 이다 — DOM 존재만 보고 페인트는 건너뛴다.
+        if (tab.getBoundingClientRect().height === 0) continue;
+        const box = icon.getBoundingClientRect();
+        const style = getComputedStyle(icon);
+        if (box.width < 8 || box.height < 8 || style.display === "none" || style.visibility === "hidden") {
+          unpainted.push(`${id} ${Math.round(box.width)}×${Math.round(box.height)} ${style.display}`);
+        }
+        // stroke: currentColor 이므로 color 가 투명하면 상자만 있고 선이 안 보인다.
+        if (style.color === "rgba(0, 0, 0, 0)" || style.color === "transparent") transparent.push(id);
+      }
+      return { missing, total: tabs.length, transparent, unpainted };
+    });
 
-  const actors = await glyph("db-tab-actors");
-  expect(actors.content, "actors glyph from sidebar.css").toBe('"♙"');
-  expect(actors.display, "actors glyph is rendered").not.toBe("none");
+  await switchDatabaseTab(page, ACTORS_TAB);
+  const actors = await iconFacts();
+  expect(actors.total, "expert mode shows all 29 rail tabs").toBe(29);
+  expect(actors.missing, "every tab owns an svg.db-tab-icon").toEqual([]);
+  expect(actors.unpainted, "every icon has a painted box").toEqual([]);
+  expect(actors.transparent, "currentColor stroke is not transparent").toEqual([]);
 
   await switchDatabaseTab(page, ITEMS_TAB);
-  const items = await glyph("db-tab-items");
-  expect(items.content, "items glyph from sidebar.css").toBe('"▤"');
-  expect(items.display, "items glyph is rendered").not.toBe("none");
+  expect((await iconFacts()).missing, "items tab keeps icons").toEqual([]);
+
+  // 시스템 탭이 회귀 지점이다 — 여기서 죽었었다.
+  await switchDatabaseTab(page, SYSTEM_TAB);
+  const system = await iconFacts();
+  expect(system.missing, "system tab keeps icons").toEqual([]);
+  expect(system.unpainted, "system tab icons stay painted").toEqual([]);
+  expect(system.transparent, "system tab icons keep a visible stroke").toEqual([]);
 });
 
 test("the rail search filters tabs and stays wide enough to read", async ({ page }) => {

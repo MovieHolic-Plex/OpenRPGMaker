@@ -53,7 +53,7 @@ for (const { width, height } of VIEWPORTS) {
 
     // ── 2. 사이드바 그룹 내비 ──
     const groupLabels = await page.locator(".db-tab-group").allTextContents();
-    expect(groupLabels).toEqual(["파티", "전투", "수집", "맵", "시스템"]);
+    expect(groupLabels).toEqual(["파티", "몬스터", "전투 규칙", "생활", "세계", "시스템"]);
     await expect(page.getByTestId("db-tab-overview")).toBeVisible();
     await expect(page.getByTestId("db-tab-items")).toBeVisible();
     // 1024px 바닥 계약: 모달 창 가로 스크롤 없음.

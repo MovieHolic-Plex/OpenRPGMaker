@@ -68,7 +68,9 @@ describe("database navigation by editor mode", () => {
   it("keeps grouped navigation with explicit monster and life domains in standard mode", () => {
     const host = renderPanel("standard");
     const groups = host.querySelectorAll(".db-tab-group").map((group) => group.textContent);
-    expect(groups).toContain("전투·몬스터");
+    // 몬스터는 전투 규칙과 분리된 독립 그룹이다 — 예전 `전투·몬스터` 한 덩어리(9탭)가 아니다.
+    expect(groups).toContain("몬스터");
+    expect(groups).toContain("전투 규칙");
     expect(groups).toContain("생활");
     expect(findByTestId(host, "db-nav-all")).toBeNull();
   });

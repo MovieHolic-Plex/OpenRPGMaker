@@ -175,7 +175,10 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
   ],
 };
 
-export function makeSvgIcon(icon: SvgIconName): SVGSVGElement {
+/** 노드 스펙에서 22×22 스트로크 아이콘을 만든다. 이 저장소의 아이콘은 전부 이 규격을
+ *  통과한다 — 다른 화면이 자기 아이콘 세트를 가질 때도 빌더는 하나만 쓴다
+ *  (예: databaseTabIcons.ts 의 DB 사이드바 세트). */
+export function buildSvgIcon(nodes: readonly SvgNodeSpec[]): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", "0 0 22 22");
   svg.setAttribute("fill", "none");
@@ -186,7 +189,7 @@ export function makeSvgIcon(icon: SvgIconName): SVGSVGElement {
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
 
-  for (const spec of ICONS[icon]) {
+  for (const spec of nodes) {
     const child = document.createElementNS(SVG_NS, spec.tag);
     for (const [name, value] of Object.entries(spec.attrs)) {
       child.setAttribute(name, value);
@@ -197,6 +200,10 @@ export function makeSvgIcon(icon: SvgIconName): SVGSVGElement {
   return svg;
 }
 
+export function makeSvgIcon(icon: SvgIconName): SVGSVGElement {
+  return buildSvgIcon(ICONS[icon]);
+}
+
 export const SVG_ICON_NAMES = Object.keys(ICONS) as readonly SvgIconName[];
 
-export type { SvgIconName };
+export type { SvgIconName, SvgNodeSpec };
