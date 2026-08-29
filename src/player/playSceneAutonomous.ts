@@ -220,9 +220,10 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   const animationType = view?.animationType ?? "normal";
   const priority = view?.priority ?? "same";
   const hop = move.hop;
+  // 뷰를 못 찾으면 1x1 — footprintSpriteX 는 그때 타일 중앙과 같은 값이 된다.
+  // 보간과 착지 두 곳이 같은 값을 써야 하므로 함수 스코프에 둔다.
+  const footprint = view?.footprint ?? UNIT_FOOTPRINT;
   if (sprite) {
-    // 뷰를 못 찾으면 1x1 — footprintSpriteX 는 그때 타일 중앙과 같은 값이 된다.
-    const footprint = view?.footprint ?? UNIT_FOOTPRINT;
     const groundX = footprintSpriteX(lerp(move.fromX, move.toX, progress), footprint);
     const groundY = characterSpriteY(lerp(move.fromY, move.toY, progress));
     sprite.setPosition(groundX, groundY);

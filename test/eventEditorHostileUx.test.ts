@@ -76,7 +76,8 @@ it("defaults to the storyboard and does not offer a fake graph tab", () => {
   expect(host.querySelector('[data-testid="event-view-toggle-graph"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-graph-placeholder"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-view-toggle-list"]')?.textContent).toBe("목록");
-  expect(host.querySelector('[data-testid="event-view-toggle-storyboard"]')?.textContent).toBe("스토리보드");
+  // a87ab4fc 가 크롬을 접으면서 라벨을 «스토리» 로 줄였다(목록·스토리·미리보기 3뷰).
+  expect(host.querySelector('[data-testid="event-view-toggle-storyboard"]')?.textContent).toBe("스토리");
 });
 
 it("opens the command picker from a storyboard add card without switching views", () => {
@@ -91,7 +92,7 @@ it("opens the command picker from a storyboard add card without switching views"
 
 it("keeps page add on the tab strip and leaves overflow for copy/delete only", () => {
   render(host);
-  expect(host.querySelector('[data-testid="event-page-tab-add"]')).toBeTruthy();
+  expect(host.querySelector('[data-testid="evt-page-add"]')).toBeTruthy();
   expect(host.querySelector('[data-testid="event-page-add"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-page-copy"]')?.textContent).toContain("페이지 복사");
   expect(host.querySelector('[data-testid="event-page-delete"]')).toBeNull();
