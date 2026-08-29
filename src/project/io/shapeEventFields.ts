@@ -1,4 +1,9 @@
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import {
+  CHARACTER_FOOTPRINT_AXIS_MAX,
+  CHARACTER_SCALE_MAX,
+  CHARACTER_SCALE_MIN,
+} from "@/project/footprint";
 import { validateCommandArray, validateConditionShape, validateMoveRoute } from "./shapeCommandFields";
 import { validateLightingState } from "./shapeLightingFields";
 import { validateTrigger } from "./shapeReferenceFields";
@@ -167,6 +172,55 @@ function validateEventGraphic(label: string, value: unknown): void {
   }
   if (graphic.pattern !== undefined) requireNumber(`${label}.pattern`, graphic.pattern);
   if (graphic.transparent !== undefined) requireBoolean(`${label}.transparent`, graphic.transparent);
+  validateCharacterScale(`${label}.scale`, graphic.scale);
+}
+
+/**
+ * 렌더 배율. 런타임 `normalizeCharacterScale` 과 **같은 경계**로 막는다.
+ *
+ * 왜 로드 시점에 막는가: 정규화만 있으면 `scale: 500` 이 조용히 8 로 잘려 저장된 값과
+ * 화면이 어긋난 상태로 남는다. 작성자는 자기가 500 을 넣은 것을 기억하지 못한다.
+ */
+function validateCharacterScale(label: string, value: unknown): void {
+  if (value === undefined) return;
+  const scale = requireNumber(label, value);
+  assert(
+    Number.isFinite(scale) && scale >= CHARACTER_SCALE_MIN && scale <= CHARACTER_SCALE_MAX,
+    `${label}은 ${CHARACTER_SCALE_MIN}~${CHARACTER_SCALE_MAX} 범위여야 합니다.`
+  );
+}
+
+/**
+ * 몸 크기와 통행 행. 축은 1..8, 통행 행은 1..몸 높이.
+ *
+ * 런타임의 `normalizeCharacterFootprint` / `normalizePassRows` 는 비정규 값을 조용히 굳히지만
+ * (fail-closed), 그것은 **이미 로드된 프로젝트를 지키는 마지막 방어선**이다. `{width: -5}` 가
+ * 로드 검증을 통과하면 작성자는 자기 프로젝트가 왜 1x1 로 보이는지 알 수 없다.
+ */
+function validateCharacterFootprintFields(label: string, page: Record<string, unknown>): void {
+  let height: number | undefined;
+  if (page.footprint !== undefined) {
+    const footprint = requireRecord(`${label}.footprint`, page.footprint);
+    const width = requireNumber(`${label}.footprint.width`, footprint.width);
+    height = requireNumber(`${label}.footprint.height`, footprint.height);
+    assertFootprintAxis(`${label}.footprint.width`, width);
+    assertFootprintAxis(`${label}.footprint.height`, height);
+  }
+  if (page.passRows !== undefined) {
+    const rows = requireNumber(`${label}.passRows`, page.passRows);
+    const max = height ?? 1;
+    assert(
+      Number.isSafeInteger(rows) && rows >= 1 && rows <= max,
+      `${label}.passRows는 1~${max}(몸 높이) 범위의 정수여야 합니다.`
+    );
+  }
+}
+
+function assertFootprintAxis(label: string, value: number): void {
+  assert(
+    Number.isSafeInteger(value) && value >= 1 && value <= CHARACTER_FOOTPRINT_AXIS_MAX,
+    `${label}은 1~${CHARACTER_FOOTPRINT_AXIS_MAX} 범위의 정수여야 합니다.`
+  );
 }
 
 function validateDir(label: string, value: unknown): void {
@@ -265,7 +319,12 @@ function validatePageShape(label: string, value: unknown): void {
   for (const [index, condition] of requireArray(`${label}.conditions`, page.conditions).entries()) {
     validatePageConditionShape(`${label}.conditions[${index}]`, condition);
   }
-  requireRecord(`${label}.graphic`, page.graphic);
+  const graphic = requireRecord(`${label}.graphic`, page.graphic);
+  // 페이지 그림은 예전부터 `requireRecord` 만 거쳤다. 전체를 validateEventGraphic 으로
+  // 올리면 sprite.type 이 없는 기존 프로젝트를 새로 거부하게 되므로, 2차가 도입한 배율만
+  // 검증한다 — 새 필드에만 새 계약을 건다.
+  validateCharacterScale(`${label}.graphic.scale`, graphic.scale);
+  validateCharacterFootprintFields(label, page);
   validateTrigger(`${label}.trigger`, page.trigger);
   requireString(`${label}.priority`, page.priority);
   const movement = requireRecord(`${label}.movement`, page.movement);
