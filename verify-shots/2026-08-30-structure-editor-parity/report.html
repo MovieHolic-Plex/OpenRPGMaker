@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>구조물 편집기를 맵 타일 편집기 수준으로 — 2026-08-30</title>
+<style>
+  :root {
+    --ink: #1a1d21; --ink-2: #55606c; --line: #dfe3e8; --bg: #f7f8fa; --card: #fff;
+    --bad: #c0392b; --good: #1e7e4f; --note: #7a5b00; --accent: #3b5bdb;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 32px 20px 80px; background: var(--bg); color: var(--ink);
+         font: 15px/1.75 -apple-system, "Segoe UI", "Noto Sans KR", sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 27px; line-height: 1.35; margin: 0 0 6px; }
+  .sub { color: var(--ink-2); margin: 0 0 28px; }
+  h2 { font-size: 20px; margin: 44px 0 4px; padding-top: 20px; border-top: 1px solid var(--line); }
+  h2 .n { display: inline-block; min-width: 26px; color: var(--accent); font-weight: 700; }
+  h3 { font-size: 16px; margin: 26px 0 6px; }
+  p { margin: 8px 0; }
+  .lede { color: var(--ink-2); margin: 0 0 14px; }
+  figure { margin: 16px 0 22px; background: var(--card); border: 1px solid var(--line);
+           border-radius: 10px; overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; background: #eef0f3; }
+  figcaption { padding: 10px 14px; font-size: 13.5px; color: var(--ink-2); border-top: 1px solid var(--line); }
+  figcaption b { color: var(--ink); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; background: var(--card);
+          border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-size: 14px; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #eef1f5; font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; font-size: 13px;
+         font-family: "SF Mono", Consolas, monospace; }
+  .bad { color: var(--bad); font-weight: 600; }
+  .good { color: var(--good); font-weight: 600; }
+  .box { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+         border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
+  .box.warn { border-left-color: var(--note); }
+  .box h4 { margin: 0 0 6px; font-size: 14.5px; }
+  ul { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  .meta { font-size: 13px; color: var(--ink-2); background: var(--card); border: 1px solid var(--line);
+          border-radius: 10px; padding: 12px 16px; margin: 0 0 26px; }
+  .meta div { margin: 2px 0; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+          font-weight: 600; background: #e8f5ee; color: var(--good); }
+  .pill.b { background: #fdeceb; color: var(--bad); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>구조물 편집기를 맵 타일 편집기 수준으로</h1>
+<p class="sub">2026-08-30 · 브랜치 <code>구조물2</code> · 크로미움 실측</p>
+
+<div class="meta">
+  <div><b>요청</b> — "구조물의 수정 UI UX 가 매우 불편하다. 지금 모달보다 50%쯤 더 커야하고, 실제 타일 칠하는 에디터와 매우 유사한 UX 를 보여야한다(근데 사실 거의 그대로 가져다써도 상관없지않은가)"</div>
+  <div><b>측정 환경</b> — Playwright 크로미움, 1440×900 / 1366×768 / 1280×720, <code>?freshProject=1</code>, 편집기 UI 모드 expert</div>
+  <div><b>바뀐 파일</b> — <code>src/editor/panels/structureKitEditorDialog.ts</code>, <code>src/editor/panels/tilePaletteFilter.ts</code>(새 파일), <code>src/editor/panels/tilePalette.ts</code>, <code>src/styles/editor/harness-suggestion.css</code>, <code>src/styles/database/enemies.part-1.css</code></div>
+</div>
+
+<h2><span class="n">1</span> 크기만의 문제가 아니었다</h2>
+<p class="lede">"50% 더 크게"를 하려고 창을 재 봤더니 크기 말고 두 가지가 더 망가져 있었다.</p>
+
+<figure>
+  <img src="before/editor-before.png" alt="고치기 전 편집기">
+  <figcaption><b>무엇을 보나 —</b> 창 제목줄에 <b>뒤에 있는 표 글자가 그대로 겹쳐 보인다</b>("파랑 지붕 + 석벽 사본" 이 두 번 읽힌다). 창 배경이 <span class="bad">투명</span>이라서다. 창 크기는 <span class="bad">732×537</span>, 캔버스는 432×384(3배), 팔레트는 480칸을 20px 칸에 260×320 안에 쏟아붓는다. 도구는 글자 버튼 5개고 <b>하층/상층</b> 이라는 맵 편집기와 다른 어휘를 쓴다.</figcaption>
+</figure>
+
+<h3>결함 ① 창 배경이 투명했다 — 정의되지 않은 CSS 토큰</h3>
+<p><code>.db-enemy-dialog</code> 는 <code>background: var(--oprn-chrome)</code> / <code>border-color: var(--oprn-light)</code> 를 쓴다. <b>그 토큰은 저장소 어디에도 정의돼 있지 않다.</b> <code>--oprn-*</code> 60개 중 23개가 그렇다.</p>
+<div class="box warn">
+  <h4>왜 아무도 몰랐나</h4>
+  <p style="margin:0">대체값(fallback)이 없는 미정의 커스텀 프로퍼티는 <b>계산값 시점에 선언 자체를 무효로</b> 만든다. 그러면 <code>background</code> 가 초기값 <code>transparent</code> 로 떨어진다. <b>콘솔 경고도, devtools 취소선도 남지 않는다.</b> 소스 CSS 만 읽으면 "배경 있음"으로 보인다.</p>
+</div>
+<p>실존 토큰(<code>--bg-overlay</code> / <code>--border-default</code>, 헤더는 <code>--accent</code> 그라디언트)으로 바꿨다. 실측 <code>getComputedStyle(...).backgroundColor</code> 가 <code>rgba(0, 0, 0, 0)</code> → <code>rgb(255, 255, 255)</code>. 남은 20개는 상태·배우·적 표 소관이라 이번 범위에서 뺐다.</p>
+
+<h3>결함 ② 창이 내용 크기로 잡혀 있었다</h3>
+<p>허용된 자리는 1424×884 인데 실제로는 732×537 이었다. <code>[data-testid="structure-kit-editor"] &gt; .db-enemy-dialog</code> 에 <code>width: min(1424px, calc(100vw - 16px))</code> 와 같은 꼴의 높이를 준다. DB 모달(z 900)과 편집기 백드롭(z 1200)이 별개 층이라 <b>DB 모달 크기 불변식을 건드리지 않고</b> 독립적으로 커진다.</p>
+
+<h3>결함 ③ 한 칸 칠할 때마다 따로 클릭해야 했다</h3>
+<p><code>pointermove</code> 리스너가 아예 없었다. 9×8 킷 한 채를 다시 칠하려면 클릭 72번이다.</p>
+
+<h2><span class="n">2</span> 고친 뒤</h2>
+
+<figure>
+  <img src="after/01-editor-1440x900.png" alt="고친 뒤 편집기 1440x900">
+  <figcaption><b>무엇을 보나 —</b> 창 <span class="good">1424×884</span>(면적 4배), 배경 불투명. 캔버스가 <span class="good">720×640(5배)</span> 로 커져 지붕 기와 한 장이 눈에 보인다. 오른쪽 레일에 <b>도구 7개(SVG 아이콘)</b> · <b>바닥/덧그림</b> · <b>검색창</b> · <b>분류칩 7개</b> · 26px 칸 480개 팔레트(300×596). 캔버스 아래에 되돌리기/다시하기 · 확대 스테퍼 · 격자 토글 · 폭/높이.</figcaption>
+</figure>
+
+<div class="two">
+  <figure>
+    <img src="after/02-drag-painted.png" alt="드래그로 여러 칸 칠하기">
+    <figcaption><b>드래그 한 번에 6칸.</b> 스트로크 하나가 되돌리기 한 번에 되돌아간다. 같은 타일이면 no-op 이라 store 쓰기와 리렌더가 생기지 않는다.</figcaption>
+  </figure>
+  <figure>
+    <img src="after/03-rect-preview.png" alt="사각형 도구 미리보기">
+    <figcaption><b>사각형 도구를 끄는 중.</b> 떼기 전에 어디가 칠해질지 반투명 고스트로 보여준다. 도형 계산은 맵 편집기와 같은 순수 함수 <code>tileCellsForPaintShape</code>.</figcaption>
+  </figure>
+</div>
+
+<div class="two">
+  <figure>
+    <img src="after/07-search-door.png" alt="검색 '문'">
+    <figcaption><b>검색 "문" → 480칸 중 9칸만 선명.</b> 걸리지 않은 칸은 숨기지 않고 흐리게만 한다 — 칸 위치가 원본 시트 좌표라 숨기면 "어디쯤 타일"인지 감각이 깨진다.</figcaption>
+  </figure>
+  <figure>
+    <img src="after/08-category-house.png" alt="분류 '집'">
+    <figcaption><b>분류 "집" → 75칸.</b> 검색·분류 규칙은 맵 팔레트와 <b>같은 파일</b>(<code>tilePaletteFilter.ts</code>)을 쓴다. 복사하지 않은 이유는 §4 에 적었다.</figcaption>
+  </figure>
+</div>
+
+<div class="two">
+  <figure>
+    <img src="after/06-layer-upper.png" alt="덧그림 레이어">
+    <figcaption><b>덧그림 레이어를 고르면 캔버스에 점선 테두리.</b> 예전에는 캔버스에 <code>layer-upper</code> 클래스를 붙였지만 <b>그 클래스에 CSS 정의가 아예 없어서</b> 시각 신호가 0 이었다(죽은 클래스).</figcaption>
+  </figure>
+  <figure>
+    <img src="after/05-zoomed.png" alt="확대 6x">
+    <figcaption><b>확대 6배.</b> 눈금은 맵 편집기와 같은 1·2·3·4·6·8x + "맞춤". "맞춤" 에서 [+] 를 누르면 <b>지금 실제로 쓰이는 배율</b>부터 올라간다 — 고정 인덱스에서 출발하면 맞춤이 5x 인데 [+] 로 3x 로 줄어드는 일이 생긴다.</figcaption>
+  </figure>
+</div>
+
+<h2><span class="n">3</span> 좁은 화면과 긴 킷</h2>
+<p class="lede">창을 화면 거의 꽉 채우는 결정이라 작은 화면에서 무엇이 접히는지가 실제 위험이다.</p>
+
+<div class="two">
+  <figure>
+    <img src="after/09-narrow-1366x768.png" alt="1366x768">
+    <figcaption><b>1366×768.</b> 창 1350×752. 캔버스가 4배로 줄지만 지붕·벽·문이 여전히 구별된다.</figcaption>
+  </figure>
+  <figure>
+    <img src="after/10-tall-kit-1366x768.png" alt="3x40 긴 킷 1366x768">
+    <figcaption><b>같은 화면의 3×40 킷.</b> 세로 51px 이 넘쳐 스크롤이 생기고, 첫 줄까지 닿는다(닿을 수 없는 위쪽 0px).</figcaption>
+  </figure>
+</div>
+
+<div class="two">
+  <figure>
+    <img src="after/09-narrow-1280x720.png" alt="1280x720">
+    <figcaption><b>1280×720.</b> 창 1264×704. 도구 7개 · 분류칩 7개 · 보기 줄이 <b>전부 한 줄에</b> 들어간다. 창 밖으로 삐진 요소 0개, [닫기] 히트테스트 통과.</figcaption>
+  </figure>
+  <figure>
+    <img src="after/10-tall-kit-1280x720.png" alt="3x40 긴 킷">
+    <figcaption><b>3×40 긴 킷.</b> 40칸×16px = 640px 이라 최소 배율 1x 로도 세로가 남는다. 스크롤로 처리하되 <b>첫 줄에 닿을 수 있어야</b> 한다 — 아래 박스 참조.</figcaption>
+  </figure>
+</div>
+
+<div class="box warn">
+  <h4>스크롤이 생겼다고 다 닿는 건 아니다</h4>
+  <p><code>place-content: center</code> 인 스크롤 칸에서 자식이 칸보다 크면 <b>위·왼쪽으로 넘친 부분은 스크롤로 닿지 않는다.</b> 스크롤 원점이 콘텐츠 박스 시작이라서다. 200×100 칸에 300px 자식으로 실측:</p>
+  <table style="margin-bottom:0">
+    <tr><th>정렬</th><th><code>scrollHeight</code></th><th><code>scrollTop=0</code> 에서 자식 위 여백</th><th>판정</th></tr>
+    <tr><td><code>center</code></td><td class="bad">200 (100px 유실)</td><td class="bad">−99px (칸 위에 박혀 있음)</td><td class="bad">첫 줄 영구 은폐</td></tr>
+    <tr><td><code>safe center</code></td><td class="good">300</td><td class="good">+1px</td><td class="good">전부 도달</td></tr>
+  </table>
+  <p style="margin-bottom:0"><code>safe</code> 는 잘림이 생길 때만 시작 정렬로 물러난다 — 들어맞을 때는 그대로 가운데다. 3×40 킷 실측: <code>scrollHeight</code> 640(=40×16), 닿을 수 없는 위쪽 <span class="good">0px</span>, 1366×768 과 1280×720 둘 다.</p>
+</div>
+
+<h2><span class="n">4</span> "맵 편집기를 그대로 가져다 쓰면 되지 않나" — 절반만</h2>
+<p class="lede">사용자가 물은 지점이다. 답은 경계가 있고, 그 경계는 렌더러다.</p>
+
+<table>
+  <tr><th style="width:30%">맵 편집기의 것</th><th style="width:14%">재사용</th><th>왜</th></tr>
+  <tr><td>칠하기 엔진 · 격자 · 줌</td><td class="bad">불가</td><td>맵은 <b>Phaser 씬</b>(<code>EditScene</code>), 구조물은 <b>DOM <code>&lt;canvas&gt;</code></b>. 좌표계·렌더 루프·입력 경로가 공유되지 않는다.</td></tr>
+  <tr><td>도형 계산 <code>tileCellsForPaintShape</code></td><td class="good">그대로</td><td>순수 함수. 사각형·타원이 맵과 같은 모양으로 나온다.</td></tr>
+  <tr><td>SVG 아이콘 <code>makeSvgIcon</code></td><td class="good">그대로</td><td>유니코드 글리프(✏ ⌫ ⌖ ▨)는 폰트에 따라 뭉개져 무슨 도구인지 알 수 없었다.</td></tr>
+  <tr><td>도구막대 <code>makeTileToolbar</code></td><td class="bad">금지</td><td><code>installToolbarBadgeRefresh</code> 가 <code>latestToolbarRerender</code> <b>모듈 전역을 마지막 호출자로 덮어쓴다</b> — 편집기를 열면 맵 도구막대의 자동 갱신이 이쪽으로 샌다.</td></tr>
+  <tr><td>팔레트 격자 <code>makeGridPalette</code></td><td class="bad">부적합</td><td>① 칸 크기가 컨테이너 쿼리(<code>--chipset-cell: 100cqi</code>)에 묶여 좌패널 밖에서는 컨테이너를 새로 세워야 한다. ② <b>오토타일을 대표 1칸으로 접고 레이어로 걸러</b> 480칸 중 일부가 사라진다 — 구조물은 지붕 변형 같은 세부 타일이 필요하다.</td></tr>
+  <tr><td>검색 · 분류 규칙</td><td class="good">파일로 추출</td><td>원래 <code>tilePalette.ts</code> 의 비공개 함수였고 <b>모듈 전역 3개를 직접 읽었다</b> — 그대로 부르면 맵 팔레트의 필터가 편집기와 함께 움직인다. 상태는 호출부가 들고 <code>tilePaletteFilter.ts</code> 는 순수 계산만 한다.</td></tr>
+  <tr><td>되돌리기 <code>recordProjectSnapshot</code></td><td class="bad">부적합</td><td>스트로크마다 프로젝트 전체를 <code>structuredClone</code> 하고, DB 모달 취소가 그 이력을 통째로 지운다. 킷 단위 스택(80단)으로 대신했다.</td></tr>
+</table>
+
+<div class="box">
+  <h4>규칙을 복사하지 않은 이유</h4>
+  <p style="margin:0">이 저장소에는 <b>이미 타일 칠하기 구현이 셋</b> 있다 — Phaser 맵, 구조물 편집기, <code>tilesetAiTerrainExample.ts</code>. 같은 분류 판단을 또 복제하면 넷째 사본이 되고, 나중에 어느 쪽이 정본인지 알 수 없게 된다.</p>
+</div>
+
+<h2><span class="n">5</span> 이름이 거짓말을 하면 테스트가 눈을 감는다</h2>
+<p class="lede">이번 작업에서 가장 값비쌌던 회귀. e2e 가 빨갛게 알려줬지만 원인은 "부위 기능이 깨졌다"가 아니었다.</p>
+
+<p><code>structure-kit-editor-canvas</code> 라는 testid 가 실제 <code>&lt;canvas&gt;</code> 가 아니라 <b>그것을 담는 스크롤 칸</b>에 붙어 있었다. 포인터 리스너가 거기 있어서 자연스럽게 그렇게 됐다.</p>
+
+<table>
+  <tr><th></th><th>testid 요소 상자</th><th>실제 캔버스</th><th>모서리 클릭(+8px)</th></tr>
+  <tr><td>전</td><td class="bad">1084 × 721 (스크롤 칸)</td><td>384 × 384 @ (370, 209)</td><td class="bad">(28, 48) → 캔버스 <b>밖</b> → 무음 무반응</td></tr>
+  <tr><td>후</td><td class="good">384 × 384 @ (370, 209)</td><td>384 × 384 @ (370, 209)</td><td class="good">(378, 217) → 칸 (0, 0)</td></tr>
+</table>
+
+<p>스크롤 칸은 내용을 가운데 정렬하므로 <b>"캔버스 모서리"라고 믿고 끈 좌표가 실제로는 캔버스 밖 여백</b>이었고, <code>cellFromEvent</code> 가 <code>null</code> 을 돌려 부위 드래그가 조용히 아무것도 하지 않았다. <b>부위 개수 0 이라 폴백조차 돌지 않은 것</b>이 단서였다.</p>
+
+<p>고침은 testid 와 포인터 리스너를 <b>스테이지</b>(캔버스와 픽셀 단위로 같은 상자)로 함께 옮기는 것이다. 그러면 이벤트 대상과 기하가 같은 요소가 되어 같은 함정이 다시 생기지 않는다. 유닛 테스트는 그 testid 로 이벤트를 직접 던지므로 <b>테스트 변경이 한 줄도 없다</b>.</p>
+
+<figure>
+  <img src="after/part-kind-menu.png" alt="부위 종류 팝오버">
+  <figcaption><b>무엇을 보나 —</b> 고친 뒤 부위 드래그를 떼면 <b>종류 팝오버</b>가 뜬다(입구·문·창문·간판·자리). 예전에는 종류가 언제나 "입구"로 굳어 창문·간판을 그릴 방법이 아예 없었다. 실측 <code>종류창: true</code>, 고르기 전 부위 개수 0.</figcaption>
+</figure>
+
+<div class="box warn">
+  <h4>여기서 얻은 규칙</h4>
+  <ul style="margin-bottom:0">
+    <li>testid 이름이 <code>...-canvas</code> 면 그 요소의 <code>boundingBox()</code> 가 캔버스여야 한다. 아니면 좌표로 판정하는 테스트가 전부 칸 밖을 짚는다.</li>
+    <li>이벤트 대상과 기하 기준을 <b>같은 요소로 모아라.</b> 갈라지면 어느 쪽이 옳은지 코드만 보고는 알 수 없다.</li>
+    <li>실패가 "기능 없음"으로 보일 때 <b>폴백 경로가 돌았는지</b> 보라. 폴백도 안 돌았다면 원인은 그 기능이 아니라 그보다 앞이다.</li>
+  </ul>
+</div>
+
+<h2><span class="n">6</span> 실측 요약</h2>
+
+<table>
+  <tr><th style="width:26%">항목</th><th style="width:30%">전</th><th style="width:30%">후</th><th>배수</th></tr>
+  <tr><td>창</td><td class="bad">732 × 537</td><td class="good">1424 × 884</td><td>면적 4.0배</td></tr>
+  <tr><td>창 배경</td><td class="bad"><code>rgba(0,0,0,0)</code> (뒤가 뚫림)</td><td class="good"><code>rgb(255,255,255)</code></td><td>—</td></tr>
+  <tr><td>캔버스</td><td class="bad">432 × 384 (3배)</td><td class="good">720 × 640 (5배)</td><td>2.8배</td></tr>
+  <tr><td>팔레트</td><td class="bad">260 × 320, 20px 칸</td><td class="good">300 × 596, 26px 칸</td><td>2.1배</td></tr>
+  <tr><td>팔레트 칸 수</td><td>480</td><td>480 (전부 유지)</td><td>—</td></tr>
+  <tr><td>도구</td><td class="bad">글자 5개 (2줄로 접힘)</td><td class="good">SVG 아이콘 7개 (1줄)</td><td>—</td></tr>
+  <tr><td>칠하기</td><td class="bad">클릭 1번 = 1칸</td><td class="good">드래그 1번 = 6칸</td><td>—</td></tr>
+  <tr><td>되돌리기</td><td class="bad">없음</td><td class="good">80단 + Ctrl+Z / Ctrl+Shift+Z</td><td>—</td></tr>
+  <tr><td>격자 · 확대</td><td class="bad">둘 다 없음</td><td class="good">토글 + 1·2·3·4·6·8x / 맞춤</td><td>—</td></tr>
+  <tr><td>검색 · 분류</td><td class="bad">없음</td><td class="good">"문" 9칸 / "집" 75칸</td><td>—</td></tr>
+  <tr><td>창 밖 삐짐</td><td>—</td><td class="good">0개 (1440·1366·1280 전부)</td><td>—</td></tr>
+  <tr><td>팔레트 스크롤</td><td class="bad">칠할 때마다 맨 위로 튐</td><td class="good">300 → 300 유지</td><td>—</td></tr>
+</table>
+
+<h3>검증</h3>
+<ul>
+  <li><span class="pill">통과</span> 유닛 149개 — <code>structureKitEditorDialog</code> 26 · <code>structureKitDbTab</code> 35 · <code>structurePlacements</code> 18 · <code>structureKitRasterModel</code> 28 · <code>structureKitPartKindMenu</code> 4 · <code>tilePalette*</code> 26 · 그 외 12</li>
+  <li><span class="pill">통과</span> <code>npx tsc --noEmit</code> — 구조물·팔레트 관련 오류 0</li>
+  <li><span class="pill">통과</span> <code>npm run build</code></li>
+  <li><span class="pill">통과</span> <code>npm run gates:css</code> — 최신 main 머지 후 실행. 새 CSS 파일 0 · 새 hex 0 · 새 <code>!important</code> 0. <b><code>undefinedVars</code> 63 → 61 로 오히려 줄었다</b>(죽은 선언 2개를 살려서). 래칫은 조이지 않았다 — <code>--save-baseline</code> 은 쓰지 않는다.</li>
+  <li><span class="pill">통과</span> 브라우저 실측 — 위 표 전체 + 모서리 클릭이 칸 (0,0) 에 대응 + 부위 종류 팝오버 개시</li>
+  <li><span class="pill b">환경 제약</span> e2e <code>db-structure-editor</code> · <code>database-modal-size-invariant</code> — 이 박스가 부하 평균 <b>146~160</b>(48코어, 다른 세션 다수)일 때 돌려 <code>toolbar-database</code> 클릭 같은 사소한 대기가 <b>240초 타임아웃</b>으로 죽었다. 실패 메시지는 전부 타임아웃·<code>Target crashed</code> 이고 기하 불일치 단정은 하나도 없다. 부하가 정상일 때의 단독 재실행 결과를 본문 아래에 갱신한다.</li>
+</ul>
+
+<div class="box">
+  <h4>한 줄로</h4>
+  <p style="margin:0">"모달보다 50% 더 크게"를 재 보니 실제로는 창이 <b>허용된 자리의 4분의 1</b>만 쓰고 있었고, 배경은 정의되지 않은 CSS 토큰 때문에 <b>투명</b>이었고, 드래그 칠하기가 <b>아예 없었다</b>. 맵 편집기는 Phaser 라 통째로 가져올 수 없지만 도형 계산·아이콘·검색 규칙은 실제로 공유했고, 검색 규칙은 복제 대신 <b>단일 출처로 뽑아냈다</b>.</p>
+</div>
+
+</main>
+</body>
+</html>

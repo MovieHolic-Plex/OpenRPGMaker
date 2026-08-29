@@ -244,6 +244,21 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 - **점 한 번 찍는 `count() > 0` 은 렌더 경합에 진다.** 다이얼로그가 그려지기 전에 0 을 읽고 그냥 지나쳐 버린다. `expect(async () => {...}).toPass()` 로 감싸라.
 - 케이스마다 앱을 통째로 부팅하는 스펙은 `--workers=1` 로 돌려라. 병렬로 겹치면 다운로드 이벤트·다이얼로그 렌더가 밀려 간헐 실패한다(실측: 병렬 2건 실패 → 직렬 4건 전부 통과).
 
+### 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
+
+`scrollHeight > clientHeight` 가 참이어도 **넘친 내용의 시작 쪽은 스크롤로 닿지 않을 수 있다.** `place-content: center` / `align-items: center` 인 스크롤 칸에서 자식이 칸보다 크면 위·왼쪽으로도 넘치는데, 스크롤 원점이 콘텐츠 박스 시작이라 그 위쪽은 영구히 가려진다. 실측: 200×100 칸에 300px 자식 → `center` 는 `scrollHeight` 200(100px 유실) + `scrollTop=0` 에서 자식 top 이 칸 top 보다 **99px 위**, `safe center` 는 `scrollHeight` 300 + top 1.
+
+- 판정 스니펫: `const t = box.scrollTop; box.scrollTop = 0; const gap = child.getBoundingClientRect().top - box.getBoundingClientRect().top; box.scrollTop = t;` — `gap` 이 음수면 그만큼 못 닿는다.
+- `scrollHeight` 를 콘텐츠 실제 크기와 대조하는 것도 같은 결함을 잡는다(40칸×16px = 640 이어야 하는데 589 가 나오면 잘렸다).
+- 고침은 `safe` 키워드. 크로미움 115+ / 파이어폭스 129+ / 사파리 17.6+ 이고 이 저장소 플레이라이트 크로미움에서 `getComputedStyle(...).alignContent === "safe center"` 로 지원을 확인했다.
+
+### 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
+
+`background: var(--없는토큰)` 은 대체값이 없으면 **계산값 시점에 선언 자체가 무효**가 되어 초기값(`transparent`)으로 떨어진다. 콘솔 경고도, devtools 취소선도 없다. 구조물 편집기 다이얼로그가 배경 없이 떠서 뒤의 DB 표가 뚫려 보이던 원인이 이것이고, `--oprn-*` 60개 중 23개가 이 상태였다.
+
+- 확인은 **계산값으로** 해라: `getComputedStyle(el).backgroundColor === "rgba(0, 0, 0, 0)"` 이면 죽은 선언이다. 소스 CSS 를 읽어서는 알 수 없다.
+- `npm run gates:css` 의 `undefinedVars` 지표가 이걸 센다. 숫자가 줄면 죽은 선언을 살린 것이다.
+
 ### `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
 
 - 증상: `page.goto` 는 성공했는데 화면이 **완전 백지**이고 aria 스냅샷이 비어 있다. 콘솔에 앱

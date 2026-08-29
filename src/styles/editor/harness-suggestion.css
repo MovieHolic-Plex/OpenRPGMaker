@@ -799,7 +799,11 @@
 .structure-kit-editor-canvas-wrap {
   position: relative;
   display: grid;
-  place-content: center;
+  /* safe 없는 center 는 캔버스가 칸보다 클 때 위/왼쪽으로 넘친 부분을 **스크롤로 닿을 수 없게**
+     만든다. 3x40 같은 긴 킷을 1x(최소 배율)로 봐도 세로가 남는데, 실측으로 scrollHeight 가
+     300 → 200 으로 줄고 첫 줄이 칸 위 99px 지점에 박혀 영구히 가려졌다. safe 는 잘림이
+     생길 때만 시작 정렬로 물러난다 — 들어맞을 때는 그대로 가운데다. */
+  place-content: safe center;
   overflow: auto;
   min-height: 0;
   border-radius: 8px;
@@ -809,9 +813,13 @@
 
 /* 캔버스와 정확히 같은 크기의 위치 기준 상자. 격자선·미리보기가 여기에 겹친다.
    클릭 좌표도 이 상자를 기준으로 잰다. */
+/* 포인터 리스너와 testid 가 이 요소에 붙는다 — 캔버스와 픽셀 단위로 같은 상자여야
+   좌표로 판정하는 테스트가 칸 밖을 짚지 않는다. touch-action 은 상속되지 않으므로
+   여기에도 준다. 안 주면 터치 드래그가 칠하기 대신 스크롤로 먹힌다. */
 .structure-kit-editor-canvas-stage {
   position: relative;
   line-height: 0;
+  touch-action: none;
 }
 
 .structure-kit-editor-canvas {

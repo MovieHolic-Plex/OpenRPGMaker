@@ -197,14 +197,20 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     replaceStructureKit(session.tilesetId, next);
   };
 
-  const canvasWrap = el("div", {
-    class: "structure-kit-editor-canvas-wrap",
-    dataset: { testid: "structure-kit-editor-canvas" },
-  });
+  const canvasWrap = el("div", { class: "structure-kit-editor-canvas-wrap" });
   // 캔버스와 정확히 같은 크기의 위치 기준 상자. 격자선·도형 미리보기가 여기에 겹친다.
   // 좌표 계산도 이 상자를 본다 — canvasWrap 은 스크롤 컨테이너라 캔버스보다 크고
   // 내용을 가운데 정렬하므로, wrap 기준으로 재면 그 여백만큼 클릭이 밀린다.
-  const canvasStage = el("div", { class: "structure-kit-editor-canvas-stage" });
+  //
+  // **testid 와 포인터 리스너가 같은 요소여야 한다.** 예전에는 testid 가 wrap 에 붙어
+  // 있었는데 이름이 `...-canvas` 인 요소의 boundingBox 가 캔버스가 아니라 1084x721 스크롤
+  // 칸이었다. 그래서 e2e 가 "캔버스 모서리"라고 믿고 끈 좌표가 실제로는 캔버스 밖 여백이었고,
+  // cellFromEvent 가 null 을 돌려 부위 드래그가 조용히 아무것도 안 했다. 스테이지는
+  // 캔버스와 픽셀 단위로 같은 상자이므로 둘을 여기로 모은다.
+  const canvasStage = el("div", {
+    class: "structure-kit-editor-canvas-stage",
+    dataset: { testid: "structure-kit-editor-canvas" },
+  });
   const gridOverlay = el("div", { class: "structure-kit-editor-grid-lines" });
   const previewOverlay = el("div", { class: "structure-kit-editor-preview" });
   canvasWrap.replaceChildren(canvasStage);
@@ -309,7 +315,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     return true;
   };
 
-  canvasWrap.addEventListener("pointerdown", (event) => {
+  canvasStage.addEventListener("pointerdown", (event) => {
     const pointer = event as PointerEvent;
     if (pointer.button !== undefined && pointer.button !== 0) return;
     const current = session.requireKit();
@@ -343,7 +349,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     // 드래그 도중 포인터가 캔버스 밖(도구 줄·팔레트·부위 목록)으로 나가도 pointermove/up 이
     // 이 리스너에 도착하도록 캡처한다 — 캡처가 없으면 밖에서 뗀 제스처는 dragStart 를
     // 영영 못 지우고, 나중에 엉뚱한 pointerup 과 짝지어져 유령 부위를 만든다.
-    if (pointer.pointerId !== undefined) canvasWrap.setPointerCapture(pointer.pointerId);
+    if (pointer.pointerId !== undefined) canvasStage.setPointerCapture(pointer.pointerId);
 
     if (session.tool === "part" || isDragShapeTool(session.tool)) {
       dragStart = cell;
@@ -357,7 +363,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
   });
 
   // 예전에는 pointermove 리스너가 아예 없어서 한 칸씩 클릭해야 했다.
-  canvasWrap.addEventListener("pointermove", (event) => {
+  canvasStage.addEventListener("pointermove", (event) => {
     const pointer = event as PointerEvent;
     const current = session.requireKit();
     if (!current) return;
@@ -377,11 +383,11 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     if (paintOneCell(cell.cx, cell.cy)) redrawCanvasOnly();
   });
 
-  canvasWrap.addEventListener("pointerup", (event) => {
+  canvasStage.addEventListener("pointerup", (event) => {
     const pointer = event as PointerEvent;
     if (pointer.button !== undefined && pointer.button !== 0) return;
-    if (pointer.pointerId !== undefined && canvasWrap.hasPointerCapture(pointer.pointerId)) {
-      canvasWrap.releasePointerCapture(pointer.pointerId);
+    if (pointer.pointerId !== undefined && canvasStage.hasPointerCapture(pointer.pointerId)) {
+      canvasStage.releasePointerCapture(pointer.pointerId);
     }
 
     // 칠하기 스트로크 종료 — 여러 칸을 칠했어도 되돌리기 한 번에 되돌아간다.
@@ -891,6 +897,10 @@ function drawPalette(
           type: "button",
           style: tilesetTileBackgroundStyle(tileset, tile, SWATCH_PX),
           title: tileDisplayLabelForIndex(tile),
+          // 칸에 글자가 없어 접근성 이름이 title 뿐이다. 지금 잡힌 붓은 색으로만
+          // 구별되므로 aria-pressed 로도 알려야 한다.
+          "aria-label": tileDisplayLabelForIndex(tile),
+          "aria-pressed": tile === session.tile ? "true" : "false",
         },
         dataset: { testid: `structure-kit-editor-tile-${tile}` },
         on: {
@@ -947,7 +957,7 @@ function drawFilterBar(host: HTMLElement, session: EditorSession, redrawPalette:
   const chips = TILE_CATEGORIES.map((category) =>
     el("button", {
       class: `structure-kit-editor-chip${session.category === category.id ? " active" : ""}`,
-      attrs: { type: "button" },
+      attrs: { type: "button", "aria-pressed": session.category === category.id ? "true" : "false" },
       text: category.label,
       dataset: { testid: `structure-kit-editor-category-${category.id}` },
       on: {
@@ -1008,7 +1018,14 @@ function drawTools(host: HTMLElement, session: EditorSession, redraw: () => void
   const toolButton = (entry: (typeof TOOL_BUTTONS)[number]): HTMLElement =>
     el("button", {
       class: `btn small structure-kit-editor-tool${session.tool === entry.tool ? " primary" : ""}`,
-      attrs: { type: "button", title: entry.label, "aria-label": entry.label },
+      // aria-pressed 는 맵 도구막대와 같은 규약이다. 아이콘 전용 버튼이라 이게 없으면
+      // 화면 낭독기 쪽에서 지금 어느 도구가 잡혀 있는지 알 방법이 색뿐이다.
+      attrs: {
+        type: "button",
+        title: entry.label,
+        "aria-label": entry.label,
+        "aria-pressed": session.tool === entry.tool ? "true" : "false",
+      },
       children: [makeSvgIcon(entry.icon)],
       dataset: { testid: entry.testid },
       on: { click: () => { session.tool = entry.tool; redraw(); } },
@@ -1017,7 +1034,11 @@ function drawTools(host: HTMLElement, session: EditorSession, redraw: () => void
   const layerButton = (label: string, testid: string, layer: KitLayer): HTMLElement =>
     el("button", {
       class: `btn small structure-kit-editor-layer-btn${session.layer === layer ? " primary" : ""}`,
-      attrs: { type: "button" },
+      attrs: {
+        type: "button",
+        "aria-label": `${label} 레이어`,
+        "aria-pressed": session.layer === layer ? "true" : "false",
+      },
       text: label,
       dataset: { testid },
       on: { click: () => { session.layer = layer; redraw(); } },
@@ -1121,7 +1142,7 @@ function drawViewBar(
     el("div", { class: "structure-kit-editor-viewbar-sep" }),
     el("button", {
       class: `btn small${session.showGrid ? " primary" : ""}`,
-      attrs: { type: "button" },
+      attrs: { type: "button", "aria-pressed": session.showGrid ? "true" : "false" },
       text: "격자",
       dataset: { testid: "structure-kit-editor-grid-toggle" },
       on: { click: () => { session.showGrid = !session.showGrid; redraw(); } },
