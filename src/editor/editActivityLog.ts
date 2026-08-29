@@ -44,6 +44,19 @@ const PERSIST_DEBOUNCE_MS = 800;
 const MIRROR_DEBOUNCE_MS = 1500;
 const MAX_FIELD_CHANGES = 40;
 const MAX_FIELD_VALUE_CHARS = 400;
+/**
+ * 커밋 row 하나에 실어 보낼 엔트리 상한. 페인트 세션 하나가 row 를 메가바이트로 만들면
+ * 그 row 자체가 못 읽는 것이 된다. 넘치면 **최근 것**을 남긴다 — 링버퍼도, localStorage 도
+ * 앞쪽부터 버리므로 축이 같고, 저장 시점에 가까운 행위가 그 저장을 설명한다.
+ */
+const MAX_COMMIT_ATTACHED = 300;
+/**
+ * 같은 상한의 바이트 축(직렬화 문자 수). 개수만 막으면 부족하다 —
+ * 필드 상세가 붙은 엔트리는 최악 40필드 × 400자라 300건이 수 MB 가 될 수 있다.
+ * 한글은 UTF-8 로 자당 3바이트이므로 6만 자는 넉넉히 봐도 200KB 미만이다
+ * (AI 로그의 `MAX_KEEPALIVE_BYTES` 60KB 와 같은 자릿수).
+ */
+const MAX_COMMIT_ATTACHED_CHARS = 64_000;
 
 export const EDIT_ACTIVITY_EVENT = "oprn:edit-activity";
 
@@ -299,6 +312,64 @@ export function getEditActivityEntries(query: EditActivityQuery = {}): readonly 
 export function editActivityEntryCount(): number {
   hydrate();
   return entries.length;
+}
+
+/** 커밋 row 에 실리는 형태. `project_changes.patch_json.edits` 로 들어간다. */
+export type EditActivityCommitAttachment = {
+  readonly entries: readonly EditActivityEntry[];
+  /** 링버퍼 밀림 + 상한 절단으로 빠진 건수. 0 이면 전량이다. */
+  readonly omitted: number;
+};
+
+export type EditActivitySlice = EditActivityCommitAttachment & {
+  /** 다음 호출에 그대로 넘길 커서. */
+  readonly cursor: number;
+};
+
+/**
+ * `sinceSeq` 이후의 행위 기록을 잘라 낸다 — 저장 경계에서 커밋 row 에 실을 몫.
+ *
+ * 왜 저장 경계인가 (2026-08-29 관측성 감사): 이 로그는 브라우저 링버퍼 + localStorage 200건에만
+ * 살고 DB 에는 한 줄도 없었다. 그래서 "그 세션에 무슨 행위가 있었나" 를 나중에 조사할 수 없었다.
+ * mutation 마다 DB 로 밀면 페인트 드래그 하나가 수백 행이 되므로, 이미 있는 커밋 row 에
+ * 묶는다 — 조사 단위(`무엇을 저장했더니 이렇게 됐다`)와 경계가 일치한다.
+ *
+ * 커서를 쓰는 이유: 커밋마다 "지난 커밋 이후"만 실어야 같은 엔트리가 매 저장에 반복되지 않는다.
+ * 알려진 경계 — 이미 드레인된 마지막 엔트리가 병합 창(600ms) 안에서 한 번 더 병합되면
+ * 그 갱신분(`mergedCount`/`cellCount` 증가)은 다음 커밋에 실리지 않는다. 엔트리 자체는
+ * 이미 실렸으므로 기록이 사라지는 것이 아니라 셀 수가 조금 적게 잡히는 종류의 오차다.
+ */
+export function takeEditActivitySince(sinceSeq: number, limit = MAX_COMMIT_ATTACHED): EditActivitySlice {
+  hydrate();
+  const cap = Math.max(1, Math.floor(limit));
+  const fresh = entries.filter((entry) => entry.seq >= sinceSeq);
+  // 버퍼가 앞쪽을 밀어냈으면 그 몫은 영원히 못 싣는다 — 숫자로라도 남긴다.
+  // 안 남기면 "이 저장에는 편집이 3건뿐이었다" 로 읽혀 조사가 엉뚱한 곳으로 간다.
+  const oldestKept = entries.length > 0 ? entries[0]!.seq : seq;
+  const evicted = Math.max(0, oldestKept - sinceSeq);
+  const kept = fitWithinCharBudget(fresh.slice(-cap));
+  return {
+    entries: kept,
+    cursor: Math.max(sinceSeq, seq),
+    omitted: evicted + (fresh.length - kept.length),
+  };
+}
+
+/**
+ * 뒤(최신)에서부터 예산 안에 들어가는 만큼만 담는다. 개수 상한과 절단 방향이 같다.
+ * 한 건이 혼자 예산을 넘겨도 그 한 건은 남긴다 — 전부 `omitted` 로 사라지면 커밋에
+ * "무언가 있었다" 조차 안 남는다.
+ */
+function fitWithinCharBudget(candidates: readonly EditActivityEntry[]): readonly EditActivityEntry[] {
+  let used = 2; // "[]"
+  let index = candidates.length;
+  while (index > 0) {
+    const size = JSON.stringify(candidates[index - 1]).length + 1;
+    if (used + size > MAX_COMMIT_ATTACHED_CHARS && index < candidates.length) break;
+    used += size;
+    index -= 1;
+  }
+  return candidates.slice(index);
 }
 
 /**

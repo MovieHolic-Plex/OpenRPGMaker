@@ -10,6 +10,8 @@ import { projectWithoutEventDrafts } from "./eventDrafts";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
+// 타입 전용 import — 런타임 그래프를 넓히지 않는다(선례: projectCommitLog 의 순환 검사 주석).
+import type { EditActivityCommitAttachment } from "@/editor/editActivityLog";
 import type { ChangeSummary } from "@/project/types";
 import type { EditorIdentity } from "./editorIdentity";
 import type { BattleAnimationRecord, GameMap, MapTreeNode, Project, TilesetDef } from "./types";
@@ -101,6 +103,11 @@ export type SupabaseProjectCommitInput = {
   readonly toolNames: readonly string[];
   /** 직전 원격 커밋 id — 계보 연결. 없으면 null parent. */
   readonly parentCommitId?: string | null;
+  /**
+   * 이 커밋 경계 안에서 일어난 편집 행위 기록. `patch_json.edits` 로 들어간다.
+   * `projectCommitLog` 가 커서로 잘라 넣는다 — 호출부가 직접 채우지 않는다.
+   */
+  readonly editActivity?: EditActivityCommitAttachment;
 };
 
 export type SupabaseProjectCommitListItem = {
@@ -993,6 +1000,15 @@ function projectChangeRow(
     patch_json: {
       diff: input.diff ?? null,
       toolNames: input.toolNames,
+      // 편집 행위 기록. diff 는 **결과**만 담는다 — "타일 3000" 은 알려주지만 어떤 행위가
+      // 그렇게 만들었는지는 못 짚는다(2026-08-29 관측성 감사). 이 축이 원인 쪽이다.
+      // 리더: `npm run commit:log -- --edits`.
+      ...(input.editActivity
+        ? {
+            edits: input.editActivity.entries,
+            ...(input.editActivity.omitted > 0 ? { editsOmitted: input.editActivity.omitted } : {}),
+          }
+        : {}),
     },
   };
 }
