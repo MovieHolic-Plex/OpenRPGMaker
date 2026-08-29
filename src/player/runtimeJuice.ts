@@ -73,6 +73,12 @@ function writeRuntimeJuiceLog(entry: RuntimeJuiceLogEntry): void {
 
 function applyRuntimeJuiceMotion(target: HTMLElement, spec: RuntimeJuiceSpec): void {
   target.classList.remove(...RUNTIME_JUICE_CLASSES);
+  // window 가 없으면(node 환경) 모션은 건너뛰고 클래스만 즉시 얹는다 — 단위 테스트가
+  // 모션 클래스 부착을 검사할 수 있게 하면서 rAF 부재로 죽지 않게 한다.
+  if (typeof window === "undefined") {
+    target.classList.add(spec.motionClass);
+    return;
+  }
   window.requestAnimationFrame(() => {
     target.classList.add(spec.motionClass);
     window.setTimeout(() => target.classList.remove(spec.motionClass), spec.durationMs);
@@ -80,6 +86,11 @@ function applyRuntimeJuiceMotion(target: HTMLElement, spec: RuntimeJuiceSpec): v
 }
 
 function playRuntimeJuiceSound(soundResourceId: string): void {
+  // 헤드리스 가드. vitest 는 environment:"node" 가 전역 기본값이고 test/fakeDom.ts 는
+  // document 만 깔고 Audio 는 안 깐다. 가드가 없으면 emitRuntimeJuice 를 부르는 코드가
+  // node 환경 테스트에서 전부 ReferenceError 로 죽는다 — 그래서 지금까지 UI 피드백을
+  // 붙일 수 있는 자리가 사실상 브라우저 전용으로 묶여 있었다.
+  if (typeof Audio === "undefined") return;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return;
   const audio = new Audio(url);
@@ -90,7 +101,11 @@ function playRuntimeJuiceSound(soundResourceId: string): void {
   });
 }
 
+/** window 가 없는 환경에서도 로그가 쌓이도록 하는 대체 저장소(단위 테스트 관찰용). */
+const headlessJuiceState: { log: RuntimeJuiceLogEntry[] } = { log: [] };
+
 function runtimeJuiceState(): { log: RuntimeJuiceLogEntry[] } {
+  if (typeof window === "undefined") return headlessJuiceState;
   window.__oprnRuntimeJuice ??= { log: [] };
   window.__oprnJuiceLog ??= runtimeJuiceLog;
   return window.__oprnRuntimeJuice;
