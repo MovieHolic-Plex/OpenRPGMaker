@@ -19,41 +19,31 @@ function cardOf(host: HTMLElement, idx: number): HTMLElement {
   return card;
 }
 
-describe("storyboard branch chips stay inside their card", () => {
+// 분기 이름은 카드 아래 펼쳐진 패널이 **한 번만** 찍는다. 예전에는 카드 안에도 앞 2개를
+// 12자로 자른 «칩 줄»(`.event-storyboard-card-branches`)이 있어서 같은 목록이 두 번 나왔다.
+describe("storyboard renders each branch name exactly once", () => {
   it("uses the visual storyboard as the default authoring view", () => {
     expect(loadStoryboardMode()).toBe("storyboard");
   });
 
-  it("leaves no .event-storyboard-branch as a direct child of the track", () => {
+  it("no longer renders the truncated chip row inside the card", () => {
     const host = renderStoryboard([
       choicesCommand(["맡는다", "나중에", "거절한다"]),
       { kind: "fork", condition: { kind: "switch", switchId: "s1", value: true }, then: [], else: [] },
     ]);
     document.body.append(host);
 
-    expect(host.querySelectorAll(".event-storyboard-track > .event-storyboard-branch").length).toBe(0);
-    for (const chip of host.querySelectorAll<HTMLElement>(".event-storyboard-branch")) {
-      const row = chip.parentElement;
-      expect(row?.classList.contains("event-storyboard-card-branches")).toBe(true);
-      expect(row?.parentElement?.classList.contains("event-storyboard-card")).toBe(true);
-      expect(chip.closest(".event-storyboard-card")).toBe(row?.parentElement ?? null);
-    }
+    expect(host.querySelectorAll(".event-storyboard-card-branches").length).toBe(0);
+    expect(host.querySelectorAll(".event-storyboard-branch-more").length).toBe(0);
     host.remove();
   });
 
-  it("renders at most 2 pills plus a +K badge for a 3-option choices card", () => {
+  it("names every branch of a 3-option choice once, untruncated", () => {
     const host = renderStoryboard([choicesCommand(["맡는다", "나중에", "거절한다"])]);
-    const card = cardOf(host, 0);
 
-    const row = card.querySelector(".event-storyboard-card-branches");
-    expect(row).not.toBeNull();
-    expect(card.lastElementChild).toBe(row);
-    const pills = card.querySelectorAll(".event-storyboard-branch");
-    expect(pills.length).toBe(2);
-    expect(pills[0]?.querySelector(".event-storyboard-branch-label")?.textContent).toBe("맡는다");
-    expect(pills[1]?.querySelector(".event-storyboard-branch-label")?.textContent).toBe("나중에");
-    expect(card.querySelector(".event-storyboard-branch-more")?.textContent).toBe("+1");
     expect(host.querySelectorAll(".event-storyboard-branches")).toHaveLength(1);
+    const labels = [...host.querySelectorAll(".event-storyboard-branch-label")].map((n) => n.textContent);
+    expect(labels).toEqual(["맡는다", "나중에", "거절한다"]);
   });
 
   it("renders nested branch commands with their exact selectable command path", () => {
@@ -113,23 +103,20 @@ describe("storyboard branch chips stay inside their card", () => {
     expect(host.querySelector<HTMLElement>(`[data-cmd-path='${JSON.stringify(path)}']`)?.textContent).toContain(text);
   });
 
-  it("counts the cancel branch as a normal branch in +K, not a mandatory third slot", () => {
+  it("lists the cancel branch alongside the options, with the shared label", () => {
     const host = renderStoryboard([choicesCommand(["맡는다", "나중에"], true)]);
-    const card = cardOf(host, 0);
-
-    expect(card.querySelectorAll(".event-storyboard-branch").length).toBe(2);
-    expect(card.querySelector(".event-storyboard-branch-more")?.textContent).toBe("+1");
+    const labels = [...host.querySelectorAll(".event-storyboard-branch-label")].map((n) => n.textContent);
+    expect(labels).toEqual(["맡는다", "나중에", "취소했을 때"]);
 
     const four = renderStoryboard([choicesCommand(["가", "나", "다", "라"], true)]);
-    const fourCard = cardOf(four, 0);
-    expect(fourCard.querySelectorAll(".event-storyboard-branch").length).toBe(2);
-    expect(fourCard.querySelector(".event-storyboard-branch-more")?.textContent).toBe("+3");
+    expect([...four.querySelectorAll(".event-storyboard-branch-label")].map((n) => n.textContent))
+      .toEqual(["가", "나", "다", "라", "취소했을 때"]);
   });
 
-  it("renders no branches row for commands without branches", () => {
+  it("renders no branch panel for commands without branches", () => {
     const host = renderStoryboard([{ kind: "wait", ms: 100 }]);
     const card = cardOf(host, 0);
     expect(card.querySelector(".event-storyboard-card-branches")).toBeNull();
-    expect(host.querySelectorAll(".event-storyboard-branch").length).toBe(0);
+    expect(host.querySelectorAll(".event-storyboard-branches").length).toBe(0);
   });
 });

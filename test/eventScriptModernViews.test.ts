@@ -58,8 +58,8 @@ describe("이벤트 스크립트 모던 뷰 (P2)", () => {
     expect(steps[0]?.simState).toBeDefined();
     expect(steps[1]?.simState).toBeDefined();
     expect(steps[2]?.simState).toBeDefined();
-    expect(steps[3]?.branchLabel).toBe("참일 때");
-    expect(steps[4]?.branchLabel).toBe("그 외");
+    expect(steps[3]?.branchLabel).toBe("조건이 맞을 때");
+    expect(steps[4]?.branchLabel).toBe("조건이 맞지 않을 때");
     const forkStep = steps.find((s) => s.command.kind === "fork");
     expect(forkStep?.forkTaken).toBeDefined();
   });

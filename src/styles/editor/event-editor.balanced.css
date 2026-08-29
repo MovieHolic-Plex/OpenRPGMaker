@@ -611,8 +611,15 @@
   width: 100%;
 }
 
-.event-editor .row .n,
-.event-editor .event-storyboard-card-thumb {
+/* `.event-storyboard-card-thumb` 은 여기 끼워 넣지 말 것.
+   이 파일은 레이어 밖이라 `@layer editor` 의 `storyboard.css:18` 을 무조건 이긴다. 예전에
+   `color: var(--text-3)`(#64748B) 가 거기서 정한 `color: #fff` 를 덮어, 배지 배경 #626B7D
+   위에 숫자가 명암비 1.05:1 로 찍혔다 — WCAG 1.4.3 기준 4.5:1. 실측 스크린샷에서 800%
+   확대해야 «5» 가 보였다. 배지는 배경이 있는 칩이고 여기 규칙은 배경 없는 목록 인덱스
+   (`.row .n`) 용이다. `padding-top` 도 배지의 `place-items: center` 를 깨뜨렸다.
+   배지 span 은 `class="n event-storyboard-card-thumb"` 라 `.row .n` 으로도 걸린다 —
+   선택자에서 배지 클래스만 빼는 것으로는 부족했고 `:not()` 이 필요하다. */
+.event-editor .row .n:not(.event-storyboard-card-thumb) {
   color: var(--text-3);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
@@ -643,9 +650,10 @@
   box-shadow: inset 3px 0 0 var(--accent);
 }
 
-.event-editor .row.selected .n,
-.event-editor .row.is-selected .n,
-.event-editor .event-storyboard-card.is-selected .event-storyboard-card-thumb {
+/* 선택 상태도 마찬가지다. 배지에 `--accent`(#4A57D6) 를 주면 #626B7D 배경 위에서
+   1.06:1 이 된다. 배지는 흰 숫자를 유지하고 선택 표시는 카드 테두리가 맡는다. */
+.event-editor .row.selected .n:not(.event-storyboard-card-thumb),
+.event-editor .row.is-selected .n:not(.event-storyboard-card-thumb) {
   color: var(--accent);
 }
 
@@ -1202,9 +1210,16 @@ footer {
   display: none;
 }
 
-@media (min-width: 1321px) {
+/* 설정 컬럼의 «레일 + 시트» 마스터-디테일 배치. 레일 196px + 간격 12px + 조건 2열 그리드
+   (`minmax(218px, 1fr)` x2) 를 담아야 하므로 660px 아래로는 성립하지 않는다.
+   예전에는 이 블록이 1321px 에서 열리면서 폭을 772px 로 못박았다. 1366x900 에서
+   772/1366 = 56.5% 를 설정 패널이 먹고, 명령 21줄이 들어갈 스크립트 컬럼에 594px 만
+   남았다(2560 에서는 같은 772px 이 30%). 화면이 좁아질수록 스크립트 쪽이 손실을 전부
+   받는 구조였다. 이제 (1) 두 컬럼이 같이 들어가는 폭에서만 열고, (2) 폭을 유동으로 둔다.
+   1321~1440px 은 아래 `max-width: 1440px` 가 다듬어 둔 268px 단일 컬럼 배치로 내려간다. */
+@media (min-width: 1441px) {
   .event-editor-modal-window {
-    --balanced-settings-width: 772px;
+    --balanced-settings-width: clamp(660px, 30vw, 780px);
     --balanced-rail-width: 196px;
   }
 
@@ -1286,7 +1301,7 @@ footer {
    268px 컬럼에서는 라벨 칸을 넓힐 여유가 없으므로 줄바꿈을 허용하고,
    컨트롤에는 접미사 칸까지 내준다. 실측: `이 이벤트 기억` 67/72px,
    `파티에 있음`(커스텀 셀렉트 값) 44/63px. */
-@media (max-width: 1320px) {
+@media (max-width: 1440px) {
   /* 라벨은 줄바꿈이 되므로 칸을 좁혀도 잘리지 않는다. 아낀 폭은 컨트롤로 간다. */
   .event-editor .event-editor-settings-accordion-body .event-condition-row {
     grid-template-columns: 16px 3rem minmax(0, 1fr) auto;
@@ -1627,9 +1642,16 @@ footer {
   display: none;
 }
 
-@media (min-width: 1321px) {
+/* 설정 컬럼의 «레일 + 시트» 마스터-디테일 배치. 레일 196px + 간격 12px + 조건 2열 그리드
+   (`minmax(218px, 1fr)` x2) 를 담아야 하므로 660px 아래로는 성립하지 않는다.
+   예전에는 이 블록이 1321px 에서 열리면서 폭을 772px 로 못박았다. 1366x900 에서
+   772/1366 = 56.5% 를 설정 패널이 먹고, 명령 21줄이 들어갈 스크립트 컬럼에 594px 만
+   남았다(2560 에서는 같은 772px 이 30%). 화면이 좁아질수록 스크립트 쪽이 손실을 전부
+   받는 구조였다. 이제 (1) 두 컬럼이 같이 들어가는 폭에서만 열고, (2) 폭을 유동으로 둔다.
+   1321~1440px 은 아래 `max-width: 1440px` 가 다듬어 둔 268px 단일 컬럼 배치로 내려간다. */
+@media (min-width: 1441px) {
   .event-editor-modal-window {
-    --balanced-settings-width: 772px;
+    --balanced-settings-width: clamp(660px, 30vw, 780px);
     --balanced-rail-width: 196px;
   }
 
@@ -1711,7 +1733,7 @@ footer {
    268px 컬럼에서는 라벨 칸을 넓힐 여유가 없으므로 줄바꿈을 허용하고,
    컨트롤에는 접미사 칸까지 내준다. 실측: `이 이벤트 기억` 67/72px,
    `파티에 있음`(커스텀 셀렉트 값) 44/63px. */
-@media (max-width: 1320px) {
+@media (max-width: 1440px) {
   /* 라벨은 줄바꿈이 되므로 칸을 좁혀도 잘리지 않는다. 아낀 폭은 컨트롤로 간다. */
   .event-editor .event-editor-settings-accordion-body .event-condition-row {
     grid-template-columns: 16px 3rem minmax(0, 1fr) auto;
@@ -2026,7 +2048,7 @@ footer {
   grid-template-columns: minmax(0, 1fr);
 }
 
-@media (min-width: 1321px) {
+@media (min-width: 1441px) {
   .event-editor .event-schedule-condition-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2121,7 +2143,7 @@ footer {
 }
 
 /* 레일이 아래로 접히는 좁은 폭(본문 ~230px) 보정. */
-@media (max-width: 1320px) {
+@media (max-width: 1440px) {
   /* 230px 안에서는 도움말과 추가 버튼이 한 줄에 못 선다. */
   .event-editor .event-schedule-toolbar {
     align-items: stretch;
