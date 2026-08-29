@@ -12,6 +12,7 @@ import { SCHEMA_VERSION } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
+import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import {
@@ -466,6 +467,8 @@ export function createFarmingDemoProject(): Project {
         { resourceId: "farming-crop-eggplant", frame: 1, label: "가지 수확기" },
       ],
     }),
+    // gen2 씨앗 4종이 실제로 심어지는 종자밭. 기존 밭 순서를 흔들지 않도록 뒤에 붙인다.
+    ...defaultFeatureCropRecords(),
   ];
   map.events.push(
     createFarmAnimalEvent("ev_farm_chicken", "닭", "tex_farming_charset_chicken", 11, 6),
