@@ -107,7 +107,7 @@ a{color:var(--accent)}
 <div class="grid kpi">
   <div class="box accent"><div class="v">8</div><div class="k">고친 결함 (찾은 25건 중)</div></div>
   <div class="box good"><div class="v">310×</div><div class="k">도달 불가 추격 비용 감소</div></div>
-  <div class="box violet"><div class="v">19</div><div class="k">회귀 테스트 (수정 전 12건 실패)</div></div>
+  <div class="box violet"><div class="v">17</div><div class="k">회귀 테스트 (수정 되돌리면 13건 실패)</div></div>
   <div class="box good"><div class="v">20/20</div><div class="k">실제 플레이 확인 · 실패 0</div></div>
 </div>
 
@@ -382,7 +382,7 @@ this.events.once("destroy", releaseCulling);</code></pre>
 <table>
   <thead><tr><th>항목</th><th style="width:150px">결과</th><th>비고</th></tr></thead>
   <tbody>
-    <tr><td>회귀 증거 <code>test/runtimeAdversarialDefects.test.ts</code></td><td><span class="pill pass">19건 통과</span></td><td><code>git apply -R</code> 로 수정을 되돌리면 <b>12건 실패</b>. 나머지는 의도한 불변식·대조 테스트</td></tr>
+    <tr><td>회귀 증거 <code>test/runtimeAdversarialDefects.test.ts</code></td><td><span class="pill pass">17건 통과</span></td><td>소스 10개를 main 상태로 되돌리면 <b>13건 실패</b>(실측 2026-08-30, 병합 시 재확인). 나머지 4건은 의도한 불변식·대조 테스트. 이 파일 밖에 추가된 케이스를 합치면 5개 파일 기준 더 많다</td></tr>
     <tr><td>관련 스위트 41개 파일</td><td><span class="pill pass">401 / 402</span></td><td>유일한 실패 <code>runtimeDomMarkers</code> 는 상류 것 — 아래 참조</td></tr>
     <tr><td><code>npx tsc --noEmit</code></td><td><span class="pill pass">내 파일 0건</span></td><td>저장소 전체 738건은 기존 것</td></tr>
     <tr><td><code>check-css-budget</code></td><td><span class="pill pass">통과</span></td><td>262개 파일, 회귀 0건</td></tr>
