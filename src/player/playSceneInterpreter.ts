@@ -22,7 +22,8 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import type { Command } from "@/project/types";
-import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
+import { resolvePlayerBody } from "@/project/playerFootprint";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
@@ -594,7 +595,9 @@ function stopCommandMovement(scene: PlaySceneContext): void {
     scene.moving = false;
     scene.moveProgress = 0;
     scene.movingTo = { ...scene.movingFrom };
-    scene.player.setPosition(characterSpriteX(scene.tileX), characterSpriteY(scene.tileY));
+    // 이동을 끊고 스프라이트를 되돌릴 때도 **몸 중앙**이다. 1x1 이면 타일 중앙과 같다.
+    const footprint = resolvePlayerBody(store.getCurrent(), scene.session).footprint;
+    scene.player.setPosition(footprintSpriteX(scene.tileX, footprint), characterSpriteY(scene.tileY));
   }
 }
 

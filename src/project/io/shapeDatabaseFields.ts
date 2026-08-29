@@ -25,6 +25,7 @@ import {
 } from "@/project/spatialPlacements";
 import { GOLD_MAX } from "@/project/economyValues";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import { validateFootprintPair } from "./shapeEventFields";
 
 export function validateDatabase(value: unknown): void {
   const database = requireRecord("database", value);
@@ -58,6 +59,9 @@ export function validateDatabase(value: unknown): void {
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
+  // 주인공 몸 크기는 이벤트 페이지와 **같은 경계**로 막는다(2차 §9). 한쪽만 검증하면
+  // `playerFootprint: {width: -5}` 가 로드를 통과하고 런타임 정규화만이 마지막 방어선이 된다.
+  validateFootprintPair("system.playerFootprint", system.playerFootprint, "system.playerPassRows", system.playerPassRows);
   if (system.playResolution !== undefined) {
     const playResolution = requireRecord("system.playResolution", system.playResolution);
     requireNumber("system.playResolution.width", playResolution.width);

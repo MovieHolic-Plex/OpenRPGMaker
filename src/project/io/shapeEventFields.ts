@@ -200,20 +200,34 @@ function validateCharacterScale(label: string, value: unknown): void {
  * 로드 검증을 통과하면 작성자는 자기 프로젝트가 왜 1x1 로 보이는지 알 수 없다.
  */
 function validateCharacterFootprintFields(label: string, page: Record<string, unknown>): void {
+  validateFootprintPair(`${label}.footprint`, page.footprint, `${label}.passRows`, page.passRows);
+}
+
+/**
+ * 필드 이름과 무관한 몸 크기·통행 행 검증. 이벤트 페이지는 `footprint`/`passRows`,
+ * 시스템은 `playerFootprint`/`playerPassRows` 로 키가 다르지만 **경계는 같아야** 한다 —
+ * 한쪽만 검증하면 그쪽으로 비정규 값이 새어 들어간다.
+ */
+export function validateFootprintPair(
+  footprintLabel: string,
+  footprint: unknown,
+  passRowsLabel: string,
+  passRows: unknown
+): void {
   let height: number | undefined;
-  if (page.footprint !== undefined) {
-    const footprint = requireRecord(`${label}.footprint`, page.footprint);
-    const width = requireNumber(`${label}.footprint.width`, footprint.width);
-    height = requireNumber(`${label}.footprint.height`, footprint.height);
-    assertFootprintAxis(`${label}.footprint.width`, width);
-    assertFootprintAxis(`${label}.footprint.height`, height);
+  if (footprint !== undefined) {
+    const record = requireRecord(footprintLabel, footprint);
+    const width = requireNumber(`${footprintLabel}.width`, record.width);
+    height = requireNumber(`${footprintLabel}.height`, record.height);
+    assertFootprintAxis(`${footprintLabel}.width`, width);
+    assertFootprintAxis(`${footprintLabel}.height`, height);
   }
-  if (page.passRows !== undefined) {
-    const rows = requireNumber(`${label}.passRows`, page.passRows);
+  if (passRows !== undefined) {
+    const rows = requireNumber(passRowsLabel, passRows);
     const max = height ?? 1;
     assert(
       Number.isSafeInteger(rows) && rows >= 1 && rows <= max,
-      `${label}.passRows는 1~${max}(몸 높이) 범위의 정수여야 합니다.`
+      `${passRowsLabel}는 1~${max}(몸 높이) 범위의 정수여야 합니다.`
     );
   }
 }

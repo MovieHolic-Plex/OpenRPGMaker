@@ -1,6 +1,7 @@
 import type {
   ActorId,
   BattleAnimationId,
+  CharacterFootprint,
   ClassId,
   CropId,
   Dir,
@@ -1026,6 +1027,16 @@ export interface SystemRecords {
   startActorIds: ActorId[];
   /** Omitted means the legacy 320x240 viewport. */
   playResolution?: PlayResolution;
+  /**
+   * 주인공의 **몸 크기**(타일, 발밑 앵커). 생략하면 1x1 — 기존 프로젝트와 동작이 같다.
+   * 이벤트의 `EventPage.footprint` 와 같은 규약이다(2차 스펙 §9).
+   */
+  playerFootprint?: CharacterFootprint;
+  /**
+   * 몸 사각 **하단 몇 행**이 지형·이벤트에 막히는가. 생략하면 몸 높이 전체(= 통행 사각 === 몸 사각).
+   * 3x3 주인공에 1 이면 발밑 한 줄만 막혀 상체가 벽을 스치며 지나갈 수 있다.
+   */
+  playerPassRows?: number;
   titleResourceId?: string;
   systemResourceId?: string;
   battleSystemResourceId?: string;

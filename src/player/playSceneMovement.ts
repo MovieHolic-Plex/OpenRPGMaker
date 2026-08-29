@@ -1,9 +1,10 @@
-import { canMove } from "@/project/collision";
+import { canMoveFootprint } from "@/project/collision";
 import { footprintBounds, nearestCellInRect } from "@/project/footprint";
+import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
-import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
+import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
 import { applyFacing } from "@/player/playSceneAutonomousCommands";
 import { facingForDelta } from "@/player/playSceneAutonomousRouteDirection";
 import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
@@ -11,7 +12,7 @@ import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
 import type { Dir, InputState } from "@/player/input";
 import { facingForStep, resolveDiagonalStep } from "@/player/input";
 import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
-import { findBlockingRuntimeEventAtInMap,
+import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
 import type { RuntimeEventView } from "@/project/runtimeEventState"
@@ -105,6 +106,9 @@ const WALK_FRAME_MS = 90;
 function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
   const dashFactor = scene.dashing ? DASH_SPEED_FACTOR : 1;
   const moveDurationMs = scene.moveDurationMs / dashFactor;
+  // 주인공 스프라이트도 **몸 중앙**에 놓는다(Task 7 과 같은 이유). 1x1 이면 타일 중앙과
+  // 같은 값이라 기존 동작과 동일하다.
+  const footprint = resolvePlayerBody(store.getCurrent(), scene.session).footprint;
   scene.moveProgress += deltaMs / moveDurationMs;
   if (scene.moveProgress >= 1) {
     scene.moveProgress = 1;
@@ -117,7 +121,7 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     applyWalkCareTicks(project, scene.session, 1);
     applyGen1FieldPoisonStep(project, scene.session);
     scene.moving = false;
-    scene.player.x = characterSpriteX(scene.tileX);
+    scene.player.x = footprintSpriteX(scene.tileX, footprint);
     scene.player.y = characterSpriteY(scene.tileY);
     updateCharacterDepth(scene.player, "same");
     syncFollowerSprites(scene);
@@ -127,7 +131,7 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
   }
   const px = linear(scene.movingFrom.x, scene.movingTo.x, scene.moveProgress);
   const py = linear(scene.movingFrom.y, scene.movingTo.y, scene.moveProgress);
-  scene.player.x = characterSpriteX(px);
+  scene.player.x = footprintSpriteX(px, footprint);
   scene.player.y = characterSpriteY(py);
   updateCharacterDepth(scene.player, "same");
   scene.walkTimer += deltaMs;
@@ -140,19 +144,8 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   const project = store.getCurrent();
-  // 현재 칸에서 (dx,dy) 칸으로 갈 수 있나. 직교는 canMove 한 번.
-  // 대각선은 NPC(canNpcMove)와 같은 L자 2구간 판정: 중간 칸(가로 또는 세로)을 거쳐
-  // 목적지로 진입할 수 있어야 한다. 첫 구간은 호출자(resolveDiagonalStep)가 이미 보므로
-  // 여기서는 중간 칸 → 목적지 구간을 확인한다.
-  const canStep = (dx: number, dy: number): boolean => {
-    if (dx !== 0 && dy !== 0) {
-      return (
-        canMove(project, scene.map, scene.tileX + dx, scene.tileY, scene.tileX + dx, scene.tileY + dy) ||
-        canMove(project, scene.map, scene.tileX, scene.tileY + dy, scene.tileX + dx, scene.tileY + dy)
-      );
-    }
-    return canMove(project, scene.map, scene.tileX, scene.tileY, scene.tileX + dx, scene.tileY + dy);
-  };
+  const body = resolvePlayerBody(project, scene.session);
+  const canStep = (dx: number, dy: number): boolean => playerCanStep(scene, body, dx, dy);
   // 4방향 모드(서바이벌 호러 감각): 대각 입력을 한 축으로 직교화한다.
   let moveX = input.x;
   let moveY = input.y;
@@ -169,7 +162,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   scene.facing = facingForStep(step.dx, step.dy);
   const nx = scene.tileX + step.dx;
   const ny = scene.tileY + step.dy;
-  const blockingEvent = findBlockingRuntimeEventInScene(scene, nx, ny);
+  const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {
     scene.facing = facingForStep(step.dx, step.dy);
     firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
@@ -250,9 +243,11 @@ function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {
   const delta = directionDelta(dir);
   const nx = scene.tileX + delta.x;
   const ny = scene.tileY + delta.y;
-  if (!canMove(store.getCurrent(), scene.map, scene.tileX, scene.tileY, nx, ny)) return false; // 막히면 건너뜀
+  const body = resolvePlayerBody(store.getCurrent(), scene.session);
+  // 강제 이동 루트도 몸 크기를 존중한다 — 3x3 주인공이 커맨드로는 벽을 뚫으면 안 된다.
+  if (!playerCanStep(scene, body, delta.x, delta.y)) return false; // 막히면 건너뜀
   // Force-move routes still respect same-as-characters solid events (RM2K3 character collision).
-  const blockingEvent = findBlockingRuntimeEventInScene(scene, nx, ny);
+  const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {
     firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     return false;
@@ -417,12 +412,55 @@ function findRuntimeEventInScene(
   return findRuntimeEventAtInMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions, x, y, triggerKind);
 }
 
-function findBlockingRuntimeEventInScene(
+/**
+ * 주인공이 (dx,dy) 로 한 걸음 갈 수 있나 — **통행 사각**의 선행 모서리로 지형을 본다.
+ * 자유 이동과 강제 이동 루트가 **같은 판정식**을 쓰도록 여기 한 곳에 둔다.
+ *
+ * 1x1 직교는 canMove 1회로 환원되고, 대각도 예전 식과 **같은 값**이 나온다(항등).
+ * 예전 코드는 호출부에서 대각을 L자 2구간으로 손수 분해했는데, `resolveDiagonalStep` 이
+ * 이미 첫 구간 두 개(H1·V1)를 따로 물어보므로 전체 조건은 `H1 && V1 && (H2 || V2)` 였다.
+ * canMoveFootprint 의 대각은 `(H1 && H2) || (V1 && V2)` 이고 바깥 게이트가 `H1 && V1`
+ * 이라, 합치면 `H1 && V1 && (H2 || V2)` — 같은 식이다. 분해가 두 곳에 있을 이유가 없다.
+ */
+export function playerCanStep(
+  scene: Pick<PlaySceneContext, "map" | "tileX" | "tileY">,
+  body: PlayerBody,
+  dx: number,
+  dy: number
+): boolean {
+  return canMoveFootprint(
+    store.getCurrent(),
+    scene.map,
+    scene.tileX,
+    scene.tileY,
+    body.footprint,
+    scene.tileX + dx,
+    scene.tileY + dy,
+    body.passRows
+  );
+}
+
+/**
+ * 목적지에서 주인공의 **통행 사각**을 막는 이벤트. 1x1 이면 목적지 한 칸 질의와 같다(항등).
+ *
+ * 몸 사각이 아니라 통행 사각인 이유: passRows 로 열어 둔 상체 칸에는 NPC 가 실제로 들어와
+ * 서 있을 수 있고(그게 사각을 둘로 쪼갠 목적이다), 그걸 막힘으로 세면 주인공이 자기 상체에
+ * 갇힌다. 선행 모서리만 보지 않고 목적지 사각 전체를 보는 것은 워프 착지 검사
+ * (resolveFootprintLanding)와 같은 판정을 쓰기 위한 것이고, 더 막는 쪽이 fail-closed 다.
+ */
+export function findBlockingEventForPlayerBody(
   scene: Pick<PlaySceneContext, "map" | "session" | "eventPositions">,
+  body: PlayerBody,
   x: number,
   y: number
 ): RuntimeEventView | undefined {
-  return findBlockingRuntimeEventAtInMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions, x, y);
+  return findBlockingEventOverlappingRect(
+    store.getCurrent(),
+    scene.map,
+    scene.session,
+    scene.eventPositions,
+    playerPassageRect(body, x, y)
+  );
 }
 
 function firePlayerTouchEvent(scene: PlaySceneContext, eventId: string, triggerKind: Trigger["kind"]): void {
