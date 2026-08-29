@@ -23,6 +23,7 @@ import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import type { Command } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
@@ -593,6 +594,11 @@ function stopCommandMovement(scene: PlaySceneContext): void {
   for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.clear();
   scene.playerRoute = null;
+  // 체공 중에 이동이 취소되면 원점 리프트가 남아 주인공이 공중에 붙는다.
+  if (scene.playerHop) {
+    scene.playerHop = null;
+    abortHop(scene, PLAYER_SHADOW_KEY, scene.player);
+  }
   if (scene.moving) {
     scene.moving = false;
     scene.moveProgress = 0;

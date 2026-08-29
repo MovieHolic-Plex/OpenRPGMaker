@@ -1,9 +1,14 @@
-import { canMove } from "@/project/collision";
+import { canMove, inBounds } from "@/project/collision";
+// 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
+// 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
+export { startPlayerRoute } from "@/player/playerRouteState";
 import { footprintBounds, nearestCellInRect } from "@/project/footprint";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
+import { fallHop, jumpHop } from "@/player/characterHop";
+import { applyHopFrame, finishHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyFacing } from "@/player/playSceneAutonomousCommands";
 import { facingForDelta } from "@/player/playSceneAutonomousRouteDirection";
 import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
@@ -56,13 +61,16 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   scene.session.playTimeSeconds += deltaMs / 1000;
   const input = scene.input_.update();
   const cutsceneInputLocked = isCutsceneInputLocked(scene.session);
-  if (!scene.moving) {
+  // 체공 중에는 새 이동을 시작하지 않는다 — 공중에서 입력을 받으면 낙하가 취소된다.
+  if (!scene.moving && !scene.playerHop) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
     else if (!cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) tryStartMove(scene, input);
   }
   if (scene.moving) {
     updatePlayerMovement(scene, deltaMs);
+  } else if (scene.playerHop) {
+    updatePlayerStationaryHop(scene, deltaMs);
   } else {
     scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   }
@@ -70,9 +78,10 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   // 있으면 대화가 우선하고, 없을 때만 스윙한다(적대 리뷰 10: Space 만 공격이고
   // Z 는 조사로 남아 결정 키가 둘로 쪼개져 있었다).
   let interacted = false;
-  if (!cutsceneInputLocked && input.actionPressed && !scene.moving) interacted = handleAction(scene);
-  if (!cutsceneInputLocked && input.attackPressed && !interacted) tryActionCombatSwing(scene);
-  if (!cutsceneInputLocked && input.skillPressed) tryActionSkillCast(scene);
+  const airborne = scene.playerHop !== null;
+  if (!cutsceneInputLocked && input.actionPressed && !scene.moving && !airborne) interacted = handleAction(scene);
+  if (!cutsceneInputLocked && input.attackPressed && !interacted && !airborne) tryActionCombatSwing(scene);
+  if (!cutsceneInputLocked && input.skillPressed && !airborne) tryActionSkillCast(scene);
   scene.input_.resetEdges();
   if (canUpdateWaitingEvents(scene)) {
     scene.updateAutonomousNPCs(deltaMs);
@@ -101,11 +110,20 @@ function canUpdateWaitingEvents(scene: PlaySceneContext): boolean {
 // 주기를 같은 비율로 단축해 애니메이션이 자연스럽게 빨라진다.
 const DASH_SPEED_FACTOR = 1.8;
 const WALK_FRAME_MS = 90;
+/** dx/dy 를 안 준 점프의 거리. NPC 의 DEFAULT_JUMP_DISTANCE 와 같은 2 칸이다. */
+const PLAYER_JUMP_DISTANCE = 2;
 
 function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
+  const hopState = scene.playerHop;
   const dashFactor = scene.dashing ? DASH_SPEED_FACTOR : 1;
-  const moveDurationMs = scene.moveDurationMs / dashFactor;
-  scene.moveProgress += deltaMs / moveDurationMs;
+  // 점프는 자기 지속 시간으로 난다 — 대시 배속이나 이동 속도에 끌려가지 않는다.
+  const moveDurationMs = hopState ? Math.max(1, hopState.hop.durationMs) : scene.moveDurationMs / dashFactor;
+  if (hopState) {
+    hopState.elapsedMs = Math.min(moveDurationMs, hopState.elapsedMs + Math.max(0, deltaMs));
+    scene.moveProgress = hopState.elapsedMs / moveDurationMs;
+  } else {
+    scene.moveProgress += deltaMs / moveDurationMs;
+  }
   if (scene.moveProgress >= 1) {
     scene.moveProgress = 1;
     scene.tileX = scene.movingTo.x;
@@ -120,6 +138,11 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     scene.player.x = characterSpriteX(scene.tileX);
     scene.player.y = characterSpriteY(scene.tileY);
     updateCharacterDepth(scene.player, "same");
+    if (hopState) {
+      scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
+      finishHop(scene, PLAYER_SHADOW_KEY, scene.player, scene.player.x, scene.player.y, hopState.hop);
+      scene.playerHop = null;
+    }
     syncFollowerSprites(scene);
     fireTouchTriggers(scene);
     maybeTriggerRandomEncounter(scene);
@@ -130,12 +153,46 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
   scene.player.x = characterSpriteX(px);
   scene.player.y = characterSpriteY(py);
   updateCharacterDepth(scene.player, "same");
+  if (hopState) {
+    // 공중에서는 걸음을 젓지 않는다. 리프트는 setFrame 뒤에 얹어야 원점이 살아남는다.
+    scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
+    applyHopFrame(
+      scene,
+      PLAYER_SHADOW_KEY,
+      scene.player,
+      scene.player.x,
+      scene.player.y,
+      hopState.hop,
+      scene.moveProgress
+    );
+    return;
+  }
   scene.walkTimer += deltaMs;
   if (scene.walkTimer > WALK_FRAME_MS / dashFactor) {
     scene.walkTimer = 0;
     scene.walkFrame = (scene.walkFrame + 1) % scene.playerSprite.walkFrameCount;
   }
   scene.player.setFrame(scene.playerSprite.walkFrameFor(scene.facing, scene.walkFrame));
+}
+
+/** 낙하(dropIn) 는 타일 이동이 없다 — `moving` 을 쓰지 않고 리프트만 내려온다. */
+function updatePlayerStationaryHop(scene: PlaySceneContext, deltaMs: number): void {
+  const hopState = scene.playerHop;
+  if (!hopState) return;
+  const durationMs = Math.max(1, hopState.hop.durationMs);
+  hopState.elapsedMs = Math.min(durationMs, hopState.elapsedMs + Math.max(0, deltaMs));
+  const groundX = characterSpriteX(scene.tileX);
+  const groundY = characterSpriteY(scene.tileY);
+  scene.player.x = groundX;
+  scene.player.y = groundY;
+  updateCharacterDepth(scene.player, "same");
+  scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
+  if (hopState.elapsedMs < durationMs) {
+    applyHopFrame(scene, PLAYER_SHADOW_KEY, scene.player, groundX, groundY, hopState.hop, hopState.elapsedMs / durationMs);
+    return;
+  }
+  finishHop(scene, PLAYER_SHADOW_KEY, scene.player, groundX, groundY, hopState.hop);
+  scene.playerHop = null;
 }
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
@@ -188,19 +245,13 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
 // ── 주인공 강제 이동 루트(이동 루트 설정 → 주인공) ──
 // moveEvent 명령이 주인공을 대상으로 하면 이동 단계를 큐에 넣고, 주인공이 정지할 때마다
 // 다음 단계를 자연스러운 걷기로 실행한다. 장소 이동(transfer)과 달리 한 칸씩 이동한다.
-export function startPlayerRoute(scene: PlaySceneContext, moves: readonly MoveCommand[], repeat: boolean): void {
-  if (moves.length === 0) {
-    scene.playerRoute = null;
-    return;
-  }
-  scene.playerRoute = { moves: [...moves], index: 0, repeat };
-}
+
 
 function advancePlayerRoute(scene: PlaySceneContext): void {
   // 이동을 시작하지 않는 명령(회전/스위치 등)은 같은 프레임에 연속 소비한다.
   // repeat + 이동 없는 루트의 프레임당 무한 루프를 막기 위해 상한을 둔다.
   let guard = 0;
-  while (scene.playerRoute && !scene.moving && guard < 64) {
+  while (scene.playerRoute && !scene.moving && !scene.playerHop && guard < 64) {
     guard += 1;
     const route = scene.playerRoute;
     if (route.index >= route.moves.length) {
@@ -224,6 +275,10 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand):
       return startPlayerRouteStep(scene, command.dir);
     case "stepForward":
       return startPlayerRouteStep(scene, scene.facing);
+    case "jump":
+      return startPlayerJump(scene, command);
+    case "dropIn":
+      return startPlayerDropIn(scene, command);
     case "turn":
       scene.facing = command.dir;
       return false;
@@ -239,10 +294,44 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand):
     case "changeSpeed":
       scene.moveDurationMs = clampPlayerMoveDuration(scene.moveDurationMs, command.delta);
       return false;
-    // 주인공에게 의미 없거나 MVP 범위 밖(jump/그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
+    // 주인공에게 의미 없거나 MVP 범위 밖(그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
     default:
       return false;
   }
+}
+
+/**
+ * 주인공 점프. NPC 와 같은 규칙이다 — dx/dy 가 0 이면 바라보는 방향 2 칸이고,
+ * 통행 판정은 건너뛰고 맵 경계만 본다(RM2K3 의 점프도 지형을 무시한다).
+ */
+function startPlayerJump(scene: PlaySceneContext, command: Extract<MoveCommand, { kind: "jump" }>): boolean {
+  const delta =
+    command.dx !== 0 || command.dy !== 0
+      ? { x: command.dx, y: command.dy }
+      : scaleDelta(directionDelta(scene.facing), PLAYER_JUMP_DISTANCE);
+  const nx = scene.tileX + delta.x;
+  const ny = scene.tileY + delta.y;
+  if (!inBounds(scene.map, nx, ny)) return false; // 맵 밖으로는 뛰지 않는다(건너뛴다)
+  scene.facing = facingForDelta(delta.x, delta.y, scene.facing);
+  scene.dashing = false;
+  scene.movingFrom = { x: scene.tileX, y: scene.tileY };
+  scene.movingTo = { x: nx, y: ny };
+  scene.moving = true;
+  scene.moveProgress = 0;
+  scene.walkFrame = 0;
+  scene.walkTimer = 0;
+  scene.playerHop = { hop: jumpHop(command), elapsedMs: 0, countsAsStep: true };
+  return true;
+}
+
+/** 낙하 등장. 제자리에서 떨어지므로 걸음 부수효과(발소리·인카운터)를 만들지 않는다. */
+function startPlayerDropIn(scene: PlaySceneContext, command: Extract<MoveCommand, { kind: "dropIn" }>): boolean {
+  scene.playerHop = { hop: fallHop(command), elapsedMs: 0, countsAsStep: false };
+  return true;
+}
+
+function scaleDelta(delta: { x: number; y: number }, factor: number): { x: number; y: number } {
+  return { x: delta.x * factor, y: delta.y * factor };
 }
 
 function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {

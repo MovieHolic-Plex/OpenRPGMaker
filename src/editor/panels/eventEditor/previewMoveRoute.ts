@@ -264,6 +264,8 @@ function chipLabel(move: MoveCommand): string {
       return "전진";
     case "jump":
       return `점프(${move.dx},${move.dy})`;
+    case "dropIn":
+      return "낙하";
     case "land":
       return "착지";
     case "turn":

@@ -10,18 +10,25 @@ import { databasePicker } from "./conditionForm";
 import type { MoveRouteCommandContext } from "./moveRouteCommandCatalog";
 import { mapSelectElement } from "./sharedPickers";
 
+/** "이 단계 값" 패널의 현재값 + 각 필드의 변경 콜백. 컨텍스트 버튼들이 이 값을 읽어 커맨드를 만든다. */
+export type MoveRouteParameterPanel = MoveRouteCommandContext & {
+  readonly onSwitchId: (value: string) => void;
+  readonly onSpriteId: (value: string) => void;
+  readonly onSoundId: (value: string) => void;
+  readonly onNpcTargetMapId: (value: MapId) => void;
+  readonly onNpcTargetX: (value: number) => void;
+  readonly onNpcTargetY: (value: number) => void;
+  readonly onNpcTargetDirection: (value: Dir) => void;
+  readonly onHopDx: (value: number) => void;
+  readonly onHopDy: (value: number) => void;
+  readonly onHopHeightPx: (value: number) => void;
+  readonly onHopDurationMs: (value: number) => void;
+};
+
 export function renderTopBar(
   initialFrequency: number,
   onFrequencyChange: (frequency: number) => void,
-  parameters: MoveRouteCommandContext & {
-    readonly onSwitchId: (value: string) => void;
-    readonly onSpriteId: (value: string) => void;
-    readonly onSoundId: (value: string) => void;
-    readonly onNpcTargetMapId: (value: MapId) => void;
-    readonly onNpcTargetX: (value: number) => void;
-    readonly onNpcTargetY: (value: number) => void;
-    readonly onNpcTargetDirection: (value: Dir) => void;
-  }
+  parameters: MoveRouteParameterPanel
 ): HTMLElement {
   return el("div", {
     class: "event-page-move-route-top",
@@ -97,15 +104,9 @@ function renderFrequencyRadios(initialFrequency: number, onChange: (frequency: n
   return wrap;
 }
 
-function renderParameterPanel(parameters: MoveRouteCommandContext & {
-  readonly onSwitchId: (value: string) => void;
-  readonly onSpriteId: (value: string) => void;
-  readonly onSoundId: (value: string) => void;
-  readonly onNpcTargetMapId: (value: MapId) => void;
-  readonly onNpcTargetX: (value: number) => void;
-  readonly onNpcTargetY: (value: number) => void;
-  readonly onNpcTargetDirection: (value: Dir) => void;
-}): HTMLElement {
+// 7 열 그리드(CSS)에 11 개 필드가 들어가므로 체공 4 필드는 자연히 둘째 줄로 흐른다.
+// 같은 열 트랙을 재사용하는 폼 격자라 CSS 변경 없이 정렬이 맞는다.
+function renderParameterPanel(parameters: MoveRouteParameterPanel): HTMLElement {
   return el("fieldset", {
     class: "event-page-move-route-parameters",
     children: [
@@ -117,6 +118,26 @@ function renderParameterPanel(parameters: MoveRouteCommandContext & {
       numberInput("NPC X", "event-page-move-route-npc-target-x", parameters.npcTargetX, parameters.onNpcTargetX),
       numberInput("NPC Y", "event-page-move-route-npc-target-y", parameters.npcTargetY, parameters.onNpcTargetY),
       directionSelect(parameters.npcTargetDirection, parameters.onNpcTargetDirection),
+      // 라벨은 한 줄 격자에 들어가도록 짧게 — 자세한 설명은 title(툴팁)에 있다.
+      // 점프 오프셋은 음수(왼쪽·위로 뛰기)가 필수라 min 을 풀어 준다.
+      numberInput("점프 dx", "event-page-move-route-hop-dx", parameters.hopDx, parameters.onHopDx, {
+        min: null,
+        title: "점프가 건너뛸 가로 타일 수. 음수는 왼쪽.",
+      }),
+      numberInput("dy", "event-page-move-route-hop-dy", parameters.hopDy, parameters.onHopDy, {
+        min: null,
+        title: "점프가 건너뛸 세로 타일 수. 음수는 위쪽.",
+      }),
+      numberInput("높이px", "event-page-move-route-hop-height", parameters.hopHeightPx, parameters.onHopHeightPx, {
+        title: "체공 높이. 0 이면 기본값 — 점프 12px, 낙하 128px(8칸). 보스 강림은 크게 잡는다.",
+      }),
+      numberInput(
+        "시간ms",
+        "event-page-move-route-hop-duration",
+        parameters.hopDurationMs,
+        parameters.onHopDurationMs,
+        { title: "체공 시간. 0 이면 기본값 — 점프 300ms, 낙하 620ms. 이동 속도와 무관하게 이 시간이 쓰인다." }
+      ),
     ],
   });
 }
@@ -251,9 +272,21 @@ function mapSelect(label: string, value: MapId, onChange: (value: MapId) => void
   return el("label", { children: [el("span", { text: label }), select] });
 }
 
-function numberInput(label: string, testId: string, value: number, onChange: (value: number) => void): HTMLElement {
+function numberInput(
+  label: string,
+  testId: string,
+  value: number,
+  onChange: (value: number) => void,
+  // min: null 은 하한 없음(음수 허용). 생략하면 기존 NPC 좌표처럼 0 이 하한이다.
+  options?: { readonly min?: string | null; readonly title?: string }
+): HTMLElement {
+  const min = options && "min" in options ? options.min : "0";
   const input = el("input", {
-    attrs: { type: "number", min: "0" },
+    attrs: {
+      type: "number",
+      ...(min === null ? {} : { min }),
+      ...(options?.title === undefined ? {} : { title: options.title }),
+    },
     value,
     dataset: { testid: testId },
     on: {

@@ -76,7 +76,10 @@ export type MoveCommand =
   | { kind: "moveTowardPlayer" }
   | { kind: "moveAwayFromPlayer" }
   | { kind: "stepForward" }
-  | { kind: "jump"; dx: number; dy: number }
+  /** 포물선 점프. dx/dy 가 0 이면 바라보는 방향으로 2 칸. heightPx 는 최고점(기본 12px). */
+  | { kind: "jump"; dx: number; dy: number; heightPx?: number; durationMs?: number; se?: string }
+  /** 화면 위에서 떨어지는 등장(보스 강림). 타일 이동 없이 heightPx 에서 접지까지 낙하한다. */
+  | { kind: "dropIn"; heightPx?: number; durationMs?: number; se?: string; impact?: boolean }
   | { kind: "land" }
   | { kind: "turn"; dir: Dir }
   | { kind: "turnRelative"; turn: "right90" | "left90" | "turn180" | "leftOrRight90" }

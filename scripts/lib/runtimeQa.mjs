@@ -29,9 +29,20 @@ export const OP_KINDS = [
   // (실측: 선택지 NPC 옆에서 Enter 8회 → 선택지가 다시 열림).
   "waitFor",
   "pressUntil",
+  // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
+  // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.
+  "playerRoute",
+  "waitForLift",
+  "waitForGrounded",
+  "captureShadowSample",
 ];
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+// 그림자 깊이 띠. characterDepth.ts 의 MAP_LOWER_LAYER_DEPTH(0) 와
+// PRIORITY_DEPTH_BASE.below(100_000) 사이가 비어 있어 그림자가 그 안에 산다.
+const SHADOW_DEPTH_FLOOR = 0;
+const SHADOW_DEPTH_CEILING = 100_000;
 
 /**
  * 시나리오에 기본값을 채우고 구조를 검증한다.
@@ -315,6 +326,70 @@ export function evaluateExpect(expected, observed) {
       );
     }
   }
+  // 체공 판정. liftPx 는 원점 채널을 되읽은 값이고, playerSpriteY 는 접지선이다.
+  // 체공 중에도 접지선이 타일 경계에 남아야 깊이·카메라·조명이 깨지지 않는다.
+  const lift = observed.playerLiftPx;
+  const liftUnavailable = (key) => {
+    failures.push(`캐릭터 스프라이트 훅 없음 — 체공을 읽을 수 없다(${key} 확인 불가)`);
+  };
+  if (expected.playerLiftPxAtLeast !== undefined) {
+    if (lift === null || lift === undefined) liftUnavailable("playerLiftPxAtLeast");
+    else if (lift < expected.playerLiftPxAtLeast) {
+      failures.push(`playerLiftPx: ${expected.playerLiftPxAtLeast}px 이상 기대, 실제 ${lift}px`);
+    }
+  }
+  if (expected.playerLiftPx !== undefined) {
+    if (lift === null || lift === undefined) liftUnavailable("playerLiftPx");
+    else if (lift !== expected.playerLiftPx) {
+      failures.push(`playerLiftPx: 기대 ${expected.playerLiftPx}, 실제 ${lift}`);
+    }
+  }
+  if (expected.playerSpriteY !== undefined) {
+    const groundY = observed.playerSpriteY;
+    if (groundY === null || groundY === undefined) liftUnavailable("playerSpriteY");
+    else if (groundY !== expected.playerSpriteY) {
+      failures.push(`playerSpriteY: 기대 ${expected.playerSpriteY}, 실제 ${groundY}(접지선이 움직였다)`);
+    }
+  }
+
+  // 발밑 그림자. 깊이 띠(하부 타일 0 < 그림자 < below 캐릭터 100k)는 브라우저에서만
+  // 확인된다 — 그림자가 타일 밑으로 깔리면 조용히 안 보이는 채로 게이트를 통과한다.
+  if (expected.playerShadowVisible !== undefined) {
+    const shadow = observed.playerShadow;
+    if (shadow === undefined) liftUnavailable("playerShadowVisible");
+    else if (expected.playerShadowVisible) {
+      if (!shadow || !shadow.visible) failures.push("playerShadow: 체공 중인데 그림자가 없다");
+      else {
+        if (!(shadow.depth > SHADOW_DEPTH_FLOOR && shadow.depth < SHADOW_DEPTH_CEILING)) {
+          failures.push(
+            `playerShadow: 깊이 ${shadow.depth} 가 띠(${SHADOW_DEPTH_FLOOR}~${SHADOW_DEPTH_CEILING}) 밖이다`,
+          );
+        }
+        if (shadow.alpha <= 0) failures.push(`playerShadow: alpha ${shadow.alpha} — 투명하다`);
+      }
+    } else if (shadow && shadow.visible) {
+      failures.push("playerShadow: 접지했는데 그림자가 남아 있다");
+    }
+  }
+  // 그림자 원점은 (0.5,0.5) 라 y 는 접지선보다 반 높이 위다. 타원 **아래 끝**이 접지선에
+  // 닿아야 발밑에 붙은 것으로 보인다 — 반올림 없이 1px 오차까지 허용한다.
+  if (expected.playerShadowGroundY !== undefined) {
+    const shadow = observed.playerShadow;
+    if (!shadow) liftUnavailable("playerShadowGroundY");
+    else if (Math.abs(shadow.bottomY - expected.playerShadowGroundY) > 1) {
+      failures.push(
+        `playerShadowGroundY: 기대 ${expected.playerShadowGroundY}, 실제 ${shadow.bottomY}(타원 아래 끝)`,
+      );
+    }
+  }
+  if (expected.playerAirborne !== undefined) {
+    const airborne = observed.playerAirborne;
+    if (airborne === null || airborne === undefined) liftUnavailable("playerAirborne");
+    else if (airborne !== expected.playerAirborne) {
+      failures.push(`playerAirborne: 기대 ${expected.playerAirborne}, 실제 ${airborne}`);
+    }
+  }
+
   // 전투 글자 가시성: 계측은 runtimeQaRun 이 페이지에서 돌리고, 여기서는 판정만 한다.
   // `battleTextClean` 은 "이 국면의 battle-scene 안 모든 텍스트 노드가 상자 안에 온전히
   // 보인다" 는 뜻이다. 씬이 안 떠 있으면 조용히 통과시키지 않고 실패로 만든다 —

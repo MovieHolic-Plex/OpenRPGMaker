@@ -7,6 +7,8 @@ import { mapSelectElement } from "./sharedPickers";
 import {
   DIRECTIONAL_MOVE_TEST_IDS,
   MOVE_ROUTE_COMMAND_ROWS,
+  defaultRouteSoundId,
+  inferHopParameters,
   moveCommandLabel,
   type MoveRouteCommandContext,
 } from "./moveRouteCommandCatalog";
@@ -94,6 +96,38 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     dataset: { testid: "move-route-npc-target-y-input" },
   });
   const npcTargetDirection = directionSelect(parameterDraft.npcTargetDirection);
+  // 체공: 점프 오프셋은 음수(왼쪽·위로 뛰기)가 필수라 min 을 걸지 않는다. 높이·시간의 0 은
+  // "저작하지 않음" 이라 커맨드에 필드가 아예 안 붙고 런타임 기본값이 쓰인다.
+  const hopDx = el("input", {
+    attrs: { type: "number", placeholder: "가로", title: "점프가 건너뛸 가로 타일 수. 음수는 왼쪽." },
+    value: parameterDraft.hopDx,
+    dataset: { testid: "move-route-hop-dx-input" },
+  });
+  const hopDy = el("input", {
+    attrs: { type: "number", placeholder: "세로", title: "점프가 건너뛸 세로 타일 수. 음수는 위쪽." },
+    value: parameterDraft.hopDy,
+    dataset: { testid: "move-route-hop-dy-input" },
+  });
+  const hopHeightPx = el("input", {
+    attrs: {
+      type: "number",
+      min: "0",
+      placeholder: "0=기본",
+      title: "0 이면 기본값 — 점프 12px, 낙하 128px(8칸). 보스 강림은 크게 잡는다.",
+    },
+    value: parameterDraft.hopHeightPx,
+    dataset: { testid: "move-route-hop-height-input" },
+  });
+  const hopDurationMs = el("input", {
+    attrs: {
+      type: "number",
+      min: "0",
+      placeholder: "0=기본",
+      title: "0 이면 기본값 — 점프 300ms, 낙하 620ms. 이동 속도와 무관하게 이 시간이 쓰인다.",
+    },
+    value: parameterDraft.hopDurationMs,
+    dataset: { testid: "move-route-hop-duration-input" },
+  });
 
   const commandList = el("div", {
     class: "move-route-command-list",
@@ -130,6 +164,10 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     npcTargetX: parseInt(npcTargetX.value, 10) || 0,
     npcTargetY: parseInt(npcTargetY.value, 10) || 0,
     npcTargetDirection: toDirection(npcTargetDirection.value),
+    hopDx: parseInt(hopDx.value, 10) || 0,
+    hopDy: parseInt(hopDy.value, 10) || 0,
+    hopHeightPx: parseInt(hopHeightPx.value, 10) || 0,
+    hopDurationMs: parseInt(hopDurationMs.value, 10) || 0,
   });
 
   const persistParameters = () => {
@@ -213,7 +251,19 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     renderPreview();
   });
   wait.addEventListener("change", apply);
-  for (const input of [switchIdIn, graphicIdIn, soundIdIn, npcTargetMap, npcTargetX, npcTargetY, npcTargetDirection]) {
+  for (const input of [
+    switchIdIn,
+    graphicIdIn,
+    soundIdIn,
+    npcTargetMap,
+    npcTargetX,
+    npcTargetY,
+    npcTargetDirection,
+    hopDx,
+    hopDy,
+    hopHeightPx,
+    hopDurationMs,
+  ]) {
     input.addEventListener("input", persistParameters);
     input.addEventListener("change", persistParameters);
   }
@@ -284,7 +334,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     class: "move-route-parameters-details",
     dataset: { testid: "move-route-parameters-details" },
     children: [
-      el("summary", { text: "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동)" }),
+      el("summary", { text: "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동 · 체공)" }),
       el("div", {
         class: "move-route-parameters",
         children: [
@@ -295,11 +345,15 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
           labeledField("X", npcTargetX),
           labeledField("Y", npcTargetY),
           labeledField("방향", npcTargetDirection),
+          labeledField("점프 dx", hopDx),
+          labeledField("점프 dy", hopDy),
+          labeledField("체공 높이(px)", hopHeightPx),
+          labeledField("체공 시간(ms)", hopDurationMs),
         ],
       }),
       el("p", {
         class: "move-route-parameters-hint",
-        text: "스위치 켜기/끄기, 모습 바꾸기, 효과음, NPC 맵 이동을 넣을 때 위 값을 씁니다.",
+        text: "스위치 켜기/끄기, 모습 바꾸기, 효과음, NPC 맵 이동, 점프·위에서 낙하를 넣을 때 위 값을 씁니다.",
       }),
     ],
   });
@@ -366,9 +420,12 @@ function labeledField(label: string, control: HTMLElement): HTMLElement {
 }
 
 function inferRouteParameters(moves: readonly MoveCommand[]): MoveRouteCommandContext {
-  let switchId = "sw_route_seen";
+  // 두 기본값 모두 실재하는 id 여야 한다 — 없는 id 는 「적용」에서 이벤트 저장을 통째로 막는다.
+  let switchId = store.getCurrent().switches[0]?.id ?? "";
   let spriteId = "tex_easyrpg_charset_people1";
-  let soundId = "se_route_chime";
+  let soundId = defaultRouteSoundId();
+  // 아래 루프는 npcTransfer 를 만나면 즉시 반환하므로 체공값은 따로 훑는다.
+  const hop = inferHopParameters(moves);
   for (let index = moves.length - 1; index >= 0; index -= 1) {
     const move = moves[index];
     if (move === undefined) continue;
@@ -388,6 +445,7 @@ function inferRouteParameters(moves: readonly MoveCommand[]): MoveRouteCommandCo
           npcTargetX: move.x,
           npcTargetY: move.y,
           npcTargetDirection: move.direction ?? "down",
+          ...hop,
         };
       case "playSe":
         soundId = move.resourceId;
@@ -404,6 +462,7 @@ function inferRouteParameters(moves: readonly MoveCommand[]): MoveRouteCommandCo
     npcTargetX: 0,
     npcTargetY: 0,
     npcTargetDirection: "down",
+    ...hop,
   };
 }
 
