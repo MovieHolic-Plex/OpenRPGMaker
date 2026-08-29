@@ -240,3 +240,87 @@
 .ai-chat-panel.chat-dock-glass:hover > .ai-chat-resize-handle {
   opacity: 1;
 }
+
+/* ── 유리 도크 접힘(fold) — 입력줄이 위, 대화가 아래로 열린다 ──────
+   왼쪽 위 조수는 기본적으로 입력줄 한 줄로 접혀 있고, 클릭하거나 AI 작업이 시작되면
+   대화 본문이 그 아래로 펼쳐진다. progressive disclosure — 접힌 상태로 남는 한 줄이
+   trigger 이고 아래로 흘러나오는 본문이 flyout 이다.
+
+   `is-collapsed`(48px 칩)와 다른 축이다: fold 는 `.ai-chat-body` 만 접고 입력줄·완료
+   스트립은 남긴다. glass 에서는 fold 가 칩 접힘을 대체하며, 상태 기계는 aiChatPanel.ts 의
+   applyGlassFold/scheduleGlassFold 가 소유한다.
+
+   왜 새 파일이 아니라 이 파일 끝인가: check-css-budget.mjs 가 cssFileCount 를 래칫으로
+   막고 있고(262), 이 파일이 조수 셸 기하의 마지막 레이어라 여기 끝이 새 18 번 파일의
+   시작과 캐스케이드 위치가 같다. */
+
+/* ── 순서 뒤집기 ──────────────────────────────────────────────
+   DOM 순서는 [toolbar, body, collapsedRestore, risingOverlay, stickyZone,
+   commandBar] 이고 side/float 이 그 순서를 쓴다. glass 에서만 order 로
+   입력줄을 맨 위로 올린다 — DOM 을 재배치하면 세 도크가 함께 바뀐다.
+   stickyZone(완료 스트립 · 0건 알림)은 입력줄 바로 아래에 두어 접힌 상태에서도
+   결과와 [되돌리기]가 보이게 한다. */
+.ai-chat-panel.chat-dock-glass > .ai-command-bar {
+  order: -1;
+}
+
+.ai-chat-panel.chat-dock-glass > .ai-rising-sticky-zone {
+  order: 0;
+}
+
+.ai-chat-panel.chat-dock-glass > .ai-chat-body {
+  order: 1;
+}
+
+/* ── 아래로 펼치는 트랜지션 ────────────────────────────────────
+   왜 `max-height` 인가: 본문은 02-chat-dock.css:120 에서 `flex: 1 1 auto;
+   min-height: 0; overflow: auto` 로 카드의 스크롤 영역을 맡고 있다.
+   `grid-template-rows: 0fr→1fr` 로 바꾸면 flex-grow 가 상자를 먼저 늘려
+   펼칠 때 카드가 즉시 최대 높이로 튀고 행만 안에서 자란다. `height: auto` 도
+   `flex` 와 같은 이유로 못 쓴다. `max-height` 는 flex 의 used size 를 그대로
+   덮으므로 flex 체인과 스크롤러(.ai-chat-log)를 한 줄도 건드리지 않는다.
+
+   열림 값이 `none` 이면 트랜지션이 돌지 않으므로(none 은 길이가 아니다)
+   길이를 명시한다. 카드는 이미 `max-height: calc(100% - 24px)` 로 조여져
+   있으므로 100vh 는 열린 상태에서 사실상 무해한 상한이다. */
+.ai-chat-panel.chat-dock-glass > .ai-chat-body {
+  max-height: 100vh;
+  transition:
+    max-height var(--transition-med),
+    opacity var(--transition-fast);
+}
+
+.ai-chat-panel.chat-dock-glass.is-glass-folded > .ai-chat-body {
+  max-height: 0;
+  opacity: 0;
+  /* 접히는 동안 스크롤바가 번쩍이지 않게 auto 를 덮는다. */
+  overflow: hidden;
+}
+
+/* ── 접힌 카드 기하 ───────────────────────────────────────────
+   앵커(inset: 12px … 12px)는 02-chat-dock.css:94 그대로 둔다. 같은 자리에서
+   아래로 열려야 하므로, 좌하단으로 내려가는 is-collapsed 와 달리 움직이지
+   않는 것이 이 상태의 핵심이다. 높이는 컴포저 + 완료 스트립까지만 —
+   aiChatPanel 의 applySize 가 인라인 height/maxHeight 를 비워 이 규칙을 살린다.
+   폭은 그대로 둔다(펼칠 때 카드가 튀지 않게).
+
+   왜 `:not()` 을 넷이나 달고 있는가: 13-assistant-modern.css:15 가
+   `height: min(620px, calc(100% - 24px))` 를 (0,7,0)/(0,6,0) 으로 선언한다.
+   짧게 `.chat-dock-glass.is-glass-folded`(0,3,0) 로 쓰면 본문이 max-height:0 으로
+   접혀도 카드는 620px 로 남는다 — 실측(e2e chat-dock-switch): 접힘 rect 520x620,
+   컴포저는 156px. 같은 `:not()` 짝을 달아 (0,8,0)/(0,7,0) 으로 올려야 이긴다.
+   (0,7,0) 은 13 의 첫 선택자와 동점이지만 이 파일이 뒤에 import 되므로 이긴다.) */
+.editor-layout .ai-chat-panel.chat-dock-glass.is-glass-folded:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle),
+.ai-chat-panel.chat-dock-glass.is-glass-folded:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
+  height: auto;
+}
+
+.ai-chat-panel.chat-dock-glass.is-glass-folded > .ai-chat-resize-handle {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-chat-panel.chat-dock-glass > .ai-chat-body {
+    transition: none;
+  }
+}

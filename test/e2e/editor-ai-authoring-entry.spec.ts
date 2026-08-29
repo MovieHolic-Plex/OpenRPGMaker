@@ -33,11 +33,16 @@ test("AI로 만들기에서 제공자와 여섯 저작 예제를 확인하고 �
   const entry = page.getByTestId("ai-authoring-entry");
   await expect(provider).toContainText("OpenAI Codex");
   await expect(entry).toHaveText(/AI로 만들기/);
-  await expect(page.getByTestId("ai-panel")).toHaveClass(/is-collapsed/);
+  // glass 도크는 칩 접힘(is-collapsed) 대신 본문 접힘(fold)을 쓴다 — 저장된 "1" 도
+  // fold 로 라우팅된다(openwiki/editor-ai-panel.md 2026-08-30).
+  await expect(page.getByTestId("ai-panel")).toHaveClass(/is-glass-folded/);
+  await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
+  // 접혀 있어도 입력줄은 살아 있다.
+  await expect(page.getByTestId("ai-input")).toBeVisible();
 
   await entry.click();
 
-  await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-collapsed/);
+  await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-glass-folded/);
   await expect(page.getByTestId("ai-input")).toBeFocused();
   await expect(page.getByTestId("ai-authoring-examples")).toBeVisible();
   await expect(page.locator("[data-testid^='ai-authoring-example-']")).toHaveCount(6);
@@ -45,7 +50,9 @@ test("AI로 만들기에서 제공자와 여섯 저작 예제를 확인하고 �
   const composerBox = await page.getByTestId("ai-command-bar").boundingBox();
   expect(examplesBox).not.toBeNull();
   expect(composerBox).not.toBeNull();
-  expect(examplesBox!.y + examplesBox!.height).toBeLessThanOrEqual(composerBox!.y);
+  // glass 는 입력줄이 카드 **맨 위**다(order: -1) — 대화·예제가 그 아래로 열린다.
+  // 접힌 한 줄이 그 자리에 남아 있어야 클릭 없이 바로 타이핑할 수 있다.
+  expect(composerBox!.y + composerBox!.height).toBeLessThanOrEqual(examplesBox!.y);
   await page.screenshot({
     path: path.join(EVIDENCE, "authoring-entry-and-provider.png"),
     animations: "disabled",
