@@ -473,6 +473,11 @@
     width: 100%;
   }
 
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .database-modal-body .db-parity-form select {
+    padding-right: 24px;
+  }
+
   .database-modal-body .db-parity-form code {
     align-items: center;
     display: flex;
@@ -619,6 +624,11 @@
     min-height: 32px;
     padding: 4px 8px;
     width: 100%;
+  }
+
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .database-modal-body .db-common-event-editor select {
+    padding-right: 24px;
   }
 
   .database-modal-body .db-common-event-editor .btn {

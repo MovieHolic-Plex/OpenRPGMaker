@@ -42,6 +42,12 @@
   width: 100%;
 }
 
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 4px 로 덮어 글자가 화살표를 덮는다. */
+.tileset-ai-question-control select,
+.tileset-ai-inline-field select {
+  padding-right: 24px;
+}
+
 .database-modal-dirty-prompt-region {
   min-width: 0;
 }

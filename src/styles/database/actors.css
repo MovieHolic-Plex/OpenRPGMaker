@@ -696,6 +696,11 @@
     padding: 3px 8px;
   }
 
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .oprn-record-actors .actor-classic-sheet select {
+    padding-right: 24px;
+  }
+
   .oprn-record-actors .actor-classic-sheet input[type="checkbox"] {
     accent-color: var(--accent);
     height: 18px;
