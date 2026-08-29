@@ -143,8 +143,13 @@ test.describe("조수 변경 카드 + 넓은 비교 뷰어", () => {
 
     await bootEditor(page);
 
-    // 복원된 대화는 추가 조작 없이 보여야 한다 — 이전엔 패널이 is-glass-idle 로 남아
-    // .ai-glass-log 가 display:none 이라 복원된 대화가 보이지 않았다.
+    // glass 는 접힌 입력줄로 부팅한다(2026-08-30). 셰브론 한 번으로 본문을 펼친다.
+    await expect(page.getByTestId("ai-panel")).toHaveClass(/is-glass-folded/);
+    await page.getByTestId("ai-collapse").click();
+    await expect(page.getByTestId("ai-panel")).not.toHaveClass(/is-glass-folded/);
+
+    // 펼친 뒤 복원된 대화는 추가 조작 없이 보여야 한다 — 이전엔 패널이 is-glass-idle 로
+    // 남아 .ai-glass-log 가 display:none 이라 복원된 대화가 보이지 않았다.
     const userRow = page.getByTestId("ai-command-row-user").first();
     await expect(userRow).toBeVisible({ timeout: 20_000 });
 

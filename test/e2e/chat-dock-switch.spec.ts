@@ -38,7 +38,16 @@ async function openEditor(page: Page): Promise<void> {
   if (await restore.isVisible().catch(() => false)) {
     await restore.click();
   }
+  await unfoldGlass(page);
   await expect(page.getByTestId("ai-command-bar")).toBeVisible();
+}
+
+/** glass 는 접힌 입력줄로 부팅한다 — 대화 본문을 보려면 셰브론으로 한 번 펼친다. */
+async function unfoldGlass(page: Page): Promise<void> {
+  const panel = page.getByTestId("ai-panel");
+  if (!(await panel.evaluate((n) => n.classList.contains("is-glass-folded")).catch(() => false))) return;
+  await page.getByTestId("ai-collapse").click();
+  await expect(panel).not.toHaveClass(/is-glass-folded/);
 }
 
 async function box(locator: Locator): Promise<Box> {
@@ -232,6 +241,23 @@ test.describe("chat dock switch", () => {
     for (const dock of ["float", "glass", "side"] as const) {
       await setDock(page, dock);
       await expect(page.getByTestId("ai-collapse")).toBeVisible();
+      // glass 의 셰브론은 칩 접힘이 아니라 본문 접힘(fold)이다 — 입력줄이 남으므로
+      // `ai-command-bar` 는 계속 보이고 `oprn:ai-panel-collapsed` 도 쓰지 않는다
+      // (openwiki/editor-ai-panel.md 2026-08-30).
+      if (dock === "glass") {
+        await page.getByTestId("ai-collapse").click();
+        await expect(panel).toHaveClass(/is-glass-folded/);
+        await expect(panel).not.toHaveClass(/is-collapsed/);
+        const foldedBox = await box(panel);
+        expect(foldedBox.width * foldedBox.height).toBeLessThan(canvasBox.width * canvasBox.height * 0.2);
+        // 접힌 카드는 같은 자리(좌상단 12px 앵커)에 남는다 — 좌하단으로 내려가지 않는다.
+        expect(foldedBox.y - canvasBox.y).toBeLessThan(40);
+        await expect(page.getByTestId("ai-command-bar")).toBeVisible();
+        await page.getByTestId("ai-collapse").click();
+        await expect(panel).not.toHaveClass(/is-glass-folded/);
+        await assertInputUsable(page, `restored ${dock} ok`);
+        continue;
+      }
       await page.getByTestId("ai-collapse").click();
       await expect(panel).toHaveClass(/is-collapsed/);
       await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible();

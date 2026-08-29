@@ -46,8 +46,10 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-function renderPanel(): FakeElement {
-  return renderWithFakeDom(() => renderAiChatPanel());
+// 칩 접힘(`is-collapsed`)은 side·float 축이다 — glass 는 입력줄을 남기는 fold 로 갈라졌다
+// (test/aiGlassFold.test.ts).
+function renderPanel(dock: "glass" | "side" | "float" = "side"): FakeElement {
+  return renderWithFakeDom(() => renderAiChatPanel({ getChatDock: () => dock }));
 }
 
 describe("패널 접기", () => {
