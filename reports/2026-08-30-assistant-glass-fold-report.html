@@ -151,7 +151,7 @@
   </figure>
 </div>
 
-<p class="meta">스크린샷의 대화는 제품의 복원 경로(<code>oprn:ai-conversations</code>)로 심은 16턴 픽스처다. 회색 띠로 보이는 줄들은 <code>ai-turn-group is-prior-turn is-collapsed</code> — 복원된 지난 턴을 10px 요약 줄로 접어 두는 기존 렌더링이며 fold 와 무관하다.</p>
+<p class="meta">스크린샷의 대화는 제품의 복원 경로(<code>oprn:ai-conversations</code>)로 심은 16턴 픽스처다. 위 <b>펼침</b> 캡처에서 회색 띠로 보이는 줄들은 지난 턴 요약이며, <a href="#squash">9절</a>에서 별건 결함으로 확인해 고쳤다.</p>
 
 <h2>3. 설계</h2>
 
@@ -266,10 +266,44 @@
   <tr><td><code>openwiki/editor-ai-panel.md</code></td><td>맨 위 항목 추가 + 2026-08-27 항목에 "본문 접힘만 되살았다" 명시</td></tr>
 </table>
 
-<h2>8. 남는 것</h2>
+<h2 id="squash">9. 보고서 캡처에서 발견한 별건 결함 — 지난 턴이 10px 회색 띠로 눌린다</h2>
+
+<p>위 <b>펼침</b> 캡처를 감독이 짚었다. 대화 영역에 내용 없는 회색 띠가 줄줄이 생긴 것으로 보였고, "예전 채팅을 불러오지 못해 빈 layout 으로 채워지는 것인가" 하는 의심이 나왔다. <b>불러오기 실패가 아니다.</b> DOM 에는 요약 글자가 정상적으로 들어 있었고(<code>▸ 0번째 요청 — 마을 중앙에 광장을 만들고 길을 이어줘</code>), 그룹이 자기 자식을 잘라내고 있었다.</p>
+
+<div class="shots">
+  <figure>
+    <img src="assets/glass-fold/turngroup-glass-before.png" alt="고치기 전 — 지난 턴이 내용 없는 회색 띠로 눌려 있다">
+    <figcaption><b>고치기 전</b><br>그룹 15개가 전부 <code>h=10px</code>. 안에 든 요약 버튼은 35px 인데 잘려 글자가 사라졌다.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/glass-fold/turngroup-glass-after.png" alt="고친 뒤 — 지난 턴이 읽히는 한 줄 요약으로 나온다">
+    <figcaption><b>고친 뒤</b><br>그룹 45px. <code>▸</code> 어포던스와 요약 글자가 읽히고, 넘치는 만큼 로그가 스크롤한다.</figcaption>
+  </figure>
+</div>
+
+<h3>원인</h3>
+<p><code>.ai-chat-log</code> 는 <code>display: flex; flex-direction: column</code> 스크롤러이고(<code>03-three-tier-ia.css:276</code>) <code>.ai-turn-group</code> 은 그 flex 아이템이다. flex 아이템의 자동 최소 크기(<code>min-height: auto</code>)는 <code>overflow: visible</code> 일 때만 콘텐츠 크기로 해석되는데, <code>.ai-turn-group</code> 의 <code>overflow: hidden</code>(모서리 클리핑용)이 그 값을 <b>0</b> 으로 떨어뜨린다. 그래서 로그가 넘치는 순간 기본 <code>flex-shrink: 1</code> 이 결손 전부를 이 그룹들에 몰아넣는다. <code>overflow: visible</code> 인 형제(<code>.ai-day-divider</code> 등)는 한 픽셀도 줄지 않았다.</p>
+
+<pre><span class="c">/* 고침 — 로그는 스크롤러이므로 자식은 줄지 말고 넘쳐야 한다 */</span>
+.ai-turn-group { <span class="k">flex</span>: 0 0 auto; <span class="c">/* overflow:hidden 이 자동 최소 크기를 0 으로 만들기 때문 */</span> }</pre>
+
+<table>
+  <tr><th>측정</th><th class="num">고치기 전</th><th class="num">고친 뒤</th></tr>
+  <tr><td>눌린 자식 수 (glass)</td><td class="num">15 / 18</td><td class="num">0 / 18</td></tr>
+  <tr><td>눌린 자식 수 (side)</td><td class="num">15 / 18</td><td class="num">0 / 18</td></tr>
+  <tr><td>그룹 높이 vs 내용</td><td class="num">10px / 43px</td><td class="num">45px / 45px</td></tr>
+  <tr><td>로그 <code>scrollHeight</code></td><td class="num">642px (내용이 눌려 축소)</td><td class="num">1,161px (자연 높이 + 스크롤)</td></tr>
+</table>
+
+<div class="callout">
+  <p><b>fold 와 무관한 선행 결함이다.</b> 원인 규칙 둘 다 도크 조건이 없는 전역 선택자이고, <code>side</code> 도크(이 브랜치가 한 줄도 건드리지 않은 도크)에서 똑같이 15/18 이 눌렸다. 대화가 로그 높이를 넘기는 순간부터 발생하므로 복원된 대화뿐 아니라 <b>길어진 실시간 대화에서도</b> 나타난다.</p>
+  <p>브라우저 레이아웃 결과라 fakeDom 단위 테스트로는 잡히지 않는다. CSS 원문 계약으로 잠갔다 — <code>test/aiTurnGroupSquash.test.ts</code>(선례 <code>test/aiGlassPanelWidth.test.ts</code>).</p>
+</div>
+
+<h2>10. 남는 것</h2>
 <ul>
   <li><code>qa-db-ai-dock.spec.ts:20</code> 과 <code>editor-ai-authoring-entry.spec.ts</code> 의 선행 결함은 이 변경 범위 밖이다. 각각 Database 탭 가시성과 사라진 <code>.editor-statusbar</code> 문제다.</li>
-  <li>복원된 지난 턴이 10px 요약 줄로 접혀 보이는 렌더링(<code>is-prior-turn is-collapsed</code>)은 복원 경로의 기존 동작이다. 읽기 쉬운지는 별개 판단거리다.</li>
+  <li>지난 턴을 <b>전부</b> 접어 두는 것이 맞는 기본값인지는 별개 판단거리다. 지금은 새 사용자 턴마다 직전 턴이 접히므로 16턴 대화는 접힌 요약 15줄 + 펼친 마지막 턴이 된다.</li>
 </ul>
 
 <footer>

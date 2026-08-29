@@ -151,6 +151,15 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-s);
   display: flex;
+  /* `flex: 0 0 auto` 가 없으면 지난 턴 요약이 10px 회색 띠로 눌린다.
+     `.ai-chat-log` 는 column flex 컨테이너이고(03-three-tier-ia.css:276) 이 그룹은
+     flex 아이템이다. flex 아이템의 자동 최소 크기는 `overflow: visible` 일 때만 콘텐츠
+     크기로 잡히는데, 바로 아래 `overflow: hidden` 이 그 값을 **0** 으로 떨어뜨린다.
+     그래서 로그가 넘칠 때 기본 `flex-shrink: 1` 이 결손을 전부 이 그룹들에 몰아
+     35px 짜리 요약 버튼을 품은 그룹이 10px 로 눌리고 글자가 잘려 사라졌다
+     (실측: 그룹 h=10 / scrollHeight=43, 15/18 자식이 눌림, glass·side 양쪽).
+     로그는 스크롤러이므로(`overflow: auto`) 자식은 줄지 말고 넘쳐야 맞다. */
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 4px;
   margin: 4px 0;
