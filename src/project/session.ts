@@ -58,6 +58,8 @@ export type PictureState = {
   readonly durationMs?: number;
 };
 
+const pendingPictureMountTransitions = new WeakSet<PictureState>();
+
 export type ActorRowPosition = "front" | "back";
 
 export type RuntimeFollower = {
@@ -710,8 +712,18 @@ export function clearAudioState(session: PlaySession): void {
   session.audio = {};
 }
 
-export function showPictureState(session: PlaySession, picture: PictureState): void {
+export function showPictureState<T extends PictureState>(
+  session: { pictures: Record<string, T> },
+  picture: T,
+): void {
   session.pictures[picture.pictureId] = picture;
+  if ((picture.durationMs ?? 0) > 0) pendingPictureMountTransitions.add(picture);
+}
+
+export function takePendingPictureMountTransition(picture: PictureState): boolean {
+  const pending = pendingPictureMountTransitions.has(picture);
+  pendingPictureMountTransitions.delete(picture);
+  return pending;
 }
 
 export function erasePictureState(session: PlaySession, pictureId: string): void {

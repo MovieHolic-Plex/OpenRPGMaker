@@ -1,6 +1,6 @@
 import { TILE_SIZE } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
-import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
+import { takePendingPictureMountTransition, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { M2RuntimeState } from "@/project/sessionRuntimeTypes"
 import type { RuntimeEventView } from "@/project/runtimeEventState"
@@ -97,6 +97,8 @@ export interface RuntimeStateSnapshot {
 export type RuntimeDomOverlayOptions = {
   readonly qaInstrumentation?: boolean;
   readonly playResolution?: PlayResolution;
+  /** Test seam for deterministic picture tween timing. */
+  readonly pictureNow?: () => number;
   /** Test seam for proving resize reads are cached outside marker write batches. */
   readonly stageSizeProvider?: (resolution: PlayResolution) => PlayResolution;
   /** Test seam for counting marker write operations without depending on DOM internals. */
@@ -111,6 +113,7 @@ export class RuntimeDomOverlay {
   private readonly playResolution: PlayResolution;
   private readonly stageSizeProvider: (resolution: PlayResolution) => PlayResolution;
   private readonly onMarkerWrite: ((marker: HTMLElement) => void) | undefined;
+  private readonly pictureNow: () => number;
   private stageBounds: PlayResolution;
   private pictureRafId = 0;
 
@@ -122,6 +125,7 @@ export class RuntimeDomOverlay {
     this.playResolution = options.playResolution ?? { width: 320, height: 240 };
     this.stageSizeProvider = options.stageSizeProvider ?? ((resolution) => resolution);
     this.onMarkerWrite = options.onMarkerWrite;
+    this.pictureNow = options.pictureNow ?? nowMs;
     this.stageBounds = this.qaInstrumentation
       ? this.stageSizeProvider(this.playResolution)
       : this.playResolution;
@@ -348,6 +352,8 @@ export class RuntimeDomOverlay {
   ): void {
     const target = pictureTransformFromState(picture);
     let slot = this.pictureSlots.get(picture.pictureId);
+    // 슬롯이 이 호출에서 처음 만들어졌는지. 첫 표시는 트윈 분기 조건이 다르다(아래 주석).
+    const created = !slot;
     if (!slot) {
       const container = document.createElement("div");
       container.className = "picture-layer-item";
@@ -362,7 +368,7 @@ export class RuntimeDomOverlay {
         displayed: target,
         from: target,
         to: target,
-        startedAt: nowMs(),
+        startedAt: this.pictureNow(),
         durationMs: 0,
       };
       this.pictureSlots.set(picture.pictureId, slot);
@@ -370,12 +376,20 @@ export class RuntimeDomOverlay {
     this.syncPictureMedia(slot, picture, project);
     slot.container.style.zIndex = String(20 + pictureZIndex(picture.pictureId));
     const duration = picture.durationMs ?? 0;
-    if (duration > 0 && !pictureTransformsEqual(slot.displayed, target)) {
+    if (created && duration > 0 && takePendingPictureMountTransition(picture)) {
+      const from: PictureTransform = { ...target, opacity: 0 };
+      slot.from = from;
+      slot.to = target;
+      slot.startedAt = this.pictureNow();
+      slot.durationMs = duration;
+      slot.displayed = from;
+      applyPictureTransform(slot.container, from);
+    } else if (duration > 0 && !pictureTransformsEqual(slot.to, target)) {
       slot.from = slot.displayed;
       slot.to = target;
-      slot.startedAt = nowMs();
+      slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
-    } else if (duration <= 0) {
+    } else if (created || duration <= 0) {
       slot.from = target;
       slot.to = target;
       slot.durationMs = 0;
@@ -436,7 +450,7 @@ export class RuntimeDomOverlay {
 
   private stepPictureTweens(): boolean {
     let animating = false;
-    const now = nowMs();
+    const now = this.pictureNow();
     for (const slot of this.pictureSlots.values()) {
       if (slot.durationMs <= 0) continue;
       const progress = tweenProgress(now - slot.startedAt, slot.durationMs);

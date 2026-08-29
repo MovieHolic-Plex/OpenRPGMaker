@@ -1032,6 +1032,7 @@ export function showPictureBody(
     });
     const marker = el("div", {
       class: `page3-preview-picture-marker${url ? "" : " is-missing"}`,
+      dataset: { testid: "show-picture-preview-marker" },
     });
     marker.style.left = `${clampPct((px / 320) * 100)}%`;
     marker.style.top = `${clampPct((py / 240) * 100)}%`;
@@ -1039,8 +1040,9 @@ export function showPictureBody(
     // 프리뷰가 같은 순서로 걸어야 감독이 폼에서 본 것과 게임에서 보는 것이 일치한다.
     const previewScale = (parseInt(scale.value, 10) || 100) / 100;
     const previewRotation = parseInt(rotation.value, 10) || 0;
+    const previewOpacityPercent = intInRange(opacity, 100, 0, 100);
     marker.style.transform = `scale(${previewScale}) rotate(${previewRotation}deg)`;
-    marker.style.opacity = String((parseInt(opacity.value, 10) || 0) / 255);
+    marker.style.opacity = String(clampPct(previewOpacityPercent) / 100);
     if (url) {
       marker.append(
         el("img", {

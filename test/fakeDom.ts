@@ -346,9 +346,9 @@ export function documentListenerCount(type: string): number {
   return documentListeners[type]?.length ?? 0;
 }
 
-export function flushFakeAnimationFrames(timestamp = 0): void {
+export function flushFakeAnimationFrames(timestamp = 0, maxBatches = Number.POSITIVE_INFINITY): void {
   let batches = 0;
-  while (animationFrames.size > 0) {
+  while (animationFrames.size > 0 && batches < maxBatches) {
     batches += 1;
     if (batches > 1000) throw new Error("fake DOM animation frame queue did not settle");
     const frameIds = [...animationFrames.keys()];
