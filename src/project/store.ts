@@ -74,8 +74,8 @@ export type ProjectChangeAnnotation = {
   /** 호출자가 **이미 계산해 둔** 필드 단위 변경만 넘긴다. 여기서 diff 를 계산하지 않는다. */
   readonly fields?: readonly EditActivityField[];
   readonly eventId?: string;
-  /** 프로젝트 전체 교체 표시 — 프로젝트 단위 에디터 캐시가 무효화할 신호다. */
-  readonly projectSwitch?: true;
+  /** 프로젝트 전체 교체 표시 — true면 프로젝트 단위 에디터 캐시가 무효화되고, false면 명시적으로 제외된다. */
+  readonly projectSwitch?: boolean;
 };
 
 export type ProjectChangeDescriptor =
@@ -507,7 +507,7 @@ class ProjectStore {
     // The old draft key is removed only after the switch can no longer reject.
     persistEventDraftVaultNow(baseConfig.projectId);
     try {
-      this.emit({ scope: "project" });
+      this.emit({ scope: "project", projectSwitch: true });
     } catch (error) {
       log.error("Project listener failed after transactional switch", error);
     }
@@ -628,7 +628,7 @@ class ProjectStore {
         resetManualProjectCommitBaseline(this.current);
         this.dirtySinceLastPersist = false;
         this.syncProjectUrlBar();
-        this.emit({ scope: "project" });
+        this.emit({ scope: "project", projectSwitch: true });
         this.refreshSupabaseResourceCache();
         return { kind: "connected", source: "remote" };
       }
@@ -674,6 +674,7 @@ class ProjectStore {
       resetManualProjectCommitBaseline(this.current);
       this.dirtySinceLastPersist = false;
       this.syncProjectUrlBar();
+      // 같은 projectId의 원격 저장본을 다시 읽는 경로라 의도적으로 프로젝트 전환 표시를 하지 않는다.
       this.emit({ scope: "project" });
       this.refreshSupabaseResourceCache();
       return { kind: "reloaded", projectId: supabaseProjectConfigDraft().projectId, title: this.current.meta?.title ?? "" };

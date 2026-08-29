@@ -225,7 +225,7 @@ export async function applyProposedProject(
     diff,
     options.toolNames,
   );
-  if (options.resetProject === true) store.replaceProject(proposed, change);
+  if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false });
   else store.replace(proposed, { change });
   focusAcceptedAgentChanges(before, proposed);
   const commitInput: CommitLogInput = {
