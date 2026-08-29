@@ -61,6 +61,75 @@ describe("AI activity diagnostics", () => {
 
     expect(record.diagnostics).toEqual({ severity: "ok", kinds: [], messages: [], failedTools: [] });
   });
+  // 2026-08-29 실측: `run_interior_room_pipeline` 실패 3건의 진단이 전부 이 한 줄이었다.
+  //   run_interior_room_pipeline: 'run_interior_room_pipeline' 커밋 거부(무결성 오류)
+  // 커밋 거부 summary 는 어느 lint 가 터졌든 고정 문구라 그 줄만으로는 원인을 알 수 없다.
+  // 정작 원인(`시작 위치가 통행 불가 타일입니다: (10, 12)`)은 audit[].issues 에 이미 있었고,
+  // toolCalls 가 먼저 밋밋한 줄을 넣으면 audit 쪽 줄이 이름 중복으로 건너뛰어졌다.
+  it("커밋 거부의 실제 lint 메시지를 진단 한 줄에 싣는다", () => {
+    const record = buildAiActivityLogRecord({
+      channel: "chat",
+      instruction: "이 맵을 집으로 만들어라",
+      result: { ok: true, stoppedReason: "final" },
+      toolCalls: [{
+        name: "run_interior_room_pipeline",
+        args: { mapId: "map_gallery_main" },
+        ok: false,
+        summary: "'run_interior_room_pipeline' 커밋 거부(무결성 오류)",
+      }],
+      audit: [{
+        kind: "tool",
+        name: "run_interior_room_pipeline",
+        args: { mapId: "map_gallery_main" },
+        ok: false,
+        summary: "'run_interior_room_pipeline' 커밋 거부(무결성 오류)",
+        issues: ["시작 위치가 통행 불가 타일입니다: (10, 12)"],
+        at: "2026-08-29T09:32:41.367Z",
+      }],
+    });
+
+    const message = record.diagnostics.messages.find((entry) => entry.startsWith("run_interior_room_pipeline:"));
+    expect(message, `messages: ${JSON.stringify(record.diagnostics.messages)}`).toBeDefined();
+    // 핵심: 좌표까지 그대로 남아야 한다. 이게 없으면 코드를 역추적해야 한다.
+    expect(message).toContain("시작 위치가 통행 불가 타일입니다: (10, 12)");
+    // 도구 이름과 원래 summary 도 유지한다.
+    expect(message).toContain("커밋 거부");
+  });
+
+  it("issue 가 많으면 앞 3건만 싣고 나머지는 개수로 알린다 — 요약이 로그가 되면 안 된다", () => {
+    const record = buildAiActivityLogRecord({
+      channel: "chat",
+      instruction: "실내를 다시 지어줘",
+      result: { ok: true, stoppedReason: "final" },
+      audit: [{
+        kind: "tool",
+        name: "run_interior_room_pipeline",
+        args: {},
+        ok: false,
+        summary: "커밋 거부(무결성 오류)",
+        issues: ["첫째", "둘째", "셋째", "넷째", "다섯째"],
+        at: "2026-08-29T09:32:41.367Z",
+      }],
+    });
+
+    const message = record.diagnostics.messages[0]!;
+    expect(message).toContain("첫째");
+    expect(message).toContain("셋째");
+    expect(message).not.toContain("넷째");
+    expect(message).toContain("+2건");
+  });
+
+  it("issue 가 없는 실패는 예전 형식 그대로 남긴다", () => {
+    const record = buildAiActivityLogRecord({
+      channel: "chat",
+      instruction: "적을 만들어줘",
+      result: { ok: true, stoppedReason: "final" },
+      toolCalls: [{ name: "upsert_enemy", args: {}, ok: false, summary: "enemy.id is required" }],
+    });
+
+    expect(record.diagnostics.messages).toEqual(["upsert_enemy: enemy.id is required"]);
+  });
+
   it("문제 없는 턴은 ok로 분류한다", () => {
     const record = buildAiActivityLogRecord({
       channel: "chat",
