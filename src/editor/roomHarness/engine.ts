@@ -31,6 +31,63 @@ export function listRoomSessions(project: Project): readonly RoomSession[] {
   }));
 }
 
+/**
+ * 세션이 만든 맵에 플랜 원본을 남긴다 — 세션은 직렬화되지 않으므로 이것이 유일한 영속 흔적이다.
+ * `furnish_interior_space{mapId}` 가 프로젝트 재오픈 후에도 동작하는 근거(진단 근본원인 8).
+ */
+function stampRoomHarnessPlan(project: Project, mapId: string, kitId: string, plan: unknown): void {
+  const map = project.maps[mapId];
+  if (!map) return;
+  map.roomHarnessPlan = { kitId, plan: structuredClone(plan) };
+}
+
+/** mapId 로 살아 있는 세션 찾기(가장 마지막 것). 없으면 null. */
+export function findRoomSessionByMapId(project: Project, mapId: string): RoomSession | null {
+  const matches = listRoomSessions(project).filter((session) => session.mapId === mapId);
+  return matches.length > 0 ? matches[matches.length - 1]! : null;
+}
+
+/**
+ * mapId 로 세션을 확보한다 — 살아 있으면 그대로, 없으면 맵에 남은 `roomHarnessPlan` 으로 재수립한다.
+ *
+ * 재수립 세션은 checkpoints 가 비어 있다(과거 레이어 스냅샷은 메모리에만 있었으므로 복원 불가).
+ * 방 단위 재시공에는 plan + 현재 맵만 있으면 충분하다.
+ */
+export function ensureRoomSessionForMap(project: Project, mapId: string): RoomSession {
+  const existing = findRoomSessionByMapId(project, mapId);
+  if (existing) return existing;
+  const map = project.maps[mapId];
+  if (!map) {
+    throw new ToolError(`map 없음: ${mapId} — get_project_summary 로 유효한 맵 id 를 확인하세요`, {
+      code: "map-not-found",
+      mapId,
+    });
+  }
+  const stamped = map.roomHarnessPlan;
+  if (!stamped) {
+    throw new ToolError(
+      `맵 ${mapId} 는 방 하네스로 시공된 맵이 아닙니다 — 방 단위 재시공 대신 `
+        + `fill_region / tile_erase / place_props 로 직접 편집하세요.`,
+      { code: "invalid-args", mapId },
+    );
+  }
+  const kit = requireKit(stamped.kitId);
+  kit.ensureHarness(project);
+  const checklist: RoomSession["checklist"] = Object.fromEntries(kit.buildOrder.map((layer) => [layer, "done"]));
+  const session: RoomSession = {
+    id: `room_${stamped.kitId}_${mapId}_restored`,
+    kitId: stamped.kitId,
+    plan: stamped.plan,
+    checklist,
+    mapId,
+    log: [`[restore] ${mapId} 플랜을 맵에서 복원했습니다(세션 미보존)`],
+    checkpoints: [],
+    lockedRoomIds: [],
+  };
+  saveSession(project, session);
+  return session;
+}
+
 function warningIssue(session: RoomSession, layer: string, message: string): RoomHarnessIssue {
   const coordinate = message.match(/\((-?\d+),\s*(-?\d+)\)/);
   return {
@@ -58,6 +115,44 @@ function requireKit(kitId: string) {
   return kit;
 }
 
+/** 맵의 저작량(칠한 타일 수·이벤트 수) — 폐기 경고에 실수치를 싣기 위한 측정. */
+function measureMapAuthoring(map: { lowerTiles: number[]; upperTiles: number[]; events: unknown[] }): {
+  paintedTiles: number;
+  events: number;
+} {
+  const painted = (tiles: number[]): number => tiles.reduce((n, tile) => (tile > 0 ? n + 1 : n), 0);
+  return { paintedTiles: painted(map.lowerTiles) + painted(map.upperTiles), events: map.events.length };
+}
+
+/**
+ * **기존 맵 무음 교체 차단** (2026-08-29 modify 진단 근본원인 1).
+ *
+ * `project.maps[mapId] = kit.createEmptyMap(plan)` 은 존재 검사가 없었다. 실측: 타일 300칸 +
+ * 이벤트 1개가 있는 20×15 맵에 같은 mapId 로 `start_interior_room_session` 을 걸면
+ * `ok:true` / issues 0 / warnings 0 으로 16×13 빈 방이 되고 저작물이 사라졌다.
+ * `create_map`(mapTools.ts) · `build_castle` · `author_village` 는 전부 `map-exists` 가드가 있는데
+ * 이 경로만 없었다.
+ *
+ * `replaceExisting:true` 를 명시하면 통과시키되 무엇을 버렸는지 실수치로 경고에 남긴다.
+ */
+function guardExistingMap(project: Project, mapId: string, args: Record<string, unknown>): string[] {
+  const existing = project.maps[mapId];
+  if (!existing) return [];
+  if (args.replaceExisting !== true) {
+    throw new ToolError(
+      `이미 존재하는 맵입니다: ${mapId} — 기존 실내/방 맵을 고치려면 그 맵을 대상으로 `
+        + `furnish_interior_space / fill_region / tile_erase / place_props 를 쓰세요. `
+        + `정말 새 방이 필요하면 다른 mapId 를 쓰고, 기존 맵을 버리는 파괴적 재시공이면 replaceExisting:true 를 명시하세요.`,
+      { code: "map-exists", mapId },
+    );
+  }
+  const measured = measureMapAuthoring(existing);
+  return [
+    `기존 맵 ${mapId}(${existing.width}×${existing.height}, 칠한 타일 ${measured.paintedTiles}칸, `
+      + `이벤트 ${measured.events}개)를 폐기하고 새 방으로 교체했습니다 — replaceExisting:true 로 요청됨.`,
+  ];
+}
+
 /** 멀티턴 세션 시작 — 빈 맵 + 체크리스트 생성. */
 export function startRoomSession(project: Project, kitId: string, args: Record<string, unknown>): ToolExecResult {
   const kit = requireKit(kitId);
@@ -68,10 +163,12 @@ export function startRoomSession(project: Project, kitId: string, args: Record<s
   const checklist: RoomSession["checklist"] = Object.fromEntries(
     kit.buildOrder.map((l) => [l, l === "plan" ? "done" : "open"]),
   );
+  const replaceWarnings = guardExistingMap(project, mapId, args);
   const map = kit.createEmptyMap(plan);
   project.maps[mapId] = map;
+  stampRoomHarnessPlan(project, mapId, kit.kitId, plan);
   registerMapInTree(project, mapId);
-  const startWarnings = reconcilePlayerStart(project, mapId);
+  const startWarnings = [...replaceWarnings, ...reconcilePlayerStart(project, mapId)];
   const session: RoomSession = {
     id: sessionId,
     kitId: kit.kitId,
@@ -92,7 +189,9 @@ export function startRoomSession(project: Project, kitId: string, args: Record<s
   saveSession(project, session);
   return {
     summary: `${kit.kitId} 세션 ${sessionId} 시작 · map=${mapId}`,
-    data: { sessionId, kitId: kit.kitId, plan, checklist, buildOrder: kit.buildOrder, nextLayer: kit.buildOrder.find((l) => l !== "plan") ?? null },
+    // mapId 를 data 에 명시한다 — 완료 게이트(workItemOutcome.MAP_CREATING_TOOLS)가 세션 시작을
+    // 맵 생성으로 세면서 어느 맵인지 알아야 한다.
+    data: { sessionId, kitId: kit.kitId, mapId, plan, checklist, buildOrder: kit.buildOrder, nextLayer: kit.buildOrder.find((l) => l !== "plan") ?? null },
     ...(startWarnings.length > 0 ? { warnings: startWarnings } : {}),
   };
 }
@@ -281,7 +380,8 @@ export function advanceRoomBuild(project: Project, sessionId: string, forceLayer
   // 마지막 레이어까지 끝난 시점에만 보정한다. 시작 시점(빈 맵)에는 통행 가능한 칸이 없어
   // 착지점을 옮길 곳이 없고, 중간 레이어에서 옮기면 다음 레이어가 그 칸을 다시 막을 수 있다.
   const reconcileWarnings = nextLayer === null ? reconcileMapReplacement(project, session.mapId) : [];
-  const warnings = [...result.warnings, ...reconcileWarnings];
+  // 교체 가드 경고(#262)까지 합친다 — 기존 맵을 덮어썼다는 사실이 결과에 남아야 한다.
+  const warnings = [...replaceWarnings, ...result.warnings, ...reconcileWarnings];
   return {
     summary: result.summary,
     warnings,
@@ -305,14 +405,17 @@ export function runRoomPipeline(project: Project, kitId: string, args: Record<st
   } else {
     plan = kit.parsePlan(args);
   }
-  const result = kit.runPipeline(plan);
   const mapId = kit.mapIdOf(plan);
+  const replaceWarnings = guardExistingMap(project, mapId, args);
+  const result = kit.runPipeline(plan);
   project.maps[mapId] = result.map;
+  stampRoomHarnessPlan(project, mapId, kit.kitId, plan);
   registerMapInTree(project, mapId);
   // 멀티턴 경로(startRoomSession)에만 있던 보정을 원샷에도 건다. 이게 빠져 있어서
   // "이 맵을 집으로 만들어라" 가 `시작 위치가 통행 불가 타일입니다` 로 거부됐다(2026-08-29 실측).
   const reconcileWarnings = reconcileMapReplacement(project, mapId);
-  const warnings = [...result.warnings, ...reconcileWarnings];
+  // 교체 가드 경고(#262)까지 합친다 — 기존 맵을 덮어썼다는 사실이 결과에 남아야 한다.
+  const warnings = [...replaceWarnings, ...result.warnings, ...reconcileWarnings];
   return {
     summary: result.ok ? `${kit.kitId} 파이프라인 완료 ${mapId}` : `${kit.kitId} 파이프라인 이슈 ${result.warnings.length}`,
     warnings,

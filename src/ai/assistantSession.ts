@@ -8,6 +8,7 @@ import { getTool, runTool } from "@/editor/tools";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { stripContextFooter } from "@/ai/modifyIntent";
 import { store } from "@/project/store";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import {
@@ -132,6 +133,7 @@ import {
   verifyAuthoredBossPhases,
   verifyAuthoredQuestsPlayable,
   verifyCreatedMapsAuthored,
+  verifyTargetMapChanged,
   type BattlePhaseSimulation,
 } from "./workItemOutcome";
 
@@ -211,8 +213,8 @@ export interface HarnessSnapshot {
 
 type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 
-// 파괴적으로 간주하는 툴 이름.
-const DESTRUCTIVE_TOOLS = new Set(["remove_event", "remove_map", "reset_project"]);
+// 파괴성 판정은 approvalPolicy.isDestructiveOutcome 한 곳으로 모았다(이름 목록 + 결과 diff).
+// 여기 있던 3개짜리 지역 목록은 approvalPolicy 의 6개짜리 정본과 어긋나 있었다.
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
 // 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인)이 적용될 때 origin:user 로 확정된다
 // (적용 경로가 markSoftVocabApprovalsOnProject 를 부른다 — 승인 버튼은 없다).
@@ -1050,8 +1052,14 @@ export class AssistantSession {
     const userContent = await this.buildUserTurnContent(text);
     this.messages.push({ role: "user", content: userContent });
     this.pushAudit({ kind: "user", text, context: turnContext });
-    beginAssistantToolDomainTurn(text);
-    this.currentTurnToolDomains = computeActiveToolDomains(text);
+    // 의도 스캔 입력은 **사용자 발화로 한정한다.** `[컨텍스트]` footer 는 패널이 붙이는 기계 생성
+    // 텍스트인데 같은 문자열 채널에 실려 와, 맵 이름이 도메인 키워드로 오인됐다 — 실측 A/B:
+    // 같은 "여기 좀 고쳐줘" 가 맵 이름 "언덕" 일 때 35종, "호숫가 마을" 일 때 40종에
+    // start_interior_room_session·author_village 까지 열렸다(진단 근본원인 12).
+    // LLM 에 보내는 messages 와 implicitSpecFromContext 는 footer 를 포함한 원문을 그대로 쓴다.
+    const intentText = stripContextFooter(text);
+    beginAssistantToolDomainTurn(intentText);
+    this.currentTurnToolDomains = computeActiveToolDomains(intentText);
     this.currentTurnRequestText = text;
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
@@ -1134,10 +1142,19 @@ export class AssistantSession {
     onEvent({ type: "status", text: "플래너(main LLM)가 작업 분해를 판단 중…" });
     this.pushAudit({ kind: "status", text: "planner:start" });
     const maps = Object.values(this.ctx.project.maps);
+    // 맵 id 를 실어야 한다 — 이름만 있으면 열려 있지 않은 기존 맵을 지목할 방법이 없고,
+    // 플래너 프롬프트는 "건설/수정 지시는 목표 맵을 반드시 명시"를 요구한다(진단 근본원인 14).
+    const targetMapId = this.planTargetMapId(text) ?? this.contextOptions.currentMapId;
     const projectSummary = [
       `title=${this.ctx.project.meta?.title ?? ""}`,
       `maps=${maps.length}`,
-      ...maps.slice(0, 12).map((m) => `- ${m.name} ${m.width}x${m.height} events=${m.events?.length ?? 0}`),
+      ...maps
+        .slice(0, 12)
+        .map((m) =>
+          `- ${m.name} \`${m.id}\` ${m.width}x${m.height} events=${m.events?.length ?? 0}`
+          + (m.id === targetMapId ? " ← 현재 열린 맵(기본 작업 대상)" : ""),
+        ),
+      ...(targetMapId ? [`## Target map\n${targetMapId}`] : []),
     ].join("\n");
 
     let raw = "";
@@ -1215,7 +1232,9 @@ export class AssistantSession {
     }
 
     // new_plan | replan
-    this.workPlan = workPlanFromOrchestratorDecision(decision);
+    // 수정 요청이면 대상 맵 id 를 계획에 박아 매 스프린트 재주입한다 — footer 가 없는
+    // 자율 계속 턴에도 대상이 남아야 한다(진단 근본원인 14).
+    this.workPlan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
     const progress = summarizeWorkPlan(this.workPlan);
     this.pushAudit({
       kind: "status",
@@ -1227,6 +1246,17 @@ export class AssistantSession {
     });
     this.emitWorkPlan(onEvent);
     this.injectWorkPlanOrchestration();
+  }
+
+  /**
+   * 이 계획이 손볼 기존 맵 id. 신규 생성 요청이면 undefined 를 돌려 대상 고정을 하지 않는다.
+   * 우선순위: 요청문 footer 의 현재 맵 → 컨텍스트 옵션의 currentMapId.
+   */
+  private planTargetMapId(text: string): string | undefined {
+    if (!requestLikelyExpectsExistingChange(text)) return undefined;
+    const footerMapId = contextFooterMapId(text);
+    const candidate = footerMapId ?? this.contextOptions?.currentMapId;
+    return candidate && this.ctx.project.maps[candidate] ? candidate : undefined;
   }
 
   private emitWorkPlan(onEvent: (event: SessionEvent) => void): void {
@@ -1358,12 +1388,21 @@ export class AssistantSession {
    *  - 맵: 만들기만 하고 안 채운 맵이 없는지(2026-08-28 실측: create_map 성공 3초 만에 자동 완료 → 잔디 단색 맵 2장).
    *  - 보스 페이즈: 쓴 페이지가 simulate_battle 에서 실제로 발동했는지.
    *  - 퀘스트: lint 0 + walkthrough 로 씬을 완주하는지(2026-08-24 감사: 퀘스트 툴 호출 0회).
+   *  - 대상 맵: 수정 계획의 지목된 맵이 실제로 바뀌었는지(2026-08-29 modify 진단 근본원인 10:
+   *    새 맵을 만들어 시공하면 successTools 이름 매칭은 전부 통과하고 대상 맵은 그대로 남았다).
    */
   private outcomeGate(): WorkItemOutcomeGate {
     return () => {
       const project = this.getProposedProject();
       const maps = verifyCreatedMapsAuthored(project, this.turnItemCreatedMapIds);
       if (!maps.ok) return maps;
+      const targetMapId = this.workPlan?.targetMapId;
+      const changedTargetMaps =
+        targetMapId && proposalHasChangedMap(this.finalizeProposals(this.turnProposals), targetMapId)
+          ? [targetMapId]
+          : [];
+      const target = verifyTargetMapChanged(targetMapId, changedTargetMaps, this.turnItemCreatedMapIds);
+      if (!target.ok) return target;
       const phases = verifyAuthoredBossPhases(
         project,
         this.turnItemAuthoredTroopIds,
@@ -2499,10 +2538,12 @@ export class AssistantSession {
             args,
             summary: toolResult.summary,
             result: toolResult,
-            destructive: DESTRUCTIVE_TOOLS.has(name),
+            // 이름 목록이 아니라 결과 diff 로 파괴성을 본다 — 기존 맵을 교체하거나 이벤트를 지운
+            // 호출은 이름이 생성계여도 승인 카드를 거친다(진단 근본원인 9).
+            destructive: isDestructiveOutcome(name, args, toolResult.diff),
             requiresApproval:
               RULE_TOOLS.has(name)
-              || DESTRUCTIVE_TOOLS.has(name)
+              || isDestructiveOutcome(name, args, toolResult.diff)
               || VOCABULARY_PROPOSAL_TOOLS.has(name)
               || softConfirm !== null,
           };

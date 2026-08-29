@@ -20,7 +20,14 @@ function parseDungeonPlan(args: Record<string, unknown>): DungeonRoomPlan {
   if (!DUNGEON_ROOM_THEMES.includes(theme)) {
     throw new ToolError(`theme must be ${DUNGEON_ROOM_THEMES.join("|")}`, { code: "invalid-args" });
   }
-  const mapId = String(args.mapId ?? `map_dungeon_${theme}`).trim();
+  // mapId 기본값(`map_dungeon_${theme}`)을 없앴다 — 같은 테마로 다시 호출하면 앞선 던전을
+  // 조용히 덮어썼다(2026-08-29 modify 진단). 대상 맵은 호출자가 반드시 지목한다.
+  const mapId = String(args.mapId ?? "").trim();
+  if (!mapId) {
+    throw new ToolError("mapId 를 지정하라 — 테마 기본 id 는 같은 테마의 기존 던전을 덮어쓴다", {
+      code: "invalid-args",
+    });
+  }
   const name = String(args.name ?? mapId).trim();
   const width = Math.max(8, Math.floor(Number(args.width ?? 26)));
   const height = Math.max(8, Math.floor(Number(args.height ?? 18)));

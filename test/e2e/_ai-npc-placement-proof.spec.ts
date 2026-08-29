@@ -75,8 +75,6 @@ test.describe("내부 AI NPC 배치", () => {
     await dismissLogin(page);
     await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
 
-    const restore = page.getByTestId("ai-collapsed-restore");
-    if (await restore.isVisible().catch(() => false)) await restore.click();
 
     const input = page.getByTestId("ai-input");
     await expect(input).toBeVisible({ timeout: 15_000 });

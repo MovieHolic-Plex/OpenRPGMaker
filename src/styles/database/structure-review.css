@@ -1,0 +1,196 @@
+/* 구조 검토 화면 — 조수가 배운 구조물을 사람이 확인/수정하는 별개 모달.
+ *
+ * 조수 띠와 무관하다. 「조수 CSS」 번들에 얹혀 있었을 뿐이라 자기 파일로 나왔다 —
+ * 이름과 내용이 어긋난 번들은 다음 사람이 띠를 고치다 남의 화면을 깨뜨리게 만든다.
+ */
+
+.structure-review-window {
+  display: flex;
+  flex-direction: column;
+  height: min(86vh, 820px);
+  max-width: min(96vw, 1180px);
+  width: 96vw;
+}
+
+.structure-review-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.structure-review-header h2 {
+  flex: 0 0 auto;
+}
+
+.structure-review-name {
+  flex: 1 1 200px;
+}
+
+.structure-review-tags {
+  flex: 1 1 160px;
+}
+
+.structure-review-name,
+.structure-review-tags {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  min-width: 0;
+  padding: 4px 8px;
+}
+
+.structure-review-body {
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.structure-review-left {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow: auto;
+}
+
+.structure-review-grid {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  width: max-content;
+}
+
+.structure-review-grid-row {
+  display: flex;
+}
+
+.structure-review-grid-row.is-focused {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.structure-review-grid-ylabel {
+  color: var(--text-3);
+  flex: 0 0 26px;
+  font-size: 10px;
+  line-height: 34px;
+  text-align: center;
+}
+
+.structure-review-cell {
+  flex: 0 0 34px;
+  height: 34px;
+  image-rendering: pixelated;
+  position: relative;
+  width: 34px;
+}
+
+.structure-review-cell-upper {
+  height: 100%;
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.structure-review-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  margin: 0;
+}
+
+.structure-review-cards {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.structure-review-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.structure-review-card.is-excluded {
+  opacity: 0.45;
+}
+
+.structure-review-card-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.structure-review-include-label {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.structure-review-card-layer {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.structure-review-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.structure-review-thumb-item {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  margin: 0;
+}
+
+.structure-review-thumb {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  height: 32px;
+  image-rendering: pixelated;
+  width: 32px;
+}
+
+.structure-review-thumb-caption {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+.structure-review-meaning {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  padding: 4px 6px;
+  resize: vertical;
+}
+
+.structure-review-footer {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
+.structure-review-count {
+  color: var(--text-3);
+  flex: 1 1 auto;
+  font-size: 11px;
+}

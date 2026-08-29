@@ -1,0 +1,35 @@
+/* 데이터베이스 모달의 도킹 모드 — 조수와 무관하다.
+ *
+ * 「조수 CSS」 번들에 얹혀 있었을 뿐이라 자기 파일로 나왔다. `is-docked` 라는 이름을
+ * 조수 패널도 쓰고 있어서 조수 상태를 걷어낼 때 같이 지워질 뻔했다 — 이름이 겹치는
+ * 규칙을 남의 번들에 두면 정확히 이런 사고가 난다.
+ */
+
+.database-modal-backdrop.is-docked {
+  background: transparent !important;
+  padding: 0 !important;
+  place-items: stretch end;
+  pointer-events: none !important;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window {
+  /* `dvh` 를 모르는 브라우저용 폴백. 두 줄 다 있어야 하며, 순서가 뒤바뀌면 폴백이 이긴다. */
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  right: 0;
+  top: 0 !important;
+  left: auto !important;
+  width: 40vw !important;
+}
+
+.database-modal-backdrop.is-docked .database-modal-header {
+  cursor: default;
+}
+
+.database-modal-backdrop.is-docked .database-modal-maximize {
+  cursor: default;
+  opacity: 0.45;
+}

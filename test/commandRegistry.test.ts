@@ -101,7 +101,8 @@ describe("commandRegistry", () => {
       "layer-lower",
       "layer-upper",
       "layer-event",
-      "toggle-chat-dock",
+      // `toggle-chat-dock` 은 조수 띠와 함께 삭제됐다 — 배치가 하나뿐이라 토글할 대상이 없다.
+      // 부재는 아래 워크스페이스 명령 검사가 지킨다.
     ];
     expect(commands.filter((command) => requiredIds.includes(command.id)).map((command) => command.id).sort()).toEqual([...requiredIds].sort());
   });
@@ -121,11 +122,12 @@ describe("commandRegistry", () => {
       expect(ids).toContain(`workspace-panel-${panel.id}-right`);
     }
     expect(ids).not.toContain("workspace-panel-assistant-left");
-    expect(ids).toEqual(expect.arrayContaining([
-      "assistant-dock-glass",
-      "assistant-dock-side",
-      "assistant-dock-float",
-    ]));
+    // 조수 배치 명령 3종(`assistant-dock-{glass,side,float}`)과 도크 토글은 삭제됐다.
+    // 조수는 캔버스 우하단 띠 하나로 상주하므로 팔레트에서 옮길 곳이 없다 — 되살아나면
+    // 팔레트가 존재하지 않는 표면을 약속하는 셈이라 부재를 계약으로 못박는다.
+    for (const dead of ["assistant-dock-glass", "assistant-dock-side", "assistant-dock-float", "toggle-chat-dock"]) {
+      expect(ids, `${dead} 는 조수 띠에서 삭제된 명령이다`).not.toContain(dead);
+    }
   });
 
   it("공통 저작 작업 네 개가 명령 팔레트에도 정확히 한 번 등록된다", () => {

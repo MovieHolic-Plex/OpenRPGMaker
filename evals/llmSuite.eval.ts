@@ -15,6 +15,8 @@ const BASE_URL = process.env.VITE_LLM_API_URL ?? "https://example.invalid/v1";
 const MAX_TOOL_CALLS = Number(process.env.EVAL_MAX_TOOLCALLS ?? 15);
 const TASK_COUNT = Number(process.env.EVAL_TASKS ?? 4);
 const PER_TASK_TIMEOUT_MS = Number(process.env.EVAL_TASK_TIMEOUT_MS ?? 120000);
+/** 하드 실패 대상 — 수정 과제. GOLDEN_TASKS 앞머리에 있으므로 EVAL_TASKS 기본값에서도 항상 돈다. */
+const MODIFY_TASK_IDS = new Set(["road-fix", "npc-line-fix"]);
 
 function config(): AiConfig {
   return { baseUrl: BASE_URL, model: MODEL, apiKey: API_KEY, maxToolCalls: MAX_TOOL_CALLS, maxTokens: Number(process.env.EVAL_MAX_TOKENS ?? 4000) };
@@ -54,7 +56,12 @@ async function runTask(taskIndex: number): Promise<TaskOutcome> {
     tokens += result.usage?.total_tokens ?? 0;
     return result;
   };
-  const session = new AssistantSession(task.initialProject(), { config: config(), chat });
+  // 수정 과제는 "현재 열린 맵"이 곧 대상이다 — contextOptions 없이 돌리면 에디터와 다른 상황을 잰다.
+  const session = new AssistantSession(task.initialProject(), {
+    config: config(),
+    chat,
+    ...(task.contextOptions ? { contextOptions: task.contextOptions } : {}),
+  });
   try {
     const turn = await withTimeout(session.sendUserMessage(task.prompt), PER_TASK_TIMEOUT_MS);
     const project = session.getProposedProject();
@@ -121,5 +128,14 @@ describe.skipIf(!API_KEY)("evals — 실제 LLM 골든 스위트", () => {
     // 하네스 정상 동작 검증: 모든 태스크가 채점됐고, 최소 1개는 툴콜을 발생시켰다.
     expect(outcomes.length).toBe(count);
     expect(outcomes.some((outcome) => outcome.toolCalls > 0)).toBe(true);
+
+    // 수정 과제는 **하드 실패**다(2026-08-29 modify 진단 P4). 나머지 과제는 모델 역량 편차를
+    // 리포트로 남기지만, "고쳐 달랬는데 새로 만들었다"는 회귀는 이 스위트를 빨갛게 만들어야 한다.
+    // 맵 집합 불변 매처가 깨졌다는 것은 곧 신규 생성으로 우회했다는 뜻이다.
+    for (const outcome of outcomes.filter((entry) => MODIFY_TASK_IDS.has(entry.id))) {
+      const brokenInvariance = outcome.matchers.filter((matcher) => !matcher.passed && matcher.describe.startsWith("맵 집합 불변"));
+      expect(brokenInvariance.map((matcher) => matcher.describe), `${outcome.id}: 수정 요청에 새 맵을 만들었다`).toEqual([]);
+      expect(outcome.passed, `${outcome.id}: ${JSON.stringify(outcome.matchers)} err=${outcome.error ?? ""}`).toBe(true);
+    }
   });
 });

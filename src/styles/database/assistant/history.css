@@ -1,0 +1,72 @@
+/* 전체 기록 오버레이의 **내용** — 액션 줄 · 로그 마운트 · 내보내기 버튼.
+ *
+ * 기하(우측 520px 전면, `is-history-open`)는 shell.css 가 소유한다. 상태 5종이 거기 모여
+ * 있어야 같은 속성을 두 파일이 순서로 다투지 않는다.
+ *
+ * 내보내기는 스펙 §3 에서 띠 상시 노출을 잃고 이 화면의 액션으로 내려왔다 — 대화 로그를
+ * 파일로 뽑는 일은 지난 대화를 보고 있을 때 하는 일이다.
+ */
+
+.ai-history-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-1);
+  justify-content: flex-end;
+}
+
+/* 기록이 닫혀 있을 때 액션 줄은 문서에서 빠진다 — 유휴 56px 에 빈 줄을 남기지 않는다. */
+.ai-chat-panel:not(.is-history-open) .ai-history-actions {
+  display: none;
+}
+
+/* 빈 기록 안내. 기록이 **열려 있고 대화가 없을 때만** 보인다.
+ *
+ * 이것이 없으면 기록 오버레이가 전체 높이(실측 951px)짜리 빈 흰 판으로 열린다 — 게이트가
+ * 연속 공백 밴드 377px 를 두 번 잡은 자리다. 두 조건을 선택자에 함께 넣어 유휴·자람에서는
+ * 문서에서 빠지게 한다(유휴 56px 에 한 줄이 끼면 그 자체로 높이 계약이 깨진다). */
+.ai-history-empty {
+  display: none;
+}
+
+.ai-chat-panel.is-history-open[data-ai-conversation="empty"] .ai-history-empty {
+  color: var(--text-2);
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  padding: var(--space-3) var(--space-2);
+  text-align: center;
+}
+
+/* 로그 마운트. 기록에서는 전체 대화가 여기로 옮겨 붙으므로(TS `mountLog`) 남는 높이를
+ * 다 쓴다. 띠 안 휘발 로그와 달리 자체 상한을 두지 않는다 — 패널이 이미 전체 높이다.
+ *
+ * 대화가 없으면 늘리지 않는다. `flex: 1` 을 그대로 두면 빈 로그가 남는 높이를 다 먹어
+ * 위 안내문과 아래 컴포저 사이에 그만큼의 공백이 생긴다(게이트가 잡은 두 밴드 중 하나). */
+.ai-history-log-mount {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.ai-chat-panel[data-ai-conversation="empty"] .ai-history-log-mount {
+  flex: 0 0 auto;
+}
+
+.ai-history-log-mount .ai-chat-log {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.ai-export-button {
+  font-size: 11px;
+  min-height: 28px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.ai-export-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}

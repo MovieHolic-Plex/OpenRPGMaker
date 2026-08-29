@@ -25,9 +25,15 @@ function boundedText(args: Record<string, unknown>, key: "prompt" | "title", max
 
 const resetProject: ToolDefinition = {
   name: "reset_project",
-  description: "현재 프로젝트 전체를 버리고 유효한 빈 프로젝트에서 다시 시작한다. 사용자가 새 프로젝트/처음부터/초기화/reset/start project를 명시할 때만 호출한다. 원시 Project JSON은 받지 않는다.",
+  // 설명에서 "처음부터/초기화" 같은 낚싯말을 뺐다(2026-08-29 modify 진단 근본원인 12).
+  // matchScore 는 요청 단어가 설명에 등장하면 점수를 주므로, "상점 재고를 초기화해줘"·"이 맵
+  // 처음부터 다시 칠해줘" 같은 부분 재작업 요청이 프로젝트 전체 폐기 툴을 끌어올렸다.
+  // 도메인에서 map 도 뺐다 — 맵 편집 도메인은 거의 매 턴 켜지므로 map 태그는 상시 노출과 같다.
+  // 진짜 신규 프로젝트 요청은 INTENT_KEYWORDS.system("새 프로젝트/새 게임/new project"…)이
+  // system 도메인을 열고 PINNED_TOOLS_BY_DOMAIN.system 이 노출을 보장한다.
+  description: "프로젝트 전체를 버리고 빈 프로젝트로 교체한다 — 지금까지 만든 모든 맵·이벤트·데이터베이스가 사라지며 되돌릴 수 없다. 지금까지 만든 것을 전부 버리고 완전히 새로 시작하겠다고 사용자가 분명히 요청한 경우에만 호출한다. 일부만 비우거나 되돌리는 요청에는 절대 쓰지 않는다. 원시 Project JSON은 받지 않는다.",
   mode: "write",
-  domains: ["system", "map"],
+  domains: ["system"],
   parameters: {
     type: "object",
     properties: {

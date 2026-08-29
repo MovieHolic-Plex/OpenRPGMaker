@@ -17,7 +17,7 @@
  * 서버는 이 스펙이 직접 띄우고(이미 떠 있으면 재사용) afterAll 에서 프로세스 트리를 죽인 뒤
  * 포트가 더 이상 연결을 받지 않는 것까지 확인한다.
  */
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { spawn, execFileSync } from "node:child_process";
 import { createConnection } from "node:net";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -252,12 +252,25 @@ async function pickVisibleRegion(page: Page, mapId: string): Promise<TurnPlan["r
   return rect as TurnPlan["rect"];
 }
 
-/** 채팅 도크를 접어 맵 캔버스(칩·마커)를 가리지 않게 한다 — 증거 스크린샷 가독성. */
-async function collapseChatDock(page: Page): Promise<void> {
-  const collapse = page.getByTestId("ai-collapse");
-  if (!(await collapse.isVisible().catch(() => false))) return;
-  await collapse.click();
-  await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible({ timeout: 10_000 });
+/**
+ * 조수 띠가 상태칩·고스트 마커를 가리지 않는지 잰다 — 증거 스크린샷 가독성.
+ *
+ * 예전에는 `collapseChatDock` 이 `ai-collapse` 로 도크를 접고 나서 찍었다. 띠에는 접힘이
+ * 없고(스펙 §1) 턴이 도는 동안은 `is-turn-running` 이 자람을 붙잡으므로 되돌릴 수도 없다.
+ * 그래서 "치운 뒤 찍는다" 대신 칩과 마커가 띠 밖에 있는지를 직접 잰다 — 가릴 수 있는
+ * 유일한 순간(자람 · 480px)에 재는 것이라 옛 접힘보다 강한 계약이다.
+ */
+async function assertStripClearsGhosts(page: Page, chip: Locator): Promise<void> {
+  const strip = await page.getByTestId("ai-panel").boundingBox();
+  expect(strip, "조수 띠가 마운트되지 않았다").toBeTruthy();
+  const covers = (box: { x: number; y: number; width: number; height: number } | null): number => {
+    if (!box) return 0;
+    const w = Math.max(0, Math.min(box.x + box.width, strip!.x + strip!.width) - Math.max(box.x, strip!.x));
+    const h = Math.max(0, Math.min(box.y + box.height, strip!.y + strip!.height) - Math.max(box.y, strip!.y));
+    return w * h;
+  };
+  expect(covers(await chip.boundingBox()), "조수 띠가 상태칩을 덮고 있다").toBe(0);
+  expect(covers(await page.locator(MARKER).first().boundingBox()), "조수 띠가 고스트 마커를 덮고 있다").toBe(0);
 }
 
 /** 브리지 턴을 시작하고 기다리지 않는다 — 애니메이션 중간 상태를 관찰해야 한다. */
@@ -300,7 +313,7 @@ test.describe("에이전트 고스트 순차 공개 + 상태칩", () => {
     expect(await chip.evaluate((node) => Boolean(node.parentElement?.querySelector("canvas")))).toBe(true);
     await expect(page.locator(MARKER)).not.toHaveCount(0, { timeout: 60_000 });
     expect(await page.locator(MARKER).first().evaluate((node) => Boolean(node.parentElement?.querySelector("canvas")))).toBe(true);
-    await collapseChatDock(page);
+    await assertStripClearsGhosts(page, chip);
     await expect(chip).toBeVisible();
     await expect(page.locator(MARKER).first()).toBeVisible();
     await page.screenshot({ path: path.join(EVIDENCE, "e2e-ghost-2.png"), animations: "disabled" });

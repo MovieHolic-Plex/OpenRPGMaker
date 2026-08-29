@@ -56,7 +56,6 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
   await page.addInitScript(() => {
     localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
     localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
-    localStorage.removeItem("rpg-zzu:ai-panel-collapsed");
     for (const key of ["rpg-zzu:editor-layout", "rpg-zzu:editor-layout:v2", "rpg-zzu:editor-layout:v3", "rpg-zzu:editor-layout:v4"]) {
       localStorage.removeItem(key);
     }
@@ -64,8 +63,6 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
   await page.goto("/?freshProject=1");
   await dismissChrome(page);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 40_000 });
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible().catch(() => false)) await restore.click();
   await expect(page.getByTestId("ai-input")).toBeVisible({ timeout: 20_000 });
 
   const before = await page.evaluate(() => {

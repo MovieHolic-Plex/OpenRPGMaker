@@ -18,8 +18,33 @@ export function inMapBounds(map: GameMap, x: number, y: number): boolean {
 // 지정 맵을 draft에서 조회(없으면 ToolError).
 export function requireMap(project: Project, mapId: string): GameMap {
   const map = project.maps[mapId];
-  if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${mapId}`, { code: "map-not-found", mapId });
+  if (!map) {
+    throw new ToolError(
+      `맵을 찾을 수 없습니다: ${mapId} — list_maps 로 실제 맵 id 를 확인하세요(새 맵을 만들어 우회하지 말 것).`,
+      { code: "map-not-found", mapId },
+    );
+  }
   return map;
+}
+
+/**
+ * 새 맵 id 가 비어 있는지 확인한다. 모든 맵 생성 경로가 **같은 문구**를 쓴다
+ * (2026-08-29 modify 진단 근본원인 15). 옛 메시지는 툴마다 달랐고("Map already exists",
+ * "이미 존재하는 맵 id입니다") 전부 "그러면 다음엔 뭘 해야 하는가"를 말해 주지 않아, 모델이
+ * `map_town_2` 처럼 id 를 바꿔 **새 맵을 하나 더 만드는** 우회로 빠졌다. 수정 요청에서는
+ * 그 우회가 곧 사용자가 본 증상(원본은 그대로, 새 맵이 생김)이다.
+ */
+export const MAP_ID_TAKEN_GUIDANCE =
+  "이 맵을 고치려면 새로 만들지 말고 그 맵을 대상으로 get_map_region 으로 현재 상태를 본 뒤 "
+  + "paint_tiles/fill_region/tile_erase/place_props/move_event 를 쓰세요. "
+  + "id 뒤에 숫자를 붙여 새 맵을 만드는 우회는 금지입니다.";
+
+export function mapIdTakenMessage(mapId: string): string {
+  return `이미 존재하는 맵 id입니다: ${mapId} — ${MAP_ID_TAKEN_GUIDANCE}`;
+}
+
+export function assertMapIdAvailable(project: Project, mapId: string): void {
+  if (project.maps[mapId]) throw new ToolError(mapIdTakenMessage(mapId), { code: "map-exists", mapId });
 }
 
 // lower 타일 지정 + 같은 칸 upper 비움(emberQuest setLower 관례: 지면 교체 시 상단 장식 제거).

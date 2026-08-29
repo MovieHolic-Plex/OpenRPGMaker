@@ -127,10 +127,11 @@ describe("기본 모드 코치마크", () => {
     expect(storage.getItem(COACH_MARKS_SEEN_KEY)).toBe("1");
   });
 
-  it("AI 단계는 렌더 시 보이는 입력창, 커맨드 바, 복원 버튼 순으로 앵커를 고른다", () => {
+  // 세 번째 후보였던 `ai-collapsed-restore` 는 접힘 상태와 함께 사라졌다 — 띠는 항상 상주해
+  // 입력창이 늘 보이고, 폴백은 커맨드 바 하나로 충분하다.
+  it("AI 단계는 렌더 시 보이는 입력창, 커맨드 바 순으로 앵커를 고른다", () => {
     const input = appendAnchor("ai-input", { left: 1000, right: 1100, width: 100 });
     appendAnchor("ai-command-bar", { left: 800, right: 900, width: 100 });
-    appendAnchor("ai-collapsed-restore", { left: 600, right: 700, width: 100 });
 
     maybeStartBasicCoachMarks(storage);
     click("coach-mark-next");

@@ -261,6 +261,13 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "run_interior_room_pipeline",
     "advance_interior_room_build",
     "evaluate_interior_room",
+    // 실내 유일한 in-place 경로. 핀 없이는 상한 트림에서 밀려, 기존 실내 맵을 고치라는 요청에
+    // 모델 손에 "새 방을 시공하는" 세션 툴만 남았다(2026-08-29 modify 진단 근본원인 8).
+    "furnish_interior_space",
+    // list_interior_room_sessions 는 핀하지 않는다 — 핀이 이미 상한(40)을 넘겨 라운드로빈으로
+    // 배분되는 상태라, 핀을 하나 더 얹으면 tile 버킷 꼬리의 evaluate_interior_room 이 밀려난다
+    // (실측: test/regionIntentExposure.test.ts interior 보장 실패). 조회용이라 furnish_interior_space
+    // 설명이 mapId 로 바로 고치라고 안내하는 것으로 충분하고, 필요하면 find_tools 로 잡힌다.
     "fill_region",
     "build_wall",
     // door-transfer 가이드가 "문 시각 배치는 place_door" 라고 직접 가리키는 대표 도구다. 실내 하네스
@@ -292,9 +299,13 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "set_type_chart", "upsert_item", "upsert_enemy",
   ])],
   ["map", new Set([
-    "reset_project",
+    // reset_project 는 map 핀에서 뺐다 — "이 맵 처음부터 다시 칠해줘" 같은 부분 재작업 요청에
+    // 전체 초기화 툴이 손에 잡히는 미끼였다(2026-08-29 modify 진단 근본원인 13). system 도메인에만 남긴다.
     "author_village",
     "get_map_region", "show_map_region", "get_project_summary",
+    // 수정 요청에서 tile 도메인이 닫힌 턴에도 "지우기" 경로가 남아야 한다 — tile_erase 가 유일한
+    // 지우기 툴인데(clear_region 폐기) tile 핀에만 있어서 map 도메인만 열린 턴에는 사라졌다.
+    "tile_erase",
     // 영역 작업 transform/battle-trap/structure 가이드 대표 도구(2026-07-10 라이브 실측 수정).
     // 쿼터 트림이 핀 비용을 전 도메인에 분산하므로, 가이드가 안내하는 대표 도구는 핀으로 보장한다.
     "mirror_region", "set_encounter_table", "make_hunting_ground", "create_farm_plot",

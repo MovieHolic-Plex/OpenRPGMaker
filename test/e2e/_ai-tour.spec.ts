@@ -54,8 +54,6 @@ async function boot(page: Page, mode: "basic" | "expert" = "basic"): Promise<voi
     const btn = page.getByRole("button", { name: label }).first();
     if (await btn.isVisible().catch(() => false)) await btn.click().catch(() => undefined);
   }
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible().catch(() => false)) await restore.click();
   await expect(page.getByTestId("ai-input")).toBeVisible({ timeout: 20_000 });
 }
 
@@ -68,12 +66,11 @@ async function waitForTurn(page: Page, timeout = 180_000): Promise<void> {
 }
 
 /** 턴이 끝나면 패널이 접히는 경우가 있어 스크린샷 전에 항상 펼쳐 둔다. */
-async function ensurePanel(page: Page): Promise<Locator> {
-  const restore = page.getByTestId("ai-collapsed-restore");
-  if (await restore.isVisible().catch(() => false)) {
-    await restore.click();
-    await page.waitForTimeout(500);
-  }
+/**
+ * 스크린샷 대상 패널. 예전에는 접힘 복귀 알약을 눌러 펼쳤다 — 띠는 상주하므로 펼칠 것이
+ * 없다(스펙 §2). 그대로 돌려주고, 이름은 호출부가 많아 유지한다.
+ */
+function ensurePanel(page: Page): Locator {
   return page.getByTestId("ai-panel");
 }
 
@@ -109,29 +106,18 @@ test("① 첫 화면과 진입점", async ({ page }) => {
   if (await status.isVisible().catch(() => false)) await shot(status, "05-connection-status");
 });
 
-test("② 슬래시 스킬과 도구 목록", async ({ page }) => {
+test("② 도구 목록", async ({ page }) => {
   test.setTimeout(180_000);
   await boot(page);
 
-  await page.getByTestId("ai-input").fill("/");
-  await page.waitForTimeout(700);
-  const slash = page.getByTestId("ai-slash-list");
-  if (await slash.isVisible().catch(() => false)) await shot(page.getByTestId("ai-panel"), "06-slash-skills");
-
-  const viewAll = page.getByTestId("ai-slash-view-all");
-  if (await viewAll.isVisible().catch(() => false)) {
-    await viewAll.click();
-    const drawer = page.getByTestId("ai-skill-drawer");
-    if (await drawer.isVisible().catch(() => false)) {
-      await shot(drawer, "07-skill-palette");
-      await page.keyboard.press("Escape");
-    }
-  }
-
-  await page.getByTestId("ai-input").fill("");
-  const toolsBtn = page.getByTestId("ai-tools-browser");
-  if (await toolsBtn.isVisible().catch(() => false)) {
-    await toolsBtn.click();
+  // 원래 앞에 "슬래시 스킬" 절이 있었다 — 스킬 기능이 제품에서 빠지면서
+  // `ai-slash-list` / `ai-slash-view-all` / `ai-skill-drawer` 가 모두 사라졌다.
+  // 툴 브라우저 진입점도 `ai-tools-browser` 상시 버튼에서 ☰ 메뉴 항목으로 내려왔다.
+  await page.getByTestId("ai-command-menu-toggle").click();
+  await page.waitForTimeout(300);
+  const toolsItem = page.getByTestId("ai-command-menu-tools");
+  if (await toolsItem.isVisible().catch(() => false)) {
+    await toolsItem.click();
     const modal = page.getByTestId("tool-browser-modal");
     await expect(modal).toBeVisible({ timeout: 10_000 });
     await shot(modal, "08-tool-browser-basic");
@@ -142,6 +128,8 @@ test("② 슬래시 스킬과 도구 목록", async ({ page }) => {
       await shot(modal, "09-tool-browser-basic-all");
     }
     await page.getByTestId("tool-browser-close").click();
+  } else {
+    log("ABSENT ai-command-menu-tools");
   }
 });
 
@@ -169,13 +157,13 @@ test("④ 실제 대화 한 턴 — 도구로 프로젝트를 읽는다", async 
   await shot(page.getByTestId("ai-panel"), "13-chat-thinking");
 
   await waitForTurn(page);
-  await shot(await ensurePanel(page), "14-chat-answer");
+  await shot(ensurePanel(page), "14-chat-answer");
 
   const toolToggle = page.getByTestId("ai-tool-activity-toggle").first();
   if (await toolToggle.isVisible().catch(() => false)) {
     await toolToggle.click();
     await page.waitForTimeout(600);
-    await shot(await ensurePanel(page), "15-chat-tool-activity");
+    await shot(ensurePanel(page), "15-chat-tool-activity");
   }
   const quick = page.getByTestId("ai-quick-replies");
   if (await quick.isVisible().catch(() => false)) await shot(quick, "16-chat-quick-replies");
@@ -269,7 +257,7 @@ test("⑦ 전문가 모드 — 도구 목록과 하네스", async ({ page }) => 
   test.setTimeout(240_000);
   await boot(page, "expert");
   await shot(page, "26-expert-editor");
-  await shot(await ensurePanel(page), "27-expert-ai-panel");
+  await shot(ensurePanel(page), "27-expert-ai-panel");
 
   // 도구 목록·하네스는 툴바의 「더보기」 메뉴 안에 있다.
   const openMore = async (): Promise<void> => {
@@ -345,7 +333,7 @@ test("⑧ 캔버스에서 영역을 끌면 그 자리에 AI 팝오버", async ({
 
   // 선택 영역이 AI 패널의 문맥 칩으로 올라온다.
   const chip = page.getByTestId("ai-selection-chip");
-  if (await chip.isVisible().catch(() => false)) await shot(await ensurePanel(page), "36-selection-chip");
+  if (await chip.isVisible().catch(() => false)) await shot(ensurePanel(page), "36-selection-chip");
 });
 
 test("⑨ 이벤트 편집기의 AI 도우미", async ({ page }) => {

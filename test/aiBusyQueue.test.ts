@@ -63,7 +63,10 @@ describe("AI busy 입력 큐", () => {
     const queue = findByTestId(panel, "ai-pending-queue") as unknown as FakeElement & { hidden: boolean };
     expect(queue.hidden).toBe(true);
 
-    const css = readFileSync(resolve("src/styles/database/assistant-rising-overlay.css"), "utf8");
+    // `assistant-rising-overlay.css` 가 조수 띠 재편에서 `assistant/composer.css` 로 합쳐졌다.
+    // 대기 큐의 기반 규칙과 `[hidden]` 규칙이 **같은 파일**에 있으므로 이 한 장만 읽어도
+    // 캐스케이드가 온전하다 — 두 파일로 갈렸다면 이 방식으로는 거짓 통과가 난다.
+    const css = readFileSync(resolve("src/styles/database/assistant/composer.css"), "utf8");
     const window = new Window();
     try {
       const style = window.document.createElement("style");
@@ -88,7 +91,7 @@ describe("AI busy 입력 큐", () => {
         headers: { "Content-Type": "text/event-stream" },
       })));
     })));
-    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    const panel = renderAiChatPanel() as unknown as FakeElement;
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send") as unknown as HTMLElement;
     const queue = findByTestId(panel, "ai-pending-queue") as unknown as FakeElement & { hidden: boolean };

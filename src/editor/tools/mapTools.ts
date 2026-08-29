@@ -33,6 +33,8 @@ import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlo
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
 import {
+  MAP_ID_TAKEN_GUIDANCE,
+  assertMapIdAvailable,
   floodFillCells,
   inMapBounds,
   lineCells,
@@ -100,7 +102,7 @@ const createMap: ToolDefinition = {
     if (width < 3 || height < 3) throw new ToolError("맵 크기는 최소 3x3 이상이어야 합니다.");
     assertToolMapSize(width, height);
     const id = (args.id as string | undefined) ?? genId("map");
-    if (draft.maps[id]) throw new ToolError(`이미 존재하는 맵 id입니다: ${id}`, { code: "map-exists", mapId: id });
+    assertMapIdAvailable(draft, id);
     const size = width * height;
     const map: GameMap = {
       id,
@@ -145,7 +147,7 @@ const duplicateMap: ToolDefinition = {
     const source = requireMap(draft, args.mapId as string);
     const id = args.id as string;
     if (draft.maps[id] || findTreeNode(draft.mapTree, id)) {
-      throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${id}`, { code: "map-exists", mapId: id });
+      throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${id} — ${MAP_ID_TAKEN_GUIDANCE}`, { code: "map-exists", mapId: id });
     }
     const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : `${source.name} 복사`;
     const usedEventIds = new Set(Object.values(draft.maps).flatMap((map) => map.events.flatMap((event) => [event.id, ...(event.pages ?? []).map((page) => page.id)])));

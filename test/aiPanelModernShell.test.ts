@@ -34,7 +34,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
   store.replace(createBlankProject());
-  editorState.set({ currentMapId: null, selection: null, chatDock: "glass" });
+  editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
 });
@@ -56,12 +56,29 @@ describe("조수 패널 모던 셸", () => {
     expect(panel.dataset.aiConversation).toBe("empty");
   });
 
-  it("시작 블록은 예시 칩을 4개 준다 — 한 줄에 2개면 옆의 빈 폭이 그대로 남는다", () => {
+  /**
+   * 예시 칩은 **자람에서만** 4개다. 유휴에서는 0개여야 한다.
+   *
+   * 예전에는 렌더 직후 바로 4개를 셌다 — 시작 블록이 상주하던 시절의 계약이다. 조수 띠의
+   * 유휴는 56px 한 줄이라 칩 행이 들어갈 자리가 없고(스펙 §2), `refreshNextSteps` 가
+   * `risenNow` 가 아니면 블록을 비운다. 그래서 유휴 개수만 재면 "4개를 주는가" 라는 원래
+   * 질문이 아니라 "칩이 언제 뜨는가" 를 잘못 재게 된다. 두 상태를 함께 못박는다.
+   */
+  it("예시 칩은 유휴에 0개, 자람에 4개다 — 한 줄에 2개면 옆의 빈 폭이 그대로 남는다", () => {
     const panel = renderPanel();
-    const examples = findByTestId(panel, "ai-authoring-examples");
-    const chips = examples?.querySelectorAll(".ai-authoring-example-chip") ?? [];
 
-    expect(chips.length).toBe(4);
+    expect(findByTestId(panel, "ai-authoring-examples")).toBeNull();
+
+    // 입력 포커스가 자람을 켠다(`syncRisen` 의 `document.activeElement === input` 가지).
+    // fakeDom 의 `focus()` 는 activeElement 만 옮기고 이벤트를 쏘지 않아 둘 다 필요하다.
+    const input = findByTestId(panel, "ai-input") as FakeElement & { focus(): void };
+    input.focus();
+    input.dispatchEvent(new Event("focus"));
+
+    expect(panel.classList.contains("is-risen")).toBe(true);
+    const examples = findByTestId(panel, "ai-authoring-examples");
+    expect(examples).toBeTruthy();
+    expect(examples?.querySelectorAll(".ai-authoring-example-chip").length).toBe(4);
   });
 
   it("복원된 대화가 있으면 active 다 — 턴 행 testid 가 없다고 로그를 수집하면 안 된다", () => {

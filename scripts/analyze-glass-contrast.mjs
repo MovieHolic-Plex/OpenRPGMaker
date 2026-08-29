@@ -58,7 +58,14 @@ function backgroundOf(img, [x, y, w, h]) {
   return px[Math.floor(px.length * 0.75)];
 }
 
-/** 패널 뒤가 실제로 다채로운가(=맵이 그려졌는가). 단색이면 유리 판정이 무의미하다. */
+/**
+ * 패널 뒤가 실제로 다채로운가(=맵이 그려졌는가). 단색이면 유리 판정이 무의미하다.
+ *
+ * 조수 띠는 `backdrop-filter: none` · 불투명 흰 배경이므로 이 값은 **판정에 쓰이지 않는다**
+ * (게이트는 대비뿐이다). 그래도 재는 이유: 반투명이 다시 들어오면 그날부터 이 숫자가
+ * 필요해진다. 그리고 전체 기록 상태에서는 표본 지점이 오버레이에 가려 2~3 으로 떨어지므로
+ * ⚠ 가 떠도 결함이 아니다 — 그 경고를 쫓지 말라는 뜻으로 여기 적어 둔다.
+ */
 function backdropVariety(img, [x, y, w, h]) {
   const seen = new Set();
   for (let dy = 0; dy < h; dy += 7) {
@@ -79,20 +86,35 @@ const TARGETS = [
   ["examplesTitle", "예시 라벨"],
   ["exampleChip", "예시 칩"],
   ["inputField", "입력 플레이스홀더"],
+  ["sendButton", "전송 버튼"],
 ];
+
+/**
+ * metrics 키 → 스크린샷 파일명. 계측기(`_assistant-glass-shots.spec.ts`)가
+ * `<배경>_<상태>` 로 키를 쓰고 `<배경>-<번호>-<상태>-full.png` 로 찍으므로 규칙으로 푼다.
+ * 예전에는 도크별 이름을 손으로 적은 표였다 — 배치가 사라져 표가 통째로 죽었다.
+ */
+const STAGE_INDEX = { idle: "01", focus: "02", risen: "03", history: "04" };
+function shotNameFor(key) {
+  const at = key.indexOf("_");
+  if (at < 0) return null;
+  const backdrop = key.slice(0, at);
+  const stage = key.slice(at + 1);
+  const index = STAGE_INDEX[stage];
+  return index ? `${backdrop}-${index}-${stage}` : null;
+}
 
 const out = { dir, states: [] };
 
 for (const [key, state] of Object.entries(metrics)) {
   if (!state || typeof state !== "object" || !state.panel) continue;
-  const shot = join(dir, `${{
-    basic_boot: "01-basic-boot",
-    basic_focus: "02-basic-focus",
-    dock_side: "10-dock-side",
-    dock_float: "11-dock-float",
-    dock_glass: "12-dock-glass",
-  }[key] ?? key}-full.png`);
-  if (!existsSync(shot)) continue;
+  const name = shotNameFor(key);
+  if (!name) continue;
+  const shot = join(dir, `${name}-full.png`);
+  if (!existsSync(shot)) {
+    console.warn(`샷 없음 — 건너뜀: ${shot}`);
+    continue;
+  }
   const img = await Jimp.read(shot);
   const panelRect = state.panel.rect;
 
@@ -112,6 +134,9 @@ for (const [key, state] of Object.entries(metrics)) {
     const bold = Number(node.fontWeight) >= 700;
     const large = node.fontSize >= 24 || (node.fontSize >= 18.66 && bold);
     const threshold = large ? 3 : 4.5;
+    // WCAG 1.4.3 은 비활성 컨트롤을 면제한다(Incidental — inactive user interface components).
+    // 재긴 하고 판정에서만 뺀다: 지우면 **활성** 상태가 저대비로 망가지는 회귀를 놓친다.
+    const disabled = node.disabled === true || node.ariaDisabled === "true";
     rows.push({
       label,
       fg: node.color,
@@ -120,12 +145,16 @@ for (const [key, state] of Object.entries(metrics)) {
       threshold,
       background: bg.map(Math.round),
       contrast: Number(ratio.toFixed(2)),
-      passesAA: ratio >= threshold,
+      disabled,
+      passesAA: disabled ? true : ratio >= threshold,
+      exempt: disabled,
     });
   }
   out.states.push({
     state: key,
-    dock: state.dock,
+    // `dock` 을 싣던 자리 — 배치가 하나라 구분할 값이 없다. 대신 기하 상태를 싣는다(스펙 §1).
+    risen: state.risen ?? null,
+    historyOpen: state.historyOpen ?? null,
     panelBg: state.panel.background,
     backdropFilter: state.panel.backdropFilter,
     backdropVariety: variety,
@@ -136,15 +165,28 @@ for (const [key, state] of Object.entries(metrics)) {
 
 writeFileSync(join(dir, "contrast.json"), JSON.stringify(out, null, 2), "utf8");
 
+let failures = 0;
 for (const s of out.states) {
-  console.log(`\n### ${s.state} (dock=${s.dock})`);
+  console.log(`\n### ${s.state} (risen=${s.risen} history=${s.historyOpen})`);
   console.log(`  panelBg=${s.panelBg}  backdrop=${s.backdropFilter}`);
   console.log(`  뒤 배경 다양성=${s.backdropVariety} ${s.backdropIsFlat ? "⚠ 단색 — 유리 판정 무의미" : "OK(맵 그려짐)"}`);
   for (const r of s.rows) {
+    if (!r.passesAA) failures += 1;
+    const verdict = r.exempt ? "면제" : r.passesAA ? "PASS" : "FAIL";
     console.log(
-      `  ${r.passesAA ? "PASS" : "FAIL"}  ${r.label}  fg=${r.fg} ${r.fontSize}px  ` +
-      `bg=rgb(${r.background.join(",")})  ${r.contrast}:1 (기준 ${r.threshold})`,
+      `  ${verdict}  ${r.label}  fg=${r.fg} ${r.fontSize}px  ` +
+      `bg=rgb(${r.background.join(",")})  ${r.contrast}:1 (기준 ${r.threshold})` +
+      `${r.exempt ? " — 비활성(WCAG 1.4.3 면제)" : ""}`,
     );
   }
 }
 console.log(`\n→ ${join(dir, "contrast.json")}`);
+if (out.states.length === 0) {
+  // 게이트로 쓰이므로 "잰 것이 없다" 를 통과로 보고하면 안 된다.
+  console.error("판정한 상태가 0 개다 — 계측기(_assistant-glass-shots.spec.ts)를 먼저 돌려라.");
+  process.exit(1);
+}
+if (failures > 0) {
+  console.error(`\nAA 미달 ${failures}건.`);
+  process.exit(1);
+}

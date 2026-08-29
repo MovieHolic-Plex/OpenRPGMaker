@@ -29,6 +29,21 @@ export const MIN_CAPABILITY_MATCH_SCORE = 20;
 /** 제공자(CPEN) 요청당 함수 스키마 상한. */
 export const MAX_TURN_TOOL_SCHEMAS = 128;
 
+/**
+ * 자연어 추측으로는 **절대 얹지 않는** 툴(2026-08-29 modify 진단 근본원인 12).
+ *
+ * 승격은 요청 단어와 툴 이름·설명의 어휘 일치일 뿐 의도 판정이 아니다. 되돌릴 수 없는 폐기 툴은
+ * 그 추측이 한 번만 맞아떨어져도 사용자의 작업물이 사라진다 — 실측 위험 문장: "상점 재고를
+ * 초기화해줘"(reset_project), "이 맵 지워버리고 다시"(remove_map). 모델이 정말 필요하다고
+ * 판단하면 도메인 노출(system)·이름 언급·find_tools 로 여전히 손에 잡히므로, 막히는 것은
+ * "요청 단어가 스쳤다"는 이유만으로 자동으로 얹히는 경로 하나뿐이다.
+ */
+export const ESCALATION_DENYLIST: ReadonlySet<string> = new Set([
+  "reset_project",
+  "remove_map",
+  "delete_resource",
+]);
+
 function hasSearchableWord(text: string): boolean {
   return /[\p{L}\p{N}]/u.test(text);
 }
@@ -45,7 +60,10 @@ export function capabilityEscalatedToolNames(
   if (!hasSearchableWord(text)) return [];
   return activeTools()
     .map((tool, index) => ({ name: tool.name, index, score: matchScore(tool.name, tool.description, text) }))
-    .filter((candidate) => candidate.score >= MIN_CAPABILITY_MATCH_SCORE && !alreadyExposed.has(candidate.name))
+    .filter((candidate) =>
+      candidate.score >= MIN_CAPABILITY_MATCH_SCORE
+      && !alreadyExposed.has(candidate.name)
+      && !ESCALATION_DENYLIST.has(candidate.name))
     .sort((left, right) => right.score - left.score || left.index - right.index)
     .slice(0, MAX_CAPABILITY_ESCALATED_TOOLS)
     .map((candidate) => candidate.name);

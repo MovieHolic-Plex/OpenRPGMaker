@@ -13,8 +13,10 @@ import {
 } from "@/editor/interiorRoomPipeline";
 import {
   advanceRoomBuild,
+  ensureRoomSessionForMap,
   evaluateRoom,
   listRoomDemos,
+  listRoomSessions,
   loadRoomSession,
   runRoomPipeline,
   saveRoomSession,
@@ -22,7 +24,7 @@ import {
 } from "@/editor/roomHarness/engine";
 import { INTERIOR_ROOM_KIT } from "@/editor/roomHarness/interiorKit";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
-import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
+import { COORD_SCHEMA, RECT_SCHEMA, REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
 
 const KIT = INTERIOR_ROOM_KIT.kitId;
 
@@ -52,10 +54,12 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
   {
     name: "start_interior_room_session",
     description:
-      "주민 집 실내(villager-room-v1) 멀티턴 시공 세션을 시작한다. " +
+      "**새** 주민 집 실내(villager-room-v1)를 새 mapId 로 시공하는 멀티턴 세션을 시작한다. " +
       "절차: plan → floor(bbox 바닥) → walls → furniture → entrance(입구 이벤트) → critique. " +
       "wings는 통행 바닥 bbox 합집합. 벽은 floor 이후 세운다. 침대 355|356은 hard 좌우 쌍. " +
-      "이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷.",
+      "이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷. " +
+      "**기존 실내 맵을 고치는 요청에는 쓰지 마라** — 그 맵을 대상으로 furnish_interior_space / " +
+      "fill_region / tile_erase / place_props 를 써라. 이미 있는 mapId 를 넘기면 map-exists 로 거부된다.",
     mode: "write",
     parameters: {
       type: "object",
@@ -97,6 +101,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           enum: ["cream", "gold-brick", "stone-brick"],
           description: "벽면 재질 — gold-brick은 귀족 저택(식당 러그도 붉은 카펫)",
         },
+        replaceExisting: REPLACE_EXISTING_SCHEMA,
       },
       required: ["mapId", "door", "theme"],
     },
@@ -142,9 +147,11 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
   {
     name: "run_interior_room_pipeline",
     description:
-      "실내 방을 원샷 절차 생성한다(floor bbox→walls→furniture→entrance→critique). " +
+      "**새** 실내 방을 새 mapId 로 원샷 절차 생성한다(floor bbox→walls→furniture→entrance→critique). " +
       "멀티턴 품질 경로가 기본이면 start_interior_room_session을 써라. " +
-      "침대는 355|356 hard 쌍, 벽면 장식과 바닥 잔해(깨진 유리 등)를 구분한다.",
+      "침대는 355|356 hard 쌍, 벽면 장식과 바닥 잔해(깨진 유리 등)를 구분한다. " +
+      "**기존 실내 맵 수정에는 쓰지 마라** — 이미 있는 mapId 는 map-exists 로 거부되고, " +
+      "고치려면 furnish_interior_space / fill_region / tile_erase / place_props 를 그 맵에 직접 쓴다.",
     mode: "write",
     parameters: {
       type: "object",
@@ -169,6 +176,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           enum: [...INTERIOR_ROOM_THEMES],
           description: "데모 플랜 사용 시 wings/door 생략 가능",
         },
+        replaceExisting: REPLACE_EXISTING_SCHEMA,
       },
     },
     invalidArgsExample: { demo: "bedroom" },
@@ -195,7 +203,13 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
     parameters: {
       type: "object",
       properties: {
-        sessionId: { type: "string" },
+        mapId: {
+          type: "string",
+          description:
+            "고칠 실내 맵 id — sessionId 없이 이것만으로 동작한다(이전 턴/이전 세션에 만든 맵도 가능). "
+            + "sessionId 와 함께 주면 sessionId 가 우선한다.",
+        },
+        sessionId: { type: "string", description: "이번 대화에서 시작한 세션 id(있을 때만). 없으면 mapId 를 써라." },
         roomId: { type: "string", description: "플랜 rooms[].id — 재시공할 공간" },
         theme: {
           type: "string",
@@ -209,13 +223,29 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         },
         seed: { type: "integer", description: "이 공간만의 배치 재추첨 시드(미지정 시 플랜 시드 파생)" },
       },
-      required: ["sessionId", "roomId"],
+      required: ["roomId"],
     },
-    invalidArgsExample: { sessionId: "room_villager-room-v1_1", roomId: "hall", theme: "corridor" },
+    invalidArgsExample: { mapId: "map_interior_demo", roomId: "hall", theme: "corridor" },
+    invalidArgsHint: "mapId(고칠 실내 맵) 또는 sessionId 중 하나와 roomId 를 지정하라.",
     run(draft, args): ToolExecResult {
-      const sessionId = String(args.sessionId ?? "").trim();
-      const session = loadRoomSession(draft, sessionId);
-      if (!session) throw new ToolError(`session 없음: ${sessionId}`, { code: "session-not-found" });
+      const explicitSessionId = String(args.sessionId ?? "").trim();
+      const mapIdArg = String(args.mapId ?? "").trim();
+      // sessionId 우선. 없으면 mapId 로 세션을 확보한다(맵에 남은 roomHarnessPlan 으로 재수립).
+      let session = explicitSessionId ? loadRoomSession(draft, explicitSessionId) : null;
+      if (!session && explicitSessionId && !mapIdArg) {
+        throw new ToolError(
+          `session 없음: ${explicitSessionId} — 세션은 대화 밖으로 보존되지 않습니다. `
+            + `mapId 로 대상 맵을 지목하세요(list_interior_room_sessions 로 살아 있는 세션 확인).`,
+          { code: "session-not-found" },
+        );
+      }
+      if (!session) {
+        if (!mapIdArg) {
+          throw new ToolError("mapId 또는 sessionId 중 하나는 필요하다", { code: "invalid-args" });
+        }
+        session = ensureRoomSessionForMap(draft, mapIdArg);
+      }
+      const sessionId = session.id;
       const map = draft.maps[session.mapId];
       if (!map) throw new ToolError(`map 없음: ${session.mapId}`, { code: "map-not-found" });
       const plan = session.plan as InteriorRoomPlan;
@@ -252,6 +282,8 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         layer: `room:${roomId}`,
         roomId,
       }));
+      // 맵에 박힌 플랜도 같이 갱신한다 — 다음 턴/재오픈 때 mapId 로 복원할 플랜이 최신이어야 한다.
+      map.roomHarnessPlan = { kitId: session.kitId, plan: structuredClone(outcome.plan) };
       saveRoomSession(draft, {
         ...session,
         plan: outcome.plan,
@@ -308,6 +340,38 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
     invalidArgsExample: {},
     run(): ToolExecResult {
       return listRoomDemos(KIT);
+    },
+  },
+  {
+    name: "list_interior_room_sessions",
+    description:
+      "살아 있는 방 하네스 세션과 방 하네스로 시공된 실내 맵을 나열한다. "
+      + "기존 실내 맵을 고치기 전에 이걸로 대상 mapId 와 방 id(rooms[].id)를 확인하라 — "
+      + "그다음 furnish_interior_space({ mapId, roomId }) 로 방 단위 재시공한다.",
+    mode: "read",
+    parameters: { type: "object", properties: {} },
+    invalidArgsExample: {},
+    run(draft): ToolExecResult {
+      const sessions = listRoomSessions(draft).map((session) => ({
+        sessionId: session.id,
+        kitId: session.kitId,
+        mapId: session.mapId,
+        checklist: session.checklist,
+        roomIds: ((session.plan as InteriorRoomPlan).rooms ?? []).map((room) => room.id),
+      }));
+      // 세션은 직렬화되지 않으므로 맵에 박힌 플랜이 더 넓은 진실이다.
+      const authoredMaps = Object.values(draft.maps)
+        .filter((map) => map.roomHarnessPlan !== undefined)
+        .map((map) => ({
+          mapId: map.id,
+          name: map.name,
+          kitId: map.roomHarnessPlan!.kitId,
+          roomIds: ((map.roomHarnessPlan!.plan as InteriorRoomPlan).rooms ?? []).map((room) => room.id),
+        }));
+      return {
+        summary: `세션 ${sessions.length}개 · 방 하네스 맵 ${authoredMaps.length}개`,
+        data: { sessions, authoredMaps },
+      };
     },
   },
 ];
