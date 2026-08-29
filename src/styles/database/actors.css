@@ -59,7 +59,7 @@
   height: 20px;
   border: 1px solid var(--oprn-border-dark, var(--border-default));
   border-radius: 0;
-  background: var(--bg-raised);
+  background-color: var(--bg-raised);
   font: inherit;
 }
 
@@ -687,7 +687,7 @@
 
   .oprn-record-actors .actor-classic-sheet input,
   .oprn-record-actors .actor-classic-sheet select {
-    background: var(--bg-raised);
+    background-color: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     color: var(--text-1);

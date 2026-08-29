@@ -283,7 +283,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-animation-studio-inspector :is(input[type="text"], input[type="number"], select) {
-  background: var(--db-studio-surface);
+  background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-1);
@@ -640,7 +640,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-terrain-record :is(input, select) {
-  background: var(--db-studio-surface);
+  background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-1);
@@ -688,7 +688,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-screen-inspector :is(input, select) {
-  background: var(--db-studio-surface);
+  background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   color: var(--db-studio-text-1);
@@ -905,7 +905,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-command-card :is(input, select) {
-  background: var(--db-studio-surface);
+  background-color: var(--db-studio-surface);
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   box-sizing: border-box;

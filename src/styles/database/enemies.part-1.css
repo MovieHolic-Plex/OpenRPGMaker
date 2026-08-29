@@ -33,7 +33,7 @@
 
 .db-enemy-dialog input,
 .db-enemy-dialog select {
-  background: var(--oprn-enemy-table-bg);
+  background-color: var(--oprn-enemy-table-bg);
   border-color: var(--oprn-shadow) var(--oprn-light) var(--oprn-light) var(--oprn-shadow);
   border-style: solid;
   border-width: 1px;
