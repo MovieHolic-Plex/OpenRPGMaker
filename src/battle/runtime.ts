@@ -328,12 +328,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     ),
     classOverrides: { ...(sessionState.classOverrides ?? options.party?.classOverrides ?? {}) },
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
+    npcActivities: "npcActivities" in sessionState ? { ...(sessionState.npcActivities ?? {}) } : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
   const battleEvents = createBattleEventRuntime({
     project: options.project,
     troopRecord,
     ownerEventId: options.ownerEventId,
+    ownerEvent: findProjectEvent(options.project, options.ownerEventId),
     actors,
     enemies,
     stateIds: options.project.database.states.map((state) => state.id),
@@ -2422,6 +2424,15 @@ export function concreteTargetCommand(
     case "capture":
       return { kind: "capture", captureItemId: command.captureItemId, targetEnemyId: targetId };
   }
+}
+
+function findProjectEvent(project: BattleRuntimeOptions["project"], eventId: string | undefined) {
+  if (!eventId) return undefined;
+  for (const map of Object.values(project.maps)) {
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (event) return event;
+  }
+  return undefined;
 }
 
 function normalizeActiveSlots(value: number | undefined, partySize: number): number {
