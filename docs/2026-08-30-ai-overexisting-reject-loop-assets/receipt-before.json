@@ -1,0 +1,830 @@
+{
+  "shotDir": "/home/main/.herdr/worktrees/rpg-zzu/aichat-debug/.omo/evidence/spec-reject-loop/before",
+  "scenarioA": {
+    "bridge": {
+      "ok": true,
+      "status": {
+        "ready": true,
+        "turnBusy": false,
+        "configReady": true,
+        "lastStatus": "밑그림 확정 — 에셋 1개",
+        "bridgeConnected": false,
+        "panelMounted": true
+      },
+      "audit": [
+        {
+          "kind": "user",
+          "text": "나무를 굉장히 많이 심어라. 2x2 나무를 많이심어서 아예 통행불가능하게\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start)",
+          "at": "2026-08-29T17:10:48.162Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+          "at": "2026-08-29T17:10:48.196Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+          "at": "2026-08-29T17:10:48.196Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "",
+          "at": "2026-08-29T17:10:48.255Z"
+        },
+        {
+          "kind": "tool",
+          "name": "set_build_spec",
+          "summary": "밑그림 검증 실패(1회)",
+          "at": "2026-08-29T17:10:48.287Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+          "at": "2026-08-29T17:10:48.303Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+          "at": "2026-08-29T17:10:48.303Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "",
+          "at": "2026-08-29T17:10:48.356Z"
+        },
+        {
+          "kind": "tool",
+          "name": "set_build_spec",
+          "summary": "밑그림 검증 실패(2회)",
+          "at": "2026-08-29T17:10:48.376Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+          "at": "2026-08-29T17:10:48.403Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+          "at": "2026-08-29T17:10:48.403Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "",
+          "at": "2026-08-29T17:10:48.450Z"
+        },
+        {
+          "kind": "tool",
+          "name": "set_build_spec",
+          "summary": "밑그림 검증 실패(3회) — 계획 폐기",
+          "at": "2026-08-29T17:10:48.476Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+          "at": "2026-08-29T17:10:48.485Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+          "at": "2026-08-29T17:10:48.485Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "",
+          "at": "2026-08-29T17:10:48.541Z"
+        },
+        {
+          "kind": "tool",
+          "name": "set_build_spec",
+          "summary": "밑그림 확정: 울창한 숲 — 에셋 1개(prop)",
+          "at": "2026-08-29T17:10:48.599Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+          "at": "2026-08-29T17:10:48.608Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+          "at": "2026-08-29T17:10:48.608Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "숲 밑그림을 확정했습니다.",
+          "at": "2026-08-29T17:10:48.682Z"
+        },
+        {
+          "kind": "status",
+          "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~184",
+          "at": "2026-08-29T17:10:48.703Z"
+        }
+      ],
+      "harness": {
+        "model": "gemini-3.7-flash",
+        "liteModel": "gemini-3.7-flash",
+        "maxTokens": 8192,
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\n맵·이벤트·데이터베이스(아이템/장비/스킬/클래스/상태/적/액터/트룹/커먼이벤트)·퀘스트를 '툴 호출'로 편집합니다.\n\n## UX 응답 정책(반드시 준수)\n- 능력 경계: 이 엔진은 2D 타일 RPG 에디터입니다. 3D 오픈월드, 실시간 액션 전투, 외부 서비스 연동/API 호출, 플러그인 설치, 실제 배포처럼 현재 툴/엔진이 지원하지 않는 요청은 쓰기 툴을 호출하거나 변경 제안을 만들지 마세요. 한계를 설명하고 2D 맵·이벤트·DB로 가능한 대안을 1~2개 제안한 뒤 턴을 끝내세요.\n- 허위 완료 금지: 존재하지 않는 결과를 했다고 서술하지 마세요. 캔버스에 없는 지형·숲·길·건물·NPC·3D 시점·전투 방식을 마무리 서술에 언급하지 말고, 실제로 조회하거나 변경한 내용만 말하세요.\n- 모호한 요청: '좀 멋지게 해줘'처럼 대상·스타일·규모를 특정할 수 없는 저정보 요청이면 도구 호출 전에 1문장으로 되물으세요. 단, 요청문에서 추출 가능한 파라미터(예: 집 두어 채, 길, 나무 군락, 작은 마을)는 되묻지 말고 그대로 사용하세요.\n- 집 vs 실내(필수): '집/건물 만들어줘'만 있고 야외 외장·실내 맵 표지가 없으면 추측 실행 금지. 도구 호출 전에 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 한 문장+선택지로 되물으세요. '실내'·'인테리어'·'실내 맵'이 있으면 실내 세션 경로, '야외'·'외장'·마을 위 집이 있으면 author_house 경로. 모호한 집 요청은 author_house를 호출하지 말고 먼저 되물으세요. 슬래시 스킬(집 짓기/실내 방 시공)로 고른 경우, 또는 영역 작업(사용자가 현재 맵 위에 선택 영역을 준 경우)에는 되묻지 마세요 — 영역 선택은 현재 맵 위 야외 시공 의도이므로 author_house로 바로 시공. 매칭 스킬이 없거나 집·실내 스킬이 동시에 걸리면 반드시 되묻세요.\n- 원큐 진행: 사용자가 진행/계속/진행해/진행하라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요. 실행 중 장애(맵 크기 부족 등)는 리사이즈 같은 비파괴 조치로 스스로 해결하고 결과에 보고하세요. 확인 질문은 파괴적 변경·집/실내 경로 미확정·또는 진짜 모호한 요구일 때만 허용됩니다.\n- 시간 반응 분위기: 낮/밤/시간대에 따라 자동으로 분위기가 바뀌는 요청은 configure_time_system으로 시간 시스템을 opt-in 하세요. 활성화하면 런타임이 자동 주야간 색조를 적용합니다. set_scene_mood는 현재 장면의 정적 분위기 설정이며 시간 경과에 따라 자동 전환되지 않습니다.\n- 준비 작업만 한 턴: 리사이즈, 맵 이름 변경, 타일 그룹/메타데이터 등록, 밑그림 확정처럼 준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면 마무리 서술에 '아직 배치 자체는 하지 않았다'는 사실을 명확히 쓰세요.\n- 퀘스트/서사: 일반 퀘스트는 define_quest로 등록하고 verify_quest 통과를 완료 기준으로 삼으세요. 튜토리얼/분기/반전 서사는 author_story_arc로 작성하고, 프로젝트 전반의 객관적 품질 점검은 evaluate_game_quality를 사용하세요. 이 평가는 재미·독창성·감정적 영향·페이싱 품질·선호 난이도를 판단하지 않습니다.\n- 초안 시제: 수락 전 제안 단계의 변경은 완료형으로 쓰지 말고 '~할 예정입니다', '~하도록 제안합니다'처럼 초안/예정 표현을 쓰세요.\n- 마무리 톤: 최종 사용자 응답은 3~5문장으로 제한하고 초보 사용자 언어로 쓰세요. 내부 ID(Tile 342, tex_*, ev_*, run_lint 등), 원시 도구명, 함수명, 테스트/개발자 용어는 노출하지 마세요.\n- 집 배치 효율(필수): 집 2채 이상은 반드시 author_house kind=lots + houses[]로 한 번에 호출한다. single을 반복 호출하지 마라. 각 집에는 서로 다른 kitId를 배정해 외관 다양성을 확보한다(blue-stone/bright-plaster/amber-wood/slate-wood/timber-hall 중 선택). windows는 false 또는 {}·{spacing:N}만 유효하며 true는 오류다. wing 크기는 w≥3, h≥5를 지켜라.\n\n## 고수준 툴 우선\n고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height,plannedMap}, countPolicy:\"exact\"). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **실내/방 맵=start_interior_room_session 또는 run_interior_room_pipeline(새 mapId·이름). 실내 요청에는 author_house/author_village 금지**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.\nupsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.\n\n## 작업 수칙(반드시 준수)\n1. 모든 쓰기(맵/이벤트/DB 변경)는 제안(dry-run)으로만 반영되며, 리드(사용자)가 수락해야 실제 프로젝트에 적용됩니다.\n2. 편집 전 필요한 정보는 조회 툴(get_project_summary, get_map_region, list_resources, get_database_records, find_events 등)로 먼저 확인하세요.\n   기존 레코드(아이템/스킬/액터/스위치 등)를 참조할 때는 get_database_records(collection)로 실제 id를 먼저 확인하세요.\n3. 쓰기 툴 결과에 issues(오류)가 있으면 그 내용을 읽고 인자를 고쳐 성공할 때까지 재시도하세요.\n4. 좌표·타일·리소스 ID는 추측하지 말고 조회 툴로 확인한 값을 사용하세요. 물 위/통행 불가 칸에 NPC를 두지 마세요.\n   NPC/주민 배치 = place_npc (통행 불가 칸 자동 착지), 저수준 upsert_event 금지.\n5. 파괴적 작업(remove_event 등)은 꼭 필요할 때만, 이유를 먼저 설명하세요.\n6. 툴 호출을 아끼지 마세요. 조회·검증·재시도에 필요한 만큼 깊게 사용하세요(제한은 토큰 예산뿐).\n7. 여러 개를 요청받으면(예: NPC 3명, 집 2채) 전부 만들 때까지 멈추지 마세요. 일부만 하고 끝내는 것은 실패입니다.\n   사용자가 '진행/계속/진행해/진행하라고'라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요.\n8. '깊은 대화'를 요청받으면 choices(선택지)와 분기 대사로 페이지를 풍부하게 구성하세요. lines에 여러 줄을 담을 수 있습니다.\n9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요.\n10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.\n    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.\n11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 author_house를 우선 사용하고,\n    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.\n    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house를 올리지 말고\n    start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**의 실내 맵을 시공하세요\n    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.\n    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.\n12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.\n    읽지 않고 upsert_event로 덮으면 기존 대사/분기가 사라집니다.\n13. 잘못 깔린 타일/구조물을 지울 때는 tile_erase(mapId, rect, layer)를 쓰세요(기본 kind=all: 상·하위 EMPTY).\n    새 구조물을 찍기 전, 겹치는 이전 실패물이 있으면 먼저 tile_erase로 정리하세요.\n    단, '집/구조물의 주변(근처)을 청소'하라는 요청은 그 구조물을 덮지 말고 둘러싼 빈 칸만 정리하는 뜻입니다 —\n    방금 지은 집을 지우지 마세요. 기존 구조물을 정말 철거하려면 파괴적 변경임을 짧게 설명하고 clear 에셋에 confirmDestroy:true를 명시하세요.\n    **상점/가게 철거:** find_layout_regions({mapId, query: 사용자 문구})로 상점 영역을 먼저 찾은 뒤,\n    tile_erase({mapId, rect, kind:\"market\"})로 지우세요. kind market은 상점 타일만 지우므로 이웃 집·흙길은 그대로 유지됩니다.\n    show_map_region은 지운 뒤 결과를 눈으로 확인하는 용도입니다 — 영역 상자(bbox)를 비전으로 추측하지 말고\n    find_layout_regions가 돌려준 rect를 그대로 쓰세요.\n    **호수/물/길 치우기:** get_map_region의 data.water.bounds로 위치를 잡고, set_build_spec clear에 **confirmDestroy:true**를 넣으세요(물도 비잔디라 구조물 보호에 걸림). 전체 맵 52×52를 show/get_map_region으로 반복 스캔하지 마세요.\n    스펙 검증기가 구조물을 덮는 clear를 거부하면, 영역을 구조물 바깥으로 좁히거나 confirmDestroy:true로 재제출하세요.\n14. 타일의 규칙(레이어/통행/지면 종류)은 set_tile_rules로 설정합니다. 레이어(auto/lower/upper) 변경은\n    사용자가 명시적으로 요청했을 때만 confirmedByUser=true로 호출하세요.\n15. 스펙 게이트(반드시 준수): 공간 쓰기 작업(집/마을/길/청소/NPC·전투 배치/수역·지면 채우기 등 맵에 무언가를 놓는 일)은\n    먼저 set_build_spec으로 밑그림(명세)을 제출해 검증을 통과해야 실행됩니다. 명세 체크리스트 —\n    대상 맵, 에셋 목록(종류·개수·각 영역 x,y,w,h·스타일), 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).\n    맵이 요구 구조물 대비 작으면 author_house/author_village 최소 제약을 계산해 resize_map을 먼저 호출하세요(비파괴 보정).\n    수역/지면/바닥 면은 fill_region만 쓴다. 호수·연못: material=\"물\"(타일 라벨/설명, 그룹 id·vocabId 금지), 원형·둥근 요청은 shape=circle(또는 ellipse) 필수 — rect만 쓰면 네모. 나무/바위/꽃은 place_props material=\"침엽수\" 등으로 호수·물 칸 밖(통행 가능 육지)에만 산포; 물 위 place_props 금지.\n    사용자가 정하지 않은 항목은 합리적 기본값으로 채우고, 넓은 요청(마을 등)은 명세 요약을 한 줄로 보여준 뒤 진행하세요.\n    검증기가 겹침을 거부하면 좌표·buildOrder·맵 크기를 고쳐 재제출하세요. 3회 실패하면 그 계획은 폐기하고 스스로 새 배치를 설계하세요.\n    각 빌드 툴 호출이 명세 밖 빈 영역을 쓰면 게이트가 명세를 자동 확장하고 warning으로 통과합니다.\n    단, 기존 구조물 파괴 위험(clear/overExisting/confirmDestroy/builtCells 보호)은 자동 보정하지 않습니다.\n    사용자가 맵에서 선택한 영역은 곧 암묵적 명세입니다.\n    배치 전 정리: 타일/구조물을 놓을 자리·주변에 기본 타일(잔디)이 아닌 것이 있으면 스스로 판단해\n    해당 에셋에 overExisting:\"clear\"(정리하고 배치) 또는 \"keep\"(그대로 위에 배치)을 넣어 재제출하세요. 검증기가 이를 강제합니다.\n    건설 순서: 마을처럼 여러 구조물을 짓는 복합 건축은 buildOrder([\"clear\",\"terrain\",\"road\",\"house\",\"prop\"]처럼 kind 순서)를 정하고, 그 순서대로 빌드 툴을 호출하세요.\n16. 비전(반드시 준수): 당신은 show_tiles/show_tile_grid로 띄운 타일·영역 이미지를 실제로 볼 수 있습니다(멀티모달).\n    맵에 뭔가 깐 뒤에는 말로 단정하지 말고 show_map_region으로 결과를 눈으로 확인하세요.\n    타일의 의미·라벨·용도를 단정하기 전에 반드시 그 이미지를 눈으로 확인하세요. 번호나 인접 통계만으로 '탁자/침대'처럼\n    추측해 라벨을 지어내지 마세요. 설명이 없는(described=false) 타일은 이미지를 보고 보이는 대로 서술하고, 확신이 없으면\n    사용자에게 물으세요. 어떤 타일이 무엇인지 사용자에게 물을 때도 먼저 show_tiles로 그 이미지를 띄우세요.\n    구조(벽/나무/지붕)는 말로 설명하지 말고 render_group_sample로 조립해 이미지로 보여준 뒤 판단·질문하세요.\n17. 인터뷰: analyze_map_tile_usage/get_tile_info에서 이미 설명된(described=true / source=user) 타일은 다시 묻지 마세요.\n    기록된 메타데이터가 있으면 그대로 신뢰하고, 설명 없는 타일만 질문 대상으로 삼으세요.\n18. 실내 장식: 통행 불가 바닥 타일(예: 돌바닥 342, 계단 246)을 장식이라며 사람이 지나갈 칸에 깔아 길을 막지 마세요.\n    가구/소품 타일이 타일셋에 없으면 없다고 정직하게 말하고 대안(이벤트 소품·NPC·다른 타일셋)을 제안하세요.\n    장식 타일은 대개 상위(upper) 레이어입니다 — 바닥을 통행 불가로 덮지 않도록 레이어를 확인하세요.\n19. 시각 제안: 집을 짓기 전에 preview_house(mapId, origin, width, height, material)로 결과 이미지를 먼저 띄워\n    '이렇게 생긴 집을 지을까요?'처럼 그림으로 제안할 수 있습니다(프로젝트를 바꾸지 않는 읽기 툴 — 스펙 게이트 무관).\n20. 메타데이터 저장: 인터뷰로 확정한 타일 메타데이터(set_tile_metadata)는 데이터베이스의 타일셋 지식 화면에 저장됩니다.\n    구조물 문법은 집(author_house)가 담당하므로 별도 지형 템플릿을 만들지 마세요.\n21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.\n22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.\n23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.\n24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로.\n\n## 툴 능력 색인(활성 187개 · 이름만)\n이 목록의 툴은 전부 존재한다. 이번 라운드 tool 스키마만 40개로 잘려 있을 뿐이다.\n- 핵심: tile_query, create_map, resize_map, get_project_summary, list_resources, get_database_records\n- 맵: duplicate_map, manage_map_tree, preview_house, mirror_region, copy_map_region, set_start_position, set_map_properties, set_encounter_table, make_hunting_ground, configure_roguelike_room, create_farm_plot, shift_map, remove_map, set_action_combat, generate_map, upsert_map_connection, delete_map_connection, upsert_village_document, delete_village_document, get_map_region, check_reachability, find_layout_regions, highlight_map_region, show_map_region\n- 타일·배치: author_house, author_village, build_wall, build_roof, place_door, place_window, lay_path, place_props, fill_region, arrange_rows, tile_erase, evaluate_village_look, critique_village, list_village_tree_assets, get_village_session, evaluate_village_layer, start_interior_room_session, advance_interior_room_build, run_interior_room_pipeline, furnish_interior_space, evaluate_interior_room, list_interior_room_demos, start_dungeon_room_session, advance_dungeon_room_build, run_dungeon_room_pipeline, evaluate_dungeon_room, list_dungeon_room_themes, build_castle, list_structure_kits, stamp_structure_kit, register_structure_kit, paint_road, create_tileset, set_tileset_properties, upsert_autotile_group, delete_autotile_group, set_animation_strips, set_tile_grafts\n- 이벤트: upsert_event, place_npc, set_npc_schedule, make_villager, set_shop_stock, create_transfer_pair, place_battle_blocker, place_trap, place_chest, place_storage_chest, place_savepoint, make_chase_scene, duplicate_event, remove_event, move_event, script_cutscene, add_companion, place_examine_hotspots, compile_puzzle, script_cutscene_preset, make_horror_loop, make_gallery_room, set_lighting_volume, set_scene_mood, define_ending, list_endings, manage_flag_slot, author_story_arc, declare_story_flag, get_story_state, find_flag_usage, explain_event, find_events, get_event, find_switch_usage, list_npc_graphics\n- 데이터베이스: make_action_enemy, set_factions, duplicate_database_record, delete_database_record, upsert_database_utility, upsert_item, upsert_enemy, upsert_troop, define_monster_species, define_crop, set_type_chart, give_starter_monsters, upsert_actor, upsert_skill, upsert_equipment, upsert_class, define_promotion, upsert_state, upsert_common_event, upsert_battle_animation, set_session_start, set_title_screen, upsert_life_skill, upsert_life_system, upsert_craft_recipe, delete_craft_recipe, upsert_item_upgrade, set_sell_prices, upsert_tool_action, configure_life_economy, upsert_fish_species, delete_fish_species, configure_fishing, configure_seasonal_forage, configure_museum, configure_collections, upsert_farm_building_type, upsert_home_decoration_type, upsert_farm_animal_building, set_session_farm_state, upsert_character_profile\n- 퀘스트: create_quest_flags, create_quest, define_quest, lint_quest, generate_walkthrough, verify_quest\n- 월드 그래프: plan_world, link_maps, build_world, lint_world\n- 전투: simulate_battle, tune_enemy, author_boss_phases, upsert_troop_battle_page, delete_troop_battle_page\n- 시스템: reset_project, set_project_settings, configure_companion_rules, configure_game_systems, set_project_genre, upsert_resource_profile, delete_resource_profile, upsert_test_preset, delete_test_preset, upsert_resource, delete_resource, rename_switch, rename_variable, prune_unused, evaluate_game_quality, revert_last_edit, list_edit_history, configure_time_system, configure_monster_system, export_game, play_walkthrough, run_scene_test, run_lint, list_project_commits, present_doc, list_ai_docs\n- 기타: find_tools\n\n### 색인 사용 규칙(반드시 준수)\n1. 목록에 있는 이름은 전부 호출 가능한 실제 기능이다.\n2. 스키마가 이번 라운드에 없으면 find_tools(query)로 불러와 다음 라운드에 호출한다.\n3. 목록에 있는 기능을 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — find_tools 로 에스컬레이션한다.\n4. 단, UX 정책의 진짜 엔진 한계(3D, 실시간 액션 전투, 외부 API/플러그인, 실제 배포 미지원)는 그대로다.\n\n## 프로젝트 요약\n```json\n{\n  \"title\": \"새 프로젝트\",\n  \"startMapId\": \"map_blank_start\",\n  \"startPos\": {\n    \"x\": 10,\n    \"y\": 8\n  },\n  \"maps\": [\n    {\n      \"id\": \"map_blank_start\",\n      \"name\": \"빈 맵\",\n      \"width\": 20,\n      \"height\": 15,\n      \"events\": 0\n    }\n  ],\n  \"db\": {\n    \"items\": 208,\n    \"enemies\": 221,\n    \"troops\": 7,\n    \"actors\": 6,\n    \"equipment\": 75,\n    \"skills\": 27\n  },\n  \"switches\": [],\n  \"variables\": []\n}\n```\n\n## 밸런스 상수(검증됨)\n- 영웅 Lv1 기준: HP 514 / 공격 45 / 방어 59.\n- 데미지 공식: power + 공격/2 − 방어/2 (음수면 1로 클램프).\n- 새 적/스킬 수치는 이 곡선에 비례해 정하라. 과도한 값은 밸런스를 깨뜨린다.\n\n## 리소스 조회\n타일/차셋/배경/BGM/SE는 list_resources(kind, query)로 시맨틱 검색하세요.\n예: list_resources(kind='charset', query='마을 사람'), list_resources(kind='tile', query='물').\n차셋 질의는 한국어(주민/전사/노파)와 시트명(people1~5, actor1~4, monster1~3, animal, object1~2) 모두 지원합니다.\n결과가 0개면 query='*'로 전체 목록을 훑어본 뒤 정확한 라벨로 다시 검색하세요.\n\n## 타일 어휘 다이제스트\n배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(위치)·kitId·yard 태그만(firewood/mailbox/bench_h/…), 좌표는 코드. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지). **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".\n### 합본 마을 · EasyRPG (CC0) (easyrpg_chipset_combined_town)\n- terrain: 흙길 오토타일 [layer=lower, pattern=autotile_3x3, passage=up:open,down:open,left:open,right:open] — 하위 레이어에서 한 칸 브러시로 칠하고, 연결 상태에 따라 외곽과 중앙을 자동 선택합니다., 잔디 [layer=lower, pattern=autotile_3x3, passage=up:open,down:open,left:open,right:open] — 하위 레이어 면 채우기 전용. 균질 지형이라 이웃 연결 성형이 필요 없습니다., 키큰 풀 [layer=lower, pattern=autotile_3x3, passage=up:open,down:open,left:open,right:open] — 하위 레이어 면 채우기. 잔디 위에 직사각/타원 구역으로 깝니다. 통행성은 잔디와 동일(passable)이라 별도 오토타일 성형이 필요 없습니다., 모래 [layer=lower, pattern=autotile_3x3, passage=up:open,down:open,left:open,right:open] — 하위 레이어에서 한 칸 브러시로 칠하고, 연결 상태에 따라 외곽과 중앙을 자동 선택합니다., 나무 바닥 데크 [layer=lower, passage=mixed] — 나무 바닥(192·222·228–230). 하위 통행 가능. 장터 데크·부두 면적 채움용. 대표 바디 222.\n- water: 애니메이션 물 오토타일 [layer=lower, pattern=animated_terrain, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 하위 레이어에서 물 대표 타일을 자유롭게 칠하면 주변 물과 이어져 보이도록 렌더링합니다.\n- wall: 흰 집 벽 확장 [layer=lower, pattern=nine_slice_expandable, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 지붕-벽 경계 아래 하위 레이어에 배치합니다. 모서리는 고정하고 가운데 열은 가로 반복합니다., 통나무 집 벽 확장 [layer=lower, pattern=nine_slice_expandable, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 지붕-벽 경계 아래 하위 레이어에 배치합니다. 모서리는 고정하고 가운데 열은 가로 반복합니다., 목골 석벽 집 벽 확장 [layer=lower, pattern=nine_slice_expandable, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 지붕-벽 경계 아래 하위 레이어에 배치합니다. 모서리는 고정하고 가운데 열은 가로 반복합니다.\n- roof: 사선 지붕 오버레이 [layer=upper, pattern=overlay_detail, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 상위 레이어에만 놓습니다. 아래 벽이나 지붕면을 지우지 않고 겹쳐서 통행을 막는 지붕 외곽을 만듭니다.\n- fence: 울타리 [layer=lower, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 울타리는 투명 소품이라 상위 레이어에 겹쳐 지면을 보존합니다. 길과 문 동선을 가리지 않게 끊어 배치합니다.\n…외 2개\n\n## 집 키트 요약\n- blue-stone: 파랑 지붕 + 석벽\n- bright-plaster: 밝은 오렌지 지붕 + 흰 회벽\n- amber-wood: 밝은 오렌지 지붕 + 통나무 벽\n- slate-wood: 파랑 지붕 + 통나무 벽\n- timber-hall: 빨간 널지붕 + 목조 기둥 홀\n- aframe-stone: 빨간 A자 지붕 + 석벽\n여러 채 시공 시 각 집에 서로 다른 kitId를 배정해 외관 다양성을 확보하라. 같은 kit 반복 금지.\n2채 이상은 author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지).\nwing 제약: w≥3, h≥5 (지붕+벽 포함). windows: false | {} | {spacing:N} (true 불가).\n길/모래는 paint_road(style=dirt/sand)가 8방 오토타일로 성형합니다.\n\n## 클러스터 규칙 선호 힌트\n강함 규칙 위반은 커밋이 거부됩니다.\n맵을 편집한 뒤 run_lint로 규칙 위반을 확인하세요.\n- easyrpg_chipset_combined_town/덤불: 느슨함(선호) 덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다.\n- easyrpg_chipset_combined_town/꽃/자연 소품: 중간(권장) 꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다.\n- easyrpg_chipset_combined_town/집 앞 마당 소품: 느슨함(선호) 집 앞 마당 소품은 집\n\n[예산 초과: 834자 잘림 · 잘린 구간은 조회 툴(get_map_region 등)로 직접 조회하세요. 모델·사용자 모두에게 고지됨]"
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "## 에디터 뷰포트(사용자가 지금 보고 있는 맵 화면)\n- 맵: 빈 맵 (`map_blank_start`)\n- 화면 중앙 타일: **(0, 0)**\n- 가시 영역(타일): (0,0)~(10,8) — 10×8\n- 사용자 말의 \"여기/이 근처/화면/가운데\"는 위 좌표를 기준으로 해석하세요.\n- 상세 타일/이벤트는 get_map_region / show_map_region으로 이 영역 또는 주변을 조회하세요.\n\n---\n\n나무를 굉장히 많이 심어라. 2x2 나무를 많이심어서 아예 통행불가능하게\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start)"
+              },
+              {
+                "type": "text",
+                "text": "아래는 사용자가 지금 보고 있는 맵 화면 근처 미리보기입니다 (0,0) 10×8. \"여기\" 해석 시 이 이미지를 우선하세요."
+              },
+              {
+                "type": "text",
+                "text": "맵 미리보기 (0,0) 10×8"
+              },
+              {
+                "type": "image_url",
+                "image_url": {
+                  "url": "data:image/png;base64,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",
+                  "detail": "low"
+                }
+              }
+            ]
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "call_1",
+                "type": "function",
+                "function": {
+                  "name": "set_build_spec",
+                  "arguments": "{\"mapId\":\"map_blank_start\",\"title\":\"울창한 숲\",\"assets\":[{\"id\":\"trees_dense\",\"kind\":\"prop\",\"x\":4,\"y\":4,\"w\":6,\"h\":6}]}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_1",
+            "name": "set_build_spec",
+            "content": "{\"ok\":false,\"summary\":\"밑그림 검증 실패(1회)\",\"issues\":[{\"severity\":\"error\",\"code\":\"spec-invalid\",\"message\":\"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\"},{\"severity\":\"error\",\"code\":\"spec-invalid\",\"message\":\"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\"}]}"
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "call_2",
+                "type": "function",
+                "function": {
+                  "name": "set_build_spec",
+                  "arguments": "{\"assets\":[{\"w\":6,\"kind\":\"prop\",\"x\":4,\"h\":6,\"y\":4,\"id\":\"trees_dense\"}],\"title\":\"울창한 숲\",\"mapId\":\"map_blank_start\"}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_2",
+            "name": "set_build_spec",
+            "content": "{\"ok\":false,\"summary\":\"밑그림 검증 실패(2회)\",\"issues\":[{\"severity\":\"error\",\"code\":\"spec-invalid\",\"message\":\"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\"},{\"severity\":\"error\",\"code\":\"spec-invalid\",\"message\":\"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\"}]}"
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "call_3",
+                "type": "function",
+                "function": {
+                  "name": "set_build_spec",
+                  "arguments": "{\"title\":\"울창한 숲\",\"assets\":[{\"h\":6,\"id\":\"trees_dense\",\"y\":4,\"kind\":\"prop\",\"w\":6,\"x\":4}],\"mapId\":\"map_blank_start\"}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_3",
+            "name": "set_build_spec",
+            "content": "{\"ok\":false,\"summary\":\"밑그림 검증 실패(3회) — 계획 폐기\",\"issues\":[{\"severity\":\"error\",\"code\":\"spec-invalid\",\"message\":\"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\"},{\"severity\":\"error\",\"code\":\"spec-invalid\",\"message\":\"검증 3회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.\"}]}"
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "call_4",
+                "type": "function",
+                "function": {
+                  "name": "set_build_spec",
+                  "arguments": "{\"mapId\":\"map_blank_start\",\"title\":\"울창한 숲\",\"assets\":[{\"id\":\"trees_dense\",\"kind\":\"prop\",\"x\":4,\"y\":4,\"w\":6,\"h\":6,\"overExisting\":\"keep\"}]}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_4",
+            "name": "set_build_spec",
+            "content": "{\"ok\":true,\"summary\":\"밑그림 확정: 울창한 숲 — 에셋 1개(prop)\",\"data\":{\"mapId\":\"map_blank_start\",\"title\":\"울창한 숲\",\"assets\":[{\"id\":\"trees_dense\",\"kind\":\"prop\",\"x\":4,\"y\":4,\"w\":6,\"h\":6,\"overExisting\":\"keep\"}]}}"
+          },
+          {
+            "role": "assistant",
+            "content": "숲 밑그림을 확정했습니다."
+          }
+        ],
+        "audit": [
+          {
+            "kind": "user",
+            "text": "나무를 굉장히 많이 심어라. 2x2 나무를 많이심어서 아예 통행불가능하게\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start)",
+            "context": {
+              "mapId": "map_blank_start",
+              "mapName": "빈 맵",
+              "mapWidth": 20,
+              "mapHeight": 15,
+              "viewport": {
+                "mapId": "map_blank_start",
+                "centerX": 0,
+                "centerY": 0,
+                "x": 0,
+                "y": 0,
+                "w": 10,
+                "h": 8
+              }
+            },
+            "at": "2026-08-29T17:10:48.162Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+            "at": "2026-08-29T17:10:48.196Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+            "at": "2026-08-29T17:10:48.196Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "set_build_spec",
+                "args": "{\"mapId\":\"map_blank_start\",\"title\":\"울창한 숲\",\"assets\":[{\"id\":\"trees_dense\",\"kind\":\"prop\",\"x\":4,\"y\":4,\"w\":6,\"h\":6}]}"
+              }
+            ],
+            "at": "2026-08-29T17:10:48.255Z"
+          },
+          {
+            "kind": "tool",
+            "name": "set_build_spec",
+            "args": {
+              "mapId": "map_blank_start",
+              "title": "울창한 숲",
+              "assets": [
+                {
+                  "id": "trees_dense",
+                  "kind": "prop",
+                  "x": 4,
+                  "y": 4,
+                  "w": 6,
+                  "h": 6
+                }
+              ]
+            },
+            "ok": false,
+            "summary": "밑그림 검증 실패(1회)",
+            "issues": [
+              "에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리하고 배치) 또는 \"keep\"(그대로 위에 배치)을 넣어 재제출하세요.",
+              "겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요."
+            ],
+            "at": "2026-08-29T17:10:48.287Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+            "at": "2026-08-29T17:10:48.303Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+            "at": "2026-08-29T17:10:48.303Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "set_build_spec",
+                "args": "{\"assets\":[{\"w\":6,\"kind\":\"prop\",\"x\":4,\"h\":6,\"y\":4,\"id\":\"trees_dense\"}],\"title\":\"울창한 숲\",\"mapId\":\"map_blank_start\"}"
+              }
+            ],
+            "at": "2026-08-29T17:10:48.356Z"
+          },
+          {
+            "kind": "tool",
+            "name": "set_build_spec",
+            "args": {
+              "assets": [
+                {
+                  "w": 6,
+                  "kind": "prop",
+                  "x": 4,
+                  "h": 6,
+                  "y": 4,
+                  "id": "trees_dense"
+                }
+              ],
+              "title": "울창한 숲",
+              "mapId": "map_blank_start"
+            },
+            "ok": false,
+            "summary": "밑그림 검증 실패(2회)",
+            "issues": [
+              "에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리하고 배치) 또는 \"keep\"(그대로 위에 배치)을 넣어 재제출하세요.",
+              "겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요."
+            ],
+            "at": "2026-08-29T17:10:48.376Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+            "at": "2026-08-29T17:10:48.403Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+            "at": "2026-08-29T17:10:48.403Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "set_build_spec",
+                "args": "{\"title\":\"울창한 숲\",\"assets\":[{\"h\":6,\"id\":\"trees_dense\",\"y\":4,\"kind\":\"prop\",\"w\":6,\"x\":4}],\"mapId\":\"map_blank_start\"}"
+              }
+            ],
+            "at": "2026-08-29T17:10:48.450Z"
+          },
+          {
+            "kind": "tool",
+            "name": "set_build_spec",
+            "args": {
+              "title": "울창한 숲",
+              "assets": [
+                {
+                  "h": 6,
+                  "id": "trees_dense",
+                  "y": 4,
+                  "kind": "prop",
+                  "w": 6,
+                  "x": 4
+                }
+              ],
+              "mapId": "map_blank_start"
+            },
+            "ok": false,
+            "summary": "밑그림 검증 실패(3회) — 계획 폐기",
+            "issues": [
+              "에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리하고 배치) 또는 \"keep\"(그대로 위에 배치)을 넣어 재제출하세요.",
+              "검증 3회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요."
+            ],
+            "at": "2026-08-29T17:10:48.476Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+            "at": "2026-08-29T17:10:48.485Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+            "at": "2026-08-29T17:10:48.485Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "set_build_spec",
+                "args": "{\"mapId\":\"map_blank_start\",\"title\":\"울창한 숲\",\"assets\":[{\"id\":\"trees_dense\",\"kind\":\"prop\",\"x\":4,\"y\":4,\"w\":6,\"h\":6,\"overExisting\":\"keep\"}]}"
+              }
+            ],
+            "at": "2026-08-29T17:10:48.541Z"
+          },
+          {
+            "kind": "tool",
+            "name": "set_build_spec",
+            "args": {
+              "mapId": "map_blank_start",
+              "title": "울창한 숲",
+              "assets": [
+                {
+                  "id": "trees_dense",
+                  "kind": "prop",
+                  "x": 4,
+                  "y": 4,
+                  "w": 6,
+                  "h": 6,
+                  "overExisting": "keep"
+                }
+              ]
+            },
+            "ok": true,
+            "summary": "밑그림 확정: 울창한 숲 — 에셋 1개(prop)",
+            "at": "2026-08-29T17:10:48.599Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event (capability)",
+            "at": "2026-08-29T17:10:48.608Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event,find_tools | capability:set_project_genre,place_trap,add_companion,upsert_farm_animal_building,build_world,explain_event",
+            "at": "2026-08-29T17:10:48.608Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "숲 밑그림을 확정했습니다.",
+            "at": "2026-08-29T17:10:48.682Z"
+          },
+          {
+            "kind": "status",
+            "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~184",
+            "at": "2026-08-29T17:10:48.703Z"
+          }
+        ],
+        "workPlan": null
+      },
+      "lastAssistantText": "숲 밑그림을 확정했습니다."
+    },
+    "rounds": 5,
+    "toolSummaries": [
+      "🧰",
+      "작업 4 ▾✗ set_build_spec — 밑그림 검증 실패(1회): 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리… (내부 재시도 1회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"mapId\": \"map_blank_start\", \"title\": \"울창한 숲\", \"assets\": [ { \"id\": \"trees_dense\", \"kind\": \"prop\", \"x\": 4, \"y\": 4, \"w\": 6, \"h\": 6 } ] }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(1회)\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\" } ] }✗ set_build_spec — 밑그림 검증 실패(2회): 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리… (내부 재시도 2회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"assets\": [ { \"w\": 6, \"kind\": \"prop\", \"x\": 4, \"h\": 6, \"y\": 4, \"id\": \"trees_dense\" } ], \"title\": \"울창한 숲\", \"mapId\": \"map_blank_start\" }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(2회)\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\" } ] }✗ set_build_spec — 밑그림 검증 실패(3회) — 계획 폐기: 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"c… (내부 재시도 3회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"title\": \"울창한 숲\", \"assets\": [ { \"h\": 6, \"id\": \"trees_dense\", \"y\": 4, \"kind\": \"prop\", \"w\": 6, \"x\": 4 } ], \"mapId\": \"map_blank_start\" }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(3회) — 계획 폐기\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"검증 3회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.\" } ] }✓ 밑그림 확정: 울창한 숲 — 에셋 1개(prop)",
+      "작업 4 ▾",
+      "✗ set_build_spec — 밑그림 검증 실패(1회): 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리… (내부 재시도 1회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"mapId\": \"map_blank_start\", \"title\": \"울창한 숲\", \"assets\": [ { \"id\": \"trees_dense\", \"kind\": \"prop\", \"x\": 4, \"y\": 4, \"w\": 6, \"h\": 6 } ] }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(1회)\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\" } ] }",
+      "✗ set_build_spec — 밑그림 검증 실패(1회): 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리… (내부 재시도 1회)",
+      "호출 인자 — set_build_spec{ \"mapId\": \"map_blank_start\", \"title\": \"울창한 숲\", \"assets\": [ { \"id\": \"trees_dense\", \"kind\": \"prop\", \"x\": 4, \"y\": 4, \"w\": 6, \"h\": 6 } ] }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(1회)\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\" } ] }",
+      "✗ set_build_spec — 밑그림 검증 실패(2회): 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리… (내부 재시도 2회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"assets\": [ { \"w\": 6, \"kind\": \"prop\", \"x\": 4, \"h\": 6, \"y\": 4, \"id\": \"trees_dense\" } ], \"title\": \"울창한 숲\", \"mapId\": \"map_blank_start\" }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(2회)\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\" } ] }",
+      "✗ set_build_spec — 밑그림 검증 실패(2회): 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리… (내부 재시도 2회)",
+      "호출 인자 — set_build_spec{ \"assets\": [ { \"w\": 6, \"kind\": \"prop\", \"x\": 4, \"h\": 6, \"y\": 4, \"id\": \"trees_dense\" } ], \"title\": \"울창한 숲\", \"mapId\": \"map_blank_start\" }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(2회)\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\" } ] }",
+      "✗ set_build_spec — 밑그림 검증 실패(3회) — 계획 폐기: 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"c… (내부 재시도 3회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"title\": \"울창한 숲\", \"assets\": [ { \"h\": 6, \"id\": \"trees_dense\", \"y\": 4, \"kind\": \"prop\", \"w\": 6, \"x\": 4 } ], \"mapId\": \"map_blank_start\" }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(3회) — 계획 폐기\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"검증 3회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.\" } ] }",
+      "✗ set_build_spec — 밑그림 검증 실패(3회) — 계획 폐기: 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"c… (내부 재시도 3회)",
+      "호출 인자 — set_build_spec{ \"title\": \"울창한 숲\", \"assets\": [ { \"h\": 6, \"id\": \"trees_dense\", \"y\": 4, \"kind\": \"prop\", \"w\": 6, \"x\": 4 } ], \"mapId\": \"map_blank_start\" }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(3회) — 계획 폐기\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"검증 3회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.\" } ] }",
+      "✓ 밑그림 확정: 울창한 숲 — 에셋 1개(prop)"
+    ],
+    "logText": "2026년 8월 30일 일@>나무를 굉장히 많이 심어라. 2x2 나무를 많이심어서 아예 통행불가능하게작업 4 ▾✗ set_build_spec — 밑그림 검증 실패(1회): 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리… (내부 재시도 1회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"mapId\": \"map_blank_start\", \"title\": \"울창한 숲\", \"assets\": [ { \"id\": \"trees_dense\", \"kind\": \"prop\", \"x\": 4, \"y\": 4, \"w\": 6, \"h\": 6 } ] }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(1회)\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\" } ] }✗ set_build_spec — 밑그림 검증 실패(2회): 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"clear\"(정리… (내부 재시도 2회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"assets\": [ { \"w\": 6, \"kind\": \"prop\", \"x\": 4, \"h\": 6, \"y\": 4, \"id\": \"trees_dense\" } ], \"title\": \"울창한 숲\", \"mapId\": \"map_blank_start\" }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(2회)\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.\" } ] }✗ set_build_spec — 밑그림 검증 실패(3회) — 계획 폐기: 에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\"c… (내부 재시도 3회)이 단계는 자동으로 다시 시도했습니다. 최종 결과만 확인해 주세요.호출 인자 — set_build_spec{ \"title\": \"울창한 숲\", \"assets\": [ { \"h\": 6, \"id\": \"trees_dense\", \"y\": 4, \"kind\": \"prop\", \"w\": 6, \"x\": 4 } ], \"mapId\": \"map_blank_start\" }오류 원문{ \"ok\": false, \"summary\": \"밑그림 검증 실패(3회) — 계획 폐기\", \"issues\": [ { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"에셋 'trees_dense' 자리·주변에 기본 타일이 아닌 것이 63칸 있습니다 예: (3,3). 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:\\\"clear\\\"(정리하고 배치) 또는 \\\"keep\\\"(그대로 위에 배치)을 넣어 재제출하세요.\" }, { \"severity\": \"error\", \"code\": \"spec-invalid\", \"message\": \"검증 3회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.\" } ] }✓ 밑그림 확정: 울창한 숲 — 에셋 1개(prop)📐 밑그림 확정 — 울창한 숲 · 에셋 1개· trees_dense (prop) (4,4)"
+  },
+  "scenarioB": {
+    "bridge": {
+      "ok": true,
+      "status": {
+        "ready": true,
+        "turnBusy": false,
+        "configReady": true,
+        "lastStatus": "변경 없음(0건)",
+        "bridgeConnected": false,
+        "panelMounted": true
+      },
+      "audit": [
+        {
+          "kind": "user",
+          "text": "맵 상태를 계속 조회해\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start)",
+          "at": "2026-08-29T17:11:02.346Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume (capability)",
+          "at": "2026-08-29T17:11:02.372Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume,find_tools | capability:set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume",
+          "at": "2026-08-29T17:11:02.372Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "",
+          "at": "2026-08-29T17:11:02.518Z"
+        },
+        {
+          "kind": "tool",
+          "name": "get_project_summary",
+          "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7",
+          "at": "2026-08-29T17:11:02.543Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume (capability)",
+          "at": "2026-08-29T17:11:02.553Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume,find_tools | capability:set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume",
+          "at": "2026-08-29T17:11:02.553Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "",
+          "at": "2026-08-29T17:11:02.615Z"
+        },
+        {
+          "kind": "tool",
+          "name": "get_project_summary",
+          "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7",
+          "at": "2026-08-29T17:11:02.642Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume (capability)",
+          "at": "2026-08-29T17:11:02.650Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume,find_tools | capability:set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume",
+          "at": "2026-08-29T17:11:02.650Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "",
+          "at": "2026-08-29T17:11:03.297Z"
+        },
+        {
+          "kind": "tool",
+          "name": "get_project_summary",
+          "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7",
+          "at": "2026-08-29T17:11:03.317Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:escalated set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume (capability)",
+          "at": "2026-08-29T17:11:03.325Z"
+        },
+        {
+          "kind": "status",
+          "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume,find_tools | capability:set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume",
+          "at": "2026-08-29T17:11:03.325Z"
+        },
+        {
+          "kind": "assistant",
+          "text": "",
+          "at": "2026-08-29T17:11:03.563Z"
+        },
+        {
+          "kind": "tool",
+          "name": "get_project_summary",
+          "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7",
+          "at": "2026-08-29T17:11:03.583Z"
+        },
+        {
+          "kind": "status",
+          "text": "턴 종료(max-tool-calls) — 제안 0건 · 출력 토큰 ~28",
+          "at": "2026-08-29T17:11:03.608Z"
+        }
+      ],
+      "harness": {
+        "model": "gemini-3.7-flash",
+        "liteModel": "gemini-3.7-flash",
+        "maxTokens": 8192,
+        "messages": [
+          {
+            "role": "system",
+            "content": "당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\n맵·이벤트·데이터베이스(아이템/장비/스킬/클래스/상태/적/액터/트룹/커먼이벤트)·퀘스트를 '툴 호출'로 편집합니다.\n\n## UX 응답 정책(반드시 준수)\n- 능력 경계: 이 엔진은 2D 타일 RPG 에디터입니다. 3D 오픈월드, 실시간 액션 전투, 외부 서비스 연동/API 호출, 플러그인 설치, 실제 배포처럼 현재 툴/엔진이 지원하지 않는 요청은 쓰기 툴을 호출하거나 변경 제안을 만들지 마세요. 한계를 설명하고 2D 맵·이벤트·DB로 가능한 대안을 1~2개 제안한 뒤 턴을 끝내세요.\n- 허위 완료 금지: 존재하지 않는 결과를 했다고 서술하지 마세요. 캔버스에 없는 지형·숲·길·건물·NPC·3D 시점·전투 방식을 마무리 서술에 언급하지 말고, 실제로 조회하거나 변경한 내용만 말하세요.\n- 모호한 요청: '좀 멋지게 해줘'처럼 대상·스타일·규모를 특정할 수 없는 저정보 요청이면 도구 호출 전에 1문장으로 되물으세요. 단, 요청문에서 추출 가능한 파라미터(예: 집 두어 채, 길, 나무 군락, 작은 마을)는 되묻지 말고 그대로 사용하세요.\n- 집 vs 실내(필수): '집/건물 만들어줘'만 있고 야외 외장·실내 맵 표지가 없으면 추측 실행 금지. 도구 호출 전에 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 한 문장+선택지로 되물으세요. '실내'·'인테리어'·'실내 맵'이 있으면 실내 세션 경로, '야외'·'외장'·마을 위 집이 있으면 author_house 경로. 모호한 집 요청은 author_house를 호출하지 말고 먼저 되물으세요. 슬래시 스킬(집 짓기/실내 방 시공)로 고른 경우, 또는 영역 작업(사용자가 현재 맵 위에 선택 영역을 준 경우)에는 되묻지 마세요 — 영역 선택은 현재 맵 위 야외 시공 의도이므로 author_house로 바로 시공. 매칭 스킬이 없거나 집·실내 스킬이 동시에 걸리면 반드시 되묻세요.\n- 원큐 진행: 사용자가 진행/계속/진행해/진행하라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요. 실행 중 장애(맵 크기 부족 등)는 리사이즈 같은 비파괴 조치로 스스로 해결하고 결과에 보고하세요. 확인 질문은 파괴적 변경·집/실내 경로 미확정·또는 진짜 모호한 요구일 때만 허용됩니다.\n- 시간 반응 분위기: 낮/밤/시간대에 따라 자동으로 분위기가 바뀌는 요청은 configure_time_system으로 시간 시스템을 opt-in 하세요. 활성화하면 런타임이 자동 주야간 색조를 적용합니다. set_scene_mood는 현재 장면의 정적 분위기 설정이며 시간 경과에 따라 자동 전환되지 않습니다.\n- 준비 작업만 한 턴: 리사이즈, 맵 이름 변경, 타일 그룹/메타데이터 등록, 밑그림 확정처럼 준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면 마무리 서술에 '아직 배치 자체는 하지 않았다'는 사실을 명확히 쓰세요.\n- 퀘스트/서사: 일반 퀘스트는 define_quest로 등록하고 verify_quest 통과를 완료 기준으로 삼으세요. 튜토리얼/분기/반전 서사는 author_story_arc로 작성하고, 프로젝트 전반의 객관적 품질 점검은 evaluate_game_quality를 사용하세요. 이 평가는 재미·독창성·감정적 영향·페이싱 품질·선호 난이도를 판단하지 않습니다.\n- 초안 시제: 수락 전 제안 단계의 변경은 완료형으로 쓰지 말고 '~할 예정입니다', '~하도록 제안합니다'처럼 초안/예정 표현을 쓰세요.\n- 마무리 톤: 최종 사용자 응답은 3~5문장으로 제한하고 초보 사용자 언어로 쓰세요. 내부 ID(Tile 342, tex_*, ev_*, run_lint 등), 원시 도구명, 함수명, 테스트/개발자 용어는 노출하지 마세요.\n- 집 배치 효율(필수): 집 2채 이상은 반드시 author_house kind=lots + houses[]로 한 번에 호출한다. single을 반복 호출하지 마라. 각 집에는 서로 다른 kitId를 배정해 외관 다양성을 확보한다(blue-stone/bright-plaster/amber-wood/slate-wood/timber-hall 중 선택). windows는 false 또는 {}·{spacing:N}만 유효하며 true는 오류다. wing 크기는 w≥3, h≥5를 지켜라.\n\n## 고수준 툴 우선\n고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height,plannedMap}, countPolicy:\"exact\"). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **실내/방 맵=start_interior_room_session 또는 run_interior_room_pipeline(새 mapId·이름). 실내 요청에는 author_house/author_village 금지**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.\nupsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.\n\n## 작업 수칙(반드시 준수)\n1. 모든 쓰기(맵/이벤트/DB 변경)는 제안(dry-run)으로만 반영되며, 리드(사용자)가 수락해야 실제 프로젝트에 적용됩니다.\n2. 편집 전 필요한 정보는 조회 툴(get_project_summary, get_map_region, list_resources, get_database_records, find_events 등)로 먼저 확인하세요.\n   기존 레코드(아이템/스킬/액터/스위치 등)를 참조할 때는 get_database_records(collection)로 실제 id를 먼저 확인하세요.\n3. 쓰기 툴 결과에 issues(오류)가 있으면 그 내용을 읽고 인자를 고쳐 성공할 때까지 재시도하세요.\n4. 좌표·타일·리소스 ID는 추측하지 말고 조회 툴로 확인한 값을 사용하세요. 물 위/통행 불가 칸에 NPC를 두지 마세요.\n   NPC/주민 배치 = place_npc (통행 불가 칸 자동 착지), 저수준 upsert_event 금지.\n5. 파괴적 작업(remove_event 등)은 꼭 필요할 때만, 이유를 먼저 설명하세요.\n6. 툴 호출을 아끼지 마세요. 조회·검증·재시도에 필요한 만큼 깊게 사용하세요(제한은 토큰 예산뿐).\n7. 여러 개를 요청받으면(예: NPC 3명, 집 2채) 전부 만들 때까지 멈추지 마세요. 일부만 하고 끝내는 것은 실패입니다.\n   사용자가 '진행/계속/진행해/진행하라고'라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요.\n8. '깊은 대화'를 요청받으면 choices(선택지)와 분기 대사로 페이지를 풍부하게 구성하세요. lines에 여러 줄을 담을 수 있습니다.\n9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요.\n10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.\n    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.\n11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 author_house를 우선 사용하고,\n    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.\n    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house를 올리지 말고\n    start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**의 실내 맵을 시공하세요\n    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.\n    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.\n12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.\n    읽지 않고 upsert_event로 덮으면 기존 대사/분기가 사라집니다.\n13. 잘못 깔린 타일/구조물을 지울 때는 tile_erase(mapId, rect, layer)를 쓰세요(기본 kind=all: 상·하위 EMPTY).\n    새 구조물을 찍기 전, 겹치는 이전 실패물이 있으면 먼저 tile_erase로 정리하세요.\n    단, '집/구조물의 주변(근처)을 청소'하라는 요청은 그 구조물을 덮지 말고 둘러싼 빈 칸만 정리하는 뜻입니다 —\n    방금 지은 집을 지우지 마세요. 기존 구조물을 정말 철거하려면 파괴적 변경임을 짧게 설명하고 clear 에셋에 confirmDestroy:true를 명시하세요.\n    **상점/가게 철거:** find_layout_regions({mapId, query: 사용자 문구})로 상점 영역을 먼저 찾은 뒤,\n    tile_erase({mapId, rect, kind:\"market\"})로 지우세요. kind market은 상점 타일만 지우므로 이웃 집·흙길은 그대로 유지됩니다.\n    show_map_region은 지운 뒤 결과를 눈으로 확인하는 용도입니다 — 영역 상자(bbox)를 비전으로 추측하지 말고\n    find_layout_regions가 돌려준 rect를 그대로 쓰세요.\n    **호수/물/길 치우기:** get_map_region의 data.water.bounds로 위치를 잡고, set_build_spec clear에 **confirmDestroy:true**를 넣으세요(물도 비잔디라 구조물 보호에 걸림). 전체 맵 52×52를 show/get_map_region으로 반복 스캔하지 마세요.\n    스펙 검증기가 구조물을 덮는 clear를 거부하면, 영역을 구조물 바깥으로 좁히거나 confirmDestroy:true로 재제출하세요.\n14. 타일의 규칙(레이어/통행/지면 종류)은 set_tile_rules로 설정합니다. 레이어(auto/lower/upper) 변경은\n    사용자가 명시적으로 요청했을 때만 confirmedByUser=true로 호출하세요.\n15. 스펙 게이트(반드시 준수): 공간 쓰기 작업(집/마을/길/청소/NPC·전투 배치/수역·지면 채우기 등 맵에 무언가를 놓는 일)은\n    먼저 set_build_spec으로 밑그림(명세)을 제출해 검증을 통과해야 실행됩니다. 명세 체크리스트 —\n    대상 맵, 에셋 목록(종류·개수·각 영역 x,y,w,h·스타일), 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).\n    맵이 요구 구조물 대비 작으면 author_house/author_village 최소 제약을 계산해 resize_map을 먼저 호출하세요(비파괴 보정).\n    수역/지면/바닥 면은 fill_region만 쓴다. 호수·연못: material=\"물\"(타일 라벨/설명, 그룹 id·vocabId 금지), 원형·둥근 요청은 shape=circle(또는 ellipse) 필수 — rect만 쓰면 네모. 나무/바위/꽃은 place_props material=\"침엽수\" 등으로 호수·물 칸 밖(통행 가능 육지)에만 산포; 물 위 place_props 금지.\n    사용자가 정하지 않은 항목은 합리적 기본값으로 채우고, 넓은 요청(마을 등)은 명세 요약을 한 줄로 보여준 뒤 진행하세요.\n    검증기가 겹침을 거부하면 좌표·buildOrder·맵 크기를 고쳐 재제출하세요. 3회 실패하면 그 계획은 폐기하고 스스로 새 배치를 설계하세요.\n    각 빌드 툴 호출이 명세 밖 빈 영역을 쓰면 게이트가 명세를 자동 확장하고 warning으로 통과합니다.\n    단, 기존 구조물 파괴 위험(clear/overExisting/confirmDestroy/builtCells 보호)은 자동 보정하지 않습니다.\n    사용자가 맵에서 선택한 영역은 곧 암묵적 명세입니다.\n    배치 전 정리: 타일/구조물을 놓을 자리·주변에 기본 타일(잔디)이 아닌 것이 있으면 스스로 판단해\n    해당 에셋에 overExisting:\"clear\"(정리하고 배치) 또는 \"keep\"(그대로 위에 배치)을 넣어 재제출하세요. 검증기가 이를 강제합니다.\n    건설 순서: 마을처럼 여러 구조물을 짓는 복합 건축은 buildOrder([\"clear\",\"terrain\",\"road\",\"house\",\"prop\"]처럼 kind 순서)를 정하고, 그 순서대로 빌드 툴을 호출하세요.\n16. 비전(반드시 준수): 당신은 show_tiles/show_tile_grid로 띄운 타일·영역 이미지를 실제로 볼 수 있습니다(멀티모달).\n    맵에 뭔가 깐 뒤에는 말로 단정하지 말고 show_map_region으로 결과를 눈으로 확인하세요.\n    타일의 의미·라벨·용도를 단정하기 전에 반드시 그 이미지를 눈으로 확인하세요. 번호나 인접 통계만으로 '탁자/침대'처럼\n    추측해 라벨을 지어내지 마세요. 설명이 없는(described=false) 타일은 이미지를 보고 보이는 대로 서술하고, 확신이 없으면\n    사용자에게 물으세요. 어떤 타일이 무엇인지 사용자에게 물을 때도 먼저 show_tiles로 그 이미지를 띄우세요.\n    구조(벽/나무/지붕)는 말로 설명하지 말고 render_group_sample로 조립해 이미지로 보여준 뒤 판단·질문하세요.\n17. 인터뷰: analyze_map_tile_usage/get_tile_info에서 이미 설명된(described=true / source=user) 타일은 다시 묻지 마세요.\n    기록된 메타데이터가 있으면 그대로 신뢰하고, 설명 없는 타일만 질문 대상으로 삼으세요.\n18. 실내 장식: 통행 불가 바닥 타일(예: 돌바닥 342, 계단 246)을 장식이라며 사람이 지나갈 칸에 깔아 길을 막지 마세요.\n    가구/소품 타일이 타일셋에 없으면 없다고 정직하게 말하고 대안(이벤트 소품·NPC·다른 타일셋)을 제안하세요.\n    장식 타일은 대개 상위(upper) 레이어입니다 — 바닥을 통행 불가로 덮지 않도록 레이어를 확인하세요.\n19. 시각 제안: 집을 짓기 전에 preview_house(mapId, origin, width, height, material)로 결과 이미지를 먼저 띄워\n    '이렇게 생긴 집을 지을까요?'처럼 그림으로 제안할 수 있습니다(프로젝트를 바꾸지 않는 읽기 툴 — 스펙 게이트 무관).\n20. 메타데이터 저장: 인터뷰로 확정한 타일 메타데이터(set_tile_metadata)는 데이터베이스의 타일셋 지식 화면에 저장됩니다.\n    구조물 문법은 집(author_house)가 담당하므로 별도 지형 템플릿을 만들지 마세요.\n21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.\n22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.\n23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.\n24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로.\n\n## 툴 능력 색인(활성 187개 · 이름만)\n이 목록의 툴은 전부 존재한다. 이번 라운드 tool 스키마만 40개로 잘려 있을 뿐이다.\n- 핵심: tile_query, create_map, resize_map, get_project_summary, list_resources, get_database_records\n- 맵: duplicate_map, manage_map_tree, preview_house, mirror_region, copy_map_region, set_start_position, set_map_properties, set_encounter_table, make_hunting_ground, configure_roguelike_room, create_farm_plot, shift_map, remove_map, set_action_combat, generate_map, upsert_map_connection, delete_map_connection, upsert_village_document, delete_village_document, get_map_region, check_reachability, find_layout_regions, highlight_map_region, show_map_region\n- 타일·배치: author_house, author_village, build_wall, build_roof, place_door, place_window, lay_path, place_props, fill_region, arrange_rows, tile_erase, evaluate_village_look, critique_village, list_village_tree_assets, get_village_session, evaluate_village_layer, start_interior_room_session, advance_interior_room_build, run_interior_room_pipeline, furnish_interior_space, evaluate_interior_room, list_interior_room_demos, start_dungeon_room_session, advance_dungeon_room_build, run_dungeon_room_pipeline, evaluate_dungeon_room, list_dungeon_room_themes, build_castle, list_structure_kits, stamp_structure_kit, register_structure_kit, paint_road, create_tileset, set_tileset_properties, upsert_autotile_group, delete_autotile_group, set_animation_strips, set_tile_grafts\n- 이벤트: upsert_event, place_npc, set_npc_schedule, make_villager, set_shop_stock, create_transfer_pair, place_battle_blocker, place_trap, place_chest, place_storage_chest, place_savepoint, make_chase_scene, duplicate_event, remove_event, move_event, script_cutscene, add_companion, place_examine_hotspots, compile_puzzle, script_cutscene_preset, make_horror_loop, make_gallery_room, set_lighting_volume, set_scene_mood, define_ending, list_endings, manage_flag_slot, author_story_arc, declare_story_flag, get_story_state, find_flag_usage, explain_event, find_events, get_event, find_switch_usage, list_npc_graphics\n- 데이터베이스: make_action_enemy, set_factions, duplicate_database_record, delete_database_record, upsert_database_utility, upsert_item, upsert_enemy, upsert_troop, define_monster_species, define_crop, set_type_chart, give_starter_monsters, upsert_actor, upsert_skill, upsert_equipment, upsert_class, define_promotion, upsert_state, upsert_common_event, upsert_battle_animation, set_session_start, set_title_screen, upsert_life_skill, upsert_life_system, upsert_craft_recipe, delete_craft_recipe, upsert_item_upgrade, set_sell_prices, upsert_tool_action, configure_life_economy, upsert_fish_species, delete_fish_species, configure_fishing, configure_seasonal_forage, configure_museum, configure_collections, upsert_farm_building_type, upsert_home_decoration_type, upsert_farm_animal_building, set_session_farm_state, upsert_character_profile\n- 퀘스트: create_quest_flags, create_quest, define_quest, lint_quest, generate_walkthrough, verify_quest\n- 월드 그래프: plan_world, link_maps, build_world, lint_world\n- 전투: simulate_battle, tune_enemy, author_boss_phases, upsert_troop_battle_page, delete_troop_battle_page\n- 시스템: reset_project, set_project_settings, configure_companion_rules, configure_game_systems, set_project_genre, upsert_resource_profile, delete_resource_profile, upsert_test_preset, delete_test_preset, upsert_resource, delete_resource, rename_switch, rename_variable, prune_unused, evaluate_game_quality, revert_last_edit, list_edit_history, configure_time_system, configure_monster_system, export_game, play_walkthrough, run_scene_test, run_lint, list_project_commits, present_doc, list_ai_docs\n- 기타: find_tools\n\n### 색인 사용 규칙(반드시 준수)\n1. 목록에 있는 이름은 전부 호출 가능한 실제 기능이다.\n2. 스키마가 이번 라운드에 없으면 find_tools(query)로 불러와 다음 라운드에 호출한다.\n3. 목록에 있는 기능을 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — find_tools 로 에스컬레이션한다.\n4. 단, UX 정책의 진짜 엔진 한계(3D, 실시간 액션 전투, 외부 API/플러그인, 실제 배포 미지원)는 그대로다.\n\n## 프로젝트 요약\n```json\n{\n  \"title\": \"새 프로젝트\",\n  \"startMapId\": \"map_blank_start\",\n  \"startPos\": {\n    \"x\": 10,\n    \"y\": 8\n  },\n  \"maps\": [\n    {\n      \"id\": \"map_blank_start\",\n      \"name\": \"빈 맵\",\n      \"width\": 20,\n      \"height\": 15,\n      \"events\": 0\n    }\n  ],\n  \"db\": {\n    \"items\": 208,\n    \"enemies\": 221,\n    \"troops\": 7,\n    \"actors\": 6,\n    \"equipment\": 75,\n    \"skills\": 27\n  },\n  \"switches\": [],\n  \"variables\": []\n}\n```\n\n## 밸런스 상수(검증됨)\n- 영웅 Lv1 기준: HP 514 / 공격 45 / 방어 59.\n- 데미지 공식: power + 공격/2 − 방어/2 (음수면 1로 클램프).\n- 새 적/스킬 수치는 이 곡선에 비례해 정하라. 과도한 값은 밸런스를 깨뜨린다.\n\n## 리소스 조회\n타일/차셋/배경/BGM/SE는 list_resources(kind, query)로 시맨틱 검색하세요.\n예: list_resources(kind='charset', query='마을 사람'), list_resources(kind='tile', query='물').\n차셋 질의는 한국어(주민/전사/노파)와 시트명(people1~5, actor1~4, monster1~3, animal, object1~2) 모두 지원합니다.\n결과가 0개면 query='*'로 전체 목록을 훑어본 뒤 정확한 라벨로 다시 검색하세요.\n\n## 타일 어휘 다이제스트\n배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(위치)·kitId·yard 태그만(firewood/mailbox/bench_h/…), 좌표는 코드. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지). **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".\n### 합본 마을 · EasyRPG (CC0) (easyrpg_chipset_combined_town)\n- terrain: 흙길 오토타일 [layer=lower, pattern=autotile_3x3, passage=up:open,down:open,left:open,right:open] — 하위 레이어에서 한 칸 브러시로 칠하고, 연결 상태에 따라 외곽과 중앙을 자동 선택합니다., 잔디 [layer=lower, pattern=autotile_3x3, passage=up:open,down:open,left:open,right:open] — 하위 레이어 면 채우기 전용. 균질 지형이라 이웃 연결 성형이 필요 없습니다., 키큰 풀 [layer=lower, pattern=autotile_3x3, passage=up:open,down:open,left:open,right:open] — 하위 레이어 면 채우기. 잔디 위에 직사각/타원 구역으로 깝니다. 통행성은 잔디와 동일(passable)이라 별도 오토타일 성형이 필요 없습니다., 모래 [layer=lower, pattern=autotile_3x3, passage=up:open,down:open,left:open,right:open] — 하위 레이어에서 한 칸 브러시로 칠하고, 연결 상태에 따라 외곽과 중앙을 자동 선택합니다., 나무 바닥 데크 [layer=lower, passage=mixed] — 나무 바닥(192·222·228–230). 하위 통행 가능. 장터 데크·부두 면적 채움용. 대표 바디 222.\n- water: 애니메이션 물 오토타일 [layer=lower, pattern=animated_terrain, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 하위 레이어에서 물 대표 타일을 자유롭게 칠하면 주변 물과 이어져 보이도록 렌더링합니다.\n- wall: 흰 집 벽 확장 [layer=lower, pattern=nine_slice_expandable, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 지붕-벽 경계 아래 하위 레이어에 배치합니다. 모서리는 고정하고 가운데 열은 가로 반복합니다., 통나무 집 벽 확장 [layer=lower, pattern=nine_slice_expandable, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 지붕-벽 경계 아래 하위 레이어에 배치합니다. 모서리는 고정하고 가운데 열은 가로 반복합니다., 목골 석벽 집 벽 확장 [layer=lower, pattern=nine_slice_expandable, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 지붕-벽 경계 아래 하위 레이어에 배치합니다. 모서리는 고정하고 가운데 열은 가로 반복합니다.\n- roof: 사선 지붕 오버레이 [layer=upper, pattern=overlay_detail, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 상위 레이어에만 놓습니다. 아래 벽이나 지붕면을 지우지 않고 겹쳐서 통행을 막는 지붕 외곽을 만듭니다.\n- fence: 울타리 [layer=lower, passage=up:blocked,down:blocked,left:blocked,right:blocked] — 울타리는 투명 소품이라 상위 레이어에 겹쳐 지면을 보존합니다. 길과 문 동선을 가리지 않게 끊어 배치합니다.\n…외 2개\n\n## 집 키트 요약\n- blue-stone: 파랑 지붕 + 석벽\n- bright-plaster: 밝은 오렌지 지붕 + 흰 회벽\n- amber-wood: 밝은 오렌지 지붕 + 통나무 벽\n- slate-wood: 파랑 지붕 + 통나무 벽\n- timber-hall: 빨간 널지붕 + 목조 기둥 홀\n- aframe-stone: 빨간 A자 지붕 + 석벽\n여러 채 시공 시 각 집에 서로 다른 kitId를 배정해 외관 다양성을 확보하라. 같은 kit 반복 금지.\n2채 이상은 author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지).\nwing 제약: w≥3, h≥5 (지붕+벽 포함). windows: false | {} | {spacing:N} (true 불가).\n길/모래는 paint_road(style=dirt/sand)가 8방 오토타일로 성형합니다.\n\n## 클러스터 규칙 선호 힌트\n강함 규칙 위반은 커밋이 거부됩니다.\n맵을 편집한 뒤 run_lint로 규칙 위반을 확인하세요.\n- easyrpg_chipset_combined_town/덤불: 느슨함(선호) 덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다.\n- easyrpg_chipset_combined_town/꽃/자연 소품: 중간(권장) 꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다.\n- easyrpg_chipset_combined_town/집 앞 마당 소품: 느슨함(선호) 집 앞 마당 소품은 집\n\n[예산 초과: 815자 잘림 · 잘린 구간은 조회 툴(get_map_region 등)로 직접 조회하세요. 모델·사용자 모두에게 고지됨]"
+          },
+          {
+            "role": "user",
+            "content": "맵 상태를 계속 조회해\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start)"
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "call_1",
+                "type": "function",
+                "function": {
+                  "name": "get_project_summary",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_1",
+            "name": "get_project_summary",
+            "content": "{\"ok\":true,\"summary\":\"프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7\",\"data\":{\"title\":\"새 프로젝트\",\"startMapId\":\"map_blank_start\",\"startPos\":{\"x\":10,\"y\":8},\"maps\":[{\"id\":\"map_blank_start\",\"name\":\"빈 맵\",\"width\":20,\"height\":15,\"events\":0}],\"db\":{\"items\":208,\"enemies\":221,\"troops\":7,\"actors\":6,\"equipment\":75,\"skills\":27},\"switches\":[],\"variables\":[]}}"
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "call_2",
+                "type": "function",
+                "function": {
+                  "name": "get_project_summary",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_2",
+            "name": "get_project_summary",
+            "content": "{\"ok\":true,\"summary\":\"프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7\",\"data\":{\"title\":\"새 프로젝트\",\"startMapId\":\"map_blank_start\",\"startPos\":{\"x\":10,\"y\":8},\"maps\":[{\"id\":\"map_blank_start\",\"name\":\"빈 맵\",\"width\":20,\"height\":15,\"events\":0}],\"db\":{\"items\":208,\"enemies\":221,\"troops\":7,\"actors\":6,\"equipment\":75,\"skills\":27},\"switches\":[],\"variables\":[]}}"
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "call_3",
+                "type": "function",
+                "function": {
+                  "name": "get_project_summary",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_3",
+            "name": "get_project_summary",
+            "content": "{\"ok\":true,\"summary\":\"프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7\",\"data\":{\"title\":\"새 프로젝트\",\"startMapId\":\"map_blank_start\",\"startPos\":{\"x\":10,\"y\":8},\"maps\":[{\"id\":\"map_blank_start\",\"name\":\"빈 맵\",\"width\":20,\"height\":15,\"events\":0}],\"db\":{\"items\":208,\"enemies\":221,\"troops\":7,\"actors\":6,\"equipment\":75,\"skills\":27},\"switches\":[],\"variables\":[]}}"
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "call_4",
+                "type": "function",
+                "function": {
+                  "name": "get_project_summary",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_4",
+            "name": "get_project_summary",
+            "content": "{\"ok\":true,\"summary\":\"프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7\",\"data\":{\"title\":\"새 프로젝트\",\"startMapId\":\"map_blank_start\",\"startPos\":{\"x\":10,\"y\":8},\"maps\":[{\"id\":\"map_blank_start\",\"name\":\"빈 맵\",\"width\":20,\"height\":15,\"events\":0}],\"db\":{\"items\":208,\"enemies\":221,\"troops\":7,\"actors\":6,\"equipment\":75,\"skills\":27},\"switches\":[],\"variables\":[]}}"
+          }
+        ],
+        "audit": [
+          {
+            "kind": "user",
+            "text": "맵 상태를 계속 조회해\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start)",
+            "context": {
+              "mapId": "map_blank_start",
+              "mapName": "빈 맵",
+              "mapWidth": 20,
+              "mapHeight": 15
+            },
+            "at": "2026-08-29T17:11:02.346Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume (capability)",
+            "at": "2026-08-29T17:11:02.372Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume,find_tools | capability:set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume",
+            "at": "2026-08-29T17:11:02.372Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "get_project_summary",
+                "args": "{}"
+              }
+            ],
+            "at": "2026-08-29T17:11:02.518Z"
+          },
+          {
+            "kind": "tool",
+            "name": "get_project_summary",
+            "args": {},
+            "ok": true,
+            "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7",
+            "at": "2026-08-29T17:11:02.543Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume (capability)",
+            "at": "2026-08-29T17:11:02.553Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume,find_tools | capability:set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume",
+            "at": "2026-08-29T17:11:02.553Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "get_project_summary",
+                "args": "{}"
+              }
+            ],
+            "at": "2026-08-29T17:11:02.615Z"
+          },
+          {
+            "kind": "tool",
+            "name": "get_project_summary",
+            "args": {},
+            "ok": true,
+            "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7",
+            "at": "2026-08-29T17:11:02.642Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume (capability)",
+            "at": "2026-08-29T17:11:02.650Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume,find_tools | capability:set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume",
+            "at": "2026-08-29T17:11:02.650Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "get_project_summary",
+                "args": "{}"
+              }
+            ],
+            "at": "2026-08-29T17:11:03.297Z"
+          },
+          {
+            "kind": "tool",
+            "name": "get_project_summary",
+            "args": {},
+            "ok": true,
+            "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7",
+            "at": "2026-08-29T17:11:03.317Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:escalated set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume (capability)",
+            "at": "2026-08-29T17:11:03.325Z"
+          },
+          {
+            "kind": "status",
+            "text": "tools:exposed 42 — reset_project,author_house,author_village,build_wall,build_roof,place_door,place_window,lay_path,place_props,fill_region,arrange_rows,tile_erase,evaluate_village_look,critique_village,list_village_tree_assets,start_interior_room_session,advance_interior_room_build,run_interior_room_pipeline,evaluate_interior_room,build_castle,tile_query,create_map,duplicate_map,manage_map_tree,paint_road,preview_house,mirror_region,copy_map_region,set_start_position,set_encounter_table,make_hunting_ground,create_farm_plot,resize_map,make_action_enemy,set_build_spec,set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume,find_tools | capability:set_project_genre,build_world,explain_event,get_village_session,place_trap,set_lighting_volume",
+            "at": "2026-08-29T17:11:03.325Z"
+          },
+          {
+            "kind": "assistant",
+            "text": "",
+            "toolCalls": [
+              {
+                "name": "get_project_summary",
+                "args": "{}"
+              }
+            ],
+            "at": "2026-08-29T17:11:03.563Z"
+          },
+          {
+            "kind": "tool",
+            "name": "get_project_summary",
+            "args": {},
+            "ok": true,
+            "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 208, 트룹 7",
+            "at": "2026-08-29T17:11:03.583Z"
+          },
+          {
+            "kind": "status",
+            "text": "턴 종료(max-tool-calls) — 제안 0건 · 출력 토큰 ~28",
+            "at": "2026-08-29T17:11:03.608Z"
+          }
+        ],
+        "workPlan": null
+      }
+    },
+    "rounds": 4,
+    "mentionsBudget": false,
+    "logText": "2026년 8월 30일 일@>맵 상태를 계속 조회해조회 4 ▸@>요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요."
+  }
+}

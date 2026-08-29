@@ -1,4 +1,17 @@
-import type { Command, Condition, EventAnimationType, EventPage, Trigger } from "@/project/types";
+import type { Command, Condition, EventAnimationType, EventPage, Project, Trigger } from "@/project/types";
+
+export function collectNpcActivitySuggestions(project: Project): readonly string[] {
+  const found = new Set<string>();
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const entry of event.schedule ?? []) {
+        const activity = entry.activity?.trim();
+        if (activity) found.add(activity);
+      }
+    }
+  }
+  return [...found].sort((left, right) => left.localeCompare(right, "ko"));
+}
 
 export type SelectOption<T extends string> = {
   readonly value: T;
@@ -171,8 +184,8 @@ export const EVENT_ANIMATION_TYPE_OPTIONS = [
 ] as const satisfies readonly SelectOption<EventAnimationType>[];
 
 export const BOOLEAN_OPTIONS = [
-  { value: "true", label: "참" },
-  { value: "false", label: "거짓" },
+  { value: "true", label: "켜짐" },
+  { value: "false", label: "꺼짐" },
 ] as const satisfies readonly SelectOption<"true" | "false">[];
 
 export const VARIABLE_OP_OPTIONS = [
@@ -202,6 +215,73 @@ export const CONDITION_OP_OPTIONS = [
   { value: "<", label: "미만" },
   { value: "!=", label: "다름" },
 ] as const satisfies readonly SelectOption<Extract<Condition, { kind: "variable" }>["op"]>[];
+
+/** 비교 연산자를 문장용 한국어로. 컨트롤 안 기호는 CONDITION_OP_OPTIONS 가 맡는다. */
+export function compareAmountLabel(op: string, amount: number): string {
+  switch (op) {
+    case ">=":
+      return `${amount} 이상`;
+    case "<=":
+      return `${amount} 이하`;
+    case ">":
+      return `${amount} 초과`;
+    case "<":
+      return `${amount} 미만`;
+    case "==":
+      return `${amount} 같을 때`;
+    case "!=":
+      return `${amount} 다를 때`;
+    default:
+      return String(amount);
+  }
+}
+
+export function timerIdLabel(timerId: string): string {
+  return timerId === "timer2" ? "타이머 2" : "타이머 1";
+}
+
+export function runResultLabel(result: string): string {
+  switch (result) {
+    case "completed":
+      return "완료";
+    case "failed":
+      return "실패";
+    case "abandoned":
+      return "포기";
+    default:
+      return result;
+  }
+}
+
+export function timePhaseLabel(phase: string): string {
+  switch (phase) {
+    case "morning":
+      return "아침";
+    case "day":
+      return "낮";
+    case "evening":
+      return "저녁";
+    case "night":
+      return "밤";
+    default:
+      return phase;
+  }
+}
+
+export function seasonLabel(season: string): string {
+  switch (season) {
+    case "spring":
+      return "봄";
+    case "summer":
+      return "여름";
+    case "fall":
+      return "가을";
+    case "winter":
+      return "겨울";
+    default:
+      return season;
+  }
+}
 
 export const LAYER_OPTIONS = [
   { value: "lower", label: "바닥" },

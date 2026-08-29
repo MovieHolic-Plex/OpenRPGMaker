@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>런타임 성능 보고서 — 큰 맵·다수 NPC 렉 원인 9건 (2026-08-30)</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161a21;
+    --panel-2: #1d2230;
+    --line: #2a3040;
+    --text: #e6e9ef;
+    --muted: #97a0b3;
+    --good: #4ade80;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    --accent: #60a5fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.7 -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", "Noto Sans KR", sans-serif;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 28px; margin-bottom: 40px; }
+  h1 { font-size: 28px; line-height: 1.35; margin: 0 0 12px; letter-spacing: -0.01em; }
+  h2 {
+    font-size: 20px; margin: 56px 0 16px; padding-top: 20px;
+    border-top: 1px solid var(--line); letter-spacing: -0.01em;
+  }
+  h3 { font-size: 16px; margin: 32px 0 10px; color: var(--accent); }
+  p { margin: 0 0 14px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .meta code { color: var(--text); }
+  code, pre, .num {
+    font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+    font-size: 13px;
+  }
+  code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+  pre {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; margin: 0 0 18px; line-height: 1.6;
+  }
+  pre code { background: none; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .ratio { color: var(--good); font-weight: 600; }
+  .before { color: var(--bad); }
+  .after { color: var(--good); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 0 0 28px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .card .label { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+  .card .value { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .card .sub { color: var(--muted); font-size: 12px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  figure {
+    margin: 0 0 24px; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+  }
+  figure img { display: block; width: 100%; height: auto; background: #000; }
+  figcaption { padding: 12px 16px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+  figcaption strong { color: var(--text); }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-bottom: 24px; }
+  .shots figure { margin: 0; }
+  ul, ol { margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  .pill {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.02em; vertical-align: middle;
+  }
+  .pill.pass { background: rgba(74, 222, 128, 0.14); color: var(--good); }
+  .pill.same { background: rgba(96, 165, 250, 0.14); color: var(--accent); }
+  .pill.note { background: rgba(251, 191, 36, 0.14); color: var(--warn); }
+  .note-box {
+    background: var(--panel-2); border-left: 3px solid var(--accent);
+    padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 0 0 20px; color: var(--muted);
+  }
+  .note-box strong { color: var(--text); }
+  a { color: var(--accent); }
+  .files { font-size: 13px; }
+  .files td:first-child { font-family: "JetBrains Mono", ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>런타임 성능 보고서 — 큰 맵·다수 NPC 렉 원인 9건</h1>
+  <p class="meta">
+    작성일 2026-08-30 · 브랜치 <code>agent/perf</code> · PR
+    <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/263">#263</a>(1차, 합병됨) ·
+    <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/271">#271</a>(2차 성분 색인)<br>
+    대조 기준 <code>origin/main</code> @ <code>be171a32</code> ·
+    측정 커밋 <code>fe7a1519</code> + 합병 <code>d319bf24</code> + 성분 색인 <code>2aa8f1e4</code>
+    + 재합병 <code>cc7ef056</code> ·
+    프레임 예산 16.7ms (60fps)
+  </p>
+</header>
+
+<p>
+  큰 맵에 NPC 를 여러 명 두면 프레임이 무너지는 문제를 계측으로 파고들었다. 결론은
+  <strong>렌더가 아니라 매 프레임 반복되는 전체 탐색</strong>이었다. 원인 9건을 고쳤고, 각 수치는
+  합병 후 두 워크트리에서 같은 벤치를 다시 돌려 얻은 값이다.
+</p>
+
+<div class="cards">
+  <div class="card">
+    <div class="label">시간표 갱신 (30 NPC)</div>
+    <div class="value ratio">197×</div>
+    <div class="sub">27.603 ms → 0.140 ms</div>
+  </div>
+  <div class="card">
+    <div class="label">A* 도달 가능 100×100</div>
+    <div class="value ratio">8.1×</div>
+    <div class="sub">3.646 ms → 0.450 ms</div>
+  </div>
+  <div class="card">
+    <div class="label">A* 도달 불가</div>
+    <div class="value ratio">5.2×</div>
+    <div class="sub">47.609 ms → 9.219 ms</div>
+  </div>
+  <div class="card">
+    <div class="label">도달 불가 판정 (성분 색인)</div>
+    <div class="value ratio">265×</div>
+    <div class="sub">6726 µs → 26 µs</div>
+  </div>
+</div>
+
+<h2>1. 계측 결과</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>측정 항목</th>
+      <th class="num">origin/main</th>
+      <th class="num">agent/perf</th>
+      <th class="num">배수</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>updateNpcSchedules</code> 30 NPC — 걷는 중 매 프레임</td>
+      <td class="num before">27.603 ms</td>
+      <td class="num after">0.140 ms</td>
+      <td class="num ratio">197×</td>
+    </tr>
+    <tr>
+      <td>A* 도달 가능 100×100 (0,0)→(99,99)</td>
+      <td class="num before">3.646 ms</td>
+      <td class="num after">0.450 ms</td>
+      <td class="num ratio">8.1×</td>
+    </tr>
+    <tr>
+      <td>A* 도달 불가 (벽으로 갈린 맵)</td>
+      <td class="num before">47.609 ms</td>
+      <td class="num after">9.219 ms</td>
+      <td class="num ratio">5.2×</td>
+    </tr>
+    <tr>
+      <td>이벤트 1개 찾기 (best of 5 × 20,000)</td>
+      <td class="num before">14.07 µs</td>
+      <td class="num after">9.30 µs</td>
+      <td class="num ratio">1.51×</td>
+    </tr>
+    <tr>
+      <td>차단 이벤트 판정 (best of 5 × 20,000)</td>
+      <td class="num before">15.11 µs</td>
+      <td class="num after">10.30 µs</td>
+      <td class="num ratio">1.47×</td>
+    </tr>
+    <tr>
+      <td>뷰 배열 전체, 맵 3개 (best of 5 × 20,000)</td>
+      <td class="num before">14.32 µs</td>
+      <td class="num after">9.95 µs</td>
+      <td class="num ratio">1.44×</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="meta">
+  도달 불가 A* 는 고친 뒤에도 9.2ms 다. 프레임 예산 안이지만 여전히 크다 — 그래서 도달 불가
+  표적은 <strong>매 프레임 다시 탐색하지 않도록</strong> 따로 막았다(§2 참조). 두 수정은 곱해진다.
+</p>
+
+<h3>화면 밖 타일 컬링이 새로 얹는 비용</h3>
+<table>
+  <thead>
+    <tr><th>시점</th><th class="num">비용</th><th>빈도</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>trackCullableTile</code> × 20,000</td><td class="num">1.572 ms</td><td>맵 로드당 1회</td></tr>
+    <tr><td><code>syncTileCulling</code> — 타일 창이 바뀐 프레임</td><td class="num">0.147 ms</td><td>8~16 프레임마다</td></tr>
+    <tr><td><code>syncTileCulling</code> — 창이 그대로인 프레임</td><td class="num">0.000 ms</td><td>그 외 전부</td></tr>
+    <tr><td><code>renderTiles</code> 100×100 (참고)</td><td class="num">25.122 ms</td><td>맵 로드당 1회 <span class="pill note">이전엔 시간표마다</span></td></tr>
+  </tbody>
+</table>
+
+<h3>도달 불가 판정을 전체 탐색에서 걷어낸 뒤 (2차)</h3>
+<p class="meta">
+  위 표의 A* 수치는 재탐색 <em>빈도</em>를 막은 상태다. 단발 비용 자체를 없앤 결과가 아래다.
+</p>
+<table>
+  <thead>
+    <tr><th>측정 항목</th><th class="num">색인 없음</th><th class="num">색인 있음</th><th class="num">배수</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A* 도달 불가 (벽으로 갈린 100×100)</td>
+      <td class="num before">6726 µs</td><td class="num after">26 µs</td>
+      <td class="num ratio">265×</td>
+    </tr>
+    <tr>
+      <td>경계 후보 100개가 전부 도달 불가 (갇힌 주민)</td>
+      <td class="num before">1864 µs</td><td class="num after">29 µs</td>
+      <td class="num ratio">64×</td>
+    </tr>
+    <tr>
+      <td>A* 도달 가능 (색인이 줄일 수 없는 경로)</td>
+      <td class="num">150 µs</td><td class="num">113 µs</td>
+      <td class="num"><span class="pill same">새 비용 없음</span></td>
+    </tr>
+    <tr>
+      <td>색인 구축 (맵당 1회, 실패한 탐색 뒤에만)</td>
+      <td class="num">—</td><td class="num">2.9 ms</td>
+      <td class="num meta">방금 치른 6.7ms 보다 싸다</td>
+    </tr>
+  </tbody>
+</table>
+<p class="meta">
+  <code>origin/main</code> 을 한 번 더 합병한 뒤(<code>cc7ef056</code>, 충돌 없음 — 상류가
+  <code>chaseAi</code>·<code>collision</code>·<code>playSceneMapRuntime</code> 를 건드리지 않았다)
+  같은 벤치를 다시 돌렸다: 도달 불가 26.5 µs, 경계 후보 30.2 µs, 도달 가능 118 µs, 구축 3.3 ms.
+  표의 수치와 측정 잡음 범위 안이다.
+</p>
+
+<h2>2. 원인과 수정</h2>
+
+<h3>A. 매 프레임 전체 맵 탐색 — 가장 큰 원인</h3>
+<ul>
+  <li>
+    <code>updateNpcSchedules</code> 가 프레임마다 주민 전원의 목표 경로를 다시 등록했다.
+    100ms 주기로 묶고(<code>tickNpcSchedules</code>), 이미 같은 목표로 걷는 중이면 재등록을 건너뛰고,
+    실패한 경로는 10틱 백오프를 둔다. 백오프 상태는 <code>WeakMap</code> 에 두었다 —
+    세션 상태에 넣으면 세이브 파일로 흘러간다.
+  </li>
+  <li>
+    시간표가 바뀌면 <code>renderTiles</code> 로 맵 전체 GameObject(1만~2.1만개, <span class="num">25.1ms</span>)를
+    파괴하고 다시 만들었다. 갱신이 필요한 것은 이벤트 계층뿐이라 <code>refreshRuntimeEntities</code> 를
+    새로 두고 그쪽을 부른다.
+  </li>
+  <li>
+    도달 불가한 표적을 추격하는 NPC 가 매 프레임 A* 전체 탐색을 반복했다(실측 174ms/프레임/NPC).
+    <code>chasePathBlocked</code> 로 표시해 재탐색 주기를 기다리게 한다. 경로가 <strong>소진돼서</strong>
+    빈 경우는 표시가 없으므로 예전처럼 즉시 재탐색한다 — 추격 반응성은 그대로다.
+  </li>
+</ul>
+
+<h3>B. A* 자료구조</h3>
+<p>
+  배열을 우선순위 큐로 쓰며 <code>while</code> 반복마다 <code>sort()</code>(O(n log n))를 돌리고
+  개선된 노드를 <code>findIndex()</code>(O(n))로 훑었다. 문자열 키 <code>"x,y"</code> 도 반복마다
+  새로 만들었다. 이진 최소힙 + 정수 키(<code>y*width+x</code>) + 지연 삭제로 바꿨다.
+</p>
+<div class="note-box">
+  <strong>뽑는 순서가 같은 이유:</strong> 비교자 <code>f → h → order</code> 의 <code>order</code> 는
+  키마다 유일하므로 open 안에서 전순서다. 즉 정렬 후 shift 와 힙 pop 이 같은 노드를 뽑는다.
+  decrease-key 는 지연 삭제로 대체했다 — 개선 노드는 g 가 반드시 더 작아 f 도 작으므로 낡은 항목보다
+  먼저 나오고, 낡은 항목은 pop 시점에 <code>nodes</code> 최신본과 다르다는 것으로 걸러진다.
+</div>
+<p>
+  맵 경계 396칸을 후보로 각각 A* 를 돌리던 최근접 탐색(150ms/프레임)은 너비 우선 1회
+  (<code>nearestReachableCandidate</code>)로 바꿨다. 한 칸 비용이 1 이므로 BFS 깊이가 곧 최단 거리다.
+  동률 규칙(candidates 배열에서 앞선 것)까지 예전 안정 정렬과 같고, <code>accept</code> 판정은
+  실제로 닿은 후보에만 돌려 396칸 전수 검사를 없앴다.
+</p>
+
+<h3>B2. 도달 불가는 아예 탐색하지 않는다 — 통행 성분 색인</h3>
+<p>
+  재탐색 스로틀은 <em>빈도</em>만 막았다. 단발 비용은 여전히 6.7ms 였고, 갇힌 NPC 30명이면
+  500ms 마다 200ms 를 쓴다. 4방향 통행 그래프의 연결 성분을 색인해 도달 불가를 탐색 없이
+  판정한다.
+</p>
+<div class="note-box">
+  <strong>정확한 판정인 근거 — <code>canMove</code> 는 대칭이다:</strong>
+  <pre style="margin: 10px 0 0; background: var(--panel);"><code>canMove(a→b) = a.&lt;dir&gt;      &amp;&amp; b.&lt;opposite&gt;
+canMove(b→a) = b.&lt;opposite&gt; &amp;&amp; a.&lt;dir&gt;     ← 같은 논리곱</code></pre>
+  <p style="margin: 10px 0 0;">
+    그래서 인접 통행 관계는 무향 그래프이고, 유니온-파인드 연결 성분은 <code>findChasePath</code> 의
+    도달 가능성과 <strong>정확히 일치한다</strong>. 근사가 아니라 같은 답이다. 이 정리는
+    인접 쌍 300여 개로 테스트에서 직접 확인한다.
+  </p>
+</div>
+<p>비용을 어디에 두었는지가 이 수정의 핵심이다.</p>
+<ul>
+  <li>
+    <strong>미리 만들지 않는다.</strong> A* 가 실제로 빈 경로를 낸 뒤 — 이미 6.7ms 를 쓴 뒤 —
+    에만 색인을 만든다(2.9ms). 도달 불가가 없는 맵은 값을 치르지 않는다.
+  </li>
+  <li>
+    <strong>도달 가능 질의는 지문을 타지 않는다.</strong> 라벨 두 번 읽기로 끝난다. 낙관적으로 낸
+    "도달 가능" 은 틀려도 호출부가 A* 를 돌려 스스로 바로잡기 때문에 검증할 필요가 없다.
+  </li>
+  <li>
+    <strong>결과를 바꾸는 답에만 검증을 붙인다.</strong> 낡은 색인이 낼 수 있는 위험한 오답은
+    "도달 불가" 하나다 — 그러면 호출부가 탐색을 건너뛰어, 벽이 열렸는데 추격을 포기한다.
+    그 답을 낼 때만 지문(25µs)을 확인하고 낡았으면 그 자리에서 다시 만든다.
+  </li>
+  <li>
+    판정기를 <strong>질의당 한 번</strong> 만들어 돌려 쓴다. 후보마다 검증하면 경계 100칸
+    질의가 100 × 25µs = 2.5ms 로 되돌아간다(실측하고 고쳤다).
+  </li>
+</ul>
+<p>
+  <strong>낡은 색인 대책이 두 겹이다.</strong> 런타임에서 타일이 바뀌는 유일한 지점
+  (<code>applyMapOverrides</code>)은 <code>lowerTiles[i]</code> 를 <em>제자리에서</em> 고쳐
+  배열 identity 로는 잡히지 않는다. 그 지점에서 명시적으로 버리고, 그와 별개로 지문
+  (FNV-1a, 셀당 배열 읽기 2회)이 무효화 누락을 구조적으로 막는다. 무효화 한 곳을 빠뜨려도
+  조용한 게임 버그가 되지 않는다.
+</p>
+<p class="meta">
+  안 덮는 것: 발자국이 1×1 보다 큰 이동. <code>canMoveFootprint</code> 는 이동 방향의 선행
+  모서리만 보므로 폭 2 이상에서 대칭이 깨진다(오른쪽으로 갈 때는 오른쪽 열, 왼쪽으로 갈 때는
+  왼쪽 열). <code>pass</code> 가 있으면 색인을 쓰지도 만들지도 않으며, 그걸 테스트로 고정했다.
+</p>
+
+<h3>C. 이벤트 뷰 질의</h3>
+<p>
+  <code>runtimeEventViewsForMap(...).find/some</code> 이 질의마다 <strong>모든 맵</strong>을 훑어
+  전체 배열과 Set 3종을 새로 만들었다. NPC 한 명이 한 걸음 옮길 때 대각 판정으로 최대 3회 불린다.
+  지연 순회 <code>forEachRuntimeEventView</code> 하나로 모으고, 찾기 질의는 첫 일치에서 멈춘다.
+  다른 맵 순회는 실제로 옮겨진 이벤트가 있을 때만 한다 — 맵이 하나뿐인 프로젝트는 값을 치르지 않는다.
+</p>
+
+<h3>D. 화면 밖 타일 컬링</h3>
+<p>
+  Phaser <code>Container</code> 와 root display list 에는 프러스텀 컬링이 없다.
+  <code>cull()</code> 호출부는 <code>TilemapLayer{WebGL,Canvas}Renderer</code> 뿐이고 이 프로젝트는
+  Tilemap 을 쓰지 않는다. 그래서 320×240 화면에 1만~2.1만개 타일이 매 프레임 전부 드로우된다.
+  카메라 창 밖 타일의 <code>visible</code> 을 끄는 <code>playSceneTileCulling.ts</code> 를 추가했다.
+</p>
+<div class="note-box">
+  <strong>청크 컨테이너를 쓰지 않은 이유:</strong> Container 자식은 컨테이너 <em>안에서만</em> depth 정렬된다.
+  <code>tileLayer</code> 안에서는 농지·설치물 오버레이와 root y-sort 가구가 depth 로 서로 끼어들기 때문에
+  청킹하면 그리는 순서가 바뀐다. 개별 <code>visible</code> 토글은 depth 규칙을 건드리지 않는다.
+</div>
+
+<h3>E. 그 외</h3>
+<ul>
+  <li>
+    <strong>runtimeDom</strong> — QA 상태 JSON 미러가 프레임마다 <code>textContent</code> 를 다시 썼다.
+    노드를 캐시하고 직렬화 결과가 같으면 쓰지 않는다. <code>.runtime-state-json</code> 에
+    <code>content-visibility: hidden</code> 을 걸어 레이아웃 비용을 없앴다 — 1×1 박스는 남아
+    Playwright <code>toBeVisible()</code> 과 <code>textContent</code> 가 그대로 동작한다.
+  </li>
+  <li>
+    <strong>tileToolbar</strong> — <code>store.subscribe</code> 가 칸을 칠할 때마다 툴바 전체를
+    다시 그렸고 거기에 <code>projectLint</code>(141~1206ms)가 딸려 왔다. 120ms 트레일링 디바운스.
+  </li>
+  <li>
+    <strong>mapOverlayTiles</strong> — <code>tileStackAt</code>/<code>topTileInStack</code> 이
+    <em>읽는 중에</em> <code>clearTileStack</code> 을 불러 작성된 스택을 지웠다. 렌더 경로가 살아 있는
+    store 맵을 넘기므로 한 번 그리면 작성된 <code>lowerTileStacks</code>/<code>upperTileStacks</code> 가
+    undo·자동저장 밖에서 조용히 사라졌다. 읽기를 순수하게 만들었다.
+  </li>
+</ul>
+
+<h2>3. 브라우저 증거</h2>
+
+<p>
+  jsdom 테스트는 픽셀을 만들지 않으므로 컬링이 화면을 갉아먹어도 통과한다. 실제 캔버스를 찍어 확인했다.
+</p>
+<div class="note-box">
+  <strong>왜 페이지 안 <code>getImageData</code> 가 아닌가:</strong> WebGL 캔버스는
+  <code>preserveDrawingBuffer</code> 없이 합성 뒤 버퍼가 비므로 <code>drawImage → getImageData</code> 가
+  전부 투명 검정으로 읽힌다(실측 어두운 비율 1.0). Playwright 스크린샷 PNG 를 <code>pngjs</code> 로
+  디코딩해 측정한다. 캔버스는 레터박스(좌우 검은 띠)로 감싸여 있어 전체를 재면 정상 화면도 15% 넘게
+  검으므로, 지도 내용이 확실한 <strong>가운데 60%</strong>만 본다. 임계값 2%.
+</div>
+
+<h3>컬링이 보이는 그림을 바꾸지 않는다 <span class="pill pass">통과</span></h3>
+<p class="meta">
+  60×60 체커보드 맵(<code>TILE.GRASS</code> / <code>TILE.PATH</code>). 한 칸이라도 빠지면 눈에 보인다.
+  카메라가 타일 경계를 여러 번 넘도록 오른쪽 8칸 + 아래 6칸 걷고, 다시 되돌아온다.
+</p>
+<div class="shots">
+  <figure>
+    <img src="assets/runtime-perf-2026-08-30/culling-start.png" alt="컬링 켠 상태의 시작 화면 — 60×60 체커보드 맵이 빈 칸 없이 채워져 있다">
+    <figcaption><strong>시작</strong> — 컬링 창 계산 직후. 가운데 60% 어두운 픽셀 &lt; 2%.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/runtime-perf-2026-08-30/culling-after-walk.png" alt="오른쪽 8칸 아래 6칸 걸은 뒤 화면 — 여전히 빈 칸이 없다">
+    <figcaption><strong>걸은 뒤</strong> — 창이 여러 번 다시 계산됐다. 이전 스크린샷과 바이트가 다르다(카메라가 실제로 움직였다는 확인).</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/runtime-perf-2026-08-30/culling-returned.png" alt="원래 자리로 되돌아온 화면 — 숨겼던 타일이 다시 보인다">
+    <figcaption><strong>복귀</strong> — 앞서 숨겼던 타일이 다시 나타난다. 컬링이 한 번 끈 타일을 영구히 잃지 않는다.</figcaption>
+  </figure>
+</div>
+
+<h3>시간표를 100ms 로 묶어도 주민이 실제로 걸어간다 <span class="pill pass">통과</span></h3>
+<p class="meta">
+  20×20 최소 맵, 주민 1명을 (2,2) 에 두고 시간표 목표를 (12,9) 로 준다.
+  <code>tickNpcSchedules → registerAutonomousMover → refreshRuntimeEntities</code> 경로만 태운다.
+</p>
+<figure>
+  <img src="assets/runtime-perf-2026-08-30/schedule-walked.png" alt="주민이 시간표 목표 칸까지 걸어간 상태의 런타임 화면">
+  <figcaption>
+    <strong>도착</strong> — <code>data-map-x/y</code> 가 (12,9) 에 도달하고
+    <code>__oprnDebug.readState().npcActivities.villager</code> 가 <code>"work"</code> 로 배정된다.
+    묶음이 걸음을 막지 않는다.
+  </figcaption>
+</figure>
+
+<h2>4. 게이트 검증</h2>
+
+<table>
+  <thead>
+    <tr><th>게이트</th><th>origin/main</th><th>agent/perf</th><th>판정</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>tsc --noEmit -p tsconfig.app.json</code></td>
+      <td>0건</td><td>0건</td>
+      <td><span class="pill pass">통과</span></td>
+    </tr>
+    <tr>
+      <td>전체 vitest — 실패 파일 수</td>
+      <td>93 / 1164</td><td>98 / 1167</td>
+      <td><span class="pill same">동률</span></td>
+    </tr>
+    <tr>
+      <td>CSS 예산 (회귀 / 개선)</td>
+      <td>—</td><td>0 / 1</td>
+      <td><span class="pill pass">통과</span></td>
+    </tr>
+    <tr>
+      <td>CSS 그래프 신규</td>
+      <td>—</td><td>0건</td>
+      <td><span class="pill pass">통과</span></td>
+    </tr>
+    <tr>
+      <td><code>check-file-loc.mjs</code> FAIL 집합</td>
+      <td>26개</td><td>26개</td>
+      <td><span class="pill same">완전 동일</span></td>
+    </tr>
+    <tr>
+      <td>브라우저 증거 (<code>--workers=1</code>)</td>
+      <td>—</td><td>2 / 2</td>
+      <td><span class="pill pass">통과</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>실패 파일 차이를 하나씩 확인했다</h3>
+<p>
+  전체 실행을 두 번 했고, 두 번 모두 이 브랜치만 실패한 파일은 <strong>전부</strong>
+  <code>Test timed out in 15000ms</code> 였다. 결정적인 대목: 두 실행에서 갈린 파일 목록이
+  <strong>서로 달랐다</strong>(1차 10개, 2차 8개, 겹치는 건 <code>playerBootFactory</code> 하나뿐).
+  같은 코드에서 실패 집합이 흔들린다는 것이 곧 부하 흔들림의 증거다. 격리 실행하면 두 묶음 다
+  전부 통과한다. 반대로 <code>origin/main</code> 만 실패한 파일들은 이 브랜치에서 통과한다.
+  <strong>실제 회귀 0건.</strong>
+</p>
+<pre><code># 1차에서 갈린 10개 파일 — 격리 실행
+Test Files  10 passed (10)
+      Tests  52 passed (52)
+     Errors  1 error   ← mapEditLockScratchSession 의 jsdom Response 잡음.
+                          origin/main 에서 같은 파일을 격리 실행해도 동일하게 나온다(기존 잡음).
+
+# 2차에서 갈린 8개 파일 — 격리 실행
+Test Files  8 passed (8)
+      Tests  78 passed (78)</code></pre>
+<p class="meta">
+  갈린 파일 어느 것도 이 브랜치의 diff 영역(<code>chaseAi</code>, <code>npcSchedules</code>,
+  <code>runtimeEventState</code>, <code>tilePassabilityComponents</code>, 컬링)에 속하지 않는다 —
+  마을 생성기·부팅 복구·농장 공간 질의 쪽이다.
+</p>
+
+<h3>500줄 WARN 을 새로 넘긴 파일은 없다</h3>
+<table class="files">
+  <thead>
+    <tr><th>파일</th><th class="num">origin/main</th><th class="num">agent/perf</th><th>비고</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>src/player/playSceneMapRuntime.ts</td><td class="num">523</td><td class="num">565</td><td class="meta">이미 WARN</td></tr>
+    <tr><td>src/player/PlayScene.ts</td><td class="num">599</td><td class="num">607</td><td class="meta">이미 WARN</td></tr>
+    <tr><td>src/player/runtimeDom.ts</td><td class="num">571</td><td class="num">607</td><td class="meta">이미 WARN</td></tr>
+    <tr><td>src/player/chaseAi.ts</td><td class="num">281</td><td class="num">407</td><td class="meta">WARN 아래</td></tr>
+    <tr><td>src/project/runtimeEventState.ts</td><td class="num">326</td><td class="num">415</td><td class="meta">WARN 아래</td></tr>
+    <tr><td>src/player/playSceneTileCulling.ts</td><td class="num">—</td><td class="num">121</td><td class="meta">신규</td></tr>
+  </tbody>
+</table>
+<p class="meta">1000줄 하드 천장을 넘긴 파일은 양쪽 모두 같은 26개다.</p>
+
+<h2>5. 새로 넣은 테스트</h2>
+<table class="files">
+  <thead><tr><th>파일</th><th class="num">개수</th><th>덮는 것</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>test/runtimePerfHotPaths.test.ts</td><td class="num">19</td>
+      <td>A* 경로 동일성(열린 맵·벽 우회·갈린 맵·범위 밖), BFS 최근접과 동률 규칙,
+          <code>accept</code> 가 닿은 후보에만 불리는지, 추격 재탐색 스로틀과 <code>chasePathBlocked</code> 해제,
+          시간표 틱 스로틀(음수 delta 포함), <code>runtimeEventViewById</code> 동등성,
+          <code>tileStackAt</code> 순수성</td>
+    </tr>
+    <tr>
+      <td>test/tilePassabilityComponents.test.ts</td><td class="num">8</td>
+      <td><code>canMove</code> 대칭 정리를 인접 쌍 300여 개로 직접 확인, 무작위 맵 48개에서
+          색인 없음/있음의 <code>findChasePath</code>·<code>nearestReachableCandidate</code> 결과
+          대조(참조 BFS 와도 대조), <strong>벽을 제자리에서 열면 추격이 다시 경로를 찾는지</strong>,
+          벽을 막으면 도달 불가로 바뀌는지, 무효화가 낙관 판정으로 되돌리는지,
+          발자국 경로가 색인을 남기지 않는지</td>
+    </tr>
+    <tr>
+      <td>test/playSceneTileCulling.test.ts</td><td class="num">7</td>
+      <td>여백 포함 화면 밖 숨김, 창이 같으면 쓰지 않음, 카메라가 멀어지면 다시 숨김,
+          <code>setVisible</code> 없는 스텁은 추적 제외, 망가진 뷰포트는 무동작,
+          <code>resetCullableTiles</code> 가 목록과 창을 함께 버림, <code>renderTiles</code> 로 만든 타일도 컬링됨</td>
+    </tr>
+    <tr>
+      <td>test/e2e/tile-culling-runtime.spec.ts</td><td class="num">1</td>
+      <td>브라우저 픽셀 — 걷기 전·후·복귀 모두 화면 가운데 빈 영역 없음</td>
+    </tr>
+    <tr>
+      <td>test/e2e/npc-schedule-throttle-runtime.spec.ts</td><td class="num">1</td>
+      <td>브라우저 — 묶은 뒤에도 주민이 목표 칸에 도달하고 활동이 배정됨</td>
+    </tr>
+  </tbody>
+</table>
+<p class="meta">
+  합병 영향권 16개 파일 163개 테스트도 함께 통과 확인 — <code>runtimeEventState</code>,
+  <code>npcSchedule</code>, <code>npcPlayerCollision</code>, <code>runtimeEventFootprint</code>,
+  <code>collisionFootprint</code>, <code>followerChaseRuntime</code>, <code>factionNpcCombat</code>,
+  <code>runtimeNpcLivingTravel</code>, <code>runtimeNpcMapTransfer</code> 등.
+</p>
+
+<h2>6. 상류 합병</h2>
+<p>
+  작업 중 <code>origin/main</code> 이 52 커밋 앞서 있었다. 합쳤고 충돌 4건을 해소했다
+  (<code>chaseAi</code>, <code>playSceneAutonomousMapActions</code>, <code>playSceneMapRuntime</code>,
+  <code>runtimeEventState</code>). 상류가 도입한 <strong>몸 사각 / 통행 사각</strong>
+  (<code>bodyRect</code> / <code>passRect</code>, <code>ChasePassSize</code>) 모델을 유지하면서
+  성능 수정을 그 위에 얹었다.
+</p>
+<ul>
+  <li>A* 안쪽 판정: <code>canMove</code> → <code>chasePassable</code>. 힙·정수 키·closed 선행 검사는 유지.</li>
+  <li>이벤트 점유 검사: <code>passageBounds</code> 사각을 지연 순회에 넘긴다. 조사·접촉은 <code>bodyRect</code>, 통행 차단은 <code>passRect</code>.</li>
+  <li><code>moverPassSize</code>: 전체 배열 + <code>find</code> → <code>runtimeEventViewById</code>.</li>
+  <li><code>renderTiles</code> 정리: <code>clearEventSprites</code> 로 모으고 상류가 추가한 <code>destroyAllCharacterShadows</code> 를 그 안에 넣었다 — <code>renderEventLayer</code> 도 같은 정리를 타므로 고아 그림자가 남지 않는다.</li>
+</ul>
+<p class="meta">이 보고서의 모든 벤치 수치는 <strong>합병 후</strong> 양쪽 워크트리에서 다시 측정한 값이다.</p>
+
+<h2>7. 남긴 것</h2>
+<ul>
+  <li>프레임 예산 계측을 CI 게이트로 만들지 않았다. 벤치 하네스는 <code>scratch/</code>(gitignore)에 있고 커밋되지 않는다.</li>
+  <li>플레이어 자신의 발자국은 상류 후속 태스크로 남아 있다 — <code>isCharacterBlockedRect</code> 의 플레이어 쪽은 아직 점이다.</li>
+  <li>
+    발자국이 1×1 보다 큰 이동은 성분 색인을 쓰지 못한다(§B2). 그 경로의 도달 불가는 아직
+    전체 탐색이다. 방향별 성분(강한 연결 성분)을 따로 색인하면 덮을 수 있지만, 발자국 크기마다
+    색인이 필요해 값이 맞는지 먼저 재 봐야 한다.
+  </li>
+  <li>
+    <strong>도달 가능</strong> 경로의 A* 자체는 그대로다(113µs). 프레임 예산 안이므로 손대지 않았다.
+    더 줄이려면 계층 경로 탐색(성분 안에서 관문 그래프)이 다음 후보다.
+  </li>
+</ul>
+
+<p class="meta" style="margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);">
+  🤖 Generated with <a href="https://claude.com/claude-code">Claude Code</a>
+</p>
+
+</div>
+</body>
+</html>

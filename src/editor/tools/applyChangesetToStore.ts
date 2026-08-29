@@ -12,6 +12,37 @@ import type { ChangeSummary, Project } from "@/project/types";
 import { commitChangeset, summarizeChanges } from "./changeset";
 import { runTool } from "./toolRunner";
 import type { ToolContext, ToolResult } from "./types";
+import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
+import type { ProjectChangeAnnotation } from "@/project/store";
+
+/**
+ * AI/툴 적용을 행위 로그에 남길 주석으로 바꾼다.
+ *
+ * 왜 필요한가 (2026-08-29 실측) — 이 파일의 `store.replace` 3곳과
+ * `regionTask/runRegionTask.ts` 1곳이 descriptor 없이 호출되고 있었다. 그래서 **AI 로 만든
+ * 편집 전량**이 기본값 `{ scope: "project" }` + 라벨 없음 + `origin: "human"` 으로 떨어졌다.
+ * 채팅으로만 작업하는 사용자에게는 행위 로그가 `(라벨 없음)` 줄만 남아, 고치려던 문제
+ * (「어떤 NPC 를 고쳤는지 모른다」)가 AI 경로에 그대로 재현됐다.
+ *
+ * diff 를 여기서 새로 계산하지 않는다 — 호출부가 이미 `ChangeSummary` 를 들고 있다.
+ */
+function applyAnnotation(
+  origin: EditActivityOrigin,
+  label: string,
+  diff: ChangeSummary | undefined,
+  toolNames: readonly string[],
+): ProjectChangeAnnotation {
+  const fields: EditActivityField[] = [];
+  // 변경 없는 축은 싣지 않는다 — 0 이 스무 줄 늘어서면 정작 바뀐 축을 못 찾는다.
+  if (diff) {
+    for (const [key, value] of Object.entries(diff)) {
+      if (typeof value === "number" && value > 0) fields.push({ path: key, after: value });
+      else if (value === true) fields.push({ path: key, after: true });
+    }
+  }
+  if (toolNames.length > 0) fields.push({ path: "tools", after: toolNames.join(", ") });
+  return { label, origin, ...(fields.length > 0 ? { fields } : {}) };
+}
 
 const MAP_ONLY_WRITE_TOOLS = new Set([
   "paint_tiles",
@@ -76,12 +107,14 @@ export function applyToolToStore(name: string, args: Record<string, unknown>): T
   // 쓰기 툴이 성공적으로 새 프로젝트를 만든 경우에만 반영(읽기 툴/거부는 무시).
   if (result.ok && ctx.project !== store.getCurrent()) {
     recordToolSnapshot(name, args); // 변경 이전 상태를 undo 스냅샷으로 저장.
-    store.replace(ctx.project);
+    const summary = result.summary || summaryForDiff(result.diff ?? combineDiffs([]));
+    // origin 은 "tool" — 사람이 에디터에서 툴을 직접 실행한 경로다(채팅 에이전트가 아니다).
+    store.replace(ctx.project, { change: applyAnnotation("tool", `툴 ${name}: ${summary}`, result.diff, [name]) });
     recordProjectCommitFireAndForget({
       project: ctx.project,
       identity: currentHumanEditorIdentity(),
       reviewStatus: "direct",
-      summary: result.summary || summaryForDiff(result.diff ?? combineDiffs([])),
+      summary,
       diff: result.diff,
       toolNames: [name],
     });
@@ -112,17 +145,28 @@ export function applyToolSequenceToStore(
     if (!result.ok) break; // 실패 시 중단(부분 적용 방지).
   }
   if (mutated && results.every((result) => result.ok)) {
-    recordProjectSnapshot();
-    store.replace(ctx.project);
-    if (options.source === "agent") focusAcceptedAgentChanges(before, ctx.project);
     const diff = combineDiffs(results.map((result) => result.diff));
+    const toolNames = calls.map((call) => call.name);
+    const summary = options.summary
+      ?? (results.map((result) => result.summary).filter(Boolean).join(" / ") || summaryForDiff(diff));
+    const byAgent = options.source === "agent";
+    recordProjectSnapshot();
+    store.replace(ctx.project, {
+      change: applyAnnotation(
+        byAgent ? "ai" : "tool",
+        `${byAgent ? `AI 적용${options.agentName ? ` (${options.agentName})` : ""}` : "툴 묶음"}: ${summary}`,
+        diff,
+        toolNames,
+      ),
+    });
+    if (byAgent) focusAcceptedAgentChanges(before, ctx.project);
     recordProjectCommitFireAndForget({
       project: ctx.project,
-      identity: options.source === "agent" ? currentAgentEditorIdentity(options.agentName) : currentHumanEditorIdentity(),
-      reviewStatus: options.source === "agent" ? "approved" : "direct",
-      summary: options.summary ?? (results.map((result) => result.summary).filter(Boolean).join(" / ") || summaryForDiff(diff)),
+      identity: byAgent ? currentAgentEditorIdentity(options.agentName) : currentHumanEditorIdentity(),
+      reviewStatus: byAgent ? "approved" : "direct",
+      summary,
       diff,
-      toolNames: calls.map((call) => call.name),
+      toolNames,
     });
     resetManualProjectCommitBaseline(ctx.project);
   }
@@ -172,10 +216,18 @@ export async function applyProposedProject(
     return { ok: false, reason: "commit-rejected", issue: issue?.message ?? "무결성 오류" };
   }
   recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
-  if (options.resetProject === true) store.replaceProject(proposed);
-  else store.replace(proposed);
-  focusAcceptedAgentChanges(before, proposed);
+  // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
+  // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.
   const diff = options.diff ?? summarizeChanges(before, proposed);
+  const change = applyAnnotation(
+    "ai",
+    `${options.source === "agent-milestone" ? "AI 마일스톤" : "AI 제안"} 적용: ${options.summary}`,
+    diff,
+    options.toolNames,
+  );
+  if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false });
+  else store.replace(proposed, { change });
+  focusAcceptedAgentChanges(before, proposed);
   const commitInput: CommitLogInput = {
     project: proposed,
     identity: currentAgentEditorIdentity(options.agentName ?? loadAiConfig().model),

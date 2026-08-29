@@ -6,6 +6,7 @@ import {
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
 import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
+import { collectProjectReferenceIssues } from "@/project/io/references";
 import { editorState } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
@@ -58,9 +59,7 @@ import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import {
   AUTHORING_TEST_BOOT_SUCCESS_EVENT,
-  AUTHORING_TEST_GATE_BLOCKED_EVENT,
   authoringProjectFingerprint,
-  evaluateAuthoringTestGate,
   loadAuthoringJourneyProgress,
   recordAuthoringJourneyChange,
   recordSuccessfulTestBoot,
@@ -254,7 +253,6 @@ export function renderEditor(main: HTMLElement): void {
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
-  window.addEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
   bindMapSurfaceFocusHandoff(phaserContainer);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
   unsubLayoutBbox = installLayoutBboxOverlay();
@@ -429,7 +427,6 @@ export function teardownEditor(): void {
   window.removeEventListener("resize", onWindowResize);
   window.removeEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.removeEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
-  window.removeEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
   closeTestPlayModal();
   destroyGame();
   leftRoot = null;
@@ -702,7 +699,7 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
     change.scope === "project" ||
     (change.scope === "map" && !change.cells?.length)
   ) {
-    authoringJourneyReferenceIssues = evaluateAuthoringTestGate(project).referenceIssues;
+    authoringJourneyReferenceIssues = collectProjectReferenceIssues(project);
   }
   clearChildren(authoringJourneyRoot);
   authoringJourneyRoot.append(renderAuthoringJourney(project, progress, {
@@ -726,22 +723,15 @@ function onAuthoringTestBootSuccess(event: Event): void {
   const projectFingerprint = detail.projectFingerprint;
   if (typeof projectFingerprint !== "string" || projectFingerprint.length === 0) return;
   const project = store.getCurrent();
-  const gate = evaluateAuthoringTestGate(project);
-  authoringJourneyReferenceIssues = gate.referenceIssues;
+  authoringJourneyReferenceIssues = collectProjectReferenceIssues(project);
   const scope = authoringJourneyScope();
   const progress = loadAuthoringJourneyProgress(scope);
   const next = recordSuccessfulTestBoot(
     progress,
     projectFingerprint,
     authoringProjectFingerprint(project),
-    gate.referenceIssues,
   );
   if (next !== progress) saveAuthoringJourneyProgress(scope, next);
-  refreshAuthoringJourney();
-}
-
-function onAuthoringTestGateBlocked(): void {
-  authoringJourneyReferenceIssues = evaluateAuthoringTestGate(store.getCurrent()).referenceIssues;
   refreshAuthoringJourney();
 }
 

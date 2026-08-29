@@ -115,8 +115,8 @@
   width: 120px;
 }
 
-/* 이름표는 알약이다. 높이는 JS(alignEnemyFeetToAuthoredY)가 실측해 발 위치를 보정하므로
-   패딩을 바꿔도 스프라이트는 저작 y 에 그대로 선다. */
+/* 이름표는 알약이다. `.battle-enemy-chrome` 이 흐름 밖이라 패딩·높이를 바꿔도
+   스프라이트 위치에는 영향이 없다(옛날에는 JS 가 이 높이를 실측해 보정했다). */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-name {
   background: var(--rm-glass);
   border: 2px solid var(--rm-hairline);
@@ -718,12 +718,15 @@
   grid-column: 1 / -1;
   grid-row: 1 / -1;
   grid-template-columns: minmax(0, 1fr) 16px;
-  height: 44px;
+  /* 한 줄 높이(44px)로 고정돼 있어서 "○○의 공격!" + "○○에게 74 피해!" 두 줄이 되면
+     두 번째 줄이 잘렸다(실측 scrollHeight 54 > clientHeight 44). 한 줄 높이는 최소치로
+     남기고 필요할 때만 늘어나게 한다. */
+  height: auto;
   left: 16px;
-  max-height: 44px;
-  min-height: 0;
+  max-height: none;
+  min-height: 44px;
   overflow: hidden;
-  padding: 0 14px;
+  padding: 6px 14px;
   pointer-events: none;
   position: absolute;
   right: 16px;
@@ -835,7 +838,10 @@
   height: 64px;
   inset: auto;
   left: 50%;
-  top: calc(50% + 16px);
+  /* 노드 = 스프라이트 박스가 된 뒤로는 50% 가 곧 스프라이트의 중심이다.
+     예전에는 노드가 이름표·HUD 까지 품어 50% 가 스프라이트 중심보다 아래였고,
+     그걸 +16px 로 또 밀어 괄호가 몸통 아래쪽에 걸쳐 있었다. */
+  top: 50%;
   transform: translate(-50%, -50%);
   width: 72px;
 }

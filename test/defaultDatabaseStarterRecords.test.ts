@@ -28,7 +28,19 @@ describe("default database starter records", () => {
     expect(itemIds).toEqual(
       expect.arrayContaining([DEFAULT_ITEM_ID, "item_ether", "item_antidote", "item_wake_herb", "item_poison_dart", "item_old_key"])
     );
-    expect(stateIds).toEqual(expect.arrayContaining([DEFAULT_STATE_ID, "state_sleep", "state_attack_up", "state_defense_down"]));
+    expect(stateIds).toEqual(expect.arrayContaining([
+      DEFAULT_STATE_ID,
+      "state_sleep",
+      "state_attack_up",
+      "state_defense_down",
+      "state_attack_down",
+      "state_agility_up",
+      "state_agility_down",
+      "state_paralysis",
+      "state_deep_poison",
+      "state_regen",
+      "state_silence",
+    ]));
     expect(database.battleAnimations).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: DEFAULT_ANIMATION_ID, resourceId: "easyrpg-battle-blow" }),
@@ -75,6 +87,10 @@ describe("default database starter records", () => {
         "skill_item_guard",
         "skill_item_holy_water",
         "skill_item_thunder_stone",
+        "skill_item_frost_vial",
+        "skill_item_quake_stone",
+        "skill_item_gale_fan",
+        "skill_item_shadow_dust",
       ])
     );
   });

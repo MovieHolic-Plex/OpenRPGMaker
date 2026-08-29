@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>인게임 메뉴 UI/UX 개선안 — RPG ZZU</title>
+<style>
+:root{
+  --bg:#090b10;--panel:#11151d;--panel2:#171c26;--ink:#f4f1e9;--muted:#a8afbc;
+  --line:#2c3442;--red:#ff4f5e;--orange:#ff9c4a;--yellow:#f7d65a;--cyan:#55d8e8;
+  --green:#7ce39b;--purple:#9a82ff;--max:1180px;--shadow:0 22px 70px rgba(0,0,0,.34)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:
+  radial-gradient(1000px 560px at 85% -10%,rgba(85,216,232,.13),transparent 60%),
+  radial-gradient(800px 520px at -10% 16%,rgba(154,130,255,.11),transparent 58%),var(--bg);
+  color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;line-height:1.65}
+a{color:var(--cyan)}img{display:block;max-width:100%}
+code{font:500 .88em ui-monospace,SFMono-Regular,Consolas,monospace;color:#dbe4ff}
+.wrap{width:min(var(--max),calc(100% - 32px));margin:auto}
+.eyebrow{font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--cyan);font-weight:800}
+header{padding:76px 0 34px;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(2.5rem,6.6vw,6rem);line-height:.95;letter-spacing:-.06em;margin:.35rem 0 1.25rem;max-width:980px}
+h1 em{font-style:normal;color:var(--cyan)}
+.lede{font-size:clamp(1.06rem,2.1vw,1.36rem);max-width:820px;color:#d2d5dc;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.pill{border:1px solid var(--line);border-radius:99px;padding:5px 10px;color:var(--muted);font-size:.76rem;background:rgba(17,21,29,.82)}
+nav{position:sticky;top:0;z-index:20;background:rgba(9,11,16,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:18px;overflow:auto;padding:10px 0}
+nav a{white-space:nowrap;text-decoration:none;color:#c7ccd5;font-size:.78rem;font-weight:700}
+main{padding:32px 0 80px}section{margin:0 0 72px}
+.section-kicker{color:var(--cyan);font-weight:900;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+h2{font-size:clamp(1.7rem,3.8vw,3.2rem);line-height:1.08;letter-spacing:-.045em;margin:0 0 20px}
+h3{font-size:1.06rem;line-height:1.35;margin:.1rem 0 .55rem}
+p{margin:.45rem 0 1rem}.muted{color:var(--muted)}
+.verdict{display:grid;grid-template-columns:1fr;gap:20px;padding:26px;background:linear-gradient(135deg,rgba(85,216,232,.12),rgba(17,21,29,.98) 55%);border:1px solid rgba(85,216,232,.32);box-shadow:var(--shadow)}
+.verdict blockquote{font-size:clamp(1.15rem,2.4vw,1.85rem);line-height:1.38;margin:0 0 14px;font-weight:850;letter-spacing:-.025em}
+.verdict ul{margin:0;padding-left:20px;color:#c9cdd5}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{padding:18px;background:var(--panel);border:1px solid var(--line)}
+.card.bad{border-top:4px solid var(--red)}.card.warn{border-top:4px solid var(--orange)}.card.good{border-top:4px solid var(--green)}
+.card p{margin:.3rem 0;font-size:.88rem;color:#bbc1cc}
+.evidence{position:relative;background:#030407;border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden}
+.evidence img{width:100%;height:auto;image-rendering:pixelated}
+.caption{padding:12px 15px;color:#aeb5c1;font-size:.76rem;border-top:1px solid var(--line);background:var(--panel)}
+.issue{display:grid;grid-template-columns:52px 1fr;gap:14px;padding:17px 0;border-top:1px solid var(--line)}
+.issue:first-child{border-top:0}
+.rank{width:44px;height:44px;display:grid;place-items:center;background:var(--red);color:white;font-weight:950}
+.issue p{color:#bbc1cc;margin:.25rem 0}
+.proof{font-size:.74rem;color:#9098a8}
+.tag{display:inline-block;border-radius:3px;padding:2px 7px;font-size:.65rem;font-weight:900;letter-spacing:.06em;background:var(--red);color:white;margin-right:5px}
+.tag.p1{background:var(--orange);color:#1b1008}.tag.p2{background:var(--yellow);color:#211c05}.tag.ok{background:var(--green);color:#07140a}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--panel)}
+th,td{padding:11px;border:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:#fff;background:var(--panel2)}td{color:#bac1cc}
+.fail{color:var(--red);font-weight:900}.pass{color:var(--green);font-weight:900}
+.quote{padding:24px;border-left:5px solid var(--cyan);background:var(--panel);font-size:clamp(1.05rem,2.2vw,1.5rem);font-weight:800;line-height:1.45}
+.priorities{display:grid;gap:10px}
+.priority{display:grid;grid-template-columns:64px 1fr auto;gap:15px;align-items:center;background:var(--panel);border:1px solid var(--line);padding:15px}
+.priority .when{color:var(--muted);font-size:.72rem}
+.p0{color:var(--red);font-weight:950}.p1c{color:var(--orange);font-weight:950}.p2c{color:var(--yellow);font-weight:950}
+footer{border-top:1px solid var(--line);padding:28px 0 48px;color:#89919f;font-size:.75rem}
+
+/* ---------- 목업 프레임: 실제 런타임과 동일한 4:3 (320x240 논리) ---------- */
+.mockwrap{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
+.mockhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.mockhead b{font-size:.9rem}.mockhead span{font-size:.72rem;color:var(--muted)}
+.stage{aspect-ratio:4/3;container-type:inline-size;background:#0a1030}
+/* 목업 내부는 전부 cqw 단위 — 어떤 폭에서도 640x480 비례가 유지된다 */
+.mk{width:100%;height:100%;padding:1.2cqw;display:grid;gap:1.1cqw;
+  font:700 2.9cqw/1.22 "DungGeunMo",Dotum,"Malgun Gothic",monospace;color:#fff;
+  background:linear-gradient(180deg,#1742a5,#0d2a75)}
+.mk .win{background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(6,22,96,.14)),#1742a5;
+  border:.55cqw solid #4b7ee0;box-shadow:inset 0 0 0 .28cqw #0a1f57;min-height:0;overflow:hidden}
+.mk .dim{opacity:.5}
+.mk .cur{background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(20,54,150,.10));box-shadow:inset 0 0 0 .3cqw #fff;position:relative}
+.mk .cur.hot{box-shadow:inset 0 0 0 .32cqw #fff,0 0 1.6cqw rgba(255,255,255,.55)}
+.mk .cur.hot:before{content:"▶";position:absolute;left:-.2cqw;top:50%;transform:translateY(-50%);font-size:2.1cqw;color:var(--yellow)}
+.mk .gauge{height:1.1cqw;background:#08163f;box-shadow:inset 0 0 0 .18cqw rgba(255,255,255,.32);margin-top:.35cqw}
+.mk .gauge i{display:block;height:100%;background:linear-gradient(180deg,#9df5b8,#3fbf6b)}
+.mk .gauge.mp i{background:linear-gradient(180deg,#a8d4ff,#3f7fdf)}
+.mk .gauge.warn i{background:linear-gradient(180deg,#ffd98a,#e09420)}
+.mk .gauge.crit i{background:linear-gradient(180deg,#ff9c9c,#d63a3a)}
+.mk .ico{width:3.2cqw;height:3.2cqw;flex:0 0 auto;display:grid;place-items:center;font-size:2cqw;
+  background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 .18cqw rgba(255,255,255,.66)}
+.mk .face{width:6.6cqw;height:6.6cqw;flex:0 0 auto;background:linear-gradient(150deg,#c98f6a,#7d4b34);box-shadow:inset 0 0 0 .2cqw rgba(255,255,255,.5)}
+.mk .grouplabel{font-size:2.15cqw;color:#a9c8ff;letter-spacing:.1em;padding:.3cqw .6cqw .1cqw}
+.mk .rule{height:.2cqw;background:rgba(255,255,255,.26);margin:.35cqw .6cqw}
+.mk .row{display:flex;gap:.8cqw;align-items:center;padding:.4cqw .7cqw;min-width:0}
+.mk .row .grow{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mk .num{flex:0 0 auto;color:#fff;white-space:nowrap}
+.mk .sub{font-size:2.3cqw;color:#cfe2ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk .title{font-size:3.1cqw;padding:.3cqw .7cqw .5cqw;color:#ffe9a8}
+.mk .foot{display:grid;grid-template-columns:max-content 1fr max-content;gap:1cqw;align-items:center;padding:.5cqw 1cqw}
+.mk .up{color:var(--green)}.mk .down{color:#ff8b8b}
+/* 목업별 그리드 */
+.mk.legacy{grid-template-columns:16cqw 1fr;grid-template-rows:1fr max-content}
+.mk.legacy .body{grid-column:2;display:grid;grid-template-columns:27cqw 1fr;gap:1.1cqw;min-height:0}
+.mk.legacy .foot{grid-column:1/-1}
+.mk.two{grid-template-columns:31cqw 1fr;grid-template-rows:1fr max-content}
+.mk.two .foot{grid-column:1/-1}
+.mk .rail{display:grid;align-content:start;padding:.4cqw 0}
+.mk .list{display:grid;align-content:start;padding:.4cqw 0;min-height:0}
+.mk .partycol{display:grid;gap:.6cqw;align-content:start;padding:.5cqw}
+.mk .pcard{display:flex;gap:.8cqw;min-width:0;align-items:center}
+.mk .pcard .info{flex:1 1 auto;min-width:0}
+.mk .clip{position:relative}
+.mk .clip:after{content:"";position:absolute;inset:auto 0 0 0;height:3cqw;
+  background:linear-gradient(180deg,transparent,#0d2a75)}
+.mk .scrollhint{position:absolute;right:.5cqw;bottom:.5cqw;font-size:1.8cqw;color:#ffe9a8}
+.pinned{position:absolute;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;
+  background:var(--red);border:2px solid #fff;color:#fff;font:900 13px/1 system-ui;box-shadow:0 3px 12px #000;transform:translate(-50%,-50%);z-index:5}
+.legend{display:grid;gap:6px;margin-top:12px;font-size:.8rem;color:#bbc1cc}
+.legend div{display:grid;grid-template-columns:24px 1fr;gap:8px}
+.legend b{color:#fff}
+.diffgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+@media(max-width:980px){.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.grid2,.grid3,.diffgrid{grid-template-columns:1fr}.priority{grid-template-columns:56px 1fr}.priority .when{grid-column:2}}
+@media(max-width:560px){.wrap{width:min(100% - 20px,var(--max))}header{padding-top:48px}.verdict{padding:18px}}
+.tablescroll{overflow-x:auto}
+@media print{nav{display:none}body{background:#fff;color:#111}.card,.verdict,.quote,.priority,table,.caption{color:#111;background:#fff;box-shadow:none}.muted,.card p,td{color:#444}section{break-inside:avoid}.wrap{width:100%}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">In-game menu redesign proposal · 2026-08-03</div>
+  <h1>메뉴가 구닥다리인 건<br>파란 창 때문이 아니다.<br><em>구조가 없기 때문이다.</em></h1>
+  <p class="lede">RM2003 룩은 유지해도 된다. 문제는 스킨이 아니라 <strong>13개 명령이 위계 없이 한 줄로 늘어서 있고, 화면의 3분의 1을 “숫자 4줄 × 4명”이 차지하며, 정작 플레이어가 조작할 리스트는 잘려 있다</strong>는 점이다. 아래는 실제 캡처를 근거로 한 결함 목록과, 렌더 가능한 목업 3종·단계별 실행 계획이다.</p>
+  <div class="meta">
+    <span class="pill">근거: 실제 Playwright 캡처 2장</span>
+    <span class="pill">코드 근거: playerStatusMenu.ts · tabs-b-status-menu-*.css</span>
+    <span class="pill">목업은 CSS 렌더(외부 리소스 0)</span>
+    <span class="pill">4:3 320×240 논리 해상도 준수</span>
+  </div>
+</div></header>
+
+<nav><div class="wrap">
+  <a href="#verdict">총평</a><a href="#now">현재 화면</a><a href="#failures">결함 12</a>
+  <a href="#mockups">목업 3종</a><a href="#focus">포커스 모델</a><a href="#skins">메뉴 스킨</a>
+  <a href="#tech">기술 부채</a><a href="#shipped">구현 결과 A</a><a href="#shipped-b">구현 결과 B</a><a href="#shipped-c">구현 결과 C</a><a href="#priority">실행 순서</a>
+</div></nav>
+
+<main class="wrap">
+
+<section id="verdict">
+  <div class="section-kicker">Executive summary</div>
+  <h2>“레트로”가 아니라 “미정리”다</h2>
+  <div class="verdict">
+    <blockquote>지금 메뉴는 엔진이 가진 기능 13개를 전부 같은 크기·같은 색·같은 자리에 세워 둔 목록이다. 플레이어에게 “무엇을 먼저 눌러야 하는가”를 알려주는 장치가 단 하나도 없다.</blockquote>
+    <ul>
+      <li><b>구조 결함(P0)</b> — 아이템/스킬(상시 사용)과 저장/타이틀(세션 종료)이 동일 위계. 파괴적 액션에 분리선도, 확인 단계 시각화도 없다.</li>
+      <li><b>가독 결함(P0)</b> — HP/MP가 숫자뿐. 게이지가 없어 파티 4명 상태를 한눈에 못 읽는다. 캡처에서 <code>514/514</code>가 4번 반복돼 노이즈가 된다.</li>
+      <li><b>공간 배분 결함(P1)</b> — 파티 패널이 중앙 1/3을 점유하는데 담긴 정보는 4줄. 조작 대상인 아이템 리스트는 우측 1/3에 갇혀 6번째 항목이 잘렸다.</li>
+      <li><b>의사결정 정보 부재(P1)</b> — 장비 화면에 스탯 델타가 없다. JRPG 메뉴의 존재 이유가 빠져 있다.</li>
+      <li><b>일관성 결함(P2)</b> — 전투 UI는 <code>[data-battle-skin]</code>으로 12종 스킨을 갈아입는데, 메뉴는 RM2003 1종 하드코딩. 포켓몬 스킨으로 싸우다 메뉴를 열면 톤이 붕괴한다.</li>
+    </ul>
+  </div>
+  <p class="muted" style="margin-top:14px">아래 개선안은 <b>RPG Maker와 동일해질 필요 없다</b>는 전제를 적극적으로 사용한다. 다만 픽셀 폰트·창 스킨·커서 개념 같은 “장르 약속”은 유지한다 — 그것까지 버리면 레트로 JRPG가 아니게 된다.</p>
+</section>
+
+<section id="now">
+  <div class="section-kicker">Evidence</div>
+  <h2>현재 화면 — 실제 캡처</h2>
+  <div class="diffgrid">
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/current-items.png" alt="현재 아이템 메뉴 캡처">
+      <div class="pinned" style="left:13%;top:44%">1</div>
+      <div class="pinned" style="left:44%;top:20%">2</div>
+      <div class="pinned" style="left:79%;top:81%">3</div>
+      <div class="caption"><b>아이템</b> — ① 13개 평면 명령 레일 ② 숫자만 반복되는 파티 패널 ③ 6번째 항목(<code>사금 부적…</code>) 클리핑</div>
+    </div>
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/current-equipment.png" alt="현재 장비 메뉴 캡처">
+      <div class="pinned" style="left:79%;top:19%">4</div>
+      <div class="pinned" style="left:79%;top:73%">5</div>
+      <div class="caption"><b>장비</b> — ④ 슬롯 5개 표시 후 나머지 공간이 그냥 비어 있음 ⑤ 스탯 델타 없이 “바꿀 부위를 선택하세요”만</div>
+    </div>
+  </div>
+  <div class="legend">
+    <div><b>①</b><span>아이템·스킬·장비·몬스터·저장·로드·상태·열 바꾸기·진형·임무·대기 ON·타이틀 — 12~13행. RM2003 원본은 6~7행이었다. 행 높이가 <code>15px</code> 고정이라 항목이 늘면 잘린다(<code>tabs-b-status-menu-base.css</code>의 주석이 이미 이 사고를 기록하고 있다).</span></div>
+    <div><b>②</b><span>이름/레벨+상태/HP/MP 4줄 × 4명. 전원 만피일 때 정보량은 실질 0에 가까운데 화면 폭 <code>120px</code>(논리)을 상시 점유한다.</span></div>
+    <div><b>③</b><span>스크롤 가능하지만 스크롤 어포던스가 얇은 막대뿐이고, 마지막 행이 “잘린 글자”로 끝나 버그처럼 보인다.</span></div>
+  </div>
+</section>
+
+<section id="failures">
+  <div class="section-kicker">Findings</div>
+  <h2>결함 12건 — 근거와 함께</h2>
+
+  <div class="issue"><div class="rank">1</div><div>
+    <h3><span class="tag">P0</span>명령 13개가 위계 없이 평면 배치</h3>
+    <p>행동(아이템/스킬/장비) · 파티 편성(상태/열/진형/몬스터) · 기록(임무/관계) · 시스템(저장/로드/대기/타이틀)이 같은 시각 무게로 섞여 있다. 특히 <b>타이틀로 돌아가기</b>는 진행 손실 위험이 있는 액션인데 “진형” 바로 아래에 붙어 있다.</p>
+    <p class="proof">근거 — <code>playerStatusMenuModel.ts:8</code> <code>STATUS_MENU_COMMAND_IDS</code> 13개를 <code>renderCommandRail</code>이 평면 <code>&lt;nav&gt;</code>로 그대로 나열.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">2</div><div>
+    <h3><span class="tag">P0</span>HP/MP 게이지 없음 — 숫자만</h3>
+    <p>파티 상태 파악이 “네 줄을 읽어서 분수를 비교하기”가 된다. 위급한 아군을 한눈에 못 찾으므로 회복 아이템 대상 선택이 느려진다. 색상 임계(안전/경고/위험)도 없다.</p>
+    <p class="proof">근거 — <code>playerStatusMenuModel.ts:88</code> <code>hpLabel: `${hpTerm} ${vitals.hp}/${vitals.maxHp}`</code> 문자열만 만들고, CSS에 게이지 규칙이 없다.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">3</div><div>
+    <h3><span class="tag">P0</span>활성 포커스가 어디인지 애매</h3>
+    <p>좌측 레일 선택 항목과 우측 리스트 선택 항목이 <b>둘 다 박스로 그려진다</b>. 구분은 테두리 투명도 차이(<code>0.9</code> vs <code>0.42</code>)뿐이라, 캡처에서 “아이템”과 “회복약” 중 어느 쪽이 키 입력을 받는지 즉시 판별되지 않는다.</p>
+    <p class="proof">근거 — <code>tabs-b-status-menu-base.css:39-44</code>. 비활성 커서를 <code>border-color</code> 알파만 낮춰 표현.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">4</div><div>
+    <h3><span class="tag">P0</span>리스트 마지막 항목 클리핑</h3>
+    <p>아이템 6번째 행이 잘린 글자로 끝난다. <code>-webkit-line-clamp:3</code> + 고정 행 높이 + <code>overflow:hidden</code>이 겹친 결과. 스크롤 가능함을 알리는 신호가 없어 “여기서 끝”으로 오독된다.</p>
+    <p class="proof">근거 — 캡처 <code>items.png</code> 하단 실측. <code>tabs-b-status-menu-main.css:143-157</code>.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">5</div><div>
+    <h3><span class="tag p1">P1</span>화면 공간 배분이 역전됨</h3>
+    <p>정보량이 적고 상시 필요하지 않은 파티 패널이 <code>120px</code>을 고정 점유하고, 실제 조작 대상인 리스트가 남은 폭을 쓴다. 그 결과 아이콘·이름·개수·설명이 한 줄에 못 들어가 설명이 아래로 접히고, 접힌 설명이 다시 3줄 클램프로 잘린다.</p>
+    <p class="proof">근거 — <code>tabs-b-status-menu-base.css:50</code> <code>grid-template-columns:120px minmax(0,1fr)</code>.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">6</div><div>
+    <h3><span class="tag p1">P1</span>장비 스탯 델타 부재</h3>
+    <p>“청동 검 → 강철 검”으로 바꿀 때 공격력이 얼마나 바뀌는지 화면에 없다. 플레이어는 값을 모른 채 장비를 고른다. 이건 스타일이 아니라 <b>기능 누락</b>이다.</p>
+    <p class="proof">근거 — 캡처 <code>equipment-detail.png</code>. 슬롯명+현재 장비명만 표시.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">7</div><div>
+    <h3><span class="tag p1">P1</span>아이콘 0개 — 전부 텍스트</h3>
+    <p><code>.status-menu-entry-icon</code>(18px) 클래스가 CSS에 이미 정의돼 있는데 아이템/스킬/장비 행에서 쓰이지 않는다. 종류 구분이 글자 읽기에만 의존해 스캔 속도가 느리다.</p>
+    <p class="proof">근거 — <code>tabs-b-status-menu-base.css:92-116</code>에 규칙 존재, 캡처에는 미적용.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">8</div><div>
+    <h3><span class="tag p1">P1</span>정렬 리듬 붕괴</h3>
+    <p>아이템 이름은 좌측 정렬, 개수는 우측 정렬인데 설명문은 <b>가운데 정렬</b>로 흐른다. 세 축이 섞여 시선이 좌↔우로 튄다. 가운데 정렬을 택한 이유가 없다.</p>
+    <p class="proof">근거 — 캡처의 “아군 하나의 HP를 / 50 회복합니다.” 중앙 배치.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">9</div><div>
+    <h3><span class="tag p1">P1</span>“상태” 정보가 실질적으로 비어 있음</h3>
+    <p>모든 액터의 상태가 하드코딩 문자열 <code>"정상"</code>이다. 상태 이상 시스템이 있어도 메뉴에는 반영되지 않는다.</p>
+    <p class="proof">근거 — <code>playerStatusMenuModel.ts:86</code> <code>condition: "정상"</code>.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">10</div><div>
+    <h3><span class="tag p2">P2</span>매 입력마다 전체 DOM 재생성</h3>
+    <p><code>replaceMenu</code>가 패널을 <code>remove()</code> 후 새로 <code>append</code>한다. 그래서 (a) 트랜지션/애니메이션을 붙일 수 없고, (b) 스크롤 위치가 날아가고, (c) 커서 인덱스를 <code>detailCursors</code> Map으로 수동 복원하는 부채가 생겼다. 이미 <code>runtimeJuice</code>에 <code>motionClass</code>·SFX가 정의돼 있는데도 모션이 붙을 대상이 매번 사라진다.</p>
+    <p class="proof">근거 — <code>playerStatusMenuController.ts:56-60</code>, <code>runtimeJuice.ts</code> <code>RUNTIME_JUICE_SPECS</code>.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">11</div><div>
+    <h3><span class="tag p2">P2</span>메뉴 스킨 시스템 없음</h3>
+    <p>전투는 <code>system.battleUiStyle</code> → <code>[data-battle-skin]</code>으로 12종(포켓몬·옥토패스·마더·드퀘…)을 갈아입는다. 메뉴에는 대응물이 없어 <b>같은 게임 안에서 전투와 메뉴의 톤이 어긋난다</b>.</p>
+    <p class="proof">근거 — <code>src/battle/skins/registry.ts</code> 12종 vs <code>tabs-b-title-screen.css:264</code> <code>.rm2k3-status-menu.main-menu</code> 단일 테마.</p>
+  </div></div>
+
+  <div class="issue"><div class="rank">12</div><div>
+    <h3><span class="tag p2">P2</span>푸터가 컨텍스트를 낭비함</h3>
+    <p>하단 바가 <code>돈 0G</code>와 <code>0:00</code>만 담고 가운데 메시지 영역은 대개 빈칸이다. 조작 안내(결정/취소 키), 현재 위치, 진행 중 목표를 놓을 최적의 자리인데 비워 두고 있다.</p>
+    <p class="proof">근거 — <code>playerStatusMenu.ts:219-244</code> <code>renderFooter</code>.</p>
+  </div></div>
+</section>
+
+<section id="mockups">
+  <div class="section-kicker">Proposal</div>
+  <h2>목업 3종 — 렌더해서 비교</h2>
+  <p>아래는 모두 <b>실제 런타임과 같은 4:3(320×240 논리)</b> 비율로 CSS 렌더한 것이다. 폭이 달라져도 비례가 유지되므로 실제 화면에서의 밀도를 그대로 판단할 수 있다.</p>
+
+  <div class="mockwrap" style="margin-bottom:22px">
+    <div class="mockhead"><b>목업 A — 보수안: 구조만 고친다 (RM2003 룩 유지)</b><span>변경 범위: 레일 그룹화 + 게이지 + 포커스 감광 + 아이콘. 레이아웃 골격은 그대로</span></div>
+    <div class="stage"><div class="mk legacy">
+      <nav class="win rail dim">
+        <div class="grouplabel">행동</div>
+        <div class="row"><span class="grow">아이템</span></div>
+        <div class="row"><span class="grow">스킬</span></div>
+        <div class="row"><span class="grow">장비</span></div>
+        <div class="rule"></div>
+        <div class="grouplabel">파티</div>
+        <div class="row"><span class="grow">상태</span></div>
+        <div class="row"><span class="grow">진형</span></div>
+        <div class="row"><span class="grow">몬스터</span></div>
+        <div class="row"><span class="grow">임무</span></div>
+        <div class="rule"></div>
+        <div class="grouplabel">시스템</div>
+        <div class="row"><span class="grow">저장</span></div>
+        <div class="row"><span class="grow">로드</span></div>
+        <div class="row"><span class="grow">설정</span></div>
+        <div class="row" style="color:#ffc0c0"><span class="grow">타이틀</span></div>
+      </nav>
+      <div class="body">
+        <section class="win partycol dim" style="grid-template-rows:repeat(4,minmax(0,1fr))">
+          <article class="pcard"><div class="face"></div><div class="info">
+            <div class="sub">주인공 <span style="color:#ffe9a8">L1</span></div>
+            <div class="gauge"><i style="width:100%"></i></div>
+            <div class="gauge mp"><i style="width:100%"></i></div>
+          </div></article>
+          <article class="pcard"><div class="face" style="background:linear-gradient(150deg,#e0b9a0,#8a5a48)"></div><div class="info">
+            <div class="sub">수호자 <span style="color:#ffe9a8">L1</span></div>
+            <div class="gauge warn"><i style="width:46%"></i></div>
+            <div class="gauge mp"><i style="width:80%"></i></div>
+          </div></article>
+          <article class="pcard"><div class="face" style="background:linear-gradient(150deg,#b98fc9,#5a3474)"></div><div class="info">
+            <div class="sub">마도사 <span style="color:#ffe9a8">L1</span></div>
+            <div class="gauge crit"><i style="width:14%"></i></div>
+            <div class="gauge mp"><i style="width:35%"></i></div>
+          </div></article>
+          <article class="pcard"><div class="face" style="background:linear-gradient(150deg,#9fc98f,#3d5a34)"></div><div class="info">
+            <div class="sub">정찰병 <span style="color:#ffe9a8">L1</span></div>
+            <div class="gauge"><i style="width:92%"></i></div>
+            <div class="gauge mp"><i style="width:100%"></i></div>
+          </div></article>
+        </section>
+        <section class="win list clip">
+          <div class="title">아이템</div>
+          <div class="row cur hot"><span class="ico">♥</span><span class="grow">회복약</span><span class="num">2</span></div>
+          <div class="row"><span class="ico">✧</span><span class="grow">마력약</span><span class="num">1</span></div>
+          <div class="row"><span class="ico">☘</span><span class="grow">해독초</span><span class="num">1</span></div>
+          <div class="row"><span class="ico">☘</span><span class="grow">각성초</span><span class="num">1</span></div>
+          <div class="row"><span class="ico">◇</span><span class="grow">사금 부적함</span><span class="num">1</span></div>
+          <div class="row"><span class="ico">◇</span><span class="grow">낡은 지도</span><span class="num">1</span></div>
+          <div class="row"><span class="ico">♥</span><span class="grow">고급 회복약</span><span class="num">3</span></div>
+          <div class="row"><span class="ico">☘</span><span class="grow">해열초</span><span class="num">2</span></div>
+          <div class="row"><span class="ico">◇</span><span class="grow">여관 열쇠</span><span class="num">1</span></div>
+          <div class="row"><span class="ico">✧</span><span class="grow">정신의 물</span><span class="num">1</span></div>
+          <div class="row"><span class="ico">◈</span><span class="grow">전투 식량</span><span class="num">4</span></div>
+          <div class="scrollhint">▼</div>
+        </section>
+      </div>
+      <footer class="win foot">
+        <span>돈 0G</span>
+        <span class="sub" style="text-align:center">아군 하나의 HP를 50 회복합니다.</span>
+        <span>0:00</span>
+      </footer>
+    </div></div>
+  </div>
+
+  <div class="grid3" style="margin-bottom:34px">
+    <div class="card good"><h3>고친 것</h3>
+      <p>· 명령 13 → 그룹 3개(행동/파티/시스템) + 구분선</p>
+      <p>· 타이틀을 붉은 톤으로 분리 — 파괴적 액션임을 시각화</p>
+      <p>· HP/MP 게이지 + 임계 색상. 마도사가 위험하다는 걸 0.2초에 읽는다</p>
+      <p>· 커서에 발광 + ▶ 마커. 비활성 패널은 감광(<code>opacity .5</code>)</p>
+      <p>· 아이콘 도입, 설명은 푸터로 이동 → 리스트 행이 1행으로 압축돼 <b>11항목</b>이 잘림 없이 보인다(현재는 5.5항목)</p>
+    </div>
+    <div class="card warn"><h3>남은 한계</h3>
+      <p>· 리스트 폭은 여전히 좁다. 긴 아이템명은 말줄임</p>
+      <p>· 파티 패널이 아이템·장비 화면에서도 상시 점유</p>
+      <p>· 저장/로드가 “시스템”에 묶여 접근이 한 단계 깊어진 느낌</p>
+    </div>
+    <div class="card"><h3>비용</h3>
+      <p>CSS + 렌더 함수 국소 수정. <code>replaceMenu</code> 구조 유지 가능.</p>
+      <p><b>가장 싸고, 회귀 위험이 낮다.</b> 기존 e2e testid를 거의 그대로 쓴다.</p>
+    </div>
+  </div>
+
+  <div class="mockwrap" style="margin-bottom:22px">
+    <div class="mockhead"><b>목업 B — 권장안: 2열 작업영역 (파티는 필요할 때만 승격)</b><span>레일+파티를 좌측 한 덩어리로 통합, 우측 전체를 작업 영역으로</span></div>
+    <div class="stage"><div class="mk two">
+      <div class="win partycol dim" style="grid-row:1">
+        <div class="grouplabel">행동</div>
+        <div class="row"><span class="ico">◈</span><span class="grow">아이템</span></div>
+        <div class="row"><span class="ico">✦</span><span class="grow">스킬</span></div>
+        <div class="row"><span class="ico">⚔</span><span class="grow">장비</span></div>
+        <div class="rule"></div>
+        <div class="grouplabel">파티</div>
+        <article class="pcard"><div class="face" style="width:5cqw;height:5cqw"></div><div class="info">
+          <div class="sub">주인공 <span style="color:#ffe9a8">L1</span></div>
+          <div class="gauge"><i style="width:100%"></i></div>
+        </div></article>
+        <article class="pcard"><div class="face" style="width:5cqw;height:5cqw;background:linear-gradient(150deg,#e0b9a0,#8a5a48)"></div><div class="info">
+          <div class="sub">수호자 <span style="color:#ffe9a8">L1</span></div>
+          <div class="gauge warn"><i style="width:46%"></i></div>
+        </div></article>
+        <article class="pcard"><div class="face" style="width:5cqw;height:5cqw;background:linear-gradient(150deg,#b98fc9,#5a3474)"></div><div class="info">
+          <div class="sub">마도사 <span style="color:#ffe9a8">L1</span></div>
+          <div class="gauge crit"><i style="width:14%"></i></div>
+        </div></article>
+        <article class="pcard"><div class="face" style="width:5cqw;height:5cqw;background:linear-gradient(150deg,#9fc98f,#3d5a34)"></div><div class="info">
+          <div class="sub">정찰병 <span style="color:#ffe9a8">L1</span></div>
+          <div class="gauge"><i style="width:92%"></i></div>
+        </div></article>
+        <div class="rule"></div>
+        <div class="row"><span class="grow">기록 · 시스템 ▸</span></div>
+      </div>
+      <section class="win list" style="grid-row:1">
+        <div class="title">아이템 <span class="sub" style="color:#a9c8ff">11종</span></div>
+        <div class="row cur hot"><span class="ico">♥</span><span class="grow">회복약</span><span class="sub" style="flex:0 0 auto;max-width:46%">아군 1명 HP 50 회복</span><span class="num">×2</span></div>
+        <div class="row"><span class="ico">✧</span><span class="grow">마력약</span><span class="sub" style="flex:0 0 auto;max-width:46%">아군 1명 MP 30 회복</span><span class="num">×1</span></div>
+        <div class="row"><span class="ico">☘</span><span class="grow">해독초</span><span class="sub" style="flex:0 0 auto;max-width:46%">독 상태 해제</span><span class="num">×1</span></div>
+        <div class="row"><span class="ico">☘</span><span class="grow">각성초</span><span class="sub" style="flex:0 0 auto;max-width:46%">수면 상태 해제</span><span class="num">×1</span></div>
+        <div class="row"><span class="ico">◇</span><span class="grow">사금 부적함</span><span class="sub" style="flex:0 0 auto;max-width:46%">전투 후 획득금 +10%</span><span class="num">×1</span></div>
+        <div class="row"><span class="ico">◇</span><span class="grow">낡은 지도</span><span class="sub" style="flex:0 0 auto;max-width:46%">사용 불가</span><span class="num">×1</span></div>
+        <div class="row"><span class="ico">♥</span><span class="grow">고급 회복약</span><span class="sub" style="flex:0 0 auto;max-width:46%">아군 1명 HP 200 회복</span><span class="num">×3</span></div>
+        <div class="row"><span class="ico">☘</span><span class="grow">해열초</span><span class="sub" style="flex:0 0 auto;max-width:46%">화상 상태 해제</span><span class="num">×2</span></div>
+        <div class="row"><span class="ico">◇</span><span class="grow">여관 열쇠</span><span class="sub" style="flex:0 0 auto;max-width:46%">이벤트 전용</span><span class="num">×1</span></div>
+        <div class="row"><span class="ico">✧</span><span class="grow">정신의 물</span><span class="sub" style="flex:0 0 auto;max-width:46%">아군 전체 MP 20 회복</span><span class="num">×1</span></div>
+        <div class="row"><span class="ico">◈</span><span class="grow">전투 식량</span><span class="sub" style="flex:0 0 auto;max-width:46%">야영 시 HP 전체 회복</span><span class="num">×4</span></div>
+      </section>
+      <footer class="win foot">
+        <span>돈 0G</span>
+        <span class="sub" style="text-align:center">Z 결정 · X 취소 · ↑↓ 이동</span>
+        <span>0:00</span>
+      </footer>
+    </div></div>
+  </div>
+
+  <div class="grid3" style="margin-bottom:34px">
+    <div class="card good"><h3>고친 것</h3>
+      <p>· 리스트 폭이 약 2배 → <b>이름 + 효과 + 개수가 한 행에</b> 들어간다. A와 같은 11항목을 보여주면서 <b>효과 설명까지 동시에</b> 읽힌다(A는 설명이 푸터에 하나씩만)</p>
+      <p>· 파티가 좌측 레일과 한 창에 통합돼 “대상 선택” 시 그 자리에서 커서가 파티로 내려간다(패널 이동 없음)</p>
+      <p>· 기록·시스템은 서브메뉴(<code>▸</code>)로 접어 상시 노출 항목을 10개 이하로</p>
+      <p>· 푸터를 조작 안내로 활용</p>
+    </div>
+    <div class="card warn"><h3>트레이드오프</h3>
+      <p>· 저장/타이틀이 한 단계 깊어진다 → 자주 쓰는 저장은 <b>Shift+S 같은 단축</b>이나 시스템 그룹 최상단 고정으로 보완</p>
+      <p>· 파티 HP/MP를 한 줄로 줄여 MP 게이지 생략 → 상태 화면에서 상세 제공</p>
+      <p>· 기존 e2e testid 중 <code>status-menu-party-row-*</code> 위치 기대가 깨질 수 있다</p>
+    </div>
+    <div class="card"><h3>비용</h3>
+      <p>렌더 함수 재구성 + CSS 그리드 변경 + 서브메뉴 상태 추가. e2e 일부 갱신 필요.</p>
+      <p><b>구조적 이득이 가장 크다.</b> A를 먼저 하고 B로 진행하는 경로도 성립한다.</p>
+    </div>
+  </div>
+
+  <div class="mockwrap">
+    <div class="mockhead"><b>목업 C — 장비 화면: 스탯 델타를 넣으면 이렇게 된다</b><span>결함 6번의 해소안. 레이아웃은 목업 B를 그대로 사용</span></div>
+    <div class="stage"><div class="mk two">
+      <div class="win partycol dim" style="grid-row:1">
+        <div class="grouplabel">장비 · 주인공</div>
+        <div class="row"><span class="grow">무기</span><span class="sub">청동 검</span></div>
+        <div class="row cur"><span class="grow">방패</span><span class="sub">참나무 방패</span></div>
+        <div class="row"><span class="grow">갑옷</span><span class="sub">가죽 갑옷</span></div>
+        <div class="row"><span class="grow">투구</span><span class="sub">여행자 모자</span></div>
+        <div class="row"><span class="grow">장식품</span><span class="sub">집중 부적</span></div>
+        <div class="rule"></div>
+        <div class="grouplabel">변화</div>
+        <div class="row"><span class="grow">공격</span><span class="num">42</span></div>
+        <div class="row"><span class="grow">방어</span><span class="num">28 <span class="up">→ 35 (+7)</span></span></div>
+        <div class="row"><span class="grow">민첩</span><span class="num">31 <span class="down">→ 29 (−2)</span></span></div>
+        <div class="row"><span class="grow">정신</span><span class="num">24</span></div>
+      </div>
+      <section class="win list" style="grid-row:1">
+        <div class="title">방패 후보 <span class="sub" style="color:#a9c8ff">3종</span></div>
+        <div class="row"><span class="ico">◇</span><span class="grow">참나무 방패</span><span class="sub" style="flex:0 0 auto">착용 중</span><span class="num">방어 +6</span></div>
+        <div class="row cur hot"><span class="ico">◈</span><span class="grow">강철 방패</span><span class="sub" style="flex:0 0 auto">무게 있음</span><span class="num up">방어 +13</span></div>
+        <div class="row"><span class="ico">✦</span><span class="grow">부적 방패</span><span class="sub" style="flex:0 0 auto">마법 저항</span><span class="num">방어 +4</span></div>
+        <div class="row" style="opacity:.55"><span class="ico">✕</span><span class="grow">탑주의 대방패</span><span class="sub" style="flex:0 0 auto">장착 불가 — 클래스 제한</span><span class="num"></span></div>
+        <div class="rule" style="margin-top:1cqw"></div>
+        <div class="row" style="align-items:start"><span class="sub grow" style="white-space:normal;word-break:keep-all;line-height:1.3">강철 방패 — 방어가 올라가지만 민첩이 내려간다. 선회 속도가 중요한 파티라면 부적 방패를 고려하라.</span></div>
+      </section>
+      <footer class="win foot">
+        <span>돈 0G</span>
+        <span class="sub" style="text-align:center">Z 장착 · X 취소 · ← 슬롯으로</span>
+        <span>0:00</span>
+      </footer>
+    </div></div>
+  </div>
+  <div class="legend" style="margin-top:14px">
+    <div><b>핵심</b><span>좌측 “변화” 블록이 <b>커서를 올린 후보로 갱신</b>된다. 올라가는 값은 초록 <code>↑</code>, 내려가는 값은 빨강 <code>↓</code>. 변하지 않는 스탯은 델타를 그리지 않아 시선이 변화에만 간다.</span></div>
+    <div><b>부수</b><span>장착 불가 항목은 감광 + 사유 표시(“클래스 제한”). 지금은 후보 목록에서 아예 감춰지거나 이유 없이 실패한다.</span></div>
+  </div>
+</section>
+
+<section id="focus">
+  <div class="section-kicker">Interaction</div>
+  <h2>포커스 모델 — 규칙 3개로 고정</h2>
+  <p>결함 3번(활성 포커스 애매)은 CSS 알파값 조정으로 해결되지 않는다. <b>규칙</b>이 필요하다. 마침 전투에서 최근 같은 문제를 이미 풀었다 — 커밋 <code>4a1930e9</code>가 “선택 중 HUD 감광 + 선택 적 블링크”를 도입했다. <b>같은 규칙을 메뉴에 이식하면 전투/메뉴 조작 감각이 통일된다.</b></p>
+  <div class="grid3">
+    <div class="card good"><h3>규칙 1 — 활성은 하나</h3>
+      <p>키 입력을 받는 패널만 <code>.is-active</code>. 활성 패널의 커서는 <b>발광 + ▶ 마커 + 1.2초 주기 블링크</b>.</p>
+      <p>비활성 패널의 커서는 테두리 없는 <b>잔상</b>(배경만 살짝)으로 남긴다 — “돌아가면 여기”를 알려주되 경쟁하지 않는다.</p>
+    </div>
+    <div class="card good"><h3>규칙 2 — 비활성은 감광</h3>
+      <p>비활성 패널 전체에 <code>opacity:.5</code>. 알파 미세 조정이 아니라 명백한 밝기 차이로 계층을 만든다.</p>
+      <p>전투 타깃 선택과 동일한 처리 → 학습 전이가 일어난다.</p>
+    </div>
+    <div class="card good"><h3>규칙 3 — 깊이는 가로 이동</h3>
+      <p>레일 → 리스트 → 대상 선택이 <b>왼쪽에서 오른쪽으로</b> 진행되고, <code>X</code>(취소)는 항상 한 단 왼쪽으로 되돌린다.</p>
+      <p>지금은 <code>mode: "main" | "function"</code> 2단뿐이라 3단 이상(장비→슬롯→후보)에서 되돌림 지점이 모호하다.</p>
+    </div>
+  </div>
+  <p class="quote" style="margin-top:20px">포커스 규칙이 없으면, 커서를 예쁘게 만드는 모든 작업이 낭비된다. 규칙을 먼저 정하고 그 다음에 그린다.</p>
+</section>
+
+<section id="skins">
+  <div class="section-kicker">Consistency</div>
+  <h2>메뉴 스킨 — 전투가 이미 만들어 둔 길을 쓴다</h2>
+  <p>전투는 <code>system.battleUiStyle</code> → <code>root.dataset.battleSkin</code> → <code>[data-battle-skin="…"]</code> CSS로 12종 스킨을 갈아입는다. 메뉴에도 동일 패턴을 적용하면 <b>새 아키텍처를 발명하지 않고</b> 톤 불일치를 없앨 수 있다.</p>
+  <div class="tablescroll"><table>
+    <thead><tr><th style="width:22%">항목</th><th>전투 (기존)</th><th>메뉴 (제안)</th></tr></thead>
+    <tbody>
+      <tr><td>프로젝트 설정</td><td><code>system.battleUiStyle</code></td><td><code>system.menuUiStyle</code> — 기본값 <code>"inherit-battle"</code></td></tr>
+      <tr><td>DOM 훅</td><td><code>root.dataset.battleSkin</code></td><td><code>root.dataset.menuSkin</code></td></tr>
+      <tr><td>레지스트리</td><td><code>src/battle/skins/registry.ts</code> 12종</td><td><code>src/menu/skins/registry.ts</code> — 우선 3종으로 시작</td></tr>
+      <tr><td>테마 변수</td><td><code>--battle-window-bg / -edge / -text / -accent</code></td><td>같은 4개 축을 <code>--menu-*</code>로. 값은 배틀 스킨에서 상속 가능</td></tr>
+      <tr><td>레이아웃 변형</td><td><code>layout</code>(sideview/frontview/…)</td><td><code>layout</code>: <code>rail-3col</code>(목업 A) / <code>rail-2col</code>(목업 B) / <code>fullscreen-cards</code></td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted" style="margin-top:12px"><b>최소 3종으로 시작하자.</b> ① <code>rm2003</code> — 지금 룩(호환·기본). ② <code>vxace</code> — 배틀 기본 스킨과 짝. ③ <code>modern</code> — 목업 B 레이아웃 + 낮은 채도 어두운 창. 12종을 한 번에 만들 필요 없다. 레지스트리만 열어 두면 스킨 추가는 CSS 파일 하나 붙이는 일이 된다.</p>
+</section>
+
+<section id="tech">
+  <div class="section-kicker">Debt</div>
+  <h2>기술 부채: 전체 재렌더를 먼저 끊어야 하는 이유</h2>
+  <p><code>replaceMenu</code>가 매 입력마다 패널을 <code>remove()</code>+<code>append</code> 하는 구조는 단순한 성능 문제가 아니다. <b>위 개선안 다수가 이 구조 때문에 물리적으로 불가능하다.</b></p>
+  <div class="grid2">
+    <div class="card bad"><h3>재렌더가 막고 있는 것</h3>
+      <p>· 커서 이동 애니메이션 / 패널 슬라이드 인·아웃 — 대상 노드가 매번 사라진다</p>
+      <p>· <code>runtimeJuice</code>의 <code>motionClass</code>(<code>juice-menu-select</code> 등) — 붙는 즉시 노드가 교체된다</p>
+      <p>· 리스트 스크롤 위치 — 유실되어 <code>detailCursors</code> Map으로 수동 복원 중</p>
+      <p>· 장비 델타의 “커서 올린 후보로 즉시 갱신” — 전체 재렌더로는 과하다</p>
+    </div>
+    <div class="card good"><h3>최소 변경 경로</h3>
+      <p>1. 패널 골격(레일/파티/작업영역/푸터)을 <b>한 번만</b> 생성하고 참조를 보관</p>
+      <p>2. 갱신을 4개 함수로 분리: <code>updateRail</code> / <code>updateParty</code> / <code>updateWork</code> / <code>updateFooter</code></p>
+      <p>3. 커서 이동은 클래스 토글만 — <code>attachCursorMenu</code>가 이미 이 방식이므로 <b>동일 패턴을 위로 끌어올리는 것</b>에 가깝다</p>
+      <p>4. <code>data-testid</code>는 유지 → e2e 회귀 최소화</p>
+    </div>
+  </div>
+  <p class="muted" style="margin-top:12px"><code>runtimeCursorMenu.ts</code>의 <code>attachCursorMenu</code>는 이미 “선택 관리 + click 합성”만 하는 올바른 설계다. 문제는 그 위 계층이 매번 DOM을 버린다는 점이다. 아래 계층은 이미 준비돼 있다.</p>
+</section>
+
+<section id="shipped">
+  <div class="section-kicker">Shipped</div>
+  <h2>P0 4건 — 구현 완료, 실측 캡처</h2>
+  <p>아래는 목업이 아니라 <b>실제 런타임 캡처</b>다(<code>evidence/browser-screenshots/status-menu-p0-redesign/</code>).
+  구현 중 목업만 봐서는 안 보이던 제약이 세 번 드러났고, 그 때문에 설계가 조금 바뀌었다 — 아래 "목업과 달라진 점"에 적었다.</p>
+  <div class="diffgrid">
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-items.png" alt="개선 후 아이템 메뉴">
+      <div class="caption"><b>개선 후 — 아이템</b> · 그룹 4개(행동/파티/기록/시스템) + 타이틀 분리 · HP/MP 게이지 · 1줄 리스트 · 설명은 푸터 · 레일 감광</div>
+    </div>
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-equipment.png" alt="개선 후 장비 메뉴">
+      <div class="caption"><b>개선 후 — 장비</b> · 명령 12개가 전부 레일 안에 들어온다(구현 도중 한 번 잘렸고, 그 회귀를 잡는 검사를 추가했다)</div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <div class="card good"><h3>목업과 달라진 점 ①<br>게이지는 숫자 <em>뒤</em>로</h3>
+      <p>목업은 게이지를 숫자 아래 별도 줄에 뒀다. 실제로 넣으니 파티 열(120px 폭 × 4명 고정 높이)을 넘겨 <b>텍스트 16개가 세로로 잘렸다</b>.</p>
+      <p>숫자와 게이지를 나란히 놓아도 숫자 칼럼이 0까지 밀려 가로로 잘렸다. 결국 게이지를 숫자 행의 <b>배경</b>으로 깔았다 — 행 수도 폭도 늘지 않는다.</p>
+    </div>
+    <div class="card good"><h3>목업과 달라진 점 ②<br>레벨 줄을 이름 줄과 합침</h3>
+      <p>여유를 만들려고 4줄 → 3줄로 줄였다. 덕분에 <code>line-height</code>를 <code>1.02</code>에서 <code>1.25</code>로 올릴 수 있었다.</p>
+      <p>그 과정에서 <b>기존 버그</b>를 하나 찾았다 — 9px 폰트의 글리프 박스는 11px인데 줄 높이가 9.18px이라, 개선 전에도 파티 패널의 <b>모든 줄이 상시 2px 잘려</b> 있었다(baseline 실측 <code>scrollHeight 11 / clientHeight 9</code>).</p>
+      <p class="muted">합치면서 <code>"정상"</code>은 뺐다. 하드코딩 상수라 4번 반복돼도 정보량이 0이다(결함 9 참고).</p>
+    </div>
+    <div class="card warn"><h3>목업과 달라진 점 ③<br>스크롤 페이드는 폐기</h3>
+      <p>하단 페이드 그라디언트를 넣었더니 목록이 짧을 때 패널 중간에 <b>어두운 띠</b>로 남아 그 자체가 버그처럼 보였다(장비 화면 실측).</p>
+      <p>행이 1줄로 압축돼 더 이상 글자가 잘린 채 끝나지 않으므로, 넘침 신호는 얇은 스크롤바에 맡겼다.</p>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:18px">
+    <div class="card bad"><h3>구현 중 만든 회귀 1건 — 잡아서 고침</h3>
+      <p>그룹 라벨 4개를 넣자 레일 높이를 넘겨 <b>저장·로드·대기·타이틀이 화면 밖으로 밀렸다</b>(= 조작 불가).</p>
+      <p><code>toBeVisible()</code>은 <code>overflow:hidden</code>으로 잘린 자식도 통과시킨다. 그래서 "명령이 레일 사각형 안에 실제로 들어왔는가"를 좌표로 확인하는 검사를 추가했다.</p>
+      <p>고정 15px 행 대신 flex 로 바꿔 명령 행이 남는 높이를 나눠 갖게 했다 — 항목이 늘어도 잘리는 대신 조금씩 좁아진다. 하한은 글리프가 들어가는 11px.</p>
+    </div>
+    <div class="card"><h3>검증</h3>
+      <p>· <code>tsc --noEmit -p tsconfig.app.json</code> 통과(빌드가 쓰는 설정)</p>
+      <p>· 유닛: 메뉴 관련 20/20 통과. 전체 스위트를 main과 파일 단위로 비교해 <b>내 변경으로 늘어난 실패 0건</b></p>
+      <p>· e2e: 신규 <code>status-menu-p0-redesign.spec.ts</code> 통과 — 그룹·게이지·감광·무클리핑·레일 수납을 한 번에 검사</p>
+      <p class="muted">이 저장소의 스위트는 이 환경에서 원래 105개 파일이 빨갛다(자산·네트워크 의존). 그 목록은 손대지 않았다.</p>
+    </div>
+  </div>
+</section>
+
+<section id="shipped-b">
+  <div class="section-kicker">Shipped · B</div>
+  <h2>B안 2열 레이아웃 — 구현 완료</h2>
+  <p>좌측 한 창(레일 + 파티) / 우측 전체 작업 영역. 아래는 실제 런타임 캡처다.</p>
+  <div class="diffgrid">
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-b-items.png" alt="B안 아이템 화면">
+      <div class="caption"><b>아이템</b> — 이름 + 효과 + 개수가 <b>한 줄</b>에. 파티 4명은 이름·레벨 한 줄에 HP 게이지가 배경으로 깔린다</div>
+    </div>
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-b-system.png" alt="B안 시스템 그룹">
+      <div class="caption"><b>시스템 ▸</b> — 접힌 그룹은 작업 영역에 펼쳐지고, 각 항목이 무엇을 하는지 설명이 함께 뜬다</div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <div class="card bad"><h3>세로 예산이 설계를 정했다</h3>
+      <p>사이드바 가용 높이는 <b>약 175px</b>. 명령 12개(하한 11px = 132px) + 파티는 어떻게 배치해도 넘쳤다.</p>
+      <p>뒤쪽 두 그룹만 접어도 레일 9개(117px) + 파티(71px) = <b>191px</b>로 파티 4번째가 잘렸다(실측).</p>
+      <p>행동 3개만 펼치고 파티·기록·시스템을 접으니 레일 75px + 파티 71px = <b>146px</b>. 목업 B의 <code>기록 · 시스템 ▸</code>가 장식이 아니라 필수였다.</p>
+    </div>
+    <div class="card warn"><h3>포기한 것</h3>
+      <p>· 사이드바 파티가 <b>1줄/1명</b>이 되면서 MP 게이지와 정확한 HP/MP 숫자가 빠졌다 → "상태" 화면이 맡는다. 화면에서 사라지는 값이라 <code>aria-label</code>로는 남겼다.</p>
+      <p>· 얼굴이 32px → 16px. 1줄 행에서는 얼굴이 행 높이를 정하기 때문이다(24px일 때 파티 4번째가 잘렸다).</p>
+      <p>· 저장·타이틀이 한 단계 깊어졌다. 타이틀의 파괴적 표시는 색 대신 <b>설명 문구</b>가 맡는다.</p>
+    </div>
+    <div class="card good"><h3>검사로 굳힌 것</h3>
+      <p>구현 중 실제로 낸 회귀가 <b>4건</b>이고, 전부 캡처를 눈으로 보고 찾았다. 그래서 각각을 검사로 만들었다.</p>
+      <p>· 명령/파티 항목이 컨테이너 밖으로 밀렸는가(<code>toBeVisible</code>은 잘린 자식도 통과시킨다)</p>
+      <p>· 압축 행이 두 줄로 접혔는가</p>
+      <p>· 한 행 안에서 이름/설명/개수가 서로 겹쳤는가</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>구현하며 배운 것 — 목업은 세로 예산을 모른다</h3>
+    <p>목업 3종은 전부 4:3 비율을 지켰지만 <b>실제 폰트 메트릭과 최소 행 높이</b>는 담지 못했다. B안에서 바뀐 결정(파티 그룹까지 접기, 파티 1줄화, 얼굴 16px)은 모두 목업이 아니라 실측이 정했다.</p>
+    <p>검사 자체가 틀린 적도 있다. 압축 행이 두 줄인지 보려고 <code>getBoundingClientRect()</code>(스테이지 스케일이 곱해진 값)와 <code>lineHeight</code>(CSS px)를 비교해 <b>항상 실패</b>했다. 실제로는 CSS가 이미 옳았다 — 측정 단위를 섞은 쪽이 틀렸다.</p>
+  </div>
+</section>
+
+<section id="shipped-c">
+  <div class="section-kicker">Shipped · C</div>
+  <h2>장비 스탯 델타 + 파티 수치 복구 — 구현 완료</h2>
+  <div class="diffgrid">
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-c-equipment-delta.png" alt="장비 스탯 델타">
+      <div class="caption"><b>장비 후보</b> — 커서를 올린 후보 기준으로 좌측 "변화" 블록이 갱신된다. <code>공격 53 → 65 (+12)</code> 초록, 하락은 빨강, <b>변하지 않는 값은 화살표를 그리지 않는다</b></div>
+    </div>
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-b-items.png" alt="파티 2×2 격자">
+      <div class="caption"><b>파티 2×2</b> — MP 게이지와 HP/MP 수치를 되살렸다. 셀 폭 52px 라 접두사 없이 수치만, 어느 쪽인지는 게이지 색이 알려준다</div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <div class="card good"><h3>델타는 절대 총합 기준</h3>
+      <p>장비 보너스 증감만 보여주면 <code>방어 +7</code>이 큰 건지 작은 건지 판단할 기준이 없다.</p>
+      <p>그래서 <b>기본 능력치(레벨 곡선) + 전 부위 장비 보너스</b>를 합산하고, 해당 부위만 후보로 갈아끼워 비교한다.</p>
+      <p>후보를 고르는 동안에는 파티 대신 "변화"가 뜬다. 그 순간 알고 싶은 건 파티 HP가 아니다.</p>
+    </div>
+    <div class="card good"><h3>파티 수치 복구</h3>
+      <p>1열 × 4명으로 HP/MP 두 줄을 넣으면 명당 34px = 136px 라 사이드바(100px)를 넘겨 뒤 2명이 잘렸다.</p>
+      <p><b>2×2 격자</b>로 두면 2행 × 34px = 69px 로 들어간다. 대신 셀 폭이 52px 라 얼굴을 뺐다.</p>
+      <p><code>HP 514/514</code>는 가로로 넘쳐 접두사를 뺐다. 전체 문자열은 <code>aria-label</code>이 담는다.</p>
+    </div>
+    <div class="card"><h3>검증</h3>
+      <p>· <code>tsc --noEmit -p tsconfig.app.json</code> 통과</p>
+      <p>· 전체 유닛 스위트 main 대비 <b>105 = 105, 증가한 실패 0건</b></p>
+      <p>· e2e에 델타 검사 추가 — 4개 스탯 행이 뜨는지, 커서 이동 시 상승 행이 정확히 1개인지, 파티가 대신 숨는지</p>
+    </div>
+  </div>
+</section>
+
+<section id="priority">
+  <div class="section-kicker">Roadmap</div>
+  <h2>실행 순서 — 체감 대비 비용 순</h2>
+  <div class="priorities">
+    <div class="priority"><span class="p0">P0-1</span><div><b>HP/MP 게이지 + 임계 색상</b><div class="when">파티 패널 4줄 → 이름·레벨 1줄 + 게이지 2개. 캡처의 <code>514/514</code> 반복 노이즈가 사라진다</div></div><span class="when">CSS + 모델 소폭</span></div>
+    <div class="priority"><span class="p0">P0-2</span><div><b>명령 레일 그룹화 + 파괴적 액션 분리</b><div class="when">행동/파티/시스템 3그룹 + 구분선. 타이틀은 별도 색·최하단. 행 높이 고정 문제도 함께 해소</div></div><span class="when">모델 + 렌더 + CSS</span></div>
+    <div class="priority"><span class="p0">P0-3</span><div><b>포커스 모델 3규칙 적용</b><div class="when">활성 커서 발광·▶·블링크 / 비활성 패널 감광 / 취소=왼쪽. 전투(<code>4a1930e9</code>)와 규칙 통일</div></div><span class="when">CSS 중심</span></div>
+    <div class="priority"><span class="p0">P0-4</span><div><b>리스트 클리핑 제거 + 스크롤 어포던스</b><div class="when">행을 1행으로 압축(설명은 푸터로), 더 있으면 <code>▼</code> 표시. 잘린 글자로 끝나지 않게</div></div><span class="when">CSS + 렌더</span></div>
+    <div class="priority"><span class="p1c">P1-1</span><div><b>목업 B 레이아웃(2열)으로 전환</b><div class="when">리스트 폭 2배 → 이름+효과+개수 한 행. 기록·시스템은 서브그룹으로 접기</div></div><span class="when">렌더 재구성 + e2e 갱신</span></div>
+    <div class="priority"><span class="p1c">P1-2</span><div><b>장비 스탯 델타(목업 C)</b><div class="when">커서 올린 후보로 좌측 “변화” 블록 갱신. 장착 불가 사유 표시</div></div><span class="when">계산 로직 + 렌더</span></div>
+    <div class="priority"><span class="p1c">P1-3</span><div><b>아이콘 도입 + 정렬 축 통일</b><div class="when">기존 <code>.status-menu-entry-icon</code> 재사용. 가운데 정렬 폐기 — 좌(이름)/우(수량) 2축만</div></div><span class="when">렌더 + CSS</span></div>
+    <div class="priority"><span class="p1c">P1-4</span><div><b>상태 이상을 실제로 반영</b><div class="when">하드코딩 <code>"정상"</code> 제거, 세션 상태에서 읽는다</div></div><span class="when">모델</span></div>
+    <div class="priority"><span class="p2c">P2-1</span><div><b>증분 렌더로 전환</b><div class="when">골격 1회 생성 + 4개 update 함수. 이후 트랜지션·juice 모션이 비로소 동작한다</div></div><span class="when">컨트롤러 리팩터</span></div>
+    <div class="priority"><span class="p2c">P2-2</span><div><b>메뉴 스킨 레지스트리(3종)</b><div class="when"><code>menuUiStyle</code> + <code>[data-menu-skin]</code>. 기본값은 배틀 스킨 상속</div></div><span class="when">신규 모듈 + CSS</span></div>
+    <div class="priority"><span class="p2c">P2-3</span><div><b>푸터를 컨텍스트 바로</b><div class="when">조작 안내 / 선택 항목 설명 / 현재 위치. 빈칸을 없앤다</div></div><span class="when">렌더</span></div>
+  </div>
+  <p class="muted" style="margin-top:16px"><b>P0 4건만으로도 “구닥다리” 인상의 대부분이 사라진다</b>고 본다. 전부 CSS·렌더 국소 수정이라 목업 A 범위 안에서 끝나고, 기존 e2e testid를 유지할 수 있다. 목업 B/C는 그 다음 단계에서 판단하면 된다.</p>
+</section>
+
+<section>
+  <div class="section-kicker">Decision needed</div>
+  <h2>감독 결정이 필요한 갈림길</h2>
+  <div class="grid3">
+    <div class="card"><h3>① 목업 A냐 B냐</h3><p>A는 싸고 안전, B는 구조적으로 옳다. <b>A → B 순차 진행</b>을 권한다 — A의 결과물이 B의 부분집합이라 버려지는 작업이 없다.</p></div>
+    <div class="card"><h3>② 저장 접근 깊이</h3><p>B에서 저장이 서브메뉴로 들어간다. 저장을 최상위에 유지할지, 단축키로 보완할지.</p></div>
+    <div class="card"><h3>③ 메뉴 스킨 우선순위</h3><p>P2로 뒀지만, 전투 스킨 12종을 이미 판매 포인트로 쓰고 있다면 우선순위를 올릴 근거가 된다.</p></div>
+  </div>
+</section>
+
+</main>
+<footer><div class="wrap">
+  RPG ZZU · 인게임 메뉴 UI/UX 개선안 · 2026-08-03 ·
+  근거 캡처: <code>docs/2026-08-03-ingame-menu-assets/</code> (원본 <code>evidence/browser-screenshots/status-menu-modern-mock/</code>) ·
+  코드 근거: <code>src/player/playerStatusMenu*.ts</code>, <code>src/styles/database/tabs-b-status-menu-*.css</code>, <code>src/battle/skins/registry.ts</code> ·
+  목업은 CSS만으로 렌더됨(외부 폰트·스크립트·이미지 0)
+</div></footer>
+</body>
+</html>

@@ -10,6 +10,7 @@ import type { FootprintWing, HouseKitId } from "@/editor/houseKit";
 import { MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
 import type { HouseInteriorProgram } from "@/editor/houseInteriors";
 import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt } from "@/project/defaults/houseTemplateCatalog";
 import type { GameMap, MapId, Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import type { YardDecorKind } from "../houseLotDecor";
@@ -187,6 +188,9 @@ export interface HouseTemplate {
   readonly kitId?: HouseKitId;
   /** 옥상 판자 데크 + 벽면 사다리(파랑 평지붕 전용) — houses.ts applyRoofDeck. */
   readonly roofDeck?: boolean;
+  /** 원점(0,0) 기준 날개 — 선언형 형태 데이터. */
+  readonly wings: readonly FootprintWing[];
+  /** wings를 시공 좌표로 평행이동한 것. houseTemplateWingsAt의 얇은 래퍼. */
   wingsAt(x: number, y: number): FootprintWing[];
 }
 
@@ -250,122 +254,13 @@ export interface VillageAudit {
   readonly fenceTiles: number;
 }
 
-// 형태 카탈로그(2026-07-17 확장, 34종) — 규칙:
-//  · 열 구간(footprint interval) 높이 ≥ 벽 밴드 + 2 (1층 5 / 2층 7 / 3층 9 / lowWall 4).
-//  · w ≤ 8 — 후보 슬롯 폭(slotWidth) 필터를 통과해야 실제 배치된다. 큰 필지는 세로로 늘린다.
-//  · estate-*: 본채 + 분리 헛간 날개 한 필지 — 울타리 패스(fences.ts)가 bbox+1 둘레를
-//    치므로 자동으로 "울타리 안에 헛간 있는 큰 집"이 된다.
-//  · aframe-*: kitId 강제(aframe-stone), h = 벽 밴드 + floor((w-1)/2) + 1 정확히.
-export const HOUSE_TEMPLATES: readonly HouseTemplate[] = [
-  // ── 직사각 계열 ──
-  { id: "rect-large", name: "직사각 대", w: 8, h: 7, stories: 1, wingsAt: (x, y) => [{ x, y, w: 8, h: 7 }] },
-  { id: "rect-small", name: "직사각 소", w: 6, h: 6, stories: 1, wingsAt: (x, y) => [{ x, y, w: 6, h: 6 }] },
-  { id: "rect-tall", name: "직사각 고지붕", w: 7, h: 8, stories: 1, wingsAt: (x, y) => [{ x, y, w: 7, h: 8 }] },
-  { id: "rect-wide", name: "납작 장옥", w: 8, h: 6, stories: 1, wingsAt: (x, y) => [{ x, y, w: 8, h: 6 }] },
-  { id: "rect-slim", name: "좁은 집", w: 5, h: 6, stories: 1, wingsAt: (x, y) => [{ x, y, w: 5, h: 6 }] },
-  { id: "rect-min", name: "소형 오두막", w: 4, h: 5, stories: 1, wingsAt: (x, y) => [{ x, y, w: 4, h: 5 }] },
-  { id: "rect-long", name: "고지붕 장옥", w: 8, h: 9, stories: 1, wingsAt: (x, y) => [{ x, y, w: 8, h: 9 }] },
-  { id: "rect-2f", name: "직사각 2층", w: 7, h: 9, stories: 2, wingsAt: (x, y) => [{ x, y, w: 7, h: 9 }] },
-  { id: "rect-2f-slim", name: "좁은 2층", w: 5, h: 9, stories: 2, wingsAt: (x, y) => [{ x, y, w: 5, h: 9 }] },
-  { id: "rect-3f", name: "직사각 3층", w: 8, h: 11, stories: 3, wingsAt: (x, y) => [{ x, y, w: 8, h: 11 }] },
-  // ── 낮은 벽(상단+하단 2행) — 헛간·창고·오두막 ──
-  { id: "cottage-low", name: "낮은 오두막", w: 5, h: 4, stories: 1, lowWall: true, wingsAt: (x, y) => [{ x, y, w: 5, h: 4 }] },
-  { id: "hut-low", name: "외양간", w: 4, h: 4, stories: 1, lowWall: true, wingsAt: (x, y) => [{ x, y, w: 4, h: 4 }] },
-  { id: "barn-low", name: "낮은 헛간", w: 6, h: 5, stories: 1, lowWall: true, wingsAt: (x, y) => [{ x, y, w: 6, h: 5 }] },
-  // ── ㄱ자 계열(4방향·크기) ──
-  {
-    id: "l", name: "ㄱ자", w: 6, h: 8, stories: 1,
-    wingsAt: (x, y) => [{ x, y, w: 3, h: 8 }, { x: x + 3, y, w: 3, h: 6 }],
-  },
-  {
-    id: "l-mirror", name: "ㄴ자(거울)", w: 6, h: 8, stories: 1,
-    wingsAt: (x, y) => [{ x, y, w: 3, h: 6 }, { x: x + 3, y, w: 3, h: 8 }],
-  },
-  {
-    id: "l-wide", name: "ㄱ자 대", w: 8, h: 8, stories: 1,
-    wingsAt: (x, y) => [{ x, y, w: 4, h: 8 }, { x: x + 4, y, w: 4, h: 6 }],
-  },
-  {
-    id: "l-deep", name: "ㄱ자 깊은", w: 7, h: 9, stories: 1,
-    // 아래로 내려오는 날개가 더 넓어야 문이 최하단 벽에 난다 (문 = 가장 긴 외부 하단 런).
-    wingsAt: (x, y) => [{ x, y, w: 4, h: 9 }, { x: x + 4, y, w: 3, h: 6 }],
-  },
-  // ── T자(현관 돌출)·본채+별채 ──
-  {
-    id: "t-porch", name: "T자 현관", w: 8, h: 9, stories: 1,
-    wingsAt: (x, y) => [{ x, y, w: 8, h: 6 }, { x: x + 2, y: y + 6, w: 3, h: 3 }],
-  },
-  {
-    id: "t-hall", name: "T자 홀", w: 8, h: 10, stories: 1,
-    wingsAt: (x, y) => [{ x, y, w: 8, h: 6 }, { x: x + 3, y: y + 6, w: 3, h: 4 }],
-  },
-  {
-    id: "porch-cottage", name: "현관 오두막", w: 6, h: 8, stories: 1,
-    wingsAt: (x, y) => [{ x, y, w: 6, h: 5 }, { x: x + 1, y: y + 5, w: 3, h: 3 }],
-  },
-  {
-    id: "annex", name: "본채+곁채", w: 8, h: 7, stories: 1,
-    wingsAt: (x, y) => [{ x, y, w: 5, h: 7 }, { x: x + 5, y: y + 2, w: 3, h: 5 }],
-  },
-  // ── ㄷ자·중정 ──
-  {
-    id: "u", name: "ㄷ자", w: 8, h: 8, stories: 1,
-    wingsAt: (x, y) => [
-      { x, y, w: 8, h: 5 },
-      { x, y: y + 5, w: 3, h: 3 },
-      { x: x + 5, y: y + 5, w: 3, h: 3 },
-    ],
-  },
-  {
-    id: "u-deep", name: "ㄷ자 깊은", w: 8, h: 9, stories: 1,
-    wingsAt: (x, y) => [
-      { x, y, w: 8, h: 5 },
-      { x, y: y + 5, w: 3, h: 4 },
-      { x: x + 5, y: y + 5, w: 3, h: 4 },
-    ],
-  },
-  {
-    id: "courtyard", name: "ㅁ자 중정", w: 8, h: 12, stories: 1,
-    wingsAt: (x, y) => [
-      { x, y, w: 8, h: 5 },
-      { x, y: y + 7, w: 8, h: 5 },
-      { x, y, w: 3, h: 12 },
-      { x: x + 5, y, w: 3, h: 12 },
-    ],
-  },
-  // ── 오프셋 날개(이미지 #7 계열) ──
-  {
-    id: "z-offset", name: "엇갈린 날개", w: 8, h: 10, stories: 1,
-    wingsAt: (x, y) => [{ x, y, w: 5, h: 8 }, { x: x + 3, y: y + 2, w: 5, h: 8 }],
-  },
-  {
-    id: "z-mirror", name: "엇갈린 날개(거울)", w: 8, h: 10, stories: 1,
-    wingsAt: (x, y) => [{ x: x + 3, y, w: 5, h: 8 }, { x, y: y + 2, w: 5, h: 8 }],
-  },
-  // ── 대형 필지(estate) — 본채 + 분리 헛간, 울타리가 필지 전체를 감싼다 ──
-  {
-    id: "estate-shed-r", name: "필지(헛간 우)", w: 7, h: 14, stories: 1,
-    wingsAt: (x, y) => [{ x, y: y + 7, w: 7, h: 7 }, { x: x + 3, y, w: 4, h: 5 }],
-  },
-  {
-    id: "estate-shed-l", name: "필지(헛간 좌)", w: 7, h: 14, stories: 1,
-    wingsAt: (x, y) => [{ x, y: y + 7, w: 7, h: 7 }, { x, y, w: 4, h: 5 }],
-  },
-  {
-    id: "estate-barn", name: "큰 필지(외양간)", w: 8, h: 15, stories: 1,
-    wingsAt: (x, y) => [{ x, y: y + 8, w: 8, h: 7 }, { x: x + 2, y, w: 6, h: 5 }],
-  },
-  // ── A자 지붕(이미지 #6) — kitId 강제, h = 벽 밴드 + floor((w-1)/2) + 1 ──
-  { id: "aframe-small", name: "A자 소", w: 5, h: 6, stories: 1, kitId: "aframe-stone", wingsAt: (x, y) => [{ x, y, w: 5, h: 6 }] },
-  { id: "aframe-mid", name: "A자 중", w: 7, h: 7, stories: 1, kitId: "aframe-stone", wingsAt: (x, y) => [{ x, y, w: 7, h: 7 }] },
-  { id: "aframe-wide", name: "A자 대", w: 8, h: 7, stories: 1, kitId: "aframe-stone", wingsAt: (x, y) => [{ x, y, w: 8, h: 7 }] },
-  { id: "aframe-low", name: "A자 낮은", w: 7, h: 6, stories: 1, kitId: "aframe-stone", lowWall: true, wingsAt: (x, y) => [{ x, y, w: 7, h: 6 }] },
-  // ── 옥상 데크 — 파랑 평지붕 위 판자 보행면 + 벽면 사다리(322) ──
-  {
-    id: "rooftop-deck", name: "옥상 데크", w: 7, h: 8, stories: 1, kitId: "blue-stone", roofDeck: true,
-    wingsAt: (x, y) => [{ x, y, w: 7, h: 8 }],
-  },
-];
+// 형태 카탈로그 — 선언형 데이터 정본은 project/defaults/houseTemplateCatalog.ts(34종)에 있다.
+// 여기서는 시공 코드가 쓰는 wingsAt(x, y) 표면만 씌운다 — 데이터 → 함수 어댑터.
+// 카탈로그 규칙(층 구간 최소 높이·w 상한·estate·aframe 공식)은 그 파일 머리 주석에 있다.
+export const HOUSE_TEMPLATES: readonly HouseTemplate[] = HOUSE_TEMPLATE_DEFS.map((def): HouseTemplate => ({
+  ...def,
+  wingsAt: (x: number, y: number) => houseTemplateWingsAt(def, x, y),
+}));
 
 export const DEFAULT_NPCS: readonly NpcText[] = [
   { name: "민재", lines: ["소라가 아침마다 우물가를 챙겨 줘요.", "이 길만 따라가면 광장까지 금방입니다."] },

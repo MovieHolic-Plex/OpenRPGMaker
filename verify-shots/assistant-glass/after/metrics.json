@@ -1,0 +1,1608 @@
+{
+  "tag": "after",
+  "mapPainted": true,
+  "basic_boot": {
+    "dock": "glass",
+    "conversation": "empty",
+    "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+    "panel": {
+      "selector": "[data-testid='ai-panel']",
+      "rect": [
+        84,
+        61,
+        520,
+        620
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(255, 255, 255, 0.78)",
+      "backgroundImage": "none",
+      "backdropFilter": "blur(24px) saturate(1.08)",
+      "border": "1px solid rgba(15, 23, 42, 0.08)",
+      "borderRadius": "18px",
+      "boxShadow": "rgba(15, 23, 42, 0.06) 0px 1px 2px 0px, rgba(15, 23, 42, 0.22) 0px 18px 44px -12px",
+      "padding": "0px",
+      "display": "flex"
+    },
+    "header": null,
+    "plate": null,
+    "face": null,
+    "name": null,
+    "line": null,
+    "headerActions": null,
+    "main": {
+      "selector": ".ai-chat-main",
+      "rect": [
+        85,
+        62,
+        518,
+        446
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "16px 0px",
+      "display": "flex"
+    },
+    "nextSteps": {
+      "selector": "[data-testid='ai-next-steps']",
+      "rect": [
+        85,
+        239,
+        518,
+        93
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px 16px",
+      "display": "flex"
+    },
+    "hint": {
+      "selector": ".ai-next-steps-hint",
+      "rect": [
+        101,
+        239,
+        486,
+        23
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "700",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "examplesTitle": {
+      "selector": ".ai-authoring-examples-title",
+      "rect": [
+        101,
+        273,
+        486,
+        18
+      ],
+      "color": "rgb(71, 85, 105)",
+      "fontSize": 12,
+      "fontWeight": "600",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(71, 85, 105)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "exampleChip": {
+      "selector": ".ai-authoring-example-chip",
+      "rect": [
+        101,
+        299,
+        34,
+        32
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13,
+      "fontWeight": "650",
+      "background": "rgb(238, 241, 244)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(0, 0, 0, 0)",
+      "borderRadius": "999px",
+      "boxShadow": "none",
+      "padding": "0px 10px",
+      "display": "block"
+    },
+    "inputField": {
+      "selector": ".ai-assistant-input",
+      "rect": [
+        114,
+        547,
+        460,
+        68
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "10px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "commandBar": {
+      "selector": ".ai-command-bar",
+      "rect": [
+        85,
+        524,
+        518,
+        156
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "12px 16px 16px",
+      "display": "grid"
+    },
+    "composer": {
+      "selector": ".ai-composer",
+      "rect": [
+        101,
+        536,
+        486,
+        128
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "color(srgb 1 1 1 / 0.62)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.08)",
+      "borderRadius": "14px",
+      "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+      "padding": "10px 12px",
+      "display": "grid"
+    },
+    "collapsedRestore": {
+      "selector": "[data-testid='ai-collapsed-restore']",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13.3333,
+      "fontWeight": "400",
+      "background": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.463)",
+      "borderRadius": "12px",
+      "boxShadow": "rgba(15, 23, 42, 0.16) 0px 8px 24px 0px",
+      "padding": "4px 12px 4px 4px",
+      "display": "none"
+    },
+    "restoreFace": null
+  },
+  "basic_boot_contrast": {
+    "panelBg": "rgba(255, 255, 255, 0.78)",
+    "panelAlpha": 0.78,
+    "backdropFilter": "blur(24px) saturate(1.08)",
+    "rows": [
+      {
+        "selector": ".ai-next-steps-hint",
+        "label": "빈화면 안내문",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 15,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 17.61,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-authoring-examples-title",
+        "label": "예시 라벨",
+        "status": "measured",
+        "color": "rgb(71, 85, 105)",
+        "fontSize": 12,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 7.48,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-authoring-example-chip",
+        "label": "예시 칩",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 13,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 17.61,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-assistant-input",
+        "label": "입력 플레이스홀더",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 15,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 17.61,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-chat-send",
+        "label": "전송 버튼",
+        "status": "measured",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": 12,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 1.01,
+        "passesAA": false
+      }
+    ]
+  },
+  "basic_focus": {
+    "dock": "glass",
+    "conversation": "empty",
+    "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+    "panel": {
+      "selector": "[data-testid='ai-panel']",
+      "rect": [
+        84,
+        61,
+        520,
+        620
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(255, 255, 255, 0.78)",
+      "backgroundImage": "none",
+      "backdropFilter": "blur(24px) saturate(1.08)",
+      "border": "1px solid rgba(15, 23, 42, 0.08)",
+      "borderRadius": "18px",
+      "boxShadow": "rgba(15, 23, 42, 0.06) 0px 1px 2px 0px, rgba(15, 23, 42, 0.22) 0px 18px 44px -12px",
+      "padding": "0px",
+      "display": "flex"
+    },
+    "header": null,
+    "plate": null,
+    "face": null,
+    "name": null,
+    "line": null,
+    "headerActions": null,
+    "main": {
+      "selector": ".ai-chat-main",
+      "rect": [
+        85,
+        62,
+        518,
+        446
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "16px 0px",
+      "display": "flex"
+    },
+    "nextSteps": {
+      "selector": "[data-testid='ai-next-steps']",
+      "rect": [
+        85,
+        239,
+        518,
+        93
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px 16px",
+      "display": "flex"
+    },
+    "hint": {
+      "selector": ".ai-next-steps-hint",
+      "rect": [
+        101,
+        239,
+        486,
+        23
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "700",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "examplesTitle": {
+      "selector": ".ai-authoring-examples-title",
+      "rect": [
+        101,
+        273,
+        486,
+        18
+      ],
+      "color": "rgb(71, 85, 105)",
+      "fontSize": 12,
+      "fontWeight": "600",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(71, 85, 105)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "exampleChip": {
+      "selector": ".ai-authoring-example-chip",
+      "rect": [
+        101,
+        299,
+        34,
+        32
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13,
+      "fontWeight": "650",
+      "background": "rgb(238, 241, 244)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(0, 0, 0, 0)",
+      "borderRadius": "999px",
+      "boxShadow": "none",
+      "padding": "0px 10px",
+      "display": "block"
+    },
+    "inputField": {
+      "selector": ".ai-assistant-input",
+      "rect": [
+        114,
+        547,
+        460,
+        68
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "10px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "commandBar": {
+      "selector": ".ai-command-bar",
+      "rect": [
+        85,
+        524,
+        518,
+        156
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "12px 16px 16px",
+      "display": "grid"
+    },
+    "composer": {
+      "selector": ".ai-composer",
+      "rect": [
+        101,
+        536,
+        486,
+        128
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "color(srgb 1 1 1 / 0.62)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid color(srgb 0.259428 0.307801 0.749519 / 0.51902)",
+      "borderRadius": "14px",
+      "boxShadow": "color(srgb 0.290196 0.341176 0.839216 / 0.16) 0px 0px 0px 3px",
+      "padding": "10px 12px",
+      "display": "grid"
+    },
+    "collapsedRestore": {
+      "selector": "[data-testid='ai-collapsed-restore']",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13.3333,
+      "fontWeight": "400",
+      "background": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.463)",
+      "borderRadius": "12px",
+      "boxShadow": "rgba(15, 23, 42, 0.16) 0px 8px 24px 0px",
+      "padding": "4px 12px 4px 4px",
+      "display": "none"
+    },
+    "restoreFace": null
+  },
+  "dock_side": {
+    "dock": "side",
+    "conversation": "empty",
+    "panelClass": "ai-chat-panel is-assistant-idle chat-dock-side",
+    "panel": {
+      "selector": "[data-testid='ai-panel']",
+      "rect": [
+        1068,
+        49,
+        531,
+        951
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgb(247, 248, 248)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "8px",
+      "display": "flex"
+    },
+    "header": null,
+    "plate": null,
+    "face": null,
+    "name": null,
+    "line": null,
+    "headerActions": null,
+    "main": {
+      "selector": ".ai-chat-main",
+      "rect": [
+        1076,
+        57,
+        515,
+        449
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "16px 0px",
+      "display": "flex"
+    },
+    "nextSteps": {
+      "selector": "[data-testid='ai-next-steps']",
+      "rect": [
+        1076,
+        223,
+        515,
+        117
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "16px 12px 8px",
+      "display": "flex"
+    },
+    "hint": {
+      "selector": ".ai-next-steps-hint",
+      "rect": [
+        1088,
+        239,
+        491,
+        23
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "700",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "examplesTitle": {
+      "selector": ".ai-authoring-examples-title",
+      "rect": [
+        1088,
+        274,
+        491,
+        18
+      ],
+      "color": "rgb(71, 85, 105)",
+      "fontSize": 12,
+      "fontWeight": "600",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(71, 85, 105)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "exampleChip": {
+      "selector": ".ai-authoring-example-chip",
+      "rect": [
+        1088,
+        300,
+        34,
+        32
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13,
+      "fontWeight": "650",
+      "background": "rgb(238, 241, 244)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(0, 0, 0, 0)",
+      "borderRadius": "999px",
+      "boxShadow": "none",
+      "padding": "0px 10px",
+      "display": "block"
+    },
+    "inputField": {
+      "selector": ".ai-assistant-input",
+      "rect": [
+        1105,
+        857,
+        457,
+        70
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "10px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "commandBar": {
+      "selector": ".ai-command-bar",
+      "rect": [
+        1076,
+        834,
+        515,
+        158
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "12px 16px 16px",
+      "display": "grid"
+    },
+    "composer": {
+      "selector": ".ai-composer",
+      "rect": [
+        1092,
+        846,
+        483,
+        130
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "color(srgb 1 1 1 / 0.62)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.08)",
+      "borderRadius": "14px",
+      "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+      "padding": "10px 12px",
+      "display": "grid"
+    },
+    "collapsedRestore": {
+      "selector": "[data-testid='ai-collapsed-restore']",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13.3333,
+      "fontWeight": "400",
+      "background": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.463)",
+      "borderRadius": "12px",
+      "boxShadow": "rgba(15, 23, 42, 0.16) 0px 8px 24px 0px",
+      "padding": "4px 12px 4px 4px",
+      "display": "none"
+    },
+    "restoreFace": null
+  },
+  "dock_side_contrast": {
+    "panelBg": "rgb(247, 248, 248)",
+    "panelAlpha": 1,
+    "backdropFilter": "none",
+    "rows": [
+      {
+        "selector": ".ai-next-steps-hint",
+        "label": "빈화면 안내문",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 15,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          247,
+          248,
+          248
+        ],
+        "contrast": 16.78,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-authoring-examples-title",
+        "label": "예시 라벨",
+        "status": "measured",
+        "color": "rgb(71, 85, 105)",
+        "fontSize": 12,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          247,
+          248,
+          248
+        ],
+        "contrast": 7.12,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-authoring-example-chip",
+        "label": "예시 칩",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 13,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          247,
+          248,
+          248
+        ],
+        "contrast": 16.78,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-assistant-input",
+        "label": "입력 플레이스홀더",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 15,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          247,
+          248,
+          248
+        ],
+        "contrast": 16.78,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-chat-send",
+        "label": "전송 버튼",
+        "status": "measured",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": 12,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          247,
+          248,
+          248
+        ],
+        "contrast": 1.06,
+        "passesAA": false
+      }
+    ]
+  },
+  "dock_float": {
+    "dock": "float",
+    "conversation": "empty",
+    "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float",
+    "panel": {
+      "selector": "[data-testid='ai-panel']",
+      "rect": [
+        72,
+        49,
+        1527,
+        951
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "14px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "flex"
+    },
+    "header": null,
+    "plate": null,
+    "face": null,
+    "name": null,
+    "line": null,
+    "headerActions": null,
+    "main": {
+      "selector": ".ai-chat-main",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "flex"
+    },
+    "nextSteps": {
+      "selector": "[data-testid='ai-next-steps']",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px 16px",
+      "display": "flex"
+    },
+    "hint": null,
+    "examplesTitle": null,
+    "exampleChip": null,
+    "inputField": {
+      "selector": ".ai-assistant-input",
+      "rect": [
+        971,
+        828,
+        592,
+        70
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "10px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "commandBar": {
+      "selector": ".ai-command-bar",
+      "rect": [
+        947,
+        808,
+        640,
+        144
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "color(srgb 1 1 1 / 0.94)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.125)",
+      "borderRadius": "16px",
+      "boxShadow": "rgba(15, 23, 42, 0.1) 0px 8px 24px 0px, rgba(15, 23, 42, 0.14) 0px 24px 64px 0px",
+      "padding": "10px 12px",
+      "display": "grid"
+    },
+    "composer": {
+      "selector": ".ai-composer",
+      "rect": [
+        960,
+        819,
+        614,
+        122
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "color(srgb 1 1 1 / 0.96)",
+      "backgroundImage": "none",
+      "backdropFilter": "blur(10px)",
+      "border": "1px solid rgba(15, 23, 42, 0.463)",
+      "borderRadius": "14px",
+      "boxShadow": "rgba(42, 37, 33, 0.08) 0px 8px 24px 0px",
+      "padding": "8px 10px",
+      "display": "grid"
+    },
+    "collapsedRestore": {
+      "selector": "[data-testid='ai-collapsed-restore']",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13.3333,
+      "fontWeight": "400",
+      "background": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.463)",
+      "borderRadius": "12px",
+      "boxShadow": "rgba(15, 23, 42, 0.16) 0px 8px 24px 0px",
+      "padding": "4px 12px 4px 4px",
+      "display": "none"
+    },
+    "restoreFace": null
+  },
+  "dock_float_contrast": {
+    "panelBg": "rgba(0, 0, 0, 0)",
+    "panelAlpha": 0,
+    "backdropFilter": "none",
+    "rows": [
+      {
+        "selector": ".ai-next-steps-hint",
+        "label": "빈화면 안내문",
+        "status": "absent"
+      },
+      {
+        "selector": ".ai-authoring-examples-title",
+        "label": "예시 라벨",
+        "status": "absent"
+      },
+      {
+        "selector": ".ai-authoring-example-chip",
+        "label": "예시 칩",
+        "status": "absent"
+      },
+      {
+        "selector": ".ai-assistant-input",
+        "label": "입력 플레이스홀더",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 15,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          247,
+          248,
+          248
+        ],
+        "contrast": 16.78,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-chat-send",
+        "label": "전송 버튼",
+        "status": "measured",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": 12,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          247,
+          248,
+          248
+        ],
+        "contrast": 1.06,
+        "passesAA": false
+      }
+    ]
+  },
+  "dock_glass": {
+    "dock": "glass",
+    "conversation": "empty",
+    "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+    "panel": {
+      "selector": "[data-testid='ai-panel']",
+      "rect": [
+        84,
+        61,
+        520,
+        620
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(255, 255, 255, 0.78)",
+      "backgroundImage": "none",
+      "backdropFilter": "blur(24px) saturate(1.08)",
+      "border": "1px solid rgba(15, 23, 42, 0.08)",
+      "borderRadius": "18px",
+      "boxShadow": "rgba(15, 23, 42, 0.06) 0px 1px 2px 0px, rgba(15, 23, 42, 0.22) 0px 18px 44px -12px",
+      "padding": "0px",
+      "display": "flex"
+    },
+    "header": null,
+    "plate": null,
+    "face": null,
+    "name": null,
+    "line": null,
+    "headerActions": null,
+    "main": {
+      "selector": ".ai-chat-main",
+      "rect": [
+        85,
+        62,
+        518,
+        444
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "16px 0px",
+      "display": "flex"
+    },
+    "nextSteps": {
+      "selector": "[data-testid='ai-next-steps']",
+      "rect": [
+        85,
+        238,
+        518,
+        93
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px 16px",
+      "display": "flex"
+    },
+    "hint": {
+      "selector": ".ai-next-steps-hint",
+      "rect": [
+        101,
+        238,
+        486,
+        23
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "700",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "examplesTitle": {
+      "selector": ".ai-authoring-examples-title",
+      "rect": [
+        101,
+        272,
+        486,
+        18
+      ],
+      "color": "rgb(71, 85, 105)",
+      "fontSize": 12,
+      "fontWeight": "600",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(71, 85, 105)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "exampleChip": {
+      "selector": ".ai-authoring-example-chip",
+      "rect": [
+        101,
+        298,
+        34,
+        32
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13,
+      "fontWeight": "650",
+      "background": "rgb(238, 241, 244)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(0, 0, 0, 0)",
+      "borderRadius": "999px",
+      "boxShadow": "none",
+      "padding": "0px 10px",
+      "display": "block"
+    },
+    "inputField": {
+      "selector": ".ai-assistant-input",
+      "rect": [
+        114,
+        545,
+        460,
+        70
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "10px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "commandBar": {
+      "selector": ".ai-command-bar",
+      "rect": [
+        85,
+        522,
+        518,
+        158
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "12px 16px 16px",
+      "display": "grid"
+    },
+    "composer": {
+      "selector": ".ai-composer",
+      "rect": [
+        101,
+        534,
+        486,
+        130
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "color(srgb 1 1 1 / 0.62)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.08)",
+      "borderRadius": "14px",
+      "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+      "padding": "10px 12px",
+      "display": "grid"
+    },
+    "collapsedRestore": {
+      "selector": "[data-testid='ai-collapsed-restore']",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13.3333,
+      "fontWeight": "400",
+      "background": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.463)",
+      "borderRadius": "12px",
+      "boxShadow": "rgba(15, 23, 42, 0.16) 0px 8px 24px 0px",
+      "padding": "4px 12px 4px 4px",
+      "display": "none"
+    },
+    "restoreFace": null
+  },
+  "dock_glass_contrast": {
+    "panelBg": "rgba(255, 255, 255, 0.78)",
+    "panelAlpha": 0.78,
+    "backdropFilter": "blur(24px) saturate(1.08)",
+    "rows": [
+      {
+        "selector": ".ai-next-steps-hint",
+        "label": "빈화면 안내문",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 15,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 17.61,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-authoring-examples-title",
+        "label": "예시 라벨",
+        "status": "measured",
+        "color": "rgb(71, 85, 105)",
+        "fontSize": 12,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 7.48,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-authoring-example-chip",
+        "label": "예시 칩",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 13,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 17.61,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-assistant-input",
+        "label": "입력 플레이스홀더",
+        "status": "measured",
+        "color": "rgb(15, 23, 42)",
+        "fontSize": 15,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 17.61,
+        "passesAA": true
+      },
+      {
+        "selector": ".ai-chat-send",
+        "label": "전송 버튼",
+        "status": "measured",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": 12,
+        "large": false,
+        "behind": [
+          247,
+          248,
+          248
+        ],
+        "composed": [
+          253,
+          253,
+          253
+        ],
+        "contrast": 1.01,
+        "passesAA": false
+      }
+    ]
+  },
+  "docks": [
+    "side",
+    "float",
+    "glass"
+  ],
+  "collapseTrigger": "clicked",
+  "collapsed": {
+    "dock": "glass",
+    "conversation": "empty",
+    "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass is-collapsed",
+    "panel": {
+      "selector": "[data-testid='ai-panel']",
+      "rect": [
+        14,
+        930,
+        132,
+        56
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "14px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "flex"
+    },
+    "header": null,
+    "plate": null,
+    "face": null,
+    "name": null,
+    "line": null,
+    "headerActions": null,
+    "main": {
+      "selector": ".ai-chat-main",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "16px 0px",
+      "display": "flex"
+    },
+    "nextSteps": {
+      "selector": "[data-testid='ai-next-steps']",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px 16px",
+      "display": "flex"
+    },
+    "hint": {
+      "selector": ".ai-next-steps-hint",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "700",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "examplesTitle": {
+      "selector": ".ai-authoring-examples-title",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(71, 85, 105)",
+      "fontSize": 12,
+      "fontWeight": "600",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(71, 85, 105)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "exampleChip": {
+      "selector": ".ai-authoring-example-chip",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13,
+      "fontWeight": "650",
+      "background": "rgb(238, 241, 244)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(0, 0, 0, 0)",
+      "borderRadius": "999px",
+      "boxShadow": "none",
+      "padding": "0px 10px",
+      "display": "block"
+    },
+    "inputField": {
+      "selector": ".ai-assistant-input",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 15,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "10px",
+      "boxShadow": "none",
+      "padding": "0px",
+      "display": "block"
+    },
+    "commandBar": {
+      "selector": ".ai-command-bar",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "boxShadow": "none",
+      "padding": "12px 16px 16px",
+      "display": "none"
+    },
+    "composer": {
+      "selector": ".ai-composer",
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "background": "color(srgb 1 1 1 / 0.62)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.08)",
+      "borderRadius": "14px",
+      "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+      "padding": "10px 12px",
+      "display": "grid"
+    },
+    "collapsedRestore": {
+      "selector": "[data-testid='ai-collapsed-restore']",
+      "rect": [
+        14,
+        930,
+        132,
+        48
+      ],
+      "color": "rgb(15, 23, 42)",
+      "fontSize": 13.3333,
+      "fontWeight": "400",
+      "background": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "backdropFilter": "none",
+      "border": "1px solid rgba(15, 23, 42, 0.463)",
+      "borderRadius": "12px",
+      "boxShadow": "rgba(15, 23, 42, 0.16) 0px 8px 24px 0px",
+      "padding": "4px 12px 4px 4px",
+      "display": "flex"
+    },
+    "restoreFace": null
+  }
+}

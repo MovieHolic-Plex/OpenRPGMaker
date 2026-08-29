@@ -24,11 +24,19 @@ import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
 import type { BattleEventCondition, TroopRecord } from "@/project/types";
 import type { GameMap, Project } from "@/project/types/project";
 
-/** 새 맵을 만들어 내는 툴 — 이 툴이 성공하면 만들어진 mapId 를 항목 산출물로 추적한다. */
+/**
+ * 새 맵을 만들어 내는 툴 — 이 툴이 성공하면 만들어진 mapId 를 항목 산출물로 추적한다.
+ * 방 하네스 세션 시작 툴도 여기 든다 — `start_*_room_session` 은 이름만 "세션 시작"이고
+ * 실제로는 `createEmptyMap` 으로 맵을 하나 등록한다(2026-08-29 modify 진단 근본원인 10에서
+ * 누락이 발견됐다 — 세션 시작으로 만든 맵은 미저작 검사도 대상 맵 검사도 빠져나갔다).
+ */
 export const MAP_CREATING_TOOLS: ReadonlySet<string> = new Set([
   "create_map",
   "duplicate_map",
   "run_interior_room_pipeline",
+  "start_interior_room_session",
+  "start_dungeon_room_session",
+  "run_dungeon_room_pipeline",
 ]);
 
 /** 툴 결과에서 새로 만들어진 mapId 를 꺼낸다(툴마다 data/args 위치가 달라 순서대로 훑는다). */
@@ -93,6 +101,39 @@ export function verifyCreatedMapsAuthored(
       `산출물 미완성: ${blank.join(", ")} — 맵을 만들기만 하고 지형·구조·이벤트를 하나도 넣지 않았습니다. ` +
       `fill_region/paint_road/author_house/place_props/place_npc 등으로 내용을 채운 뒤 완료하세요. ` +
       `정말 빈 맵으로 남겨야 하면 skip_work_item으로 사유를 남기고 건너뛰세요.`,
+  };
+}
+
+/**
+ * 수정 요청의 **대상 맵이 실제로 바뀌었는지** 본다(2026-08-29 modify 진단 근본원인 10).
+ *
+ * 진단 실측: "이 마을 담장 좀 고쳐줘" 에 대해 모델이 `create_map` + 새 맵 시공을 하고 항목을
+ * 완료했다. successTools 는 새 맵 시공 툴로 채워져 있었으니 이름 기반 게이트는 전부 통과했고,
+ * 지목된 맵은 한 칸도 바뀌지 않은 채로 남았다. 그래서 대상 맵이 정해진 계획에서는
+ * **"그 맵에 변경이 있었나"** 를 완료 조건에 넣는다.
+ *
+ * 대상 맵이 안 바뀌었어도 **아무 맵도 새로 만들지 않았으면 통과시킨다** — DB·퀘스트처럼 맵을
+ * 건드리지 않는 항목이 대상 맵을 이유로 막히면 오탐이다. 막는 건 "대상은 그대로인데 새 맵이
+ * 생겼다" 는 정확히 그 대체 패턴뿐이다.
+ */
+export function verifyTargetMapChanged(
+  targetMapId: string | undefined,
+  changedMapIds: Iterable<string>,
+  createdMapIds: Iterable<string>,
+): WorkItemOutcomeVerdict {
+  if (!targetMapId) return { ok: true };
+  for (const mapId of changedMapIds) {
+    if (mapId === targetMapId) return { ok: true };
+  }
+  const created = [...new Set(createdMapIds)].filter((mapId) => mapId !== targetMapId);
+  if (created.length === 0) return { ok: true };
+  return {
+    ok: false,
+    reason:
+      `지목된 맵 ${targetMapId} 에 변경이 없고 새 맵(${created.join(", ")})만 만들어졌습니다 — `
+      + `수정 요청은 그 맵을 그 자리에서 고쳐야 합니다. ${targetMapId} 를 대상으로 `
+      + `paint_tiles/fill_region/tile_erase/move_event/furnish_interior_space 를 쓰거나, `
+      + `정말 새 맵이 맞으면 skip_work_item 으로 사유를 남기세요.`,
   };
 }
 

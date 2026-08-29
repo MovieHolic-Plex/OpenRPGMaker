@@ -67,6 +67,8 @@ evidence/
 !.omo/evidence/faceset-per-face/**
 !.omo/evidence/assistant-resize-collapse/
 !.omo/evidence/assistant-resize-collapse/**
+!.omo/evidence/bugfix-sweep/
+!.omo/evidence/bugfix-sweep/**
 handoff.md
 # 세션 로컬 상태·일회성 산출물 (never commit)
 /.mcp.json

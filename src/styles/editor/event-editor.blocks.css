@@ -234,3 +234,16 @@
   border-radius: 8px;
   background: var(--bg-surface);
 }
+
+/* 스토리 보기 카드/분기 줄도 목록과 **같은** 카테고리 색을 쓴다.
+   `.cmd-item` 만 매핑돼 있어서 스토리 카드는 색 채널이 통째로 없었다. */
+.event-contents-fieldset .event-storyboard [data-command-category="dialogue"] { --blk-cat: var(--cmdcat-dialogue); }
+.event-contents-fieldset .event-storyboard [data-command-category="flow"]     { --blk-cat: var(--cmdcat-flow); }
+.event-contents-fieldset .event-storyboard [data-command-category="reward"]   { --blk-cat: var(--cmdcat-reward); }
+.event-contents-fieldset .event-storyboard [data-command-category="map"]      { --blk-cat: var(--cmdcat-map); }
+.event-contents-fieldset .event-storyboard [data-command-category="actor"]    { --blk-cat: var(--cmdcat-actor); }
+.event-contents-fieldset .event-storyboard [data-command-category="screen"]   { --blk-cat: var(--cmdcat-screen); }
+.event-contents-fieldset .event-storyboard [data-command-category="sound"]    { --blk-cat: var(--cmdcat-sound); }
+.event-contents-fieldset .event-storyboard [data-command-category="battle"]   { --blk-cat: var(--cmdcat-battle); }
+.event-contents-fieldset .event-storyboard [data-command-category="system"]   { --blk-cat: var(--cmdcat-system); }
+.event-contents-fieldset .event-storyboard [data-command-category="modern"]   { --blk-cat: var(--cmdcat-modern); }

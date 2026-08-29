@@ -1868,7 +1868,7 @@ async function probeR3ExpertCapture(page: Page): Promise<void> {
 async function probeR3Compare(page: Page): Promise<void> {
   const beginnerTabs = await collectTabLabels(page);
   const beginnerH2 = ((await page.locator(".database-modal-header h2").textContent()) ?? "").trim();
-  const navAll = ((await page.getByTestId("db-nav-all").locator("summary").textContent()) ?? "").trim();
+  const navAll = ((await page.locator(".db-tabs .db-tab-group").first().textContent()) ?? "").trim();
   const expertTabs = r3Scratch.expertTabs ?? [];
   const expertH2 = r3Scratch.expertH2 ?? "";
   const overlap = beginnerTabs.filter((label) => expertTabs.includes(label));
@@ -1912,7 +1912,7 @@ async function probeR3Compare(page: Page): Promise<void> {
       tabs: [...COMMON_DB_TAB_TEST_IDS],
       S: 1,
       B: 2,
-      title: "R3: DB tab labels and modal h2 ignore jargonStyle (hardcoded; only db-nav-all uses uiLabel)",
+      title: "R3: DB tab labels and modal h2 ignore jargonStyle (hardcoded)",
       repro,
       evidence: [evidence, table],
     });
@@ -1956,27 +1956,25 @@ async function probeG1(page: Page): Promise<void> {
   const direct = await page.locator(".db-tabs > .db-tab").evaluateAll((nodes) =>
     nodes.map((node) => (node as HTMLElement).dataset.testid ?? ""),
   );
-  const all = page.getByTestId("db-nav-all");
-  const allVisible = await all.isVisible().catch(() => false);
-  const allOpen = allVisible && (await all.getAttribute("open")) !== null;
+  // 초보 레일도 카테고리 그룹이다(예전 「모든 자료」 접이식은 없앴다).
+  const groups = await page.locator(".db-tabs .db-tab-group").evaluateAll((nodes) =>
+    nodes.map((node) => (node.textContent ?? "").trim()),
+  );
   const evidence = await shot(page, "g1-nav");
-  const ok =
-    direct.length === COMMON_DB_TAB_TEST_IDS.length &&
-    COMMON_DB_TAB_TEST_IDS.every((id, index) => direct[index] === id) &&
-    allVisible &&
-    !allOpen;
-  const repro = [`direct=${direct.join(",")}`, `db-nav-all visible=${allVisible} open=${allOpen}`];
+  const navAllGone = !(await page.getByTestId("db-nav-all").isVisible().catch(() => false));
+  const ok = direct.length === 1 && direct[0] === "db-tab-overview" && groups.length >= 5 && navAllGone;
+  const repro = [`direct=${direct.join(",")}`, `groups=${groups.join(",")}`, `navAllGone=${navAllGone}`];
   if (ok) {
-    emitClean("G1-ok", "G1", [...COMMON_DB_TAB_TEST_IDS], "G1: beginner common nav is 6 tabs + collapsed db-nav-all", repro, [evidence]);
+    emitClean("G1-ok", "G1", ["overview"], "G1: beginner rail is grouped by category with overview on top", repro, [evidence]);
     return;
   }
   emitDefect({
     id: "G1-nav-mismatch",
     probeId: "G1",
-    tabs: [...COMMON_DB_TAB_TEST_IDS],
+    tabs: ["overview"],
     S: 2,
     B: 2,
-    title: "G1: beginner common nav is not exactly the 6 common tabs plus collapsed db-nav-all",
+    title: "G1: beginner rail is not the grouped category rail",
     repro,
     evidence: [evidence],
   });
@@ -1993,20 +1991,23 @@ async function probeG2(page: Page): Promise<void> {
   await expect(page.getByTestId("database-modal")).toBeVisible();
   const stored = await page.evaluate((key) => localStorage.getItem(key), ACTIVE_TAB_KEY);
   const active = (await page.locator(".db-tab.active").getAttribute("data-testid")) ?? "";
-  const navOpen = (await page.getByTestId("db-nav-all").getAttribute("open")) !== null;
+  const activeGroupCollapsed = await page
+    .locator(".db-tab-group[aria-expanded='false']")
+    .filter({ has: page.getByTestId("db-tab-elements") })
+    .count();
   const evidence = await shot(page, "g2-persist");
   const repro = [
-    "beginner: open db-nav-all → db-tab-elements, close, reopen via Tools",
-    `stored=${stored} active=${active} db-nav-all open=${navOpen}`,
+    "beginner: open 전통 귬칙 group → db-tab-elements, close, reopen via Tools",
+    `stored=${stored} active=${active} activeGroupCollapsed=${activeGroupCollapsed}`,
   ];
-  if (stored === "elements" && active === "db-tab-elements" && !navOpen) {
+  if (stored === "elements" && active === "db-tab-elements" && activeGroupCollapsed > 0) {
     emitDefect({
       id: "G2-hidden-tab-collapsed",
       probeId: "G2",
       tabs: ["elements"],
       S: 1,
       B: 2,
-      title: "G2: persisted hidden tab stays active while db-nav-all is collapsed (active tab invisible in common rail)",
+      title: "G2: persisted tab stays active while its category group is collapsed (active tab invisible in rail)",
       repro,
       evidence: [evidence],
     });

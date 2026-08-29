@@ -8,7 +8,7 @@ import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
-import { inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
+import { assertMapIdAvailable, inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
 import {
   applyMapGenerationPassage,
   requireMapGenerationProfile,
@@ -19,6 +19,14 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 
 type MapTheme = "village" | "forest" | "cave";
+
+// 외곽 테두리 처리. create_map(mapTools.ts)과 같은 규약 — 기본은 테두리 없음.
+// 2026-07-08 47b0d51d 가 create_map 의 강제 돌벽 테두리를 옵션으로 강등했는데
+// generate_map 은 같은 패턴이 남아 있었다(사용자 보고 2026-08-29: "타일 깔라 하면
+// 항상 외곽에 벽을 깐다"). 장애물 팔레트는 프로파일 13종 전부 벽/솔리드 타일이라
+// (mapGenerationProfiles.ts: village/cave=306 TILE.WALL 등) 테마와 무관하게
+// 맵 4변이 통행 불가 벽으로 봉인됐다.
+type MapBorder = "none" | "wall";
 
 interface ThemePalette {
   readonly floor: number;
@@ -53,6 +61,7 @@ function blankThemedMap(
   tilesetId: string,
   palette: ThemePalette,
   pathTile: number,
+  border: MapBorder,
 ): GameMap {
   const size = width * height;
   const map: GameMap = {
@@ -66,13 +75,15 @@ function blankThemedMap(
     upperTiles: new Array<number>(size).fill(TILE.EMPTY),
     events: [],
   };
-  for (let x = 0; x < width; x += 1) {
-    setLower(map, x, 0, palette.obstacle);
-    setLower(map, x, height - 1, palette.obstacle);
-  }
-  for (let y = 0; y < height; y += 1) {
-    setLower(map, 0, y, palette.obstacle);
-    setLower(map, width - 1, y, palette.obstacle);
+  if (border === "wall") {
+    for (let x = 0; x < width; x += 1) {
+      setLower(map, x, 0, palette.obstacle);
+      setLower(map, x, height - 1, palette.obstacle);
+    }
+    for (let y = 0; y < height; y += 1) {
+      setLower(map, 0, y, palette.obstacle);
+      setLower(map, width - 1, y, palette.obstacle);
+    }
   }
   setLower(map, 1, Math.floor(height / 2), pathTile);
   return map;
@@ -133,12 +144,15 @@ function carvePath(map: GameMap, from: Point, to: Point, floor: number): void {
 
 const generateMap: ToolDefinition = {
   name: "generate_map",
-  description: "테마(village/forest/cave) 맵을 생성한다(최대 256×256). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프).",
+  description:
+    "테마(village/forest/cave) 맵을 생성한다(기본은 테두리 없는 평지, 최대 256×256). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). "
+    + "동굴/던전처럼 외곽이 막혀야 할 때만 border:\"wall\"을 지정한다 — 지정하면 맵 4변이 통행 불가 장애물로 봉인된다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       theme: { type: "string", enum: ["village", "forest", "cave"] },
+      border: { type: "string", enum: ["none", "wall"], description: "테두리 처리(기본 none, wall이면 외곽 4변을 테마 장애물 타일로 봉인)" },
       tilesetId: { type: "string", description: "이 맵에 사용할 타일셋. 타일셋별 전용 생성 로직을 선택한다." },
       name: { type: "string" },
       width: { type: "integer", description: "가로 타일 수(최대 256)" },
@@ -165,8 +179,10 @@ const generateMap: ToolDefinition = {
     if (width < 6 || height < 6) throw new ToolError("생성 맵은 최소 6x6 이상이어야 합니다.");
     assertGeneratedMapSize(width, height);
     const id = (args.id as string | undefined) ?? genId("map");
-    if (draft.maps[id]) throw new ToolError(`이미 존재하는 맵 id입니다: ${id}`, { mapId: id });
+    // code:"map-exists" 누락으로 이 경로만 감사·게이트에서 다른 실패로 세어졌다(진단 근본원인 15).
+    assertMapIdAvailable(draft, id);
     const rng = mulberry32((args.seed as number | undefined) ?? 1);
+    const border = (args.border as MapBorder | undefined) ?? "none";
     const map = blankThemedMap(
       id,
       (args.name as string | undefined) ?? `${theme} 맵`,
@@ -175,6 +191,7 @@ const generateMap: ToolDefinition = {
       tilesetId,
       palette,
       generationPalette.path,
+      border,
     );
     paintLayoutGrammar(map, generationProfile.layout, palette);
 
@@ -235,11 +252,12 @@ const generateMap: ToolDefinition = {
     }
 
     return {
-      summary: `${theme}/${generationProfile.layout} 맵 '${map.name}'(${width}x${height}) 생성 — POI ${pois.length}개, 통로 수리 ${repairs}회`,
+      summary: `${theme}/${generationProfile.layout} 맵 '${map.name}'(${width}x${height}) 생성 — POI ${pois.length}개, 통로 수리 ${repairs}회, 테두리 ${border === "wall" ? "벽" : "없음"}`,
       data: {
         mapId: id,
         entrance,
         pois,
+        border,
         generationProfile: generationProfile.tilesetId,
         generationLayout: generationProfile.layout,
       },

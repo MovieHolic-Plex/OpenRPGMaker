@@ -351,9 +351,11 @@ Use this EXACT format:
 
 ## Critical Context
 - [Any data, examples, or references needed to continue]
+- [The exact map id(s) being edited (e.g. \`map_town\`), and whether the user asked to MODIFY existing content in place or to CREATE something new. Never drop or rename these ids.]
 - [Or "(none)" if not applicable]
 
-Keep each section concise. Preserve exact file paths, function names, and error messages.`;
+Keep each section concise. Preserve exact file paths, function names, error messages, and map/event/record ids verbatim.
+If the user asked to modify existing content, say so explicitly and name the target map id — a summary that loses this makes the next turn build a new map instead of fixing the old one.`;
 
 /** 출처: compaction.js UPDATE_SUMMARIZATION_PROMPT(이전 요약 갱신). 형식은 원문 유지. */
 const UPDATE_SUMMARIZATION_PROMPT = `The messages above are NEW conversation messages to incorporate into the existing summary provided in <previous-summary> tags.
@@ -392,8 +394,10 @@ Use this EXACT format:
 
 ## Critical Context
 - [Preserve important context, add new if needed]
+- [Preserve the exact map id(s) being edited and the MODIFY-vs-CREATE intent. Never drop or rename them.]
 
-Keep each section concise. Preserve exact file paths, function names, and error messages.`;
+Keep each section concise. Preserve exact file paths, function names, error messages, and map/event/record ids verbatim.
+If the user asked to modify existing content, say so explicitly and name the target map id — a summary that loses this makes the next turn build a new map instead of fixing the old one.`;
 
 /**
  * 요약을 시킬 요청 메시지. [system 지침, 직렬화된 대화(+이전 요약), 형식 지시] 세 개다.

@@ -1,9 +1,11 @@
 import type {
   AssetSet,
   ActorId,
+  CharacterFootprint,
   Dir,
   FlagName,
   MapId,
+  MonsterInstanceId,
   ResourceProfile,
   SCHEMA_VERSION,
   SwitchDef,
@@ -78,6 +80,15 @@ export interface GameMap {
    * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.
    */
   layoutPlan?: MapLayoutPlan;
+  /**
+   * 방 하네스(실내 villager-room-v1 / 던전 dungeon-room-v1)가 이 맵을 시공할 때 쓴 플랜 원본.
+   *
+   * 세션(RoomSession)은 에디터 메모리(WeakMap)에만 살고 Project JSON 에 직렬화되지 않는다. 그래서
+   * 프로젝트를 다시 열면 `furnish_interior_space` 처럼 sessionId 를 요구하는 in-place 툴의 진입로가
+   * 사라졌다(2026-08-29 modify 진단 근본원인 8). 플랜을 맵에 남겨 mapId 만으로 세션을 재수립한다.
+   * `plan` 은 킷별 플랜 타입이라 여기서는 JSON 값으로만 다룬다(project → editor 역참조 금지).
+   */
+  roomHarnessPlan?: { kitId: string; plan: unknown };
   /**
    * 제작자가 맵마다 켜고 끄는 미니맵 설정. optional — 없으면 미니맵 off(기존 맵 호환).
    * v1은 1회 정적 썸네일 + 플레이어 점만 갱신; fogOfWar는 자리만 두고 추후 확장.
@@ -202,6 +213,8 @@ export type FactionAggression = 0 | 1 | 2 | 3;
 export interface FactionDef {
   id: string;
   name: string;
+  /** 세계관에서 구체화된 진영이면 원본 WorldEntity.id. 전투 ID를 바꿔도 출처 정체성을 유지한다. */
+  worldEntityId?: string;
   /** 진영 식별 색(#RRGGBB). 난전에서 누가 어느 편인지 읽히게 하는 유일한 UI 수단이다. */
   color?: string;
   /** 생략 시 1(공격적) — 적(-1 이하) 에게만 선공한다. */
@@ -239,6 +252,10 @@ export interface FieldSpawnDef {
   maxAlive?: number;
   respawnSec?: number;
   graphic?: EventPageGraphic;
+  /** 스폰되는 몸 크기(타일). 생략하면 1x1 — 기존 스폰과 같다. */
+  footprint?: CharacterFootprint;
+  /** 몸 사각 하단 몇 행이 길을 막는가. 생략하면 몸 높이 전체(항등). */
+  passRows?: number;
   chase?: boolean;
   /** 이 스폰 인스턴스의 진영. 생략 시 EnemyRecord.factionId, 그것도 없으면 예약 진영 enemy. */
   factionId?: string;
@@ -292,6 +309,10 @@ export interface ProjectSession {
   timers?: Record<string, number>;
   inventory: Record<string, number>;
   partyActorIds: ActorId[];
+  /** Optional authored monster collection seed for new games. */
+  monsterInstances?: Record<MonsterInstanceId, import("@/project/session").MonsterInstance>;
+  monsterParty?: MonsterInstanceId[];
+  monsterBox?: MonsterInstanceId[];
   gold?: number;
   /**
    * 시작 시 세계에 놓인 설치물(바위·나무 등), `mapId:x,y` 키.

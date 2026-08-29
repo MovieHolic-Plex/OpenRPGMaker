@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { POSE_FRAME, type BattleBattlerPose } from "@/battle/battlePose";
 
-// 주인공 전투 캐릭터셋(리소스 kind "n") 4장의 **출하 규격**을 못 박는다.
+// 주인공 전투 캐릭터셋(리소스 kind "n") 6장의 **출하 규격**을 못 박는다.
 //
 // 왜 브라우저 없이 픽셀을 재는가: 이 시트는 `src/player/battleFieldDom.ts` 의
 // `actorBattleImage` 가 background-image 로만 그린다. 프레임 폭/높이와 backgroundSize 를
@@ -46,25 +47,47 @@ const ROWS = 8;
 const SHEET_WIDTH = CELL * COLUMNS;
 const SHEET_HEIGHT = CELL * ROWS;
 const OPAQUE = 32;
-/** 최소 실루엣 면적 — 이보다 적으면 사실상 빈 프레임이다. */
-const MIN_OPAQUE_PIXELS = 350;
-/** 열 사이 최소 차이(셀 면적 대비 %). */
+/**
+ * 최소 실루엣 면적. 행 0 만 쓰던 시절 하한은 350 이었지만, 행 1 의 dead(누운 그림)까지
+ * 재게 되면서 그 값으로는 정상 시트가 걸린다. 서 있는 포즈의 엄격한 하한은
+ * MIN_CELL_FILL 이 따로 맡는다.
+ */
+const MIN_OPAQUE_PIXELS = 200;
+/** 셀 사이 최소 차이(셀 면적 대비 %). */
 const MIN_POSE_DIFF_RATIO = 0.02;
-/** 모든 열이 채워야 하는 셀 높이 비율. */
+/** 서 있는 포즈가 채워야 하는 셀 높이 비율. dead 는 누워서 높이를 못 채우므로 뺀다. */
 const MIN_CELL_FILL = 0.7;
+/** idle 의 최소 실루엣 면적 — 교체 전 오버월드 프레임(527~663px)을 되돌리지 못하게 막는다. */
+const MIN_IDLE_AREA = 900;
+/**
+ * 셀 사이 최소 **실루엣** 차이 — 마스크 XOR / 합집합.
+ *
+ * 색만 다른 같은 포즈를 통과시키지 않으려고 픽셀 차이(MIN_POSE_DIFF_RATIO)와 따로 잰다.
+ * 행 1 이 존재하는 이유가 "defend 가 idle 과, dead 가 hit 과 다른 그림" 이므로 그 조건을
+ * 직접 못 박는다. 출하 6장 실측(2026-08-29): defend↔idle 34.7~41.0%, dead↔hit 64.4~78.5%,
+ * defend↔dead 58.9~76.1%. 0.2 는 가장 낮은 값의 절반 수준으로 여유를 둔 하한이다.
+ */
+const MIN_SILHOUETTE_DIFF_RATIO = 0.2;
 /** 가장 큰 실루엣이 채워야 하는 셀 높이 비율. */
 const MIN_TALLEST_FILL = 0.9;
-/** idle 열의 최소 실루엣 면적 — 교체 전 오버월드 프레임(527~663px)을 되돌리지 못하게 막는다. */
-const MIN_IDLE_AREA = 900;
-/** 오슬라이스 방어 띠 높이 — 과거 버그가 아랫행 16px 을 끌어왔으므로 그 절반을 잰다. */
-const BLEED_GUARD_HEIGHT = 8;
 
-const SHEETS = ["hero-01", "hero-02", "hero-03", "hero-04"] as const;
+// hero-05(성직자)·hero-06(궁수)는 2026-08-29 에 grok 으로 새로 그려 넣었다. 번들 시트를
+// 잘라 만든 hero-01~04 와 달리 원본이 1024px 마젠타 JPEG 이라 크로마키·축소를 거치므로,
+// 같은 계약으로 재는 것이 특히 중요하다 — 축소 필터나 키잉 허용 오차가 바뀌면 여기서 걸린다.
+const SHEETS = ["hero-01", "hero-02", "hero-03", "hero-04", "hero-05", "hero-06"] as const;
 
 type Sheet = { readonly width: number; readonly height: number; readonly pixels: Uint8Array };
+type PoseName = BattleBattlerPose;
+type Frame = { readonly col: number; readonly row: number };
+
+/** 런타임이 쓰는 5포즈. POSE_FRAME 의 키를 그대로 쓰므로 포즈가 늘면 여기도 자동으로 늘어난다. */
+const POSE_NAMES = Object.keys(POSE_FRAME) as readonly PoseName[];
+
+/** 셀 높이를 채워야 하는 포즈 — dead 는 누운 그림이라 높이 검사에서 뺀다. */
+const STANDING_POSES = POSE_NAMES.filter((pose) => pose !== "dead");
 
 describe("hero battle charset sheets", () => {
-  it.each(SHEETS)("%s-battle.png ships the 144x384 three-pose row-0 contract", async (slug) => {
+  it.each(SHEETS)("%s-battle.png ships the 144x384 five-pose contract", async (slug) => {
     const fs = await loadBinaryFs();
     const zlib = await loadInflater();
     const bytes = fs.readFileSync(sheetUrl(slug));
@@ -76,23 +99,52 @@ describe("hero battle charset sheets", () => {
     expect(bytes[25]).toBe(6);
 
     const sheet = decodeRgbaPng(bytes, zlib);
-    const cells = [0, 1, 2].map((column) => measureCell(sheet, column));
+    const cells = Object.fromEntries(
+      POSE_NAMES.map((pose) => [pose, measureCell(sheet, POSE_FRAME[pose])] as const)
+    ) as Record<PoseName, ReturnType<typeof measureCell>>;
 
-    for (const [column, cell] of cells.entries()) {
-      expect(cell.opaque, `col ${column} 실루엣 면적`).toBeGreaterThanOrEqual(MIN_OPAQUE_PIXELS);
-      expect(cell.height / CELL, `col ${column} 셀 높이 점유율`).toBeGreaterThanOrEqual(MIN_CELL_FILL);
+    // 다섯 포즈 전부 그림이 있어야 한다. 비면 그 상태에서 배틀러가 화면에서 사라진다.
+    for (const pose of POSE_NAMES) {
+      expect(cells[pose].opaque, `${pose} 실루엣 면적`).toBeGreaterThanOrEqual(MIN_OPAQUE_PIXELS);
     }
 
-    expect(cells[0]?.opaque ?? 0, "idle 실루엣 면적").toBeGreaterThanOrEqual(MIN_IDLE_AREA);
+    // 서 있는 포즈는 셀 높이를 채워야 한다 — 오버월드 걷기 프레임(작고 납작함)으로
+    // 되돌아가는 회귀를 여기서 잡는다.
+    for (const pose of STANDING_POSES) {
+      expect(cells[pose].height / CELL, `${pose} 셀 높이 점유율`).toBeGreaterThanOrEqual(MIN_CELL_FILL);
+    }
 
-    expect(diffRatio(sheet, 0, 1), "idle vs attack").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
-    expect(diffRatio(sheet, 0, 2), "idle vs hit").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
-    expect(diffRatio(sheet, 1, 2), "attack vs hit").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
+    expect(cells.idle.opaque, "idle 실루엣 면적").toBeGreaterThanOrEqual(MIN_IDLE_AREA);
 
-    expect(opaqueInRows(sheet, CELL, CELL + BLEED_GUARD_HEIGHT), "행 0 아래 띠").toBe(0);
+    expect(diffRatio(sheet, POSE_FRAME.idle, POSE_FRAME.attack), "idle vs attack").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
+    expect(diffRatio(sheet, POSE_FRAME.idle, POSE_FRAME.hit), "idle vs hit").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
+    expect(diffRatio(sheet, POSE_FRAME.attack, POSE_FRAME.hit), "attack vs hit").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
 
-    const tallest = Math.max(...cells.map((cell) => cell.height));
+    // 행 1 의 존재 이유 — 실루엣이 실제로 다른 그림이어야 한다. 행 0 칸을 복사해 넣으면
+    // 픽셀 차이는 0 이 되고 여기서 걸린다.
+    expect(silhouetteDiff(sheet, POSE_FRAME.defend, POSE_FRAME.idle), "defend vs idle 실루엣")
+      .toBeGreaterThan(MIN_SILHOUETTE_DIFF_RATIO);
+    expect(silhouetteDiff(sheet, POSE_FRAME.dead, POSE_FRAME.hit), "dead vs hit 실루엣")
+      .toBeGreaterThan(MIN_SILHOUETTE_DIFF_RATIO);
+    expect(silhouetteDiff(sheet, POSE_FRAME.defend, POSE_FRAME.dead), "defend vs dead 실루엣")
+      .toBeGreaterThan(MIN_SILHOUETTE_DIFF_RATIO);
+
+    // 행 1 열 2 는 victory 예약이라 비어 있어야 한다(battlePose.ts 의 POSE_FRAME 주석 참조).
+    // 여기 그림이 생기면 포즈 union 과 런타임을 같이 손댔다는 뜻이므로 이 단정을 갱신해야 한다.
+    expect(measureCell(sheet, { col: 2, row: 1 }).opaque, "행 1 열 2 (victory 예약)").toBe(0);
+
+    // 행 2~7 전체가 투명하다. 예전에는 행 0 바로 아래 8px 띠만 봤는데(오슬라이스 회귀 방어선),
+    // 이제 런타임이 Y 를 움직이므로 띠 가드는 성립하지 않는다. 대신 **쓰지 않는 행 전체**를
+    // 검사한다 — 순증이다. 뭔가 그려 두면 시트를 읽는 사람만 속는다.
+    expect(opaqueInRows(sheet, 2 * CELL, ROWS * CELL), "행 2~7").toBe(0);
+
+    // 서 있는 세 포즈만 셀 높이를 채워야 한다. dead 는 누운 그림이라 세로가 짧다(실측 fill 29~32%).
+    const tallest = Math.max(cells.idle.height, cells.attack.height, cells.hit.height, cells.defend.height);
     expect(tallest / CELL, "가장 큰 실루엣의 셀 높이 점유율").toBeGreaterThanOrEqual(MIN_TALLEST_FILL);
+
+    // dead 는 바닥에 붙어야 한다 — 정사각 크롭이 세로 중앙에 놓으면 시체가 공중에 뜬다
+    // (생성기의 bottomAlignFrame 이 내려 붙인다).
+    expect(cells.dead.bottom, "dead 실루엣 하단").toBeGreaterThanOrEqual(CELL - 2);
   });
 });
 
@@ -100,30 +152,34 @@ function sheetUrl(slug: string): URL {
   return new URL(`../public/assets/generated/starter/${slug}-battle.png`, import.meta.url);
 }
 
-function measureCell(sheet: Sheet, column: number): { readonly opaque: number; readonly height: number } {
+/** 셀 좌표 → 픽셀 오프셋. `bottom` 은 셀 안에서 실루엣이 끝나는 y(0-based, 없으면 -1). */
+function measureCell(
+  sheet: Sheet,
+  frame: Frame
+): { readonly opaque: number; readonly height: number; readonly bottom: number } {
   let opaque = 0;
   let minY = CELL;
   let maxY = -1;
   for (let y = 0; y < CELL; y += 1) {
     for (let x = 0; x < CELL; x += 1) {
-      const index = (y * sheet.width + column * CELL + x) * 4;
+      const index = ((frame.row * CELL + y) * sheet.width + frame.col * CELL + x) * 4;
       if ((sheet.pixels[index + 3] ?? 0) < OPAQUE) continue;
       opaque += 1;
       if (y < minY) minY = y;
       if (y > maxY) maxY = y;
     }
   }
-  return { opaque, height: maxY < 0 ? 0 : maxY - minY + 1 };
+  return { opaque, height: maxY < 0 ? 0 : maxY - minY + 1, bottom: maxY };
 }
 
-function diffRatio(sheet: Sheet, columnA: number, columnB: number): number {
+function diffRatio(sheet: Sheet, a: Frame, b: Frame): number {
   let differing = 0;
   for (let y = 0; y < CELL; y += 1) {
     for (let x = 0; x < CELL; x += 1) {
-      const a = (y * sheet.width + columnA * CELL + x) * 4;
-      const b = (y * sheet.width + columnB * CELL + x) * 4;
+      const indexA = ((a.row * CELL + y) * sheet.width + a.col * CELL + x) * 4;
+      const indexB = ((b.row * CELL + y) * sheet.width + b.col * CELL + x) * 4;
       for (let channel = 0; channel < 4; channel += 1) {
-        if (sheet.pixels[a + channel] !== sheet.pixels[b + channel]) {
+        if (sheet.pixels[indexA + channel] !== sheet.pixels[indexB + channel]) {
           differing += 1;
           break;
         }
@@ -131,6 +187,23 @@ function diffRatio(sheet: Sheet, columnA: number, columnB: number): number {
     }
   }
   return differing / (CELL * CELL);
+}
+
+/** 마스크 XOR / 합집합 — 실루엣이 얼마나 다른지. 합집합이 0 이면 0. */
+function silhouetteDiff(sheet: Sheet, a: Frame, b: Frame): number {
+  let differing = 0;
+  let union = 0;
+  for (let y = 0; y < CELL; y += 1) {
+    for (let x = 0; x < CELL; x += 1) {
+      const indexA = ((a.row * CELL + y) * sheet.width + a.col * CELL + x) * 4;
+      const indexB = ((b.row * CELL + y) * sheet.width + b.col * CELL + x) * 4;
+      const onA = (sheet.pixels[indexA + 3] ?? 0) >= OPAQUE;
+      const onB = (sheet.pixels[indexB + 3] ?? 0) >= OPAQUE;
+      if (onA !== onB) differing += 1;
+      if (onA || onB) union += 1;
+    }
+  }
+  return union === 0 ? 0 : differing / union;
 }
 
 function opaqueInRows(sheet: Sheet, fromY: number, toY: number): number {

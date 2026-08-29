@@ -159,4 +159,46 @@ describe("regionIntentGuideLines / buildRegionTaskMessage 통합", () => {
     expect(village).toContain('countPolicy:"exact"');
     expect(village).not.toMatch(/build_house_kit|build_house_lots|build_village|run_village_session|run_village_pipeline/);
   });
+
+  // 수량 표기가 없어도 마을 작업은 "이 맵" 대상이어야 한다 — 옛 구현은 수량 정규식이 걸릴 때만
+  // target 을 적어줘서 "이 마을 정리해줘"가 author_village 기본값(새 맵)으로 갔다.
+  it("수량 없는 마을 작업도 기존 맵·선택 영역을 못박는다", () => {
+    const message = buildRegionTaskMessage("이 마을을 좀 더 아기자기하게 채워줘", "맵", "m1", { x: 3, y: 4, width: 20, height: 16 });
+    expect(message).toContain('target:{kind:"existing",mapId:"m1"');
+    expect(message).toContain("bounds:{x:3,y:4,w:20,h:16}");
+  });
+});
+
+describe("영역 작업 — 수정 요청", () => {
+  const REGION = { x: 2, y: 3, width: 10, height: 8 };
+
+  it("실내 수정은 새 맵 시공 지시 없이 선택 영역 안으로 제한된다", () => {
+    const message = buildRegionTaskMessage("이 침실 가구 배치 좀 고쳐줘", "침실", "map_bedroom", REGION);
+    expect(message).not.toContain("새 맵 전체를 시공하라");
+    expect(message).toContain("선택 영역 안에서만 수행하라");
+    expect(message).toContain("실내 수정");
+    expect(message).toContain("furnish_interior_space");
+    expect(message).toContain("start_interior_room_session·run_interior_room_pipeline 금지");
+  });
+
+  it("실내 신규는 종전처럼 새 맵 시공을 허용한다", () => {
+    const message = buildRegionTaskMessage("실내 맵 하나 만들어줘", "마을", "m1", REGION);
+    expect(message).toContain("새 맵 전체를 시공하라");
+    expect(message).toContain("start_interior_room_session");
+  });
+
+  it("수정 요청은 대상 맵을 못박고 시공 facade 시그니처를 붙이지 않는다", () => {
+    const message = buildRegionTaskMessage("이 집 외벽 타일 좀 바꿔줘", "마을", "m1", REGION);
+    expect(message).toContain("대상 맵 고정");
+    expect(message).toContain("`m1`");
+    expect(message).toContain("create_map·duplicate_map 으로 새 맵을 만들지 말고");
+    expect(message).not.toContain("야외 집 시공");
+    expect(message).toContain("선택 영역 안에서만 수행하라");
+  });
+
+  it("수정 요청에는 modify 가이드가 먼저 붙고 실내 신축 가이드는 빠진다", () => {
+    const routed = routeRegionIntent("이 침실 좀 수정해줘");
+    expect(routed[0]).toBe("modify");
+    expect(routed).not.toContain("interior");
+  });
 });

@@ -68,3 +68,20 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 `evaluate_game_quality` is read-only. It combines project, world, and tileset-palette lint with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Only objective `projectLint` errors block its verdict; world/palette findings and walkthrough failures remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.
 
 `play_walkthrough` exposes a single provider-safe scenario item object rather than JSON Schema unions. All runner fields are optional at the provider boundary because the valid required set depends on `do`/`expect`; the runner is the strict trust boundary and rejects unknown fields, mixed variants, bad types, and empty scenarios before executing any command. Provider-compat tests recursively reject both `oneOf` and `anyOf` anywhere in an exposed tool schema.
+
+## prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+
+`src/editor/tools/refactorTools.ts` `addCommandRefs` 의 `switch` 가 다루던 kind 는
+`setSwitch`/`setVariable`/`changeGold`/`changeExp`/`getFriendship`/`fork`/`changeItem`/
+`battleProcessing`/`shop` **9종뿐**이었다. 스키마(`src/project/types/events.ts`)에서
+`variableId` 를 지니는 kind 는 `wait`·`inputWait`·`inputNumber`·`setVariable`·`getFriendship` 이라
+**앞의 세 개가 통째로 빠졌다.** `moveEvent` 경로 안의 `{ kind: "setSwitch" }` 무브도 누락됐다
+(`databaseCommandReferences.ts:298` 은 그걸 센다).
+
+왜 조용한가: 누락된 참조는 `findUnused` 를 지나 `prune_unused apply=true` 에서 **이름만 비우고
+id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `commandReferenceValidation.ts:205` 의
+`inputNumber: variableId가 존재하지 않습니다` 단언은 **끝까지 안 뜬다.** 그리고 `actions.ts:438` 이
+이름이 빈 슬롯을 다음 «변수 추가» 에 **재발급**한다 — 무관한 두 기능이 한 변수를 조용히 공유하게 된다.
+
+계약 테스트: `test/refactorTools.test.ts` «prune_unused 참조 수집 누락» (inputNumber/inputWait/wait
+각각 단독 참조 + moveEvent 경로 setSwitch + 진짜 미참조 변수는 여전히 보고되는 회귀 케이스).

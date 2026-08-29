@@ -1,0 +1,106 @@
+########## dock=glass
+PANEL h=620 display=flex dir=column dock=glass
+div.ai-chat-header y=62 h=73 flex=0/0/auto minH=64px maxH=none pos=relative ovf=visible
+  div.ai-header-title-row y=74 h=48 flex=1/1/auto minH=auto maxH=none pos=static ovf=visible
+    div.ai-director-plate y=74 h=48 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-director-plate]
+      span.ai-director-face y=74 h=48 flex=0/0/auto minH=auto maxH=none pos=static ovf=hidden [ai-director-face]
+      div.ai-director-copy y=81 h=34 flex=1/1/auto minH=auto maxH=none pos=static ovf=visible
+  span.ai-header-actions y=81 h=34 flex=0/0/auto minH=auto maxH=none pos=static ovf=visible
+    button.ai-chat-icon-btn — display:none
+    button.ai-dock-mode-btn — display:none
+    button.ai-chat-icon-btn — display:none
+    div.ai-more-wrap y=81 h=34 flex=0/1/auto minH=auto maxH=none pos=relative ovf=visible
+      button.ai-chat-icon-btn y=81 h=34 flex=0/1/auto minH=0px maxH=none pos=static ovf=visible [ai-more-menu-toggle]
+      div.ai-more-menu — display:none
+  button.ai-chat-collapse y=81 h=34 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-collapse]
+div.ai-chat-toolbar — display:none
+div.ai-chat-body y=143 h=363 flex=1/1/auto minH=0px maxH=none pos=static ovf=auto
+  div.ai-chat-main y=143 h=363 flex=1/1/auto minH=0px maxH=none pos=static ovf=visible
+    div.ai-next-steps y=155 h=0 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-next-steps]
+    div.ai-glass-log y=167 h=266 flex=1/1/auto minH=0px maxH=none pos=static ovf=auto [ai-glass-log]
+      div.ai-chat-log y=167 h=254 flex=1/1/auto minH=0px maxH=100% pos=static ovf=auto [ai-chat-log]
+    div.ai-history-log-mount y=445 h=61 flex=1/1/auto minH=0px maxH=none pos=static ovf=visible
+    div.ai-quick-replies — display:none
+button.ai-collapsed-restore — display:none
+div.ai-proposal-pin-host — display:none
+div.ai-rising-sticky-zone y=514 h=0 flex=0/1/auto minH=auto maxH=380px pos=static ovf=auto [ai-rising-sticky-zone]
+  div.ai-completion-host — display:none
+  div.ai-proposal-notice-host y=514 h=0 flex=0/1/auto minH=0px maxH=none pos=static ovf=visible
+  button.ai-proposal-pill — display:none
+div.ai-command-bar y=522 h=158 flex=0/0/auto minH=auto maxH=none pos=relative ovf=visible [ai-command-bar]
+  div.ai-composer-popover — display:none
+  div.ai-composer-popover — display:none
+  div.ai-composer y=534 h=130 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-composer]
+    textarea.ai-assistant-input y=545 h=70 flex=0/1/auto minH=68px maxH=320px pos=static ovf=auto [ai-input]
+    div.ai-composer-actions.is-input-focused y=623 h=30 flex=0/1/auto minH=28px maxH=none pos=static ovf=visible [ai-composer-actions]
+      div.ai-composer-actions-lead y=638 h=0 flex=1/1/auto minH=auto maxH=none pos=static ovf=auto
+      div.ai-composer-actions-trail y=623 h=30 flex=0/0/auto minH=auto maxH=none pos=static ovf=visible
+div.ai-proposal-modal-backdrop — display:none
+div.ai-chat-resize-handle.is-corner-end y=664 h=16 flex=0/1/auto minH=0px maxH=none pos=absolute ovf=visible [ai-resize-handle]
+
+########## dock=side
+PANEL h=951 display=flex dir=column dock=side
+div.ai-chat-header y=49 h=73 flex=0/0/auto minH=64px maxH=none pos=relative ovf=visible
+  div.ai-header-title-row y=61 h=48 flex=1/1/auto minH=auto maxH=none pos=static ovf=visible
+    div.ai-director-plate y=61 h=48 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-director-plate]
+      span.ai-director-face y=61 h=48 flex=0/0/auto minH=auto maxH=none pos=static ovf=hidden [ai-director-face]
+      div.ai-director-copy y=68 h=34 flex=1/1/auto minH=auto maxH=none pos=static ovf=visible
+  span.ai-header-actions y=68 h=34 flex=0/0/auto minH=auto maxH=none pos=static ovf=visible
+    button.ai-chat-icon-btn — display:none
+    button.ai-dock-mode-btn — display:none
+    button.ai-chat-icon-btn — display:none
+    div.ai-more-wrap y=68 h=34 flex=0/1/auto minH=auto maxH=none pos=relative ovf=visible
+      button.ai-chat-icon-btn y=68 h=34 flex=0/1/auto minH=0px maxH=none pos=static ovf=visible [ai-more-menu-toggle]
+      div.ai-more-menu — display:none
+  button.ai-chat-collapse y=68 h=34 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-collapse]
+div.ai-chat-toolbar — display:none
+div.ai-chat-body y=130 h=268 flex=1/1/auto minH=0px maxH=none pos=static ovf=visible
+  div.ai-chat-main y=130 h=268 flex=1/1/auto minH=0px maxH=none pos=static ovf=visible
+    div.ai-next-steps y=142 h=24 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-next-steps]
+    div.ai-glass-log y=178 h=0 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-glass-log]
+    div.ai-history-log-mount y=190 h=208 flex=1/1/auto minH=0px maxH=none pos=static ovf=visible
+    div.ai-quick-replies — display:none
+button.ai-collapsed-restore — display:none
+div.ai-rising-overlay y=406 h=408 flex=1/1/auto minH=0px maxH=none pos=relative ovf=hidden [ai-rising-overlay]
+  div.ai-rising-volatile-zone.ai-volatile-dashed y=406 h=408 flex=1/1/auto minH=0px maxH=none pos=static ovf=visible [ai-rising-volatile-zone]
+    div.ai-chat-log y=410 h=400 flex=1/1/auto minH=0px maxH=none pos=static ovf=auto [ai-chat-log]
+      div.ai-day-divider y=421 h=17 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-day-divider]
+      div.ai-command-row y=464 h=27 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-command-row]
+      div.ai-command-row y=509 h=80 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-command-row]
+div.ai-proposal-pin-host — display:none
+div.ai-rising-sticky-zone y=822 h=0 flex=0/1/auto minH=auto maxH=380px pos=static ovf=auto [ai-rising-sticky-zone]
+  div.ai-completion-host — display:none
+  div.ai-proposal-notice-host y=822 h=0 flex=0/1/auto minH=0px maxH=none pos=static ovf=visible
+  button.ai-proposal-pill — display:none
+div.ai-command-bar y=834 h=158 flex=0/0/auto minH=auto maxH=none pos=relative ovf=visible [ai-command-bar]
+  div.ai-composer-popover — display:none
+  div.ai-composer-popover — display:none
+  div.ai-composer y=846 h=130 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-composer]
+    textarea.ai-assistant-input y=857 h=70 flex=0/1/auto minH=68px maxH=320px pos=static ovf=auto [ai-input]
+    div.ai-composer-actions y=935 h=30 flex=0/1/auto minH=28px maxH=none pos=static ovf=visible [ai-composer-actions]
+      div.ai-composer-actions-lead y=936 h=28 flex=1/1/auto minH=auto maxH=none pos=static ovf=auto
+      div.ai-composer-actions-trail y=935 h=30 flex=0/0/auto minH=auto maxH=none pos=static ovf=visible
+div.ai-proposal-modal-backdrop — display:none
+div.ai-chat-resize-handle — display:none
+
+########## dock=float
+PANEL h=951 display=flex dir=column dock=float
+div.ai-chat-header — display:none
+div.ai-chat-toolbar — display:none
+div.ai-chat-body — display:none
+button.ai-collapsed-restore — display:none
+div.ai-proposal-pin-host — display:none
+div.ai-rising-sticky-zone y=796 h=0 flex=0/1/auto minH=0px maxH=380px pos=fixed ovf=auto [ai-rising-sticky-zone]
+  div.ai-completion-host — display:none
+  div.ai-proposal-notice-host y=796 h=0 flex=0/1/auto minH=0px maxH=none pos=static ovf=visible
+  button.ai-proposal-pill — display:none
+div.ai-command-bar y=808 h=144 flex=0/1/auto minH=0px maxH=none pos=absolute ovf=visible [ai-command-bar]
+  div.ai-composer-popover — display:none
+  div.ai-composer-popover — display:none
+  div.ai-composer y=819 h=122 flex=0/1/auto minH=auto maxH=none pos=static ovf=visible [ai-composer]
+    textarea.ai-assistant-input y=828 h=70 flex=0/1/auto minH=68px maxH=320px pos=static ovf=auto [ai-input]
+    div.ai-composer-actions y=902 h=30 flex=0/1/auto minH=28px maxH=none pos=static ovf=visible [ai-composer-actions]
+      div.ai-composer-actions-lead y=902 h=30 flex=1/1/auto minH=auto maxH=none pos=static ovf=auto
+      div.ai-composer-actions-trail y=902 h=30 flex=0/0/auto minH=auto maxH=none pos=static ovf=visible
+div.ai-proposal-modal-backdrop — display:none
+div.ai-chat-resize-handle — display:none

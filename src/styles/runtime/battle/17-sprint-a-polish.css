@@ -1,43 +1,7 @@
 /* =========================================================================
-   Sprint A polish — idle breath, classic command focus, juice base sync.
+   Sprint A polish — classic command focus, juice base sync.
    Layout ownership stays with classic/pokemon blocks above.
    ========================================================================= */
-
-/* Idle life: tiny breathing bounce while waiting for commands. */
-.battle-scene[data-battle-phase="actorCommand"] .battle-enemy:not(.defeated):not([data-battle-pose="hit"]):not([data-battle-pose="attack"]),
-.battle-scene[data-battle-phase="actorCommand"] .battle-actor-group .battle-actor:not(.defeated):not([data-battle-pose="hit"]):not([data-battle-pose="attack"]):not([data-battle-pose="defend"]) {
-  animation: battle-idle-breath 1.8s ease-in-out infinite;
-}
-
-.battle-scene[data-battle-ui-style="pokemon"][data-battle-phase="actorCommand"] .battle-enemy:not(.defeated):not([data-battle-pose="hit"]):not([data-battle-pose="attack"]) {
-  animation: battle-idle-breath-pokemon-enemy 1.9s ease-in-out infinite;
-}
-
-.battle-scene[data-battle-ui-style="pokemon"][data-battle-phase="actorCommand"] .battle-actor-group .battle-actor:not(.defeated):not([data-battle-pose="hit"]):not([data-battle-pose="attack"]):not([data-battle-pose="defend"]) {
-  animation: battle-idle-breath-pokemon-actor 1.7s ease-in-out infinite;
-}
-
-@keyframes battle-idle-breath {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -4px; }
-}
-
-@keyframes battle-idle-breath-pokemon-enemy {
-  0%, 100% { transform: translate(-50%, -100%) scale(1.28); }
-  50% { transform: translate(-50%, -100%) scale(1.28) translateY(-6px); }
-}
-
-@keyframes battle-idle-breath-pokemon-actor {
-  0%, 100% { transform: translate(-50%, -55%) scale(2.45); }
-  50% { transform: translate(-50%, -55%) scale(2.45) translateY(-6px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .battle-scene[data-battle-phase="actorCommand"] .battle-enemy,
-  .battle-scene[data-battle-phase="actorCommand"] .battle-actor-group .battle-actor {
-    animation: none;
-  }
-}
 
 /* Classic command focus: stop blue-on-blue washout. */
 .battle-command:focus-visible,
@@ -230,3 +194,64 @@
   }
 }
 
+/* =========================================================================
+   전투 재미 감사(2026-08-29) 후속 — 정보 · 가독성 · 임팩트.
+   앞 레이어의 레이아웃 소유권은 그대로 두고, 필요한 지점만 덧쓴다.
+   ========================================================================= */
+
+/* === 적 HP 노출 === */
+/* rm2003 스킨은 적 HUD 를 targetSelect 중 선택된 적에게만 펼쳤다. 그래서 "한 방 더면
+   죽는다" 는 판단이 불가능했고 모든 턴이 같은 무게였다. 한 번이라도 피해를 입은 적은
+   (battleFieldDom 이 data-battle-hp-revealed 를 세운다) 계속 남은 체력을 보여준다.
+   아직 안 때린 적은 그대로 감춘다 — 정보 수집도 플레이다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"]
+  .battle-enemy[data-battle-hp-revealed="true"] .battle-enemy-hud {
+  display: grid;
+}
+
+/* === 0 피해 표시 === */
+/* 명중했지만 피해 0(완전 방어·무효)은 예전에 화면에 아무 흔적도 남지 않아 버그처럼
+   보였다. 팝업으로 분명히 "0" 을 띄우되, 실제 타격과 혼동되지 않게 무채색으로 둔다. */
+.battle-damage-popup-blocked {
+  color: var(--oprn-battle-muted);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+}
+
+/* === 임팩트 강조 === */
+/* 히트스톱이 붙는 프레임에 대상 스프라이트를 한 단계 더 밝힌다. 예전에는 절정 프레임의
+   시각 변화가 숫자와 수평 밀림뿐이었다. */
+.battle-scene.battle-hit-stop .battle-enemy.battle-pose-hit .battle-enemy-image,
+.battle-scene.battle-hit-stop .battle-actor.battle-pose-hit .battle-actor-sprite {
+  filter: brightness(1.85) contrast(1.1);
+}
+
+.battle-scene.battle-hit-stop-critical .battle-enemy.battle-pose-hit .battle-enemy-image {
+  filter: brightness(2.3) saturate(1.3) drop-shadow(0 0 10px rgba(255, 220, 150, 0.9));
+}
+
+/* === 메시지 창 가독성 === */
+/* 데미지 팝업이 메시지 창 위에 겹쳐 "○○에게 62 피해!" 두 번째 줄이 잘렸다.
+   창 자체를 팝업보다 위로 올리고(팝업은 필드 레이어 소속), 두 줄이 온전히 들어갈
+   최소 높이를 준다. */
+.battle-message-window {
+  position: relative;
+  z-index: 6;
+}
+
+.battle-message-window .battle-message-line {
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+/* === 빨리감기 표시 === */
+/* 연출 중 확인/취소 키를 누르면 남은 재생을 빨리감는다. 눌린 동안 상태를 알려준다. */
+.battle-scene[data-battle-skipping="true"] .battle-message-window::after {
+  content: "▶▶";
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  position: absolute;
+  right: 8px;
+  top: 6px;
+}

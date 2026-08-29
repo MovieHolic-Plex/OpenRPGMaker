@@ -1,0 +1,2 @@
+[scrub] 부팅 후 blob={"authMode":"chatgpt","apiKey":"","baseUrl":"","model":"cpen/gpt-5-6-luna","providerId":"zai","configVersion":2}
+[scrub] providerId=zai configVersion=2 apiKey="" baseUrl=""

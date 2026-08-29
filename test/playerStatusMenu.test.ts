@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
+import { useItemFromMenu, type MenuItemUseResult } from "@/player/playerItemUse";
 import type { SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlayerStatusMenuActions } from "@/player/playerStatusMenuTypes";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
@@ -357,6 +358,64 @@ describe("player status menu", () => {
       const target = findByTestId(menu, `status-menu-item-target-${session.partyActorIds[0]}`);
       expect(target?.textContent).toMatch(/HP \d+\/\d+.*MP \d+\/\d+/);
       expect(target?.textContent).not.toContain("사용할 대상을 선택하세요");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("uses a care item on the party monster selected from the item menu", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const item = project.database.items.find((record) => record.id === "item_gen2_monster_kibble");
+      const species = project.database.monsterSpecies?.[0];
+      if (!item || !species) throw new Error("missing care fixtures");
+      const instanceId = "monster_care_target";
+      session.inventory[item.id] = 1;
+      session.monsterInstances[instanceId] = {
+        instanceId,
+        speciesId: species.id,
+        level: 3,
+        exp: 0,
+        friendship: 70,
+        caughtAt: { mapId: session.currentMapId, x: session.x, y: session.y },
+      };
+      session.monsterParty = [instanceId];
+      let selectedItemId: string | undefined;
+      let result: MenuItemUseResult | undefined;
+      const actions: PlayerStatusMenuActions = {
+        ...noopActions,
+        onSelectItemTarget: (itemId) => { selectedItemId = itemId; },
+        onUseItem: (itemId, actorId, monsterInstanceId) => {
+          result = useItemFromMenu(project, session, itemId, actorId, monsterInstanceId);
+        },
+      };
+      const list = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots: [],
+        selectedCommand: "items",
+        mode: "function",
+        actions,
+      }));
+
+      findByTestId(list, `status-menu-item-${item.id}`)?.click();
+      if (selectedItemId) {
+        const targets = renderWithFakeDom(() => renderPlayerStatusMenu({
+          project,
+          session,
+          slots: [],
+          selectedCommand: "items",
+          mode: "function",
+          targetItemId: selectedItemId,
+          actions,
+        }));
+        findByTestId(targets, `status-menu-monster-${instanceId}`)?.click();
+      }
+
+      expect(session.monsterInstances[instanceId]?.friendship).toBe(78);
+      expect(result?.kind).toBe("used");
     } finally {
       restoreDom();
     }

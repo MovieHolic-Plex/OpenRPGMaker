@@ -4,7 +4,7 @@ import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isItemActorEligible } from "@/project/itemEligibility";
-import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
+import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
@@ -24,6 +24,7 @@ import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureStatusMultiplier, captureSuccessRate, monsterSpeciesForEnemy, previewMonsterExperience, rollMonsterIvs, type MonsterLevelUpPreview } from "@/project/monsterCollection";
 import {
   applyStateEffects,
+  agilityMultiplierForStates,
   attackMultiplierForStates,
   canBattlerAct,
   clearBattleEndStates,
@@ -327,12 +328,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     ),
     classOverrides: { ...(sessionState.classOverrides ?? options.party?.classOverrides ?? {}) },
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
+    npcActivities: "npcActivities" in sessionState ? { ...(sessionState.npcActivities ?? {}) } : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
   const battleEvents = createBattleEventRuntime({
     project: options.project,
     troopRecord,
     ownerEventId: options.ownerEventId,
+    ownerEvent: findProjectEvent(options.project, options.ownerEventId),
     actors,
     enemies,
     stateIds: options.project.database.states.map((state) => state.id),
@@ -410,6 +413,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const upkeep = runStateUpkeep(options.project, battler, rng);
     if (upkeep.hpDamage > 0) {
       recordTimeline({ kind: "stateUpkeep", side: battlerSide(battler), targetId: battler.id, amount: upkeep.hpDamage });
+    }
+    if (upkeep.hpHealing > 0) {
+      recordTimeline({ kind: "stateRecovery", side: battlerSide(battler), targetId: battler.id, amount: upkeep.hpHealing });
     }
     for (const stateId of upkeep.removedStateIds) {
       recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "natural" });
@@ -649,12 +655,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     void visualWaitMs;
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
-    const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier);
+    const battlerAgilityMultiplier = (battler: MutableBattler): number => agilityMultiplierForStates(options.project, battler);
+    const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
     if (!ready) {
-      chargeBattlers(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier);
+      chargeBattlers(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
       return;
     }
-    chargeBattlers(activeActors(), enemiesInBattle, ready.timeMs, skinHasteMultiplier);
+    chargeBattlers(activeActors(), enemiesInBattle, ready.timeMs, skinHasteMultiplier, battlerAgilityMultiplier);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
@@ -863,6 +870,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       hitRate: normalAttackHitRate(actor, target),
       // RM2K3 통상공격 분산(±20%) — 없으면 매 타격이 완전히 같은 숫자라 도박성이 0이다.
       variance: 20,
+      elementMultiplier: normalAttackElementMultiplier(actor, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
       gen1AttackerLevel: gen1AttackerLevel(actor),
@@ -887,7 +895,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const equipment = actorEquipment.get(actor.recordId as ActorId);
     if (!equipment?.weapon && actorRecord?.unarmedAnimationId) return actorRecord.unarmedAnimationId;
     const classAnimationId = options.project.database.classes.find((record) => record.id === actor.classId)?.animationId;
-    return classAnimationId ?? actorRecord?.unarmedAnimationId ?? lookupSkill(DEFAULT_SKILL_ID)?.animationId;
+    return classAnimationId
+      ?? actorRecord?.unarmedAnimationId
+      ?? lookupSkill(DEFAULT_SKILL_ID)?.animationId
+      ?? fallbackHitAnimationId();
+  }
+
+  /**
+   * 통상공격 애니메이션의 **최후 폴백**.
+   *
+   * 액터에 unarmedAnimationId 도, 클래스 animationId 도 없고 기본 스킬 레코드까지
+   * 없는 프로젝트에서는 통상공격이 아무 그림도 없이 지나갔다(실측: 필름스트립 전
+   * 구간 animation=null). 가장 많이 쓰는 행동에 시각 피드백이 숫자와 밀림뿐이었다.
+   * 표준 타격 애니메이션이 있으면 그것, 없으면 DB 의 첫 애니메이션을 쓴다.
+   */
+  function fallbackHitAnimationId(): string | undefined {
+    const records = options.project.database.battleAnimations;
+    if (records.length === 0) return undefined;
+    return records.find((record) => record.id === DEFAULT_ANIMATION_ID)?.id ?? records[0].id;
   }
 
   function applyGen1Struggle(
@@ -1260,7 +1285,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         index: actors.indexOf(actor),
         speed: gen1
           ? gen1ParalyzedSpeed(actor.agility, gen1MajorStatusOf(actor)?.kind === "paralysis")
-          : actor.agility,
+          : actor.agility * agilityMultiplierForStates(options.project, actor),
         priority,
         commandClass: strictCommandClass(entry.command),
         actor,
@@ -1280,7 +1305,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           index,
           speed: gen1
             ? gen1ParalyzedSpeed(enemy.agility, gen1MajorStatusOf(enemy)?.kind === "paralysis")
-            : enemy.agility,
+            : enemy.agility * agilityMultiplierForStates(options.project, enemy),
           priority: strictActionPriority(action?.skillId),
           commandClass: "combat",
           enemy,
@@ -1769,6 +1794,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const actionTurn = turn + 1;
     const plans = (enemy.enemyActions ?? [])
       .filter((action) => enemyActionConditionMet(action.condition, actionTurn))
+      .filter((action) => !action.skillId || !battleSkillUseFailure(options.project, enemy, action.skillId, { requireLearned: false }))
       .flatMap((action) => {
         if (!action.skillId) {
           const target = chooseBasicEnemyTarget(enemy);
@@ -2094,25 +2120,33 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // enemy 는 EnemyCritical.oneIn(1/N). 데이터 없으면 0.
   function criticalRateFor(user: MutableBattler): number {
     const actor = options.project.database.actors.find((entry) => entry.id === user.recordId);
-    if (actor?.critical?.enabled && actor.critical.chanceDenominator > 0) {
-      return 100 / actor.critical.chanceDenominator;
-    }
+    const actorRate = actor?.critical?.enabled && actor.critical.chanceDenominator > 0
+      ? 100 / actor.critical.chanceDenominator
+      : 0;
     const enemy = options.project.database.enemies.find((entry) => entry.id === user.recordId);
-    if (enemy?.criticalHit?.enabled && enemy.criticalHit.oneIn > 0) {
-      return 100 / enemy.criticalHit.oneIn;
-    }
-    return 0;
+    const enemyRate = enemy?.criticalHit?.enabled && enemy.criticalHit.oneIn > 0
+      ? 100 / enemy.criticalHit.oneIn
+      : 0;
+    return Math.max(0, Math.min(100, actorRate + enemyRate + (user.equipmentEffects?.criticalRate ?? 0)));
   }
 
   function normalAttackHitRate(user: MutableBattler, target: MutableBattler): number {
     const enemy = options.project.database.enemies.find((entry) => entry.id === user.recordId);
     let rate = enemy?.attackOptions.normalAttacksMiss ? 90 : 100;
+    const equipmentAccuracy = user.equipmentEffects?.accuracy;
+    if (equipmentAccuracy !== undefined) rate *= equipmentAccuracy / 100;
     for (const stateId of user.stateIds) {
       const state = options.project.database.states.find((entry) => entry.id === stateId);
       if (typeof state?.accuracyModifier === "number") rate *= state.accuracyModifier / 100;
     }
     rate -= Math.max(-20, Math.min(40, (target.agility - user.agility) * 0.5));
-    return Math.max(5, Math.min(100, Math.round(rate)));
+    const minimumRate = equipmentAccuracy === 0 ? 0 : 5;
+    return Math.max(minimumRate, Math.min(100, Math.round(rate)));
+  }
+
+  function normalAttackElementMultiplier(user: MutableBattler, target: MutableBattler): number {
+    const elementId = user.equipmentEffects?.attackElementIds?.[0];
+    return elementMultiplierFor(elementId, user, target);
   }
 
   // 속성 상성 배율을 계산. skill.elementId 가 없거나 데이터가 없으면 1.0.
@@ -2407,6 +2441,15 @@ export function concreteTargetCommand(
     case "capture":
       return { kind: "capture", captureItemId: command.captureItemId, targetEnemyId: targetId };
   }
+}
+
+function findProjectEvent(project: BattleRuntimeOptions["project"], eventId: string | undefined) {
+  if (!eventId) return undefined;
+  for (const map of Object.values(project.maps)) {
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (event) return event;
+  }
+  return undefined;
 }
 
 function normalizeActiveSlots(value: number | undefined, partySize: number): number {

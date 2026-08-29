@@ -557,11 +557,17 @@ describe("battle event equipment/class commands (Step 3d)", () => {
     const runtime = runEquipBattle(equipProject());
     const before = runtime.snapshot().actors[0]!;
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    // 적 반격으로 HP 가 실제로 깎인 상태를 기준선으로 잡는다. 예전에는 이 적의 공격이
+    // 정확히 0 이라 "HP 보존" 단정이 우연히 성립했다 — 방어 관통 하한(MIN_DAMAGE_RATIO)
+    // 도입 후에는 초반 적도 최소한 조금은 깎는다.
+    const damaged = runtime.snapshot().actors[0]!;
+    expect(damaged.hp).toBeLessThan(damaged.maxHp);
     runtime.performActorCommand({ kind: "defend" }); // 페이지 발화 → 장비 변경
     const mid = runtime.snapshot().actors[0]!;
     expect(mid.effectiveStats?.attack).toBe((before.effectiveStats?.attack ?? 0) + 24);
     expect(mid.maxHp).toBe(before.maxHp);
-    expect(mid.hp).toBe(before.hp);
+    // 이 단정의 목적은 "장비 교체가 HP/MP 를 최대치로 리셋하지 않는다" 다.
+    expect(mid.hp).toBeLessThanOrEqual(damaged.hp);
     expect(mid.mp).toBe(before.mp);
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
     const snapshot = runtime.snapshot();

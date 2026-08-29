@@ -338,11 +338,19 @@ describe("page conditions working guarantee (all kinds)", () => {
     expect(root.textContent).toContain("보유 중");
     expect(root.textContent).toContain("파티에 있음");
     expect(root.textContent).toContain("켜짐");
-    // 비활성 행 자리도 항상 렌더되는 계약: 빈 페이지에서도 라벨 존재
+    // 새 계약: 빈 페이지면 행은 0개, 칩 12개가 종류를 보여준다
+    // 조건을 안 건 페이지: 행은 하나도 내지 않고 칩 12개와 한 줄 안내만 남는다.
+    // 예전 계약은 «체크 안 된 행» 12줄을 늘 렌더해 첫 화면을 덮었다 — 발견 가능성은 이제 칩이 진다.
     const emptyPage: EventPage = { ...page, conditions: [] };
     const emptyRoot = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", emptyPage) }));
-    expect(emptyRoot.querySelectorAll(".event-condition-row").length).toBeGreaterThanOrEqual(10);
-    expect(emptyRoot.querySelectorAll('[data-condition-active="false"]').length).toBeGreaterThan(0);
+    expect(emptyRoot.querySelectorAll(".event-condition-row").length).toBe(0);
+    expect(findByTestId(emptyRoot, "event-condition-empty")).not.toBeNull();
+    expect(emptyRoot.querySelectorAll(".event-condition-chip").length).toBe(12);
+    for (const key of ["switch1", "switch2", "variable", "item", "actor", "timer1", "timer2", "timePhase", "season", "npcActivity", "friendship", "selfSwitch"]) {
+      const chip = findByTestId(emptyRoot, `event-condition-chip-${key}`);
+      expect(chip, `chip missing: ${key}`).not.toBeNull();
+      expect(chip?.getAttribute("aria-pressed")).toBe("false");
+    }
   });
 
   it("런타임: CONDITION_KINDS 전원이 true/false로 평가된다", () => {

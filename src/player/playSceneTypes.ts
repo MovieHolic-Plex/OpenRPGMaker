@@ -71,6 +71,10 @@ export type AutonomousMoveTween = {
   readonly dir: Dir;
   readonly baseFrame: number;
   elapsedMs: number;
+  /** 체공 곡선. 있으면 스프라이트가 원점 리프트로 떠오른다(걸음 애니메이션 대신 정지 프레임). */
+  readonly hop?: import("@/player/characterHop").CharacterHop;
+  /** 이 한 수의 지속 시간. 없으면 mover.moveDurationMs(이동 속도) 를 쓴다. */
+  readonly durationMs?: number;
 };
 
 export type RuntimeTimer = {
@@ -103,6 +107,17 @@ export interface PlayerRouteState {
   moves: MoveCommand[];
   index: number;
   repeat: boolean;
+}
+
+/**
+ * 주인공 체공 상태. 걸음 이동(`moving`/`moveProgress`) 과 **별도 채널**이다 —
+ * 낙하는 타일 이동 없이 제자리에서 떨어지므로 이동 상태기에 얹을 수 없다.
+ */
+export interface PlayerHopState {
+  readonly hop: import("@/player/characterHop").CharacterHop;
+  elapsedMs: number;
+  /** 이 체공이 끝나면 걸음 이동 부수효과(발소리·인카운터·독)를 한 걸음으로 셀지. */
+  readonly countsAsStep: boolean;
 }
 
 export interface PlaySceneContext extends Phaser.Scene {
@@ -168,11 +183,17 @@ export interface PlaySceneContext extends Phaser.Scene {
   timeTintTransition: TimeTintTransition | null;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container>;
+  /** 체공 그림자 풀. 키는 `PLAYER_SHADOW_KEY` 또는 이벤트 id — 스프라이트 풀과 1:1. */
+  characterShadows?: Map<string, import("@/player/characterShadow").ShadowImage>;
+  /** 주인공의 진행 중인 체공. null 이면 접지 상태다. */
+  playerHop: PlayerHopState | null;
   getMapId(): MapId;
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void;
   renderTiles(): void;
   syncRuntimeState(): void;
   refreshRuntimeSurfaces(): void;
+  /** 이벤트 계층만 갱신한다(타일 재생성 없음). NPC·시간표 변경에 쓴다. */
+  refreshRuntimeEntities(): void;
   centerCamera(): void;
   setInputEnabled(enabled: boolean): void;
   activeRuntimeEvents(triggerKind: Trigger["kind"]): RuntimeEventView[];

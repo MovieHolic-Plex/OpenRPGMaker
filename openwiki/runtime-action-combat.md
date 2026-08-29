@@ -157,13 +157,19 @@ Action combat is no longer player-centric. Combatants carry a faction, and each 
 
 `project.factions` (see `openwiki/runtime-project-schema.md`) is resolved once per scene into `ActionCombatSceneState.factions` via `resolveFactionTable`. Each `ActionEnemyState` gets a `factionId` at sync time with precedence spawn definition > enemy record > reserved `enemy`. The party is the reserved `player` faction under the sentinel combatant id `PLAYER_COMBATANT_ID` (`"__player__"`).
 
+### Runtime stance overlay and its save rule
+
+Authored stance is read-only at runtime. Live changes ride the sparse overlay `PlaySession.factionStanceOverrides`, owned by `src/project/factionRuntime.ts`: keys are `JSON.stringify([from, to])` pairs (a separator inside an id cannot collide, and the save stays human-readable), values are continuous and clamped to `-2..2` so a 0.25 reputation step is not rounded away, and `effectiveFactionStance` reads the overlay over the resolved table while still taking `Math.min` of both directions. `setEffectiveFactionStance` / `adjustEffectiveFactionStance` back the `changeFactionStance` event command (`=` sets, `+=` / `-=` accumulate through the current effective value); `applyPlayerKillReputation` cools the defeated faction plus its friends toward the player and warms its enemies by the same weight when `factions.playerKillReputation` is authored. The scene shares one overlay object (`playSceneActionCombat.ts` assigns `scene.session.factionStanceOverrides ??= {}`), so a mid-fight change re-targets existing NPCs on the next retarget tick.
+
+Persistence is split by what each boundary knows. `createSaveSnapshot` writes the overlay only when it is non-empty, so old saves and projects without factions stay byte-identical. The shared slot/autosave wire parser (`parseSessionRecord`) calls `parseFactionStanceOverrides` **without** a table because it has no `Project` yet, so it validates key/value shape only — the same reason calendar normalization waits for `applySaveSnapshot`. `applySaveSnapshot(project, snapshot)` then passes `resolveFactionTable(project.factions)`, and any key naming a faction that no longer exists is dropped: otherwise stale pairs accumulate through every later save, and every lookup would alias them into the reserved `enemy` slot through the unknown-id fallback, quietly shifting the player's standing with real enemies. Reusing a deleted faction's id inherits its overlay on purpose. Id is identity for session state, exactly as it already is for `killedFieldSpawns` and `switches`; if you want a clean slate, use a new id. Contract: `test/factionRuntimePersistence.test.ts`.
+
 ### Pure rule module
 
 `src/battle/action/factionTargeting.ts`:
 - `resolveHostileTarget({ self, candidates, table, aggroRange, forcedTargetId })` returns the nearest combatant the actor will attack on sight, or `null`. Distance is Chebyshev and ties break by **lowest id**, so the result never depends on candidate array order (that is, on `Map` insertion order or spawn history). A live `forcedTargetId` wins over both stance and range.
 - `resolveNpcDamage({ hp, damage, protectedFromNpcs })` applies NPC-inflicted damage; a protected faction floors at 1 HP instead of dying.
 
-Stance and aggression resolution live in `src/project/factions.ts`: `factionStance` symmetrizes with `Math.min`, `willAttackOnSight` gates the four aggression levels, and `isHittableByFaction` exempts friend/ally from stray projectiles.
+Stance and aggression resolution live in `src/project/factions.ts`: `factionStance` symmetrizes with `Math.min`, `willAttackOnSight` gates the four aggression levels, and `isHittableByFaction` exempts friend/ally from stray projectiles. The Database enemy relationship preview applies `willAttackOnSight` in both directions because target acquisition uses each attacker's own aggression; any pair where either side attacks on sight remains expanded, while only pairs where neither side initiates combat may be collapsed.
 
 ### Scene behaviour
 
@@ -213,6 +219,8 @@ There is no new budget system. Field spawns already cap concurrency with `maxAli
 - `test/factionStance.test.ts`: stance matrix defaults, `Math.min` symmetrization, aggression gating, unknown-id fallback, reserved-faction override, `protectedFromNpcs`, normalization drops, and a serialize/deserialize roundtrip that does not bump the schema version.
 - `test/factionTargeting.test.ts`: nearest-hostile selection, candidate-order independence with id tiebreak, aggro range gate, own-faction and self exclusion, all four aggression levels, retaliation latch precedence and fallback, NPC damage and protection floor, plus a 40-tick order-independence check.
 - `test/factionNpcCombat.test.ts`: scene-level integration on a stubbed Phaser surface — faction precedence (spawn > record > reserved), hostile factions killing each other with the player away, no gold/exp/kill-persistence from NPC kills, neutral factions never engaging, a protected faction surviving at 1 HP, no contact damage from an enemy engaged elsewhere, and the legacy path where a hostile enemy still attacks the player.
+- `test/factionRuntime.test.ts`: overlay absence matching authored behaviour, ordered-pair keys, absolute/delta clamping with fractional reputation preserved, more-hostile resolution for asymmetric loaded overlays, and player-kill reputation spreading to allies and enemies.
+- `test/factionRuntimePersistence.test.ts`: overlay roundtrip through the known-field parser, overlay keys dropped for deleted factions, deliberate inheritance on id reuse, legacy snapshots without the field, and an existing NPC target flipping after the shared overlay changes.
 
 ### E2E browser specifications
 - `test/e2e/action-combat.spec.ts`: Full real-time attack, dodge, guard, and enemy response in browser player.

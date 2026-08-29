@@ -61,8 +61,27 @@ export function computeGen1BaseDamage(input: Gen1BaseDamageInput): number {
 }
 
 export const DEFAULT_SKILL_VARIANCE = 10;
-export const DEFAULT_SKILL_CRIT_RATE = 4;
-export const DEFAULT_SKILL_CRIT_MULT = 1.5;
+/**
+ * 기본 크리티컬 확률 4% → 10%.
+ *
+ * 4% 는 25턴에 1번이라 대부분의 전투에서 한 번도 보이지 않았다. 전용 효과음·플래시·
+ * 화면 흔들림을 다 만들어 놓고 발동을 안 하니 투자가 회수되지 않는다. 실측 분포에서
+ * 크리 구간(86~107)이 일반(56~70)과 겹치지 않아 "운 좋게 크게 박혔다"가 아니라
+ * "다른 등급의 공격"으로 읽히던 문제도 배율을 낮춰 접하게 만들면서 함께 완화한다.
+ */
+export const DEFAULT_SKILL_CRIT_RATE = 10;
+/** 1.5 → 1.35. 확률을 올린 대신 배율을 낮춰 한 방 결정력을 유지하되 편차를 줄인다. */
+export const DEFAULT_SKILL_CRIT_MULT = 1.35;
+/**
+ * 뺄셈식 방어의 **데미지 하한 비율**.
+ *
+ * `power + floor(stat/2) - floor(def/2)` 는 방어력이 공격력을 넘기면 0 으로 붕괴한다.
+ * 실측: 기본 프로젝트의 Lv1 주인공(방어 72) 상대로 초반 적 24종 중 12종이 정확히
+ * 0 을 줬다 — 위험이 없으니 긴장도 없고, 0 데미지는 화면 표시조차 없었다.
+ * 방어를 뚫지 못한 공격도 방어 적용 전 위력의 이 비율만큼은 반드시 깎는다(최소 1).
+ * 값이 0 보다 큰 데미지에는 아무 영향이 없다 — 붕괴 구간만 구제한다.
+ */
+export const MIN_DAMAGE_RATIO = 0.125;
 
 export interface SkillLikeEffect {
   readonly power: number;
@@ -165,12 +184,19 @@ function computeMagnitude(
   const effectiveDefense = baseDefense * (spec.targetDefenseMultiplier ?? 1);
   // A/B 테스트: spec.useDiminishingDefense가 true면 감쇠식, 아니면 기존 뺄셈 유지(호환).
   // gen1 모델 또는 명시 플래그에서 감쇠식을 쓰면 탱커 체감이 회복된다.
+  // 방어 적용 전 위력 — 하한(MIN_DAMAGE_RATIO) 계산의 기준이다.
+  const preDefense = magnitude;
   if ((spec as SkillLikeEffect & { useDiminishingDefense?: boolean }).useDiminishingDefense) {
     const reduction = effectiveDefense / (effectiveDefense + 80);
     magnitude = Math.round(magnitude * (1 - reduction));
   } else {
     magnitude -= Math.floor(effectiveDefense / 2);
   }
+  // 뺄셈식이 0 으로 붕괴한 구간만 하한으로 구제한다. 0 보다 큰 결과는 손대지 않는다.
+  const floorDamage = preDefense > 0 ? Math.max(1, Math.floor(preDefense * MIN_DAMAGE_RATIO)) : 0;
+  if (magnitude < floorDamage) magnitude = floorDamage;
+  // 방어 자세는 하한 뒤에 적용한다 — 웅크리면 하한선 아래로도 내려갈 수 있어야
+  // "방어했다"가 실제 이득으로 읽힌다.
   if (target.defending) magnitude = Math.floor(magnitude / 2);
   return { amount: magnitude <= 0 ? 0 : Math.max(1, magnitude), critical };
 }

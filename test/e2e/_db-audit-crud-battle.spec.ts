@@ -398,7 +398,7 @@ test.describe("AUDIT — battle-group record CRUD", () => {
       const errors = collectConsoleErrors(page);
       await bootDbLane(page, { mode: "beginner" });
       await expect(page.getByTestId("database-modal")).toBeVisible();
-      await expect(page.getByTestId("db-nav-all")).toBeVisible();
+      await expect(page.locator(".db-tabs .db-tab-group").first()).toBeVisible();
       try {
         await openBattleTab(page, tab);
         await ensureListView(page);
@@ -416,7 +416,7 @@ test.describe("AUDIT — battle-group record CRUD", () => {
           title: `Beginner ${tab.slug} tab aborted remaining silent-loss probes`,
           repro: [
             `bootDbLane(page,{mode:"beginner"})`,
-            `switchTabAnyMode(page, ${tab.testId}) // opens db-nav-all when collapsed`,
+            `switchTabAnyMode(page, ${tab.testId}) // expands the category group when collapsed`,
             `threw: ${error instanceof Error ? error.message : String(error)}`,
           ],
           evidence: [evidence],

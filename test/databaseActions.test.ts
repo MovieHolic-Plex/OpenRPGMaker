@@ -107,6 +107,8 @@ describe("Database actions", () => {
       equippableClassIds: [classId],
       equippableActorIds: [project.database.actors[0]?.id ?? ""],
       cursed: true,
+      accuracy: 37,
+      criticalRate: 14,
       usableAsItemSkillId: skillId,
     });
     updateDatabaseRecord("enemies", enemyId, {
@@ -143,6 +145,7 @@ describe("Database actions", () => {
     expect(skill?.successRate).toBe(100);
     expect(skill?.variance).toBe(0);
     expect(item?.stateEffects).toEqual([{ stateId: "state_death", chance: 100, operation: "remove" }]);
+    expect(equipment).toMatchObject({ accuracy: 37, criticalRate: 14 });
     expect(equipment?.statBonuses.attack).toBe(9999);
     expect(equipment?.statBonuses.defense).toBe(0);
     expect(enemy?.stats.maxHp).toBe(99999);

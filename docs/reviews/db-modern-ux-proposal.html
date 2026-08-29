@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>데이터베이스를 사람으로 — RM 잔재 제거 제안</title>
+  <style>
+    :root {
+      --cream: #f7f3ea;
+      --inset: #efe9dc;
+      --raised: #fffdf8;
+      --ink: #2a2521;
+      --muted: #5c5348;
+      --faint: #6b5f52;
+      --line: rgba(42, 37, 33, 0.14);
+      --accent: #4a57d6;
+      --accent-soft: rgba(74, 87, 214, 0.12);
+      --danger: #c6403d;
+      --ok: #18764f;
+      --warn: #8a5e00;
+      --shadow: 0 22px 50px rgba(42, 37, 33, 0.12);
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", serif;
+      --sans: "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font: 16px/1.6 var(--sans);
+    }
+    a { color: var(--accent); }
+    img { max-width: 100%; display: block; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    header.top {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(14px);
+      background: rgba(247, 243, 234, 0.86);
+      border-bottom: 1px solid var(--line);
+    }
+    header.top .wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px; gap: 16px;
+    }
+    .brand { font-weight: 800; letter-spacing: -0.03em; }
+    nav { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+    nav a { color: var(--muted); text-decoration: none; }
+    nav a:hover { color: var(--ink); }
+    .hero {
+      position: relative;
+      min-height: 78vh;
+      display: grid;
+      place-items: end start;
+      overflow: hidden;
+      background: #d9d0bd;
+    }
+    .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(42,37,33,0.15), rgba(42,37,33,0.72) 70%);
+    }
+    .hero-copy {
+      position: relative; z-index: 1;
+      padding: 48px 0 56px;
+      color: #fffdf8;
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+    .kicker {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font: 700 52px/1.12 var(--serif);
+      letter-spacing: -0.035em;
+      margin: 0 0 14px;
+      max-width: 16ch;
+    }
+    .lede { font-size: 20px; max-width: 42ch; color: #f3ead8; }
+    section { padding: 72px 0; }
+    h2 { font: 700 34px/1.2 var(--serif); letter-spacing: -0.03em; margin: 0 0 12px; }
+    h3 { font: 700 20px/1.3 var(--serif); margin: 0 0 8px; }
+    .sub { color: var(--muted); margin: 0 0 28px; max-width: 62ch; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card {
+      background: var(--raised);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .card.flat { box-shadow: none; background: var(--inset); }
+    .photo {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: #ddd4c4;
+    }
+    .photo figcaption {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--raised);
+    }
+    .principle { min-height: 180px; }
+    .principle em { color: var(--accent); font-style: normal; }
+    .ia {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .ia-col {
+      background: var(--raised);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .ia-col h3 { font-size: 16px; }
+    .ia-col ul { margin: 8px 0 0; padding: 0; list-style: none; }
+    .ia-col li {
+      padding: 7px 9px;
+      margin: 6px 0;
+      background: var(--cream);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .ia-col li.move { outline: 2px solid var(--accent); background: var(--accent-soft); }
+    .ia-col li.drop { opacity: 0.45; text-decoration: line-through; }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 0; overflow: hidden; }
+    .compare > div { padding: 18px; }
+    .was { background: #f4e8e6; }
+    .now { background: #e8f3ec; }
+    .was h3 { color: var(--danger); }
+    .now h3 { color: var(--ok); }
+    .kill {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .kill span {
+      background: #f4e8e6;
+      color: #7a2a28;
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 13px;
+      font-family: ui-monospace, Consolas, monospace;
+    }
+    .keep span {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 13px;
+    }
+    .waves { display: grid; gap: 14px; }
+    .wave {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 16px;
+      align-items: start;
+      background: var(--raised);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .wave b {
+      display: grid; place-items: center;
+      width: 88px; height: 88px;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      font: 700 22px/1 var(--serif);
+    }
+    .mock-shell {
+      display: grid;
+      grid-template-columns: 196px 1fr;
+      min-height: 420px;
+      background: var(--raised);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .mock-side { background: var(--inset); padding: 12px; border-right: 1px solid var(--line); }
+    .mock-side button {
+      width: 100%; text-align: left;
+      border: 0; background: transparent;
+      padding: 8px 10px; border-radius: 8px;
+      font: 13px var(--sans); color: var(--ink); cursor: pointer;
+    }
+    .mock-side button.on { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+    .g { font-size: 11px; color: var(--faint); margin: 10px 8px 4px; letter-spacing: 0.08em; }
+    .mock-main { padding: 18px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      min-width: 92px;
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+    .chip strong { display: block; font-size: 20px; }
+    .chip small { color: var(--muted); }
+    .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin: 8px 0 12px; }
+    .sw { display: inline-block; width: 10px; height: 10px; border-radius: 99px; margin-right: 4px; }
+    .chart {
+      height: 150px;
+      border-radius: 12px;
+      background:
+        linear-gradient(#0000 74%, var(--line) 75%),
+        linear-gradient(90deg, var(--line) 1px, #0000 1px);
+      background-size: 100% 20%, 48px 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .chart svg { width: 100%; height: 100%; }
+    .issue {
+      display: flex; gap: 10px; align-items: center;
+      background: rgba(138, 94, 0, 0.12);
+      border: 1px solid var(--warn);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+    .issue button {
+      margin-left: auto;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    footer {
+      padding: 40px 0 60px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--line);
+    }
+    @media (max-width: 860px) {
+      h1 { font-size: 36px; }
+      .grid-2, .grid-3, .ia, .compare, .mock-shell, .wave { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">AI RPG MAKER · 자료집 제안</div>
+      <nav>
+        <a href="#thesis">전제</a>
+        <a href="#look">화면</a>
+        <a href="#ia">정보구조</a>
+        <a href="#kill">버릴 것</a>
+        <a href="#waves">순서</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <img src="db-modern-ux-proposal/db-proposal-overview-hero.png" alt="모던 개요 대시보드 컨셉" />
+    <div class="hero-copy">
+      <span class="kicker">편의성 우선 · RM 폼은 유산이 아님</span>
+      <h1>데이터베이스를 시트로 두지 말고, 그림이 있는 작업대로</h1>
+      <p class="lede">전투 규칙은 엔진이 기억하면 됩니다. 사람은 초상, 아이콘, 미리보기, 한 줄 말로 고칩니다.</p>
+    </div>
+  </div>
+
+  <section id="thesis">
+    <div class="wrap">
+      <h2>전제</h2>
+      <p class="sub">RM2003 창을 재현하는 일은 제품 목표가 아닙니다. 스키마·저장·전투 계산은 그대로 두고, <strong>만지는 면만 사람 쪽으로</strong> 갈아끼웁니다.</p>
+      <div class="grid-3">
+        <article class="card principle">
+          <h3>보이는 것은 고를 수 있다</h3>
+          <p>리소스 id, 스킬 id, <em>easyrpg-system2</em> 문자열은 필드가 아닙니다. 큰 미리보기와 썸네일 격자만 남깁니다.</p>
+        </article>
+        <article class="card principle">
+          <h3>한 개념은 한 자리</h3>
+          <p>검은 장비 탭에서만. 전투 HP는 몬스터에서만. 수집 정체성은 종족에서만. 아이템 탭의 가짜 무기 폼은 접습니다.</p>
+        </article>
+        <article class="card principle">
+          <h3>숫자가 보이면 그곳으로 간다</h3>
+          <p>개요 칩, 산점도 점, 문제 카드는 장식이 아니라 문입니다. 클릭하면 해당 레코드가 열립니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="look" style="padding-top: 0;">
+    <div class="wrap">
+      <h2>화면이 이렇게 바뀌면 됩니다</h2>
+      <p class="sub">아래는 방향 스케치입니다. 픽셀 복제가 아니라, RM 회색 시트 대신 초상·아이콘·범례가 주인인 상태를 보여 줍니다.</p>
+
+      <figure class="photo" style="margin: 0 0 28px;">
+        <img src="db-modern-ux-proposal/db-proposal-before-after-item.png" alt="레거시 시트와 모던 아이템 인스펙터" />
+        <figcaption>왼쪽은 버릴 문법(경로·영문 enum·id). 오른쪽은 아이콘이 헤더인 인스펙터 — 이미 아이템/장비 헤더가 시작한 길을 전 탭으로 밀어 넣습니다.</figcaption>
+      </figure>
+
+      <div class="mock-shell" style="margin-bottom: 36px;">
+        <aside class="mock-side">
+          <div class="g">시작</div>
+          <button class="on" type="button">개요</button>
+          <div class="g">파티</div>
+          <button type="button">주인공</button>
+          <button type="button">직업</button>
+          <button type="button">아이템</button>
+          <button type="button">장비</button>
+          <div class="g">전투</div>
+          <button type="button">몬스터</button>
+          <button type="button">적 무리</button>
+          <div class="g">수집</div>
+          <button type="button">종족</button>
+          <button type="button">작물</button>
+        </aside>
+        <div class="mock-main">
+          <h3>지금 이 작품</h3>
+          <p class="sub" style="margin-bottom: 12px;">숫자는 문입니다. 주인공 6을 누르면 주인공 탭이 열립니다.</p>
+          <div class="chips">
+            <div class="chip"><small>주인공</small><strong>6</strong></div>
+            <div class="chip"><small>아이템</small><strong>177</strong></div>
+            <div class="chip"><small>몬스터</small><strong>24</strong></div>
+            <div class="chip"><small>종족</small><strong>12</strong></div>
+            <div class="chip"><small>작물</small><strong>0</strong></div>
+          </div>
+          <div class="legend">
+            <span><i class="sw" style="background:#18764f"></i>체력</span>
+            <span><i class="sw" style="background:#4a57d6"></i>공격</span>
+            <span>시작 파티 기준 · 1–50레벨</span>
+          </div>
+          <div class="chart">
+            <svg viewBox="0 0 480 150" aria-hidden="true">
+              <path d="M8 120 C 80 110, 140 90, 220 70 S 360 40, 472 22" fill="none" stroke="#18764f" stroke-width="2.5"/>
+              <path d="M8 128 C 90 122, 160 118, 250 108 S 380 90, 472 78" fill="none" stroke="#4a57d6" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <div class="issue">
+            영웅 직업의 공격이 6–12레벨에서 멈춥니다.
+            <button type="button">직업 탭에서 보기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 28px;">
+        <figure class="photo">
+          <img src="db-modern-ux-proposal/db-proposal-species.png" alt="종족 수집 카드 컨셉" />
+          <figcaption>종족 화면의 주인공은 전투 HP가 아니라 초상·타입·포획·진화입니다.</figcaption>
+        </figure>
+        <figure class="photo">
+          <img src="db-modern-ux-proposal/db-proposal-dock.png" alt="아이콘 도크 컨셉" />
+          <figcaption>도크는 숫자 뱃지가 아니라 그림 레일입니다. 호버에 한글 이름.</figcaption>
+        </figure>
+      </div>
+
+      <figure class="photo">
+        <img src="db-modern-ux-proposal/db-proposal-typechart.png" alt="상성표 컨셉" />
+        <figcaption>상성표는 “미리보기”가 아니라 배율을 바꾸는 그림입니다. 클릭 전에 한글 타입과 배율 문장을 보여 줍니다.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="ia">
+    <div class="wrap">
+      <h2>정보 구조를 정직하게</h2>
+      <p class="sub">지금 사이드바의 「수집」에는 전투 배틀러가 있고, 「세계」에는 맵이 아니라 전투 지형이 있습니다. 그룹 이름을 작품 만드는 사람의 일로 바꿉니다.</p>
+      <div class="ia">
+        <div class="ia-col">
+          <h3>파티</h3>
+          <ul>
+            <li>개요</li>
+            <li>주인공</li>
+            <li>직업</li>
+            <li>스킬</li>
+            <li>아이템 · 장비</li>
+          </ul>
+        </div>
+        <div class="ia-col">
+          <h3>전투</h3>
+          <ul>
+            <li class="move">몬스터 · 적 무리</li>
+            <li>속성 · 상태</li>
+            <li>애니메이션 · 화면</li>
+            <li class="move">전투 지형</li>
+            <li class="drop">전투 명령 카탈로그 (직업으로 흡수)</li>
+          </ul>
+        </div>
+        <div class="ia-col">
+          <h3>수집 · 생활</h3>
+          <ul>
+            <li>종족</li>
+            <li>작물</li>
+            <li>캐릭터 (호감, 주인공 아님)</li>
+          </ul>
+        </div>
+        <div class="ia-col">
+          <h3>맵 · 설정</h3>
+          <ul>
+            <li>타일셋 · 스탬프</li>
+            <li>공용 이벤트</li>
+            <li>시작 · 시간 · 상성 · 제목</li>
+            <li>용어 · 스위치 · 변수</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>같은 일을, 다른 손맛으로</h2>
+      <div class="card compare" style="padding: 0;">
+        <div class="was">
+          <h3>지금</h3>
+          <ul>
+            <li>아이템에서 검을 만들면 전투에 안 나감</li>
+            <li>개요 칩은 숫자만, 차트에 범례 없음</li>
+            <li>도크는 라벨을 지운 빈 칸 + 숫자</li>
+            <li>프레임 버튼을 눌러도 애니메이션이 안 바뀜</li>
+            <li>하루 끝 이벤트를 지워도 아무 말 없음</li>
+            <li>A / C / E, DPS, RM2003, database.*</li>
+          </ul>
+        </div>
+        <div class="now">
+          <h3>제안</h3>
+          <ul>
+            <li>무기 종류는 장비 탭으로만. 아이템은 「장비에서 만들기」</li>
+            <li>칩·점·카드 클릭 = 해당 레코드</li>
+            <li>도크 아이콘 + 이름 툴팁</li>
+            <li>프레임 스트립이 스테이지를 즉시 그림</li>
+            <li>지우기 전에 「하루가 끝날 때 이 이벤트를 씁니다」</li>
+            <li>약함 / 보통 / 안 먹힘 / 한 대에 아픈 정도</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kill">
+    <div class="wrap">
+      <h2>화면에서 지울 잔재</h2>
+      <p class="sub">엔진 키는 남을 수 있습니다. 초보·표준 화면에 아래 문구가 보이면 실패한 겁니다.</p>
+      <div class="card">
+        <div class="kill">
+          <span>RM2003 데이터베이스 &gt;</span>
+          <span>저장 위치 = database.*</span>
+          <span>attack / guard / skill</span>
+          <span>easyrpg-system2-…</span>
+          <span>A B C D E</span>
+          <span>DPS</span>
+          <span>배우</span>
+          <span>옵트인 시스템</span>
+          <span>◆ 더블클릭</span>
+          <span>호출 (트리거 none)</span>
+          <span>States Page</span>
+          <span>off / on</span>
+          <span>새 species</span>
+        </div>
+      </div>
+      <p class="sub" style="margin-top: 22px;">반대로 잠글 계약 — 룩이 아니라 동작.</p>
+      <div class="keep">
+        <span>스키마 · 마이그레이션</span>
+        <span>더티 저장/버리기/계속</span>
+        <span>모달 안 점프 (창을 다시 안 염)</span>
+        <span>기존 testid</span>
+        <span>1024 × 768 바닥</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="waves">
+    <div class="wrap">
+      <h2>갈아끼우는 순서</h2>
+      <p class="sub">한 번에 24탭을 다시 그리지 않습니다. 사람이 매일 만지는 문부터 그림으로 바꿉니다.</p>
+      <div class="waves">
+        <article class="wave">
+          <b>1</b>
+          <div>
+            <h3>문과 레일</h3>
+            <p>개요를 진짜 입구로: 칩 클릭, 범례, 시작 파티 곡선, 이슈는 맞는 탭으로. 도크에 아이콘·이름. 1024에서 잘리는 그리드는 1열.</p>
+          </div>
+        </article>
+        <article class="wave">
+          <b>2</b>
+          <div>
+            <h3>파티 짐</h3>
+            <p>아이템에서 장비 폼 제거. 직업 습득 스킬을 주인공과 같은 행 편집으로. 스킬·속성을 인스펙터 헤더 + 한글 등급으로.</p>
+          </div>
+        </article>
+        <article class="wave">
+          <b>3</b>
+          <div>
+            <h3>싸움과 수집</h3>
+            <p>몬스터/적 무리를 전투로. 종족은 초상 카드. 애니메이션 프레임이 실제로 그려지게. 전투 명령 탭은 직업으로 흡수.</p>
+          </div>
+        </article>
+        <article class="wave">
+          <b>4</b>
+          <div>
+            <h3>설정이 말로</h3>
+            <p>상성표 카피 정정, 타입 비우기 확인, 하루 끝 삭제 가드, 지형·타일셋 raw id를 피커로. RM 경로 행 전면 삭제.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      이 문서는 구현 스펙이 아니라 방향 제안입니다. 그림은 분위기용 컨셉이며, 제품 크롬은 크림 토큰(#F7F3EA, #4A57D6)을 유지합니다.
+      파일 위치: <code>docs/reviews/db-modern-ux-proposal.html</code>
+    </div>
+  </footer>
+</body>
+</html>

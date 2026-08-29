@@ -108,6 +108,8 @@ export function equipmentEffectStory(project: Project, record: EquipmentRecord):
     record.statBonuses[key] === 0 ? [] : [`${label} ${signed(record.statBonuses[key])}`]
   );
   const effects = EFFECT_FLAG_FIELDS.filter(({ key }) => record.effectFlags[key]).map(({ label }) => label);
+  effects.push(`명중률 ${record.accuracy}%`);
+  effects.push(`치명타율 +${record.criticalRate}%p`);
   if (record.twoHanded) effects.push("양손 장비 · 방패 해제");
   if (record.cursed) effects.push("저주 · 장착 후 해제 제한");
   if (record.attackElementIds.length > 0) effects.push(`공격 속성: ${namedIds(record.attackElementIds, project.database.elements ?? [])}`);
@@ -201,7 +203,10 @@ export function equipmentEffectSummaryChips(record: EquipmentRecord): EquipmentE
   const badges: string[] = [];
   if (record.twoHanded) badges.push("양손 장비");
   if (record.cursed) badges.push("저주");
-  const counts: string[] = [];
+  const counts: string[] = [
+    `명중률 ${record.accuracy}%`,
+    `치명타율 +${record.criticalRate}%p`,
+  ];
   if (record.attackElementIds.length > 0) counts.push(`공격 속성 ${record.attackElementIds.length}`);
   if (record.elementalDefenseIds.length > 0) counts.push(`속성 방어 ${record.elementalDefenseIds.length}`);
   if (record.stateInflictIds.length > 0) counts.push(`상태 부여 ${record.stateInflictIds.length}`);
@@ -291,6 +296,13 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
               title: "장착 규칙",
               testid: "db-equipment-card-rules",
               children: [
+                el("div", {
+                  class: "db-eq-grid",
+                  children: [
+                    combatAxisField(record, "accuracy", "명중률(%)", "db-field-equipment-accuracy", refreshOverview),
+                    combatAxisField(record, "criticalRate", "치명타율(%p)", "db-field-equipment-critical-rate", refreshOverview),
+                  ],
+                }),
                 toggleSwitch("양손 장비", "db-field-equipment-two-handed", record.twoHanded, (twoHanded) => {
                   updateDatabaseRecord("equipment", record.id, { twoHanded });
                   refreshOverview();
@@ -351,7 +363,7 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
                 statePercentField(record, "stateResistanceChance", "db-field-equipment-state-resistance", "상태 저항률(%)", refreshOverview),
               ],
             })),
-            spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "twoHanded", "usableAsItemSkillId", "stateInflictIds", "stateInflictionChance", "stateResistanceChance")),
+            spanCard(databaseFieldSupportNotice("imageResourceId", "iconResourceId", "twoHanded", "accuracy", "criticalRate", "usableAsItemSkillId", "stateInflictIds", "stateInflictionChance", "stateResistanceChance")),
           ],
         }),
       ],
@@ -599,6 +611,19 @@ function statField(input: StatFieldInput, onChange?: () => void): HTMLElement {
     updateDatabaseRecord("equipment", input.equipment.id, { statBonuses });
     onChange?.();
   }, { min: 0, max: 9999 });
+}
+
+function combatAxisField(
+  record: EquipmentRecord,
+  key: "accuracy" | "criticalRate",
+  label: string,
+  testid: string,
+  onChange?: () => void,
+): HTMLElement {
+  return numberField(label, testid, record[key], (value) => {
+    updateDatabaseRecord("equipment", record.id, { [key]: value });
+    onChange?.();
+  }, { min: 0, max: 100 });
 }
 
 function actorChoices(record: EquipmentRecord, onChange?: () => void): HTMLElement[] {

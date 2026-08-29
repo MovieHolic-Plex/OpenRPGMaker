@@ -6,10 +6,10 @@ type DomGlobalName =
   | "HTMLInputElement"
   | "HTMLSelectElement"
   | "HTMLImageElement"
+  | "Image"
   | "HTMLTextAreaElement"
   | "requestAnimationFrame"
   | "cancelAnimationFrame";
-
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
@@ -18,6 +18,7 @@ type PreviousDomGlobals = {
   readonly HTMLInputElement: typeof HTMLInputElement | undefined;
   readonly HTMLSelectElement: typeof HTMLSelectElement | undefined;
   readonly HTMLImageElement: typeof HTMLImageElement | undefined;
+  readonly Image: typeof Image | undefined;
   readonly HTMLTextAreaElement: typeof HTMLTextAreaElement | undefined;
   readonly requestAnimationFrame: typeof requestAnimationFrame | undefined;
   readonly cancelAnimationFrame: typeof cancelAnimationFrame | undefined;
@@ -346,9 +347,9 @@ export function documentListenerCount(type: string): number {
   return documentListeners[type]?.length ?? 0;
 }
 
-export function flushFakeAnimationFrames(timestamp = 0): void {
+export function flushFakeAnimationFrames(timestamp = 0, maxBatches = Number.POSITIVE_INFINITY): void {
   let batches = 0;
-  while (animationFrames.size > 0) {
+  while (animationFrames.size > 0 && batches < maxBatches) {
     batches += 1;
     if (batches > 1000) throw new Error("fake DOM animation frame queue did not settle");
     const frameIds = [...animationFrames.keys()];
@@ -370,6 +371,7 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     HTMLInputElement: globalThis.HTMLInputElement,
     HTMLSelectElement: globalThis.HTMLSelectElement,
     HTMLImageElement: globalThis.HTMLImageElement,
+    Image: globalThis.Image,
     HTMLTextAreaElement: globalThis.HTMLTextAreaElement,
     requestAnimationFrame: globalThis.requestAnimationFrame,
     cancelAnimationFrame: globalThis.cancelAnimationFrame,
@@ -384,6 +386,9 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   defineDomGlobal("HTMLInputElement", FakeElement);
   defineDomGlobal("HTMLSelectElement", FakeElement);
   defineDomGlobal("HTMLImageElement", FakeElement);
+  // `new Image()` 는 프로덕션 코드(chromaKey.getAutoKeyedDataUrl 등)가 직접 쓰는 생성자다.
+  // HTMLImageElement 만 매핑해두면 생성자 전역이 없어 ReferenceError 가 난다.
+  defineDomGlobal("Image", FakeImage);
   defineDomGlobal("HTMLTextAreaElement", FakeElement);
   if (options.animationFrames === "manual") {
     defineDomGlobal("requestAnimationFrame", (callback: FrameRequestCallback): number => {
@@ -445,10 +450,43 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     restoreDomGlobal("HTMLInputElement", previous.HTMLInputElement);
     restoreDomGlobal("HTMLSelectElement", previous.HTMLSelectElement);
     restoreDomGlobal("HTMLImageElement", previous.HTMLImageElement);
+    restoreDomGlobal("Image", previous.Image);
     restoreDomGlobal("HTMLTextAreaElement", previous.HTMLTextAreaElement);
     restoreDomGlobal("requestAnimationFrame", previous.requestAnimationFrame);
     restoreDomGlobal("cancelAnimationFrame", previous.cancelAnimationFrame);
   };
+}
+
+/**
+ * `new Image()` 대체물. 헤드리스에는 디코딩할 픽셀이 없으므로 src 할당 시
+ * 비동기로 `error` 를 딱 한 번 발화한다 — 실제 브라우저에서 로드 실패한 것과 같은 경로다.
+ * 호출부(chromaKey)는 load/error 양쪽에서 resolve 하므로 프라미스가 확실히 정착하고,
+ * 아무 이벤트도 쏘지 않는 스텁처럼 무한 pending 이 되지 않는다.
+ */
+export class FakeImage extends FakeElement {
+  readonly naturalWidth = 0;
+  readonly naturalHeight = 0;
+  readonly complete = false;
+  private currentSrc = "";
+  private errorDispatched = false;
+
+  constructor() {
+    super("img");
+  }
+
+  get src(): string {
+    return this.currentSrc;
+  }
+
+  set src(value: string) {
+    this.currentSrc = value;
+    if (this.errorDispatched) return;
+    this.errorDispatched = true;
+    // addEventListener 가 { once: true } 를 무시하므로 발화 횟수는 이쪽에서 보장한다.
+    queueMicrotask(() => {
+      this.dispatchEvent(new Event("error"));
+    });
+  }
 }
 
 export function renderWithFakeDom(render: () => HTMLElement): FakeElement {

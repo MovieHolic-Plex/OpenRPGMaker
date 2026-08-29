@@ -96,4 +96,69 @@ describe("페이지 조건: 꺼짐/없음 방향 저작", () => {
     const value = findByTestId(root, "event-page-actor-condition-present");
     expect(value?.value).toBe("absent");
   });
+
+  it("고급 스위치에서 꺼짐을 저작한 뒤 대상을 바꿔도 value:false를 유지한다", () => {
+    const switches = store.getCurrent().switches;
+    const { mapId, page } = seedPage([
+      { kind: "switch", switchId: switches[0]?.id ?? "sw_1", value: true },
+      { kind: "switch", switchId: switches[1]?.id ?? "sw_2", value: true },
+      { kind: "switch", switchId: switches[2]?.id ?? "sw_3", value: true },
+    ]);
+    const root = render(mapId, page);
+    const polarity = findByTestId(root, "event-page-advanced-condition-switch-value-0");
+    const picker = findByTestId(root, "event-page-advanced-condition-switch-0");
+    if (!polarity || !picker) throw new Error("advanced switch controls missing");
+
+    polarity.value = "false";
+    polarity.dispatchEvent(new Event("change"));
+    picker.value = switches[0]?.id ?? "sw_changed";
+    picker.dispatchEvent(new Event("change"));
+
+    expect(polarity.textContent).toContain("꺼짐");
+    expect(livePage(mapId).conditions[2]).toEqual({
+      kind: "switch",
+      switchId: switches[0]?.id ?? "sw_changed",
+      value: false,
+    });
+  });
+
+  it("고급 아이템에서 보유 안 함을 저작한 뒤 대상을 바꿔도 present:false를 유지한다", () => {
+    const items = store.getCurrent().database.items;
+    const { mapId, page } = seedPage([
+      { kind: "item", itemId: DEFAULT_ITEM_ID, present: true },
+      { kind: "item", itemId: items[1]?.id ?? "item_extra", present: true },
+    ]);
+    const root = render(mapId, page);
+    const polarity = findByTestId(root, "event-page-advanced-condition-item-present-0");
+    const picker = findByTestId(root, "event-page-advanced-condition-item-0");
+    if (!polarity || !picker) throw new Error("advanced item controls missing");
+
+    polarity.value = "false";
+    polarity.dispatchEvent(new Event("change"));
+    picker.value = DEFAULT_ITEM_ID;
+    picker.dispatchEvent(new Event("change"));
+
+    expect(polarity.textContent).toContain("보유 안 함");
+    expect(livePage(mapId).conditions[1]).toEqual({ kind: "item", itemId: DEFAULT_ITEM_ID, present: false });
+  });
+
+  it("고급 주인공에서 파티에 없음을 저작한 뒤 대상을 바꿔도 present:false를 유지한다", () => {
+    const actors = store.getCurrent().database.actors;
+    const { mapId, page } = seedPage([
+      { kind: "actor", actorId: DEFAULT_ACTOR_ID, present: true },
+      { kind: "actor", actorId: actors[1]?.id ?? "actor_extra", present: true },
+    ]);
+    const root = render(mapId, page);
+    const polarity = findByTestId(root, "event-page-advanced-condition-actor-present-0");
+    const picker = findByTestId(root, "event-page-advanced-condition-actor-0");
+    if (!polarity || !picker) throw new Error("advanced actor controls missing");
+
+    polarity.value = "false";
+    polarity.dispatchEvent(new Event("change"));
+    picker.value = DEFAULT_ACTOR_ID;
+    picker.dispatchEvent(new Event("change"));
+
+    expect(polarity.textContent).toContain("파티에 없음");
+    expect(livePage(mapId).conditions[1]).toEqual({ kind: "actor", actorId: DEFAULT_ACTOR_ID, present: false });
+  });
 });

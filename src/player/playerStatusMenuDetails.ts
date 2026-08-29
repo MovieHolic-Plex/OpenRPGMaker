@@ -121,6 +121,24 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   if (options.targetItemId) {
     const item = project.database.items.find((record) => record.id === options.targetItemId);
     if (!item) return { title: "대상 선택", entries: [], emptyLabel: "아이템을 찾을 수 없습니다" };
+    const careProfile = item.careProfile;
+    if (careProfile) {
+      return {
+        title: `대상 선택: ${item.name}`,
+        entries: session.monsterParty.flatMap((instanceId) => {
+          const instance = session.monsterInstances[instanceId];
+          if (!instance) return [];
+          return [{
+            label: monsterDisplayName(project, instance),
+            value: `Lv.${instance.level}  친밀도 ${instance.friendship}`,
+            testId: `status-menu-monster-${instanceId}`,
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "대상이 없습니다",
+        hint: "사용할 대상을 선택하세요.",
+      };
+    }
     return {
       title: `대상 선택: ${item.name}`,
       entries: partyActors(project, session).map((actor) => {
@@ -146,7 +164,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     value: `${inventory.get(item.id) ?? 0}개`,
     description: item.description,
     testId: `status-menu-item-${item.id}`,
-    onActivate: (item.scope === "ally" || item.scope === "allAllies") && options.onSelectItemTarget
+    onActivate: (item.scope === "ally" || item.scope === "allAllies" || Boolean(item.careProfile)) && options.onSelectItemTarget
       ? () => options.onSelectItemTarget?.(item.id)
       : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
   }));

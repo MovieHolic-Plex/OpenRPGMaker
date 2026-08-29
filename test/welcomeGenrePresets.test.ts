@@ -4,11 +4,15 @@ import {
   WELCOME_GENRE_CHECKLIST_LINES,
   WELCOME_GENRE_PRESETS,
   WELCOME_INSPIRATION_MINIS,
+  WELCOME_MORE_WORLDS,
+  WELCOME_POSTER_CARDS,
+  WELCOME_STARTER_TEMPLATES,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
   officialGenrePackIdForWelcomePreset,
   welcomeGenrePresetById,
 } from "@/editor/welcomeGenrePresets";
+import { GENRE_PACK_IDS } from "@/project/genrePackId";
 
 describe("welcomeGenrePresets", () => {
   it("exposes seven genre chips including story-cutscene", () => {
@@ -78,5 +82,31 @@ describe("welcomeGenrePresets", () => {
     expect(WELCOME_INSPIRATION_MINIS.length).toBeGreaterThanOrEqual(6);
     expect(WELCOME_INSPIRATION_MINIS[0]?.thumb).toContain("/assets/generated/welcome/mini-");
     expect(WELCOME_INSPIRATION_MINIS.every((m) => m.intent.trim().length > 0)).toBe(true);
+  });
+
+  it("renders every preset as a poster and anchors each pack once", () => {
+    expect(WELCOME_POSTER_CARDS.map((card) => card.preset.id))
+      .toEqual(expect.arrayContaining(WELCOME_GENRE_PRESETS.map((preset) => preset.id)));
+    expect(WELCOME_POSTER_CARDS).toHaveLength(WELCOME_GENRE_PRESETS.length);
+
+    const anchors = WELCOME_POSTER_CARDS.map((card) => card.packAnchor).filter((packId) => packId !== null);
+    expect([...anchors].sort()).toEqual([...GENRE_PACK_IDS].sort());
+
+    // The referenced worlds lead, and their reference sits in the eyebrow so the title stays short.
+    expect(WELCOME_POSTER_CARDS[0]).toMatchObject({ reference: "이브 같은", title: "갤러리 호러" });
+    expect(WELCOME_POSTER_CARDS[1]).toMatchObject({ reference: "아오오니 같은", title: "학교 호러" });
+    for (const card of WELCOME_POSTER_CARDS) {
+      expect(card.title.trim().length).toBeGreaterThan(0);
+      expect(card.title).not.toContain("같은");
+    }
+  });
+
+  it("second-tier worlds all carry free-text intent and art", () => {
+    expect(WELCOME_MORE_WORLDS.length).toBe(WELCOME_INSPIRATION_MINIS.length + WELCOME_STARTER_TEMPLATES.length);
+    expect(new Set(WELCOME_MORE_WORLDS.map((world) => world.id)).size).toBe(WELCOME_MORE_WORLDS.length);
+    for (const world of WELCOME_MORE_WORLDS) {
+      expect(world.intent.trim().length).toBeGreaterThan(0);
+      expect(world.thumb).toContain("/assets/generated/welcome/");
+    }
   });
 });

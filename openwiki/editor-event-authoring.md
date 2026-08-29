@@ -64,7 +64,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **AI assistant viewport context:** `EditScene` publishes camera tile viewport via `editorMapViewport.ts`. Each chat turn prepends center coords + visible rect (`mapViewportContext.ts`) and, in-browser, a low-detail viewport map image on the user message. System map summary clips to viewport when present (not always top-left).
 - **Default LLM/auth path:** new settings default to `authMode: "chatgpt"` with factory default provider `google-antigravity` (`gemini-3.7-flash`), alongside `openai-codex` (`gpt-5.6-sol`). OAuth acquisition and token refresh are owned directly by this repository in plain Node (`src/ai/oauth/` and `scripts/lib/aiAuthRuntime.ts`), so Bun is not needed for authentication routes. Completions run through the loopback Bun worker (`scripts/oh-my-pi-worker.ts`), which serves a single `/complete` route receiving an already-resolved `apiKey` with no credentials stored in the worker. Two front-ends share the router (`scripts/lib/ohMyPiHttp.mjs`): **DEV** mounts the handlers same-origin inside the vite dev server via `codexOAuthPlugin` in `vite.config.ts` (`DEFAULT_CHATGPT_BASE_URL` is `/v1` when `import.meta.env.DEV`), so `npm run dev` alone is enough with no second terminal. **PREVIEW / `dist/`** falls back to `127.0.0.1:17832`; `npm start` runs `scripts/start-preview.mjs`, which opens that companion in-process before vite preview, so preview no longer boots with AI silently unreachable (`npm run ai:oauth` still starts it standalone). Never expose OAuth tokens to browser local storage.
 - **AI harness blow-ups (2026-07 lake-clear incident):** (1) `get_map_region` must mark lake autotiles as `~` via `isMapWaterTile` and return `data.water.bounds` ??do not rely on `TILE.WATER` alone. (2) `toolResultForModel` omits `lower`/`upper` matrices; `show_map_region` clamps to 24횞24. (3) Lake/road clear needs `confirmDestroy:true` on clear assets (water is non-grass ?쐀uilt??. (4) Avoid full-map 52횞52 vision scans.
-- Hunting-ground authoring tools live in `src/editor/tools/mapTools.ts`: `set_encounter_table` replaces a map's weighted/conditional encounter table, and `make_hunting_ground` appends a field spawn while optionally setting matching encounter entries. Keep schemas provider-compatible with plain object/array/string/number/boolean types and validate troop ids plus tile rect bounds before writing.
+- Hunting-ground authoring tools live in `src/editor/tools/mapTools.ts`: `set_encounter_table` replaces a map's weighted/conditional encounter table, and `make_hunting_ground` appends a field spawn while optionally setting matching encounter entries. Keep schemas provider-compatible with plain object/array/string/number/boolean types and validate troop ids plus tile rect bounds before writing. **`parseFieldSpawn` must carry every field the caller sends (2026-08-29):** `factionId`, `footprint`, `passRows`, `persistKill`, and `onKillSwitchId` were dropped on the floor, so an authored faction override or kill persistence vanished the moment a spawn went through this tool, and `make_hunting_ground` could not express the per-spawn faction that `make_action_enemy`'s `spawn.factionId` already wrote. All five are now optional `make_hunting_ground` parameters, validated before the write: ids must be non-blank, `footprint.width`/`height` and `passRows` must be at least 1, and `onKillSwitchId` must name an existing `project.switches` row (`switch-not-found`). Omitted keys stay absent, so existing callers serialize byte-identically. Contract: `test/mapToolsFieldSpawn.test.ts`.
 - Farming authoring uses `GameMap.farmableArea` plus crop/item database records. The write tool `create_farm_plot { mapId, area }` only declares farmable tile rects and must not paint soil/fences or mutate tile layers. The write tool `define_crop` upserts `database.crops[]` records and validates seed/harvest item ids. Regenerate `scripts/generated/toolCatalog.json` whenever these schemas change.
 - Event editing flows are split across `src/editor/eventActions.ts`, `src/editor/eventPages.ts`, `src/editor/eventDraftActions.ts`, `src/editor/eventDeletion.ts`, `src/editor/eventCommandFactory.ts`, and `src/editor/eventCommands/`.
 - **이벤트 에디터 Option A 레이아웃 (2026-08-27):** `src/editor/panels/eventEditor/` 셸 레이아웃을 Option A 규격으로 정렬한다. 모달 상단 타이틀바(`event-editor-titlebar`)는 편집 가능한 이름(`event-editor-name`), ID, 좌표, `테스트` 버튼과 함께 헤더 페이지 세그먼트(`[data-testid^=evt-page-segment]`)를 포함한다. 기존 모달 본문의 넓은 페이지 탭 스트립(`.event-page-number-tabs`, `event-page-strip`, `event-page-tab-*`)은 완전히 제거된다. 좌측 설정 레일(`event-editor-settings-column`)은 최대 4개 그룹의 요약 아코디언(`details > summary` 구조: 조건, 그래픽, 트리거/우선순위, 이동 빈도/경로)으로 구성되며 각 그룹의 summary에 현재 설정 요약 텍스트가 노출된다. 명령 목록(`event-editor-commands-column`)은 행 클릭 시 선택 하이라이트가 적용되고 더블클릭 또는 Enter로 편집 대화상자를 열며 행별 '편집' 버튼은 노출하지 않는다. 우측 통합 인스펙터(`event-editor-inspector-column`)는 선택한 명령의 상세 필드와 라이브 프리뷰를 일체형으로 표시한다. 하단 푸터(`event-editor-modal-footer`)는 단일 primary 액션인 `저장하고 닫기`(`event-editor-save`)만 제공한다. 모달 루트 testid는 `event-editor-modal`을 유지한다. 테스트: `test/e2e/event-layout-optiona.spec.ts`, `test/eventEditorHierarchyShell.test.ts`, `test/eventEditorBalancedShell.test.ts`, `test/eventEditorSettingsLayout.test.ts`, `test/eventEditorStoryboardBranches.test.ts`, `test/eventEditorUiDensity.test.ts`, `test/eventEditorModal.test.ts`.
@@ -187,3 +187,120 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   `event-page-item-condition-present`, `event-page-actor-condition-present`(present/absent).
   체크박스 재활성 경로는 기존 `condition.value` 를 보존한다. 계약은 `test/eventPageConditionOffValue.test.ts`.
 - 이동 속도 select 는 런타임 `clampSetting` 과 같은 1~8 범위를 제시해야 한다(이전에는 1~6 이라 7·8 저작 불가).
+
+## 「움직임과 속도」 부피 정리 (2026-08-29)
+
+- **생활 이동은 두 행이다.** 예전에는 233px 레일에 컨트롤 13개(목적지 5 + 맵 연결 8)를
+  `auto-fit minmax(148px, 1fr)` 로 깔았고, 그 폭에서 그리드는 1열이 되므로 실측 13행 세로 스택이었다.
+  지금은 「목적지」 행(맵 select + 「맵에서 찍기」)과 X/Y/방향/반복 4칸 행으로 조인다.
+  실측(1440 뷰포트, 편집면 529px): 같은 맵 목적지 **10행**, 연결이 있는 다른 맵 목적지 **11행**.
+- **맵 연결은 조건부다.** 목적지가 같은 맵이면 `renderMapLinkBlock` 이 빈 블록을 낸다
+  (`.event-page-map-link-block:empty { display: none }`) — 같은 맵에서 맵 연결은 뜻이 없다.
+  다른 맵인데 연결이 없으면 한 줄로 「‘X’로 나가는 연결이 없습니다」(`--danger`) 만 알리고 폼을 펼친다.
+  연결이 이미 있으면 폼을 접고 `event-page-map-link-toggle`(연결 편집/연결 접기) 로만 연다.
+  **연결이 없을 때 토글을 같이 내지 말 것** — 할 일이 「연결 추가」 하나인데 버튼 두 개는 어느 쪽이
+  본 행동인지 흐린다. 펼침 상태는 `openEventMapLink`(`eventEditorOpenState.ts`) 가 들고 있다.
+  패널은 `<details>` 가 아니라 `hidden` 이다 — 레일 그룹이 `<details>` 를 `<div>` 로 갈아치우므로.
+- **좌표는 찍는다.** `mapPointDialog.ts` 의 `openMapPointDialog()` 가 「장소 이동」 과 같은
+  `drawTransferMapPreview` 미리보기를 띄우고 클릭한 칸을 돌려준다(testid 접두사 방식:
+  `<prefix>-dialog|-canvas|-status|-map|-ok|-cancel`). 「맵에서 찍기」 는 숨은 필드가 아니라
+  **보이는 select/X/Y 를 갱신**한다 — 검증기 앵커(`event-page-living-target-map`/`-x`)와 손입력
+  e2e 경로가 둘 다 살아야 한다.
+- **선택 칸 표시는 십자선이다.** 캔버스는 맵 해상도로 그린 뒤 CSS 로 축소되므로, 100×100 맵을 상자에
+  맞추면 배율이 0.4 밑으로 내려가 타일 한 칸 테두리(2px)가 1px 미만이 되어 사실상 보이지 않았다.
+  `drawMarker()` 는 맵 전체를 가로지르는 십자 안내선(어두운 밑선 + 흰 선) 뒤에 반투명 채움과 2겹
+  테두리를 **마지막에** 올린다. 「장소 이동」 미리보기도 같은 함수를 쓴다.
+- **사용자 지정 경로는 궤적으로 읽는다.** `previewMoveRoute.ts` 의 `tracePath`/`renderTrajectory`/
+  `renderTape`/`svgSupported` 를 내보내 레일에서 재사용한다 — 궤적 썸네일(`event-page-route-thumb`,
+  누르면 경로 편집) + 화살표 칩 테이프 + 전체 라벨 한 줄이 가로로 나란히 선다.
+  전체 라벨(`event-page-movement-route-summary`) 의 한국어 텍스트는 그대로 둘 것 —
+  `test/e2e/oprn-event-pages.spec.ts` 가 "오른쪽 이동" 을 이 요소에서 찾는다.
+- **`.event-page-movement-label` 은 `.event-editor` 를 앞에 붙여야 산다.** `core.part-2.css` 의
+  `.event-editor label { display: block }` 은 특이도 (0,1,1) 이라 (0,1,0) 짜리 `display: grid` 를
+  이기고 있었고, 그래서 이동 그룹의 모든 라벨 행이 세로로 쌓여 높이를 두 배로 먹었다.
+- **시각 QA:** `node scripts/qa-event-movement-ux.mjs --label <tag>` 가 정지 → 사용자 지정 →
+  생활 이동(같은 맵) → 맵 찍기 → 다른 맵 → 연결 생성 8단계를 실제 브라우저에서 캡처하고
+  섹션 높이·행 수·`overflowX` 를 잰다. 증거는 `.omo/evidence/event-movement-ux/<tag>/`.
+  기준선(main)에서도 돌아가야 하므로 새 testid 는 optional 로만 본다.
+
+## 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+
+같은 16종 `Condition` 유니온(`src/project/types/events.ts:32-55`, 정본 목록
+`src/project/commandKindRegistry.ts:103-120`)을 **세 곳**이 각자 평가한다:
+
+| 평가기 | 위치 | 쓰는 곳 |
+|---|---|---|
+| `evalPageCondition` | `src/project/io/pageResolution.ts:31` | 이벤트 페이지 출현 판정 |
+| `evalCondition` | `src/project/session.ts:735` | 맵 조건 분기(`interpreter/commandCatalog.ts` fork) |
+| `evaluateCondition` | `src/battle/battleEvents.ts` (내부 함수) | 전투 분기 + 트룹 페이지 |
+
+**활동 조건은 프로젝트의 실제 일정에서 후보를 받는다 (2026-08-29).** `activity` 는 자유 문자열이고
+매칭은 완전 일치다. 저작자가 유효한 값을 추측해야 했던 문제를 `collectNpcActivitySuggestions`
+(`panels/eventEditor/options.ts`) 로 없앴다 — 모든 맵 이벤트의 `schedule[].activity` 를 모아
+`<datalist>` 로 건다. 페이지 간단 행은 `event-page-npc-activity-condition-options`, 분기 폼과 고급
+목록은 `${activityTestId}-options` 를 쓴다(고급 목록은 행마다 id 가 달라야 하므로 testId 에서 파생).
+**기본값 `work` 는 그대로 둔다** — `editor/tools/eventTools.ts` 의 `dailyRoutine` 이 생성하는 일정이
+`activity: "home" | "work"` 를 쓰고 `defaultActivityLine` 이 그 키를 한국어 대사로 번역한다. 즉 `work`
+는 이 레포가 인정하는 어휘이지 자리표시자가 아니다. 저작된 기본 콘텐츠는 한국어(`저녁 장터`, `귀가`)를
+쓰므로 두 어휘가 공존한다 — 그래서 "영어 기본값" 을 결함으로 보고 빈 값으로 바꾸면 도구가 만든 NPC 를
+가리키는 가장 흔한 경우가 깨진다.
+
+**셋이 갈라져 있었다(실측).** `npcActivity` 는 전투에서 하드코딩 `false` 였고,
+`friendshipAtLeast` 는 빈 `npcKey` 를 소유 이벤트 `characterId` 로 해석하지 않아 항상 거짓이었다.
+둘 다 `src/editor/tools/troopBattlePageTools.ts` 가 모든 `CONDITION_KINDS` 를 받으므로
+**저작은 되는데 절대 참이 될 수 없는** 상태였다. 지금은 전투도 소유 이벤트의 활동을 보고,
+`resolveSocialKey` 를 **재사용**한다(두 번째 해석 규칙을 만들지 않는다).
+
+**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 16종 × (만족/불만족) 을 세 평가기에
+동일 입력으로 먹여 판정 일치를 단언하고, `Object.keys(CASES)` 를 `CONDITION_KINDS` 와 순서까지
+비교하므로 **종류를 빠뜨리면 실패한다**. 허용 예외 목록(`ALLOWLISTED_DIVERGENCES`)은 현재 **비어 있다** —
+지우거나 채우기 전에 왜 갈라져야 하는지 근거를 남겨라.
+
+### 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+
+세 평가기 모두 `(timers[timerId] ?? 0) <= condition.seconds` 다. 따라서 **타이머가 한 번도 켜지지
+않았어도** `seconds >= 0` 조건은 참이다(`0초 이하` 도 참). 이것은 이 엔진의 **의도된 계약**이며
+`test/pageConditionsGuarantee.test.ts`, `test/commandContracts/fork.contract.test.ts`,
+`test/selfSwitch.test.ts` 가 고정하고 있다 — 거짓으로 만드는 유일한 방법은 **음수** 임계값이다.
+
+RM2K3/EasyRPG 와는 다르다(그쪽은 타이머가 **작동 중**이어야 한다). `PlaySession.timers` 에 running
+비트가 없고 `timer stop` 이 값을 지우지 않으므로, RM 정합은 스키마 변경이다. **"고치지" 말고**
+저작 시점 경고(`condition.timer.always-true`)로 보이게 두라.
+
+### 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+
+`pageAdvancedConditions.ts` 의 오버플로 행(3번째 스위치, 2번째 아이템/주인공)은 한때
+`showValue: false` + `forceTrueOnSwitchChange: true` 로 극성을 **강제**했다. 그래서 그 행은
+꺼짐/보유 안 함/파티에 없음을 저작할 수 없었고, 대상 id 를 바꾸면 저장된 `false` 가 조용히 `true` 로
+뒤집혔다. 이것은 `ab8f9714` 가 단순 행에서 이미 고친 **P0 결함 D08 이 다른 목록에 남아 있던** 것이다.
+계약: `test/eventPageConditionOffValue.test.ts` (오버플로 조건까지 왕복 단언).
+
+### 참조를 비워도 조건을 삭제하지 않는다
+
+대상 id 가 비면 조건을 지우는 대신 **인라인 오류**를 띄운다(분기 폼과 같은 규약).
+DB 에서 지워진 유령 참조는 `<id> (없음)` 라벨로 **계속 보인다** — 안 보이게 하면 저작자가 설정한
+극성이 조용히 유실된다. 회귀: `test/pageItemCondition.test.ts`(유령 itemId 표시),
+`test/pageConditionAuthoringIntegrity.test.ts`(빈 참조 보존 + 비활성 행 조작 시 자동 활성화).
+
+### 조건 미리보기는 모르면 모른다고 말한다
+
+`conditionEvalPreview` 의 판정값은 `boolean | undefined` **3상태**다. 편집기 상태로 판정할 수 없는
+조건은 「판정 불가」(`event-condition-eval-undetermined`)를 띄우고, `all`/`any`/`not` 은 3값 논리로
+전파한다. 리프는 **값이 아니라 존재**로 게이트한다 — `timer` 는 `Object.hasOwn(timers, timerId)` 일
+때만 판정한다. 종전에는 빈 세션으로 평가해서 16종 중 **7종**(timer/timePhase/season/npcActivity/
+friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모든 타이머 조건이 「충족」으로
+보였다. 계약: `test/conditionEvalPreview.test.ts`.
+
+### 조건 문구에 내부 토큰을 넣지 마라
+
+`ON`/`OFF`, `AND()`/`OR()`/`NOT`, 생 비교 연산자, `timer1`/`timer2`, `run`,
+`completed`/`failed`/`abandoned` 는 사용자에게 보이면 안 된다. 통일 어휘는 켜짐/꺼짐,
+보유 중/보유 안 함, 파티에 있음/파티에 없음, 타이머 1/타이머 2,
+모두 맞을 때/하나라도 맞을 때/아닐 때, 완료/실패/포기 다. 문장·배지·탭 요약·명령 요약이 전부
+대상이며(`pageConditionSentence.ts`, `pageProps.ts`, `commandSummary.ts`) 게이트는
+`test/conditionCopyTokens.test.ts` 다.
+
+**조건 행을 접거나 숨기지 마라.** 접기 안은 D09(battleResult·all·any·not 이 화면에서 통째로
+사라진 P1 결함)로 되돌아가는 일이라며 명시적으로 거부됐다
+(`docs/proposals/2026-08-28-event-editor-ui-improvement.html`). `all`/`any`/`not` 은 페이지 표면에서
+읽기 전용 요약 + 삭제로 유지되며, 중첩 저작은 분기(fork) 폼이 담당한다.

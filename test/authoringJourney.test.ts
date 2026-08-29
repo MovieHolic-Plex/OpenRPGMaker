@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { collectProjectReferenceIssues } from "@/project/io/references";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({ runAuthoringTask: vi.fn() }));
@@ -8,7 +9,6 @@ vi.mock("@/editor/authoringTasks", () => ({ runAuthoringTask: mocks.runAuthoring
 const {
   authoringProjectFingerprint,
   emptyAuthoringJourneyProgress,
-  evaluateAuthoringTestGate,
   evaluateAuthoringJourney,
   loadAuthoringJourneyProgress,
   recordAuthoringJourneyChange,
@@ -69,7 +69,6 @@ describe("genre-neutral authoring journey", () => {
       emptyAuthoringJourneyProgress(),
       "fingerprint-before",
       "fingerprint-before",
-      [],
     );
 
     const changed = recordAuthoringJourneyChange(tested, change);
@@ -84,7 +83,6 @@ describe("genre-neutral authoring journey", () => {
       emptyAuthoringJourneyProgress(),
       "different-revision",
       "different-revision",
-      [],
     );
 
     const testStage = evaluateAuthoringJourney(project, progress)
@@ -95,22 +93,28 @@ describe("genre-neutral authoring journey", () => {
   });
 
   // Break caught: a late player-ready signal promotes Test while references are broken.
-  it("rejects a success signal when its revision is stale or references are broken", () => {
+  it("rejects a success signal when its revision is stale", () => {
     const empty = emptyAuthoringJourneyProgress();
-    expect(recordSuccessfulTestBoot(empty, "old", "current", []).testedProjectFingerprint).toBeNull();
-    expect(recordSuccessfulTestBoot(empty, "current", "current", ["broken ref"]).testedProjectFingerprint).toBeNull();
+    expect(recordSuccessfulTestBoot(empty, "old", "current").testedProjectFingerprint).toBeNull();
+    // 끊긴 참조는 더 이상 증거를 버리는 사유가 아니다 — 그 버전으로 플레이어가 떴다는 사실은 남는다.
+    expect(recordSuccessfulTestBoot(empty, "current", "current").testedProjectFingerprint).toBe("current");
   });
 
-  // Break caught: Test launch surfaces disagree about whether dangling references block play.
-  it("returns the exact reference issue list from the shared Test gate", () => {
+  // 참조 문제는 «신호» 이지 «차단» 이 아니다 — 끊긴 참조가 있어도 여정은 테스트 단계로 넘어간다.
+  it("keeps the reference issue list as a signal without blocking the Test stage", () => {
     const project = createBlankProject();
     project.system.startActorIds = ["missing-actor"];
+    const issues = collectProjectReferenceIssues(project);
 
-    const gate = evaluateAuthoringTestGate(project);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues.some((issue: string) => issue.includes("missing-actor"))).toBe(true);
 
-    expect(gate.allowed).toBe(false);
-    expect(gate.referenceIssues.length).toBeGreaterThan(0);
-    expect(gate.referenceIssues.some((issue: string) => issue.includes("missing-actor"))).toBe(true);
+    // 부팅 지문이 찍히면 참조 문제가 남아 있어도 테스트 단계는 완료로 본다.
+    const fingerprint = authoringProjectFingerprint(project);
+    const progress = recordSuccessfulTestBoot(emptyAuthoringJourneyProgress(), fingerprint, fingerprint);
+    const stages = evaluateAuthoringJourney(project, progress, issues);
+    const test = stages.find((stage) => stage.id === "test");
+    expect(test?.completion).toBe("test-boot");
   });
 
   it("stays collapsed to a toggle until opened", () => {
@@ -145,15 +149,16 @@ describe("genre-neutral authoring journey", () => {
     }
   });
 
-  it("blocks Test launch while project references are broken", () => {
+  it("keeps Test launch pressable while showing broken references", () => {
     const restore = installFakeDom();
     try {
       const project = createBlankProject();
       project.system.startActorIds = ["missing-actor"];
       const root = renderAuthoringJourney(project, emptyAuthoringJourneyProgress());
       const testButton = findByTestId(root as unknown as FakeElement, "authoring-journey-task-test");
-      expect(testButton?.disabled).toBe(true);
-      expect(testButton?.getAttribute("aria-disabled")).toBe("true");
+      // 예전에는 여기서 버튼을 잠갔다 — 참조가 끊겨도 돌려보는 것 자체는 막지 않는다.
+      expect(testButton?.disabled).toBeFalsy();
+      expect(testButton?.getAttribute("aria-disabled")).toBeNull();
       expect(findByTestId(root as unknown as FakeElement, "authoring-journey-reference-issue-0")).toBeTruthy();
       findByTestId(root as unknown as FakeElement, "authoring-journey-repair-references")?.click();
       expect(mocks.runAuthoringTask).toHaveBeenCalledWith("data");

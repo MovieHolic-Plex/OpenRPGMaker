@@ -76,7 +76,8 @@ it("defaults to the storyboard and does not offer a fake graph tab", () => {
   expect(host.querySelector('[data-testid="event-view-toggle-graph"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-graph-placeholder"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-view-toggle-list"]')?.textContent).toBe("목록");
-  expect(host.querySelector('[data-testid="event-view-toggle-storyboard"]')?.textContent).toBe("스토리보드");
+  // a87ab4fc 가 크롬을 접으면서 라벨을 «스토리» 로 줄였다(목록·스토리·미리보기 3뷰).
+  expect(host.querySelector('[data-testid="event-view-toggle-storyboard"]')?.textContent).toBe("스토리");
 });
 
 it("opens the command picker from a storyboard add card without switching views", () => {
@@ -91,7 +92,7 @@ it("opens the command picker from a storyboard add card without switching views"
 
 it("keeps page add on the tab strip and leaves overflow for copy/delete only", () => {
   render(host);
-  expect(host.querySelector('[data-testid="event-page-tab-add"]')).toBeTruthy();
+  expect(host.querySelector('[data-testid="evt-page-add"]')).toBeTruthy();
   expect(host.querySelector('[data-testid="event-page-add"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-page-copy"]')?.textContent).toContain("페이지 복사");
   expect(host.querySelector('[data-testid="event-page-delete"]')).toBeNull();
@@ -155,7 +156,11 @@ it("does not advertise movement speed on a stationary event", () => {
     }));
 
     host.querySelector<HTMLButtonElement>("[data-testid='event-view-toggle-storyboard']")?.click();
-    host.querySelector<HTMLButtonElement>("[data-testid='event-storyboard-card-0']")?.click();
+    const card = host.querySelector<HTMLElement>("[data-testid='event-storyboard-card-0']");
+    // 스토리 카드는 목록 행과 같은 계약이다: 한 번 = 선택(편집 창 없음), 두 번 = 편집 창.
+    card?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+    expect(document.querySelector('[data-testid="event-command-edit-dialog"]')).toBeNull();
+    card?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, cancelable: true }));
 
     const dialog = document.querySelector('[data-testid="event-command-edit-dialog"] [role="dialog"]');
     expect(dialog?.getAttribute("aria-label")).toBe("선택지 표시");

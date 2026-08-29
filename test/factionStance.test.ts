@@ -53,6 +53,16 @@ describe("faction stance table", () => {
     expect(factionStance(asymmetric, "guard", "bandit")).toBe(-1);
   });
 
+  it("keeps the more hostile stance when the same pair is authored twice in either order", () => {
+    const hostile = { a: "guard", b: "bandit", stance: -2 } as const;
+    const allied = { a: "bandit", b: "guard", stance: 2 } as const;
+    const rowOrders = [[hostile, allied], [allied, hostile]];
+
+    expect(rowOrders.map((relations) => (
+      factionStance(resolveFactionTable({ defs: TWO_SIDES.defs, relations }), "guard", "bandit")
+    ))).toEqual([-2, -2]);
+  });
+
   it("falls back to the reserved enemy faction for unknown ids", () => {
     const table = resolveFactionTable(TWO_SIDES);
     expect(factionStance(table, PLAYER_FACTION_ID, "typo_faction")).toBe(-1);

@@ -27,13 +27,68 @@ export function restoreExistingTargetStart(
   afterMap.upperTiles[index] = beforeMap.upperTiles[index] ?? TILE.EMPTY;
 }
 
-export function assertVillageMutationScope(state: VillageFacadeState): void {
+/**
+ * 마을 저작이 선언한 범위를 넘어섰는지 검사한다. 위반이면 throw, 허용되지만 알려야 하는
+ * 광범위 변경은 경고 문자열로 돌려준다(호출자가 툴 결과 warnings 에 실어 보낸다).
+ */
+export function assertVillageMutationScope(state: VillageFacadeState): readonly string[] {
   const allowedAdded = allowedAddedMapIds(state);
   assertMapSetAndContents(state, allowedAdded);
   assertMapTree(state, allowedAdded);
   assertStart(state);
   assertProjectCore(state);
   assertTilesets(state);
+  return unboundedExistingTargetWarnings(state);
+}
+
+/**
+ * `target:{kind:"existing"}` + `bounds` 생략 = **타깃 맵 전면 재포장**이 스코프 검사를 통과한다
+ * (2026-08-29 modify 진단 근본원인 10). `assertTilesWithinBounds` 는 bounds 가 있을 때만 돌고,
+ * `assertMapSetAndContents` 는 타깃 맵 *이외* 만 보호한다.
+ *
+ * bounds 를 required 로 올리면 기존 호출(정당한 전체 재시공 포함)이 전부 깨지므로, 대신 실제로
+ * 바뀐 셀의 bbox 를 계산해 무엇을 얼마나 덮었는지 실수치로 알린다 — 모델이 다음 턴에 bounds 를
+ * 붙일 유인이 되고, 사용자는 결과 카드에서 범위를 본다.
+ */
+function unboundedExistingTargetWarnings(state: VillageFacadeState): readonly string[] {
+  const { baseline, draft, request } = state;
+  if (request.target.kind !== "existing" || request.target.bounds) return [];
+  const before = baseline.maps[request.target.mapId];
+  const after = draft.maps[request.target.mapId];
+  if (!before || !after) return [];
+  const box = changedTileBounds(before, after);
+  if (!box) return [];
+  const coverage = Math.round((box.changed / (after.width * after.height)) * 100);
+  return [
+    `bounds 를 생략해 기존 맵 ${after.id} 전체가 시공 범위였습니다 — 실제 변경 `
+      + `${box.changed}칸(맵의 ${coverage}%), bbox (${box.x},${box.y}) ${box.w}×${box.h}. `
+      + `일부만 손보려면 target.bounds 에 그 영역을 지정하세요.`,
+  ];
+}
+
+function changedTileBounds(
+  before: GameMap,
+  after: GameMap,
+): { x: number; y: number; w: number; h: number; changed: number } | null {
+  let minX = Number.POSITIVE_INFINITY;
+  let minY = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  let maxY = Number.NEGATIVE_INFINITY;
+  let changed = 0;
+  for (let index = 0; index < after.lowerTiles.length; index += 1) {
+    if (before.lowerTiles[index] === after.lowerTiles[index] && before.upperTiles[index] === after.upperTiles[index]) {
+      continue;
+    }
+    const x = index % after.width;
+    const y = Math.floor(index / after.width);
+    changed += 1;
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  }
+  if (changed === 0) return null;
+  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1, changed };
 }
 
 function allowedAddedMapIds(state: VillageFacadeState): ReadonlySet<string> {

@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+  액터별 뒷모습 배틀러 시각 QA 하네스.
+
+  전투 화면은 phaser 캔버스가 아니라 **순수 DOM + CSS** 다(맵만 캔버스다). 그래서 맵을 걷고
+  이벤트를 물어 전투에 들어가는 경로를 태울 필요가 없다 — `mountBattleScene()` 을 직접 부른다.
+
+  왜 이렇게 바꿨나: 맵 이벤트 트리거 경로가 이 환경(headless + vite dev 변환)에서 심하게
+  플레이키했다(실측: `__oprnInput.action()` 반복 7회 중 3회 성공, 실제 z 키 반복은 8회 중 1회).
+  전투 화면 자체를 보는 게 목적이므로 맵 주행은 없앤다 — 결정적이고 빠르다.
+
+  실제 제품 코드(`mountBattleScene`, `battleField`, 런타임, 스킨 CSS)를 그대로 쓴다.
+  단위 테스트와 다른 점은 **진짜 브라우저에서 진짜 CSS 로 레이아웃된다**는 것이다.
+-->
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>QA — 뒷모습 배틀러</title>
+    <style>
+      html, body { margin: 0; padding: 0; background: #101014; }
+      /* 플레이어의 무대 비율(4:3)을 흉내낸다 — bindBattleStageScale 이 host 크기를 본다. */
+      #battle-host { width: 960px; height: 720px; position: relative; overflow: hidden; margin: 0 auto; }
+    </style>
+  </head>
+  <body>
+    <div id="battle-host" data-testid="qa-battle-host"></div>
+    <script type="module" src="/src/qa/backBattlerHarness.ts"></script>
+  </body>
+</html>

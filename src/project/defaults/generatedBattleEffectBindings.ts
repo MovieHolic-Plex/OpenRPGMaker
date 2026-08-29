@@ -30,6 +30,10 @@ export const GENERATED_BATTLE_EFFECT_SKILL_BINDINGS: Readonly<Record<string, str
   skill_item_guard: animation("guard-barrier"),
   skill_item_holy_water: animation("holy-beam"),
   skill_item_thunder_stone: animation("thunder-strike"),
+  skill_item_frost_vial: animation("ice-shatter"),
+  skill_item_quake_stone: animation("earth-spike"),
+  skill_item_gale_fan: animation("wind-slice"),
+  skill_item_shadow_dust: animation("shadow-pulse"),
 };
 
 /** Items override their linked skill animation at runtime, so they need their own bindings too. */
@@ -101,6 +105,27 @@ export const GENERATED_BATTLE_EFFECT_ITEM_BINDINGS: Readonly<Record<string, stri
   item_gen_holy_water: animation("holy-beam"),
   item_gen_net_trap: animation("capture-seal"),
   item_gen_capture_sphere: animation("capture-seal"),
+  item_gen2_war_draught: animation("power-aura"),
+  item_gen2_stone_salve: animation("guard-barrier"),
+  item_gen2_swift_incense: animation("wind-slice"),
+  item_gen2_life_dew: animation("heal-bloom"),
+  item_gen2_nerve_tonic: animation("cleanse-sparkle"),
+  item_gen2_purifying_serum: animation("cleanse-sparkle"),
+  item_gen2_voice_lozenge: animation("cleanse-sparkle"),
+  item_gen2_courage_tea: animation("cleanse-sparkle"),
+  item_gen2_party_potion: animation("heal-bloom"),
+  item_gen2_party_ether: animation("psychic-wave"),
+  item_gen2_party_elixir: animation("revive-rise"),
+  item_gen2_party_cleanse: animation("cleanse-sparkle"),
+  item_gen2_frost_vial: animation("ice-shatter"),
+  item_gen2_quake_stone: animation("earth-spike"),
+  item_gen2_gale_fan: animation("wind-slice"),
+  item_gen2_shadow_dust: animation("shadow-pulse"),
+  item_gen2_venom_ampoule: animation("poison-mist"),
+  item_gen2_paralysis_coil: animation("paralysis-bind"),
+  item_gen2_twin_dose_kit: animation("heal-bloom"),
+  item_gen2_triple_aegis: animation("guard-barrier"),
+  item_gen2_five_spark_core: animation("fire-burst"),
 };
 
 /** Class animation is the normal-attack visual while a weapon is equipped. */

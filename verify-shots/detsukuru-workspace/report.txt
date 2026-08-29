@@ -1,0 +1,38 @@
+OK   3단 모드 토글(editor-ui-mode-toggle) 제거됨
+OK   작업 프리셋 세그먼트 1개
+OK   프리셋 버튼 보임: map
+OK   프리셋 버튼 보임: event
+OK   프리셋 버튼 보임: data
+프리셋 라벨: ["맵 그리기","이벤트 연출","자료 밸런싱"]
+OK   ⌘K 칩이 탑바에 있다
+OK   칩 클릭으로 커맨드 팔레트 열림
+OK   팔레트에서 "프리셋" 검색 → 프리셋 명령 3건 (3 이상)
+OK   Esc 로 팔레트 닫힘
+맵 그리기 도크: [{"panel":"tiles","zone":"left","testid":"left-palette-root","height":595},{"panel":"maps","zone":"left","testid":"left-map-root","height":300}]
+OK   좌측 도크에 패널 2개(타일·맵)
+OK   순서가 타일 → 맵
+OK   패널 사이 리사이저 1개
+OK   팔레트 높이 368px ≥ 260px (도크 리팩터가 세로를 먹지 않았다)
+이벤트 연출 도크: [{"panel":"maps","zone":"left","testid":"left-map-root","height":595}]
+OK   좌측 도크에 맵 패널만
+OK   타일 팔레트가 화면에서 사라짐
+OK   패널이 하나면 리사이저 없음
+OK   선택된 프리셋이 aria-pressed 로 표시됨
+자료 밸런싱 도크: [] · 캔버스 폭 1131 → 1437
+OK   좌측 도크가 빈다
+OK   캔버스가 실제로 넓어진다(빈 열이 남지 않았다)
+OK   자료 밸런싱 → 촘촘 밀도 (body: ai-chat-dock-glass ai-command-bar-active editor-ui-expert)
+OK   맵 그리기 → 보통 밀도 (body: ai-chat-dock-glass ai-command-bar-active editor-ui-standard)
+OK   패널 메뉴가 실제로 보인다(.open 없이 display:none 으로 죽지 않았다)
+타일 → 오른쪽 이동 후: [{"panel":"maps","zone":"left","testid":"left-map-root","height":595}]
+OK   타일 패널이 좌측 도크에서 빠졌다
+저장된 레이아웃: {"presetId":"map","docks":{"left":["maps"],"right":["tiles","assistant"],"bottom":[]}}
+OK   이동이 oprn:workspace:v1 에 저장됐다
+OK   저장값에 density 가 없다(원천은 editor-ui-mode 하나)
+새로고침 후 도크: [{"panel":"maps","zone":"left","testid":"left-map-root","height":595}]
+OK   새로고침 후에도 타일 패널이 좌측에 없다
+복구 후 도크: [{"panel":"tiles","zone":"left","testid":"left-palette-root","height":595},{"panel":"maps","zone":"left","testid":"left-map-root","height":300}]
+OK   타일 패널을 좌측으로 되돌릴 수 있다
+OK   팔레트가 다시 렌더된다(빈 껍데기가 아니다)
+OK   복구된 팔레트 높이 368px ≥ 260px
+콘솔 에러: 0건

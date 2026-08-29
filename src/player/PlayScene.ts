@@ -6,6 +6,7 @@ import {
 } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
 import { store } from "@/project/store";
+import { resolvePlayerBody } from "@/project/playerFootprint";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { startSession, type PlaySession } from "@/project/session";
 import { Input } from "@/player/input";
@@ -34,6 +35,7 @@ import {
   activeRuntimeEvents as activeSceneEvents,
   syncRuntimeState as syncSceneRuntimeState,
   refreshRuntimeSurfaces as refreshSceneRuntimeSurfaces,
+  refreshRuntimeEntities as refreshSceneRuntimeEntities,
   fireAutoTriggers as fireSceneAutoTriggers,
 } from "@/player/playSceneMapRuntime";
 import {
@@ -43,7 +45,7 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
-import { characterSpriteX, characterSpriteY, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
+import { characterSpriteY, footprintSpriteX, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
 import {
   registerAutonomousMover as registerSceneAutonomousMover,
@@ -71,7 +73,8 @@ import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { initializeActionCombatForScene, updateActionCombatForScene } from "@/player/playSceneActionCombat";
 import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, isGameTimePausedForRuntime, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
-import { updateNpcSchedules } from "@/player/npcSchedules";
+import { tickNpcSchedules, updateNpcSchedules } from "@/player/npcSchedules";
+import { syncTileCulling } from "@/player/playSceneTileCulling";
 import {
   createPlaySceneZoneFeedback,
   destroyPlaySceneZoneFeedback,
@@ -124,6 +127,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   walkTimer = 0;
   lastActionTargetKey = "";
   playerRoute: PlayerRouteState | null = null;
+  playerHop: import("@/player/playSceneTypes").PlayerHopState | null = null;
+  characterShadows: Map<string, import("@/player/characterShadow").ShadowImage> = new Map();
   autonomousNPCs: Map<string, AutonomousMover> = new Map();
   runtimeTimers: Map<string, RuntimeTimer> = new Map();
   fieldSpawnState: FieldSpawnRuntimeState | null = null;
@@ -203,7 +208,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player = this.add.sprite(
-      characterSpriteX(this.tileX),
+      // 주인공도 **몸 중앙**에 놓는다 — 1x1 이면 타일 중앙과 같은 값이다(항등).
+      footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint),
       characterSpriteY(this.tileY),
       this.playerSprite.texture,
       this.playerSprite.idleFrameFor("down")
@@ -291,10 +297,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   update(_time: number, deltaMs: number): void {
     updatePlayScene(this, deltaMs);
     updateGameTime(this, deltaMs);
-    updateNpcSchedules(this, isGameTimePausedForRuntime(this));
+    tickNpcSchedules(this, isGameTimePausedForRuntime(this), deltaMs);
     updateWeather(this, deltaMs);
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
+    syncTileCulling(this, this.cameras.main.worldView);
     // 이벤트 마커는 화면 좌표로 놓여야 한다 — 카메라를 반영하지 않으면 무대의 스크롤 영역이
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
@@ -358,6 +365,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncWeatherLayer(this);
     installTimeTintLayer(this);
     syncLightingLayer(this);
+  }
+
+  refreshRuntimeEntities(): void {
+    refreshSceneRuntimeEntities(this);
+    syncFollowerSprites(this);
   }
 
   centerCamera(): void {
@@ -474,7 +486,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.tileY = this.session.y;
     this.player.setTexture(this.playerSprite.texture);
     this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
-    this.player.setPosition(characterSpriteX(this.tileX), characterSpriteY(this.tileY));
+    this.player.setPosition(
+      footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint),
+      characterSpriteY(this.tileY)
+    );
     placeCharacterSprite(this.player, "same");
     for (const animation of this.activeMapAnimations) animation.destroy(true);
     this.activeMapAnimations.clear();

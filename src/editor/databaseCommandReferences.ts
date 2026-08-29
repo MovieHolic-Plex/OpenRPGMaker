@@ -222,6 +222,13 @@ function conditionReferencesDatabase(condition: Condition | BattleEventCondition
       return collection === "enemies" && condition.enemyId === id;
     case "enemyHpBelow":
       return collection === "enemies" && condition.enemyId === id;
+    // fix(db): all/any/not 안에 숨은 참조도 봐야 한다. 여기서 멈추면 AND 그룹 안에서만
+    // 쓰이는 레코드가 경고 없이 삭제되고, 남은 조건이 사라진 id를 읽어 조용히 죽는다.
+    case "all":
+    case "any":
+      return condition.conditions.some((child) => conditionReferencesDatabase(child, collection, id));
+    case "not":
+      return conditionReferencesDatabase(condition.condition, collection, id);
     default:
       return false;
   }
@@ -311,6 +318,13 @@ function conditionReferencesSwitchVariable(condition: Condition | BattleEventCon
       return kind === "switch" && condition.switchId === id;
     case "variable":
       return kind === "variable" && condition.variableId === id;
+    // fix(db): 복합 조건으로 내려가지 않으면 그 안에서만 쓰이는 스위치/변수가 참조 없음으로
+    // 판정되어 deleteSwitch/deleteVariable이 경고 없이 지워버린다.
+    case "all":
+    case "any":
+      return condition.conditions.some((child) => conditionReferencesSwitchVariable(child, kind, id));
+    case "not":
+      return conditionReferencesSwitchVariable(condition.condition, kind, id);
     default:
       return false;
   }

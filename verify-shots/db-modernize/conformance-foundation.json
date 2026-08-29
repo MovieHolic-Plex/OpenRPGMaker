@@ -1,0 +1,869 @@
+{
+  "overview": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 195,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": true,
+    "deadSpace": 0.641,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [
+      {
+        "node": "button.db-overview-ai[db-overview-ai]",
+        "text": "AI 어시스턴트에게 물어보기",
+        "w": 1349
+      }
+    ],
+    "fullBleedCount": 1,
+    "nodeCount": 73,
+    "violations": [
+      "fullBleed:1",
+      "deadSpace:64%"
+    ]
+  },
+  "actors": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 6,
+    "emptyState": false,
+    "deadSpace": 0.524,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 743,
+    "violations": [
+      "deadSpace:52%"
+    ]
+  },
+  "classes": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 6,
+    "emptyState": false,
+    "deadSpace": 0.485,
+    "clipped": [
+      {
+        "node": "div.db-record-workspace.oprn-record-workspace",
+        "overY": 122,
+        "overX": 0
+      }
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 3081,
+    "violations": [
+      "clipped:1",
+      "deadSpace:49%"
+    ]
+  },
+  "skills": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 21,
+    "emptyState": false,
+    "deadSpace": 0.209,
+    "clipped": [
+      {
+        "node": "span",
+        "overY": 0,
+        "overX": 32
+      }
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 486,
+    "violations": [
+      "clipped:1"
+    ]
+  },
+  "items": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 29,
+    "emptyState": false,
+    "deadSpace": 0.354,
+    "clipped": [
+      {
+        "node": "span",
+        "overY": 0,
+        "overX": 11
+      },
+      {
+        "node": "span",
+        "overY": 0,
+        "overX": 68
+      }
+    ],
+    "clippedCount": 2,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 476,
+    "violations": [
+      "clipped:2"
+    ]
+  },
+  "equipment": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 11,
+    "emptyState": false,
+    "deadSpace": 0.395,
+    "clipped": [
+      {
+        "node": "span",
+        "overY": 0,
+        "overX": 20
+      },
+      {
+        "node": "span",
+        "overY": 0,
+        "overX": 10
+      },
+      {
+        "node": "span",
+        "overY": 0,
+        "overX": 10
+      }
+    ],
+    "clippedCount": 3,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 557,
+    "violations": [
+      "clipped:3"
+    ]
+  },
+  "enemies": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 29,
+    "emptyState": false,
+    "deadSpace": 0.391,
+    "clipped": [
+      {
+        "node": "section.db-detail-form.oprn-detail-form[db-detail-form]",
+        "overY": 973,
+        "overX": 0
+      }
+    ],
+    "clippedCount": 1,
+    "overlaps": [
+      {
+        "a": "strong",
+        "b": "span",
+        "ox": 72,
+        "oy": 17
+      },
+      {
+        "a": "strong",
+        "b": "span",
+        "ox": 72,
+        "oy": 17
+      },
+      {
+        "a": "strong",
+        "b": "span",
+        "ox": 72,
+        "oy": 17
+      }
+    ],
+    "overlapCount": 3,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 723,
+    "violations": [
+      "clipped:1",
+      "overlap:3"
+    ]
+  },
+  "monster-species": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": false,
+    "rowCount": 9,
+    "emptyState": false,
+    "deadSpace": 0.32,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [
+      {
+        "node": "button.btn.small[db-monster-species-skill-add]",
+        "text": "스킬 추가",
+        "w": 998
+      },
+      {
+        "node": "button.btn.small[db-monster-species-evo-add]",
+        "text": "진화 추가",
+        "w": 998
+      }
+    ],
+    "fullBleedCount": 2,
+    "nodeCount": 230,
+    "violations": [
+      "fullBleed:2",
+      "listWithoutSearch"
+    ]
+  },
+  "troops": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 40,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 6,
+    "emptyState": false,
+    "deadSpace": 0.441,
+    "clipped": [
+      {
+        "node": "section.db-troop-event-panel",
+        "overY": 0,
+        "overX": 81
+      }
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [
+      {
+        "node": "button.btn.small[db-troop-sim-run]",
+        "text": "난이도 추정",
+        "w": 519
+      }
+    ],
+    "fullBleedCount": 1,
+    "nodeCount": 231,
+    "violations": [
+      "clipped:1",
+      "fullBleed:1"
+    ]
+  },
+  "elements": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.674,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 108,
+    "violations": [
+      "deadSpace:67%"
+    ]
+  },
+  "states": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 5,
+    "emptyState": false,
+    "deadSpace": 0.364,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 203,
+    "violations": []
+  },
+  "animations": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 12,
+    "emptyState": false,
+    "deadSpace": 0.491,
+    "clipped": [
+      {
+        "node": "input.db-resource-picker-inline-id.db-authoring-id[db-field-animation-resource]",
+        "overY": 1,
+        "overX": 33
+      },
+      {
+        "node": "section.db-animation-studio-timeline[db-animation-studio-timeline]",
+        "overY": 10,
+        "overX": 0
+      }
+    ],
+    "clippedCount": 2,
+    "overlaps": [
+      {
+        "a": "div.db-animation-top-grid",
+        "b": "section.db-animation-panel[db-animation-cell-table]",
+        "ox": 151,
+        "oy": 230
+      }
+    ],
+    "overlapCount": 1,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 274,
+    "violations": [
+      "clipped:2",
+      "overlap:1",
+      "deadSpace:49%"
+    ]
+  },
+  "battle-screen": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.33,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 87,
+    "violations": []
+  },
+  "battle-commands": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 92,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.207,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 237,
+    "violations": []
+  },
+  "terrain": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.312,
+    "clipped": [
+      {
+        "node": "input.db-resource-picker-inline-id.db-authoring-id[db-field-terrain-backdrop-1]",
+        "overY": 1,
+        "overX": 49
+      },
+      {
+        "node": "input.db-resource-picker-inline-id.db-authoring-id[db-field-terrain-backdrop-2]",
+        "overY": 1,
+        "overX": 10
+      }
+    ],
+    "clippedCount": 2,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 179,
+    "violations": [
+      "clipped:2"
+    ]
+  },
+  "crops": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": true,
+    "deadSpace": 0.596,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 46,
+    "violations": [
+      "deadSpace:60%",
+      "listWithoutSearch"
+    ]
+  },
+  "characters": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": false,
+    "rowCount": 3,
+    "emptyState": false,
+    "deadSpace": 0.48,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [
+      {
+        "node": "button.btn.primary[db-character-create-profile]",
+        "text": "프로필 만들기",
+        "w": 976
+      }
+    ],
+    "fullBleedCount": 1,
+    "nodeCount": 72,
+    "violations": [
+      "fullBleed:1",
+      "deadSpace:48%",
+      "listWithoutSearch"
+    ]
+  },
+  "life-crafting": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.87,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 30,
+    "violations": [
+      "deadSpace:87%",
+      "listWithoutSearch",
+      "emptyWithoutState"
+    ]
+  },
+  "daily-weather": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": true,
+    "deadSpace": 0.84,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 13,
+    "violations": [
+      "deadSpace:84%"
+    ]
+  },
+  "farm-animals": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": true,
+    "deadSpace": 0.852,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 11,
+    "violations": [
+      "deadSpace:85%"
+    ]
+  },
+  "farm-spatial": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": true,
+    "deadSpace": 0.812,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 14,
+    "violations": [
+      "deadSpace:81%"
+    ]
+  },
+  "life-collections": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": true,
+    "deadSpace": 0.81,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 12,
+    "violations": [
+      "deadSpace:81%"
+    ]
+  },
+  "tilesets": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.205,
+    "clipped": [
+      {
+        "node": "span.db-list-name",
+        "overY": 1,
+        "overX": 14
+      },
+      {
+        "node": "span.db-list-name",
+        "overY": 1,
+        "overX": 12
+      },
+      {
+        "node": "span.db-list-name",
+        "overY": 1,
+        "overX": 34
+      },
+      {
+        "node": "span.db-list-name",
+        "overY": 1,
+        "overX": 58
+      },
+      {
+        "node": "span.db-list-name",
+        "overY": 1,
+        "overX": 13
+      },
+      {
+        "node": "span.db-list-name",
+        "overY": 1,
+        "overX": 25
+      },
+      {
+        "node": "span.db-list-name",
+        "overY": 1,
+        "overX": 53
+      },
+      {
+        "node": "span.db-list-name",
+        "overY": 1,
+        "overX": 32
+      },
+      {
+        "node": "section.tileset-db-editor.simplified",
+        "overY": 189,
+        "overX": 0
+      }
+    ],
+    "clippedCount": 9,
+    "overlaps": [
+      {
+        "a": "div.oprn-tileset-main",
+        "b": "div.tileset-ai-launcher",
+        "ox": 1122,
+        "oy": 69
+      }
+    ],
+    "overlapCount": 1,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 626,
+    "violations": [
+      "clipped:9",
+      "overlap:1"
+    ]
+  },
+  "structure-kits": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 67,
+    "canon": false,
+    "hasListPane": false,
+    "search": true,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.45,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 142,
+    "violations": []
+  },
+  "common-events": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.681,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 12,
+    "violations": [
+      "deadSpace:68%"
+    ]
+  },
+  "system": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": false,
+    "hasListPane": false,
+    "search": true,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.68,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 666,
+    "violations": [
+      "deadSpace:68%"
+    ]
+  },
+  "terms": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 27,
+    "canon": false,
+    "hasListPane": false,
+    "search": false,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.428,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 70,
+    "violations": []
+  },
+  "switches": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 27,
+    "canon": false,
+    "hasListPane": false,
+    "search": true,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.62,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+      {
+        "a": "input",
+        "b": "input",
+        "ox": 10,
+        "oy": 30
+      }
+    ],
+    "overlapCount": 1,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 53,
+    "violations": [
+      "overlap:1",
+      "deadSpace:62%"
+    ]
+  },
+  "variables": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 27,
+    "canon": false,
+    "hasListPane": false,
+    "search": true,
+    "rowCount": 0,
+    "emptyState": false,
+    "deadSpace": 0.671,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+      {
+        "a": "input",
+        "b": "input",
+        "ox": 10,
+        "oy": 30
+      }
+    ],
+    "overlapCount": 1,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 28,
+    "violations": [
+      "overlap:1",
+      "deadSpace:67%"
+    ]
+  }
+}

@@ -20,7 +20,7 @@ import {
 } from "@/editor/editorCameraFocus";
 import { subscribeAgentBlueprint } from "@/editor/agentBlueprint";
 import { AgentBlueprintRenderer } from "@/editor/agentBlueprintRenderer";
-import { subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
@@ -80,6 +80,7 @@ import { saveProjectNow } from "@/editor/saveActions";
 import { TilePaintEngine } from "@/editor/TilePaintEngine";
 import { DragOperationHandler } from "@/editor/DragOperationHandler";
 import { editorWorkingEvents } from "@/project/eventDrafts";
+import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -153,6 +154,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
   private unsubAgentBlueprint: (() => void) | null = null;
+  /** 원본 보기(꾹 누름) 마지막 값 — 토글이 바뀐 순간에만 청사진을 다시 그린다. */
+  private lastGhostHidden = false;
   private agentBlueprintRenderer: AgentBlueprintRenderer | null = null;
   private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
   private agentFocusRenderer: AgentFocusRenderer | null = null;
@@ -287,7 +290,16 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
-    this.unsubAgentGhost = subscribeAgentGhostPreview(() => this.renderAgentGhostPreview());
+    this.unsubAgentGhost = subscribeAgentGhostPreview(() => {
+      this.renderAgentGhostPreview();
+      // 원본 보기(꾹 누름) 토글은 고스트 스토어에서 발화한다 — 청사진도 같은 토글을 따르므로
+      // 값이 **바뀐 순간에만** 다시 그린다. 매 프리뷰 갱신(150ms 스로틀)마다 다시 그리면
+      // 사각형·라벨 최대 40장을 계속 새로 만든다.
+      const hidden = isAgentGhostPreviewHidden();
+      if (hidden === this.lastGhostHidden) return;
+      this.lastGhostHidden = hidden;
+      this.renderAgentBlueprint();
+    });
     this.unsubAgentBlueprint = subscribeAgentBlueprint(() => this.renderAgentBlueprint());
 
     this.scale.on("resize", this.handleResize, this);
@@ -1001,7 +1013,7 @@ export class EditScene extends PhaserRuntime.Scene {
       editorState.set({ pendingEventCoordinate: null });
       return;
     }
-    const existing = editorWorkingEvents(map.events).find((e) => e.x === x && e.y === y);
+    const existing = findEventCoveringPoint(editorWorkingEvents(map.events), x, y);
     if (existing) {
       editorState.set({ selectedEventId: existing.id, selectedEventPageId: null, pendingEventCoordinate: null });
       if (openEditor) openEventEditorModal(mapId, existing.id);
@@ -1029,7 +1041,7 @@ export class EditScene extends PhaserRuntime.Scene {
       y >= 0 &&
       x < map.width &&
       y < map.height &&
-      !editorWorkingEvents(map.events).some((event) => event.x === x && event.y === y),
+      !findEventCoveringPoint(editorWorkingEvents(map.events), x, y),
     );
     if (!validEmptyEventTile) editorState.set({ pendingEventCoordinate: null });
   }
@@ -1044,14 +1056,14 @@ export class EditScene extends PhaserRuntime.Scene {
       pending.y >= 0 &&
       pending.x < map.width &&
       pending.y < map.height &&
-      !editorWorkingEvents(map.events).some((event) => event.x === pending.x && event.y === pending.y),
+      !findEventCoveringPoint(editorWorkingEvents(map.events), pending.x, pending.y),
     );
     if (!valid) editorState.set({ pendingEventCoordinate: null });
   }
 
   private offerEventLayerSwitchAt(mapId: MapId, x: number, y: number, layer: string, clickCount: number): boolean {
     const map = store.getCurrent().maps[mapId];
-    const existing = map ? editorWorkingEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    const existing = map ? findEventCoveringPoint(editorWorkingEvents(map.events), x, y) : undefined;
     if (!shouldOfferEventLayerSwitch({ activeLayer: layer as "lower" | "upper" | "event", clickCount, hasEvent: Boolean(existing) })) {
       return false;
     }
@@ -1077,7 +1089,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private openExistingEventAt(mapId: MapId, x: number, y: number): boolean {
     const map = store.getCurrent().maps[mapId];
-    const existing = map ? editorWorkingEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    const existing = map ? findEventCoveringPoint(editorWorkingEvents(map.events), x, y) : undefined;
     if (!existing) return false;
     this.isPainting = false;
     this.lastPaintKey = "";
@@ -1308,7 +1320,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private showEventLayerClickFeedback(mapId: MapId, x: number, y: number): void {
     const map = store.getCurrent().maps[mapId];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
-    const hasEvent = editorWorkingEvents(map.events).some((event) => event.x === x && event.y === y);
+    const hasEvent = findEventCoveringPoint(editorWorkingEvents(map.events), x, y) !== undefined;
     const mode = hasEvent ? "edit" : "create";
     this.eventLayerClickFeedback = { mapId, x, y, mode };
     setTileToolStatus(
@@ -1326,7 +1338,7 @@ export class EditScene extends PhaserRuntime.Scene {
       return;
     }
     const map = store.getCurrent().maps[mapId];
-    const existing = map ? editorWorkingEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    const existing = map ? findEventCoveringPoint(editorWorkingEvents(map.events), x, y) : undefined;
     if (!existing) {
       this.clearEventMarkerTooltip();
       return;

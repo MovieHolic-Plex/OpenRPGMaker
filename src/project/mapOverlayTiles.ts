@@ -4,13 +4,27 @@ const EMPTY_TILE_STACK: readonly number[] = [];
 
 export type TileStackLayer = "lower" | "upper";
 
+/**
+ * 스택은 폐기된 개념이라 언제나 빈 배열이다.
+ *
+ * 읽기 함수는 **맵을 건드리지 않는다**. 예전에는 여기서 clearTileStack 을 불러 delete +
+ * Object.keys 로 map.lowerTileStacks / upperTileStacks 를 지웠다. 렌더 경로
+ * (editSceneRender.ts:138, playSceneMapRuntime.ts:151) 가 store 의 살아 있는 맵을 그대로
+ * 넘기므로, 화면을 한 번 그리는 것만으로 undo·자동저장 밖에서 저작 데이터가 사라졌다.
+ * 정리는 쓰기 함수(appendTileToStack·replaceTileStack·popTileFromStack)와 명시적
+ * clearTileStack 에만 남긴다.
+ */
 export function tileStackAt(map: GameMap, layer: TileStackLayer, index: number): readonly number[] {
-  clearTileStack(map, layer, index);
+  void map;
+  void layer;
+  void index;
   return EMPTY_TILE_STACK;
 }
 
 export function topTileInStack(map: GameMap, layer: TileStackLayer, index: number): number | undefined {
-  clearTileStack(map, layer, index);
+  void map;
+  void layer;
+  void index;
   return undefined;
 }
 

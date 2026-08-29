@@ -11,11 +11,13 @@ import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import {
   DEFAULT_ENEMY_FACTION_ID,
   PLAYER_FACTION_ID,
+  factionAggression,
   factionColor,
   factionName,
   factionStance,
   resolveFactionTable,
   stanceBarColor,
+  willAttackOnSight,
 } from "@/project/factions";
 import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";
@@ -266,19 +268,32 @@ function factionConsequence(
   storedId: string | undefined,
 ): HTMLElement {
   const projectFactions = store.getCurrent().factions;
+  const effectiveAggression = factionAggression(table, effectiveId);
   const peers = table.ids
     .filter((id) => id !== effectiveId && id !== PLAYER_FACTION_ID)
-    .map((id) => ({
-      id,
-      authored: (projectFactions?.relations ?? []).some((relation) => (
-        (relation.a === effectiveId && relation.b === id)
-        || (relation.a === id && relation.b === effectiveId)
-      )),
-      stance: factionStance(table, effectiveId, id),
-    }))
-    .sort((left, right) => factionRelationshipPriority(left) - factionRelationshipPriority(right));
-  const primaryPeers = peers.slice(0, FACTION_RELATION_PREVIEW_LIMIT);
-  const remainingPeers = peers.slice(FACTION_RELATION_PREVIEW_LIMIT);
+    .map((id) => {
+      const stance = factionStance(table, effectiveId, id);
+      return {
+        id,
+        authored: (projectFactions?.relations ?? []).some((relation) => (
+          (relation.a === effectiveId && relation.b === id)
+          || (relation.a === id && relation.b === effectiveId)
+        )),
+        stance,
+        // 런타임은 공격자 자신의 성향으로 판정한다. 어느 쪽이든 상대를 선공할 수 있으면
+        // 실제 난전 상대이므로 미리보기 제한 뒤에 접어 관계를 숨기지 않는다.
+        fightsOnSight: willAttackOnSight(stance, effectiveAggression)
+          || willAttackOnSight(stance, factionAggression(table, id)),
+      };
+    });
+  const combatPeers = peers
+    .filter((peer) => peer.fightsOnSight)
+    .sort((left, right) => left.stance - right.stance);
+  const nonCombatPeers = peers
+    .filter((peer) => !peer.fightsOnSight)
+    .sort((left, right) => Number(right.authored) - Number(left.authored));
+  const primaryPeers = [...combatPeers, ...nonCombatPeers.slice(0, FACTION_RELATION_PREVIEW_LIMIT)];
+  const remainingPeers = nonCombatPeers.slice(FACTION_RELATION_PREVIEW_LIMIT);
   const missing = source === "dangling";
   const identityName = missing ? "존재하지 않는 진영" : factionName(table, effectiveId);
   const identityId = missing ? (storedId ?? effectiveId) : effectiveId;
@@ -332,11 +347,6 @@ function factionConsequence(
   });
 }
 
-function factionRelationshipPriority(peer: { readonly authored: boolean; readonly stance: number }): number {
-  if (peer.authored) return 0;
-  return peer.stance === 0 ? 2 : 1;
-}
-
 function collapsedFactionRelationships(
   table: ReturnType<typeof resolveFactionTable>,
   effectiveId: string,
@@ -344,8 +354,8 @@ function collapsedFactionRelationships(
 ): HTMLElement {
   const neutralCount = peers.filter((peer) => peer.stance === 0).length;
   const card = sectionCard({
-    title: `나머지 관계 ${peers.length}개`,
-    hint: neutralCount > 0 ? `중립 ${neutralCount}개 포함` : "우선 관계 더 보기",
+    title: `서로 선공하지 않는 관계 ${peers.length}개`,
+    hint: neutralCount > 0 ? `중립 ${neutralCount}개 포함` : "비선공 관계 더 보기",
     collapsible: true,
     collapsed: true,
     testid: "db-enemy-faction-relationships-more",

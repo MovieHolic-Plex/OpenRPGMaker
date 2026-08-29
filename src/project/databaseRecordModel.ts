@@ -88,6 +88,19 @@ type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecord
   | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes"
 >>;
 
+/**
+ * 아이템 목록을 화이트리스트로 좁히는 쇼케이스 프로젝트가 씨앗·수확물이 사라진 작물 행을
+ * 남기면 `validateProjectReferences` 가 하드 실패해 프로젝트가 열리지 않는다. 실측(2026-08-29):
+ * 기본 DB 에 작물 4종을 추가했더니 `emberQuest`(items 화이트리스트) 가 dangling 4건으로 깨졌다.
+ * 아이템을 잘라내는 쪽은 작물도 같은 기준으로 잘라야 한다.
+ */
+export function dropCropsWithMissingItems(database: ProjectDatabaseInput): void {
+  const crops = database.crops;
+  if (!crops || crops.length === 0) return;
+  const itemIds = new Set((database.items ?? []).map((item) => item.id));
+  database.crops = crops.filter((crop) => itemIds.has(crop.seedItemId) && itemIds.has(crop.harvestItemId));
+}
+
 export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
     ...database,
@@ -551,6 +564,8 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
     equippableClassIds: cleanIds(record.equippableClassIds),
     cursed: record.cursed ?? false,
     twoHanded: record.twoHanded ?? false,
+    accuracy: clampInteger(record.accuracy ?? 100, 0, 100),
+    criticalRate: clampInteger(record.criticalRate ?? 0, 0, 100),
     usableAsItemSkillId: cleanOptionalId(record.usableAsItemSkillId),
     attackElementIds: cleanIds(record.attackElementIds),
     stateInflictIds: cleanIds(record.stateInflictIds),

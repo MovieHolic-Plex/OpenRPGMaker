@@ -1,5 +1,6 @@
-import { canMove, inBounds } from "@/project/collision";
-import { footprintContains } from "@/project/footprint";
+import { canMoveFootprint, inBounds } from "@/project/collision";
+import { UNIT_FOOTPRINT, passageBounds } from "@/project/footprint";
+import type { CharacterFootprint } from "@/project/types";
 import { store } from "@/project/store";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
 import type { MoveCommand } from "@/project/types";
@@ -7,7 +8,7 @@ import type { AutonomousMover } from "@/player/playSceneTypes";
 import type { AutonomousNpcSceneContext, MovementDelta } from "@/player/playSceneAutonomousTypes";
 import { applySpriteAlpha } from "@/player/playSceneAutonomousSprites";
 import type { NpcCommandTarget, NpcRouteCommandContext } from "@/player/playSceneAutonomousCommands";
-import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
+import { findBlockingEventOverlappingRect, runtimeEventViewById } from "@/project/runtimeEventState"
 import type { Project } from "@/project/types/project";
 
 export type NpcMoveCollision = {
@@ -32,50 +33,99 @@ export function isPlayerOccupyingTile(
   return false;
 }
 
+/**
+ * 이 무버 자신의 통행 사각 크기. `AutonomousMover` 에 싣지 않고 페이지에서 매번 읽는다 —
+ * 무버 생성 지점이 여러 곳이라 필드를 두면 동기화 대상이 늘고, `isCharacterBlockedRect`
+ * 가 이미 같은 조회를 하므로 새로운 비용 종류가 아니다. 진실은 페이지 하나다.
+ */
+function moverPassSize(request: NpcMoveCollision): { fp: CharacterFootprint; passRows: number } {
+  const self = request.eventId === undefined
+    ? undefined
+    : runtimeEventViewById(
+        request.project,
+        request.scene.map,
+        request.scene.session,
+        request.scene.eventPositions,
+        request.eventId
+      );
+  return { fp: self?.footprint ?? UNIT_FOOTPRINT, passRows: self?.passRows ?? 1 };
+}
+
 export function canNpcMove(
   request: NpcMoveCollision,
   movement: MovementDelta
 ): boolean {
   if (movement.jump || request.mover.through) return inBounds(request.scene.map, request.to.x, request.to.y);
+  const self = moverPassSize(request);
   // RM2K3 same-as-characters: player and solid events occupy tiles and block non-through movers.
-  if (isCharacterBlockedTile(request, request.to.x, request.to.y)) return false;
+  if (isCharacterBlockedRect(request, self, request.to.x, request.to.y)) return false;
   if (movement.x !== 0 && movement.y !== 0) {
+    // 대각은 여기서 L자로 분해한다 — canMoveFootprint 도 분해하지만 그쪽은 중간 칸의
+    // **캐릭터** 점유를 모른다. 두 검사를 한 구간씩 교차해야 하므로 분해를 여기 남긴다.
     const hx = request.from.x + movement.x;
     const vy = request.from.y + movement.y;
     const horizontalOpen =
-      canMove(request.project, request.scene.map, request.from.x, request.from.y, hx, request.from.y) &&
-      canMove(request.project, request.scene.map, hx, request.from.y, request.to.x, request.to.y) &&
-      !isCharacterBlockedTile(request, hx, request.from.y);
+      leg(request, self, request.from.x, request.from.y, hx, request.from.y) &&
+      leg(request, self, hx, request.from.y, request.to.x, request.to.y) &&
+      !isCharacterBlockedRect(request, self, hx, request.from.y);
     const verticalOpen =
-      canMove(request.project, request.scene.map, request.from.x, request.from.y, request.from.x, vy) &&
-      canMove(request.project, request.scene.map, request.from.x, vy, request.to.x, request.to.y) &&
-      !isCharacterBlockedTile(request, request.from.x, vy);
+      leg(request, self, request.from.x, request.from.y, request.from.x, vy) &&
+      leg(request, self, request.from.x, vy, request.to.x, request.to.y) &&
+      !isCharacterBlockedRect(request, self, request.from.x, vy);
     return horizontalOpen || verticalOpen;
   }
-  return canMove(
+  return leg(request, self, request.from.x, request.from.y, request.to.x, request.to.y);
+}
+
+/** 직교 한 구간의 지형 통행. 1x1 이면 canMove 1회와 같다. */
+function leg(
+  request: NpcMoveCollision,
+  self: { fp: CharacterFootprint; passRows: number },
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number
+): boolean {
+  return canMoveFootprint(
     request.project,
     request.scene.map,
-    request.from.x,
-    request.from.y,
-    request.to.x,
-    request.to.y
+    fromX,
+    fromY,
+    self.fp,
+    toX,
+    toY,
+    self.passRows
   );
 }
 
-function isCharacterBlockedTile(request: NpcMoveCollision, x: number, y: number): boolean {
-  if (isPlayerOccupyingTile(request.scene, x, y)) return true;
-  return runtimeEventViewsForMap(
+/**
+ * (x,y) 를 발밑으로 삼은 이 무버의 통행 사각이 플레이어나 다른 솔리드 이벤트와 겹치는가.
+ *
+ * 양쪽 다 **통행 사각**이다 — 상체만 겹치는 것은 서로 지나갈 수 있어야 한다.
+ * 플레이어 쪽은 아직 점이다(플레이어 발자국은 후속 태스크).
+ */
+function isCharacterBlockedRect(
+  request: NpcMoveCollision,
+  self: { fp: CharacterFootprint; passRows: number },
+  x: number,
+  y: number
+): boolean {
+  const rect = passageBounds(x, y, self.fp, self.passRows);
+  for (let cy = rect.top; cy <= rect.bottom; cy += 1) {
+    for (let cx = rect.left; cx <= rect.right; cx += 1) {
+      if (isPlayerOccupyingTile(request.scene, cx, cy)) return true;
+    }
+  }
+  // 예전에는 맵 전체 뷰 배열을 만든 뒤 some() 했다. 대각 이동 판정은 이 함수를 최대 3번
+  // 부르므로 NPC 한 명이 한 걸음 옮길 때마다 배열이 3개 생겼다. 이제는 첫 차단에서 멈춘다.
+  return findBlockingEventOverlappingRect(
     request.project,
     request.scene.map,
     request.scene.session,
-    request.scene.eventPositions
-  ).some(
-    (view) =>
-      footprintContains(view.x, view.y, view.footprint, x, y) &&
-      view.event.id !== request.eventId &&
-      view.priority === "same" &&
-      view.overlapForbidden
-  );
+    request.scene.eventPositions,
+    rect,
+    request.eventId
+  ) !== undefined;
 }
 
 export function applyNpcTransfer(

@@ -498,3 +498,117 @@ describe("event draft aggregate validator", () => {
     expect(result.canCommit).toBe(true);
   });
 });
+
+function issueOf(result: ReturnType<typeof validateEventDraftBody>, code: string) {
+  const issue = result.issues.find((entry) => entry.code === code);
+  expect(issue, `expected issue ${code}`).toBeDefined();
+  return issue!;
+}
+
+describe("always-true / always-false condition traps", () => {
+  it("warns when a timer threshold of 0 is always true while no timer is running", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "timer", timerId: "timer1", seconds: 0 }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.timer.always-true");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-page-timer1-condition-seconds" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  it("warns when an npc activity name is empty and can never match", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "npcActivity", activity: "" }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.npcActivity.empty");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-page-npc-activity-condition-input" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  // 페이지 조건의 battleResult 는 지속되는 세션 상태를 읽는다 — 랜덤 인카운터·필드 스폰은
+  // battleProcessing 없이도 전투를 열고, 다른 이벤트·공통 이벤트가 남긴 결과도 살아남는다.
+  // 명령 순서나 프로젝트 스캔으로 "항상 거짓"을 증명할 수 없어 이 추론 자체를 걷어냈다.
+  it("does not warn for persistent battle results without a battleProcessing command", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "battleResult", result: "victory" }],
+      commands: [{
+        kind: "fork",
+        condition: { kind: "battleResult", result: "defeat" },
+        then: [{ kind: "text", body: "recover" }],
+      }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+
+    expect(result.issues.filter((issue) => issue.code === "condition.battleResult.no-preceding-battle")).toEqual([]);
+  });
+
+  it("warns when a gold comparison can never hold for the 0..GOLD_MAX range", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "gold", op: "<", amount: -1 }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.gold.impossible");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-condition-gold-amount" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  it("warns when a time-phase condition is authored without a time system", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "timePhase", phase: "night" }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.timePhase.no-time-system");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-page-time-phase-condition-input" });
+    expect(result.canCommit).toBe(true);
+  });
+
+  it("warns when a season condition is authored without a time system", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent(page({
+      conditions: [{ kind: "season", season: "winter" }],
+    }));
+    project.maps[mapId].events = [event];
+
+    const result = validateEventDraftBody(project, mapId, event);
+    const issue = issueOf(result, "condition.season.no-time-system");
+
+    expect(issue.severity).toBe("warning");
+    expect(issue.pageId).toBe("page-1");
+    expect(issue.field).toEqual({ testId: "event-page-season-condition-input" });
+    expect(result.canCommit).toBe(true);
+  });
+});

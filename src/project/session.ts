@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, CharacterFootprint, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
 import type { FactionStanceOverrides } from "@/project/factionRuntime";
 import type { M2RuntimeState,
 PlaySessionLike,
@@ -57,6 +57,8 @@ export type PictureState = {
   readonly rotation?: number;
   readonly durationMs?: number;
 };
+
+const pendingPictureTransitions = new WeakSet<PictureState>();
 
 export type ActorRowPosition = "front" | "back";
 
@@ -262,6 +264,16 @@ export interface PlaySession {
   currentMapId: MapId;
   x: number;
   y: number;
+  /**
+   * 주인공 몸 크기의 **런타임 오버라이드**. 생략(기본)이면 `system.playerFootprint` 를 쓰고,
+   * 그것도 없으면 1x1 이다 — 액터 이름 오버라이드(actorNames)와 같은 관례다.
+   *
+   * 저작값을 세션에 복사해 두지 않는 이유: 복사하면 저작값을 고친 프로젝트를 옛 세이브로
+   * 열었을 때 세션이 낡은 크기를 되살린다. 해소는 항상 {@link resolvePlayerBody} 한 곳에서 한다.
+   */
+  playerFootprint?: CharacterFootprint;
+  /** 주인공 통행 차단 행의 런타임 오버라이드. 생략이면 `system.playerPassRows`, 그것도 없으면 몸 높이 전체. */
+  playerPassRows?: number;
   // 런타임 맵 상태(changeTile 반영). mapId → { lower, upper } 오버라이드.
   mapOverrides: Record<MapId, { lower: Record<number, number>; upper: Record<number, number> }>;
   farmPlots?: FarmPlots;
@@ -363,9 +375,9 @@ export function startSession(project: Project, seed?: number): PlaySession {
     farmAnimals: initialFarmAnimalStates(start.farmAnimals),
     farmBuildingPlacements: initialSpatialPlacementRecord(start.farmBuildingPlacements),
     homeDecorationPlacements: initialSpatialPlacementRecord(start.homeDecorationPlacements),
-    monsterInstances: {},
-    monsterParty: [],
-    monsterBox: [],
+    monsterInstances: structuredClone(start.monsterInstances ?? {}),
+    monsterParty: [...(start.monsterParty ?? [])],
+    monsterBox: [...(start.monsterBox ?? [])],
     actorSkillIds: {},
     actorSkillPp: {},
     actorExperience: initialActorExperience(project),
@@ -710,8 +722,18 @@ export function clearAudioState(session: PlaySession): void {
   session.audio = {};
 }
 
-export function showPictureState(session: PlaySession, picture: PictureState): void {
+export function showPictureState<T extends PictureState>(
+  session: { pictures: Record<string, T> },
+  picture: T,
+): void {
   session.pictures[picture.pictureId] = picture;
+  if ((picture.durationMs ?? 0) > 0) pendingPictureTransitions.add(picture);
+}
+
+export function takePendingPictureTransition(picture: PictureState): boolean {
+  const pending = pendingPictureTransitions.has(picture);
+  pendingPictureTransitions.delete(picture);
+  return pending;
 }
 
 export function erasePictureState(session: PlaySession, pictureId: string): void {

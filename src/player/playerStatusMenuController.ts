@@ -261,11 +261,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     options.loadSlot(slot, false);
   }
 
-  function useItem(itemId: string, actorId?: string): void {
+  function useItem(itemId: string, actorId?: string, monsterInstanceId?: string): void {
     const scene = options.getActiveScene();
     if (!scene) return;
     if (actorId) rememberDetailCursorFromTestId(`status-menu-item-target-${actorId}`);
-    const result = useStatusMenuItem(scene, itemId, actorId);
+    if (monsterInstanceId) rememberDetailCursorFromTestId(`status-menu-monster-${monsterInstanceId}`);
+    const result = useStatusMenuItem(scene, itemId, actorId, monsterInstanceId);
     if (result.kind === "used") targetItemId = undefined;
     emitMutationResult(result, renderMenu(result.message, "items"));
   }

@@ -93,7 +93,19 @@ describe("proposal completeness lint", () => {
         call("build_house_kit", { mapId: "m1", kitId: "bright-plaster", wings: [{ x: 4, y: 5, w: 12, h: 10 }] }, { tilesChanged: 80 }),
       ],
     });
-    expect(warnings.some((line) => line.includes("실내 요청") && line.includes("야외 집 키트"))).toBe(true);
+    expect(warnings.some((line) => line.includes("실내 요청") && line.includes("author_house"))).toBe(true);
+  });
+
+  // 수정 요청에 "새 실내 맵을 시공하세요" 경고를 붙이면 그 경고가 자동 완료를 막아 모델을 신축으로
+  // 밀어붙인다 — 사용자가 본 증상(고쳐 달랬는데 맵이 하나 더 생김) 그 자체다.
+  it("실내 수정 요청에는 신축 경고를 붙이지 않는다", () => {
+    for (const requestText of ["이 침실 가구 배치를 개선해줘", "실내 맵 조명 좀 고쳐줘"]) {
+      const warnings = proposalCompletenessWarnings({
+        requestText,
+        calls: [call("place_props", { mapId: "m1", material: "나무 상자", count: 2 }, { tilesChanged: 2 })],
+      });
+      expect(warnings.some((line) => line.includes("start_interior_room_session")), requestText).toBe(false);
+    }
   });
 
   it("실내 요청에 create_map만 하면 경고한다", () => {

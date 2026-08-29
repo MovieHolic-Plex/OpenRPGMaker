@@ -28,12 +28,15 @@ import {
   setAgentGhostRunningTool,
 } from "@/editor/agentGhostPreview";
 import {
+  beginAgentBlueprintTurn,
   clearAgentBlueprint,
-  finishAgentBlueprint,
+  commitAgentBlueprintProgress,
   markAgentBlueprintProgress,
   setAgentBlueprintFromSpec,
+  settleAgentBlueprintTurn,
   syncAgentBlueprintWithSpec,
 } from "@/editor/agentBlueprint";
+import { appliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
 import { resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
@@ -1006,6 +1009,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
     sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
+    // 지난 턴의 "이번 턴에 올린 칸" 기록을 끊는다 — 아래 두 곳의 `!ownsTurn(true)` 반환은 정산을
+    // 지나지 않으므로(소유권을 잃은 턴) 그 기록이 이번 턴 정산까지 살아남아 손대지도 않은 칸을
+    // planned 로 되돌릴 수 있다. 지금은 dropSession/dispose 가 청사진을 함께 지워서 드러나지
+    // 않지만 그건 결합에 의한 안전이다.
+    beginAgentBlueprintTurn();
     // 청사진을 세션 스펙에 다시 맞춘다 — set_build_spec 은 계획을 세운 턴에만 오므로(스펙은
     // 턴 간 유지된다) 이 재동기화가 없으면 두 번째 턴부터 맵에 밑그림이 사라진다.
     syncAgentBlueprintWithSpec(activeSpecAtTurnStart);
@@ -1183,9 +1191,33 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         }
       } else if (event.type === "milestone_applied") {
         appendMilestoneFeedLine("applied", event.title, `도구 ${event.toolCount}건${event.commitId ? ` · 커밋 ${event.commitId}` : ""}`);
+        // 자율 런은 턴 도중에 저장소로 커밋한다 — 여기까지의 진행은 실제로 들어갔으므로 확정한다.
+        // 확정하지 않으면 뒤이은 중단이 이미 들어간 시공까지 planned 로 되돌린다(마일스톤 적용은
+        // turnProposals 를 비우므로 턴 끝의 정산은 그 호출들을 볼 수 없다).
+        commitAgentBlueprintProgress();
       } else if (event.type === "proposal_paused") {
         appendMilestoneFeedLine("apply-failed", event.reason, "프로젝트 저장소 변경 없음");
       }
+    };
+
+    /**
+     * 턴이 끝났다 — 이번 턴에 올린 칸을 **적용이 실제로 들어갔는지**로 정산한다.
+     *
+     * **모든** 종료 경로(정상·중단·오류·throw·변경 없음)에서 부르되, 넘기는 것은 종료 분기가
+     * 아니라 저장소에 들어간 호출이다(`null` = 아무것도 안 들어갔다). 다섯 경로 중 셋 —
+     * 중단 return 과 catch 두 개 — 은 applyProposal **앞에서** 끝나므로 초안이 그대로 버려진다.
+     * 종전처럼 그 자리에서 building 을 done 으로 올리면 손도 안 댄 타일 위에 회색 ✓ "완료" 가
+     * 박히고, markAgentBlueprintProgress 는 planned 가 아닌 칸을 다시 올리지 않으므로 세션이
+     * 죽을 때까지 풀리지 않는다(실측: 같은 툴콜을 정상 종료/중단으로 각각 돌려 store 변경
+     * true/false, 청사진은 양쪽 다 done · 로그에는 "적용됨" 이 없었다).
+     *
+     * 판정 근거는 완성도 린트(⚠ 미이행)가 쓰는 함수 그대로다 — 채팅이 "미이행" 이라고 말하는
+     * 에셋에 맵이 "완료 ✓" 를 그리면 사용자는 어느 쪽도 믿을 수 없다.
+     */
+    const settleBlueprintForTurnEnd = (appliedCalls: readonly ProposedCall[] | null): void => {
+      settleAgentBlueprintTurn(
+        appliedCalls === null ? { regions: [], wholeTargetMapIds: [] } : appliedBlueprintRegions(appliedCalls)
+      );
     };
 
     try {
@@ -1199,6 +1231,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (abortController.signal.aborted || result.stoppedReason === "aborted") {
         ghostPreviewUpdater.cancel();
         clearAgentGhostPreview();
+        // 중단은 초안을 버린다(적용 경로에 닿지 못한다) — 이번 턴에 올린 칸을 되돌린다.
+        // 자율 런에서 턴 도중 커밋된 마일스톤 몫은 milestone_applied 에서 이미 확정됐다.
+        settleBlueprintForTurnEnd(null);
         setStatus("대기");
         streamedBubbles.forEach(renderStreamedMarkdown);
         return;
@@ -1209,10 +1244,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         clearAgentGhostPreview();
       } else {
         ghostPreviewUpdater.flush();
-        // 마지막까지 building 이던 칸을 끝난 것으로 확정한다 — 다음 툴콜이 없으므로
-        // markAgentBlueprintProgress 가 스스로 내려줄 기회가 없다.
-        finishAgentBlueprint();
       }
+      // 정산은 아래 적용 분기가 끝난 뒤에 한다 — 오류로 끝난 턴도 제안이 남아 있으면 적용된다.
       const completenessWarnings = result.stoppedReason === "error"
         ? []
         : proposalCompletenessWarnings({
@@ -1249,6 +1282,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           applyingProposal = false;
           projectIdentityId = store.getProjectIdentity().id;
         }
+        // 적용 결과가 나온 다음에 청사진을 정산한다 — 배치 검증·커밋 게이트가 거부하면
+        // (applied === false) 저장소는 그대로이므로 done 은 거짓이다.
+        settleBlueprintForTurnEnd(applied ? result.proposedCalls : null);
         setStatus(applied ? "대기" : "적용 실패");
         // 변경 카드는 proposalApi.onApplied 가 한 장만 남긴다. 여기서 또 emitChangeCard 를 부르면
         // 한 턴에 카드가 두 장 붙는다(e2e 로 잡혔다).
@@ -1256,6 +1292,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           appendBubble("system", `적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
         }
       } else {
+        // 쓰기 제안이 0건이면 적용할 것이 없다 — 진행 표시만 남으면 거짓이 된다.
+        settleBlueprintForTurnEnd(null);
         noteNoChanges(result, completenessWarnings);
         if (result.stoppedReason !== "error") {
           const silenced = result.assistantText ? ` — ${result.assistantText.slice(0, 80)}` : "";
@@ -1279,6 +1317,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } catch (cause) {
       if (!ownsTurn(true)) return;
       if (abortController.signal.aborted) {
+        settleBlueprintForTurnEnd(null);
         setStatus("대기");
         return;
       }
@@ -1287,6 +1326,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       endTurnProgress();
       ghostPreviewUpdater.cancel();
       clearAgentGhostPreview();
+      // throw 로 끝난 턴은 적용 경로에 닿지 못했다 — 초안과 함께 진행 표시도 되돌린다.
+      settleBlueprintForTurnEnd(null);
       setStatus("오류");
       const errorBubble = appendBubble("system", `오류: ${turnCatchError}`);
       // Any transport throw mounts settings opener — covers connection refused / 401 / network throw

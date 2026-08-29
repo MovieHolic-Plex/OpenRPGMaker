@@ -32,7 +32,6 @@ import {
 } from "@/editor/panels/testPlayModal";
 import {
   AUTHORING_TEST_BOOT_SUCCESS_EVENT,
-  AUTHORING_TEST_GATE_BLOCKED_EVENT,
 } from "@/editor/authoringJourney";
 import { installFakeDom } from "./fakeDom";
 
@@ -92,34 +91,20 @@ afterEach(() => {
 });
 
 describe("selected event test modal", () => {
-  // Break caught: map/context-menu/event-editor/troop callers bypass the editor event gate.
-  it("blocks every public test modal boundary when the canonical project has broken references", async () => {
+  // 끊긴 참조는 테스트를 막지 않는다 — 예전에는 fail-closed 게이트가 네 진입점 전부를
+  // 조용히 되돌려 «참조 문제 N개를 해결해야 테스트할 수 있다» 만 띄웠다.
+  it("still opens the test player when the project has broken references", async () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
     const event = selectedEvent("canonical");
     project.maps[mapId].events = [event];
     project.system.startActorIds = ["missing-actor"];
     store.replaceProject(project);
-    const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "not-configured" });
+    vi.spyOn(store, "flush").mockResolvedValue({ kind: "not-configured" });
 
-    await openTestPlayModal({ mapId, x: 1, y: 1 });
-    expect(document.querySelector("[data-testid='test-play-window']")).toBeNull();
-
-    await expect(openSelectedEventTestModal(mapId, event.id)).resolves.toBe(false);
-    expect(document.querySelector("[data-testid='test-play-window']")).toBeNull();
-
-    await openTroopBattleTestModal("missing-troop");
-    expect(document.querySelector("[data-testid='test-play-window']")).toBeNull();
-
-    await openRandomTroopBattleTestModal(() => 0);
-    expect(document.querySelector("[data-testid='test-play-window']")).toBeNull();
-
-    expect(flushSpy).not.toHaveBeenCalled();
-    expect(playerMocks.renderPlayer).not.toHaveBeenCalled();
-    const blockedEvents = vi.mocked(window.dispatchEvent).mock.calls
-      .map(([dispatched]) => dispatched.type)
-      .filter((type) => type === AUTHORING_TEST_GATE_BLOCKED_EVENT);
-    expect(blockedEvents).toHaveLength(4);
+    await expect(openSelectedEventTestModal(mapId, event.id)).resolves.toBe(true);
+    expect(document.querySelector("[data-testid='test-play-window']")).not.toBeNull();
+    expect(playerMocks.renderPlayer).toHaveBeenCalled();
   });
 
   it("boots the actual selected-event player route without flushing or persisting the draft", async () => {

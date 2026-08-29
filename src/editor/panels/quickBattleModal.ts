@@ -1,5 +1,4 @@
 import { createBattleRuntime } from "@/battle/runtime";
-import { passesAuthoringTestGate } from "@/editor/authoringTestGate";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { nextSessionRandom, startSession } from "@/project/session";
 import { store } from "@/project/store";
@@ -18,7 +17,6 @@ let removeQuickBattleKeydown: (() => void) | null = null;
 // RNG/party/sessionState 를 쓰고, 종료 시 BattleDomController.destroy() 로 틱/키보드
 // 리스너를 정리하며, 결과 화면의 확인/Z/클릭이 모달을 닫게 한다.
 export function openQuickBattleModal(troopId: string): void {
-  if (!passesAuthoringTestGate()) return;
   // 이전 모달의 컨트롤러·리스너를 먼저 정리한다. 오버레이 DOM만 remove() 하면
   // 이전 전투의 틱·리스너가 영구히 남는다(결함 1b).
   removeQuickBattleKeydown?.();

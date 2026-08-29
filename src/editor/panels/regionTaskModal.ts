@@ -7,11 +7,12 @@ import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { subscribePendingRegionApply, type PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import {
+  ALL_REGION_COMMANDS,
   nextSuggestedRegionCommands,
   regionCommandCategories,
-  SUGGESTED_REGION_COMMANDS,
   type SuggestedRegionCommand,
 } from "@/editor/regionTask/suggestedCommands";
+import { dismissCoachMarks } from "@/editor/coachMarks";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import { suggestRegionCommandsByContext } from "@/editor/regionTask/regionContextSuggestions";
 import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
@@ -126,6 +127,9 @@ export const REGION_TASK_MODAL_EVENT = "oprn:region-task-modal";
 
 /** 열림/닫힘을 알린다 — EditScene 이 선택 칩 오버레이를 숨기거나 되살리는 신호. */
 function dispatchModalOpenState(open: boolean): void {
+  // 같은 작업의 입구가 두 개 보이지 않게 한다: 이 모달이 열려 있는 동안 AI 조수 패널의 입력
+  // 경로는 물러난다(실측: 모달 뒤에 "한 문장으로 지시" 입력창이 절반 가려진 채 살아 있었다).
+  document.body?.classList?.[open ? "add" : "remove"]?.("region-task-modal-open");
   if (typeof window === "undefined" || typeof window.dispatchEvent !== "function") return;
   if (typeof CustomEvent === "function") {
     window.dispatchEvent(new CustomEvent(REGION_TASK_MODAL_EVENT, { detail: { open } }));
@@ -269,13 +273,23 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   const categories = regionCommandCategories();
   let activeCategoryId: string | null = null;
   const categoryChips = new Map<string, HTMLElement>();
+  // 카테고리를 고르면 추천이 1개만 남고 줄이 비어 보였다. 되돌아가는 길(같은 칩 다시 누르기)도
+  // 화면에 표시가 없었다 — 첫 자리에 「전체 추천」 칩을 세워 줄을 채우고 길을 보이게 한다.
+  const makeResetChip = (): HTMLElement =>
+    el("button", {
+      class: "region-task-suggest-chip is-reset",
+      attrs: { type: "button", title: "이 영역에 맞춘 추천으로 돌아가기" },
+      dataset: { testid: "region-suggest-reset" },
+      children: [makeSvgIcon("undo"), el("span", { class: "region-task-chip-label", text: "전체 추천" })],
+      on: { click: () => showCategory(null) },
+    });
   const showCategory = (id: string | null): void => {
     // 같은 칩을 다시 누르면 해제 — 문맥 추천(4개)으로 돌아온다.
     activeCategoryId = id;
     for (const [chipId, chip] of categoryChips) chip.classList.toggle("is-active", chipId === id);
     const picked = id === null ? null : categories.find((category) => category.id === id);
     suggestionRow.replaceChildren(
-      ...(picked ? picked.commands.map(makeCommandChip) : suggestions.map(makeCommandChip)),
+      ...(picked ? [makeResetChip(), ...picked.commands.map(makeCommandChip)] : suggestions.map(makeCommandChip)),
     );
   };
   const categoryRow = el("div", {
@@ -339,9 +353,11 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     ],
   }) as HTMLSelectElement;
   directModifierSelect.value = "";
+  // 섹션 제목과 버튼이 같은 문구("AI 없이 실내 초안")면 접힌 상태에선 컨트롤 없는 죽은 캡션처럼,
+  // 펼친 상태에선 같은 말이 두 번 보인다. 제목은 무엇인지, 버튼은 무엇을 하는지로 나눈다.
   const directRoomButton = el("button", {
     class: "region-task-direct-room",
-    text: "AI 없이 실내 초안",
+    text: "초안 만들기",
     attrs: { type: "button", title: "도구 쿼터를 쓰지 않고 연결된 실내를 생성" },
     dataset: { testid: "region-task-direct-room" },
   }) as HTMLButtonElement;
@@ -391,7 +407,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     dataset: { testid: "region-task-advanced-toggle" },
     children: [
       el("span", { class: "region-task-advanced-chevron" }),
-      el("span", { class: "region-task-advanced-label", text: "고급 (로그 · 부분 적용 · 스탬프)" }),
+      el("span", { class: "region-task-advanced-label", text: "고급 (실행 로그)" }),
     ],
   }) as HTMLButtonElement;
   let advancedPinned = false;
@@ -681,7 +697,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       dataset: { testid: "region-task-preview-ab-after" },
     }) as HTMLButtonElement;
 
-    const setAbView = (view: "before" | "after"): void => {
+    // 바뀐 곳이 타일 몇 칸일 때 두 버튼을 왕복하며 눈으로 차이를 찾는 것이 검토의 실제 비용이었다.
+    // 「이전」에 마우스를 올리거나 포커스만 주면 잠깐 이전 상태를 보여 주고, 떼면 원래 보던 쪽으로
+    // 돌아온다. 클릭은 그대로 고정 전환이다(기존 계약 유지).
+    let committedAbView: "before" | "after" = "after";
+    const setAbView = (view: "before" | "after", options?: { readonly peek?: boolean }): void => {
+      if (!options?.peek) committedAbView = view;
       currentAbView = view;
       previewWrapper.dataset.abView = view;
       abBeforeBtn.classList.toggle("is-active", view === "before");
@@ -690,10 +711,21 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
     abBeforeBtn.addEventListener("click", () => setAbView("before"));
     abAfterBtn.addEventListener("click", () => setAbView("after"));
+    const peekBefore = (): void => setAbView("before", { peek: true });
+    const peekEnd = (): void => setAbView(committedAbView, { peek: true });
+    abBeforeBtn.addEventListener("mouseenter", peekBefore);
+    abBeforeBtn.addEventListener("mouseleave", peekEnd);
+    abBeforeBtn.addEventListener("focus", peekBefore);
+    abBeforeBtn.addEventListener("blur", peekEnd);
 
     const abToggle = el("div", {
       class: "region-task-preview-ab-toggle",
       children: [abBeforeBtn, abAfterBtn],
+    });
+    const abHint = el("div", {
+      class: "region-task-preview-hint",
+      dataset: { testid: "region-task-preview-hint" },
+      text: "「이전」에 마우스를 올리면 잠깐 비교됩니다 · 바뀐 칸은 테두리로 표시",
     });
 
     const previewStage = el("div", {
@@ -701,7 +733,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       children: [beforeFigure, afterFigure],
     });
 
-    previewWrapper.append(abToggle, previewStage);
+    previewWrapper.append(abToggle, previewStage, abHint);
     figures.append(previewWrapper);
     // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
     // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
@@ -892,8 +924,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
     updatePartialState();
 
-    // 부분 적용은 「고급」 안으로 — 구조 변경은 타일만 떼어내면 연결이 끊기므로 숨긴다.
-    // 일반 타일 제안은 기존 계약대로 청크가 하나여도 DOM은 유지하고 고급 영역만 접는다.
+    // 부분 적용은 검토 화면의 본문에 둔다. 「고급(로그·부분 적용·스탬프)」 안에 있던 동안은
+    // "이건 받고 저건 뺀다" 는 검토의 핵심 결정을 하려면 접힌 섹션을 열고 로그를 지나쳐야 했다.
+    // 구조 변경(실내·맵 추가)은 타일만 떼어내면 문·맵 연결이 끊기므로 여전히 제공하지 않는다.
     if (structuralProposal) {
       partialHost.replaceChildren();
       partialHost.classList.add("hidden");
@@ -974,19 +1007,59 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         children: [
           el("span", {
             class: "region-task-checkpoint-dot",
-            children: [makeSvgIcon(checkpoint.status === "done" ? "check" : "warning")],
+            // pending 은 검사 결과가 아니라 대기 상태다 — 통과 체크(✓)를 달면 이미 승인된 것으로 읽힌다.
+            children: [makeSvgIcon(
+              checkpoint.status === "done" ? "check" : checkpoint.status === "pending" ? "more" : "warning",
+            )],
           }),
           el("span", { text: checkpoint.label }),
         ],
       })),
     });
     const metrics = review?.metrics;
+    // 지표는 예전에 한 줄 문자열이었다: "변경 4칸 · 이벤트 1 · 통행 0칸 · 수리 0 · 목표 36개 도달 ·
+    // 조합 50점 · NPC 일정 4명 · 시간 켜짐". 개수·점수·켜짐/꺼짐이 같은 서식으로 붙어 있어
+    // 무엇이 좋은 값인지 읽을 수 없었다. 이제 항목별 칩 + 단위/기준을 달고, 나쁜 값만 강조한다.
+    const metricChips: Array<{ readonly text: string; readonly warn?: boolean }> = [];
+    if (metrics) {
+      metricChips.push({ text: `바뀐 칸 ${metrics.changedCells}칸` });
+      metricChips.push({ text: `이벤트 ${metrics.changedEvents}건` });
+      if (metrics.passableChangedCells > 0) {
+        metricChips.push({ text: `걸어갈 수 있는 칸 ${metrics.passableChangedCells}칸` });
+      }
+      if (metrics.deterministicRepairs > 0) {
+        metricChips.push({ text: `자동 수리 ${metrics.deterministicRepairs}/${review?.repairLimit ?? metrics.deterministicRepairs}회` });
+      }
+      if ((metrics.reachableObjectives ?? 0) > 0) {
+        metricChips.push({ text: `갈 수 있는 목표 ${metrics.reachableObjectives}개` });
+      }
+      if ((metrics.unreachableObjectives ?? 0) > 0) {
+        metricChips.push({ text: `못 가는 목표 ${metrics.unreachableObjectives}개`, warn: true });
+      }
+      if ((metrics.outOfScopeChanges ?? 0) > 0) {
+        metricChips.push({ text: `영역 밖 변경 ${metrics.outOfScopeChanges}건`, warn: true });
+      }
+      if (typeof metrics.compositionScore === "number") {
+        metricChips.push({ text: `타일 조합 ${metrics.compositionScore}/100점` });
+      }
+      if (metrics.scheduledNpcs > 0) {
+        metricChips.push({ text: `NPC 일정 ${metrics.scheduledNpcs}명` });
+        metricChips.push({
+          text: `시간 시스템 ${metrics.timeSystemEnabled ? "켜짐" : "꺼짐"}`,
+          ...(metrics.timeSystemEnabled ? {} : { warn: true }),
+        });
+      }
+      if (metrics.roomScoreAverage !== null) {
+        metricChips.push({ text: `방 점수 ${metrics.roomScoreAverage}/100점` });
+      }
+    }
     const metricsRow = el("div", {
-      class: "region-task-review-metrics" + (metrics ? "" : " hidden"),
+      class: "region-task-review-metrics" + (metricChips.length ? "" : " hidden"),
       dataset: { testid: "region-task-review-metrics" },
-      text: metrics
-        ? `변경 ${metrics.changedCells}칸 · 이벤트 ${metrics.changedEvents} · 통행 ${metrics.passableChangedCells}칸 · 수리 ${metrics.deterministicRepairs} · 목표 ${metrics.reachableObjectives ?? 0}개 도달${(metrics.unreachableObjectives ?? 0) > 0 ? `/${metrics.unreachableObjectives} 차단` : ""} · 조합 ${metrics.compositionScore ?? 100}점 · NPC 일정 ${metrics.scheduledNpcs}명 · 시간 ${metrics.timeSystemEnabled ? "켜짐" : "꺼짐"}${metrics.roomScoreAverage === null ? "" : ` · 방 점수 ${metrics.roomScoreAverage}`}`
-        : "",
+      children: metricChips.map((chip) => el("span", {
+        class: "region-task-metric" + (chip.warn ? " is-warn" : ""),
+        text: chip.text,
+      })),
     });
     const issueRows = (review?.issues ?? []).map((issue, index) => el("div", {
       class: `region-task-review-issue is-${issue.severity}`,
@@ -996,7 +1069,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     const issuesHost = el("div", {
       class: "region-task-review-issues" + (issueRows.length ? "" : " is-clear"),
       dataset: { testid: "region-task-review-issues" },
-      children: issueRows.length ? issueRows : [el("div", { class: "region-task-review-clear", text: "플레이 가능성 검사 통과" })],
+      // 접힌 줄이 이미 "검사 통과" 라고 말한다 — 안에서 같은 말을 반복하지 않고 무엇이 없는지만 쓴다.
+      children: issueRows.length ? issueRows : [el("div", { class: "region-task-review-clear", text: "막는 문제·주의 없음" })],
     });
     const blockerHost = el("div", {
       class: "region-task-blockers" + (pending.blockers.length ? "" : " hidden"),
@@ -1211,6 +1285,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     compareHost.replaceChildren(
       figures,
       changeList,
+      // 변경 목록 바로 아래 = 무엇이 바뀌는지 읽은 자리에서 무엇만 받을지 고른다.
+      partialHost,
       roomsHost,
       gateHost,
       el("div", {
@@ -1382,7 +1458,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       // F: 성공적 실행 시 지시어를 최근 목록에 기록(자동완성 소스).
       if (result.ok) pushRecentInstruction(instruction);
       if (result.pending && !result.pending.settled) {
-        progressTimeline.append(el("span", { class: result.pending.blockers.length ? "is-blocked" : "is-done", text: result.pending.blockers.length ? "검사 차단" : "검사 완료 · 승인 대기" }));
+        // "승인 대기" 는 요약 문장과 결정 버튼이 이미 말한다 — 진행 칩은 검사 결과만 말한다.
+        progressTimeline.append(el("span", { class: result.pending.blockers.length ? "is-blocked" : "is-done", text: result.pending.blockers.length ? "검사 차단" : "검사 완료" }));
         progressMilestone = "미리보기를 준비하는 중";
         renderProgress();
         await renderPendingCompare(result.pending, executionId);
@@ -1483,7 +1560,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       if (result.pending && !result.pending.settled) {
         progressTimeline.append(el("span", {
           class: result.pending.blockers.length ? "is-blocked" : "is-done",
-          text: result.pending.blockers.length ? "2. 검사 차단" : "2. 검사 완료 · 승인 대기",
+          text: result.pending.blockers.length ? "2. 검사 차단" : "2. 검사 완료",
         }));
         await renderPendingCompare(result.pending);
       }
@@ -1575,21 +1652,31 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   });
   const autocompleteItems = (() => {
     const seen = new Set<string>();
-    const out: Array<{ label: string; instruction: string }> = [];
-    const push = (label: string, instruction: string): void => {
+    const out: Array<{ label: string; instruction: string; category?: string }> = [];
+    const push = (label: string, instruction: string, category?: string): void => {
       if (seen.has(instruction)) return;
       seen.add(instruction);
-      out.push({ label, instruction });
+      out.push({ label, instruction, ...(category ? { category } : {}) });
     };
-    for (const s of suggestions) push(s.label, s.instruction);
-    for (const cmd of SUGGESTED_REGION_COMMANDS) push(cmd.label, cmd.instruction);
+    for (const s of suggestions) push(s.label, s.instruction, s.category);
+    for (const cmd of ALL_REGION_COMMANDS) push(cmd.label, cmd.instruction, cmd.category);
     for (const recent of loadRecentInstructions()) push(`최근: ${recent.slice(0, 30)}`, recent);
     return out;
   })();
   let autocompleteSelected = 0;
   const renderAutocomplete = (filter: string): void => {
     const query = filter.toLowerCase();
-    const matches = autocompleteItems.filter((it) =>
+    // 카테고리 칩이 켜져 있으면 그 카테고리 안에서 찾는다. 예전에는 「다듬기」를 골라 둔 채 `/` 를
+    // 쳐도 전체 목록이 나와, 칩 필터와 `/` 목록이 서로 다른 상태를 보고 있었다.
+    // 그 카테고리에 맞는 항목이 없으면 전체로 넓힌다(찾을 수 있는 길을 막지 않는다).
+    const activeLabel = activeCategoryId
+      ? categories.find((category) => category.id === activeCategoryId)?.label ?? null
+      : null;
+    const scoped = activeLabel
+      ? autocompleteItems.filter((it) => it.category === activeLabel)
+      : autocompleteItems;
+    const pool = scoped.length > 0 ? scoped : autocompleteItems;
+    const matches = pool.filter((it) =>
       it.label.toLowerCase().includes(query) || it.instruction.toLowerCase().includes(query),
     );
     autocompleteHost.replaceChildren();
@@ -1675,7 +1762,14 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     class: "region-task-direct-disclosure",
     dataset: { testid: "region-task-direct-disclosure" },
     children: [
-      el("summary", { class: "region-task-direct-summary", text: "AI 없이 실내 초안" }),
+      el("summary", {
+        class: "region-task-direct-summary",
+        children: [
+          // 펼칠 수 있다는 표시. 「고급」 줄에는 셰브론이 있는데 이 줄에는 없어서 텍스트로만 보였다.
+          el("span", { class: "region-task-direct-chevron" }),
+          el("span", { text: "AI 없이 실내 초안 만들기" }),
+        ],
+      }),
       el("div", {
         class: "region-task-direct-body",
         children: [directPresetSelect, directModifierSelect, directRoomButton],
@@ -1692,10 +1786,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     children: [categoryRow, suggestionRow, textarea, autocompleteHost, actions],
   });
 
+  // 부분 적용은 compareHost(검토 본문)로 옮겼다 — 여기 남는 것은 개발자용 로그뿐이다.
   advancedBody.replaceChildren(
     el("div", { class: "region-task-advanced-row", children: [copyLogButton] }),
     log,
-    partialHost,
   );
 
   const asPopover = Boolean(options.anchor);
@@ -1738,6 +1832,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
   document.body.append(backdrop);
   modalRoot = backdrop;
+  // 코치/웰컴 카드는 이 팝오버의 본문(좌표 칩·결정 문장)을 덮는다 — 모달이 표면을 가져간다.
+  // databaseModal 과 같은 처리다. '본 것'으로 기록하지 않으므로 다음 부팅에 다시 안내한다.
+  dismissCoachMarks();
   dispatchModalOpenState(true);
   if (asPopover && options.anchor) {
     positionRegionTaskPopover(windowNode, options.anchor, options.avoid);

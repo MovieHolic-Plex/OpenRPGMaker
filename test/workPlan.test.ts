@@ -343,3 +343,92 @@ describe("canonical construction routing in work plans", () => {
     },
   );
 });
+
+describe("수정 요청 — 계획 단계에서 신축으로 새지 않는다", () => {
+  const NOW = new Date("2026-08-29T00:00:00.000Z");
+
+  it("플래너 프롬프트는 수정용 툴 어휘와 수정 레이어를 함께 제시한다", () => {
+    // 옛 프롬프트의 예시 툴은 전부 생성계라, 수정 요청도 create_map/author_* 로 분해됐다.
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("paint_tiles");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("tile_erase");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("move_event");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("furnish_interior_space");
+    // 수정 항목의 successTools 에는 생성툴을 넣지 말라는 지시.
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("Modify items list modify tools, never creation tools");
+    // 레이어 템플릿이 신규 전용임을 밝히고, 수정용 레이어를 따로 준다.
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("greenfield");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("Repair/adjust");
+    // 금지·보존 제약은 축약 예외.
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("금지·보존 제약");
+  });
+
+  it("플래너 페이로드에 대상 선택 규칙이 매 턴 실린다", () => {
+    const payload = buildOrchestratorUserPayload({ userText: "이 마을 담장 좀 고쳐줘", activePlan: null });
+    expect(payload).toContain("Target selection");
+    expect(payload).toContain("기존 산출물을 대상으로 삼는다");
+    expect(payload).toContain("create_map / duplicate_map / reset_project / start_interior_room_session");
+  });
+
+  it("targetMapId 는 계획에 저장되고 오케스트레이션 뷰에 재주입된다", () => {
+    // 뷰포트 없는 자율 계속 턴에도 대상이 남아야 한다.
+    const plan = workPlanFromOrchestratorDecision(
+      {
+        action: "new_plan",
+        goal: "광장 타일 교체",
+        layers: [{ title: "수정", items: [{ title: "석재 교체", instruction: "paint_tiles", doneWhen: "석재로 바뀜", successTools: ["paint_tiles"] }] }],
+      },
+      NOW,
+      "map_ember_square",
+    );
+    expect(plan.targetMapId).toBe("map_ember_square");
+    const view = formatWorkPlanForOrchestration(plan);
+    expect(view).toContain("Target map: map_ember_square");
+    expect(view).toContain("새 맵을 만들지 말고");
+  });
+
+  it("targetMapId 가 없으면 Target map 줄도 없다(신규 생성 요청)", () => {
+    const plan = buildDefaultWorkPlan("새 마을 하나 만들어줘", NOW);
+    expect(plan.targetMapId).toBeUndefined();
+    expect(formatWorkPlanForOrchestration(plan)).not.toContain("Target map:");
+  });
+
+  it("항목 전제가 틀렸으면 set_work_plan 으로 고치라고 안내한다", () => {
+    const plan = buildDefaultWorkPlan("새 마을 하나 만들어줘", NOW);
+    const view = formatWorkPlanForOrchestration(plan);
+    expect(view).toContain("set_work_plan");
+    expect(view).toContain("but the user asked to fix an existing one");
+  });
+
+  // 실측 사례: 이 goal 이 successTools=["author_village"] 로 떨어지고, author_village 는
+  // houseCount minimum 1 이라 "담장 수정" 항목이 "집 최소 1채 신축"을 완료 조건으로 가졌다.
+  it("'새로 만들지는 말고' 폴백은 생성기를 강제하지 않는다", () => {
+    const plan = buildDefaultWorkPlan(
+      "이 마을 담장이 엉망으로 깔렸어. 새로 만들지는 말고 지금 있는 것만 손봐줘.",
+      NOW,
+    );
+    const item = plan.layers[0]?.items[0];
+    expect(item?.successTools).toBeUndefined();
+    expect(item?.requiresAnyWrite).toBe(true);
+    // 폴백 지시문에 신축 금지가 동봉된다.
+    expect(item?.instruction).toContain("[대상 규칙]");
+    expect(item?.instruction).toContain("create_map");
+  });
+
+  it.each([
+    "이 집 외벽 타일 좀 바꿔줘",
+    "마을 길이 끊겼어 이어줘",
+    "이 도시 광장을 좀 넓혀줘",
+    "지금 있는 집들 위치만 옮겨줘",
+    "이 마을 정리해줘",
+  ])("수정 요청 '%s' 폴백은 author_* 를 강제하지 않는다", (goal) => {
+    const item = buildDefaultWorkPlan(goal, NOW).layers[0]?.items[0];
+    expect(item?.successTools).toBeUndefined();
+    expect(item?.requiresAnyWrite).toBe(true);
+  });
+
+  it("신축 요청 폴백은 종전대로 공식 facade 를 강제한다", () => {
+    const village = buildDefaultWorkPlan("현재 맵에 집 6채 마을을 만들어줘", NOW);
+    expect(village.layers[0]?.items[0]?.successTools).toEqual(["author_village"]);
+    expect(village.layers[0]?.items[0]?.instruction).not.toContain("[대상 규칙]");
+  });
+});

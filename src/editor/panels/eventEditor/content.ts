@@ -30,9 +30,24 @@ import { renderEventPagePreview, renderEventScriptFlowchart } from "./eventScrip
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
-import { loadStoryboardMode, renderStoryboard, renderViewToggle, type StoryboardMode } from "./storyboardView";
+import {
+  beginEventViewSession,
+  currentCommandQuery,
+  currentStoryboardMode,
+  renderStoryboard,
+  renderViewToggle,
+  setCommandQuery,
+  setStoryboardMode,
+  type StoryboardMode,
+} from "./storyboardView";
 import { newCommand } from "@/editor/eventActions";
-import { resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
+import {
+  resetCommandInspectorView,
+  selectedCommandPath,
+  setCommandInspectorHost,
+  setCommandSelectionListener,
+  showCommandInspector,
+} from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
@@ -46,9 +61,11 @@ import {
   renderPageTabs,
 } from "./pageProps";
 import type { CommandListActions } from "./types";
+import { commandKindLabel } from "./options";
 import { openFieldMonsterTemplateDialog } from "./fieldMonsterTemplateDialog";
 import { renderFollowerPresetBar } from "./followerPresetPicker";
-import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
+import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 
 export function renderEventEditorContent(container: HTMLElement, mapId: MapId, eventId: string): void {
   renderEventEditorDynamic(container, mapId, eventId);
@@ -136,8 +153,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   });
   setCommandInspectorHost(inspectorColumn);
   resetCommandInspectorView();
+  // 자리표시자 머리글은 명령 렌더보다 **먼저** 붙인다. 나중에 붙이면 선택이 복원된
+  // 인스펙터 본문 **아래로** 「선택한 명령」 머리글이 밀려 들어간다.
+  inspectorColumn.append(columnLabel("inspector", "선택한 명령", "명령을 고르면 여기에서 고칩니다"));
 
-  const storyboardMode = loadStoryboardMode();
+  // 보기 방식·검색어는 이 이벤트를 편집하는 동안 살아 있어야 한다. 스토어가 바뀌면
+  // modal.ts 가 본문을 통째로 다시 그리는데, 그때 localStorage 만 읽으면 미리보기가
+  // 저장된 저작 보기로 튕겨 나간다.
+  beginEventViewSession(`${mapId}:${ev.id}`);
+  const storyboardMode = currentStoryboardMode();
   const cmdList = el("div", { class: "cmd-list" });
   renderCommandList(cmdList, activePage.commands, [], actions, {
     issues: activePageIssues,
@@ -159,33 +183,52 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     dataset: { testid: "event-page-preview-host" },
   });
   let currentMode: StoryboardMode = storyboardMode;
+  // 스토리 보기의 선택도 목록과 **같은** 인스펙터를 채운다. 예전에는 카드 한 번 클릭이
+  // 곧바로 편집 모달을 열어서, 기본 보기인 스토리에서는 오른쪽 「선택한 명령」 칼럼이
+  // 영원히 비어 있고 툴바의 이동/복사가 대상을 찾지 못했다.
+  const selectStoryboardCommand = (path: number[]): void => {
+    const cmd = resolveCommandAtPath(activePage.commands, path);
+    if (!cmd) return;
+    showCommandInspector({ command: cmd, path, actions });
+  };
+  const openStoryboardEditor = (path: number[]): void => {
+    const cmd = resolveCommandAtPath(activePage.commands, path);
+    if (!cmd) return;
+    openEventCommandEditDialog({
+      initial: cmd,
+      lockKind: true,
+      onApply: (edited) => actions.replaceCommand(path, edited),
+    });
+  };
   const makeStoryboard = () =>
     renderStoryboard(activePage.commands, {
-      onSelect: (path) => {
-        const cmd = resolveCommandAtPath(activePage.commands, path);
-        if (!cmd) return;
-        openEventCommandEditDialog({
-          initial: cmd,
-          lockKind: true,
-          onApply: (edited) => actions.replaceCommand(path, edited),
-        });
-      },
+      onSelect: selectStoryboardCommand,
+      onOpenEditor: openStoryboardEditor,
+      onMove: (path, direction) => actions.moveCommand(path, direction),
+      onDelete: (path) => actions.deleteCommand(path),
       onAddNext: () => openCommandPickerForActions(actions),
       // 빈 이벤트 CTA: 말하기 / 장소 옮기기 / 상점 열기는 피커를 거치지 않고 바로 편집면으로.
       onQuickStart: (kind) => {
         openNewEventCommandDialog(newCommand(kind), (command) => actions.addCommand([], command));
       },
-      onShowList: () => { currentMode = "list"; applyViewMode(); },
+      selectedPath: selectedCommandPath(),
     });
   let storyboardEl = makeStoryboard();
-  let viewToggle = renderViewToggle(currentMode, (next) => { currentMode = next; applyViewMode(); });
+  const changeMode = (next: StoryboardMode): void => {
+    currentMode = next;
+    setStoryboardMode(next);
+    applyViewMode();
+  };
+  let viewToggle = renderViewToggle(currentMode, changeMode);
+  // 툴바가 아직 없는 시점에도 applyViewMode 가 안전하게 호출되도록 기본값은 빈 함수다.
+  let syncToolbarState: () => void = () => {};
   function applyViewMode(): void {
     const isPreview = currentMode === "preview";
     const isStoryboard = currentMode === "storyboard";
     cmdList.hidden = isStoryboard || isPreview;
     storyboardEl.hidden = !isStoryboard;
     previewHost.hidden = !isPreview;
-    const nextToggle = renderViewToggle(currentMode, (n) => { currentMode = n; applyViewMode(); });
+    const nextToggle = renderViewToggle(currentMode, changeMode);
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
     if (isStoryboard) {
@@ -193,6 +236,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       storyboardEl.replaceWith(fresh);
       storyboardEl = fresh;
       storyboardEl.hidden = false;
+      // 재렌더/보기 전환 뒤에도 선택한 명령이 인스펙터에 남아 있어야 한다.
+      const restored = selectedCommandPath();
+      if (restored) selectStoryboardCommand([...restored]);
     } else {
       storyboardEl.replaceChildren();
     }
@@ -201,9 +247,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     } else {
       previewHost.replaceChildren();
     }
+    syncToolbarState();
   }
   storyboardHost.append(storyboardEl);
-  applyViewMode();
 
   // NPC 연결 컨트롤은 삭제된 `display: none` identity 카드 안에 살았다 — 이제 그 주제가 속한
   // 「NPC와 일정」 그룹에서 사용자가 실제로 보고 누를 수 있다.
@@ -242,6 +288,27 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     node.replaceWith(replacement);
   });
   const aiAssist = renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList });
+  const commandToolbar = renderCommandToolbar({
+    cmdList,
+    actions,
+    commandHistory,
+    mapId,
+    eventId: ev.id,
+    page: activePage,
+    viewToggle,
+    aiDock: aiAssist,
+    onOpenPreview: () => {
+      changeMode("preview");
+      previewHost.scrollIntoView({ block: "nearest" });
+    },
+    currentMode: () => currentMode,
+    storyboardEl: () => storyboardEl,
+  });
+  // 툴바가 생긴 다음에야 검색·이동 버튼 상태를 맞출 수 있다. 첫 적용은 여기서 한 번.
+  syncToolbarState = commandToolbar.sync;
+  // 선택이 바뀌면(목록·스토리 어느 쪽이든) 편집 버튼 상태를 즉시 다시 계산한다.
+  setCommandSelectionListener(() => syncToolbarState());
+  applyViewMode();
   commandsColumn.append(
     columnLabel(
       "commands",
@@ -257,11 +324,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       attrs: { "aria-label": "이 페이지가 하는 일" },
       dataset: { testid: "event-script-canvas" },
       children: [
-        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage, viewToggle, () => {
-          currentMode = "preview";
-          applyViewMode();
-          previewHost.scrollIntoView({ block: "nearest" });
-        }, aiAssist),
+        commandToolbar.element,
         storyboardHost,
         previewHost,
         cmdList,
@@ -270,7 +333,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     // AI 작성기는 목록을 덮는 오버레이가 아니라 칼럼 맨 아래 도크다 — 삽입 위치가 계속 보인다.
     aiAssist,
   );
-  inspectorColumn.append(columnLabel("inspector", "선택한 명령", "명령을 고르면 여기에서 고칩니다"));
 
   const workbench = el("div", {
     class: `event-editor-workbench${inspectorColumn.hidden ? "" : " has-command-inspector"}`,
@@ -316,30 +378,165 @@ function activePageIdOf(mapId: MapId, eventId: string): string | null {
   return active.id;
 }
 
-function renderCommandToolbar(
-  cmdList: HTMLElement,
-  actions: CommandListActions,
-  commandHistory: CommandToolbarHistory,
-  mapId: MapId,
-  eventId: string,
-  page: EventPage,
-  viewToggle?: HTMLElement,
-  onOpenPreview?: () => void,
-  aiDock?: HTMLDetailsElement,
-): HTMLElement {
-  const selectedPath = (): number[] | null => {
-    const selected = cmdList.querySelector<HTMLElement>(".selected, .is-selected");
-    if (!selected?.dataset.cmdPath) return null;
-    try {
-      const path = JSON.parse(selected.dataset.cmdPath);
-      return Array.isArray(path) && path.every((part) => Number.isInteger(part)) ? path : null;
-    } catch {
-      return null;
+type CommandToolbarOptions = {
+  readonly cmdList: HTMLElement;
+  readonly actions: CommandListActions;
+  readonly commandHistory: CommandToolbarHistory;
+  readonly mapId: MapId;
+  readonly eventId: string;
+  readonly page: EventPage;
+  readonly viewToggle?: HTMLElement;
+  readonly aiDock?: HTMLDetailsElement;
+  readonly onOpenPreview?: () => void;
+  readonly currentMode: () => StoryboardMode;
+  readonly storyboardEl: () => HTMLElement;
+};
+
+type CommandToolbar = {
+  readonly element: HTMLElement;
+  /** 보기 전환·재렌더 뒤에 검색 필터와 편집 버튼 상태를 현재 화면에 맞춘다. */
+  readonly sync: () => void;
+};
+
+/**
+ * 명령 검색은 노드 **자기** 요약문만 본다. `textContent` 를 그대로 쓰면 분기를 품은
+ * 부모가 자식 텍스트까지 삼켜서 "일치 개수" 가 부풀고, 어떤 줄이 진짜 맞았는지 알 수 없다.
+ */
+function ownRowText(node: HTMLElement): string {
+  const chunks: string[] = [];
+  for (const child of Array.from(node.children) as HTMLElement[]) {
+    if (child.classList?.contains("cmd-head")) return child.textContent ?? "";
+    if (child.classList?.contains("kind") || child.classList?.contains("line")) {
+      chunks.push(child.textContent ?? "");
     }
+  }
+  return chunks.length > 0 ? chunks.join(" ") : (node.textContent ?? "");
+}
+
+/**
+ * 한 표시면을 걸러내고 일치 개수를 돌려준다.
+ * 부모를 숨기면 일치한 자식이 함께 사라지므로, 일치한 줄의 조상 줄은 항상 남긴다.
+ */
+function filterCommandSurface(surface: HTMLElement, query: string): number {
+  const rows = Array.from(surface.querySelectorAll<HTMLElement>("[data-cmd-path]"));
+  const branchGroups = Array.from(surface.querySelectorAll<HTMLElement>(".event-storyboard-branches"));
+  if (query.length === 0) {
+    for (const row of rows) row.hidden = false;
+    for (const group of branchGroups) group.hidden = false;
+    return rows.length;
+  }
+  // 경로로 조상을 찾는다. 스토리 보기는 분기 줄을 카드의 **형제**로 놓기 때문에
+  // DOM 조상 추적만으로는 부모 카드를 못 찾고, 부모를 숨겨 일치한 자식이 고아가 된다.
+  const byPath = new Map<string, HTMLElement>();
+  for (const row of rows) {
+    if (row.dataset.cmdPath) byPath.set(row.dataset.cmdPath, row);
+  }
+  const keep = new Set<HTMLElement>();
+  let matches = 0;
+  for (const row of rows) {
+    if (!ownRowText(row).toLocaleLowerCase("ko").includes(query)) continue;
+    matches += 1;
+    keep.add(row);
+    // 명령 경로는 [명령, 분기, 명령, 분기, …] 로 번갈아 놓인다 — 조상 명령은 홀수 길이 접두어다.
+    const path = parseCommandPath(row.dataset.cmdPath);
+    if (path) {
+      for (let length = 1; length < path.length; length += 2) {
+        const ancestor = byPath.get(JSON.stringify(path.slice(0, length)));
+        if (ancestor) keep.add(ancestor);
+      }
+    }
+    // 중첩이 DOM 으로 표현된 표시면(목록)도 함께 지지한다.
+    let parent = row.parentElement;
+    while (parent && parent !== surface) {
+      if (parent.dataset?.cmdPath) keep.add(parent);
+      parent = parent.parentElement;
+    }
+  }
+  for (const row of rows) row.hidden = !keep.has(row);
+  // 남은 줄이 하나도 없는 분기 묶음은 제목만 떠 있게 두지 않는다.
+  for (const group of branchGroups) {
+    group.hidden = Array.from(group.querySelectorAll<HTMLElement>("[data-cmd-path]"))
+      .every((row) => row.hidden);
+  }
+  return matches;
+}
+
+function parseCommandPath(raw: string | undefined): number[] | null {
+  if (!raw) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.every((part) => Number.isInteger(part))
+      ? (parsed as number[])
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/** `<details>` 팝오버를 Escape 층에 올린다 — Escape 가 에디터 전체를 닫지 않게. */
+function makePopoverEscapable(details: HTMLDetailsElement): void {
+  details.addEventListener("toggle", () => {
+    if (details.open) registerModal(details, () => { details.open = false; });
+    else unregisterModal(details);
+  });
+}
+
+function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
+  const { cmdList, actions, commandHistory, mapId, eventId, page, viewToggle, aiDock, onOpenPreview } = options;
+  // 선택의 단일 진상은 인스펙터다. 예전에는 `cmdList` 의 `.selected` 를 DOM 에서 긁었는데,
+  // 스토리 보기에서는 목록이 비어 있으니 무엇을 골라도 이동/복사가 조용히 아무 일도 안 했다.
+  const selectedPath = (): number[] | null => {
+    const path = selectedCommandPath();
+    if (!path) return null;
+    const copy = [...path];
+    // 삭제·되돌리기로 사라진 경로면 선택 없음으로 본다.
+    return resolveCommandAtPath(page.commands, copy) ? copy : null;
+  };
+  const moveBounds = (path: number[]): { readonly canUp: boolean; readonly canDown: boolean } => {
+    const list = resolveCommandListAtPath(page.commands, path);
+    const index = path[path.length - 1];
+    if (!list || index === undefined) return { canUp: false, canDown: false };
+    return { canUp: index > 0, canDown: index < list.length - 1 };
   };
   const runForSelected = (run: (path: number[]) => void): void => {
     const path = selectedPath();
-    if (path) run(path);
+    if (!path) {
+      toast("먼저 명령을 하나 고르세요.", "error");
+      return;
+    }
+    run(path);
+  };
+  const moveUp = toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1)));
+  const moveDown = toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)));
+  const copyButton = toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path)));
+  const cutButton = toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)));
+  // 무엇에 적용되는지 팝오버가 직접 말한다 — 눌러 보고 나서야 아무 일도 없음을 알게 되지 않도록.
+  const editTarget = el("p", {
+    class: "event-editor-command-edit-target",
+    dataset: { testid: "event-command-edit-target" },
+  });
+  const setDisabled = (button: HTMLButtonElement, disabled: boolean): void => {
+    button.disabled = disabled;
+    if (disabled) button.setAttribute("aria-disabled", "true");
+    else button.removeAttribute("aria-disabled");
+  };
+  const syncEditTools = (): void => {
+    const path = selectedPath();
+    if (!path) {
+      editTarget.textContent = "고른 명령이 없습니다. 먼저 명령을 한 번 클릭하세요.";
+      editTarget.dataset.state = "empty";
+      for (const button of [moveUp, moveDown, copyButton, cutButton]) setDisabled(button, true);
+      return;
+    }
+    const bounds = moveBounds(path);
+    const command = resolveCommandAtPath(page.commands, path);
+    const humanIndex = (path[path.length - 1] ?? 0) + 1;
+    editTarget.textContent = `${humanIndex}번째 ${command ? commandKindLabel(command.kind) : "명령"}에 적용됩니다.`;
+    editTarget.dataset.state = "selected";
+    setDisabled(moveUp, !bounds.canUp);
+    setDisabled(moveDown, !bounds.canDown);
+    setDisabled(copyButton, false);
+    setDisabled(cutButton, false);
   };
   const editTools = el("details", {
     class: "event-editor-command-edit-menu",
@@ -353,39 +550,80 @@ function renderCommandToolbar(
       el("div", {
         class: "event-editor-command-edit-popover",
         children: [
-          toolGroup(
-            toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1))),
-            toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)))
-          ),
-          toolGroup(
-            toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path))),
-            toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)))
-          ),
+          editTarget,
+          toolGroup(moveUp, moveDown),
+          toolGroup(copyButton, cutButton),
         ],
       }),
     ],
-  });
+  }) as HTMLDetailsElement;
+  // 팝오버가 열릴 때마다 상태를 다시 계산한다 — 버튼이 보이는 순간이 곧 이 시점이다.
+  editTools.addEventListener("toggle", () => { if (editTools.open) syncEditTools(); });
+  makePopoverEscapable(editTools);
   const toolsMenu = renderEventToolsMenu(mapId, eventId, page);
+  makePopoverEscapable(toolsMenu);
+
+  const searchCount = el("span", {
+    class: "event-editor-command-search-count",
+    dataset: { testid: "event-command-search-count" },
+    attrs: { role: "status", "aria-live": "polite" },
+  });
   const commandSearch = el("input", {
     class: "search event-editor-command-search",
     attrs: { type: "search", placeholder: "명령 검색", "aria-label": "명령 검색" },
     dataset: { testid: "event-command-search" },
   }) as HTMLInputElement;
+  // 입력창은 매 렌더 새로 만들어진다 — 값은 편집 세션이 들고 있어야 살아남는다.
+  commandSearch.value = currentCommandQuery();
+  const searchClear = el("button", {
+    class: "event-editor-command-search-clear",
+    text: "×",
+    attrs: { type: "button", title: "검색 지우기", "aria-label": "검색 지우기" },
+    dataset: { testid: "event-command-search-clear" },
+    on: {
+      click: () => {
+        setCommandQuery("");
+        commandSearch.value = "";
+        applySearch();
+      },
+    },
+  }) as HTMLButtonElement;
+
+  /** 검색은 두 표시면(목록·스토리) 모두에 같은 조건으로 걸린다. */
+  function applySearch(): void {
+    const query = currentCommandQuery().trim().toLocaleLowerCase("ko");
+    const isPreview = options.currentMode() === "preview";
+    // 미리보기에는 걸러낼 줄이 없다 — 못 하는 일을 할 수 있는 척하지 않는다.
+    commandSearch.disabled = isPreview;
+    commandSearch.title = isPreview ? "미리보기에서는 검색할 수 없습니다. 목록이나 스토리로 바꾸세요." : "명령 검색";
+    searchClear.hidden = query.length === 0;
+    const listMatches = filterCommandSurface(cmdList, query);
+    const storyMatches = filterCommandSurface(options.storyboardEl(), query);
+    if (query.length === 0 || isPreview) {
+      searchCount.textContent = "";
+      delete searchCount.dataset.state;
+      return;
+    }
+    const matches = options.currentMode() === "storyboard" ? storyMatches : listMatches;
+    searchCount.textContent = matches > 0 ? `${matches}개 일치` : "일치 없음";
+    searchCount.dataset.state = matches > 0 ? "hit" : "miss";
+  }
   commandSearch.addEventListener("input", () => {
-    const query = commandSearch.value.trim().toLocaleLowerCase("ko");
-    const surface = cmdList.hidden ? cmdList.parentElement?.querySelector<HTMLElement>(".event-storyboard") : cmdList;
-    surface?.querySelectorAll<HTMLElement>("[data-cmd-path]").forEach((node) => {
-      node.hidden = query.length > 0 && !node.textContent?.toLocaleLowerCase("ko").includes(query);
-    });
+    setCommandQuery(commandSearch.value);
+    applySearch();
   });
-  return el("div", {
+
+  const element = el("div", {
     class: "toolbar event-editor-command-toolbar",
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
     children: [
       toolbarButton("+", "명령", "event-command-toolbar-add", () => {
         openCommandPickerForActions(actions);
       }, false, true),
-      commandSearch,
+      el("div", {
+        class: "event-editor-command-search-field",
+        children: [commandSearch, searchClear, searchCount],
+      }),
       toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
       toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
       editTools,
@@ -394,6 +632,13 @@ function renderCommandToolbar(
       renderCommandAuxGroup(onOpenPreview, aiDock),
     ],
   });
+  return {
+    element,
+    sync: () => {
+      applySearch();
+      syncEditTools();
+    },
+  };
 }
 
 function renderCommandAuxGroup(onOpenPreview?: () => void, aiDock?: HTMLDetailsElement): HTMLElement {
@@ -436,7 +681,7 @@ function renderEventToolsMenu(
   mapId: MapId,
   eventId: string,
   page: EventPage
-): HTMLElement {
+): HTMLDetailsElement {
   const auxTools = el("div", {
     class: "event-editor-command-tools-popover event-editor-aux-tools",
     children: [

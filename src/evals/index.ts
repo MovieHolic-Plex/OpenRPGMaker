@@ -12,6 +12,9 @@
 export {
   scoreProject,
   mapCountAtLeast,
+  mapCountAtMost,
+  mapCountExactly,
+  mapIdsUnchanged,
   switchNamed,
   itemExists,
   troopExists,

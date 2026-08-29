@@ -91,13 +91,23 @@ describe("equipmentEffectSummaryChips (pure)", () => {
     expect(summary.flags).toContain("2회 공격");
   });
 
-  it("returns empty collections when all flags/badges/counts are off", () => {
+  it("returns no optional flags or badges when all optional effects are off", () => {
     const summary = equipmentEffectSummaryChips(
       normalizeEquipmentRecord({ id: "equip_empty", name: "빈 장비", effectFlags: allFlagsFalse() }),
     );
     expect(summary.flags).toEqual([]);
     expect(summary.badges).toEqual([]);
-    expect(summary.counts).toEqual([]);
+    expect(summary.counts).toEqual(["명중률 100%", "치명타율 +0%p"]);
+  });
+
+  it("distinguishes otherwise identical equipment by accuracy and critical rate", () => {
+    const first = normalizeEquipmentRecord({ id: "equip_axes_a", name: "비교 A", accuracy: 100, criticalRate: 3 });
+    const second = normalizeEquipmentRecord({ id: "equip_axes_b", name: "비교 B", accuracy: 80, criticalRate: 15 });
+
+    expect(equipmentEffectSummaryChips(first).counts).toEqual(["명중률 100%", "치명타율 +3%p"]);
+    expect(equipmentEffectSummaryChips(second).counts).toEqual(["명중률 80%", "치명타율 +15%p"]);
+    expect(equipmentEffectStory(store.getCurrent(), first).effects).toContain("명중률 100%");
+    expect(equipmentEffectStory(store.getCurrent(), second).effects).toContain("치명타율 +15%p");
   });
 
   it("includes twoHanded and cursed badges", () => {
@@ -233,6 +243,27 @@ describe("equipmentEffectStory and actor comparison (pure)", () => {
 });
 
 describe("equipment detail-form summary chips (G004)", () => {
+  it("edits accuracy and critical rate within 0-100 and refreshes the inspector", () => {
+    seedEquipment({ accuracy: 100, criticalRate: 0 });
+    const host = renderForm();
+    const accuracy = findByTestId(host, "db-field-equipment-accuracy");
+    const criticalRate = findByTestId(host, "db-field-equipment-critical-rate");
+    if (!accuracy || !criticalRate) throw new Error("missing combat axis controls");
+
+    expect(accuracy.attrs.min).toBe("0");
+    expect(accuracy.attrs.max).toBe("100");
+    expect(criticalRate.attrs.min).toBe("0");
+    expect(criticalRate.attrs.max).toBe("100");
+    accuracy.value = "82";
+    accuracy.dispatchEvent(new Event("input"));
+    criticalRate.value = "16";
+    criticalRate.dispatchEvent(new Event("input"));
+
+    expect(store.getCurrent().database.equipment[0]).toMatchObject({ accuracy: 82, criticalRate: 16 });
+    expect(chipTexts(host)).toEqual(expect.arrayContaining(["명중률 82%", "치명타율 +16%p"]));
+    expect(findByTestId(host, "db-equipment-effect-story")?.textContent).toContain("명중률 82%");
+  });
+
   it("shows 2회 공격 chip when doubleAttack is true", () => {
     seedEquipment({ effectFlags: { ...allFlagsFalse(), doubleAttack: true } });
     const host = renderForm();
@@ -240,13 +271,11 @@ describe("equipment detail-form summary chips (G004)", () => {
     expect(findByTestId(host, "db-equipment-summary-empty")).toBeNull();
   });
 
-  it("shows muted 효과 없음 when every effect flag/badge/count is empty", () => {
+  it("shows combat axes instead of muted 효과 없음 when every optional effect is empty", () => {
     seedEquipment();
     const host = renderForm();
-    const empty = findByTestId(host, "db-equipment-summary-empty");
-    expect(empty).not.toBeNull();
-    expect(empty?.textContent).toBe("효과 없음");
-    expect(chipTexts(host)).toEqual(["효과 없음"]);
+    expect(findByTestId(host, "db-equipment-summary-empty")).toBeNull();
+    expect(chipTexts(host)).toEqual(["명중률 100%", "치명타율 +0%p"]);
   });
 
   it("shows twoHanded and cursed badges when set", () => {
@@ -261,7 +290,7 @@ describe("equipment detail-form summary chips (G004)", () => {
   it("rebuilds chips from currentEquipment after doubleAttack toggle (no stale empty)", () => {
     seedEquipment();
     const host = renderForm();
-    expect(findByTestId(host, "db-equipment-summary-empty")?.textContent).toBe("효과 없음");
+    expect(findByTestId(host, "db-equipment-summary-empty")).toBeNull();
 
     const double = findByTestId(host, "db-field-equipment-effect-double");
     if (!double) throw new Error("missing doubleAttack control");
@@ -277,7 +306,7 @@ describe("equipment detail-form summary chips (G004)", () => {
     double.checked = false;
     double.dispatchEvent(new Event("change"));
     expect(store.getCurrent().database.equipment[0]?.effectFlags.doubleAttack).toBe(false);
-    expect(findByTestId(host, "db-equipment-summary-empty")?.textContent).toBe("효과 없음");
-    expect(chipTexts(host)).toEqual(["효과 없음"]);
+    expect(findByTestId(host, "db-equipment-summary-empty")).toBeNull();
+    expect(chipTexts(host)).toEqual(["명중률 100%", "치명타율 +0%p"]);
   });
 });

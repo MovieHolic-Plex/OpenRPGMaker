@@ -1,6 +1,11 @@
-import { canMove, inBounds } from "@/project/collision";
+import { canMove, canMoveFootprint, inBounds } from "@/project/collision";
+import {
+  armTerrainComponents,
+  terrainMayReach,
+  terrainReachFilter,
+} from "@/project/tilePassabilityComponents";
 import { resolveKiteIntent, type KiteBand } from "@/battle/action/kiting";
-import type { Dir, GameMap, Project, Rect } from "@/project/types";
+import type { CharacterFootprint, Dir, GameMap, Project, Rect } from "@/project/types";
 
 const REPATH_INTERVAL_MS = 500;
 const DIRECTIONS: readonly { readonly dir: Dir; readonly x: number; readonly y: number }[] = [
@@ -22,6 +27,13 @@ export type ChaseRuntimeState = {
   chasePath?: ChasePoint[];
   chaseActive?: boolean;
   chaseHome?: ChasePoint;
+  /**
+   * 직전 재탐색이 빈 경로를 냈는가. 도달 불가한 표적은 A* 전체 탐색을 매 프레임 반복하게
+   * 만들었다(실측 100×100 도달불가 174ms/프레임/NPC). 이 표시가 있으면 다음 재탐색은
+   * REPATH_INTERVAL_MS 를 기다린다. 경로가 **소진돼서** 빈 경우는 표시가 없으므로
+   * 예전처럼 즉시 재탐색한다 — 추격 반응성은 그대로다.
+   */
+  chasePathBlocked?: boolean;
 };
 
 export type ChaseDecision =
@@ -45,6 +57,8 @@ export function nextChaseDecision(input: {
   readonly pathfind?: boolean;
   /** 원거리 적의 거리 유지 밴드. 주면 붙지 않고 선호 거리를 지킨다. */
   readonly kite?: KiteBand;
+  /** 추격자 자신의 통행 사각. 생략 시 1x1 — 기존 호출부는 동작이 안 바뀐다. */
+  readonly pass?: ChasePassSize;
 }): ChaseDecision {
   const { mover } = input;
   mover.chaseHome ??= { ...input.from };
@@ -79,7 +93,7 @@ export function nextChaseDecision(input: {
     }
     if (intent === "retreat") {
       mover.chasePath = [];
-      const step = retreatStep(input.project, input.map, input.from, input.player);
+      const step = retreatStep(input.project, input.map, input.from, input.player, input.pass);
       if (!step) return { kind: "wait" };
       const away = directionForDelta(step.x - input.from.x, step.y - input.from.y);
       if (!away) return { kind: "wait" };
@@ -88,18 +102,21 @@ export function nextChaseDecision(input: {
     }
   }
 
-  if (mover.chaseRepathTimerMs >= REPATH_INTERVAL_MS || !mover.chasePath || mover.chasePath.length === 0) {
+  const pathExhausted = !mover.chasePath || mover.chasePath.length === 0;
+  if (mover.chaseRepathTimerMs >= REPATH_INTERVAL_MS || (pathExhausted && mover.chasePathBlocked !== true)) {
     mover.chasePath = input.pathfind === false
-      ? directStepPath(input.project, input.map, input.from, input.player)
-      : findChasePath(input.project, input.map, input.from, input.player);
+      ? directStepPath(input.project, input.map, input.from, input.player, input.pass)
+      : findChasePath(input.project, input.map, input.from, input.player, input.pass);
     mover.chaseRepathTimerMs = 0;
+    mover.chasePathBlocked = mover.chasePath.length === 0;
   }
 
-  const next = mover.chasePath[0];
+  const path = mover.chasePath ?? [];
+  const next = path[0];
   if (!next) return { kind: "wait" };
   const dir = directionForDelta(next.x - input.from.x, next.y - input.from.y);
   if (!dir) {
-    mover.chasePath = mover.chasePath.slice(1);
+    mover.chasePath = path.slice(1);
     return { kind: "wait" };
   }
   mover.timer = 0;
@@ -107,41 +124,90 @@ export function nextChaseDecision(input: {
   if (next.x === input.player.x && next.y === input.player.y) {
     return input.kite ? { kind: "wait" } : { kind: "touch", dir };
   }
-  mover.chasePath = mover.chasePath.slice(1);
+  mover.chasePath = path.slice(1);
   return { kind: "move", x: next.x, y: next.y, dir };
 }
 
+/**
+ * 추격자 자신의 통행 사각 크기. 생략하면 1x1 이고, 그 경우 `chasePassable` 은
+ * `canMove` 1회로 환원된다 — 기존 추격 동작이 그대로다.
+ */
+export type ChasePassSize = {
+  readonly footprint: CharacterFootprint;
+  readonly passRows: number;
+};
+
+/** 추격자의 통행 사각으로 한 칸 이동 가능한가. pass 생략 시 canMove 와 같다. */
+function chasePassable(
+  project: Project,
+  map: GameMap,
+  from: ChasePoint,
+  to: ChasePoint,
+  pass: ChasePassSize | undefined
+): boolean {
+  if (!pass) return canMove(project, map, from.x, from.y, to.x, to.y);
+  return canMoveFootprint(project, map, from.x, from.y, pass.footprint, to.x, to.y, pass.passRows);
+}
+
+/**
+ * A* 한 칸 경로. 결과는 예전 구현과 **바이트 단위로 같다** — 자료구조만 바꿨다.
+ *
+ * 왜: 예전에는 while 반복마다 open 을 정렬하고(O(n log n)) 개선된 노드를 findIndex 로
+ * 훑었다(O(n)). 문자열 키 `"x,y"` 도 반복마다 새 문자열을 만들었다. 실측 100×100
+ * 도달불가 탐색이 174ms/호출 — 프레임 예산 16.7ms 의 10배다. 이진 최소힙 + 정수 키
+ * (`y * width + x`) 로 23.6ms 가 된다.
+ *
+ * 순서가 같은 이유: 비교자(f → h → order)의 order 는 키마다 유일하므로 open 안에서
+ * 전순서다. 즉 정렬 후 shift 와 힙 pop 이 같은 노드를 뽑는다. 개선(decrease-key)은
+ * 지연 삭제로 둔다 — 개선 노드는 g 가 반드시 더 작아 f 도 작으므로 낡은 항목보다 먼저
+ * 나오고, 낡은 항목은 pop 시점에 nodes 최신본과 다르다는 것으로 걸러진다.
+ */
 export function findChasePath(
   project: Project,
   map: GameMap,
   from: ChasePoint,
-  to: ChasePoint
+  to: ChasePoint,
+  pass?: ChasePassSize
 ): ChasePoint[] {
   if (!inBounds(map, from.x, from.y) || !inBounds(map, to.x, to.y)) return [];
   if (from.x === to.x && from.y === to.y) return [];
-  const open: AStarNode[] = [{
+  // 지형 성분이 다르면 아래 탐색은 맵 절반을 훑고 반드시 빈 경로를 낸다 — 그 결과를
+  // 색인에서 바로 읽는다(실측 6.7ms → 25µs). 발자국 이동은 통행 관계가 비대칭이라
+  // 색인 대상이 아니므로 pass 가 있으면 건너뛴다(tilePassabilityComponents 머리 주석).
+  if (!pass && !terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return [];
+  const width = map.width;
+  const start: AStarNode = {
     point: from,
-    key: pointKey(from),
+    key: from.y * width + from.x,
     g: 0,
     h: manhattan(from, to),
     order: 0,
-  }];
-  const nodes = new Map<string, AStarNode>([[pointKey(from), open[0] as AStarNode]]);
-  const closed = new Set<string>();
+  };
+  const open = new NodeHeap();
+  open.push(start);
+  const nodes = new Map<number, AStarNode>([[start.key, start]]);
+  const closed = new Set<number>();
   let order = 1;
 
-  while (open.length > 0) {
-    open.sort(compareNode);
-    const current = open.shift();
+  while (open.size > 0) {
+    const current = open.pop();
     if (!current) break;
+    // 지연 삭제된 낡은 항목. 같은 칸의 더 좋은 노드가 이미 처리됐다.
+    if (nodes.get(current.key) !== current) continue;
     if (current.point.x === to.x && current.point.y === to.y) return reconstructPath(current);
     closed.add(current.key);
 
     for (const direction of DIRECTIONS) {
-      const next = { x: current.point.x + direction.x, y: current.point.y + direction.y };
-      if (!canMove(project, map, current.point.x, current.point.y, next.x, next.y)) continue;
-      const key = pointKey(next);
+      const nx = current.point.x + direction.x;
+      const ny = current.point.y + direction.y;
+      // 정수 키는 맵 안에서만 유일하다(x = -1 은 윗줄 마지막 칸과 충돌).
+      // 통행 판정도 같은 조건으로 막지만(collision.ts inBounds) 키를 만들기 전에 걸러야 한다.
+      if (nx < 0 || ny < 0 || nx >= width || ny >= map.height) continue;
+      const key = ny * width + nx;
+      // closed 를 통행 판정 앞에 둔다 — 판정의 절반은 이미 처리한 칸에 쓰이고 있었다.
       if (closed.has(key)) continue;
+      const next = { x: nx, y: ny };
+      if (!chasePassable(project, map, current.point, next, pass)) continue;
       const g = current.g + 1;
       const existing = nodes.get(key);
       if (existing && existing.g <= g) continue;
@@ -155,14 +221,76 @@ export function findChasePath(
       };
       if (!existing) order += 1;
       nodes.set(key, node);
-      if (!existing) open.push(node);
-      else {
-        const index = open.findIndex((entry) => entry.key === key);
-        if (index >= 0) open[index] = node;
-      }
+      open.push(node);
     }
   }
+  // 여기 닿았다는 건 from 의 성분 전체를 훑고도 to 를 못 만났다는 뜻이다. 그 탐색 값을
+  // 성분 색인으로 남겨 같은 질의가 반복될 때 다시 훑지 않게 한다. 발자국 이동은 색인의
+  // 대칭 전제를 만족하지 않으므로 남기지 않는다.
+  if (!pass) armTerrainComponents(project, map);
   return [];
+}
+
+/**
+ * from 에서 4방향으로 도달할 수 있는 후보 중 가장 가까운 것. 동률은 candidates 배열에서
+ * 앞선 것을 고른다(예전의 안정 정렬과 같은 규칙).
+ *
+ * 왜: 후보마다 A* 를 따로 돌리면 100×100 맵 경계 396칸 질의가 150ms/프레임이었다.
+ * 너비 우선으로 한 번만 퍼지면 같은 답을 얻는다 — 한 칸 비용이 1 이므로 BFS 깊이가
+ * 곧 최단 경로 길이다. accept 는 후보를 실제로 고를 때만 부르므로(닿은 것만) 예전처럼
+ * 396칸 전부에 인접 통행 검사를 돌리지 않는다.
+ */
+export function nearestReachableCandidate(
+  project: Project,
+  map: GameMap,
+  from: ChasePoint,
+  candidates: readonly ChasePoint[],
+  accept?: (point: ChasePoint) => boolean
+): ChasePoint | null {
+  if (!inBounds(map, from.x, from.y)) return null;
+  const width = map.width;
+  const targets = new Map<number, number>();
+  // 성분이 다른 후보는 아래 BFS 가 절대 닿지 못한다 — 미리 빼도 답과 동률 규칙이 같다.
+  // 집 안에 갇힌 주민처럼 **모든** 후보가 빠지는 경우가 이 걸러내기의 목적이다:
+  // 예전에는 그때마다 자기 성분 전체를 훑었다. 판정기를 한 번 만들어 돌려 쓰는 이유는
+  // 지문 검증을 후보마다 되풀이하지 않기 위해서다(tilePassabilityComponents 참조).
+  const mayReach = terrainReachFilter(project, map, from.x, from.y);
+  for (const [index, point] of candidates.entries()) {
+    if (!mayReach(point.x, point.y)) continue;
+    const key = point.y * width + point.x;
+    if (!targets.has(key)) targets.set(key, index);
+  }
+  if (targets.size === 0) return null;
+  const visited = new Set<number>([from.y * width + from.x]);
+  let frontier: ChasePoint[] = [from];
+  while (frontier.length > 0) {
+    let best = -1;
+    for (const point of frontier) {
+      const index = targets.get(point.y * width + point.x);
+      if (index === undefined) continue;
+      if (best >= 0 && index > best) continue;
+      if (accept && !accept(point)) continue;
+      best = index;
+    }
+    if (best >= 0) return candidates[best] ?? null;
+    const next: ChasePoint[] = [];
+    for (const point of frontier) {
+      for (const direction of DIRECTIONS) {
+        const nx = point.x + direction.x;
+        const ny = point.y + direction.y;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= map.height) continue;
+        const key = ny * width + nx;
+        if (visited.has(key)) continue;
+        if (!canMove(project, map, point.x, point.y, nx, ny)) continue;
+        visited.add(key);
+        next.push({ x: nx, y: ny });
+      }
+    }
+    frontier = next;
+  }
+  // findChasePath 와 같은 이유로 색인을 남긴다 — 방금 from 의 성분을 전부 훑었다.
+  armTerrainComponents(project, map);
+  return null;
 }
 
 export function isInSafeZone(safeZones: readonly Rect[] | undefined, point: ChasePoint): boolean {
@@ -174,20 +302,32 @@ export function isInSafeZone(safeZones: readonly Rect[] | undefined, point: Chas
   ));
 }
 
-function directStepPath(project: Project, map: GameMap, from: ChasePoint, to: ChasePoint): ChasePoint[] {
+function directStepPath(
+  project: Project,
+  map: GameMap,
+  from: ChasePoint,
+  to: ChasePoint,
+  pass: ChasePassSize | undefined
+): ChasePoint[] {
   const candidates = [...DIRECTIONS]
     .map((direction) => ({ x: from.x + direction.x, y: from.y + direction.y }))
-    .filter((point) => canMove(project, map, from.x, from.y, point.x, point.y))
+    .filter((point) => chasePassable(project, map, from, point, pass))
     .sort((a, b) => manhattan(a, to) - manhattan(b, to));
   return candidates[0] ? [candidates[0]] : [];
 }
 
 // 후퇴 한 걸음. 플레이어에서 가장 멀어지는 통행 가능 칸을 고른다(체비셰프 우선, 맨해튼 타이브레이크).
 // 뒷걸짐이 생기지 않으면(모리 끌입) null — 그럴 땐 그자리에서 버틴다.
-function retreatStep(project: Project, map: GameMap, from: ChasePoint, player: ChasePoint): ChasePoint | null {
+function retreatStep(
+  project: Project,
+  map: GameMap,
+  from: ChasePoint,
+  player: ChasePoint,
+  pass: ChasePassSize | undefined
+): ChasePoint | null {
   const candidates = [...DIRECTIONS]
     .map((direction) => ({ x: from.x + direction.x, y: from.y + direction.y }))
-    .filter((point) => canMove(project, map, from.x, from.y, point.x, point.y))
+    .filter((point) => chasePassable(project, map, from, point, pass))
     .filter((point) => !(point.x === player.x && point.y === player.y))
     .sort((a, b) => (
       (chebyshev(b, player) - chebyshev(a, player)) || (manhattan(b, player) - manhattan(a, player))
@@ -215,7 +355,8 @@ function chebyshev(a: ChasePoint, b: ChasePoint): number {
 
 type AStarNode = {
   readonly point: ChasePoint;
-  readonly key: string;
+  /** 정수 타일 키 `y * map.width + x`. 맵 안에서만 유일하다. */
+  readonly key: number;
   readonly g: number;
   readonly h: number;
   readonly order: number;
@@ -230,6 +371,53 @@ function compareNode(a: AStarNode, b: AStarNode): number {
   return a.order - b.order;
 }
 
+/** compareNode 기준 이진 최소힙. 지연 삭제를 쓰므로 decrease-key 없이 push 만 한다. */
+class NodeHeap {
+  private readonly items: AStarNode[] = [];
+
+  get size(): number {
+    return this.items.length;
+  }
+
+  push(node: AStarNode): void {
+    const items = this.items;
+    items.push(node);
+    let index = items.length - 1;
+    while (index > 0) {
+      const parent = (index - 1) >> 1;
+      const above = items[parent] as AStarNode;
+      if (compareNode(above, items[index] as AStarNode) <= 0) break;
+      items[parent] = items[index] as AStarNode;
+      items[index] = above;
+      index = parent;
+    }
+  }
+
+  pop(): AStarNode | undefined {
+    const items = this.items;
+    const top = items[0];
+    const last = items.pop();
+    if (items.length === 0 || last === undefined) return top;
+    items[0] = last;
+    let index = 0;
+    for (;;) {
+      const left = index * 2 + 1;
+      if (left >= items.length) break;
+      const right = left + 1;
+      let smallest = left;
+      if (right < items.length && compareNode(items[right] as AStarNode, items[left] as AStarNode) < 0) {
+        smallest = right;
+      }
+      if (compareNode(items[smallest] as AStarNode, items[index] as AStarNode) >= 0) break;
+      const swap = items[index] as AStarNode;
+      items[index] = items[smallest] as AStarNode;
+      items[smallest] = swap;
+      index = smallest;
+    }
+    return top;
+  }
+}
+
 function reconstructPath(node: AStarNode): ChasePoint[] {
   const path: ChasePoint[] = [];
   let current: AStarNode | undefined = node;
@@ -238,8 +426,4 @@ function reconstructPath(node: AStarNode): ChasePoint[] {
     current = current.prev;
   }
   return path.reverse();
-}
-
-function pointKey(point: ChasePoint): string {
-  return `${point.x},${point.y}`;
 }

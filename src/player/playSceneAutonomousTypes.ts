@@ -1,4 +1,6 @@
 import type { CharacterSprite } from "@/player/characterDepth";
+import type { CharacterHop } from "@/player/characterHop";
+import type { HopVisualScene } from "@/player/characterHopRuntime";
 import type { Dir } from "@/player/input";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -19,7 +21,7 @@ export type AutonomousNpcSceneContext = Pick<
   readonly refreshRuntimeSurfaces?: PlaySceneContext["refreshRuntimeSurfaces"];
   readonly syncRuntimeState?: PlaySceneContext["syncRuntimeState"];
   readonly commandMoveRouteEventIds?: PlaySceneContext["commandMoveRouteEventIds"];
-};
+} & HopVisualScene;
 
 export type AutonomousNpcSprite = CharacterSprite & {
   readonly texture: { readonly key: string };
@@ -34,4 +36,6 @@ export type MovementDelta = {
   readonly y: number;
   readonly face: Dir;
   readonly jump?: boolean;
+  /** 체공 곡선(점프 포물선/낙하 중력). jump=true 일 때만 의미가 있다. */
+  readonly hop?: CharacterHop;
 };

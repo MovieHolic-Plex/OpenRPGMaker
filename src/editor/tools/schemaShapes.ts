@@ -233,6 +233,19 @@ export const VILLAGE_HOUSE_PLAN_SCHEMA: JsonSchema = {
   },
 };
 
+/**
+ * 방 하네스 세션/파이프라인의 파괴적 재시공 옵트인.
+ *
+ * 기본은 거부(`map-exists`)다 — 존재 검사 없이 대입하던 시절 기존 실내 맵이 무음으로 지워졌다
+ * (2026-08-29 modify 진단). 모델이 정말 폐기를 의도할 때만 이 플래그를 켠다.
+ */
+export const REPLACE_EXISTING_SCHEMA: JsonSchema = {
+  type: "boolean",
+  description:
+    "기존 맵 id 를 대상으로 삼을 때만 true. 그 맵의 타일·이벤트가 전부 삭제되고 빈 방으로 교체된다. "
+    + "기존 맵을 고치려는 요청이면 이 플래그를 쓰지 말고 furnish_interior_space/fill_region/tile_erase 를 써라.",
+};
+
 /** 마을 NPC 계획 — `{name, lines?}`. */
 export const VILLAGE_NPC_PLAN_SCHEMA: JsonSchema = {
   type: "object",

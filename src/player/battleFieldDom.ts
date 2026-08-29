@@ -1,6 +1,7 @@
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
+import { POSE_FRAME } from "@/battle/battlePose";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 import type { DamageFeedback } from "@/player/battleSequencer";
@@ -36,12 +37,13 @@ interface SkinBattlerPlacement {
 }
 
 // 세로 배치의 단일 규칙(12종 공통):
-//  · 저작 y 는 **스프라이트의 발**이다. 노드는 `translate(-50%, -100%)` 라 앵커가 원래
-//    이름표+HUD 스택 **아래**에 잡혔고(그래서 스프라이트가 그만큼 떠 있었다), 지금은
-//    `alignEnemyFeetToAuthoredY` 가 그 스택 높이를 실측해 노드를 내려 보정한다.
-//    실측 스택 높이: rm2003 33px · vxace 60 · rm2000·dragonquest 97 · octopath·bravely 109
-//    · mv 115 · chrono·ff·mother·goldensun 133.
-//  · 그래서 y 의 상한은 "발 + 스택이 필드 안" 이다 — 스택이 두꺼운 스킨은 y 를 더 못 내린다.
+//  · 저작 y 는 **스프라이트의 발**이다. 노드는 `translate(-50%, -100%)` 로 아래쪽을 앵커로
+//    쓰고, 이름표·HUD 는 `.battle-enemy-chrome` 이 흐름에서 빼내 겹쳐 놓으므로
+//    노드 높이 = 스프라이트 높이다. 즉 앵커가 곧 발이고 보정이 필요 없다.
+//    (옛 실측 보정 시절 스택 높이: rm2003 33px · vxace 60 · rm2000·dragonquest 97
+//     · octopath·bravely 109 · mv 115 · chrono·ff·mother·goldensun 133. HUD 를 펼칠 때마다
+//     이 값이 변해 몬스터가 튀었다 — 그래서 구조로 없앴다.)
+//  · y 의 상한은 이제 "발이 필드 안" 이다 — chrome 은 필드 밖으로 넘쳐도 레이아웃을 안 민다.
 //    ff·goldensun 은 접지 띠(발 ≥ 60%)와 그 상한 사이가 36px 뿐이라 두 줄을 세우면 줄 간격이
 //    이름표 높이(38px)보다 좁아 이름이 겹쳤다(실측 교차 109×4px) → 1열로 바꿨다.
 //  · 좌표계는 필드에서 `--battle-stage-inset-top` 만큼 들어간 배틀러 그룹 박스다
@@ -107,13 +109,44 @@ function skinEnemySpriteUrl(): string | null {
   return resolveAssetResourceUrl(`bskin-enemy-${activeSkin().id}`, { project: store.getCurrent() });
 }
 
-/** 스킨 파티 스프라이트(정면/후면). 포켓몬은 몬스터 뒷모습을 쓴다. */
-function skinPartySpriteUrl(index: number, facing: PartyFacing): string | null {
+/**
+ * 액터별 뒷모습 배틀러 리소스 id. 저작된 전투 시트 id 에서 슬러그만 떼어낸다 —
+ * `generated-actor-hero-03-battle` → `generated-actor-hero-03-back`.
+ *
+ * 왜 스키마에 필드를 안 더하나: 뒷모습은 정면 시트와 **같은 인물의 다른 시점**이라 파생
+ * 관계가 이미 id 에 들어 있다. 필드를 더하면 스키마·에디터·직렬화·픽스처가 다 따라와야 하고,
+ * 작성자가 두 칸을 따로 채워 어긋나게 만들 여지도 생긴다. 여기서 유도하면 그 전부가 0 이다.
+ */
+function actorBackSpriteId(actor: BattleBattlerSnapshot): string | null {
+  const slug = /^generated-actor-(hero-\d+)-battle$/.exec(actor.battleCharacterResourceId ?? "")?.[1];
+  return slug ? `generated-actor-${slug}-back` : null;
+}
+
+/**
+ * 스킨 파티 스프라이트(정면/후면).
+ *
+ * 후면 스킨의 폴백은 액터를 구분하지 못한다 — 포켓몬은 파티 전원에게 보라색 생물 한 장을,
+ * 나머지는 전사/마법사 두 장을 번갈아 돌려 준다. 그래서 액터별 뒷모습이 있으면 그걸 먼저 쓴다.
+ * 없는 액터(작성자가 직접 넣은 시트 등)는 예전 폴백 그대로 간다.
+ */
+function skinPartySpriteUrl(
+  index: number,
+  facing: PartyFacing,
+  actor?: BattleBattlerSnapshot,
+): { url: string; perActor: boolean } | null {
   if (facing === "hidden") return null;
+  const project = store.getCurrent();
+  if (facing === "back" && actor) {
+    const backId = actorBackSpriteId(actor);
+    // id 가 만들어졌다고 그림이 있는 건 아니다 — 리졸브까지 성공해야 액터별로 쓴 것이다.
+    const backUrl = backId ? resolveAssetResourceUrl(backId, { project }) : null;
+    if (backUrl) return { url: backUrl, perActor: true };
+  }
   const id = activeSkin().id === "pokemon"
     ? "bskin-ally-creature-back"
     : `bskin-party-${index % 2 === 0 ? "warrior" : "mage"}-${facing}`;
-  return resolveAssetResourceUrl(id, { project: store.getCurrent() });
+  const url = resolveAssetResourceUrl(id, { project });
+  return url ? { url, perActor: false } : null;
 }
 
 
@@ -279,27 +312,15 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
   }
-  alignEnemyFeetToAuthoredY(group);
 }
 
-/** 저작 y 가 **스프라이트의 발**을 뜻하도록 노드를 라벨 스택 높이만큼 내린다.
- *  `.battle-enemy` 는 이미지 → 이름 → HUD 순 흐름 열인데 노드가 `translate(-50%, -100%)` 라
- *  앵커가 라벨 스택 **아래**에 잡힌다. 그래서 스프라이트는 저작 y 보다 라벨 높이만큼 떠 있었다
- *  (실측 node.bottom − image.bottom: rm2003 33px, rm2000 97px, octopath·bravely 109px,
- *  chrono 133px). 이게 "몬스터가 너무 위에 달려 있다"의 뿌리다 — y 값을 스킨마다 만지는 건
- *  증상 치료였다.
- *  라벨 높이는 스킨·이름 길이·게이지 수마다 달라 CSS 상수로 박을 수 없어 실측해서 심는다.
- *  오프셋은 노드 **높이**를 바꾸지 않으므로 (node.bottom − image.bottom) 이 불변이고,
- *  한 번의 패스로 수렴한다(재진입해도 같은 값). jsdom 은 rect 가 0 이라 자동으로 무해하다. */
-function alignEnemyFeetToAuthoredY(group: Element): void {
-  for (const node of group.querySelectorAll<HTMLElement>(".battle-enemy")) {
-    const image = node.querySelector<HTMLElement>(".battle-enemy-image");
-    if (!image) continue;
-    const drop = node.getBoundingClientRect().bottom - image.getBoundingClientRect().bottom;
-    if (!Number.isFinite(drop) || drop <= 0) continue;
-    node.style.setProperty("--battle-enemy-label-drop", `${Math.round(drop)}px`);
-  }
-}
+/* 옛 `alignEnemyFeetToAuthoredY` 가 여기 있었다.
+ *
+ * 저작 y 를 스프라이트의 **발**로 읽히게 하려고 (node.bottom − image.bottom) 을 실측해
+ * 노드 top 에 더했다. 전제는 "노드 높이는 불변" 이었는데, 적 HUD 를 펼치고 접을 때마다
+ * 높이가 변해서 전제가 깨졌다 — 그래서 몬스터가 흰 HUD 박스에 따라 눈에 보이게 튀었다.
+ * 이제 이름·HUD 를 `.battle-enemy-chrome` 으로 흐름에서 빼내 노드 높이 = 스프라이트 높이가
+ * 되므로, 실측 보정 자체가 필요 없다. CSS 의 `--battle-enemy-label-drop` 도 함께 지웠다. */
 
 function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   const group = field.querySelector(".battle-actor-group");
@@ -362,8 +383,16 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
     existingBrackets?.remove();
   }
   if (!node.querySelector(".battle-enemy-hud")) {
-    node.append(enemyHpHud(enemy));
+    // chrome 겹 안에 넣는다 — 노드 직계로 붙이면 흐름 높이가 늘어 발 위치가 흔들린다.
+    (node.querySelector<HTMLElement>(".battle-enemy-chrome") ?? node).append(enemyHpHud(enemy));
   }
+  // 한 번이라도 피해를 입은 적은 HP 를 계속 보여준다.
+  //
+  // rm2003 스킨은 원작 고증을 이유로 적 HUD 를 targetSelect 중 선택된 적에게만 펼쳤다.
+  // 그 결과 "한 방 더면 죽는다" 는 판단이 구조적으로 불가능해 모든 턴이 같은 무게가
+  // 됐다. 아직 안 때린 적은 그대로 감추고(정보 수집도 플레이다), 때린 순간부터 남은
+  // 체력을 노출한다. CSS 가 [data-battle-hp-revealed="true"] 로 HUD 를 펼친다.
+  node.dataset.battleHpRevealed = presented.hp < enemy.maxHp ? "true" : "false";
   const hpText = node.querySelector<HTMLElement>(".battle-enemy-hp-text");
   if (hpText) hpText.textContent = `${presented.hp}/${enemy.maxHp}`;
   const hpBar = node.querySelector<HTMLElement>(".battle-enemy-hp-bar");
@@ -375,6 +404,14 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   syncStatusIcons(node, enemy);
 }
 
+/**
+ * 테스트 전용 진입점 — `test/battlerPoseFrame.test.ts` 가 backgroundPosition 산식을 잰다.
+ * 전투 스냅샷 하나를 굴리지 않고 포즈만 바꿔볼 수 있어야 회귀가 산식 단위에서 잡힌다.
+ */
+export function applyBattlerPoseForTest(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]): void {
+  applyBattlerPose(node, pose);
+}
+
 function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]): void {
   node.dataset.battlePose = pose;
   node.classList.toggle("battle-pose-idle", pose === "idle");
@@ -384,12 +421,18 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
   node.classList.toggle("battle-pose-dead", pose === "dead");
   const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite, .battle-enemy-image, .battle-actor-image");
   if (sprite?.classList.contains("battle-actor-sprite")) {
-    // Generated battle sheets: 3 columns × idle/attack/hit along X.
-    // Frame width must match actorBattleImage display frame (BATTLE_SHEET_CELL × BATTLE_ASSET_PIXEL_SCALE).
-    const frameW = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-width"))
-      || BATTLE_SHEET_CELL * BATTLE_ASSET_PIXEL_SCALE;
-    const col = pose === "attack" ? 1 : pose === "hit" || pose === "dead" ? 2 : 0;
-    sprite.style.backgroundPosition = `-${col * frameW}px 0`;
+    // 생성 전투 시트는 5포즈가 (열, 행) 좌표를 갖는다 — POSE_FRAME 이 정본이다.
+    // 2026-08-29 까지는 X 만 움직여 defend 가 idle 칸을, dead 가 hit 칸을 돌려 썼다.
+    // 프레임 크기는 actorBattleImage 가 심은 인라인 커스텀 프로퍼티와 같아야 한다
+    // (BATTLE_SHEET_CELL × BATTLE_ASSET_PIXEL_SCALE).
+    const fallback = BATTLE_SHEET_CELL * BATTLE_ASSET_PIXEL_SCALE;
+    const frameW = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-width")) || fallback;
+    const frameH = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-height")) || fallback;
+    const frame = POSE_FRAME[pose] ?? POSE_FRAME.idle;
+    // 0 에는 음수 부호를 붙이지 않는다 — CSSOM 이 "-0px" 를 "0px" 로 정규화하므로 그대로 두면
+    // 우리가 쓴 값과 읽히는 값이 달라진다(실측: happy-dom).
+    const offset = (value: number) => (value === 0 ? "0px" : `-${value}px`);
+    sprite.style.backgroundPosition = `${offset(frame.col * frameW)} ${offset(frame.row * frameH)}`;
   }
 }
 
@@ -403,7 +446,16 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
   popup.classList.toggle("battle-damage-popup-critical", feedback.critical);
   popup.classList.toggle("battle-damage-popup-heal", feedback.healing);
   popup.classList.toggle("battle-damage-popup-miss", feedback.miss === true);
-  popup.textContent = feedback.miss ? "MISS" : feedback.healing ? `+${feedback.amount}` : `-${feedback.amount}`;
+  // 완전 방어(명중했지만 0 피해)는 "0" 으로 분명히 보여준다. 예전에는 이 경우
+  // 피드백 자체가 만들어지지 않아 화면이 조용했다.
+  popup.classList.toggle("battle-damage-popup-blocked", feedback.blocked === true);
+  popup.textContent = feedback.miss
+    ? "MISS"
+    : feedback.blocked
+      ? "0"
+      : feedback.healing
+        ? `+${feedback.amount}`
+        : `-${feedback.amount}`;
   const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
@@ -508,7 +560,10 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   const name = document.createElement("span");
   name.className = "battle-enemy-name";
   name.textContent = enemy.name;
-  enemyNode.append(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy));
+  // 이름·순번·상태·HP 는 스프라이트 **아래에 겹쳐** 놓는다(.battle-enemy-chrome 이 절대 배치).
+  // 흐름에 두면 HUD 를 펼칠 때 노드 높이가 변하고, 그 높이로 스프라이트 top 을 보정하던
+  // 옛 코드(alignEnemyFeetToAuthoredY) 때문에 몬스터가 눈에 보이게 튀었다.
+  enemyNode.append(enemyChrome(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy)));
   if (snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id) {
     const brackets = document.createElement("span");
     brackets.className = "battle-target-brackets";
@@ -519,6 +574,23 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   if (enemy.defeated) enemyNode.classList.add("defeated");
   enemyNode.disabled = enemy.defeated || snapshot.targetSelection?.side !== "enemy" || !snapshot.targetSelection.targetIds.includes(enemy.id);
   return enemyNode;
+}
+
+/**
+ * 적 스프라이트 아래에 붙는 UI 를 한 겹으로 묶는다.
+ *
+ * 이 겹이 있어야 `.battle-enemy` 의 높이가 **스프라이트 높이와 같게** 유지된다.
+ * 노드는 `translate(-50%, -100%)` 로 아래쪽 앵커를 쓰므로, 높이가 곧 발 위치다.
+ * 겹이 없던 시절에는 HUD 를 펼칠 때마다 노드가 자라 발 위치가 흔들렸다.
+ *
+ * flex 열로 두는 이유: 스킨이 자식에 걸어둔 `order`(vxace 배지 1 / HUD 2)가
+ * 계속 먹어야 한다. 흐름 순서를 그대로 보존한다.
+ */
+function enemyChrome(...children: HTMLElement[]): HTMLElement {
+  const chrome = document.createElement("span");
+  chrome.className = "battle-enemy-chrome";
+  chrome.append(...children);
+  return chrome;
 }
 
 /** 적 스프라이트 위의 순번 배지(1-base). 기본은 CSS 로 숨기고 vxace 스킨에서만 노출한다. */
@@ -635,12 +707,15 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
     return node;
   }
   // authored 정면 시트가 없거나 후면 구도가 필요한 스킨만 스킨 공용 파티 스프라이트로 폴백한다.
-  const skinSprite = skinPartySpriteUrl(index, place.partyFacing);
+  // 후면이면 액터별 뒷모습이 먼저 잡힌다(skinPartySpriteUrl).
+  const skinSprite = skinPartySpriteUrl(index, place.partyFacing, actor);
   if (skinSprite) {
     const image = document.createElement("img");
     image.className = "battle-actor-image battle-skin-actor-image";
     image.alt = actor.name;
-    image.src = skinSprite;
+    image.src = skinSprite.url;
+    // 액터별 뒷모습이 잡혔는지 테스트·디버깅에서 구별할 수 있게 표시한다.
+    if (skinSprite.perActor) node.dataset.actorBackBattler = "true";
     node.append(image);
     applyBattlerPose(node, actor.pose);
     node.append(statusIconCluster(actor));
@@ -878,6 +953,11 @@ function atbBar(gaugeValue: number): HTMLElement {
 }
 
 function stateIconToken(stateId: string): string {
+  // 능력 증감은 `death`/`down` 검사보다 **먼저** 갈라야 한다. `state_attack_down` 은
+  // "down" 을 품고 있어서 아래 폴백 순서로는 붉은 KO 배지로 렌더됐다(공격 하락 = 전투불능).
+  const buff = buffIconToken(stateId);
+  if (buff) return buff;
+  if (stateId.includes("regen")) return "regen";
   if (stateId.includes("poison")) return "poison";
   if (stateId.includes("burn")) return "burn";
   if (stateId.includes("freeze") || stateId.includes("frozen")) return "freeze";
@@ -888,6 +968,27 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("confuse") || stateId.includes("charm")) return "confuse";
   if (stateId.includes("death") || stateId.includes("down") || stateId.includes("ko")) return "death";
   return "burst";
+}
+
+/**
+ * 능력 증감 상태의 배지 토큰. 저작 id 의 `attack|defense|agility|magic` + `up|down` 조합만
+ * 읽는다 — 폴백(●)으로 떨어지면 공격 상승·방어 상승·재생이 화면에서 전부 같은 회색 점이 되어
+ * 스크린샷으로 구별할 수 없다.
+ */
+function buffIconToken(stateId: string): string | null {
+  const stat = stateId.includes("attack")
+    ? "atk"
+    : stateId.includes("defense")
+      ? "def"
+      : stateId.includes("agility") || stateId.includes("speed")
+        ? "agi"
+        : stateId.includes("magic")
+          ? "mag"
+          : null;
+  if (!stat) return null;
+  if (stateId.endsWith("_up") || stateId.includes("_up_")) return `${stat}-up`;
+  if (stateId.endsWith("_down") || stateId.includes("_down_")) return `${stat}-down`;
+  return null;
 }
 
 function stateName(stateId: string): string {
@@ -909,6 +1010,9 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   for (const entry of entries) {
     const node = document.createElement("span");
     node.className = `battle-status-icon battle-status-icon-${entry.icon}`;
+    // 글리프는 CSS ::before 에만 있어서 textContent 로는 잡힐 수 없다 — 상태가 실제로 화면에
+    // 배지로 남았는지를 QA 가 집을 수 있도록 배틀러·토큰까지 들어있는 testid 를 단다.
+    node.dataset.testid = `battle-status-${battler.id}-${entry.icon}`;
     node.dataset.statusIcon = entry.icon;
     node.dataset.statusName = entry.name;
     node.setAttribute("role", "img");

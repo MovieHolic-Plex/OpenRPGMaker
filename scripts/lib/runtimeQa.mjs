@@ -16,6 +16,10 @@ export const OP_KINDS = [
   "seed",
   "setVitals",
   "dir",
+  // 방향을 정해진 시간 동안 **밀고 있는다.** 금지된 고정 `wait` 와 다른 것이다: 여기서는
+  // 경과 시간이 곧 자극이고, 기다릴 조건이 존재하지 않는다("막혀서 아무 일도 안 일어난다"를
+  // 조건으로 표현할 수 없다). 이동이 성공하는 쪽은 waitForPosition 으로 조건 대기해야 한다.
+  "hold",
   "face",
   "action",
   "attack",
@@ -29,9 +33,20 @@ export const OP_KINDS = [
   // (실측: 선택지 NPC 옆에서 Enter 8회 → 선택지가 다시 열림).
   "waitFor",
   "pressUntil",
+  // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
+  // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.
+  "playerRoute",
+  "waitForLift",
+  "waitForGrounded",
+  "captureShadowSample",
 ];
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+// 그림자 깊이 띠. characterDepth.ts 의 MAP_LOWER_LAYER_DEPTH(0) 와
+// PRIORITY_DEPTH_BASE.below(100_000) 사이가 비어 있어 그림자가 그 안에 산다.
+const SHADOW_DEPTH_FLOOR = 0;
+const SHADOW_DEPTH_CEILING = 100_000;
 
 /**
  * 시나리오에 기본값을 채우고 구조를 검증한다.
@@ -47,6 +62,8 @@ export function normalizeScenario(scenario) {
     if (seen.has(beat.id)) throw new Error(`중복된 비트 ID: ${beat.id}`);
     seen.add(beat.id);
     for (const op of beat.ops ?? []) {
+      // 고정 sleep 은 금지다. 이동 성공은 waitForPosition, UI 전이는 waitFor 로 조건 대기하고,
+      // 시간 자체가 자극인 경우(막힘 검증)는 이름이 붙은 `hold` 를 쓴다.
       if (op.kind === "wait") throw new Error(`고정 wait op 은 런타임 게이트에서 금지됨: ${beat.id}`);
       if (!OP_KINDS.includes(op.kind)) throw new Error(`알 수 없는 op: ${op.kind}`);
     }
@@ -122,6 +139,18 @@ export function renderSummary(report) {
   }
 
   return `${lines.join("\n")}\n`;
+}
+
+/**
+ * 스칼라는 동등, 객체는 **키 집합까지** 동등. JSON.stringify 비교를 안 쓰는 이유는 키 순서에
+ * 의존해서다 — 사각을 `{top,left,...}` 순으로 적었을 때 조용히 실패하면 진짜 결함처럼 보인다.
+ */
+function sameShape(actual, wanted) {
+  if (wanted === null || typeof wanted !== "object") return actual === wanted;
+  if (actual === null || typeof actual !== "object") return false;
+  const wantedKeys = Object.keys(wanted);
+  if (wantedKeys.length !== Object.keys(actual).length) return false;
+  return wantedKeys.every((key) => sameShape(actual[key], wanted[key]));
 }
 
 /**
@@ -293,11 +322,69 @@ export function evaluateExpect(expected, observed) {
   scalar("gold", (s) => s.gold);
   scalar("battleResult", (s) => s.battleResult);
 
+  // 부등 기대치 — "값이 **아니어야** 한다". 동등만으로는 대조군을 표현할 수 없다:
+  // "골렘이 있으면 안 움직인다"(x 동등)는 입력이 아예 죽어도 통과하므로, 골렘 없는 대조군에서
+  // "움직였다"를 단정해야 비로소 증거가 된다. 그것이 `xNot`/`yNot` 이다.
+  // 기존 키(x/y/…)의 의미는 건드리지 않는다 — 다른 시나리오가 이 파일을 공유한다.
+  const scalarNot = (key, read) => {
+    if (expected[key] === undefined) return;
+    if (state === null) {
+      failures.push(`런타임 훅 없음 — 상태를 읽을 수 없다(${key} 확인 불가)`);
+      return;
+    }
+    const actual = read(state);
+    if (actual === expected[key]) failures.push(`${key}: 기대 ≠ ${expected[key]}, 실제 ${actual}`);
+  };
+  scalarNot("xNot", (s) => s.x);
+  scalarNot("yNot", (s) => s.y);
+
+  // 이벤트 사각 기대치 — 런타임이 **스스로 계산한** 몸/통행 사각을 그대로 단정한다.
+  // 좌표 이동으로 "막혔다 / 지나갔다" 를 보는 것과는 다른 축이다: 저건 판정의 결과고, 이건
+  // 판정의 입력이다. 결과만 보면 우연히 맞을 수 있다(다른 이유로 막혔거나, 사각이 틀렸는데도
+  // 그 칸만 우연히 통행 가능이거나). 사각을 직접 읽으면 그 우연이 배제된다.
+  //
+  // 사각 하나는 네 변을 **전부** 적어야 한다. 일부만 적으면 나머지가 조용히 통과해서,
+  // "top 만 단정했는데 통과했다" 가 사각 전체를 검증한 것처럼 읽힌다.
+  for (const [eventId, wanted] of Object.entries(expected.eventRects ?? {})) {
+    const actual = observed.events?.[eventId];
+    if (!actual) {
+      failures.push(`이벤트 스냅샷 없음: ${eventId} — 활성 페이지가 없거나 다른 맵이다`);
+      continue;
+    }
+    for (const [field, want] of Object.entries(wanted)) {
+      const got = actual[field];
+      if (!sameShape(got, want)) {
+        failures.push(`${eventId}.${field}: 기대 ${JSON.stringify(want)}, 실제 ${JSON.stringify(got)}`);
+      }
+    }
+  }
+
   for (const testid of expected.testidPresent ?? []) {
     if (!testids.includes(testid)) failures.push(`testid 누락: ${testid}`);
   }
   for (const testid of expected.testidAbsent ?? []) {
     if (testids.includes(testid)) failures.push(`testid 잔존: ${testid}`);
+  }
+
+  // 보이는 글자 단정 — testidPresent 는 DOM 존재만 본다. 숨은 패널(display:none) 속 숫자도
+  // 통과하므로 "HP 가 18/18 → 0/18 로 줄었다" 를 그 축으로 적으면 화면에 없는 값을 증거로
+  // 삼게 된다(실측: 클래식 스킨은 .battle-enemy-list-panel 을 display:none 으로 숨긴다).
+  for (const [testid, wanted] of Object.entries(expected.visibleText ?? {})) {
+    const seen = observed.visibleText?.[testid];
+    if (!seen) {
+      failures.push(`visibleText: ${testid} 노드가 DOM 에 없다(기대 "${wanted}")`);
+      continue;
+    }
+    if (!seen.visible) {
+      failures.push(
+        `visibleText: ${testid} 가 화면에 없다(${seen.width}×${seen.height}, alpha ${seen.alpha})`
+          + ` — 텍스트는 "${seen.text}"`,
+      );
+      continue;
+    }
+    if (!seen.text.includes(wanted)) {
+      failures.push(`visibleText: ${testid} 기대 "${wanted}" 포함, 실제 "${seen.text}"`);
+    }
   }
 
   if (expected.playerSpriteResourceNonEmpty && !playerSpriteResourceId) {
@@ -315,6 +402,70 @@ export function evaluateExpect(expected, observed) {
       );
     }
   }
+  // 체공 판정. liftPx 는 원점 채널을 되읽은 값이고, playerSpriteY 는 접지선이다.
+  // 체공 중에도 접지선이 타일 경계에 남아야 깊이·카메라·조명이 깨지지 않는다.
+  const lift = observed.playerLiftPx;
+  const liftUnavailable = (key) => {
+    failures.push(`캐릭터 스프라이트 훅 없음 — 체공을 읽을 수 없다(${key} 확인 불가)`);
+  };
+  if (expected.playerLiftPxAtLeast !== undefined) {
+    if (lift === null || lift === undefined) liftUnavailable("playerLiftPxAtLeast");
+    else if (lift < expected.playerLiftPxAtLeast) {
+      failures.push(`playerLiftPx: ${expected.playerLiftPxAtLeast}px 이상 기대, 실제 ${lift}px`);
+    }
+  }
+  if (expected.playerLiftPx !== undefined) {
+    if (lift === null || lift === undefined) liftUnavailable("playerLiftPx");
+    else if (lift !== expected.playerLiftPx) {
+      failures.push(`playerLiftPx: 기대 ${expected.playerLiftPx}, 실제 ${lift}`);
+    }
+  }
+  if (expected.playerSpriteY !== undefined) {
+    const groundY = observed.playerSpriteY;
+    if (groundY === null || groundY === undefined) liftUnavailable("playerSpriteY");
+    else if (groundY !== expected.playerSpriteY) {
+      failures.push(`playerSpriteY: 기대 ${expected.playerSpriteY}, 실제 ${groundY}(접지선이 움직였다)`);
+    }
+  }
+
+  // 발밑 그림자. 깊이 띠(하부 타일 0 < 그림자 < below 캐릭터 100k)는 브라우저에서만
+  // 확인된다 — 그림자가 타일 밑으로 깔리면 조용히 안 보이는 채로 게이트를 통과한다.
+  if (expected.playerShadowVisible !== undefined) {
+    const shadow = observed.playerShadow;
+    if (shadow === undefined) liftUnavailable("playerShadowVisible");
+    else if (expected.playerShadowVisible) {
+      if (!shadow || !shadow.visible) failures.push("playerShadow: 체공 중인데 그림자가 없다");
+      else {
+        if (!(shadow.depth > SHADOW_DEPTH_FLOOR && shadow.depth < SHADOW_DEPTH_CEILING)) {
+          failures.push(
+            `playerShadow: 깊이 ${shadow.depth} 가 띠(${SHADOW_DEPTH_FLOOR}~${SHADOW_DEPTH_CEILING}) 밖이다`,
+          );
+        }
+        if (shadow.alpha <= 0) failures.push(`playerShadow: alpha ${shadow.alpha} — 투명하다`);
+      }
+    } else if (shadow && shadow.visible) {
+      failures.push("playerShadow: 접지했는데 그림자가 남아 있다");
+    }
+  }
+  // 그림자 원점은 (0.5,0.5) 라 y 는 접지선보다 반 높이 위다. 타원 **아래 끝**이 접지선에
+  // 닿아야 발밑에 붙은 것으로 보인다 — 반올림 없이 1px 오차까지 허용한다.
+  if (expected.playerShadowGroundY !== undefined) {
+    const shadow = observed.playerShadow;
+    if (!shadow) liftUnavailable("playerShadowGroundY");
+    else if (Math.abs(shadow.bottomY - expected.playerShadowGroundY) > 1) {
+      failures.push(
+        `playerShadowGroundY: 기대 ${expected.playerShadowGroundY}, 실제 ${shadow.bottomY}(타원 아래 끝)`,
+      );
+    }
+  }
+  if (expected.playerAirborne !== undefined) {
+    const airborne = observed.playerAirborne;
+    if (airborne === null || airborne === undefined) liftUnavailable("playerAirborne");
+    else if (airborne !== expected.playerAirborne) {
+      failures.push(`playerAirborne: 기대 ${expected.playerAirborne}, 실제 ${airborne}`);
+    }
+  }
+
   // 전투 글자 가시성: 계측은 runtimeQaRun 이 페이지에서 돌리고, 여기서는 판정만 한다.
   // `battleTextClean` 은 "이 국면의 battle-scene 안 모든 텍스트 노드가 상자 안에 온전히
   // 보인다" 는 뜻이다. 씬이 안 떠 있으면 조용히 통과시키지 않고 실패로 만든다 —

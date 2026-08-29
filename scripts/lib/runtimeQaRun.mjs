@@ -6,6 +6,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
+import { PNG } from "pngjs";
 import {
   MAX_CLIPPED_AREA_RATIO,
   MIN_EFFECTIVE_ALPHA,
@@ -27,7 +28,11 @@ const PROJECT_URL = "/__runtime-qa/project.json";
 const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 
 /** 훅을 요구하는 op — 이들 앞에서는 런타임 훅 설치를 기다린다. */
-const HOOK_OPS = new Set(["seed", "dir", "face", "action", "attack", "skill", "teleport"]);
+const HOOK_OPS = new Set([
+  "seed", "dir", "hold", "face", "action", "attack", "skill", "teleport",
+  // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
+  "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
+]);
 
 async function freePort() {
   return await new Promise((resolvePort, reject) => {
@@ -45,6 +50,9 @@ async function freePort() {
  * player-QA 전용 vite dev 서버를 띄운다.
  * 빈 포트를 직접 잡으므로 동시에 도는 워크트리들과 포트 경합이 없고,
  * 전용 cacheDir 을 쓰므로 공유 node_modules/.vite 를 흔들지 않는다.
+ *
+ * 파일 감시는 vite.player-qa.config.ts 에서 끈다(inotify 한도 포화 방지). 여기서 인라인으로
+ * 넘기면 mergeConfig 가 null 을 삼켜 무효가 된다 — 설정 파일 쪽이 유일한 스위치다.
  */
 export async function startPlayerQaServer(opts = {}) {
   const port = opts.port ?? (await freePort());
@@ -103,7 +111,7 @@ async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30
   );
 }
 
-async function applyOp(page, op) {
+async function applyOp(page, op, runState) {
   switch (op.kind) {
     case "waitForRuntime":
       await waitForRuntimePredicate(page, (state) => Boolean(state.currentMapId), null, op.timeoutMs);
@@ -142,6 +150,14 @@ async function applyOp(page, op) {
     case "dir":
       await page.evaluate((dir) => window.__oprnInput.dir(dir), op.dir ?? null);
       return;
+    case "hold":
+      // 눌렀다 → 시간 경과 → 뗀다. 뗀 뒤 한 프레임 정착까지 본다(타일 스냅이 남아 있을 수 있다).
+      // 경과 시간을 조건 대기로 바꿀 수 없는 유일한 경우가 "막혔다" 검증이다 — 기다릴 사건이 없다.
+      await page.evaluate((dir) => window.__oprnInput.dir(dir), op.dir ?? null);
+      await page.waitForTimeout(op.ms);
+      await page.evaluate(() => window.__oprnInput.dir(null));
+      await page.waitForFunction(() => true);
+      return;
     case "face":
       await page.evaluate((dir) => window.__oprnInput.face(dir), op.dir);
       return;
@@ -149,6 +165,46 @@ async function applyOp(page, op) {
     case "attack":
     case "skill":
       await page.evaluate((kind) => window.__oprnInput[kind](), op.kind);
+      return;
+    case "playerRoute":
+      await page.evaluate((moves) => window.__oprnDebug.playerRoute(moves), op.moves);
+      return;
+    case "waitForLift":
+      // 체공은 몇 프레임 만에 끝난다. 고정 sleep 으로는 최고점을 놓치거나 이미 착지한
+      // 화면을 찍는다 — 리프트 자체를 조건으로 기다린다.
+      await page.waitForFunction(
+        ([min, max]) => {
+          const sprites = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
+          if (!sprites) return false;
+          const lift = sprites.player.liftPx;
+          return lift >= min && lift <= max;
+        },
+        [op.minPx ?? 1, op.maxPx ?? Number.MAX_SAFE_INTEGER],
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
+    case "captureShadowSample": {
+      // 그림자가 떠 있는 지금의 프레임과 기하를 기록한다. 대조 프레임은 나중에
+      // (캐릭터가 그 자리를 떠난 뒤) `playerShadowInkAtLeast` 가 직접 찍는다.
+      const geometry = await readShadowGeometry(page);
+      if (!geometry?.shadow?.visible) throw new Error("captureShadowSample: 보이는 그림자가 없다");
+      runState.shadowSample = {
+        png: await page.screenshot(),
+        view: geometry.view,
+        shadow: geometry.shadow,
+      };
+      return;
+    }
+    case "waitForGrounded":
+      // liftPx 는 정수 반올림이라 착지 직전 프레임에서도 0 으로 보인다 — 상태기를 본다.
+      await page.waitForFunction(
+        () => {
+          const sprites = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
+          return Boolean(sprites) && !sprites.player.airborne;
+        },
+        undefined,
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
       return;
     case "waitFor":
       await waitForTestid(page, op);
@@ -244,8 +300,16 @@ function readBattlerGeometryInPage() {
   };
 }
 
-async function readObserved(page, { auditBattleTextNodes = false } = {}) {
-  const base = await page.evaluate(() => {
+/**
+ * @param watchedEventIds 발자국 사각을 실어 올 이벤트 id. 시나리오가 이름을 댄 것만 싣는다 —
+ *   맵마다 이벤트가 수십 개라 전량은 매니페스트를 노이즈로 덮는다(이 하네스의 목적은
+ *   컨텍스트 절약이다).
+ * @param watchedTestids 글자를 **눈에 보이는지까지** 재 올 testid. `testids` 축은 DOM 존재만
+ *   보므로 display:none 안의 노드도 통과한다 — 실제로 전투 적 HP 목록(.battle-enemy-list-panel)이
+ *   숨겨진 스킨에서 `battle-enemy-list-hp-*` 를 단정하면 화면에 없는 숫자를 증거로 삼게 된다.
+ */
+async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [] } = {}) {
+  const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
     // 매니페스트에는 압축 상태만 남긴다 — switches/inventory 전량은 노이즈이고
@@ -260,14 +324,69 @@ async function readObserved(page, { auditBattleTextNodes = false } = {}) {
         }
       : null;
     const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
+    const characters = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
     return {
       state,
+      // 체공 계측. 리프트는 원점 채널에 있어 x/y 로는 보이지 않고, 접지 y 는 체공 중에도
+      // 타일 경계에 남아야 한다(깊이 y-소트·카메라·조명이 이 값을 읽는다).
+      playerLiftPx: characters ? characters.player.liftPx : null,
+      playerSpriteY: characters ? characters.player.y : null,
+      playerDepth: characters ? characters.player.depth : null,
+      // 발밑 그림자는 별개의 게임오브젝트다 — 존재·가시성·깊이 띠를 직접 읽는다.
+      playerShadow: characters ? (characters.shadows.__player ?? null) : null,
+      playerAirborne: characters ? characters.player.airborne : null,
+      // 월드 → 화면 변환에 필요한 것들. 렌더된 픽셀을 직접 재려면 이게 있어야 한다.
+      canvasView: (() => {
+        const canvas = document.querySelector("canvas");
+        if (!canvas) return null;
+        const rect = canvas.getBoundingClientRect();
+        const camera = window.__oprnCamera ? window.__oprnCamera() : null;
+        if (!camera) return null;
+        return {
+          left: rect.left,
+          top: rect.top,
+          cssScaleX: rect.width / camera.width,
+          cssScaleY: rect.height / camera.height,
+          scrollX: camera.scrollX,
+          scrollY: camera.scrollY,
+          zoom: camera.zoom,
+        };
+      })(),
       testids: [...document.querySelectorAll("[data-testid]")].map((node) => node.dataset.testid),
+      // 요청받은 testid 만 "보이는 글자" 로 재 온다. 상자·display·visibility·조상 opacity 를 함께
+      // 봐야 한다 — 숨은 조상 하나면 자식의 computed style 은 멀쩡한데 화면에는 아무것도 없다.
+      visibleText: Object.fromEntries(
+        (watched.testids ?? []).map((testid) => {
+          const node = document.querySelector(`[data-testid="${testid}"]`);
+          if (!node) return [testid, null];
+          const rect = node.getBoundingClientRect();
+          let hidden = false;
+          let alpha = 1;
+          for (let cursor = node; cursor && cursor !== document.documentElement; cursor = cursor.parentElement) {
+            const style = getComputedStyle(cursor);
+            if (style.display === "none" || style.visibility === "hidden") hidden = true;
+            alpha *= Number(style.opacity);
+          }
+          const onScreen =
+            rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.bottom > 0
+            && rect.left < window.innerWidth && rect.top < window.innerHeight;
+          return [
+            testid,
+            {
+              text: (node.textContent ?? "").replace(/\s+/g, " ").trim(),
+              visible: !hidden && onScreen && alpha > 0.05,
+              width: Math.round(rect.width),
+              height: Math.round(rect.height),
+              alpha: Number(alpha.toFixed(3)),
+            },
+          ];
+        }),
+      ),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
-  });
+  }, { eventIds: watchedEventIds, testids: watchedTestids });
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -276,6 +395,78 @@ async function readObserved(page, { auditBattleTextNodes = false } = {}) {
     minAlpha: MIN_EFFECTIVE_ALPHA,
   });
   return { ...base, battleText };
+}
+
+/** 그림자 기하 + 월드→화면 변환을 한 번에 읽는다(픽셀 측정 직전용). */
+async function readShadowGeometry(page) {
+  return await page.evaluate(() => {
+    const sprites = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
+    const camera = window.__oprnCamera ? window.__oprnCamera() : null;
+    const canvas = document.querySelector("canvas");
+    if (!sprites || !camera || !canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    return {
+      shadow: sprites.shadows.__player ?? null,
+      view: {
+        left: rect.left,
+        top: rect.top,
+        cssScaleX: rect.width / camera.width,
+        cssScaleY: rect.height / camera.height,
+        scrollX: camera.scrollX,
+        scrollY: camera.scrollY,
+        zoom: camera.zoom,
+      },
+    };
+  });
+}
+
+/**
+ * 그림자 타원의 **속살**에 해당하는 월드 사각형. 방사 그라디언트는 테두리에서 alpha 0 이라
+ * 외곽까지 평균에 넣으면 신호가 절반으로 희석된다.
+ */
+function shadowCoreWorldBox(shadow) {
+  const halfW = (shadow.displayWidth / 2) * 0.6;
+  const halfH = (shadow.displayHeight / 2) * 0.6;
+  return { left: shadow.x - halfW, right: shadow.x + halfW, top: shadow.y - halfH, bottom: shadow.y + halfH };
+}
+
+/** 주어진 월드 사각형의 평균 휘도. 프레임마다 자기 카메라 변환으로 화면 좌표를 구한다. */
+function meanLumaOfWorldBox(pngBuffer, view, box) {
+  const png = PNG.sync.read(pngBuffer);
+  const toScreenX = (worldX) => (worldX - view.scrollX) * view.zoom * view.cssScaleX + view.left;
+  const toScreenY = (worldY) => (worldY - view.scrollY) * view.zoom * view.cssScaleY + view.top;
+  let total = 0;
+  let count = 0;
+  for (let y = Math.round(toScreenY(box.top)); y <= Math.round(toScreenY(box.bottom)); y += 1) {
+    if (y < 0 || y >= png.height) continue;
+    for (let x = Math.round(toScreenX(box.left)); x <= Math.round(toScreenX(box.right)); x += 1) {
+      if (x < 0 || x >= png.width) continue;
+      const i = (png.width * y + x) << 2;
+      total += 0.299 * png.data[i] + 0.587 * png.data[i + 1] + 0.114 * png.data[i + 2];
+      count += 1;
+    }
+  }
+  return count === 0 ? null : total / count;
+}
+
+/**
+ * 그림자가 **실제로 그려졌는지** 렌더된 픽셀로 잰다. 같은 **월드 사각형**을 두 프레임에서
+ * 비교한다: 그림자가 떠 있던 프레임(captureShadowSample) 대 캐릭터가 그 자리를 떠난 뒤의
+ * 프레임. 지형이 완전히 같으므로 차이는 그림자뿐이다.
+ *
+ * 왜 이렇게까지 하는가(전부 실측 2026-08-29):
+ *  1. 오브젝트 축(visible·alpha·depth) 만 보면 **한 픽셀도 안 그려진 상태가 통과한다**
+ *     — 런타임 캔버스 텍스처가 GPU 로 올라가지 않는 버그가 실제로 이렇게 숨어 있었다.
+ *  2. 같은 프레임에서 상자를 **공간적으로** 옮겨 잡은 대조군은 못 쓴다. 위쪽은 캐릭터의
+ *     발이 덮어 측정이 뒤집혔고(-0.036), 아래쪽은 지형 자체가 5% 어두워서 완전 투명한
+ *     그림자도 통과했다(0.050 > 0.03).
+ */
+function measureShadowInk(samplePng, sampleView, sampleShadow, baselinePng, baselineView) {
+  const box = shadowCoreWorldBox(sampleShadow);
+  const withShadow = meanLumaOfWorldBox(samplePng, sampleView, box);
+  const withoutShadow = meanLumaOfWorldBox(baselinePng, baselineView, box);
+  if (withShadow === null || withoutShadow === null || withoutShadow <= 0) return null;
+  return (withoutShadow - withShadow) / withoutShadow;
 }
 
 /** 리포트를 디스크에 쓴다. SUMMARY.md 가 에이전트가 먼저 읽는 진입점이다. */
@@ -331,8 +522,20 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
 
+  // 시나리오 전체가 이름을 댄 이벤트를 한 번만 모은다. 비트마다 다시 걷지 않는 이유는
+  // 관측이 비트 사이에 달라지면 안 되기 때문이다 — 어떤 비트에서는 사각을 읽고 어떤 비트에서는
+  // 안 읽으면 매니페스트가 비교 불가능해진다.
+  const watchedEventIds = [
+    ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.eventRects ?? {}))),
+  ];
+  const watchedTestids = [
+    ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.visibleText ?? {}))),
+  ];
+
   let hooksReady = false;
   const beats = [];
+  // op 들 사이에 살아 있는 런 상태(그림자 픽셀 측정용 표본 프레임).
+  const runState = {};
   for (const [index, beat] of scenario.beats.entries()) {
     // op 이 던져도 런을 죽이지 않는다. 던진 사유를 그 비트의 실패로 기록하고
     // 계속 진행해야 리포트·샷이 남는다 — 초기 구현은 raw 스택만 남기고 죽어서
@@ -344,7 +547,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
           await requireHooks(page);
           hooksReady = true;
         }
-        await applyOp(page, op);
+        await applyOp(page, op, runState);
       } catch (error) {
         const reason = String(error?.message ?? error).split("\n")[0];
         opFailures.push(`op ${op.kind} 실패: ${reason}`);
@@ -353,9 +556,40 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     }
     const observed = await readObserved(page, {
       auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
+      watchedEventIds,
+      watchedTestids,
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
+    let shadowInk = null;
+    // 픽셀 검사는 화면을 한 번 더 찍는다 — 위 expect 평가와 같은 프레임을 볼 수 없으므로
+    // (평가는 이미 끝났다) 이 측정만의 독립 근거로 남긴다.
+    const wantsInk = beat.expect?.playerShadowInkAtLeast !== undefined;
+    if (wantsInk) {
+      const sample = runState.shadowSample;
+      if (!sample) {
+        failures.push("playerShadowInk: 앞선 비트에서 captureShadowSample 을 하지 않았다");
+      } else {
+        const baseline = await readShadowGeometry(page);
+        if (!baseline?.view) failures.push("playerShadowInk: 대조 프레임의 카메라를 읽을 수 없다");
+        else {
+          shadowInk = measureShadowInk(
+            sample.png,
+            sample.view,
+            sample.shadow,
+            await page.screenshot(),
+            baseline.view,
+          );
+          if (shadowInk === null) failures.push("playerShadowInk: 측정 상자가 화면 밖이다");
+          else if (shadowInk < beat.expect.playerShadowInkAtLeast) {
+            failures.push(
+              `playerShadowInk: 기대 ${beat.expect.playerShadowInkAtLeast} 이상, 실제 `
+                + `${shadowInk.toFixed(3)} — 오브젝트는 있는데 픽셀이 없다`,
+            );
+          }
+        }
+      }
+    }
     if (shouldCaptureShot(beat, failures)) {
       shot = shotFileName(index, beat.id);
       await page.screenshot({ path: join(outDir, shot) });
@@ -366,9 +600,13 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       note: beat.note,
       shot,
       failures,
+      shadowInk: shadowInk ?? undefined,
       state: observed.state,
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,
+      // 발자국 사각은 단정한 비트에만 싣는다. 안 쓰는 비트에 빈 객체를 남기면 매니페스트가
+      // "사각을 봤다" 처럼 읽힌다.
+      ...(Object.keys(observed.events ?? {}).length > 0 ? { events: observed.events } : {}),
     });
   }
 

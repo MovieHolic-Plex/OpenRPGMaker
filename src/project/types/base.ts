@@ -441,6 +441,11 @@ export interface Terms {
   skill?: string;
   item?: string;
   capture?: string;
+  /** 방어 커맨드 라벨. 예전에는 하드코딩 "방어" 라, attack/skill/item 만 영어로
+   *  덮은 프로젝트가 "Attack / Skill / Item / 방어 / 도주" 로 섞여 보였다. */
+  defend?: string;
+  /** 도주 커맨드 라벨. defend 와 같은 이유로 용어에 편입한다. */
+  escape?: string;
   back?: string;
   target?: string;
   shopGreeting?: string;
@@ -460,14 +465,18 @@ export interface Terms {
 }
 
 /**
- * 다중 타일 캐릭터의 충돌 발자국(타일 단위). 두 축 모두 1 이상이다.
- * 앵커는 **발밑** — (x,y) 가 발자국 하단 행의 칸이다:
+ * 다중 타일 캐릭터의 **몸 사각**(타일 단위). 두 축 모두 1 이상이다.
+ * 앵커는 **발밑** — (x,y) 가 몸 사각 하단 행의 칸이다:
  *
  *   left = x − ⌊(width−1)/2⌋      top = y − (height−1)      bottom = y
  *
- * 짝수 폭에서 "왼쪽으로 치우친다" 는 **앵커가 발자국 중심의 왼쪽에 있다**는 뜻이다.
- * 발자국이 왼쪽으로 뻗는다는 뜻이 아니다 — 폭 2 는 left = x 라 앵커가 왼쪽 끝이고
- * 발자국은 오른쪽으로 자란다.
+ * 짝수 폭에서 "왼쪽으로 치우친다" 는 **앵커가 몸 사각 중심의 왼쪽에 있다**는 뜻이다.
+ * 몸 사각이 왼쪽으로 뻗는다는 뜻이 아니다 — 폭 2 는 left = x 라 앵커가 왼쪽 끝이고
+ * 사각은 오른쪽으로 자란다.
+ *
+ * 이 사각이 지배하는 것: 조사·접촉 발동, 전투 히트, 점유, 렌더 중앙, depth, 편집 클릭.
+ * **통행 차단은 이 사각이 아니다** — `EventPage.passRows` 가 하단 일부만 막는다
+ * (2차 스펙 §1). 1차에서는 이 타입이 충돌 사각이었고 2차에서 의미가 뒤집혔다.
  *
  * ⚠ project/spatialPlacements.ts 의 SpatialFootprint 와 다른 타입이다.
  * 저쪽은 (x,y) 가 좌상단이고 우·하로 전개한다. 섞으면 좌표가 어긋난다.
