@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-08-29T17:34:31.710Z",
+ "ranAt": "2026-08-29T20:23:02.225Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
@@ -11,7 +11,7 @@
   },
   {
    "path": "test/fixtures/eventEditorShellSurface.baseline.json",
-   "added": 249
+   "added": 268
   },
   {
    "path": "test/fixtures/eventEditorConditionSurface.baseline.json",
@@ -10394,6 +10394,45 @@
     "src/styles/editor/event-editor.part-2.css"
    ]
   },
+  "event-condition-chip": {
+   "props": [
+    "appearance",
+    "background",
+    "border",
+    "border-color",
+    "border-radius",
+    "color",
+    "cursor",
+    "font",
+    "font-size",
+    "line-height",
+    "outline",
+    "outline-offset",
+    "padding"
+   ],
+   "decls": [
+    "appearance:none",
+    "background:var(--accent-muted)",
+    "background:var(--bg-raised)",
+    "border-color:var(--accent)",
+    "border-color:var(--border-strong)",
+    "border-radius:999px",
+    "border:1px solid var(--border-default)",
+    "color:var(--accent)",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
+    "cursor:pointer",
+    "font-size:11.5px",
+    "font:inherit",
+    "line-height:1.5",
+    "outline-offset:1px",
+    "outline:2px solid var(--accent)",
+    "padding:1px 8px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
   "event-condition-control": {
    "props": [
     "align-items",
@@ -10453,6 +10492,23 @@
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-3/04-auto-fit.css"
+   ]
+  },
+  "event-condition-empty": {
+   "props": [
+    "color",
+    "font-size",
+    "margin",
+    "padding"
+   ],
+   "decls": [
+    "color:var(--text-3)",
+    "font-size:11.5px",
+    "margin:0",
+    "padding:2px 0 3px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
    ]
   },
   "event-condition-error": {
@@ -10774,6 +10830,19 @@
     "src/styles/editor/event-editor.part-4.css"
    ]
   },
+  "event-condition-list": {
+   "props": [
+    "display",
+    "gap"
+   ],
+   "decls": [
+    "display:grid",
+    "gap:3px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
   "event-condition-main": {
    "props": [
     "display",
@@ -10784,6 +10853,23 @@
     "display:grid",
     "gap:2px",
     "grid-template-columns:minmax(0, 1fr)"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-condition-palette": {
+   "props": [
+    "display",
+    "flex-wrap",
+    "gap",
+    "padding-bottom"
+   ],
+   "decls": [
+    "display:flex",
+    "flex-wrap:wrap",
+    "gap:3px",
+    "padding-bottom:3px"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-4.css"
@@ -10914,23 +11000,6 @@
     "src/styles/editor/event-editor.modern/02-fill-overlay-p1-pagetabs.css",
     "src/styles/editor/event-editor.modern/06-event-editor-modal-footer.css",
     "src/styles/editor/event-editor.part-3/03-event-condition-label.css",
-    "src/styles/editor/event-editor.part-4.css"
-   ]
-  },
-  "event-condition-time-unit": {
-   "props": [
-    "color",
-    "font",
-    "white-space"
-   ],
-   "decls": [
-    "color:var(--event-modern-text-soft)",
-    "font:600 11px/1 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "font:700 12px/16px \"malgun gothic\", sans-serif",
-    "white-space:nowrap"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.modern/02-fill-overlay-p1-pagetabs.css",
     "src/styles/editor/event-editor.part-4.css"
    ]
   },
@@ -11377,7 +11446,8 @@
     "width:3px",
     "width:auto",
     "width:min(100%, 620px)",
-    "z-index:1"
+    "z-index:1",
+    "z-index:auto"
    ],
    "sheets": [
     "src/styles/editor/event-editor.balanced.css",
@@ -11591,6 +11661,7 @@
     "align-content",
     "align-items",
     "align-self",
+    "appearance",
     "background",
     "background-color",
     "background-image",
@@ -11714,6 +11785,7 @@
     "align-self:flex-start",
     "align-self:start",
     "align-self:stretch",
+    "appearance:none",
     "background-color:transparent",
     "background-image:none",
     "background-image:repeating-linear-gradient(45deg, rgba(255,255,255,.5) 0 2px, transparent 2px 4px)",
@@ -11724,6 +11796,7 @@
     "background:#5a3d28",
     "background:#9bb07a",
     "background:#d7b07a",
+    "background:color-mix(in srgb, var(--blk-cat, var(--text-3)) 12%, var(--bg-raised))",
     "background:color-mix(in srgb, var(--mk-accent) 5%, var(--mk-raised))",
     "background:color-mix(in srgb, var(--mk-raised) 70%, var(--mk-surface))",
     "background:color-mix(in srgb, var(--mk-surface) 55%, transparent)",
@@ -11745,6 +11818,8 @@
     "background:var(--bg-inset)",
     "background:var(--bg-raised)",
     "background:var(--bg-surface)",
+    "background:var(--control-bg)",
+    "background:var(--control-bg-hover)",
     "background:var(--danger)",
     "background:var(--danger-muted)",
     "background:var(--event-rm-chrome)",
@@ -11806,6 +11881,7 @@
     "border:1px dashed var(--border-default)",
     "border:1px dashed var(--border-strong)",
     "border:1px dashed var(--mk-line)",
+    "border:1px solid color-mix(in srgb, var(--blk-cat, var(--text-3)) 28%, var(--border))",
     "border:1px solid transparent",
     "border:1px solid var(--border)",
     "border:1px solid var(--border-subtle)",
@@ -11828,6 +11904,7 @@
     "color:#f8fafc",
     "color:#fff",
     "color:var(--accent)",
+    "color:var(--blk-cat, var(--text-3))",
     "color:var(--danger)",
     "color:var(--mk-accent)",
     "color:var(--mk-accent-ink)",
@@ -11851,11 +11928,14 @@
     "content:\"어디로\"",
     "content:\"언제\"",
     "content:\"일정 \" counter(event-schedule-row)",
+    "content:attr(data-glyph)",
+    "content:attr(data-label)",
     "content:none",
     "counter-increment:event-schedule-row",
     "counter-reset:event-schedule-row",
     "cursor:col-resize",
     "cursor:default",
+    "cursor:not-allowed",
     "cursor:pointer",
     "display:-webkit-box",
     "display:block",
@@ -11949,7 +12029,9 @@
     "grid-template-columns:228px minmax(0, 1fr) !important",
     "grid-template-columns:228px minmax(0, 1fr) 340px !important",
     "grid-template-columns:28px 52px minmax(0, 1fr)",
+    "grid-template-columns:28px auto 52px minmax(0, 1fr) auto",
     "grid-template-columns:52px minmax(0, 1fr)",
+    "grid-template-columns:52px minmax(0, 1fr) auto",
     "grid-template-columns:56px 1fr",
     "grid-template-columns:56px minmax(0, 1fr)",
     "grid-template-columns:62px minmax(0, 1fr)",
@@ -11990,6 +12072,7 @@
     "height:100%",
     "height:10px",
     "height:14px",
+    "height:20px",
     "height:22px",
     "height:26px",
     "height:28px",
@@ -12064,6 +12147,7 @@
     "margin-top:auto",
     "margin:0",
     "margin:0 0 10px",
+    "margin:0 0 6px",
     "margin:0 0 6px 38px",
     "margin:0 16px 14px",
     "margin:0 6px",
@@ -12086,6 +12170,7 @@
     "min-height:0",
     "min-height:100%",
     "min-height:22px",
+    "min-height:24px",
     "min-height:26px",
     "min-height:30px",
     "min-height:32px",
@@ -12100,6 +12185,8 @@
     "min-width:124px",
     "min-width:140px",
     "min-width:238px",
+    "min-width:24px",
+    "min-width:26px",
     "min-width:40px",
     "min-width:54px",
     "min-width:70px",
@@ -12107,6 +12194,9 @@
     "min-width:84px",
     "min-width:96px",
     "opacity:.6",
+    "opacity:0",
+    "opacity:0.45",
+    "opacity:0.55",
     "opacity:0.58",
     "opacity:1",
     "order:0",
@@ -12117,7 +12207,10 @@
     "order:8",
     "order:9",
     "outline-color:var(--mk-accent)",
+    "outline-offset:-2px",
+    "outline-offset:1px",
     "outline-offset:2px",
+    "outline:2px solid var(--accent)",
     "outline:none",
     "outline:var(--focus-outline)",
     "overflow-wrap:anywhere",
@@ -12151,6 +12244,7 @@
     "padding:0 16px 16px",
     "padding:0 4px",
     "padding:0 4px 5px 12px",
+    "padding:0 5px",
     "padding:0 7px",
     "padding:0 8px",
     "padding:10px",
@@ -12244,6 +12338,7 @@
     "transition:background-color 120ms ease",
     "transition:border-color 0.1s",
     "transition:none",
+    "transition:opacity 0.12s",
     "transition:transform 120ms ease",
     "transition:transform var(--transition-fast)",
     "user-select:none",
@@ -12647,17 +12742,39 @@
     "src/styles/editor/event-editor.mockup.css"
    ]
   },
+  "event-editor-command-edit-target": {
+   "props": [
+    "color",
+    "font-size",
+    "line-height",
+    "margin",
+    "max-width"
+   ],
+   "decls": [
+    "color:var(--text-2)",
+    "color:var(--warning)",
+    "font-size:11px",
+    "line-height:1.4",
+    "margin:0 0 6px",
+    "max-width:240px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
+   ]
+  },
   "event-editor-command-search": {
    "props": [
     "background",
     "border",
     "border-radius",
     "color",
+    "cursor",
     "flex",
     "font-size",
     "height",
     "max-width",
     "min-width",
+    "opacity",
     "order",
     "padding",
     "width"
@@ -12667,12 +12784,14 @@
     "border-radius:7px",
     "border:1px solid var(--border)",
     "color:var(--text-1)",
+    "cursor:not-allowed",
     "flex:1 1 140px",
     "font-size:12px",
     "height:30px",
     "max-width:320px",
     "min-width:140px",
     "min-width:96px",
+    "opacity:0.55",
     "order:1",
     "padding:0 10px",
     "width:200px",
@@ -12681,6 +12800,74 @@
    "sheets": [
     "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.modern/03-legend-toolbar.css"
+   ]
+  },
+  "event-editor-command-search-clear": {
+   "props": [
+    "appearance",
+    "background",
+    "border",
+    "border-radius",
+    "color",
+    "cursor",
+    "font-size",
+    "line-height",
+    "min-height",
+    "min-width",
+    "padding"
+   ],
+   "decls": [
+    "appearance:none",
+    "background:var(--control-bg)",
+    "background:var(--control-bg-hover)",
+    "border-radius:6px",
+    "border:1px solid transparent",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
+    "cursor:pointer",
+    "font-size:13px",
+    "line-height:1",
+    "min-height:26px",
+    "min-width:26px",
+    "padding:0"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
+   ]
+  },
+  "event-editor-command-search-count": {
+   "props": [
+    "color",
+    "font-size",
+    "font-variant-numeric",
+    "white-space"
+   ],
+   "decls": [
+    "color:var(--danger)",
+    "color:var(--text-3)",
+    "font-size:11px",
+    "font-variant-numeric:tabular-nums",
+    "white-space:nowrap"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
+   ]
+  },
+  "event-editor-command-search-field": {
+   "props": [
+    "align-items",
+    "display",
+    "gap",
+    "order"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "gap:6px",
+    "order:1"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
    ]
   },
   "event-editor-command-tool": {
@@ -12694,6 +12881,7 @@
     "border-top",
     "box-shadow",
     "color",
+    "cursor",
     "display",
     "filter",
     "font",
@@ -12731,6 +12919,7 @@
     "color:var(--mk-accent-ink)",
     "color:var(--text-1)",
     "color:var(--text-3)",
+    "cursor:not-allowed",
     "display:inline-flex",
     "filter:brightness(1.07)",
     "font-size:11.5px",
@@ -12746,6 +12935,7 @@
     "min-width:32px",
     "min-width:34px",
     "min-width:36px",
+    "opacity:0.45",
     "opacity:0.55",
     "outline:none",
     "padding-left:8px",
@@ -12875,7 +13065,8 @@
     "top:auto",
     "white-space:nowrap",
     "width:auto",
-    "z-index:1"
+    "z-index:1",
+    "z-index:auto"
    ],
    "sheets": [
     "src/styles/editor/event-editor.balanced.css",
@@ -14007,6 +14198,202 @@
    "sheets": [
     "src/styles/editor/event-editor.modern/03-legend-toolbar.css",
     "src/styles/editor/event-editor.modernize.css"
+   ]
+  },
+  "event-footprint-body": {
+   "props": [
+    "align-items",
+    "display",
+    "gap",
+    "grid-template-columns"
+   ],
+   "decls": [
+    "align-items:end",
+    "display:grid",
+    "gap:6px 10px",
+    "grid-template-columns:minmax(0, 1fr) auto"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-control": {
+   "props": [
+    "display",
+    "flex-direction",
+    "gap",
+    "opacity"
+   ],
+   "decls": [
+    "display:flex",
+    "flex-direction:column",
+    "gap:6px",
+    "opacity:0.5"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-field": {
+   "props": [
+    "display",
+    "flex-direction",
+    "font-size",
+    "gap",
+    "min-width",
+    "opacity",
+    "width"
+   ],
+   "decls": [
+    "display:flex",
+    "flex-direction:column",
+    "font-size:11px",
+    "gap:2px",
+    "min-width:0",
+    "opacity:0.85",
+    "width:100%"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-grid": {
+   "props": [
+    "display",
+    "gap",
+    "grid-template-columns"
+   ],
+   "decls": [
+    "display:grid",
+    "gap:6px 10px",
+    "grid-template-columns:repeat(3, minmax(0, 1fr))"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-preview": {
+   "props": [
+    "flex",
+    "position"
+   ],
+   "decls": [
+    "flex:none",
+    "position:relative"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-preview-cell": {
+   "props": [
+    "background",
+    "border",
+    "border-color",
+    "box-sizing"
+   ],
+   "decls": [
+    "background:color-mix(in srgb, currentcolor 22%, transparent)",
+    "border-color:color-mix(in srgb, currentcolor 62%, transparent)",
+    "border:1px solid color-mix(in srgb, currentcolor 26%, transparent)",
+    "box-sizing:border-box"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-preview-grid": {
+   "props": [
+    "display",
+    "position"
+   ],
+   "decls": [
+    "display:grid",
+    "position:absolute"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-preview-host": {
+   "props": [
+    "display",
+    "justify-content",
+    "min-width"
+   ],
+   "decls": [
+    "display:flex",
+    "justify-content:center",
+    "min-width:0"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-preview-sprite": {
+   "props": [
+    "image-rendering",
+    "position"
+   ],
+   "decls": [
+    "image-rendering:pixelated",
+    "position:absolute"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-scale": {
+   "props": [
+    "align-items",
+    "display",
+    "gap",
+    "grid-template-columns"
+   ],
+   "decls": [
+    "align-items:end",
+    "display:grid",
+    "gap:6px 10px",
+    "grid-template-columns:minmax(0, 1fr) 96px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-scale-manual": {
+   "props": [
+    "align-items",
+    "display",
+    "gap",
+    "min-height",
+    "white-space"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:inline-flex",
+    "gap:5px",
+    "min-height:20px",
+    "white-space:nowrap"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
+   ]
+  },
+  "event-footprint-summary": {
+   "props": [
+    "font-size",
+    "line-height",
+    "margin",
+    "opacity"
+   ],
+   "decls": [
+    "font-size:11px",
+    "line-height:1.45",
+    "margin:0",
+    "opacity:0.85"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.part-4.css"
    ]
   },
   "event-fork-branch-summary": {
@@ -15728,6 +16115,7 @@
   },
   "event-page-move-route-grid": {
    "props": [
+    "align-content",
     "display",
     "gap",
     "grid-template-columns",
@@ -15735,12 +16123,13 @@
     "overflow"
    ],
    "decls": [
+    "align-content:start",
     "display:grid",
     "gap:0",
     "gap:6px",
     "grid-template-columns:repeat(3, minmax(0, 1fr))",
     "min-height:0",
-    "overflow:hidden"
+    "overflow:auto"
    ],
    "sheets": [
     "src/styles/editor/event-editor.part-1.css",
@@ -15942,7 +16331,7 @@
     "gap:12px",
     "gap:3px",
     "grid-column:1 / -1",
-    "grid-template-columns:repeat(3, minmax(96px, 1fr)) minmax(220px, 1.5fr) 76px 76px minmax(116px, 0.8fr)",
+    "grid-template-columns:repeat(3, minmax(96px, 1fr)) minmax(200px, 1.5fr) 68px 68px minmax(104px, 0.8fr) 60px 60px 68px 76px",
     "height:32px",
     "min-height:32px",
     "min-width:0",
@@ -17076,6 +17465,7 @@
   },
   "event-storyboard": {
    "props": [
+    "--blk-cat",
     "background",
     "display",
     "flex-direction",
@@ -17087,6 +17477,16 @@
     "padding"
    ],
    "decls": [
+    "--blk-cat:var(--cmdcat-actor)",
+    "--blk-cat:var(--cmdcat-battle)",
+    "--blk-cat:var(--cmdcat-dialogue)",
+    "--blk-cat:var(--cmdcat-flow)",
+    "--blk-cat:var(--cmdcat-map)",
+    "--blk-cat:var(--cmdcat-modern)",
+    "--blk-cat:var(--cmdcat-reward)",
+    "--blk-cat:var(--cmdcat-screen)",
+    "--blk-cat:var(--cmdcat-sound)",
+    "--blk-cat:var(--cmdcat-system)",
     "background:var(--bg-base)",
     "display:flex",
     "display:grid",
@@ -17103,6 +17503,7 @@
    ],
    "sheets": [
     "src/styles/editor/event-editor.balanced.css",
+    "src/styles/editor/event-editor.blocks.css",
     "src/styles/editor/event-editor.mockup.css",
     "src/styles/editor/storyboard.css"
    ]
@@ -17212,6 +17613,7 @@
     "grid-template-columns",
     "min-height",
     "min-width",
+    "opacity",
     "outline",
     "outline-offset",
     "padding",
@@ -17227,6 +17629,7 @@
     "background:transparent",
     "background:var(--bg-raised)",
     "background:var(--bg-surface)",
+    "background:var(--control-bg)",
     "border-color:var(--accent)",
     "border-color:var(--border-strong)",
     "border-radius:6px",
@@ -17241,8 +17644,11 @@
     "gap:8px",
     "grid-template-columns:3px minmax(0, 1fr) auto",
     "grid-template-columns:52px minmax(0, 1fr)",
+    "grid-template-columns:52px minmax(0, 1fr) auto",
     "min-height:31px",
     "min-width:0",
+    "opacity:1",
+    "outline-offset:-2px",
     "outline-offset:2px",
     "outline:2px solid var(--accent)",
     "padding:4px 7px 4px 5px",
@@ -17374,6 +17780,7 @@
     "height",
     "max-height",
     "min-width",
+    "opacity",
     "outline",
     "outline-offset",
     "overflow",
@@ -17397,6 +17804,7 @@
     "background:transparent",
     "background:var(--bg-raised)",
     "background:var(--bg-surface)",
+    "background:var(--control-bg)",
     "border-color:var(--accent)",
     "border-color:var(--border-strong)",
     "border-left-color:var(--storyboard-accent)",
@@ -17418,11 +17826,14 @@
     "gap:10px",
     "gap:8px",
     "grid-template-columns:28px 52px minmax(0, 1fr)",
+    "grid-template-columns:28px auto 52px minmax(0, 1fr) auto",
     "grid-template-columns:28px minmax(0, 1fr) auto",
     "grid-template-columns:auto minmax(0, 1fr)",
     "height:56px",
     "max-height:120px",
     "min-width:0",
+    "opacity:1",
+    "outline-offset:-2px",
     "outline-offset:2px",
     "outline:2px solid var(--accent)",
     "overflow:hidden",
@@ -17460,6 +17871,50 @@
    ],
    "sheets": [
     "src/styles/editor/event-editor.mockup.css"
+   ]
+  },
+  "event-storyboard-card-cat": {
+   "props": [
+    "align-items",
+    "align-self",
+    "background",
+    "border",
+    "border-radius",
+    "color",
+    "content",
+    "display",
+    "font-size",
+    "font-weight",
+    "gap",
+    "height",
+    "justify-content",
+    "margin-top",
+    "padding",
+    "white-space"
+   ],
+   "decls": [
+    "align-items:center",
+    "align-self:start",
+    "background:color-mix(in srgb, var(--blk-cat, var(--text-3)) 12%, var(--bg-raised))",
+    "border-radius:999px",
+    "border:1px solid color-mix(in srgb, var(--blk-cat, var(--text-3)) 28%, var(--border))",
+    "color:var(--blk-cat, var(--text-3))",
+    "content:attr(data-glyph)",
+    "content:attr(data-label)",
+    "display:inline-flex",
+    "display:none",
+    "font-size:10px",
+    "font-weight:700",
+    "gap:3px",
+    "height:20px",
+    "justify-content:center",
+    "margin-top:2px",
+    "padding:0 5px",
+    "padding:0 7px",
+    "white-space:nowrap"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
    ]
   },
   "event-storyboard-card-detail": {
@@ -17578,6 +18033,66 @@
    "sheets": [
     "src/styles/editor/event-editor.mockup.css",
     "src/styles/editor/storyboard.css"
+   ]
+  },
+  "event-storyboard-row-action": {
+   "props": [
+    "appearance",
+    "background",
+    "border",
+    "border-radius",
+    "color",
+    "cursor",
+    "font-size",
+    "line-height",
+    "min-height",
+    "min-width",
+    "outline",
+    "outline-offset",
+    "padding"
+   ],
+   "decls": [
+    "appearance:none",
+    "background:var(--control-bg)",
+    "background:var(--control-bg-hover)",
+    "background:var(--danger-muted)",
+    "border-radius:6px",
+    "border:1px solid transparent",
+    "color:var(--danger)",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
+    "cursor:pointer",
+    "font-size:11px",
+    "line-height:1",
+    "min-height:24px",
+    "min-width:24px",
+    "outline-offset:1px",
+    "outline:2px solid var(--accent)",
+    "padding:0 4px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
+   ]
+  },
+  "event-storyboard-row-actions": {
+   "props": [
+    "align-items",
+    "display",
+    "gap",
+    "opacity",
+    "transition"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "gap:2px",
+    "opacity:0",
+    "opacity:1",
+    "transition:none",
+    "transition:opacity 0.12s"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
    ]
   },
   "event-subdialog-backdrop": {
@@ -18866,17 +19381,6 @@
    ],
    "sheets": [
     "src/styles/editor/event-editor-follower-preset.css"
-   ]
-  },
-  "friendship": {
-   "props": [
-    "grid-template-columns"
-   ],
-   "decls": [
-    "grid-template-columns:minmax(0, 1fr)"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.modern/02-fill-overlay-p1-pagetabs.css"
    ]
   },
   "gain": {
@@ -20252,6 +20756,25 @@
     "src/styles/shell/figma-editor/08-rm-palette-tools.css"
    ]
   },
+  "is-danger": {
+   "props": [
+    "background",
+    "border-color",
+    "color"
+   ],
+   "decls": [
+    "background:var(--danger, #c6403d)",
+    "background:var(--danger-muted)",
+    "border-color:var(--danger, #c6403d)",
+    "color:var(--danger)",
+    "color:var(--on-accent, #fff)"
+   ],
+   "sheets": [
+    "src/styles/components/app-modal.css",
+    "src/styles/database/tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css",
+    "src/styles/editor/event-editor.balanced.css"
+   ]
+  },
   "is-empty": {
    "props": [
     "align-items",
@@ -20457,6 +20980,7 @@
     "background:color-mix(in srgb, var(--editor-blue, #4a57d6) 28%, var(--mix-base))",
     "background:var(--accent-muted)",
     "border-color:color-mix(in srgb, var(--editor-blue, #4a57d6) 55%, transparent)",
+    "border-color:var(--accent-border)",
     "border-color:var(--accent-border, var(--accent))",
     "color:var(--accent)",
     "color:var(--on-accent)",
@@ -20467,7 +20991,8 @@
    "sheets": [
     "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.command-preview/08-quick-authoring-surface.css",
-    "src/styles/shell/editor-ui-modes.css"
+    "src/styles/shell/editor-ui-modes.css",
+    "src/styles/shell/editor-welcome.css"
    ]
   },
   "is-quiet": {
@@ -22199,17 +22724,6 @@
     "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css",
     "src/styles/editor/event-editor.part-4.css",
     "src/styles/editor/palette-player.css"
-   ]
-  },
-  "npc-activity": {
-   "props": [
-    "grid-template-columns"
-   ],
-   "decls": [
-    "grid-template-columns:minmax(0, 1fr)"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.modern/02-fill-overlay-p1-pagetabs.css"
    ]
   },
   "npc-advanced-sprite": {
@@ -27070,31 +27584,6 @@
     "src/styles/editor/event-editor.modern/02-fill-overlay-p1-pagetabs.css"
    ]
   },
-  "timer": {
-   "props": [
-    "align-items",
-    "column-gap",
-    "gap",
-    "grid-template-columns",
-    "justify-content"
-   ],
-   "decls": [
-    "align-items:center",
-    "column-gap:4px",
-    "gap:3px",
-    "gap:4px",
-    "grid-template-columns:36px max-content 36px max-content",
-    "grid-template-columns:78px 42px max-content 42px max-content",
-    "grid-template-columns:minmax(28px, 40px) auto minmax(28px, 40px) auto",
-    "grid-template-columns:minmax(32px, 1fr) max-content minmax(32px, 1fr) max-content",
-    "justify-content:start"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.modern/02-fill-overlay-p1-pagetabs.css",
-    "src/styles/editor/event-editor.modern/06-event-editor-modal-footer.css",
-    "src/styles/editor/event-editor.part-4.css"
-   ]
-  },
   "toolbar": {
    "props": [
     "align-content",
@@ -28306,7 +28795,6 @@
   "event-condition-badge-timePhase",
   "event-condition-badge-variable",
   "event-condition-eval-body",
-  "event-condition-friendship-hint",
   "event-condition-not",
   "event-condition-summary-badges",
   "event-condition-summary-empty",
