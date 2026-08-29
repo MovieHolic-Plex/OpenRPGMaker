@@ -481,6 +481,7 @@ export class AgentGhostPreviewRenderer {
     const canvas = this.scene.game?.canvas;
     if (!chip || !canvas) return;
     const canvasRect = canvas.getBoundingClientRect();
+    const hostRect = canvas.parentElement?.getBoundingClientRect();
     const chipRect = chip.getBoundingClientRect();
     const placement = placeAiActivityChip({
       region: this.previewBoundingRegion(previews),
@@ -498,8 +499,10 @@ export class AgentGhostPreviewRenderer {
         height: Math.max(1, chipRect.height || chip.offsetHeight),
       },
     });
-    chip.style.left = `${placement.left}px`;
-    chip.style.top = `${placement.top}px`;
+    const hostOffsetX = hostRect ? canvasRect.left - hostRect.left : 0;
+    const hostOffsetY = hostRect ? canvasRect.top - hostRect.top : 0;
+    chip.style.left = `${Math.round(hostOffsetX + placement.left)}px`;
+    chip.style.top = `${Math.round(hostOffsetY + placement.top)}px`;
     chip.dataset.chipMode = placement.mode;
   }
 

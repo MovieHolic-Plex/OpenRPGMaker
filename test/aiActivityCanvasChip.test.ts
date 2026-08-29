@@ -58,7 +58,15 @@ function makeContainer(): any {
   return container;
 }
 
-function makeRendererScene(canvas: FakeElement, camera = { scrollX: 0, scrollY: 0, zoom: 1 }): any {
+function makeRendererScene(
+  canvas: FakeElement,
+  camera: {
+    scrollX: number;
+    scrollY: number;
+    zoom: number;
+    worldView?: { x: number; y: number };
+  } = { scrollX: 0, scrollY: 0, zoom: 1 },
+): any {
   return {
     add: {
       container: vi.fn(() => makeContainer()),
@@ -118,7 +126,10 @@ describe("맵 캔버스 AI 진행 칩", () => {
         return { x: 0, y: 0, left: 0, top: 0, right: 160, bottom: 28, width: 160, height: 28, toJSON: () => ({}) };
       }
       if (this.tagName === "CANVAS") {
-        return { x: 0, y: 0, left: 0, top: 0, right: 640, bottom: 480, width: 640, height: 480, toJSON: () => ({}) };
+        return { x: 180, y: 90, left: 180, top: 90, right: 820, bottom: 570, width: 640, height: 480, toJSON: () => ({}) };
+      }
+      if (this === host) {
+        return { x: 40, y: 25, left: 40, top: 25, right: 1040, bottom: 725, width: 1000, height: 700, toJSON: () => ({}) };
       }
       return { x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, toJSON: () => ({}) };
     });
@@ -145,7 +156,7 @@ describe("맵 캔버스 AI 진행 칩", () => {
     expect(info.text).not.toMatch(/\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/u);
   });
 
-  it("프리뷰 영역과 카메라를 기준으로 칩의 인라인 위치와 배치 모드를 갱신한다", () => {
+  it("프리뷰 영역 위치를 캔버스 좌표에서 칩 호스트 좌표로 보정한다", () => {
     const project = createBlankProject();
     project.maps.m1 = createBlankMap("m1", 30, 30);
     store.replace(project);
@@ -168,8 +179,9 @@ describe("맵 캔버스 AI 진행 칩", () => {
       chip: { width: 160, height: 28 },
     });
     const chip = host.querySelector("[data-testid='ai-ghost-phase-chip']");
-    expect(chip?.style.left).toBe(`${expected.left}px`);
-    expect(chip?.style.top).toBe(`${expected.top}px`);
+    const canvasToHost = { x: 180 - 40, y: 90 - 25 };
+    expect(chip?.style.left).toBe(`${expected.left + canvasToHost.x}px`);
+    expect(chip?.style.top).toBe(`${expected.top + canvasToHost.y}px`);
     expect(chip?.dataset.chipMode).toBe(expected.mode);
     expect(expected).toMatchObject({ left: 112, top: 108, mode: "above", anchored: true });
   });

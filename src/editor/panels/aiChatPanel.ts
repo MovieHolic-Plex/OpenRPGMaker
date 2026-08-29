@@ -301,8 +301,13 @@ export function decorateAssistantMentions(
   if (strip) bubble.append(strip);
 }
 
+export const AI_ACTIVITY_MIN_DWELL_MS = 400;
+
+export type AiActivityScheduler = (callback: () => void, delayMs: number) => () => void;
+
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
+  readonly activityScheduler?: AiActivityScheduler;
   readonly getChatDock?: () => ChatDock;
   readonly onChatDockToggle?: () => void;
   readonly onChatDockChange?: (next: ChatDock) => void;
@@ -330,6 +335,14 @@ export function teardownAiChatPanel(): void {
 export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement {
   teardownAiChatPanel();
   const now = options.clock ?? (() => Date.now());
+  const scheduleActivity = options.activityScheduler ?? ((callback: () => void, delayMs: number): (() => void) => {
+    if (typeof window !== "undefined" && typeof window.setTimeout === "function") {
+      const timer = window.setTimeout(callback, delayMs);
+      return () => window.clearTimeout(timer);
+    }
+    const timer = globalThis.setTimeout(callback, delayMs);
+    return () => globalThis.clearTimeout(timer);
+  });
   const runRegion = options.regionTaskRunner ?? runRegionTask;
   const readChatDock = (): ChatDock => options.getChatDock?.() ?? editorState.get().chatDock;
   const readTemperature = (): AssistantTemperature =>
@@ -427,6 +440,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly row: HTMLElement;
     readonly line: HTMLElement;
   } | null = null;
+  type PendingActivitySwap = {
+    cancel: () => void;
+    readonly finalize: () => void;
+  };
+  const pendingActivitySwaps: PendingActivitySwap[] = [];
   // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 오류면 열린 상태를 유지한다.
   let collapseAfterAiWork = false;
   // executeTurn/영역 작업 콜백은 패널 크롬을 만들기 전에 정의되므로, 접힘 상태도
@@ -529,7 +547,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     runningActivity.line.textContent = [narration.line, narration.elapsedLabel].filter(Boolean).join(" · ");
   };
+  const flushPendingActivitySwapsThrough = (target?: PendingActivitySwap): void => {
+    const lastIndex = target ? pendingActivitySwaps.indexOf(target) : pendingActivitySwaps.length - 1;
+    if (lastIndex < 0) return;
+    const ready = pendingActivitySwaps.splice(0, lastIndex + 1);
+    for (const pending of ready) {
+      pending.cancel();
+      pending.finalize();
+    }
+  };
+  const flushPendingActivitySwaps = (): void => flushPendingActivitySwapsThrough();
   const startLiveActivity = (toolName: string, index: number): void => {
+    // 동기 도구가 연달아 오면 앞 행을 먼저 확정해 기록 순서를 지키고 마지막 행만 머문다.
+    flushPendingActivitySwaps();
     runningActivity?.row.remove();
     if (runningProgress) runningProgress.toolCount = Math.max(runningProgress.toolCount, index);
     const line = el("span", { class: "ai-activity-live-line" });
@@ -561,27 +591,40 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       ?? renderToolActivityEntry(toolName, result);
     if (!runningActivity || runningActivity.toolName !== toolName) return;
 
-    const liveRow = runningActivity.row;
-    if (rendered.parentNode) {
-      liveRow.remove();
-      rendered.replaceWith(liveRow);
-    }
-    if (result.ok) {
-      liveRow.className = rendered.className;
-      liveRow.dataset.testid = "ai-tool-entry";
-      liveRow.removeAttribute("role");
-      liveRow.removeAttribute("aria-live");
-      liveRow.textContent = rendered.textContent ?? "";
-    } else {
-      liveRow.className = "ai-activity-completed";
-      liveRow.dataset.testid = "ai-tool-entry";
-      liveRow.removeAttribute("role");
-      liveRow.removeAttribute("aria-live");
-      liveRow.replaceChildren(rendered);
-    }
-    runningActivity = null;
-    refreshRunningStatus(false);
-    log.scrollTop = log.scrollHeight;
+    const activity = runningActivity;
+    const liveRow = activity.row;
+    const completedHost = rendered.parentElement;
+    if (completedHost) rendered.remove();
+    const finalize = (): void => {
+      if (result.ok) {
+        liveRow.className = rendered.className;
+        liveRow.dataset.testid = "ai-tool-entry";
+        liveRow.removeAttribute("role");
+        liveRow.removeAttribute("aria-live");
+        liveRow.textContent = rendered.textContent ?? "";
+      } else {
+        liveRow.className = "ai-activity-completed";
+        liveRow.dataset.testid = "ai-tool-entry";
+        liveRow.removeAttribute("role");
+        liveRow.removeAttribute("aria-live");
+        liveRow.replaceChildren(rendered);
+      }
+      if (completedHost) {
+        liveRow.remove();
+        completedHost.append(liveRow);
+      }
+      if (runningActivity === activity) runningActivity = null;
+      refreshRunningStatus(false);
+      log.scrollTop = log.scrollHeight;
+    };
+    const pending: PendingActivitySwap = { cancel: () => {}, finalize };
+    pendingActivitySwaps.push(pending);
+    // 동기 도구 실행 중 흐른 벽시계 시간은 브라우저가 그린 시간이 아니다. 완료 이벤트 뒤부터
+    // 온전한 표시 시간을 예약해야 긴 동기 작업도 최소 한 프레임 이상 사용자에게 보인다.
+    pending.cancel = scheduleActivity(
+      () => flushPendingActivitySwapsThrough(pending),
+      AI_ACTIVITY_MIN_DWELL_MS,
+    );
   };
 
   // 사용자가 보고 싶은 것은 툴 호출 목록이 아니라 “무엇이 어떻게 바뀌었는가” 다. 자동 적용·수동
@@ -1008,6 +1051,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshRunningStatus(false);
   };
   const endTurnProgress = (): void => {
+    // 정상·중단·오류 어느 종료든 예약된 완료 행을 먼저 확정해 스피너와 기록 유실을 막는다.
+    flushPendingActivitySwaps();
     if (progressTimer !== null && typeof window !== "undefined") window.clearInterval(progressTimer);
     progressTimer = null;
     runningProgress = null;
