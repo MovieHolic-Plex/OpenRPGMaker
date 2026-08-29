@@ -161,6 +161,16 @@
 .ecp-stage.pos-center { place-items: center; }
 .ecp-stage.pos-bottom { place-items: end center; }
 
+/* 미리보기(`event-page-preview`)는 명령 칼럼 전체 폭을 쓴다. 거기서 `width: 100%` +
+   `aspect-ratio: 4/3` 는 무대를 스크롤 뷰포트보다 높게 만든다 — 실측 2560x1440 에서
+   무대 1737x1303, 뷰포트 1030. 메시지 창은 `place-items: end center` 로 아래에 붙으므로
+   fold 밖으로 나가 «빈 흰 박스» 만 보였다(문장 표시 명령 = 가장 흔한 명령).
+   높이를 기준으로 폭을 제한해 4:3 을 지키면서 한 화면에 들어오게 한다. */
+.event-page-preview .ecp-stage {
+  margin-inline: auto;
+  max-width: calc(58vh * 4 / 3);
+}
+
 .ecp-message-window {
   width: 100%;
   max-width: 96%;

@@ -297,10 +297,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     page: activePage,
     viewToggle,
     aiDock: aiAssist,
-    onOpenPreview: () => {
-      changeMode("preview");
-      previewHost.scrollIntoView({ block: "nearest" });
-    },
     currentMode: () => currentMode,
     storyboardEl: () => storyboardEl,
   });
@@ -387,7 +383,6 @@ type CommandToolbarOptions = {
   readonly page: EventPage;
   readonly viewToggle?: HTMLElement;
   readonly aiDock?: HTMLDetailsElement;
-  readonly onOpenPreview?: () => void;
   readonly currentMode: () => StoryboardMode;
   readonly storyboardEl: () => HTMLElement;
 };
@@ -482,7 +477,7 @@ function makePopoverEscapable(details: HTMLDetailsElement): void {
 }
 
 function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
-  const { cmdList, actions, commandHistory, mapId, eventId, page, viewToggle, aiDock, onOpenPreview } = options;
+  const { cmdList, actions, commandHistory, mapId, eventId, page, viewToggle, aiDock } = options;
   // 선택의 단일 진상은 인스펙터다. 예전에는 `cmdList` 의 `.selected` 를 DOM 에서 긁었는데,
   // 스토리 보기에서는 목록이 비어 있으니 무엇을 골라도 이동/복사가 조용히 아무 일도 안 했다.
   const selectedPath = (): number[] | null => {
@@ -629,7 +624,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
-      renderCommandAuxGroup(onOpenPreview, aiDock),
+      renderCommandAuxGroup(aiDock),
     ],
   });
   return {
@@ -641,7 +636,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   };
 }
 
-function renderCommandAuxGroup(onOpenPreview?: () => void, aiDock?: HTMLDetailsElement): HTMLElement {
+function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   // 도크가 있으면 그 조상을 통해 칼럼을 집는다 — 에디터 본문이 동시에 다수 마운트되도 섞이지 않는다.
   const commandsColumn = (): HTMLElement | null =>
     aiDock?.closest(".event-editor-commands-column") ?? document.querySelector(".event-editor-commands-column");
@@ -669,9 +664,11 @@ function renderCommandAuxGroup(onOpenPreview?: () => void, aiDock?: HTMLDetailsE
   return el("div", {
     class: "event-editor-command-aux-group",
     attrs: { role: "group", "aria-label": "보조 도구" },
+    // «▶ 미리보기» 버튼은 없다. 보기 방식 세그먼트(`event-view-toggle-preview`)와 같은
+    // `changeMode("preview")` 로 들어가는 중복 컨트롤이었고, 같은 라벨로 나란히 서 있었다.
+    // 미리보기는 세그먼트가 소유한다. 플로우는 팝오버를 여는 별개 동작이라 남는다.
     children: [
       ...(aiButton ? [aiButton] : []),
-      toolbarButton("▶", "미리보기", "event-command-quick-preview", () => onOpenPreview?.(), false, false, "이 페이지가 하는 일을 차례대로 보여줍니다"),
       toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
     ],
   });

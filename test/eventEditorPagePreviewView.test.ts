@@ -104,11 +104,13 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
     expect(caption()).toBe(first);
   });
 
-  it("툴바의 미리보기 버튼도 같은 보기로 넘긴다", () => {
+  // 미리보기는 보기 방식 세그먼트가 유일한 입구다. 예전에는 툴바에도 «▶ 미리보기» 가
+  // 있었는데 같은 `changeMode("preview")` 로 들어가는 중복 컨트롤이라 지웠다.
+  it("미리보기 세그먼트가 미리보기 보기로 넘긴다", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
 
-    click(host, "event-command-quick-preview");
+    click(host, "event-view-toggle-preview");
 
     expect(host.querySelector('[data-testid="event-page-preview"]')).toBeTruthy();
     const toggle = host.querySelector<HTMLElement>('[data-testid="event-view-toggle-preview"]');

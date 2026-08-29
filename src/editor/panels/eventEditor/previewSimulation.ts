@@ -1,3 +1,4 @@
+import { eventCommandBranches, type EventBranchKind } from "@/editor/eventCommandBranches";
 import { evalCondition, startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Command, Condition, VariableOperand } from "@/project/types";
@@ -44,47 +45,16 @@ export interface SimulationResult {
 
 export type BranchRef = { readonly label: string; readonly commands: readonly Command[] };
 
+/**
+ * 분기 열거는 `eventCommandBranches` 가 정본이다. 여기는 라벨+명령만 쓰는 얇은 어댑터다.
+ * 예전에는 이 함수가 자기 목록을 들고 있어서 상점 실패 분기를 빠뜨렸다 — 다시 만들지 말 것.
+ */
 export function branchesOf(command: Command): BranchRef[] {
-  if (command.kind === "fork") {
-    const branches: BranchRef[] = [{ label: "참", commands: command.then }];
-    if (command.else) branches.push({ label: "그 외", commands: command.else });
-    return branches;
-  }
-  if (command.kind === "choices") {
-    const branches: BranchRef[] = command.options.map((option, index) => ({
-      label: option.text || `선택지 ${index + 1}`,
-      commands: option.branch,
-    }));
-    if (command.cancelBehavior === "branch") branches.push({ label: "취소", commands: command.cancelBranch ?? [] });
-    return branches;
-  }
-  if (command.kind === "loop") return [{ label: "반복", commands: command.body }];
-  if (command.kind === "shop" && command.branchOnTransaction) {
-    return [{ label: "구매/판매", commands: command.transactionBranch ?? [] }];
-  }
-  if (command.kind === "inn" && command.branchOnNotEnoughGold) {
-    return [{ label: "골드 부족", commands: command.notEnoughBranch ?? [] }];
-  }
-  if (command.kind === "battleProcessing" && command.branchOnResult) {
-    return [
-      { label: "전투 승리", commands: command.victoryBranch ?? [] },
-      { label: "전투 패배", commands: command.defeatBranch ?? [] },
-      { label: "전투 도망", commands: command.escapeBranch ?? [] },
-    ];
-  }
-  if (command.kind === "promoteActor") {
-    return [
-      { label: "성공", commands: command.successBranch ?? [] },
-      { label: "실패", commands: command.failureBranch ?? [] },
-    ];
-  }
-  if (command.kind === "evolveMonster") {
-    return [
-      { label: "성공", commands: command.successBranch ?? [] },
-      { label: "실패", commands: command.failureBranch ?? [] },
-    ];
-  }
-  return [];
+  return eventCommandBranches(command).map((branch) => ({ label: branch.label, commands: branch.commands }));
+}
+
+function branchLabelOf(command: Command, kind: EventBranchKind): string | undefined {
+  return eventCommandBranches(command).find((branch) => branch.kind === kind)?.label;
 }
 
 export function createPreviewSimState(): PreviewSimState {
@@ -191,15 +161,17 @@ function walkWithSimulation(
       const thenSkipped = taken !== "then";
       const elseSkipped = taken !== "else";
 
-      walkWithSimulation(command.then, depth + 1, state, steps, hostEventId, "참일 때", thenSkipped);
+      walkWithSimulation(command.then, depth + 1, state, steps, hostEventId, branchLabelOf(command, "forkThen"), thenSkipped);
       if (command.else && command.else.length > 0) {
-        walkWithSimulation(command.else, depth + 1, state, steps, hostEventId, "그 외", elseSkipped);
+        walkWithSimulation(command.else, depth + 1, state, steps, hostEventId, branchLabelOf(command, "forkElse"), elseSkipped);
       }
       continue;
     }
 
     if (command.kind === "choices") {
       steps.push({ command, depth, branchLabel, simState: stateBefore, skipped });
+      // 선택지·취소 라벨도 정본에서 가져온다. 옵션은 순서가 그대로라 인덱스로 짝지어도 안전하다.
+      const choiceBranches = eventCommandBranches(command);
       command.options.forEach((option, optionIndex) => {
         const branchState = cloneState(state);
         walkWithSimulation(
@@ -208,20 +180,21 @@ function walkWithSimulation(
           branchState,
           steps,
           hostEventId,
-          option.text || `선택지 ${optionIndex + 1}`,
+          choiceBranches[optionIndex]?.label,
           skipped
         );
       });
-      if (command.cancelBehavior === "branch") {
+      const cancelBranch = choiceBranches.find((branch) => branch.kind === "choiceCancel");
+      if (cancelBranch) {
         const cancelState = cloneState(state);
-        walkWithSimulation(command.cancelBranch ?? [], depth + 1, cancelState, steps, hostEventId, "취소할 때", skipped);
+        walkWithSimulation(cancelBranch.commands, depth + 1, cancelState, steps, hostEventId, cancelBranch.label, skipped);
       }
       continue;
     }
 
     if (command.kind === "loop") {
       steps.push({ command, depth, branchLabel, simState: stateBefore, skipped });
-      const result = walkWithSimulation(command.body, depth + 1, state, steps, hostEventId, "반복", skipped);
+      const result = walkWithSimulation(command.body, depth + 1, state, steps, hostEventId, branchLabelOf(command, "loopBody"), skipped);
       if (result.broke) continue;
       continue;
     }
