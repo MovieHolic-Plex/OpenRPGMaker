@@ -3,7 +3,7 @@ import { PRODUCT_TAGLINE } from "@/brand";
 import { duplicateMap } from "@/editor/actions";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { showConfirm, showPromptInput } from "@/editor/ui/modal";
-import { editorState, type Layer, type Tool } from "@/editor/editorState";
+import { editorState } from "@/editor/editorState";
 import {
   EDITOR_PRODUCT_BRAND,
   getEditorChrome,
@@ -36,7 +36,10 @@ import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
-import { toolLabel, uiLabel } from "@/editor/uiCopy";
+import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
+// 레이어·도구 축약 이름의 정본. menu.ts 는 2026-08-30 까지 자기 사본을 들고 "하위"/"상위" 를
+// 반환했다 — visually-hidden `layer-selector` 를 통해 스크린리더에 그 폐기 용어가 읽혔다.
+import { layerShortLabel, toolShortLabel } from "@/editor/panels/aiAgentBrief";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
 import { separator, toolbarButton } from "./menuToolbar";
@@ -494,12 +497,12 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       // 모달 편집기만 담는다. 되돌리기/다시 실행과 레이어 3종은 사이드바가 소유하므로 빠졌다.
       // 음악·찾기는 전에는 전문가 클래식 툴바에만 있어 초보·표준에서 도달 경로가 없었다.
       return [
-        item(`${uiLabel("database", getEditorChrome().jargonStyle)}...`, "menu-tools-database", () => openDatabaseModal()),
-        item("자료 보관함...", "menu-tools-resources", () => openResourceModal()),
-        item("세계관...", "menu-tools-world", () => openWorldPanel()),
+        item(`${headerLabel("database")}...`, "menu-tools-database", () => openDatabaseModal()),
+        item(`${headerLabel("resourceLibrary")}...`, "menu-tools-resources", () => openResourceModal()),
+        item(`${headerLabel("world")}...`, "menu-tools-world", () => openWorldPanel()),
         { kind: "separator" },
-        item("음악·효과음...", "menu-tools-audio", () => openAudioTestDialog()),
-        item("맵·이벤트 찾기...", "menu-tools-search", () => openMapEventSearchModal()),
+        item(`${headerLabel("audio")}...`, "menu-tools-audio", () => openAudioTestDialog()),
+        item(`${headerLabel("mapEventSearch")}...`, "menu-tools-search", () => openMapEventSearchModal()),
         { kind: "separator" },
         item("AI 설정...", "menu-tools-ai-settings", () => openAiSettingsModal()),
       ];
@@ -507,8 +510,8 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       // 「시연 실행」과 「시연 실행 창」이 edit 모드에서 둘 다 openTestPlayWindow() 를 부르는
       // 진짜 중복이었다. 한 줄로 줄이고, 라벨은 레이어가 아니라 실제 모드를 말한다.
       return [
-        item(getMode() === "edit" ? "시연 실행" : "편집으로 돌아가기", "menu-game-play", () => void togglePlayMode()),
-        item("랜덤 전투 테스트", "menu-game-battle-test", () => void openRandomBattleTestWindow()),
+        item(getMode() === "edit" ? headerLabel("testPlay") : "편집으로 돌아가기", "menu-game-play", () => void togglePlayMode()),
+        item(headerLabel("battleTest"), "menu-game-battle-test", () => void openRandomBattleTestWindow()),
       ];
     case "help":
       return [
@@ -530,6 +533,15 @@ function sampleProjectCommands(): readonly MenuCommand[] {
     item("Scarloxy 포켓몬풍 데모", "menu-project-scarloxy-pokemon-demo", () => void newScarloxyPokemonDemoProject()),
     item("농장 생활 데모", "menu-project-farming-demo", () => void newFarmingDemoProject()),
   ];
+}
+
+/**
+ * 헤더 문구의 단일 진입점. 헤더는 메뉴바·톱바·클래식 툴바가 같은 개념을 같은 말로 불러야
+ * 하므로 한국어를 여기서 새로 적지 않고 `uiCopy` 표를 현재 모드의 용어 스타일로 읽는다.
+ * title/aria-label 은 언제나 정본 키를, label 은 정본 또는 `*Short` 축약형을 쓴다.
+ */
+function headerLabel(key: UiCopyKey): string {
+  return uiLabel(key, getEditorChrome().jargonStyle);
 }
 
 function item(label: string, testId: string, onClick: () => void, disabled = false): MenuCommand {
@@ -564,8 +576,9 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     separator(),
     toolbarButton({
       testId: "toolbar-battle-test",
-      label: "전투",
-      title: "랜덤 적 그룹과 바로 전투 테스트",
+      label: headerLabel("battleTestShort"),
+      // 설명은 정본 뒤에 `—` 로 잇는다. 정본 자리에 설명문을 쓰면 같은 동작이 또 다른 이름을 얻는다.
+      title: `${headerLabel("battleTest")} — 적 그룹을 뽑아 즉시 전투`,
       icon: "play",
       onClick: () => void openRandomBattleTestWindow(),
     }),
@@ -583,11 +596,11 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
     separator(),
     // 레이어 전환은 좌측 사이드바(left-layer-switcher)가 소유한다 — 여기에 다시 넣으면 중복이다.
-    toolbarButton({ testId: "toolbar-database", label: uiLabel("databaseShort", getEditorChrome().jargonStyle), title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
-    toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "자료 보관함", icon: "resources", onClick: () => openResourceModal() }),
-    toolbarButton({ testId: "toolbar-world", label: "세계관", title: "세계관", icon: "grid", onClick: () => openWorldPanel() }),
-    toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
-    toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
+    toolbarButton({ testId: "toolbar-database", label: headerLabel("databaseShort"), title: headerLabel("database"), icon: "database", onClick: () => openDatabaseModal() }),
+    toolbarButton({ testId: "toolbar-resource-manager", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), icon: "resources", onClick: () => openResourceModal() }),
+    toolbarButton({ testId: "toolbar-world", label: headerLabel("world"), title: headerLabel("world"), icon: "grid", onClick: () => openWorldPanel() }),
+    toolbarButton({ testId: "toolbar-sound-test", label: headerLabel("audioShort"), title: headerLabel("audio"), icon: "sound", onClick: () => openAudioTestDialog() }),
+    toolbarButton({ testId: "toolbar-search", label: headerLabel("mapEventSearchShort"), title: headerLabel("mapEventSearch"), icon: "search", onClick: () => openMapEventSearchModal() }),
     separator(),
     // 구 toolbar-left-panel: 클릭해도 관찰 가능한 변화가 없는 죽은 버튼이었고(실측 감사),
     // 패널 표시/숨김은 ▤ 패널 메뉴가 소유한다.
@@ -635,8 +648,8 @@ function renderTestPlayButton(): HTMLElement {
         class: "topbar-test-play",
         attrs: {
           type: "button",
-          title: "시연 실행",
-          "aria-label": "전체 프로젝트 시연 실행",
+          title: headerLabel("testPlay"),
+          "aria-label": headerLabel("testPlay"),
         },
         dataset: { testid: "mode-play" },
         on: {
@@ -647,7 +660,7 @@ function renderTestPlayButton(): HTMLElement {
         },
         children: [
           el("span", { class: "topbar-test-play-glyph", text: "▶", attrs: { "aria-hidden": "true" } }),
-          el("span", { class: "topbar-test-play-label", text: "테스트" }),
+          el("span", { class: "topbar-test-play-label", text: headerLabel("testPlayShort") }),
         ],
       }),
     ],
@@ -659,8 +672,8 @@ function renderQuickBattleTestButton(): HTMLElement {
     class: "team-history-button is-icon-only quick-battle-test-button",
     attrs: {
       type: "button",
-      title: "랜덤 전투 테스트 — 적 그룹을 뽑아 즉시 전투",
-      "aria-label": "랜덤 전투 테스트",
+      title: `${headerLabel("battleTest")} — 적 그룹을 뽑아 즉시 전투`,
+      "aria-label": headerLabel("battleTest"),
     },
     dataset: { testid: "topbar-battle-test" },
     children: [
@@ -696,8 +709,8 @@ function classicPlayToolbarRow(mode: string): HTMLElement {
 function playModeButton(mode: string): HTMLButtonElement {
   return toolbarButton({
     testId: mode === "edit" ? "mode-play" : "mode-edit",
-    label: mode === "edit" ? "실행" : "편집",
-    title: mode === "edit" ? "시연 실행" : "편집기로 돌아가기",
+    label: mode === "edit" ? headerLabel("testPlayShort") : "편집",
+    title: mode === "edit" ? headerLabel("testPlay") : "편집기로 돌아가기",
     icon: mode === "edit" ? "play" : "pencil",
     primary: true,
     onClick: () => {
@@ -705,22 +718,6 @@ function playModeButton(mode: string): HTMLButtonElement {
       else toggleMode();
     },
   });
-}
-
-function layerShortLabel(layer: Layer): string {
-  switch (layer) {
-    case "lower":
-      return "하위";
-    case "upper":
-      return "상위";
-    case "event":
-      return "이벤트";
-  }
-}
-
-/** 도구 이름은 uiCopy 단일 원천 — 여기서 다시 적으면 화면마다 다른 말이 된다. */
-function toolShortLabel(tool: Tool): string {
-  return toolLabel(tool);
 }
 
 async function newProject(): Promise<void> {
