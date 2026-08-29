@@ -4,6 +4,12 @@ import { pickRandomTroopId } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
 import { installFakeDom, findByTestId, type FakeElement } from "./fakeDom";
 
+// menu.ts 는 트리 모듈 그래프를 지나므로 변환에 수십 초가 들열 수 있다. 함수 새로 동적
+// import 하면 그 시간이 **테스트 타이아웃**에 공제되어 상황에 다른 결과가 난다(이 테스트는
+// 생생한 워키트리에서 30s 타임아웃으로 죽었다). 모듈 스코프에서 한 번 지나게 해 변환을
+// collect 단계로 넘긴다 — 다른 헤더 테스트(editorMenuSidebarIa · editorHeaderTerminology)와 같은 패턴이다.
+const { renderTopbar } = await import("@/editor/panels/menu");
+
 describe("pickRandomTroopId", () => {
   it("picks only troops that have members/enemies", () => {
     const project = createBlankProject();
@@ -82,9 +88,8 @@ describe("topbar random battle button", () => {
     restoreDom = undefined;
   });
 
-  it("dispatches random-battle detail from the restored topbar button", async () => {
+  it("dispatches random-battle detail from the restored topbar button", () => {
     // Break: bottom-bar cleanup removes the unrelated topbar battle shortcut.
-    const { renderTopbar } = await import("@/editor/panels/menu");
     const topbar = document.createElement("div") as unknown as FakeElement;
     document.body.append(topbar as unknown as Node);
 
@@ -102,5 +107,5 @@ describe("topbar random battle button", () => {
     expect(events).toHaveLength(1);
     expect(events[0]?.detail).toEqual({ kind: "random-battle" });
     window.removeEventListener("oprn:test-play-window", handler);
-  }, 30_000);
+  });
 });
