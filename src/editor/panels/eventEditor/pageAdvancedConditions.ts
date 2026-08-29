@@ -74,9 +74,9 @@ const ADVANCED_ACTOR_PRESENT_OPTIONS = [
  */
 // 라벨 앞에 연산자를 세운다 — 233px 레일에서 select 가 잘려도 AND/OR/NOT 은 남는다.
 const GROUP_CONDITION_OPTIONS = [
-  { value: "all", label: "AND 묶음: 모두 만족" },
-  { value: "any", label: "OR 묶음: 하나 이상" },
-  { value: "not", label: "NOT 묶음: 아닐 때" },
+  { value: "all", label: "묶음: 모두 만족해야" },
+  { value: "any", label: "묶음: 하나만 만족해도" },
+  { value: "not", label: "묶음: 만족하지 않아야" },
 ] as const satisfies readonly { readonly value: GroupCondition["kind"]; readonly label: string }[];
 
 const ADVANCED_CONDITION_OPTIONS = [

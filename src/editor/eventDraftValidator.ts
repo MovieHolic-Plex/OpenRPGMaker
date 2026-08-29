@@ -205,10 +205,6 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     // 사회 기능은 이름표가 아니라 이 이벤트의 신원을 참조한다 — 같은 사전에 싣어 재긍 없이 나른다.
     hostHasCharacterId: hasCharacterId(host),
     hasTimeSystem: resolveTimeSystem(project) !== undefined,
-    // 페이지 조건의 battleResult 는 다른 이벤트·공통 이벤트가 남긴 결과를 봐도 된다. 어느 전투가
-    // 이 페이지 앞에 오는지는 런타임 사실이라 정적으로 증명할 수 없으므로, 프로젝트 전체에
-    // 전투 경로가 하나도 없을 때만(그때는 확실히 항상 거짓) 경고한다.
-    projectHasBattlePath: projectHasBattleProcessing(project),
   };
 }
 
@@ -227,7 +223,6 @@ function validatePage(
   }
 
   page.conditions.forEach((condition) => validateCondition(condition, page.id, refs, issues));
-  validateBattleResultForks(page.commands, page.id, issues);
   validateMovement(project, page, refs, issues);
 
   const riskyTrigger = page.trigger.kind === "auto" || page.trigger.kind === "parallel";
@@ -483,15 +478,9 @@ function validateCondition(
       }
       return;
     case "battleResult":
-      if (!commandPath && !refs.projectHasBattlePath) {
-        issues.push({
-          severity: "warning",
-          code: "condition.battleResult.no-preceding-battle",
-          message: "이 프로젝트에 전투를 시작하는 명령이 없어 전투 결과 조건은 항상 거짓입니다.",
-          pageId,
-          field: { testId: "event-condition-battle-result" },
-        });
-      }
+      // battleResult 는 지속되는 세션 상태다 — 랜덤 인카운터·필드 스폰은 battleProcessing
+      // 없이도 전투를 열고, 다른 이벤트·공통 이벤트가 남긴 결과도 살아남는다. 명령 순서나
+      // 프로젝트 스캔으로 "항상 거짓"을 증명할 수 없으므로 검사하지 않는다.
       return;
     case "friendshipAtLeast":
       // 런타임 하드 게이트: NPC 키가 비었고 이 이벤트에 characterId 도 없으면 항상 거짓이다.
@@ -560,59 +549,6 @@ function goldConditionTrap(
       if (amount < 0 || amount > GOLD_MAX) return "always-true";
       return undefined;
   }
-}
-
-function conditionHasBattleResult(condition: Condition): boolean {
-  if (condition.kind === "battleResult") return true;
-  if (condition.kind === "all" || condition.kind === "any") {
-    return condition.conditions.some(conditionHasBattleResult);
-  }
-  if (condition.kind === "not") return conditionHasBattleResult(condition.condition);
-  return false;
-}
-
-function commandTreeHasBattleProcessing(command: Command): boolean {
-  if (command.kind === "battleProcessing") return true;
-  return commandBranches(command).some((branch) => branch.commands.some(commandTreeHasBattleProcessing));
-}
-
-// 프로젝트 어딘가에 전투를 시작하는 명령이 하나라도 있는가(맵 이벤트 페이지 + 공통 이벤트).
-function projectHasBattleProcessing(project: Project): boolean {
-  const pageCommands = Object.values(project.maps).flatMap((map) =>
-    map.events.flatMap((event) => [
-      ...(event.commands ?? []),
-      ...(event.pages ?? []).flatMap((eventPage) => eventPage.commands),
-    ]),
-  );
-  const commonCommands = project.commonEvents.flatMap((entry) => entry.commands ?? []);
-  return [...pageCommands, ...commonCommands].some(commandTreeHasBattleProcessing);
-}
-
-function validateBattleResultForks(
-  commands: readonly Command[],
-  pageId: string,
-  issues: EventDraftIssue[],
-  containerPath: readonly number[] = [],
-  battleSeen = false,
-): void {
-  let seen = battleSeen;
-  commands.forEach((command, index) => {
-    const path = [...containerPath, index];
-    if (command.kind === "fork" && conditionHasBattleResult(command.condition) && !seen) {
-      issues.push({
-        severity: "warning",
-        code: "condition.battleResult.no-preceding-battle",
-        message: "전투 결과 조건은 직전 전투의 결과를 봅니다. 이 분기 앞에 전투가 없으면 항상 거짓입니다.",
-        pageId,
-        commandPath: path,
-        field: { testId: "event-condition-battle-result" },
-      });
-    }
-    for (const branch of commandBranches(command)) {
-      validateBattleResultForks(branch.commands, pageId, issues, [...path, branch.branchIndex], seen);
-    }
-    if (commandTreeHasBattleProcessing(command)) seen = true;
-  });
 }
 
 function validateLabels(
