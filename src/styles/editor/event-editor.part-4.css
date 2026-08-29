@@ -154,34 +154,58 @@
   min-height: 0;
 }
 
-.event-conditions-grid,
 .event-condition-row,
 .event-page-movement,
 .event-page-movement-basics {
   gap: 3px;
 }
 
-.event-conditions-grid {
-  display: grid;
-}
-
 .event-editor-modal-body [data-testid="event-classic-conditions"].event-oprn-fieldset {
   padding: 4px 5px 3px;
 }
 
-.event-editor-modal-body [data-testid="event-classic-conditions"] .event-conditions-grid {
+/* 켠 조건 하나 = 행 하나. 세로 한 컬럼이라 넓은 면에서도 라벨·컨트롤이 세로로 정렬된다.
+   예전에는 `.event-conditions-grid` 가 auto-fit 2열로 눕히고 각 행이 4열
+   (체크박스|라벨|컨트롤|접미사) 이라, 218px 칸에서 컨트롤이 눌려 잘림이 났다. */
+.event-condition-list {
+  display: grid;
   gap: 3px;
+  min-width: 0;
+}
+
+.event-condition-list-empty {
+  color: var(--event-rm-disabled);
+  font: 700 12px/18px "Malgun Gothic", sans-serif;
+  margin: 0;
 }
 
 .event-editor-modal-body .event-condition-row {
   align-items: center;
   column-gap: 6px;
   display: grid;
-  grid-template-columns: 14px 4.5rem minmax(0, 1fr) auto;
+  grid-template-columns: 5.5rem minmax(0, 1fr) 20px;
   justify-content: start;
   min-height: 22px;
   min-width: 0;
   row-gap: 0;
+}
+
+.event-condition-remove {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--event-rm-disabled);
+  cursor: pointer;
+  font: 700 11px/16px "Malgun Gothic", sans-serif;
+  height: 18px;
+  padding: 0;
+  width: 18px;
+}
+
+.event-condition-remove:hover,
+.event-condition-remove:focus-visible {
+  border-color: var(--event-rm-mid);
+  color: var(--danger);
 }
 
 .event-editor-modal-body .event-condition-control {
@@ -247,102 +271,84 @@
 }
 
 .event-condition-label,
-.event-condition-suffix,
 .event-editor-modal-body label {
   color: var(--event-rm-text);
   font: 700 12px/16px "Malgun Gothic", sans-serif;
 }
 
-.event-condition-row > input[type="checkbox"] {
-  height: 12px;
-  margin: 0;
-  width: 12px;
+/* 편집기가 없는 all/any/not 은 사람이 읽는 한 줄 요약으로만 보인다. */
+.event-condition-control.group-summary {
+  color: var(--event-rm-text);
+  font: 400 12px/18px "Malgun Gothic", sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.event-condition-row.disabled .event-condition-label,
-.event-condition-row.disabled .event-condition-suffix {
-  color: var(--event-rm-disabled);
-}
-
-.event-advanced-conditions {
+/* 칩 팔레트 — 13종을 4줄로 상시 노출한다. 조건 목록과는 가로줄로 갈라 둔다. */
+.event-condition-palette {
   border-top: 1px solid var(--event-rm-mid);
-  margin-top: 3px;
-  padding-top: 3px;
+  display: grid;
+  gap: 3px;
+  margin-top: 5px;
+  padding-top: 5px;
 }
 
-.event-advanced-conditions > summary {
+.event-condition-palette-row {
+  align-items: start;
+  column-gap: 6px;
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+}
+
+.event-condition-palette-title {
+  color: var(--event-rm-disabled);
+  font: 700 12px/18px "Malgun Gothic", sans-serif;
+}
+
+.event-condition-palette-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.event-condition-chip {
+  align-items: center;
+  background: var(--event-rm-face, var(--bg-inset));
+  border: 1px solid var(--event-rm-mid);
+  border-radius: 9px;
   color: var(--event-rm-text);
   cursor: pointer;
-  font: 700 12px/16px "Malgun Gothic", sans-serif;
-  list-style-position: inside;
-  outline-offset: 2px;
-  width: max-content;
-}
-
-.event-advanced-conditions > summary:focus-visible {
-  outline: 1px dotted var(--accent);
-}
-
-.event-advanced-condition-list {
-  display: grid;
-  gap: 2px;
-  margin-top: 2px;
-}
-
-.event-advanced-condition-row {
-  align-items: center;
-  display: grid;
-  gap: 3px;
-  grid-template-columns: 76px minmax(0, 1fr) 46px;
-  max-width: 520px;
-  min-height: 20px;
-}
-
-.event-advanced-condition-control {
-  display: grid;
-  min-width: 0;
-}
-
-.event-advanced-condition-control.variable {
-  gap: 3px;
-  grid-template-columns: minmax(0, 1fr) 86px 48px;
-}
-
-.event-advanced-condition-control.timer {
-  align-items: center;
-  gap: 3px;
-  grid-template-columns: 78px 42px max-content 42px max-content;
-  justify-content: start;
-}
-
-.event-advanced-condition-row input,
-.event-advanced-condition-row select,
-.event-advanced-condition-add select {
-  font: 400 12px/16px "Malgun Gothic", sans-serif;
-  height: 20px;
-  min-height: 20px;
-  min-width: 0;
-  padding-block: 0;
-  width: 100%;
-}
-
-.event-advanced-condition-empty {
-  color: var(--event-rm-disabled);
-  font: 700 12px/16px "Malgun Gothic", sans-serif;
-}
-
-.event-advanced-condition-add {
-  display: grid;
-  gap: 3px;
-  grid-template-columns: 98px 66px;
-  margin-top: 3px;
-}
-
-.event-advanced-condition-row .btn.small,
-.event-advanced-condition-add .btn.small {
+  display: inline-flex;
   font: 700 11px/16px "Malgun Gothic", sans-serif;
-  min-height: 20px;
-  padding-inline: 5px;
+  gap: 2px;
+  min-height: 18px;
+  padding: 0 6px 0 4px;
+}
+
+.event-condition-chip:hover,
+.event-condition-chip:focus-visible {
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+
+.event-condition-chip-plus {
+  color: var(--event-rm-disabled);
+  font-size: 10px;
+}
+
+/* 이미 쓰고 있는 종류는 칩에서도 티가 나야 한다 — 칩은 켜져도 사라지지 않기 때문이다. */
+.event-condition-chip.is-used {
+  border-color: var(--accent);
+}
+
+.event-condition-chip-count {
+  background: var(--accent-muted);
+  border-radius: 7px;
+  color: var(--text-1);
+  min-width: 13px;
+  padding: 0 3px;
+  text-align: center;
 }
 
 .event-graphic-control {
@@ -889,29 +895,21 @@
     min-height: 20px;
   }
 
-  .event-advanced-conditions {
-    margin-top: 2px;
-    padding-top: 2px;
+  .event-condition-list {
+    gap: 2px;
   }
 
-  .event-advanced-conditions > summary,
-  .event-advanced-condition-empty {
+  .event-condition-palette {
+    gap: 2px;
+    margin-top: 3px;
+    padding-top: 3px;
+  }
+
+  .event-condition-list-empty,
+  .event-condition-palette-title {
     line-height: 16px;
   }
 
-  .event-advanced-condition-list {
-    gap: 1px;
-    margin-top: 1px;
-  }
-
-  .event-advanced-condition-row {
-    gap: 2px;
-  }
-
-  .event-advanced-condition-add {
-    gap: 2px;
-    margin-top: 2px;
-  }
   .event-graphic-control {
     min-height: 52px;
   }

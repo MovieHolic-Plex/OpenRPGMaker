@@ -12,11 +12,20 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
+import type { EventPageCondition } from "@/project/types";
 
 function seed(): string {
   const project = createBlankProject();
   const mapId = project.startMapId;
   const map = project.maps[mapId]!;
+  // 조건 행은 «켠 조건» 만 나오므로 네 종류를 미리 켜 둔다 — 예전에는 12행이 항상
+  // 렌더돼서 빈 conditions 로도 픽커가 잡혔다.
+  const conditions: EventPageCondition[] = [
+    { kind: "switch", switchId: project.switches[0]?.id ?? "", value: true },
+    { kind: "variable", variableId: project.variables[0]?.id ?? "", op: ">=", value: 0 },
+    { kind: "item", itemId: project.database.items[0]?.id ?? "", present: true },
+    { kind: "actor", actorId: project.database.actors[0]?.id ?? "", present: true },
+  ];
   map.events = [
     {
       id: "ev_pick",
@@ -28,7 +37,7 @@ function seed(): string {
         {
           id: "p1",
           name: "픽커",
-          conditions: [],
+          conditions,
           graphic: {},
           trigger: { kind: "action" },
           priority: "same",

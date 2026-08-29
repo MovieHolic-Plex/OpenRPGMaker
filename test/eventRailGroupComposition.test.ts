@@ -79,7 +79,9 @@ describe("이벤트 편집기 좌측 레일 그룹 소속", () => {
     expect(host.querySelector("[data-testid='evt-rail-group-other']")).toBeNull();
     const rail = host.querySelector<HTMLElement>("[data-testid='event-editor-settings-accordion']");
     const slugs = [...rail!.children].map((node) => (node as HTMLElement).dataset.railGroup);
-    expect(slugs).toEqual(["look-talk", "when", "move", "memory", "npc"]);
+    // 시작 방식·우선순위는 「언제 보이나요」 에서 분리해 `start` 그룹이 소유한다 —
+    // 조건(=언제)과 트리거(=어떻게)는 다른 질문이다.
+    expect(slugs).toEqual(["look-talk", "when", "start", "move", "memory", "npc"]);
   });
 
   it("overlapForbidden 미지정 시 헤더 요약과 체크박스 상태가 일치한다", () => {

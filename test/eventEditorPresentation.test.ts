@@ -472,7 +472,7 @@ it("explains missing face graphic previews instead of leaving a blank slot", () 
     expect(findByTestId(conditions, "event-page-timer1-condition-seconds")?.value).toBe("5");
   });
 
-  it("keeps extra page conditions in the expandable advanced condition list", () => {
+  it("renders repeated page conditions as ordinary rows instead of a separate advanced list", () => {
     const page = {
       id: "page-1",
       name: "EV0001",
@@ -494,11 +494,18 @@ it("explains missing face graphic previews instead of leaving a blank slot", () 
       el("div", { children: renderPageConditions("map-start", "event-1", page) })
     );
 
-    expect(conditions.textContent).toContain("고급 조건 (2)");
-    expect(findByTestId(conditions, "event-page-advanced-condition-list")).not.toBeNull();
-    expect(findByTestId(conditions, "event-page-advanced-condition-switch-0")?.value).toBe("sw_secret");
-    expect(findByTestId(conditions, "event-page-advanced-condition-variable-1")?.value).toBe("var_rank");
-    expect(findByTestId(conditions, "event-page-advanced-condition-variable-picker-1")).not.toBeNull();
-    expect(findByTestId(conditions, "event-page-advanced-condition-add")).not.toBeNull();
+    // 예전에는 스위치 2개·변수 1개까지만 12행이 받고 나머지는 「고급 조건」 이라는
+    // 다른 편집기로 밀려났다. 이제 세 번째 스위치도 같은 행 컨트롤을 쓴다.
+    expect(conditions.textContent).not.toContain("고급 조건");
+    expect(findByTestId(conditions, "event-page-advanced-condition-list")).toBeNull();
+    expect(conditions.querySelectorAll(".event-condition-row").length).toBe(5);
+    expect(findByTestId(conditions, "event-page-switch-condition-input")?.value).toBe("sw_gate");
+    expect(findByTestId(conditions, "event-page-switch2-condition-input")?.value).toBe("sw_bonus");
+    expect(findByTestId(conditions, "event-page-switch3-condition-input")?.value).toBe("sw_secret");
+    expect(findByTestId(conditions, "event-page-variable-condition-input")?.value).toBe("var_score");
+    expect(findByTestId(conditions, "event-page-variable2-condition-input")?.value).toBe("var_rank");
+    // 세 번째 스위치도 삭제 버튼을 갖는다 — 별 편집기로 가야 지울 수 있던 문제가 사라졌다.
+    expect(findByTestId(conditions, "event-condition-remove-스위치-3")).not.toBeNull();
+    expect(findByTestId(conditions, "event-condition-remove-변수-2")).not.toBeNull();
   });
 });

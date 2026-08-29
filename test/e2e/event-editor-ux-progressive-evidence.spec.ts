@@ -66,8 +66,9 @@ async function defaultMetrics(page: Page): Promise<Record<string, unknown>> {
       hasGraphic: !!q('[data-testid="event-classic-graphic"]'),
       hasBottomLeft: !!q('[data-testid="event-page-bottom-left"]'),
       hasBottomRight: !!q('[data-testid="event-page-bottom-right"]'),
+      // 조건 요약은 배지 줄이 아니라 레일 헤더 메타 한 군데로 모았다.
       badgeText:
-        q('[data-testid="event-condition-summary-badges"]')?.textContent ??
+        q('[data-testid="evt-rail-meta-when"]')?.textContent ??
         q('[data-testid="event-condition-summary-empty"]')?.textContent ??
         null,
       hasTriggerSelect: !!q('[data-testid="event-page-trigger-select"]'),

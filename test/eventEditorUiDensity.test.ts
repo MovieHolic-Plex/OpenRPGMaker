@@ -102,8 +102,8 @@ describe("event editor UI density", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
     expect(conditions?.open).toBe(false);
-    expect(conditions?.textContent).toContain("항상");
-    expect(host.querySelector('[data-testid="event-condition-summary-empty"]')?.textContent).toBe("항상");
+    // 조건 없는 페이지는 레일 메타가 「항상」 이다(배지 줄은 2026-08-29 에 삭제).
+    expect(host.querySelector('[data-testid="evt-rail-meta-when"]')?.textContent).toBe("항상");
 
     const movement = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-movement-section"]');
     expect(movement?.open).toBe(false);
@@ -198,7 +198,7 @@ describe("event editor UI density", () => {
     expect(inspector?.querySelector('[data-testid="event-inspector-body"]')).toBeTruthy();
   });
 
-  it("shows active condition badges with switch id/ON-OFF, expands conditions on demand", () => {
+  it("summarizes conditions on the rail with switch id/ON-OFF and edits them in one list", () => {
     const project = store.getCurrent();
     project.maps[project.startMapId]!.events = [
       baseEvent({
@@ -212,23 +212,26 @@ describe("event editor UI density", () => {
     store.replace(project);
 
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
-    const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
-    expect(conditions?.open).toBe(false);
-    expect(conditions?.textContent).not.toContain("1개 활성");
-    expect(host.querySelector('[data-testid="event-condition-summary-badges"]')).toBeTruthy();
+    // 요약은 레일 헤더 한 군데만 진다 — 예전에는 레일 메타 + 배지 3개 + 읽기 문장까지
+    // 같은 내용을 세 번 반복했다.
+    // 접힌 상태에서 «어느 스위치가 어느 값일 때인가» 를 그대로 읽을 수 있어야 한다 —
+    // 개수만 적힌 `조건 1개` 로는 배지 줄이 주던 정보를 대체하지 못한다.
+    const meta = host.querySelector('[data-testid="evt-rail-meta-when"]')?.textContent ?? "";
+    expect(meta).not.toBe("스위치");
+    expect(meta).not.toBe("조건 1개");
+    expect(meta).toMatch(/켜짐|꺼짐/);
+    expect(meta.length).toBeGreaterThan("스위치".length);
+    expect(host.querySelector('[data-testid="event-condition-summary-badges"]')).toBeNull();
 
-    const badgeText = host.querySelector('[data-testid="event-condition-badge"]')?.textContent ?? "";
-    // Hostile UX: badge is not bare "스위치"; it carries id-ish token and ON/OFF.
-    expect(badgeText).not.toBe("스위치");
-    expect(badgeText).toMatch(/ON|OFF/);
-    expect(badgeText.length).toBeGreaterThan("스위치".length);
-
-    expandDetails(conditions);
-    expect(conditions?.open).toBe(true);
-    // expand-then-assert: condition grid controls become available
+    // 켠 조건만 행이 된다.
+    expect(host.querySelector('[data-testid="event-condition-row-스위치"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-page-switch-condition-input"]')).toBeTruthy();
-    // 모든 핵심 조건 행이 항상 보인다 (체크 OFF 포함).
-    expect(host.querySelector('[data-testid="event-condition-row-변수"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-condition-row-변수"]')).toBeNull();
+
+    // 아직 안 켠 종류는 칩으로 상시 노출된다 — 「어떤 조건을 걸 수 있는가」 를 계속 보여준다.
+    expect(host.querySelector('[data-testid="event-page-condition-palette"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-condition-chip-variable"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-condition-chip-count-switch"]')?.textContent).toBe("1");
   });
 
   it("expands movement section for nested movement controls without burying trigger", () => {
@@ -301,19 +304,23 @@ describe("event editor UI density", () => {
     expect(host.querySelector(".event-inspector-card-hint")).toBeNull();
   });
 
-  it("keeps inactive condition rows visible but faded (RM-style, no collapsing)", () => {
+  it("keeps no dead condition rows: unset kinds live in the chip palette", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
-    const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
-    expandDetails(conditions);
-    const inactive = conditions?.querySelectorAll('[data-condition-active="false"]') ?? [];
-    expect(inactive.length).toBeGreaterThan(0);
-    for (const row of Array.from(inactive)) {
-      expect(row.classList.contains("disabled")).toBe(true);
-      const children = Array.from(row.children) as HTMLElement[];
-      expect(children.length).toBeGreaterThanOrEqual(3);
-      for (const child of children) {
-        expect(child.hidden || child.hasAttribute("hidden")).toBe(false);
-      }
+    // 예전 계약은 «12행 상시 렌더 + 안 켠 행은 흐리게» 였다. 조건 하나 걸린 페이지에서
+    // 신호 대 잡음이 1:12 이 되던 원인이라, 안 켠 종류는 행이 아니라 칩으로 옮겼다.
+    expect(host.querySelectorAll('[data-condition-active="false"]').length).toBe(0);
+    expect(host.querySelectorAll(".event-condition-row.disabled").length).toBe(0);
+
+    // 조건이 없는 페이지는 행 대신 빈 안내만 둔다.
+    expect(host.querySelector('[data-testid="event-page-condition-list-empty"]')).toBeTruthy();
+    expect(host.querySelectorAll(".event-condition-row").length).toBe(0);
+
+    // 그래도 «걸 수 있는 조건» 은 화면에 남는다 — 4줄 칩으로.
+    const palette = host.querySelector('[data-testid="event-page-condition-palette"]');
+    expect(palette).toBeTruthy();
+    expect(palette?.querySelectorAll(".event-condition-chip").length).toBe(13);
+    for (const slug of ["progress", "holding", "time", "situation"]) {
+      expect(host.querySelector(`[data-testid="event-page-condition-palette-${slug}"]`), slug).toBeTruthy();
     }
   });
 });

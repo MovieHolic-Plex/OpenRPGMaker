@@ -1,13 +1,15 @@
-// 페이지 조건 전 kind 작동 보증 — 체크 토글 시드/해제, 고급 목록 가시성, 런타임 평가, UI 컨트롤.
+// 페이지 조건 전 kind 작동 보증 — 칩 시드/✕ 해제, 목록 가시성, 런타임 평가, UI 컨트롤.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-  advancedConditionEntries,
-  defaultSimpleCondition,
-  type SimpleConditionKind,
-  toggleSimpleCondition,
-  toggleSwitchCondition,
-  toggleTimerCondition,
+  appendCondition,
+  pageConditionEntries,
+  removeConditionAt,
 } from "@/editor/panels/eventEditor/pageConditionModel";
+import {
+  defaultPageCondition,
+  PAGE_CONDITION_CHIP_KINDS,
+  type PageConditionChipKind,
+} from "@/editor/panels/eventEditor/pageConditionCatalog";
 import { renderPageConditions } from "@/editor/panels/eventEditor/pageConditions";
 import { CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { createBlankProject, DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "@/project/defaults";
@@ -18,7 +20,7 @@ import type { EventPage, EventPageCondition, GameEvent } from "@/project/types";
 import { el } from "@/util/dom";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
-const SIMPLE_KINDS: readonly SimpleConditionKind[] = [
+const SIMPLE_KINDS: readonly PageConditionChipKind[] = [
   "variable",
   "item",
   "actor",
@@ -136,68 +138,76 @@ describe("page conditions working guarantee (all kinds)", () => {
     restoreDom?.();
   });
 
-  it("CONDITION_KINDS 전원이 default 시드 또는 토글 경로를 가진다", () => {
-    for (const kind of SIMPLE_KINDS) {
-      const seeded = defaultSimpleCondition(kind);
-      expect(seeded, `defaultSimpleCondition(${kind})`).not.toBeNull();
-      expect(seeded?.kind).toBe(kind);
+  it("칩 종류 전원이 default 시드 경로를 가진다", () => {
+    for (const kind of PAGE_CONDITION_CHIP_KINDS) {
+      const seeded = defaultPageCondition(kind);
+      expect(seeded, `defaultPageCondition(${kind})`).not.toBeNull();
+      expect(seeded.kind).toBe(kind);
     }
   });
 
-  it.each(SIMPLE_KINDS)("simple 조건 %s: 체크 ON 시드 → OFF 제거", (kind) => {
-    const { mapId, eventId, page } = ensureEventWithPage();
-    toggleSimpleCondition({ mapId, eventId, page }, kind, true);
-    const afterOn = livePage(mapId, eventId);
-    expect(afterOn.conditions.some((c) => c.kind === kind)).toBe(true);
-
-    toggleSimpleCondition({ mapId, eventId, page: afterOn }, kind, false);
-    const afterOff = livePage(mapId, eventId);
-    expect(afterOff.conditions.some((c) => c.kind === kind)).toBe(false);
+  it("칩 팔레트가 all/any/not 을 뺀 CONDITION_KINDS 전원을 덮는다", () => {
+    const editable = CONDITION_KINDS.filter((kind) => kind !== "all" && kind !== "any" && kind !== "not");
+    expect([...PAGE_CONDITION_CHIP_KINDS].sort()).toEqual([...editable].sort());
   });
 
-  it("스위치 slot0/slot1: 체크 ON 시드 → OFF 제거 (서로 독립)", () => {
+  it.each(SIMPLE_KINDS)("조건 %s: 칩 시드 → ✕ 제거", (kind) => {
+    const { mapId, eventId, page } = ensureEventWithPage();
+    appendCondition({ mapId, eventId, page }, defaultPageCondition(kind));
+    const afterAdd = livePage(mapId, eventId);
+    expect(afterAdd.conditions.some((c) => c.kind === kind)).toBe(true);
+
+    const entry = pageConditionEntries(afterAdd).find((row) => row.condition.kind === kind);
+    expect(entry).toBeDefined();
+    removeConditionAt({ mapId, eventId, page: afterAdd }, entry?.index ?? -1);
+    expect(livePage(mapId, eventId).conditions.some((c) => c.kind === kind)).toBe(false);
+  });
+
+  it("스위치 두 개: 두 번째 칩은 다음 스위치를 집고, ✕ 는 그 행만 지운다", () => {
     const { mapId, eventId, page } = ensureEventWithPage();
     const sw0 = store.getCurrent().switches[0]?.id;
     const sw1 = store.getCurrent().switches[1]?.id ?? sw0;
     expect(sw0).toBeTruthy();
 
-    toggleSwitchCondition({ mapId, eventId, page, slot: 0 }, true);
+    appendCondition({ mapId, eventId, page }, defaultPageCondition("switch", 0));
     let live = livePage(mapId, eventId);
-    expect(live.conditions.filter((c) => c.kind === "switch")).toHaveLength(1);
-
-    toggleSwitchCondition({ mapId, eventId, page: live, slot: 1 }, true);
+    appendCondition({ mapId, eventId, page: live }, defaultPageCondition("switch", 1));
     live = livePage(mapId, eventId);
-    expect(live.conditions.filter((c) => c.kind === "switch")).toHaveLength(2);
+    const seeded = live.conditions.filter((c) => c.kind === "switch");
+    expect(seeded).toHaveLength(2);
+    // 두 번째 스위치가 첫 번째와 같은 스위치를 가리키면 늘 같은 값인 중복 조건이 된다.
+    expect(seeded[0]?.kind === "switch" ? seeded[0].switchId : "").toBe(sw0);
+    expect(seeded[1]?.kind === "switch" ? seeded[1].switchId : "").toBe(sw1);
 
-    toggleSwitchCondition({ mapId, eventId, page: live, slot: 0 }, false);
+    removeConditionAt({ mapId, eventId, page: live }, 0);
     live = livePage(mapId, eventId);
     const remaining = live.conditions.filter((c) => c.kind === "switch");
     expect(remaining).toHaveLength(1);
-    // slot1 이 남아 있어야 한다
-    expect(remaining[0]?.kind).toBe("switch");
+    expect(remaining[0]?.kind === "switch" ? remaining[0].switchId : "").toBe(sw1);
 
-    toggleSwitchCondition({ mapId, eventId, page: live, slot: 0 }, false); // already empty slot0
-    toggleSwitchCondition({ mapId, eventId, page: livePage(mapId, eventId), slot: 1 }, false);
+    removeConditionAt({ mapId, eventId, page: live }, 0);
     expect(livePage(mapId, eventId).conditions.filter((c) => c.kind === "switch")).toHaveLength(0);
-    void sw1;
   });
 
-  it("타이머 1/2: 체크 ON 시드 → OFF 제거", () => {
+  it("타이머 1/2: 두 번째 칩은 timer2 로 떨어지고 ✕ 는 그 행만 지운다", () => {
     const { mapId, eventId, page } = ensureEventWithPage();
-    toggleTimerCondition({ mapId, eventId, page }, "timer1", true);
-    toggleTimerCondition({ mapId, eventId, page: livePage(mapId, eventId) }, "timer2", true);
+    appendCondition({ mapId, eventId, page }, defaultPageCondition("timer", 0));
+    appendCondition({ mapId, eventId, page: livePage(mapId, eventId) }, defaultPageCondition("timer", 1));
     let live = livePage(mapId, eventId);
-    expect(live.conditions.filter((c) => c.kind === "timer")).toHaveLength(2);
+    expect(live.conditions).toEqual([
+      { kind: "timer", timerId: "timer1", seconds: 0 },
+      { kind: "timer", timerId: "timer2", seconds: 0 },
+    ]);
 
-    toggleTimerCondition({ mapId, eventId, page: live }, "timer1", false);
+    removeConditionAt({ mapId, eventId, page: live }, 0);
     live = livePage(mapId, eventId);
     expect(live.conditions).toEqual([{ kind: "timer", timerId: "timer2", seconds: 0 }]);
 
-    toggleTimerCondition({ mapId, eventId, page: live }, "timer2", false);
+    removeConditionAt({ mapId, eventId, page: live }, 0);
     expect(livePage(mapId, eventId).conditions).toEqual([]);
   });
 
-  it("고급 목록: 간단 행 초과분 + selfSwitch/gold 가 모두 보인다", () => {
+  it("목록: 켠 조건이 중복·초과분까지 빠짐없이 한 행씩 나온다", () => {
     const conditions: EventPageCondition[] = [
       sampleCondition("switch"),
       sampleCondition("switch"),
@@ -239,42 +249,23 @@ describe("page conditions working guarantee (all kinds)", () => {
       movement: { type: "fixed", speed: 3, frequency: 3 },
       commands: [],
     };
-    const advanced = advancedConditionEntries(page);
-    const kinds = advanced.map((e) => e.condition.kind);
-    // 초과분
-    expect(kinds).toContain("switch");
-    expect(kinds).toContain("variable");
-    expect(kinds).toContain("item");
-    expect(kinds).toContain("actor");
-    expect(kinds).toContain("timePhase");
-    expect(kinds).toContain("season");
-    expect(kinds).toContain("npcActivity");
-    expect(kinds).toContain("friendshipAtLeast");
-    expect(kinds).toContain("timer");
-    // 소지금은 간단 행이 없어 항상 고급에; 셀프 스위치 2개 중 1개는 초과분
-    expect(kinds).toContain("selfSwitch");
-    expect(kinds).toContain("gold");
-
-    // 어떤 kind도 고급/간단 어디에도 안 보이는 구멍 없음:
-    // 각 kind 최소 1개는 페이지에 있고, simple 슬롯 또는 advanced에 배치.
+    // 「12행 + 고급 목록」 이분법이 사라졌으므로 배열 인덱스와 행이 1:1 이다 —
+    // 어떤 조건도 어디에도 안 나타나는 구멍이 있을 수 없다.
+    const entries = pageConditionEntries(page);
+    expect(entries).toHaveLength(conditions.length);
+    expect(entries.map((entry) => entry.index)).toEqual(conditions.map((_, index) => index));
     for (const kind of CONDITION_KINDS) {
       const total = conditions.filter((c) => c.kind === kind).length;
       expect(total, `sample has ${kind}`).toBeGreaterThan(0);
-      if (kind === "gold") {
-        // 소지금은 간단 행 없음 — 항상 고급에
-        expect(advanced.some((e) => e.condition.kind === kind)).toBe(true);
-      } else if (kind === "selfSwitch") {
-        // 셀프 스위치는 첫 번째가 간단 행, 나머지 초과분이 고급에
-        expect(advanced.filter((e) => e.condition.kind === "selfSwitch").length).toBe(1);
-      } else if (kind === "timer") {
-        // timer1 first + timer2 first are simple; extras advanced
-        expect(advanced.filter((e) => e.condition.kind === "timer").length).toBeGreaterThanOrEqual(1);
-      } else if (kind === "switch") {
-        expect(advanced.filter((e) => e.condition.kind === "switch").length).toBe(1); // 3rd
-      } else {
-        expect(advanced.some((e) => e.condition.kind === kind)).toBe(true); // 2nd+
-      }
+      expect(entries.filter((entry) => entry.condition.kind === kind), `entries for ${kind}`).toHaveLength(total);
     }
+
+    // 렌더도 같은 개수의 행을 낸다(중복 종류도 testid 가 겹치지 않는다).
+    const root = renderWithFakeDom(() =>
+      el("div", { children: renderPageConditions("map-start", "ev", page, { characterId: "char_ev" }) })
+    );
+    expect(root.querySelectorAll(".event-condition-row").length).toBe(conditions.length);
+    expect(findByTestId(root, "event-page-condition-list-empty")).toBeNull();
   });
 
   it("UI: 모든 간단 조건 행의 컨트롤 testid가 렌더된다", () => {
@@ -326,7 +317,8 @@ describe("page conditions working guarantee (all kinds)", () => {
      "event-page-friendship-condition-value",
       "event-page-self-switch-condition-key-A",
       "event-page-self-switch-condition-value",
-     "event-page-advanced-conditions",
+      "event-page-condition-list",
+      "event-page-condition-palette",
     ];
     for (const id of ids) {
       expect(findByTestId(root, id), id).not.toBeNull();
@@ -338,11 +330,15 @@ describe("page conditions working guarantee (all kinds)", () => {
     expect(root.textContent).toContain("보유 중");
     expect(root.textContent).toContain("파티에 있음");
     expect(root.textContent).toContain("켜짐");
-    // 비활성 행 자리도 항상 렌더되는 계약: 빈 페이지에서도 라벨 존재
+
+    // 켠 조건만 행이 된다 — 빈 페이지는 행 0개 + 빈 안내, 그리고 칩은 그래도 전부 보인다.
     const emptyPage: EventPage = { ...page, conditions: [] };
     const emptyRoot = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", emptyPage) }));
-    expect(emptyRoot.querySelectorAll(".event-condition-row").length).toBeGreaterThanOrEqual(10);
-    expect(emptyRoot.querySelectorAll('[data-condition-active="false"]').length).toBeGreaterThan(0);
+    expect(emptyRoot.querySelectorAll(".event-condition-row").length).toBe(0);
+    expect(findByTestId(emptyRoot, "event-page-condition-list-empty")).not.toBeNull();
+    for (const kind of PAGE_CONDITION_CHIP_KINDS) {
+      expect(findByTestId(emptyRoot, `event-condition-chip-${kind}`), `chip ${kind}`).not.toBeNull();
+    }
   });
 
   it("런타임: CONDITION_KINDS 전원이 true/false로 평가된다", () => {

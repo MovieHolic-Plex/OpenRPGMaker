@@ -167,7 +167,7 @@
 
   .event-editor-modal-body .event-condition-row {
     gap: 4px;
-    grid-template-columns: 16px max-content minmax(0, 1fr) max-content;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
   }
 
   .event-editor-modal-body .event-condition-control.variable {
@@ -340,15 +340,8 @@
   color: var(--event-modern-text-soft);
 }
 
-/* 비활성 조건 행에서 컨트롤 흐림 처리 */
-.event-condition-row.disabled .self-switch-key,
-.event-condition-row.disabled .self-switch-value {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* 고급 조건 영역에서도 동일 스타일 적용 */
-.event-advanced-condition-control.self-switch .self-switch-control {
+/* 조건 행에 «비활성» 상태는 없다 — 행이 있으면 켜진 것이다. `.disabled` 흐림 규칙 삭제. */
+.event-condition-control.self-switch .self-switch-control {
   flex-wrap: wrap;
   gap: 4px;
 }

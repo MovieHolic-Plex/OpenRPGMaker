@@ -679,12 +679,11 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       testId: "event-classic-conditions",
       openSet: openEventConditions,
       openKey,
-      summaryExtra: renderConditionSummaryBadges(conditions),
       body: el("div", {
         class: "event-conditions-body",
         children: [
           renderConditionSentence(conditions),
-          el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
+          ...renderPageConditions(mapId, eventId, page, event),
         ],
       }),
     }),
@@ -856,14 +855,21 @@ function wrapPageSettingsAsAccordion(
   openKey: string,
 ): HTMLElement {
   const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
-  const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
+  const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions']"));
+  // 시작 방식·우선순위는 «언제 보이나요» 가 아니라 «어떻게 시작하나요» 다. 조건과 성질이
+  // 다른 것을 같은 그룹에 담고 있어 그룹의 정체가 흐려졌다 — 2026-08-29 에 분리했다.
+  const start = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-page-trigger-priority-stack']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
   const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-overlap'], [data-testid='event-page-fact-overlap']"));
   // 레일은 한 번에 한 그룹만 연다 — 저장된 활성 slug 가 없으면 「모습과 대화」로 시작한다.
   const activeSlug = activeRailGroupSlug(openKey, "look-talk");
   const groups = [
     { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", authored: Boolean(page.graphic.sprite), nodes: look },
-    { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, authored: conditions.length > 0, nodes: when },
+    // 접힌 상태의 유일한 신호다 — 배지 줄을 지웠으므로 개수(`조건 3개`)로는 부족하다.
+    // 페이지 탭과 같은 문구를 쓴다(`스위치1 켜짐 외 2`).
+    { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "항상" : pageTabConditionText(page), authored: conditions.length > 0, nodes: when },
+    // RM 계약상 새 페이지의 기본은 «말을 걸면» + «캐릭터와 같은 층». 그 밖이면 저작자가 고른 값이다.
+    { slug: "start", title: "어떻게 시작하나요", summary: startSummary(page), authored: page.trigger.kind !== "action" || page.priority !== "same", nodes: start },
     // RM 계약상 새 이벤트의 기본 이동은 «정지»다. 그 밖이면 저작자가 고른 값이다.
     { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), authored: page.movement.type !== "fixed", nodes: move },
     // 기본값은 «겹침 금지»(overlapForbidden !== false). 통행을 허용했다면 손댄 것이다.
@@ -912,45 +918,20 @@ function wrapPageSettingsAsAccordion(
   return source;
 }
 
-const CONDITION_BADGE_LIMIT = 3;
-
 function overlapSummary(page: EventPage): string {
   return page.overlapForbidden !== false ? "겹침 금지" : "겹침 허용";
 }
 
-function renderConditionSummaryBadges(conditions: readonly EventPageCondition[]): HTMLElement {
-  if (conditions.length === 0) {
-    return el("span", {
-      class: "event-condition-summary-empty",
-      text: "항상",
-      dataset: { testid: "event-condition-summary-empty" },
-    });
-  }
-  const badges = el("span", {
-    class: "event-condition-summary-badges",
-    dataset: { testid: "event-condition-summary-badges" },
-  });
-  for (const condition of conditions.slice(0, CONDITION_BADGE_LIMIT)) {
-    badges.append(
-      el("span", {
-        class: `event-condition-badge event-condition-badge-${condition.kind}`,
-        text: pageConditionBadgeText(condition),
-        attrs: { title: pageConditionSummary(condition) },
-        dataset: { testid: "event-condition-badge" },
-      })
-    );
-  }
-  if (conditions.length > CONDITION_BADGE_LIMIT) {
-    badges.append(
-      el("span", {
-        class: "event-condition-badge event-condition-badge-overflow",
-        text: `+${conditions.length - CONDITION_BADGE_LIMIT}`,
-        dataset: { testid: "event-condition-badge-overflow" },
-      })
-    );
-  }
-  return badges;
+function startSummary(page: EventPage): string {
+  return `${triggerLabel(page.trigger)} · ${priorityLabel(page.priority)}`;
 }
+
+// 「조건」 섹션 헤더의 요약 배지(`renderConditionSummaryBadges`)는 2026-08-29 에 삭제했다.
+// 같은 사실을 세 곳이 각자 다른 문법으로 말하고 있었다: 레일 헤더 meta(`조건 3개`), 배지
+// 3개 + `+n`, 그리고 되읽기 문장. 접힌 상태에서 필요한 신호는 헤더 meta 하나이고, 펼친 뒤에는
+// 문장이 배지보다 정확하다 — 배지는 12자에서 잘리고 3개까지만 보였다.
+//
+// 아래 짧은 라벨 함수들은 남는다. 페이지 탭 압축 요약(`pageConditionCompactSummary`)이 쓴다.
 
 function pageConditionBadgeText(condition: EventPageCondition): string {
   switch (condition.kind) {

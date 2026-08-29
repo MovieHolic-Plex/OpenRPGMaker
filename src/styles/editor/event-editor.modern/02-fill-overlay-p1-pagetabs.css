@@ -122,33 +122,19 @@
   white-space: nowrap;
 }
 
-.event-conditions-grid {
-  display: grid;
-  gap: 5px;
-}
-
-/* RM 조건 한 줄: [✓] 라벨 | 컨트롤 | 접미어 */
+/* 조건 한 줄: 라벨 | 컨트롤 | ✕
+   체크박스 칸과 접미사 칸은 없다 — 행의 존재가 «켜짐» 이고, 접미사는 값 컨트롤 안으로
+   흡수했다(«≤ 1분 30초»). 그래서 `.disabled` 상태도 존재하지 않는다. */
 .event-editor-modal-body .event-condition-row {
   align-items: center;
   column-gap: 8px;
   display: grid;
-  grid-template-columns: 16px 4.75rem minmax(0, 1fr) auto;
+  grid-template-columns: 5.75rem minmax(0, 1fr) 22px;
   max-width: 100%;
   min-height: 26px;
   min-width: 0;
   padding: 1px 0;
   row-gap: 0;
-}
-
-.event-editor-modal-body .event-condition-row.disabled {
-  opacity: 0.7;
-}
-
-.event-editor-modal-body .event-condition-row > input[type="checkbox"] {
-  height: 14px;
-  justify-self: center;
-  margin: 0;
-  width: 14px;
 }
 
 .event-editor-modal-body .event-condition-label {
@@ -159,16 +145,9 @@
   white-space: nowrap;
 }
 
-.event-editor-modal-body .event-condition-suffix {
+.event-editor-modal-body .event-condition-palette-title {
   color: var(--event-modern-text-soft);
-  font: 600 12px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  justify-self: end;
-  white-space: nowrap;
-}
-
-.event-editor-modal-body .event-condition-row.disabled .event-condition-label,
-.event-editor-modal-body .event-condition-row.disabled .event-condition-suffix {
-  color: var(--event-modern-text-soft);
+  font: 700 12px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .event-editor-modal-body .event-condition-control {
@@ -225,16 +204,6 @@
 .event-condition-time-unit {
   color: var(--event-modern-text-soft);
   font: 600 11px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  white-space: nowrap;
-}
-
-.event-condition-suffix {
-  color: var(--event-modern-text-soft);
-  flex: 0 0 auto;
-  max-width: 6.5em;
-  overflow: hidden;
-  text-align: left;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

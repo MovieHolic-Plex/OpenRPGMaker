@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { databaseRecordSelect } from "@/editor/panels/eventEditor/pageConditionControls";
 import {
-  advancedConditionEntries,
-  defaultSimpleCondition,
-  toggleSimpleCondition,
+  appendCondition,
+  pageConditionEntries,
+  removeConditionAt,
 } from "@/editor/panels/eventEditor/pageConditionModel";
+import { defaultPageCondition } from "@/editor/panels/eventEditor/pageConditionCatalog";
 import { renderPageConditions } from "@/editor/panels/eventEditor/pageConditions";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -61,31 +62,31 @@ describe("page item possession condition", () => {
     restoreDom?.();
   });
 
-  it("체크만 켜도 기본 아이템 보유 조건을 심는다", () => {
+  it("아이템 칩만 눌러도 기본 보유 조건을 심는다", () => {
     const { mapId, eventId, page } = ensureEventWithPage();
     const firstItemId = store.getCurrent().database.items[0]?.id;
     expect(firstItemId).toBeTruthy();
 
-    toggleSimpleCondition({ mapId, eventId, page }, "item", true);
+    appendCondition({ mapId, eventId, page }, defaultPageCondition("item"));
 
     const nextPage = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId)?.pages?.[0];
     expect(nextPage?.conditions).toEqual([{ kind: "item", itemId: firstItemId, present: true }]);
   });
 
-  it("아이템 보유 체크를 끄면 조건을 제거한다", () => {
+  it("아이템 행의 ✕ 는 그 조건을 제거한다", () => {
     const firstItemId = store.getCurrent().database.items[0]?.id ?? "item_potion";
     const { mapId, eventId, page } = ensureEventWithPage([
       { kind: "item", itemId: firstItemId, present: true },
     ]);
 
-    toggleSimpleCondition({ mapId, eventId, page }, "item", false);
+    removeConditionAt({ mapId, eventId, page }, 0);
 
     const nextPage = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId)?.pages?.[0];
     expect(nextPage?.conditions ?? []).toEqual([]);
   });
 
-  it("defaultSimpleCondition(item)은 첫 아이템 + present:true 이다", () => {
-    const seeded = defaultSimpleCondition("item");
+  it("defaultPageCondition(item)은 첫 아이템 + present:true 이다", () => {
+    const seeded = defaultPageCondition("item");
     const firstItemId = store.getCurrent().database.items[0]?.id;
     expect(seeded).toEqual({ kind: "item", itemId: firstItemId, present: true });
   });
@@ -127,7 +128,7 @@ describe("page item possession condition", () => {
     expect(root.textContent).toContain("보유 중");
   });
 
-  it("셀프 스위치 첫 번째는 간단 행, 초과분/소지금은 고급 목록에", () => {
+  it("셀프 스위치·소지금·중복 아이템이 전부 같은 목록에 한 행씩 온다", () => {
     const page: EventPage = {
       id: "page-1",
       name: "EV",
@@ -145,8 +146,23 @@ describe("page item possession condition", () => {
       commands: [],
     };
 
-    const advanced = advancedConditionEntries(page);
-    expect(advanced.map((entry) => entry.condition.kind)).toEqual(["selfSwitch", "gold", "item"]);
-    expect(advanced[2]?.condition).toEqual({ kind: "item", itemId: "item_key", present: true });
+    // 예전에는 소지금이 「고급 조건」 에만 있어서 12행 쪽에서는 편집할 방법이 없었다.
+    const entries = pageConditionEntries(page);
+    expect(entries.map((entry) => entry.condition.kind)).toEqual([
+      "selfSwitch",
+      "selfSwitch",
+      "gold",
+      "item",
+      "item",
+    ]);
+
+    const root = renderWithFakeDom(() =>
+      el("div", { children: renderPageConditions("map-start", "event-1", page) })
+    );
+    expect(root.querySelectorAll(".event-condition-row").length).toBe(5);
+    // 같은 종류가 둘이면 두 번째 행에 `-2` 가 붙어 testid 가 겹치지 않는다.
+    for (const key of ["이 이벤트 기억", "이 이벤트 기억-2", "소지금", "아이템", "아이템-2"]) {
+      expect(findByTestId(root, `event-condition-row-${key}`), key).not.toBeNull();
+    }
   });
 });

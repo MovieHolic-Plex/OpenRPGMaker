@@ -118,9 +118,16 @@ describe("event editor settings column layout", () => {
     expect(movement?.contains(behavior)).toBe(false);
     expect(movement?.querySelector('[data-testid="event-page-trigger-select"]')).toBeNull();
 
-    expect(main?.querySelectorAll(".event-editor-settings-accordion-group").length).toBeLessThanOrEqual(5);
+    // 6 = look-talk / when / start / move / memory / npc. 「어떻게 시작하나요」 를 떼어내
+    // 하나 늘었다 — 조건(언제)과 트리거·우선순위(어떻게)는 다른 질문이라 같은 그룹에 두면
+    // 「언제 보이나요」 안에서 서로 안 맞는 컨트롤이 섞인다.
+    expect(main?.querySelectorAll(".event-editor-settings-accordion-group").length).toBeLessThanOrEqual(6);
     expect(main?.querySelector('[data-testid="evt-rail-group-look-talk"]')).toBeTruthy();
     expect(main?.querySelector('[data-testid="evt-rail-group-when"]')).toBeTruthy();
+    expect(main?.querySelector('[data-testid="evt-rail-group-start"]')).toBeTruthy();
+    // 트리거·우선순위 묶음은 start 그룹이 소유하고 when 그룹에는 없다.
+    expect(behavior?.closest('[data-testid="evt-rail-group-start"]')).toBeTruthy();
+    expect(behavior?.closest('[data-testid="evt-rail-group-when"]')).toBeNull();
     expect(main?.querySelector('[data-testid="evt-rail-group-move"]')).toBeTruthy();
     expect(main?.querySelector('[data-testid="evt-rail-group-memory"]')).toBeTruthy();
     expect(graphic?.querySelector("legend")?.textContent).toContain("모습");

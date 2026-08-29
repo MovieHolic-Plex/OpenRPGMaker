@@ -114,9 +114,14 @@ async function captureEditorRows(page: Page): Promise<EditorProof> {
   await expect(page.getByTestId("event-page-props")).toBeVisible();
   await page.getByTestId("event-page-tab-2").click();
   await page.screenshot({ path: evidencePath("003-editor-condition-rows.png"), fullPage: true });
+  // 조건 행에서 체크박스가 사라졌으므로(행의 존재가 «켜짐») 값이 든 칸은 select 쪽에 있다.
   const filledConditionFields = await page.evaluate(() => {
-    const conditionInputs = Array.from(document.querySelectorAll<HTMLInputElement>(".event-condition-row input"));
-    return conditionInputs.filter((input) => input.value.trim().length > 0).length;
+    const fields = Array.from(
+      document.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+        ".event-condition-row input, .event-condition-row select"
+      )
+    );
+    return fields.filter((field) => field.value.trim().length > 0).length;
   });
   await page.getByTestId("event-page-tab-1").click();
   return page.evaluate(() => {

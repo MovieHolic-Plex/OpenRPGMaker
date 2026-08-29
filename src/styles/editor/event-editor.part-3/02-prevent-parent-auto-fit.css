@@ -312,12 +312,12 @@
   }
 
   .event-editor-modal-body .event-condition-row {
-    grid-template-columns: 14px 72px minmax(0, 1fr) 72px;
+    grid-template-columns: 72px minmax(0, 1fr) 18px;
     min-height: 19px;
   }
 
   .event-condition-label,
-  .event-condition-suffix,
+  .event-condition-palette-title,
   .event-editor-modal-body label {
     font: 700 11px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   }

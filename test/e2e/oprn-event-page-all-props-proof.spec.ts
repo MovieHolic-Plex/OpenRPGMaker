@@ -125,7 +125,7 @@ function at(eventState: RuntimeEventState | undefined, x: number, y: number): bo
   return Boolean(eventState && eventState.x === x && eventState.y === y);
 }
 
-async function editorRows(page: Page): Promise<{ disabledRows: number; zebraRows: readonly string[] }> {
+async function editorRows(page: Page): Promise<{ conditionRows: number; disabledRows: number; zebraRows: readonly string[] }> {
   await page.getByTestId("mode-edit").click();
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await page.getByTestId("layer-event").click();
@@ -133,12 +133,16 @@ async function editorRows(page: Page): Promise<{ disabledRows: number; zebraRows
   await page.getByTestId("event-list-row-ev_condition").click();
   await page.getByTestId("event-editor-open").click();
   await expect(page.getByTestId("event-page-props")).toBeVisible();
+  // 조건 4개를 켠 페이지(2번)에서 실제로 4행이 나오는지 본다. 흐린 행 계약은 사라졌으므로
+  // 「disabled 0개」 만으로는 아무것도 증명하지 못한다.
+  await page.getByTestId("event-page-tab-2").click();
+  const conditionRows = await page.locator(".event-condition-row").count();
   await page.getByTestId("event-page-tab-1").click();
   const disabledRows = await page.locator(".event-condition-row.disabled").count();
   const zebraRows = await page.locator(".event-contents-fieldset .cmd-list > .cmd-item > .cmd-head").evaluateAll((nodes) =>
     nodes.slice(0, 2).map((node) => getComputedStyle(node).backgroundColor)
   );
-  return { disabledRows, zebraRows };
+  return { conditionRows, disabledRows, zebraRows };
 }
 
 function proofProject(): Project {
@@ -275,7 +279,7 @@ test("focused PlayScene proof covers event page runtime props", async ({ page })
     "overlap-player-movement-hook": { status: afterTouch.player.x === initial.player.x && afterTouch.player.y === initial.player.y ? "pass" : "fail", evidence: { start: initial.player, afterTouch: afterTouch.player } },
     "page-movement-types": { status: at(final.events.move_fixed, 4, 4) && notAt(final.events.move_custom, 6, 4) && notAt(final.events.move_random, 8, 4) && notAt(final.events.move_approach, 10, 4) ? "pass" : "fail", evidence: { before: beforeMove.events, after: final.events } },
     "animation-types": { status: new Set(normalFrames.map((item) => item.frame)).size > 1 && new Set(fixedFrames.map((item) => item.frame)).size === 1 ? "pass" : "fail", evidence: { normalFrames, fixedFrames } },
-    "implemented-condition-rows-editor": { status: editor.disabledRows === 0 ? "pass" : "fail", evidence: editor },
+    "implemented-condition-rows-editor": { status: editor.conditionRows >= 4 && editor.disabledRows === 0 ? "pass" : "fail", evidence: editor },
     "zebra-rows": { status: new Set(editor.zebraRows).size > 1 ? "pass" : "fail", evidence: editor },
   };
   await writeFile(REPORT_PATH, `${JSON.stringify({ generatedAt: new Date().toISOString(), browser: "Playwright Chromium", results }, null, 2)}\n`, "utf8");

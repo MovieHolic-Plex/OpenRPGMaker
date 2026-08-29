@@ -75,7 +75,7 @@
 
   .event-editor-modal-body .event-condition-row {
     gap: 2px;
-    grid-template-columns: 10px 42px minmax(0, 1fr) max-content;
+    grid-template-columns: 42px minmax(0, 1fr) max-content;
   }
 
   .event-editor-modal-body .event-condition-control.variable {

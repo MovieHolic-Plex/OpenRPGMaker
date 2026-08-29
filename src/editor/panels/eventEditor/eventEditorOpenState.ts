@@ -6,7 +6,8 @@ export type EventEditorOpenKey = string;
 
 export const openEventConditions = new Set<EventEditorOpenKey>();
 export const openEventMovement = new Set<EventEditorOpenKey>();
-export const openEventAdvanced = new Set<EventEditorOpenKey>();
+// `openEventAdvanced` 는 「고급 조건」 details 와 함께 삭제됐다 (2026-08-29). 조건은 이제
+// 종류 구분 없이 한 목록에서 편집하므로 따로 펼쳐 둘 영역이 없다.
 
 /**
  * 좌측 설정 레일에서 지금 펼쳐 둔 그룹 slug.
