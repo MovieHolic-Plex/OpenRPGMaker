@@ -3,15 +3,25 @@ import {
   agentBlueprintForMap,
   blueprintKindLabel,
   clearAgentBlueprint,
-  finishAgentBlueprint,
+  commitAgentBlueprintProgress,
   getAgentBlueprintState,
   markAgentBlueprintProgress,
   setAgentBlueprintFromSpec,
+  settleAgentBlueprintTurn,
   subscribeAgentBlueprint,
   syncAgentBlueprintWithSpec,
 } from "@/editor/agentBlueprint";
+import { blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
-import { affectedRegions, type BuildSpec } from "@/ai/buildSpec";
+import { affectedRegions, type AffectedRegion, type BuildSpec } from "@/ai/buildSpec";
+
+/** 아무것도 적용되지 않은 턴 끝(중단·오류·적용 실패·변경 0건). */
+const APPLIED_NOTHING = { regions: [] as readonly AffectedRegion[], wholeTargetMapIds: [] as readonly string[] };
+
+/** 이 영역들이 저장소에 들어간 턴 끝. */
+function appliedRegions(...regions: readonly AffectedRegion[]) {
+  return { regions, wholeTargetMapIds: [] as readonly string[] };
+}
 
 /** 쓰기 툴콜 — 패널은 레지스트리의 mode 를 그대로 넘긴다. */
 const WRITE = { write: true } as const;
@@ -198,7 +208,7 @@ describe("markAgentBlueprintProgress", () => {
     setAgentBlueprintFromSpec(SPEC);
     markAgentBlueprintProgress("paint_road", { mapId: "m1", points: roadPoints() }, WRITE);
     markAgentBlueprintProgress("build_wall", HOUSE_WALL_ARGS, WRITE);
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
     expect(statusById()).toEqual({ site: "planned", main_road: "done", house_a: "done" });
     const revision = getAgentBlueprintState().revision;
 
@@ -255,8 +265,32 @@ describe("markAgentBlueprintProgress — 좌표를 wrapper 키에 담는 쓰기 
 
   it("origin + width/height(구조물 스탬프 계열)도 사각형으로 귀속된다", () => {
     setAgentBlueprintFromSpec(VILLAGE_SPEC);
-    markAgentBlueprintProgress("stamp_structure_kit", { mapId: "m1", kitId: "kit_x", origin: { x: 4, y: 4 } }, WRITE);
+    // stamp_structure_kit 은 origin + repeat 만 받는다 — 발자국 크기가 인자에 없으므로 1×1 점으로
+    // 귀속된다(repeat 는 읽지 않는다). 점이 두 칸에 들어가면 IoU 가 작은 칸을 고르므로 안전하다.
+    markAgentBlueprintProgress("stamp_structure_kit", { mapId: "m1", kitId: "kit_x", origin: { x: 4, y: 4 }, repeat: 6 }, WRITE);
     expect(statusById().house_a).toBe("building");
+  });
+
+  it("place_examine_hotspots 의 hotspots[].at 으로 조사 칸이 진행된다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    // 스키마는 항목마다 required:["at"] 이라 좌표가 한 겹 안에 있다(investigationTools.ts).
+    // 항목 최상위 x/y 만 보던 시절에는 전량 포기 규칙에 걸려 영역이 0장 = 조용히 침묵이었다.
+    markAgentBlueprintProgress(
+      "place_examine_hotspots",
+      { mapId: "m1", hotspots: [{ at: { x: 21, y: 3 }, name: "낡은 액자", once: true }, { at: { x: 24, y: 6 }, name: "이끼 낀 돌" }] },
+      WRITE
+    );
+    expect(statusById()).toEqual({ site: "planned", main_road: "planned", house_a: "planned", grove: "building" });
+  });
+
+  it("최상위 width/height 가 새 맵 크기인 툴은 origin 과 짝지어도 맵 전체를 한 칸으로 만들지 않는다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    // generate_map 계열 8종의 width/height 는 발자국이 아니라 만들 맵의 크기다. 발자국으로 읽으면
+    // origin 을 좌상단으로 하는 맵 크기짜리 영역이 나오고, 그것은 IoU 로 맵 전체를 덮는 정리 칸을
+    // 이겨(0.53 대 0.05) 나머지 칸을 전부 done 으로 밀어낸다. 오늘 이 짝을 보내는 툴은 없다 —
+    // 하나 생기는 순간 조용히 터지는 자리라서 못으로 박는다.
+    markAgentBlueprintProgress("generate_map", { mapId: "m1", origin: { x: 4, y: 4 }, width: 30, height: 20 }, WRITE);
+    expect(statusById()).toEqual({ site: "planned", main_road: "planned", house_a: "building", grove: "planned" });
   });
 
   it("다른 맵의 area 호출은 무시한다", () => {
@@ -282,6 +316,55 @@ describe("markAgentBlueprintProgress — 좌표를 wrapper 키에 담는 쓰기 
   });
 });
 
+// 시스템 프롬프트는 집 2채 이상을 **한 호출**로 짓게 지시한다(contextBuilder: "2채 이상은
+// author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지)"). 그 호출의 게이트
+// 영역은 집마다 몸통+마당 2장씩 정확히 나오는데, 전체를 합쳐 승자 하나만 고르던 시절에는 세
+// 채 중 한 채만 building 이 되고 나머지 두 채는 뒤에 오는 호출이 없어 영원히 파랑으로 남았다.
+describe("markAgentBlueprintProgress — 집 여러 채를 한 호출로 짓는 author_house(kind=lots)", () => {
+  /** authorHouseToolDef.ts 의 invalidArgsExample 그대로(mapId 만 이 테스트 맵으로). */
+  const LOTS_CALL: Record<string, unknown> = {
+    kind: "lots",
+    mapId: "m1",
+    houses: [
+      { kitId: "blue-stone", wings: [{ x: 2, y: 1, w: 5, h: 6 }], interior: "exterior-only", door: true, ownerName: "대장장이", windows: {}, yard: ["firewood", "pot"] },
+      { kitId: "bright-plaster", wings: [{ x: 12, y: 1, w: 6, h: 5 }], interior: "exterior-only", door: true, ownerName: "약초사", windows: { spacing: 2 }, yard: ["flowers", "bench_h"] },
+      { kitId: "amber-wood", wings: [{ x: 7, y: 10, w: 5, h: 5 }], interior: "exterior-only", door: true, ownerName: "어부", windows: {}, yard: ["mailbox"] },
+    ],
+    seed: 42,
+  };
+
+  /** 한 채의 터 = 몸통 + 문 앞 마당 3행(buildSpec.wingsRegions 가 lots 에서 내는 모양). */
+  const LOTS_SPEC: BuildSpec = {
+    mapId: "m1",
+    title: "세 채 마을",
+    buildOrder: ["clear", "house"],
+    assets: [
+      { id: "site", kind: "clear", x: 0, y: 0, w: 30, h: 20 },
+      { id: "house_a", kind: "house", x: 2, y: 1, w: 5, h: 9 },
+      { id: "house_b", kind: "house", x: 12, y: 1, w: 6, h: 8 },
+      { id: "house_c", kind: "house", x: 7, y: 10, w: 5, h: 8 },
+    ],
+  };
+
+  it("게이트가 낸 6장(몸통 3 + 마당 3)이 집 세 칸을 모두 올린다", () => {
+    // 게이트는 이 호출에서 이미 정확한 영역 6장을 낸다 — 결함은 그것을 한 칸으로 접는 쪽이었다.
+    expect(affectedRegions("author_house", LOTS_CALL)).toHaveLength(6);
+
+    setAgentBlueprintFromSpec(LOTS_SPEC);
+    markAgentBlueprintProgress("author_house", LOTS_CALL, WRITE);
+    expect(statusById()).toEqual({ site: "planned", house_a: "building", house_b: "building", house_c: "building" });
+  });
+
+  it("영역이 여러 개여도 맵 전체를 덮는 정리 칸을 훔쳐 가지 않는다", () => {
+    // 영역마다 독립으로 승자를 고르면 1×1 점의 IoU 가 "그 점을 담은 가장 작은 칸"을 뽑는 성질
+    // 때문에 집 사각형을 지나는 길 60칸 중 12칸이 길 대신 집을 뽑는다(SPEC 의 main_road 와
+    // house_a 는 12칸 겹친다). 그래서 남은 영역을 벗겨 가며 합산 IoU 로 뽑는다 — 길은 한 칸이다.
+    setAgentBlueprintFromSpec(SPEC);
+    markAgentBlueprintProgress("paint_road", { mapId: "m1", points: roadPoints() }, WRITE);
+    expect(statusById()).toEqual({ site: "planned", main_road: "building", house_a: "planned" });
+  });
+});
+
 describe("markAgentBlueprintProgress — 대상 전체를 짓는 파사드(author_village)", () => {
   /** 시스템 프롬프트가 그대로 지시하는 모양 — contextBuilder: 마을=author_village(target:{kind:"existing",mapId} …). */
   const VILLAGE_CALL = { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" } as const;
@@ -291,7 +374,7 @@ describe("markAgentBlueprintProgress — 대상 전체를 짓는 파사드(autho
     markAgentBlueprintProgress("author_village", VILLAGE_CALL, WRITE);
     expect(statusById()).toEqual({ site: "building", main_road: "building", house_a: "building", grove: "building" });
 
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
     expect(statusById()).toEqual({ site: "done", main_road: "done", house_a: "done", grove: "done" });
   });
 
@@ -312,7 +395,7 @@ describe("markAgentBlueprintProgress — 대상 전체를 짓는 파사드(autho
   it("이미 끝난 칸은 되감지 않는다", () => {
     setAgentBlueprintFromSpec(VILLAGE_SPEC);
     markAgentBlueprintProgress("paint_road", { mapId: "m1", points: [{ x: 0, y: 16 }, { x: 29, y: 17 }] }, WRITE);
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
     expect(statusById().main_road).toBe("done");
 
     markAgentBlueprintProgress("author_village", VILLAGE_CALL, WRITE);
@@ -331,7 +414,7 @@ describe("syncAgentBlueprintWithSpec", () => {
   it("턴마다 같은 스펙으로 다시 맞춰도 진행을 잃지 않고 조용하다", () => {
     setAgentBlueprintFromSpec(SPEC);
     markAgentBlueprintProgress("build_wall", HOUSE_WALL_ARGS, WRITE);
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
     const revision = getAgentBlueprintState().revision;
 
     // set_build_spec 은 계획을 세운 턴에만 온다 — 다음 턴은 세션의 활성 스펙으로 다시 맞춘다.
@@ -343,7 +426,7 @@ describe("syncAgentBlueprintWithSpec", () => {
   it("스펙이 자동 확장돼도 살아남은 칸의 진행을 물려받는다", () => {
     setAgentBlueprintFromSpec(SPEC);
     markAgentBlueprintProgress("build_wall", HOUSE_WALL_ARGS, WRITE);
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
 
     // assistantSession.expandSpecWithRegions 가 활성 스펙에 에셋을 덧붙인 모양.
     syncAgentBlueprintWithSpec({
@@ -361,7 +444,7 @@ describe("syncAgentBlueprintWithSpec", () => {
   it("칸이 움직이면 진행을 물려받지 않는다", () => {
     setAgentBlueprintFromSpec(SPEC);
     markAgentBlueprintProgress("build_wall", HOUSE_WALL_ARGS, WRITE);
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
 
     syncAgentBlueprintWithSpec({
       ...SPEC,
@@ -382,7 +465,7 @@ describe("청사진과 고스트는 수명이 다르다", () => {
   it("고스트를 지워도 청사진은 남는다", () => {
     setAgentBlueprintFromSpec(SPEC);
     markAgentBlueprintProgress("build_wall", HOUSE_WALL_ARGS, WRITE);
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
 
     // aiProposalCard.applyProposal 은 applyProposedProject **직전에** 고스트를 지운다. 청사진을
     // 여기에 묶어 두면 처음 시공한 턴의 끝에서 계획이 사라지고, set_build_spec 은 다음 턴에
@@ -394,15 +477,105 @@ describe("청사진과 고스트는 수명이 다르다", () => {
   });
 });
 
-describe("finishAgentBlueprint / clearAgentBlueprint", () => {
-  it("턴이 끝나면 building 이던 칸이 done 으로 확정된다", () => {
+// 표시된 진행은 **저장소에 들어간 것**만 가리켜야 한다. 종전 정산은 종료 경로에 상관없이
+// building 을 done 으로 올렸는데, 패널의 다섯 종료 경로 중 셋(중단 return, catch 두 개)은 적용
+// 앞에서 끝나 초안을 그대로 버린다 — 손도 안 댄 타일 위에 회색 ✓ 가 박히고, 그 칸은 planned 가
+// 아니라서 다시 올라가지도 않으므로 세션이 죽을 때까지 남았다.
+describe("settleAgentBlueprintTurn", () => {
+  /** VILLAGE_SPEC 의 길 칸(0,16,30,2)을 따라가는 실제 paint_road 인자. */
+  const VILLAGE_ROAD = { mapId: "m1", points: [{ x: 0, y: 16 }, { x: 29, y: 17 }] } as const;
+  /** VILLAGE_SPEC 의 집 칸을 그대로 덮는 쓰기. */
+  const VILLAGE_HOUSE_FILL = { mapId: "m1", rect: { x: 4, y: 4, w: 6, h: 5 }, material: "흰 집 벽" } as const;
+
+  it("적용이 없으면 이번 턴에 올린 칸이 전부 planned 로 되돌아간다 — 턴 도중 done 으로 내려간 앞 칸까지", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("paint_road", VILLAGE_ROAD, WRITE);
+    markAgentBlueprintProgress("fill_region", VILLAGE_HOUSE_FILL, WRITE);
+    // 인과 순서 판정이 길을 그 자리에서 done 으로 내렸다 — 저장소에는 아직 아무것도 없다.
+    expect(statusById()).toEqual({ site: "planned", main_road: "done", house_a: "building", grove: "planned" });
+
+    settleAgentBlueprintTurn(APPLIED_NOTHING);
+    expect(statusById()).toEqual({ site: "planned", main_road: "planned", house_a: "planned", grove: "planned" });
+  });
+
+  it("들어간 영역에 걸리는 칸만 done 이 된다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("paint_road", VILLAGE_ROAD, WRITE);
+    markAgentBlueprintProgress("fill_region", VILLAGE_HOUSE_FILL, WRITE);
+
+    // 길만 저장소에 들어갔다(집 쓰기는 제안에서 빠졌거나 변경을 못 냈다).
+    settleAgentBlueprintTurn(appliedRegions({ mapId: "m1", x: 0, y: 16, w: 30, h: 2 }));
+    expect(statusById()).toEqual({ site: "planned", main_road: "done", house_a: "planned", grove: "planned" });
+  });
+
+  it("다른 맵에 들어간 변경은 이 청사진을 확정하지 못한다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("fill_region", VILLAGE_HOUSE_FILL, WRITE);
+    settleAgentBlueprintTurn(appliedRegions({ mapId: "m2", x: 4, y: 4, w: 6, h: 5 }));
+    expect(statusById().house_a).toBe("planned");
+  });
+
+  it("앞 턴에 확정된 done 은 정산이 건드리지 않는다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("fill_region", VILLAGE_HOUSE_FILL, WRITE);
+    settleAgentBlueprintTurn(appliedRegions({ mapId: "m1", x: 4, y: 4, w: 6, h: 5 }));
+    expect(statusById().house_a).toBe("done");
+
+    // 다음 턴: 길을 치다가 중단했다. 집의 done 은 이번 턴 것이 아니므로 남는다.
+    markAgentBlueprintProgress("paint_road", VILLAGE_ROAD, WRITE);
+    settleAgentBlueprintTurn(APPLIED_NOTHING);
+    expect(statusById()).toEqual({ site: "planned", main_road: "planned", house_a: "done", grove: "planned" });
+  });
+
+  it("되돌릴 것이 없으면 리비전을 낭비하지 않는다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("fill_region", VILLAGE_HOUSE_FILL, WRITE);
+    settleAgentBlueprintTurn(APPLIED_NOTHING);
+    const revision = getAgentBlueprintState().revision;
+    settleAgentBlueprintTurn(APPLIED_NOTHING);
+    expect(getAgentBlueprintState().revision).toBe(revision);
+  });
+
+  it("bounds 없는 파사드는 영역이 없어도 그 맵이면 확정된다 — 마을을 다 짓고도 전부 파랑으로 되감기지 않는다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }, WRITE);
+    settleAgentBlueprintTurn({ regions: [], wholeTargetMapIds: ["m1"] });
+    expect(statusById()).toEqual({ site: "done", main_road: "done", house_a: "done", grove: "done" });
+  });
+
+  it("다른 맵을 지은 파사드는 이 청사진을 확정하지 못한다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }, WRITE);
+    settleAgentBlueprintTurn({ regions: [], wholeTargetMapIds: ["m2"] });
+    expect(statusById()).toEqual({ site: "planned", main_road: "planned", house_a: "planned", grove: "planned" });
+  });
+});
+
+// 청사진 전용 추출이 "읽는다"고 적어 둔 키는 실제로 도달 가능해야 한다 — 죽은 목록은 다음
+// 사람에게 커버리지가 있다고 거짓말한다. spots/areas 는 최상위 mapId 가 없어서 이 모듈이
+// 먼저 빠져나가므로 목록에서 뺐고, 그 사실을 여기서 못으로 박는다.
+describe("blueprintRegionsForToolCall — 도달할 수 없는 모양", () => {
+  it("configure_fishing / configure_seasonal_forage 는 맵 id 가 항목마다 있어 청사진 대상이 아니다", () => {
+    expect(blueprintRegionsForToolCall("configure_fishing", {
+      enabled: true,
+      spots: [{ id: "spot_river", mapId: "m1", area: { x: 0, y: 0, w: 4, h: 4 }, catches: [{ fishId: "fish_river", weight: 1 }] }],
+    })).toEqual({ mapId: null, regions: [], wholeTarget: false });
+    expect(blueprintRegionsForToolCall("configure_seasonal_forage", {
+      enabled: true,
+      areas: [{ id: "forage_farm", mapId: "m1", area: { x: 0, y: 0, w: 5, h: 5 }, dailySpawnCount: 2, maxActive: 6, despawnAfterDays: 3, entries: [] }],
+    })).toEqual({ mapId: null, regions: [], wholeTarget: false });
+  });
+});
+
+describe("commitAgentBlueprintProgress / clearAgentBlueprint", () => {
+  it("적용이 들어가면 building 이던 칸이 done 으로 확정된다", () => {
     setAgentBlueprintFromSpec(SPEC);
     markAgentBlueprintProgress("build_wall", HOUSE_WALL_ARGS, WRITE);
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
     expect(statusById().house_a).toBe("done");
     // 두 번 불러도 리비전이 늘지 않는다.
     const revision = getAgentBlueprintState().revision;
-    finishAgentBlueprint();
+    commitAgentBlueprintProgress();
     expect(getAgentBlueprintState().revision).toBe(revision);
   });
 

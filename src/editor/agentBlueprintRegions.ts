@@ -6,8 +6,8 @@
 // 건너뛴다(checkRegionsAgainstSpecBoundary). 게이트에는 그게 맞다(모르는 호출을 막지 않는다).
 // 그런데 좌표를 wrapper 키에 담는 쓰기 툴이 많다 — place_props 의 `area`, place_door/place_window 의
 // `at`, build_roof 의 `wallRect`, build_castle 의 `bounds`, stamp_structure_kit 의 `origin`,
-// place_examine_hotspots 의 `hotspots`. 청사진이 그 폴백을 그대로 받으면 "위치를 모르면 침묵한다"
-// 규칙에 걸려 진행이 한 칸도 움직이지 않는다.
+// place_examine_hotspots 의 `hotspots[].at`. 청사진이 그 폴백을 그대로 받으면 "위치를 모르면
+// 침묵한다" 규칙에 걸려 진행이 한 칸도 움직이지 않는다.
 //
 // 2026-08-29 실측(가장 아픈 경로): 시스템 프롬프트가 마을을 만들 때 쓰라고 **글자 그대로** 지시하는
 // `author_village(target:{kind:"existing",mapId})` 는 `bounds` 가 선택이라(스키마·파서·
@@ -20,6 +20,18 @@
 // 순수 모듈이다(브라우저·Phaser·store·툴 레지스트리 비의존) — agentBlueprint.ts 와 같은 규약.
 
 import { affectedRegions, type AffectedRegion } from "@/ai/buildSpec";
+import {
+  proposalCallChangedSomething,
+  proposalChangedRegions,
+  type ProposalCompletenessCall,
+} from "@/ai/proposalCompleteness";
+
+/** 턴 정산에 넘길 "실제로 들어간 것" — 영역 + 대상 전체를 지은 파사드의 맵 id. */
+export interface AppliedBlueprintRegions {
+  readonly regions: readonly AffectedRegion[];
+  /** 대상 맵 전체를 시공하고 적용된 파사드의 맵 id — 영역을 인자에서 뽑을 수 없는 경우다. */
+  readonly wholeTargetMapIds: readonly string[];
+}
 
 export interface BlueprintCallRegions {
   /** 이 호출이 건드린 맵(최상위 mapId 또는 nested target.mapId). 모르면 null. */
@@ -52,8 +64,35 @@ const RECT_KEYS: readonly string[] = [
   "rect", "wallRect", "area", "region", "bounds", "at", "pos", "point", "position", "cell",
 ];
 
-/** 점·사각형 배열을 담는 키(cells/points 는 affectedRegions 가 이미 읽는다). */
-const RECT_LIST_KEYS: readonly string[] = ["hotspots", "spots", "areas", "regions", "rects", "wings"];
+/**
+ * 좌표 배열을 담는 키(cells/points 는 affectedRegions 가 이미 읽는다).
+ *
+ * 실측으로 도달 가능한 것만 남긴다 — 커버리지를 주장하는 죽은 목록은 다음 사람을 속인다.
+ * - `hotspots`: place_examine_hotspots(쓰기, 최상위 mapId + `{at:{x,y},…}[]`). 항목 안의 좌표
+ *   wrapper 를 벗겨야 읽힌다(아래 rectFromEntry) — 벗기지 않던 시절에는 전량 포기 규칙에 걸려
+ *   `regions: []` 로 조용히 떨어졌다.
+ * - `wings`: 게이트(affectedRegions)가 author_house/build_house_* 에서 먼저 소비하므로 오늘은
+ *   이 폴백까지 오지 않는다. 모양이 맞는 유일한 예비 항목이라 새 집 파사드용으로 남긴다.
+ *
+ * 빼낸 것: `spots`(configure_fishing) · `areas`(configure_seasonal_forage) 는 최상위 mapId 가
+ * 없고(스키마 additionalProperties:false) 맵 id 를 **항목마다** 들고 있어 callMapId 가 null 을 내며
+ * 이 모듈이 먼저 빠져나간다 — 게다가 둘 다 타일을 칠하지 않는 system 설정 툴이라 청사진 진행의
+ * 대상이 아니다. `regions`/`rects` 는 이 이름으로 인자를 받는 등록된 쓰기 툴이 하나도 없었다.
+ */
+const RECT_LIST_KEYS: readonly string[] = ["hotspots", "wings"];
+
+/**
+ * 최상위 `width`/`height` 가 **새 맵 크기**인 툴 — 발자국으로 읽으면 맵 전체가 한 칸이 된다.
+ *
+ * 오늘은 이 8종 중 `origin` 을 같이 받는 툴이 없어 아래 origin 분기에 닿지 않지만, 둘을 같이
+ * 보내는 파사드가 하나 생기는 순간 origin 을 좌상단으로 하는 맵 크기짜리 영역이 조용히 나온다 —
+ * 그 영역은 IoU 로 맵 전체를 덮는 `clear` 칸을 이기고 나머지 칸을 전부 done 으로 밀어낸다.
+ */
+const MAP_DIMENSION_TOOLS: ReadonlySet<string> = new Set([
+  "create_map", "resize_map", "generate_map", "build_castle",
+  "start_dungeon_room_session", "run_dungeon_room_pipeline",
+  "start_interior_room_session", "run_interior_room_pipeline",
+]);
 
 export function blueprintRegionsForToolCall(toolName: string, args: Record<string, unknown>): BlueprintCallRegions {
   const wholeTarget = WHOLE_TARGET_FACADES.has(toolName);
@@ -65,11 +104,13 @@ export function blueprintRegionsForToolCall(toolName: string, args: Record<strin
   const mapId = callMapId(args);
   if (mapId === null) return { mapId: null, regions: [], wholeTarget: false };
 
-  // origin{x,y} + 최상위 width/height — 구조물 스탬프·집 계열의 모양이다.
+  // origin{x,y} + 최상위 width/height — 구조물 스탬프·집 계열의 모양이다. 맵 크기를 뜻하는
+  // width/height 는 발자국이 아니므로 읽지 않는다(MAP_DIMENSION_TOOLS 주석).
   const origin = rectFromRecord(mapId, args.origin);
   if (origin !== null) {
-    const width = positiveSize(args.width ?? args.w);
-    const height = positiveSize(args.height ?? args.h);
+    const footprint = MAP_DIMENSION_TOOLS.has(toolName) ? null : args;
+    const width = footprint === null ? null : positiveSize(footprint.width ?? footprint.w);
+    const height = footprint === null ? null : positiveSize(footprint.height ?? footprint.h);
     return { mapId, regions: [{ ...origin, w: width ?? origin.w, h: height ?? origin.h }], wholeTarget };
   }
 
@@ -109,11 +150,52 @@ function rectsFromArray(mapId: string, value: unknown): AffectedRegion[] | null 
   if (!Array.isArray(value) || value.length === 0) return null;
   const rects: AffectedRegion[] = [];
   for (const entry of value) {
-    const rect = rectFromRecord(mapId, entry);
+    const rect = rectFromEntry(mapId, entry);
     if (rect === null) return null;
     rects.push(rect);
   }
   return rects;
+}
+
+/**
+ * 배열 항목 하나 — 좌표가 항목 바로 밑에 있거나 한 겹 더 들어가 있다.
+ *
+ * 실측: place_examine_hotspots 의 스키마는 항목마다 `required:["at"]` 이라 좌표가 `at` 안에 있다
+ * (`{at:{x,y}, name, lines?, …}`). 최상위 x/y 만 보던 시절에는 스키마대로 온 인자가 전량 포기
+ * 규칙(하나라도 아니면 null)에 걸려 `regions: []` 이 됐고, 살아 있는 쓰기 툴 하나가 청사진에서
+ * 조용히 사라졌다 — 이 모듈이 애초에 없애려던 그 침묵이다.
+ */
+function rectFromEntry(mapId: string, entry: unknown): AffectedRegion | null {
+  const direct = rectFromRecord(mapId, entry);
+  if (direct !== null) return direct;
+  if (!isRecord(entry)) return null;
+  for (const key of RECT_KEYS) {
+    const nested = rectFromRecord(mapId, entry[key]);
+    if (nested !== null) return nested;
+  }
+  return null;
+}
+
+/**
+ * 이번 턴에 **저장소로 들어간** 영역 — 청사진 턴 정산(agentBlueprint.settleAgentBlueprintTurn)의 근거.
+ *
+ * 완성도 린트가 쓰는 함수를 그대로 쓴다(proposalChangedRegions). 정산이 따로 계산하면 한 화면에서
+ * 채팅은 "⚠ 미이행", 맵은 "완료 ✓" 가 되어 사용자가 어느 쪽을 믿을지 알 수 없다.
+ *
+ * 다만 린트가 영역을 못 뽑는 자리가 하나 있다: `bounds` 없는 `author_village` 는 대상 맵 전체를
+ * 지었는데 인자에 사각형이 없다(스키마·파서·invalidArgsExample 모두에서 bounds 는 선택). 영역만
+ * 보면 마을을 다 짓고 적용까지 끝나도 청사진이 전부 planned 로 되감긴다 — 6f3342df 가 고친
+ * "마을을 지어도 100% 파랑" 의 재발이다. 그래서 그 파사드가 실제 변경을 내고 적용됐으면 대상
+ * 맵 id 를 따로 알려 준다.
+ */
+export function appliedBlueprintRegions(calls: readonly ProposalCompletenessCall[]): AppliedBlueprintRegions {
+  const wholeTargetMapIds: string[] = [];
+  for (const call of calls) {
+    if (!WHOLE_TARGET_FACADES.has(call.name) || !proposalCallChangedSomething(call)) continue;
+    const targetMapId = blueprintRegionsForToolCall(call.name, call.args).mapId;
+    if (targetMapId !== null) wholeTargetMapIds.push(targetMapId);
+  }
+  return { regions: proposalChangedRegions(calls), wholeTargetMapIds };
 }
 
 function positiveSize(value: unknown): number | null {
