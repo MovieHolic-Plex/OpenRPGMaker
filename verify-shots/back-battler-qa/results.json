@@ -65,10 +65,10 @@
       "backgroundImage": null,
       "transform": "none",
       "box": {
-        "w": 533,
-        "h": 515,
-        "x": 125,
-        "y": 310
+        "w": 218,
+        "h": 210,
+        "x": 305,
+        "y": 236
       },
       "naturalSize": {
         "w": 712,
@@ -78,16 +78,16 @@
     },
     "enemies": [
       {
-        "w": 284,
-        "h": 292,
-        "x": 766,
-        "y": 31
+        "w": 222,
+        "h": 222,
+        "x": 797,
+        "y": 97
       },
       {
-        "w": 284,
-        "h": 292,
-        "x": 593,
-        "y": -4
+        "w": 222,
+        "h": 222,
+        "x": 624,
+        "y": 63
       }
     ],
     "errors": [
@@ -160,10 +160,10 @@
       "backgroundImage": null,
       "transform": "none",
       "box": {
-        "w": 533,
-        "h": 515,
-        "x": 125,
-        "y": 315
+        "w": 218,
+        "h": 210,
+        "x": 305,
+        "y": 236
       },
       "naturalSize": {
         "w": 712,
@@ -173,16 +173,16 @@
     },
     "enemies": [
       {
-        "w": 284,
-        "h": 292,
-        "x": 766,
-        "y": 33
+        "w": 222,
+        "h": 222,
+        "x": 797,
+        "y": 97
       },
       {
-        "w": 284,
-        "h": 292,
-        "x": 593,
-        "y": -1
+        "w": 222,
+        "h": 222,
+        "x": 624,
+        "y": 63
       }
     ],
     "errors": []
@@ -253,10 +253,10 @@
       "backgroundImage": null,
       "transform": "none",
       "box": {
-        "w": 533,
-        "h": 515,
-        "x": 125,
-        "y": 315
+        "w": 218,
+        "h": 210,
+        "x": 305,
+        "y": 236
       },
       "naturalSize": {
         "w": 712,
@@ -266,16 +266,16 @@
     },
     "enemies": [
       {
-        "w": 284,
-        "h": 292,
-        "x": 766,
-        "y": 33
+        "w": 222,
+        "h": 222,
+        "x": 797,
+        "y": 97
       },
       {
-        "w": 284,
-        "h": 292,
-        "x": 593,
-        "y": -2
+        "w": 222,
+        "h": 222,
+        "x": 624,
+        "y": 63
       }
     ],
     "errors": []
@@ -346,10 +346,10 @@
       "backgroundImage": null,
       "transform": "none",
       "box": {
-        "w": 533,
-        "h": 515,
-        "x": 125,
-        "y": 310
+        "w": 218,
+        "h": 210,
+        "x": 305,
+        "y": 236
       },
       "naturalSize": {
         "w": 712,
@@ -359,16 +359,16 @@
     },
     "enemies": [
       {
-        "w": 284,
-        "h": 292,
-        "x": 766,
-        "y": 30
+        "w": 222,
+        "h": 222,
+        "x": 797,
+        "y": 97
       },
       {
-        "w": 284,
-        "h": 292,
-        "x": 593,
-        "y": -4
+        "w": 222,
+        "h": 222,
+        "x": 624,
+        "y": 63
       }
     ],
     "errors": []
@@ -439,10 +439,10 @@
       "backgroundImage": null,
       "transform": "none",
       "box": {
-        "w": 533,
-        "h": 515,
-        "x": 125,
-        "y": 315
+        "w": 218,
+        "h": 210,
+        "x": 305,
+        "y": 236
       },
       "naturalSize": {
         "w": 712,
@@ -452,16 +452,16 @@
     },
     "enemies": [
       {
-        "w": 284,
-        "h": 292,
-        "x": 766,
-        "y": 31
+        "w": 222,
+        "h": 222,
+        "x": 797,
+        "y": 97
       },
       {
-        "w": 284,
-        "h": 292,
-        "x": 593,
-        "y": -4
+        "w": 222,
+        "h": 222,
+        "x": 624,
+        "y": 63
       }
     ],
     "errors": []
@@ -532,10 +532,10 @@
       "backgroundImage": null,
       "transform": "none",
       "box": {
-        "w": 533,
-        "h": 515,
-        "x": 125,
-        "y": 314
+        "w": 218,
+        "h": 210,
+        "x": 305,
+        "y": 236
       },
       "naturalSize": {
         "w": 712,
@@ -545,16 +545,16 @@
     },
     "enemies": [
       {
-        "w": 284,
-        "h": 292,
-        "x": 766,
-        "y": 32
+        "w": 222,
+        "h": 222,
+        "x": 797,
+        "y": 97
       },
       {
-        "w": 284,
-        "h": 292,
-        "x": 593,
-        "y": -2
+        "w": 222,
+        "h": 222,
+        "x": 624,
+        "y": 63
       }
     ],
     "errors": []
@@ -578,12 +578,6 @@
           "selector": ".battle-scene[data-battle-ui-style=\"classic\"][data-battle-skin=\"rm2003\"] .battle-actor[data-authored-battler=\"true\"] .battle-actor-sprite",
           "width": "var(--battle-sprite-frame-width)",
           "height": "var(--battle-sprite-frame-height)",
-          "transform": null
-        },
-        {
-          "selector": ".battle-scene[data-battle-ui-style=\"classic\"][data-battle-skin=\"rm2003\"] .battle-actor[data-authored-battler=\"true\"] .battle-actor-sprite",
-          "width": null,
-          "height": null,
           "transform": "scale(1.25)"
         }
       ],
@@ -594,9 +588,9 @@
       },
       "fieldBox": {
         "w": 960,
-        "h": 420,
+        "h": 456,
         "y": 0,
-        "bottom": 420
+        "bottom": 456
       },
       "partyFacing": "front",
       "actorBackBattler": null,
@@ -604,13 +598,13 @@
       "authoredBattler": "true",
       "kind": "sprite",
       "src": null,
-      "backgroundImage": "url(\"http://127.0.0.1:39989/assets/generated/starter/hero-01-battle.png\")",
+      "backgroundImage": "url(\"http://127.0.0.1:41051/assets/generated/starter/hero-01-battle.png\")",
       "transform": "matrix(1.25, 0, 0, 1.25, 0, 0)",
       "box": {
         "w": 180,
         "h": 180,
-        "x": 742,
-        "y": 30
+        "x": 744,
+        "y": 98
       },
       "naturalSize": null,
       "complete": null
@@ -618,15 +612,15 @@
     "enemies": [
       {
         "w": 180,
-        "h": 242,
-        "x": 276,
-        "y": -33
+        "h": 210,
+        "x": 274,
+        "y": 68
       },
       {
         "w": 180,
-        "h": 242,
-        "x": 449,
-        "y": -33
+        "h": 210,
+        "x": 448,
+        "y": 68
       }
     ],
     "errors": []
@@ -697,10 +691,10 @@
       "backgroundImage": null,
       "transform": "none",
       "box": {
-        "w": 533,
-        "h": 515,
-        "x": 125,
-        "y": 304
+        "w": 218,
+        "h": 210,
+        "x": 305,
+        "y": 236
       },
       "naturalSize": {
         "w": 712,
@@ -710,16 +704,16 @@
     },
     "enemies": [
       {
-        "w": 284,
-        "h": 292,
-        "x": 766,
-        "y": 27
+        "w": 222,
+        "h": 222,
+        "x": 797,
+        "y": 97
       },
       {
-        "w": 284,
-        "h": 292,
-        "x": 593,
-        "y": -7
+        "w": 222,
+        "h": 222,
+        "x": 624,
+        "y": 63
       }
     ],
     "errors": []

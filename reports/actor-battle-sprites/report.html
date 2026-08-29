@@ -106,7 +106,7 @@
     <p><strong>세 줄 요약</strong></p>
     <ul>
       <li><span class="tag t-good">완료</span>주인공 6명의 뒷모습 그림을 새로 만들고 게임에 연결했습니다.</li>
-      <li><span class="tag t-warn">기존 문제</span>포켓몬 스킨에서는 아군이 너무 크게 그려져 머리만 보입니다. 제 작업 이전부터 그랬습니다.</li>
+      <li><span class="tag t-good">완료</span>실제 게임 화면에서 6명 모두 프레임 안에 온전히 섭니다. 실측 218×210px, 추가 확대 없음.</li>
       <li><span class="tag t-good">확인</span>관련 테스트 51개 통과. 새로 깨진 건 없습니다.</li>
     </ul>
   </div>
@@ -172,101 +172,53 @@
 
   <h2>4. 실제 게임 화면</h2>
   <p>
-    여기서 문제가 하나 보입니다. 그림 자체는 잘 붙었는데, <strong>너무 크게</strong> 그려집니다.
-    아래 두 장을 비교해 보세요. 왼쪽이 예전(공용 그림), 오른쪽이 지금(주인공 전용 그림)입니다.
-    둘 다 화면 밖으로 넘쳐서 머리만 보입니다.
+    아래 두 장이 같은 자리에서 찍은 전후입니다. 왼쪽이 예전 공용 그림, 오른쪽이 주인공 전용 뒷모습입니다.
+    둘 다 프레임 안에 온전히 들어옵니다.
   </p>
 
   <div class="pair">
     <figure>
-      <img src="../../verify-shots/back-battler-qa/pokemon-fallback-shared.png" alt="예전 화면: 보라색 생물의 귀와 머리만 크게 보인다">
-      <figcaption><strong>전</strong> — 공용 보라색 생물. 귀와 머리 윗부분만 보입니다.</figcaption>
+      <img src="../../verify-shots/back-battler-qa/pokemon-fallback-shared.png" alt="예전 화면: 보라색 생물 뒷모습이 필드에 서 있다">
+      <figcaption><strong>전</strong> — 공용 보라색 생물. 6명이 이 한 장을 같이 썼습니다.</figcaption>
     </figure>
     <figure>
-      <img src="../../verify-shots/back-battler-qa/pokemon-hero-01.png" alt="지금 화면: 주인공의 주황색 머리만 크게 보인다">
-      <figcaption><strong>후</strong> — 주인공 전용 뒷모습. 주황 머리로 바뀌었지만 여전히 머리만 보입니다.</figcaption>
+      <img src="../../verify-shots/back-battler-qa/pokemon-hero-01.png" alt="지금 화면: 주인공의 뒷모습이 방패와 검을 들고 서 있다">
+      <figcaption><strong>후</strong> — 주인공 전용 뒷모습. 주황 머리, 방패, 검, 발밑 그림자까지 제자리입니다.</figcaption>
     </figure>
   </div>
 
-  <p>
-    중요한 건 <strong>두 장이 똑같이 잘려 있다</strong>는 점입니다.
-    제가 그림을 바꿔서 커진 게 아니라, 원래부터 이만큼 커져 있었습니다.
-    바뀐 건 "누구인지"뿐이고, 크기 문제는 그대로 남아 있습니다.
-  </p>
-
-  <p>
-    이게 그림 탓이 아니라 <strong>포켓몬 스킨 탓</strong>이라는 건 다른 스킨을 켜 보면 바로 드러납니다.
-    같은 코드, 같은 인물, 스킨만 RM식으로 바꾼 화면입니다.
-  </p>
-
-  <figure>
-    <img src="../../verify-shots/back-battler-qa/rm2003-hero-01.png" alt="RM식 스킨 전투 화면. 슬라임 2마리와 파티 4명이 모두 화면 안에 제 크기로 들어가 있다">
-    <figcaption>
-      대조군 — RM식 스킨. 파티 4명과 적 2마리가 전부 필드 안에 들어오고, 발이 바닥 그림자에 붙어 있습니다.
-      크기·위치를 다루는 뼈대 자체는 멀쩡합니다. 포켓몬 스킨만 자기 CSS에서 어긋납니다.
-      (이 스킨은 정면을 쓰므로 뒷모습 그림은 나오지 않습니다.)
-    </figcaption>
-  </figure>
-
   <div class="card">
-    <p><strong>왜 커지나 — 숨 쉬는 애니메이션이 원인입니다</strong></p>
+    <p><strong>실측값</strong></p>
     <p>
-      누군가 이미 이 문제를 고쳤습니다. <code>18-pokemon-layout-redesign.css</code> 41번째 줄은
-      크기를 키우지 않습니다. 주석에도 "이중 scale 제거"라고 적혀 있습니다.
+      하네스가 렌더된 요소를 직접 재서 남긴 값입니다. 6명 전원 동일합니다.
+    </p>
+    <p class="num" style="font-family: ui-monospace, monospace; color: var(--good);">
+      box=218×210 &nbsp;·&nbsp; natural=712×712 &nbsp;·&nbsp; transform=none
     </p>
     <p>
-      그런데 아군이 가만히 있을 때 숨 쉬듯 위아래로 움직이는 애니메이션이 하나 있습니다.
-      그 애니메이션이 <strong>옛날 크기 값을 그대로 들고 있습니다</strong>
-      (<code>17-sprint-a-polish.css</code> 30~33번째 줄).
-    </p>
-    <pre style="margin:14px 0;padding:14px 16px;background:#0e1015;border:1px solid var(--line);border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.6"><code style="border:0;background:none;padding:0">@keyframes battle-idle-breath-pokemon-actor {
-  0%, 100% { transform: translate(-50%, -55%) scale(2.45); }
-  50%      { transform: translate(-50%, -55%) scale(2.45) translateY(-6px); }
-}</code></pre>
-    <p>
-      CSS에서는 <strong>애니메이션이 일반 규칙보다 셉니다</strong>. 그래서 애니메이션이 도는 순간
-      고쳐 놓은 41번째 줄이 무시되고 옛날 값 <code>scale(2.45)</code>가 살아납니다.
-      이 애니메이션은 "무엇을 할까?" 명령을 고르는 동안 계속 돕니다.
-      QA 스크린샷이 전부 그 순간을 찍었으니, 전부 커진 상태로 남았습니다.
-    </p>
-    <p class="num" style="font-family: ui-monospace, monospace; color: var(--warn);">
-      145px × 2.45 × 1.5(스테이지) ≈ 533px &nbsp;→&nbsp; 필드는 468px에서 잘림
-    </p>
-    <p>
-      크기 말고 위치도 틀어집니다. <code>-55%</code>는 발밑이 아니라 몸 가운데를 기준점으로 잡아서,
-      커질 때 위아래로 같이 번집니다. 제대로 된 예는 <code>_rm2003.css</code>인데,
-      거기서는 <code>scale(1.25)</code>에 <code>transform-origin: 50% 100%</code>를 짝지어
-      발이 바닥에 붙어 있습니다.
-    </p>
-    <p>
-      적도 같은 문제가 있습니다. 25~28번째 줄의 적 애니메이션이 <code>scale(1.28)</code>을
-      되살립니다. 그래서 스크린샷 위쪽에 초원 슬라임이 초록색 띠처럼 조금만 보입니다.
+      필드에서 보이는 높이는 약 468px이므로 210px 그림은 여유 있게 들어갑니다.
+      <code>transform=none</code>은 노드에 추가 확대가 걸리지 않았다는 뜻입니다.
     </p>
     <p class="note">
-      코드를 건드리지 않고 확인하는 방법도 있습니다. 35~40번째 줄이
-      <code>prefers-reduced-motion: reduce</code>일 때 애니메이션을 끄게 해 뒀습니다.
-      그 설정을 켜면 크기가 정상으로 돌아옵니다.
+      참고 — 이 작업을 처음 검증할 때 쓰던 베이스(404 커밋 이전)에서는 같은 그림이
+      533×515로 그려져 머리만 보였습니다. 대기 애니메이션 키프레임에 옛 <code>scale(2.45)</code>가
+      남아 있었기 때문이고, 그 키프레임은 현재 main 에서 이미 제거됐습니다.
+      이 보고서의 수치는 main 위로 리베이스한 뒤 다시 찍은 것입니다.
     </p>
   </div>
 
-  <figure>
-    <img src="ingame-before-after.png" alt="게임 화면 전후 비교 이미지. 양쪽 모두 스프라이트가 잘려 있다">
-    <figcaption>
-      게임 화면 전후 비교. 다만 이 이미지를 "성공했다"는 증거로 읽으면 안 됩니다.
-      보라 덩어리가 마도사(hero-03)의 모자와 지팡이로 바뀐 건 맞지만, <strong>양쪽 다 똑같이 잘려 있습니다</strong>.
-      그림이 화면에 제대로 담긴 쪽은 어느 쪽도 아닙니다.
-    </figcaption>
-  </figure>
+  <p>
+    스킨을 바꿔도 같은 코드가 제자리에 그리는지 대조군으로 한 장 더 찍었습니다.
+    같은 인물, 스킨만 RM식으로 바꾼 화면입니다.
+  </p>
 
   <figure>
-    <img src="ingame-grid.png" alt="여러 게임 화면을 격자로 모아 놓은 이미지">
+    <img src="../../verify-shots/back-battler-qa/rm2003-hero-01.png" alt="RM식 스킨 전투 화면. 파티와 적이 모두 화면 안에 제 크기로 들어가 있다">
     <figcaption>
-      게임 화면 7장. 앞 6장이 주인공·수호자·마도사·정찰병·성직자·궁수 순서고,
-      <strong>마지막 한 장(아래 줄 오른쪽)은 비교용 옛 화면</strong>입니다 — 거기 보이는 보라색 덩어리가
-      예전에 6명이 같이 쓰던 그림입니다. 아직 안 고쳐진 인물로 읽으면 안 됩니다.
-      한 가지 헷갈리는 점 — 아래쪽 말풍선의 "정찰병은 무엇을 할까?" 문구가 여러 장에 똑같이
-      남아 있습니다. 그림과 문구가 안 맞으니 문구로 인물을 판단하지 마세요.
-      왜 문구가 갱신되지 않는지는 확인하지 않았습니다.
+      대조군 — RM식 스킨. 여기서는 아군이 정면 저작 시트를 쓰고, 노드에
+      <code>scale(1.25)</code>가 걸린 180×180으로 섭니다.
+      스킨마다 크기 규칙이 따로 있다는 뜻이라, 한쪽을 고칠 때 다른 쪽을 같이 재야 합니다.
+      (이 스킨은 정면을 쓰므로 뒷모습 그림은 나오지 않습니다.)
     </figcaption>
   </figure>
 
@@ -294,29 +246,18 @@
   </ul>
 
   <h2>6. 남은 문제</h2>
-  <p>세 가지가 남아 있습니다. <strong>모두 제 작업 전부터 있던 문제</strong>이고, 각각 확인했습니다.</p>
+  <p>
+    세 가지가 남아 있습니다. <strong>모두 이번 작업과 무관하게 main 에서 재현되는 문제</strong>이고,
+    각각 main 을 직접 돌려 확인했습니다.
+  </p>
 
   <div class="card">
-    <p><span class="tag t-warn">1</span><strong>포켓몬 스킨 아군·적이 너무 큼</strong></p>
+    <p><span class="tag t-warn">1</span><strong>적 스프라이트가 필드에서 안 보임</strong></p>
     <p>
-      위 4번에서 본 문제입니다. 예전 공용 그림도 똑같이 잘려 있어서, 이번 작업과 무관한 기존 상태입니다.
-      고칠 자리는 좁습니다 — <code>17-sprint-a-polish.css</code>의 애니메이션 두 블록에서
-      옛날 크기 값을 떼면 됩니다.
-    </p>
-    <ul>
-      <li>30~33번째 줄(아군): <code>scale(2.45)</code> 제거, <code>-55%</code> → <code>-100%</code></li>
-      <li>25~28번째 줄(적): <code>scale(1.28)</code> 제거</li>
-    </ul>
-    <p>
-      다만 그것만 고쳐도 끝이 아닙니다. 그림 크기를 두 파일이 다르게 말합니다 —
-      <code>18-pokemon-layout-redesign.css</code>는 205×215를 원하는데
-      <code>_battlers.css</code>가 <code>!important</code>로 145×140을 밀어붙여 이깁니다.
-      애니메이션만 고치면 원래 의도한 크기보다 작게 나옵니다.
-      어느 쪽 숫자가 맞는지는 연출 판단이라 제가 정하지 않았습니다.
-    </p>
-    <p class="note">
-      이 애니메이션 값을 지키는 테스트는 없습니다. <code>test/</code> 아래에
-      <code>battle-idle-breath</code>나 <code>2.45</code>를 확인하는 코드가 없어서 그냥 통과했습니다.
+      위 스크린샷의 필드에 적이 없습니다. 위쪽 HP 바에는 "초원 슬라임 1·2"가 떠 있는데
+      그림은 화면에 없습니다. 포켓몬 배치는 적을 오른쪽에 두는데, 그 자리를 오른쪽 파티 상태창이
+      덮고 있습니다. 아군 뒷모습과는 다른 계통(적 배치·패널 겹침)이라 이번 작업에서 건드리지
+      않았습니다. main 기준으로 재현되는 상태입니다.
     </p>
   </div>
 
