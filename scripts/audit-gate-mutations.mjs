@@ -141,15 +141,32 @@ function run([cmd, args]) {
  *
  * ANSI 를 지우고, 통과 표식(`✓`)으로 시작하는 라인과 건너뜀 표식(`·`)을 버린다.
  * 실패 라인(`×`), 메시지(`→`), `AssertionError`, diff 라인은 전부 남는다.
+ *
+ * 시각·소요시간도 여기서 지운다. 이 보고서는 **커밋되는 증거**인데 매 실행마다 `Start at` 과
+ * `22ms → 17ms` 만 바뀌면 diff 가 통째로 잡음이 되고, 사람은 그걸 `git checkout` 으로 버리는
+ * 습관을 들인다. 그렇게 증거가 낡은 채 리뷰를 통과한다. 판정이 실제로 바뀌지 않으면 파일도
+ * 바뀌지 않아야 한다.
+ * (마스킹을 진단 꼬리에만 걸었더니 `evidence` 쪽에 소요시간이 남아 두 실행의 보고서가
+ *  여전히 달랐다 — 실측. 그래서 두 필드가 공유하는 이 단계로 올렸다.)
  */
 function failureLines(out) {
   return out
     .split("\n")
     .map((line) => line.replace(/\[[0-9;]*m/g, "").trim())
-    .filter((line) => line && !line.startsWith("✓") && !line.startsWith("·"));
+    .map((line) => line.replace(/\s+\d+(\.\d+)?m?s\b/g, ""))
+    .filter(
+      (line) =>
+        line &&
+        !line.startsWith("✓") &&
+        !line.startsWith("·") &&
+        !/^(Start at|Duration)\b/.test(line)
+    );
 }
 
-/** 첫 실패 표식(`×` / `AssertionError` / `FAIL`)부터 실패 라인 12줄. 사람이 읽을 진단 꼬리. */
+/**
+ * 첫 실패 표식(`×` / `AssertionError` / `FAIL`)부터 실패 라인 12줄. 사람이 읽을 진단 꼬리.
+ * 잡음 제거는 `failureLines` 가 이미 했다.
+ */
 function diagnosticTail(lines) {
   const start = lines.findIndex((line) => /^(×|AssertionError|FAIL\b)/.test(line));
   if (start < 0) return [];
