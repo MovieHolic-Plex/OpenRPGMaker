@@ -7,6 +7,8 @@ export type EventEditorOpenKey = string;
 export const openEventConditions = new Set<EventEditorOpenKey>();
 export const openEventMovement = new Set<EventEditorOpenKey>();
 export const openEventAdvanced = new Set<EventEditorOpenKey>();
+/** 생활 이동의 맵 연결 폼(컨트롤 8개)을 펼쳐 둔 페이지. 기본은 접힘. */
+export const openEventMapLink = new Set<EventEditorOpenKey>();
 
 /**
  * 좌측 설정 레일에서 지금 펼쳐 둔 그룹 slug.
