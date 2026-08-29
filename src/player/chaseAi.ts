@@ -1,4 +1,9 @@
 import { canMove, canMoveFootprint, inBounds } from "@/project/collision";
+import {
+  armTerrainComponents,
+  terrainMayReach,
+  terrainReachFilter,
+} from "@/project/tilePassabilityComponents";
 import { resolveKiteIntent, type KiteBand } from "@/battle/action/kiting";
 import type { CharacterFootprint, Dir, GameMap, Project, Rect } from "@/project/types";
 
@@ -166,6 +171,10 @@ export function findChasePath(
 ): ChasePoint[] {
   if (!inBounds(map, from.x, from.y) || !inBounds(map, to.x, to.y)) return [];
   if (from.x === to.x && from.y === to.y) return [];
+  // 지형 성분이 다르면 아래 탐색은 맵 절반을 훑고 반드시 빈 경로를 낸다 — 그 결과를
+  // 색인에서 바로 읽는다(실측 6.7ms → 25µs). 발자국 이동은 통행 관계가 비대칭이라
+  // 색인 대상이 아니므로 pass 가 있으면 건너뛴다(tilePassabilityComponents 머리 주석).
+  if (!pass && !terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return [];
   const width = map.width;
   const start: AStarNode = {
     point: from,
@@ -215,6 +224,10 @@ export function findChasePath(
       open.push(node);
     }
   }
+  // 여기 닿았다는 건 from 의 성분 전체를 훑고도 to 를 못 만났다는 뜻이다. 그 탐색 값을
+  // 성분 색인으로 남겨 같은 질의가 반복될 때 다시 훑지 않게 한다. 발자국 이동은 색인의
+  // 대칭 전제를 만족하지 않으므로 남기지 않는다.
+  if (!pass) armTerrainComponents(project, map);
   return [];
 }
 
@@ -237,10 +250,17 @@ export function nearestReachableCandidate(
   if (!inBounds(map, from.x, from.y)) return null;
   const width = map.width;
   const targets = new Map<number, number>();
+  // 성분이 다른 후보는 아래 BFS 가 절대 닿지 못한다 — 미리 빼도 답과 동률 규칙이 같다.
+  // 집 안에 갇힌 주민처럼 **모든** 후보가 빠지는 경우가 이 걸러내기의 목적이다:
+  // 예전에는 그때마다 자기 성분 전체를 훑었다. 판정기를 한 번 만들어 돌려 쓰는 이유는
+  // 지문 검증을 후보마다 되풀이하지 않기 위해서다(tilePassabilityComponents 참조).
+  const mayReach = terrainReachFilter(project, map, from.x, from.y);
   for (const [index, point] of candidates.entries()) {
+    if (!mayReach(point.x, point.y)) continue;
     const key = point.y * width + point.x;
     if (!targets.has(key)) targets.set(key, index);
   }
+  if (targets.size === 0) return null;
   const visited = new Set<number>([from.y * width + from.x]);
   let frontier: ChasePoint[] = [from];
   while (frontier.length > 0) {
@@ -268,6 +288,8 @@ export function nearestReachableCandidate(
     }
     frontier = next;
   }
+  // findChasePath 와 같은 이유로 색인을 남긴다 — 방금 from 의 성분을 전부 훑었다.
+  armTerrainComponents(project, map);
   return null;
 }
 
