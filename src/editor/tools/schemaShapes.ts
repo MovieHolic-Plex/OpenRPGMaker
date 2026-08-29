@@ -7,6 +7,7 @@
 //
 // 유니온 shape 은 `oneOf`/`anyOf` 를 쓰지 않는다 — Gemini 계열 게이트웨이가 요청 전체를 400 으로
 // 죽인다. 대신 키 합집합을 모두 선택 필드로 선언하고 required 를 비워 둔다.
+import { RELATIONSHIP_STATES } from "@/project/relationshipState";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import type { JsonSchema } from "./types";
 
@@ -174,6 +175,7 @@ export const CONDITION_SCHEMA: JsonSchema = {
         "not",
       ],
     },
+    state: { type: "string", enum: [...RELATIONSHIP_STATES] },
     switchId: { type: "string" },
     variableId: { type: "string" },
     itemId: { type: "string" },

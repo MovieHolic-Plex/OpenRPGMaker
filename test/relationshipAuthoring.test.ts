@@ -5,7 +5,7 @@ import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { ProjectFormatError } from "@/project/io/errors";
 import { getRelationshipState } from "@/project/relationshipState";
 import { BATTLE_CONDITION_SESSION_STATE_FIELDS } from "@/battle/battleEvents";
-import { relationshipRank } from "@/project/relationshipState";
+import { relationshipRank, setRelationshipState } from "@/project/relationshipState";
 import { stampEventIfNeeded } from "@/project/characterIdStamp";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { createBlankProject } from "@/project/defaults";
@@ -72,5 +72,46 @@ describe("관계 상태 저작 경로", () => {
       project
     );
     expect(getRelationshipState(session, "npc_ha")).toBe("married");
+  });
+
+  /* 리뷰가 측정한 결함: 스냅숏에 관계 지도 전체를 실으면 전투 중 맵에서 지운 관계를
+     write-back 이 되살린다. 전투가 실제로 쓴 키만 실려야 한다. */
+  it("전투 중 맵에서 헤어진 관계를 전투 종료가 되살리지 않는다", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    setRelationshipState(session, "npc_ha", "married");
+    const seeded = { ...session.relationships };
+    setRelationshipState(session, "npc_ha", "single");
+    expect(session.relationships).toEqual({});
+
+    applyBattleRewardsToSession(
+      session,
+      {
+        result: "escape",
+        rewards: { exp: 0, gold: 0, items: [] },
+        actors: [],
+        eventState: { switches: {}, variables: {}, inventory: {}, relationships: {} },
+      } as unknown as Parameters<typeof applyBattleRewardsToSession>[1],
+      project
+    );
+    expect(seeded).toEqual({ npc_ha: "married" });
+    expect(getRelationshipState(session, "npc_ha")).toBe("single");
+  });
+
+  it("전투가 관계 없음으로 되돌리면 항목이 삭제된다", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    setRelationshipState(session, "npc_ha", "married");
+    applyBattleRewardsToSession(
+      session,
+      {
+        result: "victory",
+        rewards: { exp: 0, gold: 0, items: [] },
+        actors: [],
+        eventState: { switches: {}, variables: {}, inventory: {}, relationships: { npc_ha: "single" } },
+      } as unknown as Parameters<typeof applyBattleRewardsToSession>[1],
+      project
+    );
+    expect(session.relationships).toEqual({});
   });
 });

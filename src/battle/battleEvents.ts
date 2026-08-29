@@ -4,7 +4,7 @@ import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
-import { evalRelationshipCondition, type RelationshipState } from "@/project/relationshipState";
+import { evalRelationshipCondition, setRelationshipState, type RelationshipState } from "@/project/relationshipState";
 import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { transitionItemState } from "@/project/itemTransitions";
 import { transitionActorEquipment } from "@/project/equipmentRules";
@@ -44,6 +44,9 @@ export type BattleEventRuntimeState = {
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
   readonly relationships?: Record<string, RelationshipState>;
+  // 전투가 실제로 쓴 관계 키만 모은다. 스냅숏에 지도 전체를 실으면 전투 중 맵에서 지운
+  // 관계를 write-back 이 되살린다(setRelationshipState 는 single 을 삭제로 처리한다).
+  relationshipWrites?: Record<string, RelationshipState>;
 };
 
 // Condition evaluation must read session-derived state through this declared surface.
@@ -208,7 +211,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       actorExperience: { ...(options.state.actorExperience ?? {}) },
       actorLevels: { ...(options.state.actorLevels ?? {}) },
       actorBattleCommands: { ...(options.state.actorBattleCommands ?? {}) },
-      relationships: { ...(options.state.relationships ?? {}) },
+      relationships: { ...(options.state.relationshipWrites ?? {}) },
       flags: { ...(options.state.flags ?? {}) },
       timers: { ...(options.state.timers ?? {}) },
       actorEquipment: Object.fromEntries(
@@ -506,7 +509,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           logUnsupported(page, context, command.kind);
           return false;
         }
-        options.state.relationships[npcKey] = command.state;
+        setRelationshipState(options.state, npcKey, command.state);
+        options.state.relationshipWrites ??= {};
+        options.state.relationshipWrites[npcKey] = command.state;
         return false;
       }
       case "getFriendship": {

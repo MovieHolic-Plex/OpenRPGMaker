@@ -3,6 +3,7 @@ import type { BattleBattlerSnapshot, BattleEventStateSnapshot, BattleRewardsSnap
 import { computeActorLevelUp, type BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
+import { setRelationshipState } from "@/project/relationshipState";
 import { changeActorClass } from "@/project/sessionClass";
 import { applyMonsterExperienceAndEvolution } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
@@ -153,9 +154,12 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
   }
   // 관계 상태: 셀프 스위치와 같은 병합 write-back. 이게 없으면 트룹 페이지의 setRelationship 이
   // 버려지는 사본만 바꾸고 전투가 끝나면 사라져 troop:"full" 보증이 거짓이 된다.
+  // 전투가 쓴 키만 되돌린다. setRelationshipState 를 지나야 single 이 삭제로 반영돼
+  // 맵 경로와 저장 정규화기(single 을 저장하지 않음)와 어긋나지 않는다.
   if (eventState.relationships) {
-    session.relationships ??= {};
-    for (const [key, state] of Object.entries(eventState.relationships)) session.relationships[key] = state;
+    for (const [key, state] of Object.entries(eventState.relationships)) {
+      setRelationshipState(session, key, state);
+    }
   }
   // 전투 중 changeEquipment 오버레이 write-back(Step 3d): 시드가 세션 사본이라 액터 단위
   // 병합이 idempotent 하다. 장비 전이의 인벤토리 증감은 아래 inventory 덮어쓰기에 포함된다.
