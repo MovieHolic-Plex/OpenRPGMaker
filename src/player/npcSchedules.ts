@@ -247,6 +247,8 @@ function registerScheduleRoute(
 
 function configureScheduleMover(mover: AutonomousMover): void {
   mover.strategy = "sequence";
+  // 시간표 경로는 A* 결과라 한 걸음을 잃으면 남은 계획이 전부 어긋난다.
+  mover.retryBlockedSteps = true;
   mover.speedRank = 4;
   mover.frequencyRank = 8;
   mover.moveDurationMs = 320;

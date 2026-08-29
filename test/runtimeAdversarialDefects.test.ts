@@ -8,6 +8,7 @@ import { findChasePath, nextChaseDecision } from "@/player/chaseAi";
 import { updateNpcSchedules, tickNpcSchedules, NPC_SCHEDULE_TICK_MS } from "@/player/npcSchedules";
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import { applyMapOverrides } from "@/player/playSceneMapRuntime";
+import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
 import { canMove, canMoveFootprint, getTileset } from "@/project/collision";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
@@ -294,7 +295,9 @@ describe("시간표 스로틀은 프레임이 길어져도 주기를 늘리지 �
 // ─────────────────────────────────────────────────────────────────────────────
 // 4~6. 시간표 사슬의 기존 결함
 // ─────────────────────────────────────────────────────────────────────────────
-type ScheduleScene = Parameters<typeof updateNpcSchedules>[0] & Parameters<typeof updateAutonomousNPCs>[0];
+type ScheduleScene = Parameters<typeof updateNpcSchedules>[0]
+  & Parameters<typeof updateAutonomousNPCs>[0]
+  & Parameters<typeof registerPageMoveRoutes>[0];
 
 function scheduledNpc(
   id: string,
@@ -337,6 +340,8 @@ function scheduleScene(project: Project, projectMap: GameMap, playerAt = { x: 0,
     eventPositions: initialRuntimeEventPositions(sceneMap.events),
     autonomousNPCs: new Map(),
     commandMoveRouteEventIds: new Set(),
+    pageMoveRouteKeys: new Set(),
+    pageMoveRouteEventIds: new Set(),
     registerAutonomousMover: (eventId, moves, repeat) => registerAutonomousMover(scene, eventId, moves, repeat),
     refreshRuntimeSurfaces: () => undefined,
     syncRuntimeState: () => undefined,
@@ -453,6 +458,8 @@ describe("막힌 걸음을 소비하지 않아 순서 경로가 어긋나지 않
     const mover = scene.autonomousNPCs.get("npc_blocked");
     expect(mover).toBeDefined();
     mover!.strategy = "sequence";
+    // 시간표·생활 이동의 계산된 경로만 재시도한다(configureScheduleMover 가 세우는 값).
+    mover!.retryBlockedSteps = true;
     mover!.moveIntervalMs = 10;
     mover!.timer = 100;
 
@@ -490,6 +497,7 @@ describe("막힌 걸음을 소비하지 않아 순서 경로가 어긋나지 않
     );
     const mover = scene.autonomousNPCs.get("npc_resume");
     mover!.strategy = "sequence";
+    mover!.retryBlockedSteps = true;
     mover!.moveIntervalMs = 10;
 
     // 막힌 상태로 한 번 시도.
@@ -506,5 +514,38 @@ describe("막힌 걸음을 소비하지 않아 순서 경로가 어긋나지 않
       scene.eventPositions["npc_resume"]?.x,
       "막힌 걸음이 사라져 계획이 어긋났다 — 첫 걸음(right)을 건너뛰었다"
     ).toBe(3);
+  });
+
+  // 재시도 대상은 **계산된** 경로뿐이다. 작가가 쓴 custom 경로는 막히면 걸음을 소비하는
+  // 기존 동작을 유지해야 한다 — test/runtimeMoveRouteCommands 가 그 계약을 지킨다.
+  it("작가가 쓴 custom 경로는 재시도 대상이 아니고 시간표 경로는 대상이다", () => {
+    const map = createBlankMap("경로 출처", 8, 8);
+    map.id = MAP_ID;
+    map.lowerTiles = new Array(64).fill(TILE.GRASS);
+    map.upperTiles = new Array(64).fill(-1);
+    const authored = scheduledNpc("npc_authored", { x: 4, y: 4 }, { x: 4, y: 4 }, map.id);
+    authored.schedule = undefined;
+    authored.pages![0].movement = {
+      type: "custom",
+      speed: 3,
+      frequency: 3,
+      route: { moves: [{ kind: "move", dir: "right" }], repeat: false },
+    };
+    const scheduled = scheduledNpc("npc_scheduled", { x: 2, y: 6 }, { x: 6, y: 6 }, map.id);
+    map.events = [authored, scheduled];
+    const project = projectWith(map);
+    const scene = scheduleScene(project, map, { x: 0, y: 0 });
+
+    registerPageMoveRoutes(scene);
+    updateNpcSchedules(scene);
+
+    expect(
+      scene.autonomousNPCs.get("npc_authored")?.retryBlockedSteps,
+      "작가 경로가 재시도 대상이 됐다 — 기존 동작이 바뀐다"
+    ).toBe(false);
+    expect(
+      scene.autonomousNPCs.get("npc_scheduled")?.retryBlockedSteps,
+      "시간표 경로가 재시도 대상이 아니다 — A* 계획이 어긋난 채 걷는다"
+    ).toBe(true);
   });
 });
