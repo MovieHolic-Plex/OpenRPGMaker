@@ -1,4 +1,5 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import {
   DEFAULT_ASSISTANT_TEMPERATURE,
   parseAssistantTemperature,
@@ -33,7 +34,11 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
+import {
+  loadDockPanelSize,
+  resolveSideChatWidth,
+  saveDockPanelSize,
+} from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import {
@@ -105,6 +110,8 @@ let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let chatDock = initialLayout.chatDock;
 let assistantTemperature = initialLayout.assistantTemperature;
+let preferredSideChatWidth = loadDockPanelSize("side")?.width ?? null;
+let previewSideChatWidth: number | null = null;
 let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
 let unsubWorkspace: (() => void) | null = null;
@@ -123,9 +130,10 @@ export function renderEditor(main: HTMLElement): void {
   });
   // applyLayout 전에도 1/3 폭 폴백을 심어 사이드 컬럼이 420→재계산으로 점프하지 않게 한다.
   if (chatDock === "side") {
-    const bootWidth = computeSideChatWidth(
+    const bootWidth = resolveSideChatWidth(
       typeof window !== "undefined" && window.innerWidth > 0 ? window.innerWidth : 1280,
       MIN_CANVAS_WIDTH + 6 + LEFT_PANEL_MIN_WIDTH,
+      preferredSideChatWidth,
     );
     layout.style.setProperty("--ai-chat-side-width", `${bootWidth}px`);
     document.documentElement?.style?.setProperty?.("--ai-chat-side-width", `${bootWidth}px`);
@@ -194,6 +202,18 @@ export function renderEditor(main: HTMLElement): void {
     onChatDockChange: setChatDock,
     getAssistantTemperature: () => assistantTemperature,
     onAssistantTemperatureChange: setAssistantTemperature,
+    onSideWidthPreview: (width) => {
+      previewSideChatWidth = width;
+      applyLayout();
+      scheduleFitCanvas();
+    },
+    onSideWidthCommit: (width, panelHeight) => {
+      previewSideChatWidth = null;
+      preferredSideChatWidth = width;
+      applyLayout();
+      saveDockPanelSize("side", { width, height: panelHeight });
+      scheduleFitCanvas();
+    },
   });
   main.append(layout, projectExportNodeElement());
 
@@ -217,7 +237,11 @@ export function renderEditor(main: HTMLElement): void {
     const ro = new ResizeObserver(() => {
       if (chatDock === "side") {
         const usable = document.querySelector<HTMLElement>(".editor-layout")?.clientWidth ?? window.innerWidth;
-        const w = computeSideChatWidth(usable, MIN_CANVAS_WIDTH + 6 + LEFT_PANEL_MIN_WIDTH);
+        const w = resolveSideChatWidth(
+          usable,
+          MIN_CANVAS_WIDTH + 6 + LEFT_PANEL_MIN_WIDTH,
+          previewSideChatWidth ?? preferredSideChatWidth,
+        );
         document.documentElement.style.setProperty("--ai-chat-side-width", `${w}px`);
         const layoutEl = document.querySelector<HTMLElement>(".editor-layout");
         if (layoutEl) layoutEl.style.setProperty("--ai-chat-side-width", `${w}px`);
@@ -248,6 +272,7 @@ export function renderEditor(main: HTMLElement): void {
   unsubWorkspace = subscribeWorkspace(() => syncLeftDock());
   installSelectionChipHint();
   installToolCursor();
+  scheduleEditorAssetWarmup();
   maybeStartBasicCoachMarks();
   maybeStartStandardWelcomeCard();
 }
@@ -582,7 +607,11 @@ function applyLayout(): void {
   // 사이드 도크는 레이아웃 폭의 1/3. 접힘 레일(CSS 44px)은 :has(.is-collapsed)가 덮어쓴다.
   const sideWidth =
     chatDock === "side"
-      ? computeSideChatWidth(usableWidth, MIN_CANVAS_WIDTH + resizerWidth + LEFT_PANEL_MIN_WIDTH)
+      ? resolveSideChatWidth(
+        usableWidth,
+        MIN_CANVAS_WIDTH + resizerWidth + LEFT_PANEL_MIN_WIDTH,
+        previewSideChatWidth ?? preferredSideChatWidth,
+      )
       : 0;
   publishSideChatWidth(layoutEl, sideWidth);
 

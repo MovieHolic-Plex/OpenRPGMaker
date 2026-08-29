@@ -5,6 +5,10 @@ import { resolvePlayResolution } from "@/project/playResolution";
 import { store } from "@/project/store";
 
 export type PlayGameBootOptions = {
+  /** Enables export-player QA locators and mutation hooks. Never enabled by normal export boot. */
+  readonly qaInstrumentation?: boolean;
+  /** Keyboard-only play disables Phaser's independent mouse/touch input managers. */
+  readonly keyboardOnly?: boolean;
   readonly initialEventTestId?: string;
   /** PlayScene preload progress 0..1 (optional UI hook). */
   readonly onPlayLoadProgress?: (ratio: number) => void;
@@ -29,6 +33,9 @@ export async function createPlayGame(
     roundPixels: true,
     antialias: false,
     pixelArt: true,
+    input: options.keyboardOnly === false
+      ? undefined
+      : { mouse: false, touch: false },
     scale: {
       mode: PhaserRuntime.Scale.NONE,
       width: resolution.width,
@@ -38,6 +45,9 @@ export async function createPlayGame(
     scene: [PlayScene],
     callbacks: {
       preBoot: (game) => {
+        if (options.qaInstrumentation === true) {
+          game.registry.set("qaInstrumentation", true);
+        }
         if (initialSession) {
           game.registry.set("initialSession", initialSession);
         }

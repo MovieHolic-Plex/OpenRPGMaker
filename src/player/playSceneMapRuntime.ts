@@ -388,6 +388,21 @@ export function activeRuntimeEvents(
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
   const project = store.getCurrent();
+  // Production boundary: the broad debug snapshot (all runtime event views, session records,
+  // mover snapshots) exists only for QA instrumentation. A shipped player syncs the visible
+  // HUD and picture layer directly and never builds or serializes that payload.
+  if (!scene.runtimeDom.instrumented) {
+    const timed = resolveTimeSystem(project);
+    scene.runtimeDom.syncVisibleHud({
+      timers: scene.session.timers,
+      timerActive: runtimeTimerActivity(scene.runtimeTimers),
+      gameTime: timed ? scene.session.gameTime : undefined,
+      timePhase: timed ? timePhaseFor(scene.session.gameTime) : undefined,
+      lifeCalendarHudLines: timed ? lifeCalendarHudLines(project, scene.session) : undefined,
+    });
+    scene.runtimeDom.syncPictureLayer(scene.session.pictures);
+    return;
+  }
   const events: Record<string, RuntimeEventSnapshot> = {};
   for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
     events[view.event.id] = {
@@ -435,6 +450,11 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     classOverrides: scene.session.classOverrides,
     audio: scene.session.audio,
     pictures: scene.session.pictures,
+    // 상점 경제 상태. 세이브에는 진작 들어 있었지만(saveSlots.ts) 런타임 상태 덤프에는
+    // 없어서 마일리지·누적 지출이 실제로 쌓이는지 밖에서 확인할 방법이 없었다.
+    shopLoyaltySpend: scene.session.shopLoyaltySpend,
+    shopTradeCounts: scene.session.shopTradeCounts,
+    shopMileagePoints: scene.session.shopMileagePoints,
     m2Runtime: scene.session.m2Runtime,
     events,
     movers: runtimeMoverSnapshots(scene.autonomousNPCs),

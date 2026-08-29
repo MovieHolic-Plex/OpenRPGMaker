@@ -26,7 +26,15 @@ export function renderOnlineSaveStatus(
   }
   const button = el("button", {
     class: `editor-statusbar-cell db-connection-status db-connection-chip-button ${status.kind} autosave-${autoSave.kind}`,
-    attrs: { title: onlineSaveButtonTitle(status, autoSave), type: "button" },
+    // 칩 내부 배치는 원래 폐지된 하단 상태바 컨텍스트에 의지했다: `.db-connection-status { gap: 7px }`
+    // 는 있는데 display:flex 는 좁은 폭 미디어 쿼리(07-context-menu-responsive.css:177) 안에만
+    // 있어서, 톱바에 마운트하면 button 기본값 inline-block 으로 떨어져 라벨과 상태가 붙어
+    // "온라인 저장저장 실패" 로 읽힌다. 호스트가 어디든 같게 보이도록 배치를 칩이 직접 들고 있는다.
+    attrs: {
+      title: onlineSaveButtonTitle(status, autoSave),
+      type: "button",
+      style: "display:inline-flex;align-items:center;gap:7px",
+    },
     children,
     dataset: { testid: "db-connection-status" },
     on: { click: openSettings },

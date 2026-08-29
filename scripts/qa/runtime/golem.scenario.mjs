@@ -36,16 +36,30 @@
 // 1차에서는 동등 비교밖에 없어 좌표를 매니페스트에 기록하고 사람이 두 런을 대조했다.
 
 const HOLD_MS = 1500;
-const SETTLE_MS = 500;
 const MAP_ID = "map_lantern_village";
 
-/** 방향을 HOLD_MS 동안 눌렀다 뗀다. 막혀 있으면 제자리, 열려 있으면 여러 칸 걷는다. */
-function walk(dir) {
+/**
+ * 방향을 HOLD_MS 동안 밀었다 뗀다. 막혀 있으면 제자리, 열려 있으면 여러 칸 걷는다.
+ *
+ * `hold` 는 고정 `wait` 의 우회로가 아니다 — 하네스가 `wait` 를 금지한 이유는 UI 전이를
+ * sleep 으로 기다리면 느린 호스트에서 flaky 해지기 때문인데, 여기서는 **기다릴 사건이 없다**.
+ * "밀었는데 아무 일도 안 일어났다" 가 곧 검증 대상이라 경과 시간이 자극 자체다.
+ * 반대로 지나가는 쪽(passScenario)은 waitForPosition 으로 도착을 조건 대기한다.
+ */
+function push(dir) {
+  return [{ kind: "hold", dir, ms: HOLD_MS }];
+}
+
+/**
+ * 지나갈 수 있는 쪽. 밀면서 **목표 칸 도착을 조건 대기**하고 뗀다 — 막혀 있으면 타임아웃으로
+ * 실패하므로 호스트 속도와 무관하다. 목표는 늘 골렘이 막던 그 칸이다: 대조군에서 이 칸에
+ * 도달한다는 것이 곧 "골렘만이 막고 있었다" 의 증거다.
+ */
+function walkInto(dir, cell) {
   return [
     { kind: "dir", dir },
-    { kind: "wait", ms: HOLD_MS },
+    { kind: "waitForPosition", mapId: MAP_ID, x: cell.x, y: cell.y },
     { kind: "dir", dir: null },
-    { kind: "wait", ms: SETTLE_MS },
   ];
 }
 
@@ -119,7 +133,9 @@ function startBeat(spec, note, rects) {
   return {
     id: "field-start",
     note: `[${spec.body}] ${note}`,
-    ops: [{ kind: "key", key: "Enter" }, { kind: "wait", ms: 3000 }, { kind: "seed", seed: 1 }],
+    // 고정 3초 대기였던 자리다. waitForRuntime 은 맵이 실제로 올라온 것을 보고 넘어가므로
+    // 느린 호스트에서 3초가 모자라 타이틀 화면을 찍는 일이 없다.
+    ops: [{ kind: "key", key: "Enter" }, { kind: "waitForRuntime" }, { kind: "seed", seed: 1 }],
     expect: {
       mapId: MAP_ID,
       x: spec.start.x,
@@ -146,8 +162,6 @@ function talkBeats(spec, note) {
         { kind: "face", dir },
         { kind: "action" },
         { kind: "waitFor", testid: "dialogue-box", state: "present" },
-        // 타이프라이터가 끝나길 기다린다. 단정에는 영향이 없고 샷만 읽기 좋아진다.
-        { kind: "wait", ms: 1200 },
       ],
       expect: { testidPresent: ["dialogue-box"], mapId: MAP_ID, x: start.x, y: start.y },
       shot: true,
@@ -177,7 +191,7 @@ function blockedScenario(faceId, spec) {
           + (anchor
             ? "앵커 칸이다(1x1 이어도 막히므로 판별력 없음)"
             : "비앵커 칸이다(발자국 없으면 빈 칸이므로 판별력 있음)"),
-        ops: walk(dir),
+        ops: push(dir),
         // dialogue-box 부재를 같이 본다: 대사창이 떠 있으면 모달이 이동을 막아
         // 좌표가 그대로여도 "발자국이 막았다" 는 근거가 되지 못한다.
         expect: { mapId: MAP_ID, x: start.x, y: start.y, testidAbsent: ["dialogue-box"] },
@@ -204,7 +218,7 @@ function passScenario(faceId, spec) {
         note:
           `${dir} 로 ${HOLD_MS}ms — 첫 칸 (${target.x},${target.y}) 이 몸 사각 안이지만 통행 사각 `
           + "밖이라 들어간다. 몇 칸 갔는지는 단정하지 않는다(한 칸이면 이미 증명이다)",
-        ops: walk(dir),
+        ops: walkInto(dir, { x: target.x + 2, y: target.y }),
         expect: movedExpect(spec),
         shot: true,
       },
@@ -240,7 +254,9 @@ function controlScenario(faceId, spec) {
         {
           id: "nothing-to-talk-to",
           note: `골렘이 없으면 같은 칸을 보고 조사해도 대사창이 뜨지 않는다`,
-          ops: [{ kind: "face", dir: spec.dir }, { kind: "action" }, { kind: "wait", ms: 1200 }],
+          // 조사 후 대사창이 뜰 시간을 준다. 부재를 검증하므로 조건 대기가 불가능하다 —
+          // 방향 없는 hold 가 그 대기다(즉시 읽으면 아직 안 뜬 것과 구분되지 않는다).
+          ops: [{ kind: "face", dir: spec.dir }, { kind: "action" }, { kind: "hold", dir: null, ms: 1200 }],
           expect: { mapId: MAP_ID, x: spec.start.x, y: spec.start.y, testidAbsent: ["dialogue-box"] },
           shot: true,
         },
@@ -253,8 +269,10 @@ function controlScenario(faceId, spec) {
       startBeat(spec, `대조군(골렘 없음) 시작 (${spec.start.x},${spec.start.y})`),
       {
         id: "walks-through",
-        note: `골렘이 없으면 ${spec.dir} 로 실제로 걸어 들어간다 — 시작칸이 아님을 단정한다`,
-        ops: walk(spec.dir),
+        note:
+          `골렘이 없으면 ${spec.dir} 로 (${spec.target.x},${spec.target.y}) 까지 실제로 걸어 들어간다`
+          + " — 골렘 런이 막힌 바로 그 칸이다",
+        ops: walkInto(spec.dir, spec.target),
         expect: movedExpect(spec),
         shot: true,
       },

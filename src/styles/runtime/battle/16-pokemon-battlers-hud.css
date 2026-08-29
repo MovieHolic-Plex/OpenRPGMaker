@@ -198,7 +198,7 @@
   font-size: 20px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"]::before,
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover::before,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible::before,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible::before {
   content: "▸";
   display: inline-block;

@@ -14,8 +14,12 @@ import {
   SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { GOLD_MAX } from "@/project/economyValues";
+import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
+import { resolveTimeSystem } from "@/project/gameTime";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import { hasCharacterId } from "@/project/socialKey";
 import type {
   Command,
   Condition,
@@ -115,7 +119,7 @@ export function validateEventDraftBody(
   event: GameEvent,
 ): EventDraftValidation {
   const issues: EventDraftIssue[] = [];
-  const refs = referenceSets(project, mapId);
+  const refs = referenceSets(project, mapId, event);
   const pages = event.pages ?? [];
 
   if (pages.length === 0) {
@@ -169,7 +173,7 @@ function validationFromIssues(issues: readonly EventDraftIssue[]): EventDraftVal
   return { issues, errorCount, warningCount, infoCount, canCommit: errorCount === 0 };
 }
 
-function referenceSets(project: Project, mapId: MapId) {
+function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
   const map = project.maps[mapId];
   return {
     actors: new Set(project.database.actors.map((entry) => entry.id)),
@@ -178,6 +182,11 @@ function referenceSets(project: Project, mapId: MapId) {
     commonEvents: new Set(project.commonEvents.map((entry) => entry.id)),
     endings: new Set((project.endings ?? []).map((entry) => entry.id)),
     equipment: new Set(project.database.equipment.map((entry) => entry.id)),
+    factions: new Set([
+      PLAYER_FACTION_ID,
+      DEFAULT_ENEMY_FACTION_ID,
+      ...(project.factions?.defs ?? []).map((entry) => entry.id),
+    ]),
     events: new Set((map?.events ?? []).map((entry) => entry.id)),
     eventTemplates: new Set(
       Object.values(project.maps).flatMap((projectMap) => projectMap.events.map((entry) => entry.id)),
@@ -193,6 +202,13 @@ function referenceSets(project: Project, mapId: MapId) {
     troops: new Set(project.database.troops.map((entry) => entry.id)),
     upgrades: new Set((project.system.itemUpgrades ?? []).map((entry) => entry.id)),
     variables: new Set(project.variables.map((entry) => entry.id)),
+    // 사회 기능은 이름표가 아니라 이 이벤트의 신원을 참조한다 — 같은 사전에 싣어 재긍 없이 나른다.
+    hostHasCharacterId: hasCharacterId(host),
+    hasTimeSystem: resolveTimeSystem(project) !== undefined,
+    // 페이지 조건의 battleResult 는 다른 이벤트·공통 이벤트가 남긴 결과를 봐도 된다. 어느 전투가
+    // 이 페이지 앞에 오는지는 런타임 사실이라 정적으로 증명할 수 없으므로, 프로젝트 전체에
+    // 전투 경로가 하나도 없을 때만(그때는 확실히 항상 거짓) 경고한다.
+    projectHasBattlePath: projectHasBattleProcessing(project),
   };
 }
 
@@ -211,6 +227,7 @@ function validatePage(
   }
 
   page.conditions.forEach((condition) => validateCondition(condition, page.id, refs, issues));
+  validateBattleResultForks(page.commands, page.id, issues);
   validateMovement(project, page, refs, issues);
 
   const riskyTrigger = page.trigger.kind === "auto" || page.trigger.kind === "parallel";
@@ -388,13 +405,106 @@ function validateCondition(
       validateCondition(condition.condition, pageId, refs, issues, commandPath);
       return;
     case "selfSwitch":
-    case "gold":
-    case "timer":
+      return;
+    case "gold": {
+      const trap = goldConditionTrap(condition.op, condition.amount);
+      if (trap) {
+        issues.push({
+          severity: "warning",
+          code: "condition.gold.impossible",
+          message: trap === "always-false"
+            ? "소지금이 가질 수 있는 값으로는 이 비교가 항상 거짓입니다."
+            : "소지금이 가질 수 있는 값으로는 이 비교가 항상 참입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-condition-gold-amount" },
+        });
+      }
+      return;
+    }
+    case "timer": {
+      if (condition.seconds === 0) {
+        const timerLabel = condition.timerId === "timer2" ? "타이머 2" : "타이머 1";
+        issues.push({
+          severity: "warning",
+          code: "condition.timer.always-true",
+          message: `${timerLabel} · 0초 이하 조건은 타이머가 꺼져 있으면 남은 시간을 0초로 보아 항상 참입니다. 페이지가 항상 보일 수 있습니다.`,
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath
+              ? "event-condition-timer-seconds"
+              : `event-page-${condition.timerId}-condition-seconds`,
+          },
+        });
+      }
+      return;
+    }
     case "timePhase":
+      if (!refs.hasTimeSystem) {
+        issues.push({
+          severity: "warning",
+          code: "condition.timePhase.no-time-system",
+          message: "시간 시스템이 꺼져 있어 시간대 조건은 항상 거짓입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath ? "event-condition-time-phase" : "event-page-time-phase-condition-input",
+          },
+        });
+      }
+      return;
     case "season":
+      if (!refs.hasTimeSystem) {
+        issues.push({
+          severity: "warning",
+          code: "condition.season.no-time-system",
+          message: "시간 시스템이 꺼져 있어 계절 조건은 항상 거짓입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath ? "event-condition-season" : "event-page-season-condition-input",
+          },
+        });
+      }
+      return;
     case "npcActivity":
-    case "friendshipAtLeast":
+      if (!condition.activity.trim()) {
+        issues.push({
+          severity: "warning",
+          code: "condition.npcActivity.empty",
+          message: "활동 이름이 비어 있어 이 조건은 항상 거짓입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath ? "event-condition-npc-activity" : "event-page-npc-activity-condition-input",
+          },
+        });
+      }
+      return;
     case "battleResult":
+      if (!commandPath && !refs.projectHasBattlePath) {
+        issues.push({
+          severity: "warning",
+          code: "condition.battleResult.no-preceding-battle",
+          message: "이 프로젝트에 전투를 시작하는 명령이 없어 전투 결과 조건은 항상 거짓입니다.",
+          pageId,
+          field: { testId: "event-condition-battle-result" },
+        });
+      }
+      return;
+    case "friendshipAtLeast":
+      // 런타임 하드 게이트: NPC 키가 비었고 이 이벤트에 characterId 도 없으면 항상 거짓이다.
+      if (!condition.npcKey?.trim() && !refs.hostHasCharacterId) {
+        issues.push({
+          severity: "warning",
+          code: "condition.friendship.no-character-id",
+          message: "호감도 조건에 쓸 NPC 관계가 없어 이 조건은 항상 거짓입니다. 「NPC와 일정」에서 인물을 연결하거나 NPC 키를 적으세요.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-page-friendship-condition-npc-key" },
+        });
+      }
       return;
     case "run":
       if (condition.query === "flag" && !condition.flag.trim()) {
@@ -419,6 +529,90 @@ function conditionHasLeaf(condition: Condition): boolean {
   }
   if (condition.kind === "not") return conditionHasLeaf(condition.condition);
   return true;
+}
+
+function goldConditionTrap(
+  op: Extract<Condition, { kind: "gold" }>["op"],
+  amount: number,
+): "always-true" | "always-false" | undefined {
+  if (!Number.isFinite(amount)) return "always-false";
+  switch (op) {
+    case ">=":
+      if (amount <= 0) return "always-true";
+      if (amount > GOLD_MAX) return "always-false";
+      return undefined;
+    case ">":
+      if (amount < 0) return "always-true";
+      if (amount >= GOLD_MAX) return "always-false";
+      return undefined;
+    case "<=":
+      if (amount >= GOLD_MAX) return "always-true";
+      if (amount < 0) return "always-false";
+      return undefined;
+    case "<":
+      if (amount > GOLD_MAX) return "always-true";
+      if (amount <= 0) return "always-false";
+      return undefined;
+    case "==":
+      if (amount < 0 || amount > GOLD_MAX) return "always-false";
+      return undefined;
+    case "!=":
+      if (amount < 0 || amount > GOLD_MAX) return "always-true";
+      return undefined;
+  }
+}
+
+function conditionHasBattleResult(condition: Condition): boolean {
+  if (condition.kind === "battleResult") return true;
+  if (condition.kind === "all" || condition.kind === "any") {
+    return condition.conditions.some(conditionHasBattleResult);
+  }
+  if (condition.kind === "not") return conditionHasBattleResult(condition.condition);
+  return false;
+}
+
+function commandTreeHasBattleProcessing(command: Command): boolean {
+  if (command.kind === "battleProcessing") return true;
+  return commandBranches(command).some((branch) => branch.commands.some(commandTreeHasBattleProcessing));
+}
+
+// 프로젝트 어딘가에 전투를 시작하는 명령이 하나라도 있는가(맵 이벤트 페이지 + 공통 이벤트).
+function projectHasBattleProcessing(project: Project): boolean {
+  const pageCommands = Object.values(project.maps).flatMap((map) =>
+    map.events.flatMap((event) => [
+      ...(event.commands ?? []),
+      ...(event.pages ?? []).flatMap((eventPage) => eventPage.commands),
+    ]),
+  );
+  const commonCommands = project.commonEvents.flatMap((entry) => entry.commands ?? []);
+  return [...pageCommands, ...commonCommands].some(commandTreeHasBattleProcessing);
+}
+
+function validateBattleResultForks(
+  commands: readonly Command[],
+  pageId: string,
+  issues: EventDraftIssue[],
+  containerPath: readonly number[] = [],
+  battleSeen = false,
+): void {
+  let seen = battleSeen;
+  commands.forEach((command, index) => {
+    const path = [...containerPath, index];
+    if (command.kind === "fork" && conditionHasBattleResult(command.condition) && !seen) {
+      issues.push({
+        severity: "warning",
+        code: "condition.battleResult.no-preceding-battle",
+        message: "전투 결과 조건은 직전 전투의 결과를 봅니다. 이 분기 앞에 전투가 없으면 항상 거짓입니다.",
+        pageId,
+        commandPath: path,
+        field: { testId: "event-condition-battle-result" },
+      });
+    }
+    for (const branch of commandBranches(command)) {
+      validateBattleResultForks(branch.commands, pageId, issues, [...path, branch.branchIndex], seen);
+    }
+    if (commandTreeHasBattleProcessing(command)) seen = true;
+  });
 }
 
 function validateLabels(
@@ -678,6 +872,28 @@ function validateCommand(
     case "applyItemUpgrade": require("reference.upgrade.missing", "업그레이드", command.upgradeId, refs.upgrades); return;
     case "equipTool": require("reference.item.missing", "도구 아이템", command.itemId, refs.items, true); return;
     case "getFriendship": require("reference.variable.missing", "호감도 저장 변수", command.variableId, refs.variables); return;
+    case "changeFactionStance":
+      requireReference(
+        issues,
+        pageId,
+        "reference.faction.missing",
+        "진영 A",
+        command.a,
+        refs.factions,
+        { testId: "event-command-faction-a" },
+        path,
+      );
+      requireReference(
+        issues,
+        pageId,
+        "reference.faction.missing",
+        "진영 B",
+        command.b,
+        refs.factions,
+        { testId: "event-command-faction-b" },
+        path,
+      );
+      return;
     case "giveMonster": require("reference.species.missing", "몬스터 종", command.speciesId, refs.species); return;
     case "evolveMonster": require("reference.species.missing", "진화 대상 종", command.toSpeciesId, refs.species, true); return;
     case "addFollower":

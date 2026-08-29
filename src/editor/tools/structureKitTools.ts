@@ -11,7 +11,14 @@ import {
   structureKitSize,
   structureKitUnitCells,
 } from "@/editor/harnessSuggestion/structureKitModel";
-import type { GameMap, Project, StructureKitDef, StructureKitPart, TilesetDef } from "@/project/types";
+import type {
+  GameMap,
+  Project,
+  StructureKitAiMeta,
+  StructureKitDef,
+  StructureKitPart,
+  TilesetDef,
+} from "@/project/types";
 import { TILE } from "@/project/defaults";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -47,6 +54,10 @@ const listStructureKits: ToolDefinition = {
       width: number;
       height: number;
       learnedFrom: string;
+      /** 사람이 가르친 어휘 메타 — AI 가 "언제 쓸지"를 판단하는 유일한 근거. */
+      ai?: StructureKitAiMeta;
+      /** 가로로 이어 찍어도 되는지. false 면 repeat 인자가 무시된다. */
+      repeatable: boolean;
       parts?: StructureKitPart[];
       rows?: { tiles: number[]; upperTiles?: number[] }[];
       house?: { houseKitId: string; wings: { x: number; y: number; w: number; h: number }[] };
@@ -62,6 +73,8 @@ const listStructureKits: ToolDefinition = {
           width: size.width,
           height: size.height,
           learnedFrom: kit.learnedFrom,
+          repeatable: structureKitRepeatable(kit),
+          ...(kit.ai ? { ai: { ...kit.ai, ...(kit.ai.tags ? { tags: [...kit.ai.tags] } : {}) } } : {}),
           ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
           ...(kit.kind === "section"
             ? {
@@ -80,7 +93,7 @@ const listStructureKits: ToolDefinition = {
       summary:
         entries.length === 0
           ? "등록된 구조 킷이 없습니다. 유저가 맵에 패턴을 반복해 찍고 제안 카드에서 [등록]하면 생깁니다."
-          : `구조 킷 ${entries.length}개: ${entries.map((entry) => `${entry.name}(${entry.kitId}, ${entry.width}x${entry.height}, ${entry.kind})`).join(", ")}`,
+          : `구조 킷 ${entries.length}개: ${entries.map((entry) => `${entry.name}(${entry.kitId}, ${entry.width}x${entry.height}, ${entry.repeatable ? "반복" : "한 채 완결"})`).join(", ")}`,
       data: { kits: entries },
     };
   },

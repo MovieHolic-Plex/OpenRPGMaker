@@ -98,6 +98,29 @@
   width: var(--face-display-width, 96px);
 }
 
+/* 배경 그림은 <img> 로드 실패용 폴백이다. 실제 그림이 붙어 있으면 배경을 꺼야 한다.
+   켜 두면 원본 크기 <img> 와 contain 배경이 서로 다른 크기·자리로 같이 보여 얼굴이 두 장으로
+   겹친다(실측: 96px 상자에 48px img). 둘을 같은 크기로 맞추는 것만으로는 부족하다 —
+   nearest-neighbour 래스터화 결과가 미묘하게 달라 배경이 테두리에서 1px 새어나온다.
+   <img> 는 로드 실패 시 스스로 떨어지므로(faceImage), 그때 :has() 가 풀리며 폴백이 되살아난다. */
+.faceset-crop-box {
+  position: relative;
+}
+
+.faceset-crop-box:has(> .faceset-crop-sheet) {
+  background-image: none;
+}
+
+.faceset-crop-box > .faceset-crop-sheet {
+  height: 100%;
+  image-rendering: pixelated;
+  inset: 0;
+  max-width: none;
+  object-fit: contain;
+  position: absolute;
+  width: 100%;
+}
+
 .event-command-face-preview-copy {
   align-content: center;
   display: grid;
@@ -256,7 +279,7 @@
   border-top: 1px solid var(--event-modern-line);
   display: grid;
   gap: 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   min-width: 0;
 }
 

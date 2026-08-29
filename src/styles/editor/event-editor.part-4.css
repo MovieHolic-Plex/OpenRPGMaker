@@ -821,11 +821,16 @@
   width: 100%;
 }
 
+/* `.event-editor label { display: block }` (core.part-2.css:270) 은 특이도 (0,1,1) 이라
+   여태 이 규칙(0,1,0)을 이기고 있었다 — 라벨과 컨트롤이 의도와 달리 세로로 쌓여
+   행마다 높이를 두 배로 먹었다. `.event-editor` 를 앞에 붙여 실제로 적용시킨다. */
+.event-editor .event-page-movement-label,
 .event-page-movement-label {
   align-items: center;
   display: grid;
   gap: 7px;
   grid-template-columns: 62px minmax(0, 1fr);
+  margin-bottom: 0;
 }
 
 .event-page-custom-route {
@@ -840,16 +845,65 @@
   min-width: 0;
 }
 
+/* 233px 레일에서 minmax(148px) 는 1열로 접혀 항목 수만큼 세로로 쌓였다. 96px 는 2열을 남긴다. */
 .event-page-living-grid {
   display: grid;
   gap: 5px;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   min-width: 0;
 }
 
-.event-page-living-grid .event-page-movement-label {
-  grid-template-columns: minmax(52px, max-content) minmax(72px, 1fr);
+.event-page-living-destination {
+  align-items: center;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr) minmax(0, max-content);
   min-width: 0;
+}
+
+.event-page-living-field-label {
+  color: var(--event-rm-text);
+  white-space: nowrap;
+}
+
+.event-page-living-destination select {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.event-page-living-pick {
+  min-height: 25px;
+  white-space: nowrap;
+}
+
+/* 좁은 창에서는 목적지 select 가 눌리므로 찍기 버튼을 아래 줄로 내린다. */
+@media (max-width: 900px) {
+  .event-page-living-destination {
+    grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  }
+
+  .event-page-living-pick {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+}
+
+.event-editor .event-page-living-grid .event-page-movement-label,
+.event-page-living-grid .event-page-movement-label {
+  grid-template-columns: minmax(38px, max-content) minmax(48px, 1fr);
+  min-width: 0;
+}
+
+/* 목적지 상세 한 줄: X·Y 는 숫자 두세 자리면 되고 방향 select 는 "왼쪽" 이 들어가야 한다.
+   auto-fit 균등 4열은 방향을 "아." 로 잘라먹었다 — 비율을 못박는다. */
+.event-page-living-detail {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 0.8fr);
+}
+
+.event-page-living-detail .event-page-movement-label {
+  gap: 5px;
 }
 
 .event-page-living-grid .event-page-movement-label > span {
@@ -872,22 +926,211 @@
   width: 16px;
 }
 
-.event-page-map-link-panel {
-  border-top: 1px solid var(--event-rm-mid);
+.event-page-map-link-block {
   display: grid;
   gap: 6px;
+  min-width: 0;
+}
+
+.event-page-map-link-block:empty {
+  display: none;
+}
+
+/* 상태 한 줄 + (연결이 있을 때만) 편집 토글. 토글은 폭을 다 먹지 않는다 — 전폭 버튼은
+   그룹 전체의 본 행동처럼 읽히는데, 여기서 본 행동은 목적지 고르기다. */
+.event-page-map-link-status {
+  align-items: center;
+  border-top: 1px solid var(--event-rm-mid);
+  display: grid;
+  gap: 5px 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
   padding-top: 7px;
 }
 
-.event-page-map-link-add {
-  align-self: end;
+.event-page-map-link-status-text {
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.event-page-map-link-status.is-missing .event-page-map-link-status-text {
+  color: var(--danger);
+}
+
+.event-page-map-link-toggle {
+  justify-self: end;
   min-height: 25px;
-  min-width: 96px;
   white-space: nowrap;
 }
 
-.event-page-map-link-summary {
+.event-page-map-link-panel {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-page-map-link-grid {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.event-page-map-link-wide {
+  grid-column: 1 / -1;
+}
+
+.event-editor .event-page-map-link-grid .event-page-movement-label {
+  grid-template-columns: minmax(44px, max-content) minmax(48px, 1fr);
+  min-width: 0;
+}
+
+.event-page-map-link-grid input[type="number"],
+.event-page-map-link-grid select {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-page-map-link-grid input[type="checkbox"] {
+  height: 16px;
+  justify-self: start;
+  margin: 0;
+  width: 16px;
+}
+
+/* [hidden] 이 display:grid 에 지지 않도록 같은 특이도로 못박는다. */
+.event-page-map-link-panel[hidden] {
+  display: none;
+}
+
+.event-page-map-link-actions {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-page-map-link-add {
+  justify-self: stretch;
+  min-height: 25px;
+  white-space: nowrap;
+}
+
+.event-page-map-link-hint {
+  color: var(--text-2);
   overflow-wrap: anywhere;
+}
+
+/* 사용자 지정 경로 되읽기: 왼쪽에 궤적 그림(클릭=편집), 오른쪽에 화살표 테이프 + 전체 라벨.
+   세로로 세 층을 쌓으면 궤적 박스가 남는 폭을 다 먹고 아래 두 줄을 밀어낸다. */
+.event-page-movement-route {
+  align-items: start;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  margin-top: 6px;
+  min-width: 0;
+  row-gap: 4px;
+}
+
+.event-page-route-thumb {
+  background: var(--event-rm-field);
+  border: 1px solid var(--event-rm-mid);
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  grid-row: 1 / span 2;
+  min-width: 0;
+  padding: 4px;
+}
+
+.event-page-route-thumb:hover,
+.event-page-route-thumb:focus-visible {
+  border-color: var(--accent);
+}
+
+.event-page-route-thumb .ecp-move-grid-box {
+  background: none;
+  gap: 2px;
+  padding: 0;
+}
+
+/* 궤적 SVG 는 경로 길이에 따라 커진다. 레일에서는 높이·폭을 함께 묶는다. */
+.event-page-route-thumb .ecp-move-grid {
+  max-height: 84px;
+  max-width: 132px;
+  width: auto;
+}
+
+.event-page-route-thumb .ecp-move-grid-caption {
+  margin: 0;
+}
+
+.event-page-movement-route .ecp-move-tape {
+  gap: 3px;
+}
+
+.event-page-movement-route .ecp-move-chip {
+  font-size: 12px;
+  min-width: 20px;
+  padding: 1px 6px;
+  text-align: center;
+}
+
+/* 전체 라벨은 두 줄까지만 — 화살표 테이프가 요약이고 이 줄은 확인용이다(title 에 전문).
+   `.empty-hint` 의 가운데 정렬은 테이프와 시작점이 어긋나므로 왼쪽으로 되돌린다. */
+.event-page-movement-route-text {
+  text-align: left;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  overflow: hidden;
+}
+
+/* 맵 좌표 찍기 서브다이얼로그. 버튼·프리뷰 표면은 「장소 이동」 클래스를 그대로 재사용한다. */
+.map-point-dialog {
+  display: grid;
+  gap: 10px;
+  grid-template-rows: auto minmax(300px, 46vh) auto;
+  min-width: 0;
+}
+
+.map-point-head {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.map-point-map-label {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.map-point-zoom {
+  display: flex;
+  gap: 6px;
+}
+
+.map-point-preview {
+  min-height: 0;
+}
+
+.map-point-foot {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  min-width: 0;
+}
+
+.map-point-status {
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-priority-block {

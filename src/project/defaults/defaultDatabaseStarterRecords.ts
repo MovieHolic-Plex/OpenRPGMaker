@@ -52,6 +52,12 @@ export function defaultSkillRecords(): SkillRecord[] {
     }),
     skill("skill_fire", "화염", "enemy", 30, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "fire" }),
     skill("skill_water", "물대포", "enemy", 28, "anim_magic", "물 타입 공격에 대응하는 기본 기술입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "water" }),
+    skill("skill_item_holy_water", "성수 효과", "enemy", 30, "anim_magic", "성수 계열 아이템이 사용하는 신성 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "holy" }),
+    skill("skill_item_thunder_stone", "뇌전석 효과", "enemy", 34, "anim_magic", "뇌전석 계열 아이템이 사용하는 번개 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "thunder" }),
+    skill("skill_item_frost_vial", "서리병 효과", "enemy", 32, "anim_magic", "서리병 계열 아이템이 사용하는 얼음 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "ice" }),
+    skill("skill_item_quake_stone", "지진석 효과", "enemy", 38, "anim_magic", "지진석 계열 아이템이 사용하는 대지 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "earth" }),
+    skill("skill_item_gale_fan", "질풍 부채 효과", "enemy", 29, "anim_magic", "질풍 부채 계열 아이템이 사용하는 바람 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "wind" }),
+    skill("skill_item_shadow_dust", "그림자 가루 효과", "enemy", 36, "anim_magic", "그림자 가루 계열 아이템이 사용하는 어둠 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "dark" }),
     skill("skill_leaf", "잎날", "enemy", 28, "anim_arrow", "풀 타입 공격에 대응하는 기본 기술입니다.", "attack", "hp", { mpCost: 3, variance: 10, elementId: "grass" }),
     skill("skill_heal", "치유", "ally", 32, "anim_heal", "아군 하나의 HP를 회복합니다.", "mind", "hp", { mpCost: 3, kind: "healing" }),
     skill("skill_poison_sting", "독침", "enemy", 8, "anim_poison", "독 상태를 노리는 찌르기 기술입니다.", "mind", "hp", {
@@ -119,6 +125,19 @@ export function defaultStateRecords(): StateRecord[] {
     },
     // 방어 하락: 방어 절반 약화, 전투 종료 시 해제.
     { id: "state_defense_down", name: "방어 하락", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25 },
+    // 공격 하락: 공격 절반 약화, 전투 종료 시 해제.
+    { id: "state_attack_down", name: "공격 하락", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25, runtimeEffects: { attackMultiplier: 0.5, removeOnBattleEnd: true } },
+    // 민첩 상승/하락: 엄격 턴 순서와 게이지 충전 속도에 같은 배율을 적용한다.
+    { id: "state_agility_up", name: "민첩 상승", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25, runtimeEffects: { agilityMultiplier: 2, removeOnBattleEnd: true } },
+    { id: "state_agility_down", name: "민첩 하락", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25, runtimeEffects: { agilityMultiplier: 0.5, removeOnBattleEnd: true } },
+    // 마비: 행동을 막지만 2턴부터 35% 확률로 자연 회복한다.
+    { id: "state_paralysis", name: "마비", restriction: "행동 불가", removalCondition: "턴 경과", recoverNaturallyFromTurn: 2, recoverNaturallyChance: 35, runtimeEffects: { restrictsAction: true, removeOnBattleEnd: true } },
+    // 맹독: 독보다 강한 턴당 최대 HP 12% 피해, 치료 전까지 유지한다.
+    { id: "state_deep_poison", name: "맹독", restriction: "없음", removalCondition: "전투 종료 후 유지", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 10, runtimeEffects: { hpDamagePercentPerTurn: 12, removeOnBattleEnd: false } },
+    // 재생: 턴당 최대 HP 8%를 회복하고 전투 종료 시 해제한다.
+    { id: "state_regen", name: "재생", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 5, recoverNaturallyChance: 25, runtimeEffects: { hpHealPercentPerTurn: 8, removeOnBattleEnd: true } },
+    // 침묵: 스킬만 막고 기본 공격과 아이템은 허용한다.
+    { id: "state_silence", name: "침묵", restriction: "스킬 사용 불가", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { blocksSkillUse: true, removeOnBattleEnd: true } },
   ];
 }
 

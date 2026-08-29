@@ -1,0 +1,625 @@
+[
+  {
+    "slug": "overview",
+    "ok": true,
+    "metrics": {
+      "scrollH": 990,
+      "clientH": 795,
+      "overflow": true,
+      "topLevel": [
+        "div.db-overview-game-pulse"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 11,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 3
+      }
+    }
+  },
+  {
+    "slug": "actors",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 17,
+        "selects": 25,
+        "buttons": 37,
+        "tables": 0,
+        "fieldsets": 13,
+        "legends": 13,
+        "h3": 2
+      }
+    }
+  },
+  {
+    "slug": "classes",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 32,
+        "selects": 35,
+        "buttons": 45,
+        "tables": 0,
+        "fieldsets": 12,
+        "legends": 12,
+        "h3": 2
+      }
+    }
+  },
+  {
+    "slug": "skills",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 11,
+        "selects": 9,
+        "buttons": 65,
+        "tables": 0,
+        "fieldsets": 7,
+        "legends": 7,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "items",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 28,
+        "selects": 6,
+        "buttons": 54,
+        "tables": 0,
+        "fieldsets": 9,
+        "legends": 9,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "equipment",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 88,
+        "selects": 4,
+        "buttons": 24,
+        "tables": 0,
+        "fieldsets": 8,
+        "legends": 8,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "enemies",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-collection-gate-warn",
+        "div.db-record-intro-shell"
+      ],
+      "controls": {
+        "inputs": 23,
+        "selects": 27,
+        "buttons": 41,
+        "tables": 1,
+        "fieldsets": 12,
+        "legends": 12,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "monster-species",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-collection-gate-warn",
+        "div.db-life-header",
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 15,
+        "selects": 2,
+        "buttons": 23,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 2
+      }
+    }
+  },
+  {
+    "slug": "troops",
+    "ok": true,
+    "metrics": {
+      "scrollH": 836,
+      "clientH": 796,
+      "overflow": true,
+      "topLevel": [
+        "div.db-collection-gate-warn",
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 15,
+        "selects": 1,
+        "buttons": 59,
+        "tables": 0,
+        "fieldsets": 6,
+        "legends": 6,
+        "h3": 2
+      }
+    }
+  },
+  {
+    "slug": "elements",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 8,
+        "selects": 0,
+        "buttons": 18,
+        "tables": 0,
+        "fieldsets": 3,
+        "legends": 3,
+        "h3": 0
+      }
+    }
+  },
+  {
+    "slug": "states",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 31,
+        "selects": 3,
+        "buttons": 10,
+        "tables": 0,
+        "fieldsets": 12,
+        "legends": 12,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "animations",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 16,
+        "selects": 2,
+        "buttons": 50,
+        "tables": 2,
+        "fieldsets": 1,
+        "legends": 1,
+        "h3": 2
+      }
+    }
+  },
+  {
+    "slug": "battle-screen",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 2,
+        "selects": 2,
+        "buttons": 5,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "battle-commands",
+    "ok": true,
+    "metrics": {
+      "scrollH": 888,
+      "clientH": 796,
+      "overflow": true,
+      "topLevel": [
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 12,
+        "selects": 8,
+        "buttons": 9,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "terrain",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 24,
+        "selects": 3,
+        "buttons": 13,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "crops",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-life-header",
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 8,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 3
+      }
+    }
+  },
+  {
+    "slug": "characters",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-life-header",
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 1,
+        "selects": 0,
+        "buttons": 10,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 3
+      }
+    }
+  },
+  {
+    "slug": "life-crafting",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "section.db-life-crafting-header",
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 14,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "daily-weather",
+    "ok": true,
+    "metrics": {
+      "scrollH": 795,
+      "clientH": 795,
+      "overflow": false,
+      "topLevel": [
+        "section.db-life-authoring-workspace"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 2,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "farm-animals",
+    "ok": true,
+    "metrics": {
+      "scrollH": 795,
+      "clientH": 795,
+      "overflow": false,
+      "topLevel": [
+        "section.db-life-authoring-workspace"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 1,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "farm-spatial",
+    "ok": true,
+    "metrics": {
+      "scrollH": 795,
+      "clientH": 795,
+      "overflow": false,
+      "topLevel": [
+        "section.db-life-authoring-workspace"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 2,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "life-collections",
+    "ok": true,
+    "metrics": {
+      "scrollH": 795,
+      "clientH": 795,
+      "overflow": false,
+      "topLevel": [
+        "section.db-life-authoring-workspace"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 1,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "tilesets",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 4,
+        "selects": 0,
+        "buttons": 520,
+        "tables": 0,
+        "fieldsets": 7,
+        "legends": 7,
+        "h3": 0
+      }
+    }
+  },
+  {
+    "slug": "structure-kits",
+    "ok": true,
+    "metrics": {
+      "scrollH": 862,
+      "clientH": 795,
+      "overflow": true,
+      "topLevel": [
+        "h3.",
+        "p.",
+        "div.structure-kit-album-workspace"
+      ],
+      "controls": {
+        "inputs": 1,
+        "selects": 0,
+        "buttons": 13,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "common-events",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "h3.",
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 0,
+        "selects": 0,
+        "buttons": 3,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "system",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "h3.",
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 44,
+        "selects": 17,
+        "buttons": 47,
+        "tables": 1,
+        "fieldsets": 14,
+        "legends": 14,
+        "h3": 3
+      }
+    }
+  },
+  {
+    "slug": "terms",
+    "ok": true,
+    "metrics": {
+      "scrollH": 823,
+      "clientH": 796,
+      "overflow": true,
+      "topLevel": [
+        "h3.",
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 20,
+        "selects": 0,
+        "buttons": 0,
+        "tables": 0,
+        "fieldsets": 4,
+        "legends": 4,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "switches",
+    "ok": true,
+    "metrics": {
+      "scrollH": 823,
+      "clientH": 796,
+      "overflow": true,
+      "topLevel": [
+        "h3.",
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 5,
+        "selects": 0,
+        "buttons": 15,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  },
+  {
+    "slug": "variables",
+    "ok": true,
+    "metrics": {
+      "scrollH": 823,
+      "clientH": 796,
+      "overflow": true,
+      "topLevel": [
+        "h3.",
+        "section.db-detail-form"
+      ],
+      "controls": {
+        "inputs": 5,
+        "selects": 0,
+        "buttons": 5,
+        "tables": 0,
+        "fieldsets": 0,
+        "legends": 0,
+        "h3": 1
+      }
+    }
+  }
+]

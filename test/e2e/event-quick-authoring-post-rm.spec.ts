@@ -205,10 +205,11 @@ test("상점 미리보기에 판매 목록 ≥ 1 — 빈 상점 + 아이콘 홍�
   const saleRows = dialog.locator('[data-testid="shop-sale-list"] [data-testid^="shop-item-row-"]');
   await expect(saleRows.first()).toBeVisible();
   expect(await saleRows.count()).toBeGreaterThanOrEqual(1);
-  // 자료집은 열린 채 시작하고 실제로 스크롤된다 — 열려 있어도 179행이 잘려 있으면 의미가 없다.
-  const catalogFold = dialog.getByTestId("shop-item-catalog-fold");
-  await expect(catalogFold).toBeVisible();
-  await expect(dialog.getByTestId("shop-item-catalog-summary")).toHaveAttribute("aria-expanded", "true");
+  // 목록은 하나뿐이다: 담긴 행이 맨 위 «판매 중» 그룹, DB 나머지는 그 아래 «안 담음».
+  const pool = dialog.getByTestId("shop-stock-pool");
+  await expect(pool).toBeVisible();
+  // 「보인다」로는 부족하다 — DB 전체가 목록 안에 있고 실제로 스크롤돼야 6번째 이후에 닿는다.
+  // 예전 `<details>` 자료집은 스크롤바를 그려 놓고도 scrollTop 이 0 에 못 박혀 있었다.
   const catalog = dialog.getByTestId("shop-item-catalog");
   await expect(catalog).toBeVisible();
   const catalogScroll = await catalog.evaluate((node) => ({
@@ -216,9 +217,9 @@ test("상점 미리보기에 판매 목록 ≥ 1 — 빈 상점 + 아이콘 홍�
     scrollH: node.scrollHeight,
   }));
   expect(catalogScroll.scrollH).toBeGreaterThan(catalogScroll.clientH);
-  await dumpEvidence(page, "shop-stocked-scrollable-catalog", {
+  await dumpEvidence(page, "shop-stocked-single-list", {
     saleRows: await saleRows.count(),
-    catalogFoldOpen: true,
+    poolRows: await pool.locator('[data-testid^="shop-item-row-"]').count(),
     catalogScroll,
   });
 });

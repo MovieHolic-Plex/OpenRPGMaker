@@ -174,6 +174,12 @@ export function agentGhostPreviewsForMap(state: AgentGhostPreviewState, mapId: M
 }
 
 export function clearAgentGhostPreview(): void {
+  // 청사진(밑그림)은 여기서 지우지 않는다. 수명이 다르다 — 고스트는 한 턴짜리 초안이고
+  // BuildSpec 은 세션 것이다(턴 간 유지). 묶어 뒀을 때는 적용 경로(aiProposalCard.applyProposal
+  // 이 applyProposedProject 직전에 이 함수를 부른다)가 **처음 시공한 턴의 끝에서 청사진을
+  // 지웠고**, set_build_spec 이 다음 턴에 다시 오지 않아 그 뒤로는 영원히 빈 상태였다.
+  // 청사진 정리는 agentBlueprint.syncAgentBlueprintWithSpec(턴 시작) + clearAgentBlueprint
+  // (새 대화·패널 폐기)가 맡는다.
   if (previews.length === 0 && runningToolName === "") return;
   previews = [];
   runningToolName = "";

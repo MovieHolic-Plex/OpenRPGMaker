@@ -4,6 +4,7 @@
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, CharacterFootprint, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
+import type { FactionStanceOverrides } from "@/project/factionRuntime";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -56,6 +57,8 @@ export type PictureState = {
   readonly rotation?: number;
   readonly durationMs?: number;
 };
+
+const pendingPictureTransitions = new WeakSet<PictureState>();
 
 export type ActorRowPosition = "front" | "back";
 
@@ -255,6 +258,8 @@ export interface PlaySession {
   actorParamBonuses?: Record<string, Partial<Record<ActorParameterKey, number>>>;
   // 필드/전투로 이어지는 런타임 상태 이상(Change State).
   actorStateIds?: Record<string, string[]>;
+  /** 저작 태도표와 다른 진영 쌍만 담는 런타임 평판 오버레이. */
+  factionStanceOverrides?: FactionStanceOverrides;
   // 현재 위치(맵 진입/transfer 시 갱신).
   currentMapId: MapId;
   x: number;
@@ -397,6 +402,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     classOverrides: {},
     actorParamBonuses: {},
     actorStateIds: {},
+    factionStanceOverrides: {},
     currentMapId: project.startMapId,
     x: project.startPos.x,
     y: project.startPos.y,
@@ -716,8 +722,18 @@ export function clearAudioState(session: PlaySession): void {
   session.audio = {};
 }
 
-export function showPictureState(session: PlaySession, picture: PictureState): void {
+export function showPictureState<T extends PictureState>(
+  session: { pictures: Record<string, T> },
+  picture: T,
+): void {
   session.pictures[picture.pictureId] = picture;
+  if ((picture.durationMs ?? 0) > 0) pendingPictureTransitions.add(picture);
+}
+
+export function takePendingPictureTransition(picture: PictureState): boolean {
+  const pending = pendingPictureTransitions.has(picture);
+  pendingPictureTransitions.delete(picture);
+  return pending;
 }
 
 export function erasePictureState(session: PlaySession, pictureId: string): void {

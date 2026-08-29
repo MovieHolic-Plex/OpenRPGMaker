@@ -7,6 +7,12 @@ import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import {
+  MAX_CLIPPED_AREA_RATIO,
+  MIN_EFFECTIVE_ALPHA,
+  MIN_INK_HEIGHT_PX,
+  auditBattleText,
+} from "./battleTextAudit.mjs";
+import {
   evaluateExpect,
   normalizeScenario,
   renderSummary,
@@ -21,7 +27,7 @@ const PROJECT_URL = "/__runtime-qa/project.json";
 const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 
 /** 훅을 요구하는 op — 이들 앞에서는 런타임 훅 설치를 기다린다. */
-const HOOK_OPS = new Set(["seed", "dir", "face", "action", "attack", "skill", "teleport"]);
+const HOOK_OPS = new Set(["seed", "dir", "hold", "face", "action", "attack", "skill", "teleport"]);
 
 async function freePort() {
   return await new Promise((resolvePort, reject) => {
@@ -84,15 +90,35 @@ async function waitForTestid(page, op) {
   );
 }
 
+async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30_000) {
+  await page.waitForFunction(
+    ([predicateSource, value]) => {
+      const debug = window.__oprnDebug;
+      if (!debug || typeof debug.readState !== "function") return false;
+      const state = debug.readState();
+      return Function("state", "value", `return (${predicateSource})(state, value)`)(state, value);
+    },
+    [predicate.toString(), argument],
+    { timeout: timeoutMs },
+  );
+}
+
 async function applyOp(page, op) {
   switch (op.kind) {
-    case "wait":
-      await page.waitForTimeout(op.ms);
+    case "waitForRuntime":
+      await waitForRuntimePredicate(page, (state) => Boolean(state.currentMapId), null, op.timeoutMs);
+      return;
+    case "waitForPosition":
+      await waitForRuntimePredicate(
+        page,
+        (state, target) => state.currentMapId === target.mapId && state.x === target.x && state.y === target.y,
+        { mapId: op.mapId, x: op.x, y: op.y },
+        op.timeoutMs,
+      );
       return;
     case "key":
       for (let i = 0; i < (op.times ?? 1); i += 1) {
         await page.keyboard.press(op.key);
-        await page.waitForTimeout(op.delayMs ?? 250);
       }
       return;
     case "seed":
@@ -116,6 +142,14 @@ async function applyOp(page, op) {
     case "dir":
       await page.evaluate((dir) => window.__oprnInput.dir(dir), op.dir ?? null);
       return;
+    case "hold":
+      // 눌렀다 → 시간 경과 → 뗀다. 뗀 뒤 한 프레임 정착까지 본다(타일 스냅이 남아 있을 수 있다).
+      // 경과 시간을 조건 대기로 바꿀 수 없는 유일한 경우가 "막혔다" 검증이다 — 기다릴 사건이 없다.
+      await page.evaluate((dir) => window.__oprnInput.dir(dir), op.dir ?? null);
+      await page.waitForTimeout(op.ms);
+      await page.evaluate(() => window.__oprnInput.dir(null));
+      await page.waitForFunction(() => true);
+      return;
     case "face":
       await page.evaluate((dir) => window.__oprnInput.face(dir), op.dir);
       return;
@@ -134,7 +168,14 @@ async function applyOp(page, op) {
       for (let i = 0; i < max; i += 1) {
         if (await testidMatches(page, op)) return;
         await page.keyboard.press(op.key);
-        await page.waitForTimeout(op.delayMs ?? 250);
+        await page.waitForFunction(
+          ([testid, state]) => {
+            const present = document.querySelector(`[data-testid='${testid}']`) !== null;
+            return state === "absent" ? !present : present;
+          },
+          [op.testid, op.state],
+          { timeout: op.timeoutMs ?? 30_000 },
+        ).catch(() => undefined);
       }
       if (!(await testidMatches(page, op))) {
         throw new Error(
@@ -148,13 +189,76 @@ async function applyOp(page, op) {
   }
 }
 
+/** 전투 배틀러 기하 — 실브라우저 rect. CSS 레이아웃은 jsdom 으로 재현되지 않으므로
+ *  적 배치 검증은 이 측정값만이 근거가 된다. 전투 화면이 없으면 null. */
+function readBattlerGeometryInPage() {
+  const scene = document.querySelector("[data-testid='battle-scene']");
+  const field = scene?.querySelector("[data-testid='battle-field']");
+  if (!scene || !field) return null;
+  const boxOf = (r) => ({
+    top: Math.round(r.top),
+    bottom: Math.round(r.bottom),
+    left: Math.round(r.left),
+    right: Math.round(r.right),
+    width: Math.round(r.width),
+    height: Math.round(r.height),
+  });
+  const box = (node) => {
+    const r = node.getBoundingClientRect();
+    return {
+      top: Math.round(r.top),
+      bottom: Math.round(r.bottom),
+      left: Math.round(r.left),
+      right: Math.round(r.right),
+      width: Math.round(r.width),
+      height: Math.round(r.height),
+    };
+  };
+  const enemies = [...field.querySelectorAll(".battle-enemy")].map((node) => {
+    const image = node.querySelector(".battle-enemy-image");
+    // 이름표는 **텍스트 실측 폭**이 필요하다. `.battle-enemy-hud` 는 고정 min-width 상자라
+    // 서로 겹쳐도 글자는 안 겹칠 수 있고, 반대로 이름이 길면 상자를 넘어 옆 적과 겹친다.
+    // Range 로 텍스트 노드의 실제 잉크 박스를 잰다.
+    const nameNode = node.querySelector(".battle-enemy-name");
+    let name = null;
+    if (nameNode) {
+      const range = document.createRange();
+      range.selectNodeContents(nameNode);
+      const inkRect = range.getBoundingClientRect();
+      name = inkRect.width > 0 ? boxOf(inkRect) : box(nameNode);
+      range.detach();
+    }
+    return {
+      id: node.dataset.testid ?? null,
+      node: box(node),
+      image: image ? box(image) : null,
+      name,
+    };
+  });
+  const allies = [...field.querySelectorAll(".battle-actor-group .battle-actor")].map((node) => ({
+    id: node.dataset.testid ?? null,
+    node: box(node),
+  }));
+  // 적 그룹 박스: 저작 좌표(0..160)가 실제 px 로 어떻게 매핑되는지 재현하려면 필요하다.
+  // 필드 != 그룹 박스다(`--battle-stage-inset-*` 만큼 안으로 들어간다).
+  const enemyGroup = field.querySelector(".battle-enemy-group");
+  return {
+    skin: scene.dataset.battleSkin ?? null,
+    directorStep: scene.dataset.battleDirectorStep ?? null,
+    field: box(field),
+    enemyGroup: enemyGroup ? box(enemyGroup) : null,
+    enemies,
+    allies,
+  };
+}
+
 /**
- * @param watchedEventIds 사각을 실어 올 이벤트 id. 시나리오가 이름을 댄 것만 싣는다 —
+ * @param watchedEventIds 발자국 사각을 실어 올 이벤트 id. 시나리오가 이름을 댄 것만 싣는다 —
  *   맵마다 이벤트가 수십 개라 전량은 매니페스트를 노이즈로 덮는다(이 하네스의 목적은
  *   컨텍스트 절약이다).
  */
-async function readObserved(page, watchedEventIds = []) {
-  return await page.evaluate((watched) => {
+async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [] } = {}) {
+  const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
     // 매니페스트에는 압축 상태만 남긴다 — switches/inventory 전량은 노이즈이고
@@ -200,8 +304,17 @@ async function readObserved(page, watchedEventIds = []) {
       testids: [...document.querySelectorAll("[data-testid]")].map((node) => node.dataset.testid),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
+      battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
   }, watchedEventIds);
+  if (!auditBattleTextNodes) return base;
+  // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
+  const battleText = await page.evaluate(auditBattleText, {
+    minInkHeight: MIN_INK_HEIGHT_PX,
+    maxClippedAreaRatio: MAX_CLIPPED_AREA_RATIO,
+    minAlpha: MIN_EFFECTIVE_ALPHA,
+  });
+  return { ...base, battleText };
 }
 
 /** 리포트를 디스크에 쓴다. SUMMARY.md 가 에이전트가 먼저 읽는 진입점이다. */
@@ -236,12 +349,17 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       } catch {
         // 접근 불가 환경이면 그대로 진행한다.
       }
-      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace };
+      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true };
     },
     [PROJECT_URL, `runtime-qa:${scenario.id}`],
   );
   await page.route(PROJECT_ROUTE, (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: projectJson }),
+  );
+
+  // 배틀러 기하 측정기를 페이지에 심는다(readObserved 가 매 비트마다 호출).
+  await page.addInitScript(
+    `window.__oprnReadBattlerGeometry = ${readBattlerGeometryInPage.toString()};`,
   );
 
   const query = new URLSearchParams(scenario.query ?? {}).toString();
@@ -279,7 +397,10 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
         break; // 같은 비트의 남은 op 은 전제가 깨졌으므로 건너뛴다.
       }
     }
-    const observed = await readObserved(page, watchedEventIds);
+    const observed = await readObserved(page, {
+      auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
+      watchedEventIds,
+    });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
     if (shouldCaptureShot(beat, failures)) {
@@ -287,10 +408,17 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       await page.screenshot({ path: join(outDir, shot) });
     }
     beats.push({
-      index, id: beat.id, note: beat.note, shot, failures, state: observed.state,
-      // 사각을 단정한 비트에만 싣는다. 안 쓰는 비트에 빈 객체를 남기면 매니페스트가
+      index,
+      id: beat.id,
+      note: beat.note,
+      shot,
+      failures,
+      state: observed.state,
+      // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
+      battlers: observed.battlers ?? undefined,
+      // 발자국 사각은 단정한 비트에만 싣는다. 안 쓰는 비트에 빈 객체를 남기면 매니페스트가
       // "사각을 봤다" 처럼 읽힌다.
-      ...(Object.keys(observed.events).length > 0 ? { events: observed.events } : {}),
+      ...(Object.keys(observed.events ?? {}).length > 0 ? { events: observed.events } : {}),
     });
   }
 

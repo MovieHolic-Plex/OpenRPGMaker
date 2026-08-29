@@ -1,93 +1,40 @@
-// ai/approvalPolicy.ts — deny-by-default single approval boundary
+// ai/approvalPolicy.ts — 승인 게이트 없음. AI 가 만든 변경은 그대로 적용되고, 복구는 되돌리기다.
+//
+// 폐기된 것: `classifyApproval` 이 파괴적·어휘·규칙 툴을 골라 승인 카드([이 맵에 넣기] ·
+// [앞으로 자동 적용])로 보내던 흐름(감독 지시 2026-08-28).
+//
+// 되돌리기가 실제 복구 경로인 근거: 적용은 `applyProposedProject` 한 곳을 지나고 그 함수의
+// `recordProjectSnapshot` 은 **프로젝트 전체** 스냅샷을 undo 스택에 쌓는다(옵션 없이 부르면
+// kind:"project"). 맵 삭제·reset_project 도 되돌리기 한 번으로 원복된다.
 import type { ProposedCall } from "./assistantSession";
 
-export const DESTRUCTIVE_TOOLS: ReadonlySet<string> = new Set(["remove_event", "remove_map", "delete_database_record", "delete_resource", "clear_region", "reset_project"]);
+/** 타일 지식(메타데이터) 전용 툴 — 변경 카드 없이 즉시 반영되는 계열(aiChatPanelHelpers 공유). */
 export const METADATA_ONLY_TOOLS: ReadonlySet<string> = new Set([
   "set_tile_metadata",
   "set_tile_rules",
   "upsert_tile_group",
   "set_tile_passability",
 ]);
-export const VOCABULARY_TOOLS: ReadonlySet<string> = new Set(["propose_tile_vocabulary"]);
-export const RULE_TOOLS_APPROVAL: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
 
-export type ApprovalDecision = "auto" | "require_approval" | "metadata_commit";
-
-export interface ApprovalVerdict {
-  readonly decision: ApprovalDecision;
-  readonly reason: string;
-  readonly requiresUserConfirm: boolean;
-  readonly warnings: string[];
-}
-
-function isDestructive(call: ProposedCall): boolean {
-  return call.destructive || DESTRUCTIVE_TOOLS.has(call.name);
-}
-
-function isVocab(call: ProposedCall): boolean {
-  return !!call.requiresApproval || VOCABULARY_TOOLS.has(call.name) || call.approvalWarning?.includes("재료 합의") === true;
-}
-
-function isRule(call: ProposedCall): boolean {
-  return RULE_TOOLS_APPROVAL.has(call.name);
-}
-
-export function classifyApproval(calls: readonly ProposedCall[], opts: { autoApproveEnabled: boolean }): ApprovalVerdict {
-  const warnings: string[] = [];
-  const hasDestructive = calls.some(isDestructive);
-  const hasVocab = calls.some(isVocab);
-  const hasRule = calls.some(isRule);
-  const hasRequiresApproval = calls.some((c) => c.requiresApproval === true);
-
-  if (hasDestructive) {
-    return {
-      decision: "require_approval",
-      reason: "파괴적 변경(remove/clear)이 포함되어 있어 명시적 승인이 필요합니다.",
-      requiresUserConfirm: true,
-      warnings: ["파괴적 작업 포함 — 체크박스 확인 후 재승인이 필요합니다."],
-    };
-  }
-  if (hasVocab || hasRequiresApproval || hasRule) {
-    return {
-      decision: "require_approval",
-      reason: "어휘/규칙 합의 또는 requiresApproval 플래그로 수동 승인이 필요합니다.",
-      requiresUserConfirm: false,
-      warnings: hasVocab ? ["어휘 합의 — 승인 시 영구 합의(origin:user)로 기록됩니다."] : [],
-    };
-  }
-  if (!opts.autoApproveEnabled) {
-    return { decision: "require_approval", reason: "자동 승인이 꺼져 있어 수동 승인이 필요합니다.", requiresUserConfirm: false, warnings };
-  }
-  return { decision: "auto", reason: "자동 승인 조건 충족", requiresUserConfirm: false, warnings };
-}
-
-export type ProposalApplyMode = "apply-now" | "review";
+export type ProposalApplyMode = "apply-now" | "no-changes";
 
 export interface ProposalApplyModeInput {
-  /** 이 턴이 만든 쓰기 툼콜 수. 0 이면 적용할 것이 없다. */
+  /** 이 턴이 만든 쓰기 툴콜 수. 0 이면 적용할 것이 없다. */
   readonly callCount: number;
-  /** agentMode === "auto" 또는 autoApprove === true. 기본값은 켜진 상태다. */
-  readonly autoApplyEnabled: boolean;
-  readonly approvalDecision: ApprovalDecision;
-  readonly turnErrored: boolean;
 }
 
 /**
- * 제안을 바로 맵에 넣을지(apply-now), 사용자 결정 카드로 보낼지(review) 한 자리에서 정한다.
+ * 턴이 만든 변경을 어떻게 처리하는지는 이 한 자리가 정한다: 쓰기가 있으면 바로 적용한다.
  *
- * 안전 분류(`classifyProposalSafety`)와 완성도 린트 경고는 **이 입력에 없다** — 일부러 버렸다.
- * 되돌리기 한 번으로 원복되는 변경을 승인 카드로 받아내면 마찰만 남고(사용자는 항상
- * 수락한다), 경고는 카드가 아니라 로그로 전달하면 된다. 복구 경로는 좌하단 되돌리기
- * (oprn-tool-undo → undoMapEdit) 와 자동 적용 카드의 되돌리기다.
+ * 안전 분류·완성도 린트 경고·파괴 여부·"자동 적용" 설정은 **입력이 아니다** — 일부러 전부
+ * 버렸다. 사용자는 승인 카드를 항상 수락했고, 카드는 마찰만 남겼다. 경고는 카드가 아니라
+ * 로그로 전달한다.
  *
- * 단 `require_approval`은 그대로 검토로 보낸다: 파괴적/재료합의 변경은 acceptProposal 안에서
- * 확인 단계를 거치기 때문에, 자동 적용 카드를 먼저 붙이면 "적용됨" 이 거짓이 된다.
+ * 오류로 끝난 턴도 적용한다: 그 턴이 이미 성공시킨 쓰기를 조용히 버리면 저작물이 사라진다
+ * (예전 `review` 분기는 카드가 있어야 회수할 수 있었고, 그 카드를 없앴다). 되돌리기가 있다.
  */
 export function resolveProposalApplyMode(input: ProposalApplyModeInput): ProposalApplyMode {
-  if (input.callCount <= 0) return "review";
-  if (input.turnErrored) return "review";
-  if (!input.autoApplyEnabled) return "review";
-  return input.approvalDecision === "auto" ? "apply-now" : "review";
+  return input.callCount > 0 ? "apply-now" : "no-changes";
 }
 
 export function isSilencedSuccess(calls: readonly ProposedCall[], assistantText: string): { silenced: boolean; kind: string; message: string } | null {

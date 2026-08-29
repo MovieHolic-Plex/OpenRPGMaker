@@ -109,22 +109,16 @@
 /* 아이콘은 모든 폭에서 라벨과 함께 남는다. 접힌 56px 레일은 라벨만 사라진
    같은 디자인이 되고, 220px 라벨 레일도 한글 텍스트 벽이 되지 않는다. */
 @container db-modal (min-width: 800px) {
-  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
-    display: inline-flex !important;
-    justify-content: center;
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab > .db-tab-icon {
     opacity: 0.72;
-    width: 18px !important;
   }
 }
 
 /* 위 컨테이너 쿼리의 미디어 폴백 — 둘이 같은 값을 내야 한다. 예전에는 이 쪽만
    글리프를 죽이고 있어서 컨테이너 쿼리를 고쳐도 데스크톱 아이콘이 살아나지 않았다. */
 @media (min-width: 800px) {
-  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
-    display: inline-flex !important;
-    justify-content: center;
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab > .db-tab-icon {
     opacity: 0.72;
-    width: 18px !important;
   }
 }
 
@@ -135,21 +129,19 @@
   .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
     color: transparent !important;
     font-size: 0 !important;
+    /* 라벨은 font-size 0 이어도 여전히 flex 항목이다 — gap 을 남기면 아이콘이
+       40px 버튼 중앙에서 gap 의 절반(4px)만큼 왼쪽으로 밀린다. */
+    gap: 0;
     height: 40px !important;
     justify-content: center !important;
     max-width: 40px !important;
     padding: 0 !important;
     width: 40px !important;
   }
-  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
-    color: var(--db-studio-text-2, #475569) !important;
-    display: block !important;
-    flex: 0 0 auto !important;
-    font-size: 18px !important;
-    width: auto !important;
-  }
-  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab.active::before {
-    color: var(--db-studio-accent, #4A57D6) !important;
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab > .db-tab-icon {
+    height: 20px;
+    opacity: 1;
+    width: 20px;
   }
   .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab[data-count]::after {
     display: none !important;
@@ -160,21 +152,19 @@
   .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
     color: transparent !important;
     font-size: 0 !important;
+    /* 라벨은 font-size 0 이어도 여전히 flex 항목이다 — gap 을 남기면 아이콘이
+       40px 버튼 중앙에서 gap 의 절반(4px)만큼 왼쪽으로 밀린다. */
+    gap: 0;
     height: 40px !important;
     justify-content: center !important;
     max-width: 40px !important;
     padding: 0 !important;
     width: 40px !important;
   }
-  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab::before {
-    color: var(--db-studio-text-2, #475569) !important;
-    display: block !important;
-    flex: 0 0 auto !important;
-    font-size: 18px !important;
-    width: auto !important;
-  }
-  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab.active::before {
-    color: var(--db-studio-accent, #4A57D6) !important;
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab > .db-tab-icon {
+    height: 20px;
+    opacity: 1;
+    width: 20px;
   }
   .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab[data-count]::after {
     display: none !important;
@@ -401,13 +391,20 @@
   overflow: hidden;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab::before {
-  color: inherit;
-  content: attr(data-short);
+/* 아이콘은 `databaseTabIcons.ts` 가 심는 <svg class="db-tab-icon"> 다. CSS `content` 글리프가
+   아닌 이유: per-testid 규칙 24줄로는 29개 탭을 덮지 못해 5개가 한글 첫 글자로 떨어졌고,
+   system-studio.css 가 같은 ::before 를 content:none 으로 덮어 시스템 탭에서 전멸했다.
+   `color` 를 자식에 직접 선언하는 게 핵심 — 접힌 레일의 `.db-tab { color: transparent }` 는
+   상속이므로 자식의 일반 선언에 진다(!important 불필요). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
+  color: var(--db-studio-text-2, #475569);
   flex: 0 0 auto;
-  font: 700 14px/1 "Segoe UI Symbol", "Malgun Gothic", sans-serif;
-  text-align: center;
+  height: 18px;
   width: 18px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active > .db-tab-icon {
+  color: var(--db-studio-accent, #4A57D6);
 }
 
 /* label text is the button's textContent — flex takes remaining space */
@@ -469,19 +466,16 @@
     border-radius: 8px;
     color: transparent;
     font-size: 0;
+    gap: 0;
     justify-content: center;
     height: 40px;
     max-width: 40px;
     padding: 0;
     width: 40px;
   }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab::before {
-    color: var(--db-studio-text-2, #475569);
-    font-size: 18px;
-    width: auto;
-  }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active::before {
-    color: var(--db-studio-accent, #4A57D6);
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
+    height: 20px;
+    width: 20px;
   }
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count]::after {
     display: none;
@@ -493,50 +487,26 @@
     border-radius: 8px;
     color: transparent;
     font-size: 0;
+    gap: 0;
     justify-content: center;
     height: 40px;
     max-width: 40px;
     padding: 0;
     width: 40px;
   }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab::before {
-    color: var(--db-studio-text-2, #475569);
-    font-size: 18px;
-    width: auto;
-  }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active::before {
-    color: var(--db-studio-accent, #4A57D6);
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
+    height: 20px;
+    width: 20px;
   }
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count]::after {
     display: none;
   }
 }
 
-/* keep per-tab glyphs */
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-overview"]::before { content: "▦" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-actors"]::before { content: "♙" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-classes"]::before { content: "♜" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-skills"]::before { content: "✧" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-items"]::before { content: "▤" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-equipment"]::before { content: "◈" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-enemies"]::before { content: "⚑" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-monster-species"]::before { content: "♞" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-troops"]::before { content: "♟" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-elements"]::before { content: "◇" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-states"]::before { content: "⊕" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-animations"]::before { content: "✺" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-battle-screen"]::before { content: "▣" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-battle-commands"]::before { content: "⌘" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-terrain"]::before { content: "△" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-crops"]::before { content: "♧" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-characters"]::before { content: "◎" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-tilesets"]::before { content: "▧" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-structure-kits"]::before { content: "⧉" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-common-events"]::before { content: "↯" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-system"]::before { content: "⌁" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-terms"]::before { content: "Aa" !important; font-size: 12px; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-switches"]::before { content: "◉" !important; }
-.database-modal-backdrop .database-modal-window [data-testid="db-tab-variables"]::before { content: "⚙" !important; }
+/* per-testid 글리프 24줄은 삭제됐다 — 아이콘은 `databaseTabIcons.ts` 가 소유한다.
+   그 방식은 29개 탭 중 24개만 덮어서 생활 탭 5개가 한글 첫 글자로 떨어졌고,
+   system-studio.css 가 같은 ::before 를 content:none 으로 이겨서 시스템 탭에서는
+   전부 사라졌다. 아이콘을 CSS 선택자로 배분하지 말 것. */
 
 /* ---- body pane ------------------------------------------------------- */
 
@@ -562,6 +532,7 @@
 .database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab {
   color: transparent;
   font-size: 0;
+  gap: 0;
   height: 32px;
   justify-content: center;
   padding: 0;
@@ -569,8 +540,7 @@
   max-width: 40px;
 }
 
-.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab::before {
-  color: var(--db-studio-text-2, #475569);
-  font-size: 18px;
-  width: auto;
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
+  height: 20px;
+  width: 20px;
 }

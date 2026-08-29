@@ -17,31 +17,49 @@ export function skillFields(form: HTMLElement, id: string): void {
   ));
 }
 
+// 아이템 필드는 목적별로 쪼개서 내보낸다 — 아이템 인스펙터가 이 넷을 서로 다른 카드
+// (기본 / 대상 / 포획 / 연결 스킬)에 나눠 담기 때문이다. 예전에는 전부 "수치" 한 장에
+// 쌓여 가격·범위·포획 배율·볼 등급·스킬이 한 덩어리였다. `itemFields` 는 그 넷을 한
+// 호스트에 붙이는 합성 함수로 남긴다(기존 호출자·계약 유지).
 export function itemFields(form: HTMLElement, id: string): void {
-  const item = store.getCurrent().database.items.find((record) => record.id === id);
-  if (!item) return;
-  const currentCaptureProfile = () => store.getCurrent().database.items.find((record) => record.id === id)?.captureProfile;
-  form.append(numberField("가격", "db-field-price", item.price, (value) => updateDatabaseRecord("items", id, { price: value }), { min: 0, max: 999999 }));
-  form.append(selectLiteral("범위", "db-field-scope", item.scope, ["none", "ally", "allAllies", "enemy"], (value) =>
-    updateDatabaseRecord("items", id, { scope: value })
-  ));
-  form.append(numberField("포획 배율", "db-field-item-capture-multiplier", item.captureProfile?.multiplier ?? 0, (value) => {
-    const profile = currentCaptureProfile();
-    updateDatabaseRecord("items", id, {
-      captureProfile: value > 0
-        ? { multiplier: value, ...(profile?.ballClass ? { ballClass: profile.ballClass } : {}) }
-        : undefined,
-    });
-  }, { min: 0, max: 100 }));
-  form.append(selectLiteral("볼 등급", "db-field-item-ball-class", item.captureProfile?.ballClass ?? "none", ["none", "poke", "great", "ultra", "master"], (ballClass) => {
-    const profile = currentCaptureProfile();
-    updateDatabaseRecord("items", id, {
-      captureProfile: ballClass === "none"
-        ? profile ? { multiplier: profile.multiplier } : undefined
-        : { multiplier: profile?.multiplier ?? 1, ballClass },
-    });
-  }));
+  if (!store.getCurrent().database.items.some((record) => record.id === id)) return;
+  form.append(itemPriceField(id), itemScopeField(id), ...itemCaptureFields(id));
   skillPicker(form, "items", id);
+}
+
+export function itemPriceField(id: string): HTMLElement {
+  const item = store.getCurrent().database.items.find((record) => record.id === id);
+  return numberField("가격", "db-field-price", item?.price ?? 0, (value) => updateDatabaseRecord("items", id, { price: value }), { min: 0, max: 999999 });
+}
+
+export function itemScopeField(id: string): HTMLElement {
+  const item = store.getCurrent().database.items.find((record) => record.id === id);
+  return selectLiteral("범위", "db-field-scope", item?.scope ?? "none", ["none", "ally", "allAllies", "enemy"], (value) =>
+    updateDatabaseRecord("items", id, { scope: value })
+  );
+}
+
+export function itemCaptureFields(id: string): HTMLElement[] {
+  const item = store.getCurrent().database.items.find((record) => record.id === id);
+  const currentCaptureProfile = () => store.getCurrent().database.items.find((record) => record.id === id)?.captureProfile;
+  return [
+    numberField("포획 배율", "db-field-item-capture-multiplier", item?.captureProfile?.multiplier ?? 0, (value) => {
+      const profile = currentCaptureProfile();
+      updateDatabaseRecord("items", id, {
+        captureProfile: value > 0
+          ? { multiplier: value, ...(profile?.ballClass ? { ballClass: profile.ballClass } : {}) }
+          : undefined,
+      });
+    }, { min: 0, max: 100 }),
+    selectLiteral("볼 등급", "db-field-item-ball-class", item?.captureProfile?.ballClass ?? "none", ["none", "poke", "great", "ultra", "master"], (ballClass) => {
+      const profile = currentCaptureProfile();
+      updateDatabaseRecord("items", id, {
+        captureProfile: ballClass === "none"
+          ? profile ? { multiplier: profile.multiplier } : undefined
+          : { multiplier: profile?.multiplier ?? 1, ballClass },
+      });
+    }),
+  ];
 }
 
 // 부위(slot)는 여기서 그리지 않는다. 장비 인스펙터 헤더의 세그먼트

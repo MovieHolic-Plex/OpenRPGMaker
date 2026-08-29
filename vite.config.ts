@@ -80,6 +80,27 @@ function cpenRouterApiKey(mode: string): string {
   return (fromEnvFiles ?? process.env.CPENROUTER_API_KEY ?? "").trim();
 }
 
+/**
+ * /supabase 프록시가 주입하는 Supabase anon 키. 서버 전용(non-VITE) 이라 클라이언트 번들에
+ * 인라인되지 않는다 — /api/ai·/api/qwen·/api/cpen 과 정확히 같은 패턴이다.
+ *
+ * 왜: VITE_SUPABASE_ANON_KEY 는 접두사 때문에 번들에 그대로 박힌다. 지금 rpg_zzu 는 RLS 가
+ * 없고(DRAFT_20260706_auth_rls.sql 미적용) anon 에게 SELECT/INSERT/UPDATE 가 열려 있으므로,
+ * 빌드 산출물을 받은 사람은 전체 프로젝트·AI 대화·활동 로그를 읽고 쓸 수 있다
+ * (2026-08-29 실측: project_id 필터 없이 ai_activity_logs 12,735행 전체 조회됨).
+ * 키를 서버에 두면 그 열람 통로가 이 오리진 경유로 좁아진다.
+ */
+function supabaseAnonKey(mode: string): string {
+  const fromEnvFiles = loadEnv(mode, process.cwd(), "").SUPABASE_ANON_KEY;
+  return (fromEnvFiles ?? process.env.SUPABASE_ANON_KEY ?? "").trim();
+}
+
+/** 브라우저가 프록시 모드로 뜨는지(클라이언트에 실 키를 주지 않는 모드). */
+function supabaseUseProxy(mode: string): boolean {
+  const raw = (loadEnv(mode, process.cwd(), "").VITE_SUPABASE_USE_PROXY ?? "").trim();
+  return raw === "1" || raw === "true";
+}
+
 // 루프백 여부 판정 — IPv4/IPv6/IPv4-mapped-IPv6 모두 커버.
 function isLoopbackAddress(address: string | undefined): boolean {
   if (!address) return false;
@@ -119,6 +140,21 @@ const SAFE_ACTIVITY_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
  * 반드시 같아야 한다(값만 복제하고 계약은 test/aiActivityLogEndpoint.test.ts 가 고정한다).
  */
 const AI_ACTIVITY_DISK_ENDPOINT = "/__oprn/ai-activity";
+/**
+ * 편집 행위 로그 디스크 미러 경로. `src/editor/editActivityEndpoint.ts` 의
+ * EDIT_ACTIVITY_DISK_ENDPOINT 와 반드시 같아야 한다(값만 복제하고 계약은
+ * test/editActivityEndpoint.test.ts 가 고정한다 — AI 쪽에서 리네임 드리프트로 404 가
+ * 조용히 나던 전례가 있다).
+ */
+const EDIT_ACTIVITY_DISK_ENDPOINT = "/__oprn/edit-activity";
+/**
+ * 배치 본문 상한(2 MiB). 편집 행위 미러는 1500ms 마다 큐 전체를 보내므로 정상 배치는
+ * 수십 KiB 다. 상한이 없으면 스트로크 폭풍이나 오작동 클라이언트가 edits.jsonl 을
+ * 무한히 키운다 — 초과분은 413 으로 끊고 클라이언트가 미러를 스스로 끄게 한다.
+ */
+const EDIT_ACTIVITY_MAX_BODY_BYTES = 2 * 1024 * 1024;
+/** index.json 요약 보존 개수. 링버퍼(500)·localStorage(200) 와 같은 자리수로 맞춘다. */
+const EDIT_ACTIVITY_INDEX_LIMIT = 200;
 
 /** 미러가 실제로 읽는 필드만 선언한 JSON 경계 타입(전체 레코드는 src/ai/activityLogTypes.ts). */
 type AiActivityMirrorRecord = {
@@ -241,6 +277,162 @@ function aiActivityDiskPlugin(): Plugin {
   };
 }
 
+/** 미러가 실제로 읽는 필드만 선언한 JSON 경계 타입(전체 레코드는 src/editor/editActivityLog.ts). */
+type EditActivityMirrorEntry = {
+  seq?: number;
+  at?: string;
+  scope?: string;
+  label?: string | null;
+  origin?: string;
+  mapId?: string;
+  collection?: string;
+  cellCount?: number;
+  mergedCount?: number;
+  generation?: number;
+};
+
+/**
+ * 편집 행위 로그를 output/edit-activity/ 에 미러 — 에이전트·CLI(`npm run edit:log`)가
+ * 디스크에서 바로 읽는다.
+ *
+ * AI 미러와 두 군데가 다르다:
+ *   1. 본문이 `{entries:[...]}` **배치**다(AI 는 단건). 편집은 스트로크 단위라 1500ms 디바운스로
+ *      묶어 보낸다 — 건당 POST 면 dev 서버가 요청 폭풍을 맞는다.
+ *   2. 파일명에 클라이언트 값을 **한 글자도 쓰지 않는다**. AI 쪽은 `record.id` 를 파일명에 써서
+ *      `SAFE_ACTIVITY_ID_PATTERN` 으로 경로 탈출을 막아야 했는데, 여기는 append-only jsonl +
+ *      고정 파일명(edits.jsonl / latest.json / index.json) 뿐이라 탈출 표면이 애초에 없다.
+ */
+function editActivityDiskPlugin(): Plugin {
+  const dir = join(process.cwd(), "output", "edit-activity");
+  // dev 와 preview 양쪽에 같은 미들웨어를 단다. AI 미러는 configureServer 만 있던 동안
+  // `vite preview` 로 접속한 에디터의 POST 가 404 로 떨어졌고, 클라이언트는 첫 실패에 미러를
+  // 스스로 끄기 때문에 디스크에 한 줄도 남지 않았다(2026-08-28 실측). 같은 실수를 반복하지 않는다.
+  function attachEditMirror(server: ViteDevServer | PreviewServer) {
+    server.middlewares.use((req, res, next) => {
+      if (!req.url?.startsWith(EDIT_ACTIVITY_DISK_ENDPOINT)) return next();
+      const allowedOrigin = devCorsOrigin(req);
+      if (req.method === "OPTIONS") {
+        res.statusCode = 204;
+        if (allowedOrigin) res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+        res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        res.end();
+        return;
+      }
+      if (req.method === "GET") {
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        if (allowedOrigin) res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+        const latestPath = join(dir, "latest.json");
+        const listPath = join(dir, "index.json");
+        if (req.url.includes("list") && existsSync(listPath)) {
+          res.end(readFileSync(listPath, "utf8"));
+          return;
+        }
+        if (existsSync(latestPath)) {
+          res.end(readFileSync(latestPath, "utf8"));
+          return;
+        }
+        res.end("[]");
+        return;
+      }
+      if (req.method !== "POST") {
+        res.statusCode = 405;
+        res.end("method not allowed");
+        return;
+      }
+      const chunks: Buffer[] = [];
+      let size = 0;
+      let aborted = false;
+      req.on("data", (c) => {
+        if (aborted) return;
+        const chunk = Buffer.isBuffer(c) ? c : Buffer.from(c);
+        size += chunk.length;
+        if (size > EDIT_ACTIVITY_MAX_BODY_BYTES) {
+          // 상한 초과는 파싱하지 않고 즉시 끊는다 — 다 받아놓고 거절하면 상한이 의미가 없다.
+          aborted = true;
+          chunks.length = 0;
+          res.statusCode = 413;
+          if (allowedOrigin) res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+          res.end(`payload too large (> ${EDIT_ACTIVITY_MAX_BODY_BYTES} bytes)`);
+          return;
+        }
+        chunks.push(chunk);
+      });
+      req.on("end", () => {
+        if (aborted) return;
+        try {
+          mkdirSync(dir, { recursive: true });
+          const raw = Buffer.concat(chunks).toString("utf8");
+          const body = JSON.parse(raw) as { entries?: EditActivityMirrorEntry[] };
+          const entries = Array.isArray(body.entries) ? body.entries : [];
+          if (entries.length === 0) {
+            // 빈 배치는 정상 응답으로 넘긴다 — 400 을 주면 클라이언트가 미러를 영구히 끈다.
+            res.statusCode = 204;
+            if (allowedOrigin) res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+            res.end();
+            return;
+          }
+          // 한 줄 = 한 엔트리. 줄바꿈이 섞이면 jsonl 이 깨지므로 직렬화 후 공백으로 치환한다.
+          const lines = entries.map((entry) => `${JSON.stringify(entry).replace(/\n/g, " ")}\n`).join("");
+          appendFileSync(join(dir, "edits.jsonl"), lines, "utf8");
+          const last = entries[entries.length - 1];
+          writeFileSync(join(dir, "latest.json"), JSON.stringify(last, null, 2), "utf8");
+
+          let index: EditActivityMirrorEntry[] = [];
+          const indexPath = join(dir, "index.json");
+          if (existsSync(indexPath)) {
+            try {
+              index = JSON.parse(readFileSync(indexPath, "utf8")) as EditActivityMirrorEntry[];
+            } catch {
+              index = [];
+            }
+          }
+          // 요약은 CLI 표가 쓰는 열만 담는다(fields 상세는 edits.jsonl 에만 남는다) —
+          // index.json 이 필드 diff 까지 들면 200건에서 수 MB 가 된다.
+          const summaries = entries.map((entry) => ({
+            seq: entry.seq,
+            at: entry.at ?? new Date().toISOString(),
+            scope: entry.scope ?? "project",
+            label: entry.label ?? null,
+            ...(entry.mapId === undefined ? {} : { mapId: entry.mapId }),
+            ...(entry.collection === undefined ? {} : { collection: entry.collection }),
+            ...(entry.cellCount === undefined ? {} : { cellCount: entry.cellCount }),
+            ...(entry.mergedCount === undefined ? {} : { mergedCount: entry.mergedCount }),
+            origin: entry.origin ?? "human",
+          }));
+          // seq 는 클라이언트 링버퍼에서 단조 증가한다. 병합 엔트리는 같은 seq 로 다시 오므로
+          // 최신 값으로 교체한다(그러지 않으면 드래그 한 번이 index 를 같은 seq 로 도배한다).
+          const replaced = new Set(summaries.map((row) => row.seq).filter((value) => value !== undefined));
+          const next = [
+            ...summaries.reverse(),
+            // seq 없는 행(구버전 미러·손편집)은 대조 기준이 없으므로 지우지 않고 밀어낸다.
+            ...index.filter((row) => row.seq === undefined || !replaced.has(row.seq)),
+          ].slice(
+            0,
+            EDIT_ACTIVITY_INDEX_LIMIT,
+          );
+          writeFileSync(indexPath, JSON.stringify(next, null, 2), "utf8");
+          res.statusCode = 204;
+          if (allowedOrigin) res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+          res.end();
+        } catch (error) {
+          res.statusCode = 400;
+          res.end(error instanceof Error ? error.message : "bad request");
+        }
+      });
+    });
+  }
+  return {
+    name: "rpgzzu-edit-activity-disk",
+    configureServer(server) {
+      attachEditMirror(server);
+    },
+    configurePreviewServer(server) {
+      attachEditMirror(server);
+    },
+  };
+}
+
 // Same-origin bridge to the oh-my-pi companion router (provider auth + completions).
 // Browser always calls /auth/* and /v1/chat/completions on the page origin — never
 // 127.0.0.1:17832 — so Tailscale preview (`mdc-server:9888`) still reaches this process.
@@ -336,10 +528,32 @@ export default defineConfig(({ mode }) => {
   // Supabase(Kong) 는 평문 HTTP 라, dev 서버를 HTTPS 로 열면 브라우저가 mixed content 로 차단한다.
   // 같은 오리진의 /supabase 로 프록시해 두면 페이지 프로토콜과 무관하게 항상 붙는다(CORS 도 불필요).
   // 업스트림은 .env 의 절대 URL 을 그대로 쓴다 — node 스크립트들이 같은 값을 쓰므로 .env 는 절대 URL 로 유지한다.
+  const supabaseKey = supabaseAnonKey(mode);
+  const useSupabaseProxy = supabaseUseProxy(mode);
+  if (useSupabaseProxy && !supabaseKey) {
+    // 프록시 모드인데 서버 키가 없으면 클라이언트는 센티널만 보내고 PostgREST 는 401 을 준다.
+    // "저장이 안 되는데 원인 모름"이 되지 않게 부팅에서 크게 알린다.
+    console.warn(
+      "[rpg-zzu] VITE_SUPABASE_USE_PROXY=1 인데 SUPABASE_ANON_KEY 가 없습니다 — /supabase 요청이 401 로 떨어집니다. .env.local 에 서버 전용 키를 넣으세요.",
+    );
+  }
   proxy[SUPABASE_PROXY_PATH] = {
     target: supabaseUpstreamUrl(mode),
     changeOrigin: true,
     rewrite: (path: string) => path.replace(new RegExp(`^${SUPABASE_PROXY_PATH}`), ""),
+    // 키가 있으면 클라이언트가 보낸 자격증명을 서버 값으로 덮는다. headers 옵션 대신
+    // proxyReq.setHeader 를 쓰는 이유: 들어온 헤더는 소문자로 정규화돼 있어서 `Authorization`
+    // 을 새로 얹으면 `authorization` 과 중복 전송될 수 있다. setHeader 는 대소문자 무관하게 교체한다.
+    ...(supabaseKey
+      ? {
+          configure: (proxyServer) => {
+            proxyServer.on("proxyReq", (proxyReq) => {
+              proxyReq.setHeader("apikey", supabaseKey);
+              proxyReq.setHeader("authorization", `Bearer ${supabaseKey}`);
+            });
+          },
+        }
+      : {}),
   };
   if (apitopiaKey) {
     proxy["/api/ai"] = {
@@ -382,7 +596,7 @@ export default defineConfig(({ mode }) => {
   // 재최적화하다 "Failed to scan for dependencies" 로 서버가 죽는다(실측: 액션 전투 QA 중 3회).
   // VITE_CACHE_DIR 을 주면 워크트리 전용 캐시를 써서 이 충돌을 없앤다.
   cacheDir: process.env.VITE_CACHE_DIR,
-  plugins: [aiActivityDiskPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin()],
+  plugins: [aiActivityDiskPlugin(), editActivityDiskPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin()],
   // src/styles/index.css 는 @import 로 243개 파일을 한 모듈로 인라인한다. 소스맵이 없으면
   // DevTools 가 그 모든 규칙을 `index.css` 한 파일로 귀속시켜, 계산된 스타일에서 소유 파일을
   // 역추적할 수 없다. !important 1,051개와 "재배열 금지" 순서 계약 40여 개가 걸린 시트에서

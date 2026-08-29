@@ -1,13 +1,18 @@
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, serialize } from "./io";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { defaultEquipmentRecords } from "./defaults/defaultDatabaseEquipmentRecords";
+import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
+import { defaultSkillRecords } from "./defaults/defaultDatabaseStarterRecords";
+import { collectProjectItemReferenceIds } from "./io/references";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
 import type { ChangeSummary } from "@/project/types";
 import type { EditorIdentity } from "./editorIdentity";
-import type { GameMap, MapTreeNode, Project, TilesetDef } from "./types";
+import type { BattleAnimationRecord, GameMap, MapTreeNode, Project, TilesetDef } from "./types";
 
 const SUPABASE_SCHEMA = "rpg_zzu";
 const DEFAULT_PROJECT_TITLE = PRODUCT_BRAND;
@@ -212,7 +217,7 @@ async function loadProjectSnapshotFromSupabase(
   const rows = await parseProjectRows(response);
   const row = rows[0];
   if (!row) return null;
-  const project = deserialize(JSON.stringify(repairSupabaseCurrentJson(row.current_json)));
+  const project = deserializeSupabaseCurrentJson(row.current_json);
   // Hybrid maps SoT (editor open / public load): maps table map_json overlays current_json map bodies.
   // Patch/conflict loads pass overlayMaps:false so concurrent merge still compares current_json.
   if (options.overlayMaps !== false) {
@@ -318,6 +323,8 @@ export async function recordSupabaseAiAnalysisRun(
 
 export type SupabaseAiActivityLogInput = {
   readonly logId: string;
+  /** 탭 1개당 uuid 하나. 같은 project_id 를 쓰는 다른 워크트리/탭의 턴과 갈라내는 유일한 키. */
+  readonly runId?: string;
   readonly channel: string;
   readonly instruction: string;
   readonly mapId?: string;
@@ -327,15 +334,27 @@ export type SupabaseAiActivityLogInput = {
 /** 채팅/영역 AI 활동 로그 1건. 과거 폴백 행은 조회만 하고 새 로그는 전용 테이블에만 쓴다. */
 export const AI_ACTIVITY_FALLBACK_TILESET_ID = "__ai_activity__";
 
+/** run_id 컬럼이 없는 DB 를 한 번 확인하면 이후 요청에서 그 키를 빼서 왕복을 아낀다. */
+let aiActivityRunIdColumnMissing = false;
+
 export async function recordSupabaseAiActivityLog(
   input: SupabaseAiActivityLogInput,
   config = supabaseProjectConfig(),
 ): Promise<SupabaseSaveResult> {
   if (!config) return { kind: "not-configured" };
   try {
-    await upsertRows(config, "ai_activity_logs", "log_id", [aiActivityLogRow(config.projectId, input)]);
+    await upsertRows(config, "ai_activity_logs", "log_id", [
+      aiActivityLogRow(config.projectId, input, { omitRunId: aiActivityRunIdColumnMissing }),
+    ]);
     return { kind: "saved" };
   } catch (error) {
+    if (input.runId && !aiActivityRunIdColumnMissing && isUnknownColumnError(error, "run_id")) {
+      aiActivityRunIdColumnMissing = true;
+      await upsertRows(config, "ai_activity_logs", "log_id", [
+        aiActivityLogRow(config.projectId, input, { omitRunId: true }),
+      ]);
+      return { kind: "saved" };
+    }
     const missingPrimary =
       (error instanceof SupabaseProjectSyncError && error.status === 404) || isOptionalTableMissingError(error);
     if (!missingPrimary) throw error;
@@ -346,10 +365,22 @@ export async function recordSupabaseAiActivityLog(
   }
 }
 
-/** 전용 테이블 + 폴백 테이블에서 최근 AI 활동 로그를 읽어 온다. */
+/** 테스트 전용 — 컬럼 없음 캐시를 되돌린다. */
+export function resetAiActivityRunIdColumnProbeForTest(): void {
+  aiActivityRunIdColumnMissing = false;
+}
+
+/**
+ * 전용 테이블 + 폴백 테이블에서 최근 AI 활동 로그를 읽어 온다.
+ *
+ * `runId` 를 주면 그 런의 턴만 본다 — 같은 project_id 를 여러 워크트리·탭이 공유하므로
+ * 필터 없는 최신 정렬은 옆 런의 e2e 턴을 준다. 폴백 테이블(ai_analysis_runs)에는 런 정보가
+ * 없으므로 runId 를 준 호출에서는 폴백을 섞지 않는다.
+ */
 export async function listSupabaseAiActivityLogs(
   limit = 20,
   config = supabaseProjectConfig(),
+  options: { readonly runId?: string } = {},
 ): Promise<readonly Record<string, unknown>[]> {
   if (!config) return [];
   const n = Math.max(1, Math.min(100, Math.floor(limit)));
@@ -358,14 +389,20 @@ export async function listSupabaseAiActivityLogs(
   try {
     const primaryParams = new URLSearchParams({
       project_id: `eq.${config.projectId}`,
-      select: "log_id,channel,instruction,map_id,payload_json,created_at",
+      // run_id 는 필터를 걸 때만 select 에 넣는다 — 20260829000000 미적용 DB 에서
+      // 없는 컬럼을 select 하면 400 이고, 이 경로는 오류를 삼키므로 목록이 통째로 빈다.
+      select: options.runId
+        ? "log_id,run_id,channel,instruction,map_id,payload_json,created_at"
+        : "log_id,channel,instruction,map_id,payload_json,created_at",
       order: "created_at.desc",
       limit: String(n),
+      ...(options.runId ? { run_id: `eq.${options.runId}` } : {}),
     });
     primary = await fetchJsonArray(`${config.url}/rest/v1/ai_activity_logs?${primaryParams.toString()}`, config);
   } catch {
     /* primary missing or network — still try fallback */
   }
+  if (options.runId) return primary.slice(0, n);
   try {
     const fallbackParams = new URLSearchParams({
       project_id: `eq.${config.projectId}`,
@@ -903,13 +940,20 @@ function aiAnalysisRunRow(projectId: string, input: SupabaseAiAnalysisRunInput):
   };
 }
 
-function aiActivityLogRow(projectId: string, input: SupabaseAiActivityLogInput): Record<string, unknown> {
+function aiActivityLogRow(
+  projectId: string,
+  input: SupabaseAiActivityLogInput,
+  options: { readonly omitRunId?: boolean } = {},
+): Record<string, unknown> {
   return {
     log_id: input.logId,
     project_id: projectId,
     channel: input.channel,
     instruction: input.instruction.slice(0, 4000),
     map_id: input.mapId ?? null,
+    // run_id 는 20260829000000 이후에만 존재한다. 미적용 DB 에서는 PostgREST 가 PGRST204 로
+    // 400 을 주므로, 그때는 이 키를 빼고 한 번 더 보낸다(로그가 아예 안 남는 것보다 낫다).
+    ...(input.runId && options.omitRunId !== true ? { run_id: input.runId } : {}),
     payload_json: input.payload,
   };
 }
@@ -1199,20 +1243,212 @@ function isOptionalTableMissingError(error: unknown): boolean {
   return error instanceof SupabaseProjectSyncError && error.status === 404 && error.message.includes("PGRST205");
 }
 
+/**
+ * PostgREST 가 "그 컬럼 없음" 으로 거절했는지. 쓰기 경로는 PGRST204 로 400 을 준다.
+ * 마이그레이션이 밀린 DB 에서 새 컬럼 때문에 기능 전체가 죽지 않게 하는 판별기다.
+ */
+function isUnknownColumnError(error: unknown, column: string): boolean {
+  if (!(error instanceof SupabaseProjectSyncError) || error.status !== 400) return false;
+  if (!error.message.includes(column)) return false;
+  return error.message.includes("PGRST204") || /does not exist|could not find/iu.test(error.message);
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function deserializeSupabaseCurrentJson(value: unknown): Project {
+  const originalJson = JSON.stringify(value);
+  try {
+    const repaired: unknown = JSON.parse(originalJson);
+    repairSupabaseCurrentJson(repaired);
+    return deserialize(JSON.stringify(repaired));
+  } catch {
+    // 세 차례의 검토에서 장식용 로드 복구가 정상 프로젝트를 불러오지 못하게 만들었다.
+    // 복구본 전체를 검증한 뒤 실패하면 손대지 않은 원본 행을 여는 것을 구조적으로 보장한다.
+    return deserialize(originalJson);
+  }
+}
+
 function repairSupabaseCurrentJson(value: unknown): unknown {
-  if (!isRecord(value)) return value;
-  // DB current_json is the canonical source of truth for authored database records
-  // (items, skills, states, animations). Do NOT backfill from JSON defaults on load —
-  // defaults seed new projects via createBlankProject -> saveProjectToSupabase, and
-  // every load returns exactly what the DB row holds. Local is cache-only.
+  repairSupabaseLoadFoundation(value);
+  repairSupabaseItemCatalog(value);
+  return value;
+}
+
+function repairSupabaseLoadFoundation(value: unknown): void {
+  if (!isRecord(value)) return;
   pruneInvalidVillageInfoDocuments(value);
   removeLegacySpriteReferences(value);
   appendMissingResourceProfiles(value, defaultResourceProfiles());
-  return value;
+
+  // store.ts도 로드 뒤 같은 ensure를 호출한다. 여기서는 복구 아이템/스킬을 검증하기 전에
+  // 애니메이션 참조를 완성해야 하므로 먼저 실행하며, 두 호출은 같은 id 기반 수렴 동작이다.
+  ensureLoadRepairBattleAnimations(value);
+}
+
+function repairSupabaseItemCatalog(value: unknown): void {
+  if (!isRecord(value)) return;
+  // 참조 수집기는 정규화된 Project를 단일 권위자로 삼는다. 카탈로그를 건드리기 전의
+  // 유효한 행을 먼저 해석하므로, 이벤트·시스템·시작 인벤토리의 기존 참조를 잃지 않는다.
+  const referencedItemIds = collectProjectItemReferenceIds(deserialize(JSON.stringify(value)));
+
+  // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
+  // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
+  // 그대로 두면 손대지 않은 영문 껍데기가 Supabase를 불러올 때마다 살아남기 때문이다.
+  const requiredSkillIds = repairUntouchedDefaultItemCatalogStubs(value, referencedItemIds);
+  appendMissingLoadRepairSkills(value, requiredSkillIds);
+}
+
+const RETIRED_EQUIPMENT_ITEM_ID_MAP: Readonly<Record<string, string>> = {
+  item_bronze_sword: "equip_sword",
+  item_iron_sword: "equip_iron_sword",
+  item_steel_sword: "equip_steel_sword",
+  item_scout_dagger: "equip_scout_dagger",
+  item_mage_staff: "equip_mage_staff",
+  item_oak_shield: "equip_oak_shield",
+  item_leather_armor: "equip_leather_armor",
+  item_mystic_robe: "equip_mystic_robe",
+  item_traveler_hat: "equip_traveler_hat",
+  item_focus_charm: "equip_focus_charm",
+  item_iron_shield: "equip_iron_shield",
+  item_steel_armor: "equip_steel_armor",
+  item_mage_hat: "equip_mage_hat",
+  item_gloves: "equip_gloves",
+  item_boots: "equip_boots",
+  item_cloak: "equip_cloak",
+  item_ring: "equip_ring",
+  item_necklace: "equip_necklace",
+  item_focus_ring: "equip_focus_ring",
+};
+
+const RETIRED_EQUIPMENT_ITEM_STUB_IDS = new Set(Object.keys(RETIRED_EQUIPMENT_ITEM_ID_MAP));
+
+function repairUntouchedDefaultItemCatalogStubs(
+  project: Record<string, unknown>,
+  referencedItemIds: ReadonlySet<string>,
+): ReadonlySet<string> {
+  const requiredSkillIds = new Set<string>();
+  if (!isRecord(project.database)) return requiredSkillIds;
+  const database = project.database;
+  if (!Array.isArray(database.items) || !Array.isArray(database.skills)) return requiredSkillIds;
+
+  const itemDefaults = new Map(defaultItemRecords().map((record) => [record.id, record]));
+  const authoredItemIds = new Set(
+    database.items
+      .filter((record) => isRecord(record) && typeof record.id === "string" && !isUntouchedLegacyItemStub(record))
+      .map((record) => (record as Record<string, unknown>).id as string),
+  );
+  database.items = database.items.flatMap((record) => {
+    if (!isRecord(record) || typeof record.id !== "string" || !isUntouchedLegacyItemStub(record)) return [record];
+    if (authoredItemIds.has(record.id)) return [];
+    const current = itemDefaults.get(record.id);
+    if (current) {
+      const replacement = filteredLoadRepairItem(current, database);
+      for (const skillId of [replacement.skillId, replacement.learnedSkillId, replacement.activateSkillId]) {
+        if (typeof skillId === "string") requiredSkillIds.add(skillId);
+      }
+      return [replacement];
+    }
+    if (!RETIRED_EQUIPMENT_ITEM_STUB_IDS.has(record.id)) return [record];
+    return referencedItemIds.has(record.id) ? [retiredEquipmentItemReplacement(record)] : [];
+  });
+  return requiredSkillIds;
+}
+
+function filteredLoadRepairItem(
+  record: unknown,
+  database: Record<string, unknown>,
+): Record<string, unknown> {
+  const item = cloneRecord(record);
+  const actorIds = recordIds(database.actors);
+  const classIds = recordIds(database.classes);
+  const stateIds = recordIds(database.states);
+  const elementIds = recordIds(database.elements);
+  filterIdArray(item, "usableActorIds", actorIds);
+  filterIdArray(item, "usableClassIds", classIds);
+  filterIdArray(item, "healStateIds", stateIds);
+  filterStateEffects(item, stateIds);
+  if (isRecord(item.equipmentProfile)) {
+    filterIdArray(item.equipmentProfile, "equippableActorIds", actorIds);
+    filterIdArray(item.equipmentProfile, "equippableClassIds", classIds);
+    filterIdArray(item.equipmentProfile, "stateInflictIds", stateIds);
+    filterIdArray(item.equipmentProfile, "stateDefenseIds", stateIds);
+    filterIdArray(item.equipmentProfile, "attackElementIds", elementIds);
+    filterIdArray(item.equipmentProfile, "elementalDefenseIds", elementIds);
+  }
+  return item;
+}
+
+function appendMissingLoadRepairSkills(
+  project: Record<string, unknown>,
+  requiredSkillIds: ReadonlySet<string>,
+): void {
+  if (requiredSkillIds.size === 0 || !isRecord(project.database)) return;
+  const database = project.database;
+  if (!Array.isArray(database.skills)) return;
+  const skillIds = recordIds(database.skills);
+  const stateIds = recordIds(database.states);
+  const elementIds = recordIds(database.elements);
+  for (const defaultSkill of defaultSkillRecords()) {
+    if (!requiredSkillIds.has(defaultSkill.id) || skillIds.has(defaultSkill.id)) continue;
+    const skill = cloneRecord(defaultSkill);
+    filterStateEffects(skill, stateIds);
+    if (typeof skill.elementId === "string" && !elementIds.has(skill.elementId)) delete skill.elementId;
+    database.skills.push(skill);
+    skillIds.add(defaultSkill.id);
+  }
+}
+
+function retiredEquipmentItemReplacement(record: Record<string, unknown>): Record<string, unknown> {
+  const id = typeof record.id === "string" ? record.id : "";
+  const equipmentId = RETIRED_EQUIPMENT_ITEM_ID_MAP[id];
+  const equipment = equipmentId
+    ? defaultEquipmentRecords().find((entry) => entry.id === equipmentId)
+    : undefined;
+  // 알 수 없는 이전 id는 로드를 막지 않는다. 복구 대상이 아니었던 원본 행을 그대로 둔다.
+  if (!equipment) return record;
+  return {
+    ...record,
+    name: equipment.name,
+    description: `이전 아이템 목록에 남아 있던 ${equipment.name} 항목입니다. 착용 가능한 버전은 장비 탭에 있습니다.`,
+    occasion: "never",
+    occasionField: false,
+    occasionBattle: false,
+    consumable: false,
+  };
+}
+
+function recordIds(value: unknown): Set<string> {
+  if (!Array.isArray(value)) return new Set();
+  return new Set(value.flatMap((entry) => isRecord(entry) && typeof entry.id === "string" ? [entry.id] : []));
+}
+
+function filterIdArray(record: Record<string, unknown>, key: string, existingIds: ReadonlySet<string>): void {
+  if (!Array.isArray(record[key])) return;
+  record[key] = record[key].filter((id): id is string => typeof id === "string" && existingIds.has(id));
+}
+
+function filterStateEffects(record: Record<string, unknown>, stateIds: ReadonlySet<string>): void {
+  if (!Array.isArray(record.stateEffects)) return;
+  record.stateEffects = record.stateEffects.filter((effect) => (
+    isRecord(effect) && typeof effect.stateId === "string" && stateIds.has(effect.stateId)
+  ));
+}
+
+function ensureLoadRepairBattleAnimations(project: Record<string, unknown>): void {
+  if (!isRecord(project.database) || !Array.isArray(project.database.battleAnimations)) return;
+  ensureBundledBattleAnimations({
+    database: { battleAnimations: project.database.battleAnimations as BattleAnimationRecord[] },
+  });
+}
+
+function isUntouchedLegacyItemStub(record: Record<string, unknown>): boolean {
+  if (typeof record.id !== "string" || !record.id.startsWith("item_")) return false;
+  const slug = record.id.slice("item_".length).replaceAll("_", "-");
+  const oldName = slug.replaceAll("-", " ");
+  // 두 필드가 모두 옛 시드 모양이어야 한다. 이름이나 설명 하나라도 다르면 저작 데이터다.
+  return record.name === oldName && record.description === `${slug} 기본 아이템입니다.`;
 }
 
 function pruneInvalidVillageInfoDocuments(project: Record<string, unknown>): void {

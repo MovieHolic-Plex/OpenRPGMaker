@@ -129,6 +129,16 @@ export type StepResult =
       merchantGold?: number;
       branchOnTransaction?: boolean;
       branchOnFailedTransaction?: boolean;
+      /** 추가 서비스. 예전에는 pause 페이로드에서 빠져 에디터 설정이 런타임에 도달하지 않았다. */
+      shopServiceKind?: "repair" | "appraisal" | "pawn";
+      /** 감정 대상 풀 — 비면 "해 드릴 일이 없습니다". */
+      appraisalUnidentifiedPool?: readonly string[];
+      /** 누적 지출 집계 키. 생략 시 "global". */
+      loyaltyTierId?: string;
+      /** 구매액 대비 마일리지 적립률(0..0.1). */
+      mileageRate?: number;
+      /** 가게 투자 레벨 0..5 — 상인 매입 예산 배수. */
+      investmentLevel?: number;
     }
   | {
       kind: "inn";
@@ -165,6 +175,7 @@ export interface InterpreterState {
   currentFace?: FaceGraphic;
   // 현재 실행 중인 이벤트 id. 셀프 스위치 조작/평가 기준.
   currentEventId?: string;
+  onFactionStanceChanged?: () => void;
   // 루프 무한 반복 가드. 루프 본문이 한 번 완료될 때마다 증가.
   loopIterations?: number;
   maxLoopIterations: number;
@@ -176,6 +187,8 @@ export interface InterpreterOptions {
   readonly maxLoopIterations?: number;
   readonly maxInstructions?: number;
   readonly currentEventId?: string;
+  /** 진영 태도가 바뀐 프레임에 액션 전투의 타깃 캐시를 비우는 런타임 훅. */
+  readonly onFactionStanceChanged?: () => void;
 }
 
 export interface Interpreter {

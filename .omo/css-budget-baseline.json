@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-28T12:11:14.651Z",
+  "generatedAt": "2026-08-29T09:34:47.237Z",
   "metrics": {
-    "hexLiterals": 1922,
-    "important": 1035,
-    "undefinedVars": 74,
+    "hexLiterals": 1761,
+    "important": 986,
+    "undefinedVars": 63,
     "globalRootFiles": 10,
-    "cssFileCount": 258
+    "cssFileCount": 262
   },
   "details": {
     "hexByFile": {
@@ -17,8 +17,8 @@
       "src/styles/database/ai-bar.css": 1,
       "src/styles/database/assistant-command-bar.css": 1,
       "src/styles/database/assistant-composer.css": 1,
-      "src/styles/database/assistant-proposal.css": 11,
-      "src/styles/database/assistant-rising-overlay.css": 9,
+      "src/styles/database/assistant-proposal.css": 2,
+      "src/styles/database/assistant-rising-overlay.css": 2,
       "src/styles/database/battle-studio.css": 9,
       "src/styles/database/core.part-1.css": 13,
       "src/styles/database/core.part-2.css": 2,
@@ -31,25 +31,25 @@
       "src/styles/database/desktop-record-shell/13-actor-studio.css": 2,
       "src/styles/database/enemies.part-1.css": 2,
       "src/styles/database/form-hierarchy-modern.css": 9,
-      "src/styles/database/light-theme.css": 24,
+      "src/styles/database/light-theme.css": 22,
       "src/styles/database/modern/troops.css": 5,
       "src/styles/database/record-list-modern.css": 12,
-      "src/styles/database/sidebar.css": 30,
+      "src/styles/database/sidebar.css": 23,
       "src/styles/database/studio-theme.css": 24,
       "src/styles/database/system-studio.css": 14,
       "src/styles/database/tabs-a.part-2.css": 3,
       "src/styles/database/tabs-b-assistant-panel/02-chat-dock.css": 1,
       "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css": 2,
       "src/styles/database/tabs-b-assistant-panel/04-chat-bubbles-proposals.css": 4,
+      "src/styles/database/tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css": 4,
       "src/styles/database/tabs-b-assistant-panel/07-viewer-modal-settings.css": 6,
       "src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css": 7,
       "src/styles/database/tabs-b-assistant-panel/09-ux-polish-density.css": 4,
       "src/styles/database/tabs-b-assistant-panel/10-dock-mode-rich-doc.css": 9,
       "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css": 1,
-      "src/styles/database/tabs-b-assistant-panel/13-assistant-modern.css": 2,
-      "src/styles/database/tabs-b-shell-layout.css": 1,
+      "src/styles/database/tabs-b-assistant-panel/13-assistant-modern.css": 1,
       "src/styles/database/tabs-b-status-menu-base.css": 5,
-      "src/styles/database/tabs-b-status-menu-main.css": 9,
+      "src/styles/database/tabs-b-status-menu-main.css": 7,
       "src/styles/database/tabs-b-title-screen.css": 20,
       "src/styles/database/tilesets-terrain.css": 4,
       "src/styles/database/tilesets.css": 19,
@@ -71,13 +71,12 @@
       "src/styles/editor/event-editor.command-preview/05-seteventgraphicpattern-charset-frame-stage.css": 15,
       "src/styles/editor/event-editor.command-preview/06-force-full-rm-grid.css": 14,
       "src/styles/editor/event-editor.command-preview/07-actor-battle-authoring-surface.css": 33,
-      "src/styles/editor/event-editor.command-preview/07-identifiable-previews.css": 8,
       "src/styles/editor/event-editor.command-preview/07-screen-effect-stage.css": 7,
       "src/styles/editor/event-editor.command-preview/08-quick-authoring-surface.css": 17,
       "src/styles/editor/event-editor.command-preview/09-map-screen-authoring-surface.css": 12,
-      "src/styles/editor/event-editor.commerce.css": 87,
+      "src/styles/editor/event-editor.commerce.css": 34,
       "src/styles/editor/event-editor.css": 1,
-      "src/styles/editor/event-editor.mockup.css": 29,
+      "src/styles/editor/event-editor.mockup.css": 22,
       "src/styles/editor/event-editor.modern/03-legend-toolbar.css": 5,
       "src/styles/editor/event-editor.modern/04-depth-parent.css": 8,
       "src/styles/editor/event-editor.modern/05-changeface-form-selected-card.css": 4,
@@ -93,13 +92,14 @@
       "src/styles/editor/event-editor.part-3/07-map-preview-keeps-dark.css": 16,
       "src/styles/editor/event-editor.part-4.css": 4,
       "src/styles/editor/event-marker-tooltip.css": 20,
-      "src/styles/editor/harness-suggestion.css": 84,
+      "src/styles/editor/harness-suggestion.css": 83,
       "src/styles/editor/help-modal.css": 29,
       "src/styles/editor/inline-assist.css": 35,
       "src/styles/editor/map-event-search.css": 31,
-      "src/styles/editor/map-props.css": 41,
+      "src/styles/editor/map-panel.modern.css": 1,
+      "src/styles/editor/map-props.css": 35,
       "src/styles/editor/palette-player.css": 4,
-      "src/styles/editor/responsive-a.css": 17,
+      "src/styles/editor/responsive-a.css": 16,
       "src/styles/editor/storyboard.css": 3,
       "src/styles/editor/tile-palette-clusters.css": 1,
       "src/styles/map/resource-system.part-1.css": 5,
@@ -133,29 +133,26 @@
       "src/styles/runtime/battle-skins/_octopath.css": 8,
       "src/styles/runtime/battle-skins/_pokemon.css": 11,
       "src/styles/runtime/battle-skins/_rm2000.css": 9,
-      "src/styles/runtime/battle-skins/_rm2003.css": 19,
       "src/styles/runtime/battle-skins/_transitions.css": 11,
       "src/styles/runtime/battle-skins/_vxace.css": 35,
-      "src/styles/runtime/commerce.css": 2,
+      "src/styles/runtime/commerce.css": 1,
       "src/styles/runtime/keyboardNav.css": 6,
       "src/styles/runtime/minimap.css": 2,
       "src/styles/runtime/nameEntry.css": 11,
       "src/styles/runtime/pictures.css": 1,
       "src/styles/runtime/playLoading.css": 7,
       "src/styles/runtime/playSurface.css": 2,
+      "src/styles/runtime/shop.css": 7,
       "src/styles/runtime/statusMenuEdgeDock.css": 14,
       "src/styles/runtime/system.css": 7,
       "src/styles/runtime/timer.css": 1,
       "src/styles/runtime/title.css": 4,
       "src/styles/runtime/touchpad.css": 2,
       "src/styles/runtime/transitions.css": 5,
-      "src/styles/shell/editor-ui-modes.css": 61,
+      "src/styles/shell/editor-ui-modes.css": 46,
       "src/styles/shell/editor-welcome.css": 1,
-      "src/styles/shell/figma-editor/04-chipset-events.css": 3,
-      "src/styles/shell/figma-editor/10-map-tree.css": 25,
       "src/styles/shell/shell-density.part-1.css": 2,
-      "src/styles/shell/shell-density.part-2.css": 6,
-      "src/styles/tokens.css": 24,
+      "src/styles/tokens.css": 25,
       "src/player/player.css": 1
     },
     "importantByFile": {
@@ -169,12 +166,11 @@
       "src/styles/database/modern/enemies.css": 1,
       "src/styles/database/modern/weather-animals.css": 1,
       "src/styles/database/play-resolution.css": 1,
-      "src/styles/database/sidebar.css": 81,
+      "src/styles/database/sidebar.css": 41,
       "src/styles/database/studio-theme.css": 115,
-      "src/styles/database/system-studio.css": 244,
+      "src/styles/database/system-studio.css": 242,
       "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css": 3,
       "src/styles/database/tabs-b-assistant-panel/09-ux-polish-density.css": 21,
-      "src/styles/database/tabs-b-assistant-panel/13-assistant-modern.css": 2,
       "src/styles/database/tilesets.css": 4,
       "src/styles/database/title-workbench.css": 1,
       "src/styles/database/workspace-modern.css": 4,
@@ -202,27 +198,25 @@
       "src/styles/runtime/battle-skins/_battlers.css": 11,
       "src/styles/runtime/battle-skins/_bravely.css": 5,
       "src/styles/runtime/battle-skins/_chrono.css": 3,
-      "src/styles/runtime/battle-skins/_dragonquest.css": 3,
+      "src/styles/runtime/battle-skins/_dragonquest.css": 1,
       "src/styles/runtime/battle-skins/_ff.css": 2,
       "src/styles/runtime/battle-skins/_goldensun.css": 1,
       "src/styles/runtime/battle-skins/_mother.css": 2,
-      "src/styles/runtime/battle-skins/_mv.css": 65,
+      "src/styles/runtime/battle-skins/_mv.css": 63,
       "src/styles/runtime/battle-skins/_octopath.css": 2,
       "src/styles/runtime/battle-skins/_pokemon.css": 18,
-      "src/styles/runtime/battle-skins/_rm2000.css": 4,
+      "src/styles/runtime/battle-skins/_rm2000.css": 2,
       "src/styles/runtime/battle-skins/_vxace.css": 264,
       "src/styles/runtime/battle-skins/_windowskin.css": 5,
       "src/styles/runtime/title.css": 1,
-      "src/styles/shell/editor-ui-modes.css": 31,
+      "src/styles/shell/editor-ui-modes.css": 30,
       "src/styles/shell/editor-welcome.css": 1,
       "src/styles/shell/figma-editor/03-layout-left-palette.css": 2,
-      "src/styles/shell/figma-editor/04-chipset-events.css": 2,
+      "src/styles/shell/figma-editor/04-chipset-events.css": 1,
       "src/styles/shell/figma-editor/05-canvas-statusbar.css": 2,
       "src/styles/shell/figma-editor/09-rm-chipset-grid.css": 8,
-      "src/styles/shell/figma-editor/10-map-tree.css": 2,
       "src/styles/shell/shell-density.part-1.css": 1,
-      "src/styles/shell/shell-density.part-2.css": 2,
-      "src/player/player.css": 1
+      "src/player/player.css": 8
     },
     "globalRootFileList": [
       "src/styles/database/enemies.part-1.css",
@@ -249,10 +243,7 @@
       "--actor-resource-width",
       "--actor-resource-x",
       "--actor-resource-y",
-      "--ai-command-bar-height",
       "--ai-dock-width",
-      "--ai-proposal-wipe-ms",
-      "--battle-window-skin-width",
       "--bg-input",
       "--border-color",
       "--cluster-cols",
@@ -294,20 +285,12 @@
       "--oprn-title-blue-hi",
       "--pop-x",
       "--shadow-sm",
-      "--studio-amber",
-      "--studio-mint",
       "--studio-play",
       "--studio-select",
-      "--studio-surface-2",
-      "--studio-surface-3",
-      "--studio-violet",
-      "--studio-violet-soft",
-      "--surface",
       "--surface-1",
       "--surface-raised",
       "--surface-soft",
       "--text-on-accent",
-      "--wait-fill",
       "--warn-bg",
       "--warn-border",
       "--warn-text"
@@ -350,19 +333,10 @@
       "--actor-resource-y": [
         "src/styles/database/record-thumbs.css"
       ],
-      "--ai-command-bar-height": [
-        "src/styles/database/assistant-proposal.css"
-      ],
       "--ai-dock-width": [
         "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css",
         "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css",
         "src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css"
-      ],
-      "--ai-proposal-wipe-ms": [
-        "src/styles/database/assistant-proposal.css"
-      ],
-      "--battle-window-skin-width": [
-        "src/styles/runtime/battle-skins/_windowskin.css"
       ],
       "--bg-input": [
         "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css"
@@ -398,7 +372,6 @@
         "src/styles/database/desktop-record-shell/11-life-authoring.css"
       ],
       "--hover-bg": [
-        "src/styles/editor/map-props.css",
         "src/styles/editor/map-props.css",
         "src/styles/editor/map-props.css"
       ],
@@ -513,42 +486,11 @@
       "--shadow-sm": [
         "src/styles/editor/region-task.css"
       ],
-      "--studio-amber": [
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css"
-      ],
-      "--studio-mint": [
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css"
-      ],
       "--studio-play": [
         "src/styles/shell/editor-ui-modes.css"
       ],
       "--studio-select": [
         "src/styles/shell/editor-ui-modes.css"
-      ],
-      "--studio-surface-2": [
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css"
-      ],
-      "--studio-surface-3": [
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css"
-      ],
-      "--studio-violet": [
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css"
-      ],
-      "--studio-violet-soft": [
-        "src/styles/database/system-studio.css",
-        "src/styles/database/system-studio.css"
-      ],
-      "--surface": [
-        "src/styles/shell/figma-editor/10-map-tree.css"
       ],
       "--surface-1": [
         "src/styles/database/tabs-b-assistant-panel/02-chat-dock.css",
@@ -564,9 +506,6 @@
       ],
       "--text-on-accent": [
         "src/styles/editor/event-editor.modern/06-event-editor-modal-footer.css"
-      ],
-      "--wait-fill": [
-        "src/styles/editor/event-editor.command-preview/07-identifiable-previews.css"
       ],
       "--warn-bg": [
         "src/styles/editor/event-editor.command-preview/09-map-screen-authoring-surface.css"
@@ -623,6 +562,7 @@
       "src/styles/database/modern/crops-characters.css",
       "src/styles/database/modern/enemies.css",
       "src/styles/database/modern/equipment-items.css",
+      "src/styles/database/modern/factions.css",
       "src/styles/database/modern/life-crafting.css",
       "src/styles/database/modern/skills.css",
       "src/styles/database/modern/spatial-collections.css",
@@ -709,7 +649,6 @@
       "src/styles/editor/event-editor.command-preview/05-seteventgraphicpattern-charset-frame-stage.css",
       "src/styles/editor/event-editor.command-preview/06-force-full-rm-grid.css",
       "src/styles/editor/event-editor.command-preview/07-actor-battle-authoring-surface.css",
-      "src/styles/editor/event-editor.command-preview/07-identifiable-previews.css",
       "src/styles/editor/event-editor.command-preview/07-screen-effect-stage.css",
       "src/styles/editor/event-editor.command-preview/08-quick-authoring-surface.css",
       "src/styles/editor/event-editor.command-preview/09-map-screen-authoring-surface.css",
@@ -739,6 +678,7 @@
       "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css",
       "src/styles/editor/event-editor.part-3/07-map-preview-keeps-dark.css",
       "src/styles/editor/event-editor.part-3/08-inline-validation-badges.css",
+      "src/styles/editor/event-editor.part-3/09-condition-groups.css",
       "src/styles/editor/event-editor.part-4.css",
       "src/styles/editor/event-editor.windowing.css",
       "src/styles/editor/event-marker-tooltip.css",
@@ -748,6 +688,7 @@
       "src/styles/editor/inline-assist.css",
       "src/styles/editor/map-event-search.css",
       "src/styles/editor/map-history.css",
+      "src/styles/editor/map-panel.modern.css",
       "src/styles/editor/map-props.css",
       "src/styles/editor/palette-player.css",
       "src/styles/editor/region-task.css",
@@ -804,6 +745,7 @@
       "src/styles/runtime/battle/21-gen1-hud-type-badge.css",
       "src/styles/runtime/commerce.css",
       "src/styles/runtime/handSlot.css",
+      "src/styles/runtime/juice.css",
       "src/styles/runtime/keyboardNav.css",
       "src/styles/runtime/minimap.css",
       "src/styles/runtime/nameEntry.css",
@@ -811,6 +753,7 @@
       "src/styles/runtime/playLoading.css",
       "src/styles/runtime/playSurface.css",
       "src/styles/runtime/playerRuntime.css",
+      "src/styles/runtime/shop.css",
       "src/styles/runtime/statusMenuEdgeDock.css",
       "src/styles/runtime/system.css",
       "src/styles/runtime/timer.css",

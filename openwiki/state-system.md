@@ -39,9 +39,12 @@ RM2K3-compatible editable fields:
 
 Runtime effects (`runtimeEffects?: StateRuntimeEffects`):
 - `restrictsAction` — 행동 봉쇄
-- `hpDamagePercentPerTurn` — 턴당 HP % 피해
-- `attackMultiplier` / `defenseMultiplier` — 공격·방어 배율 (공격상승=2, 방어하락=0.5 식)
+- `blocksSkillUse` — 스킬만 봉쇄(기본 공격·아이템은 허용)
+- `hpDamagePercentPerTurn` / `hpHealPercentPerTurn` — 턴당 최대 HP 비례 피해 / 회복
+- `attackMultiplier` / `defenseMultiplier` / `agilityMultiplier` — 공격·방어·민첩 배율
 - `removeOnBattleEnd` — 전투 종료 시 해제
+
+회복은 음수 피해로 표현하지 않는다. `hpHealPercentPerTurn` 전용 필드가 직렬화·역직렬화되고 상태 편집기의 `턴당 HP 회복(%)`에 그대로 표시되므로 저작 데이터의 의미가 명확하다.
 
 > Note: `hpReleaseTurn`/`mpReleaseTurn` (record) and `hpTurn`/`mpTurn` (ontology) have **different schemas** — the ontology stores a display string like “매 턴 최대 HP의 -6%”, the record stores a number. `resolvedStateValues` maps between them. Do not assume they are interchangeable.
 
@@ -49,21 +52,30 @@ Runtime effects (`runtimeEffects?: StateRuntimeEffects`):
 
 `StateOntology` in `src/project/ontology/databaseStateOntology.ts`. A complete template with every field filled, looked up by `stateOntologyFor(id, name)`. Unknown ids get a generic fallback template.
 
-The built-in `STATE_ONTOLOGY` covers the five default states:
+The built-in `STATE_ONTOLOGY` covers the twelve default states:
 
-| id | name | color | restriction | key runtime effect |
-|---|---|---|---|---|
-| `state_poison` | 독 | 초록 `#7fc665` | 없음 | 매 턴 최대 HP -6%, 전투 종료 후에도 유지(해독 필요), 3턴부터 20% 자연 회복 |
-| `state_sleep` | 수면 | 보라 `#b9a2df` | 행동 불가 | 공격/정신/방어/민첩 봉인, 피격 시 50% 해제, 회피 불가 |
-| `state_attack_up` | 공격 상승 | 빨강 `#e68b8b` | 없음 | 공격 2배, 전투 종료 시 해제 |
-| `state_defense_up` | 방어 상승 | (없음 hex 기본) | 없음 | 방어 2배, 전투 종료 시 해제 (record에만 `runtimeEffects` 명시) |
-| `state_defense_down` | 방어 하락 | 파랑 `#8bb6e6` | 없음 | 방어 절반, 전투 종료 시 해제 |
+| id | name | key runtime effect |
+|---|---|---|
+| `state_poison` | 독 | 매 턴 최대 HP -6%, 전투 종료 후 유지 |
+| `state_sleep` | 수면 | 행동 불가, 피격 시 50% 해제 |
+| `state_attack_up` | 공격 상승 | 공격 2배 |
+| `state_defense_up` | 방어 상승 | 방어 2배 |
+| `state_defense_down` | 방어 하락 | 방어 절반 |
+| `state_attack_down` | 공격 하락 | 공격 절반 |
+| `state_agility_up` | 민첩 상승 | 민첩 2배(엄격 턴 순서·게이지 충전) |
+| `state_agility_down` | 민첩 하락 | 민첩 절반(엄격 턴 순서·게이지 충전) |
+| `state_paralysis` | 마비 | 행동 불가, 2턴부터 35% 자연 회복 |
+| `state_deep_poison` | 맹독 | 매 턴 최대 HP -12%, 전투 종료 후 유지 |
+| `state_regen` | 재생 | 매 턴 최대 HP +8% |
+| `state_silence` | 침묵 | 스킬 사용 불가, 기본 공격·아이템 허용 |
+
+알 수 없는 id는 `stateOntologyFor`의 중립 템플릿(행동 제한·지속 효과 없음, 전투 종료 해제, 3턴부터 20% 자연 회복)을 받는다. 실제 런타임 효과가 필요한 출하 기본 상태는 반드시 명시적 `runtimeEffects` 또는 검증된 온톨로지 폴백을 가져야 한다.
 
 `StateOntology.summary` is a one-line Korean description intended for surfacing in the editor UI; the state DB view already renders it at the bottom of the form (`db-state-ontology-summary`).
 
 ## Default seed (new projects)
 
-`defaultStateRecords()` in `src/project/defaults/defaultDatabaseStarterRecords.ts:96` seeds the five records above into `createBlankProject` → `saveProjectToSupabase`. Per the DB-is-truth rule, `repairSupabaseCurrentJson` no longer backfills missing records from these defaults on load — a sparse DB row loads as-is. Defaults only seed **new** projects.
+`defaultStateRecords()` in `src/project/defaults/defaultDatabaseStarterRecords.ts` seeds the twelve records above into `createBlankProject` → `saveProjectToSupabase`. Per the DB-is-truth rule, `repairSupabaseCurrentJson` no longer backfills missing records from these defaults on load — a sparse DB row loads as-is. Defaults only seed **new** projects.
 
 ## Editor surface
 
@@ -71,6 +83,7 @@ The built-in `STATE_ONTOLOGY` covers the five default states:
 
 - A top-of-form inline help box (`.db-state-info-help`, `data-testid=db-state-info-help`) explains what a State is and the definition-vs-application distinction. Keep it short and Korean; it is the user-facing answer to “상태가 뭔가요?”.
 - `resolvedStateValues` is the single merge point — both the view and runtime should go through it rather than reading `StateRecord` fields directly when a value may be inherited from ontology.
+- `전투 규칙 (Gen1 knob)` 패널은 행동 불가, 스킬 봉쇄, 턴당 HP 피해·회복, 공격·방어·민첩 배율, 전투 종료 해제를 편집한다. 이름은 호환성을 위해 유지되지만 이 구조화 필드는 RM식 전투에서도 소비된다.
 - References panel lists skills/items whose `stateEffects[].stateId` matches this state (switch-effect skills are excluded — they manipulate switches, not states).
 - CSS lives in `src/styles/database/desktop-record-shell/06-states.css`. The workbench uses an explicit `grid-template-areas` layout at ≥981px; adding a new top-level child before the workbench (like the help box) is safe because it sits outside the grid.
 
@@ -78,7 +91,10 @@ The built-in `STATE_ONTOLOGY` covers the five default states:
 
 - `PlaySession.actorStateIds` records which states are currently applied per actor; `Change State` event command adds/removes; persisted in save slots.
 - Field-state overrides also live on `PlaySession` (`actorStateIds`), never on the project database record — runtime overrides must not mutate authored `StateRecord`.
-- Battle state application, damage-over-time, recovery rolls, and removal conditions are owned by `src/battle` (see `runtime-battle.md`).
+- Battle state application, damage/healing-over-time, recovery rolls, and removal conditions are owned by `src/battle` (see `runtime-battle.md`).
+- `runStateUpkeep`는 지속 피해와 지속 회복을 각각 계산한다. 재생 회복은 최대 HP를 넘지 않으며 `stateRecovery` 타임라인 사실로 기록된다.
+- `battleSkillUseFailure`는 `blocksSkillUse` 상태를 `skillBlocked`로 반환한다. 배우 커맨드·자동 전투·적 행동 선택/실행이 같은 게이트를 사용하고 UI는 `침묵 상태라 스킬을 사용할 수 없습니다.`를 표시한다.
+- `agilityMultiplierForStates`는 엄격 전투 행동 정렬과 게이지 전투의 충전/준비 시간 모두에 적용된다.
 - Every resolved state transition is also an ordered presentation fact in the append-only `BattleSnapshot.timeline`: `stateUpkeep` records turn damage, `stateAdded` / `stateRemoved` record effect, natural, hit, and battle-end changes, and `incapacitated` records an action skipped by restriction. Strict rounds retain their exact timeline slice in `roundLogs[].timeline`; presentation consumes these facts once rather than reconstructing state changes from the final battler snapshot.
 - State `removalCondition` / `restriction` / `runtimeEffects` are consumed by battle resolution; the editor only authors them.
 
@@ -87,8 +103,9 @@ The built-in `STATE_ONTOLOGY` covers the five default states:
 1. **“상태” ambiguity** — could mean the authored definition, the ontology template, or the runtime applied state. Always disambiguate by layer when explaining.
 2. **Record vs ontology** — a sparse `StateRecord` with only `{id, name, priority}` is valid; everything else comes from `stateOntologyFor`. Do not treat missing fields as zero/empty.
 3. **`hpReleaseTurn` (number) vs `hpTurn` (string)** — different schemas; `resolvedStateValues` maps. Editors writing raw record values must use the numeric form.
-4. **`state_defense_up`** has `runtimeEffects` defined in the default record (not just ontology) — the only default state that does this explicitly. Other defaults rely on ontology.
-5. **DB-is-truth** — editing `StateRecord` fields in a running project must round-trip through Supabase save; local JSON is cache-only.
+4. 기본 상태 중 `state_defense_up`, 공격/민첩 변화, 마비, 맹독, 재생, 침묵은 명시적 `runtimeEffects`를 가진다. 독·수면·공격 상승·방어 하락은 검증된 온톨로지/id 폴백도 지원한다.
+5. **출하 기본 상태 무효과 금지** — 기본 DB의 모든 상태가 런타임에서 최소 하나의 효과를 갖는지 계약 테스트가 검사한다.
+6. **DB-is-truth** — editing `StateRecord` fields in a running project must round-trip through Supabase save; local JSON is cache-only.
 
 ## Files to inspect before editing
 

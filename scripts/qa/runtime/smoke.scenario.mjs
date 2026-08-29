@@ -29,7 +29,7 @@ export const smokeScenario = {
       note: "새 게임 → 등대 마을 시작 지점, 플레이어 스프라이트가 실제로 그려진다",
       ops: [
         { kind: "key", key: "Enter" },
-        { kind: "wait", ms: 3000 },
+        { kind: "waitForRuntime" },
         { kind: "seed", seed: 1 },
       ],
       expect: {
@@ -54,7 +54,7 @@ export const smokeScenario = {
       note: "맵 전환 — 달우물 숲",
       ops: [
         { kind: "teleport", mapId: "map_moonwell_forest", x: 14, y: 14 },
-        { kind: "wait", ms: 1500 },
+        { kind: "waitForPosition", mapId: "map_moonwell_forest", x: 14, y: 14 },
       ],
       expect: {
         mapId: "map_moonwell_forest",
@@ -69,7 +69,7 @@ export const smokeScenario = {
       note: "맵 전환 — 하늘등 신전",
       ops: [
         { kind: "teleport", mapId: "map_sky_lantern_shrine", x: 12, y: 12 },
-        { kind: "wait", ms: 1500 },
+        { kind: "waitForPosition", mapId: "map_sky_lantern_shrine", x: 12, y: 12 },
       ],
       expect: {
         mapId: "map_sky_lantern_shrine",

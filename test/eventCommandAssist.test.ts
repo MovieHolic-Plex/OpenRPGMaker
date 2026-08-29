@@ -89,6 +89,15 @@ describe("buildEventAssistPrompt", () => {
     expect(prompt).toContain("JSON 배열");
   });
 
+  it("AI 저작 표면에서 제외된 명령은 kind 목록과 예시에 노출하지 않는다", () => {
+    const project = testProject();
+    const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: testPage() });
+
+    expect(prompt).not.toContain('"kind":"m2Command"');
+    expect(prompt).not.toContain('"kind":"changeFactionStance"');
+    expect(prompt.match(/사용 가능한 kind: ([^\n]+)/u)?.[1]?.split(", ")).not.toContain("changeFactionStance");
+  });
+
   it("기존 페이지 커맨드를 요약에 포함한다", () => {
     const project = testProject();
     const page = testPage([{ kind: "text", body: "안녕하세요" }]);
@@ -105,6 +114,16 @@ describe("parseAndValidate", () => {
     if (!result.ok) throw new Error(result.errors.join(", "));
     expect(result.commands).toHaveLength(1);
     expect(result.commands[0].kind).toBe("fork");
+  });
+
+  it("AI 저작 표면에서 제외된 명령은 파싱에서도 거부한다", () => {
+    const result = parseAndValidate(
+      testProject(),
+      '[{"kind":"changeFactionStance","a":"guard","b":"player","op":"+=","value":0.25}]',
+    );
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.errors.join(" ")).toContain("AI 저작 표면");
   });
 
   it("존재하지 않는 itemId는 참조 에러로 거부한다", () => {
@@ -215,17 +234,38 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
   }
 
   function renderPanel(actions: CommandListActions, apiKey = "sk-test"): FakeElement {
+    return renderPanelFor("event-1", actions, apiKey);
+  }
+
+  function renderPanelFor(eventId: string, actions: CommandListActions, apiKey = "sk-test"): FakeElement {
     const cmdList = new FakeElement("div") as unknown as HTMLElement;
     const mapId = store.getCurrent().startMapId;
     return renderEventAiAssist({
       mapId,
-      eventId: "event-1",
+      eventId,
       page: testPage(),
       actions,
       cmdList,
       loadConfig: () => ({ ...CONFIG, apiKey }),
     }) as unknown as FakeElement;
   }
+
+  it("같은 ids를 가진 다른 프로젝트로 바꾸면 초안과 열린 상태를 공유하지 않는다", () => {
+    const { actions } = recordingActions();
+    const panelA = renderPanelFor("shared-event", actions);
+    const inputA = findByTestId(panelA, "ai-event-input")!;
+    inputA.value = "Project A private draft";
+    inputA.dispatchEvent(new Event("input"));
+    (panelA as unknown as HTMLDetailsElement).open = true;
+    panelA.dispatchEvent(new Event("toggle"));
+
+    const projectB = createBlankProject();
+    store.replaceProject(projectB);
+    const panelB = renderPanelFor("shared-event", actions);
+
+    expect(findByTestId(panelB, "ai-event-input")!.value).toBe("");
+    expect((panelB as unknown as HTMLDetailsElement).open).toBe(false);
+  });
 
   it("프롬프트 입력과 생성 상태, 결과 영역을 보이는 레이블로 연결한다", () => {
     const { actions } = recordingActions();

@@ -9,12 +9,12 @@ import { ensureDayDivider, markPriorTurns } from "@/editor/panels/aiConversation
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 describe("AI 상태 톤(제안 6)", () => {
-  it("대기/오류/검토/진행/완료를 구분한다", () => {
+  it("대기/오류/진행/완료를 구분한다", () => {
     expect(statusToneOf("대기")).toBe("idle");
     expect(statusToneOf("새 대화")).toBe("idle");
     expect(statusToneOf("오류")).toBe("error");
     expect(statusToneOf("오류: 키 없음")).toBe("error");
-    expect(statusToneOf("검토 대기")).toBe("review");
+    expect(statusToneOf("적용 실패")).toBe("error");
     expect(statusToneOf("계획 중… 12초 · 도구 3")).toBe("running");
     expect(statusToneOf("실행 중(flash) … 3초 · 도구 1/200")).toBe("running");
     expect(statusToneOf("중단 중…")).toBe("running");

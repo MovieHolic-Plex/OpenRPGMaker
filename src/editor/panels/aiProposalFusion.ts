@@ -2,14 +2,6 @@ import type { ProposedCall } from "@/ai/assistantSession";
 import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm, type VocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 
-export function proposalAcceptButtonLabel(selectedCount: number, total: number): string {
-  return selectedCount === total ? "이 맵에 넣기" : `선택 ${selectedCount}개 이 맵에 넣기`;
-}
-
-export function proposalAcceptWithMaterialButtonLabel(selectedCount: number, total: number): string {
-  return selectedCount === total ? "맵 적용 + 재료 합의" : `선택 ${selectedCount}개 맵+재료 합의`;
-}
-
 export function collectVocabSoftConfirms(calls: readonly ProposedCall[], selected?: readonly boolean[]): VocabSoftConfirm[] {
   const out: VocabSoftConfirm[] = [];
   calls.forEach((call, index) => {
@@ -20,7 +12,7 @@ export function collectVocabSoftConfirms(calls: readonly ProposedCall[], selecte
   return out;
 }
 
-/** soft-confirm 재료를 origin:user 로 확정(수락 훅). */
+/** soft-confirm 재료를 origin:user 로 확정(적용 후톡). 기존 origin:user 는 건드리지 않는다. */
 export function markSoftVocabApprovalsOnProject(project: Project, calls: readonly ProposedCall[], selected?: readonly boolean[]): number {
   return applyVocabSoftConfirmApprovals(project, collectVocabSoftConfirms(calls, selected));
 }

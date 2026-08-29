@@ -78,6 +78,8 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
     // Give the browser a paint before heavy player bootstrap.
     await yieldToBrowser();
     renderPlayer(body, {
+      // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
+      qaInstrumentation: true,
       onExit: closeTestPlayModal,
       trackGlobalGame: false,
       startOverride,
@@ -129,6 +131,8 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
     void warmBundledPlayAssets(preparation.project);
     await yieldToBrowser();
     renderPlayer(body, {
+      // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
+      qaInstrumentation: true,
       initialEventTestId: eventId,
       initialSession: selectedEventTestSession(preparation),
       onExit: closeTestPlayModal,

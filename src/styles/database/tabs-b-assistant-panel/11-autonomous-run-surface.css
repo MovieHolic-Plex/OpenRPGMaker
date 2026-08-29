@@ -201,8 +201,8 @@
   color: var(--success);
 }
 
-.ai-autonomous-feed-line.is-paused {
-  color: var(--warning);
+.ai-autonomous-feed-line.is-apply-failed {
+  color: var(--danger);
 }
 
 .ai-autonomous-feed-mark {

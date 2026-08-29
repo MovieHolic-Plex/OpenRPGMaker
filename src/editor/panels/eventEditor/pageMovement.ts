@@ -3,6 +3,7 @@ import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { openPageMoveRouteDialog } from "./moveRouteDialog";
 import { renderPageLivingMovement } from "./pageNpcLiving";
+import { renderTape, renderTrajectory, svgSupported, tracePath } from "./previewMoveRoute";
 import type { EventPage, EventPageMovement, MapId, MoveCommand } from "@/project/types";
 
 const MOVEMENT_TYPE_OPTIONS = [
@@ -28,22 +29,21 @@ export function renderPageMovement(mapId: MapId, eventId: string, page: EventPag
   });
   type.addEventListener("change", applyBasics);
   frequency.addEventListener("change", applyBasics);
+  const openRouteDialog = () => openPageMoveRouteDialog({
+    movement: {
+      ...movement,
+      type: "custom",
+      frequency: parseInt(frequency.value, 10) || movement.frequency,
+      route: movement.route ?? { moves: [], repeat: true },
+    },
+    onApply: (nextMovement) => replaceMovement(mapId, eventId, page, nextMovement),
+  });
   const customRoute = el("button", {
     class: "btn event-page-custom-route",
     text: "사용자 지정 이동 경로 설정",
     attrs: isCustom ? { type: "button" } : { type: "button", disabled: "" },
     dataset: { testid: "event-page-custom-route" },
-    on: {
-      click: () => openPageMoveRouteDialog({
-        movement: {
-          ...movement,
-          type: "custom",
-          frequency: parseInt(frequency.value, 10) || movement.frequency,
-          route: movement.route ?? { moves: [], repeat: true },
-        },
-        onApply: (nextMovement) => replaceMovement(mapId, eventId, page, nextMovement),
-      }),
-    },
+    on: { click: openRouteDialog },
   });
   const wrap = el("div", { class: "event-page-movement", dataset: { testid: "event-page-movement" } });
   wrap.append(
@@ -58,7 +58,7 @@ export function renderPageMovement(mapId: MapId, eventId: string, page: EventPag
     })
   );
   if (isCustom) {
-    wrap.append(el("div", { class: "event-page-movement-route", children: [routeSummary(movement)] }));
+    wrap.append(routeBlock(movement, openRouteDialog));
   }
   if (movement.type === "living") {
     wrap.append(renderPageLivingMovement(mapId, eventId, page));
@@ -107,11 +107,39 @@ function replaceMovement(mapId: MapId, eventId: string, page: EventPage, movemen
   updateEventPage(mapId, eventId, page.id, { movement });
 }
 
-function routeSummary(movement: EventPageMovement): HTMLElement {
+/**
+ * 사용자 지정 경로를 세 층으로 되읽는다: 궤적 그림 → 화살표 칩 테이프 → 전체 라벨 한 줄.
+ *
+ * 이전에는 `위 이동 -> 위 이동 -> 왼쪽 이동` 문자열 하나뿐이었다. 233px 레일에서 그 줄은
+ * 경로가 조금만 길어져도 다섯 줄로 접히면서도 "그래서 어디로 가는가" 는 알려주지 못했다.
+ * 궤적·테이프는 명령 프리뷰(`previewMoveRoute`)가 이미 쓰는 렌더러를 그대로 재사용한다.
+ * 전체 라벨 줄은 한 줄로 조이되 지우지 않는다 — 저작 계약(e2e)이 읽는 텍스트이고,
+ * 화살표만으로는 「방향 고정 ON」 같은 비이동 명령을 구분할 수 없다.
+ */
+function routeBlock(movement: EventPageMovement, onEdit: () => void): HTMLElement {
+  const moves = movement.route?.moves ?? [];
+  const fullText = moves.map(moveLabel).join(" -> ") || "(이동 경로 없음)";
+  const thumb = svgSupported()
+    ? [el("button", {
+        class: "event-page-route-thumb",
+        attrs: { type: "button", title: "이동 경로 편집" },
+        dataset: { testid: "event-page-route-thumb" },
+        children: [renderTrajectory(tracePath(moves))],
+        on: { click: onEdit },
+      })]
+    : [];
   return el("div", {
-    class: "empty-hint",
-    text: (movement.route?.moves ?? []).map(moveLabel).join(" -> ") || "(이동 경로 없음)",
-    dataset: { testid: "event-page-movement-route-summary" },
+    class: "event-page-movement-route",
+    children: [
+      ...thumb,
+      renderTape(moves),
+      el("div", {
+        class: "empty-hint event-page-movement-route-text",
+        text: fullText,
+        attrs: { title: fullText },
+        dataset: { testid: "event-page-movement-route-summary" },
+      }),
+    ],
   });
 }
 

@@ -1,7 +1,7 @@
 // 패널 크기 커스텀 + 툴 브라우저 계약(2026-07-05).
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { clampPanelSize, loadPanelSize, PANEL_SIZE_LIMITS, renderAiChatPanel, savePanelSize } from "@/editor/panels/aiChatPanel";
-import { computeSideChatWidth, SIDE_CHAT_WIDTH } from "@/editor/panels/aiPanelLayout";
+import { computeSideChatWidth, resolveSideChatWidth, SIDE_CHAT_WIDTH } from "@/editor/panels/aiPanelLayout";
 import { filterToolCategories, openToolBrowserModal, TOOL_CATEGORIES, totalToolCount } from "@/editor/panels/toolBrowserModal";
 import { activeTools } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -50,6 +50,15 @@ describe("사이드 도크 폭 (1/3)", () => {
     // 캔버스 예산으로 상한을 더 조인다
     expect(computeSideChatWidth(1200, 1000)).toBe(SIDE_CHAT_WIDTH.min);
     expect(computeSideChatWidth(0)).toBe(SIDE_CHAT_WIDTH.min);
+  });
+
+  it("저장 preferred width는 일시적인 viewport clamp와 분리된다", () => {
+    const preferred = 610;
+    expect(resolveSideChatWidth(1500, 0, preferred)).toBe(preferred);
+    expect(resolveSideChatWidth(900, 700, preferred)).toBe(SIDE_CHAT_WIDTH.min);
+    expect(resolveSideChatWidth(1500, 0, preferred)).toBe(preferred);
+    expect(resolveSideChatWidth(1500, 0, null)).toBe(500);
+    expect(resolveSideChatWidth(1200, 700, 680)).toBe(500);
   });
 });
 

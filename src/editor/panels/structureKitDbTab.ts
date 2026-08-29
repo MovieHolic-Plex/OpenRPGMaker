@@ -4,31 +4,44 @@
 // 1. 타일셋 레일은 필터가 아니라 앨범. 기본 앨범은 현재 맵 타일셋(editorState.currentMapId).
 // 2. 표에는 선택된 타일셋의 구조물만 표시.
 // 3. 빈 상태 정확한 카피: "이 타일셋에는 아직 구조물이 없습니다."
-// 4. 인스펙터: 이름, 래스터, 부위 목록(인스턴스 번호), 문에서 입구 추정, 지금 저장(filled primary), 팔레트에서 쓰기, 삭제.
+// 4. 인스펙터는 이 파일이 배치만 한다 — 내용·액션 계약은 structureKitInspector.ts 를 본다.
 // 5. 원본(source) 칩은 앨범 안의 세 갈래 — 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물. 실내 오브젝트는 실내 칩셋 전용.
 
 import { editorState } from "@/editor/editorState";
-import { deleteStructureKit, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { createBlankStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
+import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnessSuggestion/structureKitFile";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
-import { paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
+import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID, type InteriorRoomTheme } from "@/editor/interiorRoomPipeline";
 import {
   albumEntries,
   albumEntryId,
   entriesForSource,
-  INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
-  interiorObjectLayerLabel,
-  interiorObjectRoleLabel,
-  interiorObjectSnapLabel,
   interiorObjectThemeLabels,
   interiorThemeCards,
   STRUCTURE_KIT_SOURCES,
   type StructureAlbumEntry,
   type StructureKitDbSource,
 } from "@/editor/panels/structureKitDbSources";
+import { openNewStructureKitDialog, openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
+import { pickAndImportStructureKits } from "@/editor/panels/structureKitImportDialog";
+import {
+  interiorObjectCanvas,
+  partKindName,
+  renderInspector,
+  renderObjectInspector,
+  setInspectorSelectedPartId,
+} from "@/editor/panels/structureKitInspector";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
-import type { StructureKitDef, StructureKitPart, StructureKitPartKind, TilesetDef } from "@/project/types";
+import type {
+  StructureKitDef,
+  StructureKitPart,
+  StructureKitPartKind,
+  TilesetDef,
+} from "@/project/types";
+import { downloadBlob } from "@/util/downloadBlob";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -37,9 +50,9 @@ interface ActiveSessionState {
   source: StructureKitDbSource;
   selectedKitId: string | null;
   selectedObjectId: string | null;
-  selectedPartId: string | null;
   searchQuery: string;
   themeFilter: InteriorRoomTheme | null;
+  checkedKitIds: Set<string>;
 }
 
 const session: ActiveSessionState = {
@@ -47,9 +60,9 @@ const session: ActiveSessionState = {
   source: "all",
   selectedKitId: null,
   selectedObjectId: null,
-  selectedPartId: null,
   searchQuery: "",
   themeFilter: null,
+  checkedKitIds: new Set(),
 };
 
 export function resetStructureKitsTabSession(): void {
@@ -57,9 +70,10 @@ export function resetStructureKitsTabSession(): void {
   session.source = "all";
   session.selectedKitId = null;
   session.selectedObjectId = null;
-  session.selectedPartId = null;
+  setInspectorSelectedPartId(null);
   session.searchQuery = "";
   session.themeFilter = null;
+  session.checkedKitIds.clear();
 }
 
 export function renderStructureKitsTab(host: HTMLElement, rerender: () => void): void {
@@ -84,7 +98,16 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     .filter((entry) => matchesQuery(entry, query))
     .filter((entry) => matchesThemeFilter(entry, themeFilterActive));
 
+  // 체크는 지금 보이는 행에만 뜻이 있다 — 원본 칩·검색으로 가려지면 그 선택은 화면에서 사라진다.
+  // 푸터 개수·내보내기 버튼 라벨·실제 내보내기 대상을 전부 이 한 배열에서 갈라내 서로 어긋나지
+  // 않게 한다. 지워진 킷의 남은 id 도 visibleEntries 에 없으니 따로 걸러낼 필요가 없다.
+  const checkedVisibleKits: StructureKitDef[] = visibleEntries.flatMap((entry) =>
+    entry.kind === "kit" && session.checkedKitIds.has(entry.kit.id) ? [entry.kit] : [],
+  );
+
   // 선택 유효성 확인 — 보이는 행 안에서만 선택을 유지하고, 없으면 첫 행으로 되돌린다.
+  // 이 재계산은 매 렌더 무조건 실행된다 — 인스펙터의 삭제·복제 액션이 지운 킷/오브젝트의
+  // 선택을 저절로 걸러내므로, 그쪽에서 session.selectedKitId 를 따로 비우지 않는다.
   const selectedId = session.selectedObjectId ?? session.selectedKitId;
   const selectedEntry =
     visibleEntries.find((entry) => albumEntryId(entry) === selectedId) ?? visibleEntries[0] ?? null;
@@ -131,7 +154,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
         on: {
           click: () => {
             session.source = source.id;
-            session.selectedPartId = null;
+            setInspectorSelectedPartId(null);
             if (source.id !== "interior") session.themeFilter = null;
             refresh(host, rerender);
           },
@@ -158,7 +181,8 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           session.tilesetId = tileset.id;
           session.selectedKitId = null;
           session.selectedObjectId = null;
-          session.selectedPartId = null;
+          setInspectorSelectedPartId(null);
+          session.checkedKitIds.clear();
           refresh(host, rerender);
         },
       },
@@ -186,15 +210,65 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           },
         },
       }),
-      el("div", {
-        class: "structure-kit-hint-chip",
-        children: [
-          el("span", { text: "맵에서 영역 선택 → " }),
-          el("b", { text: "구조물로 저장" }),
-        ],
+      el("button", {
+        class: "btn small primary",
+        attrs: { type: "button" },
+        text: "+ 새 구조물",
+        dataset: { testid: "structure-kit-new" },
+        on: {
+          click: () => {
+            const tilesetId = session.tilesetId;
+            if (!tilesetId) return;
+            const openEditorFor = (kitId: string): void => {
+              session.selectedKitId = kitId;
+              session.selectedObjectId = null;
+              rerender();
+              refresh(host, rerender);
+              openStructureKitEditor(tilesetId, kitId, () => {
+                rerender();
+                refresh(host, rerender);
+              });
+            };
+            if (tilesetId !== DEFAULT_TILESET_ID) {
+              openEditorFor(createBlankStructureKit(tilesetId).id);
+              return;
+            }
+            openNewStructureKitDialog(tilesetId, openEditorFor);
+          },
+        },
       }),
     ],
   });
+  tools.append(
+    el("button", {
+      class: "btn small",
+      attrs: { type: "button" },
+      text: "가져오기",
+      dataset: { testid: "structure-kit-import" },
+      on: { click: () => { if (session.tilesetId) pickAndImportStructureKits(session.tilesetId, () => { rerender(); refresh(host, rerender); }); } },
+    }),
+    el("button", {
+      class: "btn small",
+      attrs: { type: "button" },
+      text: checkedVisibleKits.length > 0 ? "선택 내보내기" : "앨범 내보내기",
+      dataset: { testid: "structure-kit-export" },
+      on: {
+        click: () => {
+          if (!activeTileset) return;
+          const targets = checkedVisibleKits.length > 0
+            ? checkedVisibleKits
+            : (activeTileset.structureKits ?? []);
+          if (targets.length === 0) {
+            toast("내보낼 구조물이 없습니다. 먼저 [+ 새 구조물]이나 [복제]로 만들어 주세요.", "info");
+            return;
+          }
+          const text = serializeStructureKitFile(activeTileset, targets, new Date().toISOString());
+          downloadBlob(new Blob([text], { type: "application/json" }), structureKitFileName(activeTileset.name, targets));
+          toast(`구조물 ${targets.length}개를 내보냈습니다`, "ok");
+        },
+      },
+    }),
+  );
   tableCol.append(tools);
 
   // 2-a. 방 종류(테마) 문법 — 실내 오브젝트 원본에서만. AI 가 방을 채울 때 요구하는 역할을 그림으로 보여준다.
@@ -210,7 +284,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
         el("strong", { text: "이 타일셋에는 아직 구조물이 없습니다." }),
         el("p", {
           class: "structure-kit-quiet",
-          text: "맵에서 타일 영역을 선택한 후 [구조물로 저장]을 누르면 이 앨범에 추가됩니다.",
+          text: "[+ 새 구조물]로 바로 만들거나, 맵에서 타일 영역을 선택한 후 [구조물로 저장]을 누르면 이 앨범에 추가됩니다.",
         }),
       ],
     });
@@ -243,6 +317,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
         children: [
           el("tr", {
             children: [
+              el("th", { class: "structure-kit-check-col", attrs: { style: "width: 28px;" } }),
               el("th", { attrs: { style: "width: 50%;" }, text: "이름" }),
               el("th", { text: "크기" }),
               el("th", { text: lastColumnLabel }),
@@ -267,6 +342,28 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
         class: `structure-kit-row${isSelected ? " active" : ""}`,
         dataset: { testid: `structure-kit-db-${kit.id}` },
         children: [
+          el("td", {
+            class: "structure-kit-check-col",
+            children: entry.source === "user"
+              ? [
+                  el("input", {
+                    attrs: session.checkedKitIds.has(kit.id)
+                      ? { type: "checkbox", checked: "" }
+                      : { type: "checkbox" },
+                    dataset: { testid: `structure-kit-check-${kit.id}` },
+                    on: {
+                      click: (event: Event) => {
+                        // 행 클릭(인스펙터 선택)과 겹치지 않게 한다.
+                        event.stopPropagation();
+                        if (session.checkedKitIds.has(kit.id)) session.checkedKitIds.delete(kit.id);
+                        else session.checkedKitIds.add(kit.id);
+                        refresh(host, rerender);
+                      },
+                    },
+                  }),
+                ]
+              : [],
+          }),
           el("td", {
             children: [
               el("div", {
@@ -301,8 +398,15 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           click: () => {
             session.selectedKitId = kit.id;
             session.selectedObjectId = null;
-            session.selectedPartId = null;
+            setInspectorSelectedPartId(null);
             refresh(host, rerender);
+          },
+          dblclick: () => {
+            if (entry.source !== "user") return;
+            openStructureKitEditor(activeTileset!.id, kit.id, () => {
+              rerender();
+              refresh(host, rerender);
+            });
           },
         },
       });
@@ -315,7 +419,11 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     const footer = el("div", {
       class: "structure-kit-footer",
       children: [
-        el("span", { text: `${visibleEntries.length}개` }),
+        el("span", {
+          text: checkedVisibleKits.length > 0
+            ? `${checkedVisibleKits.length}개 선택됨`
+            : `${visibleEntries.length}개`,
+        }),
       ],
     });
     tableCol.append(footer);
@@ -325,10 +433,16 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
 
   // 3. 인스펙터 (오른쪽 열)
   if (selectedObject && activeTileset) {
-    workspace.append(renderObjectInspector(activeTileset, selectedObject));
+    workspace.append(
+      renderObjectInspector(activeTileset, selectedObject, () => refresh(host, rerender), rerender)
+    );
   } else if (selectedKit && activeTileset) {
-    const inspector = renderInspector(activeTileset, selectedKit, host, rerender);
-    workspace.append(inspector);
+    // 편집 잠금의 축은 "어떻게 만들어졌나"(learnedFrom)가 아니라 "프로젝트 데이터에 있나"(source)다.
+    // learnedFrom 으로 판정하면 내장 킷을 내보낸 파일을 가져왔을 때 영구히 잠긴 유령 킷이 생긴다.
+    const editable = selectedEntry?.source === "user";
+    workspace.append(
+      renderInspector(activeTileset, selectedKit, editable, () => refresh(host, rerender), rerender)
+    );
   }
 }
 
@@ -418,7 +532,7 @@ function renderThemeGrammar(
         on: {
           click: () => {
             session.themeFilter = session.themeFilter === theme ? null : theme;
-            session.selectedPartId = null;
+            setInspectorSelectedPartId(null);
             refresh(host, rerender);
           },
         },
@@ -441,6 +555,7 @@ function renderObjectRow(
     class: `structure-kit-row${isSelected ? " active" : ""}`,
     dataset: { testid: `structure-kit-object-${object.id}` },
     children: [
+      el("td", { class: "structure-kit-check-col" }),
       el("td", {
         children: [
           el("div", {
@@ -465,7 +580,7 @@ function renderObjectRow(
       click: () => {
         session.selectedObjectId = object.id;
         session.selectedKitId = null;
-        session.selectedPartId = null;
+        setInspectorSelectedPartId(null);
         refresh(host, rerender);
       },
     },
@@ -478,66 +593,6 @@ function renderThemeBadges(object: InteriorObjectDef): HTMLElement[] {
     return [el("span", { class: "structure-kit-part-badge none", text: "테마 없음" })];
   }
   return labels.map((label) => el("span", { class: "structure-kit-part-badge teal", text: label }));
-}
-
-function interiorObjectCanvas(tileset: TilesetDef, object: InteriorObjectDef, scale: number): HTMLCanvasElement {
-  return renderTileCellsToCanvas({
-    tileset,
-    widthTiles: Math.max(1, object.width),
-    heightTiles: Math.max(1, object.height),
-    cells: object.cells,
-    scale,
-    backgroundTile: INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
-  });
-}
-
-/** 실내 오브젝트 인스펙터 — 카탈로그는 프로젝트 데이터가 아니라 코드문이라 이름 변경·삭제가 없다. */
-function renderObjectInspector(tileset: TilesetDef, object: InteriorObjectDef): HTMLElement {
-  const themeLabels = interiorObjectThemeLabels(object);
-  const canvas = interiorObjectCanvas(tileset, object, 3);
-  canvas.className = "structure-kit-raster-canvas";
-  canvas.dataset.testid = `structure-kit-object-unit-${object.id}`;
-
-  return el("div", {
-    class: "structure-kit-inspector",
-    dataset: { testid: `structure-kit-inspector-${object.id}` },
-    children: [
-      el("div", { class: "structure-kit-inspector-title", text: object.label }),
-      el("div", {
-        class: "structure-kit-inspector-meta",
-        text: `${object.width}×${object.height} · ${interiorObjectLayerLabel(object.layer)} · ${tileset.name}`,
-      }),
-      el("div", {
-        class: "structure-kit-raster-wrap",
-        dataset: { testid: "structure-kit-raster-wrap" },
-        children: [canvas],
-      }),
-      el("div", {
-        class: "structure-kit-object-facts",
-        children: [
-          objectFact("역할", interiorObjectRoleLabel(object)),
-          objectFact("레이어", interiorObjectLayerLabel(object.layer)),
-          objectFact("배치 규약", interiorObjectSnapLabel(object.snap)),
-          objectFact("사용 테마", themeLabels.length > 0 ? themeLabels.join(", ") : "없음"),
-        ],
-      }),
-      el("p", {
-        class: "structure-kit-quiet",
-        dataset: { testid: "structure-kit-object-hint" },
-        text: "실내 오브젝트는 코드로 관리되는 카탈로그입니다 — 이름 변경이나 삭제는 할 수 없습니다.",
-      }),
-    ],
-  });
-}
-
-function objectFact(label: string, value: string): HTMLElement {
-  return el("div", {
-    class: "structure-kit-object-fact",
-    children: [
-      el("span", { class: "structure-kit-object-fact-label", text: label }),
-      el("span", { class: "structure-kit-object-fact-value", text: value }),
-    ],
-  });
 }
 
 function refresh(host: HTMLElement, rerender: () => void): void {
@@ -563,302 +618,4 @@ function renderPartBadges(parts?: StructureKitPart[]): HTMLElement[] {
     badges.push(el("span", { class: `structure-kit-part-badge ${colorClass}`.trim(), text: badgeText }));
   }
   return badges;
-}
-
-function partKindName(kind: StructureKitPartKind): string {
-  switch (kind) {
-    case "entrance":
-      return "입구";
-    case "window":
-      return "창문";
-    case "sign":
-      return "간판";
-    case "anchor":
-      return "자리";
-  }
-}
-
-function renderInspector(
-  tileset: TilesetDef,
-  kit: StructureKitDef,
-  host: HTMLElement,
-  rerender: () => void
-): HTMLElement {
-  // 내장 파라메트릭 킷은 프로젝트 데이터에 없는 가상 킷 — 이름 변경·삭제 같은 파괴적 액션을 노출하지 않는다.
-  const isBuiltin = kit.learnedFrom === "builtin-parametric";
-  const size = structureKitSize(kit);
-  const inspector = el("div", {
-    class: "structure-kit-inspector",
-    dataset: { testid: `structure-kit-inspector-${kit.id}` },
-  });
-
-  inspector.append(
-    el("div", { class: "structure-kit-inspector-title", text: kit.name ?? "구조물" })
-  );
-
-  // 이름 필드
-  const nameField = el("div", {
-    class: "structure-kit-field",
-    children: [
-      el("label", { text: "이름" }),
-      el("input", {
-        value: kit.name ?? "구조물",
-        attrs: isBuiltin ? { type: "text", disabled: "" } : { type: "text" },
-        dataset: { testid: `structure-kit-db-name-${kit.id}` },
-        on: isBuiltin
-          ? undefined
-          : {
-              change: (event: Event) => {
-                const target = event.currentTarget;
-                if (!(target instanceof HTMLInputElement)) return;
-                renameStructureKit(tileset.id, kit.id, target.value);
-                rerender();
-                refresh(host, rerender);
-              },
-            },
-      }),
-    ],
-  });
-  inspector.append(nameField);
-
-  // 메타 정보
-  const sourceLabel = kit.learnedFrom === "user-paint" ? "붓질에서 학습" : "내장 파라메트릭";
-  inspector.append(
-    el("div", {
-      class: "structure-kit-inspector-meta",
-      text: `${size.width}×${size.height} · ${tileset.name} · ${sourceLabel}`,
-    })
-  );
-
-  // 래스터 뷰 + 부위 오버레이
-  const rasterWrap = el("div", {
-    class: "structure-kit-raster-wrap",
-    dataset: { testid: "structure-kit-raster-wrap" },
-  });
-
-  const canvas = renderTileCellsToCanvas({
-    tileset,
-    widthTiles: size.width,
-    heightTiles: size.height,
-    cells: assembledKitCells(kit, size.width),
-    scale: 3,
-  });
-  canvas.className = "structure-kit-raster-canvas";
-  canvas.dataset.testid = `structure-kit-db-unit-${kit.id}`;
-  rasterWrap.append(canvas);
-
-  // 부위 오버레이 표시
-  const parts = kit.parts ?? [];
-  parts.forEach((part, index) => {
-    const leftPercent = (part.dx / size.width) * 100;
-    const topPercent = (part.dy / size.height) * 100;
-    const widthPercent = (part.w / size.width) * 100;
-    const heightPercent = (part.h / size.height) * 100;
-
-    const overlay = el("div", {
-      class: `structure-kit-overlay ${part.kind}`,
-      attrs: {
-        style: `left:${leftPercent}%;top:${topPercent}%;width:${widthPercent}%;height:${heightPercent}%;`,
-      },
-      children: [
-        el("span", { class: "structure-kit-overlay-badge", text: String(index + 1) }),
-        ...(part.kind === "entrance"
-          ? [el("span", { class: "structure-kit-overlay-warp-pin" })]
-          : []),
-      ],
-    });
-    rasterWrap.append(overlay);
-  });
-
-  inspector.append(rasterWrap);
-
-  // 부위 목록
-  const partsList = el("div", { class: "structure-kit-parts-list" });
-  parts.forEach((part, index) => {
-    const isSelected = part.id === session.selectedPartId;
-    const rangeText = part.kind === "entrance"
-      ? `문 ${part.w}×${Math.max(1, part.h - 1)} + 앞 1칸`
-      : `(${part.dx},${part.dy}) ${part.w}×${part.h}`;
-
-    const partItem = el("div", {
-      class: `structure-kit-part-item${isSelected ? " selected" : ""}`,
-      children: [
-        el("div", {
-          class: "structure-kit-part-top",
-          children: [
-            el("span", { class: `structure-kit-part-dot ${part.kind}`, text: String(index + 1) }),
-            el("span", { class: "structure-kit-part-kind", text: partKindName(part.kind) }),
-            el("span", { class: "structure-kit-part-range", text: rangeText }),
-          ],
-        }),
-        ...(part.note ? [el("div", { class: "structure-kit-part-note", text: part.note })] : []),
-        el("div", {
-          class: "structure-kit-part-actions",
-          children: [
-            el("button", {
-              class: "structure-kit-part-delete-btn",
-              attrs: { type: "button" },
-              text: "부위 삭제",
-              on: {
-                click: () => {
-                  const updatedParts = (kit.parts ?? []).filter((p) => p.id !== part.id);
-                  saveKitParts(tileset.id, kit, updatedParts);
-                  rerender();
-                  refresh(host, rerender);
-                },
-              },
-            }),
-          ],
-        }),
-      ],
-      on: {
-        click: () => {
-          session.selectedPartId = part.id;
-          refresh(host, rerender);
-        },
-      },
-    });
-    partsList.append(partItem);
-  });
-  inspector.append(partsList);
-
-  // 문에서 입구 추정 버튼
-  const estimateBtn = el("button", {
-    class: "btn small structure-kit-estimate",
-    attrs: { type: "button" },
-    text: "문에서 입구 추정",
-    dataset: { testid: "structure-kit-estimate-entrance" },
-    on: {
-      click: () => {
-        const estimated = autoEstimateEntranceParts(kit);
-        if (estimated.length === 0) {
-          toast("문 타일을 찾지 못했습니다.", "info");
-          return;
-        }
-        const merged = [...(kit.parts ?? []).filter((p) => p.kind !== "entrance"), ...estimated];
-        saveKitParts(tileset.id, kit, merged);
-        toast(`입구 ${estimated.length}곳 추정 완료`, "ok");
-        rerender();
-        refresh(host, rerender);
-      },
-    },
-  });
-  inspector.append(estimateBtn);
-
-  inspector.append(
-    el("p", {
-      class: "structure-kit-quiet",
-      text: "이 래스터를 드래그하면 부위가 붙습니다. 흰 점이 워프 칸입니다.",
-    })
-  );
-
-  // 하단 액션 버튼들 (지금 저장, 팔레트에서 쓰기, 삭제 — 내장 킷은 저장되지 않아 제외)
-  const actions = el("div", {
-    class: "structure-kit-actions",
-    children: [
-      ...(isBuiltin
-        ? []
-        : [
-            el("button", {
-              class: "btn ghost structure-kit-delete",
-              attrs: { type: "button" },
-              text: "삭제",
-              dataset: { testid: `structure-kit-db-delete-${kit.id}` },
-              on: {
-                click: () => {
-                  deleteStructureKit(tileset.id, kit.id);
-                  toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
-                  session.selectedKitId = null;
-                  session.selectedPartId = null;
-                  rerender();
-                  refresh(host, rerender);
-                },
-              },
-            }),
-          ]),
-      el("button", {
-        class: "btn primary",
-        attrs: { type: "button" },
-        text: "지금 저장",
-        dataset: { testid: "structure-kit-save-now" },
-        on: {
-          click: () => {
-            toast("구조물이 저장되었습니다.", "ok");
-            rerender();
-          },
-        },
-      }),
-      el("button", {
-        class: "btn",
-        attrs: { type: "button" },
-        text: "팔레트에서 쓰기",
-        dataset: { testid: `structure-kit-db-use-${kit.id}` },
-        on: {
-          click: () => {
-            editorState.set({
-              activePaletteStamp: paletteStampFromKit(kit),
-              tool: "paint",
-            });
-            toast(`'${kit.name ?? "구조물"}'을 브러시로 선택했습니다`, "ok");
-          },
-        },
-      }),
-    ],
-  });
-  inspector.append(actions);
-
-  if (isBuiltin) {
-    inspector.append(
-      el("p", {
-        class: "structure-kit-quiet",
-        dataset: { testid: "structure-kit-builtin-hint" },
-        text: "내장 파라메트릭 킷은 프로젝트에 저장되지 않아 이름 변경이나 삭제를 할 수 없습니다.",
-      })
-    );
-  }
-
-  return inspector;
-}
-
-function saveKitParts(tilesetId: string, kit: StructureKitDef, parts: StructureKitPart[]): void {
-  const current = store.getCurrent();
-  const tileset = current.tilesets[tilesetId];
-  if (!tileset || !tileset.structureKits) return;
-
-  const nextKits = tileset.structureKits.map((k) => (k.id === kit.id ? { ...k, parts } : k));
-  store.update((proj) => {
-    const targetTileset = proj.tilesets[tilesetId];
-    if (targetTileset) {
-      targetTileset.structureKits = nextKits;
-    }
-  });
-}
-
-function autoEstimateEntranceParts(kit: StructureKitDef): StructureKitPart[] {
-  const estimated: StructureKitPart[] = [];
-  // 문 타일 id 예: 116, 146, 360 등 (RM2k3 도어 패턴)
-  const DOOR_TILES = new Set([116, 146, 117, 147, 360, 361]);
-
-  if (kit.kind === "section") {
-    for (let y = 0; y < kit.rows.length; y += 1) {
-      const row = kit.rows[y];
-      if (!row) continue;
-      for (let x = 0; x < kit.width; x += 1) {
-        const tile = row.tiles[x] ?? -1;
-        const upper = row.upperTiles?.[x] ?? -1;
-        if (DOOR_TILES.has(tile) || DOOR_TILES.has(upper)) {
-          estimated.push({
-            id: `pt_${Date.now()}_${x}_${y}`,
-            kind: "entrance",
-            dx: x,
-            dy: Math.max(0, y - 1),
-            w: 1,
-            h: 3,
-            note: "문 2칸 + 앞 1칸",
-          });
-        }
-      }
-    }
-  }
-  return estimated;
 }

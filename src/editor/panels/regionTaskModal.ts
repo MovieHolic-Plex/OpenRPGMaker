@@ -69,6 +69,14 @@ export type RegionTaskAnchor = {
   readonly y: number;
 };
 
+/** 화면 좌표(클라이언트) 사각형 — 팝오버가 겹치면 안 되는 영역(=작업 대상 선택 영역). */
+export type RegionTaskAvoidRect = {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+};
+
 export interface RegionTaskModalOptions {
   readonly mapId: MapId;
   readonly region: RegionRect;
@@ -76,6 +84,12 @@ export interface RegionTaskModalOptions {
   readonly autoRun?: boolean;
   /** 화면 좌표(클라이언트). 있으면 중앙 모달 대신 근처 플로팅 팝오버. */
   readonly anchor?: RegionTaskAnchor;
+  /**
+   * 작업 대상 영역의 화면 사각형. 주면 팝오버를 그 옆에 세운다 — 우클릭 드래그는 놓은 자리가
+   * 곧 대상 영역 안이라, anchor 만 쓰면 창이 **자기가 바꾸는 곳을 덮는다**(캔버스 고스트
+   * 미리보기까지 가린다). 옆에 자리가 좁으면 간격을 줄이거나 겹침이 가장 적은 쪽에 세운다.
+   */
+  readonly avoid?: RegionTaskAvoidRect;
   // 테스트 주입: 기본은 실제 runRegionTask.
   readonly run?: RegionTaskRunner;
   /** 테스트 주입: AI/도구 쿼터를 쓰지 않는 직접 실내 초안 경로. */
@@ -183,7 +197,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   // 로그 버튼은 헤더에서 「고급」 안으로 옮겼다 — 초보자에게 첫 화면에 보일 이유가 없다.
   const titleRow = el("div", {
     class: "region-task-title-row",
-    children: [el("span", { class: "region-task-title", text: "영역 작업" })],
+    children: [el("span", { class: "region-task-title", text: "영역 작업" }), closeButton],
   });
   // 단계 세그즜트 — 지시 → 생성 → 검토. 어떤 단계가 활성이냐는 CSS 가 data-stage 로 정한다
   // — JS 는 stage 만 바꾼다는 이 파일의 기존 원칙을 그대로 따른다.
@@ -198,9 +212,16 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       }),
     ),
   });
+  // 제목·닫기 한 줄, 메타(단계·좌표·타일 분포) 한 줄. 380px 팝오버에서 다섯 덩어리를 한 줄에
+  // 밀어 넣으면 제목과 좌표 칩이 서로를 밀어내 읽을 수 없었다.
+  const metaRow = el("div", {
+    class: "region-task-meta-row",
+    dataset: { testid: "region-task-meta-row" },
+    children: [stageSegments, chip, statsChip],
+  });
   const header = el("div", {
     class: "region-task-header",
-    children: [titleRow, stageSegments, chip, statsChip, closeButton],
+    children: [titleRow, metaRow],
   });
 
   // E: 컨텍스트 인식 동적 추천 — 영역 주변 인접 타일 분석 기반. 정적 로테이션은 폴백.
@@ -386,6 +407,13 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   });
 
   let activePending: PendingRegionApply | null = null;
+  // 검토 단계의 세 결정(적용·다시 만들기·버리기) — 버튼과 단축키가 같은 함수를 부른다.
+  // pending 이 없는 단계에서는 null 이라 Enter 가 엉뚱한 곳에서 적용을 부를 수 없다.
+  let reviewShortcuts: {
+    readonly apply: () => void;
+    readonly retry: () => void;
+    readonly discard: () => void;
+  } | null = null;
   let pendingUnsubscribe: (() => void) | null = null;
   let schedulePopoverReposition: () => void = () => undefined;
   type ActiveExecution = {
@@ -422,6 +450,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   };
   activeModalCleanup = (): void => {
     disposed = true;
+    reviewShortcuts = null;
     // 신호/세대를 먼저 끊어 late result와 pending subscriber가 DOM을 만지지 못하게 한다.
     invalidateExecution(true);
     pendingUnsubscribe?.();
@@ -433,6 +462,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   // applied: true=적용, false=버리기, null=외부(캔버스 인라인 툴바 등)에서 settle되어 결과를 알 수 없음.
   const settlePendingUi = (applied: boolean | null): void => {
     if (disposed) return;
+    reviewShortcuts = null;
     releaseExecution();
     const appliedSummary = `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`;
     setSummary(
@@ -448,7 +478,13 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       toast(appliedSummary, "ok");
       // 이 함수는 pending.apply() 직후 동기적으로 불린다. 여기서 바로 닫으면 호출부(버튼
       // 핸들러)가 이미 사라진 DOM 을 계속 만지므로, 현재 콜스택을 빠져나온 뒤 닫는다.
-      const close = (): void => closeRegionTaskModal();
+      // 그 사이에 다른 경로(하네스·빌드 팔레트·새 우클릭 드래그)가 새 모달을 열었다면 그것을
+      // 닫아서는 안 된다 — 예약 당시의 root 가 아직 살아 있을 때만 닫는다.
+      const ownRoot = modalRoot;
+      const close = (): void => {
+        if (modalRoot !== ownRoot) return;
+        closeRegionTaskModal();
+      };
       if (typeof globalThis.setTimeout === "function") globalThis.setTimeout(close, 0);
       else close();
       return;
@@ -678,7 +714,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       dataset: { testid: "region-task-partial-apply" },
     }) as HTMLButtonElement;
     partialApplyButton.addEventListener("click", () => {
-      if (!isCurrentExecution(executionId)) return;
+      if (!isCurrentExecution(executionId) || pending.settled) return;
       const ids = Array.from(selectedChunkIds);
       if (ids.length === 0) return;
       selfSettling = true;
@@ -703,56 +739,62 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       finalizeSettle(true);
     });
 
+    // 버튼과 단축키가 같은 함수를 부른다. 이미 settle 된 pending 에 다시 적용을 보내면
+    // "이미 처리된 제안입니다" 오류가 summary 에 찍히므로, 버튼에 포커스가 있는 상태에서
+    // Enter 가 click 과 document keydown 으로 두 번 들어오는 경우를 여기서 막는다.
+    const doApply = (): void => {
+      if (!isCurrentExecution(executionId) || pending.settled) return;
+      selfSettling = true;
+      const outcome = pending.apply();
+      if (!outcome.ok) {
+        selfSettling = false;
+        setSummary(outcome.error ?? "적용 안전 검사를 통과하지 못했습니다.");
+        schedulePopoverReposition();
+        return;
+      }
+      finalizeSettle(true);
+    };
+    const doRetry = (): void => {
+      if (!isCurrentExecution(executionId) || pending.settled) return;
+      selfSettling = true;
+      pending.discard();
+      finalizeSettle(false);
+      if (lastRunMode === "direct") void executeDirectRoom();
+      else void execute();
+    };
+    const doDiscard = (): void => {
+      if (!isCurrentExecution(executionId) || pending.settled) return;
+      selfSettling = true;
+      pending.discard();
+      finalizeSettle(false);
+    };
+    reviewShortcuts = { apply: doApply, retry: doRetry, discard: doDiscard };
+
     const applyButton = el("button", {
       class: "region-task-apply",
       text: totalChangedCells > 0 ? `적용 · ${totalChangedCells}칸` : "적용",
-      attrs: { type: "button" },
+      attrs: { type: "button", title: "이 제안을 맵에 적용 (Enter)" },
       dataset: { testid: "region-task-apply" },
-      on: { click: () => {
-        if (!isCurrentExecution(executionId)) return;
-        selfSettling = true;
-        const outcome = pending.apply();
-        if (!outcome.ok) {
-          selfSettling = false;
-          setSummary(outcome.error ?? "적용 안전 검사를 통과하지 못했습니다.");
-          schedulePopoverReposition();
-          return;
-        }
-        finalizeSettle(true);
-      } },
+      on: { click: doApply },
     });
     // "다시 만들기" — 같은 지시로 재실행. 마음에 안 드는 결과를 버리고 다시 뽑는 흐름이
     // 버리기→입력창 찾기→실행 3단계였던 것을 1단계로 줄인다.
     const retryButton = el("button", {
       class: "region-task-retry",
-      attrs: { type: "button", title: "같은 지시로 다시 생성" },
+      attrs: { type: "button", title: "같은 지시로 다시 생성 (R)" },
       dataset: { testid: "region-task-retry" },
       children: [
         makeSvgIcon("undo"),
         el("span", { class: "region-task-action-label", text: "다시 만들기" }),
       ],
-      on: {
-        click: () => {
-          if (!isCurrentExecution(executionId)) return;
-          selfSettling = true;
-          pending.discard();
-          finalizeSettle(false);
-          if (lastRunMode === "direct") void executeDirectRoom();
-          else void execute();
-        },
-      },
+      on: { click: doRetry },
     });
     const discardButton = el("button", {
       class: "region-task-discard",
       text: "버리기",
-      attrs: { type: "button" },
+      attrs: { type: "button", title: "제안을 버리고 지시 단계로" },
       dataset: { testid: "region-task-discard" },
-      on: { click: () => {
-        if (!isCurrentExecution(executionId)) return;
-        selfSettling = true;
-        pending.discard();
-        finalizeSettle(false);
-      } },
+      on: { click: doDiscard },
     });
 
     // 청크 트리 — 각 청크 체크박스. 토글 시 부분 적용 버튼 라벨/활성 갱신.
@@ -1130,22 +1172,63 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       ] : [],
     });
 
-    const reviewCard = el("div", {
-      class: "region-task-review-card",
-      children: [timeline, metricsRow, blockerHost, npcScheduleDecision, issuesHost, roomsHost],
+    // 적용을 막거나 사용자 결정을 요구하는 것들 — 결정 버튼 바로 위에 항상 보이게 둔다.
+    const gateHost = el("div", {
+      class: "region-task-gates",
+      dataset: { testid: "region-task-gates" },
+      children: [blockerHost, npcScheduleDecision],
     });
+    // 진단(체크포인트·지표·이슈)은 접는다. 예전에는 이 셋이 미리보기보다 **위**에 있어서
+    // 380px 팝오버에서 「적용」이 스크롤 아래로 밀려 있었다 — 우클릭 드래그의 목적이 적용인데
+    // 그게 화면에서 가장 멀었다. 한 줄 판정만 남기고, 막힌 경우에만 자동으로 펼친다.
+    const errorIssues = (review?.issues ?? []).filter((issue) => issue.severity === "error").length;
+    const warnIssues = (review?.issues ?? []).length - errorIssues;
+    const verdictText = pending.blockers.length > 0
+      ? `적용 차단 ${pending.blockers.length}건 · 검사 상세`
+      : errorIssues > 0
+        ? `검사 오류 ${errorIssues}건 · 검사 상세`
+        : warnIssues > 0
+          ? `주의 ${warnIssues}건 · 검사 상세`
+          : "검사 통과 · 검사 상세";
+    const diagnostics = el("details", {
+      class: "region-task-diagnostics",
+      dataset: { testid: "region-task-diagnostics" },
+      children: [
+        el("summary", {
+          class: "region-task-diagnostics-summary",
+          text: verdictText,
+          dataset: { testid: "region-task-verdict" },
+        }),
+        el("div", {
+          class: "region-task-review-card",
+          children: [timeline, metricsRow, issuesHost],
+        }),
+      ],
+    });
+    if (pending.blockers.length > 0 || errorIssues > 0) diagnostics.setAttribute("open", "");
+    diagnostics.addEventListener("toggle", schedulePopoverReposition);
 
     compareHost.replaceChildren(
-      reviewCard,
       figures,
       changeList,
+      roomsHost,
+      gateHost,
       el("div", {
         class: "region-task-compare-actions",
         dataset: { testid: "region-task-compare-actions" },
         children: [applyButton, retryButton, discardButton],
       }),
+      diagnostics,
     );
     setStage("review");
+    // 검토 DOM이 한꺼번에 자란 뒤 다음 프레임까지 이전 높이의 좌표를 유지하면 하단이 잘린 채
+    // 노출된다. CSS가 검토 내용을 드러낸 직후 실측하고, 아래 rAF 재측정도 그대로 둔다.
+    if (asPopover && options.anchor) positionRegionTaskPopover(windowNode, options.anchor, options.avoid);
+    // 결정 화면에 들어오면 기본 결정(적용)에 포커스를 준다. 브라우저는 Enter/Space 를 포커스된
+    // 버튼의 동작으로 처리하므로, 이것만으로 "결과를 보고 Enter" 가 확정이 된다. 입력창은 이
+    // 단계에서 display:none 이라 포커스를 잃는데, 그 포커스가 body 로 흘러가면 어떤 키도
+    // 결정으로 이어지지 않았다.
+    applyButton.focus?.();
     // 결과가 나오면 로그는 접는다 — 결정에 필요한 건 미리보기와 변경 칸 수다.
     if (!advancedPinned) setAdvancedOpen(false);
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
@@ -1445,15 +1528,30 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
   });
 
-  // ── F: 키보드 단축키 (textarea 비포커스시) + 슬래시 자동완성 ─────────────────
-  // textarea/input 포커스 중에는 단일키가 입력으로 들어가므로 무시.
-  const isTextFocused = (): boolean => {
+  // ── F: 키보드 단축키 + 슬래시 자동완성 ──────────────────────────────────────
+  // 단축키는 **단계별로** 뜻이 달라야 한다. 예전에는 단계와 무관하게 Enter 가 execute() 였고,
+  // 그래서 검토 단계에서 결과를 보고 Enter 를 누르면 확정이 아니라 **방금 만든 제안을 버리고
+  // AI 를 한 번 더 호출**했다. 결정 화면에 확정 키가 아예 없었던 셈이다.
+  const hasNeutralShortcutFocus = (): boolean => {
     const active = document.activeElement;
-    return active instanceof HTMLTextAreaElement || active instanceof HTMLInputElement;
+    return active === null || active === document.body || active === stageHost || active === modalRoot;
   };
   const onShortcutKey = (event: KeyboardEvent): void => {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
-    if (isTextFocused()) return;
+    // 변경 행처럼 탐색용으로 포커스되는 요소의 Enter 가 제안 전체 적용으로 새지 않게,
+    // 문서 단축키는 어떤 자식도 키 동작을 소유하지 않는 중립 지점에서만 받는다.
+    if (!hasNeutralShortcutFocus()) return;
+    if (currentStage === "review") {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        reviewShortcuts?.apply();
+      } else if (event.key === "r" || event.key === "R") {
+        event.preventDefault();
+        reviewShortcuts?.retry();
+      }
+      return;
+    }
+    if (currentStage === "running") return;
     if (event.key === "Enter") {
       event.preventDefault();
       void execute();
@@ -1545,6 +1643,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       const target = items[autocompleteSelected] as HTMLElement | undefined;
       target?.click();
     } else if (event.key === "Escape") {
+      // 드롭다운만 닫는다. stopPropagation 이 없으면 backdrop 의 keydown 까지 올라가
+      // 창 전체가 닫혔다 — 자동완성을 물리려던 Escape 가 작업을 날렸다.
+      event.preventDefault();
+      event.stopPropagation();
       closeAutocomplete();
     }
   });
@@ -1610,7 +1712,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     if (!asPopover || !options.anchor) return;
     const reposition = (): void => {
       if (!windowNode.isConnected) return;
-      positionRegionTaskPopover(windowNode, options.anchor!);
+      positionRegionTaskPopover(windowNode, options.anchor!, options.avoid);
     };
     if (typeof requestAnimationFrame === "function") requestAnimationFrame(reposition);
     else reposition();
@@ -1638,7 +1740,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   modalRoot = backdrop;
   dispatchModalOpenState(true);
   if (asPopover && options.anchor) {
-    positionRegionTaskPopover(windowNode, options.anchor);
+    positionRegionTaskPopover(windowNode, options.anchor, options.avoid);
   }
   textarea.focus();
   if (options.autoRun) void execute();
@@ -1649,7 +1751,11 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
  * 앵커 근처 fixed 팝오버를 뷰포트 안으로 클램프.
  * 결과 로그·before/after로 높이가 커진 뒤에도 재호출해야 화면 밖으로 밀리지 않는다.
  */
-export function positionRegionTaskPopover(panel: HTMLElement, anchor: RegionTaskAnchor): void {
+export function positionRegionTaskPopover(
+  panel: HTMLElement,
+  anchor: RegionTaskAnchor,
+  avoid?: RegionTaskAvoidRect,
+): void {
   const margin = 12;
   // browser: globalThis === window; tests can stub globalThis.innerWidth/Height without full window.
   const view = globalThis as { innerWidth?: number; innerHeight?: number };
@@ -1679,6 +1785,22 @@ export function positionRegionTaskPopover(panel: HTMLElement, anchor: RegionTask
   // maxHeight를 넘기면 CSS overflow로 스크롤 — 위치 계산은 클램프된 높이를 기준으로.
   const height = Math.min(rect.height || 220, maxHeight);
 
+  // 회피 영역(=작업 대상 선택 영역)이 주어지면 그 옆에 세운다. 우클릭 드래그는 놓은 자리가
+  // 곧 대상 영역 안이므로 anchor 만 쓰면 창이 자기가 바꾸는 곳과 캔버스 고스트 미리보기를
+  // 덮는다. 완전히 비켜설 수 없어도 anchor 로 돌아가지 않고 겹침이 가장 적은 쪽을 고른다.
+  const beside = placePopoverBesideRect({
+    avoid,
+    width,
+    height,
+    viewport: { width: vw, height: vh },
+    margin,
+  });
+  if (beside) {
+    panel.style.left = `${Math.round(beside.x)}px`;
+    panel.style.top = `${Math.round(beside.y)}px`;
+    return;
+  }
+
   if (left + width > vw - margin) left = Math.max(margin, anchor.x - width - 12);
   if (left < margin) left = margin;
   if (left + width > vw - margin) left = Math.max(margin, vw - width - margin);
@@ -1693,6 +1815,64 @@ export function positionRegionTaskPopover(panel: HTMLElement, anchor: RegionTask
 
   panel.style.left = `${Math.round(left)}px`;
   panel.style.top = `${Math.round(top)}px`;
+}
+
+/**
+ * 회피 사각형(대상 영역) 옆의 팝오버 좌상단을 고른다. 오른쪽 → 왼쪽 → 아래 → 위 순으로
+ * 먼저 요청 간격, 다음 0 간격에서 겹치지 않는 자리를 찾는다. 그래도 없으면 뷰포트 안으로
+ * 클램프한 네 자리 중 대상 영역과의 겹침이 가장 작은 곳을 쓴다. 회피 영역이 없을 때만
+ * null을 반환해 호출부의 anchor 배치를 유지한다. DOM 없이 검증할 수 있게 순수 함수로 분리했다.
+ */
+export function placePopoverBesideRect(opts: {
+  readonly avoid?: RegionTaskAvoidRect;
+  readonly width: number;
+  readonly height: number;
+  readonly viewport: { readonly width: number; readonly height: number };
+  readonly margin: number;
+  readonly gap?: number;
+}): { readonly x: number; readonly y: number } | null {
+  const { avoid, width, height, viewport, margin } = opts;
+  if (!avoid) return null;
+
+  const gap = opts.gap ?? 12;
+  const clamp = (value: number, min: number, max: number): number =>
+    max < min ? min : Math.min(Math.max(value, min), max);
+  const maxLeft = viewport.width - margin - width;
+  const maxTop = viewport.height - margin - height;
+  // 세로 배치는 영역의 세로 중앙에, 가로 배치는 영역의 가로 중앙에 맞춘다.
+  const centeredTop = clamp(avoid.y + avoid.height / 2 - height / 2, margin, maxTop);
+  const centeredLeft = clamp(avoid.x + avoid.width / 2 - width / 2, margin, maxLeft);
+  const candidates = (candidateGap: number): ReadonlyArray<{ readonly x: number; readonly y: number }> => [
+    { x: avoid.x + avoid.width + candidateGap, y: centeredTop },
+    { x: avoid.x - width - candidateGap, y: centeredTop },
+    { x: centeredLeft, y: avoid.y + avoid.height + candidateGap },
+    { x: centeredLeft, y: avoid.y - height - candidateGap },
+  ];
+  const insideViewport = (candidate: { readonly x: number; readonly y: number }): boolean =>
+    candidate.x >= margin && candidate.x <= maxLeft && candidate.y >= margin && candidate.y <= maxTop;
+
+  for (const candidateGap of gap === 0 ? [0] : [gap, 0]) {
+    const placed = candidates(candidateGap).find(insideViewport);
+    if (placed) return placed;
+  }
+
+  const overlapArea = (candidate: { readonly x: number; readonly y: number }): number => {
+    const overlapWidth = Math.max(
+      0,
+      Math.min(candidate.x + width, avoid.x + avoid.width) - Math.max(candidate.x, avoid.x),
+    );
+    const overlapHeight = Math.max(
+      0,
+      Math.min(candidate.y + height, avoid.y + avoid.height) - Math.max(candidate.y, avoid.y),
+    );
+    return overlapWidth * overlapHeight;
+  };
+  const clamped = candidates(0).map((candidate) => ({
+    x: clamp(candidate.x, margin, maxLeft),
+    y: clamp(candidate.y, margin, maxTop),
+  }));
+  return clamped.reduce((best, candidate) =>
+    overlapArea(candidate) < overlapArea(best) ? candidate : best);
 }
 
 /** 클립보드 복사 — Clipboard API 실패 시 textarea fallback. */

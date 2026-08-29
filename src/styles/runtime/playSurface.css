@@ -26,7 +26,7 @@
 /* 호스트 셸 전체화면 토글(⛶) — hostFeatures에 "fullscreen"이 있을 때만 마운트된다(hostBridge.ts).
    스테이지는 transform: scale() 이라 버튼을 뷰포트에 붙이고 --play-scale 로 스테이지
    우상단 모서리(중앙 기준 ±160/120px)를 역산한다. 포인터 전용 — 키보드 포커스 없음. */
-.play-viewport > .play-fullscreen-toggle {
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle {
   align-items: center;
   background: rgba(8, 10, 18, 0.68);
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -46,8 +46,8 @@
   width: 22px;
   z-index: 60;
 }
-.play-viewport > .play-fullscreen-toggle:hover,
-.play-viewport > .play-fullscreen-toggle[aria-pressed="true"] {
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle:hover,
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle[aria-pressed="true"] {
   opacity: 1;
 }
 .play-stage {
@@ -124,6 +124,8 @@
   height: min(calc(100% - 24px), calc(var(--play-logical-height) * var(--play-scale) - 24px));
   align-items: center;
 }
+/* 560px 고정이던 시절에는 1600x1000(재생 영역 1203px)에서 목록 열이 362px 라 긴 이름이
+   잘리고 사이드 열 아래로 600px 가 비었다. 재생 영역을 더 쓰되 상한은 남긴다. */
 .player-layout .play-viewport > .runtime-shop-overlay > .runtime-shop-shell {
-  width: min(100%, 560px);
+  width: min(100%, 720px);
 }

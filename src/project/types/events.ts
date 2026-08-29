@@ -297,6 +297,7 @@ export type Command =
   | { kind: "equipTool"; itemId?: ItemId }
   | { kind: "openChest"; chestId?: string }
   | { kind: "changeFriendship"; npcKey?: string; delta: number }
+  | { kind: "changeFactionStance"; a: string; b: string; op: "=" | "+=" | "-="; value: number }
   | { kind: "getFriendship"; npcKey?: string; variableId: string }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
   | { kind: "giveMonster"; speciesId: MonsterSpeciesId; level: number; nickname?: string }

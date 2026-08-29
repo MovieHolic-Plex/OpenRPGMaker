@@ -49,11 +49,6 @@
   margin: 0;
 }
 
-.event-command-faceset-preview {
-  display: grid;
-  min-height: 96px;
-}
-
 .event-command-face-preview {
   align-items: center;
   background: var(--surface-recessed, var(--bg-raised));

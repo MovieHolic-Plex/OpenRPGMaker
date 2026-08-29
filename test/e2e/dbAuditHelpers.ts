@@ -185,11 +185,13 @@ export async function bootDbLane(page: Page, opts: BootDbLaneOpts): Promise<void
 export async function switchTabAnyMode(page: Page, tab: DatabaseTabSpec): Promise<void> {
   const button = page.getByTestId(tab.testId);
   if (!(await button.isVisible().catch(() => false))) {
-    const all = page.getByTestId("db-nav-all");
-    await expect(all, `db-nav-all must exist to reach ${tab.testId} in beginner nav`).toBeVisible();
-    if ((await all.getAttribute("open")) === null) {
-      await all.locator("summary").click();
-    }
+    // 레일은 모든 모드에서 카테고리 그룹이다 — 접힌 그룹 머리를 눌러 그 탭이 있는 묶음을 펼친다.
+    const groupSlug = await button.evaluate((node) => (node as HTMLElement).dataset.groupSlug ?? null);
+    const header = groupSlug
+      ? page.getByTestId(`db-tab-group-${groupSlug}`)
+      : page.locator(".db-tab-group").filter({ has: page.getByTestId(tab.testId) }).first();
+    await expect(header, `group header must exist to reach ${tab.testId}`).toBeVisible();
+    await header.click();
     await expect(button).toBeVisible();
   }
   await button.click({ force: true });

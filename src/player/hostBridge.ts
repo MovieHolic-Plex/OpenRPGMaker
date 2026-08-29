@@ -87,16 +87,13 @@ export function mountHostFullscreenToggle(options: FullscreenToggleOptions): (()
     text: "⛶",
     dataset: {
       testid: "play-fullscreen-toggle",
-      // playInputBlocker 는 실사용자 포인터를 막지만 touch-controls 소유 표식은 통과시킨다.
-      // 이 버튼은 포인터 전용 셸 컨트롤이므로 같은 소유권 경로를 재사용한다(블로커 파일 수정 금지).
-      playInputOwner: "touch-controls",
+      playInputOwner: "host-fullscreen",
     },
     attrs: {
       type: "button",
       tabindex: "-1",
       "aria-pressed": "false",
       "aria-label": "전체화면 전환",
-      title: "전체화면 전환",
     },
   });
 

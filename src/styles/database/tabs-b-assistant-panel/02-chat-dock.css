@@ -62,8 +62,7 @@
 }
 
 .ai-chat-panel.chat-dock-float .ai-command-bar,
-.ai-chat-panel.chat-dock-float .ai-proposal-pin-host,
-.ai-chat-panel.chat-dock-float .ai-proposal-modal-backdrop {
+.ai-chat-panel.chat-dock-float .ai-chat-resize-handle {
   pointer-events: auto;
 }
 
@@ -88,7 +87,6 @@
   pointer-events: auto;
 }
 .ai-chat-panel.chat-dock-float.is-collapsed > .ai-command-bar,
-.ai-chat-panel.chat-dock-float.is-collapsed > .ai-proposal-pin-host,
 .ai-chat-panel.chat-dock-float.is-collapsed > .ai-rising-overlay {
   display: none;
 }
@@ -266,7 +264,6 @@
   pointer-events: auto;
 }
 .ai-chat-panel.chat-dock-glass.is-collapsed > .ai-command-bar,
-.ai-chat-panel.chat-dock-glass.is-collapsed > .ai-proposal-pin-host,
 .ai-chat-panel.chat-dock-glass.is-collapsed > .ai-rising-overlay,
 .ai-chat-panel.chat-dock-glass.is-collapsed > .ai-chat-body {
   display: none;

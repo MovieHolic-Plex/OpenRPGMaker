@@ -365,7 +365,9 @@ describe("내장 플레이어 마커 — 클릭 히트박스가 몸 사각이다
     host.style.width = "320px";
     host.style.height = "240px";
     document.body.append(host);
-    const overlay = new RuntimeDomOverlay(() => host);
+    // 마커는 export-QA 부트에서만 존재한다(`instrumented`). 플래그 없이 만들면
+    // `upsertEventMarker` 가 조용히 반환해 히트박스를 관측할 대상 자체가 없다.
+    const overlay = new RuntimeDomOverlay(() => host, { qaInstrumentation: true });
     const source = event("golem", 5, 7, footprint);
     overlay.upsertEventMarker(runtimeEventView(source, {}, {}));
     const found = host.querySelector<HTMLElement>("[data-testid='event-golem']");

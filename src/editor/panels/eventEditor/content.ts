@@ -6,8 +6,6 @@ import {
 import {
   eventDraftIssuesForPage,
   validateEventDraftBody,
-  type EventDraftIssue,
-  type EventDraftValidation,
 } from "@/editor/eventDraftValidator";
 import {
   addEventPageCommand,
@@ -28,7 +26,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
-import { renderEventScriptModernViews } from "./eventScriptModernViews";
+import { renderEventPagePreview, renderEventScriptFlowchart } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
@@ -156,6 +154,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }
   });
   const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
+  const previewHost = el("div", {
+    class: "event-page-preview-host",
+    dataset: { testid: "event-page-preview-host" },
+  });
   let currentMode: StoryboardMode = storyboardMode;
   const makeStoryboard = () =>
     renderStoryboard(activePage.commands, {
@@ -178,9 +180,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   let storyboardEl = makeStoryboard();
   let viewToggle = renderViewToggle(currentMode, (next) => { currentMode = next; applyViewMode(); });
   function applyViewMode(): void {
+    const isPreview = currentMode === "preview";
     const isStoryboard = currentMode === "storyboard";
-    cmdList.hidden = isStoryboard;
+    cmdList.hidden = isStoryboard || isPreview;
     storyboardEl.hidden = !isStoryboard;
+    previewHost.hidden = !isPreview;
     const nextToggle = renderViewToggle(currentMode, (n) => { currentMode = n; applyViewMode(); });
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
@@ -192,10 +196,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     } else {
       storyboardEl.replaceChildren();
     }
+    if (isPreview) {
+      previewHost.replaceChildren(renderEventPagePreview({ mapId, eventId, page: activePage }));
+    } else {
+      previewHost.replaceChildren();
+    }
   }
   storyboardHost.append(storyboardEl);
   applyViewMode();
-  const validationControl = renderEventValidationSummary(validation);
 
   // NPC 연결 컨트롤은 삭제된 `display: none` identity 카드 안에 살았다 — 이제 그 주제가 속한
   // 「NPC와 일정」 그룹에서 사용자가 실제로 보고 누를 수 있다.
@@ -208,7 +216,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     : "연결 안 됨";
   appendEventRailGroup(
     pageSettings,
-    { slug: "npc", title: "NPC와 일정", summary: npcName, open: false },
+    { slug: "npc", title: "NPC와 일정", summary: npcName, open: false, authored: Boolean(ev.characterId) },
     [characterLink, socialExtras, scheduleEditor].filter((node): node is HTMLElement => node !== null),
   );
   const settingsMain = el("div", {
@@ -233,6 +241,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     Array.from(node.childNodes).forEach((child) => replacement.append(child));
     node.replaceWith(replacement);
   });
+  const aiAssist = renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList });
   commandsColumn.append(
     columnLabel(
       "commands",
@@ -248,11 +257,18 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       attrs: { "aria-label": "이 페이지가 하는 일" },
       dataset: { testid: "event-script-canvas" },
       children: [
-        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage, viewToggle),
+        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage, viewToggle, () => {
+          currentMode = "preview";
+          applyViewMode();
+          previewHost.scrollIntoView({ block: "nearest" });
+        }, aiAssist),
         storyboardHost,
+        previewHost,
         cmdList,
       ],
-    })
+    }),
+    // AI 작성기는 목록을 덮는 오버레이가 아니라 칼럼 맨 아래 도크다 — 삽입 위치가 계속 보인다.
+    aiAssist,
   );
   inspectorColumn.append(columnLabel("inspector", "선택한 명령", "명령을 고르면 여기에서 고칩니다"));
 
@@ -269,7 +285,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       children: [renderClassicPageTabStrip(mapId, ev, activePage), renderPageTabs(mapId, ev, activePage)],
     }),
     workbench,
-    ...(validationControl ? [validationControl] : [])
   );
   container.append(section);
 }
@@ -309,6 +324,8 @@ function renderCommandToolbar(
   eventId: string,
   page: EventPage,
   viewToggle?: HTMLElement,
+  onOpenPreview?: () => void,
+  aiDock?: HTMLDetailsElement,
 ): HTMLElement {
   const selectedPath = (): number[] | null => {
     const selected = cmdList.querySelector<HTMLElement>(".selected, .is-selected");
@@ -348,7 +365,7 @@ function renderCommandToolbar(
       }),
     ],
   });
-  const toolsMenu = renderEventToolsMenu(cmdList, actions, mapId, eventId, page);
+  const toolsMenu = renderEventToolsMenu(mapId, eventId, page);
   const commandSearch = el("input", {
     class: "search event-editor-command-search",
     attrs: { type: "search", placeholder: "명령 검색", "aria-label": "명령 검색" },
@@ -374,13 +391,15 @@ function renderCommandToolbar(
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
-      renderCommandAuxGroup(),
+      renderCommandAuxGroup(onOpenPreview, aiDock),
     ],
   });
 }
 
-function renderCommandAuxGroup(): HTMLElement {
-  const commandsColumn = (): HTMLElement | null => document.querySelector(".event-editor-commands-column");
+function renderCommandAuxGroup(onOpenPreview?: () => void, aiDock?: HTMLDetailsElement): HTMLElement {
+  // 도크가 있으면 그 조상을 통해 칼럼을 집는다 — 에디터 본문이 동시에 다수 마운트되도 섞이지 않는다.
+  const commandsColumn = (): HTMLElement | null =>
+    aiDock?.closest(".event-editor-commands-column") ?? document.querySelector(".event-editor-commands-column");
   const open = (selector: string): void => {
     const column = commandsColumn();
     const tools = column?.querySelector<HTMLDetailsElement>("[data-testid='event-editor-aux-tools']");
@@ -390,20 +409,30 @@ function renderCommandAuxGroup(): HTMLElement {
     details.open = true;
     details.scrollIntoView({ block: "nearest" });
   };
+  // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
+  // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
+  const aiButton = aiDock ? toolbarButton("✧", "AI 명령", "event-command-quick-ai") : null;
+  if (aiDock && aiButton) {
+    const syncAiExpanded = (): void => aiButton.setAttribute("aria-expanded", String(aiDock.open));
+    syncAiExpanded();
+    aiDock.addEventListener("toggle", syncAiExpanded);
+    aiButton.addEventListener("click", () => {
+      aiDock.open = !aiDock.open;
+      if (aiDock.open) aiDock.scrollIntoView({ block: "nearest" });
+    });
+  }
   return el("div", {
     class: "event-editor-command-aux-group",
     attrs: { role: "group", "aria-label": "보조 도구" },
     children: [
-      toolbarButton("✧", "AI 명령", "event-command-quick-ai", () => open("[data-testid='ai-event-assist']")),
-      toolbarButton("</>", "스크립트 보기", "event-command-quick-preview", () => open("[data-testid='event-script-live-preview']")),
+      ...(aiButton ? [aiButton] : []),
+      toolbarButton("▶", "미리보기", "event-command-quick-preview", () => onOpenPreview?.(), false, false, "이 페이지가 하는 일을 차례대로 보여줍니다"),
       toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
     ],
   });
 }
 
 function renderEventToolsMenu(
-  cmdList: HTMLElement,
-  actions: CommandListActions,
   mapId: MapId,
   eventId: string,
   page: EventPage
@@ -411,8 +440,7 @@ function renderEventToolsMenu(
   const auxTools = el("div", {
     class: "event-editor-command-tools-popover event-editor-aux-tools",
     children: [
-      renderEventAiAssist({ mapId, eventId, page, actions, cmdList }),
-      renderEventScriptModernViews({ mapId, eventId, page }),
+      renderEventScriptFlowchart({ mapId, eventId, page }),
       renderFollowerPresetBar({
         insertCommandsAt: (index, commands) => {
           for (let i = 0; i < commands.length; i += 1) {
@@ -437,7 +465,7 @@ function renderEventToolsMenu(
       el("summary", {
         class: "event-editor-command-tools-summary",
         text: "도구",
-        attrs: { title: "AI, 미리보기, 플로우와 특수 템플릿" },
+        attrs: { title: "플로우와 특수 템플릿" },
       }),
       auxTools,
     ],
@@ -603,84 +631,4 @@ export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boo
     },
   });
   return true;
-}
-
-function renderEventValidationSummary(validation: EventDraftValidation): HTMLDetailsElement | null {
-  if (validation.issues.length === 0) return null;
-  const parts: string[] = [];
-  if (validation.errorCount > 0) parts.push(`오류 ${validation.errorCount}`);
-  if (validation.warningCount > 0) parts.push(`경고 ${validation.warningCount}`);
-  if (validation.infoCount > 0) parts.push(`안내 ${validation.infoCount}`);
-  const label = parts.join(" · ");
-  const details = el("details", {
-    class: `event-draft-validation${validation.errorCount > 0 ? " has-errors" : validation.warningCount > 0 ? " has-warnings" : " has-info"}`,
-    dataset: { testid: "event-draft-validation" },
-  }) as HTMLDetailsElement;
-  details.append(
-    el("summary", {
-      class: "event-draft-validation-summary",
-      dataset: { testid: "event-draft-validation-summary" },
-      text: label,
-      attrs: { "aria-label": label },
-    }),
-    el("div", {
-      class: "event-draft-validation-issues",
-      children: validation.issues.map((issue, index) => el("button", {
-        class: `event-draft-validation-issue ${issue.severity}`,
-        attrs: { type: "button" },
-        dataset: {
-          testid: `event-draft-validation-issue-${index}`,
-          issueCode: issue.code,
-          severity: issue.severity,
-        },
-        children: [
-          el("span", { class: "event-draft-validation-severity", text: validationSeverityLabel(issue.severity) }),
-          el("span", { class: "event-draft-validation-message", text: issue.message }),
-        ],
-        on: { click: () => navigateToEventDraftIssue(issue) },
-      })),
-    })
-  );
-  return details;
-}
-
-export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
-  if (issue.pageId) editorState.set({ selectedEventPageId: issue.pageId });
-  const focusIssue = (): void => {
-    const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
-    const root = modal ?? document.body;
-    let target: HTMLElement | null = null;
-    if (issue.commandPath) {
-      const encoded = JSON.stringify(issue.commandPath);
-      target = Array.from(root.querySelectorAll<HTMLElement>(".cmd-item, .row, .leaf"))
-        .find((candidate) => candidate.dataset.cmdPath === encoded) ?? null;
-      if (target) {
-        root.querySelectorAll(".cmd-item.selected, .row.selected, .leaf.selected").forEach((node) => node.classList.remove("selected", "is-selected"));
-        target.classList.add("selected", "is-selected");
-        target = target.querySelector<HTMLElement>(".cmd-head, .line") ?? target;
-      }
-    }
-    if (!target && issue.field) {
-      target = root.querySelector<HTMLElement>(`[data-testid="${issue.field.testId}"]`);
-    }
-    if (!target) return;
-    for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
-      if (ancestor.tagName === "DETAILS") (ancestor as HTMLDetailsElement).open = true;
-    }
-    if (target.getAttribute("tabindex") === null && !/^(BUTTON|INPUT|SELECT|TEXTAREA)$/u.test(target.tagName)) {
-      target.setAttribute("tabindex", "-1");
-    }
-    target.focus({ preventScroll: true });
-    target.scrollIntoView?.({ block: "center", inline: "nearest" });
-  };
-  focusIssue();
-  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
-    window.requestAnimationFrame(focusIssue);
-  }
-}
-
-function validationSeverityLabel(severity: EventDraftIssue["severity"]): string {
-  if (severity === "error") return "오류";
-  if (severity === "warning") return "경고";
-  return "안내";
 }

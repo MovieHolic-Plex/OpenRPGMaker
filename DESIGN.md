@@ -261,17 +261,17 @@ All spacing derives from 4px.
 - **Structure**: RM2K3 menu bar (프로젝트/맵/도구/게임/도움말) + the three-button `editor-ui-mode-toggle` (초보/표준/전문가). Inactive mode buttons stay visible at every supported desktop width; only brand text and the beginner test-play label may collapse below `1320px`. Toolbar rows follow (title + mode badge, file/undo/DB actions, layer + zoom controls).
 - **Shortcuts**: F5/F6/F7 layers, 1–7 tools, +/- zoom, Ctrl+S save, Ctrl+Z/Y undo/redo, Ctrl+C/V copy/paste (see `src/editor/hotkeys.ts`). Hotkeys are disabled while a form control or modal has focus. Ctrl+K opens the integrated palette covering tools, layers, Test Play, Database, World, Resources, current-map PNG, build-palette toggle, map/tile/event drawers, explicit mode selection and mode cycling, AI side/float dock toggle, Help, map navigation, and AI skills.
 
-### AI director plate
+### AI director plate — removed (2026-08-28)
 
-- Header plate (`data-testid="ai-director-plate"`): 48px faceset crop of `easyrpg-faceset-actor1` index 0 (standard 4×4 / 48px cell) + name `조수` + one-line `idlePresenceLine`.
-- Face is `role="img"` `aria-label="조수"`, pixelated, no emoji. Name is the header `h2`. Line is `data-testid="ai-director-line"`.
-- Tokens: name `--text-1` 13px/600, line `--text-2` 12px/400, gap `--space-2`, face well `--studio-inset` / `--studio-line` (or `--bg-inset` / `--border-subtle` aliases). No 지시/질문/계획 chips on the plate.
-- Presence line is idle copy unless a turn is running. Collapsed restore `aria-label` is `조수`. Primary actions (보내기, 이 맵에 넣기) and `@>` use `--gold`, not indigo.
+- The header plate (`ai-director-plate`: 48px face + `조수` + presence line) **no longer exists**. #163 dropped the assistant header and face; measured before-state (`verify-shots/assistant-glass/before/metrics.json`) showed a 518×73px header spending 12% of the 620px panel on chrome that carried only ☰ and ▾.
+- `src/editor/panels/aiDirectorChrome.ts` now holds one thing: the collapsed restore button, labelled with text (`조수`), not a face.
+- Primary actions (보내기, 이 맵에 넣기) and `@>` still use `--gold`, not indigo.
+- Note for anyone reviving a face here: faces are one file per image (`easyrpg-faceset-actor1-00`), not a 4×4 sheet plus a cell index. The sheet + index model is gone.
 
 ### AI conversation column — Cursor 3-band (locked 2026-08-25)
 
 Glass/side assistant is three bands only:
-1. **Plate** — faceset + `조수` + one status. Overflow (`⋯`) holds dock/new-session/settings. No `+` / dock word / detach on the plate.
+1. **Plate** — removed by #163 (see above). The band is gone; overflow actions (dock/new-session/settings) moved off the header. No faceset, no `+`, no dock word, no detach.
 2. **Stream** — conversation and tool rows. This band owns scroll. Empty stream may show a one-line hint + at most two chips. No visual gallery.
 3. **Composer** — inset well + indigo `전송`, always at the bottom.
 Proposal cards float over the map (imposter), not inside these three bands.
@@ -449,7 +449,7 @@ Legacy `--db-light-*` / `--bg-*` / `--db-modern-*` aliases remap to these inside
 
 ### Contracts
 
-- **Nav:** 220px labeled rail at `>=800px` container (`container-type: inline-size` on `.database-modal-window`; media fallback at 799px), 56px icon+tooltip below. Group headers (`파티/전투·몬스터/생활/맵/시스템`) visible as 11px uppercase `text-3`. Count badge via `[data-count]` quiet pill. Selected = `accent-soft` + 2px left accent bar. Search placeholder `탭 검색` full-width readable.
+- **Nav:** 220px labeled rail at `>=800px` container (`container-type: inline-size` on `.database-modal-window`; media fallback at 799px), 56px icon+tooltip below. Group headers (`파티/몬스터/전투 규칙/생활/세계/시스템`) visible as 11px uppercase `text-3`. Tab icons are inline SVG (`databaseTabIcons.ts`, `svg.db-tab-icon`, 22×22 viewBox / `stroke: currentColor` 1.8 — the `tileToolbarIcons.ts` house spec), never CSS `content` glyphs: the old per-testid glyph list covered 24 of 29 tabs and `system-studio.css` could out-specify it away entirely. Count badge via `[data-count]` quiet pill. Selected = `accent-soft` + 2px left accent bar. Search placeholder `탭 검색` full-width readable.
 - **List:** name first (`flex:1`, ellipsis), muted trailing `#n` (`#${visibleIndex}`), 24px thumb, pill sub. Selected = `accent-soft` + border ring. CSS order puts name before number; markup order matches display order.
 - **Inspector:** sticky header (`top:0; z-index:2` on `.db-record-hero` / modal header) and sticky footer; former equal-weight Win95 fieldsets become hairline sections (top border only, `text-3` 12px uppercase labels).
 - **Footer:** `닫기` is ghost (`transparent` + `border-default`), `지금 저장` is filled accent — enforced by `[data-testid]` selectors in `studio-theme.css` even if `.primary` class is on the other button.

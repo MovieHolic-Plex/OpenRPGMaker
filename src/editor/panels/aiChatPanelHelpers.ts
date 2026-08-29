@@ -16,6 +16,7 @@ import {
 import { isProxyAuth, loadAiConfig } from "@/ai/llmClient";
 import type { AiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
+import { clearAgentBlueprint } from "@/editor/agentBlueprint";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { getTool } from "@/editor/tools";
 import { showConfirm } from "@/editor/ui/modal";
@@ -147,7 +148,7 @@ export function isMetadataOnlyProposal(calls: readonly ProposedCall[]): boolean 
   return calls.length > 0 && calls.every((call) => METADATA_ONLY_TOOLS.has(call.name));
 }
 
-/** 제안 카드 본문이 이미 확인 UI인 경고 — 이중 「승인 확인」 모달을 띄우지 않는다. */
+/** 클러스터 AI 모달 본문이 이미 확인 UI인 경고 — 이중 「승인 확인」 모달을 띄우지 않는다. */
 export function isCardLevelApprovalWarning(warning: string): boolean {
   return (
     warning.includes("이대로 적용")
@@ -162,7 +163,7 @@ export function isCardLevelApprovalWarning(warning: string): boolean {
 
 // 커스텀 인앱 모달(§2.4) — 네이티브 confirm 대체. 경고가 없으면 동기 true를 돌려
 // 수락 경로가 마이크로태스크로 미뤄지지 않게 한다(적용 직후 상태를 읽는 흐름 보존).
-// soft-confirm/재료 합의 경고만 있으면 카드의 [이대로 적용]이 확인이므로 모달을 건너뛴다.
+// soft-confirm/재료 합의 경고만 있으면 모달 본문이 이미 확인이므로 건너뛴다.
 export function confirmRuleApproval(warnings: readonly string[]): true | Promise<boolean> {
   if (warnings.length === 0) return true;
   const hasDestructive = warnings.some((w) => w.includes("파괴") || w.includes("지워") || w.includes("삭제") || w.includes("remove") || w.includes("clear"));
@@ -195,7 +196,7 @@ export function completenessSpecForProposal(
   return null;
 }
 
-// UI 상태 배지 전이 기록(결함 ⑬) — "검토 대기" 멈춤 같은 문제를 export 로그로 진단 가능하게.
+// UI 상태 배지 전이 기록(결함 ⑬) — 적용 실패 같은 멈춤을 export 로그로 진단한다.
 export interface StatusTransition {
   readonly at: string;
   readonly status: string;
@@ -234,6 +235,9 @@ export function dropSession(controller: ChatController): void {
   if (controller.session) controller.auditHistory.push(...controller.session.getAuditEntries());
   controller.session = null;
   clearAgentGhostPreview();
+  // 세션이 사라지면 그 세션의 밑그림(BuildSpec)도 사라진다 — 청사진의 수명은 스펙에 매여 있고
+  // 새 대화·대화 복원·프로젝트 전환이 모두 이 함수를 지나간다.
+  clearAgentBlueprint();
 }
 
 export function downloadJson(filename: string, json: string): void {
@@ -314,13 +318,12 @@ export function isAiAssistDetail(value: unknown): value is AiAssistDetail {
 }
 
 /** 상태 배지·접힘 FAB 점과 맞추는 톤. UI 폴리시(제안 6). */
-export type AiStatusTone = "idle" | "running" | "review" | "error" | "ok";
+export type AiStatusTone = "idle" | "running" | "error" | "ok";
 
 export function statusToneOf(text: string): AiStatusTone {
   const t = text.trim();
   if (!t) return "idle";
   if (t === "오류" || t.startsWith("오류") || t.includes("실패")) return "error";
-  if (t.includes("검토 대기")) return "review";
   if (
     t === "적용됨" ||
     t === "완료" ||

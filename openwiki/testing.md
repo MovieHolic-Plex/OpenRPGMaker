@@ -14,6 +14,18 @@ Use the lightest command that proves the change.
 - `test/commandContracts/runControl.contract.test.ts`: all action variants, inactive no-op behavior, non-blocking completion, and project serialization.
 - `test/roguelikeRooms.test.ts`: exact deterministic slot selection, generation invalidation after floor/reset changes and same-seed restart, real `run_scene_test` enemy and one-shot loot reset behavior, live event-surface rebuild, save/load generation stability, event-reset opt-out, real-time enemy HP/projectile cleanup, active-run kill persistence isolation, AI tool authoring, import validation, and project roundtrip.
 - Registry/shape coverage includes `runControl` and `run`; native manifest counts are 75 commands and 16 conditions at this phase.
+- **Condition coverage (2026-08-29).** `test/conditionEvaluatorParity.test.ts` is the parity spine: it feeds identical `(condition, state)` pairs for all 16 kinds, in both a satisfying and a non-satisfying state, to all three evaluators (`pageResolution.evalPageCondition`, `session.evalCondition`, the battle runtime's `evaluateCondition`) and asserts identical verdicts. It also asserts `Object.keys(CASES)` equals `CONDITION_KINDS` in order, so a new union member fails the test until it is classified. `ALLOWLISTED_DIVERGENCES` is currently empty — record evidence before adding to it.
+  `test/commandContracts/fork.contract.test.ts` covers all 16 kinds through the real interpreter drain; it previously covered only 10, with `timePhase`/`season`/`npcActivity`/`friendshipAtLeast`/`battleResult`/`run` proven at the `evalCondition` unit level but never through branch selection. It also pins that an empty friendship `npcKey` resolves via the host event's `characterId`.
+  `test/pageConditionAuthoringIntegrity.test.ts` pins that a page condition survives an emptied reference (inline error, not deletion) and that touching a disabled row activates it visibly. `test/conditionEvalPreview.test.ts` pins the three-state 판정 불가 verdict. `test/conditionCopyTokens.test.ts` is the internal-token gate for condition copy.
+
+### 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
+
+`.omo/gates-baseline.json` 은 `baselineTrustworthy: false` 이고 이유가 적혀 있다 — 동일 코드로
+연속 실행해도 실패 수가 170/187/195/203 으로 흔들리고 `failedFiles` 는 **합집합**이다.
+실측: playwright 시간 QA 가 dev 서버를 돎리는 동시에 `npm run gates` 를 돌렸다가 24개 파일이
+「새로 실패」로 찍혔고, 그 중에는 바로 전에 개별 실행으로 두 번 초록을 본 파일도 섞여 있었다.
+따라서 게이트 회귀 파정은 **조용한 상태에서 해당 파일을 개별 재실행**해서 마무리해야 한다.
+`typecheck:app` 은 기준선이 0 오류 + `baselineTrustworthy: true` 이므로 그곳의 오류는 바로 회귀다.
 
 ## Agent validation rule
 
@@ -23,6 +35,7 @@ Pick validation based on the touched boundary:
 
 - Type-only or low-risk helper changes: run `npm run typecheck` plus a focused unit test if one exists.
 - Project schema, migration, persistence, defaults, or references: run focused Vitest coverage for the changed path and include save/load or migration evidence.
+- Default item/equipment catalog changes run `test/defaultItemCatalogQuality.test.ts` for Korean copy and shape coherence plus `test/itemRuntimeUsability.test.ts` for real field-menu/battle effect and consumption behavior. Keep the icon-coverage and default-database suites in the same focused gate.
 - Terms/runtime label changes should cover `resolveTerms` defaults and overrides, old JSON with missing `meta.terms`, unknown term roundtrips, and focused DOM/model checks for battle command labels, shop text, inn text, and status/common labels when touched.
 - Cluster-rule changes should include a focused validator test plus a commit-gate proof: a hard rule must still produce a `projectLint` error, `commitChangeset` must return `ok:true` for cluster-rule-only hard violations, and the fixed map should return `ok:true` without cluster-rule issues.
 - Editor UI/workflow changes: run focused tests and drive the browser/editor surface with Playwright or an equivalent browser check.
@@ -120,6 +133,25 @@ Evidence expectations:
 - Event draft/editor changes should run `npm run typecheck:app` plus: `npx vitest run test/eventDrafts.test.ts test/eventDraftVault.test.ts test/eventDraftValidator.test.ts test/eventBeginnerTemplates.test.ts test/eventTestSandbox.test.ts test/eventEditorTrustLoop.test.ts test/selectedEventTestModal.test.ts --configLoader runner`.
 - Required assertions are canonical projection while editing, crash/replace recovery, Cancel rollback, Apply/OK/Test fatal blocking, recursive nested validation and navigation, safe record-backed beginner templates, newest-first recents and roving tabs, focus/caret/details/scroll restoration, sandbox-only selected draft injection, deterministic spawn, real `initialEventTestId` player wiring, and zero `store.flush()` calls on the selected-event path. Follow with `npm run gates`, `npm run build`, and a practical browser smoke for merge-ready UI work.
 
+## 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
+
+- 게이트: `npx playwright test test/e2e/event-face-command-visual.spec.ts` + `npm run gates:css`(graph 고아 0건, 예산 래칫 회귀 0건).
+- 이 스펙이 잡는 것은 **얼굴이 두 장 겹쳐 보이는** 회귀다. `facesetPreview.faceImage()` 는
+  얼굴 상자에 `--face-url` CSS 배경(로드 실패 폴백)을 깔고 그 안에 실제 `<img>` 를 넣는다.
+  두 규칙(`<img>` 절대 배치 + 배경 끄기)을 담고 있던
+  `event-editor.command-preview/07-identifiable-previews.css` 가 **어떤 배럴에도 @import 되지
+  않은 고아 파일**이라 `<img>` 가 `position:static` 원본 크기(48×48)로 흘러가고 배경은 상자
+  전체(96×96)에 `contain` 으로 깔렸다. 실측: 얼굴 상자 115개 중 114개가 이중 페인트.
+- 계약 3줄: (1) `<img>` 가 있으면 상자의 computed `background-image` 는 `none`,
+  (2) `<img>` 는 `position:absolute` 로 상자 내부를 정확히 채운다, (3) `<img>` 를 떼면
+  배경 폴백이 되살아난다. 배경/`<img>` 를 **같은 크기로 맞추는 것만으로는 부족하다** —
+  nearest-neighbour 래스터화 결과가 미묘하게 달라 배경이 테두리에서 1px 새어나온다.
+- 대비는 computed 색이 아니라 **렌더된 픽셀**로 본다. `.ecp-message-window` 가 불투명
+  `--bg-surface` 층을 어두운 유리 색 위에 깔고 있던 동안 computed 대비는 17.8:1 로
+  보였지만 실제 페인트는 #FFF6E2 on #F7F8F8 = **1.0:1** 이었다.
+- 배경/전경 층 순서를 만질 때는 `.ecp-message-window` 를 공유하는 문장 표시·선택지·문장
+  표시 설정 미리보기도 같이 눈으로 확인한다.
+
 ## P2 spatial focused gate (2026-08-25)
 
 - Schema/legacy/roundtrip: `test/p2SpatialSchema.test.ts`.
@@ -197,6 +229,18 @@ Evidence expectations:
   패배 처리 경로**이기 때문이다. HP 1 로는 패배가 재현되지 않았다(`battleDamage.ts:175` 는
   `power + floor(atk/2) - floor(def/2) <= 0` 이면 데미지 0 → 약한 적 앞에서 1 HP 파티가
   무적이 되고, 실측에서 레벨 1 파티가 108HP 트룹을 이겨 `battleResult=victory` 가 찍혔다).
+- `battle` 시나리오는 `map_moonwell_forest` 의 봉인 이벤트(14,2 · `movement: fixed`)로
+  `troop_forest_hornets` **3마리 전투**에 들어가고, `battlerGeometry` 기대치가 실브라우저
+  rect 로 배틀러 배치를 판정한다(적 이미지가 필드 안에 온전히 있는지 + 발이 백드롭
+  지평선 33% 아래인지). CSS 레이아웃은 jsdom 으로 재현되지 않으므로 이 기하는 실브라우저
+  측정만이 근거다. 12종 스킨 전수는 `system.battleUiStyle` 만 바꾼 픽스처 사본에
+  `--project` / `--out` 을 붙여 같은 시나리오를 돌려서 본다.
+- `battlerGeometry` 는 네 축이다: 필드 담기 · 발이 지평선 아래 · 스프라이트 크기 0 아님 ·
+  **적끼리 겹침 아님**. 겹침 축이 없던 동안 rm2000/dragonquest/mv 가 3마리를 한 점에 겹쳐
+  그리면서 통과했다 — 담기·지평선만 보면 "완전히 겹친 한 덩어리"가 정답으로 보인다.
+- 스윕은 스킨마다 서버·브라우저를 새로 띄운다. **도는 중에 `git stash` 같은 트리 변경을 하면
+  안 된다** — 실측: 스윕 중 stash 로 ff 런이 "전투가 시작되지 않았다"로 죽었다(내 변경이
+  사라진 트리를 읽었다). 결과가 오염되면 그 스킨만 다시 돌려라.
 
 함정 (전부 실측):
 - `vite.player.config.ts` 는 `publicDir: false` 다. 그대로 dev 서빙하면 번들 텍스처

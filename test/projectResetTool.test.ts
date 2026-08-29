@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { DESTRUCTIVE_TOOLS as APPROVAL_DESTRUCTIVE_TOOLS, classifyApproval } from "@/ai/approvalPolicy";
 import { AssistantSession } from "@/ai/assistantSession";
 import { reassembleSelectedProposalProject } from "@/editor/panels/aiChatPanel";
 import { runTool, type ToolContext } from "@/editor/tools";
@@ -7,7 +6,7 @@ import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import type { ChatResult } from "@/ai/llmClient";
 
-const CONFIG = { baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
+const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
 
 function scriptedChat(steps: readonly ChatResult[]) {
   let index = 0;
@@ -28,7 +27,23 @@ function finalMessage(): ChatResult {
 describe("reset_project", () => {
   it("deterministically replaces old content with a valid blank seed and applies title/genre", () => {
     const old = createBlankProject();
-    old.maps[old.startMapId].events.push({ id: "old_event", name: "old", x: 1, y: 1, trigger: "action", pages: [{ commands: [] }] });
+    old.maps[old.startMapId].events.push({
+      id: "old_event",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [{
+        id: "old_event_page",
+        name: "old",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "action" },
+        priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [],
+      }],
+    });
     old.database.items.push({ ...old.database.items[0], id: "old_item", name: "old" });
     const first: ToolContext = { project: structuredClone(old) };
     const second: ToolContext = { project: structuredClone(old) };
@@ -62,7 +77,7 @@ describe("reset_project", () => {
     expect(rawPayload.issues?.[0]?.code).toBe("invalid-args");
   });
 
-  it("is destructive and approval-required at session and approval boundaries", async () => {
+  it("remains a destructive proposal but no longer crosses an approval boundary", async () => {
     const project = createBlankProject();
     const session = new AssistantSession(project, {
       chat: scriptedChat([resetCall({ prompt: "새 게임 시작", title: "새 출발" }), finalMessage()]),
@@ -72,11 +87,7 @@ describe("reset_project", () => {
     const result = await session.sendUserMessage("새 프로젝트로 처음부터 시작해줘");
     expect(result.proposedCalls).toHaveLength(1);
     expect(result.proposedCalls[0]).toMatchObject({ name: "reset_project", destructive: true, requiresApproval: true });
-    expect(APPROVAL_DESTRUCTIVE_TOOLS.has("reset_project")).toBe(true);
-    expect(classifyApproval(result.proposedCalls, { autoApproveEnabled: true })).toMatchObject({
-      decision: "require_approval",
-      requiresUserConfirm: true,
-    });
+    expect(session.getProposedProject().meta.title).toBe("새 출발");
   });
 
   it("makes reset-rooted proposal replay all-or-nothing", () => {

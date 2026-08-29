@@ -254,6 +254,9 @@ export function learnedSkillIds(
 export interface EquipmentRuntimeEffects {
   readonly doubleAttack: boolean;
   readonly attackAll?: boolean;
+  readonly accuracy?: number;
+  readonly criticalRate?: number;
+  readonly attackElementIds?: readonly string[];
   readonly elementalDefenseIds: readonly string[];
   readonly stateDefenseIds: readonly string[];
   readonly stateDefenseMode: "resist" | "inflict";
@@ -275,10 +278,13 @@ function totalEquipmentBonuses(project: Project, equipment: ActorInitialEquipmen
 }
 
 function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipment): EquipmentRuntimeEffects {
+  const attackElementIds = new Set<string>();
   const elementalDefenseIds = new Set<string>();
   const stateDefenseIds = new Set<string>();
   let doubleAttack = false;
   let attackAll = false;
+  let accuracy = 100;
+  let criticalRate = 0;
   let stateResistanceChance = 0;
   let stateDefenseMode: "resist" | "inflict" = "resist";
   for (const equipmentId of logicalEquipmentIds(project, equipment)) {
@@ -287,6 +293,9 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     if (!record) continue;
     if (record.effectFlags.doubleAttack) doubleAttack = true;
     if (record.effectFlags.attackAll) attackAll = true;
+    accuracy = Math.round((accuracy * record.accuracy) / 100);
+    criticalRate += record.criticalRate;
+    for (const elementId of record.attackElementIds) attackElementIds.add(elementId);
     for (const elementId of record.elementalDefenseIds) elementalDefenseIds.add(elementId);
     for (const stateId of record.stateDefenseIds) stateDefenseIds.add(stateId);
     if (record.stateDefenseMode === "inflict") stateDefenseMode = "inflict";
@@ -295,6 +304,9 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   return {
     doubleAttack,
     attackAll,
+    accuracy: Math.max(0, Math.min(100, accuracy)),
+    criticalRate: Math.max(0, Math.min(100, criticalRate)),
+    attackElementIds: [...attackElementIds],
     elementalDefenseIds: [...elementalDefenseIds],
     stateDefenseIds: [...stateDefenseIds],
     stateDefenseMode,

@@ -168,10 +168,41 @@ const DERIVED_COMMAND_ENTRIES: readonly CommandEntry[] = COMMAND_PRESENTATION_DE
     rank: 0,
     alternateRoute: descriptor.alternateRoute,
   }));
+/**
+ * 종류 이름을 testid 로 쓸 "대표" 카탈로그 항목. 같은 네이티브 종류로 접히는 항목이 둘
+ * 이상이면 `command-picker-add-<kind>` 가 겹쳐 e2e 가 어느 버튼인지 지목할 수 없다
+ * (실측 2026-08-28: m2-001-show-text 와 m2-209-advanced-dialogue 가 둘 다
+ * command-picker-add-text 를 달아 Playwright strict mode 위반). 카탈로그 순서상 첫 항목만
+ * 종류 이름을 갖고 나머지는 항목 id 로 구분한다 — 기존 스펙이 잡던 손잡이
+ * (command-picker-add-text = 문장 표시)는 그대로 유지된다.
+ *
+ * 종전에는 픽커 목록에서 라벨 문자열("고급 대화")로 걸러 중복을 피하려 했는데, 라벨이
+ * 바뀌면 조용히 뚫리고 실제로 뚫려 있었다. 구조로 막는다.
+ *
+ * 은퇴한 카탈로그 행(중복 등재·다른 명령으로 통합)은 라벨이 아니라 `entry.deprecated`
+ * (= `DEPRECATED_M2_COMMAND_IDS`) 로 걸러낸다. 라벨 필터는 `pickerLabelFor` 가 붙이는
+ * 말줄임("고급 대화...") 때문에 한 번도 맞지 않아, 문장 표시로 통합한 「고급 대화」가 탭 1
+ * 「말하기」에 그대로 남아 있었다(실측 2026-08-28).
+ */
+const CANONICAL_CATALOG_ID_BY_KIND: ReadonlyMap<CommandKind, string> = (() => {
+  const canonical = new Map<CommandKind, string>();
+  for (const entry of M2_COMMAND_CATALOG) {
+    if (!entry.existingKind) continue;
+    if (!canonical.has(entry.existingKind)) canonical.set(entry.existingKind, entry.id);
+  }
+  return canonical;
+})();
+
+function catalogEntryTestId(entry: M2CommandCatalogEntry, kind: CommandKind): string {
+  return CANONICAL_CATALOG_ID_BY_KIND.get(kind) === entry.id
+    ? `command-picker-add-${kind}`
+    : `command-picker-add-${entry.id}`;
+}
+
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
   page,
   entries: [
-    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && entry.pickerLabel !== "고급 대화").map(
+    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && !entry.deprecated).map(
       commandEntryFromCatalog
     ),
     ...NATIVE_ONLY_ENTRIES.filter((entry) => entry.page === page),
@@ -191,6 +222,8 @@ export type EventCommandPickerEntryView = {
   readonly page: M2CommandPickerPage;
   readonly selectable: boolean;
   readonly alternateRoute?: string;
+  /** 버튼의 data-testid. e2e 가 잡는 손잡이라 항목마다 유일해야 한다. */
+  readonly testId: string;
 };
 
 function tabGridEntries(entries: readonly CommandEntry[]): readonly CommandEntry[] {
@@ -228,7 +261,7 @@ function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
       commandId: entry.id,
       group: entry.pickerGroup,
       index: entry.index,
-      testId: `command-picker-add-${entry.existingKind}`,
+      testId: catalogEntryTestId(entry, entry.existingKind),
       selectable: descriptor.selectable,
       runtimeSupport: runtimeSupportFor(descriptor),
       runtimeOwner: descriptor.executionOwner,

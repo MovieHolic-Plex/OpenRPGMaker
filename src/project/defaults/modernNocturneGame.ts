@@ -10,6 +10,7 @@ import {
   DEFAULT_ITEM_ID,
   DEFAULT_TILE_SIZE,
 } from "./constants";
+import { dropCropsWithMissingItems } from "../databaseRecordModel";
 import { defaultAssetSet, defaultResourceProfiles } from "./defaultAssets";
 import { defaultDatabase, defaultSession, defaultSystem, defaultTerms, defaultTitleScreenSettings } from "./defaultDatabase";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
@@ -109,6 +110,8 @@ export function createModernNocturneProject(): Project {
         equippableClassIds: entry.equipmentProfile.equippableClassIds.filter((id) => id === DEFAULT_CLASS_ID),
       },
     }));
+  // 아이템을 기본 회복약 하나로 좁혔으니 씨앗·수확물이 사라진 작물 행도 함께 걷어낸다.
+  dropCropsWithMissingItems(database);
   database.enemies = database.enemies.filter((entry) => ["enemy_extra_016", "enemy_extra_038"].includes(entry.id));
   database.enemies = database.enemies.map((enemy) => enemy.id === "enemy_extra_016"
     ? { ...enemy, name: "네온 망령", stats: { ...enemy.stats, maxHp: 48, attack: 18, defense: 10 }, rewards: { ...enemy.rewards, exp: 35, gold: 18 } }

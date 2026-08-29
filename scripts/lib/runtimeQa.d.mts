@@ -13,13 +13,26 @@ export type RuntimeQaOp =
       readonly actorIds?: readonly string[];
     }
   | { readonly kind: "dir"; readonly dir: RuntimeQaDir | null }
+  /**
+   * 방향을 `ms` 동안 밀고 있다가 뗀다. 금지된 고정 `wait` 와 다르다 — 경과 시간이 곧 자극이고,
+   * "막혀서 아무 일도 안 일어난다" 는 조건으로 표현할 수 없다. 이동이 성공하는 쪽은
+   * {@link RuntimeQaOp} 의 `waitForPosition` 으로 조건 대기해야 한다.
+   */
+  | { readonly kind: "hold"; readonly dir: RuntimeQaDir | null; readonly ms: number }
   | { readonly kind: "face"; readonly dir: RuntimeQaDir }
   | { readonly kind: "action" }
   | { readonly kind: "attack" }
   | { readonly kind: "skill" }
-  | { readonly kind: "key"; readonly key: string; readonly times?: number; readonly delayMs?: number }
+  | { readonly kind: "key"; readonly key: string; readonly times?: number }
   | { readonly kind: "teleport"; readonly mapId: string; readonly x: number; readonly y: number }
-  | { readonly kind: "wait"; readonly ms: number }
+  | { readonly kind: "waitForRuntime"; readonly timeoutMs?: number }
+  | {
+      readonly kind: "waitForPosition";
+      readonly mapId: string;
+      readonly x: number;
+      readonly y: number;
+      readonly timeoutMs?: number;
+    }
   | {
       readonly kind: "waitFor";
       readonly testid: string;
@@ -32,7 +45,7 @@ export type RuntimeQaOp =
       readonly testid: string;
       readonly state: "present" | "absent";
       readonly maxPresses?: number;
-      readonly delayMs?: number;
+      readonly timeoutMs?: number;
     };
 
 export type RuntimeQaExpect = {
@@ -60,9 +73,16 @@ export type RuntimeQaExpect = {
    * 사각은 네 변을 전부 적어야 한다(일부만 적으면 나머지가 조용히 통과한다).
    */
   readonly eventRects?: Readonly<Record<string, RuntimeQaEventRects>>;
+  readonly battleTextClean?: boolean;
+  readonly battlerGeometry?: RuntimeQaBattlerGeometrySpec;
 };
 
-export type RuntimeQaRect = {
+/**
+ * **타일** 좌표 사각(발자국). 픽셀 상자인 {@link RuntimeQaRect} 와 축이 다르다 —
+ * 이름을 갈라 둔 이유: 둘 다 left/right/top/bottom 을 갖지만 단위가 타일 대 CSS 픽셀이고,
+ * 섞이면 "18" 이 19번째 타일인지 18px 인지 알 수 없게 된다.
+ */
+export type RuntimeQaFootprintRect = {
   readonly left: number;
   readonly right: number;
   readonly top: number;
@@ -75,9 +95,41 @@ export type RuntimeQaEventRects = {
   /** 몸 사각 하단 몇 행이 통행을 막는가. 생략 저작이면 몸 높이와 같다. */
   readonly passRows?: number;
   /** 조사·전투·클릭이 쓰는 사각. */
-  readonly bodyRect?: RuntimeQaRect;
+  readonly bodyRect?: RuntimeQaFootprintRect;
   /** 통행 차단이 쓰는 사각. */
-  readonly passRect?: RuntimeQaRect;
+  readonly passRect?: RuntimeQaFootprintRect;
+};
+
+/** 실브라우저 DOM 상자(CSS 픽셀). 전투 배틀러 기하가 쓴다. */
+export type RuntimeQaRect = {
+  readonly top: number;
+  readonly bottom: number;
+  readonly left: number;
+  readonly right: number;
+  readonly width: number;
+  readonly height: number;
+};
+
+export type RuntimeQaBattler = {
+  readonly id: string;
+  readonly node?: RuntimeQaRect | null;
+  readonly image?: RuntimeQaRect | null;
+  readonly name?: RuntimeQaRect | null;
+};
+
+export type RuntimeQaBattlerGeometry = {
+  readonly skin: string;
+  readonly directorStep?: string;
+  readonly field: RuntimeQaRect;
+  readonly enemyGroup?: RuntimeQaRect;
+  readonly enemies: readonly RuntimeQaBattler[];
+  readonly allies?: readonly RuntimeQaBattler[];
+};
+
+export type RuntimeQaBattlerGeometrySpec = {
+  readonly minEnemies?: number;
+  readonly horizonRatio?: number;
+  readonly groundBandRatio?: number;
 };
 
 export type RuntimeQaBeat = {
@@ -120,6 +172,15 @@ export type RuntimeQaCompactState = {
   readonly gold: number;
 };
 
+export type RuntimeQaBattleTextNode = {
+  readonly text: string;
+  readonly selector: string;
+  readonly reasons: readonly string[];
+  readonly clippedRatio: number;
+  readonly slicedRatio: number;
+  readonly clipper: string | null;
+};
+
 export type RuntimeQaObserved = {
   /** 런타임 훅 설치 전(타이틀 화면 등)에는 null. */
   readonly state: RuntimeQaCompactState | null;
@@ -131,6 +192,12 @@ export type RuntimeQaObserved = {
   readonly testids: readonly string[];
   readonly playerSpriteResourceId: string | null;
   readonly playerSpriteTextureKey: string | null;
+  /** `battleTextClean` 을 요구한 비트에서만 칸다. */
+  readonly battleText?: {
+    readonly mounted: boolean;
+    readonly nodes: readonly RuntimeQaBattleTextNode[];
+  };
+  readonly battlers?: RuntimeQaBattlerGeometry | null;
 };
 
 export type RuntimeQaBeatReport = {
@@ -142,6 +209,7 @@ export type RuntimeQaBeatReport = {
   readonly state: RuntimeQaCompactState | null;
   /** 사각을 단정한 비트에만 실린다 — 안 쓰는 비트에 빈 객체를 남기면 "사각을 봤다" 로 읽힌다. */
   readonly events?: Readonly<Record<string, RuntimeQaEventRects>>;
+  readonly battlers?: RuntimeQaBattlerGeometry;
 };
 
 export type RuntimeQaReport = {
@@ -165,6 +233,13 @@ export declare function shouldCaptureShot(
 ): boolean;
 export declare function shotFileName(index: number, beatId: string): string;
 export declare function renderSummary(report: RuntimeQaReport): string;
+export declare const BATTLE_HORIZON_RATIO: number;
+export declare const BATTLE_GROUND_BAND_RATIO: number;
+
+export declare function evaluateBattlerGeometry(
+  spec: RuntimeQaBattlerGeometrySpec,
+  battlers: RuntimeQaBattlerGeometry | null,
+): string[];
 export declare function evaluateExpect(
   expected: RuntimeQaExpect,
   observed: RuntimeQaObserved,

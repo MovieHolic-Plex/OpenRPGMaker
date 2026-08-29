@@ -30,7 +30,7 @@
 .tileset-ai-question-custom-answer,
 .tileset-ai-inline-field input,
 .tileset-ai-inline-field select {
-  background: var(--surface-panel);
+  background-color: var(--surface-panel);
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
   border-width: 1px;
@@ -40,6 +40,12 @@
   min-width: 0;
   padding: 2px 4px;
   width: 100%;
+}
+
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 4px 로 덮어 글자가 화살표를 덮는다. */
+.tileset-ai-question-control select,
+.tileset-ai-inline-field select {
+  padding-right: 24px;
 }
 
 .database-modal-dirty-prompt-region {

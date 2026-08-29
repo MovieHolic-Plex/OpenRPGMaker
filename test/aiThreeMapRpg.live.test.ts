@@ -191,7 +191,6 @@ describeLive("내장 AI 로 맵 3개 RPG 저작 (live)", () => {
     maxToolCalls: 60,
     maxTokens: 8192,
     reasoningEffort: "off",
-    autoApprove: true,
   };
   console.log("[ai config]", { baseUrl: aiConfig.baseUrl, model: aiConfig.model, keyLen: aiConfig.apiKey.length });
 

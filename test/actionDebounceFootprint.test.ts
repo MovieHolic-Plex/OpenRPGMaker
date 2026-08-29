@@ -122,9 +122,13 @@ describe("__oprnDebug 스냅샷이 두 사각을 실어 보낸다", () => {
     let captured: { events: Record<string, Record<string, unknown>> } | null = null;
     const withDom = scene as unknown as Record<string, unknown>;
     withDom.runtimeDom = {
+      // 넓은 디버그 스냅샷은 export-QA 부트에서만 만들어진다. `instrumented` 가 false 면
+      // syncRuntimeState 가 보이는 HUD 만 갱신하고 반환해 관측할 사각이 아예 없다.
+      instrumented: true,
       syncRuntimeState: (state: { events: Record<string, Record<string, unknown>> }) => {
         captured = state;
       },
+      syncVisibleHud: () => undefined,
       syncAudioState: () => undefined,
       syncPictureLayer: () => undefined,
     };

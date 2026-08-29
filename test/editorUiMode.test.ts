@@ -123,7 +123,7 @@ describe("editorUiMode", () => {
     const expert = chromeForMode("expert");
 
     expect(beginner.railLabels).toBe("persistent");
-    expect(beginner.databaseNav).toBe("common");
+    expect(beginner.databaseNav).toBe("grouped");
     expect(beginner.eventBeginnerChrome).toBe(true);
     expect(beginner.jargonStyle).toBe("plain");
 

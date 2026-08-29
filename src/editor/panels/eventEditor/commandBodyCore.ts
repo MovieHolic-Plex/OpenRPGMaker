@@ -71,6 +71,7 @@ const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
   setSwitch: setSwitchBody,
   setVariable: setVariableBody,
   changeFriendship: changeFriendshipBody,
+  changeFactionStance: changeFactionStanceBody,
   getFriendship: getFriendshipBody,
   timer: timerBody,
   inputWait: inputWaitBody,
@@ -501,7 +502,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
             el("p", {
               text:
                 mode === "full"
-                  ? "이 리소스는 통짜 전신 이미지입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
+                  ? "전신 레이아웃으로 대사 창 위에 크게 세웁니다. 번들 프리셋(generated-face-actor1-full)은 아직 흉상 그림을 공유하므로 그림 자체는 흉상입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
                   : "이 리소스는 통짜 흉상 이미지입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요.",
             }),
           ],
@@ -660,7 +661,9 @@ function displayTextSettingsBody(
     class: "event-command-message-settings",
     dataset: { testid: "event-command-message-settings" },
   });
-  // 드롭다운 대신 세그먼트 버튼으로 즉시 선택. 숨김 select 는 testid/selectOption 호환.
+  // 드롭다운 대신 세그먼트 버튼으로 즉시 선택. 숨김 select 는 testid 와 change 파이프라인을
+  // 유지하지만 Playwright `selectOption` 은 못 받는다(hidden 이라 액셔너빌리티에서 막힌다) —
+  // 테스트는 `...-segment-<key>` 버튼을 누르고 `aria-pressed` 로 상태를 읽는다.
   const format = segmentedSelect({
     options: MESSAGE_WINDOW_FORMAT_SEGMENTS,
     value: cmd.format,
@@ -811,11 +814,11 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       dropElseBranch();
       return;
     }
-    // 네이티밌 confirm 은 에디터의 다이얼로그와 모양이 다르다 — 물어보는 동안은 체탁을 되돌려 끈다.
+    // 네이티브 confirm 은 에디터의 다이얼로그와 모양이 다르다 — 물어보는 동안은 체크를 되돌려 둔다.
     elseCheck.checked = true;
     void showConfirm({
       title: "그 외 분기 삭제",
-      message: "그 외 분기에 들어있는 명령이 함까 삭제됩니다. 진행할까요?",
+      message: "그 외 분기에 들어있는 명령이 함께 삭제됩니다. 진행할까요?",
       confirmLabel: "삭제",
       cancelLabel: "유지",
       danger: true,
@@ -992,6 +995,66 @@ function changeFriendshipBody(context: CommandEditContext, cmd: Extract<Command,
   delta.addEventListener("change", apply);
   wrap.append(fieldControl("누구", npcKey), fieldControl("변화량", delta));
   appendFriendshipCharacterHint(wrap, cmd.npcKey);
+  return wrap;
+}
+
+function changeFactionStanceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFactionStance" }>): HTMLElement {
+  const wrap = el("div", { class: "event-command-record-form cream-command-form" });
+  const factionA = el("input", {
+    attrs: { type: "text", placeholder: "player" },
+    value: cmd.a,
+    dataset: { testid: "event-command-faction-a" },
+  }) as HTMLInputElement;
+  const factionB = el("input", {
+    attrs: { type: "text", placeholder: "enemy" },
+    value: cmd.b,
+    dataset: { testid: "event-command-faction-b" },
+  }) as HTMLInputElement;
+  const op = selectWithOptions([
+    { value: "=", label: "설정" },
+    { value: "+=", label: "올리기" },
+    { value: "-=", label: "내리기" },
+  ] as const, cmd.op, "event-command-faction-op");
+  const value = el("input", {
+    attrs: {
+      type: "number",
+      min: cmd.op === "=" ? "-2" : "0",
+      max: cmd.op === "=" ? "2" : "4",
+      step: "0.25",
+    },
+    value: String(cmd.value),
+    dataset: { testid: "event-command-faction-value" },
+  }) as HTMLInputElement;
+  const apply = () => context.actions.replaceCommand(context.path, {
+    kind: "changeFactionStance",
+    a: factionA.value.trim() || "player",
+    b: factionB.value.trim() || "enemy",
+    op: selectedOptionValue(op, [
+      { value: "=", label: "설정" },
+      { value: "+=", label: "올리기" },
+      { value: "-=", label: "내리기" },
+    ] as const, cmd.op),
+    value: Number.isFinite(value.valueAsNumber) ? value.valueAsNumber : 0,
+  });
+  factionA.addEventListener("change", apply);
+  factionB.addEventListener("change", apply);
+  op.addEventListener("change", () => {
+    const selected = selectedOptionValue(op, [
+      { value: "=", label: "설정" },
+      { value: "+=", label: "올리기" },
+      { value: "-=", label: "내리기" },
+    ] as const, cmd.op);
+    value.min = selected === "=" ? "-2" : "0";
+    value.max = selected === "=" ? "2" : "4";
+    apply();
+  });
+  value.addEventListener("change", apply);
+  wrap.append(
+    fieldControl("진영 A", factionA),
+    fieldControl("진영 B", factionB),
+    fieldControl("연산", op),
+    fieldControl("값", value),
+  );
   return wrap;
 }
 

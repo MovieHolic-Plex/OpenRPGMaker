@@ -1,0 +1,261 @@
+{
+  "_note": "실측 잠금(measurement lock): 적 배치 y 를 바꾸면 이 픽스처가 어긋나 RED 가 된다. 갱신 방법: node scripts/runtime-qa.mjs --scenario battle --skin <id> 로 12종을 다시 재고 verify-shots/runtime-qa/*/manifest.json 의 battlers 값으로 이 파일을 다시 쓴다.",
+  "_axes": {
+    "groundBandRatio": 0.6,
+    "noTopClipRatio": 0.0
+  },
+  "skins": {
+    "pokemon": {
+      "authoredY": [
+        100,
+        86,
+        100
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 468,
+        "feetRatio": [
+          0.737,
+          0.665,
+          0.737
+        ],
+        "topRatio": [
+          0.13,
+          0.058,
+          0.13
+        ]
+      }
+    },
+    "rm2003": {
+      "authoredY": [
+        96,
+        96,
+        142
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 420,
+        "feetRatio": [
+          0.636,
+          0.636,
+          0.91
+        ],
+        "topRatio": [
+          0.136,
+          0.136,
+          0.41
+        ]
+      }
+    },
+    "rm2000": {
+      "authoredY": [
+        76,
+        76,
+        76
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 426,
+        "feetRatio": [
+          0.732,
+          0.732,
+          0.732
+        ],
+        "topRatio": [
+          0.43,
+          0.43,
+          0.43
+        ]
+      }
+    },
+    "octopath": {
+      "authoredY": [
+        47,
+        47,
+        74
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 426,
+        "feetRatio": [
+          0.606,
+          0.606,
+          0.744
+        ],
+        "topRatio": [
+          0.3,
+          0.3,
+          0.439
+        ]
+      }
+    },
+    "chrono": {
+      "authoredY": [
+        48,
+        48,
+        48
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 426,
+        "feetRatio": [
+          0.655,
+          0.655,
+          0.655
+        ],
+        "topRatio": [
+          0.35,
+          0.35,
+          0.35
+        ]
+      }
+    },
+    "bravely": {
+      "authoredY": [
+        47,
+        47,
+        74
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 426,
+        "feetRatio": [
+          0.603,
+          0.603,
+          0.739
+        ],
+        "topRatio": [
+          0.298,
+          0.298,
+          0.437
+        ]
+      }
+    },
+    "dragonquest": {
+      "authoredY": [
+        68,
+        68,
+        68
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 426,
+        "feetRatio": [
+          0.692,
+          0.692,
+          0.692
+        ],
+        "topRatio": [
+          0.387,
+          0.387,
+          0.387
+        ]
+      }
+    },
+    "ff": {
+      "authoredY": [
+        46,
+        46,
+        46
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 426,
+        "feetRatio": [
+          0.634,
+          0.634,
+          0.634
+        ],
+        "topRatio": [
+          0.329,
+          0.329,
+          0.329
+        ]
+      }
+    },
+    "mother": {
+      "authoredY": [
+        48,
+        48,
+        48
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 426,
+        "feetRatio": [
+          0.646,
+          0.646,
+          0.646
+        ],
+        "topRatio": [
+          0.343,
+          0.343,
+          0.343
+        ]
+      }
+    },
+    "goldensun": {
+      "authoredY": [
+        46,
+        46,
+        46
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 426,
+        "feetRatio": [
+          0.636,
+          0.636,
+          0.636
+        ],
+        "topRatio": [
+          0.333,
+          0.333,
+          0.333
+        ]
+      }
+    },
+    "mv": {
+      "authoredY": [
+        60,
+        60,
+        60
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 420,
+        "feetRatio": [
+          0.681,
+          0.681,
+          0.681
+        ],
+        "topRatio": [
+          0.374,
+          0.374,
+          0.374
+        ]
+      }
+    },
+    "vxace": {
+      "authoredY": [
+        96,
+        96,
+        96
+      ],
+      "measured": {
+        "fieldTop": 24,
+        "fieldHeight": 516,
+        "feetRatio": [
+          0.703,
+          0.703,
+          0.703
+        ],
+        "topRatio": [
+          0.378,
+          0.378,
+          0.378
+        ]
+      }
+    }
+  }
+}

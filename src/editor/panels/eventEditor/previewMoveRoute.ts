@@ -141,7 +141,7 @@ function targetName(eventId: string): string {
 }
 
 // 위치 이동 명령만 좌표로 누적(상대/무작위/전진 등 비결정 명령은 궤적에서 제외).
-function tracePath(moves: readonly MoveCommand[]): Pt[] {
+export function tracePath(moves: readonly MoveCommand[]): Pt[] {
   const points: Pt[] = [{ x: 0, y: 0 }];
   let cur: Pt = { x: 0, y: 0 };
   for (const move of moves) {
@@ -180,7 +180,7 @@ function applyDir(cur: Pt, dir: Dir): Pt {
   }
 }
 
-function renderTrajectory(points: Pt[]): HTMLElement {
+export function renderTrajectory(points: Pt[]): HTMLElement {
   const xs = points.map((p) => p.x);
   const ys = points.map((p) => p.y);
   // 빈/단일 점이어도 최소 3×3 격자를 유지해 시작 위치가 보이게 한다.
@@ -238,7 +238,7 @@ function renderTrajectory(points: Pt[]): HTMLElement {
   return box;
 }
 
-function renderTape(moves: readonly MoveCommand[]): HTMLElement {
+export function renderTape(moves: readonly MoveCommand[]): HTMLElement {
   const tape = el("div", { class: "ecp-move-tape", dataset: { testid: "ecp-move-tape" } });
   if (moves.length === 0) {
     tape.append(el("span", { class: "ecp-move-chip empty", text: "이동 명령 없음" }));
@@ -346,7 +346,7 @@ function badge(text: string): HTMLElement {
 
 // SVG 궤적은 createElementNS 가 있는 환경(실제 브라우저)에서만. 노드 환경(fakeDom 테스트)은
 // 테이프/뱃지로 폴백한다.
-function svgSupported(): boolean {
+export function svgSupported(): boolean {
   return typeof document !== "undefined" && typeof document.createElementNS === "function";
 }
 

@@ -53,6 +53,7 @@ export const COMMAND_KINDS = [
   "equipTool",
   "openChest",
   "changeFriendship",
+  "changeFactionStance",
   "getFriendship",
   "changeParty",
   "giveMonster",

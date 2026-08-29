@@ -1,4 +1,5 @@
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
+import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
 import type { ActorParameterKey, M2CommandFields, Project } from "@/project/types";
@@ -269,7 +270,7 @@ function upsertPicture(session: PlaySessionLike, fields: M2CommandFields): void 
       : toDurationMs(fieldNumber(fields, "duration", 0));
   }
   session.pictures ??= {};
-  session.pictures[pictureId] = picture;
+  showPictureState(session as { pictures: Record<string, RuntimePictureState> }, picture);
 }
 
 // 필드 존재 여부(값이 undefined 가 아님).

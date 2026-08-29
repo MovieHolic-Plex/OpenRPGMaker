@@ -135,6 +135,7 @@ export interface BattleSessionState {
   // 런타임 직업 오버라이드(promoteActor 커맨드 기준 상태). 없으면 party.classOverrides 폴백.
   readonly classOverrides?: Readonly<Record<string, string>>;
   readonly gameTime?: GameTime;
+  readonly npcActivities?: Readonly<Record<string, string>>;
   readonly friendship?: Readonly<Record<string, number>>;
 }
 
@@ -245,6 +246,7 @@ export type BattleTimelineEntryKind =
   | "capture"
   | "switch"
   | "stateUpkeep"
+  | "stateRecovery"
   | "stateAdded"
   | "stateRemoved"
   | "incapacitated"

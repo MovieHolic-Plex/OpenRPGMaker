@@ -198,10 +198,8 @@ async function bootEditor(page: Page): Promise<string> {
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
-    // 이 스펙은 **대기 제안**의 고스트 수이명을 보므로 자동 적용을 명시적으로 끈다.
-    // 기본값은 승인 없이 즉시 적용이고(approvalPolicy.resolveProposalApplyMode), 적용 직전에
-    // clearAgentGhostPreview() 가 고스트를 지우므로 대기 상태를 관얰할 수 없다.
-    localStorage.setItem("oprn:ai-config", JSON.stringify({ agentMode: "chat", autoApprove: false }));
+    // 이 스펙은 고스트 공개 애니메이션 자체를 본다. 승인 설정은 더 이상 존재하지 않는다.
+    localStorage.setItem("oprn:ai-config", JSON.stringify({ agentMode: "chat" }));
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
@@ -295,7 +293,7 @@ test.describe("에이전트 고스트 순차 공개 + 상태칩", () => {
     // 하나를 항상 보여준다"만 확인한다.
     const chip = page.locator(CHIP);
     await expect(chip).toHaveCount(1, { timeout: 60_000 });
-    await expect(chip).toHaveText(/(중 · \d+\/\d+ 셀 · \S+|초안 완성 · 검토 대기)/u, { timeout: 60_000 });
+    await expect(chip).toHaveText(/(중 · \d+\/\d+ 셀 · \S+|초안 완성)/u, { timeout: 60_000 });
     chipTimeline.push((await chip.textContent()) ?? "");
 
     // 칩과 고스트 마커는 맵 캔버스 호스트(캔버스의 부모)에 붙는다.
@@ -307,17 +305,17 @@ test.describe("에이전트 고스트 순차 공개 + 상태칩", () => {
     await expect(page.locator(MARKER).first()).toBeVisible();
     await page.screenshot({ path: path.join(EVIDENCE, "e2e-ghost-2.png"), animations: "disabled" });
 
-    // 경계 3: 공개가 끝나면 칩은 '초안 완성 · 검토 대기'로 넘어가고 마커는 그대로 남는다.
+    // 경계 3: 공개가 끝나면 칩은 '초안 완성'으로 넘어가고 마커는 그대로 남는다.
     const result = await turn;
     expect(result.ok, `브리지 턴 실패: ${result.error ?? ""}`).toBe(true);
     await expect(page.locator(MARKER)).not.toHaveCount(0);
-    await expect(chip).toHaveText("초안 완성 · 검토 대기", { timeout: 15_000 });
+    await expect(chip).toHaveText("초안 완성", { timeout: 15_000 });
     chipTimeline.push((await chip.textContent()) ?? "");
     await page.screenshot({ path: path.join(EVIDENCE, "e2e-ghost-3.png"), animations: "disabled" });
   });
 
   // 공개 스케줄은 씬 update 이벤트에 붙은 티커가 굴린다(AgentGhostPreviewRenderer.startTicker).
-  // 여기서는 실제 프레임 루프 위에서 칩이 "작업 중"에서 "초안 완성 · 검토 대기"까지 가는지 본다.
+  // 여기서는 실제 프레임 루프 위에서 칩이 "작업 중"에서 "초안 완성"까지 가는지 본다.
   test("상태칩이 공개 스케줄 완료 후 '초안 완성'으로 넘어간다", async ({ page }) => {
     const plan: TurnPlan = { mapId: "", rect: { x: 26, y: 13, w: 10, h: 8 } };
     await installScriptedTurn(page, () => plan);

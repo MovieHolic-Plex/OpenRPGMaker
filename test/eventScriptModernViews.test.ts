@@ -1,6 +1,10 @@
 // [P2] 라이브 미리보기/플로우차트 파생 뷰 + 크로스 컨테이너 이동.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { flattenScript, renderEventScriptModernViews } from "@/editor/panels/eventEditor/eventScriptModernViews";
+import {
+  flattenScript,
+  renderEventPagePreview,
+  renderEventScriptFlowchart,
+} from "@/editor/panels/eventEditor/eventScriptModernViews";
 import {
   FORK_THEN_BRANCH_INDEX,
   isContainerInsideCommand,
@@ -60,40 +64,45 @@ describe("이벤트 스크립트 모던 뷰 (P2)", () => {
     expect(forkStep?.forkTaken).toBeDefined();
   });
 
-  it("라이브 미리보기와 플로우차트는 기본 접힘 details 로 렌더된다", () => {
-    const root = renderWithFakeDom(() =>
-      renderEventScriptModernViews(pageWith([{ kind: "text", body: "한 줄" }]))
-    );
-    const live = findByTestId(root, "event-script-live-preview");
-    const flow = findByTestId(root, "event-script-flowchart");
-    expect(live).not.toBeNull();
-    expect(flow).not.toBeNull();
-    // 기본 접힘 (open 어트리뷰트/프로퍼티 없음)
-    expect((live as unknown as { open?: boolean }).open ?? false).toBe(false);
-    expect((flow as unknown as { open?: boolean }).open ?? false).toBe(false);
-    expect(findByTestId(root, "event-script-live-stage")).not.toBeNull();
-    expect(findByTestId(root, "event-flow-node-text")).not.toBeNull();
-  });
-
-  it("renderEventScriptModernViews accepts mapId/eventId/page signature", () => {
+  it("미리보기 패널은 details 접힘 없이 무대와 스텝 조작을 바로 내건다", () => {
     const page = pageWith([{ kind: "text", body: "한 줄" }]);
     const root = renderWithFakeDom(() =>
-      renderEventScriptModernViews("map_start", "ev_test", page)
+      renderEventPagePreview({ mapId: "map_start", eventId: "ev_test", page })
     );
-    expect(findByTestId(root, "event-script-live-preview")).not.toBeNull();
-    expect(findByTestId(root, "event-script-flowchart")).not.toBeNull();
+    const panel = findByTestId(root, "event-page-preview");
+    expect(panel).not.toBeNull();
+    expect((panel as unknown as { tagName?: string }).tagName?.toLowerCase()).not.toBe("details");
+    expect(findByTestId(root, "event-script-live-stage")).not.toBeNull();
+    expect(findByTestId(root, "event-script-live-prev")).not.toBeNull();
+    expect(findByTestId(root, "event-script-live-next")).not.toBeNull();
+    expect(findByTestId(root, "event-script-live-play")).not.toBeNull();
+  });
 
-    const optionsRoot = renderWithFakeDom(() =>
-      renderEventScriptModernViews({ mapId: "map_start", eventId: "ev_test", page })
+  it("명령이 없으면 미리보기는 빈 안내를 내건다", () => {
+    const root = renderWithFakeDom(() =>
+      renderEventPagePreview({ mapId: "map_start", eventId: "ev_test", page: pageWith([]) })
     );
-    expect(findByTestId(optionsRoot, "event-script-live-preview")).not.toBeNull();
-    expect(findByTestId(optionsRoot, "event-script-flowchart")).not.toBeNull();
+    expect(findByTestId(root, "event-page-preview-empty")).not.toBeNull();
+    expect(findByTestId(root, "event-script-live-stage")).toBeNull();
+  });
+
+  it("플로우차트는 기본 접힘 details 로 렌더된다", () => {
+    const page = pageWith([{ kind: "text", body: "한 줄" }]);
+    const root = renderWithFakeDom(() =>
+      renderEventScriptFlowchart({ mapId: "map_start", eventId: "ev_test", page })
+    );
+    const flow = findByTestId(root, "event-script-flowchart");
+    expect(flow).not.toBeNull();
+    expect((flow as unknown as { open?: boolean }).open ?? false).toBe(false);
+    expect(findByTestId(root, "event-flow-node-text")).not.toBeNull();
   });
 
   it("플로우차트는 fork/choices 분기를 하위 컬럼으로 렌더한다", () => {
     const root = renderWithFakeDom(() =>
-      renderEventScriptModernViews(
-        pageWith([
+      renderEventScriptFlowchart({
+        mapId: "map_start",
+        eventId: "ev_test",
+        page: pageWith([
           {
             kind: "choices",
             options: [
@@ -101,8 +110,8 @@ describe("이벤트 스크립트 모던 뷰 (P2)", () => {
               { text: "아니오", branch: [] },
             ],
           },
-        ])
-      )
+        ]),
+      })
     );
     const flow = findByTestId(root, "event-flowchart-body");
     expect(flow).not.toBeNull();

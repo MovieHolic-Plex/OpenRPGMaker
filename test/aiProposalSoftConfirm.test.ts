@@ -1,10 +1,10 @@
-// 융합 기계 제거 후에도 soft-confirm 수락 훅이 동작하는지 고정한다.
+// 승인 카드 제거 후에도 즉시 적용 경로의 soft-confirm 합의 훅이 동작하는지 고정한다.
 import { describe, expect, it } from "vitest";
 import { collectVocabSoftConfirms, markSoftVocabApprovalsOnProject } from "@/editor/panels/aiProposalFusion";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 
-describe("soft-confirm 수락 (pendingBuilds 제거 후)", () => {
-  it("proposedCalls의 vocabSoftConfirm을 수집해 origin:user로 마킹한다", () => {
+describe("soft-confirm 자동 합의", () => {
+  it("proposedCalls의 vocabSoftConfirm을 수집해 즉시 origin:user로 마킹한다", () => {
     const project = createEmptyToolProject();
     const tilesetId = Object.keys(project.tilesets)[0];
     const tileset = project.tilesets[tilesetId];

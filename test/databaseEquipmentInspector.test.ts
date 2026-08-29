@@ -206,8 +206,8 @@ describe("equipment inspector header", () => {
 describe("summary chips partial refresh (refreshSummaryChips closure)", () => {
   it("toggle twoHanded switch adds the 양손 장비 chip without a rebuild", () => {
     const form = renderForm();
-    expect(chipTexts(form)).toEqual(["효과 없음"]);
-    expect(findByTestId(form, "db-equipment-summary-empty")?.textContent).toBe("효과 없음");
+    expect(chipTexts(form)).toEqual(["명중률 100%", "치명타율 +0%p"]);
+    expect(findByTestId(form, "db-equipment-summary-empty")).toBeNull();
 
     const twoHanded = byTestId(form, "db-field-equipment-two-handed");
     expect(twoHanded.attrs.type).toBe("checkbox");
@@ -224,7 +224,7 @@ describe("summary chips partial refresh (refreshSummaryChips closure)", () => {
     twoHanded.checked = false;
     twoHanded.dispatchEvent(new Event("change", { bubbles: true }));
     expect(store.getCurrent().database.equipment[0]?.twoHanded).toBe(false);
-    expect(chipTexts(form)).toEqual(["효과 없음"]);
+    expect(chipTexts(form)).toEqual(["명중률 100%", "치명타율 +0%p"]);
   });
 
   it("effect flag toggleSwitch writes effectFlags and refreshes the chip row", () => {
@@ -239,7 +239,7 @@ describe("summary chips partial refresh (refreshSummaryChips closure)", () => {
     double.checked = false;
     double.dispatchEvent(new Event("change", { bubbles: true }));
     expect(store.getCurrent().database.equipment[0]?.effectFlags.doubleAttack).toBe(false);
-    expect(chipTexts(form)).toEqual(["효과 없음"]);
+    expect(chipTexts(form)).toEqual(["명중률 100%", "치명타율 +0%p"]);
   });
 });
 

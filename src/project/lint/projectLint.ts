@@ -758,7 +758,7 @@ function checkShopIntegrity(project: Project, issues: LintIssue[]): void {
       }
     }
     if ((command.itemIds?.length ?? 0) === 0 && (!command.stock || command.stock.length === 0)) {
-      issues.push({ severity: "warning", code: "shop.empty", message: `${label}: 빈 상점 — 판매할 아이템이 없다. 진입 시 바로 닫힌다.` });
+      issues.push({ severity: "warning", code: "shop.empty", message: `${label}: 빈 상점 — 진열할 물건이 없다. 진입하면 "지금은 팔 물건이 없습니다." 안내만 띄우고 닫힌다.` });
     }
     const ids = new Set<string>();
     for (const entry of command.stock ?? []) {

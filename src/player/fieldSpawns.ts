@@ -72,6 +72,7 @@ export interface NormalizedFieldSpawn {
   readonly passRows: number;
   readonly chase: boolean;
   readonly persistKill: boolean;
+  readonly factionId?: string;
   readonly onKillSwitchId?: string;
 }
 
@@ -415,6 +416,7 @@ function normalizeFieldSpawn(project: Project, spawn: FieldSpawnDef): Normalized
     passRows: normalizePassRows(spawn.passRows, normalizeCharacterFootprint(spawn.footprint).height),
     chase: spawn.chase === true,
     persistKill: spawn.persistKill === true,
+    ...(spawn.factionId ? { factionId: spawn.factionId } : {}),
     ...(spawn.onKillSwitchId ? { onKillSwitchId: spawn.onKillSwitchId } : {}),
   };
 }

@@ -33,6 +33,10 @@ export function nextChaseDecision(input: {
   readonly project: Project;
   readonly map: GameMap;
   readonly from: ChasePoint;
+  /**
+   * 추겁 대상 칸. 거의 항상 플레이어지만, 진영 전투에서는 AutonomousMover.chaseTarget 로
+   * 다른 NPC 좌표가 들어온다. 그 때 touch 는 이벤트 트리거가 아니라 "닿았다"만 의무한다.
+   */
   readonly player: ChasePoint;
   readonly deltaMs: number;
   readonly mover: ChaseRuntimeState;

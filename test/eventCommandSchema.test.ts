@@ -151,6 +151,30 @@ describe("이벤트 명령 스키마", () => {
     }
   });
 
+  it("진영 태도 값 스키마는 연산별 범위와 소수 단계를 선언하고 렌더러가 소수를 보존한다", () => {
+    const schema = commandSchemaFor("changeFactionStance");
+    if (!schema) throw new Error("changeFactionStance 스키마 없음");
+    const valueSpec = schema.fields.value;
+    if (!valueSpec || valueSpec.type !== "number") throw new Error("changeFactionStance 값 스키마 없음");
+    const min = (command: Record<string, unknown>) => typeof valueSpec.min === "function" ? valueSpec.min(command) : valueSpec.min;
+    const max = (command: Record<string, unknown>) => typeof valueSpec.max === "function" ? valueSpec.max(command) : valueSpec.max;
+    expect([min({ op: "=" }), max({ op: "=" }), valueSpec.step]).toEqual([-2, 2, 0.25]);
+    expect([min({ op: "+=" }), max({ op: "+=" })]).toEqual([0, 4]);
+
+    const replaceCommand = vi.fn();
+    const command = { kind: "changeFactionStance", a: "guard", b: "player", op: "+=", value: 0.25 } as Command;
+    const body = renderSchemaForm(ctx(replaceCommand), command, schema);
+    const input = findByTestId(body as never, "change-faction-stance-value-input") as
+      | { value: string; dispatchEvent: (event: unknown) => void }
+      | undefined;
+    expect(input).toBeTruthy();
+    if (!input) return;
+    input.value = "0.25";
+    input.dispatchEvent(new Event("change"));
+    const [, next] = replaceCommand.mock.calls[0] as [number[], Record<string, unknown>];
+    expect(next.value).toBe(0.25);
+  });
+
   it("스키마 폼은 필드를 컨트롤로 렌더한다", () => {
     const schema = commandSchemaFor("cutsceneControl");
     if (!schema) throw new Error("cutsceneControl 스키마 없음");

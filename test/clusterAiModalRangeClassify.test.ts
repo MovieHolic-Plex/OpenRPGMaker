@@ -106,8 +106,8 @@ beforeEach(() => {
   previousLocalStorage = globalThis.localStorage;
   storage = new MemoryStorage();
   storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+    authMode: "apiKey",
     apiKey: "test-key",
-    autoApprove: false,
     baseUrl: "https://example.test",
     maxTokens: 1024,
     model: "test-model",

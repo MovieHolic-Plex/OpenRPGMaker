@@ -1,0 +1,625 @@
+{
+  "states": {
+    "00-glass-idle": {
+      "dock": "glass",
+      "panelClass": "ai-chat-panel is-assistant-idle is-glass-idle chat-dock-glass",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "panel": [
+        84,
+        61,
+        520,
+        620
+      ],
+      "header": [
+        85,
+        62,
+        518,
+        73
+      ],
+      "headerStyle": {
+        "display": "flex",
+        "position": "relative",
+        "height": "73px",
+        "borderBottom": "1px solid rgba(15, 23, 42, 0.08)"
+      },
+      "main": [
+        85,
+        143,
+        518,
+        365
+      ],
+      "log": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "composer": [
+        101,
+        536,
+        486,
+        128
+      ],
+      "composerStyle": {
+        "position": "static",
+        "padding": "10px 12px",
+        "borderRadius": "14px",
+        "background": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+        "border": "1px solid rgba(15, 23, 42, 0.08)",
+        "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+        "margin": "0px"
+      },
+      "input": [
+        114,
+        547,
+        460,
+        68
+      ],
+      "inputStyle": {
+        "minHeight": "68px",
+        "maxHeight": "320px",
+        "fontSize": "15px",
+        "borderRadius": "10px",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      "rail": [
+        1,
+        50,
+        72,
+        950
+      ],
+      "railClass": "basic-left-rail is-icon-rail",
+      "side": [
+        1599,
+        49,
+        1,
+        951
+      ],
+      "sideClass": "right-panel ai-chat-side-panel",
+      "composerHit": "visible",
+      "inputHit": "visible",
+      "overlapPanelRail": null,
+      "overlapPanelSide": null,
+      "clippedRight": -996,
+      "clippedBottom": -319
+    },
+    "01-glass-active": {
+      "dock": "glass",
+      "panelClass": "ai-chat-panel chat-dock-glass",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "panel": [
+        84,
+        61,
+        520,
+        620
+      ],
+      "header": [
+        85,
+        62,
+        518,
+        73
+      ],
+      "headerStyle": {
+        "display": "flex",
+        "position": "relative",
+        "height": "73px",
+        "borderBottom": "1px solid rgba(15, 23, 42, 0.08)"
+      },
+      "main": [
+        85,
+        143,
+        518,
+        363
+      ],
+      "log": [
+        101,
+        167,
+        486,
+        254
+      ],
+      "composer": [
+        101,
+        534,
+        486,
+        130
+      ],
+      "composerStyle": {
+        "position": "static",
+        "padding": "10px 12px",
+        "borderRadius": "14px",
+        "background": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+        "border": "1px solid color(srgb 0.259428 0.307801 0.749519 / 0.51902)",
+        "boxShadow": "color(srgb 0.290196 0.341176 0.839216 / 0.16) 0px 0px 0px 3px",
+        "margin": "0px"
+      },
+      "input": [
+        114,
+        545,
+        460,
+        70
+      ],
+      "inputStyle": {
+        "minHeight": "68px",
+        "maxHeight": "320px",
+        "fontSize": "15px",
+        "borderRadius": "10px",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      "rail": [
+        1,
+        50,
+        72,
+        950
+      ],
+      "railClass": "basic-left-rail is-icon-rail",
+      "side": [
+        1599,
+        49,
+        1,
+        951
+      ],
+      "sideClass": "right-panel ai-chat-side-panel",
+      "composerHit": "visible",
+      "inputHit": "visible",
+      "overlapPanelRail": null,
+      "overlapPanelSide": null,
+      "clippedRight": -996,
+      "clippedBottom": -319
+    },
+    "10-dock-side": {
+      "dock": "side",
+      "panelClass": "ai-chat-panel chat-dock-side",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "panel": [
+        1068,
+        49,
+        531,
+        951
+      ],
+      "header": [
+        1068,
+        49,
+        531,
+        73
+      ],
+      "headerStyle": {
+        "display": "flex",
+        "position": "relative",
+        "height": "73px",
+        "borderBottom": "1px solid rgba(15, 23, 42, 0.08)"
+      },
+      "main": [
+        1076,
+        130,
+        515,
+        268
+      ],
+      "log": [
+        1080,
+        410,
+        507,
+        400
+      ],
+      "composer": [
+        1092,
+        846,
+        483,
+        130
+      ],
+      "composerStyle": {
+        "position": "static",
+        "padding": "10px 12px",
+        "borderRadius": "14px",
+        "background": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+        "border": "1px solid rgba(15, 23, 42, 0.08)",
+        "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+        "margin": "0px"
+      },
+      "input": [
+        1105,
+        857,
+        457,
+        70
+      ],
+      "inputStyle": {
+        "minHeight": "68px",
+        "maxHeight": "320px",
+        "fontSize": "15px",
+        "borderRadius": "10px",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      "rail": [
+        1,
+        50,
+        72,
+        950
+      ],
+      "railClass": "basic-left-rail is-icon-rail",
+      "side": [
+        1067,
+        49,
+        533,
+        951
+      ],
+      "sideClass": "right-panel ai-chat-side-panel",
+      "composerHit": "visible",
+      "inputHit": "visible",
+      "overlapPanelRail": null,
+      "overlapPanelSide": [
+        531,
+        951
+      ],
+      "clippedRight": -1,
+      "clippedBottom": 0
+    },
+    "11-dock-float": {
+      "dock": "float",
+      "panelClass": "ai-chat-panel chat-dock-float",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "panel": [
+        72,
+        49,
+        1527,
+        951
+      ],
+      "header": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "headerStyle": {
+        "display": "none",
+        "position": "relative",
+        "height": "auto",
+        "borderBottom": "1px solid rgba(15, 23, 42, 0.08)"
+      },
+      "main": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "log": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "composer": [
+        960,
+        819,
+        614,
+        122
+      ],
+      "composerStyle": {
+        "position": "static",
+        "padding": "8px 10px",
+        "borderRadius": "14px",
+        "background": "color(srgb 1 1 1 / 0.96) none repeat scroll 0% 0% / auto padding-box border-box",
+        "border": "1px solid rgba(15, 23, 42, 0.463)",
+        "boxShadow": "rgba(42, 37, 33, 0.08) 0px 8px 24px 0px",
+        "margin": "0px"
+      },
+      "input": [
+        971,
+        828,
+        592,
+        70
+      ],
+      "inputStyle": {
+        "minHeight": "68px",
+        "maxHeight": "320px",
+        "fontSize": "15px",
+        "borderRadius": "10px",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      "rail": [
+        1,
+        50,
+        72,
+        950
+      ],
+      "railClass": "basic-left-rail is-icon-rail",
+      "side": [
+        1599,
+        49,
+        1,
+        951
+      ],
+      "sideClass": "right-panel ai-chat-side-panel",
+      "composerHit": "visible",
+      "inputHit": "visible",
+      "overlapPanelRail": [
+        1,
+        950
+      ],
+      "overlapPanelSide": null,
+      "clippedRight": -1,
+      "clippedBottom": 0
+    },
+    "12-dock-glass": {
+      "dock": "glass",
+      "panelClass": "ai-chat-panel chat-dock-glass",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "panel": [
+        84,
+        61,
+        520,
+        620
+      ],
+      "header": [
+        85,
+        62,
+        518,
+        73
+      ],
+      "headerStyle": {
+        "display": "flex",
+        "position": "relative",
+        "height": "73px",
+        "borderBottom": "1px solid rgba(15, 23, 42, 0.08)"
+      },
+      "main": [
+        85,
+        143,
+        518,
+        363
+      ],
+      "log": [
+        101,
+        167,
+        486,
+        254
+      ],
+      "composer": [
+        101,
+        534,
+        486,
+        130
+      ],
+      "composerStyle": {
+        "position": "static",
+        "padding": "10px 12px",
+        "borderRadius": "14px",
+        "background": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+        "border": "1px solid rgba(15, 23, 42, 0.08)",
+        "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+        "margin": "0px"
+      },
+      "input": [
+        114,
+        545,
+        460,
+        70
+      ],
+      "inputStyle": {
+        "minHeight": "68px",
+        "maxHeight": "320px",
+        "fontSize": "15px",
+        "borderRadius": "10px",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      "rail": [
+        1,
+        50,
+        72,
+        950
+      ],
+      "railClass": "basic-left-rail is-icon-rail",
+      "side": [
+        1599,
+        49,
+        1,
+        951
+      ],
+      "sideClass": "right-panel ai-chat-side-panel",
+      "composerHit": "visible",
+      "inputHit": "visible",
+      "overlapPanelRail": null,
+      "overlapPanelSide": null,
+      "clippedRight": -996,
+      "clippedBottom": -319
+    },
+    "20-glass-grown": {
+      "dock": "glass",
+      "panelClass": "ai-chat-panel chat-dock-glass",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "panel": [
+        84,
+        61,
+        520,
+        900
+      ],
+      "header": [
+        85,
+        62,
+        518,
+        73
+      ],
+      "headerStyle": {
+        "display": "flex",
+        "position": "relative",
+        "height": "73px",
+        "borderBottom": "1px solid rgba(15, 23, 42, 0.08)"
+      },
+      "main": [
+        85,
+        143,
+        518,
+        643
+      ],
+      "log": [
+        101,
+        167,
+        486,
+        394
+      ],
+      "composer": [
+        101,
+        814,
+        486,
+        130
+      ],
+      "composerStyle": {
+        "position": "static",
+        "padding": "10px 12px",
+        "borderRadius": "14px",
+        "background": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+        "border": "1px solid rgba(15, 23, 42, 0.08)",
+        "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+        "margin": "0px"
+      },
+      "input": [
+        114,
+        825,
+        460,
+        70
+      ],
+      "inputStyle": {
+        "minHeight": "68px",
+        "maxHeight": "320px",
+        "fontSize": "15px",
+        "borderRadius": "10px",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      "rail": [
+        1,
+        50,
+        72,
+        950
+      ],
+      "railClass": "basic-left-rail is-icon-rail",
+      "side": [
+        1599,
+        49,
+        1,
+        951
+      ],
+      "sideClass": "right-panel ai-chat-side-panel",
+      "composerHit": "visible",
+      "inputHit": "visible",
+      "overlapPanelRail": null,
+      "overlapPanelSide": null,
+      "clippedRight": -996,
+      "clippedBottom": -39
+    },
+    "30-collapsed": {
+      "dock": "glass",
+      "panelClass": "ai-chat-panel chat-dock-glass is-collapsed",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "panel": [
+        14,
+        920,
+        132,
+        66
+      ],
+      "header": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "headerStyle": {
+        "display": "none",
+        "position": "relative",
+        "height": "auto",
+        "borderBottom": "1px solid rgba(15, 23, 42, 0.08)"
+      },
+      "main": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "log": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "composer": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "composerStyle": {
+        "position": "static",
+        "padding": "10px 12px",
+        "borderRadius": "14px",
+        "background": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
+        "border": "1px solid rgba(15, 23, 42, 0.08)",
+        "boxShadow": "rgba(15, 23, 42, 0.04) 0px 1px 2px 0px",
+        "margin": "0px"
+      },
+      "input": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "inputStyle": {
+        "minHeight": "68px",
+        "maxHeight": "320px",
+        "fontSize": "15px",
+        "borderRadius": "10px",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      "rail": [
+        1,
+        50,
+        72,
+        950
+      ],
+      "railClass": "basic-left-rail is-icon-rail",
+      "side": [
+        1599,
+        49,
+        1,
+        951
+      ],
+      "sideClass": "right-panel ai-chat-side-panel",
+      "composerHit": "zero-size",
+      "inputHit": "zero-size",
+      "overlapPanelRail": [
+        59,
+        66
+      ],
+      "overlapPanelSide": null,
+      "clippedRight": -1454,
+      "clippedBottom": -14
+    }
+  },
+  "grew": {
+    "before": [
+      520,
+      620
+    ],
+    "after": [
+      520,
+      900
+    ]
+  }
+}

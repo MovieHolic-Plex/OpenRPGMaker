@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "skills",
+    "ok": true,
+    "metrics": {
+      "scrollH": 796,
+      "clientH": 796,
+      "overflow": false,
+      "topLevel": [
+        "div.db-record-workspace"
+      ],
+      "controls": {
+        "inputs": 11,
+        "selects": 9,
+        "buttons": 65,
+        "tables": 0,
+        "fieldsets": 7,
+        "legends": 7,
+        "h3": 1
+      }
+    }
+  }
+]

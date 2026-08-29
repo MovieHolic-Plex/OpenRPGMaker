@@ -25,6 +25,8 @@ export type ReferenceContext = {
   troopIds: ReadonlySet<string>;
   speciesIds: ReadonlySet<string>;
   resourceIds: ReadonlySet<string>;
+  /** 생략하면 기존 호출자처럼 진영 명령을 참조 없는 명령으로 취급한다. */
+  factionIds?: ReadonlySet<string>;
 };
 
 export function validateEventPages(pages: readonly EventPage[], context: ReferenceContext): void {
@@ -55,6 +57,77 @@ export function validateBattleEventPages(pages: readonly BattleEventPageRecord[]
 
 export function validateCommands(commands: readonly Command[], context: ReferenceContext): void {
   for (const command of commands) validateCommandReferences(command, context);
+}
+
+/** 이벤트 명령 트리에서 아이템 참조를 모은다. 검증과 같은 중첩 분기 구조를 순회한다. */
+export function collectCommandItemReferenceIds(commands: readonly Command[], ids: Set<string>): void {
+  for (const command of commands) collectCommandItemReferences(command, ids);
+}
+
+function collectCommandItemReferences(command: Command, ids: Set<string>): void {
+  switch (command.kind) {
+    case "changeItem":
+      ids.add(command.itemId);
+      return;
+    case "equipTool":
+      if (command.itemId) ids.add(command.itemId);
+      return;
+    case "shop":
+      for (const itemId of command.itemIds) ids.add(itemId);
+      for (const stock of command.stock ?? []) ids.add(stock.itemId);
+      for (const entry of command.buyback ?? []) ids.add(entry.itemId);
+      for (const line of command.cartLines ?? []) ids.add(line.itemId);
+      for (const consignment of command.consignments ?? []) ids.add(consignment.itemId);
+      for (const ticket of command.pawnTickets ?? []) ids.add(ticket.itemId);
+      for (const itemId of command.appraisalUnidentifiedPool ?? []) ids.add(itemId);
+      collectCommandItemReferenceIds(command.transactionBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.failedTransactionBranch ?? [], ids);
+      return;
+    case "choices":
+      for (const option of command.options) collectCommandItemReferenceIds(option.branch, ids);
+      collectCommandItemReferenceIds(command.cancelBranch ?? [], ids);
+      return;
+    case "fork":
+      collectConditionItemReferenceIds(command.condition, ids);
+      collectCommandItemReferenceIds(command.then, ids);
+      collectCommandItemReferenceIds(command.else ?? [], ids);
+      return;
+    case "loop":
+      collectCommandItemReferenceIds(command.body, ids);
+      return;
+    case "battleProcessing":
+      collectCommandItemReferenceIds(command.victoryBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.defeatBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.escapeBranch ?? [], ids);
+      return;
+    case "promoteActor":
+    case "evolveMonster":
+      collectCommandItemReferenceIds(command.successBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.failureBranch ?? [], ids);
+      return;
+    case "inn":
+      collectCommandItemReferenceIds(command.notEnoughBranch ?? [], ids);
+      return;
+    default:
+      return;
+  }
+}
+
+export function collectConditionItemReferenceIds(condition: Condition | BattleEventCondition, ids: Set<string>): void {
+  switch (condition.kind) {
+    case "item":
+      ids.add(condition.itemId);
+      return;
+    case "all":
+    case "any":
+      for (const child of condition.conditions) collectConditionItemReferenceIds(child, ids);
+      return;
+    case "not":
+      collectConditionItemReferenceIds(condition.condition, ids);
+      return;
+    default:
+      return;
+  }
 }
 
 function validateCommandReferences(command: Command, context: ReferenceContext): void {
@@ -89,6 +162,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "ending":
     case "returnToTitle":
     case "displayTextSettings":
+      return;
+    case "changeFactionStance":
+      if (!context.factionIds) return;
+      assert(context.factionIds.has(command.a), `changeFactionStance: faction A가 존재하지 않습니다: ${command.a}`);
+      assert(context.factionIds.has(command.b), `changeFactionStance: faction B가 존재하지 않습니다: ${command.b}`);
       return;
     case "triggerEnding":
       if (command.endingId) assert(context.endingIds.has(command.endingId), `triggerEnding: endingId가 존재하지 않습니다: ${command.endingId}`);
@@ -225,10 +303,14 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "showAnimation":
       assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
       return;
-    case "shop":
-      requireExistingIds("shop: item", command.itemIds, context.itemIds);
-      if (command.stock) requireExistingIds("shop stock: item", command.stock.map((entry) => entry.itemId), context.itemIds);
+    case "shop": {
+      // 상점은 아이템 탭과 장비 탭을 함께 진열한다 — 예전에는 items 만 대조해서
+      // 무기점(장비 id)을 만들면 프로젝트가 참조 검증에서 걸려 아예 로드되지 않았다.
+      const sellable = union(context.itemIds, context.equipmentIds);
+      requireExistingIds("shop: item", command.itemIds, sellable);
+      if (command.stock) requireExistingIds("shop stock: item", command.stock.map((entry) => entry.itemId), sellable);
       return;
+    }
   }
 }
 
@@ -327,6 +409,12 @@ export function validateCondition(
 
 function requireExistingIds(label: string, ids: readonly string[], knownIds: ReadonlySet<string>): void {
   for (const id of ids) assert(knownIds.has(id), `${label}가 존재하지 않습니다: ${id}`);
+}
+
+function union(left: ReadonlySet<string>, right: ReadonlySet<string>): ReadonlySet<string> {
+  const merged = new Set(left);
+  for (const id of right) merged.add(id);
+  return merged;
 }
 
 function validateOptionalCommandResource(

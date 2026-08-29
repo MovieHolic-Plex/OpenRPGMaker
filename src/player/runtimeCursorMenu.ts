@@ -1,3 +1,4 @@
+import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import {
   isCancelKey,
   isConfirmKey,
@@ -21,7 +22,18 @@ export type CursorMenuOptions = {
   readonly onSelect?: (index: number) => void;
   // ←→ 처리 훅(수량 조절 등). true 반환 시 커서 이동 없이 이벤트 소비.
   readonly onHorizontal?: (dir: -1 | 1, index: number) => boolean;
+  /**
+   * RM2003 System SE 중 커서·취소음을 울린다(opt-in). 기본이 꺼짐인 이유: 이 헬퍼는
+   * 맵·전투·상태 메뉴가 함께 쓰므로 무조건 울리면 게임 전체 소리가 한꺼번에 바뀐다.
+   *
+   * 결정음은 여기서 울리지 않는다. 결정은 성공일 수도 거절일 수도 있고, RM2003 은
+   * 거절에 버저만 울린다(scene_shop.cpp). 결정/버저 판단은 도메인 핸들러 몫이다.
+   */
+  readonly sound?: boolean;
 };
+
+/** setIndex 를 부른 원인. 커서음은 키보드 이동에만 울린다 — 마우스가 스칠 때마다 삑삑거리면 못 쓴다. */
+type SelectCause = "key" | "pointer" | "focus" | "init";
 
 const NAV_ITEM_CLASS = "rm-nav-item";
 
@@ -48,11 +60,12 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
     });
   };
 
-  const setIndex = (next: number): void => {
+  const setIndex = (next: number, cause: SelectCause = "key"): void => {
     const clamped = clampIndex(next, items.length);
     if (clamped === index) return;
     index = clamped;
     applySelection();
+    if (opts.sound && cause === "key") emitRuntimeJuice({ event: "menu-select" });
     opts.onSelect?.(index);
   };
 
@@ -87,14 +100,30 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
       event.preventDefault();
       event.stopPropagation();
       if (event.repeat) return;
+      // cancelEl 이 없으면 취소키가 무시되므로 소리도 울리지 않는다(빈 약속 금지).
+      if (opts.sound && opts.cancelEl) emitRuntimeJuice({ event: "menu-back" });
       opts.cancelEl?.click();
     }
   };
 
-  // 마우스 호버 → 커서 동기화(키보드·마우스 일관).
+  // 마우스 호버 → 커서 동기화(키보드·마우스 일관). 소리는 울리지 않는다.
   items.forEach((el, i) => {
-    el.addEventListener("mouseenter", () => setIndex(i), { signal });
+    el.addEventListener("mouseenter", () => setIndex(i, "pointer"), { signal });
   });
+
+  // Tab 포커스 → 커서 동기화. 이게 없으면 브라우저 포커스는 A 행에 있는데 결정키는
+  // items[index](=B 행)를 click 해서 "포커스한 것과 다른 항목이 실행"된다(실측: 포커스
+  // shop-buy-k_b, 커서 다 → Enter 로 k_c 구매). 커서가 포커스를 따라가면 두 모델이 하나가 된다.
+  root.addEventListener(
+    "focusin",
+    ((event: FocusEvent) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const hit = items.findIndex((el) => el === target || el.contains(target));
+      if (hit >= 0) setIndex(hit, "focus");
+    }) as EventListener,
+    { signal }
+  );
 
   if (typeof root.tabIndex === "number" && root.tabIndex < 0) root.tabIndex = 0;
   root.addEventListener("keydown", handle as EventListener, { signal });

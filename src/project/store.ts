@@ -42,7 +42,15 @@ import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } 
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { sha256HexText } from "@/util/sha256";
 import { randomUuid } from "@/util/id";
+import { createLogger } from "@/util/logger";
+import {
+  recordEditActivity,
+  type EditActivityField,
+  type EditActivityOrigin,
+} from "@/editor/editActivityLog";
 import type { GameMap, MapId, Project } from "./types";
+
+const log = createLogger("store");
 
 export type ProjectChangeCell = {
   readonly x: number;
@@ -50,10 +58,28 @@ export type ProjectChangeCell = {
   readonly layer: "lower" | "upper" | "event";
 };
 
+/**
+ * 편집 행위의 의미 정보 — 관측용 부가 필드. 전부 optional 이라 기존 호출부 244곳은
+ * 그대로 컴파일된다. 리스너는 이 필드를 보지 않는다(관측 초크포인트만 읽는다).
+ *
+ * 왜 descriptor 에 얹는가: mutation 초크포인트(`markLocalMutation`)는 "무엇이 바뀌었나" 는
+ * 알 수 있지만 "왜 바뀌었나" 는 모른다. 인텐트는 호출자만 안다. 이미 91곳이 descriptor 를
+ * 넘기고 있으므로 여기가 인텐트를 실어 보낼 가장 짧은 통로다.
+ */
+export type ProjectChangeAnnotation = {
+  /** 사람이 읽는 행위 이름. 예: "커맨드 추가", "진영 ID 변경". */
+  readonly label?: string;
+  /** 누가 한 편집인가. 생략하면 "human". AI 경로가 사람으로 오귀속되는 걸 막는 축. */
+  readonly origin?: EditActivityOrigin;
+  /** 호출자가 **이미 계산해 둔** 필드 단위 변경만 넘긴다. 여기서 diff 를 계산하지 않는다. */
+  readonly fields?: readonly EditActivityField[];
+  readonly eventId?: string;
+};
+
 export type ProjectChangeDescriptor =
-  | { readonly scope: "map"; readonly mapId: MapId; readonly cells?: readonly ProjectChangeCell[] }
-  | { readonly scope: "database"; readonly collection?: string }
-  | { readonly scope: "system" | "assets" | "project" };
+  | ({ readonly scope: "map"; readonly mapId: MapId; readonly cells?: readonly ProjectChangeCell[] } & ProjectChangeAnnotation)
+  | ({ readonly scope: "database"; readonly collection?: string } & ProjectChangeAnnotation)
+  | ({ readonly scope: "system" | "assets" | "project" } & ProjectChangeAnnotation);
 
 /** Identity of the project that is actually loaded in this editor session. */
 export type ProjectIdentity =
@@ -247,7 +273,7 @@ class ProjectStore {
       }
       this.remotePersistenceEnabled = false;
       this.remotePersistenceDisabledReason = "load-failed";
-      console.error("[store] Supabase canonical project load failed:", error);
+      log.error("Supabase canonical project load failed", error);
       throw error;
     }
     this.loaded = true;
@@ -467,7 +493,7 @@ class ProjectStore {
       try {
         stagedConfig.rollback();
       } catch (rollbackError) {
-        console.error("[store] Failed to roll back staged Supabase config:", rollbackError);
+        log.error("Failed to roll back staged Supabase config", rollbackError);
       }
       restoreBrowserHref(previousHref);
       throw new NewRemoteProjectTransactionError(
@@ -481,7 +507,7 @@ class ProjectStore {
     try {
       this.emit({ scope: "project" });
     } catch (error) {
-      console.error("[store] Project listener failed after transactional switch:", error);
+      log.error("Project listener failed after transactional switch", error);
     }
     this.refreshSupabaseResourceCache();
     return { projectId };
@@ -676,7 +702,14 @@ class ProjectStore {
     return this.reloadFromRemote({ force: true });
   }
 
-  replace(project: Project, options: { readonly preserveEventDrafts?: boolean } = {}): void {
+  /**
+   * `change` 는 관측용 주석이다 — undo/AI 적용/원격 병합이 서로 구분되게 라벨을 실어 보낸다.
+   * 생략하면 라벨 없는 project 스코프 변경으로 기록된다(`__oprnUnlabeledEditCount()` 에 집계).
+   */
+  replace(
+    project: Project,
+    options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation } = {},
+  ): void {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
     // Default: keep open event editor drafts across undo/AI/accept/remote merges.
@@ -689,17 +722,20 @@ class ProjectStore {
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
     }
-    this.markLocalMutation();
+    this.markLocalMutation({ scope: "project", ...(options.change ?? {}) });
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
 
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
-  replaceProject(project: Project): void {
+  replaceProject(project: Project, change?: ProjectChangeAnnotation): void {
     clearEventDraftVault();
     persistEventDraftVaultNow();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
-    this.replace(project, { preserveEventDrafts: false });
+    this.replace(project, {
+      preserveEventDrafts: false,
+      change: { label: "프로젝트 교체", ...(change ?? {}) },
+    });
   }
 
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
@@ -711,7 +747,7 @@ class ProjectStore {
     removeLegacySpriteReferences(draft);
     this.current = draft;
     syncEventDraftVaultFromProject(this.current);
-    this.markLocalMutation();
+    this.markLocalMutation(change);
     this.emit(change);
     this.scheduleAutoSave();
   }
@@ -719,7 +755,7 @@ class ProjectStore {
   updateMap(
     mapId: MapId,
     mapMutator: (draft: GameMap) => void,
-    change: { readonly cells?: readonly ProjectChangeCell[] } = {}
+    change: { readonly cells?: readonly ProjectChangeCell[] } & ProjectChangeAnnotation = {}
   ): void {
     const currentMap = this.current.maps[mapId];
     if (!currentMap) return;
@@ -738,8 +774,9 @@ class ProjectStore {
       },
     };
     syncEventDraftVaultFromProject(this.current);
-    this.markLocalMutation();
-    this.emit({ scope: "map", mapId, ...change });
+    const descriptor: ProjectChangeDescriptor = { scope: "map", mapId, ...change };
+    this.markLocalMutation(descriptor);
+    this.emit(descriptor);
     this.scheduleAutoSave();
   }
 
@@ -777,7 +814,7 @@ class ProjectStore {
     persistEventDraftVaultNow();
     this.current = createBlankProject();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
-    this.markLocalMutation();
+    this.markLocalMutation({ scope: "project", label: "전체 초기화" });
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
@@ -792,16 +829,53 @@ class ProjectStore {
     if (!withVault.maps[mapId]?.events.some((entry) => entry.id === eventId)) return false;
     this.current = withVault;
     syncEventDraftVaultFromProject(this.current);
-    this.markLocalMutation();
+    this.markLocalMutation({ scope: "map", mapId, label: "드래프트 금고 복원", origin: "system", eventId });
     this.emit({ scope: "map", mapId });
     this.scheduleAutoSave();
     return true;
   }
 
-  /** Local edit counter — remote save responses must not clobber a newer generation. */
-  private markLocalMutation(): void {
+  /**
+   * Local edit counter — remote save responses must not clobber a newer generation.
+   *
+   * **관측 초크포인트.** 상태를 바꾸는 5개 메서드(`update`/`updateMap`/`replace`/`clearAll`/
+   * `restoreEventDraftFromVault`)가 전부 여기를 지나므로, 275개 mutation 호출부 전량이
+   * 외부 파일 수정 없이 계측된다. 호출자는 전부 이 클래스 안에 있다 — 이 성질을
+   * test/storeMutationInstrumentation.test.ts 가 고정한다.
+   */
+  private markLocalMutation(change: ProjectChangeDescriptor): void {
     this.mutationGeneration += 1;
     this.dirtySinceLastPersist = true;
+    this.recordChangeActivity(change);
+  }
+
+  /**
+   * 편집 행위 1건을 감사 로그에 남긴다.
+   *
+   * 성능: descriptor 에 이미 담긴 값만 읽는다. **여기서 diff 를 계산하지 않는다** —
+   * 페인트 스트로크마다 전 맵 비교를 돌리는 셈이 되고, 그게 새 병목이 된다.
+   * 필드 단위 상세는 호출자가 이미 계산해 둔 것(이벤트 편집기의 EventDiff 등)만 실어 보낸다.
+   */
+  private recordChangeActivity(change: ProjectChangeDescriptor): void {
+    try {
+      recordEditActivity({
+        scope: change.scope,
+        label: change.label ?? null,
+        generation: this.mutationGeneration,
+        ...(change.origin === undefined ? {} : { origin: change.origin }),
+        ...(change.scope === "map"
+          ? { mapId: change.mapId, ...(change.cells === undefined ? {} : { cellCount: change.cells.length }) }
+          : {}),
+        ...(change.scope === "database" && change.collection !== undefined
+          ? { collection: change.collection }
+          : {}),
+        ...(change.fields === undefined ? {} : { fields: change.fields }),
+        ...(change.eventId === undefined ? {} : { eventId: change.eventId }),
+      });
+    } catch (error) {
+      // 관측이 편집을 막으면 안 된다 — 기록 실패는 경고로 남기고 편집은 그대로 진행한다.
+      log.warn("편집 행위 기록 실패", error);
+    }
   }
 
   private beginLocalProjectSession(): void {
@@ -814,8 +888,26 @@ class ProjectStore {
     return () => this.listeners.delete(listener);
   }
 
+  /**
+   * 리스너 1개의 예외가 나머지를 죽이지 않게 격리한다.
+   *
+   * 실측(2026-08-29): try/catch 가 없어서 구독자 하나가 던지면 뒤에 등록된 구독자 전부가
+   * 그 프레임에서 건너뛰어졌다 — 캔버스 재렌더·자동저장 예약·패널 갱신이 한꺼번에 멈추는데
+   * 원인 로그는 어디에도 남지 않았다. 격리하고 어느 리스너가 던졌는지 기록한다.
+   */
   private emit(change: ProjectChangeDescriptor = { scope: "project" }): void {
-    for (const listener of this.listeners) listener(this.current, change);
+    for (const listener of this.listeners) {
+      try {
+        listener(this.current, change);
+      } catch (error) {
+        log.error("프로젝트 변경 리스너가 예외를 던졌다 — 나머지 리스너는 계속 실행한다", {
+          scope: change.scope,
+          label: change.label ?? null,
+          error: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+      }
+    }
   }
 
   private emitAutoSave(): void {
@@ -836,7 +928,7 @@ class ProjectStore {
     this.autoSaveTimer = setTimeout(() => {
       this.autoSaveTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
-        console.error("[store] Supabase auto-save failed:", error);
+        log.error("Supabase auto-save failed", error);
       });
     }, this.autoSaveDelayMs);
   }
@@ -856,7 +948,7 @@ class ProjectStore {
     this.autoSaveRetryTimer = setTimeout(() => {
       this.autoSaveRetryTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
-        console.error("[store] Supabase auto-save retry failed:", error);
+        log.error("Supabase auto-save retry failed", error);
       });
     }, delay);
     this.startHealthCheck();
@@ -904,15 +996,15 @@ class ProjectStore {
         signal: AbortSignal.timeout(8000),
       });
       if (response.ok) {
-        console.info(`[store] Health check: DB reachable (${response.status}), attempting flush`);
+        log.info(`Health check: DB reachable (${response.status}), attempting flush`);
         this.stopHealthCheck();
         this.clearAutoSaveRetry();
         this.autoSaveRetryCount = 0;
         void this.saveCurrentWithAutoSaveState().catch((error) => {
-          console.error("[store] Health-check-triggered flush failed:", error);
+          log.error("Health-check-triggered flush failed", error);
         });
       } else {
-        console.warn(`[store] Health check: server responded ${response.status} — not triggering flush`);
+        log.warn(`Health check: server responded ${response.status} — not triggering flush`);
       }
     } catch {
       // Network unreachable — keep waiting for next tick or online event.
@@ -923,11 +1015,11 @@ class ProjectStore {
   private onNetworkRestored(): void {
     if (!this.loaded || !this.remotePersistenceEnabled) return;
     if (this.autoSaveState.kind !== "error") return;
-    console.info("[store] Network restored, attempting immediate flush");
+    log.info("Network restored, attempting immediate flush");
     this.stopHealthCheck();
     this.clearAutoSaveRetry();
     void this.saveCurrentWithAutoSaveState().catch((error) => {
-      console.error("[store] Online-event flush failed:", error);
+      log.error("Online-event flush failed", error);
     });
   }
 
@@ -991,8 +1083,14 @@ class ProjectStore {
     // Snapshot local state at submit time. Paint during await must win over the response.
     const generationAtSubmit = this.mutationGeneration;
     const submittedProject = projectWithoutEventDrafts(this.current);
-    const result = this.persistedBaseline
-      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: this.persistedBaseline })
+    // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
+    // 아래에서 `this.persistedBaseline` 을 저장 결과로 갈아치우므로 여기서 잡아두지 않으면
+    // 커밋 diff 가 "자기 자신과의 비교"(=빈 diff)로 무너진다. await 앞에서 읽는 이유는
+    // normalizeCurrentProject 가 persistInFlight 코얼레싱 밖에서 persistCurrent 를 직접
+    // 부르는 경로가 있어서다 — RTT 중에 이 필드가 다른 저장에 의해 바뀔 수 있다.
+    const commitBaseline = this.persistedBaseline;
+    const result = commitBaseline
+      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: commitBaseline })
       : await saveProjectToSupabase(submittedProject);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
@@ -1010,7 +1108,7 @@ class ProjectStore {
       // Do not arm the 4s autosave debounce here — that left a "saved" gap.
       this.dirtySinceLastPersist = true;
     }
-    recordManualProjectCommitAfterSave(savedProject);
+    recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     this.refreshSupabaseResourceCache();
     return result;
   }
@@ -1032,24 +1130,39 @@ class ProjectStore {
 
   private async normalizeCurrentProject(options: { readonly persistIfChanged?: boolean } = {}): Promise<void> {
     const persistIfChanged = options.persistIfChanged !== false;
-    const dialogueRewritten = rewriteLegacyAdvancedDialogueInProject(this.current);
-    const changed = [
-      dialogueRewritten,
-      ensureProjectMapConnections(this.current),
+    // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
+    // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
+    // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
+    // "내가 안 건드렸는데 값이 달라졌다" 를 추적할 수 없었다.
+    const normalizers: readonly (readonly [string, boolean])[] = [
+      ["legacyDialogue", rewriteLegacyAdvancedDialogueInProject(this.current)],
+      ["mapConnections", ensureProjectMapConnections(this.current)],
       // 실내 보강은 mapTree 고아 복구보다 먼저 — 새로 넣은 실내 맵이 같은 패스에서 트리에 편입된다.
-      ensureScarloxyPokemonInteriors(this.current),
-      ensureMapTreeCoversAllMaps(this.current),
-      ensureSwitchVariableSlots(this.current),
-      ensureBundledTilesets(this.current),
-      repairInteriorTransparentPropLayers(this.current),
-      removeLegacyRmTileset(this.current),
-      removeLegacySpriteReferences(this.current),
-      ensureBundledResourceProfiles(this.current),
-      ensureDefaultDatabaseIconResources(this.current),
+      ["scarloxyInteriors", ensureScarloxyPokemonInteriors(this.current)],
+      ["mapTreeCoverage", ensureMapTreeCoversAllMaps(this.current)],
+      ["switchVariableSlots", ensureSwitchVariableSlots(this.current)],
+      ["bundledTilesets", ensureBundledTilesets(this.current)],
+      ["interiorPropLayers", repairInteriorTransparentPropLayers(this.current)],
+      ["legacyRmTileset", removeLegacyRmTileset(this.current)],
+      ["legacySpriteRefs", removeLegacySpriteReferences(this.current)],
+      ["bundledResourceProfiles", ensureBundledResourceProfiles(this.current)],
+      ["databaseIconResources", ensureDefaultDatabaseIconResources(this.current)],
       // 팩 이전 스냅샷은 anim_gen_* 이 없어 스타터 아이템·스킬 참조가 끊긴다 —
       // 그대로 두면 fail-closed 재생 게이트가 ▶테스트를 조용히 막는다.
-      ensureBundledBattleAnimations(this.current),
-    ].some(Boolean);
+      ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
+    ];
+    const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
+    const changed = appliedNormalizers.length > 0;
+    if (changed) {
+      // mutationGeneration 은 **올리지 않는다** — 그 값은 저장 경합 판정용이고(local-first),
+      // 로드 경로에서 올리면 in-flight 저장 응답 처리가 달라진다. 관측만 남긴다.
+      this.recordChangeActivity({
+        scope: "system",
+        label: `프로젝트 정규화 (${appliedNormalizers.length}종)`,
+        origin: "system",
+        fields: appliedNormalizers.map((name) => ({ path: name, after: true })),
+      });
+    }
     // 업로드 시트의 진짜 절단은 canvas 가 필수라 동기 보정 배열 밖에서 돌린다.
     // 쪼갤 것이 없으면 await 조차 하지 않는다 — 로드 경로에 자시합을 더하면 지속화 순서가 바뀐다.
     const facesRepaired = hasPendingFacesetSheetRepair(this.current)
@@ -1072,11 +1185,11 @@ class ProjectStore {
     void cacheSupabaseRootResources(this.current)
       .then((report) => {
         if (report.skipped.length > 0) {
-          console.warn("[store] Supabase resource cache skipped:", report.skipped);
+          log.warn("Supabase resource cache skipped", report.skipped);
         }
       })
       .catch((error) => {
-        console.error("[store] Supabase resource cache refresh failed:", error);
+        log.error("Supabase resource cache refresh failed", error);
       });
   }
 

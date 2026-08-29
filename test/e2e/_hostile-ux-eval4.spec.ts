@@ -1,10 +1,10 @@
-/* 적대적 UX 평가 4차 — ai-proposal 백드롭 차단 여부. CI 제외(_접두사). */
-import { expect, test, type Page } from "@playwright/test";
+/* 적대적 UX 평가 4차 — 삭제된 AI 승인 모달이 입력을 막지 않는지 확인. CI 제외(_접두사). */
+import { expect, test } from "@playwright/test";
 import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 const TILE = 16;
 
-test("P. proposal backdrop after OK: does it block input?", async ({ page }) => {
+test("P. 삭제된 승인 모달 없이 편집기 입력이 통한다", async ({ page }) => {
   test.setTimeout(240_000);
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "standard"));
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -19,18 +19,9 @@ test("P. proposal backdrop after OK: does it block input?", async ({ page }) => 
   await page.getByTestId("event-editor-modal").locator("[data-testid='event-page-name-input']").fill("백드롭테스트");
   await page.getByTestId("event-editor-ok").click();
   await page.waitForTimeout(900);
-  const info = await page.evaluate(() => {
-    const bd = document.querySelector<HTMLElement>(".ai-proposal-modal-backdrop");
-    const md = document.querySelector<HTMLElement>(".ai-proposal-modal");
-    const rect = (el: HTMLElement | null) => { if (!el) return null; const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height), display: cs.display, vis: cs.visibility, pe: cs.pointerEvents, z: cs.zIndex, op: cs.opacity }; };
-    const center = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
-    return { backdrop: rect(bd), modal: rect(md), centerHit: center ? `${center.tagName}.${(center as HTMLElement).className?.toString().slice(0, 40)}` : null };
-  });
-  console.log("BACKDROP " + JSON.stringify(info, null, 1));
-  // 도구 버튼 클릭이 실제로 통하는지
-  await page.getByTestId("tool-paint").click({ timeout: 3000 }).catch((e) => console.log("PAINT_CLICK_FAIL " + e.message.split("\n")[0]));
-  const active = await page.evaluate(() => document.querySelector("[data-testid='tool-paint']")?.classList.contains("is-active"));
-  console.log("PAINT_ACTIVE " + active);
-  await page.screenshot({ path: "verify-shots/event-editor-hostile/P01-after-ok-proposal.png" });
-  expect(true).toBe(true);
+
+  await expect(page.locator(".ai-proposal-modal-backdrop, .ai-proposal-modal")).toHaveCount(0);
+  await page.getByTestId("tool-paint").click({ timeout: 3000 });
+  await expect(page.getByTestId("tool-paint")).toHaveClass(/is-active/u);
+  await page.screenshot({ path: "verify-shots/event-editor-hostile/P01-after-ok-no-approval-modal.png" });
 });

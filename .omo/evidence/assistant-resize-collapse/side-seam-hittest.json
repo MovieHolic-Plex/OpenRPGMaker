@@ -1,0 +1,134 @@
+{
+  "handleRect": {
+    "x": 961,
+    "y": 49,
+    "w": 12,
+    "h": 851
+  },
+  "hostLeft": 960,
+  "hostOverflow": "hidden",
+  "continuousHitWidth": 12,
+  "hitRange": {
+    "from": 961,
+    "to": 972
+  },
+  "scan": [
+    {
+      "x": 953,
+      "hit": "edit-canvas"
+    },
+    {
+      "x": 954,
+      "hit": "edit-canvas"
+    },
+    {
+      "x": 955,
+      "hit": "edit-canvas"
+    },
+    {
+      "x": 956,
+      "hit": "edit-canvas"
+    },
+    {
+      "x": 957,
+      "hit": "edit-canvas"
+    },
+    {
+      "x": 958,
+      "hit": "edit-canvas"
+    },
+    {
+      "x": 959,
+      "hit": "edit-canvas"
+    },
+    {
+      "x": 960,
+      "hit": "chat-side-panel"
+    },
+    {
+      "x": 961,
+      "hit": "handle"
+    },
+    {
+      "x": 962,
+      "hit": "handle"
+    },
+    {
+      "x": 963,
+      "hit": "handle"
+    },
+    {
+      "x": 964,
+      "hit": "handle"
+    },
+    {
+      "x": 965,
+      "hit": "handle"
+    },
+    {
+      "x": 966,
+      "hit": "handle"
+    },
+    {
+      "x": 967,
+      "hit": "handle"
+    },
+    {
+      "x": 968,
+      "hit": "handle"
+    },
+    {
+      "x": 969,
+      "hit": "handle"
+    },
+    {
+      "x": 970,
+      "hit": "handle"
+    },
+    {
+      "x": 971,
+      "hit": "handle"
+    },
+    {
+      "x": 972,
+      "hit": "handle"
+    },
+    {
+      "x": 973,
+      "hit": "ai-rising-overlay"
+    },
+    {
+      "x": 974,
+      "hit": "ai-rising-overlay"
+    },
+    {
+      "x": 975,
+      "hit": "ai-rising-overlay"
+    },
+    {
+      "x": 976,
+      "hit": "ai-rising-overlay"
+    },
+    {
+      "x": 977,
+      "hit": "ai-rising-overlay"
+    },
+    {
+      "x": 978,
+      "hit": "ai-rising-overlay"
+    },
+    {
+      "x": 979,
+      "hit": "ai-rising-overlay"
+    },
+    {
+      "x": 980,
+      "hit": "ai-rising-overlay"
+    },
+    {
+      "x": 981,
+      "hit": "ai-rising-overlay"
+    }
+  ],
+  "pass": true
+}

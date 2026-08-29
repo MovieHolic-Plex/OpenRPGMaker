@@ -71,6 +71,17 @@ export class DragOperationHandler {
     return this.dragOperation !== null;
   }
 
+  /**
+   * 드래그를 하고 있거나, 이벤트를 누른 채 아직 이동으로 승격되지 않은 후보를 들고 있다.
+   *
+   * `active()` 와 나누는 이유: 후보 상태에서도 `tryPromoteEventDrag` 가 살아 있는 카메라로
+   * 타일을 다시 구하므로, 손을 대지 않았는데 카메라가 움직이면 눌린 자리와 다른 타일이 나와
+   * 유령 이벤트 이동이 시작된다. 카메라 양보 판정은 이 넓은 쪽을 봐야 한다.
+   */
+  busy(): boolean {
+    return this.dragOperation !== null || this.eventDragCandidate !== null;
+  }
+
   clear(): void {
     this.dragOperation = null;
     this.eventDragCandidate = null;

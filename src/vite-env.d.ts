@@ -5,9 +5,17 @@ interface ImportMetaEnv {
   // 앞의 둘은 키를 클라이언트 번들에 인라인하던 통로이고, 마지막 것은 에디터의 인증
   // 모드를 정해 AI 를 반복적으로 죽인 통로다(llmClient.defaultAiConfig 주석 참고).
   // 되살리지 말 것 — 게이트웨이가 필요한 소비자는 설정을 직접 주입한다.
+  // 레거시 — 클라이언트 번들에 anon 키를 인라인한다. VITE_SUPABASE_USE_PROXY=1 을 쓰면
+  // 서버 전용 SUPABASE_ANON_KEY 를 /supabase 프록시가 주입하므로 이 값이 필요 없다.
   readonly VITE_SUPABASE_ANON_KEY?: string;
   readonly VITE_SUPABASE_PROJECT_ID?: string;
   readonly VITE_SUPABASE_URL?: string;
+  /** "1"/"true" 면 브라우저가 항상 같은-오리진 /supabase 로 나가고 자격증명은 서버가 붙인다. */
+  readonly VITE_SUPABASE_USE_PROXY?: string;
+  /** AI 활동 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
+  readonly VITE_AI_ACTIVITY_DISK_MIRROR?: string;
+  /** 편집 행위 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
+  readonly VITE_EDIT_ACTIVITY_DISK_MIRROR?: string;
   readonly VITE_TOUCH_CONTROLS?: string;
   // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
   readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
@@ -70,6 +78,11 @@ interface Window {
   __oprnGetAiActivityLog?: (id: string) => unknown;
   __oprnClearAiActivityLogs?: () => void;
   __oprnExportAiActivityLogs?: (limit?: number) => string;
+  // 이 탭의 런 식별자. DB 에서 "내 런의 최신 턴" 을 고를 때 쓴다(scripts/list-ai-activity.mjs --run).
+  __oprnAiActivityRunId?: () => string;
+  // 원격 전송 실패분 큐 — 조용한 유실을 드러내기 위한 진단 표면(src/project/remoteOutbox.ts).
+  __oprnRemoteOutbox?: () => unknown;
+  __oprnFlushRemoteOutbox?: () => Promise<unknown>;
   // AI 하네스 스냅샷(주입 포함 원본 메시지 + 감사 로그) — 콘솔/헤드리스 디버깅용.
   __oprnAiHarness?: () => unknown;
   // 에디터 beginner/standard/expert UI 모드 (src/editor/editorUiMode.ts).

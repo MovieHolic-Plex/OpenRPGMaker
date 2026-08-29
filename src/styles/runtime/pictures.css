@@ -1,5 +1,6 @@
-/* 픽처(그림) 레이어. runtimeDom.syncPictureLayer 가 픽처 번호별 슬롯을 배치한다.
-   실제 이미지는 <img class="picture-layer-image">, 미해석 리소스는 텍스트 라벨로 폴백. */
+/* 픽처(그림) 슬롯. 컨테이너 스태킹은 tabs-b-status-menu-main.css 의 unlayered 규칙이
+   소유한다. playerRuntime.css 안의 unlayered 선언은 @layer runtime 보다 항상 우선하므로,
+   여기 중복 선언을 두면 값이 바뀌어도 효력이 없는 dead rule 이 된다. */
 @layer runtime {
   .picture-layer-item {
     position: absolute;

@@ -14,6 +14,8 @@
 // 유지되는 testid (e2e 3개 스펙이 의존): event-record-picker, -search, -add,
 // -row-{n}, -ok, -name, -no-result.
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
+import { editorState } from "@/editor/editorState";
+import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { openEventSubdialog } from "./subdialog";
 import {
@@ -47,6 +49,16 @@ type PanelHosts = {
   readonly list: HTMLElement;
   readonly search: HTMLInputElement;
   readonly summary: HTMLElement;
+  /**
+   * 참조 수 카운터. 창이 열려 있는 동안 한 번만 만든다.
+   *
+   * 렌더마다 새로 만들면 검색 키 한 번에 프로젝트 맵 전체가 다시 직렬화된다.
+   * 창이 떠 있는 동안 레코드 생성·이름변경은 맵 쪽 참조를 건드리지 않으므로
+   * 집계 원본은 그대로 유효하다.
+   */
+  readonly usageOf: (id: string) => number;
+  /** 지금 편집 중인 맵 안에서의 참조 수. 관련 레코드를 위로 올리는 데 쓴다. */
+  readonly mapUsageOf: (id: string) => number;
 };
 
 /** 검색 결과가 아무리 많아도 한 번에 그리는 행 수 상한. 넘치면 안내 문구로 알린다. */
@@ -97,6 +109,8 @@ function renderPanel(options: {
     }),
     search,
     summary: el("div", { class: "event-record-picker-summary" }),
+    usageOf: createUsageCounter(),
+    mapUsageOf: createUsageCounter(store.getCurrent(), editorState.get().currentMapId),
   };
 
   const commit = (): void => {
@@ -110,7 +124,14 @@ function renderPanel(options: {
     state.query = search.value;
     renderList(hosts, request, state, commit);
   });
-  search.addEventListener("keydown", (event) => {
+
+  const shell = panelShell({ close: options.close, hosts, request, state, commit });
+  // 핸들러는 패널 루트에 둔다. 검색창에만 달면 행을 한 번 클릭한 뒤로는 ↑↓ 가 죽는다
+  // (재렌더가 그 행을 파괴해 포커스가 body 로 떨어진다).
+  shell.addEventListener("keydown", (event) => {
+    if (!(event instanceof KeyboardEvent)) return;
+    // 이름 입력 중에는 ↑↓·Enter 를 가로채지 않는다 — 그쪽이 자기 Enter 를 쓴다.
+    if (event.target instanceof HTMLInputElement && event.target.type === "text") return;
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       moveSelection(hosts, request, state, commit, event.key === "ArrowDown" ? 1 : -1);
@@ -122,7 +143,7 @@ function renderPanel(options: {
     }
   });
 
-  options.body.append(panelShell({ close: options.close, hosts, request, state, commit }));
+  options.body.append(shell);
   renderList(hosts, request, state, commit);
   // 검색이 첫 조작이다 — 타이핑으로 바로 좁힐 수 있게 포커스를 준다.
   queueMicrotask(() => search.focus({ preventScroll: true }));
@@ -213,18 +234,25 @@ function renderList(
     return;
   }
 
-  // 참조 수는 프로젝트 전체를 훑어야 나오므로 렌더 1회당 카운터 하나를 공유한다.
-  const usageOf = createUsageCounter();
-  for (const entry of matches.slice(0, RENDER_LIMIT)) {
+  const shown = matches.slice(0, RENDER_LIMIT);
+  // 지금 편집 중인 맵이 이미 쓰는 레코드를 위로 올린다 — 수십 개 중에서 관련 있는 것을
+  // 먼저 보여 주는 유일한 단서다. 표시 순서만 바뀌고 행 testid 는 레코드 번호를 따른다.
+  const inMap = shown.filter((entry) => hosts.mapUsageOf(entry.record.id) > 0);
+  const rest = shown.filter((entry) => hosts.mapUsageOf(entry.record.id) === 0);
+
+  const appendRow = (entry: VisibleEntry): void => {
     hosts.list.append(
       recordRow({
         entry,
         kind: request.kind,
         selected: entry.record.id === state.selectedId,
-        usage: usageOf(entry.record.id),
+        usage: hosts.usageOf(entry.record.id),
         onSelect: () => {
           state.selectedId = entry.record.id;
           renderList(hosts, request, state, commit);
+          // 재렌더가 방금 누른 버튼을 없앤다. 포커스를 새로 그려진 같은 행으로 옮기지 않으면
+          // body 로 떨어져 키보드 조작과 스크린리더 위치를 모두 잃는다.
+          focusSelectedRow(hosts);
         },
         onConfirm: commit,
         onRename: (name) => {
@@ -233,7 +261,15 @@ function renderList(
         },
       }),
     );
+  };
+
+  if (inMap.length > 0) {
+    hosts.list.append(sectionHeading("이 맵에서 쓰는 중", inMap.length, "map"));
+    inMap.forEach(appendRow);
+    hosts.list.append(sectionHeading("그 밖의 " + kindLabel, rest.length, "rest"));
   }
+  rest.forEach(appendRow);
+
   if (matches.length > RENDER_LIMIT) {
     hosts.list.append(
       el("div", {
@@ -243,6 +279,17 @@ function renderList(
     );
   }
   updateConfirm(hosts.confirm, state);
+}
+
+function sectionHeading(label: string, count: number, slug: string): HTMLElement {
+  return el("div", {
+    class: "event-record-picker-section",
+    dataset: { testid: `event-record-picker-section-${slug}` },
+    children: [
+      el("span", { text: label }),
+      el("span", { class: "event-record-picker-section-count", text: String(count) }),
+    ],
+  });
 }
 
 function updateConfirm(confirm: HTMLButtonElement, state: PanelState): void {
@@ -280,8 +327,15 @@ function moveSelection(
     : Math.min(matches.length - 1, Math.max(0, current + delta));
   state.selectedId = matches[nextIndex]!.record.id;
   renderList(hosts, request, state, commit);
-  hosts.list.querySelector<HTMLElement>(".event-record-picker-row.selected")
-    ?.scrollIntoView({ block: "nearest" });
+  focusSelectedRow(hosts);
+}
+
+/** 선택된 행으로 포커스와 스크롤을 맞춘다. 재렌더로 사라진 포커스를 복구하는 유일한 지점. */
+function focusSelectedRow(hosts: PanelHosts): void {
+  const row = hosts.list.querySelector<HTMLElement>(".event-record-picker-row.selected");
+  if (!row) return;
+  row.scrollIntoView({ block: "nearest" });
+  row.focus({ preventScroll: true });
 }
 
 function recordRow(options: {

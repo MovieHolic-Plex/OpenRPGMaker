@@ -165,7 +165,6 @@
   display: none;
 }
 
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
   background: #fff6f0;

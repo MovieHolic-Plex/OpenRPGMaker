@@ -159,7 +159,8 @@ describe("runtime play window skins — 상점", () => {
     const row = shell.querySelector<HTMLElement>("[data-testid='shop-buy-item_potion']");
     expect(row).not.toBeNull();
     expect(row?.querySelector("[data-testid='shop-item-icon-item_potion']")).not.toBeNull();
-    expect(row?.querySelector("[data-testid='shop-price-item_potion']")?.textContent).toBe("50");
+    // 값만 있으면 단위를 알 수 없다 — 소지금 패널과 같은 단위를 붙인다.
+    expect(row?.querySelector("[data-testid='shop-price-item_potion']")?.textContent).toBe("50G");
     // 파티 소지 수량이 목록에서 바로 읽힌다(구매 전에 창을 옮겨 다니지 않는다).
     expect(row?.querySelector("[data-testid='shop-owned-item_potion']")?.textContent).toBe("x3");
     // 소지금 + 상인 소지금이 같은 화면에 있다.
@@ -176,8 +177,10 @@ describe("runtime play window skins — 상점", () => {
     expect(shell.querySelector("[data-testid='shop-mode-buy']")).not.toBeNull();
   });
 
-  it("commerce.css 의 가게 창 표면이 윈도스킨 변수를 쓴다", () => {
-    const css = read("src/styles/runtime/commerce.css");
+  it("shop.css 의 가게 창 표면이 윈도스킨 변수를 쓴다(모던 카드의 폴백)", () => {
+    // 가게 창 스타일은 commerce.css 에서 shop.css 로 분리됐다. 기본 표면은 모던 유리 카드고,
+    // backdrop-filter 를 못 쓰는 환경에서는 이 border-image 규칙이 살아난다 — 그래서 여전히 계약이다.
+    const css = read("src/styles/runtime/shop.css");
     const panelBlock = css.slice(css.indexOf(".runtime-shop-panel {"));
     expect(panelBlock).toContain("border-image-source: var(--runtime-window-skin);");
     expect(css).toContain(".runtime-shop-item-icon");

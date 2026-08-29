@@ -18,11 +18,10 @@
    적 스프라이트는 별도 요소라 밝기가 유지된다. */
 /* backdrop art (dragonquest-backdrop.png) is already dark; no filter mask. */
 
-/* 단일 적 중앙 고정(result 승리 연출 좌표는 유지). */
-.battle-scene[data-battle-skin="dragonquest"]:not([data-battle-director-step="result"]) .battle-enemy {
-  left: 50% !important;
-  top: 50% !important;
-}
+/* 적 좌표는 `BATTLER_PLACEMENTS`(battleFieldDom.ts)의 `--battle-node-x/y` 가 정한다.
+   예전에는 여기서 `left/top` 을 강제로 한 점에 고정했는데, 단일 적을 가운데 두려던 규칙이
+   **다마리 트룹까지 같은 점에 쌓았다**(실측: 3마리 트룹의 세 rect 가 완전히 동일 → 화면에는
+   한 마리). 배치 함수가 이미 단일 적을 x=160(=50%)에 두므로 그 강제 선언은 불필요했다. */
 
 .battle-scene[data-battle-skin="dragonquest"] .battle-party,
 .battle-scene[data-battle-skin="dragonquest"] .battle-command-panel,
@@ -41,7 +40,6 @@
   color: #f8f8f8;
 }
 
-.battle-scene[data-battle-skin="dragonquest"] .battle-command:hover,
 .battle-scene[data-battle-skin="dragonquest"] .battle-command:focus-visible,
 .battle-scene[data-battle-skin="dragonquest"] .battle-command[data-battle-command-cursor="true"] {
   background: transparent;

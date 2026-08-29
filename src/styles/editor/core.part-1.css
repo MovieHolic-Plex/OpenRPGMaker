@@ -16,8 +16,8 @@
   --text-muted: var(--text-3);
   --accent-soft: var(--accent-muted);
   --ok: var(--success);
-  /* 怨⑤뱶 ?≪꽱????ъ갹 ?ㅺ낵 議고솕). */
-  --gold: var(--warning);
+  /* --gold 재정의 삭제: tokens.css 가 단독 소유한다(TOKENS.md §4.3).
+     이 줄은 tabs-b-shell-layout.css 가 뒤에서 다시 덮어써 이미 죽어 있었다. */
   /* DESIGN.md 짠2 ?좏겙 ???ъ슜泥섍? 議댁옱?섏?留??뺤쓽媛 鍮좎졇 ?됱씠 源⑥???蹂?섎뱾.
      紐⑤뜕 ?ㅽ겕 ?붾젅??湲곗? 媛믪쑝濡??뺤쓽?쒕떎(?덊듃濡??쇱씠???뚮쭏???꾨옒 ??踰덉㎏ :root ?먯꽌 override). */
   --surface-app: var(--bg-base);

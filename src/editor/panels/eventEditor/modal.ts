@@ -1,3 +1,4 @@
+import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState } from "@/editor/editorState";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
@@ -18,11 +19,15 @@ import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import {
-  navigateToEventDraftIssue,
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
   renderEventEditorStable,
 } from "./content";
+import {
+  navigateToEventDraftIssue,
+  refreshEventValidationBell,
+  renderEventValidationBell,
+} from "./validationBell";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { clearCommandInspector, setCommandInspectorHost } from "./commandInspector";
 import { installEventEditorCustomSelects } from "./customSelect";
@@ -89,6 +94,8 @@ function guardedCloseExistingEventEditorModal(next: () => void): void {
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
+  // 그래픽/얼굴 피커는 이 모달 안에서 열린다 — 여는 순간이 아니라 지금 받아 둔다.
+  void warmEditorPickerAssets();
   clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
   clearCommandInspector();
   setCommandInspectorHost(undefined);
@@ -196,6 +203,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     restoreEventEditorScroll(dynamicBody, scrollSnapshots);
     restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
     refreshHeaderPageSegments(header, request);
+    refreshEventValidationBell(header, validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
     refreshModalFooterStatus(footer, request);
     refreshModalHeaderSaveState(header, footer);
   };
@@ -331,6 +339,7 @@ function renderModalHeader(
       el("div", {
         class: "header-actions",
         children: [
+          renderEventValidationBell(),
           el("button", {
             class: "btn ghost event-editor-header-test",
             text: "테스트",

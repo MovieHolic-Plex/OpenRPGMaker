@@ -8,6 +8,7 @@ import { SCHEMA_VERSION } from "@/project/types";
 import type { Project } from "@/project/types";
 import { defaultAssetSet, defaultResourceProfiles, defaultTilesets } from "@/project/defaults/defaultAssets";
 import { defaultDatabase, defaultSession, defaultSystem, defaultTerms } from "@/project/defaults/defaultDatabase";
+import { dropCropsWithMissingItems } from "@/project/databaseRecordModel";
 import { ensureSwitchVariableSlots } from "@/project/defaults/defaultProject";
 
 export function createEmptyToolProject(title = "빈 프로젝트"): Project {
@@ -15,6 +16,8 @@ export function createEmptyToolProject(title = "빈 프로젝트"): Project {
   database.items = [];
   database.enemies = [];
   database.troops = [];
+  // 아이템을 버렸으니 씨앗·수확물을 참조하는 작물 행도 함께 버린다(참조 검증 통과).
+  dropCropsWithMissingItems(database);
 
   const system = defaultSystem();
   // 트룹을 비웠으므로 초기 트룹 참조를 제거(참조 검증 통과).
