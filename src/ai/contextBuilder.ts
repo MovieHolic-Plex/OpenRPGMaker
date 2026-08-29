@@ -229,7 +229,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지에 가깝다). 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle + get_map_region data.water.bounds. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용]. 시공 툴 재료는 material=타일 라벨/설명만 쓴다(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(위치)·kitId·yard 태그만(firewood/mailbox/bench_h/…), 좌표는 코드. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지). **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
     trimDigestLines(lines, 700),
   ].join("\n");
 }
