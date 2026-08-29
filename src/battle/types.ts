@@ -13,6 +13,7 @@ import type {
   SkillId,
   TroopId,
 } from "@/project/types";
+import type { RelationshipState } from "@/project/relationshipState";
 import type { BattleResult, GameTime } from "@/project/gameTime";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
 import type { MonsterLevelUpPreview } from "@/project/monsterCollection";
@@ -137,6 +138,7 @@ export interface BattleSessionState {
   readonly gameTime?: GameTime;
   readonly npcActivities?: Readonly<Record<string, string>>;
   readonly friendship?: Readonly<Record<string, number>>;
+  readonly relationships?: Readonly<Record<string, RelationshipState>>;
 }
 
 export interface BattlePartyProgress {

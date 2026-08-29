@@ -3,6 +3,7 @@ import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from
 import { clampFriendship } from "../session";
 import { resolveSocialKey } from "../socialKey";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "../roguelikeRun";
+import { evalRelationshipCondition, type RelationshipState } from "../relationshipState";
 import type { EventPage, EventPageCondition, GameEvent, ProjectSession } from "../types";
 
 type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
@@ -10,6 +11,7 @@ type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
     readonly gameTime?: GameTime;
     readonly npcActivities?: Record<string, string>;
     readonly friendship?: Record<string, number>;
+    readonly relationships?: Record<string, RelationshipState>;
     readonly battleResult?: "victory" | "defeat" | "escape";
     readonly roguelikeRun?: RoguelikeRunState;
   };
@@ -59,6 +61,8 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
       if (!npcKey) return false;
       return clampFriendship(session.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
     }
+    case "relationshipAtLeast":
+      return evalRelationshipCondition(session, condition, resolveSocialKey(event, condition.npcKey));
     case "battleResult":
       return session.battleResult === condition.result;
     case "run":

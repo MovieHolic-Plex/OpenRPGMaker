@@ -6,6 +6,7 @@ import { commandSummary } from "./commandSummary";
 import {
   renderBattleResultCondition,
   renderFriendshipAtLeastCondition,
+  renderRelationshipAtLeastCondition,
   renderGoldCondition,
   renderNpcActivityCondition,
   renderRunCondition,
@@ -45,6 +46,7 @@ const LEAF_CONDITION_OPTIONS = [
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
   { value: "friendshipAtLeast", label: "호감도" },
+  { value: "relationshipAtLeast", label: "관계" },
   { value: "battleResult", label: "전투 결과" },
   { value: "run", label: "탐험" },
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
@@ -441,6 +443,13 @@ function renderAdvancedConditionContent(
         className: "event-advanced-condition-control npc-activity",
         activityTestId: `event-page-advanced-condition-npc-activity-${suffix}`,
       });
+    case "relationshipAtLeast":
+      return renderRelationshipAtLeastCondition(condition, onChange, {
+        className: "event-advanced-condition-control relationship",
+        npcKeyTestId: `event-page-advanced-condition-relationship-npc-key-${suffix}`,
+        stateTestId: `event-page-advanced-condition-relationship-state-${suffix}`,
+        hostHasCharacterId: context.hostHasCharacterId === true,
+      });
     case "friendshipAtLeast":
       return renderFriendshipAtLeastCondition(condition, onChange, {
         className: "event-advanced-condition-control friendship",
@@ -486,6 +495,8 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "npcActivity", activity: "work" };
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 100 };
+    case "relationshipAtLeast":
+      return { kind: "relationshipAtLeast", state: "dating" };
     case "battleResult":
       return { kind: "battleResult", result: "victory" };
     case "run":

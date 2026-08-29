@@ -1,4 +1,5 @@
 import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
+import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
   clampFriendship,
@@ -178,6 +179,7 @@ export type SaveSnapshot = {
     readonly farmPlots?: PlaySession["farmPlots"];
     readonly farmPlotsAdvancedThrough?: PlaySession["farmPlotsAdvancedThrough"];
     readonly friendship?: PlaySession["friendship"];
+    readonly relationships?: PlaySession["relationships"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
     readonly monsterCareSteps?: number;
@@ -348,6 +350,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       farmPlots: structuredClone(session.farmPlots ?? {}),
       farmPlotsAdvancedThrough: structuredClone(session.farmPlotsAdvancedThrough),
       friendship: structuredClone(session.friendship ?? {}),
+      relationships: structuredClone(session.relationships ?? {}),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
       monsterCareSteps: session.monsterCareSteps,
@@ -548,6 +551,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
   session.farmPlotsAdvancedThrough = normalizeFarmPlotDateForProject(project, snapshot.session.farmPlotsAdvancedThrough);
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
+  session.relationships = normalizeRelationships(snapshot.session.relationships) ?? {};
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
   if (typeof snapshot.session.monsterCareSteps === "number") {
@@ -881,6 +885,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       farmPlots: isFarmPlotsRecord(session.farmPlots) ? session.farmPlots : undefined,
       farmPlotsAdvancedThrough: isFarmPlotDate(session.farmPlotsAdvancedThrough) ? session.farmPlotsAdvancedThrough : undefined,
       friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
+      relationships: normalizeRelationships(session.relationships),
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
       monsterCareSteps: typeof session.monsterCareSteps === "number" && Number.isFinite(session.monsterCareSteps)

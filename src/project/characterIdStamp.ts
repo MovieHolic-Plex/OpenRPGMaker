@@ -44,6 +44,7 @@ function commandsHaveSocial(commands: readonly Command[] | undefined): boolean {
 
 function commandIsSocial(command: Command): boolean {
   switch (command.kind) {
+    case "setRelationship":
     case "changeFriendship":
     case "getFriendship":
       return true;

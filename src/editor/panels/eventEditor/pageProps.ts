@@ -48,6 +48,7 @@ import {
   openEventMovement,
 } from "./eventEditorOpenState";
 
+import { relationshipStateName } from "@/project/relationshipState";
 export function renderEventNameControl(
   mapId: MapId,
   eventId: string,
@@ -235,6 +236,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `활동 ${condition.activity}`;
     case "friendshipAtLeast":
       return `호감도 ${condition.npcKey || "이 이벤트"} ${condition.value} 이상`;
+    case "relationshipAtLeast":
+      return `관계 ${condition.npcKey || "이 이벤트"} ${relationshipStateName(condition.state)} 이상`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
     case "run":
@@ -1060,6 +1063,8 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return truncateBadgeToken(condition.activity, 10);
     case "friendshipAtLeast":
       return `호감≥${condition.value}`;
+    case "relationshipAtLeast":
+      return `관계 ${relationshipStateName(condition.state)}+`;
     case "battleResult":
       return `전투${condition.result === "victory" ? "승" : condition.result === "defeat" ? "패" : "도"}`;
     case "run":

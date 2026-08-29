@@ -2,7 +2,7 @@ import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { CONDITION_OP_OPTIONS } from "./options";
-import { npcActivitySuggestionList, renderFriendshipAtLeastCondition, selfSwitchControl, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
+import { npcActivitySuggestionList, renderFriendshipAtLeastCondition, renderRelationshipAtLeastCondition, selfSwitchControl, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
 import { hasCharacterId } from "@/project/socialKey";
 import { renderAdvancedConditions } from "./pageAdvancedConditions";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
@@ -145,6 +145,15 @@ export function renderPageConditions(
       enabled: page.conditions.some((item) => item.kind === "friendshipAtLeast"),
       suffix: "이상",
       toggle: (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled),
+    },
+    {
+      key: "relationship",
+      chipLabel: "관계",
+      label: "관계",
+      build: (markActive) => relationshipConditionInputs(context, markActive),
+      enabled: page.conditions.some((item) => item.kind === "relationshipAtLeast"),
+      suffix: "이상",
+      toggle: (enabled) => toggleSimpleCondition(context, "relationshipAtLeast", enabled),
     },
     {
       key: "selfSwitch",
@@ -516,6 +525,25 @@ function friendshipConditionInputs(context: PageConditionContext, markActive: ()
    }
  );
 }
+function relationshipConditionInputs(context: PageConditionContext, markActive: () => void): HTMLElement {
+  const condition = context.page.conditions.find((item) => item.kind === "relationshipAtLeast");
+  return renderRelationshipAtLeastCondition(
+    condition?.kind === "relationshipAtLeast" ? condition : { kind: "relationshipAtLeast", state: "dating" },
+    (next) => {
+      const existing = withoutFirstCondition(context.page.conditions, "relationshipAtLeast");
+      existing.push(next);
+      markActive();
+      updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: existing });
+    },
+    {
+      className: "event-condition-control relationship",
+      npcKeyTestId: "event-page-relationship-condition-npc-key",
+      stateTestId: "event-page-relationship-condition-state",
+      hostHasCharacterId: context.hostHasCharacterId === true,
+    }
+  );
+}
+
 function selfSwitchConditionInputs(context: PageConditionContext, markActive: () => void): HTMLElement {
   const condition = selfSwitchConditionAt(context.page);
   return selfSwitchControl(

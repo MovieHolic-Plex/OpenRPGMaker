@@ -96,6 +96,11 @@ const CASES = {
     satisfying: (state) => { state.friendship = { [OWNER_EVENT.characterId as string]: 20 }; },
     nonSatisfying: (state) => { state.friendship = { [OWNER_EVENT.characterId as string]: 19 }; },
   },
+  relationshipAtLeast: {
+    condition: { kind: "relationshipAtLeast", state: "dating" },
+    satisfying: (state) => { state.relationships = { [OWNER_EVENT.characterId as string]: "engaged" }; },
+    nonSatisfying: (state) => { state.relationships = { [OWNER_EVENT.characterId as string]: "single" }; },
+  },
   battleResult: {
     condition: { kind: "battleResult", result: "victory" },
     satisfying: (state) => { state.battleResult = "victory"; },

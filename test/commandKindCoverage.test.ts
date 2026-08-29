@@ -75,6 +75,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   applyItemUpgrade: { kind: "applyItemUpgrade", upgradeId: "upgrade1" },
   equipTool: { kind: "equipTool", itemId: "item1" },
   openChest: { kind: "openChest", chestId: "chest1" },
+  setRelationship: { kind: "setRelationship", npcKey: "npc_a", state: "dating" },
   changeFriendship: { kind: "changeFriendship", npcKey: "ev1", delta: 10 },
   changeFactionStance: { kind: "changeFactionStance", a: "player", b: "enemy", op: "+=", value: 1 },
   getFriendship: { kind: "getFriendship", npcKey: "ev1", variableId: "var1" },
@@ -133,6 +134,7 @@ function buildMinimalConditions(ids: {
     season: { kind: "season", season: "spring" },
     npcActivity: { kind: "npcActivity", activity: "work" },
     friendshipAtLeast: { kind: "friendshipAtLeast", value: 10 },
+    relationshipAtLeast: { kind: "relationshipAtLeast", state: "dating" },
     battleResult: { kind: "battleResult", result: "victory" },
     run: { kind: "run", query: "active", value: true },
     all: {

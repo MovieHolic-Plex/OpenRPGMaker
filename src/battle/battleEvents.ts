@@ -4,6 +4,7 @@ import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
+import { evalRelationshipCondition, type RelationshipState } from "@/project/relationshipState";
 import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { transitionItemState } from "@/project/itemTransitions";
 import { transitionActorEquipment } from "@/project/equipmentRules";
@@ -42,6 +43,7 @@ export type BattleEventRuntimeState = {
   readonly gameTime?: GameTime;
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
+  readonly relationships?: Record<string, RelationshipState>;
 };
 
 // Condition evaluation must read session-derived state through this declared surface.
@@ -60,6 +62,7 @@ export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
   "gameTime",
   "npcActivities",
   "friendship",
+  "relationships",
 ] as const satisfies readonly (keyof BattleEventRuntimeState)[];
 
 type BattleConditionRuntimeState = Pick<
@@ -496,6 +499,15 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         options.state.friendship[npcKey] = clampFriendship((options.state.friendship[npcKey] ?? 0) + command.delta);
         return false;
       }
+      case "setRelationship": {
+        const npcKey = command.npcKey?.trim();
+        if (!npcKey || !options.state.relationships) {
+          logUnsupported(page, context, command.kind);
+          return false;
+        }
+        options.state.relationships[npcKey] = command.state;
+        return false;
+      }
       case "getFriendship": {
         const npcKey = command.npcKey?.trim();
         options.state.variables[command.variableId] = npcKey ? clampFriendship(options.state.friendship?.[npcKey] ?? 0) : 0;
@@ -820,6 +832,12 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           : condition.npcKey?.trim() || null;
         if (!npcKey) return false;
         return clampFriendship(conditionState.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
+      }
+      case "relationshipAtLeast": {
+        const npcKey = ownerEvent
+          ? resolveSocialKey(ownerEvent, condition.npcKey)
+          : condition.npcKey?.trim() || null;
+        return evalRelationshipCondition(conditionState, condition, npcKey);
       }
       case "battleResult":
         // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷)로 실제 평가.

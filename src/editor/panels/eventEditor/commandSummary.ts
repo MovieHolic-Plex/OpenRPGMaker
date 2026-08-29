@@ -13,6 +13,7 @@ import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, SwitchValue, VariableOperand } from "@/project/types";
 
+import { relationshipStateName } from "@/project/relationshipState";
 export type CommandSummaryTone =
   | "plain"
   | "command"
@@ -1046,6 +1047,8 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
       return `활동 ${condition.activity}`;
     case "friendshipAtLeast":
       return `호감도 ${condition.npcKey || "이 이벤트"} ${condition.value} 이상`;
+    case "relationshipAtLeast":
+      return `관계 ${condition.npcKey || "이 이벤트"} ${relationshipStateName(condition.state)} 이상`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
     case "run":

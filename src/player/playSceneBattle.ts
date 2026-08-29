@@ -100,6 +100,7 @@ export function playBattle(
       gameTime: scene.session.gameTime,
       npcActivities: scene.session.npcActivities,
       friendship: scene.session.friendship,
+      relationships: scene.session.relationships,
     },
     partyMonsters: monsterPartyMode ? partyMonsters : undefined,
     // Terrain at the player's tile feeds battle backdrop when troop has no preview.

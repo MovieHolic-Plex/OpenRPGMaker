@@ -225,7 +225,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 
 ## 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
 
-같은 16종 `Condition` 유니온(`src/project/types/events.ts:32-55`, 정본 목록
+같은 17종 `Condition` 유니온(`src/project/types/events.ts:32-55`, 정본 목록
+- `relationshipAtLeast` 는 `friendshipAtLeast` 와 같은 소셜 키 규칙을 쓰지만 수치가 아니라 순서 있는 열거(`single | dating | engaged | married`)를 비교한다. 저작 표면 세 곳(간단 행/칩, 고급 목록, fork 조건 폼)에 모두 등록돼 있고, 상태를 바꾸는 명령은 `setRelationship` 뿐이다. 조건만 넣고 명령을 두지 않으면 항상 거짓이다. 연결된 인물이 없으면 `friendshipAtLeast` 와 동일하게 닫힌 채로 거짓이며 검증기가 `condition.relationship.no-character-id` 로 경고한다.
 `src/project/commandKindRegistry.ts:103-120`)을 **세 곳**이 각자 평가한다:
 
 | 평가기 | 위치 | 쓰는 곳 |
