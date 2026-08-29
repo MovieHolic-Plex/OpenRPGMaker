@@ -33,7 +33,7 @@ import type { Project } from "@/project/types";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
 import { capabilityEscalationSchemas, clampTurnToolSchemas } from "./capabilityEscalation";
 import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
-import { compactMessagesForRequest } from "./messageBudget";
+import { compactMessagesForRequest, resolveRequestCharBudget, resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
   buildSummarizationRequest,
@@ -41,7 +41,6 @@ import {
   estimateContextTokens,
   findCompactionCutPoint,
   findPreviousSummary,
-  resolveContextWindow,
   resolveThresholdContextTokens,
   shouldCompact,
 } from "./contextCompaction";
@@ -678,7 +677,16 @@ export class AssistantSession {
    * 성공한 압축은 이 예산을 쓰지 않는다(senpi per-turn-cap.js: 성공은 admission budget 을
    * 소모하지 않고, 반복 실패만 회로 차단기가 막는다 — circuit-breaker.js).
    */
-  private compactionFailedThisTurn = false;
+  /**
+   * 이 턴에 압축을 이미 시도했는가(성공·실패 모두). 한 턴은 여러 라운드를 돌고 판정은 매 라운드
+   * 도는데, 요약은 LLM 콜이라 라운드마다 다시 부르면 그만큼 돈과 시간이 나간다.
+   *
+   * 옛 이름은 `compactionFailedThisTurn` 으로 **실패만** 막았다. 성공 쪽이 새지 않았던 것은
+   * 문턱이 모델 창(gemini 1,032,192토큰)에 붙어 있어서 두 번째 판정 때 잘라낼 앞부분이 남지
+   * 않았기 때문(`firstKeptIndex <= 1` 조기 반환)이고, 문턱이 작업 창으로 내려오자 같은 턴에
+   * 요약이 반복해 돌았다(실측: test/assistantSessionCompaction 요약 콜 1회 → 7회).
+   */
+  private compactionAttemptedThisTurn = false;
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
   private workPlan: WorkPlan | null = null;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
@@ -1042,7 +1050,7 @@ export class AssistantSession {
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
     this.turnEscalatedToolNames = [];
-    this.compactionFailedThisTurn = false;
+    this.compactionAttemptedThisTurn = false;
     this.turnSuccessfulTools = new Set();
     this.turnItemCreatedMapIds = new Set();
     this.turnItemAuthoredTroopIds = new Set();
@@ -1794,10 +1802,12 @@ export class AssistantSession {
    * 빈 응답이면 대화를 손대지 않고 조용히 돌아가고, 요청은 기존 문자 클램프가 감당한다.
    */
   private async maybeCompactConversation(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
-    if (this.compactionFailedThisTurn) return;
+    if (this.compactionAttemptedThisTurn) return;
     const estimate = estimateContextTokens(this.messages);
     const contextTokens = resolveThresholdContextTokens(this.lastPromptTokens, estimate);
-    if (!shouldCompact(contextTokens, resolveContextWindow(this.config.model), DEFAULT_COMPACTION_SETTINGS)) return;
+    // 모델 창이 아니라 **작업 창**으로 판정한다 — 창을 그대로 쓰면 gemini(1M)의 문턱이
+    // 1,032,192 토큰이 되는데 문자 클램프가 그 훨씬 아래에서 먼저 걸려 이 요약이 영영 돌지 않았다.
+    if (!shouldCompact(contextTokens, resolveWorkingContextTokens(this.config), DEFAULT_COMPACTION_SETTINGS)) return;
     const cutPoint = findCompactionCutPoint(this.messages, DEFAULT_COMPACTION_SETTINGS.keepRecentTokens);
     // 요약할 앞부분이 없다(시스템 프롬프트 직후가 곧 잔존 창) — LLM 을 부를 이유가 없다.
     if (cutPoint.firstKeptIndex <= 1) return;
@@ -1818,21 +1828,23 @@ export class AssistantSession {
       const reason = isLlmAbortError(cause) || signal?.aborted
         ? "사용자가 중단했습니다"
         : cause instanceof Error ? cause.message : String(cause);
-      this.compactionFailedThisTurn = true;
+      this.compactionAttemptedThisTurn = true;
       this.pushAudit({ kind: "status", text: `대화 압축 건너뜀: 요약 실패 — ${reason}` });
       return;
     }
     if (signal?.aborted) {
-      this.compactionFailedThisTurn = true;
+      this.compactionAttemptedThisTurn = true;
       this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 사용자가 중단했습니다" });
       return;
     }
     if (summary === null) {
-      this.compactionFailedThisTurn = true;
+      this.compactionAttemptedThisTurn = true;
       this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 요약 응답이 비어 있습니다" });
       return;
     }
 
+    // 성공도 "이 턴에 시도함"으로 센다 — 남은 라운드에서 요약 LLM 을 다시 부르지 않는다.
+    this.compactionAttemptedThisTurn = true;
     const compacted = buildCompactedMessages({ messages: this.messages, cutPoint, summary });
     const compactedTokens = estimateContextTokens(compacted);
     // messages 는 세션이 계속 참조하는 배열이다 — 재할당 대신 제자리 교체로 동일성을 유지한다.
@@ -2223,9 +2235,10 @@ export class AssistantSession {
       // 컨텍스트 압축(요약)은 요청 조립보다 **먼저** 돈다: 대화 자체를 줄이지 못하면
       // 아래 문자 클램프가 오래된 assistant/tool 을 통째로 버려 기억이 소리 없이 사라진다.
       await this.maybeCompactConversation(onEvent, signal);
-      // CPEN 64k 메시지 내용 상한(todo 8 실측 422): 전송 사본을 안전 예산으로 압축한다.
+      // 요청 문자 클램프: 예산은 모델 창에서 끌어낸다(resolveRequestCharBudget) — 고정 52,000 은
+      // 사라진 공급자(CPEN)의 검증 상한이라 창 1M 짜리 모델의 기억까지 잘라냈다.
       // 원본(this.messages)은 감사/하네스용으로 유지된다.
-      const requestMessages = compactMessagesForRequest(this.messages);
+      const requestMessages = compactMessagesForRequest(this.messages, resolveRequestCharBudget(this.config));
       try {
         result = await this.chatWithTransientRetry(
           this.phaseConfig(phase),
