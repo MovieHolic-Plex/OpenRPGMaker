@@ -160,10 +160,21 @@ describe("questCompiler 통행 가능 착지", () => {
     const result = compileQuest(project, questDef(project, mapId));
 
     const gate = eventById(map, `ev_${QUEST_KEY}_gate0`);
-    const reported = (result.warnings ?? []).some(
+    expect([gate.x, gate.y]).toEqual([AUTHORED.gate.x, AUTHORED.gate.y]);
+    expect(result.warnings.some(
       (warning) => warning.includes(`(${AUTHORED.gate.x}, ${AUTHORED.gate.y})`),
-    );
-    expect(isPassable(project, map, gate.x, gate.y) || reported).toBe(true);
+    )).toBe(true);
+  });
+
+  it("create_quest 툴이 컴파일러의 자동 착지 경고를 반환한다", () => {
+    const { project, map, mapId } = fixture();
+    carveRiver(map, [7, 8, 9]);
+
+    const result = getTool("create_quest")!.run(project, { def: questDef(project, mapId) });
+
+    expect(result.warnings?.some(
+      (warning) => warning.includes(`(${AUTHORED.giver.x}, ${AUTHORED.giver.y})`) && warning.includes("→"),
+    )).toBe(true);
   });
 
   it("평지에 컴파일하면 저작 좌표를 하나도 건드리지 않는다", () => {

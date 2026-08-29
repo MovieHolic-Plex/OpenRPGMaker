@@ -139,6 +139,7 @@ const createQuest: ToolDefinition = {
       return {
         summary: `퀘스트 '${def.title}' 컴파일 — 이벤트 ${result.eventsCreated}개, 단계 ${def.steps.length}개`,
         data: { flags: result.flags, eventsCreated: result.eventsCreated },
+        ...(result.warnings.length > 0 ? { warnings: [...result.warnings] } : {}),
       };
     } catch (cause) {
       throw new ToolError(`퀘스트 컴파일 실패: ${cause instanceof Error ? cause.message : String(cause)}`, { code: "quest-compile" });
