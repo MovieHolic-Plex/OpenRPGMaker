@@ -157,20 +157,15 @@ function cropLifeHeader(project: Project, rerender: () => void): HTMLElement {
   return el("div", {
     class: "db-life-header",
     children: [
-      el("p", {
-        class: "db-record-intro",
-        dataset: { testid: "db-crops-intro" },
-        text: "씨앗을 심고, 날짜가 지나면 자라며, 수확물이 아이템으로 들어오는 농사 규칙입니다.",
-      }),
       renderLifePanel({
         testid: "db-crop-readiness",
-        eyebrow: "플레이 연결",
-        title: "농사 루프 준비 상태",
-        description: "작물 레코드만으로는 자라지 않습니다. 시간, 경작 영역, 도구가 함께 준비되어야 합니다.",
+        title: "농사·작물",
+        headingTestid: "db-crops-intro",
         cards: [
           {
             testid: "db-crop-readiness-time",
-            label: "시간·계절",
+            icon: "season",
+            label: "시간",
             value: timeReady ? "사용 중" : "설정 필요",
             detail: timeReady ? "날짜가 바뀌면 성장합니다." : "시스템에서 시간 기능을 켜세요.",
             state: timeReady ? "ready" : "needs-setup",
@@ -182,7 +177,8 @@ function cropLifeHeader(project: Project, rerender: () => void): HTMLElement {
           },
           {
             testid: "db-crop-readiness-fields",
-            label: "경작 가능한 맵",
+            icon: "field",
+            label: "경작 맵",
             value: `${farmableMapCount}곳`,
             detail: farmableMapCount > 0 ? "맵의 경작 영역에서 심을 수 있습니다." : "맵 설정에 경작 영역이 필요합니다.",
             state: farmableMapCount > 0 ? "ready" : "needs-setup",
@@ -199,7 +195,8 @@ function cropLifeHeader(project: Project, rerender: () => void): HTMLElement {
           },
           {
             testid: "db-crop-readiness-tools",
-            label: "기본 농사 도구",
+            icon: "tool",
+            label: "도구",
             value: toolsReady ? "준비됨" : "확인 필요",
             detail: toolsReady ? "괭이와 물뿌리개가 등록되어 있습니다." : "아이템에서 괭이와 물뿌리개를 지정하세요.",
             state: toolsReady ? "ready" : "needs-setup",
@@ -211,7 +208,8 @@ function cropLifeHeader(project: Project, rerender: () => void): HTMLElement {
           },
           {
             testid: "db-crop-readiness-records",
-            label: "작물 연결",
+            icon: "crop",
+            label: "작물",
             value: invalidCrops.length > 0 ? `${invalidCrops.length}개 오류` : `${crops.length}개 사용 가능`,
             detail: invalidCrops.length > 0 ? "씨앗 또는 수확 아이템 연결을 확인하세요." : "모든 작물의 아이템 연결이 유효합니다.",
             state: invalidCrops.length > 0 || crops.length === 0 ? "needs-setup" : "ready",
@@ -531,13 +529,12 @@ function cropOverview(record: CropRecord): HTMLElement {
   const growthDays = record.stages.reduce((total, stage) => total + stage.days, 0);
   return renderLifePanel({
     testid: "db-crop-overview",
-    eyebrow: "플레이 결과",
     title: record.name || "이름 없는 작물",
-    description: "현재 설정으로 플레이어가 경험하는 재배 흐름입니다.",
     compact: true,
     cards: [
       {
         testid: "db-crop-overview-growth",
+        icon: "season",
         label: "첫 수확까지",
         value: `${growthDays}일`,
         detail: `${record.stages.length}단계 성장`,
@@ -545,6 +542,7 @@ function cropOverview(record: CropRecord): HTMLElement {
       },
       {
         testid: "db-crop-overview-yield",
+        icon: "item",
         label: "한 번 수확",
         value: `${record.harvestCount}개`,
         detail: "수확 아이템 지급량",
@@ -552,6 +550,7 @@ function cropOverview(record: CropRecord): HTMLElement {
       },
       {
         testid: "db-crop-overview-seasons",
+        icon: "season",
         label: "재배 계절",
         value: `${record.seasons.length}계절`,
         detail: record.seasons.map((season) => SEASON_LABEL[season] ?? season).join(" · "),
@@ -559,6 +558,7 @@ function cropOverview(record: CropRecord): HTMLElement {
       },
       {
         testid: "db-crop-overview-regrow",
+        icon: "repeat",
         label: "재수확",
         value: record.regrow ? `${record.regrow.days}일마다` : "한 번만",
         detail: record.regrow ? "수확 후 다시 열립니다." : "수확하면 밭이 비워집니다.",
