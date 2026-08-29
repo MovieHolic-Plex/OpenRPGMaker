@@ -1,7 +1,7 @@
 // 번들 전투 애니메이션 수렴 계약.
 //
 // 왜 이 테스트가 필요한가(실측 회귀, 2026-08-28): 갓 만든 프로젝트에서 ▶테스트가
-// 아무 반응도 없었다. openTestPlayModal 첫 줄의 passesAuthoringTestGate() 가
+// 아무 반응도 없었다. 당시 openTestPlayModal 첫 줄의 fail-closed 게이트가
 // fail-closed 인데, 참조 문제가 18건 잡혔기 때문이다. 전부
 // "item item_gen_*: animationId does not exist."
 //

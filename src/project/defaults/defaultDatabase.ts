@@ -21,8 +21,8 @@ import { DEFAULT_TROOP_ID } from "./constants";
  * 왜 필요한가(실측 2026-08-28): 생성 이펙트 팩 도입 전에 저장된 프로젝트와 마을 데모
  * 픽스처는 `battleAnimations` 가 12개짜리 옛 스냅샷이라 `anim_gen_*` 이 하나도 없다.
  * 그런데 `generatedBattleEffectBindings` 는 스타터 아이템·스킬을 그 id 로 묶어 두었다 —
- * 참조가 통째로 끊겨 `collectProjectReferenceIssues` 가 18건을 뱉고,
- * fail-closed 인 `passesAuthoringTestGate()` 가 ▶테스트를 조용히 막는다.
+ * 참조가 통째로 끊겨 `collectProjectReferenceIssues` 가 18건을 뱉는다. 지금은 그것이
+ * ▶테스트를 막지는 않지만(게이트 제거), 재생 시 애니메이션이 통째로 빠진다.
  *
  * 같은 id 가 이미 있으면 저자가 손댔을 수 있으므로 건드리지 않고 빠진 것만 채운다.
  */

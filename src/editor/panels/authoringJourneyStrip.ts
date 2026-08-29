@@ -85,23 +85,19 @@ export function renderAuthoringJourney(
     if (stage.id === "project") {
       item.append(el("span", { class: "authoring-journey-project", text: stage.label }));
     } else {
-      const blocked = stage.id === "test" && stage.referenceIssueCount > 0;
       const taskButton = el("button", {
         class: "authoring-journey-task",
         text: stage.label,
         attrs: {
           type: "button",
-          title: blocked
-            ? `참조 문제 ${stage.referenceIssueCount}개를 먼저 해결하세요`
+          // 참조 문제는 신호일 뿐 잠금이 아니다 — 끊긴 참조가 있어도 눌러서 돌려볼 수 있어야 한다.
+          title: stage.referenceIssueCount > 0
+            ? `${stage.label} 작업 열기 (참조 문제 ${stage.referenceIssueCount}개): ${stage.detail}`
             : `${stage.label} 작업 열기: ${stage.detail}`,
         },
         dataset: { testid: `authoring-journey-task-${stage.id}` },
         on: { click: () => runAuthoringTask(stage.id as AuthoringTaskId) },
       });
-      if (blocked) {
-        taskButton.setAttribute("aria-disabled", "true");
-        taskButton.disabled = true;
-      }
       item.append(taskButton);
     }
     item.append(el("span", {
