@@ -115,8 +115,11 @@
   --empty-icon-color: var(--db-light-accent);
 
   /* 셸 보조색 */
-  --gold: #9a6b00;
-  --gold-soft: #b07d1e;
+  /* --gold / --gold-soft 재정의 삭제: 이 블록은 네 개 중 두 개만 덮어써서
+     모달 안에서 골드 패밀리를 쪼개고 있었다 — 테두리는 앰버(--gold-soft)인데
+     글자는 인디고(--gold-deep, 미오버라이드)로 나오는 식이다
+     (04-chat-bubbles-proposals.css:144-146, 06-canvas-guides-panel-chrome.css:148).
+     tokens.css 의 골드 패밀리가 다시 일관된 브론즈가 됐으므로 그대로 상속받는다. */
   --brand-blue: #2f67c9;
   --mix-base: #e6e0cf;
 

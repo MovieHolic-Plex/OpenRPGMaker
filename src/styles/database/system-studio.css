@@ -16,6 +16,18 @@
   --studio-accent: var(--db-studio-accent);
   --studio-accent-soft: var(--db-studio-accent-soft);
   --studio-accent-border: var(--db-studio-accent-border);
+  /* b8f78991 이 violet/surface-2/surface-3 계열을 accent/inset/well 로 개명하면서
+     사용처 27곳을 함께 고치지 않았다. 정의 없는 var() 는 계산값 무효(IACVT)라
+     선언이 통째로 죽는데, 그중 13곳이 !important 와 결합돼 있어 뒤따르는 어떤
+     규칙으로도 복구되지 않았다 — 배경이 지워진 채로 출하됐다.
+     전부 @media (min-width:1100px) 안이라 데스크톱 폭에서만 발현한다.
+     리터럴 대신 형제 별칭과 같은 --db-studio-* 프리미티브로 되돌린다(래칫 영향 0). */
+  --studio-surface-2: var(--db-studio-inset);
+  --studio-surface-3: var(--db-studio-surface);
+  --studio-violet: var(--db-studio-accent);
+  --studio-violet-soft: var(--db-studio-accent-soft);
+  --studio-mint: var(--db-studio-success);
+  --studio-amber: var(--db-studio-warning);
 }
 
 .database-modal-backdrop:has(.db-system-studio) .database-modal-window {

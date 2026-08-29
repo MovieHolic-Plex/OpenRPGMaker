@@ -417,16 +417,11 @@
   position: absolute;
   z-index: 26;
 }
-.picture-layer-item {
-  background: rgba(248, 251, 255, 0.96);
-  border: 1px solid #2e6f9e;
-  color: #08111f;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.2;
-  padding: 4px 6px;
-  position: absolute;
-}
+/* .picture-layer-item 은 runtime/pictures.css(@layer runtime) 가 단독 소유한다.
+   여기 있던 텍스트-칩 스타일은 .picture-layer-label 로 옮겨갔다(pictures.css:19-28).
+   이 파일은 unlayered 라 레이어드 규칙을 전부 이기므로, 남겨 두면
+   src/player/runtimeDom.ts 가 만드는 이미지 픽처 컨테이너에 흰 상자 + 파란 테두리를
+   씌운다. pictures.css 는 어떤 특정도로도 되찾을 수 없다(unlayered > layered). */
 .runtime-screen-effect {
   inset: 0;
   pointer-events: none;

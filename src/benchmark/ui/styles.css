@@ -16,6 +16,14 @@
    --bm-* 정의 27개 중 0개가 번들에 도달). 빌드는 exit 0 이라 아무도 몰랐다 —
    parity.yml 의 build 게이트가 이제 esbuild 경고를 실패로 승격시킨다. */
 
+/* 글꼴만은 레포 역할 토큰을 그대로 쓴다(TOKENS.md §4.7 — 리터럴 글꼴 스택 금지).
+   이 페이지는 index.css 를 로드하지 않으므로 tokens.css 만 따로 들여온다.
+   위 주석이 지적한 파스 오류가 고쳐지기 전에는 이 파일 전체가 잘못된 prelude 로
+   삼켜져 있어서 test/fontFamilyTokenGuard.test.ts 가 --bm-font-ui 의 리터럴 스택을
+   보지 못했다. 구문을 고치자 원래 있던 위반이 드러난 것이다. 소비되는 --bm-* 색
+   팔레트는 아래에서 계속 자체 정의한다(이 페이지는 다크 IDE 룩). */
+@import "../../styles/tokens.css";
+
 :root {
   --bm-bg-base: #0f1117;
   --bm-bg-surface: #151823;
@@ -51,8 +59,9 @@
 
   --bm-focus-ring: 0 0 0 2px rgba(108, 121, 242, 0.55);
 
-  --bm-font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic",
-    -apple-system, "Segoe UI", sans-serif;
+  /* 별칭 한 단계만 허용된다(TOKENS.md §4.7). 값은 tokens.css:90 과 원래 바이트
+     동일했으므로 렌더링 변화는 없고, 네 번째 진실 공급원 하나가 사라진다. */
+  --bm-font-ui: var(--font-ui);
 }
 
 .bm-page {
