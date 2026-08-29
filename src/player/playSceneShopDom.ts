@@ -21,11 +21,13 @@ import {
   shopCategoryBar,
   shopItemRow,
   shopModeTabs,
+  shopQuantityMaxIn,
   toGoods,
   updateShopQuantityTotalIn,
   type ShopListing,
   type ShopMode,
 } from "@/player/playSceneShopParts";
+import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ResolvedTerms } from "@/project/terms";
@@ -282,12 +284,27 @@ export function removeShopItemRow(overlay: HTMLElement, itemId: string, mode: Sh
   overlay.querySelector(`[data-testid='shop-${mode}-${itemId}']`)?.remove();
 }
 
-/** 수량 select 모드에서 ←(-1)/→(+1) 로 수량 입력을 1~99 범위로 조절. 항상 소비(true). */
+/** 거절 피드백을 얹을 행. 없으면 null — 소리는 나고 흔들림만 생략된다. */
+export function shopItemRowEl(overlay: HTMLElement, itemId: string, mode: ShopMode): HTMLElement | null {
+  return overlay.querySelector<HTMLElement>(`[data-testid='shop-${mode}-${itemId}']`);
+}
+
+/**
+ * 수량 select 모드에서 ←(-1)/→(+1) 로 수량 조절. 상한은 선택 행이 정한다(소지금 ÷ 단가,
+ * 판매는 가진 개수와 상인 지갑). 상한에 부딪히면 버저를 울린다 — 조용히 안 움직이면
+ * 키가 안 먹은 건지 상한인 건지 구분할 수 없다. 항상 소비(true).
+ */
 export function adjustShopQuantity(overlay: HTMLElement, dir: -1 | 1): boolean {
   const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
   if (!input) return true;
+  const max = shopQuantityMaxIn(overlay);
   const current = Math.max(1, Number.parseInt(input.value, 10) || 1);
-  input.value = String(Math.min(99, Math.max(1, current + dir)));
+  const next = Math.min(max, Math.max(1, current + dir));
+  if (next === current) {
+    emitRuntimeJuice({ event: "menu-invalid", target: input });
+    return true;
+  }
+  input.value = String(next);
   updateShopQuantityTotal(overlay);
   return true;
 }

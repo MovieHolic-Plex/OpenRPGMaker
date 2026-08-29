@@ -10,6 +10,7 @@ import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { resolveShopMerchantBudget } from "@/project/shopStock";
 import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
+import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import {
   adjustShopQuantity,
   createShopOverlay,
@@ -21,6 +22,7 @@ import {
   renderShopMenu,
   renderShopNotice,
   sellPrice,
+  shopItemRowEl,
   shopPromptText,
   updateShopGoldPanel,
   updateShopHelpLine,
@@ -86,6 +88,7 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
           items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-menu-cancel']"),
           initialIndex: menuCursor,
+          sound: true,
           onSelect: (index) => {
             menuCursor = index;
           },
@@ -97,6 +100,7 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
         items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-item-row")),
         cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-item-cancel']"),
         initialIndex: itemCursor,
+        sound: true,
         onSelect: (index) => {
           itemCursor = index;
           updateShopOwnedPanel(overlay, scene, viewItems[index]);
@@ -137,9 +141,15 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
               onItem: (item, nextMode, count) => {
                 const result = handleShopTransaction(scene, item, nextMode, count, merchantGold);
                 if (!result.ok) {
+                  // RM2003 은 무효한 거래에 버저만 울린다(scene_shop.cpp: SFX_Buzzer).
+                  // 여기서 울리는 이유: handleShopTransaction 안에 넣으면 이 함수를 직접
+                  // 부르는 node 환경 단위 테스트들이 오디오 경로를 타게 된다.
+                  emitRuntimeJuice({ event: "menu-invalid", target: shopItemRowEl(overlay, item.id, nextMode) });
                   setStatus(result.status);
                   return;
                 }
+                // 거래 성립 — 결정음. 거절과 성공에 같은 소리를 내면 소리로 결과를 알 수 없다.
+                emitRuntimeJuice({ event: "menu-confirm" });
                 // 상태 메시지 갱신 전에 상인 소지금을 반영해야 패널 숫자가 맞다.
                 merchantGold = result.merchantGold;
                 if (nextMode === "buy") {
@@ -271,6 +281,7 @@ function showShopNotice(scene: PlaySceneContext, terms: ResolvedTerms, message: 
     detach = attachCursorMenu(overlay, {
       items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
       cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-notice-close']"),
+      sound: true,
     });
   });
 }
