@@ -81,6 +81,28 @@ describe("map properties — 필드 스폰 진영 덮어쓰기", () => {
     expect(optionValues).toContain("enemy");
   });
 
+  it("삭제된 진영 ID를 선택된 비활성 옵션과 런타임 경고로 보존한다", () => {
+    const project = structuredClone(store.getCurrent());
+    const map = project.maps[project.startMapId];
+    if (!map?.fieldSpawns?.[0]) throw new Error("missing first field spawn");
+    map.fieldSpawns[0].factionId = "deleted_guard";
+    store.replace(project);
+    const before = JSON.stringify(currentSpawns()[0]);
+
+    const container = openSpawnsTab();
+    const select = findByTestId(container, "map-spawn-faction-0");
+    const missingOption = select?.querySelectorAll("option")
+      .find((option) => option.value === "deleted_guard");
+    const effective = findByTestId(container, "map-spawn-faction-effective-0");
+
+    expect(select?.value).toBe("deleted_guard");
+    expect(missingOption?.getAttribute("disabled")).toBe("");
+    expect(missingOption?.textContent).toContain("존재하지 않는 진영");
+    expect(effective?.classList.contains("map-spawn-row-warning")).toBe(true);
+    expect(effective?.textContent).toContain("런타임에서는 적(enemy)으로 싸웁니다");
+    expect(JSON.stringify(currentSpawns()[0])).toBe(before);
+  });
+
   it("진영을 고르면 그 스폰의 factionId만 기록한다", () => {
     const container = openSpawnsTab();
 

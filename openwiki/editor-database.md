@@ -226,6 +226,6 @@ The Database modal was modernized in six waves while keeping every hard contract
 
 - 드롭다운(`db-picker-enemy-faction`)은 `enemy` 를 "진영 없음"이 아니라 **런타임 기본 진영**으로 보여 준다(`… · 기본값`). 기본값을 고르면 레코드에서 `factionId` 키를 지워 희소하게 유지하고, 힌트 `db-enemy-faction-default-clears` 가 그 동작을 적는다.
 - 결과 카드 `db-enemy-faction-effective` 는 유효 진영·식별 색(`db-enemy-faction-color`)·출처(`레코드에 저장됨` / `미저장 · enemy로 전투`)와 플레이어 기준 태도를 함께 보여 준다. 저장값이 없는 진영을 가리키면 렌더가 조용히 고치지 않고 결손 항목을 선택된 채로 남기며, 경고 `db-enemy-faction-missing` 과 `저장값 지우기`(`db-enemy-faction-clear-missing`)로 명시적 복구만 제공한다.
-- **적대 관계는 미리보기 제한으로 접지 않는다.** 관계 목록은 적대(`stance <= -1`)를 더 적대적인 순서로 **전부** `db-enemy-faction-relationships-primary` 에 먼저 놓고, 제한(`FACTION_RELATION_PREVIEW_LIMIT = 6`)은 남은 비적대 관계에만 적용한다(그 안에서는 저작한 쌍 우선). 접히는 카드는 `db-enemy-faction-relationships-more`, 제목은 `비적대 관계 N개` 다. 실제로 싸울 상대가 접힌 섹션 뒤에 숨는 것이 이 화면의 유일한 오독 위험이었다.
+- **실제로 서로 선공하는 관계는 미리보기 제한으로 접지 않는다.** 관계 목록은 `willAttackOnSight(stance, aggression)`를 양쪽 방향으로 평가해 이 몬스터 진영이 상대를 공격하거나 상대 진영이 이쪽을 공격하면 **전부** `db-enemy-faction-relationships-primary` 에 먼저 놓는다. 따라서 매우 공격적(2)의 중립 대상과 광폭(3) 진영도 숨지 않는다. 제한(`FACTION_RELATION_PREVIEW_LIMIT = 6`)은 양쪽 모두 선공하지 않는 관계에만 적용하고, 접히는 카드 `db-enemy-faction-relationships-more`의 제목도 `서로 선공하지 않는 관계 N개`로 판정 범위를 정확히 적는다.
 - 예약 진영만 있는 프로젝트에는 `db-enemy-faction-guide` 안내와 `진영 탭 열기`(`db-enemy-open-factions`)가 붙고, 점프는 모달을 다시 열지 않고 `switchDatabaseActiveTab`(G006)을 쓴다.
 - 커버리지: `test/databaseEnemyFactionPanel.test.ts`.

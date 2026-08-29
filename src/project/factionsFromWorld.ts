@@ -136,11 +136,14 @@ export function planFactionsFromWorld(
   const combatIdOwner = new Map<string, string>();
   const availableByWorldId = new Map<string, string>();
   const existingDefById = new Map(base.defs.map((def) => [def.id, def]));
-  const existingDefByWorldId = new Map(
-    base.defs
-      .filter((def) => def.worldEntityId !== undefined)
-      .map((def) => [def.worldEntityId!, def]),
-  );
+  const existingDefByWorldId = new Map<string, FactionDef>();
+  for (const def of base.defs) {
+    if (def.worldEntityId === undefined) continue;
+    const current = existingDefByWorldId.get(def.worldEntityId);
+    if (!current || prefersWorldProvenanceOwner(def, current, def.worldEntityId)) {
+      existingDefByWorldId.set(def.worldEntityId, def);
+    }
+  }
   const knownNames = new Map<string, { readonly id: string; readonly name: string }>();
 
   for (const def of base.defs) knownNames.set(normalizeName(def.name), { id: def.id, name: def.name });
@@ -322,6 +325,15 @@ export function applyFactionsFromWorldPlan(plan: FactionsFromWorldPlan): Project
 
 function compatibleExistingDef(existing: FactionDef, entity: WorldEntity): boolean {
   return existing.name === entity.name && (existing.aggression ?? DEFAULT_AGGRESSION) === MATERIALIZED_AGGRESSION;
+}
+
+function prefersWorldProvenanceOwner(candidate: FactionDef, current: FactionDef, worldEntityId: string): boolean {
+  const derivedId = combatFactionIdFromWorldEntityId(worldEntityId);
+  // 병합 JSON에 출처가 중복돼도 배열의 마지막 행이 링크를 빼앗아서는 안 된다. 세계관에서
+  // 계산한 정식 ID를 먼저 택하고, 둘 다 아니면 ID 사전순으로 고정해 입력 순서와 무관하게 한다.
+  if (candidate.id === derivedId) return current.id !== derivedId;
+  if (current.id === derivedId) return false;
+  return candidate.id < current.id;
 }
 
 function mappingEntry(

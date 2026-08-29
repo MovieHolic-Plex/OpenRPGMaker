@@ -169,7 +169,7 @@ Persistence is split by what each boundary knows. `createSaveSnapshot` writes th
 - `resolveHostileTarget({ self, candidates, table, aggroRange, forcedTargetId })` returns the nearest combatant the actor will attack on sight, or `null`. Distance is Chebyshev and ties break by **lowest id**, so the result never depends on candidate array order (that is, on `Map` insertion order or spawn history). A live `forcedTargetId` wins over both stance and range.
 - `resolveNpcDamage({ hp, damage, protectedFromNpcs })` applies NPC-inflicted damage; a protected faction floors at 1 HP instead of dying.
 
-Stance and aggression resolution live in `src/project/factions.ts`: `factionStance` symmetrizes with `Math.min`, `willAttackOnSight` gates the four aggression levels, and `isHittableByFaction` exempts friend/ally from stray projectiles.
+Stance and aggression resolution live in `src/project/factions.ts`: `factionStance` symmetrizes with `Math.min`, `willAttackOnSight` gates the four aggression levels, and `isHittableByFaction` exempts friend/ally from stray projectiles. The Database enemy relationship preview applies `willAttackOnSight` in both directions because target acquisition uses each attacker's own aggression; any pair where either side attacks on sight remains expanded, while only pairs where neither side initiates combat may be collapsed.
 
 ### Scene behaviour
 

@@ -118,6 +118,27 @@ describe("world faction materialization", () => {
     expect(replanned.result?.defs).toHaveLength(defsBeforeReplan ?? 0);
   });
 
+  it.each([
+    ["original first", [
+      { id: "w_iron", name: "철의 손", aggression: 1 as const, worldEntityId: "w_iron" },
+      { id: "w_iron_1", name: "철의 손 복사본", aggression: 1 as const, worldEntityId: "w_iron" },
+    ]],
+    ["copy first", [
+      { id: "w_iron_1", name: "철의 손 복사본", aggression: 1 as const, worldEntityId: "w_iron" },
+      { id: "w_iron", name: "철의 손", aggression: 1 as const, worldEntityId: "w_iron" },
+    ]],
+  ] as const)("chooses the same provenance owner when duplicate claims are %s", (_label, defs) => {
+    const existing: ProjectFactions = { defs: [...defs], relations: [] };
+
+    const plan = planFactionsFromWorld(world([faction("w_iron", "철의 손")]), existing);
+
+    expect(plan.mapping[0]).toEqual(expect.objectContaining({
+      combatFactionId: "w_iron",
+      status: "existing",
+    }));
+    expect(plan.hasChanges).toBe(false);
+  });
+
   it("backfills provenance on a legacy materialized def so a later rename keeps the link", () => {
     const input = world([faction("w_iron", "철의 손")]);
     // 출처 필드가 없던 구버전 구체화 산출물 그대로의 행.

@@ -258,6 +258,46 @@ describe("enemy faction assignment panel", () => {
     expect(findByTestId(host, "db-enemy-faction-relationships-more")).toBeNull();
   });
 
+  it("keeps neutral peers expanded when this faction attacks them by aggression", () => {
+    const project = createBlankProject();
+    project.factions = {
+      defs: [
+        { id: "berserkers", name: "광전사", aggression: 2 },
+        ...Array.from({ length: 8 }, (_, index) => ({ id: `neutral_${index + 1}`, name: `중립 ${index + 1}` })),
+      ],
+      relations: [],
+    };
+    project.database.enemies[0]!.factionId = "berserkers";
+    store.replace(project);
+    const host = renderEnemyForm();
+
+    const primary = findByTestId(host, "db-enemy-faction-relationships-primary");
+
+    expect(primary?.querySelectorAll(".db-enemy-faction-stance")).toHaveLength(9);
+    expect(findByTestId(host, "db-enemy-faction-relationships-more")).toBeNull();
+  });
+
+  it("keeps a neutral peer expanded when that peer would attack this faction", () => {
+    const project = createBlankProject();
+    project.factions = {
+      defs: [
+        { id: "villagers", name: "주민", aggression: 0 },
+        ...Array.from({ length: 7 }, (_, index) => ({ id: `neutral_${index + 1}`, name: `중립 ${index + 1}`, aggression: 0 as const })),
+        { id: "frenzied", name: "광폭단", aggression: 3 },
+      ],
+      relations: [],
+    };
+    project.database.enemies[0]!.factionId = "villagers";
+    store.replace(project);
+    const host = renderEnemyForm();
+
+    const primary = findByTestId(host, "db-enemy-faction-relationships-primary");
+    const collapsed = findByTestId(host, "db-enemy-faction-relationships-more");
+
+    expect(findByTestId(primary ?? host, "db-enemy-faction-stance-frenzied")).not.toBeNull();
+    expect(findByTestId(collapsed ?? host, "db-enemy-faction-stance-frenzied")).toBeNull();
+  });
+
   it("bounds peer pills, prioritizes authored relationships, and collapses the neutral remainder", () => {
     const project = createBlankProject();
     project.factions = {
@@ -284,15 +324,15 @@ describe("enemy faction assignment panel", () => {
     expect(primary?.querySelectorAll(".db-enemy-faction-stance")).toHaveLength(7);
     expect(primary?.textContent).toContain("경비대 -1 · 적");
     expect(primary?.textContent).toContain("상인회 0 · 중립");
-    expect(more?.textContent).toContain("비적대 관계 3개");
+    expect(more?.textContent).toContain("서로 선공하지 않는 관계 3개");
     expect(more?.textContent).toContain("중립 3개 포함");
     expect(more?.dataset.neutralCount).toBe("3");
     expect(collapsedBody?.getAttribute("hidden")).toBe("");
-    expect(toggle?.getAttribute("aria-label")).toBe("비적대 관계 3개 펼치기");
+    expect(toggle?.getAttribute("aria-label")).toBe("서로 선공하지 않는 관계 3개 펼치기");
     expect(findByTestId(host, "db-enemy-faction-stance-neutral_7")?.textContent).toBe("중립 7 0 · 중립");
 
     toggle?.click();
     expect(collapsedBody?.getAttribute("hidden")).toBeNull();
-    expect(toggle?.getAttribute("aria-label")).toBe("비적대 관계 3개 접기");
+    expect(toggle?.getAttribute("aria-label")).toBe("서로 선공하지 않는 관계 3개 접기");
   });
 });
