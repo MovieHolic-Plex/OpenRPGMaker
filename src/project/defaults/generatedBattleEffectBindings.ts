@@ -30,6 +30,10 @@ export const GENERATED_BATTLE_EFFECT_SKILL_BINDINGS: Readonly<Record<string, str
   skill_item_guard: animation("guard-barrier"),
   skill_item_holy_water: animation("holy-beam"),
   skill_item_thunder_stone: animation("thunder-strike"),
+  skill_item_frost_vial: animation("ice-shatter"),
+  skill_item_quake_stone: animation("earth-spike"),
+  skill_item_gale_fan: animation("wind-slice"),
+  skill_item_shadow_dust: animation("shadow-pulse"),
 };
 
 /** Items override their linked skill animation at runtime, so they need their own bindings too. */
