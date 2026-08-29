@@ -23,6 +23,8 @@ import { openNpcGraphicDialog } from "./graphicDialog";
 import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
 import { pageConditionSentence } from "./pageConditionSentence";
+import { renderPageFootprint } from "./pageFootprint";
+import { UNIT_FOOTPRINT, normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { renderPageMovement } from "./pageMovement";
 import {
   type EventEditorTriggerKind,
@@ -694,6 +696,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       }),
     }),
     rm2k3Fieldset("모습", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+    rm2k3Fieldset("크기와 통행", renderPageFootprint(mapId, eventId, page), "event-classic-footprint"),
     el("div", {
       class: "event-page-behavior-sections",
       dataset: { testid: "event-page-trigger-priority-stack" },
@@ -879,7 +882,9 @@ function wrapPageSettingsAsAccordion(
   const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions'], [data-testid='event-page-trigger-priority-stack']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
   // 우선순위는 겹침과 한 판정식이라 memory 그룹이 함께 claim 한다(예전에는 when 그룹이었다).
-  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-page-priority-overlap-stack'], [data-testid='event-classic-overlap'], [data-testid='event-page-fact-overlap']"));
+  // 「크기와 통행」도 같은 그룹이다 — 미분류로 남기면 "기타" 그룹이 생겨 레일이 4칸 계약을
+  // 깬다(eventRailGroupComposition.test.ts 가 그 계약을 고정한다).
+  const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-page-priority-overlap-stack'], [data-testid='event-classic-overlap'], [data-testid='event-classic-footprint'], [data-testid='event-page-fact-overlap']"));
   // 레일은 한 번에 한 그룹만 연다 — 저장된 활성 slug 가 없으면 「모습과 대화」로 시작한다.
   const activeSlug = activeRailGroupSlug(openKey, "look-talk");
   const groups = [
@@ -887,12 +892,13 @@ function wrapPageSettingsAsAccordion(
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, authored: conditions.length > 0, nodes: when },
     // RM 계약상 새 이벤트의 기본 이동은 «정지»다. 그 밖이면 저작자가 고른 값이다.
     { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), authored: page.movement.type !== "fixed", nodes: move },
-    // 기본값은 «캐릭터와 같은 층 + 겹침 금지». 통행을 허용했거나 층을 옮겼다면 손댄 것이다.
+    // 기본값은 «캐릭터와 같은 층 + 겹침 금지 + 1x1 몸». 통행을 허용했거나 층을 옮겼거나
+    // 몸을 키웠다면 손댄 것이다.
     {
       slug: "memory",
       title: "겹침과 통행",
-      summary: overlapSummary(page),
-      authored: page.overlapForbidden === false || page.priority !== "same",
+      summary: passageRailSummary(page),
+      authored: page.overlapForbidden === false || page.priority !== "same" || bodyAuthored(page),
       nodes: memory,
     },
   ].map((group) => ({ ...group, open: group.slug === activeSlug }));
@@ -969,6 +975,23 @@ function renderOverlapPriorityHint(page: EventPage): HTMLElement {
       ? "같은 층이므로 이 설정이 통행 판정에 쓰입니다."
       : `우선순위가 «${priorityOptionLabel(page.priority)}» 라 통행을 막지 않습니다. 막으려면 «캐릭터와 같은 층» 으로 바꾸세요.`,
   });
+}
+
+/** 몸을 1x1 밖으로 키웠는가. 레일 헤더의 «손댔음» 배지 판정에 쓴다. */
+function bodyAuthored(page: EventPage): boolean {
+  const body = normalizeCharacterFootprint(page.footprint);
+  return body.width !== UNIT_FOOTPRINT.width || body.height !== UNIT_FOOTPRINT.height;
+}
+
+/**
+ * 레일 헤더 요약. 1x1 은 `overlapSummary` 그대로 — 몸 크기를 안 만진 페이지의 요약 문구가
+ * 바뀌면 안 된다(기존 계약이 문자열 동등으로 고정돼 있다). 다중 타일일 때만 크기를 덧붙인다.
+ */
+function passageRailSummary(page: EventPage): string {
+  const body = normalizeCharacterFootprint(page.footprint);
+  if (!bodyAuthored(page)) return overlapSummary(page);
+  const rows = normalizePassRows(page.passRows, body.height);
+  return `${overlapSummary(page)} · ${body.width}x${body.height} 중 ${rows}행`;
 }
 
 function renderConditionSummaryBadges(conditions: readonly EventPageCondition[]): HTMLElement {

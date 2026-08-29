@@ -41,15 +41,13 @@ export function characterSpriteY(tileY: number): number {
  *
  * Y 는 별도 함수가 필요 없다 — 발자국 하단은 언제나 y 이므로 characterSpriteY 가 그대로 맞는다.
  *
- * ⚠️ 적용 범위는 **최초 렌더(`renderEvents`) 하나뿐이다.** 이벤트 스프라이트를 *다시*
- * 놓는 경로들은 아직 `characterSpriteX` 를 쓴다 — `playSceneAutonomous.ts` 의
- * `updateAutonomousNPCs`·`updateChaseNpc`·`updateActiveNpcMove`, 그리고
- * `playSceneActionCombat.ts` 의 `applyKnockback`·`startWindup`·`stepDash`.
- * 그래서 폭이 2 이상인 이벤트가 움직이면 발자국 중앙에서 타일 중앙으로 튄다.
+ * 이벤트 스프라이트를 놓는 **모든** 경로가 이것을 쓴다(2차): 최초 렌더 `renderEvents`,
+ * `playSceneAutonomous.ts` 의 걸음 보간 4곳, `playSceneActionCombat.ts` 의 넉백·윈드업·대시,
+ * 그리고 스프라이트가 없는 이벤트를 겨누는 카메라·조명.
  *
- * 의도된 경계이지 누락이 아니다. `EventPage.footprint` 를 쓰는 편집 UI 가 아직 없어
- * (2차 계획) 움직이는 다중 타일 이벤트를 저작할 방법 자체가 없고, 이 경로들은 게임에서
- * 가장 타이밍에 민감한 코드다. 2차에서 `canMoveFootprint` 전환과 함께 옮긴다.
+ * ⚠️ 반대로 **데미지 숫자·파티클·텔레그래프·스윙 아크는 타일 중앙(`characterSpriteX`)이 맞다.**
+ * 그것들은 캐릭터 그림이 아니라 칸을 가리키는 표식이다. 같은 파일에 둘이 섞여 있으니
+ * 일괄 치환은 오답이다.
  */
 export function footprintSpriteX(tileX: number, footprint: CharacterFootprint): number {
   return (footprintBounds(tileX, 0, footprint).left + footprint.width / 2) * TILE_SIZE;

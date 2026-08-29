@@ -108,14 +108,14 @@ function mapWithEvent(target: GameEvent): { project: Project; map: GameMap } {
   return { project, map };
 }
 
-function bigEvent(footprint: { width: number; height: number }): GameEvent {
+function bigEvent(footprint: { width: number; height: number }, passRows?: number): GameEvent {
   return {
     id: "ev_big",
     x: 5,
     y: 7,
     trigger: { kind: "action" },
     commands: [],
-    pages: [page({ footprint, priority: "same", overlapForbidden: true })],
+    pages: [page({ footprint, passRows, priority: "same", overlapForbidden: true })],
   };
 }
 
@@ -152,6 +152,82 @@ describe("사각 질의 승격 — 2x2 이벤트", () => {
     }
     for (const [x, y] of FREE) {
       expect(findBlockingRuntimeEventAtInMap(project, map, session(), positions, x, y), `(${x},${y})`).toBeUndefined();
+    }
+  });
+});
+
+// 2차 스펙 §3 — 몸 사각(조사·전투)과 통행 사각(차단)이 갈라진다.
+describe("passRows — 상체는 지나가되 조사는 몸 전체로 받는다", () => {
+  // (5,7) 에 선 3x3 의 몸 사각은 x 4..6 / y 5..7. passRows 1 이면 통행 사각은 y 7 한 줄.
+  const TORSO = [[4, 5], [5, 5], [6, 5], [4, 6], [5, 6], [6, 6]] as const;
+  const LEGS = [[4, 7], [5, 7], [6, 7]] as const;
+  // 앵커는 (5,7) 이다. 앵커를 겨냥한 단정은 1x1 이어도 같은 결과라 아무것도 증명하지 않는다.
+  const LEGS_DISCRIMINATING = [[4, 7], [6, 7]] as const;
+
+  function fixture(passRows?: number) {
+    const { project, map } = mapWithEvent(bigEvent({ width: 3, height: 3 }, passRows));
+    return { project, map, positions: initialRuntimeEventPositions(map.events) };
+  }
+
+  // 판별력의 핵심: 같은 칸에서 조사는 **되고** 통행 차단은 **안 되는** 조합이다.
+  // - 1x1 이라면 상체 칸에서 조사가 아예 안 된다 → 앞 단정이 잡는다.
+  // - passRows 없는 3x3 이라면 상체 칸이 통행을 막는다 → 뒤 단정이 잡는다.
+  // 둘을 같이 봐야 "사각이 둘로 갈라졌다" 가 증명된다.
+  it("상체 칸은 조사되지만 통행을 막지 않는다", () => {
+    const { project, map, positions } = fixture(1);
+    for (const [x, y] of TORSO) {
+      expect(
+        findRuntimeEventAtInMap(project, map, session(), positions, x, y, "action")?.event.id,
+        `조사 (${x},${y})`
+      ).toBe("ev_big");
+      expect(
+        findBlockingRuntimeEventAtInMap(project, map, session(), positions, x, y),
+        `통행 (${x},${y})`
+      ).toBeUndefined();
+    }
+  });
+
+  it("발밑 줄은 여전히 막는다 — 앵커가 아닌 칸으로 본다", () => {
+    const { project, map, positions } = fixture(1);
+    for (const [x, y] of LEGS_DISCRIMINATING) {
+      expect(
+        findBlockingRuntimeEventAtInMap(project, map, session(), positions, x, y),
+        `(${x},${y})`
+      ).toBeDefined();
+    }
+  });
+
+  it("passRows 생략은 몸 전체 차단이다 — 1차와 동일", () => {
+    const { project, map, positions } = fixture(undefined);
+    for (const [x, y] of [...TORSO, ...LEGS]) {
+      expect(
+        findBlockingRuntimeEventAtInMap(project, map, session(), positions, x, y),
+        `(${x},${y})`
+      ).toBeDefined();
+    }
+  });
+
+  it("뷰가 두 사각을 계산해 내보낸다 — 소비자가 크기를 다시 조립하지 않는다", () => {
+    const { map, positions } = fixture(1);
+    const view = runtimeEventView(map.events[0], session(), positions);
+    expect(view.passRows).toBe(1);
+    expect(view.bodyRect).toEqual({ left: 4, right: 6, top: 5, bottom: 7 });
+    expect(view.passRect).toEqual({ left: 4, right: 6, top: 7, bottom: 7 });
+  });
+
+  it("passRows 가 몸 높이와 같으면 두 사각이 같은 객체값이다", () => {
+    const { map, positions } = fixture(3);
+    const view = runtimeEventView(map.events[0], session(), positions);
+    expect(view.passRect).toEqual(view.bodyRect);
+  });
+
+  it("비정규 passRows 는 몸 전체를 막는다 — fail-closed", () => {
+    for (const bad of [0, -2, 2.5, Number.NaN]) {
+      const { project, map, positions } = fixture(bad);
+      expect(
+        findBlockingRuntimeEventAtInMap(project, map, session(), positions, 4, 5),
+        `행 수 ${bad}`
+      ).toBeDefined();
     }
   });
 });

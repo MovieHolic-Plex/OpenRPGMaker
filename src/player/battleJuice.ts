@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
+import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/battleSfx";
 
 export type BattleJuiceEvent =
   | "command-select"
@@ -9,6 +10,8 @@ export type BattleJuiceEvent =
   | "hit-damage"
   | "hit-critical"
   | "hit-miss"
+  | "hit-heal"
+  | "faint"
   | "defend"
   | "escape"
   | "victory"
@@ -22,6 +25,8 @@ const BATTLE_SFX: Record<BattleJuiceEvent, string> = {
   "hit-damage": "easyrpg-sound-damage2",
   "hit-critical": "easyrpg-sound-blow4",
   "hit-miss": "easyrpg-sound-evade1",
+  "hit-heal": "easyrpg-sound-recovery5",
+  faint: "easyrpg-sound-collapse2",
   defend: "easyrpg-sound-barrier1",
   escape: "easyrpg-sound-escape",
   victory: "easyrpg-sound-chime2",
@@ -31,14 +36,42 @@ const BATTLE_SFX: Record<BattleJuiceEvent, string> = {
 // Some RTP builds omit alternate names; fall back to a safe click.
 const SFX_FALLBACK: Partial<Record<BattleJuiceEvent, string>> = {
   "hit-miss": "easyrpg-sound-buzzer1",
+  "hit-heal": "easyrpg-sound-recovery7",
+  faint: "easyrpg-sound-fall1",
   escape: "easyrpg-sound-cancel2",
   victory: "easyrpg-sound-item1",
 };
 
+/**
+ * 합성 보이스(battleSfx.ts)는 **샘플이 없을 때만** 우는 폴백이다.
+ *
+ * 예전에는 battleDom 이 사건 하나에 `playBattleSfx`(합성)와 `emitBattleJuice`(샘플)를
+ * 둘 다 불러서, 한 번의 타격에 노이즈·톤·샘플이 2ms 안에 겹쳐 울렸다(실측: 26ms
+ * Attack1.wav / 592 노이즈 / 593 톤 / 594 Damage2.wav). 어택 트랜지언트가 서로를
+ * 마스킹해 오히려 약하게 들린다. 사건 1개 = 소리 1개가 이 파일의 계약이다.
+ */
+const SYNTH_VOICE: Record<BattleJuiceEvent, BattleSfxKind> = {
+  "command-select": "cursor",
+  "command-confirm": "confirm",
+  "command-cancel": "cancel",
+  "attack-swing": "cursor",
+  "hit-damage": "hit",
+  "hit-critical": "critical",
+  "hit-miss": "miss",
+  "hit-heal": "heal",
+  faint: "faint",
+  defend: "confirm",
+  escape: "escape",
+  victory: "victory",
+  defeat: "defeat",
+};
+
+// 샘플과 합성 폴백의 체감 크기를 맞춘 값. 합성 마스터는 0.14(battleSfx.ts)이고
+// 샘플은 원음이 커서 0.4 에서 대략 같은 라우드니스로 들린다.
 const DEFAULT_VOLUME = 0.4;
 
 export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | null): void {
-  playBattleSfx(event);
+  playBattleCue(event);
   if (!target) return;
   const motion =
     event === "hit-critical"
@@ -60,10 +93,16 @@ export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | 
   });
 }
 
-export function playBattleSfx(event: BattleJuiceEvent): void {
+/**
+ * 전투 사건 1개에 소리 1개. 프로젝트 샘플 → 대체 샘플 → 합성 보이스 순으로
+ * **처음 성공한 하나만** 낸다. 호출자는 여기 말고 다른 오디오 경로를 겹치지 말 것.
+ */
+export function playBattleCue(event: BattleJuiceEvent): void {
   const primary = BATTLE_SFX[event];
   const fallback = SFX_FALLBACK[event];
-  if (!tryPlay(primary) && fallback) tryPlay(fallback);
+  if (tryPlay(primary)) return;
+  if (fallback && tryPlay(fallback)) return;
+  playSynthVoice(SYNTH_VOICE[event]);
 }
 
 function tryPlay(soundResourceId: string): boolean {

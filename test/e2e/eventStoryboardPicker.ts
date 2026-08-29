@@ -103,6 +103,23 @@ export async function openSeededEventEditor(page: Page, tile: { readonly x: numb
   if ((await visibleEventTool.count()) > 0) await visibleEventTool.click();
 
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const target = await pointAtTile(page, tile);
+  await canvas.dblclick({ position: target });
+  const editor = page.getByTestId("event-editor-modal");
+  await expect(editor).toBeVisible();
+  return editor;
+}
+
+/**
+ * 타일 좌표를 캔버스 안 좌표로 실측 환산한다. 매직 픽셀 상수가 없으므로 줌·카메라
+ * 오프셋이 달라도 수렴한다 — 다중 타일 이벤트의 **비앵커 칸**을 겨냥할 때 특히 중요하다
+ * (앵커에서 몇 픽셀 어긋나면 옆 칸을 클릭하고도 성공처럼 보인다).
+ */
+export async function pointAtTile(
+  page: Page,
+  tile: { readonly x: number; readonly y: number }
+): Promise<{ readonly x: number; readonly y: number }> {
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
   if (!box) throw new Error("missing editor canvas");
   const center = { x: Math.floor(box.width / 2), y: Math.floor(box.height / 2) };
@@ -129,11 +146,7 @@ export async function openSeededEventEditor(page: Page, tile: { readonly x: numb
     targetTile = await tileUnderCanvas(page, canvas, target);
   }
   expect(targetTile, `tile ${tile.x},${tile.y} 을 화면에서 가리킬 수 없다`).toEqual({ x: tile.x, y: tile.y });
-
-  await canvas.dblclick({ position: target });
-  const editor = page.getByTestId("event-editor-modal");
-  await expect(editor).toBeVisible();
-  return editor;
+  return target;
 }
 
 /** 하니스용 커서 진단이 보고하는, 지금 포인터 아래의 타일. */

@@ -13,6 +13,8 @@
 //
 // 즉 "이 스위치들을 켠 상태에서 항구에서 제단까지 걸어갈 수 있는가"를 그대로 묻는다.
 import { canMove, isPassable } from "@/project/collision";
+import { eventBodyRect } from "@/project/eventFootprintQuery";
+import { rectCells } from "@/project/footprint";
 import type { Command, Condition, GameEvent, GameMap, Project } from "@/project/types";
 
 export type TravelStart = { readonly mapId: string; readonly x: number; readonly y: number };
@@ -140,13 +142,17 @@ export function canTravelBetweenMaps(
   seen.add(stateKey(from.mapId, from.x, from.y));
   visitedMapIds.add(from.mapId);
   // 맵별 transfer 이벤트 색인 — 매 칸마다 events 를 훑으면 O(칸×이벤트) 가 된다.
+  // 색인은 앵커가 아니라 **몸 사각 전 칸**에 건다 — 발동 판정이 몸 사각 겹침이므로, 2x2 문의
+  // 비앵커 칸을 밟아도 워프가 걸린다. 1x1 이면 칸이 하나라 예전 색인과 같다.
   const gatesByCell = new Map<string, GameEvent[]>();
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      const cell = `${map.id}:${event.x},${event.y}`;
-      const list = gatesByCell.get(cell);
-      if (list) list.push(event);
-      else gatesByCell.set(cell, [event]);
+      for (const cellPos of rectCells(eventBodyRect(event))) {
+        const cell = `${map.id}:${cellPos.x},${cellPos.y}`;
+        const list = gatesByCell.get(cell);
+        if (list) list.push(event);
+        else gatesByCell.set(cell, [event]);
+      }
     }
   }
 
@@ -198,8 +204,10 @@ export function canTravelBetweenMaps(
     for (const event of map.events) {
       const targets = activeTransfers(event, open, ignoreSwitches);
       if (targets.length === 0) continue;
-      const standable = isPassable(project, map, event.x, event.y);
-      const touched = seen.has(stateKey(map.id, event.x, event.y));
+      // 진단도 몸 사각으로 본다 — 앵커가 벽이어도 다른 몸 칸을 밟을 수 있으면 관문은 살아 있다.
+      const body = rectCells(eventBodyRect(event));
+      const standable = body.some((cell) => isPassable(project, map, cell.x, cell.y));
+      const touched = body.some((cell) => seen.has(stateKey(map.id, cell.x, cell.y)));
       if (standable && touched) continue;
       unreachableGates.push({
         mapId: map.id,

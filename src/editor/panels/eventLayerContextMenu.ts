@@ -13,6 +13,7 @@ import {
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId } from "@/project/types";
 import { genId } from "@/util/id";
+import { eventAtPoint } from "@/project/eventFootprintQuery";
 
 export type EventLayerContextMenuTarget = {
   readonly mapId: MapId;
@@ -218,7 +219,8 @@ function setPlayerStartingPosition(target: EventLayerContextMenuTarget): void {
 }
 
 function eventAtTarget(target: EventLayerContextMenuTarget): GameEvent | undefined {
-  return store.getCurrent().maps[target.mapId]?.events.find((event) => event.x === target.x && event.y === target.y);
+  const map = store.getCurrent().maps[target.mapId];
+  return map ? eventAtPoint(map, target.x, target.y) : undefined;
 }
 
 function cloneEventForPaste(source: GameEvent, target: EventLayerContextMenuTarget): GameEvent {

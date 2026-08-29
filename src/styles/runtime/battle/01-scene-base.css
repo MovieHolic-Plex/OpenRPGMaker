@@ -141,10 +141,11 @@
   left: var(--battle-node-x);
   min-height: 0;
   position: absolute;
-  /* 저작 y 는 스프라이트의 **발**이다. 노드 앵커는 이름표+HUD 아래에 잡히므로
-     그 라벨 스택 높이(`--battle-enemy-label-drop`, battleFieldDom 이 실측 주입)만큼
-     내려 보정한다. 주입 전/jsdom 에서는 0 이라 기존 동작과 같다. */
-  top: calc(var(--battle-node-y) + var(--battle-enemy-label-drop, 0px));
+  /* 저작 y 는 스프라이트의 **발**이다. 이름표·HUD 는 `.battle-enemy-chrome` 이 흐름에서
+     빼내므로 노드 높이 = 스프라이트 높이고, 아래쪽 앵커가 그대로 발이 된다.
+     전에는 라벨 스택 높이를 JS 로 실측해 top 에 더했는데(--battle-enemy-label-drop),
+     HUD 를 펼치고 접을 때마다 그 값이 바뀌어 몬스터가 눈에 보이게 튀었다. */
+  top: var(--battle-node-y);
   transform: translate(-50%, -100%);
   border: 0;
   border-radius: 0;
@@ -163,6 +164,22 @@
   padding: 0;
   position: absolute;
   z-index: 1;
+}
+
+/* 이름표·순번·상태 아이콘·HP HUD 를 담는 겹(battleFieldDom: enemyChrome).
+   흐름에서 빠져 있어야 HUD 를 펼치거나 접어도 노드 높이가 안 변하고, 그래야 스프라이트가
+   제자리에 못 박힌다. flex 열로 두는 이유는 스킨이 자식에 걸어둔 `order`(vxace 배지 1 /
+   HUD 2)를 계속 살리기 위해서다. */
+.battle-enemy-chrome {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  left: 50%;
+  position: absolute;
+  /* 6px 띄우는 이유: 조준 중 노드에 그려지는 outline(4px + offset 4px)이 스프라이트
+     바로 밑을 지나므로, 붙여 놓으면 이름표 알약이 그 선을 물고 앉는다. */
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
 }
 
 .battle-enemy-image {

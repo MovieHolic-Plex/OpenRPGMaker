@@ -79,6 +79,7 @@ import { saveProjectNow } from "@/editor/saveActions";
 import { TilePaintEngine } from "@/editor/TilePaintEngine";
 import { DragOperationHandler } from "@/editor/DragOperationHandler";
 import { editorWorkingEvents } from "@/project/eventDrafts";
+import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -999,7 +1000,7 @@ export class EditScene extends PhaserRuntime.Scene {
       editorState.set({ pendingEventCoordinate: null });
       return;
     }
-    const existing = editorWorkingEvents(map.events).find((e) => e.x === x && e.y === y);
+    const existing = findEventCoveringPoint(editorWorkingEvents(map.events), x, y);
     if (existing) {
       editorState.set({ selectedEventId: existing.id, selectedEventPageId: null, pendingEventCoordinate: null });
       if (openEditor) openEventEditorModal(mapId, existing.id);
@@ -1027,7 +1028,7 @@ export class EditScene extends PhaserRuntime.Scene {
       y >= 0 &&
       x < map.width &&
       y < map.height &&
-      !editorWorkingEvents(map.events).some((event) => event.x === x && event.y === y),
+      !findEventCoveringPoint(editorWorkingEvents(map.events), x, y),
     );
     if (!validEmptyEventTile) editorState.set({ pendingEventCoordinate: null });
   }
@@ -1042,14 +1043,14 @@ export class EditScene extends PhaserRuntime.Scene {
       pending.y >= 0 &&
       pending.x < map.width &&
       pending.y < map.height &&
-      !editorWorkingEvents(map.events).some((event) => event.x === pending.x && event.y === pending.y),
+      !findEventCoveringPoint(editorWorkingEvents(map.events), pending.x, pending.y),
     );
     if (!valid) editorState.set({ pendingEventCoordinate: null });
   }
 
   private offerEventLayerSwitchAt(mapId: MapId, x: number, y: number, layer: string, clickCount: number): boolean {
     const map = store.getCurrent().maps[mapId];
-    const existing = map ? editorWorkingEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    const existing = map ? findEventCoveringPoint(editorWorkingEvents(map.events), x, y) : undefined;
     if (!shouldOfferEventLayerSwitch({ activeLayer: layer as "lower" | "upper" | "event", clickCount, hasEvent: Boolean(existing) })) {
       return false;
     }
@@ -1075,7 +1076,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private openExistingEventAt(mapId: MapId, x: number, y: number): boolean {
     const map = store.getCurrent().maps[mapId];
-    const existing = map ? editorWorkingEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    const existing = map ? findEventCoveringPoint(editorWorkingEvents(map.events), x, y) : undefined;
     if (!existing) return false;
     this.isPainting = false;
     this.lastPaintKey = "";
@@ -1306,7 +1307,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private showEventLayerClickFeedback(mapId: MapId, x: number, y: number): void {
     const map = store.getCurrent().maps[mapId];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
-    const hasEvent = editorWorkingEvents(map.events).some((event) => event.x === x && event.y === y);
+    const hasEvent = findEventCoveringPoint(editorWorkingEvents(map.events), x, y) !== undefined;
     const mode = hasEvent ? "edit" : "create";
     this.eventLayerClickFeedback = { mapId, x, y, mode };
     setTileToolStatus(
@@ -1324,7 +1325,7 @@ export class EditScene extends PhaserRuntime.Scene {
       return;
     }
     const map = store.getCurrent().maps[mapId];
-    const existing = map ? editorWorkingEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
+    const existing = map ? findEventCoveringPoint(editorWorkingEvents(map.events), x, y) : undefined;
     if (!existing) {
       this.clearEventMarkerTooltip();
       return;

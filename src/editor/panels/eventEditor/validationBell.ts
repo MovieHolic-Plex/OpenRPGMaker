@@ -10,6 +10,7 @@
 import { editorState } from "@/editor/editorState";
 import type { EventDraftIssue, EventDraftValidation } from "@/editor/eventDraftValidator";
 import { clearChildren, el } from "@/util/dom";
+import { openEventRailGroupFor } from "./pageProps";
 
 const BELL_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
  stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">
@@ -119,6 +120,9 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
       target = root.querySelector<HTMLElement>(`[data-testid="${issue.field.testId}"]`);
     }
     if (!target) return;
+    // 앵커가 닫힌 설정 레일 그룹 속이면 그 그룹을 여는 것까지 해야 사용자가 고칠 자리를 본다.
+    // 그룹은 <details> 가 아니라 is-open 클래스라 아래 DETAILS 루프가 달지 못한다(#212).
+    openEventRailGroupFor(target);
     for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
       if (ancestor.tagName === "DETAILS") (ancestor as HTMLDetailsElement).open = true;
     }

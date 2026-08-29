@@ -1,4 +1,5 @@
-import { SCHEMA_VERSION, type ActorInitialEquipment, type Project } from "@/project/types";
+import { SCHEMA_VERSION, type ActorInitialEquipment, type CharacterFootprint, type Project } from "@/project/types";
+import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
   clampFriendship,
   GOLD_MAX,
@@ -189,6 +190,8 @@ export type SaveSnapshot = {
     readonly currentMapId: string;
     readonly x: number;
     readonly y: number;
+    readonly playerFootprint?: PlaySession["playerFootprint"];
+    readonly playerPassRows?: PlaySession["playerPassRows"];
     readonly mapOverrides: PlaySession["mapOverrides"];
     readonly flags: Record<string, boolean>;
     readonly battleResult?: PlaySession["battleResult"];
@@ -357,6 +360,11 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
+      // 주인공 몸 크기의 **런타임 오버라이드**만 굽는다. 오버라이드가 없으면 undefined 로 남아
+      // 로드 시 저작값(system.playerFootprint)을 다시 읽는다 — 저작값을 고친 프로젝트에
+      // 옛 세이브를 붙여도 낡은 크기가 되살아나지 않는다.
+      playerFootprint: session.playerFootprint ? structuredClone(session.playerFootprint) : undefined,
+      playerPassRows: session.playerPassRows,
       mapOverrides: structuredClone(session.mapOverrides ?? {}),
       flags: structuredClone(session.flags),
       battleResult: session.battleResult,
@@ -561,6 +569,12 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.currentMapId = snapshot.session.currentMapId;
   session.x = snapshot.session.x;
   session.y = snapshot.session.y;
+  // 오버라이드는 **덮어쓰지 않고 지운다** — 세이브에 없으면 "저작값을 따르라"는 뜻이므로
+  // 세션에 남아 있던 이전 오버라이드를 비워야 한다(조건부 대입이면 이전 값이 살아남는다).
+  session.playerFootprint = snapshot.session.playerFootprint
+    ? structuredClone(snapshot.session.playerFootprint)
+    : undefined;
+  session.playerPassRows = snapshot.session.playerPassRows;
   session.mapOverrides = structuredClone(snapshot.session.mapOverrides);
   session.flags = structuredClone(snapshot.session.flags);
   session.battleResult = snapshot.session.battleResult;
@@ -756,6 +770,18 @@ function parseActorFaceResourceIds(
   return mapped;
 }
 
+/**
+ * 세이브의 주인공 몸 크기 오버라이드를 읽는다. 모양이 아니면 **undefined** 로 떨어뜨려
+ * 저작값(system.playerFootprint)이 이기게 한다 — 손상된 세이브가 1x1 을 강요하면
+ * 3x3 로 저작된 주인공이 조용히 작아진 채 벽을 지나간다.
+ */
+function parsePlayerFootprint(value: unknown): CharacterFootprint | undefined {
+  if (!isRecord(value)) return undefined;
+  const raw = value as { width?: unknown; height?: unknown };
+  if (typeof raw.width !== "number" || typeof raw.height !== "number") return undefined;
+  return normalizeCharacterFootprint(raw);
+}
+
 type ParsedSessionResult =
   | { readonly ok: true; readonly session: SaveSnapshot["session"] }
   | { readonly ok: false; readonly message: string };
@@ -868,6 +894,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
+      playerFootprint: parsePlayerFootprint(session.playerFootprint),
+      playerPassRows: Number.isSafeInteger(session.playerPassRows) ? session.playerPassRows as number : undefined,
       mapOverrides: parseMapOverrides(session.mapOverrides),
       flags: session.flags,
       battleResult,

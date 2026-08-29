@@ -2,7 +2,9 @@ import { canMove, isPassable } from "@/project/collision";
 import { setMapTileOverride } from "@/project/session";
 import { store } from "@/project/store";
 import type { MapId, TransferFade } from "@/project/types";
-import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
+import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
+import { resolveFootprintLanding } from "@/project/footprintLanding";
+import { resolvePlayerBody } from "@/project/playerFootprint";
 import type { StepResult } from "@/player/interpreter";
 import { applyMapOverrides, fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import { dialogueHost } from "@/player/playSceneDom";
@@ -56,17 +58,32 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
     await fadeCamera(scene, "out", fadeColor);
   }
   scene.loadMap(request.mapId);
-  scene.tileX = destination.x;
-  scene.tileY = destination.y;
-  scene.session.x = destination.x;
-  scene.session.y = destination.y;
+  // 다중 타일 주인공은 목적지 한 칸이 비어 있어도 **몸이** 안 들어갈 수 있다 — 가까운 유효
+  // 칸으로 밀어낸다. 1x1 은 검사 없이 지정 좌표를 그대로 받으므로 기존 워프와 동작이 같다.
+  // loadMap 뒤에 계산하는 이유: 도착 맵의 런타임 이벤트 좌표(scene.eventPositions)를 봐야 한다.
+  const body = resolvePlayerBody(project, scene.session);
+  const landing = resolveFootprintLanding(
+    project,
+    targetMap,
+    scene.session,
+    scene.eventPositions,
+    destination.x,
+    destination.y,
+    body.footprint,
+    undefined, // maxRadius 는 기본값(8) 그대로
+    body.passRows
+  );
+  scene.tileX = landing.x;
+  scene.tileY = landing.y;
+  scene.session.x = landing.x;
+  scene.session.y = landing.y;
   if (resolveCompanionRules(project.system.companions).clearOnTransfer) {
     removeFollowerFromSession(scene.session, { all: true });
   }
   resetFollowerTrailNearPlayer(scene.session, targetMap, project.system.companions);
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
   scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
-  scene.player.setPosition(characterSpriteX(destination.x), characterSpriteY(destination.y));
+  scene.player.setPosition(footprintSpriteX(landing.x, body.footprint), characterSpriteY(landing.y));
   updateCharacterDepth(scene.player, "same");
   syncFollowerSprites(scene);
   scene.moving = false;

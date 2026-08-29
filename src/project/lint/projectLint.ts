@@ -10,8 +10,9 @@
 //  - transfer-impassable   (error)   transfer 목적지 타일이 통행 불가
 //  - transfer-retrigger    (warning) transfer 목적지에 playerTouch 이벤트(무한 재전이 위험)
 //  - playerTouch-impassable (warning) 밟기형(priority≠same) touch/playerTouch 이벤트가 통행 불가 타일 위(영구 미발동)
-//  - event-unreachable       (warning) 자신의 칸과 4방향 이웃이 전부 통행 불가라 접근 불가능한 이벤트
-//  - duplicate-event       (warning) 같은 맵 내 이벤트 좌표 중복
+//  - event-unreachable       (warning) 자신의 몸 칸과 그 4방향 이웃이 전부 통행 불가라 접근 불가능한 이벤트
+//  - event-footprint-impassable (warning) 다중 타일 이벤트의 통행 사각이 통행 불가 칸을 덮음(걸어서 닿을 수 없는 자리)
+//  - duplicate-event       (warning) 같은 맵 내 이벤트 **몸 사각** 겹침
 //  - map-size              (warning) 256×256 초과 맵
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
 //  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
@@ -32,6 +33,9 @@ import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { autoCropSpriteAsset } from "@/project/farmModel";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
+import { eventBodyRect, eventCoversPoint, eventPassageRect, overlappingEventPairs } from "../eventFootprintQuery";
+import { rectCells } from "../footprint";
+import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
 import { deserialize, serialize } from "../io";
 import { collectProjectReferenceIssues } from "../io/references";
 import { isQuestGraphDef } from "../quest/questDef";
@@ -67,6 +71,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkTransfers(project, issues);
   checkPlayerTouchTilePassability(project, issues);
   checkEventUnreachable(project, issues);
+  checkEventFootprintPassability(project, issues);
   checkDuplicateEventPositions(project, issues);
   checkMapSizes(project, issues);
   checkRuntimeSupportCommands(project, issues);
@@ -187,6 +192,26 @@ function checkStartPosition(project: Project, issues: LintIssue[]): void {
       y,
       message: `시작 위치가 통행 불가 타일입니다: (${x}, ${y})`,
     });
+    return;
+  }
+  // 다중 타일 주인공은 앵커가 풀밭이어도 **몸이** 안 들어갈 수 있다. 발밑 칸만 보던 검사를
+  // 통행 사각 전 칸으로 넓힌다 — 1x1(기본)이면 방금 본 그 한 칸이라 새 경고가 생기지 않는다.
+  const body = resolvePlayerBody(project);
+  const rect = playerPassageRect(body, x, y);
+  const blocked = rectCells(rect).find(
+    (cell) => !inBounds(map, cell.x, cell.y) || !isPassable(project, map, cell.x, cell.y)
+  );
+  if (blocked) {
+    issues.push({
+      severity: "error",
+      code: "start-position",
+      mapId: map.id,
+      x,
+      y,
+      message:
+        `시작 위치에 주인공 몸(${body.footprint.width}x${body.footprint.height})이 들어가지 않습니다: ` +
+        `(${x}, ${y}) — 막힌 칸 (${blocked.x}, ${blocked.y})`,
+    });
   }
 }
 
@@ -253,7 +278,10 @@ function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]):
         (page) => isSteppableTouch(page.trigger) && page.priority !== "same"
       );
       if (!steppablePage) continue;
-      if (isPassable(project, map, event.x, event.y)) continue;
+      // 발동 판정은 **몸 사각** 겹침이므로(runtimeEventState.findRuntimeEventAt), 몸 칸 하나라도
+      // 밟을 수 있으면 발동한다. 앵커만 보던 예전 검사는 2x2 의 앵커가 벽이고 나머지 세 칸이
+      // 풀밭일 때 "영구 미발동" 이라고 잘못 울렸다. 1x1 이면 앵커 한 칸이라 판정이 같다.
+      if (rectCells(eventBodyRect(event)).some((cell) => isPassable(project, map, cell.x, cell.y))) continue;
       issues.push({
         severity: "warning",
         code: "playerTouch-impassable",
@@ -270,19 +298,23 @@ function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]):
 }
 
 // (f) 같은 맵 내 이벤트 좌표 중복.
-// 밟기형 여부와 무관하게, 자신의 칸과 4방향 이웃이 전부 통행 불가인 이벤트는 플레이어가
+// 밟기형 여부와 무관하게, 자신의 몸 칸과 그 4방향 이웃이 전부 통행 불가인 이벤트는 플레이어가
 // 어떻게도 접근할 수 없다(부딪힘 발동도 이웃 칸에서 시도해야 하므로). warning 으로만 잡는다:
 // playerTouch-impassable 과 대상이 겹칠 수 있지만 메시지/의미가 다르고 둘 다 울려도 무방하다.
 function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      if (isPassable(project, map, event.x, event.y)) continue;
-      const neighbourPassable = [
-        { x: event.x, y: event.y - 1 },
-        { x: event.x, y: event.y + 1 },
-        { x: event.x - 1, y: event.y },
-        { x: event.x + 1, y: event.y },
-      ].some((cell) => inBounds(map, cell.x, cell.y) && isPassable(project, map, cell.x, cell.y));
+      // 몸 사각 전 칸과 그 칸들의 4방향 이웃을 본다. 1x1 이면 앵커 + 4방 이웃이라 예전과 같다.
+      const body = rectCells(eventBodyRect(event));
+      if (body.some((cell) => isPassable(project, map, cell.x, cell.y))) continue;
+      const neighbourPassable = body
+        .flatMap((cell) => [
+          { x: cell.x, y: cell.y - 1 },
+          { x: cell.x, y: cell.y + 1 },
+          { x: cell.x - 1, y: cell.y },
+          { x: cell.x + 1, y: cell.y },
+        ])
+        .some((cell) => inBounds(map, cell.x, cell.y) && isPassable(project, map, cell.x, cell.y));
       if (neighbourPassable) continue;
       issues.push({
         severity: "warning",
@@ -298,24 +330,61 @@ function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
   }
 }
 
+/**
+ * (f') 이벤트의 **통행 사각**이 통행 불가 타일을 걸친다.
+ *
+ * 다중 타일 저작이 열리면서 생긴 함정이다: 2x2 NPC 를 벽에 붙여 놓으면 앵커는 풀밭이라
+ * 기존 검사가 전부 통과하지만, 그 앵커는 `canMoveFootprint` 가 **절대 허용하지 않는 자리**다
+ * (통행 사각 전 칸이 통행 가능해야 한다). 걸어서는 갈 수 없는 곳에 저작으로만 놓인 상태라
+ * 이동형 NPC 는 그 자리에서 못 나오고, 워프 착지는 그 칸을 후보에서 뺀다.
+ *
+ * 1x1 이면 통행 사각이 앵커 한 칸이라 `playerTouch-impassable`·`event-unreachable` 과 대상이
+ * 겹치는데, 그래도 무해하다 — 메시지가 다르고 셋 다 warning 이다. 이 검사만 통행 사각을 쓰는
+ * 이유: passRows 로 열어 둔 상체 칸은 벽과 겹쳐도 정상이다(벽을 스치고 지나가는 것이 목적).
+ */
+function checkEventFootprintPassability(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const rect = eventPassageRect(event);
+      // 1x1 은 건너뛴다 — 위 두 검사가 이미 같은 칸을 다루고, 여기서 또 울리면 기존 프로젝트에
+      // 경고가 통째로 새로 생긴다(항등 위반).
+      if (rect.left === rect.right && rect.top === rect.bottom) continue;
+      const blocked = rectCells(rect).filter(
+        (cell) => !inBounds(map, cell.x, cell.y) || !isPassable(project, map, cell.x, cell.y)
+      );
+      if (blocked.length === 0) continue;
+      const shown = blocked.slice(0, 3).map((cell) => `(${cell.x}, ${cell.y})`).join(" ");
+      issues.push({
+        severity: "warning",
+        code: "event-footprint-impassable",
+        mapId: map.id,
+        x: event.x,
+        y: event.y,
+        message:
+          `다중 타일 이벤트의 통행 사각이 통행 불가 칸을 덮습니다 — 걸어서는 닿을 수 없는 자리입니다: ` +
+          `${map.id} ${event.id} (${event.x}, ${event.y}) 막힌 칸 ${blocked.length}개 ${shown}` +
+          `${blocked.length > 3 ? " …" : ""} — 앵커를 옮기거나 통행 차단 행(passRows)을 줄이세요.`,
+      });
+    }
+  }
+}
+
+// (g) 같은 맵 안에서 **몸 사각이 겹치는** 이벤트 쌍.
+// 예전 키는 `${event.x},${event.y}` 여서 겹친 2x2 두 개를 못 잡았다 — 앵커가 한 칸 다르면
+// 다른 좌표로 세었기 때문이다. 판정은 편집 맵의 겹침 배지와 같은 함수를 쓴다(설계 결정 D5).
 function checkDuplicateEventPositions(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
-    const seen = new Map<string, string>();
-    for (const event of map.events) {
-      const key = `${event.x},${event.y}`;
-      const previous = seen.get(key);
-      if (previous) {
-        issues.push({
-          severity: "warning",
-          code: "duplicate-event",
-          mapId: map.id,
-          x: event.x,
-          y: event.y,
-          message: `이벤트 좌표가 겹칩니다: ${map.id} (${event.x}, ${event.y}) — ${previous} & ${event.id}`,
-        });
-      } else {
-        seen.set(key, event.id);
-      }
+    for (const pair of overlappingEventPairs(map.events)) {
+      issues.push({
+        severity: "warning",
+        code: "duplicate-event",
+        mapId: map.id,
+        // 좌표는 **뒤쪽** 이벤트의 앵커다 — 예전 구현이 두 번째 이벤트를 보고했으므로 1x1 겹침에서
+        // 좌표·메시지가 그대로 유지된다.
+        x: pair.b.x,
+        y: pair.b.y,
+        message: `이벤트 좌표가 겹칩니다: ${map.id} (${pair.b.x}, ${pair.b.y}) — ${pair.a.id} & ${pair.b.id}`,
+      });
     }
   }
 }
@@ -643,7 +712,8 @@ function commandLabel(command: Command): string {
 // (x,y)에 playerTouch 트리거를 가진 이벤트(레거시 트리거 또는 어느 페이지든)가 있는가?
 function hasPlayerTouchEventAt(map: GameMap, x: number, y: number): boolean {
   for (const event of map.events) {
-    if (event.x !== x || event.y !== y) continue;
+    // 몸 사각으로 본다 — 2x2 playerTouch 의 비앵커 칸에 착지해도 발동은 똑같이 걸린다.
+    if (!eventCoversPoint(event, x, y)) continue;
     if (isPlayerTouch(event.trigger)) return true;
     for (const page of event.pages ?? []) {
       if (isPlayerTouch(page.trigger)) return true;

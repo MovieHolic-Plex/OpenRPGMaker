@@ -187,12 +187,18 @@ export function applyRegionProjectWithHistory(project: Project, label: string, m
   try {
     recordProjectSnapshot(label, mapId, { kind: "project" });
     replaceStarted = true;
-    store.replace(project);
+    // 행위 로그에 AI 소행으로 남긴다. 라벨/origin 이 없으면 영역 작업 전량이
+    // `(라벨 없음)` + `origin: "human"` 으로 떨어져 사람 손편집과 구분되지 않는다.
+    store.replace(project, { change: { label: `AI 영역 작업: ${label}`, origin: "ai" } });
   } catch (cause) {
     let rollbackFailure: unknown;
     if (replaceStarted) {
       try {
-        store.replace(before, { preserveEventDrafts: false });
+        // 롤백도 기록한다 — "적용됐다가 되돌아갔다" 는 조사에서 필요한 사실이다.
+        store.replace(before, {
+          preserveEventDrafts: false,
+          change: { label: `AI 영역 작업 롤백: ${label}`, origin: "system" },
+        });
       } catch (error) {
         rollbackFailure = error;
       }

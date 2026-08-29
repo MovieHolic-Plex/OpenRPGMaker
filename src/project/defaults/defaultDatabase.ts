@@ -46,6 +46,8 @@ export function defaultTerms(): Required<Terms> {
     skill: "스킬",
     item: "아이템",
     capture: "포획",
+    defend: "방어",
+    escape: "도주",
     back: "뒤로",
     target: "대상",
     shopGreeting: "어서 오세요.",

@@ -1,7 +1,8 @@
-import type { GameMap, MapMinimapSetting } from "@/project/types";
+import type { GameEvent, GameMap, MapMinimapSetting } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { store } from "@/project/store";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
+import { eventBodyRect } from "@/project/eventFootprintQuery";
 
 export type MinimapCorner = NonNullable<MapMinimapSetting["corner"]>;
 
@@ -121,17 +122,34 @@ function drawLayer(
   }
 }
 
+/**
+ * 미니맵 이벤트 표식의 픽셀 사각. **몸 사각**을 덮고 안쪽으로 inset 만큼 좁힌다.
+ *
+ * 앵커 한 칸만 찍으면 3x3 골렘이 지도에서 1x1 로 보여, 길을 막는 몸집을 지도로 판단할 수
+ * 없다. 1x1 이벤트는 몸 사각이 앵커 한 칸이라 예전과 같은 사각이 나온다(항등).
+ */
+export function minimapEventMarkerRect(
+  event: GameEvent,
+  tileSize: number
+): { readonly x: number; readonly y: number; readonly w: number; readonly h: number } {
+  const rect = eventBodyRect(event);
+  const inset = Math.max(1, Math.floor(tileSize * 0.2));
+  return {
+    x: rect.left * tileSize + inset,
+    y: rect.top * tileSize + inset,
+    w: (rect.right - rect.left + 1) * tileSize - inset * 2,
+    h: (rect.bottom - rect.top + 1) * tileSize - inset * 2,
+  };
+}
+
 function drawEventMarkers(ctx: CanvasRenderingContext2D, map: GameMap): void {
   for (const ev of map.events) {
-    const x = ev.x * map.tileSize;
-    const y = ev.y * map.tileSize;
-    const inset = Math.max(1, Math.floor(map.tileSize * 0.2));
-    const s = map.tileSize - inset * 2;
+    const { x, y, w, h } = minimapEventMarkerRect(ev, map.tileSize);
     ctx.fillStyle = "rgba(255,0,122,0.95)";
-    ctx.fillRect(x + inset, y + inset, s, s);
+    ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = "rgba(255,255,255,0.95)";
     ctx.lineWidth = 1;
-    ctx.strokeRect(x + inset, y + inset, s, s);
+    ctx.strokeRect(x, y, w, h);
   }
 }
 

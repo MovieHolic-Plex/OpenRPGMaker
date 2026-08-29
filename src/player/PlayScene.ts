@@ -6,6 +6,7 @@ import {
 } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
 import { store } from "@/project/store";
+import { resolvePlayerBody } from "@/project/playerFootprint";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { startSession, type PlaySession } from "@/project/session";
 import { Input } from "@/player/input";
@@ -44,7 +45,7 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
-import { characterSpriteX, characterSpriteY, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
+import { characterSpriteY, footprintSpriteX, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
 import {
   registerAutonomousMover as registerSceneAutonomousMover,
@@ -126,6 +127,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   walkTimer = 0;
   lastActionTargetKey = "";
   playerRoute: PlayerRouteState | null = null;
+  playerHop: import("@/player/playSceneTypes").PlayerHopState | null = null;
+  characterShadows: Map<string, import("@/player/characterShadow").ShadowImage> = new Map();
   autonomousNPCs: Map<string, AutonomousMover> = new Map();
   runtimeTimers: Map<string, RuntimeTimer> = new Map();
   fieldSpawnState: FieldSpawnRuntimeState | null = null;
@@ -205,7 +208,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player = this.add.sprite(
-      characterSpriteX(this.tileX),
+      // 주인공도 **몸 중앙**에 놓는다 — 1x1 이면 타일 중앙과 같은 값이다(항등).
+      footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint),
       characterSpriteY(this.tileY),
       this.playerSprite.texture,
       this.playerSprite.idleFrameFor("down")
@@ -482,7 +486,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.tileY = this.session.y;
     this.player.setTexture(this.playerSprite.texture);
     this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
-    this.player.setPosition(characterSpriteX(this.tileX), characterSpriteY(this.tileY));
+    this.player.setPosition(
+      footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint),
+      characterSpriteY(this.tileY)
+    );
     placeCharacterSprite(this.player, "same");
     for (const animation of this.activeMapAnimations) animation.destroy(true);
     this.activeMapAnimations.clear();

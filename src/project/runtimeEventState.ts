@@ -1,5 +1,13 @@
 import { resolveEventPage } from "@/project/io";
-import { footprintBounds, normalizeCharacterFootprint, normalizeCharacterScale, pointRect, rectsOverlap } from "@/project/footprint";
+import {
+  footprintBounds,
+  normalizeCharacterFootprint,
+  normalizeCharacterScale,
+  normalizePassRows,
+  passageBounds,
+  pointRect,
+  rectsOverlap,
+} from "@/project/footprint";
 import type {
   AssetRef,
   CharacterFootprint,
@@ -39,9 +47,21 @@ export interface RuntimeEventView {
   readonly trigger: Trigger;
   readonly priority: EventPriority;
   readonly overlapForbidden: boolean;
-  /** 충돌 발자국. 생략된 페이지는 1x1 로 정규화돼 언제나 존재한다. */
+  /** 몸 사각의 크기. 생략된 페이지는 1x1 로 정규화돼 언제나 존재한다. */
   readonly footprint: CharacterFootprint;
-  /** 스프라이트 렌더 배율. 생략 시 1. 발자국과 독립. */
+  /** 통행을 막는 행 수. 생략 시 footprint.height(= 몸 전체, 1차와 동일). */
+  readonly passRows: number;
+  /**
+   * 몸 사각 — 조사·접촉 발동, 전투 히트, 점유, 렌더 중앙, 편집 클릭.
+   *
+   * 크기(footprint/passRows)가 아니라 **계산된 사각**을 내보내는 이유: 소비자가 크기에
+   * passRows 를 적용하는 걸 잊으면 통행이 조용히 열린다. 이름 붙은 사각을 주면 그 실수를
+   * 할 수 없다. 2차 스펙 §3.
+   */
+  readonly bodyRect: FootprintRect;
+  /** 통행 차단 사각 — 몸 사각의 하단 passRows 행. passRows 가 전체면 bodyRect 와 같다. */
+  readonly passRect: FootprintRect;
+  /** 스프라이트 렌더 배율. 생략 시 1. 사각과 독립. */
   readonly scale: number;
   readonly transparent: boolean;
   readonly animationType: EventAnimationType;
@@ -90,6 +110,8 @@ export function runtimeEventView(
   const position = location ? { x: location.x, y: location.y } : runtimePosition ?? { x: event.x, y: event.y };
   const runtimeDirection = location?.direction ?? runtimePosition?.direction;
   const transparent = page?.graphic.transparent === true;
+  const footprint = normalizeCharacterFootprint(page?.footprint);
+  const passRows = normalizePassRows(page?.passRows, footprint.height);
   return {
     event,
     page,
@@ -99,7 +121,10 @@ export function runtimeEventView(
     trigger: page?.trigger ?? event.trigger,
     priority: page?.priority ?? "same",
     overlapForbidden: page?.overlapForbidden ?? true,
-    footprint: normalizeCharacterFootprint(page?.footprint),
+    footprint,
+    passRows,
+    bodyRect: footprintBounds(position.x, position.y, footprint),
+    passRect: passageBounds(position.x, position.y, footprint, passRows),
     scale: normalizeCharacterScale(page?.graphic.scale),
     transparent,
     animationType: page?.animationType ?? "normal",
@@ -265,14 +290,12 @@ function legacyMovement(event: GameEvent): EventPageMovement {
     : DEFAULT_PAGE_MOVEMENT;
 }
 
-/** 뷰의 발자국 사각. 1x1 이면 그 칸 자신이다. */
-function viewRect(view: RuntimeEventView): FootprintRect {
-  return footprintBounds(view.x, view.y, view.footprint);
-}
-
 /**
- * 사각과 겹치는 이벤트를 찾는다 — 이 파일의 히트테스트 원본.
+ * 사각과 겹치는 이벤트를 찾는다 — 이 파일의 **조사·접촉** 히트테스트 원본.
  * 점 질의(findRuntimeEventAtInMap 등)는 전부 여기에 1x1 사각으로 위임한다.
+ *
+ * `bodyRect` 를 쓴다 — 3x3 의 상체를 보고도 말을 걸 수 있어야 한다(2차 스펙 §3).
+ * 통행 차단은 `passRect` 를 쓰는 별도 계열이다(findBlocking*).
  */
 export function findEventOverlappingRect(
   project: Pick<Project, "maps">,
@@ -284,7 +307,7 @@ export function findEventOverlappingRect(
 ): RuntimeEventView | undefined {
   let found: RuntimeEventView | undefined;
   forEachRuntimeEventView(project, map, session, positions, (event) => {
-    if (!rectsOverlap(viewRect(event), rect)) return false;
+    if (!rectsOverlap(event.bodyRect, rect)) return false;
     if (!matchesTrigger(event.trigger.kind, triggerKind)) return false;
     found = event;
     return true;
@@ -294,7 +317,7 @@ export function findEventOverlappingRect(
 
 /**
  * 이벤트 배열 형태. map 을 안 받아 runtimeEventViewsForMap 을 못 쓰므로
- * 사각 질의 원본에 위임하지 못하고 자기 .find 조건만 발자국으로 바꾼다.
+ * 사각 질의 원본에 위임하지 못하고 자기 .find 조건만 bodyRect 로 바꾼다.
  */
 export function findRuntimeEventAt(
   events: readonly GameEvent[],
@@ -308,10 +331,15 @@ export function findRuntimeEventAt(
   return events
     .filter((event) => !(session.erasedEventIds ?? []).includes(event.id))
     .map((event) => runtimeEventView(event, session, positions))
-    .find((event) => rectsOverlap(viewRect(event), rect) && matchesTrigger(event.trigger.kind, triggerKind));
+    .find((event) => rectsOverlap(event.bodyRect, rect) && matchesTrigger(event.trigger.kind, triggerKind));
 }
 
-/** 사각과 겹치면서 통행을 막는 이벤트. excludeEventId 는 자기 자신(움직이는 NPC)을 뺀다. */
+/**
+ * 사각과 겹치면서 통행을 막는 이벤트 — **passRect** 계열의 원본.
+ * 3x3 몸에 passRows 1 이면 발밑 한 줄만 여기에 걸리고 상체 두 줄은 지나갈 수 있다.
+ *
+ * excludeEventId 는 자기 자신(움직이는 NPC)을 뺀다.
+ */
 export function findBlockingEventOverlappingRect(
   project: Pick<Project, "maps">,
   map: GameMap,
@@ -322,7 +350,7 @@ export function findBlockingEventOverlappingRect(
 ): RuntimeEventView | undefined {
   let found: RuntimeEventView | undefined;
   forEachRuntimeEventView(project, map, session, positions, (event) => {
-    if (!rectsOverlap(viewRect(event), rect)) return false;
+    if (!rectsOverlap(event.passRect, rect)) return false;
     if (event.event.id === excludeEventId) return false;
     if (event.priority !== "same" || !event.overlapForbidden) return false;
     found = event;
@@ -354,7 +382,7 @@ export function findBlockingRuntimeEventAt(
   return events
     .filter((event) => !(session.erasedEventIds ?? []).includes(event.id))
     .map((event) => runtimeEventView(event, session, positions))
-    .find((event) => rectsOverlap(viewRect(event), rect) && event.priority === "same" && event.overlapForbidden);
+    .find((event) => rectsOverlap(event.passRect, rect) && event.priority === "same" && event.overlapForbidden);
 }
 
 export function findBlockingRuntimeEventAtInMap(

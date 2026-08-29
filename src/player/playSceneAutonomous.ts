@@ -1,8 +1,9 @@
 import { store } from "@/project/store";
-// characterSpriteX 는 타일 중앙이다. 폭 2 이상 발자국의 중앙은 footprintSpriteX 이고 아직
-// renderEvents 만 쓴다 — 아래 updateAutonomousNPCs·updateChaseNpc·updateActiveNpcMove 의
-// 걸음 보간은 2차에서 함께 옮긴다. characterDepth.ts 의 footprintSpriteX 주석 참고.
-import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
+// 스프라이트 가로 좌표는 발자국 중앙(footprintSpriteX)이다 — 타일 중앙(characterSpriteX)을
+// 쓰면 폭 2 이상인 몸이 반 칸 왼쪽으로 붙는다. 걸음 보간·착지·첫 프레임 모두 같은 규칙이다.
+import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
+import { UNIT_FOOTPRINT } from "@/project/footprint";
+import { abortHop, applyHopFrame, finishHop } from "@/player/characterHopRuntime";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import {
   applyFacing,
@@ -70,12 +71,30 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
     }
     if (canNpcMove({ project, scene, mover, eventId, from: position, to: { x: nx, y: ny } }, movement)) {
       moveAutonomousRuntimePosition(scene, eventId, nx, ny, frameDir);
-      mover.activeMove = { fromX: position.x, fromY: position.y, toX: nx, toY: ny, dir: frameDir, baseFrame, elapsedMs: 0 };
+      mover.activeMove = {
+        fromX: position.x,
+        fromY: position.y,
+        toX: nx,
+        toY: ny,
+        dir: frameDir,
+        baseFrame,
+        elapsedMs: 0,
+        hop: movement.hop,
+        durationMs: movement.hop?.durationMs,
+      };
       if (sprite) {
-        sprite.setPosition(characterSpriteX(position.x), characterSpriteY(position.y));
+        const startX = footprintSpriteX(position.x, view.footprint);
+        const startY = characterSpriteY(position.y);
+        sprite.setPosition(startX, startY);
         updateCharacterDepth(sprite, view.priority);
         applySpriteAlpha(sprite, mover.opacity);
-        setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
+        // 체공은 첫 프레임부터 정지 프레임으로 간다 — 이륙 프레임만 걸음이면 한 칸 깜빡인다.
+        if (movement.hop) {
+          setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+          applyHopFrame(scene, eventId, sprite, startX, startY, movement.hop, 0);
+        } else {
+          setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
+        }
       }
       scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions));
     } else {
@@ -112,6 +131,8 @@ function updateChaseNpc(
     giveUpRange: mover.giveUpRange,
     pathfind: mover.pathfind,
     kite: mover.kite,
+    // 추격자 자신의 통행 사각. 1x1 이면 canMove 1회로 환원돼 기존 경로와 같다.
+    pass: { footprint: view.footprint, passRows: view.passRows },
   });
   if (decision.kind === "wait") {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
@@ -150,7 +171,7 @@ function updateChaseNpc(
   moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
   mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0 };
   if (sprite) {
-    sprite.setPosition(characterSpriteX(view.x), characterSpriteY(view.y));
+    sprite.setPosition(footprintSpriteX(view.x, view.footprint), characterSpriteY(view.y));
     updateCharacterDepth(sprite, view.priority);
     applySpriteAlpha(sprite, mover.opacity);
     setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);
@@ -187,27 +208,42 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   const { scene, eventId, mover } = target;
   const move = mover.activeMove;
   if (!move) return;
-  move.elapsedMs = Math.min(mover.moveDurationMs, move.elapsedMs + Math.max(0, deltaMs));
-  const progress = move.elapsedMs / mover.moveDurationMs;
+  // 점프·낙하는 이동 속도와 별개의 자기 지속 시간을 갖는다(저작 durationMs).
+  const durationMs = Math.max(1, move.durationMs ?? mover.moveDurationMs);
+  move.elapsedMs = Math.min(durationMs, move.elapsedMs + Math.max(0, deltaMs));
+  const progress = move.elapsedMs / durationMs;
   const sprite = scene.eventSprites.get(eventId);
   const view = runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, eventId);
   const animationType = view?.animationType ?? "normal";
   const priority = view?.priority ?? "same";
+  const hop = move.hop;
+  // 뷰를 못 찾으면 1x1 — footprintSpriteX 는 그때 타일 중앙과 같은 값이 된다.
+  // 보간과 착지 두 곳이 같은 값을 써야 하므로 함수 스코프에 둔다.
+  const footprint = view?.footprint ?? UNIT_FOOTPRINT;
   if (sprite) {
-    sprite.setPosition(
-      characterSpriteX(lerp(move.fromX, move.toX, progress)),
-      characterSpriteY(lerp(move.fromY, move.toY, progress))
-    );
+    const groundX = footprintSpriteX(lerp(move.fromX, move.toX, progress), footprint);
+    const groundY = characterSpriteY(lerp(move.fromY, move.toY, progress));
+    sprite.setPosition(groundX, groundY);
     updateCharacterDepth(sprite, priority);
     applySpriteAlpha(sprite, mover.opacity);
-    setNpcWalkFrame(sprite, move.baseFrame, move.dir, move.elapsedMs, animationType, mover.animationEnabled);
+    // 체공 중에는 걸음을 돌리지 않는다 — 공중에서 발을 젓는 모양이 된다.
+    if (hop) setNpcIdleFrame(sprite, move.baseFrame, move.dir, animationType, mover.animationEnabled);
+    else setNpcWalkFrame(sprite, move.baseFrame, move.dir, move.elapsedMs, animationType, mover.animationEnabled);
+    // 리프트는 프레임 갱신 뒤에 — setFrame 이 원점을 되돌린다(characterHop.ts 계약).
+    if (hop) applyHopFrame(scene, eventId, sprite, groundX, groundY, hop, progress);
   }
-  if (move.elapsedMs < mover.moveDurationMs) return;
+  if (move.elapsedMs < durationMs) return;
   if (sprite) {
-    sprite.setPosition(characterSpriteX(move.toX), characterSpriteY(move.toY));
+    const landX = footprintSpriteX(move.toX, footprint);
+    const landY = characterSpriteY(move.toY);
+    sprite.setPosition(landX, landY);
     updateCharacterDepth(sprite, priority);
     applySpriteAlpha(sprite, mover.opacity);
     setNpcIdleFrame(sprite, move.baseFrame, move.dir, animationType, mover.animationEnabled);
+    if (hop) finishHop(scene, eventId, sprite, landX, landY, hop);
+  } else if (hop) {
+    // 체공 중에 스프라이트가 사라졌다(맵 재렌더/이벤트 소거). 그림자만 남기면 고아가 된다.
+    abortHop(scene, eventId, undefined);
   }
   mover.activeMove = null;
   mover.timer = 0;

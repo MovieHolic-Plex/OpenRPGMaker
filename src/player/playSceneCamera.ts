@@ -3,7 +3,7 @@ import { TILE_SIZE } from "@/assets/bundled";
 import type { GameMap } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
-import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
 
@@ -200,7 +200,9 @@ function resolveCameraTarget(
   if (sprite) return { x: sprite.x + offsetX, y: sprite.y + offsetY };
   const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
     .find((event) => event.event.id === target.eventId);
-  if (view) return { x: characterSpriteX(view.x) + offsetX, y: characterSpriteY(view.y) + offsetY };
+  // 스프라이트가 없는 이벤트로 팬할 때도 **몸 중앙**을 겨눈다. 앵커를 쓰면 3x3 골렘이
+  // 화면 한쪽으로 밀린 채 멈춘다.
+  if (view) return { x: footprintSpriteX(view.x, view.footprint) + offsetX, y: characterSpriteY(view.y) + offsetY };
   return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
 }
 

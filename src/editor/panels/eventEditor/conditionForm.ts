@@ -3,7 +3,7 @@ import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { hasCharacterId } from "@/project/socialKey";
 import { selectedOptionValue, selectWithOptions } from "./dom";
-import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS } from "./options";
+import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, collectNpcActivitySuggestions } from "./options";
 import { databasePicker } from "./switchVariablePicker";
 import { actorPickerControl, itemPickerControl } from "./sharedPickers";
 import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
@@ -961,21 +961,33 @@ export function renderSeasonCondition(
   return row;
 }
 
+export function npcActivitySuggestionList(listId: string): HTMLElement {
+  return el("datalist", {
+    attrs: { id: listId },
+    dataset: { testid: listId },
+    children: collectNpcActivitySuggestions(store.getCurrent()).map((activity) =>
+      el("option", { attrs: { value: activity } })
+    ),
+  });
+}
+
 export function renderNpcActivityCondition(
   cond: Extract<Condition, { kind: "npcActivity" }>,
   onChange: (condition: Condition) => void,
   options: { readonly className?: string; readonly activityTestId?: string } = {}
 ): HTMLElement {
   const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const activityTestId = options.activityTestId ?? "event-condition-npc-activity";
+  const listId = `${activityTestId}-options`;
   const activity = el("input", {
-    attrs: { type: "text", placeholder: "일" },
+    attrs: { type: "text", placeholder: "일", list: listId },
     value: cond.activity,
-    dataset: { testid: options.activityTestId ?? "event-condition-npc-activity" },
+    dataset: { testid: activityTestId },
   }) as HTMLInputElement;
   activity.addEventListener("change", () => {
     onChange({ kind: "npcActivity", activity: activity.value.trim() || cond.activity });
   });
-  row.append(activity);
+  row.append(activity, npcActivitySuggestionList(listId));
   return row;
 }
 

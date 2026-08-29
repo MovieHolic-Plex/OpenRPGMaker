@@ -6,11 +6,12 @@ import {
   battleAnimationDurationMs,
   battleAnimationFrameDurationMs,
 } from "@/player/battleAnimationPlayback";
-import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { UNIT_FOOTPRINT } from "@/project/footprint";
 import { store } from "@/project/store";
-import type { BattleAnimationRecord, ShowAnimationTarget } from "@/project/types";
+import type { BattleAnimationRecord, CharacterFootprint, ShowAnimationTarget } from "@/project/types";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 
 const MAP_ANIMATION_DEPTH = 800_000;
@@ -20,7 +21,12 @@ const CHROMA_TEXTURE_PREFIX = "__rpg_zzu_battle_animation_";
 export type ShowAnimationTileResolver = {
   readonly player: { readonly x: number; readonly y: number };
   readonly currentEventId?: string;
-  eventPosition(eventId: string): { readonly x: number; readonly y: number } | undefined;
+  /** 발자국은 선택이다 — 타일 해석에는 필요 없고, 픽셀 변환이 몸 중앙을 잡을 때만 쓴다. */
+  eventPosition(eventId: string): {
+    readonly x: number;
+    readonly y: number;
+    readonly footprint?: CharacterFootprint;
+  } | undefined;
 };
 
 export function resolveShowAnimationTargetTile(
@@ -153,9 +159,15 @@ function resolveAnimationTargetPixel(
     if (!eventId) return undefined;
     const sprite = scene.eventSprites.get(eventId);
     // 이벤트가 이동 중이어도 시작 시점의 좌표만 캡처하고 이후 추적하지 않는다.
+    // 스프라이트가 있으면 그 x 는 이미 발자국 중앙이다(playSceneMapRuntime·playSceneAutonomous).
     if (sprite) return { x: sprite.x, y: sprite.y - TILE_SIZE / 2 };
-    const tile = resolveShowAnimationTargetTile(target, sceneTileResolver(scene, currentEventId));
-    return tile ? tileCenter(tile.x, tile.y) : undefined;
+    const resolver = sceneTileResolver(scene, currentEventId);
+    const tile = resolveShowAnimationTargetTile(target, resolver);
+    if (!tile) return undefined;
+    // 그림 없는 이벤트(투명 트리거)도 **몸 중앙**에 터뜨린다 — 앵커를 쓰면 3x3 투명 영역의
+    // 왼쪽에 치우친다. 발자국이 없으면 footprintSpriteX 가 곧 타일 중앙이라 항등이다.
+    const footprint = resolver.eventPosition(eventId)?.footprint ?? UNIT_FOOTPRINT;
+    return { x: footprintSpriteX(tile.x, footprint), y: characterSpriteY(tile.y) - TILE_SIZE / 2 };
   }
   return tileCenter(target.x, target.y);
 }

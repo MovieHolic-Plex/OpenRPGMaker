@@ -22,6 +22,8 @@ import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
+import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
+import { destroyAllCharacterShadows } from "@/player/characterShadow";
 import { startMapBgm } from "@/player/mapBgm";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import {
@@ -91,6 +93,8 @@ interface RenderTilesSceneContext<
   };
   /** optional host identity for WeakMap tracking of root y-sort tiles */
   readonly sceneHost?: object;
+  /** 체공 그림자 풀. 이벤트 스프라이트를 파괴할 때 같이 비워야 고아 그림자가 남지 않는다. */
+  characterShadows?: Map<string, import("@/player/characterShadow").ShadowImage>;
   readonly eventSprites: {
     values(): IterableIterator<TSprite>;
     clear(): void;
@@ -166,6 +170,8 @@ function clearEventSprites<
 >(scene: RenderTilesSceneContext<TImage, TSprite>): void {
   for (const sprite of scene.eventSprites.values()) sprite.destroy();
   scene.eventSprites.clear();
+  // 체공 그림자는 이벤트 스프라이트에 딸린다 — 스프라이트를 버리면 같이 버려야 고아가 없다.
+  destroyAllCharacterShadows(scene);
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
 }
@@ -404,6 +410,10 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.fieldSpawnState = null;
   for (const animation of scene.activeMapAnimations) animation.destroy(true);
   scene.activeMapAnimations.clear();
+  // 체공 상태와 그림자는 스프라이트 풀과 수명이 같다 — 남기면 새 맵에서 주인공이 떠 있다.
+  scene.playerHop = null;
+  abortHop(scene, PLAYER_SHADOW_KEY, scene.player);
+  destroyAllCharacterShadows(scene);
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
 }
@@ -442,6 +452,12 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
       priority: view.priority,
       trigger: view.trigger.kind,
       direction: view.direction,
+      // 사각은 view 가 이미 계산해 둔 것을 그대로 싣는다 — 여기서 다시 파생하면 런타임 판정과
+      // 디버그 표면이 갈라진다(그러면 QA 가 통과해도 게임은 틀린 사각으로 돌 수 있다).
+      footprint: view.footprint,
+      passRows: view.passRows,
+      bodyRect: view.bodyRect,
+      passRect: view.passRect,
     };
   }
   scene.runtimeDom.syncRuntimeState({

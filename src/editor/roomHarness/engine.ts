@@ -7,7 +7,7 @@ import { getRoomKit } from "./registry";
 import { loadSession as loadFromBag, listSessions as listFromBag, saveSession as saveToBag } from "./sessionStore";
 import type { RoomHarnessIssue, RoomSession } from "./types";
 import { ToolError, type ToolExecResult } from "@/editor/tools/types";
-import type { Project } from "@/project/types";
+import type { Command, GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 
 const ROOM_SESSION_BAG = "roomHarnessSessions";
@@ -127,6 +127,130 @@ function reconcilePlayerStart(project: Project, mapId: string): string[] {
   ];
 }
 
+function inBounds(map: GameMap, x: number, y: number): boolean {
+  return x >= 0 && y >= 0 && x < map.width && y < map.height;
+}
+
+/** (x,y) 에서 가장 가까운 통행 가능 칸. 원래 착지 의도를 최대한 보존한다. */
+function nearestPassableCell(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number,
+): { readonly x: number; readonly y: number } | null {
+  let best: { x: number; y: number } | null = null;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (let cy = 0; cy < map.height; cy += 1) {
+    for (let cx = 0; cx < map.width; cx += 1) {
+      if (!isPassable(project, map, cx, cy)) continue;
+      const distance = (cx - x) ** 2 + (cy - y) ** 2;
+      if (distance >= bestDistance) continue;
+      bestDistance = distance;
+      best = { x: cx, y: cy };
+    }
+  }
+  return best;
+}
+
+/**
+ * 교체된 맵을 겨냥한 **다른 맵의 transfer 착지점**을 되살린다.
+ *
+ * 2026-08-29 실측: 방 맵은 전면 VOID 로 시작해 방 footprint 만 바닥으로 칠하므로, 기존 맵을
+ * 교체하면 마을 문에서 들어오는 착지 칸이 벽이 되거나(맵 축소 시) 경계 밖으로 나간다.
+ * 커밋 게이트가 `transfer-impassable` / `transfer-bounds` 로 거부하는데, 원인이 모델의 인자가
+ * 아니라 **다른 맵에 있는 좌표**라서 재시도가 전부 실패한다.
+ *
+ * `enforceWalkability` 는 `plan.door` 기준 BFS 만 뚫으므로 외부 착지 칸을 보호하지 않는다.
+ * 시작 위치 보정([[reconcilePlayerStart]])만으로는 이 축이 남는다 — 두 축은 독립이다.
+ */
+function reconcileInboundTransfers(project: Project, mapId: string): string[] {
+  const map = project.maps[mapId];
+  if (!map) return [];
+
+  const broken: Extract<Command, { kind: "transfer" }>[] = [];
+  const collect = (commands: readonly Command[] | undefined): void => {
+    for (const command of commands ?? []) {
+      if (command.kind === "transfer" && command.mapId === mapId) {
+        if (!inBounds(map, command.x, command.y) || !isPassable(project, map, command.x, command.y)) {
+          broken.push(command);
+        }
+      }
+      // 분기 안쪽도 봐야 한다 — 마을 문은 대개 choices/fork 안에 들어 있다.
+      if (command.kind === "choices") {
+        for (const option of command.options) collect(option.branch);
+        collect(command.cancelBranch);
+      } else if (command.kind === "fork") {
+        collect(command.then);
+        collect(command.else);
+      } else if (command.kind === "loop") {
+        collect(command.body);
+      } else if (command.kind === "shop") {
+        collect(command.transactionBranch);
+      }
+    }
+  };
+  for (const candidate of Object.values(project.maps)) {
+    for (const event of candidate.events) {
+      collect(event.commands);
+      for (const page of event.pages ?? []) collect(page.commands);
+    }
+  }
+  for (const commonEvent of project.commonEvents) collect(commonEvent.commands);
+
+  if (broken.length === 0) return [];
+
+  // 착지 칸이 여러 개 깨졌어도 목적지는 보통 하나(현관)다. 좌표별로 한 번만 계산하고
+  // 경고도 좌표별로 접는다 — 같은 문구 15줄이 되면 정작 다른 경고를 못 찾는다.
+  const moved = new Map<string, { from: { x: number; y: number }; to: { x: number; y: number }; count: number }>();
+  const unresolved = new Set<string>();
+  for (const command of broken) {
+    const key = `${command.x},${command.y}`;
+    const already = moved.get(key);
+    if (already) {
+      command.x = already.to.x;
+      command.y = already.to.y;
+      already.count += 1;
+      continue;
+    }
+    if (unresolved.has(key)) continue;
+    const target = nearestPassableCell(project, map, command.x, command.y);
+    if (!target) {
+      unresolved.add(key);
+      continue;
+    }
+    moved.set(key, { from: { x: command.x, y: command.y }, to: { x: target.x, y: target.y }, count: 1 });
+    command.x = target.x;
+    command.y = target.y;
+  }
+
+  const warnings: string[] = [];
+  for (const entry of moved.values()) {
+    warnings.push(
+      `방 맵이 ${mapId}을 교체해 이 맵으로 들어오는 착지 좌표 (${entry.from.x}, ${entry.from.y})가 ` +
+        `통행 불가/경계 밖이 되었습니다 — 가장 가까운 통행 가능한 칸 (${entry.to.x}, ${entry.to.y})로 옮겼습니다` +
+        `${entry.count > 1 ? ` (transfer ${entry.count}건)` : ""}. 다른 위치를 원하면 해당 transfer 명령을 직접 고치세요.`,
+    );
+  }
+  for (const key of unresolved) {
+    warnings.push(
+      `방 맵이 ${mapId}을 교체해 착지 좌표 (${key})가 통행 불가가 되었으나 대신할 통행 가능한 칸이 없습니다 — ` +
+        `바닥(floor) 레이어를 먼저 시공하세요.`,
+    );
+  }
+  return warnings;
+}
+
+/**
+ * 기존 맵을 통째로 교체한 직후에 깨지는 **프로젝트 수준 계약**을 보정한다.
+ *
+ * 맵 하나만 보면 완결이지만 프로젝트에는 그 맵을 가리키는 좌표가 두 종류 더 있다:
+ * 플레이어 시작 위치와 다른 맵에서 들어오는 transfer 착지점. 둘 다 커밋 게이트가
+ * `error` 로 막으므로, 보정하지 않으면 시공 자체가 성공했는데도 적용이 거부된다.
+ */
+function reconcileMapReplacement(project: Project, mapId: string): string[] {
+  return [...reconcilePlayerStart(project, mapId), ...reconcileInboundTransfers(project, mapId)];
+}
+
 /** 세션 체크리스트의 다음 open 레이어 하나를 시공/검증. */
 export function advanceRoomBuild(project: Project, sessionId: string, forceLayer?: string): ToolExecResult {
   const session = loadRoomSession(project, sessionId);
@@ -154,10 +278,14 @@ export function advanceRoomBuild(project: Project, sessionId: string, forceLayer
   });
   saveSession(project, session);
   const nextLayer = kit.buildOrder.find((l) => session.checklist[l] === "open") ?? null;
+  // 마지막 레이어까지 끝난 시점에만 보정한다. 시작 시점(빈 맵)에는 통행 가능한 칸이 없어
+  // 착지점을 옮길 곳이 없고, 중간 레이어에서 옮기면 다음 레이어가 그 칸을 다시 막을 수 있다.
+  const reconcileWarnings = nextLayer === null ? reconcileMapReplacement(project, session.mapId) : [];
+  const warnings = [...result.warnings, ...reconcileWarnings];
   return {
     summary: result.summary,
-    warnings: [...result.warnings],
-    data: { sessionId, layer, ok: result.ok, warnings: result.warnings, checklist: session.checklist, nextLayer, done: !nextLayer },
+    warnings,
+    data: { sessionId, layer, ok: result.ok, warnings, checklist: session.checklist, nextLayer, done: !nextLayer },
   };
 }
 
@@ -181,10 +309,14 @@ export function runRoomPipeline(project: Project, kitId: string, args: Record<st
   const mapId = kit.mapIdOf(plan);
   project.maps[mapId] = result.map;
   registerMapInTree(project, mapId);
+  // 멀티턴 경로(startRoomSession)에만 있던 보정을 원샷에도 건다. 이게 빠져 있어서
+  // "이 맵을 집으로 만들어라" 가 `시작 위치가 통행 불가 타일입니다` 로 거부됐다(2026-08-29 실측).
+  const reconcileWarnings = reconcileMapReplacement(project, mapId);
+  const warnings = [...result.warnings, ...reconcileWarnings];
   return {
     summary: result.ok ? `${kit.kitId} 파이프라인 완료 ${mapId}` : `${kit.kitId} 파이프라인 이슈 ${result.warnings.length}`,
-    warnings: [...result.warnings],
-    data: { kitId: kit.kitId, mapId, plan, log: result.log, warnings: result.warnings, ok: result.ok },
+    warnings,
+    data: { kitId: kit.kitId, mapId, plan, log: result.log, warnings, ok: result.ok },
   };
 }
 

@@ -3,6 +3,7 @@ import { store } from "@/project/store";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite, updateCharacterDepth } from "@/player/characterDepth";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { followerPositions } from "@/project/followers";
+import { normalizeCharacterScale } from "@/project/footprint";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 export function syncFollowerSprites(scene: PlaySceneContext): void {
@@ -33,6 +34,9 @@ export function syncFollowerSprites(scene: PlaySceneContext): void {
       sprite.setPosition(characterSpriteX(position.x), characterSpriteY(position.y));
       updateCharacterDepth(sprite, "same");
     }
+    // 동료도 배율을 따른다 — 큰 동료가 이벤트로 서 있을 때와 따라올 때 크기가 달라지면
+    // 같은 캐릭터로 보이지 않는다. 배율 없는 동료는 1(항등).
+    sprite.setScale(normalizeCharacterScale(position.follower.graphic.scale));
     sprite.setFrame(frame);
   }
   for (const key of [...scene.followerSprites.keys()]) {
