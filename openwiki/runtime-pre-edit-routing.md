@@ -20,3 +20,35 @@
   `fixedDirection`, `fourFrame` 은 저작되지만 `playSceneAutonomousSprites.ts` 가 normal 로 취급한다.
   정지 애니메이션은 무버 없는 이벤트에도 프레임 클록이 필요하므로 별도 작업이다.
 - **Action combat runtime:** for real-time action combat (`system.actionCombat` + `map.actionCombat`), routing, pure rule modules in `src/battle/action/`, and scene integration in `src/player/playSceneActionCombat.ts`, see `openwiki/runtime-action-combat.md`.
+
+## 정수리 이모트 (2026-08-29)
+
+캐릭터 머리 위에 잠깐 뜨는 표현 아이콘. 어휘의 단일 소스는 `src/project/emotes.ts` 의
+**`EMOTE_KINDS` 12종**(heart · heartBroken · smile · exclamation · question · music · sweat ·
+anger · ellipsis · sleep · sparkle · idea)이고 **배열 순서 = 시트 프레임 인덱스**다.
+
+- **에셋:** `public/assets/generated-emotes.png` (192×16, 16px 프레임 12장). 손으로 딴 그림이
+  아니라 `scripts/lib/emoteSheet/render.mjs` 가 코드로 그리고 `node scripts/gen-emote-sheet.mjs`
+  가 기록한다. 도형만 칠하면 `outlinePass` 가 1px 어두운 테두리를 자동으로 둘러 어떤 타일 위에서도
+  읽힌다. `--check` 는 커밋된 PNG 와 바이트 비교(드리프트 게이트)이고 `test/emoteSheet.test.ts` 가
+  같은 대조를 테스트로도 고정한다. **목록을 늘리거나 순서를 바꾸면 시트를 다시 생성해야 한다.**
+- **로딩:** `loadBundledAssets` 가 항상 이미지로 싣고 `registerBundledFrames` → `registerEmoteFrames`
+  가 16px 숫자 프레임을 등록한다(작물 시트와 같은 방식). `BUNDLED_IMAGE_ASSETS` 에는 넣지 않는다 —
+  엔진 소유 에셋이라 자료 보관함·리소스 픽커에 노출할 것이 아니다.
+- **표시:** `src/player/playSceneEmotes.ts`. depth `400_000` (캐릭터 200k·above 이벤트 300k 위).
+  기준점은 `sprite.y - sprite.displayHeight - 4` — 타일 크기로 고정하면 24px 캐릭셋의 머리를
+  파고든다(실측). 팝(140ms) → 상승 → 페이드(200ms)이고 **주인 1명당 1개**라 다시 띄우면 교체된다.
+  NPC 는 걸으므로 `syncSceneEmotes` 가 매 프레임 위치를 다시 잡고(`PlayScene.update`),
+  주인이 사라지면 함께 정리한다. 상승분은 y 가 아니라 별도 `lift` 값을 트윈한다 —
+  y 를 직접 트윈하면 매 프레임 동기화와 서로를 덮어쓴다.
+- **명령:** `showEmote { target: "player" | { eventId }, emote, durationMs? }`.
+  `eventId: ""` 는 showAnimation 과 같은 규약으로 "이 명령을 실행한 이벤트"를 뜻한다.
+  씬이 즉시 재개하므로 **대사·이동을 막지 않는다**(대기 옵션 없음). 병렬 이벤트 경로
+  (`playSceneSchedulers.applyParallelStep`)도 지원한다. 표시 시간은 200~10,000ms 로 클램프된다.
+- **자동 이모트(저작 0줄):** 선물은 반응 등급 → `giftRankEmote`(loved 하트 · liked 미소 ·
+  neutral 말줄임 · disliked 화남), 대화 호감도는 `friendshipDeltaEmote`. 둘 다 NPC 관계
+  (`characterId`)가 없으면 애초에 호감도가 안 오르므로 이모트도 안 뜬다.
+- **QA:** 이모트는 Phaser 스프라이트라 DOM testid 로 볼 수 없다. `__oprnEmotes` 훅
+  (`describeSceneEmotes`)이 target·frame·좌표·alpha 를 노출하고, 런타임 QA 하네스의
+  `emoteCountAtLeast` / `emoteFrames` 기대축이 그것으로 판정한다.
+  `npm run qa:runtime -- --scenario emote` → `verify-shots/runtime-qa/emote/SUMMARY.md`.

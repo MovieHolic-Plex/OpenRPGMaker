@@ -797,6 +797,7 @@ function validateCommand(
     case "returnToTitle":
     case "setFlag":
     case "setSelfSwitch":
+    case "showEmote":
       return;
   }
   const exhaustive: never = command;

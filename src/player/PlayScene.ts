@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { clearAllSceneEmotes, syncSceneEmotes } from "@/player/playSceneEmotes";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import {
   loadBundledAssets,
@@ -291,6 +292,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 이벤트 마커는 화면 좌표로 놓여야 한다 — 카메라를 반영하지 않으면 무대의 스크롤 영역이
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
+    syncSceneEmotes(this);
     if (this.zoneFeedback) syncPlaySceneZoneFeedback(this, this.zoneFeedback, deltaMs);
     this.syncHandSlotChip();
     if (this.minimap) {
@@ -315,6 +317,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
+    clearAllSceneEmotes(this);
     loadSceneMap(this, mapId, options);
     initializeActionCombatForScene(this);
     resetEncounterCounter();

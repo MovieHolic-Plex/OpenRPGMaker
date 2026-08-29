@@ -18,6 +18,7 @@ import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
+import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
 import type { Project } from "@/project/types";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 
@@ -118,6 +119,7 @@ export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void 
     scene.load.image(asset.id, asset.path);
   }
   scene.load.image(TEX_DIALOGUE_FRAME, ASSET_DIALOGUE_FRAME);
+  scene.load.image(EMOTE_TEXTURE_KEY, EMOTE_ASSET_PATH);
 
   scene.load.on("loaderror", (file: Phaser.Loader.File) => {
     if (
@@ -160,6 +162,21 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
   ]);
   registerEasyRpgCharsetTextures(scene, usedTextures);
   registerFarmingCropFrames(scene, usedTextures);
+  registerEmoteFrames(scene);
+}
+
+// 이모트 시트(16x16 프레임 가로 나열) — 프레임 인덱스 = EMOTE_KINDS 순서.
+function registerEmoteFrames(scene: Phaser.Scene): void {
+  if (!scene.textures.exists(EMOTE_TEXTURE_KEY)) {
+    console.error(`[assets] ${EMOTE_TEXTURE_KEY} 가 로드되지 않았습니다. node scripts/gen-emote-sheet.mjs 를 실행하세요.`);
+    return;
+  }
+  const texture = scene.textures.get(EMOTE_TEXTURE_KEY);
+  const existing = texture.getFrameNames();
+  EMOTE_KINDS.forEach((_kind, frameIndex) => {
+    if (existing.includes(String(frameIndex))) return;
+    texture.add(frameIndex, 0, frameIndex * EMOTE_FRAME_SIZE, 0, EMOTE_FRAME_SIZE, EMOTE_FRAME_SIZE);
+  });
 }
 
 // 작물 성장 시트(16x16 프레임 가로 나열)를 성장 단계 인덱스로 접근할 수 있게 숫자 프레임을 등록한다.

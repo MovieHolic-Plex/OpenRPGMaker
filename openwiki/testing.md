@@ -206,3 +206,11 @@ Evidence expectations:
   페이지 이동은 굴리지 않는다. 그래서 `{ kind: "expect", eventAt: <원래 좌표> }` 는 NPC 가
   실제로 움직이든 안 움직이든 통과한다 — "안 움직인다" 류 회귀를 이 러너로 증명하지 말라.
   단위 레벨은 `test/runtimeEventPageMovement.test.ts`, 실물은 브라우저 Test Play 로 잡는다.
+
+## 이모트 QA 픽스처와 auto 일회성 규약 (2026-08-29)
+
+`test/fixtures/projects/oprn-emote-qa.json` 은 12종 전시용 `auto` 이벤트를 쓴다. 각 이벤트는
+1페이지에서 `showEmote` + `setSelfSwitch A` 를 실행하고, 2페이지가 `selfSwitch A` 조건으로
+받는다. **반복 실행이면 팝 애니메이션이 매 프레임 다시 시작해 깜빡인다** — auto 이벤트로 이모트를
+띄울 때는 셀프 스위치로 한 번만 실행되게 잠가야 한다. 픽스처 캐릭셋이 `__MISSING`(초록
+와이어프레임)으로 그려지는 것은 dialogue 픽스처에서 물려받은 기존 성질이고 이모트와 무관하다.

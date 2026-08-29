@@ -154,6 +154,7 @@ async function readObserved(page) {
       testids: [...document.querySelectorAll("[data-testid]")].map((node) => node.dataset.testid),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
+      emotes: window.__oprnEmotes ? window.__oprnEmotes() : null,
     };
   });
 }

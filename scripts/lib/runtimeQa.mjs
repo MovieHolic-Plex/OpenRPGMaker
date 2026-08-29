@@ -152,6 +152,20 @@ export function evaluateExpect(expected, observed) {
     if (testids.includes(testid)) failures.push(`testid 잔존: ${testid}`);
   }
 
+  // 이모트는 Phaser 스프라이트라 testid 로 볼 수 없다 — __oprnEmotes 훅 관측치로 판정한다.
+  if (expected.emoteCountAtLeast !== undefined) {
+    const emotes = observed.emotes;
+    if (emotes === null || emotes === undefined) failures.push("이모트 훅 없음 — 정수리 이모트를 확인할 수 없다");
+    else if (emotes.length < expected.emoteCountAtLeast) {
+      failures.push(`emoteCountAtLeast: 기대 ${expected.emoteCountAtLeast} 이상, 실제 ${emotes.length}`);
+    }
+  }
+  if (expected.emoteFrames !== undefined) {
+    const frames = (observed.emotes ?? []).map((emote) => emote.frame);
+    for (const frame of expected.emoteFrames) {
+      if (!frames.includes(String(frame))) failures.push(`이모트 프레임 누락: ${frame} (실제 ${frames.join(",") || "없음"})`);
+    }
+  }
   if (expected.playerSpriteResourceNonEmpty && !playerSpriteResourceId) {
     failures.push("playerSprite: 리소스 ID 가 비어 있다(스프라이트 누락)");
   }

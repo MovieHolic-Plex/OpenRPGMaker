@@ -36,6 +36,10 @@ export type RuntimeQaExpect = {
   readonly testidPresent?: readonly string[];
   readonly testidAbsent?: readonly string[];
   readonly playerSpriteResourceNonEmpty?: boolean;
+  /** 정수리 이모트 개수 하한(__oprnEmotes 훅). */
+  readonly emoteCountAtLeast?: number;
+  /** 떠 있어야 하는 이모트 프레임 인덱스(EMOTE_KINDS 순서). */
+  readonly emoteFrames?: readonly (number | string)[];
   /** Phaser 텍스처가 실제로 로드됐는지(__MISSING 플레이스홀더 검출). */
   readonly playerSpriteTextureLoaded?: boolean;
 };

@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { describeSceneEmotes, type SceneEmoteDebug } from "@/player/playSceneEmotes";
 import type { Dir, Input } from "@/player/input";
 import { reseedSessionRng, type PlaySession } from "@/project/session";
 import { applyDebugOp, applyStatePreset, type DebugOp, type StatePreset } from "@/testing/debugSession";
@@ -44,6 +45,7 @@ type TestHookWindow = Window & {
   __oprnPlayerSprite?: () => PlayerSpriteDebug | null;
   __oprnCharacterSprites?: () => CharacterSpriteDebug | null;
   __oprnCamera?: () => CameraDebug;
+  __oprnEmotes?: () => readonly SceneEmoteDebug[];
   __oprnSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
   __oprnSetMediaState?: (state: MediaStateDebug) => void;
   __oprnDebug?: RuntimeDebugHook;
@@ -148,6 +150,7 @@ export function installPlaySceneTestHooks(
   w.__oprnPlayerSprite = () => playerSpriteDebug(scene);
   w.__oprnCharacterSprites = () => characterSpritesDebug(scene);
   w.__oprnCamera = () => cameraDebug(scene);
+  w.__oprnEmotes = () => describeSceneEmotes(scene as unknown as Parameters<typeof describeSceneEmotes>[0]);
   w.__oprnActionCombat = () => actionCombatDebug(scene);
   // 런타임 디버그 쓰기 훅(항상 활성). 조작 후 syncRuntimeState로 화면/상태 JSON을 갱신한다.
   const applyAndSync = (op: DebugOp): void => {

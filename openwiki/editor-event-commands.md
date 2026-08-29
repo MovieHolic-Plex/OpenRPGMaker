@@ -52,3 +52,15 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 - Command rows and page tabs receive aggregate issue badges from `eventDraftValidator.ts`. Issue buttons navigate to the affected page and nested command path (or a known field testid). Apply, OK, and selected-event Test all share the same fatal-error gate; warnings are visible but non-blocking.
 - The auxiliary surface is deliberately labelled `스크립트 둘러보기`, not runtime preview. It expands loops once, lists all choice branches, and does not execute label/goto jumps; those limits must remain visible in `event-script-preview-disclaimer`. Actual behavior is verified only through `이 이벤트 테스트`, which enters the real player/interpreter path.
 - Focused coverage: `test/eventDraftValidator.test.ts`, `test/eventEditorTrustLoop.test.ts`, `test/eventBeginnerTemplates.test.ts`, and `test/selectedEventTestModal.test.ts`.
+
+## showEmote — 정수리 이모트 명령 (2026-08-29)
+
+`showEmote` 는 대사창을 열지 않고 감정만 보여주는 씬 표면 명령이다. 편집기 폼은 스키마
+(`schema/catalog.ts`)에서 파생되고, 이모트 어휘·라벨은 `src/project/emotes.ts` 의
+`EMOTE_KINDS` / `EMOTE_LABELS` 가 소유한다. 명령 하나를 추가하며 손댄 레지스트리 전체 목록은
+런타임 위키(`openwiki/runtime-pre-edit-routing.md` 정수리 이모트 절)와
+`test/commandContracts/showEmote.contract.test.ts` 를 함께 보라. 계약 요지:
+
+- 세션 상태를 바꾸지 않는다(스위치·변수·셀프스위치 무영향).
+- `durationMs` 는 200~10,000ms 클램프, 생략 시 1,200ms.
+- 저장 왕복에서 `target` · `emote` · `durationMs` 가 보존된다.

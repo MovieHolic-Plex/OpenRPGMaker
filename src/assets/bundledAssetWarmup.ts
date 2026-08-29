@@ -8,6 +8,7 @@ import {
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
   TEX_DIALOGUE_FRAME,
 } from "@/assets/bundled";
+import { EMOTE_ASSET_PATH } from "@/project/emotes";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import type { Project } from "@/project/types";
 
@@ -19,7 +20,7 @@ let warmKey = "";
 /** 현재 프로젝트에 참조된 번들 이미지 경로(상대 path) 목록. */
 export function listBundledPlayAssetPaths(project?: Project): readonly string[] {
   const used = project ? projectReferencedTextureKeys(project) : null;
-  const paths = new Set<string>([ASSET_TILESET, DIALOGUE_FRAME_PATH]);
+  const paths = new Set<string>([ASSET_TILESET, DIALOGUE_FRAME_PATH, EMOTE_ASSET_PATH]);
 
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (used && !used.has(asset.textureKey)) continue;
