@@ -11,6 +11,8 @@ import { generateAiPreviewThemeMap } from "@/project/aiPreviewThemeGrammar";
 import { resolveAiPreviewTheme } from "@/project/aiPreviewThemeResolver";
 import { canMove, tilePassability } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
+import { eventBodyRect, eventCoversPoint } from "@/project/eventFootprintQuery";
+import { rectCells } from "@/project/footprint";
 import type { GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 
 export type AiPreviewRequest = {
@@ -196,8 +198,12 @@ function boundaryIsSolid(map: GameMap, tileset: TilesetDef): boolean {
   return true;
 }
 
+// 도달 판정은 이벤트의 **몸 사각** 아무 칸에 닿으면 성공이다. 앵커 한 칸만 보던 예전 판정은
+// 2x2 이벤트의 앵커가 벽에 얹혀 있고 나머지 칸이 열려 있으면 "도달 불가" 로 오판했다.
+// 1x1 이면 몸 사각이 앵커 한 칸이라 판정이 같다.
 function eventIsReachable(project: Project, map: GameMap, tileset: TilesetDef, event: GameEvent): boolean {
-  if (!inBounds(map, event.x, event.y) || !isMapTilePassable(map, tileset, event.x, event.y)) return false;
+  const body = rectCells(eventBodyRect(event));
+  if (!body.some((cell) => inBounds(map, cell.x, cell.y) && isMapTilePassable(map, tileset, cell.x, cell.y))) return false;
   const seen = new Set<string>();
   const queue = [{ ...project.startPos }];
   while (queue.length > 0) {
@@ -206,7 +212,7 @@ function eventIsReachable(project: Project, map: GameMap, tileset: TilesetDef, e
     const key = `${current.x},${current.y}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    if (current.x === event.x && current.y === event.y) return true;
+    if (eventCoversPoint(event, current.x, current.y)) return true;
     for (const next of neighbors(current.x, current.y)) {
       const nextKey = `${next.x},${next.y}`;
       if (seen.has(nextKey) || !canMove(project, map, current.x, current.y, next.x, next.y)) continue;

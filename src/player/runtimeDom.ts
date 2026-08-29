@@ -18,7 +18,7 @@ import {
   type PictureTransform,
 } from "@/player/pictures/pictureTween";
 import { store } from "@/project/store";
-import type { Project } from "@/project/types";
+import type { CharacterFootprint, FootprintRect, Project } from "@/project/types";
 import { formatGameTime, type GameTime, type TimePhase } from "@/project/gameTime";
 import type { PlayResolution } from "@/project/types";
 
@@ -43,6 +43,29 @@ function nowMs(): number {
     : 0;
 }
 
+/**
+ * 마커를 이벤트의 몸 사각 크기·위치로 맞춘다. 좌표는 dataset 에 맵 픽셀로 남기고
+ * `placeMarker` 가 카메라 기준으로 환산한다 — 카메라가 움직여도 크기는 다시 안 잰다.
+ */
+function applyMarkerBodyRect(marker: HTMLElement, view: RuntimeEventView): void {
+  const width = (view.bodyRect.right - view.bodyRect.left + 1) * TILE_SIZE;
+  const height = (view.bodyRect.bottom - view.bodyRect.top + 1) * TILE_SIZE;
+  marker.dataset.mapX = `${view.bodyRect.left * TILE_SIZE}`;
+  marker.dataset.mapY = `${view.bodyRect.top * TILE_SIZE}`;
+  marker.dataset.mapW = `${width}`;
+  marker.dataset.mapH = `${height}`;
+  marker.style.width = `${width}px`;
+  marker.style.height = `${height}px`;
+}
+
+/**
+ * `__oprnDebug` 가 노출하는 이벤트 상태. QA 시나리오가 단정할 수 있는 것은 여기 있는 것뿐이다.
+ *
+ * 사각을 **파생값까지 실어 보내는** 이유: 크기(footprint/passRows)만 주면 소비자가 발밑 앵커
+ * 규약(top = y - (height-1), 짝수 폭은 앵커가 중앙 왼쪽)을 손으로 다시 구현해야 하고, 그 계산이
+ * 어긋나면 시나리오가 조용히 엉뚱한 칸을 단정한다. 실제로 1차 QA 는 발자국 좌표를 시나리오
+ * 주석에 손으로 적어 두는 것이 전부였다.
+ */
 export interface RuntimeEventSnapshot {
   readonly x: number;
   readonly y: number;
@@ -50,6 +73,14 @@ export interface RuntimeEventSnapshot {
   readonly priority: string;
   readonly trigger: string;
   readonly direction?: string;
+  /** 활성 페이지의 몸 크기(타일). 저작이 없으면 1x1. */
+  readonly footprint: CharacterFootprint;
+  /** 몸 사각 하단 몇 행이 통행을 막는가. 생략 저작이면 몸 높이와 같다. */
+  readonly passRows: number;
+  /** 조사·전투·클릭이 쓰는 사각. */
+  readonly bodyRect: FootprintRect;
+  /** 통행 차단이 쓰는 사각. passRows 가 몸 높이면 bodyRect 와 같다. */
+  readonly passRect: FootprintRect;
 }
 
 export interface RuntimeStateSnapshot {
@@ -196,9 +227,13 @@ export class RuntimeDomOverlay {
     const mapY = Number(marker.dataset.mapY ?? "0");
     const screenX = mapX - this.cameraX;
     const screenY = mapY - this.cameraY;
+    // 마커 자기 크기로 가시성을 본다. 한 칸으로 고정하면 3x3 이벤트가 왼쪽·위로 두 칸
+    // 걸쳐 있을 때 아직 화면에 보이는데도 접혀 클릭이 죽는다.
+    const markerW = Number(marker.dataset.mapW ?? TILE_SIZE) || TILE_SIZE;
+    const markerH = Number(marker.dataset.mapH ?? TILE_SIZE) || TILE_SIZE;
     const visible =
-      screenX > -TILE_SIZE
-      && screenY > -TILE_SIZE
+      screenX > -markerW
+      && screenY > -markerH
       && screenX < this.stageBounds.width
       && screenY < this.stageBounds.height;
     marker.dataset.offscreen = visible ? "" : "1";
@@ -223,10 +258,9 @@ export class RuntimeDomOverlay {
       this.eventMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    marker.dataset.mapX = `${view.x * TILE_SIZE}`;
-    marker.dataset.mapY = `${view.y * TILE_SIZE}`;
-    marker.style.width = `${TILE_SIZE}px`;
-    marker.style.height = `${TILE_SIZE}px`;
+    // 히트박스는 **몸 사각**이다. 앵커 한 칸으로 두면 3x3 골렘의 머리를 클릭해도 아무 일이
+    // 없다 — 이 마커가 `pointer-events: auto` 실행 히트박스이기 때문이다.
+    applyMarkerBodyRect(marker, view);
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     marker.dataset.trigger = view.trigger.kind;
@@ -260,10 +294,7 @@ export class RuntimeDomOverlay {
       this.spriteMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    marker.dataset.mapX = `${view.x * TILE_SIZE}`;
-    marker.dataset.mapY = `${view.y * TILE_SIZE}`;
-    marker.style.width = `${TILE_SIZE}px`;
-    marker.style.height = `${TILE_SIZE}px`;
+    applyMarkerBodyRect(marker, view);
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     this.placeMarker(marker);

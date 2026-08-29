@@ -6,7 +6,7 @@
 // 둘 다 필요로 한다. footprint.ts 는 의존성 없는 순수 프리미티브로 남긴다.
 
 import { inBounds, isPassable } from "./collision";
-import { footprintBounds, characterFootprintCells } from "./footprint";
+import { footprintBounds, characterFootprintCells, passageBounds } from "./footprint";
 import { findBlockingEventOverlappingRect, type RuntimeEventPositions } from "./runtimeEventState";
 import type { CharacterFootprint, GameMap, Project } from "./types";
 import type { PlaySessionLike } from "./sessionRuntimeTypes";
@@ -30,18 +30,27 @@ export function resolveFootprintLanding(
   x: number,
   y: number,
   footprint: CharacterFootprint,
-  maxRadius = 8
+  maxRadius = 8,
+  passRows?: number
 ): LandingPoint {
   if (footprint.width === 1 && footprint.height === 1) return { x, y };
-  if (footprintFits(project, map, session, positions, x, y, footprint)) return { x, y };
+  if (footprintFits(project, map, session, positions, x, y, footprint, passRows)) return { x, y };
   for (let radius = 1; radius <= maxRadius; radius += 1) {
     for (const candidate of ringCells(x, y, radius)) {
-      if (footprintFits(project, map, session, positions, candidate.x, candidate.y, footprint)) return candidate;
+      if (footprintFits(project, map, session, positions, candidate.x, candidate.y, footprint, passRows)) return candidate;
     }
   }
   return { x, y };
 }
 
+/**
+ * 이 앵커에 몸이 들어가는가. 검사는 **통행 사각**으로 한다 — passRows 로 상체를 열어 둔
+ * 3x3 은 벽을 스치며 걸어갈 수 있으니, 워프도 같은 자리에 내려앉을 수 있어야 한다.
+ * 착지가 이동보다 엄격하면 "걸어서는 가는데 문으로는 못 들어가는" 칸이 생긴다.
+ *
+ * `passRows` 생략 시 몸 사각 전체다(= 1차 동작). 맵 경계는 통행 사각이 아니라 **몸 사각**으로
+ * 보는데, 상체가 맵 밖으로 나가면 통행과 무관하게 그림이 잘리기 때문이다.
+ */
 function footprintFits(
   project: Project,
   map: GameMap,
@@ -49,13 +58,20 @@ function footprintFits(
   positions: RuntimeEventPositions,
   x: number,
   y: number,
-  footprint: CharacterFootprint
+  footprint: CharacterFootprint,
+  passRows?: number
 ): boolean {
   for (const cell of characterFootprintCells(x, y, footprint)) {
     if (!inBounds(map, cell.x, cell.y)) return false;
-    if (!isPassable(project, map, cell.x, cell.y)) return false;
   }
-  const rect = footprintBounds(x, y, footprint);
+  const rect = passRows === undefined
+    ? footprintBounds(x, y, footprint)
+    : passageBounds(x, y, footprint, passRows);
+  for (let cy = rect.top; cy <= rect.bottom; cy += 1) {
+    for (let cx = rect.left; cx <= rect.right; cx += 1) {
+      if (!isPassable(project, map, cx, cy)) return false;
+    }
+  }
   return findBlockingEventOverlappingRect(project, map, session, positions, rect) === undefined;
 }
 

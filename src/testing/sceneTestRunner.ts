@@ -17,7 +17,7 @@ import {
 import { syncActorVitals } from "@/project/sessionVitals";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import type { Command, Dir, GameMap, Project } from "@/project/types";
-import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
@@ -58,6 +58,7 @@ import {
   type FieldSpawnRuntimeState,
 } from "@/player/fieldSpawns";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
+import { nearestCellInRect, pointRect, rectsOverlap } from "@/project/footprint";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import {
@@ -514,11 +515,24 @@ function findGiftTargetEvent(state: RunnerState, eventId: string | undefined): R
   const events = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions);
   if (eventId) return events.find((view) => view.event.id === eventId);
   const delta = directionDelta(state.facing);
-  const front = events.find(
-    (view) => view.trigger.kind === "action" && view.x === state.session.x + delta.x && view.y === state.session.y + delta.y
-  );
+  // 조사와 같은 판정으로 찾는다 — **몸 사각** 겹침. 앵커 점 비교로는 3x3 NPC 의 가슴을 보고
+  // 선물을 주려 할 때 "대상 없음" 이 되어, 게임에서는 되는 조작이 시나리오에서만 실패했다.
+  const front = findGiftEventOverlapping(events, state.session.x + delta.x, state.session.y + delta.y);
   if (front) return front;
-  return events.find((view) => view.trigger.kind === "action" && view.x === state.session.x && view.y === state.session.y);
+  return findGiftEventOverlapping(events, state.session.x, state.session.y);
+}
+
+/**
+ * 이 칸을 몸 사각으로 덮는 action 이벤트. 배열 순서가 우선순위다(설계 결정 D5).
+ * 프로브가 사각이 아니라 **점**인 이유: 런타임 조사(handleAction)도 앵커 정면 한 칸을 묻는다.
+ * 여기서 사각으로 넓히면 시나리오가 게임보다 관대해져 통과가 증거가 되지 않는다.
+ */
+function findGiftEventOverlapping(
+  events: readonly RuntimeEventView[],
+  x: number,
+  y: number
+): RuntimeEventView | undefined {
+  return events.find((view) => view.trigger.kind === "action" && rectsOverlap(view.bodyRect, pointRect(x, y)));
 }
 
 function runInteractStep(state: RunnerState): string | null {
@@ -1178,7 +1192,8 @@ function resolveCameraTarget(
   const map = currentMap(state);
   if (map) {
     const event = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((view) => view.event.id === target.eventId);
-    if (event) return { x: characterSpriteX(event.x) + offsetX, y: characterSpriteY(event.y) + offsetY };
+    // 프로덕션 카메라(playSceneCamera)와 같은 식이어야 한다 — 이벤트는 **몸 중앙**을 본다.
+    if (event) return { x: footprintSpriteX(event.x, event.footprint) + offsetX, y: characterSpriteY(event.y) + offsetY };
   }
   return { x: characterSpriteX(state.session.x) + offsetX, y: characterSpriteY(state.session.y) + offsetY };
 }
@@ -1536,7 +1551,11 @@ function expectEventDistance(
   if (!map) return `이벤트 거리 확인 맵 없음: ${mapId}`;
   const event = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((view) => view.event.id === expected.eventId);
   if (!event) return `이벤트 없음: ${expected.eventId} (맵 ${mapId})`;
-  const distance = Math.abs(event.x - state.session.x) + Math.abs(event.y - state.session.y);
+  // 거리는 앵커끼리가 아니라 **몸 사각까지**로 잰다. 3x3 NPC 의 앵커는 발밑 가운데라, 몸이
+  // 플레이어에 닿아 있어도 앵커 맨해튼 거리는 2 로 나온다 — "가까이 왔다" 를 검증하는 시나리오가
+  // 실제로 붙어 있는데도 실패한다. 1x1 이면 최근접 칸이 앵커 자신이라 값이 같다.
+  const near = nearestCellInRect(event.bodyRect, state.session.x, state.session.y);
+  const distance = Math.abs(near.x - state.session.x) + Math.abs(near.y - state.session.y);
   if (distance >= expected.distance) {
     return `이벤트 ${expected.eventId} 거리: 기대 < ${expected.distance}, 실제 ${distance}`;
   }

@@ -2,7 +2,7 @@ import { store } from "@/project/store";
 // characterSpriteX 는 타일 중앙이다. 폭 2 이상 발자국의 중앙은 footprintSpriteX 이고 아직
 // renderEvents 만 쓴다 — 아래 updateAutonomousNPCs·updateChaseNpc·updateActiveNpcMove 의
 // 걸음 보간은 2차에서 함께 옮긴다. characterDepth.ts 의 footprintSpriteX 주석 참고.
-import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
+import { characterSpriteX, characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
 import { abortHop, applyHopFrame, finishHop } from "@/player/characterHopRuntime";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import {
@@ -133,6 +133,8 @@ function updateChaseNpc(
     giveUpRange: mover.giveUpRange,
     pathfind: mover.pathfind,
     kite: mover.kite,
+    // 추격자 자신의 통행 사각. 1x1 이면 canMove 1회로 환원돼 기존 경로와 같다.
+    pass: { footprint: view.footprint, passRows: view.passRows },
   });
   if (decision.kind === "wait") {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
@@ -171,7 +173,7 @@ function updateChaseNpc(
   moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
   mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0 };
   if (sprite) {
-    sprite.setPosition(characterSpriteX(view.x), characterSpriteY(view.y));
+    sprite.setPosition(footprintSpriteX(view.x, view.footprint), characterSpriteY(view.y));
     updateCharacterDepth(sprite, view.priority);
     applySpriteAlpha(sprite, mover.opacity);
     setNpcWalkFrame(sprite, baseFrame, frameDir, 0, view.animationType, mover.animationEnabled);

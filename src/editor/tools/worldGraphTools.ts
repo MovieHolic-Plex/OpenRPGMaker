@@ -22,6 +22,7 @@ import {
   type WorldGraphSide,
 } from "@/project/worldGraph";
 import type { Command, EventPage, GameEvent, GameMap, Project, TransferFade } from "@/project/types";
+import { eventAtPoint } from "@/project/eventFootprintQuery";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -553,7 +554,8 @@ function assertPointInMap(map: GameMap, point: Point, label: string): void {
 }
 
 function eventAt(map: GameMap, point: Point): GameEvent | undefined {
-  return map.events.find((event) => event.x === point.x && event.y === point.y);
+  // 몸 사각으로 찾는다 — 2x2 이벤트의 비앵커 칸에 관문을 놓으면 몸통에 겹쳐 박힌다.
+  return eventAtPoint(map, point.x, point.y);
 }
 
 function pointRect(point: Point) {

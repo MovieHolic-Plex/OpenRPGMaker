@@ -1,4 +1,5 @@
 import { inBounds, isPassable } from "../collision";
+import { eventAtPoint } from "../eventFootprintQuery";
 import type { Command, GameEvent, GameMap, Project } from "../types";
 import type { LintIssue } from "../lint/projectLint";
 import {
@@ -112,7 +113,8 @@ function validateTransferDestination(
       message: `월드 그래프 transfer 목적지가 통행 불가입니다: ${map.id} (${x}, ${y})`,
     });
   }
-  const overlap = map.events.find((event) => event.x === x && event.y === y);
+  // 몸 사각으로 본다 — 2x2 이벤트의 비앵커 칸에 워프를 꽂아도 착지가 몸과 겹친다.
+  const overlap = eventAtPoint(map, x, y);
   if (overlap) {
     issues.push({
       severity: "error",

@@ -1,6 +1,7 @@
 import type {
   AssetSet,
   ActorId,
+  CharacterFootprint,
   Dir,
   FlagName,
   MapId,
@@ -216,6 +217,10 @@ export interface FieldSpawnDef {
   maxAlive?: number;
   respawnSec?: number;
   graphic?: EventPageGraphic;
+  /** 스폰되는 몸 크기(타일). 생략하면 1x1 — 기존 스폰과 같다. */
+  footprint?: CharacterFootprint;
+  /** 몸 사각 하단 몇 행이 길을 막는가. 생략하면 몸 높이 전체(항등). */
+  passRows?: number;
   chase?: boolean;
   /** 이 스폰 인스턴스의 진영. 생략 시 EnemyRecord.factionId, 그것도 없으면 예약 진영 enemy. */
   factionId?: string;

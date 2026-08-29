@@ -29,7 +29,7 @@ const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 
 /** 훅을 요구하는 op — 이들 앞에서는 런타임 훅 설치를 기다린다. */
 const HOOK_OPS = new Set([
-  "seed", "dir", "face", "action", "attack", "skill", "teleport",
+  "seed", "dir", "hold", "face", "action", "attack", "skill", "teleport",
   // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
   "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
 ]);
@@ -146,6 +146,14 @@ async function applyOp(page, op, runState) {
       return;
     case "dir":
       await page.evaluate((dir) => window.__oprnInput.dir(dir), op.dir ?? null);
+      return;
+    case "hold":
+      // 눌렀다 → 시간 경과 → 뗀다. 뗀 뒤 한 프레임 정착까지 본다(타일 스냅이 남아 있을 수 있다).
+      // 경과 시간을 조건 대기로 바꿀 수 없는 유일한 경우가 "막혔다" 검증이다 — 기다릴 사건이 없다.
+      await page.evaluate((dir) => window.__oprnInput.dir(dir), op.dir ?? null);
+      await page.waitForTimeout(op.ms);
+      await page.evaluate(() => window.__oprnInput.dir(null));
+      await page.waitForFunction(() => true);
       return;
     case "face":
       await page.evaluate((dir) => window.__oprnInput.face(dir), op.dir);
@@ -289,8 +297,13 @@ function readBattlerGeometryInPage() {
   };
 }
 
-async function readObserved(page, { auditBattleTextNodes = false } = {}) {
-  const base = await page.evaluate(() => {
+/**
+ * @param watchedEventIds 발자국 사각을 실어 올 이벤트 id. 시나리오가 이름을 댄 것만 싣는다 —
+ *   맵마다 이벤트가 수십 개라 전량은 매니페스트를 노이즈로 덮는다(이 하네스의 목적은
+ *   컨텍스트 절약이다).
+ */
+async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [] } = {}) {
+  const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
     const full = debug ? debug.readState() : null;
     // 매니페스트에는 압축 상태만 남긴다 — switches/inventory 전량은 노이즈이고
@@ -338,7 +351,7 @@ async function readObserved(page, { auditBattleTextNodes = false } = {}) {
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
-  });
+  }, watchedEventIds);
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -474,6 +487,13 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
 
+  // 시나리오 전체가 이름을 댄 이벤트를 한 번만 모은다. 비트마다 다시 걷지 않는 이유는
+  // 관측이 비트 사이에 달라지면 안 되기 때문이다 — 어떤 비트에서는 사각을 읽고 어떤 비트에서는
+  // 안 읽으면 매니페스트가 비교 불가능해진다.
+  const watchedEventIds = [
+    ...new Set(scenario.beats.flatMap((beat) => Object.keys(beat.expect?.eventRects ?? {}))),
+  ];
+
   let hooksReady = false;
   const beats = [];
   // op 들 사이에 살아 있는 런 상태(그림자 픽셀 측정용 표본 프레임).
@@ -498,6 +518,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     }
     const observed = await readObserved(page, {
       auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
+      watchedEventIds,
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
@@ -544,6 +565,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       state: observed.state,
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,
+      // 발자국 사각은 단정한 비트에만 싣는다. 안 쓰는 비트에 빈 객체를 남기면 매니페스트가
+      // "사각을 봤다" 처럼 읽힌다.
+      ...(Object.keys(observed.events ?? {}).length > 0 ? { events: observed.events } : {}),
     });
   }
 

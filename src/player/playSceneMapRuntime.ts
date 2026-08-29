@@ -421,6 +421,12 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
       priority: view.priority,
       trigger: view.trigger.kind,
       direction: view.direction,
+      // 사각은 view 가 이미 계산해 둔 것을 그대로 싣는다 — 여기서 다시 파생하면 런타임 판정과
+      // 디버그 표면이 갈라진다(그러면 QA 가 통과해도 게임은 틀린 사각으로 돌 수 있다).
+      footprint: view.footprint,
+      passRows: view.passRows,
+      bodyRect: view.bodyRect,
+      passRect: view.passRect,
     };
   }
   scene.runtimeDom.syncRuntimeState({

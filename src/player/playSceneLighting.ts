@@ -158,7 +158,11 @@ function resolveLightAnchor(
     if (follower) return { x: follower.x, y: follower.y };
     const view = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
       .find((entry) => entry.event.id === anchor.eventId);
-    return view ? { x: view.x, y: view.y } : undefined;
+    // 스프라이트가 없으면 뷰에서 몸 중앙을 계산한다 — spriteToTilePosition 과 같은 좌표계다
+    // (중앙 타일 인덱스). Y 는 발밑이 곧 앵커라 그대로다.
+    return view
+      ? { x: view.bodyRect.left + view.footprint.width / 2 - 0.5, y: view.y }
+      : undefined;
   }
   return { x: anchor.x, y: anchor.y };
 }

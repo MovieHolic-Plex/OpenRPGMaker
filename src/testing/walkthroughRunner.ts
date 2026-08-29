@@ -13,6 +13,7 @@
 import { createBattleRuntime } from "@/battle/runtime";
 import type { BattleRuntimeOptions } from "@/battle/types";
 import { checkReachability } from "@/project/lint/reachability";
+import { eventAtPoint } from "@/project/eventFootprintQuery";
 import { resolveEventPage } from "@/project/io";
 import { getSwitch, getVariable, startSession, type PlaySession } from "@/project/session";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
@@ -343,9 +344,11 @@ function runStep(state: RunnerState, step: WalkthroughStep): string | null {
         const map = state.project.maps[state.session.currentMapId];
         if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
         // eventId 우선, 없으면 좌표(x,y)의 이벤트를 찾는다.
+        // 좌표로 찾을 때는 **몸 사각**으로 본다 — 3x3 NPC 의 가슴 좌표를 적은 워크스루가
+        // "이벤트 없음" 으로 죽지 않도록. 1x1 이면 앵커 점 비교와 같다.
         const event = step.eventId
           ? map.events.find((e) => e.id === step.eventId)
-          : map.events.find((e) => e.x === step.x && e.y === step.y);
+          : eventAtPoint(map, step.x ?? Number.NaN, step.y ?? Number.NaN);
         if (!event) return `이벤트 없음: ${step.eventId ?? `(${step.x},${step.y})`} (맵 ${map.id})`;
         const page = event.pages?.length ? resolveEventPage(event, state.session) : undefined;
         const commands = page?.commands ?? event.commands;

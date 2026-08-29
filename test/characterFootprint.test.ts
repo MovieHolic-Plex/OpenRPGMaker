@@ -12,6 +12,8 @@ import {
   footprintContains,
   normalizeCharacterFootprint,
   normalizeCharacterScale,
+  normalizePassRows,
+  passageBounds,
   pointRect,
   rectsOverlap,
 } from "@/project/footprint";
@@ -181,5 +183,84 @@ describe("비정규 발자국은 fail-open 하지 않는다", () => {
     expect(footprintBounds(5, 7, { width: 2.9, height: 1 })).toEqual(
       footprintBounds(5, 7, { width: 2, height: 1 })
     );
+  });
+});
+
+// 2차 스펙 §1 — 몸 사각과 통행 사각의 분리.
+describe("passageBounds — 통행 사각은 몸 사각의 하단 부분사각", () => {
+  // 항등: passRows 가 몸 높이와 같으면(= 생략 시 정규화 기본값) 두 사각이 같다.
+  // 이 항등이 깨지면 passRows 없는 기존 프로젝트의 통행 동작이 바뀐다.
+  it("행 수가 몸 높이와 같으면 몸 사각과 정확히 같다", () => {
+    for (const height of [1, 2, 3, CHARACTER_FOOTPRINT_AXIS_MAX]) {
+      const fp = { width: 3, height };
+      expect(passageBounds(5, 7, fp, height), `높이 ${height}`).toEqual(footprintBounds(5, 7, fp));
+    }
+  });
+
+  it("행 수 1 이면 발밑 한 줄이다 — 좌우 폭은 몸과 같다", () => {
+    const rect = passageBounds(5, 7, { width: 3, height: 3 }, 1);
+    expect(rect).toEqual({ left: 4, right: 6, top: 7, bottom: 7 });
+  });
+
+  it("하단에 고정된다 — top 만 올라오고 bottom·left·right 는 몸과 같다", () => {
+    const fp = { width: 4, height: 4 };
+    const body = footprintBounds(9, 12, fp);
+    for (const rows of [1, 2, 3, 4]) {
+      const pass = passageBounds(9, 12, fp, rows);
+      expect(pass.bottom, `${rows}행의 bottom`).toBe(body.bottom);
+      expect(pass.left, `${rows}행의 left`).toBe(body.left);
+      expect(pass.right, `${rows}행의 right`).toBe(body.right);
+      expect(pass.top, `${rows}행의 top`).toBe(body.bottom - (rows - 1));
+    }
+  });
+
+  // fail-closed: 행 수가 적을수록 통행이 열린다. 비정규 값은 다 막는 쪽으로 굳어야 한다.
+  //
+  // 이 테스트가 실패하려면: passageBounds 의 safePassRows 를 지우면 rows=0 이
+  // top = bottom + 1 인 역사각을 만들고 첫 단정이 깨진다.
+  it("비정규 행 수는 몸 전체로 올라간다 — fail-closed", () => {
+    const fp = { width: 2, height: 3 };
+    const body = footprintBounds(5, 7, fp);
+    for (const rows of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(passageBounds(5, 7, fp, rows), `행 수 ${rows}`).toEqual(body);
+    }
+  });
+
+  it("몸 높이를 넘는 행 수는 몸 높이로 클램프된다", () => {
+    const fp = { width: 2, height: 2 };
+    expect(passageBounds(5, 7, fp, 99)).toEqual(footprintBounds(5, 7, fp));
+  });
+
+  it("역사각이 되지 않으므로 통행 검사가 빈손으로 통과하지 않는다", () => {
+    for (const rows of [0, -5, Number.NaN, 2.5]) {
+      const rect = passageBounds(5, 7, { width: 3, height: 3 }, rows);
+      expect(rect.top <= rect.bottom, `행 수 ${rows}`).toBe(true);
+      expect(rect.left <= rect.right, `행 수 ${rows}`).toBe(true);
+    }
+  });
+});
+
+describe("normalizePassRows — 직렬화 방어", () => {
+  it("생략·비정규는 몸 높이 전체다 — 그게 항등 기본값이다", () => {
+    for (const bad of [undefined, null, "2", {}, [], Number.NaN, 0, -3, 2.5, true]) {
+      expect(normalizePassRows(bad, 3), `${JSON.stringify(bad) ?? "undefined"}`).toBe(3);
+    }
+  });
+
+  it("범위 안의 정수는 그대로다", () => {
+    expect(normalizePassRows(1, 3)).toBe(1);
+    expect(normalizePassRows(2, 3)).toBe(2);
+  });
+
+  it("몸 높이를 넘으면 몸 높이로 클램프한다", () => {
+    expect(normalizePassRows(9, 3)).toBe(3);
+  });
+
+  it("몸 높이가 비정규면 clampAxis 와 같은 경계로 굳는다", () => {
+    expect(normalizePassRows(5, 0)).toBe(1);
+    expect(normalizePassRows(5, Number.NaN)).toBe(1);
+    // 몸 높이가 상한을 넘으면 상한이 천장이 된다. 범위 안의 5 는 그대로 5 다.
+    expect(normalizePassRows(5, CHARACTER_FOOTPRINT_AXIS_MAX + 10)).toBe(5);
+    expect(normalizePassRows(99, CHARACTER_FOOTPRINT_AXIS_MAX + 10)).toBe(CHARACTER_FOOTPRINT_AXIS_MAX);
   });
 });

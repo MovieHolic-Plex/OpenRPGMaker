@@ -13,6 +13,12 @@ export type RuntimeQaOp =
       readonly actorIds?: readonly string[];
     }
   | { readonly kind: "dir"; readonly dir: RuntimeQaDir | null }
+  /**
+   * 방향을 `ms` 동안 밀고 있다가 뗀다. 금지된 고정 `wait` 와 다르다 — 경과 시간이 곧 자극이고,
+   * "막혀서 아무 일도 안 일어난다" 는 조건으로 표현할 수 없다. 이동이 성공하는 쪽은
+   * {@link RuntimeQaOp} 의 `waitForPosition` 으로 조건 대기해야 한다.
+   */
+  | { readonly kind: "hold"; readonly dir: RuntimeQaDir | null; readonly ms: number }
   | { readonly kind: "face"; readonly dir: RuntimeQaDir }
   | { readonly kind: "action" }
   | { readonly kind: "attack" }
@@ -56,6 +62,13 @@ export type RuntimeQaExpect = {
   readonly mapId?: string;
   readonly x?: number;
   readonly y?: number;
+  /**
+   * "x 가 이 값이 **아니어야** 한다". 대조군을 표현하기 위한 부등 기대치다 — 동등만으로는
+   * "골렘이 없으면 움직인다" 를 단정할 수 없고, 그러면 입력이 죽어도 "안 움직였다" 가 통과한다.
+   */
+  readonly xNot?: number;
+  /** y 의 부등 기대치. {@link RuntimeQaExpect.xNot} 참조. */
+  readonly yNot?: number;
   readonly gold?: number;
   /** 직전 전투 처리 결과(session.battleResult). */
   readonly battleResult?: "victory" | "defeat" | "escape" | null;
@@ -64,6 +77,12 @@ export type RuntimeQaExpect = {
   readonly playerSpriteResourceNonEmpty?: boolean;
   /** Phaser 텍스처가 실제로 로드됐는지(__MISSING 플레이스홀더 검출). */
   readonly playerSpriteTextureLoaded?: boolean;
+  /**
+   * 이벤트 id → 런타임이 계산한 발자국 사각. `runtime-state-json` DOM 노드에서 읽는다.
+   * 좌표 이동 단정과 달리 판정의 **입력**을 직접 본다 — 사각이 틀렸는데 결과만 맞는 우연을 배제한다.
+   * 사각은 네 변을 전부 적어야 한다(일부만 적으면 나머지가 조용히 통과한다).
+   */
+  readonly eventRects?: Readonly<Record<string, RuntimeQaEventRects>>;
   readonly battleTextClean?: boolean;
   readonly battlerGeometry?: RuntimeQaBattlerGeometrySpec;
   /** 체공 높이 하한(px). 리프트는 원점 채널에 있어 x/y 로는 보이지 않는다. */
@@ -107,6 +126,30 @@ export type RuntimeQaCanvasView = {
   readonly zoom: number;
 };
 
+/**
+ * **타일** 좌표 사각(발자국). 픽셀 상자인 {@link RuntimeQaRect} 와 축이 다르다 —
+ * 이름을 갈라 둔 이유: 둘 다 left/right/top/bottom 을 갖지만 단위가 타일 대 CSS 픽셀이고,
+ * 섞이면 "18" 이 19번째 타일인지 18px 인지 알 수 없게 된다.
+ */
+export type RuntimeQaFootprintRect = {
+  readonly left: number;
+  readonly right: number;
+  readonly top: number;
+  readonly bottom: number;
+};
+
+export type RuntimeQaEventRects = {
+  /** 활성 페이지의 몸 크기(타일). 저작이 없으면 1x1. */
+  readonly footprint?: { readonly width: number; readonly height: number };
+  /** 몸 사각 하단 몇 행이 통행을 막는가. 생략 저작이면 몸 높이와 같다. */
+  readonly passRows?: number;
+  /** 조사·전투·클릭이 쓰는 사각. */
+  readonly bodyRect?: RuntimeQaFootprintRect;
+  /** 통행 차단이 쓰는 사각. */
+  readonly passRect?: RuntimeQaFootprintRect;
+};
+
+/** 실브라우저 DOM 상자(CSS 픽셀). 전투 배틀러 기하가 쓴다. */
 export type RuntimeQaRect = {
   readonly top: number;
   readonly bottom: number;
@@ -190,6 +233,11 @@ export type RuntimeQaBattleTextNode = {
 export type RuntimeQaObserved = {
   /** 런타임 훅 설치 전(타이틀 화면 등)에는 null. */
   readonly state: RuntimeQaCompactState | null;
+  /**
+   * 시나리오가 `eventRects` 로 이름을 댄 이벤트의 사각. 전량이 아닌 이유는 맵마다 이벤트가
+   * 수십 개라 매니페스트가 노이즈로 덮이기 때문이다. 이름을 안 댄 런에서는 빈 객체다.
+   */
+  readonly events?: Readonly<Record<string, RuntimeQaEventRects>>;
   readonly testids: readonly string[];
   readonly playerSpriteResourceId: string | null;
   readonly playerSpriteTextureKey: string | null;
@@ -215,6 +263,8 @@ export type RuntimeQaBeatReport = {
   readonly shot: string | null;
   readonly failures: readonly string[];
   readonly state: RuntimeQaCompactState | null;
+  /** 사각을 단정한 비트에만 실린다 — 안 쓰는 비트에 빈 객체를 남기면 "사각을 봤다" 로 읽힌다. */
+  readonly events?: Readonly<Record<string, RuntimeQaEventRects>>;
   readonly battlers?: RuntimeQaBattlerGeometry;
   /** 그림자 농도 측정값(요구한 비트에만 있다). */
   readonly shadowInk?: number;

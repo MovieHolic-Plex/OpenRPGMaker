@@ -16,6 +16,10 @@ export const OP_KINDS = [
   "seed",
   "setVitals",
   "dir",
+  // 방향을 정해진 시간 동안 **밀고 있는다.** 금지된 고정 `wait` 와 다른 것이다: 여기서는
+  // 경과 시간이 곧 자극이고, 기다릴 조건이 존재하지 않는다("막혀서 아무 일도 안 일어난다"를
+  // 조건으로 표현할 수 없다). 이동이 성공하는 쪽은 waitForPosition 으로 조건 대기해야 한다.
+  "hold",
   "face",
   "action",
   "attack",
@@ -58,6 +62,8 @@ export function normalizeScenario(scenario) {
     if (seen.has(beat.id)) throw new Error(`중복된 비트 ID: ${beat.id}`);
     seen.add(beat.id);
     for (const op of beat.ops ?? []) {
+      // 고정 sleep 은 금지다. 이동 성공은 waitForPosition, UI 전이는 waitFor 로 조건 대기하고,
+      // 시간 자체가 자극인 경우(막힘 검증)는 이름이 붙은 `hold` 를 쓴다.
       if (op.kind === "wait") throw new Error(`고정 wait op 은 런타임 게이트에서 금지됨: ${beat.id}`);
       if (!OP_KINDS.includes(op.kind)) throw new Error(`알 수 없는 op: ${op.kind}`);
     }
@@ -133,6 +139,18 @@ export function renderSummary(report) {
   }
 
   return `${lines.join("\n")}\n`;
+}
+
+/**
+ * 스칼라는 동등, 객체는 **키 집합까지** 동등. JSON.stringify 비교를 안 쓰는 이유는 키 순서에
+ * 의존해서다 — 사각을 `{top,left,...}` 순으로 적었을 때 조용히 실패하면 진짜 결함처럼 보인다.
+ */
+function sameShape(actual, wanted) {
+  if (wanted === null || typeof wanted !== "object") return actual === wanted;
+  if (actual === null || typeof actual !== "object") return false;
+  const wantedKeys = Object.keys(wanted);
+  if (wantedKeys.length !== Object.keys(actual).length) return false;
+  return wantedKeys.every((key) => sameShape(actual[key], wanted[key]));
 }
 
 /**
@@ -303,6 +321,43 @@ export function evaluateExpect(expected, observed) {
   scalar("y", (s) => s.y);
   scalar("gold", (s) => s.gold);
   scalar("battleResult", (s) => s.battleResult);
+
+  // 부등 기대치 — "값이 **아니어야** 한다". 동등만으로는 대조군을 표현할 수 없다:
+  // "골렘이 있으면 안 움직인다"(x 동등)는 입력이 아예 죽어도 통과하므로, 골렘 없는 대조군에서
+  // "움직였다"를 단정해야 비로소 증거가 된다. 그것이 `xNot`/`yNot` 이다.
+  // 기존 키(x/y/…)의 의미는 건드리지 않는다 — 다른 시나리오가 이 파일을 공유한다.
+  const scalarNot = (key, read) => {
+    if (expected[key] === undefined) return;
+    if (state === null) {
+      failures.push(`런타임 훅 없음 — 상태를 읽을 수 없다(${key} 확인 불가)`);
+      return;
+    }
+    const actual = read(state);
+    if (actual === expected[key]) failures.push(`${key}: 기대 ≠ ${expected[key]}, 실제 ${actual}`);
+  };
+  scalarNot("xNot", (s) => s.x);
+  scalarNot("yNot", (s) => s.y);
+
+  // 이벤트 사각 기대치 — 런타임이 **스스로 계산한** 몸/통행 사각을 그대로 단정한다.
+  // 좌표 이동으로 "막혔다 / 지나갔다" 를 보는 것과는 다른 축이다: 저건 판정의 결과고, 이건
+  // 판정의 입력이다. 결과만 보면 우연히 맞을 수 있다(다른 이유로 막혔거나, 사각이 틀렸는데도
+  // 그 칸만 우연히 통행 가능이거나). 사각을 직접 읽으면 그 우연이 배제된다.
+  //
+  // 사각 하나는 네 변을 **전부** 적어야 한다. 일부만 적으면 나머지가 조용히 통과해서,
+  // "top 만 단정했는데 통과했다" 가 사각 전체를 검증한 것처럼 읽힌다.
+  for (const [eventId, wanted] of Object.entries(expected.eventRects ?? {})) {
+    const actual = observed.events?.[eventId];
+    if (!actual) {
+      failures.push(`이벤트 스냅샷 없음: ${eventId} — 활성 페이지가 없거나 다른 맵이다`);
+      continue;
+    }
+    for (const [field, want] of Object.entries(wanted)) {
+      const got = actual[field];
+      if (!sameShape(got, want)) {
+        failures.push(`${eventId}.${field}: 기대 ${JSON.stringify(want)}, 실제 ${JSON.stringify(got)}`);
+      }
+    }
+  }
 
   for (const testid of expected.testidPresent ?? []) {
     if (!testids.includes(testid)) failures.push(`testid 누락: ${testid}`);
