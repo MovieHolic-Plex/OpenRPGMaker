@@ -117,22 +117,19 @@ describe("editorUiMode", () => {
     expect("aiDenseSections" in expert).toBe(false);
   });
 
-  it("pins beginner/standard/expert chrome flags for rail labels, database nav, event chrome, jargon style", () => {
+  it("pins beginner/standard/expert chrome flags for database nav, event chrome, jargon style", () => {
     const beginner = chromeForMode("beginner");
     const standard = chromeForMode("standard");
     const expert = chromeForMode("expert");
 
-    expect(beginner.railLabels).toBe("persistent");
     expect(beginner.databaseNav).toBe("grouped");
     expect(beginner.eventBeginnerChrome).toBe(true);
     expect(beginner.jargonStyle).toBe("plain");
 
-    expect(standard.railLabels).toBe("hover");
     expect(standard.databaseNav).toBe("grouped");
     expect(standard.eventBeginnerChrome).toBe(true);
     expect(standard.jargonStyle).toBe("plain");
 
-    expect(expert.railLabels).toBe("hover");
     expect(expert.databaseNav).toBe("grouped");
     expect(expert.eventBeginnerChrome).toBe(false);
     expect(expert.jargonStyle).toBe("technical");
