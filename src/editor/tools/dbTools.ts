@@ -34,6 +34,7 @@ import type {
   TroopRecord,
 } from "@/project/types";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
+import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
@@ -1031,23 +1032,35 @@ const giveStarterMonsters: ToolDefinition = {
     const map = draft.maps[mapId];
     if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${mapId}`, { code: "map-not-found" });
     const eventId = eventArgs.eventId ?? uniqueEventId(map.events, "ev_starter_monsters");
+    const requestedX = eventArgs.x ?? Math.min(map.width - 1, draft.startPos.x + 1);
+    const requestedY = eventArgs.y ?? draft.startPos.y;
+    const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
+      kind: "interaction",
+      ignoreEventId: eventId,
+      label: "스타팅 몬스터 선택 이벤트",
+      code: "starter-monsters-impassable",
+    });
     const event = starterMonsterEvent(draft, {
       mapId,
       eventId,
-      x: eventArgs.x ?? Math.min(map.width - 1, draft.startPos.x + 1),
-      y: eventArgs.y ?? draft.startPos.y,
+      x: placement.x,
+      y: placement.y,
       name: eventArgs.name ?? "스타팅 몬스터",
       speciesIds,
     });
     const index = map.events.findIndex((entry) => entry.id === eventId);
     if (index >= 0) map.events[index] = event;
     else map.events.push(event);
-    const warnings = draft.system.monsterCollection === true
-      ? undefined
-      : ["system.monsterCollection 이 꺼져 있어 전투에 '포획' 커맨드가 뜨지 않습니다. configure_monster_system(enabled:true) 를 먼저 실행하세요."];
+    const warnings: string[] = [];
+    if (placement.adjusted) {
+      warnings.push(`스타팅 몬스터 선택 이벤트 위치 자동 조정: (${requestedX}, ${requestedY}) → (${placement.x}, ${placement.y})`);
+    }
+    if (draft.system.monsterCollection !== true) {
+      warnings.push("system.monsterCollection 이 꺼져 있어 전투에 '포획' 커맨드가 뜨지 않습니다. configure_monster_system(enabled:true) 를 먼저 실행하세요.");
+    }
     return {
       summary: `스타팅 몬스터 선택 이벤트 '${event.id}' 생성(${speciesIds.length}종)`,
-      warnings,
+      warnings: warnings.length > 0 ? warnings : undefined,
       data: { mapId, eventId: event.id, speciesIds },
     };
   },
