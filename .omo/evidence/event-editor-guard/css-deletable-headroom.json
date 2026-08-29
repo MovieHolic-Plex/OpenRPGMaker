@@ -1,0 +1,46 @@
+{
+ "perSheet": {
+  "mode": "per-sheet",
+  "filter": "event-editor",
+  "total": 56,
+  "deletable": 8,
+  "caught": 48,
+  "deletableLines": 832,
+  "caughtLines": 20039,
+  "deletableFiles": [
+   "editor/event-editor-legacy.css (4줄)",
+   "editor/event-editor-legacy.part-1.css (460줄)",
+   "editor/event-editor-rich-forms.css (11줄)",
+   "editor/event-editor.command-preview.css (15줄)",
+   "editor/event-editor.command-preview/07-actor-battle-authoring-surface.css (224줄)",
+   "editor/event-editor.modern.css (8줄)",
+   "editor/event-editor.p1-pagetabs.css (97줄)",
+   "editor/event-editor.part-3.css (13줄)"
+  ],
+  "note": "개별 통과는 «죽은 코드»가 아니라 «세대 간 중복»일 수 있다. --combined 로 동시에 비워 확인해야 삭제 가능 여부가 정해진다."
+ },
+ "combined": {
+  "mode": "combined",
+  "filter": "event-editor",
+  "sheets": 8,
+  "lines": 832,
+  "exitCode": 0,
+  "propertyLoss": false,
+  "valueChangeCount": 2,
+  "valueChangeDetail": [
+   ".active — 값 변경 2건 [background:var(--bg-panel-2) / color:var(--event-modern-accent, #4a57d6)]",
+   ".btn — 값 변경 3건 [color:var(--event-modern-accent, #4a57d6) / display:block / height:72px]"
+  ],
+  "files": [
+   "editor/event-editor-legacy.css",
+   "editor/event-editor-legacy.part-1.css",
+   "editor/event-editor-rich-forms.css",
+   "editor/event-editor.command-preview.css",
+   "editor/event-editor.command-preview/07-actor-battle-authoring-surface.css",
+   "editor/event-editor.modern.css",
+   "editor/event-editor.p1-pagetabs.css",
+   "editor/event-editor.part-3.css"
+  ],
+  "note": "속성 손실 0. 다만 값 변경이 남아 있으면 화면은 바뀔 수 있다 — 그 선언들은 사람이 확인해야 한다."
+ }
+}

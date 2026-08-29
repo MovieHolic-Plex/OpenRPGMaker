@@ -1,7 +1,7 @@
 {
- "total": 6,
- "applied": 6,
- "caught": 6,
+ "total": 7,
+ "applied": 7,
+ "caught": 7,
  "results": [
   {
    "name": "commit-배선-삭제",
@@ -203,6 +203,41 @@
       "AssertionError: [포털(피커/모달)] 하한선 위반",
       "하한선 미달: commandPickerFavorites.classCount 30 < 31",
       "── 함께 관측된 표면 변화 1건 (원인은 여기 있다) ──"
+     ]
+    }
+   },
+   "caught": true
+  },
+  {
+   "name": "미리보기-재렌더-누락",
+   "hole": "구멍 7 — 커밋은 되는데 화면이 안 따라온다 (커밋 프로브로는 안 보인다)",
+   "applied": true,
+   "verdicts": {
+    "interaction": {
+     "exitCode": 1,
+     "red": true,
+     "named": true,
+     "caught": true,
+     "crashedButSilent": false,
+     "evidence": [
+      "× 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 반응하던 컨트롤이 no-change 로 퇴화하지 않는다",
+      "→ 반응 퇴화 3건 — 조건부 표시/재렌더 로직이 죽었는지 확인하라 (change 핸들러 안의 syncVisibility 계열 호출, 조건부 렌더 분기가 살아 있는지). 컨트롤을 의도적으로 없앴다면 /home/main/z-project/rpg-zzu-event-editor-guard/test/fixtures/interactionNoChangeAllowlis",
+      "moveEvent / move-route-repeat-checkbox: 반응이 죽었다 → \"self-only 컨트롤 값 변경 1개 [move-route-repeat-checkbox: input[checkbox]{}→input[checkbox]{checked}]\"",
+      "moveEvent / move-route-skippable-checkbox: 반응이 죽었다 → \"self-only 컨트롤 값 변경 1개 [move-route-skippable-checkbox: input[checkbox]{}→input[checkbox]{checked}]\""
+     ],
+     "detail": [
+      "× 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 반응하던 컨트롤이 no-change 로 퇴화하지 않는다",
+      "→ 반응 퇴화 3건 — 조건부 표시/재렌더 로직이 죽었는지 확인하라 (change 핸들러 안의 syncVisibility 계열 호출, 조건부 렌더 분기가 살아 있는지). 컨트롤을 의도적으로 없앴다면 /home/main/z-project/rpg-zzu-event-editor-guard/test/fixtures/interactionNoChangeAllowlis",
+      "moveEvent / move-route-repeat-checkbox: 반응이 죽었다 → \"self-only 컨트롤 값 변경 1개 [move-route-repeat-checkbox: input[checkbox]{}→input[checkbox]{checked}]\"",
+      "moveEvent / move-route-skippable-checkbox: 반응이 죽었다 → \"self-only 컨트롤 값 변경 1개 [move-route-skippable-checkbox: input[checkbox]{}→input[checkbox]{checked}]\"",
+      "moveEvent / move-route-wait-checkbox: 반응이 죽었다 → \"self-only 컨트롤 값 변경 1개 [move-route-wait-checkbox: input[checkbox]{}→input[checkbox]{checked}]\": expected [ …(3) ] to deeply equal []",
+      "× 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "→ [상호작용 후 폼] 하한선 위반",
+      "하한선 미달: moveEvent.reactingCount 2 < 3",
+      "하한선 미달: moveEvent.classCount 43 < 45",
+      "── 함께 관측된 표면 변화 1건 (원인은 여기 있다) ──",
+      "moveEvent: ⚠ 반응 퇴화 3개 → no-change/self-only [move-route-repeat-checkbox, move-route-skippable-checkbox, move-route-wait-checkbox] — 조건부 표시/재렌더 로직이 죽었는지 확인하라 | 조작후 클래스 소실 2개 [ecp-move-badge, ecp-move-b",
+      "Test Files  1 failed (1)"
      ]
     }
    },

@@ -119,6 +119,19 @@ const MUTATIONS = [
     expect: ["portal"],
     signal: /is-favorite/,
   },
+  {
+    name: "미리보기-재렌더-누락",
+    hole: "구멍 7 — 커밋은 되는데 화면이 안 따라온다 (커밋 프로브로는 안 보인다)",
+    file: "src/editor/panels/eventEditor/commandBodyRoute.ts",
+    // 앞의 여섯 변이가 전부 commit/form/shell/portal 축만 건드려서 **상호작용 축은 변이로
+    // 증명된 적이 없었다.** 이 구멍은 실제 결함에서 왔다: `wait` 체크박스가 `apply` 만 걸려
+    // 있어 커밋은 정상인데 미리보기 배지 «완료까지 대기» 가 다른 조작 전까지 안 나타났다.
+    // 커밋 스냅샷은 그대로라 커밋 프로브는 초록이다 — 조작 후 재렌더를 보는 축만 잡는다.
+    from: `      apply();\n      renderPreview();`,
+    to: `      apply(); // MUTATION: renderPreview() 누락`,
+    expect: ["interaction"],
+    signal: /move-route-(wait|skippable)-checkbox|반응/,
+  },
 ];
 
 function run([cmd, args]) {
