@@ -226,6 +226,18 @@ const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
   "🖼 맵 배치와 함께 재료를 합의했습니다(origin:user). 되돌리면 배치와 합의가 함께 원복됩니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
+
+// 예산 소진으로 잘린 턴은 모델이 마무리 문장을 낼 기회가 없어 assistantText 가 빈 채로 끝난다.
+// 그대로 반환하면 제안이 승인 대기로 떠 있는데도 화면에는 아무 말이 없다 — 2026-08-29 실측:
+// 영역 턴이 max-tool-calls 로 잘리며 313칸 제안 13건을 침묵으로 남겼고, 사용자에게는
+// "명령이 씹혔다"로 보였다. 최소한 왜 멈췄고 무엇이 대기 중인지는 말한다.
+export function truncatedTurnText(existing: string, proposals: number, budgetLabel: string): string {
+  if (existing.trim().length > 0) return existing;
+  const pending = proposals > 0
+    ? `지금까지 만든 제안 ${proposals}건이 승인 대기 중입니다 — 수락하면 반영됩니다.`
+    : "적용할 만한 변경은 만들지 못했습니다.";
+  return `${budgetLabel}을 다 써서 이번 턴을 여기서 멈췄습니다. ${pending} 이어서 요청해 주세요.`;
+}
 const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).";
 const ZERO_CHANGE_REKICK_HINT = "사용자는 변경을 기대합니다. 질문이 아니면 지금 계획을 세우고 실행하세요";
 const UNBUILT_SPEC_REKICK_HINT =
@@ -437,9 +449,16 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
           type: "array",
           description:
             "겹치지 않는 영역을 가진 에셋 목록. kind: house|road|npc|prop|clear|terrain 등, layer: lower(기본)|upper(장식). " +
-            "clear 에셋이 기존 구조물(집 등)을 덮으면 confirmDestroy:true가 있어야 통과합니다 — '주변 청소'는 구조물을 피해 영역을 좁히세요.",
+            "clear 에셋이 기존 구조물(집 등)을 덮으면 confirmDestroy:true가 있어야 통과합니다 — '주변 청소'는 구조물을 피해 영역을 좁히세요. " +
+            "배치 에셋 자리·주변에 기존 타일이 있으면 overExisting:\"clear\"|\"keep\"이 있어야 통과합니다.",
           // properties 를 선언하지 않으면(items:{type:"object"}) strict function-calling 경로에서
           // 모델이 필드를 표현할 방법이 없어 `assets:[{}]` 만 보낸다 — 2026-08-23 실측: 밑그림 검증 10회 연속 실패.
+          //
+          // 같은 벽을 필드 단위로 또 밟았다(2026-08-29 실측): 검증기가 overExisting 을 요구하는데
+          // 여기 선언이 없어 모델이 9회 연속 재제출에서 단 한 번도 그 필드를 낼 수 없었다. 같은 턴에서
+          // 선언돼 있던 confirmDestroy 는 정상적으로 나왔다 — 차이는 오직 이 목록에 있느냐였다.
+          // 결과: 영역 턴이 24콜 예산을 태우고 max-tool-calls 로 잘렸다(313칸이 미적용으로 폐기).
+          // 검증기가 요구하는 필드는 반드시 여기 선언한다 — properties 는 계약이고 description 은 주석이다.
           items: {
             type: "object",
             properties: {
@@ -451,7 +470,19 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
               h: { type: "integer" },
               layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower" },
               style: { type: "string", description: "종류별 스타일 힌트(선택)" },
+              shape: {
+                type: "string",
+                enum: ["rect", "ellipse", "circle"],
+                description: "면 채우기 형태 힌트(기본 rect). 원형 수역은 circle — fill_region.shape 와 맞춘다",
+              },
               confirmDestroy: { type: "boolean", description: "clear가 기존 구조물을 덮을 때만 true" },
+              overExisting: {
+                type: "string",
+                enum: ["clear", "keep"],
+                description:
+                  "배치(비-clear) 에셋 자리·주변에 기본 타일이 아닌 것이 있을 때의 정리 방침. " +
+                  "clear=정리하고 배치, keep=그대로 위에 배치. 검증기가 요구하면 반드시 넣는다",
+              },
             },
             required: ["id", "kind", "x", "y", "w", "h"],
           },
@@ -472,6 +503,27 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
 
 // 검증 실패 허용 횟수(턴당). 초과하면 계획 폐기를 지시한다 — 루프 방지.
 const MAX_SPEC_REJECTIONS = 3;
+
+// 검증기가 재제출 때 채우라고 이름을 부르는 에셋 필드. 여기 있는 이름은 반드시
+// SET_BUILD_SPEC_TOOL 의 assets.items.properties 에도 선언돼 있어야 한다 —
+// 선언 없는 필드를 요구하면 모델이 낼 방법이 없어 거부 루프가 예산을 태운다.
+// 계약은 test/toolSchemaProviderCompat.test.ts 가 지킨다.
+export const SPEC_REMEDY_FIELDS = ["overExisting", "confirmDestroy"] as const;
+
+// 키 순서에 흔들리지 않는 명세 지문. JSON.stringify 는 키 삽입 순서를 그대로 따르므로
+// 모델이 같은 내용을 순서만 바꿔 보내면 다른 문자열이 된다 — 정렬해서 비교한다.
+function specFingerprint(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(specFingerprint).join(",")}]`;
+  if (value !== null && typeof value === "object") {
+    const body = Object.entries(value as Record<string, unknown>)
+      .filter(([, entry]) => entry !== undefined)
+      .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+      .map(([key, entry]) => `${JSON.stringify(key)}:${specFingerprint(entry)}`)
+      .join(",");
+    return `{${body}}`;
+  }
+  return JSON.stringify(value) ?? "null";
+}
 const ASSISTANT_TURN_RETRY_ATTEMPTS = 3;
 const TRANSIENT_NETWORK_RETRY_GUIDANCE = "일시적 네트워크 문제로 보이면 재시도를 눌러 주세요.";
 
@@ -636,6 +688,9 @@ export class AssistantSession {
   private carryoverWarningAdded = false;
   // 이번 턴의 명세 검증 실패 횟수 — MAX_SPEC_REJECTIONS 초과 시 폐기 지시.
   private specRejections = 0;
+  // 직전에 거부된 명세의 정규화 지문. 키 순서만 바꾼 같은 명세를 재제출하는 공회전을
+  // 짚어주기 위해서다(2026-08-29 실측: 314바이트 동일 payload 3연속 재제출로 예산 소진).
+  private lastRejectedSpecFingerprint: string | null = null;
   // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
   private turnProposals = new Map<string, ProposedCall>();
   /** place_props 등 산포 중복 호출 억제 — 같은 인자로 이미 성공한 쓰기는 재실행하지 않는다. */
@@ -783,19 +838,36 @@ export class AssistantSession {
     const spec = args as unknown as BuildSpec;
     const errors = validateBuildSpec(this.ctx.project, spec).filter((issue) => issue.severity === "error");
     if (errors.length > 0) {
+      const fingerprint = specFingerprint(spec);
+      const repeated = fingerprint === this.lastRejectedSpecFingerprint;
+      this.lastRejectedSpecFingerprint = fingerprint;
       this.specRejections += 1;
       const discarded = this.specRejections >= MAX_SPEC_REJECTIONS;
       const issues = errors.map((issue) => ({ severity: "error" as const, code: "spec-invalid", message: issue.message }));
+      // 검증기가 이름을 부른 필드를 그대로 되돌려준다 — 산문 지시만으로는 모델이 좌표만 흔든다.
+      const demanded = SPEC_REMEDY_FIELDS.filter((field) => errors.some((issue) => issue.message.includes(field)));
+      const fieldList = demanded.join("·");
+      if (repeated) {
+        issues.push({
+          severity: "error",
+          code: "spec-invalid",
+          message:
+            "직전과 내용이 같은 명세입니다(키 순서만 다른 것은 같은 것으로 봅니다). 같은 것을 다시 내면 같은 이유로 거부됩니다."
+            + (demanded.length > 0 ? ` 이번에는 지적된 에셋에 ${fieldList} 필드를 실제로 넣어 제출하세요.` : ""),
+        });
+      }
       issues.push({
         severity: "error",
         code: "spec-invalid",
         message: discarded
           ? `검증 ${this.specRejections}회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.`
-          : "겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.",
+          : demanded.length > 0
+            ? `지적된 에셋에 ${fieldList} 필드를 넣어 set_build_spec을 재제출하세요 — 좌표만 바꾸면 같은 이유로 또 거부됩니다.`
+            : "겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.",
       });
       return {
         ok: false,
-        summary: `밑그림 검증 실패(${this.specRejections}회)${discarded ? " — 계획 폐기" : ""}`,
+        summary: `밑그림 검증 실패(${this.specRejections}회)${repeated ? " — 직전과 동일" : ""}${discarded ? " — 계획 폐기" : ""}`,
         issues,
       };
     }
@@ -805,6 +877,7 @@ export class AssistantSession {
     // 현재 턴에서 새로 확정된 스펙이 이전 계획을 덮으면 다음 턴 carryover가 끊긴다.
     // previous-turn carryover는 다음 sendUserMessage 초입에서 세팅되므로 여기서 null로 비우지 않는다.
     this.specRejections = 0;
+    this.lastRejectedSpecFingerprint = null;
     const kinds = [...new Set(spec.assets.map((asset) => asset.kind))].join("·");
     return {
       ok: true,
@@ -1072,6 +1145,7 @@ export class AssistantSession {
       : null;
     this.carryoverWarningAdded = false;
     this.specRejections = 0;
+    this.lastRejectedSpecFingerprint = null;
     this.turnProposals = new Map();
     this.turnWriteDedupe = new Map();
     this.turnToolStartedCount = 0;
@@ -2628,14 +2702,22 @@ export class AssistantSession {
           text: TOKEN_BUDGET_STATUS_TEXT,
         });
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
-        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "token-budget" };
+        return {
+          assistantText: truncatedTurnText(assistantText, proposedByKey.size, "출력 토큰 예산"),
+          proposedCalls: this.finalizeProposals(proposedByKey),
+          stoppedReason: "token-budget",
+        };
       }
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
     onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
-    return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "max-tool-calls" };
+    return {
+      assistantText: truncatedTurnText(assistantText, proposedByKey.size, "도구 호출 예산"),
+      proposedCalls: this.finalizeProposals(proposedByKey),
+      stoppedReason: "max-tool-calls",
+    };
   }
 }
 

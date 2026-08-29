@@ -1026,6 +1026,7 @@ async function load() {
     AssistantSession: assistantSession.AssistantSession,
     hasRawToolCallMarkup: assistantSession.hasRawToolCallMarkup,
     sanitizeAssistantText: assistantSession.sanitizeAssistantText,
+    truncatedTurnText: assistantSession.truncatedTurnText,
     AGENT_RUN_MAX_TOTAL_STEPS: assistantSession.AGENT_RUN_MAX_TOTAL_STEPS,
     createBlankProject: defaults.createBlankProject,
     llm,
@@ -1235,6 +1236,36 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.stoppedReason).toBe("max-tool-calls");
     expect(n).toBe(3);
   }, 30000);
+
+  // 2026-08-29 실측 회귀: 예산으로 잘린 턴은 모델이 마무리 문장을 낼 기회가 없어 assistantText 가
+  // 빈 채로 끝났고, 제안 13건(313칸)이 승인 대기인데도 화면에는 아무 말이 없었다 — 사용자에게는
+  // "명령이 씹혔다"로 보였다. 왜 멈췄는지는 반드시 말한다.
+  it("예산으로 잘린 턴은 침묵하지 않는다 — 멈춘 이유를 assistantText 에 남긴다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    let n = 0;
+    const chat = async (): Promise<ChatResult> => {
+      n += 1;
+      return assistantToolCall("get_project_summary", {}, `c${n}`);
+    };
+    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, maxToolCalls: 2 }, chat });
+    const result = await session.sendUserMessage("계속 조회해", () => {});
+    expect(result.stoppedReason).toBe("max-tool-calls");
+    expect(result.assistantText.trim()).not.toBe("");
+    expect(result.assistantText).toContain("도구 호출 예산");
+  }, 30000);
+
+  it("truncatedTurnText — 모델이 마무리를 냈으면 그대로 두고, 없으면 대기 중 제안 수를 알린다", async () => {
+    const { truncatedTurnText } = await load();
+    // 모델 문장이 있으면 손대지 않는다.
+    expect(truncatedTurnText("숲을 배치했습니다.", 3, "도구 호출 예산")).toBe("숲을 배치했습니다.");
+    // 비어 있으면 멈춘 이유 + 승인 대기 건수를 알린다.
+    const pending = truncatedTurnText("   ", 13, "도구 호출 예산");
+    expect(pending).toContain("도구 호출 예산");
+    expect(pending).toContain("제안 13건");
+    expect(pending).toContain("승인 대기");
+    // 만든 것이 없으면 대기 건수를 꾸며내지 않는다.
+    expect(truncatedTurnText("", 0, "출력 토큰 예산")).toContain("변경은 만들지 못했습니다");
+  });
 
   it("감사 로그를 JSON으로 내보낸다", async () => {
     const { AssistantSession, createBlankProject } = await load();
