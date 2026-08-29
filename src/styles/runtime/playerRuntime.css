@@ -17,6 +17,8 @@
 @import "./transitions.css";
 @import "./nameEntry.css";
 @import "./keyboardNav.css";
+/* keyboardNav 뒤에 온다 — 거절 흔들림·붉은 테두리가 커서 강조에 덮이면 안 된다. */
+@import "./juice.css";
 @import "../dialogue.css";
 @import "./playSurface.css";
 @import "./zoneFeedback.css";

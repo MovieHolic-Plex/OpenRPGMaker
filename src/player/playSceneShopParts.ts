@@ -249,6 +249,10 @@ export function shopItemRow(options: {
   button.dataset.category = goods.category;
   // 합계 계산이 선택 행의 단가를 읽어간다.
   button.dataset.unitPrice = String(price);
+  // 수량 상한도 행에 싣는다. 스테퍼·입력칸·합계가 각자 99를 하드코딩하고 있어서
+  // 살 수 없는 수량까지 올라간 뒤 거절당하는 막다른 길이 생겼다(RM2003 은 애초에
+  // std::min(max, gold / price) 로 못 고르게 한다).
+  button.dataset.maxQty = String(affordableQuantityMax(goods, mode, scene.session.gold, merchantGold, owned));
   button.setAttribute("role", "listitem");
   button.append(
     shopItemIcon(goods),
@@ -275,6 +279,65 @@ export function shopItemRow(options: {
   if (selected) button.classList.add("selected");
   button.addEventListener("click", onActivate);
   return button;
+}
+
+/** 수량 스테퍼가 올라갈 수 있는 절대 상한(RM2003 과 동일). 소지 한도와는 별개다. */
+export const SHOP_QUANTITY_HARD_MAX = 99;
+
+/**
+ * 상한을 수량 입력칸에 반영한다. 세 곳(생성 시점·clamp·합계 갱신)이 같은 문구를
+ * 써야 하므로 한 곳에 모았다.
+ *
+ * 조작 힌트는 title 이 아니라 aria-label 에 담는다 — title 은 스크린리더 낭독이
+ * 보장되지 않는다. 상한은 행마다 다르니 "1~99" 로 고정하면 16개까지만 살 수 있는
+ * 물건에서 거짓 안내가 된다.
+ */
+function applyQuantityMaxTo(input: HTMLInputElement, max: number): void {
+  input.max = String(max);
+  input.title = `←/→ 로 1~${max} 수량 조절`;
+  input.setAttribute("aria-label", `수량 — ←/→ 로 1~${max} 조절`);
+}
+
+/**
+ * 이 물건을 지금 몇 개까지 거래할 수 있는가.
+ *
+ * RM2003 은 `std::min(max, gold / price)` 로 수량 자체를 못 올리게 한다(scene_shop.cpp).
+ * 소지 한도(RM 은 99)는 베끼지 않았다 — 이 저장소의 한도는 ITEM_QUANTITY_MAX(9,999,999)
+ * 이고, 99로 낮추면 전 시스템에 걸친 회귀가 된다.
+ *
+ * 0을 반환할 수 있다(한 개도 못 산다). 그 경우 행은 이미 흐림·자물쇠로 표시돼 있고
+ * 결정하면 버저가 울린다 — 커서는 얹히게 둔다.
+ */
+export function affordableQuantityMax(
+  goods: ShopGoods,
+  mode: ShopMode,
+  gold: number,
+  merchantGold: number,
+  owned: number
+): number {
+  const price = listingPrice(goods, mode);
+  if (mode === "sell") {
+    // 판매는 가진 개수가 먼저 상한이고, 상인 지갑이 그다음이다.
+    const byOwned = Math.max(0, Math.trunc(owned));
+    if (price <= 0) return Math.min(SHOP_QUANTITY_HARD_MAX, byOwned);
+    return Math.min(SHOP_QUANTITY_HARD_MAX, byOwned, Math.floor(Math.max(0, merchantGold) / price));
+  }
+  // 공짜 물건은 소지금이 상한을 만들지 못한다.
+  if (price <= 0) return SHOP_QUANTITY_HARD_MAX;
+  return Math.min(SHOP_QUANTITY_HARD_MAX, Math.floor(Math.max(0, gold) / price));
+}
+
+/**
+ * 오버레이의 현재 선택 행이 허용하는 수량 상한. 행에 실린 값이 없으면 하드 상한으로 돈다.
+ * 최소 1을 보장하는 이유: 한 개도 못 사는 물건도 수량칸은 1을 보여야 하고, 거절은
+ * 결정 시점의 버저가 담당한다(RM2003 도 목록에서 못 고르게 막지 않는다).
+ */
+export function shopQuantityMaxIn(overlay: HTMLElement): number {
+  const row = overlay.querySelector<HTMLElement>(".runtime-shop-item-row.selected")
+    ?? overlay.querySelector<HTMLElement>(".runtime-shop-item-row");
+  const raw = Number.parseInt(row?.dataset.maxQty ?? "", 10);
+  if (!Number.isFinite(raw)) return SHOP_QUANTITY_HARD_MAX;
+  return Math.min(SHOP_QUANTITY_HARD_MAX, Math.max(1, raw));
 }
 
 /**
@@ -476,12 +539,23 @@ export function quantityControl(
   input.value = "1";
   input.className = "runtime-commerce-quantity-input";
   input.dataset.testid = "shop-quantity-input";
-  input.setAttribute("aria-label", "수량 — ←/→ 로 1~99 조절");
+  // 상한은 선택 행에 따라 바뀐다. 붙는 시점에 오버레이가 아직 없을 수 있어 기본값을 두고
+  // clamp() 가 매번 다시 읽는다.
+  const currentMax = (): number => {
+    const overlay = input.closest<HTMLElement>(".runtime-shop-overlay");
+    return overlay ? shopQuantityMaxIn(overlay) : SHOP_QUANTITY_HARD_MAX;
+  };
   const clamp = () => {
+    const max = currentMax();
+    applyQuantityMaxTo(input, max);
     const raw = Number.parseInt(input.value, 10);
-    const clamped = Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
+    const clamped = Math.min(max, Math.max(1, Number.isFinite(raw) ? raw : 1));
     if (String(clamped) !== input.value.trim()) input.value = String(clamped);
   };
+  // 붙는 시점에 한 번 적용한다 — 안 하면 첫 렌더에 aria-label 이 없다(main 에서 온
+  // 접근성 개선이 사라진다). 이때는 오버레이가 없어 99가 들어가고, 마운트 후
+  // updateShopQuantityTotalIn 이 실제 상한으로 고쳐 쓴다.
+  applyQuantityMaxTo(input, SHOP_QUANTITY_HARD_MAX);
   input.addEventListener("input", () => {
     clamp();
     bubbleTotal(input);
@@ -526,7 +600,14 @@ export function updateShopQuantityTotalIn(overlay: HTMLElement): void {
   const total = overlay.querySelector<HTMLElement>("[data-testid='shop-quantity-total']");
   if (!total) return;
   const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
-  const qty = Math.min(99, Math.max(1, Number.parseInt(input?.value ?? "1", 10) || 1));
+  // 커서가 다른 행으로 옮겨가면 상한도 함께 바뀐다. 예전 행에서 올려 둔 수량이 새 행의
+  // 상한을 넘으면 여기서 끌어내린다 — 안 하면 합계가 못 살 금액을 보여준다.
+  const max = shopQuantityMaxIn(overlay);
+  const qty = Math.min(max, Math.max(1, Number.parseInt(input?.value ?? "1", 10) || 1));
+  if (input) {
+    applyQuantityMaxTo(input, max);
+    if (String(qty) !== input.value.trim()) input.value = String(qty);
+  }
   const row = overlay.querySelector<HTMLElement>(".runtime-shop-item-row.selected")
     ?? overlay.querySelector<HTMLElement>(".runtime-shop-item-row");
   const unit = Math.max(0, Number.parseInt(row?.dataset.unitPrice ?? "0", 10) || 0);
