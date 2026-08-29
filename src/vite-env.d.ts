@@ -14,6 +14,8 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_USE_PROXY?: string;
   /** AI 활동 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
   readonly VITE_AI_ACTIVITY_DISK_MIRROR?: string;
+  /** 편집 행위 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
+  readonly VITE_EDIT_ACTIVITY_DISK_MIRROR?: string;
   readonly VITE_TOUCH_CONTROLS?: string;
   // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
   readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;

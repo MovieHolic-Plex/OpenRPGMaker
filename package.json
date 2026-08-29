@@ -18,6 +18,7 @@
     "mcp:assistant": "node scripts/rpgzzu-assistant-mcp.mjs",
     "ai:oauth": "node scripts/chatgpt-oauth-companion.mjs",
     "ai:log": "node scripts/list-ai-activity.mjs",
+    "edit:log": "node scripts/list-edit-activity.mjs",
     "db:check": "node scripts/check-supabase-schema.mjs",
     "db:verify-ai": "node scripts/check-supabase-schema.mjs --verify-ai",
     "db:migrate": "bun scripts/apply-supabase-migrations.mjs",
