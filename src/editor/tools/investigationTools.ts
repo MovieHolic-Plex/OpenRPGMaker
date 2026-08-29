@@ -2,7 +2,6 @@
 // 이브/마녀의 집식 조사 밀도와 방 단위 퍼즐을 안전하게 대량 저작하는 툴.
 
 import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
-import { isPassable } from "@/project/collision";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, Trigger } from "@/project/types";
@@ -392,26 +391,54 @@ function compileSwitchSequence(draft: Project, map: GameMap, args: RecordValue):
   });
   rejectIfEventOverlap(map, parsedNodes.map((node) => node.at), "switch-sequence");
 
+  const warnings: string[] = [];
+  const placedNodes: Array<(typeof parsedNodes)[number] & { readonly originalIndex: number; readonly x: number; readonly y: number }> = [];
+  let skipped = 0;
+  let reportedSkipped = 0;
+  parsedNodes.forEach((node, index) => {
+    try {
+      const landing = resolveEventPlacement(draft, map, node.at.x, node.at.y, {
+        kind: "interaction",
+        label: `switch-sequence 노드 '${node.name}'`,
+        code: "puzzle-node-impassable",
+      });
+      if (landing.adjusted) {
+        warnings.push(`nodes[${index}] '${node.name}' 위치 자동 조정: (${node.at.x}, ${node.at.y}) → (${landing.x}, ${landing.y})`);
+      }
+      placedNodes.push({ ...node, originalIndex: index, x: landing.x, y: landing.y });
+    } catch (cause) {
+      if (!(cause instanceof ToolError)) throw cause;
+      skipped += 1;
+      if (reportedSkipped < 5) {
+        warnings.push(`nodes[${index}] '${node.name}' skip: ${cause.message}`);
+        reportedSkipped += 1;
+      }
+    }
+  });
+  if (skipped > 0) warnings.push(`switch-sequence 노드 총 ${skipped}개 skip`);
+
+  const placedIndexes = new Set(placedNodes.map((node) => node.originalIndex));
+  const placedOrder = parsedOrder.filter((nodeIndex) => placedIndexes.has(nodeIndex));
   const usedIds = new Set(map.events.map((event) => event.id));
-  const eventIds = parsedNodes.map((_, index) => uniqueEventId(usedIds, `ev_${segment}_seq_${index + 1}`));
+  const eventIds = placedNodes.map((node) => uniqueEventId(usedIds, `ev_${segment}_seq_${node.originalIndex + 1}`));
   const solve = onSolveCommands(draft, map, puzzleId, args.onSolve, mapEventIds(map, eventIds));
   const variableId = `var_${segment}_step`;
   ensureNamedVariable(draft, variableId, `퍼즐 진행도: ${puzzleId}`);
   const reset = args.reset !== false;
-  const events: GameEvent[] = parsedNodes.map((node, nodeIndex) => {
+  const events: GameEvent[] = placedNodes.map((node, nodeIndex) => {
     const eventId = eventIds[nodeIndex] as string;
-    const steps = parsedOrder.flatMap((entry, step) => entry === nodeIndex ? [step] : []);
+    const steps = placedOrder.flatMap((entry, step) => entry === node.originalIndex ? [step] : []);
     const commands = sequenceBranchCommands({
       steps,
-      orderLength: parsedOrder.length,
+      orderLength: placedOrder.length,
       variableId,
       solveCommands: solve.commands,
       reset,
     });
     return {
       id: eventId,
-      x: node.at.x,
-      y: node.at.y,
+      x: node.x,
+      y: node.y,
       trigger: { kind: "action" },
       commands: [],
       pages: [
@@ -435,8 +462,9 @@ function compileSwitchSequence(draft: Project, map: GameMap, args: RecordValue):
     map.events.push(event);
   }
   return {
-    summary: `${map.name}에 switch-sequence 퍼즐 '${puzzleId}' 컴파일 — 노드 ${events.length}개, 순서 ${parsedOrder.length}단계`,
-    data: { puzzleId, kind: "switch-sequence", eventIds, variableId, solveSwitchId: solve.solveSwitchId },
+    summary: `${map.name}에 switch-sequence 퍼즐 '${puzzleId}' 컴파일 — 노드 ${events.length}개, 순서 ${placedOrder.length}단계, ${skipped}개 스킵`,
+    data: { created: events.length, skipped, puzzleId, kind: "switch-sequence", eventIds, variableId, solveSwitchId: solve.solveSwitchId },
+    ...(warnings.length > 0 ? { warnings } : {}),
   };
 }
 
@@ -490,6 +518,14 @@ function compilePassword(draft: Project, map: GameMap, args: RecordValue): ToolE
   }
   const answer = args.answer;
   const name = cleanName(args.name, "암호 장치");
+  const placement = resolveEventPlacement(draft, map, at.x, at.y, {
+    kind: "interaction",
+    label: `password '${name}'`,
+    code: "puzzle-password-impassable",
+  });
+  const warnings = placement.adjusted
+    ? [`password '${name}' 위치 자동 조정: (${at.x}, ${at.y}) → (${placement.x}, ${placement.y})`]
+    : [];
   const prompt = typeof args.prompt === "string" && args.prompt.length > 0 ? args.prompt : "암호를 입력한다.";
   const usedIds = new Set(map.events.map((event) => event.id));
   const eventId = uniqueEventId(usedIds, `ev_${segment}_password`);
@@ -515,8 +551,8 @@ function compilePassword(draft: Project, map: GameMap, args: RecordValue): ToolE
   }
   const event: GameEvent = {
     id: eventId,
-    x: at.x,
-    y: at.y,
+    x: placement.x,
+    y: placement.y,
     trigger: { kind: "action" },
     commands: [],
     pages: [
@@ -538,7 +574,8 @@ function compilePassword(draft: Project, map: GameMap, args: RecordValue): ToolE
   map.events.push(event);
   return {
     summary: `${map.name}에 password 퍼즐 '${puzzleId}' 컴파일 — ${canUseInputNumber(answer) ? "숫자 입력" : "선택지 입력"}`,
-    data: { puzzleId, kind: "password", eventIds: [eventId], variableId, solveSwitchId: solve.solveSwitchId },
+    data: { created: 1, skipped: 0, puzzleId, kind: "password", eventIds: [eventId], variableId, solveSwitchId: solve.solveSwitchId },
+    ...(warnings.length > 0 ? { warnings } : {}),
   };
 }
 
@@ -553,6 +590,14 @@ function compileItemGate(draft: Project, map: GameMap, args: RecordValue): ToolE
   const requiredItemId = args.requiredItemId.trim();
   requireExistingItem(draft, requiredItemId, "item-gate requiredItemId");
   const name = cleanName(args.name, "잠긴 길");
+  const placement = resolveEventPlacement(draft, map, at.x, at.y, {
+    kind: "interaction",
+    label: `item-gate '${name}'`,
+    code: "puzzle-item-gate-impassable",
+  });
+  const warnings = placement.adjusted
+    ? [`item-gate '${name}' 위치 자동 조정: (${at.x}, ${at.y}) → (${placement.x}, ${placement.y})`]
+    : [];
   const usedIds = new Set(map.events.map((event) => event.id));
   const eventId = uniqueEventId(usedIds, `ev_${segment}_gate`);
   const solve = onSolveCommands(draft, map, puzzleId, args.onSolve, mapEventIds(map, [eventId]));
@@ -563,8 +608,8 @@ function compileItemGate(draft: Project, map: GameMap, args: RecordValue): ToolE
   const elseCommands: Command[] = [{ kind: "text", body: typeof args.lockedMessage === "string" && args.lockedMessage.length > 0 ? args.lockedMessage : "잠겨 있다." }];
   const event: GameEvent = {
     id: eventId,
-    x: at.x,
-    y: at.y,
+    x: placement.x,
+    y: placement.y,
     trigger: { kind: "action" },
     commands: [],
     pages: [
@@ -593,7 +638,8 @@ function compileItemGate(draft: Project, map: GameMap, args: RecordValue): ToolE
   map.events.push(event);
   return {
     summary: `${map.name}에 item-gate 퍼즐 '${puzzleId}' 컴파일 — 필요 아이템 ${requiredItemId}`,
-    data: { puzzleId, kind: "item-gate", eventIds: [eventId], requiredItemId, solveSwitchId: solve.solveSwitchId },
+    data: { created: 1, skipped: 0, puzzleId, kind: "item-gate", eventIds: [eventId], requiredItemId, solveSwitchId: solve.solveSwitchId },
+    ...(warnings.length > 0 ? { warnings } : {}),
   };
 }
 
@@ -624,24 +670,46 @@ function compilePushSwitches(draft: Project, map: GameMap, args: RecordValue): T
     return pointFromRecord(raw.at, `plates[${index}].at`);
   });
   rejectIfEventOverlap(map, parsedPlates, "push-switches");
-  for (const point of parsedPlates) {
-    if (!isPassable(draft, map, point.x, point.y)) {
-      throw new ToolError(`push-switches: 발판 좌표가 통행 불가입니다 (${point.x}, ${point.y})`, {
+
+  const warnings: string[] = [];
+  const placedPlates: Array<Point & { readonly originalIndex: number }> = [];
+  let skipped = 0;
+  let reportedSkipped = 0;
+  parsedPlates.forEach((point, index) => {
+    try {
+      const landing = resolveEventPlacement(draft, map, point.x, point.y, {
+        kind: "interaction",
+        steppable: true,
+        label: `push-switches 발판 ${index + 1}`,
         code: "puzzle-plate-impassable",
-        mapId: map.id,
-        x: point.x,
-        y: point.y,
       });
+      if (landing.adjusted) {
+        warnings.push(`plates[${index}] 위치 자동 조정: (${point.x}, ${point.y}) → (${landing.x}, ${landing.y})`);
+      }
+      placedPlates.push({ x: landing.x, y: landing.y, originalIndex: index });
+    } catch (cause) {
+      if (!(cause instanceof ToolError)) throw cause;
+      skipped += 1;
+      if (reportedSkipped < 5) {
+        warnings.push(`plates[${index}] skip: ${cause.message}`);
+        reportedSkipped += 1;
+      }
     }
-  }
+  });
+  if (skipped > 0) warnings.push(`push-switches 발판 총 ${skipped}개 skip`);
+
   const usedIds = new Set(map.events.map((event) => event.id));
-  const eventIds = parsedPlates.map((_, index) => uniqueEventId(usedIds, `ev_${segment}_plate_${index + 1}`));
-  const plateSwitchIds = parsedPlates.map((_, index) => `sw_${segment}_plate_${index + 1}`);
-  for (const [index, switchId] of plateSwitchIds.entries()) ensureNamedSwitch(draft, switchId, `발판 ${index + 1}: ${puzzleId}`);
+  const eventIds = placedPlates.map((plate) => uniqueEventId(usedIds, `ev_${segment}_plate_${plate.originalIndex + 1}`));
+  const plateSwitchIds = placedPlates.map((plate) => `sw_${segment}_plate_${plate.originalIndex + 1}`);
+  for (const [index, switchId] of plateSwitchIds.entries()) {
+    const plateNumber = (placedPlates[index]?.originalIndex ?? index) + 1;
+    ensureNamedSwitch(draft, switchId, `발판 ${plateNumber}: ${puzzleId}`);
+  }
   const solve = onSolveCommands(draft, map, puzzleId, args.onSolve, mapEventIds(map, eventIds));
-  const events = parsedPlates.map((point, index): GameEvent => {
+  const events = placedPlates.map((point, index): GameEvent => {
     const eventId = eventIds[index] as string;
     const plateSwitchId = plateSwitchIds[index] as string;
+    const plateNumber = point.originalIndex + 1;
     return {
       id: eventId,
       x: point.x,
@@ -651,7 +719,7 @@ function compilePushSwitches(draft: Project, map: GameMap, args: RecordValue): T
       pages: [
         page({
           id: `${eventId}_fresh`,
-          name: `발판 ${index + 1}`,
+          name: `발판 ${plateNumber}`,
           conditions: [
             { kind: "switch", switchId: solve.solveSwitchId, value: false },
             { kind: "selfSwitch", key: SELF_ONCE_KEY, value: false },
@@ -665,7 +733,7 @@ function compilePushSwitches(draft: Project, map: GameMap, args: RecordValue): T
         }),
         page({
           id: `${eventId}_pressed`,
-          name: `발판 ${index + 1} 눌림`,
+          name: `발판 ${plateNumber} 눌림`,
           conditions: [
             { kind: "switch", switchId: solve.solveSwitchId, value: false },
             { kind: "selfSwitch", key: SELF_ONCE_KEY, value: true },
@@ -675,7 +743,7 @@ function compilePushSwitches(draft: Project, map: GameMap, args: RecordValue): T
         }),
         page({
           id: `${eventId}_solved`,
-          name: `발판 ${index + 1} 해결 후`,
+          name: `발판 ${plateNumber} 해결 후`,
           conditions: [{ kind: "switch", switchId: solve.solveSwitchId, value: true }],
           trigger: { kind: "playerTouch" },
           commands: [],
@@ -688,8 +756,9 @@ function compilePushSwitches(draft: Project, map: GameMap, args: RecordValue): T
     map.events.push(event);
   }
   return {
-    summary: `${map.name}에 push-switches 퍼즐 '${puzzleId}' 컴파일 — 발판 ${events.length}개`,
-    data: { puzzleId, kind: "push-switches", eventIds, plateSwitchIds, solveSwitchId: solve.solveSwitchId },
+    summary: `${map.name}에 push-switches 퍼즐 '${puzzleId}' 컴파일 — 발판 ${events.length}개, ${skipped}개 스킵`,
+    data: { created: events.length, skipped, puzzleId, kind: "push-switches", eventIds, plateSwitchIds, solveSwitchId: solve.solveSwitchId },
+    ...(warnings.length > 0 ? { warnings } : {}),
   };
 }
 
