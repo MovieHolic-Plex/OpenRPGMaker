@@ -1,4 +1,11 @@
-import { pictureSlotCaption } from "./options";
+import {
+  compareAmountLabel,
+  pictureSlotCaption,
+  runResultLabel,
+  seasonLabel,
+  timePhaseLabel,
+  timerIdLabel,
+} from "./options";
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
@@ -1020,39 +1027,39 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
     case "switch":
       return `${recordName("switch", condition.switchId)} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "variable":
-      return `${recordName("variable", condition.variableId)} ${condition.op} ${condition.value}`;
+      return `${recordName("variable", condition.variableId)} ${compareAmountLabel(condition.op, condition.value)}`;
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "actor":
-      return `${actorName(condition.actorId)} ${condition.present ? "파티" : "부재"}`;
+      return `${actorName(condition.actorId)} ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":
-      return `${itemName(condition.itemId)} ${condition.present ? "소지" : "미소지"}`;
+      return `${itemName(condition.itemId)} ${condition.present ? "보유 중" : "보유 안 함"}`;
     case "gold":
-      return `소지금 ${condition.op} ${condition.amount}`;
+      return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `${condition.timerId} <= ${condition.seconds}초`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초 이하`;
     case "timePhase":
-      return `시간대 ${condition.phase}`;
+      return `시간대 ${timePhaseLabel(condition.phase)}`;
     case "season":
-      return `계절 ${condition.season}`;
+      return `계절 ${seasonLabel(condition.season)}`;
     case "npcActivity":
       return `활동 ${condition.activity}`;
     case "friendshipAtLeast":
-      return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
+      return `호감도 ${condition.npcKey || "이 이벤트"} ${condition.value} 이상`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
     case "run":
       return runConditionSummary(condition);
     case "all":
       return condition.conditions.length
-        ? `모두(${condition.conditions.map((child) => conditionSummary(child)).join(" ∧ ")})`
-        : "모두(없음)";
+        ? `모두 맞을 때(${condition.conditions.map((child) => conditionSummary(child)).join(", ")})`
+        : "모두 맞을 때(없음)";
     case "any":
       return condition.conditions.length
-        ? `하나(${condition.conditions.map((child) => conditionSummary(child)).join(" ∨ ")})`
-        : "하나(없음)";
+        ? `하나라도 맞을 때(${condition.conditions.map((child) => conditionSummary(child)).join(", ")})`
+        : "하나라도 맞을 때(없음)";
     case "not":
-      return `아님(${conditionSummary(condition.condition)})`;
+      return `아닐 때(${conditionSummary(condition.condition)})`;
   }
 }
 
@@ -1074,13 +1081,13 @@ function runControlSummary(command: Extract<Command, { kind: "runControl" }>): s
 function runConditionSummary(condition: Extract<Extract<Command, { kind: "fork" }>["condition"], { kind: "run" }>): string {
   switch (condition.query) {
     case "active":
-      return `런 ${condition.value === false ? "비활성" : "진행 중"}`;
+      return condition.value === false ? "탐험 중이 아님" : "탐험 중";
     case "floor":
-      return `런 층 ${condition.op} ${condition.value}`;
+      return `탐험 층 ${compareAmountLabel(condition.op, condition.value)}`;
     case "flag":
-      return `런 ${condition.flag || "플래그"} ${condition.value ? "켜짐" : "꺼짐"}`;
+      return `탐험 기억 ${condition.flag || "기억"} ${condition.value ? "켜짐" : "꺼짐"}`;
     case "result":
-      return `런 결과 ${condition.result}`;
+      return `탐험 결과 ${runResultLabel(condition.result)}`;
   }
 }
 

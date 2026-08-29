@@ -1,5 +1,5 @@
 import { switchVariablePicker } from "./switchVariablePicker";
-import type { RecordKind } from "./recordKinds";
+import { recordsOf, type RecordKind } from "./recordKinds";
 
 type SwitchVariableKind = "switch" | "variable";
 type DatabaseRecordKind = "item" | "actor";
@@ -26,7 +26,7 @@ type RecordSelectParams = {
 
 /** 페이지 조건 슬롯용 — 공용 switchVariablePicker 를 밀도 높은 레이아웃으로 감싼다. */
 export function switchVariableIdPicker(params: IdPickerParams): HTMLElement {
-  return switchVariablePicker({
+  const handle = switchVariablePicker({
     kind: params.kind,
     selectedId: params.currentId,
     onChange: params.onChange,
@@ -35,7 +35,9 @@ export function switchVariableIdPicker(params: IdPickerParams): HTMLElement {
     keepMissingId: true,
     showFilter: false,
     className: "event-condition-id-picker",
-  }).root;
+  });
+  markMissingRecord(handle.root, handle.select, params.kind, params.currentId);
+  return handle.root;
 }
 
 /**
@@ -49,7 +51,7 @@ export function switchVariableIdPicker(params: IdPickerParams): HTMLElement {
  * 그대로 남으므로 `[data-testid=...-input]` 셀렉터와 selectOption 은 계속 동작한다.
  */
 export function databaseRecordSelect(params: RecordSelectParams): HTMLElement {
-  return switchVariablePicker({
+  const handle = switchVariablePicker({
     kind: params.kind as RecordKind,
     selectedId: params.currentId,
     onChange: params.onChange,
@@ -60,10 +62,36 @@ export function databaseRecordSelect(params: RecordSelectParams): HTMLElement {
     keepMissingId: true,
     showFilter: false,
     className: "event-condition-id-picker",
-  }).root;
+  });
+  markMissingRecord(handle.root, handle.select, params.kind as RecordKind, params.currentId);
+  return handle.root;
 }
 
 function defaultPickerTestId(inputTestId: string): string {
   const base = inputTestId.endsWith("-input") ? inputTestId.slice(0, -"-input".length) : inputTestId;
   return `${base}-picker-open`;
+}
+
+/**
+ * DB 에서 사라진 id 를 「id (없음)」으로 표시한다.
+ *
+ * keepMissingId 는 유령 id 를 선택 상태로 남겨 주지만 라벨이 성한 레코드와 구별되지 않아,
+ * 아이템을 DB 에서 지운 뒤에도 조건이 정상인 것처럼 보였다. 조건 데이터는 그대로 살아
+ * 있으므로(집계 검증이 참조 오류로 잡는다) 여기서는 보이게 + 표시하게만 한다.
+ */
+function markMissingRecord(
+  root: HTMLElement,
+  select: HTMLSelectElement,
+  kind: RecordKind,
+  currentId: string,
+): void {
+  const id = currentId.trim();
+  if (!id || recordsOf(kind).some((entry) => entry.id === id)) return;
+  const label = `${id} (없음)`;
+  for (const option of Array.from(select.querySelectorAll("option"))) {
+    if (option.value === id) option.textContent = label;
+  }
+  const trigger = root.querySelector(".event-record-picker-trigger");
+  if (trigger) trigger.textContent = label;
+  root.dataset.missingRecord = "true";
 }

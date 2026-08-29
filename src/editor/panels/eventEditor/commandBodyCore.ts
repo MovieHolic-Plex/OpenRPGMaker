@@ -814,11 +814,11 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       dropElseBranch();
       return;
     }
-    // 네이티밌 confirm 은 에디터의 다이얼로그와 모양이 다르다 — 물어보는 동안은 체탁을 되돌려 끈다.
+    // 네이티브 confirm 은 에디터의 다이얼로그와 모양이 다르다 — 물어보는 동안은 체크를 되돌려 둔다.
     elseCheck.checked = true;
     void showConfirm({
       title: "그 외 분기 삭제",
-      message: "그 외 분기에 들어있는 명령이 함까 삭제됩니다. 진행할까요?",
+      message: "그 외 분기에 들어있는 명령이 함께 삭제됩니다. 진행할까요?",
       confirmLabel: "삭제",
       cancelLabel: "유지",
       danger: true,

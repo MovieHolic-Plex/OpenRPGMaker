@@ -4,6 +4,7 @@ import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
+import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { transitionItemState } from "@/project/itemTransitions";
 import { transitionActorEquipment } from "@/project/equipmentRules";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
@@ -39,6 +40,7 @@ export type BattleEventRuntimeState = {
   // 전투 종료 시 세션 classOverrides 로 write-back(맵 changeActorClass 와 동일 의미).
   classOverrides?: Record<string, string>;
   readonly gameTime?: GameTime;
+  readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
 };
 
@@ -54,6 +56,9 @@ export type BattleEventRuntimeOptions = {
   // 이 전투를 기동한 맵 이벤트 id. selfSwitch 조건/setSelfSwitch 커맨드의 소유 이벤트.
   // 랜덤 인카운터/필드 스폰 등 소유 이벤트가 없는 전투는 undefined(조건 false + 추적 로그).
   readonly ownerEventId?: string;
+  // friendshipAtLeast 의 빈 npcKey를 characterId로 해석할 소유 이벤트. 상위 배틀 런타임이
+  // ownerEventId와 project에서 해석하며, 직접 호출자는 생략해도 같은 방식으로 해석된다.
+  readonly ownerEvent?: SocialHost;
   readonly actors: readonly MutableBattler[];
   readonly enemies: readonly MutableBattler[];
   readonly stateIds: readonly string[];
@@ -118,19 +123,22 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   const firedBattleEventPageRoundKeys = new Set<string>();
   const extraActorActions: Record<string, number> = {};
   const logs: BattleEventLogSnapshot[] = [];
-  // 소유 이벤트 없는 전투에서 selfSwitch 조건이 평가되면 1회만 추적 로그를 남긴다
+  const ownerEvent = options.ownerEvent ?? findProjectEvent(options.project, options.ownerEventId);
+  // 소유 이벤트 없는 전투에서 소유자 의존 조건이 평가되면 종류별로 1회만 추적 로그를 남긴다
   // (조건 평가는 tick/라운드마다 반복되므로 매번 기록하면 eventLogs 가 범람한다).
-  let loggedSelfSwitchWithoutOwner = false;
+  const loggedOwnerlessConditions = new Set<"selfSwitch" | "npcActivity">();
 
-  function logSelfSwitchWithoutOwnerOnce(): void {
-    if (loggedSelfSwitchWithoutOwner) return;
-    loggedSelfSwitchWithoutOwner = true;
+  function logOwnerlessConditionOnce(kind: "selfSwitch" | "npcActivity"): void {
+    if (loggedOwnerlessConditions.has(kind)) return;
+    loggedOwnerlessConditions.add(kind);
     logs.push({
       pageId: "external",
       round: 0,
       triggerId: "external",
       kind: "unsupported",
-      detail: "selfSwitch condition without owner event (treated as OFF)",
+      detail: kind === "selfSwitch"
+        ? "selfSwitch condition without owner event (treated as OFF)"
+        : "npcActivity condition without owner event (treated as false)",
     });
   }
 
@@ -754,7 +762,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         // 소유 이벤트가 없는 전투(랜덤 인카운터/필드 스폰)는 종전대로 OFF 취급하되 추적 로그를 남긴다.
         const ownerEventId = options.ownerEventId;
         if (!ownerEventId) {
-          logSelfSwitchWithoutOwnerOnce();
+          logOwnerlessConditionOnce("selfSwitch");
           return condition.value === false;
         }
         const own = (options.state.selfSwitches ?? {})[ownerEventId];
@@ -774,10 +782,18 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return conditionMatchesTimePhase(options.state.gameTime, condition.phase);
       case "season":
         return conditionMatchesSeason(options.state.gameTime, condition.season);
-      case "npcActivity":
-        return false;
+      case "npcActivity": {
+        const ownerEventId = options.ownerEventId;
+        if (!ownerEventId) {
+          logOwnerlessConditionOnce("npcActivity");
+          return false;
+        }
+        return options.state.npcActivities?.[ownerEventId] === condition.activity;
+      }
       case "friendshipAtLeast": {
-        const npcKey = condition.npcKey?.trim();
+        const npcKey = ownerEvent
+          ? resolveSocialKey(ownerEvent, condition.npcKey)
+          : condition.npcKey?.trim() || null;
         if (!npcKey) return false;
         return clampFriendship(options.state.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
       }
@@ -919,6 +935,15 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
 // playSceneInterpreter 의 default: assertNever(step) 전례를 따르는 로컬 전수 검증 헬퍼.
 // (src/battle 은 자립 모듈이므로 @/player/playSceneTypes 를 역참조하지 않는다.)
+function findProjectEvent(project: Project, eventId: string | undefined): SocialHost | undefined {
+  if (!eventId) return undefined;
+  for (const map of Object.values(project.maps)) {
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (event) return event;
+  }
+  return undefined;
+}
+
 function assertNever(value: never): never {
   void value;
   throw new Error("Unhandled battle event command kind");

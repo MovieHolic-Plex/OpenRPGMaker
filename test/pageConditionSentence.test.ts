@@ -79,6 +79,7 @@ describe("페이지 조건 문장", () => {
     { kind: "npcActivity", activity: "work" },
     { kind: "friendshipAtLeast", npcKey: "촌장", value: 50 },
     { kind: "battleResult", result: "victory" },
+    { kind: "run", query: "active", value: true },
     { kind: "all", conditions: [] },
     { kind: "any", conditions: [] },
     { kind: "not", condition: { kind: "switch", switchId: "sw_0001", value: true } },
@@ -93,6 +94,36 @@ describe("페이지 조건 문장", () => {
       const inner = sentence.text.slice("이 페이지는 ".length, -"일 때 보입니다.".length);
       expect(inner.trim().length).toBeGreaterThan(0);
       expect(inner).not.toContain("undefined");
+      expect(inner).not.toMatch(/\brun\b/);
     });
   }
+
+  it("탐험 조회를 한국어 절로 되읽고 내부 토큰을 드러내지 않는다", () => {
+    expect(pageConditionSentence([{ kind: "run", query: "active", value: true }]).text).toBe(
+      "이 페이지는 탐험 중일 때 보입니다.",
+    );
+    expect(pageConditionSentence([{ kind: "run", query: "active", value: false }]).text).toBe(
+      "이 페이지는 탐험 중이 아님일 때 보입니다.",
+    );
+    expect(pageConditionSentence([{ kind: "run", query: "floor", op: ">=", value: 3 }]).text).toBe(
+      "이 페이지는 탐험 층 3 이상일 때 보입니다.",
+    );
+    expect(pageConditionSentence([{ kind: "run", query: "flag", flag: "door", value: true }]).text).toBe(
+      "이 페이지는 탐험 기억 「door」 켜짐일 때 보입니다.",
+    );
+    expect(pageConditionSentence([{ kind: "run", query: "result", result: "completed" }]).text).toBe(
+      "이 페이지는 탐험 결과 완료일 때 보입니다.",
+    );
+    expect(pageConditionSentence([{ kind: "run", query: "result", result: "failed" }]).text).toBe(
+      "이 페이지는 탐험 결과 실패일 때 보입니다.",
+    );
+    expect(pageConditionSentence([{ kind: "run", query: "result", result: "abandoned" }]).text).toBe(
+      "이 페이지는 탐험 결과 포기일 때 보입니다.",
+    );
+  });
+
+  it("아이템 부재는 보유 안 함으로 말한다", () => {
+    const itemId = store.getCurrent().database.items[0]!.id;
+    expect(pageConditionSentence([{ kind: "item", itemId, present: false }]).text).toContain("보유 안 함");
+  });
 });

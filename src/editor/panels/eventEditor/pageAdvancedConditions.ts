@@ -4,16 +4,13 @@ import type { EventPageCondition } from "@/project/types";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { commandSummary } from "./commandSummary";
 import {
-  renderActorCondition,
   renderBattleResultCondition,
   renderFriendshipAtLeastCondition,
   renderGoldCondition,
-  renderItemCondition,
   renderNpcActivityCondition,
   renderRunCondition,
   renderSeasonCondition,
   renderSelfSwitchCondition,
-  renderSwitchCondition,
   renderTimePhaseCondition,
   renderTimerCondition,
   renderVariableCondition,
@@ -47,6 +44,24 @@ const ADVANCED_CONDITION_OPTIONS = [
   // all/any/not 은 중첩 에디터가 없어 추가 셀렉트에 넣지 않는다.
   // 이미 데이터에 있으면 읽기 전용 요약 행으로 보이고 삭제만 할 수 있다.
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
+
+// 고급 목록도 방향(꺼짐/보유 안 함/파티에 없음)을 저작할 수 있어야 한다.
+// 예전에는 picker 만 그리고 id 를 바꾸면 value/present 를 true 로 되돌려, 3번째 스위치·2번째
+// 아이템·2번째 주인공은 «꺼짐»을 쓸 수도 없고 데이터에 있던 false 가 조용히 뒤집혔다.
+const ADVANCED_SWITCH_VALUE_OPTIONS = [
+  { value: "true", label: "켜짐" },
+  { value: "false", label: "꺼짐" },
+] as const;
+
+const ADVANCED_ITEM_PRESENT_OPTIONS = [
+  { value: "true", label: "보유 중" },
+  { value: "false", label: "보유 안 함" },
+] as const;
+
+const ADVANCED_ACTOR_PRESENT_OPTIONS = [
+  { value: "true", label: "파티에 있음" },
+  { value: "false", label: "파티에 없음" },
+] as const;
 
 export function renderAdvancedConditions(context: PageConditionContext): HTMLElement {
   const entries = advancedConditionEntries(context.page);
@@ -156,7 +171,7 @@ function groupConditionRow(
 
 function groupConditionSummary(condition: GroupCondition): string {
   if (condition.kind === "not") return `아닐 때: ${describeCondition(condition.condition)}`;
-  const label = condition.kind === "all" ? "모두 만족" : "하나 이상 만족";
+  const label = condition.kind === "all" ? "모두 맞을 때" : "하나라도 맞을 때";
   const children = condition.conditions;
   const head = children[0];
   if (!head) return `${label}: 하위 조건 없음`;
@@ -172,6 +187,92 @@ function describeCondition(condition: EventPageCondition): string {
   return separator >= 0 ? full.slice(separator + 2) : full;
 }
 
+function advancedSwitchControl(
+  context: PageConditionContext,
+  index: number,
+  condition: Extract<EventPageCondition, { kind: "switch" }>,
+  listIndex: number
+): HTMLElement {
+  let current = condition;
+  const commit = (next: Extract<EventPageCondition, { kind: "switch" }>): void => {
+    current = next;
+    replaceConditionAt(context, index, next);
+  };
+  const picker = switchVariableIdPicker({
+    kind: "switch",
+    currentId: current.switchId,
+    inputTestId: `event-page-advanced-condition-switch-${listIndex}`,
+    pickerTestId: `event-page-advanced-condition-switch-picker-${listIndex}`,
+    // 대상만 바꾸고 상태는 살린다.
+    onChange: (switchId) => commit({ ...current, switchId }),
+  });
+  const value = selectWithOptions(
+    ADVANCED_SWITCH_VALUE_OPTIONS,
+    current.value === false ? "false" : "true",
+    `event-page-advanced-condition-switch-value-${listIndex}`
+  );
+  value.addEventListener("change", () => {
+    commit({ ...current, value: selectedOptionValue(value, ADVANCED_SWITCH_VALUE_OPTIONS, "true") === "true" });
+  });
+  return el("div", { class: "event-advanced-condition-control", children: [picker, value] });
+}
+
+function advancedItemControl(
+  context: PageConditionContext,
+  index: number,
+  condition: Extract<EventPageCondition, { kind: "item" }>,
+  listIndex: number
+): HTMLElement {
+  let current = condition;
+  const commit = (next: Extract<EventPageCondition, { kind: "item" }>): void => {
+    current = next;
+    replaceConditionAt(context, index, next);
+  };
+  const picker = databaseRecordSelect({
+    kind: "item",
+    currentId: current.itemId,
+    testId: `event-page-advanced-condition-item-${listIndex}`,
+    onChange: (itemId) => commit({ ...current, itemId }),
+  });
+  const present = selectWithOptions(
+    ADVANCED_ITEM_PRESENT_OPTIONS,
+    current.present === false ? "false" : "true",
+    `event-page-advanced-condition-item-present-${listIndex}`
+  );
+  present.addEventListener("change", () => {
+    commit({ ...current, present: selectedOptionValue(present, ADVANCED_ITEM_PRESENT_OPTIONS, "true") === "true" });
+  });
+  return el("div", { class: "event-advanced-condition-control record", children: [picker, present] });
+}
+
+function advancedActorControl(
+  context: PageConditionContext,
+  index: number,
+  condition: Extract<EventPageCondition, { kind: "actor" }>,
+  listIndex: number
+): HTMLElement {
+  let current = condition;
+  const commit = (next: Extract<EventPageCondition, { kind: "actor" }>): void => {
+    current = next;
+    replaceConditionAt(context, index, next);
+  };
+  const picker = databaseRecordSelect({
+    kind: "actor",
+    currentId: current.actorId,
+    testId: `event-page-advanced-condition-actor-${listIndex}`,
+    onChange: (actorId) => commit({ ...current, actorId }),
+  });
+  const present = selectWithOptions(
+    ADVANCED_ACTOR_PRESENT_OPTIONS,
+    current.present === false ? "false" : "true",
+    `event-page-advanced-condition-actor-present-${listIndex}`
+  );
+  present.addEventListener("change", () => {
+    commit({ ...current, present: selectedOptionValue(present, ADVANCED_ACTOR_PRESENT_OPTIONS, "true") === "true" });
+  });
+  return el("div", { class: "event-advanced-condition-control record", children: [picker, present] });
+}
+
 function renderAdvancedConditionContent(
   context: PageConditionContext,
   index: number,
@@ -180,18 +281,7 @@ function renderAdvancedConditionContent(
 ): HTMLElement {
   switch (condition.kind) {
     case "switch":
-      return renderSwitchCondition(condition, (next) => replaceConditionAt(context, index, next), {
-        className: "event-advanced-condition-control",
-        showValue: false,
-        forceTrueOnSwitchChange: true,
-        picker: (currentId, onChange) => switchVariableIdPicker({
-          kind: "switch",
-          currentId,
-          inputTestId: `event-page-advanced-condition-switch-${listIndex}`,
-          pickerTestId: `event-page-advanced-condition-switch-picker-${listIndex}`,
-          onChange,
-        }),
-      });
+      return advancedSwitchControl(context, index, condition, listIndex);
     case "variable":
       return renderVariableCondition(condition, (next) => replaceConditionAt(context, index, next), {
         className: "event-advanced-condition-control variable",
@@ -212,29 +302,9 @@ function renderAdvancedConditionContent(
         valueTestId: `event-page-advanced-condition-self-switch-value-${listIndex}`,
       });
     case "item":
-      return renderItemCondition(condition, (next) => replaceConditionAt(context, index, next), {
-        className: "event-advanced-condition-control record",
-        showPresent: false,
-        forcePresentOnItemChange: true,
-        picker: (currentId, onChange) => databaseRecordSelect({
-          kind: "item",
-          currentId,
-          testId: `event-page-advanced-condition-item-${listIndex}`,
-          onChange,
-        }),
-      });
+      return advancedItemControl(context, index, condition, listIndex);
     case "actor":
-      return renderActorCondition(condition, (next) => replaceConditionAt(context, index, next), {
-        className: "event-advanced-condition-control record",
-        showPresent: false,
-        forcePresentOnActorChange: true,
-        picker: (currentId, onChange) => databaseRecordSelect({
-          kind: "actor",
-          currentId,
-          testId: `event-page-advanced-condition-actor-${listIndex}`,
-          onChange,
-        }),
-      });
+      return advancedActorControl(context, index, condition, listIndex);
     case "gold":
       return renderGoldCondition(condition, (next) => replaceConditionAt(context, index, next), {
         className: "event-advanced-condition-control gold",
