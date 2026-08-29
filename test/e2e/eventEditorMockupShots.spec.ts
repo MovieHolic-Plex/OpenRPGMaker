@@ -63,7 +63,7 @@ test("event editor matches the approved mockup", async ({ page }) => {
   await expect(modal.getByTestId("ai-event-assist")).toBeVisible();
   await modal.getByTestId("event-command-quick-ai").click();
   await expect(modal.getByTestId("ai-event-assist")).not.toHaveAttribute("open", "");
-  await modal.getByTestId("event-command-quick-preview").click();
+  await modal.getByTestId("event-view-toggle-preview").click();
   await expect(modal.getByTestId("event-page-preview")).toBeVisible();
   await expect(modal.getByTestId("event-view-toggle-preview")).toHaveAttribute("aria-pressed", "true");
   await modal.getByTestId("event-view-toggle-storyboard").click();

@@ -1,18 +1,6 @@
 import { clearChildren, el } from "@/util/dom";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
-import {
-  CHOICE_CANCEL_BRANCH_INDEX,
-  FORK_ELSE_BRANCH_INDEX,
-  FORK_THEN_BRANCH_INDEX,
-  LOOP_BODY_BRANCH_INDEX,
-  PROMOTE_FAILURE_BRANCH_INDEX,
-  PROMOTE_SUCCESS_BRANCH_INDEX,
-  SHOP_TRANSACTION_BRANCH_INDEX,
-  INN_NOT_ENOUGH_BRANCH_INDEX,
-  BATTLE_VICTORY_BRANCH_INDEX,
-  BATTLE_DEFEAT_BRANCH_INDEX,
-  BATTLE_ESCAPE_BRANCH_INDEX,
-} from "@/editor/eventCommandPaths";
+import { branchGroupEndLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
@@ -338,88 +326,19 @@ function appendCommandChildren(
   faceState: FaceState,
   options: CommandListRenderOptions
 ): void {
-  if (cmd.kind === "choices") {
-    cmd.options.forEach((option, optionIndex) => {
-      host.append(renderBranchDropLine(
-        option.text || `선택지 ${optionIndex + 1}`,
-        depth,
-        "choices",
-        [...path, optionIndex],
-        actions
-      ));
-      option.branch.forEach((child, childIndex) => {
-        renderCommandTree(host, child, [...path, optionIndex, childIndex], containerPath, actions, depth + 1, faceState, options);
-      });
-    });
-    if (cmd.cancelBehavior === "branch") {
-      host.append(renderBranchDropLine(
-        "취소할 때",
-        depth,
-        "choices",
-        [...path, CHOICE_CANCEL_BRANCH_INDEX],
-        actions
-      ));
-      (cmd.cancelBranch ?? []).forEach((child, childIndex) => {
-        renderCommandTree(
-          host,
-            child,
-            [...path, CHOICE_CANCEL_BRANCH_INDEX, childIndex],
-            containerPath,
-            actions,
-            depth + 1,
-            faceState,
-            options
-        );
-      });
+  // 분기 목록·라벨·경로 칸은 `eventCommandBranches` 가 정본이다. 예전에는 여기에 명령
+  // 종류별 블록이 일곱 개 늘어서 있었고, 상점 실패 분기는 상수 import 자체가 없어서
+  // «주소를 못 매기는» 분기였다 — 런타임은 실행하는데 목록에는 줄이 안 났다.
+  for (const branch of eventCommandBranches(cmd)) {
+    host.append(renderBranchDropLine(branch.label, depth, branch.tone, [...path, branch.branchIndex], actions));
+    if (branch.commands.length === 0) {
+      host.append(renderMarkerLine("비어 있음 — 여기에 명령 추가", depth + 1, branch.tone));
     }
-    host.append(renderMarkerLine("선택 끝", depth, "choices"));
-    return;
-  }
-  if (cmd.kind === "fork") {
-    host.append(renderBranchDropLine("조건이 맞을 때", depth, "fork", [...path, FORK_THEN_BRANCH_INDEX], actions));
-    if (cmd.then.length === 0) {
-      host.append(renderMarkerLine("비어 있음 — 여기에 명령 추가", depth + 1, "fork"));
-    }
-    cmd.then.forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-          child,
-          [...path, FORK_THEN_BRANCH_INDEX, childIndex],
-          containerPath,
-          actions,
-          depth + 1,
-          faceState,
-          options
-      );
-    });
-    if (cmd.else) {
-      host.append(renderBranchDropLine("그 외", depth, "fork", [...path, FORK_ELSE_BRANCH_INDEX], actions));
-      if (cmd.else.length === 0) {
-        host.append(renderMarkerLine("비어 있음 — 여기에 명령 추가", depth + 1, "fork"));
-      }
-      cmd.else.forEach((child, childIndex) => {
-        renderCommandTree(
-          host,
-            child,
-            [...path, FORK_ELSE_BRANCH_INDEX, childIndex],
-            containerPath,
-            actions,
-            depth + 1,
-            faceState,
-            options
-        );
-      });
-    }
-    host.append(renderMarkerLine("분기 끝", depth, "fork"));
-    return;
-  }
-  if (cmd.kind === "loop") {
-    host.append(renderBranchDropLine("반복", depth, "fork", [...path, LOOP_BODY_BRANCH_INDEX], actions));
-    cmd.body.forEach((child, childIndex) => {
+    branch.commands.forEach((child, childIndex) => {
       renderCommandTree(
         host,
         child,
-        [...path, LOOP_BODY_BRANCH_INDEX, childIndex],
+        [...path, branch.branchIndex, childIndex],
         containerPath,
         actions,
         depth + 1,
@@ -427,152 +346,11 @@ function appendCommandChildren(
         options
       );
     });
-    host.append(renderMarkerLine("반복 끝", depth, "fork"));
-    return;
   }
-  if (cmd.kind === "shop" && cmd.branchOnTransaction) {
-    host.append(renderBranchDropLine(
-      "구매·판매했을 때",
-      depth,
-      "shop",
-      [...path, SHOP_TRANSACTION_BRANCH_INDEX],
-      actions
-    ));
-    (cmd.transactionBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-          child,
-          [...path, SHOP_TRANSACTION_BRANCH_INDEX, childIndex],
-          containerPath,
-          actions,
-          depth + 1,
-          faceState,
-          options
-      );
-    });
-    host.append(renderMarkerLine("상점 분기 끝", depth, "shop"));
-  }
-  if (cmd.kind === "inn" && cmd.branchOnNotEnoughGold) {
-    host.append(renderBranchDropLine(
-      "골드가 부족할 때",
-      depth,
-      "shop",
-      [...path, INN_NOT_ENOUGH_BRANCH_INDEX],
-      actions
-    ));
-    (cmd.notEnoughBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-        child,
-        [...path, INN_NOT_ENOUGH_BRANCH_INDEX, childIndex],
-        containerPath,
-        actions,
-        depth + 1,
-        faceState,
-        options
-      );
-    });
-    host.append(renderMarkerLine("여관 부족 분기 끝", depth, "shop"));
-  }
-  if (cmd.kind === "battleProcessing" && cmd.branchOnResult) {
-    host.append(renderBranchDropLine("전투 승리", depth, "fork", [...path, BATTLE_VICTORY_BRANCH_INDEX], actions));
-    (cmd.victoryBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-        child,
-        [...path, BATTLE_VICTORY_BRANCH_INDEX, childIndex],
-        containerPath,
-        actions,
-        depth + 1,
-        faceState,
-        options
-      );
-    });
-    host.append(renderBranchDropLine("전투 패배", depth, "fork", [...path, BATTLE_DEFEAT_BRANCH_INDEX], actions));
-    (cmd.defeatBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-        child,
-        [...path, BATTLE_DEFEAT_BRANCH_INDEX, childIndex],
-        containerPath,
-        actions,
-        depth + 1,
-        faceState,
-        options
-      );
-    });
-    host.append(renderBranchDropLine("전투 도망", depth, "fork", [...path, BATTLE_ESCAPE_BRANCH_INDEX], actions));
-    (cmd.escapeBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-        child,
-        [...path, BATTLE_ESCAPE_BRANCH_INDEX, childIndex],
-        containerPath,
-        actions,
-        depth + 1,
-        faceState,
-        options
-      );
-    });
-    host.append(renderMarkerLine("전투 결과 분기 끝", depth, "fork"));
-  }
-  if (cmd.kind === "promoteActor") {
-    host.append(renderMarkerLine("승급 성공", depth, "fork"));
-    (cmd.successBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-          child,
-          [...path, PROMOTE_SUCCESS_BRANCH_INDEX, childIndex],
-          containerPath,
-          actions,
-          depth + 1,
-          faceState,
-          options
-      );
-    });
-    host.append(renderMarkerLine("승급 실패", depth, "fork"));
-    (cmd.failureBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-          child,
-          [...path, PROMOTE_FAILURE_BRANCH_INDEX, childIndex],
-          containerPath,
-          actions,
-          depth + 1,
-          faceState,
-          options
-      );
-    });
-    host.append(renderMarkerLine("승급 끝", depth, "fork"));
-  }
-  if (cmd.kind === "evolveMonster") {
-    host.append(renderMarkerLine("진화 성공", depth, "fork"));
-    (cmd.successBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-        child,
-        [...path, PROMOTE_SUCCESS_BRANCH_INDEX, childIndex],
-        containerPath,
-        actions,
-        depth + 1,
-        faceState,
-        options
-      );
-    });
-    host.append(renderMarkerLine("진화 실패", depth, "fork"));
-    (cmd.failureBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-        child,
-        [...path, PROMOTE_FAILURE_BRANCH_INDEX, childIndex],
-        containerPath,
-        actions,
-        depth + 1,
-        faceState,
-        options
-      );
-    });
-    host.append(renderMarkerLine("진화 끝", depth, "fork"));
+  const endLabel = branchGroupEndLabel(cmd);
+  if (endLabel) {
+    const tone = eventCommandBranches(cmd)[0]?.tone ?? "fork";
+    host.append(renderMarkerLine(endLabel, depth, tone));
   }
 }
 

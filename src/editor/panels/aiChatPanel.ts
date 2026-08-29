@@ -110,6 +110,7 @@ import {
   applyAiFontSize,
   clampPanelSize,
   clampPanelSizeToViewport,
+  GLASS_FOLD_IDLE_MS,
   loadAiFontSize,
   loadDockPanelSize,
   loadPanelCollapsed,
@@ -154,6 +155,7 @@ export {
   AI_FONT_SIZE_KEY,
   AI_FONT_SIZE_SCALE,
   AUTO_COLLAPSE_AFTER_AI_MS,
+  GLASS_FOLD_IDLE_MS,
   MAP_FIRST_MIGRATION_KEY,
   PANEL_SIZE_LIMITS,
   applyAiFontSize,
@@ -427,6 +429,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // TDZ 상태의 collapsed를 읽어 턴을 시작하기 전에 실패한다.
   let collapsed = loadPanelCollapsed();
   let autoCollapseTimer: number | null = null;
+  // 유리 도크의 본문 접힘(fold). `collapsed`(48px 칩)와 다른 축이며 glass 에서만 쓴다 —
+  // 입력줄은 남고 대화 본문만 아래로 여닫힌다. 저장하지 않는다(GLASS_FOLD_IDLE_MS 주석 참조).
+  // 왼쪽 위 조수는 접힌 입력줄로 시작하고, glass 에서는 fold 가 칩 접힘을 대체하므로
+  // 저장된 `oprn:ai-panel-collapsed === "1"` 도 fold 로 라우팅한다(멱등, 새 키 없음).
+  let glassFolded = readChatDock() === "glass";
+  if (glassFolded) collapsed = false;
+  let glassFoldTimer: number | null = null;
+  let glassFoldArmed = false;
+  let glassFoldHovered = false;
   let volatileZone: HTMLElement | null = null;
   // 원탭 답변 칩 — 컨트롤러보다 먼저 만들어 질문 대기 중 페이드를 막는다.
   const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
@@ -435,6 +446,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let expandForAiWork: () => void = () => {};
   let scheduleCollapseAfterAiWork: () => void = () => {};
   let clearAutoCollapseTimer: () => void = () => {};
+  let applyGlassFold: () => void = () => {};
+  let scheduleGlassFold: (options?: { failed?: boolean }) => void = () => {};
+  let clearGlassFoldTimer: () => void = () => {};
   const revealVolatileZone = (): void => {
     if (!volatileZone) return;
     volatileZone.hidden = false;
@@ -597,7 +611,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
     onProposalSettled: () => {
       // 검토 카드가 닫힌 뒤 — 자동 펼침이었다면 맵으로 화면을 되돌린다.
-      if (!turnBusy) scheduleCollapseAfterAiWork();
+      if (!turnBusy) {
+        scheduleCollapseAfterAiWork();
+        scheduleGlassFold();
+      }
     },
   });
   const noteNoChanges = proposalApi.noteNoChanges;
@@ -1396,6 +1413,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
+      // 유리 도크 본문 접힘 예약 — 시작 시 접혀 있었는지와 무관하다(fold 는 입력줄을 남기므로
+      // 답이 사라지지 않는다). 실패한 턴은 읽을 수 있게 열어 둔다.
+      scheduleGlassFold({ failed: turnFailed });
       // 접혀 시작한 턴만 종료 후 재접기. 이미 열린 패널은 그대로 둔다.
       if (collapseAfterAiWork) {
         if (turnFailed) {
@@ -1664,6 +1684,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
       if (!cancelled) notifyIfObscuredByTestPlay();
       drainPendingSends();
+      scheduleGlassFold({ failed: regionFailed });
       if (collapseAfterAiWork) {
         if (regionFailed) collapseAfterAiWork = false;
         else scheduleCollapseAfterAiWork();
@@ -2447,8 +2468,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   syncCommandBarClearance = (): void => {
     const rect = commandBar.getBoundingClientRect();
     if (rect.height <= 0 || typeof window === "undefined") return;
-    const clearance = Math.max(60, Math.ceil(window.innerHeight - composerShell.measuredTop()) + 12);
-    panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
+    // glass 는 컴포저가 카드 **맨 위**에 있으므로 `innerHeight - top` 이 사실상 뷰포트
+    // 전체가 된다. 이 값을 읽는 .ai-rising-overlay 는 side 에서만 마운트되니 지금은
+    // 실피해가 없지만, 남겨 두면 오버레이가 glass 로 오는 날 조용히 터진다.
+    if (readChatDock() !== "glass") {
+      const clearance = Math.max(60, Math.ceil(window.innerHeight - composerShell.measuredTop()) + 12);
+      panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
+    } else {
+      panel.style.removeProperty("--ai-command-bar-clearance");
+    }
     document.body?.style.setProperty("--ai-command-bar-inset", `${Math.max(72, Math.ceil(rect.height) + 24)}px`);
   };
   const commandBarClearanceObserver =
@@ -2519,10 +2547,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!resizableDock()) return;
     if (dock === "glass" && dockSizes.glass) {
       const fitted = clampPanelSizeToViewport(dockSizes.glass, viewportNow());
+      // 폭은 접혀도 유지한다 — 안 그러면 CSS clamp(360px,38vw,520px) 로 돌아가서
+      // 펼치는 순간 카드 폭이 튄다. 높이는 컴포저 한 줄로 줄어야 하므로 인라인 값을
+      // 비워 17-assistant-modern-shell.css 끝의 `height: auto` 가 이기게 한다.
       panel.style.width = `${fitted.width}px`;
-      panel.style.height = `${fitted.height}px`;
       panel.style.maxWidth = `${fitted.width}px`;
-      panel.style.maxHeight = `${fitted.height}px`;
+      if (!(glassFolded && dock === "glass")) {
+        panel.style.height = `${fitted.height}px`;
+        panel.style.maxHeight = `${fitted.height}px`;
+      }
     } else if (dock === "float" && dockSizes.float) {
       const width = clampWidthForDock("float", dockSizes.float.width);
       commandBar.style.setProperty("--ai-float-bar-width", `${width}px`);
@@ -2694,6 +2727,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (panel.dataset.logSlot === "volatile" && volatileZone) {
       volatileZone.hidden = false;
     }
+    applyGlassFold(); // fold 는 glass 전용 — 도크가 바뀌면 클래스도 따라가야 한다.
     if (mode === "glass") {
       syncGlassIdle();
       return;
@@ -2702,6 +2736,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshNextSteps();
   };
 
+  // 셰브론은 도크마다 다른 것을 여닫는다: glass 는 대화 본문(fold), 나머지는 패널 전체(칩).
+  // 같은 버튼·testid·aria 배선을 공유하므로 라벨만 갈라 쓴다.
+  const syncCollapseButtonChrome = (): void => {
+    const glass = readChatDock() === "glass";
+    const shut = glass ? glassFolded : collapsed;
+    const label = glass
+      ? (shut ? "조수 대화 펼치기" : "조수 대화 접기")
+      : (shut ? "AI 패널 펼치기" : "AI 패널 접기");
+    collapseButton.textContent = shut ? "▸" : "▾";
+    collapseButton.setAttribute("title", label);
+    collapseButton.setAttribute("aria-label", label);
+    collapseButton.setAttribute("aria-expanded", String(!shut));
+  };
   const applyCollapsed = (): void => {
     if (collapsed) panel.classList.add("is-collapsed");
     else {
@@ -2709,10 +2756,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // 접힌 동안 쌓인 알림 점(완료/오류)은 펼치는 순간 확인한 것으로 보고 지운다.
       panel.classList.remove("is-turn-attention", "is-turn-error");
     }
-    collapseButton.textContent = collapsed ? "▸" : "▾";
-    collapseButton.setAttribute("title", collapsed ? "AI 패널 펼치기" : "AI 패널 접기");
-    collapseButton.setAttribute("aria-label", collapsed ? "AI 패널 펼치기" : "AI 패널 접기");
-    collapseButton.setAttribute("aria-expanded", String(!collapsed));
+    syncCollapseButtonChrome();
     collapsedRestore.setAttribute("aria-expanded", String(!collapsed));
     if (typeof document !== "undefined" && document.body) document.body.classList.add("ai-command-bar-active");
     applySize(); // 접힘 상태에서는 커스텀 크기를 해제한다.
@@ -2721,10 +2765,85 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (autoCollapseTimer !== null && typeof window !== "undefined") window.clearTimeout(autoCollapseTimer);
     autoCollapseTimer = null;
   };
+  // ── 유리 도크 본문 접힘(fold) ────────────────────────────────────────────
+  // is-collapsed 와 다른 축이다: 입력줄·완료 스트립은 남고 대화 본문만 여닫힌다.
+  // 접힘 중 자식이 Tab 으로 잡히지 않게 inert 를 세운다 — CSS 는 max-height:0 으로
+  // 접으므로(display:none 이 아니라 트랜지션이 돌아야 한다) 요소가 트리에 남는다.
+  applyGlassFold = (): void => {
+    const glass = readChatDock() === "glass";
+    const folded = glass && glassFolded;
+    if (!glass) disarmGlassFold();
+    panel.classList.toggle("is-glass-folded", folded);
+    // 가짜 DOM(test/fakeDom)에는 inert 프로퍼티가 없으므로 속성으로 폴백한다.
+    const inertable = body as HTMLElement & { inert?: boolean };
+    if (typeof inertable.inert === "boolean") inertable.inert = folded;
+    else if (folded) body.setAttribute("inert", "");
+    else body.removeAttribute("inert");
+    syncCollapseButtonChrome();
+    applySize(); // 접힘 중에는 커스텀 카드 크기를 해제한다.
+  };
+  clearGlassFoldTimer = (): void => {
+    if (glassFoldTimer !== null && typeof window !== "undefined") window.clearTimeout(glassFoldTimer);
+    glassFoldTimer = null;
+  };
+  // 무장(armed)과 타이머를 분리한다. hover 는 타이머만 끊고 무장은 남겨 포인터가 떠나면
+  // 다시 센다. 셰브론으로 직접 펼친 것은 무장을 해제해, 마우스를 옮겼다고 닫히지 않는다.
+  const disarmGlassFold = (): void => {
+    glassFoldArmed = false;
+    clearGlassFoldTimer();
+  };
+  const unfoldGlass = (): void => {
+    disarmGlassFold();
+    if (!glassFolded) return;
+    glassFolded = false;
+    applyGlassFold();
+  };
+  // 유휴 접힘을 걸어도 되는 상태인가. 2026-08-27 에 자동 접기를 걷어낸 이유(답이 사라짐)를
+  // 여기서 막는다 — 실패한 턴, 답을 기다리는 질문, 쓰던 입력, 위로 스크롤해 읽는 중,
+  // 포인터가 카드 위에 있는 경우에는 접지 않는다.
+  const canScheduleGlassFold = (failed: boolean): boolean => {
+    if (readChatDock() !== "glass" || glassFolded || failed) return false;
+    if (panel.classList.contains("is-turn-running") || panel.classList.contains("is-turn-error")) return false;
+    if (turnBusy || runningProgress !== null || hasPendingQuestion()) return false;
+    if (glassFoldHovered || input.value.trim() !== "") return false;
+    if (typeof document !== "undefined" && document.activeElement && panel.contains(document.activeElement)) return false;
+    // 로그를 위로 올려 읽는 중이면 접지 않는다(바닥에서 4px 이내면 최신을 보고 있는 것).
+    const drift = log.scrollHeight - log.clientHeight - log.scrollTop;
+    if (Number.isFinite(drift) && drift > 4) return false;
+    return true;
+  };
+  const armGlassFoldTimer = (): void => {
+    clearGlassFoldTimer();
+    if (!glassFoldArmed || !canScheduleGlassFold(false)) return;
+    if (typeof window === "undefined" || typeof window.setTimeout !== "function") return;
+    glassFoldTimer = window.setTimeout(() => {
+      glassFoldTimer = null;
+      if (!canScheduleGlassFold(false)) return;
+      glassFoldArmed = false;
+      glassFolded = true;
+      applyGlassFold();
+    }, GLASS_FOLD_IDLE_MS);
+  };
+  // 턴이 끝날 때 부른다 — 여기서만 무장한다.
+  scheduleGlassFold = (options?: { failed?: boolean }): void => {
+    if (!canScheduleGlassFold(options?.failed === true)) {
+      clearGlassFoldTimer();
+      return;
+    }
+    glassFoldArmed = true;
+    armGlassFoldTimer();
+  };
+  // 조작이 있으면 대기를 처음부터 다시 센다. 무장되지 않았으면 아무 일도 하지 않는다 —
+  // 조작 자체가 접기를 시작하게 하면 안 된다.
+  const restartGlassFoldTimer = (): void => {
+    if (!glassFoldArmed) return;
+    armGlassFoldTimer();
+  };
   // 접힌 패널을 AI 작업용으로 펼친다. 이미 열려 있으면 폭만 유지하고 종료 후 재접기 플래그는 유지.
   // 자동 경로 — 사용자의 저장된 접힘 선택(savePanelCollapsed)은 건드리지 않는다.
   expandForAiWork = (): void => {
     clearAutoCollapseTimer();
+    unfoldGlass(); // "내용이 나와야 하는 경우" — 턴 시작 3곳이 모두 이 함수를 지난다.
     if (!collapsed) return;
     collapsed = false;
     if (studio) applyStudio(false);
@@ -2737,6 +2856,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseAfterAiWork = false;
   };
   const toggleCollapsed = (): void => {
+    // glass 에서는 이 셰브론이 fold 토글이다 — 입력줄이 항상 보이므로 칩 접힘은 중복이고,
+    // 셰브론을 두 개 두면 무엇이 무엇을 접는지 읽히지 않는다.
+    if (readChatDock() === "glass") {
+      if (glassFolded) unfoldGlass();
+      else {
+        clearGlassFoldTimer();
+        glassFolded = true;
+        applyGlassFold();
+      }
+      return;
+    }
     clearAutoCollapseTimer();
     collapsed = !collapsed;
     // 수동으로 접으면 예약 취소. 수동으로 펼치면 다음 AI 턴 전까지는 연 상태 유지.
@@ -2746,6 +2876,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     applyCollapsed();
   };
   const restoreCollapsed = (): void => {
+    // 공개 진입점("조수 열기" · openAiAssistantPanel · 브리지 open)이 여기로 온다.
+    // glass 에서 여는 것은 fold 를 여는 것이다 — 칩 접힘은 그 도크에서 쓰지 않는다.
+    unfoldGlass();
     if (!collapsed) return;
     clearAutoCollapseTimer();
     collapsed = false;
@@ -2755,7 +2888,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   collapseButton.addEventListener("click", toggleCollapsed);
   collapsedRestore.addEventListener("click", restoreCollapsed);
+  // 유휴 대기는 조작이 있으면 처음부터 다시 센다. hover 중에는 아예 접지 않는다.
+  panel.addEventListener("pointerenter", () => {
+    glassFoldHovered = true;
+    clearGlassFoldTimer();
+  });
+  panel.addEventListener("pointerleave", () => {
+    glassFoldHovered = false;
+    restartGlassFoldTimer();
+  });
+  for (const type of ["keydown", "input", "focusin", "wheel", "scroll"] as const) {
+    panel.addEventListener(type, restartGlassFoldTimer, { passive: true });
+  }
   applyCollapsed();
+  applyGlassFold();
   refreshSendEnabled(); // 부트 직후도 보낼 게 없으므로 전송은 비활성에서 시작해야 한다.
 
   let completionStripHandle: AiCompletionStripHandle | null = null;
@@ -3094,6 +3240,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endAutonomousRun(); // 진행 중이던 자율 런 표면 정리.
     endTurnProgress();
     clearAutoCollapseTimer();
+    clearGlassFoldTimer();
     activeResizeCleanup?.();
     activeResizeCleanup = null;
 

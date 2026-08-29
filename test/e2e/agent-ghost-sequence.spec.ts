@@ -256,8 +256,14 @@ async function pickVisibleRegion(page: Page, mapId: string): Promise<TurnPlan["r
 async function collapseChatDock(page: Page): Promise<void> {
   const collapse = page.getByTestId("ai-collapse");
   if (!(await collapse.isVisible().catch(() => false))) return;
+  const panel = page.getByTestId("ai-panel");
+  const folded = await panel.evaluate((n) => n.classList.contains("is-glass-folded")).catch(() => false);
+  if (folded) return; // glass 는 이미 접힌 입력줄 한 줄이다(2026-08-30).
   await collapse.click();
-  await expect(page.getByTestId("ai-collapsed-restore")).toBeVisible({ timeout: 10_000 });
+  // glass 는 칩이 아니라 본문 접힘(fold)이라 복원 칩이 뜨지 않는다 — 둘 중 하나면 된다.
+  await expect
+    .poll(async () => panel.evaluate((n) => n.className), { timeout: 10_000 })
+    .toMatch(/is-collapsed|is-glass-folded/);
 }
 
 /** 브리지 턴을 시작하고 기다리지 않는다 — 애니메이션 중간 상태를 관찰해야 한다. */

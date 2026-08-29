@@ -49,7 +49,11 @@ function installFakeWindow(innerWidth = 1600, innerHeight = 1000): void {
 }
 
 function renderPanel(dock: "glass" | "side" | "float", options: Parameters<typeof renderAiChatPanel>[0] = {}): FakeElement {
-  return renderAiChatPanel({ clock: () => 37_000, getChatDock: () => dock, ...options }) as unknown as FakeElement;
+  const panel = renderAiChatPanel({ clock: () => 37_000, getChatDock: () => dock, ...options }) as unknown as FakeElement;
+  // glass 는 접힌 입력줄로 부팅한다(17-assistant-modern-shell.css 의 fold 섹션 / aiGlassFold.test.ts). 접힘은
+  // 카드를 컴포저 한 줄로 줄이므로 저장 높이가 적용되지 않는다 — 크기 계약은 펼친 상태의 것이다.
+  if (dock === "glass") findByTestId(panel, "ai-collapse")?.click();
+  return panel;
 }
 
 function pointerEvent(type: string, clientX: number, clientY: number): Event {
@@ -111,6 +115,25 @@ describe("유리 카드는 저장된 크기로 열린다", () => {
 
     expect(panel.style.width).toBe("720px"); // 800 * 0.9
     expect(panel.style.height).toBe("630px"); // 700 * 0.9
+  });
+
+  it("접힌 입력줄은 저장 폭을 유지하고 높이만 푼다 — 펼칠 때 폭이 튀지 않는다", () => {
+    installFakeWindow();
+    storage.set("oprn:ai-panel-size:glass", JSON.stringify({ width: 520, height: 700 }));
+
+    // renderPanel 과 달리 셰브론을 누르지 않는다: 부팅 직후의 접힌 상태를 본다.
+    const panel = renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "glass" }) as unknown as FakeElement;
+
+    expect(panel.classList.contains("is-glass-folded")).toBe(true);
+    expect(panel.style.width).toBe("520px");
+    expect(panel.style.maxWidth).toBe("520px");
+    // 높이는 CSS `height: auto` 가 이겨 컴포저 한 줄로 줄어야 한다.
+    expect(panel.style.height ?? "").toBe("");
+    expect(panel.style.maxHeight ?? "").toBe("");
+
+    findByTestId(panel, "ai-collapse")?.click();
+    expect(panel.style.width).toBe("520px"); // 폭은 그대로
+    expect(panel.style.height).toBe("700px");
   });
 
   it("사이드와 float 은 패널 자체 크기를 건드리지 않는다", () => {

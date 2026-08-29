@@ -198,3 +198,13 @@ export function savePanelCollapsed(collapsed: boolean): void {
 
 /** AI 작업으로 자동 펼친 뒤 턴이 끝나면 다시 접기까지 대기(ms). */
 export const AUTO_COLLAPSE_AFTER_AI_MS = 0;
+
+/**
+ * 유리 도크의 본문 접힘(fold) 유휴 지연(ms).
+ *
+ * `is-collapsed`(48px 칩)와 다른 축이다 — fold 는 대화 본문만 접고 입력줄은 남긴다.
+ * 그래서 2026-08-27 에 `AUTO_COLLAPSE_AFTER_AI_MS = 0` 으로 죽인 자동 접기와 달리
+ * 답이 얼굴 뒤로 사라지지 않는다. 저장하지 않는다: 유휴 접힘이 있으면 "펼침"은
+ * 안정된 사용자 선택이 아니므로 localStorage 키는 낡을 뿐이다.
+ */
+export const GLASS_FOLD_IDLE_MS = 8000;

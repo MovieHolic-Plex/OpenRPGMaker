@@ -235,7 +235,11 @@
   width: auto;
 }
 
-/* 기능 본문은 도구 칩 행 아래 오버레이로 열려 캔버스 높이를 바꾸지 않는다. */
+/* 기능 본문은 도구 칩 행 아래 오버레이로 열려 캔버스 높이를 바꾸지 않는다.
+   크기는 «분기를 읽을 수 있는가» 로 정한다. 예전 `min(280px, 42vh)` 는 1440px 높이에서도
+   280px 만 썼고, 폭은 `left:0; right:0` 이라 도구 팝오버 너비(실측 618px)에 묶였다 —
+   최상위 명령 7개 중 2개만 보이고 노드 중간에서 잘렸다. 플로우는 가로로 벌어지는 분기
+   컬럼을 그리므로 폭이 특히 아프다. 오른쪽에 붙이고 왼쪽으로 자라게 둔다. */
 .event-editor-aux-tools .event-script-flowchart[open] > .event-flowchart-body {
   background: color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #FFFDF8));
   border: 1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border));
@@ -245,8 +249,9 @@
   box-shadow:
     0 10px 28px var(--bg-surface),
     0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent);
-  left: 0;
-  max-height: min(280px, 42vh);
+  left: auto;
+  max-height: min(72vh, 760px);
+  min-width: min(760px, 78vw);
   overflow: auto;
   position: absolute;
   right: 0;

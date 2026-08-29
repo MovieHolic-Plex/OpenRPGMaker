@@ -150,8 +150,10 @@ async function flushAsync(): Promise<void> {
   for (let i = 0; i < 20; i += 1) await Promise.resolve();
 }
 
-function renderPanel(): FakeElement {
-  return renderWithFakeDom(() => renderAiChatPanel());
+// 칩 접힘(`is-collapsed`)은 side·float 축이다 — glass 는 입력줄을 남기는 fold 로 갈라졌다
+// (test/aiGlassFold.test.ts). 이 파일은 자동 펼침/재접기를 보므로 side 에 고정한다.
+function renderPanel(dock: "glass" | "side" | "float" = "side"): FakeElement {
+  return renderWithFakeDom(() => renderAiChatPanel({ getChatDock: () => dock }));
 }
 
 // emitWorkPlan 페이로드와 같은 형태의 합성 계획.

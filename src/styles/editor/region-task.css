@@ -485,15 +485,6 @@
   width: 100%;
 }
 
-/* 미리보기 사용법 한 줄 — 「이전」에 올리면 잠깐 비교된다는 것을 화면에서 알린다. */
-.region-task-preview-hint {
-  color: var(--editor-text-muted);
-  font-size: 10px;
-  line-height: 1.4;
-  padding-top: var(--space-1);
-  text-align: center;
-}
-
 .region-task-preview-ab-toggle {
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
@@ -834,6 +825,8 @@ body.region-task-modal-open .ai-authoring-examples {
   font-weight: 600;
 }
 .region-task-review-metrics.hidden,
+.region-task-review-issues.hidden,
+.region-task-checkpoint-timeline.hidden,
 .region-task-blockers.hidden,
 .region-task-room-controls.hidden { display: none; }
 
@@ -848,11 +841,6 @@ body.region-task-modal-open .ai-authoring-examples {
 .region-task-review-issue.is-error,
 .region-task-blockers { color: var(--danger); }
 .region-task-review-issue.is-warning { color: var(--warning); }
-.region-task-review-clear {
-  color: var(--success);
-  font-size: 11px;
-  font-weight: 600;
-}
 
 .region-task-room-controls {
   background: transparent;

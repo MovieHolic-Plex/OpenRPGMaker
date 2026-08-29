@@ -1,6 +1,7 @@
 import { storyFlagById } from "@/project/storyFlags";
 import type { Command, Project, StoryFlagDef } from "@/project/types";
 import type { QuestGraphDef } from "@/project/quest/questDef";
+import { resolveEventPlacement } from "./eventTools";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -40,6 +41,11 @@ const authorStoryArc: ToolDefinition = {
     if (!map) throw new ToolError(`맵이 없습니다: ${mapId}`, { code: "map-not-found", mapId });
     if (at.x < 0 || at.y < 0 || at.x >= map.width || at.y >= map.height) throw new ToolError("이벤트 좌표가 맵 밖입니다.", { code: "story-arc-position", mapId, x: at.x, y: at.y });
     if (map.events.some((event) => event.id === eventId)) throw new ToolError(`이벤트 ID가 이미 있습니다: ${eventId}`, { code: "event-id-duplicate", mapId });
+    const placement = resolveEventPlacement(project, map, at.x, at.y, {
+      kind: "interaction",
+      label: "서사 비트",
+      code: "story-beat-impassable",
+    });
     const objectiveFlagIds = objectives.map((objective) => `${id}-${cleanId(objective.id, "objective.id")}`);
     const objectiveSwitchIds = objectiveFlagIds.map((flagId) => `sw_story_${flagId.replaceAll("-", "_")}`);
     const choiceFlagId = `${id}-branch-choice`;
@@ -64,10 +70,14 @@ const authorStoryArc: ToolDefinition = {
       { kind: "choices", prompt: title, options: branches.map((branch, index) => ({ text: branch.label.trim(), branch: [...cleanLines(branch.lines).map(textCommand), { kind: "setVariable", variableId: choiceVariableId, op: "=", value: index + 1 }, ...(twist.enabled && branch.id === twist.discoverInBranchId && twistSwitchId ? [{ kind: "setSwitch" as const, switchId: twistSwitchId, value: true }] : [])] })) },
       ...(twist.enabled && twistSwitchId ? [{ kind: "fork" as const, condition: { kind: "switch" as const, switchId: twistSwitchId, value: true }, then: cleanLines(twist.reveal).map(textCommand) }] : []),
     ];
-    map.events.push({ id: eventId, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages: [{ id: `${eventId}_page_1`, name: title, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands }] });
+    map.events.push({ id: eventId, x: placement.x, y: placement.y, trigger: { kind: "action" }, commands: [], pages: [{ id: `${eventId}_page_1`, name: title, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands }] });
     const quest: QuestGraphDef = { kind: "graph", id, title, nodes: objectives.map((objective, index) => ({ id: cleanId(objective.id, "objective.id"), description: objective.text.trim(), completesWhen: { kind: "storyFlag", flagId: objectiveFlagIds[index] as string, value: true } })), edges: objectives.slice(1).map((objective, index) => ({ from: cleanId(objectives[index]?.id, "objective.id"), to: cleanId(objective.id, "objective.id") })) };
     project.quests = [...(project.quests ?? []).filter((candidate) => !("id" in candidate) || candidate.id !== id), quest];
-    return { summary: `서사 아크 작성: ${title} (목표 ${objectives.length}, 분기 ${branches.length}${twist.enabled ? ", 반전 포함" : ""})`, data: { eventId, questId: id, objectiveFlagIds, choiceFlagId, choiceVariableId, twistFlagId: twist.enabled ? twist.flagId : undefined, twistSwitchId } };
+    return {
+      summary: `서사 아크 작성: ${title} (목표 ${objectives.length}, 분기 ${branches.length}${twist.enabled ? ", 반전 포함" : ""})`,
+      data: { eventId, questId: id, x: placement.x, y: placement.y, adjusted: placement.adjusted, objectiveFlagIds, choiceFlagId, choiceVariableId, twistFlagId: twist.enabled ? twist.flagId : undefined, twistSwitchId },
+      warnings: placement.adjusted ? [`서사 비트 위치 자동 조정: (${at.x}, ${at.y}) → (${placement.x}, ${placement.y})`] : undefined,
+    };
   },
 };
 

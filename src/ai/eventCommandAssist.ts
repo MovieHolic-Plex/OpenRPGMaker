@@ -5,7 +5,15 @@
 // - 프롬프트: commandKindRegistry의 kind 목록 + eventCommandFactory.newCommand 기본값을
 //   JSON 예시로 "자동 직렬화"해 포함한다(수기 중복 정의 금지 — 스키마 드리프트 방지).
 // - 검증: io/shapeCommandFields.validateCommandArray(구조) + io/commandReferenceValidation(참조).
-// - 범위: "커맨드 배열 생성"만. 페이지 분리/조건 편집은 다루지 않는다.
+//
+// 출력 계약: 기본은 **페이지의 고친 뒤 최종 목록 전체**("page" scope)다. 예전에는 "새로 붙일
+// 명령만" 이었고 반영도 삽입뿐이라, 사용자가 "이미 열었으면 비어있다고 하게 고쳐" 라고 쓰면
+// 모델이 페이지를 다시 써서 돌려주고 앱은 그걸 끝에 덧붙여 **이벤트가 두 번 실행**됐다.
+// 최종 목록을 받으면 고치기·지우기·순서 바꾸기가 전부 표현되고, 무엇이 달라졌는지는
+// panels/eventEditor/commandDiff.ts 가 계산한다.
+//
+// 기존 목록이 컨텍스트 예산에 안 들어가면 "append" scope 로 내려간다 — 전체를 못 보여준
+// 상태로 최종 목록을 받으면 모델이 못 본 명령을 지워버린다.
 
 import { newCommand } from "@/editor/eventCommandFactory";
 import { commandBranches } from "@/editor/tools/commandTraversal";
@@ -25,9 +33,15 @@ export interface EventAssistContext {
   readonly mapId: string;
   readonly event?: GameEvent;
   readonly page?: EventPage;
-  // 현재 커맨드 리스트에서 선택된 경로(있으면 "이 위치 뒤에 삽입될 것"임을 모델에 알린다).
+  // 현재 커맨드 리스트에서 선택된 경로. 선택 **여부**만 쓴다 — 경로 배열 자체는
+  // [명령index, 분기index(음수 센티널), …] 교대 인코딩이라 모델이 읽을 수 없다.
   readonly selection?: readonly number[] | null;
+  // 선택된 명령을 사람 말로 옮긴 라벨(호출자가 commandSummary 로 만든다). 있으면 이걸 싣는다.
+  readonly selectionLabel?: string;
 }
+
+/** "page" = 고친 뒤 최종 목록 전체 / "append" = 뒤에 붙일 새 명령만. */
+export type AssistScope = "page" | "append";
 
 export type AssistParseResult =
   | { readonly ok: true; readonly commands: Command[] }
@@ -35,14 +49,17 @@ export type AssistParseResult =
 
 export interface AssistRunResult {
   readonly commands: Command[];
+  // scope 가 "page" 면 페이지 최종 목록, "append" 면 뒤에 붙일 새 명령만.
+  readonly scope: AssistScope;
   // 성공까지 사용한 LLM 호출 횟수(1=한 번에 성공).
   readonly attempts: number;
 }
 
 // 프롬프트에 나열하는 참조 목록 상한(초과분은 생략 안내).
 const MAX_REF_ENTRIES = 40;
-// 기존 커맨드 요약 문자 상한.
-const MAX_EXISTING_CHARS = 2000;
+// 기존 커맨드를 **온전한 JSON 으로** 실을 수 있는 상한. 넘으면 잘라 싣지 않고 append 로 내려간다
+// (예전에는 2000자에서 문자열 중간을 자르고 "…(생략)" 을 붙여, 모델이 닫히지 않은 JSON 을 봤다).
+const MAX_EXISTING_CHARS = 12000;
 // 최초 1회 + 자가수정 2회.
 const MAX_ATTEMPTS = 3;
 
@@ -69,29 +86,83 @@ function refSection(title: string, entries: readonly { id: string; name: string 
   return [`### ${title}`, ...(lines.length ? lines : ["- (없음 — 이 종류를 참조하는 커맨드를 만들지 말 것)"])].join("\n");
 }
 
-function existingCommandsSection(page: EventPage | undefined): string {
-  if (!page || page.commands.length === 0) return "## 현재 페이지의 기존 커맨드\n(없음)";
-  let json = JSON.stringify(page.commands);
-  if (json.length > MAX_EXISTING_CHARS) json = `${json.slice(0, MAX_EXISTING_CHARS)}…(생략)`;
-  return ["## 현재 페이지의 기존 커맨드", "```json", json, "```"].join("\n");
+/** 기존 목록을 온전한 JSON 으로 실을 수 있으면 "page", 아니면 "append". */
+export function resolveAssistScope(page: EventPage | undefined): AssistScope {
+  if (!page || page.commands.length === 0) return "page";
+  return JSON.stringify(page.commands).length <= MAX_EXISTING_CHARS ? "page" : "append";
+}
+
+function existingCommandsSection(page: EventPage | undefined, scope: AssistScope): string {
+  if (!page || page.commands.length === 0) {
+    return ["## 현재 페이지의 기존 커맨드", "(없음 — 빈 페이지다)"].join("\n");
+  }
+  if (scope === "append") {
+    // 본문을 못 실었다는 사실을 분명히 적는다. 안 그러면 모델이 "안 보이는 건 없는 것"으로
+    // 취급해 최종 목록에서 빠뜨린다.
+    return [
+      "## 현재 페이지의 기존 커맨드",
+      `총 ${page.commands.length}개가 이미 있다. 너무 길어서 본문을 싣지 못했다.`,
+      "기존 명령은 손대지 말고, 뒤에 붙일 새 명령만 만들어라.",
+    ].join("\n");
+  }
+  return [
+    "## 현재 페이지의 기존 커맨드(이 목록을 고쳐서 최종 목록을 돌려줄 것)",
+    "```json",
+    JSON.stringify(page.commands, null, 1),
+    "```",
+  ].join("\n");
+}
+
+function outputContractSection(scope: AssistScope): string {
+  const common = [
+    "2. 각 원소는 위 스키마의 Command 객체여야 한다.",
+    "3. switchId/variableId/itemId/troopId/actorId/mapId는 반드시 위 목록의 id를 사용한다.",
+    "4. playAudio/showPicture/changeFace 등 resourceId가 필요한 커맨드와 m2Command는 사용하지 않는다.",
+    "5. 요청이 모호하면 가장 단순하고 안전한 해석으로 생성한다.",
+  ];
+  if (scope === "append") {
+    return [
+      "## 출력 규약(반드시 준수)",
+      "1. 출력은 **뒤에 붙일 새 커맨드 JSON 배열 하나**뿐이다. 설명·주석·여는 말 금지. ```json 펜스는 허용.",
+      ...common,
+      "6. 기존 커맨드를 다시 출력하지 마라 — 출력한 것이 그대로 뒤에 붙는다.",
+    ].join("\n");
+  }
+  return [
+    "## 출력 규약(반드시 준수)",
+    "1. 출력은 **이 페이지의 고친 뒤 최종 커맨드 JSON 배열 하나**뿐이다. 설명·주석·여는 말 금지. ```json 펜스는 허용.",
+    ...common,
+    "6. 최종 목록이므로 **바꾸지 않을 기존 커맨드도 그대로 다시 포함**한다. 순서도 최종 순서다.",
+    "7. 지울 커맨드는 출력에서 빼고, 고칠 커맨드는 고친 값으로 넣는다. 요청에 없는 커맨드를 임의로 지우지 마라.",
+    "8. 요청이 '추가'라면 기존 목록에 새 커맨드를 끼운 전체 목록을 출력한다.",
+  ].join("\n");
 }
 
 export function buildEventAssistPrompt(context: EventAssistContext): string {
-  const { project, mapId, event, page, selection } = context;
+  const { project, mapId, event, page, selection, selectionLabel } = context;
+  const scope = resolveAssistScope(page);
   const mapName = project.maps[mapId]?.name ?? mapId;
   const sections: string[] = [];
 
+  // 선택 위치는 사람 말로만 싣는다. 예전에는 경로 배열(`[2,-2,1]`)을 그대로 넣었는데,
+  // -2 가 "fork 의 조건이 맞을 때 가지" 라는 범례가 프롬프트에 없어 모델에겐 잡음이었다.
+  const selectionLine = selection && selection.length > 0
+    ? (selectionLabel
+      ? `사용자는 지금 목록에서 「${selectionLabel}」 커맨드를 고른 상태다 — 요청이 "이거"를 가리킬 수 있다.`
+      : "사용자는 지금 목록에서 커맨드 하나를 고른 상태다 — 요청이 그 커맨드를 가리킬 수 있다.")
+    : "사용자가 고른 커맨드는 없다.";
+
   sections.push(
     [
-      "당신은 브라우저 기반 2D RPG 에디터의 이벤트 명령 생성기입니다.",
-      "사용자의 자연어 요청을 이벤트 커맨드(Command) JSON 배열로 변환합니다.",
+      "당신은 브라우저 기반 2D RPG 에디터의 이벤트 명령 편집기입니다.",
+      scope === "page"
+        ? "사용자의 자연어 요청대로 이 페이지의 커맨드 목록을 고쳐, 고친 뒤의 최종 목록을 JSON 배열로 돌려줍니다."
+        : "사용자의 자연어 요청을 이 페이지 뒤에 붙일 커맨드 JSON 배열로 변환합니다.",
       "",
       `현재 위치: 맵 "${mapName}"(${mapId})` +
         (event ? `, 이벤트 ${event.id} (${event.x}, ${event.y})` : "") +
         (page ? `, 페이지 "${page.name || page.id}"` : ""),
-      selection && selection.length > 0
-        ? `생성된 커맨드는 현재 선택된 커맨드(경로 ${JSON.stringify(selection)}) 뒤에 삽입됩니다.`
-        : "생성된 커맨드는 페이지 커맨드 목록 끝에 추가됩니다.",
+      selectionLine,
     ].join("\n")
   );
 
@@ -129,18 +200,8 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
     ].join("\n")
   );
 
-  sections.push(existingCommandsSection(page));
-
-  sections.push(
-    [
-      "## 출력 규약(반드시 준수)",
-      "1. 출력은 **커맨드 JSON 배열 하나**뿐이다. 설명·주석·여는 말 금지. ```json 펜스는 허용.",
-      "2. 각 원소는 위 스키마의 Command 객체여야 한다.",
-      "3. switchId/variableId/itemId/troopId/actorId/mapId는 반드시 위 목록의 id를 사용한다.",
-      "4. playAudio/showPicture/changeFace 등 resourceId가 필요한 커맨드와 m2Command는 사용하지 않는다.",
-      "5. 요청이 모호하면 가장 단순하고 안전한 해석으로 생성한다.",
-    ].join("\n")
-  );
+  sections.push(existingCommandsSection(page, scope));
+  sections.push(outputContractSection(scope));
 
   return sections.join("\n\n");
 }
@@ -177,7 +238,12 @@ function buildReferenceContext(project: Project): ReferenceContext {
   };
 }
 
-export function parseAndValidate(project: Project, text: string): AssistParseResult {
+export function parseAndValidate(
+  project: Project,
+  text: string,
+  // "page" scope 에서 기존 명령이 있던 페이지는 빈 배열이 정당하다("전부 지워 줘").
+  options: { readonly allowEmpty?: boolean } = {},
+): AssistParseResult {
   const jsonText = extractJsonArrayText(text);
   if (!jsonText) {
     return { ok: false, errors: ["응답에서 JSON 배열을 찾지 못했습니다. 커맨드 JSON 배열만 출력하세요."] };
@@ -189,7 +255,9 @@ export function parseAndValidate(project: Project, text: string): AssistParseRes
     return { ok: false, errors: [`JSON 파싱 실패: ${cause instanceof Error ? cause.message : String(cause)}`] };
   }
   if (!Array.isArray(parsed)) return { ok: false, errors: ["최상위 값이 배열이 아닙니다."] };
-  if (parsed.length === 0) return { ok: false, errors: ["빈 배열입니다. 요청에 맞는 커맨드를 1개 이상 생성하세요."] };
+  if (parsed.length === 0 && !options.allowEmpty) {
+    return { ok: false, errors: ["빈 배열입니다. 요청에 맞는 커맨드를 1개 이상 생성하세요."] };
+  }
 
   // 1) 구조(shape) 검증 — 알 수 없는 kind/필드 타입 오류를 잡는다.
   try {
@@ -275,6 +343,8 @@ export async function runEventCommandAssist(options: {
 }): Promise<AssistRunResult> {
   const { prompt, context, onDelta, signal } = options;
   const config = configForLiteModel(options.config);
+  const scope = resolveAssistScope(context.page);
+  const allowEmpty = scope === "page" && (context.page?.commands.length ?? 0) > 0;
   const messages: ChatMessage[] = [
     { role: "system", content: buildEventAssistPrompt(context) },
     { role: "user", content: prompt },
@@ -290,8 +360,8 @@ export async function runEventCommandAssist(options: {
     });
     // assistant 응답은 항상 문자열 content다(멀티모달 파트는 비전 주입 user 메시지 전용).
     const content = typeof result.message.content === "string" ? result.message.content : "";
-    const parsed = parseAndValidate(context.project, content);
-    if (parsed.ok) return { commands: parsed.commands, attempts: attempt };
+    const parsed = parseAndValidate(context.project, content, { allowEmpty });
+    if (parsed.ok) return { commands: parsed.commands, scope, attempts: attempt };
 
     lastErrors = parsed.errors;
     // 자가수정: 직전 응답 + 검증 에러를 되돌려 재생성 요청.

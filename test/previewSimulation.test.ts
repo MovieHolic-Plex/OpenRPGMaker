@@ -96,11 +96,11 @@ describe("previewSimulation", () => {
     expect(forkStep).toBeTruthy();
     expect(forkStep!.forkTaken).toBe("then");
 
-    const thenStep = result.steps.find((s) => s.branchLabel === "참일 때" && !s.skipped);
+    const thenStep = result.steps.find((s) => s.branchLabel === "조건이 맞을 때" && !s.skipped);
     expect(thenStep).toBeTruthy();
     expect(thenStep!.skipped).toBeFalsy();
 
-    const elseStep = result.steps.find((s) => s.branchLabel === "그 외");
+    const elseStep = result.steps.find((s) => s.branchLabel === "조건이 맞지 않을 때");
     expect(elseStep).toBeTruthy();
     expect(elseStep!.skipped).toBe(true);
   });
@@ -120,10 +120,10 @@ describe("previewSimulation", () => {
     const forkStep = result.steps.find((s) => s.command.kind === "fork");
     expect(forkStep!.forkTaken).toBe("else");
 
-    const elseStep = result.steps.find((s) => s.branchLabel === "그 외" && !s.skipped);
+    const elseStep = result.steps.find((s) => s.branchLabel === "조건이 맞지 않을 때" && !s.skipped);
     expect(elseStep).toBeTruthy();
 
-    const thenStep = result.steps.find((s) => s.branchLabel === "참일 때");
+    const thenStep = result.steps.find((s) => s.branchLabel === "조건이 맞을 때");
     expect(thenStep).toBeTruthy();
     expect(thenStep!.skipped).toBe(true);
   });
@@ -163,7 +163,7 @@ describe("previewSimulation", () => {
     const result = simulatePageCommands(commands, "ev_test");
     expect(getSimSwitch(result.finalState, switchId)).toBe(true);
 
-    const thenStep = result.steps.find((s) => s.branchLabel === "참일 때" && s.command.kind === "setSwitch");
+    const thenStep = result.steps.find((s) => s.branchLabel === "조건이 맞을 때" && s.command.kind === "setSwitch");
     expect(thenStep).toBeTruthy();
     expect(thenStep!.skipped).toBe(true);
   });

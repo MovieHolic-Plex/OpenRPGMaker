@@ -24,7 +24,7 @@ import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import { renderEventAiAssist } from "./aiAssist";
+import { hasEventAiStagedDraft, renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventPagePreview, renderEventScriptFlowchart } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
@@ -178,6 +178,12 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }
   });
   const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
+  // AI 초안은 목록을 덮는 오버레이도, 도크 안의 별도 카드도 아니다 — **목록이 있던 자리에**
+  // 같은 카드 모양으로 그린다. 그래서 cmdList 바로 앞에 살고, 초안이 있는 동안만 목록과 자리를 바꾼다.
+  const stagedHost = el("div", {
+    class: "cmd-staged-host",
+    dataset: { testid: "ai-event-staged-host" },
+  });
   const previewHost = el("div", {
     class: "event-page-preview-host",
     dataset: { testid: "event-page-preview-host" },
@@ -225,7 +231,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   function applyViewMode(): void {
     const isPreview = currentMode === "preview";
     const isStoryboard = currentMode === "storyboard";
-    cmdList.hidden = isStoryboard || isPreview;
+    // 적용 대기 중인 AI 초안이 있으면 목록 자리를 초안이 쓴다. 렌더 순서와 무관하게 같은 답이
+    // 나와야 하므로 DOM 이 아니라 aiAssist 의 모듈 상태를 읽는다.
+    const isStaged = hasEventAiStagedDraft(mapId, eventId, activePage.id);
+    cmdList.hidden = isStoryboard || isPreview || isStaged;
+    stagedHost.hidden = isStoryboard || isPreview || !isStaged;
     storyboardEl.hidden = !isStoryboard;
     previewHost.hidden = !isPreview;
     const nextToggle = renderViewToggle(currentMode, changeMode);
@@ -287,7 +297,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     Array.from(node.childNodes).forEach((child) => replacement.append(child));
     node.replaceWith(replacement);
   });
-  const aiAssist = renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList });
+  const aiAssist = renderEventAiAssist({
+    mapId,
+    eventId: ev.id,
+    page: activePage,
+    cmdList,
+    stagedHost,
+    refreshListVisibility: () => applyViewMode(),
+    replaceAll: (commands) => commandHistory.replaceAll(commands),
+  });
   const commandToolbar = renderCommandToolbar({
     cmdList,
     actions,
@@ -297,10 +315,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     page: activePage,
     viewToggle,
     aiDock: aiAssist,
-    onOpenPreview: () => {
-      changeMode("preview");
-      previewHost.scrollIntoView({ block: "nearest" });
-    },
     currentMode: () => currentMode,
     storyboardEl: () => storyboardEl,
   });
@@ -327,6 +341,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         commandToolbar.element,
         storyboardHost,
         previewHost,
+        stagedHost,
         cmdList,
       ],
     }),
@@ -387,7 +402,6 @@ type CommandToolbarOptions = {
   readonly page: EventPage;
   readonly viewToggle?: HTMLElement;
   readonly aiDock?: HTMLDetailsElement;
-  readonly onOpenPreview?: () => void;
   readonly currentMode: () => StoryboardMode;
   readonly storyboardEl: () => HTMLElement;
 };
@@ -482,7 +496,7 @@ function makePopoverEscapable(details: HTMLDetailsElement): void {
 }
 
 function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
-  const { cmdList, actions, commandHistory, mapId, eventId, page, viewToggle, aiDock, onOpenPreview } = options;
+  const { cmdList, actions, commandHistory, mapId, eventId, page, viewToggle, aiDock } = options;
   // 선택의 단일 진상은 인스펙터다. 예전에는 `cmdList` 의 `.selected` 를 DOM 에서 긁었는데,
   // 스토리 보기에서는 목록이 비어 있으니 무엇을 골라도 이동/복사가 조용히 아무 일도 안 했다.
   const selectedPath = (): number[] | null => {
@@ -629,7 +643,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
-      renderCommandAuxGroup(onOpenPreview, aiDock),
+      renderCommandAuxGroup(aiDock),
     ],
   });
   return {
@@ -641,7 +655,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   };
 }
 
-function renderCommandAuxGroup(onOpenPreview?: () => void, aiDock?: HTMLDetailsElement): HTMLElement {
+function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   // 도크가 있으면 그 조상을 통해 칼럼을 집는다 — 에디터 본문이 동시에 다수 마운트되도 섞이지 않는다.
   const commandsColumn = (): HTMLElement | null =>
     aiDock?.closest(".event-editor-commands-column") ?? document.querySelector(".event-editor-commands-column");
@@ -669,9 +683,11 @@ function renderCommandAuxGroup(onOpenPreview?: () => void, aiDock?: HTMLDetailsE
   return el("div", {
     class: "event-editor-command-aux-group",
     attrs: { role: "group", "aria-label": "보조 도구" },
+    // «▶ 미리보기» 버튼은 없다. 보기 방식 세그먼트(`event-view-toggle-preview`)와 같은
+    // `changeMode("preview")` 로 들어가는 중복 컨트롤이었고, 같은 라벨로 나란히 서 있었다.
+    // 미리보기는 세그먼트가 소유한다. 플로우는 팝오버를 여는 별개 동작이라 남는다.
     children: [
       ...(aiButton ? [aiButton] : []),
-      toolbarButton("▶", "미리보기", "event-command-quick-preview", () => onOpenPreview?.(), false, false, "이 페이지가 하는 일을 차례대로 보여줍니다"),
       toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
     ],
   });

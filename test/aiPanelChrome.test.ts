@@ -142,7 +142,9 @@ describe("AI 패널 크롬", () => {
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
   });
 
-  it.each(["glass", "side", "float"] as const)("%s dock의 실제 composer 접기 버튼과 restore가 aria/persistence를 왕복한다", (dock) => {
+  // glass 는 빠져 있다: 거기서 이 셰브론은 칩 접힘이 아니라 본문 접힘(fold) 토글이고
+  // `oprn:ai-panel-collapsed` 를 쓰지 않는다. 그 계약은 test/aiGlassFold.test.ts 가 갖는다.
+  it.each(["side", "float"] as const)("%s dock의 실제 composer 접기 버튼과 restore가 aria/persistence를 왕복한다", (dock) => {
     const panel = renderPanel(dock);
     const collapse = findByTestId(panel, "ai-collapse");
     const actions = findByTestId(panel, "ai-composer-actions");
@@ -171,6 +173,26 @@ describe("AI 패널 크롬", () => {
     expect(collapse.getAttribute("aria-expanded")).toBe("true");
     expect(restore.getAttribute("aria-expanded")).toBe("true");
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
+  });
+
+  it("glass 의 접기 버튼은 칩 접힘이 아니라 본문 접힘을 토글하고 저장값을 건드리지 않는다", () => {
+    const panel = renderPanel("glass");
+    const collapse = findByTestId(panel, "ai-collapse");
+    if (!collapse) throw new Error("collapse fixtures missing");
+
+    // 부팅이 이미 접힌 입력줄이므로 라벨도 조수 어휘를 쓴다("AI 패널" 이 아니다).
+    expect(panel.classList.contains("is-glass-folded")).toBe(true);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(collapse.getAttribute("aria-label")).toBe("조수 대화 펼치기");
+    expect(collapse.getAttribute("aria-expanded")).toBe("false");
+
+    collapse.click();
+    expect(panel.classList.contains("is-glass-folded")).toBe(false);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(collapse.getAttribute("aria-label")).toBe("조수 대화 접기");
+    expect(collapse.getAttribute("aria-expanded")).toBe("true");
+    // fold 는 저장하지 않는다 — 유휴 자동 접힘이 있으면 "펼침"은 안정된 선택이 아니다.
+    expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
   });
 
   it("접기 버튼은 커맨드 바 인셋을 유지하고, 복귀 타깃 클릭으로 펼친다", () => {

@@ -72,13 +72,13 @@
 
 <header class="top">
   <h1>영역 작업 창 UI 감사</h1>
-  <p class="sub">스크린샷 13장을 훑어 화면에서 읽히는 대로 결함을 적고, 제품 결함을 전부 고쳤다.</p>
+  <p class="sub">스크린샷 13장을 훑어 화면에서 읽히는 대로 결함을 적고 고쳤다. 그다음 2차로, 화면에 남은 설명 문구를 걷어냈다.</p>
   <div class="meta">
     <span>2026-08-30</span>
     <span>브랜치 <code>worktree/rapid-field-f2d6</code></span>
-    <span>커밋 <code>3895dfb7</code></span>
+    <span>커밋 <code>3895dfb7</code> · <code>7635d09a</code></span>
     <span><a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/270">PR #270</a></span>
-    <span>단위 테스트 57 통과 · 캡처 스펙 3 통과</span>
+    <span>단위 테스트 87 통과 · 캡처 스펙 통과</span>
   </div>
 </header>
 
@@ -86,8 +86,8 @@
   <div class="cards">
     <div class="stat"><b>15</b><small>찾은 결함</small></div>
     <div class="stat"><b>14</b><small>고친 제품 결함</small></div>
-    <div class="stat"><b>1</b><small>제품 아님(캡처 도구)</small></div>
-    <div class="stat"><b>8</b><small>새로 쓴 회귀 테스트</small></div>
+    <div class="stat"><b>13 → 4</b><small>검토 화면에서 읽을 줄</small></div>
+    <div class="stat"><b>14</b><small>새로 쓴 회귀 테스트</small></div>
   </div>
 </section>
 
@@ -115,7 +115,7 @@
 </figure>
 
 <h2>검토 화면: 같은 말 네 번, 정작 필요한 건 접혀 있었다</h2>
-<p class="lede">부분 적용(구역 고르기)이 「고급」 안에 묻혀 있었고, 지표는 단위 없는 한 줄 문장이었다.</p>
+<p class="lede">부분 적용(구역 고르기)이 「고급」 안에 묻혀 있었고, 통과했다는 말이 네 군데서 반복됐다.</p>
 
 <figure class="pair">
   <div class="row">
@@ -125,17 +125,37 @@
     </div>
     <div>
       <div class="tag after">후</div>
-      <img src="shots-after/11-review-diagnostics.png" alt="구역 고르기가 본문으로 올라오고 지표가 칩으로 쪼개진 검토 화면" />
+      <img src="shots-after/11-review-diagnostics.png" alt="그림·변경 목록·구역 고르기·버튼만 남은 검토 화면" />
     </div>
   </div>
   <figcaption>
     <ul>
-      <li><strong>전</strong> — 상태가 <em>검사 완료 · 승인 대기</em> / <em>체크포인트</em> / <em>플레이 가능성 검사 통과</em> / <em>검사 통과</em>로 네 번 반복된다. <strong>승인 대기</strong>에 초록 체크(✓)가 붙어 이미 끝난 것처럼 보인다. 지표는 "갈 수 있는 목표 36 · 타일 조합 50 · NPC 일정 4"처럼 무엇의 단위인지 알 수 없다. 전/후 비교는 작은 썸네일 두 장이라 무엇이 바뀌었는지 안 보인다.</li>
-      <li><strong>후</strong> — 진행 칩은 <strong>검사 완료</strong> 하나, 문제 줄은 <strong>막는 문제·주의 없음</strong>. 승인 대기는 <strong>내 결정 대기</strong>로 바뀌고 체크 대신 대기 표시(…)를 쓴다. 지표는 <strong>갈 수 있는 목표 36개 · 타일 조합 50/100점 · NPC 일정 4명 · 시간 시스템 켜짐</strong>처럼 단위와 분모를 붙인 칩이고, 나쁜 값이면 경고색으로 뜬다. <strong>적용할 구역을 고르세요</strong>가 「적용」 버튼 바로 위 본문으로 올라왔다. 「고급」에는 실행 로그만 남는다.</li>
+      <li><strong>전</strong> — 상태가 <em>검사 완료 · 승인 대기</em> / <em>체크포인트 6개</em> / <em>플레이 가능성 검사 통과</em> / <em>검사 통과</em>로 네 번 반복된다. <strong>승인 대기</strong>에 초록 체크(✓)가 붙어 이미 끝난 것처럼 보인다. 지표는 "갈 수 있는 목표 36 · 타일 조합 50 · NPC 일정 4"처럼 무엇의 단위인지 알 수 없다. 부분 적용은 접힌 「고급」 안에 있다.</li>
+      <li><strong>후</strong> — 남은 것은 <strong>지시 문장 · 미리보기 · 변경 목록(타일 4칸 / 보물상자 (5,5)) · 적용할 구역 · 버튼 3개</strong>. 통과한 검사는 한 줄도 쓰지 않는다. 문제가 있을 때만 판정 줄이 생기고 건수만 말한다(<strong>주의 1건</strong>). 부분 적용은 「적용」 바로 위 본문으로 올라왔고, 「고급」에는 실행 로그만 남는다.</li>
       <li>고친 곳 — <code>src/editor/panels/regionTaskModal.ts</code>, <code>src/editor/regionTask/harnessReview.ts</code>, <code>src/styles/editor/region-task.css</code></li>
     </ul>
   </figcaption>
 </figure>
+
+<h2>2차: 쓸데없는 설명 걷어내기</h2>
+<p class="lede">1차 수정이 문제를 글로 때운 자리가 있었다. 단위를 붙인 지표 칩, 호버 안내 한 줄, 확인 문구. 검토 화면에서 읽어야 하는 줄이 13개였다.</p>
+
+<table>
+  <thead><tr><th style="width:34%">지운 것</th><th>왜</th></tr></thead>
+  <tbody>
+    <tr><td>요약 줄 "제안 준비 — 4칸 타일 · 이벤트 1건 · 적용 여부를 선택하세요"</td><td>바로 아래 변경 목록이 같은 숫자를 말하고, 버튼이 이미 적용/버리기를 묻는다. 같은 수를 세 번 읽혔다</td></tr>
+    <tr><td>진행 칩 "1. 초안 생성 / 검사 완료"</td><td>통과는 침묵한다. 막힌 경우만 "검사 차단"이 남는다</td></tr>
+    <tr><td>체크포인트 6줄 (분리 초안 · 영역 경계 · 결정론 수리 · 배치 규칙 · 게임플레이 사전검사 · 내 결정 대기)</td><td>사용자에게 없는 개념이다. 이제 막힌 검사만 그린다</td></tr>
+    <tr><td>지표 칩 (바뀐 칸 · 이벤트 · 갈 수 있는 목표 · 타일 조합 점수 · NPC 일정 · 시간 시스템 켜짐 · 방 점수)</td><td>개수는 변경 목록과 중복이고, 점수·켜짐은 이 편집에서 할 일이 없다. 손봐야 하는 값(못 가는 목표 · 영역 밖 변경 · 시간 시스템 꺼짐)만 남긴다. 전체 수치는 실행 로그에 있다</td></tr>
+    <tr><td>"검사 통과 · 검사 상세" 줄과 "막는 문제·주의 없음"</td><td>눌러도 초록 체크와 "없음"만 나오는, 열 이유가 없는 줄이었다. 할 말이 있을 때만 생긴다</td></tr>
+    <tr><td>미리보기 안내 "「이전」에 마우스를 올리면 잠깐 비교됩니다"</td><td>올리면 바로 보이는 동작을 문장으로 다시 말할 필요가 없다. 툴팁으로 옮겼다</td></tr>
+  </tbody>
+</table>
+
+<p style="margin-top:16px">
+  덤으로 잡은 버그: 1초 경과 타이머를 끄지 않아 검토 화면에 "미리보기를 준비하는 중 · 12초"가 남을 수 있었다.
+  요약 줄을 비우면서 드러났다.
+</p>
 
 <h2>추천 칩: 카테고리를 고르면 갈 곳이 없어졌다</h2>
 <p class="lede">「다듬기」를 누르면 추천이 4개에서 1개로 줄고, 전체 목록으로 돌아갈 표시가 없었다.</p>
@@ -212,15 +232,15 @@
   <tbody>
     <tr><td>1</td><td class="p1">P1</td><td>표준 모드 웰컴 카드가 영역 작업 창 본문을 덮음</td><td>모달·팝오버가 있으면 코치마크가 물러남. 본 것으로 기록하지 않음</td></tr>
     <tr><td>2</td><td class="p1">P1</td><td>"AI 없이 실내 초안"이 라벨·제목·버튼 3곳 중복</td><td>제목만 남기고 버튼은 "초안 만들기"</td></tr>
-    <tr><td>3</td><td class="p1">P1</td><td>검토 상태가 4곳에서 같은 말 반복</td><td>진행 칩 "검사 완료", 문제 줄 "막는 문제·주의 없음"</td></tr>
+    <tr><td>3</td><td class="p1">P1</td><td>검토 상태가 4곳에서 같은 말 반복</td><td>2차에서 통과 시 전부 침묵(문제 있을 때만 건수)</td></tr>
     <tr><td>4</td><td class="p1">P1</td><td>부분 적용(구역 고르기)이 접힌 「고급」에 묻힘</td><td>검토 본문으로 올림. 「고급」은 실행 로그만</td></tr>
     <tr><td>5</td><td class="p2">P2</td><td>카테고리를 고르면 추천 4→1개, 되돌아갈 표시 없음</td><td>「전체 추천」 칩 + 명령 4개 보강</td></tr>
     <tr><td>6</td><td class="p2">P2</td><td><code>/</code> 자동완성이 켠 카테고리를 무시</td><td>카테고리 안에서만 검색</td></tr>
-    <tr><td>7</td><td class="p2">P2</td><td>"승인 대기"에 초록 체크 → 끝난 것처럼 보임</td><td><code>status: "pending"</code> 추가, "내 결정 대기"</td></tr>
-    <tr><td>8</td><td class="p2">P2</td><td>지표가 단위 없는 한 줄 문장</td><td>단위·분모 붙은 칩, 나쁜 값은 경고색</td></tr>
+    <tr><td>7</td><td class="p2">P2</td><td>"승인 대기"에 초록 체크 → 끝난 것처럼 보임</td><td>2차에서 체크포인트 줄 자체를 지워 오해가 사라짐</td></tr>
+    <tr><td>8</td><td class="p2">P2</td><td>지표가 단위 없는 한 줄 문장</td><td>2차에서 경고 값만 남김(그 전에는 단위·분모 붙인 칩)</td></tr>
     <tr><td>9</td><td class="p2">P2</td><td>선택 칩 바의 AI 버튼이 라벨 없는 아이콘</td><td>"AI 작업" 라벨</td></tr>
     <tr><td>10</td><td class="p2">P2</td><td>넓은 영역 지우기가 오클릭 한 번에 실행</td><td>12칸 초과는 "N칸 지울까요?" 확인(4초 자동 해제)</td></tr>
-    <tr><td>11</td><td class="p2">P2</td><td>전/후 비교가 작은 썸네일 두 장</td><td>「이전」에 올리면 잠깐 비교, 바뀐 칸 테두리 굵게, 안내 한 줄</td></tr>
+    <tr><td>11</td><td class="p2">P2</td><td>전/후 비교가 작은 썸네일 두 장</td><td>「이전」에 올리면 잠깐 비교, 바뀐 칸 테두리 굵게(안내 문구는 2차에서 툴팁으로)</td></tr>
     <tr><td>12</td><td class="p2">P2</td><td>지시 입력이 모달·왼쪽 패널 두 곳에 동시 존재</td><td>모달이 열리면 왼쪽 조수 입력이 물러남</td></tr>
     <tr><td>13</td><td class="p3">P3</td><td>안내 문구의 "왼쪽 감독"이 화면에 없는 이름</td><td>"왼쪽 조수 패널"</td></tr>
     <tr><td>14</td><td class="p3">P3</td><td>문맥 전용 추천이 카테고리에서 사라짐</td><td>카테고리 필터에 문맥 명령 포함</td></tr>
@@ -244,9 +264,9 @@
 <table>
   <thead><tr><th>무엇</th><th style="width:120px">결과</th><th>내용</th></tr></thead>
   <tbody>
-    <tr><td><code>test/regionTaskUiAudit.test.ts</code></td><td class="ok">8 통과</td><td>신규. 결함 1·2·3·4·7·8·11·12 각각을 지킨다</td></tr>
-    <tr><td><code>coachMarks</code> · <code>selectionActionChips</code> · <code>suggestedCommands</code> · <code>regionTaskModal</code> · <code>regionTaskCssTokens</code></td><td class="ok">합계 57 통과</td><td>기존 스펙 포함, 실패 0</td></tr>
-    <tr><td><code>test/e2e/_region-task-ui-audit-shots.spec.ts</code></td><td class="ok">3 통과</td><td>수정 후 화면 11장 캡처(이 보고서의 "후" 이미지)</td></tr>
+    <tr><td><code>test/regionTaskUiAudit.test.ts</code></td><td class="ok">11 통과</td><td>신규. 1차 결함(1·2·4·12)과 2차 계약(통과 침묵 · 지표 축소 · 진단 부재 · 판정 문구 · 요약 빈 줄 · 호버 안내 없음)을 지킨다</td></tr>
+    <tr><td><code>coachMarks</code> · <code>selectionActionChips</code> · <code>suggestedCommands</code> · <code>regionTaskModal</code> · <code>regionTaskModalEnhancements</code> · <code>regionTaskApplyFlow</code> · <code>regionTaskCssTokens</code></td><td class="ok">합계 87 통과</td><td>기존 스펙 포함, 실패 0</td></tr>
+    <tr><td><code>test/e2e/_region-task-ui-audit-shots.spec.ts</code></td><td class="ok">통과</td><td>수정 후 화면 11장 캡처(이 보고서의 "후" 이미지)</td></tr>
     <tr><td>전체 스위트</td><td class="p2">기준선 빨강</td><td>이 저장소는 손대기 전부터 85개 파일이 실패한다. 내 diff 와 이름이 겹치는 6개 파일은 <strong>HEAD 만 체크아웃한 별도 워크트리에서 같은 테스트가 같은 이유로 실패</strong>함을 확인했다 — 이번 변경 탓이 아니다</td></tr>
   </tbody>
 </table>
@@ -257,10 +277,19 @@
   <code>test/e2e/canvas-fill-selection-chips.spec.ts</code>도 같은 자리(selection 폴링)에서 실패한다.
   칩 바 캡처는 하네스 <code>setSelection</code>으로 우회했고, 드래그 자체는 이번 감사 범위 밖이라 손대지 않았다.
 </p>
+<div class="note" style="margin-top:16px">
+  <h3>캡처할 때 <code>DEV_SERVER_PORT</code> 를 지정해야 한다</h3>
+  <p style="margin:0">
+    <code>playwright.config.ts</code> 의 <code>reuseExistingServer: true</code> 때문에 기본 포트(9173)에 다른
+    워크트리의 dev 서버가 떠 있으면 <strong>그 코드가 찍힌다</strong>. 실제로 2차 캡처 첫 시도가
+    <code>.herdr/worktrees/rpg-zzu/5</code> 의 서버를 재사용해 수정 전 화면을 찍었다(칩·문구가 모두 옛 것).
+    빈 포트를 지정해 다시 찍었다.
+  </p>
+</div>
 
 <footer>
   이미지는 이 파일과 같은 폴더의 <code>shots/</code>(전)·<code>shots-after/</code>(후)에 있다.
-  전 이미지는 감사 시작 시점의 <code>worktree/rapid-field-f2d6</code> 기준, 후 이미지는 커밋 <code>3895dfb7</code> 기준이다.
+  전 이미지는 감사 시작 시점의 <code>worktree/rapid-field-f2d6</code> 기준, 후 이미지는 커밋 <code>7635d09a</code> 기준이다.
 </footer>
 
 </div>
