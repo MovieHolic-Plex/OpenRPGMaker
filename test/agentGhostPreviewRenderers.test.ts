@@ -60,47 +60,45 @@ describe("computeGhostAnimationState pure function", () => {
 
 
 describe("ghostPhaseChipInfo helper", () => {
-  it("translates toolNames into Korean labels and tracks progress vs completion", () => {
-    // animating with build/author/paint/fill/create/scatter tool
+  it("narrates toolNames in Korean and tracks progress vs completion without exposing internal ids", () => {
     const buildInfo = ghostPhaseChipInfo({
       toolName: "build_house",
       revealedCount: 3,
       totalCount: 10,
       isScheduleComplete: false,
     });
-    expect(buildInfo.koreanLabel).toBe("시공 중");
+    expect(buildInfo.koreanLabel).toBe("집을 만드는 중");
     expect(buildInfo.spinner).toBe(true);
-    expect(buildInfo.text).toBe("시공 중 · 3/10 셀 · build_house");
+    expect(buildInfo.text).toBe("집을 만드는 중 · 3/10 셀");
+    expect(buildInfo.text).not.toContain("build_house");
 
-    // place_npc / make_villager
     const npcInfo = ghostPhaseChipInfo({
       toolName: "place_npc",
       revealedCount: 1,
       totalCount: 1,
       isScheduleComplete: false,
     });
-    expect(npcInfo.koreanLabel).toBe("주민 배치 중");
-    expect(npcInfo.text).toBe("주민 배치 중 · 1/1 셀 · place_npc");
+    expect(npcInfo.koreanLabel).toBe("사람을 만드는 중");
+    expect(npcInfo.text).toBe("사람을 만드는 중 · 1/1 셀");
+    expect(npcInfo.text).not.toContain("place_npc");
 
-    // upsert_event
     const eventInfo = ghostPhaseChipInfo({
       toolName: "upsert_event",
       revealedCount: 1,
       totalCount: 2,
       isScheduleComplete: false,
     });
-    expect(eventInfo.koreanLabel).toBe("이벤트 연결 중");
+    expect(eventInfo.koreanLabel).toBe("이벤트를 만드는 중");
 
-    // generic tool
     const otherInfo = ghostPhaseChipInfo({
-      toolName: "erase_tiles",
+      toolName: "unknown_internal_tool",
       revealedCount: 0,
       totalCount: 5,
       isScheduleComplete: false,
     });
-    expect(otherInfo.koreanLabel).toBe("작업 중");
+    expect(otherInfo.koreanLabel).toBe("작업을 진행하는 중");
+    expect(otherInfo.text).not.toContain("unknown_internal_tool");
 
-    // completed
     const doneInfo = ghostPhaseChipInfo({
       toolName: "paint_tiles",
       revealedCount: 10,
@@ -187,7 +185,7 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
 
     mockScene = {
       add: {
-        container: vi.fn(() => containerFactory()),
+        container: vi.fn(() => containerFactory!()),
         graphics: vi.fn(() => ({
           fillStyle: vi.fn(),
           fillRect: vi.fn(),
@@ -453,7 +451,7 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     const tileLayer = renderer["tileLayer"] as any;
     expect(tileLayer).not.toBeNull();
     expect(tileLayer.parentContainer).toBe(secondGroup);
-    expect(secondGroup.list).toContain(tileLayer);
+    expect(secondGroup!.list).toContain(tileLayer);
     expect(tileLayer.list?.length ?? 0).toBeGreaterThan(0);
     expect(renderer["tileLayerParent"]).toBe(secondGroup);
   });

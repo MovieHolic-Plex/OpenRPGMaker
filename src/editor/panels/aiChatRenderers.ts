@@ -15,14 +15,18 @@ export function formatAiRunningStatus(
   now: number,
   toolCount: number,
   maxTools = AI_PROGRESS_TOOL_LIMIT,
-  phaseLabel?: string | null
+  phaseLabel?: string | null,
+  activityLine?: string | null,
 ): string {
   const elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
+  const activity = activityLine?.trim();
   const label = phaseLabel?.trim();
   const prefix = label ? `${label}…` : "생각 중…";
+  const elapsed = `${elapsedSeconds}초`;
   // 분모(상한)는 진단용 — 일상 UI에는 호출 횟수만.
   void maxTools;
-  return toolCount > 0 ? `${prefix} ${elapsedSeconds}초 · 도구 ${toolCount}` : `${prefix} ${elapsedSeconds}초`;
+  if (activity) return `${activity} · ${elapsed}${toolCount > 0 ? ` · 도구 ${toolCount}` : ""}`;
+  return toolCount > 0 ? `${prefix} ${elapsed} · 도구 ${toolCount}` : `${prefix} ${elapsed}`;
 }
 
 export function isDraftDestructiveTool(name: string): boolean {

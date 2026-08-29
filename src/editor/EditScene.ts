@@ -138,6 +138,10 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
 import { tileRectToClientRect } from "@/editor/selectionOverlayAnchor";
 export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
 
+export function regionTaskBadgeText(phase: "running" | "pending"): string | null {
+  return phase === "pending" ? "✓ 변경 확인 대기" : null;
+}
+
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
@@ -1621,7 +1625,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const task = this.activeRegionTask;
     const mapId = this.mapId();
     const host = this.game.canvas?.parentElement;
-    if (!task || task.mapId !== mapId || !host) {
+    const badgeText = task ? regionTaskBadgeText(task.phase) : null;
+    if (!task || task.mapId !== mapId || !host || !badgeText) {
       this.regionTaskBadge?.remove();
       this.regionTaskBadge = null;
       return;
@@ -1633,7 +1638,7 @@ export class EditScene extends PhaserRuntime.Scene {
       host.append(badge);
       this.regionTaskBadge = badge;
     }
-    this.regionTaskBadge.textContent = task.phase === "pending" ? "✓ 변경 확인 대기" : "✨ AI 작업 중…";
+    this.regionTaskBadge.textContent = badgeText;
     const camera = this.cameras.main;
     const rect = tileRectToScreenRect(
       { x: task.region.x, y: task.region.y, width: task.region.width, height: task.region.height },
