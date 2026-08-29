@@ -15,10 +15,11 @@ import {
   type ZoneFeedbackScene,
 } from "@/player/playSceneZoneFeedback";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { initialRuntimeEventPositions, runtimeEventView } from "@/project/runtimeEventState";
 import type { M2UiCommandState } from "@/project/sessionRuntimeTypes"
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { startSession, type PlaySession } from "@/project/session";
-import type { Command, EventPage } from "@/project/types";
+import type { Command, EventPage, GameEvent } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 
 const CHECKPOINT_EVENT = "oprn:checkpoint-feedback";
@@ -340,6 +341,43 @@ describe("PlayScene zone feedback lifecycle", () => {
       expect(host.querySelector("[data-testid='zone-feedback']")).toBeNull();
     },
   );
+});
+
+describe("facing prompt sees multi-tile footprints", () => {
+  it("prompts when facing a non-anchor cell of a 2x2 event", () => {
+    // Given — 발자국은 (5,7) 이 발밑(앵커)인 2x2. footprintBounds 로 (5,6)(6,6)(5,7)(6,7) 을 덮는다.
+    // 플레이어는 (4,6) 에서 오른쪽을 보고 있어 조사 대상은 앵커가 아닌 (5,6) 이다.
+    const targetEvent: GameEvent = {
+      id: "golem",
+      x: 5,
+      y: 7,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [{
+        ...actionPage([{ kind: "text", body: "거대한 골렘이다" }]),
+        footprint: { width: 2, height: 2 },
+      }],
+    };
+    const session = startSession(createBlankProject());
+    const positions = initialRuntimeEventPositions([targetEvent]);
+    const view = runtimeEventView(targetEvent, session, positions);
+    const host = document.createElement("div");
+    const scene: ZoneFeedbackScene = {
+      session,
+      facing: "right",
+      tileX: 4,
+      tileY: 6,
+      activeRuntimeEvents: () => [view],
+      game: { registry: { get: (key: string) => key === "dialogueHost" ? host : undefined } },
+    };
+    const feedback = createPlaySceneZoneFeedback(session);
+
+    // When
+    syncPlaySceneZoneFeedback(scene, feedback, 0);
+
+    // Then
+    expect(host.querySelector("[data-testid='zone-feedback-prompt']")?.textContent).toBe("Z 조사");
+  });
 });
 
 describe("standalone player zone feedback CSS", () => {

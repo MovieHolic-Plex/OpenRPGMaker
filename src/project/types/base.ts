@@ -459,4 +459,30 @@ export interface Terms {
   mp?: string;
 }
 
+/**
+ * 다중 타일 캐릭터의 충돌 발자국(타일 단위). 두 축 모두 1 이상이다.
+ * 앵커는 **발밑** — (x,y) 가 발자국 하단 행의 칸이다:
+ *
+ *   left = x − ⌊(width−1)/2⌋      top = y − (height−1)      bottom = y
+ *
+ * 짝수 폭에서 "왼쪽으로 치우친다" 는 **앵커가 발자국 중심의 왼쪽에 있다**는 뜻이다.
+ * 발자국이 왼쪽으로 뻗는다는 뜻이 아니다 — 폭 2 는 left = x 라 앵커가 왼쪽 끝이고
+ * 발자국은 오른쪽으로 자란다.
+ *
+ * ⚠ project/spatialPlacements.ts 의 SpatialFootprint 와 다른 타입이다.
+ * 저쪽은 (x,y) 가 좌상단이고 우·하로 전개한다. 섞으면 좌표가 어긋난다.
+ */
+export interface CharacterFootprint {
+  readonly width: number;
+  readonly height: number;
+}
+
+/** 타일 좌표 사각형. 네 값 모두 포함(inclusive). */
+export interface FootprintRect {
+  readonly left: number;
+  readonly right: number;
+  readonly top: number;
+  readonly bottom: number;
+}
+
 export const SCHEMA_VERSION = 4 as const;

@@ -1,6 +1,7 @@
 import type { PlaySession } from "@/project/session";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { footprintContains } from "@/project/footprint";
 import {
   createZoneFeedbackModel,
   interactionPromptLabel,
@@ -214,8 +215,8 @@ function facingPrompt(scene: ZoneFeedbackScene): string | null {
   const targetX = scene.tileX + delta.x;
   const targetY = scene.tileY + delta.y;
   const events = scene.activeRuntimeEvents("action");
-  const target = events.find((event) => event.x === targetX && event.y === targetY)
-    ?? events.find((event) => event.x === scene.tileX && event.y === scene.tileY);
+  const target = events.find((event) => footprintContains(event.x, event.y, event.footprint, targetX, targetY))
+    ?? events.find((event) => footprintContains(event.x, event.y, event.footprint, scene.tileX, scene.tileY));
   return promptForEvent(target);
 }
 

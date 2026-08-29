@@ -25,8 +25,8 @@ import { runCommands } from "@/player/playSceneInterpreter";
 import { startMapBgm } from "@/player/mapBgm";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import {
-  characterSpriteX,
   characterSpriteY,
+  footprintSpriteX,
   isAlwaysAboveCharacterUpperTile,
   mapUpperTileDepth,
   placeCharacterSprite,
@@ -62,6 +62,7 @@ interface RenderedEventSprite extends RenderedTileImage {
   play(key: string): this;
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
+  setScale(value: number): void;
   destroy(): void;
 }
 
@@ -342,12 +343,13 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
         ? overrideFrame
         : eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
     const marker = scene.add.sprite(
-      characterSpriteX(view.x),
+      footprintSpriteX(view.x, view.footprint),
       characterSpriteY(view.y),
       spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
       frame
     );
     placeCharacterSprite(marker, view.priority);
+    marker.setScale(view.scale);
     scene.eventSprites.set(event.id, marker);
   }
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
