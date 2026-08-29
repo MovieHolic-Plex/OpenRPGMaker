@@ -15,7 +15,7 @@
 // `clearAgentBlueprint()` 로 지운다. 자세한 사고 기록은 syncAgentBlueprintWithSpec 주석에 있다.
 
 import { orderedAssets, type AffectedRegion, type BuildSpec, type SpecAsset } from "@/ai/buildSpec";
-import { blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
+import { blueprintRegionsForToolCall, type AppliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
 import type { MapId } from "@/project/types";
 
 export type BlueprintEntryStatus = "planned" | "building" | "done";
@@ -52,6 +52,16 @@ const listeners = new Set<Listener>();
 let mapId: MapId | null = null;
 let entries: BlueprintEntry[] = [];
 let revision = 0;
+/**
+ * 이번 턴에 planned 밖으로 올린 칸(entryShapeKey) — 턴 정산이 되돌릴 수 있는 대상의 전량이다.
+ *
+ * 왜 `building` 만 보면 안 되는가: markAgentBlueprintProgress 는 다음 칸으로 넘어갈 때 앞 칸을
+ * 그 자리에서 `done` 으로 내린다(인과 순서 판정). 그 done 은 저장소에 아무것도 들어가기 **전**의
+ * 표시다 — 한 턴에 길·집을 이어 치고 중단하면 길은 done, 집은 building 이 되고, building 만
+ * 되돌리면 손도 안 댄 길에 회색 ✓ 가 남는다. 그래서 "이번 턴에 움직인 칸" 을 전부 들고 있는다.
+ * 앞 턴에 확정된 done 은 여기 없으므로 정산이 건드리지 않는다.
+ */
+let turnAdvanced = new Set<string>();
 
 // kind → 사람 말. BuildSpec.kind 는 모델이 자유롭게 쓰지만 villagePlan/village builder 가 내는
 // 어휘는 좁다(road·house·prop·terrain·clear·event 계열). 모르는 kind 는 그대로 보여준다 —
@@ -169,9 +179,11 @@ export function syncAgentBlueprintWithSpec(spec: BuildSpec | null): void {
 /**
  * 공간 쓰기 툴콜 하나가 들어왔을 때 청사진 진행을 갱신한다.
  *
- * 판정은 누적 커버리지 퍼센트가 아니라 **인과 순서**다: 이번 호출이 가장 잘 맞아떨어지는 칸
- * (bestOverlapIndex, IoU 기준)을 `building` 으로 올리고, 그 전에 `building` 이던 다른 칸은
- * `done` 으로 내린다. 누적 퍼센트를 쓰지 않는 이유는 한 에셋이 여러 툴콜로 쪼개져 들어오기
+ * 판정은 누적 커버리지 퍼센트가 아니라 **인과 순서**다: 이번 호출이 가장 잘 맞아떨어지는
+ * 칸들(bestOverlapIndices — 칸이 덮인 비율로 뽑고 덮은 만큼 벗겨내며 되풀이한다)을 `building`
+ * 으로 올리고, 그 전에 `building` 이던 다른 칸은 `done` 으로 내린다. 한 호출이 여러 칸을
+ * 올릴 수 있다 — 집 여러 채를 한 호출로 짓는 `author_house kind=lots` 가 그 경로다.
+ * 누적 퍼센트를 쓰지 않는 이유는 한 에셋이 여러 툴콜로 쪼개져 들어오기
  * 때문이다(집 한 채 = paint 여러 번) — 비율은 그럴 때 조용히 거짓말을 하고, 순서는 그러지 않는다.
  *
  * 영역은 `blueprintRegionsForToolCall`(청사진 전용 추출)이 뽑는다 — 스펙 게이트의
@@ -199,24 +211,28 @@ export function markAgentBlueprintProgress(
   if (!mode.write) return;
   if (entries.length === 0 || mapId === null) return;
   const call = blueprintRegionsForToolCall(toolName, args);
+  // 한 호출의 영역은 모두 같은 맵이다(affectedRegions·이 모듈 둘 다 mapId 하나로 만든다) —
+  // 맵 판정은 위 한 줄로 끝났으므로 영역마다 다시 보지 않는다.
   if (call.mapId !== mapId) return;
-  const regions = call.regions.filter((region) => region.mapId === mapId && region.w > 0 && region.h > 0);
+  const regions = call.regions.filter((region) => region.w > 0 && region.h > 0);
   // 대상 전체를 한 호출로 짓는 파사드(author_village)는 한 칸으로 귀속하지 않는다 — 아래 함수 주석.
   if (call.wholeTarget) {
     advanceAllPlanned(regions);
     return;
   }
   if (regions.length === 0) return;
-  const targetIndex = bestOverlapIndex(entries, regions);
-  if (targetIndex === -1) return;
+  const targets = new Set(bestOverlapIndices(entries, regions));
   // planned 만 building 으로 올린다 — 같은 칸 반복 호출은 그대로 두고, done 은 되돌리지 않는다.
-  if (entries[targetIndex].status !== "planned") return;
+  const advancing = new Set([...targets].filter((index) => entries[index].status === "planned"));
+  if (advancing.size === 0) return;
 
   entries = entries.map((entry, index) => {
-    if (index === targetIndex) return { ...entry, status: "building" };
-    if (entry.status === "building") return { ...entry, status: "done" };
+    if (advancing.has(index)) return { ...entry, status: "building" };
+    // 이번 호출이 건드리지 않은 칸이 아직 짓는 중이면 앞 칸이므로 내린다(정산이 다시 검증한다).
+    if (entry.status === "building" && !targets.has(index)) return { ...entry, status: "done" };
     return entry;
   });
+  for (const index of advancing) turnAdvanced.add(entryShapeKey(entries[index]));
   emit();
 }
 
@@ -231,24 +247,86 @@ export function markAgentBlueprintProgress(
  *
  * `regions` 가 비어 있으면(bounds 없는 호출 = 대상 전체) 그 맵의 planned 칸 전부, 있으면 그
  * 영역에 걸리는 칸만 올린다 — 북쪽 절반에 지은 마을이 남쪽 계획을 끌고 가지 않는다.
- * done 은 되돌리지 않고(역주행 금지), 확정은 종전대로 턴 끝의 finishAgentBlueprint 가 한다.
+ * done 은 되돌리지 않고(역주행 금지), 확정은 턴 끝의 settleAgentBlueprintTurn 이 한다 — 그때
+ * 적용이 들어가지 않았으면 여기서 올린 칸은 전부 planned 로 되돌아간다.
  */
 function advanceAllPlanned(regions: readonly AffectedRegion[]): void {
   const touched = (entry: BlueprintEntry): boolean =>
     entry.status === "planned" && (regions.length === 0 || regions.some((region) => overlapArea(entry, region) > 0));
   if (!entries.some(touched)) return;
   entries = entries.map((entry) => (touched(entry) ? { ...entry, status: "building" } : entry));
+  for (const entry of entries) {
+    if (entry.status === "building") turnAdvanced.add(entryShapeKey(entry));
+  }
   emit();
 }
 
-/** 턴이 끝났다 — 진행 중이던 칸을 끝난 것으로 확정한다. */
-export function finishAgentBlueprint(): void {
+/**
+ * 턴이 시작됐다 — 지난 턴의 "이번 턴에 올린 칸" 기록을 버린다.
+ *
+ * `turnAdvanced` 는 턴 끝 정산(settleAgentBlueprintTurn)이나 마일스톤 확정
+ * (commitAgentBlueprintProgress)에서 비워진다. 그런데 패널에는 그 둘 중 **아무것도 지나지 않는**
+ * 종료 경로가 있다: `!ownsTurn(true)` 반환(프로젝트 전환·패널 폐기로 소유권을 잃은 턴)은 정산을
+ * 건너뛰고 바로 나간다. 그러면 지난 턴의 기록이 다음 턴의 정산까지 살아남아, 이번 턴이 손대지도
+ * 않은 칸을 "적용 안 됨" 으로 planned 로 되돌린다. 오늘 그 일이 실제로 안 나는 이유는
+ * dropSession/dispose 가 `clearAgentBlueprint()` 로 청사진을 함께 지우기 때문이다 — **결합에
+ * 의한 안전**이라 그 호출이 하나 빠지는 순간 조용히 깨진다. 턴 시작에서 명시적으로 끊는다.
+ *
+ * 상태(칸)는 건드리지 않으므로 emit 하지 않는다 — 이 기록은 공개 상태가 아니다.
+ */
+export function beginAgentBlueprintTurn(): void {
+  turnAdvanced = new Set();
+}
+
+/**
+ * 턴이 끝났다 — 이번 턴에 올린 칸을 **적용이 실제로 들어갔는지**로 가른다.
+ * 들어간 영역에 걸리면 `done`, 걸리지 않으면 `planned` 로 되돌린다.
+ *
+ * 종전에는 종료 경로마다 "짓는 중을 done 으로 확정" 만 했다. 그런데 패널의 다섯 종료 경로 중
+ * 셋(중단 return, catch 두 개)은 applyProposal **앞에서** 끝난다 — 초안은 그대로 버려지고
+ * 저장소는 한 칸도 바뀌지 않는데 청사진에는 회색 ✓ 가 박혔다(실측: 같은 툴콜을 정상 종료와
+ * 중단으로 각각 돌려 store 변경 true/false, 청사진은 양쪽 다 done). 그리고 이 표시는 세션이
+ * 죽을 때까지 풀리지 않는다 — markAgentBlueprintProgress 는 planned 가 아닌 칸을 다시 올리지
+ * 않고 syncAgentBlueprintWithSpec 은 done 을 사각형 기준으로 물려받는다. 즉 시공 중 한 번의
+ * 중단이 손도 안 댄 타일 위에 "완료" 를 영구히 칠했다. 이 기능이 없애려던 바로 그 거짓이다.
+ *
+ * 그래서 종료 **분기**가 아니라 **적용 결과**로 정산한다. 중단이라고 전부 되돌리는 것도 틀렸다:
+ * 자율 런은 마일스톤을 턴 도중에 커밋하므로(assistantSession.maybeAutoApplyMilestone) 중단
+ * 전에 실제로 들어간 시공이 있다 — 그 몫은 commitAgentBlueprintProgress 가 그 시점에 확정한다.
+ */
+export function settleAgentBlueprintTurn(applied: AppliedBlueprintRegions): void {
+  if (turnAdvanced.size === 0) return;
+  // bounds 없는 파사드는 영역을 인자에 남기지 않는다 — 그 맵이면 이번 턴 진행분을 그대로 인정한다.
+  const wholeMap = mapId !== null && applied.wholeTargetMapIds.includes(mapId);
+  const landed = (entry: BlueprintEntry): boolean =>
+    wholeMap || applied.regions.some((region) => region.mapId === mapId && overlapArea(entry, region) > 0);
+  const next = entries.map((entry) =>
+    turnAdvanced.has(entryShapeKey(entry))
+      ? { ...entry, status: landed(entry) ? ("done" as const) : ("planned" as const) }
+      : entry
+  );
+  turnAdvanced = new Set();
+  if (sameEntries(entries, next)) return;
+  entries = next;
+  emit();
+}
+
+/**
+ * 여기까지의 진행분이 저장소에 들어갔다 — 짓는 중이던 칸을 끝난 것으로 확정한다.
+ *
+ * 자율 런의 마일스톤 커밋 시점에 부른다(패널의 milestone_applied). 그 커밋은 턴 도중에
+ * 일어나고 적용된 제안을 turnProposals 에서 지우므로(=턴 결과에 남지 않는다) 턴 끝의
+ * settleAgentBlueprintTurn 이 그 몫을 "적용 안 됨" 으로 되돌리면 안 된다.
+ */
+export function commitAgentBlueprintProgress(): void {
+  turnAdvanced = new Set();
   if (!entries.some((entry) => entry.status === "building")) return;
   entries = entries.map((entry) => (entry.status === "building" ? { ...entry, status: "done" } : entry));
   emit();
 }
 
 export function clearAgentBlueprint(): void {
+  turnAdvanced = new Set();
   if (entries.length === 0 && mapId === null) return;
   mapId = null;
   entries = [];
@@ -256,27 +334,69 @@ export function clearAgentBlueprint(): void {
 }
 
 /**
- * 이번 호출과 가장 잘 맞아떨어지는 칸의 인덱스 — 겹침 면적이 아니라 **IoU**(겹침 / 합집합)로 고른다.
+ * 이번 호출이 진행시킨 칸들 — 영역이 여러 개면 **한 칸으로 접지 않는다**.
+ *
+ * 실측 결함: 시스템 프롬프트는 집 2채 이상을 `author_house kind=lots + houses[]` **한 호출**로
+ * 짓게 글자 그대로 지시한다(contextBuilder: "개별 single 반복 금지"). 그 호출의 게이트 영역은
+ * 집마다 몸통+마당 2장씩 정확히 나오는데(buildSpec.wingsRegions), 전체를 합쳐 승자 하나만
+ * 고르면 집 3채 중 1채만 building 이 되고 나머지 2채는 뒤에 오는 호출이 없으므로 영원히
+ * 파랑으로 남았다(3채 호출 실측: {house_a:"building", house_b:"planned", house_c:"planned"}).
+ *
+ * 그렇다고 영역마다 독립으로 승자를 고르면 1차 리뷰가 고친 결함이 다른 얼굴로 돌아온다:
+ * 1×1 점 하나만 보면 "그 점을 담은 가장 작은 칸" 이 이기므로, 집 사각형을 지나는 길을 칠하면
+ * 집 안을 통과하는 점들이 길 대신 집을 뽑아 집까지 building 으로 올라간다(이 모듈의 첫
+ * 테스트가 그 상황이다 — main_road(0,12,30,2) 와 house_a(10,10,6,5) 는 12칸 겹친다).
+ *
+ * 그래서 **덮은 만큼 벗겨내는** 탐욕법을 쓴다: 남은 영역 전체로 승자를 뽑고(합산 판정이라
+ * 여러 호출로 쪼개진 한 에셋을 하나로 본다), 그 칸이 덮는 영역을 빼고 남은 것이 있으면 다시
+ * 뽑는다. 길 60칸은 첫 승자(길)가 60칸을 모두 덮으므로 한 칸으로 끝나고, 서로 안 겹치는 집
+ * N채는 N칸이 다 나온다. 매 회 최소 한 영역이 사라지므로 칸 수만큼 돌면 멈춘다.
+ */
+function bestOverlapIndices(candidates: readonly BlueprintEntry[], regions: readonly AffectedRegion[]): number[] {
+  const winners: number[] = [];
+  let remaining: readonly AffectedRegion[] = regions;
+  while (remaining.length > 0) {
+    const index = bestCoveredIndex(candidates, remaining);
+    if (index === -1) break;
+    winners.push(index);
+    const winner = candidates[index];
+    remaining = remaining.filter((region) => overlapArea(winner, region) === 0);
+  }
+  return winners;
+}
+
+/**
+ * 이번 호출과 가장 잘 맞아떨어지는 칸 — **그 칸이 얼마나 덮였는지**(겹침 / 칸 면적)로 고른다.
+ * 동점이면 겹침 면적이 큰 칸, 그래도 같으면 순번이 앞선 칸(strict `>`).
  *
  * 절대 면적으로 고르면 큰 칸이 항상 이긴다: 마을 계획은 보통 맵 전체를 덮는 `clear` 에셋을
  * 1번 칸으로 두는데, 길 60칸을 칠하면 길과의 겹침도 60, clear 와의 겹침도 60 이라 동점이 되고
- * 순서가 앞선 clear 가 계속 building 으로 남는다(실측: 이 테스트가 처음 잡은 결함). IoU 는
- * 길 60/60=1.0 대 clear 60/600=0.1 로 갈라주고, 맵 전체를 치우는 호출에서는 반대로 clear 가
- * 1.0 으로 이긴다.
+ * 순서가 앞선 clear 가 계속 building 으로 남는다(1차 리뷰가 잡은 결함). 커버리지는 길 60/60=1.0
+ * 대 clear 60/600=0.1 로 갈라주고, 맵 전체를 치우는 호출에서는 전 칸이 1.0 으로 동점이 되므로
+ * 겹침 면적 타이브레이크가 clear(600)를 골라 준다 — 나머지 칸은 벗겨내기에서 사라져 올라가지
+ * 않는다(맵을 잔디로 덮는 것은 집을 짓는 것이 아니다).
  *
- * 영역이 여러 개면 겹침과 영역 면적을 각각 합쳐서 계산한다 — 영역끼리 겹치면 이중 계산이
- * 되지만 진행 표시용 어림이므로 정확한 합집합을 구하는 비용을 쓰지 않는다.
- * 면적이 0 인 영역은 호출자가 이미 걸러 낸다(markAgentBlueprintProgress 주석 2번).
+ * **왜 IoU 를 버렸는가(3차 리뷰의 미완 수정)**: IoU 는 분모에 영역 합계가 들어가므로 한 호출이
+ * 영역을 많이 낼수록 개별 칸의 점수가 1/N 로 깎인다. 집 N채 lots 호출에서 집의 IoU = 자기
+ * 면적/Σ영역, `clear` 의 IoU = Σ영역/맵면적 이라 **N 이 커지는 순간 clear 가 이기고** 벗겨내기가
+ * 첫 회에 영역 전량을 먹어 집이 한 칸도 안 올라갔다. 실측(맵 30×20, 몸통 5×6+마당 3행):
+ * N=2 → 2/2, N=3 → 3/3, **N=4 → 0/4, N=5 → 0/5, 40×30 N=6 → 0/6, 100×100 N=20 → 0/20**.
+ * 3차 리뷰가 붙인 테스트가 N=3(교차점 N≈3.65 바로 아래)에 앉아 있어 통과했을 뿐이고,
+ * `author_village` 의 기본값은 `houseCount: 4` 다 — 즉 주경로가 전부 깨진 상태였다.
+ * 커버리지는 분모가 칸 면적이라 N 과 무관하다. `clear` 가 집을 이기려면
+ * Σ(칸 안에 칠해진 면적)/맵면적 > 자기 면적/자기 칸면적 이어야 하는데, 계획의 칸들은 맵 안에
+ * 서로 겹치지 않게 들어가므로(validateBuildSpec) Σ칸면적 ≤ 맵면적 이고, 집이 자기 칸을 그대로
+ * 칠하는 정상 경로에서는 집이 1.0 으로 절대 지지 않는다.
+ *
+ * 영역이 여러 개면 겹침을 합쳐서 계산한다 — 영역끼리 겹치면 이중 계산이 되므로 1.0 으로
+ * 자른다(자르지 않으면 같은 칸을 두 번 지나는 경로가 칸 면적보다 큰 겹침을 만들어 정확히
+ * 일치하는 다른 칸을 이긴다). 면적이 0 인 영역은 호출자가 이미 걸러 낸다.
  * 아무 칸도 안 걸리면 -1.
  */
-function bestOverlapIndex(candidates: readonly BlueprintEntry[], regions: readonly AffectedRegion[]): number {
-  let regionArea = 0;
-  for (const region of regions) {
-    if (region.w > 0 && region.h > 0) regionArea += region.w * region.h;
-  }
-
+function bestCoveredIndex(candidates: readonly BlueprintEntry[], regions: readonly AffectedRegion[]): number {
   let bestIndex = -1;
   let bestScore = 0;
+  let bestIntersection = 0;
   for (let index = 0; index < candidates.length; index += 1) {
     const entry = candidates[index];
     let intersection = 0;
@@ -284,10 +404,11 @@ function bestOverlapIndex(candidates: readonly BlueprintEntry[], regions: readon
       intersection += overlapArea(entry, region);
     }
     if (intersection <= 0) continue;
-    const union = entry.w * entry.h + regionArea - intersection;
-    const score = union > 0 ? intersection / union : 0;
-    if (score > bestScore) {
+    const entryArea = entry.w * entry.h;
+    const score = entryArea > 0 ? Math.min(1, intersection / entryArea) : 0;
+    if (score > bestScore || (score === bestScore && intersection > bestIntersection)) {
       bestScore = score;
+      bestIntersection = intersection;
       bestIndex = index;
     }
   }
