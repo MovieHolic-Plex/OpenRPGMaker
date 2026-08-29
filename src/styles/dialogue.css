@@ -16,6 +16,21 @@
   --runtime-dialogue-bust-width: 88px;
   --runtime-dialogue-full-height: 164px;
   --runtime-dialogue-full-width: 92px;
+
+  /* 연출 지속시간은 src/player/dialoguePresentation.ts 가 상자에 인라인으로 심는다.
+     여기 값은 폴백일 뿐이다 — 없으면 var() 가 무효가 되어 animation-duration 이 0s 로
+     떨어지고 연출이 통째로 죽는다(battleTransition 의 TS/CSS 이중 기재 실수 회피). */
+  --dialogue-enter-ms: 170ms;
+  --dialogue-exit-ms: 120ms;
+  --dialogue-nameplate-delay-ms: 40ms;
+  --dialogue-portrait-ms: 200ms;
+  --dialogue-scrim-ms: 180ms;
+  --dialogue-scrim-opacity: 0.28;
+
+  /* 이징은 CSS 만의 것이다 — TS 는 길이만 정하고 곡선은 여기서 고른다. */
+  --runtime-dialogue-enter-ease: cubic-bezier(0.16, 0.84, 0.3, 1);
+  --runtime-dialogue-enter-ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --runtime-dialogue-exit-ease: cubic-bezier(0.4, 0, 1, 1);
 }
 
 /* 런타임 z-index 밴드: 픽처 레이어 26 < 타이머 29
@@ -752,8 +767,155 @@
   }
 }
 
+/* === 대화창 등장/퇴장 연출 ===
+   상태는 상자의 data-dialogue-* 에 있다. 오버레이가 아니다 — resetOverlay() 가
+   className 을 통짜로 대입해서(dialogue.ts) 오버레이에 얹은 연출 클래스는 매 대사마다 지워진다.
+
+   오버슈트는 세로에만 준다. 전폭 상자에서 가로 확대는 좌우 끝이 몇 px 대칭으로 벌어질 뿐
+   지각되지 않는 반면, 1280 뷰포트에서 상자 좌우 여백의 16px 하한을 깨서
+   test/e2e/dialogue-modern-skin.spec.ts 의 leftGutter/rightGutter 단정을 무너뜨린다.
+   그래서 scaleX 는 어떤 프레임에서도 1 을 넘지 않는다(축소는 여백을 넓히므로 안전). */
+.dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 100%;
+}
+
+.dialogue-overlay.position-top .dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 0%;
+}
+
+.dialogue-overlay.position-center .dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 50%;
+}
+
+.dialogue-box[data-dialogue-phase="enter"] {
+  animation: dialogue-box-enter var(--dialogue-enter-ms) var(--runtime-dialogue-enter-ease) both;
+}
+
+.dialogue-box[data-dialogue-emotion="happy"][data-dialogue-phase="enter"],
+.dialogue-box[data-dialogue-emotion="surprised"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-pop;
+}
+
+.dialogue-box[data-dialogue-emotion="sad"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-soft;
+  animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+}
+
+.dialogue-box[data-dialogue-phase="exit"] {
+  animation: dialogue-box-exit var(--dialogue-exit-ms) var(--runtime-dialogue-exit-ease) both;
+  /* 퇴장 중인 상자는 유령 클릭을 먹지 않는다 — 기본값이 pointer-events: auto 다. */
+  pointer-events: none;
+}
+
+/* 움직임을 끈 자리: 창은 그대로 떠야 한다. opacity 만 남기고 이동·신축을 없앤다.
+   src/styles/runtime/juice.css 의 원칙 — 움직임만 끄고 의미 신호는 남긴다. */
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-fade;
+  animation-timing-function: linear;
+}
+
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="exit"] {
+  animation-name: dialogue-box-exit-fade;
+  animation-timing-function: linear;
+}
+
+@keyframes dialogue-box-enter {
+  0% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease);
+    opacity: 0.35;
+    transform: translate3d(0, 8px, 0) scaleY(0.86);
+  }
+
+  58% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+    opacity: 1;
+    transform: translate3d(0, -3px, 0) scaleY(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-enter-pop {
+  0% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease);
+    opacity: 0.3;
+    transform: translate3d(0, 10px, 0) scaleY(0.82);
+  }
+
+  56% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+    opacity: 1;
+    transform: translate3d(0, -4px, 0) scaleY(1.075);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-enter-soft {
+  0% {
+    opacity: 0.2;
+    transform: translate3d(0, 10px, 0) scaleY(0.94);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-exit {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0) scaleY(0.96);
+  }
+}
+
+@keyframes dialogue-box-enter-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dialogue-box-exit-fade {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dialogue-box.page-ready .dialogue-page-cursor {
     animation: none;
+  }
+
+  /* TS 가 reducedMotion 을 못 읽는 경로(명시 override 등)의 안전망이다.
+     [data-dialogue-emotion] 을 함께 붙여야 감정별 animation-name 규칙(특이도 0,3,0)을
+     이긴다 — 이게 없으면 happy·sad 는 안전망을 통과해 버린다. */
+  .dialogue-box[data-dialogue-emotion][data-dialogue-phase="enter"] {
+    animation-name: dialogue-box-enter-fade;
+    animation-timing-function: linear;
+  }
+
+  .dialogue-box[data-dialogue-emotion][data-dialogue-phase="exit"] {
+    animation-name: dialogue-box-exit-fade;
+    animation-timing-function: linear;
   }
 }

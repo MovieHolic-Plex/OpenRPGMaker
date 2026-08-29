@@ -26,6 +26,7 @@ function mkFixture() {
     showChoices: vi.fn(async () => 0),
     showNumberInput: vi.fn(async () => 0),
     hide: vi.fn(),
+    close: vi.fn(),
   };
   const registry = new Map<string, unknown>([
     ["dialogue", dialogue],

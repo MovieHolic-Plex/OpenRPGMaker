@@ -65,6 +65,30 @@ node node_modules/vitest/vitest.mjs run --configLoader bundle \
     "*": ["*", "/home/main/z-project/rpg-zzu/node_modules/*"] } } }
 ```
 
+**e2e 는 위 우회가 안 통한다** (2026-08-30 실측). Playwright 의 `webServer` 는 설정 파일이 있는 디렉터리에서
+`npm run dev` 를 돌리므로 워크트리에 vite 가 실재해야 한다. 본 레포 패키지를 **개별 심볼릭 링크**로 걸면
+`.vite` 캐시가 워크트리에 남아 공유 `node_modules` 를 오염시키지 않는다. 디렉터리를 통째로 링크하면
+vite 가 공유 캐시에 쓰기 시작해 다른 세션과 충돌한다.
+
+```bash
+SRC=/home/main/z-project/rpg-zzu/node_modules
+DST=/home/main/.herdr/worktrees/rpg-zzu/<name>/node_modules
+for e in "$SRC"/* "$SRC"/.bin; do b=$(basename "$e"); [ -e "$DST/$b" ] || ln -s "$e" "$DST/$b"; done
+```
+
+그다음 **포트를 반드시 고정해서** 돌린다. `playwright.config.ts` 는 `reuseExistingServer: true` 라서
+기본 포트 9173 에 다른 워크트리의 서버가 이미 떠 있으면 **남의 코드를 조용히 테스트한다.**
+출력에 `[WebServer]` 줄이 보이면 이 실행이 직접 띄운 것이다.
+
+```bash
+DEV_SERVER_PORT=9351 E2E_BOOT_TIMEOUT_MS=90000 npx playwright test test/e2e/<spec>.spec.ts
+```
+
+`E2E_BOOT_TIMEOUT_MS` 는 `seedProjectFromSupabaseCanonical` 내부의 `edit-canvas` 대기(기본 15초)를 늘린다 —
+콜드 부팅이 그보다 느려 스펙이 통째로 빨개지는 일이 흔하다. 다만 `startNewGameFromTitle` 에
+`waitForRuntimeState: false` 를 주는 방식으로 부팅을 건너뛰지는 말 것. 자동시작 분기가 스테이지만 보고
+곧장 반환해서 **게임이 시작되기 전에** 다음 단계로 넘어간다.
+
 ## Roguelike run Phase 0–3 coverage (2026-08-24)
 
 - `test/roguelikeRun.test.ts`: real interpreter lifecycle plus save-snapshot roundtrip.
@@ -218,6 +242,40 @@ Evidence expectations:
 - Definition/placement FK, footprint collision, repair, map cascade and delete guards: `test/p2SpatialReferenceIntegrity.test.ts`.
 - Database CRUD/navigation and runtime visibility: `test/p2SpatialEditorAuthoring.test.ts`, Database sidebar suites, and `test/p2SpatialRuntimeUi.test.ts`.
 - Root integration performs real browser QA at 1024x768 and 1440x900 using `db-tab-farm-spatial`, `db-spatial-workspace`, `db-spatial-hero-image`, CRUD testids, and `life-ledger-tab-spaces`. This isolated implementation does not claim browser evidence.
+
+## 대화창 연출 focused gate (2026-08-30)
+
+연출의 실패는 **조용하다.** 예외도 콘솔 경고도 없이 "아무 일도 일어나지 않는" 정상 화면이 되므로
+스크린샷으로도 구분되지 않는다. 그래서 판정 경로를 세 층으로 나눠 둔다.
+
+- `test/dialoguePresentation.test.ts` — 순수 프로파일 표. 알 수 없는 `emotion` → `neutral` 폴백,
+  감정별 성격(슬픔은 느리게, 분노·놀람은 빠르게), `reducedMotion` 이 흔들림·per-char 는 끄고
+  스크림·타이핑 배율은 남기는 것, 그리고 **모든 지속시간이 `dialoguePresentationCssVars` 에 실려 나가는지**.
+  마지막 항목이 `battleTransition.ts` 식 TS/CSS 값 어긋남(close 260 vs 190)의 회귀 게이트다.
+- `test/dialoguePresentationCss.test.ts` — `src/styles/dialogue.css` **텍스트**를 직접 읽는다.
+  ① 참조하는 모든 `animation-name` 에 실제 `@keyframes` 가 있는지(클래스만 붙고 죽은 모션 탐지),
+  ② TS 가 심는 `--dialogue-*` 전부에 `:root` 폴백이 있는지(없으면 `animation-duration` 이 0s 로 떨어진다),
+  ③ `dialogue-box-*` keyframes 가 `scaleX`/등방 `scale()` 을 쓰지 않는지,
+  ④ reduced-motion 안전망 선택자가 `[data-dialogue-emotion]` 을 물어 감정별 규칙(특이도 0,3,0)을 이기는지.
+  ①③④ 는 다른 어떤 검사로도 잡히지 않는다.
+- `test/dialogue.test.ts` — 생명주기. `schedule` 을 주입해 fake timer 없이 결정적으로 검사한다
+  (세션 첫 창만 진입 재생, `close()` 는 연출 후 비움 / `hide()` 는 즉시 컷, 연출 상태가 `resetOverlay` 의
+  className 통짜 대입에 지워지지 않음). **타이핑 타이밍 기대값(24ms·159ms 단위)은 손대지 않는다** —
+  진입 연출은 타이핑과 동시에 도는 순수 시각 효과라서 `startPage(0)` 시점이 바뀌지 않는다는 증거다.
+- `test/e2e/dialogue-presentation-motion.spec.ts` — 실제 브라우저의 `getComputedStyle`.
+  위 세 층이 다 통과해도 화면에서 죽을 수 있는 경우(특이도에 밀림, `var()` 무효, keyframe 이름 어긋남)를
+  여기서만 잡는다. 두 가지 함정 대응이 스펙에 박혀 있다:
+  - 진입 연출은 140~260ms 뒤 `phase="shown"` 이 되며 `animation` 선언 자체가 사라진다. 폴링으로는
+    못 잡으므로 `addInitScript` 의 **MutationObserver 로 상자 삽입 순간**의 계산된 스타일을 낚아채 둔다.
+  - 트리거는 `{kind:"auto"}` 이벤트를 쓴다. 실행 히트박스 클릭에 의존하지 않는다 —
+    `runtimeDom.ts` 의 `upsertEventMarker` 는 **마커를 처음 만들 때만** 클릭 리스너를 붙이는데
+    `playSceneAutonomous.ts:99,179` 는 `onActivate` 없이 같은 함수를 부른다. 자율이동 경로가 마커를
+    먼저 그리면 그 마커는 영구히 클릭이 안 먹는다. 클릭 기반 대화 e2e 가 원래 불안정한 이유다.
+- `test/playerRuntimeCss.test.ts` 의 `REQUIRED_RUNTIME_SELECTORS` 에 `dialogue-box-enter`/`-exit` 를 넣어 둔다.
+  에디터 테스트플레이는 에디터 CSS 가 같이 로드돼 정상으로 보이므로, **익스포트 플레이어에 규칙이 실렸는지는
+  실제 vite 빌드를 돌리는 이 검사만 판정한다.**
+- 4단계 스크림의 `.play-stage` 크롭 inset 정합은 계산으로 확정할 수 없다 —
+  `npm run qa:runtime -- --scenario dialogue` 의 실측으로만 확인한다.
 
 ## 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
 

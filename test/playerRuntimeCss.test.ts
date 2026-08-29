@@ -13,6 +13,10 @@ const REQUIRED_RUNTIME_SELECTORS = [
   ".rm-title-menu",
   ".play-loading-overlay",
   ".dialogue-overlay",
+  // 대화창 연출. 에디터 테스트플레이는 에디터 CSS 가 함께 로드돼 정상으로 보이므로
+  // 익스포트 플레이어에 규칙이 실렸는지는 이 빌드 검사만 판정할 수 있다.
+  "dialogue-box-enter",
+  "dialogue-box-exit",
   ".touch-pad",
   ".action-hud",
   ".battle-transition-overlay",
@@ -34,6 +38,8 @@ const RUNTIME_IMPORTS = [
   "./battle.css",
   "./battle-skins/index.css",
   "./commerce.css",
+  // 4b13aa68 에서 추가됐는데 이 목록이 갱신되지 않아 선행 실패였다(juice.css 와 같은 경우).
+  "./shop.css",
   "./title.css",
   "../database/tabs-b-title-screen.css",
   "../database/tabs-b-status-menu-base.css",
@@ -47,6 +53,8 @@ const RUNTIME_IMPORTS = [
   "./transitions.css",
   "./nameEntry.css",
   "./keyboardNav.css",
+  // cd4311cd 에서 playerRuntime.css 에 추가됐는데 이 목록이 갱신되지 않아 선행 실패였다.
+  "./juice.css",
   "../dialogue.css",
   "./playSurface.css",
   "./zoneFeedback.css",

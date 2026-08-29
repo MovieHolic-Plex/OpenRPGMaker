@@ -6,6 +6,7 @@ import {
   isDialogueAdvanceKey,
   resolveDialogueText,
 } from "@/player/dialogue";
+import { dialoguePresentationProfile } from "@/player/dialoguePresentation";
 import { createBlankProject } from "@/project/defaults";
 
 describe("dialogue keyboard controls", () => {
@@ -201,6 +202,9 @@ describe("dialogue control playback", () => {
     await vi.advanceTimersByTimeAsync(100);
     await vi.advanceTimersByTimeAsync(0);
     expect(resolved).toBe(true);
+    // 창은 퇴장 연출을 재생한 뒤에 빠진다 — 진행은 이미 끝났고 DOM 만 남아 있다.
+    expect(host.querySelector(".dialogue-box")).not.toBeNull();
+    await vi.advanceTimersByTimeAsync(dialoguePresentationProfile("neutral").exitMs);
     expect(host.querySelector(".dialogue-box")).toBeNull();
     await shown;
   });
@@ -221,6 +225,135 @@ function textRequest(body: string, gold = 0) {
 function dialogueBody(host: HTMLElement): string {
   return host.querySelector<HTMLElement>(".dialogue-box .body")?.textContent ?? "";
 }
+
+describe("dialogue presentation lifecycle", () => {
+  /** 예약을 손으로 발화시키는 schedule — fake timer 없이 결정적으로 검사한다. */
+  function manualSchedule() {
+    const queue: { readonly callback: () => void; readonly delayMs: number; cancelled: boolean }[] = [];
+    const schedule = (callback: () => void, delayMs: number): (() => void) => {
+      const entry = { callback, delayMs, cancelled: false };
+      queue.push(entry);
+      return () => {
+        entry.cancelled = true;
+      };
+    };
+    const flush = (): void => {
+      for (const entry of [...queue]) {
+        if (!entry.cancelled) entry.callback();
+      }
+      queue.length = 0;
+    };
+    return { schedule, queue, flush };
+  }
+
+  const box = (host: HTMLElement): HTMLElement | null =>
+    host.querySelector<HTMLElement>(".dialogue-box");
+
+  it("세션 첫 창만 진입 연출을 재생하고 이어지는 대사는 재생하지 않는다", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const { schedule, flush } = manualSchedule();
+    const dialogue = createDialogueUI(host, schedule);
+
+    const first = dialogue.showText(textRequest("첫 줄"));
+    expect(box(host)?.dataset.dialoguePhase).toBe("enter");
+    expect(box(host)?.dataset.dialogueEmotion).toBe("neutral");
+
+    // 진입이 끝나면 정착 상태로 넘어간다.
+    flush();
+    expect(box(host)?.dataset.dialoguePhase).toBe("shown");
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await first;
+
+    // cleanup 이 퇴장을 예약했지만 아직 상자는 살아 있다.
+    expect(box(host)?.dataset.dialoguePhase).toBe("exit");
+
+    // 같은 세션의 다음 대사 — 예약이 취소되고 진입 연출은 다시 재생되지 않는다.
+    const second = dialogue.showText(textRequest("둘째 줄"));
+    expect(box(host)?.dataset.dialoguePhase).toBe("shown");
+    expect(dialogueBody(host)).not.toContain("첫 줄");
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await second;
+    dialogue.hide();
+  });
+
+  it("close() 는 퇴장을 재생한 뒤 비우고, hide() 는 즉시 컷이다", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const { schedule, flush } = manualSchedule();
+    const dialogue = createDialogueUI(host, schedule);
+
+    const shown = dialogue.showText(textRequest("본문"));
+    flush();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await shown;
+
+    dialogue.close();
+    expect(box(host)?.dataset.dialoguePhase).toBe("exit");
+    flush();
+    expect(box(host)).toBeNull();
+
+    // hide() 는 연출을 기다리지 않는다 — 맵 전환처럼 창이 남으면 안 되는 자리용이다.
+    const again = dialogue.showText(textRequest("다시"));
+    expect(box(host)).not.toBeNull();
+    dialogue.hide();
+    expect(box(host)).toBeNull();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await again;
+  });
+
+  it("연출 상태는 상자에 있어 resetOverlay 의 className 통짜 대입에 지워지지 않는다", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const { schedule, flush } = manualSchedule();
+    const dialogue = createDialogueUI(host, schedule);
+
+    const shown = dialogue.showText({ ...textRequest("분노"), emotion: "angry" });
+    const current = box(host);
+    expect(current?.dataset.dialogueEmotion).toBe("angry");
+    expect(current?.dataset.dialogueShake).toBe("1");
+    expect(current?.style.getPropertyValue("--dialogue-enter-ms")).toBe(
+      `${dialoguePresentationProfile("angry").enterMs}ms`
+    );
+    // 오버레이는 className 이 통짜로 덮이는 자리다 — 연출 상태가 여기 있으면 안 된다.
+    const overlay = host.querySelector<HTMLElement>(".dialogue-overlay");
+    expect(overlay?.dataset.dialogueEmotion).toBeUndefined();
+
+    flush();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await shown;
+    dialogue.hide();
+  });
+
+  it("reducedMotion 은 움직임을 끄지만 창은 그대로 뜬다", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const { schedule, flush } = manualSchedule();
+    const dialogue = createDialogueUI(host, schedule);
+
+    const shown = dialogue.showText({ ...textRequest("조용히"), emotion: "angry", reducedMotion: true });
+    const current = box(host);
+    expect(current?.dataset.dialogueMotion).toBe("off");
+    expect(current?.dataset.dialogueShake).toBeUndefined();
+    expect(current?.dataset.dialogueCharReveal).toBeUndefined();
+    // 창 자체는 여전히 나타나야 한다 — opacity 0 으로 남으면 대사가 안 보인다.
+    expect(current?.dataset.dialoguePhase).toBe("enter");
+    flush();
+    expect(current?.dataset.dialoguePhase).toBe("shown");
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await shown;
+    dialogue.hide();
+  });
+});
 
 describe("dialogue bust face overlay", () => {
   beforeEach(() => {
