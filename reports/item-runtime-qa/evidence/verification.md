@@ -97,3 +97,31 @@ EXIT=0
 ## 5) 판정
 
 **PASS** — 시나리오 6/6 종료 코드 0, 런타임 게이트 종료 코드 0(11 passed), 리포트 이미지 누락 0개(렌더 BROKEN=0), 타입체크 종료 코드 0. 단, 이 결과는 위에 적은 미커밋 변경 4건이 워킹트리에 있는 상태에서만 재현된다.
+
+## 6) 검증 이후 보고서가 바뀐 기록 (구현자 추가, 2026-08-30 04:0x)
+
+§3 의 수치는 **02:14 시점 보고서**를 재본 것이다. 그 뒤 커밋 `2fd89a18` 에서 아이템 재고 소모 증거
+2장(`stock-before.png`, `stock-after.png`)을 보고서에 더했다. 그래서 지금 저장소에 있는 보고서는 §3 보다
+이미지가 2장 많다. 헷갈리지 않게 최종 상태를 다시 실측해 남긴다.
+
+| 항목 | §3 (02:14 기준) | 최종 (`2fd89a18`) |
+|---|---|---|
+| `index.html` sha256 | `ae9ec409…c3980` | `465e373b…cd521` |
+| `<img>` 태그 / 유일 경로 | 20 / 18 | 22 / 20 |
+| 애셋 바이트 범위 | 280,378 ~ 430,468 | 280,378 ~ 440,387 |
+| 누락 · 0바이트 | 0 · 0 | 0 · 0 |
+| 실브라우저 렌더 | IMG_TOTAL=20 BROKEN=0 REQ_FAILED=0 | IMG_TOTAL=22 BROKEN=0 REQ_FAILED=0 |
+
+최종 렌더는 `/tmp/omo-render-report-final.mjs`(chromium, `file://` 로딩, 1280×900, 전체 페이지)로 돌렸고
+종료 코드 0 이다. 캡처를 이 커밋에 함께 담았다.
+
+- `verify-shots/report-render/` — 보고서 초판 캡처 3장(`report-full.png` 2,968,241 bytes 등)
+- `verify-shots/report-render-verify/` — 검증자 캡처. **주의**: 이 폴더의 `report-full.png` 는 지금
+  3,260,810 bytes 다. §3 에 적힌 2,968,241 bytes 와 다른데, 재고 증거를 넣은 뒤 같은 경로에 다시
+  렌더해 덮어썼기 때문이다. 즉 §3 의 "바이트 크기까지 일치한다" 는 02:14 당시 두 캡처에만 해당한다.
+- `verify-shots/report-render-final/` — 최종 보고서를 다시 렌더한 캡처 2장.
+  `report-full.png` 3,260,810 bytes · `report-viewport-top.png` 145,852 bytes 로
+  `report-render-verify/` 와 바이트까지 같다 — 같은 보고서를 두 번 렌더하면 같은 PNG 가 나온다.
+
+병합 뒤 재확인(02:55~02:57, `/tmp/item-review-1788026151/status`): `item-menu` · `item-battle` ·
+`item-care` 시나리오와 `tsc --noEmit` 모두 종료 코드 0, 게이트 전부 통과.
