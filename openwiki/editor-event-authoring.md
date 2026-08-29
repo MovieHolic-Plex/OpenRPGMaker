@@ -234,6 +234,17 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 | `evalCondition` | `src/project/session.ts:735` | 맵 조건 분기(`interpreter/commandCatalog.ts` fork) |
 | `evaluateCondition` | `src/battle/battleEvents.ts` (내부 함수) | 전투 분기 + 트룹 페이지 |
 
+**활동 조건은 프로젝트의 실제 일정에서 후보를 받는다 (2026-08-29).** `activity` 는 자유 문자열이고
+매칭은 완전 일치다. 저작자가 유효한 값을 추측해야 했던 문제를 `collectNpcActivitySuggestions`
+(`panels/eventEditor/options.ts`) 로 없앴다 — 모든 맵 이벤트의 `schedule[].activity` 를 모아
+`<datalist>` 로 건다. 페이지 간단 행은 `event-page-npc-activity-condition-options`, 분기 폼과 고급
+목록은 `${activityTestId}-options` 를 쓴다(고급 목록은 행마다 id 가 달라야 하므로 testId 에서 파생).
+**기본값 `work` 는 그대로 둔다** — `editor/tools/eventTools.ts` 의 `dailyRoutine` 이 생성하는 일정이
+`activity: "home" | "work"` 를 쓰고 `defaultActivityLine` 이 그 키를 한국어 대사로 번역한다. 즉 `work`
+는 이 레포가 인정하는 어휘이지 자리표시자가 아니다. 저작된 기본 콘텐츠는 한국어(`저녁 장터`, `귀가`)를
+쓰므로 두 어휘가 공존한다 — 그래서 "영어 기본값" 을 결함으로 보고 빈 값으로 바꾸면 도구가 만든 NPC 를
+가리키는 가장 흔한 경우가 깨진다.
+
 **셋이 갈라져 있었다(실측).** `npcActivity` 는 전투에서 하드코딩 `false` 였고,
 `friendshipAtLeast` 는 빈 `npcKey` 를 소유 이벤트 `characterId` 로 해석하지 않아 항상 거짓이었다.
 둘 다 `src/editor/tools/troopBattlePageTools.ts` 가 모든 `CONDITION_KINDS` 를 받으므로

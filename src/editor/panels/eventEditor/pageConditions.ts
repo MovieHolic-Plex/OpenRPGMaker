@@ -2,7 +2,7 @@ import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { CONDITION_OP_OPTIONS } from "./options";
-import { renderFriendshipAtLeastCondition, selfSwitchControl, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
+import { npcActivitySuggestionList, renderFriendshipAtLeastCondition, selfSwitchControl, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
 import { hasCharacterId } from "@/project/socialKey";
 import { renderAdvancedConditions } from "./pageAdvancedConditions";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
@@ -403,8 +403,9 @@ function seasonConditionInputs(context: PageConditionContext, markActive: () => 
 
 function npcActivityConditionInputs(context: PageConditionContext, markActive: () => void): HTMLElement {
   const condition = context.page.conditions.find((item) => item.kind === "npcActivity");
+  const listId = "event-page-npc-activity-condition-options";
   const activity = el("input", {
-    attrs: { type: "text", placeholder: "일" },
+    attrs: { type: "text", placeholder: "일", list: listId },
     value: condition?.kind === "npcActivity" ? condition.activity : "work",
     dataset: { testid: "event-page-npc-activity-condition-input" },
   }) as HTMLInputElement;
@@ -417,7 +418,10 @@ function npcActivityConditionInputs(context: PageConditionContext, markActive: (
     }
     updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
   });
-  return el("div", { class: "event-condition-control npc-activity", children: [activity] });
+  return el("div", {
+    class: "event-condition-control npc-activity",
+    children: [activity, npcActivitySuggestionList(listId)],
+  });
 }
 
 function friendshipConditionInputs(context: PageConditionContext, markActive: () => void): HTMLElement {
