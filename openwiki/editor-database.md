@@ -204,4 +204,16 @@ The Database modal was modernized in six waves while keeping every hard contract
 - **AI 가 받는 것이 넓어졌다.** `src/ai/contextBuilder.ts` 가 구조물마다 설명·배치규칙·반복 여부를 함께 출력하고(설명은 100자로 자른다), `structureKitTools.ts` 의 도구 응답도 `ai` 를 싣는다. 이름만 보고 추측하던 상태를 끝낸 것이다.
 - **파일 포맷은 `rpgzzu-structure-kits` v1**(`structureKitFile.ts`). 파일에 들어가는 순간 사진이 된다 — house 킷도 구운 래스터로 나가므로 받는 쪽에 같은 코드가 없어도 열린다. 가져오기는 `planImport` 가 3단으로 판정한다: 포맷·버전 검증(미래 버전 거부) → 칩셋 경계 확인(`structure-kit-import-mismatch`) → 서명 기준 중복 판정. 같은 파일을 두 번 넣어도 사본이 쌓이지 않는다.
 - 내보내기·가져오기 진입점: 도구줄 `structure-kit-export`(체크된 행이 있으면 **지금 보이는 그 선택**만, 없으면 앨범 전체) / `structure-kit-import`, 확인창은 `structure-kit-import-list` + `structure-kit-import-confirm`. 다운로드는 `src/util/downloadBlob.ts` 한 곳을 지난다 — anchor 를 DOM 에 붙였다 떼고 `revokeObjectURL` 을 동기 호출하지 않는, `menu.ts` 에서 겪은 3-버그 회피 패턴이다.
-- 커버리지: `test/structureKitRasterModel.test.ts`(칸 계산·페인트·크기조절·부위 CRUD·굽기), `test/structureKitFile.test.ts`(직렬화·검증·`planImport`·origin 보존), `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`(repeatability), `test/downloadBlob.test.ts`, 그리고 브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts` 3케이스.
+- 커버리지: `test/structureKitRasterModel.test.ts`(칸 계산·페인트·크기조절·부위 CRUD·굽기), `test/structureKitFile.test.ts`(직렬화·검증·`planImport`·origin 보존), `test/structureKitEditorDialog.test.ts`, `test/structureKitTools.test.ts`(repeatability), `test/downloadBlob.test.ts`, 그리고 브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts`.
+
+### 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
+
+위 편집기가 전부 동작하는데도 사용자는 "구조물을 수정할 수 없다"고 했다. 실제 브라우저로 재현해 재 보니 **버튼이 보이는 영역 밖에 있었다.**
+
+- **원인은 `height: 100%` 와 `display: block` 의 조합이다.** `.structure-kit-album-workspace` 가 `height:100%` 인데 담는 그릇 `.db-body.db-shared-workspace`(`src/styles/database/sidebar.css`)는 `display` 를 지정하지 않는 block + `overflow:auto` 다. 그래서 앨범이 자기 앞에 있는 `h3`("구조물") + `p`(설명) **67px 을 없는 것처럼** 높이를 잡고 그만큼 아래로 삐져나갔다. 인스펙터 액션 줄은 `margin-top:auto` 로 그 바닥에 붙으므로 `[편집]` 이 정확히 67px 밖으로 밀렸다.
+- **수치**: `[편집]` y=831 vs 클립 경계 y=829, `elementFromPoint` → `div.database-footer-status`. 1366×768 / 1440×900 / 1920×1080 **세 해상도 모두 삐짐 67px 로 동일** — 제목 두 줄 높이가 화면 크기와 무관해서다. 큰 모니터로도 안 보인다.
+- **내장 행보다 내 구조물 행이 더 심하다.** 내장은 버튼 2개라 한 줄(38px)이고 내 구조물은 5개가 352px 폭에 안 들어가 글자가 두 줄로 접혀(53px) 15px 더 두꺼워진다. 아슬아슬하게 걸려 있던 것이 완전히 넘어간다. → **`flex-wrap: wrap` 으로 고치려 들면 악화된다.** 줄이 두 단이 되어 더 높아진다. 버튼 **개수를 줄이는 것**이 해법이다.
+- **고침**: 담는 그릇을 세로 flex 로 만들고(`display:flex; flex-direction:column`), 앨범의 `height:100%` 를 **뺀다**. 세로 flex 안에서는 `flex:1` 이 남은 높이를 정확히 준다. `height:100%` 를 남기면 그릇 높이(= h3+p 포함)를 그대로 받아 잘림이 되살아난다. 실측: 삐짐 67→0, `[편집]` y 831→764, 좌표 직접 클릭으로 편집기 열림.
+- **형제 탭은 이미 같은 처방을 갖고 있었다.** 타일셋 탭은 `tabs-a.part-2.css` / `desktop.css` 에서 `:has(.tileset-db-workspace)` 로 고쳐 뒀고 **구조물 탭만 빠져 있었다.** 새로 발명할 것이 없었다.
+- **마커 클래스로 하면 안 된다.** `renderActiveTab` 이 body 를 `replaceChildren` 만 하므로 TS 에서 붙인 className·dataset 이 탭을 바꾼 뒤에도 남아 다른 탭으로 샌다. `:has()` 로 판정해야 한다. `sidebar.css` 쪽 선택자가 특이도는 높지만 `display` 를 건드리지 않아 충돌하지 않는다.
+- **복제가 막다른 길이었다.** 내장 킷은 "편집하려면 [내 구조물로 복제]를 쓰세요"라고 안내하는데, 복제 핸들러가 사본을 만들고 목록만 다시 그려서 인스펙터가 계속 원본을 봤다. 선택을 사본으로 옮길 때는 **`session.selectedKitId` 만으로 부족하다** — `session.source`(`"builtin"` 이면 사용자 킷이 걸러진다)와 `session.searchQuery` 를 함께 맞춰야 한다. 안 그러면 선택 복구 로직이 `visibleEntries[0]` 으로 즉시 갈아탄다. `[+ 새 구조물]` 핸들러가 옳은 순서의 선례다.

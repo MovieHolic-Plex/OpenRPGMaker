@@ -93,7 +93,7 @@ describe("structureKitDbTab album UI contract", () => {
     expect(host.textContent).toContain("이 타일셋에는 아직 구조물이 없습니다.");
   });
 
-  it("renders inspector with name, parts list with instance numbers, 문에서 입구 추정, 팔레트에서 쓰기, 삭제", () => {
+  it("renders inspector with name, parts list with instance numbers, 팔레트에서 쓰기 · 행 삭제 아이콘", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     const firstTilesetId = current.maps[mapId]!.tilesetId;
@@ -123,9 +123,9 @@ describe("structureKitDbTab album UI contract", () => {
     expect(inspector?.textContent).toContain("입구");
     expect(inspector?.textContent).toContain("창문");
 
-    const estimateEntranceBtn = host.querySelector("[data-testid='structure-kit-estimate-entrance']");
-    expect(estimateEntranceBtn).not.toBeNull();
-    expect(estimateEntranceBtn?.textContent).toContain("문에서 입구 추정");
+    // [문에서 입구 추정]과 [부위 삭제]는 편집기로 옮겼다 — 부위 목록은 읽기 전용이다.
+    expect(host.querySelector("[data-testid='structure-kit-estimate-entrance']")).toBeNull();
+    expect(inspector?.textContent).not.toContain("부위 삭제");
 
     // 아무것도 저장하지 않던 가짜 버튼 — 제거됐는지 못을 박는다.
     expect(host.querySelector("[data-testid='structure-kit-save-now']")).toBeNull();
@@ -140,9 +140,15 @@ describe("structureKitDbTab album UI contract", () => {
     expect(useInPaletteBtn).not.toBeNull();
     expect(useInPaletteBtn?.textContent).toContain("팔레트에서 쓰기");
 
+    // 삭제·내보내기는 인스펙터 액션 줄에서 표 행의 아이콘으로 옮겼다(액션 5개 → 3개).
     const deleteBtn = host.querySelector(`[data-testid='structure-kit-db-delete-${kitWithParts.id}']`);
     expect(deleteBtn).not.toBeNull();
-    expect(deleteBtn?.textContent).toContain("삭제");
+    expect(deleteBtn?.getAttribute("aria-label")).toBe("삭제");
+    expect(host.querySelector(`[data-testid='structure-kit-export-${kitWithParts.id}']`)).not.toBeNull();
+
+    const inspectorActions = host.querySelector(".structure-kit-actions");
+    expect(inspectorActions).not.toBeNull();
+    expect(inspectorActions!.querySelectorAll("button")).toHaveLength(3);
   });
 });
 
@@ -212,7 +218,7 @@ describe("structureKitDbTab 내장 파라메트릭 킷 노출", () => {
     expect(host.querySelector("[data-testid='structure-kit-db-kit_malformed']")).not.toBeNull();
   });
 
-  it("내장 킷 인스펙터에는 삭제 버튼이 없고 등록 킷에는 있다", () => {
+  it("내장 킷 행에는 삭제 아이콘이 없고 등록 킷 행에는 있다", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
@@ -235,13 +241,12 @@ describe("structureKitDbTab 내장 파라메트릭 킷 노출", () => {
     expect(host.querySelector("[data-testid='structure-kit-inspector-kit_registered']")).not.toBeNull();
     const registeredDelete = host.querySelector("[data-testid='structure-kit-db-delete-kit_registered']");
     expect(registeredDelete).not.toBeNull();
-    expect(registeredDelete!.textContent).toContain("삭제");
+    expect(registeredDelete!.getAttribute("aria-label")).toBe("삭제");
   });
 
-  it("내장 킷 인스펙터에는 [문에서 입구 추정]이 없고 등록 킷에는 있다", () => {
-    // autoEstimateEntranceParts 는 kind === "section" 킷에서만 결과를 낼 수 있는데
-    // 내장 앨범 행은 전부 읽기 전용이라, 이 버튼은 편집·복제·삭제와 같은 축(editable)으로 갈라야 한다 —
-    // 아니면 눌러도 "문 타일을 찾지 못했습니다"만 뜨는 죽은 버튼이 된다.
+  it("[문에서 입구 추정]은 어느 행을 골라도 탭에 없다 — 편집기로 옮겼다", () => {
+    // 부위를 만드는 자리와 고치는 자리가 갈려 있으면 사용자가 어디를 봐야 할지 모른다.
+    // 인스펙터는 읽기 요약만 맡고, 부위 편집은 전부 편집기 다이얼로그가 갖는다.
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
@@ -258,7 +263,7 @@ describe("structureKitDbTab 내장 파라메트릭 킷 노출", () => {
     const registeredRow = host.querySelector("[data-testid='structure-kit-db-kit_registered_estimate']");
     expect(registeredRow).not.toBeNull();
     registeredRow!.click();
-    expect(host.querySelector("[data-testid='structure-kit-estimate-entrance']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-estimate-entrance']")).toBeNull();
   });
 
   it("가져온 builtin-parametric 킷도 프로젝트 데이터면 편집 가능하다", () => {
@@ -631,6 +636,99 @@ describe("structureKitDbTab 내보내기", () => {
     const exportBtn = host.querySelector("[data-testid='structure-kit-export']")!;
     expect(exportBtn.textContent).toContain("앨범 내보내기");
     expect(exportBtn.textContent).not.toContain("선택 내보내기");
+  });
+});
+
+describe("structureKitDbTab 복제 → 편집 연결", () => {
+  function renderTownAlbum(): FakeElement {
+    const current = store.getCurrent();
+    const mapId = Object.keys(current.maps)[0]!;
+    editorState.set({ currentMapId: mapId });
+    const host = new FakeElement("div");
+    renderStructureKitsTab(host as unknown as HTMLElement, () => {});
+    return host;
+  }
+
+  function onlyUserKitId(): string {
+    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
+    expect(kits).toHaveLength(1);
+    return kits[0]!.id;
+  }
+
+  it("내장 킷 복제는 선택을 사본으로 옮기고 편집기를 연다", () => {
+    // 예전에는 사본을 만들고 목록만 다시 그려서, 인스펙터가 계속 원본(편집 불가)을 봤다 —
+    // 사용자에게는 "복제했는데 아무 일도 안 남" 이었다.
+    const host = renderTownAlbum();
+    host.querySelector("[data-testid='structure-kit-db-kit_house_blue-stone']")!.click();
+    host.querySelector("[data-testid='structure-kit-duplicate-kit_house_blue-stone']")!.click();
+
+    const copyId = onlyUserKitId();
+    expect(host.querySelector(`[data-testid='structure-kit-inspector-${copyId}']`)).not.toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-inspector-kit_house_blue-stone']")).toBeNull();
+    expect(document.querySelector("[data-testid='structure-kit-editor']")).not.toBeNull();
+  });
+
+  it("복제 후에는 원본 칩·검색어가 사본을 가리지 않는다", () => {
+    const host = renderTownAlbum();
+    // 내장 원본 칩 + 검색어를 켜 둔 상태에서 복제한다.
+    host.querySelector("[data-testid='structure-kit-source-builtin']")!.click();
+    const search = host.querySelector(".structure-kit-search")!;
+    (search as unknown as HTMLInputElement).value = "파랑";
+    search.dispatchEvent(new Event("input"));
+
+    host.querySelector("[data-testid='structure-kit-db-kit_house_blue-stone']")!.click();
+    host.querySelector("[data-testid='structure-kit-duplicate-kit_house_blue-stone']")!.click();
+
+    // source 가 'builtin' 으로 남아 있으면 entriesForSource() 가 사본 행을 통째로 걸러낸다.
+    const copyId = onlyUserKitId();
+    expect(host.querySelector(`[data-testid='structure-kit-db-${copyId}']`)).not.toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-source-user']")!.className).toContain("active");
+    expect((host.querySelector(".structure-kit-search") as unknown as HTMLInputElement).value).toBe("");
+  });
+
+  it("내장 행의 복제 아이콘도 사본의 편집기까지 이어진다", () => {
+    const host = renderTownAlbum();
+    const dup = host.querySelector("[data-testid='structure-kit-row-duplicate-kit_house_blue-stone']");
+    expect(dup).not.toBeNull();
+    dup!.click();
+
+    const copyId = onlyUserKitId();
+    expect(host.querySelector(`[data-testid='structure-kit-inspector-${copyId}']`)).not.toBeNull();
+    expect(document.querySelector("[data-testid='structure-kit-editor']")).not.toBeNull();
+  });
+
+  it("내 구조물 행의 ✎ 아이콘으로 편집기가 열린다", () => {
+    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_row_edit", "행에서 편집"));
+    const host = renderTownAlbum();
+
+    const editIcon = host.querySelector("[data-testid='structure-kit-row-edit-kit_row_edit']");
+    expect(editIcon).not.toBeNull();
+    expect(editIcon!.getAttribute("aria-label")).toBe("편집");
+    editIcon!.click();
+
+    expect(document.querySelector("[data-testid='structure-kit-editor']")).not.toBeNull();
+    // 내장 행에는 편집 아이콘이 없다 — 고칠 수 없는 것에 편집을 약속하지 않는다.
+    expect(host.querySelector("[data-testid='structure-kit-row-edit-kit_house_blue-stone']")).toBeNull();
+  });
+
+  it("편집 중 킷이 사라지면 칠하기가 무음 실패하지 않고 편집기가 닫힌다", () => {
+    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_vanish", "사라질 킷"));
+    const host = renderTownAlbum();
+    host.querySelector("[data-testid='structure-kit-row-edit-kit_vanish']")!.click();
+    expect(document.querySelector("[data-testid='structure-kit-editor']")).not.toBeNull();
+
+    // Ctrl+Z / DB 모달 취소로 store 가 교체된 상황 — 편집기가 보던 킷이 없어진다.
+    store.update((project) => {
+      project.tilesets[DEFAULT_TILESET_ID]!.structureKits = [];
+    });
+
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    expect(canvas).not.toBeNull();
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+
+    // 예전에는 조용히 return 해서, 계속 칠해도 아무것도 저장되지 않았다.
+    expect(document.querySelector("[data-testid='structure-kit-editor']")).toBeNull();
+    expect(document.querySelector("[data-testid='toast']")!.textContent).toContain("사라졌습니다");
   });
 });
 

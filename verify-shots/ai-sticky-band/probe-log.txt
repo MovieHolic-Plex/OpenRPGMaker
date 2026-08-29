@@ -1,6 +1,0 @@
-[glass] {"mounted":true,"pointerEvents":"auto","position":"static","rect":{"x":349,"y":705,"w":278,"h":0},"emptyHit":"(none)","swallows":false}
-[side] {"mounted":true,"pointerEvents":"auto","position":"static","rect":{"x":1011,"y":867,"w":480,"h":0},"emptyHit":"(none)","swallows":false}
-[float] {"mounted":true,"pointerEvents":"none","position":"fixed","rect":{"x":517,"y":814,"w":780,"h":0},"emptyHit":"(none)","swallows":false}
-[glass pill] {"ok":true,"rect":{"x":431,"y":711,"w":113,"h":35},"hit":"button.ai-proposal-pill"}
-[side pill] {"ok":true,"rect":{"x":1194,"y":838,"w":113,"h":35},"hit":"button.ai-proposal-pill"}
-[float pill] {"ok":true,"rect":{"x":850,"y":785,"w":113,"h":35},"hit":"button.ai-proposal-pill"}

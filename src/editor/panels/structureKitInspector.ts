@@ -1,5 +1,7 @@
 // panels/structureKitInspector.ts
 // 데이터베이스 '구조물' 탭의 오른쪽 열 — 읽기 요약과 액션.
+// 부위를 고치는 일(삭제·종류 변경·문에서 추정)은 전부 편집기로 옮겼다 —
+// 이 열에는 부위 목록의 '읽기'만 남는다.
 // structureKitDbTab.ts 가 865줄까지 자라 렌더와 비즈니스 로직이 뒤엉켰기에 떼어냈다.
 // 편집(래스터·부위·AI 메타)은 여기가 아니라 structureKitEditorDialog.ts 가 담당한다 —
 // 인스펙터 열은 352px 고정이라 9×8 킷(scale 3 → 432px)이 들어가지 않는다.
@@ -8,8 +10,7 @@
 // 의존 방향은 탭 → 인스펙터 한 방향이다(순환 없음).
 
 import { editorState } from "@/editor/editorState";
-import { deleteStructureKit, duplicateIntoTileset, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
-import { serializeStructureKitFile, structureKitFileName } from "@/editor/harnessSuggestion/structureKitFile";
+import { duplicateIntoTileset, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import {
   paletteStampFromCells,
@@ -25,17 +26,14 @@ import {
   interiorObjectSnapLabel,
   interiorObjectThemeLabels,
 } from "@/editor/panels/structureKitDbSources";
-import { aiRoleLabel, openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
-import { store } from "@/project/store";
+import { aiRoleLabel } from "@/editor/panels/structureKitEditorDialog";
 import type {
   StructureKitAiMeta,
   StructureKitDef,
   StructureKitLearnedFrom,
-  StructureKitPart,
   StructureKitPartKind,
   TilesetDef,
 } from "@/project/types";
-import { downloadBlob } from "@/util/downloadBlob";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -57,12 +55,18 @@ export function interiorObjectCanvas(tileset: TilesetDef, object: InteriorObject
   });
 }
 
+/**
+ * 사본을 만든 뒤 그 사본으로 선택을 옮기고 편집기까지 열어 주는 콜백.
+ * 탭(structureKitDbTab)이 넘겨준다 — 세션(선택·원본 칩·검색어)은 그쪽 모듈 프라이빗이라
+ * 여기서 직접 손댈 수 없고, 손대면 의존 방향(탭 → 인스펙터)이 순환한다.
+ */
+export type EnterKitEditor = (kitId: string) => void;
+
 /** 실내 오브젝트 인스펙터 — 카탈로그는 프로젝트 데이터가 아니라 코드문이라 이름 변경·삭제가 없다. */
 export function renderObjectInspector(
   tileset: TilesetDef,
   object: InteriorObjectDef,
-  refresh: () => void,
-  rerender: () => void,
+  enterEditor: EnterKitEditor,
 ): HTMLElement {
   const themeLabels = interiorObjectThemeLabels(object);
   const canvas = interiorObjectCanvas(tileset, object, 3);
@@ -124,8 +128,8 @@ export function renderObjectInspector(
               click: () => {
                 const copy = duplicateIntoTileset(tileset.id, object);
                 toast(`'${copy.name}' — 사본은 그림만 가져옵니다. AI 실내 방 채우기는 원본 카탈로그만 씁니다.`, "info");
-                rerender();
-                refresh();
+                // 목록만 다시 그리면 선택이 원본에 남아 "복제했는데 아무 일도 안 남" 이 된다.
+                enterEditor(copy.id);
               },
             },
           }),
@@ -227,7 +231,8 @@ export function renderInspector(
   kit: StructureKitDef,
   editable: boolean,
   refresh: () => void,
-  rerender: () => void
+  rerender: () => void,
+  enterEditor: EnterKitEditor,
 ): HTMLElement {
   const size = structureKitSize(kit);
   const inspector = el("div", {
@@ -317,7 +322,9 @@ export function renderInspector(
 
   inspector.append(rasterWrap);
 
-  // 부위 목록
+  // 부위 목록 — 읽기 전용이다. 부위를 지우고 종류를 바꾸고 문에서 추정하는 일은
+  // 전부 편집기(structureKitEditorDialog)로 모았다. 만드는 자리와 고치는 자리가
+  // 갈려 있으면 사용자가 어디를 봐야 할지 모른다.
   const partsList = el("div", { class: "structure-kit-parts-list" });
   parts.forEach((part, index) => {
     const isSelected = part.id === selectedPartId;
@@ -337,24 +344,6 @@ export function renderInspector(
           ],
         }),
         ...(part.note ? [el("div", { class: "structure-kit-part-note", text: part.note })] : []),
-        el("div", {
-          class: "structure-kit-part-actions",
-          children: [
-            el("button", {
-              class: "structure-kit-part-delete-btn",
-              attrs: { type: "button" },
-              text: "부위 삭제",
-              on: {
-                click: () => {
-                  const updatedParts = (kit.parts ?? []).filter((p) => p.id !== part.id);
-                  saveKitParts(tileset.id, kit, updatedParts);
-                  rerender();
-                  refresh();
-                },
-              },
-            }),
-          ],
-        }),
       ],
       on: {
         click: () => {
@@ -367,34 +356,6 @@ export function renderInspector(
   });
   inspector.append(partsList);
 
-  // 문에서 입구 추정 버튼 — autoEstimateEntranceParts 는 kind === "section" 킷에서만 결과를
-  // 낼 수 있는데 내장 앨범 행은 전부 읽기 전용이라, editable 이 아니면 누를 수 있어도
-  // "문 타일을 찾지 못했습니다" 만 뜨는 죽은 버튼이 된다. 편집·복제·내보내기·삭제와 같은 축으로 가른다.
-  if (editable) {
-    inspector.append(
-      el("button", {
-        class: "btn small structure-kit-estimate",
-        attrs: { type: "button" },
-        text: "문에서 입구 추정",
-        dataset: { testid: "structure-kit-estimate-entrance" },
-        on: {
-          click: () => {
-            const estimated = autoEstimateEntranceParts(kit);
-            if (estimated.length === 0) {
-              toast("문 타일을 찾지 못했습니다.", "info");
-              return;
-            }
-            const merged = [...(kit.parts ?? []).filter((p) => p.kind !== "entrance"), ...estimated];
-            saveKitParts(tileset.id, kit, merged);
-            toast(`입구 ${estimated.length}곳 추정 완료`, "ok");
-            rerender();
-            refresh();
-          },
-        },
-      }),
-    );
-  }
-
   inspector.append(
     el("p", {
       class: "structure-kit-quiet",
@@ -402,7 +363,10 @@ export function renderInspector(
     })
   );
 
-  // 하단 액션 버튼들 (편집, 복제, 삭제 — 프로젝트 데이터가 아니면 편집·삭제 제외, 팔레트에서 쓰기)
+  // 하단 액션 줄은 세 개까지만 둔다.
+  // [내보내기]·[삭제]는 표 행의 hover 아이콘으로 옮겼다 — 다섯 개를 한 줄에 넣으면
+  // 352px 열에서 넘친다. flex-wrap 으로 두 단을 만들면 인스펙터가 더 높아져
+  // 래스터가 밀려나므로, 해법은 감싸기가 아니라 개수 줄이기다.
   const actions = el("div", {
     class: "structure-kit-actions",
     children: [
@@ -413,14 +377,7 @@ export function renderInspector(
               attrs: { type: "button" },
               text: "편집",
               dataset: { testid: `structure-kit-edit-${kit.id}` },
-              on: {
-                click: () => {
-                  openStructureKitEditor(tileset.id, kit.id, () => {
-                    rerender();
-                    refresh();
-                  });
-                },
-              },
+              on: { click: () => enterEditor(kit.id) },
             }),
           ]
         : []),
@@ -433,50 +390,12 @@ export function renderInspector(
           click: () => {
             const copy = duplicateIntoTileset(tileset.id, kit);
             toast(`'${copy.name}' 을 만들었습니다`, "ok");
-            rerender();
-            refresh();
+            // 선택을 사본으로 옮기지 않으면 인스펙터가 계속 원본(편집 불가)을 본다 —
+            // 사용자에게는 "복제했는데 아무 일도 안 남" 으로 보인다.
+            enterEditor(copy.id);
           },
         },
       }),
-      ...(editable
-        ? [
-            el("button", {
-              class: "btn",
-              attrs: { type: "button" },
-              text: "내보내기",
-              dataset: { testid: `structure-kit-export-${kit.id}` },
-              on: {
-                click: () => {
-                  const text = serializeStructureKitFile(tileset, [kit], new Date().toISOString());
-                  downloadBlob(
-                    new Blob([text], { type: "application/json" }),
-                    structureKitFileName(tileset.name, [kit]),
-                  );
-                  toast(`'${kit.name ?? "구조물"}'을 내보냈습니다`, "ok");
-                },
-              },
-            }),
-          ]
-        : []),
-      ...(editable
-        ? [
-            el("button", {
-              class: "btn ghost structure-kit-delete",
-              attrs: { type: "button" },
-              text: "삭제",
-              dataset: { testid: `structure-kit-db-delete-${kit.id}` },
-              on: {
-                click: () => {
-                  deleteStructureKit(tileset.id, kit.id);
-                  toast(`'${kit.name ?? "구조물"}' 삭제`, "info");
-                  setInspectorSelectedPartId(null);
-                  rerender();
-                  refresh();
-                },
-              },
-            }),
-          ]
-        : []),
       el("button", {
         class: "btn",
         attrs: { type: "button" },
@@ -507,47 +426,4 @@ export function renderInspector(
   }
 
   return inspector;
-}
-
-function saveKitParts(tilesetId: string, kit: StructureKitDef, parts: StructureKitPart[]): void {
-  const current = store.getCurrent();
-  const tileset = current.tilesets[tilesetId];
-  if (!tileset || !tileset.structureKits) return;
-
-  const nextKits = tileset.structureKits.map((k) => (k.id === kit.id ? { ...k, parts } : k));
-  store.update((proj) => {
-    const targetTileset = proj.tilesets[tilesetId];
-    if (targetTileset) {
-      targetTileset.structureKits = nextKits;
-    }
-  });
-}
-
-function autoEstimateEntranceParts(kit: StructureKitDef): StructureKitPart[] {
-  const estimated: StructureKitPart[] = [];
-  // 문 타일 id 예: 116, 146, 360 등 (RM2k3 도어 패턴)
-  const DOOR_TILES = new Set([116, 146, 117, 147, 360, 361]);
-
-  if (kit.kind === "section") {
-    for (let y = 0; y < kit.rows.length; y += 1) {
-      const row = kit.rows[y];
-      if (!row) continue;
-      for (let x = 0; x < kit.width; x += 1) {
-        const tile = row.tiles[x] ?? -1;
-        const upper = row.upperTiles?.[x] ?? -1;
-        if (DOOR_TILES.has(tile) || DOOR_TILES.has(upper)) {
-          estimated.push({
-            id: `pt_${Date.now()}_${x}_${y}`,
-            kind: "entrance",
-            dx: x,
-            dy: Math.max(0, y - 1),
-            w: 1,
-            h: 3,
-            note: "문 2칸 + 앞 1칸",
-          });
-        }
-      }
-    }
-  }
-  return estimated;
 }

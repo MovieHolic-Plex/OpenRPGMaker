@@ -34,14 +34,17 @@ import {
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
+import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { PUBLIC_HOUSE_KIT_IDS } from "@/editor/tools/houseKitDomain";
+import { unregisterModal } from "@/editor/ui/modalStack";
 import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type {
   SectionStructureKitDef,
   StructureKitAiMeta,
+  StructureKitPart,
   StructureKitPartKind,
   TileGroupRole,
   TilesetDef,
@@ -54,6 +57,9 @@ import { toast } from "@/util/toast";
 /** 캔버스 영역이 감당하는 최대 폭(px). 다이얼로그 본문 폭에서 팔레트 열을 뺀 값. */
 const CANVAS_VIEWPORT_PX = 520;
 
+/** 편집기 다이얼로그의 testid — openDialog 가 이 값을 오버레이 dataset 에 그대로 박는다. */
+const EDITOR_DIALOG_TESTID = "structure-kit-editor";
+
 type EditorTool = "paint" | "erase" | "part";
 
 interface EditorSession {
@@ -65,12 +71,46 @@ interface EditorSession {
   tab: "shape" | "ai";
   /** AI 메타 폼의 미저장 편집 상태. [초안 수락] 전까지 store 에는 닿지 않는다. */
   draft: StructureKitAiMeta | null;
+  /**
+   * 지금 편집 중인 킷. 사라졌으면 알리고 편집기를 닫은 뒤 undefined 를 준다.
+   * 모든 편집 경로(칠하기·부위·크기·AI)는 findKit 을 직접 부르지 않고 이걸 쓴다 —
+   * 조용히 return 하면 그 뒤의 모든 편집이 store 에 닿지 못한 채 무음으로 사라진다.
+   */
+  readonly requireKit: () => SectionStructureKitDef | undefined;
+}
+
+/**
+ * 구조물 편집기가 지금 떠 있는가.
+ * DB 모달의 문서 레벨 Ctrl+Z 가드가 이걸 본다 — undo 는 store 를 통째로 갈아치우므로
+ * 편집기가 보던 킷이 사라지고, 그 뒤 편집이 전부 헛일이 된다.
+ * 상태 플래그가 아니라 DOM 부착 여부로 판정한다 — 백드롭 클릭·Escape 처럼
+ * 우리 콜백을 거치지 않는 닫기 경로가 있어 플래그는 새기 쉽다.
+ */
+export function isStructureKitEditorOpen(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.querySelector(`[data-testid="${EDITOR_DIALOG_TESTID}"]`) !== null;
 }
 
 export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onClosed: () => void): void {
   const tileset = store.getCurrent().tilesets[tilesetId];
   const kit = findKit(tilesetId, kitId);
   if (!tileset || !kit) return;
+
+  let overlay: Element | null = null;
+  let closed = false;
+
+  // DB 모달을 취소로 닫거나 Ctrl+Z 로 store 가 교체되면 이 킷이 사라진다.
+  // 예전에는 조용히 return 해서, 사용자는 계속 칠하는데 아무것도 저장되지 않았다.
+  const closeBecauseKitVanished = (): void => {
+    if (closed) return;
+    closed = true;
+    toast("이 구조물이 사라졌습니다 (되돌리기 때문일 수 있어요)", "error");
+    if (overlay) {
+      unregisterModal(overlay);
+      overlay.remove();
+    }
+    onClosed();
+  };
 
   const session: EditorSession = {
     tilesetId,
@@ -80,6 +120,11 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     tile: TILE.GRASS,
     tab: "shape",
     draft: null,
+    requireKit: () => {
+      const current = findKit(tilesetId, kitId);
+      if (!current) closeBecauseKitVanished();
+      return current;
+    },
   };
 
   const canvasWrap = el("div", {
@@ -101,7 +146,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
   const aiWrap = el("div", { class: "structure-kit-editor-ai" });
 
   const redraw = (): void => {
-    const current = findKit(session.tilesetId, session.kitId);
+    const current = session.requireKit();
     if (!current) return;
     drawCanvas(canvasWrap, tileset, current, session);
     drawSize(sizeWrap, current, redraw, session);
@@ -125,7 +170,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
   canvasWrap.addEventListener("pointerdown", (event) => {
     const pointer = event as PointerEvent;
     if (pointer.button !== undefined && pointer.button !== 0) return;
-    const current = findKit(session.tilesetId, session.kitId);
+    const current = session.requireKit();
     if (!current) return;
     const cell = cellFromEvent(pointer, current);
     if (!cell) return;
@@ -155,21 +200,23 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     const start = dragStart;
     dragStart = null;
     if (session.tool !== "part" || !start) return;
-    const current = findKit(session.tilesetId, session.kitId);
+    const current = session.requireKit();
     if (!current) return;
     const end = cellFromEvent(pointer, current) ?? start;
-    // 새 부위의 기본 종류는 입구다 — 워프를 놓을 자리를 지정하는 것이 가장 잦은 용도다.
-    replaceStructureKit(
-      session.tilesetId,
-      addPart(current, normalizeDragRect(start, end), "entrance", `pt_${randomUuid()}`),
-    );
-    redraw();
+    const rect = normalizeDragRect(start, end);
+    const commit = (kind: StructureKitPartKind): void => {
+      const target = session.requireKit();
+      if (!target) return;
+      replaceStructureKit(session.tilesetId, addPart(target, rect, kind, `pt_${randomUuid()}`));
+      redraw();
+    };
+    // 예전에는 종류가 언제나 "입구" 로 굳어 창문·간판·자리를 그릴 방법이 아예 없었다.
+    // 팝오버를 못 띄우는 환경이면 가장 잦은 용도인 입구로 만든다(옛 동작).
+    if (!openPartKindMenu({ x: pointer.clientX, y: pointer.clientY }, null, commit)) commit("entrance");
   });
 
-  redraw();
-
   openDialog(
-    "structure-kit-editor",
+    EDITOR_DIALOG_TESTID,
     `${kit.name ?? "구조물"} 편집`,
     [
       el("div", {
@@ -180,8 +227,22 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
         ],
       }),
     ],
-    [{ label: "닫기", testid: "structure-kit-editor-close", action: onClosed }],
+    [{
+      label: "닫기",
+      testid: "structure-kit-editor-close",
+      action: () => {
+        closed = true;
+        onClosed();
+      },
+    }],
   );
+  // openDialog 는 오버레이를 돌려주지 않는다 — 자기가 박은 testid 로 되찾아 둔다.
+  // 킷이 사라졌을 때 이 노드를 직접 떼어 내야 하기 때문이다.
+  overlay = typeof document !== "undefined"
+    ? document.querySelector(`[data-testid="${EDITOR_DIALOG_TESTID}"]`)
+    : null;
+
+  redraw();
 }
 
 /** 시작점 선택 — 빈 칸이냐, 집 한 채냐. 집 갈래는 combined_town 앨범에서만 열린다. */
@@ -488,7 +549,7 @@ function drawSize(host: HTMLElement, kit: SectionStructureKitDef, redraw: () => 
             change: (event: Event) => {
               const target = event.currentTarget;
               if (!(target instanceof HTMLInputElement)) return;
-              const current = findKit(session.tilesetId, session.kitId);
+              const current = session.requireKit();
               if (!current) return;
               const next = apply(Number(target.value));
               const result = resizeKit(current, next.width, next.height);
@@ -521,6 +582,83 @@ const PART_KIND_OPTIONS: readonly { readonly value: StructureKitPartKind; readon
   { value: "anchor", label: "자리" },
 ];
 
+/** 팝오버 항목의 글리프. 툴 레일이 이미 쓰는 아이콘 이름만 고른다(없는 이름은 빈 칸이 된다). */
+const PART_KIND_ICONS: Readonly<Record<StructureKitPartKind, string>> = {
+  entrance: "link",
+  window: "window",
+  sign: "title",
+  anchor: "pin",
+};
+
+function partKindLabel(kind: StructureKitPartKind): string {
+  return PART_KIND_OPTIONS.find((option) => option.value === kind)?.label ?? kind;
+}
+
+/**
+ * 부위 종류 팝오버. 맵 컨텍스트 메뉴 위젯을 그대로 빌린다 —
+ * 클릭 지점 배치·바깥클릭/Esc 닫기·화살표 키 이동이 이미 들어 있다.
+ * 그 파일은 건드리지 않고, 이 쓰임에 맞게 라벨과 testid 만 뒤에서 덮어쓴다.
+ *
+ * window 가 없는 환경(노드 유닛 테스트)에서는 그 위젯이 resize/scroll 리스너를 못 붙여
+ * 던진다 — false 를 돌려주고 호출부가 팝오버 없는 경로로 넘어가게 한다.
+ */
+function openPartKindMenu(
+  point: { readonly x: number; readonly y: number },
+  currentKind: StructureKitPartKind | null,
+  pick: (kind: StructureKitPartKind) => void,
+): boolean {
+  if (typeof window === "undefined" || typeof document === "undefined") return false;
+  openMapContextMenu({
+    mapId: "structure-kit-part-kind",
+    mapName: "부위 종류",
+    point,
+    items: PART_KIND_OPTIONS.map((option) => ({
+      action: () => pick(option.value),
+      icon: PART_KIND_ICONS[option.value],
+      id: `part-kind-${option.value}`,
+      label: option.value === currentKind ? `${option.label} (현재)` : option.label,
+      testId: `structure-kit-part-kind-option-${option.value}`,
+    })),
+  });
+  const menu = document.querySelector<HTMLElement>('[data-testid="map-context-menu-structure-kit-part-kind"]');
+  if (menu) {
+    menu.dataset.testid = "structure-kit-part-kind-menu";
+    menu.setAttribute("aria-label", "부위 종류 고르기");
+    // `.map-context-menu` 의 층(z-index: --z-status)은 맵 셸 기준이라 편집기
+    // 다이얼로그(--z-popover-high) 뒤에 깔린다. 이 쓰임만 한 층 올린다.
+    menu.classList.add("structure-kit-part-kind-menu");
+  }
+  return true;
+}
+
+/** 아이콘 한 글자 버튼 — 부위 행의 ✎ · ✕. */
+function partActionButton(
+  glyph: string,
+  label: string,
+  testid: string,
+  onClick: (event: Event) => void,
+): HTMLElement {
+  return el("button", {
+    class: "structure-kit-editor-part-action",
+    attrs: { type: "button", title: label, "aria-label": label },
+    text: glyph,
+    dataset: { testid },
+    on: { click: onClick },
+  });
+}
+
+/** 버튼에서 뜨는 팝오버의 기준점 — 키보드로 눌렀으면 clientX 가 0 이라 버튼 아래를 쓴다. */
+function pointFromButtonEvent(event: Event): { readonly x: number; readonly y: number } {
+  const mouse = event as MouseEvent;
+  if (mouse.clientX || mouse.clientY) return { x: mouse.clientX, y: mouse.clientY };
+  const target = event.currentTarget;
+  if (target instanceof HTMLElement) {
+    const rect = target.getBoundingClientRect();
+    return { x: rect.left, y: rect.bottom };
+  }
+  return { x: 0, y: 0 };
+}
+
 function drawParts(
   host: HTMLElement,
   kit: SectionStructureKitDef,
@@ -529,65 +667,72 @@ function drawParts(
 ): void {
   const parts = kit.parts ?? [];
   const rows: HTMLElement[] = [
-    el("div", { class: "structure-kit-editor-parts-title", text: `부위 (${parts.length})` }),
+    el("div", {
+      class: "structure-kit-editor-parts-head",
+      children: [
+        el("div", { class: "structure-kit-editor-parts-title", text: `부위 (${parts.length})` }),
+        // 인스펙터에 있던 [문에서 입구 추정]이 여기로 왔다 — 부위를 고치는 자리가 편집기다.
+        el("button", {
+          class: "btn small structure-kit-estimate",
+          attrs: { type: "button" },
+          text: "문에서 추정",
+          dataset: { testid: "structure-kit-estimate-entrance" },
+          on: {
+            click: () => {
+              const current = session.requireKit();
+              if (!current) return;
+              const estimated = autoEstimateEntranceParts(current);
+              if (estimated.length === 0) {
+                toast("문 타일을 찾지 못했습니다.", "info");
+                return;
+              }
+              const merged = [
+                ...(current.parts ?? []).filter((part) => part.kind !== "entrance"),
+                ...estimated,
+              ];
+              replaceStructureKit(session.tilesetId, { ...current, parts: merged });
+              toast(`입구 ${estimated.length}곳 추정 완료`, "ok");
+              redraw();
+            },
+          },
+        }),
+      ],
+    }),
   ];
 
   if (parts.length === 0) {
     rows.push(
       el("p", {
         class: "structure-kit-quiet",
-        text: "[부위 그리기]로 캔버스를 끌면 입구·창문 자리가 생깁니다.",
+        text: "[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이 뜹니다.",
       }),
     );
   }
 
   parts.forEach((part, index) => {
-    const select = el("select", {
-      dataset: { testid: `structure-kit-editor-part-kind-${part.id}` },
-      children: PART_KIND_OPTIONS.map((option) =>
-        el("option", {
-          attrs: part.kind === option.value ? { value: option.value, selected: "" } : { value: option.value },
-          text: option.label,
-        }),
-      ),
-      on: {
-        change: (event: Event) => {
-          const target = event.currentTarget;
-          if (!(target instanceof HTMLSelectElement)) return;
-          const current = findKit(session.tilesetId, session.kitId);
-          if (!current) return;
-          replaceStructureKit(
-            session.tilesetId,
-            updatePart(current, part.id, { kind: target.value as StructureKitPartKind }),
-          );
-          redraw();
-        },
-      },
-    });
-
     rows.push(
       el("div", {
         class: "structure-kit-editor-part-row",
         children: [
           el("span", { class: "structure-kit-editor-part-index", text: String(index + 1) }),
-          select,
+          el("span", { class: "structure-kit-editor-part-kind", text: partKindLabel(part.kind) }),
           el("span", {
             class: "structure-kit-editor-part-range",
             text: `(${part.dx},${part.dy}) ${part.w}×${part.h}`,
           }),
-          el("button", {
-            class: "btn small ghost",
-            attrs: { type: "button" },
-            text: "삭제",
-            dataset: { testid: `structure-kit-editor-part-delete-${part.id}` },
-            on: {
-              click: () => {
-                const current = findKit(session.tilesetId, session.kitId);
-                if (!current) return;
-                replaceStructureKit(session.tilesetId, removePart(current, part.id));
-                redraw();
-              },
-            },
+          partActionButton("✎", "부위 편집", `structure-kit-editor-part-edit-${part.id}`, (event) => {
+            openPartKindMenu(pointFromButtonEvent(event), part.kind, (kind) => {
+              const current = session.requireKit();
+              if (!current) return;
+              replaceStructureKit(session.tilesetId, updatePart(current, part.id, { kind }));
+              redraw();
+            });
+          }),
+          partActionButton("✕", "부위 삭제", `structure-kit-editor-part-delete-${part.id}`, () => {
+            const current = session.requireKit();
+            if (!current) return;
+            replaceStructureKit(session.tilesetId, removePart(current, part.id));
+            redraw();
           }),
         ],
       }),
@@ -595,6 +740,37 @@ function drawParts(
   });
 
   host.replaceChildren(...rows);
+}
+
+/**
+ * 문 타일을 찾아 입구 부위를 추정한다. 인스펙터에서 옮겨 왔다 —
+ * 부위를 만드는 자리와 고치는 자리가 갈려 있으면 사용자가 어디를 봐야 할지 모른다.
+ */
+function autoEstimateEntranceParts(kit: SectionStructureKitDef): StructureKitPart[] {
+  const estimated: StructureKitPart[] = [];
+  // 문 타일 id 예: 116, 146, 360 등 (RM2k3 도어 패턴)
+  const DOOR_TILES = new Set([116, 146, 117, 147, 360, 361]);
+
+  for (let y = 0; y < kit.rows.length; y += 1) {
+    const row = kit.rows[y];
+    if (!row) continue;
+    for (let x = 0; x < kit.width; x += 1) {
+      const tile = row.tiles[x] ?? -1;
+      const upper = row.upperTiles?.[x] ?? -1;
+      if (DOOR_TILES.has(tile) || DOOR_TILES.has(upper)) {
+        estimated.push({
+          id: `pt_${randomUuid()}`,
+          kind: "entrance",
+          dx: x,
+          dy: Math.max(0, y - 1),
+          w: 1,
+          h: 3,
+          note: "문 2칸 + 앞 1칸",
+        });
+      }
+    }
+  }
+  return estimated;
 }
 
 function drawAiTab(
@@ -708,7 +884,7 @@ function drawAiTab(
       dataset: { testid: "structure-kit-editor-ai-accept" },
       on: {
         click: () => {
-          const target = findKit(session.tilesetId, session.kitId);
+          const target = session.requireKit();
           if (!target) return;
           // 제로 부트스트랩: 여기가 origin 을 "user" 로 만드는 유일한 지점이다.
           replaceStructureKit(session.tilesetId, { ...target, ai: { ...draft, origin: "user" } });

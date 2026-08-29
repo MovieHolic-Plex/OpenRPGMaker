@@ -162,6 +162,18 @@ Evidence expectations:
 - 브라우저 QA 중에 다른 에이전트가 `src/` 를 편집하면 HMR 리로드가 끼어들어
   `ERR_NETWORK_CHANGED` 가 쏟아지고 편집기 부팅이 깨진다. 소스가 조용할 때 브라우저 증거를 잡아라.
 
+### `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
+
+Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` 를 한다. **사람은 화면 밖이라 못 누르는 버튼도 테스트는 스크롤해서 누른다.** 그래서 "클릭 성공"은 그 버튼이 보인다는 증거가 되지 못한다. DB 구조물 탭의 `[편집]` 이 화면 밖 67px 에 있었는데 e2e 가 초록불이었던 이유가 이것이다.
+
+- 판정은 **좌표로** 해라: `scroller.scrollTop = 0` 으로 되돌린 뒤 `getBoundingClientRect()` 를 재고,
+  `document.elementFromPoint(중심)` 이 그 버튼(또는 그 자손)인지 본다. 그리고 `scrollHeight - clientHeight === 0`(스크롤 여지 없음)을 함께 확인한다. 마지막 증명은 `page.mouse.click(좌표)` — 이건 자동 스크롤을 거치지 않는다.
+- `toBeVisible()` 도 부족하다. Playwright 의 "visible" 은 `display`/`visibility`/크기만 보고 **조상의 `overflow` 로 잘렸는지는 보지 않는다.**
+- **접두사가 겹치는 testid 를 `^=` 로 잡지 마라.** `[data-testid^="structure-kit-edit-"]` 는 `structure-kit-editor`·`-editor-close`·`-editor-canvas` 까지 다 잡아 strict 위반이 난다. 컨테이너 클래스로 좁혀라(`.structure-kit-actions [data-testid^=...]`).
+- **탭 전환은 헤딩 가시성으로 확인하면 안 된다.** DB 사이드바 탭을 누른 직후 초기화 경합에 밀려 `activeTab` 이 기본값으로 되돌아가는 것을 실측했다(구조물 → 파티). 공용 헬퍼 `switchDatabaseTab`(`test/e2e/oprn-database-helpers.ts`)을 써라 — 그룹을 순회해 찾고 **탭 버튼의 `.active`** 까지 확인한다. 그룹 슬러그를 직접 박아 넣으면(`db-tab-group-map` 같은 존재하지 않는 값) 헬퍼가 통째로 죽어도 아무도 모른다.
+- **점 한 번 찍는 `count() > 0` 은 렌더 경합에 진다.** 다이얼로그가 그려지기 전에 0 을 읽고 그냥 지나쳐 버린다. `expect(async () => {...}).toPass()` 로 감싸라.
+- 케이스마다 앱을 통째로 부팅하는 스펙은 `--workers=1` 로 돌려라. 병렬로 겹치면 다운로드 이벤트·다이얼로그 렌더가 밀려 간헐 실패한다(실측: 병렬 2건 실패 → 직렬 4건 전부 통과).
+
 ### `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
 
 - 증상: `page.goto` 는 성공했는데 화면이 **완전 백지**이고 aria 스냅샷이 비어 있다. 콘솔에 앱

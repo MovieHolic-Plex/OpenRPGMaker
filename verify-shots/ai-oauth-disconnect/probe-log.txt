@@ -1,6 +1,0 @@
-[seed] /auth/key → {"connected":true,"provider":"groq","authKind":"apiKey","env":false}
-[connected] status="연결됨" tone=connected login="다시 확인"
-[connected] disconnect exists=true hidden=false boxH=28
-[after] status="키 필요" tone=disconnected login="연결 확인"
-[after] disconnect hidden=true boxH=0
-[server] /auth/status → {"connected":false,"provider":"groq"}

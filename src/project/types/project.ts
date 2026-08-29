@@ -83,6 +83,29 @@ export interface GameMap {
    * v1은 1회 정적 썸네일 + 플레이어 점만 갱신; fogOfWar는 자리만 두고 추후 확장.
    */
   minimap?: MapMinimapSetting;
+  /**
+   * 맵에 찍힌 구조물 킷 배치 기록. "여기에 이 집이 있다"를 남겨 다시 고르고·고치고·지울 수 있게 한다.
+   * 기록 범위는 구조물 킷 스탬프만 — 사람이 팔레트로 찍은 것 + AI 도구 stamp_structure_kit.
+   * 마을 자동 생성(빌더)의 집 시공은 layoutPlan.regions 가 담당하며 여기에 들어오지 않는다.
+   * 배열 순서가 곧 시간 순서다 — 겹칠 때는 뒤(나중)가 이긴다. optional 이라 마이그레이션 불필요.
+   */
+  structurePlacements?: StructurePlacement[];
+}
+
+/** 맵에 찍힌 구조물 킷 한 채. 좌상단(x,y) + 크기(w,h)는 찍은 순간의 킷 크기다. */
+export interface StructurePlacement {
+  id: string;
+  /** tileset.structureKits[].id 또는 내장 파라메트릭 킷 id(kit_house_*). */
+  kitId: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  stampedAt?: string;
+  /** 찍기 직전 그 자리의 타일 (길이 w*h) — 지우기 복원용. 행 우선(y*w+x). */
+  before: { lower: number[]; upper: number[] };
+  /** 찍은 직후 맵에서 되읽은 타일의 해시 — 이후 덧칠 감지용(soft hint). */
+  afterHash: string;
 }
 
 /** 맵 배경(패럴랙스) 설정 — RM2003 Background 탭 대응. */
