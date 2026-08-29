@@ -163,8 +163,22 @@ function installToolbarBadgeRefresh(rerender: () => void): void {
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
     window.addEventListener(MAP_EDIT_HISTORY_EVENT, () => latestToolbarRerender?.());
   }
+  // 편집 1회마다 도구막대를 통째로 다시 그리면 규칙 감사 배지가 projectLint 를 전체로 다시
+  // 돌린다(실측 141ms~1,206ms/칸). 페인트 드래그는 칸마다 store emit 을 내므로 트레일링
+  // 디바운스로 묶는다 — 배지·선택 타일 표시가 최대 0.12초 늦는 것 말고는 같다.
+  // 되돌리기(MAP_EDIT_HISTORY_EVENT)는 빈도가 낮아 그대로 즉시 그린다.
   store.subscribe(() => {
     if (typeof document === "undefined") return;
-    latestToolbarRerender?.();
+    if (toolbarStoreRerenderTimer !== null) return;
+    toolbarStoreRerenderTimer = setTimeout(() => {
+      toolbarStoreRerenderTimer = null;
+      // 타이머는 구독 시점보다 오래 산다 — 문서가 사라진 뒤(테스트 환경 해체, 창 종료)
+      // 그리면 renderCurrentPalette 가 document 를 만지다 터진다.
+      if (typeof document === "undefined") return;
+      latestToolbarRerender?.();
+    }, TOOLBAR_STORE_RERENDER_DEBOUNCE_MS);
   });
 }
+
+const TOOLBAR_STORE_RERENDER_DEBOUNCE_MS = 120;
+let toolbarStoreRerenderTimer: ReturnType<typeof setTimeout> | null = null;

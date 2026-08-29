@@ -72,6 +72,10 @@ body {
   pointer-events: none;
   font-size: 1px;
   z-index: 1;
+  /* 세션 JSON 은 수십 KB 이고 매 갱신마다 이 1px 상자 안에서 줄 상자를 다시 계산했다.
+     content-visibility 는 내용의 레이아웃·페인트를 건너뛴다. 상자(1×1)는 남으므로
+     Playwright 의 toBeVisible 은 그대로 통과하고 textContent 도 그대로 읽힌다. */
+  content-visibility: hidden;
 }
 /* 이벤트 디버그 마커도 동일하게 은닉(헤드리스 검증용 DOM 유지). */
 .runtime-debug-marker {

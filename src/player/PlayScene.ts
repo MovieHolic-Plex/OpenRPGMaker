@@ -35,6 +35,7 @@ import {
   activeRuntimeEvents as activeSceneEvents,
   syncRuntimeState as syncSceneRuntimeState,
   refreshRuntimeSurfaces as refreshSceneRuntimeSurfaces,
+  refreshRuntimeEntities as refreshSceneRuntimeEntities,
   fireAutoTriggers as fireSceneAutoTriggers,
 } from "@/player/playSceneMapRuntime";
 import {
@@ -72,7 +73,8 @@ import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { initializeActionCombatForScene, updateActionCombatForScene } from "@/player/playSceneActionCombat";
 import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, isGameTimePausedForRuntime, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
-import { updateNpcSchedules } from "@/player/npcSchedules";
+import { tickNpcSchedules, updateNpcSchedules } from "@/player/npcSchedules";
+import { syncTileCulling } from "@/player/playSceneTileCulling";
 import {
   createPlaySceneZoneFeedback,
   destroyPlaySceneZoneFeedback,
@@ -295,10 +297,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   update(_time: number, deltaMs: number): void {
     updatePlayScene(this, deltaMs);
     updateGameTime(this, deltaMs);
-    updateNpcSchedules(this, isGameTimePausedForRuntime(this));
+    tickNpcSchedules(this, isGameTimePausedForRuntime(this), deltaMs);
     updateWeather(this, deltaMs);
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
+    syncTileCulling(this, this.cameras.main.worldView);
     // 이벤트 마커는 화면 좌표로 놓여야 한다 — 카메라를 반영하지 않으면 무대의 스크롤 영역이
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
@@ -362,6 +365,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncWeatherLayer(this);
     installTimeTintLayer(this);
     syncLightingLayer(this);
+  }
+
+  refreshRuntimeEntities(): void {
+    refreshSceneRuntimeEntities(this);
+    syncFollowerSprites(this);
   }
 
   centerCamera(): void {

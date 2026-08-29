@@ -1,5 +1,5 @@
 import { canMoveFootprint, inBounds } from "@/project/collision";
-import { UNIT_FOOTPRINT, passageBounds, rectsOverlap } from "@/project/footprint";
+import { UNIT_FOOTPRINT, passageBounds } from "@/project/footprint";
 import type { CharacterFootprint } from "@/project/types";
 import { store } from "@/project/store";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
@@ -8,7 +8,7 @@ import type { AutonomousMover } from "@/player/playSceneTypes";
 import type { AutonomousNpcSceneContext, MovementDelta } from "@/player/playSceneAutonomousTypes";
 import { applySpriteAlpha } from "@/player/playSceneAutonomousSprites";
 import type { NpcCommandTarget, NpcRouteCommandContext } from "@/player/playSceneAutonomousCommands";
-import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
+import { findBlockingEventOverlappingRect, runtimeEventViewById } from "@/project/runtimeEventState"
 import type { Project } from "@/project/types/project";
 
 export type NpcMoveCollision = {
@@ -41,12 +41,13 @@ export function isPlayerOccupyingTile(
 function moverPassSize(request: NpcMoveCollision): { fp: CharacterFootprint; passRows: number } {
   const self = request.eventId === undefined
     ? undefined
-    : runtimeEventViewsForMap(
+    : runtimeEventViewById(
         request.project,
         request.scene.map,
         request.scene.session,
-        request.scene.eventPositions
-      ).find((view) => view.event.id === request.eventId);
+        request.scene.eventPositions,
+        request.eventId
+      );
   return { fp: self?.footprint ?? UNIT_FOOTPRINT, passRows: self?.passRows ?? 1 };
 }
 
@@ -115,18 +116,16 @@ function isCharacterBlockedRect(
       if (isPlayerOccupyingTile(request.scene, cx, cy)) return true;
     }
   }
-  return runtimeEventViewsForMap(
+  // 예전에는 맵 전체 뷰 배열을 만든 뒤 some() 했다. 대각 이동 판정은 이 함수를 최대 3번
+  // 부르므로 NPC 한 명이 한 걸음 옮길 때마다 배열이 3개 생겼다. 이제는 첫 차단에서 멈춘다.
+  return findBlockingEventOverlappingRect(
     request.project,
     request.scene.map,
     request.scene.session,
-    request.scene.eventPositions
-  ).some(
-    (view) =>
-      rectsOverlap(view.passRect, rect) &&
-      view.event.id !== request.eventId &&
-      view.priority === "same" &&
-      view.overlapForbidden
-  );
+    request.scene.eventPositions,
+    rect,
+    request.eventId
+  ) !== undefined;
 }
 
 export function applyNpcTransfer(
