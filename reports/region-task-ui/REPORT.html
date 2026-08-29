@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>영역 작업 창 UI 감사 — 2026-08-30</title>
+<style>
+  :root {
+    --ink: #14161a;
+    --ink-soft: #4a5160;
+    --line: #e3e6ec;
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --brand: #4f46e5;
+    --bad: #b42318;
+    --good: #067647;
+    --warn: #b54708;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.7 -apple-system, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 40px 24px 96px; }
+  header.top { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 32px; }
+  h1 { font-size: 30px; margin: 0 0 8px; letter-spacing: -0.4px; }
+  .sub { color: var(--ink-soft); margin: 0; }
+  .meta { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .meta span, .pill {
+    display: inline-block; padding: 4px 10px; border-radius: 999px;
+    background: #eef0f4; color: var(--ink-soft); font-size: 13px; border: 1px solid var(--line);
+  }
+  .meta a { color: var(--brand); text-decoration: none; }
+  h2 { font-size: 22px; margin: 48px 0 6px; letter-spacing: -0.3px; }
+  h2 + .lede { color: var(--ink-soft); margin: 0 0 20px; }
+  h3 { font-size: 18px; margin: 0 0 4px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px;
+  }
+  .stat b { display: block; font-size: 28px; line-height: 1.2; }
+  .stat small { color: var(--ink-soft); }
+  figure.pair { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin: 0 0 28px; }
+  figure.pair .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 780px) { figure.pair .row { grid-template-columns: 1fr; } }
+  figure.pair img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .tag { font-size: 12px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 6px; }
+  .tag.before { color: var(--bad); }
+  .tag.after { color: var(--good); }
+  figcaption { margin-top: 14px; color: var(--ink-soft); font-size: 15px; }
+  figcaption ul { margin: 8px 0 0; padding-left: 20px; }
+  figcaption li { margin: 3px 0; }
+  figcaption strong { color: var(--ink); }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #eef0f4; font-size: 13px; color: var(--ink-soft); font-weight: 700; }
+  tr:last-child td { border-bottom: 0; }
+  code { background: #eef0f4; padding: 1px 5px; border-radius: 5px; font-size: 13px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .p1 { color: var(--bad); font-weight: 700; }
+  .p2 { color: var(--warn); font-weight: 700; }
+  .p3 { color: var(--ink-soft); font-weight: 700; }
+  .ok { color: var(--good); font-weight: 700; }
+  .note { background: #fff8ea; border: 1px solid #f3d9a4; border-radius: 12px; padding: 16px 18px; }
+  .note h3 { margin-bottom: 6px; }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>영역 작업 창 UI 감사</h1>
+  <p class="sub">스크린샷 13장을 훑어 화면에서 읽히는 대로 결함을 적고, 제품 결함을 전부 고쳤다.</p>
+  <div class="meta">
+    <span>2026-08-30</span>
+    <span>브랜치 <code>worktree/rapid-field-f2d6</code></span>
+    <span>커밋 <code>3895dfb7</code></span>
+    <span><a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/270">PR #270</a></span>
+    <span>단위 테스트 57 통과 · 캡처 스펙 3 통과</span>
+  </div>
+</header>
+
+<section>
+  <div class="cards">
+    <div class="stat"><b>15</b><small>찾은 결함</small></div>
+    <div class="stat"><b>14</b><small>고친 제품 결함</small></div>
+    <div class="stat"><b>1</b><small>제품 아님(캡처 도구)</small></div>
+    <div class="stat"><b>8</b><small>새로 쓴 회귀 테스트</small></div>
+  </div>
+</section>
+
+<h2>가장 큰 문제: 창이 가려졌다</h2>
+<p class="lede">표준 모드 안내 카드가 영역 작업 창 위에 떠서, 좌표 칩과 "적용 여부를 선택하세요" 줄을 덮었다.</p>
+
+<figure class="pair">
+  <div class="row">
+    <div>
+      <div class="tag before">전</div>
+      <img src="shots/09-review-page.png" alt="안내 카드가 영역 작업 창 오른쪽 위를 덮은 화면" />
+    </div>
+    <div>
+      <div class="tag after">후</div>
+      <img src="shots-after/09-review-page.png" alt="안내 카드가 사라지고 창 내용이 온전히 보이는 화면" />
+    </div>
+  </div>
+  <figcaption>
+    <ul>
+      <li><strong>전</strong> — "왼쪽 감독에게 한 줄로 부탁하면…" 카드가 창의 오른쪽 위를 가린다. 화면에 <strong>감독</strong>이라는 이름은 없다(왼쪽은 조수 패널이다). 검토 상태도 <strong>검사 완료 · 승인 대기</strong>가 아래 <strong>검사 통과</strong>와 겹쳐 같은 말을 두 번 한다.</li>
+      <li><strong>후</strong> — 모달이 떠 있으면 코치마크·웰컴 카드가 물러난다. "본 것"으로 기록하지 않으니 다음 부팅에 다시 뜬다. 왼쪽 조수 입력은 뒤로 물러나 지시를 넣는 곳이 하나로 보인다. 안내 문구는 <strong>왼쪽 조수 패널</strong>로 바꿨다.</li>
+      <li>고친 곳 — <code>src/editor/coachMarks.ts</code>, <code>src/editor/panels/regionTaskModal.ts</code></li>
+    </ul>
+  </figcaption>
+</figure>
+
+<h2>검토 화면: 같은 말 네 번, 정작 필요한 건 접혀 있었다</h2>
+<p class="lede">부분 적용(구역 고르기)이 「고급」 안에 묻혀 있었고, 지표는 단위 없는 한 줄 문장이었다.</p>
+
+<figure class="pair">
+  <div class="row">
+    <div>
+      <div class="tag before">전</div>
+      <img src="shots/11-review-diagnostics.png" alt="검사 상세가 펼쳐진 이전 검토 화면" />
+    </div>
+    <div>
+      <div class="tag after">후</div>
+      <img src="shots-after/11-review-diagnostics.png" alt="구역 고르기가 본문으로 올라오고 지표가 칩으로 쪼개진 검토 화면" />
+    </div>
+  </div>
+  <figcaption>
+    <ul>
+      <li><strong>전</strong> — 상태가 <em>검사 완료 · 승인 대기</em> / <em>체크포인트</em> / <em>플레이 가능성 검사 통과</em> / <em>검사 통과</em>로 네 번 반복된다. <strong>승인 대기</strong>에 초록 체크(✓)가 붙어 이미 끝난 것처럼 보인다. 지표는 "갈 수 있는 목표 36 · 타일 조합 50 · NPC 일정 4"처럼 무엇의 단위인지 알 수 없다. 전/후 비교는 작은 썸네일 두 장이라 무엇이 바뀌었는지 안 보인다.</li>
+      <li><strong>후</strong> — 진행 칩은 <strong>검사 완료</strong> 하나, 문제 줄은 <strong>막는 문제·주의 없음</strong>. 승인 대기는 <strong>내 결정 대기</strong>로 바뀌고 체크 대신 대기 표시(…)를 쓴다. 지표는 <strong>갈 수 있는 목표 36개 · 타일 조합 50/100점 · NPC 일정 4명 · 시간 시스템 켜짐</strong>처럼 단위와 분모를 붙인 칩이고, 나쁜 값이면 경고색으로 뜬다. <strong>적용할 구역을 고르세요</strong>가 「적용」 버튼 바로 위 본문으로 올라왔다. 「고급」에는 실행 로그만 남는다.</li>
+      <li>고친 곳 — <code>src/editor/panels/regionTaskModal.ts</code>, <code>src/editor/regionTask/harnessReview.ts</code>, <code>src/styles/editor/region-task.css</code></li>
+    </ul>
+  </figcaption>
+</figure>
+
+<h2>추천 칩: 카테고리를 고르면 갈 곳이 없어졌다</h2>
+<p class="lede">「다듬기」를 누르면 추천이 4개에서 1개로 줄고, 전체 목록으로 돌아갈 표시가 없었다.</p>
+
+<figure class="pair">
+  <div class="row">
+    <div>
+      <div class="tag before">전</div>
+      <img src="shots/04-popover-category-open.png" alt="카테고리를 고르면 추천 칩이 꽃밭 하나만 남은 화면" />
+    </div>
+    <div>
+      <div class="tag after">후</div>
+      <img src="shots-after/04-modal-category.png" alt="전체 추천 칩과 추천 3개가 함께 보이는 화면" />
+    </div>
+  </div>
+  <figcaption>
+    <ul>
+      <li><strong>전</strong> — 「다듬기」를 고르면 칩이 <em>꽃밭</em> 하나만 남는다. 되돌아갈 방법이 화면에 없어서 카테고리를 다시 눌러 끄는 걸 알아내야 한다.</li>
+      <li><strong>후</strong> — 첫 자리에 <strong>전체 추천</strong> 칩을 세워 한 번에 돌아온다. 명령 4개(침엽수 숲·흙길·바위 흩뿌리기·등불 분위기)를 보강했고, 문맥에서만 뜨던 명령(부두·다리·가로수 등)도 카테고리 안에서 보인다.</li>
+      <li>고친 곳 — <code>src/editor/regionTask/suggestedCommands.ts</code>, <code>src/editor/regionTask/regionContextSuggestions.ts</code></li>
+    </ul>
+  </figcaption>
+</figure>
+
+<h2>자동완성과 중복 제목</h2>
+<p class="lede"><code>/</code> 목록이 켠 카테고리를 무시했고, "AI 없이 실내 초안"이 한 화면에 세 번 나왔다.</p>
+
+<figure class="pair">
+  <div class="row">
+    <div>
+      <div class="tag before">전</div>
+      <img src="shots/06-popover-autocomplete.png" alt="다듬기 카테고리인데 상인·오두막까지 나오는 자동완성" />
+    </div>
+    <div>
+      <div class="tag after">후</div>
+      <img src="shots-after/06-modal-autocomplete.png" alt="다듬기 안에서만 찾는 자동완성" />
+    </div>
+  </div>
+  <figcaption>
+    <ul>
+      <li><strong>전</strong> — 「다듬기」가 켜져 있는데도 <em>상인</em>·<em>오두막</em>까지 나온다. 칩은 걸러졌는데 목록은 안 걸러진, 서로 다른 두 규칙이 한 화면에 있었다. 아래쪽에는 <strong>AI 없이 실내 초안</strong>이 라벨·제목·버튼으로 세 번 겹친다.</li>
+      <li><strong>후</strong> — 목록이 카테고리 안에서만 찾는다(꽃밭·바위 흩뿌리기·가로수). 초안 영역은 제목만 남기고 버튼은 <strong>초안 만들기</strong>로 줄였다.</li>
+      <li>고친 곳 — <code>src/editor/panels/regionTaskModal.ts</code></li>
+    </ul>
+  </figcaption>
+</figure>
+
+<figure class="pair">
+  <div class="row">
+    <div>
+      <div class="tag after">후 — 지시 단계 전체</div>
+      <img src="shots-after/05-modal-direct-open.png" alt="지시 단계 화면" />
+    </div>
+    <div>
+      <div class="tag after">후 — 선택 칩 바</div>
+      <img src="shots-after/08b-selection-chips-armed.png" alt="48칸 지울까요 확인이 뜬 선택 칩 바" />
+    </div>
+  </div>
+  <figcaption>
+    <ul>
+      <li><strong>선택 칩 바</strong> — 전에는 AI 버튼이 라벨 없는 동그란 아이콘이라 무엇인지 몰랐고(→ <strong>AI 작업</strong>), <strong>지우기</strong>가 한 번의 오클릭으로 넓은 영역을 날렸다. 지금은 12칸을 넘으면 <strong>48칸 지울까요?</strong> 확인을 한 번 받고, 4초 안에 다시 안 누르면 저절로 풀린다.</li>
+      <li>고친 곳 — <code>src/editor/selectionActionChips.ts</code>, <code>src/styles/editor/inline-assist.css</code></li>
+    </ul>
+  </figcaption>
+</figure>
+
+<h2>결함 목록</h2>
+<p class="lede">화면에서 읽힌 순서대로. 우선순위는 "작업을 막는가"를 기준으로 매겼다.</p>
+
+<table>
+  <thead>
+    <tr><th style="width:44px">#</th><th style="width:60px">등급</th><th>무엇이 잘못 보였나</th><th style="width:34%">어떻게 고쳤나</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td class="p1">P1</td><td>표준 모드 웰컴 카드가 영역 작업 창 본문을 덮음</td><td>모달·팝오버가 있으면 코치마크가 물러남. 본 것으로 기록하지 않음</td></tr>
+    <tr><td>2</td><td class="p1">P1</td><td>"AI 없이 실내 초안"이 라벨·제목·버튼 3곳 중복</td><td>제목만 남기고 버튼은 "초안 만들기"</td></tr>
+    <tr><td>3</td><td class="p1">P1</td><td>검토 상태가 4곳에서 같은 말 반복</td><td>진행 칩 "검사 완료", 문제 줄 "막는 문제·주의 없음"</td></tr>
+    <tr><td>4</td><td class="p1">P1</td><td>부분 적용(구역 고르기)이 접힌 「고급」에 묻힘</td><td>검토 본문으로 올림. 「고급」은 실행 로그만</td></tr>
+    <tr><td>5</td><td class="p2">P2</td><td>카테고리를 고르면 추천 4→1개, 되돌아갈 표시 없음</td><td>「전체 추천」 칩 + 명령 4개 보강</td></tr>
+    <tr><td>6</td><td class="p2">P2</td><td><code>/</code> 자동완성이 켠 카테고리를 무시</td><td>카테고리 안에서만 검색</td></tr>
+    <tr><td>7</td><td class="p2">P2</td><td>"승인 대기"에 초록 체크 → 끝난 것처럼 보임</td><td><code>status: "pending"</code> 추가, "내 결정 대기"</td></tr>
+    <tr><td>8</td><td class="p2">P2</td><td>지표가 단위 없는 한 줄 문장</td><td>단위·분모 붙은 칩, 나쁜 값은 경고색</td></tr>
+    <tr><td>9</td><td class="p2">P2</td><td>선택 칩 바의 AI 버튼이 라벨 없는 아이콘</td><td>"AI 작업" 라벨</td></tr>
+    <tr><td>10</td><td class="p2">P2</td><td>넓은 영역 지우기가 오클릭 한 번에 실행</td><td>12칸 초과는 "N칸 지울까요?" 확인(4초 자동 해제)</td></tr>
+    <tr><td>11</td><td class="p2">P2</td><td>전/후 비교가 작은 썸네일 두 장</td><td>「이전」에 올리면 잠깐 비교, 바뀐 칸 테두리 굵게, 안내 한 줄</td></tr>
+    <tr><td>12</td><td class="p2">P2</td><td>지시 입력이 모달·왼쪽 패널 두 곳에 동시 존재</td><td>모달이 열리면 왼쪽 조수 입력이 물러남</td></tr>
+    <tr><td>13</td><td class="p3">P3</td><td>안내 문구의 "왼쪽 감독"이 화면에 없는 이름</td><td>"왼쪽 조수 패널"</td></tr>
+    <tr><td>14</td><td class="p3">P3</td><td>문맥 전용 추천이 카테고리에서 사라짐</td><td>카테고리 필터에 문맥 명령 포함</td></tr>
+    <tr><td>15</td><td class="p3">—</td><td>실행 로그에 <code>mock</code> 표시</td><td class="ok">제품 결함 아님 — 아래 참고</td></tr>
+  </tbody>
+</table>
+
+<h2>고치지 않은 1건</h2>
+<div class="note">
+  <h3>로그의 <code>mock</code>은 캡처 도구가 남긴 값이다</h3>
+  <p style="margin:0">
+    <code>src/editor/editorToolHook.ts</code>의 <code>runMockRegionTask</code>는 DEV 빌드에서만 붙는 e2e 하네스다.
+    캡처가 실제 LLM 없이 창을 검토 단계까지 몰려면 이 경로를 쓸 수밖에 없고, 사용자 빌드에는 없다.
+    화면에 이상하게 보였지만 제품 코드에 문제가 없어 손대지 않았다.
+  </p>
+</div>
+
+<h2>검증</h2>
+<p class="lede">고친 것마다 회귀 테스트를 붙였다. 되돌아가면 테스트에서 잡힌다.</p>
+
+<table>
+  <thead><tr><th>무엇</th><th style="width:120px">결과</th><th>내용</th></tr></thead>
+  <tbody>
+    <tr><td><code>test/regionTaskUiAudit.test.ts</code></td><td class="ok">8 통과</td><td>신규. 결함 1·2·3·4·7·8·11·12 각각을 지킨다</td></tr>
+    <tr><td><code>coachMarks</code> · <code>selectionActionChips</code> · <code>suggestedCommands</code> · <code>regionTaskModal</code> · <code>regionTaskCssTokens</code></td><td class="ok">합계 57 통과</td><td>기존 스펙 포함, 실패 0</td></tr>
+    <tr><td><code>test/e2e/_region-task-ui-audit-shots.spec.ts</code></td><td class="ok">3 통과</td><td>수정 후 화면 11장 캡처(이 보고서의 "후" 이미지)</td></tr>
+    <tr><td>전체 스위트</td><td class="p2">기준선 빨강</td><td>이 저장소는 손대기 전부터 85개 파일이 실패한다. 내 diff 와 이름이 겹치는 6개 파일은 <strong>HEAD 만 체크아웃한 별도 워크트리에서 같은 테스트가 같은 이유로 실패</strong>함을 확인했다 — 이번 변경 탓이 아니다</td></tr>
+  </tbody>
+</table>
+
+<h2>남은 것</h2>
+<p>
+  합성 마우스 드래그로 선택 영역을 만드는 경로는 기준선에서 이미 깨져 있다. 기존
+  <code>test/e2e/canvas-fill-selection-chips.spec.ts</code>도 같은 자리(selection 폴링)에서 실패한다.
+  칩 바 캡처는 하네스 <code>setSelection</code>으로 우회했고, 드래그 자체는 이번 감사 범위 밖이라 손대지 않았다.
+</p>
+
+<footer>
+  이미지는 이 파일과 같은 폴더의 <code>shots/</code>(전)·<code>shots-after/</code>(후)에 있다.
+  전 이미지는 감사 시작 시점의 <code>worktree/rapid-field-f2d6</code> 기준, 후 이미지는 커밋 <code>3895dfb7</code> 기준이다.
+</footer>
+
+</div>
+</body>
+</html>
