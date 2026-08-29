@@ -52,6 +52,7 @@ import {
   setLightingBody,
   setWeatherBody,
   showAnimationBody,
+  showEmoteBody,
   showPictureBody,
 } from "./commandBodyPage3Native";
 import { renderTransferPicker, transferDirectionLabel, transferFadeLabel } from "./transferPlayerDialog";
@@ -148,6 +149,8 @@ export function renderAdvancedCommandBody(
       return setWeatherBody(context, cmd);
     case "showAnimation":
       return showAnimationBody(context, cmd);
+    case "showEmote":
+      return showEmoteBody(context, cmd);
     case "playMovie":
       return playMovieBody(context, cmd);
     case "changeGold":
