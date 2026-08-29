@@ -43,9 +43,9 @@ afterEach(() => {
   restoreDom();
 });
 
-describe("database quick battle authoring gate", () => {
-  // Break caught: the legacy Quick Battle export creates UI/session/runtime before the shared Test gate.
-  it("blocks a databaseBasicRecordFields launch with broken references before any battle side effect", () => {
+describe("database quick battle launch", () => {
+  // 끊긴 참조는 전투 미리보기를 막지 않는다 — 예전 fail-closed 게이트가 이 진입점도 조용히 되돌렸다.
+  it("launches a databaseBasicRecordFields quick battle even with broken references", () => {
     const project = createBlankProject();
     const troopId = project.database.troops[0]?.id;
     if (!troopId) throw new Error("blank project must include a troop fixture");
@@ -60,9 +60,9 @@ describe("database quick battle authoring gate", () => {
     if (!clickHandler) throw new Error("Quick Battle button has no click handler");
     clickHandler.call(button as unknown as HTMLButtonElement, new Event("click") as MouseEvent);
 
-    expect(document.querySelector("[data-testid='quick-battle-modal']")).toBeNull();
-    expect(battleMocks.startSession).not.toHaveBeenCalled();
-    expect(battleMocks.createBattleRuntime).not.toHaveBeenCalled();
-    expect(battleMocks.mountBattleScene).not.toHaveBeenCalled();
+    expect(document.querySelector("[data-testid='quick-battle-modal']")).not.toBeNull();
+    expect(battleMocks.startSession).toHaveBeenCalled();
+    expect(battleMocks.createBattleRuntime).toHaveBeenCalled();
+    expect(battleMocks.mountBattleScene).toHaveBeenCalled();
   });
 });
