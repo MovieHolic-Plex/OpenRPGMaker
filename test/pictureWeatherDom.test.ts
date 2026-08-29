@@ -146,12 +146,14 @@ describe("syncPictureLayer — 첫 표시 + 전환 시간(페이드인)", () => 
     overlay.syncPictureLayer(session.pictures);
     expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(0);
 
+    const opacities = [0];
     for (clock = 100; clock <= 1000; clock += 100) {
       flushFakeAnimationFrames(0, 1);
       overlay.syncPictureLayer(session.pictures);
+      opacities.push(Number(findByTestId(host, "picture-pic1")!.style.opacity));
     }
 
-    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBe(1);
+    expect(opacities).toEqual([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]);
   });
 
   it("진행 중 새 Move Picture 목표는 현재 표시값에서 새 트윈을 시작한다", () => {
@@ -192,6 +194,130 @@ describe("syncPictureLayer — 첫 표시 + 전환 시간(페이드인)", () => 
     flushFakeAnimationFrames(0, 1);
 
     expect(findByTestId(host, "picture-pic1")!.style.left).toBe("110px");
+  });
+
+  it("durationMs<=0 인 새 목표는 즉시 적용한다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let clock = 0;
+    const host = new TestHost();
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => clock });
+    const session = startSession(createBlankProject());
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 10 }));
+    overlay.syncPictureLayer(session.pictures);
+
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 210, opacity: 128, durationMs: 0 }));
+    overlay.syncPictureLayer(session.pictures);
+
+    expect(findByTestId(host, "picture-pic1")!.style.left).toBe("210px");
+    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBeCloseTo(128 / 255, 3);
+    clock = 500;
+    flushFakeAnimationFrames(0, 1);
+    expect(findByTestId(host, "picture-pic1")!.style.left).toBe("210px");
+  });
+
+  it("두 픽처의 Move Picture 트윈은 서로 간섭하지 않는다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let clock = 0;
+    const host = new TestHost();
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => clock });
+    const session = startSession(createBlankProject());
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 0 }));
+    showPictureState(session, pic({ pictureId: "pic2", resourceId: "hero", x: 20 }));
+    overlay.syncPictureLayer(session.pictures);
+
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 100, durationMs: 1000 }));
+    showPictureState(session, pic({ pictureId: "pic2", resourceId: "hero", x: 220, durationMs: 1000 }));
+    overlay.syncPictureLayer(session.pictures);
+    clock = 500;
+    flushFakeAnimationFrames(0, 1);
+
+    expect(findByTestId(host, "picture-pic1")!.style.left).toBe("50px");
+    expect(findByTestId(host, "picture-pic2")!.style.left).toBe("120px");
+  });
+
+  it("프레임마다 바뀌는 목표는 표시값에서 재시작하고 마지막 목표에 수렴한다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let clock = 0;
+    const host = new TestHost();
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => clock });
+    const session = startSession(createBlankProject());
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 0 }));
+    overlay.syncPictureLayer(session.pictures);
+
+    const displayed: number[] = [];
+    for (const target of [100, 200, 300, 400, 500]) {
+      clock += 100;
+      flushFakeAnimationFrames(0, 1);
+      displayed.push(Number.parseFloat(findByTestId(host, "picture-pic1")!.style.left));
+      showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: target, durationMs: 1000 }));
+      overlay.syncPictureLayer(session.pictures);
+    }
+
+    expect(displayed).toHaveLength(5);
+    [0, 10, 29, 56.1, 90.49].forEach((expected, index) => {
+      expect(displayed[index]).toBeCloseTo(expected, 6);
+    });
+    expect(Number.parseFloat(findByTestId(host, "picture-pic1")!.style.left)).toBeCloseTo(90.49, 6);
+    clock += 1000;
+    flushFakeAnimationFrames(0, 1);
+    expect(findByTestId(host, "picture-pic1")!.style.left).toBe("500px");
+  });
+
+  it("Move 완료 후 같은 세션의 새 overlay는 stale fade 없이 목표를 즉시 표시한다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let clock = 0;
+    const session = startSession(createBlankProject());
+    const firstHost = new TestHost();
+    const firstOverlay = new RuntimeDomOverlay(() => asHost(firstHost), { pictureNow: () => clock });
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 0 }));
+    firstOverlay.syncPictureLayer(session.pictures);
+    showPictureState(session, pic({ pictureId: "pic1", resourceId: "hero", x: 100, opacity: 255, durationMs: 1000 }));
+    firstOverlay.syncPictureLayer(session.pictures);
+
+    clock = 500;
+    flushFakeAnimationFrames(0, 1);
+    expect(findByTestId(firstHost, "picture-pic1")!.style.left).toBe("50px");
+
+    const remountedHost = new TestHost();
+    const remountedOverlay = new RuntimeDomOverlay(() => asHost(remountedHost), { pictureNow: () => clock });
+    remountedOverlay.syncPictureLayer(session.pictures);
+
+    expect(findByTestId(remountedHost, "picture-pic1")!.style.left).toBe("100px");
+    expect(Number(findByTestId(remountedHost, "picture-pic1")!.style.opacity)).toBe(1);
+  });
+
+  it("applySession 형태의 인게임 로드는 기존 slot에 저장 변환을 즉시 적용한다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let clock = 0;
+    const project = createBlankProject();
+    const liveSession = startSession(project);
+    const host = new TestHost();
+    const overlay = new RuntimeDomOverlay(() => asHost(host), { pictureNow: () => clock });
+    showPictureState(liveSession, pic({ pictureId: "pic1", resourceId: "hero", x: 0, opacity: 255 }));
+    overlay.syncPictureLayer(liveSession.pictures);
+
+    const savedSession = startSession(project);
+    savedSession.pictures.pic1 = pic({ pictureId: "pic1", resourceId: "hero", x: 100, opacity: 200, durationMs: 1000 });
+    const storage = new MemoryStorage();
+    expect(saveToSlot(storage, 1, createSaveSnapshot(project, savedSession))).toEqual({ ok: true });
+    const saved = readSaveSlot(storage, 1);
+    expect(saved.kind).toBe("present");
+    if (saved.kind !== "present") throw new Error("expected present save slot");
+    const restored = applySaveSnapshot(project, saved.snapshot);
+
+    overlay.syncPictureLayer(restored.pictures);
+
+    expect(findByTestId(host, "picture-pic1")!.style.left).toBe("100px");
+    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBeCloseTo(200 / 255, 3);
+    clock = 500;
+    flushFakeAnimationFrames(0, 1);
+    expect(findByTestId(host, "picture-pic1")!.style.left).toBe("100px");
+    expect(Number(findByTestId(host, "picture-pic1")!.style.opacity)).toBeCloseTo(200 / 255, 3);
   });
 
   it("세이브를 storage 왕복해 복원한 픽처는 authored opacity로 즉시 표시된다", () => {

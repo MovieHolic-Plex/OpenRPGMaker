@@ -1,6 +1,6 @@
 import { TILE_SIZE } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
-import { takePendingPictureMountTransition, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
+import { takePendingPictureTransition, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { M2RuntimeState } from "@/project/sessionRuntimeTypes"
 import type { RuntimeEventView } from "@/project/runtimeEventState"
@@ -320,7 +320,7 @@ export class RuntimeDomOverlay {
 
   // 픽처 레이어를 실제 이미지로 렌더한다. 리소스가 이미지로 해석되면 <img> 슬롯을,
   // 아니면 기존 텍스트 라벨을 배치한다(폴백/테스트 호환). z-order 는 픽처 번호로 유도하고,
-  // durationMs 가 있으면 Move Picture 트윈(이동/스케일/불투명/회전)을 시작한다.
+  // durationMs 와 실행 중인 Show/Move Picture 의 일회성 의도가 함께 있을 때만 트윈한다.
   syncPictureLayer(pictures: Record<string, PictureState>): void {
     const host = this.host();
     if (!host) return;
@@ -376,7 +376,8 @@ export class RuntimeDomOverlay {
     this.syncPictureMedia(slot, picture, project);
     slot.container.style.zIndex = String(20 + pictureZIndex(picture.pictureId));
     const duration = picture.durationMs ?? 0;
-    if (created && duration > 0 && takePendingPictureMountTransition(picture)) {
+    const transitionRequested = takePendingPictureTransition(picture);
+    if (created && duration > 0 && transitionRequested) {
       const from: PictureTransform = { ...target, opacity: 0 };
       slot.from = from;
       slot.to = target;
@@ -384,12 +385,12 @@ export class RuntimeDomOverlay {
       slot.durationMs = duration;
       slot.displayed = from;
       applyPictureTransform(slot.container, from);
-    } else if (duration > 0 && !pictureTransformsEqual(slot.to, target)) {
+    } else if (duration > 0 && transitionRequested && !pictureTransformsEqual(slot.to, target)) {
       slot.from = slot.displayed;
       slot.to = target;
       slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
-    } else if (created || duration <= 0) {
+    } else if (created || duration <= 0 || !pictureTransformsEqual(slot.to, target)) {
       slot.from = target;
       slot.to = target;
       slot.durationMs = 0;
