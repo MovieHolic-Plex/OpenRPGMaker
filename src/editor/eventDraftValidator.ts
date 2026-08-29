@@ -20,6 +20,7 @@ import { resolveTimeSystem } from "@/project/gameTime";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { hasCharacterId } from "@/project/socialKey";
+import { collectNpcActivitySuggestions } from "@/editor/panels/eventEditor/options";
 import type {
   Command,
   Condition,
@@ -194,6 +195,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     items: new Set(project.database.items.map((entry) => entry.id)),
     lifeSkills: new Set((project.database.lifeSkills ?? []).map((entry) => entry.id)),
     maps: new Set(Object.keys(project.maps)),
+    npcActivities: new Set(collectNpcActivitySuggestions(project)),
     recipes: new Set((project.system.craftRecipes ?? []).map((entry) => entry.id)),
     resources: collectResourceIds(project),
     skills: new Set(project.database.skills.map((entry) => entry.id)),
@@ -463,8 +465,9 @@ function validateCondition(
         });
       }
       return;
-    case "npcActivity":
-      if (!condition.activity.trim()) {
+    case "npcActivity": {
+      const activity = condition.activity.trim();
+      if (!activity) {
         issues.push({
           severity: "warning",
           code: "condition.npcActivity.empty",
@@ -475,8 +478,24 @@ function validateCondition(
             testId: commandPath ? "event-condition-npc-activity" : "event-page-npc-activity-condition-input",
           },
         });
+        return;
+      }
+      // 세션 활동 값을 쓰는 곳은 npcSchedules.setActivity 하나뿐이고 그 값은 일정 항목의
+      // activity 에서만 온다. 그래서 어떤 일정에도 없는 이름은 매칭될 수 없다.
+      if (!refs.npcActivities.has(activity)) {
+        issues.push({
+          severity: "warning",
+          code: "condition.npcActivity.unknown",
+          message: `이 프로젝트의 NPC 일정에 없는 활동입니다(${activity}). 「NPC와 일정」에서 같은 이름을 쓰거나 이름을 맞춰 주세요.`,
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: {
+            testId: commandPath ? "event-condition-npc-activity" : "event-page-npc-activity-condition-input",
+          },
+        });
       }
       return;
+    }
     case "battleResult":
       // battleResult 는 지속되는 세션 상태다 — 랜덤 인카운터·필드 스폰은 battleProcessing
       // 없이도 전투를 열고, 다른 이벤트·공통 이벤트가 남긴 결과도 살아남는다. 명령 순서나

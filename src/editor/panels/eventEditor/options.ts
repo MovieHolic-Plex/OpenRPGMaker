@@ -1,4 +1,17 @@
-import type { Command, Condition, EventAnimationType, EventPage, Trigger } from "@/project/types";
+import type { Command, Condition, EventAnimationType, EventPage, Project, Trigger } from "@/project/types";
+
+export function collectNpcActivitySuggestions(project: Project): readonly string[] {
+  const found = new Set<string>();
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const entry of event.schedule ?? []) {
+        const activity = entry.activity?.trim();
+        if (activity) found.add(activity);
+      }
+    }
+  }
+  return [...found].sort((left, right) => left.localeCompare(right, "ko"));
+}
 
 export type SelectOption<T extends string> = {
   readonly value: T;
