@@ -10,7 +10,7 @@ import {
   DEFAULT_ITEM_ID,
   DEFAULT_TILE_SIZE,
 } from "./constants";
-import { dropCropsWithMissingItems } from "../databaseRecordModel";
+import { dropCropsWithMissingItems, normalizeEnemyRecord } from "../databaseRecordModel";
 import { defaultAssetSet, defaultResourceProfiles } from "./defaultAssets";
 import { defaultDatabase, defaultSession, defaultSystem, defaultTerms, defaultTitleScreenSettings } from "./defaultDatabase";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
@@ -112,16 +112,36 @@ export function createModernNocturneProject(): Project {
     }));
   // 아이템을 기본 회복약 하나로 좁혔으니 씨앗·수확물이 사라진 작물 행도 함께 걷어낸다.
   dropCropsWithMissingItems(database);
-  database.enemies = database.enemies.filter((entry) => ["enemy_extra_016", "enemy_extra_038"].includes(entry.id));
-  database.enemies = database.enemies.map((enemy) => enemy.id === "enemy_extra_016"
-    ? { ...enemy, name: "네온 망령", stats: { ...enemy.stats, maxHp: 48, attack: 18, defense: 10 }, rewards: { ...enemy.rewards, exp: 35, gold: 18 } }
-    : { ...enemy, name: "도시 기록수호자", stats: { ...enemy.stats, maxHp: 95, attack: 24, defense: 16 }, rewards: { ...enemy.rewards, exp: 70, gold: 40 } });
+  // 이 데모의 적 2종은 자기 것으로 들고 있다. 예전에는 기본 DB 의 enemy_extra_016 / 038 을
+  // filter 로 건져 이름·스탯만 덮어썼는데, 그 번호 레코드 115건은 등차수열 스탯 더미라
+  // 기본 DB 에서 제거됐다(2026-08-28). speciesId 는 붙이지 않는다 — 대응 species_extra_*
+  // 도 같이 사라졌고, 없는 id 를 남기면 references.ts 가 dangling 으로 잡는다.
+  // monsterResourceId 의 `-enemy_extra_NNN` 접미는 유지한다: 애셋 해석이 그 숫자로
+  // enemy-art-NNN.png 를 찾는다(generatedAssetResourceResolver.ts).
+  database.enemies = [
+    normalizeEnemyRecord({
+      id: "enemy_neon_wraith",
+      name: "네온 망령",
+      monsterResourceId: "generated-enemy-zombie-01-enemy_extra_016",
+      stats: { maxHp: 48, maxMp: 10, attack: 18, defense: 10, mind: 10, agility: 10 },
+      rewards: { exp: 35, gold: 18, dropRatePercent: 15 },
+      actions: [{ skillId: "skill_attack", priority: 5, condition: { kind: "always" } }],
+    }),
+    normalizeEnemyRecord({
+      id: "enemy_archive_custodian",
+      name: "도시 기록수호자",
+      monsterResourceId: "generated-enemy-skeleton-01-enemy_extra_038",
+      stats: { maxHp: 95, maxMp: 10, attack: 24, defense: 16, mind: 10, agility: 10 },
+      rewards: { exp: 70, gold: 40, dropRatePercent: 15 },
+      actions: [{ skillId: "skill_attack", priority: 5, condition: { kind: "always" } }],
+    }),
+  ];
   database.troops = [
     {
       id: "troop_neon_wraith",
       name: "네온 망령",
-      enemyIds: ["enemy_extra_016"],
-      members: [{ enemyId: "enemy_extra_016", x: 112, y: 96 }],
+      enemyIds: ["enemy_neon_wraith"],
+      members: [{ enemyId: "enemy_neon_wraith", x: 112, y: 96 }],
       autoAlign: false,
       previewBackgroundResourceId: "modern-nocturne-battle-city",
       battleEventPages: [],
@@ -129,8 +149,8 @@ export function createModernNocturneProject(): Project {
     {
       id: "troop_archive_custodian",
       name: "도시 기록수호자",
-      enemyIds: ["enemy_extra_038"],
-      members: [{ enemyId: "enemy_extra_038", x: 112, y: 96 }],
+      enemyIds: ["enemy_archive_custodian"],
+      members: [{ enemyId: "enemy_archive_custodian", x: 112, y: 96 }],
       autoAlign: false,
       previewBackgroundResourceId: "modern-nocturne-battle-rooftop",
       battleEventPages: [],
