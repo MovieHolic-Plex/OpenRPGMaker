@@ -209,6 +209,9 @@ function validateFactions(value: unknown): void {
     const def = requireRecord(`factions.defs[${index}]`, entry);
     requireString(`factions.defs[${index}].id`, def.id);
     requireString(`factions.defs[${index}].name`, def.name);
+    if (def.worldEntityId !== undefined) {
+      requireString(`factions.defs[${index}].worldEntityId`, def.worldEntityId);
+    }
     if (def.color !== undefined) requireString(`factions.defs[${index}].color`, def.color);
     if (def.aggression !== undefined) requireNumber(`factions.defs[${index}].aggression`, def.aggression);
   }

@@ -3,6 +3,7 @@ import {
   authoredFactionStance,
   defaultFactionStance,
   deleteFaction,
+  duplicateFaction,
   factionMatrixCell,
   renameFaction,
   setPlayerKillReputation,
@@ -101,6 +102,17 @@ describe("database faction editor model", () => {
 
     expect(setPlayerKillReputation(renamed.project.factions, true, 0.4)?.playerKillReputation).toEqual({ weight: 0.4 });
     expect(setPlayerKillReputation(renamed.project.factions, false)?.playerKillReputation).toBeUndefined();
+  });
+
+  it("duplicates authored identity without inheriting world-lore provenance", () => {
+    const source = { id: "w_iron", name: "철의 손", worldEntityId: "w_iron", aggression: 2 as const };
+
+    const duplicated = duplicateFaction({ defs: [source], relations: [] }, source, "w_iron_1");
+
+    expect(duplicated.defs).toEqual([
+      source,
+      { id: "w_iron_1", name: "철의 손 복사본", aggression: 2 },
+    ]);
   });
 
   it("removes dangling relations on delete and refuses reserved ids", () => {

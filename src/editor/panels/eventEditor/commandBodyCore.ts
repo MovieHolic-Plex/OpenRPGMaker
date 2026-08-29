@@ -20,6 +20,7 @@ import {
   type SelectOption,
 } from "./options";
 import type { Command, MessageWindowFormat, MessageWindowPosition, SwitchValue } from "@/project/types";
+import { factionName, resolveFactionTable } from "@/project/factions";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { hasCharacterId } from "@/project/socialKey";
@@ -1000,16 +1001,27 @@ function changeFriendshipBody(context: CommandEditContext, cmd: Extract<Command,
 
 function changeFactionStanceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFactionStance" }>): HTMLElement {
   const wrap = el("div", { class: "event-command-record-form cream-command-form" });
-  const factionA = el("input", {
-    attrs: { type: "text", placeholder: "player" },
-    value: cmd.a,
-    dataset: { testid: "event-command-faction-a" },
-  }) as HTMLInputElement;
-  const factionB = el("input", {
-    attrs: { type: "text", placeholder: "enemy" },
-    value: cmd.b,
-    dataset: { testid: "event-command-faction-b" },
-  }) as HTMLInputElement;
+  const table = resolveFactionTable(store.getCurrent().factions);
+  const factionSelect = (storedId: string, testid: string): HTMLSelectElement => {
+    const select = el("select", { dataset: { testid } }) as HTMLSelectElement;
+    if (!table.ids.includes(storedId)) {
+      // 아직 만들지 않은 진영을 먼저 참조할 수 있으므로 결손 ID를 렌더만으로 바꾸지 않는다.
+      select.append(el("option", {
+        attrs: { value: storedId, disabled: "" },
+        text: `${storedId} · 존재하지 않는 진영`,
+      }));
+    }
+    for (const id of table.ids) {
+      select.append(el("option", {
+        attrs: { value: id },
+        text: `${factionName(table, id)} (${id})`,
+      }));
+    }
+    select.value = storedId;
+    return select;
+  };
+  const factionA = factionSelect(cmd.a, "event-command-faction-a");
+  const factionB = factionSelect(cmd.b, "event-command-faction-b");
   const op = selectWithOptions([
     { value: "=", label: "설정" },
     { value: "+=", label: "올리기" },
@@ -1027,8 +1039,8 @@ function changeFactionStanceBody(context: CommandEditContext, cmd: Extract<Comma
   }) as HTMLInputElement;
   const apply = () => context.actions.replaceCommand(context.path, {
     kind: "changeFactionStance",
-    a: factionA.value.trim() || "player",
-    b: factionB.value.trim() || "enemy",
+    a: factionA.value,
+    b: factionB.value,
     op: selectedOptionValue(op, [
       { value: "=", label: "설정" },
       { value: "+=", label: "올리기" },
