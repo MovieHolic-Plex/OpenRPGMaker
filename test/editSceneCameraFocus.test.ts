@@ -13,14 +13,17 @@
 //     같은 좌표 위에 남았다.
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { CameraPanController } from "@/editor/CameraPanController";
 import { editorState } from "@/editor/editorState";
 import {
   requestEditorCameraFocus,
   subscribeEditorCameraFocus,
   type CameraFocusTarget,
 } from "@/editor/editorCameraFocus";
+import { renderSelectionActionChips } from "@/editor/selectionActionChips";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 vi.mock("@/editor/editSceneRender", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/editor/editSceneRender")>();
@@ -58,13 +61,31 @@ type CameraFocusHarness = {
 
 const TILE_SIZE = 16;
 let EditSceneCtor: { readonly prototype: object };
+const windowListeners = new Map<string, Set<(event: Event) => void>>();
 
 beforeAll(async () => {
   vi.stubGlobal("window", {
     Phaser: { Scene: class Scene {} },
     location: { search: "" },
+    addEventListener: (type: string, listener: (event: Event) => void) => {
+      const listeners = windowListeners.get(type) ?? new Set<(event: Event) => void>();
+      listeners.add(listener);
+      windowListeners.set(type, listeners);
+    },
+    removeEventListener: (type: string, listener: (event: Event) => void) => {
+      windowListeners.get(type)?.delete(listener);
+    },
+    dispatchEvent: (event: Event) => {
+      for (const listener of windowListeners.get(event.type) ?? []) listener(event);
+      return !event.defaultPrevented;
+    },
   });
-  vi.stubGlobal("document", { querySelector: () => null });
+  vi.stubGlobal("document", {
+    querySelector: () => null,
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+  });
+  vi.stubGlobal("HTMLElement", class HTMLElement {});
   vi.stubGlobal("MouseEvent", class MouseEvent {});
   vi.stubGlobal("PointerEvent", class PointerEvent {});
 
@@ -162,6 +183,87 @@ function createHarness(options?: {
 function focusTarget(mapId: string): CameraFocusTarget {
   // 맵 안(20×15)이지만 화면(0..9, 0..7) 밖 — onlyIfOffscreen 이어도 움직여야 하는 요청.
   return { mapId, tileX: 16, tileY: 12, onlyIfOffscreen: true };
+}
+
+type SceneInputHarness = {
+  readonly handlers: Map<string, (event: unknown) => void>;
+  readonly keyboardHandlers: Map<string, (event: unknown) => void>;
+  on(type: string, handler: (event: unknown) => void): void;
+  emit(type: string, event?: unknown): void;
+  mouse: { disableContextMenu(): void };
+  keyboard: {
+    on(type: string, handler: (event: unknown) => void): void;
+    emit(type: string, event: unknown): void;
+  };
+};
+
+function createInputHarness(): SceneInputHarness {
+  const handlers = new Map<string, (event: unknown) => void>();
+  const keyboardHandlers = new Map<string, (event: unknown) => void>();
+  return {
+    handlers,
+    keyboardHandlers,
+    on: (type, handler) => { handlers.set(type, handler); },
+    emit: (type, event) => { handlers.get(type)?.(event); },
+    mouse: { disableContextMenu: () => undefined },
+    keyboard: {
+      on: (type, handler) => { keyboardHandlers.set(type, handler); },
+      emit: (type, event) => { keyboardHandlers.get(type)?.(event); },
+    },
+  };
+}
+
+function bindSceneInput(scene: CameraFocusHarness): SceneInputHarness {
+  const input = createInputHarness();
+  Object.assign(scene, {
+    input,
+    bindCanvasPanGuards: () => undefined,
+    bindBrowserContextMenuGuards: () => undefined,
+    finishDragOperation: () => undefined,
+    getDragOperationHandler: () => ({
+      active: () => false,
+      busy: () => false,
+      begin: () => false,
+      clearEventCandidate: () => undefined,
+    }),
+    hoverPreviewLayer: { removeAll: () => undefined },
+    updateHoverPreview: () => undefined,
+    clearHoverPreview: () => undefined,
+  });
+  (scene as unknown as { bindInput(): void }).bindInput();
+  return input;
+}
+
+function pointerAt(tileX = 2, tileY = 2, button = 0): unknown {
+  return {
+    x: tileX * TILE_SIZE,
+    y: tileY * TILE_SIZE,
+    button,
+    isDown: false,
+    event: {},
+    positionToCamera: () => ({ x: tileX * TILE_SIZE, y: tileY * TILE_SIZE }),
+    rightButtonDown: () => button === 2,
+    middleButtonDown: () => button === 1,
+  };
+}
+
+function clipboardFixture() {
+  return {
+    width: 1,
+    height: 1,
+    lower: { tiles: [0], stacks: [[]] },
+    upper: { tiles: [-1], stacks: [[]] },
+  };
+}
+
+function nativePanEndEvent(type: string): Event {
+  return {
+    type,
+    preventDefault: () => undefined,
+    stopPropagation: () => undefined,
+    stopImmediatePropagation: () => undefined,
+    defaultPrevented: false,
+  } as unknown as Event;
 }
 
 describe("panCameraToTile 은 사용자 제스처 중에 카메라를 빼앗지 않는다", () => {
@@ -284,7 +386,213 @@ describe("팬 목표는 가림을 뺀 가시 영역의 중앙이다", () => {
   });
 });
 
-describe("제스처가 미룬 초점은 제스처가 끝난 뒤 한 번 재생한다", () => {
+describe("제스처가 미룬 초점은 실제 종료 진입점에서 한 번 재생한다", () => {
+  it("pointerup은 페인트 상태를 내린 뒤 정확히 한 번 재생한다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene);
+    scene.isPainting = true;
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+
+    input.emit("pointerup", pointerAt());
+    input.emit("pointerup", pointerAt());
+
+    expect(scene.isPainting).toBe(false);
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("pointerupoutside는 페인트 상태를 내린 뒤 정확히 한 번 재생한다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene);
+    scene.isPainting = true;
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+
+    input.emit("pointerupoutside");
+    input.emit("pointerupoutside");
+
+    expect(scene.isPainting).toBe(false);
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("우클릭 영역 pointerup은 영역 제스처를 지운 뒤 정확히 한 번 재생한다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene);
+    scene.rightRegionGesture = {
+      mapId: store.getCurrent().startMapId,
+      start: { x: 1, y: 1 },
+      screen: { x: TILE_SIZE, y: TILE_SIZE },
+      moved: true,
+    };
+    Object.assign(scene, { openRegionAiPopover: () => undefined });
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+
+    input.emit("pointerup", pointerAt(2, 2, 2));
+    input.emit("pointerup", pointerAt(2, 2, 2));
+
+    expect(scene.rightRegionGesture).toBeNull();
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("붙여넣기 확정 pointerdown은 미리보기를 지운 뒤 정확히 한 번 재생한다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene);
+    editorState.set({ clipboard: clipboardFixture(), pastePreview: { x: 2, y: 2 } });
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+
+    input.emit("pointerdown", pointerAt(2, 2));
+
+    expect(editorState.get().pastePreview).toBeNull();
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("붙여넣기 취소 pointerdown은 미리보기를 지운 뒤 정확히 한 번 재생한다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene);
+    editorState.set({ clipboard: clipboardFixture(), pastePreview: { x: 2, y: 2 } });
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+
+    input.emit("pointerdown", pointerAt(2, 2, 2));
+
+    expect(editorState.get().pastePreview).toBeNull();
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("Escape은 붙여넣기 미리보기를 취소한 뒤 정확히 한 번 재생한다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene);
+    editorState.set({ clipboard: clipboardFixture(), pastePreview: { x: 2, y: 2 } });
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+    const escape = {
+      key: "Escape",
+      code: "Escape",
+      ctrlKey: false,
+      metaKey: false,
+      preventDefault: () => undefined,
+    };
+
+    input.keyboard.emit("keydown", escape);
+    input.keyboard.emit("keydown", escape);
+
+    expect(editorState.get().pastePreview).toBeNull();
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("선택 칩 닫기는 붙여넣기 미리보기를 취소한 뒤 정확히 한 번 재생한다", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const scene = createHarness();
+      const selection = { mapId: store.getCurrent().startMapId, x: 2, y: 2, width: 1, height: 1 };
+      editorState.set({ clipboard: clipboardFixture(), pastePreview: { x: 2, y: 2 }, selection });
+      scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+      const bar = renderSelectionActionChips(
+        selection,
+        (() => document.createElement("div")) as never,
+        () => scene.replayDeferredCameraFocus(),
+      );
+      document.body.append(bar);
+      const dismiss = findByTestId(document.body as unknown as FakeElement, "selection-chip-dismiss");
+
+      dismiss?.click();
+      dismiss?.click();
+
+      expect(editorState.get().pastePreview).toBeNull();
+      expect(scene.panCalls).toHaveLength(1);
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("스페이스 키를 놓아 팬이 끝나면 정확히 한 번 재생한다", () => {
+    const scene = createHarness();
+    const canvas = {
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      closest: () => null,
+    };
+    const controller = new CameraPanController(
+      {
+        cameras: { main: { scrollX: 0, scrollY: 0, zoom: 1, setScroll: () => undefined } },
+        game: { canvas },
+      } as never,
+      {
+        onPanStart: () => undefined,
+        onPanMove: () => undefined,
+        onPanEnd: () => scene.replayDeferredCameraFocus(),
+      } as never,
+    );
+    scene.cameraPanController = controller;
+    controller.handleSpaceKeyDown({ code: "Space", preventDefault: () => undefined } as KeyboardEvent);
+    controller.start(pointerAt() as never);
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+
+    controller.handleSpaceKeyUp({ code: "Space", preventDefault: () => undefined } as KeyboardEvent);
+    controller.handleSpaceKeyUp({ code: "Space", preventDefault: () => undefined } as KeyboardEvent);
+
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it.each(["pointerup", "mouseup"])("window %s guard가 팬을 끝내면 정확히 한 번 재생한다", (eventType) => {
+    const scene = createHarness();
+    const canvas = {
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      closest: () => null,
+    };
+    const controller = new CameraPanController(
+      {
+        cameras: { main: { scrollX: 0, scrollY: 0, zoom: 1, setScroll: () => undefined } },
+        game: { canvas },
+      } as never,
+      {
+        onPanStart: () => undefined,
+        onPanMove: () => undefined,
+        onPanEnd: () => scene.replayDeferredCameraFocus(),
+      } as never,
+    );
+    scene.cameraPanController = controller;
+    controller.start(pointerAt() as never);
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+
+    window.dispatchEvent(nativePanEndEvent(eventType));
+    window.dispatchEvent(nativePanEndEvent(eventType));
+
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("다른 제스처가 남아 있으면 종료 진입점에서도 재생하지 않는다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene);
+    scene.isPainting = true;
+    editorState.set({ clipboard: clipboardFixture(), pastePreview: { x: 2, y: 2 } });
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+
+    input.emit("pointerupoutside");
+
+    expect(scene.isPainting).toBe(false);
+    expect(scene.panCalls).toEqual([]);
+  });
+
+  it("cleanup 뒤에는 종료 진입점이 와도 재생하지 않는다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene);
+    scene.isPainting = true;
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+    Object.assign(scene, {
+      unbindCanvasPanGuards: () => undefined,
+      unbindBrowserContextMenuGuards: () => undefined,
+      clearAgentGhostPreviewLayer: () => undefined,
+      clearAgentBlueprintLayer: () => undefined,
+      clearAgentFocusHighlight: () => undefined,
+      clearBuildPaletteOverlay: () => undefined,
+    });
+
+    (scene as unknown as { cleanup(): void }).cleanup();
+    input.emit("pointerupoutside");
+
+    expect(scene.panCalls).toEqual([]);
+  });
+});
+
+describe("미뤄진 초점 슬롯 자체의 규약", () => {
   it("제스처 중에는 재생하지 않고, 끝난 뒤 정확히 한 번만 간다", () => {
     const scene = createHarness();
     scene.dragOperationHandler = { busy: () => true };

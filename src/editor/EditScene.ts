@@ -116,7 +116,7 @@ type RightRegionGesture = {
 };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
-/** 캔버스·조수 가림 사각형을 재는 주기. 매 프레임 DOM 을 재면 레이아웃이 흔린다. */
+/** 캔버스·조수 가림 사각형을 재는 주기. 매 프레임 DOM 을 재면 레이아웃이 흔들린다. */
 const OVERLAY_GEOMETRY_TTL_MS = 250;
 
 function overlayGeometryNowMs(): number {
@@ -197,13 +197,13 @@ export class EditScene extends PhaserRuntime.Scene {
   /**
    * 게시된 뷰포트 스냅샷의 기하 서명 — 이것이 바뀔 만큼만 다시 게시한다.
    *
-   * 게시 지점을 열거하는 방식은 이미 실패했다(실집 2026-08-30): 부팅 직후 마지막 게시가 카메라가
+   * 게시 지점을 열거하는 방식은 이미 실패했다(실측 2026-08-30): 부팅 직후 마지막 게시가 카메라가
    * 맵 중심으로 정착하기 **전**에 일어나 100×100 맵에서 사용자는 타일 (50,50) 을 보는데 스냅샷은
-   * (17,12) 을 가리켰다 — 33칸 오차. 유리 도크를 펼치면 가림 범위가 바니는데(첫 AI 턴이 자동으로
-   * 펼친다) 그 또한 게시를 부를 지점이 없었다. 그래서 이젠 "변하면 게시한다" 로 바꿈다.
+   * (17,12) 을 가리켰다 — 33칸 오차. 유리 도크를 펼치면 가림 범위가 바뀌는데(첫 AI 턴이 자동으로
+   * 펼친다) 그 또한 게시를 부를 지점이 없었다. 그래서 이젠 "변하면 게시한다"로 바꾼다.
    */
   private lastPublishedViewportSignature = "";
-  /** 캔버스·오버레이 rect 캐시 — 프레임마다 getBoundingClientRect 를 부르면 레이아웃이 흔린다. */
+  /** 캔버스·오버레이 rect 캐시 — 프레임마다 getBoundingClientRect 를 부르면 레이아웃이 흔들린다. */
   private cachedCanvasRect: CanvasRect | null = null;
   private cachedUnoccludedRect: CanvasRect | null = null;
   private overlayGeometryReadAtMs = 0;
@@ -302,6 +302,7 @@ export class EditScene extends PhaserRuntime.Scene {
         this.renderBuildPaletteOverlay();
         this.publishMapViewport();
       },
+      onPanEnd: () => this.replayDeferredCameraFocus(),
     });
     this.eventClickFeedbackLayer = this.add.container(0, 0);
     this.eventClickFeedbackLayer.setDepth(12);
@@ -428,8 +429,8 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   /**
-   * Phaser 가 매 프레임 부른다. 카메라 scroll/zoom 은 어느 경로로든 바뀔 수 있으밀로(부팅 정착,
-   * 모드 전환, 휠 줌, 키버드 팬, cameraStability 재정렬) 게시 지점을 열거하지 않고 서명이
+   * Phaser가 매 프레임 부른다. 카메라 scroll/zoom은 어느 경로로든 바뀔 수 있으므로(부팅 정착,
+   * 모드 전환, 휠 줌, 키보드 팬, cameraStability 재정렬) 게시 지점을 열거하지 않고 서명이
    * 바뀔 때 게시한다. 무변화 프레임은 수 번의 수치 복사·문자열 비교만 하고 끝난다.
    */
   update(): void {
@@ -566,7 +567,10 @@ export class EditScene extends PhaserRuntime.Scene {
       if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
     });
     this.input.on("pointerupoutside", () => {
-      // 캔버스 밖에서 버튼을 놓는 경우도 제스처의 끝이다 — 이 경로가 버리면 미뤄 둔 초점이 슬롯에 갇힌다.
+      // 캔버스 밖에서 버튼을 놓아도 pointerup과 같은 순서로 제스처 상태를 먼저 내린다.
+      this.isPainting = false;
+      this.lastPaintKey = "";
+      this.stopPan();
       this.replayDeferredCameraFocus();
     });
     this.input.on(
@@ -806,9 +810,8 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private stopPan(): void {
+    // 실제 활성 팬이 끝나면 CameraPanController의 onPanEnd가 미뤄 둔 초점을 재생한다.
     this.cameraPanController?.stop();
-    // 팬이 진짜로 멈췄을 때만 재생한다(재생 내부에서 다시 제스처 판정을 한다).
-    this.replayDeferredCameraFocus();
   }
 
   private pointerScreenPosition(ptr: Phaser.Input.Pointer): { readonly x: number; readonly y: number } {
@@ -990,6 +993,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 붙여넣기 미리보기 취소가 최우선.
     if (cancelPastePreview()) {
       this.clearPastePreviewGhost();
+      this.replayDeferredCameraFocus();
       return true;
     }
     // 그 다음 선택 해제.
@@ -1101,7 +1105,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private handleEventClick(mapId: MapId, x: number, y: number, openEditor = false): void {
     const map = store.getCurrent().maps[mapId];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) {
-      // 더블클릭이 맵 밖으로 뱗나면 아무 일도 안 일어나던 무반응 데드엔드 수정
+      // 더블클릭이 맵 밖으로 벗어나면 아무 일도 안 일어나던 무반응 데드엔드 수정
       // (2026-08-18 초보자 UX 리뷰 P1-5) — 피드백 없는 실패는 금지.
       if (openEditor) toast("맵 안쪽 타일을 더블클릭하면 새 이벤트를 만듭니다", "info");
       editorState.set({ pendingEventCoordinate: null });
@@ -1762,7 +1766,9 @@ export class EditScene extends PhaserRuntime.Scene {
     const popupKey = `${kind}:${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`;
     if (!this.buildPalettePopup || this.buildPalettePopupKey !== popupKey || !this.buildPalettePopup.isConnected) {
       this.clearBuildPaletteOverlay();
-      const popup = kind === "build" ? renderBuildPalettePopup() : renderSelectionActionChips(selection);
+      const popup = kind === "build"
+        ? renderBuildPalettePopup()
+        : renderSelectionActionChips(selection, openRegionTaskModal, () => this.replayDeferredCameraFocus());
       if (!popup) {
         this.renderRegionTaskBadge();
         return;
