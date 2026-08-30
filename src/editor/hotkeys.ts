@@ -16,6 +16,32 @@ import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEdit
 import { toast } from "@/util/toast";
 
 /**
+ * 플레이 서피스가 키보드를 소유하고 있는가 — 시연 실행 / 이벤트 테스트 / 전투 테스트 창,
+ * 또는 플레이 셸이 마운트된 모든 경우.
+ *
+ * 이런 서피스가 살아 있는 동안 키보드는 **게임의 것**이다. 편집 Phaser 게임은 창 뒤에서
+ * 계속 살아 있고(`testPlayModal.ts` 는 `trackGlobalGame: false` 로 플레이 게임을 별도 소유한다)
+ * 그 키보드 플러그인은 `window` 를 듣기 때문에, 가드가 없으면 게임에서 걸으려고 누른 방향키가
+ * `EditScene.panWithArrowKey` 로도 들어가 편집 카메라를 한 번에 6타일(Shift 16타일) 밀어낸다.
+ * 플레이를 조금 하다 닫으면 편집 캔버스가 맵 경계 밖으로 밀려 «맵이 사라진» 것처럼 보인다
+ * (2026-08-30 실측: 방향키 24+12회 뒤 닫으면 편집 카메라 scrollX 가 323→1123 으로 밀려
+ * 100×100 맵이 우하단 모서리 조각만 남는다). 방향키만이 아니다 — 1~7 도구, F5~F7 레이어,
+ * +/- 줌, Ctrl+Z 되돌리기가 전부 같은 경로다. 포인터는 `installPlayPointerBlocker` 가 이미 막는다.
+ *
+ * 두 조건을 OR 로 본다. 둘 다 필수다:
+ * - `.test-play-modal-backdrop`: `openTestPlayShell` 을 지나는 모든 테스트 셸. 전투 테스트 셸은
+ *   `renderPlayer` 를 거치지 않아(`mountBattleScene` 직통) 아래 조건으로 잡힐 수 없다.
+ * - `.player-layout`: `renderPlayer` 가 마운트하는 플레이 셸. 모달 없는 전역 플레이
+ *   (`enterMode("play")`) 까지 덮는다 — 지금 그 경로는 `teardownEditor()` 로 편집 게임을
+ *   파괴하므로 새지 않지만, 소유권 판정이 한 모달의 생산 관례에 업혀 있으면 안 된다.
+ */
+export function isPlaySurfaceOwningKeyboard(): boolean {
+  if (typeof document === "undefined") return false;
+  if (document.querySelector(".test-play-modal-backdrop")) return true;
+  return Boolean(document.querySelector(".player-layout"));
+}
+
+/**
  * 현재 포커스가 폼 컨트롤이거나 모달이 열려 있어 에디터 단축키를 무시해야 하는지 판별.
  * Phaser 키보드 플러그인은 캡처 단계 document 리스너로 동작하므로, 텍스트 필드에
  * 타이핑하는 동안 F키/숫자키가 도구를 바꿔버리는 일을 막아야 한다.
@@ -40,6 +66,8 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
     if (document.querySelector("[data-testid='event-editor-modal']")) return true;
   }
+  // 플레이 서피스가 떠 있으면 키보드는 게임의 것이다.
+  if (isPlaySurfaceOwningKeyboard()) return true;
   return false;
 }
 
@@ -98,6 +126,11 @@ export function isHistoryHotkeyChord(event: KeyboardEvent): boolean {
  */
 export function historyHotkeyOwnedByPanel(): boolean {
   if (typeof document === "undefined") return false;
+  // 플레이 서피스가 떠 있으면 Ctrl+Z 도 편집기의 것이 아니다. EditScene 은 히스토리 키를
+  // 일반 가드보다 **먼저** 처리하므로(체크박스 포커스가 되돌리기를 삼키던 결함 대응),
+  // 이 함수가 소유권을 넘기면 handleKeyDown 이 자연스럽게 shouldIgnoreEditorShortcut 로
+  // 내려가 전적으로 침묵한다 — EditScene 에 별도 가드를 넣지 않는 이유다.
+  if (isPlaySurfaceOwningKeyboard()) return true;
   if (document.querySelector("[data-testid='database-modal']")) return true;
   return Boolean(document.querySelector("[data-testid='event-editor-modal']"));
 }
