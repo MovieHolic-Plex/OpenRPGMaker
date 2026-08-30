@@ -55,16 +55,19 @@
   --battle-window-skin-width: 0;
 
   /* HUD 표면 · 선 · 잉크. 알파를 쓰지만 씬 루트는 불투명(#000)이라 맵이 새지 않는다. */
-  --rm-hud-surface: linear-gradient(180deg, rgba(23, 28, 52, 0.96), rgba(9, 11, 24, 0.98));
-  --rm-card: rgba(255, 255, 255, 0.04);
-  --rm-card-raised: rgba(255, 255, 255, 0.07);
-  --rm-hairline: rgba(154, 170, 226, 0.18);
-  --rm-hairline-strong: rgba(154, 170, 226, 0.32);
-  --rm-inset: rgba(4, 6, 16, 0.66);
-  --rm-glass: rgba(12, 15, 30, 0.82);
+  /* 표면값의 출처는 이제 system.css 의 런타임 공용 글래스 토큰이다 — 메뉴·대화·상점·타이틀도
+     같은 토큰을 소비하므로 한 곳만 움직이면 런타임 전체가 함께 움직인다. 지역 이름(--rm-*)은
+     이 파일의 수백 소비 지점을 건드리지 않기 위한 별칭으로 남긴다. */
+  --rm-hud-surface: var(--runtime-glass-surface);
+  --rm-card: var(--runtime-glass-card);
+  --rm-card-raised: var(--runtime-glass-card-raised);
+  --rm-hairline: var(--runtime-glass-hairline);
+  --rm-hairline-strong: var(--runtime-glass-hairline-strong);
+  --rm-inset: var(--runtime-glass-inset);
+  --rm-glass: var(--runtime-glass-panel);
   --rm-mp: rgb(96, 186, 255);
-  --rm-scrim: rgba(6, 8, 18, 0.86);
-  --rm-shadow-lift: 0 8px 24px rgba(3, 5, 14, 0.55);
+  --rm-scrim: var(--runtime-glass-scrim);
+  --rm-shadow-lift: var(--runtime-glass-shadow);
 
   grid-template-columns: 232px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) minmax(0, var(--battle-hud-height));

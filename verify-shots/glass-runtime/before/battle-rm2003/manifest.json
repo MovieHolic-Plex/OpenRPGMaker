@@ -1,0 +1,186 @@
+{
+  "scenarioId": "battle-rm2003",
+  "projectPath": "test/fixtures/projects/battle-v3.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "타이틀 화면이 뜬다",
+      "shot": null,
+      "failures": [],
+      "state": null
+    },
+    {
+      "index": 1,
+      "id": "field-start",
+      "note": "새 게임 → map_battle (0,0), 오른쪽 (1,0) 에 전투 이벤트",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_battle",
+        "x": 0,
+        "y": 0,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 2,
+      "id": "battle-open",
+      "note": "전투 이벤트 말걸기 → 전투 화면(기본 스킨 rm2003)이 실제로 마운트된다",
+      "shot": "03-battle-open.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_battle",
+        "x": 0,
+        "y": 0,
+        "gold": 0,
+        "battleResult": null
+      },
+      "battlers": {
+        "skin": "rm2003",
+        "directorStep": "intro",
+        "field": {
+          "top": 24,
+          "bottom": 480,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 456
+        },
+        "enemyGroup": {
+          "top": 36,
+          "bottom": 480,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 444
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 92,
+              "bottom": 302,
+              "left": -106,
+              "right": 74,
+              "width": 180,
+              "height": 210
+            },
+            "image": {
+              "top": 92,
+              "bottom": 302,
+              "left": -106,
+              "right": 74,
+              "width": 180,
+              "height": 210
+            },
+            "name": {
+              "top": 319,
+              "bottom": 337,
+              "left": -43,
+              "right": 11,
+              "width": 54,
+              "height": 18
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 158,
+              "bottom": 302,
+              "left": 831,
+              "right": 972,
+              "width": 141,
+              "height": 144
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "id": "battle-command",
+      "note": "인트로가 끝나면 액터 커맨드(공격)까지 도달한다",
+      "shot": "04-battle-command.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_battle",
+        "x": 0,
+        "y": 0,
+        "gold": 0,
+        "battleResult": null
+      },
+      "battlers": {
+        "skin": "rm2003",
+        "directorStep": "command",
+        "field": {
+          "top": 24,
+          "bottom": 480,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 456
+        },
+        "enemyGroup": {
+          "top": 36,
+          "bottom": 480,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 444
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 92,
+              "bottom": 302,
+              "left": 146,
+              "right": 326,
+              "width": 180,
+              "height": 210
+            },
+            "image": {
+              "top": 92,
+              "bottom": 302,
+              "left": 146,
+              "right": 326,
+              "width": 180,
+              "height": 210
+            },
+            "name": {
+              "top": 319,
+              "bottom": 337,
+              "left": 209,
+              "right": 263,
+              "width": 54,
+              "height": 18
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 158,
+              "bottom": 302,
+              "left": 634,
+              "right": 775,
+              "width": 141,
+              "height": 144
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

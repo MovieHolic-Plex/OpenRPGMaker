@@ -44,7 +44,7 @@
 .status-menu-command-group-label {
   border-top: 1px solid rgba(255, 255, 255, 0.26);
   box-sizing: border-box;
-  color: #a9c8ff;
+  color: var(--runtime-glass-muted);
   font-size: 8px;
   height: 11px;
   letter-spacing: 0.1em;
@@ -216,10 +216,10 @@
   white-space: nowrap;
 }
 .status-menu-entry-effect {
-  color: #d8ebff;
+  color: var(--runtime-glass-text);
 }
 .status-menu-entry-performance {
-  color: #fff3b8;
+  color: var(--runtime-glass-accent);
 }
 .status-menu-scene-empty {
   padding: 6px;

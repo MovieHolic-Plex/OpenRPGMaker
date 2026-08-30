@@ -14,12 +14,8 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
     var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   display: grid;
   gap: 1px;
@@ -86,7 +82,7 @@
   position: relative;
 }
 .status-menu-party-headline .status-menu-actor-subline {
-  color: #ffe9a8;
+  color: var(--runtime-glass-accent);
 }
 /* 숫자 행 자체가 게이지 트랙이 된다 — 행도 폭도 늘지 않는다.
    전원 만피일 때 `514/514` 가 4번 반복되어 정보량이 0 에 가까웠다.
@@ -143,11 +139,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
     var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
+  border: 1px solid var(--runtime-glass-hairline);
   display: grid;
   gap: 1px;
   grid-auto-rows: max-content;
@@ -157,7 +149,7 @@
   padding: 2px;
 }
 .status-menu-stat-delta-title {
-  color: #a9c8ff;
+  color: var(--runtime-glass-muted);
   font-size: 8px;
   letter-spacing: 0.1em;
   padding: 0 2px;
@@ -186,12 +178,8 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
     var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 2px 3px;
@@ -286,7 +274,7 @@
   grid-row: 1;
 }
 .status-menu-detail-row-compact .status-menu-detail-description {
-  color: #cfe2ff;
+  color: var(--runtime-glass-text);
   display: block;
   grid-column: 2;
   grid-row: 1;
@@ -313,7 +301,7 @@
   white-space: normal;
 }
 .status-menu-detail-row.has-description .status-menu-detail-description {
-  color: #d8ebff;
+  color: var(--runtime-glass-text);
   display: -webkit-box;
   grid-column: 1 / -1;
   -webkit-box-orient: vertical;
@@ -366,7 +354,7 @@
 .life-ledger-tab.active {
   background: rgba(255, 215, 90, 0.18);
   border-color: rgba(255, 215, 90, 0.72);
-  color: #fff0a8;
+  color: var(--runtime-glass-accent);
 }
 .life-ledger-detail .status-menu-detail-row-compact {
   min-height: 22px;
@@ -382,12 +370,8 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
     var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   display: grid;
   gap: 4px;
@@ -436,12 +420,8 @@
 }
 .game-over-panel {
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   color: var(--runtime-window-text);
   display: flex;

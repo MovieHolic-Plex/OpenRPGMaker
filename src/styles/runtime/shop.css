@@ -45,7 +45,7 @@
   padding: 16px;
   background: radial-gradient(120% 90% at 50% 0%, rgba(12, 16, 26, 0.5), rgba(5, 7, 12, 0.78));
   border: 0;
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   color: var(--shop-ink);
   font-family: var(--shop-ui-font);
@@ -92,12 +92,8 @@
    덮어쓴다. 두 경로가 같은 클래스를 공유하므로 마크업은 하나다. */
 .runtime-shop-panel {
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   min-height: 0;
 }
 

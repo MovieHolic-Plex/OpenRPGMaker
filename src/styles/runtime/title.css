@@ -48,7 +48,7 @@
 .player-layout.system-shell .rm-title-kicker {
   color: rgba(226, 232, 240, 0.72);
   display: block;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: 7px;
   /* 400 고정 — 픽셀 글꼴은 400 페이스 하나만 등록돼 있어서, 그보다 굵게 요구하면
      브라우저가 합성 볼드로 격자를 뭉갠다. 위계는 크기·색·자간이 담당한다. */
@@ -64,7 +64,7 @@
 .player-layout.system-shell .rm-title-subtitle {
   color: rgba(248, 250, 252, 0.86);
   display: block;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: 10px;
   font-weight: 400;
   left: 10%;
@@ -129,7 +129,7 @@
 }
 
 .player-layout.system-shell .rm-title-screen.rm-title-screen-editorial .rm-title-screen-title {
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: 18px;
   font-weight: 400;
   letter-spacing: -0.04em;
@@ -170,12 +170,8 @@
    DB 타이틀 그래픽은 메뉴 밖 전역에서 그대로 보이고, 레터박스 RM 타이틀로 돌아가지도 않는다. */
 .player-layout.system-shell .rm-title-screen-editorial .rm-title-menu {
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   gap: 2px;
   min-width: 96px;
@@ -189,7 +185,7 @@
   border: 0;
   color: var(--runtime-window-muted);
   cursor: default;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: 11px;
   font-weight: 400;
   line-height: 1.2;
@@ -222,7 +218,7 @@
   bottom: 10px;
   box-shadow: none;
   color: rgba(248, 250, 252, 0.8);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: 8px;
   font-weight: 400;
   line-height: 1.4;
@@ -249,16 +245,12 @@
 
 .player-layout.system-shell .oprn-load-window {
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   box-sizing: border-box;
   display: grid;
-  font: 700 var(--runtime-font-size-11)/1.25 var(--runtime-pixel-font);
+  font: 700 var(--runtime-font-size-11)/1.25 var(--runtime-ui-font);
   gap: 4px;
   padding: 2px 4px;
   position: relative;
@@ -303,7 +295,7 @@
   appearance: none;
   background: transparent;
   border: 0;
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   color: var(--oprn-title-text);
   cursor: default;
   font: inherit;
@@ -321,11 +313,7 @@
    border-image-slice 에 fill 을 쓰지 않는 이유: 중앙 채움이 hover/focus 하이라이트
    배경(var(--runtime-window-selected-bg))을 덮어 커서 상태가 보이지 않게 되기 때문. */
 .player-layout.system-shell .oprn-load-slot {
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: 24;
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
+  border: 1px solid var(--runtime-glass-hairline);
   display: grid;
   gap: 1px;
   min-width: 0;

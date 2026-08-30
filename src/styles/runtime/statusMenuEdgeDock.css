@@ -6,13 +6,13 @@
  * RPG window presentation with an edge dock, party glance, and progressive tray.
  */
 .oprn-status-menu.main-menu {
-  --status-edge-amber: #f3bd69;
-  --status-edge-amber-soft: rgba(243, 189, 105, 0.18);
-  --status-edge-border: rgba(247, 229, 198, 0.22);
-  --status-edge-glass: rgba(15, 18, 20, 0.9);
-  --status-edge-glass-soft: rgba(15, 18, 20, 0.76);
-  --status-edge-ivory: #f7efe2;
-  --status-edge-muted: #bfb5a6;
+  --status-edge-amber: var(--runtime-glass-accent);
+  --status-edge-amber-soft: var(--runtime-glass-accent-soft);
+  --status-edge-border: var(--runtime-glass-hairline);
+  --status-edge-glass: var(--runtime-glass-panel);
+  --status-edge-glass-soft: var(--runtime-glass-inset);
+  --status-edge-ivory: var(--runtime-glass-text);
+  --status-edge-muted: var(--runtime-glass-muted);
   --status-edge-teal: #54c9c0;
   background: transparent;
   border: 0;
@@ -20,9 +20,10 @@
   box-shadow: none;
   color: var(--status-edge-ivory);
   display: block;
-  /* 게임 내 시스템(대화창·타이틀·전투)과 같은 픽셀 글꼴을 쓴다. 에디터 토큰
-     var(--font-ui) 을 그대로 쓰면 ESC 화면만 모던 산세리프가 되어 따로 논다. */
-  font: 600 8px/1.25 var(--runtime-pixel-font);
+  /* 게임 내 시스템(대화창·타이틀·전투)과 같은 글꼴을 쓴다 — 그 글꼴이 이제 전부
+     --runtime-ui-font(모던 글래스) 다. 예전 주석은 반대로 픽셀 글꼴을 근거로 들었는데,
+     실제로는 전투 HUD 만 --font-ui 로 앞서 옮겨가 ESC 화면이 혼자 낡아 보였다. */
+  font: 600 12px/1.25 var(--runtime-ui-font);
   isolation: isolate;
   overflow: hidden;
   padding: 0;
@@ -94,14 +95,14 @@
   background: transparent;
   border: 0;
   border-left: 1px solid rgba(247, 229, 198, 0.09);
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   color: var(--status-edge-muted);
   cursor: default;
   display: flex;
   flex: none;
   flex-direction: column;
-  font: 600 8px/1 var(--runtime-pixel-font);
+  font: 600 12px/1 var(--runtime-ui-font);
   gap: 4px;
   height: auto;
   justify-content: center;
@@ -251,7 +252,7 @@
   box-sizing: border-box;
   color: var(--status-edge-ivory);
   display: flex;
-  font: 700 9px/1 var(--runtime-pixel-font);
+  font: 700 12px/1 var(--runtime-ui-font);
   height: 22px;
   image-rendering: pixelated;
   justify-content: center;
@@ -277,6 +278,10 @@
   grid-template-columns: minmax(0, 1fr) max-content;
 }
 
+  /* 파티 글리앤스 카드는 320×240 논리 스테이지에서 카드 폭 73px 고정이다. 논리 px 는
+     스테이지 배율(1024 폭에서 약 3배)로 확대되어 화면에서는 이미 24px 급으로 보인다 —
+     전투 HUD(640 논리)의 12px 와 같은 급이다. 12px 로 올렸다가 이름이 "주…", 체력이
+     "100/5" 로 잘렸다(실측). 폭이 고정된 이 카드만 8px 를 유지한다. */
 .oprn-status-menu .status-menu-actor-name {
   color: var(--status-edge-ivory);
   font-size: 8px;
@@ -286,6 +291,10 @@
   white-space: nowrap;
 }
 
+  /* 파티 글리앤스 카드는 320×240 논리 스테이지에서 카드 폭 73px 고정이다. 논리 px 는
+     스테이지 배율(1024 폭에서 약 3배)로 확대되어 화면에서는 이미 24px 급으로 보인다 —
+     전투 HUD(640 논리)의 12px 와 같은 급이다. 12px 로 올렸다가 이름이 "주…", 체력이
+     "100/5" 로 잘렸다(실측). 폭이 고정된 이 카드만 8px 를 유지한다. */
 .oprn-status-menu .status-menu-actor-subline {
   color: var(--status-edge-amber);
   font-size: 8px;
@@ -301,6 +310,10 @@
   position: relative;
 }
 
+  /* 파티 글리앤스 카드는 320×240 논리 스테이지에서 카드 폭 73px 고정이다. 논리 px 는
+     스테이지 배율(1024 폭에서 약 3배)로 확대되어 화면에서는 이미 24px 급으로 보인다 —
+     전투 HUD(640 논리)의 12px 와 같은 급이다. 12px 로 올렸다가 이름이 "주…", 체력이
+     "100/5" 로 잘렸다(실측). 폭이 고정된 이 카드만 8px 를 유지한다. */
 .oprn-status-menu .status-menu-actor-vitals {
   color: rgba(247, 239, 226, 0.72);
   font-size: 8px;
@@ -380,7 +393,7 @@
 
 .oprn-status-menu .status-menu-detail-title {
   color: var(--status-edge-ivory);
-  font: 750 10px/1.15 var(--runtime-pixel-font);
+  font: 750 13px/1.15 var(--runtime-ui-font);
   letter-spacing: -0.025em;
   margin: 0;
   overflow: hidden;
@@ -411,7 +424,7 @@
   box-sizing: border-box;
   color: var(--status-edge-ivory);
   display: grid;
-  font: 600 8px/1.2 var(--runtime-pixel-font);
+  font: 600 12px/1.2 var(--runtime-ui-font);
   gap: 4px;
   min-height: 18px;
   padding: 3px 5px;
@@ -470,7 +483,7 @@
 .oprn-status-menu .status-menu-detail-hint,
 .oprn-status-menu .status-menu-detail-empty {
   color: var(--status-edge-muted);
-  font: 500 8px/1.35 var(--runtime-pixel-font);
+  font: 500 12px/1.35 var(--runtime-ui-font);
 }
 
 .oprn-status-menu .status-menu-detail-row-compact {
@@ -618,14 +631,14 @@
 
 .oprn-status-menu .status-menu-stat-delta-title {
   color: var(--status-edge-amber);
-  font: 700 8px/1.2 var(--runtime-pixel-font);
+  font: 700 8px/1.2 var(--runtime-ui-font);
   letter-spacing: 0.08em;
   padding: 0;
 }
 
 .oprn-status-menu .status-menu-stat-delta-row {
   display: grid;
-  font: 600 8px/1.2 var(--runtime-pixel-font);
+  font: 600 12px/1.2 var(--runtime-ui-font);
   gap: 3px;
   grid-template-columns: max-content minmax(0, 1fr);
   min-width: 0;
@@ -657,7 +670,7 @@
   box-shadow: none;
   color: rgba(247, 239, 226, 0.72);
   display: grid;
-  font: 600 8px/1 var(--runtime-pixel-font);
+  font: 600 12px/1 var(--runtime-ui-font);
   gap: 5px;
   grid-template-columns: max-content minmax(0, 1fr) max-content;
   left: 9px;
@@ -791,20 +804,20 @@
  * 전체를 덮는 루트에 걸면 화면이 스킨 타일로 잠긴다. systemGraphics.ts 100-106 이 전투 루트에서
  * 같은 결함을 겪고 남긴 기록이다.
  *
- * 그래서 전투와 같은 방식을 쓴다: 루트에는 변수만 남기고, 경계가 있는 내부 패널이
- * var(--runtime-window-skin) 을 소비한다. 이러면 DB 에서 고른 시스템 그래픽이 상점·대화창과
- * 똑같이 ESC 메뉴에도 나타난다(그전에는 저작값이 이 화면에 아무 영향이 없었다).
+ * 이제는 9-slice 스킨 대신 런타임 공용 글래스 토큰으로 표면을 직접 그린다: 루트는 계속
+ * 투명(스테이지를 덮으므로)이고, 경계가 있는 내부 패널만 --runtime-glass-* 를 소비한다.
+ * 자료집 윈도스킨 배관(--runtime-window-skin)과 저작 데이터는 그대로 살아 있고, 런타임
+ * 패널에 칠하는 것만 멈췄다 — 전투 HUD(_rm2003.css)가 먼저 같은 결론에 도달했다.
  */
 .oprn-status-menu .status-menu-detail,
 .oprn-status-menu .status-menu-party-row,
 .oprn-status-menu .status-menu-primary-dock {
-  background: transparent;
-  backdrop-filter: none;
-  border-image-outset: 0;
-  border-image-repeat: stretch;
-  border-image-slice: 24 fill;
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: 6px;
-  border-style: solid;
-  border-width: 6px;
+  background: var(--runtime-glass-panel);
+  /* 살아있는 맵 위에 뜨는 패널이라 표면 뒤를 살짝 흐린다. 전투 HUD 는 불투명한 씬 위라
+     블러가 필요 없었지만, 여기서 표면을 투명하게 두면 맵 타일이 글자를 그대로 관통한다
+     (실측: 윈도스킨 fill 을 걷어낸 첫 판이 정확히 그 상태였다 — 회복 설명이 잔디 위에서 안 읽혔다). */
+  backdrop-filter: var(--runtime-dialogue-glass-filter);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius);
+  box-shadow: var(--runtime-glass-shadow);
 }
