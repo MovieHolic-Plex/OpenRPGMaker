@@ -86,7 +86,7 @@ export function renderEventNameControl(
  * 계약:
  * - 여섯 버튼은 **항상 마운트**된다. 못 쓰는 상황은 `disabled` + 이유를 담은 `title` 이다 —
  *   조건부 마운트는 버튼이 나타났다 사라지며 이웃 버튼 자리를 밀어 혼동을 만들었다.
- * - 복제/붙여넣기/삭제/순서는 상태를 바꾸므로 항상 `toast` 로 뭐가 어떻게 됐는지 말한다.
+ * - 복제/붙여넣기/삭제/순서는 상태를 실제로 바꿨을 때만 `toast` 로 결과를 말한다.
  */
 export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
   const wrap = el("div", {
@@ -105,7 +105,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
     pageButton(
       "복제",
       "event-page-duplicate",
-      "이 페이지를 바로 뒤에 하나 더 만들어요",
+      "이 페이지를 바로 앞(낮은 우선순위)에 하나 더 만들어요",
       () => {
         if (!copyEventPage(mapId, ev.id, activePage.id)) return;
         toast(`"${activePage.name}" 페이지를 복제했어요.`, "ok");
@@ -114,7 +114,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
       "페이지 복제"
     ),
     pageButton(
-      "복사",
+      "복사해 두기",
       "event-page-copy",
       "이 페이지를 복사해 둔다 — 다른 이벤트에도 붙여넣을 수 있어요",
       () => {
@@ -143,7 +143,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
         ? "이 페이지를 한 칸 앞으로 — 뒤에 있는 페이지가 먼저 이깁니다"
         : "이미 첫 페이지예요",
       () => {
-        moveEventPage(mapId, ev.id, activePage.id, -1);
+        if (!moveEventPage(mapId, ev.id, activePage.id, -1)) return;
         toast(`"${activePage.name}" 페이지를 앞으로 옮겼어요.`, "ok");
       },
       !canMoveBack,
@@ -157,7 +157,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
         ? "이 페이지를 한 칸 뒤로 — 뒤에 있을수록 조건이 맞을 때 이깁니다"
         : "이미 마지막 페이지예요",
       () => {
-        moveEventPage(mapId, ev.id, activePage.id, 1);
+        if (!moveEventPage(mapId, ev.id, activePage.id, 1)) return;
         toast(`"${activePage.name}" 페이지를 뒤로 옮겼어요.`, "ok");
       },
       !canMoveForward,
@@ -167,7 +167,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
     pageButton(
       "삭제",
       "event-page-delete",
-      canDelete ? "이 페이지와 여기 들어있는 명령을 지워요" : "페이지가 하나뿐이라 지울 수 없어요",
+      canDelete ? "삭제" : "페이지가 하나뿐이라 지울 수 없어요",
       () => void requestEventPageDeletion(mapId, ev.id, activePage),
       !canDelete,
       "페이지 삭제",
@@ -196,7 +196,7 @@ export async function requestEventPageDeletion(
   mapId: MapId,
   eventId: string,
   page: EventPage
-): Promise<void> {
+): Promise<boolean> {
   const confirmed = await showConfirm({
     title: "페이지 삭제",
     message: `"${page.name}" 페이지와 그 안의 모든 명령을 삭제할까요?`,
@@ -204,9 +204,10 @@ export async function requestEventPageDeletion(
     cancelLabel: "취소",
     danger: true,
   });
-  if (!confirmed) return;
-  deleteEventPage(mapId, eventId, page.id);
+  if (!confirmed) return false;
+  if (!deleteEventPage(mapId, eventId, page.id)) return false;
   toast(`"${page.name}" 페이지를 지웠어요.`, "ok");
+  return true;
 }
 
 export function renderClassicPageTabStrip(
@@ -340,18 +341,24 @@ function handlePageTabKeydown(
   const page = pages[index];
   if (!page) return;
   if (reorder && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
-    moveEventPage(mapId, ev.id, page.id, event.key === "ArrowLeft" ? -1 : 1);
+    if (!moveEventPage(mapId, ev.id, page.id, event.key === "ArrowLeft" ? -1 : 1)) return;
     toast(`"${page.name}" 페이지를 ${event.key === "ArrowLeft" ? "앞" : "뒤"}로 옮겼어요.`, "ok");
+    focusRenderedPageTab(page.id);
     return;
   }
   const target = pages[nextIndex];
   if (!target) return;
   editorState.set({ selectedEventPageId: target.id });
-  const strip = event.currentTarget instanceof HTMLElement ? event.currentTarget.parentElement : null;
-  strip
-    ?.querySelectorAll<HTMLElement>(".evt-page-segment")
-    ?.item(nextIndex)
-    ?.focus();
+  focusRenderedPageTab(target.id);
+}
+
+/** 상태 구독 렌더가 기존 탭 트리를 교체한 뒤 새로 마운트된 같은 페이지 탭을 찾는다. */
+function focusRenderedPageTab(pageId: string): void {
+  for (const tab of document.querySelectorAll<HTMLElement>(".evt-page-segment[data-page-id]")) {
+    if (tab.dataset.pageId !== pageId) continue;
+    tab.focus({ preventScroll: true });
+    return;
+  }
 }
 
 function pageTabConditionText(page: EventPage): string {
@@ -488,11 +495,23 @@ function pageButton(
   const variantClass = variant ? ` event-page-action-${variant}` : "";
   return el("button", {
     class: `btn event-page-action-button${variantClass} ${disabled ? "disabled" : ""}`,
-    children: [el("span", { class: "event-page-button-label", text })],
+    children: [el("span", {
+      class: "event-page-button-label",
+      text,
+      dataset: { compactLabel: compactPageActionLabel(testId, text) },
+    })],
     dataset: { testid: testId },
     attrs,
     on: onClick ? { click: onClick } : undefined,
   }) as HTMLButtonElement;
+}
+
+function compactPageActionLabel(testId: string, fallback: string): string {
+  switch (testId) {
+    case "event-page-copy": return "보관";
+    case "event-page-paste": return "붙임";
+    default: return fallback;
+  }
 }
 
 export function renderPageCommandCatalog(

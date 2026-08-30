@@ -12,10 +12,11 @@
 //   D8 role=tab 에 aria-pressed 를 함께 쓰고, tabindex·방향키가 없었다.
 import { beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
+import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { renderClassicPageTabStrip, renderPageActions } from "@/editor/panels/eventEditor/pageProps";
 import { openPageTabContextMenu } from "@/editor/panels/eventEditor/pageTabContextMenu";
-import { modalStackDepthForTest } from "@/editor/ui/modalStack";
-import { addEventPage, copyEventPageToClipboard } from "@/editor/eventPages";
+import { modalStackEntryCountForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
+import { addEventPage, clearCopiedEventPage, copyEventPageToClipboard } from "@/editor/eventPages";
 import { addEvent } from "@/editor/eventActions";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -25,6 +26,8 @@ let mapId: MapId;
 let eventId: string;
 
 beforeEach(() => {
+  resetModalStackForTest();
+  clearCopiedEventPage();
   store.replace(createBlankProject());
   mapId = store.getCurrent().startMapId;
   eventId = addEvent(mapId, 3, 3);
@@ -82,7 +85,7 @@ describe("페이지 관리 작업면", () => {
     expect(host.querySelector("summary")).toBeNull();
   });
 
-  it("복제는 원본 바로 뒤에 꽂는다 — 맨 뒤에 붙이면 런타임 우선순위가 뒤집힌다 (D3)", () => {
+  it("복제는 원본 바로 앞의 낮은 우선순위에 꽂는다 — 원본 뒤면 런타임 승자가 바뀐다 (D3)", () => {
     addEventPage(mapId, eventId);
     addEventPage(mapId, eventId);
     expect(pages()).toHaveLength(3);
@@ -92,8 +95,8 @@ describe("페이지 관리 작업면", () => {
 
     const after = pages();
     expect(after).toHaveLength(4);
-    expect(after[0]!.id).toBe(sourceId);
-    expect(after[1]!.name).toBe(`${after[0]!.name} 복사본`);
+    expect(after[1]!.id).toBe(sourceId);
+    expect(after[0]!.name).toBe(`${after[1]!.name} 복사본`);
   });
 
   it("순서 이동 버튼이 실제로 페이지를 옮기고 양 끝에서 막힌다 (D4)", () => {
@@ -148,6 +151,27 @@ describe("페이지 관리 작업면", () => {
     expect(pages().map((page) => page.id)).toEqual([second, first]);
   });
 
+  it("실제 모달 구독 렌더 뒤에도 방향키와 Ctrl+방향키 포커스가 선택 페이지를 따른다", () => {
+    addEventPage(mapId, eventId);
+    editorState.set({ currentMapId: mapId, selectedEventId: eventId, selectedEventPageId: pages()[0]!.id });
+    openEventEditorModal(mapId, eventId);
+    const firstId = pages()[0]!.id;
+    const secondId = pages()[1]!.id;
+    const first = document.querySelector<HTMLElement>(`.evt-page-segment[data-page-id="${firstId}"]`)!;
+    first.focus();
+
+    first.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    expect(editorState.get().selectedEventPageId).toBe(secondId);
+    expect((document.activeElement as HTMLElement).dataset.pageId).toBe(secondId);
+
+    document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "ArrowLeft", ctrlKey: true, bubbles: true,
+    }));
+    expect(pages().map((page) => page.id)).toEqual([secondId, firstId]);
+    expect((document.activeElement as HTMLElement).dataset.pageId).toBe(secondId);
+    expect((document.activeElement as HTMLElement).dataset.pageId).toBe(editorState.get().selectedEventPageId);
+  });
+
   it("탭 우클릭 메뉴가 여섯 항목을 주고 클립보드 상태를 반영한다 (D7)", () => {
     addEventPage(mapId, eventId);
     const event = currentEvent();
@@ -165,10 +189,9 @@ describe("페이지 관리 작업면", () => {
       "event-page-menu-move-forward",
       "event-page-menu-delete",
     ]);
-    // 첫 페이지에서는 앞으로 옮기기가 막혀 있다. 붙여넣기의 "버퍼 빔" 상태는 여기서 잡지 않는다 —
-    // 페이지 버퍼는 모듈 상태(세션 수준)라 이 파일 앞 사례가 복사해 둔 것이 넘어온다.
-    // 대신 **전이**를 잡는다: 복사하면 다시 여는 메뉴에서 붙여넣기가 허용된다.
+    // 첫 페이지에서는 앞으로 옮기기와 빈 버퍼의 붙여넣기가 막혀 있다.
     expect(menu!.querySelector<HTMLButtonElement>('[data-testid="event-page-menu-move-back"]')!.disabled).toBe(true);
+    expect(menu!.querySelector<HTMLButtonElement>('[data-testid="event-page-menu-paste"]')!.disabled).toBe(true);
 
     copyEventPageToClipboard(mapId, eventId, page.id);
     openPageTabContextMenu({ x: 20, y: 20, mapId, event, page, index: 0, requestDelete: () => undefined });
@@ -179,15 +202,48 @@ describe("페이지 관리 작업면", () => {
   it("우클릭 메뉴는 모달 스택 최상단을 잡는다 — Escape 가 이벤트 편집기까지 닫지 않도록", () => {
     const event = currentEvent();
     const page = (event.pages ?? [])[0]!;
-    const before = modalStackDepthForTest();
+    const before = modalStackEntryCountForTest();
 
     openPageTabContextMenu({ x: 10, y: 10, mapId, event, page, index: 0, requestDelete: () => undefined });
-    expect(modalStackDepthForTest()).toBe(before + 1);
+    expect(modalStackEntryCountForTest()).toBe(before + 1);
 
     document
       .querySelector<HTMLElement>('[data-testid="event-page-menu-duplicate"]')!
       .dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     expect(document.querySelector('[data-testid="event-page-context-menu"]')).toBeNull();
-    expect(modalStackDepthForTest()).toBe(before);
+    expect(modalStackEntryCountForTest()).toBe(before);
+  });
+
+  it("우클릭 메뉴의 모든 닫기 경로가 리스너와 raw 모달 엔트리를 함께 치운다", () => {
+    addEventPage(mapId, eventId);
+    const event = currentEvent();
+    const page = event.pages![0]!;
+    const request = { x: 10, y: 10, mapId, event, page, index: 0, requestDelete: () => undefined };
+    const baseline = modalStackEntryCountForTest();
+
+    openPageTabContextMenu(request);
+    openPageTabContextMenu(request);
+    expect(document.querySelectorAll('[data-testid="event-page-context-menu"]')).toHaveLength(1);
+    expect(modalStackEntryCountForTest()).toBe(baseline + 1);
+
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-copy"]')!.click();
+    expect(modalStackEntryCountForTest()).toBe(baseline);
+
+    openPageTabContextMenu(request);
+    document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    expect(modalStackEntryCountForTest()).toBe(baseline);
+
+    openPageTabContextMenu(request);
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-duplicate"]')!
+      .dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(modalStackEntryCountForTest()).toBe(baseline);
+  });
+
+  it("거부된 경계 이동은 성공 토스트를 만들지 않는다", () => {
+    const host = actions();
+    const target = button(host, "event-page-move-back");
+    target.disabled = false;
+    target.click();
+    expect(document.querySelector('[data-testid="toast"]')).toBeNull();
   });
 });

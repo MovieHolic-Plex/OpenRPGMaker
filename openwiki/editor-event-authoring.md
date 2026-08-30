@@ -95,7 +95,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **분기 열거는 `eventCommandBranches` 가 정본이다 (2026-08-31):** `src/editor/eventCommandBranches.ts` 의 `eventCommandBranches(command)` 가 분기 목록·라벨·경로 칸(`branchIndex`)·목록 마커 톤(`tone`)을 **한 곳에서** 준다. 뷰는 자기 목록을 갖지 않는다 — 네 뷰와 두 비-뷰 호출부가 전부 얇은 어댑터다: `commandList.ts:appendCommandChildren`(목록), `storyboardView.ts:branchesOf`(스토리), `previewSimulation.ts:branchesOf` + `walkWithSimulation`(미리보기·플로우), `tools/commandTraversal.ts:commandBranches`(프로젝트 순회), `eventDraftValidator.ts:commandBranches`(검증). **분기를 새로 만들면 정본에만 추가한다.** 왜 강제인가 (실측): 예전에는 열거 함수가 다섯 벌이었고 그중 셋이 상점 실패 분기(`failedTransactionBranch`)를 빠뜨렸다 — 런타임 `player/interpreter/resume.ts:38-40` 은 실행하는데 목록·플로우·미리보기에는 줄이 안 났고 검증도 그 안에 못 들어갔다(화면에 없는 분기는 모르고 지워진다). `commandList.ts` 는 `SHOP_FAILED_TRANSACTION_BRANCH_INDEX`(-12) 를 import 조차 안 해서 주소를 매길 수도 없었고, `previewSimulation` 의 `inn` 은 거울상으로 정상 분기를 빠뜨렸다. 라벨 규약은 **「언제 실행되나」를 답하는 `~때` 꼴**이다 (`조건이 맞을 때` / `조건이 맞지 않을 때` / `취소했을 때` / `반복할 내용` / `거래했을 때` / `거래하지 못했을 때` / `골드가 부족할 때` / `이겼을 때` / `성공했을 때` …). 예전에는 같은 조건 분기가 뷰마다 `참` / `참일 때` / `조건이 맞을 때` / `조건을 만족함` 네 이름이었다. 분기 «있음» 판정은 **배열이 있으면 있음**(빈 배열 포함) 또는 플래그가 켜져 있으면 있음 — 빈 분기를 찾아 명령을 밀어 넣는 호출부가 있으므로 «비어 있지 않음» 으로 좁히지 말 것. 목록 뷰의 묶음 끝 마커는 `branchGroupEndLabel`. 계약: `test/eventCommandBranchesSingleSource.test.ts`.
 - **페이지 관리는 탭 옆 한 줄이 정본이다 (2026-08-30):** `pageProps.ts` 의 `renderPageActions` 가
   `.event-editor-pagebar` 에서 탭 스트립 **바로 오른쪽**에 여섯 버튼을 항상 마운트한다 —
-  `event-page-duplicate`(복제) · `event-page-copy`(복사) · `event-page-paste`(붙여넣기) ·
+  `event-page-duplicate`(복제) · `event-page-copy`(복사해 두기) · `event-page-paste`(붙여넣기) ·
   `event-page-move-back`/`event-page-move-forward`(순서) · `event-page-delete`(삭제).
   못 쓰는 상황은 **`disabled` + 이유를 담은 `title`** 이다. 조건부 마운트 금지 — 버튼이 나타났다
   사라지며 이웃 버튼 자리를 밀었다. 페이지 추가는 여전히 스트립의 `evt-page-add`(`+`) 하나다.
@@ -107,8 +107,11 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - **복제·순서 이동은 UI 도달 불가였다** — `copyEventPage` / `moveEventPage` 는 모델·유닛테스트가
     있는데 호출부가 0이었다. 페이지 순서는 런타임 우선순위다(`resolveEventPage` 는 **마지막에
     조건이 맞는 페이지**를 고른다) — 순서를 못 바꾸면 우선순위를 못 정한다.
-  - `copyEventPage` 는 **원본 바로 뒤**에 꽂는다. 맨 뒤에 붙이면 복제본이 원본보다 조용히 높은
-    우선순위를 갖는다.
+  - **복제·붙여넣기는 기준 페이지 바로 앞(낮은 우선순위)**에 꽂는다. 런타임은 조건을 통과한
+    마지막 페이지를 고르므로, 바로 뒤에 꽂으면 기준 페이지가 마지막일 때 복사본이 즉시 승자가 된다.
+    기준 페이지가 첫째·가운데·마지막 어디에 있든 바로 앞 삽입은 기존 resolve 결과를 유지한다.
+    활성 페이지가 대상 이벤트에 없는 붙여넣기만 끝에 넣는다.
+  - 복제·붙여넣기 이름은 `X 복사본`, `X 복사본 2`, … 순서로 충돌을 피한다.
   - **탭 우클릭 메뉴** `pageTabContextMenu.ts` (`event-page-context-menu`, 항목
     `event-page-menu-*`). 명령 목록에는 우클릭 메뉴가 있는데 탭에는 없어 상호작용 모델이 갈렸다.
     스킨은 `.event-command-context-menu` 를 공유하고, Escape 는 `stopPropagation` 으로 메뉴만 닫는다.
@@ -123,7 +126,14 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - 페이지 액션 아이콘 슬롯 제거: `.event-page-button-icon-{copy,paste,delete}` 는 글리프 CSS가 없어
     18px 빈 상자였다. 라벨만 남긴다.
   - 복제·복사·붙여넣기·순서·삭제는 모두 `toast` 로 결과를 말한다(예전 복사는 무반응이었다).
-  - 계약: `test/eventPageManagementSurface.test.ts`. 표면 기준선
+  - 페이지 순서 이동·삭제는 boolean 결과를 반환하고 실제 변경이 있을 때만 성공 toast 를 띄운다.
+    우클릭 메뉴는 클릭 시점의 live 페이지 배열을 읽으며, 닫기 한 경계가 outside listener 와
+    modalStack 등록을 함께 해제한다.
+  - 탭 포커스 복원은 위치 testid 가 아니라 `data-page-id` 로 새 렌더 트리를 다시 찾는다.
+  - 1024px 이하에서는 액션 문구를 줄이고 페이지바 안의 탭 스트립만 가로 스크롤을 소유한다.
+    고정 액션을 `overflow:hidden` 밖으로 자르는 구조는 금지다.
+  - 계약: `test/eventPageManagementSurface.test.ts`, `test/eventPages.test.ts`,
+    `test/eventEditorModal.test.ts`. 표면 기준선
     `test/fixtures/eventEditorShellSurface.baseline.json` 과 CSS 실사용 클래스 기준선을 함께 갱신했다.
 
 - **미리보기 입구는 보기 세그먼트 하나다 (2026-08-31):** 툴바 aux 버튼 `event-command-quick-preview`(`▶ 미리보기`) 는 **없다**. 세그먼트 `event-view-toggle-preview` 와 같은 `changeMode("preview")` 로 들어가는 중복 컨트롤이었고 같은 라벨로 나란히 서 있었다. aux 그룹에 남는 것은 `event-command-quick-ai` 와 `event-command-quick-flow` 뿐이다(플로우는 팝오버를 여는 별개 동작). `renderCommandToolbar` 의 `onOpenPreview` 배선도 함께 사라졌다.

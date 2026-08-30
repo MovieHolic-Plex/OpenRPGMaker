@@ -1089,7 +1089,8 @@ footer {
   padding: 0 7px;
 }
 
-/* Page selector lives in the page row only, one scrollable line. */
+/* Page selector and all six actions share one row. The tab strip owns the shrink/scroll budget; the
+ * fixed action cluster uses compact labels below 1024px so every action remains inside the pagebar. */
 .event-editor > .event-editor-pagebar {
   align-items: center;
   column-gap: 10px;
@@ -1099,6 +1100,7 @@ footer {
 .event-editor .evt-page-segments {
   align-items: center;
   display: flex;
+  flex: 1 1 auto;
   gap: 4px;
   min-width: 0;
   overflow-x: auto;
@@ -1182,6 +1184,39 @@ footer {
 .event-editor .event-page-actions-row .event-page-action-button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
+}
+
+@media (max-width: 1024px) {
+  .event-editor > .event-editor-pagebar {
+    column-gap: 4px;
+    padding-inline: 6px;
+  }
+
+  .event-editor > .event-editor-pagebar > .event-page-tabs {
+    gap: 3px;
+    margin-left: 2px;
+    padding-left: 5px;
+  }
+
+  .event-editor .event-page-actions-label {
+    display: none;
+  }
+
+  .event-editor .event-page-actions-row .event-page-action-button {
+    padding-inline: 5px;
+  }
+
+  .event-editor .event-page-button-label::after {
+    content: attr(data-compact-label);
+  }
+
+  .event-editor .event-page-button-label {
+    font-size: 0;
+  }
+
+  .event-editor .event-page-button-label::after {
+    font-size: 11px;
+  }
 }
 
 /* Destructive delete leaves the commit cluster. */
