@@ -229,5 +229,6 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - **실루엣 배율은 피크로 맞춘다.** 개별 프레임이 아니라 프레임 전집합에 맞춰야 한다. 한 프레임에 맞추면 날개를 접은 순간이 기준이 되어 박쥐가 원본의 절반으로 줄어든다. 피크 상대폭 실측: 슬라임 0.651·박쥐 0.906·골렘 0.818 대 원본 0.651·0.906·0.815.
 - **죽은 배틀러는 숨을 쉬지 않는다.** `<img>` 티어는 포즈마다 속성을 갈아끼우지 않으므로 사망만 CSS(`.battle-pose-dead`)로 끊는다. 적은 620ms 뒤 `battle-death-fade` 로 사라지지만 파티 몬스터에는 그 페이드가 없어 시체가 계속 호흡했다.
 - **스트립 로딩 실패**에는 `data-battler-anim` 을 걷어 정적 `src` 로 돌아간다. 배경만 보이는 구조라 스트립이 404 면 빈 상자가 되기 때문이다.
+- **새 배틀러를 붙이는 절차는 `openwiki/battler-idle-playbook.md` 에 있다.** 이 쪽은 런타임 계약·CSS·폴백의 *이유*를 적고, 플레이북은 *만드는 순서*를 적는다. 창 탐색은 눈으로 하지 말고 `scripts/asset-gen/select-battler-idle-window.mjs` 를 쓴다 — 계약 지표는 `scripts/asset-gen/battlerIdleMetrics.mjs` 가 정본이고 테스트와 선택기가 같은 파일을 import 한다.
 - **생성기.** 절차 티어는 `scripts/asset-gen/gen-battler-idle-strips.mjs`(Jimp, 상진 60% 만 1px 눌러 발은 고정), 영상 티어는 `scripts/asset-gen/pack-battler-idle-strip.mjs`(키드 프레임 → 정적 원본의 알파 박스에 폭 기준으로 맞춰 셀에 앉힌다). 폭 기준인 이유: 날개짓처럼 상하 진폭이 큰 모션은 전집합 박스가 세로로 길어져, 높이로 맞추면 실루엣 폭이 정적 배틀러보다 명함하게 작아진다(실측: 박쥐 상대폭 0.906 → 0.380).
 - 계약 테스트: `test/battlerIdleAnimation.test.ts`(카탈로그 정합·`<img>` 유지·포즈 우선·CSS steps/감속/`!important` 래칫).

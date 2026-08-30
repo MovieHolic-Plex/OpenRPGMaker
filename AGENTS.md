@@ -25,6 +25,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
    - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
    - Runtime battle: `openwiki/runtime-battle.md`
+   - 배틀러 idle 애니메이션을 **새로 추가하는 절차**(표시 상자 실측 → 클립 → 창 탐색 → 패킹 → 검증, 네 계약과 함정): `openwiki/battler-idle-playbook.md`
    - Runtime action combat: `openwiki/runtime-action-combat.md`
    - Runtime sessions & state: `openwiki/runtime-sessions.md`
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
