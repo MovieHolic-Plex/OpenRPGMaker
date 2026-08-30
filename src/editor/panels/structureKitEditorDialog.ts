@@ -127,6 +127,8 @@ interface EditorSession {
   search: string;
   category: TileCategoryId;
   recent: number[];
+  /** 켜면 이 구조물이 아직 쓰지 않은 타일만 팔레트에 남긴다. */
+  unusedOnly: boolean;
   /** AI 메타 폼의 미저장 편집 상태. [초안 수락] 전까지 store 에는 닿지 않는다. */
   draft: StructureKitAiMeta | null;
   /**
@@ -182,6 +184,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     search: "",
     category: "all",
     recent: [],
+    unusedOnly: false,
     draft: null,
     requireKit: () => {
       const current = findKit(tilesetId, kitId);
@@ -270,6 +273,9 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     if (!current) return;
     activeScale = resolveScale(current, session, canvasWrap);
     drawCanvasStage(canvasStage, gridOverlay, previewOverlay, tileset, current, session, activeScale);
+    // 칠하는 도중에도 "사용 중" 표식과 개수가 따라온다. refresh 는 자기 입력이 그대로면 즉시
+    // 빠지므로 드래그 한 칸마다 부려도 실제 DOM 쓰기는 바뀐 프레임에만 일어난다.
+    syncPalette();
   };
 
   const refreshViewBar = (): void => {
@@ -282,31 +288,64 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     });
   };
 
+  /**
+   * 오른쪽 열은 **열 때 한 번만** 조립한다.
+   *
+   * 예전에는 redraw 마다 `rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap)` 로
+   * 같은 노드를 다시 붙였다. 재부모(re-parent)는 스크롤 컨테이너의 scrollTop 을 0 으로 되돌리고
+   * 포커스를 body 로 떨어뜨린다 — 실측(1440×900, 12×10 킷): 팔레트를 400px 내려 타일을 하나
+   * 고르면 scrollTop 400 → 0, 두 번째 고를 때 250 → 0, 검색창에 글자를 치다 타일을 고르면
+   * document.activeElement 가 search → BODY. 사용자가 "state 때문에 화면이 흔들린다"고 한 그것이다.
+   * 그래서 붓 선택·필터·도구 전환은 **이미 있는 노드의 클래스만** 바꾼다.
+   */
+  const palette = createPalette(paletteWrap, tileset, session, () => {
+    // 붓만 바뀌었다 — 캔버스도 부위 목록도 그대로다. 도구줄과 팔레트 표식만 갱신한다.
+    tools.refresh();
+    syncPalette();
+  });
+  const filterBar = createFilterBar(filterWrap, session, () => syncPalette());
+  const tools = createTools(toolsWrap, session, (changed) => {
+    tools.refresh();
+    // 레이어를 바꾸면 스테이지 테두리(바닥/덧그림)가 달라진다 — 캔버스만 다시 그린다.
+    if (changed === "layer") redrawCanvasOnly();
+  });
+  const tabs = createTabs(tabsWrap, session, () => redraw());
+
+  /**
+   * 팔레트 표식과 "사용 중 N칸" 은 **같은 집합**을 보므로 한 경로로 밀어야 한다.
+   * 따로 놓았다가 e2e 에서 잡혔다: 칸을 칠하면 쓰인 타일엔 표식이 붙는데 숫자는
+   * "사용 중 없음" 에 멈추어 있었다 — 칠하기 경로가 필터 줄을 갱신하지 않았기 때문이다.
+   */
+  function syncPalette(): void {
+    filterBar.refresh(palette.refresh());
+  }
+  // 오른쪽 열은 지금 이 한 번만 조립된다. 툴·필터·팔레트·AI 폼은 전부 여기 남아 있고
+  // 탭 전환은 hidden 을 토글한다 — 노드를 떼었다 다시 붙이면 팔레트 스크롤이 매번 맨 위로 튴다.
+  rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap, aiWrap);
+
   const redraw = (): void => {
     const current = session.requireKit();
     if (!current) return;
     redrawCanvasOnly();
     refreshViewBar();
     drawSize(sizeWrap, current, redraw, session, commitKit);
-    drawTabs(tabsWrap, session, redraw);
-    const showParts = session.tab === "shape";
-    if (showParts) {
-      partsWrap.removeAttribute("hidden");
-      hintsWrap.removeAttribute("hidden");
-    } else {
-      partsWrap.setAttribute("hidden", "");
-      hintsWrap.setAttribute("hidden", "");
-    }
-    if (session.tab === "ai") {
-      drawAiTab(aiWrap, current, tileset, session, redraw, commitKit);
-      rightWrap.replaceChildren(tabsWrap, aiWrap);
-    } else {
-      drawTools(toolsWrap, session, redraw);
-      drawFilterBar(filterWrap, session, () => drawPalette(paletteWrap, tileset, session, redraw));
-      drawPalette(paletteWrap, tileset, session, redraw);
+    // #338 의 refresh 방식을 쓴다 — 예전 replaceChildren 재부모가 붓을 고를 때마다 팔레트를
+    // 떼었다 붙여 흔들림을 만들었다. 여기에 #339 의 칸 힌트(hintsWrap)를 얹는다.
+    tabs.refresh();
+    tools.refresh();
+    syncPalette();
+    const shapeTab = session.tab === "shape";
+    setHidden(partsWrap, !shapeTab);
+    setHidden(hintsWrap, !shapeTab);
+    setHidden(toolsWrap, !shapeTab);
+    setHidden(filterWrap, !shapeTab);
+    setHidden(paletteWrap, !shapeTab);
+    setHidden(aiWrap, shapeTab);
+    if (shapeTab) {
       drawParts(partsWrap, current, session, redraw, commitKit);
       drawCellHints(hintsWrap, current, session, redraw, commitKit);
-      rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap);
+    } else {
+      drawAiTab(aiWrap, current, tileset, session, redraw, commitKit);
     }
   };
 
@@ -789,11 +828,7 @@ export function buildAiMetaDraftPrompt(
   tileset: TilesetDef,
   existingNames: readonly string[],
 ): string {
-  const used = new Set<number>();
-  for (const row of kit.rows) {
-    for (const tile of row.tiles) if (tile !== TILE.EMPTY) used.add(tile);
-    for (const tile of row.upperTiles ?? []) if (tile !== TILE.EMPTY) used.add(tile);
-  }
+  const used = collectUsedTiles(kit);
   const legend = [...used]
     .sort((a, b) => a - b)
     .map((tile) => {
@@ -1010,50 +1045,72 @@ function drawShapePreview(
 /** 팔레트 한 칸의 픽셀 크기 — CSS 의 .structure-kit-editor-swatch 와 같은 값이어야 한다. */
 const SWATCH_PX = 26;
 
+/** 보이기/숨기기 한 줄짜리 헬퍼 — hidden 속성은 FakeDom 에서도 그대로 읽힌다. */
+function setHidden(node: HTMLElement, hidden: boolean): void {
+  if (hidden) node.setAttribute("hidden", "");
+  else node.removeAttribute("hidden");
+}
+
+/**
+ * 이 킷이 지금 쓰고 있는 타일 번호. 두 레이어를 모두 본다.
+ *
+ * 왜 필요한가: 480칸 팔레트에서 "이미 이 구조물에 쓴 타일"이 구별되지 않으면 사용자는
+ * 방금 지붕에 쓴 타일을 다시 찾으려고 시트를 눈으로 훑는다. 표식과 [안 쓴 타일만] 필터가
+ * 같은 집합을 본다.
+ */
+export function collectUsedTiles(kit: SectionStructureKitDef): Set<number> {
+  const used = new Set<number>();
+  for (const row of kit.rows) {
+    for (const tile of row.tiles) if (tile !== TILE.EMPTY) used.add(tile);
+    for (const tile of row.upperTiles ?? []) if (tile !== TILE.EMPTY) used.add(tile);
+  }
+  return used;
+}
+
+type PaletteView = {
+  /**
+   * 이미 만들어 둔 480칸의 **클래스만** 갱신한다 — 스크롤·포커스가 그대로 남는다.
+   * 지금 킷이 쓰는 타일 칸수를 돌려준다 — 필터 줄의 숫자가 같은 집합에서 나와야 하기 때문이다.
+   */
+  readonly refresh: () => number;
+};
+
 /**
  * 타일 팔레트. 480칸을 **전부** 유지한다 — 구조물은 지붕 변형처럼 세부 타일이 필요해서
  * 맵 팔레트처럼 오토타일을 대표 1칸으로 접으면 만들 수 없는 구조물이 생긴다.
  * 검색·분류에 걸리지 않은 칸은 숨기지 않고 흐리게만 한다: 칸의 위치가 원본 시트의 좌표라
  * 숨기면 "어디쯤 타일"인지 감각이 깨진다(맵 편집기의 커스텀 아틀라스와 같은 판단).
+ * 예외는 [안 쓴 타일만] 뿐이다 — 사용자가 명시적으로 켠 필터이고, 걸러지는 쪽이 소수다.
  *
- * 제목(title)에 한글 라벨을 넣는다 — 예전에는 타일 번호 문자열뿐이었다.
+ * **노드는 열 때 한 번만 만든다.** 예전에는 타일을 고를 때마다 480개를 재생성하고
+ * 부모에 다시 붙여서 스크롤이 맨 위로 튀었다(실측 400 → 0).
  */
-function drawPalette(
+function createPalette(
   host: HTMLElement,
   tileset: TilesetDef,
   session: EditorSession,
-  redraw: () => void,
-): void {
-  // 480칸을 재생성하면 스크롤 위치가 사라진다. 다시 그리는 경로가 여럿(도구 전환·타일 선택·
-  // 레이어 전환)이라 호출부마다 챙기지 않고 여기서 한 번에 복원한다.
-  const scrollTop = host.scrollTop;
-  const visible = new Set(
-    filterTileIndexes(tileset, {
-      category: session.category,
-      query: session.search,
-      recent: session.recent,
-    }),
-  );
+  onPick: () => void,
+): PaletteView {
   const swatches: HTMLElement[] = [];
   for (let tile = 0; tile < tileset.count; tile += 1) {
-    // 고른 타일은 필터에 안 걸려도 항상 선명해야 한다 — 아니면 "선택 중"인 칸이 흐려진다.
-    const dimmed = !visible.has(tile) && session.tile !== tile;
+    const label = tileDisplayLabelForIndex(tile);
+    const index = tile;
     swatches.push(
       el("button", {
-        class: `structure-kit-editor-swatch${tile === session.tile ? " active" : ""}${dimmed ? " is-filtered-out" : ""}`,
+        class: "structure-kit-editor-swatch",
         attrs: {
           type: "button",
           style: tilesetTileBackgroundStyle(tileset, tile, SWATCH_PX),
-          title: tileDisplayLabelForIndex(tile),
           // 칸에 글자가 없어 접근성 이름이 title 뿐이다. 지금 잡힌 붓은 색으로만
-          // 구별되므로 aria-pressed 로도 알려야 한다.
-          "aria-label": tileDisplayLabelForIndex(tile),
-          "aria-pressed": tile === session.tile ? "true" : "false",
+          // 구별되므로 aria-pressed 로도 알려야 한다. 사용 여부는 refresh 가 덧붙인다.
+          title: label,
+          "aria-label": label,
+          "aria-pressed": "false",
         },
         dataset: { testid: `structure-kit-editor-tile-${tile}` },
         on: {
           click: () => {
-            session.tile = tile;
+            session.tile = index;
             // 도구가 지우기·스포이트·부위·칸 힌트였으면 칠하기로 돌린다. 사각형·타원·채우기는
             // 타일만 바꿔 그 도구를 계속 쓰게 둔다 — 맵 편집기와 같은 감각이다.
             if (
@@ -1062,34 +1119,92 @@ function drawPalette(
             ) {
               session.tool = "paint";
             }
-            noteRecentTile(session, tile);
-            redraw();
+            noteRecentTile(session, index);
+            onPick();
           },
         },
       }),
     );
   }
-  if (visible.size === 0) {
-    swatches.push(
-      el("div", {
-        class: "structure-kit-editor-palette-empty",
-        text: "조건에 맞는 타일이 없습니다.",
-        dataset: { testid: "structure-kit-editor-palette-empty" },
+  const empty = el("div", {
+    class: "structure-kit-editor-palette-empty",
+    text: "조건에 맞는 타일이 없습니다.",
+    dataset: { testid: "structure-kit-editor-palette-empty" },
+  });
+  host.replaceChildren(...swatches, empty);
+
+  // 마지막으로 그린 상태의 지문. 칠하기 드래그는 칸마다 refresh 를 부르므로,
+  // 바뀐 것이 없으면 480번의 DOM 쓰기를 아예 하지 않는다.
+  let signature = "";
+
+  const refresh = (): number => {
+    const kit = findKit(session.tilesetId, session.kitId);
+    const used = kit ? collectUsedTiles(kit) : new Set<number>();
+    const next = [
+      session.tile,
+      session.category,
+      session.search,
+      session.unusedOnly ? "unused" : "all",
+      session.recent.join(","),
+      [...used].sort((a, b) => a - b).join(","),
+    ].join("|");
+    if (next === signature) return used.size;
+    signature = next;
+
+    const visible = new Set(
+      filterTileIndexes(tileset, {
+        category: session.category,
+        query: session.search,
+        recent: session.recent,
       }),
     );
-  }
-  host.replaceChildren(...swatches);
-  if (scrollTop > 0) host.scrollTop = scrollTop;
+    let shown = 0;
+    for (let tile = 0; tile < swatches.length; tile += 1) {
+      const swatch = swatches[tile];
+      if (!swatch) continue;
+      const isActive = tile === session.tile;
+      const isUsed = used.has(tile);
+      // 고른 타일은 필터에 안 걸려도 항상 선명하고 사라지지 않는다 — 아니면 "선택 중"인 칸이
+      // 흐려지거나 [안 쓴 타일만] 을 켜는 순간 지금 쓰는 붓이 화면에서 없어진다.
+      const hidden = session.unusedOnly && isUsed && !isActive;
+      const matches = visible.has(tile) && !hidden;
+      swatch.classList.toggle("active", isActive);
+      swatch.classList.toggle("is-filtered-out", !matches && !isActive);
+      swatch.classList.toggle("is-used", isUsed);
+      setHidden(swatch, hidden);
+      swatch.setAttribute("aria-pressed", isActive ? "true" : "false");
+      const label = isUsed
+        ? `${tileDisplayLabelForIndex(tile)} · 이 구조물에 사용 중`
+        : tileDisplayLabelForIndex(tile);
+      swatch.setAttribute("title", label);
+      swatch.setAttribute("aria-label", label);
+      if (matches) shown += 1;
+    }
+    setHidden(empty, shown > 0);
+    return used.size;
+  };
+
+  refresh();
+  return { refresh };
 }
 
+type FilterBarView = {
+  /** 분류칩 활성 표시와 "사용 중 N칸" 숫자만 고친다 — 검색창 노드는 건드리지 않는다. */
+  readonly refresh: (usedCount: number) => void;
+};
+
 /**
- * 팔레트 위 검색창 + 분류칩. 분류 목록과 필터 계산은 맵 팔레트와 같은 출처
+ * 팔레트 위 검색창 + 분류칩 + [안 쓴 타일만]. 분류 목록과 필터 계산은 맵 팔레트와 같은 출처
  * (panels/tilePaletteFilter.ts)를 쓴다 — 규칙이 두 곳에서 갈라지지 않게.
  *
- * 팔레트만 다시 그리는 콜백(redrawPalette)을 받는 이유: 검색어를 한 글자 칠 때마다
- * 전체를 재렌더하면 입력 포커스와 커서 위치가 날아간다.
+ * 노드를 한 번만 만드는 이유는 팔레트와 같다. 특히 검색창을 다시 만들면 한 글자 칠 때마다
+ * 포커스와 커서 위치가 날아간다.
  */
-function drawFilterBar(host: HTMLElement, session: EditorSession, redrawPalette: () => void): void {
+function createFilterBar(
+  host: HTMLElement,
+  session: EditorSession,
+  onFilterChange: () => void,
+): FilterBarView {
   const search = el("input", {
     class: "structure-kit-editor-search",
     attrs: { type: "search", placeholder: "번호·이름·태그로 타일 찾기" },
@@ -1100,45 +1215,104 @@ function drawFilterBar(host: HTMLElement, session: EditorSession, redrawPalette:
         const target = event.currentTarget;
         if (!(target instanceof HTMLInputElement)) return;
         session.search = target.value;
-        redrawPalette();
+        onFilterChange();
       },
     },
   });
 
   const chips = TILE_CATEGORIES.map((category) =>
     el("button", {
-      class: `structure-kit-editor-chip${session.category === category.id ? " active" : ""}`,
-      attrs: { type: "button", "aria-pressed": session.category === category.id ? "true" : "false" },
+      class: "structure-kit-editor-chip",
+      attrs: { type: "button", "aria-pressed": "false" },
       text: category.label,
       dataset: { testid: `structure-kit-editor-category-${category.id}` },
       on: {
         click: () => {
           session.category = category.id;
-          // 칩은 활성 표시가 바뀌어야 하니 이 줄도 다시 그린다.
-          drawFilterBar(host, session, redrawPalette);
-          redrawPalette();
+          applyChipState();
+          onFilterChange();
         },
       },
     }),
   );
 
-  host.replaceChildren(search, el("div", { class: "structure-kit-editor-chips", children: chips }));
+  const applyChipState = (): void => {
+    TILE_CATEGORIES.forEach((category, index) => {
+      const chip = chips[index];
+      if (!chip) return;
+      const active = session.category === category.id;
+      chip.classList.toggle("active", active);
+      chip.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  };
+
+  // 체크박스인 이유: 필터를 켜 둔 상태가 화면에 계속 남아야 한다. 분류칩에 섞으면
+  // "집" 같은 분류와 배타가 되어 둘을 같이 걸 수 없다 — 실제 저작은 둘을 겹쳐 쓴다.
+  const unusedBox = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "structure-kit-editor-unused-only" },
+    on: {
+      change: (event: Event) => {
+        const target = event.currentTarget;
+        if (!(target instanceof HTMLInputElement)) return;
+        session.unusedOnly = target.checked;
+        onFilterChange();
+      },
+    },
+  });
+  const usedCountLabel = el("span", {
+    class: "structure-kit-editor-used-count",
+    dataset: { testid: "structure-kit-editor-used-count" },
+    text: "",
+  });
+
+  host.replaceChildren(
+    search,
+    el("div", { class: "structure-kit-editor-chips", children: chips }),
+    el("div", {
+      class: "structure-kit-editor-filter-row",
+      children: [
+        el("label", {
+          class: "structure-kit-editor-unused-label",
+          children: [unusedBox, el("span", { text: "안 쓴 타일만" })],
+        }),
+        usedCountLabel,
+      ],
+    }),
+  );
+  applyChipState();
+
+  return {
+    refresh: (usedCount: number) => {
+      applyChipState();
+      usedCountLabel.textContent = usedCount > 0 ? `사용 중 ${usedCount}칸` : "사용 중 없음";
+    },
+  };
 }
 
-function drawTabs(host: HTMLElement, session: EditorSession, redraw: () => void): void {
-  const button = (label: string, testid: string, tab: EditorSession["tab"]): HTMLElement =>
+type TabsView = { readonly refresh: () => void };
+
+function createTabs(host: HTMLElement, session: EditorSession, onSwitch: () => void): TabsView {
+  const make = (label: string, testid: string, tab: EditorSession["tab"]): HTMLElement =>
     el("button", {
-      class: `btn small${session.tab === tab ? " primary" : ""}`,
+      class: "btn small",
       attrs: { type: "button" },
       text: label,
       dataset: { testid },
-      on: { click: () => { session.tab = tab; redraw(); } },
+      on: { click: () => { session.tab = tab; onSwitch(); } },
     });
 
-  host.replaceChildren(
-    button("모양", "structure-kit-editor-tab-shape", "shape"),
-    button("AI 메타", "structure-kit-editor-tab-ai", "ai"),
-  );
+  const buttons: readonly { readonly node: HTMLElement; readonly tab: EditorSession["tab"] }[] = [
+    { node: make("모양", "structure-kit-editor-tab-shape", "shape"), tab: "shape" },
+    { node: make("AI 메타", "structure-kit-editor-tab-ai", "ai"), tab: "ai" },
+  ];
+  host.replaceChildren(...buttons.map((entry) => entry.node));
+
+  const refresh = (): void => {
+    for (const entry of buttons) entry.node.classList.toggle("primary", session.tab === entry.tab);
+  };
+  refresh();
+  return { refresh };
 }
 
 /**
@@ -1162,50 +1336,70 @@ const TOOL_BUTTONS: readonly {
   { tool: "hint", label: "칸 힌트 (증분 축·메모)", icon: "template", testid: "structure-kit-editor-tool-hint" },
 ];
 
-function drawTools(host: HTMLElement, session: EditorSession, redraw: () => void): void {
+type ToolsView = { readonly refresh: () => void };
+
+/** 뭐가 바뀐는지 — 레이어는 캔버스 테두리까지 바꾸므로 호출부가 구별해야 한다. */
+type ToolChange = "tool" | "layer";
+
+/**
+ * 도구·레이어 버튼. 노드를 한 번만 만들고 활성 표식은 refresh 가 클래스로만 바꾼다 —
+ * 예전에는 도구를 눌를 때마다 오른족 열을 통째 다시 조립해서 팔레트 스크롤이 튀었다.
+ */
+function createTools(
+  host: HTMLElement,
+  session: EditorSession,
+  onChange: (changed: ToolChange) => void,
+): ToolsView {
   // 아이콘은 맵 편집기의 SVG 팩토리를 그대로 쓴다 — 유니코드 글리프는 폰트에 따라
-  // 안 그려지거나 뭉개져서 무슨 도구인지 알 수 없었다. (makeTileToolbar 자체는 부르지
-  // 않는다: installToolbarBadgeRefresh 가 모듈 전역을 마지막 호출자로 덮어써서
-  // 맵 팔레트의 자동 갱신이 이 편집기로 샌다.)
-  const toolButton = (entry: (typeof TOOL_BUTTONS)[number]): HTMLElement =>
-    el("button", {
-      class: `btn small structure-kit-editor-tool${session.tool === entry.tool ? " primary" : ""}`,
-      // aria-pressed 는 맵 도구막대와 같은 규약이다. 아이콘 전용 버튼이라 이게 없으면
-      // 화면 낭독기 쪽에서 지금 어느 도구가 잡혀 있는지 알 방법이 색뿐이다.
-      attrs: {
-        type: "button",
-        title: entry.label,
-        "aria-label": entry.label,
-        "aria-pressed": session.tool === entry.tool ? "true" : "false",
-      },
+  // 안 그려지거나 뭉게지어서 무슨 도구인지 알 수 없었다. (makeTileToolbar 자시체는 부르지
+  // 않는다: installToolbarBadgeRefresh 가 모듈 전역을 마지리 호출자로 덮어서
+  // 맵 팔레트의 자동 갱신이 이 편집기로 쥙다.)
+  const toolNodes = TOOL_BUTTONS.map((entry) => ({
+    tool: entry.tool,
+    node: el("button", {
+      class: "btn small structure-kit-editor-tool",
+      // aria-pressed 는 맵 도구문대와 같은 규약이다. 아이콘 전용 버튼이라 이게 없으면
+      // 화면 낞독기 쪽에서 지금 어느 도구가 잡혀 있는지 알 방법이 색뿐이다.
+      attrs: { type: "button", title: entry.label, "aria-label": entry.label, "aria-pressed": "false" },
       children: [makeSvgIcon(entry.icon)],
       dataset: { testid: entry.testid },
-      on: { click: () => { session.tool = entry.tool; redraw(); } },
-    });
+      on: { click: () => { session.tool = entry.tool; onChange("tool"); } },
+    }),
+  }));
 
-  const layerButton = (label: string, testid: string, layer: KitLayer): HTMLElement =>
-    el("button", {
-      class: `btn small structure-kit-editor-layer-btn${session.layer === layer ? " primary" : ""}`,
-      attrs: {
-        type: "button",
-        "aria-label": `${label} 레이어`,
-        "aria-pressed": session.layer === layer ? "true" : "false",
-      },
-      text: label,
-      dataset: { testid },
-      on: { click: () => { session.layer = layer; redraw(); } },
-    });
+  const layerNodes = [
+    { layer: "lower" as KitLayer, label: "바닥", testid: "structure-kit-editor-layer-lower" },
+    { layer: "upper" as KitLayer, label: "덧그림", testid: "structure-kit-editor-layer-upper" },
+  ].map((entry) => ({
+    layer: entry.layer,
+    node: el("button", {
+      class: "btn small structure-kit-editor-layer-btn",
+      attrs: { type: "button", "aria-label": `${entry.label} 레이어`, "aria-pressed": "false" },
+      text: entry.label,
+      dataset: { testid: entry.testid },
+      on: { click: () => { session.layer = entry.layer; onChange("layer"); } },
+    }),
+  }));
 
   host.replaceChildren(
-    el("div", { class: "structure-kit-editor-tool-row", children: TOOL_BUTTONS.map(toolButton) }),
-    el("div", {
-      class: "structure-kit-editor-tool-row",
-      children: [
-        layerButton("바닥", "structure-kit-editor-layer-lower", "lower"),
-        layerButton("덧그림", "structure-kit-editor-layer-upper", "upper"),
-      ],
-    }),
+    el("div", { class: "structure-kit-editor-tool-row", children: toolNodes.map((entry) => entry.node) }),
+    el("div", { class: "structure-kit-editor-tool-row", children: layerNodes.map((entry) => entry.node) }),
   );
+
+  const refresh = (): void => {
+    for (const entry of toolNodes) {
+      const active = session.tool === entry.tool;
+      entry.node.classList.toggle("primary", active);
+      entry.node.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+    for (const entry of layerNodes) {
+      const active = session.layer === entry.layer;
+      entry.node.classList.toggle("primary", active);
+      entry.node.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+  };
+  refresh();
+  return { refresh };
 }
 
 /** 캔버스 아래 보기 줄 — 되돌리기 · 확대 · 격자. */

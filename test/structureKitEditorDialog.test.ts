@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createStructureKitFromHouse, importStructureKits, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
-import { buildAiMetaDraftPrompt, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
+import { buildAiMetaDraftPrompt, collectUsedTiles, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
@@ -625,5 +625,101 @@ describe("칸 힌트 도구", () => {
     seedKit();
     openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
     expect(pick("structure-kit-editor-cell-hints-empty")).not.toBeNull();
+describe("collectUsedTiles", () => {
+  it("두 레이어에서 쓰는 타일을 모으고 빈 칸은 뺀다", () => {
+    const used = collectUsedTiles({
+      id: "k",
+      kind: "section",
+      width: 2,
+      height: 2,
+      rows: [
+        { tiles: [240, -1], upperTiles: [116, -1] },
+        { tiles: [-1, 300] },
+      ],
+    } as SectionStructureKitDef);
+    expect([...used].sort((a, b) => a - b)).toEqual([116, 240, 300]);
+  });
+});
+
+/* 사용자가 "팔레트에서 클릭해서 그리는데 state 때문에 화면이 자꾸 흔들린다"고 했다.
+   실측(1440×900): 팔레트를 400px 내려 타일을 하나 고르면 scrollTop 400 → 0,
+   검색창에 글자를 치다 타일을 고르면 activeElement 가 search → BODY.
+   원인은 redraw 가 rightWrap.replaceChildren 로 같은 노드를 **재부모**하고 480칸을
+   재생성한 것이다. 노드 정체성이 유지되는지로 회귀를 못 박는다 — FakeDom 은 스크롤을
+   흉내내지 않으므로 정체성이 이 계약의 검사 가능한 형태다. */
+describe("편집기 팔레트 안정성", () => {
+  const swatch = (tile: number): FakeElement =>
+    document.querySelector(`[data-testid='structure-kit-editor-tile-${tile}']`) as unknown as FakeElement;
+
+  it("타일을 골라도 팔레트 노드를 다시 만들지 않는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    const before = swatch(421);
+    const searchBefore = document.querySelector("[data-testid='structure-kit-editor-search']");
+    before.click();
+
+    expect(swatch(421)).toBe(before);
+    expect(document.querySelector("[data-testid='structure-kit-editor-search']")).toBe(searchBefore);
+    expect(before.className).toContain("active");
+  });
+
+  it("도구·분류를 바꿔도 팔레트와 검색창 노드가 그대로다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    const paletteBefore = document.querySelector("[data-testid='structure-kit-editor-palette']");
+    const searchBefore = document.querySelector("[data-testid='structure-kit-editor-search']");
+    (document.querySelector("[data-testid='structure-kit-editor-tool-erase']") as unknown as FakeElement).click();
+    (document.querySelector("[data-testid='structure-kit-editor-category-house']") as unknown as FakeElement).click();
+
+    expect(document.querySelector("[data-testid='structure-kit-editor-palette']")).toBe(paletteBefore);
+    expect(document.querySelector("[data-testid='structure-kit-editor-search']")).toBe(searchBefore);
+    const chip = document.querySelector("[data-testid='structure-kit-editor-category-house']") as unknown as FakeElement;
+    expect(chip.className).toContain("active");
+  });
+
+  it("이 구조물이 쓰는 타일에 사용 표식이 붙는다", () => {
+    seedKit(); // 240 · 116 을 쓴다
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    expect(swatch(240).className).toContain("is-used");
+    expect(swatch(116).className).toContain("is-used");
+    expect(swatch(421).className).not.toContain("is-used");
+    expect(swatch(240).getAttribute("title")).toContain("사용 중");
+    const count = document.querySelector("[data-testid='structure-kit-editor-used-count']") as unknown as FakeElement;
+    expect(count.textContent).toBe("사용 중 2칸");
+  });
+
+  it("[안 쓴 타일만] 을 켜면 쓰인 타일이 숨고, 지금 잡은 붓은 남는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    // 안 쓰는 타일을 붓으로 잡아 둔다 — 기본 붓(잔디 240)은 이 킷이 쓰는 타일이다.
+    swatch(421).click();
+
+    const box = document.querySelector("[data-testid='structure-kit-editor-unused-only']") as unknown as FakeElement;
+    box.checked = true;
+    box.dispatchEvent(new Event("change"));
+
+    expect(swatch(240).getAttribute("hidden")).toBe("");
+    expect(swatch(116).getAttribute("hidden")).toBe("");
+    expect(swatch(421).getAttribute("hidden")).toBeNull();
+
+    box.checked = false;
+    box.dispatchEvent(new Event("change"));
+    expect(swatch(240).getAttribute("hidden")).toBeNull();
+  });
+
+  it("칠하면 그 타일이 사용 표식을 얻는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    expect(swatch(421).className).not.toContain("is-used");
+
+    swatch(421).click();
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+    canvas.dispatchEvent(Object.assign(new Event("pointerup"), { clientX: 1, clientY: 1, button: 0 }));
+
+    expect(swatch(421).className).toContain("is-used");
   });
 });

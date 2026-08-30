@@ -525,3 +525,44 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 - **사슬**: 이 레코드가 `village/authoringData.ts` → `buildVillageDomain` 의 `VillageIntent.templateCatalog` 로 들어가고, 동시에 `ai/contextBuilder.ts` 의 `## 마을 저작 데이터` 섹션에 실려 모델이 `author_village({ presetId })` / `housePlans[].templateId` 로 지목할 수 있게 된다. 우선순위는 **명시 인자 > 사용자 프리셋 > 테마 추론 > 씨앗값 파생**.
 - **기하 규약은 시공기에서 베껴 온다.** `templateFromRecord()` 는 폭·높이·바운딩 박스만 보는 게 아니라 `stampFootprintHouseKit` 이 요구하는 것까지 본다 — **열마다** 이어진 칸이 `벽 밴드 + 지붕 2` 행 이상이어야 하고(1층 5행, 2층 7행, 낮은 벽 4행), A자 지붕 킷은 날개 하나에 높이가 `벽 밴드 + ⌊(폭−1)/2⌋ + 1` 로 고정이다. 이걸 안 보면 화면은 「통과」라고 하는데 하네스는 "집을 한 채도 시공하지 못했다" 로 실패한다(8×8 에 위 4행만 폭 8 인 ㅜ 자로 실측). `+ 날개 추가` 의 기본 높이도 `minWingRun()` 을 써서 누른 직후 위반이 되지 않게 한다.
 - 커버리지: `test/databaseVillageView.test.ts`(16케이스 — 규약 통과·내장 복제·날개 편집·짧은 열 위반·프리셋 키 생성/삭제·참조 정리), `test/villageAuthoringData.test.ts`(17케이스 — 읽기·AI 컨텍스트·시공 반영·내장 34종 왕복·열 높이·A자 지붕), `test/houseTemplateCatalog.test.ts`(내장 34종 데이터화 등가성).
+
+### 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+
+사용자: "팔레트에서 클릭해서 그리는 형식인데 이게 자꾸 state 때문에 흔들리는 것 같다."
+맞았다. 관찰기 `scripts/observe-structure-ux.mjs`(포트를 주면 워크트리 dev 서버에 붙는다,
+결과는 `verify-shots/structure-ux-*/OBS.json` + PNG)로 재니 숫자가 그대로 나왔다.
+
+- **고치기 전 실측(1440×900, 12×10 킷)**: 팔레트를 400px 내려 타일을 하나 고르면 `scrollTop`
+  **400 → 0**, 두 번째로 고를 때 **250 → 0**. 검색창에 글자를 치다 타일을 고르면
+  `document.activeElement` 가 `search` → **BODY**. 즉 이웃 타일을 연달아 집는 리듬이 불가능하고,
+  매번 다시 스크롤해서 같은 자리를 눈으로 찾아야 했다.
+- **원인은 `redraw()` 가 `rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap)` 로
+  같은 노드를 다시 붙인 것**이다. 자식 목록이 똑같아도 `replaceChildren` 은 노드를 떼었다 다시
+  붙이며, **재부모는 스크롤 컨테이너의 `scrollTop` 을 0 으로 되돌리고 포커스를 body 로 떨어뜨린다.**
+  게다가 `drawPalette` 가 480칸을 매번 재생성했다 — 자기 안에서 `scrollTop` 을 복원해도 그 뒤에
+  오는 재부모가 다시 지웠다(복원 코드가 있는데도 증상이 남은 이유).
+- **고침: 오른쪽 열은 열 때 한 번만 조립한다.** `createPalette` / `createFilterBar` / `createTools` /
+  `createTabs` 가 노드를 만들어 두고 `refresh()` 는 **클래스·속성만** 바꾼다. 탭 전환도
+  `replaceChildren` 이 아니라 `hidden` 토글이다. 실측: 400 → **400**, 250 → **250**, 검색 중
+  타일을 골라도 검색어가 남고 포커스는 누른 그 칸에 있다.
+- **팔레트 refresh 는 지문(signature)으로 자기 자신을 아낀다.** 칠하기 드래그는 칸마다
+  `redrawCanvasOnly()` 를 부르고 거기서 팔레트 표식도 갱신하는데, 붓·필터·사용 타일 집합을 이어
+  붙인 문자열이 그대로면 즉시 빠져나온다. 그래서 480칸 DOM 쓰기는 실제로 바뀐 프레임에만 일어난다.
+- **격자를 켜도 아무것도 보이지 않았다.** `kitRender.ts` 는 캔버스를 `#101318` 로 칠하는데
+  격자선 색이 `var(--border-strong)`(= `rgba(15,23,42,.461)`, 거의 검정)이었다. 검정 위의 검정이라
+  12×10 빈 킷 스크린샷이 **완전한 검정 한 장**이었다 — 칸 경계도, 킷이 어디서 끝나는지도 알 수 없었다.
+  선을 `rgb(255 255 255 / 0.18)` 로, 스테이지 테두리를 `rgb(255 255 255 / 0.32)` 로 바꿨다.
+  **이 둘은 의도적 비토큰 값**이다: 아래에 깔린 색이 테마 토큰이 아니라 캔버스에 직접 칠한 고정색이다.
+- **이미 쓴 타일을 팔레트에서 구별한다.** `collectUsedTiles(kit)`(두 레이어 모두 본다)가 정본이고
+  AI 초안 프롬프트의 타일 범례도 같은 함수를 쓴다. 표식은 `.is-used` → 오른쪽 위 점 + `title` 에
+  "· 이 구조물에 사용 중", 필터 줄에 `사용 중 N칸`(`structure-kit-editor-used-count`).
+  검색에 안 걸린 사용 타일은 `opacity .22` 로 점까지 사라지므로 `.is-filtered-out.is-used` 만
+  `.55` 로 둔다 — "쓴 타일 표시"가 검색 흐림보다 우선이다.
+- **[안 쓴 타일만] 은 체크박스**(`structure-kit-editor-unused-only`)다. 분류칩에 섞으면 "집" 같은
+  분류와 배타가 되는데 실제 저작은 둘을 겹쳐 쓴다. 켜면 쓰인 칸을 `hidden` 으로 **숨긴다** —
+  "칸 위치가 시트 좌표라 숨기지 않는다"는 이 팔레트의 기본 규약을 사람이 명시적으로 켠 이 필터에서만
+  어긴다. 단 **지금 잡은 붓은 숨기지 않는다**(아니면 켜는 순간 쓰는 붓이 화면에서 사라진다).
+- 커버리지: `test/structureKitEditorDialog.test.ts`(`collectUsedTiles`, 타일을 골라도 팔레트·검색창
+  노드가 같은 인스턴스로 남는다, 사용 표식·개수, `[안 쓴 타일만]` 숨김과 붓 면제, 칠하면 표식이 붙는다),
+  브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts` 의 스크롤·포커스 유지 케이스와 사용 표식 케이스.
+  스크롤은 FakeDom 이 흉내내지 않으므로 유닛에서는 **노드 정체성**으로 대신 못을 박는다.
