@@ -5,6 +5,7 @@ import { gotoWithRetry } from "./lib/goto-retry.mjs";
 const BASE = process.env.CAPTURE_BASE ?? "http://127.0.0.1:8790";
 const OUT = "verify-shots/ai-db-generate";
 const GENERATION_TIMEOUT_MS = 240_000;
+const IMAGE_DELAY_MS = Number(process.env.CAPTURE_IMAGE_DELAY_MS ?? "0");
 
 const BRIEF: Record<"enemy" | "item", string> = {
   enemy: "얼음 동굴에 사는 서슬 늑대. 빠르고 물리 공격 위주, 초중반 난이도의 야수형 몬스터.",
@@ -62,6 +63,7 @@ async function installStubs(page: Page, artwork: Record<"enemy" | "item", string
   });
 
   await page.route("**/v1/images/generations", async (route: Route) => {
+    if (IMAGE_DELAY_MS > 0) await new Promise((resolve) => setTimeout(resolve, IMAGE_DELAY_MS));
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -129,6 +131,10 @@ async function runGeneration(page: Page, kind: "enemy" | "item"): Promise<{ stat
 
   await page.getByTestId("db-ai-generate-run").click();
   const status = page.getByTestId("db-ai-generate-status");
+  if (IMAGE_DELAY_MS > 0) {
+    await page.getByTestId("db-ai-generate-close").filter({ hasText: "취소" }).waitFor({ timeout: 20_000 });
+    await shoot(page, `${kind}-2b-inflight-cancel`);
+  }
   await status.filter({ hasText: /^(완료|실패)/ }).waitFor({ state: "visible", timeout: GENERATION_TIMEOUT_MS });
   const statusText = (await status.textContent()) ?? "";
   await shoot(page, `${kind}-3-result`);
