@@ -232,3 +232,39 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - **새 배틀러를 붙이는 절차는 `openwiki/battler-idle-playbook.md` 에 있다.** 이 쪽은 런타임 계약·CSS·폴백의 *이유*를 적고, 플레이북은 *만드는 순서*를 적는다. 창 탐색은 눈으로 하지 말고 `scripts/asset-gen/select-battler-idle-window.mjs` 를 쓴다 — 계약 지표는 `scripts/asset-gen/battlerIdleMetrics.mjs` 가 정본이고 테스트와 선택기가 같은 파일을 import 한다.
 - **생성기.** 절차 티어는 `scripts/asset-gen/gen-battler-idle-strips.mjs`(Jimp, 상진 60% 만 1px 눌러 발은 고정), 영상 티어는 `scripts/asset-gen/pack-battler-idle-strip.mjs`(키드 프레임 → 정적 원본의 알파 박스에 폭 기준으로 맞춰 셀에 앉힌다). 폭 기준인 이유: 날개짓처럼 상하 진폭이 큰 모션은 전집합 박스가 세로로 길어져, 높이로 맞추면 실루엣 폭이 정적 배틀러보다 명함하게 작아진다(실측: 박쥐 상대폭 0.906 → 0.380).
 - 계약 테스트: `test/battlerIdleAnimation.test.ts`(카탈로그 정합·`<img>` 유지·포즈 우선·CSS steps/감속/`!important` 래칫).
+
+- **전투 애니메이션 앵커는 대상 스프라이트를 실측해서 정한다(2026-08-30).** 산식은 순수 함수
+  `battleAnimationAnchor`(`src/player/battleAnimationAnchor.ts`)에 있고, `battleAnimationDom.positionAnimation`
+  이 `.battle-animation-layer` 와 대상 스프라이트(`battlerSpriteNode`: `.battle-enemy-image` /
+  `.battle-actor-image` / `.battle-actor-sprite`)의 `getBoundingClientRect` 를 넣어 **레이어 박스에 대한
+  백분율**을 받는다. 저작 스키마의 `BattleAnimationPosition` 이 세로 위치를 정한다 — `head` = 스프라이트
+  상단, `center`(기본) = 세로 중심, `feet` = 접지선, `screen` = 무대 중심. `scope: "screen"` 은 대상을
+  무시하고 무대 중심에 놓는다. **px 이 아니라 백분율을 쓰는 이유**: `.battle-scene` 에
+  `transform: scale(var(--battle-stage-scale))` 이 걸려 있어 rect 는 배율이 곱해진 시각 px 인데, 같은
+  레이어 rect 로 나눈 비율에서는 배율이 약분된다(데미지 팝업이 이미 쓰는 방식과 동일).
+  예전에는 대상 노드의 `--battle-node-x/y` 문자열을 그대로 복사했다 — 그 값은 배틀러의 **발**을
+  가리키고 `.battle-animation` 이 `translate(-50%, -55%)` 로 12px 만 올려 줬으므로, 144px 급 스프라이트에서
+  이펙트가 발목 높이에 찍혔다. 그 백분율 복사는 애니 레이어와 배틀러 그룹의 컨테이닝 블록이 픽셀
+  단위로 같아야만 성립했고(과거 실측 72px 어긋남), `position`/`scope` 는 `data-*` 로 찍히기만 했다.
+  실측 못 하는 환경(레이아웃 없는 happy-dom, 아직 로드 전이라 rect 0×0)에서는 옛 복사 경로가 폴백으로
+  남고 `data-animation-anchor="fallback"` 이 찍힌다 — 가드는 이 속성으로 폴백 회귀를 잡는다.
+  **남은 간극**: `scope: "allTargets"` 의 N개 동시 재생은 아직 없다. `BattleAnimationSnapshot` 이
+  `targetId` 하나만 싣기 때문이며, 좌표 결함이 아니라 별개의 미구현 기능이다.
+- **대상 표시는 코너 리티클 + 스프라이트 펄스 두 겹이고, 노드를 감싸는 흰 사각형은 쓰지 않는다(2026-08-30).**
+  `06-damage-flash-targeting.css` 의 `.battle-target-selected` / `.battle-targeted` 에 있던
+  `outline: 4px solid var(--oprn-battle-window-light)`(#e7f2ff) 를 지웠다. 노드 박스는 스프라이트
+  실루엣이 아니고(아군 노드는 `176×192` 고정 그리드 박스), 기본 스킨 rm2003 은 같은 노드에 코너
+  리티클(`.battle-target-brackets`)을 이미 그려 조준점이 두 개로 읽혔다. pokemon 스킨은 이미 그 사각형을
+  무효화하고 화살표 + 스프라이트 깜빡임으로 갈아탄 상태였으므로, 기본 경로만 옛 표현에 남아 있었던 것이다.
+  대체 연출 `@keyframes battle-target-pulse` 는 **노드가 아니라 스프라이트**에 건다 — `.battle-enemy` 의
+  `filter` 는 접지 그림자(`07-640-scene-turn-ribbon.css`)가 이미 쓰고 있어 노드에 걸면 그림자가 함께
+  깜빡인다. 윤곽 색은 `--oprn-battle-window-light` 토큰을 쓴다(하드코딩 hex 는 CSS 예산 래칫이 잡는다).
+  `.battle-has-result` 에서는 노드와 스프라이트 **양쪽** 을 꺼야 승리 화면에서 죽은 적이 계속 깜빡이지 않는다.
+  하단 대상 메뉴 행은 `08-640-target-panels.css` 의 자기 규칙(금색 그라데이션 + `outline: 0`)이 있어
+  아무것도 잃지 않는다.
+- 위 두 계약의 증거 경로: 산식은 `test/battleAnimationAnchor.test.ts`(rect 리터럴, 타이밍 없음), 화면은
+  `test/runtime/battle-target-anim.spec.ts`(출하 `player.html` 경로에서 계산된 스타일과 비율로 판정 +
+  `.omo/evidence/battle-anim-target/*.png`). **편집기 셸을 타는 `test/e2e/` 전투 스펙은 기준선에서도
+  `startNewGameFromTitle` 이 런타임 부팅에 실패해 돌지 않는다**(실측 2026-08-30: 손대지 않은
+  `oprn-battle-system-targeting.spec.ts` 도 같은 지점에서 실패). `test/e2e/battle-animation-anchor.spec.ts`
+  는 계약을 새 앵커 기준으로 갱신해 뒀지만, 그 경로가 되살아날 때까지는 실행 가능한 정본이 아니다.

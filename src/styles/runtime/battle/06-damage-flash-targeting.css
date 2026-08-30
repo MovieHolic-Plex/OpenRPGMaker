@@ -126,10 +126,11 @@
   filter: brightness(1.2);
 }
 
+/* 피격 순간 표시. 예전에는 여기에도 4px 흰 사각형(outline)이 있었다 — 노드 박스는
+   스프라이트 실루엣이 아니고(아군 노드는 176×192 고정), 하드한 흰 테두리는 조준·피격이
+   아니라 UI 포커스 링으로 읽힌다. 번쩍임만 남긴다. */
 .battle-targeted {
   animation: oprn-target-flash 0.2s ease-out 2;
-  outline: 4px solid var(--oprn-battle-window-light);
-  outline-offset: 4px;
 }
 
 .battle-target-candidate {
@@ -149,10 +150,46 @@
   transform: translateY(-50%);
 }
 
+/* 대상 선택 표시 = 코너 리티클(.battle-target-brackets) + 스프라이트 펄스 두 겹.
+   흰 사각형(outline: 4px solid var(--oprn-battle-window-light))을 없앤 이유:
+   - 기본 스킨 rm2003 은 같은 노드에 코너 리티클을 이미 그린다(battle-skins/_rm2003.css) —
+     흰 사각형과 리티클이 동시에 보여 조준점이 두 개로 읽혔다.
+   - 노드 박스는 스프라이트 실루엣과 무관하다. 아군 노드는 176×192 고정 그리드 박스라
+     사각형이 그림에서 한참 떨어진 자리에 떴다.
+   - pokemon 스킨은 이미 이 사각형을 무효화하고(14-pokemon-skin-layout.css) 화살표 +
+     스프라이트 깜빡임으로 갈아탄 상태였다 — 기본 경로만 옛 표현에 남아 있었다.
+   하단 대상 메뉴 행은 자기 규칙(08-640-target-panels.css: 금색 그라데이션 + outline 0)이
+   있어 아무것도 잃지 않는다. */
 .battle-target-selected {
   animation: none;
-  outline: 4px solid var(--oprn-battle-window-light);
-  outline-offset: 4px;
+}
+
+/* 무늬 많은 스프라이트·배경 위에서도 "이놈" 이 보이게 그림 자체를 맥동시킨다. pokemon
+   스킨이 감독 지적("타겟팅 박스가 잘 안 보임") 뒤 검증한 방식을 기본 경로로 올린 것이다.
+   노드가 아니라 그림에 거는 이유: .battle-enemy 의 filter 는 접지 그림자
+   (07-640-scene-turn-ribbon.css:190)가 이미 쓰고 있어 노드에 걸면 그림자가 함께 깜빡인다. */
+.battle-target-selected .battle-enemy-image,
+.battle-target-selected .battle-actor-image,
+.battle-target-selected .battle-actor-sprite {
+  /* 윤곽 색은 창틀 밝은 톤 토큰을 쓴다 — 스킨이 톤을 바꾸면 조준 윤곽도 따라간다
+     (pokemon 스킨은 _pokemon.css 에서 #f8f8f8 로 재정의). 하드코딩 hex 는 CSS 예산
+     래칫이 잡는다 — src/styles/TOKENS.md §4. */
+  --battle-target-ink: var(--oprn-battle-window-light);
+  animation: battle-target-pulse 0.62s steps(1, end) infinite;
+}
+
+@keyframes battle-target-pulse {
+  0% {
+    filter:
+      brightness(1.5) saturate(0.8)
+      drop-shadow(2px 0 0 var(--battle-target-ink))
+      drop-shadow(-2px 0 0 var(--battle-target-ink))
+      drop-shadow(0 2px 0 var(--battle-target-ink))
+      drop-shadow(0 -2px 0 var(--battle-target-ink));
+  }
+  50% {
+    filter: none;
+  }
 }
 
 .battle-has-result .battle-targeted,
@@ -160,6 +197,15 @@
   animation: none;
   filter: none;
   outline: 0;
+}
+
+/* 펄스는 노드가 아니라 그림에 걸려 있으므로 여기서도 그림을 꺼야 멈춘다 —
+   위 규칙만 두면 승리 화면에서 죽은 적이 계속 깜빡였다. */
+.battle-has-result .battle-target-selected .battle-enemy-image,
+.battle-has-result .battle-target-selected .battle-actor-image,
+.battle-has-result .battle-target-selected .battle-actor-sprite {
+  animation: none;
+  filter: none;
 }
 
 .battle-has-result .battle-target-candidate::after {

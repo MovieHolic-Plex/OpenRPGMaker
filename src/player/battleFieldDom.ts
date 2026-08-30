@@ -24,6 +24,23 @@ export function findBattlerNode(scope: HTMLElement | Document, targetId: string)
     ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]`);
 }
 
+/**
+ * 배틀러 노드에서 **그림이 실제로 그려지는 자식**을 고른다.
+ *
+ * 노드를 그대로 재면 안 된다 — 아군 노드는 `.battle-actor-group .battle-actor { width: 176px;
+ * height: 192px }` 로 고정된 그리드 박스라 노드 중심과 스프라이트 중심이 다르다. 몬스터
+ * 배틀러도 `battle-actor-image battle-monster-image battle-monster-back` 로 첫 클래스를
+ * 공유하므로 이 목록에 걸린다.
+ *
+ * 데미지 팝업과 애니메이션 앵커가 **같은 목록**을 쓰게 하려고 export 한다. 두 곳이 각자
+ * 선택자를 들고 있으면 한쪽만 고쳐졌을 때 숫자와 이펙트가 서로 다른 높이에 뜬다.
+ */
+export function battlerSpriteNode(node: HTMLElement): HTMLElement {
+  return node.querySelector<HTMLElement>(
+    ".battle-enemy-image, .battle-actor-image, .battle-actor-sprite"
+  ) ?? node;
+}
+
 /** 현재 프로젝트 설정에서 활성 전투 스킨을 해석한다. */
 function activeSkin(): BattleSkin {
   return getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
@@ -546,7 +563,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     // 흩어진다 — 실측한 스프라이트 상단 30% 지점(머리께)에 띄운다(9차 리뷰).
     // 상단 0% 를 쓰면 팝업 전체가 스프라이트 박스 위로 나가 높이 배치된 적에서는
     // 필드 밖(HUD 영역)까지 밀려났다.
-    const sprite = anchor.querySelector<HTMLElement>(".battle-enemy-image, .battle-actor-image, .battle-actor-sprite") ?? anchor;
+    const sprite = battlerSpriteNode(anchor);
     const layerRect = layer.getBoundingClientRect();
     const spriteRect = sprite.getBoundingClientRect();
     if (layerRect.height > 0 && spriteRect.height > 0) {

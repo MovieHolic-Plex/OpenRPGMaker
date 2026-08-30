@@ -1,5 +1,11 @@
 /* 전투 애니메이션 앵커 회귀 가드.
  *
+ * 현재 계약(2026-08-30): 앵커는 대상 **스프라이트를 실측** 해서 정하고, 저작된
+ * BattleAnimationPosition(head/center/feet/screen)이 세로 위치를, scope: "screen" 이 무대
+ * 중심 여부를 정한다. 산식은 순수 함수 src/player/battleAnimationAnchor.ts 에 있고
+ * test/battleAnimationAnchor.test.ts 가 rect 리터럴로 재므로, 이 브라우저 가드는 그 산식이
+ * 실제 플레이 경로에서 살아 있는지(폴백으로 떨어지지 않았는지)만 본다.
+ *
  * 실측으로 확정된 결함(지금은 고쳐진 상태):
  * `.battle-animation` 이 width/height 0 인데 `transform: translate(-50%, -55%)` 가 걸려 있어
  * 퍼센트 translate 가 (0, 0) 으로 무효였다. 자식 `.battle-animation-sheet` 는 240×240 인플로우
@@ -42,7 +48,8 @@ import { startNewGameFromTitle } from "./runtimeInput";
 const LOGICAL_WIDTH = 640;
 // 시트 크기 = 애니메이션 박스 크기. 0 으로 회귀하면 퍼센트 translate 가 죽는다.
 const ANIMATION_BOX_SIZE = 240;
-// 실측 12 / -4 → 20 으로 조인다(수정 전 dy 68 은 확실히 잡힌다).
+// 셀 중심이 **저작된 앵커**(anim_anchor_probe 는 position: "center")에서 벗어난 양의 상한.
+// 잔차는 셀 자신의 크기 절반(실측 12, 8)뿐이어야 한다.
 const MAX_DX_LOGICAL = 20;
 const MAX_DY_LOGICAL = 20;
 // 셀 중심과 애니메이션 박스 중심의 차이는 셀 크기 절반(실측 12, 8)뿐이어야 한다.
@@ -62,6 +69,9 @@ type AnchorProbe = {
      스프라이트 중심과 앵커는 설계상 스프라이트 높이의 절반만큼 어긋난다. */
   readonly spriteCenterDxLogical: number;
   readonly spriteCenterDyLogical: number;
+  /* battleAnimationDom.positionAnimation 이 심는 경로 표시. 저작된 position 이 들어와야 하고
+     "fallback" 이면 실측 경로가 죽어 예전 백분율 복사로 떨어진 것이다. */
+  readonly animationAnchorMode: string;
   /* 적 노드 기하(논리 px) — 앵커가 노드 하단 중앙인지 확인하는 근거 */
   readonly enemyNodeHeightLogical: number;
   readonly spriteHeightLogical: number;
@@ -151,6 +161,7 @@ const installAnchorProbe = (options: { readonly enemyTestId: string; readonly lo
             spriteCenterDyLogical: Math.round((cellCenterY - (spriteRect.top + spriteRect.height / 2)) * toLogical),
             enemyNodeHeightLogical: Math.round(enemyRect.height * toLogical),
             spriteHeightLogical: Math.round(spriteRect.height * toLogical),
+            animationAnchorMode: animation.dataset.animationAnchor ?? "(none)",
             nodeStyleX: enemy.style.getPropertyValue("--battle-node-x"),
             nodeStyleY: enemy.style.getPropertyValue("--battle-node-y"),
             animationBoxWidth: Math.round(numeric(animationStyle.width)),
@@ -260,16 +271,22 @@ test("battle animation cells land on the target battler anchor", async ({ page }
   expect(Math.abs(probe.cellVsBoxDxLogical)).toBeLessThan(MAX_CELL_VS_BOX_LOGICAL);
   expect(Math.abs(probe.cellVsBoxDyLogical)).toBeLessThan(MAX_CELL_VS_BOX_LOGICAL);
 
-  // 3) 앵커 가드 — 셀 중심이 대상 배틀러 앵커(노드 하단 중앙)에서 크게 벗어나지 않아야 한다.
-  //    positionAnimationOnTarget(battleAnimationDom.ts:98) 이 대상 노드의
-  //    `--battle-node-x/y` 를 그대로 복사하므로, 애니메이션의 기준점은 정의상 이 앵커다.
-  //    `.battle-enemy` 는 left/top = 그 앵커 + `translate(-50%, -100%)`(battle.css:126) 이라
-  //    앵커는 노드 박스의 하단 중앙 = rect 로 직접 되짚을 수 있다.
-  //    회귀(퍼센트 translate 무효)가 나면 셀이 앵커 +120, +120 으로 밀려 두 단정이 깨진다.
-  //
-  //    실측(수정 후): dx 12, dy -4 — 둘 다 셀 자신의 크기 절반에서 오는 잔차뿐이다.
-  expect(Math.abs(probe.dxLogical)).toBeLessThan(MAX_DX_LOGICAL);
-  expect(Math.abs(probe.dyLogical)).toBeLessThan(MAX_DY_LOGICAL);
+  // 3) 앵커 가드 — 셀 중심이 **저작된 position 이 가리키는 점** 에 놓여야 한다.
+  //    anim_anchor_probe 는 position: "center" 이므로 그 점은 대상 스프라이트의 세로 중심이다.
+  //    예전 계약은 대상 노드의 `--battle-node-x/y`(= 배틀러의 **발**, .battle-enemy 는
+  //    translate(-50%, -100%))를 문자열로 복사했고 .battle-animation 이 -55% 로 12px 만 올려
+  //    줬다. 그래서 이펙트가 몸통이 아니라 발목 높이에 찍혔고, 이 가드도 그 발 앵커를 정답으로
+  //    굳혀 두고 스프라이트 중심 편차는 "설계상 어긋남" 이라며 진단용으로만 찍었다. 이제
+  //    battleAnimationDom.positionAnimation 이 스프라이트를 실측하므로 정답이 바뀐다.
+  expect(Math.abs(probe.spriteCenterDxLogical)).toBeLessThan(MAX_DX_LOGICAL);
+  expect(Math.abs(probe.spriteCenterDyLogical)).toBeLessThan(MAX_DY_LOGICAL);
+
+  //    그리고 그 값이 우연이 아니라 실측 경로에서 나왔음을 못 박는다 — 폴백으로 떨어지면
+  //    좌표가 예전 발 앵커로 돌아가므로, 경로 표시가 없으면 위 두 단정이 조용히 뒤집힌다.
+  expect(probe.animationAnchorMode).toBe("center");
+
+  //    발 앵커와의 편차는 이제 진단값이다 — 스프라이트 높이의 절반만큼 위여야 정상이다.
+  expect(probe.dyLogical).toBeLessThan(0);
 
   // 4) 구조적 가드 — 컨테이닝 블록 일치. `--battle-node-x/y` 가 퍼센트라, 레이어와 적 그룹의
   //    퍼센트 기준 박스가 같아야 같은 35%/65% 가 같은 점으로 풀린다.
