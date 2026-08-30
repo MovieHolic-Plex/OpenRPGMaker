@@ -386,10 +386,13 @@ describe("키 온보딩과 설정 접근성", () => {
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("Gemini");
   });
 
-  it("설정 아이콘은 전용 모달을 열고 첫 입력에 포커스한다", () => {
-    // Break: settings still expands an inline ai-config details instead of the modal.
+  it("☰ 의 설정 항목은 전용 모달을 열고 첫 입력에 포커스한다", () => {
+    // 진입점은 크롬 아이콘이 아니라 ☰ 메뉴 항목이다: `ai-settings-toggle`(헤더 아이콘)과
+    // `ai-settings-command-bar`(커맨드바 단추)는 "패널 크롬에 설정을 중복해 놓지 않는다" 는
+    // 2026-08-30 계약이 금지한다(test/aiAssistantUxP0P2, test/aiChatPanelSettings). 열리는
+    // 표면(전용 모달 + 첫 입력 포커스)은 그대로 못박는다.
     const panel = renderPanel();
-    findByTestId(panel, "ai-settings-toggle")?.click();
+    findByTestId(panel, "ai-command-menu-settings")?.click();
 
     const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
     expect(modal).not.toBeNull();
@@ -399,7 +402,9 @@ describe("키 온보딩과 설정 접근성", () => {
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {
     const panel = renderPanel();
-    for (const testId of ["ai-settings-toggle", "ai-collapse", "ai-studio-toggle", "ai-new-session"]) {
+    // 출하되는 아이콘 버튼 집합. ai-studio-toggle·ai-new-session 은 패널 크롬에서 빠져
+    // 숨은 훅 컨테이너로 갔고(헤더 제거), 설정은 ☰ 항목이다 — 라벨 계약은 그 셋에 걸린다.
+    for (const testId of ["ai-command-menu-settings", "ai-collapse", "ai-new-chat", "ai-command-menu-toggle"]) {
       expect(findByTestId(panel, testId)?.getAttribute("aria-label"), testId).toBeTruthy();
     }
   });

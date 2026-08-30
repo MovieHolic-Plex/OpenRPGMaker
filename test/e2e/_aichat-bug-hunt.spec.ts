@@ -94,7 +94,7 @@ const META_IDS = [
   "ai-command-menu-toggle",
   "ai-new-chat",
   "ai-collapse",
-  "ai-settings-toggle",
+  "ai-command-menu-settings",
   "ai-dock-mode-btn",
   "ai-chat-toolbar",
   "ai-more-menu-toggle",
@@ -144,7 +144,7 @@ test("aichat 결함 사냥", async ({ page }) => {
       if (await toggle.isVisible({ timeout: 1_500 }).catch(() => false)) {
         await toggle.click({ timeout: 3_000 }).catch(() => {});
         await page.waitForTimeout(300);
-        note(`[dock ${dock}] ☰ open → ai-settings-toggle: ${await reach(page, "ai-settings-toggle")}`);
+        note(`[dock ${dock}] ☰ open → ai-settings-toggle: ${await reach(page, "ai-command-menu-settings")}`);
         note(`[dock ${dock}] ☰ open → ai-command-menu-dock: ${await reach(page, "ai-command-menu-dock")}`);
         const labels = await page.locator("[data-testid^='ai-command-menu-'], [data-testid='ai-settings-toggle']").evaluateAll((nodes) =>
           nodes

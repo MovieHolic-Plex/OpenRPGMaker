@@ -109,10 +109,14 @@ export function createAiActionMenuItems(options: {
 
   // 설정 — 2026-08-28 헤더 제거 뒤 패널에는 AI 설정(인증·모델·글자 크기)으로 가는 진입점이
   // 하나도 없었다(에디터 톱바 ⚙ 만 유일). 오류 버블의 [설정 열기]는 401 이 터진 뒤에만 보이므로
-  // 평상시 경로가 아니다. testid 는 기존 계약 ai-settings-toggle 을 그대로 다시 쓴다.
+  // 평상시 경로가 아니다. 단, testid 는 `ai-settings-toggle` 을 쓰지 않는다 — 그 id 는
+  // "조수 패널 크롬(헤더·커맨드바)에 설정 단추를 중복해 놓지 않는다" 는 계약이 금지하는 버튼을
+  // 가리킨다(test/aiAssistantUxP0P2.ts, test/aiChatPanelSettings.ts — 2026-08-30). 이 항목은
+  // 크롬 버튼이 아니라 ☰ 메뉴 속 항목이므로 그 금지와 모순하지 않으며, aiComposer.ts 의 설계
+  // 지식("설정은 그 메뉴 안의 항목이다")을 그대로 구현한다.
   const settings = build({
     label: "⚙ 설정",
-    testid: header ? "ai-more-settings" : "ai-settings-toggle",
+    testid: header ? "ai-more-settings" : "ai-command-menu-settings",
     title: "AI 설정 — 연결·모델·글자 크기",
     ariaLabel: "AI 설정 열기",
     run: options.actions.openSettings,

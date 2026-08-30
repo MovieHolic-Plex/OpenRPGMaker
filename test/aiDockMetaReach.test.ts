@@ -83,7 +83,7 @@ describe("☰ 메타 메뉴는 어느 도크에서도 숨지 않는다", () => {
       "ai-command-menu-export",
       "ai-command-menu-dock",
       "ai-command-menu-tools",
-      "ai-settings-toggle",
+      "ai-command-menu-settings",
       "ai-command-menu-interview",
       "ai-command-menu-learn-structure",
       "ai-command-menu-demo-teach",
@@ -94,9 +94,17 @@ describe("☰ 메타 메뉴는 어느 도크에서도 숨지 않는다", () => {
 });
 
 describe("설정 진입점", () => {
+  it("크롬 설정 단추(ai-settings-toggle·ai-settings-command-bar)는 여전히 만들지 않는다", () => {
+    // 2026-08-30 계약: 조수 패널 크롬에는 설정 단추를 중복해 놓지 않는다. 진입점은
+    // ☰ 메뉴 항목 하나다 — 이 둠이 함게 최종 표대 상태를 정의한다.
+    const panel = renderPanel("glass");
+    expect(findByTestId(panel, "ai-settings-toggle")).toBeNull();
+    expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
+  });
+
   it("☰ 의 설정 항목은 aria-label 을 갖고 전용 설정 모달을 연다", () => {
     const panel = renderPanel("glass");
-    const settings = findByTestId(panel, "ai-settings-toggle") as unknown as FakeElement;
+    const settings = findByTestId(panel, "ai-command-menu-settings") as unknown as FakeElement;
     expect(settings.getAttribute("aria-label")).toBe("AI 설정 열기");
     settings.click();
     expect(findByTestId(document.body as unknown as FakeElement, "ai-settings-modal")).toBeTruthy();
