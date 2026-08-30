@@ -235,14 +235,16 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // 툴바가 아직 없는 시점에도 applyViewMode 가 안전하게 호출되도록 기본값은 빈 함수다.
   let syncToolbarState: () => void = () => {};
   function applyViewMode(): void {
-    const isPreview = currentMode === "preview";
-    const isStoryboard = currentMode === "storyboard";
-    const isFlow = currentMode === "flow";
-    // 적용 대기 중인 AI 초안이 있으면 목록 자리를 초안이 쓴다. 렌더 순서와 무관하게 같은 답이
-    // 나와야 하므로 DOM 이 아니라 aiAssist 의 모듈 상태를 읽는다.
+    // 적용 대기 중인 AI 초안은 **보기 방식보다 우선한다**. 렌더 순서와 무관하게 같은 답이
+    // 나와야 하므로 DOM 이 아니라 aiAssist 의 모듈 상태를 읽는다. 기본 보기(스토리)에서
+    // 초안 자리가 `hidden` 이면 「위 목록에 표시했어요」라고 말하면서 아무것도 보이지 않는다.
+    // flow 보기(main 이 추가)도 같은 규칙을 따른다 — 초안이 있으면 초안이 자리를 쓴다.
     const isStaged = hasEventAiStagedDraft(mapId, eventId, activePage.id);
+    const isPreview = currentMode === "preview" && !isStaged;
+    const isStoryboard = currentMode === "storyboard" && !isStaged;
+    const isFlow = currentMode === "flow" && !isStaged;
     cmdList.hidden = isStoryboard || isPreview || isFlow || isStaged;
-    stagedHost.hidden = isStoryboard || isPreview || isFlow || !isStaged;
+    stagedHost.hidden = !isStaged;
     storyboardEl.hidden = !isStoryboard;
     previewHost.hidden = !isPreview;
     flowHost.hidden = !isFlow;

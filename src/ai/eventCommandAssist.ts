@@ -17,6 +17,7 @@
 
 import { newCommand } from "@/editor/eventCommandFactory";
 import { commandBranches } from "@/editor/tools/commandTraversal";
+import { isPassable } from "@/project/collision";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import { COMMAND_GUARANTEES } from "@/project/commandGuaranteeRegistry";
 import {
@@ -25,7 +26,7 @@ import {
 } from "@/project/io/commandReferenceValidation";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
-import type { Command, EventPage, GameEvent, Project } from "@/project/types";
+import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { resolveSurfaceAiConfig } from "./assistantEndpoint";
 import { chatCompletion, type AiConfig, type ChatMessage } from "./llmClient";
 import { composeSystemPrompt } from "./systemPromptEnvelope";
@@ -64,10 +65,20 @@ const MAX_REF_ENTRIES = 40;
 const MAX_EXISTING_CHARS = 12000;
 // 최초 1회 + 자가수정 2회.
 const MAX_ATTEMPTS = 3;
+// 이동 대상 맵에서 밟을 수 있는 칸을 찾을 때 중앙에서 벗어나는 최대 거리.
+const LANDING_SEARCH_RADIUS = 12;
 
 // 선언된 저작 표면을 우회해 명령을 프롬프트에 노출하면 해당 명령의 참조 계약도 우회된다.
+// resourceId 를 요구하는 명령은 아예 목록에서 뺀다 — 예전에는 kind 목록에 실어 놓고
+// 출력 규약에서 "쓰지 말라"고 다시 금지해, 프롬프트가 스스로 모순이었다(모델은 목록을 믿는다).
+const RESOURCE_BOUND_KINDS = COMMAND_KINDS.filter(
+  (kind) => "resourceId" in (newCommand(kind) as Record<string, unknown>),
+);
+
 const AI_COMMAND_KINDS = COMMAND_KINDS.filter(
-  (kind) => COMMAND_GUARANTEES[kind].authoringSurfaces.includes("ai"),
+  (kind) =>
+    COMMAND_GUARANTEES[kind].authoringSurfaces.includes("ai")
+    && !RESOURCE_BOUND_KINDS.includes(kind),
 );
 
 // ── 프롬프트 조립 ────────────────────────────────────────────────────────────
@@ -86,6 +97,35 @@ function refSection(title: string, entries: readonly { id: string; name: string 
     lines.push(`- …외 ${entries.length - shown.length}개 생략(위 목록의 id만 사용)`);
   }
   return [`### ${title}`, ...(lines.length ? lines : ["- (없음 — 이 종류를 참조하는 커맨드를 만들지 말 것)"])].join("\n");
+}
+
+// 이동 대상 맵은 크기만으로 부족하다 — 모델이 (0,0) 처럼 "안전해 보이는" 좌표를 쓰는데
+// 실내 맵의 (0,0) 은 거의 항상 벽이라 플레이어가 벽 안에서 시작한다. 실제로 밟을 수 있는
+// 칸 하나를 같이 실어 준다(탐색 범위는 중앙 부근으로 제한해 큰 맵에서도 값이 싸다).
+function suggestedLandingCell(project: Project, map: GameMap): { x: number; y: number } | null {
+  const centerX = Math.floor(map.width / 2);
+  const centerY = Math.floor(map.height / 2);
+  for (let radius = 0; radius <= LANDING_SEARCH_RADIUS; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const x = centerX + dx;
+        const y = centerY + dy;
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+        if (isPassable(project, map, x, y)) return { x, y };
+      }
+    }
+  }
+  return null;
+}
+
+function mapReferenceLabel(project: Project, mapId: string, map: GameMap): string {
+  const size = `가로 ${map.width} × 세로 ${map.height}`;
+  const landing = suggestedLandingCell(project, map);
+  const landingNote = landing
+    ? `, 밟을 수 있는 칸 예: x=${landing.x} y=${landing.y}`
+    : "";
+  return `${map.name || mapId} (${size}${landingNote})`;
 }
 
 /** 기존 목록을 온전한 JSON 으로 실을 수 있으면 "page", 아니면 "append". */
@@ -119,24 +159,25 @@ function outputContractSection(scope: AssistScope): string {
   const common = [
     "2. 각 원소는 위 스키마의 Command 객체여야 한다.",
     "3. switchId/variableId/itemId/troopId/actorId/mapId는 반드시 위 목록의 id를 사용한다.",
-    "4. playAudio/showPicture/changeFace 등 resourceId가 필요한 커맨드와 m2Command는 사용하지 않는다.",
-    "5. 요청이 모호하면 가장 단순하고 안전한 해석으로 생성한다.",
+    "4. 위 kind 목록에 없는 명령은 만들지 않는다.",
+    "5. transfer 의 x,y 는 대상 맵 크기 안이면서 밟을 수 있는 칸이어야 한다. 확실하지 않으면 위 목록의 «밟을 수 있는 칸 예» 를 쓴다.",
+    "6. 요청이 모호하면 가장 단순하고 안전한 해석으로 생성한다.",
   ];
   if (scope === "append") {
     return [
       "## 출력 규약(반드시 준수)",
       "1. 출력은 **뒤에 붙일 새 커맨드 JSON 배열 하나**뿐이다. 설명·주석·여는 말 금지. ```json 펜스는 허용.",
       ...common,
-      "6. 기존 커맨드를 다시 출력하지 마라 — 출력한 것이 그대로 뒤에 붙는다.",
+      "7. 기존 커맨드를 다시 출력하지 마라 — 출력한 것이 그대로 뒤에 붙는다.",
     ].join("\n");
   }
   return [
     "## 출력 규약(반드시 준수)",
     "1. 출력은 **이 페이지의 고친 뒤 최종 커맨드 JSON 배열 하나**뿐이다. 설명·주석·여는 말 금지. ```json 펜스는 허용.",
     ...common,
-    "6. 최종 목록이므로 **바꾸지 않을 기존 커맨드도 그대로 다시 포함**한다. 순서도 최종 순서다.",
-    "7. 지울 커맨드는 출력에서 빼고, 고칠 커맨드는 고친 값으로 넣는다. 요청에 없는 커맨드를 임의로 지우지 마라.",
-    "8. 요청이 '추가'라면 기존 목록에 새 커맨드를 끼운 전체 목록을 출력한다.",
+    "7. 최종 목록이므로 **바꾸지 않을 기존 커맨드도 그대로 다시 포함**한다. 순서도 최종 순서다.",
+    "8. 지울 커맨드는 출력에서 빼고, 고칠 커맨드는 고친 값으로 넣는다. 요청에 없는 커맨드를 임의로 지우지 마라.",
+    "9. 요청이 '추가'라면 기존 목록에 새 커맨드를 끼운 전체 목록을 출력한다.",
   ].join("\n");
 }
 
@@ -197,7 +238,10 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
       refSection("액터", project.database.actors),
       refSection(
         "맵",
-        Object.entries(project.maps).map(([id, map]) => ({ id, name: map.name }))
+        Object.entries(project.maps).map(([id, map]) => ({
+          id,
+          name: mapReferenceLabel(project, id, map),
+        }))
       ),
     ].join("\n")
   );
@@ -282,10 +326,37 @@ export function parseAndValidate(
     validateCommands(commands, referenceContext);
     // io 검증이 다루지 않는 참조 보강(changeItem.itemId / changeParty.actorId).
     validateSupplementalReferences(commands, referenceContext);
+    validateTransferBounds(commands, project);
   } catch (cause) {
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
   return { ok: true, commands };
+}
+
+// transfer 의 좌표는 맵 밖으로 나갈 수 있다. 프롬프트에 맵 크기를 실어도 모델은 (0,0) 같은
+// "안전해 보이는" 값을 자주 쓰는데, 대부분 맵 테두리(벽)라 플레이어가 벽 안에 갇힌다.
+// 여기서 잡아 주면 자가수정 루프가 스스로 고친다.
+function validateTransferBounds(commands: readonly Command[], project: Project): void {
+  for (const command of commands) {
+    if (command.kind === "transfer") {
+      const map = project.maps[command.mapId];
+      if (map) {
+        if (command.x < 0 || command.y < 0 || command.x >= map.width || command.y >= map.height) {
+          throw new Error(
+            `transfer: 좌표가 맵 «${map.name || command.mapId}» 밖입니다(x=${command.x}, y=${command.y}; 가로 ${map.width} × 세로 ${map.height}).`,
+          );
+        }
+        // 밟을 수 있는 칸을 하나도 못 찾는 맵(타일셋 미해석 등)은 판정 근거가 없으니 반려하지 않는다.
+        const landing = suggestedLandingCell(project, map);
+        if (landing && !isPassable(project, map, command.x, command.y)) {
+          throw new Error(
+            `transfer: 좌표(x=${command.x}, y=${command.y})가 맵 «${map.name || command.mapId}» 에서 밟을 수 없는 칸입니다. 밟을 수 있는 칸을 쓰세요. 예: x=${landing.x} y=${landing.y}`,
+          );
+        }
+      }
+    }
+    for (const branch of commandBranches(command)) validateTransferBounds(branch.commands, project);
+  }
 }
 
 function validateAiAuthoringSurfaces(commands: readonly Command[]): void {

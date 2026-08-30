@@ -13,6 +13,7 @@ import {
   renderEventAiAssist,
   resetEventAiStagedForTest,
 } from "@/editor/panels/eventEditor/aiAssist";
+import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, EventPage, Project } from "@/project/types";
@@ -32,6 +33,18 @@ function testProject(): Project {
   const project = createBlankProject();
   project.switches[0] = { id: "sw_0001", name: "보물상자 열림" };
   return project;
+}
+
+// 기본 타일셋에서 통행 불가로 표시된 타일 하나를 찾는다(하드코딩한 타일 번호는 타일셋이
+// 바뀌면 조용히 거짓이 된다).
+function findImpassableTile(project: Project, map: Project["maps"][string]): number {
+  const probe = { ...map, lowerTiles: [...map.lowerTiles], upperTiles: [...map.upperTiles] };
+  for (let tile = 0; tile < 512; tile += 1) {
+    probe.lowerTiles[0] = tile;
+    probe.upperTiles[0] = tile;
+    if (!isPassable(project, probe, 0, 0)) return tile;
+  }
+  throw new Error("기본 타일셋에서 통행 불가 타일을 찾지 못했습니다");
 }
 
 function testPage(commands: Command[] = []): EventPage {
@@ -104,6 +117,26 @@ describe("buildEventAssistPrompt", () => {
     expect(prompt).not.toContain('"kind":"m2Command"');
     expect(prompt).not.toContain('"kind":"changeFactionStance"');
     expect(prompt.match(/사용 가능한 kind: ([^\n]+)/u)?.[1]?.split(", ")).not.toContain("changeFactionStance");
+  });
+
+  it("resourceId 가 필요한 명령은 kind 목록에서 뺀다 — 목록과 금지가 서로 어긋나지 않는다", () => {
+    const project = testProject();
+    const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: testPage() });
+    const kinds = prompt.match(/사용 가능한 kind: ([^\n]+)/u)?.[1]?.split(", ") ?? [];
+
+    expect(kinds.length).toBeGreaterThan(0);
+    for (const kind of ["playAudio", "showPicture", "changeFace", "playMovie"]) {
+      expect(kinds).not.toContain(kind);
+      expect(prompt).not.toContain(`- ${kind}: `);
+    }
+  });
+
+  it("맵 목록에 크기를 실어 transfer 좌표를 찍을 근거를 준다", () => {
+    const project = testProject();
+    const map = project.maps[project.startMapId];
+    const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: testPage() });
+    expect(prompt).toContain(`${map.width}`);
+    expect(prompt).toContain(`${map.height}`);
   });
 
   it("기존 페이지 커맨드를 요약에 포함한다", () => {
@@ -182,6 +215,44 @@ describe("parseAndValidate", () => {
     expect(result.ok).toBe(false);
     if (result.ok) throw new Error("참조 에러를 기대했다");
     expect(result.errors.join(" ")).toContain("item_ghost");
+  });
+
+  it("맵 밖으로 나가는 transfer 좌표를 거부한다 — 자가수정 루프가 고칠 기회를 준다", () => {
+    const project = testProject();
+    const map = project.maps[project.startMapId];
+    const outside: Command[] = [
+      { kind: "transfer", mapId: project.startMapId, x: map.width, y: 0, direction: "retain", fade: "black" } as Command,
+    ];
+    const result = parseAndValidate(project, JSON.stringify(outside));
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("맵 밖 좌표가 통과했습니다");
+    expect(result.errors.join(" ")).toContain("transfer");
+  });
+
+  it("밟을 수 없는 칸으로 보내는 transfer 를 거부하고 대안 좌표를 알려준다", () => {
+    const project = testProject();
+    const map = project.maps[project.startMapId];
+    const blockedTile = findImpassableTile(project, map);
+    const blockedIndex = 0;
+    map.lowerTiles[blockedIndex] = blockedTile;
+    map.upperTiles[blockedIndex] = blockedTile;
+
+    const blocked: Command[] = [
+      { kind: "transfer", mapId: project.startMapId, x: 0, y: 0, direction: "retain", fade: "black" } as Command,
+    ];
+    const result = parseAndValidate(project, JSON.stringify(blocked));
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("밟을 수 없는 칸이 통과했습니다");
+    expect(result.errors.join(" ")).toContain("밟을 수 없는 칸");
+    expect(result.errors.join(" ")).toMatch(/예: x=\d+ y=\d+/u);
+  });
+
+  it("맵 안 transfer 좌표는 통과한다", () => {
+    const project = testProject();
+    const inside: Command[] = [
+      { kind: "transfer", mapId: project.startMapId, x: 1, y: 1, direction: "retain", fade: "black" } as Command,
+    ];
+    expect(parseAndValidate(project, JSON.stringify(inside)).ok).toBe(true);
   });
 
   it("알 수 없는 kind는 shape 에러로 거부한다", () => {
