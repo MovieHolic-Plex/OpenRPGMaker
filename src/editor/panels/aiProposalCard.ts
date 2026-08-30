@@ -19,6 +19,7 @@ import {
   formatLayoutValidationSummary,
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
+import type { LintIssue } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -253,11 +254,17 @@ export function createProposalHost(options: {
     // 영역작업(AI) 뒤의 검증게이트 배제(2026-08-30): 예전에는 여기서 repairLayoutPlacement 로
     // AI 배치를 옮기고 지운 뒤, 남은 error 로 적용 전체를 반려했다. 그 결과 사용자에게는
     // "아무것도 안 됐다" 또는 "깐 게 사라졌다" 만 남았다. 이제 사실만 계산해 적용 후 알린다.
-    const layoutIssues = validateLayoutPlacement(proposed, {
-      mapId: currentHistoryMapId() ?? undefined,
-      instruction,
-      toolNames: calls.map((call) => call.name),
-    });
+    // 진단기가 예외를 던져도 적용은 진행한다 — 검증기 사고는 AI 작업물을 볼모로 잡을 이유가 아니다.
+    let layoutIssues: readonly LintIssue[] = [];
+    try {
+      layoutIssues = validateLayoutPlacement(proposed, {
+        mapId: currentHistoryMapId() ?? undefined,
+        instruction,
+        toolNames: calls.map((call) => call.name),
+      });
+    } catch (cause) {
+      console.warn("[aiProposal] 배치 진단에 실패했지만 적용은 진행합니다:", cause);
+    }
     const applyProject = proposed;
 
     // 커밋 게이트 검증 → undo 스냅샷 → store.replace → await 커밋 로그는

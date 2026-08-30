@@ -877,7 +877,14 @@ export async function runRegionTask(
         },
       };
     };
-    const reviewed = reviewCandidate(clipped);
+    // 진단이 터져도 AI 작업물은 살린다. 예전에는 이 자리에서 예외가 나면 턴 전체가 오류로 끝나
+    // 사용자에게 아무것도 남지 않았다 — 그 실패 모드를 없애는 것이 이 변경의 목적이다.
+    let reviewed: { readonly project: Project; readonly report?: HarnessReviewReport } = { project: clipped };
+    try {
+      reviewed = reviewCandidate(clipped);
+    } catch (cause) {
+      console.warn("[regionTask] 진단 실행에 실패했지만 초안은 유지합니다:", cause);
+    }
     clipped = reviewed.project;
     changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
     changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
