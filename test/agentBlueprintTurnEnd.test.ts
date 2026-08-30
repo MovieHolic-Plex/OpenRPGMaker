@@ -176,10 +176,10 @@ function scriptRounds(rounds: readonly (() => Response | never)[]): void {
   }));
 }
 
-async function runTurn(panel: FakeElement): Promise<void> {
+async function runTurn(panel: FakeElement, text = "야외에 집 한 채 지어줘"): Promise<void> {
   const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
   // "야외" 표지가 없으면 intentClarify 가 실내/야외를 되묻고 툴 라운드로 가지 않는다.
-  input.value = "야외에 집 한 채 지어줘";
+  input.value = text;
   (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
   await flushUntilTurnEnd(panel);
 }
@@ -264,6 +264,31 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     expect((getLatestAiActivityLog()?.result.proposedCalls ?? 0) > 0).toBe(true);
     expect(store.getCurrent()).toBe(before);
     expect(statusById()).toEqual({ house_a: "planned" });
+  });
+
+  // 리뷰 지적: 캔버스가 다 지은 계획을 물러나게 하면 상태줄이 여전히 "밑그림 확정 — 에셋 N개" 를
+  // 찍어 맵과 서로 다른 말을 한다. 그 분기는 쓰기 제안 0건인 턴에서만 달리므로 시공이 끝난 뒤의
+  // 조회 턴이 정확히 그 상황이다.
+  it("다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다", async () => {
+    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    // 1턴: 계획을 세우고 집을 실제로 지어 적용까지 간다.
+    scriptTurn(() => sseTextResponse("집을 지었습니다."));
+    await runTurn(panel);
+    expect(statusById()).toEqual({ house_a: "done" });
+    expect(getAgentBlueprintState().entries).toHaveLength(1);
+
+    // 2턴: 스펙은 세션에 그대로 살아 있고(턴 간 유지) 쓰기 제안은 0건인 조회 턴.
+    scriptRounds([
+      () => sseToolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]),
+      () => sseTextResponse("지어진 집을 확인했습니다."),
+    ]);
+    // 시공 지시가 아니라 조회다 — 완성도 린트가 경고를 내면 상태줄 분기에 닿지 못한다.
+    await runTurn(panel, "야외 맵 상태가 지금 어떤지 알려줘");
+
+    const status = findByTestId(panel, "ai-status") as unknown as FakeElement;
+    expect(status.textContent ?? "").not.toContain("밑그림 확정");
+    // 계획은 다 지어졌으므로 캔버스에서도 물러난 상태다 — 두 표면이 같은 말을 한다.
+    expect(statusById()).toEqual({ house_a: "done" });
   });
 
   // 4차 리뷰 N4-7: 쓰기 제안이 0건인 종료(변경 없음 분기)도 정산을 부른다. 그 분기가 정산을

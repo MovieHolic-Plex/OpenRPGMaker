@@ -893,6 +893,23 @@ describe("agentBlueprintForMap — 다 지은 계획은 캔버스에서 물러�
     expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(0);
   });
 
+  it("마일스톤 확정으로 다 지어진 뒤 중단해도 계획이 되살아나지 않는다", () => {
+    // 리뷰 지적: 턴 도중에 전 칸이 done 이 되면 물러나는데, 뒤이은 중단 정산이 그 칸을 planned 로
+    // 되돌려 계획이 캔버스에 **되살아나는** 것 아닌가. 그럴 수 없다 —
+    // (1) markAgentBlueprintProgress 단독으로는 전 칸 done 이 될 수 없다(방금 올린 칸이 building 으로
+    //     남는다), (2) 전 칸을 done 으로 만들 수 있는 것은 마일스톤 확정뿐이고 그것은 저장소에 실제로
+    //     커밋된 시점이며 turnAdvanced 를 함께 비운다 → 이후 정산은 되돌릴 대상이 없다.
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }, WRITE);
+    commitAgentBlueprintProgress();
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(0);
+
+    // 마일스톤 뒤에 사용자가 중단했다 — 아무것도 적용되지 않은 턴 끝.
+    settleAgentBlueprintTurn(APPLIED_NOTHING);
+    expect(statusById()).toEqual({ site: "done", main_road: "done", house_a: "done", grove: "done" });
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(0);
+  });
+
   it("스펙 자동 확장이 새 칸을 덧붙이면 다시 그린다 — 물러난 것은 계획이 아니라 끝난 표시다", () => {
     setAgentBlueprintFromSpec(VILLAGE_SPEC);
     buildWholeVillage();

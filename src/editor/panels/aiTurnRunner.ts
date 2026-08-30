@@ -23,6 +23,8 @@ import type { AiDocument } from "@/project/types";
 import {
   beginAgentBlueprintTurn,
   commitAgentBlueprintProgress,
+  getAgentBlueprintState,
+  isAgentBlueprintComplete,
   markAgentBlueprintProgress,
   setAgentBlueprintFromSpec,
   settleAgentBlueprintTurn,
@@ -463,8 +465,12 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         decorateAssistantMentions(assistantBubble, result.assistantText, store.getCurrent());
       }
       // 밑그림 상태 표시 — 확정된 스펙이 있으면 사용자도 본다(다음 빌드가 이 영역 안에서만 실행됨).
+      // 단 **다 지은** 계획은 알릴 것이 없다: 캔버스가 물러난 뒤에도 이 줄이 계획을 계속 찍으면
+      // 상태줄과 맵이 서로 다른 말을 한다. 이 분기는 쓰기 제안 0건인 턴에서만 달리므로(시공이
+      // 끝난 뒤의 질문·조회 턴) 그대로 두면 오해만 남는다.
       const activeSpec = session.getActiveSpec();
-      if (activeSpec && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
+      const planFullyBuilt = isAgentBlueprintComplete(getAgentBlueprintState().entries);
+      if (activeSpec && !planFullyBuilt && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
         deps.surface.setStatus(`밑그림 확정 — 에셋 ${activeSpec.assets.length}개`);
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
