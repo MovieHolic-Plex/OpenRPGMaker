@@ -192,7 +192,7 @@ describe("RPG Maker style event editor entry points", () => {
     // 페이지 추가는 탭 스트립의 [+](evt-page-add) 하나로 통일(2026-08-19 스펙).
     const pageActionExpectations = [
       ["event-page-duplicate", "복제"],
-      ["event-page-copy", "복사해 두기"],
+      ["event-page-copy", "복사"],
       ["event-page-paste", "붙여넣기"],
       ["event-page-delete", "삭제"],
     ] as const;

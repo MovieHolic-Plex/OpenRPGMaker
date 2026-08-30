@@ -11,6 +11,8 @@
 //   D7 탭 우클릭 메뉴가 없었다(명령 목록에는 있다).
 //   D8 role=tab 에 aria-pressed 를 함께 쓰고, tabindex·방향키가 없었다.
 import { beforeEach, describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { editorState } from "@/editor/editorState";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { renderClassicPageTabStrip, renderPageActions } from "@/editor/panels/eventEditor/pageProps";
@@ -170,6 +172,55 @@ describe("페이지 관리 작업면", () => {
     expect(pages().map((page) => page.id)).toEqual([secondId, firstId]);
     expect((document.activeElement as HTMLElement).dataset.pageId).toBe(secondId);
     expect((document.activeElement as HTMLElement).dataset.pageId).toBe(editorState.get().selectedEventPageId);
+  });
+
+  it("우클릭 메뉴의 붙여넣기는 선택이 아니라 **우클릭한** 페이지 바로 앞에 넣는다", () => {
+    // 우클릭은 선택을 움기지 않는다. 예전엔 붙여넣기가 editorState 의 활성 페이지로 자리를 잡아서,
+    // 1페이지를 고른 상태에서 3페이지를 우클릭해 붙여넣으면 새 페이지가 index 0 에 꽂혔다.
+    addEventPage(mapId, eventId);
+    addEventPage(mapId, eventId);
+    const [first, , third] = [pages()[0]!, pages()[1]!, pages()[2]!];
+    expect(copyEventPageToClipboard(mapId, eventId, first.id)).toBe(true);
+    editorState.set({ selectedEventPageId: first.id });
+
+    openPageTabContextMenu({
+      x: 20, y: 20, mapId, event: currentEvent(), page: third, index: 2, requestDelete: () => undefined,
+    });
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-paste"]')!.click();
+
+    const after = pages();
+    const pastedIndex = after.findIndex((page) => page.id === editorState.get().selectedEventPageId);
+    expect(after.findIndex((page) => page.id === third.id)).toBe(3);
+    expect(pastedIndex).toBe(2);
+  });
+
+  it("한 동작은 한 단어만 쓰고, 보이는 라벨이 접근성 이름에 들어 있다 (WCAG 2.5.3)", () => {
+    const host = actions();
+    const expected = [
+      ["event-page-duplicate", "복제"],
+      ["event-page-copy", "복사"],
+      ["event-page-paste", "붙여넣기"],
+      ["event-page-delete", "삭제"],
+    ] as const;
+    for (const [testId, label] of expected) {
+      const node = button(host, testId);
+      // 보이는 라벨은 진짜 텍스트 노드다 — `font-size:0` + `::after` 로 다른 말을 그리면 이 단언이 깨진다.
+      expect(node.textContent, testId).toBe(label);
+      expect(node.querySelector(".event-page-button-label")?.textContent, testId).toBe(label);
+      expect(node.dataset.compactLabel, testId).toBeUndefined();
+      expect(node.getAttribute("aria-label") ?? "", testId).toContain(label);
+      // 비활성이여도 title 은 라벨을 되둥하지 않고 이유를 말한다.
+      expect(node.getAttribute("title") ?? "", testId).not.toBe(label);
+    }
+  });
+
+  it("좁은 포트 CSS 는 라벨을 지우고 다시 그리는 장치를 쓰지 않는다", () => {
+    const css = readFileSync(
+      resolve(process.cwd(), "src/styles/editor/event-editor.balanced.css"),
+      "utf8",
+    );
+    expect(css).not.toContain("attr(data-compact-label)");
+    expect(css).not.toMatch(/\.event-page-button-label\s*\{[^}]*font-size:\s*0/u);
   });
 
   it("탭 우클릭 메뉴가 여섯 항목을 주고 클립보드 상태를 반영한다 (D7)", () => {

@@ -257,8 +257,9 @@ test("C4 interaction — page segment switching, add command, and undo", async (
   expect(page1FirstRowText.length).toBeGreaterThan(0);
 
   // Click segment 2 -> the first command row text must change.
+  // role=tab 은 aria-selected 만 사용한다(aria-pressed 는 toggle 버튼 속성).
   const segmentIndex = (segments: ReturnType<typeof modal.locator>): Promise<number> =>
-    segments.evaluateAll((nodes) => nodes.findIndex((node) => node instanceof HTMLElement && node.getAttribute("aria-pressed") === "true"));
+    segments.evaluateAll((nodes) => nodes.findIndex((node) => node instanceof HTMLElement && node.getAttribute("aria-selected") === "true"));
   await segments.nth(1).click();
   await expect.poll(async () => (await segmentIndex(segments))).toBe(1);
 

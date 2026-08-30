@@ -120,7 +120,8 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
       disabled: !hasCopiedEventPage(),
       run: () => {
         close();
-        if (!pasteEventPage(mapId, event.id)) return;
+        // 기지는 우클릭한 페이지다 — 이 메뉴의 다른 항목과 같은 대상을 쓴다(우클릭은 선택을 움기지 않는다).
+        if (!pasteEventPage(mapId, event.id, page.id)) return;
         toast("복사해 둔 페이지를 붙여넣었어요.", "ok");
       },
     },

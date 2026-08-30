@@ -114,7 +114,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
       "페이지 복제"
     ),
     pageButton(
-      "복사해 두기",
+      "복사",
       "event-page-copy",
       "이 페이지를 복사해 둔다 — 다른 이벤트에도 붙여넣을 수 있어요",
       () => {
@@ -167,7 +167,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
     pageButton(
       "삭제",
       "event-page-delete",
-      canDelete ? "삭제" : "페이지가 하나뿐이라 지울 수 없어요",
+      canDelete ? "이 페이지와 여기 들어있는 명령을 지워요" : "페이지가 하나뿐이라 지울 수 없어요",
       () => void requestEventPageDeletion(mapId, ev.id, activePage),
       !canDelete,
       "페이지 삭제",
@@ -477,6 +477,15 @@ function recordName(records: readonly { id: string; name: string }[], id: string
   return records.find((record) => record.id === id)?.name ?? id;
 }
 
+/**
+ * 한 동작은 모든 표면에서 **한 단어**만 쓴다(버튼·좁은 포트·우클릭 메뉴 동일).
+ *
+ * 예전엔 좁은 포트에서 `font-size: 0` 으로 진짜 텍스트를 집어삼키고 `::after` 로 다른 말을
+ * 그렸다 — 화면엔 «보관», DOM 과 접근성 이름은 «복사해 두기» 여서 보이는 라벨이 접근성 이름에
+ * 들어 있지 않았고(WCAG 2.5.3 Label in Name 실패), 음성 제어가 «복사해 두기 클릭» 을 못 찾았다.
+ * 짧은 단어 하나로 통일해 지우기·다시 그리기 자심를 없었다. 복제·복사·붙여넣기의 시각 구분은
+ * 장식용 CSS 글리프(`::before`)가 맡는다 — 라벨 텍스트를 건드리지 않는다.
+ */
 function pageButton(
   text: string,
   testId: string,
@@ -495,23 +504,11 @@ function pageButton(
   const variantClass = variant ? ` event-page-action-${variant}` : "";
   return el("button", {
     class: `btn event-page-action-button${variantClass} ${disabled ? "disabled" : ""}`,
-    children: [el("span", {
-      class: "event-page-button-label",
-      text,
-      dataset: { compactLabel: compactPageActionLabel(testId, text) },
-    })],
+    children: [el("span", { class: "event-page-button-label", text })],
     dataset: { testid: testId },
     attrs,
     on: onClick ? { click: onClick } : undefined,
   }) as HTMLButtonElement;
-}
-
-function compactPageActionLabel(testId: string, fallback: string): string {
-  switch (testId) {
-    case "event-page-copy": return "보관";
-    case "event-page-paste": return "붙임";
-    default: return fallback;
-  }
 }
 
 export function renderPageCommandCatalog(

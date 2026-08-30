@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-08-30T22:17:23.085Z",
+ "ranAt": "2026-08-30T23:03:28.182Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
@@ -11596,9 +11596,6 @@
     "background:linear-gradient(180deg, color-mix(in srgb, var(--bg-inset) 84%, white 4%), var(--bg-inset))",
     "border-color:color-mix(in srgb, var(--accent) 52%, var(--border-default))",
     "border-color:var(--accent)",
-    "border-color:var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default)",
-    "border-color:var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle)",
-    "border-radius:0",
     "border-radius:7px",
     "border:1px solid var(--border-default)",
     "box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent), 0 1px 2px var(--shadow-pop)",
@@ -11629,7 +11626,6 @@
     "width:100%"
    ],
    "sheets": [
-    "src/styles/database/tabs-a.part-2.css",
     "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.custom-select.css"
    ]
@@ -11937,13 +11933,15 @@
     "column-gap:4px",
     "column-gap:8px",
     "content:\"\"",
+    "content:\"\\1f4cb\\a0\"",
+    "content:\"\\1f5d0\\a0\"",
     "content:\"\\25b4\"",
     "content:\"\\25be\"",
+    "content:\"\\29c9\\a0\"",
     "content:\"▾\"",
     "content:\"어디로\"",
     "content:\"언제\"",
     "content:\"일정 \" counter(event-schedule-row)",
-    "content:attr(data-compact-label)",
     "content:attr(data-glyph)",
     "content:attr(data-label)",
     "content:none",
@@ -11977,7 +11975,6 @@
     "flex:1 1 auto",
     "font-family:inherit",
     "font-family:var(--mk-mono)",
-    "font-size:0",
     "font-size:10.5px",
     "font-size:10px",
     "font-size:11.5px",
@@ -15599,10 +15596,12 @@
   "event-page-actions-row": {
    "props": [
     "color",
+    "content",
     "cursor",
     "display",
     "flex",
     "flex-wrap",
+    "font-size",
     "gap",
     "grid-template-columns",
     "height",
@@ -15615,10 +15614,15 @@
    ],
    "decls": [
     "color:var(--danger)",
+    "content:\"\\1f4cb\\a0\"",
+    "content:\"\\1f5d0\\a0\"",
+    "content:\"\\29c9\\a0\"",
+    "content:none",
     "cursor:not-allowed",
     "display:flex",
     "flex-wrap:nowrap",
     "flex:0 0 auto",
+    "font-size:11px",
     "gap:4px",
     "grid-template-columns:none",
     "height:26px",
@@ -15640,8 +15644,10 @@
     "font-size"
    ],
    "decls": [
-    "content:attr(data-compact-label)",
-    "font-size:0",
+    "content:\"\\1f4cb\\a0\"",
+    "content:\"\\1f5d0\\a0\"",
+    "content:\"\\29c9\\a0\"",
+    "content:none",
     "font-size:11px"
    ],
    "sheets": [
