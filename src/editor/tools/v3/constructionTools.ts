@@ -16,6 +16,7 @@ import {
   type VocabSoftConfirm,
 } from "@/project/tileVocabulary";
 import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
+import { forestPlacementPlan, type ForestDensity, treeFootprintCells } from "../forestDensity";
 import { inMapBounds, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
 import { wobblePath } from "../naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
@@ -551,8 +552,8 @@ const placeProps: ToolDefinition = {
   name: "place_props",
   description:
     "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region. "
-    + "사용자가 빽빽하게·통행 불가·길 막기를 요구하면 packing:\"dense\" 로 보내고 count 는 area 면적만큼 크게 잡는다(결과에 남은 통행 칸 수가 나온다). "
-    + "숲·삼림은 나무 몇 그루가 아니라 그 지대를 덮는 지형이다 — 나무 산포로 숲을 만들 땐 plant_tree_clusters(density) 를 쓰고, place_props 로 직접 심으면 count 를 area 면적의 최소 1/4 그루로 잡아라(울창한 숲은 packing:\"dense\").",
+    + "숲은 density:sparse|normal|dense|impassable 로 요청하면 count·packing을 면적에서 자동 계산한다(숲 기본 dense=80%, 울창/빽빽=impassable). "
+    + "일반 소품을 빽빽하게·통행 불가로 놓을 때는 packing:\"dense\" + count=area 면적(결과에 남은 통행 칸 수).",
   mode: "write",
   version: 3,
   parameters: {
@@ -566,7 +567,12 @@ const placeProps: ToolDefinition = {
         required: ["x", "y", "w", "h"],
       },
       material: { type: "string", description: "소품 재료: 타일 라벨/설명(예: \"침엽수\", \"나무 상자\"). 그룹 id 금지" },
-      count: { type: "integer", description: "배치 개수" },
+      count: { type: "integer", description: "배치 개수. 나무 density를 주면 생략 가능" },
+      density: {
+        type: "string",
+        enum: ["sparse", "normal", "dense", "impassable"],
+        description: "나무 전용 밀도. count·packing을 area 면적에서 계산하며 dense=80%, impassable=100%",
+      },
       minGap: { type: "integer", description: "간격(기본 1; 마을 산포는 2+ 권장)" },
       naturalness: { type: "number", description: "0~1(기본 0.5). <0.3=한곳 뭉침(uniform), 0.3~0.7=poisson 산포, >0.7=cluster" },
       packing: {
@@ -576,29 +582,48 @@ const placeProps: ToolDefinition = {
       },
       seed: { type: "integer" },
     },
-    required: ["mapId", "area", "material", "count"],
+    required: ["mapId", "area", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map } = requireMapContext(draft, args, PROPS_EXAMPLE);
     const area = coerceRect(args.area, "area", PROPS_EXAMPLE);
-    const count = coerceInt(args.count, "count", PROPS_EXAMPLE);
+    const density = coercePlacePropsForestDensity(args.density);
     const material = typeof args.material === "string" ? args.material.trim() : "";
     if (!material) failWithExample("material(타일 라벨/설명, 예: \"침엽수\"·\"나무 상자\")이 필요합니다", PROPS_EXAMPLE);
-    const minGap = typeof args.minGap === "number" && Number.isInteger(args.minGap) ? args.minGap : undefined;
+    const forestMaterial = /침엽수|conifer/i.test(material)
+      ? "침엽수" as const
+      : /활엽수|broadleaf/i.test(material)
+        ? "활엽수" as const
+        : undefined;
+    if (density && !forestMaterial) failWithExample("density는 침엽수/활엽수 material에만 쓸 수 있습니다", PROPS_EXAMPLE);
+    const plan = density && forestMaterial
+      ? forestPlacementPlan({ area, footprintCells: treeFootprintCells(forestMaterial), density })
+      : undefined;
+    const count = args.count === undefined
+      ? plan?.count ?? failWithExample("count가 필요합니다(나무는 density로 대신할 수 있습니다)", PROPS_EXAMPLE)
+      : coerceInt(args.count, "count", PROPS_EXAMPLE);
+    const minGap = plan?.minGap
+      ?? (typeof args.minGap === "number" && Number.isInteger(args.minGap) ? args.minGap : undefined);
     const seed = args.seed === undefined ? undefined : coerceInt(args.seed, "seed", PROPS_EXAMPLE);
-    const packing = args.packing === undefined ? undefined : coercePacking(args.packing);
+    const packing = plan?.packing ?? (args.packing === undefined ? undefined : coercePacking(args.packing));
     return placePropsOnDraft(draft, {
       mapId: map.id,
       area,
       material,
       count,
       ...(minGap === undefined ? {} : { minGap }),
-      naturalness: naturalnessArg(args),
+      naturalness: plan?.naturalness ?? naturalnessArg(args),
       ...(seed === undefined ? {} : { seed }),
       ...(packing === undefined ? {} : { packing }),
     });
   },
 };
+
+function coercePlacePropsForestDensity(value: unknown): ForestDensity | undefined {
+  if (value === undefined) return undefined;
+  if (value === "sparse" || value === "normal" || value === "dense" || value === "impassable") return value;
+  failWithExample("density는 sparse|normal|dense|impassable 중 하나여야 합니다", PROPS_EXAMPLE);
+}
 
 function coercePacking(value: unknown): ScatterPacking {
   if (value === "natural" || value === "dense") return value;

@@ -17,16 +17,22 @@ type DensitySpec = {
   readonly coverage: number;
   readonly minGap: number;
   readonly naturalness: number;
-  /** true 면 place_props packing:"dense"(간격 0, 행 우선 빈틈 채우기)로 보낸다. */
+  /** true 면 place_props packing:"dense"(선형 채우기)로 보낸다. */
   readonly packDense: boolean;
 };
 
 const SPECS: Readonly<Record<ForestDensity, DensitySpec>> = {
   sparse: { coverage: 0.15, minGap: 3, naturalness: 0.55, packDense: false },
   normal: { coverage: 0.4, minGap: 2, naturalness: 0.6, packDense: false },
-  dense: { coverage: 0.8, minGap: 1, naturalness: 0.65, packDense: false },
+  // 왜 dense도 선형 packer인가: 24×24 실측에서 자연 산포는 231그루 요청 중 79그루만 놓고
+  // 44% 커버리지·72.6% 통행 가능에 멈췄으며, 96×96은 399초에도 끝나지 않았다.
+  dense: { coverage: 0.8, minGap: 0, naturalness: 0.65, packDense: true },
   impassable: { coverage: 1, minGap: 0, naturalness: 0.5, packDense: true },
 };
+
+export function forestCoverageTarget(density: ForestDensity): number {
+  return SPECS[density].coverage;
+}
 
 /** 통행 불가급 밀도를 뜻하는 표현 — 울창/빽빽/밀림/원시림/들어갈 수 없는. */
 const IMPASSABLE_WORDS = /울창|빽빽|빼곡|밀림|정글|원시림|태초의 숲|통행\s*불가|지나갈 수 없|들어갈 수 없|막아|impassable|impenetrable|jungle/;

@@ -2,6 +2,13 @@
 // 지금 솔버 = fill_region(오토타일) + place_props. 이후 WFC로 water/forest 마스크만 교체 가능.
 
 import type { GameMap, Project } from "@/project/types";
+import {
+  DEFAULT_FOREST_DENSITY,
+  forestDensityFromText,
+  forestPlacementPlan,
+  treeFootprintCells,
+  type ForestDensity,
+} from "./forestDensity";
 import type { ToolDefinition } from "./types";
 import type { VillageRequirements } from "./villageRequirements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
@@ -110,6 +117,7 @@ export function applyTerrainPassFromMasks(
   map: GameMap,
   masks: TerrainConstraintMasks,
   warnings: string[],
+  forestDensity: ForestDensity = DEFAULT_FOREST_DENSITY,
 ): { readonly waterOps: number; readonly forestOps: number; readonly notes: string[] } {
   const fill = requireTool("fill_region");
   const props = requireTool("place_props");
@@ -129,44 +137,57 @@ export function applyTerrainPassFromMasks(
   }
 
   for (const rect of masks.forestRects) {
-    const count = Math.max(8, Math.floor((rect.w * rect.h) / 10));
-    const bigCount = Math.max(4, Math.min(10, Math.floor((rect.w * rect.h) / 28)));
-    try {
-      const result = props.run(draft, {
-        mapId: map.id,
-        area: rect,
-        material: "침엽수",
-        count,
-        minGap: 2,
-        naturalness: 0.6,
-        seed: 7700 + rect.x * 13 + rect.y * 7,
-      });
-      if (result.warnings) warnings.push(...result.warnings);
-      const placed = typeof (result.data as { placed?: number } | undefined)?.placed === "number"
-        ? (result.data as { placed: number }).placed
-        : count;
-      forestOps += placed;
-      notes.push(`terrainPass forest conifer ~${placed}`);
-    } catch (err) {
-      warnings.push(err instanceof Error ? err.message : String(err));
-    }
-    // 2×2 활엽수 대목 — multi-turn forest_big 레이어와 동일 품질 목표
+    // 활엽수 군락을 먼저 소량 심고 침엽수 선형 packer로 목표 커버리지를 채운다. 반대 순서는
+    // 2×2 원자가 들어갈 틈을 먼저 없애 author_village 품질 게이트가 흔들렸다.
+    const broadleafPlan = forestPlacementPlan({
+      area: rect,
+      footprintCells: treeFootprintCells("활엽수"),
+      density: forestDensity,
+      share: 0.05,
+    });
     try {
       const big = props.run(draft, {
         mapId: map.id,
         area: rect,
         material: "활엽수",
-        count: bigCount,
-        minGap: 3,
-        naturalness: 0.55,
+        count: Math.max(3, broadleafPlan.count),
+        minGap: broadleafPlan.minGap,
+        naturalness: broadleafPlan.naturalness,
+        packing: broadleafPlan.packing,
         seed: 8800 + rect.x * 17 + rect.y * 11,
       });
       if (big.warnings) warnings.push(...big.warnings);
       const placedBig = typeof (big.data as { placed?: number } | undefined)?.placed === "number"
         ? (big.data as { placed: number }).placed
-        : bigCount;
+        : broadleafPlan.count;
       forestOps += placedBig;
       notes.push(`terrainPass forest broadleaf-2x2 ~${placedBig}`);
+    } catch (err) {
+      warnings.push(err instanceof Error ? err.message : String(err));
+    }
+
+    const coniferPlan = forestPlacementPlan({
+      area: rect,
+      footprintCells: treeFootprintCells("침엽수"),
+      density: forestDensity,
+    });
+    try {
+      const result = props.run(draft, {
+        mapId: map.id,
+        area: rect,
+        material: "침엽수",
+        count: coniferPlan.count,
+        minGap: coniferPlan.minGap,
+        naturalness: coniferPlan.naturalness,
+        packing: coniferPlan.packing,
+        seed: 7700 + rect.x * 13 + rect.y * 7,
+      });
+      if (result.warnings) warnings.push(...result.warnings);
+      const placed = typeof (result.data as { placed?: number } | undefined)?.placed === "number"
+        ? (result.data as { placed: number }).placed
+        : coniferPlan.count;
+      forestOps += placed;
+      notes.push(`terrainPass forest conifer ~${placed} density=${forestDensity}`);
     } catch (err) {
       warnings.push(err instanceof Error ? err.message : String(err));
     }
@@ -189,7 +210,8 @@ export function runTerrainConstraintPass(
   readonly notes: string[];
 } {
   const masks = buildTerrainConstraintMasks(map, requirements, area);
-  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings);
+  const density = forestDensityFromText(requirements.query) ?? DEFAULT_FOREST_DENSITY;
+  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, density);
   return {
     masks,
     waterOps: applied.waterOps,

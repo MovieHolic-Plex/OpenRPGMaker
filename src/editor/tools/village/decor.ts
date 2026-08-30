@@ -6,6 +6,12 @@ import { shapeCobbleAround } from "@/project/defaults/cobbleAutotile";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
+import {
+  DEFAULT_FOREST_DENSITY,
+  forestDensityFromText,
+  forestPlacementPlan,
+  treeFootprintCells,
+} from "../forestDensity";
 import { inMapBounds } from "../mapHelpers";
 import {
   materialForYardDecor,
@@ -35,6 +41,9 @@ import { paintFlowerField, paintPlazaFence, placeMarketDeckProps } from "./plaza
 import { paintPlazaGatePath } from "./roads";
 
 const placePropsTool = requireTool(CONSTRUCTION_TOOLS_V3, "place_props");
+
+/** 마을 전역 나무 산포가 가질 밀도 지분 — 남은 밀도는 숲 밴드(terrainPass)가 채운다. */
+const INTERIOR_TREE_SHARE = 0.25;
 
 /** 클러스터(나란히 무리) 배치 대상 소품 → 타일 id. 전부 combined_town 단독 소품. */
 const CLUSTER_PROP_TILES: Partial<Record<YardDecorKind, number>> = {
@@ -270,20 +279,42 @@ export function placeVillageDecor(
   }
 
   if (intent.edgeTrees !== "none") {
-    placed += placeBroadleafGroves(map, area, plaza, houses, seed, intent.edgeTrees === "dense" ? 16 : 9);
+    // edgeTrees="dense" 만 숲 밀도 축을 탄다 — "conifer" 는 숲 요구가 아니라 마을 가장자리 나무라
+    // 옛 개수를 그대로 둔다(실측: 밀도를 여기에도 밀었더니 50×50 시공이 1.6s → 31s 가 됐다).
+    const density = intent.edgeTrees === "dense"
+      ? forestDensityFromText(intent.theme) ?? DEFAULT_FOREST_DENSITY
+      : undefined;
+    const broadleafPlan = density
+      ? forestPlacementPlan({ area, footprintCells: treeFootprintCells("활엽수"), density, share: 0.05 })
+      : undefined;
+    placed += placeBroadleafGroves(map, area, plaza, houses, seed, broadleafPlan ? Math.max(16, broadleafPlan.count) : 9);
     const treeArea = {
       x: area.x + 1,
       y: area.y + 1,
       w: Math.max(2, area.w - 2),
       h: Math.max(2, area.h - 2),
     };
+    const coniferPlan = density
+      ? forestPlacementPlan({
+        area: treeArea,
+        footprintCells: treeFootprintCells("침엽수"),
+        density,
+        // 왜 share 인가: 이 산포의 area 는 숲 밴드가 아니라 **마을 전역**이다. 밀도를 그대로 쓰면
+        // 집·길 사이까지 나무로 메워 마을이 사라진다. 정작 두꺼워야 할 숲 밴드는
+        // villageTerrainPass 의 forestRects 가 직접 채운다.
+        share: INTERIOR_TREE_SHARE,
+      })
+      : undefined;
     placed += placePropsCount(draft, {
       mapId: map.id,
       area: treeArea,
       material: "침엽수",
-      count: Math.max(18, Math.floor((treeArea.w * treeArea.h) / (intent.edgeTrees === "dense" ? 78 : 118))),
-      minGap: 3,
-      naturalness: 0.62,
+      count: coniferPlan?.count ?? Math.max(18, Math.floor((treeArea.w * treeArea.h) / 118)),
+      // 밀도 경로는 선형 packer 를 탄다: 자연 산포는 스텝마다 전 후보를 다시 재기 때문에 count 에
+      // 제곱으로 들어간다(실측 48×48 에 230그루 = 40s, 같은 수를 dense 로 = 63ms).
+      minGap: coniferPlan?.minGap ?? 3,
+      naturalness: coniferPlan?.naturalness ?? 0.62,
+      ...(coniferPlan ? { packing: coniferPlan.packing } : {}),
       seed: seed + 1000,
     }, warnings);
     // 석상 쉼터 — 포석(129 블록) 패치 위 석상/돌기둥. (바위 441/442는 전역 밴, 2026-07-17.)

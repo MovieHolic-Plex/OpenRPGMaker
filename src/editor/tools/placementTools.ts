@@ -109,7 +109,14 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
     const placed: Rect[] = [];
     const footprints: Footprint[] = [];
     if (args.packing === "dense") {
-      const dense = planDensePlacements({ map, area: args.area, count: args.count, protectedCells, footprintAt: stepFootprintAt });
+      const dense = planDensePlacements({
+        map,
+        area: args.area,
+        count: args.count,
+        protectedCells,
+        footprintAt: stepFootprintAt,
+        offsetSeed: seedForTool(rawArgs, legacySeed),
+      });
       placed.push(...dense.placed);
       footprints.push(...dense.footprints);
     }
@@ -674,28 +681,47 @@ function planDensePlacements(input: {
   readonly count: number;
   readonly protectedCells: ReadonlySet<string>;
   readonly footprintAt: (step: number) => Footprint;
+  readonly offsetSeed: number;
 }): { readonly placed: readonly Rect[]; readonly footprints: readonly Footprint[] } {
   const { map, area, count, protectedCells, footprintAt } = input;
   const usedUpper = new Set<number>();
   const usedLower = new Set<number>();
-  const placed: Rect[] = [];
-  const footprints: Footprint[] = [];
+  const candidates: { readonly rect: Rect; readonly footprint: Footprint }[] = [];
   const maxX = area.x + area.w - 1;
   const maxY = area.y + area.h - 1;
   for (let y = area.y; y <= maxY; y += 1) {
     for (let x = area.x; x <= maxX; x += 1) {
-      if (placed.length >= count) return { placed, footprints };
-      const footprint = footprintAt(placed.length);
+      const footprint = footprintAt(candidates.length);
       if (x + footprint.w - 1 > maxX || y + footprint.h - 1 > maxY) continue;
       const origin = { x, y };
       if (!footprintFits(map, footprint, origin, protectedCells)) continue;
       if (!denseCellsFree(map, footprint, origin, usedUpper, usedLower)) continue;
       occupyDenseCells(map, footprint, origin, usedUpper, usedLower);
-      placed.push(rectAt(origin, footprint));
-      footprints.push(footprint);
+      candidates.push({ rect: rectAt(origin, footprint), footprint });
     }
   }
-  return { placed, footprints };
+  if (count >= candidates.length) {
+    return {
+      placed: candidates.map((candidate) => candidate.rect),
+      footprints: candidates.map((candidate) => candidate.footprint),
+    };
+  }
+
+  // 왜 앞 count개를 그대로 쓰지 않는가: 80% dense가 왼쪽 80% 벽 + 오른쪽 빈 띠가 되면
+  // 커버리지는 맞아도 숲으로 읽히지 않는다. 선형 전수 결과에서 등간격으로 골라 빈틈을 고르게 남긴다.
+  const offset = input.offsetSeed % candidates.length;
+  const selected: typeof candidates = [];
+  const chosen = new Set<number>();
+  for (let step = 0; step < count; step += 1) {
+    let index = (offset + Math.floor(((step + 0.5) * candidates.length) / count)) % candidates.length;
+    while (chosen.has(index)) index = (index + 1) % candidates.length;
+    chosen.add(index);
+    selected.push(candidates[index]!);
+  }
+  return {
+    placed: selected.map((candidate) => candidate.rect),
+    footprints: selected.map((candidate) => candidate.footprint),
+  };
 }
 
 function denseCellsFree(
