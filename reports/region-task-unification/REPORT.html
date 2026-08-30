@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>영역 작업 AI 통합 실측 보고서 — 2026-08-31</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161a21; --line: #262c37; --ink: #e6e9ef;
+    --dim: #9aa4b2; --accent: #6ea8fe; --good: #4ade80; --warn: #fbbf24; --bad: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.7 -apple-system, "Segoe UI", "Noto Sans KR", sans-serif;
+  }
+  main { max-width: 1080px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1 { font-size: 30px; line-height: 1.3; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-size: 21px; margin: 56px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 16px; margin: 28px 0 10px; color: var(--accent); }
+  p { margin: 12px 0; }
+  .meta { color: var(--dim); font-size: 13px; margin-bottom: 32px; }
+  .meta code { color: var(--ink); }
+  .lede {
+    background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 18px 20px; margin: 24px 0 8px;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--dim); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  tbody tr:hover { background: #1a1f28; }
+  code {
+    background: #1e242e; border: 1px solid var(--line); border-radius: 4px;
+    padding: 1px 5px; font-size: 13px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+  .ok { color: var(--good); } .warn { color: var(--warn); } .bad { color: var(--bad); } .dim { color: var(--dim); }
+  figure { margin: 24px 0; }
+  figure img {
+    width: 100%; border: 1px solid var(--line); border-radius: 8px; display: block; background: #fff;
+  }
+  figcaption { color: var(--dim); font-size: 13px; margin-top: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+  .grid figure { margin: 0; }
+  ul, ol { padding-left: 22px; }
+  li { margin: 6px 0; }
+  .stat-row { display: flex; gap: 14px; flex-wrap: wrap; margin: 20px 0; }
+  .stat {
+    flex: 1 1 150px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .stat b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--dim); font-size: 12.5px; }
+  blockquote {
+    margin: 16px 0; padding: 12px 16px; background: var(--panel);
+    border-left: 3px solid var(--warn); border-radius: 0 6px 6px 0; color: var(--ink);
+  }
+  .foot { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--dim); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>영역 작업 AI 를 조수 하나로 통합한다</h1>
+<p class="meta">
+  2026-08-31 · 브랜치 <code>영역작업009</code> · 커밋 <code>9e779c14</code> ·
+  베이스 <code>e5bb5902</code> · PR <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/378" style="color:var(--accent)">#378</a>
+</p>
+
+<div class="lede">
+  AI 편집 턴을 실행하는 경로가 <b>셋</b>이었고 서로 다른 모델·기억·검증·적용 정책을 썼다.
+  이제 실행체는 조수 세션 하나이고, “영역”은 엔진이 아니라 <b>그 턴의 스코프 제약</b>
+  (프롬프트 문구 + 하드 클립)으로만 남는다. 진입점 6개는 이벤트 하나로 합쳤다.
+</div>
+
+<div class="stat-row">
+  <div class="stat"><b class="num">80</b><span>변경 파일</span></div>
+  <div class="stat"><b class="num ok">−11,138</b><span>삭제 줄</span></div>
+  <div class="stat"><b class="num">+1,817</b><span>추가 줄</span></div>
+  <div class="stat"><b class="num">34</b><span>삭제 모듈·테스트</span></div>
+  <div class="stat"><b class="num ok">4/4</b><span>실모델 확인 항목</span></div>
+</div>
+
+<h2>1. 무엇이 문제였나</h2>
+
+<table>
+  <thead><tr><th>진입</th><th>실행체</th><th>모델</th><th>기억</th><th>승인</th></tr></thead>
+  <tbody>
+    <tr><td>조수에 입력</td><td><code>aiChatPanel.executeTurn</code></td><td>감독+lite, 추론 on</td><td>세션 지속</td><td>없음</td></tr>
+    <tr><td>선택 후 조수에 입력</td><td><code>runRegionTask</code></td><td class="warn">lite 고정, 추론 off</td><td class="bad">매번 새 세션</td><td>없음</td></tr>
+    <tr><td>영역 팝오버</td><td><code>runRegionTask</code></td><td class="warn">lite 고정, 추론 off</td><td class="bad">매번 새 세션</td><td class="bad">pending + 검토 UI</td></tr>
+  </tbody>
+</table>
+
+<p>
+  <code>approvalPolicy.ts</code> 는 이미 “승인 게이트 없음, 복구는 되돌리기”를 정책으로 박아 뒀고
+  <code>9c6b37a5</code>·<code>f97a0824</code> 두 커밋이 조수에서 승인 카드를 걷어냈다. 그런데 커밋 제목이
+  “<b>조수 창에서</b> 걷어낸다”였고, 영역 쪽 승인 게이트는 그대로 남았다. 통합 방향은 이미 정해져
+  있었고 영역만 따라오지 않은 상태였다.
+</p>
+
+<h3>양쪽에 갈라져 있던 자산</h3>
+<table>
+  <thead><tr><th>영역 경로에만</th><th>조수에만</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>
+        재료·도구 규칙(가방 금지, 장식박스↔보물상자 구분, 물 위 소품 금지, <code>shape=circle</code>)<br>
+        하드 클립 <code>clipMapCellsToRegion</code><br>
+        플레이 가능성 하네스 <code>reviewRegionDraft</code>
+      </td>
+      <td>
+        프로젝트 무결성 게이트 <code>commitChangeset</code><br>
+        커밋 로그 · 세션 기억<br>
+        비전(맵 스크린샷) · 자율 실행
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>2. 통합 후 구조</h2>
+
+<pre style="background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;overflow-x:auto;font-size:13px;line-height:1.6">sendText(text)
+  ├ turnScope = 선택이 있고 escaping intent 가 아니면 {mapId, region}, 아니면 null
+  ├ dispatchRegionTaskStatus(running)            ← 캔버스 배지 유지
+  ├ session.sendUserMessage(
+  │    text + buildTurnGuide({instruction, tileset, scope}) + contextFooter(),
+  │    …, { autonomous, instruction: text }      ← 되묻기 판정은 <b>원문</b>으로
+  │  )
+  └ applyProposal(calls, bubble, turnScope)
+       ├ clipMapCellsToRegion(base, proposed, scope)   ← 스코프 있을 때만
+       ├ repairLayoutPlacement                         (기존)
+       ├ layoutValidationBlocking → 차단               (기존)
+       ├ reviewRegionDraft → ⚠ 로그 버블               (신규, <b>차단 안 함</b>)
+       └ applyProposedProject → commitChangeset + 커밋로그</pre>
+
+<p>
+  <code>turnScope</code> 는 턴 시작 시점에 고정한다 — 턴 도중 선택이 바뀌어도 모델이 들은 사각형과
+  클립하는 사각형이 어긋나면 안 된다. 클립은 <b>배치 수리 앞</b>에 둔다(클립으로 되돌린 칸을
+  배치 수리가 다시 건드리면 안 된다).
+</p>
+
+<h3>진입점 6개 → 이벤트 1개</h3>
+<p>
+  <code>oprn:ai-selection-context</code> 의 detail 에 <code>instruction</code>·<code>autoRun</code> 을 더했다.
+  <code>autoRun</code> 은 <code>instruction</code> 이 있을 때만 유효하다.
+</p>
+<table>
+  <thead><tr><th>파일</th><th>전</th><th>후</th></tr></thead>
+  <tbody>
+    <tr><td><code>selectionActionChips</code></td><td><code>openRegionTaskModal</code> + 컨텍스트 요청</td><td>이벤트 1건 (<code>focus:true</code>)</td></tr>
+    <tr><td><code>mapSelectionContextMenu</code></td><td><code>openModal</code> deps</td><td>같음</td></tr>
+    <tr><td><code>buildPalette</code></td><td><code>openBuildPaletteAiFill/Construction</code></td><td><code>instruction</code>+<code>autoRun</code></td></tr>
+    <tr><td><code>canvasInspectionPanel</code></td><td><code>openRegionTask</code> deps</td><td>같음</td></tr>
+    <tr><td><code>canvasAiWorkbench</code></td><td><code>openRegionTask</code> deps</td><td>선택 없으면 패널만 펼침</td></tr>
+    <tr><td><code>editorToolHook</code></td><td><code>openModal</code>+<code>runMock</code></td><td>삭제(하네스 4종만 남김)</td></tr>
+  </tbody>
+</table>
+
+<h2>3. 함께 고친 회귀 — 되묻기가 턴을 통째로 세우고 있었다</h2>
+
+<blockquote>
+  통합 직후 실측: “맵 전체를 풀로 덮어줘” → “집/건물을 어떻게 만들까요? 실내인가요 야외인가요?”
+  로 되물으며 <b>LLM 라운드 0회, 툴 0건</b>으로 종료.
+</blockquote>
+
+<p>
+  원인은 통합이 만든 <b>합성문</b>이다. 패널은 이제 <code>지시 + 도구 가이드 + 컨텍스트 footer</code> 를
+  한 문자열로 보내는데, 가이드의 고정 문구에는 “실내/방 맵 요청에는 야외 시공 facade 금지”처럼
+  <b>실내·야외 표지가 동시에</b> 들어 있다. <code>resolveIntentClarification</code> 이 그 합성문을 보면
+  “경로를 확정할 수 없음”으로 판정한다.
+</p>
+<p>
+  고침: <code>sendUserMessage(payload, …, { instruction })</code> 로 <b>사용자 발화 원문</b>을 함께 넘기고,
+  세션이 되묻기 판정만 그것으로 한다. 경로 확정 신호(<code>isProtocolLocked</code>)는 종전대로 합성문에서
+  본다 — 스코프 문구(“영역 작업 도구 규칙”)가 프로토콜 잠금이고, 스코프가 걸린 턴의 bare “집”은
+  가이드가 이미 야외 1채로 못박았으므로 되물으면 안 된다.
+</p>
+<p class="dim">
+  같은 원리가 도메인 노출에는 적용되지 않는다 — 가이드의 한국어 키워드가 <b>일부러</b> 도구 도메인을
+  연다. 도메인은 넓게 틀려도 도구가 몇 개 더 열릴 뿐이고, 되묻기는 턴을 세운다.
+</p>
+
+<h2>4. 삭제 목록</h2>
+<table>
+  <thead><tr><th>파일</th><th class="num">줄</th><th>이유</th></tr></thead>
+  <tbody>
+    <tr><td><code>panels/regionTaskModal.ts</code></td><td class="num">2,016</td><td>두 번째 엔드포인트</td></tr>
+    <tr><td><code>regionTask/runRegionTask.ts</code></td><td class="num">1,013</td><td>두 번째 엔진 (내용은 <code>turnGuide</code>+<code>applyProposal</code> 로 흡수)</td></tr>
+    <tr><td><code>regionTask/runDirectRoomDraft.ts</code></td><td class="num">287</td><td>모달 전용</td></tr>
+    <tr><td><code>regionTask/pendingRegionApply.ts</code></td><td class="num">260</td><td>승인 게이트 — 정책상 없음</td></tr>
+    <tr><td><code>regionTask/regionChangeGroups.ts</code></td><td class="num">232</td><td>부분 적용 전용</td></tr>
+    <tr><td><code>regionTask/regionChangeSummary.ts</code></td><td class="num">202</td><td>검토 UI 전용</td></tr>
+    <tr><td><code>regionTask/regionContextSuggestions.ts</code></td><td class="num">169</td><td>모달 컴포저 전용</td></tr>
+    <tr><td><code>regionTask/partialApplyCompose.ts</code></td><td class="num">70</td><td>부분 적용 전용</td></tr>
+    <tr><td><code>regionTask/regionTileStats.ts</code></td><td class="num">64</td><td>검토 UI 전용</td></tr>
+    <tr><td><code>regionTask/recentInstructions.ts</code></td><td class="num">50</td><td>모달 컴포저 전용</td></tr>
+    <tr><td><code>editor/regionClientRect.ts</code></td><td class="num">—</td><td>팝오버 배치 전용</td></tr>
+    <tr><td><code>styles/editor/region-task.css</code></td><td class="num">—</td><td>모달 스타일</td></tr>
+    <tr><td>vitest 19개 · e2e 5개</td><td class="num">—</td><td>모듈과 함께 사망</td></tr>
+  </tbody>
+</table>
+<p>
+  <b>남긴 것</b>: <code>clipToRegion</code>(스코프 핵심) · <code>regionIntentRouter</code>(가이드 라우팅) ·
+  <code>regionTaskStatus</code>(캔버스 배지) · <code>harnessReview</code>(경고용) · <code>suggestedCommands</code>.
+  <code>regionSnapshot.ts</code> 는 삭제 계획이었지만 <code>mapTileDraw</code>·<code>aiChangePreview</code>
+  (조수 자신의 변경 미리보기)가 쓰고 있어 남겼다.
+</p>
+
+<h2>5. 실모델 실측 — 사람 손 순서 그대로</h2>
+<p>
+  계획서의 마지막 검증 항목(“실제 앱에서 우클릭 드래그로 영역 잡고 조수에 «나무 좀 심어줘»”)을
+  손으로 하는 대신 프로브로 고정했다 — <code>test/e2e/_scoped-turn-live-probe.spec.ts</code>.
+  모델은 gemini-3.7-flash(Antigravity OAuth), 20×15 빈 맵, 우클릭 드래그로 잡은 사각형
+  <code>(7,5) 6×5</code>. 총 20.6분.
+</p>
+
+<table>
+  <thead><tr><th>확인</th><th>방법</th><th>결과</th></tr></thead>
+  <tbody>
+    <tr><td>(a) 영역 안에만 깔리는가</td><td>맵 전체 lower/upper 스냅샷 차이를 좌표로 환산</td><td class="ok">턴1 6칸 · 턴2 12칸 — <b>영역 밖 0칸</b></td></tr>
+    <tr><td>(b) 사각형 배지가 뜨는가</td><td><code>REGION_TASK_STATUS_EVENT</code> 를 부팅부터 수집</td><td class="ok">on→off, 같은 <code>runId:1</code>, 사각형 일치</td></tr>
+    <tr><td>(c) 후속 턴이 기억하는가</td><td>재무장 없이 “좀 더 많이” 전송</td><td class="ok">모델이 «나무 추가 심기»로 이어감</td></tr>
+    <tr><td>(d) 되돌리기 한 번</td><td>도구막대 undo 1회 → 직전 스냅샷 대조</td><td class="ok">잔여 <b>0칸</b></td></tr>
+  </tbody>
+</table>
+
+<p class="dim">
+  <code>mentionedClip:false</code> — 모델이 영역 밖을 칠하지 않아 클립이 발동할 일 자체가 없었다.
+  프롬프트 스코프만으로 지켜졌다는 뜻이고, 클립은 그 아래 안전망으로 남는다.
+</p>
+
+<div class="grid">
+  <figure>
+    <img src="shots/01-region-armed.png" alt="우클릭 드래그로 잡은 선택 사각형과 그 자리에 붙은 작업 칩">
+    <figcaption>① 우클릭 드래그 → 선택 사각형 + 칩 바가 <b>놓은 자리</b>에 붙는다(우하단 고정 아님).</figcaption>
+  </figure>
+  <figure>
+    <img src="shots/02-assistant-armed.png" alt="AI 작업 칩을 눌러 조수 입력창이 스코프와 함께 열린 상태">
+    <figcaption>② «AI 작업» 칩 → 조수 입력창으로 초점 이동. 이 선택이 이번 턴의 스코프가 된다.</figcaption>
+  </figure>
+</div>
+
+<figure>
+  <img src="shots/03-turn1-applied.png" alt="첫 턴 적용 결과: 영역 안에 침엽수 3그루, 이전/이후 비교 카드">
+  <figcaption>
+    ③ 턴 1 “여기 나무 좀 심어줘” — 침엽수 3그루 = 6타일. 변경 카드가 이전/이후를 나란히 보여주고
+    <b>되돌리기</b> 버튼을 함께 낸다(승인 게이트 없음, 복구는 되돌리기).
+  </figcaption>
+</figure>
+
+<figure>
+  <img src="shots/04-turn2-applied.png" alt="후속 턴 적용 결과: 같은 영역에 나무 6그루로 촘촘해진 상태">
+  <figcaption>
+    ④ 턴 2 “좀 더 많이” — 재무장 없이 같은 세션에서 이어졌다. 모델이 «나무 추가 심기»로 이해하고
+    간격을 좁혀 6그루 = 12타일. <b>예전 영역 경로는 매번 새 세션이라 이 턴이 성립할 수 없었다.</b>
+  </figcaption>
+</figure>
+
+<figure>
+  <img src="shots/05-after-undo.png" alt="되돌리기 한 번 뒤 턴 1 상태로 정확히 복귀한 화면">
+  <figcaption>⑤ 되돌리기 1회 → 턴 1 종료 상태로 정확히 복귀. 잔여 0칸.</figcaption>
+</figure>
+
+<h2>6. 게이트·테스트</h2>
+<table>
+  <thead><tr><th>검증</th><th>결과</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td><code>tsc -p tsconfig.app.json</code></td><td class="ok">무결</td><td>워크트리는 <code>npx tsc</code> 가 TS 7 을 집으므로 메인 체크아웃 바이너리 사용</td></tr>
+    <tr><td><code>gates:css</code></td><td class="ok">통과</td><td>모달 CSS 삭제로 <code>.hidden</code> 산출물 1종 감소 → 라이브 클래스 기준선만 갱신. 예산 래칫은 손대지 않음</td></tr>
+    <tr><td><code>gates:surface</code></td><td class="ok">통과</td><td>—</td></tr>
+    <tr><td>핵심 vitest 10파일</td><td class="ok">65/65</td><td><code>scopedAssistantTurn</code>·<code>turnGuide</code>·<code>regionTaskClip</code>·재배선된 진입점 5종</td></tr>
+    <tr><td>영향 vitest 36파일</td><td class="warn">잔여 실패 있음</td><td>전부 <b>베이스 커밋 워크트리에서 동일 재현</b>(선재 실패 11건 + 부하 타임아웃)</td></tr>
+    <tr><td>영역 e2e 3종</td><td class="ok">통과</td><td><code>canvas-fill-selection-chips</code>·<code>right-drag-chips-anchored</code>·<code>canvas-ai-workbench</code></td></tr>
+  </tbody>
+</table>
+
+<h3>테스트를 두 곳 고쳐야 했다</h3>
+<ul>
+  <li>
+    <code>canvas-fill-selection-chips.spec.ts</code> — 칩 바를 “캔버스 우하단 고정 FAB”로 단정하고 있었다.
+    우클릭 제스처가 영역을 잡는 동작으로 되돌아온 <code>181c2570</code> 이후 실제 동작과 어긋난 채 남아
+    <b>베이스에서도 실패</b>했고, <code>right-drag-chips-anchored</code> 와 정면으로 모순됐다. 놓은 자리 기준으로 고쳤다.
+  </li>
+  <li>
+    <code>right-drag-chips-anchored.spec.ts</code> — 단발 <code>boundingBox()</code> 가 오버레이 재생성
+    (<code>popupKey</code> 변경 시 노드 교체)과 경합해 3회 중 1회 <code>null</code>. 폴링으로 바꿨다.
+    이 스펙은 이 브랜치가 진단(<code>_</code> 접두어)에서 정식 스위트로 올린 것이라 경합을 남길 수 없었다.
+  </li>
+</ul>
+
+<h2>7. 알아 둘 변화 — 승인된 삭제의 결과</h2>
+<table>
+  <thead><tr><th>변화</th><th>결과</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="warn">비용</td>
+      <td>lite 고정이 풀려 영역 작업도 감독 모델 계획 단계를 탄다. 의도된 것이지만 체감 비용이 오른다.</td>
+    </tr>
+    <tr>
+      <td><code>runDirectInteriorRoomDraft</code> 삭제</td>
+      <td>결정론적 양방향 실내 신축(밖의 문 + 실내 맵 + 복귀 이동, 영역 클립, 되돌리기 1회)이 없어졌다.
+          이제 AI 가 <code>run_interior_room_pipeline</code> + 문 이벤트로 조립한다.</td>
+    </tr>
+    <tr>
+      <td>NPC 시간표 결정 게이트 삭제</td>
+      <td><code>keep-fixed</code>/<code>enable-time</code> 선택지가 없다. 시간 시스템이 꺼진 채 스케줄 NPC 를
+          넣으면 ⚠ 만 남고 적용된다. 자동 수리는 하지 않았다 — 그건 정책을 새로 만드는 일이다.</td>
+    </tr>
+    <tr>
+      <td>적용 중 스토어 구독자 예외</td>
+      <td>재시도 가능한 pending 대신 턴 오류로 뜬다(옛 롤백이 삭제된 <code>applyRegionProjectWithHistory</code> 에
+          있었고 <code>store.replace</code> 에는 롤백이 없다).</td>
+    </tr>
+    <tr>
+      <td class="warn"><code>regionIntentRouter</code> 과활성</td>
+      <td>substring 매칭(<code>주인</code> ⊂ <code>주인공</code>, bare <code>전투</code>/<code>세이브</code>/<code>저장</code>,
+          아무 <code>바꿔</code>/<code>고쳐</code>)이 라우터가 매 턴 도는 지금 비공간 채팅 턴에도 1.3~1.5KB 를 붙인다.
+          라우터는 이 작업 범위 밖이라 별건으로 남긴다.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>8. 사고 하나 — 공유 <code>node_modules</code> 를 잠시 깼다</h2>
+<p>
+  베이스 대조용 워크트리 <code>/tmp/rpg-baseline</code> 의 <code>node_modules</code> 가
+  <b>메인 체크아웃을 가리키는 심링크 하나</b>였는데, 그 안에서 개별 패키지 심링크를 걸었다.
+  경로가 메인으로 풀려 <code>vite</code>·<code>rollup</code>·<code>typescript</code>·<code>playwright</code> 등
+  7개 패키지와 <code>.bin</code> 4개가 <b>자기 자신을 가리키는 링크</b>가 되었다
+  (<code>Too many levels of symbolic links</code>). 워크트리 30개가 같이 쓰는 트리다.
+</p>
+<p>
+  즉시 원래 상대 타깃으로 복구했다 — <code>.bin/vite→../vite/bin/vite.js</code>,
+  <code>.bin/playwright→../playwright/cli.js</code>, <code>.bin/tsc→../typescript/bin/tsc</code>,
+  <code>.bin/vitest→../vitest/vitest.mjs</code> (각 <code>package.json</code> 의 <code>bin</code> 필드가 정답).
+  복구 후 <span class="ok">vite 6.4.3 · tsc 5.9.3 · vitest 3.2.4 · playwright 1.61.0</span> 모두 정상 동작 확인.
+  링크를 걸기 전에 <code>ls -ld node_modules</code> 로 디렉터리인지 확인해야 한다.
+</p>
+
+<p class="foot">
+  생성 2026-08-31 · 작성 Claude Opus 5 (Claude Code) · 커밋 <code>9e779c14</code> ·
+  증거 원본 <code>.omo/evidence/scoped-turn-live/run4/</code> ·
+  프로브 <code>test/e2e/_scoped-turn-live-probe.spec.ts</code>
+</p>
+
+</main>
+</body>
+</html>
