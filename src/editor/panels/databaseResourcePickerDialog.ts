@@ -34,6 +34,10 @@ import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { store } from "@/project/store";
 import type { Project, ResourceKind } from "@/project/types";
 import { el } from "@/util/dom";
+import {
+  databaseImageFailurePlaceholder,
+  markDatabaseImageFailed,
+} from "@/editor/panels/databaseRecordThumbnails";
 
 export type DatabaseResourcePickerKind =
   | "icon"
@@ -490,7 +494,7 @@ function resourceVisual(
 ): HTMLElement {
   if (!resourceId) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
   const url = resolveAssetResourceUrl(resourceId, { project });
-  if (!url) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
+  if (!url) return resourceFailureVisual(className, label);
 
   if (kind === "music" || kind === "sound") {
     const playable = !url.toLowerCase().endsWith(".mid");
@@ -542,15 +546,25 @@ function resourceVisual(
     });
   }
 
-  const image = el("img", { class: className, attrs: { alt: `${label} 미리보기`, src: url } });
+  const dimensions = resourceVisualDimensions(className);
+  const image = el("img", {
+    class: className,
+    attrs: {
+      alt: `${label} 미리보기`,
+      src: url,
+      width: String(dimensions.width),
+      height: String(dimensions.height),
+    },
+  });
+  image.style.minWidth = `${dimensions.width}px`;
+  image.style.minHeight = `${dimensions.height}px`;
   if (crop.hue !== undefined && crop.hue !== 0) {
     image.style.filter = `hue-rotate(${crop.hue}deg)`;
   }
   image.addEventListener(
     "error",
     () => {
-      const fallback = el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
-      image.replaceWith?.(fallback);
+      image.replaceWith?.(resourceFailureVisual(className, label));
     },
     { once: true }
   );
@@ -582,7 +596,7 @@ function cropVisual(
     `--db-resource-y:-${source.y * source.scale}px`,
   ];
   if (source.hue !== undefined && source.hue !== 0) style.push(`filter:hue-rotate(${source.hue}deg)`);
-  return el("span", {
+  const visual = el("span", {
     class: `${className} db-resource-picker-crop`,
     attrs: {
       "aria-label": `${label} 미리보기`,
@@ -590,6 +604,25 @@ function cropVisual(
       style: style.join(";"),
     },
   });
+  visual.style.minWidth = `${Math.max(1, source.width * source.scale)}px`;
+  visual.style.minHeight = `${Math.max(1, source.height * source.scale)}px`;
+  const probe = el("img", {
+    class: "db-resource-picker-load-probe",
+    attrs: { alt: "", "aria-hidden": "true", src: url, width: "1", height: "1" },
+  });
+  probe.addEventListener("error", () => markDatabaseImageFailed(visual, label), { once: true });
+  visual.append(probe);
+  return visual;
+}
+
+function resourceFailureVisual(className: string, label: string): HTMLElement {
+  const dimensions = resourceVisualDimensions(className);
+  return databaseImageFailurePlaceholder(className, label, dimensions.width, dimensions.height);
+}
+
+function resourceVisualDimensions(className: string): { readonly width: number; readonly height: number } {
+  if (className.includes("preview-visual")) return { width: 140, height: 120 };
+  return { width: 40, height: 40 };
 }
 
 function numberControl(

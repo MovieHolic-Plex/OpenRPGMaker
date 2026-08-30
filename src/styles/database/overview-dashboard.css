@@ -25,12 +25,52 @@
 }
 
 .database-modal-backdrop .db-overview-hero {
-  align-items: end;
+  align-items: center;
   border-bottom: 1px solid var(--db-studio-border-subtle);
   display: flex;
-  gap: 24px;
+  gap: 16px;
   justify-content: space-between;
-  padding: 4px 2px 18px;
+  padding: 2px 2px 10px;
+}
+
+.database-modal-backdrop .db-overview-identity {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-overview-title-row,
+.database-modal-backdrop .db-overview-icon-chips,
+.database-modal-backdrop .db-overview-icon-chip {
+  align-items: center;
+  display: flex;
+}
+
+.database-modal-backdrop .db-overview-title-row {
+  gap: 12px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-overview-icon-chips {
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.database-modal-backdrop .db-overview-icon-chip {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  font: 600 10px/1 "Malgun Gothic", system-ui, sans-serif;
+  gap: 4px;
+  padding: 4px 7px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-overview-icon-chip .db-tab-icon {
+  color: var(--db-studio-accent);
+  height: 13px;
+  width: 13px;
 }
 
 .database-modal-backdrop .db-overview-eyebrow {
@@ -41,17 +81,21 @@
 
 .database-modal-backdrop .db-overview-hero h2 {
   color: var(--db-studio-text-1);
-  /* 1.1 clipped Korean descenders (받침) at 800 weight: the line box was
-     37px against a 41px glyph box. 1.25 fits every viewport step. */
-  font: 800 clamp(24px, 3vw, 34px)/1.25 "Malgun Gothic", system-ui, sans-serif;
+  /* 1.1 clipped Korean descenders (받자침) at 800 weight: the line box was
+     37px against a 41px glyph box.
+     2026-08-30: 1.25 도 모든 단계에 맞지 않았다. 1024px 럭에서 3vw = 30.72px 가 되면
+     line box 38.4px 에 800 굵기 한관 잉키 상자가 40.4px 로 들어가 **자기 overflow 로 2px 깍혔다**
+     (scripts/qa/db-ux-probe.mjs 로 1024x768 에서 재현: overview 탭 selfClipped 1).
+     이전 주석이 "1.25 fits every viewport step" 라고 적었지만 반증됐다 — 큰 럭에서만
+     확인한 것이다. 지원 하한이 1024px 이므로 거기서 상자를 맞춰야 한다.
+     nowrap + ellipsis 를 유지하려면 overflow:hidden 은 필수이묀로, 상자를 키운다. */
+  font: 800 clamp(24px, 3vw, 34px)/1.4 "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: -.04em;
-  margin: 6px 0 8px;
-  word-break: keep-all;
-}
-
-.database-modal-backdrop .db-overview-hero p {
-  color: var(--db-studio-text-2);
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .database-modal-backdrop .db-overview-assistant-cta {

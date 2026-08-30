@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T03:36:12.895Z",
+  "generatedAt": "2026-08-30T10:09:10.350Z",
   "metrics": {
-    "hexLiterals": 1697,
+    "hexLiterals": 1669,
     "important": 985,
-    "undefinedVars": 63,
+    "undefinedVars": 59,
     "globalRootFiles": 10,
     "cssFileCount": 263
   },
@@ -48,8 +48,8 @@
       "src/styles/database/tabs-b-assistant-panel/10-dock-mode-rich-doc.css": 9,
       "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css": 1,
       "src/styles/database/tabs-b-assistant-panel/13-assistant-modern.css": 1,
-      "src/styles/database/tabs-b-status-menu-base.css": 5,
-      "src/styles/database/tabs-b-status-menu-main.css": 7,
+      "src/styles/database/tabs-b-status-menu-base.css": 2,
+      "src/styles/database/tabs-b-status-menu-main.css": 2,
       "src/styles/database/tabs-b-title-screen.css": 20,
       "src/styles/database/tilesets-terrain.css": 4,
       "src/styles/database/tilesets.css": 19,
@@ -76,7 +76,7 @@
       "src/styles/editor/event-editor.commerce.css": 34,
       "src/styles/editor/event-editor.css": 1,
       "src/styles/editor/event-editor.mockup.css": 22,
-      "src/styles/editor/event-editor.modern/03-legend-toolbar.css": 5,
+      "src/styles/editor/event-editor.modern/03-legend-toolbar.css": 4,
       "src/styles/editor/event-editor.modern/04-depth-parent.css": 8,
       "src/styles/editor/event-editor.modern/05-changeface-form-selected-card.css": 4,
       "src/styles/editor/event-editor.modern/06-event-editor-modal-footer.css": 3,
@@ -140,9 +140,7 @@
       "src/styles/runtime/pictures.css": 1,
       "src/styles/runtime/playLoading.css": 7,
       "src/styles/runtime/playSurface.css": 2,
-      "src/styles/runtime/shop.css": 7,
-      "src/styles/runtime/statusMenuEdgeDock.css": 14,
-      "src/styles/runtime/system.css": 7,
+      "src/styles/runtime/statusMenuEdgeDock.css": 9,
       "src/styles/runtime/timer.css": 1,
       "src/styles/runtime/title.css": 4,
       "src/styles/runtime/touchpad.css": 2,
@@ -244,12 +242,10 @@
       "--bg-input",
       "--border-color",
       "--cluster-cols",
-      "--db-light-focus",
       "--db-modern-raised",
       "--db-modern-surface",
       "--editor-row-hover",
       "--enemy-index",
-      "--focus",
       "--hover-bg",
       "--ink",
       "--ink-dim",
@@ -278,8 +274,6 @@
       "--oprn-surface",
       "--oprn-surface-raised",
       "--oprn-text",
-      "--oprn-title-blue-deep",
-      "--oprn-title-blue-hi",
       "--pop-x",
       "--shadow-sm",
       "--studio-play",
@@ -346,9 +340,6 @@
       "--cluster-cols": [
         "src/styles/editor/tile-palette-clusters.css"
       ],
-      "--db-light-focus": [
-        "src/styles/database/desktop-record-shell/11-life-authoring.css"
-      ],
       "--db-modern-raised": [
         "src/styles/database/actors.css",
         "src/styles/database/actors.css",
@@ -364,9 +355,6 @@
       ],
       "--enemy-index": [
         "src/styles/runtime/battle-skins/_rm2003.css"
-      ],
-      "--focus": [
-        "src/styles/database/desktop-record-shell/11-life-authoring.css"
       ],
       "--hover-bg": [
         "src/styles/editor/map-props.css",
@@ -399,7 +387,6 @@
         "src/styles/database/actors.css"
       ],
       "--oprn-chrome": [
-        "src/styles/database/enemies.part-1.css",
         "src/styles/database/enemies.part-1.css",
         "src/styles/database/enemies.part-1.css"
       ],
@@ -468,12 +455,6 @@
         "src/styles/database/actors.css",
         "src/styles/database/actors.css",
         "src/styles/database/states.css"
-      ],
-      "--oprn-title-blue-deep": [
-        "src/styles/database/enemies.part-1.css"
-      ],
-      "--oprn-title-blue-hi": [
-        "src/styles/database/enemies.part-1.css"
       ],
       "--pop-x": [
         "src/styles/runtime/battle/06-damage-flash-targeting.css",

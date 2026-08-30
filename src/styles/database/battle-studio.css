@@ -28,38 +28,25 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-heading {
-  align-items: end;
+  align-items: center;
   border-bottom: 1px solid var(--db-studio-border-subtle);
   display: grid;
-  gap: 12px 24px;
-  grid-template-columns: minmax(210px, 1fr) auto;
-  padding: 16px 18px 0;
+  gap: 12px;
+  grid-template-columns: minmax(120px, 1fr) auto;
+  padding: 0 18px;
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-title-block {
-  display: grid;
-  gap: 3px;
-  padding-bottom: 13px;
-}
-
-.database-modal-backdrop .database-modal-window .db-battle-studio-kicker {
-  color: var(--db-studio-accent);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  min-width: 0;
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-title-block h3 {
   color: var(--db-studio-text-1);
-  font: 600 clamp(19px, 2vw, 25px)/1.15 "Malgun Gothic", system-ui, sans-serif;
+  font: 700 16px/1.2 "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
-}
-
-.database-modal-backdrop .database-modal-window .db-battle-studio-title-block p {
-  color: var(--db-studio-text-2);
-  font: 400 12px/1.45 "Malgun Gothic", system-ui, sans-serif;
-  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-nav {
@@ -71,16 +58,24 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-nav-button {
+  align-items: center;
   background: transparent;
   border: 0;
   border-bottom: 2px solid transparent;
   border-radius: 0;
   color: var(--db-studio-text-2);
   cursor: pointer;
+  display: inline-flex;
   flex: 0 0 auto;
   font: 700 12px/1.3 "Malgun Gothic", system-ui, sans-serif;
+  gap: 5px;
   min-height: 36px;
   padding: 8px 2px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-battle-studio-nav-button .db-tab-icon {
+  height: 14px;
+  width: 14px;
 }
 
 .database-modal-backdrop .database-modal-window .db-battle-studio-nav-button:hover {
@@ -998,15 +993,6 @@
 }
 
 @media (max-width: 1240px) {
-  .database-modal-backdrop .database-modal-window .db-battle-studio-heading {
-    align-items: start;
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .database-modal-backdrop .database-modal-window .db-battle-studio-title-block {
-    padding-bottom: 0;
-  }
-
   .database-modal-backdrop .database-modal-window .db-animation-studio-editor {
     grid-template-areas:
       "stage"

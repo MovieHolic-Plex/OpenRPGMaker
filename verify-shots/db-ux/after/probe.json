@@ -1,0 +1,2831 @@
+{
+  "base": "http://127.0.0.1:9873/",
+  "uiMode": "expert",
+  "viewport": {
+    "WIDTH": 1680,
+    "HEIGHT": 1050
+  },
+  "at": "2026-08-30T01:17:02.592Z",
+  "tabs": {
+    "overview": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-overview-hero",
+            "h": 78.4
+          }
+        ],
+        "headerTotal": 78.4,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "actors": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 1,
+        "bgTotal": 8,
+        "bgZero": 0,
+        "bgHidden": 2,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/faceset/Actor1/00.png",
+            "cls": "actor-face-image",
+            "alt": "얼굴 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "72px",
+            "cssH": "48px",
+            "naturalWidth": 48,
+            "complete": true,
+            "hiddenBy": "display:none@actor-section-panel"
+          }
+        ],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": [
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/charset/Actor1.png",
+            "cls": "actor-sheet-crop",
+            "w": 0,
+            "h": 0,
+            "cssW": "48px",
+            "cssH": "64px",
+            "hiddenBy": "display:none@actor-section-panel"
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/generated/starter/hero-01-battle.png",
+            "cls": "actor-sheet-crop",
+            "w": 0,
+            "h": 0,
+            "cssW": "36px",
+            "cssH": "48px",
+            "hiddenBy": "display:none@actor-section-panel"
+          }
+        ]
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {
+        "db-actor-tab-identity": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-actor-tab-appearance": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-actor-tab-growth": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-actor-tab-battle": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-actor-tab-preview": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 1,
+            "clipSamples": []
+          }
+        }
+      }
+    },
+    "classes": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 6,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "skills": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 1,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "items": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 7,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 105.5
+          }
+        ],
+        "headerTotal": 105.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "equipment": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 1,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 156.7
+          }
+        ],
+        "headerTotal": 156.7,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "enemies": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-record-intro",
+            "h": 34.2
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 122
+          },
+          {
+            "sel": ".db-collection-gate-warn",
+            "h": 37.5
+          }
+        ],
+        "headerTotal": 193.7,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "monster-species": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-life-header",
+            "h": 50
+          },
+          {
+            "sel": ".db-life-panel",
+            "h": 50
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 41
+          },
+          {
+            "sel": ".db-collection-gate-warn",
+            "h": 37.5
+          }
+        ],
+        "headerTotal": 178.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "troops": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 1,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 1,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": [
+          [
+            "div.db-troop-command-line@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-collection-gate-warn",
+            "h": 37.5
+          }
+        ],
+        "headerTotal": 37.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "elements": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 107.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "states": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "animations": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-battle-studio-heading",
+            "h": 37.8
+          }
+        ],
+        "headerTotal": 37.8,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {
+        "db-battle-studio-nav-animations": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-battleScreen": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-battleCommands": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-terrain": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        }
+      }
+    },
+    "battle-screen": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 7,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-battle-studio-heading",
+            "h": 37.8
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 145.3,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {
+        "db-battle-studio-nav-animations": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-battleScreen": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-battleCommands": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-terrain": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        }
+      }
+    },
+    "battle-commands": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-battle-studio-heading",
+            "h": 37.8
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 145.3,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {
+        "db-battle-studio-nav-animations": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-battleScreen": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-battleCommands": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-terrain": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        }
+      }
+    },
+    "terrain": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 4,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-battle-studio-heading",
+            "h": 37.8
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 145.3,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {
+        "db-battle-studio-nav-animations": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-battleScreen": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-battleCommands": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-battle-studio-nav-terrain": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        }
+      }
+    },
+    "tilesets": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 3,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 107.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {
+        "tileset-section-tab-rules": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "tileset-section-tab-knowledge": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 5,
+            "clipSamples": []
+          }
+        },
+        "tileset-section-tab-compose": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "tileset-layer-filter-all": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "tileset-layer-filter-lower": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "tileset-layer-filter-upper": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "tileset-filter-unlabeled": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        }
+      }
+    },
+    "crops": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 20,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-life-header",
+            "h": 50
+          },
+          {
+            "sel": ".db-life-panel",
+            "h": 50
+          }
+        ],
+        "headerTotal": 100,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "characters": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 4,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-life-header",
+            "h": 50
+          },
+          {
+            "sel": ".db-life-panel",
+            "h": 50
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 37
+          }
+        ],
+        "headerTotal": 137,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "life-crafting": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 107.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {
+        "db-life-section-skills": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-recipes": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-upgrades": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-sell-prices": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-tool-actions": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-energy": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-shipping": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-world-unlocks": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-bundles": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-life-section-makers": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        }
+      }
+    },
+    "life-collections": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "farm-animals": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 107.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "farm-spatial": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 85.6
+          }
+        ],
+        "headerTotal": 85.6,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "daily-weather": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 107.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "factions": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 107.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "structure-kits": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-tab-note",
+            "h": 42.1
+          }
+        ],
+        "headerTotal": 42.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "common-events": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "switches": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 88.3
+          }
+        ],
+        "headerTotal": 88.3,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "variables": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 88.3
+          }
+        ],
+        "headerTotal": 88.3,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "terms": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "bgHidden": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 0,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": []
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 107.5
+          }
+        ],
+        "headerTotal": 107.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {}
+    },
+    "system": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "imgHidden": 8,
+        "bgTotal": 6,
+        "bgZero": 0,
+        "bgHidden": 5,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "hiddenSamples": [
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "db-resource-picker-inline-thumb",
+            "alt": "타이틀 리소스 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "40px",
+            "cssH": "40px",
+            "naturalWidth": 320,
+            "complete": true,
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/ui/windowskin-default.png",
+            "cls": "db-resource-picker-inline-thumb",
+            "alt": "시스템 리소스 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "40px",
+            "cssH": "40px",
+            "naturalWidth": 96,
+            "complete": true,
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/system2/System2C.png",
+            "cls": "db-resource-picker-inline-thumb",
+            "alt": "전투 시스템 리소스 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "40px",
+            "cssH": "40px",
+            "naturalWidth": 80,
+            "complete": true,
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "db-resource-picker-inline-thumb",
+            "alt": "배경 리소스 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "40px",
+            "cssH": "40px",
+            "naturalWidth": 320,
+            "complete": true,
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "(none)",
+            "alt": "타이틀 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "auto",
+            "cssH": "auto",
+            "naturalWidth": 320,
+            "complete": true,
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "(none)",
+            "alt": "시작화면 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "auto",
+            "cssH": "auto",
+            "naturalWidth": 320,
+            "complete": true,
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/ui/windowskin-default.png",
+            "cls": "(none)",
+            "alt": "시스템 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "auto",
+            "cssH": "auto",
+            "naturalWidth": 96,
+            "complete": true,
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/system2/System2C.png",
+            "cls": "(none)",
+            "alt": "전투 미리보기",
+            "w": 0,
+            "h": 0,
+            "cssW": "auto",
+            "cssH": "auto",
+            "naturalWidth": 80,
+            "complete": true,
+            "hiddenBy": "display:none@db-system-section"
+          }
+        ],
+        "bgZeroSamples": [],
+        "bgHiddenSamples": [
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/faceset/Actor1/00.png",
+            "cls": "db-system-party-face",
+            "w": 0,
+            "h": 0,
+            "cssW": "24px",
+            "cssH": "24px",
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/faceset/Actor2/00.png",
+            "cls": "db-system-party-face",
+            "w": 0,
+            "h": 0,
+            "cssW": "24px",
+            "cssH": "24px",
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/faceset/People1/00.png",
+            "cls": "db-system-party-face",
+            "w": 0,
+            "h": 0,
+            "cssW": "24px",
+            "cssH": "24px",
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/faceset/People2/00.png",
+            "cls": "db-system-party-face",
+            "w": 0,
+            "h": 0,
+            "cssW": "24px",
+            "cssH": "24px",
+            "hiddenBy": "display:none@db-system-section"
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "db-title-workbench-stage",
+            "w": 0,
+            "h": 0,
+            "cssW": "100%",
+            "cssH": "auto",
+            "hiddenBy": "display:none@db-system-section"
+          }
+        ]
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "tinyPseudo": 0,
+        "pseudoSamples": [],
+        "lowLineHeight": 21,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": [
+          [
+            "button.db-system-section-nav@1",
+            10
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.db-system-studio-filter@1",
+            2
+          ],
+          [
+            "button.db-tab@1",
+            1
+          ],
+          [
+            "button.db-system-studio-play@1",
+            1
+          ],
+          [
+            "span.db-system-studio-filter@1",
+            1
+          ],
+          [
+            "button.db-system-studio-add-state@1",
+            1
+          ],
+          [
+            "button.db-system-studio-view-all@1",
+            1
+          ],
+          [
+            "h3.@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": [],
+      "subsections": {
+        "db-system-section-nav": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-overview": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-party": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-display": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-font": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-resources": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-startup": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-optin": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-time": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-typechart": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        },
+        "db-system-nav-title": {
+          "images": {
+            "imgBroken": 0,
+            "imgZero": 0,
+            "bgZero": 0,
+            "zeroSamples": [],
+            "bgZeroSamples": []
+          },
+          "native": {
+            "numberUnskinned": 0,
+            "rangeUnskinned": 0,
+            "detailsMarker": 0
+          },
+          "text": {
+            "selfClipped": 0,
+            "tinyFont": 0,
+            "clipSamples": []
+          }
+        }
+      }
+    }
+  },
+  "failedImageRequests": [],
+  "pageErrors": [],
+  "totals": {
+    "selectUnskinned": 0,
+    "numberUnskinned": 0,
+    "checkUnskinned": 0,
+    "rangeUnskinned": 0,
+    "detailsMarker": 0,
+    "imgBroken": 0,
+    "imgZero": 0,
+    "imgHidden": 9,
+    "bgZero": 0,
+    "bgHidden": 7,
+    "badUrls": 0,
+    "selfClipped": 0,
+    "tinyFont": 0,
+    "tinyPseudo": 0,
+    "lowLineHeight": 25,
+    "failedImageRequests": 0,
+    "tabsMeasured": 30,
+    "tabsErrored": 0,
+    "workspaceHeightSwing": 0,
+    "subsectionsVisited": 49,
+    "subImgZero": 0,
+    "subBgZero": 0,
+    "subSelfClipped": 0
+  },
+  "workspaceHeights": {
+    "overview": 796,
+    "actors": 796,
+    "classes": 796,
+    "skills": 796,
+    "items": 796,
+    "equipment": 796,
+    "enemies": 796,
+    "monster-species": 796,
+    "troops": 796,
+    "elements": 796,
+    "states": 796,
+    "animations": 796,
+    "battle-screen": 796,
+    "battle-commands": 796,
+    "terrain": 796,
+    "tilesets": 796,
+    "crops": 796,
+    "characters": 796,
+    "life-crafting": 796,
+    "life-collections": 796,
+    "farm-animals": 796,
+    "farm-spatial": 796,
+    "daily-weather": 796,
+    "factions": 796,
+    "structure-kits": 796,
+    "common-events": 796,
+    "switches": 796,
+    "variables": 796,
+    "terms": 796,
+    "system": 796
+  },
+  "subsectionOffenders": []
+}

@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-08-30T04:03:24.310Z",
+ "ranAt": "2026-08-30T10:09:09.967Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
@@ -204,7 +204,6 @@
     "box-shadow:var(--shadow-pop)",
     "color:#fff",
     "color:#fff !important",
-    "color:#fff0a8",
     "color:var(--accent)",
     "color:var(--accent, #3b6fd8)",
     "color:var(--accent, #4a57d6)",
@@ -228,6 +227,7 @@
     "color:var(--mk-t1)",
     "color:var(--on-accent)",
     "color:var(--oprn-light)",
+    "color:var(--runtime-glass-accent)",
     "color:var(--runtime-window-text)",
     "color:var(--success)",
     "color:var(--text)",
@@ -2006,6 +2006,7 @@
     "font-family:inherit",
     "font-family:var(--font-ui)",
     "font-size:10px",
+    "font-size:11.5px",
     "font-size:11px",
     "font-size:12px",
     "font-size:13px",
@@ -4544,6 +4545,7 @@
     "background-color:transparent",
     "background-repeat:no-repeat",
     "border-color:rgba(255, 255, 255, 0.46)",
+    "border-color:transparent",
     "border-style:dashed",
     "border:1px solid rgba(255, 255, 255, 0.2)",
     "box-sizing:border-box",
@@ -4556,12 +4558,14 @@
     "width:var(--animation-frame-width, 96px)"
    ],
    "sheets": [
-    "src/styles/database/record-thumbs.css"
+    "src/styles/database/record-thumbs.css",
+    "src/styles/database/skill-item-visuals.css"
    ]
   },
   "db-animation-stage-cells": {
    "props": [
     "height",
+    "image-rendering",
     "left",
     "pointer-events",
     "position",
@@ -4571,6 +4575,7 @@
    ],
    "decls": [
     "height:0",
+    "image-rendering:pixelated",
     "left:50%",
     "pointer-events:none",
     "position:absolute",
@@ -4579,7 +4584,8 @@
     "z-index:2"
    ],
    "sheets": [
-    "src/styles/database/record-thumbs.css"
+    "src/styles/database/record-thumbs.css",
+    "src/styles/database/skill-item-visuals.css"
    ]
   },
   "delete": {
@@ -5323,7 +5329,6 @@
     "padding",
     "place-items",
     "text-align",
-    "transform",
     "width"
    ],
    "decls": [
@@ -5334,7 +5339,6 @@
     "background:transparent",
     "background:var(--bg-inset)",
     "background:var(--bg-inset, #efe9dc)",
-    "background:var(--border-subtle, rgba(255, 255, 255, 0.22))",
     "background:var(--db-studio-inset)",
     "background:var(--surface-panel)",
     "border-radius:6px",
@@ -5350,7 +5354,7 @@
     "color:var(--text-3, #6b5f52)",
     "color:var(--text-muted, var(--text-2))",
     "color:var(--text-secondary)",
-    "content:\"\"",
+    "content:none",
     "cursor:default",
     "display:block",
     "display:grid",
@@ -5363,17 +5367,16 @@
     "grid-column:1 / -1",
     "grid-template-columns:1fr",
     "grid-template-columns:none",
-    "height:1px",
     "height:24px",
     "height:32px",
     "justify-content:center",
     "line-height:1.45",
     "line-height:30px",
     "min-height:150px",
-    "opacity:0.35",
-    "opacity:0.36",
     "opacity:0.4",
+    "opacity:0.58",
     "opacity:0.6",
+    "opacity:1",
     "padding:0",
     "padding:20px",
     "padding:24px",
@@ -5381,8 +5384,6 @@
     "padding:var(--space-6)",
     "place-items:center",
     "text-align:center",
-    "transform:rotate(-35deg)",
-    "width:16px",
     "width:24px",
     "width:32px"
    ],
@@ -5844,12 +5845,10 @@
     "list-style",
     "min-height",
     "padding",
-    "user-select",
-    "width"
+    "user-select"
    ],
    "decls": [
     "align-items:center",
-    "color:var(--text-1)",
     "color:var(--text-2)",
     "cursor:pointer",
     "display:inline-flex",
@@ -5858,8 +5857,7 @@
     "list-style:none",
     "min-height:38px",
     "padding:0 14px",
-    "user-select:none",
-    "width:auto"
+    "user-select:none"
    ],
    "sheets": [
     "src/styles/editor/event-editor.modern/03-legend-toolbar.css"
@@ -11599,6 +11597,9 @@
     "background:linear-gradient(180deg, color-mix(in srgb, var(--bg-inset) 84%, white 4%), var(--bg-inset))",
     "border-color:color-mix(in srgb, var(--accent) 52%, var(--border-default))",
     "border-color:var(--accent)",
+    "border-color:var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default)",
+    "border-color:var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle)",
+    "border-radius:0",
     "border-radius:7px",
     "border:1px solid var(--border-default)",
     "box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent), 0 1px 2px var(--shadow-pop)",
@@ -11629,6 +11630,7 @@
     "width:100%"
    ],
    "sheets": [
+    "src/styles/database/tabs-a.part-2.css",
     "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.custom-select.css"
    ]
@@ -12401,60 +12403,23 @@
   "event-editor-aux-tools": {
    "props": [
     "align-items",
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "bottom",
-    "box-shadow",
-    "color",
     "display",
     "flex",
     "flex-wrap",
     "gap",
-    "left",
-    "max-height",
-    "min-height",
     "min-width",
-    "overflow",
     "position",
-    "right",
-    "top",
-    "width",
     "z-index"
    ],
    "decls": [
     "align-items:start",
-    "background:color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #fffdf8))",
-    "background:var(--event-modern-field)",
-    "border-color:color-mix(in srgb, var(--event-modern-accent) 45%, var(--event-modern-border))",
-    "border-radius:10px",
-    "border-radius:999px",
-    "border:1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border))",
-    "border:1px solid var(--event-modern-border)",
-    "bottom:auto",
-    "box-shadow:0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 18%, transparent)",
-    "box-shadow:0 10px 28px var(--bg-surface), 0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent)",
-    "box-shadow:none",
-    "color:var(--text-1)",
     "display:flex",
-    "display:inline-flex",
     "flex-wrap:wrap",
     "flex:0 0 auto",
     "gap:6px",
-    "left:auto",
-    "max-height:min(72vh, 760px)",
-    "min-height:38px",
     "min-width:0",
-    "min-width:min(760px, 78vw)",
-    "overflow:auto",
-    "position:absolute",
     "position:relative",
-    "right:0",
-    "top:calc(100% + 6px)",
-    "width:auto",
-    "z-index:2",
-    "z-index:8"
+    "z-index:2"
    ],
    "sheets": [
     "src/styles/editor/event-editor.modern/03-legend-toolbar.css"
@@ -14091,12 +14056,17 @@
     "border-left",
     "border-radius",
     "box-shadow",
+    "color",
+    "cursor",
     "display",
     "font",
     "gap",
     "max-width",
+    "outline",
+    "outline-offset",
     "padding",
     "position",
+    "text-align",
     "transition",
     "z-index"
    ],
@@ -14114,17 +14084,24 @@
     "align-items:center",
     "background:var(--bg-raised)",
     "border-color:color-mix(in srgb, var(--cmdcat, var(--accent)) 60%, var(--border-default))",
+    "border-color:var(--accent)",
     "border-left:3px solid var(--cmdcat, var(--border-strong))",
     "border-radius:7px",
     "border:1px solid var(--border-default)",
+    "box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 32%, transparent), 0 2px 8px color-mix(in srgb, var(--accent) 22%, transparent)",
     "box-shadow:0 1px 2px var(--shadow-pop)",
     "box-shadow:0 2px 7px color-mix(in srgb, var(--cmdcat, var(--accent)) 24%, rgba(42,37,33,.10))",
+    "color:var(--text-1)",
+    "cursor:pointer",
     "display:inline-flex",
     "font:600 11px/16px var(--font-ui)",
     "gap:7px",
     "max-width:440px",
+    "outline-offset:2px",
+    "outline:2px solid var(--accent)",
     "padding:4px 10px 4px 8px",
     "position:relative",
+    "text-align:left",
     "transition:border-color var(--transition-fast), box-shadow var(--transition-fast)",
     "z-index:1"
    ],
@@ -14178,41 +14155,16 @@
   },
   "event-flowchart-body": {
    "props": [
-    "background",
-    "border",
-    "border-radius",
-    "bottom",
-    "box-shadow",
-    "left",
-    "max-height",
-    "min-width",
+    "min-height",
     "overflow",
-    "padding",
-    "position",
-    "right",
-    "top",
-    "width",
-    "z-index"
+    "padding"
    ],
    "decls": [
-    "background:color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #fffdf8))",
-    "border-radius:10px",
-    "border:1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border))",
-    "bottom:auto",
-    "box-shadow:0 10px 28px var(--bg-surface), 0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent)",
-    "left:auto",
-    "max-height:min(72vh, 760px)",
-    "min-width:min(760px, 78vw)",
+    "min-height:0",
     "overflow:auto",
-    "padding:12px 14px 16px",
-    "position:absolute",
-    "right:0",
-    "top:calc(100% + 6px)",
-    "width:auto",
-    "z-index:8"
+    "padding:12px 14px 16px"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.modern/03-legend-toolbar.css",
     "src/styles/editor/event-editor.modernize.css"
    ]
   },
@@ -17425,59 +17377,6 @@
    "sheets": [
     "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.modernize.css"
-   ]
-  },
-  "event-script-flowchart": {
-   "props": [
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "bottom",
-    "box-shadow",
-    "color",
-    "display",
-    "flex",
-    "left",
-    "max-height",
-    "min-height",
-    "min-width",
-    "overflow",
-    "position",
-    "right",
-    "top",
-    "width",
-    "z-index"
-   ],
-   "decls": [
-    "background:color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #fffdf8))",
-    "background:var(--event-modern-field)",
-    "border-color:color-mix(in srgb, var(--event-modern-accent) 45%, var(--event-modern-border))",
-    "border-radius:10px",
-    "border-radius:999px",
-    "border:1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border))",
-    "border:1px solid var(--event-modern-border)",
-    "bottom:auto",
-    "box-shadow:0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 18%, transparent)",
-    "box-shadow:0 10px 28px var(--bg-surface), 0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent)",
-    "box-shadow:none",
-    "color:var(--text-1)",
-    "display:inline-flex",
-    "flex:0 0 auto",
-    "left:auto",
-    "max-height:min(72vh, 760px)",
-    "min-height:38px",
-    "min-width:0",
-    "min-width:min(760px, 78vw)",
-    "overflow:auto",
-    "position:absolute",
-    "right:0",
-    "top:calc(100% + 6px)",
-    "width:auto",
-    "z-index:8"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.modern/03-legend-toolbar.css"
    ]
   },
   "event-storyboard": {
@@ -20746,6 +20645,7 @@
    "sheets": [
     "src/styles/components/app-modal.css",
     "src/styles/database/tabs-b-assistant-panel/06-canvas-guides-panel-chrome.css",
+    "src/styles/database/tabs-b-assistant-panel/07-viewer-modal-settings.css",
     "src/styles/editor/event-editor.balanced.css"
    ]
   },
@@ -25508,7 +25408,7 @@
     "background:color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised))",
     "background:linear-gradient(180deg, #3a80f0 0%, #1b49b0 100%)",
     "background:linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(20, 54, 150, 0.08)), var(--runtime-window-selected-bg)",
-    "background:radial-gradient(circle at 50% 22%, rgba(255, 228, 177, 0.22), transparent 44%), linear-gradient(180deg, rgba(243, 189, 105, 0.2), rgba(243, 189, 105, 0.08))",
+    "background:radial-gradient(circle at 50% 22%, rgba(255, 228, 177, 0.22), transparent 44%), linear-gradient(180deg, rgba(124, 140, 255, 0.22), rgba(124, 140, 255, 0.08))",
     "background:rgba(124, 156, 255, 0.08)",
     "background:rgba(190, 55, 50, 0.22)",
     "background:rgba(226, 232, 240, 0.22) !important",
@@ -25526,7 +25426,6 @@
     "border-bottom:10px solid transparent",
     "border-color:#ffff66",
     "border-color:rgba(239, 177, 74, 0.32)",
-    "border-color:rgba(243, 189, 105, 0.74)",
     "border-color:rgba(245, 251, 255, 0.76)",
     "border-color:rgba(255, 126, 116, 0.82)",
     "border-color:rgba(255, 255, 255, 0.95)",
@@ -25536,20 +25435,21 @@
     "border-color:var(--accent-border)",
     "border-color:var(--mk-accent)",
     "border-color:var(--runtime-dialogue-glass-border)",
+    "border-color:var(--runtime-glass-hairline-strong)",
     "border-color:var(--runtime-window-focus)",
     "border-left:17px solid var(--oprn-title-cursor)",
     "border-radius:10px",
     "border-radius:999px",
     "border-top:10px solid transparent",
     "border-width:2px",
-    "border:1px solid rgba(243, 189, 105, 0.72)",
+    "border:1px solid var(--runtime-glass-hairline-strong)",
     "border:2px solid #ffff66",
     "bottom:-1px",
-    "box-shadow:0 0 0 1px rgba(243, 189, 105, 0.1), 0 5px 16px rgba(0, 0, 0, 0.34), 0 0 12px rgba(243, 189, 105, 0.17)",
     "box-shadow:0 0 0 1px var(--mk-accent)",
+    "box-shadow:0 0 0 1px var(--runtime-glass-accent-soft), 0 5px 16px rgba(0, 0, 0, 0.34), 0 0 12px var(--runtime-glass-accent-soft)",
     "box-shadow:0 0 0 2px color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 32%, transparent), 0 2px 10px rgba(42,37,33,.10)",
     "box-shadow:0 0 0 2px var(--accent-subtle, #eef0fd)",
-    "box-shadow:0 0 6px rgba(243, 189, 105, 0.8)",
+    "box-shadow:0 0 6px var(--runtime-glass-accent)",
     "box-shadow:0 8px 22px -10px rgba(239, 177, 74, 0.95)",
     "box-shadow:inset 0 0 0 1px #7fc5ff, inset 0 -1px 0 rgba(3, 29, 85, 0.5)",
     "box-shadow:inset 0 0 0 1px rgba(245, 251, 255, 0.42), 0 0 6px rgba(214, 234, 255, 0.5)",
@@ -25560,12 +25460,11 @@
     "box-shadow:inset 0 0 0 2px var(--accent-primary)",
     "box-shadow:inset 2px 0 0 #ff756b, 0 0 10px rgba(255, 90, 80, 0.12)",
     "box-shadow:inset 2px 0 0 var(--accent)",
-    "box-shadow:inset 2px 0 0 var(--status-edge-amber), 0 0 10px rgba(243, 189, 105, 0.09)",
+    "box-shadow:inset 2px 0 0 var(--status-edge-amber), 0 0 10px var(--runtime-glass-accent-soft)",
     "box-shadow:inset 3px 0 0 var(--accent)",
     "box-shadow:inset 3px 0 0 var(--runtime-window-focus)",
     "box-shadow:none",
     "box-shadow:var(--runtime-dialogue-glass-focus-shadow)",
-    "color:#ffe7bd",
     "color:#ffffff",
     "color:rgba(32, 23, 4, 0.72)",
     "color:var(--accent)",
@@ -25574,6 +25473,7 @@
     "color:var(--accent, var(--text-1))",
     "color:var(--oprn-status-highlight, #ffd75a)",
     "color:var(--runtime-dialogue-glass-accent)",
+    "color:var(--runtime-glass-text)",
     "color:var(--runtime-window-text)",
     "color:var(--shop-ink)",
     "color:var(--shop-on-accent)",
@@ -28786,6 +28686,7 @@
   "event-page-move-route-help-panel",
   "event-page-movement-stack",
   "event-record-picker-add",
+  "event-script-flowchart",
   "evt-page-segment-number",
   "face-mode-chip",
   "gold",

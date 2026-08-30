@@ -17,9 +17,16 @@ import type {
 import { stateOntologyFor } from "@/project/ontology/databaseStateOntology";
 import { el } from "@/util/dom";
 import { applyMagentaChromaKey, applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
+import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 
 const THUMB_SIZE = 32;
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
+const BROKEN_IMAGE_ICON: readonly SvgNodeSpec[] = [
+  { tag: "rect", attrs: { x: "3.5", y: "4.5", width: "15", height: "13", rx: "1.7" } },
+  { tag: "circle", attrs: { cx: "8", cy: "8.5", r: "1.3" } },
+  { tag: "path", attrs: { d: "M4.5 15l4-4 3 3 2-2 4 4" } },
+  { tag: "path", attrs: { d: "M5 19 17 3" } },
+];
 
 export function recordListThumbnail(
   collection: DatabaseCollection,
@@ -51,19 +58,21 @@ export function recordListThumbnail(
     case "troops":
       return troopThumbnail(record as TroopRecord, project, thumbSize);
     case "states":
-      return stateThumbnail(record as StateRecord);
+      return stateThumbnail(record as StateRecord, thumbSize);
   }
 }
 
 function actorThumbnail(record: ActorRecord, project: Project, size: number): HTMLElement {
+  const label = `${record.name} 얼굴`;
   const url = resolveAssetResourceUrl(record.faceResourceId, { project });
-  if (!url) return emptySlot();
+  if (!url) return record.faceResourceId ? imageFailureSlot(label, size) : emptySlot(size);
+
   // 얼굴 한 칸 = 파일 한 장이라 크롭이 없다 — 슬롯 크기에 맞춰 그림 한 장을 통째로 깐다.
-  const slot = baseSlot("db-list-thumb-crop", `${record.name} 얼굴`);
+  const slot = baseSlot("db-list-thumb-crop", label, size);
   slot.style.backgroundImage = `url("${url}")`;
   slot.style.backgroundPosition = "center";
   slot.style.backgroundSize = `${size}px ${size}px`;
-  slot.append(loadProbe(url, slot));
+  slot.append(loadProbe(url, slot, label));
   return slot;
 }
 
@@ -83,7 +92,7 @@ function classThumbnail(record: ClassRecord, project: Project, size: number): HT
     const animation = project.database.battleAnimations.find((entry) => entry.id === record.animationId);
     if (animation) return animationThumbnail(animation, project, size);
   }
-  return emptySlot();
+  return emptySlot(size);
 }
 
 function troopThumbnail(record: TroopRecord, project: Project, size: number): HTMLElement {
@@ -93,9 +102,9 @@ function troopThumbnail(record: TroopRecord, project: Project, size: number): HT
   return imageThumbnail(record.previewBackgroundResourceId, project, `${record.name} 배경`, size);
 }
 
-function stateThumbnail(record: StateRecord): HTMLElement {
+function stateThumbnail(record: StateRecord, size: number): HTMLElement {
   const ontology = stateOntologyFor(record.id, record.name);
-  const slot = baseSlot("db-list-thumb-state", `${record.name} 상태 색`);
+  const slot = baseSlot("db-list-thumb-state", `${record.name} 상태 색`, size);
   slot.style.backgroundColor = ontology.colorHex;
   slot.title = ontology.color;
   return slot;
@@ -105,58 +114,97 @@ function skillAnimationThumbnail(record: SkillRecord, project: Project, size: nu
   const animation = record.animationId
     ? project.database.battleAnimations.find((entry) => entry.id === record.animationId)
     : undefined;
-  return animation ? animationThumbnail(animation, project, size) : emptySlot();
+  return animation ? animationThumbnail(animation, project, size) : emptySlot(size);
 }
 
 function animationThumbnail(record: BattleAnimationRecord, project: Project, size: number): HTMLElement {
+  const label = `${record.name} 애니메이션`;
   const url = resolveAssetResourceUrl(record.resourceId, { project });
-  if (!url) return emptySlot();
-  const slot = baseSlot("db-list-thumb-crop db-list-thumb-animation", `${record.name} 애니메이션`);
+  if (!url) return record.resourceId ? imageFailureSlot(label, size) : emptySlot(size);
+  const slot = baseSlot("db-list-thumb-crop db-list-thumb-animation", label, size);
   applyAnimationPatternCrop(slot, record.sheet ?? DEFAULT_ANIMATION_SHEET, 0, url, size);
-  slot.append(loadProbe(url, slot));
+  slot.append(loadProbe(url, slot, label));
   return slot;
 }
 
 // 이미지 썸네일은 <img> 가 슬롯(32px/갤러리 48px)을 CSS 100% 로 채우므로 JS 크롭 계산이
 // 필요 없다 — size 파라미터는 호출부 계약(recordListThumbnail 시그니처)을 위해 받는다.
-function imageThumbnail(resourceId: string | undefined, project: Project, alt: string, _size: number): HTMLElement {
+function imageThumbnail(resourceId: string | undefined, project: Project, alt: string, size: number): HTMLElement {
   const url = resolveAssetResourceUrl(resourceId, { project });
-  if (!url) return emptySlot();
-  const slot = baseSlot("db-list-thumb-image", alt);
-  const image = el("img", { attrs: { alt, src: url } });
-  image.addEventListener("error", () => markEmpty(slot), { once: true });
+  if (!url) return resourceId ? imageFailureSlot(alt, size) : emptySlot(size);
+  const slot = baseSlot("db-list-thumb-image", alt, size);
+  const image = el("img", { attrs: { alt, src: url, width: String(size), height: String(size) } });
+  image.addEventListener("error", () => markDatabaseImageFailed(slot, alt), { once: true });
   // Equipment icons + enemy battlers are authored with #FF00FF chroma key.
   if (image instanceof HTMLImageElement) applyMagentaChromaKey(image);
   slot.append(image);
   return slot;
 }
 
-function baseSlot(extraClass: string, label: string): HTMLElement {
-  return el("span", {
+function baseSlot(extraClass: string, label: string, size: number): HTMLElement {
+  const slot = el("span", {
     class: `db-list-thumb ${extraClass}`,
     attrs: { "aria-label": label, role: "img" },
   });
+  declareMinimumImageSize(slot, size, size);
+  return slot;
 }
 
-function emptySlot(): HTMLElement {
-  return el("span", { class: "db-list-thumb empty", attrs: { "aria-hidden": "true" } });
+function emptySlot(size: number): HTMLElement {
+  const slot = baseSlot("empty db-image-placeholder", "이미지 없음", size);
+  slot.setAttribute("aria-hidden", "true");
+  slot.removeAttribute("aria-label");
+  slot.removeAttribute("role");
+  slot.append(databaseBrokenImageIcon());
+  return slot;
 }
 
-function loadProbe(url: string, slot: HTMLElement): HTMLElement {
-  const probe = el("img", { class: "db-list-thumb-probe", attrs: { alt: "", "aria-hidden": "true", src: url } });
-  probe.addEventListener("error", () => markEmpty(slot), { once: true });
+function imageFailureSlot(label: string, size: number): HTMLElement {
+  const slot = baseSlot("", label, size);
+  markDatabaseImageFailed(slot, label);
+  return slot;
+}
+
+function loadProbe(url: string, slot: HTMLElement, label: string): HTMLElement {
+  const probe = el("img", {
+    class: "db-list-thumb-probe",
+    attrs: { alt: "", "aria-hidden": "true", src: url, width: "1", height: "1" },
+  });
+  probe.addEventListener("error", () => markDatabaseImageFailed(slot, label), { once: true });
   return probe;
 }
 
-function markEmpty(slot: HTMLElement): void {
-  slot.classList.add("empty");
-  slot.style.backgroundImage = "";
-  slot.replaceChildren();
-  slot.setAttribute("aria-hidden", "true");
-  if ("removeAttribute" in slot) {
-    slot.removeAttribute("aria-label");
-    slot.removeAttribute("role");
-  }
+export function markDatabaseImageFailed(surface: HTMLElement, label: string): void {
+  surface.classList.remove("empty");
+  surface.classList.add("db-image-placeholder", "db-image-load-failed");
+  surface.style.backgroundImage = "";
+  surface.replaceChildren(databaseBrokenImageIcon(), el("span", { class: "db-image-placeholder-label", text: label }));
+  surface.setAttribute("aria-label", `${label} 이미지 불러오기 실패`);
+  surface.setAttribute("role", "img");
+  surface.setAttribute("title", `${label} 이미지 불러오기 실패`);
+}
+
+export function databaseImageFailurePlaceholder(
+  className: string,
+  label: string,
+  width: number,
+  height: number,
+): HTMLElement {
+  const surface = el("span", { class: className });
+  declareMinimumImageSize(surface, width, height);
+  markDatabaseImageFailed(surface, label);
+  return surface;
+}
+
+function databaseBrokenImageIcon(): SVGSVGElement {
+  const icon = buildSvgIcon(BROKEN_IMAGE_ICON);
+  icon.classList.add("db-image-placeholder-icon");
+  return icon;
+}
+
+function declareMinimumImageSize(surface: HTMLElement, width: number, height: number): void {
+  surface.style.minWidth = `${Math.max(1, width)}px`;
+  surface.style.minHeight = `${Math.max(1, height)}px`;
 }
 
 function applyAnimationPatternCrop(

@@ -328,19 +328,15 @@ export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void): 
  * 칩 자체는 이미 스타일이 있는 `.db-filter-chip` 을 그대로 쓴다.
  */
 function sectionRailHeader(project: Project, rerender: () => void): HTMLElement {
-  const title = el("div", {
-    class: "db-life-rail-title",
-    children: [
-      el("span", { class: "db-ws-hero-eyebrow", text: "생활 데이터" }),
-      el("h2", { class: "db-ws-hero-title", text: "생활 기술·제작" }),
-      el("p", { class: "db-ws-hero-sub", text: "기술 성장, 제작 재료, 도구 강화와 판매 규칙을 열 개 섹션으로 나눠 관리합니다." }),
-    ],
-  });
-
   const rail = el("div", {
     class: "db-filter-chips db-life-rail",
     attrs: { role: "tablist", "aria-label": "생활 데이터 종류" },
-    children: SECTIONS.map((section) => {
+    children: [
+      el("div", {
+        class: "db-life-rail-title",
+        children: [el("h2", { class: "db-ws-hero-title", text: "생활 기술·제작" })],
+      }),
+      ...SECTIONS.map((section) => {
       const count = sectionCount(project, section.id);
       const active = activeSection === section.id;
       return el("button", {
@@ -362,11 +358,12 @@ function sectionRailHeader(project: Project, rerender: () => void): HTMLElement 
             rerender();
           },
         },
-      });
-    }),
+        });
+      }),
+    ],
   });
 
-  return sectionCard({ children: [title, rail], testid: "db-life-crafting-header" });
+  return sectionCard({ children: [rail], testid: "db-life-crafting-header" });
 }
 
 // ---------------------------------------------------------------------------

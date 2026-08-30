@@ -137,6 +137,88 @@ DEV_SERVER_PORT=9351 E2E_BOOT_TIMEOUT_MS=90000 npx playwright test test/e2e/<spe
 따라서 게이트 회귀 파정은 **조용한 상태에서 해당 파일을 개별 재실행**해서 마무리해야 한다.
 `typecheck:app` 은 기준선이 0 오류 + `baselineTrustworthy: true` 이므로 그곳의 오류는 바로 회귀다.
 
+## 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
+
+`scripts/qa/db-ux-probe.mjs` — 데이터베이스 모달 **30탭 + 서브내비 49곳**을 순회하며 눈이 아니라
+브라우저에게 직접 묻는다. computed style / `getBoundingClientRect` / `appearance` / `naturalWidth` 를
+읽으므로 결과가 부하에 흔들리지 않는다.
+
+```bash
+PROBE_BASE=http://127.0.0.1:9873/ PROBE_OUT=/tmp/probe PROBE_SUBNAV=1 node scripts/qa/db-ux-probe.mjs
+```
+
+| env | 뜻 |
+|---|---|
+| `PROBE_BASE` | dev 서버 주소 (워크트리마다 다른 포트를 쓴다) |
+| `PROBE_OUT` | `probe.json` + 스크린샷 출력 디렉터리 |
+| `PROBE_ONLY` | 탭 슬러그 하나만 (반복 수정 중에 쓴다) |
+| `PROBE_SUBNAV=1` | 서브내비 49곳까지 들어가서 잰다 |
+| `PROBE_SHOTS=0` | 스크린샷 생략 (측정만 할 때 훨씬 빠르다) |
+| `PROBE_W` / `PROBE_H` | 뷰포트. 기본 1680x1050 |
+
+세는 것: `selectUnskinned`(computed `appearance` 가 `none` 이 아닌 select), `numberUnskinned`,
+`rangeUnskinned`, `detailsMarker`, `imgBroken`/`imgZero`/`bgZero`/`badUrls`, `selfClipped`(자기
+`overflow` 로 글자가 깎인 요소), `tinyFont`, `tinyPseudo`, `lowLineHeight`, 탭별 헤더 비용과
+작업영역 높이, 그리고 **탭별 모달 창 rect**.
+
+### 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
+
+초기 하네스는 자식 텍스트 노드(`nodeType === 3`)가 있는 요소만 재서, `::before`/`::after` 의
+`content` 는 **구조상 단 한 건도 재지 않았다.** 그러는 동안 `tinyFont 0` 은 "작은 글자가 없다" 로
+읽혔지만 실제로는 "가상 요소를 안 봤다" 였다. `tinyPseudo` 를 붙이자 모달 전역에서 유일하게 11px
+미만으로 렌더링되는 텍스트가 드러났다 — `sidebar.css` 의 `.db-tab-group::after` 셰브론(`▾`)
+10px, 30탭 × 6개 = **180건**. 근거 파일은
+`verify-shots/db-ux/pseudo-baseline/probe.json`(셰브론만 10px 로 되돌린 30탭 순회,
+`totals.tinyPseudo` 180). `before/probe.json` 에는 이 키가 없으니 그쪽을 근거로 들지 마라.
+
+교훈: **계수기가 0 이라고 보고하면 그 표면이 범위에 들어오는지 먼저 증명하라.** 일부러 깨뜨린
+표본을 만들어 계수기가 실제로 오르는지 보는 것이 가장 짧다(`db-placeholder-proof.mjs` 가 이미
+이미지 쪽에서 같은 짓을 한다).
+
+그리고 `TINY_FLOOR` 는 11 이며 이건 재단이 아니라 **기준선과 같은 자**다. 진단 문서와
+`before/probe.json` 이 모두 "11px 미만" 을 셌다. 문턱을 11.5 로 올리면 726건이 새로 걸리는데
+전부 정확히 11px 이다 — before/after 가 다른 자를 쓰면 비교가 무의미하니 가볍게 바꾸지 말 것.
+
+곁딸린 하네스: `scripts/qa/db-placeholder-proof.mjs`(살아 있는 썸네일을 실제로 깨뜨려 자리표시자가
+보이는지 증명), `scripts/shoot-db-tabs.mjs`(탭 스크린샷 30장).
+
+### 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
+
+처음 만든 판정은 크기 0 인 이미지를 전부 결함으로 셌는데, 접힌 `<details>` 안이나
+`display:none` 조상 밑에 있는 이미지도 0px 이다. 하네스는 조상 사슬을 걸어 올라가 숨은 것을
+`imgHidden`/`bgHidden` 으로 따로 센다. 이 구분이 없으면 고칠 것이 없는데도 숫자가 안 떨어진다.
+
+### 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
+
+`test/e2e/database-modal-size-invariant.spec.ts` 는 탭을 눌러도 모달 창 rect 가 1px도 안 움직이는지
+본다. 이 박스에서 다른 세션들이 vitest·chromium 프로세스를 **98개** 돌리는 동안(loadavg 86) 3뷰포트
+× 재시도까지 **6회 전부** 실패했는데, 사인은 전부
+`locator.click: Test timeout of 240000ms exceeded` 였고 **기하 드리프트 단정 출력은 0건** — 비교문에
+도달조차 못 했다. 지속시간으로는 구분되지 않는다: 30탭 순회 자체가 4분쯤 걸리므로 진짜 드리프트
+실패도 4분이 걸린다. **판정은 오류 메시지로 한다** — drift 목록이 있으면 회귀, 시간 초과 문구면 경합.
+
+초록불을 만들려고 `test.setTimeout` 을 늘리는 것은 게이트를 무력화하는 것이다. 대신 스펙이 단정하는
+속성을 부하와 무관하게 직접 쟀다: 프로브가 탭마다 창 rect 를 기록하므로 **탭 간 창 상자가 몇
+종류인지** 보면 된다. 1종이면 델타 0 이다.
+
+```
+1024x768  -> 30탭 전부 1000x744@12    상자 1종
+1280x800  -> 30탭 전부 1256x776@12    상자 1종
+1680x1050 -> 30탭 전부 1628x900@26    상자 1종
+1920x1200 -> 30탭 전부 1628x900@146   상자 1종
+```
+
+같은 30탭을 같은 브라우저로 순회하는 프로브가 `tabsErrored 0` 으로 완주한다는 사실이, 240초 클릭
+타임아웃이 CSS 탓이 아니라는 것까지 같이 증명한다.
+
+### 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
+
+`test/databaseKoreanRtpDefaults.test.ts` 는 소스에서 한글 라벨 21종을 찾고 **첫 미스에서 끊는다**.
+그래서 "실패한 테스트 이름" 만 비교하면 새로 지운 라벨이 안 보인다. 라벨을 건드렸으면 21종 각각의
+등장 횟수를 base 와 대조하라. 또한 이런 테스트의 단정문은 `expected 'import type ...' to contain
+'...'` 모양이라 **다른 파일 블록으로 새기 쉽다** — `awk '/FAIL/,0'` 는 EOF 까지 긁으므로 원인을
+오배정한다. FAIL 라인 사이로 구간을 끊어서 읽어라.
+
 ## Agent validation rule
 
 **Authored game content** (demo maps, events, sample adventure data meant for the product): incomplete until **Supabase save + load-back** succeeds. Repo fixtures alone do not count. See root `AGENTS.md`.
@@ -149,6 +231,9 @@ Pick validation based on the touched boundary:
 - Terms/runtime label changes should cover `resolveTerms` defaults and overrides, old JSON with missing `meta.terms`, unknown term roundtrips, and focused DOM/model checks for battle command labels, shop text, inn text, and status/common labels when touched.
 - Cluster-rule changes should include a focused validator test plus a commit-gate proof: a hard rule must still produce a `projectLint` error, `commitChangeset` must return `ok:true` for cluster-rule-only hard violations, and the fixed map should return `ok:true` without cluster-rule issues.
 - Editor UI/workflow changes: run focused tests and drive the browser/editor surface with Playwright or an equivalent browser check.
+- 데이터베이스 모달 UI 변경: `scripts/qa/db-ux-probe.mjs` 로 30탭을 재고 `verify-shots/db-ux/before` 와
+  대조한다. 컨트롤 껍데기(`selectUnskinned`/`numberUnskinned`/`rangeUnskinned`/`detailsMarker`),
+  이미지 실패, `selfClipped`, 헤더 비용이 판정 지표다. 스크린샷만으로는 통과로 치지 않는다.
 - Desktop UI integration: use the Beginner/Standard/Expert shell matrix at `1024×768`, `1280×800`, and `1440×900`; separately exercise the event editor at `1586×992`, `1280×900`, `1024×768`, and `960×900`. Capture fresh three-mode shells, menu focus, shared modal, AI restore, event-editor, and title/load state; record viewport and localStorage setup next to the screenshots.
 - The focused desktop regression batch includes the applicable UI unit files (modal stack, AI panel chrome, coachmarks, play input blocker, and title screen) plus `test/e2e/responsive-shell.spec.ts`, `test/e2e/desktop-editor-interactions.spec.ts`, `test/e2e/title-play-controls.spec.ts`, and the event-editor desktop flow. Use an isolated server port with `--workers=1`; fail on every browser error except the documented optional developer bridge refusal.
 - `npm run build` is required before integrated UI handoff. The root supervisor, not a task worker, owns `npm run gates`; compare any gate result to the repository baseline instead of treating pre-existing failures as this task's regression.

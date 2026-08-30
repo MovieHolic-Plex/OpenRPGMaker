@@ -181,11 +181,41 @@
   background-repeat: no-repeat;
   border: 1px solid var(--db-studio-border-subtle);
   border-radius: 6px;
+  box-sizing: border-box;
+  flex: 0 0 24px;
   height: 24px;
+  min-height: 24px;
+  min-width: 24px;
+  position: relative;
   width: 24px;
 }
 
-.database-modal-backdrop .db-system-party-face.empty {
+.database-modal-backdrop .db-system-party-face::before {
+  background:
+    linear-gradient(135deg, transparent 45%, var(--db-studio-text-3) 47%, var(--db-studio-text-3) 53%, transparent 55%),
+    linear-gradient(45deg, transparent 45%, var(--db-studio-text-3) 47%, var(--db-studio-text-3) 53%, transparent 55%);
+  content: "";
+  inset: 6px;
+  opacity: 0.55;
+  position: absolute;
+  z-index: 0;
+}
+
+.database-modal-backdrop .db-system-party-face::after {
+  background-image: inherit;
+  background-position: inherit;
+  background-repeat: inherit;
+  background-size: inherit;
+  border-radius: inherit;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.database-modal-backdrop .db-system-party-face.empty,
+.database-modal-backdrop .db-system-party-face.db-image-load-failed {
   background: var(--db-studio-inset);
 }
 
