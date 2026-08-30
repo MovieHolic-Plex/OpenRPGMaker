@@ -133,7 +133,9 @@ describe("movie ResourceKind", () => {
 
   it("movie 업로드가 serialize/deserialize 왕복한다", () => {
     const project = withMovieUpload(createBlankProject());
+    project.resourceProfiles.push({ kind: "movie", name: "인트로", assetId: "movie-intro" });
     const round = deserialize(serialize(project));
     expect(round.assets.uploaded["movie-intro"]?.kind).toBe("movie");
+    expect(round.resourceProfiles.some((profile) => profile.kind === "movie" && profile.name === "인트로")).toBe(true);
   });
 });
