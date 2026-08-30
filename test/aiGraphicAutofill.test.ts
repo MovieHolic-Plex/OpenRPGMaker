@@ -7,6 +7,7 @@ import { searchResources } from "@/assets/resourceSearch";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
+import { createFieldSpawnRuntime } from "@/player/fieldSpawns";
 
 function context(): ToolContext {
   return { project: createBlankProject() };
@@ -94,6 +95,76 @@ describe("define_monster_species 외형 자동 부여", () => {
   });
 });
 
+describe("make_action_enemy 외형 자동 부여", () => {
+  it("생성 적과 그 적의 사냥터 필드 스폰이 모두 보이는 외형을 가진다", () => {
+    const ctx = context();
+    const enemyId = "enemy_action_visible";
+    const troopId = "troop_action_visible";
+    const created = runTool(ctx, "make_action_enemy", {
+      enemyId,
+      name: "돌진 슬라임",
+      actionProfile: { contactDamage: 3 },
+    });
+
+    expect(created.ok, created.summary).toBe(true);
+    expect(ctx.project.database.enemies.find((entry) => entry.id === enemyId)?.monsterResourceId)
+      .toMatch(/^generated-enemy-/);
+    expect((created.diff?.warnings ?? []).join(" ")).toContain("enemy.monsterResourceId");
+
+    ctx.project.database.troops.push({
+      id: troopId,
+      name: "돌진 슬라임 무리",
+      enemyIds: [enemyId],
+      members: [{ enemyId, x: 160, y: 96, hidden: false }],
+      autoAlign: false,
+      battleEventPages: [],
+    });
+    const mapId = ctx.project.startMapId;
+    const hunting = runTool(ctx, "make_hunting_ground", {
+      mapId,
+      area: { x: 1, y: 1, w: 3, h: 3 },
+      troopId,
+      maxAlive: 1,
+    });
+
+    expect(hunting.ok, hunting.summary).toBe(true);
+    const map = ctx.project.maps[mapId];
+    if (!map) throw new Error("start map missing");
+    const runtime = createFieldSpawnRuntime(ctx.project, map, { x: 10, y: 10 });
+    expect(runtime.entries.at(-1)?.spawn.graphic.sprite?.id).toMatch(/^generated-enemy-/);
+    expect(runtime.entries.at(-1)?.spawn.graphic.transparent).not.toBe(true);
+  });
+});
+
+describe("몬스터 이벤트 기본 외형", () => {
+  it.each([
+    ["place_battle_blocker", (ctx: ToolContext) => ({
+      mapId: ctx.project.startMapId,
+      x: 3,
+      y: 3,
+      troopId: ctx.project.database.troops[0]?.id,
+    })],
+    ["make_chase_scene", (ctx: ToolContext) => ({
+      mapId: ctx.project.startMapId,
+      chaser: { at: { x: 3, y: 3 } },
+    })],
+  ] as const)("%s 는 graphic 생략 시 monster charset 과 경고를 붙인다", (toolName, argsFor) => {
+    const ctx = context();
+    const result = runTool(ctx, toolName, argsFor(ctx));
+
+    expect(result.ok, result.summary).toBe(true);
+    const eventId = (result.data as { eventId: string }).eventId;
+    const pages = ctx.project.maps[ctx.project.startMapId]?.events.find((event) => event.id === eventId)?.pages ?? [];
+    const visiblePages = pages.filter((page) => page.graphic?.transparent !== true);
+    expect(visiblePages.length).toBeGreaterThan(0);
+    for (const page of visiblePages) {
+      expect(page.graphic?.sprite?.id).toBeTruthy();
+      expect(page.graphic?.transparent).not.toBe(true);
+    }
+    expect((result.diff?.warnings ?? []).join(" ")).toContain('query:"monster"');
+  });
+});
+
 describe("upsert_event NPC 외형 자동 부여", () => {
   it("대화가 있는 action 이벤트는 투명하게 저장되지 않는다", () => {
     const ctx = context();
@@ -114,6 +185,58 @@ describe("upsert_event NPC 외형 자동 부여", () => {
     expect(page?.graphic?.sprite?.id).toBeTruthy();
     expect(page?.graphic?.transparent).not.toBe(true);
     expect((result.diff?.warnings ?? []).join(" ")).toContain("graphic:{transparent:true}");
+  });
+
+  it("두 페이지 NPC는 비어 있는 뒷 페이지에 앞 페이지 외형을 그대로 재사용한다", () => {
+    const ctx = context();
+    const explicitGraphic = {
+      sprite: { type: "bundled" as const, id: "tex_easyrpg_charset_people2" },
+      direction: "left" as const,
+      pattern: 7,
+    };
+    const result = runTool(ctx, "upsert_event", {
+      mapId: ctx.project.startMapId,
+      event: {
+        id: "ev_progressive_npc",
+        x: 3,
+        y: 3,
+        trigger: { kind: "action" },
+        pages: [
+          { conditions: [], graphic: explicitGraphic, commands: [{ kind: "text", body: "처음 대사" }] },
+          { conditions: [{ kind: "selfSwitch", key: "A", value: true }], commands: [{ kind: "text", body: "다음 대사" }] },
+        ],
+      },
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    const pages = ctx.project.maps[ctx.project.startMapId]?.events
+      .find((entry) => entry.id === "ev_progressive_npc")?.pages;
+    expect(pages?.[1]?.graphic).toEqual(pages?.[0]?.graphic);
+    expect(pages?.[1]?.graphic).toEqual(explicitGraphic);
+  });
+
+  it("priority below 인 action 대화 마커는 주민 그래픽을 세우지 않는다", () => {
+    const ctx = context();
+    const result = runTool(ctx, "upsert_event", {
+      mapId: ctx.project.startMapId,
+      event: {
+        id: "ev_wall_marker",
+        x: 4,
+        y: 3,
+        trigger: { kind: "action" },
+        pages: [{
+          conditions: [],
+          priority: "below",
+          commands: [{ kind: "text", body: "벽에 오래된 글씨가 있다." }],
+        }],
+      },
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    const graphic = ctx.project.maps[ctx.project.startMapId]?.events
+      .find((entry) => entry.id === "ev_wall_marker")?.pages?.[0]?.graphic;
+    expect(graphic?.sprite).toBeUndefined();
+    expect(graphic?.transparent).not.toBe(true);
   });
 
   it("투명을 명시한 이벤트와 컷신용 auto 이벤트는 그대로 둔다", () => {
@@ -142,5 +265,48 @@ describe("upsert_event NPC 외형 자동 부여", () => {
     const events = ctx.project.maps[ctx.project.startMapId]?.events ?? [];
     expect(events.find((entry) => entry.id === "ev_hidden")?.pages?.[0]?.graphic?.sprite).toBeUndefined();
     expect(events.find((entry) => entry.id === "ev_cutscene")?.pages?.[0]?.graphic?.sprite).toBeUndefined();
+  });
+});
+
+describe("add_companion actor 합류 이벤트 외형", () => {
+  it("actorId 의 charset 을 말 걸기 페이지에 표시한다", () => {
+    const ctx = context();
+    const actor = ctx.project.database.actors[0];
+    if (!actor) throw new Error("actor fixture missing");
+    const result = runTool(ctx, "add_companion", {
+      who: { actorId: actor.id },
+      target: { mapId: ctx.project.startMapId, x: 4, y: 4 },
+      trigger: "talk",
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    const eventId = (result.data as { eventId: string }).eventId;
+    const joinPage = ctx.project.maps[ctx.project.startMapId]?.events
+      .find((entry) => entry.id === eventId)?.pages?.find((page) =>
+        page.commands.some((command) => command.kind === "addFollower")
+      );
+    expect(joinPage?.graphic?.sprite?.id).toBeTruthy();
+    expect(joinPage?.graphic?.transparent).not.toBe(true);
+  });
+
+  it("characterResourceId 가 없으면 기존 기본 follower charset 으로 폴백한다", () => {
+    const ctx = context();
+    const actor = ctx.project.database.actors[0];
+    if (!actor) throw new Error("actor fixture missing");
+    delete actor.characterResourceId;
+    const result = runTool(ctx, "add_companion", {
+      who: { actorId: actor.id },
+      target: { mapId: ctx.project.startMapId, x: 4, y: 4 },
+      trigger: "talk",
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    const eventId = (result.data as { eventId: string }).eventId;
+    const joinPage = ctx.project.maps[ctx.project.startMapId]?.events
+      .find((entry) => entry.id === eventId)?.pages?.find((page) =>
+        page.commands.some((command) => command.kind === "addFollower")
+      );
+    expect(joinPage?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_monster1");
+    expect(joinPage?.graphic?.transparent).not.toBe(true);
   });
 });
