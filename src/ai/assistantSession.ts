@@ -660,6 +660,12 @@ export interface AssistantSessionOptions {
    * 시스템 프롬프트에는 들어가지 않는다 — 그래서 ContextOptions 가 아니라 여기 있다.
    */
   getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
+  /**
+   * 감사 항목이 생기는 **즉시** 호출되는 싱크. 대화의 실시간 로컬 미러(SQLite)가 쓴다 —
+   * 대화 저장이 턴 종료 시점 한 곳에만 있어서 진행 중 새로고침이 그 턴을 지웠던 문제의 해법이다.
+   * 턴 흐름을 막지 않는 fire-and-forget 구현만 주입한다(여기서 throw 하면 턴이 죽는다).
+   */
+  onAudit?: (entry: AuditEntry) => void;
 }
 
 export class AssistantSession {
@@ -778,6 +784,8 @@ export class AssistantSession {
   /** 직전 사용자 턴의 상황 — 맵 이동 경계 판정용. */
   private lastTurnContext: ConversationTurnContext | null = null;
   private readonly getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
+  /** 감사 항목 실시간 싱크(로컬 SQLite 미러). 주입되지 않으면 아무 일도 하지 않는다. */
+  private readonly onAudit?: (entry: AuditEntry) => void;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -786,6 +794,7 @@ export class AssistantSession {
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
     this.getTurnSelection = options.getTurnSelection;
+    this.onAudit = options.onAudit;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
@@ -1850,7 +1859,9 @@ export class AssistantSession {
 
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
   private pushAudit(entry: AuditEntry): void {
-    this.audit.push({ ...entry, at: new Date().toISOString() });
+    const stamped: AuditEntry = { ...entry, at: new Date().toISOString() };
+    this.audit.push(stamped);
+    this.onAudit?.(stamped);
   }
 
   /** 이번 턴의 편집 상황(맵·뷰포트·선택) 스냅샷 — 감사 기록과 맵 이동 판정의 단일 출처. */

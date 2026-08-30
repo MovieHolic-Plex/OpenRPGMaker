@@ -14,6 +14,13 @@ import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHtt
 import { createOhMyPiAdapters, stopOhMyPiWorker } from "./scripts/lib/ohMyPiPiAi.mjs";
 import type { OhMyPiAdapters } from "./scripts/lib/ohMyPiPiAi.mjs";
 import { readRequestJson, writeCompanionResult } from "./scripts/lib/companionHttpUtil.mjs";
+import {
+  appendConversationEntry,
+  listConversations,
+  openConversationDb,
+  readConversationEntries,
+  type ConversationAppendInput,
+} from "./scripts/lib/aiConversationSqlite.mjs";
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
@@ -147,6 +154,14 @@ const AI_ACTIVITY_DISK_ENDPOINT = "/__oprn/ai-activity";
  * 조용히 나던 전례가 있다).
  */
 const EDIT_ACTIVITY_DISK_ENDPOINT = "/__oprn/edit-activity";
+/**
+ * AI 대화 SQLite 미러 경로. `src/ai/conversationMirrorEndpoint.ts` 의
+ * AI_CONVERSATION_DISK_ENDPOINT 와 반드시 같아야 한다(계약은
+ * test/aiConversationSqliteMirror.test.ts 가 고정한다).
+ */
+const AI_CONVERSATION_DISK_ENDPOINT = "/__oprn/ai-conversation";
+/** 감사 항목 1건 본문 상한(2 MiB). 툴 인자에 타일 배열이 실리면 수백 KiB 까지 커진다. */
+const AI_CONVERSATION_MAX_BODY_BYTES = 2 * 1024 * 1024;
 /**
  * 배치 본문 상한(2 MiB). 편집 행위 미러는 1500ms 마다 큐 전체를 보내므로 정상 배치는
  * 수십 KiB 다. 상한이 없으면 스트로크 폭풍이나 오작동 클라이언트가 edits.jsonl 을
@@ -433,6 +448,105 @@ function editActivityDiskPlugin(): Plugin {
   };
 }
 
+/**
+ * AI 대화를 output/ai-conversations.sqlite 에 **실시간**으로 append.
+ *
+ * Supabase 미러는 턴이 끝날 때 1회만 돌아서(aiChatPanel 의 persistConversation) 진행 중에
+ * 새로고입/탭 종료를 하면 그 턴이 통째로 사라진다. 이 미러는 감사 항목이 생기는 시점마다
+ * 한 줄을 쌓으니, dev 중에는 이 DB 가 대화의 사실상 정본이다(`npm run chat:log`).
+ *
+ * 필요한 것만 다른 점: 새 항목 1건 = 1 POST 라 배치 디바운스가 없고(사람이 지시를 치는
+ * 바이통이 아니다), 하위 DB 가 쉼기 및 열림 때법이 seq 를 매긴다 — 클라이언트 카운턴는
+ * 턴/세션 경계에서 어긋나기 쉬워 신뢰하지 않는다.
+ */
+function aiConversationSqlitePlugin(): Plugin {
+  const dbPath = join(process.cwd(), "output", "ai-conversations.sqlite");
+  // 연결은 첫 쓰기 때 한 번만 열고 재사용한다 — 건당 open/close 는 WAL 체키프인트를 매번 부른다.
+  let db: ReturnType<typeof openConversationDb> | null = null;
+  const ensureDb = (): ReturnType<typeof openConversationDb> => (db ??= openConversationDb(dbPath));
+
+  function attachConversationMirror(server: ViteDevServer | PreviewServer) {
+    server.middlewares.use((req, res, next) => {
+      if (!req.url?.startsWith(AI_CONVERSATION_DISK_ENDPOINT)) return next();
+      const allowedOrigin = devCorsOrigin(req);
+      const cors = (): void => {
+        if (allowedOrigin) res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+      };
+      if (req.method === "OPTIONS") {
+        res.statusCode = 204;
+        cors();
+        res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        res.end();
+        return;
+      }
+      if (req.method === "GET") {
+        // 진단용 읽기 — `?conversation=<id>` 은 본문, 없으단 대화 목록.
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        cors();
+        try {
+          const url = new URL(req.url, "http://localhost");
+          const conversationId = url.searchParams.get("conversation");
+          const payload = conversationId
+            ? readConversationEntries(ensureDb(), conversationId)
+            : listConversations(ensureDb(), Number(url.searchParams.get("limit") ?? 20));
+          res.end(JSON.stringify(payload));
+        } catch (error) {
+          res.statusCode = 500;
+          res.end(JSON.stringify({ error: error instanceof Error ? error.message : "read failed" }));
+        }
+        return;
+      }
+      if (req.method !== "POST") {
+        res.statusCode = 405;
+        res.end("method not allowed");
+        return;
+      }
+      const chunks: Buffer[] = [];
+      let size = 0;
+      let aborted = false;
+      req.on("data", (c) => {
+        if (aborted) return;
+        const chunk = Buffer.isBuffer(c) ? c : Buffer.from(c);
+        size += chunk.length;
+        if (size > AI_CONVERSATION_MAX_BODY_BYTES) {
+          aborted = true;
+          chunks.length = 0;
+          res.statusCode = 413;
+          cors();
+          res.end(`payload too large (> ${AI_CONVERSATION_MAX_BODY_BYTES} bytes)`);
+          return;
+        }
+        chunks.push(chunk);
+      });
+      req.on("end", () => {
+        if (aborted) return;
+        try {
+          const body = JSON.parse(Buffer.concat(chunks).toString("utf8")) as ConversationAppendInput;
+          const result = appendConversationEntry(ensureDb(), body);
+          res.statusCode = 200;
+          cors();
+          res.setHeader("Content-Type", "application/json; charset=utf-8");
+          res.end(JSON.stringify(result));
+        } catch (error) {
+          res.statusCode = 400;
+          cors();
+          res.end(error instanceof Error ? error.message : "bad request");
+        }
+      });
+    });
+  }
+  return {
+    name: "rpgzzu-ai-conversation-sqlite",
+    configureServer(server) {
+      attachConversationMirror(server);
+    },
+    configurePreviewServer(server) {
+      attachConversationMirror(server);
+    },
+  };
+}
+
 // Same-origin bridge to the oh-my-pi companion router (provider auth + completions).
 // Browser always calls /auth/* and /v1/chat/completions on the page origin — never
 // 127.0.0.1:17832 — so Tailscale preview (`mdc-server:9888`) still reaches this process.
@@ -596,7 +710,13 @@ export default defineConfig(({ mode }) => {
   // 재최적화하다 "Failed to scan for dependencies" 로 서버가 죽는다(실측: 액션 전투 QA 중 3회).
   // VITE_CACHE_DIR 을 주면 워크트리 전용 캐시를 써서 이 충돌을 없앤다.
   cacheDir: process.env.VITE_CACHE_DIR,
-  plugins: [aiActivityDiskPlugin(), editActivityDiskPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin()],
+  plugins: [
+    aiActivityDiskPlugin(),
+    editActivityDiskPlugin(),
+    aiConversationSqlitePlugin(),
+    codexOAuthPlugin(),
+    localOnlyAiProxyPlugin(),
+  ],
   // src/styles/index.css 는 @import 로 243개 파일을 한 모듈로 인라인한다. 소스맵이 없으면
   // DevTools 가 그 모든 규칙을 `index.css` 한 파일로 귀속시켜, 계산된 스타일에서 소유 파일을
   // 역추적할 수 없다. !important 1,051개와 "재배열 금지" 순서 계약 40여 개가 걸린 시트에서

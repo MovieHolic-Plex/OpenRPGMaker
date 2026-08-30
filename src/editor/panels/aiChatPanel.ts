@@ -71,6 +71,7 @@ import {
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
+import { mirrorConversationEntry } from "@/ai/conversationSqliteMirror";
 import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
 import {
   buildInterviewKickoff,
@@ -696,6 +697,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         renderImages: renderToolImages,
         // 컨텍스트 모드 스코핑(§2.2): 활성 UI 상태에서 결정론으로 계산 — 턴마다 재평가된다.
         toolMode: computeAssistantToolMode,
+        // 실시간 로컬 미러(SQLite). Supabase 는 턴 종료 시 persistConversation 이 그대로 담당하고,
+        // 이 싱크는 사용자가 엔터를 누른 그 순간부터 항목 단위로 로컬 DB 에 append 한다 —
+        // 진행 중 새로고침·탭 종료로 그 턴이 통째로 사라지던 구멍을 막는 쪽이다.
+        onAudit: (entry) => {
+          mirrorConversationEntry({
+            conversationId,
+            entry,
+            projectContextKey: conversationScope,
+            model: loadAiConfig().model,
+          });
+        },
       });
     }
     return controller.session;
@@ -1637,6 +1649,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const recordRegionAudit = (entry: AuditEntry): void => {
       regionAuditEntries.push(entry);
       controller.auditHistory.push(entry);
+      // 영역 작업은 패널이 직접 감사 항목을 만든다(세션 pushAudit 을 지나지 않는다) —
+      // 실시간 미러도 여기서 같이 태워야 채팅 경로와 기록이 대칭이 된다.
+      mirrorConversationEntry({
+        conversationId: regionConversationId,
+        entry,
+        projectContextKey: regionConversationScope,
+        model: loadAiConfig().model,
+      });
     };
     const abortController = new AbortController();
     const selectionKey = `${selection.mapId}:${selection.region.x}:${selection.region.y}:${selection.region.width}:${selection.region.height}`;
