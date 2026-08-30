@@ -81,9 +81,15 @@
 
 .database-modal-backdrop .db-overview-hero h2 {
   color: var(--db-studio-text-1);
-  /* 1.1 clipped Korean descenders (받침) at 800 weight: the line box was
-     37px against a 41px glyph box. 1.25 fits every viewport step. */
-  font: 800 clamp(24px, 3vw, 34px)/1.25 "Malgun Gothic", system-ui, sans-serif;
+  /* 1.1 clipped Korean descenders (받자침) at 800 weight: the line box was
+     37px against a 41px glyph box.
+     2026-08-30: 1.25 도 모든 단계에 맞지 않았다. 1024px 럭에서 3vw = 30.72px 가 되면
+     line box 38.4px 에 800 굵기 한관 잉키 상자가 40.4px 로 들어가 **자기 overflow 로 2px 깍혔다**
+     (scripts/qa/db-ux-probe.mjs 로 1024x768 에서 재현: overview 탭 selfClipped 1).
+     이전 주석이 "1.25 fits every viewport step" 라고 적었지만 반증됐다 — 큰 럭에서만
+     확인한 것이다. 지원 하한이 1024px 이므로 거기서 상자를 맞춰야 한다.
+     nowrap + ellipsis 를 유지하려면 overflow:hidden 은 필수이묀로, 상자를 키운다. */
+  font: 800 clamp(24px, 3vw, 34px)/1.4 "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: -.04em;
   margin: 0;
   overflow: hidden;
