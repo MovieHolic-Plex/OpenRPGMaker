@@ -236,7 +236,7 @@ function assertEventShape(event: GameEvent, warnings?: string[]): void {
     for (const page of event.pages ?? []) {
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
     }
-    for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages)) warnings?.push(warning);
+    for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
   } catch (cause) {
     if (cause instanceof ToolError) throw cause;
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {

@@ -14,6 +14,6 @@ export const EVENT_PAGE_SEMANTICS_BLOCK = [
   "- 그래서 **조건 없는 페이지를 여러 장 만들면 마지막 1장만 영원히 발동**하고 앞 장들은 죽은 데이터다. 페이지는 '대사 후보'도 '순서대로 재생되는 장면'도 아니라 **상태별 변형**이다.",
   "- 페이지 1은 조건 없는 **기본 상태**로 두고, 변화는 뒤 페이지에 '등장 조건'(conditions)을 걸어 덮어라: switch / selfSwitch / variable / item / actor / gold / timer / timePhase / season / npcActivity / friendshipAtLeast / relationshipAtLeast / battleResult / run, 그리고 복합 all·any·not. 빈 conditions = 무조건.",
   "- **랜덤 대사는 페이지로 만들지 마라.** 한 페이지 안에서 m2Command(commandId:\"m2-211-weighted-branch\", fields:{table:\"0=1\\n1=1\\n2=1\", resultVariableId:\"<변수>\"})로 0..N-1 을 뽑고, fork(kind:\"variable\", op:\"==\") 로 대사를 갈라라. 가중치는 table 의 우변이다.",
-  "- **말할 때마다 다음 대사로 넘어가는 NPC**는 setSelfSwitch 로 단계를 올리고 각 단계 페이지에 selfSwitch 조건을 건다(페이지 1=조건 없음 → 페이지 2=selfSwitch A on → …). 조건 없이 페이지만 늘리면 첫 대사가 나오지 않는다.",
+  "- **말할 때마다 다음 대사로 넘어가는 NPC**는 selfSwitch 로 단계를 올린다. **조건과 쓰기는 반드시 한 쌍이다** — 페이지 1(조건 없음) 커맨드 끝에 setSelfSwitch{key:\"A\",value:true}, 페이지 2(조건 selfSwitch A) 끝에 key \"B\" 를 넣어라. 조건만 걸고 켜는 커맨드를 빼면 그 페이지는 영원히 잠긴다(조건 없이 페이지만 늘리는 것과 똑같이 죽는다).",
   "- 새 switch/variable 은 declare_story_flag 로 먼저 등록하고, 저작 후 explain_event 로 activePageNumber 와 각 페이지의 falseConditions 를 확인해 의도한 페이지가 활성인지 검증하라.",
 ].join("\n");

@@ -5,11 +5,11 @@ import { runTool } from "@/editor/tools";
 import { SIMPLE_PAGE_SCHEMA, CONDITION_SCHEMA } from "@/editor/tools/schemaShapes";
 import { CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { createBlankProject } from "@/project/defaults";
-import { findShadowedPages, shadowedPageWarnings } from "@/project/eventPageShadow";
+import { findShadowedPages, findUnwrittenSelfSwitchGates, shadowedPageWarnings } from "@/project/eventPageShadow";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { projectLint } from "@/project/lint/projectLint";
 import { explainEvent } from "@/project/storyEventExplain";
-import type { EventPage, EventPageCondition, GameEvent } from "@/project/types";
+import type { Command, EventPage, EventPageCondition, GameEvent } from "@/project/types";
 
 function page(id: string, conditions: readonly EventPageCondition[] = []): EventPage {
   return {
@@ -163,5 +163,72 @@ describe("dead pages are reported by the diagnostics the model is told to use", 
     const warnings = ((result.diff?.warnings ?? []) as readonly string[]).join("\n");
     expect(warnings).toContain("절대 발동하지 않습니다");
     expect(warnings).toContain("m2-211-weighted-branch");
+  });
+});
+
+describe("selfSwitch gates nobody opens", () => {
+  function gatedEvent(withWrite: boolean) {
+    const first = page("p1");
+    if (withWrite) (first.commands as Command[]).push({ kind: "setSelfSwitch", key: "A", value: true });
+    return {
+      id: "granny",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [first, page("p2", [{ kind: "selfSwitch", key: "A", value: true }])],
+    } as unknown as GameEvent;
+  }
+
+  it("flags a page whose selfSwitch is never turned on", () => {
+    const gates = findUnwrittenSelfSwitchGates(gatedEvent(false));
+    expect(gates).toHaveLength(1);
+    expect(gates[0]?.pageId).toBe("p2");
+    expect(gates[0]?.keys).toEqual(["A"]);
+  });
+
+  it("stays quiet once some page writes that selfSwitch", () => {
+    expect(findUnwrittenSelfSwitchGates(gatedEvent(true))).toEqual([]);
+  });
+
+  it("finds writes nested inside forks and choices", () => {
+    const first = page("p1");
+    (first.commands as Command[]).push({
+      kind: "fork",
+      condition: { kind: "switch", switchId: "s1", value: true },
+      then: [{ kind: "setSelfSwitch", key: "A", value: true }],
+      else: [],
+    } as unknown as Command);
+    const event = {
+      id: "nested",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [first, page("p2", [{ kind: "selfSwitch", key: "A", value: true }])],
+    } as unknown as GameEvent;
+    expect(findUnwrittenSelfSwitchGates(event)).toEqual([]);
+  });
+
+  it("ignores conditions that require the switch to be OFF", () => {
+    const event = {
+      id: "offgate",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [page("p1"), page("p2", [{ kind: "selfSwitch", key: "A", value: false }])],
+    } as unknown as GameEvent;
+    expect(findUnwrittenSelfSwitchGates(event)).toEqual([]);
+  });
+
+  it("warning list carries the condition-and-write pairing hint", () => {
+    const warnings = shadowedPageWarnings("'granny'", gatedEvent(false).pages, []);
+    expect(warnings.join("\n")).toContain("영원히 열리지 않습니다");
+    expect(warnings.join("\n")).toContain("setSelfSwitch");
+  });
+
+  it("prompt states that condition and write must come as a pair", () => {
+    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("조건과 쓰기는 반드시 한 쌍이다");
   });
 });

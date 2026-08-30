@@ -49,7 +49,17 @@
 `fields.table` 가중치로 결과 변수를 뽑는 것이고, 그 변수를 `fork` 로 갈라 대사를 나눈다 —
 **전부 한 페이지 안에서**. 이 패턴이 프롬프트 블록과 경고 힌트 양쪽에 박혀 있다.
 
-계약 테스트: `test/aiEventPageSemantics.test.ts`(15건), 예산 고정은
+### 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
+
+라이브 검증에서 나온 잔여 결함이다. 프롬프트를 고친 뒤 모델은 "말 걸 때마다 다음 대사"를
+페이지 1(무조건)/2(`selfSwitch A`)/3(`selfSwitch B`)로 **옳게** 나눴는데 `setSelfSwitch` 를
+하나도 넣지 않았다 — 조건은 맞고 가려짐도 없는데 2·3 페이지가 영원히 잠겼다. 결과가 같으므로
+같이 잡는다: `findUnwrittenSelfSwitchGates` 는 페이지 조건이 요구하는 `selfSwitch`(value:true) 를
+그 이벤트의 **어느 페이지 커맨드에서도**(fork·choices·loop 안쪽까지 내려가) 켜지 않으면 지목한다.
+전역 `switch` 는 기존 `story-flag:read-without-write` 가 이미 보므로 중복하지 않는다.
+린트 코드는 `event-selfswitch-gate-unwritten`, explain_event 는 `unwrittenSelfSwitchKeys`.
+
+계약 테스트: `test/aiEventPageSemantics.test.ts`(21건), 예산 고정은
 `test/aiToolCapabilityIndex.test.ts`.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.

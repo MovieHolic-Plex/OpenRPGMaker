@@ -2,7 +2,7 @@ import { compareVariableValue } from "@/project/conditionEvaluation";
 import { timePhaseFor } from "@/project/gameTime";
 import { evalCondition, getFriendship, getSwitch, getTimer, getVariable } from "@/project/session";
 import { storyFlagForTarget, targetShortLabel } from "@/project/storyFlags";
-import { findShadowedPages } from "@/project/eventPageShadow";
+import { findShadowedPages, findUnwrittenSelfSwitchGates } from "@/project/eventPageShadow";
 import type { Condition, GameEvent, Project } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
@@ -32,6 +32,8 @@ export interface StoryEventPageTrace {
   readonly falseConditions: string[];
   /** 조건이 참이어도 이 페이지 대신 실행되는 뒤 페이지 번호 — 있으면 이 페이지는 죽은 데이터다. */
   readonly shadowedByPageNumber?: number;
+  /** 이 페이지를 여는 selfSwitch 중 이벤트 안에서 아무도 켜지 않는 키 — 있으면 영원히 잠긴다. */
+  readonly unwrittenSelfSwitchKeys?: readonly string[];
 }
 
 export interface StoryEventExplanation {
@@ -70,9 +72,16 @@ export function explainEvent(
     };
   });
   const shadowByIndex = new Map(findShadowedPages(event.pages).map((shadow) => [shadow.index, shadow.byIndex + 1]));
+  const gateByIndex = new Map(findUnwrittenSelfSwitchGates(event).map((gate) => [gate.index, gate.keys]));
   const tracedPages = pages.map((page, index): StoryEventPageTrace => {
     const shadowedBy = shadowByIndex.get(index);
-    return shadowedBy === undefined ? page : { ...page, shadowedByPageNumber: shadowedBy };
+    const gateKeys = gateByIndex.get(index);
+    if (shadowedBy === undefined && gateKeys === undefined) return page;
+    return {
+      ...page,
+      ...(shadowedBy === undefined ? {} : { shadowedByPageNumber: shadowedBy }),
+      ...(gateKeys === undefined ? {} : { unwrittenSelfSwitchKeys: gateKeys }),
+    };
   });
   const active = activePageNumber(tracedPages);
   const note = sessionSource === "editor-default"
@@ -331,6 +340,10 @@ function summaryFor(
   const shadowNote = shadowed.length === 0
     ? ""
     : `; 절대 발동하지 않는 페이지 ${shadowed.map((page) => `${page.pageNumber}(→${page.shadowedByPageNumber})`).join(", ")}`;
-  if (!firstBlocked) return `${source}: 활성 페이지 ${active}${shadowNote}`;
-  return `${source}: 활성 페이지 ${active}; 페이지 ${firstBlocked.pageNumber} 비활성: ${firstBlocked.falseConditions[0]}${shadowNote}`;
+  const locked = pages.filter((page) => (page.unwrittenSelfSwitchKeys ?? []).length > 0);
+  const lockNote = locked.length === 0
+    ? ""
+    : `; 켜는 곳이 없어 영원히 잠긴 페이지 ${locked.map((page) => `${page.pageNumber}(selfSwitch ${(page.unwrittenSelfSwitchKeys ?? []).join("/")})`).join(", ")}`;
+  if (!firstBlocked) return `${source}: 활성 페이지 ${active}${shadowNote}${lockNote}`;
+  return `${source}: 활성 페이지 ${active}; 페이지 ${firstBlocked.pageNumber} 비활성: ${firstBlocked.falseConditions[0]}${shadowNote}${lockNote}`;
 }

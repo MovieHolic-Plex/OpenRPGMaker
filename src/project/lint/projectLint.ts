@@ -12,6 +12,7 @@
 //  - playerTouch-impassable (warning) 밟기형(priority≠same) touch/playerTouch 이벤트가 통행 불가 타일 위(영구 미발동)
 //  - event-unreachable       (warning) 자신의 몸 칸과 그 4방향 이웃이 전부 통행 불가라 접근 불가능한 이벤트
 //  - event-page-shadowed   (warning) 뒤 페이지가 항상 덮어 절대 발동하지 않는 이벤트 페이지
+//  - event-selfswitch-gate-unwritten (warning) selfSwitch 로 잠긴 페이지인데 그것을 켜는 커맨드가 없음
 //  - event-footprint-impassable (warning) 다중 타일 이벤트의 통행 사각이 통행 불가 칸을 덮음(걸어서 닿을 수 없는 자리)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 **몸 사각** 겹침
 //  - map-size              (warning) 256×256 초과 맵
@@ -23,7 +24,7 @@
 //  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
-import { describeShadowedPage, findShadowedPages } from "../eventPageShadow";
+import { describeShadowedPage, describeUnwrittenSelfSwitchGate, findShadowedPages, findUnwrittenSelfSwitchGates } from "../eventPageShadow";
 import {
   battleEventCommandRuntimeSupport,
   commandRuntimeSupport,
@@ -340,6 +341,16 @@ function checkEventPageShadow(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       const pageCount = (event.pages ?? []).length;
+      for (const gate of findUnwrittenSelfSwitchGates(event)) {
+        issues.push({
+          severity: "warning",
+          code: "event-selfswitch-gate-unwritten",
+          mapId: map.id,
+          x: event.x,
+          y: event.y,
+          message: `${map.id} ${event.id}: ${describeUnwrittenSelfSwitchGate(gate, pageCount)}`,
+        });
+      }
       for (const shadow of findShadowedPages(event.pages)) {
         issues.push({
           severity: "warning",

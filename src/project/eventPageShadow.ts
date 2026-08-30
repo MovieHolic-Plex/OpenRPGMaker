@@ -11,7 +11,7 @@
 // 실측 배경: 에디터 AI 에게 "랜덤하게 대사 치는 NPC"를 요청하면 대사 후보를 페이지로 나눠 담았다.
 // 페이지 4장 전부 조건이 비어 있었으므로 런타임은 마지막 1장만 실행했고, 나머지 3장은 죽은 데이터로
 // 남았다. 판정 자체는 순수 함수이므로 툴 경고·프로젝트 린트·explain_event 가 같은 근거를 공유한다.
-import type { EventPage, EventPageCondition } from "./types";
+import type { Command, EventPage, EventPageCondition } from "./types";
 
 export interface ShadowedPage {
   /** 가려진(죽은) 페이지의 0-based 인덱스. */
@@ -107,12 +107,88 @@ export function describeShadowedPage(shadow: ShadowedPage, pageCount: number): s
   return `${dead}는 절대 발동하지 않습니다 — 런타임은 조건이 맞는 마지막 페이지 하나만 실행하고, ${reason}.`;
 }
 
-export function shadowedPageWarnings(label: string, pages: readonly EventPage[] | undefined): readonly string[] {
+export interface UnwrittenSelfSwitchGate {
+  readonly index: number;
+  readonly pageId: string;
+  readonly keys: readonly string[];
+}
+
+function isCommandArray(value: unknown): value is readonly Command[] {
+  return Array.isArray(value) && value.every((entry) => entry !== null && typeof entry === "object" && "kind" in entry);
+}
+
+function collectSelfSwitchWrites(commands: readonly Command[], into: Set<string>): void {
+  for (const command of commands) {
+    if (command.kind === "setSelfSwitch") into.add(command.key);
+    // 분기·루프·선택지 안쪽에 쓰기가 숨어 있는 것이 정상이므로 커맨드 트리를 전부 내려간다.
+    for (const value of Object.values(command as Record<string, unknown>)) {
+      if (isCommandArray(value)) {
+        collectSelfSwitchWrites(value, into);
+        continue;
+      }
+      if (value !== null && typeof value === "object") {
+        for (const nested of Object.values(value as Record<string, unknown>)) {
+          if (isCommandArray(nested)) collectSelfSwitchWrites(nested, into);
+        }
+      }
+    }
+  }
+}
+
+function selfSwitchKeysIn(conditions: readonly EventPageCondition[]): readonly string[] {
+  return flattenConditions(conditions)
+    .filter((condition): condition is Extract<EventPageCondition, { kind: "selfSwitch" }> =>
+      condition.kind === "selfSwitch" && condition.value === true)
+    .map((condition) => condition.key);
+}
+
+/**
+ * selfSwitch 로 잠긴 페이지인데 그 이벤트 안에서 그것을 **켜는 커맨드가 없다** = 영원히 잠김.
+ *
+ * 페이지 가려짐의 거울상이고 결과가 같다(저작한 페이지가 조용히 죽는다). 실측으로 나온 실패다:
+ * 모델이 "말 걸 때마다 다음 대사" 를 페이지 1(무조건)/2(selfSwitch A)/3(selfSwitch B) 로 옳게
+ * 나눴는데 setSelfSwitch 를 하나도 넣지 않아 2·3 이 죽었다. selfSwitch 는 런타임에서
+ * selfSwitches[event.id] 로 이벤트 안에서만 의미가 있으므로 이벤트 단위로 판정할 수 있다.
+ * 전역 switch 는 이미 story-flag:read-without-write 린트가 본다.
+ */
+export function findUnwrittenSelfSwitchGates(event: {
+  readonly pages?: readonly EventPage[];
+  readonly commands?: readonly Command[];
+}): readonly UnwrittenSelfSwitchGate[] {
+  const pages = event.pages ?? [];
+  if (pages.length === 0) return [];
+  const written = new Set<string>();
+  collectSelfSwitchWrites(event.commands ?? [], written);
+  for (const page of pages) collectSelfSwitchWrites(page.commands ?? [], written);
+  const gates: UnwrittenSelfSwitchGate[] = [];
+  for (const [index, page] of pages.entries()) {
+    const missing = [...new Set(selfSwitchKeysIn(page.conditions ?? []))].filter((key) => !written.has(key));
+    if (missing.length > 0) gates.push({ index, pageId: page.id, keys: missing });
+  }
+  return gates;
+}
+
+export function describeUnwrittenSelfSwitchGate(gate: UnwrittenSelfSwitchGate, pageCount: number): string {
+  return `페이지 ${gate.index + 1}/${pageCount}('${gate.pageId}')는 셀프 스위치 ${gate.keys.join(", ")} 가 켜져야 열리는데 이 이벤트 어디에도 그것을 켜는 setSelfSwitch 가 없습니다 — 영원히 열리지 않습니다.`;
+}
+
+export const SELF_SWITCH_GATE_FIX_HINT =
+  "단계 진행은 조건과 쓰기가 한 쌍이다: 페이지 1 커맨드 끝에 setSelfSwitch{key:\"A\",value:true}, "
+  + "페이지 2(조건 selfSwitch A) 끝에 setSelfSwitch{key:\"B\",value:true} 를 넣어야 다음 단계로 넘어간다.";
+
+export function shadowedPageWarnings(
+  label: string,
+  pages: readonly EventPage[] | undefined,
+  eventCommands: readonly Command[] = [],
+): readonly string[] {
   const shadows = findShadowedPages(pages);
-  if (shadows.length === 0) return [];
+  const gates = findUnwrittenSelfSwitchGates({ pages, commands: eventCommands });
+  if (shadows.length === 0 && gates.length === 0) return [];
   const count = (pages ?? []).length;
   return [
     ...shadows.map((shadow) => `${label} ${describeShadowedPage(shadow, count)}`),
-    PAGE_SHADOW_FIX_HINT,
+    ...(shadows.length > 0 ? [PAGE_SHADOW_FIX_HINT] : []),
+    ...gates.map((gate) => `${label} ${describeUnwrittenSelfSwitchGate(gate, count)}`),
+    ...(gates.length > 0 ? [SELF_SWITCH_GATE_FIX_HINT] : []),
   ];
 }
