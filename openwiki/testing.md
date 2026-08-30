@@ -297,6 +297,18 @@ Evidence expectations:
   스크림 사각형이 오버레이와 같은 좌·우·아래를 갖는지도 같이 잰다(같은 `playSurface.css` 규칙이 둘의
   크롭 inset 을 맞춘다). 다만 에디터 Test Play 는 `surfaceScaleMode: "fit"` 이라 `--play-crop-*` 이 0 이다 —
   **정수 배율에서 실제로 잘리는 화면의 정합은 `npm run qa:runtime -- --scenario dialogue` 로만 확인된다.**
+- `test/dialoguePreviewPresentationCss.test.ts` — 에디터 프리뷰와 게임의 감정→keyframe 짝을
+  두 CSS 파일에서 뽑아 대조한다. 프리뷰 창은 `.ecp-message-window`, 게임 창은 `.dialogue-box` 라
+  규칙을 두 번 적어야 하고, 그 중복은 조용히 어긋난다 — 프리뷰만 옛 곡선으로 튀어도 예외가 없고,
+  프리뷰가 존재 이유("게임에서 이렇게 보인다")를 거짓말한다. keyframes 정의는 복제하지 않고
+  `dialogue.css` 것을 그대로 부르므로 그 파일이 에디터 그래프에 실려 있는지(`index.css` →
+  `runtime/playerRuntime.css` → `../dialogue.css`)도 같이 본다. 사슬이 끊기면 규칙은 남고
+  애니메이션만 사라진다.
+- `test/dialoguePresentationAuthoring.test.ts` — 저작 UI. ① 「말투·연출」이 접힌
+  `event-command-text-advanced` **밖에** 있는지(안에 있던 동안은 아무도 안 썼다. 되접히면 기능이
+  다시 안 보이게 죽는다), ② 프리뷰가 **연출이 바뀐 호출에만** `data-dialogue-phase="enter"` 를
+  붙이는지. ②를 놓치면 프리뷰가 본문 한 글자마다 통째로 다시 그려지므로 창이 타자마다 튀어
+  **글을 쓸 수 없다** — 기능이 아니라 편집이 망가지는 회귀라서 화면 없이 여기서 잡는다.
 
 ## 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
 
