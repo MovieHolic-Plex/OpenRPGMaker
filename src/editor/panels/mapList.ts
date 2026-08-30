@@ -9,8 +9,10 @@ import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
 import { openTestPlayModal } from "@/editor/panels/testPlayModal";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
 import { openMapContextMenu, type MapContextMenuItem, type MapContextMenuPoint } from "@/editor/panels/mapContextMenu";
+import { renderMapInspector, type MapInspectorAction, type MapInspectorView } from "@/editor/panels/mapInspectorPane";
 import { renderMapProps } from "@/editor/panels/mapProps";
 import { openMapShiftDialog } from "@/editor/panels/mapShiftDialog";
+import { collectMapInspection, type MapInspection } from "@/project/mapInspection";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
 import {
   canReparentMap,
@@ -24,7 +26,7 @@ import {
 } from "@/project/mapTree";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
-import type { MapId, MapTreeNode } from "@/project/types";
+import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
 type RenderNodeContext = {
@@ -98,57 +100,30 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     dataset: { testid: "map-tree", mapListVariant: currentMapListVariant },
   });
 
-  if (isBasic) {
-    const header = el("div", { class: "map-tree-header map-tree-header-basic" });
-    header.append(
-      el("div", {
-        class: "map-tree-basic-meta",
+  const header = isBasic
+    ? makeBasicHeader(mapCount)
+    : (() => {
+      const node = el("div", { class: "map-tree-header" });
+      node.append(el("h3", {
         children: [
-          el("span", { class: "map-tree-basic-count", text: `${mapCount}개 맵` }),
-          el("span", { class: "map-tree-basic-hint", text: "클릭 선택 · Ctrl/Shift 다중 · 중간클릭 테스트 · 핸들 이동" }),
+          el("span", { class: "map-tree-title", text: "맵" }),
+          el("span", { class: "map-tree-count", text: String(mapCount) }),
         ],
-      }),
-    );
-    if (canToggleMapFilter(mapCount)) {
-      header.append(el("button", {
-        class: "map-tree-action",
-        attrs: { type: "button", title: "맵 필터", "aria-label": "맵 필터", "aria-expanded": String(isFilterExpanded(mapCount)) },
-        dataset: { testid: "map-tree-filter-toggle" },
-        children: [el("span", { class: "rm-tool-icon oprn-icon-map-search", attrs: { "aria-hidden": "true" } })],
-        on: {
-          click: () => toggleMapFilterExpansion(),
-        },
       }));
-    }
-    header.append(
-      el("button", {
-        class: "map-tree-basic-add",
-        text: "+ 새 맵",
-        attrs: { type: "button", title: "맵 추가" },
-        dataset: { testid: "map-add" },
-        on: {
-          click: () => openMapCreateDialog({ preset: "blank" }),
-        },
-      }),
-    );
-    section.append(header);
-    section.append(makeFilterField(mapCount));
-  } else {
-    const header = el("div", { class: "map-tree-header" });
-    header.append(el("h3", {
-      children: [
-        el("span", { class: "map-tree-title", text: "맵" }),
-        el("span", { class: "map-tree-count", text: String(mapCount) }),
-      ],
-    }));
-    header.append(makeMapTreeHeaderActions(project.mapTree, mapCount));
-    section.append(header);
-    section.append(makeFilterField(mapCount));
-  }
+      node.append(makeMapTreeHeaderActions(project.mapTree, mapCount));
+      return node;
+    })();
 
   const tree = el("div", {
     class: isBasic ? "map-tree-list map-tree-list-basic" : "map-tree-list",
-    attrs: { role: "tree", "aria-label": "맵 목록", "aria-multiselectable": "true" },
+    attrs: {
+      role: "tree",
+      "aria-label": "맵 목록",
+      "aria-multiselectable": "true",
+      // 예전엔 이 조작법이 헤더에서 두 줄을 상시 점유했다(340px 폭에서 줄바꿈). 목록은
+      // 이름을 읽는 칸이므로 제스처 설명은 도구설명으로 내린다.
+      title: "클릭 선택 · Ctrl/Shift 다중 선택 · 가운데클릭 시연 실행 · 핸들 끌어 이동",
+    },
     dataset: { testid: "map-tree-list" },
     on: {
       pointerdown: (event) => beginTreeBoxSelect(event, tree),
@@ -160,13 +135,120 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     host: tree,
     node: project.mapTree,
   });
-  section.append(tree);
+
+  if (isBasic) {
+    // 2단 탐색기: 왼쪽은 이름 위주 목록, 오른쪽은 고른 맵의 상세. 행에 정보를 더 밀어넣는
+    // 대신 칸을 하나 늘린 이유는 map-panel.modern.css §초보 플라이아웃에 적혀 있다 —
+    // 340px 1단에서는 1fr 트랙이 93.59px 이라 메타를 늘리면 그대로 말줄임된다.
+    section.append(el("div", {
+      class: "map-tree-explorer",
+      dataset: { testid: "map-tree-explorer" },
+      children: [
+        el("div", { class: "map-tree-explorer-list", children: [header, makeFilterField(mapCount), tree] }),
+        el("div", {
+          class: "map-tree-explorer-detail",
+          children: [renderMapInspector(inspectorViewFor(project, activeId))],
+        }),
+      ],
+    }));
+  } else {
+    section.append(header);
+    section.append(makeFilterField(mapCount));
+    section.append(tree);
+  }
   container.append(section);
   if (typeof globalThis.requestAnimationFrame === "function") {
     globalThis.requestAnimationFrame(() => {
       document.querySelector<HTMLElement>(`[data-testid="map-tree-node-${activeId}"]`)?.scrollIntoView({ block: "nearest" });
     });
   }
+}
+
+function makeBasicHeader(mapCount: number): HTMLElement {
+  const header = el("div", { class: "map-tree-header map-tree-header-basic" });
+  header.append(
+    el("div", {
+      class: "map-tree-basic-meta",
+      children: [
+        el("span", { class: "map-tree-basic-count", text: `${mapCount}개 맵` }),
+        el("span", { class: "map-tree-basic-hint", text: "고르면 오른쪽에 상세" }),
+      ],
+    }),
+  );
+  if (canToggleMapFilter(mapCount)) {
+    header.append(el("button", {
+      class: "map-tree-action",
+      attrs: { type: "button", title: "맵 필터", "aria-label": "맵 필터", "aria-expanded": String(isFilterExpanded(mapCount)) },
+      dataset: { testid: "map-tree-filter-toggle" },
+      children: [el("span", { class: "rm-tool-icon oprn-icon-map-search", attrs: { "aria-hidden": "true" } })],
+      on: {
+        click: () => toggleMapFilterExpansion(),
+      },
+    }));
+  }
+  header.append(
+    el("button", {
+      class: "map-tree-basic-add",
+      text: "+ 새 맵",
+      attrs: { type: "button", title: "맵 추가" },
+      dataset: { testid: "map-add" },
+      on: {
+        click: () => openMapCreateDialog({ preset: "blank" }),
+      },
+    }),
+  );
+  return header;
+}
+
+/**
+ * 상세 칸이 무엇을 보여줄지 고른다.
+ *
+ * 분류 폴더 행을 누르면 `selectEditorMap` 을 타지 않아(applyTreeSelection) 활성 맵이 그대로
+ * 남는다 — 그때 옆 칸이 다른 맵 상세를 계속 띄우면 "누른 걸 보여준다"는 약속이 깨진다.
+ * 마지막으로 누른 행이 폴더면 폴더라고 말한다.
+ */
+function inspectorViewFor(project: Project, activeId: MapId): MapInspectorView {
+  if (lastClickedMapId && !project.maps[lastClickedMapId]) {
+    const node = findTreeNode(project.mapTree, lastClickedMapId);
+    if (node && isMapTreeFolder(node)) {
+      const label = mapTreeNodeLabel(node, project.maps);
+      return {
+        kind: "empty",
+        text: `'${label}' 은 정리용 분류입니다. 하위 ${node.children.length}개 — 플레이되는 맵이 아니라서 크기·이벤트·연결이 없습니다.`,
+      };
+    }
+  }
+  const inspection = collectMapInspection(project, activeId);
+  if (!inspection) return { kind: "empty", text: "맵을 고르면 여기에 상세가 나옵니다." };
+  return { actions: inspectorActions(project, inspection), inspection, kind: "map" };
+}
+
+function inspectorActions(project: Project, inspection: MapInspection): readonly MapInspectorAction[] {
+  const mapId = inspection.mapId;
+  const canDelete = Object.keys(project.maps).length > 1;
+  return [
+    { id: "properties", label: "맵 설정", primary: true, run: () => openMapProperties(mapId, inspection.name) },
+    { id: "test-play", label: "시연 실행", run: () => void playMapFromTree(mapId) },
+    { id: "add-child", label: "하위 맵 추가", run: () => openMapCreateUnder(mapId) },
+    { id: "duplicate", label: "복제", run: () => duplicateAndSelect(mapId) },
+    {
+      disabled: inspection.isStart,
+      disabledReason: "이미 시작 맵입니다",
+      id: "set-start",
+      label: "시작 맵으로",
+      run: () => {
+        setStartMap(mapId);
+        toast(`'${inspection.name}'을 시작 맵으로 지정했습니다`, "ok");
+      },
+    },
+    {
+      disabled: !canDelete,
+      disabledReason: "맵이 하나뿐이라 지울 수 없습니다",
+      id: "delete",
+      label: "삭제",
+      run: () => deleteAndSelectNext(mapId),
+    },
+  ];
 }
 
 function hasActiveMapFilter(): boolean {
@@ -360,6 +442,7 @@ function renderNode(spec: RenderNodeSpec): void {
     item.append(renameField(node.mapId, map?.name || ""));
   } else {
     const links = map ? collectMapLinkStats(project, node.mapId) : null;
+    const isUnlinked = !isFolder && links !== null && links.playLinkCount === 0;
     const metaBits = isFolder
       ? [`분류`, `하위 ${node.children.length}`]
       : [
@@ -367,13 +450,17 @@ function renderNode(spec: RenderNodeSpec): void {
         `${map?.events.length ?? 0}이벤트`,
       ].filter(Boolean);
     if (!isFolder && ((map?.encounterRate ?? 0) > 0 || (map?.troopIds?.length ?? 0) > 0)) metaBits.push("인카운터");
+    // 초보 2단 탐색기에서는 `문N` 을 뺀다 — 나가는/들어오는/연결로 쪼갠 값이 상세 칸에
+    // 있고, 목록 칸의 1fr 트랙은 이름을 읽는 데 써야 한다. 다만 0 일 때는 그 자리에
+    // '고립'을 남긴다: 이게 유일하게 행에서 손을 써야 하는 신호다.
+    if (isBasicRow && isUnlinked) metaBits.push("고립");
     item.append(el("div", {
       class: "map-tree-copy",
       children: [
         el("span", { class: "map-tree-name", text: actionContext.mapName }),
         el("span", {
-          class: "map-tree-meta" + (!isFolder && links && links.playLinkCount === 0 ? " is-unlinked" : ""),
-          text: isFolder ? metaBits.join(" · ") : `${metaBits.join(" · ")} · 문${links?.playLinkCount ?? 0}`,
+          class: "map-tree-meta" + (isUnlinked ? " is-unlinked" : ""),
+          text: isFolder || isBasicRow ? metaBits.join(" · ") : `${metaBits.join(" · ")} · 문${links?.playLinkCount ?? 0}`,
           attrs: {
             title: isFolder
               ? "플레이 맵이 아닙니다. 정리용 폴더입니다."

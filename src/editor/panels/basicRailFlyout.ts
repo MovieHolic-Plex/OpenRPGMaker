@@ -11,7 +11,11 @@ export interface BasicFlyoutState {
 
 export type BasicFlyoutAction =
   | { readonly type: "toggle"; readonly id: BasicFlyoutId }
-  | { readonly type: "outside-click" }
+  /**
+   * 사용자가 닫기를 누른 것이 아니라 «볼 일이 끝났다»고 앱이 판단한 자동 닫기.
+   * 바깥 클릭과 "타일을 골랐다" 가 같은 뜻이므로 한 이름을 쓴다 — 핀은 존중한다.
+   */
+  | { readonly type: "dismiss" }
   | { readonly type: "escape" }
   | { readonly type: "pin-toggle" };
 
@@ -23,7 +27,7 @@ export function basicFlyoutReducer(state: BasicFlyoutState, action: BasicFlyoutA
       if (state.open === action.id) return { open: null, pinned: false };
       // 다른 패널로 전환하면 pinned 는 따라가지 않는다 — 사용자가 고정한 것은 이전 패널이다.
       return { open: action.id, pinned: false };
-    case "outside-click":
+    case "dismiss":
       if (state.open === null || state.pinned) return state;
       return { open: null, pinned: false };
     case "escape":
