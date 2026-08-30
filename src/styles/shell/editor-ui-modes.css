@@ -776,14 +776,14 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .authoring-task-btn:hover,
 .authoring-task-btn:focus-visible {
-  background: color-mix(in srgb, var(--brand-blue, #4A57D6) 9%, transparent);
-  box-shadow: inset 0 -2px 0 var(--brand-blue, #4A57D6);
+  background: color-mix(in srgb, var(--brand-blue) 9%, transparent);
+  box-shadow: inset 0 -2px 0 var(--brand-blue);
 }
 
 /* 작업 칩은 밑줄 탭이 아니라 하단 상태 바를 쓴다 — hover와 같은 시각 어휘를 유지한다. */
 .authoring-task-btn.is-active {
-  background: color-mix(in srgb, var(--brand-blue, #4A57D6) 12%, transparent);
-  box-shadow: inset 0 -2px 0 var(--brand-blue, #4A57D6);
+  background: color-mix(in srgb, var(--brand-blue) 12%, transparent);
+  box-shadow: inset 0 -2px 0 var(--brand-blue);
   color: var(--editor-text, var(--text-1));
   font-weight: 700;
   text-decoration: none;
