@@ -28,6 +28,12 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { resolveSurfaceAiConfig } from "./assistantEndpoint";
+import {
+  EVENT_RESOURCE_SLOT_LABELS,
+  eventResourceIdSet,
+  listEventResourceOptions,
+  type EventResourceSlot,
+} from "./eventResourceCatalog";
 import { chatCompletion, type AiConfig, type ChatMessage } from "./llmClient";
 import { composeSystemPrompt } from "./systemPromptEnvelope";
 
@@ -67,17 +73,49 @@ const MAX_EXISTING_CHARS = 12000;
 const MAX_ATTEMPTS = 3;
 // 이동 대상 맵의 중앙에서 시작해 전체 맵을 훑는다. 일부만 보고 "착지 칸 없음"으로
 // 물러서면 멀리 정상 칸이 있는 맵의 함정 좌표를 검증 없이 통과시키기 때문이다.
-// 리소스 명령을 숨기면 얼굴·소리 같은 일급 저작 기능을 잃는다. 대신 실제 id 목록을 프롬프트에
-// 제공하고 기존 참조 검증으로 실패를 닫아, 잘못 고른 id 는 자가수정 루프가 다시 고치게 한다.
-const AI_COMMAND_KINDS = COMMAND_KINDS.filter(
+// 리소스 명령을 숨기면 얼굴·소리 같은 일급 저작 기능을 잃는다. 대신 **종류별** id 목록을
+// 프롬프트에 싣고(eventResourceCatalog) 같은 집합으로 kind 별 검증을 걸어, 잘못 고른 id 는
+// 자가수정 루프가 다시 고치게 한다.
+const AI_SURFACE_KINDS = COMMAND_KINDS.filter(
   (kind) => COMMAND_GUARANTEES[kind].authoringSurfaces.includes("ai"),
 );
+
+// 어떤 kind 가 어떤 리소스 종류를 요구하는가. 프롬프트 절·검증·kind 노출이 이 표 하나를 본다.
+const RESOURCE_SLOTS_BY_KIND = {
+  changeFace: ["faceset"],
+  playAudio: ["music", "sound"],
+  showPicture: ["picture"],
+  playMovie: ["movie"],
+} as const satisfies Partial<Record<Command["kind"], readonly EventResourceSlot[]>>;
+
+type ResourceBoundKind = keyof typeof RESOURCE_SLOTS_BY_KIND;
+
+function isResourceBoundKind(kind: string): kind is ResourceBoundKind {
+  return kind in RESOURCE_SLOTS_BY_KIND;
+}
+
+/**
+ * 이 프로젝트에서 실제로 쓸 수 있는 kind 목록.
+ *
+ * 고를 리소스가 하나도 없는 kind 는 **뺀다**. 특히 동영상은 업로드로만 들어오므로 블랭크
+ * 프로젝트에서는 playMovie 가 만들어 낼 수 있는 모든 값이 구조적으로 틀린다 — 목록에 실으면
+ * 모델이 id 를 발명하고 자가수정 루프가 3회를 태운 뒤 실패한다. 하드코딩이 아니라 프로젝트를
+ * 보고 정한다.
+ */
+export function aiCommandKinds(project: Project): readonly Command["kind"][] {
+  return AI_SURFACE_KINDS.filter((kind) => {
+    if (!isResourceBoundKind(kind)) return true;
+    return RESOURCE_SLOTS_BY_KIND[kind].some(
+      (slot) => listEventResourceOptions(slot, project).length > 0,
+    );
+  });
+}
 
 // ── 프롬프트 조립 ────────────────────────────────────────────────────────────
 
 // newCommand 기본값들을 그대로 직렬화한 kind별 JSON 예시(단일 진실 소스 유지).
-function commandExampleLines(): string[] {
-  return AI_COMMAND_KINDS.map(
+function commandExampleLines(kinds: readonly Command["kind"][]): string[] {
+  return kinds.map(
     (kind) => `- ${kind}: ${JSON.stringify(newCommand(kind))}`
   );
 }
@@ -120,6 +158,41 @@ function mapReferenceLabel(project: Project, mapId: string, map: GameMap): strin
     ? `, 밟을 수 있는 칸 예: x=${landing.x} y=${landing.y}`
     : "";
   return `${map.name || mapId} (${size}${landingNote})`;
+}
+
+/**
+ * 리소스 id 는 **종류별로** 싣는다. 한 덩어리로 실으면 상한 40개가 칩셋·아이콘으로
+ * 차버리고 얼굴·소리·그림 id 는 하나도 보이지 않는다(직전 구현이 그랬다: 1851개 중 앞
+ * 40개가 전부 tex_* / cc0-jetrel-*). 지금 노출된 kind 가 쓰는 종류만 실어 프롬프트 예산을
+ * 지키고, 각 절은 refSection 이 MAX_REF_ENTRIES 로 같이 자른다.
+ */
+function resourceSlotSection(project: Project, kinds: readonly Command["kind"][]): string {
+  const slots: EventResourceSlot[] = [];
+  for (const kind of kinds) {
+    if (!isResourceBoundKind(kind)) continue;
+    for (const slot of RESOURCE_SLOTS_BY_KIND[kind]) {
+      if (!slots.includes(slot)) slots.push(slot);
+    }
+  }
+  if (slots.length === 0) return "## 리소스 id (이 프로젝트에는 고를 리소스가 없다)";
+
+  const usage: string[] = [];
+  for (const kind of kinds) {
+    if (!isResourceBoundKind(kind)) continue;
+    const labels = RESOURCE_SLOTS_BY_KIND[kind].map((slot) => EVENT_RESOURCE_SLOT_LABELS[slot]);
+    usage.push(`- ${kind}.resourceId \u2190 ${labels.join(" 또는 ")} 목록에서만 고른다.`);
+  }
+
+  return [
+    "## 리소스 id (종류가 다른 리소스를 섞어 쓰면 반려된다)",
+    ...usage,
+    ...slots.map((slot) =>
+      refSection(
+        `${EVENT_RESOURCE_SLOT_LABELS[slot]} id`,
+        listEventResourceOptions(slot, project).map((option) => ({ id: option.id, name: option.name })),
+      ),
+    ),
+  ].join("\n");
 }
 
 /** 기존 목록을 온전한 JSON 으로 실을 수 있으면 "page", 아니면 "append". */
@@ -179,6 +252,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   const { project, mapId, event, page, selection, selectionLabel } = context;
   const scope = resolveAssistScope(page);
   const mapName = project.maps[mapId]?.name ?? mapId;
+  const kinds = aiCommandKinds(project);
   const sections: string[] = [];
 
   // 선택 위치는 사람 말로만 싣는다. 예전에는 경로 배열(`[2,-2,1]`)을 그대로 넣었는데,
@@ -206,10 +280,10 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   sections.push(
     [
       "## Command 스키마",
-      `사용 가능한 kind: ${AI_COMMAND_KINDS.join(", ")}`,
+      `사용 가능한 kind: ${kinds.join(", ")}`,
       "",
       "kind별 기본값 JSON 예시(필드 구조 참고 — 값은 요청에 맞게 채울 것):",
-      ...commandExampleLines(),
+      ...commandExampleLines(kinds),
       "",
       "중첩 규칙:",
       '- fork: {"kind":"fork","condition":<Condition>,"then":[<Command>...],"else":[<Command>...]} (else는 선택).',
@@ -231,10 +305,6 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
       refSection("트룹(적 그룹)", project.database.troops),
       refSection("액터", project.database.actors),
       refSection(
-        "리소스",
-        [...collectResourceIds(project)].map((id) => ({ id, name: id })),
-      ),
-      refSection(
         "맵",
         Object.entries(project.maps).map(([id, map]) => ({
           id,
@@ -245,6 +315,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   );
 
   sections.push(existingCommandsSection(page, scope));
+  sections.push(resourceSlotSection(project, kinds));
   sections.push(outputContractSection(scope));
 
   return sections.join("\n\n");
@@ -325,6 +396,8 @@ export function parseAndValidate(
     // io 검증이 다루지 않는 참조 보강(changeItem.itemId / changeParty.actorId).
     validateSupplementalReferences(commands, referenceContext);
     validateTransferBounds(commands, project);
+    // resourceId 는 집합 소속만으로 부족하다 — 종류까지 맞지 않으면 조용히 깨진 이벤트가 된다.
+    validateResourceSlots(commands, project);
   } catch (cause) {
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
@@ -334,7 +407,18 @@ export function parseAndValidate(
 // transfer 의 좌표는 맵 밖으로 나갈 수 있다. 프롬프트에 맵 크기를 실어도 모델은 (0,0) 같은
 // "안전해 보이는" 값을 자주 쓰는데, 대부분 맵 테두리(벽)라 플레이어가 벽 안에 갇힌다.
 // 여기서 잡아 주면 자가수정 루프가 스스로 고친다.
+//
+// 착지 칸 탐색은 **맵당 한 번**만 한다. 전에는 transfer 명령마다·시도마다 다시 계산해서
+// 전면 통행 불가 맵이 섞이면 전수 탐색을 반복했다(실측: 128×128 맵 100개 1.46s).
 function validateTransferBounds(commands: readonly Command[], project: Project): void {
+  validateTransferBoundsWith(commands, project, new Map<string, { x: number; y: number } | null>());
+}
+
+function validateTransferBoundsWith(
+  commands: readonly Command[],
+  project: Project,
+  landingCache: Map<string, { x: number; y: number } | null>,
+): void {
   for (const command of commands) {
     if (command.kind === "transfer") {
       const map = project.maps[command.mapId];
@@ -344,18 +428,75 @@ function validateTransferBounds(commands: readonly Command[], project: Project):
             `transfer: 좌표가 맵 «${map.name || command.mapId}» 밖입니다(x=${command.x}, y=${command.y}; 가로 ${map.width} × 세로 ${map.height}).`,
           );
         }
-        // 밟을 수 있는 칸을 하나도 못 찾는 맵(타일셋 미해석 등)은 판정 근거가 없으니 반려하지 않는다.
-        const landing = suggestedLandingCell(project, map);
-        if (landing && !isPassableLanding(project, map, command.x, command.y)) {
+        if (!isPassableLanding(project, map, command.x, command.y)) {
+          if (!landingCache.has(command.mapId)) {
+            landingCache.set(command.mapId, suggestedLandingCell(project, map));
+          }
+          // 밟을 수 있는 칸을 하나도 못 찾는 맵(타일셋 미해석 등)은 판정 근거가 없으니 반려하지 않는다.
+          const landing = landingCache.get(command.mapId) ?? null;
+          if (landing) {
+            throw new Error(
+              `transfer: 좌표(x=${command.x}, y=${command.y})가 맵 «${map.name || command.mapId}» 에서 밟을 수 없는 칸입니다. 밟을 수 있는 칸을 쓰세요. 예: x=${landing.x} y=${landing.y}`,
+            );
+          }
+        }
+      }
+    }
+    for (const branch of commandBranches(command)) {
+      validateTransferBoundsWith(branch.commands, project, landingCache);
+    }
+  }
+}
+
+/**
+ * resourceId 를 **종류까지** 대조한다.
+ *
+ * io/commandReferenceValidation 은 전역 리소스 집합 소속만 보므로
+ * `{"kind":"playAudio","resourceId":"tex_easyrpg_chipset_dungeon"}` 가 그대로 통과해
+ * **소리 없는 이벤트**가 조용히 저장된다. 자가수정 루프가 고칠 수 있는 오류로 바꿔 둔다.
+ */
+function validateResourceSlots(commands: readonly Command[], project: Project): void {
+  const cache = new Map<EventResourceSlot, Set<string>>();
+  const idsOf = (slot: EventResourceSlot): Set<string> => {
+    const cached = cache.get(slot);
+    if (cached) return cached;
+    const fresh = eventResourceIdSet(slot, project);
+    cache.set(slot, fresh);
+    return fresh;
+  };
+  walkResourceSlots(commands, project, idsOf);
+}
+
+function walkResourceSlots(
+  commands: readonly Command[],
+  project: Project,
+  idsOf: (slot: EventResourceSlot) => Set<string>,
+): void {
+  for (const command of commands) {
+    if (isResourceBoundKind(command.kind)) {
+      const slots = RESOURCE_SLOTS_BY_KIND[command.kind];
+      const resourceId = (command as { readonly resourceId?: string }).resourceId ?? "";
+      // 빈 칸은 저작상 유효하다 — changeFace 는 «얼굴 지우기» 를 빈 문자열로 표현한다.
+      if (resourceId.trim().length > 0) {
+        const allowed = slots.some((slot) => idsOf(slot).has(resourceId));
+        if (!allowed) {
+          const labels = slots.map((slot) => EVENT_RESOURCE_SLOT_LABELS[slot]).join(" 또는 ");
+          const example = slots
+            .flatMap((slot) => listEventResourceOptions(slot, project).slice(0, 1))
+            .map((option) => option.id)[0];
           throw new Error(
-            `transfer: 좌표(x=${command.x}, y=${command.y})가 맵 «${map.name || command.mapId}» 에서 밟을 수 없는 칸입니다. 밟을 수 있는 칸을 쓰세요. 예: x=${landing.x} y=${landing.y}`,
+            `${command.kind}: resourceId «${resourceId}» 는 ${labels} 리소스가 아닙니다.`
+            + (example
+              ? ` ${labels} 목록의 id 를 쓰세요. 예: ${example}`
+              : ` 이 프로젝트에는 ${labels} 리소스가 없으니 이 명령을 쓰지 마세요.`),
           );
         }
       }
     }
-    for (const branch of commandBranches(command)) validateTransferBounds(branch.commands, project);
+    for (const branch of commandBranches(command)) walkResourceSlots(branch.commands, project, idsOf);
   }
 }
+
 
 function validateAiAuthoringSurfaces(commands: readonly Command[]): void {
   for (const command of commands) {
