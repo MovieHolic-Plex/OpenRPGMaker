@@ -7,15 +7,12 @@
 //
 // 버린 것: routing.max_input_per_1m (cpenrouter 게이트웨이 전용 비용 상한). 동반 서비스 경로에서는
 // 이미 보내지 않고 있었고, 인증이 OAuth 전용이 된 뒤 남은 경로가 없다. 비용은 모델 선택으로 통제한다.
-// 지킨 것: max_tokens 8192(매핑 JSON 이 길다 — 설정의 기본 예산으로는 잘린다), temperature 0.2.
-import {
-  chatCompletion,
-  isProxyAuth,
-  loadAiConfig,
-  LlmError,
-  usesOhMyPiCompanion,
-  type ContentPart,
-} from "@/ai/llmClient";
+// 지킨 것: max_tokens 고정값(매핑 JSON 은 길지만 공급자 상한이 낮다 — 실측 cpen 8192 통과·32768 은 422), temperature 0.2.
+// 모델 티어·토큰 예산·준비 판정은 assistantEndpoint 의 표면 정책이 소유한다 — 이 표면이 자기만의
+// 준비 판정을 들고 있는 동안 조수와 기준이 달랐다: 모델을 보지 않아 `model: ""` 로도 요청이 나갔고,
+// 다른 어떤 코드도 읽지 않는 레거시 `oprn:llmApiKey` 하나로 버튼이 열렸다.
+import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+import { chatCompletion, LlmError, type ContentPart } from "@/ai/llmClient";
 import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
 
 export type CpenTilesetRequest = {
@@ -23,23 +20,18 @@ export type CpenTilesetRequest = {
   readonly imageDataUrl: string;
 };
 
-const MAX_OUTPUT_TOKENS = 8192;
 const SAMPLING_TEMPERATURE = 0.2;
-const LOCAL_STORAGE_KEY = "oprn:llmApiKey";
 const JSON_ONLY_SYSTEM_PROMPT =
   "Return exactly one JSON object for the requested tileset metadata. Do not quote the schema, do not include markdown, prose, code fences, or hidden reasoning. If uncertain, fill minimumQuestions and keep fields conservative.";
 
 export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Promise<string> {
-  const config = loadAiConfig();
-  // 인증 준비 판정만 여기서 한다(버튼 게이트와 같은 기준). 실제 헤더 조립은 llmClient 몫이다.
-  if (!usesOhMyPiCompanion(config) && !isProxyAuth(config) && !(config.apiKey?.trim() || readApiKey())) {
+  if (!isAssistantEndpointReady()) {
     return "AI 설정이 아직 연결되지 않았습니다. 로컬 설정을 확인해 주세요.";
   }
 
   try {
     const result = await chatCompletion(
-      // 매핑 JSON 은 길다 — 설정의 maxTokens(기본 예산)를 쓰면 중간에서 잘린다.
-      { ...config, maxTokens: MAX_OUTPUT_TOKENS },
+      resolveSurfaceAiConfig("tileset-analysis"),
       {
         messages: [
           {
@@ -84,10 +76,7 @@ export function normalizeCpenResponseText(responseText: string): string {
 }
 
 export function hasCpenTilesetApiKey(): boolean {
-  const config = loadAiConfig();
-  // OAuth 는 클라이언트 키가 없는 것이 정상이다 — 키 유무로 게이트하면 타일셋 AI 버튼이
-  // OAuth 환경에서 영구히 잠긴다.
-  return usesOhMyPiCompanion(config) || isProxyAuth(config) || (config.apiKey?.trim() || readApiKey()).length > 0;
+  return isAssistantEndpointReady();
 }
 
 // llmClient 의 ContentPart 를 그대로 쓴다 — 사본 타입을 두면 필드가 어긋나도 컴파일러가
@@ -100,17 +89,6 @@ function messageContent(request: CpenTilesetRequest): string | ContentPart[] {
   ];
 }
 
-/**
- * 옛 브라우저 보관 키를 읽던 자리. **env 키 폴백을 걷었다.**
- *
- * `VITE_YUNWU_API_KEY`/`VITE_LLM_API_KEY` 는 값을 클라이언트 번들에 인라인하는 통로였고,
- * 인증이 동반 서비스 전용이 된 뒤로는 쓸 데도 없다. 남긴 것은 레거시 localStorage 키
- * 하나뿐이며, 주입 설정(노드 스크립트)이 config.apiKey 로 넘기는 경로는 그대로 산다.
- */
-function readApiKey(): string {
-  if (typeof window === "undefined") return "";
-  return window.localStorage.getItem(LOCAL_STORAGE_KEY)?.trim() ?? "";
-}
 
 // 삭제됨: readApiUrl / fetchWithTimeout / readFailureBody / httpFailureMessage / readResponseText /
 // readContentPart / isChatCompletionResponse. 엔드포인트 해석·타임아웃·HTTP 실패 문구·응답 파싱은

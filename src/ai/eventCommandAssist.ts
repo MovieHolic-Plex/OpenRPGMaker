@@ -26,7 +26,8 @@ import {
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
-import { chatCompletion, configForLiteModel, type AiConfig, type ChatMessage } from "./llmClient";
+import { resolveSurfaceAiConfig } from "./assistantEndpoint";
+import { chatCompletion, type AiConfig, type ChatMessage } from "./llmClient";
 import { composeSystemPrompt } from "./systemPromptEnvelope";
 
 export interface EventAssistContext {
@@ -345,7 +346,7 @@ export async function runEventCommandAssist(options: {
   readonly projectScopeKey?: string;
 }): Promise<AssistRunResult> {
   const { prompt, context, onDelta, signal } = options;
-  const config = configForLiteModel(options.config);
+  const config = resolveSurfaceAiConfig("event-command", options.config);
   const scope = resolveAssistScope(context.page);
   const allowEmpty = scope === "page" && (context.page?.commands.length ?? 0) > 0;
   const messages: ChatMessage[] = [

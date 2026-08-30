@@ -17,7 +17,8 @@ import { conversationScopeKey } from "@/ai/conversationStore";
 import { distillPreferences } from "@/ai/preferenceDistiller";
 import { observeTurn, shouldDistillPreferences } from "@/ai/preferenceSignals";
 import { requestLikelyModifiesExisting } from "@/ai/modifyIntent";
-import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
+import { REGION_SURFACE_MAX_TOOL_CALLS, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+import { loadAiConfig } from "@/ai/llmClient";
 import {
   activityToolCallsFromAudit,
   type ConstructionActivityDisposition,
@@ -51,7 +52,9 @@ import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply }
 import { projectApprovalFingerprint, reviewRegionDraft, type HarnessReviewReport } from "./harnessReview";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
-export const REGION_TASK_MAX_TOOL_CALLS = 24;
+// 상한 값 자체는 표면 정책(assistantEndpoint)이 소유한다. 이 이름은 진행 표시("도구 3/24")를
+// 그리는 regionTaskModal 이 쓰고 있어 그대로 재노출한다.
+export const REGION_TASK_MAX_TOOL_CALLS = REGION_SURFACE_MAX_TOOL_CALLS;
 
 export interface RegionTaskSessionLike {
   sendUserMessage(
@@ -242,12 +245,8 @@ const defaultDeps: RegionTaskDeps = {
   getProject: () => store.getCurrent(),
   applyProject: applyRegionProjectWithHistory,
   createSession: (project, mapId) => {
-    const liteConfig = configForLiteModel(loadAiConfig());
     return new AssistantSession(project, {
-      config: {
-        ...liteConfig,
-        maxToolCalls: Math.min(liteConfig.maxToolCalls, REGION_TASK_MAX_TOOL_CALLS),
-      },
+      config: resolveSurfaceAiConfig("region"),
       contextOptions: {
         currentMapId: mapId,
         // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.

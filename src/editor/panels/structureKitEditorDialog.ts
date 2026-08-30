@@ -23,7 +23,8 @@
 //        일부가 사라진다 — 구조물은 지붕 변형 같은 세부 타일이 필요하다.
 //   대신 검색·분류 계산은 맵 팔레트와 같은 출처(panels/tilePaletteFilter.ts)를 쓴다.
 
-import { chatCompletion, loadAiConfig } from "@/ai/llmClient";
+import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+import { chatCompletion } from "@/ai/llmClient";
 import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
 import { TILE_SIZE } from "@/assets/bundled";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
@@ -2308,9 +2309,17 @@ async function requestAiMetaDraft(
     .filter((candidate) => candidate.id !== kit.id)
     .map((candidate) => candidate.name ?? "구조물");
 
+  // 준비 게이트. 이 표면만 게이트가 없어서, 미연결 상태의 클릭이 401 LlmError 로 떨어지고
+  // "초안 요청 실패: 인증 실패(401)..." 라는 원인 진단을 사용자에게 떠넘겼다. 다른 표면과 같은
+  // 판정으로 같은 안내를 준다.
+  if (!isAssistantEndpointReady()) {
+    toast("AI 연결을 먼저 완료하세요. 편집기 헤더의 AI 설정에서 로그인한 뒤 다시 시도해 주세요.", "error");
+    return;
+  }
+
   toast("AI 초안을 요청하는 중...", "info");
   try {
-    const result = await chatCompletion(loadAiConfig(), {
+    const result = await chatCompletion(resolveSurfaceAiConfig("structure-kit"), {
       messages: [
         {
           role: "system",
