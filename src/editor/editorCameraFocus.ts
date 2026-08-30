@@ -16,9 +16,9 @@ export interface CameraFocusBounds {
 export interface CameraFocusTarget {
   /** 이벤트가 있는 맵. 현재 EditScene이 보고 있는 맵과 다르면 무시된다. */
   readonly mapId: MapId;
-  /** 카메라를 중심에 둘 타일 X (정수). */
+  /** 카메라를 중심에 둘 타일 X. bounds 가 없을 때만 쓰이며 분수를 받는다(사각형 중심). */
   readonly tileX: number;
-  /** 카메라를 중심에 둘 타일 Y (정수). */
+  /** 카메라를 중심에 둘 타일 Y. bounds 가 없을 때만 쓰이며 분수를 받는다(사각형 중심). */
   readonly tileY: number;
   /**
    * 화면에 들여놓고 싶은 영역(타일). 주면 이 사각형의 중심으로 간다 — tileX/tileY 는
@@ -33,7 +33,11 @@ export interface CameraFocusTarget {
   readonly onlyIfOffscreen?: boolean;
 }
 
-/** 지금 화면에 실제로 보이는 타일 사각형. Phaser camera.worldView 에서 만든다. */
+/**
+ * 지금 화면에 실제로 보이는 타일 사각형 — **분수 타일** 단위다.
+ * 값을 ceil/floor 로 정수화하면 99% 보이는 타일이 버려져서 이미 화면 안인 대상을 끌어당긴다.
+ * 조수 독처럼 캔버스를 덮는 오버레이를 뺀 사각형을 넣는다(cameraFocusViewport.visibleTileRectFromViewport).
+ */
 export interface VisibleTileRect {
   readonly x: number;
   readonly y: number;
@@ -41,10 +45,12 @@ export interface VisibleTileRect {
   readonly height: number;
 }
 
-/** 카메라를 어느 타일 중심으로 보낼지. null 이면 움직이지 않는다. */
+/** 카메라가 바라볼 지점 — 타일 단위 분수 좌표(대상 사각형의 정확한 중심). 월드 픽셀 = center * tileSize. */
 export interface CameraFocusPlan {
-  readonly tileX: number;
-  readonly tileY: number;
+  readonly centerTileX: number;
+  readonly centerTileY: number;
+  /** 대상이 현재 줌으로 가시 영역에 안 들어올 때 제안하는 줌. 없으면 줌을 바꾸지 않는다. */
+  readonly zoom?: number;
 }
 
 type Listener = (target: CameraFocusTarget) => void;
@@ -72,24 +78,41 @@ export function requestEditorCameraFocus(target: CameraFocusTarget): void {
  *     이미 "보고 있는" 것으로 치고 움직이지 않는다. (100×100 맵을 다 채운 변경에서
  *     화면이 매번 맵 중앙으로 튀는 것을 막는다.)
  *  3. 그 밖 → 대상 중심으로 보낸다.
+ *
+ * 중심은 **내림하지 않는다**: {x:4,y:4,width:6,height:8} 의 참 중심은 (7,8) 이고, 예전처럼 내림한 뒤
+ * 소비자가 +0.5 타일을 더하면 오른쪽 아래로 반 타일(8px) 밀렸다. 1×1 대상은 (3,5) → (3.5,5.5) 이다.
+ *
+ * `visible === null` 은 "뷰포트를 모른다"는 뜻이다. 조수 자동 이동에서는 판정 불가를 이동으로 바꾸면
+ * 이미 보고 있는 화면을 빼앗으므로 포기한다. 사용자가 직접 누른 이동은 그대로 간다.
  */
 export function planCameraFocus(
   target: CameraFocusTarget,
   map: { readonly width: number; readonly height: number },
   visible: VisibleTileRect | null,
-  marginTiles = 1
+  marginTiles = 1,
+  fit?: { readonly currentZoom: number; readonly zoomLevels: readonly number[] }
 ): CameraFocusPlan | null {
   const keep = focusRect(target);
   if (keep === null) return null;
   if (map.width <= 0 || map.height <= 0) return null;
 
-  const centerX = Math.floor(keep.x + keep.width / 2);
-  const centerY = Math.floor(keep.y + keep.height / 2);
-  if (centerX < 0 || centerY < 0 || centerX >= map.width || centerY >= map.height) return null;
+  const centerX = keep.x + keep.width / 2;
+  const centerY = keep.y + keep.height / 2;
+  // 맵 경계 판정은 내림한 중심으로 한다 — 40 폭 맵에서 39.5 는 마지막 타일의 중앙이라 유효하고,
+  // 정확히 40.0 은 맵 밖이다.
+  const tileX = Math.floor(centerX);
+  const tileY = Math.floor(centerY);
+  if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) return null;
 
-  if (!target.onlyIfOffscreen || visible === null || visible.width <= 0 || visible.height <= 0) {
-    return { tileX: centerX, tileY: centerY };
-  }
+  const center: CameraFocusPlan = { centerTileX: centerX, centerTileY: centerY };
+  const suggestedZoom = suggestFitZoom(target, keep, visible, marginTiles, fit);
+  const withZoom: CameraFocusPlan =
+    suggestedZoom === null ? center : { ...center, zoom: suggestedZoom };
+
+  if (!target.onlyIfOffscreen) return withZoom;
+  if (visible === null || visible.width <= 0 || visible.height <= 0) return null;
+  // 줌을 낮춰야 다 보이는 상황이면 "이미 보고 있다" 판정보다 제안이 앞선다.
+  if (suggestedZoom !== null) return withZoom;
 
   const fitsInView = keep.width + marginTiles * 2 <= visible.width && keep.height + marginTiles * 2 <= visible.height;
   if (fitsInView) {
@@ -98,7 +121,7 @@ export function planCameraFocus(
       keep.y - marginTiles >= visible.y &&
       keep.x + keep.width + marginTiles <= visible.x + visible.width &&
       keep.y + keep.height + marginTiles <= visible.y + visible.height;
-    return inside ? null : { tileX: centerX, tileY: centerY };
+    return inside ? null : center;
   }
 
   // 화면보다 큰 대상: 중심이 화면 중앙 절반 안에 있으면 이미 보고 있다.
@@ -109,7 +132,43 @@ export function planCameraFocus(
     centerY >= coreY &&
     centerX <= coreX + visible.width / 2 &&
     centerY <= coreY + visible.height / 2;
-  return centerInCore ? null : { tileX: centerX, tileY: centerY };
+  return centerInCore ? null : center;
+}
+
+/**
+ * 대상이 현재 줌으로 안 들어오면 낮출 줌을 고른다. 줌을 올리는 제안은 하지 않는다.
+ *
+ * 가시 폭/높이(타일)는 줌에 반비례하므로 후보 줌에서의 폭은 visibleSpan * currentZoom / candidate 다.
+ * 후보 중 다 담기는 가장 큰 값이 최선이고, 어떤 후보로도 다 담기지 않으면(예: 40×40 대상 vs 20×12 화면)
+ * 가장 낮은 후보를 제안한다 — 최대한 물러나는 것이 그래도 사용자가 보려는 영역을 가장 많이 보여준다.
+ */
+function suggestFitZoom(
+  target: CameraFocusTarget,
+  keep: CameraFocusBounds,
+  visible: VisibleTileRect | null,
+  marginTiles: number,
+  fit?: { readonly currentZoom: number; readonly zoomLevels: readonly number[] }
+): number | null {
+  if (!fit || !target.bounds) return null;
+  if (!visible || visible.width <= 0 || visible.height <= 0) return null;
+  const current = fit.currentZoom;
+  if (!Number.isFinite(current) || current <= 0) return null;
+
+  const needWidth = keep.width + marginTiles * 2;
+  const needHeight = keep.height + marginTiles * 2;
+  const fitsAt = (zoom: number): boolean =>
+    (visible.width * current) / zoom >= needWidth && (visible.height * current) / zoom >= needHeight;
+  if (fitsAt(current)) return null;
+
+  const candidates = fit.zoomLevels
+    .filter((zoom) => Number.isFinite(zoom) && zoom > 0 && zoom < current)
+    .sort((a, b) => a - b);
+  if (candidates.length === 0) return null;
+  for (let index = candidates.length - 1; index >= 0; index -= 1) {
+    const zoom = candidates[index];
+    if (fitsAt(zoom)) return zoom;
+  }
+  return candidates[0];
 }
 
 /** 지금 진행 중인 사용자 제스처. EditScene 이 자기 상태를 그대로 채워 넣는다. */

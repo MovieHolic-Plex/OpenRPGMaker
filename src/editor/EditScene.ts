@@ -18,6 +18,12 @@ import {
   type PointerGestureState,
   type VisibleTileRect,
 } from "@/editor/editorCameraFocus";
+import {
+  cameraLookAtForTarget,
+  unoccludedCanvasRect,
+  visibleTileRectFromViewport,
+  type CanvasRect,
+} from "@/editor/cameraFocusViewport";
 import { subscribeAgentBlueprint } from "@/editor/agentBlueprint";
 import { AgentBlueprintRenderer } from "@/editor/agentBlueprintRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -25,7 +31,7 @@ import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPre
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
-import { editorState } from "@/editor/editorState";
+import { editorState, EDITOR_ZOOM_LEVELS } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
   renderEventLayerClickFeedback,
@@ -68,7 +74,7 @@ import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
-import { setEditorMapViewport } from "@/editor/editorMapViewport";
+import { getEditorMapViewport, setEditorMapViewport } from "@/editor/editorMapViewport";
 import { computeMapViewport } from "@/ai/mapViewportContext";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
 import {
@@ -176,6 +182,12 @@ export class EditScene extends PhaserRuntime.Scene {
   private tilePaintEngine: TilePaintEngine | null = null;
   private dragOperationHandler: DragOperationHandler | null = null;
   private rightRegionGesture: RightRegionGesture | null = null;
+  /**
+   * 사용자 제스처 때문에 미뤄 둔 카메라 초점 요청 — **한 칸**만 둔다(새 요청이 옛 요청을 덮는다).
+   * 미룬 요청을 그냥 버리면 조수가 "여기 고쳤어요" 하고도 화면은 딴 데를 보고 있다. 반대로 큐로
+   * 쌓으면 제스처가 끝나는 순간 카메라가 여러 번 튄다 — 마지막 요청만 사용자에게 의미가 있다.
+   */
+  private deferredCameraFocus: CameraFocusTarget | null = null;
   /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
   private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
   /** 맵 캔버스에서 우클릭이 시작되면 true. 버튼을 놓는 순간 contextmenu 가 문서 타겟으로 뜨는 경우 대비. */
@@ -316,7 +328,13 @@ export class EditScene extends PhaserRuntime.Scene {
       const editWindow = window as unknown as {
         __oprnEditCamera?: () => { scrollX: number; scrollY: number; width: number; height: number; zoom: number };
         __oprnEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
+        __oprnEditMapViewport?: () => unknown;
+        __oprnEditVisibleArea?: () => unknown;
       };
+      // 조수가 실제로 읽는 뷰포트 스냅샷과, 그 스냅샷을 만든 기하학(캔버스·가림 제외·worldView·줌).
+      // e2e 가 카메라·가림 계산을 다시 구현하면 두 소스가 갈라지므로 씬의 값을 그대로 내보낸다.
+      editWindow.__oprnEditMapViewport = () => getEditorMapViewport();
+      editWindow.__oprnEditVisibleArea = () => this.cameraVisibleArea();
       editWindow.__oprnEditCamera = () => {
         const c = this.cameras.main;
         return { scrollX: c.scrollX, scrollY: c.scrollY, width: c.width, height: c.height, zoom: c.zoom };
@@ -342,6 +360,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unbindCanvasPanGuards();
     this.unbindBrowserContextMenuGuards();
     this.rightRegionGesture = null;
+    // 미뤄 둔 초점은 씬과 함께 버린다 — 아래 stopPan 이 재생을 시도하기 전에 비워야 한다.
+    this.deferredCameraFocus = null;
     this.stopPan();
     this.unsubStore?.();
     this.unsubEditor?.();
@@ -364,9 +384,16 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
     if (typeof window !== "undefined") {
-      const editWindow = window as unknown as { __oprnEditCamera?: unknown; __oprnEditWorldToClient?: unknown };
+      const editWindow = window as unknown as {
+        __oprnEditCamera?: unknown;
+        __oprnEditWorldToClient?: unknown;
+        __oprnEditMapViewport?: unknown;
+        __oprnEditVisibleArea?: unknown;
+      };
       delete editWindow.__oprnEditCamera;
       delete editWindow.__oprnEditWorldToClient;
+      delete editWindow.__oprnEditMapViewport;
+      delete editWindow.__oprnEditVisibleArea;
     }
     this.clearBuildPaletteOverlay();
     this.regionTaskBadge?.remove();
@@ -410,6 +437,8 @@ export class EditScene extends PhaserRuntime.Scene {
         } else {
           confirmPastePreview(mid);
         }
+        // 붙여넣기 미리보기도 제스처다 — 확정/취소로 끝나면 미뤄 둔 초점을 재생한다.
+        this.replayDeferredCameraFocus();
         return;
       }
       if (this.isRightClick(ptr)) {
@@ -467,6 +496,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.input.on("pointerup", (ptr: Phaser.Input.Pointer) => {
       if (this.rightRegionGesture) {
         this.finishRightRegionGesture(ptr);
+        this.replayDeferredCameraFocus();
         return;
       }
       this.finishDragOperation(ptr);
@@ -476,9 +506,15 @@ export class EditScene extends PhaserRuntime.Scene {
       this.stopPan();
       // 스트로크 종료 후 호버 복원 (성형된 맵 타일 위에 raw 프리뷰 가능).
       this.updateHoverPreview(ptr);
+      // 제스처가 끝났으니 미뤄 둔 조수 초점을 지금 재생한다.
+      this.replayDeferredCameraFocus();
     });
     this.input.on("pointerout", () => {
       if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
+    });
+    this.input.on("pointerupoutside", () => {
+      // 캔버스 밖에서 버튼을 놓는 경우도 제스처의 끝이다 — 이 경로가 버리면 미뤄 둔 초점이 슬롯에 갇힌다.
+      this.replayDeferredCameraFocus();
     });
     this.input.on(
       "wheel",
@@ -718,6 +754,8 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private stopPan(): void {
     this.cameraPanController?.stop();
+    // 팬이 진짜로 멈췄을 때만 재생한다(재생 내부에서 다시 제스처 판정을 한다).
+    this.replayDeferredCameraFocus();
   }
 
   private pointerScreenPosition(ptr: Phaser.Input.Pointer): { readonly x: number; readonly y: number } {
@@ -1196,6 +1234,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapChanged = this.lastRenderedMapId !== mid;
     if (mapChanged) {
       this.lastPointerTile = null;
+      // 맵이 바뀌면 미뤄 둔 초점은 버린다 — 다른 맵의 요청이라 panCameraToTile 이 어차피 mapId 에서 버린다.
+      this.deferredCameraFocus = null;
       this.clearHoverPreview();
       this.clearAgentFocusHighlight();
       this.lastPaintKey = "";
@@ -1296,17 +1336,26 @@ export class EditScene extends PhaserRuntime.Scene {
       setEditorMapViewport(null);
       return;
     }
-    const camera = this.cameras.main;
-    const tileSize = map.tileSize || TILE_SIZE;
+    const area = this.cameraVisibleArea();
+    if (!area) {
+      setEditorMapViewport(null);
+      return;
+    }
+    // 조수가 읽는 "보이는 영역" = worldView ∩ 가림 제외 영역. 카드가 덮은 왼쪽 절반을 보인다고
+    // 말하면 모델은 사용자가 못 보는 칸을 "여기"로 해석한다.
+    const offsetX = area.unoccluded.x - area.canvas.x;
+    const offsetY = area.unoccluded.y - area.canvas.y;
     const snapshot = computeMapViewport(
       map,
       {
-        scrollX: camera.scrollX,
-        scrollY: camera.scrollY,
-        zoom: camera.zoom,
-        viewWidthPx: this.scale.width,
-        viewHeightPx: this.scale.height,
-        tileSize,
+        worldLeftPx: area.worldView.x + offsetX / area.zoom,
+        worldTopPx: area.worldView.y + offsetY / area.zoom,
+        worldWidthPx: area.unoccluded.width / area.zoom,
+        worldHeightPx: area.unoccluded.height / area.zoom,
+        // 타일 크기는 TILE_SIZE 고정이다 — 그리기·pointerToTile·visibleTileRect 가 전부 이 단위로
+        // 계산하므로 여기서만 map.tileSize 를 쓰면 좌표계가 둘로 쪼개진다(맵 tileSize 가 다른 순간
+        // 조수가 보고받는 영역이 화면과 어긋난다).
+        tileSize: TILE_SIZE,
       },
     );
     setEditorMapViewport(snapshot);
@@ -1453,22 +1502,63 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     // 사용자의 손이 화면 위에 있으면 카메라를 빼앗지 않는다 — 판정 근거는
     // shouldDeferCameraFocus 주석(드래그 커밋이 라이브 카메라로 타일을 다시 구한다).
-    if (shouldDeferCameraFocus(this.pointerGestureState())) return;
-    const plan = planCameraFocus(target, map, this.visibleTileRect());
+    // 대신 요청을 한 칸에 적어 두고 제스처가 끝나는 순간 한 번 재생한다.
+    if (shouldDeferCameraFocus(this.pointerGestureState())) {
+      this.deferredCameraFocus = target;
+      return;
+    }
+    const plan = planCameraFocus(target, map, this.visibleTileRect(), 1, {
+      currentZoom: editorState.get().zoom,
+      zoomLevels: EDITOR_ZOOM_LEVELS,
+    });
     if (!plan) return;
-    const worldX = (plan.tileX + 0.5) * TILE_SIZE;
-    const worldY = (plan.tileY + 0.5) * TILE_SIZE;
+    // 줌은 팬보다 **먼저** 바꾼다: editorState.set 이 redraw → applyCameraView 로 카메라를 다시 세우므로
+    // 순서를 뒤집으면 방금 계산한 팬 목표가 리셋된 카메라에 덮인다. 줌이 바뀌면 worldView 크기도
+    // 달라지므로 팬 목표는 줌 적용 뒤의 기하학으로 구한다.
+    const nextZoom = EDITOR_ZOOM_LEVELS.find((level) => level === plan.zoom);
+    if (nextZoom !== undefined && nextZoom !== editorState.get().zoom) editorState.set({ zoom: nextZoom });
+    // 계획은 이미 대상 사각형의 정확한 중심을 담고 있다(분수 타일) — +0.5 를 더하면 반 타일 밀린다.
+    const targetWorldX = plan.centerTileX * TILE_SIZE;
+    const targetWorldY = plan.centerTileY * TILE_SIZE;
+    const area = this.cameraVisibleArea();
+    // 조수 카드가 캔버스를 덮고 있으면 캔버스 중앙 = 카드 뒤다. 가림을 뺀 영역의 중앙에 대상이
+    // 오도록 lookAt 을 민다(cameraLookAtForTarget).
+    const lookAt = area
+      ? cameraLookAtForTarget({
+        targetWorldX,
+        targetWorldY,
+        canvas: area.canvas,
+        unoccluded: area.unoccluded,
+        zoom: area.zoom,
+      })
+      : { x: targetWorldX, y: targetWorldY };
     // 카메라가 움직이면 DOM 마커·선택 팔레트 오버레이·AI 뷰포트 스냅샷이 전부 낡는다.
     // 손 팬은 onPanMove 에서 이미 이 셋을 되맞추는데 프로그램 팬은 아무것도 하지 않아
     // 조수가 데려간 화면에서 마커가 엉뚱한 자리에 남고 AI 는 이전 위치를 계속 읽었다.
-    this.cameras.main.pan(worldX, worldY, 300, "Cubic.easeOut", true, (_camera, progress: number) => {
+    this.cameras.main.pan(lookAt.x, lookAt.y, 300, "Cubic.easeOut", true, (_camera, progress: number) => {
       // 6번째 인자는 onComplete 가 아니라 **onUpdate** 다(phaser Pan.js: "invoked every frame
-      // for the duration of the effect"). 그대로 두면 300ms 동안 열여덟 번쯤 불려 매 프레임
-      // 고스트 DOM 마커를 지웠다 다시 만든다 — 영역 작업의 인라인 승인 툴바가 그 사이에 갈려
-      // pointerdown/up 이 다른 노드에 떨어질 수 있다. 마지막 프레임(progress 1)에만 정리한다.
-      if (progress < 1) return;
+      // for the duration of the effect"). DOM 마커·팔레트를 매 프레임 다시 만들면 영역 작업의
+      // 인라인 승인 툴바가 그 사이에 갈려 pointerdown/up 이 다른 노드에 떨어질 수 있으므로
+      // 그 뒷정리는 마지막 프레임에만 한다. 반면 뷰포트 스냅샷은 매 프레임 게시한다 —
+      // 팬이 도는 300ms 동안 조수가 도구를 부르면 출발 지점의 화면을 사실로 읽어 버린다.
+      if (progress < 1) {
+        this.publishMapViewport();
+        return;
+      }
       this.afterCameraMoved();
     });
+  }
+
+  /**
+   * 제스처가 끝나는 순간 미뤄 둔 초점을 정확히 한 번 재생한다.
+   * 다른 제스처가 아직 살아 있으면(예: 붙여넣기 미리보기 위에서 팬을 놓았다) 슬롯을 그대로 둔다.
+   */
+  private replayDeferredCameraFocus(): void {
+    const target = this.deferredCameraFocus;
+    if (!target) return;
+    if (shouldDeferCameraFocus(this.pointerGestureState())) return;
+    this.deferredCameraFocus = null;
+    this.panCameraToTile(target);
   }
 
   /** 카메라 양보 판정에 넘길 제스처 스냅샷 — 판정 자체는 순수 함수가 한다. */
@@ -1490,19 +1580,77 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   /**
-   * 지금 실제로 보이는 타일 사각형. scrollX/Y 는 3.60+ 줌 규약 때문에 화면 왼쪽 위와 직접
-   * 대응하지 않으므로 렌더가 쓰는 worldView 를 쓴다. 안쪽으로 보수적으로 깎아(ceil/floor)
-   * "다 보인다" 판정이 반 칸 때문에 틀리지 않게 한다.
+   * 지금 실제로 보이는 타일 사각형(**분수** 단위). 카메라 worldView 와 가림 제외 캔버스 사각형을
+   * 같은 헬퍼에서 가져오므로 조수의 팬 판정과 뷰포트 스냅샷이 한 소스를 본다.
+   * 정수로 깎지 않는다 — 99% 보이는 타일을 버리면 이미 화면 안인 대상을 다시 끌어당긴다.
    */
   private visibleTileRect(): VisibleTileRect | null {
-    const view = this.cameras.main?.worldView;
-    if (!view || view.width <= 0 || view.height <= 0) return null;
-    const x0 = Math.ceil(view.x / TILE_SIZE);
-    const y0 = Math.ceil(view.y / TILE_SIZE);
-    const x1 = Math.floor((view.x + view.width) / TILE_SIZE);
-    const y1 = Math.floor((view.y + view.height) / TILE_SIZE);
-    if (x1 <= x0 || y1 <= y0) return null;
-    return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
+    const area = this.cameraVisibleArea();
+    if (!area) return null;
+    return visibleTileRectFromViewport({
+      worldView: area.worldView,
+      canvas: area.canvas,
+      unoccluded: area.unoccluded,
+      zoom: area.zoom,
+      tileSize: TILE_SIZE,
+    });
+  }
+
+  /**
+   * 카메라 초점·뷰포트 스냅샷이 공유하는 단 하나의 기하학 소스.
+   * scrollX/Y 는 3.60+ 줌 규약 때문에 화면 왼쪽 위와 직접 대응하지 않으므로 렌더가 쓰는 worldView 를 쓴다.
+   * 캔버스 사각형을 못 재는 환경(단위 테스트: DOM 없음)에서는 "가림 없음 + 캔버스 = worldView×zoom" 으로
+   * 떨어져 동작이 정의된 상태를 유지한다.
+   */
+  private cameraVisibleArea(): {
+    readonly canvas: CanvasRect;
+    readonly unoccluded: CanvasRect;
+    readonly worldView: CanvasRect;
+    readonly zoom: number;
+  } | null {
+    const camera = this.cameras?.main;
+    const view = camera?.worldView;
+    if (!camera || !view || view.width <= 0 || view.height <= 0) return null;
+    const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+    const worldView: CanvasRect = { x: view.x, y: view.y, width: view.width, height: view.height };
+    const canvas = this.canvasClientRect()
+      ?? { x: 0, y: 0, width: worldView.width * zoom, height: worldView.height * zoom };
+    const unoccluded = unoccludedCanvasRect(canvas, this.assistantOverlayRects(canvas));
+    return { canvas, unoccluded, worldView, zoom };
+  }
+
+  private canvasClientRect(): CanvasRect | null {
+    const canvas = this.game?.canvas;
+    if (!canvas || typeof canvas.getBoundingClientRect !== "function") return null;
+    const rect = canvas.getBoundingClientRect();
+    if (!(rect.width > 0) || !(rect.height > 0)) return null;
+    return { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
+  }
+
+  /**
+   * 캔버스 위에 떠 있는 조수 표면 사각형 — DOM 을 재는 유일한 지점이다.
+   * 대상은 캔버스 열에 얹힌 유리 도크 호스트(.ai-chat-float-host, panels/editor.ts)의 카드와 컴포저 바다.
+   * 사이드 도크는 캔버스 옆 열이라 교차하지 않으므로 아래 교차 검사에서 저절로 걸러진다.
+   */
+  private assistantOverlayRects(canvas: CanvasRect): readonly CanvasRect[] {
+    if (typeof document === "undefined" || typeof document.querySelector !== "function") return [];
+    const host = document.querySelector<HTMLElement>(".ai-chat-float-host");
+    if (!host || typeof host.querySelectorAll !== "function") return [];
+    const rects: CanvasRect[] = [];
+    for (const node of host.querySelectorAll<HTMLElement>('[data-testid="ai-panel"], [data-testid="ai-command-bar"]')) {
+      if (typeof node.getBoundingClientRect !== "function") continue;
+      const style = typeof window !== "undefined" && typeof window.getComputedStyle === "function"
+        ? window.getComputedStyle(node)
+        : null;
+      if (style && (style.display === "none" || style.visibility === "hidden")) continue;
+      const rect = node.getBoundingClientRect();
+      if (!(rect.width > 0) || !(rect.height > 0)) continue;
+      // 실제로 캔버스를 덮는 것만 센다 — 접힌 카드가 캔버스 밖에 있으면 가림이 아니다.
+      if (rect.right <= canvas.x || rect.left >= canvas.x + canvas.width) continue;
+      if (rect.bottom <= canvas.y || rect.top >= canvas.y + canvas.height) continue;
+      rects.push({ x: rect.left, y: rect.top, width: rect.width, height: rect.height });
+    }
+    return rects;
   }
 
   private renderBuildPaletteOverlay(): void {

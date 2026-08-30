@@ -53,8 +53,9 @@ describe("focusAcceptedAgentChanges 가 카메라도 요청한다", () => {
     expect(cameraRequests).toHaveLength(1);
     expect(cameraRequests[0]).toEqual({
       mapId: "m1",
-      tileX: 20,
-      tileY: 10,
+      // bbox 의 정확한 중심(분수) — 내림하면 짝수 크기에서 반 타일(8px)이 밀린다.
+      tileX: 20.5,
+      tileY: 10.5,
       bounds: { x: 20, y: 10, width: 1, height: 1 },
       onlyIfOffscreen: true,
     });

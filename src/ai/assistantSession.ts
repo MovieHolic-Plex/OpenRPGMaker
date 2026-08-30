@@ -463,10 +463,10 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
             properties: {
               id: { type: "string", description: "에셋 식별자(예: house_1)" },
               kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등" },
-              x: { type: "integer" },
-              y: { type: "integer" },
-              w: { type: "integer" },
-              h: { type: "integer" },
+              x: { type: "integer", description: "영역 좌상단 타일 x(칸 좌표)" },
+              y: { type: "integer", description: "영역 좌상단 타일 y(칸 좌표)" },
+              w: { type: "integer", description: "가로 칸 수 — 차지하는 마지막 칸은 x+w-1" },
+              h: { type: "integer", description: "세로 칸 수 — 차지하는 마지막 칸은 y+h-1" },
               layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower" },
               style: { type: "string", description: "종류별 스타일 힌트(선택)" },
               shape: {

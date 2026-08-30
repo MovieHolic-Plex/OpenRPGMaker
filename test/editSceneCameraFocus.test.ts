@@ -33,20 +33,27 @@ type PanCall = {
   readonly x: number;
   readonly y: number;
   readonly duration: number;
+  /** pan 이 걸린 시점의 에디터 줌 — 줌 제안이 팬보다 **먼저** 적용됐는지 본다. */
+  readonly zoomAtPan: number;
   readonly callback: (camera: unknown, progress: number) => void;
 };
 
+type CanvasRect = { x: number; y: number; width: number; height: number };
+
 type CameraFocusHarness = {
   panCameraToTile(target: CameraFocusTarget): void;
+  replayDeferredCameraFocus(): void;
   redraw(): void;
   isPainting: boolean;
   rightRegionGesture: unknown;
   cameraPanController: { active(): boolean } | null;
   dragOperationHandler: { busy(): boolean } | null;
+  cameras: { main: { zoom: number; worldView: CanvasRect } };
   readonly panCalls: PanCall[];
   readonly renderedBlueprints: number[];
   readonly renderedGhosts: number[];
   readonly cameraMovedCalls: number[];
+  readonly viewportPublishes: number[];
 };
 
 const TILE_SIZE = 16;
@@ -75,27 +82,51 @@ beforeEach(() => {
     currentMapId: store.getCurrent().startMapId,
     layer: "lower",
     tool: "paint",
+    // 줌은 기본값으로 되돌린다 — 줌 제안 테스트가 1로 내려놓은 값이 다음 테스트의 fit 판정을 바꾼다.
+    zoom: 2,
     pastePreview: null,
     selection: null,
   });
 });
 
-function createHarness(): CameraFocusHarness {
+/**
+ * 캔버스 위에 떠 있는 조수 카드를 흉내내는 오버레이 목록. 씬 헬퍼가 DOM 에서 읽는 것과 같은
+ * 선택자를 타지 않고, 실측 사각형을 직접 넣어 기하학만 고정한다(단위 테스트에는 DOM 이 없다).
+ */
+function createHarness(options?: {
+  readonly canvas?: CanvasRect;
+  readonly overlays?: readonly CanvasRect[];
+  readonly zoom?: number;
+  readonly worldView?: CanvasRect;
+}): CameraFocusHarness {
   const panCalls: PanCall[] = [];
   const renderedBlueprints: number[] = [];
   const renderedGhosts: number[] = [];
   const cameraMovedCalls: number[] = [];
+  const viewportPublishes: number[] = [];
+  const canvasRect = options?.canvas ?? null;
+  const overlays = options?.overlays ?? [];
   return Object.assign(Object.create(EditSceneCtor.prototype), {
     // 카메라: 빈 맵은 20×15 타일인데 화면에는 (0,0) 부터 10×8 타일만 들어와 있다.
     cameras: {
       main: {
-        zoom: 1,
-        worldView: { x: 0, y: 0, width: 10 * TILE_SIZE, height: 8 * TILE_SIZE },
+        zoom: options?.zoom ?? 1,
+        worldView: options?.worldView ?? { x: 0, y: 0, width: 10 * TILE_SIZE, height: 8 * TILE_SIZE },
         pan: (x: number, y: number, duration: number, _ease: string, _force: boolean, callback: PanCall["callback"]) => {
-          panCalls.push({ x, y, duration, callback });
+          panCalls.push({ x, y, duration, zoomAtPan: editorState.get().zoom, callback });
         },
       },
     },
+    // 캔버스/오버레이 기하학은 씬의 실제 경로(game.canvas.getBoundingClientRect + 오버레이 조회)를 탄다.
+    // 진짜 DOMRect 는 left/top 을 갖는다 — 씬이 그 필드를 읽으니 하네스도 같이 넣어 주어야 한다.
+    game: canvasRect
+      ? {
+        canvas: {
+          getBoundingClientRect: () => ({ ...canvasRect, left: canvasRect.x, top: canvasRect.y }),
+        },
+      }
+      : {},
+    assistantOverlayRects: () => overlays,
     isPainting: false,
     lastPaintKey: "",
     rightRegionGesture: null,
@@ -113,7 +144,7 @@ function createHarness(): CameraFocusHarness {
     lastPointerTile: null,
     // redraw 의 나머지 협력자는 이 파일의 관심이 아니다.
     renderEventLayerClickFeedback: () => {},
-    publishMapViewport: () => {},
+    publishMapViewport: () => viewportPublishes.push(1),
     renderBuildPaletteOverlay: () => {},
     clearHoverPreview: () => {},
     clearAgentFocusHighlight: () => {},
@@ -121,6 +152,7 @@ function createHarness(): CameraFocusHarness {
     renderAgentGhostPreview: () => renderedGhosts.push(1),
     afterCameraMoved: () => cameraMovedCalls.push(1),
     panCalls,
+    viewportPublishes,
     renderedBlueprints,
     renderedGhosts,
     cameraMovedCalls,
@@ -185,6 +217,105 @@ describe("프로그램 팬 뒷정리는 마지막 프레임에만 한다", () =>
 
     callback({}, 1);
     expect(scene.cameraMovedCalls).toEqual([1]);
+  });
+
+  it("뷰포트 스냅샷은 팬이 도는 동안 매 프레임 게시한다 — 조수가 300ms 낡은 화면을 읽지 않는다", () => {
+    const scene = createHarness();
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+    const publishedBeforeTween = scene.viewportPublishes.length;
+    const { callback } = scene.panCalls[0];
+
+    callback({}, 0.4);
+    // 중간 프레임: 스냅샷만 갱신하고 DOM 마커/팔레트는 건드리지 않는다(인라인 승인 툴바가 갈린다).
+    expect(scene.viewportPublishes.length).toBe(publishedBeforeTween + 1);
+    expect(scene.cameraMovedCalls).toEqual([]);
+
+    callback({}, 1);
+    expect(scene.cameraMovedCalls).toEqual([1]);
+  });
+});
+
+describe("팬 목표는 가림을 뺀 가시 영역의 중앙이다", () => {
+  it("짝수 크기 bounds 는 정확한 중심으로 간다 — 반 타일이 더 붙지 않는다", () => {
+    const scene = createHarness();
+    // {4,4,2,2} 의 참 중심은 (5,5) 다. 예전처럼 내림 뒤 +0.5 를 붙이면 (5.5,5.5) 로 8px 밀렸다.
+    scene.panCameraToTile({
+      mapId: store.getCurrent().startMapId,
+      tileX: 4,
+      tileY: 4,
+      bounds: { x: 4, y: 4, width: 2, height: 2 },
+    });
+
+    expect(scene.panCalls).toHaveLength(1);
+    expect(scene.panCalls[0]).toMatchObject({ x: 5 * TILE_SIZE, y: 5 * TILE_SIZE });
+  });
+
+  it("조수 카드가 왼쪽 432px 을 덮으면 그만큼 lookAt 을 왼쪽으로 민다", () => {
+    // 실측 기준: 캔버스 1133×700, 줌 2 → worldView 566.5×350. 카드가 왼쪽 432px 을 덮는다.
+    const scene = createHarness({
+      canvas: { x: 0, y: 0, width: 1133, height: 700 },
+      overlays: [{ x: 0, y: 0, width: 432, height: 700 }],
+      zoom: 2,
+      worldView: { x: 0, y: 0, width: 566.5, height: 350 },
+    });
+
+    scene.panCameraToTile({ mapId: store.getCurrent().startMapId, tileX: 16, tileY: 12 });
+
+    expect(scene.panCalls).toHaveLength(1);
+    // 가시 중앙 x = 432 + 701/2 = 782.5, 캔버스 중앙 = 566.5 → lookAt = 16.5*16 - (782.5-566.5)/2 = 156.
+    expect(scene.panCalls[0]).toMatchObject({ x: 156, y: 12.5 * TILE_SIZE });
+  });
+
+  it("줌 제안이 붙은 계획은 팬보다 먼저 editorState 줌을 적용한다", () => {
+    const scene = createHarness();
+    expect(editorState.get().zoom).toBe(2);
+
+    // 18×14 대상 + 여유 1칸은 화면(10×8 타일 @ 줌 2)에 안 들어온다 → 줌 1 로 물러나야 다 보인다.
+    scene.panCameraToTile({
+      mapId: store.getCurrent().startMapId,
+      tileX: 9,
+      tileY: 7,
+      bounds: { x: 0, y: 0, width: 18, height: 14 },
+    });
+
+    expect(editorState.get().zoom).toBe(1);
+    expect(scene.panCalls).toHaveLength(1);
+    expect(scene.panCalls[0].zoomAtPan).toBe(1);
+  });
+});
+
+describe("제스처가 미룬 초점은 제스처가 끝난 뒤 한 번 재생한다", () => {
+  it("제스처 중에는 재생하지 않고, 끝난 뒤 정확히 한 번만 간다", () => {
+    const scene = createHarness();
+    scene.dragOperationHandler = { busy: () => true };
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+    expect(scene.panCalls).toEqual([]);
+
+    // 아직 드래그 중이면 재생하지 않는다 — 커밋 타일이 팬 거리만큼 밀린다.
+    scene.replayDeferredCameraFocus();
+    expect(scene.panCalls).toEqual([]);
+
+    scene.dragOperationHandler = { busy: () => false };
+    scene.replayDeferredCameraFocus();
+    expect(scene.panCalls).toHaveLength(1);
+    expect(scene.panCalls[0]).toMatchObject({ x: 16.5 * TILE_SIZE, y: 12.5 * TILE_SIZE });
+
+    // 슬롯은 재생과 함께 비워진다 — 두 번째 pointerup 이 카메라를 또 데려가면 안 된다.
+    scene.replayDeferredCameraFocus();
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("미뤄진 요청이 여러 번 오면 마지막 것만 남는다", () => {
+    const scene = createHarness();
+    scene.isPainting = true;
+    scene.panCameraToTile({ mapId: store.getCurrent().startMapId, tileX: 3, tileY: 3 });
+    scene.panCameraToTile({ mapId: store.getCurrent().startMapId, tileX: 16, tileY: 12 });
+
+    scene.isPainting = false;
+    scene.replayDeferredCameraFocus();
+
+    expect(scene.panCalls).toHaveLength(1);
+    expect(scene.panCalls[0]).toMatchObject({ x: 16.5 * TILE_SIZE, y: 12.5 * TILE_SIZE });
   });
 });
 
