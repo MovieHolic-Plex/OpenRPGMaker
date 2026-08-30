@@ -7,7 +7,7 @@ import {
   terrainTemplateDoorBottomOffset,
 } from "@/editor/content/dbExtractedHouseTemplate";
 import type { SmallHouseMaterial, TilePoint } from "@/project/defaults/contentBuilderTypes";
-import { paintTownPathNetwork } from "./townPathAutotile";
+import { paintTownPathNetwork, type TownPathSkip } from "./townPathAutotile";
 
 type TileLayerName = "lower" | "upper";
 type PlannedHouseVariant = "wide" | "compact" | "l";
@@ -18,6 +18,8 @@ export type DbHouseVariantStampInput = {
   readonly includeFence?: boolean;
   readonly material: SmallHouseMaterial;
   readonly origin: TilePoint;
+  /** 문 앞 진입로가 덮지 않을 칸 — 기존 건물 보호용. */
+  readonly skipPath?: TownPathSkip;
   readonly variant: DbHouseShapeVariant;
 };
 
@@ -141,7 +143,12 @@ export function stampDbHouseVariant(map: GameMap, input: DbHouseVariantStampInpu
       assertNever(input.variant);
   }
   if (input.approachHeight !== undefined) {
-    paintApproach(map, { doorBottom: dbHouseVariantDoorBottomOffset(input.variant), height: input.approachHeight, origin: input.origin });
+    paintApproach(map, {
+      doorBottom: dbHouseVariantDoorBottomOffset(input.variant),
+      height: input.approachHeight,
+      origin: input.origin,
+      skipPath: input.skipPath,
+    });
   }
 }
 
@@ -207,8 +214,17 @@ function stampRun(map: GameMap, run: TileRun): void {
   for (let offset = 0; offset < run.width; offset += 1) placeTile(map, { layer: run.layer, tile: run.tiles[columnIndex(offset, run.width)], x: run.origin.x + offset, y: run.origin.y });
 }
 
-function paintApproach(map: GameMap, input: { readonly doorBottom: TilePoint; readonly height: number; readonly origin: TilePoint }): void {
-  paintTownPathNetwork(map, [{ x: input.origin.x + input.doorBottom.x, y: input.origin.y + input.doorBottom.y + 1, width: 1, height: input.height }]);
+function paintApproach(map: GameMap, input: {
+  readonly doorBottom: TilePoint;
+  readonly height: number;
+  readonly origin: TilePoint;
+  readonly skipPath?: TownPathSkip;
+}): void {
+  paintTownPathNetwork(
+    map,
+    [{ x: input.origin.x + input.doorBottom.x, y: input.origin.y + input.doorBottom.y + 1, width: 1, height: input.height }],
+    input.skipPath
+  );
 }
 
 function wallTilesForRow(wall: HouseWallTiles, row: number, rows: number): readonly [number, number, number] {

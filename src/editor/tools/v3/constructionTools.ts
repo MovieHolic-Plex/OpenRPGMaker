@@ -18,6 +18,15 @@ import {
 import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { inMapBounds, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
 import { wobblePath } from "../naturalScatter";
+import {
+  filterRoadWidthCells,
+  paintRoadGround,
+  repairRoadPath,
+  roadGapFailure,
+  roadObstacleMaskFor,
+  roadRepairWarnings,
+  withWidthCells,
+} from "../roadObstacles";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
 import { placePropsOnDraft } from "../placePropsDomain";
 import type { ScatterPacking } from "../placementTools";
@@ -499,7 +508,7 @@ function autotileGroupForVocab(tileset: TilesetDef, group: TileGroupMetadata): A
 const layPath: ToolDefinition = {
   name: "lay_path",
   description:
-    "길 어휘로 경유점(2개 이상)을 잇는 길을 깐다(v3 공정 4단계). 어휘에 8-이웃 variantMap 오토타일 정의가 필수 — 없으면 거부(승인 시 오토타일 정의 필요). 외곽+inner corner 변형을 자동 재계산한다. 경로가 집·물 같은 통행 불가 칸을 만나면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). naturalness 0~1(기본 0.5), seed로 결정론 재현. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
+    "길 어휘로 경유점(2개 이상)을 잇는 길을 깐다(v3 공정 4단계). 어휘에 8-이웃 variantMap 오토타일 정의가 필수 — 없으면 거부(승인 시 오토타일 정의 필요). 외곽+inner corner 변형을 자동 재계산한다. 경로가 집·벽 같은 건물을 만나면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). 나무·울타리는 치우고, 물은 우회 우선·불가 시 건넌다. 우회로가 없어 길이 끊기면 막힌 좌표와 함께 실패한다. naturalness 0~1(기본 0.5), seed로 결정론 재현. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
   mode: "write",
   version: 3,
   parameters: {
@@ -532,17 +541,44 @@ const layPath: ToolDefinition = {
     const signature = `lay_path|${map.id}|${map.width}x${map.height}|${naturalnessLabel(naturalness)}|${points.map((point) => `${point.x},${point.y}`).join(";")}`;
     const result = wobblePath(points, naturalness, rngForTool(args, signature));
     const body = autotile.variantMap[String(255)] ?? group.tileIds[0];
+    const mask = roadObstacleMaskFor(draft, map);
+    const routed = repairRoadPath(map, mask, result.path);
+    const gapFailure = roadGapFailure(routed);
+    if (gapFailure) throw new ToolError(gapFailure, { code: "path-blocked", mapId: map.id });
+    const repair = withWidthCells(routed, filterRoadWidthCells(mask, result.widthCells));
     const painted: Point[] = [];
-    for (const cell of [...result.path, ...result.widthCells]) {
+    for (const cell of repair.cells) {
       if (!inMapBounds(map, cell.x, cell.y)) continue;
-      setLower(map, cell.x, cell.y, body);
+      paintRoadGround(map, tileset, cell.x, cell.y, body);
       painted.push(cell);
     }
-    if (painted.length === 0) failWithExample("경로가 전부 맵 밖입니다 — points 좌표를 맵 안으로 고치세요", PATH_EXAMPLE);
+    if (painted.length === 0) {
+      if (repair.blocked > 0) {
+        throw new ToolError(
+          `요청 경로 ${repair.blocked}칸이 전부 통행 불가라 길을 한 칸도 깔지 못했습니다`
+          + ` — 경유점을 건물·물 밖으로 옮기세요.`,
+          { code: "path-blocked", mapId: map.id }
+        );
+      }
+      failWithExample("경로가 전부 맵 밖입니다 — points 좌표를 맵 안으로 고치세요", PATH_EXAMPLE);
+    }
     const reshaped = resolveAutotile(autotile, painted, map);
+    const warnings = roadRepairWarnings(repair);
     return withSoftConfirm({
-      summary: `${map.name}에 '${group.name}' 길 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)}, 오토타일 재계산 ${reshaped}칸(inner corner 포함).`,
-      data: { pathCells: painted.length, reshaped, groupId: group.id },
+      summary: `${map.name}에 '${group.name}' 길 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)}, 오토타일 재계산 ${reshaped}칸(inner corner 포함).`
+        + (repair.blocked > 0 ? ` — 통행 불가 ${repair.blocked}칸 우회` : ""),
+      ...(warnings.length > 0 ? { warnings } : {}),
+      data: {
+        detouredSegments: repair.detours,
+        disconnectedSegments: repair.gaps,
+        endpointBlocked: repair.startBlocked || repair.endBlocked,
+        groupId: group.id,
+        obstacleCells: repair.blocked,
+        pathCells: painted.length,
+        reshaped,
+        structureCells: repair.structureCells,
+        waterCrossings: repair.waterCrossings.length,
+      },
     }, softConfirm);
   },
 };

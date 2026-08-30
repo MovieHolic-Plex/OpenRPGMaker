@@ -47,7 +47,15 @@ import { expandHardClusterPlacement, type HardClusterTileEdit } from "./clusterR
 import { jitterPlacement, wobblePath } from "./naturalScatter";
 import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool } from "./naturalToolArgs";
 import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
-import { repairRoadPath, roadObstacleMaskFor, roadRepairWarning, type RoadPathRepair } from "./roadObstacles";
+import {
+  filterRoadWidthCells,
+  paintRoadGround,
+  repairRoadPath,
+  roadGapFailure,
+  roadObstacleMaskFor,
+  roadRepairWarnings,
+  withWidthCells,
+} from "./roadObstacles";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
@@ -373,7 +381,7 @@ function coordKey(x: number, y: number): string {
 
 const paintRoad: ToolDefinition = {
   name: "paint_road",
-  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. 경로가 집·방해물·물 같은 통행 불가 칸을 가로지르려면 그 칸을 덮지 않고 자동으로 우회한다(건로봐 보호). ${NATURALNESS_GUIDANCE}`,
+  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. 경로가 집·벽 같은 건물을 가로지르면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). 나무·울타리는 치우고, 물은 우회를 먼저 시도한 뒤 마른 길이 없으면 건넌다. 우회로가 없어 길이 끊기면 실패하며 막힌 좌표를 알려주니 경유점을 그 좌표 밖으로 옮겨 다시 부르라. ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -406,20 +414,35 @@ const paintRoad: ToolDefinition = {
       ? { path: straightRoadCandidate(points), widthCells: [] as readonly Point[] }
       : wobblePath(points, naturalness, rngForTool(args, roadSeedSignature(map, points, naturalness)));
     const routed = repairRoadPath(map, mask, candidate.path);
-    const widened = repairRoadPath(map, mask, candidate.widthCells);
+    const gapFailure = roadGapFailure(routed);
+    if (gapFailure) throw new ToolError(gapFailure, { code: "road-blocked", mapId: map.id });
+    const repair = withWidthCells(routed, filterRoadWidthCells(mask, candidate.widthCells));
     const pathCells = routed.cells.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
-    for (const cell of routed.cells) paintRoadCell(map, cell, body(), painted);
-    for (const cell of widened.cells) paintRoadCell(map, cell, body(), painted);
+    for (const cell of repair.cells) paintRoadCell(map, tileset, cell, body(), painted);
+    if (painted.length === 0 && repair.blocked > 0) {
+      throw new ToolError(
+        `요청 경로 ${repair.blocked}칸이 전부 통행 불가라 도로를 한 칸도 깔지 못했습니다`
+        + ` — 경유점을 건물·물 밖으로 옮기거나 타일 통행 설정을 확인하세요.`,
+        { code: "road-blocked", mapId: map.id }
+      );
+    }
     if (!picker && style === "dirt") shapeRoadAround(map, painted);
     else if (!picker && style === "sand") shapeSandAround(map, painted);
     const source = picker ? `${picker.presetId}/${picker.role}` : style;
-    const repair = mergeRoadRepairs(routed, widened);
-    const obstacleWarning = roadRepairWarning(repair);
+    const warnings = roadRepairWarnings(repair);
     return {
       summary: `${map.name}에 ${source} 도로 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)} / 경로 ${pathCells}칸`
         + (repair.blocked > 0 ? ` — 통행 불가 ${repair.blocked}칸 우회` : ""),
-      ...(obstacleWarning ? { warnings: [obstacleWarning] } : {}),
-      data: { detouredSegments: repair.detours, disconnectedSegments: repair.gaps, obstacleCells: repair.blocked, pathCells },
+      ...(warnings.length > 0 ? { warnings } : {}),
+      data: {
+        detouredSegments: repair.detours,
+        disconnectedSegments: repair.gaps,
+        endpointBlocked: repair.startBlocked || repair.endBlocked,
+        obstacleCells: repair.blocked,
+        pathCells,
+        structureCells: repair.structureCells,
+        waterCrossings: repair.waterCrossings.length,
+      },
     };
   },
 };
@@ -436,19 +459,15 @@ function straightRoadCandidate(points: readonly Point[]): readonly Point[] {
   return cells;
 }
 
-function mergeRoadRepairs(path: RoadPathRepair, width: RoadPathRepair): RoadPathRepair {
-  return {
-    blocked: path.blocked + width.blocked,
-    cells: [...path.cells, ...width.cells],
-    detours: path.detours + width.detours,
-    gaps: path.gaps + width.gaps,
-  };
-}
-
-function paintRoadCell(map: GameMap, cell: Point, body: number, painted: Point[]): void {
+function paintRoadCell(
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  cell: Point,
+  body: number,
+  painted: Point[]
+): void {
   if (!inMapBounds(map, cell.x, cell.y)) return;
-  map.lowerTiles[cell.y * map.width + cell.x] = body;
-  map.upperTiles[cell.y * map.width + cell.x] = TILE.EMPTY;
+  paintRoadGround(map, tileset, cell.x, cell.y, body);
   painted.push(cell);
 }
 
@@ -490,7 +509,8 @@ const stampStructure: ToolDefinition = {
       (candidate) => inMapBounds(map, candidate.x, candidate.y)
     );
     const before = snapshotTiles(map);
-    stampTownCityPlot(map, template, origin.x, origin.y);
+    const structureMask = roadObstacleMaskFor(draft, map);
+    stampTownCityPlot(map, template, origin.x, origin.y, (x, y) => structureMask(x, y) !== "open");
     const paletteTiles = picker && tileset
       ? applyPaletteToChangedCells(map, tileset, before, { x: origin.x, y: origin.y, width: 18, height: 16 }, picker)
       : 0;

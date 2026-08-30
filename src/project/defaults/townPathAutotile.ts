@@ -24,10 +24,18 @@ const TOWN_PATH_TILES = [
 
 const TOWN_PATH_TILE_SET = new Set<number>(TOWN_PATH_TILES);
 
-export function paintTownPathNetwork(map: GameMap, rects: readonly RoadRect[]): void {
-  for (const rect of rects) paintTownPathRect(map, rect);
+/** 길이 덮지 않을 칸 — 기존 건물을 마스킹해 관통을 마는다. */
+export type TownPathSkip = (x: number, y: number) => boolean;
+
+export function paintTownPathNetwork(
+  map: GameMap,
+  rects: readonly RoadRect[],
+  skip?: TownPathSkip
+): void {
+  for (const rect of rects) paintTownPathRect(map, rect, skip);
   for (const rect of rects) {
     forEachTownPathPoint(map, rect, (point) => {
+      if (skip?.(point.x, point.y)) return;
       setLower(map, point.x, point.y, tileForTownPathCell(townPathNeighbors(map, point)));
     });
   }
@@ -60,8 +68,11 @@ export function offsetTownRect(originX: number, originY: number, rect: RoadRect)
   };
 }
 
-function paintTownPathRect(map: GameMap, rect: RoadRect): void {
-  forEachTownPathPoint(map, rect, (point) => setLower(map, point.x, point.y, SAND_TILE.BODY));
+function paintTownPathRect(map: GameMap, rect: RoadRect, skip?: TownPathSkip): void {
+  forEachTownPathPoint(map, rect, (point) => {
+    if (skip?.(point.x, point.y)) return;
+    setLower(map, point.x, point.y, SAND_TILE.BODY);
+  });
 }
 
 function forEachTownPathPoint(
