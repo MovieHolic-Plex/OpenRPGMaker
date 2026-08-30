@@ -98,7 +98,7 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
       run: () => {
         close();
         if (!copyEventPage(mapId, event.id, page.id)) return;
-        toast(`"${page.name}" 페이지를 바로 앞(낮은 우선순위)에 복제했어요 — 지금은 원본이 먼저 이기어요.`, "ok");
+        toast(`"${page.name}" 페이지를 바로 앞(낮은 우선순위)에 복제했어요 — 지금은 원본이 먼저 이겨요.`, "ok");
       },
     },
     {

@@ -119,7 +119,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
       "이 페이지를 바로 앞(낮은 우선순위)에 하나 더 만들어요",
       () => {
         if (!copyEventPage(mapId, ev.id, activePage.id)) return;
-        toast(`"${activePage.name}" 페이지를 바로 앞(낮은 우선순위)에 복제했어요 — 지금은 원본이 먼저 이기어요.`, "ok");
+        toast(`"${activePage.name}" 페이지를 바로 앞(낮은 우선순위)에 복제했어요 — 지금은 원본이 먼저 이겨요.`, "ok");
       },
       false,
       "페이지 복제"
