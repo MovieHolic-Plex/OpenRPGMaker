@@ -126,9 +126,38 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 | 커밋 히스토리 / 신원 | `commit-history-toggle`, `topbar-identity` | 단독 | 트레일링 아이콘 클러스터 |
 | 명령 실행 · 맵 이동 (Ctrl+K 팔레트) | `workspace-command-palette-button` | 단독(예외) | Ctrl+K 팔레트는 전 표면을 훑으므로 사이드바/헤더 IA 계약의 예외다. `commandPalette.ts` 의 `KIND_HEADERS` 는 `command`(명령) · `map`(맵 이동) 둘뿐 — title 은 `명령 팔레트 — 명령 실행 · 맵 이동 (Ctrl+K)`(정본 이름 + `—` 설명)이고 aria-label 도 같은 이름 `명령 팔레트` 를 쓴다 |
 | **이름 충돌 (해소)**: 찾기 표면 | `workspace-command-palette-button` ↔ `menu-tools-search` / `toolbar-search` | 중복 이름 → 해소 | 구 팔레트 title `명령·맵·스킬 찾기 (Ctrl+K)` 가 (1) 2026-08-27 에 삭제된 조수 스킬을 광고하고 (2) 도구 메뉴의 `맵·이벤트 찾기` 와 함께 한 헤더에 `찾기` 표면을 둘 만들어 둘 다 "맵을 찾는다" 고 말했다. 역할이 다르므로 이름도 다르게 둔다 — **팔레트 = 명령 실행기 + 맵 이동, `맵·이벤트 찾기` = 프로젝트 데이터(맵·이벤트) 찾기**. 진입점은 둘 다 유지한다. 회귀 단정: `test/editorHeaderTerminology.test.ts` 「헤더에 찾기 표면은 하나다」 |
-| 패널·밀도·편집 모드 | `workspace-panels-button` → `workspace-panels-menu` | 단독 | 편집 모드 전환의 집(2026-08-26) |
+| 밀도·편집 모드·조수 위치 | `workspace-panels-button` → `workspace-panels-menu` | 단독 | 편집 모드 전환의 집(2026-08-26) |
+| 패널 표시(타일·맵) | 초보: `basic-rail-toggle-tiles` / `-maps`(좌측 레일) · 표준·전문가: `workspace-panel-toggle-tiles` / `-maps`(▤) | 모드별 단일 소유 | 아래 「사이드바 ↔ 톱바 소유권」 참조 |
+| 작업 프리셋(맵·이벤트·데이터) | `authoring-task-map` / `-event` / `-data` | 단독 | ▤ 의 구 `workspace-layout-*` 3줄을 지웠다 — 아래 참조 |
 | 창 컨트롤 | `window-toolbar-collapse`, `window-fullscreen` | 단독 | — |
 | 레이어·도구 현재 상태 | `layer-selector` (visually-hidden) | 표시 전용 | 전환은 좌측 사이드바가 소유한다. 문구는 `aiAgentBrief.layerShortLabel` 정본 |
+
+
+### 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+
+위 감사표는 **톱바 내부**만 봤다. 실측하니 겹치는 축이 하나 더 있었다 — 좌측 사이드바와 톱바가
+같은 명령을 둘씩 내놓는 자리. 규칙은 **한 명령의 집은 하나이고, 두 번째 표면은 첫 번째가 그
+모드에서 렌더되지 않을 때만 둔다** 다.
+
+| 겹쳤던 것 | 지금 소유자 | 지운 것과 이유 |
+|---|---|---|
+| 패널 표시 토글 `타일` · `맵` | 초보 = 좌측 아이콘 레일(`basic-rail-toggle-*`), 표준·전문가 = ▤ 패널 메뉴 | 초보에서 둘이 함께 떴고, ▤ 쪽 타일 행은 레일 호스트라 끌 수 없어 **`aria-disabled` + 「끌 수 없습니다」 title 을 달고 눌러도 아무 일이 없는 체크박스**였다. 「되지 않는 선택지를 보여주지 않는다」는 이 메뉴 자신의 규칙(§2-1)이 자기 첫 그룹에는 적용되지 않았던 셈이다. 초보에서는 **그룹째로** 렌더하지 않는다. `isLeftDockPinned` 는 남는다 — Ctrl+K 팔레트가 아직 그 판정을 쓴다 |
+| 작업 프리셋 `맵 중심` · `이벤트 중심` · `데이터 중심` | 저작 작업 칩 `authoring-task-map` / `-event` / `-data` | ▤ 의 「레이아웃」 3줄이 칩과 **같은 `setWorkspacePreset`** 을 부르면서 칩이 하는 실제 일(레이어 전환·DB 모달)은 하지 않았다. 즉 `authoringTasks` 가 애초에 대체한 「작업 런처처럼 보이지만 레이아웃 프리셋만 내놓는 컨트롤」이 메뉴 안에 그대로 남아 있었고(`test/authoringTasks.test.ts` 의 첫 Break 가 그것이다), 톱바 한 줄이 맵·이벤트·데이터를 두 번 말했다. 줄을 지우고, 그 줄이 갖고 있던 **선택 표시는 칩의 `aria-pressed`** 로 옮겼다 — `src/app/mode.ts` 의 워크스페이스 구독이 톱바를 다시 그리는 이유로 적어둔 「프리셋 세그먼트의 선택 표시」가 정작 어디에도 없었다 |
+
+지우지 **않은** 것과 이유:
+
+- `authoring-task-test` ↔ `mode-play`(▶ 테스트) ↔ `menu-game-play` — 위 감사표가 의도된
+  단축 경로로 판정했고 e2e 다수가 `mode-play` 를 계약으로 쓴다.
+- 메뉴바 ↔ 클래식 툴바(전문가 전용 `is-legacy-surface`) — 같은 판정. RM 관례다.
+- 칩 `맵`·`이벤트` ↔ 좌측 레일의 레이어 버튼 — 칩은 `selectSidebarLayer` 를 불러 **사이드바가
+  소유한 컨트롤을 움직인다**. 두 번째 컨트롤이 아니라 그 컨트롤의 원격 스위치이고,
+  `test/authoringTasks.test.ts` 가 그 동작(레이어+도구가 실제로 바뀐다)을 계약으로 고정한다.
+
+회귀 단정: `test/leftDockPanels.test.ts` 「초보 모드에서는 좌측 레일이 패널 토글을 소유해…」 ·
+「표준 모드에서는 이 메뉴가 패널 토글의 유일한 집이다」, `test/authoringTasks.test.ts`
+「패널 메뉴에 작업 프리셋을 두 번째 이름으로 다시 내놓지 않는다」 · 「현재 작업 화면을 칩의
+선택 상태로 말한다」. 실측 증거는 `scripts/capture-chrome-dedupe-evidence.mts`
+(before/after `surface.json` + PNG).
 
 **이 감사에서 지운 것은 진입점이 아니라 용어를 중복 정의한 코드다.** 메뉴바 ↔ 클래식 툴바 중복은
 전문가 전용 legacy 표면이라 유지하고, `topbar-ai-settings` · `topbar-battle-test` 는 기존 테스트가
