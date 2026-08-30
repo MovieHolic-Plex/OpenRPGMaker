@@ -27,6 +27,24 @@ beforeEach(() => {
 });
 
 describe("event pages", () => {
+  it("기지 id 가 사라진 붙여넣기는 맨 앞(낮은 우선순위)에 넣고 승자가 되지 않는다", () => {
+    // 맵 단위 되돌리기·원경 리로드가 페이지를 지워도 editorState 는 재조정되지 않는다 —
+    // 그 낡은 id 로 끝에 붙이면 붙여넣기가 가장 높은 우선순위를 얻는다(막으려는 바로 그 역전).
+    const mapId = store.getCurrent().startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    addEventPage(mapId, eventId);
+    const before = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages!;
+    const survivors = before.map((page) => page.id);
+    expect(copyEventPageToClipboard(mapId, eventId, before[0]!.id)).toBe(true);
+
+    const pastedId = pasteEventPage(mapId, eventId, "page_does_not_exist");
+
+    const event = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!;
+    expect(event.pages!.map((page) => page.id)).toEqual([pastedId, ...survivors]);
+    expect(resolveEventPage(event, { switches: {}, variables: {}, inventory: {}, partyActorIds: [] })?.id)
+      .not.toBe(pastedId);
+  });
+
   it("clears a copied page when the project is switched", () => {
     const projectA = store.getCurrent();
     const mapId = projectA.startMapId;

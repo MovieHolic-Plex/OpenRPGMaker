@@ -15,7 +15,7 @@ import { store, type ProjectChangeDescriptor } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
 
-export { clearCopiedEventPage } from "@/editor/eventPageClipboard";
+export { clearCopiedEventPage, subscribeCopiedEventPage } from "@/editor/eventPageClipboard";
 
 type PagePatch = Partial<Omit<EventPage, "id">>;
 
@@ -129,9 +129,7 @@ export function copyEventPageToClipboard(mapId: MapId, eventId: string, pageId: 
   const source = store.getCurrent().maps[mapId]?.events
     .find((item) => item.id === eventId)
     ?.pages?.find((page) => page.id === pageId);
-  const copied = copyEventPageToBuffer(source ?? null);
-  if (copied) editorState.set({ selectedEventPageId: pageId });
-  return copied;
+  return copyEventPageToBuffer(source ?? null);
 }
 
 export function hasCopiedEventPage(): boolean {
@@ -142,8 +140,10 @@ export function hasCopiedEventPage(): boolean {
  * 복사해 둔 페이지를 기지 페이지 바로 앞(낮은 런타임 우선순위)에 넣는다. 기지는 `anchorPageId` 로
  * 명시하고, 생략하면 현재 활성 페이지다 — 탭 우클릭 메뉴는 선택을 움기지 않고 **니른 페이지**를
  * 대상으로 삼아서(복제·순서·삭제와 같은 기지), 활성 페이지로 계산하면 엉둠한 자리에 꽂힌다.
- * 기지가 이 이벤트에 없을 때만 끝에 넣는다. 기지 뒤에 넣으면 조건을 그대로 복사한 새 페이지가
- * 즉시 기지를 이기므로, 붙여넣기만으로 resolve 결과가 바뀐다.
+ * 기지가 이 이벤트에 없으면 **맨 앞(index 0)** 에 넣는다. 끝에 넣으면 그게 가장 높은 우선순위가
+ * 되어 이 함수가 막으려는 역전이 생긴다 — `selectedEventPageId` 는 맵 단위 되돌리기나 원격
+ * 리로드로 그 페이지가 사라지면 낡은 값이 된다(그 경로들은 editorState 를 재조정하지 않고
+ * 렌더만 `pages[0]` 으로 폴백한다). 낮은 우선순위로 떨어지는 쪽이 안전한 실패다.
  */
 export function pasteEventPage(mapId: MapId, eventId: string, anchorPageId?: string): string {
   const source = copiedEventPageFromBuffer();
@@ -158,7 +158,7 @@ export function pasteEventPage(mapId: MapId, eventId: string, anchorPageId?: str
     pasted.id = genId("page");
     pasted.name = nextAvailableCopyName(source.name, pages);
     const anchorIndex = pages.findIndex((page) => page.id === anchorId);
-    pages.splice(anchorIndex >= 0 ? anchorIndex : pages.length, 0, pasted);
+    pages.splice(anchorIndex >= 0 ? anchorIndex : 0, 0, pasted);
     event.pages = pages;
     pastedId = pasted.id;
   }, pageChange(mapId, eventId, `페이지 붙여넣기: ${source.name}`));

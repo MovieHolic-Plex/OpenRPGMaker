@@ -98,7 +98,7 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
       run: () => {
         close();
         if (!copyEventPage(mapId, event.id, page.id)) return;
-        toast(`"${page.name}" 페이지를 복제했어요.`, "ok");
+        toast(`"${page.name}" 페이지를 바로 앞(낮은 우선순위)에 복제했어요 — 지금은 원본이 먼저 이기어요.`, "ok");
       },
     },
     {
@@ -122,7 +122,7 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
         close();
         // 기지는 우클릭한 페이지다 — 이 메뉴의 다른 항목과 같은 대상을 쓴다(우클릭은 선택을 움기지 않는다).
         if (!pasteEventPage(mapId, event.id, page.id)) return;
-        toast("복사해 둔 페이지를 붙여넣었어요.", "ok");
+        toast(`"${page.name}" 페이지 바로 앞(낮은 우선순위)에 붙여넣었어요.`, "ok");
       },
     },
     {

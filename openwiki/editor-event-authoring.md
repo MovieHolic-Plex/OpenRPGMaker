@@ -133,9 +133,23 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
     복제·복사·붙여넣기의 시간적 구분은 **장식용 CSS 글리프(`::before`)** 가 맡는다.
   - 탭 우클릭 메뉴는 선택을 움기지 않으니, 붙여넣기도 **우클릭한 페이지**를 기지로 삼는다 —
     `pasteEventPage(mapId, eventId, anchorPageId?)` 의 3번짜 인자로 명시하며, 생략하면 활성 페이지다.
+    기지 id 가 이벤트에 없으면 **index 0**(가장 낮은 우선순위)에 넣는다 — 맵 단위 되돌리기·원경
+    리로드가 페이지를 지워도 `editorState` 는 재조정되지 않아 낡은 id 가 남는다. 끝에 붙이면
+    그 상황에서 붙여넣기가 **가장 높은 우선순위**를 얻어 insert-before 불밍식이 뒤집힌다.
     예전엔 메뉴가 `editorState` 의 활성 페이지로 자리를 잡아, 1페이지를 고른 상태에서 3페이지를
     우클릭해 붙여넣으면 새 페이지가 index 0 에 꽂혔다(복제·순서·삭제는 우클릭한 페이지를 다뤄
     같은 메뉴 안에서 기지가 갈렸다).
+  - **복사는 읽기 전용이다** — `copyEventPageToClipboard` 는 선택을 바꾸지 않는다.
+    예전엔 여기서 `editorState.set` 을 부려서 탭 우클릭 «복사» 만으로 헤더 이름 상자·명령 목록·
+    검증 벨·버튼 줄의 대상이 전부 우클릭한 페이지로 넘어갔다.
+  - **클립보드 갱슴 경로는 하나다**: `subscribeCopiedEventPage`(`eventPageClipboard.ts`). 버튼 줄이
+    구독하기 때문에 버튼·우클릭 메뉴 어느 경로로 복사해도 붙여넣기 활성·안내문이 같이 맞춰진다.
+    클립보드는 store 도 editorState 도 아니므로 이 구독 없이는 아무도 변경을 듣지 못한다 — 이미
+    활성인 페이지를 메뉴로 복사하면 선택값이 그대로라 `editorState.set` 은 통지하지 않아
+    «복사했어요» 토스트와 동시에 붙여넣기가 disabled + «먼저 복사를 누르세요» 여서 버튼 상태가
+    현실과 모순됐다.
+  - 복제·붙여넣기의 **자리 약속은 토스트·툴팁 둘 다** 에 적는다 — hover 툴팁만 있으니
+    마우스를 얼리지 않는 사용자는 우선순위 계약을 볼 수 없었다.
   - `role="tab"` 은 `aria-selected` 만 쓰므로 e2e 도 그것을 읽어야 한다 — `aria-pressed` 로 활성 탭을
     찾는 assertion 은 항상 -1 을 낸다(`test/e2e/event-layout-optiona.spec.ts` C4 가 이로 인해 poll
     후 색잡이었다).

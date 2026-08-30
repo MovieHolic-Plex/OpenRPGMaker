@@ -9,6 +9,7 @@ import {
   hasCopiedEventPage,
   moveEventPage,
   pasteEventPage,
+  subscribeCopiedEventPage,
   triggerFromKind,
   updateEventPage,
 } from "@/editor/eventPages";
@@ -100,6 +101,16 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
   const canMoveBack = activeIndex > 0;
   const canMoveForward = activeIndex >= 0 && activeIndex < pages.length - 1;
   const rerender = () => wrap.replaceWith(renderPageActions(mapId, ev, activePage));
+  // 클립보드는 store 도 editorState 도 아니어서 아무도 "이제 붙여넣을 게 있다"를 듣지 못했다.
+  // 버튼으로 복사하든 탭 우클릭 메뉴로 복사하든 이 한 경로로 다시 그려진다 — 예전엔 버튼만
+  // 자기 핸들러에서 다시 그렸고, 메뉴가 암묵적으로 의지하던 선택 변경은 이미 활성인 페이지를
+  // 복사하면 no-op 이라 "복사했어요" 토스트와 동시에 붙여넣기가 버튼이 끌진 채로 남았다.
+  const unsubscribeClipboard = subscribeCopiedEventPage(() => {
+    unsubscribeClipboard();
+    // happy-dom · 밌라우자만 `isConnected` 를 주므로 값이 없는 환경(페이크 DOM)은 연결로 본다.
+    if (wrap.isConnected === false) return;
+    rerender();
+  });
 
   const actions: HTMLElement[] = [
     pageButton(
@@ -108,7 +119,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
       "이 페이지를 바로 앞(낮은 우선순위)에 하나 더 만들어요",
       () => {
         if (!copyEventPage(mapId, ev.id, activePage.id)) return;
-        toast(`"${activePage.name}" 페이지를 복제했어요.`, "ok");
+        toast(`"${activePage.name}" 페이지를 바로 앞(낮은 우선순위)에 복제했어요 — 지금은 원본이 먼저 이기어요.`, "ok");
       },
       false,
       "페이지 복제"
@@ -120,7 +131,6 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
       () => {
         if (!copyEventPageToClipboard(mapId, ev.id, activePage.id)) return;
         toast(`"${activePage.name}" 페이지를 복사해 뒀어요. 붙여넣기로 사용하세요.`, "ok");
-        rerender();
       },
       false,
       "페이지 복사"
@@ -128,10 +138,12 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
     pageButton(
       "붙여넣기",
       "event-page-paste",
-      canPaste ? "복사해 둔 페이지를 이 이벤트에 붙여요" : "붙여넣을 페이지가 없어요. 먼저 복사를 누르세요",
+      canPaste
+        ? "복사해 둔 페이지를 지금 페이지 바로 앞(낮은 우선순위)에 넣어요"
+        : "붙여넣을 페이지가 없어요. 먼저 복사를 누르세요",
       () => {
         if (!pasteEventPage(mapId, ev.id)) return;
-        toast("복사해 둔 페이지를 붙여넣었어요.", "ok");
+        toast("복사해 둔 페이지를 바로 앞(낮은 우선순위)에 붙여넣었어요.", "ok");
       },
       !canPaste,
       "페이지 붙여넣기"

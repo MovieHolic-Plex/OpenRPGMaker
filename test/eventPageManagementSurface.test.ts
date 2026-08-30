@@ -223,6 +223,39 @@ describe("페이지 관리 작업면", () => {
     expect(css).not.toMatch(/\.event-page-button-label\s*\{[^}]*font-size:\s*0/u);
   });
 
+  it("메뉴 복사는 선택을 움기지 않는다 — 읽기 행위가 헤더·목록·버튼 대상을 끌고 가면 안 된다", () => {
+    addEventPage(mapId, eventId);
+    addEventPage(mapId, eventId);
+    const [first, , third] = [pages()[0]!, pages()[1]!, pages()[2]!];
+    editorState.set({ selectedEventPageId: first.id });
+
+    openPageTabContextMenu({
+      x: 12, y: 12, mapId, event: currentEvent(), page: third, index: 2, requestDelete: () => undefined,
+    });
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-copy"]')!.click();
+
+    expect(editorState.get().selectedEventPageId).toBe(first.id);
+  });
+
+  it("이미 활성인 페이지를 메뉴로 복사해도 버튼 줄의 붙여넣기가 살아나고 안내도 바뀌다", () => {
+    // 클립보드에 변경 통지가 없어서, 메뉴 복사 후에도 붙여넣기가 disabled + "먼저 복사를 누르세요"
+    // 로 남았다 — 같은 화면의 성공 토스트와 정반대로 말하는 상태다.
+    const host = actions(0);
+    const active = pages()[0]!;
+    editorState.set({ selectedEventPageId: active.id });
+    expect(button(host, "event-page-paste").disabled).toBe(true);
+
+    openPageTabContextMenu({
+      x: 12, y: 12, mapId, event: currentEvent(), page: active, index: 0, requestDelete: () => undefined,
+    });
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-copy"]')!.click();
+
+    const paste = document.body.querySelector<HTMLButtonElement>('[data-testid="event-page-paste"]')!;
+    expect(paste.disabled).toBe(false);
+    expect(paste.title).not.toContain("먼저 복사");
+    expect(paste.title).toContain("앞");
+  });
+
   it("탭 우클릭 메뉴가 여섯 항목을 주고 클립보드 상태를 반영한다 (D7)", () => {
     addEventPage(mapId, eventId);
     const event = currentEvent();
