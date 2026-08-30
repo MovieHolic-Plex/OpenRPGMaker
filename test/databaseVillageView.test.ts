@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderVillageTab } from "@/editor/panels/databaseVillageView";
+import { HOUSE_SHAPE_PRESETS } from "@/editor/panels/databaseVillageModel";
 import { VILLAGE_ARCHETYPES, templateFromRecord, villageTemplateCatalog } from "@/editor/tools/village/authoringData";
 import { createBlankProject } from "@/project/defaults";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
@@ -179,6 +180,119 @@ describe("데이터베이스 「마을」탭 — 집 형태", () => {
   });
 });
 
+// 이 탭이 오래 어려웠던 이유는 값이 아니라 그림이 없어서였다 — 1301 줄에 <canvas>/<img>
+// 가 0개였다. 픽셀은 fakeDom 이 못 보므로(getContext()가 null) 여기서는 **그림 자리가
+// 실제로 붙었는지**만 본다. 픽셀은 e2e(test/e2e/db-village-visual.spec.ts)가 본다.
+describe("데이터베이스 「마을」탭 — 그림", () => {
+  it("아무것도 없으면 예시 그림부터 보여준다", () => {
+    const host = renderView();
+    // 시작 화면은 빈 상태를 대체하는 게 아니라 감싼다 — 두 빈 판이 그대로 남는다.
+    expect(findByTestId(host, "db-village-template-blank")).not.toBeNull();
+    expect(findByTestId(host, "db-village-preset-blank")).not.toBeNull();
+    expect(findByTestId(host, "db-village-start-hero")).not.toBeNull();
+    // 원형 6장(구운 PNG) + 집 모양 10꼴(실시간 캔버스).
+    expect(findByTestId(host, "db-village-archetype-shot-farm-rural")?.getAttribute("src"))
+      .toBe("assets/village-preview/farm-rural.png");
+    const palette = findByTestId(host, "db-village-start-shape-palette");
+    expect(palette?.querySelectorAll("button")).toHaveLength(HOUSE_SHAPE_PRESETS.length);
+  });
+
+  it("시작 화면의 모양을 누르면 그 꼴로 레코드가 생긴다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-start-shape-l")?.click();
+    const record = (store.getCurrent().villageTemplates ?? [])[0]!;
+    const def = HOUSE_TEMPLATE_DEFS.find((entry) => entry.id === "l")!;
+    expect(record.clonedFrom).toBe("l");
+    expect(record.wings).toEqual(def.wings.map((wing) => ({ ...wing })));
+    expect(templateFromRecord(record)).toHaveProperty("template");
+  });
+
+  it("상세·목록에 집 그림 캔버스가 붙는다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    const hero = findByTestId(host, "db-village-template-shot");
+    expect(hero?.tagName).toBe("CANVAS");
+    expect(hero?.className).toContain("is-hero");
+    // 목록 행 썸네일과 히어로는 같은 형태를 그리지만 testid 는 자리마다 달라야 한다.
+    const thumb = findByTestId(host, "db-village-template-thumb-my-house");
+    expect(thumb?.tagName).toBe("CANVAS");
+    expect(thumb?.dataset.previewKey).toBe(hero?.dataset.previewKey?.replace("hero", "card"));
+  });
+
+  it("모양 팔레트와 내장 갤러리가 그림 카드로 뜬다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    const palette = findByTestId(host, "db-village-shape-palette");
+    expect(palette?.querySelectorAll("button")).toHaveLength(HOUSE_SHAPE_PRESETS.length);
+    // 내장 34종 전부 카드로 — 예전 <select> 의 글자 목록을 대체한다.
+    const gallery = findByTestId(host, "db-village-import-gallery");
+    expect(gallery?.querySelectorAll("button")).toHaveLength(HOUSE_TEMPLATE_DEFS.length);
+    for (const def of HOUSE_TEMPLATE_DEFS) {
+      expect(findByTestId(host, `db-village-import-${def.id}-shot`)?.tagName, def.id).toBe("CANVAS");
+    }
+  });
+
+  it("모양 카드를 누르면 값이 그 형태로 바뀐다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    findByTestId(host, "db-village-shape-u")?.click();
+
+    const record = store.getCurrent().villageTemplates?.[0]!;
+    const def = HOUSE_TEMPLATE_DEFS.find((entry) => entry.id === "u")!;
+    expect(record.w).toBe(def.w);
+    expect(record.wings).toEqual(def.wings.map((wing) => ({ ...wing })));
+    // 이름·ID·메모는 사용자 것이므로 그대로 남는다.
+    expect(record.id).toBe("my-house");
+    expect(record.name).toBe("새 집 형태");
+    expect(templateFromRecord(record)).toHaveProperty("template");
+  });
+
+  it("내장 갤러리에서 고른 형태가 규약을 통과한다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    const rejected = HOUSE_TEMPLATE_DEFS.flatMap((def) => {
+      findByTestId(host, `db-village-import-${def.id}`)?.click();
+      const record = store.getCurrent().villageTemplates?.[0]!;
+      const resolved = templateFromRecord(record);
+      return "reason" in resolved ? [`${def.id}: ${resolved.reason}`] : [];
+    });
+    expect(rejected).toEqual([]);
+  });
+});
+
+describe("데이터베이스 「마을」탭 — 날개 격자", () => {
+  it("격자 조작면과 날개 상자를 낸다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    // testid 는 그 요소의 상자를 가리켜야 한다 — 드래그 좌표를 여기서 재기 때문이다.
+    const grid = findByTestId(host, "db-village-footprint-large");
+    expect(grid?.className).toContain("db-village-grid");
+    expect(grid?.style.getPropertyValue("--db-village-cols")).toBe("6");
+    expect(grid?.style.getPropertyValue("--db-village-rows")).toBe("6");
+    const box = findByTestId(host, "db-village-wing-box-0");
+    expect(box?.getAttribute("tabindex")).toBe("0");
+    expect(box?.getAttribute("aria-label")).toContain("화살표");
+    // 손잡이 8개 — 변 4 + 모서리 4.
+    for (const name of ["n", "s", "e", "w", "nw", "ne", "sw", "se"]) {
+      expect(findByTestId(host, `db-village-wing-handle-0-${name}`), name).not.toBeNull();
+    }
+    expect(findByTestId(host, "db-village-grid-status")?.dataset.valid).toBe("true");
+  });
+
+  it("숫자칸은 접힘 안에 그대로 남는다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    const fold = findByTestId(host, "db-village-wing-numbers");
+    expect(fold).not.toBeNull();
+    // 닫혀 있어도 자식은 DOM 에 남아야 한다 — 정확한 값을 박는 길이 사라지면 안 된다.
+    expect(findByTestId(host, "db-village-wing-0-x")).not.toBeNull();
+    const body = fold?.querySelectorAll(".db-village-fold-body")[0];
+    expect(body?.hidden).toBe(true);
+    findByTestId(host, "db-village-wing-numbers-toggle")?.click();
+    expect(body?.hidden).toBe(false);
+  });
+});
+
 describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
   function withTemplateAndPreset(): FakeElement {
     const host = renderView();
@@ -237,6 +351,36 @@ describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
     const host = withTemplateAndPreset();
     findByTestId(host, "db-village-preset-pick-user")?.click();
     expect(store.getCurrent().villagePresets?.[0]?.templateIds).toEqual(["my-house"]);
+  });
+
+  // 프리셋 값은 서로 얽혀 있어서 항목별 설명을 읽어도 결과가 그려지지 않는다. 그래서
+  // 진짜 시공기를 돌린다 — 버튼을 눌러야 도는 것이 계약이다(값 하나 고칠 때마다 40×40
+  // 한 판을 돌리면 select 를 바꿀 때마다 화면이 멈춘다).
+  it("미리보기는 눌러야 돌고 초안에서만 시공한다", () => {
+    const host = withTemplateAndPreset();
+    const stage = findByTestId(host, "db-village-preset-preview");
+    expect(stage?.dataset.previewState).toBe("idle");
+    expect(findByTestId(host, "db-village-preset-shot")).toBeNull();
+
+    const before = Object.keys(store.getCurrent().maps).length;
+    findByTestId(host, "db-village-preset-preview-run")?.click();
+
+    expect(stage?.dataset.previewState).toBe("ready");
+    expect(findByTestId(host, "db-village-preset-shot")?.tagName).toBe("CANVAS");
+    expect(findByTestId(host, "db-village-preset-preview-note")?.textContent).toContain("집");
+    // 초안에서만 돌았다 — 프로젝트에 맵이 생기지 않는다.
+    expect(Object.keys(store.getCurrent().maps)).toHaveLength(before);
+  });
+
+  it("씨앗을 바꾸면 다시 시공하고 씨앗값을 알려준다", () => {
+    const host = withTemplateAndPreset();
+    findByTestId(host, "db-village-preset-preview-run")?.click();
+    const first = findByTestId(host, "db-village-preset-preview-note")?.textContent ?? "";
+    findByTestId(host, "db-village-preset-preview-reseed")?.click();
+    const second = findByTestId(host, "db-village-preset-preview-note")?.textContent ?? "";
+    expect(first).toContain("씨앗");
+    expect(second).toContain("씨앗");
+    expect(second).not.toBe(first);
   });
 });
 

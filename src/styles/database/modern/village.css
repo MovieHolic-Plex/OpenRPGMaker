@@ -233,3 +233,331 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-check input {
   accent-color: var(--db-studio-accent);
 }
+
+/* ---------------------------------------------------------------------------
+   집 그림 — 실제 시공 타일을 찍은 캔버스. 재료를 못 구하면 위의 추상 격자로 내려앉으므로
+   이 규칙들은 「있으면 더 좋은」 층이다.
+   --------------------------------------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-house-shot {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: block;
+  /* 타일 그림이다 — 보간하면 격자가 뭉개진다. */
+  image-rendering: pixelated;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-house-shot.is-card {
+  height: 96px;
+  width: 96px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-house-shot.is-hero {
+  height: 168px;
+  width: 168px;
+}
+
+/* 목록 행 썸네일. `listRow` 가 감싼 span 에 `db-list-thumb`(32px) 를 붙이므로
+   캔버스는 그 상자를 꽉 채우게만 한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-row-thumb {
+  display: block;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-row-thumb .db-village-house-shot {
+  border: 0;
+  border-radius: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* 프리셋 미리보기 — 실제 시공기가 돌린 맵 한 장 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-preset-stage {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-map-shot {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  max-width: 100%;
+  width: 320px;
+}
+
+/* ---------------------------------------------------------------------------
+   모양 팔레트 / 내장 갤러리 — 글자 목록(`직사각 대 (8×7) · rect-large`)을 그림 카드로.
+   --------------------------------------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-card {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-card:hover {
+  background: var(--db-studio-inset);
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-card:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-card.active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-media {
+  display: block;
+  line-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-name {
+  color: var(--db-studio-text-1);
+  font: 600 12px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-shape-meta {
+  color: var(--db-studio-text-3);
+  font: 600 10px/1.3 "Cascadia Mono", Consolas, monospace;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-import-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 420px;
+  min-width: 0;
+  overflow: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-import-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-import-group-title {
+  color: var(--db-studio-text-3);
+  font: 700 10px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------------
+   날개 격자 조작면.
+   칸 크기는 --db-village-cell 하나가 정한다 — 드래그가 `clientWidth / 열 수` 로 같은
+   값을 되짚으므로 gap·padding 을 넣으면 좌표가 어긋난다.
+   --------------------------------------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-grid-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  overflow: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-grid {
+  --db-village-cell: 18px;
+
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(var(--db-village-cols, 6), var(--db-village-cell));
+  grid-template-rows: repeat(var(--db-village-rows, 6), var(--db-village-cell));
+  padding: 0;
+  position: relative;
+  touch-action: none;
+  width: max-content;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-grid-cell {
+  box-shadow: inset 0 0 0 1px var(--db-studio-border-subtle);
+  display: block;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-box {
+  background: var(--db-studio-accent-soft);
+  box-shadow: inset 0 0 0 2px var(--db-studio-accent);
+  cursor: move;
+  height: calc(var(--db-village-wing-h, 1) * var(--db-village-cell));
+  left: calc(var(--db-village-wing-x, 0) * var(--db-village-cell));
+  position: absolute;
+  top: calc(var(--db-village-wing-y, 0) * var(--db-village-cell));
+  touch-action: none;
+  width: calc(var(--db-village-wing-w, 1) * var(--db-village-cell));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-box:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-tag {
+  color: var(--db-studio-accent);
+  font: 700 10px/1 "Cascadia Mono", Consolas, monospace;
+  left: 3px;
+  position: absolute;
+  top: 3px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle {
+  background: var(--db-studio-accent);
+  border-radius: 2px;
+  height: 7px;
+  position: absolute;
+  width: 7px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle.is-n {
+  cursor: ns-resize;
+  left: calc(50% - 3.5px);
+  top: -4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle.is-s {
+  bottom: -4px;
+  cursor: ns-resize;
+  left: calc(50% - 3.5px);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle.is-w {
+  cursor: ew-resize;
+  left: -4px;
+  top: calc(50% - 3.5px);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle.is-e {
+  cursor: ew-resize;
+  right: -4px;
+  top: calc(50% - 3.5px);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle.is-nw {
+  cursor: nwse-resize;
+  left: -4px;
+  top: -4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle.is-ne {
+  cursor: nesw-resize;
+  right: -4px;
+  top: -4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle.is-sw {
+  bottom: -4px;
+  cursor: nesw-resize;
+  left: -4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-handle.is-se {
+  bottom: -4px;
+  cursor: nwse-resize;
+  right: -4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-grid-status {
+  color: var(--db-studio-text-3);
+  font: 600 11px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-grid-status[data-valid="false"] {
+  color: var(--db-studio-danger);
+}
+
+/* ---------------------------------------------------------------------------
+   고급 접기 — `<details>` 를 쓰지 않는다(Chromium `::details-content` 가 flex 스크롤
+   자식을 무력화한다). 닫혀 있어도 자식은 DOM 에 남는다.
+   --------------------------------------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-fold {
+  border-top: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding-top: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-fold-toggle {
+  align-items: center;
+  align-self: flex-start;
+  background: transparent;
+  border: 0;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 11px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 5px;
+  padding: 3px 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-fold-toggle:hover {
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-fold-caret {
+  color: var(--db-studio-text-3);
+  font-size: 9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-fold-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* `hidden` 은 특이도에 밀리기 쉽다 — 위 규칙이 display 를 켜므로 여기서 되돌린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-fold-body[hidden] {
+  display: none;
+}
+
+/* 원형 카드 전경 그림. 파일이 없으면 스크립트가 span 을 접으므로 카드는 글자만 남는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetype-media {
+  display: block;
+  line-height: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetype-shot {
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 100%;
+}
