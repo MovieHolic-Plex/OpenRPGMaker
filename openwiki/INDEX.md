@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **41쪽 / 1144KB / 약 318,430 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **42쪽 / 1155KB / 약 321,874 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,11 +15,11 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 174KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 307 | ~49,718 |
+| `openwiki/editor-ai-panel.md` | 175KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 307 | ~49,949 |
 | `openwiki/editor-database.md` | 127KB | 48KB | 477 | ~35,510 |
 | `openwiki/editor-event-authoring.md` | 74KB | 46KB | 318 | ~20,915 |
 | `openwiki/editor-pre-edit-routing.md` | 54KB | 44KB | 134 | ~15,159 |
-| `openwiki/runtime-battle.md` | 86KB | 16KB | 234 | ~24,423 |
+| `openwiki/runtime-battle.md` | 87KB | 16KB | 235 | ~24,554 |
 | `openwiki/runtime-project-schema.md` | 50KB | 42KB | 140 | ~13,285 |
 | `openwiki/runtime-sessions.md` | 54KB | 45KB | 119 | ~14,335 |
 | `openwiki/testing.md` | 97KB | 44KB | 637 | ~27,146 |
@@ -165,6 +165,22 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L92` 4. 오토타일 등록 경로 3가지
 - `L100` 5. 검증
 
+### `openwiki/battler-idle-playbook.md` — 10KB · 165줄 · ~3,082 토큰
+
+- `L10` 런타임 코드는 건드릴 일이 거의 없다
+- `L20` 순서
+  - `L22` 1. 표시 상자를 먼저 실측한다 (셀 종횡비가 여기서 나온다)
+  - `L34` 2. 클립을 만든다 (프롬프트에 긍정 제약까지 넣는다)
+  - `L53` 3. 창을 탐색한다 (눈으로 고르지 마라)
+  - `L70` 4. 패킹한다
+  - `L85` 5. 카탈로그에 등록한다
+  - `L90` 6. 검증한다
+- `L101` 네 계약 — 넷 다 상대값이다
+  - `L114` 상한은 불량 쪽에서 정한다
+  - `L122` 머리 계약은 얼굴 검출기가 아니다
+- `L131` 함정 목록
+- `L150` 실린 자산의 실측값
+
 ### `openwiki/bgm-catalog.md` — 8KB · 125줄 · ~1,951 토큰
 
 - `L6` Why this exists
@@ -202,7 +218,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 174KB · 307줄 · ~49,718 토큰 · 통째읽기 잘림 · 깨진 줄 24
+### `openwiki/editor-ai-panel.md` — 175KB · 307줄 · ~49,949 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
 - `L9` 패널 셸 · 도크 · 접기 · 컴포저
 - `L72` 세션 수명 · 대화 컨텍스트
@@ -422,7 +438,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 86KB · 234줄 · ~24,423 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 87KB · 235줄 · ~24,554 토큰 · 통째읽기 잘림
 
   - `L7` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
 - `L25` 지원 전투 시스템은 둘뿐이다 (2026-08-28)

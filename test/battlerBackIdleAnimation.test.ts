@@ -25,6 +25,13 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import { describe, expect, it } from "vitest";
 import battleFixture from "./fixtures/projects/battle-v3.json";
+import {
+  CONTRACT,
+  cellChange,
+  colorShares,
+  headShares,
+  relativeDeviation,
+} from "../scripts/asset-gen/battlerIdleMetrics.mjs";
 import { BATTLER_IDLE_ANIMATIONS, battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
 import { createBattleRuntime } from "@/battle/runtime";
 import { battleField } from "@/player/battleFieldDom";
@@ -33,162 +40,22 @@ import { store } from "@/project/store";
 
 const ROOT = path.resolve(__dirname, "..");
 
+/** 음성 픽스처의 실측값. 픽스처가 다른 그림으로 바뀌면 여기서 드러난다. */
+const HEAD_TURNED_FIXTURE_HEAD = 1.941;
+const HEAD_TURNED_FIXTURE_BODY = 0.125;
+
 /** 카탈로그의 후면 항목 — 리소스 id 가 `-back` 으로 끝난다. */
 const BACK_IDLE = BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.resourceId.endsWith("-back"));
 
 
 /**
- * 피사체 픽셀을 색 계열별 비율로 요약한다.
+ * 지표는 `scripts/asset-gen/battlerIdleMetrics.mjs` 의 **단일 정본**을 쓴다.
  *
- * 조명·압축 변화에는 둔감하고 **재색칠**에는 민감한 지표가 필요하다. 영상 모델은 클립이
- * 진행되며 의상 색을 흘린다 — 실측: hero-01 의 파란 튜닉이 클립 후반에 갈색으로 바뀌었고,
- * 초기 패킹이 그 갈색 프레임을 골라 "다른 옷을 입은 주인공"이 실릴 뻔했다. 색 집합 비교
- * (팔레트 포함 여부)로는 안 잡힌다 — 방패·검에 이미 파란 계열이 있어서 1% 차이로 묻힌다.
+ * 왜 테스트 안에 다시 쓰지 않는가 — 프레임 창을 고르는 CLI 도구가 계약과 다른 코드로 점수를
+ * 내면 숫자가 어긋난다. 실측으로 그 대가를 치렀다: 파이썬 근사로 고른 창이 실제 패커 출력과
+ * 달라(hero-04 0.087 대 0.125) 리뷰가 두 번 "집계가 다른 숫자"를 잡아냈다. 도구와 이 테스트가
+ * 같은 파일을 import 하면 그 어긋남이 구조적으로 불가능해진다.
  */
-function colorShares(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number): number[] {
-  let blue = 0;
-  let red = 0;
-  let green = 0;
-  let warm = 0;
-  let bright = 0;
-  let dark = 0;
-  let lumaSum = 0;
-  let total = 0;
-  for (let y = 0; y < cellHeight; y += 1) {
-    for (let x = 0; x < cellWidth; x += 1) {
-      const i = (y * png.width + cellIndex * cellWidth + x) * 4;
-      if (png.data[i + 3] <= 8) continue;
-      const r = png.data[i];
-      const g = png.data[i + 1];
-      const b = png.data[i + 2];
-      total += 1;
-      const isBlue = b - r > 30 && b - g > 30;
-      const isRed = r - b > 40 && r - g > 25;
-      const isGreen = g - r > 12 && g - b > 12;
-      if (isBlue) blue += 1;
-      else if (isRed) red += 1;
-      else if (isGreen) green += 1;
-      else if (r - b > 15) warm += 1;
-      const mean = (r + g + b) / 3;
-      if (mean > 170 && !isBlue && !isRed && !isGreen) bright += 1;
-      if (mean < 60) dark += 1;
-      lumaSum += 0.299 * r + 0.587 * g + 0.114 * b;
-    }
-  }
-  if (total === 0) return [0, 0, 0, 0, 0, 0, 0];
-  return [...[blue, red, green, warm, bright, dark].map((count) => count / total), lumaSum / total / 255];
-}
-
-/**
- * 원본에서 **존재감 있는**(≥2%) 성분의 **상대** 변화 최대값.
- *
- * 절대 편차로 재면 원본에서 지분이 작은 성분이 사라지는 걸 놓친다. 실측: hero-04 의 클립은
- * 갈색 두건 망토가 자라 녹색 튜닉을 덮었는데, 녹색이 피사체의 8% 라 절반이 덮여도 절대 편차는
- * 0.035 였다 — 상한 0.08 을 여유롭게 통과한다. 상대로 보면 0.42 로 드러난다.
- * 실측 분리도: 충실한 칸 0.03~0.10 / 망토가 덮인 칸 0.42 / 갈색 튜닉으로 바뀐 칸 0.999.
- */
-function relativeDeviation(frame: number[], reference: number[]): number {
-  let worst = 0;
-  for (let k = 0; k < reference.length; k += 1) {
-    if (reference[k] < 0.02) continue;
-    worst = Math.max(worst, Math.abs(frame[k] - reference[k]) / reference[k]);
-  }
-  return worst;
-}
-
-/**
- * 머리 영역 상대편차 상한. **양성·음성 두 테스트가 이 하나를 공유해야 한다** — 리터럴로
- * 흩어 두면 양성 쪽만 올려도 음성 테스트가 그대로 통과해서 래칫이 말뿐이 된다.
- */
-const HEAD_RELATIVE_CAP = 1.0;
-
-/** 음성 픽스처의 실측값. 픽스처가 다른 그림으로 바뀌면 여기서 드러난다. */
-const HEAD_TURNED_FIXTURE = { head: 1.941, body: 0.125 } as const;
-
-/** 알파가 있는 픽셀의 경계 상자 — 머리 영역을 피사체 기준으로 잡기 위해 필요하다. */
-function subjectBox(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number) {
-  let top = cellHeight;
-  let bottom = -1;
-  let left = cellWidth;
-  let right = -1;
-  for (let y = 0; y < cellHeight; y += 1) {
-    for (let x = 0; x < cellWidth; x += 1) {
-      if (png.data[(y * png.width + cellIndex * cellWidth + x) * 4 + 3] > 8) {
-        if (y < top) top = y;
-        if (y > bottom) bottom = y;
-        if (x < left) left = x;
-        if (x > right) right = x;
-      }
-    }
-  }
-  return { top, bottom, left, right };
-}
-
-/**
- * **머리 영역만** 같은 7버킷으로 잰다(피사체 상단 30%).
- *
- * 왜 전신 지표로 부족한가 — 실측: hero-04 의 3차 클립은 의상은 지켰지만 **고개를 돌려 얼굴을
- * 보였다**. 뒷모습 배틀러에서는 색 드리프트보다 나쁜 결함인데, 머리는 피사체의 일부라
- * 전신 상대편차가 0.125 로 통과했다. 같은 지표를 머리 영역에 걸면 1.941 로 드러난다.
- *
- * 실측 분리도: 실린 칸 0.167 / 0.337 / 0.526 / 0.665 대 고개 돌린 칸 1.941.
- */
-function headShares(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number): number[] {
-  const { top, bottom, left, right } = subjectBox(png, cellIndex, cellWidth, cellHeight);
-  if (bottom < 0) return [0, 0, 0, 0, 0, 0, 0];
-  const headEnd = top + Math.round((bottom - top) * 0.3);
-  let blue = 0;
-  let red = 0;
-  let green = 0;
-  let warm = 0;
-  let bright = 0;
-  let dark = 0;
-  let lumaSum = 0;
-  let total = 0;
-  for (let y = top; y <= headEnd; y += 1) {
-    for (let x = left; x <= right; x += 1) {
-      const i = (y * png.width + cellIndex * cellWidth + x) * 4;
-      if (png.data[i + 3] <= 8) continue;
-      const r = png.data[i];
-      const g = png.data[i + 1];
-      const b = png.data[i + 2];
-      total += 1;
-      const isBlue = b - r > 30 && b - g > 30;
-      const isRed = r - b > 40 && r - g > 25;
-      const isGreen = g - r > 12 && g - b > 12;
-      if (isBlue) blue += 1;
-      else if (isRed) red += 1;
-      else if (isGreen) green += 1;
-      else if (r - b > 15) warm += 1;
-      const mean = (r + g + b) / 3;
-      if (mean > 170 && !isBlue && !isRed && !isGreen) bright += 1;
-      if (mean < 60) dark += 1;
-      lumaSum += 0.299 * r + 0.587 * g + 0.114 * b;
-    }
-  }
-  if (total === 0) return [0, 0, 0, 0, 0, 0, 0];
-  return [...[blue, red, green, warm, bright, dark].map((count) => count / total), lumaSum / total / 255];
-}
-
-/** 두 칸의 픽셀 변화 비율 — 색 채널 합 차가 24를 넘는 픽셀. */
-function cellChange(png: PNG, a: number, b: number, cellWidth: number, cellHeight: number): number {
-  let changed = 0;
-  let total = 0;
-  for (let y = 0; y < cellHeight; y += 1) {
-    for (let x = 0; x < cellWidth; x += 1) {
-      const ia = (y * png.width + a * cellWidth + x) * 4;
-      const ib = (y * png.width + b * cellWidth + x) * 4;
-      total += 1;
-      const diff =
-        Math.abs(png.data[ia] - png.data[ib]) +
-        Math.abs(png.data[ia + 1] - png.data[ib + 1]) +
-        Math.abs(png.data[ia + 2] - png.data[ib + 2]) +
-        Math.abs(png.data[ia + 3] - png.data[ib + 3]);
-      if (diff > 24) changed += 1;
-    }
-  }
-  return total === 0 ? 0 : changed / total;
-}
 
 function renderBackField(battleCharacterResourceId: string): HTMLElement {
   const project = deserialize(JSON.stringify(battleFixture));
@@ -273,7 +140,7 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
         expect(
           deviation,
           `${entry.resourceId}: 칸 ${index} 의 머리가 원본과 다르다 (상대 ${deviation.toFixed(3)}) = 고개를 돌렸거나 머리 장식이 바뀌었다`
-        ).toBeLessThanOrEqual(HEAD_RELATIVE_CAP);
+        ).toBeLessThanOrEqual(CONTRACT.headRelativeCap);
       }
     }
   });
@@ -283,7 +150,7 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
    * 무엇을 떨어뜨리는지 CI 가 증명하지 못한다. 그래서 실제로 한 번 실렸던 결함 스트립
    * (고개가 돌아 귀·볼이 보이고 머리띠에 녹색 이물이 있던 hero-04)을 픽스처로 고정한다.
    *
-   * 상한은 `HEAD_RELATIVE_CAP` 하나를 양성·음성이 공유한다. 그 값을 픽스처 실측(1.941)
+   * 상한은 `CONTRACT.headRelativeCap` 하나를 양성·음성이 공유한다. 그 값을 픽스처 실측(1.941)
    * 이상으로 올리면 아래 `toBeGreaterThan` 이 깨진다 — 양성 쪽만 고쳐 빠져나갈 수 없다.
    * 동시에 **전신 색 계약은 이 픽스처를 통과한다**(0.125 < 0.15)는 것도 함께 못 박는다 —
    * 그게 머리 계약을 따로 세운 이유다.
@@ -305,13 +172,13 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
     }
     // 실측값을 못 박는다. 범위(`> CAP`)만 보면 픽스처를 1.05 짜리로 바꿔치기해도 초록이고,
     // 그다음 상한을 1.5 로 올리면 둘 다 살아남는다.
-    expect(worstHead, "픽스처의 머리 편차 실측").toBeCloseTo(HEAD_TURNED_FIXTURE.head, 2);
-    expect(worstBody, "픽스처의 전신 색 편차 실측").toBeCloseTo(HEAD_TURNED_FIXTURE.body, 2);
+    expect(worstHead, "픽스처의 머리 편차 실측").toBeCloseTo(HEAD_TURNED_FIXTURE_HEAD, 2);
+    expect(worstBody, "픽스처의 전신 색 편차 실측").toBeCloseTo(HEAD_TURNED_FIXTURE_BODY, 2);
     // 래칫: 상한을 픽스처 실측 이상으로 올리면 여기서 깨진다. 양성 테스트와 **같은 상수**를 본다.
     expect(
       worstHead,
-      `머리 편차 ${worstHead.toFixed(3)} 가 상한 ${HEAD_RELATIVE_CAP} 을 넘어야 한다 — 넘지 않으면 이 계약은 아무것도 막지 못한다`
-    ).toBeGreaterThan(HEAD_RELATIVE_CAP);
+      `머리 편차 ${worstHead.toFixed(3)} 가 상한 ${CONTRACT.headRelativeCap} 을 넘어야 한다 — 넘지 않으면 이 계약은 아무것도 막지 못한다`
+    ).toBeGreaterThan(CONTRACT.headRelativeCap);
     // 전신 색 계약만으로는 못 잡는다 — 이 비대칭이 머리 계약의 존재 이유다.
     expect(worstBody, `전신 색 편차 ${worstBody.toFixed(3)} 는 0.15 를 넘지 않는다`).toBeLessThan(0.15);
   });
