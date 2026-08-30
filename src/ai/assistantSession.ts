@@ -2684,144 +2684,169 @@ export class AssistantSession {
         const tool = getTool(name);
         this.emitToolStarted(onEvent, name);
         if (tool?.mode === "write") writeToolAttempts += 1;
-        // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
-        // 공간 쓰기 툴은 검증된 밑그림의 할당 영역 안에서만 실행한다(구간 격리).
-        let toolResult: ToolResult;
-        if (name === "set_build_spec") {
-          toolResult = this.applyBuildSpec(args);
-        } else if (
-          name === "get_work_plan" ||
-          name === "set_work_plan" ||
-          name === "complete_work_item" ||
-          name === "skip_work_item"
-        ) {
-          toolResult = this.applyWorkPlanTool(name, args);
-          if (toolResult.ok) {
-            this.emitWorkPlan(onEvent);
-            if (name === "set_work_plan" && this.workPlan) {
-              executionStarted = true;
-              phase = "execute";
-              this.emitPhase(onEvent, "execute");
-              this.injectWorkPlanOrchestration();
+        // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
+        // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
+        // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
+        let responded = false;
+        const respond = (result: ToolResult): void => {
+          if (responded) return;
+          responded = true;
+          this.messages.push({
+            role: "tool",
+            tool_call_id: call.id,
+            name,
+            content: JSON.stringify(toolResultForModel(result)),
+          });
+        };
+        try {
+          // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
+          // 공간 쓰기 툴은 검증된 밑그림의 할당 영역 안에서만 실행한다(구간 격리).
+          let toolResult: ToolResult;
+          if (parsedCall.parseError !== null) {
+            toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
+            this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
+          } else if (name === "set_build_spec") {
+            toolResult = this.applyBuildSpec(args);
+          } else if (
+            name === "get_work_plan" ||
+            name === "set_work_plan" ||
+            name === "complete_work_item" ||
+            name === "skip_work_item"
+          ) {
+            toolResult = this.applyWorkPlanTool(name, args);
+            if (toolResult.ok) {
+              this.emitWorkPlan(onEvent);
+              if (name === "set_work_plan" && this.workPlan) {
+                executionStarted = true;
+                phase = "execute";
+                this.emitPhase(onEvent, "execute");
+                this.injectWorkPlanOrchestration();
+              }
+              // 명시 complete_work_item 완료 경로 — 마일스톤 자동 적용을 같은 단위로 트리거한다.
+              if (name === "complete_work_item" && this.workPlan) {
+                const completedId = completedWorkItemIdFromResult(toolResult);
+                const completedItem = completedId ? findWorkItemById(this.workPlan, completedId) : null;
+                if (completedItem) await this.maybeAutoApplyMilestone(completedItem, onEvent);
+                // 레이어 검증 게이트(todo 5) — 명시 complete 경로도 같은 단위로 트리거한다.
+                if (completedItem) await this.sweepFinishedLayers(onEvent);
+              }
             }
-            // 명시 complete_work_item 완료 경로 — 마일스톤 자동 적용을 같은 단위로 트리거한다.
-            if (name === "complete_work_item" && this.workPlan) {
-              const completedId = completedWorkItemIdFromResult(toolResult);
-              const completedItem = completedId ? findWorkItemById(this.workPlan, completedId) : null;
-              if (completedItem) await this.maybeAutoApplyMilestone(completedItem, onEvent);
-              // 레이어 검증 게이트(todo 5) — 명시 complete 경로도 같은 단위로 트리거한다.
-              if (completedItem) await this.sweepFinishedLayers(onEvent);
-            }
-          }
-        } else {
-          const dedupeKey = writeDedupeKey(name, args);
-          const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
-          if (cached) {
-            toolResult = {
-              ...cached,
-              summary: `${cached.summary} (이번 턴 동일 배치 재호출 — 건너뜀)`,
-              issues: [
-                ...(cached.issues ?? []),
-                { severity: "warning", code: "write-deduped", message: "같은 place_props 인자는 한 턴에 한 번만 실행됩니다." },
-              ],
-            };
           } else {
-            const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : { warnings: [] };
-            toolResult = isSpecGatePass(gate)
-              ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
-              : gate;
-            if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
+            const dedupeKey = writeDedupeKey(name, args);
+            const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
+            if (cached) {
+              toolResult = {
+                ...cached,
+                summary: `${cached.summary} (이번 턴 동일 배치 재호출 — 건너뜀)`,
+                issues: [
+                  ...(cached.issues ?? []),
+                  { severity: "warning", code: "write-deduped", message: "같은 place_props 인자는 한 턴에 한 번만 실행됩니다." },
+                ],
+              };
+            } else {
+              const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : { warnings: [] };
+              toolResult = isSpecGatePass(gate)
+                ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
+                : gate;
+              if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
+            }
           }
-        }
-        // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
-        // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
-        if (toolResult.ok) this.recordSuccessfulTool(name);
-        if (toolResult.ok) {
-          // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
-          const createdMapId = createdMapIdFrom(name, args, toolResult.data);
-          if (createdMapId) this.turnItemCreatedMapIds.add(createdMapId);
-          // 보스 페이즈: 페이지를 쓴 트룹과 시뮬 근거를 짝지어 둔다(발동 여부는 프로젝트 상태에 안 남는다).
-          const authoredTroopId = authoredTroopIdFrom(name, args, toolResult.data);
-          if (authoredTroopId) {
-            this.turnItemAuthoredTroopIds.add(authoredTroopId);
-            // 페이지가 바뀌면 이전 시뮬 근거는 무효다 — 다시 돌려야 한다.
-            this.turnItemBattleSimulations.delete(authoredTroopId);
+          // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
+          // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
+          if (toolResult.ok) this.recordSuccessfulTool(name);
+          if (toolResult.ok) {
+            // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
+            const createdMapId = createdMapIdFrom(name, args, toolResult.data);
+            if (createdMapId) this.turnItemCreatedMapIds.add(createdMapId);
+            // 보스 페이즈: 페이지를 쓴 트룹과 시뮬 근거를 짝지어 둔다(발동 여부는 프로젝트 상태에 안 남는다).
+            const authoredTroopId = authoredTroopIdFrom(name, args, toolResult.data);
+            if (authoredTroopId) {
+              this.turnItemAuthoredTroopIds.add(authoredTroopId);
+              // 페이지가 바뀌면 이전 시뮬 근거는 무효다 — 다시 돌려야 한다.
+              this.turnItemBattleSimulations.delete(authoredTroopId);
+            }
+            const simulation = battlePhaseSimulationFrom(name, args, toolResult.data);
+            if (simulation) this.turnItemBattleSimulations.set(simulation.troopId, simulation);
+            // 퀘스트: 등록한 id 를 기록한다 — 완주 검증은 게이트가 직접 돌린다.
+            const questId = authoredQuestIdFrom(name, args);
+            if (questId) this.turnItemQuestIds.add(questId);
           }
-          const simulation = battlePhaseSimulationFrom(name, args, toolResult.data);
-          if (simulation) this.turnItemBattleSimulations.set(simulation.troopId, simulation);
-          // 퀘스트: 등록한 id 를 기록한다 — 완주 검증은 게이트가 직접 돌린다.
-          const questId = authoredQuestIdFrom(name, args);
-          if (questId) this.turnItemQuestIds.add(questId);
-        }
-        if (name === "find_tools") {
-          const discovered = discoveredToolNames(toolResult);
-          const next = [...this.turnEscalatedToolNames];
-          for (const toolName of discovered) {
-            const existing = next.indexOf(toolName);
-            if (existing >= 0) next.splice(existing, 1);
-            next.push(toolName);
+          if (name === "find_tools") {
+            const discovered = discoveredToolNames(toolResult);
+            const next = [...this.turnEscalatedToolNames];
+            for (const toolName of discovered) {
+              const existing = next.indexOf(toolName);
+              if (existing >= 0) next.splice(existing, 1);
+              next.push(toolName);
+            }
+            this.turnEscalatedToolNames = next.slice(-MAX_ESCALATED_TOOLS_PER_TURN);
+            if (discovered.length > 0) {
+              this.pushAudit({ kind: "status", text: `tools:escalated ${discovered.join(",")}` });
+            }
           }
-          this.turnEscalatedToolNames = next.slice(-MAX_ESCALATED_TOOLS_PER_TURN);
-          if (discovered.length > 0) {
-            this.pushAudit({ kind: "status", text: `tools:escalated ${discovered.join(",")}` });
-          }
-        }
-        if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
-        onEvent({ type: "tool_call", name, args, result: toolResult });
-        this.pushAudit({
-          kind: "tool",
-          name,
-          args,
-          ok: toolResult.ok,
-          summary: toolResult.summary,
-          // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
-          ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
-        });
-        // 검증 히스토리 기록(todo 5): 쓰기 툴 + play_walkthrough 만 — questId/시나리오 선택에 쓴다.
-        // (검증 게이트가 직접 실행한 툴콜은 여기로 오지 않는다 — 모델 저작 히스토리만.)
-        if (tool && (tool.mode === "write" || name === PLAY_WALKTHROUGH_TOOL)) {
-          this.verificationHistory.push({ name, args, ok: toolResult.ok, layerId: this.verificationLayerId() });
-        }
-
-        // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
-        if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {
-          const softConfirm = extractVocabSoftConfirm(toolResult.data);
-          let proposal: ProposedCall = {
+          if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
+          onEvent({ type: "tool_call", name, args, result: toolResult });
+          this.pushAudit({
+            kind: "tool",
             name,
             args,
+            ok: toolResult.ok,
             summary: toolResult.summary,
-            result: toolResult,
-            // 이름 목록이 아니라 결과 diff 로 파괴성을 본다 — 기존 맵을 교체하거나 이벤트를 지운
-            // 호출은 이름이 생성계여도 승인 카드를 거친다(진단 근본원인 9).
-            destructive: isDestructiveOutcome(name, args, toolResult.diff),
-            requiresApproval:
-              RULE_TOOLS.has(name)
-              || isDestructiveOutcome(name, args, toolResult.diff)
-              || VOCABULARY_PROPOSAL_TOOLS.has(name)
-              || softConfirm !== null,
-          };
-          const approvalWarning = softConfirm
-            ? VOCAB_SOFT_CONFIRM_APPROVAL_WARNING
-            : approvalWarningFor(name, args);
-          if (approvalWarning) proposal.approvalWarning = approvalWarning;
-          proposal = this.withCarryoverWarningIfNeeded(proposal);
-          this.upsertProposal(proposedByKey, proposal);
-        }
-
-        this.messages.push({
-          role: "tool",
-          tool_call_id: call.id,
-          name,
-          content: JSON.stringify(toolResultForModel(toolResult)),
-        });
-
-        // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
-        if (this.renderImages && VISION_TOOLS.has(name) && toolResult.ok && toolResult.data !== undefined) {
-          try {
-            roundImages.push(...(await this.renderImages(this.ctx.project, name, toolResult.data)));
-          } catch {
-            /* 렌더 실패는 치명적이지 않다 */
+            // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
+            ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
+          });
+          // 검증 히스토리 기록(todo 5): 쓰기 툴 + play_walkthrough 만 — questId/시나리오 선택에 쓴다.
+          // (검증 게이트가 직접 실행한 툴콜은 여기로 오지 않는다 — 모델 저작 히스토리만.)
+          if (tool && (tool.mode === "write" || name === PLAY_WALKTHROUGH_TOOL)) {
+            this.verificationHistory.push({ name, args, ok: toolResult.ok, layerId: this.verificationLayerId() });
           }
+
+          // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
+          if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {
+            const softConfirm = extractVocabSoftConfirm(toolResult.data);
+            let proposal: ProposedCall = {
+              name,
+              args,
+              summary: toolResult.summary,
+              result: toolResult,
+              // 이름 목록이 아니라 결과 diff 로 파괴성을 본다 — 기존 맵을 교체하거나 이벤트를 지운
+              // 호출은 이름이 생성계여도 승인 카드를 거친다(진단 근본원인 9).
+              destructive: isDestructiveOutcome(name, args, toolResult.diff),
+              requiresApproval:
+                RULE_TOOLS.has(name)
+                || isDestructiveOutcome(name, args, toolResult.diff)
+                || VOCABULARY_PROPOSAL_TOOLS.has(name)
+                || softConfirm !== null,
+            };
+            const approvalWarning = softConfirm
+              ? VOCAB_SOFT_CONFIRM_APPROVAL_WARNING
+              : approvalWarningFor(name, args);
+            if (approvalWarning) proposal.approvalWarning = approvalWarning;
+            proposal = this.withCarryoverWarningIfNeeded(proposal);
+            this.upsertProposal(proposedByKey, proposal);
+          }
+
+          respond(toolResult);
+
+          // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
+          if (this.renderImages && VISION_TOOLS.has(name) && toolResult.ok && toolResult.data !== undefined) {
+            try {
+              roundImages.push(...(await this.renderImages(this.ctx.project, name, toolResult.data)));
+            } catch {
+              /* 렌더 실패는 치명적이지 않다 */
+            }
+          }
+        } catch (cause) {
+          // 예상하지 못한 예외 — 이 호출의 응답을 먼저 남기고(짝 없는 tool_calls 로 세션을 오염하지 않는다)
+          // 그대로 다시 던진다 — 턴 자체는 사용자에게 실패로 보이는 것이 맞다.
+          const failure = cause instanceof Error ? cause.message : String(cause);
+          this.pushAudit({ kind: "status", text: `tool-loop:exception ${name} — ${failure}` });
+          respond({
+            ok: false,
+            summary: `'${name}' 실행 중 예상하지 못한 오류: ${failure}`,
+            issues: [{ severity: "error", code: "tool-loop-exception", message: failure }],
+          });
+          throw cause;
         }
       }
 
@@ -3205,19 +3230,42 @@ function compactToolDataForModel(data: unknown): unknown {
   return data;
 }
 
-function parseToolCall(call: ToolCall): { name: string; args: Record<string, unknown> } {
+function parseToolCall(call: ToolCall): { name: string; args: Record<string, unknown>; parseError: string | null } {
   const name = call.function.name;
-  let args: Record<string, unknown> = {};
   const raw = call.function.arguments?.trim();
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object") args = parsed as Record<string, unknown>;
-    } catch {
-      // 인자 JSON 파싱 실패 — 빈 인자로 두면 runTool이 검증 오류를 issues로 돌려줘 자가수정 유도.
+  if (!raw) return { name, args: {}, parseError: null };
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return { name, args: parsed as Record<string, unknown>, parseError: null };
     }
+    return { name, args: {}, parseError: `인자가 JSON 객체가 아닙니다(${Array.isArray(parsed) ? "array" : typeof parsed}).` };
+  } catch (cause) {
+    // 예전엔 파싱 실패를 조용히 삼켜 빈 인자로 툴을 돌렸다. 그러면 모델은 `필수 인자 누락:
+    // mapId, x, y…` 를 받고 "인자를 안 보냈다"고 이해해 **똑같은 큰 페이로드를 그대로 재전송**한다 —
+    // 진짜 원인은 보통 출력 상한으로 JSON 이 중간에서 잘린 것이다. 사유를 그대로 알린다.
+    return { name, args: {}, parseError: cause instanceof Error ? cause.message : String(cause) };
   }
-  return { name, args };
+}
+
+/** 인자 JSON 자체가 깨진 툴콜 — 툴을 돌리지 않고 사유를 모델에 되돌려 자가수정을 유도한다. */
+function invalidJsonArgsResult(name: string, raw: string, reason: string): ToolResult {
+  const compact = raw.length > 160 ? `${raw.slice(0, 80)}…(중략)…${raw.slice(-40)}` : raw;
+  return {
+    ok: false,
+    summary: `'${name}' 인자 JSON 파싱 실패: ${reason}`,
+    issues: [
+      {
+        severity: "error",
+        code: "invalid-json-args",
+        message:
+          `인자 JSON 을 해석하지 못했습니다: ${reason}. 인자를 생략한 것이 아니라 깨진 문자열로 도달했으므로,`
+          + ` 같은 내용을 그대로 다시 보내면 또 실패합니다. 출력 길이 상한에 걸려 JSON 이 잘린 경우가 대부분이니`
+          + ` 한 호출에 담는 항목 수를 줄이거나 호출을 여러 번으로 나눠 다시 시도하세요.`
+          + ` 받은 원문(축약): ${compact}`,
+      },
+    ],
+  };
 }
 
 function sleep(ms: number): Promise<void> {
