@@ -4,6 +4,24 @@ Battle rules, turn flow, damage, rewards, battle events, snapshots, monster coll
 
 For real-time action combat on action maps (`system.actionCombat` + `map.actionCombat`), see **`openwiki/runtime-action-combat.md`**.
 
+### 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+
+체공은 이제 위치(lift) 외에 **배율 두 채널**을 더 쓴다 — 속도에 비례하는 스쿼시/스트레치와
+체공 높이에 비례하는 원근(최대 0.35, 4타일 게이트, 착지 시 정확히 1로 닫힘). 그림자 페이드는
+고정 2타일이 아니라 **이번 비행의 시작 높이**를 기준으로 정규화하므로(`characterShadow.ts`),
+128px 낙하가 하강 전체에 걸쳐 자란다. 단 `SHADOW_FADE_LIFT_PX` 하한이 있어 32px 미만으로
+저작된 낙하는 옛 곡선을 쓴다.
+
+**연속 체공 함정.** 착지 눌림은 `HOP_SQUASH_MS` 동안 트윈으로 살아 있는데, 경로는
+`!scene.playerHop` 이면 **다음 프레임에 바로** 다음 체공을 시작한다(`playSceneMovement`).
+그래서 눌린 동안에도 기준 배율을 `scene.characterHopScales` 에 **남겨 둔다** — 지우면 다음
+체공이 캐시 미스로 눌린 값을 읽어 영구 기준으로 굳고 남은 맵 동안 캐릭터가 찌그러진다.
+트윈을 끊는 것만으로는 부족하다(스프라이트가 눌린 값에 그대로 머문다). 시작에서 트윈도
+끊어 새 체공의 배율과 동시 기록되지 않게 한다. 계약 테스트는
+`test/characterHopChainedScale.test.ts` 이고, 두 장치를 각각 지우면 각각 실패한다.
+
+감소 모션에서는 눌림·먼지가 함께 빠지므로 이 경로 자체가 없다.
+
 ## 지원 전투 시스템은 둘뿐이다 (2026-08-28)
 
 - 지원: **RM식** (`system.battleModel` 미설정 또는 `"rm2k3"` + 배틀 스킨 `rm2003`, 둘 다 기본값) 과 **포켓몬식** (`system.battleModel: "gen1"` + 배틀 스킨 `pokemon`). 새 프로젝트는 이 둘 중 하나로만 저작한다.
