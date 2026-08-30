@@ -185,3 +185,26 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 적 이름표·HP 게이지는 공용 노드(이름 18px, `.battle-enemy-hud { min-width: 104px }`)라 **적 간격이 좁은 스킨에서는 옆 적 것과 겹친다**. mv 는 간격을 44→52 로 넓히고 `_mv.css` 에서 자기 스프라이트 열 폭(60px, 이름 10px)으로 좁혔다.
 - MV is a front-view template, not a color-only compact-HUD variant: 448px field/party + 192px command rail, field row above a four-column party status row, command host on the full right rail. The shared compact layer uses later `!important` rules, so `_mv.css` must reassert its field/host/party/message placement with matching `!important` declarations and style the current `.battle-actor-status` DOM (not legacy `.battle-actor`). The host is layout-only (`pointer-events:none`); the visible panel and field enemies receive pointers.
 - Browser regression evidence is split by behavior: `battle-keyboard-input.spec.ts` must drive the real test-play window with keyboard only and prove root cursor/focus movement, submenu confirm/cancel, and target confirm/cancel without pointer clicks. `battle-skins-visual-qa.spec.ts` covers layout: command phase asserts no command/party rectangle intersection and zero visible command/status text intersections; target phase uses `document.elementFromPoint()` at the enemy center and requires the hit to be the enemy or its descendant. `qa-pokemon-dom.spec.ts` uses the current Scarloxy starter species, proves a complete monster-party attack changes HP and returns to actor command, and checks root-command label intersections at 375/768/1280 widths. At widths up to 480px the Pokemon surface hides the keyboard-only hint; pointer-capable commands remain available. These focused Playwright tests must pass in addition to overflow checks.
+
+## 배틀러 idle 애니메이션 (2026-08-30)
+- 전투 화면에서 움직이는 것이 이펙트·플래시·셰이크뿐이라 아무 일도 없는 동안 배틀러가 정지 그림이었다. 이제 **카탈로그에 등록된 배틀러만** 제자리 idle 애니메이션이 돈다. 정본은 `src/assets/battlerIdleAnimations.ts` 하나다. 등록되지 않은 리소스 id 는 지금까지의 정적 렌더 그대로다 — 몬스터 그래픽이 140여 종이라 옵트인이 아니면 유지 비용이 폭발한다.
+- **두 티어.** 성질이 다른 두 배틀러 경로를 각자의 좌표계로 돌린다.
+
+  | 티어 | 대상 | 셀 | 좌표 | 소스 |
+  |---|---|---|---|---|
+  | `image-strip` | 적·파티 몬스터·후면 액터 (`<img>`) | 192px | 백분율 | 영상 클립에서 프레임 추출 |
+  | `sheet-cell` | 정면 액터 48px 전투 캐릭터셋 (`.battle-actor-sprite`) | 48px | px | 절차 생성 |
+
+- **왜 `<img>` 를 span 으로 바꾸지 않았나.** 스킨별 width/height `!important` 규칙(적 56×64, 포켓몬 148×148)은 intrinsic 크기를 가진 치환 요소를 전제로 걸려 있고, rect 프로브(`scripts/lib/runtimeQaRun.mjs`)·`naturalWidth` 대기(`scripts/capture-ice-grand-adventure.mts`)·`src` 계약(`test/battleEnemyGraphicFidelity.test.ts`)이 모두 이 엘리먼트를 본다. 그래서 `<img>` 와 `src`(정적 원본)를 그대로 두고, CSS 가 `object-position: -99999px` 로 **내용 이미지만 상자 밖으로 밀어** 배경 스트립을 보이게 한다. 치환 요소의 내용은 콘텐츠 상자에서 잘리므로 그려지지 않고, 배경은 정상적으로 칠해진다(브라우저 실측). `opacity`/`filter` 는 배경까지 함께 지우므로 쓸 수 없다.
+- **왜 `steps(N, jump-none)` 인가.** 기본 `steps(N)` 은 첫 프레임을 건너뛴다. `jump-none` 이라야 0% 와 100% 를 모두 포함해 N 프레임에 N 번 멈춘다(실측: 8프레임에서 1/7 = 14.2857% 간격).
+- **백분율 함정.** `background-position` 백분율은 (엘리먼트 폭 − 배경 폭)에 대해 계산된다. 배경이 N배 넓으므로 `0% → 100%` 가 곧 첫 → 마지막 프레임이다. `-100% × N` 으로 밀면 배틀러가 상자 밖으로 나가 **화면에서 사라진다**(처음 그렇게 썼고 브라우저에서 잡혔다).
+- **포즈가 이긴다.** `sheet-cell` 티어는 idle 에서만 스트립을 쓴다. attack·hit·defend·dead 는 정적 시트의 `POSE_FRAME` 칸으로 즉시 돌아간다. 애니메이션은 `background-position-x` 만, 포즈 행은 인라인 `background-position-y` 만 건드려 롱핸드가 겹치지 않는다 — CSS 애니메이션이 인라인 스타일을 이기기 때문에 같은 롱핸드를 쓰면 포즈가 죽는다. 포즈 산식 계약은 `test/battlerPoseFrame.test.ts` 가 그대로 지킨다.
+- **파일이름 규약.** 스트립은 원본과 **같은 파일명**으로 `public/assets/generated/starter/idle/` 아래 둔다. 그래야 배경 URL 이 원본 파일명을 포함해서 "이 배틀러가 자기 자산을 쓰고 있다" 를 재는 기존 부분문자열 계약(`test/battleFieldAllySprite.test.ts`)이 애니메이션에도 성립한다. 실제로 `hero-03-battle-idle.png` 로 뒀다가 그 계약이 깨지는 것을 먼저 확인했다.
+- **프레임 간격은 실측값이다.** 영상 티어는 (루프 구간 프레임 수 ÷ 24fps ÷ 뽑은 장수): 슬라임 219ms, 박쥐 104ms, 골렘 62ms. 임의로 고르면 슬라임이 경련하고 골렘이 슬로모션이 된다. 절차 티어는 `BATTLE_ANIMATION_FRAME_MS`(120ms)를 그대로 쓴다.
+- **정지 화면은 티어마다 다르게 되돌린다.** 감속 모드(`prefers-reduced-motion`)·고대비(`forced-colors`)·인쇄에서 `<img>` 티어는 밀어냈던 내용 이미지를 제자리로 돌려 **정적 `src`** 를 보여준다 — 영상에서 뽑은 프레임 0 은 원본과 같은 순간이 아니기 때문이다(실측: 슬라임 상대높이 0.313 대 원본 0.526, 그 순간 눌려 있다). 프레임 0 을 세워두는 것으로는 이전 화면이 되지 않는다. 48px 시트 액터는 절차 생성기가 프레임 0 을 원본 idle 칸과 픽셀 단위로 같게 만들므로 첫 칸에 멈추면 된다(`test/battlerIdleAnimation.test.ts` 가 픽셀 비교로 못 박는다).
+- **칸의 종횡비를 지킨다.** `background-size` 의 세로는 `auto` 다. `100%` 로 묶으면 정사각 칸이 상자 종횡비(적 `56×64`, 실측 `180×210`)로 늘어나, 정적 경로의 `object-fit: contain` 레터박스와 다른 그림이 된다. 가로만 `N × 상자폭` 으로 묶어야 `0%→100%` 스텝이 칸 경계에 정확히 떨어진다. 크로미엄은 세로가 `auto` 면 computed 값을 한 값으로 직렬화한다(실측: 8프레임 → `800%`).
+- **실루엣 배율은 피크로 맞춘다.** 개별 프레임이 아니라 프레임 전집합에 맞춰야 한다. 한 프레임에 맞추면 날개를 접은 순간이 기준이 되어 박쥐가 원본의 절반으로 줄어든다. 피크 상대폭 실측: 슬라임 0.651·박쥐 0.906·골렘 0.818 대 원본 0.651·0.906·0.815.
+- **죽은 배틀러는 숨을 쉬지 않는다.** `<img>` 티어는 포즈마다 속성을 갈아끼우지 않으므로 사망만 CSS(`.battle-pose-dead`)로 끊는다. 적은 620ms 뒤 `battle-death-fade` 로 사라지지만 파티 몬스터에는 그 페이드가 없어 시체가 계속 호흡했다.
+- **스트립 로딩 실패**에는 `data-battler-anim` 을 걷어 정적 `src` 로 돌아간다. 배경만 보이는 구조라 스트립이 404 면 빈 상자가 되기 때문이다.
+- **생성기.** 절차 티어는 `scripts/asset-gen/gen-battler-idle-strips.mjs`(Jimp, 상진 60% 만 1px 눌러 발은 고정), 영상 티어는 `scripts/asset-gen/pack-battler-idle-strip.mjs`(키드 프레임 → 정적 원본의 알파 박스에 폭 기준으로 맞춰 셀에 앉힌다). 폭 기준인 이유: 날개짓처럼 상하 진폭이 큰 모션은 전집합 박스가 세로로 길어져, 높이로 맞추면 실루엣 폭이 정적 배틀러보다 명함하게 작아진다(실측: 박쥐 상대폭 0.906 → 0.380).
+- 계약 테스트: `test/battlerIdleAnimation.test.ts`(카탈로그 정합·`<img>` 유지·포즈 우선·CSS steps/감속/`!important` 래칫).

@@ -1,5 +1,11 @@
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import {
+  battlerIdleAnimation,
+  battlerIdleAnimationDurationMs,
+  battlerIdleAnimationUrl,
+  type BattlerIdleAnimation,
+} from "@/assets/battlerIdleAnimations";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { POSE_FRAME } from "@/battle/battlePose";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
@@ -133,20 +139,88 @@ function skinPartySpriteUrl(
   index: number,
   facing: PartyFacing,
   actor?: BattleBattlerSnapshot,
-): { url: string; perActor: boolean } | null {
+): { url: string; perActor: boolean; resourceId: string } | null {
   if (facing === "hidden") return null;
   const project = store.getCurrent();
   if (facing === "back" && actor) {
     const backId = actorBackSpriteId(actor);
     // id 가 만들어졌다고 그림이 있는 건 아니다 — 리졸브까지 성공해야 액터별로 쓴 것이다.
-    const backUrl = backId ? resolveAssetResourceUrl(backId, { project }) : null;
-    if (backUrl) return { url: backUrl, perActor: true };
+    const backUrl = backId && resolveAssetResourceUrl(backId, { project });
+    if (backId && backUrl) return { url: backUrl, perActor: true, resourceId: backId };
   }
   const id = activeSkin().id === "pokemon"
     ? "bskin-ally-creature-back"
     : `bskin-party-${index % 2 === 0 ? "warrior" : "mage"}-${facing}`;
   const url = resolveAssetResourceUrl(id, { project });
-  return url ? { url, perActor: false } : null;
+  return url ? { url, perActor: false, resourceId: id } : null;
+}
+
+/**
+ * 등록된 idle 애니메이션을 `<img>` 배틀러에 얹는다.
+ *
+ * 엘리먼트는 `<img>` 그대로 두고 `src` 도 정적 원본을 유지한다 — 스킨별 width/height
+ * `!important` 규칙이 intrinsic 크기를 전제로 걸려 있고, rect 프로브와 `naturalWidth` 대기,
+ * `src` 계약이 모두 이 엘리먼트를 본다. CSS 는 내용 이미지를 상자 밖으로 밀고 배경 스트립을
+ * 그린다(`src/styles/runtime/battle-skins/_battlers.css` 의 배틀러 idle 애니메이션 절).
+ * 카탈로그에 없으면 아무것도 하지 않는다 = 지금까지의 정적 렌더.
+ */
+function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string | undefined): void {
+  const anim = battlerIdleAnimation(resourceId);
+  if (!anim || anim.tier !== "image-strip") return;
+  const url = battlerIdleAnimationUrl(anim);
+  image.dataset.battlerAnim = anim.resourceId;
+  image.style.setProperty("--battler-anim-url", `url("${url}")`);
+  image.style.setProperty("--battler-anim-frames", String(anim.frameCount));
+  image.style.setProperty("--battler-anim-duration", `${battlerIdleAnimationDurationMs(anim)}ms`);
+  // 스트립을 못 불러오면 배경이 비고, 내용 이미지는 상자 밖에 있으므로 **빈 상자**가 된다.
+  // 그때는 애니메이션 표시를 걷어 정적 `src` 가 다시 보이게 한다 — 주석이 약속한 폴백이
+  // 에셋 실패에도 성립해야 한다. 프리로드는 CSS 배경 요청과 같은 URL 이라 캐시에서 합쳐진다.
+  const probe = new Image();
+  probe.addEventListener("error", () => {
+    delete image.dataset.battlerAnim;
+    image.style.removeProperty("--battler-anim-url");
+    image.style.removeProperty("--battler-anim-frames");
+    image.style.removeProperty("--battler-anim-duration");
+  });
+  probe.src = url;
+}
+
+/**
+ * 48px 전투 캐릭터셋 스프라이트를 idle 스트립으로 바꾼다.
+ * 세로(포즈 행)는 인라인으로 남기고 가로만 CSS 애니메이션이 굴린다 — 롱핸드가 달라서
+ * 애니메이션이 인라인 포즈 오프셋을 덮지 않는다.
+ */
+function applyIdleAnimationToSheetSprite(sprite: HTMLElement, anim: BattlerIdleAnimation, frameW: number): void {
+  // 이미 같은 스트립을 돌리는 중이면 아무것도 다시 쓰지 않는다. `backgroundImage` 를 매번
+  // 재대입하면 브라우저에 따라 애니메이션 루프가 처음으로 되감긴다.
+  if (sprite.dataset.battlerAnim === anim.resourceId) return;
+  // 시트 셀(48px)과 화면 프레임 폭(96px = 셀 × BATTLE_ASSET_PIXEL_SCALE)의 배율.
+  const scale = frameW / anim.cellWidth;
+  sprite.dataset.battlerAnim = anim.resourceId;
+  sprite.style.setProperty("--battler-anim-frames", String(anim.frameCount));
+  sprite.style.setProperty("--battler-anim-duration", `${battlerIdleAnimationDurationMs(anim)}ms`);
+  sprite.style.backgroundImage = `url("${battlerIdleAnimationUrl(anim)}")`;
+  sprite.style.backgroundSize = `${anim.frameCount * anim.cellWidth * scale}px ${anim.cellHeight * scale}px`;
+  sprite.style.backgroundPositionX = "0px";
+  sprite.style.backgroundPositionY = "0px";
+}
+
+/** idle 스트립을 걷고 정적 시트로 되돌린다. 되돌릴 원본은 생성 시점에 노드에 적어 둔다. */
+function clearIdleAnimationOnSheetSprite(sprite: HTMLElement): void {
+  // 가드는 "복원 스킵" 이 아니라 **한 번도 애니메이션을 켠 적 없는 스프라이트** 용이다.
+  // apply 는 항상 `dataset.battlerAnim` 을 먼저 쓰므로, 켠 적이 있으면 여기로 들어온다.
+  if (!sprite.dataset.battlerAnim) return;
+  delete sprite.dataset.battlerAnim;
+  sprite.style.removeProperty("--battler-anim-frames");
+  sprite.style.removeProperty("--battler-anim-duration");
+  // apply 가 심은 롱핸드를 직접 지운다. 지금은 호출자가 곧바로 숏핸드 `background-position` 을
+  // 쓰지만, 그 순서에 복원을 기대면 조용히 깨진다.
+  sprite.style.removeProperty("background-position-x");
+  sprite.style.removeProperty("background-position-y");
+  const sheetUrl = sprite.dataset.battlerSheetUrl;
+  const sheetSize = sprite.dataset.battlerSheetSize;
+  if (sheetUrl) sprite.style.backgroundImage = `url("${sheetUrl}")`;
+  if (sheetSize) sprite.style.backgroundSize = sheetSize;
 }
 
 
@@ -428,6 +502,14 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
     const fallback = BATTLE_SHEET_CELL * BATTLE_ASSET_PIXEL_SCALE;
     const frameW = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-width")) || fallback;
     const frameH = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-height")) || fallback;
+    // idle 은 전투의 기본 상태다 — 카탈로그에 스트립이 있으면 숨을 심는다.
+    // idle 이 아닌 포즈는 사건 연출이므로 정적 칸으로 즉시 돌아간다(POSE_FRAME 이 이긴다).
+    const idleAnimation = pose === "idle" ? battlerIdleAnimation(sprite.dataset.battlerResourceId) : undefined;
+    if (idleAnimation?.tier === "sheet-cell") {
+      applyIdleAnimationToSheetSprite(sprite, idleAnimation, frameW);
+      return;
+    }
+    clearIdleAnimationOnSheetSprite(sprite);
     const frame = POSE_FRAME[pose] ?? POSE_FRAME.idle;
     // 0 에는 음수 부호를 붙이지 않는다 — CSSOM 이 "-0px" 를 "0px" 로 정규화하므로 그대로 두면
     // 우리가 쓴 값과 읽히는 값이 달라진다(실측: happy-dom).
@@ -552,6 +634,7 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   if (url) {
     const image = document.createElement("img");
     image.className = "battle-enemy-image";
+    applyIdleAnimationToImage(image, resourceId);
     image.alt = `${enemy.name} 몬스터`;
     image.src = url;
     enemyNode.append(image);
@@ -677,6 +760,7 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
       if (url) {
         const image = document.createElement("img");
         image.className = "battle-actor-image battle-monster-image battle-monster-back";
+        applyIdleAnimationToImage(image, monsterResource);
         image.alt = `${actor.name} 몬스터`;
         image.src = url;
         node.append(image);
@@ -712,6 +796,7 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
   if (skinSprite) {
     const image = document.createElement("img");
     image.className = "battle-actor-image battle-skin-actor-image";
+    applyIdleAnimationToImage(image, skinSprite.resourceId);
     image.alt = actor.name;
     image.src = skinSprite.url;
     // 액터별 뒷모습이 잡혔는지 테스트·디버깅에서 구별할 수 있게 표시한다.
@@ -1034,12 +1119,17 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     const sprite = document.createElement("span");
     sprite.className = "battle-actor-sprite";
     sprite.dataset.testid = `battle-actor-sprite-${resourceId}`;
+    // idle 애니메이션 조회와 정적 시트 복원에 필요한 것을 노드에 적어 둔다 — 포즈 전환은
+    // 프로젝트 상태를 다시 조회하지 않고 이 값만 보아도 결정적이어야 하기 때문이다.
+    sprite.dataset.battlerResourceId = resourceId;
+    sprite.dataset.battlerSheetUrl = url;
     sprite.setAttribute("role", "img");
     sprite.setAttribute("aria-label", `${name} 전투 캐릭터`);
     sprite.style.setProperty("--battle-sprite-frame-width", `${frameW}px`);
     sprite.style.setProperty("--battle-sprite-frame-height", `${frameH}px`);
     sprite.style.backgroundPosition = "0 0";
     sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * BATTLE_SHEET_ROWS}px`;
+    sprite.dataset.battlerSheetSize = sprite.style.backgroundSize;
     sprite.style.backgroundImage = `url("${url}")`;
     return sprite;
   }
