@@ -1110,6 +1110,8 @@ export interface SystemRecords {
   fonts?: import("@/project/fontRegistry").SystemFontConfig;
   /** 저자가 선언한 장르. lint 가 이 선언 대비 옵트인 정합성을 검사한다. 미설정이면 장르 검사 없음. */
   genre?: GenrePackId;
+  /** AI 마을 생성의 물·숲·길 수치와 낱말 규칙. 생략하면 내장 기본값(예전 하드코딩과 동일 동작). */
+  worldGen?: import("@/project/worldGenRules").WorldGenRules;
 }
 
 export interface ActionCombatHudConfig {

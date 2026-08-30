@@ -36,6 +36,7 @@ import {
   runTerrainConstraintPass,
 } from "../villageTerrainPass";
 import { inferRequirementsFromQuery } from "../villageRequirements";
+import { resolveWorldGenRules } from "@/project/worldGenRules";
 import { isPassable } from "@/project/collision";
 import { scrubPlacementConflicts } from "@/project/lint/layoutPlacementValidate";
 import { isCombinedTownTileset } from "@/project/tilesetHarness/combinedTown";
@@ -166,15 +167,16 @@ export function buildVillageDomain(
   }
   // 쿼리 상식 스펙: 강/호수 자리를 비운 채 주거 영역만 시공
   const planForReq = typeof merged.planId === "string" ? loadVillagePlan(draft, merged.planId) : undefined;
+  const worldGenRules = resolveWorldGenRules(draft.system.worldGen);
   const requirements = planForReq?.requirements
     ?? (typeof intent.theme === "string" && intent.theme
-      ? inferRequirementsFromQuery(intent.theme)
+      ? inferRequirementsFromQuery(intent.theme, worldGenRules)
       : undefined);
   const baseArea = villageBuildArea(map, createArgs.bounds);
   assertBuildAreaSize(map, baseArea);
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
   const terrainMasks = requirements && requirements.landmarks.length > 0
-    ? buildTerrainConstraintMasks(map, requirements, baseArea)
+    ? buildTerrainConstraintMasks(map, requirements, baseArea, worldGenRules)
     : undefined;
   const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
   const area = intersectRects(baseArea, reserved);
@@ -271,7 +273,7 @@ export function buildVillageDomain(
   const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
   let landmarkNotes: string[] = [];
   if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
-    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea);
+    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules);
     landmarkNotes = [...terrain.notes];
     if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
     restoreHouseDoors(map, houses);
@@ -611,7 +613,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       if (raw.houses === undefined && raw.housePlans !== undefined) raw.houses = raw.housePlans;
       if (raw.houses === undefined && typeof raw.houseCount === "number") raw.houses = raw.houseCount;
       const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 1;
-      const { plan, issues, ok } = normalizeVillagePlan(raw, seed);
+      const { plan, issues, ok } = normalizeVillagePlan(raw, seed, resolveWorldGenRules(draft.system.worldGen));
       if (!ok) {
         throw new ToolError(
           `마을 계획 검증 실패: ${issues.filter((i) => i.severity === "error").map((i) => i.message).join(" / ")}`,
@@ -758,7 +760,11 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       if (!plan) throw new ToolError(`planId '${planId}' 없음`, { code: "plan-not-found" });
       const evaluation = args.evaluation as VillageLookReport;
       const patch = planPatchFromLookReport(plan, evaluation);
-      const { plan: next, issues, ok } = normalizeVillagePlan(patch, plan.seed + 1);
+      const { plan: next, issues, ok } = normalizeVillagePlan(
+        patch,
+        plan.seed + 1,
+        resolveWorldGenRules(draft.system.worldGen),
+      );
       if (!ok) {
         throw new ToolError(`계획 패치 실패: ${issues.map((i) => i.message).join(" / ")}`, { code: "invalid-plan" });
       }

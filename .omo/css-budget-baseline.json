@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T17:53:38.514Z",
+  "generatedAt": "2026-08-30T21:00:25.975Z",
   "metrics": {
-    "hexLiterals": 1665,
+    "hexLiterals": 1662,
     "important": 985,
     "undefinedVars": 59,
     "globalRootFiles": 10,
-    "cssFileCount": 264
+    "cssFileCount": 265
   },
   "details": {
     "hexByFile": {
@@ -140,7 +140,7 @@
       "src/styles/runtime/pictures.css": 1,
       "src/styles/runtime/playLoading.css": 7,
       "src/styles/runtime/playSurface.css": 2,
-      "src/styles/runtime/statusMenuEdgeDock.css": 9,
+      "src/styles/runtime/statusMenuEdgeDock.css": 6,
       "src/styles/runtime/timer.css": 1,
       "src/styles/runtime/title.css": 4,
       "src/styles/runtime/touchpad.css": 2,
@@ -596,6 +596,7 @@
       "src/styles/database/troops.part-2.css",
       "src/styles/database/virtual-list.css",
       "src/styles/database/workspace-modern.css",
+      "src/styles/database/world-gen.css",
       "src/styles/dialogue.css",
       "src/styles/editor/ai-activity-live.css",
       "src/styles/editor/ai-settings-modal.css",

@@ -4,6 +4,7 @@
 
 import { cloneJson } from "@/project/io/guards";
 import type { MapTreeNode, Project } from "@/project/types";
+import { resolveWorldGenRules } from "@/project/worldGenRules";
 import { ToolError } from "../types";
 import {
   loadVillagePlan,
@@ -47,7 +48,11 @@ export function wipeAttemptMaps(draft: Project, baseline: ProjectMapsBaseline): 
 export function mergePlanIntoBuildArgs(draft: Project, args: Record<string, unknown>): Record<string, unknown> {
   let fromPlan: Record<string, unknown> = {};
   if (typeof args.plan === "object" && args.plan !== null && !Array.isArray(args.plan)) {
-    const { plan, ok, issues } = normalizeVillagePlan(args.plan, typeof args.seed === "number" ? args.seed : 1);
+    const { plan, ok, issues } = normalizeVillagePlan(
+      args.plan,
+      typeof args.seed === "number" ? args.seed : 1,
+      resolveWorldGenRules(draft.system.worldGen),
+    );
     if (!ok) {
       throw new ToolError(
         `plan 검증 실패: ${issues.filter((i) => i.severity === "error").map((i) => i.message).join(" / ")}`,
