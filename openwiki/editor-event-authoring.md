@@ -117,6 +117,44 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   남은 testid: 본문은 `event-flowchart-body` 그대로(스크롤 컨테이너 CSS 재사용), 노드는 `event-flow-node-<kind>`, 분기 라벨은 `.event-flow-branch-label`. 사라진 것: `event-script-flowchart`, `event-flow-chip-status`, `event-command-quick-flow`. `auxOpenController` 의 `"flow"` 슬롯은 더 이상 바인딩되지 않는다.
 - **미리보기 무대 기하 (2026-08-30):** `.ecp-stage` 는 `aspect-ratio: 4/3` + `place-items: end center` 다. 명령 편집 다이얼로그의 좁은 컬럼에서는 맞지만, 미리보기는 명령 컬럼 전체 폭을 쓰므로 무대가 스크롤 뷰포트보다 높아진다 (실측 2560×1440: 무대 1737×1303, 뷰포트 1030 → 하단 정렬된 메시지 창이 fold 밖, 문장 표시 명령이 «빈 흰 박스» 로 보였다). `event-editor.command-preview/01-event-editor-modern-import.css` 의 `.event-page-preview .ecp-stage { max-width: calc(58vh * 4 / 3) }` 가 높이 기준으로 폭을 제한해 4:3 을 지키며 한 화면에 넣는다. 무대 안이 비어 보이면 렌더러가 아니라 이 기하를 먼저 의심할 것 — `renderCommandPreview` 는 텍스트를 정상적으로 넣는다.
 
+- **미리보기는 「이 페이지가 하는 일」 컬럼의 세 번째 보기 (2026-08-28, 아래 2026-08-31 항목이 툴바 부분을 갱신한다):** 보기 토글은 `목록 / 스토리 / 미리보기`(`event-view-toggle-list|storyboard|preview`) 세 칸이고, 미리보기를 고르면 `event-page-preview-host` > `event-page-preview` 가 명령 컬럼 전체 폭·높이를 그대로 쓴다. 미리보기 모드는 `oprn:storyboard-mode` 에 **저장되지 않는다**(저작 보기 = 목록/스토리만 남는다).
+- **분기 열거는 `eventCommandBranches` 가 정본이다 (2026-08-31):** `src/editor/eventCommandBranches.ts` 의 `eventCommandBranches(command)` 가 분기 목록·라벨·경로 칸(`branchIndex`)·목록 마커 톤(`tone`)을 **한 곳에서** 준다. 뷰는 자기 목록을 갖지 않는다 — 네 뷰와 두 비-뷰 호출부가 전부 얇은 어댑터다: `commandList.ts:appendCommandChildren`(목록), `storyboardView.ts:branchesOf`(스토리), `previewSimulation.ts:branchesOf` + `walkWithSimulation`(미리보기·플로우), `tools/commandTraversal.ts:commandBranches`(프로젝트 순회), `eventDraftValidator.ts:commandBranches`(검증). **분기를 새로 만들면 정본에만 추가한다.** 왜 강제인가 (실측): 예전에는 열거 함수가 다섯 벌이었고 그중 셋이 상점 실패 분기(`failedTransactionBranch`)를 빠뜨렸다 — 런타임 `player/interpreter/resume.ts:38-40` 은 실행하는데 목록·플로우·미리보기에는 줄이 안 났고 검증도 그 안에 못 들어갔다(화면에 없는 분기는 모르고 지워진다). `commandList.ts` 는 `SHOP_FAILED_TRANSACTION_BRANCH_INDEX`(-12) 를 import 조차 안 해서 주소를 매길 수도 없었고, `previewSimulation` 의 `inn` 은 거울상으로 정상 분기를 빠뜨렸다. 라벨 규약은 **「언제 실행되나」를 답하는 `~때` 꼴**이다 (`조건이 맞을 때` / `조건이 맞지 않을 때` / `취소했을 때` / `반복할 내용` / `거래했을 때` / `거래하지 못했을 때` / `골드가 부족할 때` / `이겼을 때` / `성공했을 때` …). 예전에는 같은 조건 분기가 뷰마다 `참` / `참일 때` / `조건이 맞을 때` / `조건을 만족함` 네 이름이었다. 분기 «있음» 판정은 **배열이 있으면 있음**(빈 배열 포함) 또는 플래그가 켜져 있으면 있음 — 빈 분기를 찾아 명령을 밀어 넣는 호출부가 있으므로 «비어 있지 않음» 으로 좁히지 말 것. 목록 뷰의 묶음 끝 마커는 `branchGroupEndLabel`. 계약: `test/eventCommandBranchesSingleSource.test.ts`.
+- **페이지 관리는 탭 옆 한 줄이 정본이다 (2026-08-30):** `pageProps.ts` 의 `renderPageActions` 가
+  `.event-editor-pagebar` 에서 탭 스트립 **바로 오른쪽**에 여섯 버튼을 항상 마운트한다 —
+  `event-page-duplicate`(복제) · `event-page-copy`(복사) · `event-page-paste`(붙여넣기) ·
+  `event-page-move-back`/`event-page-move-forward`(순서) · `event-page-delete`(삭제).
+  못 쓰는 상황은 **`disabled` + 이유를 담은 `title`** 이다. 조건부 마운트 금지 — 버튼이 나타났다
+  사라지며 이웃 버튼 자리를 밀었다. 페이지 추가는 여전히 스트립의 `evt-page-add`(`+`) 하나다.
+
+  왜 바꿨는가 (실측 1600×1000): 예전 `renderPageTabs` 는 접힌 `<details class="event-page-tabs">`
+  (`페이지 ▾`)였고 `margin-left: auto` 로 **x=1514** 에 밀려 있었다. 탭 줄은 x=12..639 다. 즉
+  조작 대상과 조작 수단이 1500px 떨어진 채 기본 상태가 닫힘이라, 복사·삭제가 화면에 아예 없었다
+  ("페이지 삭제·복사 기능이 없다"는 재발견이 여기서 나온다). 같이 고친 것:
+  - **복제·순서 이동은 UI 도달 불가였다** — `copyEventPage` / `moveEventPage` 는 모델·유닛테스트가
+    있는데 호출부가 0이었다. 페이지 순서는 런타임 우선순위다(`resolveEventPage` 는 **마지막에
+    조건이 맞는 페이지**를 고른다) — 순서를 못 바꾸면 우선순위를 못 정한다.
+  - `copyEventPage` 는 **원본 바로 뒤**에 꽂는다. 맨 뒤에 붙이면 복제본이 원본보다 조용히 높은
+    우선순위를 갖는다.
+  - **탭 우클릭 메뉴** `pageTabContextMenu.ts` (`event-page-context-menu`, 항목
+    `event-page-menu-*`). 명령 목록에는 우클릭 메뉴가 있는데 탭에는 없어 상호작용 모델이 갈렸다.
+    스킨은 `.event-command-context-menu` 를 공유하고, Escape 는 `stopPropagation` 으로 메뉴만 닫는다.
+  - **WAI-ARIA tablist 계약**: `role="tab"` 에서 `aria-pressed` 를 제거(tab 은 `aria-selected` 만
+    쓴다), roving `tabindex`(활성 0 / 나머지 -1), `ArrowLeft/Right/Home/End` 로 선택 이동,
+    **Ctrl/Cmd+화살표로 순서 변경**. 예전엔 ArrowRight 를 눌러도 포커스·선택 모두 제자리였다.
+  - **헤더 이름 상자가 활성 페이지를 따라간다** (`modal.ts`). 헤더는 모달을 열 때 한 번만 렌더되고
+    refresh 는 페이지 카운터만 갱신했다 — 그래서 상자는 1페이지 이름에 묶여 있었고, 2페이지를 고른
+    뒤 이름을 고치면 **1페이지 이름이 바뀌었다**(실측: `페이지 2/4` 인데 상자는 `페이지 1`).
+    이제 `change` 가 입력 시점에 활성 페이지를 다시 읽고, `refreshHeaderPageSegments` 가 포커스가
+    없을 때만 값을 맞추며, 페이지가 2장 이상이면 접근성 이름이 `페이지 이름 (n/N)` 이 된다.
+  - 페이지 액션 아이콘 슬롯 제거: `.event-page-button-icon-{copy,paste,delete}` 는 글리프 CSS가 없어
+    18px 빈 상자였다. 라벨만 남긴다.
+  - 복제·복사·붙여넣기·순서·삭제는 모두 `toast` 로 결과를 말한다(예전 복사는 무반응이었다).
+  - 계약: `test/eventPageManagementSurface.test.ts`. 표면 기준선
+    `test/fixtures/eventEditorShellSurface.baseline.json` 과 CSS 실사용 클래스 기준선을 함께 갱신했다.
+
+- **미리보기 입구는 보기 세그먼트 하나다 (2026-08-31):** 툴바 aux 버튼 `event-command-quick-preview`(`▶ 미리보기`) 는 **없다**. 세그먼트 `event-view-toggle-preview` 와 같은 `changeMode("preview")` 로 들어가는 중복 컨트롤이었고 같은 라벨로 나란히 서 있었다. aux 그룹에 남는 것은 `event-command-quick-ai` 와 `event-command-quick-flow` 뿐이다(플로우는 팝오버를 여는 별개 동작). `renderCommandToolbar` 의 `onOpenPreview` 배선도 함께 사라졌다.
+- **미리보기 무대 기하 (2026-08-31):** `.ecp-stage` 는 `aspect-ratio: 4/3` + `place-items: end center` 다. 명령 편집 다이얼로그의 좁은 컬럼에서는 맞지만, 미리보기는 명령 컬럼 전체 폭을 쓰므로 무대가 스크롤 뷰포트보다 높아진다 (실측 2560×1440: 무대 1737×1303, 뷰포트 1030 → 하단 정렬된 메시지 창이 fold 밖, 문장 표시 명령이 «빈 흰 박스» 로 보였다). `event-editor.command-preview/01-event-editor-modern-import.css` 의 `.event-page-preview .ecp-stage { max-width: calc(58vh * 4 / 3) }` 가 높이 기준으로 폭을 제한해 4:3 을 지키며 한 화면에 넣는다. 무대 안이 비어 보이면 렌더러가 아니라 이 기하를 먼저 의심할 것 — `renderCommandPreview` 는 텍스트를 정상적으로 넣는다.
+
   왜 옮겼는가 (실측 2026-08-28, `verify-shots/page-preview-probe/02-preview-open.png`): 예전 미리보기는 `도구` 팝오버 안 `event-script-live-preview` details 였고, 그 본문에 `position: absolute; max-height: min(280px, 42vh)` 가 걸려 있었다. 무대는 486px 로 자라는데 본문이 280px 이라 무대 아래쪽과 캡션이 잘렸고, 팝오버가 스토리보드 위에 겹쳐 글자가 서로 뚫고 나왔다. 즉 미리보기가 열려도 볼 수 없었다.
 
   구성: `renderEventPagePreview({ mapId, eventId, page })` 가 미리보기 패널을, `renderEventPageFlow({ mapId, eventId, page, onSelect })` 가 플로우 패널을 만든다(예전 `renderEventScriptModernViews` 는 둘을 한 번에 만들었고, 그 다음 세대인 `renderEventScriptFlowchart` 는 팝오버 아코디언을 만들었다 — 둘 다 없다). 스텝 조작 testid(`event-script-live-prev|next|play`)와 무대·캡션 testid(`event-script-live-stage|caption`)는 그대로다. `auxOpenController` 의 `"preview"`·`"flow"` 슬롯은 더 이상 바인딩되지 않는다 — 컨트롤러는 범용이라 슬롯 자체는 남겨 뒀다.

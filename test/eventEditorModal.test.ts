@@ -187,18 +187,20 @@ describe("RPG Maker style event editor entry points", () => {
     const content = fakeContainer();
     renderEventEditorContent(content, project.startMapId, "event-1");
 
-    // 붙여넣기는 복사 버퍼가 있을 때만, 삭제는 페이지 2개 이상일 때만 노출.
-    // 페이지 추가는 탭 스트립의 [+](event-page-tab-add) 하나로 통일(2026-08-19 스펙).
+    // 페이지 액션은 조건부로 사라지지 않는다 — 전부 마운트하고 못 쓰는 것만 disabled 다
+    // (2026-08-30: 예전에는 붙여넣기·삭제가 나타났다 사라져 이웃 버튼 자리를 밀었다).
+    // 페이지 추가는 탭 스트립의 [+](evt-page-add) 하나로 통일(2026-08-19 스펙).
     const pageActionExpectations = [
-      ["event-page-copy", "페이지 복사"],
-      ["event-page-delete", "페이지 삭제"],
+      ["event-page-duplicate", "복제"],
+      ["event-page-copy", "복사"],
+      ["event-page-paste", "붙여넣기"],
+      ["event-page-delete", "삭제"],
     ] as const;
     for (const [testId, label] of pageActionExpectations) {
       const button = content.querySelector(`[data-testid="${testId}"]`);
       expect(button?.textContent).toContain(label);
-      expect(button?.querySelector(".event-page-button-icon")).not.toBeNull();
     }
-    expect(content.querySelector('[data-testid="event-page-paste"]')).toBeNull();
+    expect(content.querySelector('[data-testid="event-page-paste"]')?.getAttribute("disabled")).toBe("");
 
     const ev = store.getCurrent().maps[project.startMapId]!.events[0]!;
     const strip = renderClassicPageTabStrip(project.startMapId, ev, ev.pages[2]!);
@@ -313,6 +315,37 @@ describe("RPG Maker style event editor entry points", () => {
 
     dialog.querySelector<HTMLElement>('[data-testid="event-page-move-route-ok"]')?.click();
     expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.movement.route?.skippable).toBe(true);
+  });
+
+  it("헤더 이름 상자는 활성 페이지를 따라가고, 그 페이지 이름만 고친다", () => {
+    // 실측 결함(2026-08-30): 헤더는 모달을 열 때 한 번만 렌더되고 refresh 는 페이지 카운터만
+    // 갱신했다. 그래서 상자는 1페이지 이름에 묶여 있었고(`페이지 2/4` 인데 상자는 `페이지 1`),
+    // 2페이지를 고른 뒤 이름을 고치면 **1페이지 이름이 바뀌었다**.
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const pages = [
+      { ...eventPage(), id: "page-1", name: "첫 페이지" },
+      { ...eventPage(), id: "page-2", name: "둘째 페이지" },
+    ];
+    map.events = [{ ...gameEvent(pages[0]!), pages }];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: "page-1" });
+
+    openEventEditorModal(project.startMapId, "event-1");
+    const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
+    if (!nameInput) throw new Error("Expected the header name input");
+    expect(nameInput.value).toBe("첫 페이지");
+
+    editorState.set({ selectedEventPageId: "page-2" });
+    expect(document.querySelector('[data-testid="event-editor-header-page-count"]')?.textContent).toBe("페이지 2/2");
+    expect(nameInput.value).toBe("둘째 페이지");
+    expect(nameInput.getAttribute("aria-label")).toBe("페이지 이름 (2/2)");
+
+    nameInput.value = "이름 바꿈";
+    nameInput.dispatchEvent(new Event("change"));
+
+    const saved = store.getCurrent().maps[project.startMapId].events[0]?.pages ?? [];
+    expect(saved.map((page) => page.name)).toEqual(["첫 페이지", "이름 바꿈"]);
   });
 
   it("confirms before deleting the open event with the Delete key", () => {

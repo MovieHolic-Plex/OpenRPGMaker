@@ -90,12 +90,22 @@ it("opens the command picker from a storyboard add card without switching views"
   expect(document.querySelector('[data-testid="event-command-picker"]')).toBeTruthy();
 });
 
-it("keeps page add on the tab strip and leaves overflow for copy/delete only", () => {
+it("keeps page add on the tab strip and mounts every page action beside it", () => {
   render(host);
   expect(host.querySelector('[data-testid="evt-page-add"]')).toBeTruthy();
   expect(host.querySelector('[data-testid="event-page-add"]')).toBeNull();
-  expect(host.querySelector('[data-testid="event-page-copy"]')?.textContent).toContain("페이지 복사");
-  expect(host.querySelector('[data-testid="event-page-delete"]')).toBeNull();
+  // 페이지가 하나뿐이어도 여섯 액션은 전부 마운트된다 — 못 쓰는 것은 disabled 로 이유를 말한다.
+  for (const testId of [
+    "event-page-duplicate",
+    "event-page-copy",
+    "event-page-paste",
+    "event-page-move-back",
+    "event-page-move-forward",
+    "event-page-delete",
+  ]) {
+    expect(host.querySelector(`[data-testid="${testId}"]`)).toBeTruthy();
+  }
+  expect(host.querySelector('[data-testid="event-page-delete"]')?.getAttribute("disabled")).toBe("");
 });
 
 it("hides the character-id field behind a connect action until a profile is linked", () => {

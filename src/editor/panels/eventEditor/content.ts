@@ -60,7 +60,7 @@ import {
   renderEventCharacterSocialExtras,
   renderEventPageProps,
   renderPageCommandCatalog,
-  renderPageTabs,
+  renderPageActions,
 } from "./pageProps";
 import type { CommandListActions } from "./types";
 import { commandKindLabel } from "./options";
@@ -382,7 +382,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   section.append(
     el("div", {
       class: "event-editor-pagebar",
-      children: [renderClassicPageTabStrip(mapId, ev, activePage), renderPageTabs(mapId, ev, activePage)],
+      children: [renderClassicPageTabStrip(mapId, ev, activePage), renderPageActions(mapId, ev, activePage)],
     }),
     workbench,
   );

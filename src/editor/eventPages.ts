@@ -81,6 +81,11 @@ export function addEventPage(mapId: MapId, eventId: string): string {
   return pageId;
 }
 
+/**
+ * 페이지를 바로 뒤에 복제한다. 맨 뒤에 붙이면 안 된다 — 런타임 `resolveEventPage` 는
+ * **마지막에 조건이 맞는 페이지**를 고르므로(`src/project/io/pageResolution.ts`),
+ * 끝에 붙인 복제본이 원본보다 조용히 높은 우선순위를 갖는다.
+ */
 export function copyEventPage(mapId: MapId, eventId: string, pageId: string): string {
   const sourceName = pageName(mapId, eventId, pageId);
   let copiedId = "";
@@ -91,9 +96,12 @@ export function copyEventPage(mapId: MapId, eventId: string, pageId: string): st
     const copy = structuredClone(source);
     copy.id = genId("page");
     copy.name = `${source.name} 복사본`;
-    event.pages = [...(event.pages ?? []), copy];
+    const pages = [...(event.pages ?? [])];
+    const sourceIndex = pages.findIndex((page) => page.id === pageId);
+    pages.splice(sourceIndex + 1, 0, copy);
+    event.pages = pages;
     copiedId = copy.id;
-  }, pageChange(mapId, eventId, `페이지 복사: ${sourceName}`));
+  }, pageChange(mapId, eventId, `페이지 복제: ${sourceName}`));
   if (copiedId) editorState.set({ selectedEventPageId: copiedId });
   return copiedId;
 }

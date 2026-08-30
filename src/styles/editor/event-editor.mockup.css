@@ -1463,7 +1463,6 @@
   background: transparent;
 }
 
-.event-editor .event-page-actions-summary,
 .event-editor .event-editor-command-edit-summary,
 .event-editor .event-editor-command-tools-summary,
 .event-editor-footer-more-summary {
@@ -1472,24 +1471,12 @@
   user-select: none;
 }
 
-.event-editor .event-page-actions-summary::-webkit-details-marker,
 .event-editor .event-editor-command-edit-summary::-webkit-details-marker,
 .event-editor .event-editor-command-tools-summary::-webkit-details-marker,
 .event-editor-footer-more-summary::-webkit-details-marker {
   display: none;
 }
 
-.event-editor .event-page-actions-summary {
-  min-width: 70px;
-  padding: 7px 10px;
-  border: 1px solid var(--mk-line);
-  border-radius: 4px;
-  color: var(--mk-t2);
-  font-size: 11.5px;
-  text-align: center;
-}
-
-.event-editor .event-page-actions-summary::after,
 .event-editor .event-editor-command-edit-summary::after,
 .event-editor .event-editor-command-tools-summary::after,
 .event-editor-footer-more-summary::after {
@@ -1499,37 +1486,11 @@
   font-size: 9px;
 }
 
-.event-editor .event-page-tabs[open] > .event-page-actions-summary,
 .event-editor .event-editor-command-edit-menu[open] > .event-editor-command-edit-summary,
 .event-editor .event-editor-command-tools-menu[open] > .event-editor-command-tools-summary,
 .event-editor-footer-more[open] > .event-editor-footer-more-summary {
   color: var(--mk-t1);
   border-color: color-mix(in srgb, var(--mk-accent) 48%, var(--mk-line));
-}
-
-.event-editor .event-page-tabs > .event-page-action-buttons {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + 4px);
-  right: 0;
-  display: grid;
-  width: 170px;
-  padding: 6px;
-  gap: 4px;
-  background: var(--mk-raised);
-  border: 1px solid var(--mk-line);
-  border-radius: 6px;
-  box-shadow: 0 12px 28px var(--shadow-pop);
-}
-
-.event-editor .event-page-tabs:not([open]) > .event-page-action-buttons {
-  display: none;
-}
-
-.event-editor .event-page-tabs > .event-page-action-buttons .btn {
-  width: 100%;
-  min-height: 30px;
-  text-align: left;
 }
 
 .event-editor .event-contents-fieldset {
