@@ -587,7 +587,7 @@ describe("제스처가 미룬 초점은 실제 종료 진입점에서 한 번 �
     editorState.set({ clipboard: clipboardFixture(), pastePreview: { x: 2, y: 2 } });
     scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
 
-    input.emit("pointerupoutside");
+    input.emit("pointerupoutside", pointerAt());
 
     expect(scene.isPainting).toBe(false);
     expect(scene.panCalls).toEqual([]);
@@ -608,7 +608,7 @@ describe("제스처가 미룬 초점은 실제 종료 진입점에서 한 번 �
     });
 
     (scene as unknown as { cleanup(): void }).cleanup();
-    input.emit("pointerupoutside");
+    input.emit("pointerupoutside", pointerAt());
 
     expect(scene.panCalls).toEqual([]);
   });
