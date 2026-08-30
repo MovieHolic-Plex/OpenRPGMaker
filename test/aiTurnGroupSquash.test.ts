@@ -13,6 +13,12 @@
 //
 // 이 계약은 브라우저 레이아웃 결과라 fakeDom 으로는 못 잡는다. CSS 원문을 읽어 잠근다
 // (선례: test/aiGlassPanelWidth.test.ts).
+//
+// 후속(2026-08-30): 눌림은 `flex: 0 0 auto` 로 잡혔지만 클립은 남아 또 다른 잘림을 만들었다 —
+// 펼친 이전 턴의 툴 상세가 세로 371px, 마크다운 코드 블록이 가로 250px 잘렸고 그룹은
+// 스크롤러가 아니라 스크롤로도 볼 수 없었다(test/e2e/ai-panel-reachability.spec.ts 실측).
+// 그래서 클립을 내려놓았다. 이제 보호는 둘이다: `flex: 0 0 auto` 와, `overflow: visible` 이
+// 되어 자동 최소 크기가 다시 콘텐츠 크기로 해석되는 것 — 둘이 같은 방향을 가리킨다.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -30,13 +36,22 @@ function ruleBody(css: string, selector: string): string {
   return match?.[1] ?? "";
 }
 
+/** 선언만 남긴다 — 주석에 규칙 이름이 인용돼 있어도 계약 판정이 흔들리지 않게. */
+function declarationsOnly(body: string): string {
+  return body.replace(/\/\*[\s\S]*?\*\//gu, " ");
+}
+
 describe("지난 턴 그룹은 로그의 flex 결손을 흡수하지 않는다", () => {
-  it(".ai-turn-group 은 flex-shrink 를 끈다 — overflow:hidden 이 자동 최소 크기를 0 으로 만들기 때문", () => {
+  it(".ai-turn-group 은 flex-shrink 를 끈다 — 로그의 flex 결손을 이 그룹이 흡수하면 요약이 10px 로 눌린다", () => {
     const body = ruleBody(readCss(DENSITY_CSS), ".ai-turn-group");
     expect(body).not.toBe("");
-    // overflow:hidden 이 남아 있는 한(카드 모서리 클리핑에 필요) 최소 크기 보호가 반드시 필요하다.
-    expect(body).toMatch(/overflow:\s*hidden/u);
     expect(body).toMatch(/flex:\s*0\s+0\s+auto|flex-shrink:\s*0/u);
+  });
+
+  it(".ai-turn-group 은 자식을 잘라내지 않는다 — 그룹은 스크롤러가 아니라서 클립하면 도달 불가다", () => {
+    const body = declarationsOnly(ruleBody(readCss(DENSITY_CSS), ".ai-turn-group"));
+    expect(body).not.toMatch(/overflow(?:-x|-y)?:\s*(?:hidden|clip)/u);
+    expect(body).toMatch(/overflow:\s*visible/u);
   });
 
   it(".ai-chat-log 는 여전히 column flex 스크롤러다 — 이 전제가 깨지면 위 규칙의 이유가 사라진다", () => {
