@@ -87,7 +87,13 @@ let liveDock: {
   key: string;
   renderStaged: () => void;
   setStatus: (text: string, kind?: StatusKind) => void;
+  setGenerating: (busy: boolean) => void;
 } | null = null;
+
+/** 이벤트 에디터가 닫히면 분리된 DOM 클로저를 더는 완료 대상으로 보지 않는다. */
+export function clearEventAiLiveDock(): void {
+  liveDock = null;
+}
 
 const TARGET_NAME_MAX = 18;
 
@@ -318,9 +324,6 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     ],
   }) as HTMLButtonElement;
 
-  const liveDockFor = (stateKey: string): { renderStaged: () => void; setStatus: (text: string, kind?: StatusKind) => void } =>
-    liveDock && liveDock.key === stateKey ? liveDock : { renderStaged, setStatus };
-
   const generate = async (): Promise<void> => {
     if (generateBtn.disabled) return;
     const prompt = input.value.trim();
@@ -341,6 +344,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     }
     generateBtn.disabled = true;
     setStatus("명령 초안을 만들고 있어요…", "busy");
+    const beforeCommands = JSON.stringify(page.commands);
     try {
       const project = store.getCurrent();
       const event = project.maps[mapId]?.events.find((entry) => entry.id === eventId);
@@ -359,30 +363,43 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
         // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
         projectScopeKey: conversationScopeKey(store.getProjectIdentity(), project),
       });
+      const livePage = store.getCurrent().maps[mapId]?.events
+        .find((entry) => entry.id === eventId)
+        ?.pages?.find((entry) => entry.id === page.id);
+      if (!livePage || JSON.stringify(livePage.commands) !== beforeCommands) {
+        state.staged = null;
+        state.status = "명령 목록이 생성 중에 바뀌었어요. 현재 목록으로 다시 만들어 주세요.";
+        state.statusKind = "error";
+        const activeDock = liveDock && liveDock.key === key ? liveDock : null;
+        activeDock?.setStatus(state.status, "error");
+        activeDock?.renderStaged();
+        return;
+      }
+      const liveBefore = livePage.commands;
       // 모델 출력이 "page" 면 그게 곧 최종 목록이고, "append" 면 기존 목록에 끼워 최종 목록을 만든다.
       // 어느 쪽이든 아래 diff 는 같은 일을 한다 — 무엇이 달라지는지 목록 위에 그린다.
       const after = result.scope === "page"
         ? result.commands
-        : withAppended(page.commands, selection, result.commands);
-      const rows = diffCommandLists(page.commands, after);
+        : withAppended(liveBefore, selection, result.commands);
+      const rows = diffCommandLists(liveBefore, after);
       state.staged = { rows, excluded: new Set<string>(), scope: result.scope };
       const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
-      const settled = liveDockFor(key);
-      settled.setStatus(
-        hasCommandDiffChanges(rows)
-          ? `${stagedDiffSummary(rows, new Set())} — 위 목록에서 확인하세요.${fixedNote}`
-          : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`
-      );
-      settled.renderStaged();
+      state.status = hasCommandDiffChanges(rows)
+        ? `${stagedDiffSummary(rows, new Set())} — 위 목록에서 확인하세요.${fixedNote}`
+        : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`;
+      state.statusKind = "";
+      const settled = liveDock && liveDock.key === key ? liveDock : null;
+      // 페이지 전환·에디터 닫기 뒤에는 맞는 도크가 없다. 상태만 보존하고 분리된 DOM 은 그리지 않는다.
+      settled?.setStatus(state.status);
+      settled?.renderStaged();
     } catch (cause) {
       // 검증기 원문(kind/필드 이름)은 원인 추적에 필요하니 버리지 않고, 사용자가 다음에
       // 무엇을 할지 아는 한 줄을 앞에 붙인다.
       const detail = cause instanceof Error ? cause.message : String(cause);
-      // 상태줄은 도크 안에 남기고(#356 이 도크를 살아 있는 표면으로 만들었다),
-      liveDockFor(key).setStatus(
-        `명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`,
-        "error",
-      );
+      state.status = `명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`;
+      state.statusKind = "error";
+      const activeDock = liveDock && liveDock.key === key ? liveDock : null;
+      activeDock?.setStatus(state.status, "error");
       // 한 줄 상태 텍스트는 검증기 원문이 붙으면 끝이 잘린다. append scope 에서는 애초에
       // 지우기·고치기가 표현 불가라는 사실도 여기서만 말할 수 있다 — 모달로 올린다.
       showAiGateNotice(eventCommandGateNotice({
@@ -513,7 +530,12 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   // 생성 중에 본문이 다시 그려진 경우 새 도크도 「생성 중」을 이어받는다 — 안 그러면 버튼이
   // 다시 활성돼 같은 원으로 둘째 호출을 또 넣을 수 있다.
   if (state.statusKind === "busy") generateBtn.disabled = true;
-  liveDock = { key, renderStaged, setStatus };
+  liveDock = {
+    key,
+    renderStaged,
+    setStatus,
+    setGenerating: (busy) => { generateBtn.disabled = busy; },
+  };
   return root;
 }
 
@@ -528,6 +550,7 @@ export function eventAiDockModalStackForTest(): { readonly entries: number; read
 export function resetEventAiStagedForTest(): void {
   panelStates.clear();
   panelStatesProjectKey = "";
+  clearEventAiLiveDock();
 }
 
 function bindCurrentDockRoot(

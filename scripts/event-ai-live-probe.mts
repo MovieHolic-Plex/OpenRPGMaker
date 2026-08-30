@@ -106,7 +106,7 @@ function score(inDir: string): ScoredResult[] {
     const parsed = parseAndValidate(project, raw, { allowEmpty });
     const after = parsed.ok ? parsed.commands : null;
     const expectationFailures = after
-      ? scenario.expectations.filter((expectation) => !expectation.check(after)).map((expectation) => expectation.label)
+      ? scenario.expectations.filter((expectation) => !expectation.check(after, project)).map((expectation) => expectation.label)
       : scenario.expectations.map((expectation) => expectation.label);
     return {
       id: scenario.id,

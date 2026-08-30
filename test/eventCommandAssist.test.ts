@@ -13,7 +13,8 @@ import {
   renderEventAiAssist,
   resetEventAiStagedForTest,
 } from "@/editor/panels/eventEditor/aiAssist";
-import { isPassable } from "@/project/collision";
+import { isPassable, isPassableLanding } from "@/project/collision";
+import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, EventPage, Project } from "@/project/types";
@@ -119,24 +120,25 @@ describe("buildEventAssistPrompt", () => {
     expect(prompt.match(/사용 가능한 kind: ([^\n]+)/u)?.[1]?.split(", ")).not.toContain("changeFactionStance");
   });
 
-  it("resourceId 가 필요한 명령은 kind 목록에서 뺀다 — 목록과 금지가 서로 어긋나지 않는다", () => {
+  it("resourceId 명령과 실제 리소스 id 목록을 함께 제공한다", () => {
     const project = testProject();
     const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: testPage() });
     const kinds = prompt.match(/사용 가능한 kind: ([^\n]+)/u)?.[1]?.split(", ") ?? [];
 
     expect(kinds.length).toBeGreaterThan(0);
     for (const kind of ["playAudio", "showPicture", "changeFace", "playMovie"]) {
-      expect(kinds).not.toContain(kind);
-      expect(prompt).not.toContain(`- ${kind}: `);
+      expect(kinds).toContain(kind);
+      expect(prompt).toContain(`- ${kind}: `);
     }
+    expect(prompt).toContain("### 리소스");
+    expect([...collectResourceIds(project)].some((id) => prompt.includes(`- ${id}:`))).toBe(true);
   });
 
-  it("맵 목록에 크기를 실어 transfer 좌표를 찍을 근거를 준다", () => {
+  it("맵 목록에 transfer 좌표를 찍을 정확한 크기 문구를 싣는다", () => {
     const project = testProject();
     const map = project.maps[project.startMapId];
     const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: testPage() });
-    expect(prompt).toContain(`${map.width}`);
-    expect(prompt).toContain(`${map.height}`);
+    expect(prompt).toContain(`가로 ${map.width} × 세로 ${map.height}`);
   });
 
   it("기존 페이지 커맨드를 요약에 포함한다", () => {
@@ -245,6 +247,25 @@ describe("parseAndValidate", () => {
     if (result.ok) throw new Error("밟을 수 없는 칸이 통과했습니다");
     expect(result.errors.join(" ")).toContain("밟을 수 없는 칸");
     expect(result.errors.join(" ")).toMatch(/예: x=\d+ y=\d+/u);
+  });
+
+  it("isPassable 만 통과하는 한 방향 함정 칸 transfer 를 거부한다", () => {
+    const project = testProject();
+    const map = project.maps[project.startMapId];
+    map.lowerTiles.fill(306);
+    map.upperTiles.fill(-1);
+    map.lowerTiles[3 * map.width + 3] = 230;
+    map.lowerTiles[5 * map.width + 5] = 240;
+    map.lowerTiles[5 * map.width + 4] = 240;
+
+    expect(isPassable(project, map, 3, 3)).toBe(true);
+    expect(isPassableLanding(project, map, 3, 3)).toBe(false);
+    const result = parseAndValidate(project, JSON.stringify([
+      { kind: "transfer", mapId: project.startMapId, x: 3, y: 3, direction: "retain", fade: "black" },
+    ]));
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("한 방향 함정 칸이 통과했습니다");
+    expect(result.errors.join(" ")).toContain("밟을 수 없는 칸");
   });
 
   it("맵 안 transfer 좌표는 통과한다", () => {
@@ -358,6 +379,12 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     const stagedHost = new FakeElement("div");
     const replaced: Command[][] = [];
     const mapId = store.getCurrent().startMapId;
+    store.getCurrent().maps[mapId].events = [{
+      id: eventId,
+      x: 1,
+      y: 1,
+      pages: [structuredClone(page)],
+    }];
     const panel = renderEventAiAssist({
       mapId,
       eventId,
@@ -375,6 +402,19 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     findByTestId(harness.panel, "ai-event-input")!.value = prompt;
     findByTestId(harness.panel, "ai-event-generate")!.click();
     await vi.waitFor(() => expect(findByTestId(harness.panel, "ai-event-result")!.hidden).toBe(false));
+  }
+
+  function deferredFetch(): { resolve: (content: string) => void; mock: ReturnType<typeof vi.fn> } {
+    let resolveResponse!: (response: Response) => void;
+    const mock = vi.fn(() => new Promise<Response>((resolve) => { resolveResponse = resolve; }));
+    (globalThis as unknown as { fetch: unknown }).fetch = mock;
+    return {
+      mock,
+      resolve: (content) => resolveResponse(new Response(
+        JSON.stringify({ choices: [{ message: { content }, finish_reason: "stop" }] }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      )),
+    };
   }
 
   it("같은 ids를 가진 다른 프로젝트로 바꾸면 초안과 열린 상태를 공유하지 않는다", () => {
@@ -477,6 +517,27 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect((findByTestId(harness.panel, "ai-event-apply") as unknown as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it("생성 중 명령 목록이 바뀌면 초안을 만들거나 적용하지 않는다", async () => {
+    const pending = deferredFetch();
+    const page = testPage([{ kind: "text", body: "처음 대사" }]);
+    const harness = renderPanel("sk-test", page);
+    const input = findByTestId(harness.panel, "ai-event-input")!;
+    input.value = "대사를 고쳐 줘";
+    findByTestId(harness.panel, "ai-event-generate")!.click();
+    await vi.waitFor(() => expect(pending.mock).toHaveBeenCalledTimes(1));
+
+    const livePage = store.getCurrent().maps[store.getCurrent().startMapId].events[0]!.pages![0]!;
+    livePage.commands.push({ kind: "text", body: "사용자가 생성 중 추가한 대사" });
+    pending.resolve(JSON.stringify([{ kind: "text", body: "AI가 고친 대사" }]));
+
+    await vi.waitFor(() => expect(harness.panel.textContent).toContain("명령 목록이 생성 중에 바뀌었어요"));
+    expect(findByTestId(harness.panel, "ai-event-result")!.hidden).toBe(true);
+    expect(hasEventAiStagedDraft(store.getCurrent().startMapId, harness.eventId, page.id)).toBe(false);
+    expect(harness.replaced).toHaveLength(0);
+    findByTestId(harness.panel, "ai-event-apply")!.click();
+    expect(harness.replaced).toHaveLength(0);
+  });
+
   it("취소를 누르면 초안만 지우고 목록을 건드리지 않는다", async () => {
     mockFetchSequence(JSON.stringify(CHEST_COMMANDS));
     const harness = renderPanel();
@@ -503,10 +564,17 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     const cmdList = new FakeElement("div") as unknown as HTMLElement;
     const stagedHost = new FakeElement("div");
     const mapId = store.getCurrent().startMapId;
+    const page = testPage();
+    store.getCurrent().maps[mapId].events = [{
+      id: "event-1",
+      x: 1,
+      y: 1,
+      pages: [structuredClone(page)],
+    }];
     const panel = renderEventAiAssist({
       mapId,
       eventId: "event-1",
-      page: testPage(),
+      page,
       cmdList,
       stagedHost: stagedHost as unknown as HTMLElement,
       refreshListVisibility: () => undefined,

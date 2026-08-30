@@ -5,12 +5,13 @@
 // 시나리오는 도크의 예시 버튼(PROMPT_EXAMPLES / EDIT_EXAMPLES)에 실제로 박혀 있는 문장을
 // 우선 포함한다. 앱이 스스로 권하는 문장이 실패하면 그건 곧 제품 결함이다.
 
+import { isPassableLanding } from "@/project/collision";
 import { commandBranches } from "@/editor/tools/commandTraversal";
 import type { Command, Project } from "@/project/types";
 
 export interface ProbeExpectation {
   readonly label: string;
-  readonly check: (after: readonly Command[]) => boolean;
+  readonly check: (after: readonly Command[], project: Project) => boolean;
 }
 
 export interface ProbeScenario {
@@ -104,7 +105,14 @@ export const PROBE_SCENARIOS: readonly ProbeScenario[] = [
       { label: "대사가 있다", check: (after) => textBodies(after).length >= 1 },
       { label: "장소 이동이 있다", check: (after) => hasKind(after, "transfer") },
       { label: "이동 대상이 여관 맵이다", check: (after) => flattenCommands(after).some((command) => command.kind === "transfer" && command.mapId === "map_inn") },
-      { label: "이동 좌표가 맵 안이다", check: (after) => flattenCommands(after).every((command) => command.kind !== "transfer" || (command.x >= 0 && command.y >= 0 && command.x < 20 && command.y < 15)) },
+      {
+        label: "이동 좌표가 런타임 착지 가능한 칸이다",
+        check: (after, project) => flattenCommands(after).every((command) => {
+          if (command.kind !== "transfer") return true;
+          const map = project.maps[command.mapId];
+          return Boolean(map && isPassableLanding(project, map, command.x, command.y));
+        }),
+      },
     ],
   },
   {

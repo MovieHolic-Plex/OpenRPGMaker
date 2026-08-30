@@ -17,7 +17,7 @@
 
 import { newCommand } from "@/editor/eventCommandFactory";
 import { commandBranches } from "@/editor/tools/commandTraversal";
-import { isPassable } from "@/project/collision";
+import { isPassableLanding } from "@/project/collision";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import { COMMAND_GUARANTEES } from "@/project/commandGuaranteeRegistry";
 import {
@@ -65,20 +65,12 @@ const MAX_REF_ENTRIES = 40;
 const MAX_EXISTING_CHARS = 12000;
 // 최초 1회 + 자가수정 2회.
 const MAX_ATTEMPTS = 3;
-// 이동 대상 맵에서 밟을 수 있는 칸을 찾을 때 중앙에서 벗어나는 최대 거리.
-const LANDING_SEARCH_RADIUS = 12;
-
-// 선언된 저작 표면을 우회해 명령을 프롬프트에 노출하면 해당 명령의 참조 계약도 우회된다.
-// resourceId 를 요구하는 명령은 아예 목록에서 뺀다 — 예전에는 kind 목록에 실어 놓고
-// 출력 규약에서 "쓰지 말라"고 다시 금지해, 프롬프트가 스스로 모순이었다(모델은 목록을 믿는다).
-const RESOURCE_BOUND_KINDS = COMMAND_KINDS.filter(
-  (kind) => "resourceId" in (newCommand(kind) as Record<string, unknown>),
-);
-
+// 이동 대상 맵의 중앙에서 시작해 전체 맵을 훑는다. 일부만 보고 "착지 칸 없음"으로
+// 물러서면 멀리 정상 칸이 있는 맵의 함정 좌표를 검증 없이 통과시키기 때문이다.
+// 리소스 명령을 숨기면 얼굴·소리 같은 일급 저작 기능을 잃는다. 대신 실제 id 목록을 프롬프트에
+// 제공하고 기존 참조 검증으로 실패를 닫아, 잘못 고른 id 는 자가수정 루프가 다시 고치게 한다.
 const AI_COMMAND_KINDS = COMMAND_KINDS.filter(
-  (kind) =>
-    COMMAND_GUARANTEES[kind].authoringSurfaces.includes("ai")
-    && !RESOURCE_BOUND_KINDS.includes(kind),
+  (kind) => COMMAND_GUARANTEES[kind].authoringSurfaces.includes("ai"),
 );
 
 // ── 프롬프트 조립 ────────────────────────────────────────────────────────────
@@ -101,18 +93,20 @@ function refSection(title: string, entries: readonly { id: string; name: string 
 
 // 이동 대상 맵은 크기만으로 부족하다 — 모델이 (0,0) 처럼 "안전해 보이는" 좌표를 쓰는데
 // 실내 맵의 (0,0) 은 거의 항상 벽이라 플레이어가 벽 안에서 시작한다. 실제로 밟을 수 있는
-// 칸 하나를 같이 실어 준다(탐색 범위는 중앙 부근으로 제한해 큰 맵에서도 값이 싸다).
+// 칸 하나를 같이 실어 준다. 중앙부터 전체 맵을 훑어, 멀리 정상 칸이 있는데도 검증의
+// 안전 밸브가 켜지는 일을 막는다.
 function suggestedLandingCell(project: Project, map: GameMap): { x: number; y: number } | null {
   const centerX = Math.floor(map.width / 2);
   const centerY = Math.floor(map.height / 2);
-  for (let radius = 0; radius <= LANDING_SEARCH_RADIUS; radius += 1) {
+  const maxRadius = Math.max(map.width, map.height);
+  for (let radius = 0; radius < maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
         const x = centerX + dx;
         const y = centerY + dy;
         if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
-        if (isPassable(project, map, x, y)) return { x, y };
+        if (isPassableLanding(project, map, x, y)) return { x, y };
       }
     }
   }
@@ -158,7 +152,7 @@ function existingCommandsSection(page: EventPage | undefined, scope: AssistScope
 function outputContractSection(scope: AssistScope): string {
   const common = [
     "2. 각 원소는 위 스키마의 Command 객체여야 한다.",
-    "3. switchId/variableId/itemId/troopId/actorId/mapId는 반드시 위 목록의 id를 사용한다.",
+    "3. switchId/variableId/itemId/troopId/actorId/mapId/resourceId는 반드시 위 목록의 id를 사용한다.",
     "4. 위 kind 목록에 없는 명령은 만들지 않는다.",
     "5. transfer 의 x,y 는 대상 맵 크기 안이면서 밟을 수 있는 칸이어야 한다. 확실하지 않으면 위 목록의 «밟을 수 있는 칸 예» 를 쓴다.",
     "6. 요청이 모호하면 가장 단순하고 안전한 해석으로 생성한다.",
@@ -236,6 +230,10 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
       refSection("아이템", project.database.items),
       refSection("트룹(적 그룹)", project.database.troops),
       refSection("액터", project.database.actors),
+      refSection(
+        "리소스",
+        [...collectResourceIds(project)].map((id) => ({ id, name: id })),
+      ),
       refSection(
         "맵",
         Object.entries(project.maps).map(([id, map]) => ({
@@ -348,7 +346,7 @@ function validateTransferBounds(commands: readonly Command[], project: Project):
         }
         // 밟을 수 있는 칸을 하나도 못 찾는 맵(타일셋 미해석 등)은 판정 근거가 없으니 반려하지 않는다.
         const landing = suggestedLandingCell(project, map);
-        if (landing && !isPassable(project, map, command.x, command.y)) {
+        if (landing && !isPassableLanding(project, map, command.x, command.y)) {
           throw new Error(
             `transfer: 좌표(x=${command.x}, y=${command.y})가 맵 «${map.name || command.mapId}» 에서 밟을 수 없는 칸입니다. 밟을 수 있는 칸을 쓰세요. 예: x=${landing.x} y=${landing.y}`,
           );
