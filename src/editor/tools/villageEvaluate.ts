@@ -3,6 +3,7 @@
 // - 룩: 결정론 휴리스틱(광장 소품 밀도, 길 재질, 나무 분포, 상위 점유율)
 // 멀티모달 LLM은 같은 VillageLookReport 스키마를 채우면 된다(fixes로 피드백).
 
+import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
 import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -59,6 +60,8 @@ export interface VillageLookReport {
     readonly adjacentWindowPairs: number;
     readonly orphanDoorTiles: number;
     readonly doorPairs: number;
+    /** Object1 문 이벤트 수 — 문 외형이 타일이 아니라 이벤트인 집을 센다. */
+    readonly doorEvents: number;
     readonly houseRegions: number;
     readonly houseShapeKinds: number;
     readonly houseKitKinds: number;
@@ -155,8 +158,11 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
   // - 설계도 기반(집 형태/키트/층수): layoutPlan.regions 에만 있는 정보라 관찰로 확인할 수 없다.
   //   설계도가 없을 때 검사하면 "형태 0종" 같은 **거짓 지적**이 나오므로 설계도가 있을 때만 검사한다.
   const hasVillageBlueprint = map.layoutPlan?.kind === "village-harness-natural-v2";
-  // 집 수: 설계도가 있으면 그 값, 없으면 타일에서 센 문 쌍(집 한 채당 116/146 한 쌍)으로 추정한다.
-  const houseCount = metrics.houseRegions > 0 ? metrics.houseRegions : metrics.doorPairs;
+  // 집 수: 설계도가 있으면 그 값, 없으면 문 개수로 추정한다.
+  // 문은 두 형태다 — Object1 문 이벤트(현재 시공 기본값) 또는 타일 문 쌍(116/146).
+  const houseCount = metrics.houseRegions > 0
+    ? metrics.houseRegions
+    : Math.max(metrics.doorEvents, metrics.doorPairs);
   // 정착지로 볼 최소 조건 — 문 쌍이 둘 이상이면 마을 품질을 따질 대상이다.
   const isSettlement = hasVillageBlueprint || houseCount >= 2;
   if (isSettlement) {
@@ -664,6 +670,7 @@ function collectMetrics(map: GameMap) {
     adjacentWindowPairs,
     orphanDoorTiles,
     doorPairs,
+    doorEvents: countDoorEvents(map),
     houseRegions: houseRegions.length,
     houseShapeKinds: new Set(houseRegions.map((region) => region.shape).filter(Boolean)).size,
     houseKitKinds: new Set(houseRegions.map((region) => region.kitId).filter(Boolean)).size,
@@ -718,6 +725,14 @@ function countRoadExits(map: GameMap): number {
   const west = Array.from({ length: map.height }, (_, y) => isRoad(0, y)).some(Boolean);
   const east = Array.from({ length: map.height }, (_, y) => isRoad(map.width - 1, y)).some(Boolean);
   return Number(north) + Number(south) + Number(west) + Number(east);
+}
+
+/** 문 외형을 맡은 Object1 문 이벤트 수. 문 charset 스프라이트를 쓴 이벤트만 센다. */
+function countDoorEvents(map: GameMap): number {
+  return map.events.filter((event) => {
+    const sprite = event.pages?.[0]?.graphic.sprite;
+    return sprite?.id === HOUSE_DOOR_CHARSET_TEXTURE;
+  }).length;
 }
 
 function inferDoorFronts(map: GameMap): { x: number; y: number }[] {
@@ -786,6 +801,7 @@ function emptyFail(message: string, attempt: number, maxAttempts: number): Villa
       adjacentWindowPairs: 0,
       orphanDoorTiles: 0,
       doorPairs: 0,
+      doorEvents: 0,
       houseRegions: 0,
       houseShapeKinds: 0,
       houseKitKinds: 0,

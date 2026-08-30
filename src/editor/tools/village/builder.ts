@@ -108,6 +108,8 @@ export function buildVillageDomain(
   const housePlan = coerceHousePlan(merged.houses ?? merged.houseCount, merged.housePlans);
   const interiorEnabled = merged.interior !== false;
   const doorEventEnabled = merged.doorEvent !== false;
+  // 문 외형의 주인 — 이벤트를 만들면 Object1 문 스프라이트가 문이고, 문 타일은 깔지 않는다.
+  const doorEventsPlanned = interiorEnabled && doorEventEnabled;
   const fencesEnabled = merged.fences !== false;
   const decorEnabled = merged.decor !== false;
   const warnings: string[] = [];
@@ -214,6 +216,7 @@ export function buildVillageDomain(
     map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
     houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
     boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
+    !doorEventsPlanned,
   );
   perfLap("houses");
   if (houses.length === 0) {
@@ -324,7 +327,7 @@ export function buildVillageDomain(
       }
     }
   }
-  const houseInteriors = interiorEnabled && doorEventEnabled
+  const houseInteriors = doorEventsPlanned
     ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
     : [];
   perfLap("interiors");
