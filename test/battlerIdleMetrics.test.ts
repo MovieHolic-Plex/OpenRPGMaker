@@ -75,9 +75,11 @@ function halfFilled(width: number, height: number, rgba: [number, number, number
 }
 
 describe("배틀러 idle 지표 정본", () => {
-  it("행마다 다른 같은 그림끼리는 변화가 0 이다 — 행 스트라이드가 밀리면 깨진다", () => {
-    // 픽스처가 **행마다 달라야** 행 오프셋 오류가 값에 드러난다. 행 불변 이미지(예: 왼쪽
-    // 절반만 칠한 그림)로는 행이 밀려도 같은 값이 나와 버그를 놓친다.
+  it("같은 그림끼리는 변화가 0 이다 (sanity — 이 테스트만으로는 밀림을 못 잡는다)", () => {
+    // `frameChange` 는 두 버퍼를 `i += 4` 로 나란히 훑는다. 그래서 **같은 그림 두 장**은
+    // 픽스처 모양과 무관하게 항상 0 이고, 양쪽에 같은 오프셋을 넣는 대칭 버그도 0 이다.
+    // 즉 이건 밀림 래칫이 아니라 선형 비교의 sanity 다 — 밀림을 실제로 잡는 것은 아래
+    // "행이 한 줄 밀린 그림" 과 "frameChange 와 cellChange 가 같은 임계값" 두 개다.
     expect(frameChange(diagonal(40, 30), diagonal(40, 30))).toBe(0);
   });
 
@@ -106,7 +108,7 @@ describe("배틀러 idle 지표 정본", () => {
     );
   });
 
-  it("frameChange 와 cellChange 가 같은 임계값을 쓴다", () => {
+  it("frameChange 와 cellChange 가 같은 값을 낸다 — 스트립 주소가 칸 폭으로 밀리면 깨진다", () => {
     // 같은 두 그림을 (a) 두 장으로, (b) 한 스트립의 두 칸으로 주면 같은 값이 나와야 한다.
     const left = diagonal(20, 20);
     const right = solid(20, 20, [10, 200, 10, 255]);
