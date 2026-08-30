@@ -24,4 +24,16 @@ export const store = {
   getCurrent(): Project {
     return currentProject;
   },
+
+  beginReadOnlyProjectSnapshot(project: Project): () => void {
+    const previous = currentProject;
+    const snapshot = structuredClone(project);
+    currentProject = snapshot;
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      if (currentProject === snapshot) currentProject = previous;
+    };
+  },
 };
