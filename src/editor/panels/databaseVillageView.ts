@@ -18,6 +18,7 @@ import {
   duplicateTemplateRecord,
   footprintTileCount,
   nextVillageId,
+  presetRecordFromArchetype,
   templateFootprint,
   templateRecordFromDef,
   tightenTemplateBounds,
@@ -38,6 +39,7 @@ import {
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { ALL_HOUSE_KIT_IDS, HOUSE_KITS, MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
 import {
+  VILLAGE_ARCHETYPES,
   VILLAGE_EDGE_TREE_STYLES,
   VILLAGE_GROUND_THEME_IDS,
   VILLAGE_LAYOUT_IDS,
@@ -49,7 +51,9 @@ import {
   minWingRun,
   presetOverrides,
   templateFromRecord,
+  villageArchetypeById,
   villageTemplateCatalog,
+  type VillageArchetype,
 } from "@/editor/tools/village/authoringData";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { store } from "@/project/store";
@@ -144,19 +148,35 @@ function kindChips(templateCount: number, presetCount: number, rerender: () => v
   });
 }
 
+/** 내장과 id 가 겹치는 레코드는 「더하기」가 아니라 「덮기」다 — 목록에서 구분돼야 한다. */
+function overridesBuiltIn(id: string): boolean {
+  return HOUSE_TEMPLATE_DEFS.some((def) => def.id === id);
+}
+
 function templateRows(records: readonly VillageHouseTemplateRecord[], rerender: () => void): HTMLElement[] {
   const query = villageSearch.trim().toLowerCase();
   return records.flatMap((record, index) => {
     if (query && !matches(record.name, record.id, query)) return [];
     const resolved = templateFromRecord(record);
+    const override = overridesBuiltIn(record.id);
+    const marks = [`${record.w}×${record.h}`];
+    if (override) marks.push("내장 덮음");
+    if ("reason" in resolved) marks.push("규약 위반");
+    const titleParts = [record.id];
+    if (override) titleParts.push(`내장 “${record.id}” 을 이 레코드가 대체합니다`);
+    if ("reason" in resolved) titleParts.push(resolved.reason);
     return [listRow({
       name: record.name || record.id,
-      sub: `${record.w}×${record.h}${"reason" in resolved ? " · 규약 위반" : ""}`,
+      sub: marks.join(" · "),
       number: index + 1,
       active: record.id === selectedTemplateId,
-      title: "reason" in resolved ? `${record.id} · ${resolved.reason}` : record.id,
+      title: titleParts.join(" · "),
       testid: `db-village-template-row-${record.id}`,
-      dataset: { villageTemplateId: record.id, valid: "reason" in resolved ? "false" : "true" },
+      dataset: {
+        villageTemplateId: record.id,
+        valid: "reason" in resolved ? "false" : "true",
+        villageOverride: override ? "true" : "false",
+      },
       onSelect: () => { selectedTemplateId = record.id; rerender(); },
     })];
   });
@@ -260,20 +280,41 @@ function templateDetail(
   const invalid = "reason" in resolved ? resolved.reason : undefined;
   const catalog = villageTemplateCatalog(project);
   const kitName = record.kitId ? HOUSE_KITS[record.kitId as keyof typeof HOUSE_KITS]?.name ?? record.kitId : "프리셋/씨앗값이 고름";
+  const override = overridesBuiltIn(record.id);
+  // 레코드 수와 후보 수만 보면 "34 인데 왜 안 늘었지" 를 알 수 없다 — 덮은 것과 더한 것을 따로 센다.
+  const overrideCount = records.filter((entry) => overridesBuiltIn(entry.id)).length;
+  const addedCount = records.length - overrideCount;
 
   return detailPane({
     hero: detailHero({
       eyebrow: "집 형태",
       title: record.name || record.id,
-      subtitle: invalid ? `규약 위반: ${invalid}` : "시공에 바로 쓰입니다. AI 는 housePlans[].templateId 로 이 id 를 지목합니다.",
-      tags: [record.id, `${record.w}×${record.h}`, `${footprintTileCount(record)}칸`, kitName],
+      subtitle: invalid
+        ? `규약 위반: ${invalid}`
+        : override
+          ? `내장 “${record.id}” 을 이 레코드가 대체합니다. AI 가 같은 id 를 써도 여기 값으로 시공됩니다.`
+          : "시공에 바로 쓰입니다. AI 는 housePlans[].templateId 로 이 id 를 지목합니다.",
+      tags: [
+        record.id,
+        `${record.w}×${record.h}`,
+        `${footprintTileCount(record)}칸`,
+        kitName,
+        ...(override ? ["내장 덮음"] : []),
+      ],
       media: footprintPreview(record),
       testid: "db-village-template-hero",
     }),
     body: [
       statStrip([
-        { label: "내가 만든 형태", value: String(records.length), hint: "내장 34종에 더해짐", tone: "good" },
-        { label: "시공 후보", value: String(catalog.templates.length), hint: "내장 + 사용자(같은 id는 덮어씀)" },
+        { label: "내장에 더함", value: String(addedCount), hint: `내장 ${HOUSE_TEMPLATE_DEFS.length}종에 새로 더한 형태`, tone: "good" },
+        {
+          label: "내장 덮음",
+          value: String(overrideCount),
+          hint: overrideCount > 0 ? "내장과 id 가 같아 대체됩니다" : "내장과 같은 ID 를 쓰면 여기로 셉니다",
+          tone: overrideCount > 0 ? "warn" : "neutral",
+          testid: "db-village-template-override-count",
+        },
+        { label: "시공 후보", value: String(catalog.templates.length), hint: `내장 ${HOUSE_TEMPLATE_DEFS.length} + 더함 ${addedCount}` },
         {
           label: "규약 검사",
           value: invalid ? "위반" : "통과",
@@ -362,19 +403,21 @@ function templateBasicFields(
     }),
     el("p", {
       class: "db-ws-usage",
-      text: record.clonedFrom
-        ? `내장 “${record.clonedFrom}” 에서 복제했습니다. 같은 ID 를 쓰면 내장 형태를 덮어씁니다.`
-        : "내장과 같은 ID 를 쓰면 내장 형태를 덮어씁니다.",
+      dataset: { testid: "db-village-template-id-usage" },
+      text: overridesBuiltIn(record.id)
+        // 이 문장이 "덮는 중" 과 "덮을 수 있음" 을 섞으면 사용자는 지금 상태를 알 수 없다.
+        ? `지금 이 ID 는 내장 형태 “${record.id}” 와 같습니다 — 내장 대신 이 레코드가 시공됩니다. ID 를 바꾸면 내장이 되살아나고 이 형태는 따로 더해집니다.`
+        : record.clonedFrom
+          ? `내장 “${record.clonedFrom}” 에서 복제했습니다. ID 가 달라서 내장에 더해집니다 — ID 를 “${record.clonedFrom}” 로 바꾸면 내장을 덮어씁니다.`
+          : "내장과 같은 ID 를 쓰면 내장 형태를 덮어씁니다. 다른 ID 면 카탈로그에 더해집니다.",
     }),
   ];
 }
 
 function templateSizeFields(record: VillageHouseTemplateRecord, rerender: () => void): HTMLElement[] {
   const { templateW, templateH } = VILLAGE_RANGE;
-  const kitOptions = [
-    { id: UNSET, name: "지정 안 함 (프리셋·씨앗값이 고름)" },
-    ...ALL_HOUSE_KIT_IDS.map((id) => ({ id, name: HOUSE_KITS[id].name })),
-  ];
+  // 빈 값 항목은 `baseSelect` 가 넣는다 — 여기서 또 넣으면 값이 같은 항목이 둘이 된다.
+  const kitOptions = ALL_HOUSE_KIT_IDS.map((id) => ({ id, name: HOUSE_KITS[id].name }));
   return [
     requiredNumber("폭 (칸)", "db-village-template-w", record.w, templateW, (value) => {
       recordCoalescedSnapshot(`village-template-w:${record.id}`, "집 형태 폭 변경");
@@ -591,13 +634,24 @@ function presetDetail(
   const record = records.find((entry) => entry.id === selectedPresetId);
   if (!record) {
     return detailPane({
-      body: emptyState({
-        icon: "⌖",
-        title: "배치 프리셋을 만들어 보세요",
-        body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
-        action: { label: "+ 프리셋 추가", kind: "primary", testid: "db-village-preset-blank-create", onClick: () => createRecord(rerender) },
-        testid: "db-village-preset-blank",
-      }),
+      body: [
+        emptyState({
+          icon: "⌖",
+          title: "배치 프리셋을 만들어 보세요",
+          body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
+          action: { label: "+ 빈 프리셋 추가", kind: "primary", testid: "db-village-preset-blank-create", onClick: () => createRecord(rerender) },
+          testid: "db-village-preset-blank",
+        }),
+        el("div", {
+          class: "db-ws-stack db-village-inspector",
+          children: [span(sectionCard({
+            title: "마을 원형에서 시작하기",
+            hint: "AI 가 테마 문장으로 고르던 값 묶음. 골라서 프리셋으로 굽습니다",
+            children: archetypeGallery(rerender),
+            testid: "db-village-archetype-gallery",
+          }))],
+        }),
+      ],
       testid: "db-village-detail-pane",
     });
   }
@@ -660,6 +714,12 @@ function presetDetail(
             // 카드 testid 는 안쪽 select 의 `db-village-preset-layout` 과 겹치면 안 된다 —
             // testid 조회는 정확 일치이므로 겹치면 조상 div 가 먼저 잡힌다.
             testid: "db-village-preset-arrangement",
+          }),
+          sectionCard({
+            title: "마을 원형에서 값 가져오기",
+            hint: "분위기 6갈래. 집 수·길 폭·바닥은 건드리지 않습니다",
+            children: archetypeImportFields(record, rerender),
+            testid: "db-village-preset-archetype",
           }),
           span(sectionCard({
             title: "쓸 집 형태 고르기",
@@ -879,6 +939,115 @@ function presetTemplateWhitelist(
 }
 
 // ---------------------------------------------------------------------------
+// 마을 원형
+//
+// 원형은 예전에 `village/builder.ts` 의 정규식 6갈래 안에만 있었다 — 테마 문장에 「어촌」이
+// 들어가야만 닿을 수 있었고, 화면에는 이름조차 없었으며 `presetId` 로 지목할 수도 없었다.
+// 이제 `authoringData.ts` 의 `VILLAGE_ARCHETYPES` 가 정본이고 테마 추론과 이 화면이 같은
+// 배열을 읽는다. 여기서 만든 프리셋은 값을 베낀 사본이므로, 원형이 나중에 바뀌어도 이미
+// 만든 프리셋은 흔들리지 않는다.
+// ---------------------------------------------------------------------------
+
+/** 원형이 정하는 값을 한 줄로. 사람이 고를 때 이름만으로는 무엇이 달라지는지 알 수 없다. */
+function archetypeSummary(archetype: VillageArchetype): string {
+  const { pathStyle, yardStyle, plazaStyle, plazaLayout, edgeTrees, kitMix } = archetype.values;
+  const parts: string[] = [];
+  if (pathStyle) parts.push(PATH_LABEL[pathStyle] ?? pathStyle);
+  if (yardStyle) parts.push(`마당 ${YARD_LABEL[yardStyle] ?? yardStyle}`);
+  if (plazaStyle) parts.push(`광장 ${PLAZA_STYLE_LABEL[plazaStyle] ?? plazaStyle}`);
+  if (plazaLayout) parts.push(PLAZA_LAYOUT_LABEL[plazaLayout] ?? plazaLayout);
+  if (edgeTrees) parts.push(`나무 ${EDGE_TREE_LABEL[edgeTrees] ?? edgeTrees}`);
+  if (kitMix) parts.push(kitMix === "mixed" ? "재료 섞기" : HOUSE_KITS[kitMix as keyof typeof HOUSE_KITS]?.name ?? kitMix);
+  return parts.join(" · ");
+}
+
+function archetypeGallery(rerender: () => void): HTMLElement[] {
+  return [
+    el("div", {
+      class: "db-village-archetypes",
+      dataset: { testid: "db-village-archetypes" },
+      children: VILLAGE_ARCHETYPES.map((archetype) => el("button", {
+        class: "db-village-archetype",
+        attrs: {
+          type: "button",
+          // 낱말 목록이 곧 "이 원형이 언제 자동으로 골라지는가" 다.
+          title: `테마에 이런 낱말이 있으면 자동으로 골라집니다: ${archetype.keywords.join(", ")}`,
+        },
+        dataset: { testid: `db-village-archetype-${archetype.id}` },
+        on: { click: () => createPresetFromArchetype(archetype.id, rerender) },
+        children: [
+          el("span", { class: "db-village-archetype-name", text: archetype.name }),
+          el("span", { class: "db-village-archetype-note", text: archetype.note }),
+          el("span", { class: "db-village-archetype-values", text: archetypeSummary(archetype) }),
+        ],
+      })),
+    }),
+    el("p", {
+      class: "db-ws-usage",
+      text: "원형을 고르면 그 값이 든 프리셋이 새로 생깁니다. AI 는 테마 문장으로도 같은 원형을 고르지만, 프리셋으로 만들어 두면 값을 눈으로 보고 고칠 수 있고 presetId 로 지목할 수 있습니다.",
+    }),
+  ];
+}
+
+function archetypeImportFields(record: VillageLayoutPresetRecord, rerender: () => void): HTMLElement[] {
+  const select = el("select", { dataset: { testid: "db-village-archetype-source" } }) as HTMLSelectElement;
+  for (const archetype of VILLAGE_ARCHETYPES) {
+    select.append(el("option", { attrs: { value: archetype.id }, text: `${archetype.name} — ${archetypeSummary(archetype)}` }));
+  }
+  return [
+    field("마을 원형", select),
+    el("div", {
+      class: "db-village-wing-actions",
+      children: [el("button", {
+        class: "db-ws-btn db-ws-btn-ghost",
+        text: "값 가져오기",
+        attrs: { type: "button" },
+        dataset: { testid: "db-village-archetype-apply" },
+        on: {
+          click: () => {
+            const archetype = villageArchetypeById(select.value);
+            if (!archetype) return;
+            recordProjectSnapshot("원형 값 가져오기");
+            // 원형이 안 정하는 항목은 `undefined` 로 지운다 — 남겨 두면 두 원형이 섞인 값이 되고,
+            // 화면의 「지정 안 함」과 저장된 값이 어긋난다.
+            patchPreset(record.id, () => ({
+              pathStyle: archetype.values.pathStyle,
+              yardStyle: archetype.values.yardStyle,
+              plazaStyle: archetype.values.plazaStyle,
+              plazaLayout: archetype.values.plazaLayout,
+              edgeTrees: archetype.values.edgeTrees,
+              kitMix: archetype.values.kitMix,
+            }));
+            toast(`“${archetype.name}” 값을 가져왔습니다.`, "ok");
+            rerender();
+          },
+        },
+      })],
+    }),
+    el("p", {
+      class: "db-ws-usage",
+      text: "분위기 값(길 재질·마당·광장·바깥 나무·재료)만 덮어씁니다. 원형이 정하지 않는 항목은 「지정 안 함」으로 비워집니다.",
+    }),
+  ];
+}
+
+function createPresetFromArchetype(archetypeId: string, rerender: () => void): void {
+  const archetype = villageArchetypeById(archetypeId);
+  if (!archetype) return;
+  const used = (store.getCurrent().villagePresets ?? []).map((entry) => entry.id);
+  const id = nextVillageId(used, archetype.id);
+  recordProjectSnapshot("원형에서 배치 프리셋 만들기");
+  store.update((draft) => {
+    draft.villagePresets = [...(draft.villagePresets ?? []), presetRecordFromArchetype(archetype, id)];
+  }, { scope: "database", collection: "villagePresets" });
+  selectedKind = "preset";
+  selectedPresetId = id;
+  villageSearch = "";
+  toast(`“${archetype.name}” 원형으로 프리셋을 만들었습니다.`, "ok");
+  rerender();
+}
+
+// ---------------------------------------------------------------------------
 // 컨트롤 헬퍼
 // ---------------------------------------------------------------------------
 
@@ -924,7 +1093,14 @@ function requiredNumber(
   return field(label, input);
 }
 
-/** 「지정 안 함」을 첫 항목으로 두는 select — 프리셋의 모든 값은 생략 가능하다. */
+/**
+ * 값을 비울 수 있는 select — 프리셋의 모든 값은 생략 가능하다.
+ *
+ * 「지정 안 함」 항목을 여기서 만들지 않는다: 공용 `selectField` 의 `baseSelect` 가 빈 값
+ * 항목(`(없음)`)을 **항상** 맨 앞에 넣는다. 예전에는 여기서 하나 더 얹어서 값이 같은("")
+ * 항목이 둘이 됐고, 브라우저는 앞선 것을 고르므로 「지정 안 함」 라벨은 화면에 한 번도
+ * 뜨지 않는 죽은 문구였다(실측: 재료 킷이 「(없음)」으로 표시).
+ */
 function optionalSelect<T extends string>(
   label: string,
   testid: string,
@@ -937,7 +1113,7 @@ function optionalSelect<T extends string>(
     label,
     testid,
     typeof value === "string" && (options as readonly string[]).includes(value) ? value : UNSET,
-    [{ id: UNSET, name: "지정 안 함" }, ...options.map((id) => ({ id, name: labels[id] ?? id }))],
+    options.map((id) => ({ id, name: labels[id] ?? id })),
     (next) => onChange(next === UNSET ? undefined : (next as T)),
   );
 }

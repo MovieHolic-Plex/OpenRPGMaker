@@ -275,11 +275,20 @@ export function renderDatabasePanel(container: HTMLElement): void {
     appendTabSearch(header);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {
+      const groupCount = groupRecordCount(group);
       header.append(el("div", {
         class: "db-tab-group",
         text: group.label,
-        attrs: { title: `${group.label} 그룹 펼치기/접기` },
-        dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
+        // 접힌 그룹은 라벨 한 낱말만 남는다 — 「마을」이 「세계」 안에 있다는 걸 알 길이
+        // 탭 검색뿐이었다. 안에 든 탭 이름을 툴팁에 실어 hover 로도 닿게 한다.
+        attrs: { title: `${group.label} 그룹 펼치기/접기 — ${groupTabLabels(group)}` },
+        dataset: {
+          testid: `db-tab-group-${group.slug}`,
+          groupSlug: group.slug,
+          // 배지는 탭과 같은 규칙(0 은 표시하지 않음). textContent 는 라벨 그대로 남는다 —
+          // 그룹 라벨 계약(db-desktop-matrix, databaseNavMode)이 정확 일치를 요구한다.
+          ...(groupCount > 0 ? { tabCount: String(groupCount) } : {}),
+        },
         on: {
           click: () => {
             const collapsed = collapsedGroupSlugs();
@@ -393,6 +402,15 @@ function databaseTabCount(tab: DatabaseTab): number | null {
   }
 }
 
+/** 그룹 헤더에 실을 합계. 컬렉션이 아닌 탭(개요/시스템 등)은 null 이므로 0 으로 센다. */
+function groupRecordCount(group: DatabaseTabGroup): number {
+  return group.tabs.reduce((sum, id) => sum + (databaseTabCount(id) ?? 0), 0);
+}
+
+function groupTabLabels(group: DatabaseTabGroup): string {
+  return group.tabs.map((id) => tabFor(id).label).join(", ");
+}
+
 function refreshTabCounts(container: HTMLElement): void {
   const header = container.querySelector(".db-tabs");
   if (!(header instanceof HTMLElement)) return;
@@ -403,6 +421,15 @@ function refreshTabCounts(container: HTMLElement): void {
     const count = databaseTabCount(tab.id);
     if (count === null || count === 0) delete button.dataset.count;
     else button.dataset.count = String(count);
+  }
+  // 그룹 배지도 같이 갱신한다 — 안 하면 접힌 그룹이 undo/redo 뒤에도 옛 합계를 들고 있다.
+  for (const node of Array.from(header.querySelectorAll(".db-tab-group"))) {
+    if (!(node instanceof HTMLElement)) continue;
+    const group = TAB_GROUPS.find((entry) => entry.slug === node.dataset.groupSlug);
+    if (!group) continue;
+    const count = groupRecordCount(group);
+    if (count === 0) delete node.dataset.tabCount;
+    else node.dataset.tabCount = String(count);
   }
 }
 

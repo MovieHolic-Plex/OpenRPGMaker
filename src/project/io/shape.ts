@@ -8,6 +8,7 @@ import { normalizeWorldGraph } from "../worldGraph";
 import { normalizePalettePresetId } from "../tilesetPalette";
 import { normalizeFarmAnimalStartInstances } from "../p1FoundationRecords";
 import { normalizeFarmBuildingPlacements, normalizeHomeDecorationPlacements } from "../spatialPlacements";
+import { HOUSE_TEMPLATE_DEFS } from "../defaults/houseTemplateCatalog";
 import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { repairProjectReferences, validateProjectReferences } from "./references";
 import { validateConditionShape } from "./shapeCommandFields";
@@ -446,6 +447,9 @@ function normalizeShopCommands(project: Project): void {
  * 열거형(kitId·pathStyle 같은 문자열)은 값을 좁히지 않는다 — types 레이어가 editor 레이어를
  * import 하지 않는다는 계약이 있고, 읽는 쪽이 좁히도록 설계됐다. 여기서 막는 것은 **모양**이다.
  */
+/** 내장 34종 id. 프리셋 화이트리스트가 이 id 를 가리키는 것은 정상이다(카탈로그가 정본). */
+const BUILT_IN_HOUSE_TEMPLATE_IDS: ReadonlySet<string> = new Set(HOUSE_TEMPLATE_DEFS.map((def) => def.id));
+
 function validateVillageTemplates(value: unknown): void {
   if (value === undefined) return;
   for (const [index, entry] of requireArray("villageTemplates", value).entries()) {
@@ -491,7 +495,12 @@ function validateVillageTemplates(value: unknown): void {
  *
  * `templateIds` 는 이 프리셋이 쓸 집 형태 화이트리스트다. 없는 id 를 가리키면 카탈로그가
  * 통째로 걸러져 후보가 0 이 되고, 시공기는 "집을 못 놓았다"로 중단한다 — 사용자 눈에는
- * 이유 없는 실패다. 그래서 저작된 형태 집합과 대조한다.
+ * 이유 없는 실패다. 그래서 시공 후보 집합과 대조한다.
+ *
+ * 후보는 **내장 34종 + 저작 형태** 다. 예전엔 저작 형태만 봤는데, 화면의 화이트리스트 고르기
+ * (`db-village-preset-template-picker`)는 카탈로그 전체를 체크박스로 내주고 하네스
+ * (`villageTemplateCatalog`)도 내장 id 를 그대로 받는다 — 그래서 사용자가 「작은 집」을 골라
+ * 저장하면 그 프로젝트 파일이 다음 열기에서 ProjectFormatError 로 튕겼다.
  */
 function validateVillagePresets(value: unknown, templateIds: ReadonlySet<string>): void {
   if (value === undefined) return;
@@ -527,8 +536,8 @@ function validateVillagePresets(value: unknown, templateIds: ReadonlySet<string>
       for (const [idIndex, id] of requireArray(`${label}.templateIds`, preset.templateIds).entries()) {
         const templateId = requireString(`${label}.templateIds[${idIndex}]`, id);
         assert(
-          templateIds.has(templateId),
-          `${label}.templateIds[${idIndex}]가 villageTemplates에 없습니다: ${templateId}`,
+          templateIds.has(templateId) || BUILT_IN_HOUSE_TEMPLATE_IDS.has(templateId),
+          `${label}.templateIds[${idIndex}]가 내장 형태에도 villageTemplates에도 없습니다: ${templateId}`,
         );
       }
     }

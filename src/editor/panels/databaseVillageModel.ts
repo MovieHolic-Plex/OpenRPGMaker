@@ -7,7 +7,7 @@
 
 import type { HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord, VillageTemplateWing } from "@/project/types/village";
-import { VILLAGE_RANGE } from "@/editor/tools/village/authoringData";
+import { VILLAGE_RANGE, type VillageArchetype } from "@/editor/tools/village/authoringData";
 
 /** 이미 쓰인 id 를 피해 `base`, `base_2`, `base_3` … 을 고른다. */
 export function nextVillageId(used: readonly string[], base: string): string {
@@ -52,6 +52,20 @@ export function blankTemplateRecord(id: string): VillageHouseTemplateRecord {
 /** 빈 프리셋 — 값을 하나도 안 채우면 하네스는 전부 코드 기본값으로 돈다(=아무 것도 안 한 것과 같다). */
 export function blankPresetRecord(id: string): VillageLayoutPresetRecord {
   return { id, name: "새 배치 프리셋" };
+}
+
+/**
+ * 마을 원형을 프리셋 레코드로 굽는다. 원형이 비워 둔 항목(집 수·바닥 테마·길 폭 등)은
+ * 그대로 비운 채 둬서 하네스가 씨앗값으로 파생하게 한다 — 원형은 "분위기"만 정한다.
+ * 값을 베끼므로 나중에 원형 카탈로그가 바뀌어도 이 레코드는 따라 변하지 않는다.
+ */
+export function presetRecordFromArchetype(archetype: VillageArchetype, id: string): VillageLayoutPresetRecord {
+  return {
+    id,
+    name: archetype.name,
+    ...archetype.values,
+    note: archetype.note,
+  };
 }
 
 export function duplicateTemplateRecord(record: VillageHouseTemplateRecord, id: string): VillageHouseTemplateRecord {

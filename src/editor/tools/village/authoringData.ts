@@ -41,6 +41,101 @@ export const VILLAGE_RANGE = {
   wingH: { min: 3, max: 24 },
 } as const;
 
+/** 원형이 정하는 값. 프리셋 레코드의 부분집합이며 전부 `presetOverrides` 가 다시 검증한다. */
+export interface VillageArchetypeValues {
+  readonly pathStyle?: (typeof VILLAGE_PATH_STYLES)[number];
+  readonly yardStyle?: (typeof VILLAGE_YARD_STYLES)[number];
+  readonly plazaStyle?: (typeof VILLAGE_PLAZA_STYLES)[number];
+  readonly plazaLayout?: (typeof VILLAGE_PLAZA_LAYOUTS)[number];
+  readonly edgeTrees?: (typeof VILLAGE_EDGE_TREE_STYLES)[number];
+  readonly kitMix?: "mixed" | HouseKitId;
+}
+
+export interface VillageArchetype {
+  readonly id: string;
+  readonly name: string;
+  /** 이 원형을 고르게 만드는 테마 낱말. 전부 리터럴이라 `includes` 로 판정한다. */
+  readonly keywords: readonly string[];
+  readonly note: string;
+  readonly values: VillageArchetypeValues;
+}
+
+/**
+ * 마을 원형 — 예전에는 `builder.ts` 의 `inferIntentFromTheme` 안에 정규식 6갈래로만 있었다.
+ *
+ * 그때는 이 값에 닿는 길이 자유 문장 `theme` 하나뿐이었다. "항구 마을"은 걸리고 "바닷가 촌"은
+ * 안 걸리는데 사용자는 왜 다른지 알 수 없었고, 프리셋 레코드가 0개면 프롬프트의 프리셋 섹션이
+ * 통째로 빠지므로 AI 는 `presetId` 로 지목할 후보 자체를 못 봤다.
+ *
+ * 그래서 여기를 정본으로 올린다 — 테마 추론(`matchVillageArchetype`)과 데이터베이스 「마을」탭의
+ * 「원형에서 만들기」가 **같은 배열**을 읽는다. 한쪽만 고쳐서 갈라질 자리를 없앤다.
+ *
+ * 순서가 계약이다: 위에서부터 첫 일치를 쓴다. 「장터」가 「어촌」보다 아래인 이유는 "항구 장터"가
+ * 어촌으로 판정돼야 하기 때문이다(광장이 남쪽으로 붙는다).
+ *
+ * 씨앗값 파생 항목(roadWidth·roadNaturalness·settlementLayout)과 houseCount·npcCount·groundTheme 은
+ * 일부러 비운다. 매번 달라야 하는 다양성 장치라 원형이 굳히면 같은 마을만 나온다 — 프리셋에서
+ * undefined 로 남으면 하네스가 seed 로 정한다.
+ */
+export const VILLAGE_ARCHETYPES: readonly VillageArchetype[] = [
+  {
+    id: "castle-stone",
+    name: "성곽·석조",
+    keywords: ["성곽", "석조", "돌길", "성문", "castle", "citadel"],
+    note: "포석 돌길과 작업장 마당. 광장은 정원으로 둔다.",
+    values: { pathStyle: "stone", yardStyle: "workshop", plazaStyle: "garden", edgeTrees: "conifer" },
+  },
+  {
+    id: "harbor-coast",
+    name: "어촌·항구",
+    keywords: ["어촌", "항구", "바다", "호수", "강가", "해안", "coast", "harbor", "lake", "river", "beach", "sand"],
+    note: "모래길과 노점 마당. 광장이 물가 쪽(남쪽)으로 붙는다.",
+    values: { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", plazaLayout: "south", edgeTrees: "conifer" },
+  },
+  {
+    id: "market-fair",
+    name: "장터·시장",
+    keywords: ["장터", "시장", "market", "fair", "축제"],
+    note: "모래길과 노점 마당. 광장 위치는 배치가 정하게 둔다.",
+    values: { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", edgeTrees: "conifer" },
+  },
+  {
+    id: "farm-rural",
+    name: "농촌·목장",
+    keywords: ["농", "밭", "촌락", "farm", "rural", "목장", "목축"],
+    note: "흙길과 텃밭 마당. 바깥 숲을 빽빽하게 두르고 광장은 가운데.",
+    values: { pathStyle: "dirt", yardStyle: "garden", plazaStyle: "garden", edgeTrees: "dense", plazaLayout: "center" },
+  },
+  {
+    id: "mine-mountain",
+    name: "광산·산골",
+    keywords: ["광산", "산골", "mine", "mountain", "채석"],
+    note: "흙길과 작업장 마당. 광장은 빈터로 두고 재료를 청석으로 고정한다.",
+    values: { pathStyle: "dirt", yardStyle: "workshop", plazaStyle: "empty", edgeTrees: "dense", kitMix: "blue-stone" },
+  },
+  {
+    id: "garden-bloom",
+    name: "정원·꽃",
+    keywords: ["정원", "꽃", "garden"],
+    note: "모래길과 텃밭 마당. 광장도 정원으로 맞춘다.",
+    values: { pathStyle: "sand", yardStyle: "garden", plazaStyle: "garden", edgeTrees: "conifer" },
+  },
+];
+
+/**
+ * 테마 문장에서 원형을 찾는다. 위에서부터 첫 일치 — `VILLAGE_ARCHETYPES` 의 순서가 곧 우선순위다.
+ * 낱말이 전부 리터럴이라 정규식 없이 `includes` 로 판정하며, 예전 정규식 대안과 결과가 같다.
+ */
+export function matchVillageArchetype(theme: string): VillageArchetype | undefined {
+  const normalized = theme.trim().toLowerCase();
+  if (!normalized) return undefined;
+  return VILLAGE_ARCHETYPES.find((archetype) => archetype.keywords.some((keyword) => normalized.includes(keyword)));
+}
+
+export function villageArchetypeById(id: string): VillageArchetype | undefined {
+  return VILLAGE_ARCHETYPES.find((archetype) => archetype.id === id);
+}
+
 /** 프로젝트에 저장된 마을 저작 레코드. 없으면 빈 목록 — 하네스는 코드 카탈로그로 동작한다. */
 export function villageAuthoringData(project: Project | undefined): VillageAuthoringData {
   return {
