@@ -129,6 +129,24 @@ export function loadLatestConversation(): ConversationRecord | null {
 }
 
 /**
+ * **이 프로젝트 범위**의 최신 대화.
+ *
+ * 왜 따로 있는가 (실측): 부팅 자동 복원이 `loadLatestConversation()`(전역 최신) 하나를 집어
+ * 스코프가 다르면 복원을 포기했다. 두 프로젝트를 번갈아 열면 다른 프로젝트의 대화가 더 최근이라
+ * **내 프로젝트의 대화가 그대로 있는데도 매번 빈 새 대화로 시작**했다 — 사용자가 ＋를 누르지도
+ * 않았는데 새 세션이 강요되는 것으로 보인다. 저장 배열은 최신이 앞이지만(saveConversation 이
+ * prepend) 원격 미러/수동 병합으로 순서가 흐트러질 수 있어 savedAt 으로 최댓값을 고른다.
+ */
+export function loadLatestConversationForScope(scopeKey: string): ConversationRecord | null {
+  let latest: ConversationRecord | null = null;
+  for (const conversation of readConversations()) {
+    if (conversation.projectContextKey !== scopeKey) continue;
+    if (!latest || conversation.savedAt > latest.savedAt) latest = conversation;
+  }
+  return latest;
+}
+
+/**
  * 대화 저장/복원 범위. 원격 프로젝트는 durable row id를 쓰고, durable row가 없는 로컬 세션은
  * 새로고침 뒤에도 재구성 가능한 프로젝트 모양(제목 + 시작 맵)을 쓴다. 로컬 세션의 런타임 identity
  * id는 별도로 프로젝트 전환 감지에만 사용한다.

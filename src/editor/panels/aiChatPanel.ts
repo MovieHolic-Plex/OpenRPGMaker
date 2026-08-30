@@ -58,7 +58,7 @@ import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
   conversationScopeKey,
   deriveTitle,
-  loadLatestConversation,
+  loadLatestConversationForScope,
   saveConversation,
   type ConversationRecord,
 } from "@/ai/conversationStore";
@@ -298,9 +298,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let disposed = false;
   const initialProjectIdentity = store.getProjectIdentity();
   const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
-  const latestConversation = loadLatestConversation();
-  const autoRestoreConversation =
-    latestConversation?.projectContextKey === currentProjectContextKey ? latestConversation : null;
+  // 이 프로젝트 범위의 최신 대화를 이어받는다. 전역 최신 하나만 집어 스코프를 대조하는 예전 방식은,
+  // 다른 프로젝트의 대화가 더 최근이면 내 대화가 있어도 복원을 포기해 새 세션이 강요되는 것처럼 보였다.
+  const autoRestoreConversation = loadLatestConversationForScope(currentProjectContextKey);
   // 이 패널(대화 세션) 전체를 하나의 기록으로 저장할 id — 매 턴 끝에 누적 감사 로그를 저장한다.
   // '새 대화' 시 재발급된다.
   let conversationId = autoRestoreConversation?.id ?? genId("conv");
@@ -742,10 +742,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   /**
-   * 새 대화 시작 — 헤더의 ＋, 액션 모드(모든 도키에서 열림), 그리고 프로젝트 전환이 공유하는 한 경로.
-   * 닫혀지는 대화는 **자기 프로젝트 키**로 보관된 뒤에 새 스코프로 갈아끓는다.
+   * 대화 리셋 코어 — 진행 중인 턴을 포기하고, 닫히는 대화를 **자기 프로젝트 키**로 보관한 뒤,
+   * 세션·표면·기록 주입을 정리하고 현재 프로젝트 스코프로 재발급한다.
+   *
+   * 반환값은 "버릴 이야기가 있었는가" 다 — 호출자가 안내 문구를 정하는 데 쓴다. 이 함수는
+   * 안내(toast)를 하지 않는다: 사용자가 누른 새 대화와 프로젝트 전환은 같은 정리를 하지만
+   * 사용자에게 할 말이 다르다.
    */
-  const startNewConversation = (reason: "manual" | "project-switch"): void => {
+  const resetConversationState = (reason: "manual" | "project-switch"): boolean => {
     // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
     // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
     const discardedEntries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length;
@@ -792,12 +796,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
     syncGlassIdle();
     syncConversationState();
-    if (reason === "manual") {
-      toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
-    } else if (hadConversation) {
+    refreshContextMeter();
+    return hadConversation;
+  };
+
+  /**
+   * 새 대화 시작 — 컴포저의 ＋ 와 액션 메뉴가 공유하는 **유일한** 진입점.
+   *
+   * 새 대화는 **사용자가 명시적으로 누를 때만** 생긴다. 프로젝트 전환은 이 경로를 쓰지 않는다
+   * (adoptConversationForCurrentProject 참조) — 의식하지 않은 리셋이 곧 "새 세션 강요" 로 보인다.
+   */
+  const startNewConversation = (reason: "manual"): void => {
+    resetConversationState(reason);
+    toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
+  };
+
+  /**
+   * 프로젝트가 바뀌었을 때 — **새 세션을 강요하지 않고** 그 프로젝트의 마지막 대화를 이어받는다.
+   *
+   * 왜: 이전 프로젝트의 계획·제안·맵 좌표는 새 프로젝트에서 무의미하므로 대화를 갈아야 하는 것은
+   * 맞다. 그런데 갈아 끼울 자리에 **빈 대화**를 넣던 것이 문제였다 — 부팅 지연 로드(로컬 신원 →
+   * 원격 durable id)도 전환으로 보이므로, 방금 자동 복원한 대화가 부팅마다 다시 비워졌다.
+   * 새 스코프의 저장본이 있으면 그것을 열고, 없을 때만 빈 대화로 남는다.
+   */
+  const adoptConversationForCurrentProject = (): void => {
+    const hadConversation = resetConversationState("project-switch");
+    const resumed = loadLatestConversationForScope(conversationScope);
+    if (resumed) {
+      restoreConversationRecord(resumed, "auto");
+      // 부팅 지연 로드에서도 매번 뜨면 소음이다 — 정말 다른 대화를 밀어냈을 때만 알린다.
+      if (hadConversation) toast("프로젝트를 바꿔 그 프로젝트의 이전 대화를 이어갑니다.", "ok");
+      return;
+    }
+    if (hadConversation) {
       toast("프로젝트가 바뀌어 새 대화를 시작합니다. 이전 대화는 그 프로젝트 기록에 저장됐습니다.", "ok");
     }
-    refreshContextMeter();
   };
 
   // 수동 대화 복원의 호출 지점. 감독 콘솔 전환에서 오버레이 시작 화면의 '이전 대화 이어가기'
@@ -894,6 +927,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       compacting = false;
       refreshContextMeter();
       refreshExportButton();
+      // 압축 중에는 접힘이 거절되므로(assistantEngaged) 여기서 유휴 대기를 다시 센다 —
+      // 다시 예약하지 않으면 사용자가 패널을 건드릴 때까지 접힘이 영영 오지 않는다.
+      scheduleGlassFold();
     }
   };
 
@@ -1107,6 +1143,26 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let autonomousRunState: { active: boolean; plan: WorkPlan | null; budget: AutonomousRunBudget } | null = null;
   let autonomousRunSurface: HTMLElement | null = null;
   let autonomousFeedHost: HTMLElement | null = null;
+  /**
+   * 조수가 **일하는 중이거나 사용자의 결정을 기다리는 중**인가 — 유휴 판정의 단일 소스.
+   *
+   * 왜 한 곳에 모으는가 (실측 결함): 유휴 접힘(GLASS_FOLD_IDLE_MS)과 유휴 레이아웃
+   * (is-glass-idle)이 각자 "바쁨"을 따로 세고 있었고, 둘 다 진행 중인 **턴**만 봤다. 그래서
+   * 턴이 끝난 뒤 8초가 지나면, 결정을 기다리는 제안 카드가 붙어 있든 대기 큐에 다음 지시가
+   * 남아 있든 자율 런 표면이 살아 있든 상관없이 본문이 접혔다 — 사용자에게는 "작동 중인데
+   * 닫혔다" 로 보인다. 접힘은 대화 본문(.ai-chat-body)을 통째로 접으므로 그 안에 있는 제안
+   * 카드·런 체크리스트가 함께 사라진다.
+   */
+  const assistantEngaged = (): boolean =>
+    turnBusy
+    || runningProgress !== null
+    || panel.classList.contains("is-turn-running")
+    || compacting
+    || autonomousRunState?.active === true
+    || pendingSends.length > 0
+    || applyingProposal
+    || proposalApi.pendingProposalMessage !== null
+    || hasPendingQuestion();
   const clearAutonomousRunSurface = (): void => {
     autonomousRunSurface?.remove();
     autonomousRunSurface = null;
@@ -1701,7 +1757,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       projectIdentityId = identity.id;
       return;
     }
-    startNewConversation("project-switch");
+    adoptConversationForCurrentProject();
   });
   const activateSelectionTaskContext = (focus = true): void => {
     if (!editorState.get().selection) return;
@@ -2228,6 +2284,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     contextMeterButton: contextMeter.button,
     contextMeterPopover: contextMeter.popover,
     onNewChat: () => startNewConversation("manual"),
+    onOpenConversations: () => openConversationHistory(),
     onPopoverChange: () => syncCommandBarClearance(),
     preferenceContent: preferenceMemory.element,
     // 대화 중 증류가 목록을 바꾼다 — 열 때마다 다시 읽어야 방금 배운 성향이 보인다.
@@ -2386,10 +2443,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     target?.append(log);
   };
   syncGlassIdle = (): void => {
-    const busy = panel.classList.contains("is-turn-running")
+    const busy = assistantEngaged()
       || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
-      || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
-      || Boolean(turnBusy || runningProgress);
+      || Boolean(log.querySelector("[data-testid=ai-command-row-user]"));
     const idle = !busy;
     const dock = readChatDock();
     panel.classList.toggle("is-assistant-idle", idle);
@@ -2495,8 +2551,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 포인터가 카드 위에 있는 경우에는 접지 않는다.
   const canScheduleGlassFold = (failed: boolean): boolean => {
     if (readChatDock() !== "glass" || glassFolded || failed) return false;
-    if (panel.classList.contains("is-turn-running") || panel.classList.contains("is-turn-error")) return false;
-    if (turnBusy || runningProgress !== null || hasPendingQuestion()) return false;
+    if (panel.classList.contains("is-turn-error")) return false;
+    // 진행 중인 턴만 보면 부족하다 — 결정 대기·대기 큐·자율 런도 "작동 중" 이다.
+    if (assistantEngaged()) return false;
     if (glassFoldHovered || input.value.trim() !== "") return false;
     if (typeof document !== "undefined" && document.activeElement && panel.contains(document.activeElement)) return false;
     // 로그를 위로 올려 읽는 중이면 접지 않는다(바닥에서 4px 이내면 최신을 보고 있는 것).

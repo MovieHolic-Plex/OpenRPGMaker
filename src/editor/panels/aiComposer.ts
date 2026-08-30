@@ -63,6 +63,13 @@ export interface ComposerOptions {
   readonly contextMeterButton?: HTMLButtonElement;
   readonly contextMeterPopover?: HTMLElement;
   readonly onNewChat: () => void;
+  /**
+   * 이전 대화 목록 열기. 주지 않으면 버튼을 만들지 않는다(preferenceContent 와 같은 주입 귀칙).
+   *
+   * 왜 고정 행에 사는가: 이전 대화를 여는 길은 ☰ 메뉴 안에만 있었다. 생성(＋)은 한 번에
+   * 닿는데 이어가기는 단계가 더 깊은 배치는, 그 자신이 "새 세션" 을 기본동작으로 만들어 버린다.
+   */
+  readonly onOpenConversations?: () => void;
   readonly onPopoverChange?: (kind: ComposerPopover | null) => void;
   /**
    * "AI 가 기억한 내 성향" 팝오버의 내용. **주입으로 받는다** — 컴포저가
@@ -92,6 +99,21 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     dataset: { testid: "ai-new-chat" },
     on: { click: options.onNewChat },
   }) as HTMLButtonElement;
+
+  const conversationsButton = options.onOpenConversations
+    ? (el("button", {
+      class: "ai-composer-menu-btn ai-open-conversations",
+      text: "🕒",
+      attrs: {
+        type: "button",
+        title: "이전 대화 — 지금 대화는 기록에 저장되고, 골라 이어서 엽니다",
+        "aria-label": "이전 대화 열기",
+        "aria-haspopup": "dialog",
+      },
+      dataset: { testid: "ai-open-conversations" },
+      on: { click: options.onOpenConversations },
+    }) as HTMLButtonElement)
+    : null;
 
   const commandMenu = el("div", {
     class: "ai-composer-popover ai-command-menu",
@@ -160,6 +182,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         children: [
           options.collapseButton,
           newChatButton,
+          ...(conversationsButton ? [conversationsButton] : []),
           commandMenuToggle,
           ...(options.contextMeterButton ? [options.contextMeterButton] : []),
           ...(preferenceToggle ? [preferenceToggle] : []),
