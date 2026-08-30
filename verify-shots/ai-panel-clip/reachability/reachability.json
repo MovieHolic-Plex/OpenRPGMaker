@@ -46,5 +46,13 @@
     "1024x768/float/expanded": [],
     "1024x768/glass/restored": [],
     "1024x768/glass/expanded": []
+  },
+  "vsqueeze": {
+    "1280x800/side": [],
+    "1280x800/float": [],
+    "1280x800/glass": [],
+    "1024x768/side": [],
+    "1024x768/float": [],
+    "1024x768/glass": []
   }
 }

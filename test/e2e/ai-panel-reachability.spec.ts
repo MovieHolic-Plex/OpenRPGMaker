@@ -456,6 +456,35 @@ async function squeezed(page: Page): Promise<readonly string[]> {
   return first.filter((line) => second.includes(line));
 }
 
+/**
+ * 지난 턴 그룹이 **세로로** 눌렸는지 재다.
+ *
+ * `squeezed()` 는 가로 눌림(본문 칸이 0px 로 밀림)만 재서 이것을 못 잡는다. 그러나 상위
+ * 계약이 말하는 원래 증상은 세로이다 — `.ai-chat-log` 가 column flex 이고 그룹이 flex
+ * 아이템이므로, 로그가 넘칠 때 기본 `flex-shrink: 1` 이 결손을 그룹에 몰아 35px 짜리
+ * 요약 버튼이 10px 회상 띄로 눌렸다(실측: 그룹 h=10 / scrollHeight=43,
+ * `09-ux-polish-density.css` 의 `.ai-turn-group` 주석).
+ *
+ * 이 판정이 없으면 압력 시드를 아무리 넓혀도 게이트는 번 통과이다 — 사보타주 실제로
+ * `flex: 0 0 auto` 를 지우면 지나가는 것을 재하고 다시 넣었다.
+ */
+async function verticallySqueezed(page: Page): Promise<readonly string[]> {
+  return await page.evaluate(() => {
+    const hits: string[] = [];
+    for (const group of document.querySelectorAll<HTMLElement>(".ai-chat-log .ai-turn-group")) {
+      if (!group.offsetParent) continue; // 숨은 그룹은 판정하지 않는다.
+      const height = group.getBoundingClientRect().height;
+      const needed = group.scrollHeight;
+      if (needed < 24) continue; // 내용이 원래 짧은 그룹은 눌린 것이 아니다.
+      // 상자가 자기 내용의 70% 도 못 담으면 쓸모가 된다. 스톤롤러가 아니므로 복구도 안 된다.
+      if (height >= needed * 0.7) continue;
+      const label = (group.textContent ?? "").trim().slice(0, 24);
+      hits.push(`그룹 ${Math.round(height)}px / 내용 ${Math.round(needed)}px :: ${label}`);
+    }
+    return hits;
+  });
+}
+
 const VIEWPORTS = [
   { name: "1280x800", width: 1280, height: 800 },
   { name: "1024x768", width: 1024, height: 768 },
@@ -466,6 +495,7 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
   const report: Record<string, readonly Unreachable[]> = {};
   const drift: Record<string, readonly string[]> = {};
   const squeeze: Record<string, readonly string[]> = {};
+  const vsqueeze: Record<string, readonly string[]> = {};
   for (const viewport of VIEWPORTS) {
     await boot(page, viewport.width, viewport.height);
     for (const dock of ["side", "float", "glass"] as const) {
@@ -555,6 +585,8 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
       });
       await click(page, "ai-turn-group-toggle");
       await expect(page.locator(".ai-turn-group.is-collapsed").first()).toBeAttached();
+      // 접힌 지난 턴이 세로로 눌리는지 여기서 잰다 — 원래 결함이 난 바로 그 상태다.
+      vsqueeze[`${viewport.name}/${applied}`] = await verticallySqueezed(page);
 
       await click(page, "ai-dock-toggle");
       if (viewport.name === "1280x800") {
@@ -564,10 +596,11 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
       await click(page, "ai-dock-toggle");
     }
   }
-  writeFileSync(path.join(OUT, "reachability.json"), JSON.stringify({ report, drift, squeeze }, null, 2));
+  writeFileSync(path.join(OUT, "reachability.json"), JSON.stringify({ report, drift, squeeze, vsqueeze }, null, 2));
   const failures = Object.entries(report).flatMap(([key, hits]) =>
     hits.map((hit) => `${key}: ${hit.selector} +${hit.overflowPx}px ${hit.axis} blocked by ${hit.blocker} [scroller: ${hit.scroller ?? "?"}] :: ${hit.text}`));
   const drifts = Object.entries(drift).flatMap(([key, lines]) => lines.map((line) => `${key}: ${line}`));
+  const vsqueezes = Object.entries(vsqueeze).flatMap(([key, lines]) => lines.map((line) => `${key}: ${line}`));
   // eslint-disable-next-line no-console
   console.log(failures.length === 0 ? "[reach] 잘림 0건" : `[reach] 잘림 ${failures.length}건\n${failures.join("\n")}`);
   // eslint-disable-next-line no-console
@@ -575,6 +608,11 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
   const squeezes = Object.entries(squeeze).flatMap(([key, lines]) => lines.map((line) => `${key}: ${line}`));
   // eslint-disable-next-line no-console
   console.log(squeezes.length === 0 ? "[reach] 본문 눌림 0건" : `[reach] 본문 눌림 ${squeezes.length}건\n${squeezes.join("\n")}`);
+  // eslint-disable-next-line no-console
+  console.log(vsqueezes.length === 0 ? "[reach] 세로 눌림 0건" : `[reach] 세로 눌림 ${vsqueezes.length}건\n${vsqueezes.join("\n")}`);
+  // 세로 눌림을 먼저 단정한다 — 지난 턴이 10px 띠로 눌리면 그 안의 잘림·밀림은 결과일 뿐이라
+  // 원인을 먼저 말해야 한다.
+  expect(vsqueezes, vsqueezes.join("\n")).toEqual([]);
   expect(failures, failures.join("\n")).toEqual([]);
   expect(drifts, drifts.join("\n")).toEqual([]);
   expect(squeezes, squeezes.join("\n")).toEqual([]);
