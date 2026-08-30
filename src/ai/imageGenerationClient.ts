@@ -87,7 +87,9 @@ export async function generateAiImage(
     });
   } catch (cause) {
     if (cause instanceof DOMException && cause.name === "AbortError") {
-      throw new ImageGenerationError("이미지 생성이 시간 안에 끝나지 않았습니다.");
+      throw new ImageGenerationError(
+        request.signal?.aborted ? "생성을 취소했습니다" : "이미지 생성이 시간 안에 끝나지 않았습니다.",
+      );
     }
     throw new ImageGenerationError(
       `이미지 생성 요청을 보내지 못했습니다: ${cause instanceof Error ? cause.message : String(cause)}`,
