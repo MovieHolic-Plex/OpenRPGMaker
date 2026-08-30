@@ -1,8 +1,8 @@
 // test/agentVerification.test.ts
 // Todo 3 — pure verification-gate module (src/ai/agentVerification.ts).
 // Covers: canonical layer→tools selection table, verdict parsing (toolRunner result
-// shape {ok, summary, issues, data}), bounded repair retry contract, repair instruction
-// format, and malformed-input safety. Canonical table below MUST match todo 5's
+// shape {ok, summary, issues, data}), the composed advisory report, and malformed-input
+// safety. 재시도/중단 계약은 2026-08-30 에 제거됐다 — 검증은 자문이며 런을 멈추지 않는다. Canonical table below MUST match todo 5's
 // integration (map/world → [run_lint, evaluate_game_quality]; quest/story →
 // [run_lint, verify_quest]; final → [run_lint, play_walkthrough] or
 // [run_lint, verify_quest×all questIds] fallback).
@@ -10,17 +10,12 @@
 import { describe, expect, it } from "vitest";
 import {
   EVALUATE_GAME_QUALITY_TOOL,
-  MAX_REPAIR_REKICKS,
-  MAX_VERIFICATION_ATTEMPTS,
   PLAY_WALKTHROUGH_TOOL,
   RUN_LINT_TOOL,
   VERIFY_QUEST_TOOL,
-  buildRepairInstruction,
-  createRetryState,
-  evaluateRetry,
   parseLayerVerdict,
   parseToolVerdict,
-  runLayerVerificationGate,
+  runLayerVerificationReport,
   selectVerificationCalls,
   type LayerDescriptor,
   type ToolResultLike,
@@ -356,144 +351,49 @@ describe("parseLayerVerdict — multi-tool gate verdict", () => {
   });
 });
 
-// ── retry contract ───────────────────────────────────────────────
+// ── composed advisory report ─────────────────────────────────────
 
-describe("evaluateRetry — bounded repair retries (max 3 attempts / 2 re-kicks)", () => {
-  it("constants: 2 repair re-kicks → at most 3 verification attempts", () => {
-    expect(MAX_REPAIR_REKICKS).toBe(2);
-    expect(MAX_VERIFICATION_ATTEMPTS).toBe(MAX_REPAIR_REKICKS + 1);
-  });
-
-  it("createRetryState starts at 0 attempts", () => {
-    expect(createRetryState("L1")).toEqual({ layerId: "L1", attempts: 0 });
-  });
-
-  it("1st consecutive failure → repair re-kick #1, attempts=1, instruction present", () => {
-    const outcome = evaluateRetry(createRetryState("L1"), "L1", {
-      pass: false,
-      blockingIssues: ["run_lint: 오류"],
-      warnings: [],
-    });
-    expect(outcome.action).toBe("repair");
-    expect(outcome.state).toEqual({ layerId: "L1", attempts: 1 });
-    expect(outcome.reason).toBeUndefined();
-    expect(outcome.repairInstruction).toBeTruthy();
-  });
-
-  it("2nd consecutive failure → repair re-kick #2, attempts=2", () => {
-    const outcome = evaluateRetry({ layerId: "L1", attempts: 1 }, "L1", {
-      pass: false,
-      blockingIssues: ["run_lint: 오류"],
-      warnings: [],
-    });
-    expect(outcome.action).toBe("repair");
-    expect(outcome.state).toEqual({ layerId: "L1", attempts: 2 });
-  });
-
-  it("3rd consecutive failure → STOP with reason verification_failed, no more re-kicks", () => {
-    const outcome = evaluateRetry({ layerId: "L1", attempts: 2 }, "L1", {
-      pass: false,
-      blockingIssues: ["run_lint: 오류"],
-      warnings: [],
-    });
-    expect(outcome.action).toBe("stop");
-    expect(outcome.reason).toBe("verification_failed");
-    expect(outcome.repairInstruction).toBeUndefined();
-  });
-
-  it("pass at any attempt → proceed and reset budget for the layer", () => {
-    const outcome = evaluateRetry({ layerId: "L1", attempts: 2 }, "L1", {
-      pass: true,
-      blockingIssues: [],
-      warnings: ["비차단 경고"],
-    });
-    expect(outcome.action).toBe("proceed");
-    expect(outcome.state).toEqual({ layerId: "L1", attempts: 0 });
-  });
-
-  it("warnings-only verdict (pass) never consumes retry budget", () => {
-    const outcome = evaluateRetry({ layerId: "L1", attempts: 0 }, "L1", {
-      pass: true,
-      blockingIssues: [],
-      warnings: ["비차단 경고"],
-    });
-    expect(outcome.action).toBe("proceed");
-    expect(outcome.state.attempts).toBe(0);
-  });
-
-  it("stale retry state for a different layer → treated as fresh (0 attempts)", () => {
-    const outcome = evaluateRetry({ layerId: "L1", attempts: 2 }, "L2", {
-      pass: false,
-      blockingIssues: ["오류"],
-      warnings: [],
-    });
-    expect(outcome.action).toBe("repair");
-    expect(outcome.state).toEqual({ layerId: "L2", attempts: 1 });
-  });
-});
-
-describe("buildRepairInstruction — format for the session re-kick mechanism", () => {
-  it("Korean imperative, lists prefixed blocking issues, states remaining re-kick budget", () => {
-    const instruction = buildRepairInstruction(
-      { pass: false, blockingIssues: ["run_lint: 타일셋 오류", "verify_quest: step 3 실패"], warnings: [] },
-      1
-    );
-    expect(instruction).toContain("검증 게이트");
-    expect(instruction).toContain("- run_lint: 타일셋 오류");
-    expect(instruction).toContain("- verify_quest: step 3 실패");
-    expect(instruction).toContain("재검증 기회");
-    expect(instruction).toContain("1");
-  });
-});
-
-// ── composed gate ────────────────────────────────────────────────
-
-describe("runLayerVerificationGate — selection + verdict + retry composed", () => {
-  it("map layer, clean results → calls selected, verdict pass, proceed", () => {
-    const result = runLayerVerificationGate(
+describe("runLayerVerificationReport — selection + verdict, no gating", () => {
+  it("map layer, clean results → calls selected, verdict pass", () => {
+    const report = runLayerVerificationReport(
       layer({ id: "L1", title: "마을", kind: "map" }),
       [],
       [
         { name: RUN_LINT_TOOL, result: lintResult() },
         { name: EVALUATE_GAME_QUALITY_TOOL, result: qualityResult(false) },
-      ],
-      createRetryState("L1")
+      ]
     );
-    expect(result.calls).toEqual([
+    expect(report.calls).toEqual([
       { name: RUN_LINT_TOOL, args: {} },
       { name: EVALUATE_GAME_QUALITY_TOOL, args: {} },
     ]);
-    expect(result.verdict.pass).toBe(true);
-    expect(result.outcome.action).toBe("proceed");
+    expect(report.verdict.pass).toBe(true);
   });
 
-  it("quest layer, lint error → calls selected, verdict fail, first repair re-kick", () => {
-    const result = runLayerVerificationGate(
+  it("quest layer, lint error → verdict fails and names the blocking issue (advisory only)", () => {
+    const report = runLayerVerificationReport(
       layer({ id: "L2", title: "퀘스트", kind: "quest" }),
       [defineQuest("q1")],
-      [{ name: RUN_LINT_TOOL, result: lintResult([{ severity: "error", message: "이벤트 연결 끊김" }]) }],
-      createRetryState("L2")
+      [{ name: RUN_LINT_TOOL, result: lintResult([{ severity: "error", message: "이벤트 연결 끊김" }]) }]
     );
-    expect(result.calls).toEqual([
+    expect(report.calls).toEqual([
       { name: RUN_LINT_TOOL, args: {} },
       { name: VERIFY_QUEST_TOOL, args: { questId: "q1" } },
     ]);
-    expect(result.verdict.pass).toBe(false);
-    expect(result.outcome.action).toBe("repair");
-    expect(result.outcome.state.attempts).toBe(1);
-    expect(result.outcome.repairInstruction).toContain("run_lint: 이벤트 연결 끊김");
+    expect(report.verdict.pass).toBe(false);
+    expect(report.verdict.blockingIssues).toContain("run_lint: 이벤트 연결 끊김");
   });
 
-  it("3rd failure through the composed gate → stop with verification_failed", () => {
-    const failing: ToolResultLike = lintResult([{ severity: "error", message: "오류" }]);
-    const outcome = runLayerVerificationGate(
-      layer({ id: "L3", title: "최종 검증", kind: "final" }),
-      [playWalkthrough([{ expect: "ended" }], true, "L3")],
-      [{ name: PLAY_WALKTHROUGH_TOOL, result: scenarioResult(false, "실패") }],
-      { layerId: "L3", attempts: 2 }
-    ).outcome;
-    expect(outcome.action).toBe("stop");
-    expect(outcome.reason).toBe("verification_failed");
-    expect(failing.ok).toBe(true);
+  it("repeated failures stay reportable — the module exposes no retry budget or stop reason", () => {
+    const failing: ToolResultLike = scenarioResult(false, "실패");
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const report = runLayerVerificationReport(
+        layer({ id: "L3", title: "최종 검증", kind: "final" }),
+        [playWalkthrough([{ expect: "ended" }], true, "L3")],
+        [{ name: PLAY_WALKTHROUGH_TOOL, result: failing }]
+      );
+      expect(report.verdict.pass).toBe(false);
+      expect(Object.keys(report)).toEqual(["calls", "verdict"]);
+    }
   });
 });

@@ -44,16 +44,26 @@ export type WelcomeGenrePreset = {
   readonly narrativeHorrorGenre?: NarrativeHorrorGenre;
 };
 
-/** Shared 8-item checklist from deep-interview welcome-genre-preset-pipeline. */
+/**
+ * Shared authoring checklist for a genre chip.
+ *
+ * 2026-08-30 실측으로 세 줄이 바뀌었다:
+ * - 옛 1번 "이미 blank로 교체된 상태"는 **거짓**이었다. 프리셋 핸드오프는 현재 열린 프로젝트를
+ *   그대로 쓴다(mode.ts 의 replaceWithBlank=false). 거짓 전제를 주면 모델이 완성된 100×100
+ *   마을에 create_map/set_build_spec 을 대고 거부당한다.
+ * - 자율 런에는 사용자 승인 카드가 **없다**(assistantSession.maybeAutoApplyMilestone).
+ *   "제안만 하고 승인을 기다려라"는 지시는 없는 게이트를 기다리게 만들어 모델이 설명만 하고
+ *   멈추게 유도한다.
+ */
 export const WELCOME_GENRE_CHECKLIST_LINES = [
-  "새 blank 프로젝트를 전제로 작업한다 (이미 blank로 교체된 상태).",
-  "장르에 맞는 시작 맵 1장을 만든다 (타일 분위기 포함).",
-  "플레이어 시작 위치를 설정한다.",
+  "지금 열려 있는 프로젝트에 이어서 작업한다 — 기존 맵·이벤트·DB 를 먼저 읽고 거기에 얹는다.",
+  "장르에 맞는 무대를 마련한다 — 쓸 맵이 없으면 만들고, 있으면 그 맵을 장르에 맞게 고친다.",
+  "플레이어 시작 위치를 장르에 맞는 자리로 맞춘다.",
   "장르 핵심 NPC/이벤트를 최소 2개 둔다.",
   "몬스터/적 또는 상호작용 대상 시드를 DB에 넣는다.",
   "관련 아이템 시드를 DB에 넣는다.",
-  "모든 쓰기는 제안(changeset)으로만 제시하고, 사용자 승인 전에는 커밋하지 않는다.",
-  "작업이 끝나면 사용자에게 제안 승인/거부를 요청하는 문장으로 마친다.",
+  "id 를 지어내지 않는다 — 트룹·몬스터·아이템을 참조하기 전에 조회 툴로 실제 id 를 확인한다.",
+  "계획 항목을 하나씩 끝낸다 — 항목이 요구하는 툴을 실제로 성공시킨 뒤 다음 항목으로 넘어간다.",
 ] as const;
 
 export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
@@ -158,7 +168,7 @@ function requiredTemplateBlock(genre: NarrativeHorrorGenre | undefined): string[
     "",
     "## 필수 템플릿 툴 (원큐 조립 — upsert_event thrash 금지)",
     templateToolInstruction(genre),
-    "위 템플릿 툴을 실제로 호출해 제안(changeset)에 포함하세요. 설명만 하고 끝내지 마세요.",
+    "위 템플릿 툴을 실제로 호출하세요. 설명만 하고 끝내지 마세요.",
   ];
 }
 
@@ -169,11 +179,11 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset): strin
     `장르 프리셋: ${preset.label}`,
     `톤: ${preset.tone}`,
     "",
-    "다음 체크리스트를 모두 만족하는 변경을 **제안**으로 작성하세요. 승인 전 커밋 금지.",
+    "다음 체크리스트를 모두 만족하도록 실제 편집 툴을 호출해 작업하세요. 설명만 하고 끝내지 마세요.",
     checklist,
     ...requiredTemplateBlock(preset.narrativeHorrorGenre),
     "",
-    "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성한 뒤 제안 카드로 제출하세요.",
+    "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
   ].join("\n");
 }
 
@@ -185,11 +195,11 @@ export function buildWelcomeFreeTextPrompt(userIntent: string): string {
   return [
     `사용자 의도: ${intent}`,
     "",
-    "위 의도에 맞는 장르 스타터를 다음 체크리스트로 **제안**하세요. 승인 전 커밋 금지.",
+    "위 의도에 맞는 장르 스타터를 다음 체크리스트대로 실제 편집 툴로 만드세요. 설명만 하고 끝내지 마세요.",
     checklist,
     ...requiredTemplateBlock(genre ?? undefined),
     "",
-    "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성한 뒤 제안 카드로 제출하세요.",
+    "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
   ].join("\n");
 }
 

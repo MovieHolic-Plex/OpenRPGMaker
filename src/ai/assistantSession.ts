@@ -13,16 +13,11 @@ import { contextFooterMapId, requestLikelyExpectsExistingChange, stripContextFoo
 import { store } from "@/project/store";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import {
-  MAX_VERIFICATION_ATTEMPTS,
   PLAY_WALKTHROUGH_TOOL,
-  STOP_REASON,
-  createRetryState,
-  evaluateRetry,
   parseLayerVerdict,
   selectVerificationCalls,
   type LayerDescriptor,
   type LayerVerdictInput,
-  type RetryState,
   type VerificationCallRecord,
 } from "./agentVerification";
 import type { LintIssue } from "@/project/lint/projectLint";
@@ -717,18 +712,14 @@ export class AssistantSession {
   private milestoneApplyFailed = false;
   // 직전에 처리한 완료 항목 id — 같은 항목의 중복 complete_work_item 재트리거 방지.
   private lastMilestoneCompletionItemId: string | null = null;
-  // ── 레이어 검증 게이트(todo 5) ──────────────────────────────────────────────
+  // ── 레이어 검증(자문) ──────────────────────────────────────────────────────
   // 자율 런에서 레이어 완료마다 canonical 테이블(agentVerification)대로 검증 툴콜을
-  // runTool(세션 ctx)로 실행하고 verdict 를 평가한다. 실패 시 기존 re-kick(오케스트레이션
-  // 메시지)으로 최대 2회 보완 재킥, 3회 연속 실패면 verification_failed 로 레이어(런)를
-  // 중단한다. 검증 게이트가 직접 실행한 툴콜은 히스토리에 기록하지 않는다(모델 저작만).
+  // runTool(세션 ctx)로 돌리고 verdict 를 **감사에만** 남긴다. 재킥·3회 중단은 없다
+  // (2026-08-30 실측으로 제거 — agentVerification 헤더의 ADVISORY CONTRACT 참조).
+  // 자문 검증이 직접 실행한 툴콜은 히스토리에 기록하지 않는다(모델 저작만).
   /** 런 누적 툴콜 히스토리(검증 선택용) — 쓰기 툴 + play_walkthrough 만 기록한다. */
   private verificationHistory: VerificationCallRecord[] = [];
-  /** 검증 실패로 재킥 대기 중인 레이어 — 다음 최종 응답 시점에 재검한다. */
-  private verificationPending: { readonly layer: LayerDescriptor; readonly retry: RetryState } | null = null;
-  /** 검증 3회 연속 실패 — 자동 계속·run-end 증명을 멈춘다(사용자 진입으로 재가동, replan 시 해제). */
-  private verificationFailed = false;
-  /** 이 플랜에서 이미 게이트를 통과한 레이어 id(플랜 id 기준 — replan 시 자연 리셋). */
+  /** 이 플랜에서 이미 자문 검증을 돌린 레이어 id(플랜 id 기준 — replan 시 자연 리셋). */
   private verifiedPlanId: string | null = null;
   private verifiedLayerIds = new Set<string>();
   /** run-end 저장 증명(flush+reload)을 처리한 플랜 id — 플랜당 1회. */
@@ -821,10 +812,8 @@ export class AssistantSession {
   rebaseProject(project: Project): void {
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
-    // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패
-    // 상태와 draft 기준의 대기 중 레이어 검증을 버린다(다음 완료/최종 응답 시점에 재검).
+    // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패 상태를 버린다.
     this.milestoneApplyFailed = false;
-    this.verificationPending = null;
   }
 
   // 현재 확정된 밑그림(없으면 null). 패널이 상태 표시/카드 렌더에 쓴다.
@@ -1032,10 +1021,6 @@ export class AssistantSession {
     } else {
       this.milestoneApplyFailed = false;
     }
-    // 검증 게이트 상태는 사용자 진입마다 재가동(re-arm)한다 — 드라이버의 자동 계속 체인
-    // 내부에서는 유지되어 3회 시도 한도가 턴 단위로 초기화되지 않는다.
-    this.verificationFailed = false;
-    this.verificationPending = null;
     if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal);
     const first = await this.executeUserTurn(text, onEvent, signal);
     return this.runAutonomousDriver(first, onEvent, signal);
@@ -1073,8 +1058,6 @@ export class AssistantSession {
   private shouldAutoContinue(last: TurnResult, onEvent: (event: SessionEvent) => void, signal?: AbortSignal): boolean {
     if (signal?.aborted) return false;
     if (last.stoppedReason === "aborted" || last.stoppedReason === "error") return false;
-    // 검증 게이트 3회 실패 — 런을 멈춘다(사용자 진입/replan 으로만 재개).
-    if (this.verificationFailed) return false;
     // 저장소를 바꾸지 못한 마일스톤이 있으면 현재 자율 런을 멈춘다. 승인 UI는 없으며,
     // 다음 사용자 메시지가 새 턴을 시작하면 다시 적용을 시도할 수 있다.
     if (this.milestoneApplyFailed) {
@@ -1382,10 +1365,8 @@ export class AssistantSession {
       this.lastMilestoneCompletionItemId = null;
       this.turnSuccessfulTools.clear();
       this.successfulToolsWorkItemId = plan.currentItemId;
-      // 새 계획 = 새 검증 주기: 이전 플랜의 실패/대기/증명 상태를 리셋한다(툴콜 히스토리는
-      // 런 전체 누적 — questId/시나리오 선택이 이전 레이어 저작물을 계속 본다).
-      this.verificationFailed = false;
-      this.verificationPending = null;
+      // 새 계획 = 새 검증 주기: 증명 상태만 리셋한다(툴콜 히스토리는 런 전체 누적 —
+      // questId/시나리오 선택이 이전 레이어 저작물을 계속 본다).
       this.runEndProofPlanId = null;
       const progress = summarizeWorkPlan(plan);
       return {
@@ -1652,15 +1633,15 @@ export class AssistantSession {
   }
 
   /**
-   * 레이어 검증 게이트 1회 실행: canonical 테이블(selectVerificationCalls)대로 검증 툴콜을
-   * 기존 툴 실행기(runTool — 세션 ctx)로 실행하고 verdict 를 평가한다. 실패 시 repair
-   * 지시를 오케스트레이션 메시지로 주입해 기존 re-kick 메커니즘을 태운다(최대 2회 재킥).
+   * 레이어 검증 1회 실행 — **자문이다.** canonical 테이블(selectVerificationCalls)대로 검증
+   * 툴콜을 기존 툴 실행기(runTool)로 돌리고 verdict 를 감사에 남긴다. 재킥·3회 중단 계약은
+   * 제거했다(2026-08-30 실측): 부팅 정규화기가 만든 선재 참조 위반 54건이 매 시도 동일하게
+   * 잡혀, 에이전트가 만들지도 않았고 고칠 수도 없는 손상으로 예산 3회를 태우고 런이 죽었다.
    */
-  private async executeVerificationGate(
+  private async executeVerificationAdvisory(
     layer: LayerDescriptor,
-    onEvent: (event: SessionEvent) => void,
-    retryState?: RetryState
-  ): Promise<"proceed" | "repair" | "stop"> {
+    onEvent: (event: SessionEvent) => void
+  ): Promise<void> {
     const calls = selectVerificationCalls(layer, this.verificationHistory);
     const results: LayerVerdictInput[] = [];
     for (const call of calls) {
@@ -1679,78 +1660,43 @@ export class AssistantSession {
     }
     const verdict = parseLayerVerdict(results);
     const layerId = layer.id ?? "";
-    const outcome = evaluateRetry(retryState ?? createRetryState(layerId), layerId, verdict);
     const label = layerId !== "" ? layerId : layer.title;
-    if (outcome.action === "proceed") {
+    this.markLayerVerified(layerId);
+    if (verdict.pass) {
       this.pushAudit({
         kind: "status",
         text: `agent_run:verification-pass layer=${label} calls=${calls.map((c) => c.name).join(",")} warnings=${verdict.warnings.length}`,
       });
-      this.verificationPending = null;
-      this.markLayerVerified(layerId);
-      return "proceed";
+      return;
     }
-    if (outcome.action === "repair") {
-      this.pushAudit({
-        kind: "status",
-        text: `agent_run:verification-repair layer=${label} attempt=${outcome.state.attempts}/${MAX_VERIFICATION_ATTEMPTS} issues=${verdict.blockingIssues.length}`,
-      });
-      this.pushOrchestrationMessage(outcome.repairInstruction ?? "");
-      onEvent({ type: "status", text: `검증 실패 — 보완 지시로 재시도 (${outcome.state.attempts}/${MAX_VERIFICATION_ATTEMPTS})` });
-      this.verificationPending = { layer, retry: outcome.state };
-      return "repair";
-    }
-    // 3회 연속 실패 — 레이어(런) 중단. 재킥을 더 발행하지 않는다.
-    this.verificationFailed = true;
-    this.verificationPending = null;
     this.pushAudit({
       kind: "status",
-      text: `agent_run:verification_failed layer=${label} — ${STOP_REASON} (${MAX_VERIFICATION_ATTEMPTS}회 시도 소진)`,
+      text: `agent_run:verification-advisory layer=${label} blocking=${verdict.blockingIssues.length} warnings=${verdict.warnings.length} — 자문이므로 런을 중단하지 않는다`,
     });
-    onEvent({ type: "status", text: "검증 게이트 3회 실패 — 런을 중단합니다. 수동 검토가 필요합니다." });
-    return "stop";
+    for (const issue of verdict.blockingIssues.slice(0, 8)) {
+      this.pushAudit({ kind: "status", text: `agent_run:verification-note layer=${label} — ${issue}` });
+    }
+    onEvent({ type: "status", text: `검증 지적 ${verdict.blockingIssues.length}건 (자문) — 진행은 계속합니다.` });
   }
 
   /**
-   * 완료된 레이어 검증 스윕: 플랜의 완료 레이어를 순서대로 검증한다. 이미 통과한 레이어나
-   * 대기 검증(verificationPending)이 있으면 건너뛴다(대기 검증은 최종 응답 게이트가 먼저 해결).
+   * 완료된 레이어를 순서대로 1회씩 자문 검증한다. 이미 본 레이어는 다시 보지 않는다
+   * (markLayerVerified). 반환값이 없다 — 이 스윕은 런 제어에 관여하지 않는다.
    */
-  private async sweepFinishedLayers(onEvent: (event: SessionEvent) => void): Promise<"proceed" | "continue" | "stop"> {
+  private async sweepFinishedLayers(onEvent: (event: SessionEvent) => void): Promise<void> {
     const plan = this.workPlan;
-    if (!plan || !this.milestoneAutoApply || this.verificationFailed) return "proceed";
+    if (!plan || !this.milestoneAutoApply) return;
     for (let li = 0; li < plan.layers.length; li += 1) {
       const layer = plan.layers[li]!;
       if (!this.isLayerFinished(layer)) continue;
-      if (this.verificationPending) return "proceed";
       if (this.isLayerVerified(layer.id)) continue;
-      const descriptor: LayerDescriptor = {
+      await this.executeVerificationAdvisory({
         id: layer.id,
         title: layer.title,
         isFinal: li === plan.layers.length - 1,
         items: layer.items,
-      };
-      const outcome = await this.executeVerificationGate(descriptor, onEvent);
-      if (outcome === "repair") return "continue";
-      if (outcome === "stop") return "stop";
+      }, onEvent);
     }
-    return "proceed";
-  }
-
-  /**
-   * 최종 응답 게이트: 대기 중인 레이어 검증을 먼저 재실행하고(재킥 후 모델이 고치면 통과),
-   * 남은 완료 레이어를 스윕한다. "continue" 면 루프를 계속(재킥 발행), "stop" 면
-   * verification_failed, "proceed" 면 그대로 최종 응답으로 진행한다.
-   */
-  private async runVerificationAtFinalResponse(
-    onEvent: (event: SessionEvent) => void
-  ): Promise<"proceed" | "continue" | "stop"> {
-    if (this.verificationPending) {
-      const pending = this.verificationPending;
-      const outcome = await this.executeVerificationGate(pending.layer, onEvent, pending.retry);
-      if (outcome === "repair") return "continue";
-      if (outcome === "stop") return "stop";
-    }
-    return this.sweepFinishedLayers(onEvent);
   }
 
   /**
@@ -1762,7 +1708,7 @@ export class AssistantSession {
   private async maybeRunEndProof(onEvent: (event: SessionEvent) => void): Promise<void> {
     const plan = this.workPlan;
     if (!plan || !this.milestoneAutoApply) return;
-    if (this.verificationFailed || this.verificationPending || this.milestoneApplyFailed) return;
+    if (this.milestoneApplyFailed) return;
     if (!isWorkPlanComplete(plan)) return;
     if (this.runEndProofPlanId === plan.id) return;
     this.runEndProofPlanId = plan.id;
@@ -2399,22 +2345,8 @@ export class AssistantSession {
           this.pushOrchestrationMessage(`검수 보완 지시: ${repairInstruction}`);
           continue;
         }
-        // 검증 게이트(todo 5): 검수 완료 응답도 레이어 검증이 해결된 뒤에만 최종화한다.
-        const reviewGateOutcome = await this.runVerificationAtFinalResponse(onEvent);
-        if (reviewGateOutcome === "continue") {
-          phase = "execute";
-          this.emitPhase(onEvent, "execute");
-          this.addExecutionHintIfNeeded();
-          continue;
-        }
-        if (reviewGateOutcome === "stop") {
-          this.pushAudit({ kind: "status", text: "턴 종료(final) — verification_failed 로 레이어 중단" });
-          return {
-            assistantText: sanitizeAssistantText(stripReviewCompletePrefix(reviewText)),
-            proposedCalls: this.finalizeProposals(proposedByKey),
-            stoppedReason: "final",
-          };
-        }
+        // 레이어 검증(자문): 지적을 감사에 남기되 최종화를 막지 않는다.
+        await this.sweepFinishedLayers(onEvent);
         assistantText = sanitizeAssistantText(stripReviewCompletePrefix(reviewText));
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
@@ -2495,13 +2427,8 @@ export class AssistantSession {
           this.pushAudit({ kind: "status", text: "zero-change-rekick" });
           continue;
         }
-        // 검증 게이트(todo 5): 대기 중이거나 완료된 레이어 검증을 최종 응답 전에 해결한다.
-        const gateOutcome = await this.runVerificationAtFinalResponse(onEvent);
-        if (gateOutcome === "continue") continue;
-        if (gateOutcome === "stop") {
-          this.pushAudit({ kind: "status", text: "턴 종료(final) — verification_failed 로 레이어 중단" });
-          return { assistantText: finalText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
-        }
+        // 레이어 검증(자문): 최종 응답 전에 1회 돌려 지적을 근거로 남긴다. 런은 멈추지 않는다.
+        await this.sweepFinishedLayers(onEvent);
         // 최종 응답.
         assistantText = finalText;
         onEvent({ type: "assistant_message", content: assistantText });

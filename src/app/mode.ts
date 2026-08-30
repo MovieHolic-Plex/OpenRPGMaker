@@ -182,11 +182,16 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
       maybeStartBasicCoachMarks();
       maybeStartStandardWelcomeCard();
     } else if (result.prompt) {
+      // 장르 칩의 결정적 부분(system.* 토글)은 AI 보다 먼저 적용한다 — 모델이 토글 툴을 부르지
+      // 않아도 장르 엔진은 켜져 있어야 한다(2026-08-30 실측: 포스터 클릭 경로에서
+      // applyGenrePreset 이 한 번도 호출되지 않았다).
+      if (result.source === "chip" && result.presetId) {
+        const { applyWelcomeGenrePresetToOpenProject } = await import("@/editor/welcomeGenrePresetApply");
+        applyWelcomeGenrePresetToOpenProject(result.presetId);
+      }
       setPendingWelcomePipeline({
         prompt: result.prompt,
         autoSend: result.autoSend,
-        replaceWithBlank: false,
-        presetId: result.presetId,
         source: result.source === "chip" ? "chip" : "free-text",
       });
     } else {
