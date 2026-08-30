@@ -175,7 +175,7 @@ describe("페이지 관리 작업면", () => {
   });
 
   it("우클릭 메뉴의 붙여넣기는 선택이 아니라 **우클릭한** 페이지 바로 앞에 넣는다", () => {
-    // 우클릭은 선택을 움기지 않는다. 예전엔 붙여넣기가 editorState 의 활성 페이지로 자리를 잡아서,
+    // 우클릭은 선택을 옮기지 않는다. 예전엔 붙여넣기가 editorState 의 활성 페이지로 자리를 잡아서,
     // 1페이지를 고른 상태에서 3페이지를 우클릭해 붙여넣으면 새 페이지가 index 0 에 꽂혔다.
     addEventPage(mapId, eventId);
     addEventPage(mapId, eventId);
@@ -223,7 +223,7 @@ describe("페이지 관리 작업면", () => {
     expect(css).not.toMatch(/\.event-page-button-label\s*\{[^}]*font-size:\s*0/u);
   });
 
-  it("메뉴 복사는 선택을 움기지 않는다 — 읽기 행위가 헤더·목록·버튼 대상을 끌고 가면 안 된다", () => {
+  it("메뉴 복사는 선택을 옮기지 않는다 — 읽기 행위가 헤더·목록·버튼 대상을 끌고 가면 안 된다", () => {
     addEventPage(mapId, eventId);
     addEventPage(mapId, eventId);
     const [first, , third] = [pages()[0]!, pages()[1]!, pages()[2]!];

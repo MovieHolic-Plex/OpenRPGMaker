@@ -107,7 +107,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
   // 복사하면 no-op 이라 "복사했어요" 토스트와 동시에 붙여넣기가 버튼이 끌진 채로 남았다.
   const unsubscribeClipboard = subscribeCopiedEventPage(() => {
     unsubscribeClipboard();
-    // happy-dom · 밌라우자만 `isConnected` 를 주므로 값이 없는 환경(페이크 DOM)은 연결로 본다.
+    // happy-dom · 브라우저만 `isConnected` 를 주므로 값이 없는 환경(페이크 DOM)은 연결로 본다.
     if (wrap.isConnected === false) return;
     rerender();
   });

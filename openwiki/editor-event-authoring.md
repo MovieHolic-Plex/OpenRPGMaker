@@ -110,7 +110,6 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - **복제·붙여넣기는 기준 페이지 바로 앞(낮은 우선순위)**에 꽂는다. 런타임은 조건을 통과한
     마지막 페이지를 고르므로, 바로 뒤에 꽂으면 기준 페이지가 마지막일 때 복사본이 즉시 승자가 된다.
     기준 페이지가 첫째·가운데·마지막 어디에 있든 바로 앞 삽입은 기존 resolve 결과를 유지한다.
-    활성 페이지가 대상 이벤트에 없는 붙여넣기만 끝에 넣는다.
   - 복제·붙여넣기 이름은 `X 복사본`, `X 복사본 2`, … 순서로 충돌을 피한다.
   - **탭 우클릭 메뉴** `pageTabContextMenu.ts` (`event-page-context-menu`, 항목
     `event-page-menu-*`). 명령 목록에는 우클릭 메뉴가 있는데 탭에는 없어 상호작용 모델이 갈렸다.
@@ -130,19 +129,19 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
     `붙여넣기` 를 쓴다. 라벨을 `font-size: 0` 으로 지우고 `::after` + `attr(data-compact-label)`
     로 다른 말을 그리지 마라 — 화면은 `보관`, DOM·접근성 이름은 `복사해 두기` 가 되어 보이는
     라벨이 접근성 이름에 없는 상태(WCAG 2.5.3 Label in Name 실패)가 되고 음성 제어가 깨진다.
-    복제·복사·붙여넣기의 시간적 구분은 **장식용 CSS 글리프(`::before`)** 가 맡는다.
-  - 탭 우클릭 메뉴는 선택을 움기지 않으니, 붙여넣기도 **우클릭한 페이지**를 기지로 삼는다 —
+    복제·복사·붙여넣기의 시각적 구분은 **장식용 CSS 글리프(`::before`)** 가 맡는다.
+  - 탭 우클릭 메뉴는 선택을 옮기지 않으니, 붙여넣기도 **우클릭한 페이지**를 기지로 삼는다 —
     `pasteEventPage(mapId, eventId, anchorPageId?)` 의 3번짜 인자로 명시하며, 생략하면 활성 페이지다.
-    기지 id 가 이벤트에 없으면 **index 0**(가장 낮은 우선순위)에 넣는다 — 맵 단위 되돌리기·원경
+    기지 id 가 이벤트에 없으면 **index 0**(가장 낮은 우선순위)에 넣는다 — 맵 단위 되돌리기·원격
     리로드가 페이지를 지워도 `editorState` 는 재조정되지 않아 낡은 id 가 남는다. 끝에 붙이면
-    그 상황에서 붙여넣기가 **가장 높은 우선순위**를 얻어 insert-before 불밍식이 뒤집힌다.
+    그 상황에서 붙여넣기가 **가장 높은 우선순위**를 얻어 insert-before 불변식이 뒤집힌다.
     예전엔 메뉴가 `editorState` 의 활성 페이지로 자리를 잡아, 1페이지를 고른 상태에서 3페이지를
     우클릭해 붙여넣으면 새 페이지가 index 0 에 꽂혔다(복제·순서·삭제는 우클릭한 페이지를 다뤄
     같은 메뉴 안에서 기지가 갈렸다).
   - **복사는 읽기 전용이다** — `copyEventPageToClipboard` 는 선택을 바꾸지 않는다.
     예전엔 여기서 `editorState.set` 을 부려서 탭 우클릭 «복사» 만으로 헤더 이름 상자·명령 목록·
     검증 벨·버튼 줄의 대상이 전부 우클릭한 페이지로 넘어갔다.
-  - **클립보드 갱슴 경로는 하나다**: `subscribeCopiedEventPage`(`eventPageClipboard.ts`). 버튼 줄이
+  - **클립보드 갱신 경로는 하나다**: `subscribeCopiedEventPage`(`eventPageClipboard.ts`). 버튼 줄이
     구독하기 때문에 버튼·우클릭 메뉴 어느 경로로 복사해도 붙여넣기 활성·안내문이 같이 맞춰진다.
     클립보드는 store 도 editorState 도 아니므로 이 구독 없이는 아무도 변경을 듣지 못한다 — 이미
     활성인 페이지를 메뉴로 복사하면 선택값이 그대로라 `editorState.set` 은 통지하지 않아
