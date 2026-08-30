@@ -52,6 +52,7 @@
 ## Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01)
 
 - Files: `scarloxy/*.png` (battle backdrops, monster battlers/icons, battle effect strips, chipsets, charsets, stat icons)
+  except the generated monster sprites listed in the section below.
 - Author: Scarloxy (Ismael Garcia)
 - Source: https://scarloxy.itch.io/mpwsp01 (purchased copy)
 - License: Creative Commons Attribution 4.0 International — commercial use allowed with attribution
@@ -59,6 +60,20 @@
   `scripts/import-scarloxy-pack.py` downscales them back to native pixel resolution and repacks
   tilesets/characters into RM2K3-compatible ChipSet (480x256, 16px) and CharSet (288x256, 24x32)
   sheets. Fonts from the pack are not bundled (Latin-only; runtime uses Galmuri).
+
+## Generated monster sprites (not part of the Scarloxy pack)
+
+- Files:
+  - `scarloxy/scarloxy-monster-mossling.png`, `scarloxy/scarloxy-monster-icon-mossling.png`
+  - `scarloxy/scarloxy-monster-emberkit.png`, `scarloxy/scarloxy-monster-icon-emberkit.png`
+  - `scarloxy/scarloxy-monster-puddlup.png`, `scarloxy/scarloxy-monster-icon-puddlup.png`
+- Origin: synthesized with an image generation model, then downscaled to the pack's native
+  96x96 battler / 32x32 icon format (magenta key removed, alpha bleed cleared, palette reduced).
+- Author: none of the above sprites are Scarloxy (Ismael Garcia) artwork. They live under the
+  `scarloxy/` prefix only so the demo project resolves them from one bundled asset directory.
+- Notes: these files must not be represented as pack content. If the Scarloxy pack license or
+  attribution changes, it does not apply to them; conversely the CC-BY 4.0 credit above does not
+  cover them. Review generated-asset terms before shipping commercially.
 
 ## EasyRPG RTP scoped runtime import
 
