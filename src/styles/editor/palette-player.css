@@ -534,7 +534,8 @@
   bottom: var(--space-4);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  /* 앱 모달(테스트 플레이 창) 위에 떠야 한다 — 1000 일 때 런타임 디버그 막대에 가려졌다. */
+  z-index: var(--z-toast);
   display: flex;
   flex-direction: column-reverse;
   align-items: center;

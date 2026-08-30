@@ -130,6 +130,11 @@
   --z-modal-overlay: 2200;
   --z-modal-top: 2300;
   --z-proposal: 2500;
+  /* 토스트는 앱 모달(--z-app-modal 2600)보다 위다. 실측 근거: 테스트 플레이 창(앱 모달 층)에서
+     «시작 전 자동 복구» 토스트가 z-index 1000 이라 런타임 디버그 막대 뒤로 가려졌다 —
+     scripts/qa/testplay-toast-occlusion-probe.mjs 가 elementFromPoint 로 재서 잡았다.
+     눈에 안 보이는 알림은 없는 알림이므로 층을 올린다. */
+  --z-toast: 2700;
 
   --brand-blue: #4A57D6;
   --mix-base: #F7F8F8;
