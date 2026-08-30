@@ -10,6 +10,16 @@
 // 패널 메뉴가 도킹 컨트롤을 담는 이유: 좌패널의 세로 공간은 이 제품에서 가장 비싼
 // 자원이다(팔레트가 접힘선 밑으로 밀린 사고가 3번 있었다). 패널마다 제목줄을 얹으면
 // 28px 씩 먹으므로, 옮기기·닫기는 탑바 메뉴에서 처리한다.
+//
+// ── 소유권 (2026-08-30 중복 정리) ─────────────────────────────────────────────
+// 한 명령의 집은 하나다. 두 번째 표면은 첫 번째가 그 모드에서 렌더되지 않을 때만 둔다.
+//  • 작업 프리셋(맵·이벤트·데이터) = **저작 작업 칩**. ▤ 의 「레이아웃」 3줄은 같은
+//    `setWorkspacePreset` 을 부르는 두 번째 이름이었고, 칩이 하는 실제 일(레이어·모달)을
+//    하지 않아 「작업 런처처럼 보이지만 레이아웃 프리셋만 내놓는 컨트롤」이었다 —
+//    `authoringTasks` 가 애초에 대체한 그 표면이다. 지웠고, 선택 표시는 칩으로 옮겼다.
+//  • 패널 표시(타일·맵) = 좌측이 아이콘 레일인 모드에서는 **레일**(`basic-rail-toggle-*`),
+//    레일이 없는 표준·전문가에서는 **이 메뉴**. 전에는 초보에서 둘이 겹쳤고 ▤ 쪽 타일 행은
+//    눌러도 아무 일이 없는 체크박스였다.
 
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
@@ -17,18 +27,16 @@ import { editorState } from "@/editor/editorState";
 import { getEditorUiMode, setEditorUiMode, getEditorChrome, type EditorUiMode } from "@/editor/editorUiMode";
 import type { ChatDock } from "@/editor/chatDock";
 import { allPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
-import { dockZoneHasHost, isLeftDockPinned } from "@/editor/workspace/leftDockPanels";
+import { dockZoneHasHost } from "@/editor/workspace/leftDockPanels";
 import {
   dockOf,
   isWorkspaceDensity,
-  WORKSPACE_PRESETS,
   type WorkspaceDensity,
 } from "@/editor/workspace/workspaceLayout";
 import {
   getWorkspaceLayout,
   moveWorkspacePanel,
   setWorkspaceDensity,
-  setWorkspacePreset,
   toggleWorkspacePanel,
 } from "@/editor/workspace/workspaceStore";
 import { el } from "@/util/dom";
@@ -66,12 +74,19 @@ function renderAuthoringTaskLauncher(): HTMLElement {
     attrs: { role: "group", "aria-label": "저작 작업 열기" },
     dataset: { testid: "authoring-task-launcher" },
   });
+  // 지금 어느 작업 화면에 있는지는 이 칩이 말한다. 전에는 ▤ 메뉴의 「레이아웃」 라디오 3줄이
+  // 같은 프리셋을 두 번째로 늘어놓고 그 표시를 대신 갖고 있었다 — `mode.ts` 의 워크스페이스
+  // 구독이 톱바를 다시 그리는 이유로 적어둔 「프리셋 세그먼트의 선택 표시(aria-pressed)」가
+  // 정작 어디에도 없었다. 표시를 정본 진입점인 칩으로 되돌리고 중복 줄을 지운다.
+  const presetId = getWorkspaceLayout().presetId;
   for (const task of AUTHORING_TASKS) {
+    // `test` 는 프리셋이 아니라 실행 요청이라 선택 상태를 갖지 않는다.
+    const active = task.id === presetId;
     group.append(
       el("button", {
-        class: "authoring-task-btn editor-ui-mode-btn",
+        class: `authoring-task-btn editor-ui-mode-btn${active ? " is-active" : ""}`,
         text: task.label,
-        attrs: { type: "button", title: task.hint },
+        attrs: { type: "button", title: task.hint, "aria-pressed": active ? "true" : "false" },
         dataset: { testid: `authoring-task-${task.id}` },
         on: {
           click: (event) => {
@@ -137,28 +152,16 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
   });
 
   const layout = getWorkspaceLayout();
-  menu.append(el("div", { class: "workspace-menu-group", text: "패널" }));
-  for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
-    menu.append(renderPanelRow(panel.id, panel.title, close));
-  }
-  menu.append(el("div", { class: "workspace-menu-group", text: "레이아웃" }));
-  for (const preset of WORKSPACE_PRESETS) {
-    const active = layout.presetId === preset.id;
-    menu.append(
-      el("button", {
-        class: `oprn-menu-command workspace-layout-item${active ? " is-active" : ""}`,
-        text: `${active ? "● " : "○ "}${preset.label}`,
-        attrs: { type: "button", role: "menuitemradio", "aria-checked": active ? "true" : "false", title: preset.hint },
-        dataset: { testid: `workspace-layout-${preset.id}` },
-        on: {
-          click: (event) => {
-            event.stopPropagation();
-            setWorkspacePreset(preset.id);
-            close();
-          },
-        },
-      }),
-    );
+  // 「패널」 그룹은 **좌측 레일이 없는 모드에서만** 이 메뉴의 것이다. 초보 모드의 좌측 레일은
+  // `basic-rail-toggle-tiles` / `-maps` 로 같은 두 패널을 이미 소유하고, 타일 행은 레일 호스트라
+  // 끌 수도 없어서 「눌러도 아무 일이 없는 체크박스 + 왜 안 되는지 적은 title」 로 떠 있었다.
+  // 되지 않는 선택지를 보여주지 않는다는 이 메뉴의 규칙(§2-1)이 자기 첫 그룹에는 적용되지
+  // 않았던 셈이다. 사이드바가 소유하는 모드에서는 그룹째로 내린다.
+  if (!getEditorChrome().paletteRail) {
+    menu.append(el("div", { class: "workspace-menu-group", text: "패널" }));
+    for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
+      menu.append(renderPanelRow(panel.id, panel.title, close));
+    }
   }
   const assistantPlacement = renderAssistantPlacement(close);
   refreshAssistantPlacement = assistantPlacement.refresh;
@@ -258,45 +261,40 @@ function renderAssistantPlacement(close: () => void): {
   };
 }
 
-/** 패널 한 줄 = 표시 토글 + 도크 이동 칩. */
+/**
+ * 패널 한 줄 = 표시 토글 + 도크 이동 칩.
+ *
+ * 초보 모드는 이 행을 아예 그리지 않는다(`renderPanelsMenu` 가 그룹째로 건너뛴다). 그래서
+ * 여기에 「고정 행」 분기는 없다 — 좌측 레일이 그 모드의 소유자다.
+ */
 function renderPanelRow(id: PanelId, title: string, close: () => void): HTMLElement {
   const layout = getWorkspaceLayout();
   const zone = dockOf(layout, id);
   const row = el("div", { class: "workspace-panel-row", dataset: { testid: `workspace-panel-row-${id}` } });
-  // 초보 모드의 타일 패널은 아이콘 레일의 호스트다 — 끄면 사이드바가 빈다. 눌러도 되지 않는
-  // 체크박스를 주는 대신 이유를 붙인 고정 행으로 그린다(계획서 §2-1).
-  const pinned = isLeftDockPinned(id, getEditorChrome().paletteRail);
   const toggle = el("button", {
-    class: `oprn-menu-command workspace-panel-toggle${zone || pinned ? " is-active" : ""}`,
-    text: `${zone || pinned ? "☑" : "☐"} ${title}`,
+    class: `oprn-menu-command workspace-panel-toggle${zone ? " is-active" : ""}`,
+    text: `${zone ? "☑" : "☐"} ${title}`,
     attrs: {
       type: "button",
       role: "menuitemcheckbox",
-      "aria-checked": zone || pinned ? "true" : "false",
-      ...(pinned ? { "aria-disabled": "true" } : {}),
-      title: pinned
-        ? `초보 모드에서는 ${title} 패널이 도구 레일을 담고 있어 끌 수 없습니다`
-        : zone ? `${title} 패널 닫기` : `${title} 패널 열기`,
+      "aria-checked": zone ? "true" : "false",
+      title: zone ? `${title} 패널 닫기` : `${title} 패널 열기`,
     },
     dataset: { testid: `workspace-panel-toggle-${id}` },
     on: {
       click: (event) => {
         event.stopPropagation();
-        if (pinned) return;
         toggleWorkspacePanel(id);
         close();
       },
     },
   });
-  // 고정 행은 `aria-disabled` + 클릭 가드로만 막는다. `disabled` 속성을 걸면 버튼이 포커스를
-  // 받지 못해 **왜 끌 수 없는지 적어둔 title 에 키보드로 닿을 수 없다** — 메뉴 항목에서
-  // 이유를 읽어야 하는 쪽이 바로 키보드 사용자다.
   row.append(toggle);
   // 이동 칩은 **호스트가 실제로 마운트된 zone 만** 제시한다. right/bottom 도크를 아무도
   // 마운트하지 않는 동안 칩을 보여주면 눌러도 아무 일이 없고, 그 뒤 메뉴는 이동이 일어난
   // 척한다(계획서 §1-1 B-2).
   for (const target of ["left", "right"] as const) {
-    if (!zone || zone === target || pinned) continue;
+    if (!zone || zone === target) continue;
     if (!dockZoneHasHost(target)) continue;
     row.append(
       el("button", {

@@ -223,7 +223,7 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     expect(findByTestId(bodyRoot, "workspace-panel-dock-tiles-right")).not.toBeNull();
   }, 120_000);
 
-  it("초보 모드의 타일 행은 끌 수 없는 고정 행이고 이유를 말한다", async () => {
+  it("초보 모드에서는 좌측 레일이 패널 토글을 소유해 메뉴가 그 줄을 중복으로 내지 않는다", async () => {
     storage.setItem(UI_MODE_KEY, "beginner");
     setWorkspaceDocks(["tiles", "maps"]);
     const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
@@ -231,17 +231,30 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     for (const node of renderWorkspaceBar()) document.body.append(node);
 
     const bodyRoot = fake(document.body as unknown as HTMLElement);
-    const tilesToggle = findByTestId(bodyRoot, "workspace-panel-toggle-tiles");
-    const mapsToggle = findByTestId(bodyRoot, "workspace-panel-toggle-maps");
-    // 고정은 aria-disabled 로 알리고, `disabled` 속성은 걸지 않는다 — disabled 버튼은
-    // 포커스를 못 받아서 이유가 적힌 title 에 키보드로 닿지 못하기 때문이다.
-    expect(tilesToggle?.getAttribute("aria-disabled")).toBe("true");
-    expect(tilesToggle?.disabled).toBe(false);
-    expect(tilesToggle?.getAttribute("title") ?? "").toContain("끌 수 없습니다");
-    // 그리고 진짜로 안 눈다: 클릭해도 지속된 레이아웃의 tiles 멤버쉽이 그대로여야 한다.
-    tilesToggle?.click();
+    // 전에는 둘 다 그렸고, 타일 행은 레일 호스트라 끌 수 없어서 aria-disabled +
+    // 「끌 수 없습니다」 title 을 달고 눌러도 아무 일이 없었다. 되지 않는 선택지를 보여주지
+    // 않는다는 이 메뉴의 규칙은 자기 첫 그룹에도 적용된다 — 그룹째로 사이드바에 넘긴다
+    // (좌측 레일의 basic-rail-toggle-tiles / -maps 가 같은 두 패널을 이미 소유한다).
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-tiles")).toBeNull();
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-maps")).toBeNull();
+    expect(findByTestId(bodyRoot, "workspace-panel-row-tiles")).toBeNull();
+    // 사라진 것은 중복 토글이지 타일 패널이 아니다 — 구성은 그대로 남는다.
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toContain("tiles");
-    expect(mapsToggle?.getAttribute("aria-disabled")).toBeNull();
-    expect(mapsToggle?.disabled).toBe(false);
+  }, 120_000);
+
+  it("표준 모드에서는 이 메뉴가 패널 토글의 유일한 집이다", async () => {
+    storage.setItem(UI_MODE_KEY, "standard");
+    setWorkspaceDocks(["tiles", "maps"]);
+    const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
+
+    for (const node of renderWorkspaceBar()) document.body.append(node);
+
+    const bodyRoot = fake(document.body as unknown as HTMLElement);
+    const tilesToggle = findByTestId(bodyRoot, "workspace-panel-toggle-tiles");
+    expect(tilesToggle).not.toBeNull();
+    expect(tilesToggle?.getAttribute("aria-disabled")).toBeNull();
+    // 그리고 진짜로 된다 — 레일이 없는 모드에서는 이 토글이 지속 구성을 바꿔야 한다.
+    tilesToggle?.click();
+    expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).not.toContain("tiles");
   }, 120_000);
 });

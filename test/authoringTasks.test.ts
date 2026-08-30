@@ -98,6 +98,32 @@ describe("genre-neutral authoring task launcher", () => {
     expect(dispatchEvent.mock.calls[0]?.[0]).toMatchObject({ type: "oprn:test-play-window" });
   });
 
+  // Break: ▤ 패널 메뉴가 같은 프리셋 3개를 「레이아웃」 이라는 두 번째 이름으로 다시 내놓는다.
+  // 그 줄들은 authoringTasks 가 대체한 「작업 런처처럼 보이지만 레이아웃 프리셋만 내놓는 컨트롤」
+  // 이었고, 톱바 한 줄 안에서 맵/이벤트/데이터를 두 번 말하게 만들었다.
+  it("패널 메뉴에 작업 프리셋을 두 번째 이름으로 다시 내놓지 않는다", () => {
+    const root = renderBar();
+    for (const preset of ["map", "event", "data"]) {
+      expect(findByTestId(root, `workspace-layout-${preset}`), preset).toBeNull();
+    }
+    // 밀도·편집 모드는 이 메뉴가 계속 소유한다 — 지운 것은 중복된 프리셋 줄뿐이다.
+    expect(findByTestId(root, "workspace-density-comfortable")).toBeTruthy();
+    expect(findByTestId(root, "workspace-ui-mode-standard")).toBeTruthy();
+  });
+
+  // Break: 프리셋 줄이 갖고 있던 「지금 어느 작업 화면인가」 표시가 사라져 아무도 말하지 않는다.
+  // mode.ts 의 워크스페이스 구독이 톱바를 다시 그리는 이유로 적어둔 그 표시다.
+  it("현재 작업 화면을 칩의 선택 상태로 말한다", () => {
+    const root = renderBar();
+    findByTestId(root, "authoring-task-event")?.click();
+
+    const after = renderBar();
+    expect(findByTestId(after, "authoring-task-event")?.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(after, "authoring-task-map")?.getAttribute("aria-pressed")).toBe("false");
+    // 테스트는 프리셋이 아니라 실행 요청이므로 선택 상태를 갖지 않는다.
+    expect(findByTestId(after, "authoring-task-test")?.getAttribute("aria-pressed")).toBe("false");
+  });
+
   // Break caught: selecting Data silently upgrades guided users to dense/expert chrome.
   it("preserves the current density while switching among all four tasks", () => {
     const root = renderBar();

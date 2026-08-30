@@ -849,8 +849,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   outline: none;
 }
 
-.workspace-density-item.is-active,
-.workspace-layout-item.is-active {
+.workspace-density-item.is-active {
   font-weight: 700;
 }
 
