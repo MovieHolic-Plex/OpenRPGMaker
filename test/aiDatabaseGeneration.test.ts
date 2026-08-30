@@ -178,6 +178,78 @@ describe("generateDatabaseRecordWithAi", () => {
     expect(outcome.artworkDataUrl).toBeUndefined();
   });
 
+  it("이미 중단된 요청은 프로젝트에 아무것도 적용하지 않는다", async () => {
+    const controller = new AbortController();
+    controller.abort();
+    let applyCalls = 0;
+
+    await expect(
+      generateDatabaseRecordWithAi(
+        {
+          kind: "item",
+          brief: "빵",
+          config: defaultAiConfig(),
+          withArtwork: true,
+          signal: controller.signal,
+        },
+        {
+          currentProject: () => EMPTY,
+          complete: async () => ({ message: { role: "assistant", content: '{"name":"빵"}' }, finishReason: "stop" }),
+          generateImage: async () => ({
+            dataUrl: "data:image/png;base64,RAW",
+            mimeType: "image/png",
+            model: "gemini-3.1-flash-image",
+            provider: "google-antigravity",
+          }),
+          applyCalls: () => {
+            applyCalls += 1;
+            return [ok];
+          },
+        },
+      ),
+    ).rejects.toBeInstanceOf(AiDatabaseGenerationError);
+    expect(applyCalls).toBe(0);
+  });
+
+  it("그림 응답 직후 중단돼도 프로젝트에 아무것도 적용하지 않는다", async () => {
+    const controller = new AbortController();
+    let applyCalls = 0;
+
+    await expect(
+      generateDatabaseRecordWithAi(
+        {
+          kind: "enemy",
+          brief: "얼음 늑대",
+          config: defaultAiConfig(),
+          withArtwork: true,
+          signal: controller.signal,
+        },
+        {
+          currentProject: () => EMPTY,
+          complete: async () => ({
+            message: { role: "assistant", content: '{"name":"서슬 늑대"}' },
+            finishReason: "stop",
+          }),
+          generateImage: async () => ({
+            dataUrl: "data:image/jpeg;base64,RAW",
+            mimeType: "image/jpeg",
+            model: "gemini-3.1-flash-image",
+            provider: "google-antigravity",
+          }),
+          flattenArtwork: async () => {
+            controller.abort();
+            return "data:image/png;base64,FLAT";
+          },
+          applyCalls: () => {
+            applyCalls += 1;
+            return [ok];
+          },
+        },
+      ),
+    ).rejects.toBeInstanceOf(AiDatabaseGenerationError);
+    expect(applyCalls).toBe(0);
+  });
+
   it("툴 적용이 실패하면 오류로 올린다", async () => {
     await expect(
       generateDatabaseRecordWithAi(

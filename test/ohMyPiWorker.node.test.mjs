@@ -93,4 +93,24 @@ describe("인증은 Node, 완성만 Bun 워커", () => {
     assert.equal(completion.completion.provider, ANTIGRAVITY);
     assert.equal(completion.completion.choices[0].message.content, `stub:${ANTIGRAVITY}`);
   });
+
+  it("이미지 요청은 /image 워커와 generateImage 어댑터를 탄다", async () => {
+    const adapters = await createOhMyPiAdapters();
+    await adapters.seedOAuth(ANTIGRAVITY, {
+      access: "image-access",
+      refresh: "image-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "image-project",
+    });
+
+    const image = await adapters.generateImage(ANTIGRAVITY, {
+      model: "gemini-3.1-flash-image",
+      prompt: "슬라임",
+    });
+
+    assert.equal(image.provider, ANTIGRAVITY);
+    assert.equal(image.model, "gemini-3.1-flash-image");
+    assert.equal(image.mimeType, "image/png");
+    assert.match(image.base64, /^[A-Za-z0-9+/]+=*$/u);
+  });
 });

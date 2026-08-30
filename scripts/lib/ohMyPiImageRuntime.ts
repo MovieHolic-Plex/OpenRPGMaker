@@ -14,6 +14,16 @@ export interface GeneratedImage {
   readonly base64: string;
 }
 
+const IMAGE_AUTH_MESSAGE = "이미지를 만들려면 AI 설정 → Google Antigravity 로그인에서 연결해 주세요.";
+
+function isCredentialFailure(error: unknown, message: string): boolean {
+  const status = error && typeof error === "object" && "status" in error
+    ? Number((error as { status: unknown }).status)
+    : 0;
+  return status === 401 || status === 403
+    || /\b(?:credentials?|authentication|unauthorized|forbidden|re-?authenticate|invalid[_ ]?(?:grant|token)|(?:missing|no)[_ ]?(?:api[_ ]?key|token|projectId)|access token)\b/i.test(message);
+}
+
 function statusError(message: string, status: number): Error & { status?: number } {
   const error = new Error(message) as Error & { status?: number };
   error.status = status;
@@ -164,7 +174,7 @@ export async function generateProviderImage(
   };
 
   let message: unknown;
-  let failure = "";
+  let failure: unknown;
   try {
     message = await complete(model as never, context as never, {
       ...(options?.apiKey ? { apiKey: options.apiKey } : {}),
@@ -172,12 +182,15 @@ export async function generateProviderImage(
       onPayload: withImageModality,
     } as never);
   } catch (error) {
-    failure = error instanceof Error ? error.message : String(error);
+    failure = error;
   }
 
   const image = biggest(imagePartsOfMessage(message)) ?? biggest(harvested);
   if (!image) {
-    const reason = failure || (message as { errorMessage?: string })?.errorMessage || "응답에 이미지가 없습니다.";
+    const reason = failure instanceof Error
+      ? failure.message
+      : failure !== undefined ? String(failure) : (message as { errorMessage?: string })?.errorMessage || "응답에 이미지가 없습니다.";
+    if (isCredentialFailure(failure, reason)) throw statusError(IMAGE_AUTH_MESSAGE, 401);
     throw statusError(`이미지 생성 실패: ${reason.slice(0, 400)}`, 502);
   }
   return { provider: IMAGE_PROVIDER_ID, model: modelId, mimeType: image.mimeType, base64: image.base64 };
