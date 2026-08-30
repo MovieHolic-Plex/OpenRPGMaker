@@ -47,6 +47,12 @@ const ANCHOR_TOLERANCE_RATIO = 0.05;
 const CENTER_TO_FEET_RATIO = 0.5;
 const MIN_FEET_SEPARATION_RATIO = CENTER_TO_FEET_RATIO - ANCHOR_TOLERANCE_RATIO;
 
+/** 픽스처의 anim_magic — scope: "singleTarget", position: "center" 로 저작돼 있다. */
+const ANCHOR_ANIMATION_ID = "anim_magic";
+
+/** 촬영 창 확보용 프레임 수(기본 120ms/프레임 → 약 1.4초). 앵커 계산과는 무관하다. */
+const SHOT_FRAME_COUNT = 12;
+
 type TargetIndicator = {
   readonly id: string | null;
   readonly skin: string | null;
@@ -195,6 +201,40 @@ test("skill animation lands on the authored anchor of the target sprite", async 
     // 이 값이 0 으로 돌아가면 회귀다.
     expect(Math.abs(probe.feetOffsetRatioY)).toBeGreaterThan(MIN_FEET_SEPARATION_RATIO);
 
+    // 이펙트가 **아직 화면에 있는 동안** 찍는다 — 없어진 뒤 찍은 그림은 앵커 증거가 아니다.
+    // 셀 캔버스 확인이 촬영보다 먼저 와야 한다: 촬영이 재생 시간을 잡아먹어서 찍은 뒤에 세면
+    // 이미 정리된 레이어를 세게 된다(실측: 촬영 후 count 가 0 이었다).
+    await expect(page.locator("[data-testid='battle-animation']")).toBeVisible();
+    expect(await page.locator("[data-testid='battle-animation-cell']").count()).toBeGreaterThan(0);
+    const shot = await page.evaluate(() => {
+      const animation = document.querySelector<HTMLElement>("[data-testid='battle-animation']");
+      const frames = [...(animation?.querySelectorAll<HTMLElement>(".battle-animation-frame") ?? [])];
+      const visible = frames.filter((frame) => !frame.hidden);
+      const cells = [...(visible[0]?.querySelectorAll<HTMLCanvasElement>("canvas") ?? [])];
+      return {
+        playbackFinished: animation?.dataset.playbackFinished ?? "(none)",
+        currentFrame: animation?.dataset.currentFrame ?? "(none)",
+        frames: frames.length,
+        visibleFrames: visible.length,
+        visibleCells: cells.length,
+        renderedCells: cells.filter((cell) => cell.dataset.rendered === "true").length,
+        firstCell: cells[0]
+          ? {
+              opacity: getComputedStyle(cells[0]).opacity,
+              width: Math.round(cells[0].getBoundingClientRect().width),
+              height: Math.round(cells[0].getBoundingClientRect().height),
+            }
+          : null,
+      };
+    });
+    console.log(`shot probe: ${JSON.stringify(shot)}`);
+    // 엘리먼트가 붙어 있다는 것만으로는 그림이 남지 않는다 — `finishPlayback` 은 프레임을
+    // `hidden` 으로 걷고 셀 캔버스는 DOM 에 그대로 둔다. 그래서 "cells > 0" 은 재생이 끝난
+    // 뒤에도 통과했고, 증거 PNG 에 이펙트가 없는 채로 스펙이 초록이었다(실측). 촬영 순간에
+    // **보이는 프레임과 실제로 그려진 캔버스**가 있는지까지 봐야 그림이 증거가 된다.
+    expect(shot.playbackFinished, "재생이 끝난 뒤 찍었다 — PNG 에 이펙트가 남지 않는다").not.toBe("true");
+    expect(shot.visibleFrames, "보이는 애니메이션 프레임이 없다").toBe(1);
+    expect(shot.renderedCells, "셀 캔버스가 아직 그려지지 않았다 — 빈 사각만 찍힌다").toBeGreaterThan(0);
     await page.locator(".battle-scene").screenshot({ path: `${SHOT_DIR}/skill-animation-anchor.png` });
   });
 });
@@ -257,11 +297,23 @@ async function withRealBattle(page: Page, run: () => Promise<void>): Promise<voi
  */
 async function withUnarmedAttackAnimation(json: string): Promise<string> {
   const project = JSON.parse(json) as {
-    database: { actors: { id: string; unarmedAnimationId?: string }[] };
+    database: {
+      actors: { id: string; unarmedAnimationId?: string }[];
+      battleAnimations: { id: string; frames?: unknown[] }[];
+    };
   };
   const hero = project.database.actors.find((actor) => actor.id === "actor_hero");
   if (!hero) throw new Error("픽스처에 actor_hero 가 없다 — 평타 애니메이션을 심을 수 없다");
-  hero.unarmedAnimationId = "anim_magic";
+  hero.unarmedAnimationId = ANCHOR_ANIMATION_ID;
+
+  // 스크린샷 증거용으로 **재생 길이만** 늘린다. 원본 anim_magic 은 2프레임(약 240ms)이라
+  // 스냅샷이 도착하기 전에 이펙트가 사라져 "이펙트가 대상 위에 있다" 를 눈으로 확인할 수
+  // 없었다(실측: 첫 증거 PNG 에 이펙트가 없었다). 프레임을 반복해 늘리는 것은 앵커 계산과
+  // 무관하다 — 앵커는 엘리먼트 하나당 한 번 정해지고 셀은 그 안에서 상대 배치된다.
+  const animation = project.database.battleAnimations.find((record) => record.id === ANCHOR_ANIMATION_ID);
+  if (!animation?.frames?.length) throw new Error(`픽스처에 ${ANCHOR_ANIMATION_ID} 프레임이 없다`);
+  const source = animation.frames;
+  animation.frames = Array.from({ length: SHOT_FRAME_COUNT }, (_, index) => source[index % source.length]);
   return JSON.stringify(project);
 }
 
