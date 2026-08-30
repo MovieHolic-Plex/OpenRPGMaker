@@ -4,7 +4,6 @@ export interface AiActivityNarrationInput {
   readonly toolName: string;
   readonly args?: Record<string, unknown>;
   readonly phase?: AiActivityPhase;
-  readonly elapsedMs?: number;
   readonly done?: boolean;
   readonly ok?: boolean;
   readonly summary?: string;
@@ -15,7 +14,6 @@ export interface AiActivityNarration {
   readonly action: string;
   readonly target: string;
   readonly line: string;
-  readonly elapsedLabel: string;
 }
 
 interface ActionForms {
@@ -206,8 +204,5 @@ export function narrateAiActivity(input: AiActivityNarrationInput): AiActivityNa
     action,
     target,
     line: target ? `${action} — ${target}` : action,
-    elapsedLabel: input.elapsedMs === undefined || input.elapsedMs < 1_000
-      ? ""
-      : `${Math.floor(input.elapsedMs / 1_000)}초`,
   };
 }

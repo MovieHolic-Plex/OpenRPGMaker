@@ -437,7 +437,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let runningPhaseStatus: string | null = null;
   let runningActivity: {
     readonly toolName: string;
-    readonly startedAt: number;
     readonly row: HTMLElement;
     readonly line: HTMLElement;
   } | null = null;
@@ -542,11 +541,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const refreshLiveActivity = (): void => {
     if (!runningActivity) return;
-    const narration = narrateAiActivity({
-      toolName: runningActivity.toolName,
-      elapsedMs: Math.max(0, now() - runningActivity.startedAt),
-    });
-    runningActivity.line.textContent = narration.line;
+    const narration = narrateAiActivity({ toolName: runningActivity.toolName });
+    // aria-live 영역은 같은 문자열을 다시 써도 재낭독될 수 있다. 문구가 실제로 바뀔 때만 쓴다.
+    if (runningActivity.line.textContent !== narration.line) {
+      runningActivity.line.textContent = narration.line;
+    }
   };
   const flushPendingActivitySwapsThrough = (target?: PendingActivitySwap): void => {
     const lastIndex = target ? pendingActivitySwaps.indexOf(target) : pendingActivitySwaps.length - 1;
@@ -573,7 +572,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         line,
       ],
     });
-    runningActivity = { toolName, startedAt: now(), row, line };
+    runningActivity = { toolName, row, line };
     refreshLiveActivity();
     log.append(row);
     log.scrollTop = log.scrollHeight;

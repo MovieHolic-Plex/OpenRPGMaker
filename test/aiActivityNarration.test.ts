@@ -72,12 +72,10 @@ describe("AI 도구 활동 문장", () => {
     expect(narrateAiActivity({
       toolName: "paint_road",
       args: { mapName: "샘물마을", x: 12, y: 8, w: 6, h: 4 },
-      elapsedMs: 12_800,
     })).toEqual({
       action: "길을 그리는 중",
       target: "샘물마을 (12,8) 6×4",
       line: "길을 그리는 중 — 샘물마을 (12,8) 6×4",
-      elapsedLabel: "12초",
     });
   });
 
@@ -102,18 +100,18 @@ describe("AI 도구 활동 문장", () => {
     expect(narration.action).not.toContain("만드");
   });
 
-  it("실패, 도구 요약, 경과 시간 경계를 사람에게 읽히게 표현한다", () => {
+  it("실패와 도구 요약을 사람에게 읽히게 표현한다", () => {
     expect(narrateAiActivity({ toolName: "paint_road", done: true, ok: false }).action)
       .toBe("길 그리기를 실패했어요");
     expect(narrateAiActivity({ toolName: "paint_road", done: true, summary: "샘물마을의 길을 이었어요" }).action)
       .toBe("샘물마을의 길을 이었어요");
-    expect(narrateAiActivity({ toolName: "paint_road", elapsedMs: 999 }).elapsedLabel).toBe("");
-    expect(narrateAiActivity({ toolName: "paint_road", elapsedMs: 1_999 }).elapsedLabel).toBe("1초");
   });
 
   it("레지스트리에 등록된 모든 도구에서 내부 이름을 노출하지 않는다", () => {
     const registeredNames = registeredToolNames();
     const registryNames = allTools().map((tool) => tool.name).sort();
+    // 두 수집 경로가 동시에 무너져도 통과하는 것을 막는 바닥값. 실제 등록 도구는 224개다.
+    expect(registryNames.length).toBeGreaterThanOrEqual(200);
     expect(registeredNames).toEqual(registryNames);
 
     for (const toolName of registeredNames) {

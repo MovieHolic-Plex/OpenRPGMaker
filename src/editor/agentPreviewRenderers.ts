@@ -709,8 +709,9 @@ export class AgentFocusRenderer {
 
   private screenRect(bounds: AgentFocusBounds): AgentFocusBounds {
     const camera = this.scene.cameras.main;
-    const x = Math.round((bounds.x * TILE_SIZE - camera.scrollX) * camera.zoom);
-    const y = Math.round((bounds.y * TILE_SIZE - camera.scrollY) * camera.zoom);
+    // Phaser 3.60+ 에서 scrollX 는 zoom!==1 일 때 뷰포트 좌상단이 아니다. worldView 를 써야 한다.
+    const x = Math.round((bounds.x * TILE_SIZE - camera.worldView.x) * camera.zoom);
+    const y = Math.round((bounds.y * TILE_SIZE - camera.worldView.y) * camera.zoom);
     const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
     const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
     return { x, y, width, height };
