@@ -60,9 +60,12 @@ async function columnReport(page: Page): Promise<{
       const summary = head?.querySelector<HTMLElement>(":scope > .cmd-summary") ?? null;
       const kind = summary?.querySelector<HTMLElement>(".cmd-kind") ?? null;
       const face = summary?.querySelector<HTMLElement>("[data-testid='cmd-speaker-face']") ?? null;
+      const stepEl = head?.querySelector<HTMLElement>(":scope > .cmd-step") ?? null;
       return {
         testid: row.dataset.testid ?? "",
         path: row.dataset.cmdPath ?? "",
+        step: (stepEl?.textContent ?? "").trim(),
+        stepAriaHidden: stepEl?.getAttribute("aria-hidden") ?? "",
         text: (row.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 120),
         row: box(row),
         head: box(head ?? null),
