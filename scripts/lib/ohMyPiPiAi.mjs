@@ -115,5 +115,9 @@ export async function createOhMyPiAdapters() {
       const apiKey = await resolveRequestApiKey(provider);
       return workerJson("/complete", { provider, body, apiKey });
     },
+    async generateImage(provider, body) {
+      const apiKey = await resolveRequestApiKey(provider);
+      return workerJson("/image", { provider, body, apiKey });
+    },
   };
 }

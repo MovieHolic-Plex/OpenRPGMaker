@@ -6,6 +6,7 @@
 // 로그인조차 불가능해진다.
 
 import { completeProvider } from "./lib/ohMyPiPiAiRuntime.ts";
+import { generateProviderImage } from "./lib/ohMyPiImageRuntime.ts";
 
 const port = Number(process.env.RPG_ZZU_OH_MY_PI_WORKER_PORT || 0);
 
@@ -28,6 +29,13 @@ const server = Bun.serve({
         const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
         return json(await completeProvider(provider, payload, { apiKey }));
+      }
+      if (request.method === "POST" && url.pathname === "/image") {
+        const body = await request.json() as Record<string, unknown>;
+        const provider = typeof body.provider === "string" ? body.provider : "google-antigravity";
+        const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
+        const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
+        return json(await generateProviderImage(provider, payload, { apiKey }));
       }
       return json({ error: "Not found" }, 404);
     } catch (error) {

@@ -287,3 +287,25 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 레이어 이름은 하층/상층 → **바닥/덧그림**, 덧그림일 때 스테이지에 점선 테두리. testid(`structure-kit-editor-layer-lower/upper`)는 그대로다.
 - 새 testid: `-tool-rect/-ellipse/-fill/-pick`, `-undo`, `-redo`, `-zoom-in/-out/-fit/-value`, `-grid-toggle`, `-search`, `-category-<id>`. 기존 `-tile-<n>` · `-tool-paint/erase/part` · `-layer-*` 는 유지해 테스트 변경이 없다.
 - 실측(1440×900): 창 1424×884 · 배경 불투명 · 창밖 삐짐 0 · 캔버스 720×640(5x) · 팔레트 300×596/480칸 · 드래그 한 번에 6칸 · 검색 "문" 9칸 · 분류 "집" 75칸 · 팔레트 스크롤 300 유지. 1366×768 / 1280×720 에서도 도구·분류칩·보기 줄이 한 줄에 들어간다.
+
+### AI로 몬스터·아이템 생성 (2026-08-30)
+
+아이템/적 탭 툴바에 `AI로 생성`(`db-ai-generate-open`) 이 있다. 모달
+(`databaseAiGenerateDialog.ts`, testid `db-ai-generate-dialog-<kind>`)에 설명을 넣으면
+**레코드 + 그림**이 한 번에 등록된다. 오케스트레이션은 `src/editor/aiDatabaseGeneration.ts`:
+
+1. `chatCompletion` 으로 레코드 JSON 을 받는다. 응답은 `parseGeneratedRecord` 가
+   **필드 allowlist**(item 9개 / enemy 6개)로 걸러낸다 — `upsert_item`/`upsert_enemy` 의
+   `rejectUnknownFields` 가 모르는 필드에 하드 실패하므로, 모델을 믿지 않고 미리 자른다.
+2. 그림은 `generateAiImage` (아래 이미지 경로) → `flattenGeneratedArtwork` 로 배경을 투명화.
+3. 적용은 **기존 툴만** 쓴다: `upsert_resource` → `upsert_item`/`upsert_enemy` 를
+   `applyToolSequenceToStore` 로 한 undo 체크포인트에 묶는다. 새 쓰기 경로를 만들지 마라.
+
+리소스 kind 는 종류마다 다르다 — 적은 `monster`, 아이템은 `picture`. 아이템 아이콘 피커
+(`kind:"icon"`)가 업로드 자산 중 `picture`/`monster`/`system` 만 목록에 올리기 때문이다
+(`databaseResourcePickerDialog.ts` `uploadedMatchesKind`). 그림은 `assets.uploaded[id].dataUrl`
+로 들어가고 `resolveAssetResourceUrl` 이 업로드를 먼저 보므로 썸네일·전투 화면이 그대로 집는다.
+
+Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`,
+`test/imageGenerationClient.test.ts`.
+

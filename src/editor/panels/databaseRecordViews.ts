@@ -23,6 +23,7 @@ import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
+import { openDatabaseAiGenerateDialog } from "@/editor/panels/databaseAiGenerateDialog";
 import {
   categoryFilterForCollection,
   listScrollTopForCollection,
@@ -245,10 +246,27 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
       },
     }),
     deleteButton(collection, rerender),
+    ...(collection === "items" || collection === "enemies" ? [aiGenerateButton(collection, rerender)] : []),
     ...(collection === "battleAnimations" ? [generatedEffectInstallButton(rerender)] : []),
     viewToggle(collection, rerender)
   );
   return wrap;
+}
+
+function aiGenerateButton(collection: "items" | "enemies", rerender: () => void): HTMLElement {
+  const kind = collection === "items" ? "item" : "enemy";
+  return el("button", {
+    class: "btn small",
+    text: "AI로 생성",
+    dataset: { testid: "db-ai-generate-open" },
+    attrs: {
+      type: "button",
+      title: kind === "item"
+        ? "설명을 주면 AI 가 아이템 레코드와 아이콘 그림을 만들어 등록합니다."
+        : "설명을 주면 AI 가 적 레코드와 몬스터 그림을 만들어 등록합니다.",
+    },
+    on: { click: () => openDatabaseAiGenerateDialog({ kind, rerender }) },
+  });
 }
 
 function generatedEffectInstallButton(rerender: () => void): HTMLElement {

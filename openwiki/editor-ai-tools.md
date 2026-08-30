@@ -93,3 +93,19 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
 
 계약 테스트: `test/refactorTools.test.ts` «prune_unused 참조 수집 누락» (inputNumber/inputWait/wait
 각각 단독 참조 + moveEvent 경로 setSwitch + 진짜 미참조 변수는 여전히 보고되는 회귀 케이스).
+
+- **이미지 생성은 Antigravity 한 경로뿐이다 (2026-08-30, 실측):** 동반 서비스에
+  `POST /v1/images/generations` 가 붙었다(`ohMyPiHttp.mjs` → 어댑터 `generateImage` →
+  Bun 워커 `/image` → `scripts/lib/ohMyPiImageRuntime.ts`). 브라우저 클라이언트는
+  `src/ai/imageGenerationClient.ts` 이고 `/v1/chat/completions` 와 같은 같은-오리진 규약을 쓴다.
+  실측 결과: `google-antigravity` + `gemini-3.1-flash-image` 에 `generationConfig.responseModalities`
+  = `["TEXT","IMAGE"]` 를 pi-ai 의 `onPayload` 훅으로 주입하면 `v1internal:streamGenerateContent`
+  가 `inlineData`(image/jpeg, 약 360KB base64) 를 200 으로 돌려준다.
+  **Codex 는 못 한다** — 호스팅 `image_generation` 툴을 요청할 방법이 pi-ai 에 없다
+  (`NativeToolMarker` 가 `{type:"computer"}` 하나뿐). 응답 쪽 `image_generation_call` 파서는
+  있지만 요청을 만들 수 없으므로 살아 있는 경로가 아니다. 그래서 클라이언트는 대화 제공자가
+  무엇이든 그림만 Antigravity 로 보내고, 모달이 그 사실을 안내한다.
+  **함정 둘:** (1) pi-ai 의 Google 응답 파서는 `inlineData` 를 버린다(`type:"image"` 파트를
+  만들지 않는다) — 그래서 이미지 바이트는 전송 계층에서 직접 줍는다. (2) 그때 재생하는
+  `Response` 에 `url` 을 다시 심어야 한다. 없으면 pi-ai 가 `Missing request URL` 로 끊는다.
+
