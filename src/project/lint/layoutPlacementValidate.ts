@@ -93,7 +93,9 @@ export function formatLayoutValidationSummary(issues: readonly LintIssue[]): str
   const warnings = issues.filter((i) => i.severity === "warning").length;
   const head = issues.slice(0, 3).map((i) => i.message).join(" · ");
   const more = issues.length > 3 ? ` 외 ${issues.length - 3}건` : "";
-  return `배치 검증 실패(error ${errors}/warning ${warnings}): ${head}${more}`;
+  // error 가 없으면 적용을 막지 않았다 — "실패" 로 쓰면 깔린 배치를 사용자가 안 깐린 으로 오인한다.
+  const label = errors > 0 ? `배치 검증 실패(error ${errors}/warning ${warnings})` : `배치 검증 경고(warning ${warnings})`;
+  return `${label}: ${head}${more}`;
 }
 
 function clampRegion(map: GameMap, region?: LayoutRegion): LayoutRegion {
@@ -222,7 +224,14 @@ function checkVerticalTreePairs(map: GameMap, mapId: string, region: LayoutRegio
   });
 }
 
-/** 지시에 나무가 있는데 영역 안 나무 0 — error. 있으면 개수 정보(warning 아님, 통과). */
+/**
+ * 지시에 나무가 있는데 영역 안 나무 0 — **warning**(적용을 막지 않는다).
+ *
+ * 이 판정은 문자열/하드코딩 타일 id 기반이라 구조적으로 오탐한다: "나무 상자"·"나무 바닥" 같은
+ * 부분일치, 맵 이름이 실린 `[컨텍스트]` footer, TREE_TILE_IDS 밖의 타일셋(world 계열 318/319 등)이
+ * 모두 "나무 0그루"로 보인다. error 로 두면 실제로 타일을 깐 제안까지 통째로 반려돼 사용자에게
+ * 아무것도 남지 않았다. 신호는 남기고 배치는 통과시킨다.
+ */
 function checkTreeExpectation(
   _project: Project,
   map: GameMap,
@@ -244,7 +253,7 @@ function checkTreeExpectation(
 
   const propToolUsed = (opts.toolNames ?? []).some((name) => PROP_TOOLS.has(name));
   issues.push({
-    severity: "error",
+    severity: "warning",
     code: "layout-tree-missing",
     mapId,
     message: propToolUsed

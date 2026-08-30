@@ -59,7 +59,7 @@ describe("validateLayoutPlacement", () => {
     expect(issues.filter((i) => i.severity === "error")).toEqual([]);
   });
 
-  it("flags missing trees when instruction asks for trees", () => {
+  it("warns (does not block) when instruction asks for trees but none landed", () => {
     const project = createBlankProject();
     const issues = validateLayoutPlacement(project, {
       mapId: MAP,
@@ -67,6 +67,7 @@ describe("validateLayoutPlacement", () => {
       toolNames: ["place_props"],
     });
     expect(issues.some((i) => i.code === "layout-tree-missing")).toBe(true);
+    expect(layoutValidationBlocking(issues)).toEqual([]);
     expect(formatLayoutValidationSummary(issues)).toContain("나무");
   });
 });

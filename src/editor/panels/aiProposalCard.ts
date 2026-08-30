@@ -8,6 +8,7 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { loadAiConfig } from "@/ai/llmClient";
+import { stripContextFooter } from "@/ai/modifyIntent";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { summarizeChanges } from "@/editor/tools";
@@ -249,7 +250,9 @@ export function createProposalHost(options: {
 
     // 배치 충돌은 사람에게 되돌리지 않는다. 물/벽 위 소품은 육지로 옮기거나 정리한다.
     const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
-    const instruction = lastUser && lastUser.kind === "user" ? lastUser.text : "";
+    // 지시문은 **사용자 발화만** 쓴다. `[컨텍스트] 현재 맵: 숲 입구 …` footer 가 섞이면 맵 이름이
+    // 나무 지시로 오인돼 배치 검증이 헛돌았다(assistantSession 의 의도 스캔과 같은 처리).
+    const instruction = stripContextFooter(lastUser && lastUser.kind === "user" ? lastUser.text : "");
     const repaired = repairLayoutPlacement(proposed, {
       mapId: currentHistoryMapId() ?? undefined,
       instruction,
@@ -270,7 +273,7 @@ export function createProposalHost(options: {
     const completionMapId = proposalPreviewMapId(calls, before, applyProject)
       ?? currentHistoryMapId()
       ?? applyProject.startMapId;
-    const completionInstruction = instruction.split("\n\n[컨텍스트]")[0]?.trim() ?? instruction.trim();
+    const completionInstruction = instruction.trim();
     clearAgentGhostPreview();
     const applied = await applyProposedProject(applyProject, {
       source: "agent",
@@ -294,6 +297,10 @@ export function createProposalHost(options: {
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. 되돌리려면 [되돌리기](Ctrl+Z).`);
     if (layoutRepairDidWork(repaired.counts)) {
       appendBubble("system", formatLayoutRepairSummary(repaired.counts));
+    }
+    // 차단하지 않는 배치 경고(예: 나무 0그루 판정)는 숨기지 않고 남긴다 — 타일은 이미 깔렸다.
+    if (repaired.remaining.length > 0) {
+      appendBubble("system", `⚠️ ${formatLayoutValidationSummary(repaired.remaining)}`);
     }
     if (softMarked > 0) {
       appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);
