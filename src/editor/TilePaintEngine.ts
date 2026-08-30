@@ -50,6 +50,12 @@ export type TilePaintEngineDeps = {
 };
 
 export class TilePaintEngine {
+  /**
+   * 이 스트로크에서 배치 조건 안내를 이미 띄웠는지. 드래그로 같은 말을 수십 번 띄우지 않되,
+   * 스트로크 도중 처음 거부되는 자리에서는 반드시 한 번 말하게 하는 자리 표시다.
+   */
+  private placementNoticeShown = false;
+
   constructor(private readonly deps: TilePaintEngineDeps) {}
 
   applyAtPointer(ptr: Phaser.Input.Pointer): void {
@@ -69,6 +75,7 @@ export class TilePaintEngine {
     const { activePaletteStamp, autoConnectMode, brushSize, selectedTile } = editorState.get();
     const key = `${x},${y}`;
     const firstStrokeTile = this.deps.getPaintState().lastPaintKey === "";
+    if (firstStrokeTile) this.placementNoticeShown = false;
     const repeatedNonEventCell = layer !== "event" && key === this.deps.getPaintState().lastPaintKey;
     const tileLayer: TileLayer = layer === "upper" ? "upper" : "lower";
     const clickCount =
@@ -95,7 +102,11 @@ export class TilePaintEngine {
             // 토스트는 스트로크 첫 타일에서만 — 드래그로 같은 말을 수십 번 띄우지 않는다.
             const conditions = checkKitStampConditions(mid, activePaletteStamp, x, y);
             if (conditions && conditions.verdict.blocked.length > 0) {
-              if (firstStrokeTile) {
+              // 스트로크 첫 타일이 아니라 **첫 거부**에서 알린다. 유효한 자리에서 드래그를 시작해
+              // 안 되는 자리로 넘어가면 예전 규칙(firstStrokeTile)에서는 아무 말도 없이 칠이 멈춰,
+              // 붓이 고장 난 것처럼 보였다.
+              if (!this.placementNoticeShown) {
+                this.placementNoticeShown = true;
                 toast(
                   `여기엔 '${conditions.kit.name ?? "구조물"}'을 놓을 수 없습니다 — `
                   + conditions.verdict.blocked.map((failure) => failure.text).join(" / "),
@@ -104,7 +115,8 @@ export class TilePaintEngine {
               }
               break;
             }
-            if (conditions && conditions.verdict.warnings.length > 0 && firstStrokeTile) {
+            if (conditions && conditions.verdict.warnings.length > 0 && !this.placementNoticeShown) {
+              this.placementNoticeShown = true;
               toast(conditions.verdict.warnings.map((failure) => failure.text).join(" / "), "info");
             }
             // 구조물 배치 기록은 **스트로크의 첫 타일에서 한 번만** — 드래그로 배치가 수십 개 생기는 것을 막는다.

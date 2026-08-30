@@ -11,7 +11,7 @@ import {
   structureKitSize,
   structureKitUnitCells,
 } from "@/editor/harnessSuggestion/structureKitModel";
-import { evaluatePlacementConditions, mapSurfaceProbe } from "@/project/placementSurface";
+import { describePlacementSurface, evaluatePlacementConditions, mapSurfaceProbe } from "@/project/placementSurface";
 import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
 import type {
   GameMap,
@@ -39,7 +39,8 @@ const listStructureKits: ToolDefinition = {
   description:
     "사용자가 붓질로 가르쳐 등록한 구조 킷(내 스탬프) 목록. mapId를 주면 그 맵 타일셋의 킷만. "
     + "각 킷의 rows는 하위/상위 레이어 타일 id 행렬(기계 표면) — 시공은 stamp_structure_kit로. "
-    + "parts는 입구·간판·자리 등 부위의 상대좌표(dx,dy) — 절대좌표는 stamp_structure_kit이 돌려준다.",
+    + "parts는 입구·간판·자리 등 부위의 상대좌표(dx,dy) — 절대좌표는 stamp_structure_kit이 돌려준다. "
+    + "placementText가 있으면 그 킷은 배치 조건이 걸린 것이다 — «필수»는 어긴 좌표에서 시공이 거부된다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -60,6 +61,11 @@ const listStructureKits: ToolDefinition = {
       ai?: StructureKitAiMeta;
       /** 가로로 이어 찍어도 되는지. false 면 repeat 인자가 무시된다. */
       repeatable: boolean;
+      /**
+       * 배치 조건을 사람 말로 — ai.placement 원본만 주면 zone/facing 코드를 모델이 다시
+       * 해석해야 한다. 거부 문장과 같은 어휘를 쓰게 해 "왜 막혔는지"가 한 어휘로 이어진다.
+       */
+      placementText?: string[];
       parts?: StructureKitPart[];
       rows?: { tiles: number[]; upperTiles?: number[] }[];
       house?: { houseKitId: string; wings: { x: number; y: number; w: number; h: number }[] };
@@ -77,6 +83,13 @@ const listStructureKits: ToolDefinition = {
           learnedFrom: kit.learnedFrom,
           repeatable: structureKitRepeatable(kit),
           ...(kit.ai ? { ai: { ...kit.ai, ...(kit.ai.tags ? { tags: [...kit.ai.tags] } : {}) } } : {}),
+          ...(kit.ai?.placement && kit.ai.placement.length > 0
+            ? {
+                placementText: kit.ai.placement.map(
+                  (condition) => `${condition.strength === "hard" ? "필수" : "권장"} — ${describePlacementSurface(condition)}`
+                ),
+              }
+            : {}),
           ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
           ...(kit.kind === "section"
             ? {
@@ -107,7 +120,9 @@ const stampStructureKit: ToolDefinition = {
     "등록된 구조 킷(내 스탬프)을 맵에 시공한다. 단위 단면(width×height)을 origin 좌상단부터 가로로 repeat회 이어 찍는다. "
     + "타일 선택은 킷 데이터가 전담 — 개별 타일 id를 넘기지 말 것. 킷 목록·크기는 list_structure_kits로 먼저 확인. "
     + "부위가 있는 킷은 parts를 절대좌표(x,y)로 돌려주며 이벤트는 생성하지 않는다 — 워프는 그 좌표로 따로 만든다. "
-    + "반복 1회마다 배치 기록(map.structurePlacements)이 하나씩 남아 나중에 그 한 채만 다시 찍거나 지울 수 있다(placementIds).",
+    + "반복 1회마다 배치 기록(map.structurePlacements)이 하나씩 남아 나중에 그 한 채만 다시 찍거나 지울 수 있다(placementIds). "
+    + "킷에 «필수» 배치 조건이 있으면 조건을 어긴 좌표에서는 한 칸도 쓰지 않고 거부한다 — 조건과 실패 이유는 오류 문장에 실려 온다. "
+    + "같은 좌표로 다시 부르지 말고 list_structure_kits의 placement를 보고 자리를 옮겨라.",
   mode: "write",
   parameters: {
     type: "object",

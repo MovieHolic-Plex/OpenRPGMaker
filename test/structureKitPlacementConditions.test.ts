@@ -10,8 +10,8 @@ import type { PlacementSurfaceCondition, Project, StructureKitDef } from "@/proj
  * 배치 조건이 **실제로 집행되는지** — stamp_structure_kit 경로.
  *
  * 사람이 팔레트로 찍는 경로(TilePaintEngine)는 같은 함수
- * (`checkKitStampConditions` → `evaluatePlacementConditions`)를 쓰지만 Phaser 포인터가 필요해
- * 유닛으로 몰기 어렵다. 여기서 조건 판정 자체를 고정하고, 사람 경로는 e2e 로 본다.
+ * (`checkKitStampConditions` → `evaluatePlacementConditions`)를 쓴다 — 그쪽 스트로크·안내 규칙은
+ * test/structureKitBrushConditions.test.ts 가 본다. 여기서는 AI 도구 경로를 고정한다.
  */
 
 /** 화덕처럼 «북쪽 벽에 등을 대는» 1×2 세로쌍 킷. */
