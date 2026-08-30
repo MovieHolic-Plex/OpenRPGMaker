@@ -16,6 +16,8 @@ import {
   enterPastePreview,
 } from "@/editor/mapClipboard";
 import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
+import { POLISH_INSTRUCTION } from "@/editor/regionTask/suggestedCommands";
+import type { RegionTaskMode } from "@/editor/regionTask/runRegionTask";
 import { el } from "@/util/dom";
 
 /** 이 칸 수를 넘는 「지우기」는 두 번 눌러야 실행된다. 3×4 이하는 즉시 실행(기존 동작). */
@@ -27,12 +29,22 @@ export interface SelectionChipPreset {
   readonly title: string;
   /** null이면 지시 입력을 위해 모달만 연다(autoRun 없음). */
   readonly instruction: string | null;
+  /** "polish" 면 다듬기(주변 어울림 재구성) 경로로 실행한다. */
+  readonly mode?: RegionTaskMode;
 }
 
-// 영역 모달(suggestedCommands)과 중복되는 구조물/길/다듬기 단축 칩은 두지 않는다.
-// 캔버스 칩은 모달 진입 1개만 — 세부 추천은 모달 안에서 보여준다.
+// 구조물/길 같은 "무엇을 만들지" 단축 칩은 여기 두지 않는다 — 그건 지시문 선택이라 모달 안
+// 추천 칩의 일이다. 다만 **다듬기는 지시문을 고를 것이 없다**(대상=이 사각형, 목표=주변 어울림).
+// 모달을 열어 문장을 확인하고 실행 버튼을 누르는 왕복이 순손실이라 원탭으로 캔버스에 둔다.
 export const SELECTION_CHIP_PRESETS: readonly SelectionChipPreset[] = [
   { id: "ai", label: "AI", title: "이 영역에 자연어 지시로 AI 작업", instruction: null },
+  {
+    id: "polish",
+    label: "다듬기",
+    title: "이 영역을 주변과 어울리게 AI가 다시 짜기 (타일·이벤트 전권)",
+    instruction: POLISH_INSTRUCTION,
+    mode: "polish",
+  },
 ] as const;
 
 export function selectionChipModalOptions(
@@ -49,6 +61,7 @@ export function selectionChipModalOptions(
     mapId: selection.mapId,
     region,
     ...(preset.instruction !== null ? { initialInstruction: preset.instruction, autoRun: true } : {}),
+    ...(preset.mode ? { mode: preset.mode } : {}),
     ...(anchor ? { anchor } : {}),
     ...(avoid ? { avoid } : {}),
   };

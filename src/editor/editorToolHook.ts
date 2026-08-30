@@ -22,7 +22,8 @@ import {
 } from "@/editor/panels/buildPaletteCore";
 import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
-import { runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import { runRegionTask, type RegionTaskMode, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import { POLISH_INSTRUCTION } from "@/editor/regionTask/suggestedCommands";
 import { commitChangeset, getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
 import { passableCellCount } from "@/editor/tools/mapHelpers";
@@ -94,12 +95,14 @@ type RegionTaskHarness = {
   /** 영역 안에서 아직 걸어 들어갈 수 있는 칸 수 — "아예 통행불가능하게" 를 실측할 유일한 창구. */
   passableCount: (mapId: MapId, area: { x: number; y: number; w: number; h: number }) => number | null;
   runMock: (mapId: MapId, region: RegionRect, writes: readonly RegionWrite[]) => Promise<RegionTaskResult>;
-  /** writes 를 주면 모달이 그 결과로 자동 실행되어 제안 검토 UI 까지 렌더된다. */
+  /** writes 를 주면 모달이 그 결과로 자동 실행되어 제안 검토 UI 까지 렌더된다.
+   *  mode:"polish" 는 다듬기 경로 — 승인 화면의 여백 프레임·어울림 지표가 이 값에서만 나온다. */
   openModal: (
     mapId: MapId,
     region: RegionRect,
     writes?: readonly RegionWrite[],
     events?: readonly GameEvent[],
+    mode?: RegionTaskMode,
   ) => void;
 };
 
@@ -221,16 +224,19 @@ export function installEditorToolHook(): void {
     runMock: (mapId, region, writes) => runMockRegionTask(mapId, region, writes, "headless mock"),
     // 모달을 통째로 목업 실행에 물린다 — 제안 검토 UI(before/after, 변경 칸 하이라이트,
     // 적용/다시 만들기/버리기)는 실제 LLM 없이 이 경로로만 e2e 검증할 수 있다.
-    openModal: (mapId, region: Parameters<typeof openRegionTaskModal>[0]["region"], writes, events) => {
+    openModal: (mapId, region: Parameters<typeof openRegionTaskModal>[0]["region"], writes, events, mode) => {
       // 타입 브리지는 projectId 기반 RegionTaskCtx로 변환하기 전 προσω μεταβατικό — strict 정밀화는 별도 PR
       openRegionTaskModal({
         mapId: mapId as string as never,
         region: region as never,
+        ...(mode ? { mode } : {}),
         ...(writes
           ? {
-              initialInstruction: "여기에 둥근 호수를 만들어줘",
+              initialInstruction: mode === "polish"
+                ? POLISH_INSTRUCTION
+                : "여기에 둥근 호수를 만들어줘",
               autoRun: true,
-              run: ({ instruction }: { instruction: string }) => runMockRegionTask(mapId as string as never, region as never, writes, instruction, events),
+              run: ({ instruction }: { instruction: string }) => runMockRegionTask(mapId as string as never, region as never, writes, instruction, events, mode),
             }
           : {}),
       });
@@ -394,9 +400,10 @@ function runMockRegionTask(
   writes: readonly RegionWrite[],
   instruction: string,
   events?: readonly GameEvent[],
+  mode?: RegionTaskMode,
 ): Promise<RegionTaskResult> {
   return runRegionTask(
-        { mapId, region, instruction },
+        { mapId, region, instruction, ...(mode ? { mode } : {}) },
         {
           getProject: () => store.getCurrent(),
           applyProject: (project, label, snapshotMapId) => {

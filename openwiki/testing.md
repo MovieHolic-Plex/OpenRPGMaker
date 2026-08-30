@@ -7,6 +7,13 @@
 
 Use the lightest command that proves the change.
 
+## 영역 다듬기 focused gate (2026-08-31)
+
+- 가벼운 순서: `npx vitest run test/regionSurroundings.test.ts test/regionBlend.test.ts test/regionPolish.test.ts test/regionTaskPolishModal.test.ts` 로 새 계약을 먼저 본다. 클립·실행 경로를 건드렸으면 `test/regionTaskClip.test.ts test/regionTaskRun.test.ts` 를, 칩·지시문을 건드렸으면 `test/selectionActionChips.test.ts test/suggestedCommands.test.ts` 를 더한다(8파일 97케이스).
+- **경고를 blockers 로 만들면 테스트가 잡는다.** `test/regionTaskRun.test.ts` 의 `mode: polish` 절은 어울림 issue 가 전부 `warning` 인지, `severity:"error"` 목록이 비어 있는지, 이음새 때문에 `region-scope-violation` 이 뜨지 않는지를 본다 — 이 경로에는 차단 개념이 없다(`PendingRegionApply` 에 `blockers` 없음). 어울림을 게이트로 만드는 변경은 여기서 실패해야 한다.
+- 함정: 이음새 검사에 `scopeRegion` 을 안 넘기면 다듬기가 **항상** 스코프 위반 error 로 막힌다. 그 케이스가 `test/regionTaskRun.test.ts` 에 회귀로 박혀 있다.
+- 보고서 캡처는 게이트가 아니라 증거 재생성이다: `E2E_INCLUDE_DIAGNOSTICS=1 npx playwright test test/e2e/_region-polish-report-shots.spec.ts` → `vite-node scripts/_polish-brief-sample.mts` → `node scripts/_build-polish-report.mjs`. 수치는 캡처가 DOM 에서 읽어 `reports/region-polish/facts.json` 에 적고, 보고서는 그 값만 읽는다.
+
 ## AI 이벤트 배치 통행성 focused gate (2026-08-30)
 
 - 가벼운 순서: `node scripts/run-vitest.mjs run test/aiEventPlacementPassability.test.ts test/aiEventPlacementSurfaceGate.test.ts --configLoader bundle` 로 계약 + 구조 게이트를 먼저 본다. 배치 툴을 건드렸으면 해당 툴의 spec(`test/aiPlacement*.test.ts`)을, 컨텍스트를 건드렸으면 `test/aiMapContextPassability*.test.ts` 를 더한다.

@@ -35,6 +35,16 @@ export interface HarnessGameplayMetrics {
   readonly scheduleDestinations?: number;
   /** Changed-region tile-pair variety, 0..100. This is a deterministic composition heuristic, not image vision. */
   readonly compositionScore?: number;
+  /** 다듬기(polish) 전용 — 경계 연속성 0..100. regionBlend.analyzeRegionBlend 가 채운다. */
+  readonly blendScore?: number;
+  /** 다듬기 전 같은 척도의 점수. 개선/악화를 비교하는 근거다. */
+  readonly blendScoreBefore?: number;
+  /** 바깥 길·물이 영역 경계에서 끊긴 칸 수. */
+  readonly brokenCrossings?: number;
+  /** 이 초안이 새로 막은 진입 칸 수. */
+  readonly blockedEntrances?: number;
+  /** 경계 바로 밖 1칸에서 오토타일 변형만 고친 칸 수. */
+  readonly seamCells?: number;
 }
 
 /**
@@ -74,6 +84,12 @@ export function reviewRegionDraft(input: {
   readonly draft: Project;
   readonly mapId: MapId;
   readonly region: RegionRect;
+  /**
+   * 스코프 검사(영역 밖 변경 감지)에만 쓰는 사각형. 기본값은 region.
+   * 다듬기가 경계 1칸의 오토타일 변형을 마감하므로 그 경로만 region 을 1칸 넓혀 넘긴다 —
+   * 고립·도달·일정 검사는 계속 region 기준이다.
+   */
+  readonly scopeRegion?: RegionRect;
 }): HarnessReviewResult {
   const project = cloneDetachedDraft(input.draft);
   const issues: HarnessIssue[] = [];
@@ -81,7 +97,7 @@ export function reviewRegionDraft(input: {
   let changedEvents = 0;
   let passableChangedCells = 0;
 
-  const scope = targetScopeViolations(input.base, project, input.mapId, input.region);
+  const scope = targetScopeViolations(input.base, project, input.mapId, input.scopeRegion ?? input.region);
   if (scope.count > 0) {
     issues.push({
       code: "region-scope-violation",

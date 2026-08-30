@@ -47,6 +47,9 @@ import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedT
 import type { MapId, Project, TilesetDef } from "@/project/types";
 import { validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
+import { analyzeRegionBlend, describeBlendBreak, describeBlockedEntrance, expandRegion, polishRegionSeams } from "./regionBlend";
+import { buildRegionPolishMessage } from "./regionPolish";
+import { analyzeRegionSurroundings } from "./regionSurroundings";
 import { REGION_INTENT_KEYWORDS, regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
 import { projectApprovalFingerprint, reviewRegionDraft, type HarnessReviewReport } from "./harnessReview";
@@ -74,10 +77,17 @@ export interface RegionTaskDeps {
   createSession(project: Project, mapId: MapId): RegionTaskSessionLike;
 }
 
+export type RegionTaskMode = "task" | "polish";
+
 export interface RegionTaskOptions {
   readonly mapId: MapId;
   readonly region: RegionRect;
   readonly instruction: string;
+  /**
+   * 기본 "task": 지시대로 만든다. "polish": 주변과 어울리게 영역 안을 전권으로 다시 짜고,
+   * 경계 이음새를 결정론으로 마감한 뒤 어울림 리포트를 붙인다.
+   */
+  readonly mode?: RegionTaskMode;
   /** 기본 "approval": 사용자가 적용/버리기를 결정하는 상태로 멈춘다. "immediate"는 레거시 직접 적용. */
   readonly gate?: "approval" | "immediate";
   readonly signal?: AbortSignal;
@@ -109,6 +119,7 @@ export interface RegionTaskLogExport {
     readonly changedCells: number;
     readonly changedEvents: number;
     readonly clippedCells: number;
+    readonly seamCells?: number;
     readonly proposedCalls: number;
     readonly assistantText: string;
     readonly error?: string;
@@ -135,6 +146,8 @@ export interface RegionTaskResult {
   /** 새로 추가된 맵 수(실내 파이프라인·create_map). 영역 셀 0이어도 적용 가치가 있다. */
   readonly mapsAdded?: number;
   readonly clippedCells: number; // 영역 밖에서 되돌린(막은) 셀 수.
+  /** 다듬기가 경계 바로 밖 1칸에서 오토타일 변형만 고친 칸 수. */
+  readonly seamCells?: number;
   readonly proposedCalls: number;
   readonly assistantText: string;
   readonly error?: string;
@@ -177,8 +190,11 @@ export function pendingApprovalText(
 
 export function describeRegionTaskResult(result: RegionTaskResult): string {
   if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
+  // 이음새는 사용자가 허용한 "경계 1칸 변형" 이다 — 클립 수치와 섞이지 않게 따로 밝힌다.
+  // 승인 대기 단계에서도 말해야 한다: 결정 전에 영역 밖이 몇 칸 손질됐는지 알아야 한다.
+  const seam = (result.seamCells ?? 0) > 0 ? ` · 경계 ${result.seamCells}칸 정돈` : "";
   if (result.pending && !result.pending.settled) {
-    return `승인 대기 — ${formatRegionTaskChangeParts(result).join(" · ") || "변경"} · 아직 반영되지 않았습니다`;
+    return `승인 대기 — ${formatRegionTaskChangeParts(result).join(" · ") || "변경"}${seam} · 아직 반영되지 않았습니다`;
   }
   if (!result.applied) {
     // hasRegionTaskChanges 가 참이면 "만들어 두고 반영하지 않은 변경" 이 있다는 뜻이다.
@@ -189,7 +205,7 @@ export function describeRegionTaskResult(result: RegionTaskResult): string {
   }
   const parts = formatRegionTaskChangeParts(result);
   const clipped = result.clippedCells > 0 ? ` · 영역 밖 ${result.clippedCells}칸 차단` : "";
-  return `적용됨 — ${parts.join(" · ") || "변경 적용"}${clipped}`;
+  return `적용됨 — ${parts.join(" · ") || "변경 적용"}${clipped}${seam}`;
 }
 
 /** proposed에 생기고 base에 없는 맵 수. */
@@ -313,6 +329,7 @@ export function buildRegionTaskLogExport(input: {
       changedCells: input.result.changedCells,
       changedEvents: input.result.changedEvents,
       clippedCells: input.result.clippedCells,
+      ...((input.result.seamCells ?? 0) > 0 ? { seamCells: input.result.seamCells } : {}),
       proposedCalls: input.result.proposedCalls,
       assistantText: input.result.assistantText,
       ...(input.result.error ? { error: input.result.error } : {}),
@@ -717,7 +734,22 @@ export async function runRegionTask(
     if (workingTileset) ensureRegionPlacementHarness(workingTileset);
 
     const session = deps.createSession(working, opts.mapId);
-    const message = buildRegionTaskMessage(instruction, map.name, opts.mapId, opts.region, workingTileset);
+    const mode: RegionTaskMode = opts.mode ?? "task";
+    const message = mode === "polish"
+      ? buildRegionPolishMessage({
+          instruction,
+          mapName: map.name,
+          mapId: opts.mapId,
+          region: opts.region,
+          surroundings: analyzeRegionSurroundings(base, opts.mapId, opts.region),
+          materialHint: formatMaterialLabelHint(workingTileset),
+          // 신축 가이드(실내·야외 구조물)는 뺀다 — 다듬기는 정의상 기존 것을 주변에 맞추는 작업이라
+          // "새로 지어라" 문장이 섞이면 모델이 두 개의 상반된 지시를 받는다.
+          extraGuides: regionIntentGuideLines(
+            routeRegionIntent(instruction).filter((category) => category !== "interior" && category !== "structure"),
+          ),
+        })
+      : buildRegionTaskMessage(instruction, map.name, opts.mapId, opts.region, workingTileset);
     const uiEvents: RegionTaskUiEvent[] = [];
     ghostPreviewUpdater = createThrottledAgentGhostPreviewUpdater({
       getBaseProject: () => base,
@@ -847,12 +879,29 @@ export async function runRegionTask(
 
     // 분리 초안 진단. 게이트가 아니다 — 사실만 모아 검토 UI 에 보이게 하고, 초안은 그대로 둔다.
     // pendingRegionApply 가 적용 진입점마다 다시 부른다(진단값·유령 미리보기 갱신 목적).
+    // 다듬기는 경계 바로 밖 1칸의 오토타일 **변형**까지 손댄다(사용자 승인 결정). 그래서 스코프
+    // 검사에는 1칸 넓힌 사각형을 준다 — 안 그러면 방금 만든 이음새가 region-scope-violation
+    // error 로 잡혀 적용 자체가 차단된다. 고립·도달·일정 검사는 원래 영역 기준을 그대로 쓴다.
+    const scopeRegion = mode === "polish"
+      ? expandRegion(opts.region, 1, map)
+      : opts.region;
+    const blendBefore = mode === "polish"
+      ? analyzeRegionBlend({ project: base, mapId: opts.mapId, region: opts.region })
+      : null;
+    let seamCells = 0;
     const reviewCandidate = (project: Project) => {
+      let candidate = project;
+      if (mode === "polish") {
+        const seams = polishRegionSeams(candidate, opts.mapId, opts.region);
+        candidate = seams.project;
+        seamCells = seams.seamCells;
+      }
       const harness = reviewRegionDraft({
         base,
-        draft: project,
+        draft: candidate,
         mapId: opts.mapId,
         region: opts.region,
+        scopeRegion,
       });
       const layoutIssues = validateLayoutPlacement(harness.project, {
         mapId: opts.mapId,
@@ -868,11 +917,49 @@ export async function runRegionTask(
         ...(issue.x === undefined ? {} : { x: issue.x }),
         ...(issue.y === undefined ? {} : { y: issue.y }),
       }));
+      // 어울림은 **경고만** 이다 — blockers 에 넣지 않는다. 경계가 조금 어긋난 초안조차 적용을
+      // 막으면 사용자가 아무것도 못 하게 된다. 사실을 보여 주고 결정은 사람이 한다.
+      // (배치 규칙 error 도 같은 이유로 blockers 에 넣지 않는다 — 영역작업 검증게이트 배제, 2026-08-30.)
+      const blend = mode === "polish"
+        ? analyzeRegionBlend({ project: harness.project, mapId: opts.mapId, region: opts.region, base })
+        : null;
+      const blendIssues = blend
+        ? [
+            ...blend.brokenCrossings.slice(0, 3).map((point) => ({
+              code: "region-blend-break",
+              severity: "warning" as const,
+              message: describeBlendBreak(point),
+              mapId: opts.mapId,
+              x: point.x,
+              y: point.y,
+            })),
+            ...blend.newlyBlockedEntrances.slice(0, 2).map((point) => ({
+              code: "region-blend-entrance-blocked",
+              severity: "warning" as const,
+              message: describeBlockedEntrance(point),
+              mapId: opts.mapId,
+              x: point.x,
+              y: point.y,
+            })),
+          ]
+        : [];
       return {
         project: harness.project,
         report: {
           ...harness.report,
-          issues: [...harness.report.issues, ...structuredLayoutIssues],
+          issues: [...harness.report.issues, ...structuredLayoutIssues, ...blendIssues],
+          metrics: {
+            ...harness.report.metrics,
+            ...(blend
+              ? {
+                  blendScore: blend.score,
+                  brokenCrossings: blend.brokenCrossings.length,
+                  blockedEntrances: blend.newlyBlockedEntrances.length,
+                  seamCells,
+                  ...(blendBefore ? { blendScoreBefore: blendBefore.score } : {}),
+                }
+              : {}),
+          },
         },
       };
     };
@@ -893,7 +980,9 @@ export async function runRegionTask(
     // 유령 미리보기에서 본 것이 그대로 적용된다(영역작업 검증게이트 배제, 2026-08-30).
 
     const gate = opts.gate ?? "approval";
-    const label = `영역 작업: ${instruction.slice(0, 40)}`;
+    const label = `${mode === "polish" ? "다듬기" : "영역 작업"}: ${instruction.slice(0, 40)}`;
+    // seamCells 는 reviewCandidate 첫 패스가 채운다(적용 시 재검토도 같은 값으로 수렴 — 멱등).
+    const seamPart = seamCells > 0 ? { seamCells } : {};
     const completionSummary = formatRegionTaskChangeParts({ changedCells, changedEvents, mapsAdded }).join(" · ") || "영역 변경";
     // 단일 저장 경로. 저장 후 완료 스트립에 알려 사용자가 적용 결과를 바로 확인한다.
     const applyOwnedProject = (project: Project): void => {
@@ -922,6 +1011,7 @@ export async function runRegionTask(
           changedEvents,
           mapsAdded,
           clippedCells,
+          ...seamPart,
           proposedCalls: turn.proposedCalls.length,
           assistantText: turn.assistantText,
           error: "기준 프로젝트가 변경되었습니다. 새 기준으로 다시 생성하세요.",
@@ -936,6 +1026,7 @@ export async function runRegionTask(
         changedEvents,
         mapsAdded,
         clippedCells,
+        ...seamPart,
         proposedCalls: turn.proposedCalls.length,
         assistantText: turn.assistantText,
         review: reviewed.report,
@@ -1001,6 +1092,7 @@ export async function runRegionTask(
       changedEvents,
       mapsAdded,
       clippedCells,
+      ...seamPart,
       proposedCalls: turn.proposedCalls.length,
       // 모델 문장만 그대로 흘리면 "시공했습니다" 가 마지막 말이 되어 이미 반영된 것처럼 읽힌다.
       assistantText: pendingApprovalText(turn.assistantText, { changedCells, changedEvents, mapsAdded }),
