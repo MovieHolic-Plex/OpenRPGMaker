@@ -58,8 +58,18 @@ import { PUBLIC_HOUSE_KIT_IDS } from "@/editor/tools/houseKitDomain";
 import { unregisterModal } from "@/editor/ui/modalStack";
 import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
+import {
+  asPlacementFacing,
+  asPlacementZone,
+  describePlacementSurface,
+  facingLabel,
+  PLACEMENT_FACINGS,
+  PLACEMENT_ZONES,
+  placementZoneLabel,
+} from "@/project/placementSurface";
 import { store } from "@/project/store";
 import type {
+  PlacementSurfaceCondition,
   SectionStructureKitDef,
   StructureKitAiMeta,
   StructureKitPart,
@@ -744,6 +754,11 @@ export function buildAiMetaDraftPrompt(
     "이 구조물의 description(무엇인지), placementRules(어디에 어떻게 놓는지),",
     `tags(검색어 배열), role(${AI_ROLES.join("|")}), repeatability(repeat|fixed)를`,
     "JSON 한 덩어리로만 답하라. repeatability 는 가로로 이어 찍어도 되면 repeat, 한 채로 완결이면 fixed.",
+    "",
+    "추가로 placement 배열을 낼 수 있다 — 이것은 산문이 아니라 **편집기가 실제로 검사하는 조건**이다.",
+    `각 항목은 {zone, facing, strength}. zone ∈ ${PLACEMENT_ZONES.join("|")},`,
+    `facing ∈ ${PLACEMENT_FACINGS.join("|")}(zone=againstWall 에서만 의미), strength ∈ hard|soft.`,
+    "확실하지 않으면 placement 를 아예 빼라 — 틀린 hard 조건은 시공을 막아 버린다.",
   ].join("\n");
 }
 
@@ -774,15 +789,41 @@ export function parseAiMetaDraft(text: string): StructureKitAiMeta | null {
   const tags = Array.isArray(record.tags)
     ? record.tags.filter((tag): tag is string => typeof tag === "string")
     : undefined;
+  const placement = parseAiPlacementConditions(record.placement);
 
   return {
     description,
     placementRules,
+    ...(placement.length > 0 ? { placement } : {}),
     ...(tags && tags.length > 0 ? { tags } : {}),
     ...(role ? { role } : {}),
     ...(repeatability ? { repeatability } : {}),
     origin: "ai",
   };
+}
+
+/**
+ * 모델이 낸 배치 조건 파싱 — 아는 값만 통과시키고 나머지는 조용히 버린다.
+ * 모르는 zone 을 억지로 매핑하지 않는 이유: 틀린 hard 조건은 시공을 **막으므로**,
+ * "조건이 없다"보다 "엉뚱한 조건이 걸렸다"가 훨씬 나쁘다.
+ */
+function parseAiPlacementConditions(value: unknown): PlacementSurfaceCondition[] {
+  if (!Array.isArray(value)) return [];
+  const parsed: PlacementSurfaceCondition[] = [];
+  for (const entry of value.slice(0, 4)) {
+    if (typeof entry !== "object" || entry === null) continue;
+    const record = entry as Record<string, unknown>;
+    const zone = asPlacementZone(record.zone);
+    if (!zone) continue;
+    const facing = zone === "againstWall" ? asPlacementFacing(record.facing) : undefined;
+    parsed.push({
+      id: `pc_${randomUuid()}`,
+      strength: record.strength === "soft" ? "soft" : "hard",
+      zone,
+      ...(facing && facing !== "any" ? { facing } : {}),
+    });
+  }
+  return parsed;
 }
 
 /**
@@ -1489,6 +1530,11 @@ function drawAiTab(
       children: [el("span", { text: label }), select],
     });
 
+  // 배치 조건 — 「설명 / 배치 규칙」과 달리 **기계가 검사하는** 조건이다.
+  // 여기서 hard 로 걸어 둔 조건을 어기면 사람이 팔레트로 찍어도, AI 가 stamp_structure_kit 을
+  // 불러도 시공이 거부된다. 산문(배치 규칙)은 남겨 둔다 — 사람이 읽는 설명은 여전히 필요하다.
+  const conditionsBlock = renderPlacementConditionEditor(draft, redraw);
+
   host.replaceChildren(
     el("div", {
       class: "structure-kit-editor-ai-head",
@@ -1506,7 +1552,8 @@ function drawAiTab(
       ],
     }),
     area("설명", "structure-kit-editor-ai-description", draft.description, (next) => { draft.description = next; }),
-    area("배치 규칙", "structure-kit-editor-ai-placement", draft.placementRules, (next) => { draft.placementRules = next; }),
+    area("배치 규칙(설명용 문장)", "structure-kit-editor-ai-placement", draft.placementRules, (next) => { draft.placementRules = next; }),
+    conditionsBlock,
     selectField("반복", repeatabilitySelect),
     selectField("분류", roleSelect),
     el("button", {
@@ -1529,6 +1576,150 @@ function drawAiTab(
       },
     }),
   );
+}
+
+/**
+ * 배치 조건 편집기 — zone·방향·강도 세 개의 드롭다운 한 줄이 조건 하나다.
+ *
+ * 자유 텍스트를 파싱하지 않고 드롭다운으로만 받는 이유: 파싱은 실패하면 **조용히** 조건이
+ * 사라지고, 사라진 조건은 "검사했는데 통과했다"와 구분되지 않는다. 고를 수 있는 값만 고르게 한다.
+ *
+ * `draft` 를 제자리에서 고친다 — 세션 초안 규약(수락 버튼을 눌러야 store 에 커밋)을 그대로 따른다.
+ * 줄을 더하거나 지운 뒤에는 redraw 로 다시 그린다(초안은 session.draft 에 살아 있다).
+ */
+function renderPlacementConditionEditor(draft: StructureKitAiMeta, redraw: () => void): HTMLElement {
+  const conditions = draft.placement ?? [];
+
+  const zoneSelect = (condition: PlacementSurfaceCondition): HTMLElement =>
+    el("select", {
+      dataset: { testid: "structure-kit-editor-condition-zone" },
+      attrs: { "aria-label": "배치 면" },
+      children: PLACEMENT_ZONES.map((zone) =>
+        el("option", {
+          attrs: condition.zone === zone ? { value: zone, selected: "" } : { value: zone },
+          text: placementZoneLabel(zone),
+        }),
+      ),
+      on: {
+        change: (event: Event) => {
+          const target = event.currentTarget;
+          if (!(target instanceof HTMLSelectElement)) return;
+          const zone = asPlacementZone(target.value);
+          if (!zone) return;
+          condition.zone = zone;
+          // 방향은 `againstWall` 에서만 뜻이 있다 — 다른 면으로 바꾸면 키를 지운다.
+          if (zone !== "againstWall") delete condition.facing;
+          redraw();
+        },
+      },
+    });
+
+  const facingSelect = (condition: PlacementSurfaceCondition): HTMLElement =>
+    el("select", {
+      dataset: { testid: "structure-kit-editor-condition-facing" },
+      attrs: { "aria-label": "어느 쪽이 벽" },
+      children: PLACEMENT_FACINGS.map((facing) =>
+        el("option", {
+          attrs: (condition.facing ?? "any") === facing ? { value: facing, selected: "" } : { value: facing },
+          text: facingLabel(facing),
+        }),
+      ),
+      on: {
+        change: (event: Event) => {
+          const target = event.currentTarget;
+          if (!(target instanceof HTMLSelectElement)) return;
+          const facing = asPlacementFacing(target.value);
+          if (!facing) return;
+          if (facing === "any") delete condition.facing;
+          else condition.facing = facing;
+          redraw();
+        },
+      },
+    });
+
+  const strengthSelect = (condition: PlacementSurfaceCondition): HTMLElement =>
+    el("select", {
+      dataset: { testid: "structure-kit-editor-condition-strength" },
+      attrs: { "aria-label": "강도" },
+      children: [
+        el("option", {
+          attrs: condition.strength === "hard" ? { value: "hard", selected: "" } : { value: "hard" },
+          text: "필수 — 어기면 못 찍음",
+        }),
+        el("option", {
+          attrs: condition.strength === "soft" ? { value: "soft", selected: "" } : { value: "soft" },
+          text: "권장 — 경고만",
+        }),
+      ],
+      on: {
+        change: (event: Event) => {
+          const target = event.currentTarget;
+          if (!(target instanceof HTMLSelectElement)) return;
+          condition.strength = target.value === "soft" ? "soft" : "hard";
+          redraw();
+        },
+      },
+    });
+
+  const row = (condition: PlacementSurfaceCondition, index: number): HTMLElement =>
+    el("li", {
+      class: "structure-kit-editor-condition-row",
+      dataset: { testid: "structure-kit-editor-condition-row" },
+      children: [
+        zoneSelect(condition),
+        // 방향 칸은 `againstWall` 에서만 뜻이 있으므로 그때만 보여 준다 — 안 쓰는 칸을
+        // 비활성으로 남겨 두면 "왜 안 먹지"를 유발한다.
+        ...(condition.zone === "againstWall" ? [facingSelect(condition)] : []),
+        strengthSelect(condition),
+        el("span", {
+          class: "structure-kit-editor-condition-preview",
+          text: describePlacementSurface(condition),
+        }),
+        el("button", {
+          class: "btn small",
+          attrs: { type: "button", title: "이 조건 지우기", "aria-label": "이 조건 지우기" },
+          text: "✕",
+          dataset: { testid: "structure-kit-editor-condition-remove" },
+          on: {
+            click: () => {
+              draft.placement = conditions.filter((_, position) => position !== index);
+              if (draft.placement.length === 0) delete draft.placement;
+              redraw();
+            },
+          },
+        }),
+      ],
+    });
+
+  return el("div", {
+    class: "structure-kit-editor-ai-field structure-kit-editor-conditions",
+    dataset: { testid: "structure-kit-editor-conditions" },
+    children: [
+      el("span", { text: "배치 조건 (실제로 검사함)" }),
+      el("p", {
+        class: "structure-kit-editor-condition-hint",
+        text: conditions.length === 0
+          ? "조건이 없으면 아무 자리에나 찍힙니다. 예: [벽에 붙은 바닥] + [북쪽] + [필수] 로 걸면 북쪽이 벽이 아닌 자리에서는 찍히지 않습니다."
+          : "«필수» 조건을 어기면 사람이 찍어도 AI 가 찍어도 거부됩니다.",
+      }),
+      el("ul", { class: "structure-kit-editor-condition-list", children: conditions.map(row) }),
+      el("button", {
+        class: "btn small",
+        attrs: { type: "button" },
+        text: "+ 조건 추가",
+        dataset: { testid: "structure-kit-editor-condition-add" },
+        on: {
+          click: () => {
+            draft.placement = [
+              ...conditions,
+              { id: `pc_${randomUuid()}`, strength: "hard", zone: "againstWall", facing: "north" },
+            ];
+            redraw();
+          },
+        },
+      }),
+    ],
+  });
 }
 
 async function requestAiMetaDraft(

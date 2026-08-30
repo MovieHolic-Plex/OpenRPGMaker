@@ -1,4 +1,5 @@
-import type { GameMap, TileGroupMetadata } from "@/project/types";
+import { checkPlacementSurface, surfaceRuleFromClusterRule, type SurfaceProbe } from "@/project/placementSurface";
+import type { ClusterRule, GameMap, TileGroupMetadata } from "@/project/types";
 
 type Rect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 type SoftPenaltyInput = {
@@ -6,34 +7,51 @@ type SoftPenaltyInput = {
   readonly candidate: Rect;
   readonly placed: readonly Rect[];
   readonly map: GameMap;
+  /**
+   * 배치 면 채점용 벽·바닥 프로브. 없으면 surface 규칙은 0점으로 건너뛴다 —
+   * 통행 플래그를 볼 수 없는 호출자(맵만 있고 프로젝트가 없는 경로)를 위한 하위 호환이다.
+   */
+  readonly probe?: SurfaceProbe;
 };
 
 export function placementSoftPenalty(input: SoftPenaltyInput): number {
   let penalty = 0;
   for (const rule of input.group.rules ?? []) {
     if (rule.strength === "hard") continue;
-    const weighted = rulePenalty(rule.kind, rule.params, input.candidate, input.placed) * strengthWeight(rule.strength);
+    const weighted = rulePenalty(rule, input.candidate, input.placed, input.probe) * strengthWeight(rule.strength);
     penalty += weighted;
   }
   return penalty;
 }
 
+/** surface 위반 1건의 기본 벌점 — 간격/개수 벌점(칸 수)과 같은 눈금으로 쓰려고 2로 둔다. */
+const SURFACE_PENALTY = 2;
+
 function rulePenalty(
-  kind: NonNullable<TileGroupMetadata["rules"]>[number]["kind"],
-  params: Record<string, unknown>,
+  rule: ClusterRule,
   candidate: Rect,
-  placed: readonly Rect[]
+  placed: readonly Rect[],
+  probe: SurfaceProbe | undefined
 ): number {
-  switch (kind) {
+  switch (rule.kind) {
     case "adjacency":
       return 0;
     case "spacing":
-      return spacingPenalty(params, candidate, placed);
+      return spacingPenalty(rule.params, candidate, placed);
     case "count":
-      return countPenalty(params, placed);
+      return countPenalty(rule.params, placed);
+    case "surface":
+      return surfacePenalty(rule, candidate, probe);
     default:
-      return assertNever(kind);
+      return assertNever(rule.kind);
   }
+}
+
+function surfacePenalty(rule: ClusterRule, candidate: Rect, probe: SurfaceProbe | undefined): number {
+  if (!probe) return 0;
+  const surfaceRule = surfaceRuleFromClusterRule(rule);
+  if (!surfaceRule) return 0;
+  return checkPlacementSurface({ probe, rect: candidate, rule: surfaceRule }).ok ? 0 : SURFACE_PENALTY;
 }
 
 function spacingPenalty(params: Record<string, unknown>, candidate: Rect, placed: readonly Rect[]): number {

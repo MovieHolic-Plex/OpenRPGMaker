@@ -1,3 +1,9 @@
+import {
+  checkPlacementSurface,
+  mapTerrainSurfaceProbe,
+  surfaceRuleFromClusterRule,
+  type SurfaceProbe,
+} from "@/project/placementSurface";
 import type { ClusterRule, GameMap, LintSeverity, Project, TileGroupMetadata } from "@/project/types";
 
 export interface ClusterRuleViolationCoord {
@@ -42,7 +48,7 @@ export function validateClusterRules(project: Project, mapId?: string): ClusterR
     const tileset = project.tilesets[map.tilesetId];
     for (const group of tileset?.tileGroups ?? []) {
       for (const rule of group.rules ?? []) {
-        const violation = validateRuleOnMap(map, group, rule);
+        const violation = validateRuleOnMap(project, map, group, rule);
         if (violation) violations.push(violation);
       }
     }
@@ -68,6 +74,7 @@ function selectedMaps(project: Project, mapId: string | undefined): readonly Gam
 }
 
 function validateRuleOnMap(
+  project: Project,
   map: GameMap,
   group: TileGroupMetadata,
   rule: ClusterRule
@@ -81,10 +88,60 @@ function validateRuleOnMap(
       return adjacencyViolation(map, group, rule);
     case "spacing":
       return spacingViolation(map, group, rule);
+    case "surface":
+      return surfaceViolation(project, map, group, rule);
     case "count":
       if (rule.params.perMap === false) return null;
       return countViolation(map, group, rule);
   }
+}
+
+/**
+ * 배치 면 위반 — 이미 찍혀 있는 인스턴스가 규칙이 요구하는 자리에 있는지 되본다.
+ *
+ * 여기는 **찍은 뒤**를 보므로 프로브가 보는 벽·바닥에 자기 자신이 이미 들어 있다. 그래서 두 겹으로 되돌린다.
+ *
+ *  1. 바탕은 `mapTerrainSurfaceProbe` — 상위 레이어(가구·소품)는 없는 것으로 본다.
+ *     화덕 상단(21)처럼 벽면에 **겹쳐 세우는** 타일이 벽을 가리지 않게 한다.
+ *  2. 인스턴스가 **하위 레이어**를 차지한 칸은 찍기 전 지형을 알 수 없다. 바닥으로 가정하고,
+ *     그 칸에 벽 판정이 걸리면 이 인스턴스는 **판정 불가**로 두고 넘어간다(거짓 위반 금지).
+ *
+ * 그래서 결과는 세 갈래다: 통과 / 위반 / 판정 불가(조용히 건너뜀).
+ */
+function surfaceViolation(
+  project: Project,
+  map: GameMap,
+  group: TileGroupMetadata,
+  rule: ClusterRule
+): ClusterRuleViolation | null {
+  const surfaceRule = surfaceRuleFromClusterRule(rule);
+  if (!surfaceRule) return null;
+  const terrain = mapTerrainSurfaceProbe(project, map);
+  const tileIds = new Set(group.tileIds);
+  const coords = new Map<string, ClusterRuleViolationCoord>();
+  for (const instance of groupInstances(map, group)) {
+    const ownsTerrain = new Set(
+      instance.coords
+        .filter((coord) => hasLowerTileAt(map, coord.x, coord.y, tileIds))
+        .map((coord) => `${coord.x},${coord.y}`)
+    );
+    let undecidable = false;
+    const probe: SurfaceProbe = {
+      // 자기 칸은 "찍기 전"으로 되돌려 본다 — 발밑은 바닥이었다고 본다.
+      isFloor: (x, y) => ownsTerrain.has(`${x},${y}`) || terrain.isFloor(x, y),
+      isWall: (x, y) => {
+        if (ownsTerrain.has(`${x},${y}`)) {
+          undecidable = true;
+          return false;
+        }
+        return terrain.isWall(x, y);
+      },
+    };
+    const check = checkPlacementSurface({ probe, rect: instance.rect, rule: surfaceRule });
+    if (check.ok || undecidable) continue;
+    for (const coord of instance.coords) coords.set(coordKey(coord), coord);
+  }
+  return coords.size > 0 ? baseViolation(group, rule, [...coords.values()]) : null;
 }
 
 function baseViolation(
@@ -379,6 +436,14 @@ function hasAnyTileAt(map: GameMap, x: number, y: number, tileIds: ReadonlySet<n
 
 function hasTileAt(map: GameMap, x: number, y: number, tile: number): boolean {
   return hasAnyTileAt(map, x, y, new Set([tile]));
+}
+
+/** 하위(지형) 레이어만 본다 — 배치 면 감사가 「이 칸의 지형을 이 물건이 덮었나」를 가르는 데 쓴다. */
+function hasLowerTileAt(map: GameMap, x: number, y: number, tileIds: ReadonlySet<number>): boolean {
+  const index = y * map.width + x;
+  if (tileIds.has(map.lowerTiles[index] ?? Number.NaN)) return true;
+  for (const tile of map.lowerTileStacks?.[index] ?? []) if (tileIds.has(tile)) return true;
+  return false;
 }
 
 function isInside(map: GameMap, x: number, y: number): boolean {
