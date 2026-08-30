@@ -9,9 +9,12 @@ import { subscribePendingRegionApply, type PendingRegionApply } from "@/editor/r
 import {
   ALL_REGION_COMMANDS,
   nextSuggestedRegionCommands,
+  POLISH_INSTRUCTION,
   regionCommandCategories,
   type SuggestedRegionCommand,
 } from "@/editor/regionTask/suggestedCommands";
+import { isRegionPolishRequest } from "@/editor/regionTask/regionPolish";
+import { expandRegion } from "@/editor/regionTask/regionBlend";
 import { dismissCoachMarks } from "@/editor/coachMarks";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import { resolveRegionClientRect } from "@/editor/regionClientRect";
@@ -40,6 +43,7 @@ import {
   runRegionTask,
   serializeRegionTaskLog,
   type RegionTaskLogExport,
+  type RegionTaskMode,
   type RegionTaskResult,
 } from "@/editor/regionTask/runRegionTask";
 import {
@@ -62,6 +66,7 @@ type RegionTaskRunner = (opts: {
   mapId: MapId;
   region: RegionRect;
   instruction: string;
+  mode?: RegionTaskMode;
   signal?: AbortSignal;
   onEvent?: (event: SessionEvent) => void;
 }) => Promise<RegionTaskResult>;
@@ -84,6 +89,8 @@ export interface RegionTaskModalOptions {
   readonly region: RegionRect;
   readonly initialInstruction?: string;
   readonly autoRun?: boolean;
+  /** "polish" 면 자동 실행·실행 버튼이 다듬기 경로로 간다(캔버스 「다듬기」 칩 등). */
+  readonly mode?: RegionTaskMode;
   /** 화면 좌표(클라이언트). 있으면 중앙 모달 대신 근처 플로팅 팝오버. */
   readonly anchor?: RegionTaskAnchor;
   /**
@@ -364,6 +371,15 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     attrs: { type: "button" },
     dataset: { testid: "region-task-run" },
   }) as HTMLButtonElement;
+  // 다듬기는 「무엇을 만들지」를 고를 것이 없다 — 대상은 이 사각형, 목표는 주변 어울림이다.
+  // 그래서 입력창이 비어 있어도 눌리는 별도 버튼으로 둔다(추천 칩을 거쳐 문장을 넣게 하면
+  // 사용자가 그 문장을 편집할 이유도 없이 왕복만 한다).
+  const polishButton = el("button", {
+    class: "region-task-polish",
+    text: "주변과 어울리게 다듬기",
+    attrs: { type: "button", title: "이 영역을 주변과 어울리게 AI가 다시 짜기 (타일·이벤트 전권)" },
+    dataset: { testid: "region-task-polish" },
+  }) as HTMLButtonElement;
   const cancelButton = el("button", {
     class: "region-task-cancel",
     text: "중단",
@@ -553,6 +569,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // running:false 배지 해제는 pending.apply()/discard() → onSettle(runRegionTask.ts)에서
     // 담당한다 — 캔버스 인라인 툴바 등 이 모달을 거치지 않는 settle 경로도 있어 여기서 중복 발행하지 않는다.
     runButton.disabled = false;
+    polishButton.disabled = false;
     directRoomButton.disabled = false;
     directPresetSelect.disabled = false;
     directModifierSelect.disabled = false;
@@ -600,11 +617,22 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
     const allChunks = [...groups.lower, ...groups.upper];
     const hasChanges = allChunks.length > 0;
+    // 이벤트 변경 목록은 **부분 적용 판정·오버레이보다 먼저** 계산한다 — 부분 적용 가능 여부와
+    // "이후" 그림 위의 이벤트 마커가 둘 다 이 목록을 본다.
+    const eventChanges = (() => {
+      try {
+        return summarizeRegionEventChanges(pending.baseProject, pending.clippedProject, pending.mapId, pending.region);
+      } catch {
+        return [];
+      }
+    })();
     const structuralProposal = pending.roomDrafts.length > 0
       || Object.keys(pending.clippedProject.maps).some((mapId) => !pending.baseProject.maps[mapId]);
     // 청크가 1개뿐이면 "선택 적용"이 "모두 적용"과 완전히 같은 동작이라 고를 이유가 없다.
     // 실내/맵 추가 제안은 타일만 부분 복사하면 문·맵·세션이 분리되므로 아예 제공하지 않는다.
-    const partialUseful = allChunks.length > 1 && !structuralProposal;
+    // 이벤트가 섞인 제안도 제공하지 않는다: composePartialProject 는 **타일만** 옮기므로
+    // 부분 적용을 고르면 NPC 이동·상자 배치가 조용히 사라진다(다듬기는 재배치가 본업이다).
+    const partialUseful = allChunks.length > 1 && !structuralProposal && eventChanges.length === 0;
     const selectedChunkIds = new Set<string>();
     const allChunkIds = allChunks.map((c) => c.id);
     // 기본: 모든 청크 선택(=전체 적용과 동일). 사용자가 일부 해제하면 부분 적용.
@@ -622,15 +650,13 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
     const figures = el("div", { class: "region-task-compare", dataset: { testid: "region-task-compare" } });
 
-    // 이벤트 변경 목록은 **오버레이보다 먼저** 계산한다 — "이후" 그림 위에 이벤트 마커를
-    // 얹으려면 어떤 이벤트가 어디에 놓이는지 알아야 한다. (아래 변경 목록에서도 그대로 쓴다.)
-    const eventChanges = (() => {
-      try {
-        return summarizeRegionEventChanges(pending.baseProject, pending.clippedProject, pending.mapId, pending.region);
-      } catch {
-        return [];
-      }
-    })();
+    // 미리보기 프레임 — 다듬기는 "주변과 이어졌는가"가 결정 근거라, 영역만 크롭하면 판단할
+    // 재료가 화면에 없다. 다듬기 초안에서만 여백 2칸을 포함한 사각형을 찍는다(맵 밖은 클램프).
+    const previewRect = lastRunMode === "ai" && lastAiMode === "polish" && map
+      ? expandRegion(pending.region, 2, map)
+      : pending.region;
+    const hasPreviewMargin = previewRect.width !== pending.region.width
+      || previewRect.height !== pending.region.height;
 
     // 변경 칸 하이라이트 — 어디가 바뀌는지 그림만 보고 알 수 있어야 한다.
     // 청크 id → 그 청크가 차지하는 오버레이 칸들. 체크박스 hover/해제 시 이 칸들만 손댄다.
@@ -642,16 +668,27 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       // 타일이 하나도 안 바뀌어도 이벤트만 놓이는 제안(NPC·상자)이 있다 — 그때도 마커를
       // 얹을 격자가 필요하므로 오버레이를 만든다.
       if (!hasChanges && eventChanges.length === 0) return null;
-      const { width: rw, height: rh } = pending.region;
+      // 격자는 **찍은 그림과 같은 사각형**이어야 한다 — 여백 프레임에서 영역 크기로 격자를
+      // 만들면 하이라이트가 실제 칸과 어긋난다. 영역 로컬 좌표는 이 오프셋만큼 밀어 넣는다.
+      const { width: rw, height: rh } = previewRect;
+      const offsetX = pending.region.x - previewRect.x;
+      const offsetY = pending.region.y - previewRect.y;
       if (rw <= 0 || rh <= 0) return null;
       const chunkAt = new Map<string, string>();
       for (const chunk of allChunks) for (const cell of chunk.cells) chunkAt.set(`${cell.x},${cell.y}`, chunk.id);
       const cells: HTMLElement[] = [];
       for (let cy = 0; cy < rh; cy += 1) {
         for (let cx = 0; cx < rw; cx += 1) {
-          const chunkId = chunkAt.get(`${cx},${cy}`);
+          const insideRegion = cx >= offsetX && cy >= offsetY
+            && cx < offsetX + pending.region.width && cy < offsetY + pending.region.height;
+          const chunkId = insideRegion ? chunkAt.get(`${cx - offsetX},${cy - offsetY}`) : undefined;
           const cell = el("span", {
-            class: chunkId ? "region-task-change-cell is-changed" : "region-task-change-cell",
+            class: chunkId
+              ? "region-task-change-cell is-changed"
+              : insideRegion
+                ? "region-task-change-cell"
+                // 여백 칸 — 작업 대상이 아니라 비교 대상이다. 흐리게 깔아 영역과 구분한다.
+                : "region-task-change-cell is-context",
           });
           if (chunkId) {
             const bucket = overlayCellsByChunk.get(chunkId);
@@ -661,14 +698,14 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
           cells.push(cell);
         }
       }
-      // 이벤트 마커 — 절대 좌표를 영역 로컬 좌표로 환산해 같은 격자에 배치한다.
-      // 영역 밖(clipToRegion 이 되돌리기 전 좌표 등)은 격자에 자리가 없으므로 건너뛴다.
+      // 이벤트 마커 — 절대 좌표를 프레임 로컬 좌표로 환산해 같은 격자에 배치한다.
+      // 프레임 밖(clipToRegion 이 되돌리기 전 좌표 등)은 격자에 자리가 없으므로 건너뛴다.
       let eventMarkerIndex = 0;
       for (const change of eventChanges) {
         eventMarkerIndex += 1;
         const markerIndex = eventMarkerIndex;
-        const lx = change.x - pending.region.x;
-        const ly = change.y - pending.region.y;
+        const lx = change.x - previewRect.x;
+        const ly = change.y - previewRect.y;
         if (lx < 0 || ly < 0 || lx >= rw || ly >= rh) continue;
         const marker = el("span", {
           class: "region-task-event-marker",
@@ -679,10 +716,21 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         eventMarkersById.set(change.eventId, marker);
         cells.push(marker);
       }
+      // 영역 테두리 — 여백이 있을 때만. 어디까지가 AI 가 손댄 사각형인지 한 줄로 보여 준다.
+      if (hasPreviewMargin) {
+        cells.push(el("span", {
+          class: "region-task-region-frame",
+          attrs: {
+            style: `grid-column: ${offsetX + 1} / span ${pending.region.width};`
+              + ` grid-row: ${offsetY + 1} / span ${pending.region.height};`,
+          },
+          dataset: { testid: "region-task-region-frame" },
+        }));
+      }
       return el("div", {
         class: "region-task-change-overlay",
         attrs: { style: `grid-template-columns: repeat(${rw}, 1fr); grid-template-rows: repeat(${rh}, 1fr);`, "aria-hidden": "true" },
-        dataset: { testid: "region-task-change-overlay" },
+        dataset: { testid: "region-task-change-overlay", cols: String(rw), rows: String(rh) },
         children: cells,
       });
     };
@@ -697,7 +745,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       const body = el("div", { class: "region-task-compare-canvas", dataset: { testid } });
       if (figureMap) {
         try {
-          const canvas = await renderSnapshot(project, figureMap, pending.region);
+          const canvas = await renderSnapshot(project, figureMap, previewRect);
           // 클릭 시 2배 확대 토글
           canvas.addEventListener?.("click", () => body.classList.toggle("is-zoomed"));
           body.append(canvas);
@@ -819,7 +867,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       pending.discard();
       finalizeSettle(false);
       if (lastRunMode === "direct") void executeDirectRoom();
-      else void execute();
+      // 다듬기 초안을 버리고 다시 뽑을 때도 다듬기여야 한다 — 모드를 안 넘기면 같은 문장이
+      // 키워드로 우연히 잡힐 때만 유지된다(사용자가 지시를 고쳐 두면 조용히 일반 경로가 된다).
+      else void execute({ mode: lastAiMode });
     };
     const doDiscard = (): void => {
       if (!isCurrentExecution(executionId) || pending.settled) return;
@@ -1055,6 +1105,27 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       }
       if (metrics.scheduledNpcs > 0 && !metrics.timeSystemEnabled) {
         metricChips.push({ text: `시간 시스템 꺼짐 · NPC 일정 ${metrics.scheduledNpcs}명`, warn: true });
+      }
+      // 다듬기 전용 지표. 어울림은 적용을 막지 않는다(경계가 조금 어긋난 초안조차 못 쓰게 하면
+      // 사용자가 막힌다) — 대신 여기서 보이고 결정은 사람이 한다.
+      if ((metrics.brokenCrossings ?? 0) > 0) {
+        metricChips.push({ text: `경계 어긋남 ${metrics.brokenCrossings}곳`, warn: true });
+      }
+      if ((metrics.blockedEntrances ?? 0) > 0) {
+        metricChips.push({ text: `진입 막힘 ${metrics.blockedEntrances}곳`, warn: true });
+      }
+      // 점수는 **나빠졌거나 낮을 때만** 뜬다. 다듬어서 올라간 점수는 사용자가 할 일이 없다.
+      if (metrics.blendScore !== undefined) {
+        const before = metrics.blendScoreBefore;
+        const worse = before !== undefined && metrics.blendScore < before;
+        if (worse || metrics.blendScore < 70) {
+          metricChips.push({
+            text: before !== undefined
+              ? `어울림 ${before}→${metrics.blendScore}`
+              : `어울림 ${metrics.blendScore}점`,
+            warn: true,
+          });
+        }
       }
     }
     const metricsRow = el("div", {
@@ -1315,6 +1386,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   };
 
   let lastRunMode: "ai" | "direct" = "ai";
+  // 마지막 AI 실행이 다듬기였는가. 「다시 만들기」가 같은 경로로 돌아야 하고, 승인 미리보기의
+  // 여백 프레임도 이 값으로 결정한다(다듬기는 주변과의 이음새가 판단 근거다).
+  let lastAiMode: RegionTaskMode = "task";
   let lastLog: RegionTaskLogExport | undefined;
   // 복사 버튼 라벨 — 실행 후에는 툴 호출 수를 함께 보여 준다("복사됨" 후 여기로 되돌린다).
   let copyLogLabel = "로그";
@@ -1366,14 +1440,26 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
   };
 
-  const execute = async (): Promise<void> => {
+  /**
+   * AI 실행. overrides 를 주면 입력창 대신 그 지시·모드로 돈다 — 「다듬기」처럼 사용자가
+   * 문장을 고를 것이 없는 진입점이 있다. 이때 입력창에도 그 문장을 채워 두어야
+   * 「지시 수정」·「다시 만들기」가 같은 지시를 이어받는다(빈 입력창으로 되돌아가면
+   * 무엇을 시켰는지 화면에서 사라진다).
+   */
+  const execute = async (
+    overrides?: { readonly instruction?: string; readonly mode?: RegionTaskMode },
+  ): Promise<void> => {
     if (running) return;
+    if (overrides?.instruction !== undefined) textarea.value = overrides.instruction;
     const instruction = textarea.value.trim();
     if (!instruction) {
       setSummary("지시 내용을 입력하세요.");
       textarea.focus();
       return;
     }
+    // 자유 입력도 어휘로 라우팅한다 — "주변과 어울리게 해줘" 를 직접 쓴 사람이 일반 경로로
+    // 가면 주변 브리핑 없이 영역 안만 보고 채운다(요청을 이행할 근거 자체가 없다).
+    const mode: RegionTaskMode = overrides?.mode ?? (isRegionPolishRequest(instruction) ? "polish" : "task");
     // 검토 중 단축키로 다시 실행하는 기존 흐름도 한 소유자만 남도록 먼저 해소한다.
     if (activePending && !activePending.settled) activePending.discard();
     if (activeExecution) invalidateExecution(true);
@@ -1384,6 +1470,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     activeExecution = execution;
     running = true;
     lastRunMode = "ai";
+    lastAiMode = mode;
     const startedAt = Date.now();
     let progressMilestone = "영역을 살펴보는 중";
     // 스트리밍으로 이미 찍은 어시스턴트 문단을 결과에서 또 찍지 않기 위한 플래그.
@@ -1399,6 +1486,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
     setStage("running");
     runButton.disabled = true;
+    polishButton.disabled = true;
     directRoomButton.disabled = true;
     directPresetSelect.disabled = true;
     directModifierSelect.disabled = true;
@@ -1414,6 +1502,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     execution.elapsedTimer = setInterval(renderProgress, 1000);
     appendLog(`지시: ${instruction}`);
     appendLog(`영역: (${region.x},${region.y}) ${region.width}×${region.height}`);
+    if (mode === "polish") appendLog("모드: 다듬기 (주변 브리핑 + 영역 안 전권)");
     const onEvent = (event: SessionEvent): void => {
       if (!isCurrentExecution(executionId)) return;
       if (event.type === "status") appendLog(event.text);
@@ -1449,6 +1538,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         mapId: options.mapId,
         region,
         instruction,
+        // 일반 경로에서는 키를 넣지 않는다 — 기존 호출 계약(주입 러너의 인자 검증)을 그대로 둔다.
+        ...(mode === "polish" ? { mode } : {}),
         signal: controller.signal,
         onEvent,
       });
@@ -1504,6 +1595,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         releaseExecution(executionId);
         setStage("compose");
         runButton.disabled = false;
+        polishButton.disabled = false;
         directRoomButton.disabled = false;
         directPresetSelect.disabled = false;
         directModifierSelect.disabled = false;
@@ -1528,6 +1620,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     partialHost.classList.add("hidden");
     setStage("compose");
     runButton.disabled = false;
+    polishButton.disabled = false;
     textarea.disabled = false;
     setSummary("작업을 중단했습니다 — 맵은 변경되지 않았습니다.");
     appendLog("사용자가 작업을 중단했습니다.");
@@ -1547,6 +1640,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     setStage("running");
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true });
     runButton.disabled = true;
+    polishButton.disabled = true;
     directRoomButton.disabled = true;
     directPresetSelect.disabled = true;
     directModifierSelect.disabled = true;
@@ -1584,6 +1678,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       if (!activePending) {
         setStage("compose");
         runButton.disabled = false;
+        polishButton.disabled = false;
         directRoomButton.disabled = false;
         directPresetSelect.disabled = false;
         directModifierSelect.disabled = false;
@@ -1602,6 +1697,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   };
 
   runButton.addEventListener("click", () => void execute());
+  polishButton.addEventListener("click", () => void execute({ instruction: POLISH_INSTRUCTION, mode: "polish" }));
   cancelButton.addEventListener("click", cancelCurrentExecution);
   directRoomButton.addEventListener("click", () => void executeDirectRoom());
   copyLogButton.addEventListener("click", () => void copyLastLog());
@@ -1787,7 +1883,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   });
   const actions = el("div", {
     class: "region-task-actions",
-    children: [directDisclosure, runButton, cancelButton],
+    children: [directDisclosure, polishButton, runButton, cancelButton],
   });
   const promptSection = el("div", {
     class: "region-task-prompt",
@@ -1869,7 +1965,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     positionRegionTaskPopover(windowNode, options.anchor, options.avoid);
   }
   textarea.focus();
-  if (options.autoRun) void execute();
+  if (options.autoRun) void execute(options.mode ? { mode: options.mode } : undefined);
   return backdrop;
 }
 
