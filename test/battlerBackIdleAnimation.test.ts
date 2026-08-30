@@ -96,6 +96,15 @@ function relativeDeviation(frame: number[], reference: number[]): number {
   return worst;
 }
 
+/**
+ * 머리 영역 상대편차 상한. **양성·음성 두 테스트가 이 하나를 공유해야 한다** — 리터럴로
+ * 흩어 두면 양성 쪽만 올려도 음성 테스트가 그대로 통과해서 래칫이 말뿐이 된다.
+ */
+const HEAD_RELATIVE_CAP = 1.0;
+
+/** 음성 픽스처의 실측값. 픽스처가 다른 그림으로 바뀌면 여기서 드러난다. */
+const HEAD_TURNED_FIXTURE = { head: 1.941, body: 0.125 } as const;
+
 /** 알파가 있는 픽셀의 경계 상자 — 머리 영역을 피사체 기준으로 잡기 위해 필요하다. */
 function subjectBox(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number) {
   let top = cellHeight;
@@ -264,7 +273,7 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
         expect(
           deviation,
           `${entry.resourceId}: 칸 ${index} 의 머리가 원본과 다르다 (상대 ${deviation.toFixed(3)}) = 고개를 돌렸거나 머리 장식이 바뀌었다`
-        ).toBeLessThanOrEqual(1.0);
+        ).toBeLessThanOrEqual(HEAD_RELATIVE_CAP);
       }
     }
   });
@@ -274,14 +283,14 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
    * 무엇을 떨어뜨리는지 CI 가 증명하지 못한다. 그래서 실제로 한 번 실렸던 결함 스트립
    * (고개가 돌아 귀·볼이 보이고 머리띠에 녹색 이물이 있던 hero-04)을 픽스처로 고정한다.
    *
-   * 이 테스트가 있으면 상한을 1.941 이상으로 올리는 순간 여기서 실패한다.
+   * 상한은 `HEAD_RELATIVE_CAP` 하나를 양성·음성이 공유한다. 그 값을 픽스처 실측(1.941)
+   * 이상으로 올리면 아래 `toBeGreaterThan` 이 깨진다 — 양성 쪽만 고쳐 빠져나갈 수 없다.
    * 동시에 **전신 색 계약은 이 픽스처를 통과한다**(0.125 < 0.15)는 것도 함께 못 박는다 —
    * 그게 머리 계약을 따로 세운 이유다.
    */
   it("고개가 돌아간 옛 스트립을 머리 계약이 떨어뜨린다 — 전신 색 계약은 통과시킨다", () => {
     const entry = BACK_IDLE.find((item) => item.resourceId === "generated-actor-hero-04-back");
-    expect(entry, "hero-04 후면 항목이 있어야 이 픽스처가 의미를 가진다").toBeDefined();
-    if (!entry) return;
+    if (!entry) throw new Error("hero-04 후면 항목이 없다 — 이 픽스처가 의미를 잃었다");
     const source = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path.replace("/idle/", "/"))));
     const defect = PNG.sync.read(
       readFileSync(path.join(ROOT, "test", "fixtures", "battler-idle", "hero-04-back-head-turned.png"))
@@ -294,8 +303,15 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
       worstHead = Math.max(worstHead, relativeDeviation(headShares(defect, index, entry.cellWidth, entry.cellHeight), referenceHead));
       worstBody = Math.max(worstBody, relativeDeviation(colorShares(defect, index, entry.cellWidth, entry.cellHeight), referenceBody));
     }
-    // 머리 계약은 떨어뜨린다.
-    expect(worstHead, `머리 편차 ${worstHead.toFixed(3)} 가 상한 1.0 을 넘어야 한다`).toBeGreaterThan(1.0);
+    // 실측값을 못 박는다. 범위(`> CAP`)만 보면 픽스처를 1.05 짜리로 바꿔치기해도 초록이고,
+    // 그다음 상한을 1.5 로 올리면 둘 다 살아남는다.
+    expect(worstHead, "픽스처의 머리 편차 실측").toBeCloseTo(HEAD_TURNED_FIXTURE.head, 2);
+    expect(worstBody, "픽스처의 전신 색 편차 실측").toBeCloseTo(HEAD_TURNED_FIXTURE.body, 2);
+    // 래칫: 상한을 픽스처 실측 이상으로 올리면 여기서 깨진다. 양성 테스트와 **같은 상수**를 본다.
+    expect(
+      worstHead,
+      `머리 편차 ${worstHead.toFixed(3)} 가 상한 ${HEAD_RELATIVE_CAP} 을 넘어야 한다 — 넘지 않으면 이 계약은 아무것도 막지 못한다`
+    ).toBeGreaterThan(HEAD_RELATIVE_CAP);
     // 전신 색 계약만으로는 못 잡는다 — 이 비대칭이 머리 계약의 존재 이유다.
     expect(worstBody, `전신 색 편차 ${worstBody.toFixed(3)} 는 0.15 를 넘지 않는다`).toBeLessThan(0.15);
   });
