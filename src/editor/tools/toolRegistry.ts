@@ -45,6 +45,7 @@ import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
+import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
@@ -203,6 +204,11 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GROUP_LAYOUT_TOOLS, "tile"),
   ...withDomain(GROUP_SAMPLE_TOOLS, "tile"),
   ...withDomain(VISION_QUERY_TOOLS, "map"),
+  // 도메인을 주지 않는다 — "어디야?" 는 타일·이벤트·퀵스트 어느 모드에서도 나오는 질문이다.
+  // 도메인 없는 툴은 exposedInDomains 가 항상 통과시킨다(find_tools·PROJECT_TOOLS 와 같은 자리).
+  // map 도메인에 핸하면 상한(40) 트림에서 set_scene_mood 등 대표 도구가 밀려난다
+  // (실산: test/regionIntentExposure.test.ts 보장 3건 실패).
+  ...VIEW_FOCUS_TOOLS,
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
 ]);
