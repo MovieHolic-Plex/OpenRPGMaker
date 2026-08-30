@@ -868,13 +868,16 @@ export class AssistantSession {
 
   /**
    * 지금 대화가 모델 창의 어디쯤인가 — 자동 압축 임계와 **같은 입력**으로 계산한다.
-   * 게이지가 다른 식으로 세면 표시와 실제 압축 시점이 어긋난다.
+   * 게이지가 다른 식으로 세면 표시와 실제 압축 시점이 어긋난다. 그래서 창도 압축 판정과
+   * 같은 작업 창(resolveWorkingContextTokens)을 넘긴다 — 모델 창(gemini 1M)을 쓰면
+   * 게이지가 "맥락 3%" 인데 압축이 도는 모순이 보인다.
    */
   getContextUsage(): ContextUsage {
     return describeContextUsage({
       messages: this.messages,
       model: this.config.model,
       usageTokens: this.lastPromptTokens,
+      contextWindow: resolveWorkingContextTokens(this.config),
     });
   }
 

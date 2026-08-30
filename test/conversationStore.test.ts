@@ -7,6 +7,7 @@ import {
   deriveTitle,
   listConversations,
   loadConversation,
+  loadLatestConversationForScope,
   saveConversation,
   searchConversations,
   type ConversationRecord,
@@ -190,5 +191,30 @@ describe("conversationStore", () => {
 
     expect(loadConversation("remote-failure")?.id).toBe("remote-failure");
     expect(consoleError).toHaveBeenCalledWith("[ai-conversation] Supabase mirror failed:", failure);
+  });
+});
+
+describe("loadLatestConversationForScope", () => {
+  // 왜 전역 최신(loadLatestConversation)으로는 안 되는가: 두 프로젝트를 번갈아 열면 남의
+  // 프로젝트 대화가 더 최근이라, 내 대화가 그대로 있는데도 부팅 복원이 포기됐다 — 사용자에게는
+  // 누르지도 않은 "새 세션 강요" 로 보인다.
+  it("남의 프로젝트 대화가 더 최근이어도 내 범위의 최신을 돌려준다", () => {
+    saveConversation({ ...record("conv_mine_old", 100), projectContextKey: "remote:mine" });
+    saveConversation({ ...record("conv_mine_new", 200), projectContextKey: "remote:mine" });
+    saveConversation({ ...record("conv_other", 999), projectContextKey: "remote:other" });
+
+    expect(loadLatestConversationForScope("remote:mine")?.id).toBe("conv_mine_new");
+    expect(loadLatestConversationForScope("remote:other")?.id).toBe("conv_other");
+  });
+
+  it("범위에 저장본이 없으면 null 이다 — 남의 대화를 끌어오지 않는다", () => {
+    saveConversation({ ...record("conv_other", 999), projectContextKey: "remote:other" });
+    expect(loadLatestConversationForScope("remote:mine")).toBeNull();
+  });
+
+  it("저장 순서가 흐트러져도 savedAt 최댓값을 고른다", () => {
+    saveConversation({ ...record("conv_new", 500), projectContextKey: "remote:mine" });
+    saveConversation({ ...record("conv_old", 100), projectContextKey: "remote:mine" });
+    expect(loadLatestConversationForScope("remote:mine")?.id).toBe("conv_new");
   });
 });
