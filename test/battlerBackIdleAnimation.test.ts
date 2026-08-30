@@ -15,6 +15,10 @@
 //  4. 후면 구도(`partyFacing="back"`)에서 그 `<img>` 에 애니메이션이 실제로 배선되는가.
 //  5. 등록되지 않은 뒷모습은 정적 이미지 그대로인가(폴백).
 //  6. `<img>`·`src` 계약이 유지되는가 — 애니메이션이 붙어도 `src` 는 정적 원본이다.
+//  7. **감속 모드·사망 포즈에서 멈추는가.** 이 티어는 자기 클래스(`.battle-skin-actor-image`)가
+//     아니라 함께 붙는 `.battle-actor-image` 로 기존 접근성 규칙에 얹혀 있다. 기존 계약은 그
+//     블록에 `.battle-enemy-image` 만 들어있는지 보고 있어서, `.battle-actor-image` 를 빼도
+//     테스트가 초록인 채로 뒷모습만 계속 돌아간다 — 그 빈틈을 여기서 막는다.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
@@ -142,12 +146,57 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
   });
 });
 
+describe("후면 배틀러 idle — 접근성", () => {
+  const css = readFileSync(path.join(ROOT, "src/styles/runtime/battle-skins/_battlers.css"), "utf8");
+
+  /** 헤더로 시작하는 `@media` 블록 본문을 중괄호 균형으로 뜬다. */
+  function mediaBlock(header: string): string {
+    const at = css.indexOf(header);
+    expect(at, `${header} 블록을 못 찾았다`).toBeGreaterThan(-1);
+    let depth = 0;
+    for (let i = css.indexOf("{", at); i < css.length; i += 1) {
+      if (css[i] === "{") depth += 1;
+      else if (css[i] === "}") {
+        depth -= 1;
+        if (depth === 0) return css.slice(at, i + 1);
+      }
+    }
+    throw new Error(`${header} 블록의 중괄호가 안 닫힌다`);
+  }
+
+  it("감속·고대비·인쇄에서 뒷모습 배틀러도 정적 src 로 되돌아간다", () => {
+    const block = mediaBlock("@media (prefers-reduced-motion: reduce), (forced-colors: active), print");
+    // 뒷모습 `<img>` 는 `battle-actor-image battle-skin-actor-image` 두 클래스를 함께 단다
+    // (`battleFieldDom.ts`). 이 선택자가 빠지면 감속 모드에서 뒷모습만 계속 돈다.
+    expect(block, "감속 모드 블록이 .battle-actor-image 를 덮지 않는다 = 뒷모습이 계속 돈다").toContain(
+      ".battle-actor-image[data-battler-anim]"
+    );
+    expect(block).toMatch(/animation:\s*none/);
+    expect(block).toMatch(/background-image:\s*none/);
+  });
+
+  it("사망 포즈에서 뒷모습 배틀러의 애니메이션이 멈춘다", () => {
+    // 죽은 배틀러가 숨을 쉬면 안 된다. 이 규칙도 `.battle-actor-image` 로 얹혀 있다.
+    const at = css.indexOf(".battle-pose-dead .battle-enemy-image[data-battler-anim]");
+    expect(at, "사망 포즈 정지 규칙을 못 찾았다").toBeGreaterThan(-1);
+    const rule = css.slice(at, css.indexOf("}", at) + 1);
+    expect(rule, "사망 포즈 정지 규칙이 .battle-actor-image 를 덮지 않는다").toContain(
+      ".battle-actor-image[data-battler-anim]"
+    );
+    expect(rule).toMatch(/animation:\s*none/);
+  });
+});
+
 describe("후면 배틀러 idle — DOM 배선", () => {
   it("후면 구도의 뒷모습 <img> 에 애니메이션이 붙는다", () => {
     for (const entry of BACK_IDLE) {
       const slug = entry.resourceId.replace("generated-actor-", "").replace("-back", "");
       const field = renderBackField(`generated-actor-${slug}-battle`);
       const image = backImage(field);
+      // 접근성 규칙(감속·사망)이 `.battle-actor-image` 로 걸려 있으므로 두 클래스가 함께 붙어야
+      // 한다. 한쪽만 남으면 규칙이 빗나가고 뒷모습만 계속 돈다.
+      expect(image?.classList.contains("battle-actor-image"), "감속 규칙이 빗나간다").toBe(true);
+      expect(image?.classList.contains("battle-skin-actor-image")).toBe(true);
       expect(image, `${slug}: 뒷모습 이미지가 없다`).not.toBeNull();
       expect(image?.dataset.battlerAnim, `${slug}: 애니메이션이 배선되지 않았다`).toBe(entry.resourceId);
       expect(image?.style.getPropertyValue("--battler-anim-frames")).toBe(String(entry.frameCount));
