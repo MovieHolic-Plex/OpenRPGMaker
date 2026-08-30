@@ -5,7 +5,6 @@ import type {
   ConstructionRect,
   NewVillageTarget,
 } from "@/editor/construction/contracts";
-import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { MIN_SIZE } from "./village/constants";
 import type { GameMap, Project } from "@/project/types";
@@ -84,20 +83,6 @@ export function viewportVillageBounds(
 function clampStart(center: number, span: number, limit: number): number {
   const start = Math.round(center) - Math.floor(span / 2);
   return Math.max(0, Math.min(start, limit - span));
-}
-
-/**
- * `kind:"existing"` + bounds 생략은 그 맵 전체 재포장이었다(2026-08-30 측정). 사용자가 (60,40)을
- * 보며 "여기에 마을"이라 해도 (0,0)부터 덮였다. 지금 보고 있는 맵과 스냅샷의 맵이 같을 때만
- * 화면 중심 사각형을 bounds 로 채운다 — 스냅샷이 없거나 다른 맵이면 종전 동작을 유지한다.
- */
-export function withViewportBounds(request: AuthorVillageRequest, project: Project): AuthorVillageRequest {
-  if (request.target.kind !== "existing" || request.target.bounds) return request;
-  const snapshot = getEditorMapViewport();
-  if (!snapshot || snapshot.mapId !== request.target.mapId) return request;
-  const map = project.maps[request.target.mapId];
-  if (!map) return request;
-  return { ...request, target: { ...request.target, bounds: viewportVillageBounds(snapshot, map) } };
 }
 
 export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDomainArgs {

@@ -8,7 +8,6 @@ import {
   buildVillageFacadeData,
   createExactVillageMap,
   villageDomainArgs,
-  withViewportBounds,
 } from "./authorVillageSupport";
 import {
   buildVillageDomain,
@@ -132,20 +131,18 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
     },
     run(draft, args): ToolExecResult {
       const normalized = normalizeUnknownHouseTemplates(args);
-      const parsed = parseAuthorVillageRequest(normalized.args);
+      const request = parseAuthorVillageRequest(normalized.args);
       const baseline = createDraft(draft);
-      switch (parsed.target.kind) {
+      switch (request.target.kind) {
         case "existing":
-          if (!draft.maps[parsed.target.mapId]) {
-            throw new ToolError(`Map not found: ${parsed.target.mapId}`, { code: "map-not-found", mapId: parsed.target.mapId });
+          if (!draft.maps[request.target.mapId]) {
+            throw new ToolError(`Map not found: ${request.target.mapId}`, { code: "map-not-found", mapId: request.target.mapId });
           }
           break;
         case "new":
-          createExactVillageMap(draft, parsed.target);
+          createExactVillageMap(draft, request.target);
           break;
       }
-      // bounds 생략을 "맵 전체 재포장"으로 번역하던 지점 — "여기에 마을"은 보는 화면이 범위다.
-      const request = withViewportBounds(parsed, draft);
       const built = dependencies.build(draft, villageDomainArgs(request));
       const result = normalized.warnings.length === 0
         ? built

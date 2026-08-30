@@ -1,14 +1,15 @@
-// "여기에 마을 깔아줘" = 사용자가 보고 있는 화면에 마을. bounds 생략 시 맵 전체를 재포장하던
-// 기존 동작(측정: villageBuildArea 의 {0,0,w,h} 폴백)을 뷰포트 중심 사각형으로 좁힌다.
-// 단언 seam: createAuthorVillageTool 의 build 의존성이 받는 args.bounds — 실제로 시공 범위가 되는 값.
+// "여기에 마을 깔아줘" = 사용자가 보고 있는 화면에 마을. 실행 경계에서 구체적인 bounds 를
+// 기록해 프리뷰·적용·감사 재생이 카메라 이동과 무관하게 같은 영역을 시공하는지 검증한다.
 import { afterEach, describe, expect, it } from "vitest";
+import { AssistantSession } from "@/ai/assistantSession";
+import type { AiConfig, ChatResult } from "@/ai/llmClient";
 import { createAuthorVillageTool } from "@/editor/tools/authorVillageTool";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { setEditorMapViewport } from "@/editor/editorMapViewport";
 import { buildVillageDomain, inspectVillageBuild, type VillageBuildDomainArgs } from "@/editor/tools/villageBuilder";
 import { MIN_SIZE } from "@/editor/tools/village/constants";
 import type { ToolResult } from "@/editor/tools/types";
-import type { Project } from "@/project/types";
+import type { GameMap, Project } from "@/project/types";
 import { createExistingProject, EXISTING_TARGET, runFacade } from "./authorVillageFacadeFixtures";
 
 afterEach(() => {
@@ -42,6 +43,27 @@ function publishViewport(mapId: string, centerX: number, centerY: number): void 
   setEditorMapViewport({ mapId, centerX, centerY, x: centerX - 8, y: centerY - 8, w: 16, h: 16 });
 }
 
+function changedCellIndexes(before: GameMap, after: GameMap): number[] {
+  const changed: number[] = [];
+  for (let index = 0; index < before.lowerTiles.length; index += 1) {
+    if (before.lowerTiles[index] !== after.lowerTiles[index] || before.upperTiles[index] !== after.upperTiles[index]) {
+      changed.push(index);
+    }
+  }
+  return changed;
+}
+
+const SESSION_CONFIG: AiConfig = {
+  authMode: "apiKey",
+  baseUrl: "x",
+  model: "viewport-test-model",
+  liteModel: "viewport-test-model",
+  apiKey: "sk",
+  maxToolCalls: 4,
+  maxTokens: 4096,
+  agentMode: "chat",
+};
+
 describe("viewportVillageBounds", () => {
   it("뷰포트 중심을 최소 한 변(minSpan) 사각형의 가운데로 둔다", () => {
     expect(viewportVillageBounds({ mapId: "m1", centerX: 60, centerY: 40 }, { width: 200, height: 200 }, 20))
@@ -64,40 +86,82 @@ describe("viewportVillageBounds", () => {
 });
 
 describe("author_village + 뷰포트 bounds", () => {
-  it("bounds 를 생략하면 사용자가 보던 화면 중심 사각형이 시공 범위가 된다", () => {
+  it("실행 경계가 기록한 bounds 는 카메라가 움직여도 같은 영역을 다시 시공한다", async () => {
+    const baseline = createExistingProject(50);
+    let viewport = { mapId: "map_existing", centerX: 34, centerY: 34, x: 26, y: 26, w: 16, h: 16 };
+    publishViewport(viewport.mapId, viewport.centerX, viewport.centerY);
+    let round = 0;
+    const chat = async (): Promise<ChatResult> => {
+      round += 1;
+      if (round === 1) {
+        return {
+          message: {
+            role: "assistant",
+            content: null,
+            tool_calls: [{
+              id: "call_author_village",
+              type: "function",
+              function: {
+                name: "author_village",
+                arguments: JSON.stringify({
+                  target: EXISTING_TARGET,
+                  houseCount: 2,
+                  countPolicy: "exact",
+                  seed: 7,
+                  interior: false,
+                }),
+              },
+            }],
+          },
+          finishReason: "tool_calls",
+        };
+      }
+      return { message: { role: "assistant", content: "완료" }, finishReason: "stop" };
+    };
+    const session = new AssistantSession(baseline, {
+      config: SESSION_CONFIG,
+      chat,
+      contextOptions: {
+        getCurrentMapId: () => "map_existing",
+        getViewport: () => viewport,
+      },
+    });
+
+    const turn = await session.sendUserMessage(
+      "여기에 마을을 지어줘\n\n[컨텍스트] 현재 맵: Existing village (map_existing) · 사용자 선택 영역: (24,24) 20×20",
+    );
+    const recordedArgs = turn.proposedCalls[0]?.args;
+    expect(recordedArgs?.target).toEqual({
+      ...EXISTING_TARGET,
+      bounds: { x: 24, y: 24, w: MIN_SIZE, h: MIN_SIZE },
+    });
+
+    const first = structuredClone(baseline);
+    const firstBefore = structuredClone(first.maps.map_existing);
+    const firstResult = runFacade(first, recordedArgs ?? {});
+    expect(firstResult.ok, `${firstResult.summary} ${JSON.stringify(firstResult.issues ?? [])}`).toBe(true);
+
+    viewport = { mapId: "map_existing", centerX: 10, centerY: 10, x: 2, y: 2, w: 16, h: 16 };
+    publishViewport(viewport.mapId, viewport.centerX, viewport.centerY);
+    const second = structuredClone(baseline);
+    const secondBefore = structuredClone(second.maps.map_existing);
+    const secondResult = runFacade(second, recordedArgs ?? {});
+    expect(secondResult.ok, `${secondResult.summary} ${JSON.stringify(secondResult.issues ?? [])}`).toBe(true);
+
+    const firstRegion = changedCellIndexes(firstBefore, first.maps.map_existing);
+    const secondRegion = changedCellIndexes(secondBefore, second.maps.map_existing);
+    expect(firstRegion.length).toBeGreaterThan(0);
+    expect(secondRegion).toEqual(firstRegion);
+  }, 30_000);
+
+  it("도구에 bounds 가 없으면 기존 전체 재포장 동작이 그대로다", () => {
     const project = createExistingProject(50);
-    const before = [...project.maps.map_existing.lowerTiles];
     publishViewport("map_existing", 34, 34);
 
     const { result, calls } = runWithRecordedBounds(project);
 
     expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
-    expect(calls).toHaveLength(1);
-    expect(calls[0].bounds).toEqual({ x: 24, y: 24, w: MIN_SIZE, h: MIN_SIZE });
-
-    const map = project.maps.map_existing;
-    const outside = [0, 10 * 50 + 10, 45 * 50 + 45];
-    for (const index of outside) expect(map.lowerTiles[index]).toBe(before[index]);
-    const changed = map.lowerTiles.filter((tile, index) => tile !== before[index]).length;
-    expect(changed).toBeGreaterThan(0);
-  });
-
-  it("뷰포트 스냅샷이 없으면 기존 전체 재포장 동작이 그대로다", () => {
-    const project = createExistingProject(50);
-    const { result, calls } = runWithRecordedBounds(project);
-
-    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
     expect(calls[0].bounds).toBeUndefined();
     expect((result.diff?.warnings ?? []).some((entry) => entry.includes("bounds 를 생략해"))).toBe(true);
-  });
-
-  it("스냅샷이 다른 맵을 보고 있으면 뷰포트를 쓰지 않는다", () => {
-    const project = createExistingProject(50);
-    publishViewport("map_other", 34, 34);
-
-    const { result, calls } = runWithRecordedBounds(project);
-
-    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
-    expect(calls[0].bounds).toBeUndefined();
   });
 });

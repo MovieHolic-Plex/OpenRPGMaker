@@ -4,7 +4,8 @@
 // - 커밋 게이트/인자 검증 실패 시 issues를 tool 메시지로 모델에 되돌려 자가수정을 유도(최대 maxToolCalls 왕복).
 // - 브라우저 비의존(순수). chat 함수는 주입 가능(테스트에서 모킹).
 
-import { getTool, runTool } from "@/editor/tools";
+import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
+import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
@@ -1961,6 +1962,30 @@ export class AssistantSession {
     this.pushAudit({ kind: "status", text: `대화 압축: ${contextTokens} -> ${compactedTokens} 토큰 (요약 1건)` });
   }
 
+  /**
+   * 뷰포트 같은 라이브 상태는 순수 도구 안이 아니라 호출 경계에서 구체적인 인자로 고정한다.
+   * 그래야 프리뷰와 나중 적용이 같은 영역을 시공하고, 감사 로그 재생도 카메라 위치에 흔들리지 않는다.
+   */
+  private resolveToolCallArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
+    if (name !== "author_village") return args;
+    const target = args.target;
+    if (!isRecord(target) || target.kind !== "existing" || target.bounds !== undefined) return args;
+    const mapId = target.mapId;
+    if (typeof mapId !== "string") return args;
+    const snapshot = resolveContextViewport(this.contextOptions);
+    if (!snapshot || snapshot.mapId !== mapId) return args;
+    const map = this.ctx.project.maps[mapId];
+    if (!map) return args;
+
+    const normalized = normalizeToolArgs(name, args);
+    const normalizedTarget = normalized.target;
+    if (!isRecord(normalizedTarget)) return args;
+    return {
+      ...normalized,
+      target: { ...normalizedTarget, bounds: viewportVillageBounds(snapshot, map) },
+    };
+  }
+
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
     const spec = this.carryoverSpecForTurn;
     if (spec === null || this.carryoverWarningAdded) return proposal;
@@ -2516,7 +2541,9 @@ export class AssistantSession {
       const workItemIdAtRoundStart = this.workPlan?.currentItemId ?? null;
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
-        const { name, args } = parseToolCall(call);
+        const parsedCall = parseToolCall(call);
+        const name = parsedCall.name;
+        const args = this.resolveToolCallArgs(name, parsedCall.args);
         const tool = getTool(name);
         this.emitToolStarted(onEvent, name);
         if (tool?.mode === "write") writeToolAttempts += 1;
