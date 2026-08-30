@@ -96,6 +96,80 @@ function relativeDeviation(frame: number[], reference: number[]): number {
   return worst;
 }
 
+/**
+ * 머리 영역 상대편차 상한. **양성·음성 두 테스트가 이 하나를 공유해야 한다** — 리터럴로
+ * 흩어 두면 양성 쪽만 올려도 음성 테스트가 그대로 통과해서 래칫이 말뿐이 된다.
+ */
+const HEAD_RELATIVE_CAP = 1.0;
+
+/** 음성 픽스처의 실측값. 픽스처가 다른 그림으로 바뀌면 여기서 드러난다. */
+const HEAD_TURNED_FIXTURE = { head: 1.941, body: 0.125 } as const;
+
+/** 알파가 있는 픽셀의 경계 상자 — 머리 영역을 피사체 기준으로 잡기 위해 필요하다. */
+function subjectBox(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number) {
+  let top = cellHeight;
+  let bottom = -1;
+  let left = cellWidth;
+  let right = -1;
+  for (let y = 0; y < cellHeight; y += 1) {
+    for (let x = 0; x < cellWidth; x += 1) {
+      if (png.data[(y * png.width + cellIndex * cellWidth + x) * 4 + 3] > 8) {
+        if (y < top) top = y;
+        if (y > bottom) bottom = y;
+        if (x < left) left = x;
+        if (x > right) right = x;
+      }
+    }
+  }
+  return { top, bottom, left, right };
+}
+
+/**
+ * **머리 영역만** 같은 7버킷으로 잰다(피사체 상단 30%).
+ *
+ * 왜 전신 지표로 부족한가 — 실측: hero-04 의 3차 클립은 의상은 지켰지만 **고개를 돌려 얼굴을
+ * 보였다**. 뒷모습 배틀러에서는 색 드리프트보다 나쁜 결함인데, 머리는 피사체의 일부라
+ * 전신 상대편차가 0.125 로 통과했다. 같은 지표를 머리 영역에 걸면 1.941 로 드러난다.
+ *
+ * 실측 분리도: 실린 칸 0.167 / 0.337 / 0.526 / 0.665 대 고개 돌린 칸 1.941.
+ */
+function headShares(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number): number[] {
+  const { top, bottom, left, right } = subjectBox(png, cellIndex, cellWidth, cellHeight);
+  if (bottom < 0) return [0, 0, 0, 0, 0, 0, 0];
+  const headEnd = top + Math.round((bottom - top) * 0.3);
+  let blue = 0;
+  let red = 0;
+  let green = 0;
+  let warm = 0;
+  let bright = 0;
+  let dark = 0;
+  let lumaSum = 0;
+  let total = 0;
+  for (let y = top; y <= headEnd; y += 1) {
+    for (let x = left; x <= right; x += 1) {
+      const i = (y * png.width + cellIndex * cellWidth + x) * 4;
+      if (png.data[i + 3] <= 8) continue;
+      const r = png.data[i];
+      const g = png.data[i + 1];
+      const b = png.data[i + 2];
+      total += 1;
+      const isBlue = b - r > 30 && b - g > 30;
+      const isRed = r - b > 40 && r - g > 25;
+      const isGreen = g - r > 12 && g - b > 12;
+      if (isBlue) blue += 1;
+      else if (isRed) red += 1;
+      else if (isGreen) green += 1;
+      else if (r - b > 15) warm += 1;
+      const mean = (r + g + b) / 3;
+      if (mean > 170 && !isBlue && !isRed && !isGreen) bright += 1;
+      if (mean < 60) dark += 1;
+      lumaSum += 0.299 * r + 0.587 * g + 0.114 * b;
+    }
+  }
+  if (total === 0) return [0, 0, 0, 0, 0, 0, 0];
+  return [...[blue, red, green, warm, bright, dark].map((count) => count / total), lumaSum / total / 255];
+}
+
 /** 두 칸의 픽셀 변화 비율 — 색 채널 합 차가 24를 넘는 픽셀. */
 function cellChange(png: PNG, a: number, b: number, cellWidth: number, cellHeight: number): number {
   let changed = 0;
@@ -162,13 +236,84 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
       for (let index = 0; index < entry.frameCount; index += 1) {
         const frame = colorShares(strip, index, entry.cellWidth, entry.cellHeight);
         const deviation = relativeDeviation(frame, reference);
-        // 0.15 = 실측 분리선. 실린 칸들은 0.07~0.10, 망토가 덮인 칸 0.42, 갈색 튜닉 0.999.
+        // 0.15 는 불량 쪽에서 정했다. 실린 칸 전 칸 worst 0.071/0.075/0.080/0.092,
+    // 망토가 덮인 칸 0.42, 갈색 튜닉으로 바뀐 칸 0.999 — 가장 가까운 불량과 2.8배 떨어진다.
         expect(
           deviation,
           `${entry.resourceId}: 칸 ${index} 의 색 분포가 원본에서 상대 ${(deviation * 100).toFixed(0)}% 벗어났다 = 다른 옷이다`
         ).toBeLessThan(0.15);
       }
     }
+  });
+
+  /**
+   * 이 계약이 재는 것은 **머리 영역의 색 구성**이고, 그것이 원본 뒷머리와 다르면 실패한다.
+   * "얼굴 검출기"가 아니다 — 고개를 돌리면 잡히는 이유는 머리카락 지분이 무너지기
+   * 때문이고(실측: 얼굴 구간 60~76 을 패킹하면 2.452, 주도 버킷은 `green` = 머리카락),
+   * 머리색과 살색 대비가 약한 배틀러에서는 같은 포즈가 덜 두드러질 수 있다. 실제로 이
+   * 계약이 실린 자산에서 잡아낸 결함은 머리띠에 생긴 **밝은 녹색 이물**이었다.
+   *
+   * 상한 1.0 의 두 방향 여유(같은 집계, 상단 30% 창):
+   *   - 알려진 불량 1.941 → 상한의 **1.94배 위**(`1.941 / 1.0`)
+   *   - 실린 칸 최악 0.665 → 상한의 **1.50배 아래**(`1.0 / 0.665`)
+   * 즉 상한은 불량과 실린 값 사이에 있고, 어느 쪽에도 붙어 있지 않다. 머리 버킷 지분이
+   * 작아(hero-04 머리의 녹색 2.9%) 상대편차가 본래 출렁이므로 전신 상한(0.15)보다
+   * 느슨할 수밖에 없다.
+   *
+   * 상한이 나중에 슬그머니 올라가는 것은 **아래 음성 픽스처 테스트**가 막는다.
+   */
+  it("모든 칸의 머리 영역 구성이 원본 뒷머리와 같다", () => {
+    for (const entry of BACK_IDLE) {
+      const source = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path.replace("/idle/", "/"))));
+      const referenceHead = headShares(source, 0, source.width, source.height);
+      const strip = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path)));
+      for (let index = 0; index < entry.frameCount; index += 1) {
+        const frame = headShares(strip, index, entry.cellWidth, entry.cellHeight);
+        const deviation = relativeDeviation(frame, referenceHead);
+        expect(
+          deviation,
+          `${entry.resourceId}: 칸 ${index} 의 머리가 원본과 다르다 (상대 ${deviation.toFixed(3)}) = 고개를 돌렸거나 머리 장식이 바뀌었다`
+        ).toBeLessThanOrEqual(HEAD_RELATIVE_CAP);
+      }
+    }
+  });
+
+  /**
+   * **음성 픽스처.** 실린 칸만 검사하면 상한을 2.0 으로 올려도 테스트가 통과한다 — 계약이
+   * 무엇을 떨어뜨리는지 CI 가 증명하지 못한다. 그래서 실제로 한 번 실렸던 결함 스트립
+   * (고개가 돌아 귀·볼이 보이고 머리띠에 녹색 이물이 있던 hero-04)을 픽스처로 고정한다.
+   *
+   * 상한은 `HEAD_RELATIVE_CAP` 하나를 양성·음성이 공유한다. 그 값을 픽스처 실측(1.941)
+   * 이상으로 올리면 아래 `toBeGreaterThan` 이 깨진다 — 양성 쪽만 고쳐 빠져나갈 수 없다.
+   * 동시에 **전신 색 계약은 이 픽스처를 통과한다**(0.125 < 0.15)는 것도 함께 못 박는다 —
+   * 그게 머리 계약을 따로 세운 이유다.
+   */
+  it("고개가 돌아간 옛 스트립을 머리 계약이 떨어뜨린다 — 전신 색 계약은 통과시킨다", () => {
+    const entry = BACK_IDLE.find((item) => item.resourceId === "generated-actor-hero-04-back");
+    if (!entry) throw new Error("hero-04 후면 항목이 없다 — 이 픽스처가 의미를 잃었다");
+    const source = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path.replace("/idle/", "/"))));
+    const defect = PNG.sync.read(
+      readFileSync(path.join(ROOT, "test", "fixtures", "battler-idle", "hero-04-back-head-turned.png"))
+    );
+    const referenceHead = headShares(source, 0, source.width, source.height);
+    const referenceBody = colorShares(source, 0, source.width, source.height);
+    let worstHead = 0;
+    let worstBody = 0;
+    for (let index = 0; index < entry.frameCount; index += 1) {
+      worstHead = Math.max(worstHead, relativeDeviation(headShares(defect, index, entry.cellWidth, entry.cellHeight), referenceHead));
+      worstBody = Math.max(worstBody, relativeDeviation(colorShares(defect, index, entry.cellWidth, entry.cellHeight), referenceBody));
+    }
+    // 실측값을 못 박는다. 범위(`> CAP`)만 보면 픽스처를 1.05 짜리로 바꿔치기해도 초록이고,
+    // 그다음 상한을 1.5 로 올리면 둘 다 살아남는다.
+    expect(worstHead, "픽스처의 머리 편차 실측").toBeCloseTo(HEAD_TURNED_FIXTURE.head, 2);
+    expect(worstBody, "픽스처의 전신 색 편차 실측").toBeCloseTo(HEAD_TURNED_FIXTURE.body, 2);
+    // 래칫: 상한을 픽스처 실측 이상으로 올리면 여기서 깨진다. 양성 테스트와 **같은 상수**를 본다.
+    expect(
+      worstHead,
+      `머리 편차 ${worstHead.toFixed(3)} 가 상한 ${HEAD_RELATIVE_CAP} 을 넘어야 한다 — 넘지 않으면 이 계약은 아무것도 막지 못한다`
+    ).toBeGreaterThan(HEAD_RELATIVE_CAP);
+    // 전신 색 계약만으로는 못 잡는다 — 이 비대칭이 머리 계약의 존재 이유다.
+    expect(worstBody, `전신 색 편차 ${worstBody.toFixed(3)} 는 0.15 를 넘지 않는다`).toBeLessThan(0.15);
   });
 
   it("인접한 모든 칸이 실제로 움직인다 — 한 쌍만 움직이는 정지화면을 막는다", () => {

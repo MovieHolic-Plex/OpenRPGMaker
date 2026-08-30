@@ -343,6 +343,9 @@ for (const slug of BACK_HEROES) {
       expect(observed.size, `프레임이 넘어가지 않는다 (${[...observed].join(", ")})`).toBeGreaterThan(1);
       const frameCount = head?.frames ?? 0;
       for (const value of observed) {
+        // 단위까지 본다. `parseFloat` 만 하면 `"0px"` 도 프레임 0 으로 통과해, 재생이 px 로
+        // 흐르는 회귀를 놓친다 — 이 티어의 산식은 백분율이어야 칸 경계에 떨어진다.
+        expect(value, `background-position-x 가 백분율이 아니다: ${value}`).toMatch(/^-?[\d.]+%$/);
         const percent = Number.parseFloat(value);
         const step = 100 / (frameCount - 1);
         const k = Math.round(percent / step);
