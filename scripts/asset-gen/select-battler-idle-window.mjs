@@ -68,8 +68,8 @@ function parseArgs(argv) {
   return args;
 }
 
-/** 프레임 파일을 인덱스로 읽는다. 파일명의 숫자를 인덱스로 쓴다(`f091.png` → 91). */
-function loadFrames(dir) {
+/** 프레임 파일을 인덱스로 읽는다. 파일명의 **마지막** 숫자 묶음을 인덱스로 쓴다(`hero-04-f091.png` → 91). */
+export function loadFrames(dir) {
   const frames = new Map();
   for (const file of readdirSync(dir).filter((name) => name.endsWith(".png")).sort()) {
     // **마지막** 숫자 묶음만 쓴다. 전부 이어 붙이면 `hero-04-f091.png` 가 4091 이 된다.
@@ -203,7 +203,16 @@ function main() {
   console.log(`탈락: 색 ${reasons.color} · 머리 ${reasons.head} · 모션 ${reasons.motion} · 이음매 ${reasons.seam}`);
   console.log(`근사 통과 ${survivors.length}개 → 상위 ${verified.length}개를 실제 패커로 재채점\n`);
   if (verified.length === 0) {
-    console.log(`통과 창이 없다(근사 통과 ${survivors.length}개). 클립 자체가 계약을 만족하지 못한다는 뜻이다.`);
+    // `--verify 0` 은 "재채점을 건너뛰라"는 뜻이다. 그걸 "통과 창이 없다"로 읽으면 오진이다.
+    if (survivors.length > 0) {
+      console.log(`근사 통과 후보 ${survivors.length}개가 있지만 재채점을 하지 않았다(--verify ${args.verify}).`);
+      console.log("근사 값은 권위가 없다 — `--verify 5` 이상으로 실제 패커 출력을 확인하라.");
+      for (const candidate of survivors.slice(0, 10)) {
+        console.log(`  ${label(candidate)}  --pick "${candidate.picks.join(",")}"`);
+      }
+      return;
+    }
+    console.log("통과 창이 없다(근사 통과 0개). 클립 자체가 계약을 만족하지 못한다는 뜻이다.");
     console.log("임계값을 낮추지 마라 — 프롬프트를 고쳐 다시 생성하거나 --pingpong-only 를 시도하라.");
     console.log(`판단 근거는 openwiki/battler-idle-playbook.md 를 보라.`);
     return;
@@ -275,4 +284,7 @@ function label(entry) {
   return `${entry.mode === "ping" ? "핑퐁" : "연속"} start=${entry.start} stride=${entry.stride}`;
 }
 
-main();
+// 직접 실행일 때만 돈다 — 테스트가 `loadFrames` 를 import 할 수 있어야 한다.
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
+}

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { PNG } from "pngjs";
 
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import nodePath from "node:path";
+
+import { loadFrames } from "../scripts/asset-gen/select-battler-idle-window.mjs";
 import {
   CONTRACT,
   cellChange,
@@ -32,6 +37,28 @@ function solid(width: number, height: number, rgba: [number, number, number, num
   return png;
 }
 
+/**
+ * **행마다 다른** 그림. 행 스트라이드 버그를 잡으려면 이런 픽스처여야 한다.
+ *
+ * 실측 교훈: 처음엔 "왼쪽 절반만 칠한" 픽스처를 썼는데 **모든 행이 같아서**, 행 스트라이드가
+ * 어긋나도 같은 그림끼리는 여전히 0 이 나올 수 있었다. 행 불변 이미지로는 행 오프셋 오류를
+ * 못 잡는다 — 대각선으로 값이 바뀌게 만든다.
+ */
+function diagonal(width: number, height: number): PNG {
+  const png = new PNG({ width, height });
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const i = (y * width + x) * 4;
+      // 행과 열이 모두 값에 들어가야 행이 밀렸을 때 값이 달라진다.
+      png.data[i] = (x * 7 + y * 53) % 256;
+      png.data[i + 1] = (y * 31) % 256;
+      png.data[i + 2] = (x * 13) % 256;
+      png.data[i + 3] = 255;
+    }
+  }
+  return png;
+}
+
 /** 왼쪽 절반만 칠한 프레임 — 알려진 비율의 차이를 만들기 위해. */
 function halfFilled(width: number, height: number, rgba: [number, number, number, number]): PNG {
   const png = solid(width, height, [0, 0, 0, 0]);
@@ -48,19 +75,28 @@ function halfFilled(width: number, height: number, rgba: [number, number, number
 }
 
 describe("배틀러 idle 지표 정본", () => {
-  it("같은 그림끼리는 변화가 0 이다 — 스트라이드 버그가 재발하면 여기서 깨진다", () => {
-    const frame = halfFilled(40, 30, [200, 40, 40, 255]);
-    const copy = halfFilled(40, 30, [200, 40, 40, 255]);
-    // 이 값이 0 이 아니면 프레임을 잘못 훑고 있다는 뜻이다. 그 버그는 모든 창을 모션
-    // 만점으로 보이게 만들어 사전 필터를 무력화한다.
-    expect(frameChange(frame, copy)).toBe(0);
+  it("행마다 다른 같은 그림끼리는 변화가 0 이다 — 행 스트라이드가 밀리면 깨진다", () => {
+    // 픽스처가 **행마다 달라야** 행 오프셋 오류가 값에 드러난다. 행 불변 이미지(예: 왼쪽
+    // 절반만 칠한 그림)로는 행이 밀려도 같은 값이 나와 버그를 놓친다.
+    expect(frameChange(diagonal(40, 30), diagonal(40, 30))).toBe(0);
   });
 
-  it("절반이 바뀌면 변화가 0.5 다 — 비율이 실제 픽셀 수와 맞는다", () => {
+  it("행이 한 줄 밀린 그림은 변화가 0 이 아니다 — 밀림을 실제로 감지한다", () => {
+    const base = diagonal(40, 30);
+    const shifted = new PNG({ width: 40, height: 30 });
+    // base 의 행 1..29 를 0..28 로 올려 붙인다 = 한 행 밀림.
+    for (let y = 0; y < 29; y += 1) {
+      base.data.copy(shifted.data, y * 40 * 4, (y + 1) * 40 * 4, (y + 2) * 40 * 4);
+    }
+    base.data.copy(shifted.data, 29 * 40 * 4, 0, 40 * 4);
+    expect(frameChange(base, shifted)).toBeGreaterThan(0.5);
+  });
+
+  it("전체가 바뀌면 변화가 1 이다 — 비율이 실제 픽셀 수와 맞는다", () => {
     const before = solid(40, 30, [0, 0, 0, 255]);
     const after = halfFilled(40, 30, [255, 255, 255, 255]);
-    // 왼쪽 절반은 검정→흰색(채널합 차 765 > 임계 24), 오른쪽 절반은 검정→투명.
-    // 오른쪽도 알파가 255→0 이라 차이로 잡히므로 전체가 바뀐다.
+    // 왼쪽 절반은 검정→흰색(채널합 차 765 > 임계 24), 오른쪽 절반은 알파 255→0.
+    // 양쪽 모두 임계를 넘으므로 1 이다 — 제목과 단언이 어긋나지 않게 적는다.
     expect(frameChange(before, after)).toBe(1);
   });
 
@@ -72,7 +108,7 @@ describe("배틀러 idle 지표 정본", () => {
 
   it("frameChange 와 cellChange 가 같은 임계값을 쓴다", () => {
     // 같은 두 그림을 (a) 두 장으로, (b) 한 스트립의 두 칸으로 주면 같은 값이 나와야 한다.
-    const left = halfFilled(20, 20, [10, 200, 10, 255]);
+    const left = diagonal(20, 20);
     const right = solid(20, 20, [10, 200, 10, 255]);
     const strip = new PNG({ width: 40, height: 20 });
     PNG.bitblt(left, strip, 0, 0, 20, 20, 0, 0);
@@ -103,5 +139,20 @@ describe("배틀러 idle 지표 정본", () => {
     expect(score.passes).toBe(false);
     expect(score.failures.join(" ")).toMatch(/모션/);
     expect(score.minStep).toBe(0);
+  });
+
+  it("프레임 인덱스는 파일명의 마지막 숫자 묶음이다 — 슬러그의 숫자를 이어 붙이지 않는다", () => {
+    // 실측 버그: 숫자를 전부 이어 붙여 `hero-04-f091.png` 가 4091 이 됐다. 그러면 창 탐색이
+    // 존재하지 않는 인덱스를 찾아 아무 후보도 못 만든다.
+    const dir = mkdtempSync(nodePath.join(tmpdir(), "frames-"));
+    try {
+      const png = new PNG({ width: 4, height: 4 });
+      for (const name of ["hero-04-f091.png", "hero-04-f092.png"]) {
+        writeFileSync(nodePath.join(dir, name), PNG.sync.write(png));
+      }
+      expect([...loadFrames(dir).keys()].sort((a, b) => a - b)).toEqual([91, 92]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
