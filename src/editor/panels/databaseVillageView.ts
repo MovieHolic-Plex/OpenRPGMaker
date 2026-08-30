@@ -12,17 +12,29 @@
 
 import { field, selectField, textField } from "@/editor/panels/databaseControls";
 import {
+  HOUSE_SHAPE_PRESETS,
   blankPresetRecord,
   blankTemplateRecord,
   duplicatePresetRecord,
   duplicateTemplateRecord,
   footprintTileCount,
+  houseTemplateGroupLabel,
+  moveWing,
   nextVillageId,
   presetRecordFromArchetype,
+  resizeWing,
   templateFootprint,
   templateRecordFromDef,
   tightenTemplateBounds,
 } from "@/editor/panels/databaseVillageModel";
+import {
+  createHousePreview,
+  createMapShot,
+  houseKitTileset,
+  villageArchetypeShotUrl,
+  type HousePreviewSize,
+} from "@/editor/panels/villageHousePreview";
+import { PRESET_PREVIEW_SIZE, buildPresetPreview } from "@/editor/panels/villagePresetPreview";
 import {
   detailHero,
   detailPane,
@@ -58,7 +70,7 @@ import {
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { store } from "@/project/store";
 import type { Project, VillageHouseTemplateRecord, VillageLayoutPresetRecord } from "@/project/types";
-import { el } from "@/util/dom";
+import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import "@/styles/database/modern/village.css";
 
@@ -87,6 +99,8 @@ let selectedKind: VillageKind = "template";
 let selectedTemplateId = "";
 let selectedPresetId = "";
 let villageSearch = "";
+/** 프리셋 미리보기 씨앗. 랜덤이 아니라 세는 값이다 — 같은 씨앗은 늘 같은 배치를 낸다. */
+let presetPreviewSeed = 7;
 
 export function renderVillageTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
@@ -105,15 +119,19 @@ export function renderVillageTab(host: HTMLElement, rerender: () => void): void 
       onInput: (value) => { villageSearch = value; rerender(); },
     }),
     chips: kindChips(templates.length, presets.length, rerender),
-    rows: selectedKind === "template" ? templateRows(templates, rerender) : presetRows(presets, rerender),
+    rows: selectedKind === "template" ? templateRows(project, templates, rerender) : presetRows(presets, rerender),
     empty: listEmpty(templates.length, presets.length, rerender),
     toolbar: kindToolbar(templates, presets, rerender),
     testid: "db-village-list-pane",
   });
 
-  const detail = selectedKind === "template"
-    ? templateDetail(project, templates, rerender)
-    : presetDetail(project, presets, rerender);
+  // 빈 프로젝트에서 「만들어 보세요」 빈 판만 뜨면 사용자는 무엇을 만들 수 있는지조차
+  // 모른다 — 아무것도 없을 때는 예시(원형 6갈래 · 집 모양 10꼴)를 먼저 보여준다.
+  const detail = templates.length === 0 && presets.length === 0
+    ? startScreen(project, rerender)
+    : selectedKind === "template"
+      ? templateDetail(project, templates, rerender)
+      : presetDetail(project, presets, rerender);
 
   host.append(workspaceShell({ list, detail, legacyClass: "db-village-workspace", testid: "db-village-workspace" }));
 }
@@ -153,7 +171,11 @@ function overridesBuiltIn(id: string): boolean {
   return HOUSE_TEMPLATE_DEFS.some((def) => def.id === id);
 }
 
-function templateRows(records: readonly VillageHouseTemplateRecord[], rerender: () => void): HTMLElement[] {
+function templateRows(
+  project: Project,
+  records: readonly VillageHouseTemplateRecord[],
+  rerender: () => void,
+): HTMLElement[] {
   const query = villageSearch.trim().toLowerCase();
   return records.flatMap((record, index) => {
     if (query && !matches(record.name, record.id, query)) return [];
@@ -171,6 +193,8 @@ function templateRows(records: readonly VillageHouseTemplateRecord[], rerender: 
       number: index + 1,
       active: record.id === selectedTemplateId,
       title: titleParts.join(" · "),
+      // 목록에서도 그림으로 고르게 한다 — 이름만 있으면 「my-house_3」 중 어느 게 ㄱ자인지 모른다.
+      thumb: rowThumb(project, record),
       testid: `db-village-template-row-${record.id}`,
       dataset: {
         villageTemplateId: record.id,
@@ -254,6 +278,98 @@ function kindToolbar(
 }
 
 // ---------------------------------------------------------------------------
+// 시작 화면
+//
+// 레코드가 하나도 없을 때만 뜬다. 예전에는 분류마다 「만들어 보세요」 빈 판이 떴고,
+// 예시(원형 6갈래)는 프리셋 분류로 들어가야 보였다 — 첫 화면이 무엇을 만들 수 있는지
+// 알려주지 않으면 빈 프로젝트에서는 시작할 방법이 없다.
+//
+// 빈 상태 판을 **없애지 않고 감싼다**: `db-village-template-blank` / `db-village-preset-blank`
+// 는 여기 안에 그대로 남는다.
+// ---------------------------------------------------------------------------
+
+function startScreen(project: Project, rerender: () => void): HTMLElement {
+  return detailPane({
+    hero: detailHero({
+      eyebrow: "마을",
+      title: "예시부터 골라 보세요",
+      subtitle: "여기서 만든 값은 마을 시공(author_village)이 그대로 읽습니다. 아직 아무것도 없어도 내장 형태와 원형은 이미 쓰이는 중입니다 — 고쳐 쓰고 싶은 것만 여기로 가져옵니다.",
+      tags: [`내장 집 형태 ${HOUSE_TEMPLATE_DEFS.length}종`, `마을 원형 ${VILLAGE_ARCHETYPES.length}갈래`],
+      testid: "db-village-start-hero",
+    }),
+    body: [
+      el("div", {
+        class: "db-ws-stack db-village-inspector",
+        children: [
+          span(sectionCard({
+            title: "예시 마을로 시작",
+            hint: "원형을 고르면 그 분위기 값이 든 배치 프리셋이 생깁니다",
+            children: [
+              emptyState({
+                icon: "⌖",
+                title: "배치 프리셋을 만들어 보세요",
+                body: "길 폭·광장 모양·마당 스타일 같은 값을 한 묶음으로 저장합니다. AI 에게 “이 프리셋으로 마을 깔아 줘”라고 하면 그대로 쓰입니다.",
+                action: {
+                  label: "+ 빈 프리셋 추가",
+                  kind: "primary",
+                  testid: "db-village-preset-blank-create",
+                  onClick: () => { selectedKind = "preset"; createRecord(rerender); },
+                },
+                compact: true,
+                testid: "db-village-preset-blank",
+              }),
+              ...archetypeGallery(rerender),
+            ],
+            testid: "db-village-start-archetypes",
+          })),
+          span(sectionCard({
+            title: "집 모양으로 시작",
+            hint: "고른 꼴로 집 형태 레코드가 생깁니다. 그림은 실제 시공 타일입니다",
+            children: [
+              emptyState({
+                icon: "⌂",
+                title: "집 형태를 만들어 보세요",
+                body: "내장 형태를 복제해서 시작하면 규약을 어길 일이 없습니다. 폭 3~8칸, 높이 4~24칸 안에서 날개를 붙입니다.",
+                action: {
+                  label: "내장에서 복제",
+                  kind: "primary",
+                  testid: "db-village-clone-builtin",
+                  onClick: () => cloneBuiltIn("rect-large", rerender),
+                },
+                compact: true,
+                testid: "db-village-template-blank",
+              }),
+              ...startShapePalette(project, rerender),
+            ],
+            testid: "db-village-start-shapes",
+          })),
+        ],
+      }),
+    ],
+    testid: "db-village-detail-pane",
+  });
+}
+
+/** 시작 화면의 모양 팔레트 — 고른 꼴로 **새 레코드**를 만든다(편집 중 레코드를 고치는 팔레트와 다르다). */
+function startShapePalette(project: Project, rerender: () => void): HTMLElement[] {
+  const cards = HOUSE_SHAPE_PRESETS.flatMap((preset) => {
+    const def = HOUSE_TEMPLATE_DEFS.find((entry) => entry.id === preset.defId);
+    if (!def) return [];
+    return [builtInCard(project, def, {
+      testid: `db-village-start-shape-${def.id}`,
+      onPick: () => cloneBuiltIn(def.id, rerender),
+    })];
+  });
+  return [
+    el("div", { class: "db-village-shape-grid", dataset: { testid: "db-village-start-shape-palette" }, children: cards }),
+    el("p", {
+      class: "db-ws-usage",
+      text: "고른 꼴을 복제해 내 형태로 만듭니다. 내장 형태는 그대로 남고, 복제본은 카탈로그에 더해집니다.",
+    }),
+  ];
+}
+
+// ---------------------------------------------------------------------------
 // 집 형태 상세
 // ---------------------------------------------------------------------------
 
@@ -301,7 +417,7 @@ function templateDetail(
         kitName,
         ...(override ? ["내장 덮음"] : []),
       ],
-      media: footprintPreview(record),
+      media: housePicture(project, record, "hero", { testid: "db-village-template-shot" }),
       testid: "db-village-template-hero",
     }),
     body: [
@@ -339,6 +455,12 @@ function templateDetail(
             children: templateBasicFields(record, records, rerender),
             testid: "db-village-template-basics",
           }),
+          span(sectionCard({
+            title: "모양 고르기",
+            hint: "누르면 그 꼴로 날개가 바뀝니다 — 숫자를 채우기 전에 바닥 꼴부터 고릅니다",
+            children: shapePalette(project, record, rerender),
+            testid: "db-village-template-shapes",
+          })),
           sectionCard({
             title: "크기와 재료",
             hint: "폭 3~8 · 높이 4~24칸",
@@ -347,16 +469,16 @@ function templateDetail(
           }),
           span(sectionCard({
             title: "날개",
-            hint: "바운딩 박스 안에 붙이는 직사각형들. 합집합이 집 바닥이 됩니다",
+            hint: "격자에서 끌어 옮기고 변을 끌어 늘립니다. 합집합이 집 바닥이 됩니다",
             children: templateWingFields(record, rerender),
             testid: "db-village-template-wings",
           })),
-          sectionCard({
+          span(sectionCard({
             title: "내장 형태에서 값 가져오기",
-            hint: "값을 베껴 옵니다 — 이후 내장이 바뀌어도 따라 변하지 않습니다",
-            children: builtInImportFields(record, rerender),
+            hint: `내장 ${HOUSE_TEMPLATE_DEFS.length}종. 값을 베껴 옵니다 — 이후 내장이 바뀌어도 따라 변하지 않습니다`,
+            children: builtInImportFields(project, record, rerender),
             testid: "db-village-template-import",
-          }),
+          })),
         ],
       }),
     ],
@@ -458,7 +580,7 @@ function templateSizeFields(record: VillageHouseTemplateRecord, rerender: () => 
 
 function templateWingFields(record: VillageHouseTemplateRecord, rerender: () => void): HTMLElement[] {
   const wings = record.wings ?? [];
-  const rows = wings.map((wing, index) => el("div", {
+  const numberRows = wings.map((wing, index) => el("div", {
     class: "db-village-wing-row",
     dataset: { testid: `db-village-wing-${index}` },
     children: [
@@ -484,7 +606,7 @@ function templateWingFields(record: VillageHouseTemplateRecord, rerender: () => 
   }));
 
   return [
-    el("div", { class: "db-village-wing-list", dataset: { testid: "db-village-wings" }, children: rows }),
+    footprintEditor(record, rerender),
     el("div", {
       class: "db-village-wing-actions",
       children: [
@@ -528,11 +650,237 @@ function templateWingFields(record: VillageHouseTemplateRecord, rerender: () => 
         }),
       ],
     }),
-    footprintPreview(record, { large: true }),
     el("p", {
       class: "db-ws-usage",
       // 하한을 문장에 손으로 박으면 규약이 바뀔 때 화면만 거짓말을 한다 — 상수에서 뽑는다.
-      text: `좌표는 집 왼쪽 위를 (0,0) 으로 하는 상대 좌표입니다. 날개는 최소 ${VILLAGE_RANGE.wingW.min}×${VILLAGE_RANGE.wingH.min}칸이고 바운딩 박스를 넘을 수 없습니다. 세로로는 한 열이 이어서 ${minWingRun(record)}칸 이상이어야 벽과 지붕이 들어갑니다.`,
+      text: `날개를 끌어 옮기고 변을 끌어 늘립니다. 키보드로는 날개를 고른 뒤 화살표(이동) · Shift+화살표(크기)입니다. 날개는 최소 ${VILLAGE_RANGE.wingW.min}×${VILLAGE_RANGE.wingH.min}칸이고 바운딩 박스를 넘을 수 없습니다. 세로로는 한 열이 이어서 ${minWingRun(record)}칸 이상이어야 벽과 지붕이 들어갑니다.`,
+    }),
+    // 숫자칸은 없애지 않고 접어 둔다 — 정확한 값을 박아야 할 때가 있고, 격자 드래그는
+    // 「대충 이 모양」까지만 빠르다.
+    advancedFold("숫자로 고치기", "db-village-wing-numbers", [
+      el("div", { class: "db-village-wing-list", dataset: { testid: "db-village-wings" }, children: numberRows }),
+      el("p", {
+        class: "db-ws-usage",
+        text: "좌표는 집 왼쪽 위를 (0,0) 으로 하는 상대 좌표입니다.",
+      }),
+    ]),
+  ];
+}
+
+/**
+ * 격자 조작면. 날개마다 절대 배치 사각형 + 변 손잡이 8개를 얹는다.
+ *
+ * 규약 클램프는 `moveWing`/`resizeWing`(순수 함수)이 전부 끝낸다 — 드래그로는 애초에
+ * 규약을 어길 수 없게 만드는 편이 어긴 뒤 안내문을 띄우는 것보다 낫다.
+ *
+ * 드래그 중에는 store 를 건드리지 않는다. 한 칸 움직일 때마다 커밋하면 되돌리기 스택이
+ * 수십 개로 불고, rerender 가 조작 중인 노드를 DOM 에서 떼어내 포인터가 끊긴다.
+ */
+function footprintEditor(record: VillageHouseTemplateRecord, rerender: () => void): HTMLElement {
+  const cols = Math.max(1, Math.trunc(record.w) || 1);
+  const rows = Math.max(1, Math.trunc(record.h) || 1);
+  const wings = (record.wings ?? []).map((wing) => ({ ...wing }));
+  const status = el("p", { class: "db-village-grid-status", dataset: { testid: "db-village-grid-status" } });
+  const boxes: HTMLElement[] = [];
+
+  const grid = el("div", {
+    // 클래스는 `db-village-grid` 하나만 쓴다 — 예전 격자의 `.db-village-footprint-large`
+    // 는 gap·padding 을 넣는데, 드래그가 `clientWidth / 열 수` 로 칸 크기를 재므로
+    // 여백이 끼면 좌표가 어긋난다. testid 는 그 상자를 가리켜야 하므로 그대로 둔다.
+    class: "db-village-grid",
+    attrs: { role: "group", "aria-label": `날개 배치 격자 ${cols}×${rows}칸` },
+    dataset: { testid: "db-village-footprint-large" },
+    children: Array.from({ length: cols * rows }, () => el("span", { class: "db-village-grid-cell" })),
+  });
+  grid.style.setProperty("--db-village-cols", String(cols));
+  grid.style.setProperty("--db-village-rows", String(rows));
+
+  /** 화면만 갱신한다(드래그 중). 커밋은 포인터를 놓을 때 한 번. */
+  const paintLive = (next: readonly { x: number; y: number; w: number; h: number }[]): void => {
+    next.forEach((wing, index) => {
+      const box = boxes[index];
+      if (!box) return;
+      box.style.setProperty("--db-village-wing-x", String(wing.x));
+      box.style.setProperty("--db-village-wing-y", String(wing.y));
+      box.style.setProperty("--db-village-wing-w", String(wing.w));
+      box.style.setProperty("--db-village-wing-h", String(wing.h));
+      box.setAttribute("aria-label", wingLabel(index, wing));
+    });
+    const resolved = templateFromRecord({ ...record, wings: [...next] });
+    status.textContent = "reason" in resolved ? `규약 위반: ${resolved.reason}` : "규약 통과";
+    status.dataset.valid = "reason" in resolved ? "false" : "true";
+  };
+
+  const commit = (next: readonly { x: number; y: number; w: number; h: number }[]): void => {
+    recordCoalescedSnapshot(`village-wing-drag:${record.id}`, "날개 배치 변경");
+    patchTemplate(record.id, () => ({ wings: next.map((wing) => ({ ...wing })) }));
+    rerender();
+  };
+
+  /** 격자 한 칸의 픽셀 크기. 레이아웃이 없는 환경(테스트)에서는 0 이라 드래그가 안 돈다. */
+  const cellSize = (): { readonly x: number; readonly y: number } => ({
+    x: grid.clientWidth / cols,
+    y: grid.clientHeight / rows,
+  });
+
+  wings.forEach((wing, index) => {
+    // 손잡이는 포인터 전용이다 — 8개마다 탭 정지점을 만들면 키보드 사용자가 격자를
+    // 지나갈 수 없다. 키보드 조작은 날개 상자 자체가 받는다.
+    const handles = WING_HANDLES.map(([name, edges]) => ({
+      edges,
+      node: el("span", {
+        class: `db-village-handle is-${name}`,
+        attrs: { "aria-hidden": "true" },
+        dataset: { testid: `db-village-wing-handle-${index}-${name}` },
+      }),
+    }));
+    const box = el("div", {
+      class: "db-village-wing-box",
+      attrs: { role: "button", tabindex: "0", "aria-label": wingLabel(index, wing) },
+      dataset: { testid: `db-village-wing-box-${index}` },
+      children: [
+        el("span", { class: "db-village-wing-tag", text: `#${index + 1}`, attrs: { "aria-hidden": "true" } }),
+        ...handles.map((handle) => handle.node),
+      ],
+    });
+    box.style.setProperty("--db-village-wing-x", String(wing.x));
+    box.style.setProperty("--db-village-wing-y", String(wing.y));
+    box.style.setProperty("--db-village-wing-w", String(wing.w));
+    box.style.setProperty("--db-village-wing-h", String(wing.h));
+    boxes.push(box);
+
+    const startDrag = (event: PointerEvent, edges: readonly ("n" | "s" | "e" | "w")[]): void => {
+      const cell = cellSize();
+      if (!(cell.x > 0) || !(cell.y > 0)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const originX = event.clientX;
+      const originY = event.clientY;
+      const base = wings.map((entry) => ({ ...entry }));
+      let last = base;
+      let steps = "";
+      const target = event.currentTarget as HTMLElement;
+      if (typeof target.setPointerCapture === "function") target.setPointerCapture(event.pointerId);
+
+      const onMove = (move: PointerEvent): void => {
+        const dx = Math.round((move.clientX - originX) / cell.x);
+        const dy = Math.round((move.clientY - originY) / cell.y);
+        const key = `${dx},${dy}`;
+        if (key === steps) return;
+        steps = key;
+        let next = base;
+        if (edges.length === 0) {
+          next = moveWing({ ...record, wings: base }, index, dx, dy);
+        } else {
+          for (const edge of edges) {
+            const delta = edge === "n" || edge === "s" ? dy : dx;
+            next = resizeWing({ ...record, wings: next }, index, edge, delta);
+          }
+        }
+        last = next;
+        paintLive(next);
+      };
+      const onEnd = (): void => {
+        target.removeEventListener("pointermove", onMove);
+        target.removeEventListener("pointerup", onEnd);
+        target.removeEventListener("pointercancel", onEnd);
+        commit(last);
+      };
+      target.addEventListener("pointermove", onMove);
+      target.addEventListener("pointerup", onEnd);
+      target.addEventListener("pointercancel", onEnd);
+    };
+
+    box.addEventListener("pointerdown", (event) => startDrag(event as PointerEvent, []));
+    for (const handle of handles) {
+      handle.node.addEventListener("pointerdown", (event) => startDrag(event as PointerEvent, handle.edges));
+    }
+    box.addEventListener("keydown", (event) => {
+      const step = ARROW_STEPS[(event as KeyboardEvent).key];
+      if (!step) return;
+      event.preventDefault();
+      const source = { ...record, wings };
+      if ((event as KeyboardEvent).shiftKey) {
+        // 오른쪽·아래 변만 키보드로 옮긴다 — 이동과 합치면 어떤 사각형이든 만들 수 있다.
+        const edge = step.x !== 0 ? "e" : "s";
+        commit(resizeWing(source, index, edge, step.x !== 0 ? step.x : step.y));
+        return;
+      }
+      commit(moveWing(source, index, step.x, step.y));
+    });
+    grid.append(box);
+  });
+
+  paintLive(wings);
+  return el("div", { class: "db-village-grid-wrap", children: [grid, status] });
+}
+
+/** 손잡이 이름 → 이 손잡이가 미는 변. 모서리는 두 변을 한 번에 민다. */
+const WING_HANDLES: readonly (readonly [string, readonly ("n" | "s" | "e" | "w")[]])[] = [
+  ["n", ["n"]], ["s", ["s"]], ["e", ["e"]], ["w", ["w"]],
+  ["nw", ["n", "w"]], ["ne", ["n", "e"]], ["sw", ["s", "w"]], ["se", ["s", "e"]],
+];
+
+const ARROW_STEPS: Readonly<Record<string, { readonly x: number; readonly y: number }>> = {
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+};
+
+function wingLabel(index: number, wing: { x: number; y: number; w: number; h: number }): string {
+  return `날개 ${index + 1} — 위치 ${wing.x},${wing.y} 크기 ${wing.w}×${wing.h}칸. 화살표로 이동, Shift+화살표로 크기 변경`;
+}
+
+/**
+ * 접기 — `<details>` 를 쓰지 않는다. Chromium `::details-content` 가 flex 스크롤 자식을
+ * 무력화하는 기왕의 함정이 있고, 무엇보다 닫혀 있어도 자식이 DOM 에 남아야 한다.
+ */
+function advancedFold(label: string, testid: string, children: readonly HTMLElement[]): HTMLElement {
+  const body = el("div", { class: "db-village-fold-body", children: [...children] });
+  body.hidden = true;
+  const toggle = el("button", {
+    class: "db-village-fold-toggle",
+    attrs: { type: "button", "aria-expanded": "false" },
+    dataset: { testid: `${testid}-toggle` },
+    children: [
+      el("span", { class: "db-village-fold-caret", text: "▸", attrs: { "aria-hidden": "true" } }),
+      el("span", { text: label }),
+    ],
+  });
+  toggle.addEventListener("click", () => {
+    const open = body.hidden;
+    body.hidden = !open;
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    const caret = toggle.querySelector<HTMLElement>(".db-village-fold-caret");
+    if (caret) caret.textContent = open ? "▾" : "▸";
+  });
+  return el("div", { class: "db-village-fold", dataset: { testid }, children: [toggle, body] });
+}
+
+/**
+ * 모양 팔레트 — 숫자를 채우기 전에 바닥 꼴부터 고르게 한다. 값은 내장 정의를 그대로
+ * 베끼므로 「고르자마자 규약 위반」이 생길 수 없다(내장 34종 왕복 테스트가 그 불변식을 지킨다).
+ */
+function shapePalette(
+  project: Project,
+  record: VillageHouseTemplateRecord,
+  rerender: () => void,
+): HTMLElement[] {
+  const cards = HOUSE_SHAPE_PRESETS.flatMap((preset) => {
+    const def = HOUSE_TEMPLATE_DEFS.find((entry) => entry.id === preset.defId);
+    if (!def) return [];
+    return [builtInCard(project, def, {
+      testid: `db-village-shape-${def.id}`,
+      active: record.clonedFrom === def.id,
+      onPick: () => applyBuiltInValues(record, def, rerender),
+    })];
+  });
+  return [
+    el("div", { class: "db-village-shape-grid", dataset: { testid: "db-village-shape-palette" }, children: cards }),
+    el("p", {
+      class: "db-ws-usage",
+      text: "모양을 고르면 날개·크기·층수·재료가 그 형태의 값으로 바뀝니다. 이름·ID·메모는 그대로 남습니다.",
     }),
   ];
 }
@@ -582,44 +930,139 @@ function footprintPreview(record: VillageHouseTemplateRecord, options: { readonl
   return host;
 }
 
-function builtInImportFields(record: VillageHouseTemplateRecord, rerender: () => void): HTMLElement[] {
-  const select = el("select", { dataset: { testid: "db-village-import-source" } }) as HTMLSelectElement;
+// ---------------------------------------------------------------------------
+// 그림
+//
+// 이 탭이 오래 어려웠던 이유는 값이 아니라 그림이 없어서였다. 날개 x/y/w/h 를 숫자로
+// 넣어도 그게 ㄱ자인지 ㄷ자인지 알 길이 없었고, 추상 격자는 바닥 꼴만 알려주고 층수·
+// 재료·창문은 못 보여줬다. 그래서 실제 시공 함수로 타일을 찍어 보여준다.
+//
+// 재료(합본 마을 칩셋)가 없는 프로젝트도 있으므로 그림은 **덧붙임**이다 — 못 그리면
+// 예전 추상 격자로 내려앉고, 탭 기능은 하나도 잃지 않는다.
+// ---------------------------------------------------------------------------
+
+/** 히어로/카드 자리의 집 그림. 재료를 못 구하면 추상 격자로 내려앉는다. */
+function housePicture(
+  project: Project,
+  record: VillageHouseTemplateRecord,
+  size: HousePreviewSize,
+  options: { readonly testid?: string; readonly label?: string } = {},
+): HTMLElement {
+  if (!houseKitTileset(project)) return footprintPreview(record, { large: size === "hero" });
+  return createHousePreview(record, project, size, options);
+}
+
+/** 목록 행 32px 썸네일. `listRow` 가 `db-list-thumb` 를 자기 노드에 붙이므로 감싼다. */
+function rowThumb(project: Project, record: VillageHouseTemplateRecord): HTMLElement | undefined {
+  if (!houseKitTileset(project)) return undefined;
+  return el("span", {
+    class: "db-village-row-thumb",
+    children: [createHousePreview(record, project, "card", {
+      testid: `db-village-template-thumb-${record.id}`,
+      label: `${record.name || record.id} 집 그림`,
+    })],
+  });
+}
+
+/** 내장 정의를 그림 카드로. 카드 = 그림 + 이름 + 치수. 누르면 그 값을 그대로 가져온다. */
+function builtInCard(
+  project: Project,
+  def: (typeof HOUSE_TEMPLATE_DEFS)[number],
+  options: { readonly testid: string; readonly active?: boolean; readonly onPick: () => void },
+): HTMLElement {
+  const record = templateRecordFromDef(def, def.id, def.name);
+  const marks = [`${def.w}×${def.h}`];
+  if (def.stories && def.stories > 1) marks.push(`${def.stories}층`);
+  if (def.lowWall) marks.push("낮은 벽");
+  if (def.roofDeck) marks.push("옥상");
+  return el("button", {
+    class: `db-village-shape-card${options.active ? " active" : ""}`,
+    attrs: {
+      type: "button",
+      title: `${def.name} · ${def.id} · ${def.w}×${def.h}칸`,
+      "aria-pressed": options.active ? "true" : "false",
+    },
+    dataset: { testid: options.testid, villageDefId: def.id },
+    on: { click: options.onPick },
+    children: [
+      el("span", {
+        class: "db-village-shape-media",
+        children: [housePicture(project, record, "card", {
+          testid: `${options.testid}-shot`,
+          label: `${def.name} 집 그림`,
+        })],
+      }),
+      el("span", { class: "db-village-shape-name", text: def.name }),
+      el("span", { class: "db-village-shape-meta", text: marks.join(" · ") }),
+    ],
+  });
+}
+
+/**
+ * 내장 34종 그림 갤러리. 예전에는 `직사각 대 (8×7) · rect-large` 같은 글자 목록이었다 —
+ * 이름으로는 무엇이 다른지 알 수 없어서 사실상 고를 수 없는 목록이었다.
+ *
+ * 묶음 이름은 id 접두사에서 유도한다(`houseTemplateGroupLabel`). 카탈로그 파일에 분류
+ * 필드를 새로 넣으면 `houseTemplates.baseline.json` 고정 덤프가 흔들린다.
+ */
+function builtInImportFields(
+  project: Project,
+  record: VillageHouseTemplateRecord,
+  rerender: () => void,
+): HTMLElement[] {
+  const groups = new Map<string, (typeof HOUSE_TEMPLATE_DEFS)[number][]>();
   for (const def of HOUSE_TEMPLATE_DEFS) {
-    select.append(el("option", { attrs: { value: def.id }, text: `${def.name} (${def.w}×${def.h}) · ${def.id}` }));
+    const label = houseTemplateGroupLabel(def.id);
+    const bucket = groups.get(label);
+    if (bucket) bucket.push(def);
+    else groups.set(label, [def]);
   }
-  select.value = record.clonedFrom ?? HOUSE_TEMPLATE_DEFS[0]!.id;
   return [
-    field("내장 형태", select),
     el("div", {
-      class: "db-village-wing-actions",
-      children: [el("button", {
-        class: "db-ws-btn db-ws-btn-ghost",
-        text: "값 가져오기",
-        attrs: { type: "button" },
-        dataset: { testid: "db-village-import-apply" },
-        on: {
-          click: () => {
-            const def = HOUSE_TEMPLATE_DEFS.find((entry) => entry.id === select.value);
-            if (!def) return;
-            recordProjectSnapshot("내장 형태 값 가져오기");
-            const baked = templateRecordFromDef(def, record.id, record.name);
-            patchTemplate(record.id, () => ({
-              w: baked.w,
-              h: baked.h,
-              stories: baked.stories,
-              lowWall: baked.lowWall,
-              kitId: baked.kitId,
-              roofDeck: baked.roofDeck,
-              wings: baked.wings,
-              clonedFrom: def.id,
-            }));
-            toast(`“${def.name}” 값을 가져왔습니다.`, "ok");
-            rerender();
-          },
-        },
-      })],
+      class: "db-village-import-gallery",
+      dataset: { testid: "db-village-import-gallery" },
+      children: [...groups].map(([label, defs]) => el("div", {
+        class: "db-village-import-group",
+        children: [
+          el("h5", { class: "db-village-import-group-title", text: label }),
+          el("div", {
+            class: "db-village-shape-grid",
+            children: defs.map((def) => builtInCard(project, def, {
+              testid: `db-village-import-${def.id}`,
+              active: record.clonedFrom === def.id,
+              onPick: () => applyBuiltInValues(record, def, rerender),
+            })),
+          }),
+        ],
+      })),
+    }),
+    el("p", {
+      class: "db-ws-usage",
+      text: "누르면 그 형태의 날개·크기·층수·재료를 그대로 베껴 옵니다. ID 가 내장과 다르면 카탈로그에 더해지고, 같으면 내장을 덮습니다.",
     }),
   ];
+}
+
+/** 내장 정의의 기하·재료만 레코드에 붓는다. 이름·ID·메모는 사용자 것이므로 건드리지 않는다. */
+function applyBuiltInValues(
+  record: VillageHouseTemplateRecord,
+  def: (typeof HOUSE_TEMPLATE_DEFS)[number],
+  rerender: () => void,
+): void {
+  recordProjectSnapshot("내장 형태 값 가져오기");
+  const baked = templateRecordFromDef(def, record.id, record.name);
+  patchTemplate(record.id, () => ({
+    w: baked.w,
+    h: baked.h,
+    stories: baked.stories,
+    lowWall: baked.lowWall,
+    kitId: baked.kitId,
+    roofDeck: baked.roofDeck,
+    wings: baked.wings,
+    clonedFrom: def.id,
+  }));
+  toast(`“${def.name}” 값을 가져왔습니다.`, "ok");
+  rerender();
 }
 
 // ---------------------------------------------------------------------------
@@ -690,6 +1133,12 @@ function presetDetail(
               testid: "db-village-preset-warning",
             }))]
             : []),
+          span(sectionCard({
+            title: "미리보기",
+            hint: `실제 시공기를 ${PRESET_PREVIEW_SIZE}×${PRESET_PREVIEW_SIZE} 초안에 돌려 그립니다 — 화면이 상상해 그리지 않습니다`,
+            children: presetPreviewFields(project, record),
+            testid: "db-village-preset-preview-card",
+          })),
           sectionCard({
             title: "기본 정보",
             hint: "ID 는 AI 가 지목하는 이름입니다",
@@ -732,6 +1181,75 @@ function presetDetail(
     ],
     testid: "db-village-detail-pane",
   });
+}
+
+/**
+ * 프리셋 값(길 폭·광장 모양·마당 스타일…)은 서로 얽혀 있어서 항목별 설명을 읽어도 결과가
+ * 그려지지 않는다. 그래서 진짜 시공기를 돌려 보여준다.
+ *
+ * 버튼을 눌러야 돈다: 40×40 한 판은 도로 탐색까지 도는 무거운 계산이라 값을 고칠 때마다
+ * 자동으로 돌리면 select 를 한 번 바꿀 때마다 화면이 멈춘다. 초안(structuredClone)에서만
+ * 돌기 때문에 실제 프로젝트에는 맵이 생기지 않는다.
+ */
+function presetPreviewFields(project: Project, record: VillageLayoutPresetRecord): HTMLElement[] {
+  const stage = el("div", {
+    class: "db-village-preset-stage",
+    dataset: { testid: "db-village-preset-preview", previewState: "idle" },
+  });
+  const note = el("p", {
+    class: "db-ws-usage",
+    dataset: { testid: "db-village-preset-preview-note" },
+    text: "「미리보기 만들기」를 누르면 이 프리셋으로 마을 한 판을 시공해 그림으로 보여줍니다. 초안에서만 돌기 때문에 프로젝트에는 맵이 생기지 않습니다.",
+  });
+
+  const run = (): void => {
+    clearChildren(stage);
+    const result = buildPresetPreview(project, record.id, presetPreviewSeed);
+    if (!result.ok) {
+      stage.dataset.previewState = "none";
+      note.textContent = `미리보기를 만들지 못했습니다 — ${result.reason}`;
+      return;
+    }
+    stage.dataset.previewState = "ready";
+    stage.append(createMapShot(result.map, result.tileset, {
+      label: `${record.name || record.id} 마을 미리보기`,
+      testid: "db-village-preset-shot",
+      // 미리보기 판은 정사각(`PRESET_PREVIEW_SIZE`)이다 — 기본 4:3 캔버스에 그리면
+      // 좌우에 빈 띠가 남아 그림이 작아 보인다.
+      height: 320,
+    }));
+    const warn = result.warnings.length > 0 ? ` · 경고 ${result.warnings.length}건: ${result.warnings.join(" / ")}` : "";
+    note.textContent = `씨앗 ${presetPreviewSeed} · 집 ${result.housesBuilt}채${warn}`;
+  };
+
+  return [
+    stage,
+    el("div", {
+      class: "db-village-wing-actions",
+      children: [
+        el("button", {
+          class: "db-ws-btn db-ws-btn-primary",
+          text: "미리보기 만들기",
+          attrs: { type: "button" },
+          dataset: { testid: "db-village-preset-preview-run" },
+          on: { click: run },
+        }),
+        el("button", {
+          class: "db-ws-btn db-ws-btn-ghost",
+          text: "씨앗 바꾸기",
+          attrs: { type: "button", title: "같은 프리셋도 씨앗값이 다르면 배치가 달라집니다" },
+          dataset: { testid: "db-village-preset-preview-reseed" },
+          on: {
+            click: () => {
+              presetPreviewSeed += 1;
+              run();
+            },
+          },
+        }),
+      ],
+    }),
+    note,
+  ];
 }
 
 function presetBasicFields(
@@ -961,6 +1479,28 @@ function archetypeSummary(archetype: VillageArchetype): string {
   return parts.join(" · ");
 }
 
+/**
+ * 원형 전경 그림. 집 한 채와 달리 전경은 도로 탐색·마당·바깥 숲까지 도는 무거운 시공이라
+ * 브라우저에서 6장을 즉석에서 돌리지 않는다 — `scripts/bake-village-archetype-previews.mts`
+ * 가 실제 `author_village` 결과를 굽고 여기서는 그 PNG 만 읽는다.
+ * 파일이 없으면 `error` 로 떨어지므로 카드가 그림 자리를 접고 글자만 남는다.
+ */
+function archetypeShot(archetype: VillageArchetype): HTMLElement {
+  const image = el("img", {
+    class: "db-village-archetype-shot",
+    attrs: {
+      src: villageArchetypeShotUrl(archetype.id),
+      alt: `${archetype.name} 마을 전경`,
+      loading: "lazy",
+      decoding: "async",
+    },
+    dataset: { testid: `db-village-archetype-shot-${archetype.id}` },
+  }) as HTMLImageElement;
+  const frame = el("span", { class: "db-village-archetype-media", children: [image] });
+  image.addEventListener("error", () => { frame.hidden = true; });
+  return frame;
+}
+
 function archetypeGallery(rerender: () => void): HTMLElement[] {
   return [
     el("div", {
@@ -976,6 +1516,7 @@ function archetypeGallery(rerender: () => void): HTMLElement[] {
         dataset: { testid: `db-village-archetype-${archetype.id}` },
         on: { click: () => createPresetFromArchetype(archetype.id, rerender) },
         children: [
+          archetypeShot(archetype),
           el("span", { class: "db-village-archetype-name", text: archetype.name }),
           el("span", { class: "db-village-archetype-note", text: archetype.note }),
           el("span", { class: "db-village-archetype-values", text: archetypeSummary(archetype) }),
