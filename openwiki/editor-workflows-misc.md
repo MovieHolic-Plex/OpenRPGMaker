@@ -67,3 +67,37 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 아직 토큰을 안 쓰는 인라인 층 둘이 토스트보다 위다: `quickBattleModal` 오버레이 `9999`
 (`src/editor/panels/quickBattleModal.ts:38`), 이벤트 목록 호버 툴팁 `320`. 정리 대상이다.
+
+## 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+
+초보 모드 맵 사이드바는 이제 두 칸이다 — 왼쪽 목록(`renderMapList(host, { variant: "basic" })`),
+오른쪽 상세(`src/editor/panels/mapInspectorPane.ts`, 데이터는 `src/project/mapInspection.ts`).
+
+**기능은 하나도 줄지 않았다** (도달성 전수 대조). 필터·facet, 트리 행 다중선택, 썸네일, 펼치기
+토글, 드래그 재정렬, 우클릭 메뉴, 행 `⋯` 메뉴, quick `+`, 중간클릭 시연, 더블클릭 설정, 인라인
+이름 변경, 마퀴 선택, 컨텍스트 메뉴 13개 항목이 모두 남아 있다. 삭제·복제·시작맵 지정 같은
+동작은 행 `⋯` / 우클릭 / 키보드(F2·Delete) / 새 상세 칸 액션 줄 중 최소 셋에서 도달한다.
+
+바뀐 것은 **정보 배치**다. 행 메타에서 `문N` 숫자가 빠지고 0일 때 `고립` 만 남는데, 분해값은
+상세 칸 「연결」 칩(`map-inspector-link-outgoing/incoming/connection`)과 행 메타 `title` 툴팁
+양쪽에 있다. 옛 조작법 힌트 문구도 트리 `title` 툴팁으로 옮겼다 — 발견성은 약해졌다.
+
+목록은 ARIA tree 패턴이다: roving `tabindex` + `aria-selected` + `aria-expanded`, Arrow/Home/End,
+Enter·Space 선택, Ctrl+Enter 시연, F2, Delete, Shift+F10. 플레이 상태 메뉴는
+`aria-activedescendant` 를 쓰지만 트리에는 roving tabindex 가 맞다 — 둘 다 확립된 패턴이다.
+아직 없는 것: 상세 칸이 선택된 행과 `aria-controls`/`aria-describedby` 로 묶이지 않아 스크린
+리더에서 두 칸의 연결이 암시되지 않는다.
+
+좁은 창(≤1100px)에서 상세 칸은 숨지 않고 목록 아래로 쌓인다(`map-panel.modern.css:889-912`).
+
+## 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+
+`installEventEditorCustomSelects` 의 팝오버는 열릴 때 `registerModal` 로 **최상위 층**이 되고
+닫힐 때 해제된다. 이게 없으면 Esc 한 번이 드롭다운과 모달을 **같이** 닫는다: `modalStack` 은
+keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(`ui/modalStack.ts:25`,
+`:28-37`), 캡처가 document → root 순으로 흐르는 동안 컴포넌트의 Esc 핸들러는 아예 실행되지
+않는다. "한 층에 Esc 하나" 가 `modalStack` 의 존재 이유이므로 중첩 팝오버는 반드시 등록한다.
+
+계약 테스트는 `test/customSelectEscapeLayer.test.ts` 다. 등록을 지우면 2건 실패한다(실측).
+`test/aiSettingsModalLayout.test.ts` 는 깊이 1만 단정하고 드롭다운을 열어놓고 Esc 를 누르는
+경로를 실행하지 않아 이 결함을 통과시켰다 — 깊이만 재는 단정으로는 층 소유를 증명하지 못한다.
