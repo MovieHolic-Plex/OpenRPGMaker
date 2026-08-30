@@ -746,25 +746,172 @@
   color: var(--text-1, #2A2521);
 }
 
-/* 구조물 편집기 다이얼로그 — 왼쪽 캔버스 + 오른쪽 도구·팔레트. */
-.structure-kit-editor-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
-  gap: 16px;
-  align-items: start;
+/* 구조물 편집기 다이얼로그 — 이 편집기만 크게 잡는다.
+   .db-enemy-dialog 는 여러 다이얼로그가 공유하므로 전역으로 키우면 안 된다.
+   편집기 백드롭은 z 1200 으로 DB 모달(z 900)과 독립이라 모달 크기에 갇히지 않는다 —
+   예전에는 주어진 공간의 절반(732/1350)만 쓰고 있었다. */
+[data-testid="structure-kit-editor"] > .db-enemy-dialog {
+  width: min(1424px, calc(100vw - 16px));
+  height: min(884px, calc(100vh - 16px));
 }
 
+/* main 은 display:grid 라 자식이 auto 높이가 된다 — 1fr 로 본문 전체를 채우게 한다.
+   min-height:0 이 없으면 grid 자식이 콘텐츠 아래로 안 줄어들어 스크롤이 바깥으로 샌다. */
+[data-testid="structure-kit-editor"] > .db-enemy-dialog main {
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+}
+
+/* 위: 캔버스 + 오른쪽 레일 / 아래: 부위 목록(폭 전체).
+   부위 목록이 예전에는 오른쪽 260px 열에 눌려 좌표가 줄바꿈됐다. */
+.structure-kit-editor-shell {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 10px;
+  min-height: 0;
+}
+
+.structure-kit-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.structure-kit-editor-left {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 8px;
+  min-height: 0;
+}
+
+.structure-kit-editor-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+/* 캔버스를 가운데 두고 남는 공간은 스크롤한다. 세로로 긴 킷(3×64)도 여기서 흡수된다.
+   좌표 계산은 이 wrap 이 아니라 캔버스 자신의 rect 를 봐야 한다 — wrap 이 캔버스보다
+   커지면서 가운데 정렬되므로, wrap 기준으로 재면 클릭이 그 여백만큼 밀린다. */
 .structure-kit-editor-canvas-wrap {
   position: relative;
-  display: inline-block;
+  display: grid;
+  /* safe 없는 center 는 캔버스가 칸보다 클 때 위/왼쪽으로 넘친 부분을 **스크롤로 닿을 수 없게**
+     만든다. 3x40 같은 긴 킷을 1x(최소 배율)로 봐도 세로가 남는데, 실측으로 scrollHeight 가
+     300 → 200 으로 줄고 첫 줄이 칸 위 99px 지점에 박혀 영구히 가려졌다. safe 는 잘림이
+     생길 때만 시작 정렬로 물러난다 — 들어맞을 때는 그대로 가운데다. */
+  place-content: safe center;
+  overflow: auto;
+  min-height: 0;
   border-radius: 8px;
   cursor: crosshair;
+  touch-action: none;
+}
+
+/* 캔버스와 정확히 같은 크기의 위치 기준 상자. 격자선·미리보기가 여기에 겹친다.
+   클릭 좌표도 이 상자를 기준으로 잰다. */
+/* 포인터 리스너와 testid 가 이 요소에 붙는다 — 캔버스와 픽셀 단위로 같은 상자여야
+   좌표로 판정하는 테스트가 칸 밖을 짚지 않는다. touch-action 은 상속되지 않으므로
+   여기에도 준다. 안 주면 터치 드래그가 칠하기 대신 스크롤로 먹힌다. */
+.structure-kit-editor-canvas-stage {
+  position: relative;
+  line-height: 0;
   touch-action: none;
 }
 
 .structure-kit-editor-canvas {
   display: block;
   image-rendering: pixelated;
+}
+
+/* 격자선. 캔버스에 직접 긋지 않는 이유는 renderTileCellsToCanvas 가 타일 이미지를
+   비동기로 로드해 그 프레임에 배경부터 다시 칠하기 때문이다 — 그러면 선이 지워진다. */
+.structure-kit-editor-grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--border-strong) 0 1px,
+      transparent 1px var(--structure-kit-cell, 48px)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--border-strong) 0 1px,
+      transparent 1px var(--structure-kit-cell, 48px)
+    );
+}
+
+/* 덧그림 레이어를 칠하는 중이라는 신호. 예전에는 캔버스에 layer-lower/layer-upper 를
+   붙였지만 그 클래스에 CSS 정의가 아예 없어서 아무 표시도 나지 않았다(죽은 클래스). */
+.structure-kit-editor-canvas-stage[data-layer="upper"] {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+.structure-kit-editor-preview {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.structure-kit-editor-preview-cell {
+  position: absolute;
+  background: var(--accent-muted);
+  outline: 1px solid var(--accent);
+}
+
+/* 캔버스 아래 두 줄(보기 줄 + 크기)을 한 덩어리로 묶는다. */
+.structure-kit-editor-underbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.structure-kit-editor-tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* 도구는 아이콘 하나라 정사각형으로 — 글자 버튼 5개가 두 줄로 접히던 자리다. */
+.structure-kit-editor-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* buildSvgIcon 은 viewBox 만 주고 width/height 를 붙이지 않는다 — 쓰는 쪽이 크기를 정한다.
+   보기 줄을 빼먹었더니 되돌리기·다시하기가 내용 없는 빈 알약처럼 보였다. */
+.structure-kit-editor-tool svg,
+.structure-kit-editor-viewbar svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* redo 아이콘이 따로 없어서 undo 를 좌우 반전해 쓴다. */
+.structure-kit-editor-redo-icon svg {
+  transform: scaleX(-1);
+}
+
+/* "덧그림"·"맞춤" 이 두 글자에서 두 줄로 접히던 자리 — 레일과 버튼이 좁아 기본 줄바꿈이 걸린다. */
+.structure-kit-editor-layer-btn,
+.structure-kit-editor-viewbar .btn {
+  white-space: nowrap;
+}
+
+.structure-kit-editor-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .structure-kit-editor-tools {
@@ -774,11 +921,16 @@
   margin-bottom: 10px;
 }
 
+/* 남는 높이를 팔레트가 먹는다(flex:1). 예전에는 max-height:320px 로 고정돼
+   480칸 중 약 145칸만 보였다. 칸도 20 → 26px 로 키운다 — 타일 그림을 알아볼 수 있어야
+   고를 수 있다. auto-fill 이라 레일 폭이 바뀌면 열 수가 따라간다. */
 .structure-kit-editor-palette {
   display: grid;
-  grid-template-columns: repeat(10, 20px);
+  grid-template-columns: repeat(auto-fill, 26px);
   gap: 2px;
-  max-height: 320px;
+  align-content: start;
+  flex: 1;
+  min-height: 120px;
   overflow-y: auto;
   padding: 4px;
   background: var(--bg-inset);
@@ -786,8 +938,8 @@
 }
 
 .structure-kit-editor-swatch {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border: 1px solid transparent;
   border-radius: 2px;
@@ -819,6 +971,80 @@
   width: 56px;
 }
 
+/* 캔버스 아래 보기 줄 — 되돌리기 · 확대 · 격자 · 크기.
+   맵 편집기의 줌 스테퍼(1·2·3·4·6·8x)와 같은 어휘를 쓴다. */
+.structure-kit-editor-viewbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.structure-kit-editor-viewbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.structure-kit-editor-viewbar-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border-subtle);
+}
+
+.structure-kit-editor-zoom-value {
+  min-width: 28px;
+  text-align: center;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 팔레트 위 검색 + 분류칩 — 480칸을 분류 없이 쏟아붓던 자리. */
+.structure-kit-editor-search {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.structure-kit-editor-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.structure-kit-editor-chip {
+  appearance: none;
+  padding: 2px 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.structure-kit-editor-chip.active {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+  color: var(--text-1);
+  font-weight: 700;
+}
+
+.structure-kit-editor-chip:focus-visible { outline: var(--focus-outline); }
+
+/* 필터에 안 걸린 칸은 숨기지 않고 흐리게 — 480칸의 위치가 원본 시트의 좌표라
+   숨기면 "어디쯤 타일"인지 감각이 깨진다. 맵 팔레트의 커스텀 아틀라스와 같은 판단. */
+.structure-kit-editor-swatch.is-filtered-out {
+  opacity: 0.22;
+}
+
+.structure-kit-editor-palette-empty {
+  grid-column: 1 / -1;
+  padding: 8px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
 .structure-kit-new-house {
   display: flex;
   flex-wrap: wrap;
@@ -837,12 +1063,23 @@
   background: var(--bg-raised);
 }
 
+/* 부위 목록은 이제 폭 전체를 쓴다(오른쪽 레일에서 내려왔다). 행이 여러 개여도
+   가로로 흐르게 해서 세로를 캔버스에 양보한다. */
 .structure-kit-editor-parts {
-  margin-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-height: 128px;
+  overflow-y: auto;
 }
+
+.structure-kit-editor-parts-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.structure-kit-editor-parts[hidden] { display: none; }
 
 /* 부위 종류 팝오버 — 맵 컨텍스트 메뉴 위젯을 빌려 쓴다. 그 위젯의 기본 층은 맵 셸 기준
    (`z-index: var(--z-status)`)이라 편집기 다이얼로그(`--z-popover-high`) 뒤에 깔린다.
@@ -891,11 +1128,21 @@
 
 .structure-kit-editor-part-action:focus-visible { outline: var(--focus-outline); }
 
+/* 폭 전체 목록에서 가로로 흐르도록 칩 모양이 된다. margin-left:auto 로 우측에
+   밀던 좌표(.structure-kit-editor-part-range)도 칩 안에서는 붙어 있어야 한다. */
 .structure-kit-editor-part-row {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
   font-size: 12px;
+}
+
+.structure-kit-editor-part-row .structure-kit-editor-part-range {
+  margin-left: 0;
 }
 
 .structure-kit-editor-part-index {

@@ -84,9 +84,13 @@
   z-index: var(--z-popover-high);
 }
 
+/* background/border-color 는 예전에 var(--oprn-chrome)/var(--oprn-light) 였다.
+   그 토큰들은 저장소 어디에도 정의되어 있지 않아서(--oprn-* 60개 중 23개가 그렇다)
+   선언이 무효가 되고 배경이 초기값 transparent 로 떨어졌다 — 그래서 이 다이얼로그를
+   열면 뒤에 있는 DB 표가 그대로 뚫고 보였다. 실존 토큰으로 바꾼다. */
 .db-enemy-dialog {
-  background: var(--oprn-chrome);
-  border-color: var(--oprn-light) var(--oprn-shadow) var(--oprn-shadow) var(--oprn-light);
+  background: var(--bg-overlay);
+  border-color: var(--border-default);
   border-style: solid;
   border-width: 2px;
   box-shadow: var(--shadow-popover);
@@ -98,9 +102,10 @@
   min-width: min(var(--oprn-enemy-dialog-width), calc(100vw - 16px));
 }
 
+/* 같은 이유로 헤더 그라디언트도 죽어 있었다(--oprn-title-blue-* 미정의). */
 .db-enemy-dialog header {
-  background: linear-gradient(90deg, var(--oprn-title-blue-deep), var(--oprn-title-blue-hi));
-  color: var(--oprn-light);
+  background: linear-gradient(90deg, var(--accent), var(--accent-active));
+  color: var(--bg-raised);
   font: 700 12px/20px "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
   padding: 0 6px;
 }
