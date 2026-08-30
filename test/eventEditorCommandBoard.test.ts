@@ -1,7 +1,8 @@
 /** @vitest-environment happy-dom */
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
+import { eventAiStagedCommands, resetEventAiStagedForTest } from "@/editor/panels/eventEditor/aiAssist";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { createBlankProject } from "@/project/defaults";
@@ -88,12 +89,14 @@ describe("event editor command board", () => {
 
   beforeEach(() => {
     resetEditorUiModeForTests("standard");
+    resetEventAiStagedForTest();
     clearCommandInspector();
     host = document.createElement("div");
     document.body.append(host);
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     clearCommandInspector();
     document.body.replaceChildren();
   });
@@ -168,8 +171,59 @@ describe("event editor command board", () => {
     expect(count?.getAttribute("aria-label")).toBe("작성한 명령 6개, 분기 안 명령 포함");
   });
 
-  // 이 줄은 원래 `<button>` 이었지만 `dblclick` 만 들어서 한 번 누르면 아무 일도 없었고,
-  // 라벨은 자기가 아닌 다른 버튼 이름을 부르고 있었다.
+  it("numbers staged rows from the applied sequence and keeps the badge in agreement", async () => {
+    const mapId = seedNestedProject();
+    const page = store.getCurrent().maps[mapId]!.events[0]!.pages![0]!;
+    page.commands = [{ kind: "text", body: "A" }, { kind: "text", body: "B" }];
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify([{ kind: "text", body: "B" }]) } }],
+    }), { status: 200, headers: { "Content-Type": "application/json" } })));
+
+    renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
+    const input = host.querySelector<HTMLTextAreaElement>('[data-testid="ai-event-input"]')!;
+    input.value = "첫 대사를 지워 줘";
+    host.querySelector<HTMLButtonElement>('[data-testid="ai-event-generate"]')!.click();
+
+    await vi.waitFor(() => expect(host.querySelector('[data-testid="ai-event-staged"]')).not.toBeNull());
+    const remove = host.querySelector<HTMLElement>('[data-testid="ai-event-staged-row-remove"]')!;
+    const keep = host.querySelector<HTMLElement>('[data-testid="ai-event-staged-row-keep"]')!;
+    const count = host.querySelector<HTMLElement>('[data-testid="event-editor-command-count"]')!;
+
+    expect(eventAiStagedCommands(mapId, NESTED_EVENT_ID, "p1")).toEqual([{ kind: "text", body: "B" }]);
+    expect(remove.querySelector(".cmd-step")).toBeNull();
+    expect(keep.querySelector(".cmd-step")?.textContent).toBe("1");
+    expect(count.textContent).toBe("1개");
+  });
+
+  it("renumbers the staged result contiguously when an add row is excluded", async () => {
+    const mapId = seedNestedProject();
+    const page = store.getCurrent().maps[mapId]!.events[0]!.pages![0]!;
+    page.commands = [{ kind: "text", body: "A" }];
+    const after = [
+      { kind: "text", body: "A" },
+      { kind: "text", body: "new" },
+      { kind: "wait", ms: 500 },
+    ];
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify(after) } }],
+    }), { status: 200, headers: { "Content-Type": "application/json" } })));
+
+    renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
+    const input = host.querySelector<HTMLTextAreaElement>('[data-testid="ai-event-input"]')!;
+    input.value = "두 명령을 더해 줘";
+    host.querySelector<HTMLButtonElement>('[data-testid="ai-event-generate"]')!.click();
+
+    await vi.waitFor(() => expect(host.querySelectorAll(".cmd-staged .cmd-step")).toHaveLength(3));
+    host.querySelector<HTMLButtonElement>('[data-testid="ai-event-staged-row-add"] .cmd-staged-toggle')!.click();
+
+    const steps = [...host.querySelectorAll<HTMLElement>(".cmd-staged .cmd-step")].map((node) => node.textContent);
+    const excludedAdd = host.querySelector<HTMLElement>('[data-testid="ai-event-staged-row-add"]')!;
+    expect(excludedAdd.querySelector(".cmd-step")).toBeNull();
+    expect(steps).toEqual(["1", "2"]);
+    expect(host.querySelector('[data-testid="event-editor-command-count"]')?.textContent).toBe("2개");
+  });
+
+  // 이 줄은 원래 `<button>` 이었지만 `dblclick` 만 들어서 한 번 누르면 아무 일도 없었다.
   it("opens the command picker from a single click on the append affordance", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
@@ -179,6 +233,29 @@ describe("event editor command board", () => {
     expect(append?.textContent).toBe("+ 여기에 명령 추가");
     append?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     expect(document.querySelector('[data-testid="event-command-picker"]')).toBeTruthy();
+  });
+
+  it("drops a root command on the empty branch button into that branch", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+    const branchEmpty = host.querySelector<HTMLButtonElement>('[data-testid="event-command-branch-empty-1--5"]')!;
+    const payload = JSON.stringify([0]);
+    const drop = new Event("drop", { bubbles: true, cancelable: true });
+    Object.defineProperties(drop, {
+      dataTransfer: {
+        value: {
+          types: ["application/x-rpgzzu-event-command-path", "text/plain"],
+          getData: () => payload,
+        },
+      },
+    });
+
+    branchEmpty.dispatchEvent(drop);
+
+    const commands = store.getCurrent().maps[mapId]!.events[0]!.pages![0]!.commands;
+    expect(commands).toHaveLength(1);
+    expect(commands[0]?.kind).toBe("loop");
+    if (commands[0]?.kind === "loop") expect(commands[0].body).toEqual([{ kind: "text", body: "어서 오세요." }]);
   });
 
   it("opens the picker from an empty branch and inserts into that exact container", () => {

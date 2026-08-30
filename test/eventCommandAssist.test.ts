@@ -9,6 +9,7 @@ import {
 } from "@/ai/eventCommandAssist";
 import type { AiConfig } from "@/ai/llmClient";
 import {
+  eventAiStagedCommands,
   hasEventAiStagedDraft,
   renderEventAiAssist,
   resetEventAiStagedForTest,
@@ -365,6 +366,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
   type Harness = {
     readonly panel: FakeElement;
     readonly stagedHost: FakeElement;
+    readonly commandCount: FakeElement;
     readonly replaced: Command[][];
     readonly page: EventPage;
     readonly eventId: string;
@@ -377,6 +379,7 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
   function renderPanelFor(eventId: string, apiKey = "sk-test", page: EventPage = testPage()): Harness {
     const cmdList = new FakeElement("div") as unknown as HTMLElement;
     const stagedHost = new FakeElement("div");
+    const commandCount = new FakeElement("span");
     const replaced: Command[][] = [];
     const mapId = store.getCurrent().startMapId;
     store.getCurrent().maps[mapId].events = [{
@@ -385,17 +388,22 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
       y: 1,
       pages: [structuredClone(page)],
     }];
+    const refreshCommandCount = (): void => {
+      const stagedCommands = eventAiStagedCommands(mapId, eventId, page.id);
+      commandCount.textContent = `${(stagedCommands ?? page.commands).length}개`;
+    };
+    refreshCommandCount();
     const panel = renderEventAiAssist({
       mapId,
       eventId,
       page,
       cmdList,
       stagedHost: stagedHost as unknown as HTMLElement,
-      refreshListVisibility: () => undefined,
+      refreshListVisibility: refreshCommandCount,
       replaceAll: (commands) => void replaced.push(structuredClone(commands) as Command[]),
       loadConfig: () => ({ ...CONFIG, apiKey }),
     }) as unknown as FakeElement;
-    return { panel, stagedHost, replaced, page, eventId };
+    return { panel, stagedHost, commandCount, replaced, page, eventId };
   }
 
   async function generate(harness: Harness, prompt: string): Promise<void> {
@@ -536,6 +544,46 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(harness.replaced).toHaveLength(0);
     findByTestId(harness.panel, "ai-event-apply")!.click();
     expect(harness.replaced).toHaveLength(0);
+  });
+
+  it("surviving staged rows use the applied result sequence for numbers and the badge", async () => {
+    // before=[A,B] / after=[B] is deliberately remove+keep. Raw diff indexing labels B as 2,
+    // but the applied result contains one command, so both row and badge must say 1.
+    mockFetchSequence(JSON.stringify([{ kind: "text", body: "B" }]));
+    const page = testPage([{ kind: "text", body: "A" }, { kind: "text", body: "B" }]);
+    const harness = renderPanel("sk-test", page);
+
+    await generate(harness, "첫 대사를 지워 줘");
+
+    const remove = findByTestId(harness.stagedHost, "ai-event-staged-row-remove")!;
+    const keep = findByTestId(harness.stagedHost, "ai-event-staged-row-keep")!;
+    expect(remove.querySelector(".cmd-step")).toBeNull();
+    expect(keep.querySelector(".cmd-step")?.textContent).toBe("1");
+    expect(harness.commandCount.textContent).toBe("1개");
+  });
+
+  it("excluding an add row rerenders the remaining staged numbers contiguously", async () => {
+    mockFetchSequence(JSON.stringify([
+      { kind: "text", body: "A" },
+      { kind: "text", body: "new" },
+      { kind: "wait", ms: 500 },
+    ]));
+    const harness = renderPanel("sk-test", testPage([{ kind: "text", body: "A" }]));
+
+    await generate(harness, "두 명령을 더해 줘");
+    let steps = (harness.stagedHost.querySelectorAll(".cmd-step") as unknown as FakeElement[])
+      .map((node) => node.textContent);
+    expect(steps).toEqual(["1", "2", "3"]);
+
+    const firstAdd = findByTestId(harness.stagedHost, "ai-event-staged-row-add")!;
+    findByTestId(firstAdd, `ai-event-staged-toggle-${firstAdd.dataset.stagedId}`)!.click();
+
+    steps = (harness.stagedHost.querySelectorAll(".cmd-step") as unknown as FakeElement[])
+      .map((node) => node.textContent);
+    const excludedAdd = findByTestId(harness.stagedHost, "ai-event-staged-row-add")!;
+    expect(excludedAdd.querySelector(".cmd-step")).toBeNull();
+    expect(steps).toEqual(["1", "2"]);
+    expect(harness.commandCount.textContent).toBe("2개");
   });
 
   it("취소를 누르면 초안만 지우고 목록을 건드리지 않는다", async () => {

@@ -356,7 +356,7 @@ function appendCommandChildren(
     const branchPath = [...path, branch.branchIndex];
     host.append(renderBranchDropLine(branch.label, depth, branch.tone, branchPath, actions));
     if (branch.commands.length === 0) {
-      host.append(renderEmptyBranchLine(depth + 1, branch.tone, branchPath, options.openCommandPicker));
+      host.append(renderEmptyBranchLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
     }
     branch.commands.forEach((child, childIndex) => {
       renderCommandTree(
@@ -389,6 +389,7 @@ function renderEmptyBranchLine(
   depth: number,
   kind: "fork" | "choices" | "shop",
   containerPath: readonly number[],
+  actions: CommandListActions,
   openCommandPicker: CommandListRenderOptions["openCommandPicker"],
 ): HTMLElement {
   const line = el("button", {
@@ -403,6 +404,7 @@ function renderEmptyBranchLine(
     on: { click: () => openCommandPicker?.(containerPath) },
   });
   line.style.setProperty("--cmd-depth", String(depth));
+  ensureListDropHandlers(line, actions);
   return line;
 }
 
