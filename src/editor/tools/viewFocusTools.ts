@@ -19,13 +19,13 @@ const focusEditorView: ToolDefinition = {
   description:
     "사용자 화면을 특정 위치로 옮긴다. 이름만 주면(query) 프로젝트에서 그 맵·NPC·건물을 찾아 그곳으로 데려간다. "
     + "'어디야?', '어디에 있어?', '보여줘', '거기로 가자' 같은 요청에는 설명하기 전에 먼저 호출하라. "
-    + "좌표를 이미 알고 있으면 mapId 와 x·y·w·h 로 직접 지정한다.",
+    + "좌표를 이미 알고 있으면 mapId 와 x·y·w·h 로 직접 지정한다. mapId 가 있으면 query 는 무시한다.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
-      query: { type: "string", description: "찾을 맵·이벤트 이름(사용자가 부른 그대로)" },
-      mapId: { type: "string", description: "좌표로 직접 지정할 때 대상 맵" },
+      query: { type: "string", description: "찾을 맵·이벤트 이름(사용자가 부른 그대로). mapId 가 있으면 무시됨" },
+      mapId: { type: "string", description: "좌표로 직접 지정할 때 대상 맵. query 보다 우선함" },
       x: { type: "integer", description: "왼쪽 위 타일 X (mapId 지정 시)" },
       y: { type: "integer", description: "왼쪽 위 타일 Y (mapId 지정 시)" },
       w: { type: "integer", description: "너비(타일). 생략하면 1" },
@@ -39,7 +39,7 @@ const focusEditorView: ToolDefinition = {
       throw new ToolError("query(이름) 또는 mapId 중 하나는 있어야 합니다.", { code: "invalid-args" });
     }
 
-    if (!query) {
+    if (mapIdArg) {
       const map = requireMap(project, mapIdArg);
       const hasRect = typeof args.x === "number" || typeof args.y === "number";
       const x = clampInt(args.x, 0, map.width - 1, 0);
@@ -61,7 +61,7 @@ const focusEditorView: ToolDefinition = {
     }
     if (entry.target.kind === "ambiguous") {
       throw new ToolError(
-        `'${entry.label}' 이름이 ${entry.target.count}곳에 있습니다. mapId 와 좌표로 지정하거나 사용자에게 어느 것인지 물어보세요.`,
+        `'${entry.label}' 이름이 ${entry.target.count}곳에 있습니다. mapId 와 좌표를 보내면 query보다 우선하므로 그 방식으로 지정하거나 사용자에게 어느 것인지 물어보세요.`,
         { code: "ambiguous" }
       );
     }

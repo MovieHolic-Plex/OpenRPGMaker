@@ -61,7 +61,23 @@ describe("focus_editor_view", () => {
     }
   });
 
-  it("resolves a map name to that map's full area", () => {
+  it("핀이 대표 도구를 밀어내지 않고 주요 모드에 함께 노출된다", () => {
+    const expectations = {
+      map: [],
+      tile: [],
+      event: ["set_scene_mood", "create_transfer_pair"],
+    } as const;
+
+    for (const [mode, representativeTools] of Object.entries(expectations) as [keyof typeof expectations, readonly string[]][]) {
+      const exposed = new Set(toOpenAiTools(undefined, { mode }).map((entry) => entry.function.name));
+      expect(exposed.has("focus_editor_view"), `mode=${mode}`).toBe(true);
+      for (const toolName of representativeTools) {
+        expect(exposed.has(toolName), `mode=${mode}, tool=${toolName}`).toBe(true);
+      }
+    }
+  });
+
+  it("맵 이름을 맵 전체 영역으로 해석한다", () => {
     const project = fixture();
 
     const result = focus(project, { query: "상인 하나의 집" });
@@ -110,7 +126,22 @@ describe("focus_editor_view", () => {
     expect(result.summary).toContain("찾지 못했습니다");
   });
 
-  it("refuses to guess when several places share the name", () => {
+  it("mapId가 있으면 모호한 query보다 좌표 지정을 우선한다", () => {
+    const project = createBlankProject();
+    const first = createBlankMap("여관", 20, 16);
+    first.id = "map_inn_a";
+    const second = createBlankMap("여관", 24, 18);
+    second.id = "map_inn_b";
+    project.maps = { [first.id]: first, [second.id]: second };
+    project.startMapId = first.id;
+
+    const result = focus(project, { query: "여관", mapId: second.id, x: 4, y: 5 });
+
+    expect(result.ok).toBe(true);
+    expect(result.data).toMatchObject({ mapId: second.id, x: 4, y: 5 });
+  });
+
+  it("같은 이름이 여러 곳이면 임의로 고르지 않는다", () => {
     const project = createBlankProject();
     const first = createBlankMap("여관", 20, 16);
     first.id = "map_inn_a";

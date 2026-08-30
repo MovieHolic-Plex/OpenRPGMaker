@@ -204,10 +204,9 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GROUP_LAYOUT_TOOLS, "tile"),
   ...withDomain(GROUP_SAMPLE_TOOLS, "tile"),
   ...withDomain(VISION_QUERY_TOOLS, "map"),
-  // 도메인을 주지 않는다 — "어디야?" 는 타일·이벤트·퀵스트 어느 모드에서도 나오는 질문이다.
-  // 도메인 없는 툴은 exposedInDomains 가 항상 통과시킨다(find_tools·PROJECT_TOOLS 와 같은 자리).
-  // map 도메인에 핸하면 상한(40) 트림에서 set_scene_mood 등 대표 도구가 밀려난다
-  // (실산: test/regionIntentExposure.test.ts 보장 3건 실패).
+  // 도메인을 주지 않는다 — 도메인 없는 툴은 모든 모드의 라운드로빈 트림을 통과하면서 핀을 쓰지 않는다.
+  // isPinnedTool은 도메인이 있는 툴만 핀할 수 있어, map 도메인과 핀을 함께 주면 상한(40)의 한 자리를
+  // 강제로 예약한다. 실측에서는 그 예약 때문에 test/regionIntentExposure.test.ts의 대표 도구 보장 3건이 실패했다.
   ...VIEW_FOCUS_TOOLS,
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),

@@ -18,6 +18,26 @@ function fixture(): Project {
   return project;
 }
 
+function merchant() {
+  return {
+    id: "ev_new_merchant",
+    x: 3,
+    y: 4,
+    trigger: { kind: "action" as const },
+    commands: [],
+    pages: [{
+      id: "ev_new_merchant_page_1",
+      name: "새로 온 상인",
+      conditions: [],
+      graphic: {},
+      trigger: { kind: "action" as const },
+      priority: "same" as const,
+      movement: { type: "fixed" as const, speed: 3 as const, frequency: 3 as const },
+      commands: [],
+    }],
+  };
+}
+
 function index(): EditorReferenceIndex {
   return buildEditorReferenceIndex(fixture());
 }
@@ -98,7 +118,24 @@ describe("assistant answer internal links", () => {
     expect(links(body).map((button) => button.dataset.refKind)).toEqual(["map"]);
   });
 
-  it("marks a duplicated name as ambiguous rather than picking one place", () => {
+  it("맵 변경 뒤 새 이벤트 이름으로 색인을 다시 만든다", () => {
+    const project = fixture();
+    store.replace(project);
+    renderAssistantAnswer("햇살 마을은 조용합니다.");
+    store.updateMap(project.startMapId, (map) => {
+      const event = merchant();
+      const page = event.pages[0];
+      if (!page) throw new Error("event page is missing");
+      page.name = "새로 온 상인";
+      map.events.push(event);
+    });
+
+    const body = renderAssistantAnswer("새로 온 상인을 만나보세요.");
+
+    expect(links(body).map((button) => button.dataset.refLabel)).toEqual(["새로 온 상인"]);
+  });
+
+  it("같은 이름이 여러 곳이면 한 곳을 고르지 않는다", () => {
     const project = createBlankProject();
     const first = createBlankMap("여관", 20, 16);
     first.id = "map_inn_a";

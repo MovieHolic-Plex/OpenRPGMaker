@@ -92,7 +92,47 @@ describe("editor reference navigation", () => {
     expect(highlights[0]?.bounds).toEqual({ x: 6, y: 9, width: 1, height: 1 });
   });
 
-  it("moves the camera unconditionally so a click always visibly does something", () => {
+  it("다른 맵의 이벤트로 이동한 뒤 새 맵 기준 요청을 보낸다", () => {
+    store.updateMap("map_house_interior_1", (map) => {
+      map.events = [merchant()];
+    });
+    const house = store.getCurrent().maps.map_house_interior_1;
+    if (!house) throw new Error("house map is missing");
+
+    expect(navigateToEditorReference({
+      kind: "event",
+      mapId: house.id,
+      eventId: "ev_hana",
+      x: 6,
+      y: 9,
+    })).toBe(true);
+
+    expect(editorState.get().currentMapId).toBe(house.id);
+    expect(cameraRequests).toEqual([{
+      mapId: house.id,
+      tileX: 6,
+      tileY: 9,
+      bounds: { x: 6, y: 9, width: 1, height: 1 },
+    }]);
+    expect(highlights).toEqual([{
+      mapId: house.id,
+      cells: [],
+      bounds: { x: 6, y: 9, width: 1, height: 1 },
+      score: 1,
+    }]);
+  });
+
+  it("모호한 대상은 찾기만 열고 이동 부작용을 만들지 않는다", () => {
+    const beforeMapId = editorState.get().currentMapId;
+
+    expect(navigateToEditorReference({ kind: "ambiguous", label: "여관", count: 2 })).toBe(true);
+
+    expect(editorState.get().currentMapId).toBe(beforeMapId);
+    expect(cameraRequests).toEqual([]);
+    expect(highlights).toEqual([]);
+  });
+
+  it("화면 안의 대상도 항상 카메라를 움직인다", () => {
     focusEditorRegion({ mapId: project.startMapId, x: 2, y: 3, w: 4, h: 4 });
 
     // onlyIfOffscreen 이 붙으면 화면 안에 있는 대상에서 클릭이 아무 일도 하지 않는다.

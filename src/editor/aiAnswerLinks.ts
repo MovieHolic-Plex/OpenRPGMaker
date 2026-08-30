@@ -45,14 +45,19 @@ const MIN_LABEL_LENGTH = 2;
 const MAX_LABEL_LENGTH = 40;
 
 /**
- * 한국어 조사·서술 어미의 첫 글자. 이름 뒤에 이것이 붙는 것은 합성어가 아니라 조사다:
- * `집에`, `집을`, `광장에서` 는 이름 매치로 인정하고 `마을길`, `마을회관` 은 인정하지 않는다.
- * (완전한 형태소 분석은 하지 않는다 — 오탐 몇 건보다 조사 앞에서 링크가 사라지는 쪽이 나쁘다.)
+ * 한국어 산문은 이름과 조사를 띄우지 않으므로 일반 단어 경계만 쓰면 링크가 거의 사라진다.
+ * 그러나 조사 음절을 무제한 소비하면 `마을도로` 같은 보통 합성어까지 조사로 발명해 버린다.
+ * 따라서 완전한 조사 하나와 그 뒤의 보조사 하나만 허용한다.
  */
-const PARTICLE_HEADS = new Set([
-  "은", "는", "이", "가", "을", "를", "에", "의", "도", "만", "와", "과", "로", "으", "랑", "나",
-  "부", "까", "처", "보", "라", "야", "인", "일", "입", "였", "예",
-]);
+const PARTICLES = [
+  "으로써", "으로서", "에게서", "이라도", "입니다",
+  "으로", "에서", "에게", "까지", "부터", "처럼", "보다", "마다", "조차", "밖에", "라도", "한테", "께서",
+  "하고", "이랑", "이나", "이다", "였다", "예요", "이야", "이며", "이고",
+  "은", "는", "이", "가", "을", "를", "의", "도", "만", "와", "과", "나", "랑", "께", "에", "로", "야",
+  "인", "일",
+] as const;
+
+const AUXILIARY_PARTICLES = ["이야", "는", "은", "도", "만", "요", "야"] as const;
 
 function isWordChar(char: string): boolean {
   return /[\p{L}\p{N}_]/u.test(char);
@@ -125,17 +130,25 @@ function dedupeTargets(targets: readonly EditorReferenceTarget[]): EditorReferen
   return unique;
 }
 
-/**
- * 이름 경계 판정. 앞은 단어 문자면 거부(`새마을` 안의 `마을`), 뒤는 라틴 문자·숫자면 거부하고
- * 한글이면 조사 첫 글자만 허용한다.
- */
+// 긴 조사가 먼저 걸려야 한다(`밖에` 가 `에` 보다, `이라도` 가 `라도` 보다). 표를 손으로
+// 정렬해 두는 것에 의존하면 나중에 조사를 끝에 덧붙이는 순간 조용히 짧은 쪽이 이긴다.
+const PARTICLES_BY_LENGTH = [...PARTICLES].sort((a, b) => b.length - a.length);
+const AUXILIARY_BY_LENGTH = [...AUXILIARY_PARTICLES].sort((a, b) => b.length - a.length);
+
+function consumeLongest(text: string, cursor: number, candidates: readonly string[]): number {
+  const match = candidates.find((candidate) => text.startsWith(candidate, cursor));
+  return match ? cursor + match.length : cursor;
+}
+
+/** 이름 경계 판정. 앞 단어는 거부하고, 뒤에는 완전한 조사 하나와 보조사 하나까지만 허용한다. */
 function boundaryOk(text: string, start: number, end: number): boolean {
   const before = start > 0 ? text.charAt(start - 1) : "";
   if (before && isWordChar(before)) return false;
-  const after = end < text.length ? text.charAt(end) : "";
-  if (!after) return true;
-  if (isHangul(after)) return PARTICLE_HEADS.has(after);
-  return !isWordChar(after);
+
+  let cursor = consumeLongest(text, end, PARTICLES_BY_LENGTH);
+  cursor = consumeLongest(text, cursor, AUXILIARY_BY_LENGTH);
+  const after = text.charAt(cursor);
+  return !after || (!isHangul(after) && !isWordChar(after));
 }
 
 /** 답변 텍스트에서 색인된 이름의 위치를 찾는다. 겹치지 않고, 긴 이름이 이긴다. */
