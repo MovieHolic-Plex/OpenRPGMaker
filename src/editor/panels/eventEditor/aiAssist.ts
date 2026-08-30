@@ -19,7 +19,9 @@
 // 스토어 갱신 때마다 에디터 본문이 통째로 재렌더되므로, 입력 초안/펼침 상태/초안 diff 는
 // 모듈 레벨 캐시(이벤트+페이지 키)로 보존해 재렌더 후 복원한다.
 
+import { eventCommandGateNotice } from "@/ai/aiGateNotice";
 import { runEventCommandAssist, resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
+import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
@@ -362,6 +364,13 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       // 무엇을 할지 아는 한 줄을 앞에 붙인다.
       const detail = cause instanceof Error ? cause.message : String(cause);
       setStatus(`명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`, "error");
+      // 한 줄 상태 텍스트는 검증기 원문이 붙으면 끝이 잘린다. append scope 에서는 애초에
+      // 지우기·고치기가 표현 불가라는 사실도 여기서만 말할 수 있다 — 모달로 올린다.
+      showAiGateNotice(eventCommandGateNotice({
+        message: detail,
+        scope,
+        commandCount: page.commands.length,
+      }));
     } finally {
       generateBtn.disabled = false;
     }

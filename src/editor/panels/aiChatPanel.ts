@@ -61,6 +61,8 @@ import {
 import type { WorkPlan } from "@/ai/workPlan";
 import type { BuildSpec } from "@/ai/buildSpec";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
+import { turnErrorNotice } from "@/ai/aiGateNotice";
+import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
@@ -1466,6 +1468,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         setStatus(`밑그림 확정 — 에셋 ${activeSpec.assets.length}개`);
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
+      // 오류로 끝났고 적용된 쓰기도 0건이면 이 턴은 통째로 사라진 것이다 — 오류 버블 하나로는
+      // 스크롤에 묻히므로 모달로 올린다. 쓰기가 있었던 턴은 적용 경로가 이미 자기 게이트를
+      // 보고하므로(배치·무결성) 여기서 또 띄우지 않는다.
+      if (result.stoppedReason === "error" && result.proposedCalls.length === 0) {
+        showAiGateNotice(turnErrorNotice({ message: result.error ?? "AI 작업이 오류로 끝났습니다." }));
+      }
     } catch (cause) {
       if (!ownsTurn(true)) return;
       if (abortController.signal.aborted) {

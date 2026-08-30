@@ -12,6 +12,8 @@ import { stripContextFooter } from "@/ai/modifyIntent";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { summarizeChanges } from "@/editor/tools";
+import { commitGateNotice, layoutGateNotice } from "@/ai/aiGateNotice";
+import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import {
   formatLayoutRepairSummary,
@@ -264,6 +266,9 @@ export function createProposalHost(options: {
       const summary = formatLayoutValidationSummary(repaired.remaining);
       appendBubble("system", `❌ ${summary}`);
       toast(summary, "error");
+      // 적용은 0건이다 — 버블/토스트만으로는 "AI 가 아무것도 안 했다"와 구분되지 않으므로
+      // 차단 사유 전량을 모달로 올린다(ai/aiGateNotice.ts 머리말).
+      showAiGateNotice(layoutGateNotice(layoutBlocking));
       return false;
     }
     const applyProject = repaired.project;
@@ -288,6 +293,9 @@ export function createProposalHost(options: {
     if (!applied.ok) {
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
+      // 예전에는 이 게이트만 채팅에 아무 기록도 남기지 않았다 — 토스트가 사라지면 흔적이 없다.
+      appendBubble("system", `❌ 무결성 검사에 막혀 적용하지 않았습니다: ${applied.issue ?? "무결성 오류"}`);
+      showAiGateNotice(commitGateNotice(applied.issues ?? (applied.issue ? [applied.issue] : [])));
       return false;
     }
     setStatus("대기");
