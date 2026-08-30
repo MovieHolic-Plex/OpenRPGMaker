@@ -32,7 +32,7 @@ import { addSessionLight, removeSessionLight, setSessionLighting } from "@/proje
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
 import { advanceFarmPlotsForDay } from "@/player/farming";
-import { resolveShopStock } from "@/project/shopStock";
+import { resolvePricedShopStock } from "@/project/shopPrice";
 import {
   advanceRoguelikeRunFloor,
   endRoguelikeRun,
@@ -537,7 +537,7 @@ export function executeCommand(
         kind: "shop",
         itemIds: command.itemIds,
         items: state.project
-          ? resolveShopStock(state.project, state.session, command, resolveCurrentGameEvent(state))
+          ? resolvePricedShopStock(state.project, state.session, command, resolveCurrentGameEvent(state))
           : undefined,
         allowSell: command.allowSell,
         quantityMode: command.quantityMode,
@@ -553,6 +553,10 @@ export function executeCommand(
         loyaltyTierId: command.loyaltyTierId,
         mileageRate: command.mileageRate,
         investmentLevel: command.investmentLevel,
+        restockPolicy: command.restockPolicy,
+        economy: command.economy,
+        blackMarketFlag: command.blackMarketFlag,
+        festivalFlag: command.festivalFlag,
       });
 
     case "inn": {

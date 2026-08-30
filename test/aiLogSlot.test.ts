@@ -133,13 +133,16 @@ describe("로그 슬롯은 한 곳에서 정해진다", () => {
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
 
-  it("완료 스트립과 0건 알림 호스트는 남고 승인 UI는 어느 도크에도 없다", () => {
+  // 완료 스트립(`ai-completion-host`)은 2026-08-30 에 걷었다 — 되돌리기는 컴포저의
+  // `ai-composer-undo` 로 옮겼고, 스티키 존은 0건 알림 전용으로 남는다.
+  it("0건 알림 호스트와 컴포저 되돌리기는 남고 승인 UI는 어느 도크에도 없다", () => {
     const panel = renderPanel();
 
     for (const dock of ["glass", "side", "float"]) {
       setDock(panel, dock);
       expect(findByTestId(panel, "ai-rising-sticky-zone"), dock).toBeTruthy();
-      expect(findByTestId(panel, "ai-completion-host"), dock).toBeTruthy();
+      expect(findByTestId(panel, "ai-completion-host"), dock).toBeNull();
+      expect(findByTestId(panel, "ai-composer-undo"), dock).toBeTruthy();
       expect(findByTestId(panel, "ai-proposal-reopen"), dock).toBeNull();
       expect(findByTestId(panel, "ai-proposal-pin-host"), dock).toBeNull();
       expect(findByTestId(panel, "ai-proposal-host"), dock).toBeNull();

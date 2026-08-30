@@ -53,6 +53,8 @@ export interface ComposerOptions {
   readonly collapseButton: HTMLButtonElement;
   readonly sendButton: HTMLButtonElement;
   readonly abortButton: HTMLButtonElement;
+  /** 방금 적용한 AI 변경 되돌리기 — 되돌릴 게 있을 때만 보인다(패널이 hidden 을 관리). */
+  readonly undoAppliedButton: HTMLButtonElement;
   readonly contextChips: HTMLElement;
   readonly composerChips: HTMLElement;
   readonly queueIndicator: HTMLElement;
@@ -151,12 +153,17 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         // 밀어내면 도크별 접기나 새 대화 진입점이 사라진다.
         // 맥락 게이지는 ☰ 바로 뒤 = 스크롤되는 칩들 **앞**이다. 칩 뒤에 두면 컨텍스트 꼬리표가
         // 길어진 좁은 도크에서 가로 스크롤 밖으로 밀려 사실상 사라진다(lead 는 overflow-x:auto).
+        // 되돌리기는 ☰ 다음 자리다 — 예전엔 맵 위에 뜨는 `ai-completion-strip` 밴드가
+        // 이 일을 했지만(요약 + 되돌리기), 도크와 무관한 fixed 밴드라 팔레트도 어긋나고
+        // 변경 카드 제목과 요약이 그대로 겹쳤다(2026-08-30 감독 지시로 밴드 제거).
+        // 이 행은 고정 높이라 버튼이 켜져도 바 높이가 변하지 않는다 — clearance 재측정 없음.
         children: [
           options.collapseButton,
           newChatButton,
           commandMenuToggle,
           ...(options.contextMeterButton ? [options.contextMeterButton] : []),
           ...(preferenceToggle ? [preferenceToggle] : []),
+          options.undoAppliedButton,
           options.contextChips,
           options.queueIndicator,
         ],

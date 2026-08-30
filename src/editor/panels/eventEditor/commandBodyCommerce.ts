@@ -12,6 +12,7 @@ import { commandKindSelect, selectedOptionValue } from "./dom";
 import { COMMAND_KIND_OPTIONS } from "./options";
 import { imageIconOf, recordIconElement } from "./recordPicker";
 import type { CommandEditContext } from "./types";
+import { shopEconomyCard } from "./commandBodyShopEconomy";
 
 type ShopCommand = Extract<Command, { kind: "shop" }>;
 type InnCommand = Extract<Command, { kind: "inn" }>;
@@ -679,6 +680,7 @@ function shopSettingsCard(context: CommandEditContext, command: ShopCommand): HT
       shopQuantityModeGroup(context, command),
       shopMessageSelect(context, command),
       shopMerchantGoldField(context, command),
+      shopEconomyCard(context, command),
       shopBranchOption(context, command),
     ],
   });

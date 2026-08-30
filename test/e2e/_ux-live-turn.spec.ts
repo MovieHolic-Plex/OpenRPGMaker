@@ -75,7 +75,8 @@ async function surfaceSnapshot(page: Page): Promise<unknown> {
       appliedThumbs: count("[data-testid='ai-change-pair'] canvas"),
       appliedSummary: text("[data-testid='ai-change-card'] .ai-change-title"),
       approvalUi: count("[data-testid='ai-proposal-auto-approve-input'], [data-testid='ai-proposal-card'], .ai-proposal-card, [data-testid='ai-proposal-modal']"),
-      completionStripButtons: count("[data-testid='ai-completion-strip'] button"),
+      // 구 `ai-completion-strip` 은 제거됐다 — 적용 직후 되돌리기는 컴포저 액션 행에 있다.
+      composerUndoVisible: document.querySelectorAll("[data-testid='ai-composer-undo']:not([hidden])").length,
       mentionStrips: count("[data-testid='ai-mention-strip']"),
       mentionChips: count("[data-testid='ai-mention-strip'] .ai-mention-chip"),
       mentionThumbs: count(
