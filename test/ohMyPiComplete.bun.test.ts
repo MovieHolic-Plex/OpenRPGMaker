@@ -221,14 +221,88 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
     expect(image.base64).toBe(base64);
   });
 
-  test("Antigravity 자격 오류는 제품 로그인 경로를 안내하는 401이다", async () => {
+  test("Antigravity 빈 스트림 재시도에서도 응답 URL을 보존해 이미지를 반환한다", async () => {
+    seedOAuthForTests("google-antigravity", {
+      access: "retry-access",
+      refresh: "retry-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "retry-project",
+    });
+    const { generateProviderImage } = await import("../scripts/lib/ohMyPiImageRuntime.ts");
+    const base64 = "cmV0cmllZC1pbWFnZQ==";
+    let fetchCalls = 0;
+
+    const image = await generateProviderImage(
+      "google-antigravity",
+      { model: "gemini-3.1-flash-image", prompt: "슬라임" },
+      {
+        apiKey: await resolveRequestApiKey("google-antigravity"),
+        fetch: async (input) => {
+          fetchCalls += 1;
+          return responseWithUrl(fetchCalls === 1 ? "" : antigravityImageSse(base64), String(input));
+        },
+      },
+    );
+
+    expect(fetchCalls).toBeGreaterThan(1);
+    expect(image.mimeType).toBe("image/jpeg");
+    expect(image.base64).toBe(base64);
+  });
+
+  test("Antigravity 안전 정책 차단은 로그인 오류로 오인하지 않는다", async () => {
+    seedOAuthForTests("google-antigravity", {
+      access: "safety-access",
+      refresh: "safety-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "safety-project",
+    });
+    const { generateProviderImage } = await import("../scripts/lib/ohMyPiImageRuntime.ts");
+    const body = JSON.stringify({
+      error: {
+        code: 400,
+        message: "Request blocked: forbidden content under safety policy",
+        status: "INVALID_ARGUMENT",
+      },
+    });
+    let failure: unknown;
+    try {
+      await generateProviderImage(
+        "google-antigravity",
+        { model: "gemini-3.1-flash-image", prompt: "슬라임" },
+        {
+          apiKey: await resolveRequestApiKey("google-antigravity"),
+          fetch: async () => new Response(body, { status: 400 }),
+        },
+      );
+    } catch (error) {
+      failure = error;
+    }
+
+    expect((failure as { status?: number }).status).toBe(502);
+    expect((failure as Error).message).toContain("Request blocked: forbidden content under safety policy");
+    expect((failure as Error).message).not.toContain("Google Antigravity 로그인");
+  });
+
+  test("Antigravity 상류 401은 제품 로그인 경로를 안내한다", async () => {
+    seedOAuthForTests("google-antigravity", {
+      access: "expired-access",
+      refresh: "expired-refresh",
+      expires: Date.now() + 60_000,
+      projectId: "expired-project",
+    });
     const { generateProviderImage } = await import("../scripts/lib/ohMyPiImageRuntime.ts");
     let failure: unknown;
     try {
       await generateProviderImage(
         "google-antigravity",
         { model: "gemini-3.1-flash-image", prompt: "슬라임" },
-        { apiKey: "invalid-credentials" },
+        {
+          apiKey: await resolveRequestApiKey("google-antigravity"),
+          fetch: async () => new Response(
+            JSON.stringify({ error: { code: 401, message: "OAuth session expired", status: "PERMISSION_DENIED" } }),
+            { status: 401 },
+          ),
+        },
       );
     } catch (error) {
       failure = error;

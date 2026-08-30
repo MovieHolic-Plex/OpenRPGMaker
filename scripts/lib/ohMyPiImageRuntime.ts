@@ -16,12 +16,9 @@ export interface GeneratedImage {
 
 const IMAGE_AUTH_MESSAGE = "이미지를 만들려면 AI 설정 → Google Antigravity 로그인에서 연결해 주세요.";
 
-function isCredentialFailure(error: unknown, message: string): boolean {
-  const status = error && typeof error === "object" && "status" in error
-    ? Number((error as { status: unknown }).status)
-    : 0;
-  return status === 401 || status === 403
-    || /\b(?:credentials?|authentication|unauthorized|forbidden|re-?authenticate|invalid[_ ]?(?:grant|token)|(?:missing|no)[_ ]?(?:api[_ ]?key|token|projectId)|access token)\b/i.test(message);
+function isCredentialFailure(upstreamStatus: number | undefined, message: string): boolean {
+  return upstreamStatus === 401 || upstreamStatus === 403
+    || /Use \/login to re-authenticate|invalid authentication credentials|Missing token or projectId|invalid_grant|UNAUTHENTICATED/i.test(message);
 }
 
 function statusError(message: string, status: number): Error & { status?: number } {
@@ -79,11 +76,15 @@ function harvestSseImages(text: string): { mimeType: string; base64: string }[] 
  */
 function harvestingFetch(
   sink: { mimeType: string; base64: string }[],
+  failureSink: { status?: number },
   baseFetch: typeof fetch,
 ): typeof fetch {
   return (async (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
     const response = await baseFetch(input, init);
-    if (!response.ok) return response;
+    if (!response.ok) {
+      failureSink.status = response.status;
+      return response;
+    }
     const text = await response.text();
     sink.push(...harvestSseImages(text));
     const replay = new Response(text, {
@@ -165,6 +166,8 @@ export async function generateProviderImage(
   if (!model) throw statusError(`oh-my-pi 카탈로그에 ${IMAGE_PROVIDER_ID} 이미지 모델이 없습니다.`, 400);
 
   const harvested: { mimeType: string; base64: string }[] = [];
+  // pi-ai는 제공자 HTTP 오류를 throw하지 않고 오류 메시지로 resolve하므로 전송 계층 상태를 따로 보존한다.
+  const upstreamFailure: { status?: number } = {};
   const context = {
     systemPrompt: [
       "You are a game art generator for a 2D top-down JRPG maker.",
@@ -178,7 +181,7 @@ export async function generateProviderImage(
   try {
     message = await complete(model as never, context as never, {
       ...(options?.apiKey ? { apiKey: options.apiKey } : {}),
-      fetch: harvestingFetch(harvested, options?.fetch ?? fetch),
+      fetch: harvestingFetch(harvested, upstreamFailure, options?.fetch ?? fetch),
       onPayload: withImageModality,
     } as never);
   } catch (error) {
@@ -190,7 +193,7 @@ export async function generateProviderImage(
     const reason = failure instanceof Error
       ? failure.message
       : failure !== undefined ? String(failure) : (message as { errorMessage?: string })?.errorMessage || "응답에 이미지가 없습니다.";
-    if (isCredentialFailure(failure, reason)) throw statusError(IMAGE_AUTH_MESSAGE, 401);
+    if (isCredentialFailure(upstreamFailure.status, reason)) throw statusError(IMAGE_AUTH_MESSAGE, 401);
     throw statusError(`이미지 생성 실패: ${reason.slice(0, 400)}`, 502);
   }
   return { provider: IMAGE_PROVIDER_ID, model: modelId, mimeType: image.mimeType, base64: image.base64 };
