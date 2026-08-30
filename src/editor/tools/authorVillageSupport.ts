@@ -1,5 +1,13 @@
-import type { AuthorVillageRequest, ConstructionDiffTotals, ConstructionOutcome, NewVillageTarget } from "@/editor/construction/contracts";
+import type {
+  AuthorVillageRequest,
+  ConstructionDiffTotals,
+  ConstructionOutcome,
+  ConstructionRect,
+  NewVillageTarget,
+} from "@/editor/construction/contracts";
+import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { MIN_SIZE } from "./village/constants";
 import type { GameMap, Project } from "@/project/types";
 import { summarizeChanges } from "./changeset";
 import { assertMapIdAvailable } from "./mapHelpers";
@@ -50,6 +58,46 @@ export function createExactVillageMap(project: Project, target: NewVillageTarget
     project.startMapId = target.mapId;
     project.startPos = { x: Math.floor(target.width / 2), y: Math.floor(target.height / 2) };
   }
+}
+
+/**
+ * 뷰포트 스냅샷 중심을 가운데로 둔 시공 사각형. 한 변은 최소 시공 크기(minSpan)이고,
+ * 맵을 벗어나면 안쪽으로 밀고, 맵 자체가 minSpan 보다 작으면 맵 크기로 줄인다.
+ * 스냅샷의 w/h(최대 16타일, DEFAULT_VIEWPORT_MAX_SPAN)는 쓰지 않는다 — 파서·빌더가 20 미만을
+ * 거부하므로(MIN_SIZE) 화면 크기를 그대로 넘기면 invalid-args 가 된다.
+ */
+export function viewportVillageBounds(
+  snapshot: { readonly mapId: string; readonly centerX: number; readonly centerY: number },
+  mapSize: { readonly width: number; readonly height: number },
+  minSpan: number = MIN_SIZE,
+): ConstructionRect {
+  const w = Math.min(minSpan, mapSize.width);
+  const h = Math.min(minSpan, mapSize.height);
+  return {
+    x: clampStart(snapshot.centerX, w, mapSize.width),
+    y: clampStart(snapshot.centerY, h, mapSize.height),
+    w,
+    h,
+  };
+}
+
+function clampStart(center: number, span: number, limit: number): number {
+  const start = Math.round(center) - Math.floor(span / 2);
+  return Math.max(0, Math.min(start, limit - span));
+}
+
+/**
+ * `kind:"existing"` + bounds 생략은 그 맵 전체 재포장이었다(2026-08-30 측정). 사용자가 (60,40)을
+ * 보며 "여기에 마을"이라 해도 (0,0)부터 덮였다. 지금 보고 있는 맵과 스냅샷의 맵이 같을 때만
+ * 화면 중심 사각형을 bounds 로 채운다 — 스냅샷이 없거나 다른 맵이면 종전 동작을 유지한다.
+ */
+export function withViewportBounds(request: AuthorVillageRequest, project: Project): AuthorVillageRequest {
+  if (request.target.kind !== "existing" || request.target.bounds) return request;
+  const snapshot = getEditorMapViewport();
+  if (!snapshot || snapshot.mapId !== request.target.mapId) return request;
+  const map = project.maps[request.target.mapId];
+  if (!map) return request;
+  return { ...request, target: { ...request.target, bounds: viewportVillageBounds(snapshot, map) } };
 }
 
 export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDomainArgs {
