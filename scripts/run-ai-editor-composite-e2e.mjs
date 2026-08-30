@@ -85,13 +85,13 @@ if (await guest.isVisible({ timeout: 5_000 }).catch(() => false)) await guest.cl
 await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 90_000 });
 await page.waitForFunction(() => typeof window.__oprnAiBridge?.send === "function", null, { timeout: 60_000 });
 
-await page.waitForFunction(
-  () => document.querySelector("[data-testid='ai-connection-status']")?.textContent?.includes("OpenAI Codex") === true,
-  null,
-  { timeout: 30_000 },
-);
-let providerLabel = (await page.getByTestId("ai-connection-status").textContent())?.trim() ?? "";
-if (!providerLabel.includes("OpenAI Codex")) throw new Error(`예상하지 않은 제공자 상태: ${providerLabel}`);
+await page.getByTestId("topbar-ai-settings").click();
+const settingsModal = page.getByTestId("ai-settings-modal");
+await settingsModal.waitFor({ state: "visible", timeout: 30_000 });
+let providerLabel = (await page.getByTestId("ai-auth-provider-help").textContent())?.trim() ?? "";
+if (!providerLabel.includes("OpenAI Codex")) throw new Error(`예상하지 않은 제공자 설정: ${providerLabel}`);
+await page.getByTestId("ai-settings-close").click();
+await settingsModal.waitFor({ state: "hidden", timeout: 15_000 });
 await page.screenshot({ path: path.join(outputDir, "live-composite-before.png"), animations: "disabled" });
 
 const turn = await page.evaluate(
@@ -130,7 +130,11 @@ if (pageShopCoverage.length === 0 || pageShopCoverage.some((covered) => !covered
 
 await page.getByTestId("toolbar-save").click();
 await page.waitForTimeout(3_000);
-providerLabel = (await page.getByTestId("ai-connection-status").textContent())?.trim() ?? providerLabel;
+await page.getByTestId("topbar-ai-settings").click();
+await settingsModal.waitFor({ state: "visible", timeout: 30_000 });
+providerLabel = (await page.getByTestId("ai-auth-provider-help").textContent())?.trim() ?? providerLabel;
+await page.getByTestId("ai-settings-close").click();
+await settingsModal.waitFor({ state: "hidden", timeout: 15_000 });
 await page.screenshot({ path: path.join(outputDir, "live-composite-applied-and-saved.png"), animations: "disabled" });
 
 const audit = Array.isArray(turn.audit) ? turn.audit : [];

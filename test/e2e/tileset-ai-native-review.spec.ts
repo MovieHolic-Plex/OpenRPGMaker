@@ -2,17 +2,30 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 
 const TILESET_ID = "easyrpg_chipset_combined_town";
 
+async function dismissBootOverlays(page: Page): Promise<void> {
+  const guest = page.getByTestId("login-guest");
+  if (await guest.isVisible({ timeout: 5_000 }).catch(() => false)) await guest.click();
+  await expect(page.getByTestId("login-modal")).toHaveCount(0);
+
+  const welcome = page.getByTestId("standard-welcome-start");
+  if (await welcome.isVisible({ timeout: 3_000 }).catch(() => false)) await welcome.click();
+  await expect(page.getByTestId("standard-welcome-card")).toHaveCount(0);
+
+  const coachSkip = page.getByTestId("coach-mark-skip");
+  if (await coachSkip.isVisible({ timeout: 3_000 }).catch(() => false)) await coachSkip.click();
+  await expect(page.locator("[data-testid^='coach-mark-']")).toHaveCount(0);
+}
+
 async function openKnowledgeWorkspace(page: Page): Promise<void> {
   await page.goto("/?freshProject=1");
-  const coachSkip = page.getByTestId("coach-mark-skip");
-  if (await coachSkip.isVisible()) await coachSkip.click();
+  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
+  await dismissBootOverlays(page);
   await page.getByTestId("menu-tools").click();
   await page.getByTestId("menu-tools-database").click();
   await page.getByTestId("db-tab-group-world").click();
   await page.getByTestId("db-tab-tilesets").click();
   await page.getByTestId("tileset-section-tab-knowledge").click();
   await page.getByTestId("tileset-edit-mode-group").click();
-  if (await coachSkip.isVisible()) await coachSkip.click();
   await expect(page.getByTestId("tileset-knowledge-template-water-autotile-3x3")).toBeVisible();
 }
 

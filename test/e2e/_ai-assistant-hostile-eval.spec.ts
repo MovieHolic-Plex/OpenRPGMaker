@@ -156,7 +156,7 @@ test("A 초보 부팅 — 첫 화면·시작 표면", async ({ page }) => {
   for (const [tid, name] of [
     ["ai-start-examples", "A03-start-examples"],
     ["ai-start-visual-gallery", "A04-visual-gallery"],
-    ["ai-connection-status", "A05-connection-status"],
+    ["topbar-ai-settings", "A05-ai-settings-entry"],
     ["ai-start-recent-work", "A06-recent-work"],
     ["ai-start-history", "A07-history"],
   ] as const) {

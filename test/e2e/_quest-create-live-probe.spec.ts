@@ -75,11 +75,11 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
     return {
       quests: project?.quests ?? null,
       eventCount,
-      connection: document.querySelector("[data-testid=ai-connection-status]")?.textContent?.trim() ?? null,
+      providerId: JSON.parse(localStorage.getItem("rpg-zzu:ai-config") ?? "{}").providerId ?? null,
       config: localStorage.getItem("rpg-zzu:ai-config"),
     };
   });
-  log(`BEFORE quests=${JSON.stringify(before.quests)} events=${before.eventCount} connection=${before.connection}`);
+  log(`BEFORE quests=${JSON.stringify(before.quests)} events=${before.eventCount} provider=${before.providerId}`);
   log(`BEFORE config=${(before.config ?? "<none>").slice(0, 300)}`);
   await page.screenshot({ path: path.join(OUT, "01-before.png") });
 
@@ -104,14 +104,14 @@ test("live: 퀘스트 만들어줘 does work in a real browser", async ({ page }
     return {
       quests: project?.quests ?? null,
       eventCount,
-      connection: document.querySelector("[data-testid=ai-connection-status]")?.textContent?.trim() ?? null,
+      providerId: JSON.parse(localStorage.getItem("rpg-zzu:ai-config") ?? "{}").providerId ?? null,
       sendDisabled: (document.querySelector("[data-testid=ai-send]") as HTMLButtonElement | null)?.disabled ?? null,
       inputValue: (document.querySelector("[data-testid=ai-input]") as HTMLTextAreaElement | null)?.value ?? null,
       panelText: (document.querySelector("[data-testid=ai-panel]")?.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 1200),
       logText,
     };
   });
-  log(`AFTER quests=${JSON.stringify(after.quests)} events=${after.eventCount} connection=${after.connection}`);
+  log(`AFTER quests=${JSON.stringify(after.quests)} events=${after.eventCount} provider=${after.providerId}`);
   log(`AFTER sendDisabled=${after.sendDisabled} input=${JSON.stringify(after.inputValue)}`);
   log(`AFTER panel=${after.panelText}`);
   for (const row of after.logText) log(`LOG ${row.slice(0, 240)}`);
