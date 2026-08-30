@@ -25,7 +25,7 @@ import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import { hasEventAiStagedDraft, renderEventAiAssist } from "./aiAssist";
+import { eventAiStagedCommands, hasEventAiStagedDraft, renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventPageFlow, renderEventPagePreview } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
@@ -169,6 +169,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     issues: activePageIssues,
     runtimeSupport: (command) => commandRuntimeSupport(command, "map"),
     pickerContext: "map",
+    openCommandPicker: (containerPath) => openCommandPickerForActions(actions, containerPath),
   });
   cmdList.querySelector(".empty-hint")?.remove();
   cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id, activePage.id));
@@ -219,6 +220,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       onMove: (path, direction) => actions.moveCommand(path, direction),
       onDelete: (path) => actions.deleteCommand(path),
       onAddNext: () => openCommandPickerForActions(actions),
+      onAddToBranch: (containerPath) => openCommandPickerForActions(actions, containerPath),
       // 빈 이벤트 CTA: 말하기 / 장소 옮기기 / 상점 열기는 피커를 거치지 않고 바로 편집면으로.
       onQuickStart: (kind) => {
         openNewEventCommandDialog(newCommand(kind), (command) => actions.addCommand([], command));
@@ -232,6 +234,24 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     applyViewMode();
   };
   let viewToggle = renderViewToggle(currentMode, changeMode);
+  const commandCount = el("span", {
+    class: "event-editor-column-count",
+    dataset: { testid: "event-editor-command-count" },
+  });
+  const refreshCommandCount = (): void => {
+    const stagedCommands = eventAiStagedCommands(mapId, eventId, activePage.id);
+    const count = totalCommandCount(stagedCommands ?? activePage.commands);
+    const staged = stagedCommands !== null;
+    commandCount.textContent = `${count}개`;
+    commandCount.title = staged
+      ? `AI 초안 적용 시 작성한 명령 ${count}개 (분기 안 명령 포함)`
+      : `작성한 명령 ${count}개 (분기 안 명령 포함)`;
+    commandCount.setAttribute(
+      "aria-label",
+      staged ? `AI 초안 적용 시 작성한 명령 ${count}개, 분기 안 명령 포함` : `작성한 명령 ${count}개, 분기 안 명령 포함`,
+    );
+  };
+  refreshCommandCount();
   // 툴바가 아직 없는 시점에도 applyViewMode 가 안전하게 호출되도록 기본값은 빈 함수다.
   let syncToolbarState: () => void = () => {};
   function applyViewMode(): void {
@@ -243,6 +263,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     const isPreview = currentMode === "preview" && !isStaged;
     const isStoryboard = currentMode === "storyboard" && !isStaged;
     const isFlow = currentMode === "flow" && !isStaged;
+    // 초안을 켜고 끄면 명령 수가 달라지므로 보기 전환마다 배지를 다시 센다.
+    refreshCommandCount();
     cmdList.hidden = isStoryboard || isPreview || isFlow || isStaged;
     stagedHost.hidden = !isStaged;
     storyboardEl.hidden = !isStoryboard;
@@ -349,11 +371,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     columnLabel(
       "commands",
       "이 페이지가 하는 일",
-      "위에서 아래로 차례대로 실행됩니다",      el("span", {
-        class: "event-editor-column-count",
-        text: `${totalCommandCount(activePage.commands)}개`,
-        dataset: { testid: "event-editor-command-count" },
-      }),
+      "위에서 아래로 차례대로 실행됩니다",
+      commandCount,
     ),
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
@@ -796,8 +815,8 @@ function activePageCommands(mapId: MapId, eventId: string, pageId: string): Comm
 }
 
 /**
- * 개수 배지는 목록에 실제로 보이는 명령 줄을 센다 — 분기 속 명령도 포함한다.
- * 상위 명령만 세면 8줄이 보이는 페이지에 `4개` 라고 적혀 배지가 화면과 어긋난다.
+ * 개수 배지는 저작한 `Command` 객체를 센다 — 분기 안에 중첩된 명령도 재귀로 포함한다.
+ * 분기 머리글·빈 분기·묶음 끝 마커는 실행 명령이 아니므로 세지 않는다.
  */
 function totalCommandCount(commands: readonly Command[]): number {
   return commands.reduce(
@@ -893,7 +912,10 @@ function renderEmptyCommandLine(
   });
 }
 
-function openCommandPickerForActions(actions: CommandListActions): void {
+function openCommandPickerForActions(
+  actions: CommandListActions,
+  containerPath: readonly number[] = [],
+): void {
   if (document.querySelector('[data-testid="event-command-picker"]')) return;
   openEventCommandPicker({
     title: "명령 추가",
@@ -901,7 +923,7 @@ function openCommandPickerForActions(actions: CommandListActions): void {
     // 명령을 고르면 피커를 먼저 닫는다. 편집 창이 피커 위에 쌓이면 확인이 뒤 창에 먹힌다.
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
-        actions.addCommand([], editedCommand);
+        actions.addCommand(containerPath, editedCommand);
       });
     },
   });

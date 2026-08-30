@@ -145,9 +145,15 @@ function stateOf(projectKey: string, key: string): PanelState {
  * 초안을 보일지 결정할 때 읽는다(렌더 순서에 상관없이 같은 답을 내야 하므로 모듈 상태를 본다).
  */
 export function hasEventAiStagedDraft(mapId: MapId, eventId: string, pageId: string): boolean {
+  return eventAiStagedCommands(mapId, eventId, pageId) !== null;
+}
+
+/** 배지·번호가 적용 전 초안 결과를 기준으로 말할 수 있도록 후보 명령 목록을 계산한다. */
+export function eventAiStagedCommands(mapId: MapId, eventId: string, pageId: string): Command[] | null {
   const { projectKey, key } = stateKeyOf(mapId, eventId, pageId);
-  if (panelStatesProjectKey !== projectKey) return false;
-  return Boolean(panelStates.get(key)?.staged);
+  if (panelStatesProjectKey !== projectKey) return null;
+  const staged = panelStates.get(key)?.staged;
+  return staged ? applyCommandDiff(staged.rows, staged.excluded) : null;
 }
 
 // 칩 배지는 한국어만 쓴다. 예전에는 `busy`/`error`/`ready`/`draft` 영문 기계 토큰이

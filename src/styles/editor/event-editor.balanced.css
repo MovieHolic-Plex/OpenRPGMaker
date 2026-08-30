@@ -685,7 +685,7 @@
   cursor: pointer;
   display: grid;
   gap: 8px;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 24px 52px minmax(0, 1fr) auto;
   padding: 8px 10px;
   text-align: left;
   width: 100%;
@@ -2022,7 +2022,20 @@ footer {
 }
 
 .event-editor .event-storyboard-branch-command {
-  grid-template-columns: 52px minmax(0, 1fr) auto;
+  grid-template-columns: 24px 52px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-storyboard-branch-step {
+  align-self: start;
+  background: var(--storyboard-accent, var(--text-3));
+  border-radius: 999px;
+  color: var(--bg-overlay);
+  display: grid;
+  font: 800 10px var(--font-mono);
+  height: 20px;
+  margin-top: 1px;
+  place-items: center;
+  width: 20px;
 }
 
 .event-editor .event-storyboard-card:hover,

@@ -93,7 +93,9 @@
 
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head {
   display: grid;
-  grid-template-columns: auto auto 3px auto 1fr auto;
+  /* 자식 수는 얼굴·지원·검사 배지 유무로 달라진다. 요약을 고정된 minmax 트랙에
+     넣어 선택 요소가 생겨도 얼굴이 1fr 를 차지하거나 요약이 암시 auto 트랙으로 밀리지 않는다. */
+  grid-template-columns: auto auto 3px auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 9px;
   padding: 7px 9px;
@@ -132,6 +134,20 @@
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-step {
   color: var(--blk-cat);
 }
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-summary {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-summary > .cmd-kind {
+  flex: 1 1 auto;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .command-runtime-badge { grid-column: 6; }
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .event-command-issue-badge { grid-column: 7; }
 
 /* ── ◆ 접두 문자를 색 거터로 ─────────────────────────────────────── */
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-prefix {
@@ -203,8 +219,8 @@
 }
 
 /* 좁은 폭에서도 **낱말을 지우지 않는다**. 예전에는 24px 글리프만 남겨서, 이 줄이 어떤
-   종류의 일인지 알려주는 유일한 표시가 칼럼이 좁아질 때 정확히 사라졌다. 1024 폭에서
-   행은 740px 이고 요약문은 넘치지 않았으므로 낱말을 지워 버는 26px 는 아무 값도 없었다. */
+   종류의 일인지 알려주는 유일한 표시가 칼럼이 좁아질 때 정확히 사라졌다. 실제 폭별 행·요약
+   기하는 `output/evidence/event-do-column/after/*.json` 이 기록한다. */
 @media (max-width: 1050px) {
   .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon {
     min-width: 0;

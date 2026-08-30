@@ -193,6 +193,17 @@ function successFailureBranches(
 }
 
 /**
+ * 빈 분기의 **상태**만 적는다. 행동을 권하는 어구는 여기에 넣지 않는다.
+ * 읽기 전용 면(AI 초안 미리보기)은 이것을 쓰고, 누를 수 있는 버튼은
+ * `branchEmptyActionLabel` 을 쓴다. 하나로 합치면 클릭해도 아무 일도 없는 자리에
+ * 「여기에 명령 추가」가 적힌다 — 이 변경이 없애려는 바로 그 결함이다.
+ */
+export const branchEmptyLabel = "비어 있음";
+
+/** 명령 피커를 여는 실제 버튼의 라벨. 빈 상태 + 지금 할 수 있는 행동을 한 줄로 말한다. */
+export const branchEmptyActionLabel = `${branchEmptyLabel} — 여기에 명령 추가`;
+
+/**
  * 목록 뷰가 분기 묶음 끝에 놓는 마커. 목록만 쓰는 chrome 이라 라벨과 분리했다.
  * 분기가 없는 명령은 `null`.
  */

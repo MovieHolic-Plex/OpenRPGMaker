@@ -12,6 +12,7 @@
 
 import { el } from "@/util/dom";
 import type { Command } from "@/project/types";
+import { branchEmptyLabel } from "@/editor/eventCommandBranches";
 import {
   countCommandDiff,
   type CommandDiffBranch,
@@ -47,7 +48,7 @@ export function renderStagedDiff(options: StagedDiffViewOptions): HTMLElement {
     dataset: { testid: "ai-event-staged" },
     attrs: { role: "list", "aria-label": "적용하면 이렇게 됩니다" },
   });
-  appendRows(host, options.rows, options);
+  appendRows(host, options.rows, options, "applied");
   if (host.childElementCount === 0) {
     host.append(el("div", { class: "empty-hint", text: "(명령 없음)" }));
   }
@@ -67,15 +68,48 @@ export function stagedDiffSummary(
   return parts.length > 0 ? parts.join(" · ") : "바뀌는 것 없음";
 }
 
+type RowProjection = "applied" | "before" | "none";
+
 function appendRows(
   host: HTMLElement,
   rows: readonly CommandDiffRow[],
   options: StagedDiffViewOptions,
+  projection: RowProjection,
 ): void {
+  let nextCommandNumber = 1;
   for (const row of rows) {
-    host.append(renderRow(row, options));
-    for (const branch of row.branches) appendBranch(host, row, branch, options);
+    const survives = rowSurvives(row, options.excluded, projection);
+    host.append(renderRow(row, survives ? nextCommandNumber : null, options));
+    if (survives) nextCommandNumber += 1;
+    const childProjection = branchProjection(row, options.excluded, projection);
+    for (const branch of row.branches) appendBranch(host, row, branch, options, childProjection);
   }
+}
+
+/** `applyCommandDiff`가 이 컨테이너에서 결과 명령 하나를 내는 행인지 판정한다. */
+function rowSurvives(
+  row: CommandDiffRow,
+  excluded: ReadonlySet<string>,
+  projection: RowProjection,
+): boolean {
+  if (projection === "none") return false;
+  if (projection === "before") return row.before !== undefined;
+  if (row.status === "add") return !excluded.has(row.id) && row.after !== undefined;
+  if (row.status === "remove") return excluded.has(row.id) && row.before !== undefined;
+  return (excluded.has(row.id) ? row.before : row.after ?? row.before) !== undefined;
+}
+
+/** 부모를 통째로 되돌리거나 빼면 자식 diff도 같은 적용 투영을 물려받는다. */
+function branchProjection(
+  row: CommandDiffRow,
+  excluded: ReadonlySet<string>,
+  projection: RowProjection,
+): RowProjection {
+  if (projection !== "applied") return projection;
+  if (row.status === "add") return excluded.has(row.id) ? "none" : "applied";
+  if (row.status === "remove") return excluded.has(row.id) ? "before" : "none";
+  if (row.status === "change" && excluded.has(row.id)) return "before";
+  return "applied";
 }
 
 function appendBranch(
@@ -83,14 +117,15 @@ function appendBranch(
   parent: CommandDiffRow,
   branch: CommandDiffBranch,
   options: StagedDiffViewOptions,
+  projection: RowProjection,
 ): void {
   // 분기 머리글은 부모 상태를 물려받는다 — 새로 생긴 fork 의 「조건이 맞을 때」도 새것이다.
   host.append(markerLine(branch.label, parent.depth, parent.status));
   if (branch.rows.length === 0) {
-    host.append(markerLine("비어 있음", parent.depth + 1, parent.status));
+    host.append(markerLine(branchEmptyLabel, parent.depth + 1, parent.status));
     return;
   }
-  appendRows(host, branch.rows, options);
+  appendRows(host, branch.rows, options, projection);
 }
 
 function markerLine(text: string, depth: number, status: CommandDiffStatus): HTMLElement {
@@ -103,7 +138,7 @@ function markerLine(text: string, depth: number, status: CommandDiffStatus): HTM
   return line;
 }
 
-function renderRow(row: CommandDiffRow, options: StagedDiffViewOptions): HTMLElement {
+function renderRow(row: CommandDiffRow, commandNumber: number | null, options: StagedDiffViewOptions): HTMLElement {
   const reverted = row.status !== "keep" && options.excluded.has(row.id);
   // 되돌린 행은 원래 모습으로 보여야 한다 — 삭제를 취소했으면 그 명령이 그대로 남는 그림이다.
   const shown: CommandDiffStatus = reverted ? "keep" : row.status;
@@ -127,6 +162,14 @@ function renderRow(row: CommandDiffRow, options: StagedDiffViewOptions): HTMLEle
     text: STATUS_MARK[shown],
     attrs: { "aria-hidden": "true" },
   }));
+  // 적용 결과에 없는 행(삭제 예정, 제외한 추가)은 번호 칸 자체를 만들지 않는다.
+  if (commandNumber !== null) {
+    head.append(el("span", {
+      class: "cmd-step",
+      text: String(commandNumber),
+      attrs: { "aria-hidden": "true" },
+    }));
+  }
 
   if (row.status === "change" && row.before && row.after) {
     head.append(el("span", {
