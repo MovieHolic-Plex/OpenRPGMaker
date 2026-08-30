@@ -23,7 +23,7 @@ mkdirSync(OUT, { recursive: true });
 /** 복원 조건: 저장된 `projectContextKey` 가 현재 프로젝트 스코프와 같아야 한다. */
 const SEED_SCOPE = "local:이슬 장터 — 30분::map_village_30_100x100";
 
-const SEED_CONVERSATION = {
+const SEED_CONVERSATION_HEAD = {
   id: "conv-reachability",
   title: "도달 가능성 게이트",
   model: "gate/model",
@@ -35,13 +35,23 @@ const SEED_CONVERSATION = {
       at: new Date().toISOString(),
     },
     {
+      // 넓은 자료는 **지난 턴**에도 있어야 한다. 최신 턴에만 두면 `.ai-turn-group` 이
+      // 다시 `overflow: hidden` 으로 회귀해도 E2E 가 못 잡는다 — 접히는 것은 지난 턴뿐이라
+      // 판정 대상이 그룹 밖에 있게 된다(적대적 검토 지적). 그래서 여기에도 열보다 넓은
+      // 코드 펜스와 표를 심는다.
       kind: "assistant",
       text: [
         "광장 남쪽에 상점 3채와 우물을 배치했습니다.",
         "",
         "```json",
-        '{ "tool": "place_structure_cluster", "mapId": "map_village_30_100x100", "assets": 4 }',
+        '{ "tool": "place_structure_cluster", "mapId": "map_village_30_100x100", "assets": 4, "anchors": ["plaza_south_gate", "well_center", "shop_row_east"] }',
         "```",
+        "",
+        "| 동 | 자리 | 크기 | 맞닿은 길 | 비고 |",
+        "| --- | --- | --- | --- | --- |",
+        "| shop_a | (24,22) | 3×3 | road_seg_2 | 광장 남서, 간판 동향 |",
+        "| shop_b | (28,22) | 3×3 | road_seg_3 | 광장 남동, 우물과 1칸 |",
+        "| well_a | (26,24) | 2×2 | road_seg_4 | 광장 정중앙 남쪽 |",
       ].join("\n"),
       at: new Date().toISOString(),
     },
@@ -94,6 +104,38 @@ const SEED_CONVERSATION = {
   projectContextKey: SEED_SCOPE,
 } as const;
 
+/**
+ * 시드가 짧으면 이 게이트는 **아무것도 못 잡는다**(2026-08-30 실측). 로그가 내용보다 크면
+ * flex 압력이 없어 `.ai-turn-group` 의 `flex`/`overflow` 를 결함 상태로 되돌려도 그대로
+ * 통과한다 — 원 결함(지난 턴이 10px 회색 띠로 눌림)은 **내용이 로그보다 길 때만** 난다.
+ */
+const PRESSURE_TURNS = Array.from({ length: 6 }, (_, index) => [
+  {
+    kind: "user" as const,
+    text: `${index + 1}차 점검: 광장 남쪽 상점 줄과 북문 길을 다시 확인해줘.`,
+    at: new Date().toISOString(),
+  },
+  {
+    kind: "assistant" as const,
+    text: [
+      `${index + 1}차 점검 결과입니다. 상점 줄은 유지하고 길만 다시 깔았습니다.`,
+      "",
+      "```",
+      `layoutPlacementValidate#${index + 1}: map_village_30_100x100`,
+      "  info  road_repaved      road_seg_7 → 북문(24,20) 과 맞닿게 재포장",
+      "  info  structure_kept    shop_a shop_b shop_c well_a — 좌표 변경 없음",
+      "  warn  tile_desc_missing 15개(12,13,44,45,46,47,88,89,90,91,120,121,122,123,124)",
+      "```",
+    ].join("\n"),
+    at: new Date().toISOString(),
+  },
+]).flat();
+
+const SEED_CONVERSATION = {
+  ...SEED_CONVERSATION_HEAD,
+  entries: [...SEED_CONVERSATION_HEAD.entries, ...PRESSURE_TURNS],
+} as const;
+
 type Unreachable = {
   readonly selector: string;
   readonly blocker: string;
@@ -123,6 +165,27 @@ async function boot(page: Page, width: number, height: number): Promise<void> {
   await page.getByTestId("ai-input").waitFor({ state: "visible", timeout: 20_000 });
   await page.waitForFunction(() =>
     document.querySelectorAll("[data-testid^='ai-command-row']").length > 0, undefined, { timeout: 20_000 });
+}
+
+/**
+ * 대화 로그가 **실측 가능한 표면**을 가졌는지 본다. 이 게이트는 오래도록 float(로그 0x0)과
+ * 접힌 glass(로그 452x14)를 재고 있었다 — 그 12개 상태는 통과가 아니라 **빈 통과**였다
+ * (4차 적대적 검토 지적, 2026-08-30 실측).
+ */
+async function logSurface(page: Page): Promise<{ readonly width: number; readonly height: number }> {
+  return page.evaluate(() => {
+    const rect = document.querySelector<HTMLElement>(".ai-chat-log")?.getBoundingClientRect();
+    return { width: Math.round(rect?.width ?? 0), height: Math.round(rect?.height ?? 0) };
+  });
+}
+
+/** glass 는 기본이 접힘(fold)이다 — 셰브론이 그 도크에서는 fold 토글이므로 눌러 펼친다. */
+async function unfoldGlass(page: Page): Promise<void> {
+  const folded = await page.evaluate(() =>
+    document.querySelector(".ai-chat-panel")?.classList.contains("is-glass-folded") === true);
+  if (!folded) return;
+  await page.evaluate(() => document.querySelector<HTMLElement>("[data-testid='ai-collapse']")?.click());
+  await expect(page.locator(".ai-chat-panel.is-glass-folded")).toHaveCount(0);
 }
 
 async function setDock(page: Page, dock: string): Promise<string> {
@@ -166,7 +229,9 @@ async function unreachable(page: Page): Promise<readonly Unreachable[]> {
     const shown = (node: HTMLElement): boolean => {
       const s = getComputedStyle(node);
       return s.display !== "none" && s.visibility !== "hidden" && Number(s.opacity) !== 0
-        && node.offsetWidth > 0 && node.offsetHeight > 0;
+        // 한 축만 0 인 요소(본문 0×485 같은 눌림)를 여기서 걸러 버리면 아래 두-축-작음
+        // 판정이 죽은 코드가 된다 — 하나라도 살아 있으면 통과시키고 걸러내기는 그쪽에 맡긴다.
+        && (node.offsetWidth > 0 || node.offsetHeight > 0);
     };
     /** 접힘/투명 조상 안쪽은 판정하지 않는다(의도된 축소이지 잘림이 아니다). */
     const hidden = (node: HTMLElement): boolean => {
@@ -405,6 +470,36 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
     await boot(page, viewport.width, viewport.height);
     for (const dock of ["side", "float", "glass"] as const) {
       const applied = await setDock(page, dock);
+      if (applied === "glass") await unfoldGlass(page);
+      const surface = await logSurface(page);
+      if (applied === "float") {
+        // float 은 **컴포저 캡슐**이다 — 대화 본문을 띄우지 않는다(로그 0x0). 이 도크의 대화
+        // 측정은 아래 `history` 상태가 맡는다. 계약을 못 박아 두면, 나중에 누가 float 에 본문을
+        // 띄우면서 크기를 안 줄 때 이 줄이 붉은불이 된다.
+        expect(surface.height, `float 은 컴포저 전용이어야 한다 (로그 ${surface.width}x${surface.height})`).toBe(0);
+      } else {
+        expect(surface.height, `${applied} 의 대화 로그가 사실상 없다 (${surface.width}x${surface.height})`)
+          .toBeGreaterThan(120);
+        // 원 결함을 **이름 그대로** 잰다: 접힌 지난 턴은 토글 한 줄이므로 그보다 낮아질 수 없다.
+        // `overflow: hidden`(자동 최소 크기 0) 과 축소 가능한 `flex` 가 **함께** 돌아오면 여기서
+        // 잡힌다 — 둘 중 하나만 되돌린 변이가 통과하는 것은 옳다(각각이 독립적으로 충분한 방어).
+        const squeezedGroups = await page.evaluate(() =>
+          [...document.querySelectorAll<HTMLElement>(".ai-chat-log .ai-turn-group")]
+            .map((group) => ({
+              height: Math.round(group.getBoundingClientRect().height),
+              toggle: Math.round(
+                group.querySelector<HTMLElement>(".ai-turn-group-toggle")?.getBoundingClientRect().height ?? 0),
+            }))
+            .filter((row) => row.toggle > 0 && row.height < row.toggle));
+        expect(squeezedGroups, `${applied}: 지난 턴 그룹이 토글보다 낮게 눌렸다 ${JSON.stringify(squeezedGroups)}`)
+          .toEqual([]);
+        const pressure = await page.evaluate(() => {
+          const log = document.querySelector<HTMLElement>(".ai-chat-log");
+          return log ? log.scrollHeight - log.clientHeight : 0;
+        });
+        expect(pressure, `${applied} 로그에 flex 압력이 없다 — 시드가 짧아졌거나, 내용이 스크롤 대신 눌려 들어갔다`)
+          .toBeGreaterThan(40);
+      }
       await unfoldIfFolded(page);
 
       // 스크린샷은 **판정 전에** 찍는다 — 판정은 조상 스크롤러를 전부 움직이므로 그 뒤의 화면은
@@ -428,6 +523,11 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
           [...(log?.querySelectorAll<HTMLDetailsElement>("details") ?? [])].map((d) => d.open);
         for (const node of document.querySelectorAll<HTMLDetailsElement>(".ai-chat-log details")) node.open = true;
       });
+      // 펼침이 아무것도 바꾸지 않은 독은 "펼침" 측정이 빈 통과가 된다 — float 의
+      // restored/expanded 스크린샷이 바이트까지 같았다(적대적 검토 지적 ③). 펼친 결과가
+      // 실제로 있는지 못 박고 지나간다.
+      await expect(page.locator(".ai-chat-log details[open]").first()).toBeAttached();
+      await expect(page.locator(".ai-turn-group:not(.is-collapsed)").first()).toBeAttached();
       if (viewport.name === "1280x800") {
         await page.screenshot({ path: path.join(OUT, `${applied}-2-expanded.png`) });
       }
