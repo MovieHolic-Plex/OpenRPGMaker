@@ -560,7 +560,7 @@ const placeNpc: ToolDefinition = {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
-    assertEventShape(event);
+    assertEventShape(event, normalizationWarnings);
     upsertEventIntoMap(map, event);
     const adjusted = finalX !== requestedX || finalY !== requestedY;
     const warnings = [
@@ -817,7 +817,7 @@ const makeVillager: ToolDefinition = {
         ...(talkFriendship ? { talkFriendship } : {}),
       };
     }
-    assertEventShape(event);
+    assertEventShape(event, warnings);
     upsertEventIntoMap(map, event);
     const finalX = reusedEvent?.x ?? home.x;
     const finalY = reusedEvent?.y ?? home.y;

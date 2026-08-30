@@ -55,11 +55,15 @@
 페이지 1(무조건)/2(`selfSwitch A`)/3(`selfSwitch B`)로 **옳게** 나눴는데 `setSelfSwitch` 를
 하나도 넣지 않았다 — 조건은 맞고 가려짐도 없는데 2·3 페이지가 영원히 잠겼다. 결과가 같으므로
 같이 잡는다: `findUnwrittenSelfSwitchGates` 는 페이지 조건이 요구하는 `selfSwitch`(value:true) 를
-그 이벤트의 **어느 페이지 커맨드에서도**(fork·choices·loop 안쪽까지 내려가) 켜지 않으면 지목한다.
-전역 `switch` 는 기존 `story-flag:read-without-write` 가 이미 보므로 중복하지 않는다.
+알려진 커맨드 트리의 어디에서도 켜지 않으면 지목한다. 이 순회는 커맨드 union의 중첩 shape에
+묶이지 않고 모든 배열·객체를 내려가므로 `choices.options[].branch`, `cancelBranch`, `fork`, `loop`,
+전투·상점 등의 분기까지 포함한다. 단 `callCommonEvent`, `callMapEvent`, `battleProcessing` 은 호출한
+이벤트의 self switch를 외부 커맨드가 쓸 수 있어 write set을 알 수 없으므로, false positive를 피하려고
+그 이벤트의 gate 판정을 생략한다. 전역 `switch` 는 기존 `story-flag:read-without-write` 가 이미 보므로
+중복하지 않는다.
 린트 코드는 `event-selfswitch-gate-unwritten`, explain_event 는 `unwrittenSelfSwitchKeys`.
 
-계약 테스트: `test/aiEventPageSemantics.test.ts`(21건), 예산 고정은
+계약 테스트: `test/aiEventPageSemantics.test.ts`(29건), 예산 고정은
 `test/aiToolCapabilityIndex.test.ts`.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
