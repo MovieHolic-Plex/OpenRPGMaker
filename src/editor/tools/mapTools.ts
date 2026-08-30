@@ -1484,6 +1484,7 @@ const createFarmPlot: ToolDefinition = {
   name: "create_farm_plot",
   description: "맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다.",
   mode: "write",
+  domains: ["database", "map"],
   parameters: {
     type: "object",
     properties: {

@@ -24,7 +24,8 @@ import {
   type FieldSpec,
 } from "@/editor/eventCommands/schema/fieldTypes";
 import { numberInput } from "./commandBodyAdvanced";
-import { amountStepper, segmentedSelect } from "./recordPicker";
+import { amountStepper, recordPickerWithPreview, segmentedSelect } from "./recordPicker";
+import { listMovieResources } from "./playMoviePreview";
 import { actorPicker, itemPicker, mapPicker } from "./sharedPickers";
 import { switchPicker, variablePicker } from "./switchVariablePicker";
 import type { CommandEditContext } from "./types";
@@ -374,6 +375,14 @@ function renderRecordField(
       return itemPicker({ selectedId, testid: `${testid}-picker`, allowEmpty: spec.allowEmpty, onChange }).root;
     case "map":
       return mapPicker({ selectedId, testid: `${testid}-picker`, onChange }).root;
+    case "movie":
+      return recordPickerWithPreview({
+        records: listMovieResources(store.getCurrent()),
+        selectedId,
+        placeholder: "동영상 선택",
+        testid: `${testid}-picker`,
+        onChange,
+      }).root;
     default: {
       // 아직 전용 피커가 없는 소스는 자유 입력으로 두되, 소스를 표식에 남긴다.
       const input = el("input", {

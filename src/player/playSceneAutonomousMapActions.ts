@@ -1,5 +1,6 @@
 import { canMoveFootprint, inBounds } from "@/project/collision";
 import { UNIT_FOOTPRINT, passageBounds } from "@/project/footprint";
+import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import type { CharacterFootprint } from "@/project/types";
 import { store } from "@/project/store";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
@@ -95,6 +96,11 @@ function leg(
     toX,
     toY,
     self.passRows
+  ) && !isSpatialPlacementBlocking(
+    request.project,
+    request.scene.session,
+    request.scene.map.id,
+    passageBounds(toX, toY, self.fp, self.passRows),
   );
 }
 

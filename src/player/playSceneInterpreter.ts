@@ -193,10 +193,14 @@ export async function runCommands(
     let result = interpreter.start();
     scene.refreshRuntimeSurfaces();
     while (result.kind !== "done") {
+      if (isCutsceneSkippable(scene.session)) {
+        scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
+      }
       result = await consumeBlockingStep(scene, interpreter, result, currentEventId, skipController);
     }
   } finally {
     skipController.dispose();
+    scene.clearRuntimeOverlay("cutscene-skip-hint");
     releaseCutsceneControlForOwner(scene.session, currentEventId);
     scene.running = options.allowNested === true ? previousRunning : false;
     scene.lastActionTargetKey = "";
@@ -376,11 +380,19 @@ async function consumeBlockingStep(
       if (target === PLAYER_MOVE_TARGET) {
         // 주인공 강제 이동: 이벤트 무버가 아니라 플레이어를 한 칸씩 걷게 한다.
         startPlayerRoute(scene, step.moves, step.repeat);
-        if (step.wait) await waitForPlayerRouteComplete(scene);
+        if (step.wait) {
+          await Promise.race([waitForPlayerRouteComplete(scene), skipController.waitForSkip()]);
+        }
       } else {
         scene.registerAutonomousMover(target, step.moves, step.repeat);
         scene.commandMoveRouteEventIds.add(target);
-        if (step.wait) await waitForMoverComplete(scene, target);
+        if (step.wait) {
+          await Promise.race([waitForMoverComplete(scene, target), skipController.waitForSkip()]);
+        }
+      }
+      {
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
       }
       return resumeAfterSurface(scene, interpreter);
     }
@@ -441,9 +453,12 @@ async function consumeBlockingStep(
     case "scrollMap":
       await scene.panScreen(step);
       return resumeAfterSurface(scene, interpreter);
-    case "cameraControl":
-      await applyCameraControl(scene, step);
+    case "cameraControl": {
+      await Promise.race([applyCameraControl(scene, step), skipController.waitForSkip()]);
+      const skipped = skipController.takeResult();
+      if (skipped) return skipped;
       return resumeAfterSurface(scene, interpreter);
+    }
     case "setLighting":
       await applyLightingStep(scene, step);
       return resumeAfterSurface(scene, interpreter);

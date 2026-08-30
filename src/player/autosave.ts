@@ -13,13 +13,13 @@ export type { AutosaveTrigger } from "@/player/saveSlots";
 /** 오토세이브 최소 간격. 연속 전이/연전에서 localStorage 직렬화를 난사하지 않기 위한 디바운스. */
 export const AUTOSAVE_DEBOUNCE_MS = 5000;
 
-type AutosavePolicySession = Pick<PlaySession, "flags"> & {
+type AutosavePolicySession = Pick<PlaySession, "currentMapId" | "flags"> & {
   readonly m2Runtime?: PlaySession["m2Runtime"];
 };
 
 /**
  * 오토세이브 정책(순수 함수).
- * ① Change Save Access(m2Runtime.access.save === false)면 skip — 수동 세이브 금지 컨텍스트 존중.
+ * ① Change Save Access(m2Runtime.access.save === false) 또는 현재 맵 disableSave면 skip.
  * ② 마지막 오토세이브로부터 AUTOSAVE_DEBOUNCE_MS 미만이면 skip.
  * ③ 컷신 입력 잠금 중이면 skip — 연출 도중 어중간한 지점을 굽지 않는다.
  * trigger 는 정책상 대칭이지만 시그니처에 남겨 향후 트리거별 정책 분기를 허용한다.
@@ -29,8 +29,10 @@ export function shouldAutosave(
   _trigger: AutosaveTrigger,
   lastAutosaveAtMs: number | null,
   nowMs: number,
+  project?: Pick<Project, "maps">,
 ): boolean {
   if (session.m2Runtime?.access?.save === false) return false;
+  if (project?.maps[session.currentMapId]?.disableSave === true) return false;
   if (isCutsceneInputLocked(session)) return false;
   if (lastAutosaveAtMs !== null && nowMs - lastAutosaveAtMs < AUTOSAVE_DEBOUNCE_MS) return false;
   return true;
@@ -82,7 +84,7 @@ export function maybeAutosave(
 ): boolean {
   const storage = resolveLocalStorage();
   if (!storage) return false;
-  if (!shouldAutosave(session, trigger, lastAutosaveAtMs, nowMs)) return false;
+  if (!shouldAutosave(session, trigger, lastAutosaveAtMs, nowMs, project)) return false;
   const written = performAutosave(project, session, storage, trigger);
   if (!written) return false;
   lastAutosaveAtMs = nowMs;

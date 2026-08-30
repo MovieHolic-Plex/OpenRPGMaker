@@ -493,8 +493,8 @@ function applyExposureLimit(exposed: readonly ToolDefinition[], domains: Readonl
     if (limited.length <= MAX_EXPOSED_TOOLS) break;
     removed.add(domain);
     limited = limited.filter((tool) => {
-      if (tool.domains?.includes("core") || !tool.domains) return true;
-      return !tool.domains.some((toolDomain) => removed.has(toolDomain));
+      if (isPinnedTool(tool, domains) || tool.domains?.includes("core") || !tool.domains) return true;
+      return tool.domains.some((toolDomain) => !removed.has(toolDomain));
     });
   }
   return trimToExposureCap(limited, domains);
