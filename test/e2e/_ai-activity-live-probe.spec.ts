@@ -172,8 +172,10 @@ test("라이브 활동 행이 페인트되고 실제 도로 고스트 칩이 영
 
   plan.mapId = await bootEditor(page);
   await page.evaluate(async () => {
-    const { editorState } = await import(/* @vite-ignore */ "/src/editor/editorState.ts") as typeof import("@/editor/editorState");
-    editorState.set({ zoom: 2 });
+    // vite dev 서버만 해석하는 런타임 경로라 리터럴로 두면 tsc 가 TS2307 을 낸다.
+    const modulePath: string = "/src/editor/editorState.ts";
+    const mod = await import(/* @vite-ignore */ modulePath) as typeof import("@/editor/editorState");
+    mod.editorState.set({ zoom: 2 });
   });
   await expect.poll(async () => page.evaluate(() => (
     (window as unknown as { __oprnEditCamera?: () => { zoom: number } }).__oprnEditCamera?.().zoom ?? 0
