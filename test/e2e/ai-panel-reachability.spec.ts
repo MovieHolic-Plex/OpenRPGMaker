@@ -480,12 +480,6 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
       } else {
         expect(surface.height, `${applied} 의 대화 로그가 사실상 없다 (${surface.width}x${surface.height})`)
           .toBeGreaterThan(120);
-        const pressure = await page.evaluate(() => {
-          const log = document.querySelector<HTMLElement>(".ai-chat-log");
-          return log ? log.scrollHeight - log.clientHeight : 0;
-        });
-        expect(pressure, `${applied} 로그에 flex 압력이 없다 — 시드가 짧아지면 이 게이트는 아무것도 못 잡는다`)
-          .toBeGreaterThan(40);
         // 원 결함을 **이름 그대로** 잰다: 접힌 지난 턴은 토글 한 줄이므로 그보다 낮아질 수 없다.
         // `overflow: hidden`(자동 최소 크기 0) 과 축소 가능한 `flex` 가 **함께** 돌아오면 여기서
         // 잡힌다 — 둘 중 하나만 되돌린 변이가 통과하는 것은 옳다(각각이 독립적으로 충분한 방어).
@@ -499,6 +493,12 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
             .filter((row) => row.toggle > 0 && row.height < row.toggle));
         expect(squeezedGroups, `${applied}: 지난 턴 그룹이 토글보다 낮게 눌렸다 ${JSON.stringify(squeezedGroups)}`)
           .toEqual([]);
+        const pressure = await page.evaluate(() => {
+          const log = document.querySelector<HTMLElement>(".ai-chat-log");
+          return log ? log.scrollHeight - log.clientHeight : 0;
+        });
+        expect(pressure, `${applied} 로그에 flex 압력이 없다 — 시드가 짧아졌거나, 내용이 스크롤 대신 눌려 들어갔다`)
+          .toBeGreaterThan(40);
       }
       await unfoldIfFolded(page);
 
