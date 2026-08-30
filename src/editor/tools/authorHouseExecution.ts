@@ -8,7 +8,7 @@ import type {
 import { parseAuthorHouseRequest } from "@/editor/construction/parseHouseRequest";
 import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
-import type { Project } from "@/project/types";
+import type { GameMap, Project } from "@/project/types";
 
 import { summarizeChanges } from "./changeset";
 import {
@@ -23,6 +23,7 @@ import type {
 import { buildHouseKit, type HouseKitBuildData } from "./houseKitDomain";
 import { buildHouseLots, type HouseLotBuildData } from "./houseLotDomain";
 import { isYardDecorKind, type YardDecorPlan } from "./houseLotDecor";
+import { detectHouses, houseVarietyReport, houseVarietySummary, type HouseRect } from "./houseVariety";
 import { ToolError, type ChangeSummary, type ToolExecResult } from "./types";
 
 export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unknown>): ToolExecResult {
@@ -39,6 +40,13 @@ export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unkno
   const changes = describeAuthorHouseChanges(before, draft);
   const diff = summarizeChanges(before, draft);
   validateAuthorHousePostconditions({ before, after: draft, request, houses: execution.houses, changes, diff });
+  // 시공한 자리를 즉시 되읽어 모양·킷 분포를 낸다. 단조로우면 경고로 되먹여 다음 턴을 유도한다
+  // (2026-08-31: kitId 만 흔들라는 지시 아래 같은 사각형만 깔리던 결함의 관찰 고리).
+  const variety = houseVarietyReport(detectHouses(draft.maps[request.mapId] as GameMap, neighbourhood(execution.houses)));
+  const varietyWarnings = variety.verdict === "diverse" || variety.houses <= 1
+    ? []
+    : [`집 다양성 ${variety.verdict}: ${houseVarietySummary(variety)}. ${variety.advice.join(" ")} (확인: look_at_houses)`];
+  const warnings = [...execution.warnings, ...varietyWarnings];
   const construction: ConstructionOutcome = {
     executionOk: true,
     applied: true,
@@ -52,14 +60,26 @@ export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unkno
     target: { kind: "existing", mapId: request.mapId },
     counts: { requested: requestedCount(request), actual: execution.houses.length },
     diff: constructionDiff(diff),
-    warnings: execution.warnings,
+    warnings,
   };
-  const data: AuthorHouseResultData = { construction, houses: execution.houses, changes };
+  const data: AuthorHouseResultData = { construction, houses: execution.houses, changes, variety };
   return {
-    summary: execution.summary,
-    ...(execution.warnings.length === 0 ? {} : { warnings: [...execution.warnings] }),
+    summary: `${execution.summary} · ${houseVarietySummary(variety)}`,
+    ...(warnings.length === 0 ? {} : { warnings }),
     data,
   };
+}
+
+/** 시공 자리 + 여백 3칸 — 이웃한 기존 집까지 함께 세서 "옆집과 똑같은지"를 본다. */
+function neighbourhood(houses: readonly AuthorHouseExecution[]): HouseRect | undefined {
+  const wings = houses.flatMap((house) => [...house.wings]);
+  if (wings.length === 0) return undefined;
+  const pad = 3;
+  const minX = Math.min(...wings.map((wing) => wing.x)) - pad;
+  const minY = Math.min(...wings.map((wing) => wing.y)) - pad;
+  const maxX = Math.max(...wings.map((wing) => wing.x + wing.w)) + pad;
+  const maxY = Math.max(...wings.map((wing) => wing.y + wing.h)) + pad;
+  return { x: Math.max(0, minX), y: Math.max(0, minY), w: maxX - Math.max(0, minX), h: maxY - Math.max(0, minY) };
 }
 
 type HouseBuildExecution = {
@@ -80,6 +100,7 @@ function buildRequestedHouses(draft: Project, request: AuthorHouseRequest): Hous
         interior: request.interior === "linked-interior",
         ...(request.ownerName === undefined ? {} : { ownerName: request.ownerName }),
         ...(request.windows === undefined ? {} : { windows: request.windows }),
+        ...shapeInput(request),
       });
       return {
         summary: result.summary,
@@ -98,6 +119,7 @@ function buildRequestedHouses(draft: Project, request: AuthorHouseRequest): Hous
           interior: house.interior === "linked-interior",
           ...(house.ownerName === undefined ? {} : { ownerName: house.ownerName }),
           ...(house.windows === undefined ? {} : { windows: house.windows }),
+          ...shapeInput(house),
           yard: house.yard.map(yardPlan),
         })),
       });
@@ -128,6 +150,23 @@ function assertCompleteYards(mapId: string, data: HouseLotBuildData): void {
       }
     }
   }
+}
+
+type ShapeInput = {
+  readonly stories?: 1 | 2 | 3;
+  readonly lowWall?: boolean;
+  readonly chimney?: boolean;
+  readonly roofDeck?: boolean;
+};
+
+/** 형태 어휘를 도메인 입력으로 옮긴다. templateId 는 파서가 이미 wings 로 전개했다. */
+function shapeInput(plan: Pick<AuthorHousePlan, "stories" | "lowWall" | "chimney" | "roofDeck">): ShapeInput {
+  return {
+    ...(plan.stories === undefined ? {} : { stories: plan.stories }),
+    ...(plan.lowWall === undefined ? {} : { lowWall: plan.lowWall }),
+    ...(plan.chimney === undefined ? {} : { chimney: plan.chimney }),
+    ...(plan.roofDeck === undefined ? {} : { roofDeck: plan.roofDeck }),
+  };
 }
 
 function yardPlan(intent: AuthorHousePlan["yard"][number]): YardDecorPlan {

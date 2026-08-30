@@ -3,7 +3,6 @@ import {
   stampFootprintHouseKit,
   type FootprintWing,
   type HouseKitId,
-  type HouseKitWindowsOption,
 } from "@/editor/houseKit";
 import {
   createHouseDoorEvent,
@@ -16,10 +15,14 @@ import {
 import type { MapId, Project } from "@/project/types";
 import {
   appendTreeChildOnce,
+  applyHouseRoofDeck,
   ensureDoorFrontPassable,
+  houseExteriorPlan,
+  houseInteriorStories,
   seedFromString,
   uniqueProjectId,
   upsertEvent,
+  type HouseShapeOptions,
 } from "./houseKitDraftSupport";
 import { ToolError } from "./types";
 import { placeHouseLotFences } from "./village/fences";
@@ -38,7 +41,8 @@ export const PUBLIC_HOUSE_KIT_IDS = [
 
 export const INTERNAL_ONLY_HOUSE_KIT_IDS = [] as const satisfies readonly HouseKitId[];
 
-export type BuildHouseKitInput = {
+/** 형태 축(stories·lowWall·roofDeck·chimney·windows)은 HouseShapeOptions 가 정본이다. */
+export type BuildHouseKitInput = HouseShapeOptions & {
   readonly mapId: MapId;
   readonly kitId: HouseKitId;
   readonly wings: readonly FootprintWing[];
@@ -46,13 +50,10 @@ export type BuildHouseKitInput = {
   readonly doorEvent: boolean;
   readonly interior: boolean;
   readonly ownerName?: string;
-  readonly windows?: HouseKitWindowsOption;
   /** 앞마당 울타리+게이트 — 마을 파이프라인 정본(placeHouseLotFences) 재사용. 기본 꺼짐. */
   readonly fence?: boolean;
   /** 문 위 최상단 벽에 깃발 208/209 페어(village/decor 문법). 기본 꺼짐. */
   readonly banner?: boolean;
-  /** 우측 사선 지붕 굴뚝 326(상위). 기본 꺼짐. */
-  readonly chimney?: boolean;
 };
 
 export type HouseKitInteriorData = {
@@ -109,15 +110,12 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     );
   }
 
-  const result = stampFootprintHouseKit(map, {
-    kitId: input.kitId,
-    wings: input.wings,
-    ...(input.windows === undefined ? {} : { windows: input.windows }),
-    ...(input.chimney ? { chimney: true } : {}),
-  });
+  const shape = houseExteriorPlan(input);
+  const result = stampFootprintHouseKit(map, { kitId: input.kitId, wings: input.wings, ...shape.stampOptions });
   if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId: input.mapId });
 
   const warnings: string[] = [];
+  const deckApplied = applyHouseRoofDeck(map, input.wings, result.doorAt, input.roofDeck);
   let doorNote = "문 없음";
   let interiorData: HouseKitInteriorData | undefined;
   if (input.door && result.doorAt) {
@@ -139,11 +137,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
       const exitEventId = uniqueProjectId(draft, "ev_house_exit", base);
       const ownerName = input.ownerName?.trim() || map.name;
       const footprintArea = input.wings.reduce((sum, wing) => sum + wing.w * wing.h, 0);
-      const stories: HouseStoryCount = input.wings.some((wing) => wing.h >= 11)
-        ? 3
-        : input.wings.some((wing) => wing.h >= 9)
-          ? 2
-          : 1;
+      const stories = houseInteriorStories(input.stories, input.wings);
       const interior = createHouseInteriorMap({
         id: interiorMapId,
         name: `${ownerName}의 집 내부`,
@@ -214,13 +208,14 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         doorAt: { x: doorX, y: doorY },
         front: { x: doorX, y: doorY + 1 },
         kitId: input.kitId,
-        stories: 1,
+        stories: shape.stories,
         templateId: "house-kit-single",
       }], seedFromString(`${map.id}_fence_${doorX}_${doorY}`));
       decorNotes.push("울타리+게이트");
     }
   }
 
+  if (deckApplied) decorNotes.push("옥상 데크+사다리");
   const windowNote = input.windows === false ? "창문 없음" : "창문 자동";
   const baseData: HouseKitBuildBaseData = {
     doorAt: result.doorAt ?? null,
@@ -230,7 +225,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
   const data: HouseKitBuildData = interiorData ? { ...baseData, ...interiorData } : baseData;
   const decorNote = decorNotes.length > 0 ? `, 장식(${decorNotes.join("·")})` : "";
   return {
-    summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${input.wings.length}개, ${doorNote}, ${windowNote}${decorNote}. 집 키트 규칙 적용 완료.`,
+    summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${input.wings.length}개${shape.note}, ${doorNote}, ${windowNote}${decorNote}. 집 키트 규칙 적용 완료.`,
     ...(warnings.length > 0 ? { warnings } : {}),
     data,
   };

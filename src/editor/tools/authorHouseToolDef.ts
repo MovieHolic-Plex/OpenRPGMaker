@@ -1,12 +1,18 @@
 import { ALL_HOUSE_KIT_IDS } from "@/editor/houseKit";
+import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { executeAuthorHouse } from "./authorHouseExecution";
 import type { ToolDefinition } from "./types";
 
 const KIT_IDS = [...ALL_HOUSE_KIT_IDS];
+const TEMPLATE_IDS = HOUSE_TEMPLATE_DEFS.map((def) => def.id);
+/** 스키마 설명용 — "이 id 는 이런 꼴" 을 모델이 알아야 골라 쓴다. */
+const TEMPLATE_CATALOG = HOUSE_TEMPLATE_DEFS.map((def) => `${def.id}(${def.name} ${def.w}×${def.h})`).join(", ");
 
 const WING_SCHEMA = {
   type: "object",
-  description: "집 몸통 직사각형. w(폭) 최소 3, h(높이) 최소 5. 지붕+벽을 포함하므로 h≥5 필수.",
+  description:
+    "집 몸통 직사각형. w(폭) 최소 3, h(높이) 최소 5. 지붕+벽을 포함하므로 h≥5 필수. "
+    + "templateId 를 함께 주면 wings[0]의 x·y 만 앵커로 쓰이고 w·h 는 카탈로그 치수로 대체된다.",
   properties: {
     x: { type: "integer", minimum: 0, description: "맵 좌측 기준 열 (≥0)" },
     y: { type: "integer", minimum: 0, description: "맵 상단 기준 행 (≥0)" },
@@ -24,17 +30,46 @@ const WINDOWS_SCHEMA = {
   },
 } as const;
 
+// 형태 축 4개. kitId(색)만 흔들면 같은 실루엣의 색만 바뀐 집이 나온다 —
+// 2026-08-31 결함: kitId 6종은 지붕색 3가지로 접혀서 "다양성 확보" 지시를 지켜도 단조로웠다.
+const SHAPE_PROPERTIES = {
+  templateId: {
+    type: "string",
+    enum: TEMPLATE_IDS,
+    description:
+      `외장 형태 카탈로그(${TEMPLATE_IDS.length}종). **집마다 서로 다른 값을 써서 실루엣을 갈라라** — `
+      + `ㄱ자·ㄷ자·중정·현관 돌출·A자 지붕·옥상 데크는 이 값으로만 나온다. 목록: ${TEMPLATE_CATALOG}`,
+  },
+  stories: {
+    type: "integer",
+    enum: [1, 2, 3],
+    description: "외장 층수(벽 밴드 행 수). 2층은 wing h≥9, 3층은 h≥11 필요. 실내 층수도 여기에 맞춰진다.",
+  },
+  lowWall: {
+    type: "boolean",
+    description: "낮은 벽(상단+하단 2행) — 헛간·창고·오두막. 창문이 없어진다. stories 를 무시한다.",
+  },
+  chimney: { type: "boolean", description: "우측 사선 지붕에 굴뚝. 실루엣에 변화를 준다." },
+  roofDeck: {
+    type: "boolean",
+    description: "옥상 판자 데크 + 벽면 사다리. 파랑 평지붕(blue-stone/slate-wood)에서만 의미가 있다.",
+  },
+} as const;
+
 const HOUSE_PLAN_SCHEMA = {
   type: "object",
-  description: "개별 집 계획. 각 집에 서로 다른 kitId를 써서 외관 다양성을 확보하라.",
+  description:
+    "개별 집 계획. **각 집에 서로 다른 templateId 와 kitId 를 배정하라** — templateId 가 실루엣(모양), "
+    + "kitId 가 색이다. 같은 templateId 를 반복하면 결과 경고에 monotonous 로 잡힌다.",
   properties: {
-    kitId: { type: "string", enum: KIT_IDS, description: "집 외관 키트. 집마다 다르게 선택." },
-    wings: { type: "array", items: WING_SCHEMA, description: "집 몸통(1개 권장). w≥3, h≥5." },
+    kitId: { type: "string", enum: KIT_IDS, description: "집 외관 키트(색). 집마다 다르게 선택." },
+    wings: { type: "array", items: WING_SCHEMA, description: "집 몸통. templateId 를 쓰면 wings[0]은 앵커(좌상단)." },
     interior: { type: "string", enum: ["exterior-only", "linked-interior"] },
     door: { type: "boolean" },
     ownerName: { type: "string", description: "주민 이름 (NPC/이벤트용)" },
     windows: WINDOWS_SCHEMA,
     yard: { type: "array", items: { type: "string", enum: ["firewood", "mailbox", "pot", "jar", "bench_h", "bench_v", "flowers", "fruit_box", "wood_box", "table_h", "sign"] }, description: "마당 소품. 예: [\"firewood\",\"mailbox\",\"pot\",\"bench_h\",\"flowers\"]" },
+    ...SHAPE_PROPERTIES,
   },
   required: ["kitId", "wings", "interior", "door", "yard"],
 } as const;
@@ -43,9 +78,10 @@ const EXAMPLE = {
   kind: "lots",
   mapId: "map_1",
   houses: [
-    { kitId: "blue-stone", wings: [{ x: 2, y: 1, w: 5, h: 6 }], interior: "exterior-only", door: true, ownerName: "대장장이", windows: {}, yard: ["firewood", "pot"] },
-    { kitId: "bright-plaster", wings: [{ x: 12, y: 1, w: 6, h: 5 }], interior: "exterior-only", door: true, ownerName: "약초사", windows: { spacing: 2 }, yard: ["flowers", "bench_h"] },
-    { kitId: "amber-wood", wings: [{ x: 7, y: 10, w: 5, h: 5 }], interior: "exterior-only", door: true, ownerName: "어부", windows: {}, yard: ["mailbox"] },
+    { kitId: "blue-stone", templateId: "l", wings: [{ x: 2, y: 1, w: 6, h: 8 }], interior: "exterior-only", door: true, ownerName: "대장장이", windows: {}, chimney: true, yard: ["firewood", "pot"] },
+    { kitId: "bright-plaster", templateId: "rect-2f", wings: [{ x: 12, y: 1, w: 7, h: 9 }], interior: "exterior-only", door: true, ownerName: "약초사", windows: { spacing: 2 }, yard: ["flowers", "bench_h"] },
+    { kitId: "amber-wood", templateId: "barn-low", wings: [{ x: 7, y: 14, w: 6, h: 5 }], interior: "exterior-only", door: true, ownerName: "어부", windows: {}, yard: ["mailbox"] },
+    { kitId: "aframe-stone", templateId: "aframe-mid", wings: [{ x: 18, y: 14, w: 7, h: 7 }], interior: "exterior-only", door: true, ownerName: "사냥꾼", windows: {}, yard: ["jar"] },
   ],
   seed: 42,
 } as const;
@@ -55,7 +91,9 @@ export const AUTHOR_HOUSE_TOOL: ToolDefinition = {
   description:
     "야외 맵에 집 한 채(single) 또는 여러 채(lots)를 원자적으로 시공한다. "
     + "여러 채는 반드시 kind=lots + houses[]로 한 번에 호출한다(개별 반복 호출 금지). "
-    + "각 집에 서로 다른 kitId를 배정해 외관 다양성을 확보한다. "
+    + `**모양 다양성이 필수다: 집마다 서로 다른 templateId(${TEMPLATE_IDS.length}종 카탈로그)를 배정하고 kitId 도 섞어라.** `
+    + "templateId 를 생략하면 wings 그대로의 사각형이 되어 결과가 단조로워진다. "
+    + "결과 data.variety 와 경고에 모양/킷 분포가 실리고, 깐 뒤에는 look_at_houses 로 눈으로 확인하라. "
     + "wing 크기 제약: w≥3, h≥5 (지붕+벽 포함). windows는 false 또는 {spacing?:N}만 유효(true 불가). "
     + "독립 실내 방 요청에는 사용하지 않는다.",
   mode: "write",
@@ -72,8 +110,9 @@ export const AUTHOR_HOUSE_TOOL: ToolDefinition = {
       door: { type: "boolean" },
       ownerName: { type: "string" },
       windows: WINDOWS_SCHEMA,
-      houses: { type: "array", items: HOUSE_PLAN_SCHEMA, description: "lots일 때 사용. 집마다 다른 kitId." },
+      houses: { type: "array", items: HOUSE_PLAN_SCHEMA, description: "lots일 때 사용. 집마다 다른 templateId·kitId." },
       seed: { type: "integer", description: "랜덤 시드 (마당 소품 배치용)" },
+      ...SHAPE_PROPERTIES,
     },
     required: ["kind", "mapId"],
   },

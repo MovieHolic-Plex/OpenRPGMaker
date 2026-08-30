@@ -416,7 +416,7 @@ export type ToolImageRenderer = (
 ) => Promise<RenderedToolImage[]>;
 
 // 이미지를 주입할 툴(명시적 '보여줘' 계열 + 미리보기). get_map_region 등 빈번 조회는 텍스트로 두어 토큰을 아낀다.
-const VISION_TOOLS = new Set(["show_tiles", "show_tile_grid", "show_map_region", "preview_house", "render_group_sample"]);
+const VISION_TOOLS = new Set(["show_tiles", "show_tile_grid", "show_map_region", "preview_house", "look_at_houses", "render_group_sample"]);
 
 // ── 스펙 게이트(2026-07-05, '모호도' 대체) ────────────────────────
 // 자기 신고 수치([모호도 N%]) 대신 코드가 검증하는 밑그림(명세)을 쓴다:
@@ -3131,6 +3131,10 @@ function compactToolDataForModel(data: unknown): unknown {
       y: rec.y,
       w,
       h,
+      // look_at_houses 의 집계는 이미지로 대체되지 않는 판정 근거다 — 배열만 떼고 남긴다.
+      ...(rec.bounds === undefined ? {} : { bounds: rec.bounds }),
+      ...(rec.houses === undefined ? {} : { houses: rec.houses }),
+      ...(rec.variety === undefined ? {} : { variety: rec.variety }),
       tileArraysOmitted: true,
       note: "lower/upper 타일 배열은 컨텍스트 절약을 위해 생략됨. 같은 턴에 주입된 맵 이미지를 보거나, 좌표는 x/y/w/h·summary를 사용. 호수 위치는 get_map_region의 data.water.bounds를 우선.",
     };

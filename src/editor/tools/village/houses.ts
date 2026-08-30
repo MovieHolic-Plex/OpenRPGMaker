@@ -304,7 +304,8 @@ export function buildHouses(
   return houses;
 }
 
-const ROOF_DECK_PLANK = 199; // 다리 판자와 동일 — 상위 O가 하위 X를 덮는 통행 오버라이드
+/** 다리 판자와 동일 — 상위 O가 하위 X를 덮는 통행 오버라이드. houseVariety 가 옥상 데크 판정에 쓴다. */
+export const ROOF_DECK_PLANK = 199;
 const WALL_LADDER = 322; // 벽 사다리(상위, 통과 O)
 
 /**
