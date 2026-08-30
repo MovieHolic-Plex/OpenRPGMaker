@@ -192,6 +192,9 @@ function successFailureBranches(
   return branches;
 }
 
+/** 빈 분기를 두 뷰가 같은 말로 표시한다. 명령 피커를 여는 실제 버튼에만 쓴다. */
+export const branchEmptyLabel = "비어 있음 — 여기에 명령 추가";
+
 /**
  * 목록 뷰가 분기 묶음 끝에 놓는 마커. 목록만 쓰는 chrome 이라 라벨과 분리했다.
  * 분기가 없는 명령은 `null`.

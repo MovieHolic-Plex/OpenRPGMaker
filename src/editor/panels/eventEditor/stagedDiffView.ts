@@ -72,10 +72,10 @@ function appendRows(
   rows: readonly CommandDiffRow[],
   options: StagedDiffViewOptions,
 ): void {
-  for (const row of rows) {
-    host.append(renderRow(row, options));
+  rows.forEach((row, index) => {
+    host.append(renderRow(row, index, options));
     for (const branch of row.branches) appendBranch(host, row, branch, options);
-  }
+  });
 }
 
 function appendBranch(
@@ -103,7 +103,7 @@ function markerLine(text: string, depth: number, status: CommandDiffStatus): HTM
   return line;
 }
 
-function renderRow(row: CommandDiffRow, options: StagedDiffViewOptions): HTMLElement {
+function renderRow(row: CommandDiffRow, commandIndex: number, options: StagedDiffViewOptions): HTMLElement {
   const reverted = row.status !== "keep" && options.excluded.has(row.id);
   // 되돌린 행은 원래 모습으로 보여야 한다 — 삭제를 취소했으면 그 명령이 그대로 남는 그림이다.
   const shown: CommandDiffStatus = reverted ? "keep" : row.status;
@@ -122,11 +122,18 @@ function renderRow(row: CommandDiffRow, options: StagedDiffViewOptions): HTMLEle
 
   const head = el("div", { class: "cmd-head cmd-staged-head" });
   head.style.setProperty("--cmd-depth", String(row.depth));
-  head.append(el("span", {
-    class: "cmd-staged-mark",
-    text: STATUS_MARK[shown],
-    attrs: { "aria-hidden": "true" },
-  }));
+  head.append(
+    el("span", {
+      class: "cmd-staged-mark",
+      text: STATUS_MARK[shown],
+      attrs: { "aria-hidden": "true" },
+    }),
+    el("span", {
+      class: "cmd-step",
+      text: String(commandIndex + 1),
+      attrs: { "aria-hidden": "true" },
+    }),
+  );
 
   if (row.status === "change" && row.before && row.after) {
     head.append(el("span", {

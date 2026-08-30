@@ -95,7 +95,7 @@ describe("event editor command board", () => {
 
   afterEach(() => {
     clearCommandInspector();
-    host.remove();
+    document.body.replaceChildren();
   });
 
   // 옛 계약: 개수와 뷰 토글을 페이지바의 `event-command-header` 칩에 올렸다. a87ab4fc 가 크롬을
@@ -148,10 +148,14 @@ describe("event editor command board", () => {
       .map((node) => node.textContent);
 
     expect(steps).toEqual(["1", "2", "1", "2", "1", "3"]);
+    expect([...host.querySelectorAll<HTMLElement>(".cmd-step")].every((node) => node.getAttribute("aria-hidden") === "true"))
+      .toBe(true);
+    expect([...host.querySelectorAll<HTMLElement>(".cmd-step")].every((node) => !node.hasAttribute("aria-label")))
+      .toBe(true);
   });
 
-  // 상위 명령만 세면 6줄이 보이는 페이지에 `3개` 라고 적혀 배지가 화면과 어긋난다.
-  it("counts branch commands too so the badge matches the rows on screen", () => {
+  // 분기 마커 줄이 아니라 실제 Command 객체를 세되, 분기 안의 명령은 빠뜨리지 않는다.
+  it("counts authored commands including commands nested inside branches", () => {
     const mapId = seedNestedProject();
     renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
 
@@ -160,6 +164,8 @@ describe("event editor command board", () => {
 
     expect(rows).toBe(6);
     expect(count?.textContent).toBe("6개");
+    expect(count?.title).toBe("작성한 명령 6개 (분기 안 명령 포함)");
+    expect(count?.getAttribute("aria-label")).toBe("작성한 명령 6개, 분기 안 명령 포함");
   });
 
   // 이 줄은 원래 `<button>` 이었지만 `dblclick` 만 들어서 한 번 누르면 아무 일도 없었고,
@@ -173,5 +179,22 @@ describe("event editor command board", () => {
     expect(append?.textContent).toBe("+ 여기에 명령 추가");
     append?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     expect(document.querySelector('[data-testid="event-command-picker"]')).toBeTruthy();
+  });
+
+  it("opens the picker from an empty branch and inserts into that exact container", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+
+    const branchEmpty = host.querySelector<HTMLButtonElement>('[data-testid="event-command-branch-empty-1--5"]');
+    expect(branchEmpty?.textContent).toBe("비어 있음 — 여기에 명령 추가");
+    branchEmpty?.click();
+    expect(document.querySelector('[data-testid="event-command-picker"]')).toBeTruthy();
+
+    document.querySelector<HTMLButtonElement>('[data-testid="command-picker-add-wait"]')?.click();
+    document.querySelector<HTMLButtonElement>('[data-testid="event-command-edit-ok"]')?.click();
+
+    const loop = store.getCurrent().maps[mapId]?.events[0]?.pages?.[0]?.commands[1];
+    expect(loop?.kind).toBe("loop");
+    if (loop?.kind === "loop") expect(loop.body).toEqual([{ kind: "wait", ms: 500 }]);
   });
 });

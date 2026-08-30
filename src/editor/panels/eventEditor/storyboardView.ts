@@ -1,4 +1,4 @@
-import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { branchEmptyLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandCategoryVisual } from "./commandCategoryIcons";
@@ -134,6 +134,7 @@ export type StoryboardOptions = {
   readonly onMove?: (path: number[], direction: -1 | 1) => void;
   readonly onDelete?: (path: number[]) => void;
   readonly onAddNext?: () => void;
+  readonly onAddToBranch?: (containerPath: number[]) => void;
   readonly onQuickStart?: (kind: StoryboardQuickStartKind) => void;
   /** 재렌더 후 선택 복원용 경로. */
   readonly selectedPath?: readonly number[];
@@ -259,6 +260,11 @@ export function renderStoryboard(
         },
         dataset: { cmdPath: JSON.stringify(path), commandCategory: info.category },
         children: [
+          el("span", {
+            class: "event-storyboard-branch-step",
+            text: String(commandIndex + 1),
+            attrs: { "aria-hidden": "true" },
+          }),
           el("span", { class: "kind", text: info.title }),
           el("span", { class: "line", text: info.detail }),
           ...(actions ? [actions] : []),
@@ -280,7 +286,15 @@ export function renderStoryboard(
                   class: "event-storyboard-branch-panel",
                   children: [
                     el("div", { class: "branch-h event-storyboard-branch-label", text: branch.label || "이름 없는 분기" }),
-                    ...renderBranchCommands(branch.commands, [...path, branch.pathSegment]),
+                    ...(branch.commands.length > 0
+                      ? renderBranchCommands(branch.commands, [...path, branch.pathSegment])
+                      : [el("button", {
+                          class: "event-storyboard-branch-empty",
+                          text: branchEmptyLabel,
+                          attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
+                          dataset: { testid: `event-storyboard-branch-empty-${[...path, branch.pathSegment].join("-")}` },
+                          on: { click: () => opts?.onAddToBranch?.([...path, branch.pathSegment]) },
+                        })]),
                   ],
                 })),
               })]
@@ -362,7 +376,13 @@ export function renderStoryboard(
               }),
               ...(branch.commands.length > 0
                 ? renderBranchCommands(branch.commands, [idx, branch.pathSegment])
-                : [el("div", { class: "event-storyboard-branch-empty", text: "이 분기에는 명령이 없습니다." })]),
+                : [el("button", {
+                    class: "event-storyboard-branch-empty",
+                    text: branchEmptyLabel,
+                    attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
+                    dataset: { testid: `event-storyboard-branch-empty-${idx}-${branch.pathSegment}` },
+                    on: { click: () => opts?.onAddToBranch?.([idx, branch.pathSegment]) },
+                  })]),
             ]),
           })
         : null;
