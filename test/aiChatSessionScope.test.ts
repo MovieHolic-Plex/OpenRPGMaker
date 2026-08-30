@@ -10,6 +10,8 @@ import { conversationScopeKey, clearConversations, listConversations, loadConver
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { getAgentBlueprintState, setAgentBlueprintFromSpec } from "@/editor/agentBlueprint";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { clearAiUiEvents, listAiUiEvents } from "@/ai/uiEventLog";
+import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -383,6 +385,33 @@ describe("프로젝트 전환", () => {
     expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").not.toContain("남의 프로젝트 요청");
   });
 
+  /**
+   * 계측 계약: 이어받은 전환이 "새 대화" 로 기록되면 「대화가 사라졌다」 신고를 가를 증거가 거짓이 된다
+   * (openwiki/editor-observability.md). 기록되는 값은 사람이 읽는 산문이 아니라 기계가 먹는 detail 이다.
+   */
+  it("Given the switch resumes a saved conversation When it is recorded Then the UI event says resumed", () => {
+    clearConversations();
+    clearAiUiEvents();
+    const identity = vi.spyOn(store, "getProjectIdentity");
+    identity.mockReturnValue({ kind: "remote", id: "project-one" });
+    saveConversation({
+      id: "conv_two_resumed",
+      title: "둘째",
+      model: "m",
+      savedAt: 200,
+      projectContextKey: "remote:project-two",
+      entries: [{ kind: "user", text: "둘째 프로젝트 요청" }],
+    });
+
+    renderPanel();
+    identity.mockReturnValue({ kind: "remote", id: "project-two" });
+    store.replace(createBlankProject());
+
+    const events = listAiUiEvents().filter((event) => event.action === AI_UI_ACTIONS.newConversation);
+    expect(events.length).toBeGreaterThan(0);
+    const last = events[events.length - 1]!;
+    expect(last.detail).toMatchObject({ reason: "project-switch", resumed: true });
+  });
   it("Given the new project has its own saved conversation When the identity changes Then it is resumed instead of blanked", () => {
     clearConversations();
     const identity = vi.spyOn(store, "getProjectIdentity");
