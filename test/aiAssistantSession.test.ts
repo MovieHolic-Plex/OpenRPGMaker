@@ -684,11 +684,11 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
 
 // ── 레이어 검증 게이트 + run-end 저장 증명(todo 5) ──────────────────────────
 // 계약: 자율 런에서 레이어 완료마다 canonical 테이블(agentVerification)대로 검증 툴콜을
-// 기존 툴 실행기(runTool — 세션 ctx)로 실행하고 verdict 를 평가한다. 실패 시 기존 re-kick
-// (오케스트레이션 메시지)으로 최대 2회 보완 재킥, 3회 연속 실패면 verification_failed 로
-// 레이어(런)를 중단한다. 플랜 완료 + remote persistence 활성이면 store.flush() →
+// 기존 툴 실행기(runTool — 세션 ctx)로 실행하고 verdict 를 **감사에만** 남긴다(자문).
+// 재킥·3회 중단은 2026-08-30 실측으로 제거됐다 — 검증은 런을 멈추지 않는다.
+// 플랜 완료 + remote persistence 활성이면 store.flush() →
 // store.reloadFromRemote() → agent_run_saved 감사(projectId + sha256 + 최신 커밋 row).
-describe("레이어 검증 게이트 + run-end 저장 증명 (todo 5)", () => {
+describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
   function gateToolCall(name: string, args: unknown, id: string): ChatResult {
     return {
       message: {
@@ -864,11 +864,12 @@ describe("레이어 검증 게이트 + run-end 저장 증명 (todo 5)", () => {
     expect(gateStatusTexts(session).filter((t) => t.includes("agent_run:verification-pass")).length).toBe(2);
   }, 60000);
 
-  it("(b) 검증 실패(린트) → 재킥 1·2회 → 3회 연속 실패로 verification_failed 바운드 중단(3회 시도)", async () => {
+  it("(b) 검증 지적(린트 오류)은 자문으로만 남고 런을 멈추지 않는다 — 재킥·verification_failed 없음", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     // 런 시작부터 존재하는 린트 오류(미존재 스위치 참조 이벤트)를 심는다 — 커밋 게이트는
     // baseline 대비 새 오류만 차단하므로 마일스톤 적용은 통과하고, 검증 run_lint 만 실패한다.
+    // 실측 근거(2026-08-30): 이런 선재 오류로 3회 재킥을 태우고 런을 죽이던 게이트를 제거했다.
     project.maps[project.startMapId]!.events.push({
       id: "ev_broken",
       x: 2,
@@ -895,8 +896,7 @@ describe("레이어 검증 게이트 + run-end 저장 증명 (todo 5)", () => {
       gateFinal(JSON.stringify({ action: "new_plan", ...BROKEN_PLAN })),
       gateToolCall("set_work_plan", BROKEN_PLAN, "c_plan"),
       gateToolCall("set_title_screen", { title: "t1" }, "c_t1"),
-      gateFinal("1차 완료 보고합니다."),
-      gateFinal("2차 완료 보고합니다."),
+      gateFinal("완료 보고합니다."),
     ];
     let index = 0;
     const chat = async (): Promise<ChatResult> => {
@@ -909,20 +909,15 @@ describe("레이어 검증 게이트 + run-end 저장 증명 (todo 5)", () => {
     const result = await session.sendUserMessage("타이틀을 바꿔줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
     const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
-    // 레이어 게이트 = run_lint 만(final 단일 레이어, 시나리오/퀘스트 없음) — 3회 시도가 정확히 3번 실행된다.
-    expect(toolCalls.filter((e) => e.name === "run_lint")).toHaveLength(3);
+    // 레이어당 1회만 검증한다 — 같은 지적으로 재검하지 않는다(markLayerVerified).
+    expect(toolCalls.filter((e) => e.name === "run_lint")).toHaveLength(1);
     const audits = gateStatusTexts(session);
-    // 재킥 2회(attempt 1/3, 2/3) 후 3회째에 바운드 중단.
-    expect(audits.filter((t) => t.includes("agent_run:verification-repair")).length).toBe(2);
-    expect(audits.some((t) => t.includes("agent_run:verification-repair") && t.includes("attempt=1/3"))).toBe(true);
-    expect(audits.some((t) => t.includes("agent_run:verification-repair") && t.includes("attempt=2/3"))).toBe(true);
-    expect(audits.some((t) => t.includes("agent_run:verification_failed"))).toBe(true);
-    expect(audits.some((t) => t.includes("agent_run:verification-pass"))).toBe(false);
-    // 바운드: 재킥 2회 후 3회째에 중단 — 추가 LLM 호출이 없다(스크립트 5콜 소진).
-    expect(index).toBe(5);
-    // 검증 실패로 런이 멈춘다(자동 계속 없음).
-    expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
-    // 마일스톤 적용은 검증과 독립적으로 이뤄졌다 — 실패는 검증 게이트에서만.
+    // 자문 감사만 남는다: 재킥도, verification_failed 도 없다.
+    expect(audits.some((t) => t.includes("agent_run:verification-advisory"))).toBe(true);
+    expect(audits.some((t) => t.includes("agent_run:verification-note"))).toBe(true);
+    expect(audits.filter((t) => t.includes("agent_run:verification-repair")).length).toBe(0);
+    expect(audits.some((t) => t.includes("agent_run:verification_failed"))).toBe(false);
+    // 저작은 정상 반영되고 턴은 스크립트대로 최종화된다.
     expect(store.getCurrent().meta?.title).toBe("t1");
     expect(result.stoppedReason).toBe("final");
   }, 60000);

@@ -111,3 +111,29 @@ projectId 를 `persistTimerProjectId` 에 함께 들고 있는다.
 동일성으로 단언하는데(실제 타이머 사용), 이 중복 쓰기가 단언 앞뒤로 오가며 `savedAt` 만 달라지는
 **경합**을 만들었다. 테스트를 느슨하게 하는 대신 중복 쓰기 자체를 없앴다. 계약 테스트:
 `test/eventDraftVaultPersistDebounce.test.ts`.
+
+## Boot normalizers must not create dangling references (2026-08-30)
+
+`store.normalizeCurrentProject` 는 부팅마다 13개 정규화기를 돌린다. 그중
+`ensureDefaultDatabaseIconResources` 는 이름과 달리 **기본 아이템 카탈로그 187종을 프로젝트에
+밀어넣는다.** 그 아이템들은 기본 스킬·상태 테이블(`defaultSkillRecords`/`defaultStateRecords`)을
+참조하므로, 자기 스킬·상태 세트가 더 작은 프로젝트(예제 어드벤처 = 이슬 장터: items 21 / skills 21 /
+states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 참조 무결성을 깬다.**
+
+실측(2026-08-30): 이슬 장터 로드 직후 참조 위반 0건 → 아이템 주입 후 82건. AI 런의 `run_lint` 가
+그 54건(런 시점 기준)을 잡아 레이어 검증이 3회 연속 실패하고 런이 죽었다. 게다가 에이전트가 고아
+레코드를 `delete_database_record` 로 지우려 하면 커밋 게이트가 **같은 왕복 오류**로 거부해 청소가
+불가능한 교착이 됐다.
+
+계약:
+- 기본 레코드를 주입하는 정규화기는 주입 대상이 참조하는 기본 스킬·상태를 **같이** 보강한다
+  (`ensureItemReferences`). 기본 세트로도 채울 수 없는 참조를 가진 레코드는 주입하지 않는다.
+- `state_death` 는 엔진 내장 상태다(`references.stateIdExists`) — 레코드가 없어도 유효하다.
+- 검증: `test/bootNormalizerReferenceSafety.test.ts` 가 계약을 고정한다 — 예제 어드벤처·빈
+  프로젝트 모두 부팅 DB 정규화(`ensureDefaultDatabaseIconResources` →
+  `ensureBundledBattleAnimations`) 후 참조 위반이 **0** 이어야 하고, 주입된 아이템은 없는
+  스킬·상태를 가리키지 않아야 한다. 두 정규화기의 선언 순서가 계약의 일부다(아이템의
+  animationId 는 뒤따르는 애니메이션 보강이 채운다).
+- 커밋 게이트 기준선 대조는 집계 메시지를 줄 단위 원자로 쪼개 비교한다
+  (`changeset.issueAtoms`) — 그러지 않으면 위반 하나를 지우는 편집이 "새 오류"로 분류돼 청소가
+  영구 차단된다.

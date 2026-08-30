@@ -1192,9 +1192,17 @@ function parseCharacterFootprint(value: unknown, label: string, mapId: string): 
   return footprint;
 }
 
+/** 오류 메시지에 실을 실제 트룹 id 목록(상한 12개 — 프롬프트 폭주 방지). */
+function knownTroopIdHint(project: Project): string {
+  const ids = project.database.troops.map((troop) => troop.id);
+  if (ids.length === 0) return "등록된 트룹이 없습니다 — upsert_troop 으로 먼저 만드세요.";
+  const shown = ids.slice(0, 12).join(", ");
+  return `사용 가능한 트룹 id: ${shown}${ids.length > 12 ? ` (외 ${ids.length - 12}개)` : ""}`;
+}
+
 function assertKnownTroop(project: Project, troopId: string): void {
   if (!project.database.troops.some((troop) => troop.id === troopId)) {
-    throw new ToolError(`존재하지 않는 트룹 id: ${troopId} — get_database_records(troops)로 확인하세요.`, { code: "troop-not-found" });
+    throw new ToolError(`존재하지 않는 트룹 id: ${troopId} — ${knownTroopIdHint(project)}`, { code: "troop-not-found" });
   }
 }
 
@@ -1324,7 +1332,7 @@ const setMapProperties: ToolDefinition = {
       const known = new Set(draft.database.troops.map((troop) => troop.id));
       const missing = troopIds.filter((id) => !known.has(id));
       if (missing.length > 0) {
-        throw new ToolError(`존재하지 않는 트룹 id: ${missing.join(", ")} — get_database_records(troops)로 확인하세요.`, { code: "troop-not-found" });
+        throw new ToolError(`존재하지 않는 트룹 id: ${missing.join(", ")} — ${knownTroopIdHint(draft)}`, { code: "troop-not-found" });
       }
       map.troopIds = troopIds;
       changed.push(`트룹 ${troopIds.length}종`);
