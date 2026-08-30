@@ -217,7 +217,7 @@ function fakePendingResult(overrides: Partial<RegionTaskResult> = {}): RegionTas
     getCurrentProject: () => base,
     reviewProject: (project) => ({
       project,
-      report: { issues: [], blockers: [], checkpoints: [], metrics: {}, repairLimit: 0 } as never,
+      report: { issues: [], metrics: {} } as never,
     }),
     onApply: () => {},
     onDiscard: () => {},

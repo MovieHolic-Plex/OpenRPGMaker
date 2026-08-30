@@ -44,7 +44,7 @@ import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import { isBagGroupId, isBagMaterialQuery } from "@/project/materialPolicy";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
-import { repairLayoutPlacement } from "@/project/lint/layoutPlacementRepair";
+import { validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
 import { REGION_INTENT_KEYWORDS, regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
@@ -75,7 +75,7 @@ export interface RegionTaskOptions {
   readonly mapId: MapId;
   readonly region: RegionRect;
   readonly instruction: string;
-  /** 기본 "approval": 적용 전 승인 게이트. "immediate"는 레거시 즉시 적용. */
+  /** 기본 "approval": 사용자가 적용/버리기를 결정하는 상태로 멈춘다. "immediate"는 레거시 직접 적용. */
   readonly gate?: "approval" | "immediate";
   readonly signal?: AbortSignal;
   readonly onEvent?: (event: SessionEvent) => void;
@@ -135,13 +135,11 @@ export interface RegionTaskResult {
   readonly proposedCalls: number;
   readonly assistantText: string;
   readonly error?: string;
-  /** 배치 후 검증 실패 메시지(적용 거부 시). */
-  readonly validationSummary?: string;
-  /** 승인 전 하네스 체크포인트·구조화 이슈·게임플레이 지표. */
+  /** 적용 전 진단(권고) — 구조화 이슈·게임플레이 지표. 적용을 막지 않는다. */
   readonly review?: HarnessReviewReport;
   /** 개발용 구조화 로그 — UI export / window.__oprnRegionTaskLog */
   readonly log?: RegionTaskLogExport;
-  /** 승인 게이트(gate: "approval") 성공 시 반환 — 적용/버리기 전까지 유효. */
+  /** 사용자 결정 대기(gate: "approval") 생성 시 반환 — 적용/버리기 전까지 유효. */
   readonly pending?: PendingRegionApply;
 }
 
@@ -848,9 +846,8 @@ export async function runRegionTask(
       }, turn);
     }
 
-    // Detached draft hardening: bounded deterministic repairs and read-only gameplay preflight.
-    // This is repeated at every apply entry by pendingRegionApply; the first pass feeds review UI.
-    const toolNames = turn.proposedCalls.map((call) => call.name);
+    // 분리 초안 진단. 게이트가 아니다 — 사실만 모아 검토 UI 에 보이게 하고, 초안은 그대로 둔다.
+    // pendingRegionApply 가 적용 진입점마다 다시 부른다(진단값·유령 미리보기 갱신 목적).
     const reviewCandidate = (project: Project) => {
       const harness = reviewRegionDraft({
         base,
@@ -858,13 +855,12 @@ export async function runRegionTask(
         mapId: opts.mapId,
         region: opts.region,
       });
-      const repaired = repairLayoutPlacement(harness.project, {
+      const layoutIssues = validateLayoutPlacement(harness.project, {
         mapId: opts.mapId,
         region: { x: opts.region.x, y: opts.region.y, width: opts.region.width, height: opts.region.height },
         instruction,
-        toolNames,
+        toolNames: turn.proposedCalls.map((call) => call.name),
       });
-      const layoutIssues = repaired.remaining;
       const structuredLayoutIssues = layoutIssues.map((issue) => ({
         code: issue.code,
         severity: issue.severity === "error" ? "error" as const : "warning" as const,
@@ -873,35 +869,22 @@ export async function runRegionTask(
         ...(issue.x === undefined ? {} : { x: issue.x }),
         ...(issue.y === undefined ? {} : { y: issue.y }),
       }));
-      const layoutBlockers = structuredLayoutIssues
-        .filter((issue) => issue.severity === "error")
-        .map((issue) => issue.message);
       return {
-        project: repaired.project,
+        project: harness.project,
         report: {
           ...harness.report,
           issues: [...harness.report.issues, ...structuredLayoutIssues],
-          blockers: [...harness.report.blockers, ...layoutBlockers],
-          checkpoints: [
-            ...harness.report.checkpoints,
-            {
-              id: "layout",
-              label: "배치 규칙",
-              status: layoutBlockers.length ? "blocked" as const : "done" as const,
-              detail: layoutBlockers.length ? `차단 ${layoutBlockers.length}건` : "배치 규칙 통과",
-            },
-          ],
         },
       };
     };
-    let reviewed = reviewCandidate(clipped);
+    const reviewed = reviewCandidate(clipped);
     clipped = reviewed.project;
     changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
     changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
     mapsAdded = countAddedMaps(base, clipped);
 
-    // Layout placement validation is folded into reviewCandidate so blocker reasons remain visible
-    // in approval UI and are rechecked for full/partial/inline/headless apply entry points.
+    // 배치 검증·게임플레이 사전검사는 전부 진단이다. 적용을 막지도, 초안을 고치지도 않는다 —
+    // 유령 미리보기에서 본 것이 그대로 적용된다(영역작업 검증게이트 배제, 2026-08-30).
 
     const gate = opts.gate ?? "approval";
     const label = `영역 작업: ${instruction.slice(0, 40)}`;
@@ -924,11 +907,8 @@ export async function runRegionTask(
     };
     if (gate === "immediate") {
       clearAgentGhostPreview();
-      const stale = projectApprovalFingerprint(deps.getProject()) !== projectApprovalFingerprint(base);
-      const blockers = stale
-        ? ["기준 프로젝트가 변경되었습니다. 새 기준으로 다시 생성하세요."]
-        : reviewed.report.blockers;
-      if (blockers.length > 0) {
+      // 유질하는 거부 사유는 기준 프로젝트 변경 하나다 — 그러지 않으면 그상이에 한 사용자 편집을 덮어쓴다.
+      if (projectApprovalFingerprint(deps.getProject()) !== projectApprovalFingerprint(base)) {
         return attachLog({
           ok: false,
           applied: false,
@@ -938,8 +918,7 @@ export async function runRegionTask(
           clippedCells,
           proposedCalls: turn.proposedCalls.length,
           assistantText: turn.assistantText,
-          error: blockers[0],
-          validationSummary: blockers.join(" · "),
+          error: "기준 프로젝트가 변경되었습니다. 새 기준으로 다시 생성하세요.",
           review: reviewed.report,
         }, turn);
       }

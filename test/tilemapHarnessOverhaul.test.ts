@@ -32,8 +32,6 @@ const REGION = { x: 0, y: 0, width: 4, height: 4 } as const;
 function clearReport(): HarnessReviewReport {
   return {
     issues: [],
-    blockers: [],
-    checkpoints: [{ id: "approval", label: "승인", status: "done", detail: "ok" }],
     metrics: {
       changedCells: 0,
       changedEvents: 0,
@@ -44,9 +42,7 @@ function clearReport(): HarnessReviewReport {
       timeSystemEnabled: false,
       roomSessions: 0,
       roomScoreAverage: null,
-      deterministicRepairs: 0,
     },
-    repairLimit: 8,
   };
 }
 
@@ -155,7 +151,9 @@ describe("quota-independent connected room draft", () => {
     const exit = interior.events.find((event) => event.id === `ev_entrance_${interiorMapId}`);
     expect(exit).toBeDefined();
     expect(firstTransfer(exit!)?.mapId).toBe(base.startMapId);
-    expect(result.review?.blockers).toEqual([]);
+    // 예전에는 결정론 수리가 도달 불가 소품 조사 이벤트를 지워 소견이 비어 있었다. 이제 초안은
+    // 그대로 남고 소견만 뜬다(검증게이트 배제) — 적용 가능 여부는 이 소견과 무관하다.
+    expect(result.review?.issues.some((issue) => issue.code === "gameplay-event-unreachable")).toBe(true);
     expect(result.pending!.roomDrafts[0]?.rooms.some((room) => room.modifiers.includes("rustic"))).toBe(true);
     result.pending!.discard();
   });
@@ -290,7 +288,7 @@ describe("single guarded approval entry", () => {
     pending.apply();
     expect(applies).toBe(1);
   });
-  it("re-runs the hard review when applyProject supplies a different candidate", () => {
+  it("re-runs diagnostics for a different candidate but still applies it (검증게이트 배제)", () => {
     const base = createBlankProject();
     const candidate = structuredClone(base);
     let applies = 0;
@@ -323,11 +321,11 @@ describe("single guarded approval entry", () => {
     };
 
     const outcome = pending.applyProject(unsafe);
-    expect(outcome.ok).toBe(false);
-    expect(outcome.blockers.some((blocker) => blocker.includes("unreachable-objective"))).toBe(true);
-    expect(applies).toBe(0);
-    expect(pending.settled).toBe(false);
-    pending.discard();
+    // 예전에는 이 소견이 적용을 반려했다. 이제는 소견만 남고 적용은 사용자 결정대로 진행된다.
+    expect(outcome).toMatchObject({ ok: true, applied: true });
+    expect(pending.report?.issues.some((issue) => issue.message.includes("unreachable-objective"))).toBe(true);
+    expect(applies).toBe(1);
+    expect(pending.settled).toBe(true);
   });
 });
 
@@ -427,10 +425,10 @@ describe("hard region scope and world reachability", () => {
       region: { x: 0, y: 0, width: 1, height: 1 },
     });
     expect(reviewed.report.issues.some((issue) => issue.code === "region-scope-violation")).toBe(true);
-    expect(reviewed.report.blockers.length).toBeGreaterThan(0);
+    expect(reviewed.report.issues.some((issue) => issue.severity === "error")).toBe(true);
   });
 
-  it("blocks a new gameplay map that has no reachable incoming transfer", () => {
+  it("reports a new gameplay map that has no reachable incoming transfer", () => {
     const base = createBlankProject();
     const draft = structuredClone(base);
     const source = draft.maps[draft.startMapId]!;
@@ -492,7 +490,7 @@ describe("NPC schedule decision gate", () => {
     pending.resolveNpcSchedules("keep-fixed");
     expect(pending.clippedProject.maps[base.startMapId]!.events.find((event) => event.id === "new-scheduled-npc")?.schedule)
       .toBeUndefined();
-    expect(pending.blockers.some((blocker) => blocker.includes("시간 시스템"))).toBe(false);
+    expect(pending.report?.issues.some((issue) => issue.message.includes("시간 시스템"))).toBe(false);
     expect(base.maps[base.startMapId]!.events.some((event) => event.id === "new-scheduled-npc")).toBe(false);
     pending.discard();
   });
@@ -519,7 +517,7 @@ describe("NPC schedule decision gate", () => {
 
     pending.resolveNpcSchedules("enable-time");
     expect(pending.clippedProject.system.timeSystem?.enabled).toBe(true);
-    expect(pending.blockers.some((blocker) => blocker.includes("시간 시스템"))).toBe(false);
+    expect(pending.report?.issues.some((issue) => issue.message.includes("시간 시스템"))).toBe(false);
     pending.discard();
   });
 });
