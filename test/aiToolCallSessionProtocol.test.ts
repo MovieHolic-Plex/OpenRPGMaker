@@ -6,7 +6,11 @@
 //  - 툴 실행 중 예외가 나도 그 호출의 role:"tool" 응답은 남는다. 남지 않으면 짝 없는 tool_calls 가
 //    영구 대화에 박혀 그 세션의 **모든 다음 턴**이 공급자 400 으로 죽는다.
 import { describe, expect, it } from "vitest";
+// 정적 import 다 — 동적 import 를 테스트 본문에서 하면 레지스트리(188툴) 로딩 시간이 그 테스트의
+// 15초 예산에 들어가 부하가 걸린 병렬 스위트에서 타임아웃으로 깜박인다(실측: 단독 8초 / 스위트 15초+).
+import { AssistantSession } from "@/ai/assistantSession";
 import type { ChatMessage, ChatResult } from "@/ai/llmClient";
+import { createBlankProject } from "@/project/defaults";
 
 const CONFIG = {
   authMode: "apiKey" as const,
@@ -36,8 +40,6 @@ function orphanCallIds(messages: readonly ChatMessage[]): string[] {
 
 describe("툴 인자 JSON 파싱 실패", () => {
   it("잘린 JSON 은 잘렸다고 알린다 — 인자 누락으로 위장하지 않는다", async () => {
-    const { AssistantSession } = await import("@/ai/assistantSession");
-    const { createBlankProject } = await import("@/project/defaults");
     const sent: ChatMessage[][] = [];
     let round = 0;
     const chat = async (_config: unknown, request: { messages: ChatMessage[] }): Promise<ChatResult> => {
@@ -62,8 +64,6 @@ describe("툴 인자 JSON 파싱 실패", () => {
 
 describe("툴 루프 예외", () => {
   it("예외가 나도 그 호출의 tool 응답이 남아 세션이 오염되지 않는다", async () => {
-    const { AssistantSession } = await import("@/ai/assistantSession");
-    const { createBlankProject } = await import("@/project/defaults");
     let round = 0;
     const chat = async (): Promise<ChatResult> => {
       round += 1;
