@@ -37,7 +37,8 @@
   .event-storyboard-branch-command-index { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 999px; background: var(--bg-inset); color: var(--text-3); font: 700 9px var(--font-mono); }
   .event-storyboard-branch-command-tree { display: grid; gap: 3px; min-width: 0; }
   .event-storyboard-branch-descendants { border-left: 1px solid var(--border-default); display: grid; gap: 3px; margin-left: 12px; padding-left: 8px; }
-  .event-storyboard-branch-empty { padding: 7px 8px; border: 1px dashed var(--border-subtle); border-radius: 7px; color: var(--text-3); font: 500 12px var(--font-ui); }
+  .event-storyboard-branch-empty { appearance: none; width: 100%; padding: 7px 8px; border: 1px dashed var(--border-subtle); border-radius: 7px; background: transparent; color: var(--text-3); cursor: pointer; font: 500 12px var(--font-ui); text-align: left; }
+  .event-storyboard-branch-empty:hover, .event-storyboard-branch-empty:focus-visible { border-color: var(--accent); color: var(--accent); }
   .event-storyboard-branch-overflow { appearance: none; justify-self: start; padding: 3px 5px; border: 0; background: transparent; color: var(--accent); min-height: 32px; font: 650 11px var(--font-ui); cursor: pointer; }
   .event-storyboard-branch-overflow:hover { text-decoration: underline; }
 

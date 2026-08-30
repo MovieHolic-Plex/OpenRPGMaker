@@ -324,6 +324,13 @@
   width: 12px;
 }
 
+.cmd-staged-head > .cmd-step {
+  color: var(--text-3);
+  flex: 0 0 14px;
+  font: 700 10px/1 var(--font-mono);
+  text-align: right;
+}
+
 .cmd-staged-row[data-staged-status="add"] {
   background: color-mix(in srgb, var(--success) 9%, transparent);
   border-left-color: var(--success);
