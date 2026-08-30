@@ -151,6 +151,49 @@ describe("AudioEngine 재생 컨트롤", () => {
     expect(lastAudio().playbackRate).toBeCloseTo(1.5, 5);
   });
 
+  it("언락 전에 큐잉된 요청마다 playbackRate/pan 을 따로 보존한다", () => {
+    const panners = new Map<FakeAudio, { pan: { value: number } }>();
+    const previousAudioContext = (globalThis as { AudioContext?: unknown }).AudioContext;
+    class FakeAudioContext {
+      state = "running";
+      destination = {};
+      private source: FakeAudio | null = null;
+
+      createMediaElementSource(audio: FakeAudio): { connect: (target: object) => void } {
+        this.source = audio;
+        return {
+          connect: (target: object) => {
+            const panner = target as { pan?: { value: number } };
+            if (panner.pan && this.source) panners.set(this.source, panner as { pan: { value: number } });
+          },
+        };
+      }
+
+      createStereoPanner(): { pan: { value: number }; connect: () => void } {
+        return { pan: { value: 0 }, connect: () => undefined };
+      }
+    }
+    (globalThis as { AudioContext?: unknown }).AudioContext = FakeAudioContext;
+
+    try {
+      const engine = new AudioEngine();
+      engine.play("bgm", "first", "/first.ogg", true, { fadeInMs: 0, playbackRate: 0.5, pan: -0.5 });
+      engine.play("bgs", "second", "/second.ogg", true, { fadeInMs: 0, playbackRate: 1.5, pan: 0.5 });
+      expect(FakeAudio.instances).toHaveLength(0);
+
+      engine.unlock();
+
+      expect(FakeAudio.instances.map((audio) => ({ src: audio.src, playbackRate: audio.playbackRate }))).toEqual([
+        { src: "/first.ogg", playbackRate: 0.5 },
+        { src: "/second.ogg", playbackRate: 1.5 },
+      ]);
+      expect(FakeAudio.instances.map((audio) => panners.get(audio)?.pan.value)).toEqual([-0.5, 0.5]);
+    } finally {
+      if (previousAudioContext === undefined) Reflect.deleteProperty(globalThis, "AudioContext");
+      else (globalThis as { AudioContext?: unknown }).AudioContext = previousAudioContext;
+    }
+  });
+
   it("QA 관찰 훅으로 현재 적용값을 브라우저에서 읽을 수 있다", () => {
     const engine = newEngine();
     engine.setVolume("bgm", 0.5);

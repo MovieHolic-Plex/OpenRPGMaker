@@ -30,9 +30,9 @@ const UNLOCK_EVENTS: readonly string[] = ["pointerdown", "keydown", "touchstart"
 export interface AudioPlayOptions {
   // 이 요청의 페이드인 길이(ms). 생략 시 DEFAULT_FADE_MS.
   readonly fadeInMs?: number;
-  // 재생 속도(템포). 지정하면 엔진 전역 값으로 채택된다.
+  // 재생 속도(템포). 지정하면 이 요청이 실제 재생될 때 적용된다.
   readonly playbackRate?: number;
-  // 스테레오 밸런스(-1 왼쪽 … 1 오른쪽). 지정하면 엔진 전역 값으로 채택된다.
+  // 스테레오 밸런스(-1 왼쪽 … 1 오른쪽). 지정하면 이 요청이 실제 재생될 때 적용된다.
   readonly pan?: number;
 }
 
@@ -195,15 +195,17 @@ export class AudioEngine {
       if (!Array.isArray(holder.__oprnAudioObserved)) holder.__oprnAudioObserved = [];
       holder.__oprnAudioObserved.push(resourceId);
     }
-    if (options?.playbackRate !== undefined) this.setPlaybackRate(options.playbackRate);
-    if (options?.pan !== undefined) this.setPan(options.pan);
     const fadeInMs = options?.fadeInMs;
+    const playbackRate = options?.playbackRate;
+    const pan = options?.pan;
     const request: AudioRequest = {
       channel,
       resourceId,
       url,
       loop,
       ...(fadeInMs === undefined ? {} : { fadeInMs: Math.max(0, fadeInMs) }),
+      ...(playbackRate === undefined ? {} : { playbackRate }),
+      ...(pan === undefined ? {} : { pan }),
     };
     const { state, immediate } = requestAudio(this.queue, request);
     this.queue = state;
@@ -273,16 +275,34 @@ export class AudioEngine {
     return fadeInMs;
   }
 
+  private resolvePlaybackRate(request: AudioRequest): number {
+    if (request.playbackRate !== undefined) {
+      this.playbackRate = clampNumber(request.playbackRate, MIN_PLAYBACK_RATE, MAX_PLAYBACK_RATE, 1);
+    }
+    return this.playbackRate;
+  }
+
+  private resolvePan(request: AudioRequest): number {
+    if (request.pan !== undefined) this.pan = clampNumber(request.pan, -1, 1, 0);
+    return this.pan;
+  }
+
   private playLoop(request: AudioRequest): void {
     const fadeInMs = this.resolveFadeInMs(request);
+    const playbackRate = this.resolvePlaybackRate(request);
+    const pan = this.resolvePan(request);
     const existing = this.loopTracks.get(request.channel);
     // 같은 트랙이 이미 루프 중이면 재시작하지 않는다(RM2K3 동작).
-    if (existing && existing.resourceId === request.resourceId) return;
+    if (existing && existing.resourceId === request.resourceId) {
+      existing.audio.playbackRate = playbackRate;
+      this.applyPan(existing.audio, pan);
+      return;
+    }
     if (existing) {
       this.loopTracks.delete(request.channel);
       this.fadeOutAndDispose(existing, DEFAULT_FADE_MS);
     }
-    const audio = this.createElement(request.url, true);
+    const audio = this.createElement(request.url, true, playbackRate, pan);
     const target = this.targetVolumeFor(request.channel);
     audio.volume = 0;
     const track: ManagedTrack = {
@@ -299,7 +319,9 @@ export class AudioEngine {
 
   private playOneShot(request: AudioRequest): void {
     this.resolveFadeInMs(request);
-    const audio = this.createElement(request.url, false);
+    const playbackRate = this.resolvePlaybackRate(request);
+    const pan = this.resolvePan(request);
+    const audio = this.createElement(request.url, false, playbackRate, pan);
     audio.volume = this.targetVolumeFor(request.channel);
     this.oneShots.add(audio);
     const cleanup = (): void => {
@@ -312,12 +334,12 @@ export class AudioEngine {
     this.startPlayback(audio, request.resourceId);
   }
 
-  private createElement(url: string, loop: boolean): HTMLAudioElement {
+  private createElement(url: string, loop: boolean, playbackRate: number, pan: number): HTMLAudioElement {
     const audio = new Audio(url);
     audio.loop = loop;
     audio.preload = "auto";
-    audio.playbackRate = this.playbackRate;
-    this.applyPan(audio);
+    audio.playbackRate = playbackRate;
+    this.applyPan(audio, pan);
     this.attachToDocument(audio);
     return audio;
   }
@@ -342,15 +364,15 @@ export class AudioEngine {
   }
 
   // 팬 적용. 그래프가 아직 없고 중앙(0)이면 아무것도 만들지 않는다(지연 생성).
-  private applyPan(audio: HTMLAudioElement): void {
+  private applyPan(audio: HTMLAudioElement, pan: number = this.pan): void {
     const existing = this.panners.get(audio);
     if (existing) {
-      existing.pan.value = this.pan;
+      existing.pan.value = pan;
       return;
     }
-    if (this.pan === 0) return;
+    if (pan === 0) return;
     const panner = this.createPanner(audio);
-    if (panner) panner.pan.value = this.pan;
+    if (panner) panner.pan.value = pan;
   }
 
   private createPanner(audio: HTMLAudioElement): StereoPannerNode | null {
