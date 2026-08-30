@@ -8,7 +8,11 @@ import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
-import { exportedProjectId, setExportedProject } from "@/player/exportProjectStoreShim";
+import { setExportedProject } from "@/player/exportProjectStoreShim";
+import {
+  resolveExportSaveNamespace,
+  type ExportProjectSource,
+} from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
 import { stopAllAudio } from "@/player/audio";
 
@@ -42,7 +46,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   }
   const bundled = await loadBundledProject(boot);
   if (bundled.ok) {
-    startPlayer(root, boot, bundled.project);
+    startPlayer(root, boot, bundled.project, "bundled");
     return;
   }
   openGameFilePicker(root, boot, bundled.message);
@@ -66,19 +70,25 @@ async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProje
 }
 
 function openGameFilePicker(root: HTMLElement, boot: OpenRpgBootConfig, reason: string): void {
-  renderOprnGameFilePicker(root, { reason, onOpen: (project) => startPlayer(root, boot, project) });
+  renderOprnGameFilePicker(root, {
+    reason,
+    onOpen: (project) => startPlayer(root, boot, project, "opened-file"),
+  });
 }
 
-function startPlayer(root: HTMLElement, boot: OpenRpgBootConfig, project: Project): void {
+function startPlayer(
+  root: HTMLElement,
+  boot: OpenRpgBootConfig,
+  project: Project,
+  source: ExportProjectSource,
+): void {
   try {
     setExportedProject(project);
-    const communitySlug = /^\/play\/([^/]+)/.exec(window.location.pathname)?.[1];
-    setSaveSlotStorageNamespace(
-      boot.saveNamespace
-        ?? (communitySlug
-          ? `rpgzzu-export:${decodeURIComponent(communitySlug)}`
-          : `rpgzzu-export:${exportedProjectId(project)}`),
-    );
+    setSaveSlotStorageNamespace(resolveExportSaveNamespace(project, {
+      source,
+      hostSaveNamespace: boot.saveNamespace,
+      pathname: window.location.pathname,
+    }));
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
     const host = parseHostBridge(boot);

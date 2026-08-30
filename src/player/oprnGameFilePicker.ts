@@ -17,6 +17,7 @@ export function renderOprnGameFilePicker(root: HTMLElement, options: OprnGameFil
   root.textContent = "";
   const panel = document.createElement("section");
   panel.className = "oprn-game-file-picker";
+  panel.dataset.playInputOwner = "game-file-open";
   panel.dataset.testid = "oprn-game-file-picker";
 
   const heading = document.createElement("h1");
