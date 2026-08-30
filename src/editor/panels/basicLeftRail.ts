@@ -8,6 +8,7 @@
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
 import { uiLabel } from "@/editor/uiCopy";
+import { subscribeEditorUiMode } from "@/editor/editorUiMode";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { canEditMap } from "@/editor/mapEditLocks";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -18,7 +19,7 @@ import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { renderMapList } from "@/editor/panels/mapList";
-import { captureFocus, restoreFocus } from "@/editor/panels/sidebarFocus";
+import { applyRovingTabindex, captureFocus, restoreFocus } from "@/editor/panels/sidebarFocus";
 import {
   basicFlyoutReducer,
   buildFlyoutShell,
@@ -53,19 +54,28 @@ type BasicLayerRow = {
   readonly label: string;
   readonly hint: string;
   readonly hotkey: string;
+  readonly icon: SvgIconName;
 };
 
 /** Rail order: 바닥 → 장식 → 이벤트 (직접 선택, 플라이아웃 없음).
+ * 레이어마다 다른 글리프를 쓴다 — 72px 레일에서 아이콘이 1차 스캔 대상인데 같은 그림 3개는
+ * 정보량이 0 이었다(tileToolbarIcons 의 layerGround/layerOverlay/layerEvent).
  * 기본 모드는 결과 중심 용어를 쓴다 — 초보에게 '하위/상위 레이어'는 개념 장벽이다. */
 const BASIC_LAYERS: readonly BasicLayerRow[] = [
-  { id: "lower", label: "바닥", hint: "잔디·길 등 지면을 칠하는 레이어", hotkey: "F5" },
+  { id: "lower", label: "바닥", hint: "잔디·길 등 지면을 칠하는 레이어", hotkey: "F5", icon: "layerGround" },
   // "장식"은 타일 **분류** 이름과 겹친다(팔레트 필터 칩 · tileMeta role) → 덧그림.
-  { id: "upper", label: "덧그림", hint: "나무·가구 등 바닥 위에 얹는 레이어", hotkey: "F6" },
-  { id: "event", label: "이벤트", hint: "NPC·문·보물상자 등 상호작용 레이어", hotkey: "F7" },
+  { id: "upper", label: "덧그림", hint: "나무·가구 등 바닥 위에 얹는 레이어", hotkey: "F6", icon: "layerOverlay" },
+  { id: "event", label: "이벤트", hint: "NPC·문·보물상자 등 상호작용 레이어", hotkey: "F7", icon: "layerEvent" },
 ] as const;
 
 const BASIC_TILE_CAP = 48;
 const FLYOUT_TITLES: Record<BasicFlyoutId, string> = { tiles: "타일", maps: "맵" };
+const RAIL_GROUP_LABELS = { tools: "그리기 도구", layers: "레이어", panels: "타일·맵 패널" } as const;
+const EVENT_LAYER_TILE_REASON = "이벤트 레이어에서는 타일을 선택하지 않습니다";
+const FLYOUT_TOGGLE_TESTIDS: Record<BasicFlyoutId, string> = {
+  tiles: "basic-rail-toggle-tiles",
+  maps: "basic-rail-toggle-maps",
+};
 
 // 재렌더에도 살아남는 모듈 상태. tilePalette의 activeWorkTab 패턴과 동일.
 let flyoutState: BasicFlyoutState = INITIAL_BASIC_FLYOUT_STATE;
@@ -82,6 +92,11 @@ function dispatchFlyout(action: BasicFlyoutAction): void {
 function installDocumentListeners(): void {
   if (documentListenersInstalled || typeof document === "undefined" || typeof document.addEventListener !== "function") return;
   documentListenersInstalled = true;
+  // 모드가 바뀌면 레일은 허물어진다 — 그때 열림 상태를 남기면 초보로 돌아오는 순간 사용자가
+  // 열지 않은 오버레이가 아무 조작 없이 캔버스를 덮는다(B-5).
+  subscribeEditorUiMode(() => {
+    flyoutState = INITIAL_BASIC_FLYOUT_STATE;
+  });
   document.addEventListener("pointerdown", (event) => {
     if (flyoutState.open === null) return;
     const target = event.target;
@@ -106,6 +121,7 @@ export function resetBasicLeftRailForTests(): void {
 
 export function renderBasicLeftRail(container: HTMLElement): void {
   const focusSnapshot = captureFocus(container);
+  if (isStaleFlyoutState(container)) flyoutState = INITIAL_BASIC_FLYOUT_STATE;
   clearChildren(container);
   lastContainer = container;
   installDocumentListeners();
@@ -133,10 +149,29 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   }
   container.append(shell);
   restoreFocus(container, focusSnapshot);
+  // 도구·레이어·패널 그룹을 각각 한 개의 탭 스톱으로 만들고 화살표 이동을 준다 — 표준 모드
+  // 도구막대와 같은 헬퍼다(이전엔 레일 버튼 11개가 전부 별도 탭 스톱이었다).
+  applyRovingTabindex(container);
+}
+
+/**
+ * 모듈에 남은 열림 상태가 지금 그리려는 DOM 과 어긋나는가.
+ * 컨테이너가 바뀌었거나 끊겼거나, 그 안에 이전 레일이 더 없으면(다른 모드가 덮어썼다)
+ * 이 렌더는 "이어서 그리기"가 아니므로 열림은 사용자 의도가 아니다.
+ */
+function isStaleFlyoutState(container: HTMLElement): boolean {
+  if (flyoutState.open === null) return false;
+  if (lastContainer !== container) return true;
+  if (lastContainer.isConnected === false) return true;
+  return lastContainer.querySelector('[data-testid="basic-left-rail"]') === null;
 }
 
 function makeToolsColumn(activeTool: Tool): HTMLElement {
-  const list = el("div", { class: "basic-rail-icons", dataset: { testid: "basic-tool-list" } });
+  const list = el("div", {
+    class: "basic-rail-icons",
+    dataset: { testid: "basic-tool-list", roving: "true" },
+    attrs: { role: "toolbar", "aria-orientation": "vertical", "aria-label": RAIL_GROUP_LABELS.tools },
+  });
   for (const tool of BASIC_TOOLS) {
     const active = activeTool === tool.id;
     list.append(
@@ -146,9 +181,11 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
           type: "button",
           title: `${tool.label} (${tool.hotkey}) — ${tool.hint}`,
           "aria-label": tool.label,
-          "aria-pressed": String(active),
+          // 상호배타 선택이므로 aria-current 다 — aria-pressed 는 독립 토글 6개로 읽혔다(A-3).
+          // 비활성에는 속성을 달지 않는다 — leftLayerSwitcher 와 같은 표기를 쓴다.
+          ...(active ? { "aria-current": "true" } : {}),
         },
-        dataset: { testid: `tool-${tool.id}`, basicTool: tool.id, railLabel: `${tool.label} ${tool.hotkey}` },
+        dataset: { testid: `tool-${tool.id}`, basicTool: tool.id },
         on: {
           click: () => {
             if (tool.id === "paint") {
@@ -157,9 +194,10 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
                   ? { tool: "paint", paintShape: "pen", layer: "lower" }
                   : { tool: "paint", paintShape: "pen" },
               );
-              // 2026-08-18 UX 리뷰 P2-8: 브러시를 고르면 칠할 타일이 필요하다 —
-              // 타일 플라이아웃이 닫혀 있으면 바로 열어 발견 비용을 없앤다.
-              if (flyoutState.open !== "tiles") dispatchFlyout({ type: "toggle", id: "tiles" });
+              // 2026-08-18 UX 리뷰 P2-8 은 칠하기를 누를 때마다 플라이아웃을 열었다 — 그래서
+              // 방금 닫은 사용자에게 다시 들이밀었고 DESIGN.md:417 과도 어긋났다. 칠할 타일이
+              // 아직 없을 때만 연다: 원래 목표였던 "칠할 것을 못 고르는 상태"만 해소한다(U-4).
+              if (flyoutState.open !== "tiles" && !hasUsableSelectedTile()) dispatchFlyout({ type: "toggle", id: "tiles" });
             } else if (tool.id === "event") editorState.set({ tool: "event", layer: "event" });
             else if (editorState.get().layer === "event") editorState.set({ tool: tool.id, layer: "lower" });
             else editorState.set({ tool: tool.id });
@@ -175,6 +213,19 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
   return list;
 }
 
+/**
+ * 지금 칠할 수 있는 타일이 이미 골라지 있는가 — 칠하기 도구가 타일 플라이아웃을 여는 유일한 이유.
+ * 현재 맵의 타일셋 범위 안에 있어야 "쓸 수 있는" 선택이다.
+ */
+function hasUsableSelectedTile(): boolean {
+  const state = editorState.get();
+  const project = store.getCurrent();
+  const map = project.maps[state.currentMapId ?? project.startMapId];
+  const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+  if (!tileset) return false;
+  return state.selectedTile >= 0 && state.selectedTile < tileset.count;
+}
+
 function applyLayerSelection(layer: Layer): void {
   if (layer === "event") {
     editorState.set({ layer: "event", tool: "event" });
@@ -187,8 +238,8 @@ function applyLayerSelection(layer: Layer): void {
 function makeLayerSwitcher(activeLayer: Layer): HTMLElement {
   const list = el("div", {
     class: "basic-rail-icons basic-rail-layer-switcher",
-    dataset: { testid: "basic-layer-list" },
-    attrs: { role: "group", "aria-label": "레이어" },
+    dataset: { testid: "basic-layer-list", roving: "true" },
+    attrs: { role: "group", "aria-label": RAIL_GROUP_LABELS.layers },
   });
   for (const layer of BASIC_LAYERS) {
     const active = activeLayer === layer.id;
@@ -199,16 +250,15 @@ function makeLayerSwitcher(activeLayer: Layer): HTMLElement {
           type: "button",
           title: `${layer.label} (${layer.hotkey}) — ${layer.hint}`,
           "aria-label": layer.label,
-          "aria-pressed": String(active),
+          ...(active ? { "aria-current": "true" } : {}),
         },
         dataset: {
           testid: layer.id === "lower" ? "layer-lower" : layer.id === "upper" ? "layer-upper" : "layer-event",
           basicLayer: layer.id,
-          railLabel: `${layer.label} ${layer.hotkey}`,
         },
         on: { click: () => applyLayerSelection(layer.id) },
         children: [
-          makeSvgIcon("layers"),
+          makeSvgIcon(layer.icon),
           el("span", { class: "basic-rail-label", text: layer.label }),
         ],
       }),
@@ -218,10 +268,15 @@ function makeLayerSwitcher(activeLayer: Layer): HTMLElement {
 }
 
 function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: TilesetDef | undefined): HTMLElement {
-  const wrap = el("div", { class: "basic-rail-icons basic-rail-panel-toggles" });
+  const wrap = el("div", {
+    class: "basic-rail-icons basic-rail-panel-toggles",
+    dataset: { testid: "basic-panel-toggles", roving: "true" },
+    attrs: { role: "group", "aria-label": RAIL_GROUP_LABELS.panels },
+  });
 
   // 타일: 현재 선택 타일 썸네일을 아이콘으로. 이벤트 레이어에선 비활성.
-  const tileDisabled = activeLayer === "event" || !tileset;
+  const tileDisabledReason = activeLayer === "event" ? EVENT_LAYER_TILE_REASON : !tileset ? uiLabel("tilesetMissing") : null;
+  const tileDisabled = tileDisabledReason !== null;
   const thumbSize = 26;
   const tileThumbStyle =
     !tileDisabled && tileset && selectedTile >= 0 && selectedTile < tileset.count
@@ -231,11 +286,11 @@ function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: Til
     class: "basic-rail-btn basic-rail-tile-toggle" + (flyoutState.open === "tiles" ? " is-open" : ""),
     attrs: {
       type: "button",
-      title: tileDisabled ? "이벤트 레이어에서는 타일을 선택하지 않습니다" : `타일 — 현재: ${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}`,
+      title: tileDisabledReason ?? `타일 — 현재: ${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}`,
       "aria-label": "타일 패널",
       "aria-expanded": String(flyoutState.open === "tiles"),
     },
-    dataset: { testid: "basic-rail-toggle-tiles", railLabel: "타일 고르기" },
+    dataset: { testid: "basic-rail-toggle-tiles" },
     on: { click: () => { if (!tileDisabled) dispatchFlyout({ type: "toggle", id: "tiles" }); } },
     children: [
       el("span", { class: "basic-rail-tile-thumb", attrs: { style: tileThumbStyle, "aria-hidden": "true" } }),
@@ -249,7 +304,7 @@ function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: Til
     el("button", {
       class: "basic-rail-btn" + (flyoutState.open === "maps" ? " is-open" : ""),
       attrs: { type: "button", title: "맵 트리", "aria-label": "맵 패널", "aria-expanded": String(flyoutState.open === "maps") },
-      dataset: { testid: "basic-rail-toggle-maps", railLabel: "맵 목록" },
+      dataset: { testid: "basic-rail-toggle-maps" },
       on: { click: () => dispatchFlyout({ type: "toggle", id: "maps" }) },
       children: [
         makeSvgIcon("map"),
@@ -309,6 +364,9 @@ function makeFlyout(id: BasicFlyoutId, selectedTile: number, activeLayer: Layer,
   const shell = buildFlyoutShell({
     title: FLYOUT_TITLES[id],
     pinned: flyoutState.pinned,
+    // 닫기는 포커스된 버튼 자신을 지우므로, 이 플라이아웃을 연 토글을 대체 앵커로 넣는다
+    // (B-4: 이전엔 포커스가 <body> 로 추락해 키보드 사용자가 자리를 잃었다).
+    anchorTestId: FLYOUT_TOGGLE_TESTIDS[id],
     onPinToggle: () => dispatchFlyout({ type: "pin-toggle" }),
     onClose: () => dispatchFlyout({ type: "escape" }),
     body,

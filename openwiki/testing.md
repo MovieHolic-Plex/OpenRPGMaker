@@ -7,6 +7,14 @@
 
 Use the lightest command that proves the change.
 
+## AI 이벤트 배치 통행성 focused gate (2026-08-30)
+
+- 가벼운 순서: `node scripts/run-vitest.mjs run test/aiEventPlacementPassability.test.ts test/aiEventPlacementSurfaceGate.test.ts --configLoader bundle` 로 계약 + 구조 게이트를 먼저 본다. 배치 툴을 건드렸으면 해당 툴의 spec(`test/aiPlacement*.test.ts`)을, 컨텍스트를 건드렸으면 `test/aiMapContextPassability*.test.ts` 를 더한다.
+- **새 배치 툴을 추가하면 게이트가 먼저 실패한다.** `test/aiEventPlacementSurfaceGate.test.ts` 는 `src/editor/tools/**`·`src/project/quest/**` 를 AST 로 훑어 `map.events` 직접 쓰기를 찾고, 같은 함수(또는 그 함수가 부르는 같은 파일 헬퍼)에 `resolveEventPlacement`/`passableLanding`/`nearestPassableCell`/`isPassable` 이 없으면 file:line 을 지목한다. 통과 방법은 두 가지뿐이다: 계약을 지나게 고치거나, `file#function` 키와 한국어 이유를 허용목록에 적는다. 쓰이지 않는 허용목록 항목은 stale 로 실패하므로 리팩터 후 정리가 강제된다.
+- 함정: 계약 이름을 주석이나 문자열에 적어두면 통과할 것 같지만 안 된다(AST 호출식만 센다). 그 위장 케이스도 게이트 자신의 테스트에 들어 있다.
+- 함정: `formatViewportContextBlock(viewport, name, project?)` 의 `project` 는 optional 이라 호출부가 안 넘기면 통행 그리드가 조용히 사라진다. 단위 테스트는 인자를 직접 넘기므로 그 누락을 **못 본다** — 실측으로 그렇게 죽어 있었다. 출하 경로(`buildSystemPrompt`, `AssistantSession` 턴 블록)를 고정하는 `test/aiMapContextPassabilityWiring.test.ts` 가 그 계약이다.
+- 배치 자체의 판정 규칙(캐릭터형·밟기형 vs action 트리거, 단일 대상 자동 착지 vs 영역 건너뛰기)은 `openwiki/editor-ai-tools.md` 의 2026-08-30 항목이 정본이다.
+
 ## 체공(점프·낙하) focused gate (2026-08-29)
 
 - `test/characterHop.test.ts`: 순수 곡선·클램프 계약. 아크 대칭성과 양끝 0, 낙하의 감가속 비대칭, `hopOriginY` 가 `height × scaleY` 로 나누는지(`hopOriginY(16,32,2) === 1.25`), 착지 충격 계획이 `MIN_IMPACT_LIFT_PX` 미만이면 `null` 인지, `prefers-reduced-motion` 에서 흔들림·먼지가 빠지고 SE 만 남는지.
@@ -71,9 +79,9 @@ node node_modules/vitest/vitest.mjs run --configLoader bundle \
 - `test/roguelikeRunEditor.test.ts`: native condition/command forms and staged edit preservation.
 - `test/commandContracts/runControl.contract.test.ts`: all action variants, inactive no-op behavior, non-blocking completion, and project serialization.
 - `test/roguelikeRooms.test.ts`: exact deterministic slot selection, generation invalidation after floor/reset changes and same-seed restart, real `run_scene_test` enemy and one-shot loot reset behavior, live event-surface rebuild, save/load generation stability, event-reset opt-out, real-time enemy HP/projectile cleanup, active-run kill persistence isolation, AI tool authoring, import validation, and project roundtrip.
-- Registry/shape coverage includes `runControl` and `run`; native manifest counts are 75 commands and 16 conditions at this phase.
-- **Condition coverage (2026-08-29).** `test/conditionEvaluatorParity.test.ts` is the parity spine: it feeds identical `(condition, state)` pairs for all 16 kinds, in both a satisfying and a non-satisfying state, to all three evaluators (`pageResolution.evalPageCondition`, `session.evalCondition`, the battle runtime's `evaluateCondition`) and asserts identical verdicts. It also asserts `Object.keys(CASES)` equals `CONDITION_KINDS` in order, so a new union member fails the test until it is classified. `ALLOWLISTED_DIVERGENCES` is currently empty — record evidence before adding to it.
-  `test/commandContracts/fork.contract.test.ts` covers all 16 kinds through the real interpreter drain; it previously covered only 10, with `timePhase`/`season`/`npcActivity`/`friendshipAtLeast`/`battleResult`/`run` proven at the `evalCondition` unit level but never through branch selection. It also pins that an empty friendship `npcKey` resolves via the host event's `characterId`.
+- Registry/shape coverage includes `runControl` and `run`; native manifest counts are 78 commands and 17 conditions at this phase.
+- **Condition coverage (2026-08-29).** `test/conditionEvaluatorParity.test.ts` is the parity spine: it feeds identical `(condition, state)` pairs for all 17 kinds, in both a satisfying and a non-satisfying state, to all three evaluators (`pageResolution.evalPageCondition`, `session.evalCondition`, the battle runtime's `evaluateCondition`) and asserts identical verdicts. It also asserts `Object.keys(CASES)` equals `CONDITION_KINDS` in order, so a new union member fails the test until it is classified. `ALLOWLISTED_DIVERGENCES` is currently empty — record evidence before adding to it.
+  `test/commandContracts/fork.contract.test.ts` covers all 17 kinds through the real interpreter drain; it previously covered only 10, with `timePhase`/`season`/`npcActivity`/`friendshipAtLeast`/`battleResult`/`run` proven at the `evalCondition` unit level but never through branch selection. It also pins that an empty friendship `npcKey` resolves via the host event's `characterId`.
   `test/pageConditionAuthoringIntegrity.test.ts` pins that a page condition survives an emptied reference (inline error, not deletion) and that touching a disabled row activates it visibly. `test/conditionEvalPreview.test.ts` pins the three-state 판정 불가 verdict. `test/conditionCopyTokens.test.ts` is the internal-token gate for condition copy.
 
 ### 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
@@ -274,6 +282,14 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 `@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
 경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
 
+좁은 예외는 `scripts/qa/testplay-recovery-browser-qa.mts` 하나다. 편집기 **테스트 플레이**
+경로의 게이트라 편집기 셸을 통과한다. 결함이 톱바 `mode-play` 뒤의 저장·예비검사·복구 흐름에
+있어 `player.html` 로는 진입할 수 없기 때문이다. 살아 있는 WebGL 캔버스를 `drawImage` /
+`getImageData` 로 다시 읽으면 플레이 중에도 `distinct=1` 이므로 색 다양성은
+`scripts/lib/runtimeQaRun.mjs:435` 처럼 pngjs 로 스크린샷 PNG 를 읽어 잰다.
+`test/fixtures/projects/battle-v3.json` 은 거의 검으므로 렌더 여부 판정에는
+`editor-authored-demo-v3.json` 을 쓴다.
+
 - 결과는 `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 **먼저** 읽고 "즉시 확인" 으로
   표시된 PNG 만 열어라. `shot` 은 옵트인이고 실패 비트는 자동 캡처된다. 출력 디렉터리는
   매 실행 재생성되며 gitignore 대상이다.
@@ -281,6 +297,23 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   `scripts/_dump-event-tiles.mjs` 로 실물에서 읽어라.
 - 체공(점프·낙하) 시나리오와 그 전용 op/expect 는 위 "체공 런타임 QA" 절에 있다. 거기서
   얻은 일반 교훈: **오브젝트가 존재한다는 검사는 그것이 그려졌다는 뜻이 아니다.**
+- **`testidPresent` 만 쓴 비트는 이빨이 없다** (2026-08-30 실측). `item-care`·`item-equipment`
+  가 그 상태였다 — 비트 note 는 "친밀도 70 을 확인한다 / 78 로 오른다" 라고 적어놨는데 기대치는
+  노드 존재뿐이라, 돌봄이 친밀도를 커밋하지 않아도 통과했다. 숫자를 말하는 비트에는 반드시
+  `expect.visibleText` 를 걸어라. 이빨은 기대값을 일부러 틀리게 넣어 확인한다(실측: `친밀도 78`
+  → `친밀도 99` 로 바꾸면 종료 코드 1 + `실제 "돌봄 슬라임Lv.3 친밀도 78"`).
+- `visibleText` 는 **시나리오가 이름을 적은 testid 만** 관측한다(`runtimeQaRun.mjs` 가 모든 비트의
+  키를 모아 watched 목록을 만든다). DOM 문자열을 모를 때는 센티넬(`"@@PROBE@@"`)로 한 번
+  실패시키면 실패 메시지가 실제 텍스트를 그대로 찍어준다. 단 **실패한 비트는 관측 시점이 밀릴 수
+  있다** — 센티넬 실행에서 읽은 전투 피해값은 한 턴 뒤 값일 수 있으니, 수치는 통과하는 실행의
+  스크린샷으로 확정하라.
+- 전투에서 `visibleText` 축으로 쓸 수 없는 노드가 있다: `battle-enemy-list-hp-enemy-1` 은
+  rm2003 스킨에서 rect 가 0×0(텍스트는 `HP 830/999` 로 들어 있는데 화면에 없다고 판정),
+  `battle-damage-popup` 은 관측 순간 alpha 0 인 프레임이 있다. 믿을 축은 `battle-message-window`.
+- **A/B 픽스처 비교에서 피해 숫자를 축으로 박지 마라.** 값이 픽스처마다 다르므로 한쪽이 반드시
+  깨진다. 픽스처와 무관하게 성립하는 문장(`주인공의 공격!`)을 축으로 쓰고, 숫자 차이는 보고서에서
+  두 실행을 비교해 읽는다. 숫자 자체는 같은 픽스처·같은 시드에서 반복 재현된다(실측: 레이피어
+  3회 전부 급소 195/162, 채찍 2회 전부 34/49) — 단 지도·전투 인접 코드가 바뀌면 값이 움직인다.
 - 전투 주스가 맵을 드러내는 회귀는 `test/runtime/battle-flash-map.spec.ts` 가 잠근다. 같은 QA
   서버로 `player.html` 을 띄워 `battle-v3.json` 시작 맵(0,0) 오른쪽 `battleProcessing` 이벤트로
   **실전투 DOM** 에 들어간 뒤, 한 번의 rAF 샘플 시리즈에서 세 가지를 같이 본다: 루트

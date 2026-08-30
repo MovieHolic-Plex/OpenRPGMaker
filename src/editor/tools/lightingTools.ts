@@ -1,4 +1,5 @@
 import { genId } from "@/util/id";
+import { isPassable } from "@/project/collision";
 import { normalizeLightingState, normalizeLightSource } from "@/project/lightingRules";
 import type { Command, EventPage, GameEvent, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
 import { requireMap } from "./mapHelpers";
@@ -10,7 +11,7 @@ const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 }
 const setLightingVolume: ToolDefinition = {
   name: "set_lighting_volume",
   description:
-    "맵 또는 지정 영역에 암전/광원 설정을 한 번에 적용한다. applyMode='map'은 map.defaultLighting을 설정하고, applyMode='event'는 area 내부 칸마다 투명 playerTouch 이벤트를 생성한다.",
+    "맵 또는 지정 영역에 암전/광원 설정을 한 번에 적용한다. applyMode='map'은 map.defaultLighting을 설정하고, applyMode='event'는 area 내부의 통행 불가 칸을 건너뛰고 나머지 칸마다 투명 playerTouch 이벤트를 생성한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -53,9 +54,16 @@ const setLightingVolume: ToolDefinition = {
     const area = rectArg(args.area, "area");
     assertAreaInMap(map, area);
     const eventIds: string[] = [];
+    const skipped: Array<{ x: number; y: number }> = [];
+    let skippedCount = 0;
     const commands = lightingCommands(lighting.ambient, lighting.color, lighting.sources);
     for (let y = area.y; y < area.y + area.h; y += 1) {
       for (let x = area.x; x < area.x + area.w; x += 1) {
+        if (!isPassable(draft, map, x, y)) {
+          skippedCount += 1;
+          if (skipped.length < 5) skipped.push({ x, y });
+          continue;
+        }
         const id = genId("ev_light_volume");
         map.events.push(lightingTriggerEvent(id, x, y, commands));
         eventIds.push(id);
@@ -63,6 +71,7 @@ const setLightingVolume: ToolDefinition = {
     }
     return {
       summary: `${map.name} 영역 조명 트리거 ${eventIds.length}개 생성 — ambient ${lighting.ambient.toFixed(2)}, 광원 ${lighting.sources.length}개`,
+      ...(skippedCount > 0 ? { warnings: [impassableCellsWarning(skippedCount, skipped)] } : {}),
       data: { mapId: map.id, applyMode, area, eventIds, lightCount: lighting.sources.length },
     };
   },
@@ -71,7 +80,7 @@ const setLightingVolume: ToolDefinition = {
 const setSceneMood: ToolDefinition = {
   name: "set_scene_mood",
   description:
-    "맵 분위기 프리셋처럼 날씨와 Phase 6a 조명 인자를 한 번에 적용한다. applyMode='map'은 map.defaultLighting과 맵 진입 날씨 이벤트를 설정하고, applyMode='event'는 lighting.area 내부에 playerTouch 분위기 이벤트를 만든다.",
+    "맵 분위기 프리셋처럼 날씨와 Phase 6a 조명 인자를 한 번에 적용한다. applyMode='map'은 map.defaultLighting과 맵 진입 날씨 이벤트를 설정하고, applyMode='event'는 lighting.area 내부의 통행 불가 칸을 건너뛰고 playerTouch 분위기 이벤트를 만든다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -121,8 +130,15 @@ const setSceneMood: ToolDefinition = {
       ...(lighting ? lightingCommands(lighting.ambient, lighting.color, lighting.sources) : []),
     ];
     const eventIds: string[] = [];
+    const skipped: Array<{ x: number; y: number }> = [];
+    let skippedCount = 0;
     for (let y = area.y; y < area.y + area.h; y += 1) {
       for (let x = area.x; x < area.x + area.w; x += 1) {
+        if (!isPassable(draft, map, x, y)) {
+          skippedCount += 1;
+          if (skipped.length < 5) skipped.push({ x, y });
+          continue;
+        }
         const id = genId("ev_scene_mood");
         map.events.push(sceneMoodTriggerEvent(id, x, y, commands));
         eventIds.push(id);
@@ -130,10 +146,15 @@ const setSceneMood: ToolDefinition = {
     }
     return {
       summary: `${map.name} 분위기 트리거 ${eventIds.length}개 생성 — ${weather ? `날씨 ${weather.weather}` : "날씨 유지"}, ${lighting ? `ambient ${lighting.ambient.toFixed(2)}` : "조명 유지"}`,
+      ...(skippedCount > 0 ? { warnings: [impassableCellsWarning(skippedCount, skipped)] } : {}),
       data: { mapId: map.id, applyMode, area, weatherKind: weather?.weather, lightCount: lighting?.sources.length ?? 0, eventIds },
     };
   },
 };
+
+function impassableCellsWarning(count: number, cells: readonly { x: number; y: number }[]): string {
+  return `통행 불가 칸 ${count}개를 건너뛰었습니다: ${cells.map(({ x, y }) => `(${x}, ${y})`).join(", ")}`;
+}
 
 function lightingCommands(ambient: number, color: string | undefined, sources: readonly LightSource[]): Command[] {
   return [

@@ -126,7 +126,7 @@ async function tryOpenSelectedEvent(page: Page): Promise<boolean> {
 async function openEventEditor(page: Page): Promise<void> {
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();
-  await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-current", "true");
   await expect(page.getByTestId("tool-event")).toHaveAttribute("aria-pressed", "true");
 
   const editor = page.getByTestId("event-editor-modal");

@@ -1,18 +1,7 @@
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
-import {
-  BATTLE_DEFEAT_BRANCH_INDEX,
-  BATTLE_ESCAPE_BRANCH_INDEX,
-  BATTLE_VICTORY_BRANCH_INDEX,
-  CHOICE_CANCEL_BRANCH_INDEX,
-  FORK_ELSE_BRANCH_INDEX,
-  FORK_THEN_BRANCH_INDEX,
-  INN_NOT_ENOUGH_BRANCH_INDEX,
-  LOOP_BODY_BRANCH_INDEX,
-  PROMOTE_FAILURE_BRANCH_INDEX,
-  PROMOTE_SUCCESS_BRANCH_INDEX,
-  SHOP_TRANSACTION_BRANCH_INDEX,
-} from "@/editor/eventCommandPaths";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { GOLD_MAX } from "@/project/economyValues";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
@@ -514,6 +503,18 @@ function validateCondition(
         });
       }
       return;
+    case "relationshipAtLeast":
+      if (!condition.npcKey?.trim() && !refs.hostHasCharacterId) {
+        issues.push({
+          severity: "warning",
+          code: "condition.relationship.no-character-id",
+          message: "관계 조건에 쓸 NPC 관계가 없어 이 조건은 항상 거짓입니다. 「NPC와 일정」에서 인물을 연결하거나 NPC 키를 적으세요.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-page-relationship-condition-npc-key" },
+        });
+      }
+      return;
     case "run":
       if (condition.query === "flag" && !condition.flag.trim()) {
         issues.push({
@@ -949,6 +950,7 @@ function validateCommand(
     case "moveMonster":
     case "openChest":
     case "changeFriendship":
+    case "setRelationship":
     case "removeFollower":
     case "setLighting":
     case "removeLight":
@@ -1245,35 +1247,12 @@ function walkCommands(commands: readonly Command[], containerPath: readonly numb
   return visits;
 }
 
+/**
+ * 분기 열거는 `./eventCommandBranches` 가 정본이다. 얇은 어댑터로 두는 이유: 예전에 이
+ * 함수가 자기 목록을 들고 상점 실패 분기를 빠뜨려, 그 안의 검증 문제를 아예 못 봤다.
+ */
 function commandBranches(command: Command): readonly { readonly branchIndex: number; readonly commands: readonly Command[] }[] {
-  switch (command.kind) {
-    case "choices":
-      return [
-        ...command.options.map((option, index) => ({ branchIndex: index, commands: option.branch })),
-        ...(command.cancelBranch ? [{ branchIndex: CHOICE_CANCEL_BRANCH_INDEX, commands: command.cancelBranch }] : []),
-      ];
-    case "fork":
-      return [
-        { branchIndex: FORK_THEN_BRANCH_INDEX, commands: command.then },
-        ...(command.else ? [{ branchIndex: FORK_ELSE_BRANCH_INDEX, commands: command.else }] : []),
-      ];
-    case "loop": return [{ branchIndex: LOOP_BODY_BRANCH_INDEX, commands: command.body }];
-    case "shop": return command.transactionBranch ? [{ branchIndex: SHOP_TRANSACTION_BRANCH_INDEX, commands: command.transactionBranch }] : [];
-    case "inn": return command.notEnoughBranch ? [{ branchIndex: INN_NOT_ENOUGH_BRANCH_INDEX, commands: command.notEnoughBranch }] : [];
-    case "promoteActor":
-    case "evolveMonster":
-      return [
-        ...(command.successBranch ? [{ branchIndex: PROMOTE_SUCCESS_BRANCH_INDEX, commands: command.successBranch }] : []),
-        ...(command.failureBranch ? [{ branchIndex: PROMOTE_FAILURE_BRANCH_INDEX, commands: command.failureBranch }] : []),
-      ];
-    case "battleProcessing":
-      return [
-        ...(command.victoryBranch ? [{ branchIndex: BATTLE_VICTORY_BRANCH_INDEX, commands: command.victoryBranch }] : []),
-        ...(command.defeatBranch ? [{ branchIndex: BATTLE_DEFEAT_BRANCH_INDEX, commands: command.defeatBranch }] : []),
-        ...(command.escapeBranch ? [{ branchIndex: BATTLE_ESCAPE_BRANCH_INDEX, commands: command.escapeBranch }] : []),
-      ];
-    default: return [];
-  }
+  return eventCommandBranches(command).map((branch) => ({ branchIndex: branch.branchIndex, commands: branch.commands }));
 }
 
 function commandHasEffect(command: Command): boolean {

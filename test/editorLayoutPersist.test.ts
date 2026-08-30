@@ -192,8 +192,11 @@ afterEach(() => {
 });
 
 describe("에디터 레이아웃 크기 저장", () => {
-  it("리사이저 mouseup과 좌측 패널 토글 시 저장하고 모듈 재로드 후 접힘을 복원한다", async () => {
-    const { renderEditor, toggleLeftPanel } = await import("@/editor/panels/editor");
+  // `leftCollapsed` 는 2026-08-29 에 저장 페이로드에서 **빠졌다**. 선언·토글·저장은 있었는데
+  // `applyLayout` 이 읽지 않는 죽은 상태였고(.omo/plans/sidebar-ux.md §1-1 B-7), 되살리면
+  // "좌측 사이드바는 절대 비지 않는다" 불변식과 싸운다. 그래서 크기만 저장한다.
+  it("리사이저 mouseup 시 크기를 저장하고 모듈 재로드 후 복원한다 (접힘 상태는 저장하지 않는다)", async () => {
+    const { renderEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
     renderEditor(main);
     const leftResizer = fakeElement(main).querySelector(".resizer-left");
@@ -206,9 +209,10 @@ describe("에디터 레이아웃 크기 저장", () => {
     mapTreeResizer.dispatchEvent(mouseEvent("mousedown", { clientY: 0 }));
     document.dispatchEvent(mouseEvent("mousemove", { clientY: -6 }));
     document.dispatchEvent(mouseEvent("mouseup", {}));
-    toggleLeftPanel();
 
-    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ leftCollapsed: true, chatDock: "glass" });
+    const saved: unknown = JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}");
+    expect(saved).toMatchObject({ chatDock: "glass" });
+    expect(saved).not.toHaveProperty("leftCollapsed");
 
     vi.resetModules();
     mockEditorDependencies();
@@ -216,9 +220,10 @@ describe("에디터 레이아웃 크기 저장", () => {
     const nextMain = document.createElement("main");
     reloaded.renderEditor(nextMain);
 
-    expect(reloaded.isLeftCollapsed()).toBe(true);
     expect(fakeElement(nextMain).querySelector(".left-panel")?.style.display).not.toBe("none");
-  }, 30_000);
+    // 이 파일의 첫 테스트가 `@/editor/panels/editor` 그래프 전체를 처음 변환·실행한다 —
+    // 이 저장소에서 그 비용만 70초대다(뒤 테스트는 5~10초). 대기가 아니라 상한이다.
+  }, 180_000);
 
   it("좁은 뷰포트에서도 좌측 사이드바를 접어 숨기지 않는다", async () => {
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 480 });
@@ -227,7 +232,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     renderEditor(main);
     expect(fakeElement(main).querySelector(".left-panel")?.style.display).not.toBe("none");
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 1200 });
-  }, 30_000);
+  }, 120_000);
 
   it("채팅 dock 토글은 같은 패널 DOM을 float host와 side panel 사이에서 옮기고 저장한다", async () => {
     const { renderEditor } = await import("@/editor/panels/editor");
@@ -268,7 +273,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     expect(panel.parentElement).toBe(floatHost);
     expect(editorState.get().chatDock).toBe("glass");
     expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ chatDock: "glass" });
-  });
+  }, 120_000);
 
   it("저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다", async () => {
     // float 로 고정해 좌패널 max(640) clamp 를 side-dock 폭 차감과 분리한다.
@@ -292,7 +297,7 @@ describe("에디터 레이아웃 크기 저장", () => {
 
     const { editorState: freshState } = await import("@/editor/editorState");
     expect(freshState.get().chatDock).toBe("glass");
-  });
+  }, 120_000);
 
   it("저장된 채팅 side dock을 복원한다", async () => {
     // 소스가 읽는 실제 키(v4)에 심는다 — 상단 EDITOR_LAYOUT_KEY 상수는 레거시 키라 저장 dock 복원을 검증하지 못한다.
@@ -311,7 +316,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     const sideHost = findByTestId(root, "chat-side-panel");
     expect(panel?.parentElement).toBe(sideHost);
     expect(editorState.get().chatDock).toBe("side");
-  });
+  }, 120_000);
 
   it("저장된 조수 대기 화면을 도크 설정과 함께 복원한다", async () => {
     storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
@@ -332,7 +337,7 @@ describe("에디터 레이아웃 크기 저장", () => {
 
     expect(editorState.get().assistantTemperature).toBe("ink-only");
     expect(findByTestId(fakeElement(main), "ai-panel")?.dataset.temperature).toBe("ink-only");
-  });
+  }, 120_000);
 });
 
 describe("맵 잠금 상태바", () => {
@@ -344,8 +349,8 @@ describe("맵 잠금 상태바", () => {
     const { renderEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
     renderEditor(main);
-    const takeover = findByTestId(fakeElement(main), "map-lock-takeover");
-    if (!takeover) throw new Error("map-lock-takeover button missing");
+    const takeover = findByTestId(fakeElement(main), "map-lock-banner-takeover");
+    if (!takeover) throw new Error("map-lock-banner-takeover button missing");
 
     takeover.click();
     // 비즉시 takeover는 커스텀 인앱 모달(§2.4)로 확인을 받는다 — 확인을 눌러야 호출된다.
@@ -357,5 +362,5 @@ describe("맵 잠금 상태바", () => {
     await vi.waitFor(() => {
       expect(takeoverMapLock).toHaveBeenCalledWith(mapId, mapName);
     });
-  });
+  }, 120_000);
 });

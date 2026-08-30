@@ -1,17 +1,4 @@
-import {
-  BATTLE_DEFEAT_BRANCH_INDEX,
-  BATTLE_ESCAPE_BRANCH_INDEX,
-  BATTLE_VICTORY_BRANCH_INDEX,
-  CHOICE_CANCEL_BRANCH_INDEX,
-  FORK_ELSE_BRANCH_INDEX,
-  FORK_THEN_BRANCH_INDEX,
-  INN_NOT_ENOUGH_BRANCH_INDEX,
-  LOOP_BODY_BRANCH_INDEX,
-  PROMOTE_FAILURE_BRANCH_INDEX,
-  PROMOTE_SUCCESS_BRANCH_INDEX,
-  SHOP_FAILED_TRANSACTION_BRANCH_INDEX,
-  SHOP_TRANSACTION_BRANCH_INDEX,
-} from "@/editor/eventCommandPaths";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandCategoryVisual } from "./commandCategoryIcons";
@@ -325,26 +312,10 @@ export function renderStoryboard(
   } else {
     commands.forEach((cmd, idx) => {
       const info = summarizeCommand(cmd);
+      // 분기 이름은 바로 아래 `branchPanels` 가 전부 펼쳐 보여준다. 예전에는 카드 안에도
+      // 앞 2개만 12자로 자른 «칩 줄» 을 같이 찍어, 같은 목록이 40px 간격으로 두 번 나왔다
+      // (분기가 1개인 반복 명령은 «반복할 내용» 이 연달아 두 번). 열등한 사본이라 지웠다.
       const branches = branchesOf(cmd);
-      const visibleBranches = branches.slice(0, 2);
-      const hiddenBranches = Math.max(0, branches.length - visibleBranches.length);
-      const branchRow = branches.length > 0
-        ? el("span", {
-            class: "event-storyboard-card-branches",
-            children: [
-              ...visibleBranches.map((br) => el("span", {
-                class: "event-storyboard-branch",
-                children: [el("span", {
-                  class: "event-storyboard-branch-label",
-                  text: (br.label || "이름 없는 분기").slice(0, 12),
-                })],
-              })),
-              ...(hiddenBranches > 0
-                ? [el("span", { class: "event-storyboard-branch-more", text: `+${hiddenBranches}` })]
-                : []),
-            ],
-          })
-        : null;
       const actions = rowActions([idx]);
 
       const row = el("div", {
@@ -370,7 +341,6 @@ export function renderStoryboard(
           el("span", { class: "kind event-storyboard-card-title", text: info.title }),
           el("span", { class: "line event-storyboard-card-detail", text: info.detail }),
           ...(actions ? [actions] : []),
-          ...(branchRow ? [branchRow] : []),
         ],
       });
       attachRowBehaviour(row, [idx]);
@@ -418,73 +388,16 @@ type StoryboardBranch = {
   pathSegment: number;
 };
 
+/**
+ * 분기 열거는 `@/editor/eventCommandBranches` 가 정본이다. 여기는 경로 칸 이름만 바꿔주는
+ * 얇은 어댑터라 목록을 따로 들지 않는다.
+ */
 function branchesOf(cmd: Command): StoryboardBranch[] {
-  if (cmd.kind === "choices") {
-    return [
-      ...cmd.options.map((option, optionIdx) => ({
-        label: option.text,
-        commands: option.branch,
-        pathSegment: optionIdx,
-      })),
-      ...(cmd.cancelBranch
-        ? [{ label: "취소", commands: cmd.cancelBranch, pathSegment: CHOICE_CANCEL_BRANCH_INDEX }]
-        : []),
-    ];
-  }
-  if (cmd.kind === "fork") {
-    return [
-      { label: "조건을 만족함", commands: cmd.then, pathSegment: FORK_THEN_BRANCH_INDEX },
-      ...(cmd.else
-        ? [{ label: "조건을 만족하지 않음", commands: cmd.else, pathSegment: FORK_ELSE_BRANCH_INDEX }]
-        : []),
-    ];
-  }
-  if (cmd.kind === "loop") {
-    return [{ label: "반복할 내용", commands: cmd.body, pathSegment: LOOP_BODY_BRANCH_INDEX }];
-  }
-  if (cmd.kind === "shop") {
-    const shop = cmd as Extract<Command, { kind: "shop" }> & { failedTransactionBranch?: Command[] };
-    return [
-      ...(cmd.branchOnTransaction && cmd.transactionBranch
-        ? [{ label: "거래했을 때", commands: cmd.transactionBranch, pathSegment: SHOP_TRANSACTION_BRANCH_INDEX }]
-        : []),
-      ...(shop.failedTransactionBranch
-        ? [{ label: "거래하지 못했을 때", commands: shop.failedTransactionBranch, pathSegment: SHOP_FAILED_TRANSACTION_BRANCH_INDEX }]
-        : []),
-    ];
-  }
-  if (cmd.kind === "inn" && cmd.branchOnNotEnoughGold && cmd.notEnoughBranch) {
-    return [{ label: "골드가 부족할 때", commands: cmd.notEnoughBranch, pathSegment: INN_NOT_ENOUGH_BRANCH_INDEX }];
-  }
-  if (cmd.kind === "promoteActor" || cmd.kind === "evolveMonster") {
-    return [
-      ...(cmd.successBranch
-        ? [{ label: cmd.kind === "promoteActor" ? "승급 성공" : "진화 성공", commands: cmd.successBranch, pathSegment: PROMOTE_SUCCESS_BRANCH_INDEX }]
-        : []),
-      ...(cmd.failureBranch
-        ? [{ label: cmd.kind === "promoteActor" ? "승급 실패" : "진화 실패", commands: cmd.failureBranch, pathSegment: PROMOTE_FAILURE_BRANCH_INDEX }]
-        : []),
-    ];
-  }
-  const branches = cmd as unknown as {
-    victoryBranch?: Command[];
-    defeatBranch?: Command[];
-    escapeBranch?: Command[];
-  };
-  if (cmd.kind === "battleProcessing" && branches.victoryBranch) {
-    return [
-      ...(branches.victoryBranch
-        ? [{ label: "승리", commands: branches.victoryBranch, pathSegment: BATTLE_VICTORY_BRANCH_INDEX }]
-        : []),
-      ...(branches.defeatBranch
-        ? [{ label: "패배", commands: branches.defeatBranch, pathSegment: BATTLE_DEFEAT_BRANCH_INDEX }]
-        : []),
-      ...(branches.escapeBranch
-        ? [{ label: "도주", commands: branches.escapeBranch, pathSegment: BATTLE_ESCAPE_BRANCH_INDEX }]
-        : []),
-    ];
-  }
-  return [];
+  return eventCommandBranches(cmd).map((branch) => ({
+    label: branch.label,
+    commands: branch.commands,
+    pathSegment: branch.branchIndex,
+  }));
 }
 
 export function renderViewToggle(

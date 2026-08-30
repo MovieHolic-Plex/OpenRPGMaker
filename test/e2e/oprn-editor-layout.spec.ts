@@ -20,7 +20,7 @@ type CompactShellMetric = {
   readonly documentWidth: number;
   readonly regions: Readonly<Record<string, { readonly bottom: number; readonly left: number; readonly right: number; readonly top: number }>>;
   // Beginner icon rail computed style — runtime contract migrated from the
-  // editor-ui-modes.css regex pin (overflow visible / z-index var(--z-rail) / ~48px width).
+  // editor-ui-modes.css regex pin (overflow visible / z-index var(--z-rail) / 72px width).
   readonly leftPanelRail:
     | {
         readonly overflow: string;
@@ -170,15 +170,15 @@ test("editor shell contains Basic and Expert regions at every supported viewport
         expect(region.bottom).toBeLessThanOrEqual(viewport.height);
       }
       if (mode === "basic") {
-        // Beginner 48px icon rail contract (migrated from the editor-ui-modes.css regex pin):
-        // flyouts spill right over the map, so the rail must stay unclipped (overflow visible),
-        // float above the canvas (z-index: var(--z-rail) → 50), and keep its ~48px width.
+        // Beginner 72px icon rail contract (migrated from the editor-ui-modes.css regex pin):
+        // flyouts spill right over the map, so the panel must stay unclipped (overflow visible),
+        // float above the canvas (z-index: var(--z-rail) → 50), and keep its measured 72px width.
         expect(metric.leftPanelRail).not.toBeNull();
         expect(metric.leftPanelRail?.overflow).toBe("visible");
         expect(metric.leftPanelRail?.overflowX).toBe("visible");
         expect(metric.leftPanelRail?.overflowY).toBe("visible");
         expect(metric.leftPanelRail?.zIndex).toBe("50");
-        expect(Math.abs((metric.leftPanelRail?.width ?? 0) - 48)).toBeLessThanOrEqual(2);
+        expect(metric.leftPanelRail?.width).toBe(72);
       }
     }
     expect(browserIssues).toEqual([]);
@@ -568,7 +568,7 @@ test("right click picks the tile under the cursor and layer mode is visually dis
   await page.goto("/?devProject=1&logCabinShowcase=1&focusX=4&focusY=1&rightClickEyedropper=1");
 
   await page.getByTestId("layer-upper").click();
-  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-current", "true");
   await expect(page.getByTestId("layer-selector")).toContainText("3단 레이어");
   const roofTile = await findCanvasPointByCursor(page, ({ lower, upper }) => lower === "374" || upper === "374");
   const clip = { x: roofTile.x - 80, y: roofTile.y - 80, width: 160, height: 160 };
@@ -578,7 +578,7 @@ test("right click picks the tile under the cursor and layer mode is visually dis
   await expect(page.getByTestId("selected-tile-status")).toContainText("374");
 
   await page.getByTestId("layer-lower").click();
-  await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-current", "true");
   await expect.poll(async () => byteDistance(upperLayerView, await page.screenshot({ clip }))).toBeGreaterThan(24);
 });
 
@@ -587,7 +587,7 @@ test("right click picks the visible upper tile even when lower layer is active",
   await page.goto("/?devProject=1&logCabinShowcase=1&focusX=4&focusY=1&rightClickVisibleTop=1");
 
   await page.getByTestId("layer-lower").click();
-  await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-current", "true");
   const target = await findCanvasPointByCursor(page, ({ lower, upper }) => upper !== "-1" && upper !== "" && upper !== lower);
 
   const upperTile = await page.getByTestId("cursor-upper").textContent() ?? "";
@@ -602,7 +602,7 @@ test("middle mouse drag pans the map without changing the selected layer", async
   await page.goto("/?logCabinShowcase=1&middleMousePan=1&focusX=16&focusY=13");
 
   await page.getByTestId("layer-upper").click();
-  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-current", "true");
 
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
@@ -617,7 +617,7 @@ test("middle mouse drag pans the map without changing the selected layer", async
   await page.mouse.up({ button: "middle" });
 
   await expect.poll(async () => byteDistance(before, await canvas.screenshot())).toBeGreaterThan(1000);
-  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("layer-upper")).toHaveAttribute("aria-current", "true");
   await expect(page.getByTestId("tool-paint")).toHaveAttribute("aria-pressed", "true");
 });
 

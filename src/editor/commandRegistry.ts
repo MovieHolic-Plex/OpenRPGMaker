@@ -4,6 +4,8 @@ import { applyLayer } from "@/editor/hotkeys";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
+import { getEditorChrome } from "@/editor/editorUiMode";
+import { dockZoneHasHost, isLeftDockPinned } from "@/editor/workspace/leftDockPanels";
 import { allPanels } from "@/editor/workspace/panelRegistry";
 import { WORKSPACE_PRESETS, type WorkspaceDensity } from "@/editor/workspace/workspaceLayout";
 import {
@@ -100,23 +102,33 @@ export function listEditorCommands(): readonly EditorCommand[] {
       keywords: ["density", "밀도", label, ...keywords],
       run: () => setWorkspaceDensity(density),
     })),
-    // 패널 도킹 — ⌘K 에서 좌/우 도크로 바로 보낼 수 있게 한다(탑바 ▤ 메뉴와 같은 동작).
-    ...allPanels().filter((panel) => panel.id !== "assistant").flatMap((panel): readonly EditorCommand[] => [
-      {
-        id: `workspace-panel-${panel.id}`,
-        label: `화면: 패널 — ${panel.title} 열기/닫기`,
-        category: "화면",
-        keywords: ["panel", "dock", "패널", "도크", panel.title],
-        run: () => toggleWorkspacePanel(panel.id),
-      },
-      ...(["left", "right"] as const).map((zone): EditorCommand => ({
-        id: `workspace-panel-${panel.id}-${zone}`,
-        label: `화면: 패널 — ${panel.title}를 ${zone === "left" ? "왼쪽" : "오른쪽"}으로`,
-        category: "화면",
-        keywords: ["panel", "dock", "move", "패널", "도크", "이동", panel.title],
-        run: () => moveWorkspacePanel(panel.id, zone),
-      })),
-    ]),
+    // 패널 도킹 — ⌘K 에서 좌/우 도크로 바로 보낸다. 고정 패널과 호스트 없는 도크는
+    // 탑바 ▤ 메뉴처럼 명령 자체를 내놓지 않고, 열린 팔레트가 낡아도 실행 시 다시 막는다.
+    ...allPanels().filter((panel) => panel.id !== "assistant").flatMap((panel): readonly EditorCommand[] => {
+      if (isLeftDockPinned(panel.id, getEditorChrome().paletteRail)) return [];
+      return [
+        {
+          id: `workspace-panel-${panel.id}`,
+          label: `화면: 패널 — ${panel.title} 열기/닫기`,
+          category: "화면",
+          keywords: ["panel", "dock", "패널", "도크", panel.title],
+          run: () => {
+            if (isLeftDockPinned(panel.id, getEditorChrome().paletteRail)) return;
+            toggleWorkspacePanel(panel.id);
+          },
+        },
+        ...(["left", "right"] as const).filter(dockZoneHasHost).map((zone): EditorCommand => ({
+          id: `workspace-panel-${panel.id}-${zone}`,
+          label: `화면: 패널 — ${panel.title}를 ${zone === "left" ? "왼쪽" : "오른쪽"}으로`,
+          category: "화면",
+          keywords: ["panel", "dock", "move", "패널", "도크", "이동", panel.title],
+          run: () => {
+            if (isLeftDockPinned(panel.id, getEditorChrome().paletteRail) || !dockZoneHasHost(zone)) return;
+            moveWorkspacePanel(panel.id, zone);
+          },
+        })),
+      ];
+    }),
     ...([
       { dock: "glass", label: "왼쪽 카드" },
       { dock: "side", label: "오른쪽 고정" },

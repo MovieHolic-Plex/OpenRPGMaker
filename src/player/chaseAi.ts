@@ -1,4 +1,5 @@
 import { canMove, canMoveFootprint, inBounds } from "@/project/collision";
+import { passageBounds } from "@/project/footprint";
 import {
   armTerrainComponents,
   terrainMayReach,
@@ -137,6 +138,21 @@ export type ChasePassSize = {
   readonly passRows: number;
 };
 
+/**
+ * 통행 사각이 한 칸인가 — 성분 색인을 쓸 수 있는 조건.
+ *
+ * `pass` 의 **유무**로 갈라서는 안 된다. 런타임 추격은 1x1 NPC 에도
+ * `pass: { footprint: view.footprint, passRows: view.passRows }` 를 객체로 항상 넘기므로
+ * (playSceneAutonomous.ts §updateChaseNpc) 유무로 가르면 모든 추격 NPC 에서 색인이 죽는다.
+ * 1x1 사각은 canMoveFootprint 가 canMove 1회로 환원돼 대칭 전제가 그대로 성립한다.
+ * 그 환원을 규칙을 베껴 판정하지 않고 passageBounds 에 직접 물어 한 칸인지 본다.
+ */
+function passIsUnitRect(pass: ChasePassSize | undefined): boolean {
+  if (!pass) return true;
+  const rect = passageBounds(0, 0, pass.footprint, pass.passRows);
+  return rect.left === rect.right && rect.top === rect.bottom;
+}
+
 /** 추격자의 통행 사각으로 한 칸 이동 가능한가. pass 생략 시 canMove 와 같다. */
 function chasePassable(
   project: Project,
@@ -172,9 +188,10 @@ export function findChasePath(
   if (!inBounds(map, from.x, from.y) || !inBounds(map, to.x, to.y)) return [];
   if (from.x === to.x && from.y === to.y) return [];
   // 지형 성분이 다르면 아래 탐색은 맵 절반을 훑고 반드시 빈 경로를 낸다 — 그 결과를
-  // 색인에서 바로 읽는다(실측 6.7ms → 25µs). 발자국 이동은 통행 관계가 비대칭이라
-  // 색인 대상이 아니므로 pass 가 있으면 건너뛴다(tilePassabilityComponents 머리 주석).
-  if (!pass && !terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return [];
+  // 색인에서 바로 읽는다(실측 6.7ms → 25µs). 통행 사각이 1x1 보다 크면 통행 관계가
+  // 비대칭이라 색인 대상이 아니다(tilePassabilityComponents 머리 주석).
+  const unitPass = passIsUnitRect(pass);
+  if (unitPass && !terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return [];
   const width = map.width;
   const start: AStarNode = {
     point: from,
@@ -225,9 +242,10 @@ export function findChasePath(
     }
   }
   // 여기 닿았다는 건 from 의 성분 전체를 훑고도 to 를 못 만났다는 뜻이다. 그 탐색 값을
-  // 성분 색인으로 남겨 같은 질의가 반복될 때 다시 훑지 않게 한다. 발자국 이동은 색인의
-  // 대칭 전제를 만족하지 않으므로 남기지 않는다.
-  if (!pass) armTerrainComponents(project, map);
+  // 성분 색인으로 남겨 같은 질의가 반복될 때 다시 훑지 않게 한다. 1x1 보다 큰 통행 사각은
+  // 색인의 대칭 전제를 만족하지 않으므로 남기지 않는다. closed.size 는 방금 훑은 성분의
+  // 크기다 — 그게 면적에 비해 작으면 색인이 손해라 만들지 않는다.
+  if (unitPass) armTerrainComponents(project, map, closed.size);
   return [];
 }
 
@@ -289,7 +307,8 @@ export function nearestReachableCandidate(
     frontier = next;
   }
   // findChasePath 와 같은 이유로 색인을 남긴다 — 방금 from 의 성분을 전부 훑었다.
-  armTerrainComponents(project, map);
+  // visited.size 가 그 성분의 크기다(같은 이유로 작으면 남기지 않는다).
+  armTerrainComponents(project, map, visited.size);
   return null;
 }
 

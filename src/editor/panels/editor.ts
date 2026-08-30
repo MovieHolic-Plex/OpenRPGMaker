@@ -51,6 +51,7 @@ import {
 } from "@/editor/panels/testPlayModal";
 // 좌측 패널 본문(팔레트·맵 트리)은 이제 패널 레지스트리가 그린다 — 여기서 직접 import 하지 않는다.
 import { dockSignature, mountDock, renderDockPanels, type DockMount } from "@/editor/workspace/dockHost";
+import { resolveLeftDockPanels } from "@/editor/workspace/leftDockPanels";
 import type { PanelId } from "@/editor/workspace/panelRegistry";
 import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/workspaceStore";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -76,19 +77,19 @@ const MAP_TREE_DEFAULT_HEIGHT = 300;
 const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
+// 초보 아이콘 레일의 출하 폭. CSS `--basic-rail-width` 가 원천이고 이 상수는 폭을 읽지 못할
+// 때(fake DOM, 첫 페인트 전)의 폴백이다. 48px 로 되돌리면 14px 한국어 라벨 2줄이 잘린다.
+const BASIC_RAIL_FALLBACK_WIDTH = 72;
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
   readonly mapTreeHeight: number;
-  readonly leftCollapsed: boolean;
-  readonly leftCollapsedStored: boolean;
   readonly chatDock: ChatDock;
   readonly assistantTemperature: AssistantTemperature;
 };
 
 const initialLayout = loadEditorLayout();
 let leftWidth = initialLayout.leftWidth;
-let leftCollapsed = initialLayout.leftCollapsed;
 let leftRoot: HTMLElement | null = null;
 let leftMapRoot: HTMLElement | null = null;
 let leftResizer: HTMLElement | null = null;
@@ -275,13 +276,12 @@ export function renderEditor(main: HTMLElement): void {
   maybeStartStandardWelcomeCard();
 }
 
-/** AI 독은 자기 호스트(`chatSidePanel`)를 갖는다 — 좌측 도크가 만들지 않는다. */
-const LEFT_DOCK_EXTERNAL: readonly PanelId[] = ["assistant"];
-
+/** 좌측 도크에 마운트할 패널. 규칙은 `workspace/leftDockPanels.ts` 가 소유한다(패널 메뉴와 공유). */
 function leftDockPanels(): readonly PanelId[] {
-  const fromLayout = getWorkspaceLayout().docks.left.filter((id) => !LEFT_DOCK_EXTERNAL.includes(id));
-  const extras = fromLayout.filter((id) => id !== "tiles" && id !== "maps");
-  return ["tiles", "maps", ...extras];
+  return resolveLeftDockPanels({
+    left: getWorkspaceLayout().docks.left,
+    paletteRail: getEditorChrome().paletteRail,
+  });
 }
 
 /**
@@ -446,18 +446,6 @@ export function teardownEditor(): void {
   document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-glass", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
 
-export function toggleLeftPanel(): void {
-  leftCollapsed = !leftCollapsed;
-  applyLayout();
-  saveEditorLayout();
-  scheduleFitCanvas();
-}
-
-
-export function isLeftCollapsed(): boolean {
-  return leftCollapsed;
-}
-
 export function toggleChatDock(): void {
   setChatDock(cycleChatDock(chatDock));
 }
@@ -616,9 +604,12 @@ function applyLayout(): void {
   // 뷰포트가 열을 display:none 으로 지울 수 없다.
   if (chrome.paletteRail) {
     leftRoot.style.display = "";
-    leftRoot.style.width = "48px";
+    // 폭은 CSS(`--basic-rail-width`, `min-width … !important`)가 소유한다 — inline width 는
+    // 무시당하면서 "48px 이다"는 거짓 근거만 남긴다(실제 렌더 폭 72px).
     leftResizer.style.display = "none";
-    setEditorLeftSafe("60px");
+    // `--editor-left-safe` 는 실폭에서 파생한다. 리사이저 여유는 비-레일 분기와 같은 계산이고
+    // 여긴 숨겼으니 0 이다 → 어시스턴트 오버레이의 12px 여백이 마침내 12px 이 된다.
+    setEditorLeftSafe(`${measuredWidth(leftRoot, BASIC_RAIL_FALLBACK_WIDTH) + visibleWidth(leftResizer)}px`);
     return;
   }
   leftRoot.style.display = "";
@@ -645,6 +636,20 @@ function publishSideChatWidth(layoutEl: HTMLElement | null, sideWidth: number): 
   if (sideWidth > 0) {
     document.documentElement?.style?.setProperty?.("--ai-chat-side-width", px);
   }
+}
+
+/** 렌더된 폭(px). 아직 레이아웃되지 않았거나 fake DOM 이면 폴백. */
+function measuredWidth(node: HTMLElement, fallback: number): number {
+  const rect = node.getBoundingClientRect?.();
+  if (rect && Number.isFinite(rect.width) && rect.width > 0) return Math.round(rect.width);
+  const offset = node.offsetWidth;
+  if (Number.isFinite(offset) && offset > 0) return offset;
+  return fallback;
+}
+
+/** `display:none` 인 노드는 자리를 안 차지한다 — 여유폭도 0. */
+function visibleWidth(node: HTMLElement): number {
+  return node.style.display === "none" ? 0 : measuredWidth(node, 0);
 }
 
 // fakeDom(단위 테스트)에는 documentElement가 없으므로 옵셔널 체이닝으로 가드.
@@ -997,13 +1002,10 @@ function loadEditorLayout(): LoadedEditorLayout {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!isRecord(parsed)) return fallback;
-    const leftCollapsedStored = typeof parsed.leftCollapsed === "boolean";
     return {
       leftWidth: typeof parsed.leftWidth === "number" ? clamp(parsed.leftWidth, LEFT_PANEL_MIN_WIDTH, LEFT_PANEL_MAX_WIDTH) : fallback.leftWidth,
       mapTreeHeight:
         typeof parsed.mapTreeHeight === "number" ? clamp(parsed.mapTreeHeight, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT) : fallback.mapTreeHeight,
-      leftCollapsed: leftCollapsedStored ? parsed.leftCollapsed === true : fallback.leftCollapsed,
-      leftCollapsedStored,
       chatDock: parseChatDock(parsed.chatDock, fallback.chatDock),
       assistantTemperature: parseAssistantTemperature(parsed.assistantTemperature, fallback.assistantTemperature),
     };
@@ -1017,8 +1019,6 @@ function defaultEditorLayout(): LoadedEditorLayout {
   return {
     leftWidth: LEFT_PANEL_DEFAULT_WIDTH,
     mapTreeHeight: MAP_TREE_DEFAULT_HEIGHT,
-    leftCollapsed: false,
-    leftCollapsedStored: false,
     chatDock: "glass",
     assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
   };
@@ -1028,7 +1028,6 @@ function saveEditorLayout(): void {
   browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
     leftWidth,
     mapTreeHeight,
-    leftCollapsed,
     chatDock,
     assistantTemperature,
   }));

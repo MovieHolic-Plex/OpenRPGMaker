@@ -1,6 +1,7 @@
 import { TILE_SIZE } from "@/assets/bundled";
 import type { Layer } from "@/editor/editorState";
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
+import { installGridRoving } from "@/editor/panels/tilePaletteGrid";
 import { normalizeSheetRect, tileIdsInRect as tileIdsInSheetRect, type SheetRangeRect } from "@/editor/panels/tilePaletteGeometry";
 import { createPaletteStampFromDrag, paletteStampIncludesTile, type PaletteStamp } from "@/editor/tilePaletteStamp";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
@@ -106,6 +107,9 @@ export function makeChipsetSheet(args: MakeChipsetSheetArgs): HTMLElement {
     overlay.append(cell);
   }
   sheet.append(overlay);
+  // 시트도 타일 판이다 — 칸마다 탭 스톱을 만들지 않고 판 전체를 탭 스톱 1개로 두고
+  // 화살표로 행·열을 걷는다. 행 보폭은 시트의 실제 열 수(tilesPerRow).
+  installGridRoving(overlay, Math.max(1, args.tileset.tilesPerRow));
   installSheetRangeSelection({
     cells,
     layer: args.layer,
@@ -176,6 +180,14 @@ function makeChipsetCell(model: ChipsetCellModel): HTMLButtonElement {
       // 패널이 재구축되면 증발하지만 pointerup은 커서 아래의 새 노드에서 발화한다.
       click: (event) => {
         event.preventDefault();
+      },
+      // 키보드 활성화 — click 이 preventDefault 되고 선택은 pointerup 에서 나므로
+      // Enter/Space 경로를 명시한다.
+      keydown: (event) => {
+        const key = Reflect.get(event, "key");
+        if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
+        event.preventDefault();
+        model.onSelectTile(index);
       },
     },
   });

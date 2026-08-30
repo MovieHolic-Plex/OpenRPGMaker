@@ -722,18 +722,16 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       class: "region-task-preview-ab-toggle",
       children: [abBeforeBtn, abAfterBtn],
     });
-    const abHint = el("div", {
-      class: "region-task-preview-hint",
-      dataset: { testid: "region-task-preview-hint" },
-      text: "「이전」에 마우스를 올리면 잠깐 비교됩니다 · 바뀐 칸은 테두리로 표시",
-    });
+    // 호버 비교·테두리 표시를 글로 설명하던 줄은 지웠다 — 버튼에 올리면 바로 보이는 동작을
+    // 문장으로 한 번 더 말할 필요가 없다. 툴팁(title)만 남긴다.
+    abBeforeBtn.setAttribute("title", "올리면 잠깐 비교, 누르면 고정");
 
     const previewStage = el("div", {
       class: "region-task-preview-stage",
       children: [beforeFigure, afterFigure],
     });
 
-    previewWrapper.append(abToggle, previewStage, abHint);
+    previewWrapper.append(abToggle, previewStage);
     figures.append(previewWrapper);
     // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
     // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
@@ -998,10 +996,14 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
 
     const review = pending.report;
+    // 통과한 검사는 쓰지 않는다. 예전에는 분리 초안·영역 경계·결정론 수리·배치 규칙처럼
+    // 사용자에게 없는 개념이 초록 체크 6개로 깔렸다 — 다 통과해도 읽을 것이 6줄 늘었다.
+    // 이제 막힌 검사만 남긴다(전부 통과 = 아무 말 없음).
+    const shownCheckpoints = (review?.checkpoints ?? []).filter((checkpoint) => checkpoint.status === "blocked");
     const timeline = el("div", {
-      class: "region-task-checkpoint-timeline",
+      class: "region-task-checkpoint-timeline" + (shownCheckpoints.length ? "" : " hidden"),
       dataset: { testid: "region-task-checkpoint-timeline" },
-      children: (review?.checkpoints ?? []).map((checkpoint) => el("div", {
+      children: shownCheckpoints.map((checkpoint) => el("div", {
         class: `region-task-checkpoint is-${checkpoint.status}`,
         attrs: { title: checkpoint.detail },
         children: [
@@ -1017,40 +1019,21 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       })),
     });
     const metrics = review?.metrics;
-    // 지표는 예전에 한 줄 문자열이었다: "변경 4칸 · 이벤트 1 · 통행 0칸 · 수리 0 · 목표 36개 도달 ·
-    // 조합 50점 · NPC 일정 4명 · 시간 켜짐". 개수·점수·켜짐/꺼짐이 같은 서식으로 붙어 있어
-    // 무엇이 좋은 값인지 읽을 수 없었다. 이제 항목별 칩 + 단위/기준을 달고, 나쁜 값만 강조한다.
+    // 지표는 예전에 한 줄 문자열이었고(무엇의 단위인지 알 수 없었다), 그다음엔 칩 8개였다
+    // ("바뀐 칸 4칸 · 이벤트 1건 · 갈 수 있는 목표 36개 · 타일 조합 50/100점 · NPC 일정 4명 ·
+    // 시간 시스템 켜짐 …"). 개수는 변경 목록이 이미 말하고, 점수·켜짐은 이 편집에서 사용자가
+    // 할 일이 없다. 이제 **손을 봐야 하는 값만** 남긴다 — 좋을 때는 아무것도 안 뜬다.
+    // 전체 수치는 「고급 (실행 로그)」의 로그 복사로 확인한다.
     const metricChips: Array<{ readonly text: string; readonly warn?: boolean }> = [];
     if (metrics) {
-      metricChips.push({ text: `바뀐 칸 ${metrics.changedCells}칸` });
-      metricChips.push({ text: `이벤트 ${metrics.changedEvents}건` });
-      if (metrics.passableChangedCells > 0) {
-        metricChips.push({ text: `걸어갈 수 있는 칸 ${metrics.passableChangedCells}칸` });
-      }
-      if (metrics.deterministicRepairs > 0) {
-        metricChips.push({ text: `자동 수리 ${metrics.deterministicRepairs}/${review?.repairLimit ?? metrics.deterministicRepairs}회` });
-      }
-      if ((metrics.reachableObjectives ?? 0) > 0) {
-        metricChips.push({ text: `갈 수 있는 목표 ${metrics.reachableObjectives}개` });
-      }
       if ((metrics.unreachableObjectives ?? 0) > 0) {
         metricChips.push({ text: `못 가는 목표 ${metrics.unreachableObjectives}개`, warn: true });
       }
       if ((metrics.outOfScopeChanges ?? 0) > 0) {
         metricChips.push({ text: `영역 밖 변경 ${metrics.outOfScopeChanges}건`, warn: true });
       }
-      if (typeof metrics.compositionScore === "number") {
-        metricChips.push({ text: `타일 조합 ${metrics.compositionScore}/100점` });
-      }
-      if (metrics.scheduledNpcs > 0) {
-        metricChips.push({ text: `NPC 일정 ${metrics.scheduledNpcs}명` });
-        metricChips.push({
-          text: `시간 시스템 ${metrics.timeSystemEnabled ? "켜짐" : "꺼짐"}`,
-          ...(metrics.timeSystemEnabled ? {} : { warn: true }),
-        });
-      }
-      if (metrics.roomScoreAverage !== null) {
-        metricChips.push({ text: `방 점수 ${metrics.roomScoreAverage}/100점` });
+      if (metrics.scheduledNpcs > 0 && !metrics.timeSystemEnabled) {
+        metricChips.push({ text: `시간 시스템 꺼짐 · NPC 일정 ${metrics.scheduledNpcs}명`, warn: true });
       }
     }
     const metricsRow = el("div", {
@@ -1066,11 +1049,11 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       dataset: { testid: `region-task-review-issue-${index}` },
       text: `${issue.severity === "error" ? "차단" : issue.repaired ? "수리" : "주의"} · ${issue.message}${issue.mapId ? ` [${issue.mapId}${issue.x === undefined ? "" : ` ${issue.x},${issue.y}`}]` : ""}`,
     }));
+    // "막는 문제·주의 없음" 같은 빈 상태 문구도 없앴다 — 문제가 없으면 진단 줄 자체가 안 뜬다.
     const issuesHost = el("div", {
-      class: "region-task-review-issues" + (issueRows.length ? "" : " is-clear"),
+      class: "region-task-review-issues" + (issueRows.length ? "" : " hidden"),
       dataset: { testid: "region-task-review-issues" },
-      // 접힌 줄이 이미 "검사 통과" 라고 말한다 — 안에서 같은 말을 반복하지 않고 무엇이 없는지만 쓴다.
-      children: issueRows.length ? issueRows : [el("div", { class: "region-task-review-clear", text: "막는 문제·주의 없음" })],
+      children: issueRows,
     });
     const blockerHost = el("div", {
       class: "region-task-blockers" + (pending.blockers.length ? "" : " hidden"),
@@ -1257,30 +1240,35 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 그게 화면에서 가장 멀었다. 한 줄 판정만 남기고, 막힌 경우에만 자동으로 펼친다.
     const errorIssues = (review?.issues ?? []).filter((issue) => issue.severity === "error").length;
     const warnIssues = (review?.issues ?? []).length - errorIssues;
+    // 그리고 통과했을 때는 진단 줄 자체를 만들지 않는다. "검사 통과 · 검사 상세" 는 눌러도
+    // 초록 체크 6개와 "막는 문제·주의 없음" 만 나오는, 열 이유가 없는 줄이었다.
+    const hasSomethingToSay = pending.blockers.length > 0 || errorIssues > 0 || warnIssues > 0 || metricChips.length > 0;
     const verdictText = pending.blockers.length > 0
-      ? `적용 차단 ${pending.blockers.length}건 · 검사 상세`
+      ? `적용 차단 ${pending.blockers.length}건`
       : errorIssues > 0
-        ? `검사 오류 ${errorIssues}건 · 검사 상세`
+        ? `막는 문제 ${errorIssues}건`
         : warnIssues > 0
-          ? `주의 ${warnIssues}건 · 검사 상세`
-          : "검사 통과 · 검사 상세";
-    const diagnostics = el("details", {
-      class: "region-task-diagnostics",
-      dataset: { testid: "region-task-diagnostics" },
-      children: [
-        el("summary", {
-          class: "region-task-diagnostics-summary",
-          text: verdictText,
-          dataset: { testid: "region-task-verdict" },
-        }),
-        el("div", {
-          class: "region-task-review-card",
-          children: [timeline, metricsRow, issuesHost],
-        }),
-      ],
-    });
-    if (pending.blockers.length > 0 || errorIssues > 0) diagnostics.setAttribute("open", "");
-    diagnostics.addEventListener("toggle", schedulePopoverReposition);
+          ? `주의 ${warnIssues}건`
+          : "확인할 값";
+    const diagnostics = hasSomethingToSay
+      ? el("details", {
+        class: "region-task-diagnostics",
+        dataset: { testid: "region-task-diagnostics" },
+        children: [
+          el("summary", {
+            class: "region-task-diagnostics-summary",
+            text: verdictText,
+            dataset: { testid: "region-task-verdict" },
+          }),
+          el("div", {
+            class: "region-task-review-card",
+            children: [timeline, metricsRow, issuesHost],
+          }),
+        ],
+      })
+      : null;
+    if (diagnostics && (pending.blockers.length > 0 || errorIssues > 0)) diagnostics.setAttribute("open", "");
+    diagnostics?.addEventListener("toggle", schedulePopoverReposition);
 
     compareHost.replaceChildren(
       figures,
@@ -1294,7 +1282,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         dataset: { testid: "region-task-compare-actions" },
         children: [applyButton, retryButton, discardButton],
       }),
-      diagnostics,
+      ...(diagnostics ? [diagnostics] : []),
     );
     setStage("review");
     // 검토 DOM이 한꺼번에 자란 뒤 다음 프레임까지 이전 높이의 좌표를 유지하면 하단이 잘린 채
@@ -1458,13 +1446,24 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       // F: 성공적 실행 시 지시어를 최근 목록에 기록(자동완성 소스).
       if (result.ok) pushRecentInstruction(instruction);
       if (result.pending && !result.pending.settled) {
-        // "승인 대기" 는 요약 문장과 결정 버튼이 이미 말한다 — 진행 칩은 검사 결과만 말한다.
-        progressTimeline.append(el("span", { class: result.pending.blockers.length ? "is-blocked" : "is-done", text: result.pending.blockers.length ? "검사 차단" : "검사 완료" }));
+        // 검토 화면에서 "제안 준비 — 4칸 타일 · 이벤트 1건 · 적용 여부를 선택하세요" 는
+        // 바로 아래 변경 목록(타일 4칸/보물상자 …)과 지표 칩이 이미 하는 말이었다 — 같은 숫자를
+        // 세 번 읽게 했다. 여기서는 요약 줄을 비우고 변경 목록 한 곳만 남긴다.
+        // (채팅 패널은 말풍선이라 문장이 필요하다 — describeRegionTaskResult 는 그대로 쓴다.)
+        setSummary("");
+        // 통과는 침묵한다: 막힌 경우에만 진행 칩을 남긴다.
+        if (result.pending.blockers.length) {
+          progressTimeline.append(el("span", { class: "is-blocked", text: "검사 차단" }));
+        } else {
+          progressTimeline.replaceChildren();
+        }
         progressMilestone = "미리보기를 준비하는 중";
-        renderProgress();
         await renderPendingCompare(result.pending, executionId);
         if (!isCurrentExecution(executionId)) return;
-        setSummary(describeRegionTaskResult(result));
+        // 1초 타이머가 요약 줄을 다시 채우기 전에 끈다 — 안 끄면 검토 화면에
+        // "미리보기를 준비하는 중 · 12초" 가 그대로 남는다.
+        clearExecutionTimer(execution);
+        setSummary("");
       }
       lastLog = result.log;
       if (result.log) {

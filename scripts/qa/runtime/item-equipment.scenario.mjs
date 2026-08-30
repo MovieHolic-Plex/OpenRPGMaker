@@ -1,7 +1,11 @@
 // 같은 시드와 같은 입력을 두 장비 픽스처에 반복해 normal attack의 장비 축을 실전에서 비교한다.
 // 생성기(scripts/build-item-equipment-qa-fixtures.mjs)는 두 JSON이 hero weapon 외에는 같음을 검사한다.
-// seed 101 관측: 레이피어는 218(급소)/162, 채찍은 34/49. 급소는 치명타율 9인 레이피어에서만 뜬다.
+// seed 101 실측(현재 main): 레이피어는 195(급소)/162, 채찍은 34/49. 급소는 치명타율 9인 레이피어에서만 뜬다.
+// 같은 픽스처를 반복 실행하면 같은 값이 나온다(레이피어 3회, 채찍 2회 관측 — 전부 동일).
+// PR #268 보고서의 레이피어 1턴 스크린샷은 218 인데, 그 시점 트리의 값이라 현재와 다르다.
 // 채찍의 명중 판정(92)은 턴에 따라 빗나갈 수 있어 둘째 공격 비트는 명중·빗나감 메시지를 모두 허용한다.
+// 그래서 두 공격 비트의 visibleText 축은 픽스처와 무관하게 성립하는 "주인공의 공격!" 만 단정한다 —
+// 피해 수치는 픽스처마다 다르므로 축으로 박으면 A/B 한쪽이 반드시 깨진다.
 
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export const itemEquipmentScenario = {
@@ -63,6 +67,7 @@ export const itemEquipmentScenario = {
       ],
       expect: {
         testidPresent: ["battle-scene", "battle-message-window", "battle-damage-popup", "battle-enemy-list-hp-enemy-1"],
+        visibleText: { "battle-message-window": "주인공의 공격!" },
       },
       shot: true,
     },
@@ -79,6 +84,7 @@ export const itemEquipmentScenario = {
       ],
       expect: {
         testidPresent: ["battle-scene", "battle-message-window", "battle-damage-popup", "battle-enemy-list-hp-enemy-1"],
+        visibleText: { "battle-message-window": "주인공의 공격!" },
       },
       shot: true,
     },

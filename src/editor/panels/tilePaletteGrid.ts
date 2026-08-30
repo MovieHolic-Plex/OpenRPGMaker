@@ -182,6 +182,7 @@ export function makeGridPalette(args: MakeGridPaletteArgs): HTMLElement {
     grid.append(makeGridCell(args, tileId));
     shown += 1;
   }
+  installGridRoving(grid, GRID_PALETTE_COLUMNS);
   sheet.append(grid);
   if (shown === 0) {
     sheet.append(el("div", { class: "empty-hint palette-filter-empty", text: "조건에 맞는 타일이 없습니다.", dataset: { testid: "palette-filter-empty" } }));
@@ -214,8 +215,82 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
     grid.append(cell);
   }
+  installGridRoving(grid, columns);
   sheet.append(grid);
   return sheet;
+}
+
+/**
+ * 2차원 roving tabindex — 그리드는 탭 스톱 1개, 화살표로 칸 이동.
+ *
+ * sidebarFocus.applyRovingTabindex 를 재사용하지 않는 이유: 그 헬퍼는 도구막대를
+ * **선형** 목록으로 걸어 ArrowDown 을 "다음 버튼" 으로 취급한다. 타일 그림판은 행·열이
+ * 있는 판이라 ArrowDown 은 한 **행**(= columns 칸) 아래여야 한다. 행 보폭은 호출부가
+ * 실제 열 수를 넘겨준다 — RM 팔레트는 6열 고정이지만 커스텀 아틀라스는 저작된
+ * tilesPerRow 를 그대로 유지한다.
+ */
+export function installGridRoving(grid: HTMLElement, columns: number): void {
+  const cells = (): HTMLButtonElement[] =>
+    Array.from(grid.querySelectorAll<HTMLButtonElement>("button"))
+      .filter((cell) => !cell.disabled && !cell.hidden && cell.classList.contains("chipset-tile"));
+
+  const focusCellAt = (list: readonly HTMLButtonElement[], index: number): void => {
+    const target = list[index];
+    if (!target) return;
+    for (const [i, cell] of list.entries()) cell.setAttribute("tabindex", i === index ? "0" : "-1");
+    target.focus();
+  };
+
+  const initial = cells();
+  if (initial.length === 0) return;
+  const activeIndex = Math.max(0, initial.findIndex((cell) => cell.classList.contains("active")));
+  for (const [i, cell] of initial.entries()) cell.setAttribute("tabindex", i === activeIndex ? "0" : "-1");
+
+  grid.addEventListener("keydown", (event: KeyboardEvent) => {
+    const list = cells();
+    const current = list.findIndex((cell) => cell === document.activeElement);
+    if (current < 0) return;
+    const stride = Math.max(1, columns);
+    let next = current;
+    switch (event.key) {
+      case "ArrowRight":
+        next = current + 1;
+        break;
+      case "ArrowLeft":
+        next = current - 1;
+        break;
+      case "ArrowDown":
+        next = current + stride;
+        break;
+      case "ArrowUp":
+        next = current - stride;
+        break;
+      case "Home":
+        next = 0;
+        break;
+      case "End":
+        next = list.length - 1;
+        break;
+      default:
+        return;
+    }
+    // 화살표는 맵 스크롤을 부르므로 판 안에서는 항상 삼킨다. 경계를 넘어가는 이동만
+    // 좌표를 그대로 둔다(줄바꿈 없이 멈춤 — 판의 모양이 정보인 커스텀 아틀라스에서
+    // 줄바꿈은 "한 칸 옆" 이라는 약속을 깬다).
+    event.preventDefault();
+    event.stopPropagation();
+    if (next < 0 || next >= list.length) return;
+    focusCellAt(list, next);
+  });
+
+  grid.addEventListener("focusin", (event: FocusEvent) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const list = cells();
+    const index = list.findIndex((cell) => cell === target);
+    if (index < 0) return;
+    for (const [i, cell] of list.entries()) cell.setAttribute("tabindex", i === index ? "0" : "-1");
+  });
 }
 
 function makeGridCell(args: MakeGridPaletteArgs, tileId: number, autotileName?: string): HTMLButtonElement {
@@ -253,6 +328,14 @@ function makePaletteCell(
         args.onSelectTile(tileId);
       },
       click: (event) => event.preventDefault(),
+      // Enter/Space — 네이티브 button 의 click 은 위에서 preventDefault 되므로
+      // 키보드 활성화 경로를 여기서 명시한다(포인터와 같은 onSelectTile).
+      keydown: (event) => {
+        const key = Reflect.get(event, "key");
+        if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
+        event.preventDefault();
+        args.onSelectTile(tileId);
+      },
     },
   });
   if (decorations.badge) {

@@ -208,6 +208,7 @@ function mapRegionSection(
   if (!result.ok || result.data === undefined) return empty;
   const headerParts: string[] = [];
   if (viewport && viewport.mapId === map.id) {
+    // 시스템 프롬프트는 baseline으로 재조립될 수 있으므로, live draft 전용 통행 격자는 매 턴 사용자 블록에만 둔다.
     headerParts.push(formatViewportContextBlock(viewport, map.name));
   }
   headerParts.push(

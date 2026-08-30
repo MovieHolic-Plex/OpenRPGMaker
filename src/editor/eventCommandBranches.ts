@@ -1,0 +1,212 @@
+// 이벤트 명령의 «분기» 를 한 곳에서 세는 정본.
+//
+// 왜 이 파일이 생겼나 (실측 2026-08-31): 같은 일을 하는 분기 열거 함수가 다섯 벌 있었고
+// 그중 셋이 상점 실패 분기(`failedTransactionBranch`)를 빠뜨렸다.
+//   - `panels/eventEditor/previewSimulation.ts:branchesOf` — 단일 원소 early return (미리보기·플로우)
+//   - `panels/eventEditor/commandList.ts:appendCommandChildren` — 상수 import 자체가 없었다 (목록)
+//   - `eventDraftValidator.ts:commandBranches` — 검증이 그 분기 안으로 들어가지 않았다
+//   - `panels/eventEditor/storyboardView.ts:branchesOf` — 정상 (스토리)
+//   - `tools/commandTraversal.ts:commandBranches` — 정상, 그런데 뷰는 아무도 안 썼다
+// 런타임(`player/interpreter/resume.ts`)은 그 분기를 실행하므로, 실행은 되는데 편집기 세
+// 곳에서 안 보이는 명령이 있었다. 라벨도 뷰마다 달라 같은 분기가 «참» / «참일 때» /
+// «조건이 맞을 때» / «조건을 만족함» 네 가지로 불렸다.
+//
+// 규칙 두 개만 지킨다:
+//  1. 분기를 새로 만들면 여기에만 추가한다. 뷰는 이 함수를 호출할 뿐 자기 목록을 갖지 않는다.
+//  2. 라벨은 «언제 실행되나» 를 답하는 «~때» 꼴로 쓴다. 뷰가 라벨을 다시 쓰지 않는다.
+import type { Command } from "@/project/types";
+import {
+  BATTLE_DEFEAT_BRANCH_INDEX,
+  BATTLE_ESCAPE_BRANCH_INDEX,
+  BATTLE_VICTORY_BRANCH_INDEX,
+  CHOICE_CANCEL_BRANCH_INDEX,
+  FORK_ELSE_BRANCH_INDEX,
+  FORK_THEN_BRANCH_INDEX,
+  INN_NOT_ENOUGH_BRANCH_INDEX,
+  LOOP_BODY_BRANCH_INDEX,
+  PROMOTE_FAILURE_BRANCH_INDEX,
+  PROMOTE_SUCCESS_BRANCH_INDEX,
+  SHOP_FAILED_TRANSACTION_BRANCH_INDEX,
+  SHOP_TRANSACTION_BRANCH_INDEX,
+} from "./eventCommandPaths";
+
+export type EventBranchKind =
+  | "choiceOption" | "choiceCancel" | "forkThen" | "forkElse" | "loopBody"
+  | "shopTransaction" | "shopFailure" | "innNotEnough"
+  | "promotionSuccess" | "promotionFailure" | "evolutionSuccess" | "evolutionFailure"
+  | "battleVictory" | "battleDefeat" | "battleEscape";
+
+/** 목록 뷰의 마커 톤. 분기의 «성격» 이지 색 이름이 아니다. */
+export type EventBranchTone = "fork" | "choices" | "shop";
+
+export interface EventCommandBranch {
+  readonly kind: EventBranchKind;
+  /** 모든 뷰가 이 문자열만 쓴다. 뷰에서 다시 쓰지 말 것. */
+  readonly label: string;
+  readonly commands: readonly Command[];
+  /** `eventCommandPaths` 의 분기 인덱스. 명령 경로의 홀수 번째 칸에 들어간다. */
+  readonly branchIndex: number;
+  readonly tone: EventBranchTone;
+}
+
+/**
+ * 분기를 보일지 말지.
+ *
+ * 배열이 **있으면** 보인다 — 비어 있어도 그렇다. 빈 배열은 «아직 명령이 없는 분기» 이고
+ * 저작 대상이므로, 드롭 목표와 검증 대상으로 남아야 한다. 플래그(`branchOnTransaction`
+ * 등)가 켜져 있으면 배열이 아직 없어도 보인다.
+ *
+ * 왜 «비어 있지 않음» 이 아닌가: 그렇게 좁히면 `commandBranches` 로 빈 분기를 찾아
+ * 명령을 밀어 넣는 호출부(예: `test/advancedDialogueMerge`, AI 병합 경로)가 분기를 못 찾는다.
+ */
+function include(flag: boolean | undefined, commands: readonly Command[] | undefined): boolean {
+  return flag === true || commands !== undefined;
+}
+
+export function eventCommandBranches(command: Command): readonly EventCommandBranch[] {
+  switch (command.kind) {
+    case "choices": {
+      const options = command.options.map((option, index): EventCommandBranch => ({
+        kind: "choiceOption",
+        label: option.text || `선택지 ${index + 1}`,
+        commands: option.branch,
+        branchIndex: index,
+        tone: "choices",
+      }));
+      if (!include(command.cancelBehavior === "branch", command.cancelBranch)) return options;
+      return [...options, {
+        kind: "choiceCancel",
+        label: "취소했을 때",
+        commands: command.cancelBranch ?? [],
+        branchIndex: CHOICE_CANCEL_BRANCH_INDEX,
+        tone: "choices",
+      }];
+    }
+    case "fork": {
+      const branches: EventCommandBranch[] = [{
+        kind: "forkThen",
+        label: "조건이 맞을 때",
+        commands: command.then,
+        branchIndex: FORK_THEN_BRANCH_INDEX,
+        tone: "fork",
+      }];
+      if (command.else) {
+        branches.push({
+          kind: "forkElse",
+          label: "조건이 맞지 않을 때",
+          commands: command.else,
+          branchIndex: FORK_ELSE_BRANCH_INDEX,
+          tone: "fork",
+        });
+      }
+      return branches;
+    }
+    case "loop":
+      return [{
+        kind: "loopBody",
+        label: "반복할 내용",
+        commands: command.body,
+        branchIndex: LOOP_BODY_BRANCH_INDEX,
+        tone: "fork",
+      }];
+    case "shop": {
+      const branches: EventCommandBranch[] = [];
+      if (include(command.branchOnTransaction, command.transactionBranch)) {
+        branches.push({
+          kind: "shopTransaction",
+          label: "거래했을 때",
+          commands: command.transactionBranch ?? [],
+          branchIndex: SHOP_TRANSACTION_BRANCH_INDEX,
+          tone: "shop",
+        });
+      }
+      if (include(command.branchOnFailedTransaction, command.failedTransactionBranch)) {
+        branches.push({
+          kind: "shopFailure",
+          label: "거래하지 못했을 때",
+          commands: command.failedTransactionBranch ?? [],
+          branchIndex: SHOP_FAILED_TRANSACTION_BRANCH_INDEX,
+          tone: "shop",
+        });
+      }
+      return branches;
+    }
+    case "inn": {
+      if (!include(command.branchOnNotEnoughGold, command.notEnoughBranch)) return [];
+      return [{
+        kind: "innNotEnough",
+        label: "골드가 부족할 때",
+        commands: command.notEnoughBranch ?? [],
+        branchIndex: INN_NOT_ENOUGH_BRANCH_INDEX,
+        tone: "shop",
+      }];
+    }
+    case "promoteActor":
+      return successFailureBranches(command.successBranch, command.failureBranch, "promotion");
+    case "evolveMonster":
+      return successFailureBranches(command.successBranch, command.failureBranch, "evolution");
+    case "battleProcessing": {
+      const on = command.branchOnResult;
+      const branches: EventCommandBranch[] = [];
+      if (include(on, command.victoryBranch)) {
+        branches.push({ kind: "battleVictory", label: "이겼을 때", commands: command.victoryBranch ?? [], branchIndex: BATTLE_VICTORY_BRANCH_INDEX, tone: "fork" });
+      }
+      if (include(on, command.defeatBranch)) {
+        branches.push({ kind: "battleDefeat", label: "졌을 때", commands: command.defeatBranch ?? [], branchIndex: BATTLE_DEFEAT_BRANCH_INDEX, tone: "fork" });
+      }
+      if (include(on, command.escapeBranch)) {
+        branches.push({ kind: "battleEscape", label: "도망쳤을 때", commands: command.escapeBranch ?? [], branchIndex: BATTLE_ESCAPE_BRANCH_INDEX, tone: "fork" });
+      }
+      return branches;
+    }
+    default:
+      return [];
+  }
+}
+
+/** 승급·진화는 분기 인덱스를 공유하고 라벨만 다르다. */
+function successFailureBranches(
+  successBranch: Command[] | undefined,
+  failureBranch: Command[] | undefined,
+  family: "promotion" | "evolution"
+): readonly EventCommandBranch[] {
+  const branches: EventCommandBranch[] = [];
+  if (successBranch) {
+    branches.push({
+      kind: family === "promotion" ? "promotionSuccess" : "evolutionSuccess",
+      label: "성공했을 때",
+      commands: successBranch,
+      branchIndex: PROMOTE_SUCCESS_BRANCH_INDEX,
+      tone: "fork",
+    });
+  }
+  if (failureBranch) {
+    branches.push({
+      kind: family === "promotion" ? "promotionFailure" : "evolutionFailure",
+      label: "실패했을 때",
+      commands: failureBranch,
+      branchIndex: PROMOTE_FAILURE_BRANCH_INDEX,
+      tone: "fork",
+    });
+  }
+  return branches;
+}
+
+/**
+ * 목록 뷰가 분기 묶음 끝에 놓는 마커. 목록만 쓰는 chrome 이라 라벨과 분리했다.
+ * 분기가 없는 명령은 `null`.
+ */
+export function branchGroupEndLabel(command: Command): string | null {
+  if (eventCommandBranches(command).length === 0) return null;
+  switch (command.kind) {
+    case "choices": return "선택 끝";
+    case "fork": return "분기 끝";
+    case "loop": return "반복 끝";
+    case "shop": return "상점 분기 끝";
+    case "inn": return "여관 분기 끝";
+    case "battleProcessing": return "전투 결과 분기 끝";
+    case "promoteActor": return "승급 끝";
+    case "evolveMonster": return "진화 끝";
+    default: return null;
+  }
+}

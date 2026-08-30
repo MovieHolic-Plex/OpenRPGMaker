@@ -6,6 +6,7 @@ import { store } from "@/project/store";
 import type { Condition } from "@/project/types";
 import { createPreviewSimState, previewSessionFromSimState } from "./previewSimulation";
 
+import { relationshipStateName } from "@/project/relationshipState";
 type PreviewVerdict = boolean | undefined;
 
 /**
@@ -107,6 +108,11 @@ function evaluatePreviewCondition(
       if (!npcKey || !Object.hasOwn(session.friendship ?? {}, npcKey)) return undefined;
       break;
     }
+    case "relationshipAtLeast": {
+      const npcKey = condition.npcKey?.trim();
+      if (!npcKey || !Object.hasOwn(session.relationships ?? {}, npcKey)) return undefined;
+      break;
+    }
     case "battleResult":
       if (session.battleResult === undefined) return undefined;
       break;
@@ -142,6 +148,8 @@ function describeCondition(condition: Condition | undefined): string {
       return `활동 ${condition.activity || "(없음)"}일 때`;
     case "friendshipAtLeast":
       return `${condition.npcKey?.trim() || "이 이벤트"} 호감도 ${condition.value} 이상`;
+    case "relationshipAtLeast":
+      return `${condition.npcKey?.trim() || "이 이벤트"} 관계 ${relationshipStateName(condition.state)} 이상`;
     case "battleResult":
       return `전투 결과 ${battleResultName(condition.result)}일 때`;
     case "run":

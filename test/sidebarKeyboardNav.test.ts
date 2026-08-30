@@ -96,5 +96,46 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       expect(newFillBtn).not.toBeNull();
       expect(document.activeElement).toBe(newFillBtn);
     });
+
+    it("도구·레이어·패널 그룹이 각각 탭 스탑 하나만 갖는다 (레일 전진 3)", () => {
+      const groupIds = ["basic-tool-list", "basic-layer-list", "basic-panel-toggles"] as const;
+      for (const id of groupIds) {
+        const group = findByTestId(container as unknown as FakeElement, id);
+        expect(group, id).not.toBeNull();
+        const stops = group!.querySelectorAll("button").filter((b) => b.getAttribute("tabindex") === "0");
+        expect(stops.length, id).toBe(1);
+      }
+      const railStops = (container as unknown as FakeElement)
+        .querySelectorAll("button")
+        .filter((b) => b.getAttribute("tabindex") === "0");
+      expect(railStops.length).toBe(3);
+    });
+
+    it("도구 그룹은 role=toolbar, 레이어·패널 그룹은 라벨 있는 group 이다", () => {
+      const tools = findByTestId(container as unknown as FakeElement, "basic-tool-list");
+      expect(tools?.getAttribute("role")).toBe("toolbar");
+      expect(tools?.getAttribute("aria-label")).toBeTruthy();
+      const layers = findByTestId(container as unknown as FakeElement, "basic-layer-list");
+      expect(layers?.getAttribute("role")).toBe("group");
+      expect(layers?.getAttribute("aria-label")).toBeTruthy();
+      const toggles = findByTestId(container as unknown as FakeElement, "basic-panel-toggles");
+      expect(toggles?.getAttribute("role")).toBe("group");
+      expect(toggles?.getAttribute("aria-label")).toBeTruthy();
+    });
+
+    it("도구 그룹에서 ArrowDown 은 다음 도구로 포커스를 이동한다", () => {
+      const paintBtn = findByTestId(container as unknown as FakeElement, "tool-paint");
+      expect(paintBtn).not.toBeNull();
+      paintBtn!.focus();
+
+      let prevented = false;
+      const downEvent = new Event("keydown", { bubbles: true, cancelable: true }) as any;
+      downEvent.key = "ArrowDown";
+      downEvent.preventDefault = () => { prevented = true; };
+      paintBtn!.dispatchEvent(downEvent);
+
+      expect(prevented).toBe(true);
+      expect(document.activeElement).toBe(findByTestId(container as unknown as FakeElement, "tool-erase"));
+    });
   });
 });

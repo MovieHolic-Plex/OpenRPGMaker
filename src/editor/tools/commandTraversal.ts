@@ -1,11 +1,8 @@
+import { eventCommandBranches, type EventBranchKind } from "@/editor/eventCommandBranches";
 import type { Command, Project } from "@/project/types";
 
 export type CommandOwnerKind = "legacyEvent" | "eventPage" | "commonEvent" | "troopPage";
-export type NestedBranchKind =
-  | "choiceOption" | "choiceCancel" | "forkThen" | "forkElse" | "loopBody"
-  | "shopTransaction" | "shopFailure" | "innNotEnough"
-  | "promotionSuccess" | "promotionFailure" | "evolutionSuccess" | "evolutionFailure"
-  | "battleVictory" | "battleDefeat" | "battleEscape";
+export type NestedBranchKind = EventBranchKind;
 
 export type ProjectCommandLocation =
   | {
@@ -87,40 +84,11 @@ export function visitProjectCommands(project: Project, visitor: (visit: ProjectC
   }
 }
 
+/**
+ * 분기 열거는 `@/editor/eventCommandBranches` 가 정본이다. 여기는 `kind`+`commands` 만
+ * 쓰는 얇은 어댑터라 목록을 따로 들지 않는다 — 예전에 다섯 벌이 갈라져 상점 실패 분기가
+ * 세 곳에서 사라졌다.
+ */
 export function commandBranches(command: Command): readonly { readonly kind: NestedBranchKind; readonly commands: readonly Command[] }[] {
-  switch (command.kind) {
-    case "choices":
-      return [
-        ...command.options.map((option) => ({ kind: "choiceOption" as const, commands: option.branch })),
-        ...(command.cancelBranch ? [{ kind: "choiceCancel" as const, commands: command.cancelBranch }] : []),
-      ];
-    case "fork":
-      return [
-        { kind: "forkThen", commands: command.then },
-        ...(command.else ? [{ kind: "forkElse" as const, commands: command.else }] : []),
-      ];
-    case "loop": return [{ kind: "loopBody", commands: command.body }];
-    case "shop": {
-      const withFailure = command as typeof command & { readonly failedTransactionBranch?: readonly Command[] };
-      return [
-        ...(command.transactionBranch ? [{ kind: "shopTransaction" as const, commands: command.transactionBranch }] : []),
-        ...(withFailure.failedTransactionBranch ? [{ kind: "shopFailure" as const, commands: withFailure.failedTransactionBranch }] : []),
-      ];
-    }
-    case "inn": return command.notEnoughBranch ? [{ kind: "innNotEnough", commands: command.notEnoughBranch }] : [];
-    case "promoteActor": return [
-      ...(command.successBranch ? [{ kind: "promotionSuccess" as const, commands: command.successBranch }] : []),
-      ...(command.failureBranch ? [{ kind: "promotionFailure" as const, commands: command.failureBranch }] : []),
-    ];
-    case "evolveMonster": return [
-      ...(command.successBranch ? [{ kind: "evolutionSuccess" as const, commands: command.successBranch }] : []),
-      ...(command.failureBranch ? [{ kind: "evolutionFailure" as const, commands: command.failureBranch }] : []),
-    ];
-    case "battleProcessing": return [
-      ...(command.victoryBranch ? [{ kind: "battleVictory" as const, commands: command.victoryBranch }] : []),
-      ...(command.defeatBranch ? [{ kind: "battleDefeat" as const, commands: command.defeatBranch }] : []),
-      ...(command.escapeBranch ? [{ kind: "battleEscape" as const, commands: command.escapeBranch }] : []),
-    ];
-    default: return [];
-  }
+  return eventCommandBranches(command).map((branch) => ({ kind: branch.kind, commands: branch.commands }));
 }

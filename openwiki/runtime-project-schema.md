@@ -2,6 +2,14 @@
 
 Authored project schema, defaults, validation, migration, references, and persistence boundaries.
 
+## 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+
+`src/project/tilePassabilityComponents.ts` 는 "여기서 저기로 갈 수 있나" 를 미리 계산한 색인이다. 세 가지가 계약이다.
+
+- **1x1 게이트.** 색인 사용 여부를 `pass` 인자의 **유무**로 가르면 안 된다 — `playSceneAutonomous.ts` 가 추격에서 항상 `pass` 를 객체로 넘기므로 모든 추격에서 색인이 죽는다. 판정은 크기로 한다: `passIsUnitRect`(`player/chaseAi.ts:150`)가 1x1 인지 보고, 1x1 이면 색인을 쓴다. 통행 규칙을 복사하지 말고 `passageBounds` 에 물어야 한다.
+- **타일셋 통행이 지문에 섞인다.** 지문을 타일 배열만으로 해시하면 안 된다 — `setPassageMark` 는 같은 `TilesetDef` 를 **제자리에서** 바꾸므로 벽을 통행 가능으로 바꿔도 색인이 낡은 "도달 불가" 를 계속 답한다. `mixTilesetPassage`(`:245`)가 4방향 통행 비트와 우선도를 지문에 접는다.
+- **`INDEX_SCAN_RATIO = 8`**(`:102`). 훑은 칸이 맵 전체의 1/8 미만이면 색인을 만들지 않는다(`:115`) — 짧은 탐색에 색인 구축 비용을 물리지 않는다. `scannedCells` 를 생략하면 항상 만든다.
+
 ## Project schema & persistence
 - **Supabase schema deployment is manifest-driven (2026-08-24):** `scripts/lib/supabase-database-ops.mjs` registers every deployable file under `supabase/migrations/`; `test/supabaseDatabaseOps.node.test.mjs` fails when a non-draft SQL file is omitted. Run `npm run db:check` for an anon-key/PostgREST schema probe. An administrator sets `SUPABASE_DB_URL` in untracked `.env.local` and runs `npm run db:migrate`; the Bun runner records SHA-256 checksums in the admin-only `rpg_zzu.schema_migrations` ledger, baselines already-complete legacy migrations, rejects partially applied or checksum-changed SQL, reloads the PostgREST schema cache, and finishes with project-scoped `ai_activity_logs`/`ai_conversations` insert→reload→cleanup verification. `DRAFT_*.sql` is never deployable. Do not report DB work complete until `npm run db:verify-ai` passes and the project id is recorded.
 - **Missing AI tables are configuration errors, not successful fallbacks:** new activity writes never fall back into `ai_analysis_runs`; that table is read only for historical fallback rows. Missing `ai_activity_logs`, `ai_conversations`, or `user_skills` writes throw `SupabaseMigrationRequiredError` naming the required migration. Conversation localStorage remains available, but the failed remote mirror is logged instead of silently swallowed. `scripts/list-ai-activity.mjs --remote` loads `.env` plus `.env.local` and scopes both primary and historical queries to `VITE_SUPABASE_PROJECT_ID`.

@@ -34,6 +34,15 @@ describe("basicFlyoutReducer", () => {
     expect(closed.pinned).toBe(false);
   });
 
+  it("다른 패널로 전환하면 pinned 를 물려받지 않는다", () => {
+    let s = basicFlyoutReducer(INITIAL_BASIC_FLYOUT_STATE, { type: "toggle", id: "tiles" });
+    s = basicFlyoutReducer(s, { type: "pin-toggle" });
+    expect(s.pinned).toBe(true);
+    const switched = basicFlyoutReducer(s, { type: "toggle", id: "maps" });
+    expect(switched.open).toBe("maps");
+    expect(switched.pinned).toBe(false);
+  });
+
   it("닫힌 상태에서 pin-toggle은 무시한다", () => {
     expect(basicFlyoutReducer(INITIAL_BASIC_FLYOUT_STATE, { type: "pin-toggle" })).toEqual(INITIAL_BASIC_FLYOUT_STATE);
   });
@@ -51,6 +60,7 @@ describe("buildFlyoutShell", () => {
     const shell = buildFlyoutShell({
       title: "타일",
       pinned: false,
+      anchorTestId: "basic-rail-toggle-tiles",
       onPinToggle: () => { pinToggles += 1; },
       onClose: () => { closes += 1; },
       body,
@@ -61,5 +71,55 @@ describe("buildFlyoutShell", () => {
     (findByTestId(document.body as never, "basic-flyout-close") as unknown as HTMLElement).click();
     expect(pinToggles).toBe(1);
     expect(closes).toBe(1);
+  });
+
+  it("모달이 아니므로 dialog 를 주장하지 않고 라벨 있는 group 을 쓴다", () => {
+    const shell = buildFlyoutShell({
+      title: "타일",
+      pinned: false,
+      anchorTestId: "basic-rail-toggle-tiles",
+      onPinToggle: () => {},
+      onClose: () => {},
+      body: document.createElement("div"),
+    });
+    expect(shell.getAttribute("role")).toBe("group");
+    expect(shell.getAttribute("aria-label")).toBe("타일");
+    expect(shell.getAttribute("aria-modal")).toBeNull();
+  });
+
+  it("닫힌 뒤 포커스가 돌아갈 토글을 대체 앵커로 기록한다", () => {
+    const shell = buildFlyoutShell({
+      title: "맵",
+      pinned: false,
+      anchorTestId: "basic-rail-toggle-maps",
+      onPinToggle: () => {},
+      onClose: () => {},
+      body: document.createElement("div"),
+    });
+    expect(shell.dataset.focusFallbackAnchor).toBe("basic-rail-toggle-maps");
+  });
+
+  it("핀 버튼은 이모지 대신 상태를 담은 한국어 aria-label 을 갖는다", () => {
+    const open = buildFlyoutShell({
+      title: "타일",
+      pinned: false,
+      anchorTestId: "basic-rail-toggle-tiles",
+      onPinToggle: () => {},
+      onClose: () => {},
+      body: document.createElement("div"),
+    });
+    document.body.replaceChildren(open);
+    expect(findByTestId(document.body as never, "basic-flyout-pin")?.getAttribute("aria-label")).toBe("타일 열어두기(고정)");
+
+    const pinnedShell = buildFlyoutShell({
+      title: "타일",
+      pinned: true,
+      anchorTestId: "basic-rail-toggle-tiles",
+      onPinToggle: () => {},
+      onClose: () => {},
+      body: document.createElement("div"),
+    });
+    document.body.replaceChildren(pinnedShell);
+    expect(findByTestId(document.body as never, "basic-flyout-pin")?.getAttribute("aria-label")).toBe("타일 고정 해제");
   });
 });

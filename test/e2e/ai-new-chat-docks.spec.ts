@@ -32,6 +32,12 @@ async function bootDock(page: Page, dock: "glass" | "side" | "float"): Promise<v
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
   const restore = page.getByTestId("ai-collapsed-restore");
   if (await restore.isVisible().catch(() => false)) await restore.click();
+  // glass 는 접힌 입력줄로 부팅한다(2026-08-30) — 복원된 로그를 읽으려면 펼친다.
+  const panel = page.getByTestId("ai-panel");
+  if (await panel.evaluate((n) => n.classList.contains("is-glass-folded")).catch(() => false)) {
+    await page.getByTestId("ai-collapse").click();
+    await expect(panel).not.toHaveClass(/is-glass-folded/);
+  }
 }
 
 for (const dock of ["glass", "side", "float"] as const) {

@@ -1,13 +1,315 @@
-/* AI 연결 방식(구독 로그인 / API 키) 패널과 연결 상태 칩의 스타일.
- *
- * 별도 파일인 이유: 기존 인증 CSS 는 database/assistant-command-bar.css 에 있는데 그 파일은
- * 다른 작업(조수 컴포저 개편)이 동시에 고치는 중이다. 새 규칙을 그 파일에 넣으면 충돌한다.
- * 등록 위치는 styles/index.css 의 마지막 @import 바로 뒤 — database/tabs-b.css 보다 뒤라서
- * 같은 특이도의 옛 규칙을 !important 없이 이긴다.
- *
- * 여기서 재사용하는 기존 클래스: .ai-auth-settings(그리드 카드), .ai-auth-panel(패널 본문),
- * .ai-oauth-status(색 점 + 문구), .ai-config-input, .ai-config-select, .ai-config-label.
- */
+/* AI 설정 모달 — 연결 상태 요약과 네 설정 카드의 전용 레이아웃. */
+
+.database-modal-window.ai-settings-window {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: min(780px, calc(100vh - var(--space-5)));
+  max-height: min(780px, calc(100vh - var(--space-5)));
+  max-width: min(680px, calc(100vw - var(--space-5)));
+  overflow: hidden;
+  width: 640px;
+}
+
+.ai-settings-window .database-modal-header {
+  background: var(--bg-raised);
+  border-bottom: var(--stroke-1) solid var(--border-default);
+  min-height: 48px;
+  padding-inline: var(--space-4);
+}
+
+.ai-settings-window .database-modal-header h2 {
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--space-4);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+.ai-settings-body {
+  max-height: none;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  padding: var(--space-4);
+  scrollbar-gutter: stable;
+}
+
+.database-modal-backdrop.ai-settings-modal-backdrop
+  .database-modal-window.ai-settings-window
+  .database-modal-body.ai-settings-body {
+  display: block;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.ai-settings-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ai-settings-overview {
+  align-items: center;
+  background: var(--accent-muted);
+  border: var(--stroke-1) solid var(--accent-border);
+  border-radius: var(--radius-l);
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: var(--space-3) var(--space-4);
+}
+
+.ai-settings-connection-summary {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-2);
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.ai-settings-status-mark {
+  background: currentColor;
+  border-radius: var(--radius-pill);
+  flex: 0 0 auto;
+  height: var(--space-2);
+  width: var(--space-2);
+}
+
+.ai-settings-connection-summary[data-tone="ready"] {
+  color: var(--success);
+}
+
+.ai-settings-connection-summary[data-tone="warning"] {
+  color: var(--warning);
+}
+
+.ai-settings-connection-summary[data-tone="error"] {
+  color: var(--danger);
+}
+
+.ai-settings-check,
+.ai-settings-save-now {
+  white-space: nowrap;
+}
+
+.ai-settings-advanced {
+  display: contents;
+}
+
+.ai-settings-section {
+  background: var(--bg-raised);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-l);
+  overflow: hidden;
+}
+
+.ai-settings-section-header {
+  background: var(--bg-inset);
+  border-bottom: var(--stroke-1) solid var(--border-subtle);
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.ai-settings-section-header h3,
+.ai-settings-section-header p {
+  margin: 0;
+}
+
+.ai-settings-section-header h3 {
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.ai-settings-section-header p {
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+.ai-settings-section-body {
+  display: grid;
+  padding: 0 var(--space-4);
+}
+
+.ai-settings-form .ai-config-row {
+  align-items: center;
+  border-bottom: var(--stroke-1) solid var(--border-subtle);
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(180px, 0.8fr) minmax(220px, 1.2fr);
+  margin: 0;
+  padding-block: var(--space-3);
+}
+
+.ai-settings-form .ai-config-row:last-child {
+  border-bottom: 0;
+}
+
+.ai-settings-form .ai-config-row[hidden] {
+  display: none;
+}
+
+.ai-config-row-copy {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.ai-settings-form .ai-config-label {
+  color: var(--text-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.ai-settings-form .ai-config-help,
+.ai-settings-form .ai-model-help {
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+}
+
+.ai-config-control {
+  display: block;
+  min-width: 0;
+}
+
+.ai-config-control > .ai-config-input,
+.ai-config-control > .ai-config-select {
+  width: 100%;
+}
+
+.ai-settings-section-connection .ai-settings-section-body {
+  padding-block: var(--space-4);
+}
+
+.ai-settings-section-connection .ai-auth-settings {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.ai-settings-section-connection .ai-auth-panel {
+  background: var(--bg-inset);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-m);
+  color: var(--text-2);
+  display: grid;
+  font-size: var(--font-size-sm);
+  gap: var(--space-3);
+  line-height: 1.5;
+  padding: var(--space-3);
+}
+
+.ai-auth-panel[hidden] {
+  display: none;
+}
+
+.ai-oauth-status {
+  align-items: center;
+  color: var(--text-2);
+  display: inline-flex;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  gap: var(--space-2);
+}
+
+.ai-oauth-status::before {
+  background: currentColor;
+  border-radius: var(--radius-pill);
+  content: "";
+  height: var(--space-2);
+  width: var(--space-2);
+}
+
+.ai-oauth-status[data-tone="connected"] {
+  color: var(--success);
+}
+
+.ai-oauth-status[data-tone="offline"] {
+  color: var(--warning);
+}
+
+.ai-oauth-status[data-tone="disconnected"] {
+  color: var(--text-2);
+}
+
+.ai-model-row {
+  align-items: start;
+}
+
+.ai-model-control {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(180px, 1.15fr) minmax(150px, 1fr);
+  min-width: 0;
+}
+
+.ai-model-control .ai-config-input,
+.ai-model-control .ai-config-select {
+  min-width: 0;
+}
+
+.ai-model-warning {
+  grid-column: 2;
+  margin-top: calc(var(--space-2) * -1);
+}
+
+.ai-config-actions {
+  align-items: center;
+  background: var(--bg-raised);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-l);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  padding: var(--space-3) var(--space-4);
+}
+
+.ai-config-saved-hint {
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+  margin-right: auto;
+}
+
+@media (max-width: 640px) {
+  .ai-settings-body {
+    padding: var(--space-3);
+  }
+
+  .ai-settings-overview,
+  .ai-settings-form .ai-config-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ai-settings-check {
+    justify-self: start;
+  }
+
+  .ai-model-control {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ai-model-warning {
+    grid-column: 1;
+  }
+}
+
 
 /* [hidden] 이 항상 이긴다.
  *

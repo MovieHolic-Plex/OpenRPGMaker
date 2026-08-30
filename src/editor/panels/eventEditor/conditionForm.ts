@@ -8,6 +8,7 @@ import { databasePicker } from "./switchVariablePicker";
 import { actorPickerControl, itemPickerControl } from "./sharedPickers";
 import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
 
+import { isRelationshipState, RELATIONSHIP_STATES, relationshipStateName } from "@/project/relationshipState";
 export { databasePicker, switchPicker, switchVariablePicker, variablePicker } from "./switchVariablePicker";
 
 const CONDITION_MODE_OPTIONS = [
@@ -22,6 +23,7 @@ const CONDITION_MODE_OPTIONS = [
   { value: "season", label: "계절" },
   { value: "npcActivity", label: "활동" },
   { value: "friendshipAtLeast", label: "호감도" },
+  { value: "relationshipAtLeast", label: "관계" },
   { value: "battleResult", label: "전투 결과" },
   { value: "run", label: "탐험" },
   { value: "all", label: "모두 맞을 때" },
@@ -96,6 +98,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "friendshipAtLeast":
         onChange({ kind: "friendshipAtLeast", value: 100 });
         return;
+      case "relationshipAtLeast":
+        onChange({ kind: "relationshipAtLeast", state: "dating" });
+        return;
       case "battleResult":
         onChange({ kind: "battleResult", result: "victory" });
         return;
@@ -149,6 +154,11 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "friendshipAtLeast":
       wrap.append(labeledFriendship(cond, onChange));
+      break;
+    case "relationshipAtLeast":
+      wrap.append(field("관계", renderRelationshipAtLeastCondition(cond, onChange, {
+        hostHasCharacterId: currentHostHasCharacterId(),
+      })));
       break;
     case "battleResult":
       wrap.append(labeledBattleResult(cond, onChange));
@@ -603,6 +613,8 @@ function conditionHint(kind: Condition["kind"]): string {
       return "지금 하는 일이 일치하는지 검사합니다.";
     case "friendshipAtLeast":
       return "호감도가 지정 값 이상인지 검사합니다. 누구를 비우면 이 이벤트 기준입니다.";
+    case "relationshipAtLeast":
+      return "관계가 지정 단계 이상인지 검사합니다. 호감도 수치와 별개로 연인·약혼·부부를 가릅니다.";
     case "battleResult":
       return "직전 전투 결과에 따라 분기합니다. 필드 몬스터 처치 후 이벤트 소거에 씁니다.";
     case "run":
@@ -1061,6 +1073,50 @@ export function renderFriendshipAtLeastCondition(
     cond.npcKey,
     options.hostHasCharacterId,
     options.hintTestId ?? "event-condition-friendship-requires-character-id",
+  );
+  if (hint) row.append(hint);
+  return row;
+}
+
+export function renderRelationshipAtLeastCondition(
+  cond: Extract<Condition, { kind: "relationshipAtLeast" }>,
+  onChange: (condition: Condition) => void,
+  options: {
+    readonly className?: string;
+    readonly npcKeyTestId?: string;
+    readonly stateTestId?: string;
+    readonly hostHasCharacterId?: boolean;
+    readonly hintTestId?: string;
+  } = {}
+): HTMLElement {
+  const unlinked = options.hostHasCharacterId === false;
+  const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
+  const npcKey = el("input", {
+    attrs: { type: "text", placeholder: unlinked ? "NPC 키를 적어야 합니다" : "비우면 이 이벤트" },
+    value: cond.npcKey ?? "",
+    dataset: { testid: options.npcKeyTestId ?? "event-condition-relationship-npc-key" },
+  }) as HTMLInputElement;
+  const state = el("select", {
+    dataset: { testid: options.stateTestId ?? "event-condition-relationship-state" },
+  }) as HTMLSelectElement;
+  for (const value of RELATIONSHIP_STATES) {
+    state.append(el("option", { value, text: relationshipStateName(value) }));
+  }
+  state.value = cond.state;
+  const apply = () => {
+    onChange({
+      kind: "relationshipAtLeast",
+      npcKey: npcKey.value.trim() || undefined,
+      state: isRelationshipState(state.value) ? state.value : "dating",
+    });
+  };
+  npcKey.addEventListener("change", apply);
+  state.addEventListener("change", apply);
+  row.append(npcKey, state);
+  const hint = friendshipAlwaysFalseHint(
+    cond.npcKey,
+    options.hostHasCharacterId,
+    options.hintTestId ?? "event-condition-relationship-requires-character-id",
   );
   if (hint) row.append(hint);
   return row;

@@ -61,6 +61,20 @@ export type AutonomousMover = {
   chaseHome?: { readonly x: number; readonly y: number };
   /** 액션 전투 상태기계가 선딜/후딜/돌진 중 이동을 억제할 때 세운다. */
   actionFrozen?: boolean;
+  /**
+   * 같은 걸음이 연속으로 막힌 횟수. `retryBlockedSteps` 무버만 쓴다.
+   * playSceneAutonomous §retryBlockedStep 참조.
+   */
+  blockedSteps?: number;
+  /**
+   * 막힌 걸음을 소비하지 않고 다시 시도할지. **계산된** 경로(시간표·생활 이동의 A* 결과)만
+   * 세운다 — 절대 방향 배열이라 한 걸음을 잃으면 남은 계획 전부가 실제 위치와 어긋난다.
+   *
+   * 작가가 쓴 페이지 이동 경로는 세우지 않는다. 그쪽은 막히면 걸음을 소비하고 넘어가는 것이
+   * 이 엔진의 기존 동작이고(test/runtimeMoveRouteCommands), 작가는 "이 칸이 막혀 있으면
+   * 이번엔 건너뛴다" 를 전제로 경로를 짠다.
+   */
+  retryBlockedSteps?: boolean;
 };
 
 export type AutonomousMoveTween = {

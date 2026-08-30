@@ -5,6 +5,7 @@ import { store } from "@/project/store";
 import type { Dir, GameEvent, GameMap, MapId, MoveCommand, Project } from "@/project/types";
 import { findChasePath, nearestReachableCandidate, type ChasePoint } from "@/player/chaseAi";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
+import { runtimeEventGone } from "@/project/runtimeEventState";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
 import type { RuntimeEventLocation } from "@/project/sessionRuntimeTypes"
 
@@ -34,8 +35,13 @@ const scheduleTickAccumulators = new WeakMap<object, number>();
 /**
  * 프레임 루프에서 부르는 진입점. updateNpcSchedules 는 NPC 수 × 맵 면적에 비례하는
  * 경로 탐색을 하므로(실측 100×100·NPC 30명 = 23.0ms) 매 프레임 돌면 예산을 넘긴다.
- * 첫 호출은 즉시 돌고 이후는 NPC_SCHEDULE_TICK_MS 마다 돈다 — 시간표 반응 지연은
- * 최대 0.1초로 게임 시간 1분보다 훨씬 짧다.
+ * 첫 호출은 즉시 돌고 이후는 NPC_SCHEDULE_TICK_MS 마다 돈다.
+ *
+ * 왜 시간표 칸을 건너뛰지 않는가: **게임 시간이 실시간 1초 고정 스텝으로만 오른다**
+ * (playSceneTime.ts §TIME_FIXED_STEP_MS = 1000). 즉 게임 시간이 바뀌는 순간은 1초에 한
+ * 번뿐이고 0.1초 점검은 그보다 10배 촘촘하다. "게임 시간 1분보다 짧다" 는 근거가 아니다
+ * — 1분의 실시간 길이는 1 / minutesPerRealSecond 초이고, 이 저장소 자신의 테스트가 쓰는
+ * minutesPerRealSecond: 60 에서는 16.7ms 로 0.1초보다 **짧다**.
  */
 export function tickNpcSchedules(
   scene: NpcScheduleSceneContext,
@@ -47,7 +53,13 @@ export function tickNpcSchedules(
     scheduleTickAccumulators.set(scene, elapsed);
     return;
   }
-  scheduleTickAccumulators.set(scene, 0);
+  // 초과분을 이월한다. 0 으로 리셋하면 실효 주기가 ceil(100/frameMs) × frameMs 로 늘어
+  // 프레임이 길어질 때 최대 2배가 된다(frameMs 99 → 198ms) — 그 상황이 바로 이 스로틀이
+  // 겨냥한 큰 맵·다수 NPC 다. 이월은 한 주기 미만으로 잘라 오래 멈춘 뒤 몰아 돌지 않게 한다.
+  scheduleTickAccumulators.set(
+    scene,
+    Math.min(elapsed - NPC_SCHEDULE_TICK_MS, NPC_SCHEDULE_TICK_MS - 1)
+  );
   updateNpcSchedules(scene, paused);
 }
 
@@ -67,6 +79,12 @@ export function updateNpcSchedules(scene: NpcScheduleSceneContext, paused = fals
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       if (!event.schedule?.length) continue;
+      // 지워진(erase/remove) NPC 는 시간표에서도 빠진다. 이 순회는 project.maps 를 직접
+      // 훑어서 이벤트 순회의 소거 필터를 타지 않는다 — 걸러내지 않으면
+      // registerAutonomousMover 가 무버를 못 만들고(존재 확인에서 탈락) 그런데도
+      // registerScheduleRoute 가 변경됨을 보고해 refreshRuntimeEntities 가 맵의 모든
+      // 이벤트 스프라이트를 100ms 마다 파괴·재생성한다(무한 반복).
+      if (runtimeEventGone(scene.session, map.id, event.id)) continue;
       scheduledIds.add(event.id);
       const target = npcScheduleTargetForEvent(map.id, event, scene.session.gameTime);
       if (!target) continue;
@@ -101,7 +119,11 @@ function applyNpcScheduleTarget(
   source: EventWithSource,
   target: NpcScheduleTarget
 ): boolean {
-  const targetMap = project.maps[target.mapId];
+  // 목표가 지금 있는 맵이면 **씬 맵**을 본다. scene.map 은 structuredClone 사본이고
+  // changeTile 은 그 사본에만 반영되므로(applyMapOverrides), project.maps 로 목적지 통행을
+  // 판정하면 목적지 정규화와 경로 탐색(routeTo 는 scene.map 을 쓴다)이 서로 다른 타일을
+  // 보게 된다 — 문을 연 자리로는 영구히 못 가고, 막힌 자리를 목표로 잡고 계속 실패한다.
+  const targetMap = target.mapId === scene.map.id ? scene.map : project.maps[target.mapId];
   if (!targetMap) return false;
   const eventId = source.event.id;
   const state = scene.session.npcScheduleStates ??= {};
@@ -214,7 +236,10 @@ function registerScheduleRoute(
   if (state[eventId]?.routeKey === routeKey && scene.autonomousNPCs.has(eventId)) return false;
   scene.registerAutonomousMover(eventId, [...moves], false);
   const mover = scene.autonomousNPCs.get(eventId);
-  if (mover) configureScheduleMover(mover);
+  // 무버가 안 만들어졌으면(대상 이벤트가 런타임에 없다) 바뀐 게 없다. true 를 돌려주면
+  // 호출부가 이벤트 계층 전체를 다시 그리고, 다음 점검에서 같은 일이 영구 반복된다.
+  if (!mover) return false;
+  configureScheduleMover(mover);
   scene.commandMoveRouteEventIds.add(eventId);
   state[eventId] = { routeKey, exitTarget: state[eventId]?.exitTarget };
   return true;
@@ -222,6 +247,8 @@ function registerScheduleRoute(
 
 function configureScheduleMover(mover: AutonomousMover): void {
   mover.strategy = "sequence";
+  // 시간표 경로는 A* 결과라 한 걸음을 잃으면 남은 계획이 전부 어긋난다.
+  mover.retryBlockedSteps = true;
   mover.speedRank = 4;
   mover.frequencyRank = 8;
   mover.moveDurationMs = 320;

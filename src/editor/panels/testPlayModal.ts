@@ -3,6 +3,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
+import { describeBootFailure } from "@/player/playBootRecovery";
 import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";
 import { nextSessionRandom, startSession, type PlaySession } from "@/project/session";
 import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
@@ -56,7 +57,15 @@ function writeTestPlayAutoStart(autoStart: boolean): void {
 
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
-export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
+export type OpenTestPlayOptions = {
+  /** 자율 이동·자동/병렬 이벤트를 억제한 상태로 연다 — 복구 패널의 «안전 모드로 시작» 이 이 경로를 다시 한다. */
+  readonly safeMode?: boolean;
+};
+
+export async function openTestPlayModal(
+  startOverride?: { mapId: string; x: number; y: number },
+  openOptions: OpenTestPlayOptions = {},
+): Promise<void> {
   // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — 제품명 고정 문구를 쓰면
   // 프로젝트를 여러 개 열어두면 어느 창이 무엇인지 구분이 안 된다.
   const projectTitle = store.getCurrent().meta.title?.trim();
@@ -84,6 +93,9 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
       // 전체 테스트 플레이 창은 창을 가득 채운다(정수 배율이면 1214x640 창에서 27% 만 그렸다).
       surfaceScaleMode: "fit",
       autoStartRun: readTestPlayAutoStart(),
+      safeMode: openOptions.safeMode === true,
+      // 예비검사가 고친 항목은 부팅을 막지 않고 토스트로만 드러낸다(실제 부팅은 고친 프로젝트로 돌아간다).
+      onBootRepairs: (repairs) => toast(`시작 전 자동 복구: ${repairs.join(" · ")}`, "info"),
       onRunControlsReady: (controls) => {
         playRunControls = controls;
       },
@@ -98,7 +110,10 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
     console.error("[test-play] failed to open test play:", error);
     releaseEventTestSnapshot?.();
     releaseEventTestSnapshot = null;
-    loading.setStage("error", "시연 실행를 열지 못했습니다");
+    presentOpenFailure(loading, "시연 실행을 열지 못했습니다", error, {
+      onRetry: () => void openTestPlayModal(startOverride, openOptions),
+      onSafeMode: () => void openTestPlayModal(startOverride, { safeMode: true }),
+    });
     return;
   }
   // renderPlayer clears body children (including this overlay) when it mounts.
@@ -425,6 +440,30 @@ function selectedEventTestSession(preparation: EventTestPreparation): PlaySessio
 
 function eventDisplayName(event: GameEvent): string {
   return event.pages?.[0]?.name || event.id;
+}
+
+// 창을 여는 도중 터진 실패를 막다른 문구 대신 **기계 이유 + 실제 복구 버튼**으로 돌린다.
+//
+// 능력 확인이 있는 이유: 이 창을 같이 구동하는 다른 테스트가 `playLoadingOverlay` 모듈을
+// setStage 만 갖는 대역으로 바꿔 둔다. 대역이 패널을 못 올려도 실패 이유 보고는 끊기지 않는다.
+function presentOpenFailure(
+  loading: ReturnType<typeof mountPlayLoadingOverlay>,
+  title: string,
+  error: unknown,
+  actions: { readonly onRetry: () => void; readonly onSafeMode: () => void },
+): void {
+  const described = describeBootFailure({ kind: "boot-threw", error, detail: "openTestPlayModal" });
+  if (typeof loading.showRecovery === "function") {
+    loading.showRecovery({
+      title,
+      reason: described.reason,
+      diagnostics: described.diagnostics,
+      onRetry: actions.onRetry,
+      onSafeMode: actions.onSafeMode,
+    });
+    return;
+  }
+  toast(`${title} — ${described.reason}`, "error");
 }
 
 function yieldToBrowser(): Promise<void> {

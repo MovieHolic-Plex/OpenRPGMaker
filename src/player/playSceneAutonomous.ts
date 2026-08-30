@@ -66,10 +66,12 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
     if (!movement.jump && !mover.through && isPlayerOccupyingTile(scene, nx, ny)) {
       fireEventTouch(scene, eventId, view.trigger.kind);
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      retryBlockedStep(mover);
       completeRouteCommand(mover);
       continue;
     }
     if (canNpcMove({ project, scene, mover, eventId, from: position, to: { x: nx, y: ny } }, movement)) {
+      mover.blockedSteps = 0;
       moveAutonomousRuntimePosition(scene, eventId, nx, ny, frameDir);
       mover.activeMove = {
         fromX: position.x,
@@ -99,6 +101,7 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: 
       scene.runtimeDom.upsertEventMarker(runtimeEventView(view.event, scene.session, scene.eventPositions));
     } else {
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      retryBlockedStep(mover);
     }
     completeRouteCommand(mover);
   }
@@ -252,6 +255,34 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
 
 function completeRouteCommand(mover: AutonomousMover): void {
   if (!mover.repeat && mover.step >= mover.moves.length) mover.moves = [];
+}
+
+/** 같은 걸음을 다시 시도할 최대 횟수. 시간표 무버의 걸음 간격 80ms 로 약 0.6초다. */
+const MAX_BLOCKED_STEP_RETRIES = 8;
+
+/**
+ * 이동하지 못한 걸음을 되돌려 다음 간격에 같은 걸음을 다시 시도하게 한다.
+ *
+ * 왜: **계산된** 순서 경로는 절대 방향 배열이다(npcSchedules §configureScheduleMover,
+ * npcLivingTravel §livingRoute). 막힌 걸음을 그대로 소비하면 남은 계획 전부가 실제 위치와
+ * 한 칸 어긋난 계획이 되고, 시간표 재계획은 무버가 살아 있는 동안 막혀 있어(npcSchedules 의
+ * routeKey 조기 반환) 배열이 소진될 때까지 — 걸음당 400ms — 주민이 경로를 벗어나 걷는다.
+ *
+ * 작가가 쓴 경로는 대상이 아니다 — playSceneTypes §retryBlockedSteps.
+ *
+ * 한계를 두는 이유: 영구히 막힌 자리에서 무버가 멈춘 채 남으면 재계획 자체가 안 일어난다.
+ * 한계를 넘으면 예전처럼 소비해 계획이 소진되고 시간표가 다시 계획한다. 반복(repeat)
+ * 경로는 moves 를 비울 수 없으므로 포기 대신 소비로 푼다.
+ */
+function retryBlockedStep(mover: AutonomousMover): void {
+  if (mover.retryBlockedSteps !== true) return;
+  const attempts = (mover.blockedSteps ?? 0) + 1;
+  if (attempts > MAX_BLOCKED_STEP_RETRIES) {
+    mover.blockedSteps = 0;
+    return;
+  }
+  mover.blockedSteps = attempts;
+  mover.step -= 1;
 }
 
 function lerp(from: number, to: number, progress: number): number {

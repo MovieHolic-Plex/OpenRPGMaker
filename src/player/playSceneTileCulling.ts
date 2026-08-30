@@ -46,18 +46,23 @@ const CULL_MARGIN_TILES = 2;
 const cullableTiles = new WeakMap<object, CullableTiles>();
 const appliedWindows = new WeakMap<object, TileWindow>();
 
-/** renderTiles 가 타일을 다시 만들기 전에 호출한다. */
+/**
+ * renderTiles 가 타일을 다시 만들기 전에, 그리고 씬이 내려갈 때 호출한다.
+ * 직전 짝 기억은 host 가 같든 다르든 언제나 버린다 — 그냥 캐시라 버려도 답이 같고,
+ * 남겨 두면 내려간 씬과 타일 GameObject 1만~2.1만개를 모듈 스코프가 붙잡는다.
+ */
 export function resetCullableTiles(host: object): void {
   cullableTiles.delete(host);
   appliedWindows.delete(host);
-  if (lastTrackedHost === host) {
-    lastTrackedHost = null;
-    lastTrackedTiles = null;
-  }
+  lastTrackedHost = null;
+  lastTrackedTiles = null;
 }
 
 // 한 번의 renderTiles 는 타일 1만~2.1만개를 **같은 host** 로 추적한다. 칸마다 WeakMap 을
 // 조회하지 않도록 직전 짝을 기억한다 — 맵을 그리는 동안 항상 적중한다.
+//
+// 이 두 변수는 WeakMap 이 아니라 강한 참조다. 그래서 씬이 내려갈 때 반드시
+// resetCullableTiles 로 풀어야 한다(PlayScene 의 shutdown/destroy 훅).
 let lastTrackedHost: object | null = null;
 let lastTrackedTiles: CullableTiles | null = null;
 

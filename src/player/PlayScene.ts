@@ -74,7 +74,7 @@ import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { initializeActionCombatForScene, updateActionCombatForScene } from "@/player/playSceneActionCombat";
 import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, isGameTimePausedForRuntime, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
 import { tickNpcSchedules, updateNpcSchedules } from "@/player/npcSchedules";
-import { syncTileCulling } from "@/player/playSceneTileCulling";
+import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
   createPlaySceneZoneFeedback,
   destroyPlaySceneZoneFeedback,
@@ -90,8 +90,15 @@ import {
   syncMinimapVisibility,
   type MinimapRuntimeState,
 } from "@/player/minimap";
+import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
 
 const PhaserRuntime = getLoadedPhaser();
+const MAX_FAILED_ASSETS = 20;
+
+export type FailedPlayAsset = {
+  readonly key: string;
+  readonly url: string;
+};
 
 export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   declare tileLayer: Phaser.GameObjects.Container;
@@ -159,6 +166,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   timeTintTransition: import("@/player/playSceneTypes").TimeTintTransition | null = null;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container> = new Set();
+  private readonly failedAssetLoads: FailedPlayAsset[] = [];
+
+  get failedAssets(): readonly FailedPlayAsset[] {
+    return this.failedAssetLoads;
+  }
 
   constructor() {
     super({ key: "PlayScene" });
@@ -172,8 +184,33 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       }
     };
     this.load.on("progress", reportProgress);
+    this.load.on("loaderror", (file: Phaser.Loader.File) => {
+      const failure = { key: file.key, url: typeof file.url === "string" ? file.url : file.src };
+      if (this.failedAssetLoads.length >= MAX_FAILED_ASSETS) this.failedAssetLoads.shift();
+      this.failedAssetLoads.push(failure);
+      this.installFailedAssetPlaceholder(failure.key);
+      recordPlayBootDiagnostic({
+        stage: "assets",
+        ok: false,
+        detail: `에셋 로드 실패: ${failure.key} (${failure.url})`,
+      });
+    });
     reportProgress(0);
     loadBundledAssets(this, store.getCurrent());
+  }
+
+  private installFailedAssetPlaceholder(key: string): void {
+    if (this.textures.exists(key)) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 16;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.fillStyle = "#ff00ff";
+    context.fillRect(0, 0, 16, 16);
+    context.fillStyle = "#111111";
+    context.fillRect(0, 0, 8, 8);
+    context.fillRect(8, 8, 8, 8);
+    this.textures.addCanvas(key, canvas);
   }
 
   create(): void {
@@ -187,6 +224,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const project = store.getCurrent();
     const qaInstrumentation = this.game.registry.get("qaInstrumentation") === true;
     const playResolution = resolvePlayResolution(project.system);
+    for (const failure of this.failedAssetLoads) this.installFailedAssetPlaceholder(failure.key);
     registerBundledFrames(this, project);
     this.cameras.main.setBackgroundColor("#000");
     this.tileLayer = this.add.container(0, 0);
@@ -285,6 +323,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.events.once("destroy", destroyMinimapLocal);
     this.events.once("shutdown", destroyZoneFeedback);
     this.events.once("destroy", destroyZoneFeedback);
+    // 컬링의 직전 짝 기억은 모듈 스코프의 **강한** 참조다(WeakMap 인 본체와 다르다).
+    // 풀지 않으면 내려간 씬과 타일 GameObject 1만~2.1만개가 그대로 남는다.
+    const releaseCulling = (): void => resetCullableTiles(this);
+    this.events.once("shutdown", releaseCulling);
+    this.events.once("destroy", releaseCulling);
     // player.ts 로딩 오버레이가 create 완료를 기다릴 수 있게 신호.
     reportStage("ready");
     const onReady: unknown = this.game.registry.get("onPlaySceneReady");
@@ -368,6 +411,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   refreshRuntimeEntities(): void {
+    // 이벤트 스프라이트를 다시 만드는 쪽(refreshSceneRuntimeEntities)이 카메라 재바인딩까지
+    // 책임진다 — playSceneMapRuntime §rebindEventFollowCamera.
     refreshSceneRuntimeEntities(this);
     syncFollowerSprites(this);
   }
