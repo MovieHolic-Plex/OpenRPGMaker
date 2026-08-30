@@ -567,6 +567,8 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
       id: eventId,
       x: 1,
       y: 1,
+      trigger: { kind: "action" },
+      commands: structuredClone(page.commands),
       pages: [structuredClone(page)],
     }];
     const refreshCommandCount = (): void => {
@@ -827,6 +829,8 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
       id: "event-1",
       x: 1,
       y: 1,
+      trigger: { kind: "action" },
+      commands: structuredClone(page.commands),
       pages: [structuredClone(page)],
     }];
     const panel = renderEventAiAssist({
