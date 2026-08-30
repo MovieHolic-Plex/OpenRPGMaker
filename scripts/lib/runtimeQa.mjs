@@ -32,6 +32,9 @@ export const OP_KINDS = [
   // 키를 정해진 횟수만큼 눌러 대사를 소진하려 하면 **NPC 를 재발동시켜 초과 입력**이 된다
   // (실측: 선택지 NPC 옆에서 Enter 8회 → 선택지가 다시 열림).
   "waitFor",
+  // 마운트가 아니라 "실제로 보인다"를 기다린다. 페이드로 들어오는 창(상점 180ms)은
+  // present 직후 조상 opacity 가 0 이라 visibleText 축이 alpha 0 으로 실패한다.
+  "waitForVisible",
   "pressUntil",
   // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
   // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.

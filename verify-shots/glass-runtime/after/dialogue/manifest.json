@@ -1,0 +1,54 @@
+{
+  "scenarioId": "dialogue",
+  "projectPath": "test/fixtures/projects/oprn-sample-v3.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "field-start",
+      "note": "새 게임 → 마을 시작 지점(0,1), 우측 (1,1) 에 town-npc",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_town",
+        "x": 0,
+        "y": 1,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 1,
+      "id": "open-choices",
+      "note": "town-npc 말걸기 → 선택지 창이 떠야 한다",
+      "shot": "02-open-choices.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_town",
+        "x": 0,
+        "y": 1,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 2,
+      "id": "dismiss-dialogue",
+      "note": "결정 키로 선택지·후속 대사 소진 → 대사창이 닫혀야 한다",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_town",
+        "x": 0,
+        "y": 1,
+        "gold": 0,
+        "battleResult": null
+      }
+    }
+  ]
+}

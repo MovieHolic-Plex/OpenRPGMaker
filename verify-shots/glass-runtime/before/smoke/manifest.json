@@ -1,0 +1,62 @@
+{
+  "scenarioId": "smoke",
+  "projectPath": "test/fixtures/projects/editor-authored-demo-v3.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "타이틀 화면이 뜬다",
+      "shot": "01-title.png",
+      "failures": [],
+      "state": null
+    },
+    {
+      "index": 1,
+      "id": "field-start",
+      "note": "새 게임 → 등대 마을 시작 지점, 플레이어 스프라이트가 실제로 그려진다",
+      "shot": "02-field-start.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 2,
+      "id": "teleport-forest",
+      "note": "맵 전환 — 달우물 숲",
+      "shot": "03-teleport-forest.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 3,
+      "id": "teleport-shrine",
+      "note": "맵 전환 — 하늘등 신전",
+      "shot": "04-teleport-shrine.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_sky_lantern_shrine",
+        "x": 12,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null
+      }
+    }
+  ]
+}

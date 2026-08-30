@@ -1,0 +1,131 @@
+{
+  "scenarioId": "item-menu",
+  "projectPath": "test/fixtures/projects/item-runtime-qa-v3.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null
+    },
+    {
+      "index": 1,
+      "id": "field-start",
+      "note": "새 게임을 시작하고 실제 아이템 효과가 보이도록 파티 전원의 HP와 MP를 낮춘다",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 2,
+      "id": "status-menu-open",
+      "note": "필드에서 취소 키로 상태 메뉴를 연다",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 3,
+      "id": "hp-before-100-item-list",
+      "note": "아이템 기능에 들어가 회복약 사용 전 주인공 HP 100/514를 확인한다",
+      "shot": "04-hp-before-100-item-list.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 4,
+      "id": "hp-after-150-item-list",
+      "note": "회복약을 주인공에게 사용해 HP가 100에서 150으로 오른 결과를 확인한다",
+      "shot": "05-hp-after-150-item-list.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 5,
+      "id": "mp-before-5-item-list",
+      "note": "마력약 사용 전 주인공 MP 5/43을 확인한다",
+      "shot": "06-mp-before-5-item-list.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 6,
+      "id": "mp-after-35-item-list",
+      "note": "마력약을 주인공에게 사용해 MP가 5에서 35로 오른 결과를 확인한다",
+      "shot": "07-mp-after-35-item-list.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 7,
+      "id": "party-hp-before-100-item-list",
+      "note": "연대의 물약 사용 전 나머지 세 파티원의 HP 100/514를 확인한다",
+      "shot": "08-party-hp-before-100-item-list.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 8,
+      "id": "party-hp-after-160-item-list",
+      "note": "연대의 물약을 사용해 주인공 HP가 150에서 210, 나머지는 100에서 160으로 함께 오른 결과를 확인한다",
+      "shot": "09-party-hp-after-160-item-list.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null
+      }
+    }
+  ]
+}

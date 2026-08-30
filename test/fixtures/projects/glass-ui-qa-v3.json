@@ -1,0 +1,489 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "T14 RM2K3 샘플",
+    "author": "e2e",
+    "terms": {
+      "gold": "골드",
+      "level": "레벨",
+      "hp": "체력",
+      "mp": "마력",
+      "attack": "공격",
+      "skill": "스킬",
+      "item": "아이템"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "sample_hero": {
+        "id": "sample_hero",
+        "image": { "type": "bundled", "id": "tex_easyrpg_charset_people1" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "sample_npc": {
+        "id": "sample_npc",
+        "image": { "type": "bundled", "id": "tex_npc_base" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "sample_monster": {
+        "id": "sample_monster",
+        "image": { "type": "bundled", "id": "tex_slime" },
+        "frames": 1,
+        "frameWidth": 32,
+        "frameHeight": 32
+      }
+    },
+    "uploaded": {
+      "sample_title": {
+        "id": "sample_title",
+        "name": "sample-title",
+        "kind": "title",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADlQGOSwS2tQAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      },
+      "sample_system": {
+        "id": "sample_system",
+        "name": "sample-system",
+        "kind": "system",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAgH+Ud7FvgAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      },
+      "sample_system2": {
+        "id": "sample_system2",
+        "name": "sample-system2",
+        "kind": "system2",
+        "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk2M9QDwADmgGTXOvWLwAAAABJRU5ErkJggg==",
+        "meta": { "width": 1, "height": 1 }
+      }
+    }
+  },
+  "resourceProfiles": [
+    { "kind": "chipset", "name": "기본 칩셋", "tileWidth": 16, "tileHeight": 16, "assetId": "tex_tiles_default" },
+    { "kind": "charset", "name": "주인공 캐릭터칩", "tileWidth": 24, "tileHeight": 32, "assetId": "sample_hero" },
+    { "kind": "charset", "name": "마을 NPC 캐릭터칩", "tileWidth": 24, "tileHeight": 32, "assetId": "sample_npc" },
+    { "kind": "battleCharset", "name": "주인공 배틀 캐릭터칩", "tileWidth": 48, "tileHeight": 48, "assetId": "sample_hero" },
+    { "kind": "monster", "name": "슬라임 몬스터", "assetId": "sample_monster" },
+    { "kind": "title", "name": "샘플 타이틀", "assetId": "sample_title" },
+    { "kind": "system", "name": "샘플 시스템", "assetId": "sample_system" },
+    { "kind": "system2", "name": "샘플 전투 시스템", "assetId": "sample_system2" },
+    { "kind": "picture", "name": "문 그림", "assetId": "sample_picture_gate" },
+    { "kind": "music", "name": "샘플 테마", "assetId": "sample_theme" },
+    { "kind": "sound", "name": "스위치 효과음", "assetId": "sample_switch_se" }
+  ],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "기본 타일셋",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 8,
+      "passability": [
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true }
+      ],
+      "priority": ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"],
+      "terrain": [0, 0, 0, 0, 0, 0, 0, 0]
+    }
+  },
+  "switches": [
+    { "id": "sw_gate_open", "name": "문 열림" },
+    { "id": "sw_battle_won", "name": "전투 승리" },
+    { "id": "sw_blessed", "name": "축복 받음" }
+  ],
+  "variables": [
+    { "id": "var_choice", "name": "선택 결과" },
+    { "id": "var_blessing", "name": "축복 횟수" }
+  ],
+  "commonEvents": [
+    {
+      "id": "ce_blessing",
+      "name": "축복",
+      "trigger": "none",
+      "commands": [
+        { "kind": "setSwitch", "switchId": "sw_blessed", "value": true },
+        { "kind": "setVariable", "variableId": "var_blessing", "op": "=", "value": 3 },
+        { "kind": "showPicture", "pictureId": "pic_gate", "resourceId": "sample_picture_gate", "x": 24, "y": 32 },
+        { "kind": "playAudio", "resourceId": "sample_theme", "loop": true }
+      ]
+    }
+  ],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_hero",
+        "name": "미라",
+        "classId": "class_guardian",
+        "initialLevel": 1,
+        "maxLevel": 50,
+        "characterResourceId": "sample_hero",
+        "battleCharacterResourceId": "sample_hero",
+        "skillIds": ["skill_spark"]
+      }
+    ],
+    "classes": [
+      {
+        "id": "class_guardian",
+        "name": "수호자",
+        "skillIds": ["skill_spark"]
+      }
+    ],
+    "skills": [
+      {
+        "id": "skill_spark",
+        "name": "불꽃",
+        "scope": "enemy",
+        "power": 99,
+        "animationId": "anim_spark"
+      }
+    ],
+    "items": [
+      {
+        "id": "item_potion",
+        "name": "물약",
+        "scope": "ally",
+        "price": 10
+      }
+    ],
+    "equipment": [
+      {
+        "id": "equip_bronze_sword",
+        "name": "청동 검",
+        "slot": "weapon",
+        "price": 100
+      }
+    ],
+    "enemies": [
+      {
+        "id": "enemy_slime",
+        "name": "동굴 슬라임",
+        "monsterResourceId": "sample_monster",
+        "skillIds": []
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_slime",
+        "name": "동굴 슬라임 무리",
+        "enemyIds": ["enemy_slime"],
+        "battleEventPages": []
+      }
+    ],
+    "states": [
+      {
+        "id": "state_guard",
+        "name": "방어"
+      }
+    ],
+    "battleAnimations": [
+      {
+        "id": "anim_spark",
+        "name": "불꽃",
+        "resourceId": "sample_monster"
+      }
+    ]
+  },
+  "system": {
+    "startActorIds": ["actor_hero"],
+    "titleResourceId": "sample_title",
+    "systemResourceId": "sample_system",
+    "battleSystemResourceId": "sample_system2",
+    "initialTroopId": "troop_slime"
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": { "item_potion": 1 },
+    "partyActorIds": ["actor_hero"]
+  },
+  "maps": {
+    "map_town": {
+      "id": "map_town",
+      "name": "샘플 마을",
+      "width": 6,
+      "height": 4,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0
+      ],
+      "upperTiles": [
+        -1, -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1, -1
+      ],
+      "events": [
+        {
+          "id": "town-npc",
+          "x": 1,
+          "y": 1,
+          "sprite": { "type": "bundled", "id": "sample_npc" },
+          "trigger": { "kind": "action" },
+          "commands": [],
+          "pages": [
+            {
+              "id": "npc-before",
+              "name": "문 열기 전",
+              "conditions": [],
+              "graphic": { "sprite": { "type": "bundled", "id": "sample_npc" } },
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [
+                {
+                  "kind": "shop",
+                  "itemIds": ["item_potion"],
+                  "allowSell": true,
+                  "quantityMode": "single",
+                  "shopType": "normal",
+                  "messageType": "welcome",
+                  "merchantGold": 100,
+                  "branchOnTransaction": false,
+                  "transactionBranch": [],
+                  "branchOnFailedTransaction": false,
+                  "failedTransactionBranch": []
+                },
+                {
+                  "kind": "enterHeroName",
+                  "actorId": "actor_hero",
+                  "maxLength": 6,
+                  "showInitialName": true
+                }
+              ]
+            },
+            {
+              "id": "npc-after",
+              "name": "문 열린 뒤",
+              "conditions": [{ "kind": "switch", "switchId": "sw_gate_open", "value": true }],
+              "graphic": { "sprite": { "type": "bundled", "id": "sample_npc" } },
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [
+                { "kind": "text", "speaker": "안내자", "body": "던전으로 가는 길이 열렸습니다." }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "switch-puzzle",
+          "x": 2,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "setSwitch", "switchId": "sw_gate_open", "value": true },
+            { "kind": "setVariable", "variableId": "var_choice", "op": "=", "value": 7 },
+            { "kind": "callCommonEvent", "commonEventId": "ce_blessing" },
+            { "kind": "text", "speaker": "스위치", "body": "언덕의 문이 열렸습니다." }
+          ]
+        },
+        {
+          "id": "save-point",
+          "x": 3,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "text", "speaker": "수정", "body": "던전에 들어가기 전에 여기서 저장하세요." }
+          ]
+        },
+        {
+          "id": "clear-effects",
+          "x": 0,
+          "y": 2,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "erasePicture", "pictureId": "pic_gate" },
+            { "kind": "stopAudio" },
+            { "kind": "text", "speaker": "스위치", "body": "공기가 맑아졌습니다." }
+          ]
+        },
+        {
+          "id": "interior-door",
+          "x": 5,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "transfer", "mapId": "map_interior", "x": 0, "y": 0 }
+          ]
+        },
+        {
+          "id": "dungeon-door",
+          "x": 4,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            {
+              "kind": "fork",
+              "condition": { "kind": "switch", "switchId": "sw_gate_open", "value": true },
+              "then": [
+                { "kind": "transfer", "mapId": "map_dungeon", "x": 0, "y": 0 }
+              ],
+              "else": [
+                { "kind": "text", "speaker": "문", "body": "길이 봉인되어 있습니다." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "map_interior": {
+      "id": "map_interior",
+      "name": "샘플 실내",
+      "width": 3,
+      "height": 3,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0
+      ],
+      "upperTiles": [
+        -1, -1, -1,
+        -1, -1, -1,
+        -1, -1, -1
+      ],
+      "events": [
+        {
+          "id": "interior-host",
+          "x": 1,
+          "y": 0,
+          "sprite": { "type": "bundled", "id": "sample_npc" },
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "text", "speaker": "주인", "body": "이 작은 실내에서 맵 이동을 확인합니다." }
+          ]
+        },
+        {
+          "id": "interior-exit",
+          "x": 0,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "transfer", "mapId": "map_town", "x": 3, "y": 1 }
+          ]
+        }
+      ]
+    },
+    "map_dungeon": {
+      "id": "map_dungeon",
+      "name": "샘플 던전",
+      "width": 4,
+      "height": 3,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0
+      ],
+      "upperTiles": [
+        -1, -1, -1, -1,
+        -1, -1, -1, -1,
+        -1, -1, -1, -1
+      ],
+      "events": [
+        {
+          "id": "battle-start",
+          "x": 1,
+          "y": 0,
+          "trigger": { "kind": "action" },
+          "commands": [],
+          "pages": [
+            {
+              "id": "battle-before",
+              "name": "전투",
+              "conditions": [],
+              "graphic": { "sprite": { "type": "bundled", "id": "sample_monster" } },
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [
+                { "kind": "battleProcessing", "troopId": "troop_slime", "canEscape": true, "canLose": false },
+                { "kind": "setSwitch", "switchId": "sw_battle_won", "value": true }
+              ]
+            },
+            {
+              "id": "battle-after",
+              "name": "승리 페이지",
+              "conditions": [{ "kind": "switch", "switchId": "sw_battle_won", "value": true }],
+              "graphic": { "sprite": { "type": "bundled", "id": "sample_npc" } },
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [
+                { "kind": "text", "speaker": "안내자", "body": "슬라임이 사라졌습니다. 포털을 이용하세요." }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ending-portal",
+          "x": 2,
+          "y": 0,
+          "trigger": { "kind": "action" },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ending-locked",
+              "name": "잠김",
+              "conditions": [],
+              "graphic": {},
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [
+                { "kind": "text", "speaker": "포털", "body": "먼저 전투에서 승리하세요." }
+              ]
+            },
+            {
+              "id": "ending-open",
+              "name": "엔딩",
+              "conditions": [{ "kind": "switch", "switchId": "sw_battle_won", "value": true }],
+              "graphic": {},
+              "trigger": { "kind": "action" },
+              "priority": "same",
+              "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+              "commands": [
+                { "kind": "ending", "title": "끝", "message": "T14 샘플 완료." }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "return-town",
+          "x": 0,
+          "y": 1,
+          "trigger": { "kind": "action" },
+          "commands": [
+            { "kind": "transfer", "mapId": "map_town", "x": 3, "y": 1 }
+          ]
+        }
+      ]
+    }
+  },
+  "mapTree": {
+    "mapId": "map_town",
+    "children": [
+      { "mapId": "map_interior", "children": [] },
+      { "mapId": "map_dungeon", "children": [] }
+    ]
+  },
+  "startMapId": "map_town",
+  "startPos": { "x": 0, "y": 1 },
+  "flags": {}
+}
