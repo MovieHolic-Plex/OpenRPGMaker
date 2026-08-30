@@ -320,7 +320,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     filterBar.refresh(palette.refresh());
   }
   // 오른쪽 열은 지금 이 한 번만 조립된다. 툴·필터·팔레트·AI 폼은 전부 여기 남아 있고
-  // 탭 전환은 hidden 을 토글한다 — 노드를 떼었다 다시 붙이면 팔레트 스크롤이 매번 맨 위로 튴다.
+  // 탭 전환은 hidden 을 토글한다 — 노드를 떼었다 다시 붙이면 팔레트 스크롤이 매번 맨 위로 튄다.
   rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap, aiWrap);
 
   const redraw = (): void => {
@@ -1260,9 +1260,11 @@ function createFilterBar(
       },
     },
   });
+  // 숫자를 `data-used-count` 로도 낸다. 테스트가 "사용 중 2칸" 같은 **문구**를 잡으면
+  // 카피를 다듬는 순간 관계없는 테스트가 깨진다 — 기계가 읽는 것은 값이어야 한다.
   const usedCountLabel = el("span", {
     class: "structure-kit-editor-used-count",
-    dataset: { testid: "structure-kit-editor-used-count" },
+    dataset: { testid: "structure-kit-editor-used-count", usedCount: "0" },
     text: "",
   });
 
@@ -1285,6 +1287,7 @@ function createFilterBar(
   return {
     refresh: (usedCount: number) => {
       applyChipState();
+      usedCountLabel.dataset.usedCount = String(usedCount);
       usedCountLabel.textContent = usedCount > 0 ? `사용 중 ${usedCount}칸` : "사용 중 없음";
     },
   };
@@ -1343,7 +1346,7 @@ type ToolChange = "tool" | "layer";
 
 /**
  * 도구·레이어 버튼. 노드를 한 번만 만들고 활성 표식은 refresh 가 클래스로만 바꾼다 —
- * 예전에는 도구를 눌를 때마다 오른족 열을 통째 다시 조립해서 팔레트 스크롤이 튀었다.
+ * 예전에는 도구를 누를 때마다 오른쪽 열을 통째 다시 조립해서 팔레트 스크롤이 튀었다.
  */
 function createTools(
   host: HTMLElement,
@@ -1351,15 +1354,15 @@ function createTools(
   onChange: (changed: ToolChange) => void,
 ): ToolsView {
   // 아이콘은 맵 편집기의 SVG 팩토리를 그대로 쓴다 — 유니코드 글리프는 폰트에 따라
-  // 안 그려지거나 뭉게지어서 무슨 도구인지 알 수 없었다. (makeTileToolbar 자시체는 부르지
-  // 않는다: installToolbarBadgeRefresh 가 모듈 전역을 마지리 호출자로 덮어서
-  // 맵 팔레트의 자동 갱신이 이 편집기로 쥙다.)
+  // 안 그려지거나 뭉개져서 무슨 도구인지 알 수 없었다. (makeTileToolbar 자체는 부르지
+  // 않는다: installToolbarBadgeRefresh 가 모듈 전역을 마지막 호출자로 덮어써서
+  // 맵 팔레트의 자동 갱신이 이 편집기로 샌다.)
   const toolNodes = TOOL_BUTTONS.map((entry) => ({
     tool: entry.tool,
     node: el("button", {
       class: "btn small structure-kit-editor-tool",
-      // aria-pressed 는 맵 도구문대와 같은 규약이다. 아이콘 전용 버튼이라 이게 없으면
-      // 화면 낞독기 쪽에서 지금 어느 도구가 잡혀 있는지 알 방법이 색뿐이다.
+      // aria-pressed 는 맵 도구막대와 같은 규약이다. 아이콘 전용 버튼이라 이게 없으면
+      // 화면 낭독기 쪽에서 지금 어느 도구가 잡혀 있는지 알 방법이 색뿐이다.
       attrs: { type: "button", title: entry.label, "aria-label": entry.label, "aria-pressed": "false" },
       children: [makeSvgIcon(entry.icon)],
       dataset: { testid: entry.testid },

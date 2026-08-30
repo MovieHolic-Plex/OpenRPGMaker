@@ -171,7 +171,7 @@ test.describe("데이터베이스 구조물 편집기", () => {
     await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 
     await expect(page.getByTestId("structure-kit-editor-tile-240")).toHaveClass(/is-used/);
-    await expect(page.getByTestId("structure-kit-editor-used-count")).toHaveText("사용 중 1칸");
+    await expect(page.getByTestId("structure-kit-editor-used-count")).toHaveAttribute("data-used-count", "1");
 
     // 다른 타일을 붓으로 잡은 뒤 켜야 한다 — 지금 잡은 붓은 필터에서 면제되기 때문이다.
     await page.getByTestId("structure-kit-editor-tile-421").click();
@@ -193,7 +193,7 @@ test.describe("데이터베이스 구조물 편집기", () => {
     await page.getByTestId("structure-kit-editor-tab-shape").click();
     await expect(page.getByTestId("structure-kit-editor-palette")).toBeVisible();
     await expect(page.getByTestId("structure-kit-editor-tile-240")).toHaveClass(/is-used/);
-    await expect(page.getByTestId("structure-kit-editor-used-count")).toHaveText("사용 중 1칸");
+    await expect(page.getByTestId("structure-kit-editor-used-count")).toHaveAttribute("data-used-count", "1");
   });
 
   // 잘림 회귀 방지. locator.click() 은 scrollIntoViewIfNeeded 를 먼저 하므로 사람이 못 누르는
