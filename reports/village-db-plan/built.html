@@ -435,7 +435,7 @@ author_village({ target, houseCount, countPolicy, presetId }) 로 프리셋을 �
     <div class="card">
       <span class="kicker">확인하지 못한 것</span>
       <ul>
-        <li><strong>타입체크를 돌리지 못했다.</strong> 이 환경에 설치된 TypeScript 가 7.0.2 인데 <code>package.json</code> 은 <code>^5.7.0</code> 을 선언한다. TS 7 이 <code>baseUrl</code> 을 제거해서 <code>tsconfig.json</code> 21행에서 바로 멈춘다 — 내 변경과 무관하고, 손대지 않은 파일이다.</li>
+        <li><strong>타입체크는 처음엔 돌지 않았고, 그건 설정 쪽 문제였다 — 고쳐서 돌렸다.</strong> 설치된 TypeScript 가 7.0.2 인데 <code>tsconfig.json</code> 이 TS 7 에서 제거된 <code>baseUrl</code> 을 들고 있어, <code>tsc</code> 가 파일 하나 읽기 전에 <code>TS5102</code> 로 죽었다 — 즉 <code>npm run gates</code> 의 typecheck 게이트가 통째로 무력화된 상태였다. <code>paths</code> 를 <code>"@/*": ["./src/*"]</code> 로 바꾸니 5.x·7 양쪽에서 돌고, 게이트 스코프(<code>tsconfig.app.json</code>, <code>src</code>만)는 <strong>두 버전 모두 에러 0</strong> 이다. <code>test</code> 까지 포함한 전체 스코프는 2603개인데 TS 5.7.3 에서도 같은 수준이다 — AGENTS.md 가 말하는 빨간 기준선이고 게이트가 보는 범위 밖이다.</li>
         <li><strong>무거운 테스트 하나가 시간으로 흔들린다.</strong> <code>authorVillageFacade</code> 의 100×100 눈 도시 케이스가 90초 제한에 걸린다. 같은 커밋을 <code>git stash</code> 로 되돌려 돌려도 똑같이 걸리므로(기준선 144초) 환경 부하 문제로 판단했다. 사용자 레코드를 전혀 쓰지 않는 경로다.</li>
         <li><strong>3칸 폭 집</strong>은 내장에 없다. <code>templateW.min</code> 은 3 으로 남겼는데, 폭 3 집을 하네스가 잘 짓는지는 확인하지 않았다.</li>
         <li>날개 <em>합집합</em>이 3행짜리 바닥이 되는 극단(바운딩 박스는 4행)은 열 높이 규약에서 걸리지만, 그 조합만 따로 시공해 보지는 않았다.</li>

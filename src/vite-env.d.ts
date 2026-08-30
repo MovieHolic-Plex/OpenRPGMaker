@@ -1,3 +1,8 @@
+// CSS 는 Vite 가 번들에 넣고 타입은 없다. TS 5.x 는 side-effect import 를 조용히 넘기지만
+// TS 7 은 선언이 없으면 TS2882 로 막는다 — 13개 패널이 여기에 걸려 typecheck 게이트가
+// 빨간불이 됐다. `vite/client` 를 types 에 넣으면 ImportMetaEnv 선언과 겹치므로 모양만 선언한다.
+declare module "*.css";
+
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly PROD: boolean;

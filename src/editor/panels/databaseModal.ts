@@ -145,7 +145,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     aiToggleButton.setAttribute("aria-expanded", String(open));
     if (open) aiInput.focus();
   };
-  aiToggleButton.addEventListener("click", () => setAiBarOpen(aiBar.hidden));
+  // hidden 은 lib.dom 에서 string | boolean 이다("until-found"). 숨어 있으면 연다.
+  aiToggleButton.addEventListener("click", () => setAiBarOpen(Boolean(aiBar.hidden)));
   aiCloseButton.addEventListener("click", () => setAiBarOpen(false));
   const runAiRequest = (): void => {
     const text = aiInput.value.trim();
