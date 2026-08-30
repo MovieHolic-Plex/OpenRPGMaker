@@ -3,6 +3,10 @@ import { expect, test } from "@playwright/test";
 // 우클릭 드래그 → 선택 칩 바가 드래그 놓은 자리 근처에 뜨는지 (우하단 고정 아님) 검증.
 // 기존: fixedSelectionChipsPosition → 캔버스 우하단 고정.
 // 변경: anchoredSelectionChipsPosition → 놓은 점(context-menu 처럼) 또는 선택 rect 옆.
+//
+// 이 파일은 한동안 `_verify_` 접두어를 달고 방치돼 있었다 — 우클릭 드래그가 영역 작업 창을
+// 바로 열던 시기에는 창이 칩 바를 가려(창이 열려 있는 동안 오버레이는 숨는다) 여기 단정이
+// 구조적으로 성립할 수 없었다. 제스처가 다시 "영역을 잡는 동작"이 되면서 정식 스펙으로 돌아왔다.
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -11,12 +15,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("우클릭 드래그 놓은 자리에 선택 칩이 뜬다 (우하단 고정 아님)", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20000 });
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
 
-  // 캔버스 크기 확보
-  await canvas.waitForElementState("stable");
+  // 캔버스 크기 확보 (Locator 에는 waitForElementState 가 없다 — ElementHandle 전용 API 였다)
+  await expect(canvas).toBeVisible({ timeout: 20000 });
   const box = await canvas.boundingBox();
   if (!box) throw new Error("canvas bounding box missing");
 

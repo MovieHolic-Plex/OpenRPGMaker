@@ -625,6 +625,9 @@ describe("칸 힌트 도구", () => {
     seedKit();
     openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
     expect(pick("structure-kit-editor-cell-hints-empty")).not.toBeNull();
+  });
+});
+
 describe("collectUsedTiles", () => {
   it("두 레이어에서 쓰는 타일을 모으고 빈 칸은 뺀다", () => {
     const used = collectUsedTiles({

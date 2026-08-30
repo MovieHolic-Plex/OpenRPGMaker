@@ -14,6 +14,7 @@ import {
 } from "@/editor/regionTask/suggestedCommands";
 import { dismissCoachMarks } from "@/editor/coachMarks";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
+import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { suggestRegionCommandsByContext } from "@/editor/regionTask/regionContextSuggestions";
 import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import { formatRegionTileStatsCompact, summarizeRegionTiles } from "@/editor/regionTask/regionTileStats";
@@ -123,6 +124,31 @@ export function isRegionTaskModalOpen(): boolean {
   return modalRoot !== null;
 }
 
+// 열려 있는 창의 「대상 영역 재지정」 손잡이. 창이 비모달이 된 뒤로 사용자는 창을 띄운 채로
+// 캔버스에 다시 우클릭 드래그를 할 수 있다 — 그때 선택만 바뀌고 창이 옛 영역을 들고 있으면
+// 「적용」이 화면에 보이는 선택과 **다른 곳**을 고친다. 그래서 제스처가 창을 갈아 끼운다.
+// 지시 단계에서만 허용한다: 실행 중이거나 검토 중인 결과를 말없이 버릴 수는 없다.
+let activeModalRegionControl: {
+  readonly canRetarget: () => boolean;
+  readonly retarget: (region: RegionRect, anchor?: RegionTaskAnchor) => void;
+} | null = null;
+
+/** 창이 떠 있고 그 영역이 잠겨 있는가(실행 중·검토 중) — 이때 캔버스 재지정을 막는다. */
+export function isRegionTaskRegionLocked(): boolean {
+  return modalRoot !== null && !(activeModalRegionControl?.canRetarget() ?? false);
+}
+
+/**
+ * 열려 있는 창을 새 영역으로 갈아 끼운다. 입력해 둔 지시문은 그대로 옮겨 온다.
+ * 창이 없거나 영역이 잠겨 있으면 아무것도 하지 않고 `false`.
+ */
+export function retargetRegionTaskModal(region: RegionRect, anchor?: RegionTaskAnchor): boolean {
+  const control = activeModalRegionControl;
+  if (modalRoot === null || !control || !control.canRetarget()) return false;
+  control.retarget(region, anchor);
+  return true;
+}
+
 export const REGION_TASK_MODAL_EVENT = "oprn:region-task-modal";
 
 /** 열림/닫힘을 알린다 — EditScene 이 선택 칩 오버레이를 숨기거나 되살리는 신호. */
@@ -144,6 +170,7 @@ export function closeRegionTaskModal(): void {
   const wasOpen = modalRoot !== null;
   const cleanup = activeModalCleanup;
   activeModalCleanup = null;
+  activeModalRegionControl = null;
   cleanup?.();
   modalRoot?.remove();
   modalRoot = null;
@@ -263,52 +290,65 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         },
       },
     });
+  // ── 무엇을 시킬 수 있는지: 문맥 추천 4개 + 「모두 보기」 한 칩 ──────────────────
+  // 예전에는 추천 줄 위에 **카테고리 필터 칩 8개**가 가로 스크롤러로 상주했다. 380px 폭
+  // 팝오버에서 다섯 번째 칩이 경계에서 잘리고, 칩을 누르면 추천 줄이 그 계열로 갈아치워져
+  // "지금 무엇을 보고 있나"가 상태로 남았다(자동완성 범위까지 그 상태를 따라갔다).
+  // 이제 필터 상태는 없다. 추천 줄은 항상 이 영역에 맞춘 4개 그대로고, 전체 명령은
+  // 「모두 보기」 시트에 카테고리 소제목으로 묶여 한 번에 펼쳐진다 — 고를 것을 눈으로 보고
+  // 바로 집는다. 상태가 없으니 두 표면이 서로 다른 것을 가리킬 수도 없다.
+  const categories = regionCommandCategories();
+  const totalCommandCount = categories.reduce((acc, category) => acc + category.commands.length, 0);
+  const hiddenCommandCount = Math.max(0, totalCommandCount - suggestions.length);
+  const categorySheet = el("div", {
+    class: "region-task-categories hidden",
+    dataset: { testid: "region-task-categories" },
+    children: categories.map((category) => el("div", {
+      class: "region-task-category-group",
+      dataset: { testid: `region-category-${category.id}` },
+      children: [
+        el("div", {
+          class: "region-task-category-group-title",
+          children: [
+            makeSvgIcon(category.icon),
+            el("span", { class: "region-task-chip-label", text: category.label }),
+          ],
+        }),
+        el("div", {
+          class: "region-task-category-group-chips",
+          children: category.commands.map(makeCommandChip),
+        }),
+      ],
+    })),
+  });
+  // 「(+18)」이 범위를 말한다 — 추천 4개가 전부라는 오해(= "타일 채우기 도구")를 막는 건
+  // 카테고리 줄을 상시 노출했던 원래 의도였고, 그 값을 이 숫자 하나가 대신한다.
+  const browseAllChip = el("button", {
+    class: "region-task-suggest-chip is-browse-all",
+    attrs: { type: "button", title: "명령 전체를 계열별로 보기", "aria-expanded": "false" },
+    dataset: { testid: "region-task-browse-all" },
+    children: [
+      makeSvgIcon("more"),
+      el("span", {
+        class: "region-task-chip-label",
+        text: hiddenCommandCount > 0 ? `모두 보기 (+${hiddenCommandCount})` : "모두 보기",
+      }),
+      el("span", { class: "region-task-browse-chevron" }),
+    ],
+    on: {
+      click: () => {
+        const open = categorySheet.classList.contains("hidden");
+        categorySheet.classList.toggle("hidden", !open);
+        browseAllChip.classList.toggle("is-active", open);
+        browseAllChip.setAttribute("aria-expanded", open ? "true" : "false");
+        schedulePopoverReposition();
+      },
+    },
+  });
   const suggestionRow = el("div", {
     class: "region-task-suggestions",
     dataset: { testid: "region-task-suggestions" },
-    children: suggestions.map(makeCommandChip),
-  });
-  // 카테고리 줄 — 로테이션 4개만 보이면 "타일 채우기 도구"로 오해된다. 무엇을 시킬 수 있는지의
-  // 범위(NPC·전투·분위기…)를 항상 눈에 두고, 고르면 그 카테고리 명령으로 아래 줄을 갈아 끼운다.
-  const categories = regionCommandCategories();
-  let activeCategoryId: string | null = null;
-  const categoryChips = new Map<string, HTMLElement>();
-  // 카테고리를 고르면 추천이 1개만 남고 줄이 비어 보였다. 되돌아가는 길(같은 칩 다시 누르기)도
-  // 화면에 표시가 없었다 — 첫 자리에 「전체 추천」 칩을 세워 줄을 채우고 길을 보이게 한다.
-  const makeResetChip = (): HTMLElement =>
-    el("button", {
-      class: "region-task-suggest-chip is-reset",
-      attrs: { type: "button", title: "이 영역에 맞춘 추천으로 돌아가기" },
-      dataset: { testid: "region-suggest-reset" },
-      children: [makeSvgIcon("undo"), el("span", { class: "region-task-chip-label", text: "전체 추천" })],
-      on: { click: () => showCategory(null) },
-    });
-  const showCategory = (id: string | null): void => {
-    // 같은 칩을 다시 누르면 해제 — 문맥 추천(4개)으로 돌아온다.
-    activeCategoryId = id;
-    for (const [chipId, chip] of categoryChips) chip.classList.toggle("is-active", chipId === id);
-    const picked = id === null ? null : categories.find((category) => category.id === id);
-    suggestionRow.replaceChildren(
-      ...(picked ? [makeResetChip(), ...picked.commands.map(makeCommandChip)] : suggestions.map(makeCommandChip)),
-    );
-  };
-  const categoryRow = el("div", {
-    class: "region-task-categories",
-    dataset: { testid: "region-task-categories" },
-    children: categories.map((category) => {
-      const chip = el("button", {
-        class: "region-task-category-chip",
-        attrs: { type: "button" },
-        dataset: { testid: `region-category-${category.id}` },
-        children: [
-          makeSvgIcon(category.icon),
-          el("span", { class: "region-task-chip-label", text: category.label }),
-        ],
-        on: { click: () => showCategory(activeCategoryId === category.id ? null : category.id) },
-      });
-      categoryChips.set(category.id, chip);
-      return chip;
-    }),
+    children: [...suggestions.map(makeCommandChip), browseAllChip],
   });
 
   const log = el("div", { class: "region-task-log", dataset: { testid: "region-task-log" } });
@@ -737,20 +777,24 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
     if (pending.settled || !isCurrentExecution(executionId)) return;
 
-    const partialApplyButton = el("button", {
-      class: "region-task-partial-apply",
-      text: `선택 적용`,
-      attrs: { type: "button", title: "선택한 구역만 적용" },
-      dataset: { testid: "region-task-partial-apply" },
-    }) as HTMLButtonElement;
-    partialApplyButton.addEventListener("click", () => {
+    // 버튼과 단축키가 같은 함수를 부른다. 이미 settle 된 pending 에 다시 적용을 보내면
+    // "이미 처리된 제안입니다" 오류가 summary 에 찍히므로, 버튼에 포커스가 있는 상태에서
+    // Enter 가 click 과 document keydown 으로 두 번 들어오는 경우를 여기서 막는다.
+    //
+    // **적용 버튼은 하나다.** 예전에는 둘이었고 서로 다른 범위를 가졌다: 하단 CTA
+    // 「적용 · N칸」은 언제나 전량이었고, 체크를 반영하는 「선택한 M칸만 적용」은 본문
+    // 위쪽에 따로 생겼다. 그래서 구역 체크를 풀고 그 아래 큰 버튼을 누르면 **의도와 반대로
+    // 전부 적용**됐다. 이제 이 함수 하나가 체크 상태를 읽어 범위를 정한다.
+    const doApply = (): void => {
       if (!isCurrentExecution(executionId) || pending.settled) return;
       const ids = Array.from(selectedChunkIds);
-      if (ids.length === 0) return;
+      // 구역 체크 UI 자체가 없는 제안(단일 덩어리·실내/맵 추가)은 언제나 전량이다.
+      // 부분 선택일 때만 합성 경로를 탄다.
+      if (partialUseful && ids.length === 0) return;
+      const partial = partialUseful && ids.length > 0 && ids.length < allChunkIds.length;
       selfSettling = true;
-      const outcome = ids.length === allChunkIds.length
-        ? pending.apply()
-        : pending.applyProject(
+      const outcome = partial
+        ? pending.applyProject(
           compose({
             base: pending.baseProject,
             clipped: pending.clippedProject,
@@ -759,23 +803,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
             selectedChunkIds: ids,
             groups: rawGroups,
           }),
-        );
-      if (!outcome.ok) {
-        selfSettling = false;
-        setSummary(outcome.error ?? "적용 안전 검사를 통과하지 못했습니다.");
-        schedulePopoverReposition();
-        return;
-      }
-      finalizeSettle(true);
-    });
-
-    // 버튼과 단축키가 같은 함수를 부른다. 이미 settle 된 pending 에 다시 적용을 보내면
-    // "이미 처리된 제안입니다" 오류가 summary 에 찍히므로, 버튼에 포커스가 있는 상태에서
-    // Enter 가 click 과 document keydown 으로 두 번 들어오는 경우를 여기서 막는다.
-    const doApply = (): void => {
-      if (!isCurrentExecution(executionId) || pending.settled) return;
-      selfSettling = true;
-      const outcome = pending.apply();
+        )
+        : pending.apply();
       if (!outcome.ok) {
         selfSettling = false;
         setSummary(outcome.error ?? "적용 안전 검사를 통과하지 못했습니다.");
@@ -800,9 +829,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     };
     reviewShortcuts = { apply: doApply, retry: doRetry, discard: doDiscard };
 
+    // 전량 적용일 때의 라벨. 아래에서 "타일 밖 변경"이 있다고 판명되면 「적용」으로 낮춘다.
+    // 부분 선택 라벨과 한 곳에서 갈라져야 해서(updatePartialState) 변수로 들고 있는다.
+    let fullApplyLabel = totalChangedCells > 0 ? `적용 · ${totalChangedCells}칸` : "적용";
     const applyButton = el("button", {
       class: "region-task-apply",
-      text: totalChangedCells > 0 ? `적용 · ${totalChangedCells}칸` : "적용",
+      text: fullApplyLabel,
       attrs: { type: "button", title: "이 제안을 맵에 적용 (Enter)" },
       dataset: { testid: "region-task-apply" },
       on: { click: doApply },
@@ -827,17 +859,21 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       on: { click: doDiscard },
     });
 
-    // 청크 트리 — 각 청크 체크박스. 토글 시 부분 적용 버튼 라벨/활성 갱신.
+    // 청크 트리 — 각 청크 체크박스. 토글 시 **주 적용 버튼**의 라벨/활성이 따라온다.
+    // 체크 상태와 CTA 가 한 몸이어야 한다 — 별도 「선택 적용」 버튼을 위쪽에 띄우던 시절엔
+    // 체크를 풀고 아래 큰 버튼을 누르면 전부 적용되는 함정이 있었다.
     // 라벨은 **칸 수**다. 예전엔 선택된 청크 개수를 "N칸"으로 찍어서 37칸짜리 하나를
     // 고르면 "선택 1칸 적용"이라고 표시했다 — 정반대로 읽히는 오표기였다.
     const updatePartialState = (): void => {
       const selectedCells = cellsOf(selectedChunkIds);
-      const partial = selectedChunkIds.size < allChunkIds.length;
-      partialApplyButton.textContent =
-        selectedCells === 0 ? "선택 적용" : `선택한 ${selectedCells}칸만 적용`;
-      partialApplyButton.disabled = selectedCells === 0;
-      // 일부만 선택했을 때만 "선택 적용"이 의미가 있다 — 전부 선택이면 아래 「적용」과 동일.
-      partialApplyButton.classList.toggle("hidden", !partial);
+      const partial = partialUseful && selectedChunkIds.size < allChunkIds.length;
+      if (partial) {
+        applyButton.textContent = selectedCells === 0 ? "적용할 구역을 고르세요" : `선택한 ${selectedCells}칸만 적용`;
+      } else {
+        applyButton.textContent = fullApplyLabel;
+      }
+      // 전부 해제하면 적용할 게 없다 — 누를 수 없게 하고 라벨이 다음 행동을 말한다.
+      applyButton.disabled = partial && selectedCells === 0;
       // 체크를 푼 덩어리는 미리보기에서도 빠진 것으로 보여야 한다 — 어느 칸을 버리는지가 보인다.
       for (const [id, cells] of overlayCellsByChunk) {
         const excluded = !selectedChunkIds.has(id);
@@ -929,7 +965,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       partialHost.replaceChildren();
       partialHost.classList.add("hidden");
     } else {
-      partialHost.replaceChildren(chunkTree, partialApplyButton);
+      partialHost.replaceChildren(chunkTree);
       partialHost.classList.toggle("hidden", !partialUseful);
     }
 
@@ -949,7 +985,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     const hasNonTileChanges = eventChanges.length > 0 || outsideChanges.length > 0;
     // 목록이 항목별로 세어 주므로 버튼은 단순히 「적용」으로 둔다. 타일만 바뀔 때만 칸 수를
     // 버튼에 남긴다 — 그때는 목록이 없어서 버튼이 유일한 수량 표시다.
-    if (hasNonTileChanges) applyButton.textContent = "적용";
+    // 라벨을 직접 쓰지 않고 전량 라벨을 낮춘 뒤 갱신을 다시 태운다 — 부분 선택 중이면
+    // 「선택한 M칸만 적용」이 유지돼야 하고, 그 판단은 updatePartialState 한 곳에만 있다.
+    if (hasNonTileChanges) {
+      fullApplyLabel = "적용";
+      updatePartialState();
+    }
     const changeRows: HTMLElement[] = [];
     if (hasNonTileChanges && totalChangedCells > 0) {
       changeRows.push(el("div", {
@@ -1581,6 +1622,15 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   };
   const onShortcutKey = (event: KeyboardEvent): void => {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
+    // Escape 는 포커스 위치와 무관하게 이 창의 것이다 — 중립 포커스 게이트보다 먼저 본다.
+    // 팝오버가 비모달이 되면서 사용자가 캔버스를 만진 뒤 Esc 를 누를 수 있게 됐고, 그때
+    // 백드롭 keydown(포커스가 창 안일 때만 버블)에는 아무것도 도착하지 않는다.
+    // EditScene.handleEscapeKey 는 창이 열려 있으면 물러나므로 선택은 남는다.
+    if (event.key === "Escape") {
+      event.preventDefault();
+      discardAndClose();
+      return;
+    }
     // 변경 행처럼 탐색용으로 포커스되는 요소의 Enter 가 제안 전체 적용으로 새지 않게,
     // 문서 단축키는 어떤 자식도 키 동작을 소유하지 않는 중립 지점에서만 받는다.
     if (!hasNeutralShortcutFocus()) return;
@@ -1632,17 +1682,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   let autocompleteSelected = 0;
   const renderAutocomplete = (filter: string): void => {
     const query = filter.toLowerCase();
-    // 카테고리 칩이 켜져 있으면 그 카테고리 안에서 찾는다. 예전에는 「다듬기」를 골라 둔 채 `/` 를
-    // 쳐도 전체 목록이 나와, 칩 필터와 `/` 목록이 서로 다른 상태를 보고 있었다.
-    // 그 카테고리에 맞는 항목이 없으면 전체로 넓힌다(찾을 수 있는 길을 막지 않는다).
-    const activeLabel = activeCategoryId
-      ? categories.find((category) => category.id === activeCategoryId)?.label ?? null
-      : null;
-    const scoped = activeLabel
-      ? autocompleteItems.filter((it) => it.category === activeLabel)
-      : autocompleteItems;
-    const pool = scoped.length > 0 ? scoped : autocompleteItems;
-    const matches = pool.filter((it) =>
+    // 예전에는 켜져 있는 카테고리 칩으로 이 목록의 범위를 좁혔다 — 칩 필터와 `/` 목록이
+    // 서로 다른 상태를 보고 있으면 안 되니까. 카테고리 필터 상태 자체가 없어졌으므로
+    // (「모두 보기」 시트는 상태를 남기지 않는다) 좁힐 것도, 어긋날 것도 없다.
+    const matches = autocompleteItems.filter((it) =>
       it.label.toLowerCase().includes(query) || it.instruction.toLowerCase().includes(query),
     );
     autocompleteHost.replaceChildren();
@@ -1749,7 +1792,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   const promptSection = el("div", {
     class: "region-task-prompt",
     dataset: { testid: "region-task-prompt" },
-    children: [categoryRow, suggestionRow, textarea, autocompleteHost, actions],
+    // 시트는 추천 줄 **아래**에 온다 — 「모두 보기」를 누른 자리 바로 밑에서 열려야 한다.
+    children: [suggestionRow, categorySheet, textarea, autocompleteHost, actions],
   });
 
   // 부분 적용은 compareHost(검토 본문)로 옮겼다 — 여기 남는 것은 개발자용 로그뿐이다.
@@ -1798,6 +1842,25 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
   document.body.append(backdrop);
   modalRoot = backdrop;
+  // 캔버스에서 영역을 다시 잡았을 때 이 창이 새 영역으로 갈아 끼워지는 경로.
+  // `avoid`(창이 덮지 말아야 할 화면 사각형)는 새 영역으로 다시 계산한다 — 옛 값을 물려주면
+  // 창이 예전 대상 옆에 서서 지금 대상을 덮는다. 자동 실행은 물려주지 않는다(사용자가 새
+  // 영역에 무엇을 시킬지 아직 말하지 않았다).
+  activeModalRegionControl = {
+    canRetarget: () => currentStage === "compose",
+    retarget: (nextRegion, nextAnchor) => {
+      const nextAvoid = resolveRegionClientRect(nextRegion);
+      const anchor = nextAnchor ?? options.anchor;
+      openRegionTaskModal({
+        ...options,
+        region: nextRegion,
+        initialInstruction: textarea.value,
+        autoRun: false,
+        ...(anchor ? { anchor } : {}),
+        avoid: nextAvoid ?? undefined,
+      });
+    },
+  };
   // 코치/웰컴 카드는 이 팝오버의 본문(좌표 칩·결정 문장)을 덮는다 — 모달이 표면을 가져간다.
   // databaseModal 과 같은 처리다. '본 것'으로 기록하지 않으므로 다음 부팅에 다시 안내한다.
   dismissCoachMarks();

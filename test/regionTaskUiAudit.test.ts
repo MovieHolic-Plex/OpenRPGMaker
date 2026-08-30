@@ -40,45 +40,70 @@ afterEach(() => {
   restoreDom = null;
 });
 
-describe("추천 카테고리 줄", () => {
+describe("「모두 보기」 명령 시트", () => {
   beforeEach(() => { restoreDom = installFakeDom(); });
 
-  it("카테고리를 고르면 「전체 추천」으로 돌아가는 칩이 함께 뜬다", () => {
-    // 예전에는 카테고리를 고르면 칩이 1개만 남고 줄이 비어 보였고, 되돌아가는 길(같은 칩 다시
-    // 누르기)이 화면에 표시되지 않아 필터를 걸면 나가는 문이 사라진 것처럼 보였다.
+  // 여기 있던 두 테스트(「전체 추천」 복귀 칩, "어느 카테고리를 골라도 칩 2개 이상")는
+  // **카테고리 필터 자체가 없어져서** 지켜야 할 대상이 사라졌다. 추천 줄은 이제 무엇을
+  // 눌러도 갈아치워지지 않으므로 비어 보일 일도, 돌아갈 길을 찾을 일도 없다.
+  // 그 자리를 대신하는 계약은 "전체 명령이 계열별로 한 번에 펼쳐진다"다.
+
+  it("추천 줄은 문맥 추천 4개 + 「모두 보기」 칩이고, 시트는 접혀 있다", () => {
     const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
-    expect(findByTestId(root, "region-suggest-reset")).toBeNull();
-    const polish = findByTestId(root, "region-category-polish") as unknown as HTMLElement | null;
-    expect(polish).not.toBeNull();
-    polish?.click();
-    const reset = findByTestId(root, "region-suggest-reset") as unknown as HTMLElement | null;
-    expect(reset).not.toBeNull();
-    reset?.click();
-    expect(findByTestId(root, "region-suggest-reset")).toBeNull();
+    const row = findByTestId(root, "region-task-suggestions");
+    expect(row?.querySelectorAll("button").length).toBe(5);
+    const browse = findByTestId(root, "region-task-browse-all");
+    expect(browse).not.toBeNull();
+    // 「(+N)」이 전체 명령 수를 말한다 — 추천 4개가 전부라는 오해를 막는 유일한 표시다.
+    expect(browse?.textContent).toContain("모두 보기");
+    expect(browse?.textContent).toMatch(/\+\d+/);
+    expect(findByTestId(root, "region-task-categories")?.classList.contains("hidden")).toBe(true);
   });
 
-  it("어느 카테고리를 골라도 명령 칩이 2개 이상 남는다", () => {
+  it("「모두 보기」를 누르면 모든 계열의 명령이 한 번에 펼쳐진다", () => {
     const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
+    const browse = findByTestId(root, "region-task-browse-all") as unknown as HTMLElement | null;
+    browse?.click();
+    const sheet = findByTestId(root, "region-task-categories");
+    expect(sheet?.classList.contains("hidden")).toBe(false);
+    expect(browse?.getAttribute("aria-expanded")).toBe("true");
+    // 계열마다 소제목 + 명령 칩 2개 이상. 필터를 거치지 않고 바로 고를 수 있어야 한다.
+    let groups = 0;
     for (const id of ["tiles", "structures", "polish", "npc", "interaction", "combat", "mood", "composite"]) {
-      const chip = findByTestId(root, `region-category-${id}`) as unknown as HTMLElement | null;
-      if (!chip) continue;
-      chip.click();
-      const row = findByTestId(root, "region-task-suggestions");
-      const buttons = row?.querySelectorAll("button") ?? [];
-      // 「전체 추천」 칩 1개 + 명령 칩 2개 이상.
-      expect(buttons.length, `${id} 카테고리`).toBeGreaterThanOrEqual(3);
+      const group = findByTestId(root, `region-category-${id}`);
+      if (!group) continue;
+      groups += 1;
+      expect(group.querySelector(".region-task-category-group-title")).not.toBeNull();
+      const chips = group.querySelectorAll(".region-task-suggest-chip");
+      expect(chips.length, `${id} 계열`).toBeGreaterThanOrEqual(2);
     }
+    expect(groups).toBeGreaterThanOrEqual(5);
+    // 다시 누르면 접힌다 — 여는 문과 닫는 문이 같은 칩이다.
+    browse?.click();
+    expect(sheet?.classList.contains("hidden")).toBe(true);
+    expect(browse?.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("시트의 명령 칩을 누르면 지시 입력창이 채워진다", () => {
+    const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
+    (findByTestId(root, "region-task-browse-all") as unknown as HTMLElement | null)?.click();
+    const group = findByTestId(root, "region-category-polish");
+    const chip = group?.querySelector(".region-task-suggest-chip") as unknown as HTMLElement | null;
+    expect(chip).not.toBeNull();
+    chip?.click();
+    const input = findByTestId(root, "region-task-input") as unknown as HTMLTextAreaElement | null;
+    expect(input?.value ?? "").not.toBe("");
   });
 });
 
 describe("`/` 자동완성", () => {
   beforeEach(() => { restoreDom = installFakeDom(); });
 
-  it("카테고리가 켜져 있으면 그 카테고리 안에서 찾는다", () => {
-    // 예전에는 「다듬기」를 골라 둔 채 `/` 를 쳐도 전체 목록이 나왔다 — 칩 필터와 `/` 목록이
-    // 서로 다른 상태를 보고 있었다.
+  it("`/` 목록은 전체 명령을 보여 준다 — 숨은 카테고리 상태에 좁혀지지 않는다", () => {
+    // 예전에는 켜져 있는 카테고리 칩이 이 목록의 범위를 몰래 좁혔다. 그 결합은 "칩 필터와
+    // `/` 목록이 서로 다른 상태를 보고 있다"를 막기 위한 것이었는데, 카테고리 필터 상태가
+    // 사라졌으므로 좁힐 근거도 없다. 이제 `/` 는 언제나 같은 것을 보여 준다.
     const root = openModal({ mapId: "m1", region: REGION, run: vi.fn(), projectForContext: () => stubProject() });
-    (findByTestId(root, "region-category-polish") as unknown as HTMLElement | null)?.click();
     const input = findByTestId(root, "region-task-input") as unknown as HTMLTextAreaElement | null;
     expect(input).not.toBeNull();
     if (input) input.value = "/";
@@ -87,9 +112,8 @@ describe("`/` 자동완성", () => {
     expect(list?.classList.contains("hidden")).toBe(false);
     const labels = Array.from(list?.querySelectorAll("button") ?? []).map((item) => item.textContent ?? "");
     expect(labels.length).toBeGreaterThan(0);
-    // 다듬기 카테고리에 없는 명령(상인·오두막)은 목록에 없다.
-    expect(labels.join("|")).not.toContain("상인");
-    expect(labels.join("|")).not.toContain("오두막");
+    // 계열을 가로질러 나온다 — 다듬기 계열만 남던 시절엔 「상인」이 목록에 없었다.
+    expect(labels.join("|")).toContain("상인");
   });
 });
 
