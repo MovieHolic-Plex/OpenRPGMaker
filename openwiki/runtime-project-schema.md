@@ -137,3 +137,32 @@ states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 �
 - 커밋 게이트 기준선 대조는 집계 메시지를 줄 단위 원자로 쪼개 비교한다
   (`changeset.issueAtoms`) — 그러지 않으면 위반 하나를 지우는 편집이 "새 오류"로 분류돼 청소가
   영구 차단된다.
+
+## `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+
+`.oprn` 은 예전부터 편집기 전용 "프로젝트 파일"이었다. 게임을 남에게 넘기는 경로는 「웹 게임
+내보내기」뿐이었고 그 산출물은 `player.html` + `project.json` + 에셋이 흩어진 **여러 파일 ZIP** 이라
+압축을 풀고 웹 서버에 올려야 돌아간다. 즉 **파일 하나를 건네 게임을 여는 경로가 없었다.**
+
+계약:
+- **컨테이너는 그대로다.** `src/project/package.ts` 의 `createProjectPackage` / `readProjectPackage`
+  가 정본이고 확장자는 `RPGZZU_EXTENSION = ".oprn"`, MIME 은 `application/vnd.openrpg.project+zip`.
+  새 포맷을 만들지 않았다 — 이미 단일 파일 ZIP 이고 업로드 에셋도 `assets.uploaded[].dataUrl` 로
+  안에 들어 있다.
+- **플레이어가 `.oprn` 을 연다.** `src/player/exportEntry.ts` 는 번들 `project.json` 을 못 읽으면
+  죽지 않고 `renderOprnGameFilePicker`(`src/player/oprnGameFilePicker.ts`) 를 띄운다. 파일 선택 또는
+  드래그&드롭 → `readOprnGameFile` → 기존 `startPlayer` 경로(세이브 네임스페이스·제목·hostBridge)를
+  **그대로** 탄다. `?open=1` 로 번들 게임이 있어도 열기 화면을 강제할 수 있다.
+- **판정 로직은 DOM 과 분리한다.** `src/player/oprnGameFile.ts` 가 확장자/MIME 판정
+  (`isOprnGameFile`), 드롭 목록에서 게임 파일 고르기(`pickOprnGameFile`), 디코드
+  (`readOprnGameFile` — 던지지 않고 `{ok:false, message}` 를 준다) 를 소유한다. 그래서 브라우저 없이
+  `test/oprnGameFile.test.ts` 로 고정된다.
+- **에셋이 왜 따라오는가.** 번들 에셋은 플레이어 앱 안에 있고 저작자가 올린 그림은 프로젝트 JSON 의
+  data URL 이다. 그래서 `.oprn` 하나로 화면이 정상 렌더된다 — 별도 에셋 폴더가 필요 없다.
+- **플레이어는 `.json` 프로젝트를 받지 않는다.** 편집기 「가져오기」는 레거시 호환으로 `.json` 을
+  계속 받지만, 플레이어 열기 화면은 `.oprn`/`.rpgzzu` 만 받는다. 게임 배포 표면을 좁게 유지한다.
+
+검증: `test/e2e/oprn-single-file-game.spec.ts` 가 한 스펙에서 세 구간을 전부 통과시킨다 —
+편집기에서 내보낸 `.oprn` 한 개(ZIP 매직 `PK` 확인) → `player.html?open=1` 에서 열어 타이틀 화면
+기동(`document.title` 이 내보낸 파일명 어간과 일치) → 같은 파일을 빈 프로젝트 편집기로 되가져와
+맵 수가 원본과 같아짐. 증거 PNG 는 `verify-shots/oprn-single-file-game/`.

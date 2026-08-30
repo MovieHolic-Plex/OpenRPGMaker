@@ -1,5 +1,6 @@
 import { createBlankProject } from "@/project/defaults";
-import { serialize } from "@/project/io";
+import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { deserialize, serialize } from "@/project/io";
 import {
   createProjectPackage,
   LEGACY_RPGZZU_EXTENSION,
@@ -8,7 +9,15 @@ import {
   readProjectPackageEntryNames,
   RPGZZU_EXTENSION,
 } from "@/project/package";
+import type { Project } from "@/project/types";
 import { describe, expect, it } from "vitest";
+
+// 패키지가 보존해야 하는 것은 "팩토리가 뱉은 원본"이 아니라 **저장 계층이 보존하는 형태**다.
+// deserialize 는 기본값 채움·마이그레이션·정규화를 거치므로(예: 리소스 없는 text 모드
+// titleGraphic 은 의미가 없어 버려진다) 원본과의 바이트 비교는 정규화까지 회귀로 잡는다.
+function persistedForm(project: Project): string {
+  return serialize(deserialize(serialize(projectWithoutEventDrafts(project))));
+}
 
 describe("project package", () => {
   it("writes the canonical .oprn package when a project is exported", async () => {
@@ -31,7 +40,7 @@ describe("project package", () => {
     expect(names).toContain("data/tilesets.json");
     expect(names).toContain("metadata/ai-tile-labels.json");
     expect(names).toContain(`maps/${project.startMapId}.json`);
-    expect(serialize(restored)).toBe(serialize(project));
+    expect(serialize(restored)).toBe(persistedForm(project));
   }, 15_000);
 
   it("reads a legacy .rpgzzu package when its bytes use the supported package format", async () => {
@@ -46,7 +55,7 @@ describe("project package", () => {
 
     // Then
     expect(LEGACY_RPGZZU_EXTENSION).toBe(".rpgzzu");
-    expect(serialize(restored)).toBe(serialize(project));
+    expect(serialize(restored)).toBe(persistedForm(project));
   });
 
   it("reloads an editor-normalized package without changing boot-critical project data", async () => {
