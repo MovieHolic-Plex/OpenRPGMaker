@@ -74,7 +74,7 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
   generate.addEventListener("click", () => {
     if (generate.disabled) return;
     generate.disabled = true;
-    close.disabled = true;
+    close.textContent = "취소";
     status.textContent = artworkToggle.checked
       ? `${label} 정보와 그림을 만들고 있습니다… (그림은 30초 이상 걸릴 수 있습니다)`
       : `${label} 정보를 만들고 있습니다…`;
@@ -102,7 +102,7 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
       })
       .finally(() => {
         generate.disabled = false;
-        close.disabled = false;
+        close.textContent = "닫기";
       });
   });
 

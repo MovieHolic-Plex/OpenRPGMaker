@@ -57,10 +57,37 @@ describe("imageGenerationClient", () => {
     expect(calls).toBe(0);
   });
 
+  it("사용자 중단과 요청 시간 초과를 구분한다", async () => {
+    const abortError = new DOMException("중단", "AbortError");
+    const controller = new AbortController();
+    controller.abort();
+
+    await expect(
+      generateAiImage({ prompt: "슬라임", signal: controller.signal }, { fetch: async () => { throw abortError; } }),
+    ).rejects.toThrow("생성을 취소했습니다");
+    await expect(
+      generateAiImage({ prompt: "슬라임" }, { fetch: async () => { throw abortError; } }),
+    ).rejects.toThrow("이미지 생성이 시간 안에 끝나지 않았습니다.");
+  });
+
   it("서버 오류 본문의 사람이 읽는 메시지를 그대로 올린다", async () => {
     await expect(
       generateAiImage({ prompt: "슬라임" }, { fetch: async () => jsonResponse({ error: "이미지 생성은 …만 지원합니다." }, 409) }),
     ).rejects.toThrow("이미지 생성은 …만 지원합니다.");
+  });
+
+  it("인증 안내를 상태와 함께 그대로 올린다", async () => {
+    const message = "이미지를 만들려면 AI 설정 → Google Antigravity 로그인에서 연결해 주세요.";
+    let failure: unknown;
+    try {
+      await generateAiImage({ prompt: "슬라임" }, { fetch: async () => jsonResponse({ error: message }, 401) });
+    } catch (error) {
+      failure = error;
+    }
+
+    expect(failure).toBeInstanceOf(ImageGenerationError);
+    expect((failure as ImageGenerationError).message).toBe(message);
+    expect((failure as ImageGenerationError).status).toBe(401);
   });
 
   it("dataUrl 이 없는 200 응답도 실패로 본다", async () => {

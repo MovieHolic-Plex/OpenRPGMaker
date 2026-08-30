@@ -107,8 +107,9 @@ async function main() {
 
 ${await figure("enemy-1-toolbar.png", "① 몬스터 탭 아래에 생긴 「AI로 생성」 버튼", "추가·복제·삭제 옆에 자연스럽게 놓았습니다")}
 ${await figure("enemy-2-dialog.png", "② 만들고 싶은 걸 그냥 말로 적습니다", "‘그림도 함께 생성’은 기본으로 켜져 있습니다")}
-${await figure("enemy-3-result.png", "③ 완료 — 값이 채워지고 그림이 붙었습니다", `상태줄: ${summary.enemy?.status ?? ""}`)}
-${await figure("enemy-4-record.png", "④ 목록에도 그림이 달린 새 몬스터가 남습니다", "되돌리기 한 번으로 통째로 취소됩니다")}
+${await figure("enemy-2b-inflight-cancel.png", "③ 만드는 동안 오른쪽 버튼이 「취소」로 바뀝니다", "그림은 1분 넘게 걸릴 수 있어서, 기다리다 그만두는 길을 항상 열어 둡니다. 취소하면 프로젝트에는 아무것도 쓰지 않습니다")}
+${await figure("enemy-3-result.png", "④ 완료 — 값이 채워지고 그림이 붙었습니다", `상태줄: ${summary.enemy?.status ?? ""}`)}
+${await figure("enemy-4-record.png", "⑤ 목록에도 그림이 달린 새 몬스터가 남습니다", "되돌리기 한 번으로 통째로 취소됩니다")}
 
 <h3>아이템도 똑같습니다</h3>
 ${await figure("item-2-dialog.png", "⑤ 아이템 설명을 적습니다", "")}
@@ -150,7 +151,9 @@ Codex 가 열리면 바꿀 자리는 한 파일(<code>ohMyPiImageRuntime.ts</cod
 <tr><th>무엇을</th><th>어떻게</th><th>결과</th></tr>
 <tr><td>타입</td><td><code>npm run gates</code> · typecheck:app</td><td>오류 0</td></tr>
 <tr><td>CSS · 표면</td><td><code>gates</code> css / surface</td><td>0 / 0</td></tr>
-<tr><td>새 단위 테스트</td><td>생성 로직·이미지 클라이언트·배경 지우기·동반 라우트·지연 import</td><td>39건 통과</td></tr>
+<tr><td>새·갱신 테스트</td><td>생성 로직·이미지 클라이언트·배경 지우기·지연 import</td><td>vitest 31건 통과</td></tr>
+<tr><td>전송 계층 테스트</td><td>modality 주입 · inlineData 수확 · 자격 실패 401 · 워커 <code>/image</code></td><td><code>test:oh-my-pi</code> 통과</td></tr>
+<tr><td>테스트 회귀</td><td>기준 커밋 정본 체크아웃과 같은 조건에서 대조</td><td><strong>없음</strong> (실패 7건이 양쪽에서 동일)</td></tr>
 <tr><td>그림 만들기 (실제)</td><td>동반 서비스로 진짜 요청</td><td>2장 성공 (${kb((enemyArt.bytes ?? 0) + (itemArt.bytes ?? 0))})</td></tr>
 <tr><td>출하 번들 부팅</td><td>빌드 후 정적 서버에서 실제 부팅</td><td>오류 0 (아래 참고)</td></tr>
 <tr><td>화면 확인</td><td>빌드한 편집기로 전 과정 캡처</td><td>콘솔 오류 0건</td></tr>
@@ -164,6 +167,17 @@ Codex 가 열리면 바꿀 자리는 한 파일(<code>ohMyPiImageRuntime.ts</cod
 <p style="margin:0 0 10px">타입검사·단위테스트·CSS 게이트는 <strong>전부 초록</strong>이었습니다. 개발 서버와 테스트는 이 꼬임을 견디기 때문입니다.
 기준 커밋을 따로 빌드해 부팅시켜 비교하고 나서야 “내가 만든 문제”라고 확정했습니다.</p>
 <p style="margin:0">고친 방법은 <strong>버튼을 누를 때 모달을 불러오도록</strong> 바꾼 것이고, 같은 실수가 다시 들어오면 깨지는 테스트를 함께 넣었습니다.</p>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">검토에서 고친 것 5가지</h3>
+<ul>
+<li><strong>취소를 막고 있었습니다.</strong> 만드는 동안 닫기 버튼이 잠겨서, 1분 넘게 걸리는 요청을 그만둘 방법이 없었습니다 → 「취소」로 바꿔 항상 누를 수 있게 했습니다.</li>
+<li><strong>취소를 “시간 초과”라고 알렸습니다.</strong> 사용자가 직접 취소한 것과 진짜 시간 초과를 구분해 다르게 씁니다.</li>
+<li><strong>“취소하면 안 써진다”를 말로만 했습니다.</strong> 그림이 다 온 뒤에 취소한 경우까지 테스트로 고정했습니다.</li>
+<li><strong>제일 위험한 코드에 테스트가 없었습니다.</strong> 그림 전송 부분(184줄)에 실제 pi-ai 를 태운 테스트를 붙였습니다.</li>
+<li><strong>로그인 안 됐을 때 영어가 나왔습니다.</strong> <code>Use /login to re-authenticate.</code> 라는, 이 제품에 없는 명령을 안내하고 있었습니다 → 한국어로 <em>AI 설정 → Google Antigravity 로그인</em> 을 안내합니다.</li>
+</ul>
 </div>
 
 <h2>5. 건드린 파일</h2>

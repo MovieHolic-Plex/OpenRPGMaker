@@ -112,4 +112,3 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   **함정 둘:** (1) pi-ai 의 Google 응답 파서는 `inlineData` 를 버린다(`type:"image"` 파트를
   만들지 않는다) — 그래서 이미지 바이트는 전송 계층에서 직접 줍는다. (2) 그때 재생하는
   `Response` 에 `url` 을 다시 심어야 한다. 없으면 pi-ai 가 `Missing request URL` 로 끊는다.
-
