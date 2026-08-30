@@ -104,13 +104,18 @@ describe("확장 기본 아이템 실행 경로", () => {
         .filter((item) => item.id.endsWith("_relay"))
         .map((item) => [item.id, item.switchId]),
     );
-    expect(relaySwitches).toEqual({
+    expect(relaySwitches).toMatchObject({
       item_gen2_sun_relay: "sw_gen2_sun_relay",
       item_gen2_moon_relay: "sw_gen2_moon_relay",
       item_gen2_bridge_relay: "sw_gen2_bridge_relay",
       item_gen2_seal_relay: "sw_gen2_seal_relay",
     });
-    expect(new Set(Object.values(relaySwitches)).size).toBe(4);
+    // 계약은 "기동패는 4개다" 가 아니라 "기동패마다 전용 스위치를 하나씩 갖는다" 다.
+    // 카탈로그가 기동패를 더 실을 수 있으므로 개수를 박지 않고 1:1 성질을 확인한다.
+    const relayIds = Object.keys(relaySwitches);
+    expect(relayIds.length).toBeGreaterThanOrEqual(4);
+    expect(Object.values(relaySwitches).every((switchId) => typeof switchId === "string" && switchId.length > 0)).toBe(true);
+    expect(new Set(Object.values(relaySwitches)).size).toBe(relayIds.length);
 
     const session = startSession(project);
     session.inventory.item_gen2_sun_relay = 2;
