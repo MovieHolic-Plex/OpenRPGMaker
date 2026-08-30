@@ -55,7 +55,9 @@ test("a game travels between editor and player as one .oprn file", async ({ page
   await expect(picker).toBeVisible({ timeout: 30_000 });
   await shot(page, "03-player-awaiting-game-file.png");
 
-  await page.getByTestId("oprn-game-file-picker-input").setInputFiles(savedPath);
+  const playerFileChooser = page.waitForEvent("filechooser", { timeout: 30_000 });
+  await page.getByTestId("oprn-game-file-picker-button").click();
+  await (await playerFileChooser).setFiles(savedPath);
   await expect(page.getByTestId("title-screen")).toBeVisible({ timeout: 60_000 });
   await expect(picker).toHaveCount(0);
   await shot(page, "04-player-running-imported-game.png");
@@ -63,6 +65,21 @@ test("a game travels between editor and player as one .oprn file", async ({ page
   const playedTitle = await page.title();
   expect(playedTitle.length).toBeGreaterThan(0);
   expect(playedTitle.replace(/\s+/g, "-")).toBe(exportedTitleStem);
+
+  await page.goto("/player.html?open=1", { waitUntil: "domcontentloaded" });
+  const dropPicker = page.getByTestId("oprn-game-file-picker");
+  await expect(dropPicker).toBeVisible({ timeout: 30_000 });
+  const dataTransfer = await page.evaluateHandle(({ bytes, name }) => {
+    const transfer = new DataTransfer();
+    transfer.items.add(new File([new Uint8Array(bytes)], name, {
+      type: "application/vnd.openrpg.project+zip",
+    }));
+    return transfer;
+  }, { bytes: Array.from(savedBytes), name: fileName });
+  await dropPicker.dispatchEvent("drop", { dataTransfer });
+  await expect(page.getByTestId("title-screen")).toBeVisible({ timeout: 60_000 });
+  await expect(dropPicker).toHaveCount(0);
+  expect((await page.title()).replace(/\s+/g, "-")).toBe(exportedTitleStem);
 
   await seedEditorSession(page);
   await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
@@ -73,9 +90,8 @@ test("a game travels between editor and player as one .oprn file", async ({ page
   await page.getByTestId("menu-project").click();
   await page.getByTestId("menu-project-import").click();
   (await chooserPromise).setFiles(savedPath);
-  await expect
-    .poll(() => countMapNodes(page), { timeout: 60_000 })
-    .toBe(authoredMapCount);
+  await expect(page.locator("[data-testid^='map-tree-node-']"))
+    .toHaveCount(authoredMapCount, { timeout: 60_000 });
   await shot(page, "05-editor-reimported.png");
 
   await rm(handoffDir, { recursive: true, force: true });

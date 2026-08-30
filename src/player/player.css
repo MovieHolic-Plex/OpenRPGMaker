@@ -128,7 +128,7 @@ html[data-clean-evidence="true"] [data-testid="runtime-coordinate-debug"] {
   line-height: 1.6;
 }
 
-.oprn-game-file-picker-button {
+.oprn-game-file-picker[data-play-input-owner="game-file-open"] .oprn-game-file-picker-button {
   padding: var(--space-2) var(--space-4);
   border: var(--stroke-1) solid var(--border-default);
   border-radius: var(--radius-m);
@@ -138,7 +138,7 @@ html[data-clean-evidence="true"] [data-testid="runtime-coordinate-debug"] {
   cursor: pointer;
 }
 
-.oprn-game-file-picker-button:hover {
+.oprn-game-file-picker[data-play-input-owner="game-file-open"] .oprn-game-file-picker-button:hover {
   background: var(--control-bg-hover);
   border-color: var(--border-strong);
 }

@@ -151,8 +151,11 @@ states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 �
   안에 들어 있다.
 - **플레이어가 `.oprn` 을 연다.** `src/player/exportEntry.ts` 는 번들 `project.json` 을 못 읽으면
   죽지 않고 `renderOprnGameFilePicker`(`src/player/oprnGameFilePicker.ts`) 를 띄운다. 파일 선택 또는
-  드래그&드롭 → `readOprnGameFile` → 기존 `startPlayer` 경로(세이브 네임스페이스·제목·hostBridge)를
-  **그대로** 탄다. `?open=1` 로 번들 게임이 있어도 열기 화면을 강제할 수 있다.
+  드래그&드롭 → `readOprnGameFile` → 기존 `startPlayer` 경로(제목·hostBridge)를 탄다. 단, 파일로 연
+  게임의 세이브 네임스페이스는 그 파일의 `exportedProjectId` 로 정한다. 주소에 번들된 게임을 위한
+  호스트 `saveNamespace` 나 `/play/<slug>` 를 물려받지 않아 서로 다른 게임의 세이브가 섞이지 않는다.
+  번들 게임은 기존 우선순위(호스트 값 → 커뮤니티 slug → 프로젝트 ID)를 그대로 유지한다.
+  `?open=1` 로 번들 게임이 있어도 열기 화면을 강제할 수 있다.
 - **판정 로직은 DOM 과 분리한다.** `src/player/oprnGameFile.ts` 가 확장자/MIME 판정
   (`isOprnGameFile`), 드롭 목록에서 게임 파일 고르기(`pickOprnGameFile`), 디코드
   (`readOprnGameFile` — 던지지 않고 `{ok:false, message}` 를 준다) 를 소유한다. 그래서 브라우저 없이
@@ -163,6 +166,8 @@ states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 �
   계속 받지만, 플레이어 열기 화면은 `.oprn`/`.rpgzzu` 만 받는다. 게임 배포 표면을 좁게 유지한다.
 
 검증: `test/e2e/oprn-single-file-game.spec.ts` 가 한 스펙에서 세 구간을 전부 통과시킨다 —
-편집기에서 내보낸 `.oprn` 한 개(ZIP 매직 `PK` 확인) → `player.html?open=1` 에서 열어 타이틀 화면
-기동(`document.title` 이 내보낸 파일명 어간과 일치) → 같은 파일을 빈 프로젝트 편집기로 되가져와
-맵 수가 원본과 같아짐. 증거 PNG 는 `verify-shots/oprn-single-file-game/`.
+편집기에서 내보낸 `.oprn` 한 개(ZIP 매직 `PK` 확인) → `player.html?open=1` 의 보이는 버튼과 실제
+`filechooser`, 이어서 실제 `DataTransfer` 드롭으로 각각 열어 타이틀 화면 기동(`document.title` 이
+내보낸 파일명 어간과 일치) → 같은 파일을 빈 프로젝트 편집기로 되가져와 맵 수가 원본과 같아짐.
+세이브 네임스페이스의 파일/번들 분기는 `test/oprnGameFile.test.ts` 가 고정한다. 증거 PNG 는
+`verify-shots/oprn-single-file-game/`.

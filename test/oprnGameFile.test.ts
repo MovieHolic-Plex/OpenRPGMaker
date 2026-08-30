@@ -6,6 +6,8 @@ import {
   pickOprnGameFile,
   readOprnGameFile,
 } from "@/player/oprnGameFile";
+import { exportedProjectId } from "@/player/exportProjectStoreShim";
+import { resolveExportSaveNamespace } from "@/player/exportSaveNamespace";
 import { describe, expect, it } from "vitest";
 
 function fileStub(name: string, type = ""): Pick<File, "name" | "type"> {
@@ -63,5 +65,36 @@ describe("oprn game file", () => {
     expect(read.ok).toBe(false);
     if (read.ok) return;
     expect(read.message.length).toBeGreaterThan(0);
+  });
+
+  it("namespaces an opened file by its own identity instead of the host identity", () => {
+    const project = createBlankProject();
+    project.meta.title = "가져온 게임";
+    project.meta.author = "파일 저자";
+
+    expect(resolveExportSaveNamespace(project, {
+      source: "opened-file",
+      hostSaveNamespace: "host-injected-save-slots",
+      pathname: "/play/host-community-game",
+    })).toBe(`rpgzzu-export:${exportedProjectId(project)}`);
+  });
+
+  it("preserves the bundled player's host, community, then project namespace precedence", () => {
+    const project = createBlankProject();
+    project.meta.title = "번들 게임";
+
+    expect(resolveExportSaveNamespace(project, {
+      source: "bundled",
+      hostSaveNamespace: "host-injected-save-slots",
+      pathname: "/play/community-game",
+    })).toBe("host-injected-save-slots");
+    expect(resolveExportSaveNamespace(project, {
+      source: "bundled",
+      pathname: "/play/community%20game",
+    })).toBe("rpgzzu-export:community game");
+    expect(resolveExportSaveNamespace(project, {
+      source: "bundled",
+      pathname: "/player.html",
+    })).toBe(`rpgzzu-export:${exportedProjectId(project)}`);
   });
 });
