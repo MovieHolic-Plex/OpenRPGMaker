@@ -31,6 +31,8 @@ import {
   replaceAgentGhostPreviewFromProjectDiff,
   setAgentGhostPreviewHidden,
 } from "@/editor/agentGhostPreview";
+import { editorState } from "@/editor/editorState";
+import { clearSelection } from "@/editor/mapClipboard";
 import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
 import {
   getMapEditHistoryMarker,
@@ -255,6 +257,12 @@ export function applyRegionProjectWithHistory(project: Project, label: string, m
     }
     throw cause;
   }
+  // 드래그 선택은 이 적용의 **대상 범위**였다. 적용이 끝난 뒤에도 그 사각형이 남아 있으면
+  // 「지금 무엇을 고를지」가 아니라 「방금 무엇이 바뀌었는지」를 가리키는 낡은 표시가 되고,
+  // 그 위에 선택 액션 칩(복사·지우기·구조물로 저장)이 계속 떠 있어서 다음 클릭이 새로 만들어진
+  // 내용에 대한 지시로 오인된다. (실측 신고: 「영역 작업으로 AI 작업을 한 뒤에도 드래그한 것이
+  // 그대로 남아 있다」) 적용된 맵의 선택만 푼다 — 다른 맵에서 고른 영역은 이 적용과 무관하다.
+  if (editorState.get().selection?.mapId === mapId) clearSelection();
 }
 
 const defaultDeps: RegionTaskDeps = {
