@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { AGENT_UX_POLICY_LINES } from "@/ai/promptPolicies";
+import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
 import { TOKEN_BUDGET_STATUS_TEXT } from "@/ai/assistantSession";
 import { createBlankProject } from "@/project/defaults";
 
@@ -184,5 +185,27 @@ describe("agent UX policy prompt", () => {
     expect(TOKEN_BUDGET_STATUS_TEXT).not.toContain("출력 토큰");
     expect(TOKEN_BUDGET_STATUS_TEXT).not.toContain("8192");
     expect(TOKEN_BUDGET_STATUS_TEXT).not.toContain("최대 토큰");
+  });
+
+  // 봉투(systemPromptEnvelope)를 거쳐도 정책 문장이 변형·손실되지 않아야 한다. 정책을
+  // promptPolicies 한 곳에 모아 둬도 닿는 경로가 하나면 통합이 아니다 — 봉투가 그 배급 지점이다.
+  it("survives the shared envelope byte-for-byte", () => {
+    const wrapped = composeSystemPrompt({
+      surface: "chat",
+      body: "## 채널 고유 지침\n- 아무 규칙",
+      includePolicy: true,
+    });
+    expect(wrapped).toContain(AGENT_UX_POLICY_LINES);
+    // 정책이 본문보다 먼저 읽힌다 — 상위에서 잘려도 정책이 먼저 살아남는 순서.
+    expect(wrapped.indexOf("## UX 응답 정책(반드시 준수)")).toBeLessThan(wrapped.indexOf("## 채널 고유 지침"));
+  });
+
+  it("stays out of JSON-only surfaces where tone rules would corrupt the output", () => {
+    const wrapped = composeSystemPrompt({
+      surface: "tileset-analysis",
+      body: "Return exactly one JSON object.",
+    });
+    expect(wrapped).not.toContain("## UX 응답 정책(반드시 준수)");
+    expect(wrapped).not.toContain("3~5문장");
   });
 });

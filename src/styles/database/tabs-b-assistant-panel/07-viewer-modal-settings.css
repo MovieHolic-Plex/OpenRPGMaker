@@ -188,6 +188,143 @@
   box-shadow: var(--focus-ring);
 }
 
+/* "AI 가 기억한 내 성향" 목록(aiPreferenceMemorySettings.ts).
+ *
+ * 이 규칙들은 **이 모달에 붙지 않는다** — 목록의 진입점은 채팅 컴포저의 ⌾ 팝오버다
+ * (2026-08-30 감독 지시). 껍데기(띄우기·폭·스크롤)는 assistant-composer.css 의
+ * `.ai-preference-popover` 가 맡고, 목록 내부 스타일만 여기 산다. 설정 CSS 본진에 두는
+ * 이유는 아래와 같다 — 파일을 옮기면 cssFileCount 래칫만 흔들고 얻는 게 없다.
+ *
+ * 새 파일을 만들지 않고 설정 CSS 본진에 붙인다 — check-css-budget 이 cssFileCount 를
+ * 래칫하고 있어 파일을 하나 늘리면 게이트가 빨개진다. 클래스 이름이 전부 새로워
+ * 캐스케이드 순서에 의존하지 않으므로 여기서 충분하다.
+ *
+ * <details> 를 쓰지 않는 것은 의도다 — Chromium 의 ::details-content 가 flex/overflow 자식을
+ * 무력화해 목록이 길어질 때 내부 스크롤이 죽은 전례가 있다. 평범한 section + 스크롤러로 둔다.
+ * 재사용하는 기존 클래스: .ai-config-input(추가 입력칸), .ai-assistant-action(버튼). */
+.ai-preference-settings {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+}
+.ai-preference-title {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0;
+}
+.ai-preference-hint,
+.ai-preference-empty {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+}
+/* 목록 자체 스크롤러. 상한이 전역 16 + 프로젝트 8 이라 최악 24행이다.
+   팝오버 안에서는 이 스크롤러를 끈다(스크롤 두 겹이면 추가 입력칸이 손에 닿지 않는다) —
+   assistant-composer.css 의 `.ai-preference-popover .ai-preference-list` 참조. */
+.ai-preference-list {
+  display: grid;
+  gap: 2px;
+  max-height: 220px;
+  min-height: 0;
+  overflow-y: auto;
+}
+.ai-preference-group {
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: var(--space-1) 0 0;
+  text-transform: uppercase;
+}
+.ai-preference-row {
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-1);
+  padding: 3px 0;
+}
+.ai-preference-strength {
+  background: var(--control-bg);
+  border-radius: 999px;
+  color: var(--text-2);
+  flex: none;
+  font-size: 10px;
+  padding: 1px 7px;
+}
+/* 강도는 색으로 먼저 읽힌다 — 24행에서 라벨 글자를 하나하나 읽게 만들면 목록이 무용해진다. */
+.ai-preference-strength.is-strong {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+.ai-preference-strength.is-medium {
+  color: var(--accent);
+}
+.ai-preference-text {
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font-size: 11px;
+  line-height: 1.45;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ai-preference-meta {
+  color: var(--text-3);
+  flex: none;
+  font-size: 10px;
+}
+.ai-preference-pin,
+.ai-preference-delete {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  flex: none;
+  font: inherit;
+  font-size: 10px;
+  padding: 1px 6px;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+.ai-preference-pin:hover,
+.ai-preference-delete:hover {
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+.ai-preference-pin:focus-visible,
+.ai-preference-delete:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+.ai-preference-pin.is-pinned {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.ai-preference-delete:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.ai-preference-add-row {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+.ai-preference-add-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.ai-preference-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.ai-preference-actions > .is-danger {
+  color: var(--danger);
+}
+
 .left-panel-stack {
   background: var(--bg-panel);
   border: 1px solid;

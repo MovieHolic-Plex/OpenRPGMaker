@@ -70,6 +70,8 @@ import {
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
+import { distillPreferences } from "@/ai/preferenceDistiller";
+import { noteAiChangeUndone, observeTurn, shouldDistillPreferences } from "@/ai/preferenceSignals";
 import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
 import {
   buildInterviewKickoff,
@@ -86,6 +88,7 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
+import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createDirectorRestoreButton } from "./aiDirectorChrome";
 // queueController extracted for future use — reserved (aiQueueController.ts).
 import { buildAiCompletionStrip, type AiCompletionStripHandle } from "./aiCompletionStrip";
@@ -535,6 +538,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       ...(input.detail ? { detail: input.detail } : {}),
       chips: diffs.length > 0 ? changePreviewChips(combineDiffs(diffs)) : [],
       onUndo: () => {
+        // 성향 신호(가장 강한 부정): 채팅 제안은 자동 적용되므로 수락 버튼이 없다 — 되돌리기가
+        // "이건 원하는 게 아니었다"는 유일한 명시적 반응이다. 이 카드는 AI 변경 1건에 1:1로 붙어
+        // 있어서 대상을 정확히 알고, 사람이 직접 그린 타일의 undo 와 섞이지 않는다.
+        noteAiChangeUndone({ toolNames: input.calls.map((call) => call.name) });
         undoMapEdit();
       },
     });
@@ -548,6 +555,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         config: loadAiConfig(),
         contextOptions: {
           currentMapId: editorState.get().currentMapId ?? undefined,
+          // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
+          projectScopeKey: conversationScope,
           getViewport: () => getEditorMapViewport(),
           // 맵 이동은 세션을 끊지 않지만 시스템 프롬프트는 톨려야 한다 — 고정 값이면
           // 타일 어휘·구조 키트·맵 요약이 세션 시작 맵에 머버 라이브 뷰포트와 어긋난다.
@@ -1394,6 +1403,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }).catch(() => {
         /* ignore */
       });
+      // 성향 관측 + 증류. 활동 로그와 같은 자리에서 돈다 — 이 지점이 "지시문·툴 호출·성패"가
+      // 한꺼번에 확정되는 유일한 곳이다. 증류는 조건이 찼을 때만 lite 모델을 1회 부르고,
+      // 실패는 조용히 넘긴다(결정론 집계는 이미 저장돼 있어 손실이 없다).
+      const turnToolNames = (toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed).map((call) => call.name);
+      const signalState = observeTurn({
+        instruction: requestText,
+        toolNames: turnToolNames,
+        changed: (turnResult?.proposedCalls.length ?? 0) > 0,
+      });
+      if (shouldDistillPreferences(signalState)) {
+        void distillPreferences({ projectScopeKey: turnConversationScope })
+          .then((distilled) => {
+            // 조용히 학습하면 사용자가 통제 불가로 느낀다 — 반영된 건수만 한 줄로 알린다.
+            if (distilled.ok && distilled.upserted > 0) {
+              appendBubble("system", `성향 ${distilled.upserted}건을 기억했습니다. (아래 ⌾ 버튼에서 확인·삭제 가능)`);
+            }
+          })
+          .catch(() => {
+            /* ignore — 증류 실패는 preferenceSignals 가 자체 카운터로 처리한다. */
+          });
+      }
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
       // 접혀 시작한 턴만 종료 후 재접기. 이미 열린 패널은 그대로 둔다.
@@ -2367,8 +2397,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   toolbar.inert = true;
 
+  // "AI 가 기억한 내 성향" — 컴포저 ⌾ 버튼이 여는 팝오버의 내용.
+  // 스코프를 **함수로** 넘긴다. `conversationScope` 는 '새 대화'·프로젝트 전환에서 재대입되는
+  // let 이라, 값으로 굳히면 프로젝트를 바꾼 뒤에도 이전 프로젝트 성향이 목록에 남는다.
+  const preferenceMemory = renderPreferenceMemorySettings({
+    projectScopeKey: () => conversationScope,
+  });
+
   // 하단 컴포저: 입력 + 고정 액션 행 한 줄(세로 레일 없음).
-  // 추천 칩·액션 메뉴는 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
+  // 추천 칩·액션 메뉴·성향은 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
   const composerShell: ComposerElements = createComposerElements({
     input,
     collapseButton,
@@ -2380,6 +2417,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     statusGroup,
     onNewChat: () => startNewConversation("manual"),
     onPopoverChange: () => syncCommandBarClearance(),
+    preferenceContent: preferenceMemory.element,
+    // 대화 중 증류가 목록을 바꾼다 — 열 때마다 다시 읽어야 방금 배운 성향이 보인다.
+    onPreferenceOpen: () => preferenceMemory.refresh(),
   });
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;

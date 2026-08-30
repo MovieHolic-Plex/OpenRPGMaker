@@ -38,6 +38,7 @@ import {
   type TurnSelectionSnapshot,
 } from "./conversationTurnContext";
 import { capabilityEscalationSchemas, clampTurnToolSchemas } from "./capabilityEscalation";
+import { buildPreferenceMemorySection } from "./preferenceMemory";
 import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
 import { compactMessagesForRequest } from "./messageBudget";
 import {
@@ -786,8 +787,20 @@ export class AssistantSession {
       ?? calibratedBudgetChars(DEFAULT_BUDGET_CHARS, loadTokenObservations());
     this.messages.push({
       role: "system",
-      content: buildSystemPrompt(project, { ...this.contextOptions, budgetChars: this.appliedBudgetChars }),
+      content: buildSystemPrompt(project, this.systemPromptOptions()),
     });
+  }
+
+  /**
+   * 시스템 프롬프트 조립 옵션. 사람 성향 블록은 여기서 채운다 — contextBuilder 는 순수 함수라
+   * localStorage 를 못 읽고, 조립 시점마다 다시 읽어야 세션 도중 갱신된 성향이 반영된다.
+   */
+  private systemPromptOptions(): ContextOptions {
+    return {
+      ...this.contextOptions,
+      budgetChars: this.appliedBudgetChars,
+      preferenceMemorySection: buildPreferenceMemorySection(this.contextOptions.projectScopeKey),
+    };
   }
 
   getMessages(): readonly ChatMessage[] {
@@ -1858,10 +1871,7 @@ export class AssistantSession {
   private rebuildSystemPrompt(): void {
     const system = this.messages[0];
     if (!system || system.role !== "system") return;
-    system.content = buildSystemPrompt(this.baselineProject, {
-      ...this.contextOptions,
-      budgetChars: this.appliedBudgetChars,
-    });
+    system.content = buildSystemPrompt(this.baselineProject, this.systemPromptOptions());
   }
 
   // 토큰 보정(문자↔토큰 계수): 관측 누적으로 보정 예산이 바뀌었으면 시스템 프롬프트를

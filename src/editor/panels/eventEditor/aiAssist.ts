@@ -11,6 +11,7 @@
 // 스토어 갱신 때마다 에디터 본문이 통째로 재렌더되므로, 입력 초안/펼침 상태/프리뷰는
 // 모듈 레벨 캐시(이벤트+페이지 키)로 보존해 재렌더 후 복원한다.
 
+import { conversationScopeKey } from "@/ai/conversationStore";
 import { runEventCommandAssist } from "@/ai/eventCommandAssist";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
@@ -279,6 +280,8 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
         config,
         prompt,
         context: { project, mapId, event, page, selection: selectedCommandPath(cmdList) },
+        // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
+        projectScopeKey: conversationScopeKey(store.getProjectIdentity(), project),
       });
       state.preview = result.commands;
       setStatus(

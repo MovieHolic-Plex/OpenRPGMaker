@@ -15,6 +15,7 @@
 //   맵 붓까지 같이 바뀐다. 순수 헬퍼 tilesetTileBackgroundStyle 로 격자를 직접 그린다.
 
 import { chatCompletion, loadAiConfig } from "@/ai/llmClient";
+import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
 import { TILE_SIZE } from "@/assets/bundled";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import {
@@ -913,10 +914,16 @@ async function requestAiMetaDraft(
       messages: [
         {
           role: "system",
-          content:
-            "너는 2D 타일 RPG 편집기의 구조물 어휘 사서다."
-            + " 주어진 타일 행렬을 보고 이 구조물이 무엇이고 어디에 놓아야 하는지 기술한다."
-            + " JSON 한 덩어리로만 답하고 다른 말은 붙이지 않는다.",
+          // 공용 봉투 경유. includePolicy 는 끈다 — 산출물이 JSON 한 덩어리라 마무리 톤 규칙이 방해된다.
+          // 성향은 켠다: 구조물 이름·배치 설명의 어투가 사람 취향을 따라야 한다.
+          content: composeSystemPrompt({
+            surface: "structure-kit",
+            body:
+              "너는 2D 타일 RPG 편집기의 구조물 어휘 사서다."
+              + " 주어진 타일 행렬을 보고 이 구조물이 무엇이고 어디에 놓아야 하는지 기술한다."
+              + " JSON 한 덩어리로만 답하고 다른 말은 붙이지 않는다.",
+            includeMemory: true,
+          }),
         },
         { role: "user", content: buildAiMetaDraftPrompt(kit, tileset, existingNames) },
       ],
