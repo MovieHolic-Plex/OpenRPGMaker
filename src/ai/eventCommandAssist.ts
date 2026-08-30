@@ -18,6 +18,7 @@
 import { newCommand } from "@/editor/eventCommandFactory";
 import { commandBranches } from "@/editor/tools/commandTraversal";
 import { isPassableLanding } from "@/project/collision";
+import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import { COMMAND_GUARANTEES } from "@/project/commandGuaranteeRegistry";
 import {
@@ -474,11 +475,21 @@ function walkResourceSlots(
 ): void {
   for (const command of commands) {
     if (isResourceBoundKind(command.kind)) {
-      const slots = RESOURCE_SLOTS_BY_KIND[command.kind];
+      // kind 별 튜플로 좁혀지면 `includes("picture")` 가 never 비교가 되므로 슬롯 목록으로 넓힌다.
+      const slots: readonly EventResourceSlot[] = RESOURCE_SLOTS_BY_KIND[command.kind];
       const resourceId = (command as { readonly resourceId?: string }).resourceId ?? "";
       // 빈 칸은 저작상 유효하다 — changeFace 는 «얼굴 지우기» 를 빈 문자열로 표현한다.
       if (resourceId.trim().length > 0) {
-        const allowed = slots.some((slot) => idsOf(slot).has(resourceId));
+        // 그림 칸은 런타임(resolvePictureSource)이 해석하면 유효하다 — 폼도 자유 입력이고
+        // 「그림 선택」 픽커는 `kind: "image"` 로 454개를 제시한다. 큐레이션 목록을 검증
+        // 기준으로 쓰면 픽커가 권한 이미지 164개(scarloxy-monster-icon-*, monster 로 올린
+        // 업로드 등)를 반려해, 저작 UI 로 만든 정당한 명령을 «잘못됐다»고 하게 된다(실측).
+        // 해석기는 오디오 업로드를 거부하므로 종류 교차 보호는 그대로 살아 있다.
+        // 알려진 한계: playMovie 는 미등록 id 폴백(playSceneMovies.ts:30-39)이 있어 이론상
+        // 같은 false-reject 가 가능하지만, 동영상 슬롯이 비면 kind 자체를 빼므로 오늘은 도달 불가다.
+        const allowed = slots.includes("picture")
+          ? resolvePictureSource(resourceId, project) !== null
+          : slots.some((slot) => idsOf(slot).has(resourceId));
         if (!allowed) {
           const labels = slots.map((slot) => EVENT_RESOURCE_SLOT_LABELS[slot]).join(" 또는 ");
           const example = slots
@@ -496,7 +507,6 @@ function walkResourceSlots(
     for (const branch of commandBranches(command)) walkResourceSlots(branch.commands, project, idsOf);
   }
 }
-
 
 function validateAiAuthoringSurfaces(commands: readonly Command[]): void {
   for (const command of commands) {
