@@ -124,9 +124,14 @@ describe("editor reference navigation", () => {
 
   it("모호한 대상은 찾기만 열고 이동 부작용을 만들지 않는다", () => {
     const beforeMapId = editorState.get().currentMapId;
+    const openedQueries: string[] = [];
 
-    expect(navigateToEditorReference({ kind: "ambiguous", label: "여관", count: 2 })).toBe(true);
+    expect(navigateToEditorReference(
+      { kind: "ambiguous", label: "여관", count: 2 },
+      (query) => openedQueries.push(query),
+    )).toBe(true);
 
+    expect(openedQueries).toEqual(["여관"]);
     expect(editorState.get().currentMapId).toBe(beforeMapId);
     expect(cameraRequests).toEqual([]);
     expect(highlights).toEqual([]);

@@ -56,13 +56,18 @@ export function focusEditorRegion(region: EditorFocusRegion, options: FocusEdito
   return true;
 }
 
+export type OpenEditorReferenceSearch = (query: string) => void;
+
 /** 답변 링크 클릭의 단일 처리부. 데려갈 수 없으면 false 를 돌려주고 아무것도 바꾸지 않는다. */
-export function navigateToEditorReference(target: EditorReferenceTarget): boolean {
+export function navigateToEditorReference(
+  target: EditorReferenceTarget,
+  openSearch: OpenEditorReferenceSearch = openReferenceSearch,
+): boolean {
   const project = store.getCurrent();
 
   if (target.kind === "ambiguous") {
     // 같은 이름이 여러 곳이면 한 곳을 골라 데려가는 것은 거짓말이다 — 사용자가 고르게 한다.
-    openReferenceSearch(target.label);
+    openSearch(target.label);
     return true;
   }
 

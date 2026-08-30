@@ -55,10 +55,19 @@ const focusEditorView: ToolDefinition = {
       };
     }
 
-    const entry = resolveEditorReferenceQuery(buildEditorReferenceIndex(project), query);
-    if (!entry) {
+    const resolution = resolveEditorReferenceQuery(buildEditorReferenceIndex(project), query);
+    if (resolution.kind === "missing") {
       throw new ToolError(`'${query}' 라는 이름의 맵이나 이벤트를 찾지 못했습니다.`, { code: "not-found" });
     }
+    if (resolution.kind === "ambiguous") {
+      const shown = resolution.labels.slice(0, 5).map((label) => `'${label}'`).join(", ");
+      const remainder = resolution.labels.length > 5 ? ` 외 ${resolution.labels.length - 5}개` : "";
+      throw new ToolError(
+        `'${query}'에 맞는 이름이 ${resolution.labels.length}개입니다: ${shown}${remainder}. 정확한 이름으로 다시 호출하거나, mapId와 좌표를 보내면 query보다 우선하므로 그 방식으로 지정하세요.`,
+        { code: "ambiguous" }
+      );
+    }
+    const entry = resolution.entry;
     if (entry.target.kind === "ambiguous") {
       throw new ToolError(
         `'${entry.label}' 이름이 ${entry.target.count}곳에 있습니다. mapId 와 좌표를 보내면 query보다 우선하므로 그 방식으로 지정하거나 사용자에게 어느 것인지 물어보세요.`,

@@ -27,6 +27,11 @@ export interface EditorReferenceEntry {
   readonly target: EditorReferenceTarget;
 }
 
+export type EditorReferenceQueryResult =
+  | { readonly kind: "found"; readonly entry: EditorReferenceEntry }
+  | { readonly kind: "ambiguous"; readonly labels: readonly string[] }
+  | { readonly kind: "missing" };
+
 export interface EditorReferenceIndex {
   /** 긴 이름 우선. '상인 하나의 집' 이 '집' 보다 먼저 잡혀야 한다. */
   readonly entries: readonly EditorReferenceEntry[];
@@ -52,7 +57,7 @@ const MAX_LABEL_LENGTH = 40;
 const PARTICLES = [
   "으로써", "으로서", "에게서", "이라도", "입니다",
   "으로", "에서", "에게", "까지", "부터", "처럼", "보다", "마다", "조차", "밖에", "라도", "한테", "께서",
-  "하고", "이랑", "이나", "이다", "였다", "예요", "이야", "이며", "이고",
+  "하고", "이랑", "이나", "이다", "였다", "이에요", "예요", "이야", "이며", "이고",
   "은", "는", "이", "가", "을", "를", "의", "도", "만", "와", "과", "나", "랑", "께", "에", "로", "야",
   "인", "일",
 ] as const;
@@ -176,18 +181,20 @@ export function findEditorReferences(text: string, index: EditorReferenceIndex):
 }
 
 /**
- * 도구용 이름 조회 — 정확히 같은 이름이 먼저, 없으면 부분 일치 중 가장 짧은 이름.
- * (부분 일치에서 가장 짧은 것을 고르는 이유: `상인` 질의에 `상인 하나의 집` 과
- * `상인 하나의 집 뒷마당` 이 둘 다 맞으면 사용자가 말한 대상은 보통 좁은 쪽이다.)
+ * 도구용 이름 조회 — 정확히 같은 이름이 있으면 바로 찾고, 부분 일치만 여럿이면 후보를 돌려준다.
+ * 서로 다른 이름을 순서 규칙으로 하나 고르면 호출자가 의도하지 않은 곳으로 화면을 옮기게 된다.
  */
-export function resolveEditorReferenceQuery(index: EditorReferenceIndex, query: string): EditorReferenceEntry | null {
+export function resolveEditorReferenceQuery(index: EditorReferenceIndex, query: string): EditorReferenceQueryResult {
   const needle = query.trim();
-  if (!needle) return null;
+  if (!needle) return { kind: "missing" };
   const lower = needle.toLowerCase();
   const exact = index.entries.find((entry) => entry.label.toLowerCase() === lower);
-  if (exact) return exact;
+  if (exact) return { kind: "found", entry: exact };
   const partial = index.entries
     .filter((entry) => entry.label.toLowerCase().includes(lower))
     .sort((a, b) => a.label.length - b.label.length || (a.label < b.label ? -1 : 1));
-  return partial[0] ?? null;
+  if (partial.length === 0) return { kind: "missing" };
+  if (partial.length > 1) return { kind: "ambiguous", labels: partial.map((entry) => entry.label) };
+  const entry = partial[0];
+  return entry ? { kind: "found", entry } : { kind: "missing" };
 }

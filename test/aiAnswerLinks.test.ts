@@ -146,6 +146,7 @@ describe("findEditorReferences", () => {
       { sentence: "집처럼", label: "집" },
       { sentence: "집보다", label: "집" },
       { sentence: "집에게", label: "집" },
+      { sentence: "집이에요", label: "집" },
       { sentence: "광장에서", label: "광장" },
       { sentence: "마을.", label: "마을" },
       { sentence: "마을’", label: "마을" },
@@ -190,27 +191,46 @@ describe("findEditorReferences", () => {
 
 describe("resolveEditorReferenceQuery", () => {
   const project = projectWith([
-    mapWith("map_village", "마을 광장", [eventNamed("ev_hana", "상인 하나", 4, 7)]),
+    mapWith("map_village", "마을 광장", [
+      eventNamed("ev_hana", "상인 하나", 4, 7),
+      eventNamed("ev_dul", "상인 둘", 8, 9),
+    ]),
     mapWith("map_house_interior_1", "상인 하나의 집"),
   ]);
   const index = buildEditorReferenceIndex(project);
 
-  it("prefers an exact name over a longer containing name", () => {
-    expect(resolveEditorReferenceQuery(index, "상인 하나")?.target).toEqual({
-      kind: "event",
-      mapId: "map_village",
-      eventId: "ev_hana",
-      x: 4,
-      y: 7,
+  it("정확한 이름은 더 긴 부분 일치보다 우선한다", () => {
+    expect(resolveEditorReferenceQuery(index, "상인 하나")).toEqual({
+      kind: "found",
+      entry: {
+        label: "상인 하나",
+        target: {
+          kind: "event",
+          mapId: "map_village",
+          eventId: "ev_hana",
+          x: 4,
+          y: 7,
+        },
+      },
     });
   });
 
-  it("falls back to the shortest partial match", () => {
-    expect(resolveEditorReferenceQuery(index, "하나의")?.label).toBe("상인 하나의 집");
+  it("부분 이름이 한 종류뿐이면 그 이름을 찾는다", () => {
+    expect(resolveEditorReferenceQuery(index, "하나의")).toEqual({
+      kind: "found",
+      entry: expect.objectContaining({ label: "상인 하나의 집" }),
+    });
   });
 
-  it("returns null for an unknown or blank name", () => {
-    expect(resolveEditorReferenceQuery(index, "없는 이름")).toBeNull();
-    expect(resolveEditorReferenceQuery(index, "   ")).toBeNull();
+  it("서로 다른 부분 이름이 여럿이면 후보를 모두 보고한다", () => {
+    expect(resolveEditorReferenceQuery(index, "상인")).toEqual({
+      kind: "ambiguous",
+      labels: ["상인 둘", "상인 하나", "상인 하나의 집"],
+    });
+  });
+
+  it("모르는 이름이나 빈 이름은 찾지 못했다고 보고한다", () => {
+    expect(resolveEditorReferenceQuery(index, "없는 이름")).toEqual({ kind: "missing" });
+    expect(resolveEditorReferenceQuery(index, "   ")).toEqual({ kind: "missing" });
   });
 });
