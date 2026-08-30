@@ -111,6 +111,7 @@ test("AI 표면 프론트 액션이 링버퍼와 하네스 타임라인에 남�
   // 5) 맥락 압축 — 실 LLM 이 없으므로 skipped/error 로 끝나도 «눌렀고 이렇게 끝났다» 가 남아야 한다.
   await page.getByTestId("ai-context-meter").click();
   await expect(page.getByTestId("ai-context-panel")).toBeVisible();
+  await page.getByTestId("ai-context-panel").screenshot({ path: `${OUT}/context-panel.png` });
   await page.getByTestId("ai-context-compact").click();
   await page.waitForTimeout(1500);
 
@@ -173,6 +174,7 @@ test("AI 표면 프론트 액션이 링버퍼와 하네스 타임라인에 남�
   metrics.harnessUiRows = uiRows;
   metrics.harnessSummary = await page.getByTestId("ai-harness-summary").innerText();
   await page.screenshot({ path: `${OUT}/harness-timeline.png`, fullPage: false });
+  await page.getByTestId("ai-harness-summary").screenshot({ path: `${OUT}/harness-summary.png` });
   expect(uiRows).toBeGreaterThan(0);
 
   // 9) 활동 로그 행 — 채팅 턴이 uiActions/index 를 싣고 있는지(DB 왕복의 로컬 대응물).

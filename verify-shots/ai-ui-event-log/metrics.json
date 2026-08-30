@@ -29,7 +29,7 @@
   ],
   "semantic": [
     {
-      "at": "2026-08-30T08:14:36.210Z",
+      "at": "2026-08-30T08:19:21.587Z",
       "seq": 5,
       "surface": "instructions-modal",
       "action": "instructions-save",
@@ -42,7 +42,7 @@
       }
     },
     {
-      "at": "2026-08-30T08:14:42.850Z",
+      "at": "2026-08-30T08:19:27.726Z",
       "seq": 10,
       "surface": "panel",
       "action": "turn-rewind",
@@ -53,7 +53,7 @@
       }
     },
     {
-      "at": "2026-08-30T08:14:43.675Z",
+      "at": "2026-08-30T08:19:28.618Z",
       "seq": 12,
       "surface": "panel",
       "action": "dock-switch",
@@ -65,7 +65,7 @@
       }
     },
     {
-      "at": "2026-08-30T08:15:01.767Z",
+      "at": "2026-08-30T08:19:46.510Z",
       "seq": 15,
       "surface": "context-panel",
       "action": "context-compact",
@@ -76,7 +76,7 @@
       }
     },
     {
-      "at": "2026-08-30T08:15:03.792Z",
+      "at": "2026-08-30T08:19:48.468Z",
       "seq": 17,
       "surface": "panel",
       "action": "panel-collapse",
@@ -87,7 +87,7 @@
       }
     },
     {
-      "at": "2026-08-30T08:15:05.325Z",
+      "at": "2026-08-30T08:19:49.927Z",
       "seq": 19,
       "surface": "panel",
       "action": "panel-collapse",
@@ -98,7 +98,7 @@
       }
     },
     {
-      "at": "2026-08-30T08:15:06.805Z",
+      "at": "2026-08-30T08:19:51.343Z",
       "seq": 21,
       "surface": "panel",
       "action": "new-conversation",
@@ -110,13 +110,13 @@
       }
     },
     {
-      "at": "2026-08-30T08:15:10.851Z",
+      "at": "2026-08-30T08:19:55.191Z",
       "seq": 25,
       "surface": "history-modal",
       "action": "conversation-restore",
       "testid": "ai-history-open",
       "detail": {
-        "conversationId": "conv_37c4d6fc-92e3-4986-8235-5be9d9df0542",
+        "conversationId": "conv_10a263fc-b6e2-401b-8ac1-04dbcf3b9f33",
         "entries": 15,
         "turnCount": 1,
         "foreignProject": false
