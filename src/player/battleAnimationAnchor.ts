@@ -38,7 +38,14 @@ export interface BattleAnimationAnchorInput {
   readonly scope?: BattleAnimationScope;
   /** 대상 **스프라이트**의 사각. 노드가 아니다 — 아군 노드는 176×192 고정 박스다. */
   readonly spriteBox?: BattleAnchorBox;
-  /** `.battle-animation-layer` 의 사각. 애니메이션 엘리먼트의 컨테이닝 블록. */
+  /**
+   * `.battle-animation-layer` 의 **패딩 박스**. 애니메이션 엘리먼트의 컨테이닝 블록이다.
+   *
+   * 경계 박스(`getBoundingClientRect`)를 그대로 넣으면 안 된다 — 절대 위치 요소의
+   * `left`/`top` 백분율은 컨테이닝 블록의 **패딩 박스**에서 풀리므로, 레이어에 테두리가
+   * 생기는 순간 그 두께만큼 앵커가 밀린다. 변환은 호출부
+   * (`battleAnimationDom.layerPaddingBox`)가 한다.
+   */
   readonly layerBox: BattleAnchorBox;
 }
 

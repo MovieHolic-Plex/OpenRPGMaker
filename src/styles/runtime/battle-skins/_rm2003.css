@@ -48,7 +48,16 @@
   --battle-stage-skin-inset-top: 8px;
   /* 필드 액자 제거. 이 변수는 애니메이션·이펙트 레이어가 필드의 패딩 박스를 재현할 때
      같이 쓰므로(04-anim-damage-layers.css), 여기 한 줄만 바꾸면 세 박스가 함께 풀린다. */
-  --battle-field-border-width: 0;
+  /* **단위를 붙인 0 이어야 한다.** 이 변수는 04-anim-damage-layers.css 에서
+     `calc(var(--battle-field-border-width) + var(--battle-stage-inset-top))` 로 소비되는데,
+     CSS calc 는 단위 없는 0 과 길이를 더할 수 없다 — `calc(0 + 8px)` 는 invalid 다.
+     그러면 `.battle-animation-layer` 의 `inset` 선언이 통째로 버려져 절대배치 레이어가
+     0×0 으로 수축하고, 그 위에서 풀리는 모든 백분율(`--battle-node-x/y`)이 0 이 되어
+     이펙트가 무대 좌상단에 쌓였다. 실측 2026-08-30(출하 player.html, 기본 스킨 rm2003):
+     레이어 계산값 `width 0px height 0px`, 사용된 inset `top 0 right 640 bottom 304 left 0`,
+     이펙트 중심이 대상 스프라이트에서 가로 -0.97 · 세로 -0.91 스프라이트높이만큼 벗어남.
+     감독이 신고한 "전투 애니메이션 좌표가 이상함" 의 실제 원인이 이 한 글자다. */
+  --battle-field-border-width: 0px;
 
   /* 창 소유권: 9-slice 프레임(width 0) · 중앙 타일(slice 에 fill 없음) 모두 끈다. */
   --battle-window-skin-slice: 24;

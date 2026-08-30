@@ -178,18 +178,40 @@
   animation: battle-target-pulse 0.62s steps(1, end) infinite;
 }
 
+/* 두 단계 모두 `--battle-sprite-filter` 를 **먼저** 깔고 그 위에 보정을 더한다.
+   `filter: none` 으로 두면 `.battle-enemy-image` 의 기본 보정
+   (01-scene-base.css: brightness(1.4) contrast(1.5) saturate(1.4) — 스프라이트를 배경에서
+   분리하는 보정)이 0.62초마다 통째로 사라져 선택된 적만 배경에 묻혔다 깨어나듯 깜빡인다.
+   CSS 애니메이션은 filter 속성을 대체하므로 기본값을 키프레임이 다시 깔아 주는 것 말고는
+   방법이 없다. 변수가 없는 아군 스프라이트에서는 빈 폴백이 아무것도 더하지 않는다. */
 @keyframes battle-target-pulse {
   0% {
     filter:
-      brightness(1.5) saturate(0.8)
+      var(--battle-sprite-filter, )
+      brightness(1.5)
       drop-shadow(2px 0 0 var(--battle-target-ink))
       drop-shadow(-2px 0 0 var(--battle-target-ink))
       drop-shadow(0 2px 0 var(--battle-target-ink))
       drop-shadow(0 -2px 0 var(--battle-target-ink));
   }
   50% {
-    filter: none;
+    filter: var(--battle-sprite-filter, );
   }
+}
+
+/* 배틀러 버튼은 **UA 기본 포커스 링을 쓰지 않는다.**
+   흰 사각형(outline: 4px solid …)을 지우기만 했을 때 브라우저 기본 링이 그 자리를 그대로
+   메웠다 — 실측: 선택된 적의 계산된 outline 이 `1px auto`. 즉 예전 규칙은 UA 링을 덮고
+   있었을 뿐이고, 선언만 지우면 감독이 싫어한 "사각형" 이 얇아진 채로 남는다.
+   접근성 판단: 이 전투는 키보드 전용이고 자체 커서 모델을 갖는다. 선택 상태는 코너
+   리티클 + 스프라이트 펄스 두 겹으로 1px 링보다 강하게 표시되고, battleFieldDom 이
+   `aria-selected` 를 함께 갱신하므로 보조기술에도 상태가 전달된다. 커맨드 버튼의
+   `:focus-visible` 스타일(03/08/13/17)은 건드리지 않는다. */
+.battle-enemy:focus,
+.battle-enemy:focus-visible,
+.battle-actor:focus,
+.battle-actor:focus-visible {
+  outline: 0;
 }
 
 .battle-has-result .battle-targeted,

@@ -30,10 +30,22 @@ import { startPlayerQaServer } from "../../scripts/lib/runtimeQaRun.mjs";
 const PROJECT_FIXTURE = fileURLToPath(new URL("../fixtures/projects/battle-v3.json", import.meta.url));
 const SHOT_DIR = fileURLToPath(new URL("../../.omo/evidence/battle-anim-target/", import.meta.url));
 
-/** 앵커 허용 오차를 **스프라이트 높이 비율**로 둔다 — 무대 배율이 창 크기에 따라 변하므로
- *  절대 px 임계값은 창 크기에 묶인 숫자가 된다. 0.18 = 스프라이트 높이의 18%.
- *  고침 전 값은 0.5(정확히 절반: 발 앵커 vs 몸통 중심)이므로 확실히 걸린다. */
-const MAX_ANCHOR_OFFSET_RATIO = 0.18;
+/*
+ * 임계값은 관측치가 아니라 **계약에서 유도**한다. 스프라이트 높이 h 로 정규화하는 이유는
+ * 무대 배율(`--battle-stage-scale`)이 창 크기에 따라 변해 절대 px 임계값이 창 크기에 묶인
+ * 숫자가 되기 때문이다.
+ *
+ *  - `position: "center"` 의 계약은 "이펙트 중심 == 스프라이트 세로 중심" 이므로 이상적인
+ *    편차는 0 이다. 남는 잔차는 백분율을 소수 셋째 자리에서 끊는 양자화(레이어 높이의
+ *    0.001% = 400px 무대에서 0.004px)와 패딩 박스 환산의 반올림뿐 — 전부 서브픽셀이다.
+ *    0.05h(192px 스프라이트에서 9.6px)는 그 잔차보다 두 자리 크게 잡은 여유다.
+ *  - 같은 계약에서 세로 중심과 발(bottom)의 거리는 **정의상 정확히 h/2 = 0.5h** 다.
+ *    고침 전 앵커가 발이었으므로, 회귀하면 이 값이 0 으로 떨어진다. 하한은 0.5h 에서
+ *    위 허용 오차만큼 뺀 값이다.
+ */
+const ANCHOR_TOLERANCE_RATIO = 0.05;
+const CENTER_TO_FEET_RATIO = 0.5;
+const MIN_FEET_SEPARATION_RATIO = CENTER_TO_FEET_RATIO - ANCHOR_TOLERANCE_RATIO;
 
 type TargetIndicator = {
   readonly id: string | null;
@@ -51,6 +63,10 @@ type AnchorProbe = {
   readonly authoredPosition: string;
   readonly authoredScope: string;
   readonly anchorMode: string;
+  /** 폴백이면 왜 못 쟀는지(noTarget / spriteRect WxH / layerRect WxH). */
+  readonly anchorWhy: string;
+  /** 백분율이 풀린 컨테이닝 블록 — 레이어가 접히면 조상으로 올라간다. */
+  readonly anchorCb: string;
   /** 애니메이션 박스 중심 − 저작된 position 이 가리키는 점 (스프라이트 높이 대비 비율). */
   readonly offsetRatioX: number;
   readonly offsetRatioY: number;
@@ -69,7 +85,8 @@ type ProbeWindow = Window & {
   __oprnInput?: { face(direction: string): void; action(): void };
 };
 
-test.setTimeout(300_000);
+// 실패는 빨리 실패해야 한다 — 300초를 끌면 retain-on-failure 트레이스가 300MB 로 불어난다(실측).
+test.setTimeout(150_000);
 
 test("selected battler is marked by a reticle and a sprite pulse, never by a white box", async ({ page }) => {
   await withRealBattle(page, async () => {
@@ -122,7 +139,12 @@ test("selected battler is marked by a reticle and a sprite pulse, never by a whi
 
 test("skill animation lands on the authored anchor of the target sprite", async ({ page }) => {
   await withRealBattle(page, async () => {
-    await openSkillCommand(page);
+    // 평타로 띄운다. 액터에 무기가 없고 `unarmedAnimationId` 가 있으면
+    // `runtime.normalAttackAnimationId` 가 그것을 **최우선**으로 고르므로(runtime.ts:897)
+    // 어떤 애니메이션이 뜰지 결정적이다. 스킬 서브메뉴를 거치는 경로는 커서 이동 단계가
+    // 늘고 ATB(gauge) 흐름에서 커맨드 창이 다시 그려지면 흔들린다 — 같은 앵커 코드를
+    // 검증하는데 실패 지점만 늘릴 이유가 없다.
+    await enterTargetSelect(page);
     // 대상 확정 **전에** rAF 계측기를 심는다 — 이펙트는 두 프레임이라 확정 후 폴링으로는 놓친다.
     await installAnchorProbe(page);
     await confirmTarget(page);
@@ -153,16 +175,25 @@ test("skill animation lands on the authored anchor of the target sprite", async 
     expect(probe.authoredPosition).toBe("center");
     // 실측 경로가 살아 있어야 한다. "fallback" 이면 좌표가 예전 발 앵커로 돌아간 것이고,
     // 그러면 아래 오차 단정이 조용히 뒤집힌다.
+    // 백분율이 풀리는 컨테이닝 블록이 접히지 않았는가. 이 축을 따로 두는 이유: rm2003 이
+    // `--battle-field-border-width: 0`(단위 없음)을 선언해 `.battle-animation-layer` 의
+    // `calc()` inset 이 invalid 로 버려지고 레이어가 0×0 으로 수축한 적이 있다. 그러면
+    // 백분율 앵커가 전부 0 이 되어 이펙트가 무대 좌상단에 쌓인다 — 실패 메시지가 그 원인을
+    // 곧바로 가리켜야 다음 사람이 다시 추적하지 않는다.
+    expect(
+      probe.anchorWhy,
+      "앵커 컨테이닝 블록이 접혔다 — 레이어 inset 의 calc 가 invalid 인지 확인하라",
+    ).toBe("(measured)");
     expect(probe.anchorMode, "앵커가 폴백(--battle-node-x/y 복사)으로 떨어졌다").toBe("center");
     expect(probe.spriteHeight).toBeGreaterThan(0);
 
     // 이펙트 중심이 저작된 앵커(= 스프라이트 세로 중심)에 놓인다.
-    expect(Math.abs(probe.offsetRatioX)).toBeLessThan(MAX_ANCHOR_OFFSET_RATIO);
-    expect(Math.abs(probe.offsetRatioY)).toBeLessThan(MAX_ANCHOR_OFFSET_RATIO);
+    expect(Math.abs(probe.offsetRatioX)).toBeLessThan(ANCHOR_TOLERANCE_RATIO);
+    expect(Math.abs(probe.offsetRatioY)).toBeLessThan(ANCHOR_TOLERANCE_RATIO);
 
     // 그리고 옛 앵커(발)와는 스프라이트 높이의 절반쯤 떨어져 있어야 한다 —
     // 이 값이 0 으로 돌아가면 회귀다.
-    expect(Math.abs(probe.feetOffsetRatioY)).toBeGreaterThan(0.3);
+    expect(Math.abs(probe.feetOffsetRatioY)).toBeGreaterThan(MIN_FEET_SEPARATION_RATIO);
 
     await page.locator(".battle-scene").screenshot({ path: `${SHOT_DIR}/skill-animation-anchor.png` });
   });
@@ -171,7 +202,7 @@ test("skill animation lands on the authored anchor of the target sprite", async 
 async function withRealBattle(page: Page, run: () => Promise<void>): Promise<void> {
   const server = await startPlayerQaServer();
   try {
-    const projectJson = await readFile(PROJECT_FIXTURE, "utf8");
+    const projectJson = await withUnarmedAttackAnimation(await readFile(PROJECT_FIXTURE, "utf8"));
     await mkdir(SHOT_DIR, { recursive: true });
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.addInitScript(() => {
@@ -213,6 +244,27 @@ async function withRealBattle(page: Page, run: () => Promise<void>): Promise<voi
   }
 }
 
+/**
+ * 액터의 **맨손 평타 애니메이션**을 `anim_magic` 으로 못 박는다.
+ *
+ * 픽스처의 `anim_magic` 은 `scope: "singleTarget"`, `position: "center"` 로 저작돼 있어
+ * 앵커 계약을 그대로 태울 수 있다. 무기를 안 낀 액터에 `unarmedAnimationId` 가 있으면
+ * `runtime.normalAttackAnimationId`(runtime.ts:897) 가 그것을 최우선으로 고르므로, 어떤
+ * 애니메이션이 뜨는지가 폴백 사슬(`fallbackHitAnimationId`)에 좌우되지 않는다.
+ *
+ * 픽스처 파일을 고치지 않고 **이 하네스가 서빙하는 본문에서만** 심는다 — 다른 시나리오가
+ * 같은 픽스처를 공유하므로 파일을 건드리면 그쪽 기대치가 함께 움직인다.
+ */
+async function withUnarmedAttackAnimation(json: string): Promise<string> {
+  const project = JSON.parse(json) as {
+    database: { actors: { id: string; unarmedAnimationId?: string }[] };
+  };
+  const hero = project.database.actors.find((actor) => actor.id === "actor_hero");
+  if (!hero) throw new Error("픽스처에 actor_hero 가 없다 — 평타 애니메이션을 심을 수 없다");
+  hero.unarmedAnimationId = "anim_magic";
+  return JSON.stringify(project);
+}
+
 async function enterImmediateBattle(page: Page): Promise<void> {
   for (let attempt = 0; attempt < 10; attempt += 1) {
     await page.evaluate(() => {
@@ -233,36 +285,76 @@ async function enterImmediateBattle(page: Page): Promise<void> {
   throw new Error("authored battle did not start within 10 action attempts");
 }
 
+/**
+ * 전투는 **키보드 전용** 이다(openwiki/runtime-battle.md: director decision).
+ * `.battle-command-menu` 가 포인터 이벤트를 가로채므로 버튼 `click()` 은 구조적으로 못 닿는다
+ * (실측 2026-08-30: `actor-command-attack` 클릭이 490회 재시도 끝에 타임아웃).
+ * 커서는 keydown 핸들러가 **동기로** `data-battle-command-cursor` 를 옮기므로
+ * `press` 직후 읽으면 값이 이미 갱신돼 있다 — 고정 대기가 필요 없다.
+ */
+async function cursorTestid(page: Page): Promise<string | null> {
+  return page.evaluate(
+    () =>
+      document.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid ?? null,
+  );
+}
+
+/** 커서를 목표 커맨드로 옮긴다. 매 입력 후 조건을 확인하므로 초과 입력이 구조적으로 불가능하다. */
+async function moveCursorTo(page: Page, testid: string, maxPresses = 12): Promise<void> {
+  const seen: string[] = [];
+  for (let press = 0; press <= maxPresses; press += 1) {
+    const at = await cursorTestid(page);
+    if (at === testid) return;
+    seen.push(at ?? "(none)");
+    await page.keyboard.press("ArrowDown");
+  }
+  throw new Error(`커맨드 커서가 ${testid} 에 도달하지 못했다 — 지나온 커서: ${seen.join(" → ")}`);
+}
+
+/**
+ * 전투 안 확정키는 **z** 다.
+ *
+ * `Enter` 는 `battleDom.isNativeButtonEnter` 가 "포커스된 네이티브 버튼이 스스로 활성화한다" 고
+ * 보고 루트 핸들러가 비켜서는 경로다. 그런데 포커스는 `tabindex="0"` 인 `.battle-scene` 이
+ * 들고 있어 활성화할 버튼이 없다 — 그래서 Enter 는 아무 일도 하지 않는다(실측 2026-08-30:
+ * 공격 확정 후 30초 동안 `data-battle-phase` 가 `actorCommand` 에 머물렀다).
+ * `z` 는 네이티브 활성화가 없으므로 공용 커서 모델을 그대로 탄다. 다른 런타임 스펙
+ * (`_enemy-anchor-probe`, `_battle-feel-*`)도 모두 `z` 를 쓴다.
+ */
+async function confirmCommand(page: Page, testid: string): Promise<void> {
+  await expect(page.locator(`[data-testid='${testid}']`)).toBeVisible({ timeout: 30_000 });
+  await waitForIdleSequence(page);
+  await moveCursorTo(page, testid);
+  await page.keyboard.press("z");
+}
+
+/** 연출 중(`sequenceBusy`)의 확정키는 "빨리감기" 로 먹힌다 — 확정 전에 재생이 끝나길 기다린다. */
+async function waitForIdleSequence(page: Page): Promise<void> {
+  await expect(page.locator("[data-testid='battle-scene']")).toHaveAttribute(
+    "data-battle-sequence-busy",
+    "false",
+    { timeout: 30_000 },
+  );
+}
+
+async function waitForTargetSelect(page: Page): Promise<void> {
+  await expect(page.locator("[data-testid='battle-scene']")).toHaveAttribute(
+    "data-battle-phase",
+    "targetSelect",
+    { timeout: 30_000 },
+  );
+}
+
 /** 공격 커맨드를 확정해 대상 선택 단계로 넘어간다. */
 async function enterTargetSelect(page: Page): Promise<void> {
-  await page.locator("[data-testid='actor-command-attack']").click();
-  await expect(page.locator("[data-testid='battle-scene']")).toHaveAttribute(
-    "data-battle-phase",
-    "targetSelect",
-    { timeout: 20_000 },
-  );
+  await confirmCommand(page, "actor-command-attack");
+  await waitForTargetSelect(page);
 }
 
-/** 스킬 → skill_fire(anim_magic) 를 골라 대상 선택 단계까지 간다. */
-async function openSkillCommand(page: Page): Promise<void> {
-  await page.locator("[data-testid='actor-command-skill']").click();
-  const skill = page.locator("[data-testid='actor-skill-skill_fire']");
-  await expect(skill).toBeVisible({ timeout: 20_000 });
-  await skill.click();
-  await expect(page.locator("[data-testid='battle-scene']")).toHaveAttribute(
-    "data-battle-phase",
-    "targetSelect",
-    { timeout: 20_000 },
-  );
-}
-
+/** 대상 확정도 같은 확정키다. */
 async function confirmTarget(page: Page): Promise<void> {
-  const fieldTarget = page.locator(".battle-enemy[data-battle-targetable='true']").first();
-  if (await fieldTarget.count()) {
-    await fieldTarget.click();
-    return;
-  }
-  await page.keyboard.press("Enter");
+  await expect(page.locator(".battle-enemy.battle-target-selected")).toBeVisible({ timeout: 30_000 });
+  await page.keyboard.press("z");
 }
 
 /**
@@ -301,7 +393,9 @@ async function installAnchorProbe(page: Page): Promise<void> {
               animationId: animation.dataset.animationId ?? "(none)",
               authoredPosition: animation.dataset.animationPosition ?? "(none)",
               authoredScope: animation.dataset.animationScope ?? "(none)",
-              anchorMode: animation.dataset.animationAnchor ?? "(none)",
+                      anchorMode: animation.dataset.animationAnchor ?? "(none)",
+              anchorWhy: animation.dataset.animationAnchorWhy ?? "(measured)",
+              anchorCb: animation.dataset.animationAnchorCb ?? "(none)",
               offsetRatioX: round((animationCenterX - spriteCenterX) / spriteRect.height),
               offsetRatioY: round((animationCenterY - spriteCenterY) / spriteRect.height),
               feetOffsetRatioY: round((animationCenterY - spriteRect.bottom) / spriteRect.height),

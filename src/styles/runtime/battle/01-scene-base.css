@@ -176,8 +176,10 @@
   flex-direction: column;
   left: 50%;
   position: absolute;
-  /* 6px 띄우는 이유: 조준 중 노드에 그려지는 outline(4px + offset 4px)이 스프라이트
-     바로 밑을 지나므로, 붙여 놓으면 이름표 알약이 그 선을 물고 앉는다. */
+  /* 6px 띄운다. 원래 근거는 "조준 중 노드에 그려지는 outline(4px + offset 4px)이 스프라이트
+     바로 밑을 지난다" 였는데 그 흰 사각형은 없어졌다(06-damage-flash-targeting.css).
+     간격 자체는 남긴다 — 이름표 알약과 스프라이트 발끝이 붙어 보이지 않게 하는 여백이고,
+     이 값을 줄이면 배틀러 기하 게이트가 재는 이름표 상자 위치가 함께 움직인다. */
   top: calc(100% + 6px);
   transform: translateX(-50%);
 }
@@ -187,8 +189,13 @@
   image-rendering: pixelated;
   object-fit: contain;
   width: 224px;
-  /* 적 스프라이트를 배경에서 분리 */
-  filter: brightness(1.4) contrast(1.5) saturate(1.4);
+  /* 적 스프라이트를 배경에서 분리. **변수로 한 번 선언**하고 filter 는 그 변수만 참조한다 —
+     조준 펄스(06-damage-flash-targeting.css: battle-target-pulse)처럼 filter 를 애니메이션하는
+     규칙이 이 기본 보정을 통째로 날리지 않게 하려는 것이다. CSS 애니메이션은 filter 속성을
+     대체하므로 키프레임이 이 변수를 다시 깔아 줘야 한다. 빈 폴백 `var(--x, )` 은 유효한
+     문법이고, 변수가 없는 아군 스프라이트에서는 아무것도 더하지 않는다. */
+  --battle-sprite-filter: brightness(1.4) contrast(1.5) saturate(1.4);
+  filter: var(--battle-sprite-filter, );
   background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.3) 60%, transparent 80%);
   border-radius: 50%;
   opacity: 1;

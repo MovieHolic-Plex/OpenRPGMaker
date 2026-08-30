@@ -56,8 +56,11 @@ export function syncBattleAnimationLayer(
   const playback = mountBattleAnimationPlayback(snapshot, sceneRoot);
   if (!playback) return undefined;
   playback.element.dataset.animationKey = animationKey;
-  positionAnimation(playback.element, layer, lastAnimation!);
+  // **먼저 붙이고 나서 잰다.** 순서가 뒤였을 때 레이어의 패딩 박스가 0×0 으로 잡혀
+  // 측정 경로가 통째로 폴백으로 떨어졌다(실측: data-animation-anchor-why "layerRect 0x0").
+  // 요소가 자기 컨테이닝 블록 안에 들어간 뒤에 재는 것이 백분율의 정의와도 맞는다.
   layer.append(playback.element);
+  positionAnimation(playback.element, layer, lastAnimation!);
   return playback;
 }
 
@@ -131,24 +134,107 @@ function positionAnimation(
   layer: HTMLElement,
   animation: NonNullable<BattleSnapshot["lastAnimation"]>
 ): void {
+  if (applyMeasuredAnchor(element, layer, animation)) return;
   // 아군 노드 testid 는 battle-actor-<id> 형식 — findBattlerNode 로 통일 조회한다.
   const target = findBattlerNode(document, animation.targetId);
-  const placement = battleAnimationAnchor({
-    position: animation.position,
-    scope: animation.scope,
-    spriteBox: measuredSpriteBox(target),
-    layerBox: layer.getBoundingClientRect(),
-  });
-  if (placement) {
-    element.style.left = placement.left;
-    element.style.top = placement.top;
-    element.dataset.animationAnchor = placement.anchor;
-    return;
-  }
   if (!target) return;
   element.style.setProperty("--battle-node-x", target.style.getPropertyValue("--battle-node-x"));
   element.style.setProperty("--battle-node-y", target.style.getPropertyValue("--battle-node-y"));
   element.dataset.animationAnchor = "fallback";
+  // 스프라이트가 아직 로드되지 않아 rect 가 0×0 이면 폴백이 **영구**가 된다 — 앵커를 다시
+  // 계산할 계기가 없기 때문이다. 프레임마다 다시 재서 측정이 되는 순간 승격시킨다.
+  // 고정 대기가 아니라 rAF 이고, 프레임 예산이 있어 무한히 돌지 않는다.
+  retryMeasuredAnchor(element, layer, animation, ANCHOR_RETRY_FRAMES);
+}
+
+/** 폴백에서 승격을 노리는 프레임 예산. 60fps 기준 약 0.5초 — 이미지 디코드가 끝나기에
+ *  충분하고, 애니메이션 자체(기본 프레임 120ms x 프레임 수)보다 오래 매달리지 않는다. */
+const ANCHOR_RETRY_FRAMES = 30;
+
+function applyMeasuredAnchor(
+  element: HTMLElement,
+  layer: HTMLElement,
+  animation: NonNullable<BattleSnapshot["lastAnimation"]>
+): boolean {
+  const target = findBattlerNode(document, animation.targetId);
+  const spriteBox = measuredSpriteBox(target);
+  const containingBlock = anchorContainingBlock(element, layer);
+  const layerBox = paddingBox(containingBlock);
+  const placement = battleAnimationAnchor({
+    position: animation.position,
+    scope: animation.scope,
+    spriteBox,
+    layerBox,
+  });
+  if (!placement) {
+    // **왜** 못 쟀는지 남긴다. 폴백은 좌표가 눈에 띄게 달라지는 경로이므로, "이상한 자리에
+    // 떴다" 는 신고를 받았을 때 원인을 짐작하지 않고 DOM 에서 바로 읽을 수 있어야 한다.
+    element.dataset.animationAnchorWhy = !target
+      ? "noTarget"
+      : !spriteBox || spriteBox.height <= 0 || spriteBox.width <= 0
+        ? `spriteRect ${Math.round(spriteBox?.width ?? -1)}x${Math.round(spriteBox?.height ?? -1)}`
+        : `layerRect ${Math.round(layerBox.width)}x${Math.round(layerBox.height)}`
+          + ` cb ${containingBlock.className || containingBlock.tagName}`;
+    return false;
+  }
+  delete element.dataset.animationAnchorWhy;
+  element.dataset.animationAnchorCb = containingBlock.className || containingBlock.tagName;
+  element.style.left = placement.left;
+  element.style.top = placement.top;
+  element.dataset.animationAnchor = placement.anchor;
+  return true;
+}
+
+function retryMeasuredAnchor(
+  element: HTMLElement,
+  layer: HTMLElement,
+  animation: NonNullable<BattleSnapshot["lastAnimation"]>,
+  framesLeft: number
+): void {
+  if (framesLeft <= 0) return;
+  requestAnimationFrame(() => {
+    // 재생이 끝나 레이어에서 떼어졌거나 다른 애니메이션으로 교체됐으면 더 볼 것이 없다.
+    if (!element.isConnected) return;
+    if (applyMeasuredAnchor(element, layer, animation)) return;
+    retryMeasuredAnchor(element, layer, animation, framesLeft - 1);
+  });
+}
+
+/**
+ * 백분율이 실제로 풀리는 **컨테이닝 블록**을 고른다.
+ *
+ * 레이어 엘리먼트를 그대로 쓰면 안 된다 — `.battle-animation-layer` 는 절대배치된 그리드
+ * 아이템이고, 그 그리드 영역이 접히는 스킨에서는 자기 박스가 0×0 이 된다(실측 2026-08-30,
+ * 출하 플레이어 + 기본 스킨 rm2003: `client 0x0 offset 0x0 connected true`). 그 0 으로
+ * 나누면 앵커가 통째로 폴백으로 떨어지고, 폴백이 쓰는 `--battle-node-x/y` 백분율도 **같은**
+ * 0×0 박스에서 풀리므로 이펙트가 무대 좌상단으로 끌려간다 — 감독이 신고한 "좌표가 이상함" 의
+ * 실제 모습이다.
+ *
+ * 절대배치 요소의 `offsetParent` 는 정의상 그 요소의 컨테이닝 블록을 만드는 조상이다.
+ * 그래서 CSS 가 레이어를 어떻게 바꾸든 브라우저가 실제로 쓰는 기준과 계산이 어긋나지 않는다.
+ */
+function anchorContainingBlock(element: HTMLElement, layer: HTMLElement): HTMLElement {
+  const parent = element.offsetParent;
+  if (parent instanceof HTMLElement && parent.clientWidth > 0 && parent.clientHeight > 0) return parent;
+  return layer;
+}
+
+/**
+ * 요소의 **패딩 박스**를 시각 px 로 만든다.
+ *
+ * `left`/`top` 백분율은 컨테이닝 블록의 패딩 박스에서 풀리는데 `getBoundingClientRect` 는
+ * 경계 박스다. `clientLeft`/`clientWidth` 는 무대 배율이 곱해지지 않은 레이아웃 px 이므로,
+ * 경계 박스와 `offsetWidth` 의 비로 배율을 구해 같은 좌표계로 옮긴다.
+ */
+function paddingBox(node: HTMLElement): BattleAnchorBox {
+  const rect = node.getBoundingClientRect();
+  const scale = node.offsetWidth > 0 ? rect.width / node.offsetWidth : 1;
+  return {
+    left: rect.left + node.clientLeft * scale,
+    top: rect.top + node.clientTop * scale,
+    width: node.clientWidth * scale,
+    height: node.clientHeight * scale,
+  };
 }
 
 function measuredSpriteBox(node: HTMLElement | null): BattleAnchorBox | undefined {
