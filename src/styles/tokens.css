@@ -130,6 +130,15 @@
   --z-modal-overlay: 2200;
   --z-modal-top: 2300;
   --z-proposal: 2500;
+  /* 토스트는 앱 모달(--z-app-modal 2600)보다 위다. 실제로 가린 것은 테스트 플레이 창의
+     **백드롭** 이다 — `.test-play-modal-backdrop { z-index: 1300 }`
+     (src/styles/map/resource-system.part-1.css:263). 런타임 디버그 마대가 아니다: 그건
+     z-index 60 (src/player/runtimeDebugPanel.ts:65) 으로 백드롭 **안에** 있어 자기가 직접
+     1000 을 이길 수 없다. 그래서 «시작 전 자동 복구» 토스트가 1000 이었을 때 1300 백드롭
+     뒤로 갔다. scripts/qa/testplay-toast-occlusion-probe.mjs 가 elementFromPoint 로 재서 잡았다.
+     눈에 안 보이는 알림은 없는 알림이므로 옷을 올린다.
+     이 순서는 test/editorZLayerOrder.test.ts 가 고정한다. */
+  --z-toast: 2700;
 
   --brand-blue: #4A57D6;
   --mix-base: #F7F8F8;

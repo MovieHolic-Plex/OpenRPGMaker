@@ -52,7 +52,7 @@ for (const { width, height } of VIEWPORTS) {
     await shot("01-open");
 
     // ── 2. 사이드바 그룹 내비 ──
-    const groupLabels = await page.locator(".db-tab-group").allTextContents();
+    const groupLabels = await page.locator(".db-tab-group-label").allTextContents();
     expect(groupLabels).toEqual(["파티", "몬스터", "전투 규칙", "생활", "세계", "시스템"]);
     await expect(page.getByTestId("db-tab-overview")).toBeVisible();
     await expect(page.getByTestId("db-tab-items")).toBeVisible();

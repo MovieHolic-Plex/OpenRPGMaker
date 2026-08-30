@@ -13,7 +13,16 @@ import { persistTilesetKnowledge } from "@/editor/panels/tilesetKnowledgePersist
 import { store } from "@/project/store";
 import { compileTilesetKnowledge, type TilesetKnowledgeTemplate } from "@/project/tilesetKnowledge";
 import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
-import type { PassFlag, TileGroupMetadata, TilesetDef } from "@/project/types";
+import { asPlacementFacing, asPlacementZone } from "@/project/placementSurface";
+import type {
+  ClusterRule,
+  ClusterRuleStrength,
+  PlacementFacing,
+  PlacementZone,
+  TileGroupMetadata,
+  PassFlag,
+  TilesetDef,
+} from "@/project/types";
 
 export type KnowledgeDraft = {
   readonly activeGroupId: string | null;
@@ -22,8 +31,21 @@ export type KnowledgeDraft = {
   readonly name: string;
   readonly passage: PassFlag;
   readonly placementRules: string;
+  /**
+   * 배치 면(2026-08-30). "none" = 조건 없음(예전과 같은 동작).
+   * placementRules 는 사람이 읽는 문장이고 이쪽은 **집행되는 조건**이다 —
+   * projectLint 가 맵을 훑어 위반을 규칙 감사 패널에 올린다.
+   */
+  readonly surfaceZone: PlacementZone | "none";
+  readonly surfaceFacing: PlacementFacing;
+  readonly surfaceStrength: ClusterRuleStrength;
   readonly template: TilesetKnowledgeTemplate;
 };
+
+/** 그룹의 배치 면 규칙 id — 그룹당 하나만 둔다(있으면 갱신, 없으면 추가). */
+export function surfaceRuleId(groupId: string): string {
+  return `r_surface_${groupId}`;
+}
 
 let tilesetId: string | null = null;
 let selection: GridSelectionState = createGridSelectionState();
@@ -118,8 +140,48 @@ export function loadKnowledgeGroup(group: TileGroupMetadata, tileset: TilesetDef
     name: group.name,
     passage: { ...(tileset.passability[group.tileIds[0] ?? -1] ?? passableFlag()) },
     placementRules: group.placementRules,
+    ...surfaceDraftFromGroup(group),
     template: templateForGroup(group),
   };
+}
+
+/** 그룹에 이미 걸려 있는 배치 면 규칙 → 초안 필드. 없으면 "none". */
+function surfaceDraftFromGroup(group: TileGroupMetadata): {
+  readonly surfaceFacing: PlacementFacing;
+  readonly surfaceStrength: ClusterRuleStrength;
+  readonly surfaceZone: PlacementZone | "none";
+} {
+  const rule = (group.rules ?? []).find((entry) => entry.kind === "surface");
+  const zone = rule ? asPlacementZone(rule.params.zone) : undefined;
+  if (!rule || !zone) return { surfaceFacing: "any", surfaceStrength: "hard", surfaceZone: "none" };
+  return {
+    surfaceFacing: asPlacementFacing(rule.params.facing) ?? "any",
+    surfaceStrength: rule.strength,
+    surfaceZone: zone,
+  };
+}
+
+/**
+ * 초안의 배치 면 → 그룹 규칙 목록.
+ * 다른 규칙(인접·간격·개수)은 **보존한다** — 예전에는 저장이 compiled.group 으로 통째 교체해서
+ * 손으로 만든 hard 인접 규칙이 조용히 사라졌다.
+ */
+export function mergeSurfaceRule(
+  existing: readonly ClusterRule[] | undefined,
+  groupId: string,
+  draftValue: Pick<KnowledgeDraft, "surfaceFacing" | "surfaceStrength" | "surfaceZone">,
+): ClusterRule[] {
+  const others = (existing ?? []).filter((rule) => rule.kind !== "surface");
+  if (draftValue.surfaceZone === "none") return others;
+  const params: Record<string, unknown> = { zone: draftValue.surfaceZone };
+  // 방향은 `againstWall` 에서만 뜻이 있다 — 다른 면에 붙이면 읽는 쪽이 헷갈린다.
+  if (draftValue.surfaceZone === "againstWall" && draftValue.surfaceFacing !== "any") {
+    params.facing = draftValue.surfaceFacing;
+  }
+  return [
+    ...others,
+    { id: surfaceRuleId(groupId), kind: "surface", params, strength: draftValue.surfaceStrength },
+  ];
 }
 
 export function loadKnowledgeProposal(input: {
@@ -144,6 +206,9 @@ export function loadKnowledgeProposal(input: {
     name: input.name,
     passage: { ...input.passage },
     placementRules: input.placementRules,
+    surfaceFacing: "any",
+    surfaceStrength: "hard",
+    surfaceZone: "none",
     template: input.template,
   };
 }
@@ -165,10 +230,12 @@ export function compileKnowledgeDraft(tileset: TilesetDef) {
 export function saveKnowledgeDraft(tileset: TilesetDef): boolean {
   const compiled = compileKnowledgeDraft(tileset);
   if (compiled.kind === "invalid") return false;
+  const previous = (tileset.tileGroups ?? []).find((entry) => entry.id === compiled.value.group.id);
   const group = {
     ...compiled.value.group,
     description: draft.description,
     placementRules: draft.placementRules,
+    rules: mergeSurfaceRule(previous?.rules, compiled.value.group.id, draft),
   };
   recordProjectSnapshot("타일셋 지식 저장");
   store.update((project) => {
@@ -242,6 +309,9 @@ function defaultDraft(): KnowledgeDraft {
     name: "",
     passage: blockedFlag(),
     placementRules: "",
+    surfaceFacing: "any",
+    surfaceStrength: "hard",
+    surfaceZone: "none",
     template: "desk",
   };
 }

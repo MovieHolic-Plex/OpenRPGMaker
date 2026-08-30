@@ -355,3 +355,123 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
     expect(prompt).toContain("stamp_structure_kit");
   });
 });
+
+describe("증분 축 — 세로로 무한히 이어지는 구조물", () => {
+  /** 세로 증분으로 표시된 1×3 벽. 가로로는 늘어나지 않는다. */
+  function verticalWallProject(): { context: { project: Project }; mapId: string } {
+    const project = createEmptyToolProject("세로벽");
+    const context = { project };
+    runTool(context, "create_map", { name: "벽맵", width: 20, height: 15 });
+    const mapId = Object.keys(context.project.maps)[0]!;
+    const tilesetId = context.project.maps[mapId]!.tilesetId;
+    context.project.tilesets[tilesetId]!.structureKits = [{
+      id: "kit_vwall",
+      kind: "section",
+      name: "성벽 기둥",
+      width: 1,
+      height: 3,
+      rows: [{ tiles: [19] }, { tiles: [49] }, { tiles: [81] }],
+      cellHints: [{ dx: 0, dy: 1, growth: "vertical", note: "세로로 증분 가능" }],
+      learnedFrom: "db-authored",
+      ai: {
+        description: "돌 성벽",
+        placementRules: "경계를 따라",
+        growthAxis: "vertical",
+        themes: ["성채"],
+        origin: "user",
+      },
+    }];
+    return { context, mapId };
+  }
+
+  it("list_structure_kits 가 축·레이어·칸 힌트를 함께 돌려준다", () => {
+    const { context } = verticalWallProject();
+    const result = runTool(context, "list_structure_kits", {});
+    expect(result.ok).toBe(true);
+    const data = result.data as {
+      kits: {
+        kitId: string;
+        growth: { x: boolean; y: boolean };
+        layerHome: string;
+        repeatable: boolean;
+        cellHints?: { dx: number; dy: number; growth?: string; note?: string }[];
+      }[];
+    };
+    const wall = data.kits.find((entry) => entry.kitId === "kit_vwall")!;
+    expect(wall.growth).toEqual({ x: false, y: true });
+    expect(wall.repeatable).toBe(false);
+    expect(wall.layerHome).toBe("lower");
+    expect(wall.cellHints).toEqual([{ dx: 0, dy: 1, growth: "vertical", note: "세로로 증분 가능" }]);
+  });
+
+  it("repeatY 로 세로로 쌓는다 — 예전에는 가로 반복밖에 없었다", () => {
+    const { context, mapId } = verticalWallProject();
+    const result = runTool(context, "stamp_structure_kit", {
+      mapId, kitId: "kit_vwall", origin: { x: 4, y: 0 }, repeatY: 4,
+    });
+    expect(result.ok).toBe(true);
+    const map = context.project.maps[mapId]!;
+    // 1×3 킷 4단 = 12칸이 x=4 열에 연속으로 들어간다.
+    const column = Array.from({ length: 12 }, (_unused, y) => map.lowerTiles[y * map.width + 4]);
+    expect(column).toEqual([19, 49, 81, 19, 49, 81, 19, 49, 81, 19, 49, 81]);
+    const data = result.data as { repeatY: number; repeat: number; height: number; placementIds: string[] };
+    expect(data.repeatY).toBe(4);
+    expect(data.repeat).toBe(1);
+    expect(data.height).toBe(12);
+    // 단위마다 배치 기록이 하나 — "맨 위 한 단만 지워줘"가 가능해야 한다.
+    expect(data.placementIds).toHaveLength(4);
+  });
+
+  it("세로 증분 킷은 repeat(가로)를 줘도 1회로 조이고 그 사실을 말한다", () => {
+    const { context, mapId } = verticalWallProject();
+    const result = runTool(context, "stamp_structure_kit", {
+      mapId, kitId: "kit_vwall", origin: { x: 0, y: 0 }, repeat: 5,
+    });
+    expect(result.ok).toBe(true);
+    // 조인 사실이 문장에 남아야 한다 — 말없이 조이면 모델은 5칸을 채웠다고 믿는다.
+    expect(result.summary).toContain("증분 축 제한");
+    expect((result.data as { repeat: number }).repeat).toBe(1);
+    // 옆 열은 손대지 않았다 — create_map 이 깔아 둔 지면이 그대로다(빈 칸은 -1 이 아니다).
+    const map = context.project.maps[mapId]!;
+    expect(map.lowerTiles[1]).not.toBe(19);
+  });
+
+  it("세로 증분이 없는 킷에 repeatY 를 주면 1회로 조인다 — 조용히 3층이 생기지 않는다", () => {
+    const { project, mapId } = projectWithKit();
+    const context = { project };
+    const result = runTool(context, "stamp_structure_kit", {
+      mapId, kitId: "kit_wall_test", origin: { x: 0, y: 0 }, repeat: 1, repeatY: 3,
+    });
+    expect(result.ok).toBe(true);
+    expect(result.summary).toContain("증분 축 제한");
+    expect((result.data as { repeatY: number }).repeatY).toBe(1);
+  });
+
+  it("맵을 벗어나는 세로 반복은 한 칸도 쓰지 않고 거부한다", () => {
+    const { context, mapId } = verticalWallProject();
+    const result = runTool(context, "stamp_structure_kit", {
+      mapId, kitId: "kit_vwall", origin: { x: 0, y: 0 }, repeatY: 9,
+    });
+    expect(result.ok).toBe(false);
+    const map = context.project.maps[mapId]!;
+    expect(map.lowerTiles.every((tile) => tile !== 19)).toBe(true);
+  });
+
+  it("repeatY 도 1~50 정수만 받는다", () => {
+    const { context, mapId } = verticalWallProject();
+    const result = runTool(context, "stamp_structure_kit", {
+      mapId, kitId: "kit_vwall", origin: { x: 0, y: 0 }, repeatY: 0,
+    });
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("repeatY");
+  });
+
+  it("시스템 프롬프트가 축·테마·칸 힌트를 사람 말로 싣는다", () => {
+    const { context } = verticalWallProject();
+    const prompt = buildSystemPrompt(context.project);
+    expect(prompt).toContain("세로 증분 가능");
+    expect(prompt).toContain("테마: 성채");
+    expect(prompt).toContain("세로로 증분 가능");
+    expect(prompt).toContain("repeatY");
+  });
+});

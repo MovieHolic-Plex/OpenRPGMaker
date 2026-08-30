@@ -205,4 +205,35 @@ describe("compileCutscene", () => {
     }
     expect(() => compileCutscene(beats, { context: { eventIds: new Set(["ev_known"]) } })).toThrow(CutsceneValidationError);
   });
+
+  it("fade beat는 0.45 tint가 아닌 Screen Effect의 검정 fadeIn/fadeOut으로 컴파일한다", () => {
+    const commands = compileCutscene([
+      { kind: "fade", direction: "out", durationMs: 400, wait: true },
+      { kind: "fade", direction: "in", durationMs: 400, wait: true },
+    ]);
+    expect(commands).toContainEqual(expect.objectContaining({
+      kind: "m2Command",
+      commandId: expect.stringMatching(/screen-effect/i),
+      fields: expect.objectContaining({ effect: "fadeOut" }),
+    }));
+    expect(commands).toContainEqual(expect.objectContaining({
+      kind: "m2Command",
+      commandId: expect.stringMatching(/screen-effect/i),
+      fields: expect.objectContaining({ effect: "fadeIn" }),
+    }));
+    expect(JSON.stringify(commands)).not.toContain("Tint Screen");
+  });
+
+  it("say beat의 emotion과 autoAdvance를 text command로 전달한다", () => {
+    const commands = compileCutscene([
+      { kind: "say", speaker: "리나", text: "기억나.", emotion: "sad", autoAdvance: true },
+    ]);
+    expect(commands).toContainEqual({
+      kind: "text",
+      speaker: "리나",
+      body: "기억나.",
+      emotion: "sad",
+      autoAdvance: true,
+    });
+  });
 });

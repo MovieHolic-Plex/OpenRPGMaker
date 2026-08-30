@@ -8,18 +8,35 @@ import {
   remoteOutboxStats,
   scheduleRemoteOutboxBootFlush,
 } from "@/project/remoteOutbox";
+import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 import { recordSupabaseAiActivityLog } from "@/project/supabaseProjectSync";
 import { randomUuid } from "@/util/id";
 import { AI_ACTIVITY_DISK_ENDPOINT } from "./activityLogEndpoint";
 import { aiActivityRunId } from "./activityRunId";
-import type { AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
-export type { AiActivityChannel, AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
+import type { AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityIndex, AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
+import type { AiUiEvent } from "./uiEventTypes";
+export type { AiActivityChannel, AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityIndex, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 
 const STORAGE_KEY = "oprn:ai-activity-logs";
 const MAX_LOGS = 100;
 const MAX_TEXT = 4000;
 const MAX_ARGS_JSON = 12_000;
 const MAX_KEEPALIVE_BYTES = 60 * 1024;
+/**
+ * 한 행이 담을 수 있는 audit/toolCalls 의 직렬화 예산(바이트).
+ *
+ * 예전에는 칸수 상한(audit 200칸 / toolCalls 80개)이었다. 그게 실제로 데이터를 버렸다 —
+ * 실측 2026-08-30, "니 추천대로" 턴은 audit 정확히 200칸으로 잘려 **첫 칸이 이미 턴 중간의
+ * `tools:escalated`** 였다(사람 발언과 플래너 결정이 사라졌다). 툴도 114회 중 67개만 남았다.
+ * 칸수는 내용량과 무관하므로, 짧은 상태줄 수백 개는 통과시키고 긴 턴의 머리는 버린다.
+ * 예산으로 바꾸면 «담을 수 있는 만큼» 담고, 못 담은 양은 truncated 로 드러난다.
+ */
+const AUDIT_BUDGET_BYTES = 384 * 1024;
+const TOOL_CALL_BUDGET_BYTES = 128 * 1024;
+/** 프론트 액션은 한 건이 작다(수백 바이트) — 개수로 잘라도 머리를 버리지 않는다. */
+const MAX_UI_ACTIONS = 400;
+/** 예산 절단 시 앞쪽(사람 발언·플래너 결정)에 남겨 두는 몫. */
+const HEAD_RESERVE_RATIO = 0.25;
 /** 진단 한 줄에 붙일 issue 개수. 앞 몇 건이 거의 항상 원인이고, 다 붙이면 요약이 로그가 된다. */
 const DIAGNOSTIC_ISSUE_LIMIT = 3;
 
@@ -46,22 +63,71 @@ function clipArgs(args: Record<string, unknown>): Record<string, unknown> {
   }
 }
 
-function sanitizeAudit(entries: readonly AuditEntry[]): AuditEntry[] {
-  return entries.slice(-200).map((entry) => {
-    if (entry.kind === "user" || entry.kind === "assistant" || entry.kind === "status") {
-      return { ...entry, text: clipText(entry.text) };
-    }
-    return {
-      ...entry,
-      summary: clipText(entry.summary),
-      args: clipArgs(entry.args),
-      issues: entry.issues?.slice(0, 20).map((issue) => clipText(issue, 500)),
-    };
-  });
+function jsonBytes(value: unknown): number {
+  try {
+    return JSON.stringify(value)?.length ?? 0;
+  } catch {
+    return 0;
+  }
 }
 
-function sanitizeToolCalls(calls: readonly AiActivityToolCall[]): AiActivityToolCall[] {
-  return calls.slice(0, 80).map((call) => ({
+/**
+ * 예산 안에 들어가는 만큼을 **뒤에서부터** 담고, 담긴 것과 버린 개수를 함께 돌려준다.
+ * 뒤가 최신이고 결과에 가까우므로 잘릴 때는 앞을 버린다 — 다만 버렸다는 사실은 남긴다.
+ */
+/**
+ * 예산 안에서 «양 끝» 을 남긴다 — 뒤(결과 쪽)부터 채우고, 잘렸으면 남은 몫으로 앞(사람 발언·
+ * 플래너 결정)을 되살린다. 버리는 건 가운데이고, 몇 칸인지는 `truncated` 가 말한다.
+ *
+ * 왜 뒤만 남기지 않는가: 이 작업의 출발점이 «머리가 잘린 행» 이었다(실측 13:23:48 턴은 audit 첫
+ * 칸이 이미 턴 중간의 `tools:escalated` — 사람 발언과 플래너 결정이 사라졌다). 상한을 칸수에서
+ * 바이트로 바꾸기만 하고 뒤만 남기면 같은 실패가 극단 턴에 그대로 남는다.
+ */
+function fitWithinBudget<T>(rows: readonly T[], budget: number): { kept: T[]; dropped: number } {
+  const sizes = rows.map((row) => jsonBytes(row) + 1);
+  if (sizes.reduce((sum, size) => sum + size, 0) <= budget) return { kept: [...rows], dropped: 0 };
+
+  const tailBudget = budget - Math.floor(budget * HEAD_RESERVE_RATIO);
+  let used = 0;
+  let tailStart = rows.length;
+  while (tailStart > 0) {
+    const size = sizes[tailStart - 1] as number;
+    // 마지막 칸은 홀로 예산을 넘겨도 남긴다 — 결과 없는 행은 읽을 값이 없다.
+    if (used + size > tailBudget && tailStart < rows.length) break;
+    used += size;
+    tailStart -= 1;
+  }
+
+  let headEnd = 0;
+  while (headEnd < tailStart) {
+    const size = sizes[headEnd] as number;
+    if (used + size > budget) break;
+    used += size;
+    headEnd += 1;
+  }
+
+  const kept = [...rows.slice(0, headEnd), ...rows.slice(tailStart)];
+  return { kept, dropped: rows.length - kept.length };
+}
+
+function sanitizeAuditEntry(entry: AuditEntry): AuditEntry {
+  if (entry.kind === "user" || entry.kind === "assistant" || entry.kind === "status") {
+    return { ...entry, text: clipText(entry.text) };
+  }
+  return {
+    ...entry,
+    summary: clipText(entry.summary),
+    args: clipArgs(entry.args),
+    issues: entry.issues?.slice(0, 20).map((issue) => clipText(issue, 500)),
+  };
+}
+
+function sanitizeAudit(entries: readonly AuditEntry[]): { kept: AuditEntry[]; dropped: number } {
+  return fitWithinBudget(entries.map(sanitizeAuditEntry), AUDIT_BUDGET_BYTES);
+}
+
+function sanitizeToolCalls(calls: readonly AiActivityToolCall[]): { kept: AiActivityToolCall[]; dropped: number } {
+  const normalized = calls.map((call) => ({
     name: call.name,
     args: clipArgs(call.args ?? {}),
     ...(call.ok === undefined ? {} : { ok: call.ok }),
@@ -69,6 +135,69 @@ function sanitizeToolCalls(calls: readonly AiActivityToolCall[]): AiActivityTool
     ...(call.softConfirm === undefined ? {} : { softConfirm: call.softConfirm }),
     ...(call.construction === undefined ? {} : { construction: call.construction }),
   }));
+  return fitWithinBudget(normalized, TOOL_CALL_BUDGET_BYTES);
+}
+
+/**
+ * audit 상태줄에 박힌 `commit=<uuid>` 를 구조적으로 꺼낸다(마일스톤 적용 기록).
+ *
+ * 정규식이 남아 있는 이유: 커밋 id 는 상태줄 텍스트에만 실린다. 원천을 구조화하는 것이 옳지만
+ * 그건 assistantSession 의 상태줄 계약을 바꾸는 일이라 이 작업 범위 밖이다. 대신 «긁는 곳» 을
+ * 한 군데로 모아서, 기록되는 순간 `result.commitIds` / `index.commitIds` 로 구조화한다 —
+ * 예전에는 조회하는 사람이 매번 169KB payload 를 받아 직접 긁었다.
+ */
+export function extractCommitIdsFromAudit(entries: readonly AuditEntry[]): string[] {
+  return extractCommitIds(entries);
+}
+
+function extractCommitIds(entries: readonly AuditEntry[]): string[] {
+  const ids = new Set<string>();
+  for (const entry of entries) {
+    if (entry.kind !== "status") continue;
+    for (const match of entry.text.matchAll(/commit=([0-9a-f]{8}-[0-9a-f-]{27,})/gu)) {
+      const id = match[1];
+      if (id) ids.add(id);
+    }
+  }
+  return [...ids];
+}
+
+/** payload 안을 뒤지지 않고 SQL 로 찾기 위한 평탄 색인. */
+function buildActivityIndex(input: {
+  readonly toolCalls: readonly AiActivityToolCall[];
+  readonly audit: readonly AuditEntry[];
+  readonly uiActions: readonly AiUiEvent[];
+  readonly mapId?: string;
+  readonly commitIds: readonly string[];
+}): AiActivityIndex {
+  const toolNames = new Set<string>();
+  const failedToolNames = new Set<string>();
+  for (const call of input.toolCalls) {
+    toolNames.add(call.name);
+    if (call.ok === false) failedToolNames.add(call.name);
+  }
+  const userTexts: string[] = [];
+  const mapIds = new Set<string>();
+  if (input.mapId) mapIds.add(input.mapId);
+  for (const entry of input.audit) {
+    if (entry.kind === "tool") {
+      toolNames.add(entry.name);
+      if (entry.ok === false) failedToolNames.add(entry.name);
+      const mapId = entry.args?.mapId;
+      if (typeof mapId === "string" && mapId) mapIds.add(mapId);
+      continue;
+    }
+    // 기계 footer 를 뗀 사람 문장만 색인한다 — 붙이면 모든 행이 같은 맵 이름으로 시작한다.
+    if (entry.kind === "user") userTexts.push(clipText((entry.text.split("\n\n[컨텍스트]")[0] ?? entry.text).trim(), 200));
+  }
+  return {
+    toolNames: [...toolNames],
+    failedToolNames: [...failedToolNames],
+    uiActions: [...new Set(input.uiActions.map((event) => event.action))],
+    commitIds: [...input.commitIds],
+    mapIds: [...mapIds],
+    userTexts: userTexts.slice(-20),
+  };
 }
 
 export function deriveAiActivityDiagnostics(
@@ -183,14 +312,24 @@ function readLocal(): AiActivityLogRecord[] {
   if (!raw) return [];
   try {
     const parsed: unknown = JSON.parse(raw);
+    // 이 브랜치 이전에 저장된 행에는 diagnostics/index 가 없다. 읽는 쪽이 매번 방어하지 않도록
+    // 여기서 채워 준다 — 없는 채로 흘리면 하네스 타임라인이 undefined 를 타고 죽는다.
     return Array.isArray(parsed)
       ? parsed
           .filter(isActivityRecord)
-          .map((record) =>
-            record.diagnostics
-              ? record
-              : { ...record, diagnostics: deriveAiActivityDiagnostics(record) },
-          )
+          .map((record) => ({
+            ...record,
+            diagnostics: record.diagnostics ?? deriveAiActivityDiagnostics(record),
+            index:
+              record.index ??
+              buildActivityIndex({
+                toolCalls: record.toolCalls,
+                audit: record.audit,
+                uiActions: record.uiActions ?? [],
+                commitIds: record.result.commitIds ?? extractCommitIds(record.audit),
+                ...(record.mapId ? { mapId: record.mapId } : {}),
+              }),
+          }))
       : [];
   } catch {
     return [];
@@ -240,8 +379,23 @@ export function serializeAiActivityLogs(limit = 20): string {
 
 /** 입력 → 로컬 저장 레코드 (원격 전송 전 정규화). */
 export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityLogRecord {
-  const toolCalls = sanitizeToolCalls(input.toolCalls ?? []);
-  const audit = sanitizeAudit(input.audit ?? []);
+  const tools = sanitizeToolCalls(input.toolCalls ?? []);
+  const audits = sanitizeAudit(input.audit ?? []);
+  const toolCalls = tools.kept;
+  const audit = audits.kept;
+  const allUiActions = input.uiActions ?? [];
+  const uiActions = allUiActions.slice(-MAX_UI_ACTIONS);
+  const truncated = {
+    ...(audits.dropped > 0 ? { audit: audits.dropped } : {}),
+    ...(tools.dropped > 0 ? { toolCalls: tools.dropped } : {}),
+    ...(allUiActions.length > uiActions.length ? { uiActions: allUiActions.length - uiActions.length } : {}),
+  };
+  // 색인·커밋 id 는 «절단 전» 전체에서 만든다. 이름 목록은 중복 제거된 짧은 배열이라 비용이 거의
+  // 없는데, 절단된 행에서 만들면 가운데로 버려진 툴·액션은 조회로 아예 못 찾는다 —
+  // payload 를 못 찾는 게 이 작업이 고치려는 구멍이다.
+  const allAudit = input.audit ?? [];
+  const allToolCalls = input.toolCalls ?? [];
+  const commitIds = input.result.commitIds ?? extractCommitIds(allAudit);
   return {
     id: input.id ?? randomUuid(),
     runId: input.runId ?? aiActivityRunId(),
@@ -266,11 +420,24 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
       ...(input.result.assistantText
         ? { assistantText: clipText(input.result.assistantText, 2000) }
         : {}),
+      ...(input.result.pending ? { pending: true } : {}),
+      ...(input.result.orphaned ? { orphaned: true } : {}),
+      ...(commitIds.length > 0 ? { commitIds } : {}),
     },
     toolCalls,
     audit,
-    diagnostics: deriveAiActivityDiagnostics({ result: input.result, toolCalls, audit }),
+    // 진단도 절단 전으로 뽑는다 — 가운데로 버려진 실패는 «없던 일» 이 아니다.
+    diagnostics: deriveAiActivityDiagnostics({ result: input.result, toolCalls: allToolCalls, audit: allAudit }),
+    index: buildActivityIndex({
+      toolCalls: allToolCalls,
+      audit: allAudit,
+      uiActions: allUiActions,
+      commitIds,
+      ...(input.mapId ? { mapId: input.mapId } : {}),
+    }),
     ...(input.uiEvents ? { uiEvents: input.uiEvents.slice(-120) } : {}),
+    ...(uiActions.length > 0 ? { uiActions } : {}),
+    ...(Object.keys(truncated).length > 0 ? { truncated } : {}),
   };
 }
 
@@ -319,6 +486,7 @@ export async function recordAiActivity(input: AiActivityLogInput): Promise<AiAct
 
   // 원격이 살아 있는 걸 방금 확인한 시점이 재전송에 가장 좋은 순간이다.
   if (persisted === "both") void flushRemoteOutbox().catch(() => undefined);
+  if (persisted === "local") warnLocalOnlyOnce();
 
   const finalRecord: AiActivityLogRecord = { ...base, persisted };
   writeLocal([finalRecord, ...readLocal().filter((row) => row.id !== finalRecord.id)]);
@@ -405,6 +573,31 @@ function warnMirrorFailure(reason: string): void {
   );
 }
 
+/**
+ * 기록이 어디까지 갔는지. 하네스 모달이 「로컬 전용」 배지를 그리는 근거다.
+ *
+ * 왜 필요한가 (실측 2026-08-30): 워크트리 53개 중 19개에 `.env.local` 이 없어 Supabase 가 미설정
+ * 이었고, 표본을 열어 보니 `output/ai-activity/` 도 0개였다. 즉 그 세션들의 AI 기록은 브라우저
+ * localStorage 100건 링버퍼에만 있었고, 링버퍼가 밀어내는 순간 영구히 사라졌다. 그런데 화면에는
+ * 아무 표시도 없어서 «남는 줄 알고» 계속 썼다. 조용한 유실이 가장 나쁘다.
+ */
+export function aiActivityPersistenceState(): { readonly remote: boolean; readonly diskMirror: boolean } {
+  return { remote: supabaseProjectConfig() !== null, diskMirror: mirrorState !== "disabled" };
+}
+
+let localOnlyWarned = false;
+
+function warnLocalOnlyOnce(): void {
+  if (localOnlyWarned) return;
+  const state = aiActivityPersistenceState();
+  if (state.remote || state.diskMirror) return;
+  localOnlyWarned = true;
+  console.warn(
+    "[ai-activity] 원격(Supabase)도 디스크 미러도 없다 — AI 기록이 이 탭의 localStorage 링버퍼" +
+      `(${MAX_LOGS}건)에만 남고, 넘치면 사라진다. .env.local 의 Supabase 설정이나 dev/preview 서버를 확인할 것.`,
+  );
+}
+
 export async function recordAiActivityFromRegionLog(
   log: RegionActivityLogLike,
   extras?: { readonly projectContextKey?: string; readonly model?: string; readonly liteModel?: string },
@@ -440,6 +633,30 @@ export async function recordAiActivityFromRegionLog(
     audit: log.audit,
     uiEvents: log.uiEvents,
     at: log.exportedAt,
+  });
+}
+
+/**
+ * 턴 밖에서 일어난 프론트 액션 묶음 1행. 턴 «안» 의 액션은 그 턴 행의 `uiActions` 에도 실린다 —
+ * 중복은 의도한 것이다. 턴 행은 사람이 읽는 서사이고, 이 행들은 빠짐없는 스트림이다.
+ *
+ * instruction 에 액션 이름을 이어 붙이는 이유: 그 컬럼이 DB 의 유일한 평문 검색 축이고
+ * (`instruction=ilike.*turn-rewind*`), 목록 조회에서 payload 를 열지 않고도 무슨 일인지 읽힌다.
+ */
+export async function recordAiUiActionBatch(
+  events: readonly AiUiEvent[],
+  extras?: { readonly projectContextKey?: string; readonly mapId?: string },
+): Promise<AiActivityLogRecord | null> {
+  if (events.length === 0) return null;
+  const names = [...new Set(events.map((event) => event.action))];
+  return await recordAiActivity({
+    channel: "ui",
+    instruction: `[ui] ${names.join(", ")}`,
+    ...(extras?.projectContextKey ? { projectContextKey: extras.projectContextKey } : {}),
+    ...(extras?.mapId ? { mapId: extras.mapId } : {}),
+    result: { ok: true },
+    uiActions: events,
+    at: events[0]?.at,
   });
 }
 

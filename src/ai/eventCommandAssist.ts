@@ -26,7 +26,9 @@ import {
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
-import { chatCompletion, configForLiteModel, type AiConfig, type ChatMessage } from "./llmClient";
+import { resolveSurfaceAiConfig } from "./assistantEndpoint";
+import { chatCompletion, type AiConfig, type ChatMessage } from "./llmClient";
+import { composeSystemPrompt } from "./systemPromptEnvelope";
 
 export interface EventAssistContext {
   readonly project: Project;
@@ -340,13 +342,27 @@ export async function runEventCommandAssist(options: {
   readonly context: EventAssistContext;
   readonly onDelta?: (delta: string) => void;
   readonly signal?: AbortSignal;
+  /** 프로젝트 한정 성향 조회 키(conversationScopeKey). 없으면 전역 성향만 붙는다. */
+  readonly projectScopeKey?: string;
 }): Promise<AssistRunResult> {
   const { prompt, context, onDelta, signal } = options;
-  const config = configForLiteModel(options.config);
+  const config = resolveSurfaceAiConfig("event-command", options.config);
   const scope = resolveAssistScope(context.page);
   const allowEmpty = scope === "page" && (context.page?.commands.length ?? 0) > 0;
   const messages: ChatMessage[] = [
-    { role: "system", content: buildEventAssistPrompt(context) },
+    {
+      role: "system",
+      // 공용 봉투 경유 — 이 채널이 사람 성향을 받는 유일한 지점이다.
+      // includePolicy 는 끈다: 산출물이 JSON 커맨드 배열이라 AGENT_UX_POLICY_LINES 의 마무리 톤 규칙
+      // ("최종 응답은 3~5문장")이 "JSON 배열만 출력"과 정면으로 충돌하고, 정책이 언급하는 툴
+      // (author_house·configure_time_system 등)은 이 채널에 아예 없다.
+      content: composeSystemPrompt({
+        surface: "event-command",
+        body: buildEventAssistPrompt(context),
+        includeMemory: true,
+        ...(options.projectScopeKey ? { projectScopeKey: options.projectScopeKey } : {}),
+      }),
+    },
     { role: "user", content: prompt },
   ];
 

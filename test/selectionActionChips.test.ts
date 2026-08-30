@@ -33,6 +33,24 @@ describe("selectionChipModalOptions", () => {
     expect(options.region).toEqual({ x: 3, y: 4, width: 5, height: 6 });
     expect(options.initialInstruction).toBeUndefined();
     expect(options.autoRun).toBeUndefined();
+    // 일반 칩은 mode 키를 넣지 않는다 — 모달의 키워드 라우팅이 결정한다.
+    expect(options).not.toHaveProperty("mode");
+  });
+
+  it("다듬기 칩은 지시문·autoRun·mode 를 함께 실어 원탭으로 실행된다", () => {
+    const polish = SELECTION_CHIP_PRESETS.find((preset) => preset.id === "polish");
+    expect(polish).toBeTruthy();
+    const options = selectionChipModalOptions(polish!, SELECTION);
+    expect(options.initialInstruction).toBe(polish!.instruction);
+    expect(options.autoRun).toBe(true);
+    // mode 를 안 실으면 어휘 매칭에만 의존하게 되고, 지시문을 손보면 조용히 일반 경로가 된다.
+    expect(options.mode).toBe("polish");
+  });
+
+  it("앵커를 주면 모달이 그 좌표 근처에 뜬다", () => {
+    const polish = SELECTION_CHIP_PRESETS.find((preset) => preset.id === "polish")!;
+    const options = selectionChipModalOptions(polish, SELECTION, { x: 120, y: 240 });
+    expect(options.anchor).toEqual({ x: 120, y: 240 });
   });
 });
 

@@ -66,6 +66,7 @@ Database tabs, record views, battle database records, utility records, reference
 
 - **기본 장비 런타임 축 계약 (2026-08-29):** `EquipmentRecord.accuracy`는 일반 공격 최종 명중률에 곱하는 0~100% 보정(기본 100), `criticalRate`는 액터 기본 치명타율에 더하는 0~100%p 보정(기본 0)이다. 일반 공격은 장비의 첫 `attackElementIds` 하나를 속성 배율에 적용하므로 기본 카탈로그는 무기당 공격 속성을 최대 하나만 저작한다. `stateInflictIds`/`stateInflictionChance`는 적중한 일반 공격, `elementalDefenseIds`는 일치 속성 피해 50% 감소, `stateDefenseIds`/`stateResistanceChance`는 `stateDefenseMode:"resist"`일 때 상태 저항 판정에 쓰인다. `twoHanded`는 양손 슬롯 점유, `effectFlags.doubleAttack`/`attackAll`은 일반 공격 횟수/대상을 바꾼다. 반면 장비용 MP 비용은 `EquipmentRecord`에 없고, `preemptive`·`ignoreDodge`·`preventCriticalHits`·`increasePhysicalDodge`·`halfMpCost`·`negateTerrainDamage` 플래그와 `stateDefenseMode:"inflict"`는 턴제 런타임 소비자가 없으므로 기본 장비에 저작하지 않는다. `test/equipmentCatalogRuntimeAxes.test.ts`가 실제 전투 런타임과 결정적 RNG로 명중·치명타·상태 부여·공격 속성·속성 방어·상태 저항을 검증하고, `test/defaultItemCatalogQuality.test.ts`가 기본 카탈로그의 허용 축만 검사한다.
 - 기본 아이템 카탈로그는 `public/assets/cc0/jetrel/icons` 아래의 대응 아이콘과 함께 JRPG 아이템 100종 이상을 제공한다. 기존 Jetrel CC0 아이콘은 유지하고, 맞지 않거나 빠진 아이콘은 가능한 경우 로컬 생성 스크립트로 만든 뒤 `src/assets/cc0IconAssets.ts`에 `generated` 라이선스로 등록한다. `defaultItemRecords()`를 비롯한 기본 데이터베이스 레코드는 `createBlankProject` → `saveProjectToSupabase` 경로로 **새** 프로젝트를 만들며, `ensureDefaultDatabaseIconResources()`는 `normalizeCurrentProject`에서 번들 아이콘 리소스를 연결한다. 불러올 때도 Supabase `current_json` 행이 기준 원본이다. 일반 기본값 보충은 금지하되, `repairSupabaseCurrentJson`은 2026-08 영문 아이템 껍데기 결함만 제한적으로 이전한다. ASCII 슬러그 이름과 `<slug> 기본 아이템입니다.` 설명이 모두 손대지 않은 모양일 때만 행을 교체하고, 이름이나 설명 중 하나라도 고친 부분 편집 행은 의도적으로 보존하며, 복구된 카탈로그에 필요한 승격 장비 9개와 아이템 효과 스킬 2개 및 그 스킬이 참조하는 번들 전투 애니메이션만 추가한다. 참조 없는 옛 장비 아이템 행은 제거하지만, 이벤트·시스템·시작 인벤토리가 참조하는 행은 한국어 비착용 안내 행으로 남겨 참조를 보존한다. 이 복구는 깨끗하게 열기만 해서는 저장 행에 즉시 기록되지 않으며, 이후 다른 편집을 저장할 때 함께 영구 반영된다.
+- **로드 정규화 기본 카탈로그 보충 (2026-08-30):** `src/project/defaults/defaultDatabaseIconResources.ts`의 `ensureDefaultDatabaseIconResources()`는 불러온 프로젝트에서 id가 빠진 기본 ITEM과 EQUIPMENT 레코드를 보충한다. 같은 id의 기존 레코드는 덮어쓰지 않으므로 사용자 편집값은 유지된다.
 - **기본 카탈로그 계약:** 아이템과 장비 이름에는 한글이 들어가고, 모든 레코드는 서로 다른 구체적인 한국어 설명을 가진다. 사용 가능한 아이템의 `occasion`, `consumable`, 실행 가능한 회복·상태·스킬·기술서 효과는 서로 맞아야 한다. `occasion: "never"`는 소모하지 않는 재료, 수확물, 도구, 이벤트·퀘스트 물품과 농사 권위자가 소비하는 작물 씨앗에만 쓴다. 농기구에는 유효한 `farmTool`이 있어야 한다. 착용 장비는 `project.database.equipment`에만 두며, 장비 모양 행을 `database.items`에 남기지 않는다. 전투 아이템과 아이템 효과 스킬은 실제 전투 애니메이션 레코드를 참조해야 한다. 전투 대상 해석이 쓰러진 전투원을 제외하므로 부활 아이템은 필드 전용이다. `test/defaultItemCatalogQuality.test.ts`가 데이터와 애니메이션 참조 계약을 검사하고, `test/itemRuntimeUsability.test.ts`가 실제 메뉴·전투·농기구 권위자를 실행한다.
 - **기능 확장 기본 아이템(2026-08-29):** `defaultFeatureItemRecords.ts`가 기본 카탈로그에서 비어 있던 상태 추가, 아군 전체 대상, 몬스터 `careProfile`, 영구 성장 씨앗, `switchId`, 속성 아이템 스킬, 유한 `consumptionLimit` 경로를 출하 레코드로 연결한다. 출하 프로젝트에 연결되지 않은 작물 씨앗은 심기·수확을 약속하지 않도록 카탈로그에서 제외한다. 스위치 아이템은 필드 메뉴에서 아직 꺼진 전용 스위치만 켜고 성공 사용 1회를 공통 아이템 전환 권위자에 넘긴다. 유한 충전은 메뉴와 전투 모두 `transitionItemState(..., { kind: "successfulUse" })`가 계산하며, `allAllies` 전투 아이템은 대상 수와 관계없이 명령당 한 번만 전환한다. 집중 실행 계약은 `test/defaultFeatureItemRuntime.test.ts`다.
 - **Characters ??actors (G006):** Characters are **not** a `database.*` collection and are **not** party Actors. The `characters` database tab (`db-tab-characters`, `databaseCharacterView.ts`) manages the opt-in identity package `project.characters` plus orphan event-used characterIds via `listCharacterIdIndex`. Do **not** confuse these social keys with Actor (`database.actors`) party members. List thumbs come from the first host map-event charset crop (`characterListThumbnail.ts` / `resolveCharacterListThumbSource`: hosts[0] event page graphic only). Never use Actor facesets, `database.actors`, or a CharacterProfile portrait field for list thumbs ??CharacterProfile has displayName/birthday/giftPrefs only, no portrait resource.
@@ -142,7 +143,7 @@ Database tabs, record views, battle database records, utility records, reference
 ## DB UI modernization (2026-08)
 
 - **Party Studio actor/class build surfaces (2026-08-24):** Actor detail keeps every legacy field/testid but adds a schema-preserving build preview (`databasePartyBuildSummary.ts`) for runtime levels 1–99, with the authored natural `maxLevel` disclosed separately. Effective stats and listed starting equipment must use `effectiveActorEquipment` before delegating calculations to `actorDerivedStats`; DB growth skills come from `learnedSkillIds`. Missing or slot-invalid skill/equipment references render as inert warnings, never navigation links. The growth-source disclosure is intentionally precise: an actor's assigned starting class contributes class skills/commands/equipment relationships, while the actor's own parameter curves remain authoritative until a runtime class override from class change/promotion exists. Class detail adds a derived Lv20 role/build summary plus actor backlinks; its equipment metric unions class-common runtime permission paths (`equippableClassIds`, class `equipmentIds`/`classIds`) with `canEquip` results for directly linked actors, so actorless promotion targets still report their usable equipment. Actor class/skill/equipment links and class actor backlinks set the destination record selection and call `switchDatabaseActiveTab` against the existing `.database-modal-body`; never reopen the Database modal. Actor class/equipment edits and class skill/command/equipment/promotion edits refresh their derived surfaces immediately. The preview level is editor-local and must not dirty or persist project data. Contracts: `test/databasePartyBuildStudio.test.ts`, `test/e2e/database-party-build-studio.spec.ts`.
-- **Party Studio skill/item/equipment inspectors (2026-08-24):** Skill detail adds a live ability composer with activation/target/cost chips, ordered effect blocks, and exact-record backlinks for every authoritative consumer: actors, classes, items, equipment, enemy skill lists/actions, and monster-species level skills. Backlinks must update the destination tab's own selection state before using the existing same-modal tab switch. Item detail tells an effect story from runtime-enforced occasion and eligibility rules; optional schema fields that the runtime ignores for that item kind must not be presented as enforced restrictions. Equipment detail compares the selected actor's initial build by reusing `normalizeActorRecord`, `effectiveActorEquipment`, `transitionActorEquipment`, and `actorDerivedStats`; it explicitly excludes live-session class changes, permanent bonuses, and inventory state. These are editor-only derived views: no schema or persistence changes. Contracts: `test/databaseSkillComposer.test.ts`, `test/databaseItemInspector.test.ts`, `test/databaseEquipmentInspector.test.ts`, `test/databaseEquipmentRecordView.test.ts`.
+- **Party Studio skill/item/equipment inspectors (2026-08-24):** Skill detail adds a live ability composer with activation/target/cost chips, ordered effect blocks, and exact-record backlinks for every authoritative consumer: actors, classes, items, equipment, enemy skill lists/actions, and monster-species level skills. Backlinks must update the destination tab's own selection state before using the existing same-modal tab switch. The skill animation stage registers its controller by stage-root element in `databaseSkillAnimationStage.ts`; DOM owners stop stages by scope before tab replacement, record-detail replacement, and modal removal, then the tab cache owner resumes autoplay after cached DOM reattachment. Picker replacement still stops its current stage directly. Item detail tells an effect story from runtime-enforced occasion and eligibility rules; optional schema fields that the runtime ignores for that item kind must not be presented as enforced restrictions. Equipment detail compares the selected actor's initial build by reusing `normalizeActorRecord`, `effectiveActorEquipment`, `transitionActorEquipment`, and `actorDerivedStats`; it explicitly excludes live-session class changes, permanent bonuses, and inventory state. These are editor-only derived views: no schema or persistence changes. Contracts: `test/databaseSkillComposer.test.ts`, `test/databaseItemInspector.test.ts`, `test/databaseEquipmentInspector.test.ts`, `test/databaseEquipmentRecordView.test.ts`.
 
 The Database modal was modernized in six waves while keeping every hard contract (G006 in-modal jumps, dirty 3-way guard, AI dock visibility, existing `db-field-*`/`db-tab-*`/`db-type-chart-*`/`db-record-row-*` testids, zero schema changes). New surface styles are scoped to the modal.
 
@@ -266,6 +267,57 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - **마커 클래스로 하면 안 된다.** `renderActiveTab` 이 body 를 `replaceChildren` 만 하므로 TS 에서 붙인 className·dataset 이 탭을 바꾼 뒤에도 남아 다른 탭으로 샌다. `:has()` 로 판정해야 한다. `sidebar.css` 쪽 선택자가 특이도는 높지만 `display` 를 건드리지 않아 충돌하지 않는다.
 - **복제가 막다른 길이었다.** 내장 킷은 "편집하려면 [내 구조물로 복제]를 쓰세요"라고 안내하는데, 복제 핸들러가 사본을 만들고 목록만 다시 그려서 인스펙터가 계속 원본을 봤다. 선택을 사본으로 옮길 때는 **`session.selectedKitId` 만으로 부족하다** — `session.source`(`"builtin"` 이면 사용자 킷이 걸러진다)와 `session.searchQuery` 를 함께 맞춰야 한다. 안 그러면 선택 복구 로직이 `visibleEntries[0]` 으로 즉시 갈아탄다. `[+ 새 구조물]` 핸들러가 옳은 순서의 선례다.
 
+### 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
+
+사용자는 "구조물의 역할·레이어·배치 규약·사용 테마를 수정할 수 있어야 하고, 새 구조물을 추가할 때
+각 타일에 «세로로 증분 가능» 같은 설명을 넣을 수 있어야 한다"고 했다. 실측해 보니 여섯 축 중
+세 개(설명·배치 규칙·분류)만 편집 가능했고, `tags` 는 **타입과 AI 초안 파서에는 있는데 폼이 없었다** —
+사람이 손으로 넣을 방법이 아예 없는 필드였다. `layerHome`·`themes` 는 존재하지도 않았다.
+
+- **`StructureKitAiMeta` 에 세 필드가 늘었다**: `growthAxis`(`horizontal|vertical|both`),
+  `layerHome`(`lower|upper|perCell`), `themes: string[]`. 이름·값은 `TileGroupMetadata` 와 의도적으로
+  같다(`patternGrammar.axis`, `layerHome`) — AI 가 이미 그 단어들을 읽고 있다.
+- **`SectionStructureKitDef.cellHints`** 가 칸 단위 힌트다: `{dx, dy, growth?, note?}`.
+  `parts` 와 합치지 않은 이유는 소비자가 다르기 때문이다 — 부위는 워프·간판 좌표를 만들고,
+  칸 힌트는 시공 반복 축과 AI 설명으로 간다. 한 칸에 힌트는 하나(`dx,dy` 가 키)다.
+- **`repeatability` 는 가로 전용이었다.** `repeat|fixed` 두 값으로는 「세로로만 쌓는 벽」을 적을 수 없고,
+  `stamp_structure_kit` 도 가로 반복밖에 없었다. 판정은 `structureKitGrowthAxes()` 한 곳으로 모았고
+  세 층이 이 순서로 이긴다: `ai.growthAxis` → `ai.repeatability` → `kind`.
+  `structureKitRepeatable()` 은 그 결과의 `x` 를 돌려주는 얇은 껍데기로 남겼다(호출부 다수).
+  **세로 증분은 사람이 명시할 때만 열린다** — 조용히 3층이 생기는 쪽이 1층보다 나쁘다.
+- **`stamp_structure_kit` 에 `repeatY` 가 붙었다**(기본 1). 축이 허용하지 않는 방향은 1회로 조이고
+  **조인 사실을 요약 문장과 `data.repeatClamped` 에 남긴다** — 말없이 조이면 모델은 쌓았다고 믿고
+  다음 층을 그 위에 얹는다. 반복 격자는 `unitRects` 목록 하나로 만들어 배치 조건 검사와 실제 시공이
+  **같은 목록**을 본다(둘이 갈라지면 검사를 통과한 좌표와 찍는 좌표가 달라진다).
+- **AI 가 받는 것**: `contextBuilder` 의 구조물 줄에 증분 축·레이어가 붙고, 테마·태그·칸 힌트(앞 6개)가
+  뒤따른다. 칸 힌트는 **자르지 않는다** — 「이 열은 세로로 증분 가능」이 잘리면 무한 확장 구조물을
+  통째로 못 쓴다. `list_structure_kits` 는 `growth{x,y}`·`layerHome`·`cellHints` 를 그대로 싣는다.
+- **파일 포맷은 v1 그대로**다. 새 필드는 전부 옵션이라 옛 편집기도 파일을 열 수 있다(버전을 올리면
+  `version > STRUCTURE_KIT_FILE_VERSION` 검사가 옛 빌드에서 파일을 통째로 거부한다).
+- **같은 파서에서 실측 결함 둘을 함께 고쳤다.**
+  ① `readAiMeta` 가 `ai.placement` 를 **읽지 않았다** — 직렬화는 이미 쓰고 있었으므로
+  내보내기→가져오기를 한 번 거치면 «필수» 배치 조건이 조용히 사라져 막혀 있던 자리에 찍혔다.
+  ② `description`·`placementRules` 가 둘 다 비면 메타를 통째로 버렸다 — 축·테마만 적은 구조물이
+  왕복에서 어휘를 전부 잃었다. 이제 한 필드라도 내용이 있으면 살린다.
+- **편집기**: AI 메타 탭에 `structure-kit-editor-ai-growth`(증분 축) ·
+  `-ai-layer`(레이어, 「미지정」 옆에 유도값을 적어 둔다) · `-ai-tags` · `-ai-themes` 가 늘었다.
+  태그·테마는 쉼표로 나누는 한 줄 입력이다 — 칩으로 닫지 않은 이유는 값 어휘가 열린 집합이기 때문이다
+  (실내 테마 7종은 방 채우기 전용 문법이고 야외 테마는 사람이 짓는다).
+  도구 레일에는 `structure-kit-editor-tool-hint`(칸 힌트)가 붙었고, 칸을 누르면 부위 종류와 같은
+  팝오버(`structure-kit-editor-hint-menu`)로 축을 고른다. `window` 가 없는 유닛 테스트 환경에서는
+  팝오버 대신 **결정적 순환**(가로→세로→양방향→없음)이 돌아 같은 값 집합을 덮는다.
+  칸별 설명은 목록(`structure-kit-editor-cell-hints`)의 입력칸에서 쓴다 — 팝오버에 텍스트 입력을
+  넣으면 바깥클릭 닫기와 싸운다. 캔버스에는 격자선과 같은 겹침 층으로 배지를 얹는다
+  (`renderTileCellsToCanvas` 가 타일셋 로드 후 비동기로 다시 그리므로 캔버스에 직접 그으면 지워진다).
+- **크기 조절이 칸 힌트 손실도 보고한다**: `resizeKit` 의 `droppedHints`. 1×1 이라 클램프 여지가 없어
+  부위와 따로 센다.
+- 커버리지: `test/structureKitGrowth.test.ts`(축 3층 우선순위·레이어 유도·집 킷은 두 축 닫힘),
+  `test/structureKitRasterModel.test.ts`(칸 힌트 CRUD·축/메모 독립성·크기 조절 손실·굽기 보존),
+  `test/structureKitFile.test.ts`(어휘 왕복·배치 조건 왕복·행렬 밖 힌트 폐기·자유 문장 없는 메타 생존),
+  `test/structureKitTools.test.ts`(`growth`/`layerHome`/`cellHints` 응답, `repeatY` 시공, 축 제한 보고,
+  경계 거부, 프롬프트 내용), `test/structureKitEditorDialog.test.ts`(새 폼 4칸·수락 반영·칸 힌트 순환),
+  `test/structureKitPartKindMenu.test.ts`(칸 힌트 팝오버).
+
 ### 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
 
 잘림을 고친 뒤에도 사용자는 "수정 UI UX 가 매우 불편하다, 모달보다 50%쯤 더 커야 하고 실제 타일 칠하는 편집기와 비슷해야 한다"고 했다. 크기만의 문제가 아니라 결함 셋이 겹쳐 있었다.
@@ -287,3 +339,230 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 레이어 이름은 하층/상층 → **바닥/덧그림**, 덧그림일 때 스테이지에 점선 테두리. testid(`structure-kit-editor-layer-lower/upper`)는 그대로다.
 - 새 testid: `-tool-rect/-ellipse/-fill/-pick`, `-undo`, `-redo`, `-zoom-in/-out/-fit/-value`, `-grid-toggle`, `-search`, `-category-<id>`. 기존 `-tile-<n>` · `-tool-paint/erase/part` · `-layer-*` 는 유지해 테스트 변경이 없다.
 - 실측(1440×900): 창 1424×884 · 배경 불투명 · 창밖 삐짐 0 · 캔버스 720×640(5x) · 팔레트 300×596/480칸 · 드래그 한 번에 6칸 · 검색 "문" 9칸 · 분류 "집" 75칸 · 팔레트 스크롤 300 유지. 1366×768 / 1280×720 에서도 도구·분류칩·보기 줄이 한 줄에 들어간다.
+
+## 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
+
+- 스킬을 고르면 `연출` 카드가 시트 첫 칸을 자른 정지 이미지 1장이 아니라 **자동 반복 재생 스테이지**다. `renderSkillAnimationStage`(`src/editor/panels/databaseSkillAnimationStage.ts`)가 `db-skill-animation-preview` 안에 인셋 스테이지 웰 `db-skill-animation-stage`(픽셀 그리드 + 중심 십자선), 셀 레이어 `db-skill-animation-cells`(`data-frame-index`), 프레임 카운터 `db-skill-animation-frame-counter`(`3 / 12`), 시트 메타 칩 `db-skill-animation-sheet-meta`(`96×96 · 5열 · 15fps`), 재생/정지 토글 `db-skill-animation-toggle`(`aria-pressed`)을 렌더한다. 기존 `db-skill-animation-preview` testid 와 `.db-skill-animation-preview-frame` 클래스는 그대로 유지된다.
+- 프레임 전진의 정본은 `src/editor/panels/eventEditor/showAnimationPlayback.ts` **하나**다. `playShowAnimation(stage, layer, source, { loop, onFrame, onStop })` 이 15fps(`SHOW_ANIMATION_FRAME_MS = 1000/15`)·시트 좌표·크로마키 규약을 소유하고 이벤트 편집기 표시면과 스킬 스테이지가 그걸 공유한다. `playShowAnimationOnce` 는 그 위의 얇은 래퍼다.
+- **스킬·이벤트 표시면에 새 `setInterval` 재생 루프를 만들면 결함이다.** 애니메이션 탭의 수동 1회 재생(`databaseAnimationPreview.ts`)은 그보다 먼저 있던 별개 화면이고, 재생기를 여기서 더 늘리지 않는다.
+- 타이머 수명은 하드룰이다. `renderPreviewPanel` 은 표시면을 `replaceChildren` 하기 **전에** 이전 핸들의 `stop()` 을 부르고, `renderSkillRecordForm` 은 폼 단위 `WeakMap`(`activeAnimationStages`)으로 레코드 폼이 교체될 때 이전 스테이지를 죽인다. 픽커 변경도 `bindAnimationPreviewRefresh` → `renderPreviewPanel` 로 같은 경로를 탄다.
+- 왜 이렇게 엄한가: 분리된 DOM 에 인터벌이 살아남는 것은 이미 한 번 출하된 실측 결함이다(커밋 `2ed96476`, 미부착 유예가 무한이어서 버려진 표시면에 프레임을 계속 그렸다. 2틱 상한으로 고쳤다). `test/e2e/zz-qa-dbmodal-attacks.spec.ts:168` 은 모달을 10회 열고 닫은 뒤 stray timer 0 을 단정한다.
+- 정지 상태도 1급이다. `animationId` 가 없으면 기존 `(애니메이션 없음)` 빈 상태를 유지하고, 프레임이 1장이면 첫 프레임 정지 렌더 + 토글 `disabled`, `prefers-reduced-motion: reduce`(또는 `window.setInterval` 이 없는 헤드리스 호스트)면 자동재생하지 않고 첫 프레임에 서서 토글로만 재생한다.
+- 스타일은 `src/styles/database/skill-item-visuals.css` 안에서만 늘린다. 색은 `.database-modal-backdrop` 아래 `--db-studio-*` 토큰만 쓰고(하드코딩 hex/rgba 금지), **새 CSS 파일을 만들지 않는다**(`scripts/check-css-budget.mjs` 파일 수 래칫).
+- 커버리지: `test/databaseSkillAnimationStage.test.ts`(자동 반복 + 카운터 추적, 1프레임 정지, reduced-motion 정지, 토글 왕복, 표시면 교체 후 분리된 스테이지의 인터벌 정리), `test/databaseSkillItemForms.test.ts`(스테이지·셀·시트 메타·토글 계약), `test/eventEditorShowAnimationPreview.test.ts`(loop 랩어라운드와 `onFrame` 이 기존 1회 재생을 깨지 않음).
+
+## 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
+
+계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 모든 수치는
+**레포지토리에 들어 있는 단 두 파일**로 재계산된다:
+
+- `verify-shots/db-ux/before/probe.json` — 29탭, expert, 1680x1050
+- `verify-shots/db-ux/after/probe.json` — 30탭, expert, 1680x1050
+
+`/tmp` 에만 있는 순회 결과를 이 문서의 근거로 쓰지 마라. 재현할 수 없는 수치는 없는 수치다.
+(네 뷰포트 관찰은 아래 "줄상자 바닥" 절에 따로 적는다.)
+
+`before` 에는 `tilesets` · `factions` 가 **없다**(29탭). 그 두 탭이 `0 -> 107.5px` 로 보이면
+회귀가 아니라 계수 누락이다. `residents` 는 before 에서
+`tab button not found: db-tab-residents` 로 에러난 상태다.
+
+### 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
+
+집계는 `탭수 × 합계px` 이고, 괄호는 탭 하나당 평균이다.
+
+**함정: 한 탭이 같은 선택자를 두 번 달 수 있다.** before 의 `characters` 는 `.db-life-panel` 을
+둘(171.2 + 142.2) 가지고 있다. slug 를 키로 하는 map 으로 재계산하면 중복이 조용히 덮여
+n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-life-panel` 이 한 번 218.6 으로
+잘못 적힌 것도(4개 합을 3으로 나눔) 같은 함정이다.
+
+| 선택자 | 이전 | 이후 |
+|---|---|---|
+| `.db-life-header` (생활) | 3× 645.6 (215.2) | 3× 150.0 (50.0) |
+| `.db-life-panel` | 4× 655.8 (164.0) | 3× 150.0 (50.0) |
+| `.db-battle-studio-heading` (전투) | 4× 388.4 (97.1) | 4× 151.2 (37.8) |
+| `.db-overview-hero` | 1× 118.5 | 1× 78.4 |
+| `.db-record-intro` | 4× 144.0 (36.0) | 1× 34.2 |
+| `.db-tab-note` (구조물) | — (아래 주석) | 1× 42.1 |
+| **`.db-ws-hero`** | **17× 1828.4 (85.1~151.1)** | **18× 1799.4 — 압축 안 함** |
+| 헤더 합계 (전체 탭) | 3882.7 | 2517.8 |
+| 헤더 합계 탭간 편차 | 677.5 | 193.7 |
+
+작업영역 높이(`workspaceH`)는 before/after 모두 **모든 탭에서 796px, 편차 0** 이다.
+진단 문서의 "흔들림 275px" 는 이 하네스의 지표로는 재현되지 않는다 — 실제로 움직이는 것은
+위 표의 **헤더 합계 편차(677.5 -> 193.7)** 다. 이 둘을 헷갈리지 마라.
+
+`.db-life-panel` 은 **4개 → 3개**로 개수 자체가 줄었다. before 의 `characters` 탭이 이 헤더를
+둘(171.2 + 142.2) 달고 있었고 지금은 탭당 하나다. "3 → 3" 이 아니라 "4 → 3" 이라 평균만 보면
+이야기를 놓친다.
+
+`.db-ws-hero` 의 이후 분포는 **넓어졌다** — 37.0~156.7px. 합계는 29px 줄었지만 그 안에서 세 탭이
+오히려 커졌다(`equipment` 151.1→156.7, `items` 103.1→105.5, `farm-spatial` 85.1→85.6). 줄상자
+바닥 1.35 가 기존 배너를 조금씩 키운 결과다. 이 선택자를 손대는 다음 사람은 "전부 줄었다" 고
+가정하지 마라.
+
+`.db-tab-note` 주석: 커밋된 before 에는 이 컨테이너가 없다. 당시 구조물 탭은 맨 `h3` + `p` 였고
+프로브 선택자 목록에 안 걸렸다. `fbd2d9fb` 가 같은 내용을 `.db-tab-note` 로 감싸자 75.7px 로
+잡혔고(그 커밋 메시지는 "아이콘 바로 압축" 이라고 적었지만 설명문은 그대로 있었다), `c9ae257d` 가
+문단을 칩으로 바꿔 42.1px 가 됐다.
+
+#### `.db-ws-hero` 는 일부러 압축하지 않았다
+
+이게 **살아남은 가장 큰 헤더 덩어리**다. 17탭 1828.4px 로, 이번에 압축한
+`.db-life-header`(645.6) + `.db-life-panel`(655.8) + `.db-battle-studio-heading`(388.4) = 1689.8 을
+**합친 것보다 통째로 크다.** 그런데도 안 건드렸고, 이유는 이것이다:
+
+`databaseWorkspace.ts` 의 `detailHero` 는 설명문이 아니라 **레코드 신원 헤더**다 —
+`.db-ws-hero-media`(56px 썸네일/캔버스) · `-title` · `-tags` · `-actions`(툴바). "내가 무엇을
+편집하는지 · 어떻게 생겼는지 · 무엇을 할 수 있는지" 를 지는 기능 요소라서, 다른 탭에 쓴 변환
+(문단을 지우고 사실 하나를 칩으로)의 대상이 아니다. 유일한 설명문은 선택적인
+`.db-ws-hero-sub` 뿐이다.
+
+샴탕하게 짜려면 **`.db-ws-hero-sub` 만**, 그것도 부제목이 탭 이름을 되뇌는 탭에서만 떼라.
+썸네일 레이아웃과 툴바는 건드리지 마라 — 그건 자기 커밋과 자기 before/after 가 필요한 별건이다.
+
+설명 문단을 지우고 같은 정보를 아이콘 + 수치 칩으로 옮긴다. 개요 탭은 제목 옆 5개 칩(세계·이야기·
+등장인물·시스템·시작 지점)과 9개 수치 칩이 표준이다.
+
+#### 헤더 압축의 재사용 패턴 — `.db-tab-note` + `.db-tab-note-chip`
+
+한 줄로 줄일 헤더가 또 나오면 **새 패턴을 발명하지 말고 이것을 쓴다.** 여섯 번째 방식이 생기는 것을
+막으려고 여기에 적는다.
+
+- `.db-tab-note` 는 원래 `.db-record-intro` 와 공용인 "인트로 / 노트 띠" 스타일이다
+  (`desktop-record-shell/10-tab-chrome-unify.css` 의 `Shared intro / note strip`). 이 브랜치가
+  만든 클래스가 아니라 브랜치 이전부터 있었다.
+- 그 안에 `.db-tab-note-chip` 이 있을 때만 제목과 칩을 한 줄에 놓는다. 게이트는
+  `.db-tab-note:has(.db-tab-note-chip)` 이다 — 칩이 없는 기존 사용처의 모양은 건드리지 않는다.
+- 칩 내용은 `makeDatabaseTabIcon(<탭 id>)` + `<span>` 라벨. 저작 예시는
+  `src/editor/panels/structureKitDbTab.ts` (구조물 탭).
+- 칩의 글자 크기는 정확히 **11.5px** 이다(`10-tab-chrome-unify.css` 의 `font: 600 11.5px/1.35`).
+  `studio-theme.css` 의 런타임 바닥 `max(11.5px, 1em)` 과 같은 값이다. 프로브 문턱(11)과 혼동하지
+  마라 — 문턱은 기준선과 맞춘 계측 값이고, 이 11.5 는 새로 쓰는 칩이 따를 값이다.
+
+긴 문장을 칩의 `title` 에만 넣는 것은 **보조 정보일 때만** 허용된다. `title` 은 hover 전용이라
+키보드·터치로 닿지 않고 스크린리더 announce 도 일관되지 않는다. 그 문장이 없으면 기능을 오해할
+수준이면 칩을 `<button type="button">` + popover 로 만들거나 `aria-describedby` 로 시각적
+숨김 텍스트를 붙여라.
+
+### 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
+
+순서가 계약이다. `appearance: none` 으로 브라우저 스피너를 먼저 없애면 마우스로 값을 조절할 방법이
+사라진다. `databaseControls.ts` 가 스테퍼 버튼을 붙인 뒤에 스피너를 지운다.
+실측(커밋된 before/after probe.json): `numberUnskinned` **120** → 0, `rangeUnskinned` 6 → 0,
+`detailsMarker` 3 → 0, `checkUnskinned` 0 → 0.
+
+이미지 쪽도 같은 쌍에서 나온다: `imgZero` 9 → 0, `bgZero` 7 → 0, `imgBroken` 0 → 0.
+0px 이미지는 **깨진 것과 조상이 접힌 것**을 반드시 갈라 봐야 한다 — 함정은 `openwiki/testing.md`.
+
+**`selectUnskinned` 는 이미 0 이었다.** "네이티브 select 141개가 OS 껍데기를 노출한다" 는 진단은
+런타임에서 반증됐다 — 기존 CSS 가 이미 `appearance:none` 을 먹이고 있었다. 커스텀 select 위젯을
+새로 만들 근거가 없으므로 만들지 않았다. 같은 실수를 반복하지 말고 먼저 재라.
+
+### 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
+
+`studio-theme.css` 가 `:has(.db-shared-workspace)` 안의 텍스트 요소에 줄상자 바닥을 먹인다.
+값은 **1.35** 이고, 1.25 로는 모자란다는 것이 실측으로 나왔다:
+
+- 개요 h2 는 `font: 800 clamp(24px, 3vw, 34px)`. **1024px 럭에서 3vw = 30.72px** 로 풀린다.
+- 1.25 면 줄상자 38.4px. 800 굵기 한글 받침 잉크는 40.4px → 자기 `overflow` 로 2px 깎임.
+- 이전 주석은 "1.25 fits every viewport step" 이라고 단정했지만 **큰 럭에서만 확인한 것**이었다.
+- 1.35 x 30.72 = 41.5px > 40.4px. 통과.
+
+10px span 부터 30px 제목까지 **한 종류의 고정 바닥을 공유**하는 구조다. 그래서 바닥은 가장 큰
+글자가 안 깎이는 값으로 정해야 한다. `clamp()`/`vw` 를 쓰는 제목은 **가장 좁은 지원 럭(1024px)에서**
+재라 — 넓은 럭에서만 보면 반드시 놓친다.
+
+작은 글자 바닥은 같은 파일의 `font-size: max(11.5px, 1em)` 이 런타임에서 처리한다
+(`tinyFont` **366** → 0).
+
+**문턱은 11px 이고, 그게 뭘 증명하는지 정확히 알아야 한다.** 프로브의 `TINY_FLOOR` 는 11 이다.
+진단 기준선이 "11px 미만" 을 셌고 before 도 그 자로 366 을 기록했으니 비교 가능성을 지키려면 같은
+자를 써야 한다. 실측: 문턱을 11.5 로 올리면 726건이 새로 걸리는데 **전부 정확히 11px** 이고 11px
+미만은 0건이다. 즉 `tinyFont 0` 은 "11px 미만 글자가 없다" 는 뜻이고, "모든 글자가 11.5px 이상"
+이라는 뜻이 **아니다.** 소스의 `9px`/`11px` 선언을 일괄 치환하는 방식은 70개 파일을 흔들면서
+관측되는 이득이 없어 쓰지 않았다 — 런타임 바닥이 이미 같은 일을 한다.
+
+**가상 요소도 재야 한다(`tinyPseudo`).** `::before`/`::after` 의 `content` 는 자식 텍스트 노드가
+아니라서 `ownText` 검사에 절대 걸리지 않는데 화면에는 글자가 그려진다. 안 재면 `tinyFont 0` 이
+"작은 글자가 없다" 가 아니라 "안 봤다" 가 된다. 이 계수기를 붙이자마자 모달 전역에서 유일한 11px
+미만 렌더링 텍스트가 드러났다 — `sidebar.css` 의 `.db-tab-group::after` 셰브론(`▾`) 10px,
+30탭 × 6개 = **180건**. 11px 로 올려 `tinyPseudo` 0 이 됐다. 장식 글리프도 예외로 두지 않는다.
+
+근거는 커밋돼 있다: `verify-shots/db-ux/pseudo-baseline/probe.json` 은 셰브론만 10px 로 되돌린
+상태의 30탭 순회이고 `totals.tinyPseudo` 가 **180**, 전량이
+`div.db-tab-group::after@10px "▾"` 이며 탭마다 정확히 6개다. 같은 파일의 `tinyFont` 0 ·
+`selfClipped` 0 은 `after/probe.json` 과 같아서, 이 쌍의 유일한 차이가 셰브론임을 보여준다.
+`before/probe.json` 에는 `tinyPseudo` 키가 **아예 없다** — 계수기가 그 순회보다 나중에 생겼다.
+그래서 이 지표의 before 는 위 baseline 파일이고, before/after 쌍이 아니다.
+소스의 `9px`/`11px` 선언을 일괄 치환하는 방식은 70개 파일을 흔들면서 관측되는 이득이 없어 쓰지 않았다.
+
+**`lowLineHeight` 480 → 25 이고, 남은 25건은 의도적이다.** `system-studio.css` 의 `font: .../1 !important`
+단축 지정을 받는 고정 높이 버튼들(비율 1.0)이다. 중요도 없는 longhand 는 중요도 있는 shorthand 를
+특이도로 못 이긴다. 이들은 실제로 글자가 깎이지 않고(`selfClipped` 0) 제목 계열도 아니다. 여기에
+`!important` 를 되살리면 CSS 예산 래칫이 986 → 987 로 올라간다 — 관측되는 이득 없이 게이트만 잃는다.
+
+### 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
+
+실패한 썸네일이 크기 0 으로 사라지면 사용자는 "아무것도 없다" 로 읽는다. `databaseRecordThumbnails.ts`
+가 실패 시 32x32 자리표시자를 그리고 `회복약 썸네일 이미지 불러오기 실패` 같은 aria-label 을 붙인다.
+`scripts/qa/db-placeholder-proof.mjs` 가 살아 있는 썸네일 8개를 실제로 깨뜨려 자리표시자 8개가
+보이고 크기 0 이 하나도 없음을 증명한다. 커버리지: `test/databaseImageFailurePlaceholder.test.ts`.
+
+---
+
+## '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
+
+마을 생성의 값은 전부 코드 상수였다. 집 형태 34종은 `HOUSE_TEMPLATES` 의 `wingsAt()` 함수였고, 길 폭·광장 모양·마당 스타일은 씨앗값과 테마 문자열에서 파생됐다. 사용자가 바꿀 자리가 없었고, AI 도 코드 요약만 읽었으므로 "내가 정한 대로 깔아 줘" 가 성립하지 않았다. 이 탭이 그 입력단이다.
+
+- **레일 위치**: 세계 그룹, `구조물` 과 `지형` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.
+- **두 종류를 한 탭에서 저작한다.** 목록 창 칩(`db-village-kind-template` / `db-village-kind-preset`)이 축이고, 오른쪽 상세는 고른 종류를 편집한다. 저장 위치는 `project.villageTemplates` / `project.villagePresets` — 프로젝트에 있으면 **전부 사용자 저작**이다(내장 카탈로그는 코드에 남고 레코드가 되지 않는다).
+- **제로 부트스트랩**: 탭을 열기만 해서는 아무 레코드도 생기지 않는다. 두 배열은 그대로 `undefined` 다.
+- **화면의 선택지와 하네스가 받는 값은 같은 상수에서 나온다.** select 옵션은 `village/authoringData.ts` 의 `VILLAGE_PATH_STYLES` · `VILLAGE_PLAZA_LAYOUTS` · `VILLAGE_RANGE` 등을 그대로 쓴다. 예전에 화면과 하네스가 갈라졌던 항목(`roadWidth` 2~3, `roadNaturalness` 하한 0.35)이 여기 있다 — 갈라지면 사용자가 고른 값이 조용히 무시된다.
+- **집 형태**: 폭 3~8 · 높이 4~24 바운딩 박스 + 날개(직사각형, 최소 3×3) 목록. 날개 하한은 내장 34종에서 뽑았다 — 「현관 오두막」의 뒷채와 「ㄷ자」의 두 다리가 3×3 이라, 하한을 3×4 로 조이면 내장을 복제해 온 직후 화면만 "규약 위반" 이라고 말한다(하네스는 잘 짓는다). `test/villageAuthoringData.test.ts` 의 34종 왕복이 이 어긋남을 막는다. 날개 합집합이 집 바닥이므로 숫자만으로는 L 자인지 ㄷ 자인지 알 수 없어 `db-village-footprint-large` 격자 미리보기를 함께 그린다. `박스 맞추기`(`db-village-wing-tighten`)는 빈 줄·열을 없애고, `내장 형태에서 값 가져오기`(`db-village-import-apply`)는 값을 **베껴** 온다(`clonedFrom` 만 계보로 남고, 이후 내장이 바뀌어도 사본은 그대로다).
+- **규약 위반은 막지 않고 보여준다.** `templateFromRecord()` 가 거절한 레코드는 목록 행에 `규약 위반`, 상세에 `db-village-template-warning` 으로 뜨고, 시공에서는 그 형태만 건너뛴다(경고 1줄, 시공 실패 아님).
+- **배치 프리셋은 모든 값이 「지정 안 함」에서 시작한다.** 고른 값만 키로 남고(`undefined` 는 키째 지운다), 비운 값은 코드 기본값/씨앗값이 담당한다. `쓸 집 형태 고르기` 는 카탈로그 전체(내장+사용자)를 체크박스로 내주고 고른 id 만 `templateIds` 로 저장한다 — 하나도 안 고르면 전체를 쓴다.
+- **참조는 따라간다.** 집 형태를 지우면 프리셋 화이트리스트에서도 빠지고, id 를 바꾸면 프리셋이 새 id 를 가리킨다. 죽은 id 를 남기면 시공 때 경고가 되기 때문이다.
+- **사슬**: 이 레코드가 `village/authoringData.ts` → `buildVillageDomain` 의 `VillageIntent.templateCatalog` 로 들어가고, 동시에 `ai/contextBuilder.ts` 의 `## 마을 저작 데이터` 섹션에 실려 모델이 `author_village({ presetId })` / `housePlans[].templateId` 로 지목할 수 있게 된다. 우선순위는 **명시 인자 > 사용자 프리셋 > 테마 추론 > 씨앗값 파생**.
+- **기하 규약은 시공기에서 베껴 온다.** `templateFromRecord()` 는 폭·높이·바운딩 박스만 보는 게 아니라 `stampFootprintHouseKit` 이 요구하는 것까지 본다 — **열마다** 이어진 칸이 `벽 밴드 + 지붕 2` 행 이상이어야 하고(1층 5행, 2층 7행, 낮은 벽 4행), A자 지붕 킷은 날개 하나에 높이가 `벽 밴드 + ⌊(폭−1)/2⌋ + 1` 로 고정이다. 이걸 안 보면 화면은 「통과」라고 하는데 하네스는 "집을 한 채도 시공하지 못했다" 로 실패한다(8×8 에 위 4행만 폭 8 인 ㅜ 자로 실측). `+ 날개 추가` 의 기본 높이도 `minWingRun()` 을 써서 누른 직후 위반이 되지 않게 한다.
+- 커버리지: `test/databaseVillageView.test.ts`(16케이스 — 규약 통과·내장 복제·날개 편집·짧은 열 위반·프리셋 키 생성/삭제·참조 정리), `test/villageAuthoringData.test.ts`(17케이스 — 읽기·AI 컨텍스트·시공 반영·내장 34종 왕복·열 높이·A자 지붕), `test/houseTemplateCatalog.test.ts`(내장 34종 데이터화 등가성).
+
+### 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+
+사용자: "팔레트에서 클릭해서 그리는 형식인데 이게 자꾸 state 때문에 흔들리는 것 같다."
+맞았다. 관찰기 `scripts/observe-structure-ux.mjs`(포트를 주면 워크트리 dev 서버에 붙는다,
+결과는 `verify-shots/structure-ux-*/OBS.json` + PNG)로 재니 숫자가 그대로 나왔다.
+
+- **고치기 전 실측(1440×900, 12×10 킷)**: 팔레트를 400px 내려 타일을 하나 고르면 `scrollTop`
+  **400 → 0**, 두 번째로 고를 때 **250 → 0**. 검색창에 글자를 치다 타일을 고르면
+  `document.activeElement` 가 `search` → **BODY**. 즉 이웃 타일을 연달아 집는 리듬이 불가능하고,
+  매번 다시 스크롤해서 같은 자리를 눈으로 찾아야 했다.
+- **원인은 `redraw()` 가 `rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap)` 로
+  같은 노드를 다시 붙인 것**이다. 자식 목록이 똑같아도 `replaceChildren` 은 노드를 떼었다 다시
+  붙이며, **재부모는 스크롤 컨테이너의 `scrollTop` 을 0 으로 되돌리고 포커스를 body 로 떨어뜨린다.**
+  게다가 `drawPalette` 가 480칸을 매번 재생성했다 — 자기 안에서 `scrollTop` 을 복원해도 그 뒤에
+  오는 재부모가 다시 지웠다(복원 코드가 있는데도 증상이 남은 이유).
+- **고침: 오른쪽 열은 열 때 한 번만 조립한다.** `createPalette` / `createFilterBar` / `createTools` /
+  `createTabs` 가 노드를 만들어 두고 `refresh()` 는 **클래스·속성만** 바꾼다. 탭 전환도
+  `replaceChildren` 이 아니라 `hidden` 토글이다. 실측: 400 → **400**, 250 → **250**, 검색 중
+  타일을 골라도 검색어가 남고 포커스는 누른 그 칸에 있다.
+- **팔레트 refresh 는 지문(signature)으로 자기 자신을 아낀다.** 칠하기 드래그는 칸마다
+  `redrawCanvasOnly()` 를 부르고 거기서 팔레트 표식도 갱신하는데, 붓·필터·사용 타일 집합을 이어
+  붙인 문자열이 그대로면 즉시 빠져나온다. 그래서 480칸 DOM 쓰기는 실제로 바뀐 프레임에만 일어난다.
+- **격자를 켜도 아무것도 보이지 않았다.** `kitRender.ts` 는 캔버스를 `#101318` 로 칠하는데
+  격자선 색이 `var(--border-strong)`(= `rgba(15,23,42,.461)`, 거의 검정)이었다. 검정 위의 검정이라
+  12×10 빈 킷 스크린샷이 **완전한 검정 한 장**이었다 — 칸 경계도, 킷이 어디서 끝나는지도 알 수 없었다.
+  선을 `rgb(255 255 255 / 0.18)` 로, 스테이지 테두리를 `rgb(255 255 255 / 0.32)` 로 바꿨다.
+  **이 둘은 의도적 비토큰 값**이다: 아래에 깔린 색이 테마 토큰이 아니라 캔버스에 직접 칠한 고정색이다.
+- **이미 쓴 타일을 팔레트에서 구별한다.** `collectUsedTiles(kit)`(두 레이어 모두 본다)가 정본이고
+  AI 초안 프롬프트의 타일 범례도 같은 함수를 쓴다. 표식은 `.is-used` → 오른쪽 위 점 + `title` 에
+  "· 이 구조물에 사용 중", 필터 줄에 `사용 중 N칸`(`structure-kit-editor-used-count`).
+  검색에 안 걸린 사용 타일은 `opacity .22` 로 점까지 사라지므로 `.is-filtered-out.is-used` 만
+  `.55` 로 둔다 — "쓴 타일 표시"가 검색 흐림보다 우선이다.
+- **[안 쓴 타일만] 은 체크박스**(`structure-kit-editor-unused-only`)다. 분류칩에 섞으면 "집" 같은
+  분류와 배타가 되는데 실제 저작은 둘을 겹쳐 쓴다. 켜면 쓰인 칸을 `hidden` 으로 **숨긴다** —
+  "칸 위치가 시트 좌표라 숨기지 않는다"는 이 팔레트의 기본 규약을 사람이 명시적으로 켠 이 필터에서만
+  어긴다. 단 **지금 잡은 붓은 숨기지 않는다**(아니면 켜는 순간 쓰는 붓이 화면에서 사라진다).
+- 커버리지: `test/structureKitEditorDialog.test.ts`(`collectUsedTiles`, 타일을 골라도 팔레트·검색창
+  노드가 같은 인스턴스로 남는다, 사용 표식·개수, `[안 쓴 타일만]` 숨김과 붓 면제, 칠하면 표식이 붙는다),
+  브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts` 의 스크롤·포커스 유지 케이스와 사용 표식 케이스.
+  스크롤은 FakeDom 이 흉내내지 않으므로 유닛에서는 **노드 정체성**으로 대신 못을 박는다.

@@ -9,7 +9,8 @@ import {
   flashCssVariables,
   screenShakeCssVariables,
 } from "@/player/battleAnimationEffectStyle";
-import { findBattlerNode } from "@/player/battleFieldDom";
+import { battlerSpriteNode, findBattlerNode } from "@/player/battleFieldDom";
+import { battleAnimationAnchor, type BattleAnchorBox } from "@/player/battleAnimationAnchor";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 
 type CellSourceRect = {
@@ -55,7 +56,7 @@ export function syncBattleAnimationLayer(
   const playback = mountBattleAnimationPlayback(snapshot, sceneRoot);
   if (!playback) return undefined;
   playback.element.dataset.animationKey = animationKey;
-  positionAnimationOnTarget(playback.element, lastAnimation!.targetId);
+  positionAnimation(playback.element, layer, lastAnimation!);
   layer.append(playback.element);
   return playback;
 }
@@ -72,6 +73,8 @@ export function mountBattleAnimationPlayback(
   element.className = "battle-animation";
   element.dataset.testid = "battle-animation";
   element.dataset.animationId = lastAnimation.animationId;
+  // 대상 id 를 그대로 남긴다 — animationKey 를 파싱하지 않고 앵커 계측이 대상 노드를 찾는다.
+  element.dataset.animationTargetId = lastAnimation.targetId;
   setOptionalDataset(element, "animationName", lastAnimation.name);
   setOptionalDataset(element, "animationResourceId", lastAnimation.resourceId);
   setOptionalDataset(element, "animationScope", lastAnimation.scope);
@@ -112,12 +115,45 @@ export function mountBattleAnimationPlayback(
   };
 }
 
-function positionAnimationOnTarget(element: HTMLElement, targetId: string): void {
-  // 아군 노드 testid는 battle-actor-<id> 형식 — findBattlerNode로 통일 조회(오위치 버그 수정).
-  const target = findBattlerNode(document, targetId);
+/**
+ * 애니메이션을 새롭게 잰 앵커에 놓는다.
+ *
+ * 앵커는 저작된 `position`(head/center/feet/screen)과 `scope`(screen 여부)가 정하고, 기준은
+ * 대상 **스프라이트를 실제로 잰** 사각이다. 산식 자신은 순수 함수 `battleAnimationAnchor` 에
+ * 있어 타이밍 없이 단위 테스트된다.
+ *
+ * 재지 못하면(레이아웃이 없는 happy-dom, 아직 로드 전이라 rect 가 0×0 인 스프라이트) 예전
+ * `--battle-node-x/y` 복사 경로로 떨어진다. 어느 경로를 탔는지는 `data-animation-anchor` 에
+ * 남기므로 사후 진단에서 짐작할 필요가 없다.
+ */
+function positionAnimation(
+  element: HTMLElement,
+  layer: HTMLElement,
+  animation: NonNullable<BattleSnapshot["lastAnimation"]>
+): void {
+  // 아군 노드 testid 는 battle-actor-<id> 형식 — findBattlerNode 로 통일 조회한다.
+  const target = findBattlerNode(document, animation.targetId);
+  const placement = battleAnimationAnchor({
+    position: animation.position,
+    scope: animation.scope,
+    spriteBox: measuredSpriteBox(target),
+    layerBox: layer.getBoundingClientRect(),
+  });
+  if (placement) {
+    element.style.left = placement.left;
+    element.style.top = placement.top;
+    element.dataset.animationAnchor = placement.anchor;
+    return;
+  }
   if (!target) return;
   element.style.setProperty("--battle-node-x", target.style.getPropertyValue("--battle-node-x"));
   element.style.setProperty("--battle-node-y", target.style.getPropertyValue("--battle-node-y"));
+  element.dataset.animationAnchor = "fallback";
+}
+
+function measuredSpriteBox(node: HTMLElement | null): BattleAnchorBox | undefined {
+  if (!node) return undefined;
+  return battlerSpriteNode(node).getBoundingClientRect();
 }
 
 function setOptionalDataset(element: HTMLElement, key: string, value: string | undefined): void {

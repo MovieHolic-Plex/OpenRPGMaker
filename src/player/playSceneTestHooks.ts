@@ -112,6 +112,9 @@ type CharacterSpriteDebug = {
     /** 체공 상태기가 살아 있는가. liftPx 는 정수로 반올림되므로 착지 직전 프레임에서
      *  0 으로 보일 수 있다 — 착지 판정은 이 값으로 한다. */
     readonly airborne: boolean;
+    /** 스쿼시·스트레치 채널. 체공 중 1 초과(늘어남), 착지 순간 1 미만(눌림). */
+    readonly scaleX: number;
+    readonly scaleY: number;
   };
   /** 체공 중인 캐릭터의 발밑 그림자. 접지하면 visible=false 로 남는다(풀 재사용). */
   readonly shadows: Record<string, {
@@ -397,6 +400,8 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
       depth: player.depth,
       liftPx: spriteLiftPx(player),
       airborne: scene.playerHop != null,
+      scaleX: player.scaleX,
+      scaleY: player.scaleY,
     },
     shadows,
     events,

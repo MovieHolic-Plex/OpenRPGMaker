@@ -48,6 +48,45 @@ export function sanitizeShopTradeCounts(value: unknown): Record<string, ShopTrad
   return Object.keys(sanitized).length > 0 ? sanitized : undefined;
 }
 
+
+export type ShopHaggleVisitState = {
+  readonly patience: number;
+  readonly drift: number;
+  readonly attemptIndex: number;
+  readonly broken?: boolean;
+};
+
+export function sanitizeShopHaggleState(value: unknown): Record<string, ShopHaggleVisitState> | undefined {
+  if (!isRecord(value)) return undefined;
+  const sanitized: Record<string, ShopHaggleVisitState> = {};
+  for (const [key, row] of Object.entries(value)) {
+    if (!isRecord(row)) continue;
+    if (!isSafeEconomyValue(row.patience) || !isSafeSignedLedger(row.drift) || !isSafeEconomyValue(row.attemptIndex)) continue;
+    const next: ShopHaggleVisitState = {
+      patience: row.patience,
+      drift: row.drift,
+      attemptIndex: row.attemptIndex,
+      ...(row.broken === true ? { broken: true } : {}),
+    };
+    sanitized[key] = next;
+  }
+  return Object.keys(sanitized).length > 0 ? sanitized : undefined;
+}
+
+export function sanitizeShopShelf(value: unknown): Record<string, Record<string, number>> | undefined {
+  if (!isRecord(value)) return undefined;
+  const sanitized: Record<string, Record<string, number>> = {};
+  for (const [shopKey, shelf] of Object.entries(value)) {
+    const inner = sanitizeEconomyRecord(shelf);
+    if (inner) sanitized[shopKey] = inner;
+  }
+  return Object.keys(sanitized).length > 0 ? sanitized : undefined;
+}
+
+function isSafeSignedLedger(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && Math.abs(value) <= GOLD_MAX;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }

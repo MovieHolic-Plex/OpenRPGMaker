@@ -143,3 +143,47 @@ describe("편집기 [문에서 추정]", () => {
     expect(parts.every((part) => part.kind === "entrance")).toBe(true);
   });
 });
+
+describe("칸 힌트 팝오버", () => {
+  /** [칸 힌트] 로 (0,0) 을 누른다. fakeDom 의 rect 는 전부 0 이라 언제나 (0,0) 이다. */
+  function pressHintCell(): void {
+    (document.querySelector("[data-testid='structure-kit-editor-tool-hint']") as unknown as FakeElement).click();
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+  }
+
+  it("칸을 누르면 축 세 가지와 지우기를 묻고, 고르기 전에는 아무것도 쓰지 않는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    pressHintCell();
+
+    const menu = document.querySelector("[data-testid='structure-kit-editor-hint-menu']");
+    expect(menu).not.toBeNull();
+    expect(menu!.getAttribute("aria-label")).toBe("칸 힌트 고르기");
+    for (const axis of ["horizontal", "vertical", "both", "clear"]) {
+      expect(document.querySelector(`[data-testid='structure-kit-editor-hint-option-${axis}']`), axis).not.toBeNull();
+    }
+    expect(storedKit().cellHints).toBeUndefined();
+  });
+
+  it("«세로로 증분 가능» 을 고르면 그 칸에 세로 축이 붙는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    pressHintCell();
+    (document.querySelector("[data-testid='structure-kit-editor-hint-option-vertical']") as unknown as FakeElement).click();
+
+    expect(storedKit().cellHints).toEqual([{ dx: 0, dy: 0, growth: "vertical" }]);
+  });
+
+  it("지우기를 고르면 그 칸의 힌트가 사라진다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    pressHintCell();
+    (document.querySelector("[data-testid='structure-kit-editor-hint-option-both']") as unknown as FakeElement).click();
+    expect(storedKit().cellHints).toHaveLength(1);
+
+    pressHintCell();
+    (document.querySelector("[data-testid='structure-kit-editor-hint-option-clear']") as unknown as FakeElement).click();
+    expect(storedKit().cellHints).toBeUndefined();
+  });
+});

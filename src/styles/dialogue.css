@@ -4,7 +4,7 @@
   --runtime-dialogue-shadow: var(--runtime-dialogue-glass-shadow);
   --runtime-dialogue-text: var(--runtime-window-text);
   --runtime-dialogue-muted: var(--runtime-window-muted);
-  --runtime-dialogue-font: var(--runtime-pixel-font);
+  --runtime-dialogue-font: var(--runtime-ui-font);
   --runtime-dialogue-font-size: var(--runtime-font-size-9);
   --runtime-dialogue-panel-height: 29%;
   --runtime-choice-panel-height: 34%;
@@ -320,11 +320,7 @@
    의사요소로 얻는다. 상자 지오밌트리(padding/clientHeight)를 그대로 둔다 —
    페이지네이서어이 본및 칸 높이를 재오서 계산하기 때밑이다(dialoguePagination.ts). */
 .dialogue-box::before {
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: 24;
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
+  border: 1px solid var(--runtime-glass-hairline);
   border-radius: var(--runtime-dialogue-radius);
   content: "";
   display: block;
@@ -354,11 +350,6 @@
   left: 10px;
   top: -9px;
   z-index: 3;
-  /* 이름상자도 같은 윈도스킨 파이프 — 여긴 상자가 작아 fill 로 표면까지 받는다. */
-  border-image-repeat: stretch;
-  border-image-slice: 24 fill;
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: 4px;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-dialogue-font-size);
   line-height: 1.2;

@@ -9,7 +9,7 @@ import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
 import type { ChatResult } from "@/ai/llmClient";
 
-const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
+const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
 
 function scriptedChat(steps: readonly ChatResult[]) {
   let index = 0;

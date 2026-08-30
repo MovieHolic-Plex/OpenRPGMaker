@@ -336,6 +336,16 @@ function validateCommandShape(label: string, value: unknown): void {
       }
       if (command.merchantGold !== undefined) requireNumber(`${label}.merchantGold`, command.merchantGold);
       if (command.stock !== undefined) validateShopStock(`${label}.stock`, command.stock);
+      // restockPolicy 는 유니언이다. 런타임은 이 값을 엄거하게 맞췐보고 그 밖은 shouldRestock 에서
+      // false 로 떨어진다 — 오토를 그대로 통과시키면 오류도 경고도 없이 "재입고 안 함" 이 된다.
+      // 조용한 오답보다 로드 시점 오류가 낫다.
+      if (command.restockPolicy !== undefined) {
+        const rp = requireString(`${label}.restockPolicy`, command.restockPolicy);
+        if (rp !== "daily" && rp !== "weekly" && rp !== "onDemand") {
+          throw new ProjectFormatError(`${label}.restockPolicy가 daily/weekly/onDemand 여야 합니다.`);
+        }
+      }
+      if (command.economy !== undefined) validateShopEconomy(`${label}.economy`, command.economy);
       if (command.merchantGold !== undefined) {
         const mg = requireNumber(`${label}.merchantGold`, command.merchantGold);
         if (mg < 0 || mg > 999999) throw new ProjectFormatError(`${label}.merchantGold가 0~999999여야 합니다.`);
@@ -576,6 +586,53 @@ export function validateConditionShape(label: string, value: unknown): void {
       return;
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);
+}
+
+/**
+ * 상점 경제 설정을 검사한다.
+ *
+ * 런타임은 이 값들을 `=== true` 로 엄거하게 맞췐보고 `normalizeHaggleConfig` 가 숫자를
+ * 고정하밌으로 오토가 있어도 **통지 않는다.** 그게 더 나쁘다 — `haggleEnabled: "yes"` 는
+ * 참 같은 문자열이지만 `=== true` 가 아니라 저자가 컸 기능이 오류도 경고도 없이 조용하
+ * 꺼진다. 저작 실수를 로드 지점에서 드러내는 것이 이 검사의 목적이다.
+ */
+export function validateShopEconomy(label: string, value: unknown): void {
+  const economy = requireRecord(label, value);
+  for (const flag of [
+    "dynamicPricing",
+    "haggleEnabled",
+    "closingSaleEnabled",
+    "shopkeeperEnabled",
+  ] as const) {
+    if (economy[flag] !== undefined) requireBoolean(`${label}.${flag}`, economy[flag]);
+  }
+  for (const [key, min, max] of [
+    ["inflationFactor", 0, 100],
+    ["tradeRouteMarkup", 0, 100],
+  ] as const) {
+    if (economy[key] === undefined) continue;
+    const n = requireNumber(`${label}.${key}`, economy[key]);
+    if (!Number.isFinite(n) || n < min || n > max) {
+      throw new ProjectFormatError(`${label}.${key}가 ${min}~${max} 사이 유한수여야 합니다.`);
+    }
+  }
+  if (economy.haggle !== undefined) {
+    const haggle = requireRecord(`${label}.haggle`, economy.haggle);
+    // 상한은 런타임 고정 범위보다 넓게 둔다 — 여기서 막으려는 것은 1.79e308 같은
+    // 무한대·송실로 저장된 값이지 집필한 수자가 아니다.
+    for (const [key, min, max] of [
+      ["patience", 0, 999],
+      ["insultRatio", 0, 1],
+      ["maxDiscount", 0, 1],
+    ] as const) {
+      if (haggle[key] === undefined) continue;
+      const n = requireNumber(`${label}.haggle.${key}`, haggle[key]);
+      if (!Number.isFinite(n) || n < min || n > max) {
+        throw new ProjectFormatError(`${label}.haggle.${key}가 ${min}~${max} 사이 유한수여야 합니다.`);
+      }
+    }
+    if (haggle.skillId !== undefined) requireString(`${label}.haggle.skillId`, haggle.skillId);
+  }
 }
 
 export function validateShopStock(label: string, value: unknown): void {

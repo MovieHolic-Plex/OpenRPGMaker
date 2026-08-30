@@ -29,7 +29,6 @@
 }
 
 .ai-rising-overlay .ai-chat-log,
-.ai-rising-sticky-zone .ai-completion-strip,
 .ai-rising-sticky-zone .ai-proposal-notice-host > * {
   pointer-events: auto;
 }
@@ -177,59 +176,9 @@
   z-index: 41; /* 오버레이와 같은 층 — 커맨드 바(40) 위, 모달(72) 아래 */
 }
 
-.ai-completion-host:empty {
-  display: none;
-}
-
-.ai-completion-strip {
-  align-items: center;
-  background: color-mix(in srgb, var(--bg-panel, var(--bg-surface)) 94%, var(--accent, var(--accent)) 6%);
-  border: 1px solid color-mix(in srgb, var(--accent, var(--accent)) 42%, transparent);
-  border-radius: 14px;
-  box-shadow: var(--shadow-pop);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  padding: 9px 10px;
-}
-
-.ai-completion-summary {
-  flex: 1 1 180px;
-  font-size: 12px;
-  font-weight: 650;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ai-completion-action {
-  background: color-mix(in srgb, var(--bg-inset, var(--bg-inset)) 82%, transparent);
-  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
-  border-radius: 999px;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 5px 9px;
-  white-space: nowrap;
-}
-
-.ai-completion-action:hover:not(:disabled),
-.ai-completion-action:focus-visible {
-  border-color: color-mix(in srgb, var(--accent, var(--accent)) 70%, transparent);
-  outline: none;
-}
-
-.ai-completion-action:disabled {
-  cursor: default;
-  opacity: 0.42;
-}
-
-.ai-chat-panel.chat-dock-side .ai-completion-strip {
-  box-shadow: none;
-}
+/* 적용 완료 스트립(`.ai-completion-*`)은 2026-08-30 에 제거했다. 맵 위에 떠 있는 fixed
+   밴드라 도크별 팔레트와 어긋났고, 요약 문장은 변경 카드 제목과 글자 그대로 겹쳤다.
+   되돌리기는 컴포저 액션 행의 `.ai-composer-undo` 로 옮겼다(assistant-composer.css). */
 
 .ai-rising-sticky-zone .ai-action-zone {
   border-top: none;

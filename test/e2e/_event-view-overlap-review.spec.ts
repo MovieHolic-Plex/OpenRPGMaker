@@ -2,9 +2,8 @@
 // 와이드 뷰포트에서 나란히 캡처하고, 같은 명령 트리를 세 렌더가 어떻게 다르게 말하는지
 // 기계적으로 뽑아 온다. 적대적 리뷰용이라 assert 는 최소로 두고 관측값을 파일로 남긴다.
 import { mkdir, writeFile } from "node:fs/promises";
-import { expect, test, type Locator, type Page } from "@playwright/test";
-import { createBlankProject, DEFAULT_ITEM_ID, DEFAULT_TROOP_ID } from "@/project/defaults";
-import type { Command, EventPage, GameEvent, Project } from "@/project/types";
+import { expect, test } from "@playwright/test";
+import { openEditor, reviewProject } from "./eventViewReviewFixture";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 // EVIDENCE_TAG=before|after 로 같은 촬영을 두 번 돌려 좌우 비교를 만든다.
@@ -23,97 +22,10 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-function say(body: string): Command {
-  return { kind: "text", speaker: "촌장", body };
-}
-
-/** 세 보기가 모두 무언가를 그릴 수밖에 없는 페이지: 분기 6종 전부 등장. */
-function branchRichPage(): EventPage {
-  const commands: Command[] = [
-    say("마을 창고가 털렸다네. 도와주겠나?"),
-    {
-      kind: "choices",
-      prompt: "창고를 조사할까?",
-      options: [
-        { text: "조사한다", branch: [{ kind: "setSwitch", switchId: "0001", value: true }, say("좋아, 따라오게.")] },
-        { text: "거절한다", branch: [say("그렇군… 마음이 바뀌면 오게.")] },
-      ],
-      cancelBehavior: "branch",
-      cancelBranch: [say("(대답을 피했다)")],
-    },
-    {
-      kind: "fork",
-      condition: { kind: "switch", switchId: "0001", value: true },
-      then: [say("자물쇠가 부서져 있다.")],
-      else: [say("창고는 잠겨 있다.")],
-    },
-    { kind: "loop", body: [say("발자국을 따라간다…"), { kind: "wait", ms: 300 }, { kind: "breakLoop" }] },
-    {
-      kind: "shop",
-      itemIds: [DEFAULT_ITEM_ID],
-      allowSell: true,
-      branchOnTransaction: true,
-      transactionBranch: [say("거래 감사합니다!")],
-      branchOnFailedTransaction: true,
-      failedTransactionBranch: [say("돈이 모자라시군요.")],
-    },
-    {
-      kind: "battleProcessing",
-      troopId: DEFAULT_TROOP_ID,
-      canEscape: true,
-      canLose: true,
-      branchOnResult: true,
-      victoryBranch: [{ kind: "changeGold", op: "+=", amount: 200 }, say("도둑을 잡았다!")],
-      defeatBranch: [say("놓쳤다…")],
-      escapeBranch: [say("도둑이 달아났다.")],
-    },
-    { kind: "changeItem", itemId: DEFAULT_ITEM_ID, op: "+=", amount: 1 },
-  ];
-  return {
-    id: "p1",
-    name: "창고 조사",
-    conditions: [],
-    graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" }, direction: "down", pattern: 0 },
-    trigger: { kind: "action" },
-    priority: "same",
-    movement: { type: "fixed", speed: 3, frequency: 3 },
-    commands,
-  };
-}
-
-function reviewProject(): { project: Project; eventId: string } {
-  const project = createBlankProject();
-  project.switches = [{ id: "0001", name: "창고 조사 수락" }];
-  project.characters = { "village-chief": { displayName: "촌장" } };
-  const startMapId = project.startMapId;
-  if (!startMapId) throw new Error("blank project has no startMapId");
-  const start = project.maps[startMapId];
-  if (!start) throw new Error("start map missing");
-  const event: GameEvent = {
-    id: "0001",
-    name: "촌장",
-    x: 6,
-    y: 6,
-    trigger: { kind: "action" },
-    commands: [],
-    characterId: "village-chief",
-    pages: [branchRichPage()],
-  };
-  start.events = [event];
-  return { project, eventId: event.id };
-}
-
-async function openEditor(page: Page, mapId: string, eventId: string): Promise<Locator> {
-  await page.evaluate(async ({ activeMapId, id }) => {
-    const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
-    modalModule.openEventEditorModal(activeMapId, id);
-  }, { activeMapId: mapId, id: eventId });
-  const editor = page.getByTestId("event-editor-modal");
-  await expect(editor).toBeVisible();
-  return editor;
-}
-
 test("세 보기와 플로우를 와이드 뷰포트에서 캡처하고 표현 차이를 뽑는다", async ({ page }) => {
+  // 진단용 캡처다: 2560×1440 모달 전체 스크린샷 8장 + 미리보기 22단계 순회라 기본 180초 캡을
+  // 넘긴다(특히 이 머신은 다른 워크트리와 CPU/RAM 을 나눠 쓴다). 커버리지를 깎지 말고 예산을 준다.
+  test.slow();
   await mkdir(OUT, { recursive: true });
   await page.setViewportSize(WIDE);
   const { project, eventId } = reviewProject();
@@ -140,7 +52,7 @@ test("세 보기와 플로우를 와이드 뷰포트에서 캡처하고 표현 �
   await expect(editor.getByTestId("event-page-preview")).toBeVisible();
   await shot("03-preview-via-toggle");
 
-  // ── 4) 미리보기 입구 수. 2026-08-31 이후 세그먼트 하나뿐이어야 한다.
+  // ── 4) 미리보기 입구 수. 2026-08-30 이후 세그먼트 하나뿐이어야 한다.
   //     before 태그로도 돌려야 하므로 단정하지 않고 개수를 관측값으로 남긴다.
   await editor.getByTestId("event-view-toggle-list").click();
   const duplicatePreviewButtons = await editor.getByTestId("event-command-quick-preview").count();
@@ -148,12 +60,39 @@ test("세 보기와 플로우를 와이드 뷰포트에서 캡처하고 표현 �
   await expect(editor.getByTestId("event-page-preview")).toBeVisible();
   await shot("04-preview-single-entry");
 
-  // ── 5) 플로우 (⌘ 툴바 버튼 → 도구 팝오버 안 아코디언)
-  await editor.getByTestId("event-command-quick-flow").click();
-  const flow = editor.getByTestId("event-script-flowchart");
-  await expect(flow).toHaveJSProperty("open", true);
+  // ── 5) 플로우. 2026-08-30 이후 네 번째 보기 방식이다(예전에는 ⌘ 툴바 버튼 →
+  //     도구 팝오버 안 아코디언이라 미리보기 위에 겹쳐 떴다).
+  //     before 태그로도 돌려야 하므로 둘 중 있는 입구를 쓰고 어느 쪽이었는지를 관측값으로 남긴다.
+  const flowIsViewMode = (await editor.getByTestId("event-view-toggle-flow").count()) > 0;
+  const legacyFlowPopoverButtons = await editor.getByTestId("event-command-quick-flow").count();
+  if (flowIsViewMode) {
+    await editor.getByTestId("event-view-toggle-flow").click();
+    await expect(editor.getByTestId("event-page-flow")).toBeVisible();
+  } else {
+    await editor.getByTestId("event-command-quick-flow").click();
+    await expect(editor.getByTestId("event-script-flowchart")).toHaveJSProperty("open", true);
+  }
   await shot("05-flow-via-toolbar-button");
   await editor.getByTestId("event-flowchart-body").screenshot({ path: `${OUT}/05b-flow-body.png` });
+
+  // ── 5b) 겹침 실측: 플로우를 띄운 상태에서 미리보기의 재생 컨트롤이 가려지는가.
+  //     팝오버 시절에는 「자동 재생」 버튼 중심점이 플로우 본문에 먹혔다.
+  const flowOcclusion = await page.evaluate(() => {
+    const modal = document.querySelector('[data-testid="event-editor-modal"]');
+    const play = modal?.querySelector("[data-testid='event-script-live-play']");
+    const body = modal?.querySelector("[data-testid='event-flowchart-body']");
+    if (!play || !body) return { playPresentWithFlow: false, playCoveredByFlow: false };
+    const p = play.getBoundingClientRect();
+    const b = body.getBoundingClientRect();
+    const cx = p.x + p.width / 2;
+    const cy = p.y + p.height / 2;
+    const hit = document.elementFromPoint(cx, cy);
+    return {
+      playPresentWithFlow: true,
+      playCoveredByFlow: Boolean(hit && body.contains(hit))
+        || (cx > b.x && cx < b.x + b.width && cy > b.y && cy < b.y + b.height),
+    };
+  });
 
   // ── 6) 툴바 자체 클로즈업 (중복 컨트롤 확인용)
   await editor.locator(".event-editor-command-toolbar").screenshot({ path: `${OUT}/06-toolbar.png` });
@@ -207,16 +146,41 @@ test("세 보기와 플로우를 와이드 뷰포트에서 캡처하고 표현 �
   }
   await shot("07-preview-last-step");
 
-  await writeFile(
-    `${OUT}/probe.json`,
-    JSON.stringify({ tag: TAG, duplicatePreviewButtons, probe, previewSteps }, null, 2),
-    "utf8"
-  );
+  // ── 8) 플로우가 미리보기의 «현재 단계» 를 이어받는가. 팝오버 시절에는 이 표시가 없었다.
+  const flowStepSync = flowIsViewMode
+    ? await (async () => {
+        await editor.getByTestId("event-view-toggle-flow").click();
+        await expect(editor.getByTestId("event-page-flow")).toBeVisible();
+        await page.waitForTimeout(160);
+        await editor.getByTestId("event-page-flow").screenshot({ path: `${OUT}/09-flow-step-sync.png` });
+        return page.evaluate(() => {
+          const modal = document.querySelector('[data-testid="event-editor-modal"]');
+          return {
+            statusText: (modal?.querySelector("[data-testid='event-page-flow-current']")?.textContent ?? "").trim(),
+            currentNodes: (modal?.querySelectorAll(".event-flow-node.is-current") ?? []).length,
+            currentNodePath: modal?.querySelector<HTMLElement>(".event-flow-node.is-current")?.dataset.cmdPath ?? null,
+          };
+        });
+      })()
+    : { statusText: null, currentNodes: 0, currentNodePath: null };
+
+  const summary = {
+    tag: TAG,
+    duplicatePreviewButtons,
+    flowIsViewMode,
+    legacyFlowPopoverButtons,
+    flowOcclusion,
+    flowStepSync,
+    probe,
+    previewSteps,
+  };
+  await writeFile(`${OUT}/probe.json`, JSON.stringify(summary, null, 2), "utf8");
   // eslint-disable-next-line no-console
-  console.log("PROBE", JSON.stringify({ tag: TAG, duplicatePreviewButtons, probe, previewSteps }, null, 2));
+  console.log("PROBE", JSON.stringify(summary, null, 2));
 });
 
 test("좁은 폭에서 툴바와 세 보기가 어떻게 무너지는지", async ({ page }) => {
+  test.slow();
   await mkdir(OUT, { recursive: true });
   const { project, eventId } = reviewProject();
   await page.setViewportSize({ width: 1366, height: 900 });

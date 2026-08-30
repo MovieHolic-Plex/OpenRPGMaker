@@ -15,12 +15,12 @@ import {
   expandRect,
   HOUSE_KITS,
   HOUSE_MARGIN,
-  HOUSE_TEMPLATES,
   pointInMap,
   rectsOverlap,
   shuffled,
   type BuiltHouse,
   type HouseCandidate,
+  type HouseTemplate,
   type Plaza,
   type Rect,
   type SettlementLayout,
@@ -200,8 +200,14 @@ export function buildHouses(
   warnings: string[],
   terrainBlocked?: ReadonlySet<number>,
   boulevard?: HouseBoulevardHint,
+  /**
+   * 문 타일(116/146)을 깔지 여부. 기본값 false —
+   * 문 외형은 Object1 문 이벤트 스프라이트가 담당하므로 타일까지 깔면 문이 두 겹이 된다.
+   * 문 이벤트를 만들지 않는 시공(interior:false / doorEvent:false)에서만 true 로 넘긴다.
+   */
+  paintDoorTiles = false,
 ): BuiltHouse[] {
-  const available = houseCandidates(area, plaza, target, intent.settlementLayout, boulevard);
+  const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard);
   const candidates = [
     ...shuffled(available.filter((candidate) => candidate.organic), rng),
     ...shuffled(available.filter((candidate) => !candidate.organic), rng),
@@ -246,13 +252,23 @@ export function buildHouses(
         continue;
       }
       const doorAt = result.doorAt;
-      map.lowerTiles[(doorAt.y - 1) * map.width + doorAt.x] = DOOR_TOP_TILE;
-      map.lowerTiles[doorAt.y * map.width + doorAt.x] = DOOR_BOTTOM_TILE;
+      const topIndex = (doorAt.y - 1) * map.width + doorAt.x;
+      const bottomIndex = doorAt.y * map.width + doorAt.x;
+      if (paintDoorTiles) {
+        map.lowerTiles[topIndex] = DOOR_TOP_TILE;
+        map.lowerTiles[bottomIndex] = DOOR_BOTTOM_TILE;
+      }
+      // 도장 직후 값이 정본 — 이벤트 문이면 킷 벽 타일, 타일 문이면 116/146.
+      const doorTiles = {
+        top: map.lowerTiles[topIndex] ?? DOOR_TOP_TILE,
+        bottom: map.lowerTiles[bottomIndex] ?? DOOR_BOTTOM_TILE,
+      };
       if (candidate.template.roofDeck) applyRoofDeck(map, candidate.bbox, doorAt);
       const houseIndex = houses.length;
       houses.push({
         bbox: candidate.bbox,
         doorAt,
+        doorTiles,
         front: { x: doorAt.x, y: doorAt.y + 1 },
         kitId,
         stories,
@@ -267,7 +283,7 @@ export function buildHouses(
   tryCandidates(candidates);
   // 변형 레이아웃에서 집이 모자라면 고전 위·아래 밴드로 보충
   if (houses.length < target && intent.settlementLayout !== "plaza-ring") {
-    tryCandidates(shuffled(houseCandidates(area, plaza, target, "plaza-ring", boulevard), rng));
+    tryCandidates(shuffled(houseCandidates(area, plaza, target, intent.templateCatalog, "plaza-ring", boulevard), rng));
   }
   if (houses.length < target) {
     warnings.push(`집 후보 진단: 후보 ${candidates.length}개 중 ${houses.length}/${target} 시공 (area ${area.w}×${area.h})`);
@@ -319,10 +335,11 @@ function houseCandidates(
   area: Rect,
   plaza: Plaza,
   target: number,
+  catalog: readonly HouseTemplate[],
   settlement: SettlementLayout = "plaza-ring",
   boulevard?: HouseBoulevardHint,
 ): HouseCandidate[] {
-  const minTemplateWidth = Math.min(...HOUSE_TEMPLATES.map((template) => template.w));
+  const minTemplateWidth = Math.min(...catalog.map((template) => template.w));
   const wantedColumns = Math.ceil(target / 2);
   // 슬롯 폭은 카탈로그 최대 폭 8을 기본으로 — 폭 8 슬롯이 한 열도 안 서는 좁은 맵만
   // 최소 폭으로 강등한다. (예전 로직은 "모든 열이 8폭으로 서는가"를 물어서 대형 맵이
@@ -331,7 +348,7 @@ function houseCandidates(
   const slotWidth = maxWideColumns >= 1 ? 8 : minTemplateWidth;
   const maxColumns = Math.max(1, Math.floor(area.w / (slotWidth + HOUSE_MARGIN * 2)));
   const columns = Math.max(1, Math.min(wantedColumns, maxColumns));
-  const templates = HOUSE_TEMPLATES.filter((template) => template.w <= slotWidth);
+  const templates = catalog.filter((template) => template.w <= slotWidth);
   const span = columns * slotWidth + (columns - 1) * HOUSE_MARGIN * 2;
   const xStart = area.x + Math.max(HOUSE_MARGIN, Math.floor((area.w - span) / 2));
   const candidates: HouseCandidate[] = [];
@@ -470,8 +487,9 @@ export function restoreHouseDoors(map: GameMap, houses: readonly BuiltHouse[]): 
   for (const house of houses) {
     const { x, y } = house.doorAt;
     if (y > 0 && y < map.height && x >= 0 && x < map.width) {
-      map.lowerTiles[y * map.width + x] = DOOR_BOTTOM_TILE;
-      map.lowerTiles[(y - 1) * map.width + x] = DOOR_TOP_TILE;
+      const tiles = house.doorTiles ?? { top: DOOR_TOP_TILE, bottom: DOOR_BOTTOM_TILE };
+      map.lowerTiles[y * map.width + x] = tiles.bottom;
+      map.lowerTiles[(y - 1) * map.width + x] = tiles.top;
       map.upperTiles[y * map.width + x] = TILE.EMPTY;
       map.upperTiles[(y - 1) * map.width + x] = TILE.EMPTY;
     }

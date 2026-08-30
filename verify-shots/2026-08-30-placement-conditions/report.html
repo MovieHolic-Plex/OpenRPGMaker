@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>배치 조건 — 산문에서 검사로 · 2026-08-30</title>
+<style>
+  :root {
+    --ink: #1a1d21; --ink-2: #55606c; --line: #dfe3e8; --bg: #f7f8fa; --card: #fff;
+    --bad: #c0392b; --good: #1e7e4f; --note: #7a5b00; --accent: #3b5bdb;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 32px 20px 80px; background: var(--bg); color: var(--ink);
+         font: 15px/1.75 -apple-system, "Segoe UI", "Noto Sans KR", sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 27px; line-height: 1.35; margin: 0 0 6px; }
+  .sub { color: var(--ink-2); margin: 0 0 28px; }
+  h2 { font-size: 20px; margin: 44px 0 4px; padding-top: 20px; border-top: 1px solid var(--line); }
+  h2 .n { display: inline-block; min-width: 26px; color: var(--accent); font-weight: 700; }
+  h3 { font-size: 16px; margin: 26px 0 6px; }
+  p { margin: 8px 0; }
+  .lede { color: var(--ink-2); margin: 0 0 14px; }
+  figure { margin: 16px 0 22px; background: var(--card); border: 1px solid var(--line);
+           border-radius: 10px; overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; background: #eef0f3; }
+  figure.tight img { width: auto; max-width: 100%; margin: 12px auto 0; }
+  figcaption { padding: 10px 14px; font-size: 13.5px; color: var(--ink-2); border-top: 1px solid var(--line); }
+  figcaption b { color: var(--ink); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; background: var(--card);
+          border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-size: 14px; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #eef1f5; font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; font-size: 13px;
+         font-family: "SF Mono", Consolas, monospace; }
+  pre { background: #eef1f5; border-radius: 8px; padding: 12px 14px; overflow-x: auto;
+        font-size: 12.5px; line-height: 1.6; font-family: "SF Mono", Consolas, monospace; margin: 12px 0; }
+  .bad { color: var(--bad); font-weight: 600; }
+  .good { color: var(--good); font-weight: 600; }
+  .box { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+         border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
+  .box.warn { border-left-color: var(--note); }
+  .box h4 { margin: 0 0 6px; font-size: 14.5px; }
+  ul { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  .meta { font-size: 13px; color: var(--ink-2); background: var(--card); border: 1px solid var(--line);
+          border-radius: 10px; padding: 12px 16px; margin: 0 0 26px; }
+  .meta div { margin: 2px 0; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+          font-weight: 600; background: #e8f5ee; color: var(--good); }
+  .pill.b { background: #fdeceb; color: var(--bad); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>배치 조건 — 설명용 산문에서 실제 검사로</h1>
+<p class="sub">2026-08-30 · 크로미움 실측 · 스크린샷 10장은 모두 이번 브랜치 빌드에서 직접 찍은 것</p>
+
+<div class="meta">
+  <div><b>무엇을 했나</b> — 구조물·타일 그룹에 "어디에 놓일 수 있는가"를 <b>기계가 읽는 값</b>으로 저장하고, 사람이 칠할 때와 AI 가 찍을 때 그 값을 실제로 검사해 막는다.</div>
+  <div><b>측정 환경</b> — Playwright 크로미움 1440×900, <code>?freshProject=1</code>, 편집기 UI 모드 expert, 합본 마을 · EasyRPG (CC0) 타일셋</div>
+  <div><b>재현</b> — <code>verify-shots/2026-08-30-placement-conditions/probe.mjs</code> (이 보고서의 모든 수치와 그림을 만든 스크립트)</div>
+</div>
+
+<h2><span class="n">1</span> 문제 — 규칙은 있었지만 아무도 읽지 않았다</h2>
+<p class="lede">배치 규칙 칸은 전부터 있었다. 다만 <b>자유 문장</b>이었다.</p>
+
+<p>기존 칸은 "배치 규칙(설명용 문장)" — 사람이 아무 말이나 적는 textarea 다. 여기에 "벽에 붙여 놓아야 함"이라고 써 두면 사람이 읽고 지킬 수는 있지만, 붓이 그 문장을 이해하지 못한다. AI 도 문장을 프롬프트에 실어 보낼 뿐이라 어길 때 막히지 않는다. 조건을 어긴 배치는 <b>맵 감사에 잡히지도 않았다</b> — 검사할 값이 없으니 검사기를 쓸 수가 없다.</p>
+
+<figure class="tight">
+  <img src="shots/10-knowledge-surface-default.png" alt="타일셋 지식 인스펙터 — 산문 칸 위에 새 배치 면 블록">
+  <figcaption><b>무엇을 보나 —</b> 위쪽이 예전부터 있던 <b>「배치 규칙(설명용 문장)」</b> 자유 입력 칸, 아래가 새로 붙인 <b>「배치 면 (실제로 검사함)」</b> 블록이다. 제목에 "실제로 검사함"을 박은 건 두 칸이 나란히 있을 때 어느 쪽이 집행되는지 한눈에 갈라 보이게 하려는 것이다. 기본값은 <code>조건 없음</code> 이고 밑줄에 결과를 문장으로 되돌려 준다 — "어디에나 놓을 수 있습니다".</figcaption>
+</figure>
+
+<h2><span class="n">2</span> 저장되는 값 — 여섯 가지 자리 × 방향 × 강도</h2>
+
+<table>
+  <tr><th>자리(zone)</th><th>뜻</th><th>검사 방법</th></tr>
+  <tr><td><code>anyFloor</code></td><td>아무 바닥</td><td>발자리가 벽이 아니면 통과</td></tr>
+  <tr><td><code>clearArea</code></td><td>빈 땅(자리 전체)</td><td>발자리 전체가 비어 있어야 함</td></tr>
+  <tr><td><code>openFloor</code></td><td>벽에서 떨어진 바닥</td><td>네 방향 어디에도 벽이 닿지 않아야 함</td></tr>
+  <tr><td><code>againstWall</code></td><td>벽에 붙은 바닥</td><td>지정 방향(또는 아무 방향)이 벽이어야 함</td></tr>
+  <tr><td><code>corner</code></td><td>구석 바닥</td><td>세로·가로 양쪽이 모두 벽이어야 함</td></tr>
+  <tr><td><code>wallFace</code></td><td>벽면</td><td>발자리 전체가 벽 타일이어야 함(벽걸이용)</td></tr>
+</table>
+
+<figure class="tight">
+  <img src="shots/11-knowledge-surface-against-wall.png" alt="타일 그룹에 조건을 채운 모습">
+  <figcaption><b>같은 블록, 값을 채운 모습(타일셋 지식) —</b> <code>벽에 붙은 바닥</code> · <code>북쪽(위)</code> · <code>강함 · 막음</code>. 인스펙터는 352px 열이라 강도 라벨을 <b>짧은 쪽</b>으로 쓴다 — 편집기 다이얼로그의 "필수 — 어기면 못 찍음"과 같은 값이다. 밑줄이 저장될 조건을 문장으로 확인해 준다 — "북쪽(위) 벽에 붙은 바닥에만 놓입니다".</figcaption>
+</figure>
+
+<p>강도는 두 단계다. <b>필수(hard)</b> 는 어기면 못 찍는다. <b>권장(soft)</b> 는 경고만 하고 찍힌다. 방향은 <code>againstWall</code> 에서만 뜻이 있어서, 다른 자리를 고르면 방향 칸이 <b>사라진다</b> — 안 먹는 칸을 비활성으로 남겨 두면 "왜 안 되지"를 유발한다.</p>
+
+<div class="two">
+  <figure class="tight">
+    <img src="shots/24-conditions-added.png" alt="조건 한 줄 — 벽에 붙은 바닥 · 북쪽 · 필수">
+    <figcaption><b>구조물 편집기, 조건 한 줄 —</b> <code>벽에 붙은 바닥</code> + <code>북쪽(위)</code> + <code>필수 — 어기면 못 찍음</code>. 오른쪽에 저장될 문장("북쪽(위) 벽에 붙은 바닥")을 즉시 되돌려 준다. 머리글의 <b>«필수» 조건을 어기면 사람이 찍어도 AI 가 찍어도 거부됩니다</b> 한 줄이 강도의 뜻을 설명한다.</figcaption>
+  </figure>
+  <figure class="tight">
+    <img src="shots/26-conditions-wallface-no-facing.png" alt="벽면을 고르면 방향 칸이 사라진다">
+    <figcaption><b>같은 줄에서 자리만 «벽면» 으로 —</b> 방향 칸이 <b>없어졌다</b>. 벽면은 발자리 전체가 벽이어야 하는 조건이라 방향이 의미가 없다. 미리보기도 방향 없이 "벽면"으로 줄어든다.</figcaption>
+  </figure>
+</div>
+
+<h2><span class="n">3</span> 어디에 붙였나 — 두 입구, 한 검사기</h2>
+<p class="lede">타일 그룹(타일셋 지식)과 구조물 킷은 저장 위치가 다르다. 검사 코드는 하나로 모았다.</p>
+
+<p>새 파일 <code>src/project/placementSurface.ts</code> 가 유일한 판정자다. 맵 위 발자리를 받아 <code>{ok, reason}</code> 을 돌려주고, 실패 이유는 사람 말로 만든다. 저장 형태만 입구별로 다르다.</p>
+
+<pre>타일 그룹  → 그룹의 clusterRule 하나로 (kind: "surface")
+{"group":"화덕 오븐","rule":{"id":"r_surface_tile_group_1","kind":"surface",
+ "params":{"zone":"againstWall","facing":"north"},"strength":"hard"}}
+
+구조물 킷  → kit.ai.placement 배열로 (조건 여러 줄 가능)
+{"id":"kit_72505873…","name":"새 구조물",
+ "placement":[{"id":"pc_fd1ea23f…","strength":"hard","zone":"againstWall","facing":"north"}]}</pre>
+
+<figure>
+  <img src="shots/27-conditions-accepted.png" alt="구조물 편집기 AI 메타 탭 전체">
+  <figcaption><b>구조물 편집기 · AI 메타 탭 —</b> 설명 / 배치 규칙(설명용 문장) / <b>배치 조건 (실제로 검사함)</b> / 반복 / 분류 순서다. 조건은 <code>+ 조건 추가</code> 로 여러 줄을 쌓을 수 있고, 저장은 아래 <b>초안 수락 — 내가 보증</b> 이 맡는다.</figcaption>
+</figure>
+
+<figure>
+  <img src="shots/28-inspector-after-accept.png" alt="데이터베이스 구조물 탭 인스펙터에 조건이 보인다">
+  <figcaption><b>저장 뒤 데이터베이스 «구조물» 탭 —</b> 오른쪽 인스펙터에 <b>「배치 조건 · 필수 — 북쪽(위) 벽에 붙은 바닥」</b> 줄이 새로 뜬다. 이 줄은 이번 실측 중에 <span class="bad">없어서 추가한 것</span>이다. 조건이 집행되는 값인데 편집기를 열어야만 보이면, "왜 안 찍히지"의 답이 화면에 없다.</figcaption>
+</figure>
+
+<h2><span class="n">4</span> 실제로 막히는가 — 붓으로 확인</h2>
+<p class="lede">「북쪽(위) 벽에 붙은 바닥 · 필수」 조건을 단 3×3 킷을 팔레트에 물리고, 벽이 없는 흙길 가운데를 클릭했다.</p>
+
+<figure>
+  <img src="shots/31-refused-full.png" alt="팔레트에 킷을 물린 편집기 화면">
+  <figcaption><b>클릭 대상 —</b> 왼쪽 팔레트 <b>「내 구조물」</b> 에 3×3 킷이 물려 있다(초록 썸네일). 클릭 지점은 맵 가운데(50,50) 흙길로, 사방에 벽이 없다.</figcaption>
+</figure>
+
+<figure class="tight">
+  <img src="shots/32b-toast-element.png" alt="거부 토스트 원문">
+  <figcaption><b>거부 메시지 원문 —</b> <code>여기엔 '새 구조물'을 놓을 수 없습니다 — 북쪽(위) 벽에 붙은 바닥에 놓아야 합니다 — 북쪽(위)이 벽이 아닙니다 — 어느 쪽도 벽에 닿아 있지 않습니다</code>. 규칙 이름만 되뇌지 않고 <b>지금 이 자리가 왜 안 되는지</b>까지 붙인다. 실측 결과 바뀐 칸은 <span class="good">0칸</span> — 문구만 뜨고 실제로 안 찍힌 게 맞다.</figcaption>
+</figure>
+
+<h3>권장(soft)으로 낮추면 찍힌다</h3>
+<p>같은 자리, 같은 클릭에서 강도만 <code>권장</code> 으로 바꿨다. 결과는 <b>8칸 변경</b>(49,50 50,50 51,50 49,51 50,51 51,51 50,52 51,52), 하층 타일이 <code>424 → 365 / 454</code> 로 바뀌었다. 토스트는 이유를 그대로 알리되(<code>북쪽(위) 벽에 붙은 바닥에 놓아야 합니다 — 북쪽(위)이 벽이 아닙니다 — 어느 쪽도 벽에 닿아 있지 않습니다</code>) 붓을 막지 않는다.</p>
+
+<div class="two">
+  <figure class="tight">
+    <img src="shots/43-spot-before.png" alt="찍기 전 320px 확대">
+    <figcaption><b>찍기 전 —</b> (50,50) 주변 320px 확대.</figcaption>
+  </figure>
+  <figure class="tight">
+    <img src="shots/44-spot-after.png" alt="찍은 후 320px 확대">
+    <figcaption><b>권장으로 찍은 후 —</b> 눈으로는 차이가 작다(풀 노이즈 킷을 흙길에 얹었다). 확실한 증거는 그림이 아니라 타일 값이다 — 위의 8칸 · <code>424 → 365/454</code>.</figcaption>
+  </figure>
+</div>
+
+<div class="box warn">
+  <h4>토스트를 찍는 데 애를 먹었다 — 기록해 둔다</h4>
+  <p>전체 화면 스크린샷이 이 앱에서 1~3초가 걸린다(1440×900 + Phaser 캔버스). error 토스트 수명은 4초라, 전체를 먼저 찍고 잘라 찍으면 <b>이미 꺼져 있다</b>. DOM 을 재 보면 <code>opacity: 0</code> 인데 텍스트는 남아 있어(만료 후에도 최신 토스트는 DOM 에 남기는 계약) "보이는데 안 찍힌다"로 오해하기 쉽다. 확실한 방법은 <b>요소 자체를 찍는 것</b>(<code>locator.screenshot()</code>)이고, 그렇게 얻은 그림이 위의 거부 메시지다.</p>
+</div>
+
+<h2><span class="n">5</span> AI 쪽도 같은 문을 지난다</h2>
+<p>AI 가 구조물을 찍는 도구(<code>placementTools</code> · <code>structureKitTools</code>)와 점수 계산(<code>placementScoring</code>)이 같은 검사기를 부른다. 필수 조건을 어긴 자리는 <b>도구 호출이 거부</b>되고, 조건 문장은 <code>contextBuilder</code> 를 통해 프롬프트에도 실린다 — 먼저 알려 주고, 그래도 어기면 막는 구조다. 맵 감사(<code>clusterRuleValidators</code>)는 이미 놓인 것들을 훑어 조건 위반을 error 로 보고한다. 벽을 지워 버려 되볼 수 없는 자리는 <b>«판정 불가» 로 건너뛴다</b> — 없는 근거로 위반을 만들지 않는다.</p>
+
+<h2><span class="n">6</span> 검사 결과</h2>
+<table>
+  <tr><th>항목</th><th>결과</th></tr>
+  <tr><td><code>test/placementSurface.test.ts</code> — 자리·방향·강도 판정</td><td><span class="pill">16/16 통과</span></td></tr>
+  <tr><td><code>test/clusterRuleSurface.test.ts</code> — 맵 감사 · 규칙 저장 · 지식 병합</td><td><span class="pill">10/10 통과</span></td></tr>
+  <tr><td><code>test/structureKitBrushConditions.test.ts</code> — 붓 경로 · 스트로크당 안내 규칙</td><td><span class="pill">7/7 통과</span></td></tr>
+  <tr><td><code>test/structureKitPlacementConditions.test.ts</code> — AI 도구 경로 · 프롬프트 노출</td><td><span class="pill">7/7 통과</span></td></tr>
+  <tr><td><code>tsc --noEmit -p tsconfig.app.json</code> (게이트가 쓰는 앱 프로젝트)</td><td><span class="pill">오류 0</span></td></tr>
+  <tr><td>CSS 예산 게이트</td><td><span class="pill">회귀 0 · 개선 1</span> (undefinedVars 63 → 61)</td></tr>
+  <tr><td>붓 거부(필수) 실측</td><td><span class="pill">0칸 변경</span></td></tr>
+  <tr><td>붓 경고(권장) 실측</td><td><span class="pill">8칸 변경 + 경고</span></td></tr>
+</table>
+
+<h3>실측 중에 고친 것</h3>
+<ul>
+  <li><b>드롭다운 글자가 잘렸다</b> — 세 칸을 한 줄에 두니 "벽에 붙은 바닥"이 <span class="bad">"벽에 붙은 바다"</span> 로 읽혔다. 자리 칸을 한 줄 전체로 올리고 방향·강도를 아래 줄로 내렸다.</li>
+  <li><b>강도 라벨이 넘쳤다</b> — 인스펙터 352px 열에서 "필수 — 어기면 못 찍음"이 잘려, 인스펙터에서는 <code>강함 · 막음</code> 으로 줄였다(편집기 다이얼로그는 넓어서 긴 라벨 유지).</li>
+  <li><b>지우기 ✕ 가 한 줄을 통째로 먹었다</b> — 방향 칸이 없는 «벽면» 조건에서 줄이 접히면 다이얼로그의 <code>.btn</code> 늘어남 규칙을 물려받았다. <code>flex: 0 0 auto</code> 로 고정.</li>
+  <li><b>인스펙터에 조건이 안 보였다</b> — 4장 캡션의 그 줄을 추가.</li>
+  <li><b>드래그 도중 조용히 멈췄다</b> — 안내를 «스트로크 첫 타일»에서만 띄웠더니, 유효한 자리에서 드래그를 시작해 안 되는 자리로 넘어갈 때 아무 말도 없이 칠이 그쳤다(붓이 고장 난 것처럼 보인다). 지금은 <b>스트로크의 첫 거부</b>에서 한 번 말하고 그 뒤로는 반복하지 않는다 — <code>test/structureKitBrushConditions.test.ts</code> 가 붓 경로를 Phaser 없이 재현해 고정한다(고치기 전 코드에서는 이 테스트가 실패한다).</li>
+</ul>
+
+<div class="box">
+  <h4>남은 한계</h4>
+  <ul>
+    <li>검사는 <b>벽 여부</b>를 기준으로 한다. 물·절벽 같은 다른 지형은 벽으로 보지 않으므로 "물가에만" 같은 조건은 아직 표현할 수 없다.</li>
+    <li>조건은 발자리(bounding box) 기준이다. 부위별로 다른 조건(굴뚝은 지붕 위, 문은 벽면)은 표현하지 못한다.</li>
+    <li>맵 감사는 세로쌍 구조를 되볼 수 있을 때만 판정한다 — 벽을 지운 뒤에는 위반을 찾아내지 못하고 조용히 건너뛴다.</li>
+  </ul>
+</div>
+
+</main>
+</body>
+</html>

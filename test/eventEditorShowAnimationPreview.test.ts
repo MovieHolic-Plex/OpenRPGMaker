@@ -8,6 +8,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { showAnimationBody } from "@/editor/panels/eventEditor/commandBodyPage3Native";
 import {
   SHOW_ANIMATION_FRAME_MS,
+  playShowAnimation,
+  playShowAnimationOnce,
   renderShowAnimationFrame,
   showAnimationPlaybackSource,
 } from "@/editor/panels/eventEditor/showAnimationPlayback";
@@ -175,6 +177,107 @@ describe("showAnimation 본문 애니메이션 표시면", () => {
     expect(findByTestId(body, "show-animation-intent")).toBeNull();
     expect(findByTestId(body, "show-animation-surface")).not.toBeNull();
     expect(animationHeadings(body).map((node) => node.dataset.testid)).toEqual(["show-animation-surface-title"]);
+  });
+
+  it("반복 재생은 마지막 프레임 다음에 0으로 돌아가 계속 전진한다", () => {
+    const source = {
+      sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
+      frames: [
+        { cells: [{ pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+        { cells: [{ pattern: 1, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+        { cells: [{ pattern: 2, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+      ],
+      url: undefined,
+    };
+    const stage = new FakeElement("div") as unknown as HTMLElement;
+    const layer = new FakeElement("div") as unknown as HTMLElement;
+
+    playShowAnimation(stage, layer, source, { loop: true });
+
+    expect(layer.dataset.frameIndex).toBe("0");
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS * 2);
+    expect(layer.dataset.frameIndex).toBe("2");
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+    expect(layer.dataset.frameIndex).toBe("0");
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+    expect(layer.dataset.frameIndex).toBe("1");
+    expect(vi.getTimerCount()).toBe(1);
+  });
+
+  it("프레임 콜백은 첫 렌더와 매 틱의 인덱스와 전체 프레임 수를 알린다", () => {
+    const source = {
+      sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
+      frames: [
+        { cells: [{ pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+        { cells: [{ pattern: 1, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+      ],
+      url: undefined,
+    };
+    const stage = new FakeElement("div") as unknown as HTMLElement;
+    const layer = new FakeElement("div") as unknown as HTMLElement;
+    const onFrame = vi.fn();
+
+    playShowAnimation(stage, layer, source, { loop: true, onFrame });
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS * 3);
+
+    expect(onFrame.mock.calls).toEqual([
+      [0, 2],
+      [1, 2],
+      [0, 2],
+      [1, 2],
+    ]);
+  });
+
+  it("반복 재생도 마운트된 스테이지가 분리되면 인터벌을 지운다", () => {
+    const source = {
+      sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
+      frames: [
+        { cells: [{ pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+        { cells: [{ pattern: 1, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+      ],
+      url: undefined,
+    };
+    const stage = new FakeElement("div") as unknown as HTMLElement;
+    const layer = new FakeElement("div") as unknown as HTMLElement;
+    const onStop = vi.fn();
+    Object.defineProperty(stage, "isConnected", { configurable: true, value: true });
+
+    playShowAnimation(stage, layer, source, { loop: true, onStop });
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+    expect(vi.getTimerCount()).toBe(1);
+
+    Object.defineProperty(stage, "isConnected", { configurable: true, value: false });
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+
+    expect(vi.getTimerCount()).toBe(0);
+    expect(onStop).toHaveBeenCalledTimes(1);
+  });
+
+  it("기존 1회 재생은 끝에서 멈추고 첫 프레임으로 돌아간다", () => {
+    const source = {
+      sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
+      frames: [
+        { cells: [{ pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+        { cells: [{ pattern: 1, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] },
+      ],
+      url: undefined,
+    };
+    const stage = new FakeElement("div") as unknown as HTMLElement;
+    const layer = new FakeElement("div") as unknown as HTMLElement;
+    const onStop = vi.fn();
+
+    playShowAnimationOnce(stage, layer, source, onStop);
+    expect(layer.dataset.frameIndex).toBe("0");
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+    expect(layer.dataset.frameIndex).toBe("1");
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+
+    expect(layer.dataset.frameIndex).toBe("0");
+    expect(onStop).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS * 2);
+    expect(layer.dataset.frameIndex).toBe("0");
+    expect(onStop).toHaveBeenCalledTimes(1);
   });
 
   it("프레임 렌더러가 패턴을 시트 좌표로 옮긴다", () => {

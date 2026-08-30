@@ -224,12 +224,31 @@ export function commitChangeset(draft: Project, baseline?: Project): CommitResul
     // 이 변경이 만들지 않은 "기존" 오류는 커밋을 막지 않는다 — 시작 위치 통행 불가 같은
     // 선재 오류가 있는 프로젝트에서 무관한 편집(건축 팔레트/AI 툴)까지 전부 거부되던 버그의 수정.
     // 새로 생긴 오류만 차단해 추가 손상은 여전히 막는다.
-    const baselineKeys = new Set(projectLint(baseline).filter(isBlocking).map(issueKey));
-    blocking = blocking.filter((issue) => !baselineKeys.has(issueKey(issue)));
+    const baselineAtoms = new Set(projectLint(baseline).filter(isBlocking).flatMap(issueAtoms));
+    blocking = blocking.filter((issue) => issueAtoms(issue).some((atom) => !baselineAtoms.has(atom)));
   }
   return { ok: blocking.length === 0, issues, blocking };
 }
 
 function issueKey(issue: LintIssue): string {
   return `${issue.code}|${issue.mapId ?? ""}|${issue.x ?? ""}|${issue.y ?? ""}|${issue.message}`;
+}
+
+/**
+ * 기준선 대조 단위. 대부분의 lint 이슈는 메시지 1개 = 위반 1개라 키가 곧 원자다.
+ *
+ * serialize-roundtrip 은 예외다 — **여러 위반을 개행으로 이어 붙인 한 메시지**를 낸다.
+ * 메시지 전체를 키로 쓰면 위반 하나를 지우는 편집조차 메시지가 달라져 "새 오류"로 분류되고,
+ * 그 결과 **청소가 영구 차단된다**(2026-08-30 실측: 고아 아이템을 지우는
+ * delete_database_record 10건이 연속으로 커밋 거부됨 — 고치려는 조건이 고치는 경로를 막는 교착).
+ * 그래서 이 코드만 줄 단위로 쪼개 원자를 비교한다: 새 줄이 없으면 차단하지 않는다.
+ */
+function issueAtoms(issue: LintIssue): string[] {
+  if (issue.code !== "serialize-roundtrip") return [issueKey(issue)];
+  const lines = issue.message
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line !== "");
+  if (lines.length === 0) return [issueKey(issue)];
+  return lines.map((line) => `${issue.code}|${line}`);
 }

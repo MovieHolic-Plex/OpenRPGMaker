@@ -31,11 +31,6 @@
 
 .battle-scene {
   --battle-hud-height: 40%;
-  /* 640×480 이주: 창틀 테두리는 논리 px 기준 12px. 전역 --runtime-window-border-tight: 6px
-     (system.css) 은 dialogue.css / status-menu / title-screen 과 공유하므로 여기서 2배할 수
-     없고, 씬 스코프에서 재정의한다. (border-image-slice 는 --runtime-window-slice = 24 fill —
-     windowskin PNG 의 소스 px 이라 논리 px 이 아니므로 2배하지 않는다.) */
-  --runtime-window-border-tight: 12px;
   /* 포커스 링: var(--focus-ring, …) 의 폴백은 죽은 코드다 — tokens.css 가 --focus-ring 을
      정의(2px 판)해서 폴백이 아예 평가되지 않는다. 그래서 4px 판(= 논리 px 2배)을 씬
      스코프에서 재정의한다. 색은 전역과 동일. */
@@ -76,7 +71,7 @@
   border-radius: 0;
   background: #000;
   color: var(--oprn-battle-text);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-9);
   line-height: 1.25;
   overflow: hidden;
@@ -208,12 +203,8 @@
 .battle-message-window,
 .battle-result-panel {
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
 }
 
@@ -271,6 +262,18 @@
   width: 144px;
   height: 144px;
 }
+/* 필드 위 배틀러 라벨(적 이름표·HP 숫자·파티 이름행)은 **스프라이트 레이어**다.
+   상자 크기가 픽셀 글꼴 폭으로 실측돼 있어 비례 글꼴로 바꾸면 그대로 넘친다
+   (실측, battle-text 시나리오: 적 이름 잘림 0.299 → 0.831, 파티 이름 0 → 0.035).
+   창·명령 행처럼 **크롬**인 자리만 --runtime-ui-font 로 간다. 스킨이 이 라벨을
+   알약 같은 크롬으로 다시 그릴 때는 그 규칙에서 글꼴을 명시한다(_rm2003.css). */
+.battle-enemy-name,
+.battle-enemy-hp-text,
+.battle-party .battle-actor-name,
+.battle-party .battle-actor-hp {
+  font-family: var(--runtime-pixel-font);
+}
+
 
 .battle-actor-label,
 .battle-actor-name,

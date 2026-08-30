@@ -92,3 +92,30 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 - `repairProjectReferences` keeps the first duplicate, removes definitions with dangling item/graphic references, prunes missing allowed-map IDs, and drops orphaned/out-of-bounds/overlapping starting placements. Repair never chooses a replacement item/type and never creates inventory value.
 - Database item deletion is blocked by building costs and decoration placement items. Building/decor type deletion is blocked while a starting placement uses it. Map deletion impact reports separate P2 building/decor counts and IDs, removes only target-map placements, and prunes the deleted map from type allowlists.
 - Mandatory focused regression: `test/p2SpatialReferenceIntegrity.test.ts` plus `test/mapDeletionIntegrity.test.ts`, `test/p1ReferenceIntegrity.test.ts`, and `test/npcScheduleReferenceIntegrity.test.ts`.
+
+- **배치 조건이 산문에서 실제 기하 검사로 바뀌었다 (2026-08-30, PR #316).** `checkPlacementSurface`
+  (`src/project/placementSurface.ts:126`)가 사각의 밑변을 기준으로 **통행 가능성 데이터**만 보고
+  판정한다 — 벽 = 통행 불가 또는 맵 밖, 바닥 = 맵 안이고 통행 가능. `PlacementZone` 은
+  `anyFloor|clearArea|openFloor|againstWall|corner|wallFace` 이고 `facing` 은 `againstWall` 에서만
+  뜻을 가진다(`src/project/types/base.ts:117-129`).
+
+  **의도 탐지가 없다.** 지시문·그룹 이름·`placementRules` 산문을 읽는 경로가 하나도 없다. 이것이
+  중요한 이유는 PR #312 가 정확히 그 반대 때문에 게이트를 풀어야 했기 때문이다 — 부분일치 정규식이
+  "나무 상자", "나무 바닥", 맵 이름이 실린 `[컨텍스트]` footer 까지 매치해 실제로 타일을 깐 제안을
+  통째로 반려했다. 실측 확인: 맵 이름 `"화덕 마을 [컨텍스트] 부엌"` + 그룹 `"화덕 상자"` +
+  산문 규칙을 놓고 방 한가운데에 놓아도 위반 0건이다.
+
+  **새 lint 코드 `cluster-rule:surface:<groupId>` 는 severity 가 `error` 지만 커밋을 막지 않는다.**
+  `commitChangeset` 이 `issue.severity === "error" && !issue.code.startsWith("cluster-rule:")` 로
+  차단 대상을 고르기 때문이다(`src/editor/tools/changeset.ts:221`). 즉 규칙 감사 패널에는 보이고
+  AI 제안·커밋은 통과한다 — 이 레포의 "문제 신호는 보이게, 작업은 막지 않게" 관례와 같다.
+
+  판정은 **세 값**이다. 인스턴스 자신의 타일이 지형을 덮어쓴 경우는 `undecidable` 로 표시하고
+  건너뛰며(`clusterRuleValidators.ts:110-130`), 잘못된 params 는 조용히 무시한다. 확신할 수 없을 때
+  위반이라고 말하지 않는 것이 오탐을 막는 장치다.
+
+  구조물 킷의 `hard` 조건은 배치 시점에 거부한다(`structureKitTools.ts:158-181`) — 다만 킷마다
+  옵트인이고, `soft` 는 경고로 내려가며, 오류 문구가 고칠 자리를 지목한다("데이터베이스 → 구조물 →
+  [편집] → AI 메타 탭의 «배치 조건»"). `list_structure_kits` 가 `placementText` 를 내보내 모델이
+  좌표를 고르기 **전에** 제약을 읽는다. 내장 킷은 아직 `placement` 를 하나도 싣지 않아 기존 킷은
+  전부 무검사로 남는다.

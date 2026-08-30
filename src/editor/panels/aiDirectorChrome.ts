@@ -29,3 +29,32 @@ export function createDirectorRestoreButton(): HTMLButtonElement {
     ],
   }) as HTMLButtonElement;
 }
+
+/**
+ * 접힌 레일에 달리는 «되돌리기».
+ *
+ * 맵 위 밴드를 지우면 컴포저 행이 유일한 AI 되돌리기 표면이 되는데, 그 행은 사이드·도크가
+ * 접힌 동안 `display: none` 이다(`03-three-tier-ia.css` 의 `.is-collapsed > .ai-command-bar`).
+ * 사용자가 직접 접고(`toggleCollapsed`) 그 상태는 `savePanelCollapsed` 로 새로고침을 넘어
+ * 유지되므로, 레일을 접어 둔 채 캔버스·지역 작업 경로로 적용하는 사용자는 AI 되돌리기 수단이
+ * 아예 없어진다. 삭제되는 밴드는 패널 자식이라 그 선택자에 걸리지 않았으니 새로 생기는 구멍이다.
+ *
+ * 상태를 새로 들지 않는다 — 컴포저 버튼과 같은 refreshUndoApplied 가 둘을 함께 여닫고 클릭은
+ * 같은 undoLastButton 으로 위임한다. 진입점마다 동작이 갈라지면 배지("되돌림")와 시스템
+ * 말풍선이 어긋난다.
+ */
+export function createCollapsedUndoButton(onUndo: () => void): HTMLButtonElement {
+  return el("button", {
+    class: "ai-collapsed-undo",
+    text: "↶",
+    attrs: {
+      type: "button",
+      hidden: "",
+      "aria-hidden": "true",
+      title: "방금 적용한 AI 변경 되돌리기",
+      "aria-label": "방금 적용한 AI 변경 되돌리기",
+    },
+    dataset: { testid: "ai-collapsed-undo" },
+    on: { click: onUndo },
+  }) as HTMLButtonElement;
+}

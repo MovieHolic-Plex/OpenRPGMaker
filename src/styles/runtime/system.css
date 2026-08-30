@@ -38,33 +38,66 @@
      선언해 tokens.css 와 독립된 두 번째 진실 공급원이 됐고, 그러면 DB → 시스템 → 폰트
      에서 고른 값이 에디터에만 먹는다. 선택 가능한 글꼴 목록은 fontRegistry.ts 가 소유한다. */
   --runtime-pixel-font: var(--font-pixel);
+  /* 런타임 UI 글꼴 — 창·메뉴·상점·타이틀의 글자는 전부 이 별칭을 쓴다. 픽셀 글꼴은 배틀러
+     스프라이트와 달리 UI 를 낡아 보이게 하는 가장 큰 요인이었다(rm2003 전투 HUD 가 먼저
+     --font-ui 로 옮겨 갔고, 이 별칭이 그 결론을 런타임 전체로 넓힌다). --runtime-pixel-font
+     는 픽셀 글꼴을 명시적으로 원하는 자리를 위해 남겨 둔다. */
+  --runtime-ui-font: var(--font-ui);
+  /* 글자 크기는 **그대로 둔다**. 논리 화면이 320x240 이고 런타임이 3배로 확대하므로 9px 는
+     화면에서 27px 로 보인다 — 키울 이유가 없다. 실제로 12/13/20/26 으로 올렸더니 고정 높이를
+     쓰는 자리가 줄줄이 잘렸다(실측: 파티 카드 이름 "주…", 전투 커맨드 라벨 잘림 0.128 —
+     행 피치가 --battle-command-row-height 24px 로 고정이다). 글꼴만 비례 글꼴로 바꾼다. */
   --runtime-font-size-9: 9px;
   --runtime-font-size-11: 11px;
   --runtime-font-size-18: 18px;
   --runtime-font-size-22: 22px;
+  /* ── 모던 글래스 크롬 ─ 런타임 공용 표면 ──────────────────────────────────
+     값의 출처는 rm2003 전투 HUD(_rm2003.css) 다. 그 화면만 자체 크롬을 갖고 나머지
+     런타임 표면은 자료집 윈도스킨(갈색 9-slice)을 쓰던 탓에, 같은 게임 안에서 전투와
+     메뉴가 서로 다른 디자인 시스템처럼 보였다. 이 토큰들이 그 유리 표면을 한 곳에
+     모아 두고, _rm2003.css 도 자기 지역 변수 대신 이 토큰을 소비한다(단일 진실 공급원).
+     색은 전부 rgba 다 — TOKENS.md §4.1 하드코딩 hex 금지. */
+  --runtime-glass-surface: linear-gradient(180deg, rgba(23, 28, 52, 0.96), rgba(9, 11, 24, 0.98));
+  --runtime-glass-panel: rgba(12, 15, 30, 0.82);
+  --runtime-glass-card: rgba(255, 255, 255, 0.04);
+  --runtime-glass-card-raised: rgba(255, 255, 255, 0.07);
+  --runtime-glass-hairline: rgba(154, 170, 226, 0.18);
+  --runtime-glass-hairline-strong: rgba(154, 170, 226, 0.32);
+  --runtime-glass-inset: rgba(4, 6, 16, 0.66);
+  --runtime-glass-scrim: rgba(6, 8, 18, 0.86);
+  --runtime-glass-shadow: 0 8px 24px rgba(3, 5, 14, 0.55);
+  --runtime-glass-text: rgba(238, 241, 251, 0.98);
+  --runtime-glass-muted: rgba(154, 164, 196, 0.94);
+  --runtime-glass-accent: rgba(124, 140, 255, 0.96);
+  --runtime-glass-accent-soft: rgba(124, 140, 255, 0.2);
+  --runtime-glass-radius: 6px;
+  --runtime-glass-radius-small: 4px;
   /* 저작 기본 스킨이 따뜻한 갈색이다. 런타임에서는 applySystemGraphic 이
      system.systemResourceId 를 읽어 이 변수를 덮어쓴다 — 여기 값은 그 전의 기본값이다. */
   --runtime-window-skin: url("/assets/ui/windowskin-warm.png");
   --runtime-window-slice: 24 fill;
   --runtime-window-border: 8px;
   --runtime-window-border-tight: 6px;
-  /* 창 글자·음영을 갈색 스킨에 맞춰 따뜻하게 옮긴다. 파란 스킨 시절의
-     #f4fbff/#061a55/#123c9a 는 갈색 위에서 차갑게 떠 보였다. */
-  --runtime-window-text: #fff6e2;
-  --runtime-window-muted: #e8d3ac;
-  --runtime-window-highlight: #ffe9a8;
-  --runtime-window-shadow: #2a1608;
-  --runtime-window-focus: #f5d04a;
-  --runtime-window-fill-fallback: #5c3a1c;
-  --runtime-window-selected-bg: rgba(168, 112, 48, 0.62);
-  --runtime-dialogue-glass-surface: rgba(8, 15, 28, 0.94);
-  --runtime-dialogue-glass-surface-strong: rgba(11, 21, 38, 0.98);
-  --runtime-dialogue-glass-surface-soft: rgba(26, 43, 66, 0.82);
-  --runtime-dialogue-glass-border: rgba(137, 187, 255, 0.72);
-  --runtime-dialogue-glass-border-strong: rgba(211, 232, 255, 0.9);
-  --runtime-dialogue-glass-accent: #79b9ff;
-  --runtime-dialogue-glass-accent-soft: rgba(76, 151, 244, 0.24);
-  --runtime-dialogue-glass-shadow: 0 5px 16px rgba(0, 4, 13, 0.58), inset 0 0 0 1px rgba(187, 219, 255, 0.08);
+  /* 창 글자·음영·채움 — 예전에는 갈색 윈도스킨 위에 얹히는 따뜻한 잉크였다.
+     이제 표면이 유리라 글래스 잉크를 그대로 가리킨다(소비 지점 수정 없이 전 표면이 함께 바뀐다). */
+  --runtime-window-text: var(--runtime-glass-text);
+  --runtime-window-muted: var(--runtime-glass-muted);
+  --runtime-window-highlight: var(--runtime-glass-accent);
+  --runtime-window-shadow: rgba(3, 5, 14, 0.72);
+  --runtime-window-focus: var(--runtime-glass-accent);
+  --runtime-window-fill-fallback: var(--runtime-glass-panel);
+  --runtime-window-selected-bg: var(--runtime-glass-accent-soft);
+  /* 대화창은 이 저장소에서 가장 먼저 유리로 옮겨 간 표면이고, 자기 이름의 토큰을 39곳에서
+     소비한다. 그 이름을 유지한 채 공용 글래스로 재정의해 전투 HUD 와 같은 표면·같은
+     선 두께를 쓰게 한다(예전 값은 테두리 알파 0.72 로 전투 HUD 보다 4배 두꺼웠다). */
+  --runtime-dialogue-glass-surface: var(--runtime-glass-panel);
+  --runtime-dialogue-glass-surface-strong: var(--runtime-glass-surface);
+  --runtime-dialogue-glass-surface-soft: var(--runtime-glass-card-raised);
+  --runtime-dialogue-glass-border: var(--runtime-glass-hairline);
+  --runtime-dialogue-glass-border-strong: var(--runtime-glass-hairline-strong);
+  --runtime-dialogue-glass-accent: var(--runtime-glass-accent);
+  --runtime-dialogue-glass-accent-soft: var(--runtime-glass-accent-soft);
+  --runtime-dialogue-glass-shadow: var(--runtime-glass-shadow);
   --runtime-dialogue-glass-focus-shadow: inset 2px 0 0 var(--runtime-dialogue-glass-accent), inset 0 0 0 1px rgba(211, 232, 255, 0.34);
   --runtime-dialogue-glass-filter: blur(4px) saturate(1.08);
   --runtime-dialogue-radius: 6px;
@@ -77,10 +110,10 @@
 .dialogue-overlay,
 .battle-scene,
 .name-entry-overlay {
-  -webkit-font-smoothing: none;
-  font-family: var(--runtime-pixel-font);
-  font-smooth: never;
-  text-rendering: optimizeSpeed;
+  /* 글자는 모던 글래스 토대로 안티에일리어싱을 살려둔다. 이전에는 여기서 스무딩을 끌고
+     픽셀 글꼴을 거는 바로 그 이유로 메뉴·대화가 전투 HUD 와 다른 시대의 UI 처럼 보여졌다.
+     아래 별도 선택자의 image-rendering: pixelated 는 그대로 남아 맵·스프라이트를 지킨다. */
+  font-family: var(--runtime-ui-font);
 }
 
 .player-layout.system-shell,

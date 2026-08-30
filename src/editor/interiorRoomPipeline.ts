@@ -11,7 +11,7 @@
  * 스텝 397·플랭크 396/398·캡 457/456/458·포스트 426/428 낱장 금지. Forbidden: 233/257/258.
  *
  * Furniture surfaces:
- *   wallFace | againstWallFloor | cornerFloor | openFloor | floorDebris
+ *   wallFace | againstWall | corner | openFloor | anyFloor  (PlacementZone 공용 어휘)
  * Hard cluster: bed 355 left-of 356 (upper) — openwiki hard adjacency contract.
  */
 import {
@@ -31,11 +31,14 @@ import { DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP } from "@/project/defaults/autotil
 // 순환 의존(카탈로그 → 이 모듈의 interiorVocabTiles)이므로 import 순서상 마지막에 둔다:
 // 카탈로그 본문이 실행될 때 DARK_WALL_TILE 등 상위 상수가 이미 초기화되어 있어야 한다.
 import { interiorObjectById, type InteriorObjectCell } from "@/editor/interiorObjectCatalog";
+import { asPlacementFacing } from "@/project/placementSurface";
 import type {
   ClusterRule,
   GameEvent,
   GameMap,
   MapId,
+  PlacementFacing,
+  PlacementZone,
   Project,
   TileGroupMetadata,
 } from "@/project/types";
@@ -206,13 +209,18 @@ const WALL_FACE_RETINT: Record<string, { upper: readonly number[]; lower: readon
   "stone-brick": { upper: [134, 135, 136], lower: [164, 165, 166] }, // 밝은 석재 벽돌
 };
 
-/** Where a prop may be placed. */
-export type PropSurface =
-  | "wallFace"
-  | "againstWallFloor"
-  | "cornerFloor"
-  | "openFloor"
-  | "floorDebris";
+/**
+ * Where a prop may be placed.
+ *
+ * 2026-08-30: 자체 어휘(`againstWallFloor`/`cornerFloor`/`floorDebris`)를 버리고
+ * 프로젝트 공용 `PlacementZone` 으로 갈아탔다. 이유는 둘이다:
+ *  ① 이 표는 여기서만 쓰이고 편집 UI 가 없어서, 같은 뜻을 타일 그룹 규칙(surface)에
+ *    또 적어야 했다 — 두 벌은 곧 어긋난다.
+ *  ② 선언된 5값 중 `againstWallFloor` 와 `floorDebris` 는 **어디서도 조회되지 않았다**.
+ *    한 어휘로 합치면 그런 죽은 값이 생기지 않는다.
+ * 뜻 대응: againstWallFloor→againstWall, cornerFloor→corner, floorDebris→anyFloor.
+ */
+export type PropSurface = PlacementZone;
 
 export const PROP_SURFACE: Readonly<Record<number, PropSurface>> = {
   [VR.WINDOW]: "wallFace",
@@ -220,29 +228,29 @@ export const PROP_SURFACE: Readonly<Record<number, PropSurface>> = {
   [VR.PICTURE_R]: "wallFace",
   [VR.RELIGIOUS]: "wallFace",
   [VR.SWORD_RACK]: "wallFace",
-  [VR.BED_L]: "againstWallFloor",
-  [VR.BED_R]: "againstWallFloor",
-  [VR.BOOK_TL]: "againstWallFloor",
-  [VR.CABINET_U]: "againstWallFloor",
-  [VR.PLANT]: "cornerFloor",
-  [VR.GRAIN]: "cornerFloor",
-  [VR.BOX]: "cornerFloor",
+  [VR.BED_L]: "againstWall",
+  [VR.BED_R]: "againstWall",
+  [VR.BOOK_TL]: "againstWall",
+  [VR.CABINET_U]: "againstWall",
+  [VR.PLANT]: "corner",
+  [VR.GRAIN]: "corner",
+  [VR.BOX]: "corner",
   [VR.TABLE_TOP]: "openFloor",
   [VR.TABLE_BOT]: "openFloor",
   [VR.CHAIR_LEFT]: "openFloor",
   [VR.CHAIR_RIGHT]: "openFloor",
-  [VR.BROKEN_GLASS]: "floorDebris",
-  [VR.FLOOR_HOLE]: "floorDebris",
-  [VR.STAIRS_DOWN]: "floorDebris",
+  [VR.BROKEN_GLASS]: "anyFloor",
+  [VR.FLOOR_HOLE]: "anyFloor",
+  [VR.STAIRS_DOWN]: "anyFloor",
   // kitchen/storage/tavern 테마 가구.
   [VR.FRUIT_SHELF]: "wallFace",
   [VR.SHELF_JARS]: "wallFace",
   [VR.TAVERN_SIGN]: "wallFace",
   [VR.LADDER]: "wallFace",
-  [VR.BUCKET]: "cornerFloor",
-  [VR.JARS]: "cornerFloor",
-  [VR.CRATE]: "cornerFloor",
-  [VR.BARREL]: "cornerFloor",
+  [VR.BUCKET]: "corner",
+  [VR.JARS]: "corner",
+  [VR.CRATE]: "corner",
+  [VR.BARREL]: "corner",
   [VR.CAULDRON]: "openFloor",
   [VR.KETTLE]: "openFloor",
   [VR.TABLE_L]: "openFloor",
@@ -251,12 +259,18 @@ export const PROP_SURFACE: Readonly<Record<number, PropSurface>> = {
   [VR.STOOL]: "openFloor",
   [VR.SQUARE_TABLE]: "openFloor",
   [VR.CRYSTAL_BALL]: "openFloor",
-  [VR.MIRROR_T]: "againstWallFloor",
-  [VR.CLOCK_T]: "againstWallFloor",
-  [VR.BUST_T]: "againstWallFloor",
-  [VR.ARMOR_T]: "againstWallFloor",
-  [VR.DISPLAY_T]: "againstWallFloor",
-  [VR.PIANO_L]: "againstWallFloor",
+  [VR.MIRROR_T]: "againstWall",
+  [VR.CLOCK_T]: "againstWall",
+  [VR.BUST_T]: "againstWall",
+  [VR.ARMOR_T]: "againstWall",
+  [VR.DISPLAY_T]: "againstWall",
+  [VR.PIANO_L]: "againstWall",
+  // 화덕·아궁이(2026-08-30). 예전에는 이 표에 **없었다** — 「북벽에 붙여 배치」는 주석과
+  // 절차 코드에만 있었고, 그래서 사용자가 고칠 수도 검사할 수도 없었다.
+  // 세로쌍의 발밑(51)이 벽에 붙은 바닥이고 상단(21)은 그 위 벽면에 겹친다.
+  [VR.STOVE_BOT]: "againstWall",
+  [VR.STOVE_TOP]: "wallFace",
+  [VR.HEARTH]: "wallFace",
 };
 
 export type RoomLayer =
@@ -424,6 +438,27 @@ export function interiorStoveHardRule(): ClusterRule {
   };
 }
 
+/**
+ * 화덕은 북쪽 벽에 붙는다 — **데이터로 적은 정본**(2026-08-30).
+ *
+ * 예전에는 같은 뜻이 세 군데에 흩어져 있었다: 타일 상수 주석, 그룹의 placementRules 문장,
+ * 그리고 `placeStovePair` 안의 손으로 쓴 이웃 검사. 셋 중 어느 것도 사용자가 고칠 수 없었고
+ * 맵 위의 위반을 잡아 주지도 않았다. 이제 이 규칙 하나가
+ *  - 절차 생성의 자리 판정(`placeStovePair` 가 방향을 여기서 읽는다),
+ *  - projectLint 의 맵 감사(`cluster-rule:surface:*` → 규칙 감사 패널),
+ *  - 타일셋 지식 인스펙터의 «배치 면» 드롭다운(사용자가 방향을 바꿀 수 있다)
+ * 세 곳을 동시에 움직인다.
+ */
+export function interiorStoveSurfaceRule(): ClusterRule {
+  return {
+    id: "r_interior_stove_north_wall",
+    kind: "surface",
+    strength: "hard",
+    message: "화덕(21+51)은 북쪽 벽에 등을 대고 놓입니다 — 발밑(51)이 바닥이고 그 위가 벽면이어야 합니다.",
+    params: { zone: "againstWall", facing: "north" },
+  };
+}
+
 /** Hard adjacency: clock top 389 must sit immediately above bottom 419. */
 export function interiorClockHardRule(): ClusterRule {
   return {
@@ -475,7 +510,7 @@ export function interiorRoomTileGroups(): TileGroupMetadata[] {
     group("wall-mount", "벽면 장식", "prop", "upper", [
       VR.WINDOW, VR.PICTURE_L, VR.PICTURE_R, VR.RELIGIOUS, VR.SWORD_RACK,
     ], "wallFace upper only — 바닥 금지", { layerHome: "upper" }),
-    group("corner-props", "구석 소품", "prop", "upper", [VR.GRAIN, VR.BOX, VR.PLANT, VR.BUCKET, VR.JARS, VR.CRATE, VR.BARREL], "cornerFloor only", {
+    group("corner-props", "구석 소품", "prop", "upper", [VR.GRAIN, VR.BOX, VR.PLANT, VR.BUCKET, VR.JARS, VR.CRATE, VR.BARREL], "구석 바닥(corner)만", {
       layerHome: "upper",
     }),
     group("floor-debris", "바닥 잔해", "prop", "mixed", [VR.BROKEN_GLASS, VR.FLOOR_HOLE, VR.STAIRS_DOWN], "floor only — 벽면 금지"),
@@ -499,7 +534,7 @@ export function interiorRoomTileGroups(): TileGroupMetadata[] {
       },
     }),
     group("kitchen-stove", "화덕 오븐", "building", "mixed", [VR.STOVE_TOP, VR.STOVE_BOT], "세로 2칸 쌍 — 상단 21은 벽면 행 upper, 하단 51은 북측 바닥 행 lower(통행 차단)", {
-      rules: [interiorStoveHardRule()],
+      rules: [interiorStoveHardRule(), interiorStoveSurfaceRule()],
       patternGrammar: {
         kind: "vertical_expandable",
         axis: "vertical",
@@ -2157,16 +2192,33 @@ function placeBookshelfRow(
  * RM tall-furniture depth grammar — 하단(51)은 북측 바닥 행 lower(통행 차단),
  * 상단(21)은 바로 위 크림 벽면 행 upper(벽에 겹쳐 세움). 시계/피아노와 같은 깊이 문법.
  */
+/**
+ * 벽에 등을 대는 방향 → 발밑에서 그 방향으로 한 칸 오프셋.
+ * `checkPlacementSurface` 의 방향 검사와 같은 규약이다(기준선에서 한 칸).
+ */
+const FACING_STEP: Readonly<Record<PlacementFacing, { readonly dx: number; readonly dy: number }>> = {
+  any: { dx: 0, dy: -1 },
+  north: { dx: 0, dy: -1 },
+  south: { dx: 0, dy: 1 },
+  east: { dx: 1, dy: 0 },
+  west: { dx: -1, dy: 0 },
+};
+
 function placeStovePair(
   map: GameMap,
   northFloor: Array<{ x: number; y: number }>,
   door: DoorSpec,
 ): { x: number; y: number } | null {
   const wall = houseShellWallMembers();
+  // 방향은 규칙에서 읽는다 — 손으로 쓴 `c.y - 1` 을 남겨 두면 규칙을 고쳐도 파이프라인이 안 따라온다.
+  // 후보 목록(northFloor)은 여전히 북쪽 편향 프리필터이므로, 방향을 바꾸면 후보도 같이 바꿔야 한다.
+  const step = FACING_STEP[
+    (asPlacementFacing(interiorStoveSurfaceRule().params.facing) ?? "north")
+  ];
   for (const c of rotated(northFloor)) {
     if (c.x === door.x) continue;
     if (!isWalkFloor(map, c.x, c.y)) continue;
-    if (!wall.has(getL(map, c.x, c.y - 1))) continue; // 상단이 겹칠 벽면이 있어야 함
+    if (!wall.has(getL(map, c.x + step.dx, c.y + step.dy))) continue; // 등을 댈 벽면이 있어야 함
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x, c.y - 1)) continue;
     // hard pair — never place half stove (21 must be immediately above 51)
     paintObjectCells(map, objectCells("stove"), c.x, c.y - 1);
@@ -2260,7 +2312,7 @@ function placeCorner(
 ): void {
   let ci = 0;
   for (const tile of tiles) {
-    if (PROP_SURFACE[tile] !== "cornerFloor") continue;
+    if (PROP_SURFACE[tile] !== "corner") continue;
     while (
       ci < corners.length
       && (!isWalkFloor(map, corners[ci]!.x, corners[ci]!.y) || !isUpperEmpty(map, corners[ci]!.x, corners[ci]!.y))

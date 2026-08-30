@@ -1,0 +1,183 @@
+{
+  "at": "2026-08-30T04:43:16.000Z",
+  "base": "http://127.0.0.1:9877/",
+  "state": "before-fix (스테퍼 접기 규칙 되돌림)",
+  "minContentPx": 22,
+  "total": 17,
+  "byTab": {
+    "enemies": [
+      {
+        "label": "최대 HP",
+        "value": "18",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 718,
+        "y": 782
+      },
+      {
+        "label": "최대 MP",
+        "value": "4",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 876,
+        "y": 782
+      },
+      {
+        "label": "공격력",
+        "value": "10",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 718,
+        "y": 822
+      },
+      {
+        "label": "방어력",
+        "value": "7",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 876,
+        "y": 822
+      },
+      {
+        "label": "정신력",
+        "value": "6",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 718,
+        "y": 862
+      },
+      {
+        "label": "민첩성",
+        "value": "16",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 876,
+        "y": 862
+      },
+      {
+        "label": "경험치",
+        "value": "5",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1063,
+        "y": 402
+      },
+      {
+        "label": "돈",
+        "value": "4",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1221,
+        "y": 402
+      },
+      {
+        "label": "드롭률",
+        "value": "12",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1221,
+        "y": 442
+      },
+      {
+        "label": "1 /",
+        "value": "30",
+        "boxW": 22,
+        "contentW": 4,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1075,
+        "y": 536
+      },
+      {
+        "label": "접촉 데미지",
+        "value": "0",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1063,
+        "y": 728
+      },
+      {
+        "label": "어그로 거리",
+        "value": "5",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1221,
+        "y": 728
+      },
+      {
+        "label": "이동 간격(ms)",
+        "value": "500",
+        "boxW": 18,
+        "contentW": 0,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1063,
+        "y": 768
+      }
+    ],
+    "terrain": [
+      {
+        "label": "피해",
+        "value": "0",
+        "boxW": 23.9,
+        "contentW": 7.9,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1334,
+        "y": 945
+      },
+      {
+        "label": "조우율",
+        "value": "50",
+        "boxW": 23.9,
+        "contentW": 7.9,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1428,
+        "y": 945
+      },
+      {
+        "label": "피해",
+        "value": "0",
+        "boxW": 23.9,
+        "contentW": 7.9,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1334,
+        "y": 1011
+      },
+      {
+        "label": "조우율",
+        "value": "100",
+        "boxW": 23.9,
+        "contentW": 7.9,
+        "cls": "",
+        "wrapCls": "db-field",
+        "x": 1428,
+        "y": 1011
+      }
+    ]
+  }
+}

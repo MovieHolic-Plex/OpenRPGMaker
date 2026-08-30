@@ -96,6 +96,8 @@ export type AuthorVillageRequest = {
   readonly theme?: string;
   readonly seed?: number;
   readonly interior?: boolean;
+  /** 데이터베이스 「마을」탭의 배치 프리셋 id — 사용자가 정한 값을 시공에 적용한다. */
+  readonly presetId?: string;
 };
 
 export type CanonicalConstructionRoute = "author_house" | "author_village";

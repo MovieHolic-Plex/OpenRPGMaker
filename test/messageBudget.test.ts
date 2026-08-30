@@ -59,17 +59,24 @@ describe("compactMessagesForRequest", () => {
   });
 
   it("오래된 툴 결과를 ok/summary/issues 만 남기고 data/diff 를 제거한다", () => {
+    // 툴 응답은 자신을 부른 assistant tool_calls 와 짝이 맞아야 한다 — 전송 사본은
+    // repairToolCallProtocol 을 거치며 짝 없는 function response 를 버린다(공급자 400 방지).
     const messages: ChatMessage[] = [
       { role: "system", content: "s" },
-      toolMessage(JSON.stringify({ ok: true, summary: "오래된 0", data: "x".repeat(2000), diff: { tilesChanged: 5 } })),
-      toolMessage(JSON.stringify({ ok: true, summary: "오래된 1", data: "x".repeat(2000) })),
-      toolMessage(JSON.stringify({ ok: true, summary: "오래된 2", data: "x".repeat(2000) })),
+      {
+        role: "assistant",
+        content: null,
+        tool_calls: ["t0", "t1", "t2"].map((id) => ({ id, type: "function" as const, function: { name: "get_map_region", arguments: "{}" } })),
+      },
+      toolMessage(JSON.stringify({ ok: true, summary: "오래된 0", data: "x".repeat(2000), diff: { tilesChanged: 5 } }), "t0"),
+      toolMessage(JSON.stringify({ ok: true, summary: "오래된 1", data: "x".repeat(2000) }), "t1"),
+      toolMessage(JSON.stringify({ ok: true, summary: "오래된 2", data: "x".repeat(2000) }), "t2"),
       ...recentTail(),
     ];
     // 최근 6개 ≈ 200자 + 시스템 1자 + 툴 3개(6000자) — 예산 2000이면 오래된 툴만 압축.
     const out = compactMessagesForRequest(messages, 2000);
     expect(totalMessagesCharLength(out)).toBeLessThanOrEqual(2000);
-    const compacted = out[1].content as string;
+    const compacted = out[2].content as string;
     expect(compacted).toContain('"ok":true');
     expect(compacted).toContain('"summary":"오래된 0"');
     expect(compacted).not.toContain("xxxx");

@@ -148,6 +148,7 @@ background: var(--success-muted); border: 1px solid var(--success); color: var(-
 
 - 기본 창: `--runtime-dialogue-glass-surface` 위에 얕은 세로 명암, 1px `--runtime-dialogue-glass-border`, `--runtime-dialogue-radius`, `--runtime-dialogue-glass-shadow`.
 - 화자 이름표: 같은 표면의 작은 직사각형 탭. 본문과 겹치지 않도록 `--runtime-dialogue-speaker-inset`을 함께 조정한다.
+  - 다만 **손으로 맞추지 않는다** — 이 짝은 2026-08-30 까지 어긋나 있었다(이름표 높이 19px · `top: -9px` 인데 여백은 8px 이라 본문 첫 줄이 2px 덮였다). `dialogue.ts` 의 `reserveSpeakerInset()` 이 이름표를 재서 이 변수를 상자에 심으므로, 글꼴 크기를 바꿔도 여백이 따라온다. 여기 적힌 8px 은 레이아웃이 없는 환경(jsdom)에서 쓰는 하한이다.
 - 얼굴: 일반 faceset은 48×48 칩, `-bust`/`-portrait`는 88×112 버스트, `-full`/`fullbody`는 92×164 전신으로 표시한다. 좌우 배치에 따라 본문 예약 공간을 반대로 적용한다.
 - 선택지·숫자 입력·소지금 창: 같은 표면과 보더를 공유한다. 현재 선택 행은 `--runtime-dialogue-glass-accent-soft`와 좌측 다이아몬드로 표시한다.
 - 투명 모드: 배경·블러·그림자를 제거하되 데이터 및 상/중/하단 위치 계약은 그대로 유지한다.

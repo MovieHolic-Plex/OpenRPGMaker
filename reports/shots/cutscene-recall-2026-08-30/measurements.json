@@ -1,0 +1,114 @@
+{
+  "port": "9631",
+  "minimapOn": {
+    "mapId": "map_village_30_100x100",
+    "minimap": {
+      "enabled": true,
+      "corner": "topRight"
+    }
+  },
+  "seeded": {
+    "mapId": "map_village_30_100x100",
+    "at": {
+      "x": 50,
+      "y": 52
+    },
+    "commandCount": 13,
+    "commandKinds": [
+      "cutsceneControl",
+      "m2Command",
+      "wait",
+      "wait",
+      "m2Command",
+      "text",
+      "wait",
+      "text",
+      "m2Command",
+      "label",
+      "m2Command",
+      "m2Command",
+      "cutsceneControl"
+    ],
+    "summary": "이슬 장터 마을에 컷신 'ev_recall_demo' 생성 — beat 7개, 명령 13개, 미지원 커맨드 2건",
+    "warnings": []
+  },
+  "dialog": {
+    "ok": true
+  },
+  "silentMs": 6000,
+  "pageErrors": [],
+  "measurements": [
+    {
+      "tag": "field-normal-no-cutscene",
+      "stageClass": "play-stage",
+      "hudHiddenClass": false,
+      "minimap": {
+        "present": true,
+        "display": "flex"
+      },
+      "handSlot": {
+        "present": true,
+        "display": "block"
+      },
+      "timeHud": {
+        "present": true,
+        "display": "block"
+      },
+      "dialogueChildren": 0
+    },
+    {
+      "tag": "cutscene-silent-beat-fixed",
+      "stageClass": "play-stage cutscene-hud-hidden",
+      "hudHiddenClass": true,
+      "minimap": {
+        "present": true,
+        "display": "none"
+      },
+      "handSlot": {
+        "present": true,
+        "display": "none"
+      },
+      "timeHud": {
+        "present": true,
+        "display": "none"
+      },
+      "dialogueChildren": 0
+    },
+    {
+      "tag": "cutscene-silent-beat-old-behavior",
+      "stageClass": "play-stage cutscene-hud-hidden",
+      "hudHiddenClass": true,
+      "minimap": {
+        "present": true,
+        "display": "block"
+      },
+      "handSlot": {
+        "present": true,
+        "display": "block"
+      },
+      "timeHud": {
+        "present": true,
+        "display": "block"
+      },
+      "dialogueChildren": 0
+    },
+    {
+      "tag": "cutscene-say-beat",
+      "stageClass": "play-stage cutscene-hud-hidden",
+      "hudHiddenClass": true,
+      "minimap": {
+        "present": true,
+        "display": "none"
+      },
+      "handSlot": {
+        "present": true,
+        "display": "none"
+      },
+      "timeHud": {
+        "present": true,
+        "display": "none"
+      },
+      "dialogueChildren": 1
+    }
+  ]
+}

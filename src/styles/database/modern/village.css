@@ -1,0 +1,235 @@
+/* 마을 탭. 공용 셸/카드/버튼은 workspace-modern.css 에 맡기고, 바닥 격자와 날개 행만 정의한다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-inspector {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+/* 목록 창 분류 칩 (집 형태 / 배치 프리셋) */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-chip {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 11px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 5px;
+  padding: 5px 9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-chip:hover {
+  border-color: var(--db-studio-border-strong);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-chip.active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-chip-count {
+  color: var(--db-studio-text-3);
+  font: 700 10px/1 "Cascadia Mono", Consolas, monospace;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-chip.active .db-village-chip-count {
+  color: var(--db-studio-accent);
+}
+
+/* 바닥 미리보기 — 날개 합집합을 칸 격자로 그린다. 열 수는 인라인 --db-village-cols. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-footprint {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(var(--db-village-cols, 6), 7px);
+  justify-content: center;
+  padding: 5px;
+  width: max-content;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-footprint-large {
+  grid-template-columns: repeat(var(--db-village-cols, 6), 14px);
+  gap: 2px;
+  padding: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-cell {
+  aspect-ratio: 1;
+  background: var(--db-studio-surface);
+  border-radius: 1px;
+  box-shadow: inset 0 0 0 1px var(--db-studio-border-subtle);
+  display: block;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-cell.is-filled {
+  background: var(--db-studio-accent);
+  box-shadow: none;
+}
+
+/* 날개 편집 행 — #n · x · y · 폭 · 높이 · 삭제 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-row {
+  align-items: end;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-index {
+  color: var(--db-studio-text-3);
+  font: 700 11px/2.2 "Cascadia Mono", Consolas, monospace;
+  min-width: 22px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  width: 62px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-field span {
+  color: var(--db-studio-text-3);
+  font: 600 10px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-field input {
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-wing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* 프리셋 화이트리스트 — 카탈로그 전체를 체크박스로 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-picker {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  max-height: 260px;
+  min-width: 0;
+  overflow: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-option {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  display: flex;
+  font: 500 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 6px;
+  min-width: 0;
+  padding: 3px 5px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-option:hover {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-option.is-user {
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-option input {
+  accent-color: var(--db-studio-accent);
+  flex: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-meta {
+  color: var(--db-studio-text-3);
+  flex: none;
+  font: 600 10px/1 "Cascadia Mono", Consolas, monospace;
+}
+
+/* 마을 원형 갤러리 — 프리셋이 없을 때 「무엇부터 만들지」를 고르는 자리.
+   각 칩은 이름·설명·값 요약 3줄이므로 세로 플렉스다(한 줄 알약으로는 값을 못 보여준다). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetypes {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetype {
+  align-items: flex-start;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetype:hover {
+  background: var(--db-studio-inset);
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetype:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetype-name {
+  color: var(--db-studio-text-1);
+  font: 600 13px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetype-note {
+  color: var(--db-studio-text-2);
+  font: 500 12px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-archetype-values {
+  color: var(--db-studio-text-3);
+  font: 600 11px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-check {
+  align-items: center;
+  color: var(--db-studio-text-2);
+  display: flex;
+  font: 500 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-check input {
+  accent-color: var(--db-studio-accent);
+}

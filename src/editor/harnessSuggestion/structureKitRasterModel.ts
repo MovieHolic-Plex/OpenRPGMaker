@@ -13,6 +13,8 @@ import type { PaletteStampCell } from "@/editor/tilePaletteStamp";
 import { TILE } from "@/project/defaults/constants";
 import type {
   SectionStructureKitDef,
+  StructureGrowthAxis,
+  StructureKitCellHint,
   StructureKitDef,
   StructureKitPart,
   StructureKitPartKind,
@@ -82,6 +84,8 @@ export interface ResizeResult {
   readonly clamped: number;
   /** 경계 밖으로 완전히 나가 삭제된 부위 수. */
   readonly dropped: number;
+  /** 경계 밖으로 나가 삭제된 칸 힌트 수. 1×1 이라 클램프 여지가 없어 부위와 따로 센다. */
+  readonly droppedHints: number;
 }
 
 /**
@@ -92,7 +96,7 @@ export function resizeKit(kit: SectionStructureKitDef, width: number, height: nu
   const nextWidth = Math.max(1, Math.floor(width));
   const nextHeight = Math.max(1, Math.floor(height));
   if (nextWidth === kit.width && nextHeight === kit.height) {
-    return { kit, clamped: 0, dropped: 0 };
+    return { kit, clamped: 0, dropped: 0, droppedHints: 0 };
   }
 
   const rows: StructureKitRow[] = [];
@@ -125,10 +129,25 @@ export function resizeKit(kit: SectionStructureKitDef, width: number, height: nu
     parts.push({ ...part, w, h });
   }
 
+  // 칸 힌트는 1×1 이라 줄일 여지가 없다 — 밖으로 나가면 삭제만 있다.
+  // 모든 힌트가 사라지면 키 자체를 떼어낸다(setCellHint/removeCellHint 와 같은 생략 규약) —
+  // 생성자가 kit 을 그대로 펼치므로 담아 둔 cellHints 를 명시적으로 분해해 놓는다.
+  const { cellHints: existingHints, ...base } = kit;
+  const keptHints = (existingHints ?? []).filter((hint) => hint.dx < nextWidth && hint.dy < nextHeight);
+  const droppedHints = (existingHints ?? []).length - keptHints.length;
+
   return {
-    kit: { ...kit, width: nextWidth, height: nextHeight, rows, parts },
+    kit: {
+      ...base,
+      width: nextWidth,
+      height: nextHeight,
+      rows,
+      parts,
+      ...(keptHints.length > 0 ? { cellHints: keptHints } : {}),
+    },
     clamped,
     dropped,
+    droppedHints,
   };
 }
 
@@ -188,6 +207,59 @@ export function removePart(kit: SectionStructureKitDef, partId: string): Section
   return { ...kit, parts: parts.filter((part) => part.id !== partId) };
 }
 
+/** 칸 힌트 하나 조회. 없으면 undefined. 한 칸에 힌트는 하나만 있다(dx,dy 가 키). */
+export function cellHintAt(
+  kit: SectionStructureKitDef,
+  dx: number,
+  dy: number,
+): StructureKitCellHint | undefined {
+  return (kit.cellHints ?? []).find((hint) => hint.dx === dx && hint.dy === dy);
+}
+
+/**
+ * 한 칸의 힌트를 쓴다.
+ *
+ * `growth`/`note` 를 `null` 로 주면 그 필드를 **지우고**, 생략(undefined)하면 기존 값을 둔다 —
+ * 둘을 구분하지 않으면 "축만 바꾸기"가 사람이 적어 둔 메모를 조용히 지운다.
+ * 둘 다 마지막에 비면 항목 자체를 떼어낸다 — 뜻 없는 `{dx,dy}` 를 남기면 AI 에게
+ * "이 칸에 뭔가 적혀 있다"는 거짓 신호를 주고 파일에도 그대로 쌓인다.
+ */
+export function setCellHint(
+  kit: SectionStructureKitDef,
+  dx: number,
+  dy: number,
+  patch: { readonly growth?: StructureGrowthAxis | null; readonly note?: string | null },
+): SectionStructureKitDef {
+  if (dx < 0 || dy < 0 || dx >= kit.width || dy >= kit.height) return kit;
+  const hints = kit.cellHints ?? [];
+  const existing = hints.find((hint) => hint.dx === dx && hint.dy === dy);
+  const growth = patch.growth === undefined ? existing?.growth : (patch.growth ?? undefined);
+  const rawNote = patch.note === undefined ? existing?.note : (patch.note ?? undefined);
+  const note = rawNote && rawNote.trim() ? rawNote : undefined;
+  if (growth === undefined && note === undefined) return removeCellHint(kit, dx, dy);
+  const next: StructureKitCellHint = {
+    dx,
+    dy,
+    ...(growth === undefined ? {} : { growth }),
+    ...(note === undefined ? {} : { note }),
+  };
+  return {
+    ...kit,
+    cellHints: existing ? hints.map((hint) => (hint === existing ? next : hint)) : [...hints, next],
+  };
+}
+
+export function removeCellHint(kit: SectionStructureKitDef, dx: number, dy: number): SectionStructureKitDef {
+  const hints = kit.cellHints ?? [];
+  const remaining = hints.filter((hint) => hint.dx !== dx || hint.dy !== dy);
+  if (remaining.length === hints.length) return kit;
+  if (remaining.length === 0) {
+    const { cellHints: _emptied, ...rest } = kit;
+    return rest;
+  }
+  return { ...kit, cellHints: remaining };
+}
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), Math.max(min, max));
 }
@@ -232,6 +304,10 @@ export function bakeStructureKit(kit: StructureKitDef, id: string, name: string)
     height: size.height,
     rows,
     ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
+    // 칸 힌트는 행렬 좌표에 매달린 메타다 — house 킷을 구울 땐 원본에 없으므로 그냥 없다.
+    ...(kit.kind === "section" && kit.cellHints && kit.cellHints.length > 0
+      ? { cellHints: kit.cellHints.map((hint) => ({ ...hint })) }
+      : {}),
     ...(kit.ai ? { ai: { ...kit.ai, tags: kit.ai.tags ? [...kit.ai.tags] : undefined } } : {}),
     learnedFrom: "db-authored",
   };

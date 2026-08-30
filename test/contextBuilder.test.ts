@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
+import { PREFERENCE_PRECEDENCE_LINE, PREFERENCE_SECTION_HEADING } from "@/ai/preferenceMemory";
 import { createBlankProject } from "@/project/defaults";
 
 describe("buildSystemPrompt tileset knowledge", () => {
@@ -65,5 +66,43 @@ describe("buildSystemPrompt — 수정 vs 신규 라우팅", () => {
       expect(context, `budget=${budgetChars}`).toContain("현재 맵 요약");
       expect(context, `budget=${budgetChars}`).toContain(project.startMapId);
     }
+  });
+
+  // 성향 블록도 같은 이유로 예산 밖이다 — 13,200자 슬라이싱이 이 블록을 먹으면
+  // "AI 가 내 성향을 기억하지 못한다"가 프롬프트 층에서 그대로 재발한다.
+  it("사람 성향 블록은 예산을 극단적으로 줄여도 남는다", () => {
+    const project = createBlankProject();
+    const memorySection = [
+      PREFERENCE_SECTION_HEADING,
+      PREFERENCE_PRECEDENCE_LINE,
+      "- [강함] 마을 규모는 집 4채 이하로 작게 유지한다",
+    ].join("\n");
+    for (const budgetChars of [500, 1000, 6000, 18000]) {
+      const context = buildSystemPrompt(project, {
+        currentMapId: project.startMapId,
+        budgetChars,
+        preferenceMemorySection: memorySection,
+      });
+      expect(context, `budget=${budgetChars}`).toContain(PREFERENCE_SECTION_HEADING);
+      expect(context, `budget=${budgetChars}`).toContain(PREFERENCE_PRECEDENCE_LINE);
+      expect(context, `budget=${budgetChars}`).toContain("집 4채 이하");
+    }
+  });
+
+  it("성향 블록을 넘기지 않으면 프롬프트에 성향 자리가 생기지 않는다", () => {
+    const project = createBlankProject();
+    const context = buildSystemPrompt(project, { currentMapId: project.startMapId });
+    expect(context).not.toContain(PREFERENCE_SECTION_HEADING);
+  });
+
+  it("성향 블록은 서론 바로 뒤 고정 영역에 들어간다 — 능력 색인과 같은 자리", () => {
+    const project = createBlankProject();
+    const context = buildSystemPrompt(project, {
+      currentMapId: project.startMapId,
+      budgetChars: 800,
+      preferenceMemorySection: PREFERENCE_SECTION_HEADING,
+    });
+    // 프로젝트 요약보다 먼저 읽힌다(예산 슬라이싱 대상 앞).
+    expect(context.indexOf(PREFERENCE_SECTION_HEADING)).toBeLessThan(context.indexOf("현재 맵 요약"));
   });
 });

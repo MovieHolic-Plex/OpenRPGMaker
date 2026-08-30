@@ -32,6 +32,7 @@ export type ResourceKind =
   | "monster"
   | "faceset"
   | "picture"
+  | "movie"
   | "system"
   | "system2"
   | "title"
@@ -105,11 +106,56 @@ export interface TileGroupSourceBlock {
   tileIds: number[];
 }
 
+/**
+ * 배치 면(2026-08-30) — "이 물건은 어떤 자리에 놓이는가"를 **기계가 검사할 수 있게** 적은 것.
+ *
+ * 이 어휘가 생기기 전에는 같은 뜻이 세 군데에 흩어져 있었고 셋 다 집행되지 않았다:
+ *  (a) `TileGroupMetadata.placementRules` / `StructureKitAiMeta.placementRules` 자유 문장 —
+ *      AI 프롬프트에 100자로 잘려 들어가는 산문. 아무도 검사하지 않는다.
+ *  (b) `interiorRoomPipeline.PROP_SURFACE` 상수표 — 실내 절차 생성 전용, 편집 UI 없음.
+ *  (c) 「화덕은 북벽에 붙여 배치」 같은 **주석**과 그 뜻을 손으로 다시 구현한 절차 코드.
+ * 이제 (a)는 사람이 읽는 설명, 이것은 기계가 읽는 조건이다. (b)는 이 어휘로 값을 갈아탔다.
+ *
+ * 판정 규약은 placementSurface.ts 한 곳에만 있다 — 여기 두면 타입 순환이 생긴다.
+ */
+export type PlacementZone =
+  /** 아무 바닥이나 — 발밑이 통행 가능하면 통과. */
+  | "anyFloor"
+  /** 빈 땅 — 사각 **전체**가 통행 가능. 집처럼 큰 것이 벽·물 위에 겹치는 걸 막는다. */
+  | "clearArea"
+  /** 벽에서 떨어진 바닥 — 발밑이 바닥이고 네 방향 어느 쪽도 벽이 아니다. */
+  | "openFloor"
+  /** 벽에 붙은 바닥 — 발밑이 바닥이고 지정한 방향이 벽. `facing` 이 여기서만 뜻을 가진다. */
+  | "againstWall"
+  /** 구석 바닥 — 발밑이 바닥이고 세로 한 쪽 + 가로 한 쪽이 모두 벽. */
+  | "corner"
+  /** 벽면 — 발밑 자체가 벽. 창문·그림·아궁이처럼 벽에 매다는 것. */
+  | "wallFace";
+
+/** 방향. "any" 는 네 방향 중 아무거나 하나. */
+export type PlacementFacing = "north" | "south" | "east" | "west" | "any";
+
+/**
+ * 구조물 킷 하나에 붙는 배치 조건.
+ * hard = 어기면 **찍히지 않는다**(사람은 토스트로 이유를 본다, AI 는 ToolError).
+ * soft = 찍히지만 경고를 남긴다.
+ */
+export interface PlacementSurfaceCondition {
+  id: string;
+  zone: PlacementZone;
+  /** `againstWall` 에서만 뜻이 있다. 생략 = "any". */
+  facing?: PlacementFacing;
+  strength: "hard" | "soft";
+  /** 사람에게 보일 한 줄. 없으면 zone·facing 으로 자동 생성한다. */
+  message?: string;
+}
+
 export type ClusterRuleStrength = "hard" | "medium" | "soft";
 
 export interface ClusterRule {
   id: string;
-  kind: "adjacency" | "spacing" | "count";
+  /** surface: params 는 `{ zone: PlacementZone, facing?: PlacementFacing }`. */
+  kind: "adjacency" | "spacing" | "count" | "surface";
   strength: ClusterRuleStrength;
   params: Record<string, unknown>;
   message?: string;
@@ -254,6 +300,31 @@ export interface StructureKitPart {
 }
 
 /**
+ * 무한 증분 축(2026-08-30) — 벽·울타리처럼 끝이 없는 구조물이 **어느 방향으로** 이어지는가.
+ * 값 어휘는 `TileGroupMetadata.patternGrammar.axis` 와 같다 — AI 가 이미 그 단어를 읽고 있다.
+ */
+export type StructureGrowthAxis = "horizontal" | "vertical" | "both";
+
+/**
+ * 칸 하나에 붙는 힌트(2026-08-30).
+ *
+ * `parts` 가 사각 영역의 **역할**(입구·창문·간판·자리)을 적는다면 이쪽은 칸 하나의
+ * **이어붙임 성질과 설명**을 적는다 — 「이 벽 몸통은 세로로 증분 가능」처럼. 둘을 한
+ * 목록으로 합치지 않는 이유: 부위는 워프·간판 좌표를 만드는 인스턴스 힌트이고, 증분 축은
+ * 시공 프리미티브가 반복 횟수를 정할 때 읽는 타일링 규칙이다. 소비자가 다르다.
+ *
+ * 좌표는 킷 원점 기준 상대(dx,dy). 타일을 바꾸지 않는 순수 메타다.
+ */
+export interface StructureKitCellHint {
+  dx: number;
+  dy: number;
+  /** 이 칸을 그 축으로 무한히 이어도 그림이 성립하는가. */
+  growth?: StructureGrowthAxis;
+  /** 사람이 적는 한 줄 설명. AI 가 그대로 읽는다. */
+  note?: string;
+}
+
+/**
  * 구조물의 AI 어휘 메타데이터(2026-08-28).
  * 필드명은 TileGroupMetadata / TileAiMetadata 와 의도적으로 같다 — AI 가 이미 그 단어들을 읽고 있다.
  * 구조물은 사람이 모양을 만들어 이름 붙이면 AI 가 그 이름으로 골라 시공하는 어휘이므로,
@@ -262,8 +333,15 @@ export interface StructureKitPart {
 export interface StructureKitAiMeta {
   /** 이게 무엇인지. TileGroupMetadata.description 과 같은 이름. */
   description: string;
-  /** 어디에 어떻게 놓는지. TileGroupMetadata.placementRules 와 같은 이름. */
+  /** 어디에 어떻게 놓는지 — **사람이 읽는 문장**. TileGroupMetadata.placementRules 와 같은 이름. */
   placementRules: string;
+  /**
+   * 어디에 놓는지 — **기계가 검사하는 조건**(2026-08-30).
+   * placementRules 는 프롬프트에 100자로 잘려 들어가는 산문이라 아무도 지키게 만들 수 없었다.
+   * 이쪽은 찍는 순간 실제로 검사한다(사람 스탬프 · stamp_structure_kit 둘 다).
+   * 비었거나 없으면 검사 없음 — 하위 호환.
+   */
+  placement?: PlacementSurfaceCondition[];
   /** 검색·매칭용. TileAiMetadata.tags 와 같은 이름. */
   tags?: string[];
   /** 분류. TileGroupRole enum 재사용. */
@@ -275,6 +353,26 @@ export interface StructureKitAiMeta {
    * undefined 는 현재 동작(kind === "section" → 반복) 유지 — 하위 호환.
    */
   repeatability?: "repeat" | "fixed";
+  /**
+   * 무한 확장 축(2026-08-30) — `repeatability` 보다 정밀한 표현.
+   * 그 두 값(repeat/fixed)은 **가로 전용**이라 「세로로만 이어지는 벽」을 적을 수 없었고,
+   * stamp_structure_kit 도 가로로만 반복할 수 있었다. 이 값이 있으면 이것이 정본이고,
+   * 없으면 repeatability → kind 순으로 떨어진다(하위 호환). 판정은 structureKitGrowthAxes.
+   */
+  growthAxis?: StructureGrowthAxis;
+  /**
+   * 홈 레이어 — 「이 구조물은 바닥에 깔리는가 덧그림인가」를 사람이 선언한다.
+   * `TileGroupMetadata.layerHome` 과 이름·값이 같다. 없으면 실제 행렬에서 유도한다
+   * (structureKitLayerHome) — 유도값과 선언값이 다를 수 있는 것이 요점이다: 사람은
+   * 「덧그림으로 써야 하는 구조물」을 바닥 칸으로 그려 둘 수 있다.
+   */
+  layerHome?: "lower" | "upper" | "perCell";
+  /**
+   * 어울리는 테마. `InteriorRoomTheme` id(bedroom·tavern…)를 쓰면 실내 방 문법과 어휘가
+   * 맞고, 자유 문자열("사막 마을")도 받는다 — AI 가 테마 요청을 이 목록과 맞춘다.
+   * enum 으로 좁히지 않은 이유: 실내 7종은 방 채우기 전용 어휘이고 야외 구조물에는 뜻이 없다.
+   */
+  themes?: string[];
   /**
    * v3 승인 보캐뷸러리 규약(원칙 0 Zero-Trust Perception).
    * 사용자 명시 수락으로 커밋될 때만 "user" 다 — 어떤 자동 경로도 이 값을 "user" 로 만들지 않는다.
@@ -293,6 +391,8 @@ export interface SectionStructureKitDef {
   rows: StructureKitRow[];
   /** 입구·간판·자리 등 부위 목록(상대좌표). section·house 공통 필드. */
   parts?: StructureKitPart[];
+  /** 칸별 힌트(증분 축·메모). parts 와 달리 한 칸 단위다. 행렬이 있는 section 에만 뜻이 있다. */
+  cellHints?: StructureKitCellHint[];
   /** AI 어휘 메타데이터. 없으면 AI 는 이름과 크기만 본다. */
   ai?: StructureKitAiMeta;
   learnedFrom: StructureKitLearnedFrom;

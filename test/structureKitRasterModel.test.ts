@@ -2,14 +2,17 @@ import { describe, expect, it } from "vitest";
 import {
   addPart,
   bakeCellsToRows,
+  cellHintAt,
   bakeInteriorObject,
   bakeStructureKit,
   cellAtPoint,
   copyName,
   normalizeDragRect,
   paintCell,
+  removeCellHint,
   removePart,
   resizeKit,
+  setCellHint,
   tileAt,
   updatePart,
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
@@ -284,5 +287,76 @@ describe("copyName", () => {
   it("이미 사본이 있으면 번호를 올린다", () => {
     expect(copyName("우물", ["우물", "우물 사본"])).toBe("우물 사본 2");
     expect(copyName("우물", ["우물 사본", "우물 사본 2"])).toBe("우물 사본 3");
+  });
+});
+
+describe("칸 힌트", () => {
+  it("증분 축을 붙이고 다시 읽는다", () => {
+    const next = setCellHint(kit3x3(), 1, 2, { growth: "vertical" });
+    expect(next.cellHints).toEqual([{ dx: 1, dy: 2, growth: "vertical" }]);
+    expect(cellHintAt(next, 1, 2)?.growth).toBe("vertical");
+    expect(cellHintAt(next, 0, 0)).toBeUndefined();
+  });
+
+  it("같은 칸을 다시 쓰면 항목이 늘지 않고 덮인다", () => {
+    const once = setCellHint(kit3x3(), 0, 0, { growth: "horizontal" });
+    const twice = setCellHint(once, 0, 0, { growth: "both" });
+    expect(twice.cellHints).toHaveLength(1);
+    expect(twice.cellHints![0]!.growth).toBe("both");
+  });
+
+  /* 축만 바꾸는 조작이 사람이 적어 둔 메모를 조용히 지우면, 사용자는 지워진 줄도 모른다. */
+  it("축을 바꿔도 메모가 남고, 메모를 바꿔도 축이 남는다", () => {
+    const withNote = setCellHint(kit3x3(), 2, 0, { growth: "horizontal", note: "벽 몸통" });
+    const changedAxis = setCellHint(withNote, 2, 0, { growth: "vertical" });
+    expect(changedAxis.cellHints![0]).toEqual({ dx: 2, dy: 0, growth: "vertical", note: "벽 몸통" });
+    const changedNote = setCellHint(changedAxis, 2, 0, { note: "기둥" });
+    expect(changedNote.cellHints![0]).toEqual({ dx: 2, dy: 0, growth: "vertical", note: "기둥" });
+  });
+
+  it("축과 메모가 모두 비면 항목 자체가 사라진다 — 뜻 없는 좌표를 AI 에게 주지 않는다", () => {
+    const withBoth = setCellHint(kit3x3(), 1, 1, { growth: "both", note: "메모" });
+    const cleared = setCellHint(setCellHint(withBoth, 1, 1, { growth: null }), 1, 1, { note: null });
+    expect(cleared.cellHints).toBeUndefined();
+  });
+
+  it("빈 문자열 메모는 메모 없음과 같다", () => {
+    const kit = setCellHint(kit3x3(), 0, 1, { note: "   " });
+    expect(kit.cellHints).toBeUndefined();
+  });
+
+  it("경계 밖 좌표는 무시한다", () => {
+    const kit = kit3x3();
+    expect(setCellHint(kit, 3, 0, { growth: "both" })).toBe(kit);
+    expect(setCellHint(kit, 0, -1, { growth: "both" })).toBe(kit);
+  });
+
+  it("없는 칸을 지우면 원본을 그대로 돌려준다(참조 동일)", () => {
+    const kit = kit3x3();
+    expect(removeCellHint(kit, 0, 0)).toBe(kit);
+  });
+
+  it("크기를 줄여 밖으로 나간 힌트는 삭제되고 개수가 보고된다", () => {
+    const kit = setCellHint(setCellHint(kit3x3(), 0, 0, { growth: "both" }), 2, 2, { growth: "vertical" });
+    const result = resizeKit(kit, 2, 2);
+    expect(result.droppedHints).toBe(1);
+    expect(result.kit.cellHints).toEqual([{ dx: 0, dy: 0, growth: "both" }]);
+  });
+
+  it("전부 나가면 cellHints 키 자체가 없어진다", () => {
+    const kit = setCellHint(kit3x3(), 2, 2, { growth: "vertical" });
+    const result = resizeKit(kit, 1, 1);
+    expect(result.droppedHints).toBe(1);
+    expect(result.kit.cellHints).toBeUndefined();
+    // 입력을 변형하지 않는다 — 되돌리기 스택이 같은 객체를 들고 있다.
+    expect(kit.cellHints).toHaveLength(1);
+  });
+
+  it("굽기가 칸 힌트를 함께 가져간다 — 사본도 어휘를 잃지 않는다", () => {
+    const kit = setCellHint(kit3x3(), 1, 0, { growth: "horizontal", note: "가로로 증분 가능" });
+    const baked = bakeStructureKit(kit, "kit_copy", "사본");
+    expect(baked.cellHints).toEqual([{ dx: 1, dy: 0, growth: "horizontal", note: "가로로 증분 가능" }]);
+    // 깊은 사본이어야 한다 — 사본을 고치면 원본이 따라 바뀌면 안 된다.
+    expect(baked.cellHints![0]).not.toBe(kit.cellHints![0]);
   });
 });

@@ -231,13 +231,13 @@ describe("presentEditorWelcome", () => {
 
     const result = await pending;
     expect(result.action).toBe("start");
-    expect(result.replaceWithBlank).toBe(false);
+    // 프로젝트 교체 경로가 아니다 — 시스템 프리셋 계획이 없으면 열린 프로젝트를 그대로 쓴다.
+    expect(result.systemPresetPlan).toBeUndefined();
     expect(result.autoSend).toBe(true);
     expect(result.dismiss).toBe(true);
     expect(result.source).toBe("free-text");
     expect(result.intent).toContain("눈 내리는 마을");
     expect(result.prompt).toContain("눈 내리는 마을");
-    expect(result.prompt).toContain("승인 전 커밋 금지");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeNull();
     expect(isEditorWelcomeDismissed()).toBe(true);
   });
@@ -253,7 +253,6 @@ describe("presentEditorWelcome", () => {
       action: "skip",
       prompt: null,
       autoSend: false,
-      replaceWithBlank: false,
       dismiss: true,
     });
   });
@@ -266,7 +265,7 @@ describe("presentEditorWelcome", () => {
     expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
     const result = await pending;
     expect(result.action).toBe("start");
-    expect(result.replaceWithBlank).toBe(false);
+    expect(result.systemPresetPlan).toBeUndefined();
     expect(result.autoSend).toBe(true);
     expect(result.source).toBe("chip");
     expect(result.intent).toBe("이브 같은 갤러리 호러");
@@ -295,7 +294,6 @@ describe("presentEditorWelcome", () => {
       action: "start",
       prompt: null,
       autoSend: false,
-      replaceWithBlank: false,
       presetId: "horror-gallery",
       source: "manual-system-preset",
       systemPresetPlan: {

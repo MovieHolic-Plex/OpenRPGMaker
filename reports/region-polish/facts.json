@@ -1,0 +1,480 @@
+{
+  "chipLabels": "AI 작업\n다듬기\n복사\n지우기\n구조물로 저장\n✕",
+  "polishChipTitle": "이 영역을 주변과 어울리게 AI가 다시 짜기 (타일·이벤트 전권)",
+  "polishButtonLabel": "주변과 어울리게 다듬기",
+  "polishButtonTitle": "이 영역을 주변과 어울리게 AI가 다시 짜기 (타일·이벤트 전권)",
+  "polishCategoryChips": "다듬기\n꽃밭\n바위 흩뿌리기\n주변과 어울리게\n가로수",
+  "polishOverlayCols": "12",
+  "polishOverlayRows": "10",
+  "polishRegion": {
+    "x": 6,
+    "y": 5,
+    "width": 8,
+    "height": 6
+  },
+  "polishFrameCount": 1,
+  "polishSummary": "",
+  "polishMetricsText": "어울림 83→4",
+  "taskOverlayCols": "8",
+  "taskOverlayRows": "6",
+  "taskFrameCount": 0,
+  "roadSeed": {
+    "ok": true,
+    "summary": "이슬 장터 마을에 dirt 도로 15칸 — 자연도 0 / 경로 15칸",
+    "diff": {
+      "tilesChanged": 14,
+      "mapPropertiesChanged": 0,
+      "eventsAdded": 0,
+      "eventsModified": 0,
+      "eventsRemoved": 0,
+      "mapsAdded": 0,
+      "mapsRemoved": 0,
+      "dbRecordsChanged": 0,
+      "tilesetsChanged": 0,
+      "switchesAdded": 0,
+      "variablesAdded": 0,
+      "worldEntitiesAdded": 0,
+      "worldEntitiesModified": 0,
+      "palettePresetsAdded": 0,
+      "palettePresetsModified": 0,
+      "endingsChanged": 0,
+      "sessionChanged": false,
+      "systemChanged": false,
+      "warnings": []
+    },
+    "issues": [
+      {
+        "severity": "warning",
+        "code": "duplicate-event",
+        "mapId": "map_mine_entrance",
+        "x": 10,
+        "y": 10,
+        "message": "이벤트 좌표가 겹칩니다: map_mine_entrance (10, 10) — chest_mine_001 & ev_mine_chest"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 23,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_1/ev_house_door_30_map_village_30_100x100_1_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 23,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_1/ev_house_door_30_map_village_30_100x100_1_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 23,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_1/ev_house_door_30_map_village_30_100x100_1_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 33,
+        "y": 43,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_2/ev_house_door_30_map_village_30_100x100_2_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 33,
+        "y": 43,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_2/ev_house_door_30_map_village_30_100x100_2_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 33,
+        "y": 43,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_2/ev_house_door_30_map_village_30_100x100_2_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 45,
+        "y": 62,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_3/ev_house_door_30_map_village_30_100x100_3_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 45,
+        "y": 62,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_3/ev_house_door_30_map_village_30_100x100_3_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 45,
+        "y": 62,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_3/ev_house_door_30_map_village_30_100x100_3_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 44,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_4/ev_house_door_30_map_village_30_100x100_4_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 44,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_4/ev_house_door_30_map_village_30_100x100_4_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 44,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_4/ev_house_door_30_map_village_30_100x100_4_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 72,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_5/ev_house_door_30_map_village_30_100x100_5_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 72,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_5/ev_house_door_30_map_village_30_100x100_5_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 72,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_5/ev_house_door_30_map_village_30_100x100_5_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 10,
+        "y": 10,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_6/ev_house_door_30_map_village_30_100x100_6_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 10,
+        "y": 10,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_6/ev_house_door_30_map_village_30_100x100_6_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 10,
+        "y": 10,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_6/ev_house_door_30_map_village_30_100x100_6_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 93,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_7/ev_house_door_30_map_village_30_100x100_7_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 93,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_7/ev_house_door_30_map_village_30_100x100_7_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 60,
+        "y": 93,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_7/ev_house_door_30_map_village_30_100x100_7_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 41,
+        "y": 23,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_8/ev_house_door_30_map_village_30_100x100_8_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 41,
+        "y": 23,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_8/ev_house_door_30_map_village_30_100x100_8_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 41,
+        "y": 23,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_8/ev_house_door_30_map_village_30_100x100_8_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 21,
+        "y": 62,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_9/ev_house_door_30_map_village_30_100x100_9_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 21,
+        "y": 62,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_9/ev_house_door_30_map_village_30_100x100_9_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 21,
+        "y": 62,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_9/ev_house_door_30_map_village_30_100x100_9_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 39,
+        "y": 93,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_10/ev_house_door_30_map_village_30_100x100_10_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 39,
+        "y": 93,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_10/ev_house_door_30_map_village_30_100x100_10_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 39,
+        "y": 93,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_10/ev_house_door_30_map_village_30_100x100_10_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 41,
+        "y": 72,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_11/ev_house_door_30_map_village_30_100x100_11_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 41,
+        "y": 72,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_11/ev_house_door_30_map_village_30_100x100_11_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 41,
+        "y": 72,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_11/ev_house_door_30_map_village_30_100x100_11_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 10,
+        "y": 96,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_12/ev_house_door_30_map_village_30_100x100_12_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 10,
+        "y": 96,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_12/ev_house_door_30_map_village_30_100x100_12_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_village_30_100x100",
+        "x": 10,
+        "y": 96,
+        "message": "맵 이벤트 ev_house_door_30_map_village_30_100x100_12/ev_house_door_30_map_village_30_100x100_12_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setSelfSwitch",
+        "mapId": "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+        "x": 10,
+        "y": 10,
+        "message": "맵 이벤트 ev_herb_1/h0a에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setSelfSwitch",
+        "mapId": "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+        "x": 25,
+        "y": 12,
+        "message": "맵 이벤트 ev_herb_2/h1a에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setSelfSwitch",
+        "mapId": "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+        "x": 15,
+        "y": 25,
+        "message": "맵 이벤트 ev_herb_3/h2a에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:setSelfSwitch",
+        "mapId": "map_mine_entrance",
+        "x": 10,
+        "y": 10,
+        "message": "맵 이벤트 chest_mine_001/chest_mine_001_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 37,
+        "y": 25,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 37,
+        "y": 26,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 58,
+        "y": 25,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 58,
+        "y": 26,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 62,
+        "y": 46,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 62,
+        "y": 47,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 19,
+        "y": 64,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 19,
+        "y": 65,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 64,
+        "y": 74,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 64,
+        "y": 75,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 9,
+        "y": 97,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      },
+      {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_village_30_100x100",
+        "x": 9,
+        "y": 98,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+      }
+    ]
+  },
+  "warningMetricsText": "경계 어긋남 2곳\n진입 막힘 12곳\n어울림 79→19",
+  "warningModalText": "영역 작업\n지시\n생성\n검토\n(6,5) 8×6\nGrass23·House purple stone wall11·Dirt edge7\n이 영역을 주변과 자연스럽게 어울리도록 다듬어줘\n지시 수정\n이전\n이후\n적용 · 48칸\n다시 만들기\n버리기\n주의 4건\n경계 어긋남 2곳\n진입 막힘 12곳\n어울림 79→19\n주의 · 바깥 길이 영역 경계 (10,10)에서 끊깁니다 — 영역 안으로 이어지지 않았습니다. [map_village_30_100x100 10,10]\n주의 · 바깥 길이 영역 경계 (6,7)에서 끊깁니다 — 영역 안으로 이어지지 않았습니다. [map_village_30_100x100 6,7]\n주의 · 바깥에서 들어오던 칸 (6,5)이 새로 막혔습니다. [map_village_30_100x100 6,5]\n주의 · 바깥에서 들어오던 칸 (6,10)이 새로 막혔습니다. [map_village_30_100x100 6,10]\n고급 (실행 로그)",
+  "applySummary": "",
+  "seamRingChanged": [
+    "10,11"
+  ],
+  "suggestionRow": "둥근 호수\n오두막\n꽃밭\n보물상자\n모두 보기 (+19)",
+  "browseAllLabel": "모두 보기 (+19)"
+}

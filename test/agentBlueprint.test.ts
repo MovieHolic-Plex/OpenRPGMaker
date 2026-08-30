@@ -849,6 +849,82 @@ describe("commitAgentBlueprintProgress / clearAgentBlueprint", () => {
   });
 });
 
+describe("agentBlueprintForMap — 다 지은 계획은 캔버스에서 물러난다", () => {
+  /** VILLAGE_SPEC 을 한 턴에 다 짓는 파사드 한 호출 + 그 맵에 적용된 턴 끝. */
+  function buildWholeVillage(): void {
+    markAgentBlueprintProgress("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }, WRITE);
+    settleAgentBlueprintTurn({ regions: [], wholeTargetMapIds: ["m1"] });
+  }
+
+  it("계획에 남은 일이 없으면 그릴 칸이 없다 — 상태는 진실을 그대로 들고 있다", () => {
+    // 사용자가 본 결함: 조수에게 시킨 일이 다 끝나 결과까지 나왔는데도 맵 위에 `1/2 지형 ✓`
+    // 같은 계획 라벨이 그대로 남았다. 다 지은 계획은 더 이상 알릴 것이 없다.
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    buildWholeVillage();
+
+    const state = getAgentBlueprintState();
+    expect(state.entries.map((entry) => entry.status)).toEqual(["done", "done", "done", "done"]);
+    expect(agentBlueprintForMap(state, "m1")).toHaveLength(0);
+  });
+
+  it("한 칸이라도 남았으면 계획은 맵 위에 살아있다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    // 짓는 중(building) — 진행 표시가 있어야 하는 상태다.
+    markAgentBlueprintProgress("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }, WRITE);
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(4);
+
+    // 정산이 적용되지 않은 칸을 planned 로 되돌렸다 — "이건 안 들어갔다" 는 참인 정보라 남긴다.
+    // 맵 전제를 덮는 정리 칸(site)은 들어간 길 영역과 거치므로 상황만 함까 도다 — 집·숙이 남는다.
+    settleAgentBlueprintTurn(appliedRegions({ mapId: "m1", x: 0, y: 16, w: 30, h: 2 }));
+    expect(statusById()).toEqual({ site: "done", main_road: "done", house_a: "planned", grove: "planned" });
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(4);
+  });
+
+  it("다음 턴의 재동기화가 다 지은 계획을 되살리지 않는다", () => {
+    // 상태를 지우는 방식이 안 되는 이유: setAgentBlueprintFromSpec 은 done 을 사각형 기준으로
+    // 물려받는다. 지우면 물려받을 것이 없어지므로 턴 시작 재동기화가 **다 지어진 맵 위에**
+    // 전량 planned 파랑 계획을 다시 깐게 된다.
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    buildWholeVillage();
+
+    beginAgentBlueprintTurn();
+    syncAgentBlueprintWithSpec(VILLAGE_SPEC);
+    expect(statusById()).toEqual({ site: "done", main_road: "done", house_a: "done", grove: "done" });
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(0);
+  });
+
+  it("마일스톤 확정으로 다 지어진 뒤 중단해도 계획이 되살아나지 않는다", () => {
+    // 리뷰 지적: 턴 도중에 전 칸이 done 이 되면 물러나는데, 뒤이은 중단 정산이 그 칸을 planned 로
+    // 되돌려 계획이 캔버스에 **되살아나는** 것 아닌가. 그럴 수 없다 —
+    // (1) markAgentBlueprintProgress 단독으로는 전 칸 done 이 될 수 없다(방금 올린 칸이 building 으로
+    //     남는다), (2) 전 칸을 done 으로 만들 수 있는 것은 마일스톤 확정뿐이고 그것은 저장소에 실제로
+    //     커밋된 시점이며 turnAdvanced 를 함께 비운다 → 이후 정산은 되돌릴 대상이 없다.
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    markAgentBlueprintProgress("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }, WRITE);
+    commitAgentBlueprintProgress();
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(0);
+
+    // 마일스톤 뒤에 사용자가 중단했다 — 아무것도 적용되지 않은 턴 끝.
+    settleAgentBlueprintTurn(APPLIED_NOTHING);
+    expect(statusById()).toEqual({ site: "done", main_road: "done", house_a: "done", grove: "done" });
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(0);
+  });
+
+  it("스펙 자동 확장이 새 칸을 덧붙이면 다시 그린다 — 물러난 것은 계획이 아니라 끝난 표시다", () => {
+    setAgentBlueprintFromSpec(VILLAGE_SPEC);
+    buildWholeVillage();
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(0);
+
+    // expandSpecWithRegions 가 명세 밖 쓰기를 보고 에셋을 덧붙인 뒤 재동기화한 상황.
+    setAgentBlueprintFromSpec({
+      ...VILLAGE_SPEC,
+      assets: [...VILLAGE_SPEC.assets, { id: "auto_1", kind: "structure", x: 12, y: 2, w: 4, h: 4 }],
+    });
+    expect(statusById()).toEqual({ site: "done", main_road: "done", house_a: "done", grove: "done", auto_1: "planned" });
+    expect(agentBlueprintForMap(getAgentBlueprintState(), "m1")).toHaveLength(5);
+  });
+});
+
 function statusById(): Record<string, string> {
   const out: Record<string, string> = {};
   for (const entry of getAgentBlueprintState().entries) out[entry.id] = entry.status;

@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>마을 저작 탭 — 구현 결과와 실측</title>
+<style>
+  :root {
+    --ink: #16231f;
+    --muted: #5e6e67;
+    --paper: #f7f3e9;
+    --surface: #fffdf8;
+    --surface-2: #eee8da;
+    --line: #d9d1c1;
+    --green: #17674c;
+    --green-soft: #dff2e8;
+    --amber: #9a5b00;
+    --amber-soft: #fff0cc;
+    --red: #a5342f;
+    --red-soft: #fbe1df;
+    --blue: #2e5795;
+    --blue-soft: #e1ebfb;
+    --shadow: 0 18px 60px rgba(37, 51, 45, .11);
+    --radius: 22px;
+    --max: 1180px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 3% 1%, rgba(90, 142, 104, .13), transparent 26rem),
+      radial-gradient(circle at 95% 12%, rgba(195, 134, 58, .12), transparent 31rem),
+      var(--paper);
+    font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+    line-height: 1.65;
+    word-break: keep-all;
+  }
+  a { color: var(--blue); }
+  img { display: block; max-width: 100%; }
+  code {
+    padding: .12rem .38rem;
+    border-radius: 6px;
+    background: #ece7dc;
+    font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+    font-size: .88em;
+    word-break: break-word;
+  }
+  pre {
+    background: #1d2a25; color: #e8e4d8; border-radius: 14px;
+    padding: 1rem 1.1rem; overflow-x: auto; font-size: .82rem; line-height: 1.55;
+    font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  }
+  pre code { background: none; padding: 0; color: inherit; font-size: 1em; }
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    border-bottom: 1px solid rgba(217, 209, 193, .85);
+    background: rgba(247, 243, 233, .92);
+    backdrop-filter: blur(16px);
+  }
+  .topbar-inner {
+    width: min(var(--max), calc(100% - 36px));
+    min-height: 58px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .topbar strong { font-size: .95rem; letter-spacing: -.01em; }
+  .topbar nav { display: flex; gap: .1rem; flex-wrap: wrap; }
+  .topbar nav a {
+    color: var(--muted); text-decoration: none;
+    padding: .3rem .55rem; border-radius: 999px; font-size: .84rem;
+  }
+  .topbar nav a:hover { background: var(--surface-2); color: var(--ink); }
+  main { width: min(var(--max), calc(100% - 36px)); margin: 0 auto; padding: 2.6rem 0 5rem; }
+  h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.2; margin: 0 0 .7rem; letter-spacing: -.02em; }
+  h2 {
+    font-size: 1.42rem; margin: 3.4rem 0 .9rem; letter-spacing: -.01em;
+    padding-bottom: .45rem; border-bottom: 2px solid var(--line);
+  }
+  h3 { font-size: 1.08rem; margin: 2rem 0 .5rem; }
+  p { margin: .7rem 0; }
+  .lede { font-size: 1.08rem; color: var(--muted); max-width: 64ch; }
+  .meta { font-size: .84rem; color: var(--muted); margin-top: 1rem; }
+  .meta span + span::before { content: "·"; margin: 0 .5rem; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 1.3rem 1.5rem; box-shadow: var(--shadow);
+    margin: 1.2rem 0;
+  }
+  .grid { display: grid; gap: 1rem; }
+  @media (min-width: 780px) { .grid.g2 { grid-template-columns: 1fr 1fr; } .grid.g3 { grid-template-columns: repeat(3, 1fr); } }
+  .kicker {
+    display: inline-block; font-size: .72rem; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: .3rem;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }
+  th, td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  tbody tr:hover { background: rgba(238, 232, 218, .5); }
+  .tablewrap { overflow-x: auto; }
+  .tag {
+    display: inline-block; padding: .12rem .5rem; border-radius: 999px;
+    font-size: .74rem; font-weight: 600; white-space: nowrap;
+  }
+  .t-green { background: var(--green-soft); color: var(--green); }
+  .t-amber { background: var(--amber-soft); color: var(--amber); }
+  .t-red { background: var(--red-soft); color: var(--red); }
+  .t-blue { background: var(--blue-soft); color: var(--blue); }
+  .t-grey { background: var(--surface-2); color: var(--muted); }
+  figure { margin: 1.1rem 0; }
+  figure img { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  figcaption { font-size: .82rem; color: var(--muted); margin-top: .45rem; }
+  .shots { display: grid; gap: 1rem; }
+  @media (min-width: 720px) { .shots.s2 { grid-template-columns: 1fr 1fr; } .shots.s3 { grid-template-columns: repeat(3, 1fr); } }
+  .shots figure { margin: 0; }
+  .callout { border-left: 4px solid var(--line); padding: .1rem 0 .1rem 1rem; margin: 1.1rem 0; }
+  .callout.warn { border-color: var(--amber); }
+  .callout.stop { border-color: var(--red); }
+  .callout.ok { border-color: var(--green); }
+  ul, ol { margin: .6rem 0; padding-left: 1.35rem; }
+  li { margin: .3rem 0; }
+  .fine { font-size: .85rem; color: var(--muted); }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+  .ascii {
+    font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+    font-size: .8rem; line-height: 1.25; white-space: pre; color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <strong>마을 저작 탭 — 구현 결과</strong>
+    <nav>
+      <a href="#tab">생긴 것</a>
+      <a href="#shape">집 형태</a>
+      <a href="#preset">프리셋</a>
+      <a href="#lies">거짓말 두 곳</a>
+      <a href="#chain">사슬 실측</a>
+      <a href="#cover">커버리지</a>
+      <a href="report.html">계획서</a>
+    </nav>
+  </div>
+</div>
+
+<main>
+
+  <span class="kicker">구현 결과 · 실행 캡처</span>
+  <h1>마을 저작 탭을 만들고,<br>화면이 하네스에게 거짓말하던 두 곳을 고쳤다</h1>
+  <p class="lede">
+    데이터베이스에 「마을」탭이 생겼다. 집 형태와 배치 프리셋을 사람이 저작하고, AI 가 그 id 를 읽고,
+    하네스가 그 값으로 시공한다. 만드는 도중에 <strong>화면은 「통과」라고 하는데 하네스는 집을 한 채도 못 세우는</strong>
+    형태 두 종류를 실측으로 찾아 규약을 시공기와 맞췄다.
+  </p>
+  <p class="meta">
+    <span>워크트리 <code>rpg-zzu/3</code></span><span>브랜치 <code>village/house-template-data</code></span><span>스크린샷 16장 — 실제 실행 캡처</span><span>테스트 33케이스 통과</span>
+  </p>
+
+  <div class="card">
+    <span class="kicker">한 줄 요약 셋</span>
+    <ol>
+      <li><strong>탭은 돈다.</strong> 「세계」그룹의 <code>구조물</code>과 <code>지형</code> 사이, 집 형태 + 배치 프리셋 두 종류를 한 탭에서 저작한다. 탭을 열기만 해서는 레코드가 하나도 생기지 않는다(제로 부트스트랩).</li>
+      <li><strong>사슬이 실제로 닫힌다.</strong> 저작한 프리셋이 시스템 프롬프트의 <code>## 마을 저작 데이터</code> 섹션에 실리고, <code>author_village({ presetId })</code> 로 시공하면 집 6채가 전부 화이트리스트 안의 형태로 서고 설계도에 <code>preset:vpreset</code> 태그가 남는다.</li>
+      <li><strong>규약이 시공기와 갈라져 있었다.</strong> 날개 하한이 내장 형태보다 조여 있었고(3×4 vs 실제 3×3), 시공기가 요구하는 <em>열 높이</em> 규약은 화면이 아예 보지 않았다. 둘 다 고치고 회귀 테스트로 못 박았다.</li>
+    </ol>
+  </div>
+
+  <h2 id="tab">1. 생긴 것 — 레일 한 칸, 목록 창 하나</h2>
+
+  <div class="shots s2">
+    <figure>
+      <img src="img/vt-02-rail.png" alt="데이터베이스 왼쪽 레일 — 세계 그룹에 마을 탭이 구조물과 지형 사이에 있다">
+      <figcaption>레일: 세계 그룹 <code>구조물</code> → <strong>마을</strong> → <code>지형</code>. 배지 숫자는 사용자 레코드 수만 센다(내장 34종은 세지 않는다).</figcaption>
+    </figure>
+    <figure>
+      <img src="img/vt-13-list-pane.png" alt="목록 창 — 집 형태 2 / 배치 프리셋 1 칩과 레코드 행">
+      <figcaption>목록 창의 칩(<code>집 형태</code> / <code>배치 프리셋</code>)이 축이고, 오른쪽 상세가 고른 종류를 편집한다.</figcaption>
+    </figure>
+  </div>
+
+  <figure>
+    <img src="img/vt-01-empty.png" alt="빈 상태 — 아무 레코드도 없는 마을 탭">
+    <figcaption>제로 부트스트랩. 탭을 열어도 <code>villageTemplates</code> / <code>villagePresets</code> 는 <code>undefined</code> 그대로다. 내장 34종은 코드에 남고 레코드가 되지 않는다.</figcaption>
+  </figure>
+
+  <h2 id="shape">2. 집 형태 — 바운딩 박스 + 날개, 격자로 확인</h2>
+
+  <p>
+    집 형태는 바운딩 박스 하나와 그 안에 붙는 직사각형 <strong>날개</strong> 목록이다. 날개 합집합이 집 바닥이라
+    숫자만으로는 ㄱ 자인지 ㅜ 자인지 알 수 없어서, 편집기 옆에 격자 미리보기를 함께 그린다.
+  </p>
+
+  <div class="shots s2">
+    <figure>
+      <img src="img/vt-04-template-edited.png" alt="집 형태 상세 — 이름, ID, 메모, 폭/높이, 층수, 재료 킷">
+      <figcaption>기본 정보와 크기·재료. <code>ID</code> 는 AI 가 <code>housePlans[].templateId</code> 로 지목하는 이름이고, 메모도 AI 컨텍스트에 실린다.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/vt-05-wings-l-shape.png" alt="날개 두 개로 만든 L 자 형태와 격자 미리보기">
+      <figcaption>날개 두 개(8×5 + 4×4)로 만든 L 자. 왼쪽 위 썸네일과 아래 큰 격자가 같은 바닥을 보여준다.</figcaption>
+    </figure>
+  </div>
+
+  <figure>
+    <img src="img/vt-06-wing-card.png" alt="날개 카드 — 좌표 입력 행, 날개 추가, 박스 맞추기, 격자 미리보기">
+    <figcaption>날개 카드. <code>박스 맞추기</code>는 빈 줄·열을 없애고 바운딩 박스를 날개 합집합에 맞춘다. 안내 문구의 하한 숫자는 상수에서 뽑아 쓴다 — 문장에 손으로 박으면 규약이 바뀔 때 화면만 거짓말을 한다.</figcaption>
+  </figure>
+
+  <div class="shots s2">
+    <figure>
+      <img src="img/vt-07-template-invalid.png" alt="날개가 바운딩 박스를 넘어 규약 위반이 뜬 상태">
+      <figcaption>규약 위반은 막지 않고 보여준다. 목록 행에 <code>규약 위반</code>, 상세에 빨간 안내가 뜨고, 시공에서는 <strong>그 형태만</strong> 건너뛴다(경고 1줄, 시공 실패 아님).</figcaption>
+    </figure>
+    <figure>
+      <img src="img/vt-08-import-builtin.png" alt="내장 현관 오두막에서 값을 가져온 사용자 형태 — 규약 검사 통과">
+      <figcaption>내장 「현관 오두막」에서 값을 <strong>베껴</strong> 온 사본. <code>clonedFrom</code> 만 계보로 남아서, 이후 내장이 바뀌어도 사본은 그대로다. 날개 #2 가 3×3 인데 <span class="tag t-green">통과</span> — 이게 아래 4장에서 고친 것이다.</figcaption>
+    </figure>
+  </div>
+
+  <h2 id="preset">3. 배치 프리셋 — 고른 값만 키로 남는다</h2>
+
+  <p>
+    프리셋의 모든 값은 「지정 안 함」에서 시작한다. 고른 값만 레코드에 키로 남고, 비운 값은 코드 기본값과 씨앗값이 담당한다.
+    그래서 프리셋 하나가 마을 생성기를 통째로 대체하지 않고, <em>사용자가 신경 쓴 부분만</em> 덮는다.
+  </p>
+
+  <figure>
+    <img src="img/vt-10-preset-filled.png" alt="배치 프리셋 상세 — 집 수, 주민 수, 길 재질/폭/구불거림, 마을 배치, 광장, 마당">
+    <figcaption>프리셋 상세. select 선택지와 숫자 범위는 하네스가 읽는 상수(<code>VILLAGE_RANGE</code>, <code>VILLAGE_PATH_STYLES</code> …)에서 그대로 나온다. 길 폭 2~3, 구불거림 0.35~1 처럼 전에 화면과 하네스가 갈라졌던 항목이 여기 있다.</figcaption>
+  </figure>
+
+  <div class="shots s2">
+    <figure>
+      <img src="img/vt-12-whitelist-card.png" alt="쓸 집 형태 고르기 — 내장 34종과 사용자 형태 2종 체크박스">
+      <figcaption><code>쓸 집 형태 고르기</code>는 카탈로그 전체(내장 34종 + 사용자)를 체크박스로 내주고, 고른 id 만 <code>templateIds</code> 로 저장한다. 하나도 안 고르면 전체를 쓴다.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/vt-15-preset-stats.png" alt="프리셋 통계 스트립 — 적용되는 값 11, 형태 후보 3(화이트리스트 적용), 집 수 6">
+      <figcaption>통계 스트립은 <strong>실제로 적용될 값</strong>만 센다. 범위·열거형을 통과하지 못한 값은 11 에 들어가지 않고, 형태 후보는 화이트리스트를 반영해 3 으로 줄어든다.</figcaption>
+    </figure>
+  </div>
+
+  <p class="fine">
+    참조는 따라간다. 집 형태를 지우면 프리셋 화이트리스트에서도 빠지고, id 를 바꾸면 프리셋이 새 id 를 가리킨다.
+    죽은 id 를 남기면 시공 때 경고가 되기 때문이다.
+  </p>
+
+  <h2 id="lies">4. 화면이 하네스에게 거짓말하던 두 곳</h2>
+
+  <p>
+    탭의 존재 이유가 "사용자가 고른 값이 그대로 시공된다" 이므로, 화면이 받아주는 값과 하네스가 지을 수 있는 값이
+    어긋나면 탭 자체가 무의미해진다. 캡처를 돌리다가 어긋남 두 개를 실측으로 잡았다.
+  </p>
+
+  <h3>(1) 날개 하한이 내장 형태보다 조여 있었다</h3>
+
+  <div class="callout stop">
+    <p>
+      내장 「현관 오두막」을 복제 버튼으로 가져온 직후, 화면이 이렇게 말했다:<br>
+      <code>사용자 집 형태 "내 오두막" 를 건너뜁니다: 날개는 최소 3×4칸이어야 합니다</code>
+    </p>
+    <p class="fine">그런데 하네스는 이 형태를 아무 문제 없이 짓는다 — 내장 34종에 들어 있는 형태이기 때문이다.</p>
+  </div>
+
+  <p>
+    <code>VILLAGE_RANGE.wingH.min</code> 이 4 였다. 내장 34종의 날개를 전부 세어 보면 최소가 <strong>3×3</strong> 이다
+    (「현관 오두막」의 뒷채 3×3, 「ㄷ자」의 두 다리 3×3). 하한을 3 으로 내리고, 다시는 갈라지지 않게
+    <strong>내장 34종을 복제 변환에 태워 전부 규약을 통과하는지</strong> 보는 테스트를 넣었다.
+  </p>
+
+  <pre><code>// test/villageAuthoringData.test.ts
+it("내장 34종을 복제해 온 레코드는 전부 규약을 통과한다", () => {
+  const rejected = HOUSE_TEMPLATE_DEFS.map((def) => {
+    const resolved = templateFromRecord(templateRecordFromDef(def, `my-${def.id}`));
+    return "reason" in resolved ? `${def.id}: ${resolved.reason}` : undefined;
+  }).filter((entry) => entry !== undefined);
+  expect(rejected).toEqual([]);
+});</code></pre>
+
+  <p class="fine">
+    이 테스트는 곧바로 값을 했다. 처음엔 손으로 레코드를 짜다가 <code>lowWall</code> 을 빼먹어서
+    「낮은 오두막」·「외양간」이 걸렸다 — 그래서 화면의 복제 버튼이 쓰는 변환(<code>templateRecordFromDef</code>)을
+    그대로 태우도록 고쳤다. 사본 만들기와 규약 검사가 같은 경로를 지나야 이 테스트가 의미를 가진다.
+  </p>
+
+  <h3>(2) 시공기가 요구하는 「열 높이」를 화면이 아예 보지 않았다</h3>
+
+  <p>
+    더 무거운 쪽이다. 아래 형태(8×8, 위 4행만 폭 8, 아래 4행은 왼쪽 4칸)는 화면이 <span class="tag t-green">통과</span> 라고 했다.
+    하네스에 넣으면 이렇게 실패한다:
+  </p>
+
+  <div class="grid g2">
+    <div class="card">
+      <span class="kicker">문제의 바닥 (8×8)</span>
+      <div class="ascii">■■■■■■■■   ← 0
+■■■■■■■■
+■■■■■■■■
+■■■■■■■■   ← 3
+■■■■・・・・
+■■■■・・・・
+■■■■・・・・
+■■■■・・・・   ← 7</div>
+      <p class="fine">오른쪽 절반(x=4~7)은 이어진 칸이 4행뿐이다.</p>
+    </div>
+    <div class="card">
+      <span class="kicker">하네스 실측 결과</span>
+      <pre style="margin:.4rem 0 0"><code>[only-my-house] ok=false
+집을 한 채도 시공하지 못했다 — 맵/bounds가
+좁거나 후보 슬롯이 전부 물·숲·광장에
+막혀 있다. …
+shapes=[]</code></pre>
+      <p class="fine">같은 프리셋에서 <code>rect-small</code> 만 남기면 4/4 가 선다. 맵 크기 문제가 아니다.</p>
+    </div>
+  </div>
+
+  <p>
+    원인은 <code>houseKit.ts</code> 의 <code>stampFootprintHouseKit</code> 에 있다. 집은 <strong>열 단위</strong>로 세워진다 —
+    각 열의 이어진 구간 하단에 벽 밴드를 깔고 그 위에 지붕을 얹는다. 그래서 구간 높이가
+    <code>벽 밴드 + 2</code> 행보다 작으면 그 열은 지을 수 없다.
+  </p>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>조건</th><th>벽 밴드</th><th>열마다 필요한 최소 행</th><th>내장 근거</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1층 · 보통 벽</td><td>3 = 2 + (2×1 − 1)</td><td><strong>5</strong></td><td>「ㄷ자」의 가운데 열이 정확히 5행</td></tr>
+        <tr><td>2층</td><td>5 = 2 + (2×2 − 1)</td><td><strong>7</strong></td><td>「직사각 2층」 7×9</td></tr>
+        <tr><td>3층</td><td>7 = 2 + (2×3 − 1)</td><td><strong>9</strong></td><td>「직사각 3층」 8×11</td></tr>
+        <tr><td>낮은 벽(헛간·외양간)</td><td>2</td><td><strong>4</strong></td><td>「외양간」 4×4</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    이 계산을 <code>templateFromRecord()</code> 에 그대로 옮겼다. 이제 화면이 이유까지 말한다:
+  </p>
+
+  <figure>
+    <img src="img/vt-16-short-column.png" alt="열이 짧은 형태 — x=4 열이 4칸뿐이라는 규약 위반 안내">
+    <figcaption><code>x=4 열이 이어서 4칸뿐입니다 — 한 열은 5칸 이상이어야 합니다 (벽 3 + 지붕 2)</code>. 히어로·목록 행·통계 스트립·빨간 안내 네 곳이 같은 문장을 쓴다.</figcaption>
+  </figure>
+
+  <p>
+    같이 딸려 온 것 둘:
+  </p>
+  <ul>
+    <li><strong>A자 지붕 킷</strong>은 지붕이 피라미드라 날개 하나 + 높이 = <code>벽 밴드 + ⌊(폭−1)/2⌋ + 1</code> 로 고정이다. 시공기에 있던 이 검사도 화면에 옮겼다. 내장 A자 4종(5×6, 7×7, 8×7, 낮은 7×6)이 이 공식을 만족한다는 사실이 34종 왕복 테스트로 증명된다.</li>
+    <li><strong><code>+ 날개 추가</code> 의 기본 크기</strong>가 3×4 였다 — 1층 집에서는 <em>누르는 순간 항상</em> 규약 위반이었다. 이제 <code>minWingRun()</code> 을 써서 층수·낮은 벽에 맞는 높이(1층이면 3×5)로 시작한다.</li>
+  </ul>
+
+  <div class="callout ok">
+    <p>
+      고친 뒤 같은 ㅜ 자를 <strong>한 행만</strong> 키우면(8×9, 위 5행 + 아래 4행) 화면도 통과라고 하고 하네스도 짓는다.
+      실측: <code>[legal-L] ok=true Village authored: 4/4 houses</code>, <code>shapes=["rect-small","my-house","my-house","rect-small"]</code>.
+    </p>
+  </div>
+
+  <h2 id="chain">5. 사슬이 실제로 도는지 — 저작 → AI → 시공</h2>
+
+  <p>
+    프리셋 하나(집 6채, 흙길 폭 3, 격자 길, 정원 광장, 작업장 마당, 형태 후보 <code>my-house</code> + <code>rect-small</code>)와
+    사용자 형태 하나(8×9 L 자, 목조 홀 킷)를 넣고 사슬 양쪽을 실측했다.
+  </p>
+
+  <h3>AI 가 읽는 것 — 시스템 프롬프트에 실린 섹션</h3>
+
+  <pre><code>## 마을 저작 데이터(유저가 데이터베이스 「마을」탭에서 정한 값 — 코드 기본값보다 우선)
+유저가 직접 만든 프리셋과 집 형태입니다. 마을 요청에서 이 id를 쓰면 유저가 정한 값 그대로 시공됩니다:
+### 배치 프리셋 (author_village presetId 로 지정)
+- 내 산골 마을 (vpreset: 집 6채, street-grid, 길 dirt, 폭 3, 광장 garden, 마당 workshop, NPC 4)
+  형태 후보: my-house, rect-small
+  메모: 산골 분위기, 넓은 흙길
+### 내 집 형태 (housePlans[].templateId 로 지정)
+- 내 장옥 (my-house, 8x9, 킷 timber-hall)
+  메모: 촌장 집으로 쓰는 넓은 장옥
+author_village({ target, houseCount, countPolicy, presetId }) 로 프리셋을 적용하세요. 목록에 없는 id는 쓰지 마세요.</code></pre>
+
+  <p class="fine">저작 레코드가 없으면 이 섹션 자체가 프롬프트에 없다 — 빈 탭이 프롬프트를 늘리지 않는다.</p>
+
+  <h3>하네스가 지은 것 — <code>author_village({ presetId })</code></h3>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>확인한 것</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td>시공 요약</td><td><code>Village authored: 6/6 houses on map_existing.</code> <span class="tag t-green">성공</span></td></tr>
+        <tr><td>설계도에 프리셋 계보</td><td>광장 영역 태그에 <code>preset:vpreset</code></td></tr>
+        <tr><td>화이트리스트가 실제로 작동</td><td>집 6채가 전부 후보 안 — <code>my-house</code> 2채, <code>rect-small</code> 4채</td></tr>
+        <tr><td>사용자 형태가 장식이 아님</td><td>화이트리스트를 <code>my-house</code> 하나로 좁히면 4채 모두 사용자 형태</td></tr>
+        <tr><td>모르는 <code>presetId</code></td><td>경고 1줄로 흘리고 기본값으로 시공(실패 아님), <code>preset:</code> 태그 안 남음</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>지어진 맵 자체 — 타일을 그려서 눈으로</h3>
+
+  <p>
+    표의 태그만으로는 「형태가 실제로 저 모양으로 섰는지」를 알 수 없어서, 시공된 맵을 칩셋으로 렌더했다.
+    같은 프리셋(<code>vpreset</code>)을 50×50 / seed 7 로 다시 돌린 결과다.
+  </p>
+
+  <div class="shots s2">
+    <figure>
+      <img src="img/built-village-preset.png" alt="프리셋으로 지은 50×50 마을 — L 자 목조 홀 집과 작은 직사각 집이 흙길로 이어진다">
+      <figcaption>후보 둘(<code>my-house</code> + <code>rect-small</code>)로 지은 마을. 설계도 <code>shape</code> 태그는 <code>my-house</code> 3채 · <code>rect-small</code> 3채, 광장 태그에 <code>preset:vpreset</code>, 주민 4명. 형태 배분 자체는 지도와 seed 에 따라 흔들린다(위 표의 run 은 2 : 4 였다) — 고정되는 건 <strong>후보 밖 형태가 안 나온다</strong>는 것뿐이다.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/built-village-mine-only.png" alt="화이트리스트를 내 형태 하나로 좁혀 지은 40×40 마을 — 같은 L 자 집 4채">
+      <figcaption>후보를 <code>my-house</code> 하나로 좁힌 40×40. 4채 전부 8×9 L 자다 — 화면에서 그린 날개 두 개(8×5 + 4×4)가 그대로 바닥이 됐다. 내장 34종은 후보에서 빠져 한 채도 섞이지 않았다.</figcaption>
+    </figure>
+  </div>
+
+  <figure>
+    <img src="img/built-house-closeup.png" alt="지어진 내 형태 확대 — 기와 지붕, 나무 기둥 현관, 창문, 문, 간판과 통">
+    <figcaption>같은 맵의 확대 조각. <code>timber-hall</code> 킷이 붙어 기와 지붕·기둥 현관·창·문이 서고, 마당은 프리셋의 <code>workshop</code> 대로 통과 간판이 놓인다. 폭 3 흙길(<code>roadNaturalness</code> 0.9)이 구불거리며 문 앞으로 붙는 것도 프리셋 값이다.</figcaption>
+  </figure>
+
+  <h2 id="cover">6. 커버리지와 확인하지 못한 것</h2>
+
+  <div class="grid g2">
+    <div class="card">
+      <span class="kicker">테스트 <span class="tag t-green">33 통과</span></span>
+      <ul>
+        <li><code>test/villageAuthoringData.test.ts</code> — 17케이스. 읽기·오버라이드·AI 컨텍스트·시공 반영·JSON 왕복 + <strong>내장 34종 왕복</strong>·열 높이·A자 지붕.</li>
+        <li><code>test/databaseVillageView.test.ts</code> — 16케이스. 규약 통과·내장 복제·날개 편집·<strong>짧은 열 위반</strong>·프리셋 키 생성/삭제·참조 정리.</li>
+        <li>주변 회귀: <code>houseKit</code>, <code>houseTemplates</code>, <code>houseTemplateCatalog</code>, <code>structureKitEditorDialog</code>, <code>authorVillage</code> — 103 + 27 통과.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="kicker">확인하지 못한 것</span>
+      <ul>
+        <li><strong>타입체크는 처음엔 돌지 않았고, 그건 설정 쪽 문제였다 — 고쳐서 돌렸다.</strong> 설치된 TypeScript 가 7.0.2 인데 <code>tsconfig.json</code> 이 TS 7 에서 제거된 <code>baseUrl</code> 을 들고 있어, <code>tsc</code> 가 파일 하나 읽기 전에 <code>TS5102</code> 로 죽었다 — 즉 <code>npm run gates</code> 의 typecheck 게이트가 통째로 무력화된 상태였다. <code>paths</code> 를 <code>"@/*": ["./src/*"]</code> 로 바꾸니 5.x·7 양쪽에서 돌고, 게이트 스코프(<code>tsconfig.app.json</code>, <code>src</code>만)는 <strong>두 버전 모두 에러 0</strong> 이다. <code>test</code> 까지 포함한 전체 스코프는 2603개인데 TS 5.7.3 에서도 같은 수준이다 — AGENTS.md 가 말하는 빨간 기준선이고 게이트가 보는 범위 밖이다.</li>
+        <li><strong>무거운 테스트 하나가 시간으로 흔들린다.</strong> <code>authorVillageFacade</code> 의 100×100 눈 도시 케이스가 90초 제한에 걸린다. 같은 커밋을 <code>git stash</code> 로 되돌려 돌려도 똑같이 걸리므로(기준선 144초) 환경 부하 문제로 판단했다. 사용자 레코드를 전혀 쓰지 않는 경로다.</li>
+        <li><strong>3칸 폭 집</strong>은 내장에 없다. <code>templateW.min</code> 은 3 으로 남겼는데, 폭 3 집을 하네스가 잘 짓는지는 확인하지 않았다.</li>
+        <li>날개 <em>합집합</em>이 3행짜리 바닥이 되는 극단(바운딩 박스는 4행)은 열 높이 규약에서 걸리지만, 그 조합만 따로 시공해 보지는 않았다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr>
+
+  <p class="fine">
+    바뀐 파일: <code>src/editor/tools/village/authoringData.ts</code>(날개 하한, <code>minWingRun()</code>, <code>shapeReason()</code>),
+    <code>src/editor/panels/databaseVillageView.ts</code>(하한 문구·입력 <code>min</code>·날개 기본 크기를 상수에서 뽑기),
+    <code>test/villageAuthoringData.test.ts</code>, <code>test/databaseVillageView.test.ts</code>, <code>openwiki/editor-database.md</code>.
+    화면 캡처는 <code>scripts/_capture-village-tab.mjs</code>, 지어진 맵 렌더는 <code>scripts/_render-village-authoring-evidence.mts</code>.
+  </p>
+
+</main>
+
+</body>
+</html>

@@ -75,7 +75,7 @@
   border: 0;
   color: transparent;
   font-size: 0;
-  /* 시트(.battle-animation-sheet 240×240)와 같은 크기여야 translate(-50%, -55%) 퍼센트가
+  /* 시트(.battle-animation-sheet 240×240)와 같은 크기여야 translate(-50%, -50%) 퍼센트가
      동작한다. 0×0 이면 퍼센트 translate 가 (0, 0) 으로 무효가 되어, 셀이 앵커에서
      시트 50% = +120, +120 논리 px 어긋난 곳에 그려졌다(실측). */
   height: 240px;
@@ -84,7 +84,13 @@
   pointer-events: none;
   position: absolute;
   top: var(--battle-node-y);
-  transform: translate(-50%, -55%);
+  /* 시트 중심 = 앵커. 예전엔 -55% 로 12px(240×5%) 위로 밀어 뒀다 — 앵커가 배틀러의 발
+     (`.battle-enemy`/`.battle-actor` 는 translate(-50%, -100%))이던 시절의 보정이고, 그
+     보정으로도 144px 급 스프라이트의 몸통 중심에는 못 미쳤다. 이제 세로 위치는 저작된
+     `position`(head/center/feet/screen) 하나가 정한다 — battleAnimationAnchor.ts.
+     left/top 은 battleAnimationDom.positionAnimation 이 실측해 인라인으로 심고, 재지 못하는
+     환경에서만 아래 `--battle-node-x/y` 복사 경로가 폴백으로 남는다. */
+  transform: translate(-50%, -50%);
   width: 240px;
   z-index: 4;
 }

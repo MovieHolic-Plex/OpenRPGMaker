@@ -1,0 +1,44 @@
+{
+  "tabCounts": {
+    "actors": 6,
+    "classes": 6,
+    "skills": 27,
+    "items": 226,
+    "equipment": 86,
+    "enemies": 29,
+    "monster-species": 9,
+    "troops": 6,
+    "factions": 2,
+    "states": 12,
+    "animations": 43,
+    "tilesets": 13,
+    "switches": 6,
+    "variables": 1
+  },
+  "rowIds": [
+    "db-record-row-equip_sword",
+    "db-record-row-equip_mage_staff",
+    "db-record-row-equip_scout_dagger",
+    "db-record-row-equip_iron_sword",
+    "db-record-row-equip_steel_sword",
+    "db-record-row-equip_short_sword"
+  ],
+  "notes": [
+    {
+      "name": "01-items-tab",
+      "note": "아이템 탭 — 탭 배지가 226개를 표시한다"
+    },
+    {
+      "name": "02-equipment-tab",
+      "note": "장비 탭 — 탭 배지가 86개를 표시한다"
+    },
+    {
+      "name": "03-equipment-stats",
+      "note": "장비 레코드 상세 — 명중/치명이 값을 갖는다 (파생 이전에는 비어 있었다)"
+    },
+    {
+      "name": "04-skills-tab",
+      "note": "스킬 탭 — 27개 (skill_item_* 6종이 들어왔다)"
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "total": 25,
+  "actions": [
+    "click:ai-command-menu-toggle",
+    "click:ai-command-menu-instructions",
+    "change:ai-instructions-input",
+    "click:ai-instructions-save",
+    "instructions-save",
+    "click:ai-input",
+    "change:ai-input",
+    "click:ai-send",
+    "click:ai-turn-rewind",
+    "turn-rewind",
+    "click:chat-dock-toggle",
+    "dock-switch",
+    "click:ai-context-meter",
+    "click:ai-context-compact",
+    "context-compact",
+    "click:ai-collapse",
+    "panel-collapse",
+    "click:ai-collapsed-restore",
+    "panel-collapse",
+    "click:ai-new-chat",
+    "new-conversation",
+    "click:ai-command-menu-toggle",
+    "click:ai-command-menu-conversations",
+    "click:ai-history-open",
+    "conversation-restore"
+  ],
+  "semantic": [
+    {
+      "at": "2026-08-30T08:19:21.587Z",
+      "seq": 5,
+      "surface": "instructions-modal",
+      "action": "instructions-save",
+      "testid": "ai-instructions-save",
+      "detail": {
+        "chars": 32,
+        "beforeChars": 0,
+        "changed": true,
+        "cleared": false
+      }
+    },
+    {
+      "at": "2026-08-30T08:19:27.726Z",
+      "seq": 10,
+      "surface": "panel",
+      "action": "turn-rewind",
+      "testid": "ai-turn-rewind",
+      "disabled": true,
+      "detail": {
+        "reason": "turn-busy"
+      }
+    },
+    {
+      "at": "2026-08-30T08:19:28.618Z",
+      "seq": 12,
+      "surface": "panel",
+      "action": "dock-switch",
+      "testid": "ai-dock-mode-btn",
+      "disabled": true,
+      "detail": {
+        "from": "glass",
+        "reason": "busy"
+      }
+    },
+    {
+      "at": "2026-08-30T08:19:46.510Z",
+      "seq": 15,
+      "surface": "context-panel",
+      "action": "context-compact",
+      "testid": "ai-context-compact",
+      "detail": {
+        "kind": "skipped",
+        "reason": "요약할 앞부분이 없습니다(대화가 짧습니다)"
+      }
+    },
+    {
+      "at": "2026-08-30T08:19:48.468Z",
+      "seq": 17,
+      "surface": "panel",
+      "action": "panel-collapse",
+      "detail": {
+        "collapsed": true,
+        "turnBusy": false,
+        "via": "toggle"
+      }
+    },
+    {
+      "at": "2026-08-30T08:19:49.927Z",
+      "seq": 19,
+      "surface": "panel",
+      "action": "panel-collapse",
+      "detail": {
+        "collapsed": false,
+        "turnBusy": false,
+        "via": "rail"
+      }
+    },
+    {
+      "at": "2026-08-30T08:19:51.343Z",
+      "seq": 21,
+      "surface": "panel",
+      "action": "new-conversation",
+      "detail": {
+        "reason": "manual",
+        "discardedEntries": 15,
+        "abortedTurn": false,
+        "droppedQueue": 0
+      }
+    },
+    {
+      "at": "2026-08-30T08:19:55.191Z",
+      "seq": 25,
+      "surface": "history-modal",
+      "action": "conversation-restore",
+      "testid": "ai-history-open",
+      "detail": {
+        "conversationId": "conv_10a263fc-b6e2-401b-8ac1-04dbcf3b9f33",
+        "entries": 15,
+        "turnCount": 1,
+        "foreignProject": false
+      }
+    }
+  ],
+  "semanticWithDetailCount": 8,
+  "harnessUiRows": 26,
+  "harnessSummary": "감독 ?\n툴 ✓0/✗0\n주입 2건\n단계 전환 1회\n프론트 액션 26건",
+  "activityRows": [
+    {
+      "channel": "chat",
+      "instruction": "마을 입구에 우물을 하나 놔줘",
+      "pending": false,
+      "uiActions": 5,
+      "indexUiActions": [
+        "click:ai-turn-rewind",
+        "turn-rewind",
+        "click:chat-dock-toggle",
+        "dock-switch",
+        "click:ai-context-meter"
+      ],
+      "indexToolNames": [],
+      "persisted": "local"
+    },
+    {
+      "channel": "ui",
+      "instruction": "[ui] click:ai-command-menu-toggle, click",
+      "pending": false,
+      "uiActions": 13,
+      "indexUiActions": [
+        "click:ai-command-menu-toggle",
+        "click:ai-command-menu-instructions",
+        "change:ai-instructions-input",
+        "click:ai-instructions-save",
+        "instructions-save",
+        "click:ai-input",
+        "change:ai-input",
+        "click:ai-send",
+        "click:ai-turn-rewind",
+        "turn-rewind",
+        "click:chat-dock-toggle",
+        "dock-switch",
+        "click:ai-context-meter"
+      ],
+      "indexToolNames": [],
+      "persisted": "local"
+    }
+  ]
+}

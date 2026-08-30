@@ -76,6 +76,13 @@ describe("autosave policy (shouldAutosave)", () => {
     expect(shouldAutosave(session, "battleVictory", null, 10_000)).toBe(false);
   });
 
+  it("disables autosave when the current map has disableSave", () => {
+    const { project, session } = projectAndSession();
+    project.maps[session.currentMapId]!.disableSave = true;
+    expect(shouldAutosave(session, "transfer", null, 10_000, project)).toBe(false);
+    expect(shouldAutosave(session, "battleVictory", null, 10_000, project)).toBe(false);
+  });
+
   it("skips during cutscene input lock", () => {
     const { session } = projectAndSession();
     beginCutsceneControl(session, "cutscene-1", false);

@@ -4,6 +4,7 @@ import { canMoveFootprint, inBounds } from "@/project/collision";
 export { startPlayerRoute } from "@/player/playerRouteState";
 import { footprintBounds, nearestCellInRect } from "@/project/footprint";
 import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
+import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
@@ -515,21 +516,29 @@ function findRuntimeEventInScene(
  * 이라, 합치면 `H1 && V1 && (H2 || V2)` — 같은 식이다. 분해가 두 곳에 있을 이유가 없다.
  */
 export function playerCanStep(
-  scene: Pick<PlaySceneContext, "map" | "tileX" | "tileY">,
+  scene: Pick<PlaySceneContext, "map" | "tileX" | "tileY"> & Partial<Pick<PlaySceneContext, "session">>,
   body: PlayerBody,
   dx: number,
   dy: number
 ): boolean {
+  const project = store.getCurrent();
+  const toX = scene.tileX + dx;
+  const toY = scene.tileY + dy;
   return canMoveFootprint(
-    store.getCurrent(),
+    project,
     scene.map,
     scene.tileX,
     scene.tileY,
     body.footprint,
-    scene.tileX + dx,
-    scene.tileY + dy,
+    toX,
+    toY,
     body.passRows
-  );
+  ) && (!scene.session || !isSpatialPlacementBlocking(
+    project,
+    scene.session,
+    scene.map.id,
+    playerPassageRect(body, toX, toY),
+  ));
 }
 
 /**

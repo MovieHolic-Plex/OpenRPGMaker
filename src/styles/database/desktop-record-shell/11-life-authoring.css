@@ -1,141 +1,170 @@
-/* 생활·몬스터 저작 탭의 플레이 연결 상태, 복구 동선, 레코드 요약. */
+/* 생활·몬스터 저작 탭의 한눈 요약 칩. */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-life-header {
-  display: grid;
-  gap: 8px;
   min-width: 0;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-header .db-record-intro {
-  margin-bottom: 0;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel {
-  background: var(--db-light-bg-surface, var(--bg-surface));
-  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
-  border-radius: 8px;
-  display: grid;
-  gap: 10px;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-summary {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: var(--stroke-1) solid var(--db-studio-border-subtle);
+  border-radius: var(--radius-m);
+  display: flex;
+  gap: var(--space-3);
   min-width: 0;
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel.is-compact {
-  background: var(--db-light-bg-inset, var(--bg-inset));
-  margin: 2px 0 8px;
-  padding: 10px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading {
-  align-items: start;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-eyebrow {
-  background: var(--db-light-accent-muted, var(--accent-muted));
-  border: 1px solid var(--db-light-accent-border, var(--accent-border));
-  border-radius: 999px;
-  color: var(--db-light-accent, var(--accent));
-  font: 700 10px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  letter-spacing: 0.04em;
-  padding: 2px 8px;
-  white-space: nowrap;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading h3,
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading p {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-summary {
+  background: var(--db-studio-inset);
   margin: 0;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading h3 {
-  color: var(--db-light-text-1, var(--text-1));
-  font: 700 14px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading p {
-  color: var(--db-light-text-2, var(--text-2));
-  font: 400 11px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  margin-top: 2px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel.is-compact .db-life-card-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card {
-  align-content: start;
-  background: var(--db-light-bg-raised, var(--bg-raised));
-  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
-  border-radius: 6px;
-  display: grid;
-  gap: 3px;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: var(--space-2);
   min-width: 0;
-  padding: 8px 10px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-action {
-  align-self: end;
-  background: transparent;
-  border: 0;
-  color: var(--db-light-accent, var(--accent));
-  cursor: pointer;
-  font: 700 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  justify-self: start;
-  margin-top: 4px;
-  padding: 2px 0;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-action:focus-visible {
-  border-radius: 3px;
-  outline: 2px solid var(--db-light-focus, var(--focus));
-  outline-offset: 2px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card.is-ready {
-  border-color: color-mix(in srgb, var(--db-light-success, var(--success)) 34%, transparent);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card.is-needs-setup {
-  background: var(--db-light-warning-muted, var(--warning-muted));
-  border-color: color-mix(in srgb, var(--db-light-warning, var(--warning)) 34%, transparent);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-label {
-  color: var(--db-light-text-3, var(--text-3));
-  font: 600 10px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-value {
-  color: var(--db-light-text-1, var(--text-1));
-  font: 700 14px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-heading h3 {
+  color: var(--db-studio-text-1);
+  font: var(--font-weight-bold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  margin: 0;
+  max-width: 10rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-detail {
-  color: var(--db-light-text-2, var(--text-2));
-  font: 400 10px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-media {
+  align-items: center;
+  background: var(--db-studio-accent-soft);
+  border: var(--stroke-1) solid var(--db-studio-accent-border);
+  border-radius: var(--radius-s);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: var(--space-6);
+  justify-content: center;
+  overflow: hidden;
+  width: var(--space-6);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel-art {
+  height: 100%;
+  image-rendering: pixelated;
+  object-fit: cover;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid {
+  display: flex;
+  flex: 1 1 auto;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border: var(--stroke-1) solid var(--db-studio-border-default);
+  border-radius: var(--radius-pill);
+  color: var(--db-studio-text-2);
+  display: flex;
+  flex: 1 1 0;
+  gap: var(--space-1);
+  min-height: var(--space-6);
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-summary .db-life-card {
+  background: var(--db-studio-surface);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card.is-ready {
+  border-color: color-mix(in srgb, var(--db-studio-success) 34%, transparent);
+  color: var(--db-studio-success);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card.is-needs-setup {
+  background: color-mix(in srgb, var(--db-studio-warning) var(--color-mix-ratio-subtle), var(--db-studio-surface));
+  border-color: color-mix(in srgb, var(--db-studio-warning) 34%, transparent);
+  color: var(--db-studio-warning);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body button.db-life-card {
+  cursor: pointer;
+  font-family: var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body button.db-life-card:hover {
+  border-color: var(--db-studio-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card:focus-within,
+.database-modal-backdrop .database-modal-window .database-modal-body button.db-life-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--stroke-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-icon {
+  flex: 0 0 auto;
+  height: var(--space-4);
+  width: var(--space-4);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-label {
+  color: var(--db-studio-text-2);
+  font: var(--font-weight-semibold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-value {
+  color: var(--db-studio-text-1);
+  flex: 0 0 auto;
+  font: var(--font-weight-bold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  margin-left: auto;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-action {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: currentColor;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: var(--space-5);
+  justify-content: center;
+  margin: calc(var(--space-1) * -1);
+  padding: var(--space-1);
+  width: var(--space-5);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-action-icon {
+  height: var(--space-3);
+  width: var(--space-3);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-status {
   align-items: center;
-  color: var(--db-light-text-2, var(--text-2));
+  color: var(--db-studio-text-2);
   display: flex;
   flex-wrap: wrap;
-  font-size: 11px;
-  gap: 6px 12px;
-  margin-bottom: 6px;
+  font-size: var(--font-size-sm);
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-profile-fields,
@@ -144,17 +173,17 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-usage,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-orphan-create {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-prefs,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-responses,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-usage,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-orphan-create {
-  background: var(--db-light-bg-surface, var(--bg-surface));
-  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
-  border-radius: 6px;
-  padding: 10px;
+  background: var(--db-studio-surface);
+  border: var(--stroke-1) solid var(--db-studio-border-subtle);
+  border-radius: var(--radius-s);
+  padding: var(--space-3);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-birthday,
@@ -164,7 +193,7 @@
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-character-gift-add-row select {
@@ -183,7 +212,7 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-characters),
   .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species) {
     display: grid;
-    gap: 8px;
+    gap: var(--space-2);
     grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
     min-height: 0;
@@ -212,19 +241,98 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) > .oprn-record-monster-species {
     grid-row: 3;
   }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body :is(
+    [data-testid="db-characters-workspace"],
+    [data-testid="db-crops-workspace"],
+    [data-testid="db-monster-species-workspace"]
+  ) .db-ws-hero {
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body :is(
+    [data-testid="db-characters-workspace"],
+    [data-testid="db-crops-workspace"],
+    [data-testid="db-monster-species-workspace"]
+  ) .db-ws-hero-media img,
+  .database-modal-backdrop .database-modal-window .database-modal-body :is(
+    [data-testid="db-characters-workspace"],
+    [data-testid="db-crops-workspace"],
+    [data-testid="db-monster-species-workspace"]
+  ) .db-ws-hero-media canvas {
+    height: calc(var(--space-6) - var(--space-1));
+    width: calc(var(--space-6) - var(--space-1));
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body :is(
+    [data-testid="db-characters-workspace"],
+    [data-testid="db-crops-workspace"],
+    [data-testid="db-monster-species-workspace"]
+  ) .db-ws-hero-text {
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    gap: var(--space-2);
+    overflow: hidden;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body :is(
+    [data-testid="db-characters-workspace"],
+    [data-testid="db-crops-workspace"],
+    [data-testid="db-monster-species-workspace"]
+  ) :is(.db-ws-hero-eyebrow, .db-ws-hero-sub) {
+    display: none;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body :is(
+    [data-testid="db-characters-workspace"],
+    [data-testid="db-crops-workspace"],
+    [data-testid="db-monster-species-workspace"]
+  ) .db-ws-hero-title {
+    flex: 0 1 auto;
+    font-size: var(--font-size-sm);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body :is(
+    [data-testid="db-characters-workspace"],
+    [data-testid="db-crops-workspace"],
+    [data-testid="db-monster-species-workspace"]
+  ) :is(.db-ws-hero-tags, .db-character-status) {
+    flex: 0 1 auto;
+    flex-wrap: nowrap;
+    margin: 0;
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 1180px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid,
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel.is-compact .db-life-card-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-summary {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid {
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card {
+    flex: 0 0 12rem;
   }
 }
 
 @media (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid,
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-panel.is-compact .db-life-card-grid {
-    grid-template-columns: minmax(0, 1fr);
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-card {
+    min-width: 0;
   }
 }
 

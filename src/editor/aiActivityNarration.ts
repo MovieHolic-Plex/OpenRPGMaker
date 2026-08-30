@@ -62,6 +62,7 @@ const ACTIONS = {
   export: forms("게임을 내보내는 중", "게임을 내보냈어요", "게임 내보내기를 실패했어요"),
   play: forms("게임을 시험하는 중", "게임을 시험했어요", "게임 시험을 실패했어요"),
   history: forms("편집 내용을 되돌리는 중", "편집 내용을 되돌렸어요", "편집 내용 되돌리기를 실패했어요"),
+  focusView: forms("화면을 옮기는 중", "화면을 옮겼어요", "화면을 옮기지 못했어요"),
 } as const;
 
 const READ_ONLY_MAP = new Set([
@@ -121,6 +122,7 @@ addFamily(ACTIONS.resource, "upsert_resource delete_resource upsert_resource_pro
 addFamily(ACTIONS.export, "export_game");
 addFamily(ACTIONS.play, "play_walkthrough run_scene_test");
 addFamily(ACTIONS.history, "revert_last_edit");
+addFamily(ACTIONS.focusView, "focus_editor_view");
 
 function readOnlyAction(toolName: string): ActionForms | undefined {
   if (READ_ONLY_MAP.has(toolName)) return ACTIONS.inspectMap;

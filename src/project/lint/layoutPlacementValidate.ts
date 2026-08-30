@@ -52,6 +52,13 @@ export function validateLayoutPlacement(project: Project, opts: LayoutValidateOp
   return issues;
 }
 
+/**
+ * error 등급만 골라낸다. **AI 적용 경로는 이 함수를 쓰지 않는다** — 영역작업(AI) 뒤의 검증게이트가
+ * 배제되면서 error 로 적용을 막는 코드는 전부 없어졌다(openwiki/editor-ai-panel.md).
+ * 남은 소비자는 저작 스크립트·회귀 테스트의 품질 게이트다: scripts/wipe-and-rebuild-lake-village.mts,
+ * test/lakeVillageRebuildFinal.test.ts, test/sampleAdventureLayoutGate.test.ts.
+ * 이 함수를 다시 편집기 적용 경로에 배선하지 말 것.
+ */
 export function layoutValidationBlocking(issues: readonly LintIssue[]): readonly LintIssue[] {
   return issues.filter((issue) => issue.severity === "error");
 }
@@ -93,7 +100,7 @@ export function formatLayoutValidationSummary(issues: readonly LintIssue[]): str
   const warnings = issues.filter((i) => i.severity === "warning").length;
   const head = issues.slice(0, 3).map((i) => i.message).join(" · ");
   const more = issues.length > 3 ? ` 외 ${issues.length - 3}건` : "";
-  // error 가 없으면 적용을 막지 않았다 — "실패" 로 쓰면 깔린 배치를 사용자가 안 깐린 으로 오인한다.
+  // error 가 없으면 적용을 막지 않았다 — "실패" 로 쓰면 깔린 배치를 사용자가 안 깔린 것으로 오인한다.
   const label = errors > 0 ? `배치 검증 실패(error ${errors}/warning ${warnings})` : `배치 검증 경고(warning ${warnings})`;
   return `${label}: ${head}${more}`;
 }

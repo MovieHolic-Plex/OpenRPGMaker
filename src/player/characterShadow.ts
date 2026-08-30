@@ -22,7 +22,14 @@ export const CHARACTER_SHADOW_DEPTH_BASE = 50_000;
 
 /** 접지 시(리프트 0) 그림자 지름 대 타일 비율. */
 const SHADOW_BASE_SCALE = 0.75;
-/** 이 높이에서 그림자가 최소 크기까지 줄어든다. 2 칸이면 제자리 홉과 보스 낙하가 둘 다 자연스럽다. */
+/**
+ * 기준 높이를 안 주면 그림자가 최소 크기까지 줄어드는 높이. 제자리 홉(12px)의 기본값이다.
+ *
+ * ⚠️ 이 값을 그대로 **낙하**에 쓰면 정보가 죽는다(실측): 기본 낙하 128px 에서 리프트가 32px
+ * 안으로 들어오는 건 마지막 13% 구간(620ms 중 83ms)뿐이라, 나머지 87% 동안 그림자가 최소
+ * 크기·최소 알파에 붙어 있어 "다가온다" 를 전혀 못 준다. 그래서 호출부가 그 체공의 **시작
+ * 높이**를 기준으로 넘겨 전 구간에서 자라게 한다.
+ */
 const SHADOW_FADE_LIFT_PX = TILE_SIZE * 2;
 const SHADOW_MIN_SCALE = 0.35;
 const SHADOW_MAX_ALPHA = 0.4;
@@ -87,14 +94,23 @@ export function installCharacterShadowTexture(scene: ShadowSceneContext): void {
   scene.textures.addCanvas(CHARACTER_SHADOW_TEXTURE_KEY, canvas);
 }
 
+/**
+ * 리프트를 0..1 로 정규화한다. `referenceLiftPx` 는 그 체공의 시작 높이(=최고점) 이고,
+ * 하한을 기본 페이드 범위로 둔다 — 짧은 홉에서 기존 곡선과 값이 같게 유지된다.
+ */
+function shadowLiftRatio(liftPx: number, referenceLiftPx?: number): number {
+  const reference = Number.isFinite(referenceLiftPx) ? Math.max(SHADOW_FADE_LIFT_PX, referenceLiftPx as number) : SHADOW_FADE_LIFT_PX;
+  return Math.max(0, Math.min(1, liftPx / reference));
+}
+
 /** 높이가 커지면 그림자는 작고 옅어진다. 순수 함수라 단위 테스트로 곡선을 잠근다. */
-export function shadowScaleForLift(liftPx: number): number {
-  const t = Math.max(0, Math.min(1, liftPx / SHADOW_FADE_LIFT_PX));
+export function shadowScaleForLift(liftPx: number, referenceLiftPx?: number): number {
+  const t = shadowLiftRatio(liftPx, referenceLiftPx);
   return SHADOW_BASE_SCALE + (SHADOW_MIN_SCALE - SHADOW_BASE_SCALE) * t;
 }
 
-export function shadowAlphaForLift(liftPx: number): number {
-  const t = Math.max(0, Math.min(1, liftPx / SHADOW_FADE_LIFT_PX));
+export function shadowAlphaForLift(liftPx: number, referenceLiftPx?: number): number {
+  const t = shadowLiftRatio(liftPx, referenceLiftPx);
   return SHADOW_MAX_ALPHA + (SHADOW_MIN_ALPHA - SHADOW_MAX_ALPHA) * t;
 }
 
@@ -107,7 +123,8 @@ export function syncCharacterShadow(
   key: string,
   groundX: number,
   groundY: number,
-  liftPx: number
+  liftPx: number,
+  referenceLiftPx?: number
 ): void {
   if (liftPx <= 0) {
     hideCharacterShadow(scene, key);
@@ -121,10 +138,10 @@ export function syncCharacterShadow(
     shadow.setOrigin(0.5, 0.5);
     scene.characterShadows.set(key, shadow);
   }
-  const scale = shadowScaleForLift(liftPx);
+  const scale = shadowScaleForLift(liftPx, referenceLiftPx);
   shadow.setPosition(groundX, groundY - SHADOW_TEXTURE_HEIGHT * scale * 0.5);
   shadow.setScale(scale, scale);
-  shadow.setAlpha(shadowAlphaForLift(liftPx));
+  shadow.setAlpha(shadowAlphaForLift(liftPx, referenceLiftPx));
   shadow.setDepth(CHARACTER_SHADOW_DEPTH_BASE + groundY);
   shadow.setVisible(true);
 }

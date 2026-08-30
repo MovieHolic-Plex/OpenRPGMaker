@@ -1,5 +1,6 @@
 import { switchDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
 import { databasePanelRootFrom } from "@/editor/panels/databaseLifeUi";
+import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { el } from "@/util/dom";
 
 export type BattleStudioTab = "animations" | "battleScreen" | "battleCommands" | "terrain";
@@ -20,17 +21,13 @@ export function battleStudioNav(active: BattleStudioTab): HTMLElement {
   });
 }
 
-export function battleStudioHeading(active: BattleStudioTab, title: string, description: string): HTMLElement {
+export function battleStudioHeading(active: BattleStudioTab, title: string, _description: string): HTMLElement {
   return el("header", {
     class: "db-battle-studio-heading",
     children: [
       el("div", {
         class: "db-battle-studio-title-block",
-        children: [
-          el("span", { class: "db-battle-studio-kicker", text: "전투 스튜디오" }),
-          el("h3", { text: title }),
-          el("p", { text: description }),
-        ],
+        children: [el("h3", { text: title })],
       }),
       battleStudioNav(active),
     ],
@@ -46,7 +43,7 @@ function battleStudioNavButton(id: BattleStudioTab, label: string, active: Battl
       ...(isActive ? { "aria-current": "page" } : {}),
     },
     dataset: { testid: `db-battle-studio-nav-${id}` },
-    text: label,
+    children: [makeDatabaseTabIcon(id as DatabaseTab), el("span", { text: label })],
     on: {
       click: (event) => {
         if (isActive) return;

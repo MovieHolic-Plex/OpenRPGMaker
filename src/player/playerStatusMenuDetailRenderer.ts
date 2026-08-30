@@ -97,7 +97,11 @@ export function renderStatusMenuDetailPanel(
     if (actionIndex !== undefined) enabledActionIndex += 1;
   }
   panel.append(list);
-  if (detail.hint) panel.append(el("div", { class: "status-menu-detail-hint", text: detail.hint }));
+  // 조작 가능한 목록에서는 힌트 줄을 그리지 않는다 — 힌트가 행 하나 몫(14px)을 먹어
+  // 장비 슬롯 5개 중 3.5개만 보이고 넷째 행이 가로로 잘렸다(실측). 안내는 푸터가 맡는다.
+  if (detail.hint && !interactiveList) {
+    panel.append(el("div", { class: "status-menu-detail-hint", text: detail.hint }));
+  }
   return panel;
 }
 
@@ -142,15 +146,15 @@ function renderDetailEntry(options: {
       });
   if (selected) row.classList.add("selected");
   if (entry.icon) {
-    row.append(renderDetailEntryIcon(project, entry.icon), renderDetailText(entry));
+    row.append(renderDetailEntryIcon(project, entry.icon), renderDetailText(entry, inlineDescription));
     return row;
   }
   if (entry.face) {
     row.classList.add("with-face");
-    row.append(renderDetailFace(project, entry.face), renderDetailText(entry));
+    row.append(renderDetailFace(project, entry.face), renderDetailText(entry, inlineDescription));
     return row;
   }
-  row.append(...renderDetailTextChildren(entry));
+  row.append(...renderDetailTextChildren(entry, inlineDescription));
   return row;
 }
 
@@ -166,19 +170,25 @@ function detailEntryDataset(entry: StatusMenuDetailEntry, actionIndex?: number):
   };
 }
 
-function renderDetailText(entry: StatusMenuDetailEntry): HTMLElement {
+function renderDetailText(entry: StatusMenuDetailEntry, inlineDescription: boolean): HTMLElement {
   return el("span", {
     class: "status-menu-detail-copy",
-    children: renderDetailTextChildren(entry),
+    children: renderDetailTextChildren(entry, inlineDescription),
   });
 }
 
-function renderDetailTextChildren(entry: StatusMenuDetailEntry): HTMLElement[] {
+// 조작 가능한 행은 설명 노드를 아예 만들지 않는다. 만들어 두고 CSS 로 접으면
+// 실측처럼 둘째 줄이 생겨 행 높이가 두 배가 되고(실측: 88px vs 54px) 81px 목록에
+// 아이템 7개 중 2개만 온전히 들어갔다 — 셋째 행은 문장 중간에서 잘렸다.
+// 전문은 푸터(status-menu-message)가 보여주므로 행 안의 사본은 높이만 먹는다.
+function renderDetailTextChildren(entry: StatusMenuDetailEntry, inlineDescription: boolean): HTMLElement[] {
   const children = [
     el("span", { class: "status-menu-detail-label", text: entry.label }),
     el("span", { class: "status-menu-detail-value", text: entry.value }),
   ];
-  if (entry.description) children.push(el("span", { class: "status-menu-detail-description", text: entry.description }));
+  if (entry.description && inlineDescription) {
+    children.push(el("span", { class: "status-menu-detail-description", text: entry.description }));
+  }
   return children;
 }
 

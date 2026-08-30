@@ -11,9 +11,16 @@
 import { playAudioCommand } from "@/player/audio";
 import {
   applyCharacterLift,
+  applyHopScale,
   characterHopLiftPx,
   clearCharacterLift,
+  hopAirScale,
+  hopBaseScaleOf,
+  hopLandingSquashScale,
+  HOP_SCALE_NEUTRAL,
+  HOP_SQUASH_MS,
   type CharacterHop,
+  type HopScale,
   type HopSprite,
 } from "@/player/characterHop";
 import {
@@ -30,7 +37,16 @@ import {
 } from "@/player/characterShadow";
 import { store } from "@/project/store";
 
-export type HopVisualScene = Partial<ShadowSceneContext & LandingSceneContext>;
+/**
+ * 스쿼시 기준 배율 풀. 그림자 풀과 같은 키를 쓴다.
+ *
+ * 왜 풀에 담는가: 스트레치는 매 프레임 `base × factor` 로 덮어쓰므로 기준을 프레임마다 스프라이트에서
+ * 읽으면 직전 프레임의 늘어난 값이 기준이 되어 계속 커진다. 체공 시작 프레임에 한 번 붙잡아
+ * 두고, 접지·중단에서 그 값으로 되돌린 뒤 버린다.
+ */
+export type HopScalePool = { characterHopScales?: Map<string, HopScale> };
+
+export type HopVisualScene = Partial<ShadowSceneContext & LandingSceneContext> & HopScalePool;
 
 /** 그림자 풀 키. 주인공은 고정, 이벤트는 id — 스프라이트 풀과 1:1 이다. */
 export const PLAYER_SHADOW_KEY = "__player";
@@ -62,12 +78,36 @@ export function applyHopFrame(
   progress: number
 ): number {
   const liftPx = characterHopLiftPx(hop, progress);
+  // 스케일 먼저, 리프트 나중 — applyCharacterLift 가 그 시점 scaleY 로 원점을 나눈다.
+  // 배율은 스트레치(속도) × 원근(높이) 를 곱한 값이다 — hopAirScale 참고.
+  applyHopScale(sprite, rememberHopBaseScale(scene, key, sprite), hopAirScale(hop, progress));
   applyCharacterLift(sprite, liftPx);
-  if (shadowCapable(scene)) syncCharacterShadow(scene, key, groundX, groundY, liftPx);
+  // 그림자 기준은 이번 체공의 시작 높이다 — 8 칸 낙하에서 전 구간 자라게 하는 값.
+  if (shadowCapable(scene)) syncCharacterShadow(scene, key, groundX, groundY, liftPx, hop.liftPx);
   return liftPx;
 }
 
-/** 접지 프레임: 리프트 0 복귀 + 그림자 숨김 + 착지 임팩트 1 회. */
+function rememberHopBaseScale(scene: HopVisualScene, key: string, sprite: HopSprite | undefined): HopScale {
+  scene.characterHopScales ??= new Map();
+  const known = scene.characterHopScales.get(key);
+  if (known) {
+    // 눌림 트윈이 아직 살아 있으면 새 체공의 배율과 동시에 기록해 흔들린다.
+    scene.tweens?.killTweensOf?.(sprite);
+    return known;
+  }
+  const base = hopBaseScaleOf(sprite);
+  scene.characterHopScales.set(key, base);
+  return base;
+}
+
+/** 기준 배율을 꺼내면서 풀에서 지운다. 없으면 스프라이트의 현재 배율(=건드린 적 없음)이 기준이다. */
+function takeHopBaseScale(scene: HopVisualScene, key: string, sprite: HopSprite | undefined): HopScale {
+  const known = scene.characterHopScales?.get(key);
+  scene.characterHopScales?.delete(key);
+  return known ?? hopBaseScaleOf(sprite);
+}
+
+/** 접지 프레임: 리프트 0 복귀 + 배율 복귀 + 그림자 숨김 + 착지 임팩트(스쿼시 포함) 1 회. */
 export function finishHop(
   scene: HopVisualScene,
   key: string,
@@ -76,16 +116,59 @@ export function finishHop(
   groundY: number,
   hop: CharacterHop
 ): void {
+  const scalePool = scene.characterHopScales;
+  const base = takeHopBaseScale(scene, key, sprite);
+  applyHopScale(sprite, base, HOP_SCALE_NEUTRAL);
   clearCharacterLift(sprite);
   hideCharacterShadow(scene, key);
   const plan = landingImpactPlan(hop, { reducedMotion: prefersReducedMotion() });
   if (!plan) return;
   if (!landingCapable(scene)) return;
   playLandingImpact(scene, plan, groundX, groundY, playLandingSe);
+  // 스쿼시는 화면 모션과 같은 급이라 임팩트(dust) 와 운명을 같이 한다 — reduced-motion 이면 빠진다.
+  if (!plan.dust) return;
+  // 트윈이 HOP_SQUASH_MS 동안 스프라이트를 눌러 두는데, 경로는 !scene.playerHop 이면 다음
+  // 프레임에 바로 다음 체공을 시작한다. 기준을 풀에서 지운 채로 두면 rememberHopBaseScale 이
+  // 캐시 미스로 눌린 배율을 읽어 영구 기준으로 굳힌다 — 남은 맵 동안 캐릭터가 찌그러진다.
+  // 트윈을 끊는 것만으로는 부족하다(스프라이트가 눌린 값에 그대로 머문다). 기준을 남겨 둔다.
+  if (playLandingSquash(scene, sprite, base, hop)) scalePool?.set(key, base);
 }
 
-/** 중단 경로(맵 전이, 이동 취소, 스프라이트 소멸) — 임팩트 없이 접지만 되돌린다. */
+/**
+ * 착지 눌림 — 즉시 눌러 놓고 원래 배율로 튀어 돌아온다. 트윈이 끝나기 전에 다음 체공이 시작되면
+ * `rememberHopBaseScale` 이 눌린 배율을 기준으로 잡을 수 있으므로 시작에서 트윈을 끊는다.
+ */
+function playLandingSquash(
+  scene: LandingSceneContext,
+  sprite: HopSprite | undefined,
+  base: HopScale,
+  hop: CharacterHop
+): boolean {
+  if (!sprite?.setScale) return false;
+  const squash = hopLandingSquashScale(hop);
+  if (squash.y >= 1) return false;
+  applyHopScale(sprite, base, squash);
+  scene.tweens.add({
+    targets: sprite,
+    scaleX: base.x,
+    scaleY: base.y,
+    duration: HOP_SQUASH_MS,
+    ease: "Back.easeOut",
+    onComplete: () => applyHopScale(sprite, base, HOP_SCALE_NEUTRAL),
+  });
+  return true;
+}
+
+/** 맵 전이·런타임 리셋 — 스프라이트가 통째로 사라지므로 기준 배율 풀도 함께 비운다. */
+export function clearAllHopScales(scene: HopScalePool): void {
+  scene.characterHopScales?.clear();
+}
+
+/** 중단 경로(맵 전이, 이동 취소, 스프라이트 소멸) — 임팩트 없이 접지·배율만 되돌린다. */
 export function abortHop(scene: HopVisualScene, key: string, sprite: HopSprite | undefined): void {
+  const base = takeHopBaseScale(scene, key, sprite);
+  scene.tweens?.killTweensOf?.(sprite);
+  applyHopScale(sprite, base, HOP_SCALE_NEUTRAL);
   clearCharacterLift(sprite);
   destroyCharacterShadow(scene, key);
 }

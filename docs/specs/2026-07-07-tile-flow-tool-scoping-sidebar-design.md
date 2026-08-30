@@ -35,7 +35,7 @@
 LLM 에 **70개** 노출(등록 99, deprecated 29). deprecated 는 옛 배치 4종·palette 뿐이고,
 v3 와 경쟁하는 옛 타일 지식 툴이 살아있다: `tile_group`·`set_group_layout`·
 `suggest_group_from_range`·`tile_metadata`·`tile_cluster_rule`·`render_group_sample`·
-`show_tile_grid`·`show_tiles`. minimax-m3 같은 작은 모델은 이 70개 안에서 v3 정공법 대신 옛 툴로 샌다.
+`show_tile_grid`·`show_tiles`. 작은 모델은 이 70개 안에서 v3 정공법 대신 옛 툴로 샌다.
 
 ### 실패 C — 사이드바 IA 붕괴
 
@@ -179,7 +179,7 @@ v3 와 경쟁하는 옛 타일 지식 툴이 살아있다: `tile_group`·`set_gr
 - **T4 (스코핑):** `toOpenAiTools({mode:"tile"})` 가 ~12개만, 옛 타일 툴 0개 노출.
   `mode:"event"` 는 이벤트 툴 포함·타일 프리미티브 제외. deprecated 는 어떤 모드에서도 0.
 - **T5 (모달):** `showConfirm` resolve(true/false) 동작; 마이그레이션된 호출부가 await 로 분기.
-- **T6 (실측, 간단):** minimax-m3 로 "벽 깔아줘" → propose → 수락(원클릭) → lowerTiles 벽 확인.
+- **T6 (실측, 간단):** 기본 모델로 "벽 깔아줘" → propose → 수락(원클릭) → lowerTiles 벽 확인.
   (기존 v3d 드라이버 확장, 스크린샷 1장.)
 
 전체 `npx tsc --noEmit` + `npm test` 그린 유지(현재 2221 passed / 1 skipped 기준 증가).

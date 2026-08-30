@@ -16,8 +16,11 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
 ## Required pre-edit read order
 
 1. Read this file.
-2. Read `openwiki/quickstart.md` for the repo shape and first files to inspect.
-3. Read the focused page for the area being changed:
+2. Read `openwiki/quickstart.md` — 환경 보정, **게이트와 그 기준선 실측값**, 기능→진입 파일 표.
+   이 절차를 건넌 에이전트는 자기 환경 함정을 생소한 불량 코드로 오진한다.
+3. Read `openwiki/INDEX.md` — 위키 41쪽의 크기·절 좌표·주의 표지(통째 읽기가 잘리는 7쪽, 모지바키 9쪽,
+   없는 파일을 가리키는 참조 60여 건). 필요한 절만 줄 번호로 잘라 읽는다 — 위키 전체는 약 27만 토큰이다.
+4. Read the focused page for the area being changed:
    - Editor pre-edit routing & cautions (read first): `openwiki/editor-pre-edit-routing.md`
    - Editor observability (mutation 계측 초크포인트, 편집 감사 로그, 오류 트랩, 디버깅 레시피): `openwiki/editor-observability.md`
    - Editor event authoring: `openwiki/editor-event-authoring.md`, `openwiki/editor-event-commands.md`, `openwiki/editor-event-command-fixes.md`
@@ -99,7 +102,8 @@ For each project that uses this pattern, keep:
 
 - `AGENTS.md` at repo root: tells AI systems where the local wiki lives and what to read first.
 - `openwiki/PROJECT_WIKI.md`: project-specific AI entry point.
-- `openwiki/quickstart.md`: repo shape and common starting files.
+- `openwiki/quickstart.md`: 에이전트의 첫 10분 — 환경·게이트 기준선·기능→파일 라우터.
+- `openwiki/INDEX.md`: 생성 항해 색인(`npm run openwiki:index`) — 포기하지 말고 재생성해라.
 - `openwiki/architecture.md`: ownership boundaries and boot/runtime structure.
 - `openwiki/editor-workflows.md`: slim index to editor topic pages.
 - `openwiki/runtime-and-data.md`: slim index to runtime topic pages.

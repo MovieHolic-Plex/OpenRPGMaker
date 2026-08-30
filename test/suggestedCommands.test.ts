@@ -64,6 +64,7 @@ describe("suggestedCommands", () => {
       "dirt-path": "terrain",
       "scatter-rocks": "polish",
       "lantern-mood": "mood",
+      "blend-surroundings": "polish",
     };
     for (const command of SUGGESTED_REGION_COMMANDS) {
       expect(SVG_ICON_NAMES).toContain(command.icon);

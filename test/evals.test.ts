@@ -8,7 +8,7 @@ import { scoreProject } from "@/evals/goldenTask";
 import { GOLDEN_TASKS, GOLDEN_SOLUTIONS, GOLDEN_INN, GOLDEN_INN_SOLUTION } from "@/evals/goldenTasks";
 import { llmSolver, runGoldenSuite, runGoldenTask, toolSequenceSolver } from "@/evals/runner";
 
-const TEST_CONFIG: AiConfig = { baseUrl: "https://example.test/v1", model: "minimax/minimax-m3", apiKey: "test", maxToolCalls: 5, maxTokens: 2000 };
+const TEST_CONFIG: AiConfig = { baseUrl: "https://example.test/v1", model: "stub-model", apiKey: "test", maxToolCalls: 5, maxTokens: 2000 };
 
 describe("evals", () => {
   it("모든 골든 태스크가 정답 시퀀스로 통과한다(오프라인)", async () => {

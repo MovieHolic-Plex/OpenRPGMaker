@@ -9,6 +9,7 @@ export type CutsceneBeat =
   | CutsceneCameraBeat
   | CutscenePictureBeat
   | CutsceneMusicBeat
+  | CutsceneFadeBeat
   | CutsceneTintBeat
   | CutsceneFlashBeat
   | CutsceneShakeBeat
@@ -23,6 +24,8 @@ export type CutsceneSayBeat = {
   readonly face?: Partial<FaceGraphic>;
   readonly text?: string;
   readonly lines?: readonly string[];
+  readonly emotion?: string;
+  readonly autoAdvance?: boolean;
 };
 
 export type CutsceneMoveActorBeat = {
@@ -71,6 +74,13 @@ export type CutsceneMusicBeat = {
   readonly resourceId?: string;
   readonly loop?: boolean;
   readonly durationMs?: number;
+};
+
+export type CutsceneFadeBeat = {
+  readonly kind: "fade";
+  readonly direction: "in" | "out";
+  readonly durationMs?: number;
+  readonly wait?: boolean;
 };
 
 export type CutsceneTintBeat = {
@@ -215,6 +225,8 @@ function compileBeat(
       return compilePictureBeat(beat, state, options.forceNonBlocking);
     case "music":
       return compileMusicBeat(beat);
+    case "fade":
+      return compileFadeBeat(beat, options.forceNonBlocking);
     case "tint":
       return compileTintBeat(beat, state, options.forceNonBlocking);
     case "flash":
@@ -243,7 +255,15 @@ function compileSayBeat(beat: CutsceneSayBeat): Command[] {
     });
   }
   const lines = beat.lines?.length ? beat.lines : beat.text ? [beat.text] : [];
-  for (const body of lines) commands.push({ kind: "text", speaker: beat.speaker, body });
+  for (const body of lines) {
+    commands.push({
+      kind: "text",
+      speaker: beat.speaker,
+      body,
+      ...(beat.emotion !== undefined ? { emotion: beat.emotion } : {}),
+      ...(beat.autoAdvance !== undefined ? { autoAdvance: beat.autoAdvance } : {}),
+    });
+  }
   return commands;
 }
 
@@ -347,6 +367,18 @@ function compileMusicBeat(beat: CutsceneMusicBeat): Command[] {
   return [{ kind: "playAudio", resourceId: beat.resourceId ?? "", loop: beat.action === "bgm" ? true : beat.loop ?? false }];
 }
 
+function compileFadeBeat(beat: CutsceneFadeBeat, forceNonBlocking: boolean): Command[] {
+  const ms = durationMs(beat.durationMs, 300);
+  return [
+    m2Command("Screen Effect", {
+      effect: beat.direction === "out" ? "fadeOut" : "fadeIn",
+      value: "",
+      durationMs: ms,
+    }),
+    ...(!forceNonBlocking && beat.wait === true && ms > 0 ? [{ kind: "wait", ms } satisfies Command] : []),
+  ];
+}
+
 function compileTintBeat(beat: CutsceneTintBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
   state.tint = { color: beat.color, value: beat.value };
   const commands: Command[] = [
@@ -382,6 +414,7 @@ function needsWaitAllMovement(beat: CutsceneBeat): boolean {
 function parallelWaitMs(beat: CutsceneBeat): number {
   if (beat.kind === "picture" && (beat.wait === true || beat.waitForPicture === true)) return durationMs(beat.durationMs, 0);
   if (beat.kind === "camera" && beat.wait === true) return durationMs(beat.durationMs, 300);
+  if (beat.kind === "fade" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "tint" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "wait") return Math.max(0, Math.round(beat.ms));
   if (beat.kind === "parallel") return Math.max(0, ...beat.beats.map(parallelWaitMs));
@@ -551,6 +584,7 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "camera",
   "picture",
   "music",
+  "fade",
   "tint",
   "flash",
   "shake",

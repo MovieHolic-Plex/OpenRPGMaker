@@ -11,6 +11,8 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
 
+let releaseCompaction: (() => void) | null = null;
+
 const assistantMock = vi.hoisted(() => {
   const sentMessages: string[] = [];
 
@@ -24,6 +26,26 @@ const assistantMock = vi.hoisted(() => {
     }> {
       sentMessages.push(text);
       return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
+    }
+
+    getContextUsage(): Record<string, unknown> {
+      return {
+        estimateTokens: 1_000,
+        usageTokens: 0,
+        contextTokens: 1_000,
+        contextWindow: 216_384,
+        reserveTokens: 16_384,
+        thresholdTokens: 200_000,
+        ratio: 0.005,
+        overThreshold: false,
+      };
+    }
+
+    /** 수동 압축 = 요약 LLM 콜 1회. 끝나는 시점을 테스트가 잡을 수 있게 지연 해제한다. */
+    compactNow(_onEvent: (event: unknown) => void): Promise<{ kind: "skipped"; reason: string }> {
+      return new Promise((resolve) => {
+        releaseCompaction = () => resolve({ kind: "skipped", reason: "테스트" });
+      });
     }
 
     getAuditEntries(): [] {
@@ -145,6 +167,7 @@ async function idle(extraMs = 50): Promise<void> {
 }
 
 beforeEach(() => {
+  releaseCompaction = null;
   assistantMock.reset();
   store.replace(createBlankProject());
   restoreDom = installFakeDom();
@@ -292,5 +315,37 @@ describe("유리 도크 본문 접힘(fold)", () => {
       await idle();
       expect(panel.classList.contains("is-glass-folded")).toBe(false);
     }
+  });
+});
+
+describe("작동 중에는 접히지 않는다", () => {
+  /**
+   * 감독 지시(2026-08-30): "시간이 지나면 닫히는 건 알겠는데, 이게 작동중일 때도 닫히니까 문제임."
+   *
+   * 옛 가드는 진행 중인 **턴**만 봤다. 수동 맥락 압축은 턴 밖에서 도는 요약 LLM 콜이라
+   * (turnBusy=false, is-turn-running 없음) 직전 턴이 걸어 둔 8초 타이머가 그대로 터져 요약이
+   * 도는 중에 대화 본문이 접혔다. 접힘은 .ai-chat-body 를 통째로 접으므로 진행 상황과 결과가
+   * 함께 사라진다.
+   */
+  it("맥락 압축이 도는 동안에는 유휴 시간이 지나도 접지 않는다", async () => {
+    const panel = renderPanel("glass");
+    await runTurn("지도 그려줘");
+    expect(panel.classList.contains("is-glass-folded")).toBe(false);
+
+    const compact = findByTestId(panel, "ai-context-compact");
+    expect(compact).toBeTruthy();
+    expect(compact?.disabled).toBe(false);
+    compact?.click();
+    await flushAsync();
+    expect(typeof releaseCompaction).toBe("function");
+
+    await idle();
+    expect(panel.classList.contains("is-glass-folded")).toBe(false);
+
+    // 압축이 끝나면 유휴 접힘은 다시 예약된다 — 기능을 죽이는 게 아니라 미루는 것이다.
+    releaseCompaction?.();
+    await flushAsync();
+    await idle();
+    expect(panel.classList.contains("is-glass-folded")).toBe(true);
   });
 });

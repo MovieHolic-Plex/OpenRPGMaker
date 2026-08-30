@@ -816,10 +816,21 @@
 /* 포인터 리스너와 testid 가 이 요소에 붙는다 — 캔버스와 픽셀 단위로 같은 상자여야
    좌표로 판정하는 테스트가 칸 밖을 짚지 않는다. touch-action 은 상속되지 않으므로
    여기에도 준다. 안 주면 터치 드래그가 칠하기 대신 스크롤로 먹힌다. */
+/* 킷의 경계. 캔버스 바탕(#101318)과 그 바깥 스크롤 칸이 둘 다 어두워서, 테두리가 없으면
+   "이 구조물이 어디서 끝나는지"를 눈으로 알 수 없다 — 빈 킷에서는 화면 전체가 검정 한 장이었다.
+   덧그림 레이어는 여기에 점선 강조를 덧씌운다(아래). */
 .structure-kit-editor-canvas-stage {
   position: relative;
   line-height: 0;
   touch-action: none;
+  outline: 1px solid rgb(255 255 255 / 0.32);
+}
+
+/* 덧그림 레이어를 칠하는 중이라는 신호. 예전에는 캔버스에 layer-lower/layer-upper 를
+   붙였지만 그 클래스에 CSS 정의가 아예 없어서 아무 표시도 나지 않았다(죽은 클래스). */
+.structure-kit-editor-canvas-stage[data-layer="upper"] {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
 }
 
 .structure-kit-editor-canvas {
@@ -828,7 +839,12 @@
 }
 
 /* 격자선. 캔버스에 직접 긋지 않는 이유는 renderTileCellsToCanvas 가 타일 이미지를
-   비동기로 로드해 그 프레임에 배경부터 다시 칠하기 때문이다 — 그러면 선이 지워진다. */
+   비동기로 로드해 그 프레임에 배경부터 다시 칠하기 때문이다 — 그러면 선이 지워진다.
+
+   선 색을 토큰으로 두지 않는 이유(의도적 비토큰): 이 선이 얹히는 바탕은 테마가 아니라
+   kitRender.ts 가 캔버스에 직접 칠하는 #101318 고정색이다. 예전에는 var(--border-strong)
+   (= rgba(15,23,42,.461), 거의 검정)을 써서 **격자를 켜도 아무것도 보이지 않았다** — 12×10
+   빈 킷 스크린샷이 완전한 검정이었고, 그래서 칸 경계를 못 보고 그리게 됐다. */
 .structure-kit-editor-grid-lines {
   position: absolute;
   inset: 0;
@@ -836,21 +852,14 @@
   background-image:
     repeating-linear-gradient(
       to right,
-      var(--border-strong) 0 1px,
+      rgb(255 255 255 / 0.18) 0 1px,
       transparent 1px var(--structure-kit-cell, 48px)
     ),
     repeating-linear-gradient(
       to bottom,
-      var(--border-strong) 0 1px,
+      rgb(255 255 255 / 0.18) 0 1px,
       transparent 1px var(--structure-kit-cell, 48px)
     );
-}
-
-/* 덧그림 레이어를 칠하는 중이라는 신호. 예전에는 캔버스에 layer-lower/layer-upper 를
-   붙였지만 그 클래스에 CSS 정의가 아예 없어서 아무 표시도 나지 않았다(죽은 클래스). */
-.structure-kit-editor-canvas-stage[data-layer="upper"] {
-  outline: 2px dashed var(--accent);
-  outline-offset: 2px;
 }
 
 .structure-kit-editor-preview {
@@ -908,6 +917,15 @@
   white-space: nowrap;
 }
 
+/* 탭 전환은 노드를 떼지 않고 `hidden` 을 토글한다(재부모를 하면 팔레트 스크롤이 튀니까).
+   그런데 `[hidden] { display: none }` 은 **UA 스타일시트** 이라 이 파일의
+   `.structure-kit-editor-palette { display: grid }` 같은 설정에 그냥 진다 — 수자적으로
+   숨기려는 칸이 계속 보이게 된다. 이 장에서만 해당 특이도를 넘어 못박는다
+   (같은 함정을 event-editor.part-4.css:1050 에서 이미 겪었다). */
+.structure-kit-editor-shell [hidden] {
+  display: none;
+}
+
 .structure-kit-editor-filter {
   display: flex;
   flex-direction: column;
@@ -938,6 +956,7 @@
 }
 
 .structure-kit-editor-swatch {
+  position: relative;
   width: 26px;
   height: 26px;
   padding: 0;
@@ -946,6 +965,21 @@
   background-repeat: no-repeat;
   cursor: pointer;
   image-rendering: pixelated;
+}
+
+/* 이미 이 구조물에 쓰인 타일. 색만 신호로 두면 타일 그림 자체가 알록달록해서 묻힌다 —
+   흰 테두리를 두른 점을 얹어 어떤 타일 그림 위에서도 보이게 한다(title 에도 "사용 중"을 적는다).
+   비토큰 색인 이유는 격자선과 같다: 얹히는 바탕이 임의의 픽셀 아트다. */
+.structure-kit-editor-swatch.is-used::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.9);
 }
 
 .structure-kit-editor-swatch.active {
@@ -1032,10 +1066,40 @@
 
 .structure-kit-editor-chip:focus-visible { outline: var(--focus-outline); }
 
+/* [안 쓴 타일만] 체크박스 줄. 분류칩과 배타가 되면 안 되므로 칩이 아니라 체크박스다 —
+   "집" 분류를 보면서 안 쓴 것만 걸러내는 것이 실제 저작 흐름이다. */
+.structure-kit-editor-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.structure-kit-editor-unused-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.structure-kit-editor-used-count {
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
 /* 필터에 안 걸린 칸은 숨기지 않고 흐리게 — 480칸의 위치가 원본 시트의 좌표라
    숨기면 "어디쯤 타일"인지 감각이 깨진다. 맵 팔레트의 커스텀 아틀라스와 같은 판단. */
 .structure-kit-editor-swatch.is-filtered-out {
   opacity: 0.22;
+}
+
+/* 검색·분류에 안 걸렸어도 **이미 쓴 타일**은 알아볼 수 있어야 한다. element opacity 는
+   ::after 표식까지 함까 흐려서 0.22 에서는 점이 사라진다 — 이 조합만 덜 흐리게 둔다. */
+.structure-kit-editor-swatch.is-filtered-out.is-used {
+  opacity: 0.55;
 }
 
 .structure-kit-editor-palette-empty {
@@ -1177,6 +1241,49 @@
   font: inherit;
 }
 
+/* 배치 조건 — 드롭다운 3개 + 미리보기 + 지우기가 한 줄. 좁아지면 접힌다(폭 352px 인스펙터가
+   아니라 다이얼로그 안이지만, 조건 줄이 늘면 가로가 모자랄 수 있다). */
+.structure-kit-editor-condition-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.structure-kit-editor-condition-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.structure-kit-editor-condition-row select {
+  font: inherit;
+}
+
+.structure-kit-editor-condition-preview {
+  color: var(--text-3);
+  margin-left: auto;
+}
+
+/* 지우기 ✕ 는 내용 폭만 쓴다. 다이얼로그의 .btn 이 늘어나는 규칙을 물려받아, 줄이 접히면
+   실측에서 ✕ 하나가 한 줄을 통째로 차지했다(방향 칸이 없는 «벽면» 조건에서). */
+.structure-kit-editor-condition-row .btn.small {
+  flex: 0 0 auto;
+}
+
+.structure-kit-editor-condition-hint {
+  margin: 0;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+.structure-kit-editor-conditions {
+  gap: 6px;
+}
+
 .structure-kit-editor-ai-head {
   display: flex;
   align-items: center;
@@ -1255,4 +1362,53 @@
 .structure-kit-raster-wrap,
 .structure-kit-editor-canvas-wrap {
   background: #101318;
+}
+
+/* 칸 힌트 배지 — 격자선과 같은 겹치는 층이다. 캔버스에 직접 그리면 타일셋 이미지가
+   비동기로 다시 그려질 때 지워진다(kitRender 규약). pointer-events 를 끄는 이유:
+   이 층이 칸 위에 있으므로 켜 두면 힌트가 붙은 칸을 다시 누를 수 없다. */
+.structure-kit-editor-hints-overlay {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.structure-kit-editor-hint-badge {
+  align-items: center;
+  background: var(--accent);
+  border-radius: var(--radius-s);
+  color: var(--on-accent);
+  display: inline-flex;
+  font-size: 11px;
+  height: 14px;
+  justify-content: center;
+  line-height: 1;
+  min-width: 14px;
+  position: absolute;
+}
+
+/* 칸 힌트 행의 축 버튼 — 라벨이 길어 부위 칩보다 넓다. */
+.structure-kit-editor-hint-axis {
+  flex: none;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.structure-kit-editor-hint-note {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 12px;
+  min-width: 120px;
+  padding: 2px 6px;
+}
+
+.structure-kit-editor-hint-note:focus-visible { outline: var(--focus-outline); }
+
+/* 칸 힌트 목록 — 부위 목록과 같은 흐름이지만 높이 예산을 반만 쓴다.
+   둘 다 128px 이면 캔버스가 256px 을 잃는다(세로는 이 편집기에서 가장 귀한 자원이다). */
+.structure-kit-editor-hints {
+  max-height: 72px;
 }

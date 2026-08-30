@@ -70,8 +70,10 @@ export class AgentBlueprintRenderer {
     this.layer.removeAll(true);
     // 원본 보기(꾹 누름)는 조수가 덮은 것을 걷어 맵 자체를 보여주는 토글이다. 고스트는 스프라이트·
     // 애니메이션·DOM 마커 모두 이 값을 보는데(agentPreviewRenderers) 청사진만 보지 않아, 꾹 눌러도
-    // 계획 사각형과 라벨 40장이 위에 남았다. 이 토글이 유일한 "치우는" 수단이기도 하다 —
-    // 나머지 경로(새 대화·대화 복원·프로젝트 전환·패널 닫기)는 대화까지 버린다.
+    // 계획 사각형과 라벨 40장이 위에 남았다. 진행 중인 계획을 잠깐 걷는 유일한 수단이다 —
+    // 나머지 경로(새 대화·대화 복원·프로젝트 전환·패널 닫기)는 대화까지 버린다. **다 지어진**
+    // 계획은 이 토글을 기다리지 않는다: agentBlueprintForMap 이 전 칸 done 인 계획에 빈 목록을
+    // 내므로 아래 `entries.length === 0` 에서 스스로 물러난다(그 함수 주석 참조).
     if (isAgentGhostPreviewHidden()) return;
     const state = getAgentBlueprintState();
     const entries = agentBlueprintForMap(state, this.mapId());

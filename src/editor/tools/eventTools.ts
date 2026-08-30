@@ -2200,12 +2200,13 @@ function cutscenePage(
   pageId: string,
   name: string,
   trigger: Trigger,
-  commands: Command[]
+  commands: Command[],
+  conditions: EventPage["conditions"] = []
 ): EventPage {
   return {
     id: pageId,
     name,
-    conditions: [],
+    conditions,
     graphic: { transparent: true },
     trigger,
     priority: "below",
@@ -2237,7 +2238,10 @@ function resolveCutsceneMusicResources(project: Project, beats: readonly Cutscen
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
-    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. beat 종류: " +
+    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. " +
+    "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
+    "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
+    "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
     "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves,wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait}, " +
     "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, tint{color|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump. " +
     "예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]}",
@@ -2252,6 +2256,8 @@ const scriptCutscene: ToolDefinition = {
       trigger: { type: "string", enum: ["action", "auto", "parallel", "playerTouch", "touch"], description: "기본 action. playerTouch/touch 는 통행 가능 칸에 착지한다." },
       beats: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
       skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
+      mode: { type: "string", enum: ["replace", "append"], description: "기본 replace. 같은 이벤트에서 이름 컷신 페이지를 교체한다. append는 페이지를 쌓는다." },
+      once: { type: "boolean", description: "true면 셀프스위치 A가 꺼져 있을 때만 재생하고 끝나면 A를 켠다." },
     },
     required: ["mapId", "beats"],
   },
@@ -2287,7 +2293,18 @@ const scriptCutscene: ToolDefinition = {
       throw cause;
     }
     const existing = map.events.find((event) => event.id === eventId);
-    const page = cutscenePage(`${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`, "컷신", trigger, commands);
+    const mode = args.mode === "append" ? "append" : "replace";
+    const once = args.once === true;
+    if (once) {
+      commands = [...commands, { kind: "setSelfSwitch", key: "A", value: true }];
+    }
+    const page = cutscenePage(
+      `${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`,
+      "컷신",
+      trigger,
+      commands,
+      once ? [{ kind: "selfSwitch", key: "A", value: false }] : []
+    );
     const outcome = existing ? "modified" : "added";
     let event: GameEvent;
     if (existing) {
@@ -2306,7 +2323,10 @@ const scriptCutscene: ToolDefinition = {
           existing.y = placement.y;
         }
       }
-      existing.pages = [...(existing.pages ?? []), page];
+      const pages = existing.pages ?? [];
+      existing.pages = mode === "append"
+        ? [...pages, page]
+        : [...pages.filter((entry) => entry.name !== "컷신"), page];
       event = existing;
     } else {
       const pos = cutsceneEventPosition(draft, map, args);

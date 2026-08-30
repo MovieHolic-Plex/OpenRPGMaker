@@ -216,4 +216,66 @@ describe("map tree panel", () => {
     expect(host.querySelector('[data-testid="map-tree-filter-toggle"]')).toBeNull();
     expect(host.querySelector('[data-testid="map-tree-filter"]')?.closest(".map-tree-filter")?.getAttribute("hidden")).toBeNull();
   });
+
+  it("초보 플라이아웃은 목록 | 상세 2단이고, 고른 맵의 상세를 옆 칸에 펼친다", () => {
+    // 예전 한 칸 목록은 행 메타가 `13×10 · 1이벤트 · 문2` 뿐이라 같은 규격의 집 내부 10장이
+    // 전부 같은 글자였다(실측). 식별 정보는 이 상세 칸이 진다.
+    const host = document.createElement("div");
+    renderMapList(host, { variant: "basic" });
+
+    expect(host.querySelector('[data-testid="map-tree-explorer"]')).not.toBeNull();
+    expect(host.querySelector(".map-tree-explorer-list [data-testid=\"map-tree\"]")).not.toBeNull();
+    const inspector = host.querySelector('[data-testid="map-inspector"]');
+    expect(inspector).not.toBeNull();
+    expect(inspector?.getAttribute("data-inspector-kind")).toBe("map");
+    const startMap = store.getCurrent().maps[store.getCurrent().startMapId];
+    expect(host.querySelector('[data-testid="map-inspector-name"]')?.textContent).toBe(startMap?.name);
+
+    // 네 갈래 정보가 모두 있다 (맵 속성·이벤트 구성·연결 진단·인카운터).
+    for (const testid of [
+      "map-inspector-stat-tileset",
+      "map-inspector-stat-bgm",
+      "map-inspector-stat-parent",
+      "map-inspector-event-npc",
+      "map-inspector-event-door",
+      "map-inspector-link-outgoing",
+      "map-inspector-encounter-detail",
+      "map-inspector-diagnostics",
+    ]) {
+      expect(host.querySelector(`[data-testid="${testid}"]`), testid).not.toBeNull();
+    }
+    // 동작 버튼은 스크롤 칸 밖에 있어야 한다 — 안에 있으면 접힌 아래로 내려가 안 보인다.
+    const actions = host.querySelector('[data-testid="map-inspector-actions"]');
+    expect(actions).not.toBeNull();
+    expect(actions?.closest('[data-testid="map-inspector-scroll"]')).toBeNull();
+    expect(host.querySelector('[data-testid="map-inspector-action-properties"]')).not.toBeNull();
+  });
+
+  it("맵이 하나뿐이면 삭제 버튼이 이유를 달고 비활성이다", () => {
+    const host = document.createElement("div");
+    renderMapList(host, { variant: "basic" });
+    const remove = host.querySelector<HTMLButtonElement>('[data-testid="map-inspector-action-delete"]');
+    expect(remove).not.toBeNull();
+    expect(remove?.disabled).toBe(true);
+    expect(remove?.getAttribute("title")).toContain("하나");
+    // 이미 시작 맵이면 "시작 맵으로" 도 이유를 말한다 (죽은 버튼 금지).
+    const setStart = host.querySelector<HTMLButtonElement>('[data-testid="map-inspector-action-set-start"]');
+    expect(setStart?.disabled).toBe(true);
+    expect(setStart?.getAttribute("title")).toContain("이미 시작 맵");
+  });
+
+  it("분류 폴더를 고르면 상세 칸이 빈 칸이 아니라 이유를 적는다", () => {
+    const project = createBlankProject();
+    project.mapTree.children.push({ children: [], kind: "folder", mapId: "folder_town", name: "마을 묶음" });
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
+
+    const host = document.createElement("div");
+    renderMapList(host, { variant: "basic" });
+    host.querySelector<HTMLElement>('[data-testid="map-tree-node-folder_town"]')?.click();
+
+    const inspector = host.querySelector('[data-testid="map-inspector"]');
+    expect(inspector?.getAttribute("data-inspector-kind")).toBe("empty");
+    expect(host.querySelector('[data-testid="map-inspector-empty"]')?.textContent).toContain("마을 묶음");
+  });
 });
