@@ -83,6 +83,7 @@ import { buildDemonstrationMessage } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
+import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { loadAiConfig } from "@/ai/llmClient";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
@@ -642,7 +643,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const priorTranscript = pendingPriorTranscript;
       pendingPriorTranscript = null;
       controller.session = new AssistantSession(store.getCurrent(), {
-        config: loadAiConfig(),
+        config: resolveSurfaceAiConfig("chat"),
         ...(priorTranscript ? { priorTranscript } : {}),
         contextOptions: {
           currentMapId: editorState.get().currentMapId ?? undefined,

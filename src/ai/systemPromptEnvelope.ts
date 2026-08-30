@@ -10,21 +10,13 @@
 // (contextCompaction). 둘은 사람과 대화하지 않는 내부 플래너·요약기다 — 성향을 넣으면 계획과 요약이
 // 취향으로 오염되고, 톤 규칙(3~5문장·초보자 언어)은 JSON/요약 산출물에 해롭다.
 
+import type { AiSurface } from "./assistantEndpoint";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 
-/**
- * AI 표면 식별자. activityLogTypes.AiActivityChannel 과 값이 일부 겹치지만 별 타입이다 —
- * 그쪽은 Supabase ai_activity_logs.channel 컬럼에 그대로 실리는 로깅 어휘라, 프롬프트 조립 사정으로
- * 값을 늘리면 DB 어휘가 따라 늘어난다.
- */
-export type AiSurface =
-  | "chat"
-  | "region"
-  | "cluster"
-  | "event-command"
-  | "structure-kit"
-  | "tileset-analysis";
+// 표면 어휘는 assistantEndpoint 가 소유한다 — 엔드포인트 정책과 프롬프트 봉투가 같은 표면 목록을
+// 봐야 한다. 두 벌로 두면 표면을 하나 늘릴 때 한쪽만 갱신돼 조용히 갈라진다.
+export type { AiSurface };
 
 export interface EnvelopeOptions {
   readonly surface: AiSurface;

@@ -8,7 +8,7 @@ import {
 } from "@/ai/assistantSession";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { conversationScopeKey } from "@/ai/conversationStore";
-import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
+import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
 import {
   buildClusterEditKickoff,
@@ -184,7 +184,7 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
   const ensureSession = (): AssistantSession => {
     if (!state.session) {
       state.session = new AssistantSession(store.getCurrent(), {
-        config: configForLiteModel(loadAiConfig()),
+        config: resolveSurfaceAiConfig("cluster"),
         contextOptions: {
           currentMapId: currentMapId() ?? undefined,
           // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
@@ -392,7 +392,7 @@ function startKickoff(
   status: HTMLElement,
   sendText: (text: string, displayText?: string) => Promise<void>
 ): void {
-  const config = configForLiteModel(loadAiConfig());
+  const config = resolveSurfaceAiConfig("cluster");
   // 준비 판정은 isAiConfigReady 하나로 통일한다 — 여기서 직접 baseUrl/apiKey 를 보던 중복 검사가
   // **OAuth 면제를 빼먹어** 클러스터 AI 가 시작조차 못 했다(실측 2026-08-21). OAuth 는 baseUrl 이
   // 의도적으로 빈 문자열이고(엔드포인트는 동반 서비스가 고정) 클라이언트 키도 없기 때문이다.
