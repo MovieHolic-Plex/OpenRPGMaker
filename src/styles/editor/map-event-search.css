@@ -233,6 +233,12 @@
   display: grid;
   place-items: center;
   padding: var(--space-6);
+  /* 병합 전 이 상황에는 `font: 500 13px/1.4 Inter, …` 가 있었다. 리디자인에서 타이포가
+     자식(.map-event-search-empty-state)으로 이동하면서 이 선택자가 font 를 완전히 잃었고,
+     check-css-live-classes 게이트가 `.empty` 의 font 소실을 **기준선 대별 새 회귀**로 잡았다.
+     벘 문장은 자식이 그리지만 패인 자식이 없는 상태에서도 상속 기본값이 있어야 하므로
+     하드코드 스택 대신 **토큼**으로 돌린다(hex/리터럴 예산을 올리지 않는다). */
+  font: var(--font-weight-medium) var(--font-size-sm) / 1.4 var(--font-ui);
 }
 
 .map-event-search-empty-state {
