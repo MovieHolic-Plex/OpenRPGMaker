@@ -6,6 +6,7 @@ import {
   villagePresetById,
   villageTemplateCatalog,
 } from "@/editor/tools/village/authoringData";
+import { templateRecordFromDef } from "@/editor/panels/databaseVillageModel";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { serialize, deserialize } from "@/project/io";
 import type { Project, VillageHouseTemplateRecord, VillageLayoutPresetRecord } from "@/project/types";
@@ -231,7 +232,81 @@ describe("사용자 저작 마을 데이터 — 시공 반영", () => {
   it("templateFromRecord는 날개를 원점 기준으로 검사한다", () => {
     const ok = templateFromRecord(USER_TEMPLATE);
     expect("template" in ok).toBe(true);
-    const bad = templateFromRecord({ ...USER_TEMPLATE, wings: [{ x: 0, y: 0, w: 2, h: 4 }] });
-    expect("reason" in bad && bad.reason).toContain("최소 3×4");
+    const bad = templateFromRecord({ ...USER_TEMPLATE, wings: [{ x: 0, y: 0, w: 2, h: 3 }] });
+    expect("reason" in bad && bad.reason).toContain("최소 3×3");
+  });
+
+  // 내장 34종은 하네스가 실제로 잘 짓는 형태들이다 — 그래서 "화면이 받아주는 범위" 의
+  // 정답지이기도 하다. 화면 규약이 내장보다 조이면 사용자는 복제 버튼을 누른 직후
+  // "규약 위반" 을 보는데 하네스는 아무 문제 없이 짓는다(전에 날개 하한 3×4 로 그랬다).
+  it("내장 34종을 복제해 온 레코드는 전부 규약을 통과한다", () => {
+    const rejected = HOUSE_TEMPLATE_DEFS.map((def) => {
+      // 화면의 「내장에서 복제」가 쓰는 바로 그 변환을 태운다 — 낮은 벽·킷 같은 곁가지
+      // 필드를 빼먹으면 규약 계산이 달라지므로 손으로 레코드를 짜지 않는다.
+      const resolved = templateFromRecord(templateRecordFromDef(def, `my-${def.id}`));
+      return "reason" in resolved ? `${def.id}: ${resolved.reason}` : undefined;
+    }).filter((entry): entry is string => entry !== undefined);
+    expect(rejected).toEqual([]);
+  });
+
+  // 시공기가 요구하는 기하 — 열마다 벽 밴드 + 지붕 2행. 화면이 이걸 안 보면
+  // "통과" 라고 해 놓고 하네스는 "집을 한 채도 시공하지 못했다" 로 실패한다.
+  it("열이 짧아 지붕이 안 들어가는 형태를 거절한다", () => {
+    // 위 4행만 폭 8, 아래 4행은 왼쪽 4칸 — 오른쪽 열 구간이 4행뿐(1층은 5행 필요).
+    const short = templateFromRecord({
+      ...USER_TEMPLATE,
+      w: 8,
+      h: 8,
+      wings: [{ x: 0, y: 0, w: 8, h: 4 }, { x: 0, y: 4, w: 4, h: 4 }],
+    });
+    expect("reason" in short && short.reason).toContain("5칸 이상");
+
+    // 같은 ㅜ 자를 한 행만 키우면 통과한다.
+    const tall = templateFromRecord({
+      ...USER_TEMPLATE,
+      w: 8,
+      h: 9,
+      wings: [{ x: 0, y: 0, w: 8, h: 5 }, { x: 0, y: 5, w: 4, h: 4 }],
+    });
+    expect(tall).toHaveProperty("template");
+
+    // 2층은 벽 밴드가 5행이라 7행이 필요하다.
+    const twoStory = templateFromRecord({ ...USER_TEMPLATE, w: 6, h: 6, stories: 2, wings: [{ x: 0, y: 0, w: 6, h: 6 }] });
+    expect("reason" in twoStory && twoStory.reason).toContain("7칸 이상");
+
+    // 낮은 벽은 벽 밴드가 2행이라 4행으로도 짓는다(내장 「외양간」이 그렇다).
+    const low = templateFromRecord({ ...USER_TEMPLATE, w: 4, h: 4, lowWall: true, kitId: undefined, wings: [{ x: 0, y: 0, w: 4, h: 4 }] });
+    expect(low).toHaveProperty("template");
+  });
+
+  // A자 지붕은 피라미드라 날개 하나 + 높이가 폭에 묶인다. 내장 A자 4종이 이 공식을
+  // 만족하는 건 위 34종 왕복이 증명한다 — 여기서는 어긋난 값이 걸리는지만 본다.
+  it("A자 지붕 킷은 폭에 맞는 높이만 받는다", () => {
+    const wrong = templateFromRecord({
+      ...USER_TEMPLATE,
+      kitId: "aframe-stone",
+      w: 5,
+      h: 8,
+      wings: [{ x: 0, y: 0, w: 5, h: 8 }],
+    });
+    expect("reason" in wrong && wrong.reason).toContain("정확히 6칸");
+
+    const right = templateFromRecord({
+      ...USER_TEMPLATE,
+      kitId: "aframe-stone",
+      w: 5,
+      h: 6,
+      wings: [{ x: 0, y: 0, w: 5, h: 6 }],
+    });
+    expect(right).toHaveProperty("template");
+
+    const twoWings = templateFromRecord({
+      ...USER_TEMPLATE,
+      kitId: "aframe-stone",
+      w: 8,
+      h: 9,
+      wings: [{ x: 0, y: 0, w: 8, h: 5 }, { x: 0, y: 5, w: 4, h: 4 }],
+    });
+    expect("reason" in twoWings && twoWings.reason).toContain("날개 하나");
   });
 });

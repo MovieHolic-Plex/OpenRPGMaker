@@ -10,7 +10,7 @@
 // 그래서 select 의 선택지는 `authoringData.ts` 의 열거형 상수를 그대로 쓴다 — 화면에서
 // 고를 수 있는 값과 하네스가 받아들이는 값이 갈라지면 조용히 무시되기 때문이다.
 
-import { field, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { field, selectField, textField } from "@/editor/panels/databaseControls";
 import {
   blankPresetRecord,
   blankTemplateRecord,
@@ -46,6 +46,7 @@ import {
   VILLAGE_PLAZA_STYLES,
   VILLAGE_RANGE,
   VILLAGE_YARD_STYLES,
+  minWingRun,
   presetOverrides,
   templateFromRecord,
   villageTemplateCatalog,
@@ -375,16 +376,16 @@ function templateSizeFields(record: VillageHouseTemplateRecord, rerender: () => 
     ...ALL_HOUSE_KIT_IDS.map((id) => ({ id, name: HOUSE_KITS[id].name })),
   ];
   return [
-    numberField("폭 (칸)", "db-village-template-w", record.w, (value) => {
+    requiredNumber("폭 (칸)", "db-village-template-w", record.w, templateW, (value) => {
       recordCoalescedSnapshot(`village-template-w:${record.id}`, "집 형태 폭 변경");
       patchTemplate(record.id, () => ({ w: value }));
       rerender();
-    }, { min: templateW.min, max: templateW.max, step: 1 }),
-    numberField("높이 (칸)", "db-village-template-h", record.h, (value) => {
+    }),
+    requiredNumber("높이 (칸)", "db-village-template-h", record.h, templateH, (value) => {
       recordCoalescedSnapshot(`village-template-h:${record.id}`, "집 형태 높이 변경");
       patchTemplate(record.id, () => ({ h: value }));
       rerender();
-    }, { min: templateH.min, max: templateH.max, step: 1 }),
+    }),
     selectField("층수", "db-village-template-stories", String(record.stories ?? 1), [
       { id: "1", name: "1층" },
       { id: "2", name: "2층" },
@@ -453,7 +454,14 @@ function templateWingFields(record: VillageHouseTemplateRecord, rerender: () => 
             click: () => {
               recordProjectSnapshot("날개 추가");
               patchTemplate(record.id, (current) => ({
-                wings: [...(current.wings ?? []), { x: 0, y: 0, w: Math.min(current.w, 3), h: Math.min(current.h, 4) }],
+                // 새 날개는 규약을 통과하는 최소 크기로 시작한다 — 「추가」를 누른 순간
+                // 위반 배지가 뜨면 사용자는 무엇을 고쳐야 하는지 모른다.
+                wings: [...(current.wings ?? []), {
+                  x: 0,
+                  y: 0,
+                  w: Math.min(current.w, VILLAGE_RANGE.wingW.min),
+                  h: Math.min(current.h, minWingRun(current)),
+                }],
               }));
               rerender();
             },
@@ -480,7 +488,8 @@ function templateWingFields(record: VillageHouseTemplateRecord, rerender: () => 
     footprintPreview(record, { large: true }),
     el("p", {
       class: "db-ws-usage",
-      text: "좌표는 집 왼쪽 위를 (0,0) 으로 하는 상대 좌표입니다. 날개는 최소 3×4칸이고 바운딩 박스를 넘을 수 없습니다.",
+      // 하한을 문장에 손으로 박으면 규약이 바뀔 때 화면만 거짓말을 한다 — 상수에서 뽑는다.
+      text: `좌표는 집 왼쪽 위를 (0,0) 으로 하는 상대 좌표입니다. 날개는 최소 ${VILLAGE_RANGE.wingW.min}×${VILLAGE_RANGE.wingH.min}칸이고 바운딩 박스를 넘을 수 없습니다. 세로로는 한 열이 이어서 ${minWingRun(record)}칸 이상이어야 벽과 지붕이 들어갑니다.`,
     }),
   ];
 }
@@ -493,8 +502,9 @@ function wingNumber(
   rerender: () => void,
 ): HTMLElement {
   const label: Record<typeof axis, string> = { x: "x", y: "y", w: "폭", h: "높이" };
+  const min = axis === "w" ? VILLAGE_RANGE.wingW.min : axis === "h" ? VILLAGE_RANGE.wingH.min : 0;
   const input = el("input", {
-    attrs: { type: "number", min: axis === "w" ? "3" : axis === "h" ? "4" : "0", step: "1" },
+    attrs: { type: "number", min: String(min), step: "1" },
     value,
     dataset: { testid: `db-village-wing-${index}-${axis}` },
   }) as HTMLInputElement;
@@ -886,6 +896,32 @@ function checkboxField(
     class: "db-village-check",
     children: [input, el("span", { text: hint })],
   }));
+}
+
+/**
+ * `change` 에서만 커밋하는 숫자 입력. 공용 `numberField` 는 `input` 마다 콜백을 부르는데,
+ * 이 탭의 콜백은 미리보기 격자와 규약 배지를 다시 그리려고 전체 rerender 를 한다 —
+ * 한 글자 칠 때마다 입력칸이 DOM 에서 떼어져 캐럿이 날아간다.
+ */
+function requiredNumber(
+  label: string,
+  testid: string,
+  value: number,
+  bounds: { readonly min: number; readonly max: number },
+  onCommit: (value: number) => void,
+): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "number", min: String(bounds.min), max: String(bounds.max), step: "1" },
+    value,
+    dataset: { testid },
+  }) as HTMLInputElement;
+  input.addEventListener("change", () => {
+    const raw = Math.trunc(Number(input.value));
+    const clamped = Math.min(bounds.max, Math.max(bounds.min, Number.isFinite(raw) ? raw : bounds.min));
+    input.value = String(clamped);
+    onCommit(clamped);
+  });
+  return field(label, input);
 }
 
 /** 「지정 안 함」을 첫 항목으로 두는 select — 프리셋의 모든 값은 생략 가능하다. */

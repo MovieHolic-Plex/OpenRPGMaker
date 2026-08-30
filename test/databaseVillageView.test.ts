@@ -122,16 +122,37 @@ describe("데이터베이스 「마을」탭 — 집 형태", () => {
     const host = renderView();
     findByTestId(host, "db-village-create")?.click();
     change(findByTestId(host, "db-village-wing-0-w"), "3");
-    change(findByTestId(host, "db-village-wing-0-h"), "4");
+    change(findByTestId(host, "db-village-wing-0-h"), "5");
 
+    // 새 날개는 규약을 통과하는 크기(1층이면 3×5)로 들어와야 한다.
     findByTestId(host, "db-village-wing-add")?.click();
-    expect(store.getCurrent().villageTemplates?.[0]?.wings).toHaveLength(2);
+    const wings = store.getCurrent().villageTemplates?.[0]?.wings ?? [];
+    expect(wings).toHaveLength(2);
+    expect(wings[1]).toEqual({ x: 0, y: 0, w: 3, h: 5 });
 
     findByTestId(host, "db-village-wing-tighten")?.click();
     const tight = store.getCurrent().villageTemplates?.[0]!;
     expect(tight.w).toBe(3);
-    expect(tight.h).toBe(4);
+    expect(tight.h).toBe(5);
     expect(templateFromRecord(tight)).toHaveProperty("template");
+  });
+
+  // 화면이 "통과" 라고 했는데 시공은 한 채도 못 세우던 형태 — 위 4행만 폭 8, 아래 4행은
+  // 왼쪽 4칸인 ㅜ 자. 오른쪽 열이 4행뿐이라 벽 3 + 지붕 2 를 못 채운다.
+  it("열이 짧아 지붕이 안 들어가는 형태는 위반으로 잡는다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    change(findByTestId(host, "db-village-template-w"), "8");
+    change(findByTestId(host, "db-village-template-h"), "8");
+    change(findByTestId(host, "db-village-wing-0-w"), "8");
+    change(findByTestId(host, "db-village-wing-0-h"), "4");
+    findByTestId(host, "db-village-wing-add")?.click();
+    change(findByTestId(host, "db-village-wing-1-y"), "4");
+    change(findByTestId(host, "db-village-wing-1-w"), "4");
+    change(findByTestId(host, "db-village-wing-1-h"), "4");
+
+    expect(findByTestId(host, "db-village-template-validity")?.textContent).toContain("위반");
+    expect(findByTestId(host, "db-village-template-warning")?.textContent).toContain("5칸 이상");
   });
 
   it("재료 킷을 「지정 안 함」으로 되돌리면 키가 사라진다", () => {

@@ -5,10 +5,10 @@
 // 우선순위: 명시 인자(AI가 문장에서 뽑은 값) > 사용자 프리셋 > 테마 추론 > 씨앗값 파생.
 // 저장된 레코드는 신뢰하지 않는다 — 열거형·범위를 여기서 좁히고, 못 쓰는 값은 경고로 흘린다.
 
-import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { HOUSE_KITS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt, type HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { Project } from "@/project/types";
-import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord } from "@/project/types/village";
+import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord, VillageTemplateWing } from "@/project/types/village";
 import type { HouseTemplate } from "./constants";
 
 export interface VillageAuthoringData {
@@ -27,6 +27,9 @@ export const VILLAGE_EDGE_TREE_STYLES = ["conifer", "dense", "none"] as const;
 export const VILLAGE_LAYOUT_IDS = ["plaza-ring", "street-grid", "clusters"] as const;
 export const VILLAGE_GROUND_THEME_IDS = ["grass", "snow"] as const;
 
+// 날개 하한 3×3 은 내장 34종에서 뽑은 값이다 — 「현관 오두막」의 뒷채가 3×3 이고 「ㄷ자」의
+// 두 다리도 3×3 이다. 여기를 3×4 로 조이면 내장 형태를 복제해 온 순간 화면이 "규약 위반" 을
+// 띄우는데 하네스는 잘 짓는다. 검증은 test/villageAuthoringData.test.ts 의 34종 왕복이 맡는다.
 export const VILLAGE_RANGE = {
   roadWidth: { min: 2, max: 3 },
   roadNaturalness: { min: 0.35, max: 1 },
@@ -35,7 +38,7 @@ export const VILLAGE_RANGE = {
   templateW: { min: 3, max: 8 },
   templateH: { min: 4, max: 24 },
   wingW: { min: 3, max: 8 },
-  wingH: { min: 4, max: 24 },
+  wingH: { min: 3, max: 24 },
 } as const;
 
 /** 프로젝트에 저장된 마을 저작 레코드. 없으면 빈 목록 — 하네스는 코드 카탈로그로 동작한다. */
@@ -74,6 +77,8 @@ export function templateFromRecord(record: VillageHouseTemplateRecord): { templa
   }
   if (record.kitId !== undefined && !isHouseKitId(record.kitId)) return { reason: `모르는 재료 킷: ${record.kitId}` };
   const stories = record.stories === 2 ? 2 : record.stories === 3 ? 3 : 1;
+  const shape = shapeReason({ ...record, stories });
+  if (shape) return { reason: shape };
   const def: HouseTemplateDef = {
     id,
     name: name.trim() || id,
@@ -86,6 +91,60 @@ export function templateFromRecord(record: VillageHouseTemplateRecord): { templa
     wings: wings.map((wing) => ({ x: wing.x, y: wing.y, w: wing.w, h: wing.h })),
   };
   return { template: defToTemplate(def) };
+}
+
+/**
+ * 한 열이 이어져야 하는 최소 행 수 — 벽 밴드 + 지붕 2행.
+ * 화면이 날개를 새로 만들 때 이 높이로 시작해야 「추가」 직후 규약 위반이 되지 않는다.
+ */
+export function minWingRun(options: { readonly stories?: number; readonly lowWall?: boolean }): number {
+  const stories = options.stories === 3 ? 3 : options.stories === 2 ? 2 : 1;
+  return (options.lowWall ? 2 : 2 + (2 * stories - 1)) + 2;
+}
+
+/**
+ * 시공기(`houseKit.ts` 의 `stampFootprintHouseKit`)가 실제로 요구하는 기하 규약.
+ * 여기서 안 보면 화면은 "통과" 라고 하는데 시공은 집을 한 채도 못 세운다 — 8×8 에
+ * 위 4행만 폭 8, 아래 4행은 왼쪽 4칸인 ㅜ 자 형태로 실측했다(2026-08-30).
+ *  · 벽 밴드 = lowWall ? 2 : 2 + (2×층수 − 1) 행. 그 위에 지붕이 최소 2행 더 붙는다.
+ *  · 그래서 **열마다** 이어진 칸이 (벽 밴드 + 2) 행 이상이어야 한다. 위 예에서 오른쪽
+ *    열은 4행뿐이라 1층 기준 5행을 못 채운다.
+ *  · A자 지붕 킷은 지붕이 피라미드라 날개 하나 + 높이가 폭에 묶인다.
+ */
+function shapeReason(record: {
+  readonly w: number;
+  readonly h: number;
+  readonly stories: 1 | 2 | 3;
+  readonly lowWall?: boolean;
+  readonly kitId?: string;
+  readonly wings: readonly VillageTemplateWing[];
+}): string | undefined {
+  const wallBandRows = record.lowWall ? 2 : 2 + (2 * record.stories - 1);
+  const minRun = minWingRun(record);
+  if (record.kitId !== undefined && isHouseKitId(record.kitId) && HOUSE_KITS[record.kitId].roof.kind === "aframe") {
+    if (record.wings.length !== 1) return "A자 지붕 킷은 날개 하나짜리 직사각형만 됩니다";
+    const wing = record.wings[0]!;
+    const required = wallBandRows + Math.floor((wing.w - 1) / 2) + 1;
+    if (wing.h !== required) {
+      return `A자 지붕 킷은 폭 ${wing.w}일 때 높이가 정확히 ${required}칸이어야 합니다 (지금 ${wing.h})`;
+    }
+  }
+  const filled = (x: number, y: number): boolean =>
+    record.wings.some((wing) => x >= wing.x && x < wing.x + wing.w && y >= wing.y && y < wing.y + wing.h);
+  for (let x = 0; x < record.w; x += 1) {
+    let run = 0;
+    for (let y = 0; y <= record.h; y += 1) {
+      if (y < record.h && filled(x, y)) {
+        run += 1;
+        continue;
+      }
+      if (run > 0 && run < minRun) {
+        return `x=${x} 열이 이어서 ${run}칸뿐입니다 — 한 열은 ${minRun}칸 이상이어야 합니다 (벽 ${wallBandRows} + 지붕 2)`;
+      }
+      run = 0;
+    }
+  }
+  return undefined;
 }
 
 export interface TemplateCatalogResult {
