@@ -143,11 +143,11 @@ html[data-clean-evidence="true"] [data-testid="runtime-coordinate-debug"] {
   border-color: var(--border-strong);
 }
 
-.oprn-game-file-picker-button:focus-visible {
-  outline: var(--focus-ring);
+.oprn-game-file-picker[data-play-input-owner="game-file-open"] .oprn-game-file-picker-button:focus-visible {
+  outline: var(--focus-outline);
 }
 
-.oprn-game-file-picker-button:disabled {
+.oprn-game-file-picker[data-play-input-owner="game-file-open"] .oprn-game-file-picker-button:disabled {
   cursor: progress;
   opacity: 0.6;
 }
