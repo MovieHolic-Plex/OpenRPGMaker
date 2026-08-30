@@ -5,7 +5,7 @@ import {
   blueprintEntryCaption,
   blueprintStatusStyle,
 } from "@/editor/agentBlueprintRenderer";
-import { clearAgentBlueprint, markAgentBlueprintProgress, setAgentBlueprintFromSpec } from "@/editor/agentBlueprint";
+import { clearAgentBlueprint, markAgentBlueprintProgress, setAgentBlueprintFromSpec, settleAgentBlueprintTurn } from "@/editor/agentBlueprint";
 import { setAgentGhostPreviewHidden } from "@/editor/agentGhostPreview";
 import type { BuildSpec } from "@/ai/buildSpec";
 import type { BlueprintEntry } from "@/editor/agentBlueprint";
@@ -118,6 +118,32 @@ describe("AgentBlueprintRenderer", () => {
     }
     renderer.render();
     expect(graphicsCalls).toHaveLength(2);
+  });
+
+  it("다 지은 계획은 사각형도 라벨도 그리지 않는다 — 결과물 위에 `2/2 집 ✓` 가 살지 않는다", () => {
+    setAgentBlueprintFromSpec(spec());
+    const renderer = new AgentBlueprintRenderer(mockScene, mockLayer, () => "m1");
+    // 지어지는 동었엔 보인다.
+    markAgentBlueprintProgress("paint_road", { mapId: "m1", points: [{ x: 0, y: 5 }, { x: 19, y: 6 }] }, { write: true });
+    renderer.render();
+    expect(textCalls.map((text) => text.content)).toEqual(["1/2 길", "2/2 집"]);
+
+    // 둘 다 시공되어 정산이 끝났다 — 사용자가 보는 것은 이제 자기 결과물이지 다 끝난 진행 표시가 아니다.
+    markAgentBlueprintProgress("build_wall", { mapId: "m1", rect: { x: 10, y: 10, w: 4, h: 4 }, material: "흰 집 벅" }, { write: true });
+    settleAgentBlueprintTurn({
+      regions: [{ mapId: "m1", x: 0, y: 5, w: 20, h: 2 }, { mapId: "m1", x: 10, y: 10, w: 4, h: 4 }],
+      wholeTargetMapIds: [],
+    });
+
+    graphicsCalls.length = 0;
+    textCalls.length = 0;
+    mockScene.add.container.mockClear();
+    renderer.render();
+    expect(graphicsCalls).toHaveLength(0);
+    expect(textCalls).toHaveLength(0);
+    expect(mockScene.add.container).not.toHaveBeenCalled();
+    // 남아 있는 장버지는 파괴해서 걷는다 — 숨기기가 아니다.
+    expect(mockLayer.removeAll).toHaveBeenCalledWith(true);
   });
 
   it("진행 중인 칸은 더 굵은 선으로 그려진다", () => {
