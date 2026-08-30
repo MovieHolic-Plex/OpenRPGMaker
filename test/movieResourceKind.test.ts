@@ -10,6 +10,7 @@ import { renderSchemaForm } from "@/editor/panels/eventEditor/schemaCommandBody"
 import { listMovieResources } from "@/editor/panels/eventEditor/playMoviePreview";
 import { getResourceProfileSpec, RESOURCE_PROFILE_SPECS, validateResourceDimensions } from "@/project/resourceProfiles";
 import { createBlankProject } from "@/project/defaults";
+import { deserialize, serialize } from "@/project/io/serialize";
 import { store } from "@/project/store";
 import type { Command, Project, ResourceKind } from "@/project/types";
 import type { CommandEditContext } from "@/editor/panels/eventEditor/types";
@@ -128,5 +129,11 @@ describe("movie ResourceKind", () => {
     expect(picker?.tagName, "동영상 픽커 <select> 가 없다").toBe("SELECT");
     expect(picker?.children.map((option) => option.value)).toEqual(["", "movie-intro"]);
     expect(picker?.value).toBe("movie-intro");
+  });
+
+  it("movie 업로드가 serialize/deserialize 왕복한다", () => {
+    const project = withMovieUpload(createBlankProject());
+    const round = deserialize(serialize(project));
+    expect(round.assets.uploaded["movie-intro"]?.kind).toBe("movie");
   });
 });

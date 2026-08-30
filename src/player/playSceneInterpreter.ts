@@ -399,9 +399,12 @@ async function consumeBlockingStep(
     case "eraseEvent":
       eraseRuntimeEvent(scene, step.eventId ?? currentEventId);
       return resumeAfterSurface(scene, interpreter);
-    case "waitForAllMovement":
-      await waitForAllCommandMovement(scene);
+    case "waitForAllMovement": {
+      await Promise.race([waitForAllCommandMovement(scene), skipController.waitForSkip()]);
+      const skipped = skipController.takeResult();
+      if (skipped) return skipped;
       return resumeAfterSurface(scene, interpreter);
+    }
     case "stopAllMovement":
       stopCommandMovement(scene);
       return resumeAfterSurface(scene, interpreter);

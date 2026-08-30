@@ -80,7 +80,7 @@ function renderSpatialPlacements(scene: PlaceableOverlayScene, project: Project)
     const type = project.database.farmBuildingTypes?.find((entry) => entry.id === placement.typeId);
     const level = type?.levels.find((entry) => entry.level === placement.level);
     if (placement.mapId !== scene.map.id || !level || !isSpatialFootprint(level.footprint)) continue;
-    addSpatialSprite(scene, {
+    addSpatialSprite(scene, project, {
       placement, footprint: level.footprint,
       resourceId: level.orientationGraphicResourceIds?.[placement.orientation] ?? level.graphicResourceId,
     });
@@ -88,23 +88,25 @@ function renderSpatialPlacements(scene: PlaceableOverlayScene, project: Project)
   for (const placement of Object.values(scene.session.homeDecorationPlacements ?? {})) {
     const type = project.database.homeDecorationTypes?.find((entry) => entry.id === placement.typeId);
     if (placement.mapId !== scene.map.id || !type || !isSpatialFootprint(type.footprint)) continue;
-    addSpatialSprite(scene, {
+    addSpatialSprite(scene, project, {
       placement, footprint: type.footprint,
       resourceId: type.orientationGraphicResourceIds?.[placement.orientation] ?? type.graphicResourceId,
     });
   }
 }
 
-function addSpatialSprite(scene: PlaceableOverlayScene, spec: SpatialSpriteSpec): void {
+function addSpatialSprite(scene: PlaceableOverlayScene, project: Project, spec: SpatialSpriteSpec): void {
   const { placement, footprint, resourceId } = spec;
   const size = orientedFootprint(footprint, placement.orientation);
   if (placement.x < 0 || placement.y < 0
     || (scene.map.width !== undefined && placement.x + size.width > scene.map.width)
     || (scene.map.height !== undefined && placement.y + size.height > scene.map.height)) return;
+  const resolved = resolveEventSpriteTexture(project, resourceId, 0);
   const sprite = scene.add.sprite?.(
     (placement.x + size.width / 2) * TILE_SIZE,
     (placement.y + size.height) * TILE_SIZE,
-    resourceId,
+    resolved?.texture ?? resourceId,
+    resolved?.frame,
   );
   if (!sprite) return;
   sprite.setOrigin?.(0.5, 1);
