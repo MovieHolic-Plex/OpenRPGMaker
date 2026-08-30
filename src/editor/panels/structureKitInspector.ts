@@ -15,7 +15,8 @@ import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSugg
 import {
   paletteStampFromCells,
   paletteStampFromKit,
-  structureKitRepeatable,
+  structureKitGrowthAxes,
+  structureKitLayerHome,
   structureKitSize,
 } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
@@ -26,7 +27,7 @@ import {
   interiorObjectSnapLabel,
   interiorObjectThemeLabels,
 } from "@/editor/panels/structureKitDbSources";
-import { aiRoleLabel } from "@/editor/panels/structureKitEditorDialog";
+import { aiRoleLabel, growthAxisLabel, layerHomeLabel } from "@/editor/panels/structureKitEditorDialog";
 import { describePlacementSurface } from "@/project/placementSurface";
 import type {
   StructureKitAiMeta,
@@ -201,8 +202,17 @@ function renderAiSummary(kit: StructureKitDef): HTMLElement {
     });
   }
 
-  const repeatable = structureKitRepeatable(kit);
+  // 증분 축은 두 축을 함께 보여준다 — "반복 가능" 한 마디로는 세로로도 이어지는 벽을 말할 수 없다.
+  const axes = structureKitGrowthAxes(kit);
+  const growthText = axes.x && axes.y
+    ? "가로·세로 증분"
+    : axes.x
+      ? "가로 증분"
+      : axes.y
+        ? "세로 증분"
+        : "한 채 완결";
   const descLine = firstLineForColumn(ai.description);
+  const hintCount = kit.kind === "section" ? (kit.cellHints ?? []).length : 0;
 
   return el("div", {
     class: "structure-kit-ai-summary",
@@ -211,8 +221,26 @@ function renderAiSummary(kit: StructureKitDef): HTMLElement {
       el("div", {
         class: "structure-kit-ai-summary-badges",
         children: [
-          el("span", { class: "structure-kit-part-badge", text: repeatable ? "반복 가능" : "한 채 완결" }),
+          el("span", {
+            class: "structure-kit-part-badge",
+            dataset: { testid: "structure-kit-ai-growth" },
+            text: growthText,
+          }),
           ...(ai.role ? [el("span", { class: "structure-kit-part-badge teal", text: aiRoleLabel(ai.role) })] : []),
+          el("span", {
+            class: "structure-kit-part-badge gray",
+            dataset: { testid: "structure-kit-ai-layer" },
+            text: layerHomeLabel(structureKitLayerHome(kit)),
+          }),
+          ...(ai.themes ?? []).map((theme) =>
+            el("span", { class: "structure-kit-part-badge teal", text: theme })),
+          ...(hintCount > 0
+            ? [el("span", {
+                class: "structure-kit-part-badge",
+                dataset: { testid: "structure-kit-ai-cell-hints" },
+                text: `칸 힌트 ${hintCount}`,
+              })]
+            : []),
           ...(ai.origin !== "user"
             ? [el("span", {
                 class: "structure-kit-editor-ai-badge",
@@ -225,6 +253,15 @@ function renderAiSummary(kit: StructureKitDef): HTMLElement {
       ...(descLine ? [el("p", { class: "structure-kit-quiet structure-kit-ai-summary-desc", text: descLine })] : []),
       // 배치 조건은 **집행되는** 값이다 — 인스펙터에 없으면 "왜 안 찍히지"의 답이 편집기를
       // 열어 봐야만 나온다. 설명(산문)과 달리 자르지 않는다: 실무상 1~3줄이다.
+      ...(kit.kind === "section" ? kit.cellHints ?? [] : [])
+        .filter((hint) => hint.growth !== undefined || hint.note !== undefined)
+        .slice(0, 4)
+        .map((hint) => el("p", {
+          class: "structure-kit-quiet structure-kit-ai-summary-desc",
+          dataset: { testid: "structure-kit-ai-cell-hint-line" },
+          text: `(${hint.dx},${hint.dy}) ${hint.growth ? growthAxisLabel(hint.growth) : "메모"}`
+            + `${hint.note ? ` — ${firstLineForColumn(hint.note)}` : ""}`,
+        })),
       ...(ai.placement ?? []).map((condition) => el("p", {
         class: "structure-kit-quiet structure-kit-ai-summary-placement",
         dataset: { testid: "structure-kit-ai-placement" },

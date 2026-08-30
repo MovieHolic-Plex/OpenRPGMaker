@@ -471,3 +471,159 @@ describe("importStructureKits", () => {
   });
 
 });
+describe("AI 메타 초안 파싱 — 새 어휘", () => {
+  it("growthAxis·layerHome·themes 를 읽는다", () => {
+    const draft = parseAiMetaDraft(JSON.stringify({
+      description: "돌 성벽",
+      placementRules: "경계를 따라",
+      growthAxis: "vertical",
+      layerHome: "upper",
+      themes: ["성채", " ", "dungeon"],
+      tags: ["벽"],
+    }));
+    expect(draft).not.toBeNull();
+    expect(draft!.growthAxis).toBe("vertical");
+    expect(draft!.layerHome).toBe("upper");
+    expect(draft!.themes).toEqual(["성채", "dungeon"]);
+    // 어떤 자동 경로도 origin 을 user 로 만들지 않는다.
+    expect(draft!.origin).toBe("ai");
+  });
+
+  it("모르는 축·레이어 값은 버린다", () => {
+    const draft = parseAiMetaDraft(JSON.stringify({
+      description: "d", placementRules: "", growthAxis: "diagonal", layerHome: "middle",
+    }));
+    expect(draft!.growthAxis).toBeUndefined();
+    expect(draft!.layerHome).toBeUndefined();
+  });
+
+  it("초안 프롬프트가 새 필드를 실제로 요구한다", () => {
+    const kit = seedKit();
+    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const prompt = buildAiMetaDraftPrompt(kit, tileset, []);
+    expect(prompt).toContain("growthAxis");
+    expect(prompt).toContain("layerHome");
+    expect(prompt).toContain("themes");
+  });
+});
+
+describe("AI 메타 탭 — 수정할 수 있는 축이 화면에 있다", () => {
+  const pick = (id: string): FakeElement | null =>
+    document.querySelector(`[data-testid='${id}']`) as unknown as FakeElement | null;
+  const readKit = (): SectionStructureKitDef => (store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.structureKits ?? [])
+    .find((candidate) => candidate.id === "kit_edit") as SectionStructureKitDef;
+
+  function openAiTab(): void {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tab-ai")!.click();
+  }
+
+  it("증분 축·레이어·태그·테마 칸이 모두 있다", () => {
+    openAiTab();
+    for (const id of [
+      "structure-kit-editor-ai-growth",
+      "structure-kit-editor-ai-layer",
+      "structure-kit-editor-ai-tags",
+      "structure-kit-editor-ai-themes",
+    ]) {
+      expect(pick(id), id).not.toBeNull();
+    }
+  });
+
+  it("고친 값이 수락 뒤 store 에 남는다", () => {
+    openAiTab();
+    const growth = pick("structure-kit-editor-ai-growth")!;
+    growth.value = "vertical";
+    growth.dispatchEvent(new Event("change"));
+    const layer = pick("structure-kit-editor-ai-layer")!;
+    layer.value = "upper";
+    layer.dispatchEvent(new Event("change"));
+    const themes = pick("structure-kit-editor-ai-themes")!;
+    themes.value = "성채, tavern";
+    themes.dispatchEvent(new Event("change"));
+    const tags = pick("structure-kit-editor-ai-tags")!;
+    tags.value = "벽, 방어";
+    tags.dispatchEvent(new Event("change"));
+
+    pick("structure-kit-editor-ai-accept")!.click();
+
+    const ai = readKit().ai!;
+    expect(ai.growthAxis).toBe("vertical");
+    expect(ai.layerHome).toBe("upper");
+    expect(ai.themes).toEqual(["성채", "tavern"]);
+    expect(ai.tags).toEqual(["벽", "방어"]);
+    expect(ai.origin).toBe("user");
+  });
+
+  it("비운 목록 칸은 키 자체를 지운다", () => {
+    openAiTab();
+    const tags = pick("structure-kit-editor-ai-tags")!;
+    tags.value = "벽";
+    tags.dispatchEvent(new Event("change"));
+    tags.value = " , ";
+    tags.dispatchEvent(new Event("change"));
+    pick("structure-kit-editor-ai-accept")!.click();
+    expect(readKit().ai!.tags).toBeUndefined();
+  });
+});
+
+describe("칸 힌트 도구", () => {
+  const pick = (id: string): FakeElement | null =>
+    document.querySelector(`[data-testid='${id}']`) as unknown as FakeElement | null;
+  const readKit = (): SectionStructureKitDef => (store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.structureKits ?? [])
+    .find((candidate) => candidate.id === "kit_edit") as SectionStructureKitDef;
+
+  function pressCell(): void {
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+  }
+
+  /* window 가 없는 이 파일에서는 팝오버를 띄울 수 없으므로 결정적 순환 경로가 돈다.
+     축의 집합은 두 경로에서 같다 — 순환 순서를 못 박아 둔다. */
+  it("도구를 잡고 칸을 누르면 가로 → 세로 → 양방향 → 없음 순으로 돈다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tool-hint")!.click();
+
+    pressCell();
+    expect(readKit().cellHints).toEqual([{ dx: 0, dy: 0, growth: "horizontal" }]);
+    pressCell();
+    expect(readKit().cellHints![0]!.growth).toBe("vertical");
+    pressCell();
+    expect(readKit().cellHints![0]!.growth).toBe("both");
+    pressCell();
+    expect(readKit().cellHints).toBeUndefined();
+  });
+
+  it("힌트를 붙이면 목록에 축과 설명 칸이 생기고, 설명이 store 에 남는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tool-hint")!.click();
+    pressCell();
+
+    expect(pick("structure-kit-editor-cell-hint-0-0")).not.toBeNull();
+    const note = pick("structure-kit-editor-cell-hint-note-0-0")!;
+    note.value = "가로로 무한히 이어붙일 수 있는 벽 몸통";
+    note.dispatchEvent(new Event("change"));
+
+    expect(readKit().cellHints![0]!.note).toBe("가로로 무한히 이어붙일 수 있는 벽 몸통");
+  });
+
+  it("삭제 버튼이 그 칸의 힌트만 지운다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tool-hint")!.click();
+    pressCell();
+    expect(readKit().cellHints).toHaveLength(1);
+
+    pick("structure-kit-editor-cell-hint-delete-0-0")!.click();
+    expect(readKit().cellHints).toBeUndefined();
+  });
+
+  it("힌트가 없을 때는 무엇을 하는 도구인지 적어 둔다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    expect(pick("structure-kit-editor-cell-hints-empty")).not.toBeNull();
+  });
+});
