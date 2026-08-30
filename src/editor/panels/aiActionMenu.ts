@@ -23,6 +23,12 @@ export interface AiActionMenuActions {
   readonly toggleDock: () => void;
   readonly openHistory: () => void;
   readonly openTools: () => void;
+  /** 저장된 대화 목록(이어가기) — 기존 '전체 기록'(현재 대화의 감사 로그)과 다른 것이다. */
+  readonly openConversations: () => void;
+  /** 프로젝트 고정 지침 편집. */
+  readonly openInstructions: () => void;
+  /** 지금 맥락 압축(맥락 게이지의 같은 동작을 메뉴에서도 부른다). */
+  readonly compactContext: () => void;
   readonly startInterview: () => void;
   readonly learnStructure: () => void;
   readonly startDemoTeach: () => void;
@@ -102,6 +108,26 @@ export function createAiActionMenuItems(options: {
     testid: header ? "ai-more-tools" : "ai-command-menu-tools",
     run: options.actions.openTools,
   });
+  // '전체 기록' 은 **지금 대화**의 감사 로그를 펼치는 것이고, 이쪽은 **저장된 다른 대화**를
+  // 열어 이어가는 것이다. 라벨이 비슷해 헷갈리므로 툴팁으로 차이를 못 박는다.
+  const conversations = build({
+    label: "이전 대화",
+    testid: header ? "ai-more-conversations" : "ai-command-menu-conversations",
+    title: "저장된 대화를 골라 이어서 연다(지금 대화는 기록에 저장된다)",
+    run: options.actions.openConversations,
+  });
+  const instructions = build({
+    label: "감독 지침",
+    testid: header ? "ai-more-instructions" : "ai-command-menu-instructions",
+    title: "이 프로젝트의 조수에게 항상 주는 고정 규칙을 적는다",
+    run: options.actions.openInstructions,
+  });
+  const compact = build({
+    label: "맥락 압축",
+    testid: header ? "ai-more-compact" : "ai-command-menu-compact",
+    title: "이전 맥락을 요약 1건으로 접어 자리를 비운다",
+    run: options.actions.compactContext,
+  });
 
   // 가르치기 진입점 셋. 사라진 스킬 서러에 업혀 있었던 기능이다 — 서러만 없어지면 되지
   // 기능이 사라질 이유는 없으므로 동일한 legacy testid 로 ☰ 에 재배치한다.
@@ -125,7 +151,20 @@ export function createAiActionMenuItems(options: {
   });
 
   return {
-    items: [newChat, undo, exportItem, dockItem, history, tools, interview, learnStructure, demoTeach],
+    items: [
+      newChat,
+      conversations,
+      compact,
+      instructions,
+      undo,
+      exportItem,
+      dockItem,
+      history,
+      tools,
+      interview,
+      learnStructure,
+      demoTeach,
+    ],
     dockItem,
   };
 }

@@ -10,7 +10,8 @@ import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProject
 import { setAiConfigProvider } from "@/project/editorIdentity";
 import { setAiActivityRecorder } from "@/project/tileMetadataDb";
 import { loadAiConfig } from "@/ai/llmClient";
-import { recordAiActivity } from "@/ai/activityLog";
+import { recordAiActivity, recordAiUiActionBatch } from "@/ai/activityLog";
+import { installAiUiEventCapture, setAiUiEventSink } from "@/ai/uiEventLog";
 import { PRODUCT_BRAND } from "@/brand";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
@@ -82,6 +83,12 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     setDevProjectFactory(createDevShowcaseProjectForLocation);
     setAiConfigProvider(loadAiConfig);
     setAiActivityRecorder(recordAiActivity as (input: unknown) => Promise<unknown>);
+    // AI 표면의 프론트 액션 수집. 수집기는 순수하게 모으고, «어디로 보낼지» 는 여기서 정한다
+    // (setAiActivityRecorder 와 같은 배선 규약). 위임 리스너 1개라 앞으로 추가되는 버튼도 들어온다.
+    setAiUiEventSink((events) => {
+      void recordAiUiActionBatch(events).catch(() => undefined);
+    });
+    installAiUiEventCapture();
     deepLinkedProjectAtBoot = hasDeepLinkedProject();
     // 첫 방문 게이트(2026-08-18 UX 리뷰 P0-1): URL에 ?project= 없고, 이 기기에 저장된
     // 선택한 작업도 없는 진짜 첫 방문은 배포 기본(공유) 프로젝트 행을 편집 대상으로 열지

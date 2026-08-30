@@ -286,6 +286,127 @@
 .ai-preference-popover .ai-preference-list {
   max-height: none;
   overflow-y: visible;
+
+/* ── 맥락 게이지: 액션 행의 28px 칩 하나 + 그 팝오버 ──
+   게이지는 숫자를 담으므로 정사각형이 아니다(폭만 풀고 높이는 28px 계약을 지킨다).
+   톤 3단계는 자동 압축 임계 기준이다 — idle / near(임계 80%) / warn(임계 초과). */
+.ai-composer-menu-btn.ai-context-meter {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 0 7px;
+  width: auto;
+}
+
+.ai-context-meter[data-tone="near"] {
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+  color: var(--warning);
+}
+
+.ai-context-meter[data-tone="warn"] {
+  background: var(--danger-muted);
+  border-color: color-mix(in srgb, var(--danger) 50%, transparent);
+  color: var(--danger);
+}
+
+.ai-context-panel {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  gap: var(--space-1);
+  left: 0;
+  max-height: min(52vh, 460px);
+  max-width: 380px;
+  overflow-y: auto;
+  padding: var(--space-2);
+}
+
+.ai-context-panel-headline {
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+
+.ai-context-panel-line {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.ai-context-panel-section-label {
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  padding-top: var(--space-1);
+  text-transform: uppercase;
+}
+
+.ai-context-panel-usage {
+  color: var(--text-1);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-context-panel-models {
+  display: grid;
+  gap: 2px;
+}
+
+.ai-context-panel-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.ai-context-panel-actions .ai-assistant-action {
+  text-align: center;
+}
+
+.ai-context-panel-actions .ai-assistant-action[hidden] {
+  display: none;
+}
+
+.ai-context-summary[hidden] {
+  display: none;
+}
+
+.ai-context-summary-toggle {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  padding: 0;
+  text-align: left;
+}
+
+.ai-context-summary-toggle:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.ai-context-summary-body {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  margin: var(--space-1) 0 0;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--space-1);
+  white-space: pre-wrap;
+}
+
+.ai-context-summary-body[hidden] {
+  display: none;
 }
 
 /* ── 도크별 조정 ── */
