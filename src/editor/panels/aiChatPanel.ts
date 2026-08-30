@@ -5,6 +5,7 @@
 // - ChatGPT OAuth 토큰은 브라우저에 저장하지 않는다. API 키 폴백만 설정 localStorage를 쓴다.
 
 import {
+  getMapEditHistoryDebugEntries,
   getMapEditHistoryMarker,
   getMapEditHistoryState,
   MAP_EDIT_HISTORY_EVENT,
@@ -54,7 +55,7 @@ import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { renderMarkdown } from "@/util/markdown";
-import { genId } from "@/util/id";
+import { genId, randomUuid } from "@/util/id";
 import { toast } from "@/util/toast";
 import {
   AssistantSession,
@@ -81,7 +82,9 @@ import { EMPTY_SESSION_USAGE } from "@/ai/sessionUsage";
 import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot } from "./aiContextMeter";
 import { openAiConversationHistoryModal } from "./aiConversationHistoryModal";
 import { openAiInstructionsModal } from "./aiInstructionsModal";
-import { recordAiActivity } from "@/ai/activityLog";
+import { aiActivityPersistenceState, extractCommitIdsFromAudit, recordAiActivity } from "@/ai/activityLog";
+import { aiUiEventMarker, listAiUiEvents, recordAiUiEvent, takeAiUiEventsSince } from "@/ai/uiEventLog";
+import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
 import {
   buildInterviewKickoff,
@@ -680,7 +683,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const startNewConversation = (reason: "manual" | "project-switch"): void => {
     // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
     // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
-    const hadConversation = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
+    const discardedEntries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length;
+    const hadConversation = discardedEntries > 0;
+    // 새 대화는 진행 중인 턴을 포기한다 — 그 사실과 버린 칸 수를 남긴다. 「대화가 사라졌다」는
+    // 신고가 새 대화 클릭인지 다른 결함인지 가르는 유일한 증거다.
+    recordAiUiEvent({
+      surface: "panel",
+      action: AI_UI_ACTIONS.newConversation,
+      detail: { reason, discardedEntries, abortedTurn: turnBusy, droppedQueue: pendingSends.length },
+    });
     // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 새 대화는 이유와 무관하게 진행 중인 턴을
     // 포기하며, 늦은 finally는 시작 당시 캡처한 대화와 감사 항목에만 저장한다.
     activeAbortController?.abort();
@@ -788,13 +799,32 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         );
         setStatus("압축 완료");
         toast("맥락을 압축했습니다.", "ok");
+        // 압축은 클릭 사실만으로 결과를 모른다 — 얼마가 줄었는지가 이 액션의 전부다.
+        recordAiUiEvent({
+          surface: "context-panel",
+          action: AI_UI_ACTIONS.contextCompact,
+          testid: "ai-context-compact",
+          detail: { kind: "done", beforeTokens: outcome.beforeTokens, afterTokens: outcome.afterTokens },
+        });
       } else {
         appendBubble("system", `압축하지 않았습니다 — ${outcome.reason}`);
         setStatus("압축 건너뜀");
+        recordAiUiEvent({
+          surface: "context-panel",
+          action: AI_UI_ACTIONS.contextCompact,
+          testid: "ai-context-compact",
+          detail: { kind: "skipped", reason: outcome.reason },
+        });
       }
     } catch (error) {
       appendBubble("system", `압축 실패: ${error instanceof Error ? error.message : String(error)}`);
       setStatus("압축 실패");
+      recordAiUiEvent({
+        surface: "context-panel",
+        action: AI_UI_ACTIONS.contextCompact,
+        testid: "ai-context-compact",
+        detail: { kind: "error", error: error instanceof Error ? error.message : String(error) },
+      });
     } finally {
       compacting = false;
       refreshContextMeter();
@@ -805,13 +835,25 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const undoContextCompaction = (): void => {
     const session = controller.session;
     if (!session || !sessionMethod("undoLastCompaction") || turnBusy || compacting) return;
+    const beforeTokens = sessionMethod("getContextUsage") ? (session.getContextUsage()?.contextTokens ?? null) : null;
     if (!session.undoLastCompaction()) {
       toast("되돌릴 압축이 없습니다.", "info");
+      recordAiUiEvent({ surface: "context-panel", action: AI_UI_ACTIONS.contextCompactUndo, testid: "ai-context-compact-undo", disabled: true, detail: { kind: "nothing-to-undo" } });
       return;
     }
     appendBubble("system", "직전 압축을 되돌렸습니다. 요약 전 원문 대화로 돌아갔습니다.");
     setStatus("압축 되돌림");
     refreshContextMeter();
+    recordAiUiEvent({
+      surface: "context-panel",
+      action: AI_UI_ACTIONS.contextCompactUndo,
+      testid: "ai-context-compact-undo",
+      detail: {
+        kind: "done",
+        beforeTokens,
+        afterTokens: sessionMethod("getContextUsage") ? (session.getContextUsage()?.contextTokens ?? null) : null,
+      },
+    });
   };
 
   /**
@@ -829,9 +871,33 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }): void => {
     if (turnBusy || compacting) {
       toast("진행 중인 응답이 끝난 뒤 되감으세요", "info");
+      // 거절도 남긴다. 실측(2026-08-30 진단 스펙)에서 이 경로가 조용해서, 되감기 버튼을 눌렀는데
+      // 위임 수집의 `click:ai-turn-rewind` 만 있고 의미 이벤트가 없는 «반쪽 기록» 이 나왔다.
+      recordAiUiEvent({
+        surface: "panel",
+        action: AI_UI_ACTIONS.turnRewind,
+        testid: "ai-turn-rewind",
+        disabled: true,
+        detail: { reason: turnBusy ? "turn-busy" : "compacting" },
+      });
       return;
     }
+    const historyDepthBefore = getMapEditHistoryDebugEntries().length;
     const reverted = revertToHistoryMarker(turn.marker);
+    const entriesBefore = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length;
+    // 클릭 사실만으로는 «실제로 되돌아갔는지» 를 알 수 없다 — 되돌린 스냅샷 수와 대화 절단
+    // 위치를 함께 남긴다. 되돌릴 기록이 없어 대화만 잘린 경우(revertedSnapshots 0)가 특히 중요하다.
+    recordAiUiEvent({
+      surface: "panel",
+      action: AI_UI_ACTIONS.turnRewind,
+      testid: "ai-turn-rewind",
+      detail: {
+        reverted,
+        revertedSnapshots: Math.max(0, historyDepthBefore - getMapEditHistoryDebugEntries().length),
+        entriesBefore,
+        entriesAfter: turn.entries.length,
+      },
+    });
     dropSession(controller);
     endAutonomousRun();
     // 잘린 대화도 모델에게는 이어져야 한다 — 남긴 앞부분을 다음 세션에 다시 주입한다.
@@ -1130,6 +1196,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const abortActiveTurn = (): void => {
     if (!activeAbortController || activeAbortController.signal.aborted) return;
     activeAbortController.abort();
+    // 중단 시점의 진행 정도를 함께 남긴다 — 툴 0개에서 끊긴 것과 40개 돌다 끊긴 것은 다른 사건이다.
+    const toolsSoFar = (controller.session?.getAuditEntries() ?? []).filter((entry) => entry.kind === "tool").length;
+    const droppedQueue = pendingSends.length;
     pendingSends.length = 0;
     refreshQueueIndicator();
     if (!abortNoticeShown) {
@@ -1138,6 +1207,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     setStatus("중단 중…");
     refreshAbortButton();
+    recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.turnAbort, detail: { toolsSoFar, droppedQueue } });
   };
 
   const sendText = async (
@@ -1188,6 +1258,29 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const turnConversationId = conversationId;
     const turnConversationScope = conversationScope;
     const auditHistoryAtTurnStart = [...controller.auditHistory];
+    // 이 턴의 활동 로그 식별자. 시작·종료가 같은 id 로 upsert 되므로 행이 늘지 않는다.
+    const turnLogId = randomUuid();
+    // 턴 구간에 눌린 프론트 액션만 이 턴 행에 싣기 위한 표식(src/ai/uiEventLog.ts).
+    const uiEventMarkerAtTurnStart = aiUiEventMarker();
+    // 세션 audit 은 턴을 넘어 누적된다 — 이 지점부터가 «이번 턴» 이다. 세션 전체를 넣고 뒤에서
+    // 자르면 긴 턴의 머리(사람 발언·플래너 결정)가 날아간다(2026-08-30 실측).
+    const sessionAuditCountAtTurnStart = session.getAuditEntries().length;
+    // 시작 시점에 먼저 남긴다. 새로고침·크래시·강제 종료로 종료 기록이 못 남아도 «무슨 지시였고
+    // 언제 시작했는지» 는 남는다 — 예전에는 완료만 기록해서 죽은 턴은 흔적이 없었다.
+    {
+      const startCfg = loadAiConfig();
+      void recordAiActivity({
+        id: turnLogId,
+        channel: "chat",
+        instruction: requestText,
+        projectContextKey: turnConversationScope,
+        model: startCfg.model,
+        liteModel: startCfg.liteModel,
+        result: { ok: false, pending: true },
+      }).catch(() => {
+        /* 기록 실패가 턴을 막지 않는다 */
+      });
+    }
     const abortController = new AbortController();
     activeAbortController = abortController;
     abortNoticeShown = false;
@@ -1539,9 +1632,36 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } finally {
       ghostPreviewUpdater.cancel();
       const turnEntries = [...auditHistoryAtTurnStart, ...session.getAuditEntries()];
+      const sessionAudit = session.getAuditEntries();
+      // 세션이 턴 중간에 교체되면(dropSession) 시작 인덱스가 현재 길이를 넘는다 — 그때는 있는 걸 다 쓴다.
+      const turnAudit =
+        sessionAudit.length >= sessionAuditCountAtTurnStart
+          ? sessionAudit.slice(sessionAuditCountAtTurnStart)
+          : sessionAudit;
+      const turnUiActions = takeAiUiEventsSince(uiEventMarkerAtTurnStart);
       if (!ownsTurn(true)) {
         // 프로젝트 전환이 ownership을 먼저 끊어도 늦게 정착한 결과는 시작 당시 대화에만 저장한다.
         if (!disposed) persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries });
+        // 예전에는 여기서 그냥 return 해서 «늦게 정착한 턴» 이 활동 로그에 아예 안 남았다.
+        // 소유권이 끊겼다는 사실 자체가 진단이므로 orphaned 로 표시해 남긴다.
+        void recordAiActivity({
+          id: turnLogId,
+          channel: "chat",
+          instruction: requestText,
+          projectContextKey: turnConversationScope,
+          result: {
+            ok: false,
+            orphaned: true,
+            error: turnCatchError ?? turnResult?.error,
+            stoppedReason: turnResult?.stoppedReason ?? "ownership-lost",
+            proposedCalls: turnResult?.proposedCalls.length,
+            assistantText: turnResult?.assistantText,
+          },
+          audit: turnAudit,
+          uiActions: turnUiActions,
+        }).catch(() => {
+          /* ignore */
+        });
         return;
       }
       endTurnProgress();
@@ -1558,7 +1678,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries }); // 시작 당시 대화 범위로 저장한다.
       // 채팅 턴마다 활동 로그(로컬 + Supabase best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
       const cfg = loadAiConfig();
-      const audit = session.getAuditEntries();
+      const audit = turnAudit;
       const toolFromAudit = audit
         .filter((entry): entry is Extract<typeof entry, { kind: "tool" }> => entry.kind === "tool")
         .map((entry) => ({
@@ -1574,11 +1694,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         summary: call.summary,
       }));
       void recordAiActivity({
+        id: turnLogId, // 시작 시점 pending 행과 같은 id — upsert 로 «완료» 로 덮인다.
         channel: "chat",
         instruction: requestText,
         projectContextKey: turnConversationScope,
         model: cfg.model,
         liteModel: cfg.liteModel,
+        mapId: editorState.get().currentMapId ?? undefined,
         result: {
           ok: !turnFailed && turnResult?.stoppedReason !== "error" && !turnCatchError,
           error: turnCatchError ?? turnResult?.error,
@@ -1588,6 +1710,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         },
         toolCalls: toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed,
         audit,
+        uiActions: turnUiActions,
       }).catch(() => {
         /* ignore */
       });
@@ -1638,6 +1761,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       on: {
         click: () => {
           retry.disabled = true;
+          // 무엇을 재시도했는지(원 오류)와 어느 지시였는지를 함께 남긴다 — 같은 오류의 반복
+          // 재시도는 이 행들이 없으면 서로 구분되지 않는다.
+          recordAiUiEvent({
+            surface: "panel",
+            action: AI_UI_ACTIONS.turnRetry,
+            testid: "ai-retry-turn",
+            detail: { error: message.slice(0, 200), instruction: requestText.slice(0, 120) },
+          });
           void executeTurn(session, requestText, (onEvent, signal) => session.retryLastTurn(onEvent, signal));
         },
       },
@@ -2190,10 +2321,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     void openToolBrowserModal();
   };
   const openHarness = (): void => {
+    const audit = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
     void openHarnessModal({
-      audit: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])],
+      audit,
       statusTimeline: controller.statusTimeline,
       getSnapshot: () => controller.session?.getHarnessSnapshot() ?? null,
+      // 프론트 액션은 오래된 순서로 온다 — 타임라인 병합이 시각으로 정렬하므로 그대로 넘긴다.
+      uiActions: listAiUiEvents(),
+      getUsage: () => (sessionMethod("getUsageTotals") ? (controller.session?.getUsageTotals() ?? EMPTY_SESSION_USAGE) : EMPTY_SESSION_USAGE),
+      commitIds: extractCommitIdsFromAudit(audit),
+      persistence: aiActivityPersistenceState(),
     });
   };
   // testid 호환용 숨은 트리거 (메뉴/테스트가 click 위임).
@@ -2215,6 +2352,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let refreshDockLabels: () => void = () => {};
   let syncGlassIdle: () => void = () => {};
   const applyTemperature = (next: AssistantTemperature): void => {
+    const from = readTemperature();
     const parsed = parseAssistantTemperature(next);
     if (options.onAssistantTemperatureChange) options.onAssistantTemperatureChange(parsed);
     else {
@@ -2222,6 +2360,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       persistAssistantTemperature(parsed);
     }
     refreshTemperatureChrome();
+    // 같은 지시가 온도에 따라 다르게 끝난다 — 어느 온도로 돌았는지가 사후 재현의 전제다.
+    recordAiUiEvent({ surface: "command-menu", action: AI_UI_ACTIONS.temperatureSwitch, detail: { from, to: parsed } });
   };
   const changeDock = (next: ChatDock): void => {
     if (options.onChatDockChange) options.onChatDockChange(next);
@@ -2231,11 +2371,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const onDockToggleClick = (): void => {
     if (turnBusy || runningProgress) {
       toast("작업이 끝난 뒤에 위치를 바꿀 수 있습니다.", "info");
+      // 거절도 기록한다 — "눌렀는데 안 바뀌었다" 를 사후에 구분하려면 이 행이 있어야 한다.
+      recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.dockSwitch, testid: "ai-dock-mode-btn", disabled: true, detail: { from: currentChatDock(), reason: "busy" } });
       return;
     }
+    const from = currentChatDock();
     if (options.onChatDockToggle) options.onChatDockToggle();
     else changeDock(cycleChatDock(currentChatDock()));
     refreshDockLabels();
+    recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.dockSwitch, testid: "ai-dock-mode-btn", detail: { from, to: currentChatDock() } });
   };
   // testid 호환용 숨은 토글(레이아웃 테스트·E2E).
   const dockToggleButton = el("button", {
@@ -2266,9 +2410,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const json = exportCombinedAudit(controller);
         if (!json) {
           toast("내보낼 대화가 없습니다.", "info");
+          recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.conversationExport, testid: "ai-export", disabled: true, detail: { entries: 0 } });
           return;
         }
         downloadJson("ai-session-audit.json", json);
+        recordAiUiEvent({
+          surface: "panel",
+          action: AI_UI_ACTIONS.conversationExport,
+          testid: "ai-export",
+          detail: {
+            format: "json",
+            bytes: json.length,
+            entries: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length,
+          },
+        });
       },
     },
   }) as HTMLButtonElement;
@@ -2968,6 +3123,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (collapsed && studio) applyStudio(false); // 접으면 스튜디오도 해제.
     savePanelCollapsed(collapsed);
     applyCollapsed();
+    // 턴 중에 접혔는지가 「답장이 안 보였다」류 신고의 갈림길이다.
+    recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.panelCollapse, detail: { collapsed, turnBusy, via: "toggle" } });
   };
   const restoreCollapsed = (): void => {
     if (!collapsed) return;
@@ -2976,6 +3133,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseAfterAiWork = false; // 레일 클릭으로 연 직후 타이머에 다시 접히지 않게
     savePanelCollapsed(false);
     applyCollapsed();
+    recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.panelCollapse, detail: { collapsed: false, turnBusy, via: "rail" } });
   };
   collapseButton.addEventListener("click", toggleCollapsed);
   collapsedRestore.addEventListener("click", restoreCollapsed);

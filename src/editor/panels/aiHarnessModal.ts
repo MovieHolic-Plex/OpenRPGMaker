@@ -4,6 +4,8 @@
 // 데이터 원천: 감사 로그(AuditEntry, 영속) + 살아있는 세션 스냅샷(주입 포함 원본 메시지).
 
 import type { AuditEntry, HarnessSnapshot } from "@/ai/assistantSession";
+import { EMPTY_SESSION_USAGE, type SessionUsageTotals } from "@/ai/sessionUsage";
+import type { AiUiEvent } from "@/ai/uiEventTypes";
 import { el } from "@/util/dom";
 
 // aiChatPanel의 StatusTransition과 같은 모양 — 순환 의존을 피하려고 구조만 받는다.
@@ -16,7 +18,23 @@ export interface HarnessModalInput {
   readonly audit: readonly AuditEntry[];
   readonly statusTimeline: readonly StatusPoint[];
   readonly getSnapshot: () => HarnessSnapshot | null;
+  /**
+   * 사람이 조수 표면에서 누른 것(src/ai/uiEventLog.ts). audit 과 시간순으로 병합해 한 줄씩 흐르게
+   * 한다 — 「압축을 누른 직후 턴이 깨졌다」류는 두 스트림을 따로 보면 절대 안 보인다.
+   */
+  readonly uiActions?: readonly AiUiEvent[];
+  /** 이 세션이 실제로 태운 토큰. 없으면 배지를 그리지 않는다(0 과 미지원을 섞지 않는다). */
+  readonly getUsage?: () => SessionUsageTotals;
+  /** 이 턴이 만든 프로젝트 커밋 id. */
+  readonly commitIds?: readonly string[];
+  /** 기록이 어디까지 갔는지 — 로컬 전용이면 배지로 알린다. */
+  readonly persistence?: { readonly remote: boolean; readonly diskMirror: boolean };
 }
+
+/** 타임라인 한 줄의 원천. 두 스트림을 시간순으로 병합하기 위한 판별 유니온. */
+type TimelineRow =
+  | { readonly at: string; readonly kind: "audit"; readonly entry: AuditEntry }
+  | { readonly at: string; readonly kind: "ui"; readonly event: AiUiEvent };
 
 const ORCH_AUDIT_PREFIX = "오케스트레이션 주입: ";
 const PHASE_AUDIT_PREFIX = "phase:";
@@ -104,6 +122,44 @@ function renderEntryRow(entry: AuditEntry): HTMLElement {
   });
 }
 
+/**
+ * 프론트 액션 한 줄. 위임 수집분은 action 이 `click:<testid>` 라 그대로 읽히고, 의미 이벤트는
+ * `detail` 에 결과 수치가 있으므로 그것을 접이식으로 붙인다 — 「눌렀다」와 「무엇이 바뀌었다」는
+ * 다른 정보다.
+ */
+function renderUiActionRow(event: AiUiEvent): HTMLElement {
+  const time = el("span", { class: "harness-time", text: timeLabel(event.at) });
+  const head = [
+    time,
+    badge(event.disabled ? "ui-blocked" : "ui", event.disabled ? "손(막힘)" : "손"),
+    el("code", { class: "harness-tool-name", text: event.action }),
+    el("span", { class: "harness-text", text: [event.surface, event.label].filter(Boolean).join(" · ").slice(0, 120) }),
+  ];
+  if (!event.detail) return el("div", { class: "harness-row is-ui", children: head });
+  return el("div", { class: "harness-row is-ui", children: [detailsRow(head, JSON.stringify(event.detail, null, 1))] });
+}
+
+/**
+ * 두 스트림을 시간순으로 병합한다. `at` 이 없는 audit 항목(초기 상태줄 등)은 **직전 항목의 시각을
+ * 물려받는다** — 빈 문자열로 정렬하면 그것들이 전부 맨 앞으로 몰려 순서가 거짓이 된다.
+ */
+export function mergeHarnessTimeline(
+  audit: readonly AuditEntry[],
+  uiActions: readonly AiUiEvent[],
+): readonly TimelineRow[] {
+  let carried = "";
+  const auditRows: TimelineRow[] = audit.map((entry) => {
+    if (entry.at) carried = entry.at;
+    return { at: carried, kind: "audit", entry };
+  });
+  const uiRows: TimelineRow[] = uiActions.map((event) => ({ at: event.at, kind: "ui", event }));
+  // 시각이 같으면 audit 를 먼저 둔다(안정 정렬) — 액션의 결과가 그 액션보다 앞서 보이지 않게 한다.
+  return [...auditRows, ...uiRows]
+    .map((row, index) => ({ row, index }))
+    .sort((a, b) => (a.row.at === b.row.at ? a.index - b.index : a.row.at < b.row.at ? -1 : 1))
+    .map(({ row }) => row);
+}
+
 function messageContentText(content: unknown): string {
   if (typeof content === "string") return content;
   return JSON.stringify(content, null, 1);
@@ -142,7 +198,16 @@ function renderRawMessages(snapshot: HarnessSnapshot | null): HTMLElement {
 
 function downloadHarnessJson(input: HarnessModalInput): void {
   const payload = JSON.stringify(
-    { exportedAt: new Date().toISOString(), snapshot: input.getSnapshot(), audit: input.audit, statusTimeline: input.statusTimeline },
+    {
+      exportedAt: new Date().toISOString(),
+      snapshot: input.getSnapshot(),
+      audit: input.audit,
+      statusTimeline: input.statusTimeline,
+      uiActions: input.uiActions ?? [],
+      usage: input.getUsage?.() ?? null,
+      commitIds: input.commitIds ?? [],
+      persistence: input.persistence ?? null,
+    },
     null,
     2
   );
@@ -159,35 +224,52 @@ export function openHarnessModal(input: HarnessModalInput): HTMLElement {
   document.querySelector("[data-testid='ai-harness-modal']")?.remove();
 
   const snapshot = input.getSnapshot();
+  const uiActions = input.uiActions ?? [];
   const toolEntries = input.audit.filter((entry) => entry.kind === "tool");
   const okCount = toolEntries.filter((entry) => entry.kind === "tool" && entry.ok).length;
   const injectionCount = input.audit.filter((entry) => entry.kind === "status" && entry.text.startsWith(ORCH_AUDIT_PREFIX)).length;
   const phaseCount = input.audit.filter((entry) => entry.kind === "status" && entry.text.startsWith(PHASE_AUDIT_PREFIX)).length;
-  // 토큰 합계: "출력 토큰 ~N" 꼬리표가 붙은 턴 종료 라인들을 합산한다(근사치).
-  const tokenTotal = input.audit.reduce((total, entry) => {
-    if (entry.kind !== "status") return total;
-    const match = /출력 토큰 ~(\d+)/.exec(entry.text);
-    return match ? total + Number(match[1]) : total;
-  }, 0);
+  // 토큰은 호출 지점 집계(sessionUsage)에서 온다. 예전에는 감사 로그 문자열에서
+  // `/출력 토큰 ~(\d+)/` 로 긁었는데, 그 값은 출력만 세고 요약·플래너 콜을 빼먹고 문구를 한 글자
+  // 고치면 조용히 0 이 됐다. 게이지는 이미 옮겼고 이 배지가 마지막 정규식이었다.
+  const usage = input.getUsage?.() ?? EMPTY_SESSION_USAGE;
+  const usageBadges = usage.calls > 0
+    ? [
+        badge("stat", `토큰 입력 ${usage.promptTokens.toLocaleString()} / 출력 ${usage.completionTokens.toLocaleString()}`),
+        badge("stat", `LLM 호출 ${usage.calls}회`),
+        // 미집계 호출은 "0 토큰" 과 다르다 — 합계가 과소집계임을 그 자리에서 밝힌다.
+        ...(usage.callsWithoutUsage > 0 ? [badge("warn", `사용량 미보고 ${usage.callsWithoutUsage}회`)] : []),
+      ]
+    : [];
+  const persistence = input.persistence;
+  // 워크트리 19/53 이 Supabase 미설정 + 디스크 미러 없음으로 아무것도 안 남기던 상태를 드러낸다.
+  const persistenceBadge = persistence && !persistence.remote && !persistence.diskMirror
+    ? [badge("warn", "기록 로컬 전용 — 300건 링버퍼")]
+    : [];
 
   const summary = el("div", {
     class: "harness-summary",
+    dataset: { testid: "ai-harness-summary" },
     children: [
       badge("model", `감독 ${snapshot?.model ?? "?"}`),
       ...(snapshot?.liteModel ? [badge("model", `실행 ${snapshot.liteModel}`)] : []),
       badge("stat", `툴 ✓${okCount}/✗${toolEntries.length - okCount}`),
       badge("stat", `주입 ${injectionCount}건`),
       badge("stat", `단계 전환 ${phaseCount}회`),
-      ...(tokenTotal > 0 ? [badge("stat", `출력 토큰 ~${tokenTotal}`)] : []),
+      ...(uiActions.length > 0 ? [badge("stat", `프론트 액션 ${uiActions.length}건`)] : []),
+      ...(input.commitIds && input.commitIds.length > 0 ? [badge("stat", `커밋 ${input.commitIds.length}건`)] : []),
+      ...usageBadges,
+      ...persistenceBadge,
     ],
   });
 
+  const merged = mergeHarnessTimeline(input.audit, uiActions);
   const timeline = el("div", {
     class: "harness-timeline",
     dataset: { testid: "ai-harness-timeline" },
-    children: input.audit.length > 0
-      ? input.audit.map(renderEntryRow)
-      : [el("p", { class: "harness-empty", text: "아직 기록이 없습니다. 대화를 시작하면 단계 전환·주입·툴 호출이 여기에 쌓입니다." })],
+    children: merged.length > 0
+      ? merged.map((row) => (row.kind === "ui" ? renderUiActionRow(row.event) : renderEntryRow(row.entry)))
+      : [el("p", { class: "harness-empty", text: "아직 기록이 없습니다. 대화를 시작하면 단계 전환·주입·툴 호출·프론트 액션이 여기에 쌓입니다." })],
   });
 
   const rawSection = el("details", {

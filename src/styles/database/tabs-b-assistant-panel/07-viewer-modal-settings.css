@@ -48,6 +48,11 @@
 .harness-row.is-phase {
   background: var(--control-bg);
 }
+/* 사람이 누른 줄 — 모델·툴 줄과 한눈에 갈라져야 「압축 직후 턴이 깨졌다」가 읽힌다. */
+.harness-row.is-ui {
+  border-left: 2px solid var(--accent);
+  padding-left: var(--space-2);
+}
 .harness-time {
   color: var(--text-3);
   flex: none;
@@ -87,6 +92,16 @@
 .harness-badge.is-model,
 .harness-badge.is-role-assistant {
   color: var(--accent);
+}
+/* 프론트 액션(손) — 토큰만 쓴다. 이 파일의 hex 리터럴은 예산 래칫에 잠긴 기존 값들이다. */
+.harness-badge.is-ui {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+.harness-badge.is-ui-blocked,
+.harness-badge.is-warn {
+  background: var(--warning-muted);
+  color: var(--warning);
 }
 .harness-text {
   color: var(--text-2);

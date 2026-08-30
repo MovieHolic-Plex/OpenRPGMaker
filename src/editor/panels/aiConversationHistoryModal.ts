@@ -19,6 +19,8 @@ import {
   type ConversationRecord,
   type ConversationSummary,
 } from "@/ai/conversationStore";
+import { recordAiUiEvent } from "@/ai/uiEventLog";
+import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { el } from "@/util/dom";
 
 let openBackdrop: HTMLElement | null = null;
@@ -116,9 +118,28 @@ export function openAiConversationHistoryModal(options: {
               if (isCurrent) return;
               const record = loadConversation(row.id);
               if (!record) {
+                // 목록에는 있는데 본문이 없다 — 조용히 새로 그리면 사라진 이유가 남지 않는다.
+                recordAiUiEvent({
+                  surface: "history-modal",
+                  action: AI_UI_ACTIONS.conversationRestore,
+                  testid: "ai-history-open",
+                  detail: { conversationId: row.id, kind: "missing" },
+                });
                 renderList();
                 return;
               }
+              // 복원한 칸 수가 곧 «어디까지 이어졌는가» 다. 클릭만으로는 알 수 없다.
+              recordAiUiEvent({
+                surface: "history-modal",
+                action: AI_UI_ACTIONS.conversationRestore,
+                testid: "ai-history-open",
+                detail: {
+                  conversationId: row.id,
+                  entries: record.entries.length,
+                  turnCount: row.turnCount,
+                  foreignProject: foreign,
+                },
+              });
               close();
               options.onOpen(record);
             },
@@ -131,6 +152,14 @@ export function openAiConversationHistoryModal(options: {
           dataset: { testid: "ai-history-delete" },
           on: {
             click: () => {
+              // 삭제는 되돌릴 수 없다 — 무엇을 지웠는지가 남아야 «없어졌다» 를 설명할 수 있다.
+              recordAiUiEvent({
+                surface: "history-modal",
+                action: AI_UI_ACTIONS.conversationDelete,
+                testid: "ai-history-delete",
+                label: row.title,
+                detail: { conversationId: row.id, turnCount: row.turnCount, wasCurrent: isCurrent },
+              });
               deleteConversation(row.id);
               renderList();
             },

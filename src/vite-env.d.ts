@@ -80,6 +80,11 @@ interface Window {
   __oprnExportAiActivityLogs?: (limit?: number) => string;
   // 이 탭의 런 식별자. DB 에서 "내 런의 최신 턴" 을 고를 때 쓴다(scripts/list-ai-activity.mjs --run).
   __oprnAiActivityRunId?: () => string;
+  // AI 표면의 프론트 액션 링버퍼(src/ai/uiEventLog.ts) — 어떤 버튼을 눌렀는지.
+  __oprnAiUiEventLatest?: unknown;
+  __oprnListAiUiEvents?: (limit?: number) => readonly unknown[];
+  __oprnClearAiUiEvents?: () => void;
+  __oprnFlushAiUiEvents?: () => void;
   // 원격 전송 실패분 큐 — 조용한 유실을 드러내기 위한 진단 표면(src/project/remoteOutbox.ts).
   __oprnRemoteOutbox?: () => unknown;
   __oprnFlushRemoteOutbox?: () => Promise<unknown>;

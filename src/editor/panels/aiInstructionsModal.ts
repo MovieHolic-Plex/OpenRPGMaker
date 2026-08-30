@@ -9,6 +9,8 @@
 // (ai/projectInstructions.ts · contextBuilder.withProjectInstructions).
 
 import { AI_INSTRUCTIONS_MAX_CHARS, normalizeAiInstructions } from "@/ai/projectInstructions";
+import { recordAiUiEvent } from "@/ai/uiEventLog";
+import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -59,11 +61,24 @@ export function openAiInstructionsModal(options: {
       click: () => {
         const next = normalizeAiInstructions(textarea.value);
         if (next === current) {
+          // 안 바뀐 저장도 남긴다 — 「지침을 저장했는데 안 먹었다」의 절반은 이 경로다.
+          recordAiUiEvent({
+            surface: "instructions-modal",
+            action: AI_UI_ACTIONS.instructionsSave,
+            testid: "ai-instructions-save",
+            detail: { chars: next.length, changed: false },
+          });
           close();
           return;
         }
         // 프로젝트 데이터를 바꾸는 편집이므로 되돌리기 스냅샷을 남긴다(다른 프로젝트 편집과 동일).
         recordProjectSnapshot("감독 지침 편집");
+        recordAiUiEvent({
+          surface: "instructions-modal",
+          action: AI_UI_ACTIONS.instructionsSave,
+          testid: "ai-instructions-save",
+          detail: { chars: next.length, beforeChars: current.length, changed: true, cleared: next.length === 0 },
+        });
         store.update((draft) => {
           if (next) draft.aiInstructions = next;
           else delete draft.aiInstructions;
