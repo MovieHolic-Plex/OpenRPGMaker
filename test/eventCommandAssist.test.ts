@@ -2,11 +2,17 @@
 // 이벤트 명령 AI Assist — 순수 로직(프롬프트/파싱·검증/자가수정 루프) + UI(fakeDom 최소 렌더).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  aiCommandKinds,
   buildEventAssistPrompt,
   parseAndValidate,
   resolveAssistScope,
   runEventCommandAssist,
 } from "@/ai/eventCommandAssist";
+import {
+  EVENT_RESOURCE_SLOT_LABELS,
+  eventResourceIdSet,
+  listEventResourceOptions,
+} from "@/ai/eventResourceCatalog";
 import type { AiConfig } from "@/ai/llmClient";
 import {
   hasEventAiStagedDraft,
@@ -120,18 +126,61 @@ describe("buildEventAssistPrompt", () => {
     expect(prompt.match(/사용 가능한 kind: ([^\n]+)/u)?.[1]?.split(", ")).not.toContain("changeFactionStance");
   });
 
-  it("resourceId 명령과 실제 리소스 id 목록을 함께 제공한다", () => {
+  it("resourceId 명령을 쓰게 하되 id 목록을 종류별로 실어 준다", () => {
     const project = testProject();
     const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: testPage() });
     const kinds = prompt.match(/사용 가능한 kind: ([^\n]+)/u)?.[1]?.split(", ") ?? [];
 
     expect(kinds.length).toBeGreaterThan(0);
-    for (const kind of ["playAudio", "showPicture", "changeFace", "playMovie"]) {
+    for (const kind of ["playAudio", "showPicture", "changeFace"]) {
       expect(kinds).toContain(kind);
       expect(prompt).toContain(`- ${kind}: `);
     }
-    expect(prompt).toContain("### 리소스");
-    expect([...collectResourceIds(project)].some((id) => prompt.includes(`- ${id}:`))).toBe(true);
+    // 종류별 절이 서기고, 각 절에 그 종류의 실제 id 가 보여야 한다.
+    for (const slot of ["faceset", "music", "sound", "picture"] as const) {
+      const label = EVENT_RESOURCE_SLOT_LABELS[slot];
+      expect(prompt).toContain(`### ${label} id`);
+      const first = listEventResourceOptions(slot, project)[0]!;
+      expect(prompt).toContain(`- ${first.id}:`);
+    }
+    expect(prompt).toContain("playAudio.resourceId");
+  });
+
+  it("칩셋 id 를 오디오·얼굴 칸에 쓸 수 있는 것으로 제시하지 않는다 — 한 덩어리 목록은 없다", () => {
+    const project = testProject();
+    const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: testPage() });
+    const chipsetId = [...collectResourceIds(project)].find((id) => id.startsWith("tex_easyrpg_chipset"))!;
+
+    // 직전 구현은 1851개를 한 절에 실어 앞 40개가 전부 칩셋·아이콘이었다.
+    expect(prompt).not.toContain("### 리소스\n");
+    for (const slot of ["music", "sound", "faceset", "movie"] as const) {
+      expect(eventResourceIdSet(slot, project).has(chipsetId)).toBe(false);
+    }
+  });
+
+  it("고를 리소스가 없는 kind 는 프로젝트를 보고 목록에서 뺀다 — 동영상", () => {
+    const blank = testProject();
+    expect(listEventResourceOptions("movie", blank)).toHaveLength(0);
+    expect(aiCommandKinds(blank)).not.toContain("playMovie");
+    const blankPrompt = buildEventAssistPrompt({ project: blank, mapId: blank.startMapId, page: testPage() });
+    expect(blankPrompt.match(/사용 가능한 kind: ([^\n]+)/u)?.[1]?.split(", ")).not.toContain("playMovie");
+
+    const withMovie = testProject();
+    withMovie.assets.uploaded["upload-intro-movie"] = {
+      id: "upload-intro-movie",
+      name: "오픈생 영상",
+      kind: "movie",
+      dataUrl: "data:video/webm;base64,AA==",
+      meta: {},
+    };
+    expect(aiCommandKinds(withMovie)).toContain("playMovie");
+    const moviePrompt = buildEventAssistPrompt({
+      project: withMovie,
+      mapId: withMovie.startMapId,
+      page: testPage(),
+    });
+    expect(moviePrompt).toContain("### 동영상 id");
+    expect(moviePrompt).toContain("- upload-intro-movie:");
   });
 
   it("맵 목록에 transfer 좌표를 찍을 정확한 크기 문구를 싣는다", () => {
@@ -274,6 +323,70 @@ describe("parseAndValidate", () => {
       { kind: "transfer", mapId: project.startMapId, x: 1, y: 1, direction: "retain", fade: "black" } as Command,
     ];
     expect(parseAndValidate(project, JSON.stringify(inside)).ok).toBe(true);
+  });
+
+  it("종류가 맞는 얼굴·소리·그림 resourceId 는 통과한다", () => {
+    const project = testProject();
+    const face = listEventResourceOptions("faceset", project)[0]!.id;
+    const music = listEventResourceOptions("music", project)[0]!.id;
+    const sound = listEventResourceOptions("sound", project)[0]!.id;
+    const picture = listEventResourceOptions("picture", project)[0]!.id;
+
+    const result = parseAndValidate(project, JSON.stringify([
+      { kind: "changeFace", resourceId: face, position: "left", flipHorizontally: false },
+      { kind: "playAudio", resourceId: music, loop: true },
+      { kind: "playAudio", resourceId: sound, loop: false },
+      { kind: "showPicture", pictureId: "pic1", resourceId: picture, x: 0, y: 0 },
+    ]));
+
+    if (!result.ok) throw new Error(result.errors.join(" / "));
+    expect(result.commands).toHaveLength(4);
+  });
+
+  it("칩셋 id 를 playAudio 에 쓰면 반려하고 쓸 수 있는 id 를 알려준다", () => {
+    const project = testProject();
+    const chipsetId = [...collectResourceIds(project)].find((id) => id.startsWith("tex_easyrpg_chipset"))!;
+
+    // 전역 집합 소속만 보는 기존 참조 검증은 이걸 통과시킨다 — 그래서 종류 검증이 필요하다.
+    expect(collectResourceIds(project).has(chipsetId)).toBe(true);
+
+    const result = parseAndValidate(project, JSON.stringify([
+      { kind: "playAudio", resourceId: chipsetId, loop: true },
+    ]));
+
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("칩셋 id 가 소리로 통과했습니다");
+    const message = result.errors.join(" ");
+    expect(message).toContain("playAudio");
+    expect(message).toContain(chipsetId);
+    expect(message).toContain(EVENT_RESOURCE_SLOT_LABELS.music);
+  });
+
+  it("얼굴 칸에 음악 id 를 쓰는 어깃남도 잡고, 번 칸은 「얼굴 지우기」로 통과시킨다", () => {
+    const project = testProject();
+    const music = listEventResourceOptions("music", project)[0]!.id;
+
+    const mismatched = parseAndValidate(project, JSON.stringify([
+      { kind: "changeFace", resourceId: music, position: "left", flipHorizontally: false },
+    ]));
+    expect(mismatched.ok).toBe(false);
+    if (!mismatched.ok) expect(mismatched.errors.join(" ")).toContain(EVENT_RESOURCE_SLOT_LABELS.faceset);
+
+    const cleared = parseAndValidate(project, JSON.stringify([
+      { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false },
+    ]));
+    if (!cleared.ok) throw new Error(cleared.errors.join(" / "));
+  });
+
+  it("동영상이 없는 프로젝트에서 playMovie 는 어느 id 로도 통과하지 못한다", () => {
+    const project = testProject();
+    const picture = listEventResourceOptions("picture", project)[0]!.id;
+    const result = parseAndValidate(project, JSON.stringify([
+      { kind: "playMovie", resourceId: picture, wait: true, skippable: true },
+    ]));
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("동영상이 없는데 playMovie 가 통과했습니다");
+    expect(result.errors.join(" ")).toContain(EVENT_RESOURCE_SLOT_LABELS.movie);
   });
 
   it("알 수 없는 kind는 shape 에러로 거부한다", () => {
@@ -536,6 +649,35 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(harness.replaced).toHaveLength(0);
     findByTestId(harness.panel, "ai-event-apply")!.click();
     expect(harness.replaced).toHaveLength(0);
+  });
+
+  it("생성 중 재렌더된 뒤에도 살아 있는 도크의 생성 버튼이 다시 활성된다", async () => {
+    const pending = deferredFetch();
+    const page = testPage([{ kind: "text", body: "처음 대사" }]);
+    const first = renderPanel("sk-test", page);
+    findByTestId(first.panel, "ai-event-input")!.value = "대사를 고쳐 줘";
+    findByTestId(first.panel, "ai-event-generate")!.click();
+    await vi.waitFor(() => expect(pending.mock).toHaveBeenCalledTimes(1));
+
+    // 생성 중 스토어 갱신 → content.ts 가 본문을 다시 그린다. 이전 도크는 문서에서 떨어진다.
+    const live = renderPanel("sk-test", page);
+    const liveGenerate = findByTestId(live.panel, "ai-event-generate") as unknown as HTMLButtonElement;
+    // 새 도크는 busy 상태를 이어받아 잠개 있어야 한다(같은 원으로 둘째 호출 금지).
+    expect(liveGenerate.disabled).toBe(true);
+
+    pending.resolve(JSON.stringify([{ kind: "text", body: "AI가 고친 대사" }]));
+    await vi.waitFor(() => expect(findByTestId(live.panel, "ai-event-result")!.hidden).toBe(false));
+
+    // 예전에는 finally 가 분리된 옛 도크의 버튼만 풀어서 사용자가 재생성을 영구히 릻혔다.
+    expect(liveGenerate.disabled).toBe(false);
+
+    // 잠긴 것이 아니라 진짜로 다시 생성할 수 있어야 한다.
+    const second = deferredFetch();
+    findByTestId(live.panel, "ai-event-input")!.value = "한 번 더 고쳐 줘";
+    liveGenerate.click();
+    await vi.waitFor(() => expect(second.mock).toHaveBeenCalledTimes(1));
+    second.resolve(JSON.stringify([{ kind: "text", body: "다시 고친 대사" }]));
+    await vi.waitFor(() => expect(liveGenerate.disabled).toBe(false));
   });
 
   it("취소를 누르면 초안만 지우고 목록을 건드리지 않는다", async () => {

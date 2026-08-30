@@ -408,7 +408,13 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
         commandCount: page.commands.length,
       }));
     } finally {
+      // 자기 클로저의 버튼과 **살아 있는 도크의 버튼**을 모두 푼다. 생성 중 스토어가 갱신되면
+      // 이 클로저의 버튼은 문서에서 떨어져 나간 옛 도크 것이고, 새 도크는 `statusKind === "busy"`
+      // 를 보고 자기 버튼을 잠갔다. 상태 쓰기는 재렌더를 부르지 않으므로 여기서 직접 풀지 않으면
+      // 사용자가 다시 생성할 방법이 영구히 없어진다.
       generateBtn.disabled = false;
+      const active = liveDock && liveDock.key === key ? liveDock : null;
+      if (active) active.setGenerating(false);
     }
   };
 
