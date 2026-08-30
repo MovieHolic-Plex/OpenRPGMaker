@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
-import dewVillageDemo from "./fixtures/projects/dew-village-demo.json";
+// legacy 복구 경로를 검사하는 아램 세 테스트는 **오래된 프로젝트 표본**이 입력이어야 한다.
+// 이 사본은 그 용도로 오래된 상태를 유지한다 — 출하 픽스처
+// (src/project/defaults/fixtures/)는 npm run fixture:sync 로 항상 현행 기본값이므로 여기에 쓰면
+// 복구할 것이 없어 세 테스트가 조용하게 무의밌해진다.
+import dewVillageDemoLegacySpecimen from "./fixtures/projects/dew-village-demo.json";
 import {
   DEFAULT_SUPABASE_PROJECT_ID,
   hydrateLastRemoteCommitTip,
@@ -132,7 +136,7 @@ describe("Supabase project sync", () => {
   });
 
   it("옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다", async () => {
-    const source = structuredClone(dewVillageDemo) as unknown as Record<string, unknown>;
+    const source = structuredClone(dewVillageDemoLegacySpecimen) as unknown as Record<string, unknown>;
     const database = source.database as { battleAnimations: { id: string }[] };
     expect(database.battleAnimations).toHaveLength(12);
     expect(database.battleAnimations.some((animation) => animation.id.startsWith("anim_gen_"))).toBe(false);
@@ -190,7 +194,7 @@ describe("Supabase project sync", () => {
   });
 
   it("참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다", async () => {
-    const source = structuredClone(dewVillageDemo) as unknown as Record<string, unknown>;
+    const source = structuredClone(dewVillageDemoLegacySpecimen) as unknown as Record<string, unknown>;
     const expectedNames: Readonly<Record<string, string>> = {
       item_bronze_sword: "청동 검",
       item_iron_sword: "철 검",
@@ -230,7 +234,7 @@ describe("Supabase project sync", () => {
   });
 
   it("액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다", async () => {
-    const source = structuredClone(dewVillageDemo) as unknown as Record<string, unknown>;
+    const source = structuredClone(dewVillageDemoLegacySpecimen) as unknown as Record<string, unknown>;
     const database = source.database as { skills: Record<string, unknown>[] };
     database.skills[0]!.actionSkill = {
       kind: "projectile",
