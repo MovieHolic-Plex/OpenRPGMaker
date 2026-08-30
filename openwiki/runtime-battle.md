@@ -168,6 +168,29 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - MV is a front-view template, not a color-only compact-HUD variant: 448px field/party + 192px command rail, field row above a four-column party status row, command host on the full right rail. The shared compact layer uses later `!important` rules, so `_mv.css` must reassert its field/host/party/message placement with matching `!important` declarations and style the current `.battle-actor-status` DOM (not legacy `.battle-actor`). The host is layout-only (`pointer-events:none`); the visible panel and field enemies receive pointers.
 - Browser regression evidence is split by behavior: `battle-keyboard-input.spec.ts` must drive the real test-play window with keyboard only and prove root cursor/focus movement, submenu confirm/cancel, and target confirm/cancel without pointer clicks. `battle-skins-visual-qa.spec.ts` covers layout: command phase asserts no command/party rectangle intersection and zero visible command/status text intersections; target phase uses `document.elementFromPoint()` at the enemy center and requires the hit to be the enemy or its descendant. `qa-pokemon-dom.spec.ts` uses the current Scarloxy starter species, proves a complete monster-party attack changes HP and returns to actor command, and checks root-command label intersections at 375/768/1280 widths. At widths up to 480px the Pokemon surface hides the keyboard-only hint; pointer-capable commands remain available. These focused Playwright tests must pass in addition to overflow checks.
 
+- **커스텀 프로퍼티로 길이를 넘길 때 `0` 이 아니라 `0px` 을 써라 — 단위 없는 0 은 `calc()` 를 죽인다(2026-08-30).**
+  `_rm2003.css` 가 `--battle-field-border-width: 0` 을 단위 없이 선언하고 있었다.
+  `04-anim-damage-layers.css` 는 그 변수를
+  `calc(var(--battle-field-border-width) + var(--battle-stage-inset-top))` 로 소비한다.
+  CSS `calc` 는 단위 없는 0 과 길이를 더할 수 없으므로 `calc(0 + 8px)` 는 **invalid** 이고,
+  그러면 `.battle-animation-layer` 의 `inset` 선언이 통째로 버려진다. 절대배치 레이어는 남은
+  `auto` 로 **0×0 수축**하고, 그 위에서 풀리는 모든 백분율(`--battle-node-x/y`)이 0 이 되어
+  이펙트가 무대 좌상단에 쌓인다.
+  실측 2026-08-30(출하 `player.html`, 기본 스킨 rm2003, 1024×768):
+  레이어 `computed width 0px height 0px`, 사용된 inset `top 0 right 640 bottom 304 left 0`,
+  씬 `grid-template-rows 304px 176px 0px`, 필드 `640×304` — **필드는 정상인데 레이어만 접혔다.**
+  이펙트 중심이 대상 스프라이트에서 가로 −0.971 · 세로 −0.911(스프라이트 높이 배수) 벗어났다.
+  이것이 "전투 애니메이션 좌표가 이상함" 의 근본 원인이었고, 앵커 계약만 고쳐도 이 수축 때문에
+  측정이 실패해 옛 경로로 떨어졌다.
+  **왜 `04-anim-damage-layers.css` 의 검증 주석은 이걸 놓쳤나**: 그 주석의 계산 검증은
+  vxace(`--battle-field-border-width` = 기본 2px) 기준이었다. 기본 스킨 rm2003 은 그 변수를
+  0 으로 덮으므로 검증한 스킨에서만 성립했다. 무대 기하 주석을 고칠 때는 **기본 스킨에서**
+  실측하라.
+  `--battle-window-skin-width: 0` 은 `border-image-width` 가 소비하는데 그 속성은 단위 없는
+  배수를 받으므로 옳다 — 모든 0 에 단위를 붙이라는 규칙이 아니라, **`calc()` 에 길이로 들어가는
+  변수**에 한한 규칙이다.
+  회귀 가드: `test/runtime/battle-target-anim.spec.ts` 가 `data-animation-anchor-why` 를 읽어
+  컨테이닝 블록이 접혔는지 이름 대고 실패한다.
 - **전투 애니메이션 앵커는 대상 스프라이트를 실측해서 정한다(2026-08-30).** 산식은 순수 함수
   `battleAnimationAnchor`(`src/player/battleAnimationAnchor.ts`)에 있고, `battleAnimationDom.positionAnimation`
   이 `.battle-animation-layer` 와 대상 스프라이트(`battlerSpriteNode`: `.battle-enemy-image` /
@@ -181,6 +204,10 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   가리키고 `.battle-animation` 이 `translate(-50%, -55%)` 로 12px 만 올려 줬으므로, 144px 급 스프라이트에서
   이펙트가 발목 높이에 찍혔다. 그 백분율 복사는 애니 레이어와 배틀러 그룹의 컨테이닝 블록이 픽셀
   단위로 같아야만 성립했고(과거 실측 72px 어긋남), `position`/`scope` 는 `data-*` 로 찍히기만 했다.
+  기준은 **요소의 실제 컨테이닝 블록**(`offsetParent`)의 **패딩 박스**다 — 레이어 엘리먼트를
+  그대로 쓰지 않는 이유는 위 0×0 수축 사례이고, 경계 박스가 아니라 패딩 박스인 이유는
+  `left`/`top` 백분율이 패딩 박스에서 풀리기 때문이다. **붙인 뒤에 잰다** — 순서가 뒤였을 때
+  레이어 박스가 0×0 으로 잡혔다.
   실측 못 하는 환경(레이아웃 없는 happy-dom, 아직 로드 전이라 rect 0×0)에서는 옛 복사 경로가 폴백으로
   남고 `data-animation-anchor="fallback"` 이 찍힌다 — 가드는 이 속성으로 폴백 회귀를 잡는다.
   **남은 간극**: `scope: "allTargets"` 의 N개 동시 재생은 아직 없다. `BattleAnimationSnapshot` 이
@@ -191,9 +218,21 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   실루엣이 아니고(아군 노드는 `176×192` 고정 그리드 박스), 기본 스킨 rm2003 은 같은 노드에 코너
   리티클(`.battle-target-brackets`)을 이미 그려 조준점이 두 개로 읽혔다. pokemon 스킨은 이미 그 사각형을
   무효화하고 화살표 + 스프라이트 깜빡임으로 갈아탄 상태였으므로, 기본 경로만 옛 표현에 남아 있었던 것이다.
+  **선언만 지우면 안 된다 — UA 기본 포커스 링이 그 자리를 메운다.** 흰 사각형 규칙을 지웠을 때
+  선택된 적의 계산된 outline 이 `1px auto` 로 남았다(실측 2026-08-30). 즉 옛 규칙은 브라우저
+  기본 링을 덮고 있었을 뿐이고, 얇아진 사각형이 그대로 보인다. 그래서
+  `.battle-enemy:focus/-visible`, `.battle-actor:focus/-visible` 에 `outline: 0` 을 **명시**한다.
+  접근성 판단: 이 전투는 키보드 전용 + 자체 커서 모델이고, 선택 상태는 리티클 + 스프라이트 펄스
+  두 겹으로 1px 링보다 강하게 표시되며 `battleFieldDom` 이 `aria-selected` 를 함께 갱신한다.
+  커맨드 버튼의 `:focus-visible` 스타일(03/08/13/17)은 건드리지 않는다.
   대체 연출 `@keyframes battle-target-pulse` 는 **노드가 아니라 스프라이트**에 건다 — `.battle-enemy` 의
   `filter` 는 접지 그림자(`07-640-scene-turn-ribbon.css`)가 이미 쓰고 있어 노드에 걸면 그림자가 함께
   깜빡인다. 윤곽 색은 `--oprn-battle-window-light` 토큰을 쓴다(하드코딩 hex 는 CSS 예산 래칫이 잡는다).
+  **두 키프레임 모두 `--battle-sprite-filter` 를 먼저 깔아야 한다.** `.battle-enemy-image` 에는
+  배경 분리용 `brightness(1.4) contrast(1.5) saturate(1.4)` 가 상시로 걸려 있고
+  (01-scene-base.css), CSS 애니메이션은 `filter` 속성을 **대체**하므로 `filter: none` 키프레임이
+  0.62초마다 그 보정을 날려 선택된 적만 배경에 묻혔다 깨어나듯 깜빡였다. 중립값
+  (`brightness(1) saturate(1)`)으로도 해결되지 않는다 — 기본 사슬 자체를 다시 깔아야 한다.
   `.battle-has-result` 에서는 노드와 스프라이트 **양쪽** 을 꺼야 승리 화면에서 죽은 적이 계속 깜빡이지 않는다.
   하단 대상 메뉴 행은 `08-640-target-panels.css` 의 자기 규칙(금색 그라데이션 + `outline: 0`)이 있어
   아무것도 잃지 않는다.
