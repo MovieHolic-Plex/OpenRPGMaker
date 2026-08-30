@@ -285,9 +285,14 @@ describe("배틀러 idle 애니메이션 — CSS 계약", () => {
     expect(css).not.toContain("background-size: calc(100% * var(--battler-anim-frames)) 100%");
   });
 
-  it("죽은 배틀러는 숨을 쉬지 않는다", () => {
-    const dead = css.slice(css.indexOf(".battle-pose-dead .battle-enemy-image[data-battler-anim]"));
-    expect(dead.slice(0, dead.indexOf("}"))).toMatch(/animation:\s*none/);
+  it("죽은 배틀러는 숨을 쉬지 않고, 원본 그림으로 눕는다", () => {
+    const declarations = css.replace(/\/\*[\s\S]*?\*\//g, "");
+    const dead = declarations.slice(declarations.indexOf(".battle-pose-dead .battle-enemy-image[data-battler-anim]"));
+    const body = dead.slice(0, dead.indexOf("}"));
+    expect(body).toMatch(/animation:\s*none/);
+    // 멈추기만 하면 영상 프레임 0(원본과 다른 순간)으로 굳는다.
+    expect(body).toContain("object-position: 50% 50%");
+    expect(body).toMatch(/background-image:\s*none/);
   });
 
   it("감속·고대비·인쇄에서 <img> 배틀러는 정적 src 로 되돌아간다", () => {

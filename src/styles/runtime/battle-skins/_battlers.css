@@ -135,7 +135,10 @@
 .battle-pose-dead .battle-enemy-image[data-battler-anim],
 .battle-pose-dead .battle-actor-image[data-battler-anim] {
   animation: none;
-  background-position-x: 0%;
+  /* 멈추는 것으로 끝내면 시체가 영상 프레임 0 — 원본과 다른 순간 — 으로 굳는다.
+     감속·고대비 처방과 같이 정적 `src` 로 돌려 원본 그림으로 눕힌다. */
+  object-position: 50% 50%;
+  background-image: none;
 }
 
 /* 감속 모드·고대비·인쇄 — `<img>` 티어는 **정적 `src` 로 되돌린다**.
