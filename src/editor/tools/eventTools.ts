@@ -182,7 +182,7 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[]): voi
  * 명시적 경로이므로, 그 표시가 없는 대화형 action 페이지에만 주민 기본 그래픽을 채운다.
  */
 function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
-  if (page.trigger?.kind !== "action") return false;
+  if (page.trigger?.kind !== "action" || page.priority === "below") return false;
   if (page.graphic?.transparent === true || page.graphic?.sprite !== undefined) return false;
   return (page.commands ?? []).some((command) => DIALOGUE_COMMAND_KINDS.has(command.kind));
 }
@@ -207,11 +207,16 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
   if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
   if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
   if (isInvisibleTalkablePage(page)) {
-    page.graphic = resolveGraphicQuery("villager");
+    const siblingGraphic = event.pages?.find(
+      (sibling) => sibling !== page && sibling.graphic?.sprite !== undefined,
+    )?.graphic;
+    page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : resolveGraphicQuery("villager");
     warnings?.push(
-      `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
-        `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
-        `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
+      siblingGraphic
+        ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
+        : `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
+          `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
+          `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
     );
   } else if (page.graphic === undefined) {
     page.graphic = {};
@@ -1480,7 +1485,7 @@ const placeBattleBlocker: ToolDefinition = {
     const intro = (args.intro as string[] | undefined) ?? ["적이 앞을 가로막았다!"];
     const victory = (args.victory as string[] | undefined) ?? ["길이 열렸다."];
     const victoryItems = (args.victoryItems as Array<{ itemId: string; amount: number }> | undefined) ?? [];
-    const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
+    const graphic = resolveGraphic((args.graphic as GraphicSpec | undefined) ?? { query: "monster" });
     const event = buildFieldMonsterEvent({
       eventId: id,
       x,
@@ -1494,9 +1499,10 @@ const placeBattleBlocker: ToolDefinition = {
     });
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    const warnings = adjusted
-      ? [placementAdjustedWarning(`전투 블로커 '${troopId}'`, { x: requestedX, y: requestedY }, { x, y })]
-      : [];
+    const warnings = [
+      ...(args.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
+      ...(adjusted ? [placementAdjustedWarning(`전투 블로커 '${troopId}'`, { x: requestedX, y: requestedY }, { x, y })] : []),
+    ];
     return {
       summary: `${map.name}에 전투 블로커 '${troopId}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
       data: { eventId: id, clearSwitchId, x, y, adjusted },
@@ -1607,7 +1613,7 @@ const makeChaseScene: ToolDefinition = {
     if (!inMapBounds(map, chaser.at.x, chaser.at.y)) {
       throw new ToolError(`추격자 위치가 맵 밖입니다: (${chaser.at.x}, ${chaser.at.y})`, { code: "chaser-out-of-bounds", mapId: map.id, x: chaser.at.x, y: chaser.at.y });
     }
-    const graphic = resolveGraphic(chaser.graphic as GraphicSpec | undefined);
+    const graphic = resolveGraphic((chaser.graphic as GraphicSpec | undefined) ?? { query: "monster" });
     const id = genId("ev_chaser");
     // 추격자는 캐릭터형 — 벽 위에서 시작하면 첫 프레임부터 갇힌다.
     const placement = resolveEventPlacement(draft, map, chaser.at.x, chaser.at.y, {
@@ -1656,9 +1662,10 @@ const makeChaseScene: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(draft, map) : undefined;
-    const warnings = placement.adjusted
-      ? [placementAdjustedWarning("추격자", chaser.at, placement)]
-      : [];
+    const warnings = [
+      ...(chaser.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
+      ...(placement.adjusted ? [placementAdjustedWarning("추격자", chaser.at, placement)] : []),
+    ];
     return {
       summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
       data: { eventId: id, safeZone, activateSwitch, checkpointEventId, x: placement.x, y: placement.y, adjusted: placement.adjusted },

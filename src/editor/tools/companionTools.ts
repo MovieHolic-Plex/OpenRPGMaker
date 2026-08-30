@@ -10,7 +10,12 @@
 // "0~3 패턴"이 아니라 시트 프레임 인덱스이고, 원시 숫자를 넣으면 캐릭터가 0번으로 고정된다.
 
 import { pickNpcGraphic } from "@/assets/charsetQuery";
-import { charsetFollowerGraphic, MAX_FOLLOWER_TRAIL_POINTS, resolveCompanionRules } from "@/project/followers";
+import {
+  charsetFollowerGraphic,
+  DEFAULT_MONSTER_FIELD_CHARSET,
+  MAX_FOLLOWER_TRAIL_POINTS,
+  resolveCompanionRules,
+} from "@/project/followers";
 import type { Command, EventPage, EventPageGraphic, GameEvent, GameMap, Project, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
 import { ensureNamedSwitch } from "./flagHelpers";
@@ -84,6 +89,17 @@ function companionDisplayName(project: Project, who: CompanionWho, nameArg: unkn
     return actor?.name?.trim() || who.actorId;
   }
   return who.label;
+}
+
+function companionEventGraphic(project: Project, who: CompanionWho | undefined): EventPageGraphic {
+  if (who?.kind === "graphic") return who.graphic;
+  const actor = who?.kind === "actor"
+    ? project.database.actors.find((entry) => entry.id === who.actorId)
+    : undefined;
+  const resourceId = actor?.characterResourceId?.trim();
+  return resourceId
+    ? charsetFollowerGraphic(resourceId, actor?.characterIndex ?? 0)
+    : charsetFollowerGraphic(DEFAULT_MONSTER_FIELD_CHARSET, 0);
 }
 
 function addFollowerCommand(who: CompanionWho, name: string, hidden: boolean): Command {
@@ -216,7 +232,9 @@ const addCompanion: ToolDefinition = {
     });
     const id = genId("ev_companion");
     const eventName = action === "add" ? `${name} 합류` : "동료 해제";
-    const graphic: EventPageGraphic = who?.kind === "graphic" ? who.graphic : { transparent: true };
+    const graphic: EventPageGraphic = action === "add"
+      ? companionEventGraphic(draft, who)
+      : { transparent: true };
 
     let pages: EventPage[];
     if (triggerKind === "autorun") {
