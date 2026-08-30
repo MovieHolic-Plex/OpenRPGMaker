@@ -417,6 +417,18 @@ Evidence expectations:
   다시 안 보이게 죽는다), ② 프리뷰가 **연출이 바뀐 호출에만** `data-dialogue-phase="enter"` 를
   붙이는지. ②를 놓치면 프리뷰가 본문 한 글자마다 통째로 다시 그려지므로 창이 타자마다 튀어
   **글을 쓸 수 없다** — 기능이 아니라 편집이 망가지는 회귀라서 화면 없이 여기서 잡는다.
+- `test/e2e/dialogue-nameplate-clears-body.spec.ts` — **겹침은 기하라서 위의 어느 층도 못 잡는다.**
+  이름표는 `position: absolute; top: -9px` 로 창 위 변에 걸친 탭이고 본문이 비켜 주는 자리는
+  `.dialogue-box.has-speaker` 의 `padding-top` 뿐인데(`src/styles/TOKENS.md` 가 "본문과 겹치지 않도록
+  함께 조정한다"고 적어 둔 짝), 두 값을 각각 손으로 적어 두면 서로를 모른다. 실측 2026-08-30 에
+  이름표 높이 19px · top −9px 라 아래 변이 10px 지점인데 padding 은 8px 이어서 **본문 첫 줄이 2px
+  덮여 있었다**(글자 윗부분이 잘려 보인다). 두 선언은 각각 유효하므로 계산된 스타일 단정은 통과하고,
+  jsdom 은 레이아웃이 없어 높이가 전부 0 이라 단위 테스트도 통과한다 — 그래서 이 결함은 CSS 텍스트
+  검사와 단위 테스트를 **모두 통과한 채로** 살아 있었다. 고친 방식은 상수 교체가 아니라
+  `dialogueSpeakerInsetPx()` 로 이름표를 재서 여백을 정하는 것이다(바로 옆 `dialogueMaxLines` 가 줄
+  수를 상수로 박지 않는 것과 같은 이유). 측정은 `offsetTop`/`offsetHeight` 로 한다 — 무대가
+  `--play-scale` 로 확대되므로 `getBoundingClientRect()` 는 배율이 섞인 화면 px 를 주고, 그 값을
+  padding 으로 심으면 배율만큼 부풀어 본문 칸이 사라진다.
 
 ## 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
 
