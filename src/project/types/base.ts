@@ -105,11 +105,56 @@ export interface TileGroupSourceBlock {
   tileIds: number[];
 }
 
+/**
+ * 배치 면(2026-08-30) — "이 물건은 어떤 자리에 놓이는가"를 **기계가 검사할 수 있게** 적은 것.
+ *
+ * 이 어휘가 생기기 전에는 같은 뜻이 세 군데에 흩어져 있었고 셋 다 집행되지 않았다:
+ *  (a) `TileGroupMetadata.placementRules` / `StructureKitAiMeta.placementRules` 자유 문장 —
+ *      AI 프롬프트에 100자로 잘려 들어가는 산문. 아무도 검사하지 않는다.
+ *  (b) `interiorRoomPipeline.PROP_SURFACE` 상수표 — 실내 절차 생성 전용, 편집 UI 없음.
+ *  (c) 「화덕은 북벽에 붙여 배치」 같은 **주석**과 그 뜻을 손으로 다시 구현한 절차 코드.
+ * 이제 (a)는 사람이 읽는 설명, 이것은 기계가 읽는 조건이다. (b)는 이 어휘로 값을 갈아탔다.
+ *
+ * 판정 규약은 placementSurface.ts 한 곳에만 있다 — 여기 두면 타입 순환이 생긴다.
+ */
+export type PlacementZone =
+  /** 아무 바닥이나 — 발밑이 통행 가능하면 통과. */
+  | "anyFloor"
+  /** 빈 땅 — 사각 **전체**가 통행 가능. 집처럼 큰 것이 벽·물 위에 겹치는 걸 막는다. */
+  | "clearArea"
+  /** 벽에서 떨어진 바닥 — 발밑이 바닥이고 네 방향 어느 쪽도 벽이 아니다. */
+  | "openFloor"
+  /** 벽에 붙은 바닥 — 발밑이 바닥이고 지정한 방향이 벽. `facing` 이 여기서만 뜻을 가진다. */
+  | "againstWall"
+  /** 구석 바닥 — 발밑이 바닥이고 세로 한 쪽 + 가로 한 쪽이 모두 벽. */
+  | "corner"
+  /** 벽면 — 발밑 자체가 벽. 창문·그림·아궁이처럼 벽에 매다는 것. */
+  | "wallFace";
+
+/** 방향. "any" 는 네 방향 중 아무거나 하나. */
+export type PlacementFacing = "north" | "south" | "east" | "west" | "any";
+
+/**
+ * 구조물 킷 하나에 붙는 배치 조건.
+ * hard = 어기면 **찍히지 않는다**(사람은 토스트로 이유를 본다, AI 는 ToolError).
+ * soft = 찍히지만 경고를 남긴다.
+ */
+export interface PlacementSurfaceCondition {
+  id: string;
+  zone: PlacementZone;
+  /** `againstWall` 에서만 뜻이 있다. 생략 = "any". */
+  facing?: PlacementFacing;
+  strength: "hard" | "soft";
+  /** 사람에게 보일 한 줄. 없으면 zone·facing 으로 자동 생성한다. */
+  message?: string;
+}
+
 export type ClusterRuleStrength = "hard" | "medium" | "soft";
 
 export interface ClusterRule {
   id: string;
-  kind: "adjacency" | "spacing" | "count";
+  /** surface: params 는 `{ zone: PlacementZone, facing?: PlacementFacing }`. */
+  kind: "adjacency" | "spacing" | "count" | "surface";
   strength: ClusterRuleStrength;
   params: Record<string, unknown>;
   message?: string;
@@ -262,8 +307,15 @@ export interface StructureKitPart {
 export interface StructureKitAiMeta {
   /** 이게 무엇인지. TileGroupMetadata.description 과 같은 이름. */
   description: string;
-  /** 어디에 어떻게 놓는지. TileGroupMetadata.placementRules 와 같은 이름. */
+  /** 어디에 어떻게 놓는지 — **사람이 읽는 문장**. TileGroupMetadata.placementRules 와 같은 이름. */
   placementRules: string;
+  /**
+   * 어디에 놓는지 — **기계가 검사하는 조건**(2026-08-30).
+   * placementRules 는 프롬프트에 100자로 잘려 들어가는 산문이라 아무도 지키게 만들 수 없었다.
+   * 이쪽은 찍는 순간 실제로 검사한다(사람 스탬프 · stamp_structure_kit 둘 다).
+   * 비었거나 없으면 검사 없음 — 하위 호환.
+   */
+  placement?: PlacementSurfaceCondition[];
   /** 검색·매칭용. TileAiMetadata.tags 와 같은 이름. */
   tags?: string[];
   /** 분류. TileGroupRole enum 재사용. */

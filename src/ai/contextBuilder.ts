@@ -8,6 +8,7 @@ import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { structureKitRepeatable } from "@/editor/harnessSuggestion/structureKitModel";
+import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
@@ -294,13 +295,15 @@ const RESOURCE_HINT = [
 ].join("\n");
 
 type ClusterRuleStrength = "hard" | "medium" | "soft";
-type ClusterRuleKind = "adjacency" | "spacing" | "count";
+type ClusterRuleKind = "adjacency" | "spacing" | "count" | "surface";
 
 interface ClusterRuleHint {
   readonly id: string;
   readonly kind: ClusterRuleKind;
   readonly strength: ClusterRuleStrength;
   readonly message?: string;
+  /** surface 규칙은 params 로 조건이 정해지므로 문장 없이도 뜻을 복원할 수 있다. */
+  readonly params?: Record<string, unknown>;
 }
 
 // 사용자가 가르친 타일 지식(맵 인터뷰 결과) 요약 — 챗봇 타일 깔기의 근거.
@@ -348,6 +351,14 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
       );
       if (kit.ai?.description) lines.push(`  설명: ${kit.ai.description.slice(0, 100)}`);
       if (kit.ai?.placementRules) lines.push(`  배치: ${kit.ai.placementRules.slice(0, 100)}`);
+      // 배치 조건은 산문이 아니라 **집행되는 조건**이다 — 어기면 stamp_structure_kit 이 거부한다.
+      // 그래서 100자 자르기(placementRules)와 달리 전부 싣는다. 조건 수는 실무상 1~3개다.
+      for (const condition of kit.ai?.placement ?? []) {
+        lines.push(
+          `  배치 조건[${condition.strength === "hard" ? "필수" : "권장"}]: ${describePlacementSurface(condition)}`
+          + `${condition.message?.trim() ? ` — ${condition.message.trim().slice(0, 60)}` : ""}`,
+        );
+      }
     }
   }
   if (lines.length === 0) return "";
@@ -421,7 +432,7 @@ function isClusterRuleHint(rule: unknown): rule is ClusterRuleHint {
 }
 
 function isClusterRuleKind(value: unknown): value is ClusterRuleKind {
-  return value === "adjacency" || value === "spacing" || value === "count";
+  return value === "adjacency" || value === "spacing" || value === "count" || value === "surface";
 }
 
 function isClusterRuleStrength(value: unknown): value is ClusterRuleStrength {
@@ -433,12 +444,22 @@ function strengthLabel(strength: ClusterRuleStrength): string {
 }
 
 function kindLabel(kind: ClusterRuleKind): string {
-  return kind === "adjacency" ? "인접성" : kind === "spacing" ? "간격" : "개수";
+  if (kind === "adjacency") return "인접성";
+  if (kind === "spacing") return "간격";
+  if (kind === "surface") return "배치 면";
+  return "개수";
 }
 
 function ruleText(rule: ClusterRuleHint): string {
   const message = rule.message?.trim();
-  return message ? message.slice(0, 120) : `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
+  if (message) return message.slice(0, 120);
+  // 배치 면은 params 가 조건 그 자체다 — 문장이 없어도 "북쪽(위) 벽에 붙은 바닥"까지 복원한다.
+  // 이 규칙은 실제로 집행되므로(찍는 순간 검사) 모델이 조건을 정확히 알아야 한다.
+  if (rule.kind === "surface") {
+    const surface = surfaceRuleFromClusterRule({ id: rule.id, kind: "surface", params: rule.params ?? {}, strength: "hard" });
+    if (surface) return `${describePlacementSurface(surface)}에만 놓입니다(어기면 시공이 거부됨)`;
+  }
+  return `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
 }
 
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.

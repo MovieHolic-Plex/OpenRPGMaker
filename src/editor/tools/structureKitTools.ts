@@ -11,6 +11,7 @@ import {
   structureKitSize,
   structureKitUnitCells,
 } from "@/editor/harnessSuggestion/structureKitModel";
+import { evaluatePlacementConditions, mapSurfaceProbe } from "@/project/placementSurface";
 import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
 import type {
   GameMap,
@@ -139,6 +140,32 @@ const stampStructureKit: ToolDefinition = {
         { code: "out-of-bounds", mapId: map.id, x: origin.x, y: origin.y },
       );
     }
+    // 배치 조건(kit.ai.placement) 검사 — **한 칸도 쓰기 전에** 전 반복을 먼저 본다.
+    // 중간에 던지면 앞의 반복은 이미 찍혀 있어 드래프트가 반쯤 시공된 상태로 남는다.
+    // 조건이 없는 킷(대부분)은 아래 루프가 그냥 돌지 않는다.
+    const surfaceWarnings: string[] = [];
+    if ((kit.ai?.placement ?? []).length > 0) {
+      const probe = mapSurfaceProbe(draft, map);
+      for (let repeatIndex = 0; repeatIndex < repeat; repeatIndex += 1) {
+        const rect = {
+          x: origin.x + repeatIndex * size.width,
+          y: origin.y,
+          w: size.width,
+          h: size.height,
+        };
+        const verdict = evaluatePlacementConditions({ conditions: kit.ai?.placement, probe, rect });
+        if (verdict.blocked.length > 0) {
+          throw new ToolError(
+            `킷 '${kit.name ?? kit.id}'의 배치 조건에 맞지 않는 자리입니다 — (${rect.x},${rect.y}): `
+            + verdict.blocked.map((failure) => failure.text).join(" / ")
+            + " · 조건은 데이터베이스 → 구조물 → [편집] → AI 메타 탭의 «배치 조건»에서 고칩니다.",
+            { code: "placement-condition", mapId: map.id, x: rect.x, y: rect.y },
+          );
+        }
+        for (const warning of verdict.warnings) surfaceWarnings.push(`(${rect.x},${rect.y}) ${warning.text}`);
+      }
+    }
+
     // 반복마다 배치를 따로 기록한다 — 하나로 뭉치면 "가운데 집만 지워줘"가 불가능해진다.
     // before 는 시공 전에 뜨고, afterHash 는 시공 직후 드래프트 맵을 되읽어 계산한다(킷 정의 아님).
     let painted = 0;
@@ -152,7 +179,8 @@ const stampStructureKit: ToolDefinition = {
     }
     const parts = absoluteKitParts(kit, origin);
     return {
-      summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"} ×${repeat}회, ${painted}칸`,
+      summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"} ×${repeat}회, ${painted}칸`
+        + (surfaceWarnings.length > 0 ? ` · 배치 조건 권장 위반: ${surfaceWarnings.join(", ")}` : ""),
       data: {
         kitId: kit.id,
         origin,

@@ -11,7 +11,7 @@ import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { beginKitStampCapture, commitKitStampCapture } from "@/editor/structurePlacementActions";
+import { beginKitStampCapture, checkKitStampConditions, commitKitStampCapture } from "@/editor/structurePlacementActions";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { visibleTilePickAt } from "@/editor/tilePicking";
 import { topTileInStack } from "@/project/mapOverlayTiles";
@@ -89,6 +89,24 @@ export class TilePaintEngine {
         if (firstStrokeTile) recordTileEditSnapshot(mid);
         {
           if (activePaletteStamp) {
+            // 배치 조건(kit.ai.placement) 검사 — 킷에 조건이 있을 때만 돈다.
+            // hard 를 어기면 **칠하지 않는다**. 예전에는 조건이 산문뿐이라 아무 일도 일어나지 않았고,
+            // 「화덕은 북벽에 붙는다」 같은 말이 지켜지는지 확인할 방법이 없었다.
+            // 토스트는 스트로크 첫 타일에서만 — 드래그로 같은 말을 수십 번 띄우지 않는다.
+            const conditions = checkKitStampConditions(mid, activePaletteStamp, x, y);
+            if (conditions && conditions.verdict.blocked.length > 0) {
+              if (firstStrokeTile) {
+                toast(
+                  `여기엔 '${conditions.kit.name ?? "구조물"}'을 놓을 수 없습니다 — `
+                  + conditions.verdict.blocked.map((failure) => failure.text).join(" / "),
+                  "error",
+                );
+              }
+              break;
+            }
+            if (conditions && conditions.verdict.warnings.length > 0 && firstStrokeTile) {
+              toast(conditions.verdict.warnings.map((failure) => failure.text).join(" / "), "info");
+            }
             // 구조물 배치 기록은 **스트로크의 첫 타일에서 한 번만** — 드래그로 배치가 수십 개 생기는 것을 막는다.
             // 구조물 킷이 아닌 스탬프(일반 드래그 선택·실내 오브젝트)는 beginKitStampCapture 가 null 을 준다.
             const capture = firstStrokeTile ? beginKitStampCapture(mid, activePaletteStamp, x, y) : null;

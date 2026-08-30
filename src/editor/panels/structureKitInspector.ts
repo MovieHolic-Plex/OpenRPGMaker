@@ -27,6 +27,7 @@ import {
   interiorObjectThemeLabels,
 } from "@/editor/panels/structureKitDbSources";
 import { aiRoleLabel } from "@/editor/panels/structureKitEditorDialog";
+import { describePlacementSurface } from "@/project/placementSurface";
 import type {
   StructureKitAiMeta,
   StructureKitDef,
@@ -222,6 +223,13 @@ function renderAiSummary(kit: StructureKitDef): HTMLElement {
         ],
       }),
       ...(descLine ? [el("p", { class: "structure-kit-quiet structure-kit-ai-summary-desc", text: descLine })] : []),
+      // 배치 조건은 **집행되는** 값이다 — 인스펙터에 없으면 "왜 안 찍히지"의 답이 편집기를
+      // 열어 봐야만 나온다. 설명(산문)과 달리 자르지 않는다: 실무상 1~3줄이다.
+      ...(ai.placement ?? []).map((condition) => el("p", {
+        class: "structure-kit-quiet structure-kit-ai-summary-placement",
+        dataset: { testid: "structure-kit-ai-placement" },
+        text: `배치 조건 · ${condition.strength === "hard" ? "필수" : "권장"} — ${describePlacementSurface(condition)}`,
+      })),
     ],
   });
 }
