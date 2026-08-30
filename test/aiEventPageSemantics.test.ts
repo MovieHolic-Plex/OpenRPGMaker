@@ -232,3 +232,56 @@ describe("selfSwitch gates nobody opens", () => {
     expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("조건과 쓰기는 반드시 한 쌍이다");
   });
 });
+
+describe("make_villager does not ship dead pages of its own", () => {
+  // runTool 은 draft 를 커밋한 뒤 ctx.project 를 **교체**한다(toolRunner) — 넘긴 객체가 아니라
+  // 컨텍스트에서 결과 프로젝트를 읽어야 한다.
+  function villager(dialogue: readonly Record<string, unknown>[]) {
+    const ctx = { project: createBlankProject() };
+    const startMapId = ctx.project.startMapId;
+    const result = runTool(ctx, "make_villager", {
+      mapId: startMapId,
+      home: { x: 4, y: 4 },
+      name: "밀집",
+      dialogue,
+    });
+    const map = ctx.project.maps[startMapId];
+    const event = (map?.events ?? []).find((entry) => entry.id.startsWith("ev_villager"));
+    return { result, event };
+  }
+
+  it("folds unconditional dialogue into one page instead of stacking dead ones", () => {
+    const { result, event } = villager([{ text: "첫째" }, { text: "둘째" }]);
+    expect(result.ok, result.summary).toBe(true);
+    const pages = event?.pages ?? [];
+    expect(pages.filter((page) => page.conditions.length === 0)).toHaveLength(1);
+    expect(findShadowedPages(pages)).toEqual([]);
+    const bodies = (pages[0]?.commands ?? [])
+      .filter((command): command is Extract<Command, { kind: "text" }> => command.kind === "text")
+      .map((command) => command.body);
+    expect(bodies).toEqual(["첫째", "둘째"]);
+  });
+
+  it("keeps conditional dialogue on its own page", () => {
+    const { event } = villager([{ text: "낙" }, { when: { timePhase: "night" }, text: "밤" }]);
+    const pages = event?.pages ?? [];
+    expect(pages).toHaveLength(2);
+    expect(pages[0]?.conditions).toEqual([]);
+    expect(pages[1]?.conditions).toEqual([{ kind: "timePhase", phase: "night" }]);
+    expect(findShadowedPages(pages)).toEqual([]);
+  });
+
+  it("still greets when no unconditional dialogue was given", () => {
+    const { event } = villager([{ when: { timePhase: "night" }, text: "밤" }]);
+    const pages = event?.pages ?? [];
+    expect(pages[0]?.conditions).toEqual([]);
+    expect((pages[0]?.commands ?? []).some((command) => command.kind === "text")).toBe(true);
+    expect(findShadowedPages(pages)).toEqual([]);
+  });
+
+  it("emits no shadow warning for a plain villager", () => {
+    const { result } = villager([{ text: "첫째" }, { text: "둘째" }]);
+    const warnings = ((result.diff?.warnings ?? []) as readonly string[]).join("\n");
+    expect(warnings).not.toContain("절대 발동하지 않습니다");
+  });
+});

@@ -1262,15 +1262,30 @@ function workPoint(project: Project, defaultMapId: string, raw: unknown, label: 
   return { mapId, x, y };
 }
 
+/**
+ * 주민 대사 페이지 조립. **조건 없는 대사는 페이지를 나누지 않는다.**
+ *
+ * 실측 결함(이 변경에서 발견): 기본 인사 페이지를 항상 먼저 넣고 dialogue 항목마다 페이지를
+ * 하나씩 밀어넣었다. dialogue 에 when 이 없는 항목이 둘이면 조건 없는 페이지가 셋이 되고,
+ * 런타임은 조건이 맞는 **마지막** 페이지 하나만 실행하므로 앞의 둘은 영원히 안 나온다
+ * (`make_villager` 가 dialogue 2줄로 "대사 페이지 3개" 를 보고하면서 실제로는 마지막 1줄만
+ * 나왔다). 조건 없는 대사는 한 페이지의 여러 줄로 합쳐야 저작 의도대로 전부 나온다.
+ */
 function villagerPages(rawDialogue: unknown, schedule: readonly NpcScheduleEntry[], warnings: string[]): SimplePage[] {
-  const pages: SimplePage[] = [{ lines: ["안녕하세요."] }];
+  const conditional: SimplePage[] = [];
+  const defaultLines: string[] = [];
   if (rawDialogue !== undefined) {
     if (!Array.isArray(rawDialogue)) throw new ToolError("dialogue는 {when?,text}[] 배열이어야 합니다.", { code: "villager-dialogue" });
     rawDialogue.forEach((entry, index) => {
       const page = dialoguePageFromRecord(entry, index, warnings);
-      if (page) pages.push(page);
+      if (!page) return;
+      if ((page.conditions ?? []).length === 0) defaultLines.push(...(page.lines ?? []));
+      else conditional.push(page);
     });
   }
+  // 조건 없는 대사가 하나도 없을 때만 기본 인사를 쓴다 — 저작자가 준 대사를 인사가 덮지 않게.
+  const basePage: SimplePage = { lines: defaultLines.length > 0 ? defaultLines : ["안녕하세요."] };
+  const pages: SimplePage[] = [basePage, ...conditional];
   if (pages.length === 1) {
     for (const activity of activityLabels(schedule)) {
       pages.push({ conditions: [{ kind: "npcActivity", activity }], lines: [defaultActivityLine(activity)] });
