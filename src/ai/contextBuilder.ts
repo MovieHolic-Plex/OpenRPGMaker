@@ -8,7 +8,7 @@ import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { villageAuthoringData } from "@/editor/tools/village/authoringData";
-import { structureKitRepeatable } from "@/editor/harnessSuggestion/structureKitModel";
+import { structureKitGrowthAxes, structureKitLayerHome } from "@/editor/harnessSuggestion/structureKitModel";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
@@ -361,13 +361,33 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
             height: Math.max(...kit.wings.map((wing) => wing.y + wing.h), 1),
           }
         : { width: kit.width, height: kit.height };
-      const repeatable = structureKitRepeatable(kit);
+      // 증분 축을 축 두 개로 적는다 — "반복 가능" 한 마디는 가로만 뜻해서, 세로로 쌓는 벽을
+      // 모델이 알 방법이 없었다. stamp_structure_kit 의 repeat/repeatY 가 정확히 이 값을 본다.
+      const axes = structureKitGrowthAxes(kit);
+      const growthText = axes.x && axes.y
+        ? "가로·세로 증분 가능"
+        : axes.x
+          ? "가로 증분 가능"
+          : axes.y
+            ? "세로 증분 가능"
+            : "한 채 완결";
       lines.push(
         `- ${kit.name ?? "구조물"} (${kit.id}, ${size.width}x${size.height}`
-        + `${kit.ai?.role ? `, ${kit.ai.role}` : ""}, ${repeatable ? "반복 가능" : "한 채 완결"})`,
+        + `${kit.ai?.role ? `, ${kit.ai.role}` : ""}, ${growthText}, 레이어 ${structureKitLayerHome(kit)})`,
       );
       if (kit.ai?.description) lines.push(`  설명: ${kit.ai.description.slice(0, 100)}`);
       if (kit.ai?.placementRules) lines.push(`  배치: ${kit.ai.placementRules.slice(0, 100)}`);
+      if (kit.ai?.themes && kit.ai.themes.length > 0) lines.push(`  테마: ${kit.ai.themes.join(", ")}`);
+      if (kit.ai?.tags && kit.ai.tags.length > 0) lines.push(`  태그: ${kit.ai.tags.join(", ")}`);
+      // 칸 힌트는 사람이 칸 하나하나에 적은 것이라 자르지 않고 앞 6개까지 싣는다 —
+      // 「이 열은 세로로 증분 가능」이 잘려 나가면 무한 확장 구조물을 통째로 못 쓴다.
+      const cellHints = kit.kind === "section" ? kit.cellHints ?? [] : [];
+      for (const hint of cellHints.slice(0, 6)) {
+        lines.push(
+          `  칸(${hint.dx},${hint.dy}): ${hint.growth ?? "메모"}${hint.note ? ` — ${hint.note.slice(0, 60)}` : ""}`,
+        );
+      }
+      if (cellHints.length > 6) lines.push(`  …칸 힌트 ${cellHints.length - 6}개 더(list_structure_kits로 조회)`);
       // 배치 조건은 산문이 아니라 **집행되는 조건**이다 — 어기면 stamp_structure_kit 이 거부한다.
       // 그래서 100자 자르기(placementRules)와 달리 전부 싣는다. 조건 수는 실무상 1~3개다.
       for (const condition of kit.ai?.placement ?? []) {
@@ -383,7 +403,9 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
     "## 내 구조물(유저가 가르친 구조 킷 — 반복 구조 시공의 최우선 재료)",
     "유저가 손으로 찍어 등록한 반복 단면입니다. 성벽/울타리류 반복 구조 요청 시 개별 타일 대신 이 킷을 쓰세요:",
     ...lines,
-    "상세(타일 행렬)는 list_structure_kits, 시공은 stamp_structure_kit(mapId, kitId, origin, repeat).",
+    "상세(타일 행렬·칸 힌트)는 list_structure_kits, 시공은 stamp_structure_kit(mapId, kitId, origin, repeat, repeatY).",
+    "repeat 는 가로, repeatY 는 세로 반복입니다. 증분 축이 허용하지 않는 방향은 1회로 조여집니다 —",
+    "성벽을 높이로 쌓으려면 «세로 증분 가능» 구조물을 골라 repeatY 를 주세요.",
   ].join("\n");
 }
 

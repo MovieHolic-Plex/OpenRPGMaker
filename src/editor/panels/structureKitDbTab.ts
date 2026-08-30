@@ -602,6 +602,14 @@ function matchesQuery(entry: StructureAlbumEntry, query: string): boolean {
   }
   const kit = entry.kit;
   if ((kit.name ?? "").toLowerCase().includes(query)) return true;
+  // 어휘를 적을 수 있게 만든 값은 찾을 수 있어야 한다 — 태그·테마를 검색이 못 보면
+  // 사람이 적어 넣은 뒤 다시 찾을 방법이 이름뿐이다.
+  if ((kit.ai?.tags ?? []).some((tag) => tag.toLowerCase().includes(query))) return true;
+  if ((kit.ai?.themes ?? []).some((theme) => theme.toLowerCase().includes(query))) return true;
+  if (
+    kit.kind === "section"
+    && (kit.cellHints ?? []).some((hint) => (hint.note ?? "").toLowerCase().includes(query))
+  ) return true;
   return (kit.parts ?? []).some(
     (part) => partKindName(part.kind).includes(query) || (part.note ?? "").toLowerCase().includes(query),
   );

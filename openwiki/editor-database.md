@@ -267,6 +267,57 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - **마커 클래스로 하면 안 된다.** `renderActiveTab` 이 body 를 `replaceChildren` 만 하므로 TS 에서 붙인 className·dataset 이 탭을 바꾼 뒤에도 남아 다른 탭으로 샌다. `:has()` 로 판정해야 한다. `sidebar.css` 쪽 선택자가 특이도는 높지만 `display` 를 건드리지 않아 충돌하지 않는다.
 - **복제가 막다른 길이었다.** 내장 킷은 "편집하려면 [내 구조물로 복제]를 쓰세요"라고 안내하는데, 복제 핸들러가 사본을 만들고 목록만 다시 그려서 인스펙터가 계속 원본을 봤다. 선택을 사본으로 옮길 때는 **`session.selectedKitId` 만으로 부족하다** — `session.source`(`"builtin"` 이면 사용자 킷이 걸러진다)와 `session.searchQuery` 를 함께 맞춰야 한다. 안 그러면 선택 복구 로직이 `visibleEntries[0]` 으로 즉시 갈아탄다. `[+ 새 구조물]` 핸들러가 옳은 순서의 선례다.
 
+### 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
+
+사용자는 "구조물의 역할·레이어·배치 규약·사용 테마를 수정할 수 있어야 하고, 새 구조물을 추가할 때
+각 타일에 «세로로 증분 가능» 같은 설명을 넣을 수 있어야 한다"고 했다. 실측해 보니 여섯 축 중
+세 개(설명·배치 규칙·분류)만 편집 가능했고, `tags` 는 **타입과 AI 초안 파서에는 있는데 폼이 없었다** —
+사람이 손으로 넣을 방법이 아예 없는 필드였다. `layerHome`·`themes` 는 존재하지도 않았다.
+
+- **`StructureKitAiMeta` 에 세 필드가 늘었다**: `growthAxis`(`horizontal|vertical|both`),
+  `layerHome`(`lower|upper|perCell`), `themes: string[]`. 이름·값은 `TileGroupMetadata` 와 의도적으로
+  같다(`patternGrammar.axis`, `layerHome`) — AI 가 이미 그 단어들을 읽고 있다.
+- **`SectionStructureKitDef.cellHints`** 가 칸 단위 힌트다: `{dx, dy, growth?, note?}`.
+  `parts` 와 합치지 않은 이유는 소비자가 다르기 때문이다 — 부위는 워프·간판 좌표를 만들고,
+  칸 힌트는 시공 반복 축과 AI 설명으로 간다. 한 칸에 힌트는 하나(`dx,dy` 가 키)다.
+- **`repeatability` 는 가로 전용이었다.** `repeat|fixed` 두 값으로는 「세로로만 쌓는 벽」을 적을 수 없고,
+  `stamp_structure_kit` 도 가로 반복밖에 없었다. 판정은 `structureKitGrowthAxes()` 한 곳으로 모았고
+  세 층이 이 순서로 이긴다: `ai.growthAxis` → `ai.repeatability` → `kind`.
+  `structureKitRepeatable()` 은 그 결과의 `x` 를 돌려주는 얇은 껍데기로 남겼다(호출부 다수).
+  **세로 증분은 사람이 명시할 때만 열린다** — 조용히 3층이 생기는 쪽이 1층보다 나쁘다.
+- **`stamp_structure_kit` 에 `repeatY` 가 붙었다**(기본 1). 축이 허용하지 않는 방향은 1회로 조이고
+  **조인 사실을 요약 문장과 `data.repeatClamped` 에 남긴다** — 말없이 조이면 모델은 쌓았다고 믿고
+  다음 층을 그 위에 얹는다. 반복 격자는 `unitRects` 목록 하나로 만들어 배치 조건 검사와 실제 시공이
+  **같은 목록**을 본다(둘이 갈라지면 검사를 통과한 좌표와 찍는 좌표가 달라진다).
+- **AI 가 받는 것**: `contextBuilder` 의 구조물 줄에 증분 축·레이어가 붙고, 테마·태그·칸 힌트(앞 6개)가
+  뒤따른다. 칸 힌트는 **자르지 않는다** — 「이 열은 세로로 증분 가능」이 잘리면 무한 확장 구조물을
+  통째로 못 쓴다. `list_structure_kits` 는 `growth{x,y}`·`layerHome`·`cellHints` 를 그대로 싣는다.
+- **파일 포맷은 v1 그대로**다. 새 필드는 전부 옵션이라 옛 편집기도 파일을 열 수 있다(버전을 올리면
+  `version > STRUCTURE_KIT_FILE_VERSION` 검사가 옛 빌드에서 파일을 통째로 거부한다).
+- **같은 파서에서 실측 결함 둘을 함께 고쳤다.**
+  ① `readAiMeta` 가 `ai.placement` 를 **읽지 않았다** — 직렬화는 이미 쓰고 있었으므로
+  내보내기→가져오기를 한 번 거치면 «필수» 배치 조건이 조용히 사라져 막혀 있던 자리에 찍혔다.
+  ② `description`·`placementRules` 가 둘 다 비면 메타를 통째로 버렸다 — 축·테마만 적은 구조물이
+  왕복에서 어휘를 전부 잃었다. 이제 한 필드라도 내용이 있으면 살린다.
+- **편집기**: AI 메타 탭에 `structure-kit-editor-ai-growth`(증분 축) ·
+  `-ai-layer`(레이어, 「미지정」 옆에 유도값을 적어 둔다) · `-ai-tags` · `-ai-themes` 가 늘었다.
+  태그·테마는 쉼표로 나누는 한 줄 입력이다 — 칩으로 닫지 않은 이유는 값 어휘가 열린 집합이기 때문이다
+  (실내 테마 7종은 방 채우기 전용 문법이고 야외 테마는 사람이 짓는다).
+  도구 레일에는 `structure-kit-editor-tool-hint`(칸 힌트)가 붙었고, 칸을 누르면 부위 종류와 같은
+  팝오버(`structure-kit-editor-hint-menu`)로 축을 고른다. `window` 가 없는 유닛 테스트 환경에서는
+  팝오버 대신 **결정적 순환**(가로→세로→양방향→없음)이 돌아 같은 값 집합을 덮는다.
+  칸별 설명은 목록(`structure-kit-editor-cell-hints`)의 입력칸에서 쓴다 — 팝오버에 텍스트 입력을
+  넣으면 바깥클릭 닫기와 싸운다. 캔버스에는 격자선과 같은 겹침 층으로 배지를 얹는다
+  (`renderTileCellsToCanvas` 가 타일셋 로드 후 비동기로 다시 그리므로 캔버스에 직접 그으면 지워진다).
+- **크기 조절이 칸 힌트 손실도 보고한다**: `resizeKit` 의 `droppedHints`. 1×1 이라 클램프 여지가 없어
+  부위와 따로 센다.
+- 커버리지: `test/structureKitGrowth.test.ts`(축 3층 우선순위·레이어 유도·집 킷은 두 축 닫힘),
+  `test/structureKitRasterModel.test.ts`(칸 힌트 CRUD·축/메모 독립성·크기 조절 손실·굽기 보존),
+  `test/structureKitFile.test.ts`(어휘 왕복·배치 조건 왕복·행렬 밖 힌트 폐기·자유 문장 없는 메타 생존),
+  `test/structureKitTools.test.ts`(`growth`/`layerHome`/`cellHints` 응답, `repeatY` 시공, 축 제한 보고,
+  경계 거부, 프롬프트 내용), `test/structureKitEditorDialog.test.ts`(새 폼 4칸·수락 반영·칸 힌트 순환),
+  `test/structureKitPartKindMenu.test.ts`(칸 힌트 팝오버).
+
 ### 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
 
 잘림을 고친 뒤에도 사용자는 "수정 UI UX 가 매우 불편하다, 모달보다 50%쯤 더 커야 하고 실제 타일 칠하는 편집기와 비슷해야 한다"고 했다. 크기만의 문제가 아니라 결함 셋이 겹쳐 있었다.

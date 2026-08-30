@@ -8,7 +8,17 @@
 
 import { bakeStructureKit } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { structureKitSignature } from "@/editor/harnessSuggestion/structureKitModel";
-import type { SectionStructureKitDef, StructureKitDef, StructureKitAiMeta, TilesetDef } from "@/project/types";
+import type {
+  PlacementFacing,
+  PlacementSurfaceCondition,
+  PlacementZone,
+  SectionStructureKitDef,
+  StructureGrowthAxis,
+  StructureKitAiMeta,
+  StructureKitCellHint,
+  StructureKitDef,
+  TilesetDef,
+} from "@/project/types";
 
 export class StructureKitFileError extends Error {
   constructor(message: string) {
@@ -146,6 +156,7 @@ function readKit(raw: unknown, index: number): SectionStructureKitDef | KitDiagn
     height,
     rows,
     ...(Array.isArray(record.parts) ? { parts: readParts(record.parts) } : {}),
+    ...(Array.isArray(record.cellHints) ? readCellHintPatch(record.cellHints, width, height) : {}),
     // 파일에 적힌 origin 을 그대로 보존한다 — 가져오기 체크는 "이 파일을 받겠다" 이지
     // "이 설명을 내가 보증한다" 가 아니다(제로 부트스트랩).
     ...(ai ? { ai } : {}),
@@ -190,24 +201,118 @@ const TILE_GROUP_ROLES = new Set([
   "prop",
 ]);
 
+const GROWTH_AXES = new Set(["horizontal", "vertical", "both"]);
+const PLACEMENT_ZONE_IDS = new Set([
+  "anyFloor",
+  "clearArea",
+  "openFloor",
+  "againstWall",
+  "corner",
+  "wallFace",
+]);
+const PLACEMENT_FACING_IDS = new Set(["north", "south", "east", "west", "any"]);
+
+function readGrowthAxis(value: unknown): StructureGrowthAxis | undefined {
+  return typeof value === "string" && GROWTH_AXES.has(value) ? (value as StructureGrowthAxis) : undefined;
+}
+
+/**
+ * 칸 힌트 목록. 행렬 밖 좌표는 버린다 — 밖으로 나간 힌트는 편집기에서 지울 수 없는 유령이 되고,
+ * AI 는 없는 칸을 근거로 삼는다. 한 칸에 하나만 남긴다(dx,dy 가 키) — 편집기와 같은 규약.
+ */
+function readCellHintPatch(
+  raw: readonly unknown[],
+  width: number,
+  height: number,
+): { cellHints?: StructureKitCellHint[] } {
+  const byCell = new Map<string, StructureKitCellHint>();
+  for (const item of raw) {
+    if (typeof item !== "object" || item === null) continue;
+    const record = item as Record<string, unknown>;
+    const dx = record.dx;
+    const dy = record.dy;
+    if (!Number.isInteger(dx) || !Number.isInteger(dy)) continue;
+    const cx = dx as number;
+    const cy = dy as number;
+    if (cx < 0 || cy < 0 || cx >= width || cy >= height) continue;
+    const growth = readGrowthAxis(record.growth);
+    const note = typeof record.note === "string" && record.note.trim() ? record.note : undefined;
+    if (growth === undefined && note === undefined) continue;
+    byCell.set(`${cx},${cy}`, {
+      dx: cx,
+      dy: cy,
+      ...(growth === undefined ? {} : { growth }),
+      ...(note === undefined ? {} : { note }),
+    });
+  }
+  const cellHints = [...byCell.values()];
+  return cellHints.length > 0 ? { cellHints } : {};
+}
+
+/**
+ * 기계가 검사하는 배치 조건. 직렬화는 이미 이 값을 쓰고 있었지만 파서가 읽지 않아
+ * 내보내기→가져오기를 한 번 거치면 «필수» 조건이 조용히 사라지고 아무 자리나 찍힐 수 있게 됐다.
+ * 조건은 사람이 건 제한이므로 모르면 받지 않고 떨어뜨린다(모를 조건을 통과로 바꾸면 잡지 못한다).
+ */
+function readPlacementConditions(raw: readonly unknown[]): PlacementSurfaceCondition[] {
+  const conditions: PlacementSurfaceCondition[] = [];
+  for (const item of raw) {
+    if (typeof item !== "object" || item === null) continue;
+    const record = item as Record<string, unknown>;
+    if (typeof record.zone !== "string" || !PLACEMENT_ZONE_IDS.has(record.zone)) continue;
+    const facing = typeof record.facing === "string" && PLACEMENT_FACING_IDS.has(record.facing)
+      ? (record.facing as PlacementFacing)
+      : undefined;
+    conditions.push({
+      id: typeof record.id === "string" && record.id ? record.id : `pc_imported_${conditions.length}`,
+      zone: record.zone as PlacementZone,
+      strength: record.strength === "soft" ? "soft" : "hard",
+      ...(facing && facing !== "any" ? { facing } : {}),
+      ...(typeof record.message === "string" && record.message.trim() ? { message: record.message } : {}),
+    });
+  }
+  return conditions;
+}
+
 function readAiMeta(raw: unknown): StructureKitAiMeta | undefined {
   if (typeof raw !== "object" || raw === null) return undefined;
   const record = raw as Record<string, unknown>;
   const description = typeof record.description === "string" ? record.description : "";
   const placementRules = typeof record.placementRules === "string" ? record.placementRules : "";
-  if (!description && !placementRules) return undefined;
+  const tags = Array.isArray(record.tags)
+    ? record.tags.filter((tag): tag is string => typeof tag === "string")
+    : [];
+  const themes = Array.isArray(record.themes)
+    ? record.themes.filter((theme): theme is string => typeof theme === "string" && theme.trim().length > 0)
+    : [];
+  const role = typeof record.role === "string" && TILE_GROUP_ROLES.has(record.role)
+    ? (record.role as StructureKitAiMeta["role"])
+    : undefined;
+  const repeatability = record.repeatability === "repeat" || record.repeatability === "fixed"
+    ? record.repeatability
+    : undefined;
+  const growthAxis = readGrowthAxis(record.growthAxis);
+  const layerHome = record.layerHome === "lower" || record.layerHome === "upper" || record.layerHome === "perCell"
+    ? record.layerHome
+    : undefined;
+  const placement = Array.isArray(record.placement) ? readPlacementConditions(record.placement) : [];
+  // 예전엔 두 자유 문장이 비면 메타를 통째로 버렸다. 그러면 「증분 축·테마·배치 조건만
+  // 적은 벽」이 가져오기에서 어휘를 전부 잃는다 — 한 칸이라도 내용이 있으면 살린다.
+  const hasAnything = Boolean(
+    description || placementRules || role || repeatability || growthAxis || layerHome
+    || tags.length > 0 || themes.length > 0 || placement.length > 0,
+  );
+  if (!hasAnything) return undefined;
   return {
     description,
     placementRules,
-    ...(Array.isArray(record.tags)
-      ? { tags: record.tags.filter((tag): tag is string => typeof tag === "string") }
-      : {}),
-    ...(typeof record.role === "string" && TILE_GROUP_ROLES.has(record.role)
-      ? { role: record.role as StructureKitAiMeta["role"] }
-      : {}),
-    ...(record.repeatability === "repeat" || record.repeatability === "fixed"
-      ? { repeatability: record.repeatability }
-      : {}),
+    ...(tags.length > 0 ? { tags } : {}),
+    ...(themes.length > 0 ? { themes } : {}),
+    ...(role ? { role } : {}),
+    ...(repeatability ? { repeatability } : {}),
+    ...(growthAxis ? { growthAxis } : {}),
+    ...(layerHome ? { layerHome } : {}),
+    ...(placement.length > 0 ? { placement } : {}),
     ...(record.origin === "user" || record.origin === "ai" ? { origin: record.origin } : {}),
     ...(record.confidence === "high" || record.confidence === "medium" || record.confidence === "low"
       ? { confidence: record.confidence }

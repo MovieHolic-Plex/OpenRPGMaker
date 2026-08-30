@@ -1299,3 +1299,52 @@
 .structure-kit-editor-canvas-wrap {
   background: #101318;
 }
+
+/* 칸 힌트 배지 — 격자선과 같은 겹치는 층이다. 캔버스에 직접 그리면 타일셋 이미지가
+   비동기로 다시 그려질 때 지워진다(kitRender 규약). pointer-events 를 끄는 이유:
+   이 층이 칸 위에 있으므로 켜 두면 힌트가 붙은 칸을 다시 누를 수 없다. */
+.structure-kit-editor-hints-overlay {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.structure-kit-editor-hint-badge {
+  align-items: center;
+  background: var(--accent);
+  border-radius: var(--radius-s);
+  color: var(--on-accent);
+  display: inline-flex;
+  font-size: 11px;
+  height: 14px;
+  justify-content: center;
+  line-height: 1;
+  min-width: 14px;
+  position: absolute;
+}
+
+/* 칸 힌트 행의 축 버튼 — 라벨이 길어 부위 칩보다 넓다. */
+.structure-kit-editor-hint-axis {
+  flex: none;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.structure-kit-editor-hint-note {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 12px;
+  min-width: 120px;
+  padding: 2px 6px;
+}
+
+.structure-kit-editor-hint-note:focus-visible { outline: var(--focus-outline); }
+
+/* 칸 힌트 목록 — 부위 목록과 같은 흐름이지만 높이 예산을 반만 쓴다.
+   둘 다 128px 이면 캔버스가 256px 을 잃는다(세로는 이 편집기에서 가장 귀한 자원이다). */
+.structure-kit-editor-hints {
+  max-height: 72px;
+}
