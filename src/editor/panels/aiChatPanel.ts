@@ -88,6 +88,7 @@ import {
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
+import { createChatResizeChrome } from "./aiChatResizeChrome";
 import {
   applyAiFontSize,
   clampPanelSize,
@@ -1950,156 +1951,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     !panel.classList.contains("is-studio")
     && !panel.classList.contains("is-docked")
     && !collapsed;
-  const viewportNow = (): { width: number; height: number } =>
-    typeof window === "undefined"
-      ? { width: 1280, height: 900 }
-      : { width: window.innerWidth, height: window.innerHeight };
-  const dockSizes: Record<ChatDock, { width: number; height: number } | null> = {
-    glass: loadDockPanelSize("glass"),
-    side: loadDockPanelSize("side"),
-    float: loadDockPanelSize("float"),
-  };
-  const sizeProps = ["width", "height", "maxWidth", "maxHeight"] as const;
-  const clearPanelSize = (): void => {
-    for (const prop of sizeProps) panel.style[prop] = "";
-  };
-  const floatWidthLimits = (): { min: number; max: number } => ({
-    min: PANEL_SIZE_LIMITS.minWidth,
-    max: Math.max(PANEL_SIZE_LIMITS.minWidth, Math.min(PANEL_SIZE_LIMITS.maxWidth, viewportNow().width - 24)),
+  // 크기 조절 크롬은 aiChatResizeChrome.ts 가 갖는다. 패널은 상태 세 질문만 넘긴다 —
+  // 접힘·유리 접힘 같은 가변 플래그는 여기 `let` 이 계속 소유하므로 게터로 준다.
+  const resizeChrome = createChatResizeChrome({
+    panel,
+    commandBar,
+    currentDock: currentChatDock,
+    resizable: resizableDock,
+    glassFolded: () => glassFolded,
+    onSideWidthPreview: options.onSideWidthPreview,
+    onSideWidthCommit: options.onSideWidthCommit,
   });
-  const clampWidthForDock = (dock: ChatDock, width: number): number => {
-    const limits = dock === "side" ? SIDE_CHAT_WIDTH : floatWidthLimits();
-    return Math.round(Math.min(limits.max, Math.max(limits.min, width)));
-  };
-  const measuredSurface = (dock: ChatDock): DOMRect | { width: number; height: number } =>
-    (dock === "float" ? commandBar : panel).getBoundingClientRect?.() ?? { width: dock === "float" ? 640 : 360, height: 120 };
-  const resizeHandle = el("div", {
-    class: "ai-chat-resize-handle",
-    attrs: {
-      role: "separator",
-      tabindex: "0",
-      "aria-orientation": "vertical",
-      title: "드래그하거나 방향키로 조수 크기 조절",
-      "aria-label": "조수 크기 조절",
-    },
-    dataset: { testid: "ai-resize-handle" },
-  });
-  const syncResizeAria = (): void => {
-    const dock = currentChatDock();
-    const limits = dock === "glass"
-      ? { min: PANEL_SIZE_LIMITS.minWidth, max: PANEL_SIZE_LIMITS.maxWidth }
-      : dock === "side" ? SIDE_CHAT_WIDTH : floatWidthLimits();
-    const rect = measuredSurface(dock);
-    resizeHandle.setAttribute("aria-valuemin", String(limits.min));
-    resizeHandle.setAttribute("aria-valuemax", String(limits.max));
-    resizeHandle.setAttribute("aria-valuenow", String(Math.round(rect.width || dockSizes[dock]?.width || limits.min)));
-  };
-  const applySize = (): void => {
-    const dock = currentChatDock();
-    clearPanelSize();
-    commandBar.style.removeProperty("--ai-float-bar-width");
-    if (!resizableDock()) return;
-    if (dock === "glass" && dockSizes.glass) {
-      const fitted = clampPanelSizeToViewport(dockSizes.glass, viewportNow());
-      // 폭은 접혀도 유지한다 — 안 그러면 CSS clamp(360px,38vw,520px) 로 돌아가서
-      // 펼치는 순간 카드 폭이 튄다. 높이는 컴포저 한 줄로 줄어야 하므로 인라인 값을
-      // 비워 17-assistant-modern-shell.css 끝의 `height: auto` 가 이기게 한다.
-      panel.style.width = `${fitted.width}px`;
-      panel.style.maxWidth = `${fitted.width}px`;
-      if (!(glassFolded && dock === "glass")) {
-        panel.style.height = `${fitted.height}px`;
-        panel.style.maxHeight = `${fitted.height}px`;
-      }
-    } else if (dock === "float" && dockSizes.float) {
-      const width = clampWidthForDock("float", dockSizes.float.width);
-      commandBar.style.setProperty("--ai-float-bar-width", `${width}px`);
-    }
-  };
-  const mountResizeHandle = (): void => {
-    const dock = currentChatDock();
-    resizeHandle.remove();
-    resizeHandle.classList.toggle("is-corner-end", dock === "glass");
-    resizeHandle.classList.toggle("is-edge-start", dock !== "glass");
-    resizeHandle.setAttribute("aria-orientation", dock === "glass" ? "horizontal" : "vertical");
-    resizeHandle.setAttribute(
-      "aria-label",
-      dock === "glass" ? "조수 카드 폭과 높이 조절" : dock === "side" ? "조수 사이드 폭 조절" : "조수 입력줄 폭 조절",
-    );
-    (dock === "float" ? commandBar : panel).append(resizeHandle);
-    syncResizeAria();
-  };
-  const updateDockSize = (dock: ChatDock, width: number, height: number, commit: boolean): void => {
-    if (dock === "glass") {
-      dockSizes.glass = clampPanelSize({ width, height });
-    } else {
-      const next = { width: clampWidthForDock(dock, width), height: Math.round(height) };
-      dockSizes[dock] = next;
-      if (dock === "side") {
-        if (commit) options.onSideWidthCommit?.(next.width, next.height);
-        else options.onSideWidthPreview?.(next.width, next.height);
-      }
-    }
-    applySize();
-    syncResizeAria();
-    if (commit && dockSizes[dock]) {
-      // editor callback is the side shell's owner; direct panel renders still persist for unit/embedded use.
-      if (dock !== "side" || !options.onSideWidthCommit) saveDockPanelSize(dock, dockSizes[dock]!);
-    }
-  };
-  let activeResizeCleanup: (() => void) | null = null;
-  resizeHandle.addEventListener("pointerdown", (event: PointerEvent) => {
-    if (!resizableDock()) return;
-    event.preventDefault();
-    activeResizeCleanup?.();
-    const dock = currentChatDock();
-    const startX = event.clientX;
-    const startY = event.clientY;
-    const rect = measuredSurface(dock);
-    const startWidth = rect.width || dockSizes[dock]?.width || (dock === "float" ? 640 : 360);
-    const startHeight = rect.height || dockSizes[dock]?.height || 620;
-    const onMove = (move: PointerEvent): void => {
-      const dx = move.clientX - startX;
-      const dy = move.clientY - startY;
-      updateDockSize(dock, startWidth + (dock === "glass" ? dx : -dx), startHeight + (dock === "glass" ? dy : 0), false);
-    };
-    const cleanupResize = (): void => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      if (activeResizeCleanup === cleanupResize) activeResizeCleanup = null;
-    };
-    const onUp = (): void => {
-      cleanupResize();
-      const size = dockSizes[dock];
-      if (size) updateDockSize(dock, size.width, size.height, true);
-    };
-    activeResizeCleanup = cleanupResize;
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-  });
-  resizeHandle.addEventListener("keydown", (event: KeyboardEvent) => {
-    if (!resizableDock()) return;
-    const dock = currentChatDock();
-    const step = event.shiftKey ? 32 : 8;
-    const rect = measuredSurface(dock);
-    const current = dockSizes[dock] ?? { width: rect.width || (dock === "float" ? 640 : 360), height: rect.height || 620 };
-    let width = current.width;
-    let height = current.height;
-    if (event.key === "ArrowLeft") width += dock === "glass" ? -step : step;
-    else if (event.key === "ArrowRight") width += dock === "glass" ? step : -step;
-    else if (dock === "glass" && event.key === "ArrowUp") height -= step;
-    else if (dock === "glass" && event.key === "ArrowDown") height += step;
-    else return;
-    event.preventDefault();
-    updateDockSize(dock, width, height, true);
-  });
-  applySize();
-  mountResizeHandle();
-  // 반응형: 창이 좁아지면 저장 크기는 보존하고 실제 표면만 viewport에 맞춘다.
-  const onViewportResize = (): void => {
-    applySize();
-    syncResizeAria();
-  };
-  if (typeof window !== "undefined") window.addEventListener("resize", onViewportResize);
+  const applySize = resizeChrome.applySize;
+  const mountResizeHandle = resizeChrome.mountHandle;
 
   const remountComposerTail = (includeOverlay: boolean): void => {
     const tail: HTMLElement[] = includeOverlay
@@ -2695,8 +2559,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endTurnProgress();
     clearAutoCollapseTimer();
     clearGlassFoldTimer();
-    activeResizeCleanup?.();
-    activeResizeCleanup = null;
+    resizeChrome.dispose();
 
     unsubscribeContextEditor();
     unsubscribeContextStore();
@@ -2707,7 +2570,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerShell.dispose();
 
     if (typeof window !== "undefined") {
-      window.removeEventListener("resize", onViewportResize);
       window.removeEventListener(AI_SELECTION_CONTEXT_EVENT, handleSelectionContextEvent);
       window.removeEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
       if (window.__oprnAiHarness === harnessAccessor) delete window.__oprnAiHarness;
