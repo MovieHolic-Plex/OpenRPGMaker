@@ -323,8 +323,6 @@
   left: 10px;
   top: -9px;
   z-index: 3;
-  /* 이름상자도 같은 윈도스킨 파이프 — 여긴 상자가 작아 fill 로 표면까지 받는다. */
-
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-dialogue-font-size);
   line-height: 1.2;

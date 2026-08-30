@@ -180,14 +180,26 @@ describe("runtime play window skins — 상점", () => {
     expect(shell.querySelector("[data-testid='shop-mode-buy']")).not.toBeNull();
   });
 
-  it("shop.css 의 가게 창 표면은 윈도스킨 칠 없이 유리 토큰을 쓴다", () => {
-    // 윈도스킨 폴백이던 border-image 를 걷었다. 비트맵은 slice 에 fill 이 붙어 중앙까지 칠하므로,
-    // 폴백으로 남기면 숨간 유리판이 그 무늬에 덮인다(실측: 손 슬롯이 회색 판으로 남았다).
+  it("shop.css 의 가게 창 표면은 두 경로 모두 윈도스킨 칠 없이 유리 토큰을 쓴다", () => {
+    // 기본 규칙만 검사하면 안 된다: @supports (backdrop-filter) 블록이 같은 속성을 덮으므로,
+    // 그 블록을 지원하는 브라우저(증거 샷의 Chromium 포함)에서는 기본 규칙이 죽은 코드다.
+    // 실제로 사용자가 보는 표면은 **승자 규칙**이다 — 두 규칙을 함께 고정한다.
     const css = read("src/styles/runtime/shop.css");
-    const panelBlock = css.slice(css.indexOf(".runtime-shop-panel {"));
-    const panelRule = panelBlock.slice(0, panelBlock.indexOf("}"));
-    expect(panelRule).not.toContain("border-image-source: var(--runtime-window-skin)");
-    expect(panelRule).toMatch(/var\(--runtime-glass-|var\(--runtime-window-fill-fallback\)/);
+    const base = css.slice(css.indexOf(".runtime-shop-panel {"));
+    const baseRule = base.slice(0, base.indexOf("}"));
+    const supportsBlock = css.slice(css.indexOf("@supports (backdrop-filter: blur(2px)) {", css.indexOf(".runtime-shop-panel {")));
+    const winnerRule = supportsBlock.slice(0, supportsBlock.indexOf("  }"));
+
+    for (const rule of [baseRule, winnerRule]) {
+      expect(rule).not.toContain("border-image-source: var(--runtime-window-skin)");
+      expect(rule).toMatch(/var\(--runtime-glass-|var\(--shop-(surface|line|radius)\)/);
+    }
+    // 상점 지역 변수는 공용 유리 토큰을 가리켜야 한다 — 두 번째 디자인 시스템 금지.
+    const overlayVars = css.slice(css.indexOf(".runtime-shop-overlay {"));
+    for (const name of ["--shop-accent:", "--shop-surface:", "--shop-line:", "--shop-radius:", "--shop-ui-font:"]) {
+      const declaration = overlayVars.slice(overlayVars.indexOf(name)).split(";")[0];
+      expect(declaration, `${name} 가 공용 토큰을 가리키지 않는다`).toContain("var(--runtime-");
+    }
     expect(css).toContain(".runtime-shop-item-icon");
   });
 });
@@ -227,6 +239,14 @@ describe("runtime play window skins — 메시지 창과 타이틀", () => {
     expect(frameRule).toMatch(/var\(--runtime-(glass|dialogue-glass)-/);
     // 예전엔 ::before/::after 를 통째로 껐다 — 그러면 프레임을 걸 자리가 없다.
     expect(css).not.toContain(".dialogue-box::after,\n.dialogue-box::before {\n  display: none;\n}");
+
+    // 이름 상자(화자 라벨)도 같은 파이프여야 한다. 예전 계약은 이 상자가 윈도스킨을
+    // fill 로 받아 표면까지 그리는 것이었다 — 이제는 대화창과 같은 유리 표면·테두리를 쓴다.
+    const nameplate = css.slice(css.indexOf(".dialogue-box .speaker.speaker-nameplate {"));
+    const nameplateRule = nameplate.slice(0, nameplate.indexOf("}"));
+    expect(nameplateRule).not.toContain("border-image-source: var(--runtime-window-skin)");
+    expect(nameplateRule).toMatch(/border: 1px solid var\(--runtime-dialogue-glass-border\)/);
+    expect(nameplateRule).toMatch(/var\(--runtime-dialogue-glass-surface/);
   });
 
   it("타이틀 루트가 정규화된 윈도스킨 id 를 노출하고 배경 그래픽을 유지한다", () => {

@@ -126,6 +126,9 @@
   border-radius: 10px;
   color: var(--battle-text);
   display: inline-block;
+  /* 이 스킨은 이름표를 유리 알약(크롬)으로 다시 그린다 — 01-scene-base.css 가 필드
+     라벨에 걸어 둔 픽셀 글꼴을 여기서 되돌려 크롬 글꼴을 쓴다. */
+  font-family: var(--runtime-ui-font);
   font-size: 12px;
   line-height: 1.6;
   padding: 0 8px;
