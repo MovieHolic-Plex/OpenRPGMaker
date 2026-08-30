@@ -21,6 +21,7 @@ import {
   type EnemyScatterPoint,
   type PartyPowerCurvePoint,
 } from "@/editor/panels/databaseBalanceCompute";
+import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
@@ -76,10 +77,26 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
         class: "db-overview-hero",
         children: [
           el("div", {
+            class: "db-overview-identity",
             children: [
               el("span", { class: "db-overview-eyebrow", text: "GAME OVERVIEW" }),
-              el("h2", { text: project.meta.title || "새 프로젝트" }),
-              el("p", { text: "세계, 이야기, 등장인물, 시스템이 어떻게 연결되는지 한눈에 확인합니다." }),
+              el("div", {
+                class: "db-overview-title-row",
+                children: [
+                  el("h2", { text: project.meta.title || "새 프로젝트" }),
+                  el("div", {
+                    class: "db-overview-icon-chips",
+                    attrs: { "aria-label": "프로젝트 개요 범위" },
+                    children: [
+                      overviewIconChip("세계", "tilesets"),
+                      overviewIconChip("이야기", "commonEvents"),
+                      overviewIconChip("등장인물", "characters"),
+                      overviewIconChip("시스템", "system"),
+                      overviewIconChip("시작 지점", "overview"),
+                    ],
+                  }),
+                ],
+              }),
             ],
           }),
           // 같은 CTA 가 헤더와 차트 그리드 끝에 두 번 렌더되고 있었다. 아래쪽 사본은
@@ -127,6 +144,14 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
   scheduleIdle(() => {
     if (!canInjectDashboard(charts, host)) return;
     charts.append(...renderDashboardContent(host));
+  });
+}
+
+function overviewIconChip(label: string, tab: DatabaseTab): HTMLElement {
+  return el("span", {
+    class: "db-overview-icon-chip",
+    attrs: { title: label },
+    children: [makeDatabaseTabIcon(tab), el("span", { text: label })],
   });
 }
 

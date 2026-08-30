@@ -39,18 +39,58 @@
   width: 100%;
 }
 
-.db-list-thumb.empty {
+.db-list-thumb.empty,
+.db-list-thumb.db-image-load-failed {
   background-image: none;
-  opacity: 0.36;
 }
 
 .db-list-thumb.empty::before {
-  background: var(--border-subtle, rgba(255, 255, 255, 0.22));
-  content: "";
+  content: none;
+}
+
+.db-image-placeholder {
+  align-content: center;
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
+  color: var(--text-3, rgba(255, 255, 255, 0.58));
+  display: inline-grid;
+  gap: 2px;
+  justify-items: center;
+  opacity: 1;
+  overflow: hidden;
+  place-items: center;
+  position: relative;
+}
+
+.db-image-load-failed {
+  border-style: dashed;
+}
+
+.db-image-placeholder-icon {
   display: block;
-  height: 1px;
-  transform: rotate(-35deg);
-  width: 16px;
+  height: 18px;
+  width: 18px;
+}
+
+.db-image-placeholder-label {
+  font-size: 9px;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0 3px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-list-thumb .db-image-placeholder-label,
+.db-resource-picker-option-thumb .db-image-placeholder-label,
+.db-resource-picker-inline-thumb .db-image-placeholder-label,
+.db-system-party-face .db-image-placeholder-label {
+  display: none;
+}
+
+.db-list-thumb.empty .db-image-placeholder-icon {
+  opacity: 0.58;
 }
 
 .db-list-thumb-probe {
@@ -271,10 +311,18 @@
 .db-resource-picker-inline-thumb {
   height: 40px;
   max-width: 40px;
+  min-height: 40px;
+  min-width: 40px;
   width: 40px;
 }
 
+.db-resource-picker-inline-thumb {
+  flex: 0 0 40px;
+}
+
 .db-resource-picker-preview-visual {
+  min-height: 120px;
+  min-width: 120px;
   max-height: 120px;
   max-width: 140px;
 }
@@ -285,8 +333,18 @@
   background-repeat: no-repeat;
   background-size: var(--db-resource-sheet-width) var(--db-resource-sheet-height);
   height: min(var(--db-resource-height), 120px);
+  min-height: min(var(--db-resource-height), 120px);
+  min-width: min(var(--db-resource-width), 140px);
   overflow: hidden;
   width: min(var(--db-resource-width), 140px);
+}
+
+.db-resource-picker-load-probe {
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
 }
 
 .db-resource-picker-empty {
@@ -370,11 +428,15 @@
   box-sizing: border-box;
   height: 40px;
   image-rendering: pixelated;
+  min-height: 40px;
+  min-width: 40px;
+  position: relative;
   width: 40px;
 }
 
-.db-system-party-face.empty {
-  opacity: 0.35;
+.db-system-party-face.empty,
+.db-system-party-face.db-image-load-failed {
+  opacity: 1;
 }
 
 /* 종족 그래픽 프리뷰 — 적 스테이지(db-enemy-graphic-stage, height:100%)와 분리한 고정 높이 박스.

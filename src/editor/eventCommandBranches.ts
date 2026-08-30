@@ -1,6 +1,6 @@
 // 이벤트 명령의 «분기» 를 한 곳에서 세는 정본.
 //
-// 왜 이 파일이 생겼나 (실측 2026-08-31): 같은 일을 하는 분기 열거 함수가 다섯 벌 있었고
+// 왜 이 파일이 생겼나 (실측 2026-08-30): 같은 일을 하는 분기 열거 함수가 다섯 벌 있었고
 // 그중 셋이 상점 실패 분기(`failedTransactionBranch`)를 빠뜨렸다.
 //   - `panels/eventEditor/previewSimulation.ts:branchesOf` — 단일 원소 early return (미리보기·플로우)
 //   - `panels/eventEditor/commandList.ts:appendCommandChildren` — 상수 import 자체가 없었다 (목록)

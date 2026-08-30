@@ -135,9 +135,25 @@ const READ_ARGS = { mapId: MAP_ID, x: 0, y: 0, w: 6, h: 5 } as const;
  * 1라운드는 밑그림 확정 + 집 칸 시공, 2라운드부터는 `afterFirstRound()` 가 턴을 끝낸다.
  * (중단이면 abort 를 누르고 던지고, 오류면 401 을 돌려준다.)
  */
+/**
+ * LLM 왕복만 라운드로 센다.
+ *
+ * 왜 URL 을 보는가: 이 하네스는 «fetch 는 곧 LLM 호출» 로 짜여 있었는데, 턴은 LLM 말고도 요청을
+ * 낸다 — 활동 로그의 디스크 미러(`/__oprn/ai-activity`)가 그렇고, 그 요청이 라운드를 한 칸
+ * 훔치면 1라운드 툴콜 대본이 미러에게 배달되고 모델은 «끝» 응답을 받는다(실측: 툴 0건, 청사진
+ * 0칸으로 다섯 케이스가 한꺼번에 빨감). 라운드 대본은 LLM 요청에만 답한다.
+ */
+function isLlmRequest(input: unknown): boolean {
+  const url = typeof input === "string" ? input : String((input as { url?: unknown })?.url ?? input);
+  return url.includes("/chat/completions");
+}
+
+const okResponse = (): Response => new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } });
+
 function scriptTurn(afterFirstRound: () => Response | never): void {
   let round = 0;
-  vi.stubGlobal("fetch", vi.fn(async () => {
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown) => {
+    if (!isLlmRequest(input)) return okResponse();
     round += 1;
     if (round === 1) {
       return sseToolCallsResponse([
@@ -152,7 +168,8 @@ function scriptTurn(afterFirstRound: () => Response | never): void {
 /** 라운드별 응답을 그대로 지정한다 — 마지막 응답은 남은 라운드에서 되쓴다. */
 function scriptRounds(rounds: readonly (() => Response | never)[]): void {
   let round = 0;
-  vi.stubGlobal("fetch", vi.fn(async () => {
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown) => {
+    if (!isLlmRequest(input)) return okResponse();
     const step = rounds[Math.min(round, rounds.length - 1)];
     round += 1;
     return step();

@@ -118,6 +118,119 @@
   --db-modern-muted: var(--db-studio-text-2);
 }
 
+/* ---- Korean readability floor -----------------------------------------
+   Database workbenches accumulated 8–10.5px captions and 1.0 line boxes in
+   legacy font shorthands. Keep this selector at (0,3,0)+ so its longhands
+   also beat db-ws-* sheets imported after this file, without resetting each
+   caption's family or weight. Larger body/title text remains untouched. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body :is(
+  small,
+  .btn,
+  .db-list-sub,
+  .db-filter-chip-count,
+  .db-ws-hero-eyebrow,
+  .db-ws-section-badge,
+  .db-ws-stat-label,
+  .db-ws-stat-delta,
+  .db-ws-usage-where,
+  .db-el-kind-thumb,
+  .db-life-card-label,
+  .db-life-card-detail,
+  .db-system-preview-label,
+  .db-system-studio-card-meta,
+  .db-system-studio-card-kicker,
+  .db-overview-icon-chip,
+  .db-overview-eyebrow,
+  .db-overview-axis-label,
+  .db-actor-status,
+  .db-class-build-eyebrow,
+  .db-skill-backlink-kind,
+  .db-skill-effect-icon,
+  .db-skill-composer-label,
+  .db-item-section-label,
+  .db-filter-cluster,
+  .db-enemy-faction-source,
+  .db-enemy-faction-stance,
+  .db-monster-species-empty-row,
+  .db-troop-preview-party-marker,
+  .db-troop-field-label,
+  .db-troop-legend-chip,
+  .db-troop-member-index,
+  .db-troop-member-coords,
+  .db-studio-live-chip,
+  .db-command-card-index,
+  .tileset-selected-layer-badge,
+  .db-cx-status-chip,
+  .db-faction-matrix-corner,
+  .structure-kit-part-badge,
+  .db-ws-range-label,
+  .db-term-status,
+  .db-term-preview-title,
+  .db-animation-studio-editor :is(th, h4, button),
+  strong:not([class]),
+  b.is-switch
+) {
+  font-size: 11.5px;
+}
+
+/* Class-less caption spans are another measured 10–10.5px source. Limit the
+   floor to text-only spans; named UI primitives above retain their hierarchy. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body.database-modal-body :is(
+  span:not([class]),
+  span[class=""],
+  .db-item-ws span[class=""],
+  .oprn-record-equipment span[class=""]
+) {
+  font-size: max(11.5px, 1em);
+  line-height: 1.4;
+}
+
+/* Compact text and controls include fixed-height buttons and badges whose
+   shorthands use line-height:1 (some with !important). Existing dimensions and
+   padding stay unchanged; only the glyph line box receives the 1.35 floor.
+
+   2026-08-30: 이 바닥은 1.25 에서 1.35 로 올렸다. 1.25 는 작은 본문엔 맞지만 **큼 굵은
+   한글 제목엔 모자란다** — 1024px 럭에서 overview 하이어의 h2 가 clamp(24px,3vw,34px) 의
+   3vw = 30.72px 로 잡힐 때 line box 38.4px 에 800 굵기 받자침 잉키 40.4px 가 들어가
+   자기 overflow 로 2px 깍혔다(db-ux-probe 로 재현: 1024x768 overview selfClipped 1).
+   한 종료의 고정 바닥을 10px span 부터 30px 제목까지 같이 쓰는 구조라서, 바닥은 가장 큰
+   글자가 안 깍힐 것으로 정해야 한다. 1.35 x 30.72 = 41.5px > 40.4px 잉키. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) :is(
+  .database-modal-header,
+  .database-modal-body,
+  .database-modal-footer
+) :is(
+  button,
+  summary,
+  small,
+  strong,
+  b,
+  em,
+  code,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  label,
+  legend,
+  p,
+  span,
+  dt,
+  dd,
+  th,
+  td,
+  .db-system-studio-card-icon,
+  .db-system-studio-card-open,
+  .db-troop-preview-party-marker,
+  .db-troop-command-line,
+  .db-state-animation-preview,
+  .db-ws-readout
+) {
+  line-height: 1.35;
+}
+
 /* ---- modal window chrome — neutral surface, hairline, soft shadow ----- */
 
 .database-modal-backdrop .database-modal-window {

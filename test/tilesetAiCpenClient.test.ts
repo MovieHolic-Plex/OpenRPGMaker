@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import {
   hasCpenTilesetApiKey,
   normalizeCpenResponseText,
@@ -7,6 +8,11 @@ import {
 } from "@/editor/panels/tilesetAiCpenClient";
 
 const LOCAL_STORAGE_KEY = "oprn:llmApiKey";
+
+// 제공자·모델은 상수에서 끌어온다. 예전에는 "openai-codex"/"gpt-5.6-sol" 을 문자열로 박아 두어
+// 공장 기본 제공자가 Antigravity 로 바뀐 뒤(2026-08-27) 이 스펙이 조용히 빨간 채로 남아 있었다.
+const DEFAULT_PROVIDER = DEFAULT_OH_MY_PI_PROVIDER;
+const DEFAULT_PROVIDER_MODEL = getOhMyPiProvider(DEFAULT_OH_MY_PI_PROVIDER)?.defaultModel ?? "";
 
 describe("requestCpenTilesetMapping", () => {
   beforeEach(() => {
@@ -45,10 +51,10 @@ describe("requestCpenTilesetMapping", () => {
     expect(typeof init?.body).toBe("string");
     // 동반 서비스가 자격 증명을 들고 있다 — 브라우저는 키를 보내지 않고 제공자만 지목한다.
     expect(readHeader(init, "Authorization")).toBeNull();
-    expect(readHeader(init, "X-Rpgzzu-Provider")).toBe("openai-codex");
+    expect(readHeader(init, "X-Rpgzzu-Provider")).toBe(DEFAULT_PROVIDER);
     const body = parseBody(readStringBody(init));
-    // 저장된 게이트웨이 모델은 Codex 카탈로그 밖 → 권장 기본으로 교정.
-    expect(body.model).toBe("gpt-5.6-sol");
+    // 저장된 게이트웨이 모델은 선택된 제공자의 카탈로그 밖 → 권장 기본으로 교정.
+    expect(body.model).toBe(DEFAULT_PROVIDER_MODEL);
     expect(body.messages?.[0]?.role).toBe("system");
     expect(body.messages?.[1]?.content).toBe("타일셋을 분석해줘");
     // routing 은 cpenrouter 전용 필드 — 동반 서비스로는 보내지 않는다.
@@ -100,10 +106,12 @@ describe("requestCpenTilesetMapping", () => {
     const [url, init] = fetchMock.mock.calls[0] ?? [];
     expect(url).toBe("/v1/chat/completions");
     expect(readHeader(init, "Authorization")).toBeNull();
-    expect(readHeader(init, "X-Rpgzzu-Provider")).toBe("openai-codex");
+    expect(readHeader(init, "X-Rpgzzu-Provider")).toBe(DEFAULT_PROVIDER);
   });
 
-  it("Given the LLM rejects the request When requesting a tileset mapping Then it reports the failure body", async () => {
+  it("Given the LLM rejects the request When requesting a tileset mapping Then it reports the humanized failure", async () => {
+    // 전송을 chatCompletion 으로 합친 뒤 실패 문구는 llmClient 의 humanizeLlmStatus 가 만든다 —
+    // 옛 `HTTP <status> <본문>` 덤프보다 사용자가 할 일을 알 수 있고, 401/402/429 조치 안내가 따라온다.
     vi.stubGlobal(
       "fetch",
       vi.fn(async (_url: string, _init: RequestInit) => new Response("invalid_grant", { status: 400 })),
@@ -115,8 +123,32 @@ describe("requestCpenTilesetMapping", () => {
       prompt: "타일셋을 분석해줘",
     });
 
-    expect(result).toContain("HTTP 400");
+    expect(result).toContain("AI 호출 실패");
+    expect(result).toContain("400");
+    // 게이트웨이 원문은 그대로 남는다 — 원인 진단에 필요한 유일한 문자열이다.
     expect(result).toContain("invalid_grant");
+  });
+
+  it("Given a mapping request When it is sent Then transport concerns live only in llmClient", async () => {
+    // 이 스펙이 막는 회귀: 예전에는 이 파일이 직접 fetch 하며 companion/proxy 분기와 provider·
+    // Authorization 헤더를 손으로 조립했고, 에디터 AI 가 OAuth 전용이 된 뒤 여기만 갱신되지 않아
+    // 타일셋 AI 가 무증상으로 죽어 있었다(실측 2026-08-21).
+    const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
+      new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal("window", testWindow());
+
+    await requestCpenTilesetMapping({ imageDataUrl: "", prompt: "타일셋을 분석해줘" });
+
+    const [, init] = fetchMock.mock.calls[0] ?? [];
+    const body = parseBody(readStringBody(init));
+    // JSON 전용 채널이므로 response_format 이 실려야 한다(ChatRequest 통과 필드).
+    expect(readResponseFormat(readStringBody(init))).toEqual({ type: "json_object" });
+    // routing 은 cpenrouter 게이트웨이 전용 필드였다 — 합치면서 버렸다.
+    expect(body.routing).toBeUndefined();
+    // 매핑 JSON 이 길어 설정의 기본 예산 대신 8192 를 쓴다.
+    expect(body.max_tokens).toBe(8192);
   });
 });
 
@@ -206,6 +238,12 @@ function parseBody(bodyText: string): ParsedChatBody {
     result.routing = { max_input_per_1m: routing.max_input_per_1m };
   }
   return result;
+}
+
+function readResponseFormat(bodyText: string): unknown {
+  const parsed: unknown = JSON.parse(bodyText);
+  if (!parsed || typeof parsed !== "object" || !("response_format" in parsed)) return undefined;
+  return parsed.response_format;
 }
 
 function readHeader(init: RequestInit | undefined, headerName: string): string | null {

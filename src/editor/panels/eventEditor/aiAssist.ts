@@ -19,6 +19,7 @@
 // 스토어 갱신 때마다 에디터 본문이 통째로 재렌더되므로, 입력 초안/펼침 상태/초안 diff 는
 // 모듈 레벨 캐시(이벤트+페이지 키)로 보존해 재렌더 후 복원한다.
 
+import { conversationScopeKey } from "@/ai/conversationStore";
 import { runEventCommandAssist, resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
@@ -342,6 +343,8 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
           selection,
           selectionLabel: selectedCommandName(cmdList, page.commands) ?? undefined,
         },
+        // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
+        projectScopeKey: conversationScopeKey(store.getProjectIdentity(), project),
       });
       // 모델 출력이 "page" 면 그게 곧 최종 목록이고, "append" 면 기존 목록에 끼워 최종 목록을 만든다.
       // 어느 쪽이든 아래 diff 는 같은 일을 한다 — 무엇이 달라지는지 목록 위에 그린다.

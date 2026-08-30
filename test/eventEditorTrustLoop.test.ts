@@ -351,7 +351,9 @@ describe("event editor trust loop", () => {
     openEventEditorModal(mapId, "event-1");
 
     const nameInput = document.querySelector<HTMLInputElement>('[data-testid="event-page-name-input"]');
-    const details = document.querySelector<HTMLDetailsElement>('[data-testid="event-script-flowchart"]');
+    // 열린 details 복원은 `data-testid` 가 있는 아무 details 에나 걸리는 일반 계약이다.
+    // 예전 표본은 플로우차트 아코디언이었는데, 플로우가 보기 방식으로 승격되면서 details 가 아니게 됐다.
+    const details = document.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
     const commandList = document.querySelector<HTMLElement>(".cmd-list");
     if (!nameInput || !details || !commandList) throw new Error("expected event editor interaction surfaces");
     nameInput.focus();
@@ -365,7 +367,7 @@ describe("event editor trust loop", () => {
     });
 
     const restoredInput = document.querySelector<HTMLInputElement>('[data-testid="event-page-name-input"]');
-    const restoredDetails = document.querySelector<HTMLDetailsElement>('[data-testid="event-script-flowchart"]');
+    const restoredDetails = document.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
     const restoredList = document.querySelector<HTMLElement>(".cmd-list");
     expect(document.activeElement).toBe(restoredInput);
     expect(restoredInput?.selectionStart).toBe(2);

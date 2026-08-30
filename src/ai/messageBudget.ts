@@ -146,6 +146,78 @@ export function compactMessagesForRequest(
   messages: readonly ChatMessage[],
   budgetChars: number = REQUEST_MESSAGE_CHAR_BUDGET,
 ): ChatMessage[] {
+  // 툴 짝 복구는 **마지막**에 돈다 — 아래 3차 폐기가 tool 응답만 버려 짝을 깰 수 있기 때문이다.
+  return repairToolCallProtocol(clampMessagesToBudget(messages, budgetChars));
+}
+
+/**
+ * 전송 사본의 **툴콜 프로토콜 불변식**을 세운다: assistant `tool_calls` 는 호출마다 정확히 한 개의
+ * `role:"tool"` 응답을 갖고, 짝 없는 tool 응답은 없다.
+ *
+ * 왜 사본 계층에 있는가(2026-08-30 실측): 툴 실행 도중 예외가 나면 세션의 영구 대화에는
+ * `assistant(tool_calls)` 만 남고 응답이 없다. 그 뒤 **모든** 요청이 같은 400 으로 죽는다 —
+ * OpenAI 호환 게이트웨이는 `tool_calls` 뒤에 짝 응답을 요구하고, Gemini Cloud Code Assist 는
+ * `Please ensure that function call turn comes immediately after a user turn or after a function
+ * response turn` 으로 거부한다. 즉 한 번의 예외가 그 세션을 영구히 못 쓰게 만든다.
+ * 세션 루프는 이제 응답을 보장하지만(실패 결과라도 붙인다), 이미 저장된 대화·아직 모르는 경로를
+ * 위해 전송 경계에서도 같은 불변식을 세운다. 원본(this.messages)은 감사용으로 손대지 않는다.
+ */
+export function repairToolCallProtocol(messages: readonly ChatMessage[]): ChatMessage[] {
+  const called = new Set<string>();
+  for (const message of messages) {
+    for (const call of message.tool_calls ?? []) called.add(call.id);
+  }
+  const answered = new Set<string>();
+  const repaired: ChatMessage[] = [];
+  for (const message of messages) {
+    if (message.role === "tool") {
+      // 짝 없는 function response 는 그 자체로 같은 400 을 부른다.
+      if (message.tool_call_id === undefined || !called.has(message.tool_call_id)) continue;
+      if (answered.has(message.tool_call_id)) continue; // 같은 id 중복 응답도 거부 사유다.
+      answered.add(message.tool_call_id);
+      repaired.push(message);
+      continue;
+    }
+    repaired.push(message);
+  }
+  const unanswered: ChatMessage[] = [];
+  for (const call of repaired.flatMap((message) => message.tool_calls ?? [])) {
+    if (answered.has(call.id)) continue;
+    answered.add(call.id);
+    unanswered.push(lostToolResponse(call.id, call.function.name));
+  }
+  if (unanswered.length === 0) return repaired;
+  // 유실 응답은 해당 assistant 메시지 바로 뒤에 꽂는다(공급자는 순서까지 본다).
+  const byId = new Map(unanswered.map((message) => [message.tool_call_id!, message] as const));
+  const ordered: ChatMessage[] = [];
+  for (const message of repaired) {
+    ordered.push(message);
+    if (message.role !== "tool" && message.tool_calls) {
+      const own = message.tool_calls.map((call) => byId.get(call.id)).filter((entry): entry is ChatMessage => entry !== undefined);
+      // 같은 assistant 의 응답들 사이 순서는 공급자가 id 로 짝을 맞추므로 무관하다 —
+      // 지켜야 하는 것은 "호출 메시지 다음에 응답들이 온다" 라는 바깥 순서뿐이다.
+      ordered.push(...own);
+    }
+  }
+  return ordered;
+}
+
+function lostToolResponse(toolCallId: string, name: string): ChatMessage {
+  return {
+    role: "tool",
+    tool_call_id: toolCallId,
+    name,
+    content: JSON.stringify({
+      ok: false,
+      summary: `'${name}' 결과가 유실됐습니다(앞선 턴이 중단됨). 필요하면 다시 호출하세요.`,
+    }),
+  };
+}
+
+function clampMessagesToBudget(
+  messages: readonly ChatMessage[],
+  budgetChars: number,
+): ChatMessage[] {
   if (totalMessagesCharLength(messages) <= budgetChars) return [...messages];
   const result: ChatMessage[] = messages.map((message) => ({
     ...message,

@@ -1,9 +1,9 @@
-// [P2] 라이브 미리보기/플로우차트 파생 뷰 + 크로스 컨테이너 이동.
+// [P2] 라이브 미리보기/플로우 파생 뷰 + 크로스 컨테이너 이동.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   flattenScript,
+  renderEventPageFlow,
   renderEventPagePreview,
-  renderEventScriptFlowchart,
 } from "@/editor/panels/eventEditor/eventScriptModernViews";
 import {
   FORK_THEN_BRANCH_INDEX,
@@ -86,20 +86,20 @@ describe("이벤트 스크립트 모던 뷰 (P2)", () => {
     expect(findByTestId(root, "event-script-live-stage")).toBeNull();
   });
 
-  it("플로우차트는 기본 접힘 details 로 렌더된다", () => {
+  it("플로우는 팝오버 details 가 아니라 칼럼 전체를 쓰는 보기 방식으로 렌더된다", () => {
     const page = pageWith([{ kind: "text", body: "한 줄" }]);
     const root = renderWithFakeDom(() =>
-      renderEventScriptFlowchart({ mapId: "map_start", eventId: "ev_test", page })
+      renderEventPageFlow({ mapId: "map_start", eventId: "ev_test", page })
     );
-    const flow = findByTestId(root, "event-script-flowchart");
-    expect(flow).not.toBeNull();
-    expect((flow as unknown as { open?: boolean }).open ?? false).toBe(false);
+    // 예전 도구 팝오버 아코디언(`event-script-flowchart`)은 미리보기 위에 겹쳐 떴다 — 이제 없다.
+    expect(findByTestId(root, "event-script-flowchart")).toBeNull();
+    expect(findByTestId(root, "event-page-flow")).not.toBeNull();
     expect(findByTestId(root, "event-flow-node-text")).not.toBeNull();
   });
 
-  it("플로우차트는 fork/choices 분기를 하위 컬럼으로 렌더한다", () => {
+  it("플로우는 fork/choices 분기를 하위 컬럼으로 렌더한다", () => {
     const root = renderWithFakeDom(() =>
-      renderEventScriptFlowchart({
+      renderEventPageFlow({
         mapId: "map_start",
         eventId: "ev_test",
         page: pageWith([
