@@ -551,7 +551,8 @@ const placeProps: ToolDefinition = {
   name: "place_props",
   description:
     "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region. "
-    + "사용자가 빽빽하게·통행 불가·길 막기를 요구하면 packing:\"dense\" 로 보내고 count 는 area 면적만큼 크게 잡는다(결과에 남은 통행 칸 수가 나온다).",
+    + "사용자가 빽빽하게·통행 불가·길 막기를 요구하면 packing:\"dense\" 로 보내고 count 는 area 면적만큼 크게 잡는다(결과에 남은 통행 칸 수가 나온다). "
+    + "숲·삼림은 나무 몇 그루가 아니라 그 지대를 덮는 지형이다 — 나무 산포로 숲을 만들 땐 plant_tree_clusters(density) 를 쓰고, place_props 로 직접 심으면 count 를 area 면적의 최소 1/4 그루로 잡아라(울창한 숲은 packing:\"dense\").",
   mode: "write",
   version: 3,
   parameters: {
