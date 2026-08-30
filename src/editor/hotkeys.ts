@@ -16,6 +16,21 @@ import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEdit
 import { toast } from "@/util/toast";
 
 /**
+ * 시연 실행(테스트 플레이 / 이벤트 테스트 / 전투 테스트) 창이 떠 있는가.
+ *
+ * 이 창이 떠 있는 동안 키보드는 **게임의 것**이다. 편집 Phaser 게임은 창 뒤에서 계속
+ * 살아 있고 그 키보드 플러그인은 `window` 를 듣기 때문에, 가드가 없으면 게임에서 걸으려고
+ * 누른 방향키가 편집 카메라를 같은 만큼(기본 6타일, Shift 16타일) 밀어낸다. 플레이를 조금
+ * 하다 닫으면 편집 캔버스가 맵 경계 밖으로 밀려 «맵이 사라진» 것처럼 보였다
+ * (2026-08-30 실측: 방향키 24+12회 뒤 복귀하면 100×100 맵이 우하단 모서리 조각만 남는다).
+ * 방향키뿐 아니라 1~7 도구, F5~F7 레이어, +/- 줌, Ctrl+Z 되돌리기가 전부 같은 경로다.
+ */
+export function isPlaySurfaceOwningKeyboard(): boolean {
+  if (typeof document === "undefined") return false;
+  return Boolean(document.querySelector("[data-testid='test-play-modal-backdrop']"));
+}
+
+/**
  * 현재 포커스가 폼 컨트롤이거나 모달이 열려 있어 에디터 단축키를 무시해야 하는지 판별.
  * Phaser 키보드 플러그인은 캡처 단계 document 리스너로 동작하므로, 텍스트 필드에
  * 타이핑하는 동안 F키/숫자키가 도구를 바꿔버리는 일을 막아야 한다.
@@ -40,6 +55,8 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
     if (document.querySelector("[data-testid='event-editor-modal']")) return true;
   }
+  // 시연 실행 창이 떠 있으면 키보드는 게임의 것이다.
+  if (isPlaySurfaceOwningKeyboard()) return true;
   return false;
 }
 

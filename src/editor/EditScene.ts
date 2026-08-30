@@ -60,7 +60,7 @@ import {
   movePastePreview,
   selectTileRegion,
 } from "@/editor/mapClipboard";
-import { handleEditorKey, handleHistoryHotkey, historyHotkeyOwnedByPanel, isHistoryHotkeyChord, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+import { handleEditorKey, handleHistoryHotkey, historyHotkeyOwnedByPanel, isHistoryHotkeyChord, isPlaySurfaceOwningKeyboard, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
 import { openStructurePlacementContextMenu } from "@/editor/panels/structurePlacementContextMenu";
@@ -947,6 +947,11 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
+    // 시연 실행 창이 떠 있으면 키보드는 전부 게임의 것이다 — 되돌리기보다 이 가드가 앞선다.
+    // 편집 게임은 창 뒤에서 살아 있고 Phaser 키보드 플러그인은 window 를 들으므로, 가드가
+    // 없으면 게임에서 걸으려고 누른 방향키가 편집 카메라를 맵 밖으로 밀어내 복귀하면
+    // «맵이 사라진» 것처럼 보인다(2026-08-30 실측).
+    if (isPlaySurfaceOwningKeyboard()) return;
     // 히스토리 키는 굵은 가드보다 먼저 — shouldIgnoreEditorShortcut 은 체크박스/슬라이더
     // 포커스까지 INPUT 으로 묶어 되돌리기를 삼켰다. handleHistoryHotkey 가 텍스트 편집
     // 포커스만 정확히 양보하고, 성공/빈 스택 모두 토스트로 알린다.
