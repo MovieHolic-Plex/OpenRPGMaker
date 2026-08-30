@@ -7,7 +7,6 @@ import {
   resolveSurfaceAiConfig,
   type AiSurface,
 } from "@/ai/assistantEndpoint";
-import { REGION_TASK_MAX_TOOL_CALLS } from "@/editor/regionTask/runRegionTask";
 import type { AiConfig } from "@/ai/llmClient";
 import { AI_CONFIG_STORAGE_KEY, loadAiConfig, resetAiTransportHealth } from "@/ai/llmClient";
 import {
@@ -63,9 +62,8 @@ function companionConfig(overrides: Partial<AiConfig> = {}): AiConfig {
 }
 
 describe("resolveSurfaceAiConfig", () => {
-  it("keeps the shipped region-task tool-call ceiling at 24", () => {
+  it("keeps the region surface tool-call ceiling at 24", () => {
     expect(REGION_SURFACE_MAX_TOOL_CALLS).toBe(24);
-    expect(REGION_TASK_MAX_TOOL_CALLS).toBe(24);
   });
 
   it("Given any surface When resolving Then the endpoint fields stay identical to the assistant config", () => {

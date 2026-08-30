@@ -4,6 +4,7 @@ import {
   countAddedMaps,
   countInRegionChangedCells,
   describeRegionTaskResult,
+  REGION_TASK_MAX_TOOL_CALLS,
   runRegionTask,
   type RegionTaskDeps,
   type RegionTaskSessionLike,
@@ -164,6 +165,10 @@ describe("countInRegionChangedCells", () => {
 });
 
 describe("runRegionTask", () => {
+  it("공용 endpoint 정책의 도구 호출 상한을 재노출한다", () => {
+    expect(REGION_TASK_MAX_TOOL_CALLS).toBe(24);
+  });
+
   it("기본 세션 생성은 보조 모델(liteModel)로 chat 요청을 만든다", async () => {
     const base = baseProject();
     store.replace(base);

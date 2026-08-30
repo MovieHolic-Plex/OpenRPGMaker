@@ -1,7 +1,5 @@
-// AI 연동 칩 배선 회귀 테스트.
-// renderAiConnectionStatus 가 실제 에디터 상태바(renderEditor → renderEditorStatusbar)에
-// 렌더되어 DOM 에 나타나는지 검증한다. 칩 단위 동작은 aiConnectionStatus.test.ts 가 담당하고,
-// 여기서는 "화면에 실제로 연결돼 있는가"만 본다.
+// AI 연결 캐시 부팅 배선 회귀 테스트.
+// 퇴역한 하단 상태바는 렌더하지 않되, renderEditor가 공유 인증 캐시를 한 번 warm-up하는지 검증한다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";

@@ -7,6 +7,11 @@
 
 Use the lightest command that proves the change.
 
+## Editor e2e boot-overlay determinism (2026-08-31)
+
+- When a spec needs deterministic access to editor chrome, follow `test/e2e/tileset-ai-native-review.spec.ts`: after navigation wait for `edit-canvas`, click `login-guest` if visible and assert `login-modal` is gone, click `standard-welcome-start` if visible and assert `standard-welcome-card` is gone, then click `coach-mark-skip` if visible and assert no `[data-testid^="coach-mark-"]` remains.
+- Do not assume browser storage from a prior run, and do not use fixed sleeps or polling for these overlays. Await each exact dismissal state before opening a menu or modal.
+
 ## 영역 다듬기 focused gate (2026-08-31)
 
 - 가벼운 순서: `npx vitest run test/regionSurroundings.test.ts test/regionBlend.test.ts test/regionPolish.test.ts test/regionTaskPolishModal.test.ts` 로 새 계약을 먼저 본다. 클립·실행 경로를 건드렸으면 `test/regionTaskClip.test.ts test/regionTaskRun.test.ts` 를, 칩·지시문을 건드렸으면 `test/selectionActionChips.test.ts test/suggestedCommands.test.ts` 를 더한다(8파일 97케이스).
