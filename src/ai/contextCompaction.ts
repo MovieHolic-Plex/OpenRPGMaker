@@ -55,7 +55,6 @@ const CONTEXT_WINDOW_BY_MODEL_PREFIX: ReadonlyArray<readonly [string, number]> =
   ["qwen", 262_144],
   ["kimi", 262_144],
   ["glm-", 200_000],
-  ["minimax", 200_000],
 ];
 
 export function resolveContextWindow(model: string): number {

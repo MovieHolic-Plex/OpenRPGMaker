@@ -1,6 +1,6 @@
 // AI 어시스턴트 채팅 패널 — 접기 토글 + 설정 자동 저장 + 세션 설정 반영.
 // 사용자 불만 회귀 테스트: (1) 패널을 접을 수 없었다, (2) API 키/설정이 저장되지 않는 것처럼
-// 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 감독 m3 / 실행 flash-lite.
+// 보였다(세션이 생성 시점 설정을 캐시), (3) 감독/실행 모델 기본값이 DEFAULT_MODEL 과 일치한다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
@@ -225,11 +225,11 @@ describe("설정 자동 저장", () => {
     const modal = openSettingsSurface(panel);
     const model = findByTestId(modal, "ai-config-model");
     if (!model) throw new Error("model field missing");
-    model.value = "minimax/minimax-m3";
+    model.value = "custom/free-form-model";
     model.dispatchEvent(new Event("input"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.model).toBe("minimax/minimax-m3");
+    expect(stored.model).toBe("custom/free-form-model");
   });
 
   it("실행 모델 필드는 비우면 기본 liteModel로 저장된다", () => {
@@ -331,11 +331,11 @@ describe("설정 자동 저장", () => {
     const modal = openSettingsSurface(panel);
     const liteModel = findByTestId(modal, "ai-config-lite-model");
     if (!liteModel) throw new Error("lite model field missing");
-    liteModel.value = "minimax/minimax-m3";
+    liteModel.value = "custom/free-form-model";
     liteModel.dispatchEvent(new Event("input"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.liteModel).toBe("minimax/minimax-m3");
+    expect(stored.liteModel).toBe("custom/free-form-model");
   });
 
   it("설정 저장 버튼도 동일하게 저장한다", () => {
@@ -426,10 +426,10 @@ describe("감사 로그 내보내기", () => {
 
     // 패널의 dropSession과 동일한 흐름: 세션 폐기 전 항목을 히스토리로 회수.
     const history = [...session.getAuditEntries()];
-    const json = combineAuditJson(history, null, "minimax/minimax-m3");
+    const json = combineAuditJson(history, null, "custom/free-form-model");
     expect(json).not.toBeNull();
     const parsed = JSON.parse(json ?? "{}");
-    expect(parsed.model).toBe("minimax/minimax-m3");
+    expect(parsed.model).toBe("custom/free-form-model");
     expect(parsed.entries.length).toBe(history.length);
     // at(ISO 타임스탬프)는 결함 ⑬(구조화 세션 로그)에서 추가 — 내용 필드만 고정 검증.
     expect(parsed.entries[0]).toMatchObject({ kind: "user", text: "npc 넣어줘" });
@@ -455,7 +455,7 @@ describe("세션 설정 반영", () => {
     });
     expect(JSON.parse(session.exportAudit()).model).toBe("old-model");
 
-    session.updateConfig({ ...defaultAiConfig(), apiKey: "sk-or-new", model: "minimax/minimax-m3" });
-    expect(JSON.parse(session.exportAudit()).model).toBe("minimax/minimax-m3");
+    session.updateConfig({ ...defaultAiConfig(), apiKey: "sk-or-new", model: "custom/free-form-model" });
+    expect(JSON.parse(session.exportAudit()).model).toBe("custom/free-form-model");
   });
 });

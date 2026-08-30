@@ -1056,12 +1056,14 @@ function assistantFinal(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
 
-const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 8, maxTokens: 512, agentMode: "chat" as const };
+const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", liteModel: "stub-model", apiKey: "sk", maxToolCalls: 8, maxTokens: 512, agentMode: "chat" as const };
 const AUTO_SINGLE_CONFIG = { ...CONFIG, agentMode: "auto" as const };
 const ORCH_CONFIG = { ...CONFIG, model: "supervisor-model", liteModel: "executor-model", maxToolCalls: 12, agentMode: "auto" as const };
 // 플래너 라운드(오케스트레이션 게이트 통과 시 항상 선행)가 소비하는 1스텝 — direct 로 통과시킨다.
 const PLANNER_DIRECT = assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
-const RAW_TOOL_MARKUP_FIXTURE = `적용됨이어서 길을 깐 뒤 NPC 5명을 배치하겠습니다...]<]minimax[>[<tool_call>]<]minimax[>[<invoke name="proposetilevocabulary">...`;
+// 공급자 고유 센티넬(예전엔 특정 공급자의 raw 구분자를 함께 넣었다)은 뺐다 — 감지는 공급자를
+// 가리지 않는 `<tool_call>` / `<invoke name=` 두 형태로만 이뤄진다.
+const RAW_TOOL_MARKUP_FIXTURE = `적용됨이어서 길을 깐 뒤 NPC 5명을 배치하겠습니다...<tool_call><invoke name="proposetilevocabulary">...`;
 
 /** 검수 단계 진입 조건(writeToolAttempts > 8)을 맞추기 위한 채움용 쓰기 9회(단일 응답).
  *  paint_tiles 는 tilesChanged>0 의 의미있는 diff 를 내고(미이행 휴리스틱 오염 방지),
@@ -1415,7 +1417,6 @@ describe("AssistantSession 툴콜 루프", () => {
     )).toBe(true);
     const serializedMessages = JSON.stringify(session.getMessages());
     expect(serializedMessages).not.toContain("<tool_call>");
-    expect(serializedMessages).not.toContain("]<]minimax[>[");
     expect(serializedMessages).not.toContain("<invoke name=");
   }, 30000);
 
@@ -1472,7 +1473,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(JSON.stringify(requests[8]?.messages)).toContain("npc1");
   }, 30000);
 
-  it("최종 텍스트의 minimax raw 툴콜 마크업은 잘라내고 안내로 대체한다", async () => {
+  it("최종 텍스트의 raw 툴콜 마크업은 잘라내고 안내로 대체한다", async () => {
     const { AssistantSession, createBlankProject, hasRawToolCallMarkup, sanitizeAssistantText } = await load();
     expect(hasRawToolCallMarkup(RAW_TOOL_MARKUP_FIXTURE)).toBe(true);
     expect(sanitizeAssistantText(RAW_TOOL_MARKUP_FIXTURE)).toBe("적용됨이어서 길을 깐 뒤 NPC 5명을 배치하겠습니다...…(형식 오류로 일부 생략)");
@@ -1482,7 +1483,6 @@ describe("AssistantSession 툴콜 루프", () => {
 
     expect(result.assistantText).toContain("형식 오류로 일부 생략");
     expect(result.assistantText).not.toContain("<tool_call>");
-    expect(result.assistantText).not.toContain("]<]minimax[>[");
     expect(result.assistantText).not.toContain("<invoke name=");
   }, 30000);
 

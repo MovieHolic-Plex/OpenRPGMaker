@@ -1,7 +1,7 @@
 # 2026-07-07 타일 툴 v3 설계 — 승인 보캐뷸러리 + 공정 프리미티브
 
 > 사용자 합의 (2026-07-07 저녁). 배경: v2는 호출 형식 실패(재시도 폭주)는 잡았으나 **모델의 선택 품질**
-> (흰 타일을 길로)은 못 잡았다. 저가 모델(minimax-m3) 전제에서 재량 자체를 회수한다.
+> (흰 타일을 길로)은 못 잡았다. 저가 모델 전제에서 재량 자체를 회수한다.
 
 ## 원칙 0 — Zero-Trust Perception (사용자 명시)
 AI의 비전·타일 구분 능력은 **항상 의심**한다. AI 산출물은 전부 '추정' 신분 — 사람의 명시 행위 없이
@@ -21,7 +21,7 @@ AI의 비전·타일 구분 능력은 **항상 의심**한다. AI 산출물은 �
    8-이웃 variantMap 오토타일(inner corner 포함)/upper·lower 홈)만 1차 구현.
 6. **어휘 프로포절 카드 = 수정 후 수락**: 이름/role/패턴 kind/layerHome을 카드에서 인라인 편집 후 수락.
    편집 수락 = origin:"user". UXD 체크박스와 결합(부분 수락+부분 편집). 편집 폼은 T1b 팝오버 재사용.
-7. **모델**: 기본 `minimax/minimax-m3` (DEFAULT_MODEL + 평가 드라이버).
+7. **모델**: 제공자 레지스트리(`src/ai/ohMyPiProviders.ts`)가 해석하는 ID 만 쓴다. 기본은 `src/ai/llmClient.ts` 의 `DEFAULT_MODEL`, 평가 드라이버는 `VITE_LLM_MODEL` 로 덮는다. 스펙에 모델 ID 를 박지 않는다.
 8. **v2 처분**: 배치 4종(tile_paint/road/scatter/structure)만 deprecated→v3. 지식 계열 v2 유지.
 
 ## v3 도구

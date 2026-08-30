@@ -63,7 +63,6 @@ import {
 import {
   chatCompletion,
   configForLiteModel,
-  configWithReasoningPolicy,
   isLlmAbortError,
   isOhMyPiWorkerCrash,
   isRetryableLlmError,
@@ -312,9 +311,11 @@ function plannedTargetMismatch(spec: BuildSpec, args: Record<string, unknown>): 
 
 export function rawToolCallMarkupIndex(text: string): number {
   const lower = text.toLowerCase();
+  // 공급자 고유의 센티넬 문자열은 여기서 열거하지 않는다 — 전에는 한 공급자의 raw 툴콜
+  // 구분자를 하드코딩했는데, 그 공급자를 쓰지 않게 되면서 죽은 문자열만 남았다.
+  // `<tool_call>` 과 `<invoke name=` 는 공급자를 가리지 않는 누출 형태다.
   const indexes = [
     lower.indexOf("<tool_call>"),
-    lower.indexOf("]<]minimax[>["),
   ].filter((index) => index >= 0);
   const invoke = /<invoke\s+name\s*=/iu.exec(text);
   if (invoke?.index !== undefined) indexes.push(invoke.index);
@@ -2014,9 +2015,9 @@ export class AssistantSession {
   }
 
   private phaseConfig(phase: AssistantPhase): AiConfig {
-    const base = phase === "execute" ? configForLiteModel(this.config) : this.config;
-    // MiniMax 등 장문 추론 모델: 정책으로 effort 캡(실행 단계는 추론 off).
-    return configWithReasoningPolicy(base);
+    // 실행 단계는 configForLiteModel 이 reasoning 을 off 로 끈다. 계획·검수 단계는 사용자가
+    // 고른 reasoningEffort 를 그대로 쓴다(모델 이름으로 effort 를 깎던 공급자 정책은 제거됨).
+    return phase === "execute" ? configForLiteModel(this.config) : this.config;
   }
 
   /** 사용자 텍스트 + 뷰포트 블록 + (브라우저) 뷰포트 맵 이미지. */

@@ -3,7 +3,6 @@ import {
   AI_CONFIG_STORAGE_KEY,
   chatCompletion,
   configForLiteModel,
-  configWithReasoningPolicy,
   defaultAiConfig,
   loadAiConfig,
 } from "@/ai/llmClient";
@@ -91,7 +90,7 @@ function installLocalStorage(value: unknown): void {
 }
 
 describe("LLM reasoning 요청", () => {
-  it("비-minimax 모델에서 reasoningEffort high면 요청 본문에 high를 넣는다", async () => {
+  it("reasoningEffort high면 요청 본문에 high를 그대로 넣는다(모델 이름으로 깎지 않는다)", async () => {
     const fetchMock = stubFetch(jsonResponse({ choices: [{ message: { content: "ok" } }] }));
     const config = { ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", apiKey: "sk-test",
       model: "openai/gpt-4o",
@@ -103,26 +102,27 @@ describe("LLM reasoning 요청", () => {
     expect(sentBody(fetchMock)).toMatchObject({ reasoning: { effort: "high" } });
   });
 
-  it("minimax + medium 설정은 요청 시 low로 캡한다(장문 추론 완화)", async () => {
+  it("medium 설정은 모델 이름과 무관하게 medium 그대로 나간다", async () => {
+    // 예전에는 모델 이름에 특정 공급자 문자열이 있으면 medium→low 로 몰래 깎았다. 그 공급자를
+    // 쓰지 않으므로 캡을 걷어냈고, 사용자가 고른 값이 그대로 실려야 한다.
     const fetchMock = stubFetch(jsonResponse({ choices: [{ message: { content: "ok" } }] }));
     const config = { ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", apiKey: "sk-test",
-      model: "minimax/minimax-m3",
+      model: "stub-model",
       reasoningEffort: "medium" as const,
     };
 
     await chatCompletion(config, { messages: [{ role: "user", content: "hi" }] });
 
-    expect(sentBody(fetchMock)).toMatchObject({ reasoning: { effort: "low" } });
+    expect(sentBody(fetchMock)).toMatchObject({ reasoning: { effort: "medium" } });
   });
 
   it("configForLiteModel은 reasoning을 off로 끈다", () => {
     const lite = configForLiteModel({
-      ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "minimax/minimax-m3",
-      liteModel: "google/gemini-3.1-flash-lite",
+      ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "stub-supervisor-model",
+      liteModel: "stub-lite-model",
       reasoningEffort: "high",
     });
     expect(lite.reasoningEffort).toBe("off");
-    expect(configWithReasoningPolicy(lite).reasoningEffort).toBe("off");
   });
 
   it("reasoningEffort가 off이면 요청 본문에 reasoning 키를 넣지 않는다", async () => {
@@ -195,7 +195,7 @@ describe("AI reasoning 설정 로드", () => {
     expect(config.reasoningEffort).toBe("low");
   });
 
-  it("기본 reasoningEffort는 low이다(MiniMax 장문 추론 완화)", () => {
+  it("기본 reasoningEffort는 low이다(벽시계·비용 보수 기본값)", () => {
     const config = defaultAiConfig();
     expect(config.reasoningEffort).toBe("low");
   });
