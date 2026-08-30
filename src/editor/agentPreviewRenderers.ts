@@ -1,5 +1,7 @@
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
+import { narrateAiActivity } from "@/editor/aiActivityNarration";
+import { placeAiActivityChip } from "@/editor/aiActivityChipPlacement";
 import type { AgentFocusBounds, AgentFocusCell, AgentFocusTarget } from "@/editor/agentFocus";
 import {
   agentGhostPreviewsForMap,
@@ -81,16 +83,7 @@ export function preferredGhostToolName(previewToolName: string, runningToolName:
 }
 
 export function koreanToolLabel(toolName: string): string {
-  if (/^(?:build|author|paint|fill|create|scatter)/u.test(toolName)) {
-    return "시공 중";
-  }
-  if (/^(?:place_npc|make_villager)/u.test(toolName)) {
-    return "주민 배치 중";
-  }
-  if (/^upsert_event/u.test(toolName)) {
-    return "이벤트 연결 중";
-  }
-  return "작업 중";
+  return narrateAiActivity({ toolName }).action;
 }
 
 export interface PhaseChipInfo {
@@ -104,8 +97,9 @@ export function ghostPhaseChipInfo(options: {
   readonly revealedCount: number;
   readonly totalCount: number;
   readonly isScheduleComplete: boolean;
+  readonly runningToolName?: string;
 }): PhaseChipInfo {
-  if (options.isScheduleComplete) {
+  if (options.isScheduleComplete && !options.runningToolName) {
     return {
       koreanLabel: "초안 완성",
       text: "초안 완성",
@@ -113,11 +107,10 @@ export function ghostPhaseChipInfo(options: {
     };
   }
 
-  const tool = options.toolName || "작업";
-  const label = koreanToolLabel(tool);
+  const narration = narrateAiActivity({ toolName: options.toolName ?? "" });
   return {
-    koreanLabel: label,
-    text: `${label} · ${options.revealedCount}/${options.totalCount} 셀 · ${tool}`,
+    koreanLabel: narration.action,
+    text: `${narration.action} · ${options.revealedCount}/${options.totalCount} 셀`,
     spinner: true,
   };
 }
@@ -223,9 +216,9 @@ export class AgentGhostPreviewRenderer {
   render(): void {
     this.layer.removeAll(true);
     this.clearDomMarkers();
-    const previews = this.currentPreviews();
+    const state = this.currentState();
+    const previews = agentGhostPreviewsForMap(state, this.mapId());
     if (previews.length === 0) {
-      this.clearPhaseChip();
       this.schedule = [];
       this.scheduleKey = "";
       this.startTime = null;
@@ -235,6 +228,13 @@ export class AgentGhostPreviewRenderer {
       this.tileLayer = null; // layer.removeAll(true) 가 파괴했다 — 참조와 키를 반드시 리셋
       this.tileLayerKey = "";
       this.stopTicker();
+      if (!state.runningToolName) {
+        this.currentToolName = "";
+        this.clearPhaseChip();
+        return;
+      }
+      this.currentToolName = state.runningToolName;
+      this.update();
       return;
     }
 
@@ -243,7 +243,7 @@ export class AgentGhostPreviewRenderer {
     // 바뀔 때 startTime 까지 되감았는데, 라이브 프리뷰는 150ms 스로틀로 셀이 계속 늘어나므로
     // 툴 12개짜리 턴이 "왼쪽부터 쏵"을 12번 반복했다 — 쌓여가는 게 아니라 깜빡임으로 읽혔다.
     this.scheduleKey = ghostScheduleKey(this.schedule);
-    this.currentToolName = preferredGhostToolName(previews[0]?.toolName ?? "", this.currentState().runningToolName ?? "");
+    this.currentToolName = preferredGhostToolName(previews[0]?.toolName ?? "", state.runningToolName ?? "");
 
     if (!isAgentGhostPreviewHidden()) {
       const group = this.scene.add.container(0, 0);
@@ -296,9 +296,19 @@ export class AgentGhostPreviewRenderer {
   }
 
   update(): void {
-    const previews = this.currentPreviews();
+    const state = this.currentState();
+    const previews = agentGhostPreviewsForMap(state, this.mapId());
     if (previews.length === 0) {
-      this.clearPhaseChip();
+      if (!state.runningToolName) {
+        this.clearPhaseChip();
+        return;
+      }
+      this.currentToolName = state.runningToolName;
+      this.renderOrUpdatePhaseChip(0, {
+        cellStates: [],
+        isScheduleComplete: false,
+        revealedCount: 0,
+      }, previews);
       return;
     }
 
@@ -333,7 +343,7 @@ export class AgentGhostPreviewRenderer {
         }
       : computeGhostAnimationState(this.schedule, elapsed);
 
-    this.renderOrUpdatePhaseChip(cellCount, animState);
+    this.renderOrUpdatePhaseChip(cellCount, animState, previews);
 
     if (isAgentGhostPreviewHidden() || !this.animGroup) return;
 
@@ -424,7 +434,11 @@ export class AgentGhostPreviewRenderer {
     this.tileObjects = objects;
   }
 
-  private renderOrUpdatePhaseChip(totalCount: number, animState: GhostAnimationState): void {
+  private renderOrUpdatePhaseChip(
+    totalCount: number,
+    animState: GhostAnimationState,
+    previews: readonly AgentGhostPreview[],
+  ): void {
     if (typeof document === "undefined") return;
     const host = this.scene.game?.canvas?.parentElement;
     if (!host) return;
@@ -434,6 +448,7 @@ export class AgentGhostPreviewRenderer {
       revealedCount: animState.revealedCount,
       totalCount,
       isScheduleComplete: animState.isScheduleComplete,
+      runningToolName: this.currentState().runningToolName,
     });
 
     if (!this.phaseChip) {
@@ -460,6 +475,48 @@ export class AgentGhostPreviewRenderer {
     labelSpan.className = "ai-ghost-phase-text";
     labelSpan.textContent = info.text;
     this.phaseChip.append(labelSpan);
+    this.positionPhaseChip(previews);
+  }
+
+  private positionPhaseChip(previews: readonly AgentGhostPreview[]): void {
+    const chip = this.phaseChip;
+    const canvas = this.scene.game?.canvas;
+    if (!chip || !canvas) return;
+    const canvasRect = canvas.getBoundingClientRect();
+    const hostRect = canvas.parentElement?.getBoundingClientRect();
+    const chipRect = chip.getBoundingClientRect();
+    const placement = placeAiActivityChip({
+      region: this.previewBoundingRegion(previews),
+      camera: {
+        worldView: {
+          x: this.scene.cameras.main.worldView.x,
+          y: this.scene.cameras.main.worldView.y,
+        },
+        zoom: this.scene.cameras.main.zoom,
+      },
+      viewport: {
+        width: Math.max(1, canvasRect.width || canvas.width),
+        height: Math.max(1, canvasRect.height || canvas.height),
+      },
+      chip: {
+        width: Math.max(1, chipRect.width || chip.offsetWidth),
+        height: Math.max(1, chipRect.height || chip.offsetHeight),
+      },
+    });
+    const hostOffsetX = hostRect ? canvasRect.left - hostRect.left : 0;
+    const hostOffsetY = hostRect ? canvasRect.top - hostRect.top : 0;
+    chip.style.left = `${Math.round(hostOffsetX + placement.left)}px`;
+    chip.style.top = `${Math.round(hostOffsetY + placement.top)}px`;
+    chip.dataset.chipMode = placement.mode;
+  }
+
+  private previewBoundingRegion(previews: readonly AgentGhostPreview[]): AgentGhostBounds | null {
+    if (previews.length === 0) return null;
+    const left = Math.min(...previews.map((preview) => preview.bounds.x));
+    const top = Math.min(...previews.map((preview) => preview.bounds.y));
+    const right = Math.max(...previews.map((preview) => preview.bounds.x + preview.bounds.width));
+    const bottom = Math.max(...previews.map((preview) => preview.bounds.y + preview.bounds.height));
+    return { x: left, y: top, width: right - left, height: bottom - top };
   }
 
   private clearPhaseChip(): void {
@@ -470,6 +527,7 @@ export class AgentGhostPreviewRenderer {
   refreshDomMarkers(previews: readonly AgentGhostPreview[] = this.currentPreviews()): void {
     if (typeof document === "undefined") return;
     this.clearDomMarkers();
+    this.positionPhaseChip(previews);
     if (previews.length === 0) return;
     const host = this.scene.game.canvas.parentElement;
     if (!host) return;
@@ -519,6 +577,7 @@ export class AgentGhostPreviewRenderer {
     this.tileLayer = null;
     this.tileLayerParent = null;
     this.tileLayerKey = "";
+    this.currentToolName = "";
   }
 
   private currentState(): AgentGhostPreviewState {
@@ -556,8 +615,8 @@ export class AgentGhostPreviewRenderer {
 
   private screenRect(bounds: AgentGhostBounds): AgentGhostBounds {
     const camera = this.scene.cameras.main;
-    const x = Math.round((bounds.x * TILE_SIZE - camera.scrollX) * camera.zoom);
-    const y = Math.round((bounds.y * TILE_SIZE - camera.scrollY) * camera.zoom);
+    const x = Math.round((bounds.x * TILE_SIZE - camera.worldView.x) * camera.zoom);
+    const y = Math.round((bounds.y * TILE_SIZE - camera.worldView.y) * camera.zoom);
     const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
     const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
     return { x, y, width, height };
@@ -650,8 +709,9 @@ export class AgentFocusRenderer {
 
   private screenRect(bounds: AgentFocusBounds): AgentFocusBounds {
     const camera = this.scene.cameras.main;
-    const x = Math.round((bounds.x * TILE_SIZE - camera.scrollX) * camera.zoom);
-    const y = Math.round((bounds.y * TILE_SIZE - camera.scrollY) * camera.zoom);
+    // Phaser 3.60+ 에서 scrollX 는 zoom!==1 일 때 뷰포트 좌상단이 아니다. worldView 를 써야 한다.
+    const x = Math.round((bounds.x * TILE_SIZE - camera.worldView.x) * camera.zoom);
+    const y = Math.round((bounds.y * TILE_SIZE - camera.worldView.y) * camera.zoom);
     const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
     const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
     return { x, y, width, height };

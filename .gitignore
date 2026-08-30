@@ -76,6 +76,10 @@ evidence/
 # "실제 소스 결함을 이름으로 지목한다"는 증거라, 게이트 자체와 같이 리뷰돼야 한다.
 !.omo/evidence/event-editor-guard/
 !.omo/evidence/event-editor-guard/**
+# 사이드바 레이아웃은 단위 테스트로 볼 수 없다 — 짧은 뷰포트에서 맵 진입점이 화면
+# 안에 있는지, 레이일 폭이 색상표현과 일치하는지는 및음으로만 증명된다.
+!.omo/evidence/sidebar-ux/
+!.omo/evidence/sidebar-ux/**
 handoff.md
 # 세션 로컬 상태·일회성 산출물 (never commit)
 /.mcp.json

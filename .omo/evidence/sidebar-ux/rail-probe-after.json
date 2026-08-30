@@ -1,0 +1,62 @@
+{
+ "1024x600": {
+  "leftPanelW": 72,
+  "railWidthVar": "72px",
+  "editorLeftSafe": "72px",
+  "tilesToggle": {
+   "top": 494,
+   "bottom": 546,
+   "w": 64
+  },
+  "mapsToggle": {
+   "top": 548,
+   "bottom": 592,
+   "w": 64
+  },
+  "layerEventBox": {
+   "top": 433,
+   "bottom": 477,
+   "w": 64
+  },
+  "viewportH": 600,
+  "tilesInViewport": true,
+  "mapsInViewport": true,
+  "railOverflowY": "auto",
+  "railScrollH": 550,
+  "railClientH": 550,
+  "totalButtons": 11,
+  "tabStops": 3,
+  "layerIconsDistinct": 3,
+  "gapEventToTiles": 17
+ },
+ "1440x900": {
+  "leftPanelW": 72,
+  "railWidthVar": "72px",
+  "editorLeftSafe": "72px",
+  "tilesToggle": {
+   "top": 532,
+   "bottom": 584,
+   "w": 64
+  },
+  "mapsToggle": {
+   "top": 586,
+   "bottom": 634,
+   "w": 64
+  },
+  "layerEventBox": {
+   "top": 467,
+   "bottom": 515,
+   "w": 64
+  },
+  "viewportH": 900,
+  "tilesInViewport": true,
+  "mapsInViewport": true,
+  "railOverflowY": "auto",
+  "railScrollH": 850,
+  "railClientH": 850,
+  "totalButtons": 11,
+  "tabStops": 3,
+  "layerIconsDistinct": 3,
+  "gapEventToTiles": 17
+ }
+}

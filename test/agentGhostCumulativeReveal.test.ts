@@ -60,8 +60,7 @@ function makeEmitter(): any {
 
 beforeEach(() => {
   now = 1000;
-  const dom = installFakeDom();
-  restoreDom = dom.restore;
+  restoreDom = installFakeDom();
   hostEl = document.createElement("div");
   document.body.append(hostEl);
   mockLayer = containerFactory();
@@ -97,7 +96,7 @@ beforeEach(() => {
         destroy: vi.fn(),
       })),
     },
-    cameras: { main: { scrollX: 0, scrollY: 0, zoom: 1 } },
+    cameras: { main: { scrollX: 0, scrollY: 0, zoom: 1, worldView: { x: 0, y: 0 } } },
     textures: { exists: vi.fn(() => true), get: vi.fn(() => ({ getSourceImage: vi.fn() })), addCanvas: vi.fn() },
     game: { canvas: { parentElement: hostEl, getBoundingClientRect: () => ({ x: 0, y: 0, left: 0, top: 0, width: 640, height: 480 }) } },
     tweens: { add: vi.fn() },

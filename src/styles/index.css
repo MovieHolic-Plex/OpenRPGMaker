@@ -24,6 +24,7 @@
 @import "./editor/responsive-a.css";
 @import "./editor/inline-assist.css";
 @import "./editor/ghost-phase-chip.css";
+@import "./editor/ai-activity-live.css";
 @import "./runtime/playerRuntime.css";
 @import "./database/actors.css";
 @import "./database/enemies.css";
@@ -89,7 +90,7 @@
 @import "./editor/event-editor.balanced.css";
 /* 마지막 @import — 그 뒤는 실제 규칙이다. AI 인증 패널 규칙을 여기(가장 늦게) 두면
    database/tabs-b.css 경유로 먼저 들어온 옛 규칙을 !important 없이 이긴다. */
-@import "./editor/ai-auth-connection.css";
+@import "./editor/ai-settings-modal.css";
 
 /* ============================================================================
    전역 기본값 현대화 (UI-0) — 토큰은 ./tokens.css, 가이드는 ./TOKENS.md

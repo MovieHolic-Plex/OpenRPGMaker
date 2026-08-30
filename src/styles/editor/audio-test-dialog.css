@@ -1,5 +1,7 @@
-/* 음악/효과음 테스트 다이얼로그 (toolbar-sound-test) — RM2k3 BGM/효과음 테스트 창 스타일.
-   DOM: src/editor/panels/audioTestDialog.ts. 스타일이 없어 맨 HTML로 보이던 문제를 해결. */
+/* 음악·효과음 모달 (toolbar-sound-test / menu-tools-audio).
+   DOM: src/editor/panels/audioTestDialog.ts.
+   색·간격·모서리는 전부 src/styles/tokens.css 의 크림 스튜디오 토큰이다 —
+   hex 리터럴 폴백을 쓰면 토큰 테마가 바뀌어도 이 모달만 옛 색으로 남는다. */
 
 .audio-test-backdrop {
   position: fixed;
@@ -7,23 +9,23 @@
   z-index: 290;
   display: grid;
   place-items: center;
-  padding: 16px;
-  background: rgba(42, 37, 33, 0.18);
-  backdrop-filter: blur(2px);
+  padding: var(--space-4);
+  background: var(--bg-scrim);
+  backdrop-filter: blur(3px);
 }
 
 .audio-test-window {
   display: flex;
   flex-direction: column;
-  width: min(720px, calc(100vw - 24px));
-  max-height: min(560px, calc(100vh - 24px));
+  width: min(760px, calc(100vw - 24px));
+  max-height: min(600px, calc(100vh - 24px));
   overflow: hidden;
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: var(--radius-l, 14px);
-  background: var(--bg-raised, #FFFDF8);
-  box-shadow: var(--shadow-modal, 0 24px 64px rgba(0, 0, 0, 0.5));
-  color: var(--text-1, #2A2521);
-  animation: audio-test-pop var(--transition-med, 160ms ease);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  animation: audio-test-pop var(--transition-med);
 }
 
 @keyframes audio-test-pop {
@@ -41,15 +43,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
-  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 86%, #000);
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-base);
 }
 
 .audio-test-titlebar h2 {
   margin: 0;
-  font: 700 15px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
+  font: 700 15px/1.2 var(--font-ui);
   letter-spacing: -0.01em;
 }
 
@@ -58,67 +60,103 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: var(--radius-s, 6px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
   background: transparent;
-  color: var(--text-2, #5C5348);
+  color: var(--text-2);
   cursor: pointer;
   font-size: 18px;
   line-height: 1;
-  transition: border-color var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
-    background var(--transition-fast, 120ms ease);
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
 }
 
 .audio-test-close:hover {
-  border-color: var(--accent, #4A57D6);
-  background: var(--bg-hover, rgba(42, 37, 33, 0.06));
-  color: var(--text-1, #2A2521);
+  border-color: var(--accent-border);
+  background: var(--bg-hover);
+  color: var(--text-1);
 }
 
 .audio-test-body {
   display: grid;
-  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: var(--space-4);
   flex: 1 1 auto;
   min-height: 0;
-  padding: 14px;
+  padding: var(--space-4);
   overflow: hidden;
 }
 
-.audio-test-left {
+.audio-test-left,
+.audio-test-right {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-2);
   min-height: 0;
+}
+
+.audio-test-right {
+  gap: var(--space-3);
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .audio-test-tabs {
   display: flex;
-  gap: 6px;
+  gap: 4px;
+  padding: 3px;
+  border-radius: var(--radius-m);
+  background: var(--control-bg);
 }
 
 .audio-test-tab {
   flex: 1 1 0;
   padding: 7px 12px;
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: var(--radius-s, 6px);
-  background: var(--control-bg, rgba(42, 37, 33, 0.05));
-  color: var(--text-2, #5C5348);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text-2);
   cursor: pointer;
-  font: 600 13px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
-  transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
-    border-color var(--transition-fast, 120ms ease);
+  font: 600 13px/1.2 var(--font-ui);
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .audio-test-tab:hover {
-  background: var(--control-bg-hover, rgba(42, 37, 33, 0.06));
-  color: var(--text-1, #2A2521);
+  background: var(--control-bg-hover);
+  color: var(--text-1);
 }
 
 .audio-test-tab.active {
-  background: var(--accent-muted, var(--accent-muted));
-  border-color: var(--accent-border, var(--accent-border));
-  color: var(--text-1, #2A2521);
+  border-color: var(--accent-border);
+  background: var(--bg-raised);
+  color: var(--text-1);
+}
+
+.audio-test-filter-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.audio-test-filter {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: 500 13px/1.3 var(--font-ui);
+}
+
+.audio-test-filter::placeholder {
+  color: var(--text-3);
+}
+
+.audio-test-list-count {
+  flex: 0 0 auto;
+  color: var(--text-3);
+  font: 500 11.5px/1.2 var(--font-ui);
+  font-variant-numeric: tabular-nums;
 }
 
 .audio-test-list {
@@ -129,124 +167,165 @@
   min-height: 0;
   overflow-y: auto;
   padding: 6px;
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: var(--radius-m, 10px);
-  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  background: var(--bg-inset);
 }
 
 .audio-test-option {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: var(--space-2);
   width: 100%;
   padding: 6px 10px;
   border: 1px solid transparent;
-  border-radius: var(--radius-s, 6px);
+  border-radius: var(--radius-s);
   background: transparent;
-  color: var(--text-1, #2A2521);
+  color: var(--text-1);
   cursor: pointer;
-  font: 500 13px/1.35 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
+  font: 500 13px/1.35 var(--font-ui);
   text-align: left;
-  transition: background var(--transition-fast, 120ms ease);
+  transition: background var(--transition-fast);
+}
+
+.audio-test-option-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .audio-test-option:hover {
-  background: var(--bg-hover, rgba(42, 37, 33, 0.06));
+  background: var(--bg-hover);
 }
 
 .audio-test-option.selected {
-  background: var(--accent-muted, var(--accent-muted));
-  border-color: var(--accent-border, var(--accent-border));
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
 }
 
-.audio-test-right {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 0;
-  overflow-y: auto;
-  padding-right: 2px;
+/* 재생 불가(MIDI) 항목: 눌러보기 전에 목록에서 구별된다. */
+.audio-test-option.unplayable {
+  color: var(--text-3);
+}
+
+.audio-test-option-badge {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--control-bg);
+  color: var(--text-3);
+  font: 600 10.5px/1.5 var(--font-ui);
 }
 
 .audio-test-fieldset {
   margin: 0;
-  padding: 8px 12px 10px;
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: var(--radius-m, 10px);
-  background: var(--bg-inset, #EFE9DC);
+  padding: var(--space-2) var(--space-3) 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  background: var(--bg-inset);
 }
 
-.audio-test-fieldset > legend {
-  padding: 0 6px;
-  color: var(--accent, #4A57D6);
-  font: 700 12px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
+.audio-test-fieldset-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.audio-test-legend {
+  color: var(--accent);
+  font: 700 12px/1.2 var(--font-ui);
+}
+
+.audio-test-readout {
+  color: var(--text-1);
+  font: 600 12.5px/1.2 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.audio-test-hint {
+  margin-left: auto;
+  color: var(--text-3);
+  font: 500 11px/1.2 var(--font-ui);
 }
 
 .audio-test-fieldset input[type="range"] {
   width: 100%;
-  margin: 4px 0 2px;
-  accent-color: var(--accent, #4A57D6);
+  margin: 6px 0 2px;
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
 .audio-test-scale {
   display: flex;
   justify-content: space-between;
-  color: var(--text-3, #6B5F52);
-  font: 500 11px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
+  color: var(--text-3);
+  font: 500 11px/1.2 var(--font-ui);
 }
 
 .audio-test-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .audio-test-button {
   padding: 8px 18px;
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: var(--radius-s, 6px);
-  background: var(--control-bg, rgba(42, 37, 33, 0.05));
-  color: var(--text-1, #2A2521);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--control-bg);
+  color: var(--text-1);
   cursor: pointer;
-  font: 600 13px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
-  transition: background var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease),
-    transform var(--transition-fast, 120ms ease);
+  font: 600 13px/1.2 var(--font-ui);
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
-.audio-test-button:hover {
-  background: var(--control-bg-hover, rgba(42, 37, 33, 0.06));
-  border-color: var(--border-strong, rgba(42, 37, 33, 0.20));
+.audio-test-button.primary {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
 }
 
-.audio-test-button:active {
-  background: var(--control-bg-active, rgba(42, 37, 33, 0.12));
+.audio-test-button:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.audio-test-button:active:not(:disabled) {
+  background: var(--control-bg-active);
   transform: translateY(1px);
+}
+
+.audio-test-button:disabled {
+  color: var(--text-3);
+  cursor: default;
+  opacity: 0.6;
 }
 
 .audio-test-button:focus-visible,
 .audio-test-tab:focus-visible,
 .audio-test-option:focus-visible,
+.audio-test-filter:focus-visible,
 .audio-test-close:focus-visible {
   outline: none;
-  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
+  box-shadow: var(--focus-ring);
 }
 
 .audio-test-status {
   padding: 9px 12px;
-  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
-  border-radius: var(--radius-s, 6px);
-  background: var(--bg-inset, #EFE9DC);
-  color: var(--text-2, #5C5348);
-  font: 500 12.5px/1.4 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font: 500 12.5px/1.4 var(--font-ui);
   min-height: 36px;
 }
 
 .audio-test-footer {
   display: flex;
   justify-content: flex-end;
-  padding: 10px 14px;
-  border-top: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
-  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 86%, #000);
+  padding: 10px var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-base);
 }
 
 @media (max-width: 640px) {

@@ -112,6 +112,35 @@ describe("sidebarFocus - Focus survival & Roving Tabindex", () => {
     it("escapes data-testid unconditionally for quoted string attribute selectors", () => {
       expect(cssEscape('foo"bar\\baz')).toBe('foo\\"bar\\\\baz');
     });
+
+    it("falls back to the anchor named by an ancestor's data-focus-fallback-anchor", () => {
+      const rail = document.createElement("div");
+      const toggle = document.createElement("button");
+      toggle.dataset.testid = "basic-rail-toggle-tiles";
+      const flyout = document.createElement("div");
+      flyout.dataset.testid = "basic-rail-flyout";
+      flyout.dataset.focusFallbackAnchor = "basic-rail-toggle-tiles";
+      const closeBtn = document.createElement("button");
+      closeBtn.dataset.testid = "basic-flyout-close";
+      flyout.append(closeBtn);
+      rail.append(toggle, flyout);
+      container.append(rail);
+
+      closeBtn.focus();
+      const snapshot = captureFocus(container);
+      expect(snapshot?.fallbackAnchorTestId).toBe("basic-rail-toggle-tiles");
+
+      // Rebuild with the flyout closed — the close button no longer exists.
+      container.replaceChildren();
+      const newRail = document.createElement("div");
+      const newToggle = document.createElement("button");
+      newToggle.dataset.testid = "basic-rail-toggle-tiles";
+      newRail.append(newToggle);
+      container.append(newRail);
+
+      restoreFocus(container, snapshot);
+      expect(document.activeElement).toBe(newToggle);
+    });
   });
 
   describe("applyRovingTabindex & keyboard navigation", () => {
@@ -159,6 +188,39 @@ describe("sidebarFocus - Focus survival & Roving Tabindex", () => {
       expect(prevented).toBe(false);
       expect(document.activeElement).toBe(copyBtn);
     });
+    it("data-roving 그룹도 roving tabindex 를 받고 aria-current 로 활성 버튼을 고른다", () => {
+      const group = document.createElement("div");
+      group.setAttribute("role", "group");
+      group.dataset.roving = "true";
+
+      const first = document.createElement("button");
+      first.dataset.testid = "layer-lower";
+      first.setAttribute("aria-current", "false");
+      const second = document.createElement("button");
+      second.dataset.testid = "layer-upper";
+      second.setAttribute("aria-current", "true");
+      const third = document.createElement("button");
+      third.dataset.testid = "layer-event";
+      third.setAttribute("aria-current", "false");
+
+      group.append(first, second, third);
+      container.append(group);
+
+      applyRovingTabindex(container);
+
+      expect(first.getAttribute("tabindex")).toBe("-1");
+      expect(second.getAttribute("tabindex")).toBe("0");
+      expect(third.getAttribute("tabindex")).toBe("-1");
+
+      second.focus();
+      const downEvent = new Event("keydown", { bubbles: true, cancelable: true }) as any;
+      downEvent.key = "ArrowDown";
+      second.dispatchEvent(downEvent);
+      expect(document.activeElement).toBe(third);
+      expect(third.getAttribute("tabindex")).toBe("0");
+      expect(second.getAttribute("tabindex")).toBe("-1");
+    });
+
     it("sets tabindex=0 on active button and tabindex=-1 on others", () => {
       const toolbar = document.createElement("div");
       toolbar.setAttribute("role", "toolbar");

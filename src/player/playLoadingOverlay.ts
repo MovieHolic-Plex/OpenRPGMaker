@@ -9,10 +9,20 @@ export type PlayLoadStage =
   | "ready"
   | "error";
 
+export type PlayRecoveryInput = {
+  readonly title: string;
+  readonly reason: string;
+  readonly repairs?: readonly string[];
+  readonly diagnostics?: string;
+  readonly onRetry?: () => void;
+  readonly onSafeMode?: () => void;
+};
+
 export type PlayLoadingOverlay = {
   readonly root: HTMLElement;
   setStage(stage: PlayLoadStage, detail?: string): void;
   setProgress(ratio: number | null): void;
+  showRecovery(input: PlayRecoveryInput): void;
   remove(): void;
 };
 
@@ -89,6 +99,8 @@ export function mountPlayLoadingOverlay(
   let currentStage: PlayLoadStage = initialStage;
 
   const setStage = (stage: PlayLoadStage, detail?: string): void => {
+    card.querySelector("[data-testid='play-recovery-panel']")?.remove();
+    card.classList.remove("is-recovery");
     currentStage = stage;
     root.dataset.stage = stage;
     stageMeta.dataset.stage = stage;
@@ -120,13 +132,88 @@ export function mountPlayLoadingOverlay(
     }
   };
 
+  const showRecovery = (input: PlayRecoveryInput): void => {
+    card.querySelector("[data-testid='play-recovery-panel']")?.remove();
+
+    const actions = el("div", { class: "play-recovery-actions" });
+    if (input.onRetry) {
+      actions.append(el("button", {
+        class: "play-recovery-button is-primary",
+        text: "다시 시도",
+        attrs: { type: "button" },
+        dataset: { testid: "play-recovery-retry" },
+        on: { click: input.onRetry },
+      }));
+    }
+    if (input.onSafeMode) {
+      actions.append(el("button", {
+        class: "play-recovery-button",
+        text: "안전 모드로 시작",
+        attrs: { type: "button" },
+        dataset: { testid: "play-recovery-safe-mode" },
+        on: { click: input.onSafeMode },
+      }));
+    }
+    actions.append(el("button", {
+      class: "play-recovery-button",
+      text: "진단 내용 복사",
+      attrs: { type: "button" },
+      dataset: { testid: "play-recovery-copy" },
+      on: { click: () => copyDiagnostics(input.diagnostics ?? input.reason) },
+    }));
+
+    const panel = el("section", {
+      class: "play-recovery-panel",
+      attrs: { role: "alert" },
+      dataset: { testid: "play-recovery-panel" },
+      children: [
+        el("h2", { class: "play-recovery-title", text: input.title }),
+        el("pre", {
+          class: "play-recovery-reason",
+          text: input.reason,
+          dataset: { testid: "play-recovery-reason" },
+        }),
+      ],
+    });
+    if (input.repairs?.length) {
+      panel.append(el("div", {
+        class: "play-recovery-repairs",
+        dataset: { testid: "play-recovery-repairs" },
+        children: [
+          el("h3", { class: "play-recovery-repairs-title", text: "자동으로 복구한 항목" }),
+          el("ul", {
+            children: input.repairs.map((repair) => el("li", { text: repair })),
+          }),
+        ],
+      }));
+    }
+    panel.append(actions);
+    card.append(panel);
+    card.classList.add("is-recovery");
+    currentStage = "error";
+    root.dataset.stage = "error";
+    root.classList.add("is-error");
+    root.setAttribute("aria-busy", "false");
+    root.setAttribute("aria-label", input.title);
+  };
+
   const remove = (): void => {
     root.remove();
   };
 
   setProgress(null);
 
-  return { root, setStage, setProgress, remove };
+  return { root, setStage, setProgress, showRecovery, remove };
+}
+
+function copyDiagnostics(text: string): void {
+  // 클립보드 권한·API가 없어도 복구 버튼 자체는 항상 안전하게 동작해야 한다.
+  try {
+    const request = navigator.clipboard?.writeText(text);
+    void request?.catch(() => undefined);
+  } catch {
+    // 일부 브라우저는 클립보드 속성 접근이나 호출 단계에서 동기 오류를 던진다.
+  }
 }
 
 function stageCode(stage: PlayLoadStage): string {

@@ -15,9 +15,11 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
 
   await expect(page.getByTestId("oprn-toolbar")).toBeVisible();
   await expect(page.getByTestId("toolbar-save")).toHaveAttribute("title", "프로젝트 저장 (Ctrl+S)");
+  // 2026-08-30 헤더 용어 통일: title 은 언제나 uiCopy 정본이다(expert = technical 스타일).
+  // 구 기대값 "자료 보관함"·"시연 실행" 은 하드코딩된 폐기 문구였다.
   await expect(page.getByTestId("toolbar-database")).toHaveAttribute("title", "데이터베이스");
-  await expect(page.getByTestId("toolbar-resource-manager")).toHaveAttribute("title", "자료 보관함");
-  await expect(page.getByTestId("mode-play")).toHaveAttribute("title", "시연 실행");
+  await expect(page.getByTestId("toolbar-resource-manager")).toHaveAttribute("title", "리소스 보관함");
+  await expect(page.getByTestId("mode-play")).toHaveAttribute("title", "테스트 실행");
 
   // Default edit surface is the event layer — switch to a tile layer so the chipset palette renders.
   await page.getByTestId("layer-lower").click();
