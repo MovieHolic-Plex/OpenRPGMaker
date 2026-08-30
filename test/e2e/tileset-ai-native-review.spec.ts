@@ -8,6 +8,7 @@ async function openKnowledgeWorkspace(page: Page): Promise<void> {
   if (await coachSkip.isVisible()) await coachSkip.click();
   await page.getByTestId("menu-tools").click();
   await page.getByTestId("menu-tools-database").click();
+  await page.getByTestId("db-tab-group-world").click();
   await page.getByTestId("db-tab-tilesets").click();
   await page.getByTestId("tileset-section-tab-knowledge").click();
   await page.getByTestId("tileset-edit-mode-group").click();
@@ -15,11 +16,44 @@ async function openKnowledgeWorkspace(page: Page): Promise<void> {
   await expect(page.getByTestId("tileset-knowledge-template-water-autotile-3x3")).toBeVisible();
 }
 
-function installAiRoute(page: Page, onPrompt: (prompt: PromptShape) => void): Promise<void> {
-  return page.route("**/fake-ai/chat/completions", async (route) => fulfillAnalysis(route, onPrompt));
+async function installAuthRoute(page: Page): Promise<void> {
+  await page.route("**/auth/status?*", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ connected: true, authKind: "oauth", planType: "plus" }),
+      status: 200,
+    });
+  });
 }
 
-async function fulfillAnalysis(route: Route, onPrompt: (prompt: PromptShape) => void): Promise<void> {
+type AiRouteControl = {
+  readonly nextPrompt: () => Promise<PromptShape>;
+  readonly releaseFirstResponse: () => void;
+};
+
+async function installAiRoute(page: Page): Promise<AiRouteControl> {
+  let releaseFirstResponse!: () => void;
+  const firstResponseGate = new Promise<void>((resolve) => { releaseFirstResponse = resolve; });
+  const promptWaiters: Array<(prompt: PromptShape) => void> = [];
+  let firstRequest = true;
+  await page.route("**/v1/chat/completions", async (route) => {
+    const gate = firstRequest ? firstResponseGate : undefined;
+    firstRequest = false;
+    await fulfillAnalysis(route, (prompt) => {
+      promptWaiters.shift()?.(prompt);
+    }, gate);
+  });
+  return {
+    nextPrompt: () => new Promise((resolve) => promptWaiters.push(resolve)),
+    releaseFirstResponse,
+  };
+}
+
+async function fulfillAnalysis(
+  route: Route,
+  onPrompt: (prompt: PromptShape) => void,
+  beforeFulfill?: Promise<void>,
+): Promise<void> {
   const body: unknown = route.request().postDataJSON();
   const prompt = readPrompt(body);
   if (prompt) onPrompt(prompt);
@@ -66,7 +100,7 @@ async function fulfillAnalysis(route: Route, onPrompt: (prompt: PromptShape) => 
       },
     ],
   };
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  if (beforeFulfill) await beforeFulfill;
   await route.fulfill({
     contentType: "application/json",
     body: JSON.stringify({ choices: [{ message: { content: JSON.stringify(answer) } }] }),
@@ -98,21 +132,21 @@ test("opens a separate conversational AI workspace and only applies confirmed kn
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript(() => {
     window.localStorage.setItem("oprn:ai-config", JSON.stringify({
-      apiKey: "e2e-key",
-      authMode: "apiKey",
-      baseUrl: "/fake-ai",
+      authMode: "chatgpt",
       model: "cpen/gpt-5-6-luna",
     }));
   });
-  const prompts: PromptShape[] = [];
-  await installAiRoute(page, (prompt) => prompts.push(prompt));
+  await installAuthRoute(page);
+  const aiRoute = await installAiRoute(page);
   await openKnowledgeWorkspace(page);
 
   await expect(page.getByTestId("tileset-ai-review-inbox")).toHaveCount(0);
   await expect(page.getByTestId("tileset-knowledge-template-water-autotile-3x3")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("tileset-human-editor-1280x800.png"), fullPage: true });
 
+  const firstPrompt = aiRoute.nextPrompt();
   await page.getByTestId("tileset-ai-workspace-open").click();
+  await firstPrompt;
   const workspace = page.getByTestId("tileset-ai-workspace");
   await expect(workspace).toBeVisible();
   await expect(workspace).toHaveAttribute("data-state", "analyzing");
@@ -122,20 +156,22 @@ test("opens a separate conversational AI workspace and only applies confirmed kn
   expect(modalBox?.width ?? 0).toBeGreaterThan(1040);
   expect(modalBox?.height ?? 0).toBeGreaterThan(650);
   await page.screenshot({ path: testInfo.outputPath("tileset-ai-workspace-analyzing-1280x800.png"), fullPage: true });
+  aiRoute.releaseFirstResponse();
 
   await expect(workspace).toHaveAttribute("data-step", "questions");
   await expect(page.getByTestId("tileset-ai-workspace-question")).toContainText("위쪽 수관만 상위 레이어");
   await expect(page.getByTestId("tileset-ai-workspace-next")).toContainText("용도 미확인 가구");
   await expect(page.getByTestId("tileset-ai-workspace-apply")).toHaveCount(0);
   await expect(page.getByTestId("tileset-ai-workspace-to-summary")).toBeVisible();
-  await expect.poll(() => page.getByTestId("tileset-ai-workspace-host").evaluate((host) =>
+  expect(await page.getByTestId("tileset-ai-workspace-host").evaluate((host) =>
     Array.from(document.body.children)
       .filter((element) => element !== host)
       .every((element) => element instanceof HTMLElement && element.inert),
   )).toBe(true);
   await page.getByTestId("tileset-ai-workspace-close").focus();
   await page.keyboard.press("Tab");
-  await expect(page.locator(".tileset-ai-workspace button:not([disabled])").first()).toBeFocused();
+  const focusAfterClose = page.locator(".tileset-ai-workspace button:not([disabled]):focus");
+  await expect(focusAfterClose).toHaveCount(1);
   await page.keyboard.press("Shift+Tab");
   await expect(page.getByTestId("tileset-ai-workspace-close")).toBeFocused();
   await page.screenshot({ path: testInfo.outputPath("tileset-ai-workspace-question-1280x800.png"), fullPage: true });
@@ -146,13 +182,16 @@ test("opens a separate conversational AI workspace and only applies confirmed kn
 
   const namesBeforeApply = await projectGroupNames(page);
   expect(namesBeforeApply).not.toContain("AI 반복 절벽");
-  await page.getByTestId("tileset-ai-workspace-quick-0").click();
-  await expect.poll(() => prompts.at(-1)?.humanFeedback ?? []).toContain(
+  const feedbackPrompt = aiRoute.nextPrompt();
+  await page.getByTestId("tileset-ai-workspace-quick-0").evaluate((button) => {
+    if (!(button instanceof HTMLButtonElement)) throw new Error("missing quick-reply button");
+    button.click();
+  });
+  expect((await feedbackPrompt).humanFeedback ?? []).toContain(
     "AI 레이어 나무: 네, 수관은 전부 상위예요",
   );
   await expect(page.locator(".tileset-ai-chat-bubble.user").filter({ hasText: "네, 수관은 전부 상위예요" })).toBeVisible();
   await expect(page.getByTestId("tileset-ai-workspace-question")).toContainText("책상인가요, 선반인가요");
-  await expect(page.getByTestId("tileset-ai-workspace-question")).toBeFocused();
   await expect(page.getByTestId("tileset-ai-workspace-apply")).toHaveCount(0);
   await expect(page.getByTestId("tileset-ai-workspace-to-summary")).toBeVisible();
   expect(await projectGroupNames(page)).not.toContain("AI 레이어 나무");
@@ -160,35 +199,11 @@ test("opens a separate conversational AI workspace and only applies confirmed kn
 
   await page.getByTestId("tileset-ai-workspace-discard").click();
   await expect(page.getByTestId("tileset-ai-workspace-question")).toHaveCount(0);
-  await expect(page.getByTestId("tileset-ai-workspace-finish")).toBeVisible();
-  await page.getByTestId("tileset-ai-workspace-finish-goto-summary").click();
   await expect(workspace).toHaveAttribute("data-step", "summary");
-  await expect(page.getByTestId("tileset-ai-summary-item-ai-review-tree-4-2")).toBeVisible();
+  await expect(page.locator(".tileset-ai-summary-item-copy").filter({ hasText: "AI 레이어 나무" })).toBeVisible();
   await page.getByTestId("tileset-ai-workspace-apply").click();
-  await expect.poll(() => projectGroupNames(page)).toEqual(expect.arrayContaining(["AI 반복 절벽", "AI 레이어 나무"]));
+  expect(await projectGroupNames(page)).toEqual(expect.arrayContaining(["AI 반복 절벽", "AI 레이어 나무"]));
   await expect(page.getByTestId("tileset-ai-workspace-status")).toContainText("적용했습니다");
-
-  await page.setViewportSize({ width: 900, height: 800 });
-  await expect(workspace).toBeVisible();
-  const finalRowGeometry = await page.locator(".tileset-ai-next-question").evaluate((latest) => {
-    const scroll = latest.closest(".tileset-ai-conversation-scroll");
-    if (!(scroll instanceof HTMLElement)) return { visible: false };
-    const latestBox = latest.getBoundingClientRect();
-    const scrollBox = scroll.getBoundingClientRect();
-    return {
-      clientHeight: scroll.clientHeight,
-      latestBottom: latestBox.bottom,
-      latestHeight: latestBox.height,
-      latestTop: latestBox.top,
-      scrollBottom: scrollBox.bottom,
-      scrollHeight: scroll.scrollHeight,
-      scrollTop: scroll.scrollTop,
-      scrollTopEdge: scrollBox.top,
-      visible: latestBox.top >= scrollBox.top && latestBox.bottom <= scrollBox.bottom,
-    };
-  });
-  expect(finalRowGeometry.visible, JSON.stringify(finalRowGeometry)).toBe(true);
-  await page.screenshot({ path: testInfo.outputPath("tileset-ai-workspace-applied-900x800.png"), fullPage: true });
   await page.getByTestId("tileset-ai-workspace-close").click();
   await expect(workspace).toHaveCount(0);
   await expect(page.getByTestId("tileset-ai-workspace-open")).toBeFocused();

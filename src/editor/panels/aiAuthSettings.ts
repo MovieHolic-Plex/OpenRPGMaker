@@ -36,6 +36,10 @@ import {
   parseOhMyPiProvider,
 } from "@/ai/ohMyPiProviders";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import {
+  refreshAiConnectionStatus,
+  resetAiConnectionStatusCache,
+} from "@/editor/panels/aiConnectionStatus";
 import { el } from "@/util/dom";
 
 export interface AiAuthSettingsChange {
@@ -475,6 +479,12 @@ export function renderAiAuthSettings(
   };
 
   const applyStatus = (auth: ChatGptAuthStatus): void => {
+    // 로그인 완료(직접/폴링/붙여넣기), 재확인, 연결 해제가 모두 성공한 인증 상태를 이 한 경로로
+    // 적용한다. 여기서 공유 게이트 캐시도 무효화·재조회해야 버튼별 배선 누락 없이 같은 제공자의
+    // in-session 인증 변경이 모든 AI 표면에 전파된다. 공유 조회는 이 함수를 호출하지 않으므로
+    // 재귀 루프가 없고, aiConnectionStatus 자체가 같은 제공자의 동시 조회를 de-dup 한다.
+    resetAiConnectionStatusCache();
+    void refreshAiConnectionStatus();
     // 감독 결정: env 자격은 무시한다. 셸 환경 변수로 얻은 연결은 에디터가 만들지도 지우지도
     // 못하므로 "연결됨"이라 말하지 않는다(hasStoredCompanionCredential 에 근거가 있다).
     stored = hasStoredCompanionCredential(auth);
