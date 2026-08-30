@@ -76,6 +76,13 @@ async function installStubs(page: Page, artwork: Record<"enemy" | "item", string
     });
   });
 
+  await page.route("**/supabase/**", async (route: Route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+  await page.route("**/__oprn/**", async (route: Route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+
   return () => pending;
 }
 
@@ -146,9 +153,11 @@ async function main(): Promise<void> {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
   const consoleErrors: string[] = [];
+  const pageErrors: string[] = [];
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text().slice(0, 200));
   });
+  page.on("pageerror", (error) => pageErrors.push(error.message.slice(0, 300)));
 
   const report: Record<string, unknown> = { base: BASE };
   try {
@@ -157,8 +166,14 @@ async function main(): Promise<void> {
     await shoot(page, "00-database-open");
     report.enemy = await runGeneration(page, "enemy");
     report.item = await runGeneration(page, "item");
+  } catch (error) {
+    report.failure = error instanceof Error ? error.message.slice(0, 400) : String(error);
+    report.bodyHtml = await page.evaluate(() => document.body.innerHTML.slice(0, 1500)).catch(() => "");
+    await shoot(page, "99-boot-failure").catch(() => undefined);
+    throw error;
   } finally {
     report.consoleErrors = consoleErrors.slice(0, 10);
+    report.pageErrors = pageErrors.slice(0, 10);
     await writeFile(`${OUT}/summary.json`, JSON.stringify(report, null, 2), "utf8");
     console.log(JSON.stringify(report, null, 2));
     await browser.close();

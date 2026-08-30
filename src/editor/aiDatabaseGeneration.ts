@@ -59,17 +59,26 @@ const ENEMY_CONTRACT = `{"name":"짧은 한국어 이름","stats":{"maxHp":정�
   + `"defense":정수,"mind":정수,"agility":정수},"rewards":{"exp":정수,"gold":정수,"dropRatePercent":정수}}`;
 
 function slugify(name: string): string {
-  const ascii = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  return ascii || `gen${Date.now().toString(36)}`;
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+/**
+ * 한글 이름은 슬러그가 빈 문자열이 되므로(ASCII 만 남긴다) 순번으로 떨어진다.
+ * 타임스탬프 base36 을 쓰면 `enemy_ai_genmtgadhmo` 같은 읽을 수 없는 id 가 목록에 남는다.
+ */
 export function generatedRecordId(kind: AiDatabaseKind, name: string, taken: readonly string[]): string {
   const prefix = kind === "item" ? "item" : "enemy";
-  const base = `${prefix}_ai_${slugify(name)}`;
-  if (!taken.includes(base)) return base;
-  let index = 2;
-  while (taken.includes(`${base}-${index}`)) index += 1;
-  return `${base}-${index}`;
+  const slug = slugify(name);
+  if (slug) {
+    const base = `${prefix}_ai_${slug}`;
+    if (!taken.includes(base)) return base;
+    let index = 2;
+    while (taken.includes(`${base}-${index}`)) index += 1;
+    return `${base}-${index}`;
+  }
+  let index = 1;
+  while (taken.includes(`${prefix}_ai_${index}`)) index += 1;
+  return `${prefix}_ai_${index}`;
 }
 
 export function buildRecordPrompt(kind: AiDatabaseKind, brief: string, existingNames: readonly string[]): ChatMessage[] {

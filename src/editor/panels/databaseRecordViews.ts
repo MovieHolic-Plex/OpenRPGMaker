@@ -23,7 +23,6 @@ import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
-import { openDatabaseAiGenerateDialog } from "@/editor/panels/databaseAiGenerateDialog";
 import {
   categoryFilterForCollection,
   listScrollTopForCollection,
@@ -265,7 +264,18 @@ function aiGenerateButton(collection: "items" | "enemies", rerender: () => void)
         ? "설명을 주면 AI 가 아이템 레코드와 아이콘 그림을 만들어 등록합니다."
         : "설명을 주면 AI 가 적 레코드와 몬스터 그림을 만들어 등록합니다.",
     },
-    on: { click: () => openDatabaseAiGenerateDialog({ kind, rerender }) },
+    on: {
+      // 정적 import 금지: 이 모듈은 store 청크에서 초기화되는데 생성 모달은
+      // aiDatabaseGeneration → applyChangesetToStore → 툴 레지스트리를 끌어와
+      // 초기화 순환을 만든다. 실측(2026-08-30): 정적으로 묶으면 `npm run build:app`
+      // 은 통과하지만 출하 번들 부팅이 `Cannot read properties of undefined
+      // (reading 'deprecated')` 로 죽는다(dev·vitest 는 순환을 견뎌 못 잡는다).
+      click: () => {
+        void import("@/editor/panels/databaseAiGenerateDialog").then((module) => {
+          module.openDatabaseAiGenerateDialog({ kind, rerender });
+        });
+      },
+    },
   });
 }
 

@@ -52,8 +52,10 @@ describe("generatedRecordId", () => {
       .toBe("enemy_ai_frost-wolf-3");
   });
 
-  it("한글만 있는 이름도 빈 id 를 만들지 않는다", () => {
-    expect(generatedRecordId("item", "회복약", []).startsWith("item_ai_")).toBe(true);
+  it("한글만 있는 이름은 읽을 수 있는 순번 id 로 떨어진다", () => {
+    expect(generatedRecordId("item", "회복약", [])).toBe("item_ai_1");
+    expect(generatedRecordId("item", "회복약", ["item_ai_1"])).toBe("item_ai_2");
+    expect(generatedRecordId("enemy", "서슬 늑대", ["enemy_ai_1", "enemy_ai_2"])).toBe("enemy_ai_3");
   });
 });
 
