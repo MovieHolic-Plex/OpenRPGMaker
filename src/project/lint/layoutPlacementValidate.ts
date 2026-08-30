@@ -93,7 +93,7 @@ export function formatLayoutValidationSummary(issues: readonly LintIssue[]): str
   const warnings = issues.filter((i) => i.severity === "warning").length;
   const head = issues.slice(0, 3).map((i) => i.message).join(" · ");
   const more = issues.length > 3 ? ` 외 ${issues.length - 3}건` : "";
-  // error 가 없으면 적용을 막지 않았다 — "실패" 로 쓰면 깔린 배치를 사용자가 안 깐린 으로 오인한다.
+  // error 가 없으면 적용을 막지 않았다 — "실패" 로 쓰면 깔린 배치를 사용자가 안 깔린 것으로 오인한다.
   const label = errors > 0 ? `배치 검증 실패(error ${errors}/warning ${warnings})` : `배치 검증 경고(warning ${warnings})`;
   return `${label}: ${head}${more}`;
 }
