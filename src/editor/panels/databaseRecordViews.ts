@@ -15,6 +15,7 @@ import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
 import { renderActorStudioList } from "@/editor/panels/databaseActorStudio";
 import { databaseReferenceMessage } from "@/editor/databaseReferences";
 import { skillFields } from "@/editor/panels/databaseBasicRecordFields";
+import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
 import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
@@ -101,6 +102,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     const liveRecords = store.getCurrent().database[collection];
     const record = id ? liveRecords.find((entry) => entry.id === id) : undefined;
     if (!record) {
+      stopSkillAnimationStagesIn(detailPane);
       detailPane.replaceChildren(el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "레코드가 없습니다." }));
       return;
     }
@@ -112,6 +114,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     };
     const form = recordForm(collection, record, rerender, onRename);
     form.classList.add("oprn-detail-form", `oprn-detail-${collection}`);
+    stopSkillAnimationStagesIn(detailPane);
     detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
   };
 

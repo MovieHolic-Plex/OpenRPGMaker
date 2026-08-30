@@ -14,6 +14,7 @@ import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDi
 import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
+import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
 import { selectedRecordIdForSession } from "@/editor/panels/databaseRecordViewSession";
 import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
 import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
@@ -289,6 +290,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     modalClosed = true;
     if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
+    stopSkillAnimationStagesIn(backdrop);
     backdrop.remove();
     document.removeEventListener("keydown", controller.handleKeyDown);
     document.removeEventListener("keydown", handleHistoryKeyDown);

@@ -1,0 +1,101 @@
+{
+ "base": "http://127.0.0.1:9905/",
+ "booted": true,
+ "stageRendered": true,
+ "advanced": true,
+ "distinctFrameIndexes": [
+  "2",
+  "0",
+  "1"
+ ],
+ "first": {
+  "frameIndex": "2",
+  "cellCount": 1,
+  "counter": "3 / 3",
+  "sheetMeta": "96×96 · 5열 · 15fps",
+  "togglePressed": "true",
+  "stagePresent": true,
+  "stageBox": {
+   "w": 224,
+   "h": 148
+  },
+  "stageBackground": "color(srgb 0.134118 0.16298 0.231529) | radial-gradient(circle at 50% 54%, color(srgb 0.290196 0.341176 0.839216 / 0.12), rgba(0, 0, 0, 0) 38%), none"
+ },
+ "second": {
+  "frameIndex": "0",
+  "cellCount": 1,
+  "counter": "1 / 3",
+  "sheetMeta": "96×96 · 5열 · 15fps",
+  "togglePressed": "true",
+  "stagePresent": true,
+  "stageBox": {
+   "w": 224,
+   "h": 148
+  },
+  "stageBackground": "color(srgb 0.134118 0.16298 0.231529) | radial-gradient(circle at 50% 54%, color(srgb 0.290196 0.341176 0.839216 / 0.12), rgba(0, 0, 0, 0) 38%), none"
+ },
+ "afterTabRoundTrip": {
+  "frameIndex": "2",
+  "cellCount": 1,
+  "counter": "3 / 3",
+  "sheetMeta": "96×96 · 5열 · 15fps",
+  "togglePressed": "true",
+  "stagePresent": true,
+  "stageBox": {
+   "w": 224,
+   "h": 148
+  },
+  "stageBackground": "color(srgb 0.134118 0.16298 0.231529) | radial-gradient(circle at 50% 54%, color(srgb 0.290196 0.341176 0.839216 / 0.12), rgba(0, 0, 0, 0) 38%), none"
+ },
+ "tabRoundTripSeries": [
+  "2",
+  "1",
+  "2",
+  "0",
+  "1",
+  "2",
+  "0",
+  "1",
+  "2",
+  "0",
+  "1",
+  "2"
+ ],
+ "tabRoundTripDistinct": [
+  "2",
+  "1",
+  "0"
+ ],
+ "frameSeriesIndexes": [
+  "2",
+  "0",
+  "2",
+  "0",
+  "1",
+  "2",
+  "0",
+  "1",
+  "2",
+  "0",
+  "2",
+  "0",
+  "1",
+  "2",
+  "0",
+  "1",
+  "2",
+  "2",
+  "1",
+  "2",
+  "0",
+  "2",
+  "0",
+  "1",
+  "2"
+ ],
+ "frameSeriesCounters": [
+  "1 / 3",
+  "2 / 3",
+  "3 / 3"
+ ]
+}

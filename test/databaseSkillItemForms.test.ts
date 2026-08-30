@@ -87,7 +87,12 @@ describe("database skill and item forms", () => {
 
     const preview = byTestId(form, "db-skill-animation-preview");
     expect(preview.textContent).toContain("화염 스파크");
-    expect(preview.querySelector(".db-skill-animation-preview-frame")).not.toBeNull();
+    // 정지 이미지 한 장이 아니라 스테이지다. 이 레코드는 시트 프레임이 없어 정지 렌더 + 토글 잠금.
+    const stage = byTestId(preview, "db-skill-animation-stage");
+    expect(stage.className).toContain("db-skill-animation-preview-frame");
+    expect(byTestId(stage, "db-skill-animation-cells").dataset.frameIndex).toBe("0");
+    expect(byTestId(preview, "db-skill-animation-sheet-meta").textContent).toBe("96×96 · 5열 · 15fps");
+    expect(byTestId(preview, "db-skill-animation-toggle").disabled).toBe(true);
   });
 
   it("renders item image and icon resource fields with previews", () => {

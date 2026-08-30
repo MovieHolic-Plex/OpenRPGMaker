@@ -16,7 +16,6 @@
 // 실제로 잘려 나갔다(clientWidth 87 / scrollWidth 119). 라벨을 `최대 PP` 로 줄이고
 // 부연은 카드 힌트로 옮겼다. 재발 방지용 줄바꿈 허용 규칙은 modern/skills.css 에 있다.
 
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { emptyToUndefined, field, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
@@ -27,21 +26,20 @@ import {
   type SkillBacklinkCollection,
   type SkillComposerEffectKind,
 } from "@/editor/panels/databaseSkillComposerModel";
+import { renderSkillAnimationStage, type SkillAnimationStage } from "@/editor/panels/databaseSkillAnimationStage";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
-import type { BattleAnimationSheet, DatabaseStateEffect, SkillEffect, SkillRecord } from "@/project/types";
+import type { DatabaseStateEffect, SkillEffect, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
 const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch"] as const satisfies readonly SkillEffect["kind"][];
 const SKILL_EFFECT_AFFECTS = ["hp", "mp"] as const satisfies readonly SkillEffectAffects[];
 const SKILL_DAMAGE_STATS = ["attack", "mind"] as const satisfies readonly SkillDamageStatistic[];
 const STATE_EFFECT_OPERATIONS = ["add", "remove"] as const satisfies readonly DatabaseStateEffect["operation"][];
-const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 /** 접기 전 기본 노출 개수. 나머지는 DOM 에 남기고 hidden 으로만 감춘다. */
 const BACKLINK_PREVIEW_COUNT = 6;
-
 type SkillEffectAffects = Extract<SkillEffect, { kind: "damage" | "healing" }>["affects"];
 type SkillDamageStatistic = Extract<SkillEffect, { kind: "damage" }>["statistic"];
 
@@ -73,7 +71,12 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   const actionBody = el("div", { class: "db-skill-action-fields" });
   const renderEffectPanel = () => effectBody.replaceChildren(...effectFields(currentSkill(record), renderEffectPanel));
   const renderStatePanel = () => stateBody.replaceChildren(...stateEffectFields(currentSkill(record), renderStatePanel));
-  const renderPreviewPanel = () => previewBody.replaceChildren(skillAnimationPreview(currentSkill(record)));
+  let animationStage: SkillAnimationStage | null = null;
+  const renderPreviewPanel = (): void => {
+    animationStage?.stop();
+    animationStage = renderSkillAnimationStage(currentSkill(record), store.getCurrent());
+    previewBody.replaceChildren(animationStage.element);
+  };
   // 투사체를 켜도 데미지/사거리/탄약 필드가 안 나타나던 문제(개편 전부터 있던 결함) —
   // 효과/상태 패널처럼 이 카드도 토글 후 다시 그린다.
   const renderActionPanel = () => actionBody.replaceChildren(...actionSkillFields(currentSkill(record), renderActionPanel));
@@ -565,41 +568,6 @@ function updateSkillOptionalFields(record: SkillRecord, patch: Pick<Partial<Skil
   updateDatabaseRecord("skills", record.id, patch);
 }
 
-function skillAnimationPreview(record: SkillRecord): HTMLElement {
-  const project = store.getCurrent();
-  const animation = record.animationId
-    ? project.database.battleAnimations.find((entry) => entry.id === record.animationId)
-    : undefined;
-  const url = resolveAssetResourceUrl(animation?.resourceId, { project });
-  const wrap = el("div", { class: "db-skill-animation-preview", dataset: { testid: "db-skill-animation-preview" } });
-  if (!animation || !url) {
-    wrap.append(el("div", { class: "db-skill-animation-preview-empty", text: "(애니메이션 없음)" }));
-    return wrap;
-  }
-  const sheet = animation.sheet ?? DEFAULT_ANIMATION_SHEET;
-  const frame = animationFramePreviewBox(url, sheet, animation.name);
-  wrap.append(frame, el("span", { class: "db-skill-animation-preview-caption", text: animation.name || animation.id }));
-  return wrap;
-}
-
-function animationFramePreviewBox(url: string, sheet: BattleAnimationSheet, animationName: string): HTMLElement {
-  const frameWidth = positiveNumber(sheet.frameWidth, DEFAULT_ANIMATION_SHEET.frameWidth);
-  const frameHeight = positiveNumber(sheet.frameHeight, DEFAULT_ANIMATION_SHEET.frameHeight);
-  const columns = Math.max(1, Math.floor(positiveNumber(sheet.columns, DEFAULT_ANIMATION_SHEET.columns)));
-  const displayWidth = clamp(frameWidth, 48, 96);
-  const displayHeight = clamp(Math.round(frameHeight * (displayWidth / frameWidth)), 48, 96);
-  const frame = el("div", {
-    class: "db-skill-animation-preview-frame",
-    attrs: { "aria-label": `${animationName || "애니메이션"} 패턴 1`, role: "img" },
-  });
-  frame.style.backgroundImage = `url("${url}")`;
-  frame.style.backgroundPosition = "0 0";
-  frame.style.backgroundSize = `${columns * displayWidth}px auto`;
-  frame.style.width = `${displayWidth}px`;
-  frame.style.height = `${displayHeight}px`;
-  return frame;
-}
-
 function bindAnimationPreviewRefresh(form: HTMLElement, rerender: () => void): void {
   const picker = form.querySelector<HTMLElement>("[data-testid='db-picker-animation']");
   picker?.addEventListener("change", rerender);
@@ -623,10 +591,6 @@ function clampPercent(value: number): number {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
-}
-
-function positiveNumber(value: number | undefined, fallback: number): number {
-  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
 function assertNever(value: never): never {
