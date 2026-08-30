@@ -328,6 +328,7 @@ export class AudioEngine {
       this.oneShots.delete(audio);
       audio.removeEventListener("ended", cleanup);
       audio.removeEventListener("error", cleanup);
+      audio.remove();
     };
     audio.addEventListener("ended", cleanup);
     audio.addEventListener("error", cleanup);

@@ -19,6 +19,8 @@ class FakeAudio {
   src: string;
   paused = true;
   playCalls = 0;
+  isConnected = false;
+  private readonly listeners = new Map<string, Set<() => void>>();
 
   constructor(src?: string) {
     this.src = src ?? "";
@@ -35,8 +37,25 @@ class FakeAudio {
     this.paused = true;
   }
 
-  addEventListener(): void {}
-  removeEventListener(): void {}
+  setAttribute(): void {}
+
+  remove(): void {
+    this.isConnected = false;
+  }
+
+  addEventListener(type: string, listener: () => void): void {
+    const listeners = this.listeners.get(type) ?? new Set();
+    listeners.add(listener);
+    this.listeners.set(type, listeners);
+  }
+
+  removeEventListener(type: string, listener: () => void): void {
+    this.listeners.get(type)?.delete(listener);
+  }
+
+  dispatch(type: string): void {
+    for (const listener of this.listeners.get(type) ?? []) listener();
+  }
 }
 
 let originalAudio: unknown;
@@ -113,6 +132,30 @@ describe("AudioEngine 재생 컨트롤", () => {
     engine.play("se", "shot", "/s.wav", false, { fadeInMs: 0 });
     engine.setVolume("se", 0.25);
     expect(lastAudio().volume).toBeCloseTo(0.25, 5);
+  });
+
+  it("자연 종료된 원샷 요소를 DOM 에서 제거한다", () => {
+    const body = document.body as HTMLBodyElement & { append: (...nodes: unknown[]) => void };
+    const originalAppend = body.append;
+    body.append = (...nodes: unknown[]) => {
+      for (const node of nodes) {
+        if (node instanceof FakeAudio) node.isConnected = true;
+        else originalAppend.call(body, node);
+      }
+    };
+
+    try {
+      const engine = newEngine();
+      engine.play("se", "shot", "/shot.wav", false, { fadeInMs: 0 });
+      const audio = lastAudio();
+      expect(audio.isConnected).toBe(true);
+
+      audio.dispatch("ended");
+
+      expect(audio.isConnected).toBe(false);
+    } finally {
+      body.append = originalAppend;
+    }
   });
 
   it("playbackRate 를 브라우저 유효 범위로 클램프한다", () => {
