@@ -148,6 +148,7 @@ describe("노출 상한 도메인 쿼터", () => {
       "create_farm_plot",
       "upsert_farm_building_type",
       "upsert_home_decoration_type",
+      "upsert_farm_animal_building",
       "set_session_farm_state",
     ]) {
       expect(names, name).toContain(name);
