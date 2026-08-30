@@ -27,6 +27,7 @@ import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
+import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
 import {} from "@/editor/uiCopy";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { store } from "@/project/store";
@@ -56,7 +57,8 @@ export type DatabaseTab =
   | "terrain"
   | "switches"
   | "tilesets"
-  | "variables";
+  | "variables"
+  | "worldGen";
 
 const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = [
   { id: "overview", label: "개요", testid: "db-tab-overview" },
@@ -83,6 +85,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
+  { id: "worldGen", label: "생성 규칙", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
@@ -113,7 +116,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   // 지형은 전투 데이터가 아니라 맵 데이터다 — 타일셋·구조물과 같은 그룹에 둔다.
-  { label: "세계", slug: "world", tabs: ["tilesets", "structureKits", "terrain", "commonEvents"] },
+  { label: "세계", slug: "world", tabs: ["worldGen", "tilesets", "structureKits", "terrain", "commonEvents"] },
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
 
@@ -373,6 +376,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
         .filter((id) => id !== PLAYER_FACTION_ID && id !== DEFAULT_ENEMY_FACTION_ID)).size;
     case "tilesets":
       return Object.keys(project.tilesets).length;
+    case "worldGen":
+      return project.system.worldGen?.keywords?.length ?? 0;
     case "structureKits":
       return Object.values(project.tilesets).reduce(
         (sum, tileset) => sum + (tileset.structureKits?.length ?? 0),
@@ -582,6 +587,9 @@ function renderActiveTab(
       break;
     case "structureKits":
       renderStructureKitsTab(body, rerender);
+      break;
+    case "worldGen":
+      renderWorldGenTab(body, rerender);
       break;
     case "system":
       renderSystemTab(body, rerender);

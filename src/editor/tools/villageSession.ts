@@ -7,6 +7,11 @@ import { TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { loadSession as loadFromBag, saveSession as saveToBag, sessionExists } from "@/editor/roomHarness/sessionStore";
 import type { GameMap, Project } from "@/project/types";
+import {
+  broadleafCountFor,
+  coniferCountFor,
+  resolveWorldGenRules,
+} from "@/project/worldGenRules";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
 import {
@@ -322,6 +327,7 @@ function startVillageSession(draft: Project, args: Record<string, unknown>): Too
         buildOrder: args.buildOrder,
       },
       seed,
+      resolveWorldGenRules(draft.system.worldGen),
     );
     if (!ok) {
       throw new ToolError(`계획 실패: ${issues.map((i) => i.message).join(" / ")}`, { code: "invalid-plan" });
@@ -749,7 +755,8 @@ function stepWater(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const waterOnly: TerrainConstraintMasks = {
     ...masks,
     forestRects: [],
@@ -776,21 +783,22 @@ function stepForestConifer(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const areas = masks.forestRects.length > 0
     ? masks.forestRects
     : edgeBands(map);
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
-    const count = Math.max(6, Math.floor((area.w * area.h) / 12));
+    const count = coniferCountFor(area.w * area.h, rules.forest);
     placed += placeProps(draft, {
       mapId: map.id,
       area,
       material: "침엽수",
       count,
-      minGap: 2,
-      naturalness: 0.6,
+      minGap: rules.forest.coniferGap,
+      naturalness: rules.forest.coniferNaturalness,
       seed: session.seed + 7700 + i * 13,
     }, warnings);
   }
@@ -804,21 +812,22 @@ function stepForestBig(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const areas = masks.forestRects.length > 0
     ? masks.forestRects
     : edgeBands(map);
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
-    const count = Math.max(4, Math.min(12, Math.floor((area.w * area.h) / 28)));
+    const count = broadleafCountFor(area.w * area.h, rules.forest);
     placed += placeProps(draft, {
       mapId: map.id,
       area,
       material: "활엽수",
       count,
-      minGap: 3,
-      naturalness: 0.55,
+      minGap: rules.forest.broadleafGap,
+      naturalness: rules.forest.broadleafNaturalness,
       seed: session.seed + 8800 + i * 17,
     }, warnings);
   }
@@ -837,7 +846,7 @@ function stepForestBig(
         area: bank,
         material: "활엽수",
         count: 2,
-        minGap: 3,
+        minGap: rules.forest.broadleafGap,
         naturalness: 0.5,
         seed: session.seed + 9900,
       }, warnings);
@@ -917,8 +926,12 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
   const map = draft.maps[mapId];
   if (!map) throw new ToolError(`맵 없음: ${mapId}`, { code: "map-not-found" });
   const style = coerceStyle(args.style);
+  const worldGen = resolveWorldGenRules(draft.system.worldGen);
+  const forest = worldGen.forest;
   const seed = typeof args.seed === "number" ? args.seed : 1;
-  const minGap = typeof args.minGap === "number" ? Math.max(1, args.minGap) : style === "broadleaf-2x2" ? 3 : 2;
+  const minGap = typeof args.minGap === "number"
+    ? Math.max(1, args.minGap)
+    : style === "broadleaf-2x2" ? forest.broadleafGap : forest.coniferGap;
   const warnings: string[] = [];
 
   let areas: { x: number; y: number; w: number; h: number }[] = [];
@@ -929,7 +942,7 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
     const session = loadSession(draft, args.sessionId);
     const plan = session ? loadVillagePlan(draft, session.planId) : undefined;
     if (plan) {
-      const masks = buildTerrainConstraintMasks(map, plan.requirements);
+      const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, worldGen);
       areas = masks.forestRects.length > 0 ? [...masks.forestRects] : edgeBands(map);
     }
   }
@@ -949,8 +962,8 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
     for (let i = 0; i < areas.length; i += 1) {
       const area = areas[i]!;
       const defaultCount = isBig
-        ? Math.max(3, Math.min(10, Math.floor((area.w * area.h) / 28)))
-        : Math.max(4, Math.floor((area.w * area.h) / 14));
+        ? broadleafCountFor(area.w * area.h, forest)
+        : coniferCountFor(area.w * area.h, forest);
       const count = typeof args.count === "number"
         ? Math.max(1, Math.floor(args.count / materials.length / areas.length))
         : defaultCount;
@@ -959,8 +972,8 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
         area,
         material,
         count,
-        minGap: isBig ? Math.max(minGap, 3) : minGap,
-        naturalness: 0.55,
+        minGap: isBig ? Math.max(minGap, forest.broadleafGap) : minGap,
+        naturalness: isBig ? forest.broadleafNaturalness : forest.coniferNaturalness,
         seed: seed + g * 100 + i * 17,
       }, warnings);
     }

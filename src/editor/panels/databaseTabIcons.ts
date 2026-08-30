@@ -159,6 +159,13 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
   ],
 
   // ── 세계 ──
+  // 생성 규칙 — 물결 위 나무(지형을 깔아 주는 규칙)
+  worldGen: [
+    { tag: "path", attrs: { d: "M2.8 15.6c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0" } },
+    { tag: "path", attrs: { d: "M2.8 18.6c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0" } },
+    { tag: "path", attrs: { d: "M7.6 11.8 4.4 11.8 7.6 3.4 10.8 11.8z" } },
+    { tag: "path", attrs: { d: "M14.6 11.8a2.8 2.8 0 1 1 0-5.6 2.8 2.8 0 0 1 0 5.6z" } },
+  ],
   // 타일셋 — 3×3 격자
   tilesets: [
     { tag: "rect", attrs: { x: "3.4", y: "3.4", width: "15.2", height: "15.2", rx: "1.6" } },

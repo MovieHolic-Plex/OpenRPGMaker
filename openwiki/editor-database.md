@@ -22,6 +22,14 @@
 - The hero owns selected-actor identity, class, level range, and start-party membership. The table owns selection and comparison only; do not restore duplicate current-selection/party summary metrics or analytics. System remains the authority for `startActorIds`.
 - Scroll ownership is explicit: list rows scroll inside `.db-actor-studio-table`; the actor hero and section tabs remain fixed; only `.actor-section-body` scrolls. Do not return to one long inspector document where category navigation depends on scrolling.
 
+## '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
+
+- `세계` 그룹 첫 탭 `생성 규칙` (`worldGen`, testid `db-tab-world-gen`) 은 `project.system.worldGen` 을 저작한다. 강 띠 두께·호수 지름·수면 모양·숲 깊이·나무 밀도·간격·길 재료·광장 자리, 그리고 "이 말이 나오면 이 지형" 낱말 규칙이 전부 이 한 탭에 있다.
+- 값을 만지면 실제 칩셋 타일로 그린 미리보기가 즉시 갱신된다. 미리보기는 시공기와 **같은 함수**(`buildTerrainConstraintMasks` / `cellsInFillShape` / 나무 수 헬퍼)를 쓴다 — 미리보기 전용 근사식을 넣지 마라. 예시 프리셋 카드도 같은 렌더러로 그린 썸네일이다.
+- 낱말 규칙은 낱말 목록 + 제외 낱말 + 지형 칩이다. **정규식·코드 입력을 넣지 마라** — 초보 저자가 대상이고 자연어까지만 허용하는 것이 설계 전제다.
+- 구조 변경은 `recordProjectSnapshot`, 슬라이더/텍스트는 `recordCoalescedSnapshot` 이라 modal dirty/undo 계약을 따른다. 탭 count 는 저자가 만든 낱말 규칙 수다.
+- 스키마·기본값·정규화·경로 전체와 "새 항목 추가 절차" 는 `openwiki/world-generation-rules.md` 가 소유한다.
+
 ## P2 낚시·채집·박물관 저작 표면 (2026-08-25)
 
 - `생활` 그룹의 `낚시·채집·박물관` (`lifeCollections`) 탭은 fish species, fishing spots, seasonal forage areas, museum rewards를 구조화해서 목록·추가·이름 변경·삭제한다. 기본값 동작은 collection tracking까지 서로 참조가 맞는 최소 패키지를 만든다. 물고기 삭제는 해당 catch만 제거하고, catch가 하나도 남지 않은 낚시터만 함께 제거한다.

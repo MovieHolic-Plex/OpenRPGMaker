@@ -10,6 +10,7 @@ Before making code changes, read:
    - Editor observability — mutation 계측 초크포인트, 편집 감사 로그, 오류 트랩, 디버깅 레시피: `openwiki/editor-observability.md` (read before adding an editing feature or debugging "방금 뭘 했더니 이렇게 됐다")
    - Editor event authoring: `openwiki/editor-event-authoring.md` + `openwiki/editor-event-commands.md` + `openwiki/editor-event-command-fixes.md`
    - Editor database: `openwiki/editor-database.md`
+   - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`
