@@ -61,7 +61,14 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
   tile: {
     strong: [
       "벽", "길", "타일", "지붕", "문", "바닥", "오토타일", "도로", "페인트",
-      "물", "호수", "연못", "강", "수역", "지형", "지면",
+      // "지면" 은 뺐다 — 한국어 연결어미 `-지면`(켜**지면**, 좋아**지면**, 넓어**지면**) 과
+      // 부분일치한다. 키워드 스캔은 형태소 분석 없이 substring 이므로 이 한 단어가 조건절이
+      // 들어간 **모든** 요청에서 tile 을 strong 으로 열었다. 2026-08-30 실측: "엔딩 조건 하나
+      // 걸어줘. 스위치가 켜지면 엔딩." 이 tile strong 으로 판정돼 핀 합계가 49개(상한 40)가
+      // 되고, 라운드로빈에서 event 버킷 꼬리 6개가 굶어 define_ending/list_endings 가 노출에서
+      // 빠졌다 — 2026-08-23 에 고쳤다고 기록된 그 결함이 실제로는 살아 있었다.
+      // 지면 의미는 "바닥"·"지형" 이 이미 덮는다. 회귀 고정: test/aiEndingToolExposure.test.ts
+      "물", "호수", "연못", "강", "수역", "지형",
       "나무", "소품", "집", "건물", "숲", "꽃", "바위", "산포", "겨울", "눈", "winter", "snow",
       "마을", "도시", "정착지", "village", "city", "town", "settlement",
       "실내", "인테리어", "침실", "서재", "주방", "식당", "예배당", "강당", "강의실",
@@ -72,7 +79,23 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
     weak: [],
   },
   // 엔딩 툴(define_ending/list_endings)은 event 도메인으로 태깅돼 있으므로 엔딩 키워드도 event 를 켠다.
-  event: { strong: ["이벤트", "npc", "대사", "전송", "스위치", "변수", "트리거", "주민", "상점", "상인", "재고", "shop", "merchant", "stock", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story", "컷신", "cutscene", "연출", "선택지", "엔딩", "ending", "결말", "동료", "동행", "펫", "따라오", "따라다니", "companion", "follower", "pet"], weak: [] },
+  //
+  // 회상 어휘(회상/플래시백/씬/시네마틱/무비/오프닝/과거)는 2026-08-30 실측으로 추가됐다.
+  // `컷신` 만 있던 시절 "회상 장면 하나 넣어줘" 는 event 도메인을 열지 못했고, 40툴 트림이
+  // event 버킷을 통째로 버려 모델에 남은 34개는 전부 map/core 였다 — script_cutscene 은 물론
+  // upsert_event 조차 노출되지 않았다(핀은 도메인이 닫히면 무의미하다).
+  //
+  // 측정한 것과 측정하지 않은 것을 구분해 둔다. **측정된 것**은 노출 집합뿐이다(전 34개 →
+  // 후 40개, script_cutscene 미포함 → 포함; test/aiEndingToolExposure.test.ts 가 고정).
+  // **측정되지 않은 것**은 이 누락이 실제 대화에서 어떤 답변을 만들었는지다. 초기 진단은
+  // 모델이 "그 기능이 없습니다" 라고 보고했다고 적었지만 그것을 뒷받침하는 로그는 없다 —
+  // 2026-08-23 상성표·엔딩 기록에서 유추한 것이었다. 오히려 반대 증거가 있다:
+  // toolCapabilityIndex(2026-08-23)가 전체 툴 **이름**을 시스템 프롬프트에 상시 싣고
+  // "없다고 답하는 것은 결함"이라고 명시하며, 당일 영수증에도 script_cutscene 이 색인에 있다
+  // (docs/2026-08-30-ai-overexisting-reject-loop-assets/receipt-before.json).
+  // 즉 스키마 미노출이 곧 "기능 없음" 오보로 이어진다는 인과는 확인되지 않았다.
+  // 회귀 고정은 노출 집합에 대해서만 걸어 둔다. 계층별 실측: reports/shots/recall-discovery-2026-08-30/
+  event: { strong: ["이벤트", "npc", "대사", "전송", "스위치", "변수", "트리거", "주민", "상점", "상인", "재고", "shop", "merchant", "stock", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story", "컷신", "컷씬", "cutscene", "연출", "선택지", "엔딩", "ending", "결말", "회상", "플래시백", "flashback", "씬", "시네마틱", "cinematic", "무비", "오프닝", "과거", "동료", "동행", "펫", "따라오", "따라다니", "companion", "follower", "pet"], weak: [] },
   // 세계관(project.world) 툴은 배제됐다 — 여기 남은 world 도메인은 맵 연결 그래프(plan_world/build_world) 전용이다.
   world: { strong: ["월드", "지역", "맵 연결", "대륙"], weak: [] },
   system: {

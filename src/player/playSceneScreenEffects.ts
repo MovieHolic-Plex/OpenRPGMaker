@@ -9,6 +9,7 @@ import {
   TRANSPARENT_TINT,
   type Rgba,
 } from "@/player/screen/tintModel";
+import { CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden } from "@/player/cutsceneControl";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 // tint/hide screen 같은 "지속형" 화면 효과를 DOM 오버레이로 반영한다.
@@ -26,6 +27,21 @@ function overlayHost(scene: PlaySceneContext): HTMLElement | undefined {
   if (fromRegistry) return fromRegistry;
   const parent = canvas?.parentElement;
   return parent instanceof HTMLElement ? parent : undefined;
+}
+
+/**
+ * 컷신 입력 잠금(또는 `hideHud`)에 맞춰 `.play-stage` 에 HUD 억제 클래스를 켠다/끈다.
+ *
+ * 대화창이 HUD 를 숨기는 방식(`.play-stage:has(> .dialogue-overlay:not(:empty)) > .hand-slot`)
+ * 과 같은 계열로, 실제 `display:none` 규칙은 styles/runtime/playSurface.css 가 소유한다.
+ * 대사 없이 픽처·카메라만 흐르는 비트에서는 대화창이 비어 있어 그 `:has()` 규칙이 걸리지
+ * 않으므로, 잠금 자체를 보는 이 경로가 따로 필요하다.
+ */
+export function syncCutsceneHudVisibility(scene: PlaySceneContext): void {
+  const host = overlayHost(scene);
+  if (!host) return;
+  const hidden = scene.session ? isCutsceneHudHidden(scene.session) : false;
+  host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, hidden);
 }
 
 /** Phaser camera.flash 는 swiftshader Test Play 에서 픽셀이 안 바뀐다. DOM 오버레이로 유지한다. */

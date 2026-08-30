@@ -1,0 +1,219 @@
+{
+  "port": "9632",
+  "generatedAt": "2026-08-30T09:22:39.119Z",
+  "pageErrors": [],
+  "capabilityIndexChars": 3944,
+  "capabilityIndexHasTargets": [
+    "script_cutscene",
+    "script_cutscene_preset",
+    "upsert_event"
+  ],
+  "systemPromptChars": 20655,
+  "systemPromptHasIndexHeading": true,
+  "systemPromptHasTargets": [
+    "script_cutscene",
+    "script_cutscene_preset",
+    "upsert_event"
+  ],
+  "minEscalationScore": 20,
+  "rows": [
+    {
+      "request": "회상 장면 하나 넣어줘. 플레이어는 아무것도 못 하고 보기만 하게.",
+      "domains": [
+        "core",
+        "event",
+        "tile"
+      ],
+      "exposedCount": 40,
+      "layer1_exposed": [
+        "script_cutscene",
+        "script_cutscene_preset"
+      ],
+      "layer2_inCapabilityIndex": [
+        "script_cutscene",
+        "script_cutscene_preset",
+        "upsert_event"
+      ],
+      "layer3_escalated": [],
+      "layer4_findToolsScore": [
+        {
+          "name": "script_cutscene",
+          "score": 60
+        },
+        {
+          "name": "script_cutscene_preset",
+          "score": 5
+        },
+        {
+          "name": "upsert_event",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "request": "회상 장면 하나 넣어줘",
+      "domains": [
+        "core",
+        "event",
+        "tile"
+      ],
+      "exposedCount": 40,
+      "layer1_exposed": [
+        "script_cutscene",
+        "script_cutscene_preset"
+      ],
+      "layer2_inCapabilityIndex": [
+        "script_cutscene",
+        "script_cutscene_preset",
+        "upsert_event"
+      ],
+      "layer3_escalated": [],
+      "layer4_findToolsScore": [
+        {
+          "name": "script_cutscene",
+          "score": 25
+        },
+        {
+          "name": "script_cutscene_preset",
+          "score": 0
+        },
+        {
+          "name": "upsert_event",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "request": "플래시백 넣어줘",
+      "domains": [
+        "core",
+        "event",
+        "tile"
+      ],
+      "exposedCount": 40,
+      "layer1_exposed": [
+        "script_cutscene",
+        "script_cutscene_preset"
+      ],
+      "layer2_inCapabilityIndex": [
+        "script_cutscene",
+        "script_cutscene_preset",
+        "upsert_event"
+      ],
+      "layer3_escalated": [],
+      "layer4_findToolsScore": [
+        {
+          "name": "script_cutscene",
+          "score": 10
+        },
+        {
+          "name": "script_cutscene_preset",
+          "score": 0
+        },
+        {
+          "name": "upsert_event",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "request": "시네마틱 하나 넣어줘",
+      "domains": [
+        "core",
+        "event",
+        "tile"
+      ],
+      "exposedCount": 40,
+      "layer1_exposed": [
+        "script_cutscene",
+        "script_cutscene_preset"
+      ],
+      "layer2_inCapabilityIndex": [
+        "script_cutscene",
+        "script_cutscene_preset",
+        "upsert_event"
+      ],
+      "layer3_escalated": [],
+      "layer4_findToolsScore": [
+        {
+          "name": "script_cutscene",
+          "score": 15
+        },
+        {
+          "name": "script_cutscene_preset",
+          "score": 0
+        },
+        {
+          "name": "upsert_event",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "request": "오프닝 무비 만들어줘",
+      "domains": [
+        "core",
+        "event",
+        "tile"
+      ],
+      "exposedCount": 40,
+      "layer1_exposed": [
+        "script_cutscene",
+        "script_cutscene_preset"
+      ],
+      "layer2_inCapabilityIndex": [
+        "script_cutscene",
+        "script_cutscene_preset",
+        "upsert_event"
+      ],
+      "layer3_escalated": [],
+      "layer4_findToolsScore": [
+        {
+          "name": "script_cutscene",
+          "score": 10
+        },
+        {
+          "name": "script_cutscene_preset",
+          "score": 0
+        },
+        {
+          "name": "upsert_event",
+          "score": 0
+        }
+      ]
+    },
+    {
+      "request": "주인공이 과거를 떠올리는 장면 만들어줘",
+      "domains": [
+        "core",
+        "event",
+        "tile"
+      ],
+      "exposedCount": 40,
+      "layer1_exposed": [
+        "script_cutscene",
+        "script_cutscene_preset"
+      ],
+      "layer2_inCapabilityIndex": [
+        "script_cutscene",
+        "script_cutscene_preset",
+        "upsert_event"
+      ],
+      "layer3_escalated": [],
+      "layer4_findToolsScore": [
+        {
+          "name": "script_cutscene",
+          "score": 15
+        },
+        {
+          "name": "script_cutscene_preset",
+          "score": 0
+        },
+        {
+          "name": "upsert_event",
+          "score": 5
+        }
+      ]
+    }
+  ]
+}

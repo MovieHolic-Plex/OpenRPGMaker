@@ -37,7 +37,7 @@ import {
 } from "@/player/characterDepth";
 // ★ 수관은 upperTileLayer(고정 250k). 솔리드 가구(×)는 root display list + y-sort.
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { syncScreenEffects } from "@/player/playSceneScreenEffects";
+import { syncCutsceneHudVisibility, syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
 import { lifeCalendarHudLines } from "@/player/lifeCalendarHud";
 import { resolveTimeSystem, timePhaseFor } from "@/project/gameTime";
@@ -430,6 +430,8 @@ export function activeRuntimeEvents(
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
   const project = store.getCurrent();
+  // 계측 분기보다 앞에 둔다 — 배포 플레이어(비계측)에서도 컷신 중 HUD 가 숨어야 한다.
+  syncCutsceneHudVisibility(scene);
   // Production boundary: the broad debug snapshot (all runtime event views, session records,
   // mover snapshots) exists only for QA instrumentation. A shipped player syncs the visible
   // HUD and picture layer directly and never builds or serializes that payload.
