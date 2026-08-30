@@ -9,6 +9,8 @@ import {
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { conversationScopeKey } from "@/ai/conversationStore";
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+import { loadAiConfig } from "@/ai/llmClient";
+import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
 import {
   buildClusterEditKickoff,
@@ -392,12 +394,11 @@ function startKickoff(
   status: HTMLElement,
   sendText: (text: string, displayText?: string) => Promise<void>
 ): void {
-  const config = resolveSurfaceAiConfig("cluster");
-  // 준비 판정은 isAiConfigReady 하나로 통일한다 — 여기서 직접 baseUrl/apiKey 를 보던 중복 검사가
-  // **OAuth 면제를 빼먹어** 클러스터 AI 가 시작조차 못 했다(실측 2026-08-21). OAuth 는 baseUrl 이
-  // 의도적으로 빈 문자열이고(엔드포인트는 동반 서비스가 고정) 클라이언트 키도 없기 때문이다.
-  // 이 파일의 옛 주석이 경고했던 결함("중복 검사가 면제를 빼먹은 결함")을 같은 방식으로 반복한 셈이다.
-  if (!isAiConfigReady(config)) {
+  const config = loadAiConfig();
+  // 준비 여부는 lite 해석 전에 저장 설정과 실제 연결 캐시로 판단한다. configForLiteModel 계열은
+  // 기본 lite 모델을 채우므로 해석 뒤 모델 모양을 보면 영원히 준비됨이다. cold-cache checking은
+  // 첫 사용을 잠그지 않고, 조회로 확인된 미연결·오프라인·오류만 막는다.
+  if (!isAiConfigReady(config, getAiConnectionStatus(config))) {
     status.textContent = "설정 필요";
     appendBubble("system", "AI 연결을 먼저 완료하세요. 오른쪽 AI 패널에서 구독 로그인을 마친 뒤 다시 열어 주세요.");
     return;

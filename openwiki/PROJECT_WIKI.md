@@ -25,6 +25,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor observability (mutation 계측 초크포인트, 편집 감사 로그, 오류 트랩, 디버깅 레시피): `openwiki/editor-observability.md`
    - Editor event authoring: `openwiki/editor-event-authoring.md`, `openwiki/editor-event-commands.md`, `openwiki/editor-event-command-fixes.md`
    - Editor database: `openwiki/editor-database.md`
+   - World generation rules (authored water/forest/road numbers + natural-language keyword rules): `openwiki/world-generation-rules.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md`, `openwiki/editor-ai-tools.md`, `openwiki/ai-context-compaction.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`

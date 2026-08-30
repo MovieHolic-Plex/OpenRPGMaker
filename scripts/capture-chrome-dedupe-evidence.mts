@@ -75,10 +75,11 @@ async function shot(page: Page, name: string, selector?: string): Promise<void> 
 /** 메뉴 팝업을 열고 항목 라벨을 걷은 뒤 스크린샷. 팝업은 body 직속이라 창 전체를 찍는다. */
 async function openMenu(page: Page, testid: string, name: string, mode: Mode): Promise<readonly string[]> {
   const trigger = page.getByTestId(testid).first();
-  if (!(await trigger.isVisible().catch(() => false))) return [];
+  await trigger.waitFor({ state: "visible", timeout: 5_000 });
   await trigger.click();
   const popup = page.locator(".oprn-menu-popup.open, .oprn-menu-popup:not([hidden])").first();
-  await popup.waitFor({ state: "visible", timeout: 5_000 }).catch(() => {});
+  // 기대 메뉴가 없으면 "중복 없음"을 뜻하는 빈 배열로 기록하지 말고 증거 생성을 실패시킨다.
+  await popup.waitFor({ state: "visible", timeout: 5_000 });
   const items = await texts(page, ".oprn-menu-popup:not([hidden]) .oprn-menu-command, .oprn-menu-popup:not([hidden]) .workspace-panel-toggle");
   await shot(page, `${mode}-menu-${name}`);
   await page.keyboard.press("Escape").catch(() => {});
@@ -89,43 +90,66 @@ async function openMenu(page: Page, testid: string, name: string, mode: Mode): P
 async function main(): Promise<void> {
   mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
-  page.on("pageerror", (error) => console.log("pageerror", error.message));
-  for (const mode of MODES) {
-    await boot(page, mode);
-    await shot(page, `${mode}-full`);
-    await shot(page, `${mode}-topbar`, "[data-testid='oprn-menu-bar']");
-    await shot(page, `${mode}-classic-toolbar`, "[data-testid='oprn-toolbar']");
-    await shot(page, `${mode}-left-panel`, ".left-panel");
-    const menus: Record<string, readonly string[]> = {};
-    for (const [testid, name] of [
-      ["menu-project", "project"],
-      ["menu-tools", "tools"],
-      ["menu-game", "game"],
-      ["menu-help", "help"],
-    ] as const) {
-      menus[name] = await openMenu(page, testid, name, mode);
+  try {
+    for (const mode of MODES) {
+      // boot()의 addInitScript는 context 수명 동안 누적된다. 모드마다 새 context를 써서 이전
+      // 모드 초기화가 다음 탐색에 다시 실행되지 않게 한다.
+      const context = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
+      const page = await context.newPage();
+      page.on("pageerror", (error) => console.log("pageerror", error.message));
+      try {
+        await boot(page, mode);
+        await shot(page, `${mode}-full`);
+        await shot(page, `${mode}-topbar`, "[data-testid='oprn-menu-bar']");
+        await shot(page, `${mode}-classic-toolbar`, "[data-testid='oprn-toolbar']");
+        await shot(page, `${mode}-left-panel`, ".left-panel");
+        const menus: Record<string, readonly string[]> = {};
+        for (const [testid, name] of [
+          ["menu-project", "project"],
+          ["menu-tools", "tools"],
+          ["menu-game", "game"],
+          ["menu-help", "help"],
+        ] as const) {
+          menus[name] = await openMenu(page, testid, name, mode);
+        }
+        const panelsMenu = await openMenu(page, "workspace-panels-button", "panels", mode);
+        dumps.push({
+          mode,
+          menuBar: await texts(page, ".oprn-menu-bar .oprn-menu-item"),
+          menus,
+          authoringTasks: await texts(page, "[data-testid='authoring-task-launcher'] button"),
+          panelsMenu,
+          trailing: await page.$$eval("[data-testid='editor-topbar-trailing'] button", (nodes) =>
+            nodes.map((node) => (node.getAttribute("aria-label") ?? node.textContent ?? "").replace(/\s+/gu, " ").trim()).filter((t) => t.length > 0),
+          ),
+          classicToolbar: await texts(page, "[data-testid='oprn-toolbar'] button"),
+          leftRailTools: await texts(page, "[data-testid='basic-tool-list'] button"),
+          leftRailLayers: await texts(page, "[data-testid='basic-layer-list'] button"),
+          leftRailPanels: await texts(page, "[data-testid='basic-panel-toggles'] button"),
+          leftPanelHeadings: await texts(page, ".left-panel .panel-title, .left-panel .palette-header, .left-panel h2, .left-panel h3"),
+        });
+        if (mode === "standard") {
+          await page.setViewportSize({ width: 1180, height: 800 });
+          const activeChip = page.locator(".authoring-task-btn.is-active");
+          await activeChip.waitFor({ state: "visible", timeout: 5_000 });
+          const activeStyle = await activeChip.evaluate((node) => {
+            const style = getComputedStyle(node);
+            return { boxShadow: style.boxShadow, textDecorationLine: style.textDecorationLine };
+          });
+          if (activeStyle.boxShadow === "none" || activeStyle.textDecorationLine !== "none") {
+            throw new Error(`1180px 저작 작업 활성 상태가 칩 어휘와 다름: ${JSON.stringify(activeStyle)}`);
+          }
+          await shot(page, "standard-authoring-tasks-1180", "[data-testid='authoring-task-launcher']");
+        }
+      } finally {
+        await context.close();
+      }
     }
-    const panelsMenu = await openMenu(page, "workspace-panels-button", "panels", mode);
-    dumps.push({
-      mode,
-      menuBar: await texts(page, ".oprn-menu-bar .oprn-menu-item"),
-      menus,
-      authoringTasks: await texts(page, "[data-testid='authoring-task-launcher'] button"),
-      panelsMenu,
-      trailing: await page.$$eval("[data-testid='editor-topbar-trailing'] button", (nodes) =>
-        nodes.map((node) => (node.getAttribute("aria-label") ?? node.textContent ?? "").replace(/\s+/gu, " ").trim()).filter((t) => t.length > 0),
-      ),
-      classicToolbar: await texts(page, "[data-testid='oprn-toolbar'] button"),
-      leftRailTools: await texts(page, "[data-testid='basic-tool-list'] button"),
-      leftRailLayers: await texts(page, "[data-testid='basic-layer-list'] button"),
-      leftRailPanels: await texts(page, "[data-testid='basic-panel-toggles'] button"),
-      leftPanelHeadings: await texts(page, ".left-panel .panel-title, .left-panel .palette-header, .left-panel h2, .left-panel h3"),
-    });
+    writeFileSync(join(OUT, "surface.json"), `${JSON.stringify(dumps, null, 2)}\n`, "utf8");
+    console.log("wrote", join(OUT, "surface.json"));
+  } finally {
+    await browser.close();
   }
-  writeFileSync(join(OUT, "surface.json"), `${JSON.stringify(dumps, null, 2)}\n`, "utf8");
-  console.log("wrote", join(OUT, "surface.json"));
-  await browser.close();
 }
 
 await main();

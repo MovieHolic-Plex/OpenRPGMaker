@@ -3,7 +3,10 @@ import "@/player/player.css";
 import "@/storageBoot";
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
+import { RPGZZU_EXTENSION } from "@/project/package";
+import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
+import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
 import { exportedProjectId, setExportedProject } from "@/player/exportProjectStoreShim";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
@@ -32,11 +35,42 @@ function readBootConfig(): OpenRpgBootConfig {
 void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
+  const boot = readBootConfig();
+  if (new URLSearchParams(window.location.search).has("open")) {
+    openGameFilePicker(root, boot, "");
+    return;
+  }
+  const bundled = await loadBundledProject(boot);
+  if (bundled.ok) {
+    startPlayer(root, boot, bundled.project);
+    return;
+  }
+  openGameFilePicker(root, boot, bundled.message);
+}
+
+type BundledProjectLoad =
+  | { readonly ok: true; readonly project: Project }
+  | { readonly ok: false; readonly message: string };
+
+async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProjectLoad> {
   try {
-    const boot = readBootConfig();
     const response = await fetch(boot.projectUrl ?? new URL("project.json", window.location.href));
-    if (!response.ok) throw new Error(`project.json 로드 실패 (${response.status})`);
-    const project = deserialize(await response.text());
+    if (response.status === 404) {
+      return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${RPGZZU_EXTENSION} 게임 파일을 열어 주세요.` };
+    }
+    if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
+    return { ok: true, project: deserialize(await response.text()) };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : String(error) };
+  }
+}
+
+function openGameFilePicker(root: HTMLElement, boot: OpenRpgBootConfig, reason: string): void {
+  renderOprnGameFilePicker(root, { reason, onOpen: (project) => startPlayer(root, boot, project) });
+}
+
+function startPlayer(root: HTMLElement, boot: OpenRpgBootConfig, project: Project): void {
+  try {
     setExportedProject(project);
     const communitySlug = /^\/play\/([^/]+)/.exec(window.location.pathname)?.[1];
     setSaveSlotStorageNamespace(

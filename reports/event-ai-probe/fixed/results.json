@@ -1,0 +1,430 @@
+[
+  {
+    "id": "create-chest",
+    "title": "빈 페이지 · 보물상자(도크 예시 그대로)",
+    "intent": "create",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "fork",
+        "condition": {
+          "kind": "selfSwitch",
+          "key": "A",
+          "value": true
+        },
+        "then": [
+          {
+            "kind": "text",
+            "speaker": "",
+            "body": "비어 있다."
+          }
+        ],
+        "else": [
+          {
+            "kind": "changeItem",
+            "itemId": "item_potion",
+            "op": "+=",
+            "amount": 2
+          },
+          {
+            "kind": "text",
+            "speaker": "",
+            "body": "회복약 2개를 얻었다!"
+          },
+          {
+            "kind": "setSelfSwitch",
+            "key": "A",
+            "value": true
+          }
+        ]
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 420
+  },
+  {
+    "id": "create-npc",
+    "title": "빈 페이지 · 말 거는 NPC(도크 예시 그대로)",
+    "intent": "create",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "speaker": "마을 사람",
+        "body": "안녕하세요, 여행자님."
+      },
+      {
+        "kind": "text",
+        "speaker": "마을 사람",
+        "body": "요즘 초원에 슬라임이 부쩍 늘었다는 소문이 돌아요."
+      },
+      {
+        "kind": "choices",
+        "prompt": "더 물어보시겠어요?",
+        "options": [
+          {
+            "text": "네",
+            "branch": [
+              {
+                "kind": "text",
+                "speaker": "마을 사람",
+                "body": "밤에는 혼자 나가지 마세요. 조심하시고요."
+              }
+            ]
+          },
+          {
+            "text": "아니오",
+            "branch": [
+              {
+                "kind": "text",
+                "speaker": "마을 사람",
+                "body": "그럼 좋은 하루 보내세요."
+              }
+            ]
+          }
+        ],
+        "cancelBehavior": "choice2"
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 406
+  },
+  {
+    "id": "create-door",
+    "title": "빈 페이지 · 문 통과(도크 예시 그대로)",
+    "intent": "create",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "speaker": "",
+        "body": "문이 열렸다."
+      },
+      {
+        "kind": "transfer",
+        "mapId": "map_inn",
+        "x": 10,
+        "y": 7,
+        "direction": "retain",
+        "fade": "black"
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 153
+  },
+  {
+    "id": "edit-once",
+    "title": "기존 목록 · 한 번만 실행되게(도크 예시 그대로)",
+    "intent": "edit",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "fork",
+        "condition": {
+          "kind": "selfSwitch",
+          "key": "A",
+          "value": false
+        },
+        "then": [
+          {
+            "kind": "text",
+            "body": "낡은 상자다. 뚜껑이 살짝 들려 있다."
+          },
+          {
+            "kind": "changeItem",
+            "itemId": "item_potion",
+            "op": "+=",
+            "amount": 2
+          },
+          {
+            "kind": "text",
+            "body": "회복약 2개를 얻었다!"
+          },
+          {
+            "kind": "setSelfSwitch",
+            "key": "A",
+            "value": true
+          }
+        ],
+        "else": [
+          {
+            "kind": "text",
+            "body": "상자는 이미 비어 있다."
+          }
+        ]
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 506
+  },
+  {
+    "id": "edit-shorten",
+    "title": "기존 목록 · 대사 다듬기(도크 예시 그대로)",
+    "intent": "edit",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "speaker": "촌장",
+        "body": "어서 오게, 나그네. 요즘 마을은 조용하다네. 강 건너 폐광에서 이상한 소리가 난다는 소문도 있지만, 별일 아닐 거야."
+      },
+      {
+        "kind": "text",
+        "speaker": "촌장",
+        "body": "쉬고 싶으면 여관을 쓰게."
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 208
+  },
+  {
+    "id": "edit-condition",
+    "title": "기존 목록 · 조건 붙이기(도크 예시 그대로)",
+    "intent": "edit",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "body": "낡은 상자다. 뚜껑이 살짝 들려 있다."
+      },
+      {
+        "kind": "fork",
+        "condition": {
+          "kind": "selfSwitch",
+          "key": "A",
+          "value": false
+        },
+        "then": [
+          {
+            "kind": "changeItem",
+            "itemId": "item_potion",
+            "op": "+=",
+            "amount": 2
+          },
+          {
+            "kind": "text",
+            "body": "회복약 2개를 얻었다!"
+          },
+          {
+            "kind": "setSelfSwitch",
+            "key": "A",
+            "value": true
+          }
+        ],
+        "else": [
+          {
+            "kind": "text",
+            "body": "상자는 이미 비어 있다."
+          }
+        ]
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 498
+  },
+  {
+    "id": "delete-reward",
+    "title": "기존 목록 · 아이템 지급만 지우기",
+    "intent": "delete",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "body": "낡은 상자다. 뚜껑이 살짝 들려 있다."
+      },
+      {
+        "kind": "text",
+        "body": "회복약 2개를 얻었다!"
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 123
+  },
+  {
+    "id": "reorder-text-first",
+    "title": "기존 목록 · 순서 바꾸기",
+    "intent": "reorder",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "body": "낡은 상자다. 뚜껑이 살짝 들려 있다."
+      },
+      {
+        "kind": "text",
+        "body": "회복약 2개를 얻었다!"
+      },
+      {
+        "kind": "changeItem",
+        "itemId": "item_potion",
+        "op": "+=",
+        "amount": 2
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 209
+  },
+  {
+    "id": "create-choice-gold",
+    "title": "빈 페이지 · 선택지 + 골드",
+    "intent": "create",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "choices",
+        "prompt": "도와줄까?",
+        "options": [
+          {
+            "text": "네",
+            "branch": [
+              {
+                "kind": "changeGold",
+                "op": "+=",
+                "amount": 100
+              }
+            ]
+          },
+          {
+            "text": "아니오",
+            "branch": [
+              {
+                "kind": "text",
+                "speaker": "",
+                "body": "다음에 보자"
+              }
+            ]
+          }
+        ],
+        "cancelBehavior": "choice2"
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 386
+  },
+  {
+    "id": "create-shop",
+    "title": "빈 페이지 · 상점 열기",
+    "intent": "create",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "speaker": "",
+        "body": "무엇을 사려나"
+      },
+      {
+        "kind": "shop",
+        "itemIds": [
+          "item_potion",
+          "item_ether"
+        ],
+        "allowSell": true,
+        "quantityMode": "single",
+        "shopType": "normal",
+        "messageType": "welcome",
+        "merchantGold": 100,
+        "branchOnTransaction": false,
+        "transactionBranch": [],
+        "branchOnFailedTransaction": false,
+        "failedTransactionBranch": []
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 339
+  },
+  {
+    "id": "create-battle",
+    "title": "빈 페이지 · 전투 + 승패 분기",
+    "intent": "create",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "speaker": "도적",
+        "body": "돈을 내놔라!"
+      },
+      {
+        "kind": "battleProcessing",
+        "troopId": "troop_slime",
+        "canEscape": true,
+        "canLose": false
+      },
+      {
+        "kind": "text",
+        "body": "도적을 물리쳤다!"
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 191
+  },
+  {
+    "id": "create-inn",
+    "title": "빈 페이지 · 여관(가격 확인)",
+    "intent": "create",
+    "ok": true,
+    "errors": [],
+    "after": [
+      {
+        "kind": "text",
+        "speaker": "여관 주인",
+        "body": "하룻밤에 50골드요. 쉬어 가시겠소?"
+      },
+      {
+        "kind": "choices",
+        "prompt": "묵으시겠습니까?",
+        "options": [
+          {
+            "text": "예",
+            "branch": [
+              {
+                "kind": "fork",
+                "condition": {
+                  "kind": "gold",
+                  "op": ">=",
+                  "amount": 50
+                },
+                "then": [
+                  {
+                    "kind": "inn",
+                    "price": 50
+                  }
+                ],
+                "else": [
+                  {
+                    "kind": "text",
+                    "speaker": "여관 주인",
+                    "body": "돈이 없구먼"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "text": "아니오",
+            "branch": [
+              {
+                "kind": "text",
+                "speaker": "여관 주인",
+                "body": "마음 바뀌면 언제든 오시오."
+              }
+            ]
+          }
+        ],
+        "cancelBehavior": "choice2"
+      }
+    ],
+    "expectationFailures": [],
+    "rawChars": 431
+  }
+]

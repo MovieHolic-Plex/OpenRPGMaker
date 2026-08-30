@@ -17,9 +17,10 @@
 //    `setWorkspacePreset` 을 부르는 두 번째 이름이었고, 칩이 하는 실제 일(레이어·모달)을
 //    하지 않아 「작업 런처처럼 보이지만 레이아웃 프리셋만 내놓는 컨트롤」이었다 —
 //    `authoringTasks` 가 애초에 대체한 그 표면이다. 지웠고, 선택 표시는 칩으로 옮겼다.
-//  • 패널 표시(타일·맵) = 좌측이 아이콘 레일인 모드에서는 **레일**(`basic-rail-toggle-*`),
-//    레일이 없는 표준·전문가에서는 **이 메뉴**. 전에는 초보에서 둘이 겹쳤고 ▤ 쪽 타일 행은
-//    눌러도 아무 일이 없는 체크박스였다.
+//  • 패널 도크 멤버십(타일·맵) = 초보에서는 제공하지 않는다. 타일은 아이콘 레일의 고정
+//    호스트이고 맵 도크는 `mapTree=false`라 렌더되지 않는다. 초보의 `basic-rail-toggle-*`는
+//    멤버십을 바꾸는 컨트롤이 아니라 별도 플라이아웃을 여닫는다. 표준·전문가에서는 이 메뉴가
+//    도크 토글을 소유한다.
 
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
@@ -32,6 +33,7 @@ import {
   dockOf,
   isWorkspaceDensity,
   type WorkspaceDensity,
+  type WorkspaceLayout,
 } from "@/editor/workspace/workspaceLayout";
 import {
   getWorkspaceLayout,
@@ -71,22 +73,27 @@ export function renderWorkspaceBar(): readonly HTMLElement[] {
 function renderAuthoringTaskLauncher(): HTMLElement {
   const group = el("div", {
     class: "authoring-task-launcher editor-ui-mode-toggle",
-    attrs: { role: "group", "aria-label": "저작 작업 열기" },
+    attrs: { role: "group", "aria-label": "저작 작업 열기 — 현재 레이아웃 프리셋 표시" },
     dataset: { testid: "authoring-task-launcher" },
   });
-  // 지금 어느 작업 화면에 있는지는 이 칩이 말한다. 전에는 ▤ 메뉴의 「레이아웃」 라디오 3줄이
-  // 같은 프리셋을 두 번째로 늘어놓고 그 표시를 대신 갖고 있었다 — `mode.ts` 의 워크스페이스
-  // 구독이 톱바를 다시 그리는 이유로 적어둔 「프리셋 세그먼트의 선택 표시(aria-pressed)」가
-  // 정작 어디에도 없었다. 표시를 정본 진입점인 칩으로 되돌리고 중복 줄을 지운다.
+  // 표시는 작업 수행 여부가 아니라 현재 **레이아웃 프리셋**만 말한다. Ctrl+K의 화면 프리셋은
+  // 의도적으로 도크만 바꾸므로, 데이터 모달을 열지 않았는데 「데이터 작업 중」이라고 읽히면
+  // 거짓이다. 상호배타 현재 항목은 집 규칙대로 활성 항목에만 aria-current를 둔다.
   const presetId = getWorkspaceLayout().presetId;
   for (const task of AUTHORING_TASKS) {
-    // `test` 는 프리셋이 아니라 실행 요청이라 선택 상태를 갖지 않는다.
-    const active = task.id === presetId;
+    // `test` 는 프리셋이 아니라 일회성 실행 요청이라 선택 상태를 갖지 않는다.
+    const active = task.id !== "test" && task.id === presetId;
+    const currentPresetCopy = active ? " — 현재 레이아웃 프리셋" : "";
     group.append(
       el("button", {
         class: `authoring-task-btn editor-ui-mode-btn${active ? " is-active" : ""}`,
         text: task.label,
-        attrs: { type: "button", title: task.hint, "aria-pressed": active ? "true" : "false" },
+        attrs: {
+          type: "button",
+          title: `${task.hint}${currentPresetCopy}`,
+          "aria-label": `${task.hint}${currentPresetCopy}`,
+          ...(active ? { "aria-current": "true" } : {}),
+        },
         dataset: { testid: `authoring-task-${task.id}` },
         on: {
           click: (event) => {
@@ -101,9 +108,11 @@ function renderAuthoringTaskLauncher(): HTMLElement {
 }
 
 function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
+  const paletteRail = getEditorChrome().paletteRail;
+  const menuName = paletteRail ? "화면 배치와 밀도" : "패널 배치와 밀도";
   const menu = el("div", {
     class: "oprn-menu-popup workspace-panels-menu",
-    attrs: { role: "menu", "aria-label": "패널과 밀도" },
+    attrs: { role: "menu", "aria-label": menuName },
     dataset: { testid: "workspace-panels-menu" },
   });
   menu.hidden = true;
@@ -112,8 +121,8 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     text: "▤",
     attrs: {
       type: "button",
-      title: "패널 배치와 밀도",
-      "aria-label": "패널 배치와 밀도",
+      title: menuName,
+      "aria-label": menuName,
       "aria-expanded": "false",
       "aria-haspopup": "menu",
     },
@@ -152,15 +161,13 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
   });
 
   const layout = getWorkspaceLayout();
-  // 「패널」 그룹은 **좌측 레일이 없는 모드에서만** 이 메뉴의 것이다. 초보 모드의 좌측 레일은
-  // `basic-rail-toggle-tiles` / `-maps` 로 같은 두 패널을 이미 소유하고, 타일 행은 레일 호스트라
-  // 끌 수도 없어서 「눌러도 아무 일이 없는 체크박스 + 왜 안 되는지 적은 title」 로 떠 있었다.
-  // 되지 않는 선택지를 보여주지 않는다는 이 메뉴의 규칙(§2-1)이 자기 첫 그룹에는 적용되지
-  // 않았던 셈이다. 사이드바가 소유하는 모드에서는 그룹째로 내린다.
-  if (!getEditorChrome().paletteRail) {
+  // 「패널」 그룹은 **좌측 레일이 없는 모드에서만** 이 메뉴의 것이다. 초보의 타일은 레일
+  // 호스트라 고정이고 맵 도크는 렌더되지 않는다. `basic-rail-toggle-tiles/-maps` 는 도크
+  // 멤버십이 아니라 별도 플라이아웃을 여닫으므로, 초보에는 도크 그룹 자체를 내놓지 않는다.
+  if (!paletteRail) {
     menu.append(el("div", { class: "workspace-menu-group", text: "패널" }));
     for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
-      menu.append(renderPanelRow(panel.id, panel.title, close));
+      menu.append(renderPanelRow(panel.id, panel.title, layout, close));
     }
   }
   const assistantPlacement = renderAssistantPlacement(close);
@@ -264,11 +271,10 @@ function renderAssistantPlacement(close: () => void): {
 /**
  * 패널 한 줄 = 표시 토글 + 도크 이동 칩.
  *
- * 초보 모드는 이 행을 아예 그리지 않는다(`renderPanelsMenu` 가 그룹째로 건너뛴다). 그래서
- * 여기에 「고정 행」 분기는 없다 — 좌측 레일이 그 모드의 소유자다.
+ * 초보 모드는 이 행을 아예 그리지 않는다(`renderPanelsMenu` 가 그룹째로 건너뛴다). 타일은
+ * 고정 레일 호스트이고 맵 도크는 렌더되지 않으므로 설명만 남은 비활성 행도 만들지 않는다.
  */
-function renderPanelRow(id: PanelId, title: string, close: () => void): HTMLElement {
-  const layout = getWorkspaceLayout();
+function renderPanelRow(id: PanelId, title: string, layout: WorkspaceLayout, close: () => void): HTMLElement {
   const zone = dockOf(layout, id);
   const row = el("div", { class: "workspace-panel-row", dataset: { testid: `workspace-panel-row-${id}` } });
   const toggle = el("button", {

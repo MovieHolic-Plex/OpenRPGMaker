@@ -314,7 +314,9 @@ export class RuntimeDomOverlay {
     const error = document.createElement("div");
     error.className = "runtime-missing-resource";
     error.dataset.testid = "missing-resource-error";
-    error.textContent = `누락된 리소스: ${Array.from(missingResources).join(", ")}`;
+    // 자원 이름이 있으면 그것을 보여준다. 폴백이 원본 id 이므로 QA/e2e 가 단정하는 값은 남는다.
+    const names = Array.from(missingResources, (id) => resourceDisplayName(id, id));
+    error.textContent = `누락된 리소스: ${names.join(", ")}`;
     host.append(error);
   }
 

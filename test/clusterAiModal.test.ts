@@ -3,6 +3,7 @@ import type { SessionEvent, TurnResult } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
@@ -93,6 +94,7 @@ let replaceSpy: ReturnType<typeof vi.spyOn> | null = null;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
+  resetAiConnectionStatusCache();
   installDocumentEvents();
   previousWindow = globalThis.window;
   previousLocalStorage = globalThis.localStorage;
@@ -137,6 +139,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  resetAiConnectionStatusCache();
   restoreDom?.();
   restoreDom = null;
   restoreWindow(previousWindow);
@@ -161,6 +164,28 @@ describe("cluster AI modal", () => {
       expect.any(Function)
     );
     expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gemini-3.7-flash");
+  });
+
+  it("blocks kickoff when the stored config's live connection is confirmed disconnected", async () => {
+    const previousFetch = globalThis.fetch;
+    Object.defineProperty(globalThis, "fetch", {
+      configurable: true,
+      writable: true,
+      value: vi.fn(async () => new Response(JSON.stringify({ connected: false }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      })),
+    });
+    try {
+      await refreshAiConnectionStatus();
+      openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+
+      expect(mocks.instances).toHaveLength(0);
+      expect(requireTestId(document, "cluster-ai-status").textContent).toBe("설정 필요");
+    } finally {
+      if (previousFetch === undefined) Reflect.deleteProperty(globalThis, "fetch");
+      else Object.defineProperty(globalThis, "fetch", { configurable: true, writable: true, value: previousFetch });
+    }
   });
 
   it("accepts proposed changes into the store and rebases the session", async () => {

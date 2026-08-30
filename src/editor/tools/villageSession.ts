@@ -7,6 +7,11 @@ import { TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { loadSession as loadFromBag, saveSession as saveToBag, sessionExists } from "@/editor/roomHarness/sessionStore";
 import type { GameMap, Project } from "@/project/types";
+import {
+  broadleafCountFor,
+  coniferCountFor,
+  resolveWorldGenRules,
+} from "@/project/worldGenRules";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
 import {
@@ -340,6 +345,7 @@ function startVillageSession(draft: Project, args: Record<string, unknown>): Too
         buildOrder: args.buildOrder,
       },
       seed,
+      resolveWorldGenRules(draft.system.worldGen),
     );
     if (!ok) {
       throw new ToolError(`계획 실패: ${issues.map((i) => i.message).join(" / ")}`, { code: "invalid-plan" });
@@ -767,7 +773,8 @@ function stepWater(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const waterOnly: TerrainConstraintMasks = {
     ...masks,
     forestRects: [],
@@ -794,27 +801,34 @@ function stepForestConifer(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const areas = masks.forestRects.length > 0
     ? masks.forestRects
     : edgeBands(map);
-  const density = forestDensityFromText(session.query) ?? DEFAULT_FOREST_DENSITY;
+  const requestedDensity = forestDensityFromText(session.query);
+  const density = requestedDensity ?? DEFAULT_FOREST_DENSITY;
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
+    // 요청문이 «울창한·빽빽한» 처럼 밀도를 말했으면 그 말이 이긴다(#350). 말이 없을 때만
+    // 프로젝트의 저작된 생성 규칙을 기본값으로 쓴다(#355). 저작 규칙의 기본값은 100타일당
+    // 10그루라 #350 의 촘촘함 36그루·통행불가 45그루보다 훨씬 드물다 — 순서가 뒤집히면
+    // «울창한 숲» 이 다시 잔디밭이 된다.
     const shape = forestPlacementPlan({
       area,
       footprintCells: treeFootprintCells("침엽수"),
       density,
       share: CONIFER_COVERAGE_SHARE,
     });
+    const count = requestedDensity ? shape.count : coniferCountFor(area.w * area.h, rules.forest);
     placed += placeProps(draft, {
       mapId: map.id,
       area,
       material: "침엽수",
-      count: shape.count,
-      minGap: shape.minGap,
-      naturalness: shape.naturalness,
+      count,
+      minGap: requestedDensity ? shape.minGap : rules.forest.coniferGap,
+      naturalness: requestedDensity ? shape.naturalness : rules.forest.coniferNaturalness,
       packing: shape.packing,
       seed: session.seed + 7700 + i * 13,
     }, warnings);
@@ -829,27 +843,34 @@ function stepForestBig(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const areas = masks.forestRects.length > 0
     ? masks.forestRects
     : edgeBands(map);
-  const density = forestDensityFromText(session.query) ?? DEFAULT_FOREST_DENSITY;
+  const requestedDensity = forestDensityFromText(session.query);
+  const density = requestedDensity ?? DEFAULT_FOREST_DENSITY;
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
+    // 요청문이 «울창한·빽빽한» 처럼 밀도를 말했으면 그 말이 이긴다(#350). 말이 없을 때만
+    // 프로젝트의 저작된 생성 규칙을 기본값으로 쓴다(#355). 저작 규칙의 기본값은 100타일당
+    // 10그루라 #350 의 촘촘함 36그루·통행불가 45그루보다 훨씬 드물다 — 순서가 뒤집히면
+    // «울창한 숲» 이 다시 잔디밭이 된다.
     const shape = forestPlacementPlan({
       area,
       footprintCells: treeFootprintCells("활엽수"),
       density,
       share: 1 - CONIFER_COVERAGE_SHARE,
     });
+    const count = requestedDensity ? shape.count : broadleafCountFor(area.w * area.h, rules.forest);
     placed += placeProps(draft, {
       mapId: map.id,
       area,
       material: "활엽수",
-      count: shape.count,
-      minGap: shape.minGap,
-      naturalness: shape.naturalness,
+      count,
+      minGap: requestedDensity ? shape.minGap : rules.forest.broadleafGap,
+      naturalness: requestedDensity ? shape.naturalness : rules.forest.broadleafNaturalness,
       packing: shape.packing,
       seed: session.seed + 8800 + i * 17,
     }, warnings);
@@ -869,7 +890,7 @@ function stepForestBig(
         area: bank,
         material: "활엽수",
         count: 2,
-        minGap: 3,
+        minGap: rules.forest.broadleafGap,
         naturalness: 0.5,
         seed: session.seed + 9900,
       }, warnings);
@@ -949,8 +970,12 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
   const map = draft.maps[mapId];
   if (!map) throw new ToolError(`맵 없음: ${mapId}`, { code: "map-not-found" });
   const style = coerceStyle(args.style);
+  const worldGen = resolveWorldGenRules(draft.system.worldGen);
+  const forest = worldGen.forest;
   const seed = typeof args.seed === "number" ? args.seed : 1;
   const density = coerceForestDensity(args.density);
+  // 인자로 온 density 가 우선이고(#350), 없으면 저작된 생성 규칙을 기본값으로 쓴다(#355).
+  const requestedDensityArg = args.density !== undefined;
   const warnings: string[] = [];
 
   let areas: { x: number; y: number; w: number; h: number }[] = [];
@@ -961,7 +986,7 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
     const session = loadSession(draft, args.sessionId);
     const plan = session ? loadVillagePlan(draft, session.planId) : undefined;
     if (plan) {
-      const masks = buildTerrainConstraintMasks(map, plan.requirements);
+      const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, worldGen);
       areas = masks.forestRects.length > 0 ? [...masks.forestRects] : edgeBands(map);
     }
   }
@@ -986,10 +1011,20 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
         density,
         share: 1 / materials.length,
       });
+      const isBig = material === "활엽수";
+      const defaultCount = requestedDensityArg
+        ? shape.count
+        : isBig
+          ? broadleafCountFor(area.w * area.h, forest)
+          : coniferCountFor(area.w * area.h, forest);
       const count = typeof args.count === "number"
         ? Math.max(1, Math.floor(args.count / materials.length / areas.length))
-        : shape.count;
-      const minGap = typeof args.minGap === "number" ? Math.max(0, args.minGap) : shape.minGap;
+        : defaultCount;
+      const minGap = typeof args.minGap === "number"
+        ? Math.max(0, args.minGap)
+        : requestedDensityArg
+          ? shape.minGap
+          : isBig ? forest.broadleafGap : forest.coniferGap;
       requested += count;
       placed += placeProps(draft, {
         mapId,
@@ -997,7 +1032,9 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
         material,
         count,
         minGap,
-        naturalness: shape.naturalness,
+        naturalness: requestedDensityArg
+          ? shape.naturalness
+          : isBig ? forest.broadleafNaturalness : forest.coniferNaturalness,
         packing: shape.packing,
         seed: seed + g * 100 + i * 17,
       }, warnings);

@@ -1,7 +1,19 @@
 // 사용자 쿼리/테마 → 상식 기반 필수 랜드마크 스펙.
 // 예: "강촌마을" → 강 + 숲 + 마을(주거). 시공·게이트가 이 목록을 근거로 존재 검증한다.
+//
+// 낱말 → 랜드마크 대응표와 방향 기본값은 이제 `system.worldGen` 저작 데이터가 지배한다
+// (`@/project/worldGenRules`). 규칙을 넘기지 않으면 내장 기본 규칙 = 예전 정규식과 같은 판정.
 
-export type LandmarkKind = "river" | "lake" | "forest" | "market" | "harbor" | "farm";
+import {
+  DEFAULT_WORLD_GEN_RULES,
+  matchWorldGenKeywords,
+  oppositeWorldGenSide,
+  type ResolvedWorldGenRules,
+  type WorldGenLandmarkKind,
+  type WorldGenSide,
+} from "@/project/worldGenRules";
+
+export type LandmarkKind = WorldGenLandmarkKind;
 
 export interface VillageRequirements {
   /** 원문 쿼리/테마 */
@@ -30,65 +42,27 @@ const LANDMARK_LABEL: Record<LandmarkKind, string> = {
  * 사용자 말에서 상식으로 뽑는 필수 스펙.
  * LLM이 아니라 결정론 — "강촌"이면 강이 있어야 한다는 계약.
  */
-export function inferRequirementsFromQuery(query: string): VillageRequirements {
+export function inferRequirementsFromQuery(
+  query: string,
+  rules: ResolvedWorldGenRules = DEFAULT_WORLD_GEN_RULES,
+): VillageRequirements {
   const q = (query ?? "").trim();
-  const t = q.toLowerCase();
-  const set = new Set<LandmarkKind>();
+  const landmarks = matchWorldGenKeywords(q, rules.keywords).landmarks;
 
-  // ── 물 ──
-  if (/강촌|강가|강변|강마을|하천|시내|river|riverside|creek|stream/.test(t)) {
-    set.add("river");
-  }
-  // "강"이 들어가는 취락 표현 (강화 등 지명은 제외하지 않음 — 보수적으로 강을 깐다)
-  if (/강/.test(q) && !/강원|강도|강제|강조|강좌/.test(q)) {
-    set.add("river");
-  }
-  if (/호수|연못|호반|lake|pond/.test(t)) {
-    set.add("lake");
-  }
-  if (/항구|포구|어촌|해안|바다|항구촌|harbor|port|coast|seaside|fishing/.test(t)) {
-    set.add("harbor");
-    set.add("river"); // 물가 — 강/수역으로 표현
-  }
-
-  // ── 숲 ──
-  if (/숲|삼림|산골|산림|forest|woods|woodland/.test(t)) {
-    set.add("forest");
-  }
-  // 촌·마을·농촌 상식: 자연 취락이면 숲 밴드
-  if (/촌|마을|village|hamlet|농/.test(t) && !/도심|도시|시내중심/.test(t)) {
-    set.add("forest");
-  }
-
-  // ── 장터 ──
-  if (/장터|시장|마켓|market|fair|장시/.test(t)) {
-    set.add("market");
-  }
-
-  // ── 농 ──
-  if (/농촌|농가|밭|목장|farm|pasture|rural/.test(t)) {
-    set.add("farm");
-    set.add("forest");
-  }
-
-  // 강촌 = 강 + 숲 + 마을 (상식 최소 세트)
-  if (/강촌/.test(q)) {
-    set.add("river");
-    set.add("forest");
-  }
-
-  const landmarks = [...set];
   const mustExist = [
     "주거 마을(집·길·주민)",
     ...landmarks.map((kind) => LANDMARK_LABEL[kind]),
   ];
 
   // 강이 있으면 서쪽 물·동쪽 숲이 기본(마을이 강 옆). 호수만 있으면 북쪽 물·남쪽 숲.
-  let riverSide: "west" | "east" | "north" | "south" = "west";
+  // 저자가 방향을 못 박으면(`auto` 아님) 그 값이 이 상식을 덮는다.
+  let riverSide: WorldGenSide = "west";
   if (landmarks.includes("lake") && !landmarks.includes("river") && !landmarks.includes("harbor")) {
     riverSide = "north";
   }
-  const forestSide: "west" | "east" | "north" | "south" = oppositeSide(riverSide);
+  if (rules.water.side !== "auto") riverSide = rules.water.side;
+  const forestSide: WorldGenSide =
+    rules.forest.side !== "auto" ? rules.forest.side : oppositeWorldGenSide(riverSide);
 
   return {
     query: q || "(빈 쿼리)",
@@ -100,22 +74,12 @@ export function inferRequirementsFromQuery(query: string): VillageRequirements {
   };
 }
 
-function oppositeSide(side: "west" | "east" | "north" | "south"): "west" | "east" | "north" | "south" {
-  switch (side) {
-    case "west":
-      return "east";
-    case "east":
-      return "west";
-    case "north":
-      return "south";
-    case "south":
-      return "north";
-  }
-}
-
-/** requirements가 톤 힌트를 덮을 때 (pathStyle 등). */
-export function styleHintsFromRequirements(req: VillageRequirements): {
-  pathStyle?: "sand" | "dirt";
+/** requirements가 톤 힌트를 덮을 때 (pathStyle 등). 저자가 `auto` 를 벗어난 값을 고르면 그게 최종이다. */
+export function styleHintsFromRequirements(
+  req: VillageRequirements,
+  rules: ResolvedWorldGenRules = DEFAULT_WORLD_GEN_RULES,
+): {
+  pathStyle?: "sand" | "dirt" | "stone";
   yardStyle?: "mixed" | "garden" | "workshop" | "market" | "minimal";
   plazaStyle?: "market" | "garden" | "empty";
   edgeTrees?: "conifer" | "dense" | "none";
@@ -138,6 +102,11 @@ export function styleHintsFromRequirements(req: VillageRequirements): {
   if (req.landmarks.includes("forest")) {
     hints.edgeTrees = "dense";
   }
+  if (rules.road.pathStyle !== "auto") hints.pathStyle = rules.road.pathStyle;
+  if (rules.road.yardStyle !== "auto") hints.yardStyle = rules.road.yardStyle;
+  if (rules.road.plazaStyle !== "auto") hints.plazaStyle = rules.road.plazaStyle;
+  if (rules.road.plazaLayout !== "auto") hints.plazaLayout = rules.road.plazaLayout;
+  if (rules.road.edgeTrees !== "auto") hints.edgeTrees = rules.road.edgeTrees;
   return hints;
 }
 

@@ -10,9 +10,10 @@
 // 지킨 것: max_tokens 고정값(매핑 JSON 은 길지만 공급자 상한이 낮다 — 실측 cpen 8192 통과·32768 은 422), temperature 0.2.
 // 모델 티어·토큰 예산·준비 판정은 assistantEndpoint 의 표면 정책이 소유한다 — 이 표면이 자기만의
 // 준비 판정을 들고 있는 동안 조수와 기준이 달랐다: 모델을 보지 않아 `model: ""` 로도 요청이 나갔고,
-// 다른 어떤 코드도 읽지 않는 레거시 `oprn:llmApiKey` 하나로 버튼이 열렸다.
+// 프로덕션 reader 는 사라졌지만 마이그레이션이 보존하는 레거시 `oprn:llmApiKey` 하나로 버튼이 열렸다.
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
-import { chatCompletion, LlmError, type ContentPart } from "@/ai/llmClient";
+import { chatCompletion, loadAiConfig, LlmError, type ContentPart } from "@/ai/llmClient";
+import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
 
 export type CpenTilesetRequest = {
@@ -25,13 +26,14 @@ const JSON_ONLY_SYSTEM_PROMPT =
   "Return exactly one JSON object for the requested tileset metadata. Do not quote the schema, do not include markdown, prose, code fences, or hidden reasoning. If uncertain, fill minimumQuestions and keep fields conservative.";
 
 export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Promise<string> {
-  if (!isAssistantEndpointReady()) {
-    return "AI 설정이 아직 연결되지 않았습니다. 로컬 설정을 확인해 주세요.";
+  const config = loadAiConfig();
+  if (!isAssistantEndpointReady(config, getAiConnectionStatus(config))) {
+    return "AI 연결을 먼저 완료하세요. 편집기 헤더의 AI 설정에서 로그인한 뒤 다시 시도해 주세요.";
   }
 
   try {
     const result = await chatCompletion(
-      resolveSurfaceAiConfig("tileset-analysis"),
+      resolveSurfaceAiConfig("tileset-analysis", config),
       {
         messages: [
           {
@@ -76,7 +78,8 @@ export function normalizeCpenResponseText(responseText: string): string {
 }
 
 export function hasCpenTilesetApiKey(): boolean {
-  return isAssistantEndpointReady();
+  const config = loadAiConfig();
+  return isAssistantEndpointReady(config, getAiConnectionStatus(config));
 }
 
 // llmClient 의 ContentPart 를 그대로 쓴다 — 사본 타입을 두면 필드가 어긋나도 컴파일러가

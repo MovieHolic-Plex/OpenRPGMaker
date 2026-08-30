@@ -22,6 +22,14 @@
 - The hero owns selected-actor identity, class, level range, and start-party membership. The table owns selection and comparison only; do not restore duplicate current-selection/party summary metrics or analytics. System remains the authority for `startActorIds`.
 - Scroll ownership is explicit: list rows scroll inside `.db-actor-studio-table`; the actor hero and section tabs remain fixed; only `.actor-section-body` scrolls. Do not return to one long inspector document where category navigation depends on scrolling.
 
+## '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
+
+- `세계` 그룹 첫 탭 `생성 규칙` (`worldGen`, testid `db-tab-world-gen`) 은 `project.system.worldGen` 을 저작한다. 강 띠 두께·호수 지름·수면 모양·숲 깊이·나무 밀도·간격·길 재료·광장 자리, 그리고 "이 말이 나오면 이 지형" 낱말 규칙이 전부 이 한 탭에 있다.
+- 값을 만지면 실제 칩셋 타일로 그린 미리보기가 즉시 갱신된다. 미리보기는 시공기와 **같은 함수**(`buildTerrainConstraintMasks` / `cellsInFillShape` / 나무 수 헬퍼)를 쓴다 — 미리보기 전용 근사식을 넣지 마라. 예시 프리셋 카드도 같은 렌더러로 그린 썸네일이다.
+- 낱말 규칙은 낱말 목록 + 제외 낱말 + 지형 칩이다. **정규식·코드 입력을 넣지 마라** — 초보 저자가 대상이고 자연어까지만 허용하는 것이 설계 전제다.
+- 구조 변경은 `recordProjectSnapshot`, 슬라이더/텍스트는 `recordCoalescedSnapshot` 이라 modal dirty/undo 계약을 따른다. 탭 count 는 저자가 만든 낱말 규칙 수다.
+- 스키마·기본값·정규화·경로 전체와 "새 항목 추가 절차" 는 `openwiki/world-generation-rules.md` 가 소유한다.
+
 ## P2 낚시·채집·박물관 저작 표면 (2026-08-25)
 
 - `생활` 그룹의 `낚시·채집·박물관` (`lifeCollections`) 탭은 fish species, fishing spots, seasonal forage areas, museum rewards를 구조화해서 목록·추가·이름 변경·삭제한다. 기본값 동작은 collection tracking까지 서로 참조가 맞는 최소 패키지를 만든다. 물고기 삭제는 해당 catch만 제거하고, catch가 하나도 남지 않은 낚시터만 함께 제거한다.
@@ -524,7 +532,7 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 - **참조는 따라간다.** 집 형태를 지우면 프리셋 화이트리스트에서도 빠지고, id 를 바꾸면 프리셋이 새 id 를 가리킨다. 죽은 id 를 남기면 시공 때 경고가 되기 때문이다.
 - **사슬**: 이 레코드가 `village/authoringData.ts` → `buildVillageDomain` 의 `VillageIntent.templateCatalog` 로 들어가고, 동시에 `ai/contextBuilder.ts` 의 `## 마을 저작 데이터` 섹션에 실려 모델이 `author_village({ presetId })` / `housePlans[].templateId` 로 지목할 수 있게 된다. 우선순위는 **명시 인자 > 사용자 프리셋 > 테마 추론 > 씨앗값 파생**.
 - **기하 규약은 시공기에서 베껴 온다.** `templateFromRecord()` 는 폭·높이·바운딩 박스만 보는 게 아니라 `stampFootprintHouseKit` 이 요구하는 것까지 본다 — **열마다** 이어진 칸이 `벽 밴드 + 지붕 2` 행 이상이어야 하고(1층 5행, 2층 7행, 낮은 벽 4행), A자 지붕 킷은 날개 하나에 높이가 `벽 밴드 + ⌊(폭−1)/2⌋ + 1` 로 고정이다. 이걸 안 보면 화면은 「통과」라고 하는데 하네스는 "집을 한 채도 시공하지 못했다" 로 실패한다(8×8 에 위 4행만 폭 8 인 ㅜ 자로 실측). `+ 날개 추가` 의 기본 높이도 `minWingRun()` 을 써서 누른 직후 위반이 되지 않게 한다.
-- 커버리지: `test/databaseVillageView.test.ts`(16케이스 — 규약 통과·내장 복제·날개 편집·짧은 열 위반·프리셋 키 생성/삭제·참조 정리), `test/villageAuthoringData.test.ts`(17케이스 — 읽기·AI 컨텍스트·시공 반영·내장 34종 왕복·열 높이·A자 지붕), `test/houseTemplateCatalog.test.ts`(내장 34종 데이터화 등가성).
+- 커버리지: `test/databaseVillageView.test.ts`(33케이스 — 규약 통과·내장 복제·날개 편집·짧은 열 위반·프리셋 키 생성/삭제·참조 정리·그림·격자), `test/villageAuthoringData.test.ts`(17케이스 — 읽기·AI 컨텍스트·시공 반영·내장 34종 왕복·열 높이·A자 지붕), `test/houseTemplateCatalog.test.ts`(내장 34종 데이터화 등가성).
 
 ### 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
 
@@ -566,3 +574,43 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
   노드가 같은 인스턴스로 남는다, 사용 표식·개수, `[안 쓴 타일만]` 숨김과 붓 면제, 칠하면 표식이 붙는다),
   브라우저 왕복은 `test/e2e/db-structure-editor.spec.ts` 의 스크롤·포커스 유지 케이스와 사용 표식 케이스.
   스크롤은 FakeDom 이 흉내내지 않으므로 유닛에서는 **노드 정체성**으로 대신 못을 박는다.
+
+---
+
+## '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+
+기능은 사슬 끝까지 이어져 있었지만 화면이 스프레드시트였다. 1301줄에 `<canvas>` · `<img>` 가 **0개**였다. 8×9 ㄱ자 집을 만들려면 `x/y/w/h` 숫자 8개를 손으로 넣고, 미리보기는 칸 채움/빈칸을 나타내는 `<span>` 격자라 실제 집이 어떻게 생기는지 알 수 없었다. 내장 34종 고르기는 `직사각 대 (8×7) · rect-large` 텍스트 `<select>` 였다. 저장 계약(`villageTemplates` / `villagePresets`)과 기하 규약은 그대로 두고 **입력 방식만** 바꿨다.
+
+- **그림은 진짜 시공기를 돈다.** `villageHousePreview.ts` 는 레코드를 `w+2 × h+2` 잔디 스크래치 맵에 `stampFootprintHouseKit()` 으로 찍고 `drawMapTileLayers()` 로 굽는다 — 시공과 썸네일이 쓰는 **그 함수들**이다. 화면이 자기 나름의 그림을 상상해 그리면 결과와 어긋나고, 어긋난 미리보기는 없는 것보다 나쁘다.
+- **재료를 못 구하면 그림인 척하지 않는다.** 킷 타일 번호(406·467·374…)는 합본 마을 칩셋(`tex_easyrpg_chipset_combined_town`)의 번호 체계에 종속이다. 그 칩셋에 묶인 타일셋이 프로젝트에 없으면 `housePreviewMap()` 이 `undefined` 를 내고 화면은 기존 추상 격자로 내려앉는다.
+- **그림 세 층은 비용이 달라 방식이 다르다.** ①집 형태 = 실시간 캔버스(스탬프 1회, 내용 시그니처로 캐시). ②마을 원형 6갈래 = **구운 PNG**(`scripts/bake-village-archetype-previews.mts` → `public/assets/village-preview/<id>.png`) — 도로 탐색까지 도는 무거운 시공이라 브라우저에서 6판을 돌리지 않는다. ③내 프리셋 = 버튼을 눌러야 도는 실시간 시공(`villagePresetPreview.ts` 가 `structuredClone` 초안에서 `buildVillageDomain` 을 돌린다 — 실제 프로젝트에는 맵이 생기지 않는다). 값 하나 고칠 때마다 자동으로 돌리면 select 한 번에 화면이 멈춘다.
+- **구운 PNG 는 쓰기 옵션이 크기를 10배 가른다.** pngjs 기본값(`deflateStrategy: 3` = Z_RLE, 필터 자동)으로 288×288 한 장이 141KB 였다. `{ deflateLevel: 9, deflateStrategy: 0, filterType: 0 }` 이면 같은 픽셀이 14KB 다(6장 840KB → 90KB). 화면에 뜨는 카드 자산이라 크기가 그대로 첫 로딩 시간이 된다.
+- **모양 팔레트 + 격자 드래그.** `db-village-shape-palette` 10장(네모·2층·ㄱ·ㄴ·ㄷ·ㅁ 중정·T 현관·필지+헛간·A자·낮은 헛간)이 대표 내장 정의의 날개를 베끼고 타일 그림을 함께 그린다. `db-village-footprint-large` 격자는 날개마다 절대 배치 사각형 + 변 손잡이 8개를 얹은 조작면이다. 클램프는 순수 함수 `moveWing()` / `resizeWing()`(`databaseVillageModel.ts`)이 전부 끝낸다 — 드래그로는 애초에 규약을 어길 수 없게 만드는 편이 어긴 뒤 안내문을 띄우는 것보다 낫다. 드래그 중에는 store 를 건드리지 않고(한 칸마다 커밋하면 되돌리기 스택이 수십 개로 불고 rerender 가 조작 중인 노드를 떼어낸다) 포인터를 놓을 때 한 번 커밋한다. 키보드로도 만들 수 있다 — 날개 상자가 탭 정지점이고 화살표=이동, Shift+화살표=오른쪽·아래 변 크기.
+- **격자에는 `.db-village-footprint-large` 클래스를 붙이지 않는다.** 예전 격자 규칙이 `gap: 2px; padding: 8px` 을 넣는데 드래그가 `clientWidth / 열 수` 로 칸 크기를 재므로 여백이 끼면 좌표가 어긋난다. testid 는 그 상자를 가리켜야 하므로 testid 만 격자에 남기고 클래스는 `.db-village-grid` 하나만 쓴다.
+- **숫자칸은 없애지 않고 접는다.** `db-village-wing-${i}-${axis}` · `db-village-wing-add` · `db-village-wing-tighten` 는 「숫자로 고치기」(`db-village-wing-numbers`) 안에 그대로 산다 — 정확한 값을 박아야 할 때가 있고, 격자 드래그는 「대충 이 모양」까지만 빠르다. 접기는 `<details>` 가 아니라 `div` + 토글 버튼 + `hidden` 이다(Chromium `::details-content` 가 flex 스크롤 자식을 무력화한다). 닫혀 있어도 자식은 DOM 에 남는다.
+- **첫 화면은 예시부터.** 레코드가 하나도 없으면 상세 창이 시작 화면(`db-village-start-hero`)이 된다 — 위는 원형 6장(구운 PNG), 아래는 모양 팔레트 10장(실시간 캔버스). 기존 빈 상태(`db-village-template-blank` / `db-village-preset-blank`)를 **대체하지 않고 감싼다**.
+- **캔버스는 유닛 테스트로 못 본다.** `test/fakeDom.ts` 의 `getContext()` 가 의도적으로 `null` 을 준다. 그래서 유닛은 **스탬프된 GameMap 의 타일 배열**까지만 단정하고(지붕 몸통·처마·벽 9분할 하단행이 실제로 들어갔는지, 옥상 패스가 `upperTiles` 만 건드리는지), 픽셀은 e2e 가 `getImageData()` 로 색 수를 세어 단색 폴백과 가른다.
+- 커버리지: `test/villageHousePreview.test.ts`(13 — 칩셋 찾기·킷 해석·잔디 여백·실제 타일·규약 위반 시 `undefined`·내장 34종 전부 렌더), `test/villageWingGeometry.test.ts`(13 — `moveWing`/`resizeWing` 클램프), `test/villagePresetPreview.test.ts`(6 — 시공 결과·프로젝트 무오염·씨앗 차이·원형 6갈래), `test/villageArchetypePreviews.test.ts`(3 — PNG 존재·시그니처·남는 그림 없음 드리프트 게이트), `test/e2e/db-village-visual.spec.ts`(4 — 원형 PNG 서빙·히어로 픽셀·손잡이 드래그 커밋·프리셋 미리보기).
+- **함정(e2e)**: 상세 창은 스크롤한다. 기본 위치에서 격자는 뷰포트 **아래 1500px** 지점이고 `boundingBox()` 는 스크롤을 해 주지 않으므로, 드래그 전에 격자를 화면 안으로 끌어오지 않으면 `page.mouse` 가 뷰포트 밖을 짚고 손잡이는 `pointerdown` 을 아예 받지 못한다(값이 안 바뀌어 "드래그가 고장났다" 로 오독하게 된다).
+
+### AI로 몬스터·아이템 생성 (2026-08-30)
+
+아이템/적 탭 툴바에 `AI로 생성`(`db-ai-generate-open`) 이 있다. 모달
+(`databaseAiGenerateDialog.ts`, testid `db-ai-generate-dialog-<kind>`)에 설명을 넣으면
+**레코드 + 그림**이 한 번에 등록된다. 오케스트레이션은 `src/editor/aiDatabaseGeneration.ts`:
+
+1. `chatCompletion` 으로 레코드 JSON 을 받는다. 응답은 `parseGeneratedRecord` 가
+   **필드 allowlist**(item 9개 / enemy 6개)로 걸러낸다 — `upsert_item`/`upsert_enemy` 의
+   `rejectUnknownFields` 가 모르는 필드에 하드 실패하므로, 모델을 믿지 않고 미리 자른다.
+2. 그림은 `generateAiImage` (아래 이미지 경로) → `flattenGeneratedArtwork` 로 배경을 투명화.
+3. 적용은 **기존 툴만** 쓴다: `upsert_resource` → `upsert_item`/`upsert_enemy` 를
+   `applyToolSequenceToStore` 로 한 undo 체크포인트에 묶는다. 새 쓰기 경로를 만들지 마라.
+
+리소스 kind 는 종류마다 다르다 — 적은 `monster`, 아이템은 `picture`. 아이템 아이콘 피커
+(`kind:"icon"`)가 업로드 자산 중 `picture`/`monster`/`system` 만 목록에 올리기 때문이다
+(`databaseResourcePickerDialog.ts` `uploadedMatchesKind`). 그림은 `assets.uploaded[id].dataUrl`
+로 들어가고 `resolveAssetResourceUrl` 이 업로드를 먼저 보므로 썸네일·전투 화면이 그대로 집는다.
+
+Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`,
+`test/imageGenerationClient.test.ts`.
+

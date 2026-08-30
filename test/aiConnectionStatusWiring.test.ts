@@ -37,6 +37,12 @@ class MemoryStorage implements Storage {
 
 type ListenerMap = Map<string, EventListener[]>;
 
+const fetchChatGptAuthStatus = vi.fn(async () => ({ connected: false }));
+vi.mock("@/ai/chatgptOAuthClient", () => ({
+  fetchChatGptAuthStatus: (...args: unknown[]) => fetchChatGptAuthStatus(...args),
+  startChatGptLogin: vi.fn(),
+}));
+
 let restoreDom: (() => void) | null = null;
 let storage: MemoryStorage;
 let documentListeners: ListenerMap;
@@ -173,6 +179,7 @@ const APIKEY_READY = {
 
 beforeEach(() => {
   vi.resetModules();
+  fetchChatGptAuthStatus.mockClear();
   store.replace(createBlankProject());
   restoreDom = installFakeDom();
   installStorage();
@@ -203,6 +210,7 @@ describe("에디터 하단 상태바 제거", () => {
     expect(findByTestId(surface, "db-connection-status")).toBeNull();
     expect(findByTestId(surface, "toggle-layout-bboxes")).toBeNull();
     expect(findByTestId(surface, "ai-connection-status")).toBeNull();
+    expect(fetchChatGptAuthStatus).toHaveBeenCalledTimes(1);
 
     teardownEditor();
   }, 60_000);
