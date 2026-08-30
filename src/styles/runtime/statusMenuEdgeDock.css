@@ -300,54 +300,40 @@
 .oprn-status-menu .status-menu-vital-line {
   display: grid;
   gap: 2px;
-  /* 픽셀 글꼴 8px 에서 "514/514" 는 33px 가 필요하다(실숭) — 30px 에선 쟘렸다. */
-  grid-template-columns: 34px minmax(0, 1fr);
+  /* 사이드바는 4인을 가로로 나눠 카드 하나가 73px 밖에 안 된다. 여기서 숫자열·게이지열을
+     `34px minmax(0,1fr)` 로 나누면 숫자가 34px 를 다 가지고 게이지 트랙은 정확히 0px 를
+     받는다(실측: computed "34px 0px", 게이지 width 0) — P0-1 게이지가 DOM 에만 있고
+     화면에는 없었다. 그래서 tabs-b 설계 그대로 숫자열 자신을 트랙으로 쓴다:
+     한 칸 그리드 + 게이지는 그 밑에 깔린다. */
+  grid-template-columns: minmax(0, 1fr);
   min-height: 9px;
   position: relative;
 }
 
   /* 카드 폭 73px 고정 — 크기를 올리면 잘린다(위 첫 규칙의 실측 주석 참조). */
 .oprn-status-menu .status-menu-actor-vitals {
-  color: rgba(247, 239, 226, 0.72);
+  /* 숫자가 채워진 게이지 위에 얹히므로 감광(0.72)과 그림자 제거를 되돌린다 —
+     초록/파랑 채움 위의 흐린 상아색은 읽히지 않았다. */
+  color: var(--status-edge-ivory);
   font-size: 8px;
   line-height: 9px;
   overflow: hidden;
   text-overflow: clip;
-  text-shadow: none;
+  text-shadow: 0 1px 0 rgba(4, 14, 48, 0.85);
   white-space: nowrap;
 }
 
+/* 트랙은 숫자 뒤 배경이다 — 상자 모양·색은 tabs-b 가 정한다(흰 숫자를 얹으려고 진한
+   그라디언트). 여기서는 도킹 모서리만 맞춘다. 예전의 2px 막대 그래프로 되돌리지 말 것:
+   카드 폭이 73px 라 마크업은 그대로인데 트랙이 0px 로 사라진다. */
 .oprn-status-menu .status-menu-vital-gauge {
-  align-self: center;
-  background: rgba(255, 255, 255, 0.09);
-  border-radius: 999px;
-  box-shadow: none;
-  height: 2px;
-  inset: auto;
-  overflow: hidden;
-  position: relative;
+  border-radius: 3px;
 }
 
 .oprn-status-menu .status-menu-vital-gauge-fill {
   border-radius: inherit;
   display: block;
   height: 100%;
-}
-
-.oprn-status-menu .status-menu-vital-gauge.hp .status-menu-vital-gauge-fill {
-  background: #67d496;
-}
-
-.oprn-status-menu .status-menu-vital-gauge.hp.warn .status-menu-vital-gauge-fill {
-  background: #e5a95d;
-}
-
-.oprn-status-menu .status-menu-vital-gauge.hp.crit .status-menu-vital-gauge-fill {
-  background: #ff6767;
-}
-
-.oprn-status-menu .status-menu-vital-gauge.mp .status-menu-vital-gauge-fill {
-  background: var(--status-edge-teal);
 }
 
 .oprn-status-menu .status-menu-detail,
@@ -406,6 +392,29 @@
   overflow-y: auto;
   scrollbar-color: var(--runtime-glass-hairline-strong) transparent;
   scrollbar-width: thin;
+  /* 목록 높이는 행 높이의 정수배가 아니라, 커서를 끝까지 내리면 스크롤이 행 중간에
+     멈춰 글자가 가로로 잘린 채 남았다(실측: 마지막 화면에서 온전한 행 0개).
+     행 시작점에 스냅을 걸어 항상 행 경계에서 멈추게 한다. */
+  scroll-snap-type: y proximity;
+}
+
+/* 단일 행마다 18px 로 고른 조작 목록은 목록 높이를 행 보통임(20px = 18 + 간간 2)의
+   정수배로 내린다. 그러지 않으면 효용 높이 80.5px 에 4번째 행이 0.5px 만 들어가
+   마지막 행이 항상 다섯분의 한컷 잘린 글자로 끝난다(실측). round() 미지원 및
+   행 높이가 뒤섞인 목록은 이 선언이 무시되어 지금처럼 1fr 로 넣는다.
+   가로로 누운 컨텍스트 트레이는 행이 열로 흔러가서 정수배가 의모가 없어 제외한다. */
+.oprn-status-menu
+  .status-menu-detail:not([data-status-menu-presentation="context-tray"])
+  .status-menu-detail-list:has(> .status-menu-detail-row-compact) {
+  --oprn-menu-row-step: 20px;
+  align-self: start;
+  /* 밖은 min/max 가 안전장치다. 효용 높이가 한 행보다 짧은 작은 트레이에서는
+     내림정수배가 0 이 되어 목록이 통짜로 사라진다(실측: 파티·기록·시스템에서 listH=0).
+     한 행 밑으로는 안 내리고, 원래 받은 공간보다 키우지도 않는다. */
+  height: min(
+    100%,
+    max(calc(var(--oprn-menu-row-step) - 2px), calc(round(down, 100% + 2px, var(--oprn-menu-row-step)) - 2px))
+  );
 }
 
 .oprn-status-menu .status-menu-detail-row,
@@ -421,6 +430,7 @@
   gap: 4px;
   min-height: 18px;
   padding: 3px 5px;
+  scroll-snap-align: start;
   text-shadow: none;
 }
 
@@ -480,23 +490,11 @@
 }
 
 .oprn-status-menu .status-menu-detail-row-compact {
+  /* 이름 | (빈 칸) | 값 — 조작 행에는 설명 노드가 없다(renderDetailTextChildren).
+     예전에는 설명을 둘째 줄로 접었는데, 행 높이가 88px 로 두 배가 되어 81px 목록에
+     아이템 7개 중 2개만 온전히 보였다(실측). 전문은 푸터가 보여준다. */
   grid-template-columns: max-content minmax(0, 1fr) max-content;
   white-space: nowrap;
-}
-
-.oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-description {
-  /* Neo둥근모는 같은 8px 에서 Galmuri 보다 글자폭이 넓다. 이름·수량이 자기 폭을
-     먼저 가져가고 남은 1fr 에 설명문을 nowrap 으로 밀어넣으면 20px 이 모자라
-     말줄임으로 잘렸다(실측: clipX=20). 설명문을 아래 줄 전체 폭으로 내려
-     두 줄까지 감싸게 하면 문장이 끝까지 보인다. */
-  display: -webkit-box;
-  grid-column: 1 / -1;
-  grid-row: 2;
-  text-align: left;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  white-space: normal;
 }
 
 .oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-value {
@@ -520,7 +518,11 @@
 .oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] {
   bottom: 68px;
   gap: 0;
-  height: 34px;
+  /* height:34px 은 버튼 26px + 패딩 8px 만 삼았고, 이 트레이가 border-box 에
+     12px 도리 테도리를 달고 있는 것을 놓쳤다 — 남는 높이가 14px 라
+     파티·기록·시스템 하위 버튼이 전부 반토보리 나고 글자가 사라졌다(실측: 14/26).
+     내용 높이에 맡기면 테도리가 바뀌어도 자동으로 맞는다. */
+  height: auto;
   left: 42px;
   padding: 4px;
   right: 42px;
