@@ -238,11 +238,22 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
   });
 
   /**
-   * 상한 1.0 은 **불량 쪽에서** 정했다. 실린 칸의 최악이 0.665, 고개를 돌린 칸이 1.941 이라
-   * 1.0 은 알려진 불량보다 1.94배 아래에 있다. 머리 버킷 지분이 작아(hero-04 는 머리의
-   * 녹색이 2.9%) 상대편차가 본래 출렁이므로 전신 상한(0.15)보다 느슨할 수밖에 없다.
+   * 이 계약이 재는 것은 **머리 영역의 색 구성**이고, 그것이 원본 뒷머리와 다르면 실패한다.
+   * "얼굴 검출기"가 아니다 — 고개를 돌리면 잡히는 이유는 머리카락 지분이 무너지기
+   * 때문이고(실측: 얼굴 구간 60~76 을 패킹하면 2.452, 주도 버킷은 `green` = 머리카락),
+   * 머리색과 살색 대비가 약한 배틀러에서는 같은 포즈가 덜 두드러질 수 있다. 실제로 이
+   * 계약이 실린 자산에서 잡아낸 결함은 머리띠에 생긴 **밝은 녹색 이물**이었다.
+   *
+   * 상한 1.0 의 두 방향 여유(같은 집계, 상단 30% 창):
+   *   - 알려진 불량 1.941 → 상한의 **1.94배 위**(`1.941 / 1.0`)
+   *   - 실린 칸 최악 0.665 → 상한의 **1.50배 아래**(`1.0 / 0.665`)
+   * 즉 상한은 불량과 실린 값 사이에 있고, 어느 쪽에도 붙어 있지 않다. 머리 버킷 지분이
+   * 작아(hero-04 머리의 녹색 2.9%) 상대편차가 본래 출렁이므로 전신 상한(0.15)보다
+   * 느슨할 수밖에 없다.
+   *
+   * 상한이 나중에 슬그머니 올라가는 것은 **아래 음성 픽스처 테스트**가 막는다.
    */
-  it("모든 칸이 뒷모습을 유지한다 — 고개를 돌려 얼굴을 보이면 실패한다", () => {
+  it("모든 칸의 머리 영역 구성이 원본 뒷머리와 같다", () => {
     for (const entry of BACK_IDLE) {
       const source = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path.replace("/idle/", "/"))));
       const referenceHead = headShares(source, 0, source.width, source.height);
@@ -256,6 +267,37 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
         ).toBeLessThanOrEqual(1.0);
       }
     }
+  });
+
+  /**
+   * **음성 픽스처.** 실린 칸만 검사하면 상한을 2.0 으로 올려도 테스트가 통과한다 — 계약이
+   * 무엇을 떨어뜨리는지 CI 가 증명하지 못한다. 그래서 실제로 한 번 실렸던 결함 스트립
+   * (고개가 돌아 귀·볼이 보이고 머리띠에 녹색 이물이 있던 hero-04)을 픽스처로 고정한다.
+   *
+   * 이 테스트가 있으면 상한을 1.941 이상으로 올리는 순간 여기서 실패한다.
+   * 동시에 **전신 색 계약은 이 픽스처를 통과한다**(0.125 < 0.15)는 것도 함께 못 박는다 —
+   * 그게 머리 계약을 따로 세운 이유다.
+   */
+  it("고개가 돌아간 옛 스트립을 머리 계약이 떨어뜨린다 — 전신 색 계약은 통과시킨다", () => {
+    const entry = BACK_IDLE.find((item) => item.resourceId === "generated-actor-hero-04-back");
+    expect(entry, "hero-04 후면 항목이 있어야 이 픽스처가 의미를 가진다").toBeDefined();
+    if (!entry) return;
+    const source = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path.replace("/idle/", "/"))));
+    const defect = PNG.sync.read(
+      readFileSync(path.join(ROOT, "test", "fixtures", "battler-idle", "hero-04-back-head-turned.png"))
+    );
+    const referenceHead = headShares(source, 0, source.width, source.height);
+    const referenceBody = colorShares(source, 0, source.width, source.height);
+    let worstHead = 0;
+    let worstBody = 0;
+    for (let index = 0; index < entry.frameCount; index += 1) {
+      worstHead = Math.max(worstHead, relativeDeviation(headShares(defect, index, entry.cellWidth, entry.cellHeight), referenceHead));
+      worstBody = Math.max(worstBody, relativeDeviation(colorShares(defect, index, entry.cellWidth, entry.cellHeight), referenceBody));
+    }
+    // 머리 계약은 떨어뜨린다.
+    expect(worstHead, `머리 편차 ${worstHead.toFixed(3)} 가 상한 1.0 을 넘어야 한다`).toBeGreaterThan(1.0);
+    // 전신 색 계약만으로는 못 잡는다 — 이 비대칭이 머리 계약의 존재 이유다.
+    expect(worstBody, `전신 색 편차 ${worstBody.toFixed(3)} 는 0.15 를 넘지 않는다`).toBeLessThan(0.15);
   });
 
   it("인접한 모든 칸이 실제로 움직인다 — 한 쌍만 움직이는 정지화면을 막는다", () => {
