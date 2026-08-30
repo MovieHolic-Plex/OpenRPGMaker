@@ -3,15 +3,18 @@ import { el } from "@/util/dom";
 import {
   addEventPage,
   addEventPageCommand,
+  copyEventPage,
   copyEventPageToClipboard,
   deleteEventPage,
   hasCopiedEventPage,
+  moveEventPage,
   pasteEventPage,
   triggerFromKind,
   updateEventPage,
 } from "@/editor/eventPages";
 import { editorState } from "@/editor/editorState";
 import { showConfirm } from "@/editor/ui/modal";
+import { toast } from "@/util/toast";
 import { updateEvent } from "@/editor/eventActions";
 import { recordCoalescedSnapshot } from "@/editor/mapEditHistory";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
@@ -26,6 +29,7 @@ import { pageConditionSentence } from "./pageConditionSentence";
 import { renderPageFootprint } from "./pageFootprint";
 import { UNIT_FOOTPRINT, normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { renderPageMovement } from "./pageMovement";
+import { openPageTabContextMenu } from "./pageTabContextMenu";
 import {
   type EventEditorTriggerKind,
   EVENT_PRIORITY_OPTIONS,
@@ -72,38 +76,115 @@ export function renderEventNameControl(
   });
 }
 
-export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
-  const wrap = el("details", { class: "event-page-tabs", dataset: { testid: "event-page-tabs" } });
+/**
+ * 페이지 관리 버튼 줄. 탭 바로 오른쪽에 **접힌 것 없이** 서있다.
+ *
+ * 예전엔 모달 오른쪽 끝의 접힌 `<details>`(`페이지 ▾`) 었다 — 실측(1600×1000): 탭 줄은
+ * x=12..639 인데 이 개출석은 x=1514 에 있었고 기본 상태가 닫힘이라 복사·삭제가 화면에
+ * 아예 없었다. 기능이 없다고 재발견되는 이유다.
+ *
+ * 계약:
+ * - 여섯 버튼은 **항상 마운트**된다. 못 쓰는 상황은 `disabled` + 이유를 담은 `title` 이다 —
+ *   조건부 마운트는 버튼이 나타났다 사라지며 이웃 버튼 자리를 밀어 혼동을 만들었다.
+ * - 복제/붙여넣기/삭제/순서는 상태를 바꾸므로 항상 `toast` 로 뭐가 어떻게 됐는지 말한다.
+ */
+export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
+  const wrap = el("div", {
+    class: "event-page-tabs event-page-actions-row",
+    dataset: { testid: "event-page-tabs" },
+  });
   const pages = ev.pages ?? [];
+  const activeIndex = pages.findIndex((page) => page.id === activePage.id);
   const canPaste = hasCopiedEventPage();
   const canDelete = pages.length > 1;
+  const canMoveBack = activeIndex > 0;
+  const canMoveForward = activeIndex >= 0 && activeIndex < pages.length - 1;
+  const rerender = () => wrap.replaceWith(renderPageActions(mapId, ev, activePage));
+
   const actions: HTMLElement[] = [
-    pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => {
-      if (copyEventPageToClipboard(mapId, ev.id, activePage.id)) {
-        wrap.replaceWith(renderPageTabs(mapId, ev, activePage));
-      }
-    }),
+    pageButton(
+      "복제",
+      "event-page-duplicate",
+      "이 페이지를 바로 뒤에 하나 더 만들어요",
+      () => {
+        if (!copyEventPage(mapId, ev.id, activePage.id)) return;
+        toast(`"${activePage.name}" 페이지를 복제했어요.`, "ok");
+      },
+      false,
+      "페이지 복제"
+    ),
+    pageButton(
+      "복사",
+      "event-page-copy",
+      "이 페이지를 복사해 둔다 — 다른 이벤트에도 붙여넣을 수 있어요",
+      () => {
+        if (!copyEventPageToClipboard(mapId, ev.id, activePage.id)) return;
+        toast(`"${activePage.name}" 페이지를 복사해 뒀어요. 붙여넣기로 사용하세요.`, "ok");
+        rerender();
+      },
+      false,
+      "페이지 복사"
+    ),
+    pageButton(
+      "붙여넣기",
+      "event-page-paste",
+      canPaste ? "복사해 둔 페이지를 이 이벤트에 붙여요" : "붙여넣을 페이지가 없어요. 먼저 복사를 누르세요",
+      () => {
+        if (!pasteEventPage(mapId, ev.id)) return;
+        toast("복사해 둔 페이지를 붙여넣었어요.", "ok");
+      },
+      !canPaste,
+      "페이지 붙여넣기"
+    ),
+    pageButton(
+      "←",
+      "event-page-move-back",
+      canMoveBack
+        ? "이 페이지를 한 칸 앞으로 — 뒤에 있는 페이지가 먼저 이깁니다"
+        : "이미 첫 페이지예요",
+      () => {
+        moveEventPage(mapId, ev.id, activePage.id, -1);
+        toast(`"${activePage.name}" 페이지를 앞으로 옮겼어요.`, "ok");
+      },
+      !canMoveBack,
+      "페이지를 앞으로 이동",
+      "move"
+    ),
+    pageButton(
+      "→",
+      "event-page-move-forward",
+      canMoveForward
+        ? "이 페이지를 한 칸 뒤로 — 뒤에 있을수록 조건이 맞을 때 이깁니다"
+        : "이미 마지막 페이지예요",
+      () => {
+        moveEventPage(mapId, ev.id, activePage.id, 1);
+        toast(`"${activePage.name}" 페이지를 뒤로 옮겼어요.`, "ok");
+      },
+      !canMoveForward,
+      "페이지를 뒤로 이동",
+      "move"
+    ),
+    pageButton(
+      "삭제",
+      "event-page-delete",
+      canDelete ? "이 페이지와 여기 들어있는 명령을 지워요" : "페이지가 하나뿐이라 지울 수 없어요",
+      () => void requestEventPageDeletion(mapId, ev.id, activePage),
+      !canDelete,
+      "페이지 삭제",
+      "danger"
+    ),
   ];
-  if (canPaste) {
-    actions.push(
-      pageButton("붙여넣기", "event-page-paste", "페이지 붙여넣기", "paste", () => pasteEventPage(mapId, ev.id))
-    );
-  }
-  if (canDelete) {
-    actions.push(
-      pageButton("페이지 삭제", "event-page-delete", "페이지 삭제", "delete", () =>
-        void requestEventPageDeletion(mapId, ev.id, activePage)
-      )
-    );
-  }
+
   wrap.append(
-    el("summary", {
-      class: "event-page-actions-summary",
+    el("span", {
+      class: "event-page-actions-label",
       text: "페이지",
+      attrs: { "aria-hidden": "true" },
       dataset: { testid: "event-classic-page-controls" },
     }),
     el("div", {
       class: "event-page-action-buttons",
+      attrs: { role: "group", "aria-label": "페이지 관리" },
       dataset: { count: String(actions.length) },
       children: actions,
     })
@@ -111,7 +192,11 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
   return wrap;
 }
 
-async function requestEventPageDeletion(mapId: MapId, eventId: string, page: EventPage): Promise<void> {
+export async function requestEventPageDeletion(
+  mapId: MapId,
+  eventId: string,
+  page: EventPage
+): Promise<void> {
   const confirmed = await showConfirm({
     title: "페이지 삭제",
     message: `"${page.name}" 페이지와 그 안의 모든 명령을 삭제할까요?`,
@@ -121,6 +206,7 @@ async function requestEventPageDeletion(mapId: MapId, eventId: string, page: Eve
   });
   if (!confirmed) return;
   deleteEventPage(mapId, eventId, page.id);
+  toast(`"${page.name}" 페이지를 지웠어요.`, "ok");
 }
 
 export function renderClassicPageTabStrip(
@@ -141,12 +227,15 @@ export function renderClassicPageTabStrip(
     pageButtons.append(
       el("button", {
         class: "btn evt-page-segment" + (isActive ? " active" : ""),
-        dataset: { testid: `evt-page-segment-${index + 1}` },
+        dataset: { testid: `evt-page-segment-${index + 1}`, pageId: page.id },
         attrs: {
           type: "button",
           role: "tab",
-          "aria-pressed": isActive ? "true" : "false",
+          // role=tab 은 aria-selected 만 사용한다. aria-pressed 는 toggle 버튼 속성이라 같이 쓰면
+          // 스크린리더가 "눌림/선택됨"을 이중으로 읽는다.
           "aria-selected": isActive ? "true" : "false",
+          // roving tabindex: 탭 줄 전제가 Tab 하나로 진입하고 방향키로 움직인다.
+          tabindex: isActive ? "0" : "-1",
           title: pageTabTooltip(page, index),
         },
         children: [
@@ -166,10 +255,24 @@ export function renderClassicPageTabStrip(
             container?.querySelectorAll<HTMLElement>(".evt-page-segment").forEach((node) => {
               const active = node === button;
               node.classList.toggle("active", active);
-              node.setAttribute("aria-pressed", active ? "true" : "false");
               node.setAttribute("aria-selected", active ? "true" : "false");
+              node.setAttribute("tabindex", active ? "0" : "-1");
             });
             editorState.set({ selectedEventPageId: page.id });
+          },
+          keydown: (event) => handlePageTabKeydown(event, mapId, ev, pages, index),
+          contextmenu: (event) => {
+            if (!(event instanceof MouseEvent)) return;
+            event.preventDefault();
+            openPageTabContextMenu({
+              x: event.clientX,
+              y: event.clientY,
+              mapId,
+              event: ev,
+              page,
+              index,
+              requestDelete: (target) => void requestEventPageDeletion(mapId, ev.id, target),
+            });
           },
         },
       })
@@ -196,6 +299,59 @@ export function renderClassicPageTabStrip(
   }
 
   return pageButtons;
+}
+
+/**
+ * 탭 줄 방향키 이동(WAI-ARIA tablist 계약). 예전엔 `role="tab"` 을 달고도 tabindex와
+ * 방향키 처리가 없어서 키보드만으로는 페이지를 바꿀 수 없었다(실측: ArrowRight 를 눌러도
+ * 포커스·선택 모두 제자리).
+ *
+ * Ctrl/Cmd 를 같이 누르면 이동 대신 **순서를 바꾼다** — 뒤에 있는 페이지가 이기므로
+ * 저작자가 자주 하는 작업이다.
+ */
+function handlePageTabKeydown(
+  event: Event,
+  mapId: MapId,
+  ev: GameEvent,
+  pages: readonly EventPage[],
+  index: number
+): void {
+  if (!(event instanceof KeyboardEvent)) return;
+  const reorder = event.ctrlKey || event.metaKey;
+  let nextIndex: number | null = null;
+  switch (event.key) {
+    case "ArrowLeft":
+      nextIndex = index - 1;
+      break;
+    case "ArrowRight":
+      nextIndex = index + 1;
+      break;
+    case "Home":
+      nextIndex = 0;
+      break;
+    case "End":
+      nextIndex = pages.length - 1;
+      break;
+    default:
+      return;
+  }
+  if (nextIndex === null || nextIndex < 0 || nextIndex >= pages.length) return;
+  event.preventDefault();
+  const page = pages[index];
+  if (!page) return;
+  if (reorder && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+    moveEventPage(mapId, ev.id, page.id, event.key === "ArrowLeft" ? -1 : 1);
+    toast(`"${page.name}" 페이지를 ${event.key === "ArrowLeft" ? "앞" : "뒤"}로 옮겼어요.`, "ok");
+    return;
+  }
+  const target = pages[nextIndex];
+  if (!target) return;
+  editorState.set({ selectedEventPageId: target.id });
+  const strip = event.currentTarget instanceof HTMLElement ? event.currentTarget.parentElement : null;
+  strip
+    ?.querySelectorAll<HTMLElement>(".evt-page-segment")
+    ?.item(nextIndex)
+    ?.focus();
 }
 
 function pageTabConditionText(page: EventPage): string {
@@ -318,17 +474,21 @@ function pageButton(
   text: string,
   testId: string,
   title: string,
-  icon: "new" | "copy" | "paste" | "delete",
   onClick?: () => void,
-  disabled = false
+  disabled = false,
+  accessibleName?: string,
+  variant?: "move" | "danger"
 ): HTMLButtonElement {
-  const attrs: Record<string, string> = disabled ? { title, disabled: "" } : { title };
+  const attrs: Record<string, string> = {
+    type: "button",
+    title,
+    "aria-label": accessibleName ?? text,
+  };
+  if (disabled) attrs.disabled = "";
+  const variantClass = variant ? ` event-page-action-${variant}` : "";
   return el("button", {
-    class: `btn event-page-action-button ${disabled ? "disabled" : ""}`,
-    children: [
-      el("span", { class: `event-page-button-icon event-page-button-icon-${icon}`, attrs: { "aria-hidden": "true" } }),
-      el("span", { class: "event-page-button-label", text }),
-    ],
+    class: `btn event-page-action-button${variantClass} ${disabled ? "disabled" : ""}`,
+    children: [el("span", { class: "event-page-button-label", text })],
     dataset: { testid: testId },
     attrs,
     on: onClick ? { click: onClick } : undefined,

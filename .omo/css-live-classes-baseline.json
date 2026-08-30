@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-08-30T04:03:24.310Z",
+ "ranAt": "2026-08-30T20:52:53.199Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
@@ -1869,7 +1869,6 @@
     "padding-inline",
     "position",
     "right",
-    "text-align",
     "text-overflow",
     "text-shadow",
     "transform",
@@ -2110,7 +2109,6 @@
     "position:absolute",
     "position:relative",
     "right:12px",
-    "text-align:left",
     "text-overflow:ellipsis",
     "text-shadow:1px 1px 0 var(--event-rm-light)",
     "text-shadow:1px 1px 0 var(--shadow-pop)",
@@ -11599,6 +11597,9 @@
     "background:linear-gradient(180deg, color-mix(in srgb, var(--bg-inset) 84%, white 4%), var(--bg-inset))",
     "border-color:color-mix(in srgb, var(--accent) 52%, var(--border-default))",
     "border-color:var(--accent)",
+    "border-color:var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default)",
+    "border-color:var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle)",
+    "border-radius:0",
     "border-radius:7px",
     "border:1px solid var(--border-default)",
     "box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent), 0 1px 2px var(--shadow-pop)",
@@ -11629,6 +11630,7 @@
     "width:100%"
    ],
    "sheets": [
+    "src/styles/database/tabs-a.part-2.css",
     "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.custom-select.css"
    ]
@@ -11861,6 +11863,7 @@
     "border-left:0",
     "border-left:1px solid var(--border)",
     "border-left:1px solid var(--border-strong)",
+    "border-left:1px solid var(--border-subtle)",
     "border-left:1px solid var(--mk-line)",
     "border-left:1px solid var(--mk-line-soft, var(--mk-line))",
     "border-left:3px solid var(--mk-accent)",
@@ -12065,6 +12068,7 @@
     "grid-template-columns:minmax(0, var(--event-editor-settings-track)) 8px minmax(300px, 1fr) !important",
     "grid-template-columns:minmax(38px, max-content) minmax(48px, 1fr)",
     "grid-template-columns:minmax(44px, max-content) minmax(48px, 1fr)",
+    "grid-template-columns:none",
     "grid-template-columns:repeat(2, minmax(0, 1fr))",
     "grid-template-columns:repeat(auto-fit, minmax(218px, 1fr))",
     "grid-template-columns:var(--balanced-rail-width)",
@@ -12149,6 +12153,7 @@
     "margin-bottom:5px",
     "margin-bottom:8px",
     "margin-bottom:var(--space-2)",
+    "margin-left:10px",
     "margin-left:2px",
     "margin-left:6px",
     "margin-left:7px",
@@ -12202,7 +12207,6 @@
     "min-width:26px",
     "min-width:40px",
     "min-width:54px",
-    "min-width:70px",
     "min-width:76px",
     "min-width:84px",
     "min-width:96px",
@@ -12235,6 +12239,7 @@
     "overflow:clip",
     "overflow:hidden",
     "overflow:visible",
+    "padding-left:10px",
     "padding-left:6px",
     "padding-right:10px",
     "padding-top:2px",
@@ -12290,7 +12295,6 @@
     "padding:5px 7px",
     "padding:5px 8px",
     "padding:5px 9px",
-    "padding:6px",
     "padding:6px 0 0",
     "padding:6px 11px 7px",
     "padding:7px 10px",
@@ -12337,7 +12341,6 @@
     "top:3px",
     "top:8px",
     "top:9px",
-    "top:calc(100% + 4px)",
     "top:calc(100% + 5px)",
     "touch-action:none",
     "transform:none !important",
@@ -12359,11 +12362,11 @@
     "white-space:nowrap",
     "width:100%",
     "width:12px",
-    "width:170px",
     "width:200px",
     "width:224px",
     "width:238px",
     "width:24px",
+    "width:26px",
     "width:28px",
     "width:3px",
     "width:48px",
@@ -12379,7 +12382,6 @@
     "z-index:16",
     "z-index:18",
     "z-index:2",
-    "z-index:20",
     "z-index:3",
     "z-index:auto"
    ],
@@ -13379,6 +13381,7 @@
     "min-width",
     "overflow",
     "padding",
+    "padding-left",
     "padding-right",
     "position",
     "width",
@@ -13394,6 +13397,7 @@
     "background:var(--bg-raised)",
     "border-bottom:1px solid var(--border)",
     "border-bottom:1px solid var(--mk-line)",
+    "border-left:1px solid var(--border-subtle)",
     "border-left:1px solid var(--mk-line-soft, var(--mk-line))",
     "border-radius:0 0 0 6px",
     "border:0",
@@ -13412,9 +13416,9 @@
     "height:var(--hierarchy-pages-height)",
     "justify-content:flex-end",
     "justify-content:flex-start",
+    "margin-left:10px",
     "margin-left:2px",
     "margin-left:8px",
-    "margin-left:auto",
     "max-height:var(--hierarchy-pages-height)",
     "max-width:calc(100% - 140px)",
     "min-height:0",
@@ -13422,6 +13426,7 @@
     "min-width:0",
     "min-width:238px",
     "overflow:hidden",
+    "padding-left:10px",
     "padding-right:10px",
     "padding:0 0 5px",
     "padding:0 10px 6px",
@@ -15438,23 +15443,37 @@
   "event-page-action-button": {
    "props": [
     "align-items",
+    "cursor",
     "display",
+    "flex",
     "font-size",
     "gap",
+    "height",
     "justify-content",
+    "min-height",
+    "min-width",
+    "opacity",
     "padding",
     "white-space"
    ],
    "decls": [
     "align-items:center",
+    "cursor:not-allowed",
     "display:inline-flex",
+    "flex:0 0 auto",
     "font-size:11px",
     "gap:7px",
+    "height:26px",
     "justify-content:center",
+    "min-height:26px",
+    "min-width:0",
+    "opacity:0.45",
+    "padding:0 8px",
     "padding:3px 8px",
     "white-space:nowrap"
    ],
    "sheets": [
+    "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.mockup.css",
     "src/styles/editor/event-editor.part-2.css"
    ]
@@ -15483,16 +15502,10 @@
     "outline",
     "overflow",
     "padding",
-    "position",
-    "right",
-    "text-align",
     "text-overflow",
     "text-shadow",
-    "top",
     "transition",
-    "white-space",
-    "width",
-    "z-index"
+    "white-space"
    ],
    "decls": [
     "align-items:center",
@@ -15500,16 +15513,13 @@
     "background:var(--bg-hover, color-mix(in srgb, var(--bg-raised) 88%, var(--event-modern-accent)))",
     "background:var(--bg-raised)",
     "background:var(--event-rm-face)",
-    "background:var(--mk-raised)",
     "border-color:color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border))",
     "border-color:var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light)",
     "border-radius:6px",
     "border-style:solid",
     "border-width:2px",
     "border:1px solid var(--event-modern-border)",
-    "border:1px solid var(--mk-line)",
     "box-shadow:0 0 0 3px color-mix(in srgb, var(--event-modern-accent) 24%, transparent)",
-    "box-shadow:0 12px 28px var(--shadow-pop)",
     "box-shadow:0 1px 2px var(--shadow-pop)",
     "box-shadow:inset -1px -1px 0 var(--event-rm-shadow), inset 1px 1px 0 var(--event-rm-light)",
     "color:var(--event-rm-disabled)",
@@ -15519,7 +15529,6 @@
     "display:flex",
     "display:grid",
     "display:inline-flex",
-    "display:none",
     "flex-wrap:nowrap",
     "flex-wrap:wrap",
     "flex:0 0 auto",
@@ -15530,6 +15539,7 @@
     "gap:6px",
     "gap:8px",
     "grid-template-columns:1fr",
+    "grid-template-columns:none",
     "grid-template-columns:repeat(2, minmax(0, 1fr))",
     "grid-template-columns:repeat(auto-fit, minmax(130px, 1fr))",
     "grid-template-columns:repeat(auto-fit, minmax(78px, 1fr))",
@@ -15540,7 +15550,6 @@
     "min-height:0",
     "min-height:24px",
     "min-height:27px",
-    "min-height:30px",
     "min-height:36px",
     "min-width:0",
     "outline:none",
@@ -15549,20 +15558,13 @@
     "padding:0 14px",
     "padding:1px 6px",
     "padding:2px 8px",
-    "padding:6px",
-    "position:absolute",
-    "right:0",
-    "text-align:left",
     "text-overflow:ellipsis",
     "text-shadow:1px 1px 0 var(--event-rm-light)",
-    "top:calc(100% + 4px)",
     "transition:border-color 0.12s ease, background 0.12s ease, color 0.12s ease",
-    "white-space:nowrap",
-    "width:100%",
-    "width:170px",
-    "z-index:20"
+    "white-space:nowrap"
    ],
    "sheets": [
+    "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.mockup.css",
     "src/styles/editor/event-editor.modern/01-event-editor-modal-backdrop.css",
     "src/styles/editor/event-editor.modern/06-event-editor-modal-footer.css",
@@ -15571,59 +15573,83 @@
     "src/styles/editor/event-editor.part-3/03-event-condition-label.css"
    ]
   },
-  "event-page-actions-summary": {
+  "event-page-action-danger": {
    "props": [
-    "border",
-    "border-color",
-    "border-radius",
-    "color",
-    "content",
-    "cursor",
-    "display",
-    "font-size",
-    "list-style",
-    "margin-left",
-    "min-width",
-    "padding",
-    "text-align",
-    "user-select"
+    "color"
    ],
    "decls": [
-    "border-color:color-mix(in srgb, var(--mk-accent) 48%, var(--mk-line))",
-    "border-radius:4px",
-    "border:1px solid var(--mk-line)",
-    "color:var(--mk-t1)",
-    "color:var(--mk-t2)",
-    "color:var(--mk-t3, var(--mk-t2))",
-    "content:\"▾\"",
-    "cursor:pointer",
-    "display:none",
-    "font-size:11.5px",
-    "font-size:9px",
-    "list-style:none",
-    "margin-left:7px",
-    "min-width:70px",
-    "padding:7px 10px",
-    "text-align:center",
-    "user-select:none"
+    "color:var(--danger)"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.mockup.css"
+    "src/styles/editor/event-editor.balanced.css"
    ]
   },
-  "event-page-button-icon": {
+  "event-page-action-move": {
    "props": [
-    "height",
-    "position",
+    "padding",
     "width"
    ],
    "decls": [
-    "height:18px",
-    "position:relative",
-    "width:18px"
+    "padding:0",
+    "width:26px"
    ],
    "sheets": [
-    "src/styles/editor/event-editor.modern/01-event-editor-modal-backdrop.css"
+    "src/styles/editor/event-editor.balanced.css"
+   ]
+  },
+  "event-page-actions-label": {
+   "props": [
+    "color",
+    "flex",
+    "font-size",
+    "font-weight",
+    "letter-spacing"
+   ],
+   "decls": [
+    "color:var(--text-3)",
+    "flex:0 0 auto",
+    "font-size:11px",
+    "font-weight:700",
+    "letter-spacing:0.02em"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
+   ]
+  },
+  "event-page-actions-row": {
+   "props": [
+    "color",
+    "cursor",
+    "display",
+    "flex",
+    "flex-wrap",
+    "gap",
+    "grid-template-columns",
+    "height",
+    "min-height",
+    "min-width",
+    "opacity",
+    "padding",
+    "width"
+   ],
+   "decls": [
+    "color:var(--danger)",
+    "cursor:not-allowed",
+    "display:flex",
+    "flex-wrap:nowrap",
+    "flex:0 0 auto",
+    "gap:4px",
+    "grid-template-columns:none",
+    "height:26px",
+    "min-height:26px",
+    "min-width:0",
+    "opacity:0.45",
+    "padding:0",
+    "padding:0 8px",
+    "width:26px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.balanced.css"
    ]
   },
   "event-page-custom-route": {
@@ -16694,11 +16720,8 @@
     "align-self",
     "background",
     "border",
-    "border-color",
     "border-left",
     "border-radius",
-    "box-shadow",
-    "color",
     "display",
     "flex",
     "font-size",
@@ -16711,12 +16734,8 @@
     "min-width",
     "overflow-x",
     "padding",
-    "position",
-    "right",
-    "text-align",
-    "top",
-    "width",
-    "z-index"
+    "padding-left",
+    "position"
    ],
    "decls": [
     "align-items:center",
@@ -16724,47 +16743,32 @@
     "align-self:stretch",
     "background:color-mix(in srgb, var(--mk-surface) 55%, transparent)",
     "background:transparent",
-    "background:var(--mk-raised)",
-    "border-color:color-mix(in srgb, var(--mk-accent) 48%, var(--mk-line))",
+    "border-left:1px solid var(--border-subtle)",
     "border-left:1px solid var(--mk-line-soft, var(--mk-line))",
     "border-radius:0 0 0 6px",
-    "border-radius:6px",
     "border:0",
-    "border:1px solid var(--mk-line)",
-    "box-shadow:0 12px 28px var(--shadow-pop)",
-    "color:var(--mk-t1)",
     "display:block",
     "display:flex",
     "display:grid",
-    "display:none",
     "flex:0 0 auto",
     "font-size:12px",
     "font-weight:400",
-    "gap:4px",
     "gap:6px",
     "height:30px",
     "height:auto",
     "justify-content:start",
+    "margin-left:10px",
     "margin-left:2px",
     "margin-left:8px",
-    "margin-left:auto",
     "min-height:0",
-    "min-height:30px",
     "min-height:40px",
     "min-height:44px",
     "min-width:0",
     "overflow-x:auto",
+    "padding-left:10px",
     "padding:0 0 5px",
     "padding:0 10px 6px",
-    "padding:6px",
-    "position:absolute",
-    "position:relative",
-    "right:0",
-    "text-align:left",
-    "top:calc(100% + 4px)",
-    "width:100%",
-    "width:170px",
-    "z-index:20"
+    "position:relative"
    ],
    "sheets": [
     "src/styles/editor/event-editor.balanced.css",
@@ -28779,8 +28783,6 @@
   "event-graphic-control-actions",
   "event-movement-summary-chips",
   "event-page-behavior-sections",
-  "event-page-button-icon-copy",
-  "event-page-button-icon-delete",
   "event-page-button-label",
   "event-page-move-route-frequency",
   "event-page-move-route-help-panel",
