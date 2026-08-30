@@ -108,7 +108,7 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
         expect(
           deviation,
           `${entry.resourceId}: 칸 ${index} 의 색 분포가 원본에서 상대 ${(deviation * 100).toFixed(0)}% 벗어났다 = 다른 옷이다`
-        ).toBeLessThan(0.15);
+        ).toBeLessThan(CONTRACT.colorRelativeCap);
       }
     }
   });
@@ -180,7 +180,10 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
       `머리 편차 ${worstHead.toFixed(3)} 가 상한 ${CONTRACT.headRelativeCap} 을 넘어야 한다 — 넘지 않으면 이 계약은 아무것도 막지 못한다`
     ).toBeGreaterThan(CONTRACT.headRelativeCap);
     // 전신 색 계약만으로는 못 잡는다 — 이 비대칭이 머리 계약의 존재 이유다.
-    expect(worstBody, `전신 색 편차 ${worstBody.toFixed(3)} 는 0.15 를 넘지 않는다`).toBeLessThan(0.15);
+    expect(
+      worstBody,
+      `전신 색 편차 ${worstBody.toFixed(3)} 는 상한 ${CONTRACT.colorRelativeCap} 을 넘지 않는다`
+    ).toBeLessThan(CONTRACT.colorRelativeCap);
   });
 
   it("인접한 모든 칸이 실제로 움직인다 — 한 쌍만 움직이는 정지화면을 막는다", () => {
@@ -194,7 +197,7 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
         expect(
           change,
           `${entry.resourceId}: 칸 ${index - 1}→${index} 가 ${(change * 100).toFixed(2)}% 만 달라졌다 = 멈춘 프레임 쌍이다`
-        ).toBeGreaterThanOrEqual(0.02);
+        ).toBeGreaterThanOrEqual(CONTRACT.minAdjacentChange);
       }
     }
   });
@@ -212,8 +215,8 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
       const widest = Math.max(...steps);
       expect(
         seam,
-        `${entry.resourceId}: 루프 이음매 ${(seam * 100).toFixed(1)}% 가 평소 최대 걸음 ${(widest * 100).toFixed(1)}% 의 1.5배를 넘는다 = 감길 때 튄다`
-      ).toBeLessThanOrEqual(widest * 1.5);
+        `${entry.resourceId}: 루프 이음매 ${(seam * 100).toFixed(1)}% 가 평소 최대 걸음 ${(widest * 100).toFixed(1)}% 의 ${CONTRACT.seamRatioCap}배를 넘는다 = 감길 때 튄다`
+      ).toBeLessThanOrEqual(widest * CONTRACT.seamRatioCap);
     }
   });
 

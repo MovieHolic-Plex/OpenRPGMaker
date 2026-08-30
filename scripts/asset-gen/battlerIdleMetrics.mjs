@@ -166,11 +166,39 @@ export function cellChange(png, a, b, cellWidth, cellHeight) {
 }
 
 /**
+ * **같은 크기 두 장**의 픽셀 변화 비율. `cellChange` 와 같은 임계값을 쓴다.
+ *
+ * 왜 정본에 두는가 — 창 선택기가 이걸 자체 구현했다가 버그를 냈다. 두 프레임을 폭 2배
+ * 이미지에 붙이면서 행 스트라이드를 어긋나게 해, 사전 필터가 **모든 창을 모션 만점**으로
+ * 봤다(1509개 중 모션 탈락 0개). 실제 패커에서 0.00% 가 나와서야 드러났다.
+ * `test/battlerIdleMetrics.test.ts` 가 "같은 그림끼리는 0" 을 못 박아 재발을 막는다.
+ */
+export function frameChange(a, b) {
+  if (a.width !== b.width || a.height !== b.height) {
+    throw new Error(`프레임 크기가 다르다: ${a.width}×${a.height} 대 ${b.width}×${b.height}`);
+  }
+  let changed = 0;
+  let total = 0;
+  for (let i = 0; i < a.data.length; i += 4) {
+    total += 1;
+    const diff =
+      Math.abs(a.data[i] - b.data[i]) +
+      Math.abs(a.data[i + 1] - b.data[i + 1]) +
+      Math.abs(a.data[i + 2] - b.data[i + 2]) +
+      Math.abs(a.data[i + 3] - b.data[i + 3]);
+    if (diff > CONTRACT.pixelDiffThreshold) changed += 1;
+  }
+  return total === 0 ? 0 : changed / total;
+}
+
+/**
  * 패킹된 스트립을 네 계약으로 채점한다. **전 칸 worst** 로 집계한다.
  *
  * 집계를 여기 한 곳에 둔 이유: 칸 0 만 보거나 vitest 가 처음 보고하는 첫 위반 칸을 쓰면
- * 실린 값이 실제보다 좋아 보인다(실측: hero-04 는 칸 0 에서 0.092 지만 전 칸 worst 0.665,
- * 옛 결함본은 첫 위반 칸 1.398 이지만 worst 1.941).
+ * 실린 값이 실제보다 좋아 보인다. **지표마다 따로 봐야 한다** — 섞으면 안 된다:
+ *   hero-04 색  칸 0 = 0.069 / 전 칸 worst = 0.092 (상한 0.15)
+ *   hero-04 머리 칸 0 = 0.528 / 전 칸 worst = 0.665 (상한 1.0)
+ *   옛 결함본 머리 첫 위반 칸 = 1.398(칸 1) / worst = 1.941(칸 4)
  */
 export function scoreStrip(strip, reference, cellWidth, cellHeight, frameCount) {
   const referenceBody = colorShares(reference, 0, reference.width, reference.height);
