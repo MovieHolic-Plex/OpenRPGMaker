@@ -181,6 +181,19 @@ test.describe("데이터베이스 구조물 편집기", () => {
 
     await page.getByTestId("structure-kit-editor-unused-only").uncheck();
     await expect(page.getByTestId("structure-kit-editor-tile-240")).toBeVisible();
+
+    // 탭 전환은 노드를 떼지 않고 hidden 을 토글하므로, `[hidden]`(UA 규칙)이 이 파일의
+    // `display: grid/flex` 에 지지 않는지가 새 계약이다. 지면 AI 탭에서 팔레트가 그대로 남는다.
+    await page.getByTestId("structure-kit-editor-tab-ai").click();
+    await expect(page.getByTestId("structure-kit-editor-ai-description")).toBeVisible();
+    await expect(page.getByTestId("structure-kit-editor-palette")).toBeHidden();
+    await expect(page.getByTestId("structure-kit-editor-parts")).toBeHidden();
+
+    // 돌아오면 팔레트도 표식도 그대로다 — 노드를 다시 만드지 않았으니 상태가 살아 있어야 한다.
+    await page.getByTestId("structure-kit-editor-tab-shape").click();
+    await expect(page.getByTestId("structure-kit-editor-palette")).toBeVisible();
+    await expect(page.getByTestId("structure-kit-editor-tile-240")).toHaveClass(/is-used/);
+    await expect(page.getByTestId("structure-kit-editor-used-count")).toHaveText("사용 중 1칸");
   });
 
   // 잘림 회귀 방지. locator.click() 은 scrollIntoViewIfNeeded 를 먼저 하므로 사람이 못 누르는
