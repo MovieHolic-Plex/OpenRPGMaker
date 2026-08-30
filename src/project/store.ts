@@ -1,3 +1,4 @@
+import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
 import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/defaultProject";
@@ -328,8 +329,9 @@ class ProjectStore {
       options.projectId?.trim()
       || (configured ? `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}` : null);
 
-    // Full project switch — drop previous event drafts; new world starts clean.
+    // Full project switch — drop previous event drafts and copied pages; new world starts clean.
     clearEventDraftVault();
+    clearCopiedEventPage();
     persistEventDraftVaultNow();
     this.adoptProject(project, { restoreVault: false });
     this.persistedBaseline = null;
@@ -475,6 +477,7 @@ class ProjectStore {
 
     try {
       clearEventDraftVault();
+      clearCopiedEventPage();
       this.adoptProject(structuredClone(reloaded), { restoreVault: false });
       this.persistedBaseline = structuredClone(projectWithoutEventDrafts(reloaded));
       this.loaded = true;
@@ -623,6 +626,7 @@ class ProjectStore {
       const project = await loadProjectFromSupabase();
       if (project) {
         this.current = preserveEventDraftsOnProject(project, this.current);
+        clearCopiedEventPage();
         syncEventDraftVaultFromProject(this.current);
         this.remotePersistenceEnabled = true;
         this.remotePersistenceDisabledReason = null;
@@ -720,6 +724,7 @@ class ProjectStore {
   ): void {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
+    if (options.change?.projectSwitch === true) clearCopiedEventPage();
     // Default: keep open event editor drafts across undo/AI/accept/remote merges.
     // Pass preserveEventDrafts:false only for intentional full project switches
     // (new project / import / sample load) via replaceProject().
@@ -738,6 +743,7 @@ class ProjectStore {
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
   replaceProject(project: Project, change?: ProjectChangeAnnotation): void {
     clearEventDraftVault();
+    clearCopiedEventPage();
     persistEventDraftVaultNow();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.replace(project, {
@@ -819,6 +825,7 @@ class ProjectStore {
 
   async clearAll(): Promise<void> {
     clearEventDraftVault();
+    clearCopiedEventPage();
     persistEventDraftVaultNow();
     this.current = createBlankProject();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
@@ -1137,6 +1144,7 @@ class ProjectStore {
    */
   private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
     clearEventDraftVault();
+    clearCopiedEventPage();
     if (options.restoreVault) {
       loadEventDraftVaultFromLocalStorage();
       this.current = applyEventDraftVault(project);

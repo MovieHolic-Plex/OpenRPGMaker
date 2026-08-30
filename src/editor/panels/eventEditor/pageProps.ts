@@ -9,6 +9,7 @@ import {
   hasCopiedEventPage,
   moveEventPage,
   pasteEventPage,
+  subscribeCopiedEventPage,
   triggerFromKind,
   updateEventPage,
 } from "@/editor/eventPages";
@@ -86,7 +87,7 @@ export function renderEventNameControl(
  * 계약:
  * - 여섯 버튼은 **항상 마운트**된다. 못 쓰는 상황은 `disabled` + 이유를 담은 `title` 이다 —
  *   조건부 마운트는 버튼이 나타났다 사라지며 이웃 버튼 자리를 밀어 혼동을 만들었다.
- * - 복제/붙여넣기/삭제/순서는 상태를 바꾸므로 항상 `toast` 로 뭐가 어떻게 됐는지 말한다.
+ * - 복제/붙여넣기/삭제/순서는 상태를 실제로 바꿨을 때만 `toast` 로 결과를 말한다.
  */
 export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
   const wrap = el("div", {
@@ -100,15 +101,25 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
   const canMoveBack = activeIndex > 0;
   const canMoveForward = activeIndex >= 0 && activeIndex < pages.length - 1;
   const rerender = () => wrap.replaceWith(renderPageActions(mapId, ev, activePage));
+  // 클립보드는 store 도 editorState 도 아니어서 아무도 "이제 붙여넣을 게 있다"를 듣지 못했다.
+  // 버튼으로 복사하든 탭 우클릭 메뉴로 복사하든 이 한 경로로 다시 그려진다 — 예전엔 버튼만
+  // 자기 핸들러에서 다시 그렸고, 메뉴가 암묵적으로 의지하던 선택 변경은 이미 활성인 페이지를
+  // 복사하면 no-op 이라 "복사했어요" 토스트와 동시에 붙여넣기가 버튼이 끌진 채로 남았다.
+  const unsubscribeClipboard = subscribeCopiedEventPage(() => {
+    unsubscribeClipboard();
+    // happy-dom · 브라우저만 `isConnected` 를 주므로 값이 없는 환경(페이크 DOM)은 연결로 본다.
+    if (wrap.isConnected === false) return;
+    rerender();
+  });
 
   const actions: HTMLElement[] = [
     pageButton(
       "복제",
       "event-page-duplicate",
-      "이 페이지를 바로 뒤에 하나 더 만들어요",
+      "이 페이지를 바로 앞(낮은 우선순위)에 하나 더 만들어요",
       () => {
         if (!copyEventPage(mapId, ev.id, activePage.id)) return;
-        toast(`"${activePage.name}" 페이지를 복제했어요.`, "ok");
+        toast(`"${activePage.name}" 페이지를 바로 앞(낮은 우선순위)에 복제했어요 — 지금은 원본이 먼저 이겨요.`, "ok");
       },
       false,
       "페이지 복제"
@@ -120,7 +131,6 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
       () => {
         if (!copyEventPageToClipboard(mapId, ev.id, activePage.id)) return;
         toast(`"${activePage.name}" 페이지를 복사해 뒀어요. 붙여넣기로 사용하세요.`, "ok");
-        rerender();
       },
       false,
       "페이지 복사"
@@ -128,10 +138,12 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
     pageButton(
       "붙여넣기",
       "event-page-paste",
-      canPaste ? "복사해 둔 페이지를 이 이벤트에 붙여요" : "붙여넣을 페이지가 없어요. 먼저 복사를 누르세요",
+      canPaste
+        ? "복사해 둔 페이지를 지금 페이지 바로 앞(낮은 우선순위)에 넣어요"
+        : "붙여넣을 페이지가 없어요. 먼저 복사를 누르세요",
       () => {
         if (!pasteEventPage(mapId, ev.id)) return;
-        toast("복사해 둔 페이지를 붙여넣었어요.", "ok");
+        toast("복사해 둔 페이지를 바로 앞(낮은 우선순위)에 붙여넣었어요.", "ok");
       },
       !canPaste,
       "페이지 붙여넣기"
@@ -143,7 +155,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
         ? "이 페이지를 한 칸 앞으로 — 뒤에 있는 페이지가 먼저 이깁니다"
         : "이미 첫 페이지예요",
       () => {
-        moveEventPage(mapId, ev.id, activePage.id, -1);
+        if (!moveEventPage(mapId, ev.id, activePage.id, -1)) return;
         toast(`"${activePage.name}" 페이지를 앞으로 옮겼어요.`, "ok");
       },
       !canMoveBack,
@@ -157,7 +169,7 @@ export function renderPageActions(mapId: MapId, ev: GameEvent, activePage: Event
         ? "이 페이지를 한 칸 뒤로 — 뒤에 있을수록 조건이 맞을 때 이깁니다"
         : "이미 마지막 페이지예요",
       () => {
-        moveEventPage(mapId, ev.id, activePage.id, 1);
+        if (!moveEventPage(mapId, ev.id, activePage.id, 1)) return;
         toast(`"${activePage.name}" 페이지를 뒤로 옮겼어요.`, "ok");
       },
       !canMoveForward,
@@ -196,7 +208,7 @@ export async function requestEventPageDeletion(
   mapId: MapId,
   eventId: string,
   page: EventPage
-): Promise<void> {
+): Promise<boolean> {
   const confirmed = await showConfirm({
     title: "페이지 삭제",
     message: `"${page.name}" 페이지와 그 안의 모든 명령을 삭제할까요?`,
@@ -204,9 +216,10 @@ export async function requestEventPageDeletion(
     cancelLabel: "취소",
     danger: true,
   });
-  if (!confirmed) return;
-  deleteEventPage(mapId, eventId, page.id);
+  if (!confirmed) return false;
+  if (!deleteEventPage(mapId, eventId, page.id)) return false;
   toast(`"${page.name}" 페이지를 지웠어요.`, "ok");
+  return true;
 }
 
 export function renderClassicPageTabStrip(
@@ -340,18 +353,24 @@ function handlePageTabKeydown(
   const page = pages[index];
   if (!page) return;
   if (reorder && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
-    moveEventPage(mapId, ev.id, page.id, event.key === "ArrowLeft" ? -1 : 1);
+    if (!moveEventPage(mapId, ev.id, page.id, event.key === "ArrowLeft" ? -1 : 1)) return;
     toast(`"${page.name}" 페이지를 ${event.key === "ArrowLeft" ? "앞" : "뒤"}로 옮겼어요.`, "ok");
+    focusRenderedPageTab(page.id);
     return;
   }
   const target = pages[nextIndex];
   if (!target) return;
   editorState.set({ selectedEventPageId: target.id });
-  const strip = event.currentTarget instanceof HTMLElement ? event.currentTarget.parentElement : null;
-  strip
-    ?.querySelectorAll<HTMLElement>(".evt-page-segment")
-    ?.item(nextIndex)
-    ?.focus();
+  focusRenderedPageTab(target.id);
+}
+
+/** 상태 구독 렌더가 기존 탭 트리를 교체한 뒤 새로 마운트된 같은 페이지 탭을 찾는다. */
+function focusRenderedPageTab(pageId: string): void {
+  for (const tab of document.querySelectorAll<HTMLElement>(".evt-page-segment[data-page-id]")) {
+    if (tab.dataset.pageId !== pageId) continue;
+    tab.focus({ preventScroll: true });
+    return;
+  }
 }
 
 function pageTabConditionText(page: EventPage): string {
@@ -470,6 +489,15 @@ function recordName(records: readonly { id: string; name: string }[], id: string
   return records.find((record) => record.id === id)?.name ?? id;
 }
 
+/**
+ * 한 동작은 모든 표면에서 **한 단어**만 쓴다(버튼·좁은 포트·우클릭 메뉴 동일).
+ *
+ * 예전엔 좁은 포트에서 `font-size: 0` 으로 진짜 텍스트를 집어삼키고 `::after` 로 다른 말을
+ * 그렸다 — 화면엔 «보관», DOM 과 접근성 이름은 «복사해 두기» 여서 보이는 라벨이 접근성 이름에
+ * 들어 있지 않았고(WCAG 2.5.3 Label in Name 실패), 음성 제어가 «복사해 두기 클릭» 을 못 찾았다.
+ * 짧은 단어 하나로 통일해 지우기·다시 그리기 자심를 없었다. 복제·복사·붙여넣기의 시각 구분은
+ * 장식용 CSS 글리프(`::before`)가 맡는다 — 라벨 텍스트를 건드리지 않는다.
+ */
 function pageButton(
   text: string,
   testId: string,

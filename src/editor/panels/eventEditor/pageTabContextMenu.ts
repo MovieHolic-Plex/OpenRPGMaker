@@ -12,9 +12,11 @@ import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { copyEventPage, copyEventPageToClipboard, hasCopiedEventPage, moveEventPage, pasteEventPage } from "@/editor/eventPages";
 import { toast } from "@/util/toast";
+import { store } from "@/project/store";
 import type { EventPage, GameEvent, MapId } from "@/project/types";
 
 const MENU_TEST_ID = "event-page-context-menu";
+let closeOpenMenu: (() => void) | null = null;
 
 export interface PageTabContextMenuRequest {
   readonly x: number;
@@ -36,16 +38,27 @@ interface PageMenuItem {
 }
 
 export function openPageTabContextMenu(request: PageTabContextMenuRequest): void {
-  document.querySelector(`[data-testid="${MENU_TEST_ID}"]`)?.remove();
+  closeOpenMenu?.();
   const menu = el("div", {
     class: "event-command-context-menu event-page-context-menu",
     attrs: { role: "menu", "aria-label": "페이지 관리" },
     dataset: { testid: MENU_TEST_ID },
   });
+  let closed = false;
+  let closeOnOutside: (event: MouseEvent) => void;
   const close = () => {
+    if (closed) return;
+    closed = true;
+    document.removeEventListener("mousedown", closeOnOutside);
     unregisterModal(menu);
     menu.remove();
+    if (closeOpenMenu === close) closeOpenMenu = null;
   };
+  closeOnOutside = (event) => {
+    if (event.target instanceof Node && menu.contains(event.target)) return;
+    close();
+  };
+  closeOpenMenu = close;
   menu.append(...pageMenuItems(request, close).map(menuButton));
   document.body.append(menu);
   // Escape 는 메뉴만 닫는다.
@@ -60,11 +73,6 @@ export function openPageTabContextMenu(request: PageTabContextMenuRequest): void
   const top = Math.min(request.y, window.innerHeight - rect.height - 8);
   menu.style.left = `${Math.max(8, left)}px`;
   menu.style.top = `${Math.max(8, top)}px`;
-  const closeOnOutside = (event: MouseEvent) => {
-    if (event.target instanceof Node && menu.contains(event.target)) return;
-    close();
-    document.removeEventListener("mousedown", closeOnOutside);
-  };
   document.addEventListener("mousedown", closeOnOutside);
   menu.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
@@ -77,8 +85,10 @@ export function openPageTabContextMenu(request: PageTabContextMenuRequest): void
 }
 
 function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): PageMenuItem[] {
-  const { mapId, event, page, index } = request;
-  const pages = event.pages ?? [];
+  const { mapId, event, page } = request;
+  const livePages = () => store.getCurrent().maps[mapId]?.events.find((candidate) => candidate.id === event.id)?.pages ?? [];
+  const liveIndex = () => livePages().findIndex((candidate) => candidate.id === page.id);
+  const pageCount = livePages().length;
   return [
     {
       label: "복제",
@@ -88,7 +98,7 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
       run: () => {
         close();
         if (!copyEventPage(mapId, event.id, page.id)) return;
-        toast(`"${page.name}" 페이지를 복제했어요.`, "ok");
+        toast(`"${page.name}" 페이지를 바로 앞(낮은 우선순위)에 복제했어요 — 지금은 원본이 먼저 이겨요.`, "ok");
       },
     },
     {
@@ -110,8 +120,9 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
       disabled: !hasCopiedEventPage(),
       run: () => {
         close();
-        if (!pasteEventPage(mapId, event.id)) return;
-        toast("복사해 둔 페이지를 붙여넣었어요.", "ok");
+        // 기지는 우클릭한 페이지다 — 이 메뉴의 다른 항목과 같은 대상을 쓴다(우클릭은 선택을 옮기지 않는다).
+        if (!pasteEventPage(mapId, event.id, page.id)) return;
+        toast(`"${page.name}" 페이지 바로 앞(낮은 우선순위)에 붙여넣었어요.`, "ok");
       },
     },
     {
@@ -119,10 +130,10 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
       shortcut: "Ctrl+←",
       icon: "",
       testId: "event-page-menu-move-back",
-      disabled: index <= 0,
+      disabled: liveIndex() <= 0,
       run: () => {
         close();
-        moveEventPage(mapId, event.id, page.id, -1);
+        if (!moveEventPage(mapId, event.id, page.id, -1)) return;
         toast(`"${page.name}" 페이지를 앞으로 옮겼어요.`, "ok");
       },
     },
@@ -131,10 +142,10 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
       shortcut: "Ctrl+→",
       icon: "",
       testId: "event-page-menu-move-forward",
-      disabled: index >= pages.length - 1,
+      disabled: liveIndex() < 0 || liveIndex() >= pageCount - 1,
       run: () => {
         close();
-        moveEventPage(mapId, event.id, page.id, 1);
+        if (!moveEventPage(mapId, event.id, page.id, 1)) return;
         toast(`"${page.name}" 페이지를 뒤로 옮겼어요.`, "ok");
       },
     },
@@ -143,7 +154,7 @@ function pageMenuItems(request: PageTabContextMenuRequest, close: () => void): P
       shortcut: "",
       icon: "delete",
       testId: "event-page-menu-delete",
-      disabled: pages.length <= 1,
+      disabled: pageCount <= 1,
       run: () => {
         close();
         request.requestDelete(page);

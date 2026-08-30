@@ -1,5 +1,10 @@
 import { editorState } from "@/editor/editorState";
 import {
+  copiedEventPageFromBuffer,
+  copyEventPageToBuffer,
+  hasCopiedEventPageInBuffer,
+} from "@/editor/eventPageClipboard";
+import {
   isContainerInsideCommand,
   moveCommandBetweenLists,
   resolveCommandAtPath,
@@ -10,8 +15,9 @@ import { store, type ProjectChangeDescriptor } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
 
+export { clearCopiedEventPage, subscribeCopiedEventPage } from "@/editor/eventPageClipboard";
+
 type PagePatch = Partial<Omit<EventPage, "id">>;
-let copiedEventPage: EventPage | null = null;
 
 export function createDefaultEventPage(
   event: Pick<GameEvent, "id" | "sprite" | "trigger" | "condition" | "moveRoute" | "commands">,
@@ -54,6 +60,17 @@ function nextAvailablePageNumber(pages: readonly EventPage[]): number {
   return number;
 }
 
+/** 같은 이름의 페이지를 눈으로 구분할 수 있도록 복사본 번호를 올린다. */
+function nextAvailableCopyName(sourceName: string, pages: readonly EventPage[]): string {
+  const usedNames = new Set(pages.map((page) => page.name));
+  const root = sourceName.replace(/ 복사본(?: \d+)?$/u, "");
+  const base = `${root} 복사본`;
+  if (!usedNames.has(base)) return base;
+  let number = 2;
+  while (usedNames.has(`${base} ${number}`)) number += 1;
+  return `${base} ${number}`;
+}
+
 export function addEventPage(mapId: MapId, eventId: string): string {
   // 라벨은 mutator 실행 **전에** 정해지므로 새 페이지가 몇 번째에 붙는지 미리 센다.
   // 페이지가 하나도 없으면 아래 mutator 가 기본 페이지를 먼저 만들므로 2번째가 된다.
@@ -82,9 +99,10 @@ export function addEventPage(mapId: MapId, eventId: string): string {
 }
 
 /**
- * 페이지를 바로 뒤에 복제한다. 맨 뒤에 붙이면 안 된다 — 런타임 `resolveEventPage` 는
- * **마지막에 조건이 맞는 페이지**를 고르므로(`src/project/io/pageResolution.ts`),
- * 끝에 붙인 복제본이 원본보다 조용히 높은 우선순위를 갖는다.
+ * 페이지를 원본 바로 앞에 복제한다. 페이지 배열은 뒤에 있을수록 런타임 우선순위가 높다.
+ * 따라서 원본 뒤에 복제하면 원본이 마지막인 경우 복제본이 즉시 승자가 된다. 바로 앞(낮은
+ * 우선순위)에 두면 원본이 첫째·가운데·마지막 어디에 있든 기존 resolve 결과는 유지하면서
+ * 두 페이지는 붙어 있고, 사용자는 선택된 복제본을 안전하게 고친 뒤 순서를 명시적으로 올릴 수 있다.
  */
 export function copyEventPage(mapId: MapId, eventId: string, pageId: string): string {
   const sourceName = pageName(mapId, eventId, pageId);
@@ -95,10 +113,11 @@ export function copyEventPage(mapId: MapId, eventId: string, pageId: string): st
     if (!event || !source) return;
     const copy = structuredClone(source);
     copy.id = genId("page");
-    copy.name = `${source.name} 복사본`;
     const pages = [...(event.pages ?? [])];
     const sourceIndex = pages.findIndex((page) => page.id === pageId);
-    pages.splice(sourceIndex + 1, 0, copy);
+    if (sourceIndex < 0) return;
+    copy.name = nextAvailableCopyName(source.name, pages);
+    pages.splice(sourceIndex, 0, copy);
     event.pages = pages;
     copiedId = copy.id;
   }, pageChange(mapId, eventId, `페이지 복제: ${sourceName}`));
@@ -110,33 +129,44 @@ export function copyEventPageToClipboard(mapId: MapId, eventId: string, pageId: 
   const source = store.getCurrent().maps[mapId]?.events
     .find((item) => item.id === eventId)
     ?.pages?.find((page) => page.id === pageId);
-  copiedEventPage = source ? structuredClone(source) : null;
-  if (copiedEventPage) editorState.set({ selectedEventPageId: pageId });
-  return copiedEventPage !== null;
+  return copyEventPageToBuffer(source ?? null);
 }
 
 export function hasCopiedEventPage(): boolean {
-  return copiedEventPage !== null;
+  return hasCopiedEventPageInBuffer();
 }
 
-export function pasteEventPage(mapId: MapId, eventId: string): string {
-  const source = copiedEventPage;
+/**
+ * 복사해 둔 페이지를 기지 페이지 바로 앞(낮은 런타임 우선순위)에 넣는다. 기지는 `anchorPageId` 로
+ * 명시하고, 생략하면 현재 활성 페이지다 — 탭 우클릭 메뉴는 선택을 옮기지 않고 **니른 페이지**를
+ * 대상으로 삼아서(복제·순서·삭제와 같은 기지), 활성 페이지로 계산하면 엉둠한 자리에 꽂힌다.
+ * 기지가 이 이벤트에 없으면 **맨 앞(index 0)** 에 넣는다. 끝에 넣으면 그게 가장 높은 우선순위가
+ * 되어 이 함수가 막으려는 역전이 생긴다 — `selectedEventPageId` 는 맵 단위 되돌리기나 원격
+ * 리로드로 그 페이지가 사라지면 낡은 값이 된다(그 경로들은 editorState 를 재조정하지 않고
+ * 렌더만 `pages[0]` 으로 폴백한다). 낮은 우선순위로 떨어지는 쪽이 안전한 실패다.
+ */
+export function pasteEventPage(mapId: MapId, eventId: string, anchorPageId?: string): string {
+  const source = copiedEventPageFromBuffer();
   if (!source) return "";
+  const anchorId = anchorPageId ?? editorState.get().selectedEventPageId;
   let pastedId = "";
   store.update((project) => {
     const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
     if (!event) return;
+    const pages = [...(event.pages ?? [])];
     const pasted = structuredClone(source);
     pasted.id = genId("page");
-    pasted.name = `${source.name} 복사본`;
-    event.pages = [...(event.pages ?? []), pasted];
+    pasted.name = nextAvailableCopyName(source.name, pages);
+    const anchorIndex = pages.findIndex((page) => page.id === anchorId);
+    pages.splice(anchorIndex >= 0 ? anchorIndex : 0, 0, pasted);
+    event.pages = pages;
     pastedId = pasted.id;
   }, pageChange(mapId, eventId, `페이지 붙여넣기: ${source.name}`));
   if (pastedId) editorState.set({ selectedEventPageId: pastedId });
   return pastedId;
 }
 
-export function deleteEventPage(mapId: MapId, eventId: string, pageId: string): void {
+export function deleteEventPage(mapId: MapId, eventId: string, pageId: string): boolean {
   const removedName = pageName(mapId, eventId, pageId);
   let deleted = false;
   let nextSelectedPageId: string | null = null;
@@ -153,10 +183,12 @@ export function deleteEventPage(mapId: MapId, eventId: string, pageId: string): 
   }, pageChange(mapId, eventId, `페이지 삭제: ${removedName}`));
   // 삭제가 실제로 일어났을 때만 선택을 업데이트한다.
   if (deleted) editorState.set({ selectedEventPageId: nextSelectedPageId });
+  return deleted;
 }
 
-export function moveEventPage(mapId: MapId, eventId: string, pageId: string, delta: -1 | 1): void {
+export function moveEventPage(mapId: MapId, eventId: string, pageId: string, delta: -1 | 1): boolean {
   const movedName = pageName(mapId, eventId, pageId);
+  let moved = false;
   store.update((project) => {
     const pages = project.maps[mapId]?.events.find((item) => item.id === eventId)?.pages;
     if (!pages) return;
@@ -165,7 +197,9 @@ export function moveEventPage(mapId: MapId, eventId: string, pageId: string, del
     if (index < 0 || nextIndex < 0 || nextIndex >= pages.length) return;
     const [page] = pages.splice(index, 1);
     pages.splice(nextIndex, 0, page);
+    moved = true;
   }, pageChange(mapId, eventId, `페이지 순서 이동: ${movedName} (${delta < 0 ? "앞으로" : "뒤로"})`));
+  return moved;
 }
 
 /**

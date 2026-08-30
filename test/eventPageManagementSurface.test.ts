@@ -11,11 +11,14 @@
 //   D7 탭 우클릭 메뉴가 없었다(명령 목록에는 있다).
 //   D8 role=tab 에 aria-pressed 를 함께 쓰고, tabindex·방향키가 없었다.
 import { beforeEach, describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { editorState } from "@/editor/editorState";
+import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { renderClassicPageTabStrip, renderPageActions } from "@/editor/panels/eventEditor/pageProps";
 import { openPageTabContextMenu } from "@/editor/panels/eventEditor/pageTabContextMenu";
-import { modalStackDepthForTest } from "@/editor/ui/modalStack";
-import { addEventPage, copyEventPageToClipboard } from "@/editor/eventPages";
+import { modalStackEntryCountForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
+import { addEventPage, clearCopiedEventPage, copyEventPageToClipboard } from "@/editor/eventPages";
 import { addEvent } from "@/editor/eventActions";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -25,6 +28,8 @@ let mapId: MapId;
 let eventId: string;
 
 beforeEach(() => {
+  resetModalStackForTest();
+  clearCopiedEventPage();
   store.replace(createBlankProject());
   mapId = store.getCurrent().startMapId;
   eventId = addEvent(mapId, 3, 3);
@@ -82,7 +87,7 @@ describe("페이지 관리 작업면", () => {
     expect(host.querySelector("summary")).toBeNull();
   });
 
-  it("복제는 원본 바로 뒤에 꽂는다 — 맨 뒤에 붙이면 런타임 우선순위가 뒤집힌다 (D3)", () => {
+  it("복제는 원본 바로 앞의 낮은 우선순위에 꽂는다 — 원본 뒤면 런타임 승자가 바뀐다 (D3)", () => {
     addEventPage(mapId, eventId);
     addEventPage(mapId, eventId);
     expect(pages()).toHaveLength(3);
@@ -92,8 +97,8 @@ describe("페이지 관리 작업면", () => {
 
     const after = pages();
     expect(after).toHaveLength(4);
-    expect(after[0]!.id).toBe(sourceId);
-    expect(after[1]!.name).toBe(`${after[0]!.name} 복사본`);
+    expect(after[1]!.id).toBe(sourceId);
+    expect(after[0]!.name).toBe(`${after[1]!.name} 복사본`);
   });
 
   it("순서 이동 버튼이 실제로 페이지를 옮기고 양 끝에서 막힌다 (D4)", () => {
@@ -148,6 +153,109 @@ describe("페이지 관리 작업면", () => {
     expect(pages().map((page) => page.id)).toEqual([second, first]);
   });
 
+  it("실제 모달 구독 렌더 뒤에도 방향키와 Ctrl+방향키 포커스가 선택 페이지를 따른다", () => {
+    addEventPage(mapId, eventId);
+    editorState.set({ currentMapId: mapId, selectedEventId: eventId, selectedEventPageId: pages()[0]!.id });
+    openEventEditorModal(mapId, eventId);
+    const firstId = pages()[0]!.id;
+    const secondId = pages()[1]!.id;
+    const first = document.querySelector<HTMLElement>(`.evt-page-segment[data-page-id="${firstId}"]`)!;
+    first.focus();
+
+    first.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    expect(editorState.get().selectedEventPageId).toBe(secondId);
+    expect((document.activeElement as HTMLElement).dataset.pageId).toBe(secondId);
+
+    document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "ArrowLeft", ctrlKey: true, bubbles: true,
+    }));
+    expect(pages().map((page) => page.id)).toEqual([secondId, firstId]);
+    expect((document.activeElement as HTMLElement).dataset.pageId).toBe(secondId);
+    expect((document.activeElement as HTMLElement).dataset.pageId).toBe(editorState.get().selectedEventPageId);
+  });
+
+  it("우클릭 메뉴의 붙여넣기는 선택이 아니라 **우클릭한** 페이지 바로 앞에 넣는다", () => {
+    // 우클릭은 선택을 옮기지 않는다. 예전엔 붙여넣기가 editorState 의 활성 페이지로 자리를 잡아서,
+    // 1페이지를 고른 상태에서 3페이지를 우클릭해 붙여넣으면 새 페이지가 index 0 에 꽂혔다.
+    addEventPage(mapId, eventId);
+    addEventPage(mapId, eventId);
+    const [first, , third] = [pages()[0]!, pages()[1]!, pages()[2]!];
+    expect(copyEventPageToClipboard(mapId, eventId, first.id)).toBe(true);
+    editorState.set({ selectedEventPageId: first.id });
+
+    openPageTabContextMenu({
+      x: 20, y: 20, mapId, event: currentEvent(), page: third, index: 2, requestDelete: () => undefined,
+    });
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-paste"]')!.click();
+
+    const after = pages();
+    const pastedIndex = after.findIndex((page) => page.id === editorState.get().selectedEventPageId);
+    expect(after.findIndex((page) => page.id === third.id)).toBe(3);
+    expect(pastedIndex).toBe(2);
+  });
+
+  it("한 동작은 한 단어만 쓰고, 보이는 라벨이 접근성 이름에 들어 있다 (WCAG 2.5.3)", () => {
+    const host = actions();
+    const expected = [
+      ["event-page-duplicate", "복제"],
+      ["event-page-copy", "복사"],
+      ["event-page-paste", "붙여넣기"],
+      ["event-page-delete", "삭제"],
+    ] as const;
+    for (const [testId, label] of expected) {
+      const node = button(host, testId);
+      // 보이는 라벨은 진짜 텍스트 노드다 — `font-size:0` + `::after` 로 다른 말을 그리면 이 단언이 깨진다.
+      expect(node.textContent, testId).toBe(label);
+      expect(node.querySelector(".event-page-button-label")?.textContent, testId).toBe(label);
+      expect(node.dataset.compactLabel, testId).toBeUndefined();
+      expect(node.getAttribute("aria-label") ?? "", testId).toContain(label);
+      // 비활성이여도 title 은 라벨을 되둥하지 않고 이유를 말한다.
+      expect(node.getAttribute("title") ?? "", testId).not.toBe(label);
+    }
+  });
+
+  it("좁은 포트 CSS 는 라벨을 지우고 다시 그리는 장치를 쓰지 않는다", () => {
+    const css = readFileSync(
+      resolve(process.cwd(), "src/styles/editor/event-editor.balanced.css"),
+      "utf8",
+    );
+    expect(css).not.toContain("attr(data-compact-label)");
+    expect(css).not.toMatch(/\.event-page-button-label\s*\{[^}]*font-size:\s*0/u);
+  });
+
+  it("메뉴 복사는 선택을 옮기지 않는다 — 읽기 행위가 헤더·목록·버튼 대상을 끌고 가면 안 된다", () => {
+    addEventPage(mapId, eventId);
+    addEventPage(mapId, eventId);
+    const [first, , third] = [pages()[0]!, pages()[1]!, pages()[2]!];
+    editorState.set({ selectedEventPageId: first.id });
+
+    openPageTabContextMenu({
+      x: 12, y: 12, mapId, event: currentEvent(), page: third, index: 2, requestDelete: () => undefined,
+    });
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-copy"]')!.click();
+
+    expect(editorState.get().selectedEventPageId).toBe(first.id);
+  });
+
+  it("이미 활성인 페이지를 메뉴로 복사해도 버튼 줄의 붙여넣기가 살아나고 안내도 바뀌다", () => {
+    // 클립보드에 변경 통지가 없어서, 메뉴 복사 후에도 붙여넣기가 disabled + "먼저 복사를 누르세요"
+    // 로 남았다 — 같은 화면의 성공 토스트와 정반대로 말하는 상태다.
+    const host = actions(0);
+    const active = pages()[0]!;
+    editorState.set({ selectedEventPageId: active.id });
+    expect(button(host, "event-page-paste").disabled).toBe(true);
+
+    openPageTabContextMenu({
+      x: 12, y: 12, mapId, event: currentEvent(), page: active, index: 0, requestDelete: () => undefined,
+    });
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-copy"]')!.click();
+
+    const paste = document.body.querySelector<HTMLButtonElement>('[data-testid="event-page-paste"]')!;
+    expect(paste.disabled).toBe(false);
+    expect(paste.title).not.toContain("먼저 복사");
+    expect(paste.title).toContain("앞");
+  });
+
   it("탭 우클릭 메뉴가 여섯 항목을 주고 클립보드 상태를 반영한다 (D7)", () => {
     addEventPage(mapId, eventId);
     const event = currentEvent();
@@ -165,10 +273,9 @@ describe("페이지 관리 작업면", () => {
       "event-page-menu-move-forward",
       "event-page-menu-delete",
     ]);
-    // 첫 페이지에서는 앞으로 옮기기가 막혀 있다. 붙여넣기의 "버퍼 빔" 상태는 여기서 잡지 않는다 —
-    // 페이지 버퍼는 모듈 상태(세션 수준)라 이 파일 앞 사례가 복사해 둔 것이 넘어온다.
-    // 대신 **전이**를 잡는다: 복사하면 다시 여는 메뉴에서 붙여넣기가 허용된다.
+    // 첫 페이지에서는 앞으로 옮기기와 빈 버퍼의 붙여넣기가 막혀 있다.
     expect(menu!.querySelector<HTMLButtonElement>('[data-testid="event-page-menu-move-back"]')!.disabled).toBe(true);
+    expect(menu!.querySelector<HTMLButtonElement>('[data-testid="event-page-menu-paste"]')!.disabled).toBe(true);
 
     copyEventPageToClipboard(mapId, eventId, page.id);
     openPageTabContextMenu({ x: 20, y: 20, mapId, event, page, index: 0, requestDelete: () => undefined });
@@ -179,15 +286,48 @@ describe("페이지 관리 작업면", () => {
   it("우클릭 메뉴는 모달 스택 최상단을 잡는다 — Escape 가 이벤트 편집기까지 닫지 않도록", () => {
     const event = currentEvent();
     const page = (event.pages ?? [])[0]!;
-    const before = modalStackDepthForTest();
+    const before = modalStackEntryCountForTest();
 
     openPageTabContextMenu({ x: 10, y: 10, mapId, event, page, index: 0, requestDelete: () => undefined });
-    expect(modalStackDepthForTest()).toBe(before + 1);
+    expect(modalStackEntryCountForTest()).toBe(before + 1);
 
     document
       .querySelector<HTMLElement>('[data-testid="event-page-menu-duplicate"]')!
       .dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     expect(document.querySelector('[data-testid="event-page-context-menu"]')).toBeNull();
-    expect(modalStackDepthForTest()).toBe(before);
+    expect(modalStackEntryCountForTest()).toBe(before);
+  });
+
+  it("우클릭 메뉴의 모든 닫기 경로가 리스너와 raw 모달 엔트리를 함께 치운다", () => {
+    addEventPage(mapId, eventId);
+    const event = currentEvent();
+    const page = event.pages![0]!;
+    const request = { x: 10, y: 10, mapId, event, page, index: 0, requestDelete: () => undefined };
+    const baseline = modalStackEntryCountForTest();
+
+    openPageTabContextMenu(request);
+    openPageTabContextMenu(request);
+    expect(document.querySelectorAll('[data-testid="event-page-context-menu"]')).toHaveLength(1);
+    expect(modalStackEntryCountForTest()).toBe(baseline + 1);
+
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-copy"]')!.click();
+    expect(modalStackEntryCountForTest()).toBe(baseline);
+
+    openPageTabContextMenu(request);
+    document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    expect(modalStackEntryCountForTest()).toBe(baseline);
+
+    openPageTabContextMenu(request);
+    document.querySelector<HTMLElement>('[data-testid="event-page-menu-duplicate"]')!
+      .dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(modalStackEntryCountForTest()).toBe(baseline);
+  });
+
+  it("거부된 경계 이동은 성공 토스트를 만들지 않는다", () => {
+    const host = actions();
+    const target = button(host, "event-page-move-back");
+    target.disabled = false;
+    target.click();
+    expect(document.querySelector('[data-testid="toast"]')).toBeNull();
   });
 });

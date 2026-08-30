@@ -1155,45 +1155,13 @@
   min-height: 26px;
 }
 
-/* 탭 스트립 + 페이지 액션 버튼을 한 줄로 (목업: 탭 옆 ＋, 액션은 우측) */
+/* 탭 스트립 + 페이지 액션 버튼의 배치는 balanced.css 한 곳이 소유한다. */
 .event-editor > .event-editor-pagebar {
   display: flex;
-  align-items: stretch;
-  justify-content: flex-start;
-  gap: 6px;
   flex: 0 0 auto;
-  padding: 5px 14px 0;
-  border-bottom: 1px solid var(--mk-line);
   min-height: 0;
 }
 
-.event-editor > .event-editor-pagebar > .event-page-number-tabs {
-  flex: 0 1 auto;
-  width: auto;
-  max-width: calc(100% - 140px);
-  min-width: 0;
-}
-
-.event-editor > .event-editor-pagebar > .event-page-tabs {
-  flex: 0 0 auto;
-  align-self: stretch;
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 10px 6px;
-  margin-left: 8px;
-  border-left: 1px solid var(--mk-line-soft, var(--mk-line));
-  background: color-mix(in srgb, var(--mk-surface) 55%, transparent);
-  border-radius: 0 0 0 6px;
-}
-
-.event-editor > .event-editor-pagebar > .event-page-tabs .btn {
-  align-self: stretch;
-  height: 30px;
-  font-size: 12px;
-  font-weight: 400;
-}
 
 /* 실행 내용의 제목과 보기 전환은 페이지바의 우측 헤더로 승격한다.
  * 캔버스 안에서 별도 행을 쓰지 않아 같은 모달 높이에서 명령 보드가 더 커진다. */
@@ -1446,22 +1414,6 @@
   background: transparent;
 }
 
-.event-editor > .event-editor-pagebar {
-  align-items: center;
-  justify-content: flex-start;
-  padding-right: 10px;
-}
-
-.event-editor > .event-editor-pagebar > .event-page-tabs {
-  position: relative;
-  display: block;
-  align-self: center;
-  min-height: 0;
-  margin-left: 2px;
-  padding: 0 0 5px;
-  border: 0;
-  background: transparent;
-}
 
 .event-editor .event-editor-command-edit-summary,
 .event-editor .event-editor-command-tools-summary,

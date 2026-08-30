@@ -737,6 +737,7 @@ function readScrollNumber(node: HTMLElement, key: "scrollLeft" | "scrollTop"): n
 type EventEditorInteractionSnapshot = {
   readonly focusTestId?: string;
   readonly focusTestIdIndex?: number;
+  readonly focusPageId?: string;
   readonly focusCustomSelectFor?: string;
   readonly focusCommandPath?: string;
   readonly selectionEnd?: number;
@@ -757,6 +758,7 @@ function captureEventEditorInteraction(root: HTMLElement): EventEditorInteractio
   const selection = active as (HTMLInputElement | HTMLTextAreaElement | null);
   return {
     ...(focusTestId ? { focusTestId, focusTestIdIndex: Math.max(0, matchingFocusNodes.indexOf(active!)) } : {}),
+    ...(active?.dataset.pageId ? { focusPageId: active.dataset.pageId } : {}),
     ...(focusCustomSelectFor ? { focusCustomSelectFor } : {}),
     ...(active?.closest<HTMLElement>(".cmd-item, .row, .leaf")?.dataset.cmdPath
       ? { focusCommandPath: active.closest<HTMLElement>(".cmd-item, .row, .leaf")!.dataset.cmdPath }
@@ -780,7 +782,11 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
   if (snapshot.selectedCommandPath) selectRenderedCommand(root, snapshot.selectedCommandPath);
 
   let focusTarget: HTMLElement | null = null;
-  if (snapshot.focusCustomSelectFor) {
+  if (snapshot.focusPageId) {
+    focusTarget = Array.from(root.querySelectorAll<HTMLElement>(".evt-page-segment[data-page-id]"))
+      .find((candidate) => candidate.dataset.pageId === snapshot.focusPageId) ?? null;
+  }
+  if (!focusTarget && snapshot.focusCustomSelectFor) {
     focusTarget = root.querySelector<HTMLElement>(`[data-custom-select-for="${snapshot.focusCustomSelectFor}"]`);
   }
   if (!focusTarget && snapshot.focusTestId) {
