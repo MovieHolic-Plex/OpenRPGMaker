@@ -8,6 +8,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
 const EVENT_ID = "ev_command_board";
+const NESTED_EVENT_ID = "ev_command_board_nested";
 
 function seedProject(): string {
   const project = createBlankProject();
@@ -39,6 +40,46 @@ function seedProject(): string {
   ];
   store.replace(project);
   editorState.set({ currentMapId: mapId, selectedEventId: EVENT_ID, selectedEventPageId: "p1" });
+  return mapId;
+}
+
+function seedNestedProject(): string {
+  const project = createBlankProject();
+  const mapId = project.startMapId;
+  project.maps[mapId]!.events = [
+    {
+      id: NESTED_EVENT_ID,
+      x: 4,
+      y: 5,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        {
+          id: "p1",
+          name: "분기 있는 페이지",
+          conditions: [],
+          graphic: {},
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [
+            { kind: "text", body: "어서 오세요." },
+            {
+              kind: "choices",
+              prompt: "도와줄러?",
+              options: [
+                { text: "예", branch: [{ kind: "text", body: "고마워." }, { kind: "text", body: "가자." }] },
+                { text: "아니오", branch: [{ kind: "text", body: "알았어." }] },
+              ],
+            },
+            { kind: "text", body: "끝." },
+          ],
+        },
+      ],
+    },
+  ];
+  store.replace(project);
+  editorState.set({ currentMapId: mapId, selectedEventId: NESTED_EVENT_ID, selectedEventPageId: "p1" });
   return mapId;
 }
 
@@ -95,5 +136,42 @@ describe("event editor command board", () => {
     expect(flowBadge?.dataset.label).toBe("흐름");
     expect(dialogueBadge?.title).toBe("대화 명령");
     expect(flowBadge?.title).toBe("흐름 명령");
+  });
+
+  // 칼럼 라벨은 «위에서 아래로 차례대로 실행됩니다» 를 약속하면서 순서를 화면에 적지
+  // 않았다. 번호는 자기 컨테이너 안에서 1 부터 다시 시작하고, 분기 범위는 분기 헤더 줄이 말한다.
+  it("numbers every command row in execution order, restarting inside each branch", () => {
+    const mapId = seedNestedProject();
+    renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
+
+    const steps = [...host.querySelectorAll<HTMLElement>(".cmd-list .cmd-item > .cmd-head > .cmd-step")]
+      .map((node) => node.textContent);
+
+    expect(steps).toEqual(["1", "2", "1", "2", "1", "3"]);
+  });
+
+  // 상위 명령만 세면 6줄이 보이는 페이지에 `3개` 라고 적혀 배지가 화면과 어긋난다.
+  it("counts branch commands too so the badge matches the rows on screen", () => {
+    const mapId = seedNestedProject();
+    renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
+
+    const rows = host.querySelectorAll(".cmd-list .cmd-item").length;
+    const count = host.querySelector<HTMLElement>('[data-testid="event-editor-command-count"]');
+
+    expect(rows).toBe(6);
+    expect(count?.textContent).toBe("6개");
+  });
+
+  // 이 줄은 원래 `<button>` 이었지만 `dblclick` 만 들어서 한 번 누르면 아무 일도 없었고,
+  // 라벨은 자기가 아닌 다른 버튼 이름을 부르고 있었다.
+  it("opens the command picker from a single click on the append affordance", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+
+    const append = host.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]');
+
+    expect(append?.textContent).toBe("+ 여기에 명령 추가");
+    append?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+    expect(document.querySelector('[data-testid="event-command-picker"]')).toBeTruthy();
   });
 });
