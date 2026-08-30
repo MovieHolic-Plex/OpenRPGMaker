@@ -34,6 +34,14 @@
   grid-column: 2;
   min-width: 0;
 }
+/* [선택지] 칩은 `renderQuickReplies` 가 **본문의 형제로** 줄 안에 꽂는다(`lastAssistant.after`).
+   두 칸 그리드에서 배치 규칙이 없으면 1열(프리픽스 칸)로 자동 배치돼 그 칸이 칩 폭(358px)만큼
+   벌어지고 `minmax(0, 1fr)` 본문 칸이 0px 로 눌린다 — 답이 오른쪽 끝에서 한 글자씩 세로로 쓰인다.
+   실측 근거: verify-shots/ai-panel-clip/reachability (본문 rect 0×485). 두 칸을 다 쓰게 못 박는다. */
+.ai-command-row > .ai-quick-replies {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
 /* 채팅 버블 — 프리미엄 가독성 (여백·대비·꼬리) */
 .ai-chat-bubble {
   border-radius: 14px;
