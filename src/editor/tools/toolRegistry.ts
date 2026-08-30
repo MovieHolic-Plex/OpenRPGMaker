@@ -16,6 +16,7 @@ import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
 import { HOUSE_KIT_TOOLS } from "./houseKitTools";
 import { HOUSE_LOT_TOOLS } from "./houseLotTools";
+import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
@@ -154,6 +155,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_KIT_TOOLS, "tile"),
   ...withDomain(HOUSE_LOT_TOOLS, "tile"),
+  ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile"),
