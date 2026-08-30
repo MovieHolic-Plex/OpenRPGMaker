@@ -193,6 +193,24 @@ function applyGroupCollapse(header: HTMLElement): void {
     if (classes.contains("db-tab-group")) {
       hidden = collapsed.has(child.dataset.groupSlug ?? "");
       child.setAttribute("aria-expanded", String(!hidden));
+      // 접힌 그룹은 자식 탭 버튼을 전부 가리므로, 핸드리지 이름만 남으면 안에 무엇이 들었는지
+      // 알 수가 없다. 상태 전이가 37개인데 한 그룹만 열리므로 보이는 것은 6개라 — 쓰는 사람은
+      // «구조물» 같은 탭이 사라진 줄 알게 된다(사용자 실제 보고, 2026-08-30).
+      // 그래서 접힌 동안에만 속한 탭 이름을 부제로 보여 어디를 눌러야 하는지 답해 준다.
+      const slug = child.dataset.groupSlug ?? "";
+      const group = TAB_GROUPS.find((candidate) => candidate.slug === slug);
+      const hint = child.querySelector<HTMLElement>(".db-tab-group-peek");
+      if (group) {
+        const names = group.tabs.map((id) => tabFor(id).label).join("·");
+        if (hint) {
+          hint.textContent = hidden ? names : "";
+          hint.hidden = !hidden;
+        }
+        child.setAttribute(
+          "title",
+          hidden ? `${group.label} 그룹 펼치기 — ${names}` : `${group.label} 그룹 접기`,
+        );
+      }
       continue;
     }
     if (!classes.contains("db-tab")) continue;
@@ -277,9 +295,13 @@ export function renderDatabasePanel(container: HTMLElement): void {
     for (const group of TAB_GROUPS) {
       header.append(el("div", {
         class: "db-tab-group",
-        text: group.label,
         attrs: { title: `${group.label} 그룹 펼치기/접기` },
         dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
+        children: [
+          el("span", { class: "db-tab-group-label", text: group.label }),
+          // 접혀 있을 때 applyGroupCollapse 가 여기에 속한 탭 이름을 쓴다.
+          el("span", { class: "db-tab-group-peek", attrs: { hidden: "" } }),
+        ],
         on: {
           click: () => {
             const collapsed = collapsedGroupSlugs();
