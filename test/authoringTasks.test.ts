@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { getEditorUiMode, resetEditorUiModeForTests } from "@/editor/editorUiMode";
-import { resetWorkspaceForTests } from "@/editor/workspace/workspaceStore";
+import { uiLabel } from "@/editor/uiCopy";
+import { resetWorkspaceForTests, setWorkspacePreset } from "@/editor/workspace/workspaceStore";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -111,17 +112,25 @@ describe("genre-neutral authoring task launcher", () => {
     expect(findByTestId(root, "workspace-ui-mode-standard")).toBeTruthy();
   });
 
-  // Break: 프리셋 줄이 갖고 있던 「지금 어느 작업 화면인가」 표시가 사라져 아무도 말하지 않는다.
-  // mode.ts 의 워크스페이스 구독이 톱바를 다시 그리는 이유로 적어둔 그 표시다.
-  it("현재 작업 화면을 칩의 선택 상태로 말한다", () => {
-    const root = renderBar();
-    findByTestId(root, "authoring-task-event")?.click();
+  // Break: 프리셋 줄의 상호배타 선택을 aria-pressed 독립 토글로 옮기고, 단순 배치 변경을
+  // 「데이터 작업 중」처럼 읽었다. bare setWorkspacePreset도 거짓말하지 않는 문구를 고정한다.
+  it("현재 레이아웃 프리셋만 aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는다", () => {
+    setWorkspacePreset("data");
+    expect(mocks.openDatabaseModal).not.toHaveBeenCalled();
 
-    const after = renderBar();
-    expect(findByTestId(after, "authoring-task-event")?.getAttribute("aria-pressed")).toBe("true");
-    expect(findByTestId(after, "authoring-task-map")?.getAttribute("aria-pressed")).toBe("false");
-    // 테스트는 프리셋이 아니라 실행 요청이므로 선택 상태를 갖지 않는다.
-    expect(findByTestId(after, "authoring-task-test")?.getAttribute("aria-pressed")).toBe("false");
+    const root = renderBar();
+    const data = findByTestId(root, "authoring-task-data");
+    const map = findByTestId(root, "authoring-task-map");
+    const test = findByTestId(root, "authoring-task-test");
+    expect(data?.getAttribute("aria-current")).toBe("true");
+    expect(data?.getAttribute("aria-label")).toContain("현재 레이아웃 프리셋");
+    expect(data?.getAttribute("title")).toContain("현재 레이아웃 프리셋");
+    expect(map?.getAttribute("aria-current")).toBeNull();
+    expect(test?.getAttribute("aria-current")).toBeNull();
+    expect(test?.getAttribute("aria-label")).not.toContain("작업 열기");
+    expect(test?.getAttribute("aria-label")).toBe(test?.getAttribute("title"));
+    expect(test?.getAttribute("aria-label")).toContain(uiLabel("testPlay"));
+    for (const button of [data, map, test]) expect(button?.getAttribute("aria-pressed")).toBeNull();
   });
 
   // Break caught: selecting Data silently upgrades guided users to dense/expert chrome.

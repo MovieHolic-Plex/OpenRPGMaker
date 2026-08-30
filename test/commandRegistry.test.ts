@@ -96,13 +96,10 @@ describe("commandRegistry", () => {
     expect(getWorkspaceLayout().docks.right).not.toContain("tiles");
   });
 
-  it("초보 모드의 고정 타일 패널 명령은 저장된 도크를 바꾸지 않는다", () => {
+  it("초보 모드에는 도크 패널 명령을 등록하지 않는다", () => {
     const storage = new MemoryStorage();
     vi.stubGlobal("localStorage", storage);
     installDockHosts();
-    resetEditorUiModeForTests("standard");
-    const commands = listEditorCommands();
-
     storage.setItem(UI_MODE_KEY, "beginner");
     storage.setItem(WORKSPACE_KEY, JSON.stringify({
       presetId: "map",
@@ -110,12 +107,13 @@ describe("commandRegistry", () => {
     }));
     resetEditorUiModeForTests("beginner");
     resetWorkspaceForTests();
-    commands.find((command) => command.id === "workspace-panel-tiles")!.run();
-    commands.find((command) => command.id === "workspace-panel-tiles-right")!.run();
 
-    const persisted = JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}");
-    expect(persisted.docks.left).toContain("tiles");
-    expect(persisted.docks.right).not.toContain("tiles");
+    const ids = listEditorCommands().map((command) => command.id);
+    expect(ids).not.toContain("workspace-panel-tiles");
+    expect(ids).not.toContain("workspace-panel-maps");
+    expect(ids).not.toContain("workspace-panel-tiles-right");
+    expect(ids).not.toContain("workspace-panel-maps-right");
+    expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toEqual(["tiles", "maps"]);
   });
 
   // 예전 이름으로 검색하던 손을 막지 않는다.

@@ -780,6 +780,15 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   box-shadow: inset 0 -2px 0 var(--brand-blue, #4A57D6);
 }
 
+/* 작업 칩은 밑줄 탭이 아니라 하단 상태 바를 쓴다 — hover와 같은 시각 어휘를 유지한다. */
+.authoring-task-btn.is-active {
+  background: color-mix(in srgb, var(--brand-blue, #4A57D6) 12%, transparent);
+  box-shadow: inset 0 -2px 0 var(--brand-blue, #4A57D6);
+  color: var(--editor-text, var(--text-1));
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .workspace-panels-button {
   font-size: 13px;
   line-height: 1;

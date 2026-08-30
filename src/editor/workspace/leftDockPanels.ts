@@ -13,6 +13,7 @@
 //  3. 초보 모드(`chrome.paletteRail`)는 `tiles` 를 고정한다 — 아이콘 레일이 그 호스트
 //     안에 렌더되므로 끄면 사이드바가 빈다.
 
+import type { EditorChromeVisibility } from "@/editor/editorUiMode";
 import { allPanels, sortPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
 
 /** AI 독은 자기 호스트(`chatSidePanel`)를 갖는다 — 좌측 도크가 만들지 않는다. */
@@ -46,9 +47,22 @@ export function resolveLeftDockPanels(input: LeftDockResolution): readonly Panel
   return resolved.length > 0 ? resolved : preferredLeftDockPanels();
 }
 
-/** 초보 모드에서 이 패널을 끄는 토글은 존재할 수 없다(고정 행으로 그린다). */
+/** 초보 모드에서 타일 도크는 아이콘 레일의 호스트라 구성에서 뺄 수 없다. */
 export function isLeftDockPinned(id: PanelId, paletteRail: boolean): boolean {
   return paletteRail && id === LEFT_DOCK_RAIL_HOST;
+}
+
+/**
+ * 현재 크롬에서 도크 멤버십을 바꾸는 컨트롤을 제공해도 되는가.
+ * 초보 타일은 고정 호스트이고, 초보 맵 도크는 `mapTree=false` 로 렌더되지 않는다. 레일의
+ * 맵 버튼은 별도 플라이아웃 스위처이므로 둘 중 어느 것도 도크 토글로 내놓지 않는다.
+ */
+export function isLeftDockPanelOffered(
+  id: PanelId,
+  chrome: Pick<EditorChromeVisibility, "mapTree" | "paletteRail">,
+): boolean {
+  if (isLeftDockPinned(id, chrome.paletteRail)) return false;
+  return id !== "maps" || chrome.mapTree;
 }
 
 /**
