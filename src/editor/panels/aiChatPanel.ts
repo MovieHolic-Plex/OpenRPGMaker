@@ -23,6 +23,7 @@ import { editorState } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
   clearAgentGhostPreview,
+  clearAgentGhostRunningTool,
   createThrottledAgentGhostPreviewUpdater,
   setAgentGhostDraftMapProvider,
   setAgentGhostRunningTool,
@@ -545,7 +546,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toolName: runningActivity.toolName,
       elapsedMs: Math.max(0, now() - runningActivity.startedAt),
     });
-    runningActivity.line.textContent = [narration.line, narration.elapsedLabel].filter(Boolean).join(" · ");
+    runningActivity.line.textContent = narration.line;
   };
   const flushPendingActivitySwapsThrough = (target?: PendingActivitySwap): void => {
     const lastIndex = target ? pendingActivitySwaps.indexOf(target) : pendingActivitySwaps.length - 1;
@@ -594,7 +595,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const activity = runningActivity;
     const liveRow = activity.row;
     const completedHost = rendered.parentElement;
-    if (completedHost) rendered.remove();
+    if (!completedHost) {
+      liveRow.remove();
+      if (runningActivity === activity) runningActivity = null;
+      refreshRunningStatus(false);
+      log.scrollTop = log.scrollHeight;
+      return;
+    }
+    rendered.remove();
     const finalize = (): void => {
       if (result.ok) {
         liveRow.className = rendered.className;
@@ -609,10 +617,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         liveRow.removeAttribute("aria-live");
         liveRow.replaceChildren(rendered);
       }
-      if (completedHost) {
-        liveRow.remove();
-        completedHost.append(liveRow);
-      }
+      liveRow.remove();
+      completedHost.append(liveRow);
       if (runningActivity === activity) runningActivity = null;
       refreshRunningStatus(false);
       log.scrollTop = log.scrollHeight;
@@ -1057,6 +1063,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     progressTimer = null;
     runningProgress = null;
     runningPhaseStatus = null;
+    clearAgentGhostRunningTool();
     runningActivity?.row.remove();
     runningActivity = null;
     panel.classList.remove("is-turn-running");
@@ -1715,6 +1722,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         return;
       }
       if (event.type === "tool_started") {
+        setAgentGhostRunningTool(event.name);
         startLiveActivity(event.name, event.index);
         return;
       }

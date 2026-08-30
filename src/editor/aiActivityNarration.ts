@@ -156,6 +156,14 @@ function fallbackAction(toolName: string): ActionForms {
   return ACTIONS.work;
 }
 
+export type AiActivityFamilySource = "read-only" | "mapped" | "fallback" | "generic";
+
+export function aiActivityFamilySource(toolName: string): AiActivityFamilySource {
+  if (readOnlyAction(toolName)) return "read-only";
+  if (FAMILY_BY_TOOL.has(toolName)) return "mapped";
+  return fallbackAction(toolName) === ACTIONS.work ? "generic" : "fallback";
+}
+
 function actionForms(toolName: string): ActionForms {
   return readOnlyAction(toolName) ?? FAMILY_BY_TOOL.get(toolName) ?? fallbackAction(toolName);
 }

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
+import { getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
 import {
   AI_ACTIVITY_MIN_DWELL_MS,
@@ -137,12 +138,12 @@ describe("AI 도구 라이브 활동 행", () => {
 
         now = 2_500;
         progressTick?.();
-        expect(liveRow?.textContent).toContain("2초");
+        expect(liveRow?.textContent).toBe(liveText);
         expect(findByTestId(panel, "ai-status")?.textContent).toContain("길을 그리는 중 · 2초 · 도구 1");
       });
 
-      // 완료 시각을 시작 직후로 되돌려 최소 표시 시간 예약을 검증한다.
-      now = 0;
+      // 실제 시계처럼 앞으로 진행한 뒤 완료해도 최소 표시 시간은 완료 이벤트부터 온전히 보장한다.
+      now = 2_600;
       options.onEvent?.({
         type: "tool_call",
         name: "paint_road",
@@ -181,6 +182,47 @@ describe("AI 도구 라이브 활동 행", () => {
 
     expect(runner).toHaveBeenCalledTimes(1);
     if (runnerAssertionFailure) throw runnerAssertionFailure;
+  });
+
+  it("성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다", async () => {
+    installFakeWindow();
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    editorState.set({ currentMapId: mapId, selection: { mapId, x: 1, y: 2, width: 3, height: 4 } });
+
+    let panel: FakeElement;
+    let sawRunningTool = false;
+    const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
+      options.onEvent?.({ type: "tool_started", name: "get_map_region", index: 1 });
+      sawRunningTool = getAgentGhostPreviewState().runningToolName === "get_map_region";
+      options.onEvent?.({
+        type: "tool_call",
+        name: "get_map_region",
+        args: { mapId, x: 1, y: 2, w: 3, h: 4 },
+        result: { ok: true, summary: "선택 영역 조회" },
+      });
+      expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
+      expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toContain("조회 1");
+      return { ...successfulRegionResult(0), applied: false, proposedCalls: 0 };
+    });
+
+    panel = renderAiChatPanel({
+      clock: () => 0,
+      getChatDock: () => "side",
+      regionTaskRunner: runner,
+    }) as unknown as FakeElement;
+    requestAiSelectionContext(editorState.get().selection);
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "이 영역 크기를 알려줘";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(runner).toHaveBeenCalledTimes(1);
+    expect(sawRunningTool).toBe(true);
+    expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
+    expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toContain("조회 1");
+    expect(getAgentGhostPreviewState().runningToolName).toBe("");
+    expect(findByTestId(panel, "ai-ghost-phase-chip")).toBeNull();
   });
 
   it("다음 도구 시작은 이전 예약을 먼저 확정하고 턴 종료는 마지막 예약까지 비운다", async () => {

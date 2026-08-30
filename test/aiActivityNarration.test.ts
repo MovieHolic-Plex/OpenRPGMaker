@@ -3,10 +3,50 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   aiActivityActionLabel,
+  aiActivityFamilySource,
   narrateAiActivity,
 } from "@/editor/aiActivityNarration";
+import { allTools } from "@/editor/tools";
 
 const INTERNAL_TOOL_NAME = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/u;
+const EXPLICIT_FALLBACK_FAMILY = new Set([
+  "advance_dungeon_room_build",
+  "advance_interior_room_build",
+  "configure_collections",
+  "configure_fishing",
+  "configure_game_systems",
+  "configure_life_economy",
+  "configure_monster_system",
+  "configure_museum",
+  "configure_seasonal_forage",
+  "configure_time_system",
+  "delete_test_preset",
+  "manage_flag_slot",
+  "prune_unused",
+  "rename_switch",
+  "rename_variable",
+  "reset_project",
+  "run_dungeon_room_pipeline",
+  "run_interior_room_pipeline",
+  "set_cluster_rule",
+  "set_group_layout",
+  "set_lighting_volume",
+  "set_project_genre",
+  "set_project_settings",
+  "set_scene_mood",
+  "set_session_farm_state",
+  "start_dungeon_room_session",
+  "start_interior_room_session",
+  "upsert_test_preset",
+]);
+const EXPLICIT_GENERIC_FAMILY = new Set([
+  "advance_dungeon_room_build",
+  "advance_interior_room_build",
+  "run_dungeon_room_pipeline",
+  "run_interior_room_pipeline",
+  "start_dungeon_room_session",
+  "start_interior_room_session",
+]);
 
 function registeredToolNames(): string[] {
   const toolsRoot = new URL("../src/editor/tools/", import.meta.url);
@@ -73,12 +113,30 @@ describe("AI 도구 활동 문장", () => {
 
   it("레지스트리에 등록된 모든 도구에서 내부 이름을 노출하지 않는다", () => {
     const registeredNames = registeredToolNames();
-    expect(registeredNames.length).toBeGreaterThan(0);
+    const registryNames = allTools().map((tool) => tool.name).sort();
+    expect(registeredNames).toEqual(registryNames);
 
     for (const toolName of registeredNames) {
       const { line } = narrateAiActivity({ toolName });
       expect(line, `${toolName} 활동 문구에 내부 도구 이름이 노출됨`).not.toMatch(INTERNAL_TOOL_NAME);
+      const source = aiActivityFamilySource(toolName);
+      expect(
+        source === "read-only" || source === "mapped" || EXPLICIT_FALLBACK_FAMILY.has(toolName),
+        `${toolName} 도구의 활동 문구 패밀리를 명시적으로 결정해야 함`,
+      ).toBe(true);
     }
+    expect(registeredNames.filter((name) => {
+      const source = aiActivityFamilySource(name);
+      return source === "fallback" || source === "generic";
+    })).toEqual([...EXPLICIT_FALLBACK_FAMILY].sort());
+    expect(registeredNames.filter((name) => aiActivityFamilySource(name) === "generic")).toEqual(
+      [...EXPLICIT_GENERIC_FAMILY].sort(),
+    );
+  });
+
+  it("내레이션 모듈은 DOM과 Phaser 양쪽에서 안전하게 쓰도록 import가 없다", () => {
+    const source = readFileSync(new URL("../src/editor/aiActivityNarration.ts", import.meta.url), "utf8");
+    expect(source).not.toMatch(/^import\s/mu);
   });
 
   it("알 수 없는 도구도 내부 이름 대신 사람용 기본 문구를 쓴다", () => {

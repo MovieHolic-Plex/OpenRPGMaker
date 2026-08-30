@@ -104,9 +104,20 @@ describe("ghostPhaseChipInfo helper", () => {
       revealedCount: 10,
       totalCount: 10,
       isScheduleComplete: true,
+      runningToolName: "",
     });
     expect(doneInfo.spinner).toBe(false);
     expect(doneInfo.text).toBe("초안 완성");
+
+    const stillRunningInfo = ghostPhaseChipInfo({
+      toolName: "paint_tiles",
+      revealedCount: 10,
+      totalCount: 10,
+      isScheduleComplete: true,
+      runningToolName: "paint_tiles",
+    });
+    expect(stillRunningInfo.spinner).toBe(true);
+    expect(stillRunningInfo.text).toBe("타일을 칠하는 중 · 10/10 셀");
   });
 });
 
@@ -220,6 +231,7 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
           scrollX: 0,
           scrollY: 0,
           zoom: 1,
+          worldView: { x: 0, y: 0 },
         },
       },
       textures: {

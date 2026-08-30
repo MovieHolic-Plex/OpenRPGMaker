@@ -97,7 +97,12 @@ function makeRendererScene(
         destroy: vi.fn(),
       })),
     },
-    cameras: { main: camera },
+    cameras: {
+      main: {
+        ...camera,
+        worldView: camera.worldView ?? { x: camera.scrollX, y: camera.scrollY },
+      },
+    },
     textures: {
       exists: vi.fn(() => true),
       get: vi.fn(() => ({ getSourceImage: vi.fn() })),
@@ -167,14 +172,14 @@ describe("맵 캔버스 AI 진행 칩", () => {
       w: 4,
       h: 3,
     });
-    const camera = { scrollX: 64, scrollY: 32, zoom: 1.5 };
+    const camera = { scrollX: 64, scrollY: 32, zoom: 1.5, worldView: { x: 96, y: 48 } };
     const renderer = new AgentGhostPreviewRenderer(makeRendererScene(canvas, camera), makeContainer(), () => "m1");
 
     renderer.render();
 
     const expected = placeAiActivityChip({
       region: { x: 10, y: 8, width: 4, height: 3 },
-      camera,
+      camera: { worldView: camera.worldView, zoom: camera.zoom },
       viewport: { width: 640, height: 480 },
       chip: { width: 160, height: 28 },
     });
@@ -183,7 +188,7 @@ describe("맵 캔버스 AI 진행 칩", () => {
     expect(chip?.style.left).toBe(`${expected.left + canvasToHost.x}px`);
     expect(chip?.style.top).toBe(`${expected.top + canvasToHost.y}px`);
     expect(chip?.dataset.chipMode).toBe(expected.mode);
-    expect(expected).toMatchObject({ left: 112, top: 108, mode: "above", anchored: true });
+    expect(expected).toMatchObject({ left: 64, top: 84, mode: "above", anchored: true });
   });
 
   it("도구 시작 직후 셀이 없어도 코너 폴백으로 칩을 마운트한다", () => {

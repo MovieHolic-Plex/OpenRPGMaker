@@ -8,8 +8,7 @@ export interface ChipPlacementRegion {
 }
 
 export interface ChipPlacementCamera {
-  readonly scrollX: number;
-  readonly scrollY: number;
+  readonly worldView: { readonly x: number; readonly y: number };
   readonly zoom: number;
 }
 
@@ -53,8 +52,8 @@ export function placeAiActivityChip(input: {
 
   const { camera, chip, region, viewport } = input;
   const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
-  const regionLeft = Math.round((region.x * TILE_SIZE - camera.scrollX) * zoom);
-  const regionTop = Math.round((region.y * TILE_SIZE - camera.scrollY) * zoom);
+  const regionLeft = Math.round((region.x * TILE_SIZE - camera.worldView.x) * zoom);
+  const regionTop = Math.round((region.y * TILE_SIZE - camera.worldView.y) * zoom);
   const regionWidth = Math.max(1, Math.round(region.width * TILE_SIZE * zoom));
   const regionHeight = Math.max(1, Math.round(region.height * TILE_SIZE * zoom));
   const left = regionLeft + (regionWidth - chip.width) / 2;

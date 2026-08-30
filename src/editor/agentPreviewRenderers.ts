@@ -97,8 +97,9 @@ export function ghostPhaseChipInfo(options: {
   readonly revealedCount: number;
   readonly totalCount: number;
   readonly isScheduleComplete: boolean;
+  readonly runningToolName?: string;
 }): PhaseChipInfo {
-  if (options.isScheduleComplete) {
+  if (options.isScheduleComplete && !options.runningToolName) {
     return {
       koreanLabel: "초안 완성",
       text: "초안 완성",
@@ -447,6 +448,7 @@ export class AgentGhostPreviewRenderer {
       revealedCount: animState.revealedCount,
       totalCount,
       isScheduleComplete: animState.isScheduleComplete,
+      runningToolName: this.currentState().runningToolName,
     });
 
     if (!this.phaseChip) {
@@ -486,8 +488,10 @@ export class AgentGhostPreviewRenderer {
     const placement = placeAiActivityChip({
       region: this.previewBoundingRegion(previews),
       camera: {
-        scrollX: this.scene.cameras.main.scrollX,
-        scrollY: this.scene.cameras.main.scrollY,
+        worldView: {
+          x: this.scene.cameras.main.worldView.x,
+          y: this.scene.cameras.main.worldView.y,
+        },
         zoom: this.scene.cameras.main.zoom,
       },
       viewport: {
@@ -611,8 +615,8 @@ export class AgentGhostPreviewRenderer {
 
   private screenRect(bounds: AgentGhostBounds): AgentGhostBounds {
     const camera = this.scene.cameras.main;
-    const x = Math.round((bounds.x * TILE_SIZE - camera.scrollX) * camera.zoom);
-    const y = Math.round((bounds.y * TILE_SIZE - camera.scrollY) * camera.zoom);
+    const x = Math.round((bounds.x * TILE_SIZE - camera.worldView.x) * camera.zoom);
+    const y = Math.round((bounds.y * TILE_SIZE - camera.worldView.y) * camera.zoom);
     const width = Math.max(1, Math.round(bounds.width * TILE_SIZE * camera.zoom));
     const height = Math.max(1, Math.round(bounds.height * TILE_SIZE * camera.zoom));
     return { x, y, width, height };

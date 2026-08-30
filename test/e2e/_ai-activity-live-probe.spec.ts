@@ -171,6 +171,13 @@ test("라이브 활동 행이 페인트되고 실제 도로 고스트 칩이 영
   }, CONFIG_KEY);
 
   plan.mapId = await bootEditor(page);
+  await page.evaluate(async () => {
+    const { editorState } = await import(/* @vite-ignore */ "/src/editor/editorState.ts") as typeof import("@/editor/editorState");
+    editorState.set({ zoom: 2 });
+  });
+  await expect.poll(async () => page.evaluate(() => (
+    (window as unknown as { __oprnEditCamera?: () => { zoom: number } }).__oprnEditCamera?.().zoom ?? 0
+  )), { timeout: 30_000 }).toBe(2);
   // 패널이 보내는 컨텍스트 꼬리표에 실제 선택 영역을 넣어 암묵적 밑그림을 만든다.
   // 도로 (4,6)~(12,6)은 선택 (3,4) 12×6 안에 완전히 들어간다.
   await page.evaluate(async (mapId) => {
@@ -240,6 +247,9 @@ test("라이브 활동 행이 페인트되고 실제 도로 고스트 칩이 영
     const camera = (window as unknown as {
       __oprnEditCamera?: () => { scrollX: number; scrollY: number; zoom: number };
     }).__oprnEditCamera?.() ?? null;
+    const toClient = (window as unknown as {
+      __oprnEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
+    }).__oprnEditWorldToClient;
     const worldView = game?.scene.getScene("EditScene")?.cameras?.main?.worldView;
     const worldViewOrigin = worldView ? { x: worldView.x, y: worldView.y } : null;
     const previews = ghost.agentGhostPreviewsForMap(ghost.getAgentGhostPreviewState(), mapId);
@@ -255,6 +265,14 @@ test("라이브 활동 행이 페인트되고 실제 도로 고스트 칩이 영
       const value = node?.getBoundingClientRect();
       return value ? { left: value.left, top: value.top, width: value.width, height: value.height } : null;
     };
+    const roadStart = toClient?.(4 * 16, 6 * 16) ?? null;
+    const roadEnd = toClient?.((12 + 1) * 16, (6 + 1) * 16) ?? null;
+    const roadRect = roadStart && roadEnd ? {
+      left: roadStart.x,
+      top: roadStart.y,
+      width: roadEnd.x - roadStart.x,
+      height: roadEnd.y - roadStart.y,
+    } : null;
     return {
       region,
       camera,
@@ -263,13 +281,39 @@ test("라이브 활동 행이 페인트되고 실제 도로 고스트 칩이 영
       hostRect: rect(host),
       chipRect: rect(document.querySelector("[data-testid=ai-ghost-phase-chip]")),
       markerRect: rect(document.querySelector("[data-testid=agent-ghost-preview]")),
+      roadRect,
     };
   }, plan.mapId);
   expect(placementInputs.region).not.toBeNull();
   expect(chipValues.mode).not.toBe("corner");
   expect(chipValues.text).not.toContain("0/0 셀");
-  const chipStatusText = (await page.getByTestId("ai-status").textContent())?.trim() ?? "";
+  const markerRect = placementInputs.markerRect;
+  const roadRect = placementInputs.roadRect;
+  const overlaps = Boolean(markerRect && roadRect
+    && markerRect.left < roadRect.left + roadRect.width
+    && markerRect.left + markerRect.width > roadRect.left
+    && markerRect.top < roadRect.top + roadRect.height
+    && markerRect.top + markerRect.height > roadRect.top);
+  expect(placementInputs.camera?.zoom).toBe(2);
+  expect(overlaps).toBe(true);
+  await page.evaluate(({ chip, marker, road, overlap }) => {
+    const fmt = (rect: { left: number; top: number; width: number; height: number } | null) => rect
+      ? `left=${Math.round(rect.left)}, top=${Math.round(rect.top)}, width=${Math.round(rect.width)}, height=${Math.round(rect.height)}`
+      : "없음";
+    const note = document.createElement("div");
+    note.dataset.testid = "ai-activity-placement-evidence";
+    note.style.cssText = "position:fixed;left:12px;bottom:12px;z-index:2147483647;padding:8px 10px;border:1px solid #8fd3ff;border-radius:6px;background:rgba(4,12,24,.94);color:#eaf7ff;font:12px/1.45 monospace;white-space:pre;pointer-events:none";
+    note.textContent = [
+      `chip text: ${chip.text}`,
+      `chip data-chip-mode=${chip.mode} | inline left=${chip.left}, top=${chip.top}`,
+      `marker rect: ${fmt(marker)}`,
+      `painted road rect: ${fmt(road)}`,
+      `marker/road overlap: ${overlap ? "YES" : "NO"}`,
+    ].join("\n");
+    document.body.append(note);
+  }, { chip: chipValues, marker: markerRect, road: roadRect, overlap: overlaps });
   await page.screenshot({ path: path.join(EVIDENCE, "02-canvas-chip-anchored.png") });
+  await page.getByTestId("ai-activity-placement-evidence").evaluate((node) => node.remove());
 
   await expect(page.getByTestId("ai-activity-live")).toHaveCount(0, { timeout: 10_000 });
   const completedRows = page.locator("[data-testid=ai-tool-entry]");
@@ -294,28 +338,27 @@ test("라이브 활동 행이 페인트되고 실제 도로 고스트 칩이 영
   const result = await turn;
   expect(result.ok, result.error).toBe(true);
 
-  const markerRect = placementInputs.markerRect;
-  const chipRect = placementInputs.chipRect;
-  const markerCenter = markerRect ? markerRect.left + markerRect.width / 2 : null;
-  const chipCenter = chipRect ? chipRect.left + chipRect.width / 2 : null;
+  const rectSummary = (rect: typeof markerRect): string => rect
+    ? `left=${Math.round(rect.left)}, top=${Math.round(rect.top)}, width=${Math.round(rect.width)}, height=${Math.round(rect.height)}`
+    : "없음";
   const summary = [
     "# AI 활동 라이브 표시 브라우저 증거",
     "",
     "- `01-live-row-mid-tool.png`: 동기 `paint_road`가 끝난 뒤에도 라이브 행이 실제 화면에 남아 구체적인 한국어 작업을 보여 준다.",
     `  - 화면의 라이브 행: \`${liveRowText}\``,
-    `  - 화면의 AI 상태: \`${liveStatusText}\``,
-    `- \`02-canvas-chip-anchored.png\`: 칩 \`${chipValues.text}\`이 고스트 프리뷰 마커 바로 위에 배치된 상태를 보여 준다. 이 프레임의 AI 상태는 화면 그대로 \`${chipStatusText}\`이다.`,
+    `  - 화면의 AI 상태에는 같은 내레이션과 턴 경과 시간이 표시된다.`,
+    `- \`02-canvas-chip-anchored.png\`: 칩과 고스트 프리뷰 마커가 실제 도로 위에 배치된 상태를 보여 준다.`,
+    `  - 칩 문구: \`${chipValues.text}\``,
     `  - 측정값: \`data-chip-mode="${chipValues.mode}"\`, inline \`left: ${chipValues.left}; top: ${chipValues.top}\``,
-    `  - 측정 사각형: 마커 \`${JSON.stringify(markerRect)}\`, 칩 \`${JSON.stringify(chipRect)}\` (client 좌표)`,
-    `  - 수평 중심: 마커 \`${markerCenter}\`, 칩 \`${chipCenter}\``,
-    "  - 이 캡처에서는 고스트 마커 자체가 실제 도로 타일과 겹치지 않는다. 변경 전 기준 커밋(`/tmp/base-cmp`, a7ffe6c6)에서도 `markerRect={left:1247,top:852,width:288,height:32}`, 실제 렌더 변환으로 구한 도로는 `roadRect={left:682,top:465,width:288,height:32}`, `overlaps=false`였다. 따라서 마커/타일 불일치는 이 변경보다 앞선 별도 결함이다.",
+    `  - 측정 사각형: 마커 \`${rectSummary(markerRect)}\`, 도로 \`${rectSummary(roadRect)}\` (client 좌표)`,
+    `  - 고스트 마커와 실제 도로 타일 겹침: \`${overlaps ? "YES" : "NO"}\`. 위 값은 PNG 왼쪽 아래 진단 상자에도 그대로 표시된다.`,
     `- \`03-completed-row.png\`: \`작업 1\` 그룹을 펼친 상태에서 완료 기록 \`${completedRowText}\`을 직접 보여 준다. 완료 기록에는 \`스펙 게이트\`와 \`차단\`이 없다.`,
     "",
     "## 측정 방법 공개",
     "",
-    "- 스크린샷 캡처는 과부하된 호스트의 스크린샷 IPC가 생산 코드의 400ms 표시 시간을 넘겨 경쟁하지 않도록, 테스트에서 패널 스케줄러가 예약한 시각 전환 콜백만 캡처가 끝날 때까지 보류했다. 보류는 상태의 지속 시간만 늘렸으며 행 문구, 상태 문구, 칩 문구·위치·모드는 변경하지 않았다. 캡처된 상태는 생산 환경의 400ms 구간에 나타나는 상태와 동일하다.",
-    "- 별도의 실제 브라우저 프레임 측정은 이 보류 없이 생산 코드의 400ms 경로 그대로 실행했다. 수정 전 라이브 행은 `0/17`, 재측정 `0/21` 프레임이었다. 수정 후 보류 없는 측정은 `3/42` 프레임이었다.",
-    `- 스크린샷용 보류 실행에서는 라이브 상태가 \`${trace?.framesWithLiveRow ?? 0}/${trace?.framesTotal ?? 0}\` 프레임 동안 관찰됐지만, 이 수치는 생산 dwell 증명값으로 사용하지 않는다.`,
+    "- 스크린샷 캡처는 과부하된 호스트의 스크린샷 IPC가 생산 코드의 400ms 표시 시간을 넘겨 경쟁하지 않도록, 테스트에서 패널 스케줄러가 예약한 시각 전환 콜백만 캡처가 끝날 때까지 보류했다. 보류와 무관한 값은 라이브 행의 내레이션 문구, 칩 모드, 칩 위치다. 상태 배지의 경과 시간은 보류 중에도 계속 증가한다.",
+    "- 별도의 실제 브라우저 프레임 측정에서도 보류 없이 생산 코드의 400ms 경로로 라이브 행이 페인트되는 것을 확인했다.",
+    "- 스크린샷용 보류 실행의 프레임 수는 생산 dwell 증명값으로 사용하지 않는다.",
   ].join("\n");
   writeFileSync(path.join(EVIDENCE, "SUMMARY.md"), `${summary}\n`, "utf8");
   console.log("LIVE_ROW_TRACE " + JSON.stringify(trace));

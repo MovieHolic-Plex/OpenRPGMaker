@@ -120,15 +120,14 @@ type TileRect = {
 };
 
 type CameraView = {
-  readonly scrollX: number;
-  readonly scrollY: number;
+  readonly worldView: { readonly x: number; readonly y: number };
   readonly zoom: number;
 };
 
 export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSize = TILE_SIZE): TileRect {
   return {
-    x: Math.round((rect.x * tileSize - camera.scrollX) * camera.zoom),
-    y: Math.round((rect.y * tileSize - camera.scrollY) * camera.zoom),
+    x: Math.round((rect.x * tileSize - camera.worldView.x) * camera.zoom),
+    y: Math.round((rect.y * tileSize - camera.worldView.y) * camera.zoom),
     width: Math.max(1, Math.round(rect.width * tileSize * camera.zoom)),
     height: Math.max(1, Math.round(rect.height * tileSize * camera.zoom)),
   };
@@ -1559,8 +1558,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const isChips = popup.classList.contains("selection-action-chips");
     const camera = this.cameras.main;
     const selectionRect = tileRectToScreenRect(selection, {
-      scrollX: camera.scrollX,
-      scrollY: camera.scrollY,
+      worldView: { x: camera.worldView.x, y: camera.worldView.y },
       zoom: camera.zoom,
     });
     const canvasRect = canvas.getBoundingClientRect();
@@ -1642,7 +1640,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const camera = this.cameras.main;
     const rect = tileRectToScreenRect(
       { x: task.region.x, y: task.region.y, width: task.region.width, height: task.region.height },
-      { scrollX: camera.scrollX, scrollY: camera.scrollY, zoom: camera.zoom },
+      { worldView: { x: camera.worldView.x, y: camera.worldView.y }, zoom: camera.zoom },
     );
     const canvasRect = this.game.canvas.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();
