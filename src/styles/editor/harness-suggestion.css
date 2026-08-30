@@ -862,9 +862,6 @@
     );
 }
 
-/* 덧그림 레이어를 칠하는 중이라는 신호. 예전에는 캔버스에 layer-lower/layer-upper 를
-   붙였지만 그 클래스에 CSS 정의가 아예 없어서 아무 표시도 나지 않았다(죽은 클래스). */
-
 .structure-kit-editor-preview {
   position: absolute;
   inset: 0;

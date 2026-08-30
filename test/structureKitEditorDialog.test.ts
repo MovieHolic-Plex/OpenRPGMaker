@@ -689,9 +689,9 @@ describe("편집기 팔레트 안정성", () => {
     expect(swatch(240).className).toContain("is-used");
     expect(swatch(116).className).toContain("is-used");
     expect(swatch(421).className).not.toContain("is-used");
-    expect(swatch(240).getAttribute("title")).toContain("사용 중");
+    // 문구가 아니라 기계가 읽는 값을 본다 — 카피를 다듬어도 이 계약은 깨지지 않는다.
     const count = document.querySelector("[data-testid='structure-kit-editor-used-count']") as unknown as FakeElement;
-    expect(count.textContent).toBe("사용 중 2칸");
+    expect(count.dataset.usedCount).toBe("2");
   });
 
   it("[안 쓴 타일만] 을 켜면 쓰인 타일이 숨고, 지금 잡은 붓은 남는다", () => {
