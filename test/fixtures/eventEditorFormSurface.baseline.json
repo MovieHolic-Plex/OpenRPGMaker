@@ -821,6 +821,7 @@
     "season",
     "npcActivity",
     "friendshipAtLeast",
+    "relationshipAtLeast",
     "battleResult",
     "run",
     "all",
@@ -865,7 +866,7 @@
    "div": 14,
    "input": 1,
    "label": 4,
-   "option": 39,
+   "option": 40,
    "p": 3,
    "section": 2,
    "select": 3,
@@ -1351,6 +1352,7 @@
     "equipTool",
     "openChest",
     "changeFriendship",
+    "setRelationship",
     "changeFactionStance",
     "getFriendship",
     "changeParty",
@@ -1393,7 +1395,7 @@
   "tags": {
    "button": 2,
    "div": 7,
-   "option": 77,
+   "option": 78,
    "p": 2,
    "select": 1,
    "span": 2
@@ -4550,6 +4552,53 @@
   "testidCount": 3,
   "controlCount": 2
  },
+ "setRelationship": {
+  "testids": [
+   "event-command-edit-summary",
+   "event-command-set-relationship-npc-key",
+   "event-command-set-relationship-state"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "event-command-record-form",
+   "inline-field"
+  ],
+  "controls": {
+   "event-command-set-relationship-npc-key": "input[text]{}",
+   "event-command-set-relationship-state": "select{}"
+  },
+  "selectOptions": {
+   "event-command-set-relationship-state": [
+    "single",
+    "dating",
+    "engaged",
+    "married"
+   ]
+  },
+  "labels": [
+   "관계관계 없음연인약혼부부",
+   "누구"
+  ],
+  "tags": {
+   "div": 3,
+   "input": 1,
+   "label": 2,
+   "option": 4,
+   "select": 1,
+   "span": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "event-command-set-relationship-npc-key": "input",
+   "event-command-set-relationship-state": "select"
+  },
+  "texts": {
+   "event-command-edit-summary": "관계 설정"
+  },
+  "testidCount": 3,
+  "controlCount": 2
+ },
  "changeFactionStance": {
   "testids": [
    "event-command-edit-summary",
@@ -7260,6 +7309,7 @@
     "equipTool",
     "openChest",
     "changeFriendship",
+    "setRelationship",
     "changeFactionStance",
     "getFriendship",
     "changeParty",
@@ -7363,6 +7413,7 @@
     "equipTool",
     "openChest",
     "changeFriendship",
+    "setRelationship",
     "changeFactionStance",
     "getFriendship",
     "changeParty",
@@ -7442,7 +7493,7 @@
    "label": 12,
    "legend": 1,
    "li": 6,
-   "option": 173,
+   "option": 175,
    "p": 3,
    "select": 7,
    "span": 33,
@@ -7640,6 +7691,7 @@
     "equipTool",
     "openChest",
     "changeFriendship",
+    "setRelationship",
     "changeFactionStance",
     "getFriendship",
     "changeParty",
@@ -7696,7 +7748,7 @@
    "div": 20,
    "input": 8,
    "label": 8,
-   "option": 77,
+   "option": 78,
    "p": 1,
    "select": 1,
    "span": 8

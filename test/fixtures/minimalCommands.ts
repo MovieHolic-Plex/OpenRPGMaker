@@ -92,6 +92,9 @@ export const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   changeFriendship: { kind: "changeFriendship", npcKey: "ev1", delta: 10 },
   changeFactionStance: { kind: "changeFactionStance", a: "player", b: "enemy", op: "+=", value: 1 },
   getFriendship: { kind: "getFriendship", npcKey: "ev1", variableId: "var1" },
+  // COMMAND_KINDS 에 setRelationship 이 들어왔는데 픽스처가 없어 undefined 가 렌더로 들어갔다
+  // — commandBody.ts:29 에서 TypeError 로 죽었다(표면 게이트가 잡은 실측 결함).
+  setRelationship: { kind: "setRelationship", npcKey: "ev1", state: "dating" },
   changeParty: { kind: "changeParty", actorId: "actor1", action: "add" },
   giveMonster: { kind: "giveMonster", speciesId: "species1", level: 5 },
   moveMonster: { kind: "moveMonster", instanceId: "monster_1", to: "party" },

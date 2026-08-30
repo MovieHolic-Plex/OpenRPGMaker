@@ -215,9 +215,11 @@ export const COMMAND_GUARANTEES = {
   // playAudio/stopAudio: battleEvents.ts 가 호스트 오디오 콜백으로 실제 실행(troop-full).
   playAudio: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
   stopAudio: guarantee("media", { ...playerPause, support: troopFull }),
-  // playMovie: 인터프리터 pause + 플레이어 비디오 오버레이(playSceneMovies.playMovieOverlay)까지 착지했으므로
-  // showAnimation과 동일 등급(media·player·pause·troop-full). 피커 직선택과 검증기 통과가 함께 열린다.
-  playMovie: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
+  // playMovie: 맵/공통은 인터프리터 pause + 플레이어 비디오 오버레이(playSceneMovies.playMovieOverlay)로
+  // 실제 실행된다. **다만 troop 은 아니다** — battleEvents.ts:772 는 이 kind 를 logUnsupported 로
+  // 기록하고 false 를 돌린다(2026-08-30 실측). troopFull 로 적어 두면 전투 페이지 저작 표면이
+  // "전투에서도 그대로 돈다"고 거짓 표시한다. showAnimation 과 달리 전투 실행기가 아직 없다.
+  playMovie: guarantee("media", { ...playerPause, quick: true }),
   cutsceneControl: guarantee("controlFlow", { direct: false, support: scopedPartial }),
   // displayTextSettings: battleEvents.ts 가 메시지 표시 설정을 이벤트 로그로 실행(Step 3).
   displayTextSettings: guarantee("dialogue", { support: troopFull }),

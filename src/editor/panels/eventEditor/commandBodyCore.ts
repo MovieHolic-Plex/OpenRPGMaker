@@ -1,6 +1,7 @@
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { showConfirm } from "@/editor/ui/modal";
 import { clearChildren, el } from "@/util/dom";
+import { isRelationshipState, RELATIONSHIP_STATES, relationshipStateName } from "@/project/relationshipState";
 import { recordUsageHint } from "./recordUsageHint";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { segmentedSelect, type SegmentOption } from "./recordPicker";
@@ -74,6 +75,7 @@ const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
   changeFriendship: changeFriendshipBody,
   changeFactionStance: changeFactionStanceBody,
   getFriendship: getFriendshipBody,
+  setRelationship: setRelationshipBody,
   timer: timerBody,
   inputWait: inputWaitBody,
   inputNumber: inputNumberBody,
@@ -1094,6 +1096,41 @@ function getFriendshipBody(context: CommandEditContext, cmd: Extract<Command, { 
     });
   });
   wrap.append(fieldControl("누구", npcKey), fieldControl("어디에 저장", variablePicker), recordUsageHint("variable", cmd.variableId));
+  appendFriendshipCharacterHint(wrap, cmd.npcKey);
+  return wrap;
+}
+
+/**
+ * 관계 설정 — 표면 게이트가 «컨트롤 0» 으로 잡은 결함(2026-08-30).
+ *
+ * `setRelationship` 이 커맨드 종류·조건·스키마·검증기에는 들어갔는데 **본문 편집기만 없었다.**
+ * 저작자는 명령을 목록에 넣을 수 있지만 대상 NPC 도 상태도 고를 수 없었다. 형태는 형제인
+ * `getFriendship`(누구 = 비우면 이 이벤트) + 조건 폼의 관계 select 를 그대로 따른다.
+ */
+function setRelationshipBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setRelationship" }>): HTMLElement {
+  const wrap = el("div", { class: "event-command-record-form cream-command-form" });
+  const npcKey = el("input", {
+    attrs: { type: "text", placeholder: "비우면 이 이벤트" },
+    value: cmd.npcKey ?? "",
+    dataset: { testid: "event-command-set-relationship-npc-key" },
+  }) as HTMLInputElement;
+  const state = el("select", {
+    dataset: { testid: "event-command-set-relationship-state" },
+  }) as HTMLSelectElement;
+  for (const value of RELATIONSHIP_STATES) {
+    state.append(el("option", { value, text: relationshipStateName(value) }));
+  }
+  state.value = cmd.state;
+  const apply = () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "setRelationship",
+      npcKey: npcKey.value.trim() || undefined,
+      state: isRelationshipState(state.value) ? state.value : "dating",
+    });
+  };
+  npcKey.addEventListener("change", apply);
+  state.addEventListener("change", apply);
+  wrap.append(fieldControl("누구", npcKey), fieldControl("관계", state));
   appendFriendshipCharacterHint(wrap, cmd.npcKey);
   return wrap;
 }

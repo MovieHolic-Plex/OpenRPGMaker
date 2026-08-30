@@ -73,6 +73,10 @@ export function playShowAnimationOnce(
   let frameIndex = 0;
   // 표시면은 문서에 붙기 전에 만들어진다. 한 번이라도 붙은 뒤 떨어졌을 때만 중단한다.
   let wasMounted = false;
+  // 다만 «붙기 전» 유예는 무한이 아니다. 끝까지 붙지 않는 표시면(미리보기만 만들고 버리는 호출,
+  // 표면 스냅샷 하네스)에서는 인터벌이 영원히 살아 분리된 DOM 에 프레임을 계속 그렸다.
+  // 실측: jsdom 정리 후 tick 이 document.createElement 를 만져 «document is not defined» 로 터졌다.
+  let unmountedTicks = 0;
 
   const clear = (): void => {
     if (timer !== null) {
@@ -89,9 +93,14 @@ export function playShowAnimationOnce(
   const dropped = (): boolean => {
     if (stage.isConnected !== false) {
       wasMounted = true;
+      unmountedTicks = 0;
       return false;
     }
-    return wasMounted;
+    if (wasMounted) return true;
+    unmountedTicks += 1;
+    // 실제 UI 는 열자마자 붙으므로 두 프레임(약 130ms)이면 충분하다. 그 뒤에도 안 붙었으면
+    // 이 표시면은 화면에 없다 — 멈춘다. 나중에 붙으면 재생 버튼(play)이 다시 켠다.
+    return unmountedTicks >= 2;
   };
 
   const tick = (): void => {

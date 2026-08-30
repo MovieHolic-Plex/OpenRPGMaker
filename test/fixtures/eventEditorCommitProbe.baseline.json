@@ -428,6 +428,15 @@
   "commitCount": 2,
   "noCommitCount": 0
  },
+ "setRelationship": {
+  "probes": {
+   "event-command-set-relationship-npc-key": "replaceCommand {\"kind\":\"setRelationship\",\"npcKey\":\"__p_65eefc__\",\"state\":\"dating\"}",
+   "event-command-set-relationship-state": "replaceCommand {\"kind\":\"setRelationship\",\"npcKey\":\"ev1\",\"state\":\"married\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
+  "noCommitCount": 0
+ },
  "changeFactionStance": {
   "probes": {
    "event-command-faction-a": "replaceCommand {\"a\":\"enemy\",\"b\":\"enemy\",\"kind\":\"changeFactionStance\",\"op\":\"+=\",\"value\":0}",

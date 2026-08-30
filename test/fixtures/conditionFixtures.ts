@@ -77,6 +77,9 @@ export const CONDITION_FIXTURES: Readonly<Record<ConditionKind, Condition>> = {
   season: { kind: "season", season: "spring" },
   npcActivity: { kind: "npcActivity", activity: "work" },
   friendshipAtLeast: { kind: "friendshipAtLeast", npcKey: "npc_condition_probe", value: 200 },
+  // CONDITION_KINDS 에 relationshipAtLeast 가 들어왔는데 픽스처가 없어 undefined 가 렌더로
+  // 들어갔다 — fork 축이 «컨트롤 0개» 로 죽었다(게이트가 잡은 실측 결함).
+  relationshipAtLeast: { kind: "relationshipAtLeast", npcKey: "npc_condition_probe", state: "dating" },
   battleResult: { kind: "battleResult", result: "victory" },
   run: { kind: "run", query: "active", value: true },
   all: { kind: "all", conditions: [LEAF_SWITCH] },
