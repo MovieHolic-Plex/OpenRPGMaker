@@ -404,6 +404,8 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     await bridgeSend("안녕");
     await flushAsync();
     expect(findByTestId(panel, "ai-autonomous-run-surface")).toBeNull();
-    expect(assistantMock.getLastOpts()).toEqual({ autonomous: false });
+    // instruction 은 되묻기 판정용 원문이다 — 패널이 보내는 payload 에는 턴 가이드가 섞여 있어
+    // 그것으로 판정하면 가이드 문구의 실내·야외 표지가 매 턴 되묻기를 유발한다(통합 후 실측).
+    expect(assistantMock.getLastOpts()).toEqual({ autonomous: false, instruction: "안녕" });
   });
 });

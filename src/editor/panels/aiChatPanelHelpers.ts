@@ -131,11 +131,15 @@ export function hasDestructiveCall(calls: readonly ProposedCall[]): boolean {
   return calls.some((call) => call.destructive);
 }
 
-export function aiHistoryLabel(calls: readonly ProposedCall[]): string {
+export function aiHistoryLabel(calls: readonly ProposedCall[], instruction?: string): string {
   const first = calls[0];
   const summary = first?.summary.trim() || first?.name || "변경";
   const short = summary.length > 28 ? `${summary.slice(0, 28)}…` : summary;
-  return calls.length > 1 ? `AI: ${short} 외 ${calls.length - 1}건` : `AI: ${short}`;
+  const base = calls.length > 1 ? `AI: ${short} 외 ${calls.length - 1}건` : `AI: ${short}`;
+  // 지시문을 뒤에 붙인다 — 도구 요약만으로는 "왜 이렇게 됐는지" 를 못 되짚는다.
+  const asked = instruction?.trim().replace(/\s+/g, " ") ?? "";
+  if (asked.length === 0) return base;
+  return `${base} · 지시: ${asked.length > 40 ? `${asked.slice(0, 40)}…` : asked}`;
 }
 
 export function currentHistoryMapId(): string | null {

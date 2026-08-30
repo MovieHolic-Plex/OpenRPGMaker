@@ -10,7 +10,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { runTool } from "@/editor/tools/toolRunner";
 import { TILE } from "@/project/defaults/constants";
-import { formatMaterialLabelHint } from "@/editor/regionTask/runRegionTask";
+import { formatMaterialLabelHint } from "@/ai/turnGuide";
 
 const BAG_ID = `${COMBINED_TOWN_HARNESS_PREFIX}small-props`;
 

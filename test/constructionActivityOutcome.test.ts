@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { toolCallsFromAudit } from "@/ai/activityLog";
 import type { AuditEntry, TurnResult } from "@/ai/assistantSession";
 import type { ConstructionAuditRecord } from "@/editor/construction/constructionAudit";
-import { buildRegionTaskLogExport } from "@/editor/regionTask/runRegionTask";
-import { createBlankProject } from "@/project/defaults";
 
 const ZERO_DIFF = {
   tilesChanged: 0,
@@ -58,34 +57,13 @@ describe("canonical construction activity outcome", () => {
       stoppedReason: "final",
     } as const satisfies TurnResult;
 
-    // When: the region task builds its top-level exported tool-call list.
-    const log = buildRegionTaskLogExport({
-      mapId: "map_1",
-      mapName: "마을",
-      region: { x: 0, y: 0, width: 20, height: 20 },
-      instruction: "집 8채 마을을 정확히 지어줘",
-      composedMessage: "집 8채 마을을 정확히 지어줘\n[context]",
-      result: {
-        ok: false,
-        applied: false,
-        changedCells: 0,
-        changedEvents: 0,
-        clippedCells: 0,
-        proposedCalls: 0,
-        assistantText: turn.assistantText,
-        error: "exact count rolled back",
-      },
-      turn,
-      uiEvents: [],
-      session: {
-        sendUserMessage: async () => turn,
-        getProposedProject: () => createBlankProject(),
-        getAuditEntries: () => audit,
-      },
-    });
+    // When: the assistant turn builds its top-level exported tool-call list.
+    // (예전엔 runRegionTask.buildRegionTaskLogExport 가 했다 — 실행체 통합으로 조수 경로 하나다.)
+    expect(turn.proposedCalls).toHaveLength(0); // 제안 0건 — 감사 로그가 유일한 단서다.
+    const toolCalls = toolCallsFromAudit(audit, []);
 
     // Then: failure, route, target, and count survive in the top-level call summary.
-    expect(log.toolCalls).toEqual([expect.objectContaining({
+    expect(toolCalls).toEqual([expect.objectContaining({
       name: "author_village",
       ok: false,
       construction: expect.objectContaining({
@@ -95,5 +73,12 @@ describe("canonical construction activity outcome", () => {
         counts: { requested: 8, actual: 0 },
       }),
     })]);
+  });
+
+  it("falls back to the proposal list when the audit ledger has no tool entries", () => {
+    const toolCalls = toolCallsFromAudit([{ kind: "assistant", text: "네" }], [
+      { name: "paint_tiles", args: { mapId: "map_1" }, ok: true, summary: "12칸" },
+    ]);
+    expect(toolCalls).toEqual([{ name: "paint_tiles", args: { mapId: "map_1" }, ok: true, summary: "12칸" }]);
   });
 });

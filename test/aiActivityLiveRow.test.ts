@@ -9,7 +9,7 @@ import {
   teardownAiChatPanel,
   type AiActivityScheduler,
 } from "@/editor/panels/aiChatPanel";
-import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -68,17 +68,43 @@ function createActivityScheduler(): {
   };
 }
 
-function successfulRegionResult(changedCells: number): RegionTaskResult {
+// 실행체가 조수 세션 하나로 합쳐진 뒤, 패널 턴을 관측하는 이음새는 세션의 LLM 호출이다.
+// 라운드 경계마다 스크립트 함수가 불리므로, 그 안에서 직전 라운드의 DOM 상태를 단정한다.
+function toolRound(name: string, args: unknown, id: string): ChatResult {
   return {
-    ok: true,
-    applied: true,
-    changedCells,
-    changedEvents: 0,
-    clippedCells: 0,
-    proposedCalls: 1,
-    assistantText: "",
-  };
+    message: {
+      role: "assistant",
+      content: null,
+      tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }],
+    },
+    finishReason: "tool_calls",
+  } as ChatResult;
 }
+
+function finalRound(text: string): ChatResult {
+  return { message: { role: "assistant", content: text }, finishReason: "stop" } as ChatResult;
+}
+
+/** 라운드마다 `before[i]` 단정을 먼저 돌리고 `steps[i]` 를 돌려준다. */
+function scriptedChat(steps: readonly ChatResult[], before: readonly (() => void)[]) {
+  let index = 0;
+  const failures: unknown[] = [];
+  const chat = vi.fn(async (_config: unknown, _req: ChatRequest): Promise<ChatResult> => {
+    try {
+      before[index]?.();
+    } catch (cause) {
+      failures.push(cause);
+    }
+    const next = steps[index];
+    index += 1;
+    if (!next) throw new Error("scripted chat exhausted");
+    return next;
+  });
+  return { chat, failures, rounds: () => index };
+}
+
+const CHAT_CONFIG = (): string =>
+  JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", model: "m", liteModel: "m", apiKey: "sk-test" });
 
 async function flushAsync(): Promise<void> {
   for (let index = 0; index < 20; index += 1) await Promise.resolve();
@@ -112,115 +138,111 @@ describe("AI 도구 라이브 활동 행", () => {
     const activity = createActivityScheduler();
     const project = store.getCurrent();
     const mapId = project.startMapId;
+    storage.set(AI_CONFIG_STORAGE_KEY, CHAT_CONFIG());
     editorState.set({ currentMapId: mapId, selection: { mapId, x: 1, y: 2, width: 3, height: 4 } });
 
     let panel: FakeElement;
     let liveRow: FakeElement | null = null;
-    let runnerAssertionFailure: unknown;
-    const assertInsideRunner = (assertion: () => void): void => {
+    const failures: unknown[] = [];
+    // 예약 시점(=tool_call 처리 중)이 유일한 동기 관측점이다. 이때 라이브 행은 아직
+    // **실행 중** 문구를 들고 있고 완료 행은 붙지 않았다 — 그것이 이 회귀의 요지다.
+    const scheduler: AiActivityScheduler = (callback, delayMs) => {
+      const cancel = activity.scheduler(callback, delayMs);
       try {
-        assertion();
-      } catch (cause) {
-        runnerAssertionFailure = cause;
-        throw cause;
-      }
-    };
-    const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
-      options.onEvent?.({ type: "tool_started", name: "paint_road", index: 1 });
-
-      assertInsideRunner(() => {
         liveRow = findByTestId(panel, "ai-activity-live");
         expect(liveRow).toBeTruthy();
         expect(liveRow?.querySelector(".ai-activity-live-spinner")).toBeTruthy();
         const liveText = liveRow?.textContent ?? "";
         expect(liveText).toContain("길을 그리는 중");
+        // 도구 이름(snake_case)이 사용자에게 새면 안 된다.
         expect(liveText).not.toMatch(/\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/u);
 
         now = 2_500;
         progressTick?.();
         expect(liveRow?.textContent).toBe(liveText);
         expect(findByTestId(panel, "ai-status")?.textContent).toContain("길을 그리는 중 · 2초 · 도구 1");
-      });
 
-      // 실제 시계처럼 앞으로 진행한 뒤 완료해도 최소 표시 시간은 완료 이벤트부터 온전히 보장한다.
-      now = 2_600;
-      options.onEvent?.({
-        type: "tool_call",
-        name: "paint_road",
-        args: { mapId, x: 1, y: 2, w: 3, h: 4 },
-        result: { ok: true, summary: "길 6칸" },
-      });
-
-      assertInsideRunner(() => {
-        expect(findByTestId(panel, "ai-activity-live")).toBe(liveRow);
+        // 완료 이벤트가 왔어도 최소 표시 시간 전에는 완료 행으로 바뀌지 않는다.
         expect(findByTestId(panel, "ai-tool-entry")).toBeNull();
-        expect(activity.pending).toHaveLength(1);
-        expect(activity.pending[0]?.delayMs).toBe(AI_ACTIVITY_MIN_DWELL_MS);
+        expect(delayMs).toBe(AI_ACTIVITY_MIN_DWELL_MS);
+      } catch (cause) {
+        failures.push(cause);
+      }
+      return cancel;
+    };
 
-        activity.pending[0]?.callback();
-        expect(findByTestId(panel, "ai-activity-live")).toBeNull();
-        const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
-        expect(entries).toHaveLength(1);
-        expect(entries[0]).toBe(liveRow);
-        expect(entries[0]?.textContent).toContain("길 6칸");
-      });
-
-      return successfulRegionResult(6);
-    });
+    const script = scriptedChat(
+      [
+        toolRound("paint_road", { mapId, points: [{ x: 1, y: 2 }, { x: 3, y: 2 }], style: "dirt" }, "c1"),
+        finalRound("길을 깔았습니다."),
+      ],
+      [],
+    );
 
     panel = renderAiChatPanel({
       clock: () => now,
-      activityScheduler: activity.scheduler,
+      activityScheduler: scheduler,
       getChatDock: () => "side",
-      regionTaskRunner: runner,
+      sessionChat: script.chat,
     }) as unknown as FakeElement;
     requestAiSelectionContext(editorState.get().selection);
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "선택 영역에 길을 그려줘";
     findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    for (let i = 0; i < 24; i += 1) await flushAsync();
 
-    expect(runner).toHaveBeenCalledTimes(1);
-    if (runnerAssertionFailure) throw runnerAssertionFailure;
+    if (failures[0]) throw failures[0];
+    if (script.failures[0]) throw script.failures[0];
+    expect(script.rounds()).toBeGreaterThanOrEqual(2);
+    // 예약 콜백이 돌면 같은 DOM 요소가 완료 행으로 바뀐다(행이 튀지 않는다).
+    const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
+    expect(entries.length).toBeGreaterThanOrEqual(1);
+    expect(entries[0]).toBe(liveRow);
+    expect(findByTestId(panel, "ai-activity-live")).toBeNull();
   });
 
   it("성공한 조회 도구는 완료 행을 남기지 않고 턴 종료 시 캔버스 칩 상태도 지운다", async () => {
     installFakeWindow();
     const project = store.getCurrent();
     const mapId = project.startMapId;
+    storage.set(AI_CONFIG_STORAGE_KEY, CHAT_CONFIG());
     editorState.set({ currentMapId: mapId, selection: { mapId, x: 1, y: 2, width: 3, height: 4 } });
 
     let panel: FakeElement;
     let sawRunningTool = false;
-    const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
-      options.onEvent?.({ type: "tool_started", name: "get_map_region", index: 1 });
-      sawRunningTool = getAgentGhostPreviewState().runningToolName === "get_map_region";
-      options.onEvent?.({
-        type: "tool_call",
-        name: "get_map_region",
-        args: { mapId, x: 1, y: 2, w: 3, h: 4 },
-        result: { ok: true, summary: "선택 영역 조회" },
-      });
-      expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
-      expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toContain("조회 1");
-      return { ...successfulRegionResult(0), applied: false, proposedCalls: 0 };
-    });
+    const script = scriptedChat(
+      [
+        toolRound("get_map_region", { mapId, x: 1, y: 2, w: 3, h: 4 }, "q1"),
+        finalRound("3×4 입니다."),
+      ],
+      [
+        () => {},
+        // 조회 도구 직후 라운드: 실행 중 도구 이름이 캔버스 칩 상태에 남아 있고
+        // 완료 행은 붙지 않았다(조회는 카운터만 올린다).
+        () => {
+          sawRunningTool = getAgentGhostPreviewState().runningToolName === "get_map_region";
+          expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
+          expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toContain("조회 1");
+        },
+      ],
+    );
 
     panel = renderAiChatPanel({
       clock: () => 0,
       getChatDock: () => "side",
-      regionTaskRunner: runner,
+      sessionChat: script.chat,
     }) as unknown as FakeElement;
     requestAiSelectionContext(editorState.get().selection);
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "이 영역 크기를 알려줘";
     findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    for (let i = 0; i < 24; i += 1) await flushAsync();
 
-    expect(runner).toHaveBeenCalledTimes(1);
+    if (script.failures[0]) throw script.failures[0];
     expect(sawRunningTool).toBe(true);
     expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
     expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toContain("조회 1");
+    // 턴이 끝나면 캔버스 칩 상태는 비워진다.
     expect(getAgentGhostPreviewState().runningToolName).toBe("");
     expect(findByTestId(panel, "ai-ghost-phase-chip")).toBeNull();
   });
@@ -230,72 +252,52 @@ describe("AI 도구 라이브 활동 행", () => {
     const activity = createActivityScheduler();
     const project = store.getCurrent();
     const mapId = project.startMapId;
+    storage.set(AI_CONFIG_STORAGE_KEY, CHAT_CONFIG());
     editorState.set({ currentMapId: mapId, selection: { mapId, x: 1, y: 2, width: 3, height: 4 } });
 
     let panel: FakeElement;
-    let runnerAssertionFailure: unknown;
-    const assertInsideRunner = (assertion: () => void): void => {
-      try {
-        assertion();
-      } catch (cause) {
-        runnerAssertionFailure = cause;
-        throw cause;
-      }
-    };
-    const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
-      options.onEvent?.({ type: "tool_started", name: "paint_road", index: 1 });
-      options.onEvent?.({
-        type: "tool_call",
-        name: "paint_road",
-        args: { mapId },
-        result: { ok: true, summary: "첫 번째 길" },
-      });
-      assertInsideRunner(() => {
-        expect(findByTestId(panel, "ai-tool-entry")).toBeNull();
-        expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("길을 그리는 중");
-      });
-
-      options.onEvent?.({ type: "tool_started", name: "place_npc", index: 2 });
-      assertInsideRunner(() => {
-        const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
-        expect(entries).toHaveLength(1);
-        expect(entries[0]?.textContent).toContain("첫 번째 길");
-        expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("사람을 만드는 중");
-        expect(activity.pending[0]?.cancelled).toBe(true);
-      });
-
-      options.onEvent?.({
-        type: "tool_call",
-        name: "place_npc",
-        args: { mapId },
-        result: { ok: true, summary: "두 번째 NPC" },
-      });
-      assertInsideRunner(() => {
-        expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(1);
-        expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("사람을 만드는 중");
-      });
-      return successfulRegionResult(1);
-    });
+    const script = scriptedChat(
+      [
+        toolRound("paint_road", { mapId, points: [{ x: 1, y: 2 }, { x: 3, y: 2 }], style: "dirt" }, "c1"),
+        toolRound("place_npc", { mapId, id: "npc_live", x: 2, y: 3, name: "주민", pages: [{ lines: ["안녕"] }] }, "c2"),
+        finalRound("길과 주민을 넣었습니다."),
+      ],
+      [
+        () => {},
+        // 첫 도구가 끝난 직후: 라이브 행 하나 + 예약 하나, 완료 행은 아직 없다.
+        () => {
+          expect(findByTestId(panel, "ai-tool-entry")).toBeNull();
+          expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("길을 그리는 중");
+          expect(activity.pending).toHaveLength(1);
+        },
+        // 둘째 도구 시작이 앞 예약을 먼저 확정(취소 + finalize)하고 라이브 행을 갈아탄다.
+        () => {
+          const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
+          expect(entries).toHaveLength(1);
+          expect(entries[0]?.textContent).toContain("도로");
+          expect(activity.pending[0]?.cancelled).toBe(true);
+          expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("사람을 만드는 중");
+        },
+      ],
+    );
 
     panel = renderAiChatPanel({
       clock: () => 0,
       activityScheduler: activity.scheduler,
       getChatDock: () => "side",
-      regionTaskRunner: runner,
+      sessionChat: script.chat,
     }) as unknown as FakeElement;
     requestAiSelectionContext(editorState.get().selection);
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "길을 그리고 NPC를 배치해줘";
     findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    for (let i = 0; i < 24; i += 1) await flushAsync();
 
-    expect(runner).toHaveBeenCalledTimes(1);
-    if (runnerAssertionFailure) throw runnerAssertionFailure;
+    if (script.failures[0]) throw script.failures[0];
+    // 턴이 끝나면 라이브 행은 사라지고 두 도구가 순서대로 남는다.
     expect(findByTestId(panel, "ai-activity-live")).toBeNull();
     const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
     expect(entries).toHaveLength(2);
-    expect(entries[0]?.textContent).toContain("첫 번째 길");
-    expect(entries[1]?.textContent).toContain("두 번째 NPC");
     expect(activity.pending.every((task) => task.cancelled)).toBe(true);
   });
 });

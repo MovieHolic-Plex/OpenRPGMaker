@@ -3,9 +3,11 @@ import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
 import { TILE } from "@/project/defaults/constants";
 import { approvedVocabulary, unapprovedVocabulary } from "@/project/tileVocabulary";
-import { buildRegionTaskMessage, ensureRegionPlacementHarness, runRegionTask, type RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
+import { buildScopedTurnMessage as buildRegionTaskMessage } from "./helpers/scopedTurnMessage";
+import { ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
+import { clipMapCellsToRegion } from "@/editor/regionTask/clipToRegion";
 import { AssistantSession } from "@/ai/assistantSession";
-import { loadAiConfig, configForLiteModel, AI_CONFIG_STORAGE_KEY, DEFAULT_BASE_URL } from "@/ai/llmClient";
+import { loadAiConfig, AI_CONFIG_STORAGE_KEY, DEFAULT_BASE_URL } from "@/ai/llmClient";
 import { toOpenAiTools } from "@/editor/tools";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains } from "@/editor/assistantToolMode";
 import type { Project } from "@/project/types";
@@ -60,7 +62,7 @@ describe("region AI house/tree/npc probe", () => {
     });
     console.log("HOUSE", house.ok, house.summary);
 
-    ensureRegionPlacementHarness(tileset);
+    ensureBuildPaletteTileGroups(tileset);
         const props = runTool(ctx, "place_props", {
       mapId: MAP_ID,
       area: { x: 10, y: 3, w: 6, h: 6 },
@@ -140,34 +142,31 @@ describe("region AI house/tree/npc probe", () => {
     });
 
     const toolCalls: string[] = [];
-    const deps: RegionTaskDeps = {
-      getProject: () => project,
-      applyProject: (p) => {
-        Object.assign(project, p);
-      },
-      createSession: (p, mapId) =>
-        new AssistantSession(p, {
-          config: configForLiteModel(loadAiConfig()),
-          contextOptions: { currentMapId: mapId },
-        }),
+    // 실행체는 조수 세션 하나다 — 스코프는 프롬프트(가이드 + 꼬리표) + 하드 클립으로만 걸린다.
+    // 모델도 감독 모델(loadAiConfig) 이다: 예전 영역 경로의 lite 고정이 풀렸다.
+    const tileset = project.tilesets[project.maps[MAP_ID].tilesetId];
+    if (tileset) ensureBuildPaletteTileGroups(tileset);
+    const message = buildRegionTaskMessage("집과 나무 1개, npc 배치", "프로브", MAP_ID, REGION, tileset);
+    const session = new AssistantSession(project, {
+      config: loadAiConfig(),
+      contextOptions: { currentMapId: MAP_ID },
+    });
+    const turn = await session.sendUserMessage(message, (ev) => {
+      if (ev.type === "tool_call") toolCalls.push(ev.name);
+      if (ev.type === "status") console.log("STATUS", ev.text);
+    });
+    const clip = clipMapCellsToRegion(project, session.getProposedProject(), MAP_ID, REGION);
+    const result = {
+      ok: turn.stoppedReason !== "error",
+      applied: turn.proposedCalls.length > 0,
+      changedCells: clip.clippedCells,
+      changedEvents: 0,
+      clippedCells: clip.clippedCells,
+      proposedCalls: turn.proposedCalls.length,
+      assistantText: turn.assistantText,
+      error: turn.error,
     };
-
-    const result = await runRegionTask(
-      {
-        mapId: MAP_ID,
-        region: REGION,
-        instruction: "집과 나무 1개, npc 배치",
-        onEvent: (ev) => {
-          if (ev.type === "tool_call") toolCalls.push(ev.name);
-          if (ev.type === "status") console.log("STATUS", ev.text);
-        },
-      },
-      deps,
-    );
-
-    // 영역 작업 자체의 pending/apply 계약은 채팅 승인 카드와 별개다. 라이브 결과를
-    // 실제 프로젝트에 반영해 배치 결과를 검증한다.
-    result.pending?.apply();
+    Object.assign(project, clip.project);
 
     const map = project.maps[MAP_ID];
     const upperNonEmpty = map.upperTiles.filter((t) => t >= 0 && t !== TILE.EMPTY).length;

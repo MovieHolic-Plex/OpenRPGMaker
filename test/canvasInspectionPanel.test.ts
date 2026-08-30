@@ -30,7 +30,7 @@ describe("canvas inspection panel", () => {
         { code: "blocked-entry", mapId, message: "입구가 막혀 있습니다.", severity: "error", x: 4, y: 5 },
         { code: "map-size", mapId, message: "맵이 너무 큽니다.", severity: "warning" },
       ],
-      openRegionTask: vi.fn(),
+      requestAssistant: vi.fn(),
     };
 
     const panel = openCanvasInspectionPanel({ deps, mapId, project });
@@ -41,27 +41,28 @@ describe("canvas inspection panel", () => {
     expect(focusIssue).toHaveBeenCalledWith({ mapId, x: 4, y: 5 });
   });
 
-  it("sends a located issue to the bounded AI repair preview", () => {
+  it("문제 좌표 둘레를 조수 턴의 스코프로 무장하고 캔버스 선택도 같이 옮긴다", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
-    const openRegionTask = vi.fn();
+    const requestAssistant = vi.fn();
     const deps: CanvasInspectionDeps = {
       focusIssue: vi.fn(),
       lint: () => [
         { code: "blocked-entry", mapId, message: "입구가 막혀 있습니다.", severity: "error", x: 4, y: 5 },
       ],
-      openRegionTask,
+      requestAssistant,
     };
 
     const panel = openCanvasInspectionPanel({ deps, mapId, project });
     findByTestId(panel, "canvas-inspection-fix-0")?.click();
 
-    expect(openRegionTask).toHaveBeenCalledWith(expect.objectContaining({
-      autoRun: false,
-      mapId,
-      region: { x: 2, y: 3, width: 5, height: 5 },
-    }));
-    expect(openRegionTask.mock.calls[0]?.[0].initialInstruction).toContain("입구가 막혀 있습니다.");
+    const region = { x: 2, y: 3, width: 5, height: 5 };
+    expect(requestAssistant).toHaveBeenCalledWith({ mapId, ...region }, expect.objectContaining({ focus: true }));
+    expect(requestAssistant.mock.calls[0]?.[1].instruction).toContain("입구가 막혀 있습니다.");
+    // autoRun 은 하지 않는다 — 수리 지시문은 사용자가 읽고 다듬을 여지가 있다.
+    expect(requestAssistant.mock.calls[0]?.[1].autoRun).toBeUndefined();
+    // 사용자가 캔버스에서 같은 사각형을 봐야 되돌리기·확인이 맞아떨어진다.
+    expect(editorState.get().selection).toEqual({ mapId, ...region });
   });
 
   it("shows a clean result when lint finds no issues", () => {
@@ -69,7 +70,7 @@ describe("canvas inspection panel", () => {
     const deps: CanvasInspectionDeps = {
       focusIssue: vi.fn(),
       lint: () => [],
-      openRegionTask: vi.fn(),
+      requestAssistant: vi.fn(),
     };
 
     const panel = openCanvasInspectionPanel({ deps, mapId: project.startMapId, project });

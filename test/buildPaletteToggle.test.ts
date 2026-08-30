@@ -114,23 +114,21 @@ describe("build palette toggle → tool switch", () => {
   it.each([
     ["house", "야외 집 한 채"],
     ["village", "마을"],
-  ] as const)("%s 버튼은 결정론적 시공 대신 AI 영역 작업을 즉시 실행한다", (primitive, instruction) => {
-    const openRegionTask = vi.fn();
+  ] as const)("%s 버튼은 결정론적 시공 대신 조수 턴을 스코프째로 즉시 실행한다", (primitive, instruction) => {
+    const requestAssistant = vi.fn();
     setBuildPaletteEnabled(true);
-    editorState.set({
-      currentMapId: "map_blank_start",
-      selection: { mapId: "map_blank_start", x: 2, y: 3, width: 40, height: 38 },
-    });
+    const selection = { mapId: "map_blank_start", x: 2, y: 3, width: 40, height: 38 };
+    editorState.set({ currentMapId: "map_blank_start", selection });
 
-    const popup = renderBuildPalettePopup(openRegionTask);
+    const popup = renderBuildPalettePopup(requestAssistant);
     const fakePopup = popup as unknown as Parameters<typeof findByTestId>[0] | null;
     findByTestId(fakePopup!, `build-palette-${primitive}`)?.click();
 
-    expect(openRegionTask).toHaveBeenCalledWith(expect.objectContaining({
+    // 실행체는 조수 세션 하나다 — 팝오버를 여는 대신 브리지 이벤트 1건으로 지시문까지 실어 보낸다.
+    expect(requestAssistant).toHaveBeenCalledWith(selection, expect.objectContaining({
       autoRun: true,
-      mapId: "map_blank_start",
-      region: { x: 2, y: 3, width: 40, height: 38 },
-      initialInstruction: expect.stringContaining(instruction),
+      focus: true,
+      instruction: expect.stringContaining(instruction),
     }));
   });
 });

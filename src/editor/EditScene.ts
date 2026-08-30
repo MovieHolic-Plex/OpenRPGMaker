@@ -58,18 +58,11 @@ import { handleEditorKey, handleHistoryHotkey, historyHotkeyOwnedByPanel, isHist
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
 import { openStructurePlacementContextMenu } from "@/editor/panels/structurePlacementContextMenu";
-import {
-  isRegionTaskModalOpen,
-  isRegionTaskRegionLocked,
-  REGION_TASK_MODAL_EVENT,
-  retargetRegionTaskModal,
-} from "@/editor/panels/regionTaskModal";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { setEditorMapViewport } from "@/editor/editorMapViewport";
-import { setRegionClientRectResolver } from "@/editor/regionClientRect";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
@@ -136,7 +129,6 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
 }
 
 // 위치 헬퍼는 selectionOverlayAnchor.ts — 테스트/재사용용 re-export
-import { tileRectToClientRect } from "@/editor/selectionOverlayAnchor";
 export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
 
 export function regionTaskBadgeText(phase: "running" | "pending"): string | null {
@@ -215,9 +207,6 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderRegionTaskBadge();
   };
   /** 영역 작업 창 열림/닫힘 → 선택 칩 오버레이를 숨기거나 되살린다. */
-  private readonly handleRegionTaskModalToggle = (): void => {
-    this.renderBuildPaletteOverlay();
-  };
   /**
    * 브라우저 기본 컨텍스트 메뉴만 차단.
    * mousedown/pointerdown 에 preventDefault 하면 Phaser 우클릭 드래그가 먹통이 된다.
@@ -312,8 +301,6 @@ export class EditScene extends PhaserRuntime.Scene {
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
-    // 영역 작업 창이 닫히면 선택 칩 오버레이를 되살린다(열릴 때는 숨긴다).
-    window.addEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
     if (typeof window !== "undefined") {
       // e2e/진단 스펙용 후킹 — 카메라 수학을 스펙에 복제하지 않도록 엔진의 실제 값을 노출한다.
@@ -339,7 +326,6 @@ export class EditScene extends PhaserRuntime.Scene {
 
     // 선택 액션 바가 영역 작업 창을 열 때 대상 영역의 화면 사각형(avoid)을 알아야 한다.
     // 그 계산은 Phaser 카메라를 읽으므로 여기서만 가능하다 — 등록소에 꽂아 둔다.
-    setRegionClientRectResolver((region) => this.regionClientRect(region));
 
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
@@ -368,7 +354,6 @@ export class EditScene extends PhaserRuntime.Scene {
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
-    window.removeEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
     if (typeof window !== "undefined") {
@@ -382,7 +367,6 @@ export class EditScene extends PhaserRuntime.Scene {
     this.activeRegionTask = null;
     this.regionSizeBadge?.remove();
     this.regionSizeBadge = null;
-    setRegionClientRectResolver(null);
     setEditorMapViewport(null);
   }
 
@@ -560,11 +544,10 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private beginRightRegionGesture(ptr: Phaser.Input.Pointer): void {
-    // 영역 작업이 돌고 있거나 결과 검토 중이면 대상 영역이 잠긴다. 창은 비모달이라 캔버스가
-    // 살아 있고, 그 상태로 새 영역을 잡으면 선택과 창이 서로 다른 곳을 가리킨다 —
-    // 「적용」이 화면에 보이는 선택이 아닌 옛 영역을 고치게 된다. 그래서 제스처를 아예
-    // 시작하지 않는다(지시 단계라면 finishRightRegionGesture 가 창을 새 영역으로 옮긴다).
-    if (isRegionTaskRegionLocked()) return;
+    // 스코프 턴이 돌고 있으면 대상 영역이 잠긴다. 조수는 턴 시작 시점의 사각형을 이미 들었고
+    // 적용 시 그 사각형으로 하드 클립하므로, 도는 중에 새 영역을 잡으면 화면의 선택과 실제
+    // 작업 대상이 갈라진다. 상태는 캔버스 배지와 같은 소스(REGION_TASK_STATUS_EVENT)를 쓴다.
+    if (this.activeRegionTask) return;
     const mapId = this.mapId();
     if (!mapId) return;
     const map = store.getCurrent().maps[mapId];
@@ -630,10 +613,6 @@ export class EditScene extends PhaserRuntime.Scene {
         width: rect.width,
         height: rect.height,
       });
-      // 창이 떠 있는 채로 다시 영역을 잡았다면 그건 **대상 재지정**이다. 창을 새 영역으로
-      // 갈아 끼우고(입력해 둔 지시문은 따라온다) 칩 바나 첫사용 힌트는 띄우지 않는다 —
-      // 창이 이미 그 자리에 있고, 칩 바는 창이 열려 있는 동안 물러나 있다.
-      if (retargetRegionTaskModal(rect, screen)) return;
       notifyRightDragRegionSelected();
       return;
     }
@@ -676,33 +655,6 @@ export class EditScene extends PhaserRuntime.Scene {
       return;
     }
     this.getTilePaintEngine().pickTileAtPointer(ptr);
-  }
-
-  /**
-   * 타일 영역의 클라이언트(화면) 사각형. 영역 작업 팝오버가 대상 영역과 캔버스 고스트
-   * 미리보기를 덮지 않도록 넘긴다(`avoid`). 카메라/캔버스를 못 읽는 환경에서는 null 이고,
-   * 그때는 팝오버가 기존 anchor 배치를 그대로 쓴다.
-   *
-   * 창을 여는 주체는 이제 선택 액션 바(Phaser 비의존 DOM)라, 이 계산을
-   * regionClientRect 등록소로 내보낸다.
-   */
-  private regionClientRect(region: {
-    readonly x: number;
-    readonly y: number;
-    readonly width: number;
-    readonly height: number;
-  }): { readonly x: number; readonly y: number; readonly width: number; readonly height: number } | null {
-    const canvas = this.game?.canvas;
-    const camera = this.cameras?.main;
-    if (!canvas || !camera || typeof canvas.getBoundingClientRect !== "function") return null;
-    const canvasRect = canvas.getBoundingClientRect();
-    return tileRectToClientRect({
-      tileRect: region,
-      worldView: { x: camera.worldView.x, y: camera.worldView.y },
-      zoom: camera.zoom,
-      canvasOrigin: { x: canvasRect.left, y: canvasRect.top },
-      tileSize: TILE_SIZE,
-    });
   }
 
   private startPan(ptr: Phaser.Input.Pointer): void {
@@ -893,10 +845,6 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleEscapeKey(): boolean {
-    // 영역 작업 창이 떠 있으면 Esc 는 그 창의 것이다. 창이 비모달이 되면서 포커스가
-    // 캔버스에 있는 채로 Esc 가 여기까지 올 수 있게 됐는데, 그때 선택까지 지워 버리면
-    // Esc 한 번에 창과 선택이 함께 사라져 칩 바로 돌아갈 수 없다.
-    if (isRegionTaskModalOpen()) return false;
     // 붙여넣기 미리보기 취소가 최우선.
     if (cancelPastePreview()) {
       this.clearPastePreviewGhost();
@@ -1510,17 +1458,10 @@ export class EditScene extends PhaserRuntime.Scene {
     if (typeof document === "undefined") return;
     const selection = editorState.get().selection;
     const mapId = this.mapId();
-    // 크기 배지는 칩 바와 수명이 다르다 — 영역 작업 창이 열려 있는 동안에도 대상 영역을
-    // 가리키고 있어야 한다. 그래서 아래 가드들보다 먼저, 항상 갱신한다.
-    // (이 함수는 redraw·pan·창 토글 모두에서 불리므로 배지 추적점으로 충분하다.)
+    // 크기 배지는 칩 바와 수명이 다르다 — 스코프 턴이 도는 동안에도 대상 영역을 가리키고
+    // 있어야 한다. 그래서 아래 가드들보다 먼저, 항상 갱신한다.
+    // (이 함수는 redraw·pan 모두에서 불리므로 배지 추적점으로 충분하다.)
     this.renderRegionSizeBadge();
-    // 영역 작업 창이 열려 있으면 칩/팔레트 오버레이를 띄우지 않는다 — 창과 칩 바가 같은
-    // 자리에 겹쳐 화면이 어수선해진다. 창을 닫으면 다시 나타난다.
-    if (isRegionTaskModalOpen()) {
-      this.clearBuildPaletteOverlay();
-      this.renderRegionTaskBadge();
-      return;
-    }
     if (!selection || selection.mapId !== mapId) {
       this.clearBuildPaletteOverlay();
       this.renderRegionTaskBadge();

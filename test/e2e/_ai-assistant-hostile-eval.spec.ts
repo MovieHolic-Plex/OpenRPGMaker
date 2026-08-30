@@ -392,7 +392,7 @@ test("F 뷰포트 — 1280·1024·1920", async ({ page }) => {
   await probePanel(page, "F-1920");
 });
 
-test("G 전문가 모드 — 선택 칩·영역 팝오버·히스토리", async ({ page }) => {
+test("G 전문가 모드 — 선택 칩·작업 칩·히스토리", async ({ page }) => {
   test.setTimeout(240_000);
   collectErrors(page, "G");
   await boot(page, "expert");
@@ -408,12 +408,13 @@ test("G 전문가 모드 — 선택 칩·영역 팝오버·히스토리", async 
     await page.mouse.move(box.x + 420, box.y + 340, { steps: 12 });
     await page.mouse.up({ button: "right" });
     await page.waitForTimeout(900);
-    const popover = page.getByTestId("region-task-popover");
-    if (await popover.isVisible().catch(() => false)) {
-      await shot(page, "G03-region-popover-in-place");
-      await shot(popover, "G04-region-popover");
-      await page.getByTestId("region-task-close").click().catch(() => undefined);
-    } else await shot(page, "G05-canvas-selection-no-popover");
+    // 영역 작업 팝오버는 없어졌다 — 우클릭 드래그가 남기는 것은 작업 칩이고, 칩이 조수 턴의
+    // 스코프를 무장한다.
+    const chips = page.getByTestId("selection-action-chips");
+    if (await chips.isVisible().catch(() => false)) {
+      await shot(page, "G03-selection-chips-in-place");
+      await shot(chips, "G04-selection-chips");
+    } else await shot(page, "G05-canvas-selection-no-chips");
     const chip = page.getByTestId("ai-selection-chip");
     if (await chip.isVisible().catch(() => false)) {
       await shot(await ensurePanel(page), "G06-selection-chip");

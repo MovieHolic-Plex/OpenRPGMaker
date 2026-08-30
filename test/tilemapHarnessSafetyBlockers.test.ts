@@ -3,46 +3,15 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import {
-  getMapEditHistoryDebugEntries,
-  resetMapEditHistory,
-} from "@/editor/mapEditHistory";
-import {
-  __clearPendingRegionApplyForTest,
-  getPendingRegionApply,
-  setPendingRegionApply,
-} from "@/editor/regionTask/pendingRegionApply";
-import { reviewRegionDraft, type HarnessReviewReport } from "@/editor/regionTask/harnessReview";
-import { applyRegionProjectWithHistory } from "@/editor/regionTask/runRegionTask";
+import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { reviewRegionDraft } from "@/editor/regionTask/harnessReview";
 import { createBlankProject } from "@/project/defaults";
-import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 
 const REGION = { x: 0, y: 0, width: 4, height: 4 } as const;
 
-function clearReport(): HarnessReviewReport {
-  return {
-    issues: [],
-    blockers: [],
-    checkpoints: [],
-    metrics: {
-      changedCells: 0,
-      changedEvents: 0,
-      passableChangedCells: 0,
-      isolatedChangedCells: 0,
-      scheduledNpcs: 0,
-      scheduleEntries: 0,
-      timeSystemEnabled: false,
-      roomSessions: 0,
-      roomScoreAverage: null,
-      deterministicRepairs: 0,
-    },
-    repairLimit: 8,
-  };
-}
 
 afterEach(() => {
-  __clearPendingRegionApplyForTest();
   resetMapEditHistory();
 });
 
@@ -97,87 +66,10 @@ describe("tilemap harness safety review blockers", () => {
       && issue.message.includes("conditional-objective"))).toBe(false);
   });
 
-  it("keeps an apply failure retryable and settles only after success", () => {
-    const base = createBlankProject();
-    let attempts = 0;
-    let settlements = 0;
-    const pending = setPendingRegionApply({
-      baseProject: base,
-      clippedProject: structuredClone(base),
-      mapId: base.startMapId,
-      region: REGION,
-      changedCells: 1,
-      changedEvents: 0,
-      instruction: "retry apply",
-      report: clearReport(),
-      getCurrentProject: () => base,
-      reviewProject: (project) => ({ project, report: clearReport() }),
-      onApply: () => {
-        attempts += 1;
-        if (attempts === 1) throw new Error("one-shot commit failure");
-      },
-      onDiscard: () => undefined,
-      onSettle: () => { settlements += 1; },
-    });
-
-    expect(pending.apply()).toMatchObject({ ok: false, applied: false });
-    expect(pending.lastApplyError).toContain("one-shot commit failure");
-    expect(pending.settled).toBe(false);
-    expect(getPendingRegionApply()).toBe(pending);
-    expect(settlements).toBe(0);
-
-    expect(pending.apply()).toMatchObject({ ok: true, applied: true });
-    expect(attempts).toBe(2);
-    expect(settlements).toBe(1);
-    expect(getPendingRegionApply()).toBeNull();
-  });
-
-  it("rolls back authored state and history when store replacement throws", () => {
-    const base = createBlankProject();
-    store.replace(base, { preserveEventDrafts: false });
-    resetMapEditHistory();
-    const candidate = structuredClone(base);
-    candidate.meta.title = "Atomic candidate";
-    let throwOnce = true;
-    const unsubscribe = store.subscribe(() => {
-      if (!throwOnce) return;
-      throwOnce = false;
-      throw new Error("listener failed after assignment");
-    });
-
-    try {
-      const pending = setPendingRegionApply({
-        baseProject: base,
-        clippedProject: candidate,
-        mapId: base.startMapId,
-        region: REGION,
-        changedCells: 0,
-        changedEvents: 0,
-        instruction: "atomic apply",
-        report: clearReport(),
-        getCurrentProject: () => store.getCurrent(),
-        reviewProject: (project) => ({ project, report: clearReport() }),
-        onApply: (project) => applyRegionProjectWithHistory(project, "atomic apply", base.startMapId),
-        onDiscard: () => undefined,
-        onSettle: () => undefined,
-      });
-
-      expect(pending.apply()).toMatchObject({ ok: false, applied: false });
-      expect(store.getCurrent()).toEqual(base);
-      expect(getMapEditHistoryDebugEntries()).toHaveLength(0);
-      expect(pending.settled).toBe(false);
-
-      expect(pending.apply()).toMatchObject({ ok: true, applied: true });
-      expect(store.getCurrent().meta.title).toBe("Atomic candidate");
-      expect(getMapEditHistoryDebugEntries()).toEqual([
-        expect.objectContaining({ kind: "project", mapId: base.startMapId }),
-      ]);
-    } finally {
-      unsubscribe();
-      store.replace(createBlankProject(), { preserveEventDrafts: false });
-    }
-  });
-
+  // 삭제됨: 승인 게이트(setPendingRegionApply)의 재시도·원자성 테스트 2건.
+  // approvalPolicy 상 승인 대기가 없어졌고 적용은 조수 경로(applyProposedProject)가 한다 —
+  // 커밋 게이트 거부는 스토어를 건드리지 않고 false 를 돌려주며, 그 계약은
+  // test/applyChangesetToStore.test.ts 가 고정한다.
   it("rejects a stale Vitest report when the current runner writes nothing", () => {
     const repoRoot = process.cwd();
     const temporaryRoot = mkdtempSync(join(tmpdir(), "rpg-zzu-gates-"));

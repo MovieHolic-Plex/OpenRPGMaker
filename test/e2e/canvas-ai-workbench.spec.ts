@@ -45,10 +45,10 @@ test("canvas AI workbench exposes and executes its real quick actions", async ({
   });
   await page.getByRole("button", { name: "검사 결과 닫기" }).click();
 
+  // 영역 작업 팝오버는 없어졌다 — 선택이 없으면 조수 패널만 펼친다(맵 전체를 스코프로 씌우지 않는다).
   await page.getByTestId("canvas-ai-ask").click();
-  await expect(page.getByTestId("region-task-modal")).toBeVisible();
-  await expect(page.getByRole("dialog", { name: "영역 작업" })).toBeVisible();
-  await expect(page.getByRole("textbox", { name: /이 영역에 무엇을 할까요/ })).toBeVisible();
+  await expect(page.getByTestId("ai-input")).toBeVisible();
+  await expect(page.getByTestId("region-task-modal")).toHaveCount(0);
 
   await page.screenshot({
     fullPage: true,

@@ -13,6 +13,9 @@ import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { summarizeChanges } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { clipMapCellsToRegion } from "@/editor/regionTask/clipToRegion";
+import { reviewRegionDraft } from "@/editor/regionTask/harnessReview";
+import type { TurnScope } from "@/ai/turnGuide";
 import {
   formatLayoutRepairSummary,
   layoutRepairDidWork,
@@ -202,13 +205,29 @@ export interface ProposalAppliedResult {
   readonly summary: string;
 }
 
+/** 이번 턴의 적용 조건 — 호출자(조수 패널)만 아는 것들. */
+export interface ProposalApplyTurn {
+  /** 주면 그 사각형이 이번 턴의 하드 클립 경계가 된다(선택 영역 작업). */
+  readonly scope?: TurnScope | null;
+  /**
+   * 사용자가 실제로 입력한 지시문. 세션 감사 로그의 user 발화에는 턴 가이드가 붙어 있어
+   * (sendText 가 지시 + 가이드 + footer 를 합친다) 거기서 되뽑으면 2KB 짜리 규칙문이
+   * 배치 수리·작업 항목 정산의 키워드로 흘러든다. 그래서 호출자가 원문을 직접 넘긴다.
+   */
+  readonly instruction?: string;
+}
+
 export interface ProposalHostApi {
   pendingProposalMessage: ProposalMessageState | null;
   lastAppliedProposalMessage: ProposalMessageState | null;
   /** 변경 0건 턴의 안내(완성도 린트 경고 포함) — 적용할 것이 없을 때만 부른다. */
   noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
   /** 실제로 적용되었을 때만 true — 호출자가 "적용됨" 로그를 붙이기 전에 이것을 기다린다. */
-  applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<boolean>;
+  applyProposal: (
+    calls: readonly ProposedCall[],
+    assistantBubble?: HTMLElement | null,
+    turn?: ProposalApplyTurn | null,
+  ) => Promise<boolean>;
 }
 
 export function createProposalHost(options: {
@@ -235,7 +254,9 @@ export function createProposalHost(options: {
   const applyProposal = async (
     calls: readonly ProposedCall[],
     assistantBubble: HTMLElement | null = null,
+    turn: ProposalApplyTurn | null = null,
   ): Promise<boolean> => {
+    const scope = turn?.scope ?? null;
     const session = controller.session;
     if (!session || calls.length === 0) return false;
     ensureGuestIdentityForAiSurface();
@@ -249,12 +270,45 @@ export function createProposalHost(options: {
     const softMarked = markSoftVocabApprovalsOnProject(proposed, calls);
 
     // 배치 충돌은 사람에게 되돌리지 않는다. 물/벽 위 소품은 육지로 옮기거나 정리한다.
-    const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
+    //
     // 지시문은 **사용자 발화만** 쓴다. `[컨텍스트] 현재 맵: 숲 입구 …` footer 가 섞이면 맵 이름이
     // 나무 지시로 오인돼 배치 검증이 헛돌았다(assistantSession 의 의도 스캔과 같은 처리).
-    const instruction = stripContextFooter(lastUser && lastUser.kind === "user" ? lastUser.text : "");
-    const repaired = repairLayoutPlacement(proposed, {
-      mapId: currentHistoryMapId() ?? undefined,
+    // 호출자가 원문(turn.instruction)을 주면 그쪽이 정본이다 — 감사 로그의 발화에는 턴 가이드가
+    // 붙어 있어 되뽑으면 규칙문 키워드가 섞인다. 폴백은 재시도·복구 경로용이다.
+    const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
+    const instruction = turn?.instruction?.trim()
+      || stripContextFooter(lastUser && lastUser.kind === "user" ? lastUser.text : "");
+
+    // ── 스코프(선택 영역) 하드 클립 ─────────────────────────────────────────────
+    // 배치 수리 **앞**에 넣는다 — 클립으로 base 로 되돌린 칸을 repairLayoutPlacement 가 다시
+    // 만지면 "영역 안에서만" 이 깨진다. 클립 계약상 **다른 맵은 통과**하므로 실내 신축처럼
+    // 사각형 밖이 본업인 작업은 스코프가 걸려 있어도 살아남는다(clipToRegion 머리말).
+    let candidate = proposed;
+    let clippedCells = 0;
+    if (scope) {
+      const clip = clipMapCellsToRegion(before, candidate, scope.mapId, scope.region);
+      candidate = clip.project;
+      clippedCells = clip.clippedCells;
+    }
+    // 플레이 가능성 하네스: 경계 안 격리(문 없는 벽 등)를 정해진 횟수만 수리하고 나머지는
+    // 경고로 남긴다. **적용을 막지 않는다** — 승인 게이트가 없는 정책(@/ai/approvalPolicy)에서
+    // 하네스가 차단하면 사용자는 되돌릴 수도 없는 "아무 일도 안 일어남" 을 받는다.
+    // 스코프가 없으면 검사할 사각형이 없어 건너뛴다(하네스는 region 인자를 요구한다).
+    const harnessWarnings: string[] = [];
+    if (scope) {
+      const harness = reviewRegionDraft({
+        base: before,
+        draft: candidate,
+        mapId: scope.mapId,
+        region: scope.region,
+      });
+      candidate = harness.project;
+      harnessWarnings.push(...harness.report.blockers);
+    }
+
+    const repaired = repairLayoutPlacement(candidate, {
+      mapId: scope?.mapId ?? currentHistoryMapId() ?? undefined,
+      ...(scope ? { region: scope.region } : {}),
       instruction,
       toolNames: calls.map((call) => call.name),
     });
@@ -274,15 +328,18 @@ export function createProposalHost(options: {
       ?? currentHistoryMapId()
       ?? applyProject.startMapId;
     const completionInstruction = instruction.trim();
+    // 행위 로그 라벨에 지시문을 남긴다 — "무엇을 시켰더니 이렇게 됐다" 가 조사의 출발점이다.
+    // (영역 경로의 applyRegionProjectWithHistory 가 하던 일. 통합으로 채팅 턴도 같이 얻는다.)
+    const historyLabel = aiHistoryLabel(calls, completionInstruction);
     clearAgentGhostPreview();
     const applied = await applyProposedProject(applyProject, {
       source: "agent",
       agentName: loadAiConfig().model,
-      summary: aiHistoryLabel(calls),
+      summary: historyLabel,
       toolNames: calls.map((call) => call.name),
       diff: summarizeChanges(before, applyProject),
-      snapshotLabel: aiHistoryLabel(calls),
-      snapshotMapId: currentHistoryMapId(),
+      snapshotLabel: historyLabel,
+      snapshotMapId: scope?.mapId ?? currentHistoryMapId(),
       resetProject: calls.some((call) => call.name === "reset_project"),
     });
     if (!applied.ok) {
@@ -294,9 +351,14 @@ export function createProposalHost(options: {
     setAssistantMessageBadge(assistantBubble, "applied");
     lastAppliedProposalMessage = pendingProposalMessage;
     pendingProposalMessage = null;
-    appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. 되돌리려면 [되돌리기](Ctrl+Z).`);
+    const clipNote = clippedCells > 0 ? ` 선택 영역 밖 ${clippedCells}칸은 되돌렸습니다.` : "";
+    appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다.${clipNote} 되돌리려면 [되돌리기](Ctrl+Z).`);
     if (layoutRepairDidWork(repaired.counts)) {
       appendBubble("system", formatLayoutRepairSummary(repaired.counts));
+    }
+    // 하네스 경고는 적용 뒤에 남긴다 — 막지 않았다는 사실을 문구로 분명히 한다.
+    if (harnessWarnings.length > 0) {
+      appendBubble("system", `⚠️ 플레이 가능성 경고(적용은 유지됨): ${harnessWarnings.join(" · ")}`);
     }
     // 차단하지 않는 배치 경고(예: 나무 0그루 판정)는 숨기지 않고 남긴다 — 타일은 이미 깔렸다.
     if (repaired.remaining.length > 0) {

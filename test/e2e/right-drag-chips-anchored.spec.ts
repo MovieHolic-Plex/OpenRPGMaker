@@ -45,18 +45,28 @@ test("우클릭 드래그 놓은 자리에 선택 칩이 뜬다 (우하단 고�
   // 칩 바 위치: 드래그 놓은 점(캔버스 중앙 근처)에 가까워야 한다.
   // 기존 우하단 고정이었다면 chips y는 canvas y+height-근처(~하단) 여야 함.
   // 이제 놓은 점 근처 → chips top 은 드래그 놓은 점(cy) ± 60 이내.
-  const chipBox = await chips.boundingBox();
-  if (!chipBox) throw new Error("chips bounding box missing");
+  //
+  // 상자는 **폴링으로** 읽는다. 칩 바 오버레이는 선택 사각형이 바뀔 때마다 노드를 새로
+  // 만든다(EditScene.renderBuildPaletteOverlay 의 popupKey). 놓은 직후 한 번 더 다시 붙는
+  // 순간에 단발 boundingBox() 를 때리면 분리된 노드를 잡아 null 이 온다 — 3회 반복 실행에서
+  // 1회 재현(실측). 정합성 있는 상자가 나올 때까지 다시 읽는 것이 옳다.
   console.log("CANVAS center y=", cy, "height=", box.height);
-  console.log("CHIPS box:", JSON.stringify(chipBox));
   console.log("DRAG release point:", x1, y1);
-
-  // 핵심 단언: 칩 바의 중앙 y 가 드래그 놓은 점(y1=cy+40) 근처(±80px) 에 있다.
+  // 핵심 단언: 칩 바의 중앙 y 가 드래그 놓은 점(y1=cy+40) 근처(±120px) 에 있다.
   // 우하단 고정이었다면 chips y ≈ box.y + box.height - 40 - chipHeight ≈ cy + box.height/2 - 40.
   // 드래그 놓은 점은 cy+40 이고, 우하단은 cy + box.height/2 - 40 이다 — box.height 가 충분히 크면
-  // 두 값의 차이가 80px 보다 훨씬 크다 (구별 가능).
-  const chipCenterY = chipBox.y + chipBox.height / 2;
-  expect(Math.abs(chipCenterY - y1)).toBeLessThan(120);
+  // 두 값의 차이가 120px 보다 훨씬 크다 (구별 가능).
+  await expect
+    .poll(
+      async () => {
+        const chipBox = await chips.boundingBox();
+        if (!chipBox) return null;
+        console.log("CHIPS box:", JSON.stringify(chipBox));
+        return Math.abs(chipBox.y + chipBox.height / 2 - y1);
+      },
+      { timeout: 5000 },
+    )
+    .toBeLessThan(120);
 
   // 복사/AI 버튼이 칩 바에 존재
   await expect(page.getByTestId("selection-chip-copy")).toBeVisible();

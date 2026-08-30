@@ -22,7 +22,12 @@ async function debugState(page: Page): Promise<DebugState> {
   return JSON.parse(text) as DebugState;
 }
 
-async function dragMapFromVisiblePoint(page: Page, dxTiles: number, dyTiles: number): Promise<void> {
+/** 드래그를 수행하고 **놓은 점의 뷰포트 좌표**를 돌려준다 — 칩 바 위치 단정이 이걸 쓴다. */
+async function dragMapFromVisiblePoint(
+  page: Page,
+  dxTiles: number,
+  dyTiles: number,
+): Promise<{ readonly x: number; readonly y: number }> {
   const canvas = page.getByTestId("edit-canvas").locator("canvas");
   const box = await canvas.boundingBox();
   if (!box) throw new Error("missing editor canvas");
@@ -38,6 +43,7 @@ async function dragMapFromVisiblePoint(page: Page, dxTiles: number, dyTiles: num
   await page.mouse.down();
   await page.mouse.move(box.x + end.x, box.y + end.y, { steps: 8 });
   await page.mouse.up();
+  return { x: box.x + end.x, y: box.y + end.y };
 }
 
 test("canvas fills chrome-safe area and selection chips overlay without reflow", async ({ page }, testInfo) => {
@@ -96,7 +102,7 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
   const selectTool = page.getByTestId("tool-select").or(page.getByTestId("toolbar-select-area"));
   await expect(selectTool.first()).toBeVisible();
   await selectTool.first().click();
-  await dragMapFromVisiblePoint(page, 4, 3);
+  const release = await dragMapFromVisiblePoint(page, 4, 3);
 
   await expect.poll(async () => {
     const sel = (await debugState(page)).editor.selection;
@@ -141,18 +147,26 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
   expect(chipMetrics.hostMatchesCanvasH).toBe(true);
   // fixed 는 host overflow 밖 좌표일 수 있어 insideHost 검사는 완화.
 
-  // 칩은 캔버스 우하단 고정 FAB — 선택 영역 중앙이 아니라 하단 구석에 붙는다.
-  const anchorOk = await page.evaluate(() => {
+  // 칩 바는 **드래그를 놓은 자리**에 붙는다(우하단 고정 FAB 이 아니다). 고정 FAB 단정은
+  // 우클릭 제스처가 영역을 잡는 동작으로 되돌아온 뒤(181c2570) 실제 동작과 어긋난 채 남아
+  // 있었다 — 정확한 앵커 계약은 test/e2e/right-drag-chips-anchored.spec.ts 가 맡고, 여기서는
+  // 레이아웃 스펙의 관심사인 "오버레이가 캔버스 안에 놓이고 놓은 점을 따라간다"만 본다.
+  const anchor = await page.evaluate(() => {
     const chipsEl = document.querySelector("[data-testid='selection-action-chips']") as HTMLElement | null;
     const canvas = document.querySelector("[data-testid='edit-canvas'] canvas") as HTMLCanvasElement | null;
-    if (!chipsEl || !canvas) return false;
+    if (!chipsEl || !canvas) throw new Error("missing chips/canvas nodes");
     const chip = chipsEl.getBoundingClientRect();
     const c = canvas.getBoundingClientRect();
-    const midX = (chip.left + chip.right) / 2 - c.left;
-    const midY = (chip.top + chip.bottom) / 2 - c.top;
-    return midX > c.width * 0.55 && midY > c.height * 0.55;
+    return {
+      midX: (chip.left + chip.right) / 2,
+      midY: (chip.top + chip.bottom) / 2,
+      insideCanvas:
+        chip.left >= c.left - 2 && chip.right <= c.right + 2 && chip.top >= c.top - 2 && chip.bottom <= c.bottom + 2,
+    };
   });
-  expect(anchorOk).toBe(true);
+  expect(anchor.insideCanvas).toBe(true);
+  expect(Math.abs(anchor.midY - release.y)).toBeLessThan(120);
+  expect(Math.abs(anchor.midX - release.x)).toBeLessThan(320);
 
   await page.screenshot({
     path: path.join(EVIDENCE_DIR, "02-selection-chips.png"),

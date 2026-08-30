@@ -1,7 +1,7 @@
 // QA over-fire probe (temporary). Checks constructionFacadeLine / buildRegionTaskMessage
 // for whether "author_house" wrongly appears for non-house building requests.
 import { describe, it, expect } from "vitest";
-import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
+import { buildScopedTurnMessage as buildRegionTaskMessage } from "./helpers/scopedTurnMessage";
 
 function msgFor(instruction: string): string {
   return buildRegionTaskMessage(instruction, "맵", "m1", { x: 0, y: 1, width: 7, height: 8 });

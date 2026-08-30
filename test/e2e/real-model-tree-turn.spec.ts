@@ -160,42 +160,8 @@ test.describe("실제 모델 나무 심기 턴", () => {
       .toBeLessThan(passableBefore!);
   });
 
-  /**
-   * 승인 게이트(영역 작업) 경로. 채팅 경로는 쓰기를 바로 적용하므로 이 결함이 안 드러난다.
-   * 실제 store·실제 게이트를 그대로 태우고, 계획만 결정적으로 주입한다(runMock) — 모델이 매번
-   * 다른 계획을 내면 "미반영 안내가 붙었는가"를 잣대로 쓸 수 없기 때문이다.
-   */
-  test("영역 작업이 승인 대기를 '아직 반영되지 않았습니다'로 말한다", async ({ page }) => {
-    const mapId = await bootEditor(page);
-    const region = { x: 2, y: 2, width: 6, height: 6 };
-    const pending = await page.evaluate(async ({ id, rect }: { id: string; rect: typeof region }) => {
-      const harness = (window as unknown as {
-        __oprnRegionTaskHarness?: {
-          runMock: (m: string, r: typeof rect, writes: readonly unknown[]) => Promise<{
-            ok: boolean; applied: boolean; changedCells: number; assistantText: string;
-          }>;
-        };
-      }).__oprnRegionTaskHarness;
-      if (!harness) throw new Error("window.__oprnRegionTaskHarness 미등록");
-      // 빈 맵의 하층은 잔디(240)다 — 잔디를 다시 칠하면 변경 0칸이라 "바뀐 것이 없다" 경로로
-      // 빠져 게이트를 못 태운다. 광장 기둥(267, 통행 불가)을 상층에 올려 실제 변경을 만든다.
-      const writes: unknown[] = [];
-      for (let y = rect.y; y < rect.y + rect.height; y += 1) {
-        for (let x = rect.x; x < rect.x + rect.width; x += 1) writes.push({ layer: "upper", x, y, tile: 267 });
-      }
-      const result = await harness.runMock(id, rect, writes as never);
-      return { ok: result.ok, applied: result.applied, changedCells: result.changedCells, assistantText: result.assistantText };
-    }, { id: mapId, rect: region });
-
-    writeFileSync(path.join(SHOT_DIR, "receipt-pending.json"), `${JSON.stringify(pending, null, 2)}\n`, "utf8");
-    await page.screenshot({ path: path.join(SHOT_DIR, "r3-pending.png"), animations: "disabled" });
-
-    expect(pending.ok).toBe(true);
-    // 게이트는 그대로다 — 승인 전에는 반영하지 않는다.
-    expect(pending.applied).toBe(false);
-    expect(pending.changedCells).toBeGreaterThan(0);
-    // 그리고 그 사실을 말한다. 예전에는 이 자리가 빈 문자열이거나 모델의 "시공했습니다" 였다.
-    expect(pending.assistantText.startsWith("아직 맵에 반영되지 않았습니다")).toBe(true);
-    expect(pending.assistantText).toContain(`${pending.changedCells}칸 타일`);
-  });
+  // 승인 대기 안내("아직 맵에 반영되지 않았습니다") 검증은 삭제했다 — 승인 게이트 자체가
+  // 없어졌다(approvalPolicy: 즉시 적용, 복구는 되돌리기). 영역 작업이 조수 세션으로 합쳐진 뒤
+  // 스코프 턴의 적용·클립 계약은 test/scopedAssistantTurn.test.ts 와
+  // test/aiChatPanelUxRepairs.test.ts 가 실측한다.
 });

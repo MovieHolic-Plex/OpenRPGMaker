@@ -18,8 +18,8 @@ import {
   unlabeledEditActivityCount,
 } from "@/editor/editActivityLog";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import { applyToolSequenceToStore, applyToolToStore } from "@/editor/tools/applyChangesetToStore";
-import { applyRegionProjectWithHistory } from "@/editor/regionTask/runRegionTask";
+import { applyProposedProject, applyToolSequenceToStore, applyToolToStore } from "@/editor/tools/applyChangesetToStore";
+import { aiHistoryLabel } from "@/editor/panels/aiChatPanelHelpers";
 import { createBlankProject } from "@/project/defaults";
 import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
@@ -94,12 +94,27 @@ describe("툴 묶음 적용", () => {
   });
 });
 
-describe("영역 작업 적용", () => {
-  it("라벨을 AI 소행으로 남긴다", () => {
+// 스코프 턴(선택 영역이 걸린 조수 턴)도 조수와 같은 적용 함수를 쓴다 —
+// 예전의 applyRegionProjectWithHistory 는 없어졌고, 지시문은 aiProposalCard 가
+// aiHistoryLabel(calls, instruction) 으로 라벨에 실어 넘긴다.
+async function applyAsScopedTurn(proposed: Parameters<typeof applyProposedProject>[0], instruction: string) {
+  const calls = [{ name: "paint_tiles", summary: "타일 1칸" }] as const;
+  return applyProposedProject(proposed, {
+    source: "agent",
+    agentName: "claude-opus-5",
+    summary: aiHistoryLabel(calls as never, instruction),
+    toolNames: calls.map((call) => call.name),
+    snapshotMapId: mapId(),
+  });
+}
+
+describe("스코프 턴(영역) 적용", () => {
+  it("라벨을 AI 소행으로 남긴다", async () => {
     const proposed = structuredClone(store.getCurrent());
     proposed.maps[mapId()]!.lowerTiles[0] = 9;
 
-    applyRegionProjectWithHistory(proposed, "아이들이 놀고있다", mapId());
+    const applied = await applyAsScopedTurn(proposed, "아이들이 놀고있다");
+    expect(applied.ok).toBe(true);
 
     const entry = getEditActivityEntries()[0]!;
     expect(entry.origin).toBe("ai");
@@ -110,7 +125,7 @@ describe("영역 작업 적용", () => {
 });
 
 describe("완료 조건", () => {
-  it("AI 경로를 전부 돌려도 라벨 없는 mutation 이 0 이다", () => {
+  it("AI 경로를 전부 돌려도 라벨 없는 mutation 이 0 이다", async () => {
     applyToolToStore("paint_tiles", { mapId: mapId(), layer: "lower", mode: "cells", tile: 5, cells: [{ x: 1, y: 1 }] });
     applyToolSequenceToStore(
       [{ name: "paint_tiles", args: { mapId: mapId(), layer: "lower", mode: "cells", tile: 5, cells: [{ x: 2, y: 2 }] } }],
@@ -118,7 +133,7 @@ describe("완료 조건", () => {
     );
     const proposed = structuredClone(store.getCurrent());
     proposed.maps[mapId()]!.lowerTiles[5] = 3;
-    applyRegionProjectWithHistory(proposed, "집들을 만들어라", mapId());
+    await applyAsScopedTurn(proposed, "집들을 만들어라");
 
     expect(unlabeledEditActivityCount()).toBe(0);
     // origin 이 human 인 엔트리가 섞이면 오귀속이다 — AI 작업이 사람 편집으로 보인다.

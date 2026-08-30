@@ -18,19 +18,17 @@ describe("isCellInsideSelection", () => {
 });
 
 describe("regionTaskMenuItems", () => {
-  it("AI 작업 항목 1개를 만들고 action이 선택 영역으로 모달을 연다", () => {
-    const openModal = vi.fn();
-    const items = regionTaskMenuItems(SELECTION, openModal);
+  it("AI 작업 항목 1개를 만들고 action이 선택을 조수 턴 스코프로 무장시킨다", () => {
+    const requestAssistant = vi.fn();
+    const items = regionTaskMenuItems(SELECTION, requestAssistant);
     expect(items).toHaveLength(1);
     const [item] = items;
     expect(item.testId).toBe("region-ai-task-menu-item");
     expect(item.label).toContain("AI 작업");
 
     item.action();
-    expect(openModal).toHaveBeenCalledTimes(1);
-    expect(openModal).toHaveBeenCalledWith({
-      mapId: "m1",
-      region: { x: 2, y: 3, width: 4, height: 5 },
-    });
+    // 실행체는 조수 세션 하나다 — 항목은 팝오버를 여는 대신 브리지 이벤트 1건만 낸다.
+    expect(requestAssistant).toHaveBeenCalledTimes(1);
+    expect(requestAssistant).toHaveBeenCalledWith(SELECTION, { focus: true });
   });
 });

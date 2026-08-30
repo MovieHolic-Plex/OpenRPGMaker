@@ -2,13 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   renderSelectionActionChips,
   SELECTION_CHIP_PRESETS,
-  selectionChipModalOptions,
 } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
   anchoredSelectionChipsPosition,
 } from "@/editor/selectionOverlayAnchor";
-import type { RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
+import type { AiSelectionContextRequest } from "@/editor/aiSelectionContext";
 import type { TileSelection } from "@/editor/editorState";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -24,28 +23,18 @@ vi.mock("@/editor/mapClipboard", async (importOriginal) => {
 
 const SELECTION: TileSelection = { mapId: "map-1", x: 3, y: 4, width: 5, height: 6 };
 
-describe("selectionChipModalOptions", () => {
-  it("AI 칩(instruction=null)은 autoRun 없이 모달만 연다", () => {
-    const ai = SELECTION_CHIP_PRESETS.find((p) => p.id === "ai");
-    expect(ai).toBeTruthy();
-    const options = selectionChipModalOptions(ai!, SELECTION);
-    expect(options.mapId).toBe("map-1");
-    expect(options.region).toEqual({ x: 3, y: 4, width: 5, height: 6 });
-    expect(options.initialInstruction).toBeUndefined();
-    expect(options.autoRun).toBeUndefined();
-  });
-});
+// 실행체 통합 후: 칩은 팝오버를 열지 않고 조수 브리지 이벤트 하나만 쏜다.
+type AssistantCall = { readonly selection: TileSelection | null; readonly request: AiSelectionContextRequest };
 
 describe("renderSelectionActionChips", () => {
   let restore: () => void;
   beforeEach(() => { restore = installFakeDom(); });
   afterEach(() => { restore(); });
 
-  it("AI 칩 1개를 렌더하고 클릭 시 주입된 openModal을 호출한다", () => {
-    const calls: RegionTaskModalOptions[] = [];
-    const stub = ((options: RegionTaskModalOptions) => {
-      calls.push(options);
-      return document.createElement("div");
+  it("AI 칩 1개를 렌더하고 클릭 시 선택을 조수 스코프로 넘긴다", () => {
+    const calls: AssistantCall[] = [];
+    const stub = ((selection: TileSelection | null, request: AiSelectionContextRequest) => {
+      calls.push({ selection, request });
     }) as never;
     const bar = renderSelectionActionChips(SELECTION, stub);
     document.body.append(bar);
@@ -55,7 +44,11 @@ describe("renderSelectionActionChips", () => {
     }
     (findByTestId(document.body as unknown as FakeElement, "selection-chip-ai") as unknown as HTMLElement).click();
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.mapId).toBe("map-1");
+    expect(calls[0]?.selection).toEqual(SELECTION);
+    // 포커스는 준다(사용자가 바로 타이핑). instruction=null 프리셋이므로 자동 전송은 없다.
+    expect(calls[0]?.request.focus).toBe(true);
+    expect(calls[0]?.request.instruction).toBeUndefined();
+    expect(calls[0]?.request.autoRun).toBeUndefined();
   });
 });
 
@@ -64,7 +57,7 @@ describe("지우기 확인 (넓은 영역)", () => {
   beforeEach(() => { restore = installFakeDom(); clearCalls.length = 0; });
   afterEach(() => { restore(); });
 
-  const stub = (() => document.createElement("div")) as never;
+  const stub = (() => undefined) as never;
 
   it("48칸 선택은 첫 클릭에 확인으로 바뀌고 지우지 않는다", () => {
     // 되돌리기가 있어도 8×6 이 한 번의 오클릭으로 사라지면 무엇이 사라졌는지 알아보기 어렵다.

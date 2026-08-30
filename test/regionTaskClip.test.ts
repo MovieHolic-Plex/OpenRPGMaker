@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { clearAgentGhostPreview, subscribeAgentGhostPreview, type AgentGhostPreviewState } from "@/editor/agentGhostPreview";
+// 스코프(선택 영역) 하드 클립의 순수 계약. 실행체는 조수 세션 하나로 합쳐졌고,
+// 이 함수는 조수 적용 경로(aiProposalCard.applyProposal)가 배치 수리 **앞에서** 부른다.
+// 조수 턴을 통과하는 실측은 test/aiChatPanelUxRepairs.test.ts(스코프 밖 1칸 되돌림)와
+// test/scopedAssistantTurn.test.ts 가 맡는다.
+import { describe, expect, it } from "vitest";
 import { clipMapCellsToRegion, type RegionRect } from "@/editor/regionTask/clipToRegion";
-import { __clearPendingRegionApplyForTest } from "@/editor/regionTask/pendingRegionApply";
-import { runRegionTask, type RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
@@ -107,50 +108,5 @@ describe("clipMapCellsToRegion", () => {
 
     expect(clippedCells).toBe(0);
     expect(project).toBe(proposed);
-  });
-});
-
-describe("runRegionTask live ghost preview", () => {
-  beforeEach(() => __clearPendingRegionApplyForTest());
-  afterEach(() => __clearPendingRegionApplyForTest());
-
-  it("성공한 쓰기 tool_call 뒤 세션 draft diff 프리뷰를 발행하고 승인 해소 시 clear한다", async () => {
-    clearAgentGhostPreview();
-    const base = baseProject();
-    base.maps[MAP_ID].lowerTiles.fill(TILE.EMPTY);
-    const draft: Project = structuredClone(base);
-    draft.maps[MAP_ID].lowerTiles[idx(2, 2)] = 42;
-    const seen: AgentGhostPreviewState[] = [];
-    const unsubscribe = subscribeAgentGhostPreview((state) => seen.push(state));
-    const deps: RegionTaskDeps = {
-      getProject: () => base,
-      applyProject: () => undefined,
-      createSession: () => ({
-        getProposedProject: () => draft,
-        sendUserMessage: async (_message, onEvent) => {
-          onEvent?.({
-            type: "tool_call",
-            name: "paint_tiles",
-            args: { mapId: MAP_ID },
-            result: { ok: true, summary: "타일 변경" },
-          });
-          return { assistantText: "", proposedCalls: [], stoppedReason: "final" };
-        },
-      }),
-    };
-
-    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "칠해줘" }, deps);
-
-    expect(result.ok).toBe(true);
-    expect(seen.some((state) => state.previews.some((preview) =>
-      preview.mapId === MAP_ID && preview.cells.some((cell) => cell.x === 2 && cell.y === 2 && cell.layer === "lower")
-    ))).toBe(true);
-    // 승인 게이트(기본): run 직후에도 승인 전까지 고스트 프리뷰가 유지된다.
-    expect(result.pending).toBeDefined();
-    expect(seen.at(-1)?.previews.length).toBeGreaterThan(0);
-    // discard로 게이트가 해소되면 그제서야 clear된다.
-    result.pending!.discard();
-    expect(seen.at(-1)?.previews).toEqual([]);
-    unsubscribe();
   });
 });

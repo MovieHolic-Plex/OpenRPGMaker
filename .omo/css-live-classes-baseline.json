@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-08-30T04:03:24.310Z",
+ "ranAt": "2026-08-30T19:54:37.814Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
@@ -11599,6 +11599,9 @@
     "background:linear-gradient(180deg, color-mix(in srgb, var(--bg-inset) 84%, white 4%), var(--bg-inset))",
     "border-color:color-mix(in srgb, var(--accent) 52%, var(--border-default))",
     "border-color:var(--accent)",
+    "border-color:var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default)",
+    "border-color:var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle)",
+    "border-radius:0",
     "border-radius:7px",
     "border:1px solid var(--border-default)",
     "box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent), 0 1px 2px var(--shadow-pop)",
@@ -11629,6 +11632,7 @@
     "width:100%"
    ],
    "sheets": [
+    "src/styles/database/tabs-a.part-2.css",
     "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.custom-select.css"
    ]
@@ -20029,11 +20033,9 @@
   },
   "hidden": {
    "props": [
-    "border-top",
     "display"
    ],
    "decls": [
-    "border-top:1px solid var(--border-subtle)",
     "display:none"
    ],
    "sheets": [
@@ -20041,7 +20043,6 @@
     "src/styles/editor/event-editor.modernize.css",
     "src/styles/editor/event-editor.part-3/08-inline-validation-badges.css",
     "src/styles/editor/event-editor.part-4.css",
-    "src/styles/editor/region-task.css",
     "src/styles/shell/shell-density.part-1.css"
    ]
   },
@@ -20689,10 +20690,8 @@
     "box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent, #4a57d6) 40%, transparent)",
     "box-shadow:inset var(--stroke-2) 0 0 var(--accent)",
     "box-shadow:none",
-    "box-shadow:var(--shadow-sm, 0 1px 2px rgba(15, 23, 42, 0.08))",
     "color:var(--accent)",
     "color:var(--editor-blue)",
-    "color:var(--editor-text)",
     "color:var(--editor-text, var(--text-1))",
     "color:var(--on-accent)",
     "color:var(--runtime-window-text)",
@@ -20722,7 +20721,6 @@
     "src/styles/editor/inline-assist.css",
     "src/styles/editor/map-event-search.css",
     "src/styles/editor/map-panel.modern.css",
-    "src/styles/editor/region-task.css",
     "src/styles/editor/storyboard.css",
     "src/styles/runtime/actionHud.css",
     "src/styles/runtime/shop.css",
@@ -20996,23 +20994,19 @@
     "outline-offset"
    ],
    "decls": [
-    "background:color-mix(in srgb, var(--accent) 22%, transparent)",
     "background:color-mix(in srgb, var(--accent) 22%, var(--bg-surface))",
     "background:color-mix(in srgb, var(--accent-muted) 35%, var(--bg-surface))",
     "background:color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.2)) 90%, transparent)",
-    "background:var(--accent)",
     "background:var(--bg-raised)",
     "border-color:var(--accent)",
     "border-color:var(--accent, #4a57d6)",
     "border-left-color:var(--storyboard-accent)",
-    "box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent)",
     "box-shadow:0 0 0 1px color-mix(in srgb, var(--accent, #4a57d6) 45%, transparent)",
     "box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent)",
     "box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent)",
     "box-shadow:inset 3px 0 0 var(--accent)",
     "color:color-mix(in srgb, var(--text-1) 90%, var(--accent))",
     "color:var(--accent)",
-    "color:var(--on-accent)",
     "font-weight:700",
     "opacity:1",
     "outline-offset:1px",
@@ -21024,7 +21018,6 @@
     "src/styles/editor/event-editor.commerce.css",
     "src/styles/editor/event-editor.custom-select.css",
     "src/styles/editor/event-editor.modern/05-changeface-form-selected-card.css",
-    "src/styles/editor/region-task.css",
     "src/styles/editor/storyboard.css"
    ]
   },

@@ -126,7 +126,9 @@ describe("saveSelectionAsStructureKit — 현재 맵 타일셋에만 등록", ()
 
     it("Given 선택 칩 바, When 구조물로 저장 클릭, Then 현재 맵 타일셋에 킷이 등록된다", () => {
       const selection: TileSelection = { mapId: MAP_ID, x: 2, y: 4, width: 3, height: 2 };
-      const bar = renderSelectionActionChips(selection, (() => document.createElement("div")) as never);
+      // 2번째 인자는 조수 브리지 요청 함수다(옛 모달 옵션 팩토리가 아니다) — 이 테스트는
+      // 구조물 저장 칩만 보므로 아무것도 하지 않는 스텁을 준다.
+      const bar = renderSelectionActionChips(selection, () => {});
       document.body.append(bar);
       const chip = findByTestId(document.body as unknown as FakeElement, "selection-chip-save-structure");
       expect(chip).toBeTruthy();

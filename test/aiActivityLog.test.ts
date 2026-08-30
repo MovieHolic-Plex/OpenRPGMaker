@@ -5,7 +5,6 @@ import {
   getLatestAiActivityLog,
   listAiActivityLogs,
   recordAiActivity,
-  recordAiActivityFromRegionLog,
   serializeAiActivityLogs,
 } from "@/ai/activityLog";
 import { constructionAuditFromResult } from "@/editor/construction/constructionAudit";
@@ -107,22 +106,17 @@ describe("ai activity log store", () => {
     expect(serializeAiActivityLogs(1)).toContain("second");
   });
 
-  it("records region-shaped export without circular regionTask import", async () => {
-    const saved = await recordAiActivityFromRegionLog({
-      exportedAt: "2026-07-09T00:00:00.000Z",
+  // 스코프 턴(영역)도 조수와 같은 recordAiActivity 를 쓴다 — 전용 기록기
+  // (recordAiActivityFromRegionLog)는 실행체 통합으로 사라졌고, 위의 channel:"region" 케이스가
+  // 같은 표면을 덮는다.
+  it("keeps the region channel on a scoped turn recorded through the shared path", async () => {
+    const saved = await recordAiActivity({
+      channel: "region",
+      instruction: "호수와 나무 둥글게",
       mapId: "m1",
       mapName: "마을",
       region: { x: 0, y: 0, width: 8, height: 7 },
-      instruction: "호수와 나무 둥글게",
-      result: {
-        ok: true,
-        applied: true,
-        changedCells: 32,
-        changedEvents: 0,
-        clippedCells: 0,
-        proposedCalls: 2,
-        assistantText: "호수 완료",
-      },
+      result: { ok: true, applied: true, changedCells: 32, proposedCalls: 2, assistantText: "호수 완료" },
       toolCalls: [
         { name: "fill_region", args: { tileVocabId: "water" }, summary: "호수" },
         { name: "place_props", args: { count: 4 }, summary: "나무" },

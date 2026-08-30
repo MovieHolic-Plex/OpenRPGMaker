@@ -12,7 +12,7 @@ import { recordSupabaseAiActivityLog } from "@/project/supabaseProjectSync";
 import { randomUuid } from "@/util/id";
 import { AI_ACTIVITY_DISK_ENDPOINT } from "./activityLogEndpoint";
 import { aiActivityRunId } from "./activityRunId";
-import type { AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
+import type { AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall } from "./activityLogTypes";
 export type { AiActivityChannel, AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 
 const STORAGE_KEY = "oprn:ai-activity-logs";
@@ -238,6 +238,36 @@ export function serializeAiActivityLogs(limit = 20): string {
   return JSON.stringify(listAiActivityLogs(limit), null, 2);
 }
 
+/**
+ * 감사 로그(+제안 목록)에서 활동 로그의 최상위 `toolCalls` 를 뽑는다.
+ *
+ * 왜 감사 로그가 먼저인가 — 시공 도구가 **실패하면** 제안이 아예 안 만들어진다. 제안만 보면
+ * "집 8채를 정확히 지어라" 가 롤백된 턴이 도구 호출 0건으로 기록돼 조사할 단서가 사라진다.
+ * 감사 로그에는 실패한 호출도 `construction` 원장과 함께 남으므로, 그쪽이 있으면 그쪽을 쓴다.
+ */
+export function toolCallsFromAudit(
+  audit: readonly AuditEntry[],
+  proposed: readonly { name: string; args: Record<string, unknown>; ok?: boolean; summary?: string }[] = [],
+): readonly AiActivityToolCall[] {
+  const fromAudit = audit
+    .filter((entry): entry is Extract<AuditEntry, { kind: "tool" }> => entry.kind === "tool")
+    .map((entry) => ({
+      name: entry.name,
+      args: entry.args,
+      ok: entry.ok,
+      summary: entry.summary,
+      // 시공 원장은 실패 턴의 유일한 단서다 — 절대 떨어뜨리지 않는다.
+      ...(entry.construction === undefined ? {} : { construction: entry.construction }),
+    }));
+  if (fromAudit.length > 0) return fromAudit;
+  return proposed.map((call) => ({
+    name: call.name,
+    args: call.args,
+    ...(call.ok === undefined ? {} : { ok: call.ok }),
+    ...(call.summary === undefined ? {} : { summary: call.summary }),
+  }));
+}
+
 /** 입력 → 로컬 저장 레코드 (원격 전송 전 정규화). */
 export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityLogRecord {
   const toolCalls = sanitizeToolCalls(input.toolCalls ?? []);
@@ -403,44 +433,6 @@ function warnMirrorFailure(reason: string): void {
   console.warn(
     `[ai-activity] 디스크 미러 실패 (${AI_ACTIVITY_DISK_ENDPOINT}: ${reason}) — output/ai-activity/ 가 갱신되지 않는다.`,
   );
-}
-
-export async function recordAiActivityFromRegionLog(
-  log: RegionActivityLogLike,
-  extras?: { readonly projectContextKey?: string; readonly model?: string; readonly liteModel?: string },
-): Promise<AiActivityLogRecord> {
-  return recordAiActivity({
-    channel: "region",
-    instruction: log.instruction,
-    projectContextKey: extras?.projectContextKey,
-    model: extras?.model,
-    liteModel: extras?.liteModel,
-    mapId: log.mapId,
-    mapName: log.mapName,
-    region: log.region,
-    result: {
-      ok: log.result.ok,
-      applied: log.result.applied,
-      error: log.result.error,
-      stoppedReason: log.result.stoppedReason,
-      changedCells: log.result.changedCells,
-      changedEvents: log.result.changedEvents,
-      clippedCells: log.result.clippedCells,
-      proposedCalls: log.result.proposedCalls,
-      assistantText: log.result.assistantText,
-    },
-    toolCalls: log.toolCalls.map((call) => ({
-      name: call.name,
-      args: call.args,
-      ok: call.ok,
-      summary: call.summary,
-      ...(call.softConfirm === undefined ? {} : { softConfirm: call.softConfirm }),
-      ...(call.construction === undefined ? {} : { construction: call.construction }),
-    })),
-    audit: log.audit,
-    uiEvents: log.uiEvents,
-    at: log.exportedAt,
-  });
 }
 
 function publishActivityLogApi(latest?: AiActivityLogRecord): void {

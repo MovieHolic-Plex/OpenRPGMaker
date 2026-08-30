@@ -7,7 +7,7 @@ import {
   routeRegionIntent,
   type RegionIntentCategory,
 } from "@/editor/regionTask/regionIntentRouter";
-import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
+import { buildScopedTurnMessage as buildRegionTaskMessage } from "./helpers/scopedTurnMessage";
 
 // 코퍼스 needs → 라우터 카테고리 기대값 매핑. null = 기본 가이드로 충분(기대 없음).
 const NEEDS_TO_CATEGORY: Record<string, RegionIntentCategory | null> = {

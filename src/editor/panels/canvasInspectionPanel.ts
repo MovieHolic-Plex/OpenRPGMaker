@@ -1,6 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
-import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
+import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -8,7 +8,8 @@ import { el } from "@/util/dom";
 export interface CanvasInspectionDeps {
   readonly focusIssue: (location: { readonly mapId: MapId; readonly x: number; readonly y: number }) => void;
   readonly lint: (project: Project) => readonly LintIssue[];
-  readonly openRegionTask: (options: RegionTaskModalOptions) => HTMLElement | void;
+  /** 문제 영역을 조수 턴의 스코프로 무장시키고 수리 지시문을 입력창에 채운다. */
+  readonly requestAssistant: typeof requestAiSelectionContext;
 }
 
 export interface CanvasInspectionOptions {
@@ -27,7 +28,7 @@ const defaultDeps: CanvasInspectionDeps = {
     requestEditorCameraFocus({ mapId, tileX: x, tileY: y });
   },
   lint: projectLint,
-  openRegionTask: openRegionTaskModal,
+  requestAssistant: requestAiSelectionContext,
 };
 
 export function openCanvasInspectionPanel(options: CanvasInspectionOptions): HTMLElement {
@@ -140,15 +141,17 @@ function openIssueRepair(
   const region = issue.x !== undefined && issue.y !== undefined
     ? boundedRegion(issue.x, issue.y, map.width, map.height)
     : { x: 0, y: 0, width: map.width, height: map.height };
-  deps.openRegionTask({
-    autoRun: false,
-    initialInstruction: [
+  // 선택도 함께 옮긴다 — 스코프는 「조수가 들은 사각형」이고, 사용자가 캔버스에서 같은
+  // 사각형을 보고 있어야 되돌리기·확인이 맞아떨어진다. autoRun 은 하지 않는다(수리 지시문은
+  // 사용자가 읽고 다듬을 여지가 있다).
+  editorState.set({ currentMapId: mapId, selection: { mapId, ...region }, tool: "select" });
+  deps.requestAssistant({ mapId, ...region }, {
+    focus: true,
+    instruction: [
       "검사에서 발견된 다음 문제만 안전하게 수정해 주세요.",
       issue.message,
       "원래 의도와 통행 가능성을 보존하고, 수정 후 같은 문제가 다시 발생하지 않게 확인해 주세요.",
     ].join("\n"),
-    mapId,
-    region,
   });
 }
 

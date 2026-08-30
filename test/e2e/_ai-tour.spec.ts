@@ -19,7 +19,9 @@ declare global {
   interface Window {
     __oprnRegionTaskHarness?: {
       currentMapId: () => string;
-      openModal: (mapId: string, region: { x: number; y: number; width: number; height: number }) => void;
+      setSelection: (
+        selection: { mapId: string; x: number; y: number; width: number; height: number } | null,
+      ) => void;
     };
   }
 }
@@ -185,51 +187,48 @@ test("④ 실제 대화 한 턴 — 도구로 프로젝트를 읽는다", async 
   expect(log.length).toBeGreaterThan(80);
 });
 
-test("⑤ 실제 영역 작업 — 지정한 사각형만 고쳐 준다", async ({ page }) => {
+test("⑤ 스코프 턴 — 지정한 사각형만 고쳐 준다", async ({ page }) => {
   // 실제 LLM 왕복이라 느리다. 한 번은 240초 안에 못 끝내 실패했다 — 넉넉히 준다.
   test.setTimeout(480_000);
   await boot(page);
 
-  await page.evaluate(() => {
+  // 영역 작업 팝오버는 없어졌다. 진입점은 브리지 이벤트 1건이고 실행은 조수 세션이 한다 —
+  // 선택을 무장하면 조수 턴이 그 사각형을 스코프로 받는다(프롬프트 문구 + 하드 클립).
+  const region = { x: 4, y: 4, width: 10, height: 8 };
+  await page.evaluate((rect) => {
     const harness = window.__oprnRegionTaskHarness!;
-    harness.openModal(harness.currentMapId(), { x: 4, y: 4, width: 10, height: 8 });
-  });
-  const modal = page.getByTestId("region-task-modal");
-  await expect(modal).toBeVisible({ timeout: 10_000 });
-  await shot(modal, "17-region-modal-open");
+    const mapId = harness.currentMapId();
+    harness.setSelection({ mapId, ...rect });
+    window.dispatchEvent(new CustomEvent("oprn:ai-selection-context", {
+      detail: { focus: true, selection: { mapId, ...rect } },
+    }));
+  }, region);
+  const panel = await ensurePanel(page);
+  await shot(panel, "17-region-scope-armed");
 
   // 지시가 두루뭉술하면 모델이 "바꿀 것 없음"으로 끝내는 일이 잦다 — 크기와 모양을 못박는다.
-  await page.getByTestId("region-task-input").fill("이 영역 한가운데를 지름 6칸짜리 둥근 물웅덩이로 채워줘. 물 타일로 원형으로 채우면 된다.");
-  await shot(modal, "18-region-typed");
-  // AI 가 그 영역에서 아무것도 안 바꾸고 끝내는 경우가 실제로 있다("이 영역에서 바뀐 것이
-  // 없습니다"). 실패가 아니라 모델 편차라 몇 번 다시 시켜 본다.
-  let reachedReview = false;
-  for (let attempt = 1; attempt <= 3 && !reachedReview; attempt += 1) {
-    await page.getByTestId("region-task-run").click();
-    if (attempt === 1) {
-      await page.waitForTimeout(3000);
-      await shot(modal, "19-region-running");
-    }
-    for (let i = 0; i < 120; i += 1) {
-      const stage = await modal.getAttribute("data-stage");
-      if (stage === "review") { reachedReview = true; break; }
-      await page.waitForTimeout(1000);
-    }
-    if (!reachedReview) {
-      const summary = await page.getByTestId("region-task-summary").innerText().catch(() => "");
-      console.log(`RETRY ${attempt}: ${summary}`);
-    }
+  await page.getByTestId("ai-input").fill("이 영역 한가운데를 지름 6칸짜리 둥근 물웅덩이로 채워줘. 물 타일로 원형으로 채우면 된다.");
+  await shot(panel, "18-region-typed");
+  await page.getByTestId("ai-send").click();
+  await page.waitForTimeout(3000);
+  // 스코프 턴이 도는 동안 캔버스에 사각형 배지가 뜬다(창 없이도 어디를 작업하는지 보인다).
+  await shot(page, "19-region-running");
+
+  await waitForTurn(page);
+  await shot(await ensurePanel(page), "20-region-answer");
+
+  const toolToggle = page.getByTestId("ai-tool-activity-toggle").first();
+  if (await toolToggle.isVisible().catch(() => false)) {
+    await toolToggle.click();
+    await page.waitForTimeout(600);
+    await shot(await ensurePanel(page), "21-region-tool-activity");
   }
-  expect(reachedReview, "3번 시도했지만 제안이 만들어지지 않았다").toBe(true);
-  await shot(modal, "20-region-review");
-
-  await page.getByTestId("region-task-advanced-toggle").click();
-  await page.waitForTimeout(400);
-  await shot(modal, "21-region-advanced");
-
-  await page.getByTestId("region-task-apply").click();
-  await page.waitForTimeout(1500);
   await shot(page, "22-region-applied-canvas");
+
+  // 승인 게이트는 없다(정책: 즉시 적용, 복구는 되돌리기). 로그에 적용 문구가 남는지만 본다.
+  const log = (await page.getByTestId("ai-chat-log").innerText().catch(() => "")) ?? "";
+  console.log("REGIONLOG >>> " + log.slice(0, 1500));
+  expect(log.length).toBeGreaterThan(80);
 });
 
 test("⑥ 선택 영역 칩 · 되돌리기 · 내보내기 · 하네스", async ({ page }) => {
@@ -318,7 +317,7 @@ test("⑦ 전문가 모드 — 도구 목록과 하네스", async ({ page }) => 
   if (await menu.isVisible().catch(() => false)) await shot(menu, "32-command-menu");
 });
 
-test("⑧ 캔버스에서 영역을 끌면 그 자리에 AI 팝오버", async ({ page }) => {
+test("⑧ 캔버스에서 영역을 끌면 그 자리에 작업 칩", async ({ page }) => {
   test.setTimeout(240_000);
   await boot(page, "expert");
 
@@ -327,18 +326,18 @@ test("⑧ 캔버스에서 영역을 끌면 그 자리에 AI 팝오버", async ({
   const box = await canvas.boundingBox();
   if (!box) throw new Error("캔버스 없음");
 
-  // 우클릭 드래그 = 영역 선택 → 놓으면 포인터 근처에 영역 작업 팝오버.
+  // 우클릭 드래그 = 영역 선택 → 놓으면 포인터 근처에 작업 칩(팝오버는 없어졌다 — 칩이 조수
+  // 턴의 스코프를 무장한다).
   await page.mouse.move(box.x + 220, box.y + 200);
   await page.mouse.down({ button: "right" });
   await page.mouse.move(box.x + 420, box.y + 340, { steps: 12 });
   await page.mouse.up({ button: "right" });
   await page.waitForTimeout(900);
 
-  const popover = page.getByTestId("region-task-popover");
-  if (await popover.isVisible().catch(() => false)) {
-    await shot(page, "33-region-popover-in-place");
-    await shot(popover, "34-region-popover");
-    await page.getByTestId("region-task-close").click();
+  const chips = page.getByTestId("selection-action-chips");
+  if (await chips.isVisible().catch(() => false)) {
+    await shot(page, "33-selection-chips-in-place");
+    await shot(chips, "34-selection-chips");
   } else {
     await shot(page, "35-canvas-selection");
   }

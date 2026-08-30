@@ -10,7 +10,7 @@ import {
   type BuildPaletteApplyOptions,
 } from "@/editor/panels/buildPaletteCore";
 import type { HouseKitId } from "@/editor/houseKit";
-import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
+import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -76,7 +76,7 @@ export function isBuildPaletteEnabled(): boolean {
 }
 
 export function renderBuildPalettePopup(
-  openRegionTask: typeof openRegionTaskModal = openRegionTaskModal,
+  requestAssistant: typeof requestAiSelectionContext = requestAiSelectionContext,
 ): HTMLElement | null {
   if (!buildPaletteEnabled) return null;
   const selection = editorState.get().selection;
@@ -175,11 +175,11 @@ export function renderBuildPalettePopup(
       on: {
         click: () => {
           if (primitive.id === "ai") {
-            openBuildPaletteAiFill(selection, openRegionTask);
+            openBuildPaletteAiFill(selection, requestAssistant);
             return;
           }
           if (primitive.id === "house" || primitive.id === "village") {
-            openBuildPaletteAiConstruction(selection, primitive.id, openRegionTask);
+            openBuildPaletteAiConstruction(selection, primitive.id, requestAssistant);
             return;
           }
           const result = applyBuildPalettePrimitive(selection, primitive.id, buildPaletteApplyOptions());
@@ -260,30 +260,26 @@ function optionTestId(key: HouseOptionKey): string {
 
 function openBuildPaletteAiFill(
   selection: NonNullable<ReturnType<typeof editorState.get>["selection"]>,
-  openRegionTask: typeof openRegionTaskModal,
+  requestAssistant: typeof requestAiSelectionContext,
 ): void {
-  const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
-  const prompt = [
-    `선택 영역 mapId=${selection.mapId}, x=${selection.x}, y=${selection.y}, width=${selection.width}, height=${selection.height} 안만 작업하세요.`,
-    "먼저 set_build_spec으로 이 사각 영역을 outline/assets에 기록한 뒤, 모든 공간 쓰기 툴은 이 영역 안에서만 실행하세요.",
-    "영역을 자연스럽게 채워 주세요.",
-  ].join("\n");
-  openRegionTask({ mapId: selection.mapId, region, initialInstruction: prompt, autoRun: false });
+  // 좌표를 문구에 다시 적지 않는다 — 조수가 이 선택을 이번 턴의 스코프로 받고, 스코프 문구·
+  // 컨텍스트 푸터가 사각형을 한 번만 말한다(같은 사각형을 세 곳에서 말하면 어긋날 자리가 생긴다).
+  requestAssistant(selection, {
+    focus: true,
+    instruction: "선택 영역을 주변 지형과 자연스럽게 이어지도록 채워 주세요.",
+  });
 }
 
 function openBuildPaletteAiConstruction(
   selection: NonNullable<ReturnType<typeof editorState.get>["selection"]>,
   primitive: "house" | "village",
-  openRegionTask: typeof openRegionTaskModal,
+  requestAssistant: typeof requestAiSelectionContext,
 ): void {
-  const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
-  const initialInstruction = primitive === "house"
-    ? "선택 영역 안에 야외 집 한 채를 지어 주세요. 주변 지형과 출입 경로를 보존하고, 완성 전 미리보기를 보여 주세요."
-    : "선택 영역 안에 여러 집과 연결된 길을 갖춘 작은 마을을 만들어 주세요. 주변 지형과 출입 경로를 보존하고, 완성 전 미리보기를 보여 주세요.";
-  openRegionTask({
+  requestAssistant(selection, {
     autoRun: true,
-    initialInstruction,
-    mapId: selection.mapId,
-    region,
+    focus: true,
+    instruction: primitive === "house"
+      ? "선택 영역 안에 야외 집 한 채를 지어 주세요. 주변 지형과 출입 경로를 보존해 주세요."
+      : "선택 영역 안에 여러 집과 연결된 길을 갖춘 작은 마을을 만들어 주세요. 주변 지형과 출입 경로를 보존해 주세요.",
   });
 }

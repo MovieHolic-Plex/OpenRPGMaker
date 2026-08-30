@@ -1,15 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  getMapEditHistoryDebugEntries,
-  resetMapEditHistory,
-  undoMapEdit,
-} from "@/editor/mapEditHistory";
-import { store } from "@/project/store";
-import { getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { clipMapCellsToRegion } from "@/editor/regionTask/clipToRegion";
-import { composePartialProject } from "@/editor/regionTask/partialApplyCompose";
-import { groupRegionChanges } from "@/editor/regionTask/regionChangeGroups";
 import {
   advanceRoomDraft,
   listRoomDrafts,
@@ -17,38 +8,16 @@ import {
   setRoomDraftLock,
   startInteriorRoomDraft,
 } from "@/editor/roomHarness/facade";
-import { setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
-import { runDirectInteriorRoomDraft } from "@/editor/regionTask/runDirectRoomDraft";
-import { reviewRegionDraft, type HarnessReviewReport } from "@/editor/regionTask/harnessReview";
+import { reviewRegionDraft } from "@/editor/regionTask/harnessReview";
 import { createBlankProject } from "@/project/defaults";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "@/editor/tools/interiorRoomSession";
 import { runToolDefinition } from "@/editor/tools/toolRunner";
 import { parseInteriorPlan } from "@/editor/roomHarness/interiorKit";
 import { INTERIOR_ROOM_THEME_CATALOG, INTERIOR_SEMANTIC_TILE_CATALOG } from "@/editor/interiorRoomPipeline";
-import type { Command, Project } from "@/project/types";
+import type { Project } from "@/project/types";
 
 const REGION = { x: 0, y: 0, width: 4, height: 4 } as const;
 
-function clearReport(): HarnessReviewReport {
-  return {
-    issues: [],
-    blockers: [],
-    checkpoints: [{ id: "approval", label: "승인", status: "done", detail: "ok" }],
-    metrics: {
-      changedCells: 0,
-      changedEvents: 0,
-      passableChangedCells: 0,
-      isolatedChangedCells: 0,
-      scheduledNpcs: 0,
-      scheduleEntries: 0,
-      timeSystemEnabled: false,
-      roomSessions: 0,
-      roomScoreAverage: null,
-      deterministicRepairs: 0,
-    },
-    repairLimit: 8,
-  };
-}
 
 describe("detached room harness facade", () => {
   it("keeps sessions out of Project JSON while transferring them across draft clones", () => {
@@ -116,218 +85,29 @@ describe("detached room harness facade", () => {
   });
 });
 
-describe("quota-independent connected room draft", () => {
-  it("creates a reviewed bidirectional room proposal without mutating the authored project", () => {
+
+// 승인 게이트(setPendingRegionApply)는 정책상 없어졌다 — approvalPolicy 는 "즉시 적용,
+// 복구는 되돌리기" 다. 남은 계약은 하네스가 **무엇을 문제로 보고하는가** 이고, 그 보고는
+// 조수 적용 경로에서 ⚠ 버블이 된다(막지 않는다 — test/scopedAssistantTurn.test.ts).
+describe("hard review reporting without an approval gate", () => {
+  it("reports a scheduled NPC as an error issue when the time system is off", () => {
     const base = createBlankProject();
-    const before = JSON.stringify(base);
-    let applies = 0;
-    const result = runDirectInteriorRoomDraft({
-      mapId: base.startMapId,
-      region: REGION,
-      preset: "inn",
-      modifier: "rustic",
-      seed: 314,
-    }, {
-      getProject: () => base,
-      applyProject: () => { applies += 1; },
-    });
-
-    expect(result.ok).toBe(true);
-    expect(result.proposedCalls).toBe(0);
-    expect(result.mapsAdded).toBe(1);
-    expect(result.pending).toBeDefined();
-    expect(JSON.stringify(base)).toBe(before);
-    expect(applies).toBe(0);
-
-    const candidate = result.pending!.clippedProject;
-    const interiorMapId = Object.keys(candidate.maps).find((mapId) => !base.maps[mapId]);
-    expect(interiorMapId).toBeDefined();
-    const source = candidate.maps[base.startMapId]!;
-    const addedDoor = source.events.find((event) => !base.maps[base.startMapId]!.events.some((beforeEvent) => beforeEvent.id === event.id));
-    expect(addedDoor).toBeDefined();
-    expect(addedDoor!.x).toBeGreaterThanOrEqual(REGION.x);
-    expect(addedDoor!.x).toBeLessThan(REGION.x + REGION.width);
-    expect(addedDoor!.y).toBeGreaterThanOrEqual(REGION.y);
-    expect(addedDoor!.y).toBeLessThan(REGION.y + REGION.height);
-    expect(firstTransfer(addedDoor!)?.mapId).toBe(interiorMapId);
-
-    const interior = candidate.maps[interiorMapId!]!;
-    const exit = interior.events.find((event) => event.id === `ev_entrance_${interiorMapId}`);
-    expect(exit).toBeDefined();
-    expect(firstTransfer(exit!)?.mapId).toBe(base.startMapId);
-    expect(result.review?.blockers).toEqual([]);
-    expect(result.pending!.roomDrafts[0]?.rooms.some((room) => room.modifiers.includes("rustic"))).toBe(true);
-    result.pending!.discard();
-  });
-
-  it("applies through one full-project history entry and one undo removes both sides", () => {
-    const base = createBlankProject();
-    store.replace(base);
-    resetMapEditHistory();
-    try {
-      const result = runDirectInteriorRoomDraft({
-        mapId: base.startMapId,
-        region: REGION,
-        preset: "home",
-        seed: 91,
-      });
-      expect(result.pending).toBeDefined();
-      const candidate = result.pending!.clippedProject;
-      const interiorMapId = Object.keys(candidate.maps).find((mapId) => !base.maps[mapId])!;
-      const doorId = candidate.maps[base.startMapId]!.events
-        .find((event) => !base.maps[base.startMapId]!.events.some((previous) => previous.id === event.id))!.id;
-
-      expect(result.pending!.apply()).toMatchObject({ ok: true, applied: true });
-      expect(store.getCurrent().maps[interiorMapId]).toBeDefined();
-      expect(store.getCurrent().maps[base.startMapId]!.events.some((event) => event.id === doorId)).toBe(true);
-      expect(getMapEditHistoryDebugEntries()).toEqual([
-        expect.objectContaining({ kind: "project", mapId: base.startMapId }),
-      ]);
-
-      result.pending!.apply();
-      expect(getMapEditHistoryDebugEntries()).toHaveLength(1);
-      expect(undoMapEdit()).toBe(true);
-      expect(store.getCurrent().maps[interiorMapId]).toBeUndefined();
-      expect(store.getCurrent().maps[base.startMapId]!.events.some((event) => event.id === doorId)).toBe(false);
-    } finally {
-      resetMapEditHistory();
-      store.replace(createBlankProject());
-    }
-  });
-
-  it("fails safely when the selected region has no empty reachable doorway cell", () => {
-    const base = createBlankProject();
-    const map = base.maps[base.startMapId]!;
-    map.events.push({
-      id: "occupied-door-cell",
-      x: base.startPos.x,
-      y: base.startPos.y,
+    const candidate = structuredClone(base);
+    candidate.maps[candidate.startMapId]!.events.push({
+      id: "new-scheduled-npc",
+      x: candidate.startPos.x,
+      y: candidate.startPos.y,
       trigger: "action",
-      commands: [{ kind: "text", body: "occupied" }],
+      commands: [],
+      schedule: [{ when: {}, at: { mapId: candidate.startMapId, x: candidate.startPos.x, y: candidate.startPos.y } }],
     } as unknown as Project["maps"][string]["events"][number]);
-    const before = JSON.stringify(base);
-    let applies = 0;
-    const result = runDirectInteriorRoomDraft({
-      mapId: base.startMapId,
-      region: { x: base.startPos.x, y: base.startPos.y, width: 1, height: 1 },
-      seed: 1,
-    }, {
-      getProject: () => base,
-      applyProject: () => { applies += 1; },
-    });
 
-    expect(result.ok).toBe(false);
-    expect(result.error).toContain("문·복귀 칸");
-    expect(result.pending).toBeUndefined();
-    expect(JSON.stringify(base)).toBe(before);
-    expect(applies).toBe(0);
-  });
-});
+    const review = reviewRegionDraft({ base, draft: candidate, mapId: base.startMapId, region: REGION });
 
-function firstTransfer(
-  event: Project["maps"][string]["events"][number],
-): Extract<Command, { kind: "transfer" }> | undefined {
-  return [...event.commands, ...(event.pages ?? []).flatMap((page) => page.commands)]
-    .find((command): command is Extract<Command, { kind: "transfer" }> => command.kind === "transfer");
-}
-
-describe("single guarded approval entry", () => {
-  it("rejects stale base without settling or applying", () => {
-    const base = createBlankProject();
-    const candidate = structuredClone(base);
-    const live = structuredClone(base);
-    live.meta.title = `${live.meta.title} changed`;
-    let applies = 0;
-    const pending = setPendingRegionApply({
-      baseProject: base,
-      clippedProject: candidate,
-      mapId: base.startMapId,
-      region: REGION,
-      changedCells: 1,
-      changedEvents: 0,
-      instruction: "test",
-      report: clearReport(),
-      getCurrentProject: () => live,
-      onApply: () => { applies += 1; },
-      onDiscard: () => undefined,
-      onSettle: () => undefined,
-    });
-
-    const outcome = pending.apply();
-    expect(outcome.ok).toBe(false);
-    expect(outcome.error).toContain("기준 프로젝트");
-    expect(pending.settled).toBe(false);
-    expect(applies).toBe(0);
-    pending.discard();
-  });
-
-  it("routes a partial candidate through the same gate and applies exactly once", () => {
-    const base = createBlankProject();
-    const candidate = structuredClone(base);
-    let applies = 0;
-    let appliedTitle: string | null = null;
-    const pending = setPendingRegionApply({
-      baseProject: base,
-      clippedProject: candidate,
-      mapId: base.startMapId,
-      region: REGION,
-      changedCells: 1,
-      changedEvents: 0,
-      instruction: "test",
-      report: clearReport(),
-      getCurrentProject: () => base,
-      reviewProject: (project) => ({ project, report: clearReport() }),
-      onApply: (project) => { applies += 1; appliedTitle = project.meta.title; },
-      onDiscard: () => undefined,
-      onSettle: () => undefined,
-    });
-    const partial = structuredClone(candidate);
-    partial.meta.title = "partial";
-
-    expect(pending.applyProject(partial)).toMatchObject({ ok: true, applied: true });
-    expect(applies).toBe(1);
-    expect(appliedTitle).toBe("partial");
-    pending.apply();
-    expect(applies).toBe(1);
-  });
-  it("re-runs the hard review when applyProject supplies a different candidate", () => {
-    const base = createBlankProject();
-    const candidate = structuredClone(base);
-    let applies = 0;
-    const pending = setPendingRegionApply({
-      baseProject: base,
-      clippedProject: candidate,
-      mapId: base.startMapId,
-      region: REGION,
-      changedCells: 0,
-      changedEvents: 0,
-      instruction: "fresh review",
-      report: clearReport(),
-      getCurrentProject: () => base,
-      onApply: () => { applies += 1; },
-      onDiscard: () => undefined,
-      onSettle: () => undefined,
-    });
-    const unsafe = structuredClone(candidate);
-    unsafe.maps.orphan_direct_apply = {
-      ...structuredClone(unsafe.maps[unsafe.startMapId]!),
-      id: "orphan_direct_apply",
-      name: "Orphan",
-      events: [{
-        id: "unreachable-objective",
-        x: unsafe.startPos.x,
-        y: unsafe.startPos.y,
-        trigger: "action",
-        commands: [{ kind: "text", body: "unreachable" }],
-      } as unknown as Project["maps"][string]["events"][number]],
-    };
-
-    const outcome = pending.applyProject(unsafe);
-    expect(outcome.ok).toBe(false);
-    expect(outcome.blockers.some((blocker) => blocker.includes("unreachable-objective"))).toBe(true);
-    expect(applies).toBe(0);
-    expect(pending.settled).toBe(false);
-    pending.discard();
+    expect(review.report.issues.some((issue) => issue.code === "npc-schedule-time-disabled" && issue.severity === "error")).toBe(true);
+    expect(review.report.blockers.some((blocker) => blocker.includes("시간 시스템"))).toBe(true);
+    // 리뷰는 순수하다 — base 를 건드리지 않는다.
+    expect(base.maps[base.startMapId]!.events.some((event) => event.id === "new-scheduled-npc")).toBe(false);
   });
 });
 
@@ -354,8 +134,6 @@ describe("read-only NPC/time preflight", () => {
     expect(JSON.stringify(base.system.timeSystem)).toBe(before);
   });
 });
-
-
 
 describe("cross-tool detached session continuity", () => {
   it("preserves room sessions through the write-tool draft clone and records real layer snapshots", () => {
@@ -453,98 +231,6 @@ describe("hard region scope and world reachability", () => {
   });
 });
 
-describe("NPC schedule decision gate", () => {
-  function scheduledCandidate(): { base: Project; candidate: Project } {
-    const base = createBlankProject();
-    const candidate = structuredClone(base);
-    candidate.maps[candidate.startMapId]!.events.push({
-      id: "new-scheduled-npc",
-      x: candidate.startPos.x,
-      y: candidate.startPos.y,
-      trigger: "action",
-      commands: [],
-      schedule: [{ when: {}, at: { mapId: candidate.startMapId, x: candidate.startPos.x, y: candidate.startPos.y } }],
-    } as unknown as Project["maps"][string]["events"][number]);
-    return { base, candidate };
-  }
-
-  it("requires a choice, then can keep the new NPC fixed without mutating the base", () => {
-    const { base, candidate } = scheduledCandidate();
-    const review = (project: Project) => reviewRegionDraft({ base, draft: project, mapId: base.startMapId, region: REGION });
-    const first = review(candidate);
-    expect(first.report.issues.some((issue) => issue.code === "npc-schedule-time-disabled" && issue.severity === "error")).toBe(true);
-    const pending = setPendingRegionApply({
-      baseProject: base,
-      clippedProject: first.project,
-      mapId: base.startMapId,
-      region: REGION,
-      changedCells: 0,
-      changedEvents: 1,
-      instruction: "schedule",
-      report: first.report,
-      getCurrentProject: () => base,
-      reviewProject: review,
-      onApply: () => undefined,
-      onDiscard: () => undefined,
-      onSettle: () => undefined,
-    });
-
-    pending.resolveNpcSchedules("keep-fixed");
-    expect(pending.clippedProject.maps[base.startMapId]!.events.find((event) => event.id === "new-scheduled-npc")?.schedule)
-      .toBeUndefined();
-    expect(pending.blockers.some((blocker) => blocker.includes("시간 시스템"))).toBe(false);
-    expect(base.maps[base.startMapId]!.events.some((event) => event.id === "new-scheduled-npc")).toBe(false);
-    pending.discard();
-  });
-
-  it("can explicitly enable time and re-run the same safety review", () => {
-    const { base, candidate } = scheduledCandidate();
-    const review = (project: Project) => reviewRegionDraft({ base, draft: project, mapId: base.startMapId, region: REGION });
-    const first = review(candidate);
-    const pending = setPendingRegionApply({
-      baseProject: base,
-      clippedProject: first.project,
-      mapId: base.startMapId,
-      region: REGION,
-      changedCells: 0,
-      changedEvents: 1,
-      instruction: "schedule",
-      report: first.report,
-      getCurrentProject: () => base,
-      reviewProject: review,
-      onApply: () => undefined,
-      onDiscard: () => undefined,
-      onSettle: () => undefined,
-    });
-
-    pending.resolveNpcSchedules("enable-time");
-    expect(pending.clippedProject.system.timeSystem?.enabled).toBe(true);
-    expect(pending.blockers.some((blocker) => blocker.includes("시간 시스템"))).toBe(false);
-    pending.discard();
-  });
-});
-
-describe("stack-safe partial apply", () => {
-  it("groups and copies a stack-only layer change", () => {
-    const base = createBlankProject();
-    const clipped = structuredClone(base);
-    const mapId = base.startMapId;
-    clipped.maps[mapId]!.lowerTileStacks = { 0: [17, 23] };
-    const region = { x: 0, y: 0, width: 1, height: 1 } as const;
-    const groups = groupRegionChanges(base, clipped, mapId, region);
-    expect(groups.lower).toHaveLength(1);
-    const merged = composePartialProject({
-      base,
-      clipped,
-      mapId,
-      region,
-      selectedChunkIds: [groups.lower[0]!.id],
-      groups,
-    });
-    expect(merged.maps[mapId]!.lowerTileStacks?.[0]).toEqual([17, 23]);
-  });
-});
-
 describe("composable theme and semantic tile catalogs", () => {
   it("parses role + modifier combinations and exposes semantic evaluation roles", () => {
     const plan = parseInteriorPlan({
@@ -561,48 +247,5 @@ describe("composable theme and semantic tile catalogs", () => {
     expect(plan.rooms?.[0]?.modifiers).toEqual(["sacred", "luxury"]);
     expect(INTERIOR_ROOM_THEME_CATALOG.dining.requiredRoles).toContain("table");
     expect(INTERIOR_SEMANTIC_TILE_CATALOG.table.tileIds.length).toBeGreaterThan(1);
-  });
-});
-
-describe("reroll preview refresh", () => {
-  it("publishes a fresh ghost project diff after a room-only reroll", () => {
-    const base = createBlankProject();
-    const candidate = cloneDetachedDraft(base);
-    const session = startInteriorRoomDraft(candidate, {
-      mapId: "room_preview_refresh",
-      name: "Preview refresh",
-      width: 16,
-      height: 12,
-      rooms: [
-        { id: "living", x: 2, y: 3, w: 7, h: 5, theme: "dining" },
-        { id: "bedroom", x: 10, y: 3, w: 4, h: 5, theme: "bedroom" },
-      ],
-      innerDoors: [{ x: 9, y: 5 }],
-      door: { x: 5, y: 7 },
-      theme: "dining",
-      seed: 88,
-    });
-    for (let guard = 0; guard < 8; guard += 1) {
-      const next = advanceRoomDraft(candidate, session.id);
-      if (Object.values(next.checklist).every((state) => state !== "open")) break;
-    }
-    const pending = setPendingRegionApply({
-      baseProject: base,
-      clippedProject: candidate,
-      mapId: base.startMapId,
-      region: REGION,
-      changedCells: 0,
-      changedEvents: 0,
-      instruction: "reroll",
-      report: clearReport(),
-      getCurrentProject: () => base,
-      onApply: () => undefined,
-      onDiscard: () => undefined,
-      onSettle: () => undefined,
-    });
-    const revision = getAgentGhostPreviewState().revision;
-    pending.rerollRoom(session.id, "bedroom", 501);
-    expect(getAgentGhostPreviewState().revision).toBeGreaterThan(revision);
-    pending.discard();
   });
 });

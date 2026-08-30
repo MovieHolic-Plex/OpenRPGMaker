@@ -6,7 +6,6 @@ import { saveSelectionAsStructureKit } from "@/editor/harnessSuggestion/structur
 import type { TileSelection } from "@/editor/editorState";
 import { editorState } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { toast } from "@/util/toast";
 import {
   cancelPastePreview,
@@ -15,7 +14,6 @@ import {
   copySelection,
   enterPastePreview,
 } from "@/editor/mapClipboard";
-import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
 import { el } from "@/util/dom";
 
 /** 이 칸 수를 넘는 「지우기」는 두 번 눌러야 실행된다. 3×4 이하는 즉시 실행(기존 동작). */
@@ -25,34 +23,15 @@ export interface SelectionChipPreset {
   readonly id: string;
   readonly label: string;
   readonly title: string;
-  /** null이면 지시 입력을 위해 모달만 연다(autoRun 없음). */
+  /** null이면 조수 입력창만 열어 사용자가 직접 지시를 쓴다(autoRun 없음). */
   readonly instruction: string | null;
 }
 
-// 영역 모달(suggestedCommands)과 중복되는 구조물/길/다듬기 단축 칩은 두지 않는다.
-// 캔버스 칩은 모달 진입 1개만 — 세부 추천은 모달 안에서 보여준다.
+// 구조물/길/다듬기 단축 칩은 두지 않는다 — 캔버스 칩은 조수 진입 1개만이고,
+// 세부 추천은 조수 컴포저의 제안 칩이 보여준다.
 export const SELECTION_CHIP_PRESETS: readonly SelectionChipPreset[] = [
   { id: "ai", label: "AI", title: "이 영역에 자연어 지시로 AI 작업", instruction: null },
 ] as const;
-
-export function selectionChipModalOptions(
-  preset: SelectionChipPreset,
-  selection: TileSelection,
-  anchor?: { readonly x: number; readonly y: number },
-): RegionTaskModalOptions {
-  const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
-  // 창이 자기가 바꿀 영역을 덮지 않도록 대상의 화면 사각형을 넘긴다. 이 계산은 Phaser
-  // 카메라를 읽어야 해서 EditScene 이 등록소에 꽂아 둔다 — 등록이 없으면(테스트·헤드리스)
-  // null 이고 창은 anchor 배치로 폴백한다.
-  const avoid = anchor ? resolveRegionClientRect(region) : null;
-  return {
-    mapId: selection.mapId,
-    region,
-    ...(preset.instruction !== null ? { initialInstruction: preset.instruction, autoRun: true } : {}),
-    ...(anchor ? { anchor } : {}),
-    ...(avoid ? { avoid } : {}),
-  };
-}
 
 function makeAiSparkIcon(): SVGSVGElement {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -75,7 +54,7 @@ function makeAiSparkIcon(): SVGSVGElement {
 
 export function renderSelectionActionChips(
   selection: TileSelection,
-  openModal: typeof openRegionTaskModal = openRegionTaskModal,
+  requestAssistant: typeof requestAiSelectionContext = requestAiSelectionContext,
 ): HTMLElement {
   const hasClipboard = editorState.get().clipboard !== null;
   const bar = el("div", {
@@ -107,20 +86,18 @@ export function renderSelectionActionChips(
           : undefined,
         text: isAi ? undefined : preset.label,
         on: {
-          click: (event) => {
-            // 잠긴 맵은 AI 가 쓸 수 없다. 예전에는 EditScene 이 창을 열기 직전에 봤는데,
-            // 창을 여는 주체가 이 칩으로 옮겨졌으므로 검사도 함께 옮긴다.
+          click: () => {
+            // 잠긴 맵은 AI 가 쓸 수 없다. 조수 창을 열기 전에 여기서 막는다 — 입력창까지 가
+            // 놓고 전송에서 거부되면 사용자는 무엇이 막혔는지 모른다.
             if (!canEditMap(selection.mapId)) {
               toast(mapEditLockNotice(selection.mapId), "error");
               return;
             }
-            requestAiSelectionContext(selection, false);
-            const mouse = event as MouseEvent;
-            const anchor =
-              typeof mouse.clientX === "number" && (mouse.clientX !== 0 || mouse.clientY !== 0)
-                ? { x: mouse.clientX, y: mouse.clientY }
-                : undefined;
-            openModal(selectionChipModalOptions(preset, selection, anchor));
+            // 조수 하나가 실행체다. 이 칩은 선택을 이번 턴의 스코프로 무장시키고 초점을 옮긴다.
+            requestAssistant(selection, {
+              focus: true,
+              ...(preset.instruction !== null ? { instruction: preset.instruction, autoRun: true } : {}),
+            });
           },
         },
       }),

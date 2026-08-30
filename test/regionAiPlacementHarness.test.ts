@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildRegionTaskMessage,
-  ensureRegionPlacementHarness,
-  formatApprovedPropVocabHint,
-  REGION_PROP_VOCAB,
-} from "@/editor/regionTask/runRegionTask";
-import { BUILD_PALETTE_GROUP_IDS } from "@/editor/panels/buildPaletteCore";
+import { formatMaterialLabelHint, PROP_VOCAB as REGION_PROP_VOCAB } from "@/ai/turnGuide";
+import { buildScopedTurnMessage as buildRegionTaskMessage } from "./helpers/scopedTurnMessage";
+import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups as ensureRegionPlacementHarness } from "@/editor/panels/buildPaletteCore";
 import { toOpenAiTools } from "@/editor/tools";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains } from "@/editor/assistantToolMode";
 import { createBlankProject } from "@/project/defaults";
@@ -53,9 +49,9 @@ describe("region AI placement harness", () => {
     ensureRegionPlacementHarness(tileset);
     expect(tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_GROUP_IDS.tree)?.origin).toBe("user");
     expect(approvedVocabulary(tileset).groups.some((group) => group.id === BUILD_PALETTE_GROUP_IDS.tree)).toBe(true);
-    expect(formatApprovedPropVocabHint(tileset)).toMatch(/침엽수|나무/);
-    expect(formatApprovedPropVocabHint(tileset)).not.toContain(BUILD_PALETTE_GROUP_IDS.tree);
-    expect(formatApprovedPropVocabHint(tileset)).not.toContain("마을 소품");
+    expect(formatMaterialLabelHint(tileset)).toMatch(/침엽수|나무/);
+    expect(formatMaterialLabelHint(tileset)).not.toContain(BUILD_PALETTE_GROUP_IDS.tree);
+    expect(formatMaterialLabelHint(tileset)).not.toContain("마을 소품");
 
     const props = runTool(context, "place_props", {
       mapId: MAP_ID,

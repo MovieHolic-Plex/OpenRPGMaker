@@ -1016,7 +1016,7 @@ export class AssistantSession {
     text: string,
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
-    opts?: { readonly autonomous?: boolean },
+    opts?: { readonly autonomous?: boolean; readonly instruction?: string },
   ): Promise<TurnResult> {
     // 자율 드라이버: opts.autonomous === true 일 때만 진입한다(명시 플래그 — 플래그 없는 기존
     // 호출처(영역 작업·클러스터 모달·평가 러너)는 종전대로 턴 1개로 끝난다). 패널·MCP 브리지는
@@ -1036,8 +1036,8 @@ export class AssistantSession {
     // 내부에서는 유지되어 3회 시도 한도가 턴 단위로 초기화되지 않는다.
     this.verificationFailed = false;
     this.verificationPending = null;
-    if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal);
-    const first = await this.executeUserTurn(text, onEvent, signal);
+    if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal, opts?.instruction);
+    const first = await this.executeUserTurn(text, onEvent, signal, opts?.instruction);
     return this.runAutonomousDriver(first, onEvent, signal);
   }
 
@@ -1117,6 +1117,8 @@ export class AssistantSession {
     text: string,
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
+    /** 호출자가 아는 **사용자 발화 원문**. 되묻기 판정만 이것을 쓴다(아래 clarify 주석). */
+    rawInstruction?: string,
   ): Promise<TurnResult> {
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
     this.refreshSystemPromptBudget();
@@ -1171,7 +1173,16 @@ export class AssistantSession {
     // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
     // F-05: auto/orchestrated 모드에서는 bare 집이라도 clarify로 멈추지 않고 planner/LLM으로 넘긴다.
     // agentMode==="chat"에서만 되묻기를 유지한다. PROTOCOL_LOCKED_RE는 intentClarify 내부에서 이미 bypass.
-    const clarify = resolveIntentClarification(text);
+    // 되묻기 판정 입력은 **사용자 발화로 한정한다** — 위 intentText 와 같은 이유지만 결과는 더
+    // 무겁다. 도메인 노출은 넓게 틀려도 도구가 몇 개 더 열릴 뿐인데, 되묻기는 턴을 통째로
+    // 세운다(툴 0건). 통합 후 패널은 지시 + **도구 가이드** + footer 를 한 문자열로 합쳐 보내고,
+    // 그 가이드의 고정 문구에는 "실내/방 맵 요청에는 야외 시공 facade 금지" 처럼 실내·야외 표지가
+    // 동시에 들어 있다. 합성문으로 판정하면 "맵에 나무 좀 심어줘" 가 "집을 야외로? 실내로?" 로
+    // 되물어지고 아무 일도 일어나지 않는다(2026-08-31 실측).
+    // 경로 확정 신호는 종전대로 합성문에서 본다 — 스코프 문구("영역 작업 도구 규칙")가 프로토콜
+    // 잠금이고, 스코프가 걸린 턴의 bare "집" 은 가이드가 이미 야외 1채로 못박았으므로 되물으면 안 된다.
+    const clarifyText = rawInstruction?.trim() || stripContextFooter(text);
+    const clarify = isProtocolLocked(text) ? null : resolveIntentClarification(clarifyText);
     if (clarify) {
       const shouldBypassClarify = this.config.agentMode === "auto" || this.orchestrationEnabled();
       if (shouldBypassClarify) {

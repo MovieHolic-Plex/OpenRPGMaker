@@ -1,7 +1,7 @@
 // QA over-fire evidence capture (temporary). Writes facade lines to tmp file.
 import { describe, it } from "vitest";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
+import { buildScopedTurnMessage as buildRegionTaskMessage } from "./helpers/scopedTurnMessage";
 
 function msgFor(instruction: string): string {
   return buildRegionTaskMessage(instruction, "맵", "m1", { x: 0, y: 1, width: 7, height: 8 });

@@ -11,7 +11,7 @@ import {
   subscribeAiApplyCompletion,
   type AiApplyCompletionContext,
 } from "@/editor/aiApplyCompletion";
-import type { AiDocument, ChangeSummary, Project } from "@/project/types";
+import type { AiDocument, ChangeSummary, Project, TilesetDef } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import {
   parseAssistantTemperature,
@@ -43,7 +43,9 @@ import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
-import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
+import { buildTurnGuide, type TurnScope } from "@/ai/turnGuide";
+import { ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
@@ -53,6 +55,7 @@ import { toast } from "@/util/toast";
 import {
   AssistantSession,
   AGENT_RUN_MAX_TOTAL_STEPS,
+  type AssistantSessionOptions,
   type AuditEntry,
   type ProposedCall,
   type SessionEvent,
@@ -70,8 +73,7 @@ import {
   saveConversation,
   type ConversationRecord,
 } from "@/ai/conversationStore";
-import { recordAiActivity } from "@/ai/activityLog";
-import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
+import { recordAiActivity, toolCallsFromAudit } from "@/ai/activityLog";
 import {
   buildInterviewKickoff,
   buildStructureLearnKickoff,
@@ -318,7 +320,8 @@ export interface AiChatPanelOptions {
   readonly onAssistantTemperatureChange?: (next: AssistantTemperature) => void;
   readonly onSideWidthPreview?: (width: number, panelHeight: number) => void;
   readonly onSideWidthCommit?: (width: number, panelHeight: number) => void;
-  readonly regionTaskRunner?: (options: RegionTaskOptions) => Promise<RegionTaskResult>;
+  /** 테스트 전용 — 세션의 LLM 호출을 대체한다(SSE 픽스처 대신 라운드 단위 스크립트). */
+  readonly sessionChat?: AssistantSessionOptions["chat"];
 }
 
 let cleanupAiAssistBridge: (() => void) | null = null;
@@ -346,7 +349,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const timer = globalThis.setTimeout(callback, delayMs);
     return () => globalThis.clearTimeout(timer);
   });
-  const runRegion = options.regionTaskRunner ?? runRegionTask;
   const readChatDock = (): ChatDock => options.getChatDock?.() ?? editorState.get().chatDock;
   const readTemperature = (): AssistantTemperature =>
     parseAssistantTemperature(options.getAssistantTemperature?.() ?? editorState.get().assistantTemperature);
@@ -673,10 +675,28 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appendChangeCard(card);
   };
 
+  /**
+   * 세션 시드 프로젝트 — Combined Town 하네스 프리셋(나무/길/물 등)을 origin:"user" 로 승인해
+   * `place_props` 가 라벨만으로 바로 쓰이게 한다.
+   *
+   * 왜 여기인가 — 영역 작업 전용 엔진은 실행마다 `structuredClone(store)` 를 만들어 그 위에서
+   * 승인 스탬프를 찍고 버렸다. 조수 세션은 **오래 사는 하나**라 실행별 클론이 없다. 스토어를
+   * 직접 바꾸면 사용자 편집 이력에 AI 가 만든 타일셋 변경이 섞이므로, 세션에 넘기는 클론에만
+   * 찍는다(세션 생성자가 다시 클론하지만 그 클론은 이 스탬프를 물려받는다).
+   */
+  const sessionSeedProject = (): Project => {
+    const seed = structuredClone(store.getCurrent());
+    const mapId = editorState.get().currentMapId ?? seed.startMapId ?? null;
+    const map = mapId ? seed.maps[mapId] : undefined;
+    const tileset = map ? seed.tilesets[map.tilesetId] : undefined;
+    if (tileset) ensureBuildPaletteTileGroups(tileset);
+    return seed;
+  };
+
   const ensureSession = (): AssistantSession => {
     if (!controller.session) {
       backupProjectSnapshot();
-      controller.session = new AssistantSession(store.getCurrent(), {
+      controller.session = new AssistantSession(sessionSeedProject(), {
         config: loadAiConfig(),
         contextOptions: {
           currentMapId: editorState.get().currentMapId ?? undefined,
@@ -696,6 +716,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         renderImages: renderToolImages,
         // 컨텍스트 모드 스코핑(§2.2): 활성 UI 상태에서 결정론으로 계산 — 턴마다 재평가된다.
         toolMode: computeAssistantToolMode,
+        // 테스트용 LLM 대체. 실행체가 조수 세션 하나로 합쳐졌으므로 패널 턴을 관측하는
+        // 유일한 이음새다(예전엔 regionTaskRunner 로 엔진을 통째로 갈아끼웠다).
+        ...(options.sessionChat ? { chat: options.sessionChat } : {}),
       });
     }
     return controller.session;
@@ -1012,6 +1035,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let activeAbortController: AbortController | null = null;
   let activeSelectionRegionController: AbortController | null = null;
   let activeSelectionRegionKey: string | null = null;
+  // 캔버스 배지 소유권 번호 — 같은 맵의 새 스코프 턴이 앞 턴의 running:false 를 무시하게 한다.
+  let regionScopeRunSeq = 0;
+  const regionScopeKey = (scope: TurnScope): string =>
+    `${scope.mapId}:${scope.region.x}:${scope.region.y}:${scope.region.width}:${scope.region.height}`;
   const abortActiveSelectionRegionTask = (): void => {
     const regionController = activeSelectionRegionController;
     if (!regionController || regionController.signal.aborted) return;
@@ -1098,6 +1125,28 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
   };
 
+  /**
+   * 이번 턴의 스코프를 **턴 시작 시점에 고정**한다. 턴이 도는 동안 사용자가 선택을 바꿔도
+   * 모델이 들은 사각형과 클립하는 사각형이 어긋나면 안 된다.
+   *
+   * 실내·새 맵 요청은 스코프를 **풀기만** 한다 — 예전에는 여기서 "일반 채팅으로 진행합니다"
+   * 토스트를 띄우고 다른 경로로 재라우팅했다. 이제 경로가 하나뿐이라 재라우팅할 곳이 없고,
+   * 남은 의미는 "이 턴에는 사각형 제약을 걸지 않는다" 하나다.
+   */
+  const resolveTurnScope = (instruction: string): TurnScope | null => {
+    const selection = currentSelectionForRegionTask();
+    if (!selection) return null;
+    if (isRegionEscapingIntent(instruction)) return null;
+    return { mapId: selection.mapId, region: selection.region };
+  };
+
+  const tilesetForMap = (mapId: string | null): TilesetDef | undefined => {
+    if (!mapId) return undefined;
+    const project = store.getCurrent();
+    const map = project.maps[mapId];
+    return map ? project.tilesets[map.tilesetId] : undefined;
+  };
+
   const sendText = async (
     text: string,
     displayAs?: string,
@@ -1124,9 +1173,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const autonomous = loadAiConfig().agentMode === "auto";
     // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
     if (autonomous) beginAutonomousRun();
+    const turnScope = resolveTurnScope(trimmed);
+    // 도구 규칙(재료 라벨·소품/보물상자 구분·shape=circle 등)은 선택 여부와 무관하게 붙고,
+    // 사각형 제약 문구만 스코프가 있을 때 더 붙는다.
+    const guide = buildTurnGuide({
+      instruction: trimmed,
+      tileset: tilesetForMap(turnScope?.mapId ?? mapContext().mapId),
+      scope: turnScope,
+    });
+    const payload = [trimmed, guide, contextFooter()].filter((part) => part.length > 0).join("\n\n");
     await executeTurn(session, trimmed, (onEvent, signal) =>
-      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal, { autonomous }),
-      { autonomous }
+      // instruction: 되묻기 판정용 원문. payload 에는 도구 가이드가 섞여 있어 그걸로 판정하면
+      // 가이드 문구의 실내·야외 표지가 매 턴 "집을 어떻게 만들까요?" 되묻기를 유발한다.
+      session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed }),
+      { autonomous, scope: turnScope }
     );
   };
 
@@ -1136,12 +1196,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     session: AssistantSession,
     requestText: string,
     exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>,
-    runOpts?: { readonly autonomous?: boolean }
+    runOpts?: { readonly autonomous?: boolean; readonly scope?: TurnScope | null }
   ): Promise<void> => {
     if (turnBusy) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
+    const turnScope = runOpts?.scope ?? null;
     turnBusy = true;
     const turnConversationId = conversationId;
     const turnConversationScope = conversationScope;
@@ -1149,6 +1210,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const abortController = new AbortController();
     activeAbortController = abortController;
     abortNoticeShown = false;
+    // 스코프 턴은 사각형에 묶인다 — 사용자가 선택을 바꾸면(refreshContextChips) 이 턴을 중단하고,
+    // 캔버스 배지는 어디를 작업 중인지 사각형으로 보여준다.
+    const scopeRunId = turnScope ? ++regionScopeRunSeq : 0;
+    if (turnScope) {
+      activeSelectionRegionController = abortController;
+      activeSelectionRegionKey = regionScopeKey(turnScope);
+      dispatchRegionTaskStatus({
+        mapId: turnScope.mapId,
+        region: turnScope.region,
+        running: true,
+        runId: scopeRunId,
+        phase: "running",
+      });
+    }
     const ownsTurn = (allowAborted = false): boolean =>
       !disposed
       && activeAbortController === abortController
@@ -1429,7 +1504,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         applyingProposal = true;
         let applied: boolean;
         try {
-          applied = await applyProposal(result.proposedCalls, assistantBubble);
+          applied = await applyProposal(result.proposedCalls, assistantBubble, {
+            scope: turnScope,
+            instruction: requestText,
+          });
         } finally {
           applyingProposal = false;
           projectIdentityId = store.getProjectIdentity().id;
@@ -1495,6 +1573,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     } finally {
       ghostPreviewUpdater.cancel();
+      // 배지는 소유권을 잃은 턴에서도 반드시 꺼야 한다 — 안 그러면 사각형이 캔버스에 영구히 남는다.
+      // runId 로 같은 맵의 뒤 턴이 켠 배지를 잘못 끄지 않는다(regionTaskStatus 계약).
+      if (turnScope) {
+        dispatchRegionTaskStatus({
+          mapId: turnScope.mapId,
+          region: turnScope.region,
+          running: false,
+          runId: scopeRunId,
+        });
+        if (activeSelectionRegionController === abortController) {
+          activeSelectionRegionController = null;
+          activeSelectionRegionKey = null;
+        }
+      }
       const turnEntries = [...auditHistoryAtTurnStart, ...session.getAuditEntries()];
       if (!ownsTurn(true)) {
         // 프로젝트 전환이 ownership을 먼저 끊어도 늦게 정착한 결과는 시작 당시 대화에만 저장한다.
@@ -1511,23 +1603,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (collapsed) panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
       persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries }); // 시작 당시 대화 범위로 저장한다.
-      // 채팅 턴마다 활동 로그(로컬 + Supabase best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
+      // 턴마다 활동 로그(로컬 + Supabase best-effort). 스코프 턴도 같은 경로다 —
+      // 영역 전용 기록기(recordAiActivityFromRegionLog)는 없어졌다.
       const cfg = loadAiConfig();
       const audit = session.getAuditEntries();
-      const toolFromAudit = audit
-        .filter((entry): entry is Extract<typeof entry, { kind: "tool" }> => entry.kind === "tool")
-        .map((entry) => ({
-          name: entry.name,
-          args: entry.args,
-          ok: entry.ok,
-          summary: entry.summary,
-        }));
-      const toolFromProposed = (turnResult?.proposedCalls ?? []).map((call) => ({
-        name: call.name,
-        args: call.args,
-        ok: call.result.ok,
-        summary: call.summary,
-      }));
+      const toolCalls = toolCallsFromAudit(
+        audit,
+        (turnResult?.proposedCalls ?? []).map((call) => ({
+          name: call.name,
+          args: call.args,
+          ok: call.result.ok,
+          summary: call.summary,
+        })),
+      );
       void recordAiActivity({
         channel: "chat",
         instruction: requestText,
@@ -1541,7 +1629,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           proposedCalls: turnResult?.proposedCalls.length,
           assistantText: turnResult?.assistantText,
         },
-        toolCalls: toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed,
+        toolCalls,
         audit,
       }).catch(() => {
         /* ignore */
@@ -1606,231 +1694,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     log.scrollTop = log.scrollHeight;
   };
 
-  const sendSelectionRegionTask = async (text: string): Promise<void> => {
-    const selection = currentSelectionForRegionTask();
-    if (!selection) {
-      selectionTaskActive = false;
-      refreshContextChips();
-      await sendText(text);
-      return;
-    }
-    // 실내/새 맵은 선택 영역 하드 클립에 담기지 않는다(audit 18: create_map 후 0칸 폐기).
-    // 일반 채팅 전량 경로로 우회해 start_interior_room_session 등이 제안으로 남게 한다.
-    if (isRegionEscapingIntent(text)) {
-      selectionTaskActive = false;
-      refreshContextChips();
-      toast("실내·새 맵 요청은 선택 영역 밖 작업이라 일반 채팅으로 진행합니다", "info");
-      await sendText(text);
-      return;
-    }
-    if (turnBusy) {
-      toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
-      return;
-    }
-    const regionConversationId = conversationId;
-    const regionConversationScope = conversationScope;
-    const auditHistoryAtRegionStart = [
-      ...controller.auditHistory,
-      ...(controller.session?.getAuditEntries() ?? []),
-    ];
-    const regionAuditEntries: AuditEntry[] = [];
-    const recordRegionAudit = (entry: AuditEntry): void => {
-      regionAuditEntries.push(entry);
-      controller.auditHistory.push(entry);
-    };
-    const abortController = new AbortController();
-    const selectionKey = `${selection.mapId}:${selection.region.x}:${selection.region.y}:${selection.region.width}:${selection.region.height}`;
-    activeAbortController = abortController;
-    activeSelectionRegionController = abortController;
-    activeSelectionRegionKey = selectionKey;
-    abortNoticeShown = false;
-    const ownsRegionRun = (allowAborted = false): boolean =>
-      !disposed
-      && activeAbortController === abortController
-      && activeSelectionRegionController === abortController
-      && activeSelectionRegionKey === selectionKey
-      && (allowAborted || !abortController.signal.aborted);
-    turnBusy = true;
-    sendButton.disabled = true;
-    collapseAfterAiWork = collapsed;
-    expandForAiWork();
-    revealVolatileZone();
-    closeToolActivity();
-    appendBubble("user", text);
-    recordRegionAudit({
-      kind: "user",
-      text,
-      at: new Date().toISOString(),
-      context: buildConversationTurnContext(store.getCurrent(), {
-        mapId: selection.mapId,
-        viewport: getEditorMapViewport(),
-        selection: { mapId: selection.mapId, ...selection.region },
-      }),
-    });
-    beginTurnProgress();
-    refreshAbortButton();
-    setStatus("영역 작업 중…");
-    let assistantBubble: HTMLElement | null = null;
-    let reasoningBox: { box: HTMLElement; body: HTMLElement } | null = null;
-    let assistantMessageDisplayed = false;
-    const streamedBubbles: HTMLElement[] = [];
-    let currentStreamNodes: HTMLElement[] = [];
-    const trackCurrentStreamNode = (node: HTMLElement): void => {
-      if (!currentStreamNodes.includes(node)) currentStreamNodes.push(node);
-    };
-    const clearCurrentStreamAttempt = (): void => {
-      const discarded = new Set(currentStreamNodes);
-      currentStreamNodes.forEach((node) => node.remove());
-      for (let index = streamedBubbles.length - 1; index >= 0; index -= 1) {
-        if (discarded.has(streamedBubbles[index])) streamedBubbles.splice(index, 1);
-      }
-      for (const node of discarded) { if (isLastReasoningBox(node)) clearLastReasoning(); }
-      currentStreamNodes = [];
-      assistantBubble = null;
-      reasoningBox = null;
-    };
-    const appendAssistantText = (content: string): void => {
-      if (!content.trim()) return;
-      assistantMessageDisplayed = true;
-      closeToolActivity();
-      appendBubble("assistant", content);
-      recordRegionAudit({ kind: "assistant", text: content, at: new Date().toISOString() });
-    };
-    const onEvent = (event: SessionEvent): void => {
-      if (!ownsRegionRun()) return;
-      if (event.type === "phase") {
-        runningPhaseStatus = phaseStatusText(event.value);
-        if (runningProgress) refreshRunningStatus(true);
-        else setStatus(runningPhaseStatus);
-        return;
-      }
-      if (event.type === "assistant_stream_reset") {
-        clearCurrentStreamAttempt();
-        return;
-      }
-      if (event.type === "reasoning_token") {
-        if (!reasoningBox) {
-          reasoningBox = appendReasoning();
-          trackCurrentStreamNode(reasoningBox.box);
-        }
-        reasoningBox.body.textContent = (reasoningBox.body.textContent ?? "") + event.delta;
-        log.scrollTop = log.scrollHeight;
-        return;
-      }
-      if (event.type === "assistant_token") {
-        reasoningBox = null;
-        if (!assistantBubble) {
-          assistantBubble = appendBubble("assistant", "");
-          streamedBubbles.push(assistantBubble);
-          trackCurrentStreamNode(assistantBubble);
-          closeToolActivity();
-        }
-        assistantBubble.textContent = (assistantBubble.textContent ?? "") + event.delta;
-        log.scrollTop = log.scrollHeight;
-        return;
-      }
-      if (event.type === "assistant_message") {
-        if (!event.content.trim()) return;
-        assistantMessageDisplayed = true;
-        if (assistantBubble) {
-          assistantBubble.textContent = event.content;
-          currentStreamNodes = [];
-        } else {
-          appendAssistantText(event.content);
-        }
-        return;
-      }
-      if (event.type === "tool_started") {
-        setAgentGhostRunningTool(event.name);
-        startLiveActivity(event.name, event.index);
-        return;
-      }
-      if (event.type === "tool_call") {
-        completeLiveActivity(event.name, event.result, event.args);
-        recordRegionAudit({
-          kind: "tool",
-          name: event.name,
-          args: event.args,
-          ok: event.result.ok,
-          summary: event.result.summary,
-          issues: event.result.issues?.map((issue) => issue.message),
-          at: new Date().toISOString(),
-        });
-        assistantBubble = null;
-        reasoningBox = null;
-        currentStreamNodes = [];
-        return;
-      }
-      if (event.type === "status") {
-        setStatus(event.text);
-        recordRegionAudit({ kind: "status", text: event.text, at: new Date().toISOString() });
-        if (shouldShowStatusInChat(event.text)) appendBubble("system", event.text);
-      }
-    };
-
-    try {
-      const result = await runRegion({
-        mapId: selection.mapId,
-        region: selection.region,
-        instruction: text,
-        gate: "immediate",
-        signal: abortController.signal,
-        onEvent,
-      });
-      if (!ownsRegionRun()) {
-        result.pending?.discard();
-        return;
-      }
-      streamedBubbles.forEach(renderStreamedMarkdown);
-      if (result.assistantText && !assistantMessageDisplayed) appendAssistantText(result.assistantText);
-      const summary = describeRegionTaskResult(result);
-      appendBubble("system", summary);
-      recordRegionAudit({ kind: "status", text: summary, at: new Date().toISOString() });
-      setStatus(result.ok ? (result.applied ? "적용됨" : "완료") : "오류");
-      if (!result.ok && result.error) toast(`영역 작업 실패: ${result.error}`, "error");
-    } catch (cause) {
-      if (!ownsRegionRun()) return;
-      const message = cause instanceof Error ? cause.message : String(cause);
-      setStatus("오류");
-      appendBubble("system", `오류: ${message}`);
-      recordRegionAudit({ kind: "status", text: `오류: ${message}`, at: new Date().toISOString() });
-    } finally {
-      const regionEntries = [...auditHistoryAtRegionStart, ...regionAuditEntries];
-      if (!ownsRegionRun(true)) {
-        if (!disposed) {
-          persistConversation({
-            id: regionConversationId,
-            scope: regionConversationScope,
-            entries: regionEntries,
-          });
-        }
-        return;
-      }
-      const cancelled = abortController.signal.aborted;
-      activeSelectionRegionController = null;
-      activeSelectionRegionKey = null;
-      if (activeAbortController === abortController) activeAbortController = null;
-      if (cancelled) setStatus("대기");
-      const regionFailed = !cancelled && (status.textContent ?? "") === "오류";
-      endTurnProgress();
-      turnBusy = false;
-      refreshAbortButton();
-      if (collapsed && !cancelled) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
-      persistConversation({
-        id: regionConversationId,
-        scope: regionConversationScope,
-        entries: regionEntries,
-      });
-      if (!cancelled) notifyIfObscuredByTestPlay();
-      drainPendingSends();
-      scheduleGlassFold({ failed: regionFailed });
-      if (collapseAfterAiWork) {
-        if (regionFailed) collapseAfterAiWork = false;
-        else scheduleCollapseAfterAiWork();
-      }
-    }
-  };
-
   // 풀스크린 시연 실행 창이 AI 패널을 가리고 있으면, 턴 완료를 사용자에게 알린다
   // (도그푸딩 결함 ④ — 모달 뒤에서 턴/프로포절이 조용히 진행되던 문제). 자동으로 창을
   // 닫거나 열지 않는다: 완료 알림 + 기존 수동 버튼(편집으로/닫기)으로 확인하게 한다.
@@ -1853,15 +1716,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     if (!ensureConfigReadyForSend()) return;
-    if (selectionTaskActive && currentSelectionForRegionTask() && turnBusy) {
-      toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
-      return;
-    }
     input.value = "";
     syncInputHeight();
     refreshSendEnabled();
-    if (selectionTaskActive && currentSelectionForRegionTask()) await sendSelectionRegionTask(text);
-    else await sendText(text);
+    // 선택이 있든 없든 같은 경로다 — 선택은 sendText 안에서 이번 턴의 스코프로만 쓰인다.
+    await sendText(text);
   };
 
   sendButton.addEventListener("click", () => void send());
@@ -2134,6 +1993,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     activateSelectionTaskContext(detail.focus !== false);
+    // 진입점이 문구를 들고 왔으면 입력창에 채운다. autoRun 이면 바로 보낸다 —
+    // 칩·팔레트 버튼은 "한 번 눌러 실행" 이 기대 동작이고, 아니면 사용자가 다듬어 보낸다.
+    if (detail.instruction) {
+      input.value = detail.instruction;
+      syncInputHeight();
+      refreshSendEnabled();
+      if (detail.autoRun) void send();
+      else if (detail.focus !== false) input.focus();
+    }
   };
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
     window.addEventListener(AI_SELECTION_CONTEXT_EVENT, handleSelectionContextEvent);

@@ -20,9 +20,6 @@ import {
   type BuildPaletteResult,
   type BuildPaletteSelection,
 } from "@/editor/panels/buildPaletteCore";
-import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
-import type { RegionRect } from "@/editor/regionTask/clipToRegion";
-import { runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { commitChangeset, getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
 import { passableCellCount } from "@/editor/tools/mapHelpers";
@@ -34,10 +31,8 @@ import {
 } from "@/project/store";
 import { serialize } from "@/project/io";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
-import type { GameEvent, MapId, Project } from "@/project/types";
+import type { MapId, Project } from "@/project/types";
 import { sha256HexText } from "@/util/sha256";
-
-type RegionWrite = { readonly layer: "lower" | "upper"; readonly x: number; readonly y: number; readonly tile: number };
 
 export type ProjectE2EDeniedResult = {
   readonly kind: "denied";
@@ -93,14 +88,6 @@ type RegionTaskHarness = {
   readCell: (mapId: MapId, layer: "lower" | "upper", x: number, y: number) => number | null;
   /** 영역 안에서 아직 걸어 들어갈 수 있는 칸 수 — "아예 통행불가능하게" 를 실측할 유일한 창구. */
   passableCount: (mapId: MapId, area: { x: number; y: number; w: number; h: number }) => number | null;
-  runMock: (mapId: MapId, region: RegionRect, writes: readonly RegionWrite[]) => Promise<RegionTaskResult>;
-  /** writes 를 주면 모달이 그 결과로 자동 실행되어 제안 검토 UI 까지 렌더된다. */
-  openModal: (
-    mapId: MapId,
-    region: RegionRect,
-    writes?: readonly RegionWrite[],
-    events?: readonly GameEvent[],
-  ) => void;
 };
 
 type EditorToolHookWindow = Window & {
@@ -215,25 +202,6 @@ export function installEditorToolHook(): void {
       const map = project.maps[mapId];
       if (!map) return null;
       return passableCellCount(project, map, area);
-    },
-    // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 승인 게이트까지 재현한다 —
-    // 적용하려면 반환된 result.pending.apply() 또는 window.__oprnRegionTaskPending.apply()를 호출.
-    runMock: (mapId, region, writes) => runMockRegionTask(mapId, region, writes, "headless mock"),
-    // 모달을 통째로 목업 실행에 물린다 — 제안 검토 UI(before/after, 변경 칸 하이라이트,
-    // 적용/다시 만들기/버리기)는 실제 LLM 없이 이 경로로만 e2e 검증할 수 있다.
-    openModal: (mapId, region: Parameters<typeof openRegionTaskModal>[0]["region"], writes, events) => {
-      // 타입 브리지는 projectId 기반 RegionTaskCtx로 변환하기 전 προσω μεταβατικό — strict 정밀화는 별도 PR
-      openRegionTaskModal({
-        mapId: mapId as string as never,
-        region: region as never,
-        ...(writes
-          ? {
-              initialInstruction: "여기에 둥근 호수를 만들어줘",
-              autoRun: true,
-              run: ({ instruction }: { instruction: string }) => runMockRegionTask(mapId as string as never, region as never, writes, instruction, events),
-            }
-          : {}),
-      });
     },
   };
 }
@@ -384,52 +352,4 @@ function deepFreeze<T>(value: T): T {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-/** runMock/openModal 공용 — 주어진 writes 를 proposed 로 산출하는 결정적 세션.
- *  events 를 주면 그 맵의 이벤트 목록에 덧붙인다 — 변경 목록(NPC·상자 줄) e2e 검증용. */
-function runMockRegionTask(
-  mapId: MapId,
-  region: RegionRect,
-  writes: readonly RegionWrite[],
-  instruction: string,
-  events?: readonly GameEvent[],
-): Promise<RegionTaskResult> {
-  return runRegionTask(
-        { mapId, region, instruction },
-        {
-          getProject: () => store.getCurrent(),
-          applyProject: (project, label, snapshotMapId) => {
-            recordProjectSnapshot(label, snapshotMapId, { kind: "map" });
-            store.replace(project);
-          },
-          createSession: (project) => ({
-            // 실제 세션은 tool_call 이벤트로 고스트 프리뷰 업데이터를 흘려보내지만,
-            // 목업은 툴콜 스트림이 없으므로 여기서 직접 하나 흘려 캔버스 고스트/인라인
-            // 승인 툴바가 실제 세션과 동일하게 렌더되도록 재현한다(writes 자체는 getProposedProject가 반영).
-            sendUserMessage: async (_text, onEvent) => {
-              if (writes.length > 0) {
-                onEvent?.({ type: "tool_call", name: "paint_tiles", args: { mapId }, result: { ok: true, summary: "mock" } });
-              }
-              return { assistantText: "mock", proposedCalls: [], stoppedReason: "final" };
-            },
-            getProposedProject: () => {
-              const next = structuredClone(project);
-              const map = next.maps[mapId];
-              if (map) {
-                for (const write of writes) {
-                  const index = write.y * map.width + write.x;
-                  if (index < 0 || index >= map.lowerTiles.length) continue;
-                  if (write.layer === "upper") map.upperTiles[index] = write.tile;
-                  else map.lowerTiles[index] = write.tile;
-                }
-                if (events && events.length > 0) {
-                  map.events = [...(map.events ?? []), ...structuredClone(events as GameEvent[])];
-                }
-              }
-              return next;
-            },
-          }),
-        },
-      );
 }

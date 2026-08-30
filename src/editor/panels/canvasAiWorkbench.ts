@@ -1,7 +1,8 @@
 import { editorState, type EditorState, type TileSelection } from "@/editor/editorState";
 import { setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
 import { openCanvasInspectionPanel } from "@/editor/panels/canvasInspectionPanel";
-import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
+import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
+import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
@@ -14,7 +15,10 @@ export interface CanvasAiWorkbenchDeps {
   readonly getProject: () => Project;
   readonly getState: () => EditorState;
   readonly openInspection: (options: { readonly mapId: MapId; readonly project: Project }) => void;
-  readonly openRegionTask: (options: RegionTaskModalOptions) => HTMLElement | void;
+  /** 선택을 조수 턴의 스코프로 무장시키고(있으면) 지시문을 입력창에 채운다. */
+  readonly requestAssistant: typeof requestAiSelectionContext;
+  /** 선택이 없을 때 조수 패널만 펼친다(스코프 없이 현재 맵 문맥으로 대화). */
+  readonly openAssistantPanel: () => void;
   readonly selectBuildMode: () => void;
   readonly selectRegionTool: () => void;
   readonly toast: (message: string, kind?: ToastKind) => void;
@@ -24,7 +28,8 @@ const defaultDeps: CanvasAiWorkbenchDeps = {
   getProject: () => store.getCurrent(),
   getState: () => editorState.get(),
   openInspection: ({ mapId, project }) => { openCanvasInspectionPanel({ mapId, project }); },
-  openRegionTask: openRegionTaskModal,
+  requestAssistant: requestAiSelectionContext,
+  openAssistantPanel: () => { openAiAssistantPanel(); },
   selectBuildMode: () => setBuildPaletteEnabled(true),
   selectRegionTool: () => editorState.set({ selection: null, tool: "select" }),
   toast,
@@ -82,15 +87,14 @@ export function executeCanvasAiAction(action: CanvasAiAction, deps: CanvasAiWork
         deps.toast("다듬을 영역을 드래그해 선택하세요.", "info");
         return;
       }
-      deps.openRegionTask({
+      deps.requestAssistant(selection, {
         autoRun: true,
-        initialInstruction: [
+        focus: true,
+        instruction: [
           "선택 영역의 원래 기능과 주요 구조는 보존하세요.",
           "반복되는 타일을 줄이고, 빈 공간을 주변 지형과 자연스럽게 연결해 주세요.",
           "출입구와 이동 경로를 막지 말고 장식 밀도만 균형 있게 다듬어 주세요.",
         ].join("\n"),
-        mapId,
-        region: selectionRegion(selection),
       });
       return;
     }
@@ -98,14 +102,12 @@ export function executeCanvasAiAction(action: CanvasAiAction, deps: CanvasAiWork
       deps.openInspection({ mapId, project });
       return;
     case "ask": {
+      // 선택이 없으면 **맵 전체를 스코프로 씌우지 않는다** — 조수는 스코프 없이도 현재 맵을
+      // 컨텍스트로 받고, 맵 전체 사각형을 스코프로 주면 실내 신축 같은 맵 밖 작업이 헛되게
+      // 클립 대상으로 잡힌다. 선택이 있으면 그것만 스코프.
       const selection = validSelection(state.selection, mapId);
-      deps.openRegionTask({
-        autoRun: false,
-        mapId,
-        region: selection
-          ? selectionRegion(selection)
-          : { x: 0, y: 0, width: map.width, height: map.height },
-      });
+      if (selection) deps.requestAssistant(selection, { focus: true });
+      else deps.openAssistantPanel();
       return;
     }
   }
@@ -113,13 +115,4 @@ export function executeCanvasAiAction(action: CanvasAiAction, deps: CanvasAiWork
 
 function validSelection(selection: TileSelection | null, mapId: MapId): TileSelection | null {
   return selection?.mapId === mapId ? selection : null;
-}
-
-function selectionRegion(selection: TileSelection): {
-  readonly x: number;
-  readonly y: number;
-  readonly width: number;
-  readonly height: number;
-} {
-  return { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
 }

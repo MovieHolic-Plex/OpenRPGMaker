@@ -27,7 +27,7 @@ import {
   routeRegionIntent,
   type RegionIntentCategory,
 } from "@/editor/regionTask/regionIntentRouter";
-import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
+import { buildScopedTurnMessage as buildRegionTaskMessage } from "./helpers/scopedTurnMessage";
 import { el } from "@/util/dom";
 import { installFakeDom } from "./fakeDom";
 

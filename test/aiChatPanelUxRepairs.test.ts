@@ -19,7 +19,6 @@ import {
   renderToolActivityEntry,
   teardownAiChatPanel,
 } from "@/editor/panels/aiChatPanel";
-import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { editorState } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { getInlineProposalActions, setInlineProposalActions } from "@/editor/proposalInlineApproval";
@@ -131,51 +130,80 @@ describe("선택 영역 AI 직결 칩", () => {
     expect(findByTestId(panel, "ai-selection-chip")).toBeNull();
   });
 
-  it("칩이 붙은 상태에서 Enter 제출은 runRegionTask 러너로 선택 영역을 넘긴다", async () => {
+  // 실행체가 조수 세션 하나로 합쳐진 뒤의 계약: 칩이 붙은 제출은 **같은 세션 턴**이 되고,
+  // 선택 영역은 엔진이 아니라 그 턴의 스코프(프롬프트 문구 + 하드 클립)로만 작용한다.
+  it("칩이 붙은 상태에서 Enter 제출은 같은 세션 턴에 선택 영역을 스코프로 건다", async () => {
     installFakeWindow();
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
+    storage.set(
+      AI_CONFIG_STORAGE_KEY,
+      JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", model: "m", liteModel: "m", apiKey: "sk-test" }),
+    );
     const project = store.getCurrent();
     const mapId = project.startMapId;
-    const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
-      expect(options.gate).toBe("immediate");
-      expect(getInlineProposalActions()).toBeNull();
-      options.onEvent?.({ type: "status", text: "영역 작업 시작" });
-      options.onEvent?.({ type: "tool_call", name: "paint_tiles", args: { count: 2 }, result: { ok: true, summary: "타일 2칸" } });
-      options.onEvent?.({ type: "assistant_message", content: "완료했습니다." });
-      return { ok: true, applied: true, changedCells: 2, changedEvents: 0, clippedCells: 1, proposedCalls: 1, assistantText: "" };
+    const seen: string[] = [];
+    // 스코프 사각형은 (1,2) 3×4 다. 모델은 그 밖(x:9)까지 칠하려 든다 — 클립이 되돌려야 한다.
+    const steps: ChatResult[] = [
+      {
+        message: {
+          role: "assistant",
+          content: null,
+          tool_calls: [{
+            id: "c1",
+            type: "function",
+            function: {
+              name: "paint_tiles",
+              arguments: JSON.stringify({
+                mapId, layer: "lower", mode: "cells", tile: 5,
+                cells: [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 9, y: 9 }],
+              }),
+            },
+          }],
+        },
+        finishReason: "tool_calls",
+      } as ChatResult,
+      { message: { role: "assistant", content: "완료했습니다." }, finishReason: "stop" } as ChatResult,
+    ];
+    let step = 0;
+    const chat = vi.fn(async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      const last = [...req.messages].reverse().find((message) => message.role === "user");
+      if (typeof last?.content === "string") seen.push(last.content);
+      const next = steps[step++];
+      if (!next) throw new Error("scripted chat exhausted");
+      return next;
     });
     editorState.set({ currentMapId: mapId, selection: { mapId, x: 1, y: 2, width: 3, height: 4 } });
-    const panel = renderPanel({ regionTaskRunner: runner });
+    const panel = renderPanel({ sessionChat: chat });
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     requestAiSelectionContext(editorState.get().selection);
 
     input.value = "여기를 모래밭으로";
     dispatchInputKey(input, "Enter");
-    await flushAsync();
+    for (let i = 0; i < 24; i += 1) await flushAsync();
 
-    expect(runner).toHaveBeenCalledTimes(1);
-    expect(runner.mock.calls[0]?.[0]).toMatchObject({
-      instruction: "여기를 모래밭으로",
-      mapId,
-      region: { x: 1, y: 2, width: 3, height: 4 },
-      gate: "immediate",
-    });
+    // 스코프는 프롬프트로 간다 — 지시문 + 영역 제약 문구 + 컨텍스트 꼬리표.
+    const payload = seen[0] ?? "";
+    expect(payload).toContain("여기를 모래밭으로");
+    expect(payload).toContain("선택 영역 안에서만");
+    expect(payload).toContain("사용자 선택 영역: (1,2) 3×4");
     expect(getInlineProposalActions()).toBeNull();
-    // Status stays off the work log. Tool names are sanitized; the row is a command row, not a bubble.
-    expect(findByTestId(panel, "ai-status")?.textContent).not.toBe("영역 작업 시작");
+
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
-    expect(logText).not.toContain("영역 작업 시작");
     expect(findByTestId(panel, "ai-command-row")).toBeTruthy();
     expect(findByTestId(panel, "ai-tool-activity")).toBeTruthy();
-    expect(logText).toContain("타일 2칸");
     expect(logText).toContain("완료했습니다.");
-    expect(logText).toContain("적용됨 — 2칸 타일 · 영역 밖 1칸 차단");
+    // 승인 게이트는 없다(approvalPolicy) — 적용은 즉시, 복구는 되돌리기.
     expect(logText).not.toContain("적용 여부를 선택하세요");
-    expect(findByTestId(panel, "ai-status")?.textContent).toBe("적용됨");
+    expect(logText).toContain("프로젝트에 적용했습니다");
+    // 영역 밖 1칸(9,9)은 되돌려졌다고 말해야 한다.
+    expect(logText).toContain("선택 영역 밖 1칸은 되돌렸습니다");
+    // 그리고 실제로 되돌아가 있어야 한다 — 문구만 맞고 타일이 남으면 거짓 보고다.
+    const map = store.getCurrent().maps[mapId]!;
+    expect(map.lowerTiles[2 * map.width + 1]).toBe(5);
+    expect(map.lowerTiles[9 * map.width + 9]).not.toBe(5);
 
     const userEntry = loadLatestConversation()?.entries.find((entry) => entry.kind === "user");
     expect(userEntry?.kind).toBe("user");
-    if (userEntry?.kind !== "user") throw new Error("region user audit entry missing");
+    if (userEntry?.kind !== "user") throw new Error("scoped user audit entry missing");
     expect(userEntry.context).toMatchObject({
       mapId,
       mapName: project.maps[mapId]?.name,
