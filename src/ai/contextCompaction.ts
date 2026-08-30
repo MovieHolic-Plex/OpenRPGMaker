@@ -55,6 +55,21 @@ export const MANUAL_COMPACTION_SETTINGS: CompactionSettings = {
 export const DEFAULT_CONTEXT_WINDOW = 128_000;
 
 /**
+ * 자동 압축이 도는 지점(토큰) — **제품 선택**이다. 감독 지시(2026-08-30): "20만 토큰 넘으면
+ * compaction 하게 하고".
+ *
+ * 실측 근거: 이 값이 들어오기 전 작업 창 상한은 `DEFAULT_CONTEXT_WINDOW`(128,000)였고 문턱은
+ * `128,000 - 16,384 = 111,616` 토큰이었다. 기본 모델 `gemini-3.7-flash` 의 실제 창은 1,048,576
+ * 토큰이므로 창의 11% 지점에서 앞부분 기억을 요약으로 바꿔 버린 셈이다 — 창이 남는데도 이르게
+ * 잊었다. 반대로 창을 그대로 쓰면 문턱이 1,032,192 가 되어 사실상 압축이 없다. 둘 다 아니라
+ * "20만 토큰"을 명시적 지점으로 고정한다.
+ *
+ * 작업 창(messageBudget.WORKING_CONTEXT_TOKEN_CAP)은 이 값에서 파생된다: 창 = 지점 + 예비분.
+ * 창이 이 지점보다 작은 모델(claude-/glm- 200,000)은 자기 창이 먼저 걸리므로 동작이 바뀌지 않는다.
+ */
+export const AUTO_COMPACTION_TRIGGER_TOKENS = 200_000;
+
+/**
  * 모델별 컨텍스트 창. 접두사 기준으로만 판정한다 — 카탈로그(modelCatalog.ts)가 자주 늘어나고
  * cpen 게이트웨이는 `cpen/` 같은 제공자 접두사를 붙여 오기 때문에 정확 일치는 금방 낡는다.
  */
@@ -193,12 +208,18 @@ export function describeContextUsage(args: {
   readonly usageTokens?: number;
   readonly extraChars?: number;
   readonly settings?: CompactionSettings;
+  /**
+   * 판정에 실제로 쓰이는 작업 창(messageBudget.resolveWorkingContextTokens). 생략하면 모델 창을
+   * 쓴다. 게이지가 모델 창으로 세면 gemini(1M)에서 "맥락 3%" 인데 압축이 도는 모순이 보인다 —
+   * 압축을 부르는 쪽과 **같은 창**을 넘겨야 표시와 실제가 일치한다.
+   */
+  readonly contextWindow?: number;
 }): ContextUsage {
   const settings = args.settings ?? DEFAULT_COMPACTION_SETTINGS;
   const estimateTokens = estimateContextTokens(args.messages, args.extraChars ?? 0);
   const usageTokens = Math.max(0, args.usageTokens ?? 0);
   const contextTokens = resolveThresholdContextTokens(usageTokens, estimateTokens);
-  const contextWindow = resolveContextWindow(args.model);
+  const contextWindow = args.contextWindow ?? resolveContextWindow(args.model);
   const thresholdTokens = contextWindow - settings.reserveTokens;
   return {
     estimateTokens,

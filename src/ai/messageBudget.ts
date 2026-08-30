@@ -6,7 +6,7 @@
 //
 // 예산은 **모델에서 끌어낸다**(resolveRequestCharBudget). 고정 52,000자는 사라진 공급자(CPEN)의
 // 검증 상한이었고, 그것이 창 1M 토큰짜리 모델의 기억까지 잘라내고 있었다.
-import { DEFAULT_CONTEXT_WINDOW, resolveContextWindow } from "./contextCompaction";
+import { AUTO_COMPACTION_TRIGGER_TOKENS, DEFAULT_COMPACTION_SETTINGS, resolveContextWindow } from "./contextCompaction";
 import type { AiConfig, ChatMessage, ContentPart } from "./llmClient";
 import { DEFAULT_CHARS_PER_TOKEN } from "./tokenBudget";
 
@@ -24,15 +24,21 @@ const KEEP_RECENT_MESSAGES = 6;
 /**
  * 작업 창 상한(토큰) — **제품 선택**이다. 모델 창이 이보다 커도 여기서 멈춘다.
  *
- * DEFAULT_CONTEXT_WINDOW(128,000)를 그대로 쓴다. 이 값은 이미 "모델을 모를 때" 의 보수적 기본이고
- * 압축 문턱도 그 기준으로 잡혀 있었으므로(128,000 - reserve 16,384 = 111,616토큰), 이걸 상한으로
- * 삼으면 **압축이 켜지는 지점이 지금과 같다**. 이 변경은 요약 시점을 옮기는 게 아니라 문자
- * 클램프가 그 지점보다 79배 좁게 걸려 있던 것을 바로잡는 것이다.
+ * 자동 압축 지점(`AUTO_COMPACTION_TRIGGER_TOKENS` = 200,000 토큰)에서 파생한다. 문턱은 `창 - 예비분`
+ * 이므로 지점을 그대로 얻으려면 창 = 지점 + 예비분 이어야 한다(216,384).
  *
- * gemini-3.7-flash 의 실제 창은 1,048,576 토큰이지만(pi-catalog google-antigravity) 창을 다 쓰면
- * 요청당 입력이 최대 1M 토큰(입력 $0.75/1M)까지 자란다 — 창이 남는다고 다 쓸 이유가 없다.
+ * 예전에는 DEFAULT_CONTEXT_WINDOW(128,000)를 상한으로 삼아 문턱이 111,616 토큰이었다. 그러니
+ * 창 1,048,576 짜리 기본 모델(gemini-3.7-flash)이 **창의 11% 지점에서 앞부분 기억을 요약으로
+ * 바꿔 버렸다** — 창이 남는데도 이르게 잊었다. 반대로 모델 창을 그대로 쓰면 문턱이 1,032,192 가
+ * 되어 압축이 사실상 안 돌고 요청당 입력만 1M 토큰으로 자란다. 200,000 은 그 사이에 명시한 지점이다.
+ *
+ * 함의: 문자 클램프(resolveRequestCharBudget)도 같은 창을 보므로 함께 넘어진다. 그게 의도다 —
+ * 클램프가 압축이 남기기로 한 분량보다 좁으면 요약 직후 그 결과가 다시 잘린다(이 파일 상단 주석).
+ * gemini 기준 예산은 216,384 × 4 = 865,536자로 여전히 창(1M 토큰) 안에 잡힌다.
+ *
+ * 창이 이 상한보다 작은 모델(claude-/glm- 200,000)은 자기 창이 먼저 걸리므로 동작이 바뀌지 않는다.
  */
-export const WORKING_CONTEXT_TOKEN_CAP = DEFAULT_CONTEXT_WINDOW;
+export const WORKING_CONTEXT_TOKEN_CAP = AUTO_COMPACTION_TRIGGER_TOKENS + DEFAULT_COMPACTION_SETTINGS.reserveTokens;
 
 /** cpenrouter 경로 판정 — llmClient.isCpenGateway 와 같은 규칙(순환 import 회피용 국소 사본). */
 function isCpenRoute(model: string, baseUrl: string): boolean {

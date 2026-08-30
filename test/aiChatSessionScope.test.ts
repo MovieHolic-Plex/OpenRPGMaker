@@ -10,6 +10,8 @@ import { conversationScopeKey, clearConversations, listConversations, loadConver
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { getAgentBlueprintState, setAgentBlueprintFromSpec } from "@/editor/agentBlueprint";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { clearAiUiEvents, listAiUiEvents } from "@/ai/uiEventLog";
+import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -271,6 +273,25 @@ describe("새 대화 진입점", () => {
   });
 });
 
+describe("이전 대화 진입점", () => {
+  /**
+   * 왜 고정 행인가: 이어가기 입구가 ☰ 메뉴 안에만 있었다. 생성(＋)은 한 번에 닿는데 이어가기는
+   * 두 단계라, 그 배치 자체가 "새 세션" 을 기본값으로 만든다("ui 에서 기존 세션 불러오기가 매우
+   * 힘든거같은데" — 감독 2026-08-30).
+   */
+  it("Given any dock When the composer renders Then 이전 대화 sits next to 새 대화 in the fixed action row", () => {
+    for (const dock of ["glass", "side", "float"] as const) {
+      const panel = renderPanel(dock);
+      const composer = findByTestId(panel, "ai-composer");
+      const open = findByTestId(panel, "ai-open-conversations");
+
+      expect(open, dock).toBeTruthy();
+      expect(open?.getAttribute("aria-label")).toBe("이전 대화 열기");
+      expect(findByTestId(composer!, "ai-open-conversations")).toBe(open);
+    }
+  });
+});
+
 describe("프로젝트 전환", () => {
   it("Given an open conversation When the project identity changes Then the chat resets and the old chat keeps its own scope", () => {
     clearConversations();
@@ -327,6 +348,101 @@ describe("프로젝트 전환", () => {
     expect(stored.length).toBeGreaterThan(0);
     expect(stored.every((conversation) => conversation.projectContextKey === "remote:project-one")).toBe(true);
     expect(stored.some((conversation) => conversation.projectContextKey === "remote:project-two")).toBe(false);
+  });
+
+  /**
+   * 이어가기 계약(감독 지시 2026-08-30): "새 세션으로 강제되는 거 같은데, 사용자가 의식하고
+   * 새 세션 누르지 않으면 걍 이어서 하게 해."
+   *
+   * 옛 결함: 부팅 복원이 **전역 최신 대화 하나**만 보고 스코프가 다르면 포기했다. 두 프로젝트를
+   * 번갈아 열면 내 대화가 그대로 있는데도 매번 빈 대화로 시작했다.
+   */
+  it("Given another project's newer conversation When the panel mounts Then this project's own latest is still resumed", () => {
+    clearConversations();
+    const identity = vi.spyOn(store, "getProjectIdentity");
+    identity.mockReturnValue({ kind: "remote", id: "project-mine" });
+    saveConversation({
+      id: "conv_mine",
+      title: "내 프로젝트",
+      model: "m",
+      savedAt: 100,
+      projectContextKey: "remote:project-mine",
+      entries: [{ kind: "user", text: "내 프로젝트 요청" }, { kind: "assistant", text: "네." }],
+    });
+    // 남의 프로젝트 대화가 더 최근이다 — 예전엔 이것 때문에 복원이 통째로 포기됐다.
+    saveConversation({
+      id: "conv_other",
+      title: "다른 프로젝트",
+      model: "m",
+      savedAt: 900,
+      projectContextKey: "remote:project-other",
+      entries: [{ kind: "user", text: "남의 프로젝트 요청" }],
+    });
+
+    const panel = renderPanel();
+
+    expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").toContain("내 프로젝트 요청");
+    expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").not.toContain("남의 프로젝트 요청");
+  });
+
+  /**
+   * 계측 계약: 이어받은 전환이 "새 대화" 로 기록되면 「대화가 사라졌다」 신고를 가를 증거가 거짓이 된다
+   * (openwiki/editor-observability.md). 기록되는 값은 사람이 읽는 산문이 아니라 기계가 먹는 detail 이다.
+   */
+  it("Given the switch resumes a saved conversation When it is recorded Then the UI event says resumed", () => {
+    clearConversations();
+    clearAiUiEvents();
+    const identity = vi.spyOn(store, "getProjectIdentity");
+    identity.mockReturnValue({ kind: "remote", id: "project-one" });
+    saveConversation({
+      id: "conv_two_resumed",
+      title: "둘째",
+      model: "m",
+      savedAt: 200,
+      projectContextKey: "remote:project-two",
+      entries: [{ kind: "user", text: "둘째 프로젝트 요청" }],
+    });
+
+    renderPanel();
+    identity.mockReturnValue({ kind: "remote", id: "project-two" });
+    store.replace(createBlankProject());
+
+    const events = listAiUiEvents().filter((event) => event.action === AI_UI_ACTIONS.newConversation);
+    expect(events.length).toBeGreaterThan(0);
+    const last = events[events.length - 1]!;
+    expect(last.detail).toMatchObject({ reason: "project-switch", resumed: true });
+  });
+  it("Given the new project has its own saved conversation When the identity changes Then it is resumed instead of blanked", () => {
+    clearConversations();
+    const identity = vi.spyOn(store, "getProjectIdentity");
+    identity.mockReturnValue({ kind: "remote", id: "project-one" });
+    saveConversation({
+      id: "conv_one",
+      title: "첫 프로젝트",
+      model: "m",
+      savedAt: 100,
+      projectContextKey: "remote:project-one",
+      entries: [{ kind: "user", text: "첫 프로젝트 요청" }],
+    });
+    saveConversation({
+      id: "conv_two",
+      title: "둘째 프로젝트",
+      model: "m",
+      savedAt: 200,
+      projectContextKey: "remote:project-two",
+      entries: [{ kind: "user", text: "둘째 프로젝트 요청" }, { kind: "assistant", text: "이어서 하죠." }],
+    });
+
+    const panel = renderPanel();
+    expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").toContain("첫 프로젝트 요청");
+
+    identity.mockReturnValue({ kind: "remote", id: "project-two" });
+    store.replace(createBlankProject());
+
+    const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    expect(log).toContain("둘째 프로젝트 요청");
+    expect(log).not.toContain("첫 프로젝트 요청");
+    expect(panel.dataset.aiConversation).not.toBe("empty");
   });
 
   it("Given a conversation saved for another project When the panel mounts Then it is not restored", () => {
