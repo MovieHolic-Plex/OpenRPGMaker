@@ -45,6 +45,11 @@ import { parseAutonomousRunBudget, type AutonomousRunBudget } from "./aiChatRend
 import { renderStreamedMarkdown } from "./aiConversationLog";
 import { decorateAssistantMentions, foldWorkLogs } from "./aiBubbleDecorations";
 import type { AiRunSurface } from "./aiRunSurface";
+import { randomUuid } from "@/util/id";
+import { distillPreferences } from "@/ai/preferenceDistiller";
+import { observeTurn, shouldDistillPreferences } from "@/ai/preferenceSignals";
+import { aiUiEventMarker, recordAiUiEvent, takeAiUiEventsSince } from "@/ai/uiEventLog";
+import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 
 export interface AiTurnRunnerDeps {
   /** 채팅 턴과 영역 작업이 공유하는 실행 표면(상태 줄·진행·중단·로그·접힘). */
@@ -77,6 +82,8 @@ export interface AiTurnRunnerDeps {
   readonly hasPendingQuestion: () => boolean;
   readonly openAiSettings: (focusTarget?: "first" | "apiKey") => void;
   readonly renderQuickReplies: (assistantText: string) => void;
+  /** 컨텍스트 게이지 갱신 — 턴이 끝나면 남은 토큰을 다시 그린다(상류 #302 이후 추가). */
+  readonly refreshContextMeter: () => void;
 }
 
 export interface AiTurnRunner {
@@ -106,6 +113,29 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     const turnConversationId = deps.surface.conversationId;
     const turnConversationScope = deps.surface.conversationScope;
     const auditHistoryAtTurnStart = [...deps.surface.controller.auditHistory];
+    // 이 턴의 활동 로그 식별자. 시작·종료가 같은 id 로 upsert 되므로 행이 늘지 않는다.
+    const turnLogId = randomUuid();
+    // 턴 구간에 눌린 프론트 액션만 이 턴 행에 싣기 위한 표식(src/ai/uiEventLog.ts).
+    const uiEventMarkerAtTurnStart = aiUiEventMarker();
+    // 세션 audit 은 턴을 넘어 누적된다 — 이 지점부터가 «이번 턴» 이다. 세션 전체를 넣고 뒤에서
+    // 자르면 긴 턴의 머리(사람 발언·플래너 결정)가 날아간다(2026-08-30 실측).
+    const sessionAuditCountAtTurnStart = session.getAuditEntries().length;
+    // 시작 시점에 먼저 남긴다. 새로고침·크래시·강제 종료로 종료 기록이 못 남아도 «무슨 지시였고
+    // 언제 시작했는지» 는 남는다 — 예전에는 완료만 기록해서 죽은 턴은 흔적이 없었다.
+    {
+      const startCfg = loadAiConfig();
+      void recordAiActivity({
+        id: turnLogId,
+        channel: "chat",
+        instruction: requestText,
+        projectContextKey: turnConversationScope,
+        model: startCfg.model,
+        liteModel: startCfg.liteModel,
+        result: { ok: false, pending: true },
+      }).catch(() => {
+        /* 기록 실패가 턴을 막지 않는다 */
+      });
+    }
     const abortController = new AbortController();
     deps.surface.activeAbortController = abortController;
     deps.surface.abortNoticeShown = false;
@@ -119,6 +149,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     deps.surface.revealVolatileZone();
     deps.surface.beginTurnProgress();
     deps.surface.refreshAbortButton();
+    deps.refreshContextMeter(); // 진행 중에는 압축 버튼이 잠긴다(busy) — 그 상태를 즉시 반영한다.
     deps.surface.sendButton.disabled = true;
     const activeSpecAtTurnStart = session.getActiveSpec();
     // 지난 턴의 "이번 턴에 올린 칸" 기록을 끊는다 — 아래 두 곳의 `!ownsTurn(true)` 반환은 정산을
@@ -317,7 +348,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
      *
      * **모든** 종료 경로(정상·중단·오류·throw·변경 없음)에서 부르되, 넘기는 것은 종료 분기가
      * 아니라 저장소에 들어간 호출이다(`null` = 아무것도 안 들어갔다). 다섯 경로 중 셋 —
-     * 중단 return 과 catch 두 개 — 은 applyProposal **앞에서** 끝나므로 초안이 그대로 버려진다.
+     * 중단 return 과 catch 두 개 — 은 deps.applyProposal **앞에서** 끝나므로 초안이 그대로 버려진다.
      * 종전처럼 그 자리에서 building 을 done 으로 올리면 손도 안 댄 타일 위에 회색 ✓ "완료" 가
      * 박히고, markAgentBlueprintProgress 는 planned 가 아닌 칸을 다시 올리지 않으므로 세션이
      * 죽을 때까지 풀리지 않는다(실측: 같은 툴콜을 정상 종료/중단으로 각각 돌려 store 변경
@@ -381,7 +412,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       const applyMode = resolveProposalApplyMode({ callCount: result.proposedCalls.length });
       if (applyMode === "apply-now") {
         // 적용을 먼저 하고 그 결과를 기다린 다음에 로그를 붙인다 — 배치 검증·커밋 게이트가 적용을
-        // 거부하면 store 는 그대로이므로 "적용됨 N건" 은 거짓이 된다(사유는 applyProposal 이
+        // 거부하면 store 는 그대로이므로 "적용됨 N건" 은 거짓이 된다(사유는 deps.applyProposal 이
         // 이미 ❌ 버블로 남긴다).
         const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
         // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
@@ -456,15 +487,44 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     } finally {
       ghostPreviewUpdater.cancel();
       const turnEntries = [...auditHistoryAtTurnStart, ...session.getAuditEntries()];
+      const sessionAudit = session.getAuditEntries();
+      // 세션이 턴 중간에 교체되면(dropSession) 시작 인덱스가 현재 길이를 넘는다 — 그때는 있는 걸 다 쓴다.
+      const turnAudit =
+        sessionAudit.length >= sessionAuditCountAtTurnStart
+          ? sessionAudit.slice(sessionAuditCountAtTurnStart)
+          : sessionAudit;
+      const turnUiActions = takeAiUiEventsSince(uiEventMarkerAtTurnStart);
       if (!ownsTurn(true)) {
         // 프로젝트 전환이 ownership을 먼저 끊어도 늦게 정착한 결과는 시작 당시 대화에만 저장한다.
         if (!deps.surface.disposed) deps.surface.persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries });
+        // 예전에는 여기서 그냥 return 해서 «늦게 정착한 턴» 이 활동 로그에 아예 안 남았다.
+        // 소유권이 끊겼다는 사실 자체가 진단이므로 orphaned 로 표시해 남긴다.
+        void recordAiActivity({
+          id: turnLogId,
+          channel: "chat",
+          instruction: requestText,
+          projectContextKey: turnConversationScope,
+          result: {
+            ok: false,
+            orphaned: true,
+            error: turnCatchError ?? turnResult?.error,
+            stoppedReason: turnResult?.stoppedReason ?? "ownership-lost",
+            proposedCalls: turnResult?.proposedCalls.length,
+            assistantText: turnResult?.assistantText,
+          },
+          audit: turnAudit,
+          uiActions: turnUiActions,
+        }).catch(() => {
+          /* ignore */
+        });
         return;
       }
       deps.surface.endTurnProgress();
       if (deps.surface.activeAbortController === abortController) deps.surface.activeAbortController = null;
       deps.surface.turnBusy = false;
       deps.surface.refreshAbortButton();
+      // 턴이 끝나면 맥락/사용량이 움직였다 — 게이지는 여기서만 갱신하면 항상 최신이다.
+      deps.refreshContextMeter();
       // 자율 런 종료(정상 완료·중단·적용 실패 포함): 런 표면을 정리하고 자동 접기를 재개한다.
       // 다음 사용자 턴이 autonomous 로 시작되면 beginAutonomousRun 이 새 표면을 만든다.
       if (runOpts?.autonomous) deps.endAutonomousRun();
@@ -473,7 +533,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       deps.surface.persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries }); // 시작 당시 대화 범위로 저장한다.
       // 채팅 턴마다 활동 로그(로컬 + Supabase best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
       const cfg = loadAiConfig();
-      const audit = session.getAuditEntries();
+      const audit = turnAudit;
       const toolFromAudit = audit
         .filter((entry): entry is Extract<typeof entry, { kind: "tool" }> => entry.kind === "tool")
         .map((entry) => ({
@@ -489,11 +549,13 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         summary: call.summary,
       }));
       void recordAiActivity({
+        id: turnLogId, // 시작 시점 pending 행과 같은 id — upsert 로 «완료» 로 덮인다.
         channel: "chat",
         instruction: requestText,
         projectContextKey: turnConversationScope,
         model: cfg.model,
         liteModel: cfg.liteModel,
+        mapId: editorState.get().currentMapId ?? undefined,
         result: {
           ok: !turnFailed && turnResult?.stoppedReason !== "error" && !turnCatchError,
           error: turnCatchError ?? turnResult?.error,
@@ -503,9 +565,31 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         },
         toolCalls: toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed,
         audit,
+        uiActions: turnUiActions,
       }).catch(() => {
         /* ignore */
       });
+      // 성향 관측 + 증류. 활동 로그와 같은 자리에서 돈다 — 이 지점이 "지시문·툴 호출·성패"가
+      // 한꺼번에 확정되는 유일한 곳이다. 증류는 조건이 찼을 때만 lite 모델을 1회 부르고,
+      // 실패는 조용히 넘긴다(결정론 집계는 이미 저장돼 있어 손실이 없다).
+      const turnToolNames = (toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed).map((call) => call.name);
+      const signalState = observeTurn({
+        instruction: requestText,
+        toolNames: turnToolNames,
+        changed: (turnResult?.proposedCalls.length ?? 0) > 0,
+      });
+      if (shouldDistillPreferences(signalState)) {
+        void distillPreferences({ projectScopeKey: turnConversationScope })
+          .then((distilled) => {
+            // 조용히 학습하면 사용자가 통제 불가로 느낀다 — 반영된 건수만 한 줄로 알린다.
+            if (distilled.ok && distilled.upserted > 0) {
+              deps.surface.appendBubble("system", `성향 ${distilled.upserted}건을 기억했습니다. (아래 ⌾ 버튼에서 확인·삭제 가능)`);
+            }
+          })
+          .catch(() => {
+            /* ignore — 증류 실패는 preferenceSignals 가 자체 카운터로 처리한다. */
+          });
+      }
       deps.surface.notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
       deps.surface.drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
       // 유리 도크 본문 접힘 예약 — 시작 시 접혀 있었는지와 무관하다(fold 는 입력줄을 남기므로
@@ -557,6 +641,14 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       on: {
         click: () => {
           retry.disabled = true;
+          // 무엇을 재시도했는지(원 오류)와 어느 지시였는지를 함께 남긴다 — 같은 오류의 반복
+          // 재시도는 이 행들이 없으면 서로 구분되지 않는다.
+          recordAiUiEvent({
+            surface: "deps.surface.panel",
+            action: AI_UI_ACTIONS.turnRetry,
+            testid: "ai-retry-turn",
+            detail: { error: message.slice(0, 200), instruction: requestText.slice(0, 120) },
+          });
           void executeTurn(session, requestText, (onEvent, signal) => session.retryLastTurn(onEvent, signal));
         },
       },

@@ -13,6 +13,9 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { recordAiActivityFromRegionLog } from "@/ai/activityLog";
+import { conversationScopeKey } from "@/ai/conversationStore";
+import { distillPreferences } from "@/ai/preferenceDistiller";
+import { observeTurn, shouldDistillPreferences } from "@/ai/preferenceSignals";
 import { requestLikelyModifiesExisting } from "@/ai/modifyIntent";
 import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
 import {
@@ -249,6 +252,8 @@ const defaultDeps: RegionTaskDeps = {
       },
       contextOptions: {
         currentMapId: mapId,
+        // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
+        projectScopeKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
         getViewport: () => {
           const snap = getEditorMapViewport();
           return snap?.mapId === mapId ? snap : null;
@@ -755,6 +760,18 @@ export async function runRegionTask(
       }).catch(() => {
         /* ignore persistence failures */
       });
+      // 성향 관측 + 증류(채팅 패널과 같은 자리·같은 규칙). 영역 작업에는 변경 카드가 없어
+      // 되돌리기 신호가 오지 않으므로, 여기서 잡히는 것은 정정 발화·명시 선언·무사 통과다.
+      const signalState = observeTurn({
+        instruction,
+        toolNames: log.toolCalls.map((call) => call.name),
+        changed: log.result.proposedCalls > 0,
+      });
+      if (shouldDistillPreferences(signalState)) {
+        void distillPreferences().catch(() => {
+          /* ignore — 증류 실패는 preferenceSignals 가 자체 카운터로 처리한다. */
+        });
+      }
       return { ...result, log };
     };
 

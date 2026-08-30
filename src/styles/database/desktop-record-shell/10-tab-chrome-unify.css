@@ -72,6 +72,38 @@
     padding: 8px 12px;
   }
 
+  /* 노트 띠 안에 제목과 아이콘 칩을 한 줄로 눕힌다. 설명 문단을 지우고 사실 하나를 칩으로
+     옮긴 탭(구조물)이 두 줄 75.7px 를 먹지 않게 하려는 것이다. */
+  .database-modal-body .db-tab-note:has(.db-tab-note-chip) {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .database-modal-body .db-tab-note:has(.db-tab-note-chip) h3 {
+    font: 700 13px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin: 0;
+  }
+
+  .database-modal-body .db-tab-note-chip {
+    align-items: center;
+    background: var(--bg-inset, rgba(42, 37, 33, 0.08));
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    display: inline-flex;
+    font: 600 11.5px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    gap: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-tab-note-chip .db-tab-icon {
+    color: var(--accent);
+    height: 13px;
+    width: 13px;
+  }
+
   /* Crops / characters / monster-species: same 2-col workspace as core records */
   .database-modal-body .oprn-record-crops,
   .database-modal-body .oprn-record-characters,

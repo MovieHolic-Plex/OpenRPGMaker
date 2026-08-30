@@ -4,7 +4,8 @@
 // - 커밋 게이트/인자 검증 실패 시 issues를 tool 메시지로 모델에 되돌려 자가수정을 유도(최대 maxToolCalls 왕복).
 // - 브라우저 비의존(순수). chat 함수는 주입 가능(테스트에서 모킹).
 
-import { getTool, runTool } from "@/editor/tools";
+import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
+import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
@@ -38,18 +39,24 @@ import {
   type TurnSelectionSnapshot,
 } from "./conversationTurnContext";
 import { capabilityEscalationSchemas, clampTurnToolSchemas } from "./capabilityEscalation";
+import { buildPreferenceMemorySection } from "./preferenceMemory";
 import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
 import { compactMessagesForRequest, resolveRequestCharBudget, resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
   buildSummarizationRequest,
   DEFAULT_COMPACTION_SETTINGS,
+  MANUAL_COMPACTION_SETTINGS,
+  describeContextUsage,
   estimateContextTokens,
   findCompactionCutPoint,
   findPreviousSummary,
   resolveThresholdContextTokens,
   shouldCompact,
+  type ContextUsage,
 } from "./contextCompaction";
+import { restoredTranscriptMessage } from "./conversationReplay";
+import { addSessionUsage, EMPTY_SESSION_USAGE, type SessionUsageTotals } from "./sessionUsage";
 import {
   calibratedBudgetChars,
   estimatePromptChars,
@@ -463,10 +470,10 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
             properties: {
               id: { type: "string", description: "에셋 식별자(예: house_1)" },
               kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등" },
-              x: { type: "integer" },
-              y: { type: "integer" },
-              w: { type: "integer" },
-              h: { type: "integer" },
+              x: { type: "integer", description: "영역 좌상단 타일 x(칸 좌표)" },
+              y: { type: "integer", description: "영역 좌상단 타일 y(칸 좌표)" },
+              w: { type: "integer", description: "가로 칸 수 — 차지하는 마지막 칸은 x+w-1" },
+              h: { type: "integer", description: "세로 칸 수 — 차지하는 마지막 칸은 y+h-1" },
               layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower" },
               style: { type: "string", description: "종류별 스타일 힌트(선택)" },
               shape: {
@@ -660,7 +667,18 @@ export interface AssistantSessionOptions {
    * 시스템 프롬프트에는 들어가지 않는다 — 그래서 ContextOptions 가 아니라 여기 있다.
    */
   getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
+  /**
+   * 복원/되감기로 들어온 세션에 주입할 이전 대화 기록(conversationReplay.serializeAuditTranscript).
+   * 시스템 프롬프트 바로 뒤 role "user" 한 덩어리로 들어간다 — 화면만 복원하고 모델은 아무것도
+   * 기억하지 못하던 상태를 메꾸는 유일한 입력이다.
+   */
+  priorTranscript?: string;
 }
+
+/** 수동 압축(compactNow) 결과. 건너뜀은 사유를 사람 문장으로 돌려준다(UI 가 그대로 보여준다). */
+export type CompactionOutcome =
+  | { readonly kind: "done"; readonly beforeTokens: number; readonly afterTokens: number; readonly summary: string }
+  | { readonly kind: "skipped"; readonly reason: string };
 
 export class AssistantSession {
   private config: AiConfig;
@@ -754,6 +772,21 @@ export class AssistantSession {
    * 요약이 반복해 돌았다(실측: test/assistantSessionCompaction 요약 콜 1회 → 7회).
    */
   private compactionAttemptedThisTurn = false;
+  /**
+   * 직전 압축을 되돌리기 위한 압축 **전** 메시지 사본과 그때의 계량.
+   *
+   * 압축은 앞부분 원문을 요약 1건으로 바꿔치우는 비가역 연산이다 — 요약이 중요한 사실을
+   * 빠뜨렸다는 것은 대개 다음 턴이 헛짓을 한 뒤에야 드러나고, 그때는 원문이 이미 없다.
+   * 한 단계짜리 사본을 들고 있는 값이 그 손실보다 싸다(사본은 다음 압축 때 교체된다).
+   */
+  private lastCompaction: {
+    readonly messagesBefore: readonly ChatMessage[];
+    readonly summary: string;
+    readonly beforeTokens: number;
+    readonly afterTokens: number;
+  } | null = null;
+  /** 세션이 태운 LLM 호출/토큰 집계(sessionUsage). 모든 chat 호출이 this.chat 한 곳을 지난다. */
+  private usageTotals: SessionUsageTotals = EMPTY_SESSION_USAGE;
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
   private workPlan: WorkPlan | null = null;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
@@ -781,7 +814,14 @@ export class AssistantSession {
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
-    this.chat = options.chat ?? chatCompletion;
+    // 계량은 로그 파싱이 아니라 호출 지점에서 센다(sessionUsage.ts). 본문·플래너·검수·요약 콜이
+    // 모두 이 한 겹을 지나므로, 여기서 세면 어떤 경로도 빠지지 않는다.
+    const rawChat = options.chat ?? chatCompletion;
+    this.chat = async (config, req) => {
+      const result = await rawChat(config, req);
+      this.usageTotals = addSessionUsage(this.usageTotals, config.model, result.usage);
+      return result;
+    };
     this.peekPendingUserMessage = options.peekPendingUserMessage;
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
@@ -794,12 +834,91 @@ export class AssistantSession {
       ?? calibratedBudgetChars(DEFAULT_BUDGET_CHARS, loadTokenObservations());
     this.messages.push({
       role: "system",
-      content: buildSystemPrompt(project, { ...this.contextOptions, budgetChars: this.appliedBudgetChars }),
+      content: buildSystemPrompt(project, this.systemPromptOptions()),
     });
+    // 복원/되감기로 만든 세션: 이전 대화를 시스템 프롬프트 바로 뒤에 한 덩어리로 꽂는다.
+    const prior = options.priorTranscript?.trim();
+    if (prior) {
+      this.messages.push(restoredTranscriptMessage(prior));
+      this.pushAudit({ kind: "status", text: `이전 대화 기록 주입: ${prior.length}자` });
+    }
+  }
+
+  /**
+   * 시스템 프롬프트 조립 옵션. 사람 성향 블록은 여기서 채운다 — contextBuilder 는 순수 함수라
+   * localStorage 를 못 읽고, 조립 시점마다 다시 읽어야 세션 도중 갱신된 성향이 반영된다.
+   */
+  private systemPromptOptions(): ContextOptions {
+    return {
+      ...this.contextOptions,
+      budgetChars: this.appliedBudgetChars,
+      preferenceMemorySection: buildPreferenceMemorySection(this.contextOptions.projectScopeKey),
+    };
   }
 
   getMessages(): readonly ChatMessage[] {
     return this.messages;
+  }
+
+  /** 세션이 태운 LLM 호출/토큰 집계. */
+  getUsageTotals(): SessionUsageTotals {
+    return this.usageTotals;
+  }
+
+  /**
+   * 지금 대화가 모델 창의 어디쯤인가 — 자동 압축 임계와 **같은 입력**으로 계산한다.
+   * 게이지가 다른 식으로 세면 표시와 실제 압축 시점이 어긋난다.
+   */
+  getContextUsage(): ContextUsage {
+    return describeContextUsage({
+      messages: this.messages,
+      model: this.config.model,
+      usageTokens: this.lastPromptTokens,
+    });
+  }
+
+  /** 대화에 살아 있는 최신 압축 요약(없으면 null). UI 가 "무엇이 잊혔는지" 를 보여주는 원문. */
+  getLatestCompactionSummary(): string | null {
+    return findPreviousSummary(this.messages);
+  }
+
+  /** 직전 압축을 되돌릴 수 있는가(한 단계). */
+  canUndoCompaction(): boolean {
+    return this.lastCompaction !== null;
+  }
+
+  /**
+   * 직전 압축을 되돌린다 — 요약으로 갈아치우기 **전** 메시지 배열로 복귀한다.
+   * 되돌릴 압축이 없으면 false.
+   */
+  undoLastCompaction(): boolean {
+    const snapshot = this.lastCompaction;
+    if (!snapshot) return false;
+    this.lastCompaction = null;
+    // messages 는 세션이 계속 참조하는 배열이다 — 재할당 대신 제자리 교체로 동일성을 유지한다.
+    this.messages.splice(0, this.messages.length, ...snapshot.messagesBefore);
+    this.pushAudit({
+      kind: "status",
+      text: `압축 되돌림: ${snapshot.afterTokens} -> ${snapshot.beforeTokens} 토큰 (요약 1건 폐기)`,
+    });
+    return true;
+  }
+
+  /**
+   * 사용자가 지금 누른 수동 압축. 임계와 무관하게 돌고, 이번 턴의 요약 실패 회로차단기
+   * (compactionAttemptedThisTurn)도 무시한다 — 사람이 명시로 요청한 것이므로 한 번은 시도한다.
+   */
+  async compactNow(onEvent?: (event: SessionEvent) => void, signal?: AbortSignal): Promise<CompactionOutcome> {
+    return this.runCompaction(onEvent ?? (() => undefined), signal, true);
+  }
+
+  /**
+   * 감독 지침이 바뀌었을 때처럼 프로젝트 쪽 컨텍스트만 갈아끼운다. 대화(messages 꼬리·감사
+   * 로그)는 건드리지 않고 시스템 프롬프트만 최신 프로젝트로 재조립한다.
+   */
+  refreshProjectContext(project: Project): void {
+    this.baselineProject = structuredClone(project);
+    this.rebuildSystemPrompt();
   }
 
   // 설정 폼에서 저장한 새 설정(API 키/모델 등)을 진행 중인 세션에도 반영한다.
@@ -1866,10 +1985,7 @@ export class AssistantSession {
   private rebuildSystemPrompt(): void {
     const system = this.messages[0];
     if (!system || system.role !== "system") return;
-    system.content = buildSystemPrompt(this.baselineProject, {
-      ...this.contextOptions,
-      budgetChars: this.appliedBudgetChars,
-    });
+    system.content = buildSystemPrompt(this.baselineProject, this.systemPromptOptions());
   }
 
   // 토큰 보정(문자↔토큰 계수): 관측 누적으로 보정 예산이 바뀌었으면 시스템 프롬프트를
@@ -1911,15 +2027,34 @@ export class AssistantSession {
    * 빈 응답이면 대화를 손대지 않고 조용히 돌아가고, 요청은 기존 문자 클램프가 감당한다.
    */
   private async maybeCompactConversation(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
-    if (this.compactionAttemptedThisTurn) return;
+    await this.runCompaction(onEvent, signal, false);
+  }
+
+  /**
+   * 압축 본체. force=false 는 턴 루프의 자동 경로(임계 + 턴당 1회 회로차단기), force=true 는
+   * 사용자가 누른 수동 경로(임계·회로차단기 무시, 더 좁은 잔존 창)다.
+   */
+  private async runCompaction(
+    onEvent: (event: SessionEvent) => void,
+    signal: AbortSignal | undefined,
+    force: boolean,
+  ): Promise<CompactionOutcome> {
+    if (!force && this.compactionAttemptedThisTurn) {
+      return { kind: "skipped", reason: "이번 턴에 요약을 이미 시도했습니다" };
+    }
+    const settings = force ? MANUAL_COMPACTION_SETTINGS : DEFAULT_COMPACTION_SETTINGS;
     const estimate = estimateContextTokens(this.messages);
     const contextTokens = resolveThresholdContextTokens(this.lastPromptTokens, estimate);
     // 모델 창이 아니라 **작업 창**으로 판정한다 — 창을 그대로 쓰면 gemini(1M)의 문턱이
     // 1,032,192 토큰이 되는데 문자 클램프가 그 훨씬 아래에서 먼저 걸려 이 요약이 영영 돌지 않았다.
-    if (!shouldCompact(contextTokens, resolveWorkingContextTokens(this.config), DEFAULT_COMPACTION_SETTINGS)) return;
-    const cutPoint = findCompactionCutPoint(this.messages, DEFAULT_COMPACTION_SETTINGS.keepRecentTokens);
+    if (!force && !shouldCompact(contextTokens, resolveWorkingContextTokens(this.config), settings)) {
+      return { kind: "skipped", reason: "아직 자동 압축 임계에 닿지 않았습니다" };
+    }
+    const cutPoint = findCompactionCutPoint(this.messages, settings.keepRecentTokens);
     // 요약할 앞부분이 없다(시스템 프롬프트 직후가 곧 잔존 창) — LLM 을 부를 이유가 없다.
-    if (cutPoint.firstKeptIndex <= 1) return;
+    if (cutPoint.firstKeptIndex <= 1) {
+      return { kind: "skipped", reason: "요약할 앞부분이 없습니다(대화가 짧습니다)" };
+    }
 
     onEvent({ type: "status", text: "대화가 길어져 이전 맥락을 요약 중…" });
     let summary: string | null = null;
@@ -1939,26 +2074,53 @@ export class AssistantSession {
         : cause instanceof Error ? cause.message : String(cause);
       this.compactionAttemptedThisTurn = true;
       this.pushAudit({ kind: "status", text: `대화 압축 건너뜀: 요약 실패 — ${reason}` });
-      return;
+      return { kind: "skipped", reason: `요약 실패 — ${reason}` };
     }
     if (signal?.aborted) {
       this.compactionAttemptedThisTurn = true;
       this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 사용자가 중단했습니다" });
-      return;
+      return { kind: "skipped", reason: "사용자가 중단했습니다" };
     }
     if (summary === null) {
       this.compactionAttemptedThisTurn = true;
       this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 요약 응답이 비어 있습니다" });
-      return;
+      return { kind: "skipped", reason: "요약 응답이 비어 있습니다" };
     }
 
     // 성공도 "이 턴에 시도함"으로 센다 — 남은 라운드에서 요약 LLM 을 다시 부르지 않는다.
     this.compactionAttemptedThisTurn = true;
+    const before = this.messages.map((message) => message);
     const compacted = buildCompactedMessages({ messages: this.messages, cutPoint, summary });
     const compactedTokens = estimateContextTokens(compacted);
     // messages 는 세션이 계속 참조하는 배열이다 — 재할당 대신 제자리 교체로 동일성을 유지한다.
     this.messages.splice(0, this.messages.length, ...compacted);
+    this.lastCompaction = { messagesBefore: before, summary, beforeTokens: contextTokens, afterTokens: compactedTokens };
     this.pushAudit({ kind: "status", text: `대화 압축: ${contextTokens} -> ${compactedTokens} 토큰 (요약 1건)` });
+    return { kind: "done", beforeTokens: contextTokens, afterTokens: compactedTokens, summary };
+  }
+
+  /**
+   * 뷰포트 같은 라이브 상태는 순수 도구 안이 아니라 호출 경계에서 구체적인 인자로 고정한다.
+   * 그래야 프리뷰와 나중 적용이 같은 영역을 시공하고, 감사 로그 재생도 카메라 위치에 흔들리지 않는다.
+   */
+  private resolveToolCallArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
+    if (name !== "author_village") return args;
+    const target = args.target;
+    if (!isRecord(target) || target.kind !== "existing" || target.bounds !== undefined) return args;
+    const mapId = target.mapId;
+    if (typeof mapId !== "string") return args;
+    const snapshot = resolveContextViewport(this.contextOptions);
+    if (!snapshot || snapshot.mapId !== mapId) return args;
+    const map = this.ctx.project.maps[mapId];
+    if (!map) return args;
+
+    const normalized = normalizeToolArgs(name, args);
+    const normalizedTarget = normalized.target;
+    if (!isRecord(normalizedTarget)) return args;
+    return {
+      ...normalized,
+      target: { ...normalizedTarget, bounds: viewportVillageBounds(snapshot, map) },
+    };
   }
 
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
@@ -2516,148 +2678,175 @@ export class AssistantSession {
       const workItemIdAtRoundStart = this.workPlan?.currentItemId ?? null;
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
-        const { name, args } = parseToolCall(call);
+        const parsedCall = parseToolCall(call);
+        const name = parsedCall.name;
+        const args = this.resolveToolCallArgs(name, parsedCall.args);
         const tool = getTool(name);
         this.emitToolStarted(onEvent, name);
         if (tool?.mode === "write") writeToolAttempts += 1;
-        // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
-        // 공간 쓰기 툴은 검증된 밑그림의 할당 영역 안에서만 실행한다(구간 격리).
-        let toolResult: ToolResult;
-        if (name === "set_build_spec") {
-          toolResult = this.applyBuildSpec(args);
-        } else if (
-          name === "get_work_plan" ||
-          name === "set_work_plan" ||
-          name === "complete_work_item" ||
-          name === "skip_work_item"
-        ) {
-          toolResult = this.applyWorkPlanTool(name, args);
-          if (toolResult.ok) {
-            this.emitWorkPlan(onEvent);
-            if (name === "set_work_plan" && this.workPlan) {
-              executionStarted = true;
-              phase = "execute";
-              this.emitPhase(onEvent, "execute");
-              this.injectWorkPlanOrchestration();
+        // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
+        // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
+        // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
+        let responded = false;
+        const respond = (result: ToolResult): void => {
+          if (responded) return;
+          responded = true;
+          this.messages.push({
+            role: "tool",
+            tool_call_id: call.id,
+            name,
+            content: JSON.stringify(toolResultForModel(result)),
+          });
+        };
+        try {
+          // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
+          // 공간 쓰기 툴은 검증된 밑그림의 할당 영역 안에서만 실행한다(구간 격리).
+          let toolResult: ToolResult;
+          if (parsedCall.parseError !== null) {
+            toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
+            this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
+          } else if (name === "set_build_spec") {
+            toolResult = this.applyBuildSpec(args);
+          } else if (
+            name === "get_work_plan" ||
+            name === "set_work_plan" ||
+            name === "complete_work_item" ||
+            name === "skip_work_item"
+          ) {
+            toolResult = this.applyWorkPlanTool(name, args);
+            if (toolResult.ok) {
+              this.emitWorkPlan(onEvent);
+              if (name === "set_work_plan" && this.workPlan) {
+                executionStarted = true;
+                phase = "execute";
+                this.emitPhase(onEvent, "execute");
+                this.injectWorkPlanOrchestration();
+              }
+              // 명시 complete_work_item 완료 경로 — 마일스톤 자동 적용을 같은 단위로 트리거한다.
+              if (name === "complete_work_item" && this.workPlan) {
+                const completedId = completedWorkItemIdFromResult(toolResult);
+                const completedItem = completedId ? findWorkItemById(this.workPlan, completedId) : null;
+                if (completedItem) await this.maybeAutoApplyMilestone(completedItem, onEvent);
+                // 레이어 검증 게이트(todo 5) — 명시 complete 경로도 같은 단위로 트리거한다.
+                if (completedItem) await this.sweepFinishedLayers(onEvent);
+              }
             }
-            // 명시 complete_work_item 완료 경로 — 마일스톤 자동 적용을 같은 단위로 트리거한다.
-            if (name === "complete_work_item" && this.workPlan) {
-              const completedId = completedWorkItemIdFromResult(toolResult);
-              const completedItem = completedId ? findWorkItemById(this.workPlan, completedId) : null;
-              if (completedItem) await this.maybeAutoApplyMilestone(completedItem, onEvent);
-              // 레이어 검증 게이트(todo 5) — 명시 complete 경로도 같은 단위로 트리거한다.
-              if (completedItem) await this.sweepFinishedLayers(onEvent);
-            }
-          }
-        } else {
-          const dedupeKey = writeDedupeKey(name, args);
-          const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
-          if (cached) {
-            toolResult = {
-              ...cached,
-              summary: `${cached.summary} (이번 턴 동일 배치 재호출 — 건너뜀)`,
-              issues: [
-                ...(cached.issues ?? []),
-                { severity: "warning", code: "write-deduped", message: "같은 place_props 인자는 한 턴에 한 번만 실행됩니다." },
-              ],
-            };
           } else {
-            const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : { warnings: [] };
-            toolResult = isSpecGatePass(gate)
-              ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
-              : gate;
-            if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
+            const dedupeKey = writeDedupeKey(name, args);
+            const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
+            if (cached) {
+              toolResult = {
+                ...cached,
+                summary: `${cached.summary} (이번 턴 동일 배치 재호출 — 건너뜀)`,
+                issues: [
+                  ...(cached.issues ?? []),
+                  { severity: "warning", code: "write-deduped", message: "같은 place_props 인자는 한 턴에 한 번만 실행됩니다." },
+                ],
+              };
+            } else {
+              const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : { warnings: [] };
+              toolResult = isSpecGatePass(gate)
+                ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
+                : gate;
+              if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
+            }
           }
-        }
-        // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
-        // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
-        if (toolResult.ok) this.recordSuccessfulTool(name);
-        if (toolResult.ok) {
-          // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
-          const createdMapId = createdMapIdFrom(name, args, toolResult.data);
-          if (createdMapId) this.turnItemCreatedMapIds.add(createdMapId);
-          // 보스 페이즈: 페이지를 쓴 트룹과 시뮬 근거를 짝지어 둔다(발동 여부는 프로젝트 상태에 안 남는다).
-          const authoredTroopId = authoredTroopIdFrom(name, args, toolResult.data);
-          if (authoredTroopId) {
-            this.turnItemAuthoredTroopIds.add(authoredTroopId);
-            // 페이지가 바뀌면 이전 시뮬 근거는 무효다 — 다시 돌려야 한다.
-            this.turnItemBattleSimulations.delete(authoredTroopId);
+          // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
+          // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
+          if (toolResult.ok) this.recordSuccessfulTool(name);
+          if (toolResult.ok) {
+            // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
+            const createdMapId = createdMapIdFrom(name, args, toolResult.data);
+            if (createdMapId) this.turnItemCreatedMapIds.add(createdMapId);
+            // 보스 페이즈: 페이지를 쓴 트룹과 시뮬 근거를 짝지어 둔다(발동 여부는 프로젝트 상태에 안 남는다).
+            const authoredTroopId = authoredTroopIdFrom(name, args, toolResult.data);
+            if (authoredTroopId) {
+              this.turnItemAuthoredTroopIds.add(authoredTroopId);
+              // 페이지가 바뀌면 이전 시뮬 근거는 무효다 — 다시 돌려야 한다.
+              this.turnItemBattleSimulations.delete(authoredTroopId);
+            }
+            const simulation = battlePhaseSimulationFrom(name, args, toolResult.data);
+            if (simulation) this.turnItemBattleSimulations.set(simulation.troopId, simulation);
+            // 퀘스트: 등록한 id 를 기록한다 — 완주 검증은 게이트가 직접 돌린다.
+            const questId = authoredQuestIdFrom(name, args);
+            if (questId) this.turnItemQuestIds.add(questId);
           }
-          const simulation = battlePhaseSimulationFrom(name, args, toolResult.data);
-          if (simulation) this.turnItemBattleSimulations.set(simulation.troopId, simulation);
-          // 퀘스트: 등록한 id 를 기록한다 — 완주 검증은 게이트가 직접 돌린다.
-          const questId = authoredQuestIdFrom(name, args);
-          if (questId) this.turnItemQuestIds.add(questId);
-        }
-        if (name === "find_tools") {
-          const discovered = discoveredToolNames(toolResult);
-          const next = [...this.turnEscalatedToolNames];
-          for (const toolName of discovered) {
-            const existing = next.indexOf(toolName);
-            if (existing >= 0) next.splice(existing, 1);
-            next.push(toolName);
+          if (name === "find_tools") {
+            const discovered = discoveredToolNames(toolResult);
+            const next = [...this.turnEscalatedToolNames];
+            for (const toolName of discovered) {
+              const existing = next.indexOf(toolName);
+              if (existing >= 0) next.splice(existing, 1);
+              next.push(toolName);
+            }
+            this.turnEscalatedToolNames = next.slice(-MAX_ESCALATED_TOOLS_PER_TURN);
+            if (discovered.length > 0) {
+              this.pushAudit({ kind: "status", text: `tools:escalated ${discovered.join(",")}` });
+            }
           }
-          this.turnEscalatedToolNames = next.slice(-MAX_ESCALATED_TOOLS_PER_TURN);
-          if (discovered.length > 0) {
-            this.pushAudit({ kind: "status", text: `tools:escalated ${discovered.join(",")}` });
-          }
-        }
-        if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
-        onEvent({ type: "tool_call", name, args, result: toolResult });
-        this.pushAudit({
-          kind: "tool",
-          name,
-          args,
-          ok: toolResult.ok,
-          summary: toolResult.summary,
-          // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
-          ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
-        });
-        // 검증 히스토리 기록(todo 5): 쓰기 툴 + play_walkthrough 만 — questId/시나리오 선택에 쓴다.
-        // (검증 게이트가 직접 실행한 툴콜은 여기로 오지 않는다 — 모델 저작 히스토리만.)
-        if (tool && (tool.mode === "write" || name === PLAY_WALKTHROUGH_TOOL)) {
-          this.verificationHistory.push({ name, args, ok: toolResult.ok, layerId: this.verificationLayerId() });
-        }
-
-        // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
-        if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {
-          const softConfirm = extractVocabSoftConfirm(toolResult.data);
-          let proposal: ProposedCall = {
+          if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
+          onEvent({ type: "tool_call", name, args, result: toolResult });
+          this.pushAudit({
+            kind: "tool",
             name,
             args,
+            ok: toolResult.ok,
             summary: toolResult.summary,
-            result: toolResult,
-            // 이름 목록이 아니라 결과 diff 로 파괴성을 본다 — 기존 맵을 교체하거나 이벤트를 지운
-            // 호출은 이름이 생성계여도 승인 카드를 거친다(진단 근본원인 9).
-            destructive: isDestructiveOutcome(name, args, toolResult.diff),
-            requiresApproval:
-              RULE_TOOLS.has(name)
-              || isDestructiveOutcome(name, args, toolResult.diff)
-              || VOCABULARY_PROPOSAL_TOOLS.has(name)
-              || softConfirm !== null,
-          };
-          const approvalWarning = softConfirm
-            ? VOCAB_SOFT_CONFIRM_APPROVAL_WARNING
-            : approvalWarningFor(name, args);
-          if (approvalWarning) proposal.approvalWarning = approvalWarning;
-          proposal = this.withCarryoverWarningIfNeeded(proposal);
-          this.upsertProposal(proposedByKey, proposal);
-        }
-
-        this.messages.push({
-          role: "tool",
-          tool_call_id: call.id,
-          name,
-          content: JSON.stringify(toolResultForModel(toolResult)),
-        });
-
-        // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
-        if (this.renderImages && VISION_TOOLS.has(name) && toolResult.ok && toolResult.data !== undefined) {
-          try {
-            roundImages.push(...(await this.renderImages(this.ctx.project, name, toolResult.data)));
-          } catch {
-            /* 렌더 실패는 치명적이지 않다 */
+            // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
+            ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
+          });
+          // 검증 히스토리 기록(todo 5): 쓰기 툴 + play_walkthrough 만 — questId/시나리오 선택에 쓴다.
+          // (검증 게이트가 직접 실행한 툴콜은 여기로 오지 않는다 — 모델 저작 히스토리만.)
+          if (tool && (tool.mode === "write" || name === PLAY_WALKTHROUGH_TOOL)) {
+            this.verificationHistory.push({ name, args, ok: toolResult.ok, layerId: this.verificationLayerId() });
           }
+
+          // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
+          if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {
+            const softConfirm = extractVocabSoftConfirm(toolResult.data);
+            let proposal: ProposedCall = {
+              name,
+              args,
+              summary: toolResult.summary,
+              result: toolResult,
+              // 이름 목록이 아니라 결과 diff 로 파괴성을 본다 — 기존 맵을 교체하거나 이벤트를 지운
+              // 호출은 이름이 생성계여도 승인 카드를 거친다(진단 근본원인 9).
+              destructive: isDestructiveOutcome(name, args, toolResult.diff),
+              requiresApproval:
+                RULE_TOOLS.has(name)
+                || isDestructiveOutcome(name, args, toolResult.diff)
+                || VOCABULARY_PROPOSAL_TOOLS.has(name)
+                || softConfirm !== null,
+            };
+            const approvalWarning = softConfirm
+              ? VOCAB_SOFT_CONFIRM_APPROVAL_WARNING
+              : approvalWarningFor(name, args);
+            if (approvalWarning) proposal.approvalWarning = approvalWarning;
+            proposal = this.withCarryoverWarningIfNeeded(proposal);
+            this.upsertProposal(proposedByKey, proposal);
+          }
+
+          respond(toolResult);
+
+          // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
+          if (this.renderImages && VISION_TOOLS.has(name) && toolResult.ok && toolResult.data !== undefined) {
+            try {
+              roundImages.push(...(await this.renderImages(this.ctx.project, name, toolResult.data)));
+            } catch {
+              /* 렌더 실패는 치명적이지 않다 */
+            }
+          }
+        } catch (cause) {
+          // 예상하지 못한 예외 — 이 호출의 응답을 먼저 남기고(짝 없는 tool_calls 로 세션을 오염하지 않는다)
+          // 그대로 다시 던진다 — 턴 자체는 사용자에게 실패로 보이는 것이 맞다.
+          const failure = cause instanceof Error ? cause.message : String(cause);
+          this.pushAudit({ kind: "status", text: `tool-loop:exception ${name} — ${failure}` });
+          respond({
+            ok: false,
+            summary: `'${name}' 실행 중 예상하지 못한 오류: ${failure}`,
+            issues: [{ severity: "error", code: "tool-loop-exception", message: failure }],
+          });
+          throw cause;
         }
       }
 
@@ -3041,19 +3230,42 @@ function compactToolDataForModel(data: unknown): unknown {
   return data;
 }
 
-function parseToolCall(call: ToolCall): { name: string; args: Record<string, unknown> } {
+function parseToolCall(call: ToolCall): { name: string; args: Record<string, unknown>; parseError: string | null } {
   const name = call.function.name;
-  let args: Record<string, unknown> = {};
   const raw = call.function.arguments?.trim();
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object") args = parsed as Record<string, unknown>;
-    } catch {
-      // 인자 JSON 파싱 실패 — 빈 인자로 두면 runTool이 검증 오류를 issues로 돌려줘 자가수정 유도.
+  if (!raw) return { name, args: {}, parseError: null };
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return { name, args: parsed as Record<string, unknown>, parseError: null };
     }
+    return { name, args: {}, parseError: `인자가 JSON 객체가 아닙니다(${Array.isArray(parsed) ? "array" : typeof parsed}).` };
+  } catch (cause) {
+    // 예전엔 파싱 실패를 조용히 삼켜 빈 인자로 툴을 돌렸다. 그러면 모델은 `필수 인자 누락:
+    // mapId, x, y…` 를 받고 "인자를 안 보냈다"고 이해해 **똑같은 큰 페이로드를 그대로 재전송**한다 —
+    // 진짜 원인은 보통 출력 상한으로 JSON 이 중간에서 잘린 것이다. 사유를 그대로 알린다.
+    return { name, args: {}, parseError: cause instanceof Error ? cause.message : String(cause) };
   }
-  return { name, args };
+}
+
+/** 인자 JSON 자체가 깨진 툴콜 — 툴을 돌리지 않고 사유를 모델에 되돌려 자가수정을 유도한다. */
+function invalidJsonArgsResult(name: string, raw: string, reason: string): ToolResult {
+  const compact = raw.length > 160 ? `${raw.slice(0, 80)}…(중략)…${raw.slice(-40)}` : raw;
+  return {
+    ok: false,
+    summary: `'${name}' 인자 JSON 파싱 실패: ${reason}`,
+    issues: [
+      {
+        severity: "error",
+        code: "invalid-json-args",
+        message:
+          `인자 JSON 을 해석하지 못했습니다: ${reason}. 인자를 생략한 것이 아니라 깨진 문자열로 도달했으므로,`
+          + ` 같은 내용을 그대로 다시 보내면 또 실패합니다. 출력 길이 상한에 걸려 JSON 이 잘린 경우가 대부분이니`
+          + ` 한 호출에 담는 항목 수를 줄이거나 호출을 여러 번으로 나눠 다시 시도하세요.`
+          + ` 받은 원문(축약): ${compact}`,
+      },
+    ],
+  };
 }
 
 function sleep(ms: number): Promise<void> {

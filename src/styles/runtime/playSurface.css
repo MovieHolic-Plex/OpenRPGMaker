@@ -132,3 +132,8 @@
 .player-layout .play-viewport > .runtime-shop-overlay > .runtime-shop-shell {
   width: min(100%, 720px);
 }
+
+.play-stage.cutscene-hud-hidden .minimap-root,
+.play-stage.cutscene-hud-hidden .hand-slot {
+  display: none;
+}

@@ -547,14 +547,12 @@ defineCommand({
   summary: (c, l) => `${l.recordName(str(c.resourceId))}${c.loop ? " (반복)" : ""}`,
 });
 
-// 동영상은 ResourceKind 에 아직 자리가 없어(base.ts 는 다른 레인 소유) record 피커가
-// 자유 입력으로 떨어진다. 전용 동영상 리소스 종류가 생기면 source 만 살리면 된다.
 defineCommand({
   kind: "playMovie",
   family: "media",
   label: "동영상",
   fields: {
-    resourceId: f.record("리소스", "video"),
+    resourceId: f.record("리소스", "movie"),
     wait: f.bool("재생이 끝날 때까지 대기", { optional: true }),
     skippable: f.bool("건너뛰기 허용", { optional: true }),
   },

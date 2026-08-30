@@ -59,8 +59,9 @@ export function focusAcceptedAgentChanges(before: Project, after: Project): Agen
   if (target.bounds) {
     requestEditorCameraFocus({
       mapId: target.mapId,
-      tileX: Math.floor(target.bounds.x + target.bounds.width / 2),
-      tileY: Math.floor(target.bounds.y + target.bounds.height / 2),
+      // 내림하지 않는다 — planCameraFocus 가 쓰는 정확한 중심과 폴백 값이 어긋나면 반 타일이 밀린다.
+      tileX: target.bounds.x + target.bounds.width / 2,
+      tileY: target.bounds.y + target.bounds.height / 2,
       bounds: target.bounds,
       onlyIfOffscreen: true,
     });

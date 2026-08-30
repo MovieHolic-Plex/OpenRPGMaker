@@ -1236,6 +1236,20 @@
   min-height: 30px;
 }
 
+/* 배치 면 드롭다운 — 통행 프리셋 줄과 같은 자리를 쓰지만 select 라 button 규칙이 안 먹는다. */
+.tileset-knowledge-preset-row select {
+  flex: 1 1 96px;
+  min-height: 30px;
+  min-width: 0;
+  font: inherit;
+}
+
+/* 자리 종류는 이름이 길다("벽에서 떨어진 바닥"). 세 칸을 한 줄에 두면 실측에서 끝 글자가
+   잘려 "벽에 붙은 바다" 가 됐다 — 첫 칸만 한 줄을 다 쓰게 하고 방향·강도를 아래 줄로 내린다. */
+.tileset-knowledge-preset-row select:first-child {
+  flex-basis: 100%;
+}
+
 .tileset-knowledge-direction-grid {
   display: grid;
   gap: var(--space-1);

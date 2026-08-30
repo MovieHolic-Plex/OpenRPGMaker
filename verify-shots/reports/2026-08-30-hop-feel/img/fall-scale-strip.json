@@ -1,0 +1,215 @@
+{
+  "label": "now",
+  "heightPx": 128,
+  "durationMs": 5000,
+  "clip": {
+    "x": 32,
+    "y": 24,
+    "width": 960,
+    "height": 720
+  },
+  "pxPerWorld": 3,
+  "geom": {
+    "rect": {
+      "x": 32,
+      "y": 24,
+      "width": 960,
+      "height": 720
+    },
+    "cam": {
+      "centerX": 160,
+      "centerY": 120,
+      "height": 240,
+      "scrollX": 72,
+      "scrollY": 184,
+      "width": 320,
+      "zoom": 1
+    },
+    "player": {
+      "x": 232,
+      "y": 304
+    }
+  },
+  "shots": [
+    {
+      "name": "000-ground.png",
+      "liftPx": 0,
+      "airborne": false,
+      "scaleX": 1,
+      "scaleY": 1,
+      "shadowW": null,
+      "liftAfterPx": 0,
+      "scaleYAfter": 1
+    },
+    {
+      "name": "001-fall.png",
+      "liftPx": 127,
+      "airborne": true,
+      "scaleX": 2.8079,
+      "scaleY": 3.2869,
+      "shadowW": 11.3,
+      "liftAfterPx": 124,
+      "scaleYAfter": 3.2518
+    },
+    {
+      "name": "002-fall.png",
+      "liftPx": 124,
+      "airborne": true,
+      "scaleX": 2.751,
+      "scaleY": 3.2445,
+      "shadowW": 11.6,
+      "liftAfterPx": 122,
+      "scaleYAfter": 3.2258
+    },
+    {
+      "name": "003-fall.png",
+      "liftPx": 122,
+      "airborne": true,
+      "scaleX": 2.7169,
+      "scaleY": 3.2182,
+      "shadowW": 11.8,
+      "liftAfterPx": 119,
+      "scaleYAfter": 3.1789
+    },
+    {
+      "name": "004-fall.png",
+      "liftPx": 118,
+      "airborne": true,
+      "scaleX": 2.6569,
+      "scaleY": 3.1708,
+      "shadowW": 12.2,
+      "liftAfterPx": 115,
+      "scaleYAfter": 3.1287
+    },
+    {
+      "name": "005-fall.png",
+      "liftPx": 115,
+      "airborne": true,
+      "scaleX": 2.5949,
+      "scaleY": 3.12,
+      "shadowW": 12.5,
+      "liftAfterPx": 111,
+      "scaleYAfter": 3.0752
+    },
+    {
+      "name": "006-fall.png",
+      "liftPx": 111,
+      "airborne": true,
+      "scaleX": 2.531,
+      "scaleY": 3.066,
+      "shadowW": 12.9,
+      "liftAfterPx": 106,
+      "scaleYAfter": 3.0037
+    },
+    {
+      "name": "007-fall.png",
+      "liftPx": 106,
+      "airborne": true,
+      "scaleX": 2.4486,
+      "scaleY": 2.9938,
+      "shadowW": 13.4,
+      "liftAfterPx": 102,
+      "scaleYAfter": 2.9375
+    },
+    {
+      "name": "008-fall.png",
+      "liftPx": 100,
+      "airborne": true,
+      "scaleX": 2.3626,
+      "scaleY": 2.9158,
+      "shadowW": 14,
+      "liftAfterPx": 85,
+      "scaleYAfter": 2.6772
+    },
+    {
+      "name": "009-fall.png",
+      "liftPx": 85,
+      "airborne": true,
+      "scaleX": 2.1152,
+      "scaleY": 2.6772,
+      "shadowW": 15.5,
+      "liftAfterPx": 74,
+      "scaleYAfter": 2.5079
+    },
+    {
+      "name": "010-fall.png",
+      "liftPx": 68,
+      "airborne": true,
+      "scaleX": 1.8486,
+      "scaleY": 2.3992,
+      "shadowW": 17.2,
+      "liftAfterPx": 36,
+      "scaleYAfter": 1.8586
+    },
+    {
+      "name": "011-fall.png",
+      "liftPx": 32,
+      "airborne": true,
+      "scaleX": 1.3207,
+      "scaleY": 1.7927,
+      "shadowW": 20.8,
+      "liftAfterPx": 16,
+      "scaleYAfter": 1.508
+    },
+    {
+      "name": "012-fall.png",
+      "liftPx": 13,
+      "airborne": true,
+      "scaleX": 1.0465,
+      "scaleY": 1.4513,
+      "shadowW": 22.7,
+      "liftAfterPx": 0,
+      "scaleYAfter": 0.74
+    },
+    {
+      "name": "013-land.png",
+      "liftPx": 0,
+      "airborne": false,
+      "scaleX": 1,
+      "scaleY": 1,
+      "shadowW": null,
+      "liftAfterPx": 0,
+      "scaleYAfter": 1
+    },
+    {
+      "name": "014-land.png",
+      "liftPx": 0,
+      "airborne": false,
+      "scaleX": 1,
+      "scaleY": 1,
+      "shadowW": null,
+      "liftAfterPx": 0,
+      "scaleYAfter": 1
+    },
+    {
+      "name": "015-land.png",
+      "liftPx": 0,
+      "airborne": false,
+      "scaleX": 1,
+      "scaleY": 1,
+      "shadowW": null,
+      "liftAfterPx": 0,
+      "scaleYAfter": 1
+    },
+    {
+      "name": "016-land.png",
+      "liftPx": 0,
+      "airborne": false,
+      "scaleX": 1,
+      "scaleY": 1,
+      "shadowW": null,
+      "liftAfterPx": 0,
+      "scaleYAfter": 1
+    },
+    {
+      "name": "017-settled.png",
+      "liftPx": 0,
+      "airborne": false,
+      "scaleX": 1,
+      "scaleY": 1,
+      "shadowW": null,
+      "liftAfterPx": 0,
+      "scaleYAfter": 1
+    }
+  ]
+}

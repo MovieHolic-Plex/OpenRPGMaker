@@ -7,6 +7,7 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
+import { conversationScopeKey } from "@/ai/conversationStore";
 import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
 import {
@@ -184,7 +185,11 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
     if (!state.session) {
       state.session = new AssistantSession(store.getCurrent(), {
         config: configForLiteModel(loadAiConfig()),
-        contextOptions: { currentMapId: currentMapId() ?? undefined },
+        contextOptions: {
+          currentMapId: currentMapId() ?? undefined,
+          // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
+          projectScopeKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
+        },
         renderImages: renderToolImages,
       });
     }

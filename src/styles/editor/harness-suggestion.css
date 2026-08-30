@@ -1177,6 +1177,49 @@
   font: inherit;
 }
 
+/* 배치 조건 — 드롭다운 3개 + 미리보기 + 지우기가 한 줄. 좁아지면 접힌다(폭 352px 인스펙터가
+   아니라 다이얼로그 안이지만, 조건 줄이 늘면 가로가 모자랄 수 있다). */
+.structure-kit-editor-condition-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.structure-kit-editor-condition-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.structure-kit-editor-condition-row select {
+  font: inherit;
+}
+
+.structure-kit-editor-condition-preview {
+  color: var(--text-3);
+  margin-left: auto;
+}
+
+/* 지우기 ✕ 는 내용 폭만 쓴다. 다이얼로그의 .btn 이 늘어나는 규칙을 물려받아, 줄이 접히면
+   실측에서 ✕ 하나가 한 줄을 통째로 차지했다(방향 칸이 없는 «벽면» 조건에서). */
+.structure-kit-editor-condition-row .btn.small {
+  flex: 0 0 auto;
+}
+
+.structure-kit-editor-condition-hint {
+  margin: 0;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+.structure-kit-editor-conditions {
+  gap: 6px;
+}
+
 .structure-kit-editor-ai-head {
   display: flex;
   align-items: center;

@@ -1,17 +1,22 @@
 // 에디터 카메라 → 타일 뷰포트 스냅샷 + 어시스턴트 컨텍스트 블록.
 // 순수 함수(브라우저/Phaser 비의존) — 테스트·세션·contextBuilder가 공유한다.
+//
+// 줌/가림(조수 도크) 보정은 호출자 책임이다: 여기에는 이미 "화면에 실제로 보이는 월드 사각형"만 들어온다.
+// 왜: 예전 입력은 {scrollX, zoom, viewWidthPx...} 였고 worldLeft = scrollX 로 계산했다. Phaser 3.60+ 는
+// worldView.x = scrollX + width/2 - width/(2*zoom) 이라 zoom !== 1 이면 이 가정이 깨진다. 에디터 기본 줌은 2다.
+// 실측(캔버스 1133×700, scroll(400,300), tileSize 16): 진짜 시각 중심은 타일 (60,40) 인데 (42,29) 로 보고했다
+// — 모델에게 18칸 왼쪽/11칸 위의 영역을 알려주고 통행 그리드·뷰포트 이미지까지 그 엉뚱한 영역을 설명했다.
 
 import type { GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 
-/** 카메라/캔버스 입력(월드 픽셀 기준 scroll, 화면 픽셀 크기). */
+/** 화면에 실제로 보이는 월드 사각형(줌 보정 + 조수 도크 가림 제외). Phaser camera.worldView 에서 만든다. */
 export type MapCameraViewInput = {
-  readonly scrollX: number;
-  readonly scrollY: number;
-  readonly zoom: number;
-  readonly viewWidthPx: number;
-  readonly viewHeightPx: number;
+  readonly worldLeftPx: number;
+  readonly worldTopPx: number;
+  readonly worldWidthPx: number;
+  readonly worldHeightPx: number;
   readonly tileSize: number;
 };
 
@@ -35,14 +40,13 @@ export function computeMapViewport(
   maxSpan: number = DEFAULT_VIEWPORT_MAX_SPAN,
 ): MapViewportSnapshot {
   const tileSize = Math.max(1, camera.tileSize);
-  const zoom = camera.zoom > 0 ? camera.zoom : 1;
-  const viewW = Math.max(1, camera.viewWidthPx);
-  const viewH = Math.max(1, camera.viewHeightPx);
+  const viewW = Math.max(1, camera.worldWidthPx);
+  const viewH = Math.max(1, camera.worldHeightPx);
 
-  const worldLeft = camera.scrollX;
-  const worldTop = camera.scrollY;
-  const worldRight = camera.scrollX + viewW / zoom;
-  const worldBottom = camera.scrollY + viewH / zoom;
+  const worldLeft = camera.worldLeftPx;
+  const worldTop = camera.worldTopPx;
+  const worldRight = worldLeft + viewW;
+  const worldBottom = worldTop + viewH;
   const worldCx = (worldLeft + worldRight) / 2;
   const worldCy = (worldTop + worldBottom) / 2;
 
@@ -113,13 +117,15 @@ export function formatViewportContextBlock(
   mapName: string,
   project?: Project,
 ): string {
-  const x1 = viewport.x + viewport.w;
-  const y1 = viewport.y + viewport.h;
+  // 마지막 칸은 x+w-1 (양 끝 포함). 반열림 끝값을 찍으면 그대로 베낀 모델이 한 칸 밀린다.
+  const x1 = viewport.x + viewport.w - 1;
+  const y1 = viewport.y + viewport.h - 1;
   const lines = [
     "## 에디터 뷰포트(사용자가 지금 보고 있는 맵 화면)",
     `- 맵: ${mapName} (\`${viewport.mapId}\`)`,
     `- 화면 중앙 타일: **(${viewport.centerX}, ${viewport.centerY})**`,
-    `- 가시 영역(타일): (${viewport.x},${viewport.y})~(${x1},${y1}) — ${viewport.w}×${viewport.h}`,
+    `- 가시 영역(타일): (${viewport.x},${viewport.y})~(${x1},${y1}) — ${viewport.w}×${viewport.h} (양 끝 칸 포함)`,
+    "- 영역 표기 규약(툴 공통): 좌상단 기준, w/h 는 칸 수, 마지막 칸은 x+w-1 / y+h-1.",
     "- 사용자 말의 \"여기/이 근처/화면/가운데\"는 위 좌표를 기준으로 해석하세요.",
     "- 상세 타일/이벤트는 get_map_region / show_map_region으로 이 영역 또는 주변을 조회하세요.",
   ];

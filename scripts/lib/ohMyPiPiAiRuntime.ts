@@ -137,8 +137,11 @@ function assistantToOpenAI(message: {
     const rec = part as { type?: string; text?: string; id?: string; name?: string; arguments?: unknown };
     if (rec.type === "text" && rec.text) texts.push(rec.text);
     if (rec.type === "toolCall") {
+      // id 폴백은 호출마다 달라야 한다. 예전 `?? "call"` 은 id 없는 병렬 toolCall 두 건에
+      // **같은 tool_call_id** 를 붙였고, 세션은 id 마다 role:"tool" 응답을 실으므로 중복
+      // function response 가 되어 다음 라운드가 400 으로 죽는다(2026-08-30 실측 계열 결함).
       tool_calls.push({
-        id: rec.id ?? "call",
+        id: rec.id ?? `call_${tool_calls.length}_${rec.name ?? "tool"}`,
         type: "function",
         function: {
           name: rec.name ?? "tool",

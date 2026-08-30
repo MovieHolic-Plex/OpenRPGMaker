@@ -3,13 +3,17 @@
    z-index 는 action-hud 아래로 둬서 전투 HUD 가 항상 위에 오게 한다.
    토큰은 zoneFeedback.css 를 따른다(actionHud.css 의 하드코딩 px/hex 는 답습하지 않는다). */
 .hand-slot {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image: var(--runtime-window-skin) var(--runtime-window-slice);
+  background: var(--runtime-glass-panel);
+  border: 1px solid var(--runtime-glass-hairline);
+  /* 자료집 윈도스킨은 slice 에 fill 이 붙어 **중앙까지** 칠한다 — 그러면 위 background 가
+     비트맵에 덮여 유리판이 안 보인다(실측: verify-shots/glass-runtime, 좌하단 칩이 회색 판). */
+  border-image: none;
+  border-radius: var(--runtime-glass-radius-small);
   bottom: var(--space-2);
+  box-shadow: var(--runtime-glass-shadow);
   box-sizing: border-box;
   color: var(--runtime-window-text);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-9);
   left: var(--space-2);
   line-height: 1.4;

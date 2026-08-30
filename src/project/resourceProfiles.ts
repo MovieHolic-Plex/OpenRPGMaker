@@ -9,7 +9,7 @@ export type ResourceProfileSpec = {
   readonly tileHeight?: number;
   readonly expectedWidth?: number;
   readonly expectedHeight?: number;
-  readonly media: "image" | "audio";
+  readonly media: "image" | "audio" | "video";
 };
 
 export type ResourceDimensionResult =
@@ -27,6 +27,7 @@ export const RESOURCE_PROFILE_SPECS: readonly ResourceProfileSpec[] = [
   imageSpec("monster", "몬스터"),
   imageSpec("faceset", "얼굴 그래픽", FACE_IMAGE_SIZE, FACE_IMAGE_SIZE),
   imageSpec("picture", "그림"),
+  { kind: "movie", label: "동영상", slicing: RESOURCE_SLICING.movie, media: "video" },
   imageSpec("system", "시스템"),
   imageSpec("system2", "시스템 2"),
   imageSpec("title", "타이틀"),
@@ -41,6 +42,7 @@ export function getResourceProfileSpec(kind: ResourceKind): ResourceProfileSpec 
 export function validateResourceDimensions(kind: ResourceKind, width: number, height: number): ResourceDimensionResult {
   const spec = getResourceProfileSpec(kind);
   if (spec.media === "audio") return { ok: true, message: `${spec.label}: 오디오 리소스 (이미지 규격 검사는 생략)` };
+  if (spec.media === "video") return { ok: true, message: `${spec.label}: 동영상 리소스 (이미지 규격 검사는 생략)` };
   if (kind === "faceset") return validateFacesetDimensions(spec, width, height);
   if (spec.expectedWidth !== undefined && spec.expectedHeight !== undefined) {
     if (width !== spec.expectedWidth || height !== spec.expectedHeight) {

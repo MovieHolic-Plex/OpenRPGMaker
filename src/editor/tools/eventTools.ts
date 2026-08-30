@@ -2170,12 +2170,13 @@ function cutscenePage(
   pageId: string,
   name: string,
   trigger: Trigger,
-  commands: Command[]
+  commands: Command[],
+  conditions: EventPage["conditions"] = []
 ): EventPage {
   return {
     id: pageId,
     name,
-    conditions: [],
+    conditions,
     graphic: { transparent: true },
     trigger,
     priority: "below",
@@ -2222,6 +2223,8 @@ const scriptCutscene: ToolDefinition = {
       trigger: { type: "string", enum: ["action", "auto", "parallel", "playerTouch", "touch"], description: "기본 action. playerTouch/touch 는 통행 가능 칸에 착지한다." },
       beats: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
       skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
+      mode: { type: "string", enum: ["replace", "append"], description: "기본 replace. 같은 이벤트에서 이름 컷신 페이지를 교체한다. append는 페이지를 쌓는다." },
+      once: { type: "boolean", description: "true면 셀프스위치 A가 꺼져 있을 때만 재생하고 끝나면 A를 켠다." },
     },
     required: ["mapId", "beats"],
   },
@@ -2257,7 +2260,18 @@ const scriptCutscene: ToolDefinition = {
       throw cause;
     }
     const existing = map.events.find((event) => event.id === eventId);
-    const page = cutscenePage(`${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`, "컷신", trigger, commands);
+    const mode = args.mode === "append" ? "append" : "replace";
+    const once = args.once === true;
+    if (once) {
+      commands = [...commands, { kind: "setSelfSwitch", key: "A", value: true }];
+    }
+    const page = cutscenePage(
+      `${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`,
+      "컷신",
+      trigger,
+      commands,
+      once ? [{ kind: "selfSwitch", key: "A", value: false }] : []
+    );
     const outcome = existing ? "modified" : "added";
     let event: GameEvent;
     if (existing) {
@@ -2276,7 +2290,10 @@ const scriptCutscene: ToolDefinition = {
           existing.y = placement.y;
         }
       }
-      existing.pages = [...(existing.pages ?? []), page];
+      const pages = existing.pages ?? [];
+      existing.pages = mode === "append"
+        ? [...pages, page]
+        : [...pages.filter((entry) => entry.name !== "컷신"), page];
       event = existing;
     } else {
       const pos = cutsceneEventPosition(draft, map, args);

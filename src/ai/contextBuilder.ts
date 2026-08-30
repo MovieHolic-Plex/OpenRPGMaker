@@ -8,9 +8,11 @@ import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { structureKitRepeatable } from "@/editor/harnessSuggestion/structureKitModel";
+import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
+import { aiInstructionsSection } from "./projectInstructions";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
 import {
@@ -34,6 +36,18 @@ export interface ContextOptions {
    * 구조 키트·맵 요약이 이전 맵을 설명해, 라이브 뷰포트 블록과 서로 다른 맵을 가리킨다.
    */
   getCurrentMapId?: () => string | null | undefined;
+  /**
+   * 프로젝트 한정 성향 조회 키(conversationScopeKey 값). 패널이 넣고 세션이 성향 조회에 쓴다.
+   * 없으면 전역 성향만 붙는다 — 전역 성향은 이 값과 무관하게 항상 붙는다(사람의 취향은
+   * 프로젝트를 넘어 유지되는 게 요점이다).
+   */
+  projectScopeKey?: string;
+  /**
+   * 조립된 사람 성향 블록. 세션이 매 조립 시 buildPreferenceMemorySection 으로 채운다.
+   * 이 파일은 localStorage 를 읽지 않는다(머리 주석의 "순수 함수" 계약) — 그래서 조회 키가 아니라
+   * 완성된 문자열을 받는다.
+   */
+  preferenceMemorySection?: string;
 }
 
 export function resolveContextMapId(options: ContextOptions): string | undefined {
@@ -297,13 +311,15 @@ const RESOURCE_HINT = [
 ].join("\n");
 
 type ClusterRuleStrength = "hard" | "medium" | "soft";
-type ClusterRuleKind = "adjacency" | "spacing" | "count";
+type ClusterRuleKind = "adjacency" | "spacing" | "count" | "surface";
 
 interface ClusterRuleHint {
   readonly id: string;
   readonly kind: ClusterRuleKind;
   readonly strength: ClusterRuleStrength;
   readonly message?: string;
+  /** surface 규칙은 params 로 조건이 정해지므로 문장 없이도 뜻을 복원할 수 있다. */
+  readonly params?: Record<string, unknown>;
 }
 
 // 사용자가 가르친 타일 지식(맵 인터뷰 결과) 요약 — 챗봇 타일 깔기의 근거.
@@ -351,6 +367,14 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
       );
       if (kit.ai?.description) lines.push(`  설명: ${kit.ai.description.slice(0, 100)}`);
       if (kit.ai?.placementRules) lines.push(`  배치: ${kit.ai.placementRules.slice(0, 100)}`);
+      // 배치 조건은 산문이 아니라 **집행되는 조건**이다 — 어기면 stamp_structure_kit 이 거부한다.
+      // 그래서 100자 자르기(placementRules)와 달리 전부 싣는다. 조건 수는 실무상 1~3개다.
+      for (const condition of kit.ai?.placement ?? []) {
+        lines.push(
+          `  배치 조건[${condition.strength === "hard" ? "필수" : "권장"}]: ${describePlacementSurface(condition)}`
+          + `${condition.message?.trim() ? ` — ${condition.message.trim().slice(0, 60)}` : ""}`,
+        );
+      }
     }
   }
   if (lines.length === 0) return "";
@@ -424,7 +448,7 @@ function isClusterRuleHint(rule: unknown): rule is ClusterRuleHint {
 }
 
 function isClusterRuleKind(value: unknown): value is ClusterRuleKind {
-  return value === "adjacency" || value === "spacing" || value === "count";
+  return value === "adjacency" || value === "spacing" || value === "count" || value === "surface";
 }
 
 function isClusterRuleStrength(value: unknown): value is ClusterRuleStrength {
@@ -436,12 +460,22 @@ function strengthLabel(strength: ClusterRuleStrength): string {
 }
 
 function kindLabel(kind: ClusterRuleKind): string {
-  return kind === "adjacency" ? "인접성" : kind === "spacing" ? "간격" : "개수";
+  if (kind === "adjacency") return "인접성";
+  if (kind === "spacing") return "간격";
+  if (kind === "surface") return "배치 면";
+  return "개수";
 }
 
 function ruleText(rule: ClusterRuleHint): string {
   const message = rule.message?.trim();
-  return message ? message.slice(0, 120) : `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
+  if (message) return message.slice(0, 120);
+  // 배치 면은 params 가 조건 그 자체다 — 문장이 없어도 "북쪽(위) 벽에 붙은 바닥"까지 복원한다.
+  // 이 규칙은 실제로 집행되므로(찍는 순간 검사) 모델이 조건을 정확히 알아야 한다.
+  if (rule.kind === "surface") {
+    const surface = surfaceRuleFromClusterRule({ id: rule.id, kind: "surface", params: rule.params ?? {}, strength: "hard" });
+    if (surface) return `${describePlacementSurface(surface)}에만 놓입니다(어기면 시공이 거부됨)`;
+  }
+  return `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
 }
 
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.
@@ -482,17 +516,30 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   }
   // 현재 맵 머리는 예산 밖 고정 버지 — 절단 뒤에 붙인다(#262).
   if (mapRegion.header) assembled += `\n\n${mapRegion.header}`;
-  return withCapabilityIndex(assembled);
+  // 감독 지침도 능력 색인·성향 기억과 같은 **예산 밖 고정분**이다. 예산 안에 두면 tokenBudget 보정이
+  // 예산을 6,000자까지 줄인 세션에서 슬라이싱에 통째로 잘려, 사용자가 박아 둔 규칙이 조용히
+  // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
+  return withProjectInstructions(withFixedBlocks(assembled, options.preferenceMemorySection), project.aiInstructions);
 }
 
-// 색인 삽입 지점: INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.
-// 어느 경우도 색인 전부가 남는다(어떤 기능이 존재하는가 = 상세 지침보다 우선하는 정보).
-function withCapabilityIndex(assembled: string): string {
+function withProjectInstructions(assembled: string, instructions: string | undefined): string {
+  const section = aiInstructionsSection(instructions);
+  return section ? `${assembled}\n\n${section}` : assembled;
+}
+
+// 예산 밖 고정 블록: 툴 능력 색인 + 사람 성향.
+// 삽입 지점은 INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.
+// 어느 경우도 두 블록 전부가 남는다 — 색인은 "어떤 기능이 존재하는가"(상세 지침보다 우선하는 정보),
+// 성향은 예산 슬라이싱에 걸리면 통째로 사라져 "AI 가 나를 기억하지 못한다"가 그대로 재발한다.
+// 성향 블록은 자체 하드캡(12줄/1,200자)이 있어 예산 밖에 둬도 프롬프트를 잡아먹지 않는다.
+function withFixedBlocks(assembled: string, preferenceMemorySection?: string): string {
   const index = buildToolCapabilityIndex();
+  const memory = preferenceMemorySection?.trim() ?? "";
+  const fixed = memory ? `${index}\n\n${memory}` : index;
   if (assembled.startsWith(INTRO)) {
-    return `${INTRO}\n\n${index}${assembled.slice(INTRO.length)}`;
+    return `${INTRO}\n\n${fixed}${assembled.slice(INTRO.length)}`;
   }
-  return `${index}\n\n${assembled}`;
+  return `${fixed}\n\n${assembled}`;
 }
 
 function trimDigestLines(lines: readonly string[], maxTokens: number): string {

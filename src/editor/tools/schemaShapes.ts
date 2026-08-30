@@ -89,7 +89,7 @@ export const FACE_SCHEMA: JsonSchema = {
 };
 
 /**
- * `CutsceneBeat` (editor/cutscene) — 12 variant 유니온. 전 variant 키를 나열하면 스키마가 비대해지므로
+ * `CutsceneBeat` (editor/cutscene) — 13 variant 유니온. 전 variant 키를 나열하면 스키마가 비대해지므로
  * `kind` enum + 최빈 필드만 선언하고 variant 전용 필드는 `additionalProperties` 로 허용한다.
  */
 export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
@@ -97,12 +97,15 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
   properties: {
     kind: {
       type: "string",
-      enum: ["say", "moveActor", "camera", "picture", "music", "tint", "flash", "shake", "wait", "parallel", "label", "jump"],
+      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump"],
     },
     speaker: { type: "string" },
     text: { type: "string" },
     lines: { type: "array", items: { type: "string" } },
+    emotion: { type: "string" },
+    autoAdvance: { type: "boolean" },
     face: FACE_SCHEMA,
+    direction: { type: "string", enum: ["in", "out"] },
     target: { type: "string" },
     eventId: { type: "string" },
     mode: { type: "string" },

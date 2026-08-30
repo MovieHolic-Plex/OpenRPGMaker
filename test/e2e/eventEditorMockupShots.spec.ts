@@ -66,11 +66,11 @@ test("event editor matches the approved mockup", async ({ page }) => {
   await modal.getByTestId("event-view-toggle-preview").click();
   await expect(modal.getByTestId("event-page-preview")).toBeVisible();
   await expect(modal.getByTestId("event-view-toggle-preview")).toHaveAttribute("aria-pressed", "true");
+  // 플로우는 도구 팝오버 칩이 아니라 네 번째 보기 방식이다 — 미리보기 위에 겹치지 않는다.
+  await modal.getByTestId("event-view-toggle-flow").click();
+  await expect(modal.getByTestId("event-page-flow")).toBeVisible();
+  await expect(modal.getByTestId("event-view-toggle-flow")).toHaveAttribute("aria-pressed", "true");
   await modal.getByTestId("event-view-toggle-storyboard").click();
-  await modal.getByTestId("event-command-quick-flow").click();
-  await expect(modal.getByTestId("event-script-flowchart")).toHaveAttribute("open", "");
-  await expect(modal.getByTestId("event-script-flowchart")).toBeVisible();
-  await modal.getByTestId("event-editor-aux-tools").evaluate((details) => { (details as HTMLDetailsElement).open = false; });
 
   const header = await rect(modal.getByTestId("event-editor-titlebar"));
   const pages = await rect(modal.locator(".event-editor-pagebar"));

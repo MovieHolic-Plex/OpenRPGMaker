@@ -38,3 +38,66 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 - AI natural scatter options are integrated at the tool edge. `paint_road` accepts `naturalness`/`seed`; `naturalness:0` preserves the legacy `lineCells` path, while higher values call `wobblePath` and still reuse existing road/sand autotile shaping. `scatter_object` chooses uniform/poisson/cluster candidate ordering from naturalness, but protected-cell checks, spacing, hard-rule atomic footprints, and structure edits remain on the existing placement path. `build_house` and `stamp_structure` may jitter origin by up to two cells and fall back to the requested origin if no jitter candidate passes the existing bounds checks.
 - Village pipeline (`villageBuilder.ts` + `villageSession.ts` + `villagePlan.ts` + `villageRequirements.ts` + `villageTerrainPass.ts` + `villageEvaluate.ts`): user query/theme ??**common-sense `requirements`** (e.g. 강촌마을 ??river+forest+village). **LLM plans `buildOrder`** (e.g. lake/river villages put `water` before `settlement`; mountain villages start with settlement). Multi-turn: **`run_village_session`** / **`start_village_session`??advance_village_build`**. **Inside `settlement`:** exterior kits blue-stone/bright-plaster/amber-wood/slate-wood + 1?? stories; interiors derived from exterior (stories/footprint/kit/owner -> scale+program and chained floor maps); houses first ??plaza/roads with **house-footprint mask** (roads skip house cells; reconnect components around houses) ??restore doors ??fences ??yards ??NPCs. Roads must not overwrite house lower/upper tiles. Forest layers after settlement when required. Tree catalog **`list_village_tree_assets`**, **`plant_tree_clusters({ style:"broadleaf-2x2" })`**, **`evaluate_village_layer`**. One-shot: **`run_village_pipeline`** / **`build_village`**. Look gate needs water/trees/**?? tree2x2Clusters** when forest required. See `docs/village-plan-architecture-easy.md`.
 - **Natural village v2 reference-first grammar (2026-07-16):** `scripts/natural-village/*` is a coordinate-authored 64횞56 reference and must not import the village construction harness. It established the rules now copied by `build_village`: use four kits and distinct templates before repeats; support 1??F houses; place windows on one row per floor with a blank wall row between floors; keep exactly one 116/146 door pair per house; distribute houses through staggered natural slots; use a narrow meandering commons loop plus north/south/west/east `roadAnchors`; use a walkable wood market deck; replace closed rectangular lots with short fence fragments; scatter conifers and 2횞2 broadleaf groves through interior as well as edges; keep at least six prop tile kinds; give every generated villager morning/day/evening schedules, varied activities, and both fixed/random movement. Generated maps retain `layoutPlan.kind="village-harness-natural-v2"` with house regions and explicit quality-target tags. `evaluate_village_look` treats missing exits, orphan doors, adjacent windows, insufficient shape/kit diversity, missing schedules, one movement style, one tree species, weak prop variety, overlong straight road runs, excessive fence cells, or weak interior tree distribution as harness quality failures. Explicit all-house kit/template choices lower their corresponding target instead of being overwritten by the gate.
+
+## 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+
+편집기 층은 `src/styles/tokens.css` 의 토큰으로 정한다. 위로 갈수록:
+`--z-modal 2100` → `--z-modal-overlay 2200` → `--z-modal-top 2300` → `--z-proposal 2500`
+→ `--z-app-modal 2600` → AI 넓은 비교 오버레이 `calc(var(--z-app-modal) + 20)` = 2620
+→ **`--z-toast 2700`**.
+
+**토스트가 앱 모달보다 위인 이유 (실측).** 이전 `1000` 은 테스트 플레이 창의 **백드롭**
+(`.test-play-modal-backdrop { z-index: 1300 }`, `src/styles/map/resource-system.part-1.css:263`)
+에 가려졌다. 런타임 디버그 막대 때문이 아니다 — 그건 `z-index: 60`
+(`src/player/runtimeDebugPanel.ts:65`) 으로 그 백드롭 **안에** 있어 1000 을 직접 이길 수 없다.
+그래서 «시작 전 자동 복구» 같은 알림이 테스트 플레이 창에서 보이지 않았다. 눈에 안 보이는
+알림은 없는 알림이다.
+
+**올려도 안전한 이유.** `.toast-stack` 과 `.toast` 가 둘 다 `pointer-events: none` 이고
+`has-action` 토스트만 `auto` 로 되살린다(`src/styles/editor/palette-player.css:543`, `:559`,
+`:592-595`). 그래서 모달의 입력·확인 단추·백드롭 클릭이 전부 토스트를 통과한다. 토스트는
+`modalStack` 에 등록하지 않으므로 Esc 대상이 되지 않고 포커스도 빼앗지 않는다.
+
+런타임 밴드(picture-layer 26 ~ picture-layer-item 45)는 `.play-stage` **안쪽** 별도 서브트리라
+이 숫자들과 섞이지 않는다. 두 밴드를 한 자리로 합치려 하지 마라 — 서로를 가린다.
+
+계약 테스트는 `test/editorZLayerOrder.test.ts` 다. `--z-toast` 를 앱 모달 아래로 내리면
+실패한다(실측: 2400 으로 내려 2건 실패). 이전에는 이 순서를 지키는 것이 **아무것도 없었다** —
+`test/runtimePictureStacking.test.ts` 는 런타임 밴드만 재고 편집기 토큰은 보지 않는다.
+
+아직 토큰을 안 쓰는 인라인 층 둘이 토스트보다 위다: `quickBattleModal` 오버레이 `9999`
+(`src/editor/panels/quickBattleModal.ts:38`), 이벤트 목록 호버 툴팁 `320`. 정리 대상이다.
+
+## 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+
+초보 모드 맵 사이드바는 이제 두 칸이다 — 왼쪽 목록(`renderMapList(host, { variant: "basic" })`),
+오른쪽 상세(`src/editor/panels/mapInspectorPane.ts`, 데이터는 `src/project/mapInspection.ts`).
+
+**기능은 하나도 줄지 않았다** (도달성 전수 대조). 필터·facet, 트리 행 다중선택, 썸네일, 펼치기
+토글, 드래그 재정렬, 우클릭 메뉴, 행 `⋯` 메뉴, quick `+`, 중간클릭 시연, 더블클릭 설정, 인라인
+이름 변경, 마퀴 선택, 컨텍스트 메뉴 13개 항목이 모두 남아 있다. 삭제·복제·시작맵 지정 같은
+동작은 행 `⋯` / 우클릭 / 키보드(F2·Delete) / 새 상세 칸 액션 줄 중 최소 셋에서 도달한다.
+
+바뀐 것은 **정보 배치**다. 행 메타에서 `문N` 숫자가 빠지고 0일 때 `고립` 만 남는데, 분해값은
+상세 칸 「연결」 칩(`map-inspector-link-outgoing/incoming/connection`)과 행 메타 `title` 툴팁
+양쪽에 있다. 옛 조작법 힌트 문구도 트리 `title` 툴팁으로 옮겼다 — 발견성은 약해졌다.
+
+목록은 ARIA tree 패턴이다: roving `tabindex` + `aria-selected` + `aria-expanded`, Arrow/Home/End,
+Enter·Space 선택, Ctrl+Enter 시연, F2, Delete, Shift+F10. 플레이 상태 메뉴는
+`aria-activedescendant` 를 쓰지만 트리에는 roving tabindex 가 맞다 — 둘 다 확립된 패턴이다.
+아직 없는 것: 상세 칸이 선택된 행과 `aria-controls`/`aria-describedby` 로 묶이지 않아 스크린
+리더에서 두 칸의 연결이 암시되지 않는다.
+
+좁은 창(≤1100px)에서 상세 칸은 숨지 않고 목록 아래로 쌓인다(`map-panel.modern.css:889-912`).
+
+## 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+
+`installEventEditorCustomSelects` 의 팝오버는 열릴 때 `registerModal` 로 **최상위 층**이 되고
+닫힐 때 해제된다. 이게 없으면 Esc 한 번이 드롭다운과 모달을 **같이** 닫는다: `modalStack` 은
+keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(`ui/modalStack.ts:25`,
+`:28-37`), 캡처가 document → root 순으로 흐르는 동안 컴포넌트의 Esc 핸들러는 아예 실행되지
+않는다. "한 층에 Esc 하나" 가 `modalStack` 의 존재 이유이므로 중첩 팝오버는 반드시 등록한다.
+
+계약 테스트는 `test/customSelectEscapeLayer.test.ts` 다. 등록을 지우면 2건 실패한다(실측).
+`test/aiSettingsModalLayout.test.ts` 는 깊이 1만 단정하고 드롭다운을 열어놓고 Esc 를 누르는
+경로를 실행하지 않아 이 결함을 통과시켰다 — 깊이만 재는 단정으로는 층 소유를 증명하지 못한다.

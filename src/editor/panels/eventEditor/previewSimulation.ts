@@ -1,4 +1,4 @@
-import { eventCommandBranches, type EventBranchKind } from "@/editor/eventCommandBranches";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { evalCondition, startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Command, Condition, VariableOperand } from "@/project/types";
@@ -32,6 +32,14 @@ export interface SimulatedStep {
   readonly simState: PreviewSimState;
   readonly forkTaken?: "then" | "else";
   readonly skipped?: boolean;
+  /**
+   * 이 단계가 가리키는 명령의 편집 경로(`[명령칸, 분기칸, 명령칸, …]`) — 목록·스토리와
+   * **같은** 주소 체계다. 플로우 보기가 «미리보기의 현재 단계» 를 짚을 때 이걸로 찾는다.
+   *
+   * 인덱스로 짝지으면 안 된다: `breakLoop` 는 뒤 명령을 걷지 않고 빠져나오므로
+   * 「단계 n번째」와 「노드 n번째」가 어긋난다. 경로는 그런 조기 종료에 영향받지 않는다.
+   */
+  readonly path: readonly number[];
 }
 
 export interface ActiveFace {
@@ -51,10 +59,6 @@ export type BranchRef = { readonly label: string; readonly commands: readonly Co
  */
 export function branchesOf(command: Command): BranchRef[] {
   return eventCommandBranches(command).map((branch) => ({ label: branch.label, commands: branch.commands }));
-}
-
-function branchLabelOf(command: Command, kind: EventBranchKind): string | undefined {
-  return eventCommandBranches(command).find((branch) => branch.kind === kind)?.label;
 }
 
 export function createPreviewSimState(): PreviewSimState {
@@ -136,7 +140,7 @@ export function simulatePageCommands(
   const initialState = createPreviewSimState();
   const steps: SimulatedStep[] = [];
   const state = cloneState(initialState);
-  walkWithSimulation(commands, 0, state, steps, hostEventId, undefined);
+  walkWithSimulation(commands, 0, state, steps, hostEventId, undefined, []);
   return { steps, finalState: state };
 }
 
@@ -149,72 +153,50 @@ function walkWithSimulation(
   steps: SimulatedStep[],
   hostEventId: string | undefined,
   branchLabel: string | undefined,
+  pathPrefix: readonly number[],
   skipped = false
 ): WalkResult {
-  for (const command of commands) {
+  for (let index = 0; index < commands.length; index += 1) {
+    const command = commands[index]!;
+    const path = [...pathPrefix, index];
     const stateBefore = cloneState(state);
 
     if (command.kind === "fork" && !skipped) {
       const taken = evalForkCondition(command.condition, state, hostEventId);
-      steps.push({ command, depth, branchLabel, simState: stateBefore, forkTaken: taken, skipped });
-
-      const thenSkipped = taken !== "then";
-      const elseSkipped = taken !== "else";
-
-      walkWithSimulation(command.then, depth + 1, state, steps, hostEventId, branchLabelOf(command, "forkThen"), thenSkipped);
-      if (command.else && command.else.length > 0) {
-        walkWithSimulation(command.else, depth + 1, state, steps, hostEventId, branchLabelOf(command, "forkElse"), elseSkipped);
-      }
-      continue;
-    }
-
-    if (command.kind === "choices") {
-      steps.push({ command, depth, branchLabel, simState: stateBefore, skipped });
-      // 선택지·취소 라벨도 정본에서 가져온다. 옵션은 순서가 그대로라 인덱스로 짝지어도 안전하다.
-      const choiceBranches = eventCommandBranches(command);
-      command.options.forEach((option, optionIndex) => {
-        const branchState = cloneState(state);
+      steps.push({ command, depth, branchLabel, simState: stateBefore, forkTaken: taken, skipped, path });
+      // 참/거짓 양쪽에 **같은** state 를 넘긴다 — 실제로 실행되는 쪽은 상태를 바꿔야 하고,
+      // 실행되지 않는 쪽은 skipped 라 applyCommandToState 를 타지 않으므로 오염되지 않는다.
+      for (const branch of eventCommandBranches(command)) {
+        const branchSkipped = branch.kind === "forkElse" ? taken !== "else" : taken !== "then";
         walkWithSimulation(
-          option.branch,
-          depth + 1,
-          branchState,
-          steps,
-          hostEventId,
-          choiceBranches[optionIndex]?.label,
-          skipped
+          branch.commands, depth + 1, state, steps, hostEventId, branch.label,
+          [...path, branch.branchIndex], branchSkipped,
         );
-      });
-      const cancelBranch = choiceBranches.find((branch) => branch.kind === "choiceCancel");
-      if (cancelBranch) {
-        const cancelState = cloneState(state);
-        walkWithSimulation(cancelBranch.commands, depth + 1, cancelState, steps, hostEventId, cancelBranch.label, skipped);
       }
-      continue;
-    }
-
-    if (command.kind === "loop") {
-      steps.push({ command, depth, branchLabel, simState: stateBefore, skipped });
-      const result = walkWithSimulation(command.body, depth + 1, state, steps, hostEventId, branchLabelOf(command, "loopBody"), skipped);
-      if (result.broke) continue;
       continue;
     }
 
     if (command.kind === "breakLoop") {
-      steps.push({ command, depth, branchLabel, simState: stateBefore, skipped });
+      steps.push({ command, depth, branchLabel, simState: stateBefore, skipped, path });
       return { broke: true };
     }
 
     if (command.kind === "gotoLabel" || command.kind === "label") {
-      steps.push({ command, depth, branchLabel, simState: stateBefore, skipped });
+      steps.push({ command, depth, branchLabel, simState: stateBefore, skipped, path });
       continue;
     }
 
-    const branches = branchesOf(command);
+    // 반복은 몸통이 실제로 실행되므로 state 를 공유하고, 선택지·상점 같은 «갈라지는» 분기는
+    // 서로 오염되지 않도록 각 분기가 복사본을 받는다.
+    const sharesState = command.kind === "loop";
+    const branches = eventCommandBranches(command);
     if (branches.length > 0) {
-      steps.push({ command, depth, branchLabel, simState: stateBefore, skipped });
+      steps.push({ command, depth, branchLabel, simState: stateBefore, skipped, path });
       for (const branch of branches) {
-        const branchState = cloneState(state);
-        walkWithSimulation(branch.commands, depth + 1, branchState, steps, hostEventId, branch.label, skipped);
+        walkWithSimulation(
+          branch.commands, depth + 1, sharesState ? state : cloneState(state), steps, hostEventId,
+          branch.label, [...path, branch.branchIndex], skipped,
+        );
       }
       continue;
     }
@@ -222,7 +204,7 @@ function walkWithSimulation(
     if (!skipped) {
       applyCommandToState(command, state, hostEventId);
     }
-    steps.push({ command, depth, branchLabel, simState: stateBefore, skipped });
+    steps.push({ command, depth, branchLabel, simState: stateBefore, skipped, path });
   }
   return { broke: false };
 }

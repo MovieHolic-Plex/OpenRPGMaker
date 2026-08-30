@@ -62,6 +62,7 @@ export const RESOURCE_SLICING = {
   // src/assets/resourceSlicing.ts 와 같은 값을 유지해야 한다.
   faceset: { kind: "whole-image", unit: "image" },
   picture: { kind: "whole-image", unit: "image" },
+  movie: { kind: "video", unit: "video" },
   system: { kind: "whole-image", unit: "image" },
   system2: { kind: "whole-image", unit: "image" },
   title: { kind: "whole-image", unit: "image" },

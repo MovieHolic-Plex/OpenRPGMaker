@@ -403,9 +403,11 @@ describe("author_village bounds 생략 경고", () => {
     expect((result.diff?.warnings ?? []).some((entry) => entry.includes("bounds 를 생략해"))).toBe(false);
   });
 
-  it("스키마 설명이 생략 시 전면 재포장임을 밝힌다", () => {
+  it("스키마 설명이 생략 시 뷰포트 중심·뷰포트 모를 때만 전면 재포장임을 밝힌다", () => {
     const bounds = AUTHOR_VILLAGE_TOOL.parameters.properties?.target?.properties?.bounds;
-    expect(bounds?.description).toContain("생략하면 그 맵 전체가 재포장 대상");
+    // 2026-08-30: bounds 생략은 이제 뷰포트 중심 사각형이다(withViewportBounds). 설명도 그 사실을 말해야 한다.
+    expect(bounds?.description).toContain("사용자가 보고 있는 화면(뷰포트) 중심의 영역에 짓고");
+    expect(bounds?.description).toContain("뷰포트를 모를 때만 맵 전체를 재포장한다");
   });
 });
 

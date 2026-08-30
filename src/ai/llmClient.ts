@@ -294,6 +294,13 @@ export interface ChatRequest {
   signal?: AbortSignal;
   // AssistantSession처럼 상위 계층이 라운드 단위 재시도를 맡을 때 llmClient의 1회 재시도를 끈다.
   disableTransientRetry?: boolean;
+  // JSON 전용 응답 강제(OpenAI 호환). 타일셋 매핑·성향 증류처럼 산출물이 JSON 객체 하나인 호출용.
+  // 이 필드가 없던 동안 그런 호출들은 llmClient를 우회해 직접 fetch 했고, 그래서 OAuth 분기와
+  // 재시도·타임아웃을 각자 재구현하다 조용히 죽었다(tilesetAiCpenClient 주석의 2026-08-21 사고).
+  response_format?: { type: "json_object" };
+  // 분류/추출 호출의 표집 온도. 대화 경로는 지정하지 않아 공급자 기본값을 쓴다(현행 동작).
+  // 직접 fetch 하던 타일셋 매핑이 0.2를 쓰고 있었고, 흡수하면서 그 값을 잃지 않으려 통과시킨다.
+  temperature?: number;
 }
 
 export interface ChatResult { message: ChatMessage; finishReason: string | null; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } }
@@ -518,6 +525,8 @@ function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): strin
   // 미지원 공급자가 usage를 안 주면 소비 측(tokenBudget 관측)이 조용히 건너뛴다.
   if (stream) body.stream_options = { include_usage: true };
   if (req.tools && req.tools.length > 0) { body.tools = req.tools; body.tool_choice = req.tool_choice ?? "auto"; }
+  if (req.response_format) body.response_format = req.response_format;
+  if (typeof req.temperature === "number" && Number.isFinite(req.temperature)) body.temperature = req.temperature;
   // reasoning 필드는 공급자가 지원할 때만 붙인다(실측: cpen 은 reasoning → 400).
   if (effective.reasoningEffort && effective.reasoningEffort !== "off") {
     if (capability.supportsReasoningField) {
@@ -535,15 +544,71 @@ function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): strin
 // 스트리밍 tool_calls delta 누적기(index별로 id/name/arguments를 이어붙인다).
 interface ToolCallAccum { id: string; name: string; arguments: string }
 
+/**
+ * tool_call_id 를 **호출마다 유일**하게 만든다.
+ *
+ * 왜(2026-08-30 실측): 두 파싱 경계가 모두 id 없는 응답을 그대로 통과시켰다. 스트리밍은 빈 id 를
+ * `call_${name}` 으로 채워 **같은 툴을 병렬로 2회 호출하면 두 호출이 같은 id** 를 갖고,
+ * 비스트리밍은 `String(tc.id ?? "")` 로 **빈 문자열 id** 를 만들었다. 세션은 호출마다
+ * `role:"tool"` 응답에 그 id 를 실으므로 결과는 중복·빈 `tool_call_id` 다 — OpenAI 호환
+ * 게이트웨이는 400 으로 턴을 죽이고, Gemini Cloud Code Assist 는 function response 짝을
+ * 못 맞춰 다음 라운드부터 대화를 거부한다. 공급자가 준 id 는 그대로 존중하고, 없거나 겹칠
+ * 때만 위치를 섞어 유일하게 만든다.
+ */
+function uniqueToolCallId(raw: string, position: number, name: string, used: Set<string>): string {
+  const trimmed = raw.trim();
+  const base = trimmed.length > 0 ? trimmed : `call_${position}_${name.length > 0 ? name : "tool"}`;
+  if (!used.has(base)) {
+    used.add(base);
+    return base;
+  }
+  let suffix = position;
+  let candidate = `${base}_${suffix}`;
+  while (used.has(candidate)) {
+    suffix += 1;
+    candidate = `${base}_${suffix}`;
+  }
+  used.add(candidate);
+  return candidate;
+}
+
 function assembleToolCalls(accum: Map<number, ToolCallAccum>): ToolCall[] | undefined {
   if (accum.size === 0) return undefined;
-  return [...accum.entries()].sort((a, b) => a[0] - b[0]).map(([, tc]) => ({ id: tc.id || `call_${tc.name}`, type: "function" as const, function: { name: tc.name, arguments: tc.arguments } }));
+  const used = new Set<string>();
+  return [...accum.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([, tc], position) => ({
+      id: uniqueToolCallId(tc.id, position, tc.name, used),
+      type: "function" as const,
+      function: { name: tc.name, arguments: tc.arguments },
+    }));
+}
+
+/**
+ * `index` 없는 delta 의 슬롯을 고른다.
+ *
+ * 왜(2026-08-30 실측): 옛 구현은 `index` 가 없으면 무조건 0 이었다. 한 delta 배치에 병렬 툴콜
+ * 2건이 오면 둘이 같은 슬롯에 누적돼 이름과 인자가 이어붙었다 — `fill_region` + `place_npc`
+ * → 이름 `"fill_regionplace_npc"`, 인자 `'{"a":1}{"b":2}'`. 남는 것은 `등록되지 않은 툴`
+ * 한 건이고 두 호출은 통째로 사라진다.
+ *
+ * 규칙: 배치 안의 위치를 기본 슬롯으로 쓰고, 그 슬롯이 이미 **이름을 가진** 호출인데 이 delta
+ * 가 또 새 이름을 선언하면 이어붙이기가 아니라 새 호출이므로 빈 슬롯을 새로 딴다. 인자만 담긴
+ * 후속 청크는 이름을 선언하지 않으므로 같은 슬롯에 정상적으로 이어붙는다.
+ */
+function toolCallDeltaSlot(accum: Map<number, ToolCallAccum>, delta: Record<string, unknown>, position: number): number {
+  if (typeof delta.index === "number") return delta.index;
+  const existing = accum.get(position);
+  const fn = delta.function as Record<string, unknown> | undefined;
+  const declaresName = typeof fn?.name === "string" && fn.name.length > 0;
+  if (!existing || existing.name.length === 0 || !declaresName) return position;
+  return Math.max(...accum.keys()) + 1;
 }
 
 function applyToolCallDelta(accum: Map<number, ToolCallAccum>, deltas: unknown): void {
   if (!Array.isArray(deltas)) return;
-  for (const d of deltas as Array<Record<string, unknown>>) {
-    const index = typeof d.index === "number" ? d.index : 0;
+  (deltas as Array<Record<string, unknown>>).forEach((d, position) => {
+    const index = toolCallDeltaSlot(accum, d, position);
     const cur = accum.get(index) ?? { id: "", name: "", arguments: "" };
     if (typeof d.id === "string") cur.id = d.id;
     const fn = d.function as Record<string, unknown> | undefined;
@@ -552,7 +617,7 @@ function applyToolCallDelta(accum: Map<number, ToolCallAccum>, deltas: unknown):
       if (typeof fn.arguments === "string") cur.arguments += fn.arguments;
     }
     accum.set(index, cur);
-  }
+  });
 }
 
 // SSE 스트림을 파싱해 content/tool_calls를 조립한다. onToken은 content delta마다 호출.
@@ -652,14 +717,19 @@ function parseNonStream(json: Record<string, unknown>, requestedModel?: string):
   const choice = choices?.[0];
   const msg = (choice?.message ?? {}) as Record<string, unknown>;
   const rawToolCalls = msg.tool_calls as Array<Record<string, unknown>> | undefined;
-  const tool_calls: ToolCall[] | undefined = rawToolCalls?.map((tc) => ({
-    id: String(tc.id ?? ""),
-    type: "function",
-    function: {
-      name: String((tc.function as Record<string, unknown> | undefined)?.name ?? ""),
-      arguments: String((tc.function as Record<string, unknown> | undefined)?.arguments ?? ""),
-    },
-  }));
+  const usedIds = new Set<string>();
+  const tool_calls: ToolCall[] | undefined = rawToolCalls?.map((tc, position) => {
+    const name = String((tc.function as Record<string, unknown> | undefined)?.name ?? "");
+    return {
+      // 숫자 id 를 주는 게이트웨이도 있다 — 문자열로 정규화만 하고 값은 버리지 않는다.
+      id: uniqueToolCallId(tc.id === undefined || tc.id === null ? "" : String(tc.id), position, name, usedIds),
+      type: "function" as const,
+      function: {
+        name,
+        arguments: String((tc.function as Record<string, unknown> | undefined)?.arguments ?? ""),
+      },
+    };
+  });
   const message: ChatMessage = {
     role: "assistant",
     content: typeof msg.content === "string" ? msg.content : null,

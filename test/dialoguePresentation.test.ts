@@ -5,6 +5,7 @@ import {
   dialoguePresentationCssVars,
   dialoguePresentationProfile,
   dialogueScaledCharDelayMs,
+  dialogueSpeakerInsetPx,
   normalizeDialogueEmotion,
 } from "@/player/dialoguePresentation";
 
@@ -114,5 +115,35 @@ describe("dialogueScaledCharDelayMs", () => {
     // \> 즉시 표시는 지연 0 으로 들어온다 — 배율이 이걸 되살리면 안 된다.
     expect(dialogueScaledCharDelayMs(0, dialoguePresentationProfile("sad"))).toBe(0);
     expect(dialogueScaledCharDelayMs(1, dialoguePresentationProfile("angry"))).toBe(1);
+  });
+});
+
+describe("dialogueSpeakerInsetPx", () => {
+  it("이름표가 파고든 깊이를 여백으로 돌려준다", () => {
+    // 실측 2026-08-30: 높이 19px, top -9px → 아래 변이 10px 지점.
+    // 그때 CSS 기본값은 8px 이어서 본문 첫 줄이 2px 덮여 있었다.
+    expect(dialogueSpeakerInsetPx(-9, 19, 8)).toBe(10);
+  });
+
+  it("기존 여백보다 좁히지 않는다", () => {
+    // 이름표가 창 위로 완전히 빠져 있어도(겹침 0) 원래 숨 쉬던 자리는 남긴다 —
+    // 좁히면 줄 수가 이유 없이 늘었다 줄었다 한다.
+    expect(dialogueSpeakerInsetPx(-24, 19, 8)).toBe(8);
+    expect(dialogueSpeakerInsetPx(-19, 19, 8)).toBe(8);
+  });
+
+  it("소수 높이는 위로 올린다", () => {
+    // 내림하면 1px 이 남아 다시 덮인다.
+    expect(dialogueSpeakerInsetPx(-9, 19.4, 8)).toBe(11);
+  });
+
+  it("글꼴이 커지면 따라 내려간다", () => {
+    expect(dialogueSpeakerInsetPx(-9, 34, 8)).toBe(25);
+  });
+
+  it("레이아웃이 없으면 CSS 기본값을 쓰라고 undefined 를 준다", () => {
+    // jsdom 은 offsetHeight 가 0 이다. 여기서 0 을 심으면 이름표가 본문을 통째로 덮는다.
+    expect(dialogueSpeakerInsetPx(-9, 0, 8)).toBeUndefined();
+    expect(dialogueSpeakerInsetPx(Number.NaN, 19, 8)).toBeUndefined();
   });
 });

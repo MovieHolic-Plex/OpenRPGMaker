@@ -66,6 +66,7 @@ Database tabs, record views, battle database records, utility records, reference
 
 - **기본 장비 런타임 축 계약 (2026-08-29):** `EquipmentRecord.accuracy`는 일반 공격 최종 명중률에 곱하는 0~100% 보정(기본 100), `criticalRate`는 액터 기본 치명타율에 더하는 0~100%p 보정(기본 0)이다. 일반 공격은 장비의 첫 `attackElementIds` 하나를 속성 배율에 적용하므로 기본 카탈로그는 무기당 공격 속성을 최대 하나만 저작한다. `stateInflictIds`/`stateInflictionChance`는 적중한 일반 공격, `elementalDefenseIds`는 일치 속성 피해 50% 감소, `stateDefenseIds`/`stateResistanceChance`는 `stateDefenseMode:"resist"`일 때 상태 저항 판정에 쓰인다. `twoHanded`는 양손 슬롯 점유, `effectFlags.doubleAttack`/`attackAll`은 일반 공격 횟수/대상을 바꾼다. 반면 장비용 MP 비용은 `EquipmentRecord`에 없고, `preemptive`·`ignoreDodge`·`preventCriticalHits`·`increasePhysicalDodge`·`halfMpCost`·`negateTerrainDamage` 플래그와 `stateDefenseMode:"inflict"`는 턴제 런타임 소비자가 없으므로 기본 장비에 저작하지 않는다. `test/equipmentCatalogRuntimeAxes.test.ts`가 실제 전투 런타임과 결정적 RNG로 명중·치명타·상태 부여·공격 속성·속성 방어·상태 저항을 검증하고, `test/defaultItemCatalogQuality.test.ts`가 기본 카탈로그의 허용 축만 검사한다.
 - 기본 아이템 카탈로그는 `public/assets/cc0/jetrel/icons` 아래의 대응 아이콘과 함께 JRPG 아이템 100종 이상을 제공한다. 기존 Jetrel CC0 아이콘은 유지하고, 맞지 않거나 빠진 아이콘은 가능한 경우 로컬 생성 스크립트로 만든 뒤 `src/assets/cc0IconAssets.ts`에 `generated` 라이선스로 등록한다. `defaultItemRecords()`를 비롯한 기본 데이터베이스 레코드는 `createBlankProject` → `saveProjectToSupabase` 경로로 **새** 프로젝트를 만들며, `ensureDefaultDatabaseIconResources()`는 `normalizeCurrentProject`에서 번들 아이콘 리소스를 연결한다. 불러올 때도 Supabase `current_json` 행이 기준 원본이다. 일반 기본값 보충은 금지하되, `repairSupabaseCurrentJson`은 2026-08 영문 아이템 껍데기 결함만 제한적으로 이전한다. ASCII 슬러그 이름과 `<slug> 기본 아이템입니다.` 설명이 모두 손대지 않은 모양일 때만 행을 교체하고, 이름이나 설명 중 하나라도 고친 부분 편집 행은 의도적으로 보존하며, 복구된 카탈로그에 필요한 승격 장비 9개와 아이템 효과 스킬 2개 및 그 스킬이 참조하는 번들 전투 애니메이션만 추가한다. 참조 없는 옛 장비 아이템 행은 제거하지만, 이벤트·시스템·시작 인벤토리가 참조하는 행은 한국어 비착용 안내 행으로 남겨 참조를 보존한다. 이 복구는 깨끗하게 열기만 해서는 저장 행에 즉시 기록되지 않으며, 이후 다른 편집을 저장할 때 함께 영구 반영된다.
+- **로드 정규화 기본 카탈로그 보충 (2026-08-30):** `src/project/defaults/defaultDatabaseIconResources.ts`의 `ensureDefaultDatabaseIconResources()`는 불러온 프로젝트에서 id가 빠진 기본 ITEM과 EQUIPMENT 레코드를 보충한다. 같은 id의 기존 레코드는 덮어쓰지 않으므로 사용자 편집값은 유지된다.
 - **기본 카탈로그 계약:** 아이템과 장비 이름에는 한글이 들어가고, 모든 레코드는 서로 다른 구체적인 한국어 설명을 가진다. 사용 가능한 아이템의 `occasion`, `consumable`, 실행 가능한 회복·상태·스킬·기술서 효과는 서로 맞아야 한다. `occasion: "never"`는 소모하지 않는 재료, 수확물, 도구, 이벤트·퀘스트 물품과 농사 권위자가 소비하는 작물 씨앗에만 쓴다. 농기구에는 유효한 `farmTool`이 있어야 한다. 착용 장비는 `project.database.equipment`에만 두며, 장비 모양 행을 `database.items`에 남기지 않는다. 전투 아이템과 아이템 효과 스킬은 실제 전투 애니메이션 레코드를 참조해야 한다. 전투 대상 해석이 쓰러진 전투원을 제외하므로 부활 아이템은 필드 전용이다. `test/defaultItemCatalogQuality.test.ts`가 데이터와 애니메이션 참조 계약을 검사하고, `test/itemRuntimeUsability.test.ts`가 실제 메뉴·전투·농기구 권위자를 실행한다.
 - **기능 확장 기본 아이템(2026-08-29):** `defaultFeatureItemRecords.ts`가 기본 카탈로그에서 비어 있던 상태 추가, 아군 전체 대상, 몬스터 `careProfile`, 영구 성장 씨앗, `switchId`, 속성 아이템 스킬, 유한 `consumptionLimit` 경로를 출하 레코드로 연결한다. 출하 프로젝트에 연결되지 않은 작물 씨앗은 심기·수확을 약속하지 않도록 카탈로그에서 제외한다. 스위치 아이템은 필드 메뉴에서 아직 꺼진 전용 스위치만 켜고 성공 사용 1회를 공통 아이템 전환 권위자에 넘긴다. 유한 충전은 메뉴와 전투 모두 `transitionItemState(..., { kind: "successfulUse" })`가 계산하며, `allAllies` 전투 아이템은 대상 수와 관계없이 명령당 한 번만 전환한다. 집중 실행 계약은 `test/defaultFeatureItemRuntime.test.ts`다.
 - **Characters ??actors (G006):** Characters are **not** a `database.*` collection and are **not** party Actors. The `characters` database tab (`db-tab-characters`, `databaseCharacterView.ts`) manages the opt-in identity package `project.characters` plus orphan event-used characterIds via `listCharacterIdIndex`. Do **not** confuse these social keys with Actor (`database.actors`) party members. List thumbs come from the first host map-event charset crop (`characterListThumbnail.ts` / `resolveCharacterListThumbSource`: hosts[0] event page graphic only). Never use Actor facesets, `database.actors`, or a CharacterProfile portrait field for list thumbs ??CharacterProfile has displayName/birthday/giftPrefs only, no portrait resource.
@@ -142,7 +143,7 @@ Database tabs, record views, battle database records, utility records, reference
 ## DB UI modernization (2026-08)
 
 - **Party Studio actor/class build surfaces (2026-08-24):** Actor detail keeps every legacy field/testid but adds a schema-preserving build preview (`databasePartyBuildSummary.ts`) for runtime levels 1–99, with the authored natural `maxLevel` disclosed separately. Effective stats and listed starting equipment must use `effectiveActorEquipment` before delegating calculations to `actorDerivedStats`; DB growth skills come from `learnedSkillIds`. Missing or slot-invalid skill/equipment references render as inert warnings, never navigation links. The growth-source disclosure is intentionally precise: an actor's assigned starting class contributes class skills/commands/equipment relationships, while the actor's own parameter curves remain authoritative until a runtime class override from class change/promotion exists. Class detail adds a derived Lv20 role/build summary plus actor backlinks; its equipment metric unions class-common runtime permission paths (`equippableClassIds`, class `equipmentIds`/`classIds`) with `canEquip` results for directly linked actors, so actorless promotion targets still report their usable equipment. Actor class/skill/equipment links and class actor backlinks set the destination record selection and call `switchDatabaseActiveTab` against the existing `.database-modal-body`; never reopen the Database modal. Actor class/equipment edits and class skill/command/equipment/promotion edits refresh their derived surfaces immediately. The preview level is editor-local and must not dirty or persist project data. Contracts: `test/databasePartyBuildStudio.test.ts`, `test/e2e/database-party-build-studio.spec.ts`.
-- **Party Studio skill/item/equipment inspectors (2026-08-24):** Skill detail adds a live ability composer with activation/target/cost chips, ordered effect blocks, and exact-record backlinks for every authoritative consumer: actors, classes, items, equipment, enemy skill lists/actions, and monster-species level skills. Backlinks must update the destination tab's own selection state before using the existing same-modal tab switch. Item detail tells an effect story from runtime-enforced occasion and eligibility rules; optional schema fields that the runtime ignores for that item kind must not be presented as enforced restrictions. Equipment detail compares the selected actor's initial build by reusing `normalizeActorRecord`, `effectiveActorEquipment`, `transitionActorEquipment`, and `actorDerivedStats`; it explicitly excludes live-session class changes, permanent bonuses, and inventory state. These are editor-only derived views: no schema or persistence changes. Contracts: `test/databaseSkillComposer.test.ts`, `test/databaseItemInspector.test.ts`, `test/databaseEquipmentInspector.test.ts`, `test/databaseEquipmentRecordView.test.ts`.
+- **Party Studio skill/item/equipment inspectors (2026-08-24):** Skill detail adds a live ability composer with activation/target/cost chips, ordered effect blocks, and exact-record backlinks for every authoritative consumer: actors, classes, items, equipment, enemy skill lists/actions, and monster-species level skills. Backlinks must update the destination tab's own selection state before using the existing same-modal tab switch. The skill animation stage registers its controller by stage-root element in `databaseSkillAnimationStage.ts`; DOM owners stop stages by scope before tab replacement, record-detail replacement, and modal removal, then the tab cache owner resumes autoplay after cached DOM reattachment. Picker replacement still stops its current stage directly. Item detail tells an effect story from runtime-enforced occasion and eligibility rules; optional schema fields that the runtime ignores for that item kind must not be presented as enforced restrictions. Equipment detail compares the selected actor's initial build by reusing `normalizeActorRecord`, `effectiveActorEquipment`, `transitionActorEquipment`, and `actorDerivedStats`; it explicitly excludes live-session class changes, permanent bonuses, and inventory state. These are editor-only derived views: no schema or persistence changes. Contracts: `test/databaseSkillComposer.test.ts`, `test/databaseItemInspector.test.ts`, `test/databaseEquipmentInspector.test.ts`, `test/databaseEquipmentRecordView.test.ts`.
 
 The Database modal was modernized in six waves while keeping every hard contract (G006 in-modal jumps, dirty 3-way guard, AI dock visibility, existing `db-field-*`/`db-tab-*`/`db-type-chart-*`/`db-record-row-*` testids, zero schema changes). New surface styles are scoped to the modal.
 
@@ -287,3 +288,171 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 레이어 이름은 하층/상층 → **바닥/덧그림**, 덧그림일 때 스테이지에 점선 테두리. testid(`structure-kit-editor-layer-lower/upper`)는 그대로다.
 - 새 testid: `-tool-rect/-ellipse/-fill/-pick`, `-undo`, `-redo`, `-zoom-in/-out/-fit/-value`, `-grid-toggle`, `-search`, `-category-<id>`. 기존 `-tile-<n>` · `-tool-paint/erase/part` · `-layer-*` 는 유지해 테스트 변경이 없다.
 - 실측(1440×900): 창 1424×884 · 배경 불투명 · 창밖 삐짐 0 · 캔버스 720×640(5x) · 팔레트 300×596/480칸 · 드래그 한 번에 6칸 · 검색 "문" 9칸 · 분류 "집" 75칸 · 팔레트 스크롤 300 유지. 1366×768 / 1280×720 에서도 도구·분류칩·보기 줄이 한 줄에 들어간다.
+
+## 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
+
+- 스킬을 고르면 `연출` 카드가 시트 첫 칸을 자른 정지 이미지 1장이 아니라 **자동 반복 재생 스테이지**다. `renderSkillAnimationStage`(`src/editor/panels/databaseSkillAnimationStage.ts`)가 `db-skill-animation-preview` 안에 인셋 스테이지 웰 `db-skill-animation-stage`(픽셀 그리드 + 중심 십자선), 셀 레이어 `db-skill-animation-cells`(`data-frame-index`), 프레임 카운터 `db-skill-animation-frame-counter`(`3 / 12`), 시트 메타 칩 `db-skill-animation-sheet-meta`(`96×96 · 5열 · 15fps`), 재생/정지 토글 `db-skill-animation-toggle`(`aria-pressed`)을 렌더한다. 기존 `db-skill-animation-preview` testid 와 `.db-skill-animation-preview-frame` 클래스는 그대로 유지된다.
+- 프레임 전진의 정본은 `src/editor/panels/eventEditor/showAnimationPlayback.ts` **하나**다. `playShowAnimation(stage, layer, source, { loop, onFrame, onStop })` 이 15fps(`SHOW_ANIMATION_FRAME_MS = 1000/15`)·시트 좌표·크로마키 규약을 소유하고 이벤트 편집기 표시면과 스킬 스테이지가 그걸 공유한다. `playShowAnimationOnce` 는 그 위의 얇은 래퍼다.
+- **스킬·이벤트 표시면에 새 `setInterval` 재생 루프를 만들면 결함이다.** 애니메이션 탭의 수동 1회 재생(`databaseAnimationPreview.ts`)은 그보다 먼저 있던 별개 화면이고, 재생기를 여기서 더 늘리지 않는다.
+- 타이머 수명은 하드룰이다. `renderPreviewPanel` 은 표시면을 `replaceChildren` 하기 **전에** 이전 핸들의 `stop()` 을 부르고, `renderSkillRecordForm` 은 폼 단위 `WeakMap`(`activeAnimationStages`)으로 레코드 폼이 교체될 때 이전 스테이지를 죽인다. 픽커 변경도 `bindAnimationPreviewRefresh` → `renderPreviewPanel` 로 같은 경로를 탄다.
+- 왜 이렇게 엄한가: 분리된 DOM 에 인터벌이 살아남는 것은 이미 한 번 출하된 실측 결함이다(커밋 `2ed96476`, 미부착 유예가 무한이어서 버려진 표시면에 프레임을 계속 그렸다. 2틱 상한으로 고쳤다). `test/e2e/zz-qa-dbmodal-attacks.spec.ts:168` 은 모달을 10회 열고 닫은 뒤 stray timer 0 을 단정한다.
+- 정지 상태도 1급이다. `animationId` 가 없으면 기존 `(애니메이션 없음)` 빈 상태를 유지하고, 프레임이 1장이면 첫 프레임 정지 렌더 + 토글 `disabled`, `prefers-reduced-motion: reduce`(또는 `window.setInterval` 이 없는 헤드리스 호스트)면 자동재생하지 않고 첫 프레임에 서서 토글로만 재생한다.
+- 스타일은 `src/styles/database/skill-item-visuals.css` 안에서만 늘린다. 색은 `.database-modal-backdrop` 아래 `--db-studio-*` 토큰만 쓰고(하드코딩 hex/rgba 금지), **새 CSS 파일을 만들지 않는다**(`scripts/check-css-budget.mjs` 파일 수 래칫).
+- 커버리지: `test/databaseSkillAnimationStage.test.ts`(자동 반복 + 카운터 추적, 1프레임 정지, reduced-motion 정지, 토글 왕복, 표시면 교체 후 분리된 스테이지의 인터벌 정리), `test/databaseSkillItemForms.test.ts`(스테이지·셀·시트 메타·토글 계약), `test/eventEditorShowAnimationPreview.test.ts`(loop 랩어라운드와 `onFrame` 이 기존 1회 재생을 깨지 않음).
+
+## 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
+
+계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 모든 수치는
+**레포지토리에 들어 있는 단 두 파일**로 재계산된다:
+
+- `verify-shots/db-ux/before/probe.json` — 29탭, expert, 1680x1050
+- `verify-shots/db-ux/after/probe.json` — 30탭, expert, 1680x1050
+
+`/tmp` 에만 있는 순회 결과를 이 문서의 근거로 쓰지 마라. 재현할 수 없는 수치는 없는 수치다.
+(네 뷰포트 관찰은 아래 "줄상자 바닥" 절에 따로 적는다.)
+
+`before` 에는 `tilesets` · `factions` 가 **없다**(29탭). 그 두 탭이 `0 -> 107.5px` 로 보이면
+회귀가 아니라 계수 누락이다. `residents` 는 before 에서
+`tab button not found: db-tab-residents` 로 에러난 상태다.
+
+### 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
+
+집계는 `탭수 × 합계px` 이고, 괄호는 탭 하나당 평균이다.
+
+**함정: 한 탭이 같은 선택자를 두 번 달 수 있다.** before 의 `characters` 는 `.db-life-panel` 을
+둘(171.2 + 142.2) 가지고 있다. slug 를 키로 하는 map 으로 재계산하면 중복이 조용히 덮여
+n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-life-panel` 이 한 번 218.6 으로
+잘못 적힌 것도(4개 합을 3으로 나눔) 같은 함정이다.
+
+| 선택자 | 이전 | 이후 |
+|---|---|---|
+| `.db-life-header` (생활) | 3× 645.6 (215.2) | 3× 150.0 (50.0) |
+| `.db-life-panel` | 4× 655.8 (164.0) | 3× 150.0 (50.0) |
+| `.db-battle-studio-heading` (전투) | 4× 388.4 (97.1) | 4× 151.2 (37.8) |
+| `.db-overview-hero` | 1× 118.5 | 1× 78.4 |
+| `.db-record-intro` | 4× 144.0 (36.0) | 1× 34.2 |
+| `.db-tab-note` (구조물) | — (아래 주석) | 1× 42.1 |
+| **`.db-ws-hero`** | **17× 1828.4 (85.1~151.1)** | **18× 1799.4 — 압축 안 함** |
+| 헤더 합계 (전체 탭) | 3882.7 | 2517.8 |
+| 헤더 합계 탭간 편차 | 677.5 | 193.7 |
+
+작업영역 높이(`workspaceH`)는 before/after 모두 **모든 탭에서 796px, 편차 0** 이다.
+진단 문서의 "흔들림 275px" 는 이 하네스의 지표로는 재현되지 않는다 — 실제로 움직이는 것은
+위 표의 **헤더 합계 편차(677.5 -> 193.7)** 다. 이 둘을 헷갈리지 마라.
+
+`.db-life-panel` 은 **4개 → 3개**로 개수 자체가 줄었다. before 의 `characters` 탭이 이 헤더를
+둘(171.2 + 142.2) 달고 있었고 지금은 탭당 하나다. "3 → 3" 이 아니라 "4 → 3" 이라 평균만 보면
+이야기를 놓친다.
+
+`.db-ws-hero` 의 이후 분포는 **넓어졌다** — 37.0~156.7px. 합계는 29px 줄었지만 그 안에서 세 탭이
+오히려 커졌다(`equipment` 151.1→156.7, `items` 103.1→105.5, `farm-spatial` 85.1→85.6). 줄상자
+바닥 1.35 가 기존 배너를 조금씩 키운 결과다. 이 선택자를 손대는 다음 사람은 "전부 줄었다" 고
+가정하지 마라.
+
+`.db-tab-note` 주석: 커밋된 before 에는 이 컨테이너가 없다. 당시 구조물 탭은 맨 `h3` + `p` 였고
+프로브 선택자 목록에 안 걸렸다. `fbd2d9fb` 가 같은 내용을 `.db-tab-note` 로 감싸자 75.7px 로
+잡혔고(그 커밋 메시지는 "아이콘 바로 압축" 이라고 적었지만 설명문은 그대로 있었다), `c9ae257d` 가
+문단을 칩으로 바꿔 42.1px 가 됐다.
+
+#### `.db-ws-hero` 는 일부러 압축하지 않았다
+
+이게 **살아남은 가장 큰 헤더 덩어리**다. 17탭 1828.4px 로, 이번에 압축한
+`.db-life-header`(645.6) + `.db-life-panel`(655.8) + `.db-battle-studio-heading`(388.4) = 1689.8 을
+**합친 것보다 통째로 크다.** 그런데도 안 건드렸고, 이유는 이것이다:
+
+`databaseWorkspace.ts` 의 `detailHero` 는 설명문이 아니라 **레코드 신원 헤더**다 —
+`.db-ws-hero-media`(56px 썸네일/캔버스) · `-title` · `-tags` · `-actions`(툴바). "내가 무엇을
+편집하는지 · 어떻게 생겼는지 · 무엇을 할 수 있는지" 를 지는 기능 요소라서, 다른 탭에 쓴 변환
+(문단을 지우고 사실 하나를 칩으로)의 대상이 아니다. 유일한 설명문은 선택적인
+`.db-ws-hero-sub` 뿐이다.
+
+샴탕하게 짜려면 **`.db-ws-hero-sub` 만**, 그것도 부제목이 탭 이름을 되뇌는 탭에서만 떼라.
+썸네일 레이아웃과 툴바는 건드리지 마라 — 그건 자기 커밋과 자기 before/after 가 필요한 별건이다.
+
+설명 문단을 지우고 같은 정보를 아이콘 + 수치 칩으로 옮긴다. 개요 탭은 제목 옆 5개 칩(세계·이야기·
+등장인물·시스템·시작 지점)과 9개 수치 칩이 표준이다.
+
+#### 헤더 압축의 재사용 패턴 — `.db-tab-note` + `.db-tab-note-chip`
+
+한 줄로 줄일 헤더가 또 나오면 **새 패턴을 발명하지 말고 이것을 쓴다.** 여섯 번째 방식이 생기는 것을
+막으려고 여기에 적는다.
+
+- `.db-tab-note` 는 원래 `.db-record-intro` 와 공용인 "인트로 / 노트 띠" 스타일이다
+  (`desktop-record-shell/10-tab-chrome-unify.css` 의 `Shared intro / note strip`). 이 브랜치가
+  만든 클래스가 아니라 브랜치 이전부터 있었다.
+- 그 안에 `.db-tab-note-chip` 이 있을 때만 제목과 칩을 한 줄에 놓는다. 게이트는
+  `.db-tab-note:has(.db-tab-note-chip)` 이다 — 칩이 없는 기존 사용처의 모양은 건드리지 않는다.
+- 칩 내용은 `makeDatabaseTabIcon(<탭 id>)` + `<span>` 라벨. 저작 예시는
+  `src/editor/panels/structureKitDbTab.ts` (구조물 탭).
+- 칩의 글자 크기는 정확히 **11.5px** 이다(`10-tab-chrome-unify.css` 의 `font: 600 11.5px/1.35`).
+  `studio-theme.css` 의 런타임 바닥 `max(11.5px, 1em)` 과 같은 값이다. 프로브 문턱(11)과 혼동하지
+  마라 — 문턱은 기준선과 맞춘 계측 값이고, 이 11.5 는 새로 쓰는 칩이 따를 값이다.
+
+긴 문장을 칩의 `title` 에만 넣는 것은 **보조 정보일 때만** 허용된다. `title` 은 hover 전용이라
+키보드·터치로 닿지 않고 스크린리더 announce 도 일관되지 않는다. 그 문장이 없으면 기능을 오해할
+수준이면 칩을 `<button type="button">` + popover 로 만들거나 `aria-describedby` 로 시각적
+숨김 텍스트를 붙여라.
+
+### 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
+
+순서가 계약이다. `appearance: none` 으로 브라우저 스피너를 먼저 없애면 마우스로 값을 조절할 방법이
+사라진다. `databaseControls.ts` 가 스테퍼 버튼을 붙인 뒤에 스피너를 지운다.
+실측(커밋된 before/after probe.json): `numberUnskinned` **120** → 0, `rangeUnskinned` 6 → 0,
+`detailsMarker` 3 → 0, `checkUnskinned` 0 → 0.
+
+이미지 쪽도 같은 쌍에서 나온다: `imgZero` 9 → 0, `bgZero` 7 → 0, `imgBroken` 0 → 0.
+0px 이미지는 **깨진 것과 조상이 접힌 것**을 반드시 갈라 봐야 한다 — 함정은 `openwiki/testing.md`.
+
+**`selectUnskinned` 는 이미 0 이었다.** "네이티브 select 141개가 OS 껍데기를 노출한다" 는 진단은
+런타임에서 반증됐다 — 기존 CSS 가 이미 `appearance:none` 을 먹이고 있었다. 커스텀 select 위젯을
+새로 만들 근거가 없으므로 만들지 않았다. 같은 실수를 반복하지 말고 먼저 재라.
+
+### 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
+
+`studio-theme.css` 가 `:has(.db-shared-workspace)` 안의 텍스트 요소에 줄상자 바닥을 먹인다.
+값은 **1.35** 이고, 1.25 로는 모자란다는 것이 실측으로 나왔다:
+
+- 개요 h2 는 `font: 800 clamp(24px, 3vw, 34px)`. **1024px 럭에서 3vw = 30.72px** 로 풀린다.
+- 1.25 면 줄상자 38.4px. 800 굵기 한글 받침 잉크는 40.4px → 자기 `overflow` 로 2px 깎임.
+- 이전 주석은 "1.25 fits every viewport step" 이라고 단정했지만 **큰 럭에서만 확인한 것**이었다.
+- 1.35 x 30.72 = 41.5px > 40.4px. 통과.
+
+10px span 부터 30px 제목까지 **한 종류의 고정 바닥을 공유**하는 구조다. 그래서 바닥은 가장 큰
+글자가 안 깎이는 값으로 정해야 한다. `clamp()`/`vw` 를 쓰는 제목은 **가장 좁은 지원 럭(1024px)에서**
+재라 — 넓은 럭에서만 보면 반드시 놓친다.
+
+작은 글자 바닥은 같은 파일의 `font-size: max(11.5px, 1em)` 이 런타임에서 처리한다
+(`tinyFont` **366** → 0).
+
+**문턱은 11px 이고, 그게 뭘 증명하는지 정확히 알아야 한다.** 프로브의 `TINY_FLOOR` 는 11 이다.
+진단 기준선이 "11px 미만" 을 셌고 before 도 그 자로 366 을 기록했으니 비교 가능성을 지키려면 같은
+자를 써야 한다. 실측: 문턱을 11.5 로 올리면 726건이 새로 걸리는데 **전부 정확히 11px** 이고 11px
+미만은 0건이다. 즉 `tinyFont 0` 은 "11px 미만 글자가 없다" 는 뜻이고, "모든 글자가 11.5px 이상"
+이라는 뜻이 **아니다.** 소스의 `9px`/`11px` 선언을 일괄 치환하는 방식은 70개 파일을 흔들면서
+관측되는 이득이 없어 쓰지 않았다 — 런타임 바닥이 이미 같은 일을 한다.
+
+**가상 요소도 재야 한다(`tinyPseudo`).** `::before`/`::after` 의 `content` 는 자식 텍스트 노드가
+아니라서 `ownText` 검사에 절대 걸리지 않는데 화면에는 글자가 그려진다. 안 재면 `tinyFont 0` 이
+"작은 글자가 없다" 가 아니라 "안 봤다" 가 된다. 이 계수기를 붙이자마자 모달 전역에서 유일한 11px
+미만 렌더링 텍스트가 드러났다 — `sidebar.css` 의 `.db-tab-group::after` 셰브론(`▾`) 10px,
+30탭 × 6개 = **180건**. 11px 로 올려 `tinyPseudo` 0 이 됐다. 장식 글리프도 예외로 두지 않는다.
+
+근거는 커밋돼 있다: `verify-shots/db-ux/pseudo-baseline/probe.json` 은 셰브론만 10px 로 되돌린
+상태의 30탭 순회이고 `totals.tinyPseudo` 가 **180**, 전량이
+`div.db-tab-group::after@10px "▾"` 이며 탭마다 정확히 6개다. 같은 파일의 `tinyFont` 0 ·
+`selfClipped` 0 은 `after/probe.json` 과 같아서, 이 쌍의 유일한 차이가 셰브론임을 보여준다.
+`before/probe.json` 에는 `tinyPseudo` 키가 **아예 없다** — 계수기가 그 순회보다 나중에 생겼다.
+그래서 이 지표의 before 는 위 baseline 파일이고, before/after 쌍이 아니다.
+소스의 `9px`/`11px` 선언을 일괄 치환하는 방식은 70개 파일을 흔들면서 관측되는 이득이 없어 쓰지 않았다.
+
+**`lowLineHeight` 480 → 25 이고, 남은 25건은 의도적이다.** `system-studio.css` 의 `font: .../1 !important`
+단축 지정을 받는 고정 높이 버튼들(비율 1.0)이다. 중요도 없는 longhand 는 중요도 있는 shorthand 를
+특이도로 못 이긴다. 이들은 실제로 글자가 깎이지 않고(`selfClipped` 0) 제목 계열도 아니다. 여기에
+`!important` 를 되살리면 CSS 예산 래칫이 986 → 987 로 올라간다 — 관측되는 이득 없이 게이트만 잃는다.
+
+### 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
+
+실패한 썸네일이 크기 0 으로 사라지면 사용자는 "아무것도 없다" 로 읽는다. `databaseRecordThumbnails.ts`
+가 실패 시 32x32 자리표시자를 그리고 `회복약 썸네일 이미지 불러오기 실패` 같은 aria-label 을 붙인다.
+`scripts/qa/db-placeholder-proof.mjs` 가 살아 있는 썸네일 8개를 실제로 깨뜨려 자리표시자 8개가
+보이고 크기 0 이 하나도 없음을 증명한다. 커버리지: `test/databaseImageFailurePlaceholder.test.ts`.

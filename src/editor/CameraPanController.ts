@@ -55,6 +55,7 @@ export class CameraPanController {
     private readonly options: {
       readonly onPanStart: () => void;
       readonly onPanMove: () => void;
+      readonly onPanEnd: () => void;
     }
   ) {}
 
@@ -87,9 +88,11 @@ export class CameraPanController {
   }
 
   stop(): void {
+    const wasPanning = this.isPanning;
     this.isPanning = false;
     this.panStart = null;
     this.unbindWindowGuards();
+    if (wasPanning) this.options.onPanEnd();
   }
 
   active(): boolean {
@@ -107,10 +110,7 @@ export class CameraPanController {
     if (event.code !== "Space") return false;
     event.preventDefault();
     this.spacePanActive = false;
-    if (this.isPanning) {
-      this.isPanning = false;
-      this.panStart = null;
-    }
+    this.stop();
     return true;
   }
 

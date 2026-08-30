@@ -67,6 +67,7 @@ function makeAiSparkIcon(): SVGSVGElement {
 export function renderSelectionActionChips(
   selection: TileSelection,
   openModal: typeof openRegionTaskModal = openRegionTaskModal,
+  onPastePreviewCancel: () => void = () => undefined,
 ): HTMLElement {
   const hasClipboard = editorState.get().clipboard !== null;
   const bar = el("div", {
@@ -195,7 +196,13 @@ export function renderSelectionActionChips(
       text: "✕",
       attrs: { type: "button", title: "선택 해제 (Esc)" },
       dataset: { testid: "selection-chip-dismiss" },
-      on: { click: () => { cancelPastePreview(); clearSelection(); } },
+      on: {
+        click: () => {
+          cancelPastePreview();
+          clearSelection();
+          onPastePreviewCancel();
+        },
+      },
     }),
   );
 

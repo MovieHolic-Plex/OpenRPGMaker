@@ -9,10 +9,12 @@ import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
   getMapEditHistoryEntries,
   getMapEditHistoryDebugEntries,
+  getMapEditHistoryMarker,
   getMapEditHistoryState,
   peekPreviousProject,
   recordProjectSnapshot,
   revertToHistoryIndex,
+  revertToHistoryMarker,
   redoMapEdit,
   resetMapEditHistory,
   undoMapEdit,
@@ -150,6 +152,46 @@ describe("snapshot dedup", () => {
 
     expect(redoMapEdit()).toBe(true);
     expect(store.getCurrent().maps[mapId].lowerTiles[0]).toBe(222);
+  });
+
+  // 조수 패널의 턴 되감기("여기서 다시")가 쓰는 진입점. 턴 시작 시점의 마커만 들고 있다가
+  // 그 시점 이후 스냅샷을 한 번에 되돌린다 — 인덱스는 MAX_HISTORY shift 로 흔들려서 못 쓴다.
+  it("reverts every snapshot taken at or after a marker", () => {
+    const mapId = store.getCurrent().startMapId;
+    store.update((project) => {
+      project.maps[mapId].lowerTiles[0] = 5;
+    });
+    const beforeTurn = structuredClone(store.getCurrent());
+    const marker = getMapEditHistoryMarker();
+
+    // 한 턴 안에서 두 번 편집했다고 가정한다.
+    recordProjectSnapshot("AI 1차", mapId);
+    store.update((project) => {
+      project.maps[mapId].lowerTiles[0] = 111;
+    });
+    recordProjectSnapshot("AI 2차", mapId);
+    store.update((project) => {
+      project.maps[mapId].lowerTiles[0] = 222;
+    });
+
+    expect(revertToHistoryMarker(marker)).toBe(true);
+    expect(store.getCurrent()).toEqual(beforeTurn);
+  });
+
+  it("reports false when nothing was recorded after the marker", () => {
+    const mapId = store.getCurrent().startMapId;
+    recordProjectSnapshot("턴 전 편집", mapId);
+    store.update((project) => {
+      project.maps[mapId].lowerTiles[0] = 7;
+    });
+    const marker = getMapEditHistoryMarker();
+    const untouched = structuredClone(store.getCurrent());
+
+    // 이 턴은 프로젝트를 건드리지 않았다 — 되돌릴 것이 없다는 사실을 호출자가 알아야 한다
+    // (조수 패널은 이 값으로 "편집도 되돌렸다" 와 "대화만 되감았다" 를 갈라 말한다).
+    expect(revertToHistoryMarker(marker)).toBe(false);
+    expect(store.getCurrent()).toEqual(untouched);
+    expect(revertToHistoryMarker(Number.NaN)).toBe(false);
   });
 
   it("stores map-kind snapshots as per-map history and keeps redo symmetric", () => {

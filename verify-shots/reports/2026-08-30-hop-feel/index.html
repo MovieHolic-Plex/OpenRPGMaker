@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>낙하 체감 보고서 — rpg-zzu · 2026-08-30</title>
+<style>
+  :root {
+    --ink: #16181d;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --indigo: #4f46e5;
+    --indigo-soft: #eef0ff;
+    --green: #0f7a4a;
+    --green-soft: #e8f6ee;
+    --red: #b42318;
+    --red-soft: #fdecea;
+    --amber: #8a5a00;
+    --amber-soft: #fdf3e0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 24px 96px;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.7 -apple-system, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+  }
+  main { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 30px; line-height: 1.3; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 {
+    font-size: 21px;
+    margin: 56px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--line);
+  }
+  h3 { font-size: 17px; margin: 32px 0 10px; }
+  p { margin: 0 0 14px; }
+  .lede { color: var(--muted); font-size: 17px; margin-bottom: 28px; }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 0 0 32px; padding: 0; list-style: none;
+  }
+  .meta li {
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 14px; font-size: 13px; color: var(--muted);
+  }
+  .meta b { color: var(--ink); font-weight: 600; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 22px 24px; margin: 0 0 18px;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  figure {
+    margin: 0 0 18px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden;
+  }
+  figure img {
+    display: block; width: 100%; height: auto;
+    background: #0f1115; image-rendering: pixelated;
+  }
+  figcaption { padding: 12px 16px 14px; font-size: 13.5px; color: var(--muted); border-top: 1px solid var(--line); }
+  figcaption b { color: var(--ink); display: block; font-size: 14.5px; margin-bottom: 3px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 8px; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  code, kbd {
+    font: 13.5px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: #f1f3f7; border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px;
+  }
+  pre {
+    background: #12141a; color: #e6e9ef; border-radius: 10px; padding: 16px 18px;
+    overflow-x: auto; font: 13.5px/1.65 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  pre code { background: none; border: 0; padding: 0; color: inherit; }
+  .pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12.5px; font-weight: 600; }
+  .pass { background: var(--green-soft); color: var(--green); }
+  .fail { background: var(--red-soft); color: var(--red); }
+  .warn { background: var(--amber-soft); color: var(--amber); }
+  .note {
+    border-left: 3px solid var(--indigo); background: var(--indigo-soft);
+    padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 0 0 18px;
+  }
+  .defect { border-left-color: var(--red); background: var(--red-soft); }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; font-size: 14.5px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; }
+  footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>낙하가 "떨어진다" 로 읽히게 — 헤드스타트 · 원근 · 스쿼시 · 그림자 기준높이</h1>
+<p class="lede">#248 이 체공을 만들었지만 8 칸 낙하가 <em>"위쪽 타일에서 걸어 내려온다"</em> 로 읽혔다. 리프트 하나만 움직이는 강체 이동에는 무게가 없다. 같은 높이·같은 시간의 낙하를 이전 커밋과 나란히 녹화해 대조하고, 배율·그림자 값을 런타임에서 직접 읽어 곡선을 검산했다.</p>
+
+<ul class="meta">
+  <li>작성일 <b>2026-08-30</b></li>
+  <li>브랜치 <b>jump</b></li>
+  <li>기준 <b>8278350e</b> (PR <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/248">#248</a>)</li>
+  <li>구현 <b>330b7107</b> · 12 파일 <b>+418 / −30</b></li>
+  <li>이번 세션 수정 <b>4 파일 +91 / −25</b> · 새 테스트 1</li>
+  <li>런타임 QA <b><span class="pill pass">6 / 6 통과</span></b></li>
+</ul>
+
+<h2>1. 무엇이 문제였나</h2>
+<p>탑다운에서 <strong>화면상 세로 이동은 북·남으로 걷는 것과 픽셀 변화가 같다</strong>. 리프트만 올리면 8 칸 낙하와 "위 타일에서 걸어 내려오기" 가 구분되지 않는다. 높이를 주장하는 신호가 발밑 그림자 하나뿐이었기 때문이다.</p>
+<p>그런데 그 그림자도 사실상 죽어 있었다. 그림자 크기·알파는 <code>liftPx / (TILE_SIZE × 2)</code> 로 정규화됐다. 기본 낙하 128px 에서 리프트가 32px 안으로 들어오는 건 <strong>마지막 13% 구간(620ms 중 83ms)</strong> 뿐이라, 나머지 87% 동안 그림자는 최소 크기·최소 알파에 붙어 있었다. "다가온다" 를 전혀 못 준다.</p>
+<p>낙하 곡선 자체도 눈에 불리했다. 초속 0 인 순수 <code>1−p²</code> 는 앞 절반(310ms)에 32px, 전체의 <strong>25%</strong> 만 내려온다. 화면에서는 위쪽에 붙어 어물거리다 마지막에 훅 지나가 "떨어진다" 보다 "사라진다" 로 읽힌다.</p>
+
+<h2>2. 나란히 대조</h2>
+<p>같은 프로젝트·같은 타일·같은 저작값(<code>dropIn heightPx 128 · durationMs 620</code>)으로 두 커밋을 각각 녹화하고, <strong>첫 공중 프레임을 기준으로 정렬</strong>해 좌우로 붙였다. 25fps 로 표본화한 35 프레임이다.</p>
+
+<div class="note defect">
+  <b>이 절과 3.2 의 그림은 낙하 원근이 ×1.35 이던 시점에 찍었다</b>
+  <p style="margin:10px 0 0">아래 GIF 넷과 <code>perspective-*.png</code> 은 <strong>낙하를 ×3 으로 가르기 전</strong>의 캡처다(13:41~13:49, 상수 변경은 15:26). 그래서 "오른쪽 현재" 는 지금 빌드보다 <strong>작다</strong> — 헤드스타트·스쿼시·그림자 기준높이 세 채널의 대조로는 유효하지만, 낙하 스프라이트 <em>크기</em>의 현재값은 아니다. 지금 크기는 <a href="#fall-x3">3.2b</a> 의 스트립(16:15)을 봐야 한다. 다시 찍지 않은 이유는 대조 상대인 기준 커밋 녹화까지 같이 다시 떠야 해서다 — 비용이 그림 한 장 값이 아니다.</p>
+</div>
+
+<figure>
+  <img src="img/cmp-realtime.gif" alt="이전 커밋과 현재의 낙하를 나란히 붙인 실시간 비교 애니메이션">
+  <figcaption><b>실시간 — 왼쪽 #248, 오른쪽 현재</b>같은 620ms 다. 왼쪽은 위쪽에서 머뭇거리다 마지막에 사라지듯 도착하고, 오른쪽은 그림자가 먼저 바닥에 예고를 깔고 캐릭터가 커진 채 내려와 눌렸다 튄다.</figcaption>
+</figure>
+
+<figure>
+  <img src="img/cmp-slow4x.gif" alt="같은 비교를 4배 느리게 재생한 애니메이션">
+  <figcaption><b>같은 35 프레임을 4 배 느리게</b>표본을 더 촘촘히 뜬 것이 아니라 재생 속도만 1/4 로 줄였다(프레임당 40ms → 160ms). 150ms 스쿼시가 4 프레임을 차지해 눈으로 셀 수 있다.</figcaption>
+</figure>
+
+<figure>
+  <img src="img/squash-seq.png" alt="착지 전후 6프레임을 이전 커밋과 현재로 나눠 붙인 스트립">
+  <figcaption><b>착지 전후 6 프레임(40ms 간격) — 위 #248, 아래 현재</b>위: 발이 화면에 들어온 다음 프레임에 이미 서 있다. 중간 상태가 없어 "훅 지나갔다" 로 읽히는 구간이다. 아래: 1·2 번째 칸에 <strong>캐릭터보다 그림자가 먼저</strong> 바닥에 있고, 3 번째 칸은 세로로 늘어난 공중 실루엣, 4~6 번째 칸은 눌린 상태를 유지한다.</figcaption>
+</figure>
+
+<h2>3. 네 채널</h2>
+
+<h3>3.1 낙하 헤드스타트 — 자유낙하 곡선의 중간부터 자른다</h3>
+<p><code>dropIn</code> 은 <strong>화면 밖에서 떨어져 들어오는</strong> 등장 연출이라, 등장 순간의 속도가 0 인 것이 오히려 비물리적이다. <code>u = p₀ + (1−p₀)p</code> 로 곡선을 <code>p₀</code> 지점부터 시작하면 가속도는 등가속 그대로이면서 초속만 붙는다.</p>
+<pre><code>FALL_HEAD_START = 0.45
+fallLiftPx(p) = height × (1 − u²) / (1 − p₀²),  u = 0.45 + 0.55p</code></pre>
+<table>
+  <thead><tr><th>진행</th><th class="num">#248 리프트</th><th class="num">현재 리프트</th><th>내려온 양</th></tr></thead>
+  <tbody>
+    <tr><td><code>p = 0.25</code></td><td class="num">120px</td><td class="num">105px</td><td>6% → 18%</td></tr>
+    <tr><td><code>p = 0.50</code></td><td class="num">96px</td><td class="num">76px</td><td>25% → 41%</td></tr>
+    <tr><td><code>p = 0.75</code></td><td class="num">56px</td><td class="num">41px</td><td>56% → 68%</td></tr>
+  </tbody>
+</table>
+<p>총 시간은 그대로 620ms 다. 곡선의 <em>모양</em>만 바뀌어서 앞 절반에 볼 것이 생긴다.</p>
+
+<h3>3.2 원근 — 공중에 있는 동안 스프라이트를 키운다</h3>
+<p>크기 변화만이 "지면 위의 먼 곳" 과 "카메라에 가까운 공중" 을 구분한다. 리프트 비율에 <strong>선형</strong>으로 최대 35% 를 얹는다.</p>
+<pre><code>HOP_PERSPECTIVE_MAX = 0.35
+배율 = 1 + 0.35 × gate(시작높이 / 4칸) × (현재리프트 / 시작높이)</code></pre>
+<p>핀홀 모델(<code>D/(D−lift)</code>)을 쓰지 않은 이유: <code>ds/dlift</code> 가 높은 곳에서 최대라 성장분을 화면 밖에서 다 써버리고, 정작 착지 직전 구간에서는 크기가 거의 멈춘다. 리프트에 선형이면 낙하 곡선의 등가속이 그대로 실려 <strong>눈이 보고 있는 구간에서</strong> 변화가 일어난다.</p>
+
+<figure>
+  <img src="img/perspective-lift64.png" alt="같은 리프트 높이에서 이전 커밋과 현재의 스프라이트 크기 비교">
+  <figcaption><b>같은 높이, 다른 크기</b>둘 다 4 칸(64px) 낙하의 최고점 부근이다 — 왼쪽 리프트 64px, 오른쪽 63px. 오른쪽이 <code>1.264 × 1.482</code> 로 커져 있다. 발밑 앵커는 <code>hopOriginY</code> 가 <code>scaleY</code> 로 나누기 때문에 배율과 무관하게 유지된다: 스프라이트는 <strong>위로만</strong> 커지고 접지선은 흔들리지 않는다.</figcaption>
+</figure>
+<figure>
+  <img src="img/perspective-context.png" alt="같은 장면을 넓게 잡아 지면과 함께 보여주는 비교">
+  <figcaption><b>넓은 시야 — 지면 기준선이 같다</b>같은 타일, 같은 카메라. 아래쪽 NPC 두 명이 동일하게 붙어 있어 크기 차이가 렌더 배율이 아니라 캐릭터에만 걸렸음을 확인할 수 있다.</figcaption>
+</figure>
+
+<div class="note">
+  <b>제자리 홉이 줌 글리치로 보이지 않게</b> — 원근 게이트는 <strong>4 칸</strong>(64px), 스쿼시·스트레치 게이트는 <strong>3 칸</strong>(48px)이다. 기본 점프 12px 는 원근을 6% 만 받는다. 높이를 저작하지 않은 기존 제자리 홉의 그림은 실질적으로 그대로다.
+</div>
+
+<h3 id="fall-x3">3.2b 낙하만 ×3 — 35% 는 "등장" 으로 안 읽혔다</h3>
+<p>위 35% 는 <strong>점프</strong>의 값이다. 같은 값을 <code>dropIn</code> 에 걸어 놓고 보니 8 칸 낙하가 ×1.35 로 들어와서, "높은 데서 떨어진다" 가 아니라 "약간 큰 캐릭터가 내려온다" 로 읽혔다. 그래서 채널은 공유하고 <strong>상수만 갈라</strong> 놓았다.</p>
+<pre><code>HOP_PERSPECTIVE_MAX  = 0.35   게이트 4 칸   → 점프 최대 ×1.35
+FALL_PERSPECTIVE_MAX = 2      게이트 8 칸   → 낙하 최대 ×3</code></pre>
+<p>게이트를 8 칸으로 둔 이유는 <code>DEFAULT_FALL_HEIGHT_PX</code> 와 같게 맞춰 <strong>기본 낙하가 정확히 ×3</strong> 이 되게 하려는 것이다. 더 낮게 저작한 낙하는 비례해 줄어든다 — 2 칸 낙하가 ×3 으로 부풀면 높이 정보가 거짓이 된다. 점프를 같이 올리지 않은 이유: 점프는 캐릭터가 계속 화면에 있는 <em>이동 수단</em>이라, ×3 을 걸면 걸어 다니다 뛸 때마다 화면이 줌하는 것처럼 보인다.</p>
+
+<figure>
+  <img src="img/fall-scale-strip.png" alt="8칸 낙하에서 리프트가 줄어들며 스프라이트 배율이 3.17배에서 1배로 수축하는 7단계 시퀀스">
+  <figcaption><b>기본 8 칸 낙하, 플레이어 시야 그대로</b>320×240 월드를 1024×768 로 띄운 화면(<code>pxPerWorld 3</code>)에서 캐릭터 주변만 잘랐다. 배율은 계측값이고 리프트도 같은 프레임에서 읽었다. 오른쪽 세 장에서 옆 NPC 와 비교하면 크기 차이가 캐릭터에만 걸린 것을 확인할 수 있다 — 접지선은 <code>hopOriginY</code> 보정으로 일곱 장 모두 같은 자리다.</figcaption>
+</figure>
+
+<div class="note">
+  <b>×3 이면 낙하 시작이 화면 밖이다 — 의도한 결과다</b>
+  <p style="margin:10px 0 0">카메라는 <code>sprite.y</code> 를 따르고 리프트는 <code>sprite.y</code> 를 건드리지 않는다(원점으로만 올린다). 그래서 8 칸 위에서 시작하면 발밑이 카메라 위 끝을 넘는다: 계산하면 <strong>리프트 120px 이상에서 스프라이트가 완전히 화면 밖</strong>이고, 위 스트립 첫 장(118px)에 부츠만 걸려 있는 게 그 경계다. 머리까지 다 들어오는 것은 리프트 50px 아래부터다.</p>
+  <p style="margin:10px 0 0">시간으로는 짧다. 낙하 곡선이 헤드스타트를 받아 <code>1−u² = 0.7975 × 리프트/높이</code>, <code>u = 0.45 + 0.55p</code> 이므로 리프트 120px 은 진행률 <strong>9.5%</strong> — 기본 620ms 낙하에서 약 59ms, 60fps 로 3~4 프레임이다. 등장 연출로는 오히려 맞는 그림이라 그대로 뒀다. 다만 <strong>낙하 시작 프레임을 UI 로 강조하려는 저작은 이 구간을 못 쓴다.</strong></p>
+</div>
+
+<h3>3.3 스쿼시 · 스트레치 — 빠를 때 늘고, 닿을 때 눌린다</h3>
+<p>스트레치는 <em>속도</em>에, 원근은 <em>높이</em>에 걸린다. 서로 다른 축의 정보라 곱해서 한 값으로 넘긴다. 스트레치는 세로로 늘린 만큼 가로를 0.6 배로 줄여 부피가 유지되는 것처럼 보이게 하고, 원근은 가로·세로가 같다(거리이지 부피가 아니다).</p>
+<pre><code>hopAirScale = hopStretchScale(속도) × hopPerspectiveScale(높이)
+HOP_STRETCH_MAX = 0.22   HOP_SQUASH_MAX = 0.26   HOP_SQUASH_MS = 150</code></pre>
+<p>착지 프레임은 즉시 <code>1.182 × 0.740</code> 으로 눌러 놓고 150ms 동안 <code>Back.easeOut</code> 으로 원래 배율까지 튀어 돌아온다.</p>
+
+<figure>
+  <img src="img/squash-impact.png" alt="착지 프레임에서 이전 커밋과 현재의 스프라이트 비교">
+  <figcaption><b>착지 프레임</b>왼쪽은 착지 전후로 그림이 한 픽셀도 변형되지 않는다. 오른쪽은 세로 26% 를 눌러 가로로 퍼진다. 원점이 <code>(0.5, 1)</code> 이라 <strong>발밑을 축으로</strong> 눌려서 접지선이 위로 튀지 않는다.</figcaption>
+</figure>
+
+<div class="note">
+  <b>스틸 스크린샷으로는 스쿼시를 잡을 수 없다</b> — <code>page.screenshot()</code> 이 150~300ms 걸리는데 스쿼시가 150ms 다. 셔터가 닫히기 전에 이미 복구돼서, 계측값은 <code>1.182 × 0.740</code> 인데 파일에는 똑바로 선 캐릭터가 찍힌다. 위 두 그림은 <strong>영상 프레임에서 뽑았다</strong>. 계측과 픽셀을 같은 도구로 잡으려 하면 안 되는 경우다.
+</div>
+
+<h3>3.4 그림자 기준높이 — 그 체공의 시작 높이로 정규화한다</h3>
+<p>고정 2 칸 대신 호출부가 <strong>그 체공의 시작 높이</strong>를 넘긴다. 하한을 기존 2 칸으로 두어 짧은 홉에서는 곡선이 예전과 같다.</p>
+<pre><code>syncCharacterShadow(..., liftPx, hop.liftPx)
+t = liftPx / max(TILE_SIZE × 2, referenceLiftPx)</code></pre>
+
+<h2>4. 계측 — 런타임에서 읽은 값과 공식 검산</h2>
+<p>4 칸(64px) 낙하를 느리게 돌리며 여섯 고도에서 멈춰 <code>__oprnDebug</code> 로 배율과 그림자 지름을 직접 읽었다. 배율은 진행률·리프트 비율만의 함수라 느리게 찍어도 값이 같다.</p>
+<table>
+  <thead>
+    <tr>
+      <th class="num">리프트</th>
+      <th class="num">#248 배율</th><th class="num">현재 배율</th>
+      <th class="num">#248 그림자 ⌀</th><th class="num">현재 그림자 ⌀</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td class="num">63px</td><td class="num">1.000 × 1.000</td><td class="num">1.264 × 1.482</td><td class="num">11.2</td><td class="num">11.4</td></tr>
+    <tr><td class="num">52px</td><td class="num">1.000 × 1.000</td><td class="num">1.186 × 1.453</td><td class="num">11.2 <span class="pill pass">측정</span></td><td class="num">13.5</td></tr>
+    <tr><td class="num">40px</td><td class="num">1.000 × 1.000</td><td class="num">1.104 × 1.408</td><td class="num">11.2</td><td class="num">16.0</td></tr>
+    <tr><td class="num">27px</td><td class="num">1.000 × 1.000</td><td class="num">1.025 × 1.354</td><td class="num">13.2</td><td class="num">18.6</td></tr>
+    <tr><td class="num">16px</td><td class="num">1.000 × 1.000</td><td class="num">0.960 × 1.303</td><td class="num">17.6 <span class="pill pass">측정</span></td><td class="num">20.8</td></tr>
+    <tr><td class="num">6px</td><td class="num">1.000 × 1.000</td><td class="num">0.903 × 1.253</td><td class="num">21.6</td><td class="num">22.7</td></tr>
+    <tr><td class="num">착지</td><td class="num">1.000 × 1.000</td><td class="num">1.182 × 0.740</td><td class="num">숨김</td><td class="num">숨김</td></tr>
+  </tbody>
+</table>
+<p><code>#248 배율</code>·<code>#248 그림자</code> 는 같은 리프트에서의 이전 공식값이고, <span class="pill pass">측정</span> 표시된 두 칸은 이전 커밋을 실제로 돌려 같은 값(11.2 · 17.5)을 받아 확인했다. 이전 커밋의 그림자는 리프트 32px 이상 전 구간에서 <strong>11.2px 에 고정</strong>이다.</p>
+<p>현재 값은 공식과 소수 셋째 자리까지 맞는다. 리프트 63px 에서 <code>speedRatio 0.4636</code> · 원근 <code>1.3445</code> 로 계산하면 <code>1.2622 × 1.4817</code>, 계측은 <code>1.2637 × 1.4821</code> 이다.</p>
+<p>표에서 읽을 수 있는 두 가지. 그림자는 최고점에서 두 커밋이 거의 같고(11.2 대 11.4) <strong>내려오면서 벌어진다</strong> — 기준높이 변경이 노리는 구간이 정확히 거기다. 그리고 접지 직전 <code>scaleX</code> 가 0.903 으로 <em>1 보다 작아진다</em>: 원근이 다 빠진 뒤에는 부피 보존 스트레치만 남아 홀쭉하고 길어지고, 그 다음 프레임에 <code>1.182 × 0.740</code> 으로 납작해진다. 늘어남에서 눌림으로 넘어가는 이 반전이 충격을 만든다.</p>
+
+<h2>5. 함정 둘 — 호출 순서와 기준 배율</h2>
+
+<div class="note">
+  <b>스케일 먼저, 리프트 나중</b>
+  <p style="margin:10px 0 0"><code>applyCharacterLift</code> 는 그 시점의 <code>scaleY</code> 로 원점을 나눈다(<code>originY = 1 + liftPx / (height × scaleY)</code>). 스케일을 나중에 바꾸면 리프트가 세로 배율만큼 어긋난다. #248 이 남긴 계약(<code>setFrame</code> 뒤에 리프트)에 한 겹이 더 붙어, 이제 <strong><code>setFrame</code> → <code>setScale</code> → 리프트</strong> 순서다.</p>
+</div>
+
+<div class="note">
+  <b>기준 배율은 풀에 담는다 — 스프라이트에서 매 프레임 읽으면 폭주한다</b>
+  <p style="margin:10px 0 0">스트레치는 매 프레임 <code>base × factor</code> 로 덮어쓴다. 기준을 프레임마다 스프라이트에서 읽으면 직전 프레임의 늘어난 값이 기준이 되어 계속 커진다. 체공 시작 프레임에 한 번 붙잡아 <code>characterHopScales</code> 에 넣고, 그림자 풀과 같은 키를 쓴다. 절대값 대신 기준에 곱하는 이유는 <strong>저작 스케일이 걸린 스프라이트에서 스쿼시가 끝난 뒤 원래 크기를 잃지 않게</strong> 하려는 것이고, <code>test/characterHop.test.ts</code> 가 그 성질을 잠근다. 다만 이 풀의 <em>수명</em>을 접지 시점으로 잡은 것이 아래 6 절의 결함이었다.</p>
+</div>
+
+<p>정리 경로도 함께 넓혔다. 맵 전이·런타임 리셋은 <code>clearAllHopScales</code> 로 풀을 비우고, 중단(<code>abortHop</code>)은 진행 중인 스쿼시 트윈을 <code>killTweensOf</code> 로 끊고 기준 배율로 되돌린다. 스쿼시는 화면 흔들림·먼지와 같은 급의 모션이라 <strong><code>reduced-motion</code> 이면 임팩트와 함께 빠진다</strong> — <code>plan.dust</code> 와 운명을 같이 한다.</p>
+
+<h3>착지 임팩트도 같이 세졌다</h3>
+<p>흔들림 상한을 <code>0.012 → 0.018</code>(320×240 에서 약 4px), 길이 상한을 <code>150 → 180ms</code> 로 올려 8 칸 낙하가 액션 전투 피격보다 세 배 무겁게 읽히게 했다. 먼지는 <strong>두 겹</strong>이 됐다 — 한 겹만 퍼뜨리면 "그림자가 커졌다" 로 읽혀서 착지 순간이 안 보인다. 짧고 진한 코어(220ms)와 넓고 옅고 느린 링(360ms)으로 나누면 터지는 타이밍이 잡힌다. 새 스프라이트시트 없이 그림자 텍스처를 재활용한다.</p>
+<p><strong>그리고 먼지 지름도 높이에 붙였다.</strong> 낙하가 시작 배율 ×3 을 받게 된 뒤로, 8 칸에서 떨어진 캐릭터 밑에 1 칸 홉과 같은 크기의 구름이 피면 충격이 안 실렸다. 흔들림·소리와 <strong>같은 <code>impactStrength</code></strong> 를 쓰므로 세 신호가 같은 높이에서 함께 커진다.</p>
+<pre><code>impactStrength = clamp((리프트 − 16) / 48)      // 1 칸 아래는 0, 4 칸에서 포화
+코어 지름 = 1.6 + 1.0 × strength                 // 1.6 → 2.6
+링  지름 = 2.6 + 1.8 × strength                 // 2.6 → 4.4</code></pre>
+<table>
+  <thead><tr><th>착지 리프트</th><th>strength</th><th>코어</th><th>링</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td>16px (1 칸)</td><td>0</td><td>—</td><td>—</td><td>임팩트 없음 — 제자리 홉마다 화면이 흔들리면 멀미난다</td></tr>
+    <tr><td>32px (2 칸)</td><td>0.333</td><td>×1.93</td><td>×3.20</td><td>—</td></tr>
+    <tr><td>48px (3 칸)</td><td>0.667</td><td>×2.27</td><td>×3.80</td><td>저작 점프 최고점과 같은 높이</td></tr>
+    <tr><td>64px 이상 (4 칸+)</td><td>1</td><td>×2.60</td><td>×4.40</td><td>포화 — 기본 8 칸 낙하가 여기다</td></tr>
+  </tbody>
+</table>
+<p>즉 <strong>기본 낙하의 먼지는 최소 임팩트 착지보다 코어 63% · 링 69% 넓다</strong>. 낮은 홉의 그림은 <code>strength 0</code> 부근에서 이전 값(1.6 / 2.6)과 같으므로 변하지 않는다 — 커지는 것은 높은 낙하뿐이다.</p>
+<div class="note">
+  <b>먼지는 픽셀로 못 찍었다 — 수치로만 잠갔다</b>
+  <p style="margin:10px 0 0">코어가 220ms 인데 <code>page.screenshot()</code> 이 150~300ms 다. 접지를 감지하고 셔터를 여는 순간 이미 트윈이 끝나 있어서, 착지 직후 연속 4 장에 먼지가 한 픽셀도 없다(스쿼시와 같은 이유·같은 한계다). 대신 <code>landingImpactPlan</code> 이 순수 함수라 위 표 전체가 <code>test/characterHop.test.ts</code> 에 잠겨 있다: <code>strength 0</code> → <code>dustEndScale 0</code>, 4 칸·12 칸 → <code>2.6 / 4.4</code> 로 포화, 그리고 항상 <code>링 &gt; 코어</code>. <strong>"먼지가 커 보인다" 는 눈으로 확인하지 못했고, "먼지 지름이 커진다" 만 확인했다.</strong></p>
+</div>
+
+<h2>6. 검증</h2>
+<table>
+  <thead><tr><th>항목</th><th>결과</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td><code>typecheck:app</code></td><td><span class="pill pass">통과</span></td><td>—</td></tr>
+    <tr><td>변경 표면에 닿는 15 파일 (115)</td><td><span class="pill pass">통과</span></td><td><code>characterHopRuntime</code>·<code>characterHop</code>·<code>characterLanding</code>·<code>characterShadow</code>·<code>playSceneMovement</code>·<code>playSceneTestHooks</code> 를 참조하는 테스트 전부</td></tr>
+    <tr><td><code>characterHop</code> (26)</td><td><span class="pill pass">통과</span></td><td>헤드스타트·원근·스쿼시 곡선, 기준 배율 곱셈, 게이트 하한 · 낙하 ×3 분기와 먼지 지름 표를 잠그는 3 개 추가</td></tr>
+    <tr><td><code>hopSquashCarryover</code> (2)</td><td><span class="pill warn">보류</span></td><td>아래 결함의 회귀 게이트 — 고침 전에는 둘 다 빨갛다. <strong>다만 이 결함은 <code>main</code> 이 <code>98969996</code> 으로 이미 독립적으로 고쳤고 회귀 테스트(<code>characterHopChainedScale</code>)도 있다.</strong> 중복이라 이 변경에서 빼기로 했다 — 아래 「이미 고쳐져 있었다」 참조</td></tr>
+    <tr><td><code>characterHopChainedScale</code> (2) <span class="pill pass">main</span></td><td><span class="pill pass">통과</span></td><td><code>main</code> 의 회귀 테스트가 이 변경(×3·먼지) 뒤에도 녹색 — 원근 상수를 키운 것이 기존 수정을 깨지 않는다</td></tr>
+    <tr><td><code>qa:runtime -- --scenario hop</code></td><td><span class="pill pass">6/6</span></td><td>비트 9 개, 런타임 에러 없음 · 수정 전 5 회 중 2 회 실패</td></tr>
+    <tr><td>전체 vitest 스위트</td><td><span class="pill pass">통과</span></td><td><code>npm test</code> 단독 실행, <strong>종료 코드 0</strong> · 앞선 회차의 실패 170 건은 QA 반복 실행과 <strong>동시에</strong> 돌려 워커 타임아웃이 난 것이었다 — 부하를 없애니 사라졌다. 로그를 <code>tail</code> 로 받아 파일·테스트 합계는 캡처하지 못했다(판정은 종료 코드)</td></tr>
+    <tr><td>스위트 실행 후 <code>git status</code></td><td><span class="pill pass">깨끗</span></td><td>아래 「추적 대상 소스를 덮어썼다」 관측이 <strong>이번엔 재현되지 않았다</strong> — <code>defaultDatabaseBattleRecords.ts</code> 349 줄 그대로, 작업 트리에 내 변경 7 파일 + 신규 테스트뿐</td></tr>
+  </tbody>
+</table>
+
+<h3>게이트를 반복 실행해서 나온 셋</h3>
+<p>보고서에 "게이트 통과" 를 쓰려고 같은 시나리오를 여러 번 돌렸다. 한 번만 돌렸으면 셋 다 못 봤다. 둘은 주장 쪽 문제(플레이크)였고, 하나는 <strong>이 변경이 심은 실제 결함</strong>이었다.</p>
+
+<div class="note">
+  <b>플레이크 — <code>playerShadowGroundY</code> 의 허용오차가 드롭 프레임 한 장 폭이었다</b>
+  <p style="margin:10px 0 0">3 회 중 1 회 <code>기대 336, 실제 334.932</code>. 이 변경 탓이 아니다: 타원 아래 끝은 <code>groundY − 16·scale·0.5 + 16·scale·0.5</code> 로 배율이 정확히 소거되므로, 그림자 크기·알파만 바꾼 diff 는 이 값을 움직일 수 없다.</p>
+</div>
+<p>원인은 주장의 구조다. 접지 뒤에 남는 값은 <strong>숨기기 직전 마지막 프레임</strong>의 위치인데, 점프는 <code>groundY</code> 를 프레임마다 선형 보간하고 리프트가 0 이 되는 마지막 프레임은 완료 분기로 빠져 그림자를 갱신하지 않는다. 그래서 남는 값은 목적지보다 항상 <code>16px × 마지막 프레임 간격 비율</code> 만큼 짧다. 1200ms 점프에서 1px 이내이려면 마지막 프레임 간격이 <strong>37.5ms 아래</strong>여야 한다 — 60fps(16.7ms)면 남지만 프레임 한 장만 흘려도 넘는다. 실패한 런의 간격은 40.03ms 였다. 주장의 뜻은 "그림자가 착지 타일까지 따라왔다" 이므로 타일(16px)보다 훨씬 작은 <strong>2px</strong> 로 넓혀 뜻은 지키고 프레임 한 장은 견디게 했다.</p>
+
+<div class="note">
+  <b>플레이크 2 — <code>jump-apex</code> 는 경합이 둘이라 5 회 중 2 회 빨갰다</b>
+  <p style="margin:10px 0 0">부하 없는 상태에서도 실패했다. 증상이 두 가지였다. ① <code>heightPx: 48</code> 점프에서 최고점 창을 <strong>아예 못 잡고</strong> 30 초 타임아웃(리프트 0, 접지 상태). ② 기다림은 성공했는데 뒤이어 읽은 값이 <strong>38px</strong>.</p>
+</div>
+<table>
+  <thead><tr><th>증상</th><th>경합</th><th>고침</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>① 타임아웃</td>
+      <td>앞 비트가 저고도 띠를 <code>minPx 4, maxPx 14</code> 로 기다린다. 포물선은 그 띠를 <strong>오르며·내리며 두 번</strong> 지나므로 내려오는 쪽을 잡을 수 있고, 그러면 최고점은 이미 지나갔다</td>
+      <td>상한을 없앤다. 하한만 두면 리프트가 0 에서 올라오므로 첫 만족 표본이 <strong>항상 상승 구간</strong>이다</td>
+    </tr>
+    <tr>
+      <td>② 38px</td>
+      <td>"기다린 뒤 읽는" 구조인데 읽기 지연(스크린샷 150~300ms)이 1200ms 비행의 25% 다. 기다림이 <code>≥40</code> 에서 풀린 뒤 읽는 동안 포물선이 내려온다</td>
+      <td>점프를 <code>1200 → 4000ms</code> 로 늘려 같은 지연을 7% 로 줄이고, 기다림은 <code>≥40</code> 으로 두되 뒤에 읽는 기대값만 <code>≥30</code> 으로 낮춘다</td>
+    </tr>
+  </tbody>
+</table>
+<p>둘 다 <code>durationMs</code> 와 대기 조건의 문제이고 체감 코드와 무관하다. 수정 후 6 연속 통과.</p>
+
+<div class="note defect">
+  <b>결함 — 착지 스쿼시가 다음 체공으로 샜다</b>
+  <p style="margin:10px 0 0"><code>jump-apex</code> 를 파다가 배율 채널을 의심해 <strong>단위 테스트로 재현을 시도했고, 거기서 진짜가 나왔다</strong>. 시나리오는 낙하 착지 <em>직후</em> 점프를 쏜다. 스쿼시가 150ms 라 그 사이에 점프가 시작되면 두 가지가 동시에 깨진다.</p>
+</div>
+<table>
+  <thead><tr><th>#</th><th>무엇이</th><th>왜</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>원점과 배율이 어긋난다</td><td>살아남은 스쿼시 트윈이 매 프레임 <code>scaleY</code> 를 계속 쓴다. <code>applyCharacterLift</code> 는 <em>그 시점</em> <code>scaleY</code> 로 나눠 원점을 넣어 뒀으므로, 나중에 배율이 바뀌면 화면에 실린 리프트가 저작 높이와 달라진다</td></tr>
+    <tr><td>2</td><td>눌린 중간값이 새 기준이 된다</td><td>기준 배율 풀을 <strong>접지 시점에</strong> 비웠다. 스쿼시가 도는 동안 다음 체공이 시작되면 풀이 비어 있어, <code>rememberHopBaseScale</code> 이 눌려 있는 현재 배율을 기준으로 붙잡는다. 저작 배율 2 인 스프라이트가 <code>2.364 × 1.48</code> 을 기준으로 삼아 점프 내내 납작하고 넓었다</td></tr>
+  </tbody>
+</table>
+<p>고침은 <strong>풀의 수명을 접지에서 스쿼시 트윈 종료로 옮기는 것</strong>이다. 트윈이 끝날 때 기준을 버리고, 그 전에 새 체공이 오면 트윈만 세우고 기준을 물려준다. 세울 때 <code>killTweensOf(sprite)</code> 를 쓰지 않고 우리가 만든 트윈 핸들의 <code>stop()</code> 만 부른다 — 같은 스프라이트를 미는 넉백 트윈까지 죽이면 안 되기 때문이다. 중단 경로(<code>abortHop</code>)는 스프라이트가 사라지는 길이라 예전처럼 전부 끊는다.</p>
+<p>재현을 먼저 테스트로 고정한 뒤 고쳤다. <code>test/hopSquashCarryover.test.ts</code> 는 Phaser 트윈이 매 프레임 배율을 쓰는 것까지 흉내내서, 고침 전에는 리프트 <code>51px</code>(기대 48px)과 기준 <code>2.985</code>(기대 2.525)로 <strong>두 주장이 모두 빨갛다</strong>. 부하와 무관하게 결정적으로 재현된다.</p>
+
+<div class="note defect">
+  <b>이미 고쳐져 있었다 — 이 작업은 중복이다</b>
+  <p style="margin:10px 0 0">커밋을 준비하다가 알았다. 이 브랜치(<code>hop-feel</code>)는 <strong>이미 <code>main</code> 에 병합됐고 455 커밋 뒤처져</strong> 있었고, 그 사이 <code>main</code> 이 같은 결함을 <code>98969996</code> 「연속 체공이 눌린 배율을 영구 기준으로 굳히던 결함을 고친다」 로 <strong>독립적으로 고쳐 두었다</strong>. 회귀 테스트도 있다(<code>test/characterHopChainedScale.test.ts</code>). 낡은 기준점 위에서 작업하면서 확인하지 않은 대가다 — <strong>브랜치가 병합됐는지부터 봤어야 했다.</strong></p>
+</div>
+<table>
+  <thead><tr><th></th><th><code>main</code> 의 <code>98969996</code></th><th>이 작업(폐기)</th></tr></thead>
+  <tbody>
+    <tr><td>기준을 지키는 방법</td><td>스쿼시가 시작되면 기준을 풀에 <strong>다시 넣는다</strong> (<code>scalePool.set(key, base)</code>)</td><td>기준의 <strong>수명을 트윈 종료로 옮긴다</strong> (<code>onComplete</code> 에서 버린다)</td></tr>
+    <tr><td>남은 트윈 처리</td><td><code>killTweensOf(sprite)</code></td><td>트윈 핸들 하나만 <code>stop()</code></td></tr>
+    <tr><td>크기</td><td>순증 6 줄</td><td>맵 하나 추가 + 타입 1 개 export</td></tr>
+  </tbody>
+</table>
+<p><strong>결론: <code>main</code> 의 것을 그대로 둔다.</strong> 이미 병합돼 테스트까지 있는 수정을, 더 크고 손이 많이 가는 구현으로 재작성할 이유가 리뷰 부담을 넘지 않는다. 그래서 <code>characterHopRuntime.ts</code>·<code>playSceneTypes.ts</code>·<code>test/hopSquashCarryover.test.ts</code> 는 <strong>올리지 않는다</strong>.</p>
+<div class="note">
+  <b>다만 넘겨 둘 관찰 하나 — <code>killTweensOf</code> 의 부수효과</b>
+  <p style="margin:10px 0 0"><code>main</code> 의 수정은 캐시 히트에서 <code>killTweensOf(sprite)</code> 를 부른다. 이게 <strong>같은 스프라이트를 미는 남의 트윈까지</strong> 죽인다. 대상이 겹칠 수 있다: <code>playSceneAutonomous</code> 가 이벤트 스프라이트에도 홉을 걸고(<code>applyHopFrame(scene, eventId, sprite, …)</code>), <code>playSceneActionCombat:1044</code> 의 넉백도 같은 <code>scene.eventSprites</code> 를 민다. 겹치면 넉백 트윈의 <code>onComplete</code> 가 안 돌아 <code>enemy.knockbackTween</code> 이 <code>undefined</code> 로 안 풀리고 최종 <code>setPosition</code> 도 생략돼, 스프라이트가 논리 타일과 어긋난 자리에 남는다.</p>
+  <p style="margin:10px 0 0"><strong>재현하지 않았다 — 코드만 읽고 낸 결론이다.</strong> 조건도 좁다(액션 전투 적 + 그 적에 홉 저작 + 착지 스쿼시 150ms 안에 넉백). 이 변경에 끼워 넣지 않고 관찰로만 남긴다.</p>
+</div>
+
+<div class="note">
+  <b>인과를 붙이지 않았다</b>
+  <p style="margin:10px 0 0">이 결함이 <code>jump-apex</code> 의 33px 관측을 만든 것인지는 <strong>확인하지 못했다</strong>. 고친 뒤에도 <code>jump-apex</code> 는 같은 빈도로 빨갰고, 위 두 경합만으로 증상이 전부 설명된다. 결함은 단위 테스트로 독립적으로 증명됐으므로 그 자체로 고칠 값이 있지만, "게이트가 이 결함을 잡았다" 고 쓰는 것은 사실이 아니다. 게이트는 <em>배율 채널을 들여다보게 만들었을</em> 뿐이다.</p>
+</div>
+
+<h2>7. 알아 둘 것</h2>
+<p><strong>영상 비교의 정렬 기준.</strong> 두 녹화는 벽시계로 맞출 수 없다(로딩·시드 시간이 다르다). 첫 공중 프레임을 원점으로 잡아 붙였다. 저작값이 같고 <code>durationMs</code> 가 곡선 모양과 독립이라, 같은 프레임 번호는 같은 진행률을 뜻한다.</p>
+<p><strong>정지 스틸과 영상의 역할이 다르다.</strong> 배율·그림자 <em>숫자</em>는 스틸 캡처의 계측으로, 150ms 스쿼시의 <em>그림</em>은 영상 프레임으로 잡았다. 스크린샷 지연(150~300ms)이 스쿼시보다 길어서 한 도구로는 둘 다 못 잡는다.</p>
+<div class="note defect">
+  <b>관측 — 전체 vitest 스위트가 추적 대상 소스를 덮어썼다</b>
+  <p style="margin:10px 0 0"><code>vitest run test/</code> 한 회차 뒤에 <code>src/project/defaults/defaultDatabaseBattleRecords.ts</code> 에서 <strong>231 줄이 사라져</strong> 있었다(적 레코드 <code>enemy_extra_006</code> 이후 전부). 체공과 무관하고 내가 편집한 파일도 아니다. 되돌렸다. 이름으로 그 파일을 쓰는 테스트는 없어서 범인은 경로를 계산해 쓰는 쪽으로 보이는데, 유력 후보 둘(<code>generatedEnemyBattlers</code>·<code>actionEnemyAuthoring</code>)을 단독 실행해도 재현되지 않았다. <strong>추적하지 못했다</strong> — 전체 스위트를 돌린 뒤에는 <code>git status</code> 를 확인하는 편이 좋다.</p>
+  <p style="margin:10px 0 0"><b>후속.</b> 부하 없이 스위트를 다시 완주(종료 코드 0)한 뒤 <code>git status</code> 는 깨끗했다. 그 회차가 워커 타임아웃이 난 회차와 <strong>같은 회차</strong>였으므로, 원인은 테스트 코드 자체보다 <em>중단된 워커</em> 쪽일 가능성이 커졌다. 다만 한 번 안 났다고 없는 문제는 아니다 — 재현 조건을 못 잡았으니 확인 습관은 남긴다.</p>
+</div>
+<p><strong>남은 것.</strong> 점프(<code>jump</code>)는 헤드스타트를 받지 않는다 — 포물선은 이·착지에서 이미 최대 속도라 필요가 없다. 스트레치는 점프에도 걸리지만 기본 12px 홉은 게이트에 막혀 사실상 중립이다. 저작으로 높이를 키운 점프에서 스트레치가 과한지는 아직 실사용 표본이 없다.</p>
+<p><strong>확인하지 못한 것 둘.</strong> ① <em>먼지가 커 보이는지</em>는 눈으로 못 봤다 — 지름 공식만 잠갔다(5 절 「착지 임팩트도 같이 세졌다」). ② ×3 이 <em>과한지</em>는 판단하지 않았다. 스트립을 보면 캐릭터가 옆 NPC 의 두 배 넘게 커지는데, 이게 "높은 곳에서 온다" 로 읽힐지 "스프라이트가 깨졌다" 로 읽힐지는 취향 문제라 저작자 표본이 필요하다. 되돌리려면 <code>FALL_PERSPECTIVE_MAX</code> 한 줄이다.</p>
+
+<footer>
+  rpg-zzu · 3.1·3.3·3.4 절은 <code>8278350e</code> → <code>330b7107</code>(<code>main</code> 에 병합됨) 기준<br>
+  <b>3.2b 의 낙하 ×3 과 5 절의 먼지 지름은 <code>main</code> 에서 새로 딴 <code>feat/fall-perspective-x3</code> 브랜치의 내용이다</b> — <code>330b7107</code> 은 낙하 원근이 ×1.35 이던 시점이라 2 절·3.2 절의 그림과 같은 세대다. 올리는 파일은 <code>src/player/characterHop.ts</code>·<code>characterLanding.ts</code> + <code>test/characterHop.test.ts</code> + QA 시나리오 2 파일 다섯 개다. 스쿼시 유출 수정은 <code>main</code> 에 이미 있어 <strong>빼기로 했다</strong>(6 절 참조).<br>
+  비교 영상·스틸은 일회성 캡처 스크립트로 두 커밋에서 각각 녹화했다(커밋하지 않았다) · 리포트 사본은 <code>img/</code> 에 보관하고, 낙하 스트립의 프레임별 계측 원본은 <code>img/fall-scale-strip.json</code> 이다 · 런타임 QA 원본: <code>verify-shots/runtime-qa/hop/SUMMARY.md</code><br>
+  재현: <code>npm run qa:runtime -- --scenario hop</code> 이 같은 부팅 경로(<code>window.__OPENRPG_BOOT__</code> · <code>__oprnDebug.playerRoute</code>)를 쓴다
+</footer>
+
+</main>
+</body>
+</html>

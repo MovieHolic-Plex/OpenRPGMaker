@@ -3,7 +3,7 @@ import type { JsonSchema } from "./types";
 const DIRECTIONS = ["down", "left", "right", "up"] as const;
 const RESOURCE_KINDS = [
   "chipset", "charset", "battle", "battleCharset", "battleWeapon", "backdrop",
-  "gameOver", "monster", "faceset", "picture", "system", "system2", "title", "music", "sound",
+  "gameOver", "monster", "faceset", "picture", "movie", "system", "system2", "title", "music", "sound",
 ] as const;
 const SEASONS = ["spring", "summer", "fall", "winter"] as const;
 

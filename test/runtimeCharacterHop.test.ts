@@ -7,6 +7,7 @@ import {
   DEFAULT_FALL_HEIGHT_PX,
   DEFAULT_JUMP_DURATION_MS,
   DEFAULT_JUMP_PEAK_PX,
+  fallLiftPx,
 } from "@/player/characterHop";
 import { mockSprite, movementScene, type MockSprite } from "./runtimeEventPageFixtures";
 
@@ -99,8 +100,8 @@ describe("NPC 낙하 등장(dropIn)", () => {
     const midLift = liftPx(sprite);
     expect(midLift).toBeLessThan(DEFAULT_FALL_HEIGHT_PX);
     expect(midLift).toBeGreaterThan(0);
-    // 등가속이라 절반 시점에는 아직 시작 높이의 3/4 지점이다.
-    expect(midLift).toBeCloseTo(DEFAULT_FALL_HEIGHT_PX * 0.75, 6);
+    // 곡선 자체는 characterHop.test.ts 가 잠근다 — 여기서는 런타임이 그 곡선을 쓰는지만 본다.
+    expect(midLift).toBe(Math.round(fallLiftPx(0.5, DEFAULT_FALL_HEIGHT_PX)));
 
     updateAutonomousNPCs(runtimeScene, DEFAULT_FALL_DURATION_MS / 2);
     expect(liftPx(sprite)).toBe(0);

@@ -39,6 +39,17 @@ export type RuntimeQaOp =
       readonly state: "present" | "absent";
       readonly timeoutMs?: number;
     }
+  /**
+   * 마운트가 아니라 **실제로 보일 때까지** 기다린다. 페이드로 들어오는 창(상점·이름입력)은
+   * `waitFor: present` 직후 조상 opacity 가 0 이라 visibleText 축이 alpha 0 으로 실패한다.
+   */
+  | {
+      readonly kind: "waitForVisible";
+      readonly testid: string;
+      /** 통과 조상 alpha 하한. 기본 0.06 — visibleText 축의 판정선(alpha > 0.05) 바로 위다. */
+      readonly minAlpha?: number;
+      readonly timeoutMs?: number;
+    }
   | { readonly kind: "playerRoute"; readonly moves: readonly unknown[] }
   | {
       readonly kind: "waitForLift";

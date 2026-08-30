@@ -84,7 +84,7 @@ function memoryBeats(speaker: string, lines: readonly string[]): RecordValue[] {
   return beats;
 }
 
-const scriptCutscenePreset: ToolDefinition = {
+export const scriptCutscenePreset: ToolDefinition = {
   name: "script_cutscene_preset",
   description:
     "투더문식 연출 프리셋 컷신을 한 번에 배치한다. preset=memory_opening|bedside_monologue|ending_fade. " +

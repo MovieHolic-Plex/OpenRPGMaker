@@ -4,6 +4,24 @@ Battle rules, turn flow, damage, rewards, battle events, snapshots, monster coll
 
 For real-time action combat on action maps (`system.actionCombat` + `map.actionCombat`), see **`openwiki/runtime-action-combat.md`**.
 
+### 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+
+체공은 이제 위치(lift) 외에 **배율 두 채널**을 더 쓴다 — 속도에 비례하는 스쿼시/스트레치와
+체공 높이에 비례하는 원근(최대 0.35, 4타일 게이트, 착지 시 정확히 1로 닫힘). 그림자 페이드는
+고정 2타일이 아니라 **이번 비행의 시작 높이**를 기준으로 정규화하므로(`characterShadow.ts`),
+128px 낙하가 하강 전체에 걸쳐 자란다. 단 `SHADOW_FADE_LIFT_PX` 하한이 있어 32px 미만으로
+저작된 낙하는 옛 곡선을 쓴다.
+
+**연속 체공 함정.** 착지 눌림은 `HOP_SQUASH_MS` 동안 트윈으로 살아 있는데, 경로는
+`!scene.playerHop` 이면 **다음 프레임에 바로** 다음 체공을 시작한다(`playSceneMovement`).
+그래서 눌린 동안에도 기준 배율을 `scene.characterHopScales` 에 **남겨 둔다** — 지우면 다음
+체공이 캐시 미스로 눌린 값을 읽어 영구 기준으로 굳고 남은 맵 동안 캐릭터가 찌그러진다.
+트윈을 끊는 것만으로는 부족하다(스프라이트가 눌린 값에 그대로 머문다). 시작에서 트윈도
+끊어 새 체공의 배율과 동시 기록되지 않게 한다. 계약 테스트는
+`test/characterHopChainedScale.test.ts` 이고, 두 장치를 각각 지우면 각각 실패한다.
+
+감소 모션에서는 눌림·먼지가 함께 빠지므로 이 경로 자체가 없다.
+
 ## 지원 전투 시스템은 둘뿐이다 (2026-08-28)
 
 - 지원: **RM식** (`system.battleModel` 미설정 또는 `"rm2k3"` + 배틀 스킨 `rm2003`, 둘 다 기본값) 과 **포켓몬식** (`system.battleModel: "gen1"` + 배틀 스킨 `pokemon`). 새 프로젝트는 이 둘 중 하나로만 저작한다.
@@ -79,7 +97,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - Play-mode map rendering shares default Combined Town terrain quarter composition with editor previews through `src/project/defaults/terrainQuarterAutotile.ts`; `terrainQuarterSources()` returning `null` means the saved tile should be drawn as one raw tile.
 - Play mode uses a 320x240 logical play stage scaled by the largest integer that fits entirely inside the available viewport. The viewport stays black for letterboxing, the scaled stage stays centered, and stage-mounted DOM overlays should respect the crop-safe CSS variables from `playSurface.ts`; those crop values are normally zero except for sub-320x240 degenerate viewports.
 - Zone feedback is scene-local presentation owned by `src/player/zoneFeedback.ts` and `src/player/playSceneZoneFeedback.ts`. It consumes only UI entries appended after the active scene/session cursor, so saved `m2Runtime.ui` history never replays after load or remount; late creation of the runtime UI array still consumes its first new entry. Banners, checkpoint toasts, incomplete objective chips, and a facing action prompt mount on the dialogue host and are suppressed by dialogue, battle, title, game-over, main/status menu, shop, inn, chest, and ending overlays. The standalone/editor CSS closure is `src/styles/runtime/playerRuntime.css` -> `zoneFeedback.css`; do not import the module a second time from an entrypoint.
-- The play status menu is a stage-mounted, map-preserving edge-dock UI owned by `src/player/playerStatusMenuController.ts`, `src/player/playerStatusMenuDetails.ts`, and the final `src/styles/runtime/statusMenuEdgeDock.css` cascade. The primary dock remains exactly six entries (items, skills, equipment, party, record, system); party/record/system disclose the existing nested commands in a horizontal context tray above the dock, while full work panels appear only after a concrete command is selected. The authored windowskin is painted on the party cards, detail panel, and command dock via `--runtime-window-skin` border-image, while the menu stays a stage-mounted map-preserving edge dock rather than an opaque full-screen window. Returning to title is destructive: the system tray exposes a visible warning and the controller requires a second confirmation in a compact confirmation card before leaving play. The primary dock or active detail list keeps real DOM focus after every render and exposes its selected child through `aria-activedescendant`; keep that state synchronized with roving child `tabIndex` and `aria-current`. Its keyboard cancel stack is one level at a time: item target or equipment candidate list -> slot/actor list -> group context tray or command rail -> close. Detail cursors are preserved per submenu key, and invalid Enter on empty/disabled detail lists should emit the menu invalid feedback without changing state.
+- The play status menu is a stage-mounted, map-preserving edge-dock UI owned by `src/player/playerStatusMenuController.ts`, `src/player/playerStatusMenuDetails.ts`, and the final `src/styles/runtime/statusMenuEdgeDock.css` cascade. The primary dock remains exactly six entries (items, skills, equipment, party, record, system); party/record/system disclose the existing nested commands in a horizontal context tray above the dock, while full work panels appear only after a concrete command is selected. 파티 카드·상세 패널·명령 독은 **저작 윈도스킨을 그리지 않는다** (2026-08-30, PR #301). `--runtime-window-*` 토큰이 `src/styles/runtime/system.css` 의 `--runtime-glass-*` 를 가리키게 재정의되어, 런타임 인터페이스 전체가 rm2003 전투 HUD 의 글래스 크롬 하나로 통일된다. 즉 **데이터베이스 → 시스템에서 고른 윈도스킨은 전투 창 5개에만 적용된다** — 필드·메뉴·상점·타이틀은 글래스 고정이며 이것이 의도된 제품 결정이다(사용자 확인 완료). 배관과 프로젝트 데이터는 그대로 살아 있어 `--runtime-window-skin` 은 여전히 심어지고(`test/runtimePlayWindowSkins.test.ts:224-232` 가 고정), `_windowskin.css` 의 전투 5창 계약도 그대로다(`:95-110`). 메뉴는 여전히 불투명 전체 화면 창이 아니라 무대에 마운트된 맵 보존 엣지 독이다. Returning to title is destructive: the system tray exposes a visible warning and the controller requires a second confirmation in a compact confirmation card before leaving play. The primary dock or active detail list keeps real DOM focus after every render and exposes its selected child through `aria-activedescendant`; keep that state synchronized with roving child `tabIndex` and `aria-current`. Its keyboard cancel stack is one level at a time: item target or equipment candidate list -> slot/actor list -> group context tray or command rail -> close. Detail cursors are preserved per submenu key, and invalid Enter on empty/disabled detail lists should emit the menu invalid feedback without changing state.
 - Player save slots are runtime-session snapshots in `src/player/saveSlots.ts`. Optional slot metadata such as `mapName`, `partyLevel`, and `playTimeSeconds` is non-breaking and must remain load-compatible with older snapshots that omit those fields.
 - Exported web players set the save-slot localStorage namespace to `rpgzzu-export:<projectId>` before showing the title screen, so standalone builds do not collide with editor/dev save slots. Keep `setSaveSlotStorageNamespace()` in `src/player/saveSlots.ts` compatible with the existing default `rpg-zzu:save-slot:*` keys.
 - Session checkpoints live in `src/player/checkpoints.ts` as a single WeakMap-backed slot per active `PlaySession`. `checkpointSave` stores a save-slot-style snapshot for retry, but checkpoints are intentionally not serialized into save files or project JSON; normal save/load starts without a checkpoint.

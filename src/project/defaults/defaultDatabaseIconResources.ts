@@ -9,6 +9,7 @@ import {
   EQUIPMENT_TRAVELER_HAT_ID,
 } from "./defaultDatabaseRecordIds";
 import { DEFAULT_EQUIPMENT_ID } from "./constants";
+import { defaultEquipmentRecords } from "./defaultDatabaseEquipmentRecords";
 import { defaultItemRecords } from "./defaultDatabaseItemRecords";
 
 const DEFAULT_ITEM_ICON_RESOURCE_BY_ID = new Map(
@@ -57,6 +58,14 @@ export function ensureDefaultDatabaseIconResources(project: Project): boolean {
     changed = assignImageAndIcon(item, resourceId) || changed;
   }
 
+  const existingEquipmentIds = new Set(project.database.equipment.map((equipment) => equipment.id));
+  for (const defaultEquipment of defaultEquipmentRecords()) {
+    if (existingEquipmentIds.has(defaultEquipment.id)) continue;
+    project.database.equipment.push(cloneEquipmentRecord(defaultEquipment));
+    existingEquipmentIds.add(defaultEquipment.id);
+    changed = true;
+  }
+
   for (const equipment of project.database.equipment) {
     const resourceId = DEFAULT_EQUIPMENT_ICON_RESOURCE_BY_ID[equipment.id];
     if (resourceId === undefined) continue;
@@ -70,6 +79,23 @@ function cloneItemRecord(item: Project["database"]["items"][number]): Project["d
   return {
     ...item,
     stateEffects: item.stateEffects.map((effect) => ({ ...effect })),
+  };
+}
+
+function cloneEquipmentRecord(
+  equipment: Project["database"]["equipment"][number],
+): Project["database"]["equipment"][number] {
+  return {
+    ...equipment,
+    statBonuses: { ...equipment.statBonuses },
+    equippableActorIds: [...equipment.equippableActorIds],
+    equippableClassIds: [...equipment.equippableClassIds],
+    attackElementIds: [...equipment.attackElementIds],
+    stateInflictIds: [...equipment.stateInflictIds],
+    effectFlags: { ...equipment.effectFlags },
+    elementalDefenseIds: [...equipment.elementalDefenseIds],
+    stateDefenseIds: [...equipment.stateDefenseIds],
+    actionWeapon: equipment.actionWeapon === undefined ? undefined : { ...equipment.actionWeapon },
   };
 }
 

@@ -75,8 +75,9 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             bounds: {
               ...RECT_SCHEMA,
               description:
-                "kind=\"existing\" 일 때 시공 범위. **생략하면 그 맵 전체가 재포장 대상이 된다** — "
-                + "기존 마을의 일부만 손보라는 요청이면 반드시 그 영역을 지정하라.",
+                "kind=\"existing\" 일 때 시공 범위. **생략하면 사용자가 보고 있는 화면(뷰포트) 중심의 영역에 짓고, "
+                + "뷰포트를 모를 때만 맵 전체를 재포장한다** — 손댈 영역이 정해진 요청이면 그 영역을 직접 지정하라. "
+                + "w/h 가 최소값(20)보다 작으면 거부되니 20 이상으로 넓혀 쓰거나 생략해 뷰포트에 맡길 것.",
             },
             plannedMap: {
               type: "object",

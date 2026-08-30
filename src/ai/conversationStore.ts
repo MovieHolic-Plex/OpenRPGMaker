@@ -150,7 +150,10 @@ export function clearConversations(): void {
 export function deriveTitle(entries: readonly AuditEntry[]): string {
   for (const entry of entries) {
     if (entry.kind !== "user") continue;
-    const title = entry.text.trim();
+    // `[컨텍스트] 현재 맵: …` 는 패널이 붙이는 기계 생성 footer 다(aiChatPanel 의 contextFooter).
+    // 제목에 그대로 들어가면 목록의 모든 줄이 같은 맵 이름으로 시작해 사람이 대화를 못 가른다
+    // (실측 2026-08-30, 이전 대화 모달: "동굴 입구에 표지판을 세워줘 [컨텍스트] 현재 맵: 이슬 …").
+    const title = (entry.text.split("\n\n[컨텍스트]")[0] ?? entry.text).trim();
     if (title.length > 0) return title.length > TITLE_LIMIT ? `${title.slice(0, TITLE_LIMIT)}...` : title;
   }
   return "(빈 대화)";

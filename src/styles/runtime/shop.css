@@ -12,28 +12,34 @@
       패널을 깔아 '상자 속 상자'가 됐다. 표면은 개별 카드(.runtime-shop-panel)만 가진다.
    2) 기본 표면은 유리 카드(반투명 + 배경 블러)다. 게임 화면이 뒤에 살짝 보여야
       "가게에 들어와 있다"가 읽힌다. 완전 불투명 상자는 장면을 지워 버린다.
-   3) backdrop-filter 를 못 쓰는 환경에서는 자료집 System 윈도스킨 border-image 로
-      되돌아간다(아래 .runtime-shop-panel 기본 규칙). 즉 고전 스킨이 폴백이다.
+   3) backdrop-filter 를 못 쓰는 환경에서도 같은 유리 토큰을 쓴다(블러만 빠진다).
+      예전 폴백은 자료집 System 윈도스킨 border-image 였는데, slice 의 fill 이 중앙까지
+      칠해 유리판을 덮었다 — 그래서 칠을 멈추고 두 경로를 하나로 합쳤다.
    4) UI 글자는 픽셀 폰트를 쓰지 않는다. 가격·수량은 tabular-nums 로 자리를 고정해
       숫자가 바뀔 때 줄이 흔들리지 않게 한다.
    ══════════════════════════════════════════════════════════════════════════ */
 
 .runtime-shop-overlay {
-  --shop-ink: #f2f5fb;
-  --shop-ink-dim: #a9b3c6;
-  --shop-ink-faint: #737f95;
-  --shop-surface: linear-gradient(180deg, rgba(31, 36, 50, 0.94), rgba(17, 20, 29, 0.96));
-  --shop-surface-flat: rgba(21, 25, 35, 0.95);
-  --shop-line: rgba(255, 255, 255, 0.1);
-  --shop-line-strong: rgba(255, 255, 255, 0.18);
-  --shop-accent: #efb14a;
+  /* 지역 이름은 49곳이 소비하므로 그대로 두고, **값만** 런타임 공용 유리 토큰을
+     가리키게 한다(_rm2003.css 가 쓴 것과 같은 방법). 예전에는 이 상점만 금색 강조와
+     14px 라운드를 쓰는 별도 디자인 시스템이었다 — 대화창·전투 HUD 옆에 두면 다른
+     게임처럼 보였다. 이제 한 곳(system.css)만 고치면 상점까지 함께 바뀐다. */
+  --shop-ink: var(--runtime-glass-text);
+  --shop-ink-dim: var(--runtime-glass-muted);
+  /* 세 번째 잉크 단계는 공용 토큰에 없다. 같은 색조를 더 낮은 알파로 쓴다. */
+  --shop-ink-faint: rgba(154, 164, 196, 0.62);
+  --shop-surface: var(--runtime-glass-surface);
+  --shop-surface-flat: var(--runtime-glass-panel);
+  --shop-line: var(--runtime-glass-hairline);
+  --shop-line-strong: var(--runtime-glass-hairline-strong);
+  --shop-accent: var(--runtime-glass-accent);
   /* 강조색 위에 얹는 잉크. 여섯 곳이 같은 값을 하드코딩하고 있었다. */
-  --shop-on-accent: #201704;
-  --shop-accent-soft: rgba(239, 177, 74, 0.16);
-  --shop-gain: #6fd08c;
-  --shop-loss: #f2727f;
-  --shop-radius: 14px;
-  --shop-ui-font: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+  --shop-on-accent: rgba(9, 11, 24, 0.96);
+  --shop-accent-soft: var(--runtime-glass-accent-soft);
+  --shop-gain: var(--success);
+  --shop-loss: var(--danger);
+  --shop-radius: var(--runtime-glass-radius);
+  --shop-ui-font: var(--runtime-ui-font);
 
   position: absolute;
   /* 상점은 .play-viewport(스케일 변환 밖) 레이어에 마운트된다(playSceneShop.ts). */
@@ -45,7 +51,7 @@
   padding: 16px;
   background: radial-gradient(120% 90% at 50% 0%, rgba(12, 16, 26, 0.5), rgba(5, 7, 12, 0.78));
   border: 0;
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   color: var(--shop-ink);
   font-family: var(--shop-ui-font);
@@ -88,16 +94,14 @@
 }
 
 /* ── 카드 표면 ─────────────────────────────────────────────────────────────
-   기본값은 윈도스킨 border-image(고전 폴백). @supports 가 통과하면 유리 카드로
-   덮어쓴다. 두 경로가 같은 클래스를 공유하므로 마크업은 하나다. */
+   두 경로 모두 **같은 유리 토큰**을 쓴다. 예전에는 기본 규칙이 윈도스킨 border-image
+   폴백이고 @supports 승자만 상점 자체 값이었다 — 그래서 유리 토큰을 기본 규칙에만
+   심으면 backdrop-filter 를 지원하는 브라우저(증거 샷의 Chromium 포함)에서는
+   한 픽셀도 바뀌지 않는다. 승자 규칙이 더하는 것은 블러와 들림 그림자뿐이다. */
 .runtime-shop-panel {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  background: var(--runtime-glass-panel);
+  border: 1px solid var(--shop-line);
+  border-radius: var(--shop-radius);
   min-height: 0;
 }
 
@@ -107,9 +111,7 @@
     border: 1px solid var(--shop-line);
     border-image: none;
     border-radius: var(--shop-radius);
-    box-shadow:
-      0 20px 44px -22px rgba(0, 0, 0, 0.85),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    box-shadow: var(--runtime-glass-shadow);
   }
 }
 
