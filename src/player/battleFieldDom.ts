@@ -167,10 +167,22 @@ function skinPartySpriteUrl(
 function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string | undefined): void {
   const anim = battlerIdleAnimation(resourceId);
   if (!anim || anim.tier !== "image-strip") return;
+  const url = battlerIdleAnimationUrl(anim);
   image.dataset.battlerAnim = anim.resourceId;
-  image.style.setProperty("--battler-anim-url", `url("${battlerIdleAnimationUrl(anim)}")`);
+  image.style.setProperty("--battler-anim-url", `url("${url}")`);
   image.style.setProperty("--battler-anim-frames", String(anim.frameCount));
   image.style.setProperty("--battler-anim-duration", `${battlerIdleAnimationDurationMs(anim)}ms`);
+  // 스트립을 못 불러오면 배경이 비고, 내용 이미지는 상자 밖에 있으므로 **빈 상자**가 된다.
+  // 그때는 애니메이션 표시를 걷어 정적 `src` 가 다시 보이게 한다 — 주석이 약속한 폴백이
+  // 에셋 실패에도 성립해야 한다. 프리로드는 CSS 배경 요청과 같은 URL 이라 캐시에서 합쳐진다.
+  const probe = new Image();
+  probe.addEventListener("error", () => {
+    delete image.dataset.battlerAnim;
+    image.style.removeProperty("--battler-anim-url");
+    image.style.removeProperty("--battler-anim-frames");
+    image.style.removeProperty("--battler-anim-duration");
+  });
+  probe.src = url;
 }
 
 /**
@@ -179,6 +191,9 @@ function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string |
  * 애니메이션이 인라인 포즈 오프셋을 덮지 않는다.
  */
 function applyIdleAnimationToSheetSprite(sprite: HTMLElement, anim: BattlerIdleAnimation, frameW: number): void {
+  // 이미 같은 스트립을 돌리는 중이면 아무것도 다시 쓰지 않는다. `backgroundImage` 를 매번
+  // 재대입하면 브라우저에 따라 애니메이션 루프가 처음으로 되감긴다.
+  if (sprite.dataset.battlerAnim === anim.resourceId) return;
   // 시트 셀(48px)과 화면 프레임 폭(96px = 셀 × BATTLE_ASSET_PIXEL_SCALE)의 배율.
   const scale = frameW / anim.cellWidth;
   sprite.dataset.battlerAnim = anim.resourceId;
@@ -192,10 +207,16 @@ function applyIdleAnimationToSheetSprite(sprite: HTMLElement, anim: BattlerIdleA
 
 /** idle 스트립을 걷고 정적 시트로 되돌린다. 되돌릴 원본은 생성 시점에 노드에 적어 둔다. */
 function clearIdleAnimationOnSheetSprite(sprite: HTMLElement): void {
+  // 가드는 "복원 스킵" 이 아니라 **한 번도 애니메이션을 켠 적 없는 스프라이트** 용이다.
+  // apply 는 항상 `dataset.battlerAnim` 을 먼저 쓰므로, 켠 적이 있으면 여기로 들어온다.
   if (!sprite.dataset.battlerAnim) return;
   delete sprite.dataset.battlerAnim;
   sprite.style.removeProperty("--battler-anim-frames");
   sprite.style.removeProperty("--battler-anim-duration");
+  // apply 가 심은 롱핸드를 직접 지운다. 지금은 호출자가 곧바로 숏핸드 `background-position` 을
+  // 쓰지만, 그 순서에 복원을 기대면 조용히 깨진다.
+  sprite.style.removeProperty("background-position-x");
+  sprite.style.removeProperty("background-position-y");
   const sheetUrl = sprite.dataset.battlerSheetUrl;
   const sheetSize = sprite.dataset.battlerSheetSize;
   if (sheetUrl) sprite.style.backgroundImage = `url("${sheetUrl}")`;

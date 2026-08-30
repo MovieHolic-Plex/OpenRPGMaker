@@ -30,6 +30,8 @@ type BattlerSample = {
   naturalWidth: number | null;
   frames: string;
   backgroundPositionX: string;
+  backgroundSize: string;
+  frameWidthVar: string;
   animationName: string;
   rect: { width: number; height: number };
 };
@@ -49,6 +51,8 @@ async function sampleBattlers(page: Page): Promise<BattlerSample[]> {
         naturalWidth: image ? image.naturalWidth : null,
         frames: node.style.getPropertyValue("--battler-anim-frames"),
         backgroundPositionX: cs.backgroundPositionX,
+        backgroundSize: cs.backgroundSize,
+        frameWidthVar: node.style.getPropertyValue("--battle-sprite-frame-width"),
         animationName: cs.animationName,
         rect: { width: Math.round(rect.width), height: Math.round(rect.height) },
       };
@@ -165,11 +169,27 @@ test("배틀러 idle 애니메이션이 출하 플레이어에서 프레임을 �
         for (const value of observed) {
           expect(isFrameBoundaryPercent(value, frameCount), `${selector}: ${value} 가 프레임 경계가 아니다`).toBe(true);
         }
+        // (6) 칸의 종횡비를 지킨다 — 상자가 정사각이 아닐 때 늘어나는 회귀를 잡는다.
+        // 계약은 "가로 = 프레임 수 × 상자폭, 세로 = auto". 크로미엄은 세로가 auto 면 한 값으로
+        // 직렬화한다(실측: 8프레임 → "800%"). 세로를 `100%` 로 묶으면 여기서 "800% 100%" 가
+        // 나오고, 정사각 칸이 상자 종횡비(실측 180×210)로 늘어난다.
+        expect(
+          head.backgroundSize,
+          `칸이 상자 종횡비로 늘어났다 (상자 ${head.rect.width}×${head.rect.height})`
+        ).toMatch(new RegExp(`^${frameCount * 100}%(?:\\s+auto)?$`));
       } else {
-        // (4) 주인공은 px 셀 좌표계로 스텝한다.
+        // (4) 주인공은 px 셀 좌표계로 스텝하고, 값은 **칸 경계의 배수**여야 한다.
+        // "px 문자열" 만 재면 steps 가 아닌 보간(1px, 2px, 3px…)도 통과한다.
         expect(head.tagName).toBe("SPAN");
+        const frameWidth = Number.parseFloat(head.frameWidthVar);
+        expect(frameWidth).toBeGreaterThan(0);
         for (const value of observed) {
-          expect(value, `주인공 시트는 px 스텝이어야 한다: ${value}`).toMatch(/^-?\d+(?:\.\d+)?px$/);
+          const match = /^(-?\d+(?:\.\d+)?)px$/.exec(value.trim());
+          expect(match, `주인공 시트는 px 스텝이어야 한다: ${value}`).not.toBeNull();
+          const offset = Math.abs(Number(match?.[1] ?? Number.NaN));
+          const cells = offset / frameWidth;
+          expect(Math.abs(cells - Math.round(cells)), `${value} 가 칸 경계(${frameWidth}px 배수)가 아니다`).toBeLessThan(0.02);
+          expect(Math.round(cells)).toBeLessThan(Number(head.frames));
         }
       }
     }

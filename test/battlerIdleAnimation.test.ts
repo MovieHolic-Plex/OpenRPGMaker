@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { PNG } from "pngjs";
 import { describe, expect, it } from "vitest";
 import {
   BATTLER_IDLE_ANIMATIONS,
@@ -36,6 +37,35 @@ function pngSize(relativePath: string): { width: number; height: number } {
   return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
 }
 
+/** 셀 하나의 알파 잉크 박스. 빈 칸(전부 투명)이면 null. */
+function cellInkBox(
+  png: PNG,
+  cellIndex: number,
+  cellWidth: number
+): { x: number; y: number; w: number; h: number } | null {
+  let minX = cellWidth;
+  let minY = png.height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < png.height; y += 1) {
+    for (let x = 0; x < cellWidth; x += 1) {
+      const alpha = png.data[(y * png.width + cellIndex * cellWidth + x) * 4 + 3];
+      if (alpha > 8) {
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) return null;
+  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+}
+
+function readPng(relativePath: string): PNG {
+  return PNG.sync.read(readFileSync(path.join(ROOT, "public", relativePath)));
+}
+
 function fieldFor(troopId: string): HTMLElement {
   const project = createBlankProject();
   store.replace(project);
@@ -52,6 +82,65 @@ describe("배틀러 idle 애니메이션 — 카탈로그", () => {
       expect(size.width, `${entry.resourceId}: 폭 = 프레임 수 × 셀`).toBe(entry.frameCount * entry.cellWidth);
       expect(size.height, `${entry.resourceId}: 높이 = 셀 높이`).toBe(entry.cellHeight);
       expect(entry.frameDurationMs).toBeGreaterThan(0);
+    }
+  });
+
+  it("모든 칸에 그림이 있고, 칸마다 실루엣이 실제로 움직인다", () => {
+    for (const entry of BATTLER_IDLE_ANIMATIONS) {
+      const png = readPng(entry.path);
+      const boxes = Array.from({ length: entry.frameCount }, (_, index) =>
+        cellInkBox(png, index, entry.cellWidth)
+      );
+      boxes.forEach((box, index) => {
+        // 빈 칸은 재생 중 배틀러가 한 프레임 사라지는 것으로 보인다 — 폭 단언만으로는 안 잡힌다.
+        expect(box, `${entry.resourceId}: 칸 ${index} 가 비어 있다`).not.toBeNull();
+      });
+      // 모든 칸이 픽셀 단위로 같으면 애니메이션이 아니라 같은 그림 N장이다.
+      const signatures = new Set(boxes.map((box) => JSON.stringify(box)));
+      expect(signatures.size, `${entry.resourceId}: 칸들이 전부 동일하다`).toBeGreaterThan(1);
+    }
+  });
+
+  it("액터 스트립의 프레임 0 은 원본 시트의 idle 칸과 픽셀 단위로 같다", () => {
+    // 감속 모드와 애니메이션 미지원 환경이 프레임 0 을 정지 화면으로 쓴다. 생성기가 프레임 0 을
+    // 손보는 순간 그 환경의 그림이 조용히 바뀌므로 여기서 못 박는다.
+    const sheetCell = BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.tier === "sheet-cell");
+    expect(sheetCell.length).toBeGreaterThan(0);
+    for (const entry of sheetCell) {
+      const strip = readPng(entry.path);
+      const sourceName = entry.resourceId === "hero" ? "hero-01-battle" : entry.resourceId.replace("generated-actor-", "");
+      const sheet = readPng(`assets/generated/starter/${sourceName}.png`);
+      for (let y = 0; y < entry.cellHeight; y += 1) {
+        for (let x = 0; x < entry.cellWidth; x += 1) {
+          const fromStrip = (y * strip.width + x) * 4;
+          const fromSheet = (y * sheet.width + x) * 4;
+          for (let channel = 0; channel < 4; channel += 1) {
+            expect(
+              strip.data[fromStrip + channel],
+              `${entry.resourceId}: 프레임 0 이 원본 idle 칸과 다르다 (${x},${y})`
+            ).toBe(sheet.data[fromSheet + channel]);
+          }
+        }
+      }
+    }
+  });
+
+  it("영상 티어의 피크 실루엣이 정적 원본과 같은 크기다", () => {
+    // 이 배율이 어긋나면 애니메이션이 켜진 몬스터만 화면에서 작아 보인다(실측으로 잡은 결함:
+    // 프레임 전집합 대신 한 프레임에 맞추면 박쥐가 원본의 절반이 된다).
+    // 개별 프레임은 모션이므로 좁을 수 있고, **피크**가 원본과 맞아야 한다.
+    for (const entry of BATTLER_IDLE_ANIMATIONS.filter((item) => item.tier === "image-strip")) {
+      const strip = readPng(entry.path);
+      const source = readPng(entry.path.replace("/idle/", "/"));
+      const sourceBox = cellInkBox(source, 0, source.width);
+      const peakWidth = Math.max(
+        ...Array.from({ length: entry.frameCount }, (_, index) => cellInkBox(strip, index, entry.cellWidth)?.w ?? 0)
+      );
+      expect(sourceBox).not.toBeNull();
+      expect(
+        peakWidth / entry.cellWidth,
+        `${entry.resourceId}: 피크 실루엣 폭이 원본과 다르다`
+      ).toBeCloseTo((sourceBox?.w ?? 0) / source.width, 1);
     }
   });
 
@@ -137,6 +226,24 @@ describe("배틀러 idle 애니메이션 — 액터 전투 시트(48px 셀)", ()
     expect(sprite?.style.backgroundPosition).toBe(`-${POSE_FRAME.attack.col * 96}px 0px`);
   });
 
+  it("idle→attack→idle 왕복과 dead(행 1) 에서 배경 좌표가 오염되지 않는다", () => {
+    const node = actorSprite();
+    const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite");
+    applyBattlerPoseForTest(node, "idle");
+    applyBattlerPoseForTest(node, "attack");
+    applyBattlerPoseForTest(node, "idle");
+    expect(sprite?.dataset.battlerAnim).toBe("generated-actor-hero-01-battle");
+    expect(sprite?.style.backgroundImage).toContain("idle/hero-01-battle.png");
+    expect(sprite?.style.backgroundSize).toBe("384px 96px");
+    // dead 는 행 1 을 쓴다 — 애니메이션이 남기고 간 세로 오프셋이 살아 있으면 칸이 어긋난다.
+    applyBattlerPoseForTest(node, "dead");
+    expect(sprite?.dataset.battlerAnim).toBeUndefined();
+    expect(sprite?.style.backgroundSize).toBe("288px 768px");
+    expect(sprite?.style.backgroundPosition).toBe(
+      `-${POSE_FRAME.dead.col * 96}px -${POSE_FRAME.dead.row * 96}px`
+    );
+  });
+
   it("애니메이션이 등록되지 않은 시트는 idle 에서도 정적 칸을 쓴다", () => {
     const node = actorSprite("generated-actor-hero-99-battle");
     const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite");
@@ -161,8 +268,43 @@ describe("배틀러 idle 애니메이션 — CSS 계약", () => {
   });
 
   it("내용 이미지를 상자 밖으로 밀어 배경만 보이게 한다", () => {
-    expect(css).toMatch(/\.battle-enemy-image\[data-battler-anim\]|\[data-battler-anim\]/);
-    expect(css).toContain("object-position");
+    // 선언만 본다 — 주석에 `object-fit: contain` 이 설명으로 나온다.
+    const declarations = css.replace(/\/\*[\s\S]*?\*\//g, "");
+    const rule = declarations.slice(declarations.indexOf(".battle-enemy-image[data-battler-anim]"));
+    const body = rule.slice(0, rule.indexOf("}"));
+    expect(body).toContain("object-position: -99999px -99999px");
+    // `object-fit` 을 여기서 바꾸려 들면 안 된다 — 스킨의 `contain` 규칙이 특정도로 이긴다.
+    // 숨김은 `object-position` 하나에만 의존한다는 것이 계약이다.
+    expect(body).not.toContain("object-fit");
+  });
+
+  it("칸의 종횡비를 지킨다 (상자 종횡비로 늘리지 않는다)", () => {
+    // 세로를 `100%` 로 묶으면 정사각 칸이 상자(적 56×64)에 맞춰 늘어나, 정적 경로의
+    // `object-fit: contain` 레터박스와 다른 그림이 된다.
+    expect(css).toContain("background-size: calc(100% * var(--battler-anim-frames)) auto");
+    expect(css).not.toContain("background-size: calc(100% * var(--battler-anim-frames)) 100%");
+  });
+
+  it("죽은 배틀러는 숨을 쉬지 않는다", () => {
+    const dead = css.slice(css.indexOf(".battle-pose-dead .battle-enemy-image[data-battler-anim]"));
+    expect(dead.slice(0, dead.indexOf("}"))).toMatch(/animation:\s*none/);
+  });
+
+  it("감속·고대비·인쇄에서 <img> 배틀러는 정적 src 로 되돌아간다", () => {
+    // 영상 티어의 프레임 0 은 원본과 다른 순간이라, 멈추는 것만으로는 이전 화면이 되지 않는다.
+    const query = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce), (forced-colors: active), print"));
+    const block = query.slice(0, query.indexOf("\n}"));
+    expect(block).toContain(".battle-enemy-image[data-battler-anim]");
+    expect(block).toContain("object-position: 50% 50%");
+    expect(block).toMatch(/background-image:\s*none/);
+    expect(block).toMatch(/animation:\s*none/);
+  });
+
+  it("48px 시트 액터는 감속 모드에서 첫 칸에 멈춘다", () => {
+    // 이 티어의 프레임 0 은 원본 idle 칸과 픽셀 단위로 같다(위 계약).
+    const query = css.slice(css.lastIndexOf("@media (prefers-reduced-motion: reduce) {"));
+    expect(query).toContain(".battle-actor-sprite[data-battler-anim]");
+    expect(query).toContain("background-position-x: 0px");
   });
 
   it("감속 모드에서 애니메이션을 멈춘다", () => {
