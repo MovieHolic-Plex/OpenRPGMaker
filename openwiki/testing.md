@@ -115,7 +115,9 @@ PROBE_BASE=http://127.0.0.1:9873/ PROBE_OUT=/tmp/probe PROBE_SUBNAV=1 node scrip
 `content` 는 **구조상 단 한 건도 재지 않았다.** 그러는 동안 `tinyFont 0` 은 "작은 글자가 없다" 로
 읽혔지만 실제로는 "가상 요소를 안 봤다" 였다. `tinyPseudo` 를 붙이자 모달 전역에서 유일하게 11px
 미만으로 렌더링되는 텍스트가 드러났다 — `sidebar.css` 의 `.db-tab-group::after` 셰브론(`▾`)
-10px, 30탭 × 6개 = 180건.
+10px, 30탭 × 6개 = **180건**. 근거 파일은
+`verify-shots/db-ux/pseudo-baseline/probe.json`(셰브론만 10px 로 되돌린 30탭 순회,
+`totals.tinyPseudo` 180). `before/probe.json` 에는 이 키가 없으니 그쪽을 근거로 들지 마라.
 
 교훈: **계수기가 0 이라고 보고하면 그 표면이 범위에 들어오는지 먼저 증명하라.** 일부러 깨뜨린
 표본을 만들어 계수기가 실제로 오르는지 보는 것이 가장 짧다(`db-placeholder-proof.mjs` 가 이미

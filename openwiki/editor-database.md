@@ -288,7 +288,7 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 | 선택자 | 이전 | 이후 |
 |---|---|---|
 | `.db-life-header` (생활) | 3× 645.6 (215.2) | 3× 150.0 (50.0) |
-| `.db-life-panel` | 3× 655.8 (218.6) | 3× 150.0 (50.0) |
+| `.db-life-panel` | 4× 655.8 (164.0) | 3× 150.0 (50.0) |
 | `.db-battle-studio-heading` (전투) | 4× 388.4 (97.1) | 4× 151.2 (37.8) |
 | `.db-overview-hero` | 1× 118.5 | 1× 78.4 |
 | `.db-record-intro` | 4× 144.0 (36.0) | 1× 34.2 |
@@ -300,6 +300,15 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 작업영역 높이(`workspaceH`)는 before/after 모두 **모든 탭에서 796px, 편차 0** 이다.
 진단 문서의 "흔들림 275px" 는 이 하네스의 지표로는 재현되지 않는다 — 실제로 움직이는 것은
 위 표의 **헤더 합계 편차(677.5 -> 193.7)** 다. 이 둘을 헷갈리지 마라.
+
+`.db-life-panel` 은 **4개 → 3개**로 개수 자체가 줄었다. before 의 `characters` 탭이 이 헤더를
+둘(171.2 + 142.2) 달고 있었고 지금은 탭당 하나다. "3 → 3" 이 아니라 "4 → 3" 이라 평균만 보면
+이야기를 놓친다.
+
+`.db-ws-hero` 의 이후 분포는 **넓어졌다** — 37.0~156.7px. 합계는 29px 줄었지만 그 안에서 세 탭이
+오히려 커졌다(`equipment` 151.1→156.7, `items` 103.1→105.5, `farm-spatial` 85.1→85.6). 줄상자
+바닥 1.35 가 기존 배너를 조금씩 키운 결과다. 이 선택자를 손대는 다음 사람은 "전부 줄었다" 고
+가정하지 마라.
 
 `.db-tab-note` 주석: 커밋된 before 에는 이 컨테이너가 없다. 당시 구조물 탭은 맨 `h3` + `p` 였고
 프로브 선택자 목록에 안 걸렸다. `fbd2d9fb` 가 같은 내용을 `.db-tab-note` 로 감싸자 75.7px 로
@@ -336,8 +345,9 @@ leaf 조건에서 멈추고 `default: return false` 했다:
   `.db-tab-note:has(.db-tab-note-chip)` 이다 — 칩이 없는 기존 사용처의 모양은 건드리지 않는다.
 - 칩 내용은 `makeDatabaseTabIcon(<탭 id>)` + `<span>` 라벨. 저작 예시는
   `src/editor/panels/structureKitDbTab.ts` (구조물 탭).
-- 칩의 글자 크기는 정확히 **11px** 이다. 모달 전역 최소 가독 크기와 같은 값으로 맞춘 것이니
-  더 줄이지 마라.
+- 칩의 글자 크기는 정확히 **11.5px** 이다(`10-tab-chrome-unify.css` 의 `font: 600 11.5px/1.35`).
+  `studio-theme.css` 의 런타임 바닥 `max(11.5px, 1em)` 과 같은 값이다. 프로브 문턱(11)과 혼동하지
+  마라 — 문턱은 기준선과 맞춘 계측 값이고, 이 11.5 는 새로 쓰는 칩이 따를 값이다.
 
 긴 문장을 칩의 `title` 에만 넣는 것은 **보조 정보일 때만** 허용된다. `title` 은 hover 전용이라
 키보드·터치로 닿지 않고 스크린리더 announce 도 일관되지 않는다. 그 문장이 없으면 기능을 오해할
@@ -386,7 +396,14 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 아니라서 `ownText` 검사에 절대 걸리지 않는데 화면에는 글자가 그려진다. 안 재면 `tinyFont 0` 이
 "작은 글자가 없다" 가 아니라 "안 봤다" 가 된다. 이 계수기를 붙이자마자 모달 전역에서 유일한 11px
 미만 렌더링 텍스트가 드러났다 — `sidebar.css` 의 `.db-tab-group::after` 셰브론(`▾`) 10px,
-30탭 × 6개 = 180건. 11px 로 올려 `tinyPseudo` 0 이 됐다. 장식 글리프도 예외로 두지 않는다.
+30탭 × 6개 = **180건**. 11px 로 올려 `tinyPseudo` 0 이 됐다. 장식 글리프도 예외로 두지 않는다.
+
+근거는 커밋돼 있다: `verify-shots/db-ux/pseudo-baseline/probe.json` 은 셰브론만 10px 로 되돌린
+상태의 30탭 순회이고 `totals.tinyPseudo` 가 **180**, 전량이
+`div.db-tab-group::after@10px "▾"` 이며 탭마다 정확히 6개다. 같은 파일의 `tinyFont` 0 ·
+`selfClipped` 0 은 `after/probe.json` 과 같아서, 이 쌍의 유일한 차이가 셰브론임을 보여준다.
+`before/probe.json` 에는 `tinyPseudo` 키가 **아예 없다** — 계수기가 그 순회보다 나중에 생겼다.
+그래서 이 지표의 before 는 위 baseline 파일이고, before/after 쌍이 아니다.
 소스의 `9px`/`11px` 선언을 일괄 치환하는 방식은 70개 파일을 흔들면서 관측되는 이득이 없어 쓰지 않았다.
 
 **`lowLineHeight` 480 → 25 이고, 남은 25건은 의도적이다.** `system-studio.css` 의 `font: .../1 !important`
