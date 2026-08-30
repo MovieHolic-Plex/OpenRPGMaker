@@ -12,6 +12,8 @@ import { AI_UI_ACTIONS, AI_UI_EVENT_SURFACES } from "@/ai/uiEventTypes";
 const read = (path: string): string => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 const PANEL = read("src/editor/panels/aiChatPanel.ts");
+// 턴 계측은 2026-08-30 분해에서 런너로 옮겨갔다 — 계약은 코드가 있는 곳을 봐야 한다.
+const TURN_RUNNER = read("src/editor/panels/aiTurnRunner.ts");
 const HISTORY_MODAL = read("src/editor/panels/aiConversationHistoryModal.ts");
 const INSTRUCTIONS_MODAL = read("src/editor/panels/aiInstructionsModal.ts");
 const MODE = read("src/app/mode.ts");
@@ -30,7 +32,7 @@ const CALL_SITES: Readonly<Record<keyof typeof AI_UI_ACTIONS, string>> = {
   panelCollapse: PANEL,
   newConversation: PANEL,
   turnAbort: PANEL,
-  turnRetry: PANEL,
+  turnRetry: TURN_RUNNER,
   temperatureSwitch: PANEL,
 };
 
@@ -76,13 +78,13 @@ describe("ai ui event 계측 계약", () => {
 
   it("the chat turn row carries both audit and front actions", () => {
     // 턴 행이 «턴 구간» audit 을 쓰는지(세션 전체가 아니라) + 프론트 액션을 싣는지.
-    expect(PANEL).toContain("sessionAuditCountAtTurnStart");
-    expect(PANEL).toContain("takeAiUiEventsSince(uiEventMarkerAtTurnStart)");
-    expect(PANEL).toContain("uiActions: turnUiActions");
+    expect(TURN_RUNNER).toContain("sessionAuditCountAtTurnStart");
+    expect(TURN_RUNNER).toContain("takeAiUiEventsSince(uiEventMarkerAtTurnStart)");
+    expect(TURN_RUNNER).toContain("uiActions: turnUiActions");
     // 시작 pending 행과 종료 행이 같은 id 를 쓴다 — 죽은 턴도 지시와 시작 시각은 남는다.
-    expect(PANEL).toContain("pending: true");
-    expect(PANEL).toContain("id: turnLogId");
+    expect(TURN_RUNNER).toContain("pending: true");
+    expect(TURN_RUNNER).toContain("id: turnLogId");
     // 소유권을 잃은 턴도 남긴다(예전에는 여기서 그냥 return 했다).
-    expect(PANEL).toContain("orphaned: true");
+    expect(TURN_RUNNER).toContain("orphaned: true");
   });
 });

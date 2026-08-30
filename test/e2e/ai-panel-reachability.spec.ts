@@ -35,13 +35,23 @@ const SEED_CONVERSATION = {
       at: new Date().toISOString(),
     },
     {
+      // 넓은 자료는 **지난 턴**에도 있어야 한다. 최신 턴에만 두면 `.ai-turn-group` 이
+      // 다시 `overflow: hidden` 으로 회귀해도 E2E 가 못 잡는다 — 접히는 것은 지난 턴뿐이라
+      // 판정 대상이 그룹 밖에 있게 된다(적대적 검토 지적). 그래서 여기에도 열보다 넓은
+      // 코드 펜스와 표를 심는다.
       kind: "assistant",
       text: [
         "광장 남쪽에 상점 3채와 우물을 배치했습니다.",
         "",
         "```json",
-        '{ "tool": "place_structure_cluster", "mapId": "map_village_30_100x100", "assets": 4 }',
+        '{ "tool": "place_structure_cluster", "mapId": "map_village_30_100x100", "assets": 4, "anchors": ["plaza_south_gate", "well_center", "shop_row_east"] }',
         "```",
+        "",
+        "| 동 | 자리 | 크기 | 맞닿은 길 | 비고 |",
+        "| --- | --- | --- | --- | --- |",
+        "| shop_a | (24,22) | 3×3 | road_seg_2 | 광장 남서, 간판 동향 |",
+        "| shop_b | (28,22) | 3×3 | road_seg_3 | 광장 남동, 우물과 1칸 |",
+        "| well_a | (26,24) | 2×2 | road_seg_4 | 광장 정중앙 남쪽 |",
       ].join("\n"),
       at: new Date().toISOString(),
     },
@@ -166,7 +176,9 @@ async function unreachable(page: Page): Promise<readonly Unreachable[]> {
     const shown = (node: HTMLElement): boolean => {
       const s = getComputedStyle(node);
       return s.display !== "none" && s.visibility !== "hidden" && Number(s.opacity) !== 0
-        && node.offsetWidth > 0 && node.offsetHeight > 0;
+        // 한 축만 0 인 요소(본문 0×485 같은 눌림)를 여기서 걸러 버리면 아래 두-축-작음
+        // 판정이 죽은 코드가 된다 — 하나라도 살아 있으면 통과시키고 걸러내기는 그쪽에 맡긴다.
+        && (node.offsetWidth > 0 || node.offsetHeight > 0);
     };
     /** 접힘/투명 조상 안쪽은 판정하지 않는다(의도된 축소이지 잘림이 아니다). */
     const hidden = (node: HTMLElement): boolean => {
@@ -428,6 +440,11 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
           [...(log?.querySelectorAll<HTMLDetailsElement>("details") ?? [])].map((d) => d.open);
         for (const node of document.querySelectorAll<HTMLDetailsElement>(".ai-chat-log details")) node.open = true;
       });
+      // 펼침이 아무것도 바꾸지 않은 독은 "펼침" 측정이 빈 통과가 된다 — float 의
+      // restored/expanded 스크린샷이 바이트까지 같았다(적대적 검토 지적 ③). 펼친 결과가
+      // 실제로 있는지 못 박고 지나간다.
+      await expect(page.locator(".ai-chat-log details[open]").first()).toBeAttached();
+      await expect(page.locator(".ai-turn-group:not(.is-collapsed)").first()).toBeAttached();
       if (viewport.name === "1280x800") {
         await page.screenshot({ path: path.join(OUT, `${applied}-2-expanded.png`) });
       }
