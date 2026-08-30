@@ -411,3 +411,33 @@
   right: auto;
   width: 100%;
 }
+
+/* 답변 안의 내부 이동 링크 — 조수가 부른 맵·NPC 이름을 눌러 그 자리로 간다.
+   버튼이지만 본문 흐름 안의 낱말이므로 버튼 크롬(테두리·배경·최소 높이)을 걷어내고
+   밑줄만 남긴다. `min-height`/`padding` 을 상속하면 한 낱말이 문장 줄높이를 밀어 올린다. */
+.ai-chat-log .ai-answer-link {
+  background: none;
+  border: 0;
+  border-radius: 2px;
+  color: var(--accent);
+  cursor: pointer;
+  display: inline;
+  font: inherit;
+  min-height: 0;
+  padding: 0;
+  text-align: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+.ai-chat-log .ai-answer-link:hover,
+.ai-chat-log .ai-answer-link:focus-visible {
+  background: var(--accent-muted);
+  text-decoration-style: solid;
+}
+
+/* 같은 이름이 여러 곳이면 바로 데려갈 수 없다 — 찾기 창을 연다는 뜻을 표시로 구분한다. */
+.ai-chat-log .ai-answer-link[data-ref-kind="ambiguous"] {
+  color: var(--gold-deep);
+}

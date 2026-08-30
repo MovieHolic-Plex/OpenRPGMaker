@@ -44,7 +44,7 @@ import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/
 import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
-import { renderMarkdown } from "@/util/markdown";
+import { renderAssistantAnswer } from "@/editor/panels/aiAnswerLinkRender";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import {
@@ -1097,7 +1097,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (lastAssistant) {
       const displayed = lastAssistant.textContent ?? "";
       if (displayed.includes(QUICK_REPLY_MARKER)) {
-        lastAssistant.replaceChildren(renderMarkdown(stripQuickReplyLine(assistantText)));
+        lastAssistant.replaceChildren(renderAssistantAnswer(stripQuickReplyLine(assistantText)));
       }
       lastAssistant.after(chipsHost);
     } else {

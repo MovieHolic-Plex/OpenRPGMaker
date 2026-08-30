@@ -45,6 +45,7 @@ import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
+import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
@@ -203,6 +204,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GROUP_LAYOUT_TOOLS, "tile"),
   ...withDomain(GROUP_SAMPLE_TOOLS, "tile"),
   ...withDomain(VISION_QUERY_TOOLS, "map"),
+  // 도메인을 주지 않는다 — 도메인 없는 툴은 모든 모드의 라운드로빈 트림을 통과하면서 핀을 쓰지 않는다.
+  // isPinnedTool은 도메인이 있는 툴만 핀할 수 있어, map 도메인과 핀을 함께 주면 상한(40)의 한 자리를
+  // 강제로 예약한다. 실측에서는 그 예약 때문에 test/regionIntentExposure.test.ts의 대표 도구 보장 3건이 실패했다.
+  ...VIEW_FOCUS_TOOLS,
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
 ]);

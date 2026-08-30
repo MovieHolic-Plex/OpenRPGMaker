@@ -11,7 +11,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
 import { stripQuickReplyLine } from "@/ai/interviewPrompt";
-import { renderMarkdown } from "@/util/markdown";
+import { renderAssistantAnswer } from "./aiAnswerLinkRender";
 import { el } from "@/util/dom";
 import {
   reasoningToggleText,
@@ -181,7 +181,7 @@ export function appendConversationBubble(options: {
   const displayText = options.role === "assistant" || options.role === "system"
     ? stripQuickReplyLine(options.text)
     : options.text;
-  if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderMarkdown(displayText));
+  if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderAssistantAnswer(displayText));
   else if (displayText) body.textContent = displayText;
   options.log.append(row);
   options.log.scrollTop = options.log.scrollHeight;
@@ -192,7 +192,7 @@ export function renderStreamedMarkdown(target: HTMLElement | null): void {
   if (!target) return;
   const body = target.querySelector(".ai-command-row-body") ?? target;
   const raw = body.textContent ?? "";
-  if (raw.trim()) body.replaceChildren(renderMarkdown(raw));
+  if (raw.trim()) body.replaceChildren(renderAssistantAnswer(raw));
 }
 
 export interface ConversationLogHost {

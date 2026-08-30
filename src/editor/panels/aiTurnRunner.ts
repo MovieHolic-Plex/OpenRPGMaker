@@ -31,6 +31,7 @@ import {
   syncAgentBlueprintWithSpec,
 } from "@/editor/agentBlueprint";
 import { appliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
+import { focusEditorRegion, type EditorFocusRegion } from "@/editor/editorReferenceNavigation";
 import {
   clearAgentGhostPreview,
   createThrottledAgentGhostPreviewUpdater,
@@ -276,9 +277,16 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           deps.surface.setStatus(`밑그림 확정 — 에셋 ${spec.assets.length}개`);
         }
         // 인터뷰 하이라이트: 강조 툴콜을 에디터 selection으로 반영해 맵 위에 사각형을 그린다.
+        // 맵 전환·카메라까지 함께 옮긴다 — 선택만 세우면 강조 대상이 **다른 맵**이거나 화면 밖일 때
+        // 사용자에게는 아무 일도 일어나지 않는다(툴은 성공했는데 "어디를 묻는지" 가 안 보였다).
         if (event.name === "highlight_map_region" && event.result.ok) {
-          const region = event.result.data as { mapId: string; x: number; y: number; w: number; h: number };
+          const region = event.result.data as EditorFocusRegion;
           editorState.set({ selection: { mapId: region.mapId, x: region.x, y: region.y, width: region.w, height: region.h } });
+          focusEditorRegion(region);
+        }
+        // 조수의 화면 이동 요청: 맵을 열고 카메라를 보내고 잠깐 강조한다(선택 상태는 건드리지 않는다).
+        if (event.name === "focus_editor_view" && event.result.ok) {
+          focusEditorRegion(event.result.data as EditorFocusRegion, { highlight: true });
         }
         // 타일 이미지 표시 요청: 채팅 버블에 썸네일로 렌더.
         if (event.name === "show_tiles" && event.result.ok) {
