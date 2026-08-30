@@ -204,7 +204,9 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
 }
 
 function sourceNameOf(
-  picker: { readonly presetId: string; readonly role: string } | undefined,
+  // paletteTilePickerForTool 은 «고른 것 없음» 을 null 로 준다. undefined 만 받으면 호출부마다
+  // ?? undefined 를 붙여야 해서 정의를 넓힌다.
+  picker: { readonly presetId: string; readonly role: string } | null | undefined,
   group: { readonly name: string },
 ): string {
   return picker ? `${picker.presetId}/${picker.role}` : group.name;
