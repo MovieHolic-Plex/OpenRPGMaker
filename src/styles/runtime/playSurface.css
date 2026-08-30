@@ -133,7 +133,25 @@
   width: min(100%, 720px);
 }
 
+/* ── 컷신 HUD 억제 ───────────────────────────────────────────────────────────────
+   `cutscene-hud-hidden` 은 playSceneScreenEffects.syncCutsceneHudVisibility 가 컷신
+   입력 잠금(또는 Modern `Cutscene Control` 의 `HUD 숨김`)에 맞춰 켠다.
+
+   왜 대화창의 `:has()` 규칙으로 부족한가 (실측): handSlot.css / actionHud.css 는
+   `.play-stage:has(> .dialogue-overlay:not(:empty))` 로 HUD 를 숨긴다. 회상 컷신의
+   카메라 팬·픽처·틴트 비트에는 대사가 없어 오버레이가 비어 있고, 그 구간에서 미니맵과
+   손 슬롯이 그대로 떠 있었다. 그래서 잠금 자체를 보는 클래스가 따로 필요하다.
+
+   규칙을 이 파일에 두는 이유: playSurface.css 는 player.css(playerRuntime.css 경유)와
+   editor/core.part-2.css 양쪽 import 폐포에 모두 들어 있는 유일한 런타임 시트다.
+   handSlot/minimap/actionHud 시트는 플레이어 폐포에만 있어 에디터 테스트플레이에서는
+   규칙이 죽는다. 자식 조합자(`>`)를 쓰지 않는 것은 미니맵·타이머가 스테이지 직계가
+   아닌 마운트 경로도 있기 때문이다. */
+.play-stage.cutscene-hud-hidden .hand-slot,
+.play-stage.cutscene-hud-hidden .action-hud,
 .play-stage.cutscene-hud-hidden .minimap-root,
-.play-stage.cutscene-hud-hidden .hand-slot {
+.play-stage.cutscene-hud-hidden .runtime-timer-hud,
+.play-stage.cutscene-hud-hidden .runtime-time-hud,
+.play-stage.cutscene-hud-hidden .touch-pad {
   display: none;
 }

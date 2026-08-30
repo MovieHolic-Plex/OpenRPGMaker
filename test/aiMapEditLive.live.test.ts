@@ -15,6 +15,8 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { chatCompletion, type AiConfig } from "@/ai/llmClient";
+import { defaultModelForAuthMode } from "@/ai/modelCatalog";
+import { DEFAULT_OH_MY_PI_PROVIDER } from "@/ai/ohMyPiProviders";
 import { GOLDEN_TASKS, scoreProject, type GoldenTask } from "@/evals";
 
 /** 수정 과제만 — 신규 시공 과제는 evals 스위트가 본다. */
@@ -34,7 +36,13 @@ function loadEnv(): Record<string, string> {
 }
 
 function aiConfig(env: Record<string, string>): AiConfig {
-  const model = env.RPG_ZZU_AI_MODEL || env.VITE_LLM_MODEL || "minimax/minimax-m3";
+  // 모델 기본값은 제공자 레지스트리에서 파생한다 — 문자열을 박지 않는다. 예전 폴백은
+  // `src/ai/ohMyPiProviders.ts` 에 등록조차 없는 고아 ID 였다.
+  // `defaultModelForAuthMode` 는 그 제공자 카탈로그 첫 항목(= `provider.defaultModel`)을
+  // 돌려주므로 에디터가 실제로 쓰는 모델과 이 재현 경로가 갈라지지 않는다.
+  const model = env.RPG_ZZU_AI_MODEL
+    || env.VITE_LLM_MODEL
+    || defaultModelForAuthMode("chatgpt", DEFAULT_OH_MY_PI_PROVIDER);
   return {
     authMode: "apiKey",
     baseUrl: (env.AI_BASE_URL || "https://127.0.0.1:9999/api/cpen").replace(/\/$/, ""),

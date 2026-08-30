@@ -57,7 +57,7 @@ export function isAiConfigReady(config: AiConfig): boolean {
 }
 
 export function phaseStatusText(phase: Extract<SessionEvent, { type: "phase" }>["value"]): string {
-  // 모델 코드(m3/flash)는 상태줄 노이즈 — 사용자에게는 단계만.
+  // 모델 코드는 상태줄 노이즈 — 사용자에게는 단계만.
   if (phase === "plan") return "계획 중";
   if (phase === "execute") return "실행 중";
   return "검수 중";

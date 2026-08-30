@@ -14,7 +14,7 @@
 
 ## 해결 원칙
 
-> **건축은 손으로(결정적 스탬프), 창작은 에이전트로(minimax).**
+> **건축은 손으로(결정적 스탬프), 창작은 에이전트로.**
 
 흔한 건축(집·길·강·지붕·NPC)은 LLM 없이 즉시 스탬프 → 재시도·비용 0. 자유서술/창작만 에이전트. 어시스턴트는 창작 전용으로 비우고, 스킬은 슬래시로 발견.
 
@@ -47,7 +47,7 @@
 1. 프리셋이 지붕 어휘를 `overlay_detail`로 두지 않게 보장(전개 가능 패턴 지정).
 2. 안전망: `src/editor/tools/v3/rmTypeExpander.ts:203` `expandRoof`가 `overlay_detail`을 만나면 throw 대신 장식 오버레이 경로로 우회(또는 상위 그룹에서 전개 가능한 형제 파트 선택). 승인 시 `patternGrammar.parts` 미도출 갭(`vocabularyTools.ts:253`)도 보정.
 
-**D. AI-fill (✨) 통합:** 팔레트 "✨ AI로 채우기" = 선택 영역 좌표를 프롬프트에 자동 주입 → `set_build_spec` 자동 밑그림 → minimax 에이전트 위임. 기존 region-task 경로 재사용(가능하면 `aiChatPanel` 수정 없이).
+**D. AI-fill (✨) 통합:** 팔레트 "✨ AI로 채우기" = 선택 영역 좌표를 프롬프트에 자동 주입 → `set_build_spec` 자동 밑그림 → 채팅 에이전트 위임. 기존 region-task 경로 재사용(가능하면 `aiChatPanel` 수정 없이).
 
 **수용 기준:** 영역 드래그 → 팝업 → 🏠집 클릭 → 벽+문+지붕 즉시 시공(LLM 호출 0, 재시도 0, 되돌리기 가능). 길/강/NPC 동일. Playwright E2E로 실측.
 
@@ -60,7 +60,7 @@
 - 헤더에서 **모드뱃지(`ai-mode-badge`, :1768) · 스킬핀바(`ai-skill-pinbar`, :1483) 제거** → 헤더 = 제목 + 상태(status/abort)만.
 - `/` 슬래시 메뉴 확장(`slashHost` 재사용): 스킬 검색 + 각 항목 설명/예시(레시피). 평소 숨김, `/`로 소환. 스킬 토글 "+"는 슬래시로 통합/제거.
 - 스킬 드로어는 유지하되 슬래시의 "전체 보기"로만 진입.
-- 모델 정책: 모든 LLM `minimax/minimax-m3` 유지. 테스트가 옛 모델 기대하면 테스트를 minimax로 고칠 것(코드 되돌리기 금지).
+- 모델 정책: **폐기됨(2026-08-30).** 특정 공급자로 모든 LLM 을 고정하던 규칙은 무효다. 모델은 제공자 레지스트리(`src/ai/ohMyPiProviders.ts`)와 `src/ai/llmClient.ts` 기본값이 정한다.
 
 **수용 기준:** 헤더에 뱃지/핀바 없음. `/`로 스킬 목록 검색·소환. 기존 2272 테스트 불변(모드뱃지/핀바 관련 테스트는 신 IA에 맞게 수정).
 
@@ -72,7 +72,7 @@
 - **T2 (건축 팔레트+지붕):** `buildPalette.ts`(신규) + `EditScene.ts` + `editorZoomToolbar.ts` + `rmTypeExpander.ts` + 어휘 프리셋 + `mapSelectionContextMenu`. (B+D)
 - **T3 (슬래시 IA):** `aiChatPanel.ts` + `aiSkillDrawer.ts` + slash 확장. (C)
 
-교차 파일 없음(T1=툴층, T2=에디터/씬층, T3=AI패널층). 각 워크트리 독립. 팀장(Claude)이 워크트리 생성 → codex 파일수정 → diff audit(특히 minimax 정책 위반 폐기) → commit → 병합 → tsc + 전체 테스트 게이트 → build + pm2 restart.
+교차 파일 없음(T1=툴층, T2=에디터/씬층, T3=AI패널층). 각 워크트리 독립. 팀장(Claude)이 워크트리 생성 → codex 파일수정 → diff audit → commit → 병합 → tsc + 전체 테스트 게이트 → build + pm2 restart.
 
 ## 검증
 

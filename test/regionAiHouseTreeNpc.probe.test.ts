@@ -122,7 +122,7 @@ describe("region AI house/tree/npc probe", () => {
         authMode: "apiKey",
         apiKey: creds.apiKey,
         baseUrl: creds.baseUrl,
-        model: "minimax/minimax-m3",
+        model: "stub-model",
         liteModel: "google/gemini-3.1-flash-lite",
         maxTokens: 8192,
         maxToolCalls: 40,

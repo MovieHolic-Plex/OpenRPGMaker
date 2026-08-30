@@ -110,7 +110,7 @@ export function defaultAiConfig(): AiConfig {
     apiKey: "",
     maxToolCalls: 200,
     maxTokens: DEFAULT_MAX_TOKENS,
-    // 장문 reasoning 모델(MiniMax 등)을 감독으로 쓸 때만 low 캡이 의미 있음.
+    // 감독 단계 기본 추론 강도. 벽시계·비용을 아끼려고 낮게 시작한다(실행 단계는 off).
     reasoningEffort: "low",
     agentMode: "auto",
   };
@@ -257,28 +257,11 @@ export function configForLiteModel(config: AiConfig): AiConfig {
   return { ...config, model: liteModel, liteModel, reasoningEffort: "off" };
 }
 
-/** minimax 등 장문 reasoning 모델 탐지. */
-export function isLongReasoningModel(model: string): boolean {
-  return model.trim().toLowerCase().includes("minimax");
-}
-
-/**
- * 요청 직전 reasoning 정책 적용.
- * - lite/execute: 이미 off
- * - MiniMax + medium → low 로 캡(사용자가 high를 고른 경우만 medium까지 허용)
- * - 그 외는 설정 유지
- */
-export function configWithReasoningPolicy(config: AiConfig): AiConfig {
-  if (config.reasoningEffort === "off") return config;
-  if (!isLongReasoningModel(config.model)) return config;
-  if (config.reasoningEffort === "medium") {
-    return { ...config, reasoningEffort: "low" };
-  }
-  if (config.reasoningEffort === "high") {
-    return { ...config, reasoningEffort: "medium" };
-  }
-  return config;
-}
+// 모델 이름을 보고 reasoning effort 를 몰래 내리던 정책(`isLongReasoningModel` /
+// `configWithReasoningPolicy`)은 걷어냈다. 그 캡은 특정 공급자 하나(장문 추론 모델)만
+// 겨냥한 문자열 매칭이었고, 그 공급자를 더 쓰지 않으므로 남은 분기는 항등 함수였다.
+// 사용자가 고른 reasoningEffort 는 이제 그대로 요청에 실린다. 공급자가 reasoning 필드를
+// 아예 거부하는 경우는 ProviderCapability.supportsReasoningField 가 데이터로 처리한다.
 
 // OpenAI tools 배열의 요소 형태(toolRegistry.toOpenAiTools() 결과와 동일 구조).
 export interface OpenAiToolSchema { type: "function"; function: { name: string; description: string; parameters: unknown } }
@@ -504,19 +487,18 @@ function stripMessageNames(messages: readonly ChatMessage[]): readonly ChatMessa
 }
 
 function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
-  const effective = configWithReasoningPolicy(config);
-  const capability = providerCapability(effective, { hasTools: Boolean(req.tools && req.tools.length > 0) });
+  const capability = providerCapability(config, { hasTools: Boolean(req.tools && req.tools.length > 0) });
   // 공급자 max_tokens 상한이 있으면 클램프한다(실측: cpen 은 32768 → 422, 8192 → 200).
-  let maxTokens = effective.maxTokens;
+  let maxTokens = config.maxTokens;
   if (capability.maxTokensCeiling !== undefined && maxTokens > capability.maxTokensCeiling) {
     warnCapabilityOnce(
-      `maxTokens:${effective.model}`,
-      `[llmClient] 공급자 제약: ${effective.model} 의 max_tokens 를 ${maxTokens} → ${capability.maxTokensCeiling} 로 클램프했습니다(실측 기반 상한).`,
+      `maxTokens:${config.model}`,
+      `[llmClient] 공급자 제약: ${config.model} 의 max_tokens 를 ${maxTokens} → ${capability.maxTokensCeiling} 로 클램프했습니다(실측 기반 상한).`,
     );
     maxTokens = capability.maxTokensCeiling;
   }
   const body: Record<string, unknown> = {
-    model: effective.model,
+    model: config.model,
     messages: capability.supportsMessageName ? req.messages : stripMessageNames(req.messages),
     stream,
     max_tokens: maxTokens,
@@ -528,13 +510,13 @@ function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): strin
   if (req.response_format) body.response_format = req.response_format;
   if (typeof req.temperature === "number" && Number.isFinite(req.temperature)) body.temperature = req.temperature;
   // reasoning 필드는 공급자가 지원할 때만 붙인다(실측: cpen 은 reasoning → 400).
-  if (effective.reasoningEffort && effective.reasoningEffort !== "off") {
+  if (config.reasoningEffort && config.reasoningEffort !== "off") {
     if (capability.supportsReasoningField) {
-      body.reasoning = { effort: effective.reasoningEffort };
+      body.reasoning = { effort: config.reasoningEffort };
     } else {
       warnCapabilityOnce(
-        `reasoning:${effective.model}`,
-        `[llmClient] 공급자 제약: ${effective.model} 은(는) reasoning 필드를 지원하지 않아 본문에서 뺐습니다(실측: CPEN v1 400).`,
+        `reasoning:${config.model}`,
+        `[llmClient] 공급자 제약: ${config.model} 은(는) reasoning 필드를 지원하지 않아 본문에서 뺐습니다(실측: CPEN v1 400).`,
       );
     }
   }

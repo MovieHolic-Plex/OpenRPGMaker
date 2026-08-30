@@ -21,8 +21,8 @@ import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 const CONFIG: AiConfig = {
   authMode: "apiKey",
   baseUrl: "https://example.invalid/v1",
-  model: "minimax/minimax-m3",
-  liteModel: "minimax/minimax-m3",
+  model: "stub-model",
+  liteModel: "stub-model",
   apiKey: "sk-test",
   maxToolCalls: 8,
   maxTokens: 2048,
