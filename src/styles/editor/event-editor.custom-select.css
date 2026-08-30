@@ -20,7 +20,8 @@
 }
 
 .event-editor-modal-body .event-custom-select-trigger,
-.event-subdialog-body .event-custom-select-trigger {
+.event-subdialog-body .event-custom-select-trigger,
+.ai-settings-form .event-custom-select-trigger {
   align-items: center;
   appearance: none;
   background:
@@ -45,7 +46,8 @@
 }
 
 .event-editor-modal-body .event-custom-select-trigger:hover:not(:disabled),
-.event-subdialog-body .event-custom-select-trigger:hover:not(:disabled) {
+.event-subdialog-body .event-custom-select-trigger:hover:not(:disabled),
+.ai-settings-form .event-custom-select-trigger:hover:not(:disabled) {
   background: color-mix(in srgb, var(--bg-inset) 90%, var(--accent) 10%);
   border-color: color-mix(in srgb, var(--accent) 52%, var(--border-default));
 }
@@ -53,7 +55,9 @@
 .event-editor-modal-body .event-custom-select-trigger:focus-visible,
 .event-editor-modal-body .event-custom-select-trigger[aria-expanded="true"],
 .event-subdialog-body .event-custom-select-trigger:focus-visible,
-.event-subdialog-body .event-custom-select-trigger[aria-expanded="true"] {
+.event-subdialog-body .event-custom-select-trigger[aria-expanded="true"],
+.ai-settings-form .event-custom-select-trigger:focus-visible,
+.ai-settings-form .event-custom-select-trigger[aria-expanded="true"] {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent), 0 1px 2px var(--shadow-pop);
   outline: none;

@@ -470,11 +470,13 @@
   margin: 0;
 }
 
+/* 높이는 --map-explorer-height 하나로 정한다 — 목록과 상세 칸이 다른 값을 쓰면 2단이
+   어긋난 채로 끝난다. 값 정의와 근거는 아래 §2단 탐색기에 있다. */
 .map-tree-panel.is-basic-flyout .map-tree-list-basic {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: min(52vh, 420px);
+  max-height: var(--map-explorer-height, min(52vh, 420px));
   overflow: auto;
   padding: 2px 0 4px;
 }
@@ -600,4 +602,307 @@
 
 .map-tree-panel.is-basic-flyout .map-tree-add-child-quick:hover {
   background: var(--bg-hover);
+}
+
+/* ── 초보 플라이아웃 2단 탐색기 (2026-08-30) ─────────────────────────────────
+   왜 2단인가: 1단 340px 에서 행 메타를 늘리면 그대로 말줄임된다 — 위 §행 밀도 주석에
+   적힌 실측(1fr 트랙 93.59px, 메타 필요폭 98px)이 그 상한이다. 그래서 목록 칸은
+   이름을 읽는 폭으로 남기고, 정보는 폭이 따로 있는 상세 칸으로 옮겼다.
+
+   목록 칸 폭(320px)은 이관 전 트리 폭(314px 실측)보다 크게 잡았다. 여기를 줄이면
+   map-panel-modern.spec.ts 의 "이름과 메타가 자기 칸 안에서 말줄임된다" 가 잡는다. */
+
+.map-tree-panel.is-basic-flyout .map-tree-explorer {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 320px minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-explorer-list,
+.map-tree-panel.is-basic-flyout .map-tree-explorer-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  min-width: 0;
+}
+
+.map-tree-panel.is-basic-flyout .map-tree-explorer-detail {
+  border-left: var(--stroke-1) solid var(--border-subtle);
+  padding-left: var(--space-3);
+}
+
+/* ── 상세 칸 ──────────────────────────────────────────────────────────────── */
+
+/* 목록(--map-explorer-height)과 같은 키를 쓴다 — 두 칸 높이가 갈리면 2단이 어긋나 보인다.
+   540px 은 미리보기 150 + 속성 5줄 + 섹션 4개가 스크롤 없이 들어가는 실측 높이다. */
+.map-tree-panel.is-basic-flyout {
+  --map-explorer-height: min(64vh, 540px);
+  /* 상세 칸에는 목록 칸의 헤더(40)·간격(8)·필터(72)가 없다 — 그만큼 더 쓴다.
+     안 더하면 목록보다 120px 짧게 끝나 진단 줄이 접힌 아래로 내려간다(실측). */
+  --map-inspector-height: calc(var(--map-explorer-height) + 120px);
+}
+
+.map-inspector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: var(--map-inspector-height);
+  min-height: 0;
+  min-width: 0;
+}
+
+/* 동작 버튼 줄은 이 스크롤러 밖에 남는다 — 안에 두면 「맵 설정」이 접힌 아래로 내려간다. */
+.map-inspector-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.map-inspector-empty {
+  color: var(--text-3);
+  font: 500 12px/1.5 var(--font-ui);
+  margin: 0;
+}
+
+.map-inspector-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* 캔버스 크기는 mapInspectorPane.ts 가 맵 비율대로 인라인으로 못 박는다(백킹 2배).
+   여기서 width/height 를 다시 주면 그 계산을 덮어써 흐려지므로 상자만 담당한다. */
+.map-inspector-preview {
+  align-items: center;
+  background: var(--bg-inset);
+  border: var(--stroke-1) solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: flex;
+  justify-content: center;
+  min-height: 96px;
+  overflow: hidden;
+  padding: var(--space-2);
+}
+
+.map-inspector-preview-canvas {
+  display: block;
+  max-width: 100%;
+}
+
+.map-inspector-title {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.map-inspector-name {
+  color: var(--text-1);
+  font: 800 14px/1.25 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-inspector-badge {
+  border-radius: var(--radius-pill);
+  flex: 0 0 auto;
+  font: 700 10px/1 var(--font-ui);
+  padding: 4px 8px;
+}
+
+.map-inspector-badge.is-start {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.map-inspector-stats {
+  column-gap: var(--space-3);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin: 0;
+  row-gap: 2px;
+}
+
+.map-inspector-stats dt {
+  color: var(--text-3);
+  font: 600 11px/1.4 var(--font-ui);
+  white-space: nowrap;
+}
+
+.map-inspector-stats dd {
+  color: var(--text-1);
+  font: 600 11px/1.4 var(--font-ui);
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-inspector-section {
+  border-top: var(--stroke-1) solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: var(--space-2);
+}
+
+.map-inspector-section-head {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  margin: 0;
+}
+
+.map-inspector-section-title {
+  color: var(--text-2);
+  font: 700 11px/1.2 var(--font-ui);
+}
+
+.map-inspector-section-count {
+  color: var(--text-3);
+  font: 700 11px/1.2 var(--font-ui);
+}
+
+.map-inspector-section-count.is-warning {
+  color: var(--warning);
+}
+
+.map-inspector-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.map-inspector-chip {
+  align-items: center;
+  background: var(--bg-well);
+  border: var(--stroke-1) solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: inline-flex;
+  font: 600 10px/1 var(--font-ui);
+  gap: 4px;
+  padding: 4px 6px;
+}
+
+/* 0 인 칸도 지우지 않는다 — "상자 0개"는 "상자 항목이 없다"와 다른 정보다. 대신 죽여서
+   눈이 0 아닌 칸으로 먼저 가게 한다. */
+.map-inspector-chip.is-zero {
+  color: var(--text-3);
+}
+
+.map-inspector-chip-count {
+  font-weight: 800;
+}
+
+.map-inspector-chip.is-flag {
+  background: var(--warning-muted);
+  border-color: transparent;
+  color: var(--text-1);
+}
+
+.map-inspector-line {
+  color: var(--text-2);
+  font: 500 11px/1.45 var(--font-ui);
+  margin: 0;
+}
+
+.map-inspector-diagnostics {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.map-inspector-diagnostic {
+  border-left: var(--stroke-2) solid var(--border-strong);
+  font: 500 11px/1.45 var(--font-ui);
+  padding-left: var(--space-2);
+}
+
+.map-inspector-diagnostic.is-warning {
+  border-left-color: var(--warning);
+  color: var(--text-1);
+}
+
+.map-inspector-diagnostic.is-info {
+  color: var(--text-3);
+}
+
+.map-inspector-actions {
+  border-top: var(--stroke-1) solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-top: var(--space-2);
+}
+
+.map-inspector-action {
+  background: var(--control-bg);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  font: 700 11px/1 var(--font-ui);
+  padding: 7px 9px;
+}
+
+.map-inspector-action:hover:not(:disabled),
+.map-inspector-action:focus-visible:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+  outline: none;
+}
+
+.map-inspector-action:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.map-inspector-action.is-primary {
+  background: color-mix(in srgb, var(--accent) 22%, var(--mix-base));
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: var(--on-accent);
+}
+
+.map-inspector-action:disabled {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/* 좁은 창: 2단이 들어갈 폭이 없으면 상세를 목록 아래로 내린다. 플라이아웃 폭은
+   shell/editor-ui-modes.css 의 `.is-maps` 가 같은 분기점을 쓴다. */
+@media (max-width: 1100px) {
+  .map-tree-panel.is-basic-flyout .map-tree-explorer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .map-tree-panel.is-basic-flyout .map-tree-explorer-detail {
+    border-left: none;
+    border-top: var(--stroke-1) solid var(--border-subtle);
+    padding-left: 0;
+    padding-top: var(--space-2);
+  }
+
+  /* 1단으로 쌓이면 두 칸이 세로 예산을 나눠 쓴다 — 각자 절반 아래로 내리고, 상세 칸이
+     목록 칸보다 커질 이유도 없어진다(둘이 위아래로 붙는다). */
+  .map-tree-panel.is-basic-flyout {
+    --map-explorer-height: min(26vh, 220px);
+    --map-inspector-height: min(34vh, 300px);
+  }
 }

@@ -5,6 +5,7 @@ import { resetEditorUiModeForTests, setEditorUiMode } from "@/editor/editorUiMod
 import { uiLabel } from "@/editor/uiCopy";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { clearChildren } from "@/util/dom";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 function click(id: string): void {
@@ -182,6 +183,37 @@ describe("basic icon rail", () => {
     renderBasicLeftRail(container);
     expect(editorState.get().tool).toBe("paint");
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
+  });
+
+  it("호출자가 컨테이너를 비운 뒤 다시 그려도 열린 플라이아웃은 살아 있다", () => {
+    // renderTilePalette 는 clearChildren 뒤에 renderBasicLeftRail 을 부른다. 예전 isStaleFlyoutState
+    // 는 "컨테이너 안에 레일이 없다"를 «다른 모드가 덮어썼다»로 오진해서, editorState 가 바뀔 때마다
+    // (맵 선택 포함) 열림 상태를 초기화했다 — 맵을 고르면 맵 플라이아웃이 스스로 닫혔다.
+    click("basic-rail-toggle-maps");
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
+
+    clearChildren(container);
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
+    expect(findByTestId(container as unknown as FakeElement, "map-tree")).toBeTruthy();
+  });
+
+  it("타일을 고르면 타일 플라이아웃은 물러나고, 핀을 걸었으면 남는다", () => {
+    click("basic-rail-toggle-tiles");
+    renderBasicLeftRail(container);
+    click("basic-tile-0");
+    renderBasicLeftRail(container);
+    // 캔버스를 덮는 오버레이라 고른 타일을 바로 칠할 수 있어야 한다.
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
+
+    click("basic-rail-toggle-tiles");
+    renderBasicLeftRail(container);
+    click("basic-flyout-pin");
+    renderBasicLeftRail(container);
+    click("basic-tile-0");
+    renderBasicLeftRail(container);
+    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
   });
 
   it("타일셋이 없으면 비활성 타일 버튼이 이벤트 레이어가 아니라 실제 원인을 말한다", () => {

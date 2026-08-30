@@ -14,6 +14,21 @@ export const MAP_THUMB_HEIGHT = 30;
 
 /** 캔버스 백킹 배율 — 40×30 CSS 픽셀을 고밀도 화면에서도 또렷하게 유지한다. */
 const BACKING_SCALE = 2;
+
+/**
+ * 썸네일 한 장의 주문. 행 썸네일(40×30)이 유일한 크기였는데 맵 상세 칸이 큰 미리보기를
+ * 필요로 한다 — 같은 캔버스를 CSS 로 늘리면 80×60 백킹을 확대해 뭉개진다.
+ *
+ * `testId` 를 따로 받는 이유: 재렌더 완료 시 `liveCanvasesFor` 가 testid 로 살아 있는
+ * 캔버스를 찾아 blit 한다. 큰 미리보기가 행과 같은 testid 를 쓰면 서로의 스테이지를
+ * 자기 크기에 맞춰 덮어써 한쪽이 늘 흐려진다.
+ */
+export type MapThumbnailOptions = {
+  readonly width?: number;
+  readonly height?: number;
+  readonly className?: string;
+  readonly testId?: string;
+};
 /** 한 번에 그리는 썸네일 수 상한 — 맵 30개짜리 프로젝트가 한꺼번에 큰 캔버스를 잡지 않게 한다. */
 const MAX_PARALLEL = 3;
 /** 중간 렌더 긴 변 상한 — 100×100 맵을 원본 배율로 그리면 1600px 캔버스가 된다. */
@@ -24,15 +39,18 @@ const renderedCache = new Map<string, HTMLCanvasElement>();
 let active = 0;
 const waiting: (() => void)[] = [];
 
-export function createMapThumbnail(mapId: MapId): HTMLElement {
+export function createMapThumbnail(mapId: MapId, options: MapThumbnailOptions = {}): HTMLElement {
+  const width = Math.max(1, Math.round(options.width ?? MAP_THUMB_WIDTH));
+  const height = Math.max(1, Math.round(options.height ?? MAP_THUMB_HEIGHT));
+  const testId = options.testId ?? `map-thumb-${mapId}`;
   const canvas = el("canvas", {
-    class: "map-tree-thumb",
+    class: options.className ?? "map-tree-thumb",
     attrs: {
       "aria-hidden": "true",
-      height: String(MAP_THUMB_HEIGHT * BACKING_SCALE),
-      width: String(MAP_THUMB_WIDTH * BACKING_SCALE),
+      height: String(height * BACKING_SCALE),
+      width: String(width * BACKING_SCALE),
     },
-    dataset: { testid: `map-thumb-${mapId}`, thumbState: "pending" },
+    dataset: { testid: testId, thumbState: "pending" },
   }) as HTMLCanvasElement;
 
   const project = store.getCurrent();
@@ -42,7 +60,7 @@ export function createMapThumbnail(mapId: MapId): HTMLElement {
     return canvas;
   }
 
-  const key = thumbnailKey(mapId, map);
+  const key = thumbnailKey(mapId, map, width, height);
   const cached = renderedCache.get(key);
   if (cached) {
     blit(canvas, cached, "map");
@@ -50,11 +68,12 @@ export function createMapThumbnail(mapId: MapId): HTMLElement {
   }
 
   paintFallback(canvas, mapId);
-  void paintFromMap(project, map, mapId, key);
+  void paintFromMap(project, map, key, width, height, testId);
   return canvas;
 }
 
-function thumbnailKey(mapId: MapId, map: GameMap): string {
+/** 캐시 키에 목표 크기가 들어가야 한다 — 안 넣으면 40×30 스테이지가 큰 미리보기로 확대된다. */
+function thumbnailKey(mapId: MapId, map: GameMap, width: number, height: number): string {
   let hash = 2166136261;
   const mix = (value: number): void => {
     hash ^= value + 0x9e3779b9;
@@ -65,19 +84,26 @@ function thumbnailKey(mapId: MapId, map: GameMap): string {
   mix(map.tileSize);
   for (const tile of map.lowerTiles) mix(tile);
   for (const tile of map.upperTiles) mix(tile);
-  return `${mapId}:${map.tilesetId}:${(hash >>> 0).toString(36)}`;
+  return `${mapId}:${map.tilesetId}:${width}x${height}:${(hash >>> 0).toString(36)}`;
 }
 
-async function paintFromMap(project: Project, map: GameMap, mapId: MapId, key: string): Promise<void> {
+async function paintFromMap(
+  project: Project,
+  map: GameMap,
+  key: string,
+  width: number,
+  height: number,
+  testId: string,
+): Promise<void> {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) return;
   await acquire();
   try {
-    const stage = await renderStage(map, tileset);
+    const stage = await renderStage(map, tileset, width, height);
     if (!stage) return;
     renderedCache.set(key, stage);
     evictOverflow();
-    for (const live of liveCanvasesFor(mapId)) blit(live, stage, "map");
+    for (const live of liveCanvasesFor(testId)) blit(live, stage, "map");
   } catch {
     // 대체 무늬가 이미 그려져 있다 — 목록 렌더가 썸네일 하나 때문에 멈추면 안 된다.
   } finally {
@@ -85,7 +111,12 @@ async function paintFromMap(project: Project, map: GameMap, mapId: MapId, key: s
   }
 }
 
-async function renderStage(map: GameMap, tileset: TilesetDef): Promise<HTMLCanvasElement | null> {
+async function renderStage(
+  map: GameMap,
+  tileset: TilesetDef,
+  targetWidth: number,
+  targetHeight: number,
+): Promise<HTMLCanvasElement | null> {
   const tile = map.tileSize || tileset.tileSize || 16;
   const pixelWidth = map.width * tile;
   const pixelHeight = map.height * tile;
@@ -95,8 +126,11 @@ async function renderStage(map: GameMap, tileset: TilesetDef): Promise<HTMLCanva
   if (!image.complete || image.naturalWidth === 0) return null;
 
   // 타일을 곧바로 2px 로 그리면 소스 사각형이 서브픽셀이 되어 격자가 뭉개진다.
-  // 중간 캔버스에 정수 배율로 그린 뒤 한 번만 축소한다.
-  const stageScale = Math.min(1, STAGE_MAX_EDGE / Math.max(pixelWidth, pixelHeight));
+  // 중간 캔버스에 정수 배율로 그린 뒤 한 번만 축소한다. 큰 미리보기(상세 칸)는 목표가
+  // 512px 상한보다 클 수 있으므로 상한을 목표 백킹 크기까지 올린다 — 안 올리면
+  // 512px 스테이지를 확대하게 되어 큰 칸에서 흐려진다.
+  const stageMaxEdge = Math.max(STAGE_MAX_EDGE, targetWidth * BACKING_SCALE, targetHeight * BACKING_SCALE);
+  const stageScale = Math.min(1, stageMaxEdge / Math.max(pixelWidth, pixelHeight));
   const stageWidth = Math.max(1, Math.floor(pixelWidth * stageScale));
   const stageHeight = Math.max(1, Math.floor(pixelHeight * stageScale));
   const full = document.createElement("canvas");
@@ -110,8 +144,8 @@ async function renderStage(map: GameMap, tileset: TilesetDef): Promise<HTMLCanva
   drawMapTileLayers(fullContext, image, map, tileset, stageScale);
 
   const target = document.createElement("canvas");
-  target.width = MAP_THUMB_WIDTH * BACKING_SCALE;
-  target.height = MAP_THUMB_HEIGHT * BACKING_SCALE;
+  target.width = targetWidth * BACKING_SCALE;
+  target.height = targetHeight * BACKING_SCALE;
   const context = target.getContext("2d", { alpha: false });
   if (!context) return null;
   const fit = Math.min(target.width / stageWidth, target.height / stageHeight);
@@ -131,8 +165,8 @@ async function renderStage(map: GameMap, tileset: TilesetDef): Promise<HTMLCanva
   return target;
 }
 
-function liveCanvasesFor(mapId: MapId): HTMLCanvasElement[] {
-  return Array.from(document.querySelectorAll<HTMLCanvasElement>(`canvas[data-testid="map-thumb-${mapId}"]`));
+function liveCanvasesFor(testId: string): HTMLCanvasElement[] {
+  return Array.from(document.querySelectorAll<HTMLCanvasElement>(`canvas[data-testid="${testId}"]`));
 }
 
 function blit(canvas: HTMLCanvasElement, source: HTMLCanvasElement, state: "map" | "fallback"): void {

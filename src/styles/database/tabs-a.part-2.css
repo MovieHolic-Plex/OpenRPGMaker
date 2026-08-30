@@ -196,13 +196,13 @@
 }
 
 .database-modal-body .btn,
-.database-modal-body button:not(.db-tab) {
+.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger) {
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-radius: 0;
 }
 
 .database-modal-body .btn:active,
-.database-modal-body button:not(.db-tab):active {
+.database-modal-body button:not(.db-tab):not(.event-custom-select-trigger):active {
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
 }
 
