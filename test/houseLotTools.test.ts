@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { GameMap, Project } from "@/project/types";
 import { runTool } from "@/editor/tools/toolRunner";
-import { houseBBox, materialForYardDecor, yardAreaForHouse } from "@/editor/tools/houseLotDecor";
+import { houseBBox, materialForYardDecor, yardAreaForHouse, YARD_DECOR_KINDS } from "@/editor/tools/houseLotDecor";
+import { resolveMaterialByLabel } from "@/project/tileVocabulary";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { buildHouseLots } from "@/editor/tools/houseLotDomain";
 
@@ -92,6 +93,51 @@ describe("build_house_lots tool", () => {
   });
 });
 
+describe("yard decor materials are buildable", () => {
+  // 라이부 QA 사고: yard 태그 sign → "팻말" 이 small-props 가방 그룹에만 속해
+  // 가방 거절로 반려되면서 상점·여관 2쵄 시공이 통째로 실패했다.
+  it("resolves every yard tag to a concrete material", () => {
+    const tileset = Object.values(createBlankProject().tilesets)[0];
+    if (tileset === undefined) throw new Error("Missing fixture tileset");
+    const broken = YARD_DECOR_KINDS
+      .map((kind) => ({ kind, material: materialForYardDecor(kind), result: resolveMaterialByLabel(tileset, materialForYardDecor(kind)) }))
+      .filter((entry) => entry.result.status === "missing")
+      .map((entry) => `${entry.kind}("${entry.material}")`);
+    expect(broken, `가방·미등록으로 시공 불가한 yard 태그: ${broken.join(", ")}`).toEqual([]);
+  });
+
+  it("builds a lot whose yard uses the sign tag", () => {
+    const project = createBlankProject();
+    const ctx = { project };
+    const mapId = "map_yard_sign";
+    expect(runTool(ctx, "create_map", { id: mapId, name: "yard sign", width: 32, height: 24 }).ok).toBe(true);
+    {
+      const map = requireProjectMap(ctx.project, mapId);
+      map.lowerTiles.fill(240);
+      map.upperTiles.fill(-1);
+    }
+
+    const result = runTool(ctx, "build_house_lots", {
+      mapId,
+      seed: 7,
+      houses: [{
+        kitId: "amber-wood",
+        wings: [{ x: 6, y: 4, w: 8, h: 6 }],
+        ownerName: "상점",
+        interior: false,
+        yard: ["sign", "wood_box", "fruit_box"],
+      }],
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    if (!isLotResultData(result.data)) throw new Error("Missing lot result data");
+    const signDecor = result.data.lots[0]?.decor.find((entry) => entry.kind === "sign");
+    expect(signDecor, JSON.stringify(result.data.lots[0]?.decor ?? [])).toBeDefined();
+    expect(signDecor?.status).not.toBe("failed");
+    expect(signDecor?.placed ?? 0).toBeGreaterThan(0);
+  });
+});
+
 describe("house lot yard outcomes", () => {
   it("preserves a typed material failure with requested and placed counts", () => {
     // Given
@@ -131,7 +177,7 @@ type LotResultData = {
   readonly houses: number;
   readonly lots: readonly {
     readonly yardArea: { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
-    readonly decor: readonly { readonly kind: string; readonly summary: string }[];
+    readonly decor: readonly { readonly kind: string; readonly summary: string; readonly status: string; readonly placed: number }[];
   }[];
 };
 

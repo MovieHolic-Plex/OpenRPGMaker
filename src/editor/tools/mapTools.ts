@@ -1006,6 +1006,26 @@ const roguelikeEncounterSlotSchema: JsonSchema = {
   required: ["id", "choices"],
 };
 
+/**
+ * 인카운터 테이블을 설정할 때 발생률도 함께 보장한다.
+ * 라이브 QA 사고: encounterTable 만 채우고 encounterRate=0 으로 남기면
+ * playSceneMovement 의 `rate <= 0` 게이트에 막혀 몬스터가 평생 등장하지 않는다.
+ */
+const DEFAULT_TABLE_ENCOUNTER_RATE = 25;
+
+function applyEncounterRate(map: GameMap, requested: unknown, hasEntries: boolean): string | undefined {
+  if (requested !== undefined) {
+    if (typeof requested !== "number" || !Number.isInteger(requested) || requested < 0) {
+      throw new ToolError("encounterRate는 0 이상 정수여야 합니다.", { code: "invalid-args", mapId: map.id });
+    }
+    map.encounterRate = requested;
+    return `인카운터율=${requested}`;
+  }
+  if (!hasEntries || (map.encounterRate ?? 0) > 0) return undefined;
+  map.encounterRate = DEFAULT_TABLE_ENCOUNTER_RATE;
+  return `인카운터율 0 이라 기본값 ${DEFAULT_TABLE_ENCOUNTER_RATE} 으로 보정`;
+}
+
 function parseEncounterEntries(draft: Project, map: GameMap, value: unknown): EncounterTableEntry[] {
   if (!Array.isArray(value)) throw new ToolError("entries는 배열이어야 합니다.", { code: "invalid-entries", mapId: map.id });
   return value.map((entryValue, index) => parseEncounterEntry(draft, map, entryValue, `entries[${index}]`));
@@ -1391,13 +1411,14 @@ const setMapProperties: ToolDefinition = {
 
 const setEncounterTable: ToolDefinition = {
   name: "set_encounter_table",
-  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다.",
+  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. 맵 encounterRate가 0이면 기본 발생률로 자동 보정한다(0이면 런타임에서 인카운터가 아예 발생하지 않는다).",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       entries: { type: "array", items: encounterEntrySchema },
+      encounterRate: { type: "integer", description: "생략하면 0일 때만 기본값으로 보정한다. 0을 명시하면 랜덤 인카운터를 끈다." },
     },
     required: ["mapId", "entries"],
   },
@@ -1406,9 +1427,10 @@ const setEncounterTable: ToolDefinition = {
     const entries = parseEncounterEntries(draft, map, args.entries);
     if (entries.length > 0) map.encounterTable = entries;
     else delete map.encounterTable;
+    const rateNote = applyEncounterRate(map, args.encounterRate, entries.length > 0);
     return {
-      summary: `${map.name} 인카운터 테이블 ${entries.length}개 항목 설정`,
-      data: { mapId: map.id, entries },
+      summary: `${map.name} 인카운터 테이블 ${entries.length}개 항목 설정${rateNote === undefined ? "" : ` — ${rateNote}`}`,
+      data: { mapId: map.id, entries, encounterRate: map.encounterRate ?? 0 },
     };
   },
 };
@@ -1433,6 +1455,7 @@ const makeHuntingGround: ToolDefinition = {
       persistKill: { type: "boolean" },
       onKillSwitchId: { type: "string" },
       encounterEntries: { type: "array", items: encounterEntrySchema },
+      encounterRate: { type: "integer", description: "생략하면 0일 때만 기본값으로 보정한다. 0을 명시하면 랜덤 인카운터를 끈다." },
     },
     required: ["mapId", "area", "troopId"],
   },
@@ -1461,9 +1484,10 @@ const makeHuntingGround: ToolDefinition = {
       : [{ troopId, weight: 1, conditions: { region: area } }];
     if (entries.length > 0) map.encounterTable = entries;
     else delete map.encounterTable;
+    const rateNote = applyEncounterRate(map, args.encounterRate, entries.length > 0);
     return {
-      summary: `${map.name} 사냥터 구성 — 스폰 ${spawn.id}, 트룹 ${troopId}, 인카운터 ${entries.length}개`,
-      data: { mapId: map.id, fieldSpawn: spawn, encounterTable: entries },
+      summary: `${map.name} 사냥터 구성 — 스폰 ${spawn.id}, 트룹 ${troopId}, 인카운터 ${entries.length}개${rateNote === undefined ? "" : ` — ${rateNote}`}`,
+      data: { mapId: map.id, fieldSpawn: spawn, encounterTable: entries, encounterRate: map.encounterRate ?? 0 },
     };
   },
 };
