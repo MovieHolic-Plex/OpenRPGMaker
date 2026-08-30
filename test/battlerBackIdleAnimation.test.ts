@@ -6,7 +6,8 @@
 // 앞선 티어들의 상자(적 56×64, 정면 액터 정사각)는 모두 세로 ≥ 가로였고, 가로를 상자폭에 묶는
 // `background-size: calc(100% * N) auto` 산식이 그 전제 위에서 `contain` 과 같은 표시가 됐다.
 // 가로 > 세로인 상자에서는 그 산식이 칸을 상자 높이보다 크게 만들어 위아래를 잘라낸다.
-// 그래서 이 티어는 **셀 종횡비를 표시 상자에 맞춰 굽는다**(`--battler-anim-cell-aspect`).
+// 그래서 이 티어는 **셀 종횡비를 표시 상자에 맞춰 굽는다**. 재생 CSS 에 새 변수를 넣지 않는다 —
+// 칸을 상자 비율로 구워두면 기존 `background-size: calc(100% * N) auto` 산식이 그대로 맞는다.
 //
 // 검사하는 것:
 //  1. 카탈로그 항목이 실제 PNG 격자와 맞는가(칸 수 × 칸 크기 = 파일 크기).
@@ -47,6 +48,7 @@ const BACK_IDLE = BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.resourceId.end
 function colorShares(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number): number[] {
   let blue = 0;
   let red = 0;
+  let green = 0;
   let warm = 0;
   let bright = 0;
   let dark = 0;
@@ -62,17 +64,56 @@ function colorShares(png: PNG, cellIndex: number, cellWidth: number, cellHeight:
       total += 1;
       const isBlue = b - r > 30 && b - g > 30;
       const isRed = r - b > 40 && r - g > 25;
+      const isGreen = g - r > 12 && g - b > 12;
       if (isBlue) blue += 1;
       else if (isRed) red += 1;
+      else if (isGreen) green += 1;
       else if (r - b > 15) warm += 1;
       const mean = (r + g + b) / 3;
-      if (mean > 170 && !isBlue && !isRed) bright += 1;
+      if (mean > 170 && !isBlue && !isRed && !isGreen) bright += 1;
       if (mean < 60) dark += 1;
       lumaSum += 0.299 * r + 0.587 * g + 0.114 * b;
     }
   }
-  if (total === 0) return [0, 0, 0, 0, 0, 0];
-  return [...[blue, red, warm, bright, dark].map((count) => count / total), lumaSum / total / 255];
+  if (total === 0) return [0, 0, 0, 0, 0, 0, 0];
+  return [...[blue, red, green, warm, bright, dark].map((count) => count / total), lumaSum / total / 255];
+}
+
+/**
+ * 원본에서 **존재감 있는**(≥2%) 성분의 **상대** 변화 최대값.
+ *
+ * 절대 편차로 재면 원본에서 지분이 작은 성분이 사라지는 걸 놓친다. 실측: hero-04 의 클립은
+ * 갈색 두건 망토가 자라 녹색 튜닉을 덮었는데, 녹색이 피사체의 8% 라 절반이 덮여도 절대 편차는
+ * 0.035 였다 — 상한 0.08 을 여유롭게 통과한다. 상대로 보면 0.42 로 드러난다.
+ * 실측 분리도: 충실한 칸 0.03~0.10 / 망토가 덮인 칸 0.42 / 갈색 튜닉으로 바뀐 칸 0.999.
+ */
+function relativeDeviation(frame: number[], reference: number[]): number {
+  let worst = 0;
+  for (let k = 0; k < reference.length; k += 1) {
+    if (reference[k] < 0.02) continue;
+    worst = Math.max(worst, Math.abs(frame[k] - reference[k]) / reference[k]);
+  }
+  return worst;
+}
+
+/** 두 칸의 픽셀 변화 비율 — 색 채널 합 차가 24를 넘는 픽셀. */
+function cellChange(png: PNG, a: number, b: number, cellWidth: number, cellHeight: number): number {
+  let changed = 0;
+  let total = 0;
+  for (let y = 0; y < cellHeight; y += 1) {
+    for (let x = 0; x < cellWidth; x += 1) {
+      const ia = (y * png.width + a * cellWidth + x) * 4;
+      const ib = (y * png.width + b * cellWidth + x) * 4;
+      total += 1;
+      const diff =
+        Math.abs(png.data[ia] - png.data[ib]) +
+        Math.abs(png.data[ia + 1] - png.data[ib + 1]) +
+        Math.abs(png.data[ia + 2] - png.data[ib + 2]) +
+        Math.abs(png.data[ia + 3] - png.data[ib + 3]);
+      if (diff > 24) changed += 1;
+    }
+  }
+  return total === 0 ? 0 : changed / total;
 }
 
 function renderBackField(battleCharacterResourceId: string): HTMLElement {
@@ -112,20 +153,55 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
   // 티어 고유 계약만 본다.
 
   it("모든 칸이 정적 원본과 같은 옷을 입고 있다", () => {
-    // 이 계약이 없으면 색이 흐른 프레임을 골라도 조용히 통과한다(실측: 갈색으로 바뀐 튜닉).
+    // 이 계약이 없으면 색이 흐른 프레임을 골라도 조용히 통과한다(실측: 갈색으로 바뀐 튜닉,
+    // 녹색 튜닉을 덮은 갈색 망토).
     for (const entry of BACK_IDLE) {
       const source = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path.replace("/idle/", "/"))));
       const reference = colorShares(source, 0, source.width, source.height);
       const strip = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path)));
       for (let index = 0; index < entry.frameCount; index += 1) {
         const frame = colorShares(strip, index, entry.cellWidth, entry.cellHeight);
-        const deviation = Math.max(...frame.map((share, k) => Math.abs(share - reference[k])));
-        // 0.08 = 실측 기준선. 최종 프레임들은 0.009~0.063, 튜닉이 갈색으로 바뀐 프레임은 0.22.
+        const deviation = relativeDeviation(frame, reference);
+        // 0.15 = 실측 분리선. 실린 칸들은 0.07~0.10, 망토가 덮인 칸 0.42, 갈색 튜닉 0.999.
         expect(
           deviation,
-          `${entry.resourceId}: 칸 ${index} 의 색 분포가 원본에서 ${(deviation * 100).toFixed(1)}% 벗어났다 = 다른 옷이다`
-        ).toBeLessThan(0.08);
+          `${entry.resourceId}: 칸 ${index} 의 색 분포가 원본에서 상대 ${(deviation * 100).toFixed(0)}% 벗어났다 = 다른 옷이다`
+        ).toBeLessThan(0.15);
       }
+    }
+  });
+
+  it("인접한 모든 칸이 실제로 움직인다 — 한 쌍만 움직이는 정지화면을 막는다", () => {
+    // **최소값**으로 재야 한다. 최대값으로 재면 8칸 중 한 쌍만 움직여도 통과한다 —
+    // 실측: 초기 hero-01 패킹은 최대 1.9% 였지만 최소 0.01% 로 사실상 정지화면이었고,
+    // CSS `steps()` 는 같은 그림 위에서도 배경 위치를 옮기므로 런타임 검사로도 안 잡힌다.
+    for (const entry of BACK_IDLE) {
+      const strip = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path)));
+      for (let index = 1; index < entry.frameCount; index += 1) {
+        const change = cellChange(strip, index - 1, index, entry.cellWidth, entry.cellHeight);
+        expect(
+          change,
+          `${entry.resourceId}: 칸 ${index - 1}→${index} 가 ${(change * 100).toFixed(2)}% 만 달라졌다 = 멈춘 프레임 쌍이다`
+        ).toBeGreaterThanOrEqual(0.02);
+      }
+    }
+  });
+
+  it("루프 이음매가 평소 한 걸음보다 크게 튀지 않는다", () => {
+    // 마지막 칸 → 첫 칸 변화를 **절대값**으로 재면 진폭이 큰 모션을 부당하게 떨어뜨린다
+    // (실측: hero-03 은 이음매 9.6% 지만 평소 걸음이 14.8% 라 눈에 안 띈다). 걸음 대비로 본다.
+    for (const entry of BACK_IDLE) {
+      const strip = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path)));
+      const steps: number[] = [];
+      for (let index = 1; index < entry.frameCount; index += 1) {
+        steps.push(cellChange(strip, index - 1, index, entry.cellWidth, entry.cellHeight));
+      }
+      const seam = cellChange(strip, entry.frameCount - 1, 0, entry.cellWidth, entry.cellHeight);
+      const widest = Math.max(...steps);
+      expect(
+        seam,
+        `${entry.resourceId}: 루프 이음매 ${(seam * 100).toFixed(1)}% 가 평소 최대 걸음 ${(widest * 100).toFixed(1)}% 의 1.5배를 넘는다 = 감길 때 튄다`
+      ).toBeLessThanOrEqual(widest * 1.5);
     }
   });
 
