@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 import { describe, expect, it } from "vitest";
 import { defaultEquipmentRecords } from "@/project/defaults/defaultDatabaseEquipmentRecords";
 import { defaultItemRecords } from "@/project/defaults/defaultDatabaseItemRecords";
@@ -26,6 +27,7 @@ const codeRecordsByTable: Record<DerivedTable, () => Row[]> = {
 
 const fixture = dewVillageDemoFixture as unknown as { database: Record<DerivedTable, Row[]> };
 
+// 코드에 없는 픽스처 행은 저작 전용 행 보존 규칙에 따라 의도적으로 검사하지 않는다.
 function drift(table: DerivedTable): string[] {
   const shippedById = new Map(fixture.database[table].map((record) => [record.id, record]));
   const problems: string[] = [];
@@ -35,8 +37,11 @@ function drift(table: DerivedTable): string[] {
       problems.push(`${table} ${codeRecord.id}: 픽스처에 없음`);
       continue;
     }
-    const keys = Object.keys(codeRecord).sort();
-    if (JSON.stringify(shipped, keys) !== JSON.stringify(codeRecord, keys)) {
+    // 픽스처는 JSON 이라 undefined 필드를 들 수 없다. 코드 레코드를 한 번 통과시컰 맞춰야
+    // 거짓 불일치가 없어진다. 통과 후 심충 분리는 중착 필드(statBonuses, effectFlags) 드리프트와
+    // 픽스처에만 남은 여분 키를 둘 다 잡는다.
+    const serializable = JSON.parse(JSON.stringify(codeRecord)) as unknown;
+    if (!isDeepStrictEqual(shipped, serializable)) {
       problems.push(`${table} ${codeRecord.id}: 내용이 코드 기본값과 다름`);
     }
   }

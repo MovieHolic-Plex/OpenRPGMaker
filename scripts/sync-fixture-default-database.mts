@@ -34,6 +34,11 @@ for (const table of DERIVED_DATABASE_TABLES) {
   lines.push(
     `${table}: 총 ${records.length}개 (추가 ${report.added.length}, 코드값으로 갱신 ${report.refreshed.length}, 저작 전용 보존 ${report.authoredKept.length})`,
   );
+  if (report.refreshed.length > 0) {
+    const shown = report.refreshed.slice(0, 12);
+    const remaining = report.refreshed.length - shown.length;
+    lines.push(`  코드값으로 갱신: ${shown.join(", ")}${remaining > 0 ? ` ... (+${remaining})` : ""}`);
+  }
   if (report.authoredKept.length > 0) lines.push(`  저작 전용 보존: ${report.authoredKept.join(", ")}`);
 }
 

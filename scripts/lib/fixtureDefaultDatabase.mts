@@ -1,8 +1,9 @@
 type Record_ = { id: string };
 
-// 레코드가 전부 코드 기본값에서 오는 테이붔들이다 (실측 2026-08-30: 다섯 테이붔 모든
+// 레코드가 전부 코드 기본값에서 오는 테이블들이다 (실측 2026-08-30: 다섯 테이블 모든
 // 레코드의 id 가 기본값 id 여서 저작 전용이 0개이다). items/equipment 만 갱신하면
 // 그것들이 가리키는 skills/states/battleAnimations 가 모자라 참조 검사가 토한다.
+// 데모 전용 변형은 새 id로 작성해야 하며, 기본값 id 행을 고치면 다음 npm run fixture:sync 때 덮어쓴다.
 export const DERIVED_DATABASE_TABLES = [
   "items",
   "equipment",
