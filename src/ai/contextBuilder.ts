@@ -15,6 +15,7 @@ import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { aiInstructionsSection } from "./projectInstructions";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
+import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
 import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
 import {
   formatViewportContextBlock,
@@ -125,7 +126,7 @@ const INTRO = [
   "6. 툴 호출을 아끼지 마세요. 조회·검증·재시도에 필요한 만큼 깊게 사용하세요(제한은 토큰 예산뿐).",
   "7. 여러 개를 요청받으면(예: NPC 3명, 집 2채) 전부 만들 때까지 멈추지 마세요. 일부만 하고 끝내는 것은 실패입니다.",
   "   사용자가 '진행/계속/진행해/진행하라고'라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요.",
-  "8. '깊은 대화'를 요청받으면 choices(선택지)와 분기 대사로 페이지를 풍부하게 구성하세요. lines에 여러 줄을 담을 수 있습니다.",
+  "8. '깊은 대화'를 요청받으면 choices(선택지)와 분기 대사로 **한 페이지 안을** 풍부하게 구성하세요(페이지 수를 늘리는 것이 아니다 — 아래 페이지 의미론 참조). lines에 여러 줄을 담을 수 있습니다.",
   "9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요.",
   "10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.",
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
@@ -598,15 +599,16 @@ function withProjectInstructions(assembled: string, instructions: string | undef
   return section ? `${assembled}\n\n${section}` : assembled;
 }
 
-// 예산 밖 고정 블록: 툴 능력 색인 + 사람 성향.
+// 예산 밖 고정 블록: 툴 능력 색인 + 이벤트 페이지 의미론 + 사람 성향.
 // 삽입 지점은 INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.
-// 어느 경우도 두 블록 전부가 남는다 — 색인은 "어떤 기능이 존재하는가"(상세 지침보다 우선하는 정보),
+// 어느 경우도 세 블록 전부가 남는다 — 색인은 "어떤 기능이 존재하는가"(상세 지침보다 우선하는 정보),
+// 페이지 의미론은 잘리면 모델이 조용히 죽는 이벤트 페이지를 저작하고,
 // 성향은 예산 슬라이싱에 걸리면 통째로 사라져 "AI 가 나를 기억하지 못한다"가 그대로 재발한다.
 // 성향 블록은 자체 하드캡(12줄/1,200자)이 있어 예산 밖에 둬도 프롬프트를 잡아먹지 않는다.
 function withFixedBlocks(assembled: string, preferenceMemorySection?: string): string {
   const index = buildToolCapabilityIndex();
   const memory = preferenceMemorySection?.trim() ?? "";
-  const fixed = memory ? `${index}\n\n${memory}` : index;
+  const fixed = [index, EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
   if (assembled.startsWith(INTRO)) {
     return `${INTRO}\n\n${fixed}${assembled.slice(INTRO.length)}`;
   }

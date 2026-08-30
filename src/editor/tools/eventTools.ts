@@ -2,6 +2,7 @@
 // 이벤트 쓰기 툴: upsert_event / place_npc / create_transfer_pair / place_battle_blocker
 //              / duplicate_event / remove_event / move_event.
 
+import { shadowedPageWarnings } from "@/project/eventPageShadow";
 import { isPassable } from "@/project/collision";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
 import { validateShopStock } from "@/project/io/shapeCommandFields";
@@ -235,6 +236,7 @@ function assertEventShape(event: GameEvent, warnings?: string[]): void {
     for (const page of event.pages ?? []) {
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
     }
+    for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages)) warnings?.push(warning);
   } catch (cause) {
     if (cause instanceof ToolError) throw cause;
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {
