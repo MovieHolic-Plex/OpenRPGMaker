@@ -1,4 +1,5 @@
 import { editorState } from "@/editor/editorState";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import {
   buildEventBeginnerTemplate,
   type EventBeginnerTemplateId,
@@ -348,7 +349,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       "이 페이지가 하는 일",
       "위에서 아래로 차례대로 실행됩니다",      el("span", {
         class: "event-editor-column-count",
-        text: `${activePage.commands.length}개`,
+        text: `${totalCommandCount(activePage.commands)}개`,
         dataset: { testid: "event-editor-command-count" },
       }),
     ),
@@ -792,6 +793,18 @@ function activePageCommands(mapId: MapId, eventId: string, pageId: string): Comm
     ?.commands ?? [];
 }
 
+/**
+ * 개수 배지는 목록에 실제로 보이는 명령 줄을 센다 — 분기 속 명령도 포함한다.
+ * 상위 명령만 세면 8줄이 보이는 페이지에 `4개` 라고 적혀 배지가 화면과 어긋난다.
+ */
+function totalCommandCount(commands: readonly Command[]): number {
+  return commands.reduce(
+    (sum, command) =>
+      sum + 1 + eventCommandBranches(command).reduce((inner, branch) => inner + totalCommandCount(branch.commands), 0),
+    0,
+  );
+}
+
 function renderEmptyCommandLine(
   actions: CommandListActions,
   showBeginnerTemplates: boolean,
@@ -802,11 +815,11 @@ function renderEmptyCommandLine(
   const openPicker = () => openCommandPickerForActions(actions);
   const line = el("button", {
     class: "cmd-empty-line",
-    text: "명령 추가 — 더블클릭 또는 위 [+ 명령]",
-    attrs: { type: "button", title: "더블클릭해서 명령을 추가" },
+    text: "+ 여기에 명령 추가",
+    attrs: { type: "button", title: "이 페이지의 마지막에 명령을 하나 넣어줍니다" },
     dataset: { testid: "event-command-empty-line" },
     on: {
-      dblclick: (event) => {
+      click: (event) => {
         event.preventDefault();
         event.stopPropagation();
         openPicker();

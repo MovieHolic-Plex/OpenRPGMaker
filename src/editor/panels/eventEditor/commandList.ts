@@ -136,8 +136,15 @@ function renderCommandItem(
       ? renderSummaryVisual({ type: "faceCrop", resourceId: activeFaceForItem.resourceId })
       : null;
   if (speakerFace) speakerFace.dataset.testid = "cmd-speaker-face";
+  const step = commandStepLabel(path);
   head.append(
     handle,
+    el("span", {
+      class: "cmd-step",
+      text: step,
+      attrs: { "aria-label": `${step}번째 명령` },
+      dataset: { testid: `event-command-step-${path.join("-")}` },
+    }),
     el("span", { class: "cmd-prefix", attrs: { "aria-hidden": "true" } }),
     el("span", {
       class: "cmd-cat-icon",
@@ -187,6 +194,17 @@ function renderCommandItem(
   // 중첩 행은 항상 자기 실제 부모 컨테이너를 사용해야 같은 분기 재정렬/분기 간 이동이 작동한다.
   attachItemDropHandlers(item, path, path.slice(0, -1), actions);
   return item;
+}
+
+/**
+ * 실행 순서를 줄에 적는다. 번호는 **자기 컨테이너 안에서** 1 부터 다시 시작하고,
+ * 분기 안이라는 범위는 바로 위 분기 헤더 줄(`renderBranchDropLine`)이 말해 준다.
+ * 경로의 마지막 칸이 항상 컨테이너 상 형제 인덱스이므로 그것만 생다 — 중간 칸을
+ * 이어 붙이면 `choices` 의 `branchIndex` 가 선택지 인덱스(음수 아님)라 실행 순서가
+ * 아닌 칸이 번호에 섞인다.
+ */
+function commandStepLabel(path: readonly number[]): string {
+  return String((path[path.length - 1] ?? 0) + 1);
 }
 
 function renderCommandIssueBadge(path: readonly number[], issues: readonly EventDraftIssue[]): HTMLElement | null {

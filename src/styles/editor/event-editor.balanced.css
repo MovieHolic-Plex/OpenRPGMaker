@@ -2006,10 +2006,9 @@ footer {
 .event-editor .event-storyboard-card-cat::before { content: attr(data-glyph); }
 .event-editor .event-storyboard-card-cat::after { content: attr(data-label); }
 
-/* 좁은 폭에서는 글리프만 남긴다 — 목록의 `.cmd-cat-icon` 과 같은 규칙. */
+/* 좁은 폭에서도 낱말을 지우지 않는다 — 목록의 `.cmd-cat-icon` 과 같은 계약. */
 @media (max-width: 1050px) {
-  .event-editor .event-storyboard-card-cat { padding: 0 5px; }
-  .event-editor .event-storyboard-card-cat::after { display: none; }
+  .event-editor .event-storyboard-card-cat { font-size: 9px; padding: 0 5px; }
 }
 
 /* 줄 액션 — 평소 숨기고 hover/선택/포커스에서만. 목록 `.cmd-actions` 와 같은 계약. */
