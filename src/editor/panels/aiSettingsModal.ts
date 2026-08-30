@@ -403,7 +403,11 @@ export function renderAiSettingsForm(options: {
     dispose: () => {
       disposed = true;
       connectionCheckGeneration += 1;
-      if (autoSaveTimer !== null && typeof window !== "undefined") window.clearTimeout(autoSaveTimer);
+      if (autoSaveTimer !== null) {
+        if (typeof window !== "undefined") window.clearTimeout(autoSaveTimer);
+        autoSaveTimer = null;
+        persist(false);
+      }
       authSettings.dispose();
     },
     focusFirstInput: () => authSettings.focus(),

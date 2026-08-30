@@ -59,6 +59,7 @@ afterEach(async () => {
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
+  vi.unstubAllGlobals();
 });
 
 async function openModal(): Promise<FakeElement> {
@@ -122,6 +123,23 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     expect(save?.textContent).toBe("지금 저장");
     save?.click();
     expect(hint?.textContent).toMatch(/^지금 저장됨 · .+\d{1,2}:\d{2}/u);
+  });
+
+  it("디바운스 중 닫아도 입력값을 저장한다", async () => {
+    const modal = await openModal();
+    const maxTokens = findByTestId(modal, "ai-config-maxtokens");
+    const close = findByTestId(modal, "ai-settings-close");
+    if (!maxTokens || !close) throw new Error("AI settings controls missing");
+    vi.stubGlobal("window", {
+      setTimeout: globalThis.setTimeout.bind(globalThis),
+      clearTimeout: globalThis.clearTimeout.bind(globalThis),
+    });
+
+    maxTokens.value = "54321";
+    maxTokens.dispatchEvent(new Event("input"));
+    close.click();
+
+    expect(JSON.parse(storage.get("oprn:ai-config") ?? "{}").maxTokens).toBe(54321);
   });
 
   it("기존 testid 전량을 유지하고 modalStack 한 계층으로 등록한다", async () => {
