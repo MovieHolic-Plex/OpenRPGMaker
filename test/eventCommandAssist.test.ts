@@ -13,6 +13,7 @@ import {
   eventResourceIdSet,
   listEventResourceOptions,
 } from "@/ai/eventResourceCatalog";
+import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import type { AiConfig } from "@/ai/llmClient";
 import {
   eventAiStagedCommands,
@@ -390,6 +391,73 @@ describe("parseAndValidate", () => {
     expect(result.errors.join(" ")).toContain(EVENT_RESOURCE_SLOT_LABELS.movie);
   });
 
+  it("흉상·전신 프리셋 id 는 얼굴 절에 보이고 검증을 통과한다 — 폼이 권하는 id 다", () => {
+    const project = testProject();
+    const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: testPage() });
+    // 얼굴 절만 오려낸다 — MAX_REF_ENTRIES 상한 안에 실려 있어야 모델이 보는 것이다.
+    const faceSection = prompt.slice(prompt.indexOf(`### ${EVENT_RESOURCE_SLOT_LABELS.faceset} id`)).split("###")[1] ?? "";
+
+    for (const id of ["generated-face-actor1-bust", "generated-face-actor1-full"]) {
+      expect(eventResourceIdSet("faceset", project).has(id)).toBe(true);
+      expect(faceSection).toContain(id);
+      const result = parseAndValidate(project, JSON.stringify([
+        { kind: "changeFace", resourceId: id, position: "left", flipHorizontally: false },
+      ]));
+      if (!result.ok) throw new Error(`${id} 가 반려됐다: ${result.errors.join(" / ")}`);
+    }
+  });
+
+  it("「그림 선택」 픽커가 제시하는 이미지는 하나도 반려하지 않는다", () => {
+    const project = testProject();
+    // 폼의 「그림 선택…」 버튼은 kind:"image" 로 이 목록을 열어 준다. 저작 UI 가 권한
+    // id 를 검증이 반려하면 자가수정 3회를 헛쓰고 사용자 요구가 하드 실패한다.
+    const offered = listDatabaseResourceOptions("image", project);
+    expect(offered.length).toBeGreaterThan(400);
+
+    const rejected = offered.filter((option) => !parseAndValidate(project, JSON.stringify([
+      { kind: "showPicture", pictureId: "pic1", resourceId: option.id, x: 0, y: 0 },
+    ])).ok);
+    expect(rejected.map((option) => option.id)).toEqual([]);
+
+    // 지적된 실제 사례: 큼레이심 목록에는 없지만 런타임은 해석하는 아이콘.
+    expect(listEventResourceOptions("picture", project).some((o) => o.id === "scarloxy-monster-icon-atrox")).toBe(false);
+    const iconResult = parseAndValidate(project, JSON.stringify([
+      { kind: "showPicture", pictureId: "pic1", resourceId: "scarloxy-monster-icon-atrox", x: 0, y: 0 },
+    ]));
+    if (!iconResult.ok) throw new Error(iconResult.errors.join(" / "));
+  });
+
+  it("업로드 종류가 monster 여도 그림으로 쓸 수 있고, 오디오 업로드는 그림 칸에서 반려된다", () => {
+    const project = testProject();
+    project.assets.uploaded["upload-monster-art"] = {
+      id: "upload-monster-art",
+      name: "업로드 몬스터 그림",
+      kind: "monster",
+      dataUrl: "data:image/png;base64,AA==",
+      meta: {},
+    };
+    project.assets.uploaded["upload-bgm"] = {
+      id: "upload-bgm",
+      name: "업로드 음악",
+      kind: "music",
+      dataUrl: "data:audio/mpeg;base64,AA==",
+      meta: {},
+    };
+
+    // 픽커는 image 슬롯에 picture|monster|system 업로드를 모두 제시한다.
+    const pictureOk = parseAndValidate(project, JSON.stringify([
+      { kind: "showPicture", pictureId: "pic1", resourceId: "upload-monster-art", x: 0, y: 0 },
+    ]));
+    if (!pictureOk.ok) throw new Error(pictureOk.errors.join(" / "));
+
+    // 그러나 오디오를 그림으로 쓰는 종류 교차는 여전히 닫햘 있어야 한다.
+    const audioAsPicture = parseAndValidate(project, JSON.stringify([
+      { kind: "showPicture", pictureId: "pic1", resourceId: "upload-bgm", x: 0, y: 0 },
+    ]));
+    expect(audioAsPicture.ok).toBe(false);
+    if (!audioAsPicture.ok) expect(audioAsPicture.errors.join(" ")).toContain(EVENT_RESOURCE_SLOT_LABELS.picture);
+  });
+
   it("알 수 없는 kind는 shape 에러로 거부한다", () => {
     const result = parseAndValidate(testProject(), '[{"kind":"summonDragon"}]');
     expect(result.ok).toBe(false);
@@ -499,6 +567,8 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
       id: eventId,
       x: 1,
       y: 1,
+      trigger: { kind: "action" },
+      commands: structuredClone(page.commands),
       pages: [structuredClone(page)],
     }];
     const refreshCommandCount = (): void => {
@@ -759,6 +829,8 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
       id: "event-1",
       x: 1,
       y: 1,
+      trigger: { kind: "action" },
+      commands: structuredClone(page.commands),
       pages: [structuredClone(page)],
     }];
     const panel = renderEventAiAssist({

@@ -22,6 +22,7 @@ import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceReso
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SE_CATALOG } from "@/assets/seCatalog";
 import { listMovieResources } from "@/editor/panels/eventEditor/playMoviePreview";
+import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import type { Project } from "@/project/types";
 
 /** 이벤트 명령의 resourceId 칸이 실제로 요구하는 리소스 종류. */
@@ -41,9 +42,12 @@ export const EVENT_RESOURCE_SLOT_LABELS: Record<EventResourceSlot, string> = {
   movie: "동영상",
 };
 
+/** 흉상·전신 대형 초상 id 의 공통 접두사(`generated-face-actor1-bust` 등). */
+const GENERATED_FACE_PREFIX = "generated-face-";
+
 function collect(
   slot: EventResourceSlot,
-  project: Pick<Project, "assets" | "resourceProfiles" | "tilesets">,
+  project: Pick<Project, "assets" | "resourceProfiles">,
 ): EventResourceOption[] {
   const options = new Map<string, EventResourceOption>();
   const add = (id: string, name: string): void => {
@@ -53,6 +57,13 @@ function collect(
 
   switch (slot) {
     case "faceset":
+      // 흉상·전신 프리셋을 **맨 앞에** 둔다. 낱장 얼굴이 112장이라 뒤에 붙이면
+      // MAX_REF_ENTRIES(40) 에 잘려 프롬프트에서 사라진다 — 그러면 「초상을 크게 띄우기」가
+      // 가능하다는 사실을 모델이 알 수가 없다. 이 둘이 대사창 위 대형 초상
+      // 레이아웃(facesetPreview.faceDisplayModeOf)을 여는 유일한 열쇠다.
+      for (const id of builtinGeneratedResourceIds()) {
+        if (id.startsWith(GENERATED_FACE_PREFIX)) add(id, `${id} (대형 초상 레이아웃)`);
+      }
       // 낱장 얼굴 112장. 분할 전 4×4 시트 id 는 저장본 호환으로 등록만 남아 있으므로 뺀다 —
       // 시트를 얼굴 한 장으로 지정하면 대화창에 엉뚱한 칸이 뜬다.
       for (const asset of FACESET_FACE_ASSETS) add(asset.id, asset.name);
@@ -69,14 +80,16 @@ function collect(
       for (const asset of EASYRPG_SOUND_ASSETS) add(asset.id, asset.name);
       break;
     case "picture":
-      // showPicture 는 폼이 자유 입력 + `resolveAssetResourceUrl` 해석이라 **해석되는 이미지면 다** 그린다.
-      // 그래서 칩셋 이미지도 유효하다 — `newCommand("showPicture")` 의 기본값이 실제로
-      // `tex_tiles_default` 다. 이걸 배제하면 프롬프트가 실은 자기 예시를 검증이 반려하는
-      // 모순으로 돌아간다. 오디오·얼굴처럼 재생 경로가 좀은 종류만 엄감하게 닫는다.
+      // 그림 칸은 **제안용 목록**이다. 유효성 판정은 런타임 해석기가 한다
+      // (eventCommandAssist 의 walkResourceSlots -> resolvePictureSource) — 폼이 자유 입력이고
+      // 「그림 선택」 픽커는 `kind: "image"` 로 454개를 제시하므로, 이 목록을 검증 기준으로
+      // 쓰면 픽커가 권한 164개를 반려한다(실측).
+      //
+      // 목록에는 **런타임이 실제로 그릴 수 있는 id 만** 담는다(아래에서 걸러낸다). 칩셋 이미지
+      // 10개는 `resolvePictureSource` 가 해석하지 못해 화면에 아무것도 안 나오므로 뺀다 —
+      // `newCommand("showPicture")` 의 기본값 `tex_tiles_default` 도 그중 하나다(실측 resolves=false).
+      // 제안이 검증을 통과하지 못하면 그것이 곧 프롬프트의 자기모순이다.
       for (const id of Object.keys(project.assets.sprites)) add(id, id);
-      for (const tileset of Object.values(project.tilesets ?? {})) {
-        if (tileset.image?.id) add(tileset.image.id, `${tileset.name || tileset.image.id} (칩셋 이미지)`);
-      }
       break;
     case "movie":
       // 동영상은 업로드로만 들어온다 — 판정 근거는 playMoviePreview 가 소유한다.
@@ -101,7 +114,13 @@ function collect(
   for (const [id, uploaded] of Object.entries(project.assets.uploaded ?? {})) {
     if (matchesSlot(slot, uploaded.kind, id)) add(id, uploaded.name || id);
   }
-  return [...options.values()];
+  const collected = [...options.values()];
+  // 제안 목록은 검증이 받아 주는 집합의 부분집합이어야 한다. 그림 칸의 판정 권위는 런타임
+  // 해석기이므로 여기서 같은 함수로 걸러, "권했는데 반려" 가 구조적으로 불가능해진다.
+  if (slot === "picture") {
+    return collected.filter((option) => resolvePictureSource(option.id, project) !== null);
+  }
+  return collected;
 }
 
 /**
@@ -112,7 +131,14 @@ function matchesSlot(slot: EventResourceSlot, kind: string | undefined, id: stri
   switch (slot) {
     case "faceset":
       if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;
-      return kind === "faceset" || (id.startsWith("generated-actor-") && id.endsWith("-face"));
+      // 폼의 프리셋 버튼이 지정하는 `generated-face-*`(흉상·전신)을 반드시 받는다 — 이전
+      // 구현은 이 둘을 반려해서, UI 가 스스로 권하는 리소스로 「초상 띄우기」를 시키면
+      // 자가수정 3회를 다 태운 뒤 하드 실패했다. 같은 접두사 판정을 폼(faceDisplayModeOf)도 쓴다.
+      return (
+        kind === "faceset"
+        || id.startsWith(GENERATED_FACE_PREFIX)
+        || (id.startsWith("generated-actor-") && id.endsWith("-face"))
+      );
     case "music":
       return (
         kind === "music"
@@ -137,7 +163,7 @@ function matchesSlot(slot: EventResourceSlot, kind: string | undefined, id: stri
 /** 이 슬롯에 실제로 고를 수 있는 리소스 목록(등장 순서 = 에디터 픽커 순서). */
 export function listEventResourceOptions(
   slot: EventResourceSlot,
-  project: Pick<Project, "assets" | "resourceProfiles" | "tilesets">,
+  project: Pick<Project, "assets" | "resourceProfiles">,
 ): readonly EventResourceOption[] {
   return collect(slot, project);
 }
@@ -145,7 +171,7 @@ export function listEventResourceOptions(
 /** 이 슬롯의 유효 id 집합. 프롬프트가 실은 목록과 검증이 보는 집합이 같아야 한다. */
 export function eventResourceIdSet(
   slot: EventResourceSlot,
-  project: Pick<Project, "assets" | "resourceProfiles" | "tilesets">,
+  project: Pick<Project, "assets" | "resourceProfiles">,
 ): Set<string> {
   return new Set(collect(slot, project).map((option) => option.id));
 }
