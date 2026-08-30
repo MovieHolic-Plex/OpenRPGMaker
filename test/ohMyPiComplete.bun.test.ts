@@ -221,6 +221,26 @@ describe("oh-my-pi complete (real pi-ai + mock fetch)", () => {
     expect(image.base64).toBe(base64);
   });
 
+  test("로그인이 없으면 영어 원문 대신 401 한국어 로그인 안내로 끊는다", async () => {
+    const { generateProviderImage } = await import("../scripts/lib/ohMyPiImageRuntime.ts");
+    let called = false;
+
+    const failure = await generateProviderImage(
+      "google-antigravity",
+      { model: "gemini-3.1-flash-image", prompt: "슬라임" },
+      {
+        fetch: async () => {
+          called = true;
+          throw new Error("네트워크에 닿지 않아야 한다");
+        },
+      },
+    ).then(() => undefined, (error) => error as Error & { status?: number });
+
+    expect(called).toBe(false);
+    expect(failure?.status).toBe(401);
+    expect(failure?.message).toBe("이미지를 만들려면 AI 설정 → Google Antigravity 로그인에서 연결해 주세요.");
+  });
+
   test("Antigravity 빈 스트림 재시도에서도 응답 URL을 보존해 이미지를 반환한다", async () => {
     seedOAuthForTests("google-antigravity", {
       access: "retry-access",

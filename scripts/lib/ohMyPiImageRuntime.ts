@@ -165,6 +165,11 @@ export async function generateProviderImage(
     ?? getBundledModel(IMAGE_PROVIDER_ID as never, DEFAULT_IMAGE_MODEL);
   if (!model) throw statusError(`oh-my-pi 카탈로그에 ${IMAGE_PROVIDER_ID} 이미지 모델이 없습니다.`, 400);
 
+  // 로그인이 아예 없으면(resolveRequestApiKey → undefined) pi-ai 가 HTTP 요청을 만들기 전에
+  // MissingApiKeyError 로 끊는다. 그러면 상류 상태가 없어 아래 판별이 닿지 못하고 영어 원문이
+  // 그대로 사용자에게 간다 — 가장 흔한 미로그인 상태이므로 여기서 먼저 끊는다.
+  if (!options?.apiKey) throw statusError(IMAGE_AUTH_MESSAGE, 401);
+
   const harvested: { mimeType: string; base64: string }[] = [];
   // pi-ai는 제공자 HTTP 오류를 throw하지 않고 오류 메시지로 resolve하므로 전송 계층 상태를 따로 보존한다.
   const upstreamFailure: { status?: number } = {};
