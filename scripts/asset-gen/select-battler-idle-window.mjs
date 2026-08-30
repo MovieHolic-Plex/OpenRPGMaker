@@ -32,6 +32,7 @@ import { PNG } from "pngjs";
 import {
   CONTRACT,
   colorShares,
+  frameChange,
   headShares,
   relativeDeviationDetail,
   scoreStrip,
@@ -67,12 +68,14 @@ function parseArgs(argv) {
   return args;
 }
 
-/** 프레임 파일을 인덱스로 읽는다. 파일명의 숫자를 인덱스로 쓴다(`f091.png` → 91). */
-function loadFrames(dir) {
+/** 프레임 파일을 인덱스로 읽는다. 파일명의 **마지막** 숫자 묶음을 인덱스로 쓴다(`hero-04-f091.png` → 91). */
+export function loadFrames(dir) {
   const frames = new Map();
   for (const file of readdirSync(dir).filter((name) => name.endsWith(".png")).sort()) {
-    const digits = file.replace(/\D/g, "");
-    if (!digits) continue;
+    // **마지막** 숫자 묶음만 쓴다. 전부 이어 붙이면 `hero-04-f091.png` 가 4091 이 된다.
+    const groups = file.replace(/\.png$/i, "").match(/\d+/g);
+    if (!groups) continue;
+    const digits = groups[groups.length - 1];
     frames.set(Number(digits), PNG.sync.read(readFileSync(path.join(dir, file))));
   }
   if (frames.size === 0) throw new Error(`${dir} 에 프레임 PNG 가 없다`);
@@ -200,7 +203,16 @@ function main() {
   console.log(`탈락: 색 ${reasons.color} · 머리 ${reasons.head} · 모션 ${reasons.motion} · 이음매 ${reasons.seam}`);
   console.log(`근사 통과 ${survivors.length}개 → 상위 ${verified.length}개를 실제 패커로 재채점\n`);
   if (verified.length === 0) {
-    console.log("통과 창이 없다. 클립 자체가 계약을 만족하지 못한다는 뜻이다.");
+    // `--verify 0` 은 "재채점을 건너뛰라"는 뜻이다. 그걸 "통과 창이 없다"로 읽으면 오진이다.
+    if (survivors.length > 0) {
+      console.log(`근사 통과 후보 ${survivors.length}개가 있지만 재채점을 하지 않았다(--verify ${args.verify}).`);
+      console.log("근사 값은 권위가 없다 — `--verify 5` 이상으로 실제 패커 출력을 확인하라.");
+      for (const candidate of survivors.slice(0, 10)) {
+        console.log(`  ${label(candidate)}  --pick "${candidate.picks.join(",")}"`);
+      }
+      return;
+    }
+    console.log("통과 창이 없다(근사 통과 0개). 클립 자체가 계약을 만족하지 못한다는 뜻이다.");
     console.log("임계값을 낮추지 마라 — 프롬프트를 고쳐 다시 생성하거나 --pingpong-only 를 시도하라.");
     console.log(`판단 근거는 openwiki/battler-idle-playbook.md 를 보라.`);
     return;
@@ -230,48 +242,41 @@ function main() {
     console.log("프레임 간격은 이 창의 실측 간격으로 맞춘다: stride ÷ 24fps.");
     console.log(`  stride ${best.stride} → ${Math.round((best.stride / 24) * 1000)}ms`);
   } else {
-    console.log("\n근사는 통과했지만 실제 패커 출력이 계약을 못 넘었다. 상한을 만지지 말고 다른 구간을 보라.");
+    // 사전 필터는 키드 프레임 근사라 실제 패커 출력과 어긋날 수 있다. 상위 N개가 전부
+    // 떨어졌다면 **남은 후보가 있는지**를 먼저 알려야 한다 — 없다고 오해하면 임계값을
+    // 만지러 간다.
+    const remaining = survivors.length - verified.length;
+    console.log("\n근사는 통과했지만 재채점한 창이 전부 계약을 못 넘었다.");
+    if (remaining > 0) {
+      console.log(
+        `근사 통과 후보가 ${remaining}개 더 남아 있다 — 먼저 --verify ${Math.min(survivors.length, args.verify + 10)} 로 넓혀 보라.`
+      );
+    } else {
+      console.log("근사 통과 후보를 전부 재채점했다. 이 클립에는 통과 창이 없다.");
+    }
+    console.log("어느 쪽이든 상한을 만지지 마라 — 프롬프트를 고쳐 다시 생성하는 것이 맞다.");
+    console.log("판단 근거는 openwiki/battler-idle-playbook.md 를 보라.");
   }
 }
 
 const pairCache = new Map();
-/**
- * 두 프레임의 픽셀 변화 비율. `cellChange` 와 **같은 임계값**을 쓴다.
- *
- * 왜 두 프레임을 하나로 붙여 `cellChange` 를 재사용하지 않는가 — 그렇게 했다가 버그를 냈다.
- * 폭이 2배인 이미지에 한 프레임의 연속 버퍼를 그대로 복사하면 행 스트라이드가 어긋나 그림이
- * 흐트러지고, **모든 창이 모션 만점으로 보인다**(실측: 사전 필터가 아무것도 걸러내지 못하고
- * 실제 패커에서는 0.00% 로 드러났다). 같은 크기 두 장은 그냥 직접 비교하는 게 맞다.
- */
+/** 정본 `frameChange` 를 캐시해서 쓴다. 여기서 다시 구현하면 안 된다 — 그래서 버그를 냈다. */
 function pairChange(frames, a, b) {
   const key = a < b ? `${a}:${b}` : `${b}:${a}`;
   if (pairCache.has(key)) return pairCache.get(key);
-  const left = frames.get(a);
-  const right = frames.get(b);
-  if (left.width !== right.width || left.height !== right.height) {
-    throw new Error(`프레임 크기가 다르다: ${a} 는 ${left.width}×${left.height}, ${b} 는 ${right.width}×${right.height}`);
-  }
-  let changed = 0;
-  let total = 0;
-  for (let i = 0; i < left.data.length; i += 4) {
-    total += 1;
-    const diff =
-      Math.abs(left.data[i] - right.data[i]) +
-      Math.abs(left.data[i + 1] - right.data[i + 1]) +
-      Math.abs(left.data[i + 2] - right.data[i + 2]) +
-      Math.abs(left.data[i + 3] - right.data[i + 3]);
-    if (diff > CONTRACT.pixelDiffThreshold) changed += 1;
-  }
-  const value = total === 0 ? 0 : changed / total;
+  const value = frameChange(frames.get(a), frames.get(b));
   pairCache.set(key, value);
   return value;
 }
 
 function margin(candidate) {
+  // 네 계약 모두의 여유를 더한다. 이음매를 빼면 이음매 1.49 인 창이 색·모션 여유만으로
+  // 위로 올라온다.
   return (
     (CONTRACT.colorRelativeCap - candidate.color) / CONTRACT.colorRelativeCap +
     (CONTRACT.headRelativeCap - candidate.head) / CONTRACT.headRelativeCap +
-    (candidate.minStep - CONTRACT.minAdjacentChange) / CONTRACT.minAdjacentChange
+    (candidate.minStep - CONTRACT.minAdjacentChange) / CONTRACT.minAdjacentChange +
+    (CONTRACT.seamRatioCap - candidate.seamRatio) / CONTRACT.seamRatioCap
   );
 }
 
@@ -279,4 +284,7 @@ function label(entry) {
   return `${entry.mode === "ping" ? "핑퐁" : "연속"} start=${entry.start} stride=${entry.stride}`;
 }
 
-main();
+// 직접 실행일 때만 돈다 — 테스트가 `loadFrames` 를 import 할 수 있어야 한다.
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
+}
