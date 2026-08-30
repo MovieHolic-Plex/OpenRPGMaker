@@ -3,17 +3,17 @@ import { getTool, runTool, toOpenAiTools, type ToolContext } from "@/editor/tool
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
 
-function merchant(): GameEvent {
+function merchant(id = "ev_hana", name = "상인 하나", x = 6): GameEvent {
   return {
-    id: "ev_hana",
-    x: 6,
+    id,
+    x,
     y: 9,
     trigger: { kind: "action" },
     commands: [],
     pages: [
       {
-        id: "ev_hana_page_1",
-        name: "상인 하나",
+        id: `${id}_page_1`,
+        name,
         conditions: [],
         graphic: {},
         trigger: { kind: "action" },
@@ -30,7 +30,7 @@ function fixture(): Project {
   const start = project.maps[project.startMapId];
   if (!start) throw new Error("blank project has no start map");
   start.name = "햇살 마을";
-  start.events = [merchant()];
+  start.events = [merchant(), merchant("ev_dul", "상인 둘", 10)];
   const house = createBlankMap("상인 하나의 집", 20, 16);
   house.id = "map_house_interior_1";
   project.maps[house.id] = house;
@@ -109,6 +109,19 @@ describe("focus_editor_view", () => {
       kind: "event",
       eventId: "ev_hana",
     });
+  });
+
+  it("서로 다른 부분 이름이 여럿이면 후보 이름을 알리고 정확한 이름은 찾는다", () => {
+    const project = fixture();
+
+    const ambiguous = focus(project, { query: "상인" });
+    const exact = focus(project, { query: "상인 하나" });
+
+    expect(ambiguous.ok).toBe(false);
+    expect(ambiguous.summary).toContain("상인 하나");
+    expect(ambiguous.summary).toContain("상인 둘");
+    expect(exact.ok).toBe(true);
+    expect(exact.data).toMatchObject({ eventId: "ev_hana" });
   });
 
   it("clamps an explicit rectangle into the map", () => {
