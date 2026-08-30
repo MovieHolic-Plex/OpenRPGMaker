@@ -35,6 +35,7 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import {
   loadDockPanelSize,
   resolveSideChatWidth,
@@ -271,6 +272,10 @@ export function renderEditor(main: HTMLElement): void {
   unsubWorkspace = subscribeWorkspace(() => syncLeftDock());
   installSelectionChipHint();
   installToolCursor();
+  // 하단 연결 칩은 제거됐으므로 그 옛 렌더 경로가 더는 인증 캐시를 데우지 않는다. 부팅에서 한 번
+  // 조회해 구조 키트·클러스터·타일셋 게이트가 실제 연결 상태를 보게 한다. 완료 전 checking은
+  // 각 게이트가 허용하므로 느린 companion 조회가 사용자를 잠그지는 않는다.
+  void refreshAiConnectionStatus();
   scheduleEditorAssetWarmup();
   maybeStartBasicCoachMarks();
   maybeStartStandardWelcomeCard();

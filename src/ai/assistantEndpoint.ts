@@ -11,9 +11,10 @@
 //      타일셋 분석은 자기만의 `hasCpenTilesetApiKey`, 구조 키트는 **아무 판정도 하지 않았다**.
 //
 // 2번이 실제 결함을 만들었다. `hasCpenTilesetApiKey` 는 (a) `config.model` 을 보지 않고
-// (b) 다른 어떤 코드도 읽지 않는 레거시 `oprn:llmApiKey` localStorage 키를 폴백으로 읽었다. 그래서
+// (b) 프로덕션 reader 는 사라진 레거시 `oprn:llmApiKey` localStorage 키를 폴백으로 읽었다. 그래서
 // 모델이 빈 설정에서 조수는 "설정 필요" 로 막는데 타일셋 AI 버튼은 열려 있고 `model: ""` 로 요청이
-// 나갔으며, 남아 있던 옛 키 하나가 나머지 전체와 어긋난 판정을 만들었다. 이 파일의 형제(같은 표면의
+// 나갔으며, 남아 있던 옛 키 하나가 나머지 전체와 어긋난 판정을 만들었다. 저장소 마이그레이션은 호환을
+// 위해 이 키를 보존하지만 읽지는 않는다. 이 파일의 형제(같은 표면의
 // 옛 주석)가 "중복 검사가 면제를 빼먹은 결함" 이라고 두 번 경고한 그 유형이다.
 //
 // 이 파일의 불변식: 표면 어휘(AiSurface)와 표면별 설정 정책(SURFACE_POLICIES)과 준비 판정
@@ -48,8 +49,9 @@ interface SurfacePolicy {
   readonly tier: ModelTier;
   /**
    * 출력 토큰 예산을 이 값으로 못박는다. 표면 산출물의 길이가 사용자 예산과 무관하게 정해질 때만 쓴다.
-   * 하한(Math.max)이 아니라 정확 지정이다 — 예산을 올리면 공급자 상한(providerCapability)에 걸려
-   * 422 로 떨어지는 조합이 있어서, 이 표면은 실측으로 통과가 확인된 값 하나에 고정돼 있었다.
+   * 하한(Math.max)이 아니라 정확 지정이다. providerCapability 가 cpen 요청은 이미 8192로 clamp하므로
+   * cpen에는 중복이고, 실제 효과는 companion 등 더 큰 예산을 지원하는 공급자도 8192로 낮추는 것이다.
+   * 새 정책이 아니라 통합 전 타일셋 분석의 정확 지정 동작을 그대로 물려받는다.
    */
   readonly maxTokens?: number;
   /** 라운드 안전핀 상한. 표면이 한 번에 도는 툴콜 수를 제한할 때만 쓴다. */
@@ -60,9 +62,9 @@ interface SurfacePolicy {
 export const REGION_SURFACE_MAX_TOOL_CALLS = 24;
 
 /**
- * 타일셋 매핑 응답의 출력 예산. 매핑 JSON 은 타일 수만큼 길어서 사용자 기본 예산으로는 잘린다.
- * cpen 공급자 상한(providerCapability.maxTokensCeiling)과 같은 값이라 클램프에도 걸리지 않는다 —
- * 실측: cpen 은 8192 통과, 32768 은 422.
+ * 타일셋 매핑 응답의 상속된 고정 출력 예산. cpen은 전송층이 어차피 8192로 clamp하므로 이 핀의
+ * 실효는 더 큰 예산을 지원하는 companion/Codex/Antigravity도 8192로 낮추는 데 있다. 이 통합에서
+ * 새로 고른 값이 아니라 통합 전 타일셋 분석의 `max_tokens: 8192` 동작을 보존한 것이다.
  */
 export const TILESET_ANALYSIS_MAX_TOKENS = 8192;
 
@@ -123,9 +125,35 @@ export function resolveSurfaceAiConfig(surface: AiSurface, base?: AiConfig): AiC
  * 통째로 빈 상태에서도 조수만 거부하고 영역·클러스터·이벤트는 기본 모델로 요청을 보냈다.
  * 준비 여부는 **사용자가 설정한 것**으로 판정하고, 모델 티어 해석은 요청을 만들 때만 한다.
  */
-export function isAssistantEndpointReady(config: AiConfig = loadAiConfig()): boolean {
+export type AssistantConnectionReadiness = {
+  readonly kind: "ready" | "disconnected" | "checking" | "offline" | "error";
+};
+
+/**
+ * 조수 엔드포인트에 요청을 보낼 수 있는가.
+ *
+ * `config` 기본값은 의도적으로 없다. 브라우저의 `loadAiConfig()`는 OAuth와 기본 모델을 항상
+ * 백필하므로 config 모양만 보면 언제나 true이고, 연결 판정으로 쓰면 죽은 게이트가 된다. 브라우저
+ * 호출부는 `getAiConnectionStatus(config)`를 두 번째 인자로 넘겨 실제 companion 캐시를 함께 본다.
+ * 캐시가 차가운 `checking`은 허용한다. 아직 조회하지 않았다는 이유로 버튼을 영구 잠그지 않되,
+ * 조회로 확인된 `disconnected`·`offline`·`error`는 반복될 요청을 막는다.
+ *
+ * 주입 설정(노드 스크립트·벤치마크·테스트)은 live status가 없으므로 두 번째 인자를 생략하고
+ * model/auth/baseUrl/apiKey 모양만 검증할 수 있다. 즉 이 함수는 주입 설정에도 계속 유효하지만,
+ * 브라우저 저장 설정에 status 없이 쓰면 연결 확인이 아니라 항상 true인 shape check일 뿐이다.
+ */
+export function isAssistantEndpointReady(
+  config: AiConfig,
+  connectionStatus?: AssistantConnectionReadiness,
+): boolean {
   if (!config.model.trim()) return false;
-  if (config.authMode === "chatgpt") return true;
-  if (isProxyAuth(config)) return Boolean(config.baseUrl.trim());
-  return Boolean(config.baseUrl.trim() && config.apiKey.trim());
+  const configReady = config.authMode === "chatgpt"
+    ? true
+    : isProxyAuth(config)
+      ? Boolean(config.baseUrl.trim())
+      : Boolean(config.baseUrl.trim() && config.apiKey.trim());
+  if (!configReady) return false;
+  return connectionStatus === undefined
+    || connectionStatus.kind === "ready"
+    || connectionStatus.kind === "checking";
 }
