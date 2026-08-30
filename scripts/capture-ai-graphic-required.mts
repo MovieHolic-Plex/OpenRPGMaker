@@ -1,10 +1,11 @@
 // AI 가 만든 NPC·몬스터의 외형 자동 부여 증거를 실제 편집기 표면에서 촬영한다.
-// 수정 전 상태는 툴을 우회해 store 에 직접 써서 재현한다(옛 툴이 저장하던 모양 그대로).
+// 수정 전 상태는 같은 레코드의 monsterResourceId 를 store 에서 비워 재현한다 —
+// 옛 툴이 저장하던 모양 그대로이므로 같은 카드로 before/after 를 비교할 수 있다.
 import { chromium, type Page } from "playwright";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 const BASE = process.env.SHOOT_BASE ?? "http://127.0.0.1:9880/";
-const OUT = "verify-shots/ai-graphic-required";
+const OUT = process.env.SHOOT_OUT ?? "verify-shots/ai-graphic-required";
 mkdirSync(OUT, { recursive: true });
 
 type ToolResult = { ok: boolean; summary: string; diff?: { warnings?: string[] } };
@@ -37,12 +38,42 @@ async function openDatabaseTab(page: Page, tab: string): Promise<void> {
     await modal.waitFor({ state: "visible", timeout: 30_000 });
   }
   await page.getByTestId(tab).evaluate((node) => (node as HTMLElement).click());
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(800);
+}
+
+async function selectRecord(page: Page, recordId: string): Promise<boolean> {
+  const search = page.locator('#db-workspace input[type="search"], .db-ws-list input[type="search"]').first();
+  if (await search.isVisible().catch(() => false)) {
+    await search.fill("");
+    await search.type(recordId.replace(/^enemy_ai_|^species_ai_/, ""), { delay: 12 });
+    await page.waitForTimeout(500);
+  }
+  const row = page.locator(`[data-testid="db-record-row-${recordId}"]`).first();
+  if (!(await row.isVisible({ timeout: 4000 }).catch(() => false))) return false;
+  await row.click();
+  await page.waitForTimeout(450);
+  return true;
+}
+
+async function shootHero(page: Page, path: string): Promise<boolean> {
+  const hero = page.getByTestId("db-enemy-hero");
+  if (!(await hero.isVisible().catch(() => false))) return false;
+  await hero.screenshot({ path });
+  return true;
+}
+
+async function step(label: string, body: () => Promise<void>): Promise<void> {
+  try {
+    await body();
+    console.log(`ok   ${label}`);
+  } catch (cause) {
+    console.log(`FAIL ${label}: ${cause instanceof Error ? cause.message.split("\n")[0] : String(cause)}`);
+  }
 }
 
 const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
 const page = await browser.newPage({ viewport: { width: 1680, height: 1050 }, deviceScaleFactor: 1 });
-page.setDefaultTimeout(60_000);
+page.setDefaultTimeout(30_000);
 await page.addInitScript(() => {
   localStorage.setItem("oprn:editor-ui-mode", "expert");
   localStorage.setItem("oprn:coachmarks-basic-v1", "seen");
@@ -51,49 +82,15 @@ await page.goto(`${BASE}?freshProject=1`, { waitUntil: "domcontentloaded", timeo
 const guest = page.getByTestId("login-guest");
 if (await guest.isVisible().catch(() => false)) await guest.click();
 await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 60_000 });
+await page.waitForTimeout(2500);
 
 const evidence: Record<string, unknown> = {};
 
-// 수정 전: 툴을 우회해 외형 없는 적을 그대로 저장한다.
-await page.evaluate((records) => {
-  const store = (window as unknown as {
-    __oprnEditorStore: { update(mutator: (draft: Record<string, never>) => void): void };
-  }).__oprnEditorStore;
-  store.update((draft) => {
-    const database = (draft as unknown as { database: { enemies: unknown[] } }).database;
-    for (const record of records) {
-      database.enemies.push({
-        id: `${record.id}_before`,
-        name: record.name,
-        graphicHue: 0,
-        transparent: false,
-        flying: false,
-        criticalHit: { enabled: false, oneIn: 30 },
-        attackOptions: { normalAttacksMiss: false },
-        skillIds: [],
-        stats: { maxHp: record.stats.maxHp, maxMp: 0, attack: record.stats.attack, defense: 8, mind: 8, agility: 8 },
-        rewards: { exp: 5, gold: 5, dropRatePercent: 0 },
-        actions: [],
-        stateRates: { state_death: "C" },
-        elementRates: {},
-      });
-    }
-  });
-}, KOREAN_ENEMIES);
-
-await openDatabaseTab(page, "db-tab-enemies");
-await page.screenshot({ path: `${OUT}/01-before-no-graphic.png` });
-
-// 수정 후: 같은 이름을 툴로 만든다. monsterResourceId 는 주지 않는다.
+// 1) 툴로 한국어 이름 적을 만든다. monsterResourceId 는 주지 않는다.
 const toolResults: { id: string; name: string; summary: string; warnings: string[] }[] = [];
 for (const record of KOREAN_ENEMIES) {
   const result = await runTool(page, "upsert_enemy", { enemy: record });
-  toolResults.push({
-    id: record.id,
-    name: record.name,
-    summary: result.summary,
-    warnings: result.diff?.warnings ?? [],
-  });
+  toolResults.push({ id: record.id, name: record.name, summary: result.summary, warnings: result.diff?.warnings ?? [] });
 }
 evidence.enemyToolResults = toolResults;
 
@@ -145,29 +142,98 @@ evidence.assignedGraphics = await page.evaluate(() => {
   };
 });
 
+// 2) 같은 카드로 before/after. before 는 store 에서 외형을 비워 옛 저장 상태를 재현한다.
 await openDatabaseTab(page, "db-tab-enemies");
-await page.screenshot({ path: `${OUT}/02-after-autofilled-list.png` });
+await step("select skeleton archer", async () => {
+  if (!(await selectRecord(page, "enemy_ai_skeleton_archer"))) throw new Error("행을 찾지 못했다");
+});
+await step("01 before hero (graphic cleared)", async () => {
+  await page.evaluate(() => {
+    const store = (window as unknown as {
+      __oprnEditorStore: { update(mutator: (draft: unknown) => void): void };
+    }).__oprnEditorStore;
+    store.update((draft) => {
+      const database = (draft as { database: { enemies: { id: string; monsterResourceId?: string }[] } }).database;
+      const enemy = database.enemies.find((entry) => entry.id === "enemy_ai_skeleton_archer");
+      if (enemy) delete enemy.monsterResourceId;
+    });
+  });
+  await page.waitForTimeout(900);
+  if (!(await shootHero(page, `${OUT}/01-before-hero-no-graphic.png`))) throw new Error("hero 없음");
+});
+await step("02 after hero (tool refilled)", async () => {
+  const again = await runTool(page, "upsert_enemy", { enemy: { id: "enemy_ai_skeleton_archer", name: "해골 궁수" } });
+  evidence.refillWarnings = again.diff?.warnings ?? [];
+  await page.waitForTimeout(1000);
+  if (!(await shootHero(page, `${OUT}/02-after-hero-autofilled.png`))) throw new Error("hero 없음");
+});
 
+// 3) 종류별 카드 + 목록 전경.
 for (const [index, record] of KOREAN_ENEMIES.entries()) {
-  const row = page.locator(`[data-testid="db-list-item-${record.id}"], [data-record-id="${record.id}"]`).first();
-  if (await row.isVisible().catch(() => false)) {
-    await row.click();
-    await page.waitForTimeout(500);
-    const hero = page.getByTestId("db-enemy-hero");
-    if (await hero.isVisible().catch(() => false)) {
-      await hero.screenshot({ path: `${OUT}/03-${index + 1}-hero-${record.id}.png` });
-    }
-  }
+  await step(`03-${index + 1} hero ${record.id}`, async () => {
+    if (!(await selectRecord(page, record.id))) throw new Error("행을 찾지 못했다");
+    if (!(await shootHero(page, `${OUT}/03-${index + 1}-hero-${record.id}.png`))) throw new Error("hero 없음");
+  });
 }
+await step("04 enemy list", async () => {
+  const search = page.locator('#db-workspace input[type="search"], .db-ws-list input[type="search"]').first();
+  if (await search.isVisible().catch(() => false)) await search.fill("");
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}/04-enemy-list.png` });
+});
 
-await openDatabaseTab(page, "db-tab-monster-species");
-await page.screenshot({ path: `${OUT}/04-species-autofilled.png` });
+await step("05 species tab", async () => {
+  await openDatabaseTab(page, "db-tab-monster-species");
+  await page.locator('[data-testid^="db-record-row-species_ai_"]').first().click({ timeout: 8000 }).catch(() => undefined);
+  await page.waitForTimeout(700);
+  await page.screenshot({ path: `${OUT}/05-species-autofilled.png` });
+});
 
-const closeButton = page.getByTestId("database-close");
-if (await closeButton.isVisible().catch(() => false)) await closeButton.click();
-await page.waitForTimeout(1200);
-await page.screenshot({ path: `${OUT}/05-map-npc-visible.png` });
+await step("06 map npc", async () => {
+  await page.getByTestId("database-modal-close").click();
+  await page.getByTestId("database-modal").waitFor({ state: "hidden", timeout: 15_000 }).catch(() => undefined);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(800);
+
+  // 100x100 시작 맵은 NPC 한 칸이 화면 밖으로 밀린다 — 전체가 보이는 작은 실내 맵에 배치한다.
+  const smallMapId = await page.evaluate(() => {
+    const store = (window as unknown as {
+      __oprnEditorStore: { getCurrent(): { maps: Record<string, { id: string; width: number; height: number }> } };
+    }).__oprnEditorStore;
+    const maps = Object.values(store.getCurrent().maps);
+    const small = maps.filter((map) => map.width <= 20 && map.height <= 15).sort((a, b) => a.width * a.height - b.width * b.height);
+    return small[0]?.id ?? null;
+  });
+  if (!smallMapId) throw new Error("작은 맵이 없다");
+
+  const inner = await runTool(page, "upsert_event", {
+    mapId: smallMapId,
+    event: {
+      id: "ev_ai_talker_indoor",
+      x: 6,
+      y: 5,
+      trigger: { kind: "action" },
+      pages: [{ conditions: [], commands: [{ kind: "text", body: "이 마을은 처음이신가요?" }] }],
+    },
+  });
+  evidence.indoorNpcResult = { mapId: smallMapId, summary: inner.summary, warnings: inner.diff?.warnings ?? [] };
+  evidence.indoorNpcSprite = await page.evaluate((id: string) => {
+    const store = (window as unknown as {
+      __oprnEditorStore: { getCurrent(): { maps: Record<string, { events: { id: string; pages?: { graphic?: { sprite?: { id?: string }; transparent?: boolean } }[] }[] }> } };
+    }).__oprnEditorStore;
+    const page0 = store.getCurrent().maps[id]?.events.find((event) => event.id === "ev_ai_talker_indoor")?.pages?.[0];
+    return { sprite: page0?.graphic?.sprite?.id ?? null, transparent: page0?.graphic?.transparent ?? null };
+  }, smallMapId);
+
+  await page.getByTestId(`map-tree-node-${smallMapId}`).click({ timeout: 10_000 });
+  await page.waitForTimeout(2500);
+  await page.screenshot({ path: `${OUT}/06-map-npc-visible.png` });
+  const canvas = page.getByTestId("edit-canvas");
+  if (await canvas.isVisible().catch(() => false)) {
+    await canvas.screenshot({ path: `${OUT}/07-map-npc-canvas.png` });
+  }
+});
 
 writeFileSync(`${OUT}/evidence.json`, `${JSON.stringify(evidence, null, 2)}\n`);
-console.log(JSON.stringify(evidence, null, 2));
+console.log(JSON.stringify(evidence.assignedGraphics, null, 2));
 await browser.close();
