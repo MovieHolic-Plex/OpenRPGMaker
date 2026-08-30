@@ -197,7 +197,19 @@ export interface ApplyProposedProjectOptions {
 
 export type ApplyProposedProjectResult =
   | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project }
-  | { readonly ok: false; readonly reason: "commit-rejected"; readonly issue?: string };
+  | {
+    readonly ok: false;
+    readonly reason: "commit-rejected";
+    /** 대표 사유 한 줄(상태 텍스트·토스트용). */
+    readonly issue?: string;
+    /**
+     * 반려를 만든 **차단 사유 전량**. 게이트 경고 모달이 이걸 그대로 나열한다.
+     * `commit.issues` 가 아니라 `commit.blocking` 에서 온다 — issues 에는 이 변경이
+     * 만들지 않은 선재 오류도 섞여 있어서, 첫 error 를 골라 보고하면 반려와 무관한
+     * 문장이 사유로 나갔다(예: 무관한 편집인데 "시작 위치 통행 불가"가 사유로 표시).
+     */
+    readonly issues?: readonly string[];
+  };
 
 /**
  * 제안 프로젝트를 안전 적용 경로로 반영한다. 실패(커밋 게이트 차단) 시 스토어를
@@ -212,8 +224,14 @@ export async function applyProposedProject(
   const before = store.getCurrent();
   const commit = commitChangeset(proposed, before);
   if (!commit.ok) {
-    const issue = commit.issues.find((entry) => entry.severity === "error");
-    return { ok: false, reason: "commit-rejected", issue: issue?.message ?? "무결성 오류" };
+    const blocking = commit.blocking.map((entry) =>
+      entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);
+    return {
+      ok: false,
+      reason: "commit-rejected",
+      issue: blocking[0] ?? "무결성 오류",
+      issues: blocking,
+    };
   }
   recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
