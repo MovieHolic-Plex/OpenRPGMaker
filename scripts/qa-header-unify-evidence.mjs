@@ -184,9 +184,9 @@ await page.screenshot({ path: path.join(OUT, "c3-audio-sliders.png") });
 // 슬라이더 값 → 엔진 값 매핑은 대화상자가 정하는 것이다(audioTestDialog):
 //   음량 0..100  → volume  = value / 100
 //   템포 50..150 → rate    = value / 100
-//   밸런스 -50..50 → pan    = value / 50    ← /100 이 아니다(처음엔 -0.4 를 기대해 오탄이 나왔다)
+//   밸런스 -100..100 → pan  = value / 100  (min/max 를 실제로 읽어 확인했다)
 //   페이드인 0..10초 → fadeInMs = value * 1000
-const EXPECT = { volume: 0.4, rate: 1.35, pan: -40 / 50, fadeInMs: 4000 };
+const EXPECT = { volume: 0.4, rate: 1.35, pan: -40 / 100, fadeInMs: 4000 };
 const engineAfter = afterSliders.engine;
 record("C3-음량이-엔진에-반영", Math.abs((engineAfter?.volume?.bgm ?? -1) - EXPECT.volume) < 0.02, {
   before: beforeSliders.engine?.volume?.bgm,

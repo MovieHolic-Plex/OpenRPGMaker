@@ -183,7 +183,7 @@ export function openAudioTestDialog(): void {
             format: balanceText,
             onInput: (value) => {
               state.balance = value;
-              engine.setPan(value / 50);
+              engine.setPan(value / 100);
             },
           }),
           el("div", { class: "audio-test-actions", children: [playButton, stopButton] }),
@@ -251,7 +251,7 @@ export function openAudioTestDialog(): void {
     }
     applyVolume(state);
     engine.setPlaybackRate(state.tempo / 100);
-    engine.setPan(state.balance / 50);
+    engine.setPan(state.balance / 100);
     // 페이드인은 엔진의 현재 기본값(슬라이더가 소유)을 통해 **다음 재생**에 적용된다.
     engine.setFadeInMs(state.fadeSeconds * 1000);
     playAudioCommand({ resourceId: selected.id, loop: state.category === "music" }, store.getCurrent());
@@ -360,7 +360,7 @@ export function openAudioTestDialog(): void {
   // 엔진에 현재 슬라이더 값을 심어 화면 표기와 실제 적용값이 처음부터 일치하게 한다.
   applyVolume(state);
   engine.setPlaybackRate(state.tempo / 100);
-  engine.setPan(state.balance / 50);
+  engine.setPan(state.balance / 100);
   engine.setFadeInMs(state.fadeSeconds * 1000);
   render();
   closeAction.focus();

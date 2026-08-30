@@ -120,7 +120,7 @@ test("moving the sliders changes the values actually applied to playback", async
   const after = await readAudio(page);
   expect(after.volume.bgm).toBeCloseTo(0.4, 2);
   expect(after.playbackRate).toBeCloseTo(1.35, 2);
-  expect(after.pan).toBeCloseTo(-0.8, 2); // -40/50 — 슬라이더 전체 행정이 pan -1..1 을 덮는다
+  expect(after.pan).toBeCloseTo(-0.4, 2); // -40/100 — 슬라이더 범위가 -100..100 이므로 전체 행정이 pan -1..1 을 덮는다
   expect(after.fadeInMs).toBe(4000);
   // 실제 미디어 엘리먼트에 닿았는지 교차 검증 — 정지 없이 즉시 반영이다.
   expect(after.mediaVolume).not.toBeNull();
