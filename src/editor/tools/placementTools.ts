@@ -162,12 +162,22 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
       ? applyStructureEdits(map, resolvePlacementStructure({ map, tileset, group, placed }))
       : [];
     const skipped = args.count - placed.length;
+    if (placed.length === 0) {
+      // 라이브 QA 사고: '키큰 풀' 로 채운 영역에 침엽수를 깔면 0그루가 놓이는데도 ok 로 끝나
+      // 나무 한 그루 없는 "빽빽한 숲" 이 완성으로 보고됐다. 0개 배치는 성공이 아니다.
+      throw new ToolError(
+        `${sourceNameOf(picker, group)}를 ${args.count}개 요청했지만 영역 (${args.area.x},${args.area.y}) ${args.area.w}×${args.area.h} 에 한 개도 놓지 못했습니다`
+        + " — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다."
+        + " tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        { code: "placement-zero", mapId: map.id },
+      );
+    }
     const warning = passabilityWarning(draft, map, [...touched, ...structureTouched]);
     const atomicTileCount = picker ? 1 : nonEmptyFootprintTileCount(footprint);
     const clusterNote = !picker && hardClusterRuleCount(group) > 0
       ? ` = ${placed.length * atomicTileCount}타일(클러스터 동반 배치 포함)`
       : "";
-    const sourceName = picker ? `${picker.presetId}/${picker.role}` : group.name;
+    const sourceName = sourceNameOf(picker, group);
     const passableAfter = passableCellCount(draft, map, args.area);
     // dense 를 시킨 쪽은 "정말 못 지나가나" 를 알고 싶어 한다. 남은 통행 칸을 세서 말해준다.
     const passabilityNote = args.packing === "dense"
@@ -191,6 +201,13 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
       },
       warnings: warning ? [warning] : undefined,
     };
+}
+
+function sourceNameOf(
+  picker: { readonly presetId: string; readonly role: string } | undefined,
+  group: { readonly name: string },
+): string {
+  return picker ? `${picker.presetId}/${picker.role}` : group.name;
 }
 
 const scatterObject: ToolDefinition = {
