@@ -686,6 +686,8 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     await vi.waitFor(() => expect(second.mock).toHaveBeenCalledTimes(1));
     second.resolve(JSON.stringify([{ kind: "text", body: "다시 고친 대사" }]));
     await vi.waitFor(() => expect(liveGenerate.disabled).toBe(false));
+  });
+
   it("surviving staged rows use the applied result sequence for numbers and the badge", async () => {
     // before=[A,B] / after=[B] is deliberately remove+keep. Raw diff indexing labels B as 2,
     // but the applied result contains one command, so both row and badge must say 1.
