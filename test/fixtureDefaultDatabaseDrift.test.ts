@@ -12,7 +12,8 @@ import { DERIVED_DATABASE_TABLES, type DerivedTable } from "../scripts/lib/fixtu
 
 // 실측 배경(2026-08-30): 콘텐츠 스크립트가 픽스처를 읽어 맵·이벤트만 더한 뒤 되쓰므로 database
 // 부분이 export 당시 값에 얼어붙는다. 그래서 장비 11종 전부 accuracy/criticalRate 가 없고 아이콘
-// 13건이 남의 아이콘을 가리켰다. 보충은 *빈* 필드만 채워 틀린 값을 못 고치므로 이 게이트가 필요하다.
+// 18건이 남의 아이콘을 가리켰다(아이템 16 + 장비 2 — 검술 교본이 청동 검 그림, 철 검·강철 검이
+// 둘 다 청동 검 그림). 보충은 *빈* 필드만 채워 틀린 값을 못 고치므로 이 게이트가 필요하다.
 const RECOVERY_COMMAND = "npm run fixture:sync";
 
 type Row = { id: string };
