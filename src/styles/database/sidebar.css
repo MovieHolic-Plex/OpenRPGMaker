@@ -271,9 +271,11 @@
 }
 
 
-/* 11px 은 모달 전역의 최소 가독 크기다. 장식 글리프도 예시로 두지 않는다 — db-ux-probe 의
-   tinyPseudo 가 가상 요소를 재기 시작하면서 이 10px 이 모달 전역에서 유일한 11px 미만
-   렌더링 텍스트로 드러났다(30탭 × 6개 = 180건). */
+/* 이 셰브론은 11px 이고, 그래서 모달에서 **가장 작은** 렌더링 텍스트다 — 여기가 전역 바닥이라는
+   뜻이 아니다. 텍스트 요소의 런타임 바닥은 `studio-theme.css` 의 `max(11.5px, 1em)` 이고 가상
+   요소에는 걸리지 않는다. 11 은 db-ux-probe 의 계측 문턱(기준선과 맞춘 값)일 뿐이다.
+   이전에는 10px 였고, tinyPseudo 가 가상 요소를 재기 시작하면서 모달 전역에서 유일한 11px 미만
+   렌더링 텍스트로 드러났다(30탭 × 6개 = 180건, verify-shots/db-ux/pseudo-baseline/probe.json). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group::after {
   color: var(--db-studio-text-3, #94A3B8);
   content: "\25BE";
