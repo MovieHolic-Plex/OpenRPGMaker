@@ -1,4 +1,4 @@
-import { branchEmptyLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
+import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandCategoryVisual } from "./commandCategoryIcons";
@@ -290,7 +290,7 @@ export function renderStoryboard(
                       ? renderBranchCommands(branch.commands, [...path, branch.pathSegment])
                       : [el("button", {
                           class: "event-storyboard-branch-empty",
-                          text: branchEmptyLabel,
+                          text: branchEmptyActionLabel,
                           attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
                           dataset: { testid: `event-storyboard-branch-empty-${[...path, branch.pathSegment].join("-")}` },
                           on: { click: () => opts?.onAddToBranch?.([...path, branch.pathSegment]) },
@@ -378,7 +378,7 @@ export function renderStoryboard(
                 ? renderBranchCommands(branch.commands, [idx, branch.pathSegment])
                 : [el("button", {
                     class: "event-storyboard-branch-empty",
-                    text: branchEmptyLabel,
+                    text: branchEmptyActionLabel,
                     attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
                     dataset: { testid: `event-storyboard-branch-empty-${idx}-${branch.pathSegment}` },
                     on: { click: () => opts?.onAddToBranch?.([idx, branch.pathSegment]) },

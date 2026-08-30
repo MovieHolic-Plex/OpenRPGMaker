@@ -1,6 +1,6 @@
 import { clearChildren, el } from "@/util/dom";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
-import { branchEmptyLabel, branchGroupEndLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
+import { branchEmptyActionLabel, branchGroupEndLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
@@ -394,7 +394,7 @@ function renderEmptyBranchLine(
 ): HTMLElement {
   const line = el("button", {
     class: `cmd-line-marker cmd-marker-${kind} cmd-branch-empty`,
-    text: branchEmptyLabel,
+    text: branchEmptyActionLabel,
     attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
     dataset: {
       testid: `event-command-branch-empty-${containerPath.join("-")}`,
