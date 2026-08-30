@@ -289,13 +289,19 @@ describe("add_companion actor 합류 이벤트 외형", () => {
     expect(joinPage?.graphic?.transparent).not.toBe(true);
   });
 
-  it("characterResourceId 가 없으면 기존 기본 follower charset 으로 폴백한다", () => {
+  it("upsert_actor 로 만든 charset 없는 액터는 주민 charset 으로 폴백한다", () => {
     const ctx = context();
-    const actor = ctx.project.database.actors[0];
-    if (!actor) throw new Error("actor fixture missing");
-    delete actor.characterResourceId;
+    const actorId = "actor_ai_companion";
+    const classId = ctx.project.database.classes[0]?.id;
+    if (!classId) throw new Error("class fixture missing");
+    const actorResult = runTool(ctx, "upsert_actor", {
+      actor: { id: actorId, name: "새 동료", classId },
+    });
+    expect(actorResult.ok, actorResult.summary).toBe(true);
+    expect(ctx.project.database.actors.find((actor) => actor.id === actorId)?.characterResourceId).toBeUndefined();
+
     const result = runTool(ctx, "add_companion", {
-      who: { actorId: actor.id },
+      who: { actorId },
       target: { mapId: ctx.project.startMapId, x: 4, y: 4 },
       trigger: "talk",
     });
@@ -306,7 +312,7 @@ describe("add_companion actor 합류 이벤트 외형", () => {
       .find((entry) => entry.id === eventId)?.pages?.find((page) =>
         page.commands.some((command) => command.kind === "addFollower")
       );
-    expect(joinPage?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_monster1");
+    expect(joinPage?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_people1");
     expect(joinPage?.graphic?.transparent).not.toBe(true);
   });
 });

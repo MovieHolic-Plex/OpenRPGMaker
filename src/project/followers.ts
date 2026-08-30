@@ -8,7 +8,7 @@ import { inBounds, isPassable } from "@/project/collision";
 const MAX_TRAIL_POINTS = 64;
 /** 궤적 버툴 길이. `gap * maxCompanions` 상한의 근거다. */
 export const MAX_FOLLOWER_TRAIL_POINTS = MAX_TRAIL_POINTS;
-export const DEFAULT_MONSTER_FIELD_CHARSET = "tex_easyrpg_charset_monster1";
+const DEFAULT_MONSTER_FIELD_CHARSET = "tex_easyrpg_charset_monster1";
 
 export type ResolvedCompanionRules = {
   /** 동료 사이 간격(칸). 기본 1. */

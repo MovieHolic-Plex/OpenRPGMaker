@@ -12,7 +12,6 @@
 import { pickNpcGraphic } from "@/assets/charsetQuery";
 import {
   charsetFollowerGraphic,
-  DEFAULT_MONSTER_FIELD_CHARSET,
   MAX_FOLLOWER_TRAIL_POINTS,
   resolveCompanionRules,
 } from "@/project/followers";
@@ -20,6 +19,7 @@ import type { Command, EventPage, EventPageGraphic, GameEvent, GameMap, Project,
 import { genId } from "@/util/id";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { requireMap, inMapBounds } from "./mapHelpers";
+import { resolveGraphicQuery } from "./eventCompile";
 import { resolveEventPlacement, upsertEventIntoMap } from "./eventTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -99,7 +99,7 @@ function companionEventGraphic(project: Project, who: CompanionWho | undefined):
   const resourceId = actor?.characterResourceId?.trim();
   return resourceId
     ? charsetFollowerGraphic(resourceId, actor?.characterIndex ?? 0)
-    : charsetFollowerGraphic(DEFAULT_MONSTER_FIELD_CHARSET, 0);
+    : resolveGraphicQuery("villager");
 }
 
 function addFollowerCommand(who: CompanionWho, name: string, hidden: boolean): Command {
