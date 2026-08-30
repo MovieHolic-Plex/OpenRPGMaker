@@ -119,6 +119,21 @@ describe("사용자 저작 마을 데이터 — 읽기", () => {
     expect(round.villageTemplates).toEqual([USER_TEMPLATE]);
     expect(round.villagePresets).toEqual([USER_PRESET]);
   });
+
+  // 화면의 화이트리스트 고르기는 카탈로그 전체(내장 34 + 내 형태)를 체크박스로 내주고
+  // 하네스도 내장 id 를 그대로 받는다. 그런데 로더는 저작 형태만 봤다 — 「작은 집」을 골라
+  // 저장한 프로젝트가 다음 열기에서 ProjectFormatError 로 튕겼다(USER_PRESET 이 그 조합이다).
+  it("화이트리스트에 내장 id 가 있어도 프로젝트가 열린다", () => {
+    const project = withAuthoring(createExistingProject(46));
+    project.villagePresets = [{ id: "vp_builtin_only", name: "내장만", templateIds: ["rect-small", "rect-large"] }];
+    expect(() => deserialize(serialize(project))).not.toThrow();
+  });
+
+  it("내장에도 저작에도 없는 id 는 여전히 막는다", () => {
+    const project = withAuthoring(createExistingProject(46));
+    project.villagePresets = [{ id: "vp_ghost", name: "유령", templateIds: ["no-such-template"] }];
+    expect(() => deserialize(serialize(project))).toThrow(/no-such-template/);
+  });
 });
 
 describe("사용자 저작 마을 데이터 — AI 컨텍스트", () => {

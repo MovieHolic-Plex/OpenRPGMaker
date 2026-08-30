@@ -62,6 +62,7 @@ import {
   type VillageIntent,
 } from "./constants";
 import {
+  matchVillageArchetype,
   presetOverrides,
   villagePresetById,
   villageTemplateCatalog,
@@ -1252,29 +1253,13 @@ function resolveVillageIntent(
   };
 }
 
+/**
+ * 테마 문장 → 원형 값. 갈래별 값은 `authoringData.ts` 의 `VILLAGE_ARCHETYPES` 가 정본이다 —
+ * 데이터베이스 「마을」탭의 「원형에서 만들기」가 같은 배열을 읽으므로, 여기에 갈래를 더하면
+ * 화면에도 저절로 나타난다. (성곽·석조 = 포석 129 블록 돌길, 참조 맵 학습 2026-07-16)
+ */
 function inferIntentFromTheme(theme: string): Partial<Pick<VillageIntent, "pathStyle" | "kitMix" | "yardStyle" | "plazaStyle" | "edgeTrees" | "plazaLayout">> {
-  if (!theme) return {};
-  const t = theme.toLowerCase();
-  // 성곽·석조 마을 = 포석(129 블록) 돌길 (참조 맵 학습 2026-07-16)
-  if (/성곽|석조|돌길|성문|castle|citadel/.test(t)) {
-    return { pathStyle: "stone", yardStyle: "workshop", plazaStyle: "garden", edgeTrees: "conifer" };
-  }
-  if (/어촌|항구|바다|호수|강가|해안|coast|harbor|lake|river|beach|sand/.test(t)) {
-    return { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", plazaLayout: "south", edgeTrees: "conifer" };
-  }
-  if (/장터|시장|market|fair|축제/.test(t)) {
-    return { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", edgeTrees: "conifer" };
-  }
-  if (/농|밭|촌락|farm|rural|목장|목축/.test(t)) {
-    return { pathStyle: "dirt", yardStyle: "garden", plazaStyle: "garden", edgeTrees: "dense", plazaLayout: "center" };
-  }
-  if (/광산|산골|mine|mountain|채석/.test(t)) {
-    return { pathStyle: "dirt", yardStyle: "workshop", plazaStyle: "empty", edgeTrees: "dense", kitMix: "blue-stone" };
-  }
-  if (/정원|꽃|garden/.test(t)) {
-    return { pathStyle: "sand", yardStyle: "garden", plazaStyle: "garden", edgeTrees: "conifer" };
-  }
-  return {};
+  return matchVillageArchetype(theme)?.values ?? {};
 }
 
 function coerceEnum<T extends string>(

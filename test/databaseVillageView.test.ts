@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderVillageTab } from "@/editor/panels/databaseVillageView";
-import { templateFromRecord, villageTemplateCatalog } from "@/editor/tools/village/authoringData";
+import { VILLAGE_ARCHETYPES, templateFromRecord, villageTemplateCatalog } from "@/editor/tools/village/authoringData";
 import { createBlankProject } from "@/project/defaults";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { store } from "@/project/store";
@@ -155,6 +155,18 @@ describe("데이터베이스 「마을」탭 — 집 형태", () => {
     expect(findByTestId(host, "db-village-template-warning")?.textContent).toContain("5칸 이상");
   });
 
+  // 공용 selectField 는 빈 값 항목을 항상 맨 앞에 넣는다. 뷰가 하나 더 얹으면 값이 같은
+  // 항목이 둘이 되고, 브라우저는 앞선 것을 고르므로 뒤 라벨은 화면에 안 뜨는 죽은 문구다.
+  it("빈 값 선택지가 중복되지 않는다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    for (const testid of ["db-village-template-kit", "db-village-template-stories"]) {
+      const options = findByTestId(host, testid)?.querySelectorAll("option") ?? [];
+      const empty = options.filter((option) => (option.getAttribute("value") ?? "") === "");
+      expect(empty.length, testid).toBeLessThanOrEqual(1);
+    }
+  });
+
   it("재료 킷을 「지정 안 함」으로 되돌리면 키가 사라진다", () => {
     const host = renderView();
     findByTestId(host, "db-village-create")?.click();
@@ -225,6 +237,84 @@ describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
     const host = withTemplateAndPreset();
     findByTestId(host, "db-village-preset-pick-user")?.click();
     expect(store.getCurrent().villagePresets?.[0]?.templateIds).toEqual(["my-house"]);
+  });
+});
+
+describe("데이터베이스 「마을」탭 — 마을 원형", () => {
+  it("프리셋이 없으면 원형 6갈래를 갤러리로 낸다", () => {
+    const host = renderView("preset");
+    expect(findByTestId(host, "db-village-preset-blank")).not.toBeNull();
+    const gallery = findByTestId(host, "db-village-archetypes");
+    expect(gallery?.querySelectorAll("button")).toHaveLength(VILLAGE_ARCHETYPES.length);
+    for (const archetype of VILLAGE_ARCHETYPES) {
+      expect(findByTestId(host, `db-village-archetype-${archetype.id}`), archetype.id).not.toBeNull();
+    }
+  });
+
+  it("원형을 누르면 그 값이 든 프리셋이 생기고 선택된다", () => {
+    const host = renderView("preset");
+    findByTestId(host, "db-village-archetype-harbor-coast")?.click();
+
+    const records = store.getCurrent().villagePresets ?? [];
+    expect(records).toHaveLength(1);
+    const archetype = VILLAGE_ARCHETYPES.find((entry) => entry.id === "harbor-coast")!;
+    expect(records[0]).toMatchObject({ id: "harbor-coast", name: archetype.name, ...archetype.values });
+    // 만든 프리셋이 곧바로 상세로 열려야 한다 — 값을 확인·수정하는 게 원형을 굽는 이유다.
+    expect(findByTestId(host, "db-village-preset-name")?.value).toBe(archetype.name);
+    expect(findByTestId(host, "db-village-preset-path-style")?.value).toBe("sand");
+  });
+
+  it("프리셋이 생기면 갤러리 대신 상세의 「값 가져오기」로 옮겨간다", () => {
+    const host = renderView("preset");
+    findByTestId(host, "db-village-archetype-farm-rural")?.click();
+    // 갤러리는 "무엇부터 만들지" 를 고르는 빈 상태 전용이다 — 상세에서는 자리를 차지하면 안 된다.
+    expect(findByTestId(host, "db-village-archetypes")).toBeNull();
+    const select = findByTestId(host, "db-village-archetype-source");
+    expect(select?.querySelectorAll("option")).toHaveLength(VILLAGE_ARCHETYPES.length);
+    expect(findByTestId(host, "db-village-archetype-apply")).not.toBeNull();
+  });
+
+  it("「값 가져오기」는 분위기만 덮고 규모는 남긴다", () => {
+    const host = renderView("preset");
+    findByTestId(host, "db-village-create")?.click();
+    change(findByTestId(host, "db-village-preset-house-count"), "7");
+    change(findByTestId(host, "db-village-preset-plaza-layout"), "north");
+
+    change(findByTestId(host, "db-village-archetype-source"), "mine-mountain");
+    findByTestId(host, "db-village-archetype-apply")?.click();
+
+    const record = store.getCurrent().villagePresets?.[0]!;
+    expect(record.houseCount).toBe(7);
+    expect(record.pathStyle).toBe("dirt");
+    expect(record.yardStyle).toBe("workshop");
+    expect(record.kitMix).toBe("blue-stone");
+    // 광산 원형은 광장 위치를 정하지 않는다 — 남겨 두면 두 원형이 섞인 값이 된다.
+    expect(record).not.toHaveProperty("plazaLayout");
+  });
+});
+
+describe("데이터베이스 「마을」탭 — 내장 덮음", () => {
+  it("내장과 다른 id 면 「더함」으로 센다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    const stats = findByTestId(host, "db-village-template-stats")?.textContent ?? "";
+    expect(stats).toContain("내장에 더함");
+    expect(findByTestId(host, "db-village-template-override-count")?.textContent).toContain("0");
+    expect(findByTestId(host, "db-village-template-row-my-house")?.textContent).not.toContain("내장 덮음");
+    expect(findByTestId(host, "db-village-template-id-usage")?.textContent).toContain("더해집니다");
+  });
+
+  it("내장과 같은 id 로 바꾸면 목록·요약·안내가 덮음이라고 말한다", () => {
+    const host = renderView();
+    findByTestId(host, "db-village-create")?.click();
+    change(findByTestId(host, "db-village-template-id"), "rect-small");
+
+    expect(findByTestId(host, "db-village-template-row-rect-small")?.textContent).toContain("내장 덮음");
+    expect(findByTestId(host, "db-village-template-override-count")?.textContent).toContain("1");
+    expect(findByTestId(host, "db-village-template-hero")?.textContent).toContain("내장 덮음");
+    expect(findByTestId(host, "db-village-template-id-usage")?.textContent).toContain("내장 대신 이 레코드가 시공됩니다");
+    // 덮음이므로 후보 수는 늘지 않는다 — 이 숫자가 늘면 배지가 거짓말을 한 것이다.
+    expect(villageTemplateCatalog(store.getCurrent()).templates).toHaveLength(HOUSE_TEMPLATE_DEFS.length);
   });
 });
 

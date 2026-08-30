@@ -293,11 +293,25 @@ export function renderDatabasePanel(container: HTMLElement): void {
     appendTabSearch(header);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {
+      const groupCount = groupRecordCount(group);
       header.append(el("div", {
         class: "db-tab-group",
-        attrs: { title: `${group.label} 그룹 펼치기/접기` },
-        dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
+        // 접힌 그룹은 라벨 한 낱말만 남는다 — 「마을」이 「세계」 안에 있다는 걸 알 길이
+        // 탭 검색뿐이었다(사용자 실제 보고: 구조물이 사라진 줄 알았다). 세 갈래로 답한다.
+        //  1) 눈에 보이는 부제(.db-tab-group-peek) — hover 없이 읽힌다.
+        //  2) 툴팁 — 마우스로도 닿는다.
+        //  3) 탭 수 배지 — 안에 몇 개가 접혀 있는지 센다.
+        attrs: { title: `${group.label} 그룹 펼치기/접기 — ${groupTabLabels(group)}` },
+        dataset: {
+          testid: `db-tab-group-${group.slug}`,
+          groupSlug: group.slug,
+          // 배지는 탭과 같은 규칙(0 은 표시하지 않음).
+          ...(groupCount > 0 ? { tabCount: String(groupCount) } : {}),
+        },
         children: [
+          // 라벨을 **별도 span 으로** 둔다. 헤더 textContent 를 그대로 비교하는 계약이 있어
+          // (databaseNavMode·db-desktop-matrix) 부제를 헤더에 직접 넣으면 그 계약이 깨진다 —
+          // 실제로 깼다(02afd56f). 계약은 .db-tab-group-label 을 보도록 함께 고쳤다.
           el("span", { class: "db-tab-group-label", text: group.label }),
           // 접혀 있을 때 applyGroupCollapse 가 여기에 속한 탭 이름을 쓴다.
           el("span", { class: "db-tab-group-peek", attrs: { hidden: "" } }),
@@ -415,6 +429,15 @@ function databaseTabCount(tab: DatabaseTab): number | null {
   }
 }
 
+/** 그룹 헤더에 실을 합계. 컬렉션이 아닌 탭(개요/시스템 등)은 null 이므로 0 으로 센다. */
+function groupRecordCount(group: DatabaseTabGroup): number {
+  return group.tabs.reduce((sum, id) => sum + (databaseTabCount(id) ?? 0), 0);
+}
+
+function groupTabLabels(group: DatabaseTabGroup): string {
+  return group.tabs.map((id) => tabFor(id).label).join(", ");
+}
+
 function refreshTabCounts(container: HTMLElement): void {
   const header = container.querySelector(".db-tabs");
   if (!(header instanceof HTMLElement)) return;
@@ -425,6 +448,15 @@ function refreshTabCounts(container: HTMLElement): void {
     const count = databaseTabCount(tab.id);
     if (count === null || count === 0) delete button.dataset.count;
     else button.dataset.count = String(count);
+  }
+  // 그룹 배지도 같이 갱신한다 — 안 하면 접힌 그룹이 undo/redo 뒤에도 옛 합계를 들고 있다.
+  for (const node of Array.from(header.querySelectorAll(".db-tab-group"))) {
+    if (!(node instanceof HTMLElement)) continue;
+    const group = TAB_GROUPS.find((entry) => entry.slug === node.dataset.groupSlug);
+    if (!group) continue;
+    const count = groupRecordCount(group);
+    if (count === 0) delete node.dataset.tabCount;
+    else node.dataset.tabCount = String(count);
   }
 }
 
