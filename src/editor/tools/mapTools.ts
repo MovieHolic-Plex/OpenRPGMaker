@@ -47,6 +47,7 @@ import { expandHardClusterPlacement, type HardClusterTileEdit } from "./clusterR
 import { jitterPlacement, wobblePath } from "./naturalScatter";
 import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool } from "./naturalToolArgs";
 import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
+import { repairRoadPath, roadObstacleMaskFor, roadRepairWarning, type RoadPathRepair } from "./roadObstacles";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
@@ -372,7 +373,7 @@ function coordKey(x: number, y: number): string {
 
 const paintRoad: ToolDefinition = {
   name: "paint_road",
-  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. ${NATURALNESS_GUIDANCE}`,
+  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. 경로가 집·방해물·물 같은 통행 불가 칸을 가로지르려면 그 칸을 덮지 않고 자동으로 우회한다(건로봐 보호). ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -400,39 +401,48 @@ const paintRoad: ToolDefinition = {
     }
     const painted: Point[] = [];
     const body = picker ? () => picker.pick() : () => style === "dirt" ? DIRT_ROAD_TILE.BODY : SAND_TILE.BODY;
-    const pathCells = naturalness === 0
-      ? paintStraightRoad(map, points, body, painted)
-      : paintNaturalRoad(map, points, body, naturalness, args, painted);
+    const mask = roadObstacleMaskFor(draft, map);
+    const candidate = naturalness === 0
+      ? { path: straightRoadCandidate(points), widthCells: [] as readonly Point[] }
+      : wobblePath(points, naturalness, rngForTool(args, roadSeedSignature(map, points, naturalness)));
+    const routed = repairRoadPath(map, mask, candidate.path);
+    const widened = repairRoadPath(map, mask, candidate.widthCells);
+    const pathCells = routed.cells.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
+    for (const cell of routed.cells) paintRoadCell(map, cell, body(), painted);
+    for (const cell of widened.cells) paintRoadCell(map, cell, body(), painted);
     if (!picker && style === "dirt") shapeRoadAround(map, painted);
     else if (!picker && style === "sand") shapeSandAround(map, painted);
     const source = picker ? `${picker.presetId}/${picker.role}` : style;
-    return { summary: `${map.name}에 ${source} 도로 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)} / 경로 ${pathCells}칸` };
+    const repair = mergeRoadRepairs(routed, widened);
+    const obstacleWarning = roadRepairWarning(repair);
+    return {
+      summary: `${map.name}에 ${source} 도로 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)} / 경로 ${pathCells}칸`
+        + (repair.blocked > 0 ? ` — 통행 불가 ${repair.blocked}칸 우회` : ""),
+      ...(obstacleWarning ? { warnings: [obstacleWarning] } : {}),
+      data: { detouredSegments: repair.detours, disconnectedSegments: repair.gaps, obstacleCells: repair.blocked, pathCells },
+    };
   },
 };
 
-function paintStraightRoad(map: GameMap, points: readonly Point[], body: () => number, painted: Point[]): number {
-  let pathCells = 0;
+function straightRoadCandidate(points: readonly Point[]): readonly Point[] {
+  const cells: Point[] = [];
   for (let i = 0; i < points.length; i += 1) {
-    const segmentCells = i === 0 ? [points[0]] : lineCells(points[i - 1], points[i]);
-    pathCells += segmentCells.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
-    for (const cell of segmentCells) paintRoadCell(map, cell, body(), painted);
+    if (i === 0) {
+      cells.push(points[0]);
+      continue;
+    }
+    for (const cell of lineCells(points[i - 1], points[i])) cells.push(cell);
   }
-  return pathCells;
+  return cells;
 }
 
-function paintNaturalRoad(
-  map: GameMap,
-  points: readonly Point[],
-  body: () => number,
-  naturalness: number,
-  args: Record<string, unknown>,
-  painted: Point[]
-): number {
-  const result = wobblePath(points, naturalness, rngForTool(args, roadSeedSignature(map, points, naturalness)));
-  const pathCells = result.path.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
-  for (const cell of result.path) paintRoadCell(map, cell, body(), painted);
-  for (const cell of result.widthCells) paintRoadCell(map, cell, body(), painted);
-  return pathCells;
+function mergeRoadRepairs(path: RoadPathRepair, width: RoadPathRepair): RoadPathRepair {
+  return {
+    blocked: path.blocked + width.blocked,
+    cells: [...path.cells, ...width.cells],
+    detours: path.detours + width.detours,
+    gaps: path.gaps + width.gaps,
+  };
 }
 
 function paintRoadCell(map: GameMap, cell: Point, body: number, painted: Point[]): void {

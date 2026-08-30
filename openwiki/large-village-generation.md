@@ -249,7 +249,7 @@ ASCII: `05-final.txt`
 
 | 증상 | 원인 (요약) |
 |------|-------------|
-| 길이 집을 가로지름 | 직선 `paint_road` / lot 무시 경로 — **build_village는 houseBlocked 마스크로 집 칸 스킵 + 성분 재연결** |
+| 길이 집을 가로지름 | 직선 `paint_road` / lot 무시 경로 — **build_village는 houseBlocked 마스크로 집 칸 스킵 + 성분 재연결**. AI 가 직접 부르는 `paint_road`/`lay_path` 도 `src/editor/tools/roadObstacles.ts` 로 같은 보호를 받는다 |
 | QA는 PASS인데 화면은 이상 | 집·길을 둘 다 `#`로 찍음, 검사 기준이 느슨 |
 | 길이 집 사이에 끼어 보임 | lot 전체 차단 + 모든 문→광장 거미줄 |
 | 집이 20채 안 됨 | houseGap을 키우면 dry 공간 부족 |
