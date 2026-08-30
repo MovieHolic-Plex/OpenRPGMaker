@@ -102,6 +102,20 @@ describe("스트리밍 tool_calls 조립", () => {
     expect((result.message.tool_calls ?? []).map((call) => call.id)).toEqual(["a", "b"]);
   });
 
+  it("index 를 준 delta 와 안 준 delta 가 섞여도 호출이 합쳐지지 않는다", async () => {
+    const { chatCompletion } = await import("@/ai/llmClient");
+    stubStream([
+      { tool_calls: [{ index: 0, id: "a", function: { name: "fill_region", arguments: "{}" } }] },
+      { tool_calls: [{ function: { name: "place_npc", arguments: "{}" } }] },
+    ]);
+
+    const result = await chatCompletion(CONFIG, { messages: [{ role: "user", content: "섞어서" }], stream: true });
+
+    const calls = result.message.tool_calls ?? [];
+    expect(calls.map((call) => call.function.name)).toEqual(["fill_region", "place_npc"]);
+    expect(new Set(calls.map((call) => call.id)).size).toBe(2);
+  });
+
   it("id 가 없거나 겹쳐도 호출마다 유일한 tool_call_id 가 된다", async () => {
     const { chatCompletion } = await import("@/ai/llmClient");
     stubStream([
@@ -148,6 +162,29 @@ describe("비스트리밍 tool_calls 파싱", () => {
 
     const ids = (result.message.tool_calls ?? []).map((call) => call.id);
     expect(ids).toEqual(["call_0_place_npc", "call_1_place_npc"]);
+  });
+});
+
+describe("비스트리밍 숫자 id", () => {
+  it("숫자 id 를 주는 게이트웨이의 값은 버리지 않고 문자열로 정규화한다", async () => {
+    const { chatCompletion } = await import("@/ai/llmClient");
+    const body = {
+      choices: [
+        {
+          message: {
+            role: "assistant",
+            content: null,
+            tool_calls: [{ id: 7, function: { name: "place_npc", arguments: "{}" } }],
+          },
+          finish_reason: "tool_calls",
+        },
+      ],
+    };
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json" } })));
+
+    const result = await chatCompletion(CONFIG, { messages: [{ role: "user", content: "한 명" }], stream: false });
+
+    expect((result.message.tool_calls ?? [])[0]?.id).toBe("7");
   });
 });
 
