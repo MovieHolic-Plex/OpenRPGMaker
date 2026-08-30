@@ -5,6 +5,7 @@ import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
 import { CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
+import { koreanMonsterTags } from "@/assets/monsterResourceSemantics";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
 import { SE_CATALOG } from "@/assets/seCatalog";
@@ -130,6 +131,7 @@ function monsterCandidates(): ResourceCandidate[] {
         asset.resourceId,
         ...idWords(asset.id),
         ...idWords(asset.resourceId),
+        ...koreanMonsterTags(asset.id, asset.resourceId),
         asset.prompt,
       ],
     }));
@@ -138,14 +140,20 @@ function monsterCandidates(): ResourceCandidate[] {
     .map((id) => ({
       id,
       label: id.replace(/^generated-enemy-/, "").replace(/-/g, " "),
-      tags: ["monster", "enemy", "몬스터", "적", id, ...idWords(id)],
+      tags: ["monster", "enemy", "몬스터", "적", id, ...idWords(id), ...koreanMonsterTags(id)],
     }));
   const rtpMonsters = EASYRPG_RTP_ASSETS
     .filter((asset) => asset.category === "monster")
     .map((asset) => ({
       id: asset.id,
       label: asset.name,
-      tags: [...moodTagsForAsset(asset), asset.id, ...idWords(asset.id), ...idWords(asset.name)],
+      tags: [
+        ...moodTagsForAsset(asset),
+        asset.id,
+        ...idWords(asset.id),
+        ...idWords(asset.name),
+        ...koreanMonsterTags(asset.id, asset.name),
+      ],
     }));
   const scarloxyMonsters = SCARLOXY_MONSTER_ASSETS.map((asset) => ({
     id: asset.id,

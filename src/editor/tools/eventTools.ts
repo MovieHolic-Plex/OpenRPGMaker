@@ -20,6 +20,7 @@ import {
   charsetGraphic,
   compileSimplePages,
   resolveGraphic,
+  resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
   type GraphicSpec,
 } from "./eventCompile";
@@ -41,6 +42,7 @@ import {
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
+const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"]);
 
 /** place_npc/make_villager face 인자 → FaceGraphic. 실제 배치된 charset 기준으로 맞춘다. */
 function resolvePlaceNpcFaceArg(
@@ -175,6 +177,17 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[]): voi
 }
 
 /**
+ * 말을 걸어야 실행되는데 그래픽이 비어 있는 페이지는 "보이지 않는 NPC" 다 — 플레이어가 찾을
+ * 방법이 없으므로 의도된 저작이 아니다. 투명 이벤트를 원할 때는 `graphic:{transparent:true}` 가
+ * 명시적 경로이므로, 그 표시가 없는 대화형 action 페이지에만 주민 기본 그래픽을 채운다.
+ */
+function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
+  if (page.trigger?.kind !== "action") return false;
+  if (page.graphic?.transparent === true || page.graphic?.sprite !== undefined) return false;
+  return (page.commands ?? []).some((command) => DIALOGUE_COMMAND_KINDS.has(command.kind));
+}
+
+/**
  * `EventPage` 필수 필드를 채운다.
  *
  * 모델은 이벤트 레벨에만 trigger 를 주고 페이지에는 conditions/commands 만 담아 보내는 일이 흔하다.
@@ -187,13 +200,23 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
   if (page.id === undefined) { page.id = pageId; filled.push("id"); }
   if (page.name === undefined) { page.name = event.id; filled.push("name"); }
   if (page.conditions === undefined) { page.conditions = []; filled.push("conditions"); }
-  if (page.graphic === undefined) { page.graphic = {}; filled.push("graphic"); }
   if (page.trigger === undefined) {
     page.trigger = event.trigger ?? { kind: "action" };
     filled.push(`trigger(${page.trigger.kind})`);
   }
   if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
   if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
+  if (isInvisibleTalkablePage(page)) {
+    page.graphic = resolveGraphicQuery("villager");
+    warnings?.push(
+      `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
+        `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
+        `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
+    );
+  } else if (page.graphic === undefined) {
+    page.graphic = {};
+    filled.push("graphic");
+  }
   if (filled.length > 0) {
     warnings?.push(`${event.id}.${pageId}: 필수 페이지 필드 자동 보완 — ${filled.join(", ")}`);
   }
