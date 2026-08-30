@@ -592,3 +592,25 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 - **캔버스는 유닛 테스트로 못 본다.** `test/fakeDom.ts` 의 `getContext()` 가 의도적으로 `null` 을 준다. 그래서 유닛은 **스탬프된 GameMap 의 타일 배열**까지만 단정하고(지붕 몸통·처마·벽 9분할 하단행이 실제로 들어갔는지, 옥상 패스가 `upperTiles` 만 건드리는지), 픽셀은 e2e 가 `getImageData()` 로 색 수를 세어 단색 폴백과 가른다.
 - 커버리지: `test/villageHousePreview.test.ts`(13 — 칩셋 찾기·킷 해석·잔디 여백·실제 타일·규약 위반 시 `undefined`·내장 34종 전부 렌더), `test/villageWingGeometry.test.ts`(13 — `moveWing`/`resizeWing` 클램프), `test/villagePresetPreview.test.ts`(6 — 시공 결과·프로젝트 무오염·씨앗 차이·원형 6갈래), `test/villageArchetypePreviews.test.ts`(3 — PNG 존재·시그니처·남는 그림 없음 드리프트 게이트), `test/e2e/db-village-visual.spec.ts`(4 — 원형 PNG 서빙·히어로 픽셀·손잡이 드래그 커밋·프리셋 미리보기).
 - **함정(e2e)**: 상세 창은 스크롤한다. 기본 위치에서 격자는 뷰포트 **아래 1500px** 지점이고 `boundingBox()` 는 스크롤을 해 주지 않으므로, 드래그 전에 격자를 화면 안으로 끌어오지 않으면 `page.mouse` 가 뷰포트 밖을 짚고 손잡이는 `pointerdown` 을 아예 받지 못한다(값이 안 바뀌어 "드래그가 고장났다" 로 오독하게 된다).
+
+### AI로 몬스터·아이템 생성 (2026-08-30)
+
+아이템/적 탭 툴바에 `AI로 생성`(`db-ai-generate-open`) 이 있다. 모달
+(`databaseAiGenerateDialog.ts`, testid `db-ai-generate-dialog-<kind>`)에 설명을 넣으면
+**레코드 + 그림**이 한 번에 등록된다. 오케스트레이션은 `src/editor/aiDatabaseGeneration.ts`:
+
+1. `chatCompletion` 으로 레코드 JSON 을 받는다. 응답은 `parseGeneratedRecord` 가
+   **필드 allowlist**(item 9개 / enemy 6개)로 걸러낸다 — `upsert_item`/`upsert_enemy` 의
+   `rejectUnknownFields` 가 모르는 필드에 하드 실패하므로, 모델을 믿지 않고 미리 자른다.
+2. 그림은 `generateAiImage` (아래 이미지 경로) → `flattenGeneratedArtwork` 로 배경을 투명화.
+3. 적용은 **기존 툴만** 쓴다: `upsert_resource` → `upsert_item`/`upsert_enemy` 를
+   `applyToolSequenceToStore` 로 한 undo 체크포인트에 묶는다. 새 쓰기 경로를 만들지 마라.
+
+리소스 kind 는 종류마다 다르다 — 적은 `monster`, 아이템은 `picture`. 아이템 아이콘 피커
+(`kind:"icon"`)가 업로드 자산 중 `picture`/`monster`/`system` 만 목록에 올리기 때문이다
+(`databaseResourcePickerDialog.ts` `uploadedMatchesKind`). 그림은 `assets.uploaded[id].dataUrl`
+로 들어가고 `resolveAssetResourceUrl` 이 업로드를 먼저 보므로 썸네일·전투 화면이 그대로 집는다.
+
+Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`,
+`test/imageGenerationClient.test.ts`.
+
