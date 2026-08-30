@@ -213,19 +213,28 @@ function createInputHarness(): SceneInputHarness {
   };
 }
 
-function bindSceneInput(scene: CameraFocusHarness): SceneInputHarness {
+function bindSceneInput(
+  scene: CameraFocusHarness,
+  options: { readonly dragBusy?: boolean } = {},
+): SceneInputHarness {
   const input = createInputHarness();
+  // 드래그 축은 **상태 있는** 가짜여야 한다. busy 를 상수 false 로 두면 "릴리스가 드래그 상태를 남긴다"
+  // 축이 하네스에 고정돼, 캔버스 밖 릴리스가 초점을 가두는 결함을 테스트가 볼 수 없다(2026-08-30 리뷰).
+  let dragBusy = options.dragBusy === true;
+  // pointerGestureState 는 게터가 아니라 **필드** this.dragOperationHandler 를 읽으므로 둘 다 같은 가짜를 준다.
+  const dragHandler = {
+    active: () => false,
+    busy: () => dragBusy,
+    begin: () => false,
+    clearEventCandidate: () => { dragBusy = false; },
+  };
   Object.assign(scene, {
     input,
     bindCanvasPanGuards: () => undefined,
     bindBrowserContextMenuGuards: () => undefined,
-    finishDragOperation: () => undefined,
-    getDragOperationHandler: () => ({
-      active: () => false,
-      busy: () => false,
-      begin: () => false,
-      clearEventCandidate: () => undefined,
-    }),
+    finishDragOperation: () => { dragBusy = false; },
+    dragOperationHandler: dragHandler,
+    getDragOperationHandler: () => dragHandler,
     hoverPreviewLayer: { removeAll: () => undefined },
     updateHoverPreview: () => undefined,
     clearHoverPreview: () => undefined,
@@ -406,10 +415,23 @@ describe("제스처가 미룬 초점은 실제 종료 진입점에서 한 번 �
     scene.isPainting = true;
     scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
 
-    input.emit("pointerupoutside");
-    input.emit("pointerupoutside");
+    input.emit("pointerupoutside", pointerAt());
+    input.emit("pointerupoutside", pointerAt());
 
     expect(scene.isPainting).toBe(false);
+    expect(scene.panCalls).toHaveLength(1);
+  });
+
+  it("캔버스 밖에서 끝난 드래그도 상태를 내려 초점을 갚는다 — busy 가 남으면 영구히 갇힌다", () => {
+    const scene = createHarness();
+    const input = bindSceneInput(scene, { dragBusy: true });
+    scene.panCameraToTile(focusTarget(store.getCurrent().startMapId));
+    // 드래그 중이라 요청은 미뤄져 있다.
+    expect(scene.panCalls).toHaveLength(0);
+
+    input.emit("pointerupoutside", pointerAt());
+    input.emit("pointerupoutside", pointerAt());
+
     expect(scene.panCalls).toHaveLength(1);
   });
 

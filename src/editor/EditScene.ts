@@ -548,29 +548,16 @@ export class EditScene extends PhaserRuntime.Scene {
       }
     });
     this.input.on("pointerup", (ptr: Phaser.Input.Pointer) => {
-      if (this.rightRegionGesture) {
-        this.finishRightRegionGesture(ptr);
-        this.replayDeferredCameraFocus();
-        return;
-      }
-      this.finishDragOperation(ptr);
-      this.getDragOperationHandler().clearEventCandidate();
-      this.isPainting = false;
-      this.lastPaintKey = "";
-      this.stopPan();
-      // 스트로크 종료 후 호버 복원 (성형된 맵 타일 위에 raw 프리뷰 가능).
-      this.updateHoverPreview(ptr);
+      // 스트로크 종료 후 호버 복원 (성형된 맵 타일 위에 raw 프리뷰 가능) — 캔버스 안에서만 뜻이 있다.
+      if (this.endPointerGesture(ptr) === "gesture") this.updateHoverPreview(ptr);
       // 제스처가 끝났으니 미뤄 둔 조수 초점을 지금 재생한다.
       this.replayDeferredCameraFocus();
     });
     this.input.on("pointerout", () => {
       if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
     });
-    this.input.on("pointerupoutside", () => {
-      // 캔버스 밖에서 버튼을 놓아도 pointerup과 같은 순서로 제스처 상태를 먼저 내린다.
-      this.isPainting = false;
-      this.lastPaintKey = "";
-      this.stopPan();
+    this.input.on("pointerupoutside", (ptr: Phaser.Input.Pointer) => {
+      this.endPointerGesture(ptr);
       this.replayDeferredCameraFocus();
     });
     this.input.on(
@@ -1620,6 +1607,26 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   /** 카메라 양보 판정에 넘길 제스처 스냅샷 — 판정 자체는 순수 함수가 한다. */
+  /**
+   * 포인터 릴리스로 제스처를 내린다. 캔버스 안(pointerup)과 밖(pointerupoutside)이 **같은 몸**을 써야 한다.
+   * Phaser 는 POINTER_UP 과 POINTER_UP_OUTSIDE 중 하나만 발화하므로(둘 다 오지 않는다), 밖에서 놓은
+   * 릴리스가 드래그·우클릭 영역 상태를 남기면 shouldDeferCameraFocus 의 dragging 이 참으로 남아 미뤄 둔
+   * 조수 초점이 영구히 갇힌다 — 슬롯을 비우는 다른 지점은 맵 전환과 씬 정리뿐이고 둘 다 요청을 버린다.
+   * 도형·선택 드래그는 캔버스 경계를 넘겨 끝나는 일이 흔하다(2026-08-30 리뷰 실측).
+   */
+  private endPointerGesture(ptr: Phaser.Input.Pointer): "right-region" | "gesture" {
+    if (this.rightRegionGesture) {
+      this.finishRightRegionGesture(ptr);
+      return "right-region";
+    }
+    this.finishDragOperation(ptr);
+    this.getDragOperationHandler().clearEventCandidate();
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    this.stopPan();
+    return "gesture";
+  }
+
   private pointerGestureState(): PointerGestureState {
     return {
       painting: this.isPainting,
