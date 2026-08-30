@@ -5,7 +5,9 @@ import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 const target = resolve(process.cwd(), process.argv[2] ?? "reports/item-catalog-report.html");
-const OUT = resolve(process.cwd(), "verify-shots/report-render");
+// 출력 경로는 SHOT_OUT 으로 갈아 끼운다. verify-shots/report-render/ 는 이미 다른 작업의
+// 추적된 증거가 사는 자리라 기본값으로 쓰면 남의 PNG 를 덮는다(실측으로 한 번 덮었다).
+const OUT = resolve(process.cwd(), process.env.SHOT_OUT ?? "verify-shots/item-catalog-report-render");
 mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
