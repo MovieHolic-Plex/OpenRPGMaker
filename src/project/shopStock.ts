@@ -150,7 +150,21 @@ export function applyHaggleDiscount(price:number, bonus:number): number { const 
 export function applyDynamicMarkup(base:number, sold:number, bought:number): number { const d=(bought-sold)*0.02; const f=Math.max(0.8, Math.min(1.2, 1+d)); return Math.max(1, Math.floor(base*f)); }
 export function isBlackMarketOpen(session:{ readonly switches?: Record<string,boolean> }, flag?: string): boolean { if(!flag) return true; return session.switches?.[flag]===true; }
 export function isFestivalShopOpen(session:{ readonly switches?: Record<string,boolean> }, flag?: string): boolean { if(!flag) return true; return session.switches?.[flag]===true; }
-export function shouldRestock(policy: string|undefined, lastKey:string|undefined, curKey:string): boolean { if(!policy||policy==="onDemand") return false; if(!lastKey) return true; if(policy==="daily") return lastKey!==curKey; if(policy==="weekly") return lastKey!==curKey; return false; }
+export function restockWeekKey(dayKey: string): string {
+  const parts = dayKey.split(":");
+  if (parts.length !== 3) return dayKey;
+  const day = Number(parts[2]);
+  if (!Number.isFinite(day)) return dayKey;
+  return `${parts[0]}:${parts[1]}:w${Math.max(1, Math.ceil(day / 7))}`;
+}
+
+export function shouldRestock(policy: string | undefined, lastKey: string | undefined, curKey: string): boolean {
+  if (!policy || policy === "onDemand") return false;
+  if (!lastKey) return true;
+  if (policy === "daily") return lastKey !== curKey;
+  if (policy === "weekly") return restockWeekKey(lastKey) !== restockWeekKey(curKey);
+  return false;
+}
 
 /** Shape helper for tests / tooling — re-export SocialShop shape intent. */
 export type { SocialShop };

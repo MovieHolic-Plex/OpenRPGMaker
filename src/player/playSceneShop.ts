@@ -7,7 +7,6 @@ import {
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { store } from "@/project/store";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
-import { resolveShopMerchantBudget } from "@/project/shopStock";
 import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
@@ -18,6 +17,7 @@ import {
   flashGoldDelta,
   refreshShopItemRow,
   removeShopItemRow,
+  renderShopHaggle,
   renderShopItems,
   renderShopMenu,
   renderShopNotice,
@@ -32,6 +32,17 @@ import {
   type ShopMode,
   type ShopView,
 } from "@/player/playSceneShopDom";
+import { beginShopVisit, endShopVisit, shopIsClosed, shopKeyOf } from "@/player/playSceneShopVisit";
+import { playShopkeeper } from "@/player/playSceneShopkeeper";
+import {
+  haggleVisitKey,
+  normalizeHaggleConfig,
+  proposeHaggle,
+  resolveHaggleReserve,
+  type HaggleSetup,
+} from "@/project/haggle";
+import { shopDayKey } from "@/project/shopPrice";
+import type { ShopHaggleVisitState } from "@/project/economyValues";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { goodsIndex, type ShopCategory, type ShopGoods } from "@/player/playSceneShopGoods";
@@ -39,9 +50,16 @@ import { goodsIndex, type ShopCategory, type ShopGoods } from "@/player/playScen
 export type ShopStep = Extract<StepResult, { kind: "shop" }>;
 
 export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boolean | "failed"> {
+  if (step.economy?.shopkeeperEnabled === true) {
+    return playShopkeeper(scene, step);
+  }
+  const closed = shopIsClosed(scene.session, step);
   const stockItems = shopItems(step);
   const terms = resolveTerms(store.getCurrent());
   const failedResult = () => (step.branchOnFailedTransaction ? ("failed" as const) : false);
+  if (closed) {
+    return showShopNotice(scene, terms, closed).then(failedResult);
+  }
   // 수리/감정: 빈 풀은 “거래 불가”로 간주 (빈 풀에 수리비 청구 방지)
   const svc = step.shopServiceKind;
   const appraisalPool = step.appraisalUnidentifiedPool;
@@ -54,11 +72,16 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
     return showShopNotice(scene, terms, "지금은 팔 물건이 없습니다.").then(failedResult);
   }
   // 방문마다 상인 소지금을 명령값(기본 100G) × 투자 레벨 배수로 초기화. 방문 중 매입/매도로 증감.
-  let merchantGold = resolveShopMerchantBudget(step.merchantGold, step.investmentLevel);
+  let merchantGold = beginShopVisit(scene, step);
   return new Promise((resolve) => {
     const overlay = createShopOverlay();
     let view: ShopView = "menu";
     let mode: ShopMode = defaultShopMode(step);
+    let haggleItem: (typeof stockItems)[number] | undefined;
+    let haggleOffer = 0;
+    let haggleSetup: HaggleSetup | undefined;
+    let haggleLine = "";
+
     // 판매는 소지품 목록이다 — 진열품을 그대로 보여주면 보유 0 인 행을 눌러 실패만 한다.
     let viewItems: ShopGoods[] = stockItems;
     let statusText = shopPromptText(step, mode, terms);
@@ -77,11 +100,17 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
     };
     const finish = () => {
       teardownCursor();
-      // 한 번도 거래하지 않고 나갔으면 '거래 없음'이다 — 예전에는 늘 false 로 resolve 해서
-      // branchOnFailedTransaction 을 켜도 실패 분기가 도달 불가능한 죽은 코드였다.
+      endShopVisit(scene, step, merchantGold);
       finishCommerce(scene, overlay, resolve, transactionCompleted ? true : failedResult());
     };
     const attachShopCursor = (): (() => void) => {
+      if (view === "haggle") {
+        return attachCursorMenu(overlay, {
+          items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice, .runtime-shop-confirm")),
+          cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-cancel']"),
+          sound: true,
+        });
+      }
       if (view === "menu") {
         // 구입/판매/취소 — ←→ 또는 ↑↓ 로 이동(1D), Z/Enter 결정, X/Esc(=취소).
         return attachCursorMenu(overlay, {
@@ -114,7 +143,27 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
       teardownCursor();
       clearElement(overlay);
       if (view === "items") viewItems = listForMode(mode);
-      overlay.append(
+      if (view === "haggle" && haggleItem && haggleSetup) {
+        overlay.append(renderShopHaggle({
+          itemName: haggleItem.name,
+          reference: haggleSetup.reference,
+          offer: haggleOffer,
+          patience: haggleSetup.patience,
+          merchantLine: haggleLine || "가격을 불러 보시오.",
+          goldLabel: terms.gold,
+          onDelta: (dir) => {
+            haggleOffer = Math.max(0, haggleOffer + dir);
+            renderShop();
+          },
+          onPropose: () => proposeCurrentHaggle(),
+          onCancel: () => {
+            view = "items";
+            haggleItem = undefined;
+            haggleSetup = undefined;
+            renderShop();
+          },
+        }));
+      } else overlay.append(
         view === "menu"
           ? renderShopMenu(step, terms, showItems, finish, scene)
           : renderShopItems({
@@ -139,34 +188,125 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
                 if (next !== mode) showItems(next);
               },
               onItem: (item, nextMode, count) => {
-                const result = handleShopTransaction(scene, item, nextMode, count, merchantGold);
-                if (!result.ok) {
-                  // RM2003 은 무효한 거래에 버저만 울린다(scene_shop.cpp: SFX_Buzzer).
-                  // 여기서 울리는 이유: handleShopTransaction 안에 넣으면 이 함수를 직접
-                  // 부르는 node 환경 단위 테스트들이 오디오 경로를 타게 된다.
-                  emitRuntimeJuice({ event: "menu-invalid", target: shopItemRowEl(overlay, item.id, nextMode) });
-                  setStatus(result.status);
-                  return;
+                if (step.economy?.haggleEnabled === true) {
+                  const dayKey = shopDayKey(scene.session);
+                  const visitKey = haggleVisitKey(shopKeyOf(step), item.id, dayKey);
+                  const visit = (scene.session as { shopHaggleState?: Record<string, ShopHaggleVisitState> }).shopHaggleState?.[visitKey];
+                  if (visit?.broken !== true) {
+                    beginHaggle(item, nextMode, count);
+                    return;
+                  }
                 }
-                // 거래 성립 — 결정음. 거절과 성공에 같은 소리를 내면 소리로 결과를 알 수 없다.
-                emitRuntimeJuice({ event: "menu-confirm" });
-                // 상태 메시지 갱신 전에 상인 소지금을 반영해야 패널 숫자가 맞다.
-                merchantGold = result.merchantGold;
-                if (nextMode === "buy") {
-                  accrueShopLoyalty(scene, step, item.price * clampQuantity(count));
-                }
-                transactionCompleted = true;
-                // 소지금 변화를 눈에 보이게 띄운다 — 숫자만 조용히 바뀌면 놓친다.
-                const qty = clampQuantity(count);
-                const delta = nextMode === "buy" ? -item.price * qty : sellPrice(item) * qty;
-                flashGoldDelta(overlay, delta, terms.gold);
-                // 구매 후에도 가게에 머문다 — 예전에는 여기서 finish() 를 불러 한 개 사면
-                // 창이 닫히고, 만들어 둔 확인 메시지(result.status)는 버려졌다.
-                applyTransactionResult(item, nextMode, result.status);
+                settleShopDeal(item, nextMode, count);
               },
             })
       );
       detachCursor = attachShopCursor();
+    };
+    const settleShopDeal = (
+      item: (typeof stockItems)[number],
+      nextMode: ShopMode,
+      count: number,
+      agreed?: number,
+    ): void => {
+      const result = handleShopTransaction(scene, item, nextMode, count, merchantGold, agreed);
+      if (!result.ok) {
+        emitRuntimeJuice({ event: "menu-invalid", target: shopItemRowEl(overlay, item.id, nextMode) });
+        setStatus(result.status);
+        return;
+      }
+      emitRuntimeJuice({ event: "menu-confirm" });
+      merchantGold = result.merchantGold;
+      const qty = clampQuantity(count);
+      const unit = agreed ?? (nextMode === "buy" ? item.price : sellPrice(item));
+      if (nextMode === "buy") {
+        accrueShopLoyalty(scene, step, unit * qty);
+      }
+      if (nextMode === "sell" && step.shopServiceKind === "pawn") {
+        recordPawnOnSell(scene, step, item.id, unit);
+      }
+      transactionCompleted = true;
+      const delta = nextMode === "buy" ? -unit * qty : unit * qty;
+      flashGoldDelta(overlay, delta, terms.gold);
+      applyTransactionResult(item, nextMode, result.status);
+    };
+    let haggleCount = 1;
+    const beginHaggle = (item: (typeof stockItems)[number], nextMode: ShopMode, count: number): void => {
+      const cfg = normalizeHaggleConfig(step.economy?.haggle);
+      const dayKey = shopDayKey(scene.session);
+      const visitKey = haggleVisitKey(shopKeyOf(step), item.id, dayKey);
+      const ledgers = scene.session as { shopHaggleState?: Record<string, ShopHaggleVisitState> };
+      const visit = ledgers.shopHaggleState?.[visitKey];
+      const role = nextMode === "buy" ? "playerBuys" as const : "playerSells" as const;
+      const reference = nextMode === "buy" ? item.price : sellPrice(item);
+      const reserve = resolveHaggleReserve({
+        role,
+        reference,
+        buyPrice: item.price,
+        maxDiscount: cfg.maxDiscount,
+        itemId: item.id,
+        merchantKey: shopKeyOf(step),
+        dayKey,
+        attemptIndex: visit?.attemptIndex ?? 0,
+        drift: visit?.drift ?? 0,
+      });
+      haggleItem = item;
+      haggleCount = count;
+      mode = nextMode;
+      haggleSetup = {
+        role,
+        reference,
+        reserve,
+        patience: visit?.patience ?? cfg.patience,
+        insultRatio: cfg.insultRatio,
+        buyPrice: item.price,
+      };
+      haggleOffer = reference;
+      haggleLine = "가격을 불러 보시오.";
+      view = "haggle";
+      renderShop();
+    };
+    const writeHaggleVisit = (itemId: string, next: ShopHaggleVisitState): void => {
+      const ledgers = scene.session as { shopHaggleState?: Record<string, ShopHaggleVisitState> };
+      const visitKey = haggleVisitKey(shopKeyOf(step), itemId, shopDayKey(scene.session));
+      ledgers.shopHaggleState = { ...(ledgers.shopHaggleState ?? {}), [visitKey]: next };
+    };
+    const proposeCurrentHaggle = (): void => {
+      if (!haggleItem || !haggleSetup) return;
+      const verdict = proposeHaggle(haggleSetup, haggleOffer);
+      if (verdict.kind === "accept") {
+        const item = haggleItem;
+        const nextMode = mode;
+        haggleItem = undefined;
+        haggleSetup = undefined;
+        view = "items";
+        settleShopDeal(item, nextMode, haggleCount, verdict.price);
+        return;
+      }
+      if (verdict.kind === "broken") {
+        writeHaggleVisit(haggleItem.id, {
+          patience: 0,
+          drift: 0,
+          attemptIndex: (haggleSetup.patience ?? 0),
+          broken: true,
+        });
+        haggleLine = verdict.reason === "insulted" ? "모욕적이오. 이 물건은 정가만 받겠소." : "더 흥정할 마음이 없소.";
+        view = "items";
+        haggleItem = undefined;
+        haggleSetup = undefined;
+        statusText = haggleLine;
+        renderShop();
+        return;
+      }
+      haggleSetup = { ...haggleSetup, patience: verdict.patience, reserve: verdict.reserve };
+      writeHaggleVisit(haggleItem.id, {
+        patience: verdict.patience,
+        drift: verdict.reserve - haggleSetup.reference,
+        attemptIndex: 0,
+      });
+      haggleLine = verdict.mood === "cold" ? "턱도 없는 값이오." : verdict.mood === "wary" ? "조금 더 맞춰 보시오." : "음… 조금 더.";
+      haggleOffer = verdict.price;
+      renderShop();
     };
     const showMenu = () => {
       view = "menu";
@@ -231,6 +371,22 @@ export function clampQuantity(count: number): number {
  * 마일리지·누적 지출 적립. 예전에는 `pause` 가 mileageRate/loyaltyTierId 를 넘기지 않아
  * 이 계산이 늘 0 이었고(적립 null), 티어 키도 항상 "global" 로만 쌓였다.
  */
+
+function recordPawnOnSell(
+  scene: PlaySceneContext,
+  step: ShopStep,
+  itemId: string,
+  pawnPrice: number,
+): void {
+  const session = scene.session as typeof scene.session & {
+    shopPawnTickets?: Record<string, { itemId: string; pawnPrice: number; dueDayKey: string }>;
+  };
+  const tickets = session.shopPawnTickets ?? {};
+  const id = `${shopKeyOf(step)}:${itemId}:${shopDayKey(scene.session)}`;
+  tickets[id] = { itemId, pawnPrice, dueDayKey: shopDayKey(scene.session) };
+  session.shopPawnTickets = tickets;
+}
+
 function accrueShopLoyalty(scene: PlaySceneContext, step: ShopStep, cost: number): void {
   const session = scene.session as typeof scene.session & {
     shopLoyaltySpend?: Record<string, number>;
@@ -336,7 +492,8 @@ export function handleShopTransaction(
   item: ShopTradeable,
   mode: ShopMode,
   count: number,
-  merchantGold: number
+  merchantGold: number,
+  agreedPrice?: number,
 ): ShopTransactionResult {
   const qty = clampQuantity(count);
   if (mode === "sell") {
@@ -345,7 +502,13 @@ export function handleShopTransaction(
       scene.syncRuntimeState();
       return { ok: false, status: "가진 개수가 부족합니다." };
     }
-    const payout = sellPrice(item) * qty;
+    const listSell = sellPrice(item);
+    const unit = agreedPrice ?? listSell;
+    if (unit < listSell || (item.price > listSell && unit >= item.price)) {
+      scene.syncRuntimeState();
+      return { ok: false, status: "거래를 처리할 수 없습니다." };
+    }
+    const payout = unit * qty;
     const economy = scene.session as typeof scene.session & {
       shopLoyaltySpend?: Record<string, number>;
       shopTradeCounts?: Record<string, { sold: number; bought: number }>;
@@ -382,7 +545,13 @@ export function handleShopTransaction(
     scene.syncRuntimeState();
     return { ok: true, status: `${item.name} 판매 — +${payout}${goldUnit()}`, merchantGold: merchantGold - payout };
   }
-  const cost = item.price * qty;
+  const listBuy = item.price;
+  const unitBuy = agreedPrice ?? listBuy;
+  if (unitBuy > listBuy || unitBuy < Math.floor(listBuy / 2)) {
+    scene.syncRuntimeState();
+    return { ok: false, status: "거래를 처리할 수 없습니다." };
+  }
+  const cost = unitBuy * qty;
   if (!isSafeEconomyValue(cost) || !isSafeEconomyValue(scene.session.gold) || !isSafeEconomyValue(merchantGold) || merchantGold + cost > GOLD_MAX) {
     scene.syncRuntimeState();
     return { ok: false, status: "거래를 처리할 수 없습니다." };
