@@ -42,6 +42,7 @@ export async function renderToolImages(project: Project, toolName: string, data:
     if (toolName === "show_tile_grid") return renderTileGrid(project, data);
     if (toolName === "get_map_region") return renderTileGrid(project, data);
     if (toolName === "preview_house") return renderTileGrid(project, data, "집 미리보기");
+    if (toolName === "look_at_houses") return renderTileGrid(project, data, "깔린 집 관찰");
     if (toolName === "render_group_sample") return renderGroupSamples(project, data);
     return [];
   } catch {

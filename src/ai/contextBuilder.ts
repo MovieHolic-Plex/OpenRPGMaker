@@ -7,6 +7,7 @@
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
+import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { structureKitRepeatable } from "@/editor/harnessSuggestion/structureKitModel";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
@@ -264,7 +265,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(위치)·kitId·yard 태그만(firewood/mailbox/bench_h/…), 좌표는 코드. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지). **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(앵커 위치)·templateId(모양 34종)·kitId(색)·stories/lowWall/chimney·yard 태그만(firewood/mailbox/bench_h/…), 세부 좌표는 코드. 여러 채면 templateId 를 집마다 다르게 주고 look_at_houses 로 확인. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지). **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
     trimDigestLines(lines, 700),
   ].join("\n");
 }
@@ -363,12 +364,23 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
 }
 
 function houseKitSection(): string {
-  const lines = Object.values(HOUSE_KITS).map((kit) => `- ${kit.id}: ${kit.name}`);
+  const kits = Object.values(HOUSE_KITS).map((kit) => `- ${kit.id}: ${kit.name}`);
+  // 모양(templateId)과 색(kitId)은 서로 다른 축이다. 예전에는 색 축만 안내해서
+  // "다양성 확보" 지시를 지켜도 같은 사각형의 색만 바뀐 집이 나왔다(2026-08-31).
+  const shapes = HOUSE_TEMPLATE_DEFS.map((def) => `${def.id}(${def.w}×${def.h})`).join(", ");
   return [
-    "## 집 키트 요약",
-    ...lines,
-    "여러 채 시공 시 각 집에 서로 다른 kitId를 배정해 외관 다양성을 확보하라. 같은 kit 반복 금지.",
+    "## 집 외관 — 모양 축과 색 축을 **둘 다** 흔들어라",
+    `### 모양: author_house 의 templateId (${HOUSE_TEMPLATE_DEFS.length}종)`,
+    shapes,
+    "templateId 를 생략하면 wings 그대로의 사각형이 된다 — 여러 채를 깔 때 생략하면 결과가 단조로워진다.",
+    "templateId 를 주면 wings[0]의 x·y 만 앵커로 쓰이고 치수는 카탈로그가 정한다.",
+    "추가 형태 축: stories(1~3, 2층은 h≥9) · lowWall(헛간·창고) · chimney · roofDeck(파랑 평지붕 전용).",
+    "### 색: kitId",
+    ...kits,
+    "kitId 6종은 지붕색 3가지로 접힌다 — blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall·aframe-stone. 색군까지 섞어라.",
+    "### 시공·검증",
     "2채 이상은 author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지).",
+    "집을 깐 직후 **look_at_houses(mapId)** 로 눈으로 확인하라. verdict 가 monotonous/mixed 면 advice 의 안 쓴 templateId 를 골라 다시 깔아라.",
     "wing 제약: w≥3, h≥5 (지붕+벽 포함). windows: false | {} | {spacing:N} (true 불가).",
     "길/모래는 paint_road(style=dirt/sand)가 8방 오토타일로 성형합니다.",
   ].join("\n");

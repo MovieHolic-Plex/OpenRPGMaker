@@ -23,8 +23,19 @@ describe("agent UX policy prompt", () => {
       - 초안 시제: 수락 전 제안 단계의 변경은 완료형으로 쓰지 말고 '~할 예정입니다', '~하도록 제안합니다'처럼 초안/예정 표현을 쓰세요.
       - 마무리 톤: 최종 사용자 응답은 3~5문장으로 제한하고 초보 사용자 언어로 쓰세요. 내부 ID(Tile 342, tex_*, ev_*, run_lint 등), 원시 도구명, 함수명, 테스트/개발자 용어는 노출하지 마세요.
       - 수정 vs 신규(필수): '수정/고쳐/바꿔/변경/개선/정리/넓혀/좁혀/옮겨/지워' 요청은 **기존 산출물을 그 자리에서 고치라는 뜻**입니다. get_map_region/get_event로 현재 상태를 먼저 읽고, 사용자가 지목한 mapId(컨텍스트의 현재 맵)를 대상으로 편집하세요. 새 맵·새 방·새 마을을 만들어 거기에 결과물을 짓지 마세요 — 지목된 맵이 그대로 남으면 요청은 실패입니다. 사용자가 '새로 만들지 마'라고 명시했으면 create_map/duplicate_map/방 세션 시작을 아예 호출하지 마세요.
-      - 집 배치 효율(필수): 집 2채 이상은 반드시 author_house kind=lots + houses[]로 한 번에 호출한다. single을 반복 호출하지 마라. 각 집에는 서로 다른 kitId를 배정해 외관 다양성을 확보한다(blue-stone/bright-plaster/amber-wood/slate-wood/timber-hall 중 선택). windows는 false 또는 {}·{spacing:N}만 유효하며 true는 오류다. wing 크기는 w≥3, h≥5를 지켜라."
+      - 집 배치 효율(필수): 집 2채 이상은 반드시 author_house kind=lots + houses[]로 한 번에 호출한다. single을 반복 호출하지 마라. windows는 false 또는 {}·{spacing:N}만 유효하며 true는 오류다. wing 크기는 w≥3, h≥5를 지켜라.
+      - 집 다양성(필수): 모양 축(templateId)과 색 축(kitId)은 별개다. **집마다 서로 다른 templateId를 배정하라** — rect-large/rect-2f/rect-3f/cottage-low/barn-low/l/l-mirror/l-wide/t-porch/porch-cottage/annex/u/courtyard/z-offset/estate-shed-r/aframe-mid/rooftop-deck 등 34종이 있고, 생략하면 wings 그대로의 사각형이 되어 전부 비슷해진다. kitId도 지붕색 3군(blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall·aframe-stone)을 섞어 고르고, stories·lowWall·chimney로 실루엣을 더 갈라라. 깐 직후 look_at_houses(mapId)로 관찰해 verdict가 monotonous/mixed면 advice의 안 쓴 templateId로 다시 깔아라."
     `);
+  });
+
+  it("makes shape variety a separate axis from kit color and names the observe step", () => {
+    const text = prompt();
+    expect(text).toContain("집 다양성(필수)");
+    expect(text).toContain("모양 축(templateId)과 색 축(kitId)은 별개다");
+    expect(text).toContain("집마다 서로 다른 templateId를 배정하라");
+    // 6종 kitId 가 지붕색 3군으로 접히는 사실을 프롬프트가 직접 말해야 "색만 바꾼 다양성"을 막는다.
+    expect(text).toContain("blue: blue-stone·slate-wood");
+    expect(text).toContain("look_at_houses");
   });
 
   it("injects the UX policy section into the system prompt", () => {
