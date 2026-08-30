@@ -177,8 +177,8 @@ export function defaultCatalogFillEquipmentRecords(): EquipmentRecord[] {
       criticalRate: 4,
       stateResistanceChance: 30,
       stateDefenseIds: ["state_attack_down"],
-      equippableActorIds: [...ALL_ACTOR_IDS],
-      equippableClassIds: [...ALL_CLASS_IDS],
+      equippableActorIds: ALL_ACTOR_IDS.filter((id) => id !== ACTOR_MAGE_ID && id !== ACTOR_CLERIC_ID && id !== ACTOR_RANGER_ID && id !== ACTOR_SCOUT_ID),
+      equippableClassIds: ALL_CLASS_IDS.filter((id) => id !== CLASS_MAGE_ID && id !== CLASS_CLERIC_ID && id !== CLASS_RANGER_ID && id !== CLASS_SCOUT_ID),
     }),
   ];
 }
