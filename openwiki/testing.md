@@ -88,6 +88,14 @@ DST=/home/main/.herdr/worktrees/rpg-zzu/<name>/node_modules
 for e in "$SRC"/* "$SRC"/.bin; do b=$(basename "$e"); [ -e "$DST/$b" ] || ln -s "$e" "$DST/$b"; done
 ```
 
+**이 개별 링크 형태가 `server.fs.allow` 를 뚫는다** (2026-08-30 실측). `node_modules` **디렉터리
+자체는 실물**이므로 `realpathSync("./node_modules")` 는 자기 자신으로 풀려 아무것도 넓히지 못하고,
+`/@fs/…/node_modules/phaser/dist/phaser.min.js` 가 403 으로 죽는다. 증상이 엉뚱한 데서 나온다 —
+게임이 통째로 안 뜨므로 `qa:runtime` 이 "런타임 훅 없음" 으로 모든 비트를 실패시킨다(포트·타임아웃
+문제로 오진하기 쉽다). `vite.player-qa.config.ts` 의 `fsAllowRoots()` 는 이제 `node_modules` 안
+**링크들의 대상 쪽**(스코프 패키지는 한 단계 더)을 넓힌다. 판별: 서버 로그의
+`outside of Vite serving allow list` 와 함께 찍히는 allow 목록에 본 레포 경로가 있는지 본다.
+
 그다음 **포트를 반드시 고정해서** 돌린다. `playwright.config.ts` 는 `reuseExistingServer: true` 라서
 기본 포트 9173 에 다른 워크트리의 서버가 이미 떠 있으면 **남의 코드를 조용히 테스트한다.**
 출력에 `[WebServer]` 줄이 보이면 이 실행이 직접 띄운 것이다.
@@ -295,8 +303,15 @@ Evidence expectations:
 - 스크림은 e2e 에서 **의사요소를 직접 읽어야** 보인다. 디밍은 `::before`, 플래시는 `::after` 에 있어서
   요소 자신의 계산된 스타일에는 아무것도 안 잡힌다 — `getComputedStyle(scrim, "::before")` 를 쓴다.
   스크림 사각형이 오버레이와 같은 좌·우·아래를 갖는지도 같이 잰다(같은 `playSurface.css` 규칙이 둘의
-  크롭 inset 을 맞춘다). 다만 에디터 Test Play 는 `surfaceScaleMode: "fit"` 이라 `--play-crop-*` 이 0 이다 —
-  **정수 배율에서 실제로 잘리는 화면의 정합은 `npm run qa:runtime -- --scenario dialogue` 로만 확인된다.**
+  크롭 inset 을 맞춘다). **크롭 정합은 익스포트 플레이어(`surfaceScaleMode: "integer"`)로 실측했고
+  결론은 "따라갈 크롭이 없다" 다** (2026-08-30, `npm run qa:runtime -- --scenario dialogue` 게이트 통과 +
+  같은 하네스로 기하 측정): 1024×768 / 논리 320×240 에서 `--play-crop-*` 이 네 변 모두 `0px` 이고
+  `.dialogue-scrim` 사각형이 `.play-stage` 와 **완전히 같다**(32,24 부터 960×720). 정수 배율은
+  `Math.floor(containScale)` 이라 무대가 뷰포트를 넘을 수 없어서(`playSurfaceScale.ts:39`) 남는 여백은
+  레터박스이고 `.play-stage` **밖**이다 — 스크림이 잘려 나가는 띠를 칠할 경로가 애초에 없다.
+  `playSurface.css` 의 inset 목록에 든 것은 cover/crop 모드가 생길 때를 위한 대비다.
+  측정 함정 하나: 디밍은 `--dialogue-scrim-ms`(140~260ms) 전이라서 창이 뜬 **직후**에 읽으면
+  `::before` opacity 가 `0.26` 처럼 중간값으로 잡힌다. 정착값을 볼 거면 400ms 쯤 기다려라.
 - `test/dialoguePreviewPresentationCss.test.ts` — 에디터 프리뷰와 게임의 감정→keyframe 짝을
   두 CSS 파일에서 뽑아 대조한다. 프리뷰 창은 `.ecp-message-window`, 게임 창은 `.dialogue-box` 라
   규칙을 두 번 적어야 하고, 그 중복은 조용히 어긋난다 — 프리뷰만 옛 곡선으로 튀어도 예외가 없고,
@@ -414,7 +429,10 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   (`vite.config.ts:350-354`, 실측 3회). 반드시 전용 `cacheDir` / `VITE_CACHE_DIR`.
 - `vite.config.ts` 의 `server.fs.allow` 는 `../rpg-zzu/node_modules`(구 형제 워크트리
   `rpg-zzu-*`)만 넓힌다. **`.claude/worktrees/*` 에서는 존재하지 않는 경로로 풀려 편집기
-  dev 서버가 phaser 를 403 으로 막는다.** 올바른 일반화는 `realpathSync("./node_modules")`.
+  dev 서버가 phaser 를 403 으로 막는다.** `realpathSync("./node_modules")` 로는 **부족하다**
+  (2026-08-30 실측): 워크트리의 `node_modules` 는 디렉터리 자체가 실물이고 그 안의 패키지가
+  하나씩 링크된 형태라 자기 자신으로 풀린다. 링크 **대상**의 부모까지 넓혀야 한다
+  (`vite.player-qa.config.ts` 의 `fsAllowRoots()` 가 그 형태다).
 - 고정 키 횟수로 대사를 소진하면 닫힌 뒤 남은 Enter 가 NPC 를 재발동시켜 선택지가 다시
   열린다. `pressUntil` op(매 입력 후 조건 확인)을 써라.
 - **`__oprnDebug.teleport` 는 맵 비교를 세션 쓰기보다 먼저 해야 한다 (2026-08-28 수정).**

@@ -45,6 +45,11 @@
     **형제**로 `.play-stage` 에 붙는다(z-index 38 — 존 피드백 30 위, 창 39 아래). 오버레이 안에 두면
     화면을 덮을 수 없다 — `position-top`/`bottom` 에서 높이가 화면의 27% 뿐이다. 크롭 inset 은
     `runtime/playSurface.css` 의 `.play-stage > .dialogue-overlay` 목록에 같이 실어 맞춘다.
+    익스포트 플레이어(`surfaceScaleMode: "integer"`)로 실측한 결과 **따라갈 크롭이 실은 없다**
+    (2026-08-30): 정수 배율은 `Math.floor(containScale)` 이라 무대가 뷰포트를 넘지 못하고
+    (`playSurfaceScale.ts:39`) `--play-crop-*` 이 네 변 모두 0 이며, 스크림 사각형이 `.play-stage` 와
+    완전히 같다. 남는 여백은 레터박스이고 `.play-stage` 밖이라 스크림이 칠할 경로가 없다.
+    목록에 든 것은 cover/crop 모드가 생길 때를 위한 대비다.
     - 평평한 전면 디밍이 아니라 **창이 있는 쪽으로 몰린 비네트**다. 28% 전면 디밍은 모든 대사에서
       맵을 통째로 탁하게 만든다. 위치 클래스(`position-top/center/bottom`)를 스크림에도 실어 방향을 맞춘다.
     - 디밍과 플래시는 각각 `::before`/`::after` 에 둔다. 스크림 자신의 `opacity` 를 애니메이션하면

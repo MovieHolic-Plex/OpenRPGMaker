@@ -5,7 +5,8 @@
 // 여기에 격리한다. cacheDir 은 vite CLI 플래그가 없어서 설정 파일이 불가피하다.
 //
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
-import { realpathSync } from "node:fs";
+import { readdirSync, realpathSync, type Dirent } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, mergeConfig } from "vite";
 import playerConfig from "./vite.player.config";
@@ -18,15 +19,49 @@ const here = (path: string): string => fileURLToPath(new URL(path, import.meta.u
  * vite.config.ts:372 와 같은 근거이며, 링크 대상을 실경로로 직접 넓힌다.
  */
 function fsAllowRoots(): string[] {
-  const roots = [here("./")];
-  for (const candidate of [here("./node_modules")]) {
+  const roots = new Set([here("./")]);
+  const modules = here("./node_modules");
+  try {
+    roots.add(realpathSync(modules));
+  } catch {
+    // 링크가 없으면(정상 체크아웃) 추가할 것이 없다.
+  }
+  // 워크트리의 node_modules 는 **디렉터리 자체가 실물**이고 그 안의 패키지가 하나씩
+  // 메인 레포로 링크된 형태일 수 있다(실측 2026-08-30). 그러면 위의 realpath 는 자기
+  // 자신으로 풀려 아무것도 넓히지 못하고, `/@fs/…/node_modules/phaser/dist/phaser.min.js`
+  // 가 403 으로 죽는다 — 게임이 통째로 안 뜨므로 시나리오 전체가 훅 없음으로 실패한다.
+  // 그래서 링크 **대상**의 부모까지 넓힌다. 스코프 패키지는 한 단계 더 들어간다.
+  for (const scope of [modules, ...scopeDirs(modules)]) {
+    for (const target of symlinkTargets(scope)) roots.add(dirname(target));
+  }
+  return [...roots];
+}
+
+function scopeDirs(modules: string): string[] {
+  return entries(modules)
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith("@"))
+    .map((entry) => join(modules, entry.name));
+}
+
+function symlinkTargets(dir: string): string[] {
+  const targets: string[] = [];
+  for (const entry of entries(dir)) {
+    if (!entry.isSymbolicLink()) continue;
     try {
-      roots.push(realpathSync(candidate));
+      targets.push(realpathSync(join(dir, entry.name)));
     } catch {
-      // 링크가 없으면(정상 체크아웃) 추가할 것이 없다.
+      // 끊긴 링크는 넓힐 대상이 없다.
     }
   }
-  return [...new Set(roots)];
+  return targets;
+}
+
+function entries(dir: string): Dirent[] {
+  try {
+    return readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
 }
 
 export default mergeConfig(
