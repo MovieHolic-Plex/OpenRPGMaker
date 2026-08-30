@@ -11,6 +11,10 @@ import { renderFarmSpatialTab } from "@/editor/panels/databaseFarmSpatialView";
 import { renderFactionsTab } from "@/editor/panels/databaseFactionView";
 import { renderLifeCollectionsTab } from "@/editor/panels/databaseLifeCollectionsView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
+import {
+  resumeSkillAnimationStagesIn,
+  stopSkillAnimationStagesIn,
+} from "@/editor/panels/databaseSkillAnimationStage";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import {
   renderSwitchesTab,
@@ -496,10 +500,13 @@ function renderActiveTab(
   let cache = tabRenderCacheFor(container);
   const cached = options.forceFresh ? undefined : cache.views.get(tab);
   if (cached) {
+    stopSkillAnimationStagesIn(body);
     body.replaceChildren(...cached);
+    resumeSkillAnimationStagesIn(body);
     return;
   }
 
+  stopSkillAnimationStagesIn(body);
   body.replaceChildren();
   const rerender = (): void => {
     // A debounced callback from a tab that has since been detached must not repaint

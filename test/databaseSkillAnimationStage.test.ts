@@ -8,7 +8,13 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { skillFields } from "@/editor/panels/databaseBasicRecordFields";
-import { renderSkillAnimationStage } from "@/editor/panels/databaseSkillAnimationStage";
+import {
+  renderSkillAnimationStage,
+  resumeSkillAnimationStagesIn,
+  stopSkillAnimationStagesIn,
+} from "@/editor/panels/databaseSkillAnimationStage";
+import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { renderSkillRecordForm } from "@/editor/panels/databaseSkillRecordView";
 import { SHOW_ANIMATION_FRAME_MS } from "@/editor/panels/eventEditor/showAnimationPlayback";
 import { createBlankProject } from "@/project/defaults";
@@ -147,6 +153,57 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     stop();
   });
 
+  it("캐시된 DOM을 다시 붙이면 자동재생을 재개한다", () => {
+    const { project, skill } = installProject(3);
+    const scope = document.createElement("div") as unknown as FakeElement;
+    document.body.append(scope);
+    const rendered = renderSkillAnimationStage(skill, project);
+    scope.append(rendered.element as unknown as FakeElement);
+    const stage = byTestId(scope, "db-skill-animation-stage");
+    Object.defineProperty(stage, "isConnected", {
+      configurable: true,
+      get: () => document.body.contains(stage as unknown as Node),
+    });
+    const cells = byTestId(scope, "db-skill-animation-cells");
+    const toggle = byTestId(scope, "db-skill-animation-toggle");
+
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+    const cached = [...scope.childNodes];
+    scope.replaceChildren();
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+    expect(armedIntervals.size).toBe(0);
+    expect(toggle.textContent).toBe("▶ 재생");
+    expect(toggle.attrs["aria-pressed"]).toBe("false");
+
+    scope.replaceChildren(...cached);
+    resumeSkillAnimationStagesIn(scope as unknown as ParentNode);
+    expect(armedIntervals.size).toBe(1);
+    expect(toggle.textContent).toBe("■ 정지");
+    expect(toggle.attrs["aria-pressed"]).toBe("true");
+    expect(cells.dataset.frameIndex).toBe("0");
+
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
+    expect(cells.dataset.frameIndex).toBe("1");
+
+    rendered.stop();
+  });
+
+  it("소유 범위를 정리하면 내부 스테이지 인터벌이 즉시 모두 멈춘다", () => {
+    const { project, skill } = installProject(3);
+    const scope = document.createElement("div") as unknown as FakeElement;
+    document.body.append(scope);
+    const rendered = renderSkillAnimationStage(skill, project);
+    scope.append(rendered.element as unknown as FakeElement);
+    const toggle = byTestId(scope, "db-skill-animation-toggle");
+    expect(armedIntervals.size).toBe(1);
+
+    stopSkillAnimationStagesIn(scope as unknown as ParentNode);
+
+    expect(armedIntervals.size).toBe(0);
+    expect(toggle.textContent).toBe("▶ 재생");
+    expect(toggle.attrs["aria-pressed"]).toBe("false");
+  });
+
   it("프레임이 1장이면 정지 렌더 + 토글 비활성", () => {
     const { project, skill } = installProject(1);
     const { host, stop } = mount(skill, project);
@@ -214,6 +271,30 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     stop();
   });
 
+  it("레코드 전환은 새 폼으로 교체하기 전에 이전 스테이지 인터벌을 즉시 정리한다", () => {
+    const { skill } = installProject(3);
+    const project = store.getCurrent();
+    const nextSkill: SkillRecord = {
+      ...structuredClone(skill),
+      id: "skill_stage_next",
+      name: "다음 스킬",
+      animationId: undefined,
+    };
+    store.update((draft) => {
+      draft.database.skills.push(nextSkill);
+    }, { scope: "database", collection: "skills" });
+    setSelectedRecordId("skills", skill.id);
+
+    const host = document.createElement("div") as unknown as FakeElement;
+    document.body.append(host);
+    renderRecordTab(host as unknown as HTMLElement, "skills", () => undefined);
+    expect(armedIntervals.size).toBe(1);
+
+    byTestId(host, `db-record-row-${nextSkill.id}`).click();
+
+    expect(armedIntervals.size).toBe(0);
+  });
+
   it("픽커 변경으로 표시면이 교체되면 분리된 스테이지의 인터벌이 정리된다", () => {
     const { skill } = installProject(3);
     const form = document.createElement("section") as unknown as FakeElement;
@@ -226,23 +307,38 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     expect(detached.dataset.frameIndex).toBe("1");
     expect(armedIntervals.size).toBe(1);
 
-    const clearCallsBefore = clearIntervalSpy.mock.calls.length;
+    const stageInterval = [...armedIntervals][0];
+    expect(stageInterval).toBeDefined();
     const picker = byTestId(form, "db-picker-animation");
     picker.value = "anim_stage_test";
     picker.dispatchEvent(new Event("change"));
 
-    expect(clearIntervalSpy.mock.calls.length).toBeGreaterThan(clearCallsBefore);
+    expect(clearIntervalSpy).toHaveBeenCalledWith(stageInterval);
+    expect(armedIntervals.has(stageInterval)).toBe(false);
     // 새 스테이지 하나만 무장돼 있다.
     expect(armedIntervals.size).toBe(1);
 
     const live = byTestId(form, "db-skill-animation-cells");
     expect(live).not.toBe(detached);
-    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
-    // 분리된 스테이지는 얼어 있고, 살아 있는 스테이지만 전진한다.
+    vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS * 2);
+    // 분리된 스테이지는 1에서 얼고, 살아 있는 스테이지만 2까지 전진한다.
     expect(detached.dataset.frameIndex).toBe("1");
-    expect(live.dataset.frameIndex).toBe("1");
+    expect(live.dataset.frameIndex).toBe("2");
 
     findByTestId(form, "db-skill-animation-toggle")?.click();
+  });
+
+  it("해석할 수 없는 애셋 URL이면 빈 상태를 표시하고 인터벌을 만들지 않는다", () => {
+    const { project, skill } = installProject(3);
+    const animation = project.database.battleAnimations.find((entry) => entry.id === skill.animationId);
+    if (!animation) throw new Error("테스트 애니메이션이 없다");
+    animation.resourceId = "missing_animation_resource";
+    const { host } = mount(skill, project);
+
+    const preview = byTestId(host, "db-skill-animation-preview");
+    expect(preview.querySelector(".db-skill-animation-preview-empty")?.textContent).toBe("(애니메이션 없음)");
+    expect(findByTestId(host, "db-skill-animation-stage")).toBeNull();
+    expect(armedIntervals.size).toBe(0);
   });
 
   it("애니메이션 미지정이면 기존 빈 상태 문구를 유지한다", () => {

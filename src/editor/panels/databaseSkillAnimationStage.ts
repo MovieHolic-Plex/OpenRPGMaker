@@ -8,8 +8,9 @@
 // loop 옵션으로 돌린다. 이 모듈은 자기 타이머 루프를 만들지 않는다 — 15fps·시트 좌표·크로마키
 // 규약이 한 곳에만 있어야 한다.
 //
-// 타이머 수명은 하드룰이다(커밋 2ed96476 회귀). 이 모듈은 stop() 을 돌려주고,
-// 호출자(databaseSkillRecordView)는 표시면을 교체하기 전에 반드시 그걸 부른다.
+// 타이머 수명은 하드룰이다(커밋 2ed96476 회귀). 각 스테이지 루트의 컨트롤러를
+// WeakMap 에 등록하고, DOM 을 교체·제거하는 소유자가 범위 기반 stop/resume 헬퍼를 호출한다.
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   SHOW_ANIMATION_FRAME_MS,
   playShowAnimation,
@@ -22,6 +23,14 @@ import { el } from "@/util/dom";
 
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 const PLAYBACK_FPS = Math.round(1000 / SHOW_ANIMATION_FRAME_MS);
+
+type SkillAnimationStageController = {
+  readonly stop: () => void;
+  readonly resume: () => void;
+  readonly canAutoplay: boolean;
+};
+
+const stageControllers = new WeakMap<HTMLElement, SkillAnimationStageController>();
 
 export type SkillAnimationStage = {
   /** 카드에 붙일 표시면 루트(db-skill-animation-preview). */
@@ -39,7 +48,7 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
   const animation = record.animationId
     ? project.database.battleAnimations.find((entry) => entry.id === record.animationId)
     : undefined;
-  if (!animation) {
+  if (!animation || !animation.resourceId || !resolveAssetResourceUrl(animation.resourceId, { project })) {
     wrap.append(el("div", { class: "db-skill-animation-preview-empty", text: "(애니메이션 없음)" }));
     return { element: wrap, stop: () => undefined };
   }
@@ -89,18 +98,25 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
     })
   );
 
-  // 재생할 수 없는 상태(프레임 없음 / 1장)는 정지 렌더가 정답이다 — 토글도 잠근다.
-  if (!source || total < 2) {
-    if (source) renderShowAnimationFrame(cells, source, 0);
-    toggle.disabled = true;
-    return { element: wrap, stop: () => undefined };
-  }
-
-  let handle: ShowAnimationPlaybackHandle | null = null;
   const setRunning = (running: boolean): void => {
     toggle.textContent = running ? "■ 정지" : "▶ 재생";
     toggle.setAttribute("aria-pressed", running ? "true" : "false");
   };
+
+  // 재생할 수 없는 상태(프레임 없음 / 1장)는 정지 렌더가 정답이다 — 토글도 잠근다.
+  if (!source || total < 2) {
+    if (source) renderShowAnimationFrame(cells, source, 0);
+    toggle.disabled = true;
+    stageControllers.set(stage, {
+      stop: () => setRunning(false),
+      resume: () => undefined,
+      canAutoplay: false,
+    });
+    return { element: wrap, stop: () => setRunning(false) };
+  }
+
+  const canAutoplay = autoplayAllowed();
+  let handle: ShowAnimationPlaybackHandle | null = null;
   const stop = (): void => {
     const running = handle;
     handle = null;
@@ -108,7 +124,7 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
     setRunning(false);
   };
   const play = (): void => {
-    stop();
+    if (handle) return;
     handle = playShowAnimation(stage, cells, source, {
       loop: true,
       onFrame: (frameIndex, frameTotal) => {
@@ -130,12 +146,38 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
     play();
   });
 
-  if (!autoplayAllowed()) {
+  const controller: SkillAnimationStageController = {
+    stop,
+    resume: () => {
+      // 별도 사용자 일시정지 상태는 두지 않는다. 캐시 재부착의 자동재생 계약을 우선해,
+      // 자동재생 가능한 정지 스테이지라면 resume 소유자가 다시 시작한다.
+      if (canAutoplay && !handle) play();
+    },
+    canAutoplay,
+  };
+  stageControllers.set(stage, controller);
+
+  if (!canAutoplay) {
     renderShowAnimationFrame(cells, source, 0);
     return { element: wrap, stop };
   }
   play();
   return { element: wrap, stop };
+}
+
+/** scope 가 소유한 모든 스킬 애니메이션 인터벌을 즉시 정리한다. */
+export function stopSkillAnimationStagesIn(scope: ParentNode): void {
+  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-animation-stage']")) {
+    stageControllers.get(stage)?.stop();
+  }
+}
+
+/** 캐시에서 다시 붙은 자동재생 가능 스테이지를 재시작한다. */
+export function resumeSkillAnimationStagesIn(scope: ParentNode): void {
+  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-animation-stage']")) {
+    const controller = stageControllers.get(stage);
+    if (controller?.canAutoplay) controller.resume();
+  }
 }
 
 function chip(testid: string, text: string): HTMLElement {
@@ -149,7 +191,11 @@ function frameCounterText(frameIndex: number, total: number): string {
 function autoplayAllowed(): boolean {
   // 재생기는 window 의 인터벌 타이머 API 를 쓴다. 그게 없는 호스트(헤드리스 렌더 하네스)에서는
   // 자동재생하지 않고 첫 프레임에 선다. reduced-motion 도 같은 정지 경로다.
-  if (typeof window === "undefined" || typeof window.clearInterval !== "function") return false;
+  if (
+    typeof window === "undefined" ||
+    typeof window.setInterval !== "function" ||
+    typeof window.clearInterval !== "function"
+  ) return false;
   return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches !== true;
 }
 

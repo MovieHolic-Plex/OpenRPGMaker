@@ -40,18 +40,11 @@ const SKILL_DAMAGE_STATS = ["attack", "mind"] as const satisfies readonly SkillD
 const STATE_EFFECT_OPERATIONS = ["add", "remove"] as const satisfies readonly DatabaseStateEffect["operation"][];
 /** 접기 전 기본 노출 개수. 나머지는 DOM 에 남기고 hidden 으로만 감춘다. */
 const BACKLINK_PREVIEW_COUNT = 6;
-/**
- * 폼별 «지금 돌고 있는» 스테이지 정지 함수. 같은 폼을 다시 그릴 때(레코드 전환 등) 이전
- * 스테이지의 인터벌을 확정적으로 죽인다 — 분리된 DOM 에 타이머가 남으면 안 된다(2ed96476).
- */
-const activeAnimationStages = new WeakMap<HTMLElement, () => void>();
-
 type SkillEffectAffects = Extract<SkillEffect, { kind: "damage" | "healing" }>["affects"];
 type SkillDamageStatistic = Extract<SkillEffect, { kind: "damage" }>["statistic"];
 
 export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): void {
   form.classList.add("db-skill-studio");
-  activeAnimationStages.get(form)?.();
 
   // 이름/범위/위력/애니메이션 은 recordForm() + skillFields() 가 이미 form 에 붙여 놓았다.
   // 폼을 다시 짜면서 각자 어울리는 카드로 옮겨 담는다(단위 테스트는 이 뷰만 직접 호출해
@@ -84,7 +77,6 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
     animationStage = renderSkillAnimationStage(currentSkill(record), store.getCurrent());
     previewBody.replaceChildren(animationStage.element);
   };
-  activeAnimationStages.set(form, () => animationStage?.stop());
   // 투사체를 켜도 데미지/사거리/탄약 필드가 안 나타나던 문제(개편 전부터 있던 결함) —
   // 효과/상태 패널처럼 이 카드도 토글 후 다시 그린다.
   const renderActionPanel = () => actionBody.replaceChildren(...actionSkillFields(currentSkill(record), renderActionPanel));
