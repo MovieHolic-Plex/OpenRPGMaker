@@ -95,6 +95,15 @@
   z-index: 4;
 }
 
+/* 폴백 경로(스프라이트를 잴 수 없어 --battle-node-x/y 를 복사한 경우)는 앵커가 배틀러의
+   **발** 이다. 시트 중심을 그 위에 그대로 두면 이펙트가 접지선에 깔리므로, 고침 전과 같은
+   -55% 보정을 되살린다 — 퇴화 경로가 변경 전보다 나빠지지 않게 하는 것이 목적이다.
+   측정 경로에서는 battleAnimationDom.positionAnimation 이 인라인 left/top 을 심고
+   data-animation-anchor 에 저작된 position 을 찍으므로 이 규칙에 걸리지 않는다. */
+.battle-animation[data-animation-anchor="fallback"] {
+  transform: translate(-50%, -55%);
+}
+
 .battle-animation-sheet {
   height: 240px;
   overflow: visible;
