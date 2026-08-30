@@ -270,7 +270,10 @@ async function unreachable(page: Page): Promise<readonly Unreachable[]> {
     const hits: Unreachable[] = [];
     for (const node of targets) {
       align(node, "end");
-      if (node.getBoundingClientRect().height < 4 || node.getBoundingClientRect().width < 4) continue;
+      // 두 축이 다 작을 때만 건너뛴다(장식용 1px 선 등). 한 축만 0 이면 그것이 바로 이 PR 이
+      // 고친 눌림 계열이므로 반드시 재야 한다(2차 검토 지적 ③).
+      const first = node.getBoundingClientRect();
+      if (first.height < 4 && first.width < 4) continue;
       let worst: Unreachable | null = null;
       const scrollerInfo = ((): string => {
         for (let cursor = node.parentElement; cursor; cursor = cursor.parentElement) {
@@ -297,10 +300,12 @@ async function unreachable(page: Page): Promise<readonly Unreachable[]> {
         for (let parent = node.parentElement; parent; parent = parent.parentElement) {
           const s = getComputedStyle(parent);
           const box = parent.getBoundingClientRect();
-          if (clips(s, "y")) {
+          // 스크롤 여유가 없는(포화된) 스크롤러도 그 순간에는 클리퍼다 — visibleBox 와 같은
+          // 술어를 써야 판정이 일관된다(2차 검토 지적 ④).
+          if (clips(s, "y") || (/auto|scroll/u.test(s.overflowY) && !scrollableY(parent, s))) {
             record(label(parent), edge === "end" ? rect.bottom - box.bottom : box.top - rect.top, "y");
           }
-          if (clips(s, "x")) {
+          if (clips(s, "x") || (/auto|scroll/u.test(s.overflowX) && !scrollableX(parent, s))) {
             record(label(parent), edge === "end" ? rect.right - box.right : box.left - rect.left, "x");
           }
           if (parent === document.body) break;
@@ -417,6 +422,10 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
         // 접힌 `<details>`(작업 기록 `details.ai-work-log`, 실패 상세 `.ai-tool-failure`)도 전부 연다 —
         // 판정에서 닫힌 details 를 제외하므로(Chromium 이 버려진 기하를 돌려준다), 열지 않으면
         // 그 안의 `pre`·표가 영원히 사각지대로 남는다(적대적 리뷰 중대 ①).
+        // 원래 열려 있던 것만 기억해 두고 전부 연다 — 되돌릴 때 이 표를 쓴다.
+        const log = document.querySelector<HTMLElement>(".ai-chat-log");
+        (globalThis as { __openBefore?: readonly boolean[] }).__openBefore =
+          [...(log?.querySelectorAll<HTMLDetailsElement>("details") ?? [])].map((d) => d.open);
         for (const node of document.querySelectorAll<HTMLDetailsElement>(".ai-chat-log details")) node.open = true;
       });
       if (viewport.name === "1280x800") {
@@ -434,6 +443,15 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
       // 상태 재기가 사실은 펼친 상태가 된다 — 기본 상태는 side 만 검사되고 있었다(재검토 지적).
       await page.evaluate(() => {
         for (const node of document.querySelectorAll<HTMLElement>(".ai-tool-activity-toggle")) node.click();
+      });
+      await page.evaluate(() => {
+        // `<details>` 도 원래 상태로 돌린다. 안 돌리면 side 에서 연 작업 기록·실패 상세가
+        // float·glass 의 "기본" 상태 재기까지 열린 채로 따라와, 고친 줄 알았던 누수가 남는다
+        // (2차 적대적 검토 지적 ②).
+        const log = document.querySelector<HTMLElement>(".ai-chat-log");
+        const before = (globalThis as { __openBefore?: readonly boolean[] }).__openBefore ?? [];
+        const nodes = [...(log?.querySelectorAll<HTMLDetailsElement>("details") ?? [])];
+        for (const [index, node] of nodes.entries()) node.open = before[index] ?? false;
       });
       await click(page, "ai-turn-group-toggle");
       await expect(page.locator(".ai-turn-group.is-collapsed").first()).toBeAttached();

@@ -644,7 +644,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           // 무엇을 재시도했는지(원 오류)와 어느 지시였는지를 함께 남긴다 — 같은 오류의 반복
           // 재시도는 이 행들이 없으면 서로 구분되지 않는다.
           recordAiUiEvent({
-            surface: "deps.surface.panel",
+            surface: "panel",
             action: AI_UI_ACTIONS.turnRetry,
             testid: "ai-retry-turn",
             detail: { error: message.slice(0, 200), instruction: requestText.slice(0, 120) },
