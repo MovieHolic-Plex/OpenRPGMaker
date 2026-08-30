@@ -15,10 +15,28 @@ const SKIP_TAGS = new Set(["PRE", "CODE", "A", "BUTTON", "TEXTAREA", "INPUT"]);
 
 export type ReferenceNavigator = (target: EditorReferenceTarget) => boolean;
 
+/**
+ * 프로젝트 객체당 색인 하나만 만들어 재사용한다.
+ *
+ * 기록 복원은 말풍선을 수백 개 연달아 그리는데, 색인은 맵·이벤트 전수를 한 번 훑는다 — 부드마다
+ * 다시 만들면 (맵 × 이벤트) 무게에 부드 수까지 곱해진다. `store.getCurrent()` 는 변경 전에는
+ * 같은 객체를 돌려주므로 객체당 캐싱이 그대로 무효화 장치가 된다.
+ */
+const indexByProject = new WeakMap<object, EditorReferenceIndex>();
+
+function liveReferenceIndex(): EditorReferenceIndex {
+  const project = store.getCurrent();
+  const cached = indexByProject.get(project);
+  if (cached) return cached;
+  const index = buildEditorReferenceIndex(project);
+  indexByProject.set(project, index);
+  return index;
+}
+
 /** 조수/시스템 말풍선 본문. 마크다운 + 내부 이동 링크. */
 export function renderAssistantAnswer(text: string): HTMLElement {
   const root = renderMarkdown(text);
-  decorateEditorReferences(root, buildEditorReferenceIndex(store.getCurrent()));
+  decorateEditorReferences(root, liveReferenceIndex());
   return root;
 }
 
