@@ -21,20 +21,31 @@ import {
 /** 저작 효과음이 없는 임팩트 착지의 기본 소리. 번들 카탈로그 id 라 프로젝트 등록이 필요 없다. */
 export const DEFAULT_LANDING_SE = "cc0-se-kis-impactsoft-heavy-000";
 
-/** 한 칸 높이에서 떨어진 착지의 흔들림. 액션 전투 피격(0.006) 과 같은 급이다. */
+/**
+ * 한 칸 높이에서 떨어진 착지의 흔들림. 액션 전투 피격(0.006) 과 같은 급에서 시작한다.
+ * 상한은 8 칸 낙하가 피격보다 세 배 무겁게 읽히도록 0.018 — 320×240 에서 약 4px 진폭이다.
+ */
 const SHAKE_RATIO_MIN = 0.003;
-const SHAKE_RATIO_MAX = 0.012;
+const SHAKE_RATIO_MAX = 0.018;
 const SHAKE_MS_MIN = 60;
-const SHAKE_MS_MAX = 150;
+const SHAKE_MS_MAX = 180;
 /** 이 높이 이상은 흔들림이 더 세지지 않는다. 4 칸이면 320×240 화면에서 충분히 무겁다. */
 const SHAKE_SATURATION_LIFT_PX = TILE_SIZE * 4;
 /** 이 높이 밑에서 떨어지면 임팩트를 내지 않는다 — 제자리 홉마다 화면이 흔들리면 멀미난다. */
 export const MIN_IMPACT_LIFT_PX = TILE_SIZE;
 
+/**
+ * 먼지는 두 겹이다. 한 겹만 퍼뜨리면 "그림자가 커졌다" 로 읽혀서 착지 순간이 안 보인다.
+ * 안쪽(짧고 진한 코어) + 바깥쪽(넓고 옅고 느린 링) 으로 나누면 터지는 타이밍이 잡힌다.
+ */
 const DUST_MS = 220;
 const DUST_START_SCALE = 0.4;
 const DUST_END_SCALE = 1.6;
-const DUST_START_ALPHA = 0.45;
+const DUST_START_ALPHA = 0.5;
+const DUST_RING_MS = 360;
+const DUST_RING_START_SCALE = 0.8;
+const DUST_RING_END_SCALE = 2.6;
+const DUST_RING_START_ALPHA = 0.22;
 
 export type LandingImpactPlan = {
   readonly shakeMs: number;
@@ -83,8 +94,11 @@ export type LandingSceneContext = ShadowSceneContext & {
       scaleY?: number;
       alpha?: number;
       duration: number;
+      ease?: string;
       onComplete?: () => void;
     }): unknown;
+    /** 착지 스쿼시가 앞선 스케일 트윈(액션 전투 스윙 등) 과 겹치지 않게 끊는다. optional 이다. */
+    killTweensOf?(target: unknown): unknown;
   };
 };
 
@@ -105,9 +119,30 @@ export function playLandingImpact(
   if (plan.se !== undefined && playSe) playSe(plan.se);
 }
 
-/** 그림자 텍스처를 재활용해 퍼지며 사라지는 먼지 한 겹. 새 스프라이트시트가 필요 없다. */
+/** 그림자 텍스처를 재활용해 퍼지며 사라지는 먼지. 새 스프라이트시트가 필요 없다. */
 function spawnLandingDust(scene: LandingSceneContext, groundX: number, groundY: number): void {
   installCharacterShadowTexture(scene);
+  spawnDustLayer(scene, groundX, groundY, DUST_START_SCALE, DUST_END_SCALE, DUST_START_ALPHA, DUST_MS);
+  spawnDustLayer(
+    scene,
+    groundX,
+    groundY,
+    DUST_RING_START_SCALE,
+    DUST_RING_END_SCALE,
+    DUST_RING_START_ALPHA,
+    DUST_RING_MS
+  );
+}
+
+function spawnDustLayer(
+  scene: LandingSceneContext,
+  groundX: number,
+  groundY: number,
+  startScale: number,
+  endScale: number,
+  startAlpha: number,
+  durationMs: number
+): void {
   let dust: ShadowImage;
   try {
     dust = scene.add.image(groundX, groundY, CHARACTER_SHADOW_TEXTURE_KEY);
@@ -116,15 +151,15 @@ function spawnLandingDust(scene: LandingSceneContext, groundX: number, groundY: 
   }
   dust.setOrigin(0.5, 0.5);
   dust.setDepth(CHARACTER_SHADOW_DEPTH_BASE + groundY + 1);
-  dust.setScale(DUST_START_SCALE, DUST_START_SCALE);
-  dust.setAlpha(DUST_START_ALPHA);
+  dust.setScale(startScale, startScale);
+  dust.setAlpha(startAlpha);
   dust.setVisible(true);
   scene.tweens.add({
     targets: dust,
-    scaleX: DUST_END_SCALE,
-    scaleY: DUST_END_SCALE,
+    scaleX: endScale,
+    scaleY: endScale,
     alpha: 0,
-    duration: DUST_MS,
+    duration: durationMs,
     onComplete: () => dust.destroy(),
   });
 }

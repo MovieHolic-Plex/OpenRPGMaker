@@ -22,7 +22,7 @@ import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
-import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
+import { abortHop, clearAllHopScales, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { destroyAllCharacterShadows } from "@/player/characterShadow";
 import { startMapBgm } from "@/player/mapBgm";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
@@ -383,6 +383,7 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.playerHop = null;
   abortHop(scene, PLAYER_SHADOW_KEY, scene.player);
   destroyAllCharacterShadows(scene);
+  clearAllHopScales(scene);
   scene.runtimeDom.clearEventMarkers();
   scene.missingResources.clear();
 }
