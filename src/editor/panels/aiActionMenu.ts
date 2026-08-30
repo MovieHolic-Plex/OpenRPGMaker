@@ -18,6 +18,7 @@ export type AiActionMenuVariant = "header" | "composer";
 
 export interface AiActionMenuActions {
   readonly startNewChat: () => void;
+  readonly openSettings: () => void;
   readonly undoLast: () => void;
   readonly exportAudit: () => void;
   readonly toggleDock: () => void;
@@ -39,6 +40,8 @@ interface ItemSpec {
   readonly label: string;
   readonly testid: string | null;
   readonly title?: string;
+  /** 아이콘이 붙는 항목은 라벨만으로 부족하다 — 스크린리더용 이름을 따로 준다. */
+  readonly ariaLabel?: string;
   readonly run: () => void;
 }
 
@@ -58,6 +61,7 @@ export function createAiActionMenuItems(options: {
         type: "button",
         role: "menuitem",
         ...(spec.title === undefined ? {} : { title: spec.title }),
+        ...(spec.ariaLabel === undefined ? {} : { "aria-label": spec.ariaLabel }),
       },
       ...(spec.testid === null ? {} : { dataset: { testid: spec.testid } }),
       on: {
@@ -103,18 +107,29 @@ export function createAiActionMenuItems(options: {
     run: options.actions.openTools,
   });
 
+  // 설정 — 2026-08-28 헤더 제거 뒤 패널에는 AI 설정(인증·모델·글자 크기)으로 가는 진입점이
+  // 하나도 없었다(에디터 톱바 ⚙ 만 유일). 오류 버블의 [설정 열기]는 401 이 터진 뒤에만 보이므로
+  // 평상시 경로가 아니다. testid 는 기존 계약 ai-settings-toggle 을 그대로 다시 쓴다.
+  const settings = build({
+    label: "⚙ 설정",
+    testid: header ? "ai-more-settings" : "ai-settings-toggle",
+    title: "AI 설정 — 연결·모델·글자 크기",
+    ariaLabel: "AI 설정 열기",
+    run: options.actions.openSettings,
+  });
+
   // 가르치기 진입점 셋. 사라진 스킬 서러에 업혀 있었던 기능이다 — 서러만 없어지면 되지
   // 기능이 사라질 이유는 없으므로 동일한 legacy testid 로 ☰ 에 재배치한다.
   const interview = build({
     label: "🎓 맵 인터뷰",
     testid: header ? "ai-interview" : "ai-command-menu-interview",
-    title: "현재 맵의 타일 의믜를 질문으로 배운다",
+    title: "현재 맵의 타일 의미를 질문으로 배운다",
     run: options.actions.startInterview,
   });
   const learnStructure = build({
-    label: "📐 선택 여역 학습",
+    label: "📐 선택 영역 학습",
     testid: header ? "ai-learn-structure" : "ai-command-menu-learn-structure",
-    title: "선택한 구조밌을 템플릿으로 배운다(선택 여역 필수)",
+    title: "선택한 구조물을 템플릿으로 배운다(선택 영역 필수)",
     run: options.actions.learnStructure,
   });
   const demoTeach = build({
@@ -125,7 +140,7 @@ export function createAiActionMenuItems(options: {
   });
 
   return {
-    items: [newChat, undo, exportItem, dockItem, history, tools, interview, learnStructure, demoTeach],
+    items: [newChat, undo, exportItem, dockItem, history, tools, settings, interview, learnStructure, demoTeach],
     dockItem,
   };
 }

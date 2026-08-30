@@ -103,15 +103,21 @@
   z-index: 31;
 }
 
-/* 유리·사이드는 헤더(더보기/설정)를 가지고 있고 빈 화면 추천은 ai-next-steps 카드가
-   담당한다 → 컴포저의 ☰ 와 추천 팝오버를 빼 중복을 없앤다. float 은 헤더가 숨겨지므로
-   컴포저 ☰ 가 유일한 메타 진입점이라 그대로 둔다. */
+/* 빈 화면 추천은 ai-next-steps 카드가 담당한다 → 컴포저의 추천 팝오버를 빼 중복을 없앤다.
+
+   ☰(.ai-command-menu-toggle) 는 **어느 도크에서도 숨기지 않는다.** 이 규칙은 원래
+   "유리·사이드는 헤더(더보기/설정)를 가지고 있다" 는 전제로 ☰ 를 뺐지만, 2026-08-28
+   헤더 제거(aiChatPanel.ts:2506 `.ai-chat-header` 밴드 삭제)로 그 전제가 죽었다.
+   `.ai-chat-toolbar` 는 지금 hidden + inert + display:none 인 테스트 훅 컨테이너이고
+   도크 전환·내보내기·되돌리기·전체 기록·툴 브라우저·가르치기 3종은 전부 ☰ 메뉴 항목으로만
+   눌린다. 실측(2026-08-30, test/e2e/_aichat-bug-hunt): 기본 도크 glass 와 side 에서
+   ai-command-menu-toggle 이 display:none rect 0x0 — float 만 30x30 이었다. 즉 기본
+   상태에서 메타 기능 전체가 도달 불가였고, side 는 도크 전환 수단까지 없어 탈출 불가였다.
+   (`.ai-dock-mode-btn` 도 숨은 훅 컨테이너 안이라 세 도크 모두 rect 0x0 이다.) */
 .ai-chat-panel.chat-dock-glass .ai-chat-toolbar,
-.ai-chat-panel.chat-dock-glass .ai-command-menu-toggle,
 .ai-chat-panel.chat-dock-glass .ai-command-settings-button,
 .ai-chat-panel.chat-dock-glass .ai-composer-suggest,
 .ai-chat-panel.chat-dock-glass .ai-context-chips,
-.ai-chat-panel.chat-dock-side .ai-command-menu-toggle,
 .ai-chat-panel.chat-dock-side .ai-command-settings-button,
 .ai-chat-panel.chat-dock-side .ai-composer-suggest {
   display: none;

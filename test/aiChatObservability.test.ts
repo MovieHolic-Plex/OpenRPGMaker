@@ -7,10 +7,11 @@ import {
   renderAiChatPanel,
   renderToolActivityEntry,
   saveAiFontSize,
+  teardownAiChatPanel,
 } from "@/editor/panels/aiChatPanel";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { clearConversations, conversationScopeKey, saveConversation } from "@/ai/conversationStore";
-import { clearAgentGhostPreview, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
+import { clearAgentGhostPreview, getAgentGhostPreviewState, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -41,6 +42,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  // 진행 중 턴이 패널보다 오래 살아 죽은 DOM 에 쓰는 것을 막는다(위 uxRepairs 와 동일 이유).
+  teardownAiChatPanel();
+  clearConversations();
   clearAgentGhostPreview();
   restoreDom?.();
   restoreDom = null;
@@ -68,9 +72,14 @@ describe("글자 크기 3단 (V3C ①)", () => {
   });
 
   it("설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다", () => {
+    // 글자 크기 select 는 채팅 본문 인라인 폼이 아니라 **전용 설정 모달** 안에 있다(UX P0/P1 에서
+    // 인라인 ai-config 폼을 걷어냈다). 패널의 ⚙ 설정 항목이 그 모달로 가는 출하 경로다.
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
     const panel = renderPanel();
-    const select = findByTestId(panel, "ai-font-size") as unknown as FakeElement;
+    (findByTestId(panel, "ai-settings-toggle") as unknown as FakeElement).click();
+    const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal") as unknown as FakeElement;
+    expect(modal).toBeTruthy();
+    const select = findByTestId(modal, "ai-font-size") as unknown as FakeElement;
     expect(select).toBeTruthy();
     // 기본 적용 상태(보통).
     expect(panel.dataset.aiFontSize).toBe("normal");
@@ -100,8 +109,10 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
       { args: { mapId: "m1", tile: 42 }, index: 3 }
     ) as unknown as FakeElement;
     expect(entry.tagName).toBe("DIV");
-    expect(entry.textContent).toContain("paint_tiles");
+    // 출하 계약: 성공 라인은 도구 id 가 아니라 사람이 읽는 요약 한 줄이다(활동 내레이션,
+    // aiChatRenderers.formatToolActivityLine — 요약이 비었을 때만 도구 이름으로 떨어진다).
     expect(entry.textContent).toContain("타일 5칸 칠함");
+    expect(entry.textContent).not.toContain("mapId");
     expect(findByTestId(entry, "ai-tool-detail-3")).toBeNull();
     const legacy = renderToolActivityEntry("paint_tiles", { ok: true, summary: "타일 5칸 칠함" }) as unknown as FakeElement;
     expect(legacy.tagName).toBe("DIV");
@@ -143,8 +154,9 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
     const panel = renderPanel();
     const activity = findByTestId(panel, "ai-tool-activity");
     expect(activity).toBeTruthy();
-    expect(activity?.textContent).toContain("paint_tiles");
+    // 복원 경로도 실시간 경로와 같은 렌더러를 쓴다 — 요약 한 줄, 도구 id·JSON 없음.
     expect(activity?.textContent).toContain("타일 3칸");
+    expect(activity?.textContent).not.toContain("map_a");
     expect(findByTestId(panel, "ai-tool-detail-1")).toBeNull();
   });
 });
@@ -190,7 +202,8 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
     // 조회성 툴(get_*)은 목록 줄 없이 카운트만 — 활동 그룹은 남는다.
     const activity = findByTestId(panel, "ai-tool-activity");
     expect(activity).toBeTruthy();
-    expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toMatch(/도구/);
+    // 조회성 툴(get_*)만 담긴 그룹의 토글 문구는 "조회 N" 이다(쓰기 그룹은 "작업 N").
+    expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toMatch(/조회\s*2/);
     expect(findByTestId(panel, "ai-tool-detail-1")).toBeNull();
   });
 });
@@ -227,17 +240,31 @@ describe("실시간 고스트 프리뷰 연결", () => {
     );
 
     const panel = renderPanel();
+    // 턴 **도중** 발행된 초안 고스트를 구독으로 잡는다. 턴이 정상 종료되면 적용 경로가
+    // 고스트를 걷어내므로(aiProposalCard.ts:277 clearAgentGhostPreview → applyProposedProject)
+    // 턴이 끝난 뒤의 상태로는 이 배선을 관측할 수 없다.
+    const observed: { mapId: string; toolName: string; bounds: unknown }[] = [];
+    const unsubscribe = subscribeAgentGhostPreview((state) => {
+      for (const preview of state.previews) {
+        observed.push({ mapId: preview.mapId, toolName: preview.toolName, bounds: preview.bounds });
+      }
+    });
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "새 맵 만들어줘";
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
     for (let i = 0; i < 16; i += 1) await flushAsync();
+    unsubscribe();
 
-    expect(getAgentGhostPreviewState().previews).toEqual([
-      expect.objectContaining({
-        mapId: "map_live_ghost",
-        toolName: "live_project_diff",
-        bounds: { x: 0, y: 0, width: 6, height: 5 },
-      }),
-    ]);
+    expect(observed).toEqual(
+      expect.arrayContaining([
+        {
+          mapId: "map_live_ghost",
+          toolName: "live_project_diff",
+          bounds: { x: 0, y: 0, width: 6, height: 5 },
+        },
+      ])
+    );
+    // 적용이 끝난 뒤에는 초안 고스트가 남지 않는다(실제 변경이 됐으므로).
+    expect(getAgentGhostPreviewState().previews).toEqual([]);
   });
 });

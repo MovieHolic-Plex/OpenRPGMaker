@@ -91,6 +91,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  // 패널을 살려두면 진행 중 턴이 restoreDom 이후에도 죽은 DOM 에 버블을 쓰고(실측: 이 파일에서
+  // "document is not defined" unhandled rejection 4건), dispose 의 persistConversation 이 다음
+  // 테스트의 clearConversations 뒤에 대화를 되살려 내보내기 버튼 상태까지 오염시켰다.
+  teardownAiChatPanel();
+  clearConversations();
   setInlineProposalActions(null);
   restoreWindow?.();
   restoreDom?.();
@@ -370,9 +375,13 @@ describe("키 온보딩과 설정 접근성", () => {
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "테스트";
     findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
 
-    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
+    // 전송은 fetch → Response → 스트림 판독을 지나므로 마이크로태스크 flush 만으로는
+    // 오류 버블이 붙기 전에 단정이 돌았다(실측: 이 단정이 기준선에서 null 로 실패). 조건 자체를
+    // 기다린다 — 고정 sleep 이 아니라 상한이 있는 조건 대기다.
+    await vi.waitFor(() => {
+      expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
+    }, { timeout: 2_000, interval: 5 });
     // OAuth 경로의 401 문구는 Google Gemini 로그인을 안내한다 — apiKey 시절의 "인증 실패" 가 아니다.
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("Gemini");
   });

@@ -2427,6 +2427,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const sharedMenuActions: AiActionMenuActions = {
     startNewChat: () => startNewConversation("manual"),
+    openSettings: () => openAiSettings("first"),
     undoLast: () => undoLastButton.click(),
     exportAudit: () => exportButton?.click(),
     toggleDock: () => onDockToggleClick(),
@@ -2441,18 +2442,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const mapId = state.currentMapId ?? store.getCurrent().startMapId ?? null;
       void sendText(
         buildInterviewKickoff(mapId),
-        "🎓 맵 인터뷰 시작 — 현재 맵의 타일 의밌를 가르츠 주세요.",
+        "🎓 맵 인터뷰 시작 — 현재 맵의 타일 의미를 가르쳐 주세요.",
       );
     },
     learnStructure: () => {
       const selection = editorState.get().selection;
       if (!selection) {
-        toast("맵에서 배울 여역을 먼저 선택하세요.", "error");
+        toast("맵에서 배울 영역을 먼저 선택하세요.", "error");
         return;
       }
       void sendText(
         buildStructureLearnKickoff(selection.mapId, selection),
-        "📐 선택 여역 학습 — 구조밌을 배워 주세요.",
+        "📐 선택 영역 학습 — 구조물을 배워 주세요.",
       );
     },
     startDemoTeach: () => {
