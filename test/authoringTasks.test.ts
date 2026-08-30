@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { getEditorUiMode, resetEditorUiModeForTests } from "@/editor/editorUiMode";
+import { uiLabel } from "@/editor/uiCopy";
 import { resetWorkspaceForTests, setWorkspacePreset } from "@/editor/workspace/workspaceStore";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -126,6 +127,9 @@ describe("genre-neutral authoring task launcher", () => {
     expect(data?.getAttribute("title")).toContain("현재 레이아웃 프리셋");
     expect(map?.getAttribute("aria-current")).toBeNull();
     expect(test?.getAttribute("aria-current")).toBeNull();
+    expect(test?.getAttribute("aria-label")).not.toContain("작업 열기");
+    expect(test?.getAttribute("aria-label")).toBe(test?.getAttribute("title"));
+    expect(test?.getAttribute("aria-label")).toContain(uiLabel("testPlay"));
     for (const button of [data, map, test]) expect(button?.getAttribute("aria-pressed")).toBeNull();
   });
 

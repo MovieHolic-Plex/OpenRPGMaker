@@ -91,7 +91,7 @@ function renderAuthoringTaskLauncher(): HTMLElement {
         attrs: {
           type: "button",
           title: `${task.hint}${currentPresetCopy}`,
-          "aria-label": `${task.label} 작업 열기${currentPresetCopy}`,
+          "aria-label": `${task.hint}${currentPresetCopy}`,
           ...(active ? { "aria-current": "true" } : {}),
         },
         dataset: { testid: `authoring-task-${task.id}` },
