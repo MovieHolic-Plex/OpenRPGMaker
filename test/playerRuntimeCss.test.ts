@@ -35,6 +35,9 @@ const REQUIRED_RUNTIME_SELECTORS = [
   ".status-menu-footer",
   ".picture-layer",
   ".runtime-screen-effect",
+  // 누락 리소스 알림. 이 규칙은 editor/core.part-1.css 에만 있어서 출하 플레이어에서는
+  // 스타일 없는 static 부록이 되어 무대 아랫에 깔렸고 overflow 에 잔렸다.
+  ".runtime-missing-resource",
   ".zone-feedback",
 ] as const;
 const RUNTIME_IMPORTS = [

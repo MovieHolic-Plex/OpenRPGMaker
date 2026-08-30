@@ -432,14 +432,5 @@ body[data-editor-tool="pan"] .editor-layout [data-testid="edit-canvas"]:active {
      상자는 1×1 로 남아 헤드리스 가시성 판정과 textContent 읽기에 영향이 없다. */
   content-visibility: hidden;
 }
-.runtime-missing-resource {
-  position: absolute;
-  left: var(--space-3);
-  top: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--status-error);
-  background: var(--surface-panel);
-  color: var(--status-error);
-  font-size: 13px;
-  z-index: 30;
-}
+/* `.runtime-missing-resource` 는 runtime/playSurface.css 로 옮겼다 — 이 시트는 편집기만
+   읽으므로 규칙이 여기 있는 동안 출하되는 내보내기 플레이어에는 스타일이 없었다. */
