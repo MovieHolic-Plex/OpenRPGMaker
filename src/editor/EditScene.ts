@@ -116,6 +116,12 @@ type RightRegionGesture = {
 };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
+/** 캔버스·조수 가림 사각형을 재는 주기. 매 프레임 DOM 을 재면 레이아웃이 흔린다. */
+const OVERLAY_GEOMETRY_TTL_MS = 250;
+
+function overlayGeometryNowMs(): number {
+  return typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
+}
 const TOOLTIP_ANCHORS: readonly TooltipAnchor[] = ["top-right", "top-left", "bottom-right", "bottom-left"];
 
 type TileRect = {
@@ -188,6 +194,19 @@ export class EditScene extends PhaserRuntime.Scene {
    * 쌓으면 제스처가 끝나는 순간 카메라가 여러 번 튄다 — 마지막 요청만 사용자에게 의미가 있다.
    */
   private deferredCameraFocus: CameraFocusTarget | null = null;
+  /**
+   * 게시된 뷰포트 스냅샷의 기하 서명 — 이것이 바뀔 만큼만 다시 게시한다.
+   *
+   * 게시 지점을 열거하는 방식은 이미 실패했다(실집 2026-08-30): 부팅 직후 마지막 게시가 카메라가
+   * 맵 중심으로 정착하기 **전**에 일어나 100×100 맵에서 사용자는 타일 (50,50) 을 보는데 스냅샷은
+   * (17,12) 을 가리켰다 — 33칸 오차. 유리 도크를 펼치면 가림 범위가 바니는데(첫 AI 턴이 자동으로
+   * 펼친다) 그 또한 게시를 부를 지점이 없었다. 그래서 이젠 "변하면 게시한다" 로 바꿈다.
+   */
+  private lastPublishedViewportSignature = "";
+  /** 캔버스·오버레이 rect 캐시 — 프레임마다 getBoundingClientRect 를 부르면 레이아웃이 흔린다. */
+  private cachedCanvasRect: CanvasRect | null = null;
+  private cachedUnoccludedRect: CanvasRect | null = null;
+  private overlayGeometryReadAtMs = 0;
   /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
   private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
   /** 맵 캔버스에서 우클릭이 시작되면 true. 버튼을 놓는 순간 contextmenu 가 문서 타겟으로 뜨는 경우 대비. */
@@ -403,7 +422,41 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleResize(): void {
+    // 다음 기하 읽기를 강제한다 — 캔버스 사각형이 바뀌었으므로 캐시는 낡았다.
+    this.overlayGeometryReadAtMs = 0;
     this.redraw();
+  }
+
+  /**
+   * Phaser 가 매 프레임 부른다. 카메라 scroll/zoom 은 어느 경로로든 바뀔 수 있으밀로(부팅 정착,
+   * 모드 전환, 휠 줌, 키버드 팬, cameraStability 재정렬) 게시 지점을 열거하지 않고 서명이
+   * 바뀔 때 게시한다. 무변화 프레임은 수 번의 수치 복사·문자열 비교만 하고 끝난다.
+   */
+  update(): void {
+    this.syncPublishedViewport();
+  }
+
+  private syncPublishedViewport(): void {
+    const signature = this.viewportSignature();
+    if (signature === this.lastPublishedViewportSignature) return;
+    this.publishMapViewport();
+  }
+
+  private viewportSignature(): string {
+    const area = this.cameraVisibleArea({ cachedGeometry: true });
+    if (!area) return `none|${this.mapId() ?? ""}`;
+    return [
+      this.mapId() ?? "",
+      Math.round(area.worldView.x),
+      Math.round(area.worldView.y),
+      Math.round(area.worldView.width),
+      Math.round(area.worldView.height),
+      Math.round(area.unoccluded.x - area.canvas.x),
+      Math.round(area.unoccluded.y - area.canvas.y),
+      Math.round(area.unoccluded.width),
+      Math.round(area.unoccluded.height),
+      area.zoom,
+    ].join("|");
   }
 
   private redrawForStoreChange(change: ProjectChangeDescriptor): void {
@@ -1359,6 +1412,7 @@ export class EditScene extends PhaserRuntime.Scene {
       },
     );
     setEditorMapViewport(snapshot);
+    this.lastPublishedViewportSignature = this.viewportSignature();
   }
 
   private cameraViewKey(mapId: MapId): string {
@@ -1601,8 +1655,11 @@ export class EditScene extends PhaserRuntime.Scene {
    * scrollX/Y 는 3.60+ 줌 규약 때문에 화면 왼쪽 위와 직접 대응하지 않으므로 렌더가 쓰는 worldView 를 쓴다.
    * 캔버스 사각형을 못 재는 환경(단위 테스트: DOM 없음)에서는 "가림 없음 + 캔버스 = worldView×zoom" 으로
    * 떨어져 동작이 정의된 상태를 유지한다.
+   *
+   * `cachedGeometry` 는 **매 프레임 서명 검사 전용**이다. 이벤트 경로(팬 목표·가시 판정·e2e 훅)는 항상
+   * 새로 잰다 — 그쪽까지 캐시를 쓰면 조수 카드가 방금 펼쳐진 상황에서 다음 팬이 낡은 가림을 쓴다.
    */
-  private cameraVisibleArea(): {
+  private cameraVisibleArea(options?: { readonly cachedGeometry?: boolean }): {
     readonly canvas: CanvasRect;
     readonly unoccluded: CanvasRect;
     readonly worldView: CanvasRect;
@@ -1613,10 +1670,35 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!camera || !view || view.width <= 0 || view.height <= 0) return null;
     const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
     const worldView: CanvasRect = { x: view.x, y: view.y, width: view.width, height: view.height };
-    const canvas = this.canvasClientRect()
+    const geometry = options?.cachedGeometry === true
+      ? this.cachedOverlayGeometry(worldView, zoom)
+      : this.freshOverlayGeometry(worldView, zoom);
+    return { canvas: geometry.canvas, unoccluded: geometry.unoccluded, worldView, zoom };
+  }
+
+  private freshOverlayGeometry(worldView: CanvasRect, zoom: number): { readonly canvas: CanvasRect; readonly unoccluded: CanvasRect } {
+    const measured = this.canvasClientRect();
+    this.cachedCanvasRect = measured;
+    this.cachedUnoccludedRect = measured ? unoccludedCanvasRect(measured, this.assistantOverlayRects(measured)) : null;
+    this.overlayGeometryReadAtMs = overlayGeometryNowMs();
+    return this.geometryOrFallback(worldView, zoom);
+  }
+
+  /**
+   * 캔버스·가림 사각형을 250ms 가진다. 매 프레임 getBoundingClientRect 를 부르면 채팅이 스트림 되는
+   * 동안 레이아웃을 계속 돌리게 된다. 도크를 접거나 펴는 것은 사람 속도의 사건이니 4회/초로 충분하다.
+   */
+  private cachedOverlayGeometry(worldView: CanvasRect, zoom: number): { readonly canvas: CanvasRect; readonly unoccluded: CanvasRect } {
+    if (this.cachedCanvasRect === null || overlayGeometryNowMs() - this.overlayGeometryReadAtMs > OVERLAY_GEOMETRY_TTL_MS) {
+      return this.freshOverlayGeometry(worldView, zoom);
+    }
+    return this.geometryOrFallback(worldView, zoom);
+  }
+
+  private geometryOrFallback(worldView: CanvasRect, zoom: number): { readonly canvas: CanvasRect; readonly unoccluded: CanvasRect } {
+    const canvas = this.cachedCanvasRect
       ?? { x: 0, y: 0, width: worldView.width * zoom, height: worldView.height * zoom };
-    const unoccluded = unoccludedCanvasRect(canvas, this.assistantOverlayRects(canvas));
-    return { canvas, unoccluded, worldView, zoom };
+    return { canvas, unoccluded: this.cachedUnoccludedRect ?? canvas };
   }
 
   private canvasClientRect(): CanvasRect | null {
