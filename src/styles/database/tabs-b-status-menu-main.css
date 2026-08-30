@@ -273,38 +273,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* B안: 작업 영역이 넓어져 이름 + 효과 + 개수가 한 행에 들어간다.
-   설명은 이름과 값 사이에 오른쪽 정렬로 붙이고, 넘치면 말줄임(푸터가 전문을 보여준다). */
+/* B안: 작업 영역이 넓어져 이름 + 개수가 한 행에 들어간다.
+   설명은 행에 그리지 않는다 — 푸터(status-menu-message)가 선택한 행의 전문을 보여주고,
+   행 안에 사본을 두면 높이가 두 배가 되어 목록 용량이 반으로 준다(실측: 7개 중 2개만 보였다). */
 .status-menu-detail-row-compact {
   gap: 6px;
-  grid-template-columns: max-content minmax(0, 1fr) max-content;
-}
-/* DOM 순서는 label → value → description 이라, 설명에 grid-column:2 만 주면 자동배치가
-   뒤로 못 가고 2행으로 밀린다(실측: 모든 행이 2줄). 세 칸 모두 1행으로 못 박는다. */
-.status-menu-detail-row-compact .status-menu-detail-label {
-  grid-column: 1;
-  grid-row: 1;
-}
-.status-menu-detail-row-compact .status-menu-detail-description {
-  color: #cfe2ff;
-  display: block;
-  grid-column: 2;
-  grid-row: 1;
-  /* justify-self:end 는 폭을 max-content 로 만들어 열을 넘고 왼쪽(라벨 위)으로 삐져나왔다.
-     stretch 로 두어 열 폭에 가두고, 정렬은 text-align 이 맡는다(실측: 이름과 설명이 겹침). */
-  justify-self: stretch;
-  min-width: 0;
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.status-menu-detail-row-compact .status-menu-detail-value {
-  grid-column: 3;
-  grid-row: 1;
-}
-/* 설명이 없는 행(그룹 목록 등)은 2칸 그대로. */
-.status-menu-detail-row-compact:not(:has(.status-menu-detail-description)) {
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
 }
 .status-menu-detail-row.has-description {

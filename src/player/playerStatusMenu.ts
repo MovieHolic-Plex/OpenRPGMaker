@@ -121,7 +121,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     // 설명을 푸터에 띄우면 레일 선택(예: 시스템)과 어긋난 문구("…슬롯에 저장합니다")가 남는다.
     renderFooter(
       snapshot,
-      options.message ?? (mode === "function" ? selectedEntryDescription(detail, options.selectedDetailActionIndex) : undefined)
+      options.message ?? (mode === "function"
+        ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
+        : undefined)
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -414,6 +416,13 @@ function selectedEntryDescription(detail: StatusMenuDetail, selectedActionIndex:
     actionIndex += 1;
   }
   return undefined;
+}
+
+/** 조작 가능한 목록은 힌트 줄을 패널에 그리지 않으므로(renderStatusMenuDetailPanel) 푸터가 받아 쓴다.
+    장비 슬롯처럼 행별 설명이 없는 화면에서는 이게 유일한 안내문이다. */
+function interactiveHint(detail: StatusMenuDetail): string | undefined {
+  if (detail.entries.length === 0) return undefined;
+  return detail.entries.some((entry) => Boolean(entry.onActivate)) ? detail.hint : undefined;
 }
 
 function renderFooter(
