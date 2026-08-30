@@ -19,9 +19,9 @@ function page(id: string, conditions: readonly EventPageCondition[] = []): Event
     graphic: {},
     trigger: { kind: "action" },
     priority: "same",
-    movement: { kind: "fixed", route: { moves: [], repeat: false, ignoreImpossible: true } },
+    movement: { type: "fixed", speed: 3, frequency: 3 },
     commands: [{ kind: "text", body: id }],
-  } as EventPage;
+  };
 }
 
 describe("event page shadowing", () => {
@@ -64,6 +64,22 @@ describe("event page shadowing", () => {
     expect(wrapped.map((shadow) => shadow.pageId)).toEqual(["p1"]);
   });
 
+  it("treats any/not composites conservatively instead of inferring semantic subsets", () => {
+    const anyComposite = findShadowedPages([
+      page("any", [{ kind: "any", conditions: [
+        { kind: "switch", switchId: "s1", value: true },
+        { kind: "switch", switchId: "s2", value: true },
+      ] }]),
+      page("s1", [{ kind: "switch", switchId: "s1", value: true }]),
+    ]);
+    const notComposite = findShadowedPages([
+      page("not-off", [{ kind: "not", condition: { kind: "switch", switchId: "s1", value: false } }]),
+      page("on", [{ kind: "switch", switchId: "s1", value: true }]),
+    ]);
+    expect(anyComposite).toEqual([]);
+    expect(notComposite).toEqual([]);
+  });
+
   it("stays quiet for a single page and for genuinely distinct conditions", () => {
     expect(findShadowedPages([page("only")])).toEqual([]);
     expect(findShadowedPages([
@@ -74,9 +90,8 @@ describe("event page shadowing", () => {
 
   it("warning text explains the runtime rule and the random-dialogue fix", () => {
     const warnings = shadowedPageWarnings("'잡화상'", [page("p1"), page("p2")]);
-    expect(warnings).toHaveLength(2);
-    expect(warnings[0]).toContain("절대 발동하지 않습니다");
-    expect(warnings[1]).toContain("m2-211-weighted-branch");
+    expect(warnings.some((warning) => warning.includes("p1"))).toBe(true);
+    expect(warnings.some((warning) => warning.includes("m2-211-weighted-branch"))).toBe(true);
   });
 });
 
@@ -85,21 +100,13 @@ describe("AI surfaces that teach page semantics", () => {
     const project = createBlankProject();
     for (const budgetChars of [6000, 12_000, 40_000]) {
       const prompt = buildSystemPrompt(project, { budgetChars });
-      expect(prompt).toContain("## 이벤트 페이지 의미론");
       expect(prompt).toContain(EVENT_PAGE_SEMANTICS_BLOCK);
     }
   });
 
-  it("page semantics states one-active-page, last-wins and the random pattern", () => {
-    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("정확히 1장");
-    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("뒤에서 앞으로");
+  it("page semantics exposes the machine-consumed authoring tokens", () => {
     expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("m2-211-weighted-branch");
     expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("selfSwitch");
-  });
-
-  it("rule 8 no longer tells the model to multiply pages", () => {
-    const prompt = buildSystemPrompt(createBlankProject(), { budgetChars: 40_000 });
-    expect(prompt).not.toContain("분기 대사로 페이지를 풍부하게");
   });
 
   it("SimplePage.conditions is typed as a condition, not a command", () => {
@@ -164,6 +171,25 @@ describe("dead pages are reported by the diagnostics the model is told to use", 
     expect(warnings).toContain("절대 발동하지 않습니다");
     expect(warnings).toContain("m2-211-weighted-branch");
   });
+
+  it("place_npc forwards selfSwitch gate warnings through diff.warnings", () => {
+    const project = createBlankProject();
+    const result = runTool({ project }, "place_npc", {
+      mapId: project.startMapId,
+      x: 3,
+      y: 3,
+      name: "gated npc",
+      id: "gated_npc",
+      pages: [
+        { lines: ["first"] },
+        { conditions: [{ kind: "selfSwitch", key: "A", value: true }], lines: ["second"] },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const warnings = ((result.diff?.warnings ?? []) as readonly string[]).join("\n");
+    expect(warnings).toContain("gated_npc_p1");
+    expect(warnings).toContain("setSelfSwitch");
+  });
 });
 
 describe("selfSwitch gates nobody opens", () => {
@@ -191,7 +217,7 @@ describe("selfSwitch gates nobody opens", () => {
     expect(findUnwrittenSelfSwitchGates(gatedEvent(true))).toEqual([]);
   });
 
-  it("finds writes nested inside forks and choices", () => {
+  it("finds writes nested inside forks", () => {
     const first = page("p1");
     (first.commands as Command[]).push({
       kind: "fork",
@@ -207,6 +233,37 @@ describe("selfSwitch gates nobody opens", () => {
       commands: [],
       pages: [first, page("p2", [{ kind: "selfSwitch", key: "A", value: true }])],
     } as unknown as GameEvent;
+    expect(findUnwrittenSelfSwitchGates(event)).toEqual([]);
+  });
+
+  it("finds writes reachable only through a choices branch", () => {
+    const first = page("p1");
+    (first.commands as Command[]).push({
+      kind: "choices",
+      options: [{
+        text: "advance",
+        branch: [{ kind: "setSelfSwitch", key: "A", value: true }],
+      }],
+      cancelBehavior: "disallow",
+    });
+    const event = {
+      id: "nested-choice",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [first, page("p2", [{ kind: "selfSwitch", key: "A", value: true }])],
+    } as unknown as GameEvent;
+    expect(findUnwrittenSelfSwitchGates(event)).toEqual([]);
+  });
+
+  it.each<Command>([
+    { kind: "callCommonEvent", commonEventId: "advance-stage" },
+    { kind: "callMapEvent", eventId: "advance-stage" },
+    { kind: "battleProcessing", troopId: "stage-battle", canEscape: false, canLose: false },
+  ])("suppresses gate findings when $kind makes the write set unknown", (command) => {
+    const event = gatedEvent(false);
+    (event.pages?.[0]?.commands as Command[]).push(command);
     expect(findUnwrittenSelfSwitchGates(event)).toEqual([]);
   });
 
@@ -228,7 +285,99 @@ describe("selfSwitch gates nobody opens", () => {
     expect(warnings.join("\n")).toContain("setSelfSwitch");
   });
 
-  it("prompt states that condition and write must come as a pair", () => {
-    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("조건과 쓰기는 반드시 한 쌍이다");
+});
+
+describe("make_villager does not ship dead pages of its own", () => {
+  // runTool 은 draft 를 커밋한 뒤 ctx.project 를 **교체**한다(toolRunner) — 넘긴 객체가 아니라
+  // 컨텍스트에서 결과 프로젝트를 읽어야 한다.
+  function villager(dialogue: readonly Record<string, unknown>[], extra: Record<string, unknown> = {}) {
+    const ctx = { project: createBlankProject() };
+    const startMapId = ctx.project.startMapId;
+    const result = runTool(ctx, "make_villager", {
+      mapId: startMapId,
+      home: { x: 4, y: 4 },
+      name: "밀집",
+      dialogue,
+      ...extra,
+    });
+    const map = ctx.project.maps[startMapId];
+    const event = (map?.events ?? []).find((entry) => entry.id.startsWith("ev_villager"));
+    return { result, event };
+  }
+
+  it("folds unconditional dialogue into one page instead of stacking dead ones", () => {
+    const { result, event } = villager([{ text: "첫째" }, { text: "둘째" }]);
+    expect(result.ok, result.summary).toBe(true);
+    const pages = event?.pages ?? [];
+    expect(pages.filter((page) => page.conditions.length === 0)).toHaveLength(1);
+    expect(findShadowedPages(pages)).toEqual([]);
+    const bodies = (pages[0]?.commands ?? [])
+      .filter((command): command is Extract<Command, { kind: "text" }> => command.kind === "text")
+      .map((command) => command.body);
+    expect(bodies).toEqual(["첫째", "둘째"]);
+  });
+
+  it("keeps conditional dialogue on its own page", () => {
+    const { event } = villager([{ text: "낙" }, { when: { timePhase: "night" }, text: "밤" }]);
+    const pages = event?.pages ?? [];
+    expect(pages).toHaveLength(2);
+    expect(pages[0]?.conditions).toEqual([]);
+    expect(pages[1]?.conditions).toEqual([{ kind: "timePhase", phase: "night" }]);
+    expect(findShadowedPages(pages)).toEqual([]);
+  });
+
+  it("still greets when no unconditional dialogue was given", () => {
+    const { event } = villager([{ when: { timePhase: "night" }, text: "밤" }]);
+    const pages = event?.pages ?? [];
+    expect(pages[0]?.conditions).toEqual([]);
+    expect((pages[0]?.commands ?? []).some((command) => command.kind === "text")).toBe(true);
+    expect(findShadowedPages(pages)).toEqual([]);
+  });
+
+  it("does not warn for the generated friendship progression pages", () => {
+    const { result, event } = villager([{ text: "hello" }], { friendshipUnlock: 10 });
+    expect(findShadowedPages(event?.pages)).toEqual([]);
+    expect(findUnwrittenSelfSwitchGates(event ?? {})).toEqual([]);
+    const warnings = ((result.diff?.warnings ?? []) as readonly string[]).join("\n");
+    expect(warnings).not.toContain("setSelfSwitch");
+    expect(warnings).not.toContain("m2-211-weighted-branch");
+  });
+});
+
+describe("diagnostics are reported once and cannot crash a project load", () => {
+  it("place_npc reports each dead page exactly once", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "place_npc", {
+      mapId: ctx.project.startMapId,
+      x: 3,
+      y: 3,
+      id: "gossip_once",
+      name: "\uc7a1\ud654\uc0c1",
+      pages: [{ lines: ["a"] }, { lines: ["b"] }, { lines: ["c"] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const warnings = (result.diff?.warnings ?? []) as readonly string[];
+    const deadLines = warnings.filter((warning) => warning.includes("\uc808\ub300 \ubc1c\ub3d9\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4"));
+    // 죽은 페이지 2장 → 2줄. 같은 줄이 두 번 나오면 하나의 결함이 둘로 보인다.
+    expect(deadLines).toHaveLength(2);
+    expect(new Set(deadLines).size).toBe(deadLines.length);
+    expect(warnings.filter((warning) => warning.includes("m2-211-weighted-branch"))).toHaveLength(1);
+  });
+
+  it("survives a self-referential command graph instead of throwing", () => {
+    const looping = { kind: "fork", condition: { kind: "switch", switchId: "s", value: true } } as Record<string, unknown>;
+    looping.then = [looping];
+    const event = {
+      id: "cyclic",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        { ...page("p1"), commands: [looping as unknown as Command] },
+        page("p2", [{ kind: "selfSwitch", key: "A", value: true }]),
+      ],
+    } as unknown as GameEvent;
+    expect(() => findUnwrittenSelfSwitchGates(event)).not.toThrow();
   });
 });

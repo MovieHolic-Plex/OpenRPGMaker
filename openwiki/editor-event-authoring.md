@@ -49,17 +49,31 @@
 `fields.table` 가중치로 결과 변수를 뽑는 것이고, 그 변수를 `fork` 로 갈라 대사를 나눈다 —
 **전부 한 페이지 안에서**. 이 패턴이 프롬프트 블록과 경고 힌트 양쪽에 박혀 있다.
 
+### 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
+
+`gate()`(`src/editor/content/skyStairMaps.ts`)는 규칙을 알고 주석까지 달아 뒀다 —
+"막힌 쪽을 **먼저**, 열린 쪽을 나중에 — 마지막 매칭이 이기므로 순서를 뒤집으면 영구 차단이다".
+그런데 200줄 아래 `autoEvent()` 는 정반대로 걸쇠 페이지(`selfSwitch A`)를 먼저, 무조건 실행
+페이지를 나중에 놓았다. 마지막 매칭이 이기므로 **무조건 페이지가 영원히 이기고 걸쇠가 걸리지
+않는다** — 자동 이벤트가 맵에 들어올 때마다 커맨드를 다시 실행했다. 새 `event-page-shadowed`
+린트가 4건으로 지목해서 발견했고, 순서를 뒤집어 고쳤다. 출하 기본 프로젝트 30종 전수 감사
+결과 이제 죽은 페이지 0건이다(수정 전 4건).
+
 ### 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
 
 라이브 검증에서 나온 잔여 결함이다. 프롬프트를 고친 뒤 모델은 "말 걸 때마다 다음 대사"를
 페이지 1(무조건)/2(`selfSwitch A`)/3(`selfSwitch B`)로 **옳게** 나눴는데 `setSelfSwitch` 를
 하나도 넣지 않았다 — 조건은 맞고 가려짐도 없는데 2·3 페이지가 영원히 잠겼다. 결과가 같으므로
 같이 잡는다: `findUnwrittenSelfSwitchGates` 는 페이지 조건이 요구하는 `selfSwitch`(value:true) 를
-그 이벤트의 **어느 페이지 커맨드에서도**(fork·choices·loop 안쪽까지 내려가) 켜지 않으면 지목한다.
-전역 `switch` 는 기존 `story-flag:read-without-write` 가 이미 보므로 중복하지 않는다.
+알려진 커맨드 트리의 어디에서도 켜지 않으면 지목한다. 이 순회는 커맨드 union의 중첩 shape에
+묶이지 않고 모든 배열·객체를 내려가므로 `choices.options[].branch`, `cancelBranch`, `fork`, `loop`,
+전투·상점 등의 분기까지 포함한다. 단 `callCommonEvent`, `callMapEvent`, `battleProcessing` 은 호출한
+이벤트의 self switch를 외부 커맨드가 쓸 수 있어 write set을 알 수 없으므로, false positive를 피하려고
+그 이벤트의 gate 판정을 생략한다. 전역 `switch` 는 기존 `story-flag:read-without-write` 가 이미 보므로
+중복하지 않는다.
 린트 코드는 `event-selfswitch-gate-unwritten`, explain_event 는 `unwrittenSelfSwitchKeys`.
 
-계약 테스트: `test/aiEventPageSemantics.test.ts`(21건), 예산 고정은
+계약 테스트: `test/aiEventPageSemantics.test.ts`(29건), 예산 고정은
 `test/aiToolCapabilityIndex.test.ts`.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.

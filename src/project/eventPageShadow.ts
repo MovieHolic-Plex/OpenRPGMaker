@@ -113,26 +113,39 @@ export interface UnwrittenSelfSwitchGate {
   readonly keys: readonly string[];
 }
 
-function isCommandArray(value: unknown): value is readonly Command[] {
-  return Array.isArray(value) && value.every((entry) => entry !== null && typeof entry === "object" && "kind" in entry);
-}
+const EXTERNAL_CONTROL_TRANSFER_KINDS: ReadonlySet<Command["kind"]> = new Set([
+  "callCommonEvent",
+  "callMapEvent",
+  "battleProcessing",
+]);
 
-function collectSelfSwitchWrites(commands: readonly Command[], into: Set<string>): void {
-  for (const command of commands) {
-    if (command.kind === "setSelfSwitch") into.add(command.key);
-    // 분기·루프·선택지 안쪽에 쓰기가 숨어 있는 것이 정상이므로 커맨드 트리를 전부 내려간다.
-    for (const value of Object.values(command as Record<string, unknown>)) {
-      if (isCommandArray(value)) {
-        collectSelfSwitchWrites(value, into);
-        continue;
-      }
-      if (value !== null && typeof value === "object") {
-        for (const nested of Object.values(value as Record<string, unknown>)) {
-          if (isCommandArray(nested)) collectSelfSwitchWrites(nested, into);
-        }
-      }
+// 진짜 커맨드 트리는 수십 단계를 넘지 않는다. 상한을 두는 이유는 깊이가 아니라 **순환**이다 —
+// 이 판정기는 projectLint 를 타고 프로젝트 로드마다 돌므로, 자기 자신을 참조하는 객체 하나에
+// RangeError 로 죽으면 경고 하나를 놓치는 것이 아니라 로드가 통째로 실패한다.
+const MAX_COMMAND_WALK_DEPTH = 64;
+
+/** Walk every nested value because command arrays can appear below arrays of branch records. */
+function collectSelfSwitchWrites(value: unknown, into: Set<string>, depth = 0): boolean {
+  if (depth > MAX_COMMAND_WALK_DEPTH) return true;
+  if (Array.isArray(value)) {
+    let hasExternalControlTransfer = false;
+    for (const entry of value) {
+      hasExternalControlTransfer = collectSelfSwitchWrites(entry, into, depth + 1) || hasExternalControlTransfer;
     }
+    return hasExternalControlTransfer;
   }
+  if (value === null || typeof value !== "object") return false;
+
+  const record = value as Record<string, unknown>;
+  let hasExternalControlTransfer = false;
+  if (record.kind === "setSelfSwitch" && typeof record.key === "string") into.add(record.key);
+  if (typeof record.kind === "string" && EXTERNAL_CONTROL_TRANSFER_KINDS.has(record.kind as Command["kind"])) {
+    hasExternalControlTransfer = true;
+  }
+  for (const nested of Object.values(record)) {
+    hasExternalControlTransfer = collectSelfSwitchWrites(nested, into, depth + 1) || hasExternalControlTransfer;
+  }
+  return hasExternalControlTransfer;
 }
 
 function selfSwitchKeysIn(conditions: readonly EventPageCondition[]): readonly string[] {
@@ -143,13 +156,13 @@ function selfSwitchKeysIn(conditions: readonly EventPageCondition[]): readonly s
 }
 
 /**
- * selfSwitch 로 잠긴 페이지인데 그 이벤트 안에서 그것을 **켜는 커맨드가 없다** = 영원히 잠김.
+ * A selfSwitch-gated page is permanently locked only when the complete reachable command graph is known
+ * and contains no write that turns the key on.
  *
- * 페이지 가려짐의 거울상이고 결과가 같다(저작한 페이지가 조용히 죽는다). 실측으로 나온 실패다:
- * 모델이 "말 걸 때마다 다음 대사" 를 페이지 1(무조건)/2(selfSwitch A)/3(selfSwitch B) 로 옳게
- * 나눴는데 setSelfSwitch 를 하나도 넣지 않아 2·3 이 죽었다. selfSwitch 는 런타임에서
- * selfSwitches[event.id] 로 이벤트 안에서만 의미가 있으므로 이벤트 단위로 판정할 수 있다.
- * 전역 switch 는 이미 story-flag:read-without-write 린트가 본다.
+ * Native page commands write the current event's self switches, but called common/map events keep that
+ * current event id, and troop battle events can write the battle owner's self switches. Therefore any
+ * external control transfer makes the write set unknown and suppresses this conservative judgement.
+ * Global switches are covered separately by story-flag:read-without-write.
  */
 export function findUnwrittenSelfSwitchGates(event: {
   readonly pages?: readonly EventPage[];
@@ -158,8 +171,11 @@ export function findUnwrittenSelfSwitchGates(event: {
   const pages = event.pages ?? [];
   if (pages.length === 0) return [];
   const written = new Set<string>();
-  collectSelfSwitchWrites(event.commands ?? [], written);
-  for (const page of pages) collectSelfSwitchWrites(page.commands ?? [], written);
+  let hasExternalControlTransfer = collectSelfSwitchWrites(event.commands ?? [], written);
+  for (const page of pages) {
+    hasExternalControlTransfer = collectSelfSwitchWrites(page.commands ?? [], written) || hasExternalControlTransfer;
+  }
+  if (hasExternalControlTransfer) return [];
   const gates: UnwrittenSelfSwitchGate[] = [];
   for (const [index, page] of pages.entries()) {
     const missing = [...new Set(selfSwitchKeysIn(page.conditions ?? []))].filter((key) => !written.has(key));
