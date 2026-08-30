@@ -203,6 +203,12 @@ export interface HouseCandidate {
 export interface BuiltHouse {
   readonly bbox: Rect;
   readonly doorAt: Point;
+  /**
+   * 문 칸(상·하) 의 정본 하위 타일. 문 이벤트가 외형을 맡으면 킷 벽 타일,
+   * 이벤트 없는 타일 문이면 116/146 이다. 길·지형·조경 패스가 덮었을 때
+   * restoreHouseDoors 가 이 값으로 되돌리고, audit 이 훼손 여부를 이 값으로 센다.
+   */
+  readonly doorTiles?: { readonly top: number; readonly bottom: number };
   readonly front: Point;
   readonly kitId: HouseKitId;
   readonly stories: 1 | 2 | 3;

@@ -122,12 +122,17 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
   let interiorData: HouseKitInteriorData | undefined;
   if (input.door && result.doorAt) {
     const { x, y } = result.doorAt;
-    map.lowerTiles[(y - 1) * map.width + x] = DOOR_TOP_TILE;
-    map.lowerTiles[y * map.width + x] = DOOR_BOTTOM_TILE;
+    // 문 외형은 Object1 문 이벤트 스프라이트가 담당한다 — 이벤트를 만드는 시공에서는
+    // 문 타일(116/146)을 깔지 않는다. 깔면 타일 문 + 이벤트 문이 겹쳐 두 겹으로 보인다.
+    const doorEventPlanned = input.interior && input.doorEvent;
+    if (!doorEventPlanned) {
+      map.lowerTiles[(y - 1) * map.width + x] = DOOR_TOP_TILE;
+      map.lowerTiles[y * map.width + x] = DOOR_BOTTOM_TILE;
+    }
     const clearanceWarning = ensureDoorFrontPassable(draft, map, { x, y });
     if (clearanceWarning) warnings.push(clearanceWarning);
     doorNote = `문 (${x},${y})`;
-    if (input.interior && input.doorEvent) {
+    if (doorEventPlanned) {
       const base = `${map.id}_${input.kitId}_${x}_${y}`;
       const interiorMapId = uniqueProjectId(draft, "map_house_interior", base);
       const doorEventId = uniqueProjectId(draft, "ev_house_door", base);

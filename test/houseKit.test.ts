@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, houseDoorFrameIndex, createHouseInteriorMap, resolveHouseInteriorScale } from "@/editor/houseInteriors";
+import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, HOUSE_DOOR_OPEN_SE, houseDoorFrameIndex, createHouseInteriorMap, resolveHouseInteriorScale } from "@/editor/houseInteriors";
+import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { VR } from "@/editor/interiorRoomPipeline";
 import { rectHouseHeight, stampFootprintHouseKit, stampRectHouseKit } from "@/editor/houseKit";
 import { INTERIOR_ROOM_TILESET_ID as INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorRoomPipeline";
@@ -253,6 +254,7 @@ describe("house kit — 창문 자동 배치", () => {
     expect(page?.graphic.sprite?.id).toBe(HOUSE_DOOR_CHARSET_TEXTURE);
     expect(page?.graphic.pattern).toBe(houseDoorFrameIndex("bright-plaster", 0));
     expect(page?.commands.map((command) => command.kind)).toEqual([
+      "playAudio",
       "setEventGraphicPattern",
       "wait",
       "setEventGraphicPattern",
@@ -261,11 +263,14 @@ describe("house kit — 창문 자동 배치", () => {
       "wait",
       "transfer",
     ]);
-    expect(page?.commands[0]).toMatchObject({ kind: "setEventGraphicPattern", eventId: "ev_house_door", pattern: houseDoorFrameIndex("bright-plaster", 0) });
-    expect(page?.commands[1]).toEqual({ kind: "wait", ms: HOUSE_DOOR_FRAME_WAIT_MS });
-    expect(page?.commands[2]).toMatchObject({ kind: "setEventGraphicPattern", pattern: houseDoorFrameIndex("bright-plaster", 1) });
-    expect(page?.commands[4]).toMatchObject({ kind: "setEventGraphicPattern", pattern: houseDoorFrameIndex("bright-plaster", 2) });
-    expect(page?.commands[6]).toMatchObject({ kind: "transfer", mapId: "map_inside", x: 10, y: 15 });
+    // 문 열림 효과음은 첫 프레임과 같은 틱에, 원샷(loop:false = SE 채널)으로 울린다.
+    expect(page?.commands[0]).toEqual({ kind: "playAudio", resourceId: HOUSE_DOOR_OPEN_SE, loop: false });
+    expect(seCatalogResourceIds()).toContain(HOUSE_DOOR_OPEN_SE);
+    expect(page?.commands[1]).toMatchObject({ kind: "setEventGraphicPattern", eventId: "ev_house_door", pattern: houseDoorFrameIndex("bright-plaster", 0) });
+    expect(page?.commands[2]).toEqual({ kind: "wait", ms: HOUSE_DOOR_FRAME_WAIT_MS });
+    expect(page?.commands[3]).toMatchObject({ kind: "setEventGraphicPattern", pattern: houseDoorFrameIndex("bright-plaster", 1) });
+    expect(page?.commands[5]).toMatchObject({ kind: "setEventGraphicPattern", pattern: houseDoorFrameIndex("bright-plaster", 2) });
+    expect(page?.commands[7]).toMatchObject({ kind: "transfer", mapId: "map_inside", x: 10, y: 15 });
   });
 });
 
@@ -287,7 +292,10 @@ describe("build_house_kit AI 툴", () => {
     expect(map.lowerTiles[3 * map.width + 7]).toBe(407); // 몸통행 우측 끝
     expect(map.upperTiles[2 * map.width + 2]).toBe(356); // NW 대각
     expect(map.upperTiles[6 * map.width + 6]).toBe(87); // 기본 창문
-    expect(map.lowerTiles[7 * map.width + 4]).toBe(146); // 자동 문 하단
+    // 문 외형은 이벤트 스프라이트가 담당한다 — 문 칸에 문 타일(116/146)을 겹쳐 깔지 않는다.
+    expect(map.lowerTiles[7 * map.width + 4]).not.toBe(146);
+    expect(map.lowerTiles[6 * map.width + 4]).not.toBe(116);
+    expect(map.lowerTiles[7 * map.width + 4]).not.toBe(TILE.EMPTY); // 벽은 남아 구멍이 아니다
     const data = result.data as { interiorMapId: string; doorEventId: string; exitEventId: string };
     expect(data.interiorMapId).toMatch(/^map_house_interior_/);
     expect(data.doorEventId).toMatch(/^ev_house_door_/);

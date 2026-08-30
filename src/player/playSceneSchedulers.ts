@@ -256,7 +256,8 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "playAudio":
       setAudioState(scene.session, step);
       playAudioCommand(step, store.getCurrent());
-      scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
+      // 인터프리터 경로와 같은 규칙 — 루프만 배너를 띄운다(원샷 SE 는 화면에 남는다).
+      if (step.loop) scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
       return true;
     case "stopAudio":
       clearAudioState(scene.session);
