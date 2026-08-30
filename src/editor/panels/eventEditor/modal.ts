@@ -18,6 +18,7 @@ import { store, type AutoSaveState } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { clearEventAiLiveDock } from "./aiAssist";
 import {
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
@@ -230,6 +231,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     customSelects.dispose();
     globalThis.clearInterval(checkpointTimer);
     clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
+    clearEventAiLiveDock();
     unsubscribeStore();
     unsubscribeEditor();
     unsubscribeAutoSave();
