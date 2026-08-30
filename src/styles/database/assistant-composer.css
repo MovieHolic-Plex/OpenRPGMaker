@@ -286,6 +286,7 @@
 .ai-preference-popover .ai-preference-list {
   max-height: none;
   overflow-y: visible;
+}
 
 /* ── 맥락 게이지: 액션 행의 28px 칩 하나 + 그 팝오버 ──
    게이지는 숫자를 담으므로 정사각형이 아니다(폭만 풀고 높이는 28px 계약을 지킨다).
