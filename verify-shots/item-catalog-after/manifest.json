@@ -96,5 +96,18 @@
     "before": 27,
     "after": 27
   },
-  "autoSaveChipText": "저장 실패"
+  "autoSaveChipText": "저장 실패",
+  "recapturedAt": "2026-08-30T07:42:58.821Z",
+  "recaptured": [
+    {
+      "name": "02-item-seed",
+      "collection": "items",
+      "recordName": "숙련의 씨앗"
+    },
+    {
+      "name": "04-equipment-helmet",
+      "collection": "equipment",
+      "recordName": "선봉대 뿔투구"
+    }
+  ]
 }
