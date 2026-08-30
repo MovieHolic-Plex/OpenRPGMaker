@@ -95,9 +95,31 @@ describe("배틀러 idle 애니메이션 — 카탈로그", () => {
         // 빈 칸은 재생 중 배틀러가 한 프레임 사라지는 것으로 보인다 — 폭 단언만으로는 안 잡힌다.
         expect(box, `${entry.resourceId}: 칸 ${index} 가 비어 있다`).not.toBeNull();
       });
-      // 모든 칸이 픽셀 단위로 같으면 애니메이션이 아니라 같은 그림 N장이다.
-      const signatures = new Set(boxes.map((box) => JSON.stringify(box)));
-      expect(signatures.size, `${entry.resourceId}: 칸들이 전부 동일하다`).toBeGreaterThan(1);
+      // 인접 칸의 **픽셀 내용**을 비교한다. 실루엣 박스만 보면 피사체가 셀을 꽉 채우는 티어
+      // (후면 배틀러)에서 숨을 쉬어도 박스가 같아서 정지 화면 8장을 통과시킨다(실측).
+      const changeRatios: number[] = [];
+      for (let index = 1; index < entry.frameCount; index += 1) {
+        let changed = 0;
+        let counted = 0;
+        for (let y = 0; y < entry.cellHeight; y += 2) {
+          for (let x = 0; x < entry.cellWidth; x += 2) {
+            const a = (y * png.width + (index - 1) * entry.cellWidth + x) * 4;
+            const b = (y * png.width + index * entry.cellWidth + x) * 4;
+            const delta =
+              Math.abs(png.data[a] - png.data[b]) +
+              Math.abs(png.data[a + 1] - png.data[b + 1]) +
+              Math.abs(png.data[a + 2] - png.data[b + 2]) +
+              Math.abs(png.data[a + 3] - png.data[b + 3]);
+            if (delta > 24) changed += 1;
+            counted += 1;
+          }
+        }
+        changeRatios.push(changed / counted);
+      }
+      expect(
+        Math.max(...changeRatios),
+        `${entry.resourceId}: 프레임 간 변화가 없다 = 같은 그림 ${entry.frameCount}장이다`
+      ).toBeGreaterThan(0.01);
     }
   });
 

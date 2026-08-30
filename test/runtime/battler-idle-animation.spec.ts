@@ -197,3 +197,127 @@ test("배틀러 idle 애니메이션이 출하 플레이어에서 프레임을 �
     await server.close();
   }
 });
+
+
+/**
+ * 뒷모습(후면) 배틀러 — 포켓몬 스킨.
+ *
+ * 이 스킨의 아군 뒷모습 상자는 `145px × 140px` 로 **가로가 세로보다 넓다**. 재생 CSS 는 가로를
+ * 상자폭에 묶고 세로를 `auto` 로 두므로, 칸 종횡비가 상자와 다르면 칸 높이가 상자를 넘어
+ * 머리·발이 잘린다. 그래서 여기서는 **렌더된 칸이 상자 안에 들어오는지**를 직접 잰다.
+ */
+test("후면 배틀러 idle 이 포켓몬 스킨에서 잘리지 않고 프레임을 넘긴다", async ({ page }) => {
+  const server = await startPlayerQaServer();
+  try {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.addInitScript(() => {
+      localStorage.clear();
+      (window as Window & { __OPENRPG_BOOT__?: object }).__OPENRPG_BOOT__ = {
+        projectUrl: "/__runtime-qa/project.json",
+        saveNamespace: "runtime-qa:battler-back-idle",
+        qaInstrumentation: true,
+      };
+    });
+    await page.route("**/__runtime-qa/project.json", async (route) => {
+      const fixturePath = fileURLToPath(new URL("../fixtures/projects/battle-v3.json", import.meta.url));
+      const project = JSON.parse(await readFile(fixturePath, "utf8")) as {
+        system?: Record<string, unknown>;
+        database?: { actors?: { battleCharacterResourceId?: string }[] };
+      };
+      // 포켓몬 스킨이 아군을 후면 구도로 세운다. 액터 시트를 생성 시트로 바꿔야 액터별
+      // 뒷모습(`generated-actor-hero-01-back`)이 잡힌다 — 픽스처 기본값 "hero" 는 슬러그가 없다.
+      project.system = { ...(project.system ?? {}), battleUiStyle: "pokemon" };
+      const actor = project.database?.actors?.[0];
+      if (actor) actor.battleCharacterResourceId = "generated-actor-hero-01-battle";
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(project) });
+    });
+
+    await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
+    await page.keyboard.press("Enter");
+    await page.waitForSelector("[data-testid='title-screen']", { state: "detached", timeout: 120_000 });
+    await page.waitForFunction(
+      () => typeof (window as ProbeWindow).__oprnDebug === "object" && (window as ProbeWindow).__oprnDebug !== null,
+      undefined,
+      { timeout: 120_000 },
+    );
+    await page.waitForFunction(() => {
+      const state = (window as ProbeWindow).__oprnDebug?.readState();
+      return state?.currentMapId === "map_battle";
+    }, undefined, { polling: "raf", timeout: 30_000 });
+    await page.evaluate(() => (window as ProbeWindow).__oprnDebug?.setSeed(7));
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      await page.evaluate(() => {
+        const w = window as ProbeWindow;
+        w.__oprnInput?.face("right");
+        w.__oprnInput?.action();
+      });
+      try {
+        await page.waitForSelector("[data-testid='battle-scene']", { state: "visible", timeout: 1_500 });
+        break;
+      } catch {
+        /* 액션 엣지 재시도 */
+      }
+    }
+    await page.waitForSelector("[data-testid='actor-command-attack']", { state: "visible", timeout: 120_000 });
+
+    const read = () =>
+      page.evaluate(() => {
+        const node = document.querySelector<HTMLImageElement>(".battle-skin-actor-image[data-battler-anim]");
+        if (!node) return null;
+        const cs = getComputedStyle(node);
+        const rect = node.getBoundingClientRect();
+        return {
+          resourceId: node.dataset.battlerAnim ?? null,
+          src: node.getAttribute("src"),
+          naturalWidth: node.naturalWidth,
+          frames: Number(node.style.getPropertyValue("--battler-anim-frames")),
+          backgroundPositionX: cs.backgroundPositionX,
+          backgroundSize: cs.backgroundSize,
+          animationName: cs.animationName,
+          // 상자와 렌더된 칸(= 상자폭 ÷ 칸 종횡비)을 함께 재서 세로 잘림을 판정한다.
+          boxWidth: rect.width,
+          boxHeight: rect.height,
+        };
+      });
+
+    const head = await read();
+    expect(head, "포켓몬 스킨에서 애니메이션이 붙은 뒷모습 배틀러를 못 찾았다").not.toBeNull();
+    expect(head?.resourceId).toBe("generated-actor-hero-01-back");
+    // `<img>`·정적 `src` 계약은 이 티어에서도 같다.
+    expect(head?.src).toBe("/assets/generated/battle-skins/sprites/hero-01-back.png");
+    expect(head?.naturalWidth ?? 0).toBeGreaterThan(0);
+    expect(head?.animationName).not.toBe("none");
+    expect(head?.backgroundSize).toMatch(new RegExp(`^${(head?.frames ?? 0) * 100}%(?:\\s+auto)?$`));
+
+    // 세로 잘림 판정: 칸은 (상자폭 × 1) 폭에 종횡비를 지킨 높이로 렌더된다.
+    // 칸 높이가 상자 높이를 넘으면 머리·발이 잘린다.
+    const cellAspect = 290 / 280;
+    const renderedCellHeight = (head?.boxWidth ?? 0) / cellAspect;
+    expect(
+      renderedCellHeight,
+      `칸(${renderedCellHeight.toFixed(1)}px)이 상자(${head?.boxHeight.toFixed(1)}px)보다 높다 = 잘린다`
+    ).toBeLessThanOrEqual((head?.boxHeight ?? 0) + 1);
+
+    const observed = new Set<string>();
+    for (let i = 0; i < 16; i += 1) {
+      const sample = await read();
+      if (sample) observed.add(sample.backgroundPositionX);
+      await page.waitForTimeout(60);
+    }
+    expect(observed.size, `프레임이 넘어가지 않는다 (${[...observed].join(", ")})`).toBeGreaterThan(1);
+    const frameCount = head?.frames ?? 0;
+    for (const value of observed) {
+      const percent = Number.parseFloat(value);
+      const step = 100 / (frameCount - 1);
+      const k = Math.round(percent / step);
+      expect(Math.abs(percent - k * step), `${value} 가 프레임 경계가 아니다`).toBeLessThan(0.05);
+    }
+
+    await mkdir(OUT, { recursive: true });
+    await page.screenshot({ path: `${OUT}back-battler-pokemon.png` });
+    await writeFile(`${OUT}back-battler.json`, `${JSON.stringify({ head, observed: [...observed] }, null, 2)}\n`, "utf8");
+  } finally {
+    await server.close();
+  }
+});

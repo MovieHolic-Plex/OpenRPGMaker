@@ -63,6 +63,45 @@ const ACTOR_IDLE: readonly BattlerIdleAnimation[] = [1, 2, 3, 4, 5, 6].map((inde
   tier: "sheet-cell",
 }));
 
+/**
+ * 후면(뒷모습) 액터 idle — 영상 클립에서 뽑았다.
+ *
+ * 셀이 **정사각이 아니다**(290×280 = 1.036). 재생 CSS 는 가로를 표시 상자 폭에 묶고 세로를
+ * `auto` 로 두므로, 칸 종횡비가 상자와 다르면 칸이 상자보다 커져 잘린다. 포켓몬 스킨의 아군
+ * 뒷모습 상자는 `145px × 140px`(`_battlers.css` 1:1 대치 크기)라 가로가 더 넓다 — 그 비율을
+ * 셀에 굽는다. 290×280 은 그 상자의 2배로, 필드 zoom(~2×) 에서 1:1 로 떨어진다.
+ *
+ * 프레임 간격은 클립 실측 루프 구간에서 나온 값이다(구간 길이 ÷ 8프레임, 24fps 기준):
+ * hero-01 16프레임(0.67s) → 83ms, hero-02 20(0.83s) → 104ms, hero-03 24(1.0s) → 125ms,
+ * hero-04 20 → 104ms.
+ *
+ * 프레임 선택은 **의상 색 충실도**가 1순위다(루프 이음매는 2순위). 영상 모델은 클립이 진행되며
+ * 색을 흘린다 — hero-01 첫 클립은 파란 튜닉이 갈색으로 바뀌어 색 분포 편차 0.234 였고, 그
+ * 프레임을 골랐다면 "다른 옷을 입은 주인공"이 실렸다. 의상을 명시해 다시 생성한 클립에서
+ * 편차 0.018·루프 이음매 0.068% 구간을 골랐다. 최종 실측 편차: hero-01 0.018, hero-02 0.016,
+ * hero-03 0.032, hero-04 0.069 (계약 상한 0.08, `test/battlerBackIdleAnimation.test.ts`).
+ */
+const BACK_IDLE: readonly BattlerIdleAnimation[] = [
+  backActor("hero-01", 83),
+  backActor("hero-02", 104),
+  backActor("hero-03", 125),
+  backActor("hero-04", 104),
+];
+
+function backActor(slug: string, frameDurationMs: number): BattlerIdleAnimation {
+  return {
+    resourceId: `generated-actor-${slug}-back`,
+    // 원본과 같은 파일명으로 `idle/` 아래 둔다 — 파일명 부분문자열을 재는 기존 계약
+    // (`test/battleFieldAllySprite.test.ts`)을 그대로 살리기 위해서다.
+    path: `assets/generated/battle-skins/sprites/idle/${slug}-back.png`,
+    frameCount: 8,
+    cellWidth: 290,
+    cellHeight: 280,
+    frameDurationMs,
+    tier: "image-strip",
+  };
+}
+
 function monster(
   resourceId: string,
   file: string,
@@ -93,6 +132,7 @@ const LEGACY_HERO_IDLE: BattlerIdleAnimation = {
 export const BATTLER_IDLE_ANIMATIONS: readonly BattlerIdleAnimation[] = [
   ...MONSTER_IDLE,
   ...ACTOR_IDLE,
+  ...BACK_IDLE,
   LEGACY_HERO_IDLE,
 ];
 
