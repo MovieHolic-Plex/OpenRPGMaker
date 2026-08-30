@@ -2,10 +2,17 @@
 
 This repository uses a project-local OpenWiki layer so coding agents can understand the editor before changing it.
 
-Before making code changes, read:
+## 처음 온 에이전트는 이 두 쪽만 먼저 읽어라
+
+1. **`openwiki/quickstart.md`** — 환경 보정(워크트리 `node_modules`/`.env.local`), **어떤 명령이 진짜 게이트인지와
+   그 기준선 실측값**, 기능→진입 파일 표. 3분이면 읽는다. 이걸 건너뛰면 가짜 오류를 디버깅하게 된다.
+2. **`openwiki/INDEX.md`** — 위키 절 좌표(생성 파일, `npm run openwiki:index`). 위키는 41쪽 약 1MB(약 27만 토큰)이고
+   7쪽은 읽기 도구 상한 50KB 를 넘어 **통째로 읽으면 조용히 잘린다**. 필요한 절만 줄 번호로 잘라 읽어라.
+
+그다음에 아래 순서로 간다.
 
 1. `openwiki/PROJECT_WIKI.md` - the current project-specific AI map.
-2. The focused OpenWiki page for the area you will edit:
+2. The focused OpenWiki page for the area you will edit (크기는 INDEX 에서 먼저 확인):
    - Editor pre-edit routing & cautions: `openwiki/editor-pre-edit-routing.md` (read first for any editor change)
    - Editor observability — mutation 계측 초크포인트, 편집 감사 로그, 오류 트랩, 디버깅 레시피: `openwiki/editor-observability.md` (read before adding an editing feature or debugging "방금 뭘 했더니 이렇게 됐다")
    - Editor event authoring: `openwiki/editor-event-authoring.md` + `openwiki/editor-event-commands.md` + `openwiki/editor-event-command-fixes.md`
@@ -61,10 +68,11 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 
 **For any agent entering this repo:**
 1. Read `AGENTS.md` (this file) — it is the canonical entry point.
-2. Read `openwiki/PROJECT_WIKI.md` — it is the canonical project-specific AI map.
-3. Use `.mcp.json` for MCP server config (rpgzzu-assistant bridge on localhost).
-4. Your own agent config dir (`.claude/`, `.codex/`, `.senpi/`, etc.) is session-local and gitignored — do not commit it.
-5. `.omo/ulw-loop/` holds durable goal state and evidence; `.omo/evidence/` and `.omo/rules/` are tracked.
+2. Read `openwiki/quickstart.md` (환경·게이트 기준선·기능→파일) and `openwiki/INDEX.md` (위키 절 좌표).
+3. Read `openwiki/PROJECT_WIKI.md` — it is the canonical project-specific AI map.
+4. Use `.mcp.json` for MCP server config (rpgzzu-assistant bridge on localhost).
+5. Your own agent config dir (`.claude/`, `.codex/`, `.senpi/`, etc.) is session-local and gitignored — do not commit it.
+6. `.omo/ulw-loop/` holds durable goal state and evidence; `.omo/evidence/` and `.omo/rules/` are tracked.
 
 **Do not create a new agent config dir.** If your agent isn't listed, add it to this table with its purpose.
 
@@ -99,7 +107,9 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 미완성 편집을 덮어쓰고, 검증이 움직이는 표적을 쫓게 된다.
 
 1. 병렬이 필요하면 `npm run wt create <name>` 로 **에이전트마다 격리 워크트리**를 만든다.
-   절차·함정은 `openwiki/agent-worktrees.md` 참조.
+   절차·함정은 `openwiki/agent-worktrees.md` 참조. 다른 도구가 만든 워크트리(`.herdr/`, `.claude/worktrees/`)는
+   `node_modules`·`.env.local`·고유 포트가 없으므로 `npm run wt -- adopt <이름> --path <경로>` 로 먼저 보정한다 —
+   보정 없이 실행하면 전역 tsc 가 잡혀 **저장소 설정이 깨진 것처럼 보이는 가짜 오류**가 난다 (`openwiki/quickstart.md` 1절).
 2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** Supabase 프로젝트 행이
    공유 싱글턴이라 git 이 충돌을 못 본다 — 직렬화하거나 project id 를 분리한다.
 3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트의 "테스트 통과했습니다"와 파이프를

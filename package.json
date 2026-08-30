@@ -50,6 +50,7 @@
     "clean:title-logo": "node scripts/clean-title-logo-transparency.mjs",
     "perf:bench": "node scripts/perf-benchmark.mjs",
     "openwiki:cpen": "node scripts/openwiki-cpen.mjs",
+    "openwiki:index": "node scripts/openwiki-index.mjs",
     "openwiki:verify": "node scripts/verify-openwiki-editor-wiki.mjs",
     "test": "node scripts/run-vitest.mjs run --configLoader bundle",
     "test:parity": "node scripts/run-vitest.mjs run test/parity --configLoader bundle",
