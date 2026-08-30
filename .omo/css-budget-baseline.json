@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T13:10:51.022Z",
+  "generatedAt": "2026-08-30T17:53:38.514Z",
   "metrics": {
-    "hexLiterals": 1669,
+    "hexLiterals": 1665,
     "important": 985,
     "undefinedVars": 59,
     "globalRootFiles": 10,
@@ -34,7 +34,7 @@
       "src/styles/database/light-theme.css": 22,
       "src/styles/database/modern/troops.css": 5,
       "src/styles/database/record-list-modern.css": 12,
-      "src/styles/database/sidebar.css": 23,
+      "src/styles/database/sidebar.css": 19,
       "src/styles/database/studio-theme.css": 24,
       "src/styles/database/system-studio.css": 14,
       "src/styles/database/tabs-a.part-2.css": 3,

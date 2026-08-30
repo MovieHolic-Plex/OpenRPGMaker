@@ -23,8 +23,6 @@ const REGION = { x: 0, y: 0, width: 4, height: 4 } as const;
 function clearReport(): HarnessReviewReport {
   return {
     issues: [],
-    blockers: [],
-    checkpoints: [],
     metrics: {
       changedCells: 0,
       changedEvents: 0,
@@ -35,9 +33,7 @@ function clearReport(): HarnessReviewReport {
       timeSystemEnabled: false,
       roomSessions: 0,
       roomScoreAverage: null,
-      deterministicRepairs: 0,
     },
-    repairLimit: 8,
   };
 }
 
@@ -46,7 +42,7 @@ afterEach(() => {
   resetMapEditHistory();
 });
 
-describe("tilemap harness safety review blockers", () => {
+describe("tilemap harness safety review diagnostics", () => {
   it("counts only the initially active event page as a guaranteed transfer", () => {
     const base = createBlankProject();
     const draft = structuredClone(base);

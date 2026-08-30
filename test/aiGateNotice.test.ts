@@ -1,37 +1,20 @@
 // 차단 게이트 경고의 순수 부분 — 사유를 요약해 버리지 않는지, append scope 의 구조적 한계를
 // 사용자에게 말해 주는지, 모달이 한 장만 뜨고 Escape 로 닫히는지.
+//
+// 배치 검증 게이트는 없다(영역작업 검증게이트 배제) — 그 고지도 함께 사라졌다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   aiGateNoticeToPlainText,
   commitGateNotice,
   eventCommandGateNotice,
-  layoutGateNotice,
   turnErrorNotice,
   MAX_GATE_REASONS,
 } from "@/ai/aiGateNotice";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { modalStackDepthForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
-import type { LintIssue } from "@/project/lint/projectLint";
 import { findByTestId, installFakeDom } from "./fakeDom";
 
 describe("aiGateNotice — 사유를 버리지 않는다", () => {
-  it("배치 검증: error 사유를 전부 싣고 맵/좌표를 붙인다", () => {
-    const issues: LintIssue[] = [
-      { severity: "error", code: "layout-prop-on-water", mapId: "map_a", x: 3, y: 4, message: "물 타일 위에 소품이 2칸 있습니다." },
-      { severity: "warning", code: "layout-tree-expectation", mapId: "map_a", message: "나무 0그루" },
-      { severity: "error", code: "layout-tree-incomplete", mapId: "map_b", message: "수관 아래 밑동이 없습니다." },
-    ];
-    const notice = layoutGateNotice(issues);
-    expect(notice.kind).toBe("layout-validation");
-    expect(notice.reasons).toEqual([
-      "[map_a (3, 4)] 물 타일 위에 소품이 2칸 있습니다.",
-      "[map_b] 수관 아래 밑동이 없습니다.",
-    ]);
-    // warning 은 차단 사유가 아니므로 error 가 있는 한 사유 목록에 섞지 않는다.
-    expect(notice.reasons.join("\n")).not.toContain("나무 0그루");
-    expect(notice.nextSteps.length).toBeGreaterThan(0);
-  });
-
   it("커밋 게이트: 사유가 상한을 넘으면 남은 건수를 마지막 줄에 적는다", () => {
     const messages = Array.from({ length: MAX_GATE_REASONS + 4 }, (_, index) => `오류 ${index}`);
     const notice = commitGateNotice(messages);
@@ -110,9 +93,9 @@ describe("showAiGateNotice — 모달", () => {
 
   it("두 번 띄우면 한 장만 남는다 — 뒤엣것만 닫고 앞엣것을 못 읽는 일을 막는다", () => {
     showAiGateNotice(commitGateNotice(["첫 게이트"]));
-    showAiGateNotice(layoutGateNotice([{ severity: "error", code: "layout-prop-on-water", message: "둘째 게이트" }]));
+    showAiGateNotice(turnErrorNotice({ message: "둘째 게이트" }));
     const root = document.body as unknown as Parameters<typeof findByTestId>[0];
-    expect(findByTestId(root, "ai-gate-modal")?.dataset.gateKind).toBe("layout-validation");
+    expect(findByTestId(root, "ai-gate-modal")?.dataset.gateKind).toBe("turn-error");
     expect(modalStackDepthForTest()).toBe(1);
   });
 

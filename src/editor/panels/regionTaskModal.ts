@@ -996,28 +996,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
 
     const review = pending.report;
-    // 통과한 검사는 쓰지 않는다. 예전에는 분리 초안·영역 경계·결정론 수리·배치 규칙처럼
-    // 사용자에게 없는 개념이 초록 체크 6개로 깔렸다 — 다 통과해도 읽을 것이 6줄 늘었다.
-    // 이제 막힌 검사만 남긴다(전부 통과 = 아무 말 없음).
-    const shownCheckpoints = (review?.checkpoints ?? []).filter((checkpoint) => checkpoint.status === "blocked");
-    const timeline = el("div", {
-      class: "region-task-checkpoint-timeline" + (shownCheckpoints.length ? "" : " hidden"),
-      dataset: { testid: "region-task-checkpoint-timeline" },
-      children: shownCheckpoints.map((checkpoint) => el("div", {
-        class: `region-task-checkpoint is-${checkpoint.status}`,
-        attrs: { title: checkpoint.detail },
-        children: [
-          el("span", {
-            class: "region-task-checkpoint-dot",
-            // pending 은 검사 결과가 아니라 대기 상태다 — 통과 체크(✓)를 달면 이미 승인된 것으로 읽힌다.
-            children: [makeSvgIcon(
-              checkpoint.status === "done" ? "check" : checkpoint.status === "pending" ? "more" : "warning",
-            )],
-          }),
-          el("span", { text: checkpoint.label }),
-        ],
-      })),
-    });
+    // 체크포인트 타임라인은 없앴다: 통과/차단이라는 판정 자체가 없어졌고(검증게이트 배제),
+    // 이 타임라인은 "막힌 검사"만 그리던 UI 였다. 소견은 아래 지표 칩·이슈 목록이 말한다.
     const metrics = review?.metrics;
     // 지표는 예전에 한 줄 문자열이었고(무엇의 단위인지 알 수 없었다), 그다음엔 칩 8개였다
     // ("바뀐 칸 4칸 · 이벤트 1건 · 갈 수 있는 목표 36개 · 타일 조합 50/100점 · NPC 일정 4명 ·
@@ -1047,18 +1027,13 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     const issueRows = (review?.issues ?? []).map((issue, index) => el("div", {
       class: `region-task-review-issue is-${issue.severity}`,
       dataset: { testid: `region-task-review-issue-${index}` },
-      text: `${issue.severity === "error" ? "차단" : issue.repaired ? "수리" : "주의"} · ${issue.message}${issue.mapId ? ` [${issue.mapId}${issue.x === undefined ? "" : ` ${issue.x},${issue.y}`}]` : ""}`,
+      text: `${issue.severity === "error" ? "확인" : "주의"} · ${issue.message}${issue.mapId ? ` [${issue.mapId}${issue.x === undefined ? "" : ` ${issue.x},${issue.y}`}]` : ""}`,
     }));
     // "막는 문제·주의 없음" 같은 빈 상태 문구도 없앴다 — 문제가 없으면 진단 줄 자체가 안 뜬다.
     const issuesHost = el("div", {
       class: "region-task-review-issues" + (issueRows.length ? "" : " hidden"),
       dataset: { testid: "region-task-review-issues" },
       children: issueRows,
-    });
-    const blockerHost = el("div", {
-      class: "region-task-blockers" + (pending.blockers.length ? "" : " hidden"),
-      dataset: { testid: "region-task-blockers" },
-      children: pending.blockers.map((reason) => el("div", { text: `적용 차단 · ${reason}` })),
     });
     const scheduleDecisionRequired = (review?.issues ?? []).some(
       (issue) => issue.code === "npc-schedule-time-disabled" && issue.severity === "error",
@@ -1229,27 +1204,25 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       ] : [],
     });
 
-    // 적용을 막거나 사용자 결정을 요구하는 것들 — 결정 버튼 바로 위에 항상 보이게 둔다.
+    // 사용자 결정을 요구하는 것들 — 결정 버튼 바로 위에 항상 보이게 둔다.
     const gateHost = el("div", {
       class: "region-task-gates",
       dataset: { testid: "region-task-gates" },
-      children: [blockerHost, npcScheduleDecision],
+      children: [npcScheduleDecision],
     });
     // 진단(체크포인트·지표·이슈)은 접는다. 예전에는 이 셋이 미리보기보다 **위**에 있어서
     // 380px 팝오버에서 「적용」이 스크롤 아래로 밀려 있었다 — 우클릭 드래그의 목적이 적용인데
-    // 그게 화면에서 가장 멀었다. 한 줄 판정만 남기고, 막힌 경우에만 자동으로 펼친다.
+    // 그게 화면에서 가장 멀었다. 한 줄 소견만 남기고, error 소견이 있을 때만 자동으로 펼친다.
     const errorIssues = (review?.issues ?? []).filter((issue) => issue.severity === "error").length;
     const warnIssues = (review?.issues ?? []).length - errorIssues;
-    // 그리고 통과했을 때는 진단 줄 자체를 만들지 않는다. "검사 통과 · 검사 상세" 는 눌러도
-    // 초록 체크 6개와 "막는 문제·주의 없음" 만 나오는, 열 이유가 없는 줄이었다.
-    const hasSomethingToSay = pending.blockers.length > 0 || errorIssues > 0 || warnIssues > 0 || metricChips.length > 0;
-    const verdictText = pending.blockers.length > 0
-      ? `적용 차단 ${pending.blockers.length}건`
-      : errorIssues > 0
-        ? `막는 문제 ${errorIssues}건`
-        : warnIssues > 0
-          ? `주의 ${warnIssues}건`
-          : "확인할 값";
+    // 그리고 아무 소견이 없을 때는 진단 줄 자체를 만들지 않는다.
+    const hasSomethingToSay = errorIssues > 0 || warnIssues > 0 || metricChips.length > 0;
+    // "적용 차단" 은 더 이상 존재하지 않는다(검증게이트 배제) — 소견 건수만 말한다.
+    const verdictText = errorIssues > 0
+      ? `확인 ${errorIssues}건`
+      : warnIssues > 0
+        ? `주의 ${warnIssues}건`
+        : "확인할 값";
     const diagnostics = hasSomethingToSay
       ? el("details", {
         class: "region-task-diagnostics",
@@ -1262,12 +1235,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
           }),
           el("div", {
             class: "region-task-review-card",
-            children: [timeline, metricsRow, issuesHost],
+            children: [metricsRow, issuesHost],
           }),
         ],
       })
       : null;
-    if (diagnostics && (pending.blockers.length > 0 || errorIssues > 0)) diagnostics.setAttribute("open", "");
+    if (diagnostics && errorIssues > 0) diagnostics.setAttribute("open", "");
     diagnostics?.addEventListener("toggle", schedulePopoverReposition);
 
     compareHost.replaceChildren(
@@ -1451,12 +1424,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         // 세 번 읽게 했다. 여기서는 요약 줄을 비우고 변경 목록 한 곳만 남긴다.
         // (채팅 패널은 말풍선이라 문장이 필요하다 — describeRegionTaskResult 는 그대로 쓴다.)
         setSummary("");
-        // 통과는 침묵한다: 막힌 경우에만 진행 칩을 남긴다.
-        if (result.pending.blockers.length) {
-          progressTimeline.append(el("span", { class: "is-blocked", text: "검사 차단" }));
-        } else {
-          progressTimeline.replaceChildren();
-        }
+        // 통과·차단이라는 판정이 없어졌다 — 진행 칩은 비우고 진단은 검토 카드에서 읽는다.
+        progressTimeline.replaceChildren();
         progressMilestone = "미리보기를 준비하는 중";
         await renderPendingCompare(result.pending, executionId);
         if (!isCurrentExecution(executionId)) return;
@@ -1557,10 +1526,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       });
       setSummary(describeRegionTaskResult(result));
       if (result.pending && !result.pending.settled) {
-        progressTimeline.append(el("span", {
-          class: result.pending.blockers.length ? "is-blocked" : "is-done",
-          text: result.pending.blockers.length ? "2. 검사 차단" : "2. 검사 완료",
-        }));
+        // 검증게이트가 없으므로 이 단계는 "검사 완료"만 있다 — 진단은 검토 카드에서 읽는다.
+        progressTimeline.append(el("span", { class: "is-done", text: "2. 검사 완료" }));
         await renderPendingCompare(result.pending);
       }
       if (result.error) {

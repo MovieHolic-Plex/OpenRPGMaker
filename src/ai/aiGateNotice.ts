@@ -1,23 +1,21 @@
 // ai/aiGateNotice.ts
 // 「AI 변경이 게이트에 막혔다」를 사용자에게 보여줄 알림 한 장으로 옮기는 순수 모듈(DOM 금지).
 //
-// 왜 필요한가 (2026-08-30 실측) — AI 가 만든 변경을 적용 직전에 되돌리는 차단 게이트가 네 곳
-// 있는데, 사용자에게 남는 흔적이 게이트마다 달랐다:
-//   1. 배치 검증(layoutValidationBlocking)  — 시스템 버블 + 토스트
-//   2. 무결성 커밋 게이트(commitChangeset)   — **토스트 한 장뿐**, 채팅에는 아무 기록도 없음
-//   3. 툴 실행/턴 오류                       — 오류 버블(재시도 링크)
-//   4. 이벤트 명령 AI 반려                   — 도크 안 한 줄 상태 텍스트
-// 2번은 토스트가 사라지면 흔적이 없어서, 사용자 입장에서 "AI 가 아무것도 안 했다" 와 구분되지
+// 왜 필요한가 (2026-08-30 실측) — AI 가 만든 변경을 적용 직전에 되돌리는 차단 게이트들이
+// 사용자에게 남기는 흔적이 게이트마다 달랐다:
+//   1. 무결성 커밋 게이트(commitChangeset)   — **토스트 한 장뿐**, 채팅에는 아무 기록도 없음
+//   2. 툴 실행/턴 오류                       — 오류 버블(재시도 링크)
+//   3. 이벤트 명령 AI 반려                   — 도크 안 한 줄 상태 텍스트
+//
+// 배치 검증(layoutValidationBlocking)은 목록에서 빠졌다 — 영역작업(AI) 검증게이트 배제로
+// 그 게이트 자체가 없어졌고, 배치 소견은 적용 후 경고 한 줄로만 남는다.
+// 1번은 토스트가 사라지면 흔적이 없어서, 사용자 입장에서 "AI 가 아무것도 안 했다" 와 구분되지
 // 않았다("이벤트 지워달라니까 왜 안 되냐"의 실제 경험). 그래서 차단 게이트는 전부 모달로 올린다.
 //
 // 이 모듈은 **무엇을 보여줄지**만 정한다. 그리기는 editor/ui/aiGateModal.ts 가 한다.
 // 사유는 요약하지 않고 게이트가 내놓은 것을 그대로 싣는다 — 첫 줄만 남기고 버리면 원인이 사라진다.
 
-import type { LintIssue } from "@/project/lint/projectLint";
-
 export type AiGateKind =
-  /** 배치 검증(물/벽 위 소품, 수관 밑동 누락 등)이 적용을 막았다. */
-  | "layout-validation"
   /** 무결성 커밋 게이트가 이 변경이 **새로 만든** 오류를 잡아 적용을 막았다. */
   | "commit-rejected"
   /** 툴 실행이 실패해 턴이 끝났고, 적용된 변경은 0건이다. */
@@ -47,30 +45,6 @@ function clampReasons(messages: readonly string[]): readonly string[] {
   if (unique.length <= MAX_GATE_REASONS) return unique;
   const shown = unique.slice(0, MAX_GATE_REASONS - 1);
   return [...shown, `…외 ${unique.length - shown.length}건`];
-}
-
-function issueLine(issue: LintIssue): string {
-  const where = issue.mapId
-    ? `[${issue.mapId}${typeof issue.x === "number" && typeof issue.y === "number" ? ` (${issue.x}, ${issue.y})` : ""}] `
-    : "";
-  return `${where}${issue.message}`;
-}
-
-/** 배치 검증 차단 — 타일/소품이 놓일 수 없는 자리에 놓였다. */
-export function layoutGateNotice(issues: readonly LintIssue[]): AiGateNotice {
-  const blocking = issues.filter((issue) => issue.severity === "error");
-  // 경고만 남은 배열이 들어오는 경우는 차단이 아니다. 그래도 호출부가 부르면 사유는 보여준다.
-  const source = blocking.length > 0 ? blocking : issues;
-  return {
-    kind: "layout-validation",
-    title: "배치 검증에 막혔습니다",
-    headline: "AI 변경안이 놓을 수 없는 자리에 타일·소품을 두어, 프로젝트에 아무것도 적용하지 않았습니다.",
-    reasons: clampReasons(source.map(issueLine)),
-    nextSteps: [
-      "어디에 놓을지(맵·좌표·영역)를 문장에 적어 다시 요청해 보세요.",
-      "물 위·벽 위처럼 원래 놓을 수 없는 자리라면, 먼저 그 자리의 지형을 바꿔야 합니다.",
-    ],
-  };
 }
 
 /** 무결성 커밋 게이트 차단 — 이 변경이 새 오류를 만들었다. */

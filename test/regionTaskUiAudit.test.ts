@@ -130,23 +130,17 @@ describe("검토 화면", () => {
       getCurrentProject: () => base,
       report: {
         issues: clean ? [] : [{ code: "schedule", severity: "warning", message: "NPC 일정 확인" }],
-        blockers: [],
-        checkpoints: [
-          { id: "draft", label: "분리 초안", status: "done", detail: "ready" },
-          { id: "approval", label: "내 결정 대기", status: "pending", detail: "적용 또는 버리기 선택" },
-        ],
         metrics: clean
           ? {
             changedCells: 3, changedEvents: 0, passableChangedCells: 3, isolatedChangedCells: 0,
             scheduledNpcs: 0, scheduleEntries: 0, timeSystemEnabled: true, roomSessions: 0,
-            roomScoreAverage: null, deterministicRepairs: 0, unreachableObjectives: 0,
+            roomScoreAverage: null, unreachableObjectives: 0,
           }
           : {
             changedCells: 3, changedEvents: 0, passableChangedCells: 3, isolatedChangedCells: 0,
             scheduledNpcs: 1, scheduleEntries: 1, timeSystemEnabled: false, roomSessions: 0,
-            roomScoreAverage: null, deterministicRepairs: 0, unreachableObjectives: 2,
+            roomScoreAverage: null, unreachableObjectives: 2,
           },
-        repairLimit: 8,
       },
       onApply: () => {},
       onDiscard: () => {},
@@ -187,14 +181,13 @@ describe("검토 화면", () => {
     expect(insideAdvanced).toBe(false);
   });
 
-  it("통과한 검사는 화면에 쓰지 않는다", async () => {
-    // 예전에는 분리 초안·영역 경계·결정론 수리·배치 규칙·게임플레이 사전검사·내 결정 대기가
-    // 초록 체크 6개로 깔렸다. 사용자에게 없는 개념이고, 다 통과해도 읽을 것만 늘었다.
+  it("검사 통과·차단 표시는 화면에 없다", async () => {
+    // 예전에는 체크포인트 6개가 초록 체크로 깔렸고, 그 뒤에는 "막힌 검사"만 남겼다.
+    // 이제 통과/차단이라는 판정 자체가 없다(검증게이트 배제) — 두 UI 모두 사라졌다.
     const root = await openReview();
-    const timeline = findByTestId(root, "region-task-checkpoint-timeline");
-    expect(timeline?.className).toContain("hidden");
-    expect(timeline?.textContent ?? "").not.toContain("분리 초안");
-    expect(timeline?.textContent ?? "").not.toContain("결정 대기");
+    expect(findByTestId(root, "region-task-checkpoint-timeline")).toBeNull();
+    expect(findByTestId(root, "region-task-blockers")).toBeNull();
+    expect(root.textContent ?? "").not.toContain("적용 차단");
   });
 
   it("지표는 손봐야 하는 값만 남긴다", async () => {

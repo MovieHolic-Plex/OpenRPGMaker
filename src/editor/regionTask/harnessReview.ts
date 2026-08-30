@@ -16,19 +16,6 @@ export interface HarnessIssue {
   readonly x?: number;
   readonly y?: number;
   readonly roomId?: string;
-  readonly repaired?: boolean;
-}
-
-export interface HarnessCheckpoint {
-  readonly id: string;
-  readonly label: string;
-  /**
-   * done=검사 통과, blocked=검사 실패, pending=아직 결과가 아닌 상태(사람의 결정 대기).
-   * pending 을 따로 둔 이유: "승인 대기" 를 done 으로 두면 통과 체크 표시를 달고 나와
-   * 아직 승인되지 않은 것이 이미 승인된 것처럼 읽혔다.
-   */
-  readonly status: "done" | "blocked" | "pending";
-  readonly detail: string;
 }
 
 export interface HarnessGameplayMetrics {
@@ -41,7 +28,6 @@ export interface HarnessGameplayMetrics {
   readonly timeSystemEnabled: boolean;
   readonly roomSessions: number;
   readonly roomScoreAverage: number | null;
-  readonly deterministicRepairs: number;
   readonly outOfScopeChanges?: number;
   readonly reachableObjectives?: number;
   readonly unreachableObjectives?: number;
@@ -51,12 +37,17 @@ export interface HarnessGameplayMetrics {
   readonly compositionScore?: number;
 }
 
+/**
+ * 권고 보고서. **어떤 필드도 적용을 막지 않는다.**
+ *
+ * 왜 (2026-08-30): 영역작업(AI) 뒤에 있던 검증게이트가 휴리스틱 한 건으로 제안 전체를 반려해,
+ * 사용자에게 아무것도 남지 않는 일이 반복됐다(나무 0그루 오판, 호수 마을 맵의 전면 반려).
+ * 이제 검사는 사실만 보고하고, 적용 여부는 사용자 결정(적용/버리기)과 되돌리기가 정한다.
+ * severity 는 소견의 세기이며 정책이 아니다 — 이 값으로 적용을 거부하는 코드를 다시 만들지 말 것.
+ */
 export interface HarnessReviewReport {
   readonly issues: readonly HarnessIssue[];
-  readonly blockers: readonly string[];
-  readonly checkpoints: readonly HarnessCheckpoint[];
   readonly metrics: HarnessGameplayMetrics;
-  readonly repairLimit: number;
 }
 
 export interface HarnessReviewResult {
@@ -70,20 +61,22 @@ export interface SafeRegionDoorway {
 }
 
 const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
-const DEFAULT_REPAIR_LIMIT = 8;
 
-/** Read-only project/gameplay preflight plus bounded deterministic isolation repair. */
+/**
+ * 영역 초안 진단. **읽기 전용이다** — 초안을 고치지도, 적용을 막지도 않는다.
+ *
+ * 반환하는 project 는 입력 초안의 복제 그대로다(호출부가 소유권을 갖도록 분리만 한다).
+ * 예전에는 여기서 고립 통행 셀을 원본으로 되돌리고 도달 불가 소품 이벤트를 지웠는데,
+ * 그 결과 유령 미리보기에서 본 것과 적용된 것이 달라져 "AI 가 깐 게 사라졌다" 가 됐다.
+ */
 export function reviewRegionDraft(input: {
   readonly base: Project;
   readonly draft: Project;
   readonly mapId: MapId;
   readonly region: RegionRect;
-  readonly repairLimit?: number;
 }): HarnessReviewResult {
   const project = cloneDetachedDraft(input.draft);
   const issues: HarnessIssue[] = [];
-  const repairLimit = Math.max(0, Math.trunc(input.repairLimit ?? DEFAULT_REPAIR_LIMIT));
-  let repairs = 0;
   let changedCells = 0;
   let changedEvents = 0;
   let passableChangedCells = 0;
@@ -107,25 +100,7 @@ export function reviewRegionDraft(input: {
     changedCells += changed.length;
     changedEvents += changedEventCount(before, after);
     for (const cell of changed) {
-      if (!isPassable(project, after, cell.x, cell.y)) continue;
-      passableChangedCells += 1;
-      const connected = hasMoveNeighbor(project, after, cell.x, cell.y)
-        && (!before || connectsToStableCell(project, before, after, mapId, cell.x, cell.y));
-      if (connected) continue;
-      if (before && before.width === after.width && before.height === after.height && repairs < repairLimit) {
-        const index = cell.y * after.width + cell.x;
-        restoreMapCell(after, before, index);
-        repairs += 1;
-        issues.push({
-          code: "isolated-cell-repaired",
-          severity: "warning",
-          message: `고립된 통행 셀과 스택을 원본으로 복구했습니다 (${cell.x},${cell.y}).`,
-          mapId,
-          x: cell.x,
-          y: cell.y,
-          repaired: true,
-        });
-      }
+      if (isPassable(project, after, cell.x, cell.y)) passableChangedCells += 1;
     }
   }
 
@@ -151,39 +126,10 @@ export function reviewRegionDraft(input: {
   }
 
   const baseNavigation = inspectWorldNavigation(input.base);
-  let navigation = inspectWorldNavigation(project);
+  const navigation = inspectWorldNavigation(project);
   const baselineProblemKeys = new Set(baseNavigation.problems.map((problem) => problem.key));
-  let newNavigationProblems = navigation.problems.filter((problem) => !baselineProblemKeys.has(problem.key));
-
-  // Generated prop-inspection events are optional flavor, not progression objectives. If a
-  // furnishing lands one where it cannot be interacted with, remove only that generated event
-  // within the same bounded repair budget; authored/non-generated objectives remain hard errors.
-  let removedInspectEvent = false;
-  for (const problem of newNavigationProblems) {
-    if (repairs >= repairLimit
-      || problem.code !== "gameplay-event-unreachable"
-      || !problem.eventId?.startsWith("ev_inspect_")
-      || !problem.mapId) continue;
-    const map = project.maps[problem.mapId];
-    if (!map || !map.events.some((event) => event.id === problem.eventId)) continue;
-    map.events = map.events.filter((event) => event.id !== problem.eventId);
-    repairs += 1;
-    changedEvents = Math.max(0, changedEvents - 1);
-    removedInspectEvent = true;
-    issues.push({
-      code: "unreachable-inspect-event-repaired",
-      severity: "warning",
-      message: `도달할 수 없는 자동 소품 조사 이벤트를 제거했습니다: ${problem.eventId}.`,
-      mapId: problem.mapId,
-      ...(problem.x === undefined ? {} : { x: problem.x }),
-      ...(problem.y === undefined ? {} : { y: problem.y }),
-      repaired: true,
-    });
-  }
-  if (removedInspectEvent) {
-    navigation = inspectWorldNavigation(project);
-    newNavigationProblems = navigation.problems.filter((problem) => !baselineProblemKeys.has(problem.key));
-  }
+  // 기준 프로젝트에 이미 있던 문제는 이번 작업의 소견이 아니다 — 새로 생긴 것만 보고한다.
+  const newNavigationProblems = navigation.problems.filter((problem) => !baselineProblemKeys.has(problem.key));
   for (const problem of newNavigationProblems) {
     issues.push({
       code: problem.code,
@@ -241,7 +187,6 @@ export function reviewRegionDraft(input: {
     }
   }
 
-  const blockers = issues.filter((issue) => issue.severity === "error").map((issue) => issue.message);
   const metrics: HarnessGameplayMetrics = {
     changedCells,
     changedEvents,
@@ -252,7 +197,6 @@ export function reviewRegionDraft(input: {
     timeSystemEnabled,
     roomSessions: roomDrafts.length,
     roomScoreAverage: roomScores.length ? Math.round(roomScores.reduce((sum, score) => sum + score, 0) / roomScores.length) : null,
-    deterministicRepairs: repairs,
     outOfScopeChanges: scope.count,
     reachableObjectives: navigation.reachableObjectives,
     unreachableObjectives: newNavigationProblems.length,
@@ -260,15 +204,7 @@ export function reviewRegionDraft(input: {
     scheduleDestinations: navigation.scheduleDestinations,
     compositionScore: changedRegionCompositionScore(input.base, project, input.mapId, input.region),
   };
-  const checkpoints: HarnessCheckpoint[] = [
-    { id: "draft", label: "분리 초안", status: "done", detail: "프로젝트 저장소와 분리된 편집기 메모리에서 생성" },
-    { id: "scope", label: "영역 경계", status: scope.count ? "blocked" : "done", detail: scope.count ? `영역 밖 ${scope.count}건` : "선택 영역 경계 준수" },
-    { id: "repair", label: "결정론 수리", status: "done", detail: `${repairs}/${repairLimit}회 사용` },
-    { id: "preflight", label: "게임플레이 사전검사", status: blockers.length ? "blocked" : "done", detail: blockers.length ? `차단 ${blockers.length}건` : "통행·전송·이벤트·NPC 검사 통과" },
-    // 검사 결과가 아니라 사람의 결정 대기 상태다 — pending 으로 두어 통과 체크와 구분한다.
-    { id: "approval", label: "내 결정 대기", status: blockers.length ? "blocked" : "pending", detail: blockers.length ? "차단 사유를 해결해야 적용 가능" : "적용 또는 버리기 선택" },
-  ];
-  return { project, report: { issues, blockers, checkpoints, metrics, repairLimit } };
+  return { project, report: { issues, metrics } };
 }
 
 export function projectApprovalFingerprint(project: Project): string {
@@ -677,26 +613,6 @@ function connectsToStableCell(
     }
   }
   return false;
-}
-
-function restoreMapCell(target: GameMap, before: GameMap, index: number): void {
-  target.lowerTiles[index] = before.lowerTiles[index]!;
-  target.upperTiles[index] = before.upperTiles[index]!;
-  restoreStackCell(target, "lowerTileStacks", before.lowerTileStacks?.[index], index);
-  restoreStackCell(target, "upperTileStacks", before.upperTileStacks?.[index], index);
-}
-
-function restoreStackCell(
-  map: GameMap,
-  field: "lowerTileStacks" | "upperTileStacks",
-  value: readonly number[] | undefined,
-  index: number,
-): void {
-  const stacks = map[field] ?? {};
-  if (value) stacks[index] = [...value];
-  else delete stacks[index];
-  if (Object.keys(stacks).length > 0) map[field] = stacks;
-  else delete map[field];
 }
 
 function stacksEqual(a: readonly number[] | undefined, b: readonly number[] | undefined): boolean {

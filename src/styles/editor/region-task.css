@@ -764,42 +764,6 @@ body.region-task-modal-open .ai-authoring-examples {
   border-top: 1px solid var(--border-subtle);
 }
 
-.region-task-checkpoint-timeline {
-  display: grid;
-  gap: var(--space-1);
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-  padding: var(--space-2) var(--space-3);
-}
-@media (max-width: 380px) {
-  .region-task-checkpoint-timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-.region-task-checkpoint {
-  align-items: center;
-  color: var(--editor-text-muted);
-  display: flex;
-  font-size: 11px;
-  gap: var(--space-1);
-  min-width: 0;
-}
-.region-task-checkpoint-dot {
-  align-items: center;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  display: inline-flex;
-  flex: 0 0 16px;
-  height: 16px;
-  justify-content: center;
-}
-.region-task-checkpoint-dot svg {
-  flex-shrink: 0;
-  height: 10px;
-  width: 10px;
-}
-.region-task-checkpoint.is-done { color: var(--success); }
-.region-task-checkpoint.is-blocked { color: var(--danger); }
-/* 검사 결과가 아니라 사람의 결정 대기 — 통과(초록 체크)와 색·아이콘을 모두 구분한다. */
-.region-task-checkpoint.is-pending { color: var(--editor-text-muted); }
-
 /* 지표는 한 줄 문자열이 아니라 항목 칩이다. 나쁜 값만 색으로 튀게 하고 나머지는 조용히 둔다. */
 .region-task-review-metrics {
   background: transparent;
@@ -826,20 +790,16 @@ body.region-task-modal-open .ai-authoring-examples {
 }
 .region-task-review-metrics.hidden,
 .region-task-review-issues.hidden,
-.region-task-checkpoint-timeline.hidden,
-.region-task-blockers.hidden,
 .region-task-room-controls.hidden { display: none; }
 
-.region-task-review-issues,
-.region-task-blockers {
+.region-task-review-issues {
   display: flex;
   flex-direction: column;
   font-size: 12px;
   gap: 3px;
   padding: var(--space-2) var(--space-3);
 }
-.region-task-review-issue.is-error,
-.region-task-blockers { color: var(--danger); }
+.region-task-review-issue.is-error { color: var(--danger); }
 .region-task-review-issue.is-warning { color: var(--warning); }
 
 .region-task-room-controls {
@@ -872,7 +832,6 @@ body.region-task-modal-open .ai-authoring-examples {
 }
 .region-task-room-reroll:disabled { cursor: default; opacity: 0.45; }
 @media (max-width: 520px) {
-  .region-task-checkpoint-timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .region-task-room-row { align-items: stretch; flex-wrap: wrap; }
   .region-task-room-name { flex-basis: 100%; }
 }
@@ -893,7 +852,6 @@ body.region-task-modal-open .ai-authoring-examples {
 }
 .region-task-live-progress .is-active { border-color: var(--accent); color: var(--accent); }
 .region-task-live-progress .is-done { border-color: var(--success); color: var(--success); }
-.region-task-live-progress .is-blocked { border-color: var(--danger); color: var(--danger); }
 
 /* NPC 일정은 암묵적으로 켜지지 않는다. 승인 전에 실행 방식 세 가지를 명시적으로 고른다. */
 .region-task-npc-decision {

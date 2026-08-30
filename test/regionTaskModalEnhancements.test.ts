@@ -105,17 +105,11 @@ describe("A: 부분 적용", () => {
       getCurrentProject: () => base,
       report: {
         issues: [{ code: "npc-schedule-time-disabled", severity: "warning", message: "NPC 일정은 시간 시스템이 필요합니다." }],
-        blockers: [],
-        checkpoints: [
-          { id: "draft", label: "분리 초안", status: "done", detail: "ready" },
-          { id: "approval", label: "승인 대기", status: "done", detail: "ready" },
-        ],
         metrics: {
           changedCells: 3, changedEvents: 0, passableChangedCells: 3, isolatedChangedCells: 0,
           scheduledNpcs: 1, scheduleEntries: 1, timeSystemEnabled: false, roomSessions: 0,
-          roomScoreAverage: null, deterministicRepairs: 0,
+          roomScoreAverage: null,
         },
-        repairLimit: 8,
       },
       onApply: () => {},
       onDiscard: () => {},
@@ -178,14 +172,11 @@ describe("A: 부분 적용", () => {
     const onApply = vi.fn();
     const report = {
       issues: [],
-      blockers: [],
-      checkpoints: [],
       metrics: {
         changedCells: 2, changedEvents: 0, passableChangedCells: 2, isolatedChangedCells: 0,
         scheduledNpcs: 0, scheduleEntries: 0, timeSystemEnabled: false, roomSessions: 0,
-        roomScoreAverage: null, deterministicRepairs: 0,
+        roomScoreAverage: null,
       },
-      repairLimit: 8,
     } as never;
     const pending = setPendingRegionApply({
       baseProject: base,
@@ -256,14 +247,11 @@ describe("safe harness review surface", () => {
       getCurrentProject: () => base,
       report: {
         issues: [{ code: "schedule", severity: "warning", message: "NPC 일정 확인", mapId: "m1", x: 1, y: 1 }],
-        blockers: [],
-        checkpoints: [{ id: "draft", label: "분리 초안", status: "done", detail: "ready" }],
         metrics: {
           changedCells: 3, changedEvents: 0, passableChangedCells: 2, isolatedChangedCells: 0,
           scheduledNpcs: 1, scheduleEntries: 1, timeSystemEnabled: false, roomSessions: 0,
-          roomScoreAverage: null, deterministicRepairs: 0,
+          roomScoreAverage: null,
         },
-        repairLimit: 8,
       },
       onApply: () => undefined,
       onDiscard: () => undefined,
@@ -283,8 +271,9 @@ describe("safe harness review surface", () => {
       projectForContext: () => base,
     });
     await flush();
-    // 통과한 검사("분리 초안" done)는 더 이상 화면에 쓰지 않는다 — 손봐야 하는 것만 남는다.
-    expect(findByTestId(root, "region-task-checkpoint-timeline")?.className).toContain("hidden");
+    // 체크포인트 타임라인·차단 목록은 사라졌다 — 손봐야 하는 소견만 남는다.
+    expect(findByTestId(root, "region-task-checkpoint-timeline")).toBeNull();
+    expect(findByTestId(root, "region-task-blockers")).toBeNull();
     expect(findByTestId(root, "region-task-review-metrics")?.textContent).toContain("NPC 일정 1명");
     expect(findByTestId(root, "region-task-review-issues")?.textContent).toContain("NPC 일정 확인");
   });

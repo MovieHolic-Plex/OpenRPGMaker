@@ -37,7 +37,8 @@ afterEach(() => {
 
 type PendingHooks = {
   readonly onApply: () => void;
-  readonly blockers?: readonly string[];
+  /** error 등급 소견 한 건 주입 — 검증게이트가 없어도 진단은 계속 보인다. */
+  readonly errorIssue?: string;
   readonly eventChange?: boolean;
 };
 
@@ -59,15 +60,14 @@ function fakePendingResult(hooks: PendingHooks): RegionTaskResult {
     : project;
   const changedEvents = hooks.eventChange ? 1 : 0;
   const report = {
-    issues: [{ code: "schedule", severity: "warning", message: "NPC 일정 확인" }],
-    blockers: hooks.blockers ?? [],
-    checkpoints: [{ id: "draft", label: "분리 초안", status: "done", detail: "ready" }],
+    issues: hooks.errorIssue
+      ? [{ code: "preflight", severity: "error", message: hooks.errorIssue }]
+      : [{ code: "schedule", severity: "warning", message: "NPC 일정 확인" }],
     metrics: {
       changedCells: 3, changedEvents, passableChangedCells: 2, isolatedChangedCells: 0,
       scheduledNpcs: 0, scheduleEntries: 0, timeSystemEnabled: false, roomSessions: 0,
-      roomScoreAverage: null, deterministicRepairs: 0,
+      roomScoreAverage: null,
     },
-    repairLimit: 8,
   } as never;
   const pending = setPendingRegionApply({
     baseProject: project as never,
@@ -250,12 +250,11 @@ describe("검토 단계 배치", () => {
     expect(actionsIndex).toBeLessThan(diagnosticsIndex);
   });
 
-  it("체크포인트·지표·이슈는 진단 접이식 안에 들어간다", async () => {
+  it("지표·이슈는 진단 접이식 안에 들어간다", async () => {
     const { root } = await openInReview({ onApply: () => {} });
     const diagnostics = findByTestId(root, "region-task-diagnostics");
     expect(diagnostics).not.toBeNull();
     for (const testid of [
-      "region-task-checkpoint-timeline",
       "region-task-review-metrics",
       "region-task-review-issues",
     ]) {
@@ -263,15 +262,19 @@ describe("검토 단계 배치", () => {
     }
   });
 
-  it("차단이 없으면 진단은 접힌 채로, 차단이 있으면 펼친 채로 시작한다", async () => {
+  it("주의만 있으면 진단은 접힌 채로, error 소견이 있으면 펼친 채로 시작한다", async () => {
     const clean = await openInReview({ onApply: () => {} });
     expect(findByTestId(clean.root, "region-task-diagnostics")?.getAttribute("open")).toBeNull();
     closeRegionTaskModal();
     restoreDom?.();
     restoreDom = null;
 
-    const blocked = await openInReview({ onApply: () => {}, blockers: ["통행 불가 칸이 생깁니다"] });
-    expect(findByTestId(blocked.root, "region-task-diagnostics")?.getAttribute("open")).not.toBeNull();
+    // error 소견은 적용을 막지 않는다 — 다만 접힌 채로 숨기지도 않는다.
+    const flagged = await openInReview({ onApply: () => {}, errorIssue: "통행 불가 칸이 생깁니다" });
+    expect(findByTestId(flagged.root, "region-task-diagnostics")?.getAttribute("open")).not.toBeNull();
+    expect(findByTestId(flagged.root, "region-task-verdict")?.textContent).toBe("확인 1건");
+    // "적용 차단" 목록은 존재 자체가 사라졌다 — 소견은 진단 안에만 있다.
+    expect(findByTestId(flagged.root, "region-task-blockers")).toBeNull();
   });
 
   it("검토에 들어오면 적용 버튼이 포커스를 받는다", async () => {
