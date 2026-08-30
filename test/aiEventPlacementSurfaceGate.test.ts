@@ -161,13 +161,20 @@ function classifySource(file: string, source: string): InsertionHit[] {
   const helpers = localFunctions(parsed);
   const eventArrayAliases = new Set<string>();
   const collectAliases = (node: ts.Node): void => {
-    if (
-      ts.isVariableDeclaration(node)
-      && ts.isIdentifier(node.name)
-      && node.initializer
-      && terminalName(node.initializer) === "events"
-    ) {
-      eventArrayAliases.add(node.name.text);
+    if (ts.isVariableDeclaration(node) && node.initializer) {
+      if (ts.isIdentifier(node.name) && terminalName(node.initializer) === "events") {
+        eventArrayAliases.add(node.name.text);
+      }
+      // const { events: queue } = map — 꺼낸 속성이 events 인지로 판정한다. 이 형태는 초기자가 map 이라
+      // terminalName 이 events 가 아니어서 위 분기로는 안 잡힌다.
+      if (ts.isObjectBindingPattern(node.name)) {
+        for (const element of node.name.elements) {
+          const property = element.propertyName ?? element.name;
+          if (ts.isIdentifier(property) && property.text === "events" && ts.isIdentifier(element.name)) {
+            eventArrayAliases.add(element.name.text);
+          }
+        }
+      }
     }
     ts.forEachChild(node, collectAliases);
   };
@@ -253,6 +260,19 @@ describe("AI 이벤트 배치 표면 게이트", () => {
     const source = [
       "function createEvent(map: GameMap): void {",
       "  const queue = map.events;",
+      "  queue.push({ id: 'probe', x: 0, y: 0 });",
+      "}",
+    ].join("\n");
+
+    expect(classifySource("src/editor/tools/probeTools.ts", source)).toMatchObject([
+      { line: 3, functionName: "createEvent", kind: "events.push", guarded: false },
+    ]);
+  });
+
+  it("구조 분해로 이름을 바꾼 별칭 push도 삽입으로 잡는다", () => {
+    const source = [
+      "function createEvent(map: GameMap): void {",
+      "  const { events: queue } = map;",
       "  queue.push({ id: 'probe', x: 0, y: 0 });",
       "}",
     ].join("\n");
