@@ -192,7 +192,8 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   box-sizing: border-box;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: visible;
+  overflow-x: visible;
+  overflow-y: auto;
 }
 
 .basic-left-rail.is-icon-rail {
@@ -203,7 +204,7 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   height: 100%;
   padding: 6px 0 8px;
   position: relative;
-  width: var(--basic-rail-width, 72px);
+  width: var(--basic-rail-width);
 }
 
 .basic-rail-icons {
@@ -214,14 +215,14 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   gap: 2px;
 }
 
-/* Layer switcher sits under tools; panel toggles pin near mid-bottom of rail. */
+/* Layer switcher and panel entry points stay together in the rail flow. */
 .basic-rail-layer-switcher {
   flex-shrink: 0;
 }
 
 .basic-rail-panel-toggles {
-  margin-top: auto;
-  padding-top: 4px;
+  margin-top: 0;
+  padding-top: var(--space-1);
 }
 
 .basic-rail-btn {
@@ -292,46 +293,35 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   align-items: center;
   background: color-mix(in srgb, var(--editor-blue, #4A57D6) 26%, var(--mix-base));
   border: 1px solid color-mix(in srgb, var(--editor-blue, #4A57D6) 58%, transparent);
-  border-radius: 9px;
+  border-radius: var(--radius-m);
   color: var(--on-accent);
   cursor: pointer;
   display: flex;
   flex: 0 0 auto;
-  font: 700 11px/1.2 var(--font-ui, system-ui, sans-serif);
-  gap: 5px;
-  margin-top: 2px;
-  min-height: 38px;
-  padding: 5px;
+  flex-direction: column;
+  font: var(--font-weight-bold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  min-height: 48px;
+  padding: var(--space-1);
   position: relative;
-  width: 40px;
+  text-align: center;
+  width: calc(var(--basic-rail-width) - (2 * var(--space-1)));
 }
 
 .basic-pending-event-cta > span:not(.basic-pending-event-cta-mark) {
-  background: var(--editor-popover-bg, var(--bg-overlay));
-  border: 1px solid var(--editor-line-strong, var(--border-strong));
-  color: var(--editor-text, var(--text-1));
-  display: none;
-  left: calc(100% + 8px);
-  padding: 7px 8px;
-  position: absolute;
-  white-space: nowrap;
-  z-index: var(--z-flyout);
-}
-
-.basic-pending-event-cta > span:nth-child(2) {
-  border-radius: 7px 7px 0 0;
-  bottom: 50%;
+  background: transparent;
+  border: 0;
+  color: currentColor;
+  display: block;
+  padding: 0;
+  position: static;
+  white-space: normal;
 }
 
 .basic-pending-event-cta-coord {
-  border-radius: 0 0 7px 7px;
-  color: var(--editor-text-muted, var(--text-2)) !important;
-  top: 50%;
-}
-
-.basic-pending-event-cta:hover > span:not(.basic-pending-event-cta-mark),
-.basic-pending-event-cta:focus-visible > span:not(.basic-pending-event-cta-mark) {
-  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
 }
 
 .basic-pending-event-cta:hover,
@@ -442,23 +432,6 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
   image-rendering: pixelated;
 }
 
-/* Layer badge: compact corner chip that does not unbalance the 36px icon. */
-.basic-rail-badge {
-  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 88%, var(--bg-surface));
-  border: 1px solid color-mix(in srgb, var(--on-accent) 22%, transparent);
-  border-radius: 6px;
-  bottom: 1px;
-  box-shadow: 0 1px 2px rgba(60, 48, 32, 0.10);
-  color: var(--on-accent);
-  font: 700 8px/1 var(--font-ui, system-ui, sans-serif);
-  letter-spacing: -0.02em;
-  min-width: 12px;
-  padding: 2px 3px;
-  position: absolute;
-  right: 1px;
-  text-align: center;
-}
-
 .basic-rail-flyout {
   background: var(--editor-popover-bg, var(--bg-overlay));
   border: 1px solid var(--editor-line-strong, var(--border-strong));
@@ -466,12 +439,12 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
   box-shadow: var(--shadow-pop, 0 12px 32px rgba(60, 48, 32, 0.12));
   display: flex;
   flex-direction: column;
-  left: calc(100% + 6px);
+  left: calc(var(--basic-rail-width) + var(--space-2));
   max-height: min(78vh, calc(100vh - 80px));
-  position: absolute;
-  top: 6px;
+  position: fixed;
+  top: calc(var(--space-6) + var(--space-4) + var(--space-2));
   width: 300px;
-  z-index: var(--z-status);
+  z-index: var(--z-flyout);
 }
 
 /* 맵 플라이아웃: 이름 목록이 읽히도록 조금 넓게 */
@@ -519,6 +492,15 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
 
   .left-panel-stack[data-testid="left-palette-root"] {
     min-height: 0;
+  }
+
+  /* 초보 레일: 도구 6 + 레이어 3 + 패널 토글 2 = 11칸이 짧은 화면에 다 들어가야 한다.
+     실측(1024x600): min-height 48px 기준 레일 콘텐츠 592px > 가용 550px 라 「맵」 토글이
+     34px 접혀 스크롤 없이는 보이지 않았다. 11칸에서 6px씩 줄여 66px 을 회수하면
+     526px 로 내려와 스크롤 없이 전부 보인다. overflow-y:auto 는 더 극단적인 높이용 안전망으로 남긴다.
+     라벨은 한 줄이라 min-height 가 높이를 지배하므로 글자 크기는 건드리지 않는다. */
+  .basic-rail-btn {
+    min-height: 42px;
   }
 }
 

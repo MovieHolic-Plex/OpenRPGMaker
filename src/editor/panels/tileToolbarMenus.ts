@@ -169,7 +169,9 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
   const ruleCount = ruleAuditViolationCount();
   const historyCount = mapHistoryEntryCount();
   const highlighted = state.brushSize > 1 || ruleCount > 0;
-  const toggle = makeMenuToggle("overflow", "더 보기", panelOpen, highlighted, model.rerender);
+  const label = "더 보기";
+  const accessibleLabel = ruleCount > 0 ? `${label} — 규칙 위반 ${ruleCount}건` : label;
+  const toggle = makeMenuToggle("overflow", label, panelOpen, highlighted, model.rerender, accessibleLabel);
   if (ruleCount > 0) toggle.append(makeToolbarBadge(ruleCount, "rule-audit-badge", true));
   wrapper.append(toggle);
   if (!panelOpen) return wrapper;
@@ -377,13 +379,20 @@ function makeToolbarMenuWrapper(testId: string): HTMLElement {
   return el("div", { class: "oprn-toolbar-menu", dataset: { testid: testId } });
 }
 
-function makeMenuToggle(menu: OpenToolbarMenuId, label: string, expanded: boolean, active: boolean, rerender: () => void): HTMLButtonElement {
+function makeMenuToggle(
+  menu: OpenToolbarMenuId,
+  label: string,
+  expanded: boolean,
+  active: boolean,
+  rerender: () => void,
+  accessibleLabel = label,
+): HTMLButtonElement {
   return el("button", {
     class: "oprn-tile-tool" + (active ? " active" : ""),
     attrs: {
       "aria-expanded": String(expanded),
       "aria-haspopup": "menu",
-      "aria-label": label,
+      "aria-label": accessibleLabel,
       title: label,
     },
     children: [makeMenuIcon(menu)],

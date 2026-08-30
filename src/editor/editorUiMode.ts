@@ -34,8 +34,6 @@ export type EditorChromeVisibility = {
   readonly standardWelcome: boolean;
   // 상태바 칸 밀도 — beginner: 레이어·맵·저장(+조건부 힌트/설계도/AI 오류).
   readonly statusbarDensity: "beginner" | "full";
-  // 아이콘 레일 텍스트 라벨 — persistent: 항상 노출, hover: 호버 시에만.
-  readonly railLabels: "persistent" | "hover";
   // 데이터베이스 내비게이션 노출 범위 — grouped: 카테고리 그룹, all: 전체 평면.
   // 예전 "common"(자주 쓰는 6개 + 「모든 자료」 접이식)은 없앴다 — 초보도 카테고리로 찾는다.
   readonly databaseNav: "grouped" | "all";
@@ -60,7 +58,6 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
   coachMarks: true,
   standardWelcome: false,
   statusbarDensity: "beginner",
-  railLabels: "persistent",
   databaseNav: "grouped",
   eventBeginnerChrome: true,
   jargonStyle: "plain",
@@ -79,7 +76,6 @@ const STANDARD_CHROME: EditorChromeVisibility = {
   coachMarks: false,
   standardWelcome: true,
   statusbarDensity: "full",
-  railLabels: "hover",
   databaseNav: "grouped",
   eventBeginnerChrome: true,
   jargonStyle: "plain",
@@ -98,7 +94,6 @@ const EXPERT_CHROME: EditorChromeVisibility = {
   coachMarks: false,
   standardWelcome: false,
   statusbarDensity: "full",
-  railLabels: "hover",
   // 전문가도 그룹 사이드바를 쓴다 — 24개 플랫 리스트보다 그룹 스캔이 빠르다.
   // "all"(플랫)은 renderDatabasePanel 의 폴백 분기로만 남는다.
   databaseNav: "grouped",

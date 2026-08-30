@@ -14,9 +14,10 @@
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { editorState } from "@/editor/editorState";
-import { getEditorUiMode, setEditorUiMode, type EditorUiMode } from "@/editor/editorUiMode";
+import { getEditorUiMode, setEditorUiMode, getEditorChrome, type EditorUiMode } from "@/editor/editorUiMode";
 import type { ChatDock } from "@/editor/chatDock";
 import { allPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
+import { dockZoneHasHost, isLeftDockPinned } from "@/editor/workspace/leftDockPanels";
 import {
   dockOf,
   isWorkspaceDensity,
@@ -262,28 +263,41 @@ function renderPanelRow(id: PanelId, title: string, close: () => void): HTMLElem
   const layout = getWorkspaceLayout();
   const zone = dockOf(layout, id);
   const row = el("div", { class: "workspace-panel-row", dataset: { testid: `workspace-panel-row-${id}` } });
-  row.append(
-    el("button", {
-      class: `oprn-menu-command workspace-panel-toggle${zone ? " is-active" : ""}`,
-      text: `${zone ? "☑" : "☐"} ${title}`,
-      attrs: {
-        type: "button",
-        role: "menuitemcheckbox",
-        "aria-checked": zone ? "true" : "false",
-        title: zone ? `${title} 패널 닫기` : `${title} 패널 열기`,
+  // 초보 모드의 타일 패널은 아이콘 레일의 호스트다 — 끄면 사이드바가 빈다. 눌러도 되지 않는
+  // 체크박스를 주는 대신 이유를 붙인 고정 행으로 그린다(계획서 §2-1).
+  const pinned = isLeftDockPinned(id, getEditorChrome().paletteRail);
+  const toggle = el("button", {
+    class: `oprn-menu-command workspace-panel-toggle${zone || pinned ? " is-active" : ""}`,
+    text: `${zone || pinned ? "☑" : "☐"} ${title}`,
+    attrs: {
+      type: "button",
+      role: "menuitemcheckbox",
+      "aria-checked": zone || pinned ? "true" : "false",
+      ...(pinned ? { "aria-disabled": "true" } : {}),
+      title: pinned
+        ? `초보 모드에서는 ${title} 패널이 도구 레일을 담고 있어 끌 수 없습니다`
+        : zone ? `${title} 패널 닫기` : `${title} 패널 열기`,
+    },
+    dataset: { testid: `workspace-panel-toggle-${id}` },
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        if (pinned) return;
+        toggleWorkspacePanel(id);
+        close();
       },
-      dataset: { testid: `workspace-panel-toggle-${id}` },
-      on: {
-        click: (event) => {
-          event.stopPropagation();
-          toggleWorkspacePanel(id);
-          close();
-        },
-      },
-    }),
-  );
+    },
+  });
+  // 고정 행은 `aria-disabled` + 클릭 가드로만 막는다. `disabled` 속성을 걸면 버튼이 포커스를
+  // 받지 못해 **왜 끌 수 없는지 적어둔 title 에 키보드로 닿을 수 없다** — 메뉴 항목에서
+  // 이유를 읽어야 하는 쪽이 바로 키보드 사용자다.
+  row.append(toggle);
+  // 이동 칩은 **호스트가 실제로 마운트된 zone 만** 제시한다. right/bottom 도크를 아무도
+  // 마운트하지 않는 동안 칩을 보여주면 눌러도 아무 일이 없고, 그 뒤 메뉴는 이동이 일어난
+  // 척한다(계획서 §1-1 B-2).
   for (const target of ["left", "right"] as const) {
-    if (!zone || zone === target) continue;
+    if (!zone || zone === target || pinned) continue;
+    if (!dockZoneHasHost(target)) continue;
     row.append(
       el("button", {
         class: "workspace-panel-dock-chip",

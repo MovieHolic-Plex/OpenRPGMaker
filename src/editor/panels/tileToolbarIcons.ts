@@ -1,6 +1,7 @@
 type SvgIconName =
   | "brush" | "eraser" | "fill" | "inspector" | "pen" | "rect" | "round" | "select" | "template" | "undo"
-  | "eyedropper" | "event" | "tile" | "layers" | "map" | "hand" | "collision" | "more"
+  | "eyedropper" | "event" | "tile" | "layers" | "layerGround" | "layerOverlay" | "layerEvent"
+  | "map" | "hand" | "collision" | "more"
   | "terrain" | "structure" | "polish" | "npc" | "chest" | "combat" | "mood"
   | "composite" | "pin" | "save" | "warning" | "door" | "sign" | "shop"
   | "close" | "check";
@@ -77,6 +78,19 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M11 3l8 4.5-8 4.5-8-4.5z" } },
     { tag: "path", attrs: { d: "M3 12l8 4.5 8-4.5" } },
     { tag: "path", attrs: { d: "M3 16.5L11 21l8-4.5" } },
+  ],
+  layerGround: [
+    { tag: "path", attrs: { d: "M3 11l8-4.5 8 4.5-8 4.5z" } },
+    { tag: "path", attrs: { d: "M3 11v4l8 4.5 8-4.5v-4" } },
+  ],
+  layerOverlay: [
+    { tag: "path", attrs: { d: "M3 16l8-4 8 4-8 4z" } },
+    { tag: "path", attrs: { d: "M11 2l1.2 3.3 3.3 1.2-3.3 1.2L11 11 9.8 7.7 6.5 6.5l3.3-1.2z" } },
+  ],
+  layerEvent: [
+    { tag: "path", attrs: { d: "M4 16l7-4 7 4-7 4z" } },
+    { tag: "path", attrs: { d: "M11 16V3" } },
+    { tag: "path", attrs: { d: "M11 4h7l-2 2.5L18 9h-7" } },
   ],
   map: [
     { tag: "path", attrs: { d: "M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" } },

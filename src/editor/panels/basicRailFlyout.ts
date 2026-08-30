@@ -21,7 +21,8 @@ export function basicFlyoutReducer(state: BasicFlyoutState, action: BasicFlyoutA
   switch (action.type) {
     case "toggle":
       if (state.open === action.id) return { open: null, pinned: false };
-      return { open: action.id, pinned: state.pinned };
+      // 다른 패널로 전환하면 pinned 는 따라가지 않는다 — 사용자가 고정한 것은 이전 패널이다.
+      return { open: action.id, pinned: false };
     case "outside-click":
       if (state.open === null || state.pinned) return state;
       return { open: null, pinned: false };
@@ -37,22 +38,28 @@ export function basicFlyoutReducer(state: BasicFlyoutState, action: BasicFlyoutA
 export interface FlyoutShellOptions {
   readonly title: string;
   readonly pinned: boolean;
+  /** 닫을 때 포커스를 되돌려줄 토글의 data-testid (플라이아웃을 연 그 버튼). */
+  readonly anchorTestId: string;
   readonly onPinToggle: () => void;
   readonly onClose: () => void;
   readonly body: HTMLElement;
 }
 
 export function buildFlyoutShell(options: FlyoutShellOptions): HTMLElement {
+  // 핀 버튼의 상태 문구는 한 군데에서 정해 title 과 aria-label 이 갈라지지 않게 한다.
+  // 이모지(📌)는 장식이므로 aria-hidden 으로 숨겼다 — 이전엔 이게 유일한 접근명이었다.
+  const pinStateLabel = options.pinned ? "고정 해제" : "열어두기(고정)";
   const pin = el("button", {
     class: "basic-flyout-pin" + (options.pinned ? " is-pinned" : ""),
-    text: "📌",
     attrs: {
       type: "button",
-      title: options.pinned ? "고정 해제" : "열어두기(고정)",
+      title: pinStateLabel,
+      "aria-label": `${options.title} ${pinStateLabel}`,
       "aria-pressed": String(options.pinned),
     },
     dataset: { testid: "basic-flyout-pin" },
     on: { click: options.onPinToggle },
+    children: [el("span", { text: "\u{1F4CC}", attrs: { "aria-hidden": "true" } })],
   });
   const close = el("button", {
     class: "basic-flyout-close",
@@ -63,8 +70,10 @@ export function buildFlyoutShell(options: FlyoutShellOptions): HTMLElement {
   });
   return el("div", {
     class: "basic-rail-flyout",
-    attrs: { role: "dialog", "aria-label": options.title },
-    dataset: { testid: "basic-rail-flyout" },
+    // 모달이 아니다 — 포커스를 가두지도, 밖을 inert 로 만들지도 않는다. role="dialog" 는
+    // 스크린리더에게 트랩과 모달 반환 계약을 약속하므로 라벨 있는 group 을 쓴다.
+    attrs: { role: "group", "aria-label": options.title },
+    dataset: { testid: "basic-rail-flyout", focusFallbackAnchor: options.anchorTestId },
     children: [
       el("div", {
         class: "basic-flyout-head",

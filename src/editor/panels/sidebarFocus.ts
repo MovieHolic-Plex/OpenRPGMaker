@@ -27,8 +27,8 @@ export function captureFocus(container: HTMLElement | null): FocusSnapshot | nul
     return null;
   }
 
-  let fallbackAnchorTestId: string | undefined;
-  if (isInsideOverflowDropdown(active)) {
+  let fallbackAnchorTestId: string | undefined = closestFocusFallbackAnchor(active);
+  if (!fallbackAnchorTestId && isInsideOverflowDropdown(active)) {
     fallbackAnchorTestId = "oprn-tool-overflow";
   }
 
@@ -96,8 +96,8 @@ export function restoreFocus(container: HTMLElement | null, snapshot: FocusSnaps
 }
 
 /**
- * 좌측 패널 내 [role="toolbar"] 요소들에 대해 roving tabindex 를 적용하고
- * 방향키(ArrowLeft/ArrowRight/ArrowUp/ArrowDown), Home, End 키보드 탐색을 위임 처리한다.
+ * 좌측 패널 내 도구막대([role="toolbar"])와 roving 을 명시한 그룹([data-roving="true"])에
+ * roving tabindex 를 적용하고 방향키(ArrowLeft/Right/Up/Down), Home, End 를 위임 처리한다.
  */
 export function applyRovingTabindex(container: HTMLElement): void {
   for (const toolbar of findToolbars(container)) {
@@ -110,21 +110,24 @@ export function cssEscape(value: string): string {
 }
 
 /**
- * 좌패널 안의 도구막대를 찾는다.
+ * 좌패널 안에서 roving tabindex 를 적용할 그룹을 찾는다.
+ *
+ * [role="toolbar"] 외에 `data-roving="true"` 를 명시한 그룹도 대상이다 — 초보 아이콘 레일의
+ * 도구/레이어/패널 토글 그룹이 각각 한 개의 탭 스톱이 되도록 같은 헬퍼를 재사용한다.
  *
  * querySelectorAll 한 방으로 끝내고 싶지만 수동 스캔을 남긴 이유가 있다: 테스트 하네스
  * test/fakeDom.ts 의 matchesSelector 는 `.class` / `[data-*=...]` / 태그만 해석하고
  * `[role="toolbar"]` 같은 일반 속성 선택자를 매칭하지 못해 빈 배열을 준다(실측: 이 대비
  * 경로를 지우자 test/sidebarFocus.test.ts 의 화살표 이동 케이스가 결정적으로 깨졌다).
- * 실제 브라우저에서는 첫 줄에서 끝나고, 스캔은 하네스에서만 쓰인다.
+ * 두 결과를 합집합으로 쓴다 — 선택자가 일부만 매칭돼도(하네스) 누락이 생기지 않는다.
  */
 function findToolbars(container: HTMLElement): HTMLElement[] {
-  const matched = Array.from(container.querySelectorAll<HTMLElement>('[role="toolbar"], .oprn-tile-toolbar, [data-testid="oprn-tile-toolbar"]'));
-  if (matched.length > 0) return matched;
+  const found: HTMLElement[] = Array.from(
+    container.querySelectorAll<HTMLElement>('[role="toolbar"], .oprn-tile-toolbar, [data-testid="oprn-tile-toolbar"], [data-roving="true"]'),
+  );
 
-  const found: HTMLElement[] = [];
   const scan = (node: Element): void => {
-    if (node instanceof HTMLElement && isToolbar(node)) found.push(node);
+    if (node instanceof HTMLElement && isToolbar(node) && !found.includes(node)) found.push(node);
     for (const child of Array.from(node.children)) scan(child);
   };
   scan(container);
@@ -134,9 +137,23 @@ function findToolbars(container: HTMLElement): HTMLElement[] {
 function isToolbar(node: HTMLElement): boolean {
   return (
     node.getAttribute("role") === "toolbar" ||
+    node.dataset.roving === "true" ||
     node.classList.contains("oprn-tile-toolbar") ||
     node.dataset.testid === "oprn-tile-toolbar"
   );
+}
+
+/**
+ * 이 노드의 조상이 "포커스된 노드가 사라지면 여기로 돌려보내라" 는 앵커를 선언했는가.
+ * 플라이아웃처럼 닫힘 액션이 포커스된 버튼 자체를 없애는 표면이 자기 토글을 지정한다.
+ * (오버플로 드롭다운과 같은 계약을 데이터로 일반화한 것 — 병렬 경로를 새로 만들지 않는다.)
+ */
+function closestFocusFallbackAnchor(node: HTMLElement | null): string | undefined {
+  for (let n: HTMLElement | null = node; n; n = n.parentElement) {
+    const anchor = n.dataset?.focusFallbackAnchor;
+    if (anchor) return anchor;
+  }
+  return undefined;
 }
 
 /**
@@ -169,13 +186,15 @@ function setupToolbarRoving(toolbar: HTMLElement): void {
     const buttons = getEnabledButtons();
     if (buttons.length === 0) return;
 
-    // 활성(active 또는 aria-pressed="true" 또는 aria-checked="true") 버튼이 우선
+    // 활성(active / aria-pressed / aria-checked / aria-current) 버튼이 우선.
+    // aria-current 는 상호배타 선택(도구·레이어)의 표현이다.
     let activeIndex = buttons.findIndex(
       (b) =>
         b.classList.contains("active") ||
         b.classList.contains("is-active") ||
         b.getAttribute("aria-pressed") === "true" ||
-        b.getAttribute("aria-checked") === "true"
+        b.getAttribute("aria-checked") === "true" ||
+        b.getAttribute("aria-current") === "true"
     );
 
     // 포커스가 툴바 버튼 중 하나에 있는 경우 그 버튼이 activeIndex
