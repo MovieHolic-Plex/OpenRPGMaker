@@ -95,3 +95,74 @@ html[data-clean-evidence="true"] [data-testid="runtime-debug-panel"],
 html[data-clean-evidence="true"] [data-testid="runtime-coordinate-debug"] {
   display: none !important;
 }
+
+.oprn-game-file-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 520px;
+  padding: var(--space-6) var(--space-5);
+  border: var(--stroke-2) dashed var(--border-default);
+  border-radius: var(--radius-l);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  text-align: center;
+}
+
+.oprn-game-file-picker[data-drop-active="true"] {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
+}
+
+.oprn-game-file-picker-title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.oprn-game-file-picker-help {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.oprn-game-file-picker-button {
+  padding: var(--space-2) var(--space-4);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-m);
+  background: var(--control-bg);
+  color: var(--text-1);
+  font: inherit;
+  cursor: pointer;
+}
+
+.oprn-game-file-picker-button:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.oprn-game-file-picker-button:focus-visible {
+  outline: var(--focus-ring);
+}
+
+.oprn-game-file-picker-button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.oprn-game-file-picker-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.oprn-game-file-picker-status {
+  margin: 0;
+  min-height: 1.4em;
+  color: var(--warning);
+  font-size: var(--font-size-sm);
+}
