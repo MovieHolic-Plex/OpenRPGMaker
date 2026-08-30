@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>흥정 경제 설계 — Recettear형 · 2026-08-30</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --ink: light-dark(#203225, #edf7e9);
+      --muted: light-dark(#647365, #aebcab);
+      --page: light-dark(#f5f0df, #111912);
+      --paper: light-dark(#fffdf5, #1b261c);
+      --paper-2: light-dark(#eee6cf, #243126);
+      --line: light-dark(#d8c9a7, #405243);
+      --green: light-dark(#2f6d3e, #8fcf8d);
+      --green-deep: light-dark(#234e2e, #b6e6ad);
+      --gold: light-dark(#9b671f, #f0c36c);
+      --blue: light-dark(#315d82, #8bbce4);
+      --danger: light-dark(#9b3a28, #e08a78);
+      --shadow: 0 18px 55px color-mix(in srgb, #111 18%, transparent);
+      --radius: 18px;
+      --chart-surface: light-dark(#fcfcfb, #1a1a19);
+      --chart-ink: light-dark(#1a1a19, #f4f4f2);
+      --chart-muted: light-dark(#5c5c57, #b3b3ad);
+      --chart-grid: light-dark(#e6e6e1, #2e2e2c);
+      --chart-lv1: light-dark(#2a78d6, #3987e5);
+      --chart-lv3: light-dark(#eb6834, #d95926);
+      --chart-lv5: light-dark(#1baf7a, #199e70);
+      --chart-zone: light-dark(#ecece8, #262624);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 30rem),
+        radial-gradient(circle at 90% 16%, color-mix(in srgb, var(--green) 12%, transparent), transparent 28rem),
+        var(--page);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+    button, code, pre { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 20px; font-size: clamp(42px, 6vw, 72px); line-height: 1.02; letter-spacing: -.065em; }
+    h2 { margin-bottom: 12px; font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.045em; }
+    h3 { margin-bottom: 8px; font-size: 18px; letter-spacing: -.025em; }
+    code, .mono {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: .92em;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+      background: color-mix(in srgb, var(--page) 87%, transparent);
+      backdrop-filter: blur(14px);
+    }
+    .topbar-inner {
+      width: min(1180px, calc(100% - 32px)); min-height: 58px; margin: auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    }
+    .brand { font-weight: 800; letter-spacing: -.03em; white-space: nowrap; }
+    .nav { display: flex; align-items: center; gap: 18px; overflow-x: auto; }
+    .nav a { color: var(--muted); font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+    .nav a:hover { color: var(--green); }
+    main { width: min(1180px, calc(100% - 32px)); margin: auto; }
+    .hero {
+      min-height: 510px; padding: 78px 0 54px;
+      display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr);
+      align-items: center; gap: 52px;
+    }
+    .eyebrow {
+      margin: 0 0 12px; color: var(--green); font-size: 13px; font-weight: 900;
+      letter-spacing: .16em; text-transform: uppercase;
+    }
+    .hero-copy > p:not(.eyebrow) { max-width: 630px; color: var(--muted); font-size: 18px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 26px; }
+    .chip {
+      padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px;
+      background: color-mix(in srgb, var(--paper) 78%, transparent);
+      color: var(--green-deep); font-size: 13px; font-weight: 800;
+    }
+    .hero-frame {
+      position: relative; padding: 12px; border: 1px solid var(--line);
+      border-radius: 28px; background: var(--paper); box-shadow: var(--shadow);
+      transform: rotate(1.2deg);
+    }
+    .hero-frame::before {
+      content: "설계"; position: absolute; top: -18px; right: 22px; z-index: 2;
+      padding: 8px 14px; border-radius: 9px; background: var(--gold); color: var(--page);
+      font-size: 13px; font-weight: 900; letter-spacing: .08em; transform: rotate(2deg);
+    }
+    .hero-frame img { width: 100%; aspect-ratio: 16 / 10; border-radius: 19px; object-fit: cover; object-position: top; }
+    section { padding: 78px 0; border-top: 1px solid var(--line); }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+    .section-head p { max-width: 620px; margin-bottom: 4px; color: var(--muted); }
+    .summary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .summary-card {
+      min-height: 176px; padding: 20px; border: 1px solid var(--line);
+      border-radius: var(--radius); background: var(--paper);
+    }
+    .summary-card .number { color: var(--green); font-size: 34px; font-weight: 900; letter-spacing: -.05em; }
+    .summary-card p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+    .callout {
+      margin-top: 22px; padding: 22px 24px; border-left: 5px solid var(--gold);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: color-mix(in srgb, var(--gold) 10%, var(--paper)); font-weight: 700;
+    }
+    table.data {
+      width: 100%; border-collapse: collapse; background: var(--paper);
+      border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+    }
+    table.data th, table.data td {
+      padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--line);
+      vertical-align: top; font-size: 14px;
+    }
+    table.data th { color: var(--muted); font-size: 12px; letter-spacing: .04em; }
+    table.data tr:last-child td { border-bottom: 0; }
+    table.data code { color: var(--green-deep); }
+    table.data th:nth-child(1), table.data td:nth-child(1) { white-space: nowrap; width: 6.5em; }
+    table.data th:nth-child(4), table.data td:nth-child(4) { white-space: nowrap; width: 10.5em; }
+    .status-dead { font-weight: 800; color: var(--danger); }
+    .status-live { font-weight: 800; color: var(--green-deep); }
+    .status-half { font-weight: 800; color: var(--gold); }
+    .lane-map {
+      margin-top: 28px; padding: 22px; border: 1px solid var(--line);
+      border-radius: var(--radius); background: var(--paper);
+    }
+    .lane-map svg { width: 100%; height: auto; display: block; }
+    .arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .arch {
+      padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper);
+    }
+    .arch.chosen { border-color: var(--green); box-shadow: inset 0 0 0 1px var(--green); }
+    .arch small { display: block; color: var(--muted); font-weight: 800; letter-spacing: .08em; }
+    .arch p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+    pre.code {
+      margin: 0; padding: 18px 20px; overflow: auto; border: 1px solid var(--line);
+      border-radius: var(--radius); background: var(--paper-2); font-size: 13px; line-height: 1.55;
+    }
+    .sm-svg { width: 100%; height: auto; display: block; }
+    .chart-wrap {
+      padding: 18px; border: 1px solid var(--line); border-radius: var(--radius);
+      background: var(--chart-surface); color: var(--chart-ink);
+    }
+    .chart-toolbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 8px; }
+    .chart-toolbar h3 { margin: 0; color: var(--chart-ink); }
+    .chart-toolbar p { margin: 0; color: var(--chart-muted); font-size: 13px; }
+    .view-toggle { display: flex; gap: 6px; }
+    .view-toggle button {
+      padding: 7px 12px; border: 1px solid var(--chart-grid); border-radius: 9px;
+      background: transparent; cursor: pointer; font-weight: 800; font-size: 13px;
+    }
+    .view-toggle button[aria-pressed="true"] { background: var(--chart-ink); color: var(--chart-surface); }
+    .chart-svg { width: 100%; height: auto; display: block; }
+    .chart-legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 8px 0 0; font-size: 13px; font-weight: 700; color: var(--chart-ink); }
+    .swatch { width: 18px; height: 3px; display: inline-block; vertical-align: middle; margin-right: 6px; border-radius: 2px; }
+    #chart-table { display: none; overflow: auto; }
+    #chart-table table { width: 100%; border-collapse: collapse; color: var(--chart-ink); }
+    #chart-table th, #chart-table td { padding: 8px 10px; border-bottom: 1px solid var(--chart-grid); font-size: 13px; text-align: right; }
+    #chart-table th:first-child, #chart-table td:first-child { text-align: left; }
+    .shop-mock {
+      display: grid; grid-template-rows: auto auto auto; min-height: 0;
+      border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+      background: #1a221c; color: #edf7e9; font-size: 14px;
+    }
+    .shop-topbar { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 14px 16px; background: #243126; border-bottom: 1px solid #405243; }
+    .shop-gold { font-weight: 900; color: #f0c36c; }
+    .shop-main { display: grid; grid-template-columns: 1.05fr .95fr; }
+    .shop-list { padding: 10px; border-right: 1px solid #405243; }
+    .shop-row { display: flex; justify-content: space-between; padding: 9px 10px; border-radius: 8px; }
+    .shop-row.active { background: #2f6d3e; }
+    .shop-side { padding: 16px; display: grid; gap: 10px; align-content: start; }
+    .offer-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px dashed #8fcf8d; border-radius: 10px; }
+    .offer-bar b { font-size: 28px; letter-spacing: -.04em; }
+    .mood { font-weight: 800; }
+    .shop-prompt { padding: 12px 16px; background: #243126; border-top: 1px solid #405243; color: #aebcab; }
+    .proof { margin-top: 28px; padding: 26px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper-2); }
+    .proof-row { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 18px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .proof-row:last-child { border-bottom: 0; }
+    .proof-row span { color: var(--muted); font-weight: 700; }
+    .proof-row code { min-width: 0; overflow-wrap: anywhere; color: var(--green-deep); }
+    .stage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .stage { padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .stage .k { color: var(--gold); font-weight: 900; letter-spacing: .08em; font-size: 12px; }
+    .exclude { display: grid; gap: 12px; }
+    .exclude > div { padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .footer { padding: 24px 0 42px; color: var(--muted); font-size: 12px; text-align: center; }
+    .sources a { color: var(--green-deep); }
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding-top: 54px; }
+      .hero-frame { max-width: 680px; transform: none; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .arch-grid, .shop-main, .stage-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      .proof-row { grid-template-columns: 1fr; gap: 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">rpg-zzu · 경제 설계</div>
+      <nav class="nav">
+        <a href="#dx">진단</a>
+        <a href="#research">조사</a>
+        <a href="#core">코어</a>
+        <a href="#curve">곡선</a>
+        <a href="#ui">화면</a>
+        <a href="#invariants">불변식</a>
+        <a href="#plan">단계</a>
+        <a href="#out">제외</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Design report · HEAD a7ffe6c6 · 2026-08-30</p>
+        <h1>경제는 이미 선언돼 있다. 돌아가지만 않는다.</h1>
+        <p>방향은 Recettear형 흥정. 산출물은 이 설계 보고서. 구현이 아니라 잇는 일 — <code>ShopEconomyConfig.haggleEnabled</code>는 선언만 있고 읽는 곳이 0개다. 같은 상태의 저작 필드가 14개다.</p>
+        <div class="chips">
+          <span class="chip">흥정 (Recettear)</span>
+          <span class="chip">P0 가격 함수 단일화</span>
+          <span class="chip">임계값 · 확률 금지</span>
+          <span class="chip">sell &lt; buy 불변</span>
+          <span class="chip">HTML 설계만 · 코드 미변경</span>
+        </div>
+      </div>
+      <figure class="hero-frame">
+        <img src="economy-haggle-design-assets/shop-editor-mockup-v3.png" alt="상점 처리 편집기 목업. 확장 기능 아래에 동가 가격 OFF, 흥정 허용 OFF 토글이 그려져 있다.">
+      </figure>
+    </header>
+
+    <section id="dx">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">01 · 진단</p>
+          <h2>죽은 표면 5단</h2>
+        </div>
+        <p>목업 v3의 「흥정 허용」 토글은 그림이다. <code>commandBodyCommerce.ts</code>는 <code>economy</code>를 저작하지 않는다. 런타임은 정가·반값만 쓴다.</p>
+      </div>
+      <div class="summary-grid">
+        <article class="summary-card"><div class="number">9</div><p>순수 헬퍼가 src+test에서 선언 1곳뿐. 호출 0.</p></article>
+        <article class="summary-card"><div class="number">10</div><p>타입 전용 필드. 파일 1, 참조 1 — 전부 <code>events.ts</code>.</p></article>
+        <article class="summary-card"><div class="number">4</div><p>lint·참조 무결성만 통과하는 장부. 플레이 경로 없음.</p></article>
+        <article class="summary-card"><div class="number">2</div><p>세션에 쓰이고 저장되지만 가격에 안 읽힘.</p></article>
+        <article class="summary-card"><div class="number">2</div><p>완전 사석 세션 필드. 세이브 sanitize만 존재.</p></article>
+      </div>
+      <div class="callout">만드는 일이 아니다. 선언된 계약과 죽은 헬퍼를 런타임 가격 경로에 잇는 일이다. 사용자가 고른 흥정이 그 최단 경로다 — <code>haggleEnabled</code> 자체가 죽은 필드다.</div>
+      <table class="data" style="margin-top:28px">
+        <thead>
+          <tr><th>층</th><th>심볼</th><th>위치</th><th>상태</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>헬퍼 사석</td>
+            <td><code>applyHaggleDiscount</code> <code>applyDynamicMarkup</code> <code>resolveLoyaltyDiscount</code> <code>resolveClosingSaleDiscount</code> <code>shouldRestock</code> <code>isBlackMarketOpen</code> <code>isFestivalShopOpen</code> <code>clampShopCart</code> <code>clampShopBuyback</code></td>
+            <td><code>src/project/shopStock.ts:145–153</code></td>
+            <td class="status-dead">✕ 선언만 · 호출 0</td>
+          </tr>
+          <tr>
+            <td>타입 전용</td>
+            <td><code>haggleEnabled</code> <code>dynamicPricing</code> <code>closingSaleEnabled</code> <code>inflationFactor</code> <code>tradeRouteMarkup</code> <code>travelingRouteId</code> <code>blackMarketFlag</code> <code>festivalFlag</code> <code>restockPolicy</code> <code>discountRate</code></td>
+            <td><code>events.ts:114</code> · shop 348–356</td>
+            <td class="status-dead">✕ 파일 1 · 참조 1</td>
+          </tr>
+          <tr>
+            <td>무결성만</td>
+            <td><code>consignments</code> <code>buyback</code> <code>cartLines</code> <code>pawnTickets</code></td>
+            <td><code>projectLint.ts</code> · <code>commandReferenceValidation.ts</code></td>
+            <td class="status-half">△ 무결성만 · 플레이 0</td>
+          </tr>
+          <tr>
+            <td>기록만</td>
+            <td><code>shopLoyaltySpend</code> <code>shopTradeCounts</code></td>
+            <td><code>session.ts:197–198</code> · 기록 <code>playSceneShop.ts:156</code></td>
+            <td class="status-half">△ 저장됨 · 가격 미사용</td>
+          </tr>
+          <tr>
+            <td>완전 사석</td>
+            <td><code>shopPawnTickets</code> <code>shopLastRestockDayKey</code></td>
+            <td><code>session.ts:200–201</code> · sanitize only</td>
+            <td class="status-dead">✕ 세이브 검증만</td>
+          </tr>
+          <tr>
+            <td>실제 동작</td>
+            <td><code>shopServiceKind</code> <code>investmentLevel</code> <code>mileageRate</code> <code>resolveShopMerchantBudget</code> <code>shopMileagePoints</code></td>
+            <td>저작 <code>commandBodyCommerce.ts:620–650</code> · 런타임 <code>playSceneShop.ts:57</code></td>
+            <td class="status-live">✓ 동작</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="lane-map" aria-label="저작에서 런타임 가격까지 끊긴 경로">
+        <svg viewBox="0 0 1100 220" role="img">
+          <title>편집기 저작 → 프로젝트 JSON → 세션 장부 → 런타임 가격. 흥정·동가·충성 할인 경로는 끊김.</title>
+          <rect x="20" y="40" width="230" height="140" rx="16" fill="none" stroke="currentColor" opacity=".35"/>
+          <rect x="300" y="40" width="230" height="140" rx="16" fill="none" stroke="currentColor" opacity=".35"/>
+          <rect x="580" y="40" width="230" height="140" rx="16" fill="none" stroke="currentColor" opacity=".35"/>
+          <rect x="860" y="40" width="220" height="140" rx="16" fill="none" stroke="currentColor" opacity=".35"/>
+          <text x="135" y="28" text-anchor="middle" font-size="13" font-weight="800">편집기</text>
+          <text x="415" y="28" text-anchor="middle" font-size="13" font-weight="800">프로젝트 JSON</text>
+          <text x="695" y="28" text-anchor="middle" font-size="13" font-weight="800">세션 장부</text>
+          <text x="970" y="28" text-anchor="middle" font-size="13" font-weight="800">런타임 가격</text>
+          <text x="135" y="78" text-anchor="middle" font-size="13">investmentLevel ✓</text>
+          <text x="135" y="102" text-anchor="middle" font-size="13">mileageRate ✓</text>
+          <text x="135" y="126" text-anchor="middle" font-size="13">흥정 허용 ✕</text>
+          <text x="135" y="150" text-anchor="middle" font-size="13">동가 가격 ✕</text>
+          <text x="415" y="78" text-anchor="middle" font-size="13">economy 선언 ✓</text>
+          <text x="415" y="102" text-anchor="middle" font-size="13">haggleEnabled ✕읽기</text>
+          <text x="415" y="126" text-anchor="middle" font-size="13">helpers 9 ✕호출</text>
+          <text x="695" y="78" text-anchor="middle" font-size="13">loyaltySpend △기록</text>
+          <text x="695" y="102" text-anchor="middle" font-size="13">tradeCounts △기록</text>
+          <text x="695" y="126" text-anchor="middle" font-size="13">pawn / restock ✕</text>
+          <text x="970" y="78" text-anchor="middle" font-size="13">buy = item.price</text>
+          <text x="970" y="102" text-anchor="middle" font-size="13">sell = floor/2</text>
+          <text x="970" y="126" text-anchor="middle" font-size="13">흥정 뷰 ✕</text>
+          <text x="970" y="160" text-anchor="middle" font-size="12" font-weight="800">ShopView = menu|items</text>
+          <path d="M250 110 H300" stroke="currentColor" fill="none"/>
+          <path d="M530 110 H580" stroke="currentColor" fill="none"/>
+          <path d="M810 110 H860" stroke="currentColor" fill="none"/>
+        </svg>
+        <p style="margin:12px 0 0;color:var(--muted);font-size:13px">상태 표기는 글자(✓ / △ / ✕)다. 색만으로 구분하지 않는다. 판매 단가는 <code>upgrades.ts:47 resolveSellPrice</code> — 시즌·지역·거래량 없음.</p>
+      </div>
+    </section>
+
+    <section id="research">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">02 · 조사</p>
+          <h2>네 원형, 고른 건 하나</h2>
+        </div>
+        <p>재미의 단위가 다르다. 시세 시뮬이 아니라 한 손님과의 제안이 한 판인 쪽을 골랐다.</p>
+      </div>
+      <div class="arch-grid">
+        <article class="arch">
+          <small>A · 정적 가격</small>
+          <h3>Stardew Valley</h3>
+          <p>시장이 없다. Pierre 매입가는 시즌·작물 고정. 재미는 시간·타일·에너지 대비 이윤. 배송 상자는 하루 정산. rpg-zzu는 이 층을 이미 갖고 있다 (<code>DAY_TRANSITION_STAGES</code> 9단, <code>dayTransition.ts:23</code>).</p>
+        </article>
+        <article class="arch chosen">
+          <small>B · 채택 · 손님 단위 흥정</small>
+          <h3>Recettear / Potionomics / Moonlighter</h3>
+          <p>플레이어가 가격을 부른다. 실패하면 손님이 산다. Wikipedia: ineffectively bargaining will cause the buyer to leave without purchasing anything. 기존 <code>applyHaggleDiscount</code>는 확정 ≤15% 할인이라 최적 전략이 「항상 흥정」이다. 그래서 버린다.</p>
+        </article>
+        <article class="arch">
+          <small>C · 지역 스프레드</small>
+          <h3>대항해시대 · 수호전 교역소 · Mount &amp; Blade</h3>
+          <p>같은 물건의 가격이 장소마다 다르다. 무역로·재고가 가격을 민다. 맵·지역 경제 저작이 먼저 필요하고, 초보 작가가 돈복사 루프를 만들기 쉽다.</p>
+        </article>
+        <article class="arch">
+          <small>D · 공급자·점유율</small>
+          <h3>대항해시대 온라인 · 왕국 경영</h3>
+          <p>플레이어가 시장 점유를 움직인다. 제작기 규모에 비해 피드백 주기가 길고, NPC 에이전트 경제와 붙으면 프레임 예산을 먹는다.</p>
+        </article>
+      </div>
+      <div class="callout">돈복사 방어는 밸런스가 아니라 구조다. <code>sell &lt; buy</code>, 상인 골드 유한, 그 거래를 이용한 가격은 그 거래가 움직인다, 인덱스 클램프 + 평균회귀, 결정론으로 세이브 스컴 무효.</div>
+    </section>
+
+    <section id="core">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">03 · 흥정 코어</p>
+          <h2>임계값. 주사위 없음.</h2>
+        </div>
+        <p>DOM 없음, RNG 없음. <code>src/project/haggle.ts</code> 한 파일. 같은 입력은 세이브/로드 왕복 뒤에도 같은 판결.</p>
+      </div>
+      <pre class="code">export type HaggleRole = "playerBuys" | "playerSells";
+export type HaggleMood = "open" | "wary" | "cold";
+
+export type HaggleSetup = {
+  readonly role: HaggleRole;
+  readonly reference: number;   // 구매=정가, 판매=되팔기가
+  readonly reserve: number;     // 상대 한계선 (숨김)
+  readonly patience: number;    // 남은 제안 횟수
+  readonly insultRatio: number; // 넘으면 즉시 결렬
+};
+
+export type HaggleVerdict =
+  | { readonly kind: "accept";  readonly price: number }
+  | { readonly kind: "counter"; readonly price: number; readonly patience: number; readonly mood: HaggleMood }
+  | { readonly kind: "broken";  readonly reason: "insulted" | "exhausted" };
+
+// playerBuys : offer >= reserve → accept
+// playerSells: offer <= reserve → accept
+// reserve = hash(itemId, merchantKey, dayKey, attemptIndex) 로 지터
+// reserve(n+1) = reserve(n) + role_sign × drift × aggression(n)
+// aggression(n) = |offer(n) − reference| / reference
+// mood는 수락을 막지 않는다. 다음 예비선을 플레이어에게 불리하게 민다.</pre>
+      <p style="color:var(--muted);margin:18px 0 12px">기분으로 수락을 막으면 「1G씩 찔러 보기」가 최적이다. 예비선이 공격성에 비례해 달아나게 해서 그 전략을 죽인다. 확률 롤은 세이브 스컴을 최적 전략으로 만든다.</p>
+      <svg class="sm-svg" viewBox="0 0 1100 220" role="img" aria-label="흥정 상태 기계">
+        <title>items 뷰에서 흥정으로 들어가 accept / counter / broken 으로 분기</title>
+        <rect x="30" y="70" width="160" height="70" rx="12" fill="none" stroke="currentColor"/>
+        <text x="110" y="110" text-anchor="middle" font-size="14" font-weight="800">items</text>
+        <rect x="250" y="70" width="180" height="70" rx="12" fill="none" stroke="currentColor"/>
+        <text x="340" y="110" text-anchor="middle" font-size="14" font-weight="800">haggle</text>
+        <rect x="500" y="20" width="170" height="60" rx="12" fill="none" stroke="currentColor"/>
+        <text x="585" y="55" text-anchor="middle" font-size="13" font-weight="800">accept → 거래</text>
+        <rect x="500" y="95" width="170" height="60" rx="12" fill="none" stroke="currentColor"/>
+        <text x="585" y="130" text-anchor="middle" font-size="13" font-weight="800">counter · patience−1</text>
+        <rect x="500" y="170" width="250" height="40" rx="12" fill="none" stroke="currentColor"/>
+        <text x="625" y="196" text-anchor="middle" font-size="13" font-weight="800">broken → 이 방문 정가 고정</text>
+        <path d="M190 105 H250" stroke="currentColor" fill="none"/>
+        <path d="M430 90 C460 50 470 50 500 50" stroke="currentColor" fill="none"/>
+        <path d="M430 105 H500" stroke="currentColor" fill="none"/>
+        <path d="M430 120 C460 185 470 190 500 190" stroke="currentColor" fill="none"/>
+        <text x="800" y="55" font-size="13">handleShopTransaction(agreedPrice)</text>
+        <text x="800" y="130" font-size="13">←→ 제안 · Z 제시 · 대사 갱신</text>
+        <text x="800" y="196" font-size="13">session.shopHaggleState[key].broken</text>
+      </svg>
+      <div class="proof">
+        <div class="proof-row"><span>저작</span><code>ShopHaggleConfig { patience?: 1..5 기본 3; insultRatio?: 0.4..0.9 기본 0.6; maxDiscount?: 0..0.4 기본 0.25; skillId?; reactionSetId? }. 맨 boolean haggleEnabled: true 는 기본값. 목업 v3 「흥정 허용」 슬롯이 펼쳐진다.</code></div>
+        <div class="proof-row"><span>뷰</span><code>ShopView = "menu" | "items" | "haggle"  (현재 playSceneShopDom.ts:36 은 menu|items 뿐)</code></div>
+        <div class="proof-row"><span>거래</span><code>handleShopTransaction(..., agreedPrice) — 지금은 item.price / sellPrice(item) 고정 (playSceneShop.ts:334, :348)</code></div>
+        <div class="proof-row"><span>세션</span><code>shopHaggleState?: Record&lt;string, { patience: number; drift: number; broken?: boolean }&gt;  — sanitizeEconomyRecord 패턴 (economyValues.ts:26, saveSlots.ts:302)</code></div>
+      </div>
+    </section>
+
+    <section id="curve">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">04 · 위험·보상</p>
+          <h2>깎을수록 기대값이 무너진다</h2>
+        </div>
+        <p>스킬은 정점을 왼쪽으로 민다. 이중 축 없음. 차트 면은 보고서 종이색이 아니라 검증한 표면색이다.</p>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-toolbar">
+          <div>
+            <h3>할인 요구율 대비 기대 절약률</h3>
+            <p>시리즈 3 = 흥정 스킬 Lv1 / Lv3 / Lv5. 30–40% 대역은 결렬 급증.</p>
+          </div>
+          <div class="view-toggle" role="group" aria-label="차트 보기">
+            <button type="button" id="btn-chart" aria-pressed="true">차트</button>
+            <button type="button" id="btn-table" aria-pressed="false">표</button>
+          </div>
+        </div>
+        <div id="chart-figure">
+          <svg class="chart-svg" viewBox="0 0 880 420" role="img" aria-labelledby="chart-title">
+            <title id="chart-title">흥정 스킬 레벨별 기대 절약률. Lv1 정점 12%, Lv3 17%, Lv5 22%.</title>
+            <rect x="454" y="40" width="376" height="310" fill="var(--chart-zone)"/>
+            <text x="790" y="56" text-anchor="middle" font-size="11" fill="var(--chart-muted)">결렬 급증</text>
+            <g stroke="var(--chart-grid)" stroke-width="1" fill="none">
+              <line x1="78" y1="350" x2="830" y2="350"/>
+              <line x1="78" y1="288" x2="830" y2="288"/>
+              <line x1="78" y1="226" x2="830" y2="226"/>
+              <line x1="78" y1="164" x2="830" y2="164"/>
+              <line x1="78" y1="102" x2="830" y2="102"/>
+              <line x1="78" y1="40" x2="830" y2="40"/>
+            </g>
+            <g fill="var(--chart-muted)" font-size="12">
+              <text x="78" y="372" text-anchor="middle">0</text>
+              <text x="172" y="372" text-anchor="middle">5</text>
+              <text x="266" y="372" text-anchor="middle">10</text>
+              <text x="360" y="372" text-anchor="middle">15</text>
+              <text x="454" y="372" text-anchor="middle">20</text>
+              <text x="548" y="372" text-anchor="middle">25</text>
+              <text x="642" y="372" text-anchor="middle">30</text>
+              <text x="736" y="372" text-anchor="middle">35</text>
+              <text x="830" y="372" text-anchor="middle">40</text>
+              <text x="454" y="408" text-anchor="middle" fill="var(--chart-ink)">할인 요구율 (%)</text>
+              <text x="36" y="350" text-anchor="end">0</text>
+              <text x="36" y="288" text-anchor="end">5</text>
+              <text x="36" y="226" text-anchor="end">10</text>
+              <text x="36" y="164" text-anchor="end">15</text>
+              <text x="36" y="102" text-anchor="end">20</text>
+              <text x="36" y="46" text-anchor="end">25</text>
+              <text transform="translate(18 195) rotate(-90)" text-anchor="middle" fill="var(--chart-ink)">기대 절약률 (%)</text>
+            </g>
+            <polyline fill="none" stroke="var(--chart-lv1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              points="78,350 172,300.4 266,250.8 360,201.2 454,201.2 548,263.2 642,325.2 736,350 830,350"/>
+            <polyline fill="none" stroke="var(--chart-lv3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              points="78,350 172,288 266,238.4 360,176.4 454,139.2 548,164 642,238.4 736,312.8 830,350"/>
+            <polyline fill="none" stroke="var(--chart-lv5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              points="78,350 172,288 266,226 360,164 454,114.4 548,77.2 642,114.4 736,213.6 830,325.2"/>
+            <g id="markers"></g>
+            <text x="466" y="218" font-size="12" font-weight="800" fill="var(--chart-ink)">Lv1 · 12%</text>
+            <text x="466" y="130" font-size="12" font-weight="800" fill="var(--chart-ink)">Lv3 · 17%</text>
+            <text x="560" y="70" font-size="12" font-weight="800" fill="var(--chart-ink)">Lv5 · 22%</text>
+            <g id="hover" style="display:none">
+              <line id="hover-x" y1="40" y2="350" stroke="var(--chart-ink)" stroke-width="1" opacity=".45"/>
+              <rect id="tip-bg" rx="8" fill="var(--chart-surface)" stroke="var(--chart-grid)"/>
+              <text id="tip-text" font-size="12" fill="var(--chart-ink)"></text>
+            </g>
+          </svg>
+          <div class="chart-legend">
+            <span><i class="swatch" style="background:var(--chart-lv1)"></i>Lv1 · 정점 12%</span>
+            <span><i class="swatch" style="background:var(--chart-lv3)"></i>Lv3 · 정점 17% @ 20%</span>
+            <span><i class="swatch" style="background:var(--chart-lv5)"></i>Lv5 · 정점 22% @ 25%</span>
+          </div>
+        </div>
+        <div id="chart-table">
+          <table>
+            <thead>
+              <tr><th>할인 요구율 %</th><th>Lv1 기대 %</th><th>Lv3 기대 %</th><th>Lv5 기대 %</th></tr>
+            </thead>
+            <tbody id="chart-tbody"></tbody>
+          </table>
+        </div>
+        <p style="margin:12px 0 0;color:var(--chart-muted);font-size:12px">팔레트 재계산 2026-08-30. light <code>#2a78d6,#eb6834,#1baf7a</code> 표면 <code>#fcfcfb</code> 대비 4.30 / 3.12 / <strong>2.74</strong> — 2.74는 직접 라벨로 구제. dark <code>#3987e5,#d95926,#199e70</code> 표면 <code>#1a1a19</code> 대비 4.79 / 4.48 / 5.11 전부 ≥3:1. 인접 CVD ΔE76 deutan 최악 46, protan 최악 22. 시리즈 색은 선에만. 숫자는 잉크 토큰.</p>
+      </div>
+    </section>
+
+    <section id="ui">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">05 · 화면</p>
+          <h2>상점 셸에 흥정 뷰</h2>
+        </div>
+        <p>클래스 계약은 <code>runtime-shop-overlay / topbar / list-panel / detail-panel / prompt-panel</code>. 오버레이는 <code>.play-viewport</code> (<code>playSceneShop.ts:414</code>). 스테이지 scale을 타지 않는다.</p>
+      </div>
+      <div class="shop-mock" aria-label="흥정 화면 목업">
+        <div class="shop-topbar">
+          <div>「그 가격은 좀… 한 번만 더.」 · 인내 2</div>
+          <div class="shop-gold">소지 1,240 G · 상점 86 G</div>
+        </div>
+        <div class="shop-main">
+          <div class="shop-list">
+            <div class="shop-row">회복약 <span>40 G</span></div>
+            <div class="shop-row active">강철 검 <span>220 G</span></div>
+            <div class="shop-row">가죽 방패 <span>90 G</span></div>
+          </div>
+          <div class="shop-side">
+            <div>강철 검 · 기준가 220 G</div>
+            <div class="offer-bar">
+              <span>←→ 제안</span>
+              <b>185 G</b>
+              <span>Z 제시</span>
+            </div>
+            <div class="mood">기분 경계 · 다음 예비선이 달아나는 중</div>
+            <div style="color:#aebcab">결렬되면 이 방문에서 이 물건은 정가만.</div>
+          </div>
+        </div>
+        <div class="shop-prompt">구매 흥정 · 바닥가 floor(220/2)=110 · 모욕선 ≈ 132 G 아래는 즉시 결렬</div>
+      </div>
+    </section>
+
+    <section id="invariants">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">06 · 계약</p>
+          <h2>테스트로 잠글 다섯 불변식</h2>
+        </div>
+        <p>속성 테스트 가능해야 코어가 산다. 확률 함수는 이 표를 만족할 수 없다.</p>
+      </div>
+      <table class="data">
+        <thead><tr><th>#</th><th>불변식</th><th>실패 시</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>합의가는 구매 <code>[floor(reference/2), reference]</code>, 판매 <code>[reference, buy−1]</code> 안에 남는다.</td><td>돈복사 또는 상점 파산</td></tr>
+          <tr><td>2</td><td>같은 <code>(itemId, merchantKey, dayKey, attemptIndex)</code> → 같은 판결. 세이브/로드 왕복 포함.</td><td>세이브 스컴이 최적 전략</td></tr>
+          <tr><td>3</td><td><code>broken</code> 이후 그 방문+아이템은 정가만. <code>session.shopHaggleState</code>에 기록.</td><td>결렬 비용 소멸</td></tr>
+          <tr><td>4</td><td>흥정 뷰를 포기하면 골드·인벤토리 델타 0.</td><td>미리 깎인 채 취소</td></tr>
+          <tr><td>5</td><td>흥정은 <code>sell &lt; buy</code>를 깨지 않는다. 소셜 할인과 겹쳐도 <code>resolveSocialShopPriceMultiplier</code> 0.5 바닥 유지.</td><td>20G 사고 25G 되팔기</td></tr>
+        </tbody>
+      </table>
+      <div class="proof">
+        <div class="proof-row"><span>가격 단일화</span><code>upgrades.ts:47 resolveSellPrice · playSceneShopDom.ts:203 sellPrice → goodsSellPrice · handleShopTransaction :334 가 agreedPrice를 받도록</code></div>
+        <div class="proof-row"><span>진입점</span><code>playSceneShop.ts:60 ShopView · :142 onItem 이 haggleEnabled 이면 haggle 뷰 · :156 accrueShopLoyalty 는 합의가에 연동</code></div>
+        <div class="proof-row"><span>장부 sanitize</span><code>economyValues.ts:2 GOLD_MAX=9_999_999 · :26 sanitizeEconomyRecord · session.ts:535 changeGold 클램프 · saveSlots.ts:302</code></div>
+        <div class="proof-row"><span>하루 경계</span><code>dayTransition.ts:23, :86 draft 후 replaceSession. 동적 시세·재입고를 넣을 자리. 흥정 P1은 여기 안 탄다.</code></div>
+        <div class="proof-row"><span>장부 탭</span><code>lifeLedger.ts:16 에 시세/흥정 탭을 나중에 붙인다. P1 범위 밖.</code></div>
+        <div class="proof-row"><span>골드 수도꼭지</span><code>battleRewards.ts:7 collectBattleRewards — pity +8%p/miss cap 30%p, rng 주입. 흥정과 분리 유지.</code></div>
+      </div>
+    </section>
+
+    <section id="plan">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">07 · 단계</p>
+          <h2>P0는 방향과 무관하다</h2>
+        </div>
+        <p>AskUserQuestion에서 공통 전제로 박은 것. 흥정을 골라도 가격 함수부터 한 줄로 모은다.</p>
+      </div>
+      <div class="stage-grid">
+        <article class="stage">
+          <div class="k">P0 · 잇기</div>
+          <h3>죽은 장부를 가격에 연결</h3>
+          <p><code>resolvePrice()</code> 단일화. loyalty 할인 · dynamic markup · restock를 읽게. <code>shopPawnTickets</code> / <code>shopLastRestockDayKey</code>는 구현하거나 삭제. 어중간한 sanitize-only 필드를 남기지 않는다. 편집기에 목업 v3 토글 슬롯을 실제 필드로.</p>
+        </article>
+        <article class="stage">
+          <div class="k">P1 · 흥정</div>
+          <h3>코어 + 상점 뷰 + 5 테스트</h3>
+          <p><code>haggle.ts</code> 순수 코어. 상점 haggle 뷰. 저작 토글 4숫자. 불변식 1–5. 기존 <code>applyHaggleDiscount</code>는 삭제 또는 코어로 대체 — 확정 15% 할인으로 남기면 안 된다.</p>
+        </article>
+        <article class="stage">
+          <div class="k">P2 · 가게 주인</div>
+          <h3>역할만 뒤집힌 같은 코어</h3>
+          <p><code>kind: "shopkeeper"</code>, 손님 큐, 선반, 평판. Recettear 본편. 코어가 양방향에서 증명된 뒤에만. 손님 AI 경제·초 단위 시세는 넣지 않는다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="out">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">08 · 안 하는 것</p>
+          <h2>구조로 막는 세 가지</h2>
+        </div>
+      </div>
+      <div class="exclude">
+        <div><strong>NPC 에이전트 경제</strong> — <code>updateNpcSchedules</code> 프레임마다 A*가 예산을 태운 전례가 있다. 상점 흥정은 대화 한 판이다.</div>
+        <div><strong>초 단위 시세</strong> — 읽을 수 없다. 하루 경계 9단 트랜잭션이 이미 있다.</div>
+        <div><strong>통화량 인플레</strong> — 재미가 없고 작가가 원인을 못 본다. <code>inflationFactor</code> 필드는 선언만 있고, P0에서 삭제 후보.</div>
+      </div>
+    </section>
+
+    <section class="sources">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">참고</p>
+          <h2>근거와 경로</h2>
+        </div>
+      </div>
+      <ul>
+        <li>Recettear: An Item Shop's Tale — <a href="https://en.wikipedia.org/wiki/Recettear:_An_Item_Shop%27s_Tale">en.wikipedia.org/wiki/Recettear:_An_Item_Shop's_Tale</a></li>
+        <li>Stardew Valley 상점·작물 가격 — <a href="https://stardewvalleywiki.com">stardewvalleywiki.com</a></li>
+        <li>목업 원본 <code>docs/mockups/shop-processing-fullscreen-v3.png</code> → 자산 <code>reports/economy-haggle-design-assets/shop-editor-mockup-v3.png</code></li>
+        <li>코드 HEAD <code>a7ffe6c6</code>. 이 보고서는 소스 미변경. 디스크 추가는 <code>reports/economy-haggle-design-*</code> 뿐.</li>
+      </ul>
+    </section>
+  </main>
+  <p class="footer">rpg-zzu · 경제009 · /home/main/.herdr/worktrees/rpg-zzu/009/reports/economy-haggle-design-2026-08-30.html</p>
+  <script>
+    const xs = [0,5,10,15,20,25,30,35,40];
+    const series = {
+      lv1: [0,4,8,12,12,7,2,0,0],
+      lv3: [0,5,9,14,17,15,9,3,0],
+      lv5: [0,5,10,15,19,22,19,11,2]
+    };
+    const xOf = v => 78 + v * 18.8;
+    const yOf = v => 350 - v * 12.4;
+    const colors = { lv1: "var(--chart-lv1)", lv3: "var(--chart-lv3)", lv5: "var(--chart-lv5)" };
+    const markers = document.getElementById("markers");
+    xs.forEach((x, i) => {
+      ["lv1","lv3","lv5"].forEach(k => {
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("cx", xOf(x));
+        c.setAttribute("cy", yOf(series[k][i]));
+        c.setAttribute("r", "4.5");
+        c.setAttribute("fill", colors[k]);
+        c.setAttribute("stroke", "var(--chart-surface)");
+        c.setAttribute("stroke-width", "2");
+        markers.appendChild(c);
+      });
+    });
+    const tb = document.getElementById("chart-tbody");
+    xs.forEach((x, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${x}</td><td>${series.lv1[i]}</td><td>${series.lv3[i]}</td><td>${series.lv5[i]}</td>`;
+      tb.appendChild(tr);
+    });
+    const fig = document.getElementById("chart-figure");
+    const table = document.getElementById("chart-table");
+    document.getElementById("btn-chart").onclick = ev => {
+      fig.style.display = "block"; table.style.display = "none";
+      ev.currentTarget.setAttribute("aria-pressed","true");
+      document.getElementById("btn-table").setAttribute("aria-pressed","false");
+    };
+    document.getElementById("btn-table").onclick = ev => {
+      fig.style.display = "none"; table.style.display = "block";
+      ev.currentTarget.setAttribute("aria-pressed","true");
+      document.getElementById("btn-chart").setAttribute("aria-pressed","false");
+    };
+    const svg = document.querySelector(".chart-svg");
+    const hover = document.getElementById("hover");
+    const hoverX = document.getElementById("hover-x");
+    const tipBg = document.getElementById("tip-bg");
+    const tipText = document.getElementById("tip-text");
+    svg.addEventListener("mousemove", e => {
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX; pt.y = e.clientY;
+      const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+      let best = 0, bestD = Infinity;
+      xs.forEach((x, i) => {
+        const d = Math.abs(xOf(x) - loc.x);
+        if (d < bestD) { bestD = d; best = i; }
+      });
+      const x = xs[best];
+      const px = xOf(x);
+      hover.style.display = "block";
+      hoverX.setAttribute("x1", px); hoverX.setAttribute("x2", px);
+      const lines = [
+        `요구 ${x}%`,
+        `Lv1 ${series.lv1[best]}%`,
+        `Lv3 ${series.lv3[best]}%`,
+        `Lv5 ${series.lv5[best]}%`
+      ];
+      tipText.textContent = "";
+      while (tipText.firstChild) tipText.removeChild(tipText.firstChild);
+      lines.forEach((line, i) => {
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        t.setAttribute("x", "0");
+        t.setAttribute("dy", i === 0 ? "0" : "16");
+        t.textContent = line;
+        tipText.appendChild(t);
+      });
+      const tx = Math.min(700, px + 12);
+      const ty = 70;
+      tipText.setAttribute("transform", `translate(${tx + 10} ${ty + 18})`);
+      tipBg.setAttribute("x", tx); tipBg.setAttribute("y", ty);
+      tipBg.setAttribute("width", "120"); tipBg.setAttribute("height", "78");
+    });
+    svg.addEventListener("mouseleave", () => { hover.style.display = "none"; });
+  </script>
+</body>
+</html>

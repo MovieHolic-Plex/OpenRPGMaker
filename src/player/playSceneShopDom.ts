@@ -33,7 +33,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ResolvedTerms } from "@/project/terms";
 
 export type { ShopMode } from "@/player/playSceneShopParts";
-export type ShopView = "menu" | "items";
+export type ShopView = "menu" | "items" | "haggle";
 
 type ShopType = NonNullable<ShopStep["shopType"]>;
 type ShopMenuAction = ShopMode | "cancel";
@@ -541,3 +541,65 @@ function clear(node: HTMLElement): void {
 
 /** 목록 행에서 현재 단가를 읽어야 하는 곳이 있어 재노출한다. */
 export { listingPrice };
+
+
+export type ShopHaggleRenderRequest = {
+  readonly itemName: string;
+  readonly reference: number;
+  readonly offer: number;
+  readonly patience: number;
+  readonly merchantLine: string;
+  readonly goldLabel: string;
+  readonly onDelta: (dir: -1 | 1) => void;
+  readonly onPropose: () => void;
+  readonly onCancel: () => void;
+};
+
+export function renderShopHaggle(request: ShopHaggleRenderRequest): HTMLElement {
+  const shell = el("div", { class: "runtime-shop-shell runtime-shop-haggle-shell" });
+  const panel = el("div", { class: "runtime-shop-haggle", dataset: { testid: "shop-haggle-panel" } });
+  panel.append(
+    el("div", { class: "runtime-shop-message", text: request.merchantLine }),
+    el("div", { text: `${request.itemName} · 기준가 ${request.reference} ${request.goldLabel}` }),
+    el("div", {
+      class: "runtime-shop-haggle-offer",
+      dataset: { testid: "shop-haggle-offer" },
+      text: String(request.offer),
+    }),
+    el("div", { text: `인내 ${request.patience}` }),
+  );
+  const actions = el("div", { class: "runtime-shop-prompt-actions" });
+  actions.append(
+    el("button", {
+      class: "runtime-shop-menu-choice",
+      text: "-",
+      dataset: { testid: "shop-haggle-down" },
+      attrs: { type: "button" },
+      on: { click: () => request.onDelta(-1) },
+    }),
+    el("button", {
+      class: "runtime-shop-confirm",
+      text: "제시",
+      dataset: { testid: "shop-haggle-propose" },
+      attrs: { type: "button" },
+      on: { click: request.onPropose },
+    }),
+    el("button", {
+      class: "runtime-shop-menu-choice",
+      text: "+",
+      dataset: { testid: "shop-haggle-up" },
+      attrs: { type: "button" },
+      on: { click: () => request.onDelta(1) },
+    }),
+    el("button", {
+      class: "runtime-shop-cancel",
+      text: "포기",
+      dataset: { testid: "shop-haggle-cancel" },
+      attrs: { type: "button" },
+      on: { click: request.onCancel },
+    }),
+  );
+  panel.append(actions);
+  shell.append(shopWindow("runtime-shop-prompt-panel", [panel]));
+  return shell;
+}

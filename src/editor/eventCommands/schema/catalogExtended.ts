@@ -284,6 +284,11 @@ defineCommand({
     ]),
     merchantGold: f.number("상인 소지금", { min: 0, optional: true }),
     branchOnTransaction: f.bool("거래 후 분기", { optional: true }),
+    restockPolicy: f.enum("재입고", [
+      { value: "daily", label: "매일", key: "daily" },
+      { value: "weekly", label: "매주", key: "weekly" },
+      { value: "onDemand", label: "요청 시", key: "onDemand" },
+    ], { optional: true }),
   },
   branches: (c) =>
     c.branchOnTransaction ? [{ key: "transactionBranch", label: "거래 후", tone: "neutral" as const }] : [],

@@ -496,7 +496,13 @@ async function consumeBlockingStep(
       await playOpenChest(scene, { chestId: step.chestId });
       return resumeAfterSurface(scene, interpreter);
     case "shop":
-      return resumeWithValue(scene, interpreter, await playShop(scene, step));
+      // 상점 원장은 맵+이벤트로 가른다 — 예전에는 전부 "global" 하나를 공유해서 대장간에서
+      // 흥정하다 상인을 화나게 하면 잡화점 주인도 같이 화나 있었다.
+      return resumeWithValue(
+        scene,
+        interpreter,
+        await playShop(scene, step, { mapId: scene.map?.id, eventId: currentEventId }),
+      );
     case "inn":
       return resumeWithValue(scene, interpreter, await playInn(scene, step));
     case "gameOver":

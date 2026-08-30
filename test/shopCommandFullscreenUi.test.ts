@@ -70,6 +70,10 @@ describe("shop options live in one compact rail", () => {
       "shop-serviceKind",
       "shop-investmentLevel",
       "shop-mileageRate",
+      "shop-economy-haggle",
+      "shop-economy-dynamic",
+      "shop-economy-shopkeeper",
+      "shop-economy-restock",
     ]) {
       expect(findByTestId(rail!, testId), `${testId} missing from options rail`).not.toBeNull();
     }
