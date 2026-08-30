@@ -6,13 +6,13 @@
  * RPG window presentation with an edge dock, party glance, and progressive tray.
  */
 .oprn-status-menu.main-menu {
-  --status-edge-amber: #f3bd69;
-  --status-edge-amber-soft: rgba(243, 189, 105, 0.18);
-  --status-edge-border: rgba(247, 229, 198, 0.22);
-  --status-edge-glass: rgba(15, 18, 20, 0.9);
-  --status-edge-glass-soft: rgba(15, 18, 20, 0.76);
-  --status-edge-ivory: #f7efe2;
-  --status-edge-muted: #bfb5a6;
+  --status-edge-amber: var(--runtime-glass-accent);
+  --status-edge-amber-soft: var(--runtime-glass-accent-soft);
+  --status-edge-border: var(--runtime-glass-hairline);
+  --status-edge-glass: var(--runtime-glass-panel);
+  --status-edge-glass-soft: var(--runtime-glass-inset);
+  --status-edge-ivory: var(--runtime-glass-text);
+  --status-edge-muted: var(--runtime-glass-muted);
   --status-edge-teal: #54c9c0;
   background: transparent;
   border: 0;
@@ -20,9 +20,10 @@
   box-shadow: none;
   color: var(--status-edge-ivory);
   display: block;
-  /* 게임 내 시스템(대화창·타이틀·전투)과 같은 픽셀 글꼴을 쓴다. 에디터 토큰
-     var(--font-ui) 을 그대로 쓰면 ESC 화면만 모던 산세리프가 되어 따로 논다. */
-  font: 600 8px/1.25 var(--runtime-pixel-font);
+  /* 게임 내 시스템(대화창·타이틀·전투)과 같은 글꼴을 쓴다 — 그 글꼴이 이제 전부
+     --runtime-ui-font(모던 글래스) 다. 예전 주석은 반대로 픽셀 글꼴을 근거로 들었는데,
+     실제로는 전투 HUD 만 --font-ui 로 앞서 옮겨가 ESC 화면이 혼자 낡아 보였다. */
+  font: 600 8px/1.25 var(--runtime-ui-font);
   isolation: isolate;
   overflow: hidden;
   padding: 0;
@@ -94,14 +95,14 @@
   background: transparent;
   border: 0;
   border-left: 1px solid rgba(247, 229, 198, 0.09);
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   color: var(--status-edge-muted);
   cursor: default;
   display: flex;
   flex: none;
   flex-direction: column;
-  font: 600 8px/1 var(--runtime-pixel-font);
+  font: 600 8px/1 var(--runtime-ui-font);
   gap: 4px;
   height: auto;
   justify-content: center;
@@ -151,17 +152,16 @@
 .oprn-status-menu .status-menu-primary-dock > .status-menu-command.selected {
   background:
     radial-gradient(circle at 50% 22%, rgba(255, 228, 177, 0.22), transparent 44%),
-    linear-gradient(180deg, rgba(243, 189, 105, 0.2), rgba(243, 189, 105, 0.08));
-  border: 1px solid rgba(243, 189, 105, 0.72);
+    linear-gradient(180deg, rgba(124, 140, 255, 0.22), rgba(124, 140, 255, 0.08));
+  border: 1px solid var(--runtime-glass-hairline-strong);
   border-radius: 10px;
   box-shadow:
-    0 0 0 1px rgba(243, 189, 105, 0.1),
+    0 0 0 1px var(--runtime-glass-accent-soft),
     0 5px 16px rgba(0, 0, 0, 0.34),
-    0 0 12px rgba(243, 189, 105, 0.17);
-  color: #ffe7bd;
-  /* 이전에는 margin:-3px 0 / min-height:52px 로 46px 도트 밖으로 3px 샐어나와 하단
-     푸터의 "돈 0G" 를 가렸다. 도트가 이제 6px 윈도샤 테도리를 그리므로
-     밖으로 번지는 커서는 스킨을 깨부신다 — 도트 속에 가둠다. */
+    0 0 12px var(--runtime-glass-accent-soft);
+  color: var(--runtime-glass-text);
+  /* 이전에는 margin:-3px 0 / min-height:52px 로 46px 독 밖으로 3px 삐져나와 하단
+     푸터의 "돈 0G" 를 가렸다 — 커서를 독 속에 가둔다. (독 테두리는 이제 1px 실선이다.) */
   margin: 0;
   min-height: 0;
   z-index: 2;
@@ -171,7 +171,7 @@
   background: var(--status-edge-amber);
   border-radius: 999px;
   bottom: -1px;
-  box-shadow: 0 0 6px rgba(243, 189, 105, 0.8);
+  box-shadow: 0 0 6px var(--runtime-glass-accent);
   content: "";
   height: 2px;
   left: 50%;
@@ -251,7 +251,7 @@
   box-sizing: border-box;
   color: var(--status-edge-ivory);
   display: flex;
-  font: 700 9px/1 var(--runtime-pixel-font);
+  font: 700 9px/1 var(--runtime-ui-font);
   height: 22px;
   image-rendering: pixelated;
   justify-content: center;
@@ -277,6 +277,10 @@
   grid-template-columns: minmax(0, 1fr) max-content;
 }
 
+  /* 파티 글리앤스 카드는 320×240 논리 스테이지에서 카드 폭 73px 고정이다. 논리 px 는
+     스테이지 배율(1024 폭에서 약 3배)로 확대되어 화면에서는 이미 24px 급으로 보인다 —
+     전투 HUD(640 논리)의 12px 와 같은 급이다. 12px 로 올렸다가 이름이 "주…", 체력이
+     "100/5" 로 잘렸다(실측). 폭이 고정된 이 카드만 8px 를 유지한다. */
 .oprn-status-menu .status-menu-actor-name {
   color: var(--status-edge-ivory);
   font-size: 8px;
@@ -286,6 +290,7 @@
   white-space: nowrap;
 }
 
+  /* 카드 폭 73px 고정 — 크기를 올리면 잘린다(위 첫 규칙의 실측 주석 참조). */
 .oprn-status-menu .status-menu-actor-subline {
   color: var(--status-edge-amber);
   font-size: 8px;
@@ -295,53 +300,40 @@
 .oprn-status-menu .status-menu-vital-line {
   display: grid;
   gap: 2px;
-  /* 픽셀 글꼴 8px 에서 "514/514" 는 33px 가 필요하다(실숭) — 30px 에선 쟘렸다. */
-  grid-template-columns: 34px minmax(0, 1fr);
+  /* 사이드바는 4인을 가로로 나눠 카드 하나가 73px 밖에 안 된다. 여기서 숫자열·게이지열을
+     `34px minmax(0,1fr)` 로 나누면 숫자가 34px 를 다 가지고 게이지 트랙은 정확히 0px 를
+     받는다(실측: computed "34px 0px", 게이지 width 0) — P0-1 게이지가 DOM 에만 있고
+     화면에는 없었다. 그래서 tabs-b 설계 그대로 숫자열 자신을 트랙으로 쓴다:
+     한 칸 그리드 + 게이지는 그 밑에 깔린다. */
+  grid-template-columns: minmax(0, 1fr);
   min-height: 9px;
   position: relative;
 }
 
+  /* 카드 폭 73px 고정 — 크기를 올리면 잘린다(위 첫 규칙의 실측 주석 참조). */
 .oprn-status-menu .status-menu-actor-vitals {
-  color: rgba(247, 239, 226, 0.72);
+  /* 숫자가 채워진 게이지 위에 얹히므로 감광(0.72)과 그림자 제거를 되돌린다 —
+     초록/파랑 채움 위의 흐린 상아색은 읽히지 않았다. */
+  color: var(--status-edge-ivory);
   font-size: 8px;
   line-height: 9px;
   overflow: hidden;
   text-overflow: clip;
-  text-shadow: none;
+  text-shadow: 0 1px 0 rgba(4, 14, 48, 0.85);
   white-space: nowrap;
 }
 
+/* 트랙은 숫자 뒤 배경이다 — 상자 모양·색은 tabs-b 가 정한다(흰 숫자를 얹으려고 진한
+   그라디언트). 여기서는 도킹 모서리만 맞춘다. 예전의 2px 막대 그래프로 되돌리지 말 것:
+   카드 폭이 73px 라 마크업은 그대로인데 트랙이 0px 로 사라진다. */
 .oprn-status-menu .status-menu-vital-gauge {
-  align-self: center;
-  background: rgba(255, 255, 255, 0.09);
-  border-radius: 999px;
-  box-shadow: none;
-  height: 2px;
-  inset: auto;
-  overflow: hidden;
-  position: relative;
+  border-radius: 3px;
 }
 
 .oprn-status-menu .status-menu-vital-gauge-fill {
   border-radius: inherit;
   display: block;
   height: 100%;
-}
-
-.oprn-status-menu .status-menu-vital-gauge.hp .status-menu-vital-gauge-fill {
-  background: #67d496;
-}
-
-.oprn-status-menu .status-menu-vital-gauge.hp.warn .status-menu-vital-gauge-fill {
-  background: #e5a95d;
-}
-
-.oprn-status-menu .status-menu-vital-gauge.hp.crit .status-menu-vital-gauge-fill {
-  background: #ff6767;
-}
-
-.oprn-status-menu .status-menu-vital-gauge.mp .status-menu-vital-gauge-fill {
-  background: var(--status-edge-teal);
 }
 
 .oprn-status-menu .status-menu-detail,
@@ -380,7 +372,7 @@
 
 .oprn-status-menu .status-menu-detail-title {
   color: var(--status-edge-ivory);
-  font: 750 10px/1.15 var(--runtime-pixel-font);
+  font: 750 10px/1.15 var(--runtime-ui-font);
   letter-spacing: -0.025em;
   margin: 0;
   overflow: hidden;
@@ -398,8 +390,31 @@
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-color: rgba(243, 189, 105, 0.44) transparent;
+  scrollbar-color: var(--runtime-glass-hairline-strong) transparent;
   scrollbar-width: thin;
+  /* 목록 높이는 행 높이의 정수배가 아니라, 커서를 끝까지 내리면 스크롤이 행 중간에
+     멈춰 글자가 가로로 잘린 채 남았다(실측: 마지막 화면에서 온전한 행 0개).
+     행 시작점에 스냅을 걸어 항상 행 경계에서 멈추게 한다. */
+  scroll-snap-type: y proximity;
+}
+
+/* 단일 행마다 18px 로 고른 조작 목록은 목록 높이를 행 보통임(20px = 18 + 간간 2)의
+   정수배로 내린다. 그러지 않으면 효용 높이 80.5px 에 4번째 행이 0.5px 만 들어가
+   마지막 행이 항상 다섯분의 한컷 잘린 글자로 끝난다(실측). round() 미지원 및
+   행 높이가 뒤섞인 목록은 이 선언이 무시되어 지금처럼 1fr 로 넣는다.
+   가로로 누운 컨텍스트 트레이는 행이 열로 흔러가서 정수배가 의모가 없어 제외한다. */
+.oprn-status-menu
+  .status-menu-detail:not([data-status-menu-presentation="context-tray"])
+  .status-menu-detail-list:has(> .status-menu-detail-row-compact) {
+  --oprn-menu-row-step: 20px;
+  align-self: start;
+  /* 밖은 min/max 가 안전장치다. 효용 높이가 한 행보다 짧은 작은 트레이에서는
+     내림정수배가 0 이 되어 목록이 통짜로 사라진다(실측: 파티·기록·시스템에서 listH=0).
+     한 행 밑으로는 안 내리고, 원래 받은 공간보다 키우지도 않는다. */
+  height: min(
+    100%,
+    max(calc(var(--oprn-menu-row-step) - 2px), calc(round(down, 100% + 2px, var(--oprn-menu-row-step)) - 2px))
+  );
 }
 
 .oprn-status-menu .status-menu-detail-row,
@@ -411,10 +426,11 @@
   box-sizing: border-box;
   color: var(--status-edge-ivory);
   display: grid;
-  font: 600 8px/1.2 var(--runtime-pixel-font);
+  font: 600 8px/1.2 var(--runtime-ui-font);
   gap: 4px;
   min-height: 18px;
   padding: 3px 5px;
+  scroll-snap-align: start;
   text-shadow: none;
 }
 
@@ -431,11 +447,11 @@
 
 .oprn-status-menu .status-menu-detail-action.selected {
   background: var(--status-edge-amber-soft);
-  border-color: rgba(243, 189, 105, 0.74);
+  border-color: var(--runtime-glass-hairline-strong);
   box-shadow:
     inset 2px 0 0 var(--status-edge-amber),
-    0 0 10px rgba(243, 189, 105, 0.09);
-  color: #ffe7bd;
+    0 0 10px var(--runtime-glass-accent-soft);
+  color: var(--runtime-glass-text);
 }
 
 .oprn-status-menu .status-menu-detail-action.destructive {
@@ -470,27 +486,15 @@
 .oprn-status-menu .status-menu-detail-hint,
 .oprn-status-menu .status-menu-detail-empty {
   color: var(--status-edge-muted);
-  font: 500 8px/1.35 var(--runtime-pixel-font);
+  font: 500 8px/1.35 var(--runtime-ui-font);
 }
 
 .oprn-status-menu .status-menu-detail-row-compact {
+  /* 이름 | (빈 칸) | 값 — 조작 행에는 설명 노드가 없다(renderDetailTextChildren).
+     예전에는 설명을 둘째 줄로 접었는데, 행 높이가 88px 로 두 배가 되어 81px 목록에
+     아이템 7개 중 2개만 온전히 보였다(실측). 전문은 푸터가 보여준다. */
   grid-template-columns: max-content minmax(0, 1fr) max-content;
   white-space: nowrap;
-}
-
-.oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-description {
-  /* Neo둥근모는 같은 8px 에서 Galmuri 보다 글자폭이 넓다. 이름·수량이 자기 폭을
-     먼저 가져가고 남은 1fr 에 설명문을 nowrap 으로 밀어넣으면 20px 이 모자라
-     말줄임으로 잘렸다(실측: clipX=20). 설명문을 아래 줄 전체 폭으로 내려
-     두 줄까지 감싸게 하면 문장이 끝까지 보인다. */
-  display: -webkit-box;
-  grid-column: 1 / -1;
-  grid-row: 2;
-  text-align: left;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  white-space: normal;
 }
 
 .oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-value {
@@ -514,7 +518,11 @@
 .oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] {
   bottom: 68px;
   gap: 0;
-  height: 34px;
+  /* height:34px 은 버튼 26px + 패딩 8px 만 삼았고, 이 트레이가 border-box 에
+     12px 도리 테도리를 달고 있는 것을 놓쳤다 — 남는 높이가 14px 라
+     파티·기록·시스템 하위 버튼이 전부 반토보리 나고 글자가 사라졌다(실측: 14/26).
+     내용 높이에 맡기면 테도리가 바뀌어도 자동으로 맞는다. */
+  height: auto;
   left: 42px;
   padding: 4px;
   right: 42px;
@@ -618,14 +626,14 @@
 
 .oprn-status-menu .status-menu-stat-delta-title {
   color: var(--status-edge-amber);
-  font: 700 8px/1.2 var(--runtime-pixel-font);
+  font: 700 8px/1.2 var(--runtime-ui-font);
   letter-spacing: 0.08em;
   padding: 0;
 }
 
 .oprn-status-menu .status-menu-stat-delta-row {
   display: grid;
-  font: 600 8px/1.2 var(--runtime-pixel-font);
+  font: 600 8px/1.2 var(--runtime-ui-font);
   gap: 3px;
   grid-template-columns: max-content minmax(0, 1fr);
   min-width: 0;
@@ -657,7 +665,7 @@
   box-shadow: none;
   color: rgba(247, 239, 226, 0.72);
   display: grid;
-  font: 600 8px/1 var(--runtime-pixel-font);
+  font: 600 8px/1 var(--runtime-ui-font);
   gap: 5px;
   grid-template-columns: max-content minmax(0, 1fr) max-content;
   left: 9px;
@@ -791,20 +799,20 @@
  * 전체를 덮는 루트에 걸면 화면이 스킨 타일로 잠긴다. systemGraphics.ts 100-106 이 전투 루트에서
  * 같은 결함을 겪고 남긴 기록이다.
  *
- * 그래서 전투와 같은 방식을 쓴다: 루트에는 변수만 남기고, 경계가 있는 내부 패널이
- * var(--runtime-window-skin) 을 소비한다. 이러면 DB 에서 고른 시스템 그래픽이 상점·대화창과
- * 똑같이 ESC 메뉴에도 나타난다(그전에는 저작값이 이 화면에 아무 영향이 없었다).
+ * 이제는 9-slice 스킨 대신 런타임 공용 글래스 토큰으로 표면을 직접 그린다: 루트는 계속
+ * 투명(스테이지를 덮으므로)이고, 경계가 있는 내부 패널만 --runtime-glass-* 를 소비한다.
+ * 자료집 윈도스킨 배관(--runtime-window-skin)과 저작 데이터는 그대로 살아 있고, 런타임
+ * 패널에 칠하는 것만 멈췄다 — 전투 HUD(_rm2003.css)가 먼저 같은 결론에 도달했다.
  */
 .oprn-status-menu .status-menu-detail,
 .oprn-status-menu .status-menu-party-row,
 .oprn-status-menu .status-menu-primary-dock {
-  background: transparent;
-  backdrop-filter: none;
-  border-image-outset: 0;
-  border-image-repeat: stretch;
-  border-image-slice: 24 fill;
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: 6px;
-  border-style: solid;
-  border-width: 6px;
+  background: var(--runtime-glass-panel);
+  /* 살아있는 맵 위에 뜨는 패널이라 표면 뒤를 살짝 흐린다. 전투 HUD 는 불투명한 씬 위라
+     블러가 필요 없었지만, 여기서 표면을 투명하게 두면 맵 타일이 글자를 그대로 관통한다
+     (실측: 윈도스킨 fill 을 걷어낸 첫 판이 정확히 그 상태였다 — 회복 설명이 잔디 위에서 안 읽혔다). */
+  backdrop-filter: var(--runtime-dialogue-glass-filter);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius);
+  box-shadow: var(--runtime-glass-shadow);
 }

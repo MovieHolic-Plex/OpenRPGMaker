@@ -109,7 +109,8 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
         }
         if (u === VR.BROKEN_GLASS) {
           expect(L).toBe(VR.FLOOR);
-          expect(PROP_SURFACE[VR.BROKEN_GLASS]).toBe("floorDebris");
+          // 2026-08-30: PropSurface 자체 어휘 → 공용 PlacementZone(floorDebris→anyFloor).
+          expect(PROP_SURFACE[VR.BROKEN_GLASS]).toBe("anyFloor");
         }
       }
     }

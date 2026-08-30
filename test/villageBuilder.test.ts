@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
+import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_OPEN_SE } from "@/editor/houseInteriors";
 import { INTERIOR_ROOM_TILESET_ID as INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
@@ -45,6 +45,7 @@ interface VillageData {
   readonly decorEnabled?: boolean;
   readonly decorPlaced?: number;
   readonly doorsConnected: number;
+  readonly doorsIntact: number;
   readonly roadComponents: number;
   readonly npcCount: number;
   readonly interiorCount: number;
@@ -70,6 +71,7 @@ function isVillageData(value: unknown): value is VillageData {
   return typeof Reflect.get(value, "mapId") === "string"
     && typeof Reflect.get(value, "housesBuilt") === "number"
     && typeof Reflect.get(value, "doorsConnected") === "number"
+    && typeof Reflect.get(value, "doorsIntact") === "number"
     && typeof Reflect.get(value, "roadComponents") === "number"
     && typeof Reflect.get(value, "npcCount") === "number"
     && typeof Reflect.get(value, "interiorCount") === "number"
@@ -121,9 +123,11 @@ describe("build_village", () => {
     expect(data.pathStyle).toBe("sand");
     expect(data.decorEnabled).toBe(true);
     expect((data.decorPlaced ?? 0) > 0).toBe(true);
-    // 문 타일 무결성: 진입로가 집을 관통해 문을 덮으면 146 개수가 줄어든다 (회귀 방지).
-    expect(map.lowerTiles.filter((tile) => tile === 146)).toHaveLength(8);
-    expect(map.lowerTiles.filter((tile) => tile === 116)).toHaveLength(8);
+    // 문 외형은 Object1 문 이벤트가 담당한다 — 문 타일(116/146)은 한 칸도 깔지 않는다.
+    expect(map.lowerTiles.filter((tile) => tile === 146)).toHaveLength(0);
+    expect(map.lowerTiles.filter((tile) => tile === 116)).toHaveLength(0);
+    // 문 칸 무결성: 진입로가 집을 관통해 문을 덮으면 doorsIntact 가 줄어든다 (회귀 방지).
+    expect(data.doorsIntact).toBe(8);
     // 울타리 타일(상단 오버레이)이 실제 배치됐는지.
     const fenceTiles = new Set([378, 379, 380, 408, 409, 410, 438, 439]);
     expect(map.upperTiles.some((tile) => fenceTiles.has(tile))).toBe(true);
@@ -416,7 +420,14 @@ describe("build_village", () => {
   it("기본 시드에서도 문 8개가 전부 온전하다 (진입로 관통 회귀)", () => {
     const { context, data } = buildVillage(1);
     const map = context.project.maps[data.mapId];
-    expect(map.lowerTiles.filter((tile) => tile === 146)).toHaveLength(8);
+    expect(data.doorsIntact).toBe(8);
+    // 문 칸마다 Object1 문 이벤트가 서 있고, 문 타일은 어디에도 없다.
+    expect(map.lowerTiles.filter((tile) => tile === 146 || tile === 116)).toHaveLength(0);
+    for (const house of data.houses) {
+      const door = map.events.find((event) => event.id === house.doorEventId);
+      expect(door, JSON.stringify(house.doorAt)).toBeTruthy();
+      expect(door?.pages?.[0]?.graphic.sprite?.id).toBe(HOUSE_DOOR_CHARSET_TEXTURE);
+    }
     expect(data.doorsConnected).toBe(8);
     expect(data.roadComponents).toBe(1);
   });
@@ -469,6 +480,7 @@ describe("build_village", () => {
       expect(door?.pages?.[0]?.priority).toBe("same");
       expect(door?.pages?.[0]?.graphic.sprite?.id).toBe(HOUSE_DOOR_CHARSET_TEXTURE);
       expect(door?.pages?.[0]?.commands.map((command) => command.kind)).toEqual([
+        "playAudio",
         "setEventGraphicPattern",
         "wait",
         "setEventGraphicPattern",
@@ -477,6 +489,7 @@ describe("build_village", () => {
         "wait",
         "transfer",
       ]);
+      expect(door?.pages?.[0]?.commands[0]).toEqual({ kind: "playAudio", resourceId: HOUSE_DOOR_OPEN_SE, loop: false });
       const interior = context.project.maps[house.interiorMapId as string];
       expect(interior.name.startsWith(`${house.ownerName}의 집 내부`)).toBe(true);
       expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);

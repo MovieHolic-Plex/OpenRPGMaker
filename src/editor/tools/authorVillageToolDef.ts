@@ -16,6 +16,7 @@ import {
   type VillageBuildInspection,
 } from "./villageBuilder";
 import { RECT_SCHEMA } from "./schemaShapes";
+import { villageTemplateCatalog } from "./village/authoringData";
 import { HOUSE_TEMPLATES } from "./village/constants";
 
 export type AuthorVillageDependencies = {
@@ -28,9 +29,18 @@ const DEFAULT_DEPENDENCIES: AuthorVillageDependencies = {
   inspect: inspectVillageBuild,
 };
 
-const KNOWN_VILLAGE_TEMPLATE_IDS = new Set(HOUSE_TEMPLATES.map((template) => template.id));
+/**
+ * 이 프로젝트에서 쓸 수 있는 형태 id — 내장 34종 + 사용자가 「마을」탭에서 만든 형태.
+ * 예전엔 코드 카탈로그만 봐서, 사용자가 만든 형태를 AI가 지정하면 조용히 지워졌다.
+ */
+function knownTemplateIds(project: Parameters<typeof villageTemplateCatalog>[0]): Set<string> {
+  return new Set(villageTemplateCatalog(project).templates.map((template) => template.id));
+}
 
-function normalizeUnknownHouseTemplates(args: Record<string, unknown>): {
+function normalizeUnknownHouseTemplates(
+  args: Record<string, unknown>,
+  known: ReadonlySet<string>,
+): {
   readonly args: Record<string, unknown>;
   readonly warnings: readonly string[];
 } {
@@ -40,7 +50,7 @@ function normalizeUnknownHouseTemplates(args: Record<string, unknown>): {
     if (typeof entry !== "object" || entry === null || Array.isArray(entry)) return entry;
     const plan = { ...(entry as Record<string, unknown>) };
     const templateId = plan.templateId;
-    if (typeof templateId === "string" && templateId && !KNOWN_VILLAGE_TEMPLATE_IDS.has(templateId)) {
+    if (typeof templateId === "string" && templateId && !known.has(templateId)) {
       delete plan.templateId;
       warnings.push("housePlans[" + index + "].templateId=\'" + templateId + "\'는 알려진 템플릿이 아니어서 자동 선택으로 대체했습니다.");
     }
@@ -75,8 +85,9 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             bounds: {
               ...RECT_SCHEMA,
               description:
-                "kind=\"existing\" 일 때 시공 범위. **생략하면 그 맵 전체가 재포장 대상이 된다** — "
-                + "기존 마을의 일부만 손보라는 요청이면 반드시 그 영역을 지정하라.",
+                "kind=\"existing\" 일 때 시공 범위. **생략하면 사용자가 보고 있는 화면(뷰포트) 중심의 영역에 짓고, "
+                + "뷰포트를 모를 때만 맵 전체를 재포장한다** — 손댈 영역이 정해진 요청이면 그 영역을 직접 지정하라. "
+                + "w/h 가 최소값(20)보다 작으면 거부되니 20 이상으로 넓혀 쓰거나 생략해 뷰포트에 맡길 것.",
             },
             plannedMap: {
               type: "object",
@@ -118,6 +129,13 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
         theme: { type: "string" },
         seed: { type: "integer" },
         interior: { type: "boolean" },
+        presetId: {
+          type: "string",
+          description:
+            "선택 사항. 사용자가 데이터베이스 「마을」탭에 저장한 배치 프리셋 id."
+            + " 컨텍스트의 '마을 저작 데이터' 목록에 있는 id만 쓰고, 없으면 생략한다."
+            + " 프리셋이 정한 길 폭·광장·마당·형태 후보가 코드 기본값을 대체한다.",
+        },
       },
       required: ["target", "houseCount", "countPolicy"],
     },
@@ -129,7 +147,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       interior: false,
     },
     run(draft, args): ToolExecResult {
-      const normalized = normalizeUnknownHouseTemplates(args);
+      const normalized = normalizeUnknownHouseTemplates(args, knownTemplateIds(draft));
       const request = parseAuthorVillageRequest(normalized.args);
       const baseline = createDraft(draft);
       switch (request.target.kind) {

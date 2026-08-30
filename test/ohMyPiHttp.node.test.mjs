@@ -18,6 +18,7 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(isCompanionPath("/auth/key"), true);
     assert.equal(isCompanionPath("/auth/logout"), true);
     assert.equal(isCompanionPath("/v1/chat/completions"), true);
+    assert.equal(isCompanionPath("/v1/images/generations"), true);
     assert.equal(isCompanionPath("/oauth/launch"), true);
     assert.equal(isCompanionPath("/auth/oauth-paste"), true);
     assert.equal(isCompanionPath("/other"), false);
@@ -145,6 +146,48 @@ describe("oh-my-pi companion HTTP", () => {
       ["logout", "groq"],
       ["complete", "openrouter", "openai/gpt-5.5"],
     ]);
+  });
+
+  it("이미지 생성은 제공자와 프롬프트를 넘기고 dataUrl 로 감싸 돌려준다", async () => {
+    const seen = [];
+    const result = await handleCompanionRequest(
+      {
+        method: "POST",
+        url: "/v1/images/generations",
+        headers: { "x-rpgzzu-provider": "google-antigravity" },
+        body: { prompt: "슬라임", model: "gemini-3.1-flash-image" },
+      },
+      {
+        generateImage: async (provider, body) => {
+          seen.push([provider, body.prompt, body.model]);
+          return {
+            provider,
+            model: body.model,
+            mimeType: "image/jpeg",
+            base64: "QUJD",
+          };
+        },
+      },
+    );
+
+    assert.equal(result.status, 200);
+    assert.deepEqual(seen, [["google-antigravity", "슬라임", "gemini-3.1-flash-image"]]);
+    assert.deepEqual(result.body.image, {
+      provider: "google-antigravity",
+      model: "gemini-3.1-flash-image",
+      mimeType: "image/jpeg",
+      dataUrl: "data:image/jpeg;base64,QUJD",
+    });
+  });
+
+  it("이미지 어댑터가 없는 동반 서비스는 501 로 끊는다", async () => {
+    const result = await handleCompanionRequest(
+      { method: "POST", url: "/v1/images/generations", body: { prompt: "슬라임" } },
+      {},
+    );
+
+    assert.equal(result.status, 501);
+    assert.match(result.body.error, /이미지 생성/);
   });
 
   it("원격 Origin 으로 로그인하면 launch URL 을 공개 origin 으로 바꾼다", async () => {

@@ -4,6 +4,14 @@ import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 
 export type TilesetCategory = "outdoor" | "dungeon" | "interior";
 
+/**
+ * 「다듬기」 기본 지시문 — 모달 버튼·캔버스 칩·추천 칩이 모두 이 한 문장을 쓴다.
+ * 이 파일에 두는 이유는 import 순환 회피다: regionPolish → regionSurroundings →
+ * regionContextSuggestions → suggestedCommands 사슬이 이미 있어서, 이 상수가 regionPolish 에
+ * 있으면 추천 칩 목록이 그 사슬을 거꾸로 타야 한다.
+ */
+export const POLISH_INSTRUCTION = "이 영역을 주변과 자연스럽게 어울리도록 다듬어줘";
+
 export interface SuggestedRegionCommand {
   readonly id: string;
   readonly icon: SvgIconName;
@@ -36,6 +44,10 @@ export const SUGGESTED_REGION_COMMANDS: readonly SuggestedRegionCommand[] = [
   { id: "dirt-path", icon: "terrain", label: "흙길", instruction: "이 영역을 가로지르는 흙길을 깔아줘", category: "타일", tilesets: ["outdoor"] },
   { id: "scatter-rocks", icon: "polish", label: "바위 흩뿌리기", instruction: "이 영역에 바위와 돌무더기를 자연스럽게 흩뿌려줘", category: "다듬기" },
   { id: "lantern-mood", icon: "mood", label: "등불 분위기", instruction: "이 공간에 등불을 걸어 따뜻하고 밝은 분위기로 만들어줘", category: "분위기" },
+  // 주변 어울림 재구성. 타일셋을 가리지 않는다(실내·던전도 주변과 이어져야 한다).
+  // 목록 **끝에** 붙인 이유: 앞에 넣으면 로테이션(nextSuggestedRegionCommands) 순번이 통째로
+  // 밀려 기존 진입점의 첫 화면 추천이 다 바뀐다.
+  { id: "blend-surroundings", icon: "polish", label: "주변과 어울리게", instruction: POLISH_INSTRUCTION, category: "다듬기" },
 ] as const;
 
 /**

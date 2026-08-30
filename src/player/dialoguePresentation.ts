@@ -170,6 +170,35 @@ export function dialoguePresentationCssVars(
   };
 }
 
+/**
+ * 이름표 아래에서 본문이 비켜 줄 자리(논리 px). `.dialogue-box.has-speaker` 의
+ * `padding-top` 으로 심는다.
+ *
+ * 이름표는 `position: absolute; top: -9px` 로 창 위 변에 걸친 탭이고, 본문이 비켜 주는
+ * 자리는 그 padding 뿐이다. 두 값을 각각 손으로 적어 두면 서로 모른다 — 실측 2026-08-30 에
+ * 이름표 높이 19px, top -9px 라 아래 변이 10px 지점인데 padding 은 8px 이어서
+ * **본문 첫 줄이 2px 덮였다**(글자 윗부분이 잘려 보인다). 두 선언은 각각 유효하므로
+ * 계산된 스타일로는 안 잡히고, 겹침이 기하라서 jsdom 단위 테스트로도 안 잡힌다.
+ * `src/styles/TOKENS.md` 가 "본문과 겹치지 않도록 함께 조정한다"고 적어 둔 짝이 이것이다.
+ *
+ * 그래서 상수를 고치지 않고 **이름표를 재서** 정한다. 글꼴 크기가 바뀌어도 따라온다.
+ * 호출부가 `offsetTop`(음수) 과 `offsetHeight` 를 넣는다. 레이아웃이 없는 환경은 높이가
+ * 0 이므로 그때는 CSS 기본값을 그대로 쓰라고 `undefined` 를 돌려준다.
+ */
+export function dialogueSpeakerInsetPx(
+  plateOffsetTop: number,
+  plateOffsetHeight: number,
+  fallbackInsetPx: number
+): number | undefined {
+  if (!Number.isFinite(plateOffsetHeight) || plateOffsetHeight <= 0) return undefined;
+  if (!Number.isFinite(plateOffsetTop)) return undefined;
+  // 아래 변이 상자 안쪽으로 들어온 깊이. 이름표가 창 위로 완전히 빠져 있으면 0 이하가 된다.
+  const intrusion = plateOffsetTop + plateOffsetHeight;
+  // 원래 있던 여백보다 좁히지는 않는다 — 겹침만 없애면 되고, 줄 수는 남는 높이에서
+  // dialogueMaxLines 가 다시 센다(좁히면 이유 없이 한 줄을 잃을 수 있다).
+  return Math.max(fallbackInsetPx, Math.ceil(intrusion));
+}
+
 /** 글자 지연에 프로파일 배율을 적용한다. 최소 1ms 는 남겨 타이핑 루프가 멈추지 않게 한다. */
 export function dialogueScaledCharDelayMs(baseDelayMs: number, profile: DialoguePresentationProfile): number {
   if (!Number.isFinite(baseDelayMs) || baseDelayMs <= 0) return 0;

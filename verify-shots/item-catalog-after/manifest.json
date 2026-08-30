@@ -1,0 +1,113 @@
+{
+  "base": "http://127.0.0.1:9861",
+  "capturedAt": "2026-08-30T06:25:49.117Z",
+  "shots": [
+    {
+      "name": "01-items-tab-overview",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/01-items-tab-overview.png",
+      "note": "데이터베이스 → 아이템 탭. 왼쪽 목록이 기본 아이템 전체다."
+    },
+    {
+      "name": "02-item-normalGoods",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/02-item-normalGoods.png",
+      "note": "아이템 종류 \"일반 물품\" 의 레코드 예시: 기름 등불"
+    },
+    {
+      "name": "02-item-medicine",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/02-item-medicine.png",
+      "note": "아이템 종류 \"약\" 의 레코드 예시: 우유병"
+    },
+    {
+      "name": "02-item-book",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/02-item-book.png",
+      "note": "아이템 종류 \"기술서\" 의 레코드 예시: 쇠약의 전술서"
+    },
+    {
+      "name": "02-item-seed",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/02-item-seed.png",
+      "note": "아이템 종류 \"씨앗\" 의 레코드 예시: 숙련의 씨앗"
+    },
+    {
+      "name": "02-item-special",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/02-item-special.png",
+      "note": "아이템 종류 \"특수\" 의 레코드 예시: 강화 포획 구슬"
+    },
+    {
+      "name": "02-item-switch",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/02-item-switch.png",
+      "note": "아이템 종류 \"스위치\" 의 레코드 예시: 수로 전환패"
+    },
+    {
+      "name": "03-equipment-tab-overview",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/03-equipment-tab-overview.png",
+      "note": "데이터베이스 → 장비 탭. 무기·방패·갑옷·투구·장식 전체 목록."
+    },
+    {
+      "name": "04-equipment-shield",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/04-equipment-shield.png",
+      "note": "장비 슬롯 \"shield\" 의 레코드 예시: 월광 거울 방패"
+    },
+    {
+      "name": "04-equipment-armor",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/04-equipment-armor.png",
+      "note": "장비 슬롯 \"armor\" 의 레코드 예시: 불퇴서약 판금갑옷"
+    },
+    {
+      "name": "04-equipment-helmet",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/04-equipment-helmet.png",
+      "note": "장비 슬롯 \"helmet\" 의 레코드 예시: 선봉대 뿔투구"
+    },
+    {
+      "name": "05-item-added",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/05-item-added.png",
+      "note": "+추가 직후. 목록 행 27 → 27, 새 레코드가 선택된 상태."
+    },
+    {
+      "name": "06-session-not-persisted-page",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/06-session-not-persisted-page.png",
+      "note": "아이템 추가 후 화면 전역. 톱바에 저장 상태 칩이 뜼는지 본다."
+    },
+    {
+      "name": "07-session-not-persisted-chip",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-after/07-session-not-persisted-chip.png",
+      "note": "저장 상태 칩 본문: 저장 실패"
+    }
+  ],
+  "perType": {
+    "itemTotal": 226,
+    "byType": {
+      "medicine": 59,
+      "special": 35,
+      "normalGoods": 99,
+      "book": 11,
+      "seed": 11,
+      "switch": 11
+    },
+    "equipmentTotal": 86,
+    "bySlot": {
+      "weapon": 31,
+      "shield": 11,
+      "armor": 11,
+      "helmet": 11,
+      "accessory": 22
+    }
+  },
+  "addRecord": {
+    "before": 27,
+    "after": 27
+  },
+  "autoSaveChipText": "저장 실패",
+  "recapturedAt": "2026-08-30T07:42:58.821Z",
+  "recaptured": [
+    {
+      "name": "02-item-seed",
+      "collection": "items",
+      "recordName": "숙련의 씨앗"
+    },
+    {
+      "name": "04-equipment-helmet",
+      "collection": "equipment",
+      "recordName": "선봉대 뿔투구"
+    }
+  ]
+}

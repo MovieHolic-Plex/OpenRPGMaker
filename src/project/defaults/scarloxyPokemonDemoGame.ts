@@ -11,6 +11,7 @@
 import { PRODUCT_BRAND } from "@/brand";
 import type { GameEvent, GameMap, Project } from "../types";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { normalizeStateRecord } from "@/project/databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
@@ -317,6 +318,9 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     wildEnemy("enemy_pkmn_finsta", "핀스타", "finsta", 4, { maxHp: 46, maxMp: 5, attack: 7, defense: 7, mind: 7, agility: 11 }, { exp: 6, gold: 4 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
     wildEnemy("enemy_pkmn_jacana", "자카나", "jacana", 5, { maxHp: 52, maxMp: 5, attack: 8, defense: 7, mind: 8, agility: 13 }, { exp: 8, gold: 6 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
     wildEnemy("enemy_pkmn_draem", "드림", "draem", 6, { maxHp: 60, maxMp: 8, attack: 9, defense: 8, mind: 11, agility: 9 }, { exp: 10, gold: 8 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
+    wildEnemy("enemy_pkmn_mossling", "모슬링", "mossling", 3, { maxHp: 42, maxMp: 3, attack: 6, defense: 9, mind: 5, agility: 6 }, { exp: 5, gold: 3 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
+    wildEnemy("enemy_pkmn_emberkit", "엠버킷", "emberkit", 4, { maxHp: 44, maxMp: 5, attack: 8, defense: 6, mind: 7, agility: 13 }, { exp: 7, gold: 5 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember"]),
+    wildEnemy("enemy_pkmn_puddlup", "퍼들업", "puddlup", 4, { maxHp: 46, maxMp: 5, attack: 7, defense: 8, mind: 9, agility: 10 }, { exp: 7, gold: 5 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
     wildEnemy("enemy_pkmn_rival_cindrill", "라이벌의 신드릴", "cindrill", 8, { maxHp: 90, maxMp: 8, attack: 12, defense: 10, mind: 9, agility: 12 }, { exp: 20, gold: 20 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember"]),
     wildEnemy("enemy_pkmn_atrox", "전설의 아트록스", "atrox", 15, { maxHp: 170, maxMp: 16, attack: 17, defense: 13, mind: 13, agility: 12 }, { exp: 50, gold: 60 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember", "skill_scarloxy_burst"])
   );
@@ -327,6 +331,13 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     ]),
     demoTroop("troop_pkmn_grass_b", "풀숲의 몬스터들", "scarloxy-backdrop-forest", [
       { enemyId: "enemy_pkmn_larvea", x: 128, y: 136 },
+    ]),
+    demoTroop("troop_pkmn_new_grass", "풀숲의 모슬링", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_mossling", x: 160, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_new_pair", "엠버킷과 퍼들업", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_emberkit", x: 120, y: 130 },
+      { enemyId: "enemy_pkmn_puddlup", x: 190, y: 134 },
     ]),
     demoTroop("troop_pkmn_shore", "물가의 몬스터들", "scarloxy-backdrop-sand", [
       { enemyId: "enemy_pkmn_finsta", x: 136, y: 132 },
@@ -368,6 +379,9 @@ const SCARLOXY_GEN1_TYPES: Readonly<Record<string, readonly Gen1Type[]>> = {
   finiette: ["water", "ice"],
   larvea: ["bug", "poison"],
   cleaf: ["bug", "grass"],
+  mossling: ["grass"],
+  emberkit: ["fire"],
+  puddlup: ["water"],
   ivieron: ["grass"],
   plumette: ["flying"],
   pluma: ["normal", "flying"],
@@ -387,6 +401,9 @@ const SCARLOXY_GEN1_PRIMARY_SKILLS: Readonly<Record<string, string>> = {
   finiette: "skill_scarloxy_ice",
   larvea: "skill_scarloxy_venom",
   cleaf: "skill_scarloxy_bug",
+  mossling: "skill_scarloxy_leaf",
+  emberkit: "skill_scarloxy_ember",
+  puddlup: "skill_scarloxy_splash",
   ivieron: "skill_scarloxy_leaf",
   plumette: "skill_scarloxy_wing",
   pluma: "skill_scarloxy_quick",
@@ -409,6 +426,10 @@ const SPECIES_SEEDS: readonly SpeciesSeed[] = [
   { key: "ivieron", name: "아이비론", type: "grass", stats: { maxHp: 46, maxMp: 12, attack: 17, defense: 18, mind: 14, agility: 12 }, captureRate: 0.12, skillId: "skill_scarloxy_leaf" },
   { key: "plumette", name: "플루메트", type: "grass", stats: { maxHp: 16, maxMp: 5, attack: 8, defense: 6, mind: 7, agility: 16 }, captureRate: 0.6, skillId: "skill_scarloxy_leaf", evolvesTo: { key: "pluma", level: 8 } },
   { key: "pluma", name: "플루마", type: "grass", stats: { maxHp: 34, maxMp: 9, attack: 14, defense: 10, mind: 11, agility: 20 }, captureRate: 0.25, skillId: "skill_scarloxy_leaf" },
+  // 생성 자산 3종(2026-08-30) — 1번 길 초반 야생 라인업. 진화 없음, 포획률 높음.
+  { key: "mossling", name: "모슬링", type: "grass", stats: { maxHp: 19, maxMp: 7, attack: 9, defense: 12, mind: 9, agility: 8 }, captureRate: 0.55, skillId: "skill_scarloxy_leaf" },
+  { key: "emberkit", name: "엠버킷", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 12, defense: 8, mind: 10, agility: 14 }, captureRate: 0.5, skillId: "skill_scarloxy_ember" },
+  { key: "puddlup", name: "퍼들업", type: "water", stats: { maxHp: 20, maxMp: 8, attack: 9, defense: 10, mind: 12, agility: 10 }, captureRate: 0.55, skillId: "skill_scarloxy_splash" },
   { key: "jacana", name: "자카나", type: "water", stats: { maxHp: 21, maxMp: 6, attack: 9, defense: 8, mind: 9, agility: 15 }, captureRate: 0.55, skillId: "skill_scarloxy_splash" },
   { key: "pouch", name: "파우치", type: "water", stats: { maxHp: 26, maxMp: 6, attack: 10, defense: 11, mind: 8, agility: 8 }, captureRate: 0.5, skillId: "skill_scarloxy_splash" },
   { key: "draem", name: "드림", type: "grass", stats: { maxHp: 24, maxMp: 10, attack: 10, defense: 9, mind: 14, agility: 10 }, captureRate: 0.35, skillId: "skill_scarloxy_leaf" },
@@ -542,7 +563,7 @@ function routeMap(): GameMap {
   map.lowerTiles = new Array<number>(map.width * map.height).fill(G.GRASS);
   map.upperTiles = new Array<number>(map.width * map.height).fill(EMPTY);
   map.encounterRate = 5;
-  map.troopIds = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_shore", "troop_pkmn_dream"];
+  map.troopIds = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_new_grass", "troop_pkmn_new_pair", "troop_pkmn_shore", "troop_pkmn_dream"];
 
   stampLower(map, 22, 16, G.POND);
   stampLower(map, 4, 18, G.SAND_PATCH);
@@ -565,9 +586,55 @@ function routeMap(): GameMap {
     talker("ev_pkmn_route_sign", 12, 3, "표지판", [
       "초원 1번 길 — 풀숲에서는 야생 몬스터가 튀어나옵니다.",
       "남쪽 끝에서 이상한 울음소리가 들린다는 소문이 있다.",
+      "아래로 난 단은 뛰어내릴 수 있지만, 다시 올라올 수는 없습니다.",
     ], [], { transparent: true }, { type: "fixed", speed: 3, frequency: 3 }),
+    ...LEDGE_TILES.map(([x, y], index) => ledgeEvent(`ev_pkmn_ledge_${index}`, x, y)),
   );
   return map;
+}
+
+/**
+ * 내리막(ledge) 칸 — 루트 중단을 가로지르는 단. 위에서 밟으면 아래로 두 칸 뛰어내린다.
+ * 아래에서 밟으면 다시 아래로 튕겨 나가므로 "올라올 수 없는 한 방향 지형"이 된다(포켓몬과 같은 동작).
+ */
+const LEDGE_TILES = [[11, 15], [12, 15], [13, 15]] as const;
+
+/**
+ * 밟으면 주인공을 아래로 두 칸 점프시키는 이벤트.
+ *
+ * 왜 moveEvent + PLAYER_MOVE_TARGET 인가: 점프는 MoveCommand(`kind:"jump"`)이고, 주인공 경로는
+ * playSceneMovement.applyPlayerRouteCommand → startPlayerJump 가 처리한다. 점프는 통행 판정을
+ * 건너뛰고 맵 경계만 보므로(RM2K3 규칙) 단 아래에 무엇이 있어도 착지한다.
+ * 그래픽이 없는 투명 playerTouch 이벤트라 지형처럼 보인다.
+ */
+function ledgeEvent(id: string, x: number, y: number): GameEvent {
+  return {
+    id,
+    x,
+    y,
+    trigger: { kind: "playerTouch" },
+    commands: [],
+    pages: [{
+      id: `${id}_page`,
+      name: "내리막",
+      conditions: [],
+      graphic: { transparent: true },
+      trigger: { kind: "playerTouch" },
+      priority: "below",
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [
+        {
+          kind: "moveEvent",
+          eventId: PLAYER_MOVE_TARGET,
+          route: {
+            moves: [{ kind: "jump", dx: 0, dy: 2, heightPx: 14, durationMs: 320 }],
+            repeat: false,
+            wait: true,
+          },
+        },
+      ],
+    }],
+  } as GameEvent;
 }
 
 function rivalEvent(): GameEvent {

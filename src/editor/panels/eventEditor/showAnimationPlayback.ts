@@ -31,6 +31,12 @@ export type ShowAnimationPlaybackHandle = {
   readonly stop: () => void;
 };
 
+export type ShowAnimationPlaybackOptions = {
+  readonly loop?: boolean;
+  readonly onFrame?: (frameIndex: number, total: number) => void;
+  readonly onStop?: () => void;
+};
+
 /**
  * 그릴 프레임이 있으면 재생 소스를, 없으면 undefined 를 돌려준다.
  * (프레임 배열이 빈 레코드는 런타임도 섬광 대체 연출로 떨어진다.)
@@ -60,17 +66,17 @@ export function renderShowAnimationFrame(
 }
 
 /**
- * 셀 레이어를 1회 재생한다. 버튼이 없는 표시면(명령 프리뷰 카드)도 이걸 쓴다.
- * 재생은 항상 1프레임부터 전진하고, 끝나면 첫 프레임으로 돌아가 선다.
+ * 셀 레이어를 재생한다. 첫 프레임은 즉시 그리고, loop 가 아니면 끝난 뒤 첫 프레임으로 돌아가 선다.
  */
-export function playShowAnimationOnce(
+export function playShowAnimation(
   stage: HTMLElement,
   layer: HTMLElement,
   source: ShowAnimationPlaybackSource,
-  onStop?: () => void
+  options: ShowAnimationPlaybackOptions = {}
 ): ShowAnimationPlaybackHandle {
   let timer: ReturnType<typeof window.setInterval> | null = null;
   let frameIndex = 0;
+  let stopNotified = false;
   // 표시면은 문서에 붙기 전에 만들어진다. 한 번이라도 붙은 뒤 떨어졌을 때만 중단한다.
   let wasMounted = false;
   // 다만 «붙기 전» 유예는 무한이 아니다. 끝까지 붙지 않는 표시면(미리보기만 만들고 버리는 호출,
@@ -87,7 +93,9 @@ export function playShowAnimationOnce(
 
   const stop = (): void => {
     clear();
-    onStop?.();
+    if (stopNotified) return;
+    stopNotified = true;
+    options.onStop?.();
   };
 
   const dropped = (): boolean => {
@@ -103,6 +111,11 @@ export function playShowAnimationOnce(
     return unmountedTicks >= 2;
   };
 
+  const render = (index: number): void => {
+    renderShowAnimationFrame(layer, source, index);
+    options.onFrame?.(index, source.frames.length);
+  };
+
   const tick = (): void => {
     if (dropped()) {
       stop();
@@ -110,22 +123,35 @@ export function playShowAnimationOnce(
     }
     frameIndex += 1;
     if (frameIndex >= source.frames.length) {
-      stop();
-      renderShowAnimationFrame(layer, source, 0);
-      return;
+      frameIndex = 0;
+      if (!options.loop) stop();
     }
-    renderShowAnimationFrame(layer, source, frameIndex);
+    render(frameIndex);
   };
 
   const play = (): void => {
     clear();
+    stopNotified = false;
     frameIndex = 0;
-    renderShowAnimationFrame(layer, source, 0);
+    render(0);
     timer = window.setInterval(tick, SHOW_ANIMATION_FRAME_MS);
   };
 
   play();
   return { play, stop };
+}
+
+/**
+ * 셀 레이어를 1회 재생한다. 버튼이 없는 표시면(명령 프리뷰 카드)도 이걸 쓴다.
+ * 재생은 항상 1프레임부터 전진하고, 끝나면 첫 프레임으로 돌아가 선다.
+ */
+export function playShowAnimationOnce(
+  stage: HTMLElement,
+  layer: HTMLElement,
+  source: ShowAnimationPlaybackSource,
+  onStop?: () => void
+): ShowAnimationPlaybackHandle {
+  return playShowAnimation(stage, layer, source, { onStop });
 }
 
 /**

@@ -1,5 +1,6 @@
 import type { HouseKitId } from "@/editor/houseKit";
 import type { ConstructionOutcome, HouseWing } from "@/editor/construction/contracts";
+import type { HouseVarietyReport } from "./houseVariety";
 
 export type HouseTransferEvidence = {
   readonly doorEventId: string;
@@ -44,4 +45,9 @@ export type AuthorHouseResultData = {
   readonly construction: ConstructionOutcome;
   readonly houses: readonly AuthorHouseExecution[];
   readonly changes: AuthorHouseChanges;
+  /**
+   * 시공 직후 그 자리를 되읽은 모양·킷 분포. 모델이 "같은 집만 깔았는지"를 다음 턴에
+   * 바로 알 수 있게 결과에 싣는다(정밀 관찰은 look_at_houses).
+   */
+  readonly variety?: HouseVarietyReport;
 };

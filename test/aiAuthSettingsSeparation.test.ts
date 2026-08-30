@@ -18,6 +18,13 @@ const refreshCompanionAuth = vi.fn();
 const disconnectCompanionAuth = vi.fn();
 const completeOAuthPaste = vi.fn();
 
+// 이 파일은 인증 패널 자체의 경합을 단위 검증한다. 공유 게이트 캐시 배선은
+// aiAuthConnectionCache.test.ts 에서 실제 모듈끼리 통합 검증한다.
+vi.mock("@/editor/panels/aiConnectionStatus", () => ({
+  refreshAiConnectionStatus: vi.fn(async () => undefined),
+  resetAiConnectionStatusCache: vi.fn(),
+}));
+
 vi.mock("@/ai/chatgptOAuthClient", async () => {
   const actual = await import("@/ai/chatgptOAuthClient");
   return {

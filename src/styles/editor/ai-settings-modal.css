@@ -585,47 +585,6 @@
   padding: 8px;
 }
 
-/* ── 상태바 AI 연동 칩 ─────────────────────────────────────────────────── */
-
-/* 상태별 색. DB 연동 칩(map/resource-system.part-1.css:232-247)과 같은 패턴이다.
- * 예전에는 kind 클래스를 방출하면서 **그걸 소비하는 규칙이 어디에도 없었다** — 네 상태가
- * 모두 같은 색·같은 이모지로 보이고 차이는 hover 툴팁에만 있었다. */
-.editor-statusbar-cell.ai-connection-status.ready {
-  color: var(--status-success);
-}
-
-.editor-statusbar-cell.ai-connection-status.checking {
-  color: var(--status-warning);
-}
-
-.editor-statusbar-cell.ai-connection-status.disconnected {
-  color: var(--status-warning);
-}
-
-.editor-statusbar-cell.ai-connection-status.offline,
-.editor-statusbar-cell.ai-connection-status.error {
-  color: var(--status-error);
-}
-
-/* 좁은 상태바에서도 살아남게 — 칩이 사라지는 대신 줄어든다(아래 05-canvas-statusbar.css 수정 참고).
- * 상태별 이모지가 앞에 오므로 라벨이 잘려도 무엇이 문제인지는 읽힌다. */
-.editor-statusbar-cell.ai-connection-status {
-  max-width: 22ch;
-  min-width: 0;
-}
-
-.editor-statusbar-cell.ai-connection-status > .ai-connection-label {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.editor-statusbar-cell.ai-authoring-entry {
-  color: var(--accent);
-  font-weight: 800;
-}
-
 /* 모델 경고 — aiSettingsModal 이 인라인 style 로 색을 칠하던 것을 대체한다. */
 .ai-model-warning {
   color: var(--danger);

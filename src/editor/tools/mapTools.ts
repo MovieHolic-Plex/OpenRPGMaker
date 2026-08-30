@@ -47,6 +47,7 @@ import { expandHardClusterPlacement, type HardClusterTileEdit } from "./clusterR
 import { jitterPlacement, wobblePath } from "./naturalScatter";
 import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool } from "./naturalToolArgs";
 import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
+import { repairRoadPath, roadObstacleMaskFor, roadRepairWarning, type RoadPathRepair } from "./roadObstacles";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
@@ -372,7 +373,7 @@ function coordKey(x: number, y: number): string {
 
 const paintRoad: ToolDefinition = {
   name: "paint_road",
-  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. ${NATURALNESS_GUIDANCE}`,
+  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. 경로가 집·방해물·물 같은 통행 불가 칸을 가로지르려면 그 칸을 덮지 않고 자동으로 우회한다(건로봐 보호). ${NATURALNESS_GUIDANCE}`,
   mode: "write",
   parameters: {
     type: "object",
@@ -400,39 +401,48 @@ const paintRoad: ToolDefinition = {
     }
     const painted: Point[] = [];
     const body = picker ? () => picker.pick() : () => style === "dirt" ? DIRT_ROAD_TILE.BODY : SAND_TILE.BODY;
-    const pathCells = naturalness === 0
-      ? paintStraightRoad(map, points, body, painted)
-      : paintNaturalRoad(map, points, body, naturalness, args, painted);
+    const mask = roadObstacleMaskFor(draft, map);
+    const candidate = naturalness === 0
+      ? { path: straightRoadCandidate(points), widthCells: [] as readonly Point[] }
+      : wobblePath(points, naturalness, rngForTool(args, roadSeedSignature(map, points, naturalness)));
+    const routed = repairRoadPath(map, mask, candidate.path);
+    const widened = repairRoadPath(map, mask, candidate.widthCells);
+    const pathCells = routed.cells.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
+    for (const cell of routed.cells) paintRoadCell(map, cell, body(), painted);
+    for (const cell of widened.cells) paintRoadCell(map, cell, body(), painted);
     if (!picker && style === "dirt") shapeRoadAround(map, painted);
     else if (!picker && style === "sand") shapeSandAround(map, painted);
     const source = picker ? `${picker.presetId}/${picker.role}` : style;
-    return { summary: `${map.name}에 ${source} 도로 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)} / 경로 ${pathCells}칸` };
+    const repair = mergeRoadRepairs(routed, widened);
+    const obstacleWarning = roadRepairWarning(repair);
+    return {
+      summary: `${map.name}에 ${source} 도로 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)} / 경로 ${pathCells}칸`
+        + (repair.blocked > 0 ? ` — 통행 불가 ${repair.blocked}칸 우회` : ""),
+      ...(obstacleWarning ? { warnings: [obstacleWarning] } : {}),
+      data: { detouredSegments: repair.detours, disconnectedSegments: repair.gaps, obstacleCells: repair.blocked, pathCells },
+    };
   },
 };
 
-function paintStraightRoad(map: GameMap, points: readonly Point[], body: () => number, painted: Point[]): number {
-  let pathCells = 0;
+function straightRoadCandidate(points: readonly Point[]): readonly Point[] {
+  const cells: Point[] = [];
   for (let i = 0; i < points.length; i += 1) {
-    const segmentCells = i === 0 ? [points[0]] : lineCells(points[i - 1], points[i]);
-    pathCells += segmentCells.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
-    for (const cell of segmentCells) paintRoadCell(map, cell, body(), painted);
+    if (i === 0) {
+      cells.push(points[0]);
+      continue;
+    }
+    for (const cell of lineCells(points[i - 1], points[i])) cells.push(cell);
   }
-  return pathCells;
+  return cells;
 }
 
-function paintNaturalRoad(
-  map: GameMap,
-  points: readonly Point[],
-  body: () => number,
-  naturalness: number,
-  args: Record<string, unknown>,
-  painted: Point[]
-): number {
-  const result = wobblePath(points, naturalness, rngForTool(args, roadSeedSignature(map, points, naturalness)));
-  const pathCells = result.path.filter((cell) => inMapBounds(map, cell.x, cell.y)).length;
-  for (const cell of result.path) paintRoadCell(map, cell, body(), painted);
-  for (const cell of result.widthCells) paintRoadCell(map, cell, body(), painted);
-  return pathCells;
+function mergeRoadRepairs(path: RoadPathRepair, width: RoadPathRepair): RoadPathRepair {
+  return {
+    blocked: path.blocked + width.blocked,
+    cells: [...path.cells, ...width.cells],
+    detours: path.detours + width.detours,
+    gaps: path.gaps + width.gaps,
+  };
 }
 
 function paintRoadCell(map: GameMap, cell: Point, body: number, painted: Point[]): void {
@@ -996,6 +1006,26 @@ const roguelikeEncounterSlotSchema: JsonSchema = {
   required: ["id", "choices"],
 };
 
+/**
+ * 인카운터 테이블을 설정할 때 발생률도 함께 보장한다.
+ * 라이브 QA 사고: encounterTable 만 채우고 encounterRate=0 으로 남기면
+ * playSceneMovement 의 `rate <= 0` 게이트에 막혀 몬스터가 평생 등장하지 않는다.
+ */
+const DEFAULT_TABLE_ENCOUNTER_RATE = 25;
+
+function applyEncounterRate(map: GameMap, requested: unknown, hasEntries: boolean): string | undefined {
+  if (requested !== undefined) {
+    if (typeof requested !== "number" || !Number.isInteger(requested) || requested < 0) {
+      throw new ToolError("encounterRate는 0 이상 정수여야 합니다.", { code: "invalid-args", mapId: map.id });
+    }
+    map.encounterRate = requested;
+    return `인카운터율=${requested}`;
+  }
+  if (!hasEntries || (map.encounterRate ?? 0) > 0) return undefined;
+  map.encounterRate = DEFAULT_TABLE_ENCOUNTER_RATE;
+  return `인카운터율 0 이라 기본값 ${DEFAULT_TABLE_ENCOUNTER_RATE} 으로 보정`;
+}
+
 function parseEncounterEntries(draft: Project, map: GameMap, value: unknown): EncounterTableEntry[] {
   if (!Array.isArray(value)) throw new ToolError("entries는 배열이어야 합니다.", { code: "invalid-entries", mapId: map.id });
   return value.map((entryValue, index) => parseEncounterEntry(draft, map, entryValue, `entries[${index}]`));
@@ -1192,9 +1222,17 @@ function parseCharacterFootprint(value: unknown, label: string, mapId: string): 
   return footprint;
 }
 
+/** 오류 메시지에 실을 실제 트룹 id 목록(상한 12개 — 프롬프트 폭주 방지). */
+function knownTroopIdHint(project: Project): string {
+  const ids = project.database.troops.map((troop) => troop.id);
+  if (ids.length === 0) return "등록된 트룹이 없습니다 — upsert_troop 으로 먼저 만드세요.";
+  const shown = ids.slice(0, 12).join(", ");
+  return `사용 가능한 트룹 id: ${shown}${ids.length > 12 ? ` (외 ${ids.length - 12}개)` : ""}`;
+}
+
 function assertKnownTroop(project: Project, troopId: string): void {
   if (!project.database.troops.some((troop) => troop.id === troopId)) {
-    throw new ToolError(`존재하지 않는 트룹 id: ${troopId} — get_database_records(troops)로 확인하세요.`, { code: "troop-not-found" });
+    throw new ToolError(`존재하지 않는 트룹 id: ${troopId} — ${knownTroopIdHint(project)}`, { code: "troop-not-found" });
   }
 }
 
@@ -1324,7 +1362,7 @@ const setMapProperties: ToolDefinition = {
       const known = new Set(draft.database.troops.map((troop) => troop.id));
       const missing = troopIds.filter((id) => !known.has(id));
       if (missing.length > 0) {
-        throw new ToolError(`존재하지 않는 트룹 id: ${missing.join(", ")} — get_database_records(troops)로 확인하세요.`, { code: "troop-not-found" });
+        throw new ToolError(`존재하지 않는 트룹 id: ${missing.join(", ")} — ${knownTroopIdHint(draft)}`, { code: "troop-not-found" });
       }
       map.troopIds = troopIds;
       changed.push(`트룹 ${troopIds.length}종`);
@@ -1373,13 +1411,14 @@ const setMapProperties: ToolDefinition = {
 
 const setEncounterTable: ToolDefinition = {
   name: "set_encounter_table",
-  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다.",
+  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. 맵 encounterRate가 0이면 기본 발생률로 자동 보정한다(0이면 런타임에서 인카운터가 아예 발생하지 않는다).",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       entries: { type: "array", items: encounterEntrySchema },
+      encounterRate: { type: "integer", description: "생략하면 0일 때만 기본값으로 보정한다. 0을 명시하면 랜덤 인카운터를 끈다." },
     },
     required: ["mapId", "entries"],
   },
@@ -1388,9 +1427,10 @@ const setEncounterTable: ToolDefinition = {
     const entries = parseEncounterEntries(draft, map, args.entries);
     if (entries.length > 0) map.encounterTable = entries;
     else delete map.encounterTable;
+    const rateNote = applyEncounterRate(map, args.encounterRate, entries.length > 0);
     return {
-      summary: `${map.name} 인카운터 테이블 ${entries.length}개 항목 설정`,
-      data: { mapId: map.id, entries },
+      summary: `${map.name} 인카운터 테이블 ${entries.length}개 항목 설정${rateNote === undefined ? "" : ` — ${rateNote}`}`,
+      data: { mapId: map.id, entries, encounterRate: map.encounterRate ?? 0 },
     };
   },
 };
@@ -1415,6 +1455,7 @@ const makeHuntingGround: ToolDefinition = {
       persistKill: { type: "boolean" },
       onKillSwitchId: { type: "string" },
       encounterEntries: { type: "array", items: encounterEntrySchema },
+      encounterRate: { type: "integer", description: "생략하면 0일 때만 기본값으로 보정한다. 0을 명시하면 랜덤 인카운터를 끈다." },
     },
     required: ["mapId", "area", "troopId"],
   },
@@ -1443,9 +1484,10 @@ const makeHuntingGround: ToolDefinition = {
       : [{ troopId, weight: 1, conditions: { region: area } }];
     if (entries.length > 0) map.encounterTable = entries;
     else delete map.encounterTable;
+    const rateNote = applyEncounterRate(map, args.encounterRate, entries.length > 0);
     return {
-      summary: `${map.name} 사냥터 구성 — 스폰 ${spawn.id}, 트룹 ${troopId}, 인카운터 ${entries.length}개`,
-      data: { mapId: map.id, fieldSpawn: spawn, encounterTable: entries },
+      summary: `${map.name} 사냥터 구성 — 스폰 ${spawn.id}, 트룹 ${troopId}, 인카운터 ${entries.length}개${rateNote === undefined ? "" : ` — ${rateNote}`}`,
+      data: { mapId: map.id, fieldSpawn: spawn, encounterTable: entries, encounterRate: map.encounterRate ?? 0 },
     };
   },
 };
@@ -1484,6 +1526,7 @@ const createFarmPlot: ToolDefinition = {
   name: "create_farm_plot",
   description: "맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다.",
   mode: "write",
+  domains: ["database", "map"],
   parameters: {
     type: "object",
     properties: {

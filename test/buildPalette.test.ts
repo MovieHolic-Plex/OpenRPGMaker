@@ -148,7 +148,9 @@ describe("build palette deterministic stamps", () => {
     expect(data.kitId).toBe("blue-stone");
     expect(data.wings).toEqual([{ x: 1, y: 1, w: 10, h: 6 }]);
     const map = result.project.maps[MAP_ID];
-    expect(map.lowerTiles[data.doorAt.y * map.width + data.doorAt.x]).toBe(146);
+    // 문 외형은 Object1 문 이벤트가 맡는다 — 문 칸에 타일 문(146)을 겹쳍 깔지 않고, 그 자리에 문 이벤트가 선다.
+    expect(map.lowerTiles[data.doorAt.y * map.width + data.doorAt.x]).not.toBe(146);
+    expect(map.events.some((event) => event.x === data.doorAt.x && event.y === data.doorAt.y)).toBe(true);
     expect(map.upperTiles.some((tile) => tile === 87)).toBe(true);
   });
 

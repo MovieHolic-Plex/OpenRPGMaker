@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마을 만들기를 데이터베이스로 옮기기 — 쉬운 설명판</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --card:#ffffff; --ink:#1d1d1f; --dim:#6b6b70;
+    --line:#e3e3df; --accent:#3b5bdb; --accent-soft:#eef1fd;
+    --warn:#b45309; --warn-soft:#fdf4e7; --ok:#1a7f5a; --ok-soft:#e9f6f0;
+    --bad:#b42318; --bad-soft:#fdefee;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Noto Sans Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",AppleSDGothicNeo-Regular,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 120px}
+
+  /* ── header ── */
+  header.top{padding:64px 0 28px}
+  .kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-size:clamp(30px,4.4vw,46px);line-height:1.2;margin:12px 0 14px;letter-spacing:-.02em}
+  .lede{font-size:19px;color:#3c3c42;max-width:74ch;margin:0}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .chip{font:12px/1.5 var(--mono);background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--dim)}
+
+  /* ── nav ── */
+  nav.rail{position:sticky;top:0;z-index:20;background:rgba(247,247,245,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);margin:26px -24px 0;padding:10px 24px}
+  nav.rail ol{list-style:none;display:flex;flex-wrap:wrap;gap:4px;margin:0;padding:0}
+  nav.rail a{display:block;font-size:13px;color:var(--dim);text-decoration:none;padding:5px 11px;border-radius:8px}
+  nav.rail a:hover{background:var(--accent-soft);color:var(--accent)}
+
+  /* ── sections ── */
+  section{padding:56px 0 8px;border-top:1px solid var(--line);margin-top:44px}
+  section:first-of-type{border-top:0}
+  h2{font-size:27px;margin:0 0 10px;letter-spacing:-.01em}
+  h2 .num{display:inline-block;min-width:1.6em;color:var(--accent);font:600 15px/1 var(--mono);vertical-align:2px}
+  h3{font-size:18px;margin:36px 0 8px}
+  .sub{color:var(--dim);margin:0 0 24px;max-width:76ch}
+  p{max-width:76ch}
+
+  /* ── cards ── */
+  .cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin:24px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+  .card h4{margin:0 0 8px;font-size:16px}
+  .card p{margin:0;font-size:14.5px;color:#4a4a52}
+  .card .tag{display:inline-block;font:11px/1.4 var(--mono);color:var(--dim);margin-top:12px}
+
+  /* ── figures ── */
+  figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  figure img{display:block;width:100%;height:auto;background:#fbfbfa}
+  figure.pad img{padding:10px}
+  figcaption{padding:12px 16px 14px;font-size:13.5px;line-height:1.65;color:#4a4a52;border-top:1px solid var(--line)}
+  figcaption b{color:var(--ink);font-weight:600}
+  .grid2{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));margin:22px 0}
+  .grid3{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:22px 0}
+  .hero{margin:26px 0}
+  .tiles{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin:20px 0}
+  .tiles figure img{padding:8px;background:#f2f2ef}
+  .tiles figcaption{padding:8px 10px 10px;font:12px/1.5 var(--mono);text-align:center}
+  a.zoom{display:block;text-decoration:none;color:inherit}
+
+  /* ── tables ── */
+  .tbl{width:100%;border-collapse:collapse;margin:20px 0;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14.5px}
+  .tbl th,.tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{background:#fafaf8;font-size:13px;color:var(--dim);font-weight:600}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl code{font:12.5px/1.5 var(--mono)}
+
+  /* ── callouts ── */
+  .note{border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 12px 12px 0;padding:16px 20px;margin:22px 0}
+  .note.warn{border-color:var(--warn);background:var(--warn-soft)}
+  .note.bad{border-color:var(--bad);background:var(--bad-soft)}
+  .note.ok{border-color:var(--ok);background:var(--ok-soft)}
+  .note p{margin:0}
+  .note p+p{margin-top:8px}
+  .note strong{font-weight:700}
+
+  code{font:13px/1.5 var(--mono);background:#f0f0ed;border-radius:5px;padding:1px 5px}
+  .ref{font:11.5px/1.5 var(--mono);color:#8a8a90}
+
+  ul.plain{padding-left:20px;max-width:76ch}
+  ul.plain li{margin:7px 0}
+
+  .stat{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0}
+  .stat div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;min-width:130px}
+  .stat b{display:block;font-size:24px;letter-spacing:-.02em}
+  .stat span{font-size:12.5px;color:var(--dim)}
+
+  .steps{display:grid;gap:14px;margin:24px 0}
+  .step{display:grid;grid-template-columns:52px 1fr;gap:16px;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .step .n{font:700 20px/1 var(--mono);color:var(--accent);background:var(--accent-soft);
+    border-radius:10px;display:grid;place-items:center;height:52px}
+  .step h4{margin:0 0 6px;font-size:16.5px}
+  .step p{margin:0;font-size:14.5px;color:#4a4a52}
+  .step .out{margin-top:10px;font-size:12.5px;color:var(--dim)}
+
+  footer{margin-top:60px;padding-top:26px;border-top:1px solid var(--line);color:var(--dim);font-size:13.5px}
+  footer a{color:var(--accent)}
+  @media (max-width:640px){
+    .wrap{padding:0 16px 80px}
+    nav.rail{margin:26px -16px 0;padding:10px 16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">조사 · 설계 계획</div>
+  <h1>마을 만들기를 데이터베이스로 옮기기</h1>
+  <p class="lede">
+    지금 마을은 “한 문장 지시”로만 만들어진다. 집 모양, 벽·지붕 재료, 집 사이 간격, 꽃이 놓일 확률까지
+    전부 소스 코드 안에 숫자로 박혀 있어서 사용자가 손댈 수 없다.
+    이 문서는 그 구조를 화면과 코드로 확인한 결과와, 무엇을 어떤 순서로 데이터베이스 탭에 올릴지 정리한 것이다.
+  </p>
+  <div class="chips">
+    <span class="chip">워크트리 rpg-zzu/3</span>
+    <span class="chip">브랜치 마을3</span>
+    <span class="chip">HEAD d7cd370a</span>
+    <span class="chip">읽기 전용 조사 · 빌드·테스트 미실행</span>
+  </div>
+</header>
+
+<nav class="rail">
+  <ol>
+    <li><a href="#s1">세 줄 요약</a></li>
+    <li><a href="#s2">결과물</a></li>
+    <li><a href="#s3">만드는 길</a></li>
+    <li><a href="#s4">재료는 번호</a></li>
+    <li><a href="#s5">타일셋의 뜻</a></li>
+    <li><a href="#s6">지금 DB 탭</a></li>
+    <li><a href="#s7">제안</a></li>
+    <li><a href="#s8">걸림돌</a></li>
+    <li><a href="#s9">순서</a></li>
+    <li><a href="#s10">체크리스트</a></li>
+    <li><a href="#s11">못 본 것</a></li>
+  </ol>
+</nav>
+
+<!-- ══════════ 1 ══════════ -->
+<section id="s1">
+  <h2><span class="num">1</span> 세 줄 요약</h2>
+  <p class="sub">길게 읽을 시간이 없다면 이 세 가지만 알면 된다.</p>
+
+  <div class="cards">
+    <div class="card">
+      <h4>① 마을 만들기 창이 없다</h4>
+      <p>옵션을 골라 마을을 만드는 대화창이 아예 없다. 메뉴에도, 툴바에도, 맵 만들기 프리셋에도 없다.
+         유일한 버튼인 건축 팔레트의 <b>🏘️마을</b>은 마을을 직접 짓지 않고, 한국어 문장이 미리 채워진
+         AI 작업 창을 자동으로 띄운다.</p>
+      <span class="tag">buildPalette.ts:181-184</span>
+    </div>
+    <div class="card">
+      <h4>② 값이 전부 코드에 있다</h4>
+      <p>집 모양 34종, 벽·지붕 세트 6종, 울타리·문·창문 타일 번호, 길 오토타일 종류가 모두 코드 상수다.
+         타일셋을 쓸 수 있는지 판단하는 검사도 “뜻이 준비됐나”가 아니라 <b>“이 이미지가 맞나”</b> 한 줄이다.</p>
+      <span class="tag">village/constants.ts · combinedTown.ts:27-29</span>
+    </div>
+    <div class="card">
+      <h4>③ 지금 DB의 킷은 안 쓰인다</h4>
+      <p>데이터베이스 「구조물」탭에 집 킷 6종이 들어 있지만, 마을 생성 코드 8,632줄에서 이 킷을
+         참조하는 곳이 <b>0건</b>이다. 비슷한 두 계보가 나란히 있으면서 서로를 모른다.</p>
+      <span class="tag">src/editor/tools/village/ 12파일</span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <figure>
+      <a class="zoom" href="img/village-full.png" target="_blank" rel="noopener">
+        <img src="img/village-full.png" alt="생성기가 시공한 마을 전경">
+      </a>
+      <figcaption><b>지금 나오는 결과물.</b> 집 개수, 광장 크기, 길 폭, 나무 밀도, 꽃 확률 —
+        이 그림을 만든 모든 수치가 소스 코드에만 있다. 사용자가 바꿀 손잡이가 없다.</figcaption>
+    </figure>
+  </div>
+
+  <div class="grid2">
+    <figure>
+      <a class="zoom" href="img/village-closeup.png" target="_blank" rel="noopener">
+        <img src="img/village-closeup.png" alt="마을 근접 뷰">
+      </a>
+      <figcaption>근접 뷰. 울타리가 이어지는 방식, 마당 소품, 문 위치, 길이 문 앞까지 뻗는 방식이 전부 코드에서 결정된다.
+        이 계획의 목표는 이걸 <b>더 예쁘게</b> 만드는 게 아니라 <b>바꿀 수 있게</b> 만드는 것이다.</figcaption>
+    </figure>
+    <figure>
+      <a class="zoom" href="img/village-sample2.png" target="_blank" rel="noopener">
+        <img src="img/village-sample2.png" alt="다른 표본 마을">
+      </a>
+      <figcaption>다른 표본. 집 4채와 흙길이 각 문 앞으로 이어진다. 오른쪽 아래 흰 사각형은 타일이 비어 있는 영역이다.
+        같은 지시를 줘도 배치가 달라지는데, 그 차이를 만든 씨앗값(seed)은 어디에도 저장되지 않는다.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══════════ 2 ══════════ -->
+<section id="s2">
+  <h2><span class="num">2</span> 무엇이 만들어지나 — 형태 × 재료</h2>
+  <p class="sub">
+    집 하나는 두 가지가 곱해져서 나온다. <b>템플릿</b>은 형태(폭·높이·층수·날개 모양)이고,
+    <b>킷</b>은 재료(벽 9조각·지붕·창문 타일)다. 지금은 형태 34종과 재료 6종 모두 코드 상수다.
+  </p>
+
+  <div class="stat">
+    <div><b>34</b><span>집 형태(템플릿)</span></div>
+    <div><b>6</b><span>재료 세트(킷)</span></div>
+    <div><b>8,632</b><span>생성기 코드 줄 수</span></div>
+    <div><b>0</b><span>DB 구조물 킷 참조</span></div>
+  </div>
+
+  <figure class="hero pad">
+    <a class="zoom" href="img/houses-all8.png" target="_blank" rel="noopener">
+      <img src="img/houses-all8.png" alt="집 8채 형태와 재료 조합">
+    </a>
+    <figcaption><b>형태 × 재료 조합.</b> 한 마을 안에서 재료는 최소 3종, 형태는 최대 8종까지 섞이도록
+      코드가 강제한다(<code>min(3, 목표수)</code>, <code>min(8, 목표수, 후보수)</code>).
+      이 “다양성 목표” 숫자도 사용자가 못 만진다.</figcaption>
+  </figure>
+
+  <h3>표본 8채 — 하나씩</h3>
+  <p>같은 문법에서 나온 집들. 지붕 형태(평지붕·A자·박공), 층수, 날개 유무, 벽 재료가 조합으로 갈린다.</p>
+  <div class="tiles">
+    <figure><a class="zoom" href="img/house-0.png" target="_blank" rel="noopener"><img src="img/house-0.png" alt="표본 집 1"></a><figcaption>표본 1</figcaption></figure>
+    <figure><a class="zoom" href="img/house-1.png" target="_blank" rel="noopener"><img src="img/house-1.png" alt="표본 집 2"></a><figcaption>표본 2</figcaption></figure>
+    <figure><a class="zoom" href="img/house-2.png" target="_blank" rel="noopener"><img src="img/house-2.png" alt="표본 집 3"></a><figcaption>표본 3</figcaption></figure>
+    <figure><a class="zoom" href="img/house-3.png" target="_blank" rel="noopener"><img src="img/house-3.png" alt="표본 집 4"></a><figcaption>표본 4</figcaption></figure>
+    <figure><a class="zoom" href="img/house-4.png" target="_blank" rel="noopener"><img src="img/house-4.png" alt="표본 집 5"></a><figcaption>표본 5</figcaption></figure>
+    <figure><a class="zoom" href="img/house-5.png" target="_blank" rel="noopener"><img src="img/house-5.png" alt="표본 집 6"></a><figcaption>표본 6</figcaption></figure>
+    <figure><a class="zoom" href="img/house-6.png" target="_blank" rel="noopener"><img src="img/house-6.png" alt="표본 집 7"></a><figcaption>표본 7</figcaption></figure>
+    <figure><a class="zoom" href="img/house-7.png" target="_blank" rel="noopener"><img src="img/house-7.png" alt="표본 집 8"></a><figcaption>표본 8</figcaption></figure>
+  </div>
+
+  <div class="note ok">
+    <p><strong>여기가 제일 큰 걸림돌이었다 — 지금은 해결됐다.</strong> 집 형태가 데이터가 아니라 <b>함수</b>로 되어 있었다.
+      템플릿마다 <code>wingsAt(x, y)</code>를 들고 있어서 배열을 JSON으로 옮길 수 없었다.</p>
+    <p>34종 전부가 <b>원점 기준 모양을 그대로 평행이동</b>하는 것뿐이었다.
+      그래서 날개를 원점 <code>(0,0)</code> 기준 사각형 배열로 선언하고, 시공 좌표는 전개 함수가 만들게 바꿨다.
+      리팩터 <b>직전</b> 코드로 뽑은 기준선 덤프와 칸 하나까지 대조하는 테스트가 동일성을 고정한다
+      (0단계, PR&nbsp;#267).</p>
+  </div>
+
+  <p class="ref">형태 규칙(코드 주석에 못 박혀 있음): 층 구간 높이 ≥ 벽 밴드+2 (1층 5 / 2층 7 / 3층 9 / 낮은벽 4), 폭 ≤ 8,
+    A자 지붕은 높이 = 벽밴드 + floor((폭−1)/2) + 1. 계약 테스트 <code>test/houseTemplates.test.ts:31-60</code>가
+    30종 이상·id 유일·전부 빈 맵에 시공 성공·문이 맨 아랫줄·날개가 경계 안을 지킨다.</p>
+</section>
+
+<!-- ══════════ 3 ══════════ -->
+<section id="s3">
+  <h2><span class="num">3</span> 마을을 만드는 길은 어디인가</h2>
+  <p class="sub">UI에서부터 거꾸로 따라가 봤다. 결론은 <b>옵션을 주고 마을을 만드는 화면이 없다</b>는 것.</p>
+
+  <div class="grid2">
+    <figure>
+      <a class="zoom" href="img/ref-menu-tools.png" target="_blank" rel="noopener">
+        <img src="img/ref-menu-tools.png" alt="도구 메뉴 6항목">
+      </a>
+      <figcaption><b>메뉴에 없다.</b> 도구 메뉴는 데이터베이스·자료 보관함·세계관·음악·맵 찾기·AI 설정 6개뿐.
+        마을이나 맵을 생성하는 항목이 아예 없다. <span class="ref">menu.ts:408-420</span></figcaption>
+    </figure>
+    <figure>
+      <a class="zoom" href="img/ref-ai-make-panel.png" target="_blank" rel="noopener">
+        <img src="img/ref-ai-make-panel.png" alt="AI 영역 작업 패널">
+      </a>
+      <figcaption><b>실제 진입점.</b> “한 문장으로 지시”를 받아 내부 마을 생성 도구로 내려간다.
+        여기가 유일한 실용 경로다. 고를 수 있는 옵션 폼은 없다.</figcaption>
+    </figure>
+  </div>
+
+  <div class="grid2">
+    <figure>
+      <a class="zoom" href="img/ref-map-housekit-crop.png" target="_blank" rel="noopener">
+        <img src="img/ref-map-housekit-crop.png" alt="좌측 팔레트 집 킷 선반">
+      </a>
+      <figcaption>좌측 팔레트의 <b>집 킷 6</b> 선반. 킷을 도장처럼 한 채씩 찍는 용도다.
+        마을 배치(길·광장·울타리)와는 무관하다.</figcaption>
+    </figure>
+    <figure>
+      <a class="zoom" href="img/ref-map-brush-assist.png" target="_blank" rel="noopener">
+        <img src="img/ref-map-brush-assist.png" alt="붓 보조 · 이웃 연결 수동">
+      </a>
+      <figcaption><b>붓 보조</b>의 “이웃 연결 · 수동”. 타일을 칠할 때 경계를 자동으로 이어주는 기능이고,
+        이것도 마을 생성과 별개 계보다. 마을 코드는 이 리졸버를 거치지 않는다.</figcaption>
+    </figure>
+  </div>
+
+  <h3>결정론 생성기로 가는 실제 경로</h3>
+  <p>“결정론”은 같은 입력이면 같은 결과가 나오는 코드 경로를 말한다. 이 경로는 지금 <b>AI 도구 호출로만</b> 열린다.</p>
+  <table class="tbl">
+    <thead><tr><th>경로</th><th>어디</th><th>상태</th></tr></thead>
+    <tbody>
+      <tr><td><code>author_village</code> — 정본 창구</td><td><code>authorVillageToolDef.ts:52-158</code></td><td>활성</td></tr>
+      <tr><td><code>generate_map</code> (테마 <code>village</code>)</td><td><code>generateMapTool.ts:134-153</code></td><td>활성</td></tr>
+      <tr><td>AI 영역 작업 — “N채 마을” 감지 시 서식 주입</td><td><code>runRegionTask.ts:392-395</code></td><td>활성</td></tr>
+      <tr><td>레거시 도구 7종</td><td><code>village/builder.ts:498-918</code></td><td>폐기 예정 · AI에게 숨김</td></tr>
+      <tr><td>개발용 URL 쿼리 <code>?villageShoppingStreet</code></td><td><code>devShowcaseProjects.ts:42-43</code></td><td>개발용</td></tr>
+      <tr><td>E2E 테스트 브리지</td><td><code>editorToolHook.ts:160-161</code></td><td>테스트용</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note bad">
+    <p><strong>설정이 저장되지 않는다.</strong> <code>author_village</code>의 입력 명세에는 기본값 항목이 하나도 없다.
+      지정하지 않은 값은 하류 빌더가 씨앗값으로 알아서 정한다.</p>
+    <p>즉 같은 지시를 두 번 줘도 <b>사용자가 볼 수 있는 설정 기록이 남지 않는다.</b>
+      필수는 대상 영역·집 개수(1–32)·개수 정책 셋뿐이고, 모르는 형태 id는 거부가 아니라 경고 후 조용히 제거된다.</p>
+  </div>
+</section>
+
+<!-- ══════════ 4 ══════════ -->
+<section id="s4">
+  <h2><span class="num">4</span> 마을이 쓰는 재료는 “뜻”이 아니라 “번호”다</h2>
+  <p class="sub">
+    마을 코드는 “흙길”을 칠할 때 <b>360번 타일</b>을 찍는다. 이름이 아니라 좌표 번호다.
+    그래서 텍스처가 바뀌면 같은 번호가 전혀 다른 그림이 된다.
+  </p>
+
+  <div class="tiles">
+    <figure><a class="zoom" href="img/mat-road.png" target="_blank" rel="noopener"><img src="img/mat-road.png" alt="흙길 타일"></a><figcaption>흙길 360</figcaption></figure>
+    <figure><a class="zoom" href="img/mat-sand.png" target="_blank" rel="noopener"><img src="img/mat-sand.png" alt="모래 타일"></a><figcaption>모래 423</figcaption></figure>
+    <figure><a class="zoom" href="img/mat-cobble.png" target="_blank" rel="noopener"><img src="img/mat-cobble.png" alt="포석 타일"></a><figcaption>포석 93</figcaption></figure>
+    <figure><a class="zoom" href="img/mat-grass.png" target="_blank" rel="noopener"><img src="img/mat-grass.png" alt="잔디 타일"></a><figcaption>잔디 240</figcaption></figure>
+    <figure><a class="zoom" href="img/mat-tree.png" target="_blank" rel="noopener"><img src="img/mat-tree.png" alt="나무 타일"></a><figcaption>나무 290</figcaption></figure>
+    <figure><a class="zoom" href="img/mat-door.png" target="_blank" rel="noopener"><img src="img/mat-door.png" alt="문 타일"></a><figcaption>문 116/146</figcaption></figure>
+    <figure><a class="zoom" href="img/mat-fence.png" target="_blank" rel="noopener"><img src="img/mat-fence.png" alt="울타리 타일"></a><figcaption>울타리 8종</figcaption></figure>
+    <figure><a class="zoom" href="img/mat-well.png" target="_blank" rel="noopener"><img src="img/mat-well.png" alt="우물 타일"></a><figcaption>우물 382</figcaption></figure>
+    <figure><a class="zoom" href="img/mat-flag.png" target="_blank" rel="noopener"><img src="img/mat-flag.png" alt="깃발 타일"></a><figcaption>깃발 208/209</figcaption></figure>
+  </div>
+
+  <figure class="hero">
+    <a class="zoom" href="img/atlas.png" target="_blank" rel="noopener">
+      <img src="img/atlas.png" alt="합본 마을 타일셋 원본 이미지">
+    </a>
+    <figcaption><b>번호가 가리키는 원본 한 장.</b> 왼쪽 격자가 지면 오토타일 앵커 밴드(잔디 240, 흙길 360, 모래 423…),
+      오른쪽이 위에 얹는 소품·건물 부재다. 마을 생성기의 모든 좌표가 이 이미지 한 장에 묶여 있다.</figcaption>
+  </figure>
+
+  <figure class="hero">
+    <a class="zoom" href="img/ref-tile-paintboard.png" target="_blank" rel="noopener">
+      <img src="img/ref-tile-paintboard.png" alt="타일 그림판 화면">
+    </a>
+    <figcaption><b>같은 격자를 에디터에서 본 화면.</b> 480칩 · 30열×16행 · 2배 확대 · 통행 표시.
+      칩마다 통행 가능(O)·차단(X) 표식과 오토타일 그룹 테두리가 겹쳐 그려진다.
+      하위탭 <b>미라벨</b>이 아직 뜻을 안 붙인 칩을 모으는 대기줄이다.</figcaption>
+  </figure>
+
+  <div class="note warn">
+    <p><strong>실패가 조용하다.</strong> 마을 코드가 한국어 라벨을 넘기는 곳은 딱 두 군데다 —
+      소품 배치와 지형 채우기(“장작 더미”, “침엽수”, “물”).
+      해석에 실패하면 소품 배치 코드는 오류를 던지지만, 마을 코드가 그걸 <b>경고로 삼켜서</b> 0개 배치로 넘어간다.</p>
+    <p>결과: 뜻 정보가 부족한 타일셋에서는 소품만 슬그머니 사라지고, 집·길·울타리·문은 원시 번호로 계속 찍힌다.
+      사용자는 왜 빈 마당이 나왔는지 알 수 없다. <span class="ref">decor.ts:614-622</span></p>
+  </div>
+
+  <p>참고로 타일 역할 목록에는 <code>building · castle · fence · roof · terrain · water · wall · prop</code>이 있는데
+    <b>길(road)과 바닥(floor)이 없다.</b> 도로도 바닥도 전부 <code>terrain</code>이다.
+    마을 재료를 이름으로 묶으려면 이 축이 먼저 필요할 수 있다.</p>
+</section>
+
+<!-- ══════════ 5 ══════════ -->
+<section id="s5">
+  <h2><span class="num">5</span> 타일셋 탭에는 이미 “뜻”이 있다. 마을이 안 볼 뿐</h2>
+  <p class="sub">
+    타일마다 라벨·설명을 붙이는 화면, 타일을 묶어 어휘로 쓰는 화면, 오토타일 그룹 화면이 이미 다 있다.
+    그런데 마을 코드 전체에서 이들을 참조하는 곳이 0건이다.
+  </p>
+
+  <figure class="hero">
+    <a class="zoom" href="img/ref-tilesets-tab.png" target="_blank" rel="noopener">
+      <img src="img/ref-tilesets-tab.png" alt="데이터베이스 타일셋 탭">
+    </a>
+    <figcaption><b>타일셋 탭 전체.</b> 프로젝트에 타일셋 13종이 있고, 마을이 유일하게 지원하는
+      <b>합본 마을 · EasyRPG (CC0)</b>가 10번이다. 상단 배지가 480칸 · 30열×16행 · 통행 O 129 · X 332 · ★ 19 ·
+      <b>라벨 243/480</b>. 하위탭은 타일 규칙 / 타일 지식(단어장) / 구성 셋이다.</figcaption>
+  </figure>
+
+  <div class="grid2">
+    <figure>
+      <a class="zoom" href="img/ref-tileset-rules.png" target="_blank" rel="noopener">
+        <img src="img/ref-tileset-rules.png" alt="타일 규칙 하위탭">
+      </a>
+      <figcaption><b>타일 규칙.</b> 칩을 클릭해 라벨·설명·레이어·통행을 고친다.
+        사람이 고친 값은 <code>source=user</code>로 표시되고 AI 추정보다 우선한다.
+        마을이 번호를 버리려면 이 <b>라벨 243/480</b>이 480에 가까워져야 한다.</figcaption>
+    </figure>
+    <figure>
+      <a class="zoom" href="img/ref-tileset-knowledge.png" target="_blank" rel="noopener">
+        <img src="img/ref-tileset-knowledge.png" alt="타일 지식 하위탭">
+      </a>
+      <figcaption><b>타일 지식(단어장).</b> 미라벨 대기줄이 <b>237개 남음</b>(= 480 − 243, 배지와 일치)인데,
+        옆의 검사기는 city/house/road/water/decor 5역할 전부 <b>OK</b>다.
+        “있는지만 보고 몇 개인지는 안 보는” 검사라서 그렇다.</figcaption>
+    </figure>
+  </div>
+
+  <figure class="hero">
+    <a class="zoom" href="img/ref-tileset-composition.png" target="_blank" rel="noopener">
+      <img src="img/ref-tileset-composition.png" alt="구성 하위탭 · 오토타일 그룹">
+    </a>
+    <figcaption><b>구성 하위탭.</b> 왼쪽 오토타일 그룹 패널이 “정의가 없으면 내장 흙길/모래 규칙을 사용합니다”라고
+      대체 동작을 그대로 적어 놨다. 그룹 추가 · 템플릿에서 만들기 · 기본 그룹 불러오기(내장 11종을 편집 가능한 사본으로 복제)를 준다.
+      내장 그룹은 <b>내장</b> 배지를 달고 읽기 전용으로 뜬다 — 구조물 탭과 같은 방식이다.
+      오른쪽 “자동타일 애니메이션” 필드는 아직 껍데기이고, 그 아래 O 129 / X 332 숫자는 애니메이션과 무관한
+      통행 집계를 다시 출력한 것이다. <span class="ref">tilesetSettingsDetails.ts:130-151</span></figcaption>
+  </figure>
+
+  <div class="note">
+    <p><strong>저장된 오토타일은 0개인데 실제로는 11개로 동작한다.</strong>
+      합본 마을 타일셋에 저장된 오토타일 그룹은 0개다. 그런데 실행할 때
+      “이 이미지가 기본 텍스처면” 내장 11종(흙길·모래·포석·경작지·눈·관목·키큰풀·석재광장·자갈광장·어둠 2종)을 섞어준다.</p>
+    <p>문제는 이 대체 판정식이 마을 생성기의 통과 조건과 <b>똑같은 이미지 비교 한 줄</b>이라는 점이다.
+      다른 타일셋으로 갈아타면 <b>생성기 통과와 오토타일 대체가 동시에 죽는다.</b>
+      <span class="ref">defaults/autotileGroups.ts:245-255 · combinedTown.ts:27-29</span></p>
+  </div>
+
+  <figure class="hero">
+    <a class="zoom" href="img/ref-tileset-ai-workspace.png" target="_blank" rel="noopener">
+      <img src="img/ref-tileset-ai-workspace.png" alt="AI 타일셋 작업실 모달">
+    </a>
+    <figcaption><b>새 탭이 베껴야 할 안전장치.</b> AI 타일셋 작업실은 전체 분석 → 확인 질문 → 적용 3단계다.
+      화면에 규칙이 적혀 있다: “AI가 골라둔 묶음은 이 단계에서 프로젝트에 들어가지 않습니다. 3단계에서 확인하고
+      ‘적용’을 눌러야 반영됩니다.” 그리고 “사람이 직접 확정해 둔 타일 지식은 AI가 건드리지 않습니다.”
+      (이 스냅샷은 분석이 실패한 상태다. 그래도 안전장치 문구는 그대로 확인된다.)</figcaption>
+  </figure>
+
+  <h3>지금 지원 타일셋의 뜻 커버리지</h3>
+  <p>위키 실측표(2026-08-20) 기준: 실내 칩셋 480/480 라벨·오토타일 10, 던전 478/480·13,
+    <b>합본 마을 207/480·오토타일 0</b>, 나머지 7종 전부 0.
+    다만 현재 에디터 배지는 <b>243/480</b>을 보여준다 — 그 사이 36칸이 라벨링된 것으로 보인다.
+    계획을 세울 때는 위키 숫자가 아니라 <b>배지 값</b>을 기준으로 삼는 게 맞다. 어느 쪽이든 절반 이하다.</p>
+</section>
+
+<!-- ══════════ 6 ══════════ -->
+<section id="s6">
+  <h2><span class="num">6</span> 지금 데이터베이스에 있는 탭 — 어디에 얹을까</h2>
+  <p class="sub">새 탭을 만들기 전에, 이미 있는 표면이 마을 데이터를 받을 수 있는지 하나씩 확인했다.</p>
+
+  <figure class="hero pad">
+    <a class="zoom" href="img/db-nav-world.png" target="_blank" rel="noopener">
+      <img src="img/db-nav-world.png" alt="데이터베이스 세계 그룹 사이드바">
+    </a>
+    <figcaption><b>「세계」그룹 현재 구성.</b> 타일셋 · 구조물 · 지형 · 공용 이벤트.
+      마을 탭이 들어갈 자리는 <b>구조물과 지형 사이</b>다.</figcaption>
+  </figure>
+
+  <div class="grid2">
+    <figure>
+      <a class="zoom" href="img/ref-structure-kits-tab.png" target="_blank" rel="noopener">
+        <img src="img/ref-structure-kits-tab.png" alt="구조물 탭">
+      </a>
+      <figcaption><b>구조물 탭.</b> 전체 6 / 내장 건물 6 / 실내 오브젝트 0 / 내가 저장한 구조물 0.
+        킷 6종의 id와 이름이 코드와 정확히 일치한다(파랑 지붕+석벽 … 빨간 A자 지붕+석벽).
+        전부 9×8 고정 크기이고 <b>부위 열이 전부 “부위 없음”</b>이다.</figcaption>
+    </figure>
+    <figure>
+      <a class="zoom" href="img/ref-structure-kit-builtin-inspector.png" target="_blank" rel="noopener">
+        <img src="img/ref-structure-kit-builtin-inspector.png" alt="내장 킷 인스펙터">
+      </a>
+      <figcaption>내장 항목 인스펙터는 편집·삭제 버튼을 아예 안 그리고
+        <b>내 구조물로 복제</b> · <b>팔레트에서 쓰기</b> 둘만 둔다.
+        AI 메타도 “아직 없습니다” 상태다. 마을 탭도 이 방식을 그대로 쓰면 된다.</figcaption>
+    </figure>
+  </div>
+
+  <div class="grid2">
+    <figure>
+      <a class="zoom" href="img/ref-terrain-tab.png" target="_blank" rel="noopener">
+        <img src="img/ref-terrain-tab.png" alt="지형 탭">
+      </a>
+      <figcaption><b>이름 충돌 주의.</b> 「지형」탭은 사이드바에서 세계 그룹에 있지만 내용은
+        전투 스튜디오다(이동 규칙·전투 배경·발소리). 마을 지형과 아무 관계가 없다.</figcaption>
+    </figure>
+    <figure>
+      <a class="zoom" href="img/db-tab-reference.png" target="_blank" rel="noopener">
+        <img src="img/db-tab-reference.png" alt="진영 탭 — 참고 견본">
+      </a>
+      <figcaption><b>베낄 견본.</b> 진영 탭이 마을 탭이 닮아야 할 모양에 가장 가깝다.
+        예약 레코드는 “ID는 바꿀 수 없습니다”로 잠그고 이름만 열어두며, 셀마다
+        <b>저작됨/기본값</b>을 표시해 내장값과 사용자값을 한 화면에서 구분한다.</figcaption>
+    </figure>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>표면</th><th>담고 있는 것</th><th>마을 데이터를 받을 수 있나</th></tr></thead>
+    <tbody>
+      <tr><td>타일셋</td><td>타일별 통행·뜻 라벨, 오토타일, 팔레트 프리셋</td>
+          <td><b>재료 결속의 상류.</b> 여기 라벨이 채워져야 마을이 번호를 버릴 수 있다. 마을 설정 자체를 담기엔 부적합</td></tr>
+      <tr><td>구조물</td><td>타일셋별로 굽힌 9×8 래스터 킷</td>
+          <td><b>부적합.</b> 형태가 파라메트릭이 아니라 굽힌 그림이고, 타일셋에 묶여 있어 배치 규칙을 못 담는다</td></tr>
+      <tr><td>지형</td><td>전투 이동 규칙·전투 배경·발소리</td>
+          <td><b>부적합.</b> 전투 스튜디오 소속. 여기 얹으면 뜻이 충돌한다</td></tr>
+      <tr><td>공용 이벤트</td><td>재사용 이벤트</td><td>무관</td></tr>
+    </tbody>
+  </table>
+
+  <h3>그대로 베껴 쓸 관례 네 가지</h3>
+  <ul class="plain">
+    <li><b>내장/사용자 축은 출처로 판정.</b> 구조물 탭은 <code>source === "user"</code>만 편집 허용한다.
+      “누가 가르쳐줬나”로 판정하면 내장 킷을 내보냈다 다시 가져올 때 영구 잠긴 유령이 생긴다는 주석이 붙어 있다.</li>
+    <li><b>복제는 굽는다.</b> 사본이 원본을 참조하지 않고 값을 펼쳐 새 레코드로 넣는다. 코드 상수가 바뀌어도 사본은 그대로다.</li>
+    <li><b>자동 생성은 0건.</b> 어떤 자동 경로도 사용자 레코드를 만들지 않는다. AI 초안은 폼만 채우고,
+      사람이 「수락」을 눌러야 저장된다(위 AI 작업실 화면과 같은 규칙).</li>
+    <li><b>공용 조립 부품을 쓴다.</b> <code>databaseWorkspace.ts</code>의 껍데기·목록·상세·카드 부품으로 조립한다.
+      구조물 탭은 이걸 안 쓰고 손으로 조립한 예외이고, 그 파일 머리 주석이 손조립에서 나온 사고 다섯 건을 열거하고 있다.
+      <b>타일셋·진영 쪽을 본받고 구조물 쪽 손조립은 복제하지 않는다.</b></li>
+  </ul>
+
+  <p class="ref">상태 관리: immer도 훅도 없다. 읽기는 <code>store.getCurrent()</code>, 쓰기는 <code>store.update(draft => …)</code>이고
+    내부는 구조 복제 + 정규화다. 열린 모달은 프레임 디바운스와 편집 중 스킵으로 포커스를 지키므로,
+    키 입력마다 저장을 발화해도 안전하다.</p>
+</section>
+
+<!-- ══════════ 7 ══════════ -->
+<section id="s7">
+  <h2><span class="num">7</span> 제안 — 「마을」탭 하나, 섹션 셋</h2>
+  <p class="sub">
+    새 탭 하나를 「세계」그룹의 <b>구조물과 지형 사이</b>에 넣는다.
+    구조물 탭을 늘리지 않는 이유는 두 가지다 — 구조물은 타일셋에 묶여 있는데 마을 배치 규칙은 그렇지 않고,
+    구조물의 킷은 굽힌 그림인데 마을에 필요한 건 숫자로 조절되는 형태다.
+  </p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="n">1</div>
+      <div>
+        <h4>집 템플릿 — 형태 카탈로그</h4>
+        <p>형태 34종 + 사용자 템플릿. 폭·높이·층수·낮은벽·지붕 데크·재료 세트·날개 목록을 필드로 노출하고,
+          인스펙터에 실제 시공 미리보기를 붙인다. 내장은 읽기 전용, 「내 템플릿으로 복제」로만 편집.
+          재료 세트는 <b>참조만</b> 하고 구조물 탭 레코드와 중복 저장하지 않는다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">2</div>
+      <div>
+        <h4>배치 프리셋 — 지금 몰래 정해지는 값들</h4>
+        <p>집 수, 광장 크기, 집 사이 여백, 길 폭과 굽이 정도, 마을 레이아웃, 나무 밀도,
+          꽃·조각상 확률, 품질 검사 임계값을 <b>이름 붙은 레코드</b>로 승격한다.
+          여기서 “설정이 저장되지 않는다” 문제가 풀린다 — 쓴 프리셋 id를 결과 설계도에 남기면 재현이 된다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">3</div>
+      <div>
+        <h4>재료 결속 — 번호를 이름으로</h4>
+        <p>마을이 쓰는 재료 슬롯(길·모래·포석·잔디·울타리·문·창문·나무·물)을 원시 번호가 아니라
+          타일셋의 라벨/그룹 참조로 잇는다. 슬롯별 상태를 <b>승인 / 약함 / 없음</b>으로 표시한다.
+          다른 타일셋을 해금하는 유일한 길이고, 여기가 채워지면 이미지 비교 통과 조건을 준비도 검사로 바꿀 수 있다.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>담지 않는 것</h3>
+  <ul class="plain">
+    <li><b>시공 결과.</b> 완성된 설계도는 맵에 남는 산출물이다. DB 탭은 입력만 다룬다.</li>
+    <li><b>타일별 라벨 편집.</b> 타일셋 탭의 일이다. 재료 결속 섹션은 빈 슬롯을 가리키고 타일셋 탭으로 보낸다.</li>
+    <li><b>NPC 인물 데이터.</b> 생활·캐릭터 쪽 계보다. 마을 탭은 기본 NPC 수와 이격만 갖는다.</li>
+    <li><b>실행 버튼.</b> 옵션 폼과 실행은 맵 편집기 쪽 UI로 남긴다. DB는 프리셋 저장소다.</li>
+  </ul>
+
+  <div class="note warn">
+    <p><strong>라벨 충돌은 미리 정해야 한다.</strong> 「마을」탭은 사이드바에서 「지형」바로 위에 서는데,
+      그 지형은 전투용이다. 이미 있는 혼선이지만 마을 탭이 붙으면 “지형 = 마을 지형?” 오해가 커진다.</p>
+    <p>탭 추가와 함께 전투 지형 탭을 전투 규칙 그룹으로 옮기는 걸 같이 검토할 만하다. 별건이지만 같은 사이드바를 건드린다.</p>
+  </div>
+</section>
+
+<!-- ══════════ 8 ══════════ -->
+<section id="s8">
+  <h2><span class="num">8</span> 막는 것 다섯</h2>
+  <table class="tbl">
+    <thead><tr><th style="width:26%">문제</th><th style="width:22%">영향</th><th>해법</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>1. 집 형태가 함수다</b><br><span class="ref">해결 · PR #267</span></td>
+        <td>섹션 1을 막았다</td>
+        <td><b>완료.</b> 원점 기준 날개 배열로 정규화하고 전개 함수를 하나 뒀다.
+            리팩터 직전 덤프를 기준선으로 삼아 원점 3곳에서 대조하고, 카탈로그 규칙(폭 상한·열 구간 최소 높이·bbox 일치·A자 높이 공식)을
+            테스트로 못 박았다</td>
+      </tr>
+      <tr>
+        <td><b>2. 타일셋 통과 조건이 이미지 비교 한 줄</b></td>
+        <td>섹션 3의 목적을 무의미하게 만든다</td>
+        <td>결속이 채워진 타일셋을 허용하도록 준비도 기반으로 교체. 검사 함수는 이미 있다</td>
+      </tr>
+      <tr>
+        <td><b>3. 오토타일이 프로젝트 설정을 우회</b></td>
+        <td>사용자가 만든 그룹이 마을에 반영 안 됨</td>
+        <td>마을 코드의 내장 그룹 직접 가져오기를 프로젝트 조회 함수로 교체</td>
+      </tr>
+      <tr>
+        <td><b>4. 합본 마을 라벨 절반, 오토타일 저장 0</b></td>
+        <td>결속 섹션이 처음부터 반쯤 빈 상태로 보인다</td>
+        <td>번들 타일셋 라벨 보강은 별 트랙으로. 결속 섹션은 빈 슬롯을 정직하게 표시하고 번호 대체를 유지</td>
+      </tr>
+      <tr>
+        <td><b>5. 마을 계획이 계약 없는 필드에 쌓인다</b></td>
+        <td>검증·이관 없이 프로젝트 JSON에 축적</td>
+        <td>타입에 선언하고 검증·참조검사에 넣거나, 세션 저장소로 밀어내 직렬화에서 제외.
+            <b>새 탭 데이터를 같은 방식으로 붙이지 않는 게 최소 조건</b></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note bad">
+    <p><strong>5번을 조금 더.</strong> 마을 계획 코드가 프로젝트 객체를 캐스팅해서 <b>선언되지 않은 필드</b>에 계획을 붙인다.
+      직렬화가 객체 전체를 문자열로 만들고 검증기가 통째로 복제하니까, 저장하고 불러와도 살아남는다 —
+      실제로 데모 프로젝트 파일 안에 그 필드가 들어 있다.</p>
+    <p>검증도 이관도 없는 데이터가 프로젝트 파일에 조용히 쌓이는 상태다. <span class="ref">villagePlan.ts:353-372</span></p>
+  </div>
+</section>
+
+<!-- ══════════ 9 ══════════ -->
+<section id="s9">
+  <h2><span class="num">9</span> 순서 — 안전한 절단면은 0→1</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="n">0</div>
+      <div>
+        <h4>데이터화 — 화면 변화 없음 <span class="ref">완료 · PR #267</span></h4>
+        <p>형태 34종을 선언형 데이터로 옮겼다. 생성기는 여전히 같은 표면(<code>wingsAt</code>)을 쓰지만
+          모양이 <b>데이터</b>가 됐다. 재료 킷 6종은 이미 순수 데이터여서 옮길 게 없었고,
+          테스트가 JSON 왕복으로 그 사실을 못 박았다.</p>
+        <div class="out">확인: 카탈로그 6건 + 형태 계약 5건 + 마을 빌더 통과, 사용자에게 보이는 변화 없음.
+          프로젝트 스키마 필드는 넣지 않았다 — 저장할 사용자 레코드가 생기는 1~2단계 몫이다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">1</div>
+      <div>
+        <h4>「마을」탭 — 읽기 전용 카탈로그</h4>
+        <p>탭을 등록하고 형태 목록을 띄운다. 인스펙터 미리보기 + 「내 템플릿으로 복제」.
+          공용 부품으로 조립하고 구조물 탭의 출처 판정을 그대로 쓴다. 개수 배지는 사용자 템플릿 수(0이면 배지 없음).</p>
+        <div class="out">산출: 탭 5지점 등록 + 아이콘 + 뷰 파일 + 유닛 테스트 + e2e 명세 등록 + 위키 절.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">2</div>
+      <div>
+        <h4>배치 프리셋 — 쓰기 시작</h4>
+        <p>프리셋 섹션을 붙이고 생성 도구 입력에 프리셋 id를 추가한다.
+          빌더의 씨앗 기반 기본값이 프리셋 값을 존중하도록 바꾸고, 쓴 프리셋 id를 결과 설계도에 기록해 재현 가능하게 만든다.
+          형태 + 재료 → 구조물로 굽는 다리도 여기서 놓을 수 있다.</p>
+        <div class="out">산출: 프리셋 스키마 + 빌더 기본값 경로 수정 + 재현성 테스트.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">3</div>
+      <div>
+        <h4>재료 결속 — 타일셋 해금</h4>
+        <p>결속 섹션을 붙이고 마을 코드의 원시 번호·오토타일 직접 가져오기를 결속 조회로 교체한다.
+          통과 조건을 준비도 기반으로 바꾼다. 타일 역할에 <b>길</b> 축이 필요한지 이 단계에서 판단한다.</p>
+        <div class="out">산출: 결속 스키마 + 리졸버 배선 + 통과 조건 교체. 회귀 판정은 벤치마크의 구조 채점(타일 id 무시, 집으로 성립하는가)을 쓴다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note ok">
+    <p><strong>0단계만 끝내도 근본 제약이 사라진다.</strong> “형태가 함수라서 DB로 못 옮긴다”가 없어지고,
+      1단계는 쓰기 없이 탭 골격과 테스트 배선만 검증한다. 실질 위험은 3단계에 몰려 있다.</p>
+  </div>
+</section>
+
+<!-- ══════════ 10 ══════════ -->
+<section id="s10">
+  <h2><span class="num">10</span> 새 탭 추가 체크리스트</h2>
+  <p class="sub">가장 최근 실사례가 진영 탭이지만, 그 커밋은 6그룹·SVG 아이콘 개편 <b>전</b>이라 항목이 더 적었다. 아래는 현재 코드 기준이다.</p>
+
+  <h3>필수 — 빠뜨리면 컴파일·테스트가 잡아준다</h3>
+  <table class="tbl">
+    <thead><tr><th style="width:34%">파일</th><th>무엇을</th></tr></thead>
+    <tbody>
+      <tr><td><code>panels/database.ts</code></td><td>탭 유니온 · 탭 메타 배열(한국어 라벨의 유일한 출처) · 그룹 배치 · 개수 계산 · 렌더 분기</td></tr>
+      <tr><td><code>panels/databaseTabIcons.ts</code></td><td>아이콘 엔트리. 전탭 필수 맵이라 누락은 컴파일 에러. 22×22, 색 리터럴·이모지 금지</td></tr>
+      <tr><td>새 <code>panels/databaseVillageView.ts</code></td><td>렌더 함수. 공용 조립 부품 사용</td></tr>
+      <tr><td><code>test/databaseSidebarNav.test.ts</code></td><td>기대 탭 목록에 <b>순서까지</b> 정확히 삽입 + 개수 리터럴 2곳</td></tr>
+      <tr><td><code>test/databaseSidebarKeyboard.test.ts</code></td><td>testid 맵</td></tr>
+      <tr><td><code>test/databaseTabIcons.test.ts</code></td><td>개수 리터럴 2곳</td></tr>
+      <tr><td><code>test/e2e/oprn-database-helpers.ts</code></td><td>탭 명세에 라벨·슬러그·testid</td></tr>
+    </tbody>
+  </table>
+
+  <h3>상황에 따라</h3>
+  <ul class="plain">
+    <li>탭 전용 CSS는 뷰 파일에서 가져오는 게 최근 관례다. 추가하면 CSS 예산 게이트를 통과해야 하고,
+      <b>기준선 저장 옵션은 쓰지 않는다</b>(래칫을 영구히 풀어버린다).</li>
+    <li>레코드를 다루는 탭이면 AI 컨텍스트용 컬렉션 목록에도 등록한다. 탭 라벨은 자동으로 실린다.</li>
+    <li>초보 모드 6탭에 넣을 경우만 공용 탭 id 목록과 모드 테스트를 함께 수정한다.</li>
+    <li>스키마를 추가하면 정규화 화이트리스트 · 참조검사 · AI 도구 스키마를 같이 손본다.</li>
+    <li>위키 <code>openwiki/editor-database.md</code>에 절 추가 — 안정 id/testid, 소속 그룹과 순서,
+      편집하는 필드와 하지 않는 필드, 개수 산식, 스냅샷 정책, 커버리지 테스트. 검증 명령이 있다. 견본은 구조물 탭 절.</li>
+  </ul>
+
+  <h3>이 영역이 이미 터뜨린 함정</h3>
+  <ul class="plain">
+    <li>사이드바 DOM은 <b>평면</b>이다. 그룹 접기는 형제 요소의 숨김 토글이고 탭 검색이 자식들을 직접 걷는다 —
+      탭을 컨테이너로 감싸면 둘 다 깨진다.</li>
+    <li>요소 생성 헬퍼가 텍스트를 먼저 넣고 자식을 나중에 붙인다 → 아이콘+라벨은 <b>자식 배열로만</b> 넣는다.</li>
+    <li>그룹 헤더는 DIV여야 하고, 접기 화살표는 CSS 가상요소여야 한다(텍스트 단정 때문).</li>
+    <li>모달 창 크기는 선택자 하나에서만 선언한다. 탭 콘텐츠 쪽에서 다시 선언하면 탭 전환 때 창이 튄다 —
+      e2e가 모든 탭을 3해상도로 걸으며 차이 0을 강제한다.</li>
+    <li>탭 간 이동은 전용 전환 함수만 쓴다. 모달을 다시 여는 방식은 규칙 위반이다(변경 기준선·선택 상태 소실, 리스너 누수).</li>
+    <li>상세 폼 표시 위치를 잘못 잡으면 스크롤 컨테이너가 둘 생긴다. 스크롤러는 하나뿐이다.</li>
+  </ul>
+
+  <div class="note warn">
+    <p><strong>이미 조용히 빠진 사례가 있다.</strong> e2e 헬퍼의 탭 명세는 29개인데 사이드바 유닛 테스트는 30개다.
+      <b>진영 탭이 모달 크기 스윕과 감사 매트릭스를 한 번도 지나지 않는다.</b></p>
+    <p>유닛 테스트가 그 배열을 참조하지 않으니 자동으로 잡히지 않는 종류의 누락이다.
+      마을 탭도 같은 식으로 빠질 수 있으니 작업할 때 같이 고치는 게 좋다.</p>
+  </div>
+</section>
+
+<!-- ══════════ 11 ══════════ -->
+<section id="s11">
+  <h2><span class="num">11</span> 확인하지 못한 것</h2>
+  <ul class="plain">
+    <li><code>templates.json</code>을 만든 스크립트를 찾지 못했다. 내용이 코드 함수를 원점에서 펼친 것과
+      정확히 일치하는 건 확인했지만, 생성 경로는 추정이다. 그 디렉터리 전체가 git 추적 밖이다.</li>
+    <li>빌드·테스트를 실행하지 않았다(읽기 전용 조사). 줄 번호는 HEAD <code>d7cd370a</code> 기준이고
+      이 워크트리는 다른 세션과 공유되므로 어긋날 수 있다.</li>
+    <li>마을 계획 필드가 실제 원격 저장 왕복에서도 살아남는지는 직렬화 코드로만 추론했다. 라이브 왕복은 확인하지 않았다.</li>
+    <li>「마을」이라는 탭 이름이 최종안인지는 결정 사항이다. 전투 지형 탭과의 혼선을 어떻게 정리할지에 따라 달라진다.</li>
+    <li>AI 타일셋 작업실 스냅샷은 분석이 실패한 상태다. 성공 시 2·3단계 화면은 보지 못했다.</li>
+  </ul>
+
+  <footer>
+    <p>참고 위키: <code>openwiki/editor-database.md</code>(탭 관례) ·
+      <code>openwiki/large-village-generation.md</code>(별 계보의 100×100 스크립트 빌드) ·
+      <code>openwiki/autotiles.md</code>(앵커 격자와 금지 타일 근거) ·
+      <code>openwiki/agent-tile-benchmark.md</code> · <code>openwiki/interior-tile-benchmark.md</code>(커버리지 실측표).</p>
+    <p style="margin-top:10px">코드 인용과 줄 번호가 더 촘촘한 기술 상세판: <a href="report.html">report.html</a></p>
+    <p style="margin-top:6px">이 계획대로 만든 뒤의 결과와 실측(스크린샷 16장, 고친 규약 두 곳): <a href="built.html">built.html</a></p>
+  </footer>
+</section>
+
+</div>
+</body>
+</html>

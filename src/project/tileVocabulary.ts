@@ -362,7 +362,11 @@ export function resolveMaterialByLabel(
       if (!group || !isAutotileGroup(group)) continue;
       return materialAccessForGroup(tileset, group, hit);
     }
-    if (preferGroup && group && (group.patternGrammar || group.tileIds.length > 1)) {
+    // 구체 라벨이 잡소품 가방에만 속한 타일(예: "팻말" 440)을 가리키면 가방으로 승격하지 않고 그 타일로 시공한다.
+    // 가방 거절은 질의 자체가 가방 라벨/그룹 id 일 때만(위 isBagMaterialQuery) 적용한다.
+    // 사고: author_house yard 태그 sign → "팻말" 이 small-props 가방 소속이라 집 2쵄 시공이 통째로 반려됨.
+    const bagGroup = group !== undefined && isBagGroup(group);
+    if (preferGroup && group && !bagGroup && (group.patternGrammar || group.tileIds.length > 1)) {
       if (options.preferRoles?.length && !options.preferRoles.includes(group.role) && hit.role && !options.preferRoles.includes(hit.role)) {
         continue;
       }
@@ -371,8 +375,8 @@ export function resolveMaterialByLabel(
     if (!options.requireAutotileGroup && !preferGroup) {
       return materialAccessForTile(tileset, hit);
     }
-    // preferGroup 이어도 단일 타일 메타만 있으면 타일로 반환
-    if (!group) return materialAccessForTile(tileset, hit);
+    // preferGroup 이어도 단일 타일 메타만 있거나 가방 소속이면 타일로 반환
+    if (!group || bagGroup) return materialAccessForTile(tileset, hit);
   }
 
   // 그룹 필수였는데 실패 → 단일 타일 폴백(산포) 또는 missing

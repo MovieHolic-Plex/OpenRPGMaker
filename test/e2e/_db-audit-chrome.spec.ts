@@ -1868,7 +1868,7 @@ async function probeR3ExpertCapture(page: Page): Promise<void> {
 async function probeR3Compare(page: Page): Promise<void> {
   const beginnerTabs = await collectTabLabels(page);
   const beginnerH2 = ((await page.locator(".database-modal-header h2").textContent()) ?? "").trim();
-  const navAll = ((await page.locator(".db-tabs .db-tab-group").first().textContent()) ?? "").trim();
+  const navAll = ((await page.locator(".db-tabs .db-tab-group-label").first().textContent()) ?? "").trim();
   const expertTabs = r3Scratch.expertTabs ?? [];
   const expertH2 = r3Scratch.expertH2 ?? "";
   const overlap = beginnerTabs.filter((label) => expertTabs.includes(label));

@@ -13,6 +13,7 @@ import { normalizeCropRecord } from "@/project/farmModel";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
+import { assignMonsterResourceId, monsterGraphicAssignmentWarning } from "./monsterGraphicAssignment";
 import type {
   ActorRecord,
   BattleAnimationRecord,
@@ -816,6 +817,13 @@ const upsertEnemy: ToolDefinition = {
     dropUnknownElementRates(draft, record, "enemy", warnings);
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
     record.monsterResourceId = resolveMonsterResourceId(draft, record.monsterResourceId, "enemy.monsterResourceId", warnings);
+    if (record.monsterResourceId === undefined) {
+      const assignment = assignMonsterResourceId(draft, record);
+      if (assignment) {
+        record.monsterResourceId = assignment.resourceId;
+        warnings.push(monsterGraphicAssignmentWarning("enemy.monsterResourceId", record, assignment));
+      }
+    }
     const outcome = upsertById(draft.database.enemies, record);
     return {
       summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
@@ -893,6 +901,13 @@ const defineMonsterSpecies: ToolDefinition = {
     }
     const warnings: string[] = [];
     record.graphic.monsterResourceId = resolveMonsterResourceId(draft, record.graphic.monsterResourceId, "species.graphic.monsterResourceId", warnings);
+    if (record.graphic.monsterResourceId === undefined) {
+      const assignment = assignMonsterResourceId(draft, record);
+      if (assignment) {
+        record.graphic.monsterResourceId = assignment.resourceId;
+        warnings.push(monsterGraphicAssignmentWarning("species.graphic.monsterResourceId", record, assignment));
+      }
+    }
     const outcome = upsertById(draft.database.monsterSpecies, record);
     return {
       summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,

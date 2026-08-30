@@ -7,6 +7,7 @@ import {
   deriveTitle,
   listConversations,
   loadConversation,
+  loadLatestConversationForScope,
   saveConversation,
   searchConversations,
   type ConversationRecord,
@@ -50,7 +51,7 @@ function record(id: string, savedAt: number, entries: readonly AuditEntry[] = [u
   return {
     id,
     title: deriveTitle(entries),
-    model: "minimax/minimax-m3",
+    model: "stub-model",
     savedAt,
     entries: [...entries],
   };
@@ -81,8 +82,8 @@ describe("conversationStore", () => {
     saveConversation(record("new", 200, [assistant("준비"), user("두 번째 요청"), tool("create_map"), user("수정 요청")]));
 
     expect(listConversations()).toEqual([
-      { id: "new", title: "두 번째 요청", model: "minimax/minimax-m3", savedAt: 200, turnCount: 2 },
-      { id: "old", title: "첫 번째 요청", model: "minimax/minimax-m3", savedAt: 100, turnCount: 1 },
+      { id: "new", title: "두 번째 요청", model: "stub-model", savedAt: 200, turnCount: 2 },
+      { id: "old", title: "첫 번째 요청", model: "stub-model", savedAt: 100, turnCount: 1 },
     ]);
   });
 
@@ -91,7 +92,7 @@ describe("conversationStore", () => {
     saveConversation(record("same", 300, [user("교체됨"), assistant("응답")]));
 
     expect(listConversations()).toEqual([
-      { id: "same", title: "교체됨", model: "minimax/minimax-m3", savedAt: 300, turnCount: 1 },
+      { id: "same", title: "교체됨", model: "stub-model", savedAt: 300, turnCount: 1 },
     ]);
   });
 
@@ -110,7 +111,7 @@ describe("conversationStore", () => {
     deleteConversation("delete");
 
     expect(listConversations()).toEqual([
-      { id: "keep", title: "대화 keep", model: "minimax/minimax-m3", savedAt: 200, turnCount: 1 },
+      { id: "keep", title: "대화 keep", model: "stub-model", savedAt: 200, turnCount: 1 },
     ]);
   });
 
@@ -160,6 +161,14 @@ describe("conversationStore", () => {
     expect(deriveTitle([user("   ")])).toBe("(빈 대화)");
   });
 
+  it("Given a machine-appended context footer When deriving a title Then only the human sentence survives", () => {
+    // 이전 대화 목록의 모든 줄이 "… [컨텍스트] 현재 맵: 이슬 장터 마을 (…" 로 이어져 서로
+    // 구별이 안 됐다(2026-08-30 실측). footer 는 패널이 붙이는 기계 텍스트라 제목에서 뺀다.
+    expect(deriveTitle([user("우물을 놔줘\n\n[컨텍스트] 현재 맵: 이슬 장터 마을 (100x100)")])).toBe("우물을 놔줘");
+    // footer 가 없으면 예전과 똑같이 동작한다.
+    expect(deriveTitle([user("표지판을 세워줘")])).toBe("표지판을 세워줘");
+  });
+
   it("Given Node without localStorage When functions are called Then they no-op safely", () => {
     Reflect.deleteProperty(globalThis, "localStorage");
 
@@ -182,5 +191,30 @@ describe("conversationStore", () => {
 
     expect(loadConversation("remote-failure")?.id).toBe("remote-failure");
     expect(consoleError).toHaveBeenCalledWith("[ai-conversation] Supabase mirror failed:", failure);
+  });
+});
+
+describe("loadLatestConversationForScope", () => {
+  // 왜 전역 최신(loadLatestConversation)으로는 안 되는가: 두 프로젝트를 번갈아 열면 남의
+  // 프로젝트 대화가 더 최근이라, 내 대화가 그대로 있는데도 부팅 복원이 포기됐다 — 사용자에게는
+  // 누르지도 않은 "새 세션 강요" 로 보인다.
+  it("남의 프로젝트 대화가 더 최근이어도 내 범위의 최신을 돌려준다", () => {
+    saveConversation({ ...record("conv_mine_old", 100), projectContextKey: "remote:mine" });
+    saveConversation({ ...record("conv_mine_new", 200), projectContextKey: "remote:mine" });
+    saveConversation({ ...record("conv_other", 999), projectContextKey: "remote:other" });
+
+    expect(loadLatestConversationForScope("remote:mine")?.id).toBe("conv_mine_new");
+    expect(loadLatestConversationForScope("remote:other")?.id).toBe("conv_other");
+  });
+
+  it("범위에 저장본이 없으면 null 이다 — 남의 대화를 끌어오지 않는다", () => {
+    saveConversation({ ...record("conv_other", 999), projectContextKey: "remote:other" });
+    expect(loadLatestConversationForScope("remote:mine")).toBeNull();
+  });
+
+  it("저장 순서가 흐트러져도 savedAt 최댓값을 고른다", () => {
+    saveConversation({ ...record("conv_new", 500), projectContextKey: "remote:mine" });
+    saveConversation({ ...record("conv_old", 100), projectContextKey: "remote:mine" });
+    expect(loadLatestConversationForScope("remote:mine")?.id).toBe("conv_new");
   });
 });

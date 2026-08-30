@@ -22,7 +22,7 @@
   bottom: calc(var(--space-2) + var(--action-hud-hand-slot-band) + var(--space-1));
   display: flex;
   flex-direction: column;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-9);
   gap: var(--space-1);
   left: var(--space-2);

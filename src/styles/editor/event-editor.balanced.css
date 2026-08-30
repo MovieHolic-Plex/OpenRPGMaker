@@ -685,7 +685,7 @@
   cursor: pointer;
   display: grid;
   gap: 8px;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 24px 52px minmax(0, 1fr) auto;
   padding: 8px 10px;
   text-align: left;
   width: 100%;
@@ -1699,217 +1699,6 @@ footer {
   }
 }
 
-/* ============================================================================
-   설정 레일 — 요약 목록 + 넓은 편집면 (2026-08-28)
-
-   문제(실측, 1680×1000): 설정 컬럼 268px 안에 「언제 보이나요」 조건 12행이 통째로
-   들어가 각 행이 두 줄로 접혔다. 레일 실제 높이 1370px(가시 영역 밖으로 넘침),
-   라벨 잘림 3건(`이상`→`이..`, `파티에 있음`→`파티...`, `이 이벤트 기억`).
-   같은 화면에서 명령 컬럼 ~1400px 는 거의 비어 있었다.
-
-   해결: 그룹 헤더만 좌측 레일에 세우고, 열린 그룹의 본문은 그 오른쪽 넓은 면에 놓는다.
-   `display: contents` 로 그룹 자신은 레이아웃에서 빠지므로 DOM 계층(그룹이 헤더와 본문을
-   소유)은 그대로다 — eventRailGroupComposition.test.ts 의 소속 계약이 이에 의존한다.
-
-   기본값은 기존 세로 아코디언이고, 두 면이 나란히 설 폭이 있을 때만 갈라 놓는다.
-   ========================================================================= */
-
-.event-editor .event-editor-settings-accordion-header {
-  text-align: left;
-  width: 100%;
-}
-
-.event-editor .event-editor-settings-accordion-header:hover {
-  background: var(--bg-hover);
-}
-
-.event-editor .event-editor-settings-accordion-group.is-open
-  > .event-editor-settings-accordion-header {
-  background: var(--accent-muted);
-}
-
-.event-editor .event-editor-settings-accordion-group.is-open
-  > .event-editor-settings-accordion-header
-  .event-editor-settings-accordion-title {
-  color: var(--accent);
-}
-
-/* 접힌 그룹의 본문은 감춘다 (예전 <details> 의 open 속성 역할). */
-.event-editor .event-editor-settings-accordion-group:not(.is-open)
-  > .event-editor-settings-accordion-body {
-  display: none;
-}
-
-/* 설정 컬럼의 «레일 + 시트» 마스터-디테일 배치. 레일 196px + 간격 12px + 조건 2열 그리드
-   (`minmax(218px, 1fr)` x2) 를 담아야 하므로 660px 아래로는 성립하지 않는다.
-   예전에는 이 블록이 1321px 에서 열리면서 폭을 772px 로 못박았다. 1366x900 에서
-   772/1366 = 56.5% 를 설정 패널이 먹고, 명령 21줄이 들어갈 스크립트 컬럼에 594px 만
-   남았다(2560 에서는 같은 772px 이 30%). 화면이 좁아질수록 스크립트 쪽이 손실을 전부
-   받는 구조였다. 이제 (1) 두 컬럼이 같이 들어가는 폭에서만 열고, (2) 폭을 유동으로 둔다.
-   1321~1440px 은 아래 `max-width: 1440px` 가 다듬어 둔 268px 단일 컬럼 배치로 내려간다. */
-@media (min-width: 1441px) {
-  .event-editor-modal-window {
-    --balanced-settings-width: clamp(660px, 30vw, 780px);
-    --balanced-rail-width: 196px;
-  }
-
-  /* 시트가 세로로 꽉 차려면 조상 체인이 높이를 넘겨줘야 한다. */
-  .event-editor .event-editor-settings-main > .event-page-props {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .event-editor .event-editor-settings-accordion {
-    align-content: start;
-    display: grid;
-    flex: 1;
-    grid-template-columns: var(--balanced-rail-width);
-    min-height: 0;
-    position: relative;
-    row-gap: 4px;
-  }
-
-  /* 그룹은 레이아웃에서 빠지고 헤더·본문이 직접 자식처럼 배치된다. */
-  .event-editor .event-editor-settings-accordion-group {
-    background: none;
-    border: 0;
-    border-radius: 0;
-    display: contents;
-    overflow: visible;
-  }
-
-  .event-editor .event-editor-settings-accordion-header {
-    align-self: start;
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    grid-column: 1;
-  }
-
-  .event-editor .event-editor-settings-accordion-group.is-open
-    > .event-editor-settings-accordion-header {
-    border-color: var(--accent-border, var(--accent));
-  }
-
-  /* 시트는 그리드 흐름에서 빼낸다. 행을 가로질러 span 시키면 그 높이가 레일 헤더 행들에
-     분배돼 헤더가 세로로 부푼다(실측: 첫 헤더가 640px 가 됐다). */
-  .event-editor .event-editor-settings-accordion-body {
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    bottom: 0;
-    left: calc(var(--balanced-rail-width) + 12px);
-    min-width: 0;
-    overflow-y: auto;
-    padding: 12px 14px 14px;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-
-  .event-editor .event-editor-settings-accordion-group.is-open
-    > .event-editor-settings-accordion-body {
-    display: flex;
-  }
-
-  /* 조건 12행은 넓어진 면에서 2열로 눕는다 — 세로 넘침의 직접 원인이었다. */
-  .event-editor .event-conditions-grid {
-    display: grid;
-    gap: 6px 14px;
-    grid-template-columns: repeat(auto-fit, minmax(218px, 1fr));
-  }
-
-  /* 조건 라벨 칸(4.75rem)이 «이 이벤트 기억»(72px 필요)을 잘랐다. */
-  .event-editor .event-editor-settings-accordion-body .event-condition-row {
-    grid-template-columns: 16px 5.5rem minmax(0, 1fr) auto;
-  }
-}
-
-/* 좁은 폭(레일 아래로 펼치는 폴백)에서 남던 잘림 2건.
-   268px 컬럼에서는 라벨 칸을 넓힐 여유가 없으므로 줄바꿈을 허용하고,
-   컨트롤에는 접미사 칸까지 내준다. 실측: `이 이벤트 기억` 67/72px,
-   `파티에 있음`(커스텀 셀렉트 값) 44/63px. */
-@media (max-width: 1440px) {
-  /* 라벨은 줄바꿈이 되므로 칸을 좁혀도 잘리지 않는다. 아낀 폭은 컨트롤로 간다. */
-  .event-editor .event-editor-settings-accordion-body .event-condition-row {
-    grid-template-columns: 16px 3rem minmax(0, 1fr) auto;
-  }
-
-  .event-editor .event-editor-settings-accordion-body .event-condition-label {
-    line-height: 1.25;
-    overflow: visible;
-    text-overflow: clip;
-    white-space: normal;
-  }
-
-}
-
-/* 그룹에 저작한 값이 있음을 접힌 채로 알리는 점. */
-.event-editor .event-editor-settings-accordion-title {
-  align-items: center;
-  display: flex;
-  gap: 6px;
-  min-width: 0;
-}
-
-.event-editor .event-editor-settings-accordion-dot {
-  background: var(--accent);
-  border-radius: 50%;
-  flex: 0 0 auto;
-  height: 5px;
-  width: 5px;
-}
-
-/* 조건 요약 문장 — 켜진 조건을 저장 직전에 한 줄로 확인한다. */
-.event-editor .event-conditions-body {
-  display: grid;
-  gap: 10px;
-  min-width: 0;
-}
-
-.event-editor .event-conditions-sentence {
-  background: var(--bg-inset);
-  border-radius: 8px;
-  color: var(--text-2);
-  font-size: 12.5px;
-  line-height: 1.7;
-  margin: 0;
-  padding: 9px 12px;
-}
-
-.event-editor .event-conditions-sentence.is-empty {
-  color: var(--text-3);
-}
-
-.event-editor .event-conditions-sentence-value {
-  background: var(--accent-muted);
-  border-radius: 5px;
-  color: var(--text-1);
-  font-style: normal;
-  font-weight: 650;
-  padding: 1px 5px;
-}
-
-/* 커스텀 셀렉트는 콘텐츠 폭을 요구하지 않아 그리드가 0까지 눌러 버린다.
-   «이상» 이 «이..» 로 잘리던 원인. */
-.event-editor .event-conditions-grid select,
-.event-editor .event-conditions-grid .event-custom-select,
-.event-editor .event-conditions-grid .event-custom-select-trigger {
-  min-width: 76px;
-}
-
-/* 숫자 칸도 같은 이유로 눌린다. 타이머 «0» 자리표시자가 반만 그려져 «(» 처럼 보였다. */
-.event-editor .event-conditions-grid input[type="number"],
-.event-editor .event-conditions-grid input[type="text"] {
-  min-width: 54px;
-}
-
-.event-editor .event-custom-select-trigger[data-custom-select-for="event-page-advanced-condition-kind"] {
-  min-width: 124px;
-}
-
 /* =========================================================================
    「NPC와 일정」 레일 그룹 표면 (2026-08-29)
 
@@ -2280,7 +2069,20 @@ footer {
 }
 
 .event-editor .event-storyboard-branch-command {
-  grid-template-columns: 52px minmax(0, 1fr) auto;
+  grid-template-columns: 24px 52px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-storyboard-branch-step {
+  align-self: start;
+  background: var(--storyboard-accent, var(--text-3));
+  border-radius: 999px;
+  color: var(--bg-overlay);
+  display: grid;
+  font: 800 10px var(--font-mono);
+  height: 20px;
+  margin-top: 1px;
+  place-items: center;
+  width: 20px;
 }
 
 .event-editor .event-storyboard-card:hover,
@@ -2315,10 +2117,9 @@ footer {
 .event-editor .event-storyboard-card-cat::before { content: attr(data-glyph); }
 .event-editor .event-storyboard-card-cat::after { content: attr(data-label); }
 
-/* 좁은 폭에서는 글리프만 남긴다 — 목록의 `.cmd-cat-icon` 과 같은 규칙. */
+/* 좁은 폭에서도 낱말을 지우지 않는다 — 목록의 `.cmd-cat-icon` 과 같은 계약. */
 @media (max-width: 1050px) {
-  .event-editor .event-storyboard-card-cat { padding: 0 5px; }
-  .event-editor .event-storyboard-card-cat::after { display: none; }
+  .event-editor .event-storyboard-card-cat { font-size: 9px; padding: 0 5px; }
 }
 
 /* 줄 액션 — 평소 숨기고 hover/선택/포커스에서만. 목록 `.cmd-actions` 와 같은 계약. */

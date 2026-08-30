@@ -1,3 +1,4 @@
+import { loadAiConfig } from "@/ai/llmClient";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { editorState } from "@/editor/editorState";
 import { createAiPreviewProject, type AiPreviewResult } from "@/project/aiPreviewGenerator";
@@ -256,12 +257,30 @@ export function renderAiAssistantPanel(): HTMLElement {
   return panel;
 }
 
+/**
+ * 드래프트에 적을 모델 ID. **문자열을 여기 박지 않는다.**
+ *
+ * 예전에는 모델 ID 문자열이 직접 박혀 있었는데, 그 ID 는 제공자 레지스트리
+ * (`src/ai/ohMyPiProviders.ts` — Antigravity·Codex 둘뿐)에 **아예 없는 값**이었다. 즉 설정
+ * 화면이 보여 주는 모델과 이 드래프트가 보여 주는 모델이 서로 달랐고, 기본 모델이 두 번
+ * 바뀌는 동안(glm → gemini) 이 자리만 그대로 남아 사용자에게 거짓을 보여 줬다.
+ *
+ * `loadAiConfig()` 를 출처로 쓰면 그 드리프트가 구조적으로 불가능해진다 — loadAiConfig 는
+ * 저장값을 `isModelValidForAuthMode` 로 검증하고, 레지스트리 밖 ID 는
+ * `defaultModelForAuthMode(authMode, providerId)`(= 그 제공자 카탈로그 첫 항목,
+ * 곧 `provider.defaultModel`. 계약은 test/modelCatalog.test.ts 가 고정) 로 교정한다.
+ * 그래서 여기서 나오는 값은 항상 "지금 실제로 요청에 실릴 모델" 이다.
+ */
+function draftModelId(): string {
+  return loadAiConfig().model;
+}
+
 function selectedTileDraft(): string {
   const selected = editorState.get().selectedTile;
   const tile = describeChipsetTile(selected);
   return JSON.stringify(
     {
-      model: "minimax/minimax-m3",
+      model: draftModelId(),
       response_format: { type: "json_object" },
       task: "tileset_tile_metadata",
       tile,
@@ -282,7 +301,7 @@ function currentMapDraft(): string {
   );
   return JSON.stringify(
     {
-      model: "minimax/minimax-m3",
+      model: draftModelId(),
       response_format: { type: "json_object" },
       task: "map_improvement_draft",
       map: map

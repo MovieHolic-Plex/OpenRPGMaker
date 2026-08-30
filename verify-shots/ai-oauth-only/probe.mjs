@@ -1,6 +1,6 @@
 // AI OAuth 전용 배선 실측 프로브.
-// 에디터를 실제 브라우저로 띄워 ① 부팅 설정이 OAuth 인지 ② 상태바 칩이 뭘 말하는지
-// ③ 실제 LLM 턴이 도는지를 네트워크 레벨에서 확인하고 스샷을 남긴다.
+// 에디터를 실제 브라우저로 띄워 ① 부팅 설정이 OAuth 인지 ② 현재 설정 표면이 어떤 제공자를
+// 가리키는지 ③ 실제 LLM 턴이 도는지를 네트워크 레벨에서 확인하고 스샷을 남긴다.
 import { chromium } from "playwright";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -57,12 +57,14 @@ const cfg = await page.evaluate(async () => {
 say(`[config] authMode=${cfg.authMode} providerId=${cfg.providerId} baseUrl="${cfg.baseUrl}" model=${cfg.model} lite=${cfg.liteModel} apiKeyEmpty=${cfg.apiKeyEmpty}`);
 say(`[config] localStorage=${cfg.storedRaw ?? "(none)"}`);
 
-// ② 상태바 칩.
-const chip = await page.evaluate(() => {
-  const el = document.querySelector('[data-testid="ai-connection-status"]');
-  return el ? { text: el.textContent?.trim(), cls: el.className } : null;
+// ② 현재 설정의 제공자.
+const provider = await page.evaluate(async () => {
+  const config = await import("/src/ai/llmClient.ts");
+  const registry = await import("/src/ai/ohMyPiProviders.ts");
+  const c = config.loadAiConfig();
+  return registry.getOhMyPiProvider(registry.parseOhMyPiProvider(c.providerId))?.label ?? c.providerId;
 });
-say(`[chip] ${chip ? `${chip.text} | ${chip.cls}` : "(칩 없음)"}`);
+say(`[provider] ${provider}`);
 
 // ③ 실제 턴 — 에디터가 쓰는 클라이언트로 한 번 호출한다(툴 없이 최소 본문).
 const turn = await page.evaluate(async () => {

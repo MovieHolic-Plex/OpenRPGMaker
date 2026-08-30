@@ -15,7 +15,7 @@ type ScarloxyPackedBlock = {
   readonly row: number;
   readonly w: number;
   readonly h: number;
-  readonly kind: "terrain" | "water" | "tree" | "rock" | "deco" | "structure" | "overhead" | "indoor";
+  readonly kind: "terrain" | "water" | "tree" | "rock" | "deco" | "structure" | "overhead" | "indoor" | "furniture";
 };
 
 type ScarloxyPackManifest = {
@@ -75,6 +75,8 @@ const MONSTER_LABELS: Record<string, { readonly name: string; readonly tags: rea
   charmadillo: { name: "Charmadillo", tags: ["몬스터", "불", "아르마딜로", "갑옷"] },
   cindrill: { name: "Cindrill", tags: ["몬스터", "불", "두더지", "드릴"] },
   cleaf: { name: "Cleaf", tags: ["몬스터", "풀", "잎", "사마귀"] },
+  // 팩 원본이 아닌 생성 자산(2026-08-30, grok 이미지 생성 → 96px 변환). 출처 표기 대상이 다르다.
+  emberkit: { name: "Emberkit", tags: ["몬스터", "불", "여우", "생성 자산"] },
   draem: { name: "Draem", tags: ["몬스터", "풀", "유령", "꿈"] },
   finiette: { name: "Finiette", tags: ["몬스터", "물", "물고기", "우아함"] },
   finsta: { name: "Finsta", tags: ["몬스터", "물", "물고기", "작음"] },
@@ -83,9 +85,11 @@ const MONSTER_LABELS: Record<string, { readonly name: string; readonly tags: rea
   ivieron: { name: "Ivieron", tags: ["몬스터", "풀", "덩굴", "새"] },
   jacana: { name: "Jacana", tags: ["몬스터", "물", "물새", "새"] },
   larvea: { name: "Larvea", tags: ["몬스터", "풀", "애벌레", "벌레"] },
+  mossling: { name: "Mossling", tags: ["몬스터", "풀", "고슴도치", "이끼", "생성 자산"] },
   pluma: { name: "Pluma", tags: ["몬스터", "풀", "새", "깃털"] },
   plumette: { name: "Plumette", tags: ["몬스터", "풀", "새", "병아리"] },
   pouch: { name: "Pouch", tags: ["몬스터", "물", "펠리컨", "주머니"] },
+  puddlup: { name: "Puddlup", tags: ["몬스터", "물", "올챙이", "물방울", "생성 자산"] },
   sparchu: { name: "Sparchu", tags: ["몬스터", "불", "불씨", "아기"] },
 };
 
@@ -201,6 +205,25 @@ const TERRAIN_BLOCK_LABELS: Record<string, { readonly name: string; readonly des
   "indoor-all": { name: "실내 타일", description: "실내 벽 프레임·바닥·창문·계단 단상 타일입니다. 벽 타일은 통행 불가로 조정해 사용하세요." },
 };
 
+/**
+ * 실내 가구 블록 라벨. `furniture` 는 **블록 이름별로 그룹이 갈린다** — structure/rock 처럼 한
+ * 그룹으로 뭉치면 AI 배치 툴이 "침대"와 "소파"를 구분해 집을 수 없다.
+ *
+ * 실측 근거(2026-08-30): 실내 치프셋은 블록이 `indoor-all` 하나뿐이어서 침대·소파·모니터·창문이
+ * 전부 "실내 타일" 한 그룹, role=terrain, 통행 가능으로 노출됐다. 의미 단위가 없으니 실내 저작
+ * 요청이 들어와도 모델이 집을 어휘가 없었다.
+ */
+const FURNITURE_BLOCK_LABELS: Record<string, { readonly name: string; readonly description: string }> = {
+  "bed-mint": { name: "민트 침대", description: "민트 이불 1인용 침대입니다. 상층에 블록 단위로 놓고 통행을 막습니다." },
+  "bed-lavender": { name: "라벤더 침대", description: "라벤더 이불 1인용 침대입니다. 상층에 블록 단위로 놓고 통행을 막습니다." },
+  "sofa-yellow": { name: "노란 소파", description: "3인용 노란 소파입니다. 거실·로비 좌석으로 씁니다. 통행 불가." },
+  "sofa-mint": { name: "민트 소파", description: "3인용 민트 소파입니다. 거실·로비 좌석으로 씁니다. 통행 불가." },
+  "counter-wood": { name: "나무 카운터", description: "나무 상판 카운터/작업대입니다. 접수대·주방대로 씁니다. 통행 불가." },
+  "wall-window": { name: "창문 벽", description: "창문이 달린 실내 벽면입니다. 벽 라인에 붙여 씁니다. 통행 불가." },
+  "cabinet-white": { name: "흰 수납장", description: "문이 두 짝인 흰 수납장입니다. 벽에 붙여 씁니다. 통행 불가." },
+  "wall-screen": { name: "모니터 벽", description: "모니터가 걸린 실내 벽면입니다. 진료실·연구소 벽에 씁니다. 통행 불가." },
+};
+
 function blockTileIds(block: ScarloxyPackedBlock, rowOffset = 0, rowCount?: number): number[] {
   const ids: number[] = [];
   const startRow = block.row + rowOffset;
@@ -256,6 +279,14 @@ export function scarloxyChipsetGroupSeeds(textureKey: string): readonly Scarloxy
       case "structure":
         push("structure", { name: "건물/구조물", role: "building", defaultLayer: "upper", passage: "solid", repeatability: "fixed", description: "집·병원·유적·아레나 등 구조물입니다. 지면 위 상층에 블록 단위로 배치하며 통행 불가." }, blockTileIds(block));
         break;
+      case "furniture": {
+        // 가구는 블록 이름별로 그룹을 만든다(terrain 과 같은 키 전략) — 한 그룹으로 뭉치면
+        // "침대만 놓아라" 같은 요청을 도구 수준에서 표현할 수 없다.
+        const label = FURNITURE_BLOCK_LABELS[block.name]
+          ?? { name: block.name, description: "실내 가구입니다. 상층에 블록 단위로 놓고 통행을 막습니다." };
+        push(block.name, { name: label.name, role: "prop", defaultLayer: "upper", passage: "solid", repeatability: "fixed", description: label.description }, blockTileIds(block));
+        break;
+      }
       case "overhead":
         push("overhead", { name: "오버헤드 구조물", role: "prop", defaultLayer: "upper", passage: "passable", repeatability: "fixed", description: "대문 상단 등 캐릭터 머리 위로 그려지는 구조물입니다. 통행 가능." }, blockTileIds(block));
         break;

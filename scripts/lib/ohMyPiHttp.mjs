@@ -29,6 +29,7 @@ export function isCompanionPath(url = "") {
     || path === "/auth/oauth-paste"
     || path === "/oauth/launch"
     || path === "/v1/chat/completions"
+    || path === "/v1/images/generations"
   );
 }
 
@@ -165,6 +166,21 @@ export async function handleCompanionRequest(req, adapters) {
 
   if (method === "POST" && path === "/auth/logout") {
     return json(200, await adapters.logout(provider));
+  }
+
+  if (method === "POST" && path === "/v1/images/generations") {
+    if (typeof adapters.generateImage !== "function") {
+      return json(501, { error: "이 동반 서비스는 이미지 생성을 지원하지 않습니다." });
+    }
+    const image = await adapters.generateImage(provider, body);
+    return json(200, {
+      image: {
+        provider: image.provider,
+        model: image.model,
+        mimeType: image.mimeType,
+        dataUrl: `data:${image.mimeType};base64,${image.base64}`,
+      },
+    });
   }
 
   if (method === "POST" && path === "/v1/chat/completions") {

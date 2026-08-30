@@ -13,7 +13,8 @@ import {
   proposalHasChangedMap,
   requestLikelyExpectsChange,
 } from "@/ai/proposalCompleteness";
-import { isProxyAuth, loadAiConfig } from "@/ai/llmClient";
+import { isAssistantEndpointReady, type AssistantConnectionReadiness } from "@/ai/assistantEndpoint";
+import { loadAiConfig } from "@/ai/llmClient";
 import type { AiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { clearAgentBlueprint } from "@/editor/agentBlueprint";
@@ -45,19 +46,17 @@ export function isWriteTool(name: string): boolean {
   return getTool(name)?.mode === "write";
 }
 
-export function isAiConfigReady(config: AiConfig): boolean {
-  if (!config.model.trim()) return false;
-  if (config.authMode === "chatgpt") return true;
-  // baseUrl 은 항상 필요. 단, 상대 baseUrl(동일 오리진 vite 프록시)은 서버가 Authorization 을
-  // 주입하므로(isProxyAuth) 클라이언트 apiKey 를 요구하지 않는다. 이전에는 여기서 키를 무조건
-  // 요구해 프록시 환경에서 AI 채팅 전송이 막혔다(중복 검사가 면제를 빼먹은 결함).
-  // 올바른 참조 구현: editor/panels/aiConnectionStatus.ts — 판정은 llmClient.isProxyAuth 로 통일.
-  if (isProxyAuth(config)) return Boolean(config.baseUrl.trim());
-  return Boolean(config.baseUrl.trim() && config.apiKey.trim());
+// 준비 판정의 선언 지점은 ai/assistantEndpoint 다. 이 이름은 패널·모달 여덟 군데가 쓰고 있어
+// 그대로 남기고 위임한다 — 판정 규칙을 여기 다시 적으면 표면마다 갈라지던 원래 문제로 돌아간다.
+export function isAiConfigReady(
+  config: AiConfig,
+  connectionStatus?: AssistantConnectionReadiness,
+): boolean {
+  return isAssistantEndpointReady(config, connectionStatus);
 }
 
 export function phaseStatusText(phase: Extract<SessionEvent, { type: "phase" }>["value"]): string {
-  // 모델 코드(m3/flash)는 상태줄 노이즈 — 사용자에게는 단계만.
+  // 모델 코드는 상태줄 노이즈 — 사용자에게는 단계만.
   if (phase === "plan") return "계획 중";
   if (phase === "execute") return "실행 중";
   return "검수 중";

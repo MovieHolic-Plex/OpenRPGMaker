@@ -6,7 +6,10 @@
 //      윈도스킨 중앙 타일로 칠해진다 — 적대 리뷰 §1).
 //   2) System2 는 게이지 시트다. border-image 로 쓰면 #ff9c00 키컬러가 창을 덮는다.
 //   3) 12종 전투 스킨 파셜이 창 표면을 하드코드 색으로 덮어 윈도스킨을 죽이지 않는다.
-//   4) 상점/대화/타이틀 메뉴가 같은 `--runtime-window-skin` 변수를 쓴다.
+//   4) 상점/대화/타이틀 메뉴는 같은 `--runtime-window-skin` 배관을 공유하되, 패널을 그
+//      비트맵으로 **칠하지는 않고** rm2003 전투 HUD 와 같은 유리 토큰으로 그린다. 배관과
+//      프로젝트 데이터는 그대로다(JS 는 여전히 변수를 심고, 전투 다섯 창은 _windowskin.css
+//      계약을 지킨다). 증거: verify-shots/glass-runtime 의 before ↔ after 짝.
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
@@ -177,12 +180,26 @@ describe("runtime play window skins — 상점", () => {
     expect(shell.querySelector("[data-testid='shop-mode-buy']")).not.toBeNull();
   });
 
-  it("shop.css 의 가게 창 표면이 윈도스킨 변수를 쓴다(모던 카드의 폴백)", () => {
-    // 가게 창 스타일은 commerce.css 에서 shop.css 로 분리됐다. 기본 표면은 모던 유리 카드고,
-    // backdrop-filter 를 못 쓰는 환경에서는 이 border-image 규칙이 살아난다 — 그래서 여전히 계약이다.
+  it("shop.css 의 가게 창 표면은 두 경로 모두 윈도스킨 칠 없이 유리 토큰을 쓴다", () => {
+    // 기본 규칙만 검사하면 안 된다: @supports (backdrop-filter) 블록이 같은 속성을 덮으므로,
+    // 그 블록을 지원하는 브라우저(증거 샷의 Chromium 포함)에서는 기본 규칙이 죽은 코드다.
+    // 실제로 사용자가 보는 표면은 **승자 규칙**이다 — 두 규칙을 함께 고정한다.
     const css = read("src/styles/runtime/shop.css");
-    const panelBlock = css.slice(css.indexOf(".runtime-shop-panel {"));
-    expect(panelBlock).toContain("border-image-source: var(--runtime-window-skin);");
+    const base = css.slice(css.indexOf(".runtime-shop-panel {"));
+    const baseRule = base.slice(0, base.indexOf("}"));
+    const supportsBlock = css.slice(css.indexOf("@supports (backdrop-filter: blur(2px)) {", css.indexOf(".runtime-shop-panel {")));
+    const winnerRule = supportsBlock.slice(0, supportsBlock.indexOf("  }"));
+
+    for (const rule of [baseRule, winnerRule]) {
+      expect(rule).not.toContain("border-image-source: var(--runtime-window-skin)");
+      expect(rule).toMatch(/var\(--runtime-glass-|var\(--shop-(surface|line|radius)\)/);
+    }
+    // 상점 지역 변수는 공용 유리 토큰을 가리켜야 한다 — 두 번째 디자인 시스템 금지.
+    const overlayVars = css.slice(css.indexOf(".runtime-shop-overlay {"));
+    for (const name of ["--shop-accent:", "--shop-surface:", "--shop-line:", "--shop-radius:", "--shop-ui-font:"]) {
+      const declaration = overlayVars.slice(overlayVars.indexOf(name)).split(";")[0];
+      expect(declaration, `${name} 가 공용 토큰을 가리키지 않는다`).toContain("var(--runtime-");
+    }
     expect(css).toContain(".runtime-shop-item-icon");
   });
 });
@@ -214,15 +231,22 @@ describe("runtime play window skins — 메시지 창과 타이틀", () => {
     expect(created?.style.getPropertyValue("--runtime-window-skin")).toContain("windowskin-default.png");
   });
 
-  it("dialogue.css 가 메시지 창 프레임을 하드코드 hex 대신 윈도스킨에서 가져온다", () => {
+  it("dialogue.css 가 배관은 유지하면서 메시지 창 프레임을 유리 토큰으로 그린다", () => {
     const css = read("src/styles/dialogue.css");
     const frame = css.slice(css.indexOf(".dialogue-box::before {"));
-    expect(frame).toContain("border-image-source: var(--runtime-window-skin);");
+    const frameRule = frame.slice(0, frame.indexOf("}"));
+    expect(frameRule).not.toContain("border-image-source: var(--runtime-window-skin)");
+    expect(frameRule).toMatch(/var\(--runtime-(glass|dialogue-glass)-/);
     // 예전엔 ::before/::after 를 통째로 껐다 — 그러면 프레임을 걸 자리가 없다.
     expect(css).not.toContain(".dialogue-box::after,\n.dialogue-box::before {\n  display: none;\n}");
-    // 이름 상자도 같은 파이프.
+
+    // 이름 상자(화자 라벨)도 같은 파이프여야 한다. 예전 계약은 이 상자가 윈도스킨을
+    // fill 로 받아 표면까지 그리는 것이었다 — 이제는 대화창과 같은 유리 표면·테두리를 쓴다.
     const nameplate = css.slice(css.indexOf(".dialogue-box .speaker.speaker-nameplate {"));
-    expect(nameplate.slice(0, 700)).toContain("border-image-source: var(--runtime-window-skin);");
+    const nameplateRule = nameplate.slice(0, nameplate.indexOf("}"));
+    expect(nameplateRule).not.toContain("border-image-source: var(--runtime-window-skin)");
+    expect(nameplateRule).toMatch(/border: 1px solid var\(--runtime-dialogue-glass-border\)/);
+    expect(nameplateRule).toMatch(/var\(--runtime-dialogue-glass-surface/);
   });
 
   it("타이틀 루트가 정규화된 윈도스킨 id 를 노출하고 배경 그래픽을 유지한다", () => {
@@ -244,10 +268,12 @@ describe("runtime play window skins — 메시지 창과 타이틀", () => {
     expect(title.querySelector(".rm-title-menu")).not.toBeNull();
   });
 
-  it("title.css 의 타이틀 메뉴 창이 윈도스킨을 쓴다", () => {
+  it("title.css 의 타이틀 메뉴 창이 윈도스킨 칠 없이 유리 토큰을 쓴다", () => {
     const css = read("src/styles/runtime/title.css");
     const menu = css.slice(css.indexOf(".rm-title-screen-editorial .rm-title-menu {"));
-    expect(menu.slice(0, 600)).toContain("border-image-source: var(--runtime-window-skin);");
+    const menuRule = menu.slice(0, menu.indexOf("}"));
+    expect(menuRule).not.toContain("border-image-source: var(--runtime-window-skin)");
+    expect(menuRule).toMatch(/var\(--runtime-glass-|var\(--runtime-window-fill-fallback\)/);
   });
 
   it("필드 메인 메뉴와 상점/대화가 같은 변수 이름을 공유한다", () => {

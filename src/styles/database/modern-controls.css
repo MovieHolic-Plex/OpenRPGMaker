@@ -60,15 +60,217 @@
   opacity: 0.55;
 }
 
-/* ── number: 스피너는 그대로 둔다 ──────────────────────────────────────── */
+/* ── number: 공유 스테퍼를 제공한 뒤 네이티브 스피너 제거 ──────────────── */
 
-/* 여기 있던 세 규칙(`appearance: textfield` + `::-webkit-*-spin-button { appearance: none }`)
-   은 되돌렸다. DB 모달의 number 입력은 생성 지점만 187곳인데(브레인스토밍 문서 §2 (2)),
-   마우스로 증감할 대안(슬라이더·스테퍼 버튼)이 붙은 곳은 range 헬퍼 6곳뿐이다(§0.5).
-   스피너를 지우면 나머지는 키보드 위/아래만 남아 **마우스 전용 사용자에게 회귀**가 된다.
-   이 저장소의 선례도 대안이 있을 때만 지운다 — `.rich-stepper > input`(±버튼 동반),
-   `.runtime-commerce-quantity-input`(±버튼 동반). 스테퍼를 전 지점에 붙이는 후속 작업에서
-   대안과 함께 다시 지운다. */
+/* databaseControls.ts 의 numberField()가 모든 공유 숫자 입력에 마우스용 −/+ 버튼을
+   제공한다. 대안이 먼저 생겼으므로 이제 브라우저별 작은 스피너를 숨긴다. */
+.database-modal-backdrop .database-modal-window input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.database-modal-backdrop .database-modal-window input[type="number"]::-webkit-outer-spin-button,
+.database-modal-backdrop .database-modal-window input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* ── 공유 숫자 스테퍼: [−] [input] [+] ───────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-number-stepper {
+  align-items: stretch;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  box-sizing: border-box;
+  /* 자기 폭을 기준으로 단추를 접기 위한 컨테이너. 아래 @container 참고. */
+  container-type: inline-size;
+  display: inline-flex;
+  min-height: 30px;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper > input[type="number"] {
+  background: var(--db-studio-surface);
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  color: var(--db-studio-text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  min-height: 28px;
+  min-width: 0;
+  outline: 0;
+  padding: 3px 8px;
+  text-align: center;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper:focus-within {
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper-button {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border: 0;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 30px;
+  justify-content: center;
+  margin: 0;
+  min-height: 28px;
+  padding: 0;
+  width: 30px;
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper-dec {
+  border-right: 1px solid var(--db-studio-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper-inc {
+  border-left: 1px solid var(--db-studio-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper-button:hover:not(:disabled) {
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper-button:active:not(:disabled) {
+  background: var(--db-studio-accent-border);
+  color: var(--db-studio-accent-active);
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper-button:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper-button:disabled {
+  color: var(--db-studio-text-3);
+  cursor: default;
+  opacity: 0.55;
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper-icon {
+  display: block;
+  height: 14px;
+  pointer-events: none;
+  width: 14px;
+}
+
+/* ── 좁은 칸: 단추를 접고 값을 살린다 ──────────────────────────────────
+   −/+ 단추는 30px + 30px + 테두리 2px = 62px 를 고정으로 먹는다. 탭별 스탯
+   그리드는 값 칸을 66~86px 로 주는 곳이 있어(enemies `.db-enemy-stat-grid`,
+   terrain `.db-terrain-quick-row`), 그 자리에서는 입력칸 콘텐츠 폭이 0~8px 로
+   접혀 **값 자체가 안 보였다**. 실측 17건(enemies 13 · terrain 4).
+
+   그래서 스테퍼 자신의 inline-size 를 컨테이너로 삼아, 값을 3자리 이상 보여줄
+   수 없는 폭에서는 단추를 접는다. 단추가 접혀도 위/아래 방향키 증감은 그대로
+   동작한다(네이티브 number 입력의 키보드 계약). 폭이 넉넉한 곳은 그대로 −/+ 를 쓴다.
+
+   기준 120px: 단추 62px 를 뺀 58px 상자에서 좌우 패딩 16px 를 빼면 42px —
+   4자리(예: 9999)까지 12~13px 글자로 들어간다.
+   `scripts/qa/db-ux-narrow-number-audit.mjs` 가 눌린 칸 0건을 기계로 고정한다.
+
+   주의: @container 는 특이성을 올려주지 않는다. 짧은 선택자로 쓰면 위의
+   `.database-modal-backdrop .database-modal-window .db-number-stepper-button`(0,3,0) 에
+   지므로, 같은 깊이를 그대로 적어 준다. */
+@container (max-width: 120px) {
+  .database-modal-backdrop .database-modal-window .db-number-stepper-button {
+    display: none;
+  }
+}
+
+/* ── range: 스튜디오 트랙 + thumb ─────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window input[type="range"] {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 30px;
+  margin-block: 0;
+  padding-block: 0;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]::-webkit-slider-runnable-track {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+  height: 6px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--db-studio-accent);
+  border: 2px solid var(--db-studio-surface);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--db-studio-accent-border);
+  height: 18px;
+  margin-top: -7px;
+  width: 18px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]::-moz-range-track {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+  height: 6px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]::-moz-range-thumb {
+  background: var(--db-studio-accent);
+  border: 2px solid var(--db-studio-surface);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--db-studio-accent-border);
+  height: 14px;
+  width: 14px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+/* ── details: 네이티브 marker 대신 회전 chevron ─────────────────────── */
+
+/* summary만 꾸민다. Chromium의 익명 ::details-content 블록에는 display/flex/overflow를
+   주지 않아 내부 스크롤러가 멈추는 알려진 문제와 충돌하지 않는다. */
+.database-modal-backdrop .database-modal-window details > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 6px;
+  list-style: none;
+}
+
+.database-modal-backdrop .database-modal-window details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window details > summary::before {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  box-sizing: border-box;
+  content: "";
+  flex: 0 0 auto;
+  height: 7px;
+  margin-left: 2px;
+  transform: rotate(-45deg);
+  transition: transform 120ms ease;
+  width: 7px;
+}
+
+.database-modal-backdrop .database-modal-window details[open] > summary::before {
+  transform: rotate(45deg);
+}
 
 /* ── checkbox / radio / range: 액센트 통일 ─────────────────────────────── */
 

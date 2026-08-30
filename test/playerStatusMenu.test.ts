@@ -233,7 +233,40 @@ describe("player status menu", () => {
       for (const row of rows) {
         expect(row.className).toContain("status-menu-detail-row-compact");
         expect(row.className).not.toContain("has-description");
+        // 설명 노드를 남긴 다음 CSS 로 둘째 줄로 내려버린 전력이 있다 — 행 높이가 두 배가 되어
+        // 81px 목록에 아이템 7개 중 2개만 보이고 셋째 행은 문장 중간에서 잘렸다. 아예 만들지 않는다.
+        expect(row.querySelector(".status-menu-detail-description")).toBeNull();
       }
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("routes an interactive list hint to the footer so the list keeps that row", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const actor = session.partyActorIds[0];
+      if (!actor) throw new Error("missing party member fixture");
+      // 장비 슬롯 화면은 행별 설명이 없어서 힌트가 유일한 안내문이다.
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots: [],
+          selectedCommand: "equipment",
+          mode: "function",
+          selectedDetailActionIndex: 0,
+          equipmentActorId: actor,
+          actions: noopActions,
+        }),
+      );
+
+      expect(findByTestId(menu, "status-menu-equipment-slot-weapon")).not.toBeNull();
+      // 힌트 줄이 패널에 남으면 행 하나 몫을 가져가 슬롯 5개 중 넷째가 가로로 잘렸다.
+      expect(menu.querySelector(".status-menu-detail-hint")).toBeNull();
+      expect(findByTestId(menu, "status-menu-message")?.textContent).toBe("바꿀 부위를 선택하세요.");
     } finally {
       restoreDom();
     }

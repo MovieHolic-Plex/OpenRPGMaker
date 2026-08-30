@@ -7,6 +7,11 @@ import { TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { loadSession as loadFromBag, saveSession as saveToBag, sessionExists } from "@/editor/roomHarness/sessionStore";
 import type { GameMap, Project } from "@/project/types";
+import {
+  broadleafCountFor,
+  coniferCountFor,
+  resolveWorldGenRules,
+} from "@/project/worldGenRules";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
 import {
@@ -26,9 +31,20 @@ import { checkReachability } from "@/project/lint/reachability";
 import { MAP_TOOLS } from "./mapTools";
 import { buildVillageDomain } from "./villageBuilder";
 import { RECT_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "./schemaShapes";
+import {
+  coerceForestDensity,
+  DEFAULT_FOREST_DENSITY,
+  FOREST_DENSITIES,
+  forestDensityFromText,
+  forestPlacementPlan,
+  treeFootprintCells,
+} from "./forestDensity";
 
 const CONIFER_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 const BROADLEAF_2X2_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}broadleaf-tree-2x2`;
+// 침엽수 패스가 먼지 돌기 때문에 커버리지를 다 썬으면 뒤의 2×2 활엽수가 자리를 못 찾아
+// forest_big 게이트(군락≥3)가 굴다. 달려서 밀도 지분을 미리 나눠 갖는다.
+const CONIFER_COVERAGE_SHARE = 0.45;
 
 export type ChecklistStatus = "pending" | "open" | "done" | "skipped" | "failed";
 
@@ -199,6 +215,8 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
     description:
       "숲 레이어 스킬: 지정 영역에 나무 군락을 심는다. " +
       "style=broadleaf-2x2(기본 권장 대목) | conifer | mixed. " +
+      "density=sparse|normal|dense|impassable(기본 dense). 숲·삼림=dense, 울창한·빽빽한·밀림·통행 불가=impassable. " +
+      "count 를 비우면 밀도×영역 면적으로 그루 수를 산출한다 — 직접 준 작은 count 로는 숲이 되지 않는다. " +
       "카탈로그는 list_village_tree_assets. 강촌 숲은 conifer 후 broadleaf-2x2를 따로 호출.",
     mode: "write",
     parameters: {
@@ -210,7 +228,12 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
           description: "{x,y,w,h}. 생략 시 맵 가장자리 띠 또는 세션 forest 마스크",
         },
         style: { type: "string", enum: ["conifer", "broadleaf-2x2", "mixed"] },
-        count: { type: "integer" },
+        density: {
+          type: "string",
+          enum: [...FOREST_DENSITIES],
+          description: "밀도(기본 dense). impassable = 빈틈 없이 맞닿게 채워 그 지대를 통행 불가로 만든다",
+        },
+        count: { type: "integer", description: "생략 권장 — density 와 영역 면적에서 자동 산출된다" },
         minGap: { type: "integer" },
         seed: { type: "integer" },
         sessionId: { type: "string", description: "있으면 forest 마스크 영역 우선" },
@@ -220,7 +243,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
     invalidArgsExample: {
       mapId: "map_village_1",
       style: "broadleaf-2x2",
-      count: 6,
+      density: "dense",
     },
     run(draft, args): ToolExecResult {
       return plantTreeClusters(draft, args);
@@ -322,6 +345,7 @@ function startVillageSession(draft: Project, args: Record<string, unknown>): Too
         buildOrder: args.buildOrder,
       },
       seed,
+      resolveWorldGenRules(draft.system.worldGen),
     );
     if (!ok) {
       throw new ToolError(`계획 실패: ${issues.map((i) => i.message).join(" / ")}`, { code: "invalid-plan" });
@@ -749,7 +773,8 @@ function stepWater(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const waterOnly: TerrainConstraintMasks = {
     ...masks,
     forestRects: [],
@@ -776,25 +801,39 @@ function stepForestConifer(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const areas = masks.forestRects.length > 0
     ? masks.forestRects
     : edgeBands(map);
+  const requestedDensity = forestDensityFromText(session.query);
+  const density = requestedDensity ?? DEFAULT_FOREST_DENSITY;
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
-    const count = Math.max(6, Math.floor((area.w * area.h) / 12));
+    // 요청문이 «울창한·빽빽한» 처럼 밀도를 말했으면 그 말이 이긴다(#350). 말이 없을 때만
+    // 프로젝트의 저작된 생성 규칙을 기본값으로 쓴다(#355). 저작 규칙의 기본값은 100타일당
+    // 10그루라 #350 의 촘촘함 36그루·통행불가 45그루보다 훨씬 드물다 — 순서가 뒤집히면
+    // «울창한 숲» 이 다시 잔디밭이 된다.
+    const shape = forestPlacementPlan({
+      area,
+      footprintCells: treeFootprintCells("침엽수"),
+      density,
+      share: CONIFER_COVERAGE_SHARE,
+    });
+    const count = requestedDensity ? shape.count : coniferCountFor(area.w * area.h, rules.forest);
     placed += placeProps(draft, {
       mapId: map.id,
       area,
       material: "침엽수",
       count,
-      minGap: 2,
-      naturalness: 0.6,
+      minGap: requestedDensity ? shape.minGap : rules.forest.coniferGap,
+      naturalness: requestedDensity ? shape.naturalness : rules.forest.coniferNaturalness,
+      packing: shape.packing,
       seed: session.seed + 7700 + i * 13,
     }, warnings);
   }
-  return { placed, style: "conifer", areas: areas.length };
+  return { placed, style: "conifer", areas: areas.length, density };
 }
 
 function stepForestBig(
@@ -804,21 +843,35 @@ function stepForestBig(
   warnings: string[],
 ): Record<string, unknown> {
   const map = requireMap(draft, session.mapId);
-  const masks = buildTerrainConstraintMasks(map, plan.requirements);
+  const rules = resolveWorldGenRules(draft.system.worldGen);
+  const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, rules);
   const areas = masks.forestRects.length > 0
     ? masks.forestRects
     : edgeBands(map);
+  const requestedDensity = forestDensityFromText(session.query);
+  const density = requestedDensity ?? DEFAULT_FOREST_DENSITY;
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
-    const count = Math.max(4, Math.min(12, Math.floor((area.w * area.h) / 28)));
+    // 요청문이 «울창한·빽빽한» 처럼 밀도를 말했으면 그 말이 이긴다(#350). 말이 없을 때만
+    // 프로젝트의 저작된 생성 규칙을 기본값으로 쓴다(#355). 저작 규칙의 기본값은 100타일당
+    // 10그루라 #350 의 촘촘함 36그루·통행불가 45그루보다 훨씬 드물다 — 순서가 뒤집히면
+    // «울창한 숲» 이 다시 잔디밭이 된다.
+    const shape = forestPlacementPlan({
+      area,
+      footprintCells: treeFootprintCells("활엽수"),
+      density,
+      share: 1 - CONIFER_COVERAGE_SHARE,
+    });
+    const count = requestedDensity ? shape.count : broadleafCountFor(area.w * area.h, rules.forest);
     placed += placeProps(draft, {
       mapId: map.id,
       area,
       material: "활엽수",
       count,
-      minGap: 3,
-      naturalness: 0.55,
+      minGap: requestedDensity ? shape.minGap : rules.forest.broadleafGap,
+      naturalness: requestedDensity ? shape.naturalness : rules.forest.broadleafNaturalness,
+      packing: shape.packing,
       seed: session.seed + 8800 + i * 17,
     }, warnings);
   }
@@ -837,13 +890,13 @@ function stepForestBig(
         area: bank,
         material: "활엽수",
         count: 2,
-        minGap: 3,
+        minGap: rules.forest.broadleafGap,
         naturalness: 0.5,
         seed: session.seed + 9900,
       }, warnings);
     }
   }
-  return { placed, style: "broadleaf-2x2", areas: areas.length };
+  return { placed, style: "broadleaf-2x2", areas: areas.length, density };
 }
 
 function stepCritique(draft: Project, session: VillageBuildSession): Record<string, unknown> {
@@ -917,8 +970,12 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
   const map = draft.maps[mapId];
   if (!map) throw new ToolError(`맵 없음: ${mapId}`, { code: "map-not-found" });
   const style = coerceStyle(args.style);
+  const worldGen = resolveWorldGenRules(draft.system.worldGen);
+  const forest = worldGen.forest;
   const seed = typeof args.seed === "number" ? args.seed : 1;
-  const minGap = typeof args.minGap === "number" ? Math.max(1, args.minGap) : style === "broadleaf-2x2" ? 3 : 2;
+  const density = coerceForestDensity(args.density);
+  // 인자로 온 density 가 우선이고(#350), 없으면 저작된 생성 규칙을 기본값으로 쓴다(#355).
+  const requestedDensityArg = args.density !== undefined;
   const warnings: string[] = [];
 
   let areas: { x: number; y: number; w: number; h: number }[] = [];
@@ -929,7 +986,7 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
     const session = loadSession(draft, args.sessionId);
     const plan = session ? loadVillagePlan(draft, session.planId) : undefined;
     if (plan) {
-      const masks = buildTerrainConstraintMasks(map, plan.requirements);
+      const masks = buildTerrainConstraintMasks(map, plan.requirements, undefined, worldGen);
       areas = masks.forestRects.length > 0 ? [...masks.forestRects] : edgeBands(map);
     }
   }
@@ -943,36 +1000,58 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
         : (["활엽수"] as const);
 
   let placed = 0;
+  let requested = 0;
   for (let g = 0; g < materials.length; g += 1) {
     const material = materials[g]!;
-    const isBig = material === "활엽수";
     for (let i = 0; i < areas.length; i += 1) {
       const area = areas[i]!;
-      const defaultCount = isBig
-        ? Math.max(3, Math.min(10, Math.floor((area.w * area.h) / 28)))
-        : Math.max(4, Math.floor((area.w * area.h) / 14));
+      const shape = forestPlacementPlan({
+        area,
+        footprintCells: treeFootprintCells(material),
+        density,
+        share: 1 / materials.length,
+      });
+      const isBig = material === "활엽수";
+      const defaultCount = requestedDensityArg
+        ? shape.count
+        : isBig
+          ? broadleafCountFor(area.w * area.h, forest)
+          : coniferCountFor(area.w * area.h, forest);
       const count = typeof args.count === "number"
         ? Math.max(1, Math.floor(args.count / materials.length / areas.length))
         : defaultCount;
+      const minGap = typeof args.minGap === "number"
+        ? Math.max(0, args.minGap)
+        : requestedDensityArg
+          ? shape.minGap
+          : isBig ? forest.broadleafGap : forest.coniferGap;
+      requested += count;
       placed += placeProps(draft, {
         mapId,
         area,
         material,
         count,
-        minGap: isBig ? Math.max(minGap, 3) : minGap,
-        naturalness: 0.55,
+        minGap,
+        naturalness: requestedDensityArg
+          ? shape.naturalness
+          : isBig ? forest.broadleafNaturalness : forest.coniferNaturalness,
+        packing: shape.packing,
         seed: seed + g * 100 + i * 17,
       }, warnings);
     }
   }
 
   const clusters = countBroadleaf2x2(map);
+  const coverage = forestCoverageRatio(map, areas);
   return {
-    summary: `나무 군락 시공: style=${style}, placed≈${placed}, 2×2군락=${clusters}`,
+    summary: `나무 군락 시공: style=${style}, density=${density}, placed≈${placed}/${requested}, 2×2군락=${clusters}, 나무 덮은 비율 ${Math.round(coverage * 100)}%`,
     data: {
       mapId,
       style,
+      density,
       placed,
+      requested,
+      treeCoverage: coverage,
       tree2x2Clusters: clusters,
       materials: [...materials],
     },
@@ -1204,6 +1283,38 @@ function edgeBands(map: GameMap): { x: number; y: number; w: number; h: number }
     { x: pad, y: pad + d, w: d, h: Math.max(1, map.height - pad * 2 - d * 2) },
     { x: map.width - pad - d, y: pad + d, w: d, h: Math.max(1, map.height - pad * 2 - d * 2) },
   ];
+}
+
+const TREE_UPPER_TILES = new Set([260, 261, 262, 263, 289]);
+const TREE_LOWER_TILES = new Set([290, 291, 292, 293]);
+
+function isTreeCell(map: GameMap, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const i = y * map.width + x;
+  const u = map.upperTiles[i] ?? 0;
+  const l = map.lowerTiles[i] ?? 0;
+  return TREE_UPPER_TILES.has(u) || TREE_LOWER_TILES.has(l) || TREE_LOWER_TILES.has(u);
+}
+
+/** 시공 보고용 실측 — 지정 rect 들에서 나무가 덮은 칸 비율(0~1). 중복 rect 는 칸 단위로 합집합. */
+function forestCoverageRatio(
+  map: GameMap,
+  areas: readonly { x: number; y: number; w: number; h: number }[],
+): number {
+  const cells = new Set<number>();
+  let treed = 0;
+  for (const area of areas) {
+    for (let y = area.y; y < area.y + area.h; y += 1) {
+      for (let x = area.x; x < area.x + area.w; x += 1) {
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+        const key = y * map.width + x;
+        if (cells.has(key)) continue;
+        cells.add(key);
+        if (isTreeCell(map, x, y)) treed += 1;
+      }
+    }
+  }
+  return cells.size === 0 ? 0 : treed / cells.size;
 }
 
 function countTreeCells(map: GameMap): number {

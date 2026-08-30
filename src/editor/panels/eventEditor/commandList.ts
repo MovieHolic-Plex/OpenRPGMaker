@@ -1,6 +1,6 @@
 import { clearChildren, el } from "@/util/dom";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
-import { branchGroupEndLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
+import { branchEmptyActionLabel, branchGroupEndLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
@@ -25,6 +25,8 @@ type CommandListRenderOptions = {
   readonly issues?: readonly EventDraftIssue[];
   /** 컨텍스트 메뉴 "삽입..." 피커에 넘길 편집 컨텍스트(맵/공통/배틀). 없으면 보수 배지. */
   readonly pickerContext?: M2RuntimeContext;
+  /** 빈 분기 버튼이 이 컨테이너에 명령을 추가하는 피커를 연다. */
+  readonly openCommandPicker?: (containerPath: readonly number[]) => void;
 };
 
 // 이벤트 명령 리스트 렌더링. RM2K3 처럼 트리 들여쓰기 + 드래그 재정렬 + 위/아래/삭제 버튼.
@@ -136,16 +138,26 @@ function renderCommandItem(
       ? renderSummaryVisual({ type: "faceCrop", resourceId: activeFaceForItem.resourceId })
       : null;
   if (speakerFace) speakerFace.dataset.testid = "cmd-speaker-face";
+  const step = commandStepLabel(path);
+  const summary = el("span", {
+    class: "cmd-summary",
+    children: [...(speakerFace ? [speakerFace] : []), renderCommandSummary(cmd)],
+  });
   head.append(
     handle,
+    el("span", {
+      class: "cmd-step",
+      text: step,
+      attrs: { "aria-hidden": "true" },
+      dataset: { testid: `event-command-step-${path.join("-")}` },
+    }),
     el("span", { class: "cmd-prefix", attrs: { "aria-hidden": "true" } }),
     el("span", {
       class: "cmd-cat-icon",
       attrs: { "aria-hidden": "true", title: `${categoryVisual.label} 명령` },
       dataset: { category: categoryVisual.key, glyph: categoryVisual.glyph, label: categoryVisual.label },
     }),
-    ...(speakerFace ? [speakerFace] : []),
-    renderCommandSummary(cmd),
+    summary,
     ...(supportBadge ? [supportBadge] : []),
     ...(issueBadge ? [issueBadge] : []),
   );
@@ -187,6 +199,17 @@ function renderCommandItem(
   // 중첩 행은 항상 자기 실제 부모 컨테이너를 사용해야 같은 분기 재정렬/분기 간 이동이 작동한다.
   attachItemDropHandlers(item, path, path.slice(0, -1), actions);
   return item;
+}
+
+/**
+ * 실행 순서를 줄에 적는다. 번호는 **자기 컨테이너 안에서** 1 부터 다시 시작하고,
+ * 분기 안이라는 범위는 바로 위 분기 헤더 줄(`renderBranchDropLine`)이 말해 준다.
+ * 경로의 마지막 칸이 항상 컨테이너 상 형제 인덱스이므로 그것만 생다 — 중간 칸을
+ * 이어 붙이면 `choices` 의 `branchIndex` 가 선택지 인덱스(음수 아님)라 실행 순서가
+ * 아닌 칸이 번호에 섞인다.
+ */
+function commandStepLabel(path: readonly number[]): string {
+  return String((path[path.length - 1] ?? 0) + 1);
 }
 
 function renderCommandIssueBadge(path: readonly number[], issues: readonly EventDraftIssue[]): HTMLElement | null {
@@ -330,9 +353,10 @@ function appendCommandChildren(
   // 종류별 블록이 일곱 개 늘어서 있었고, 상점 실패 분기는 상수 import 자체가 없어서
   // «주소를 못 매기는» 분기였다 — 런타임은 실행하는데 목록에는 줄이 안 났다.
   for (const branch of eventCommandBranches(cmd)) {
-    host.append(renderBranchDropLine(branch.label, depth, branch.tone, [...path, branch.branchIndex], actions));
+    const branchPath = [...path, branch.branchIndex];
+    host.append(renderBranchDropLine(branch.label, depth, branch.tone, branchPath, actions));
     if (branch.commands.length === 0) {
-      host.append(renderMarkerLine("비어 있음 — 여기에 명령 추가", depth + 1, branch.tone));
+      host.append(renderEmptyBranchLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
     }
     branch.commands.forEach((child, childIndex) => {
       renderCommandTree(
@@ -361,6 +385,28 @@ function renderMarkerLine(text: string, depth: number, kind: "fork" | "choices" 
   return line;
 }
 
+function renderEmptyBranchLine(
+  depth: number,
+  kind: "fork" | "choices" | "shop",
+  containerPath: readonly number[],
+  actions: CommandListActions,
+  openCommandPicker: CommandListRenderOptions["openCommandPicker"],
+): HTMLElement {
+  const line = el("button", {
+    class: `cmd-line-marker cmd-marker-${kind} cmd-branch-empty`,
+    text: branchEmptyActionLabel,
+    attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
+    dataset: {
+      testid: `event-command-branch-empty-${containerPath.join("-")}`,
+      cmdDepth: String(depth),
+      containerPath: JSON.stringify(containerPath),
+    },
+    on: { click: () => openCommandPicker?.(containerPath) },
+  });
+  line.style.setProperty("--cmd-depth", String(depth));
+  ensureListDropHandlers(line, actions);
+  return line;
+}
 
 function renderBranchDropLine(
   text: string,

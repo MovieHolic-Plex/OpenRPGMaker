@@ -1,11 +1,14 @@
-import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandCategoryVisual } from "./commandCategoryIcons";
 import { commandSummary } from "./commandSummary";
 import { commandKindLabel } from "./options";
 
-export type StoryboardMode = "storyboard" | "list" | "preview";
+export type StoryboardMode = "storyboard" | "list" | "preview" | "flow";
+
+/** 저작 뷰(고치는 화면)만 다음 열기까지 저장한다. 나머지는 확인 뷰다. */
+const AUTHORING_MODES: readonly StoryboardMode[] = ["list", "storyboard"];
 
 const MODE_KEY = "oprn:storyboard-mode";
 
@@ -30,9 +33,9 @@ export function loadStoryboardMode(): StoryboardMode {
   return "storyboard";
 }
 
-/** 미리보기는 저작 뷰가 아니라 확인 뷰라서 다음 열기까지 남기지 않는다. */
+/** 미리보기·플로우는 저작 뷰가 아니라 확인 뷰라서 다음 열기까지 남기지 않는다. */
 export function saveStoryboardMode(mode: StoryboardMode): void {
-  if (mode === "preview") return;
+  if (!AUTHORING_MODES.includes(mode)) return;
   try { localStorage.setItem(MODE_KEY, mode); } catch { /* ignore */ }
 }
 
@@ -131,6 +134,7 @@ export type StoryboardOptions = {
   readonly onMove?: (path: number[], direction: -1 | 1) => void;
   readonly onDelete?: (path: number[]) => void;
   readonly onAddNext?: () => void;
+  readonly onAddToBranch?: (containerPath: number[]) => void;
   readonly onQuickStart?: (kind: StoryboardQuickStartKind) => void;
   /** 재렌더 후 선택 복원용 경로. */
   readonly selectedPath?: readonly number[];
@@ -256,6 +260,11 @@ export function renderStoryboard(
         },
         dataset: { cmdPath: JSON.stringify(path), commandCategory: info.category },
         children: [
+          el("span", {
+            class: "event-storyboard-branch-step",
+            text: String(commandIndex + 1),
+            attrs: { "aria-hidden": "true" },
+          }),
           el("span", { class: "kind", text: info.title }),
           el("span", { class: "line", text: info.detail }),
           ...(actions ? [actions] : []),
@@ -277,7 +286,15 @@ export function renderStoryboard(
                   class: "event-storyboard-branch-panel",
                   children: [
                     el("div", { class: "branch-h event-storyboard-branch-label", text: branch.label || "이름 없는 분기" }),
-                    ...renderBranchCommands(branch.commands, [...path, branch.pathSegment]),
+                    ...(branch.commands.length > 0
+                      ? renderBranchCommands(branch.commands, [...path, branch.pathSegment])
+                      : [el("button", {
+                          class: "event-storyboard-branch-empty",
+                          text: branchEmptyActionLabel,
+                          attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
+                          dataset: { testid: `event-storyboard-branch-empty-${[...path, branch.pathSegment].join("-")}` },
+                          on: { click: () => opts?.onAddToBranch?.([...path, branch.pathSegment]) },
+                        })]),
                   ],
                 })),
               })]
@@ -359,7 +376,13 @@ export function renderStoryboard(
               }),
               ...(branch.commands.length > 0
                 ? renderBranchCommands(branch.commands, [idx, branch.pathSegment])
-                : [el("div", { class: "event-storyboard-branch-empty", text: "이 분기에는 명령이 없습니다." })]),
+                : [el("button", {
+                    class: "event-storyboard-branch-empty",
+                    text: branchEmptyActionLabel,
+                    attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
+                    dataset: { testid: `event-storyboard-branch-empty-${idx}-${branch.pathSegment}` },
+                    on: { click: () => opts?.onAddToBranch?.([idx, branch.pathSegment]) },
+                  })]),
             ]),
           })
         : null;
@@ -404,12 +427,15 @@ export function renderViewToggle(
   current: StoryboardMode,
   onChange: (next: StoryboardMode) => void
 ): HTMLElement {
-  const modes: readonly StoryboardMode[] = ["list", "storyboard", "preview"];
-  const labels: Record<StoryboardMode, string> = { list: "목록", storyboard: "스토리", preview: "미리보기" };
+  // 플로우는 예전에 도구 팝오버 안 280px 오버레이였다 — 미리보기 위에 겹쳐 뜨면서
+  // 「자동 재생」과 단계 카운터를 덮었다. 이제 네 번째 보기 방식이라 겹치지 않는다.
+  const modes: readonly StoryboardMode[] = ["list", "storyboard", "preview", "flow"];
+  const labels: Record<StoryboardMode, string> = { list: "목록", storyboard: "스토리", preview: "미리보기", flow: "플로우" };
   const hints: Record<StoryboardMode, string> = {
     list: "명령을 한 줄씩 보고 고칩니다",
     storyboard: "이야기 흐름으로 훑어봅니다",
     preview: "차례대로 실행되는 모습을 봅니다",
+    flow: "분기가 어떻게 갈라지는지 봅니다",
   };
   const bar = el("div", {
     class: "seg event-view-toggle",

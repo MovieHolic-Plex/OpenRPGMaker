@@ -198,6 +198,7 @@ function isRateGrade(value: unknown): value is "A" | "B" | "C" | "D" | "E" {
 }
 
 function cleanOptionalId(value: unknown): string | undefined {
+  // 빈 그래픽은 항상 실수라 재보완한다. 의도적으로 숨기는 경로는 transparent:true 이다.
   if (typeof value !== "string") return undefined;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : undefined;

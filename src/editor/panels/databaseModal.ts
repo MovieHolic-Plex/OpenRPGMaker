@@ -14,6 +14,7 @@ import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDi
 import { applyDatabaseChanges } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
+import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
 import { selectedRecordIdForSession } from "@/editor/panels/databaseRecordViewSession";
 import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
 import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
@@ -146,7 +147,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     aiToggleButton.setAttribute("aria-expanded", String(open));
     if (open) aiInput.focus();
   };
-  aiToggleButton.addEventListener("click", () => setAiBarOpen(aiBar.hidden));
+  // hidden 은 lib.dom 에서 string | boolean 이다("until-found"). 숨어 있으면 연다.
+  aiToggleButton.addEventListener("click", () => setAiBarOpen(Boolean(aiBar.hidden)));
   aiCloseButton.addEventListener("click", () => setAiBarOpen(false));
   const runAiRequest = (): void => {
     const text = aiInput.value.trim();
@@ -289,6 +291,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     modalClosed = true;
     if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
+    stopSkillAnimationStagesIn(backdrop);
     backdrop.remove();
     document.removeEventListener("keydown", controller.handleKeyDown);
     document.removeEventListener("keydown", handleHistoryKeyDown);

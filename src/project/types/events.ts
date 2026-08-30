@@ -113,7 +113,21 @@ export type ShopMessageType = "welcome" | "business" | "direct" | "festival" | "
 export type ShopServiceKind = "repair" | "appraisal" | "pawn";
 export type ShopRestockPolicy = "daily" | "weekly" | "onDemand";
 export interface ShopLoyaltyTier { readonly id: string; readonly name: string; readonly minSpend: number; readonly discountRate: number; readonly perks?: readonly string[]; }
-export interface ShopEconomyConfig { readonly dynamicPricing?: boolean; readonly haggleEnabled?: boolean; readonly closingSaleEnabled?: boolean; readonly inflationFactor?: number; readonly tradeRouteMarkup?: Record<string, number>; }
+export interface ShopHaggleConfig {
+  readonly patience?: number;
+  readonly insultRatio?: number;
+  readonly maxDiscount?: number;
+  readonly skillId?: string;
+}
+export interface ShopEconomyConfig {
+  readonly dynamicPricing?: boolean;
+  readonly haggleEnabled?: boolean;
+  readonly closingSaleEnabled?: boolean;
+  readonly inflationFactor?: number;
+  readonly tradeRouteMarkup?: Record<string, number>;
+  readonly haggle?: ShopHaggleConfig;
+  readonly shopkeeperEnabled?: boolean;
+}
 export interface ShopBuybackEntry { readonly itemId: string; readonly price: number; readonly expiresAtDayKey?: string; }
 export interface ShopCartLine { readonly itemId: string; readonly qty: number; readonly unitPrice: number; }
 export interface ShopConsignment { readonly id: string; readonly itemId: string; readonly askPrice: number; readonly consignorSwitchId?: string; readonly listedDayKey: string; }

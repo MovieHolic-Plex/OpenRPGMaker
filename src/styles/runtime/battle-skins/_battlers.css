@@ -63,3 +63,104 @@
   width: 148px !important;
   height: 148px !important;
 }
+
+/* ── 배틀러 idle 애니메이션 (2026-08-30) ─────────────────────────────────────
+   카탈로그(`src/assets/battlerIdleAnimations.ts`)에 등록된 배틀러만 여기에 걸린다.
+   런타임이 심는 것은 `data-battler-anim` 과 인라인 커스텀 프로퍼티 3개뿐이다:
+   `--battler-anim-url` / `--battler-anim-frames` / `--battler-anim-duration`.
+
+   왜 `<img>` 를 그대로 두고 **배경**으로 그리는가:
+   엘리먼트를 span 으로 바꾸면 위의 스킨별 width/height 강제 규칙(적 56×64,
+   포켓몬 148×148 등)이 intrinsic 크기를 잃은 상자에 걸리고, rect 프로브
+   (`scripts/lib/runtimeQaRun.mjs`)·`naturalWidth` 대기(`scripts/capture-*.mts`)·`src`
+   계약(`test/battleEnemyGraphicFidelity.test.ts`)이 동시에 깨진다.
+
+   내용 이미지를 치우는 것은 **`object-position` 하나**다. 위 `.battle-scene[data-battle-skin]
+   .battle-enemy .battle-enemy-image` 규칙의 `object-fit: contain` 이 특정도가 더 높아
+   여기서 `object-fit` 을 바꿔도 이기지 못한다 — 그래서 시도하지 않는다. 치환 요소의 내용은
+   콘텐츠 상자에서 잘리므로 상자 밖으로 밀면 그려지지 않는다. `opacity`/`filter` 는 배경까지
+   같이 지운다. */
+.battle-enemy-image[data-battler-anim],
+.battle-actor-image[data-battler-anim] {
+  object-position: -99999px -99999px;
+  background-image: var(--battler-anim-url);
+  background-repeat: no-repeat;
+  /* 세로를 `auto` 로 둬서 **칸의 종횡비를 지킨다**. `100%` 로 두면 정사각 칸이 상자
+     종횡비(적 56×64, 프로브 실측 180×210)로 늘어나, 정적 경로의 `object-fit: contain`
+     레터박스와 다른 그림이 된다. 가로는 `N × 상자폭` 이라야 `0%→100%` 스텝이 칸 경계에
+     정확히 떨어지므로 가로만 묶는다. */
+  background-size: calc(100% * var(--battler-anim-frames)) auto;
+  background-position-x: 0%;
+  /* `contain` 의 기본 정렬(`object-position: 50% 50%`)과 같게 세로 중앙. */
+  background-position-y: 50%;
+  /* jump-none 이라야 첫·끝 프레임을 모두 포함해 N 프레임에 N 번 멈춘다.
+     기본 steps(N) 은 첫 프레임을 건너뛴다. */
+  animation: battler-idle-strip var(--battler-anim-duration)
+    steps(var(--battler-anim-frames), jump-none) infinite;
+}
+
+/* 백분율 배경 위치는 (엘리먼트 폭 − 배경 폭)에 대해 계산된다. 배경이 N배 넓으므로
+   0% 가 첫 프레임, 100% 가 마지막 프레임이다 — `-100% × N` 으로 밀면 배틀러가
+   상자 밖으로 나가 화면에서 사라진다(실측). */
+@keyframes battler-idle-strip {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 100%;
+  }
+}
+
+/* 48px 전투 캐릭터셋(액터)은 이미 `--battle-sprite-frame-width` px 계약을 쓴다.
+   세로(포즈 행)는 런타임이 인라인으로 쓰고, 가로만 애니메이션이 굴린다 — 롱핸드가
+   달라서 CSS 애니메이션이 인라인 포즈 오프셋을 덮지 않는다. */
+.battle-actor-sprite[data-battler-anim] {
+  animation: battler-idle-cells var(--battler-anim-duration)
+    steps(var(--battler-anim-frames), jump-none) infinite;
+}
+
+@keyframes battler-idle-cells {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: calc(-1 * (var(--battler-anim-frames) - 1) * var(--battle-sprite-frame-width));
+  }
+}
+
+/* 죽은 배틀러는 숨을 쉬지 않는다. `<img>` 티어는 포즈마다 속성을 갈아끼우지 않으므로
+   (스킨 크기 규칙이 걸린 엘리먼트를 매 포즈 건드리지 않는 게 목적) 사망만 CSS 로 끊는다.
+   적은 620ms 뒤 `battle-death-fade` 로 사라지지만 파티 몬스터에는 그 페이드가 없어서
+   시체가 계속 호흡하고 있었다. */
+.battle-pose-dead .battle-enemy-image[data-battler-anim],
+.battle-pose-dead .battle-actor-image[data-battler-anim] {
+  animation: none;
+  /* 멈추는 것으로 끝내면 시체가 영상 프레임 0 — 원본과 다른 순간 — 으로 굳는다.
+     감속·고대비 처방과 같이 정적 `src` 로 돌려 원본 그림으로 눕힌다. */
+  object-position: 50% 50%;
+  background-image: none;
+}
+
+/* 감속 모드·고대비·인쇄 — `<img>` 티어는 **정적 `src` 로 되돌린다**.
+   프레임 0 을 세워두는 것으로는 부족하다: 영상에서 뽑은 몬스터 스트립의 프레임 0 은
+   원본 그림과 같은 순간이 아니다(실측 slime 상대높이 0.313 대 원본 0.526 — 그 순간 눌려 있다).
+   내용 이미지를 제자리로 돌리면 이 변경 이전과 픽셀 단위로 같은 화면이 된다.
+   고대비·인쇄 UA 는 배경 이미지를 아예 버리므로 같은 처방이 그대로 필요하다. */
+@media (prefers-reduced-motion: reduce), (forced-colors: active), print {
+  .battle-enemy-image[data-battler-anim],
+  .battle-actor-image[data-battler-anim] {
+    object-position: 50% 50%;
+    background-image: none;
+    animation: none;
+  }
+}
+
+/* 48px 시트 액터는 프레임 0 이 원본 idle 칸과 픽셀 단위로 같다(절차 생성기가 보장하고
+   `test/battlerIdleAnimation.test.ts` 가 못 박는다). 그래서 멈추고 첫 칸을 보이면 된다.
+   이 티어는 원래도 배경으로 그렸으니 고대비·인쇄에서 보이는 그림은 이 변경과 무관하다. */
+@media (prefers-reduced-motion: reduce) {
+  .battle-actor-sprite[data-battler-anim] {
+    animation: none;
+    background-position-x: 0px;
+  }
+}

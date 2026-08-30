@@ -23,9 +23,12 @@
 //        일부가 사라진다 — 구조물은 지붕 변형 같은 세부 타일이 필요하다.
 //   대신 검색·분류 계산은 맵 팔레트와 같은 출처(panels/tilePaletteFilter.ts)를 쓴다.
 
+import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { chatCompletion, loadAiConfig } from "@/ai/llmClient";
+import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
 import { TILE_SIZE } from "@/assets/bundled";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
+import { structureKitLayerHome } from "@/editor/harnessSuggestion/structureKitModel";
 import {
   createBlankStructureKit,
   createStructureKitFromHouse,
@@ -34,16 +37,20 @@ import {
 import {
   addPart,
   cellAtPoint,
+  cellHintAt,
   normalizeDragRect,
   paintCell,
+  removeCellHint,
   removePart,
   resizeKit,
+  setCellHint,
   tileAt,
   updatePart,
   type KitLayer,
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
+import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { openMapContextMenu } from "@/editor/panels/mapContextMenu";
 import {
   TILE_CATEGORIES,
@@ -57,10 +64,22 @@ import { PUBLIC_HOUSE_KIT_IDS } from "@/editor/tools/houseKitDomain";
 import { unregisterModal } from "@/editor/ui/modalStack";
 import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
+import {
+  asPlacementFacing,
+  asPlacementZone,
+  describePlacementSurface,
+  facingLabel,
+  PLACEMENT_FACINGS,
+  PLACEMENT_ZONES,
+  placementZoneLabel,
+} from "@/project/placementSurface";
 import { store } from "@/project/store";
 import type {
+  PlacementSurfaceCondition,
   SectionStructureKitDef,
+  StructureGrowthAxis,
   StructureKitAiMeta,
+  StructureKitCellHint,
   StructureKitPart,
   StructureKitPartKind,
   TileGroupRole,
@@ -89,7 +108,7 @@ const EDITOR_DIALOG_TESTID = "structure-kit-editor";
  * 도구. 예전에는 paint·erase·part 셋뿐이라 한 칸씩 클릭해야 했고 사각형·채우기·스포이트가
  * 없었다. 도형 계산은 맵 편집기와 같은 순수 함수(tileShapeTools)를 쓴다.
  */
-type EditorTool = "paint" | "erase" | "part" | "rect" | "ellipse" | "fill" | "pick";
+type EditorTool = "paint" | "erase" | "part" | "hint" | "rect" | "ellipse" | "fill" | "pick";
 
 /** 드래그로 영역을 정하는 도구인가 — 이 도구들은 뗄 때 한 번에 커밋한다. */
 function isDragShapeTool(tool: EditorTool): boolean {
@@ -110,6 +129,8 @@ interface EditorSession {
   search: string;
   category: TileCategoryId;
   recent: number[];
+  /** 켜면 이 구조물이 아직 쓰지 않은 타일만 팔레트에 남긴다. */
+  unusedOnly: boolean;
   /** AI 메타 폼의 미저장 편집 상태. [초안 수락] 전까지 store 에는 닿지 않는다. */
   draft: StructureKitAiMeta | null;
   /**
@@ -165,6 +186,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     search: "",
     category: "all",
     recent: [],
+    unusedOnly: false,
     draft: null,
     requireKit: () => {
       const current = findKit(tilesetId, kitId);
@@ -229,6 +251,15 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     class: "structure-kit-editor-parts",
     dataset: { testid: "structure-kit-editor-parts" },
   });
+  // 칸 힌트 목록은 부위 목록과 같은 자리·같은 규약(폭 전체, 칩처럼 가로 흐름)을 쓴다.
+  // 별도 목록으로 둔 이유는 소비자가 다르기 때문이다: 부위는 워프·간판 좌표를 만들고,
+  // 칸 힌트는 시공 반복 축과 AI 설명으로 간다.
+  const hintsWrap = el("div", {
+    // 부위 목록의 흐름 규약(폭 전체·칩처럼 가로 흐름·넘치면 스크롤)을 그대로 쓰고
+    // 높이만 낮춘다 — 같은 클래스만 쓰면 두 목록이 128px 씩 캔버스 높이를 먹는다.
+    class: "structure-kit-editor-parts structure-kit-editor-hints",
+    dataset: { testid: "structure-kit-editor-cell-hints" },
+  });
   const aiWrap = el("div", { class: "structure-kit-editor-ai" });
 
   /** 지금 캔버스에 쓰인 배율. 좌표 환산이 렌더와 같은 값을 봐야 한다. */
@@ -244,6 +275,9 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     if (!current) return;
     activeScale = resolveScale(current, session, canvasWrap);
     drawCanvasStage(canvasStage, gridOverlay, previewOverlay, tileset, current, session, activeScale);
+    // 칠하는 도중에도 "사용 중" 표식과 개수가 따라온다. refresh 는 자기 입력이 그대로면 즉시
+    // 빠지므로 드래그 한 칸마다 부려도 실제 DOM 쓰기는 바뀐 프레임에만 일어난다.
+    syncPalette();
   };
 
   const refreshViewBar = (): void => {
@@ -256,25 +290,64 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     });
   };
 
+  /**
+   * 오른쪽 열은 **열 때 한 번만** 조립한다.
+   *
+   * 예전에는 redraw 마다 `rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap)` 로
+   * 같은 노드를 다시 붙였다. 재부모(re-parent)는 스크롤 컨테이너의 scrollTop 을 0 으로 되돌리고
+   * 포커스를 body 로 떨어뜨린다 — 실측(1440×900, 12×10 킷): 팔레트를 400px 내려 타일을 하나
+   * 고르면 scrollTop 400 → 0, 두 번째 고를 때 250 → 0, 검색창에 글자를 치다 타일을 고르면
+   * document.activeElement 가 search → BODY. 사용자가 "state 때문에 화면이 흔들린다"고 한 그것이다.
+   * 그래서 붓 선택·필터·도구 전환은 **이미 있는 노드의 클래스만** 바꾼다.
+   */
+  const palette = createPalette(paletteWrap, tileset, session, () => {
+    // 붓만 바뀌었다 — 캔버스도 부위 목록도 그대로다. 도구줄과 팔레트 표식만 갱신한다.
+    tools.refresh();
+    syncPalette();
+  });
+  const filterBar = createFilterBar(filterWrap, session, () => syncPalette());
+  const tools = createTools(toolsWrap, session, (changed) => {
+    tools.refresh();
+    // 레이어를 바꾸면 스테이지 테두리(바닥/덧그림)가 달라진다 — 캔버스만 다시 그린다.
+    if (changed === "layer") redrawCanvasOnly();
+  });
+  const tabs = createTabs(tabsWrap, session, () => redraw());
+
+  /**
+   * 팔레트 표식과 "사용 중 N칸" 은 **같은 집합**을 보므로 한 경로로 밀어야 한다.
+   * 따로 놓았다가 e2e 에서 잡혔다: 칸을 칠하면 쓰인 타일엔 표식이 붙는데 숫자는
+   * "사용 중 없음" 에 멈추어 있었다 — 칠하기 경로가 필터 줄을 갱신하지 않았기 때문이다.
+   */
+  function syncPalette(): void {
+    filterBar.refresh(palette.refresh());
+  }
+  // 오른쪽 열은 지금 이 한 번만 조립된다. 툴·필터·팔레트·AI 폼은 전부 여기 남아 있고
+  // 탭 전환은 hidden 을 토글한다 — 노드를 떼었다 다시 붙이면 팔레트 스크롤이 매번 맨 위로 튄다.
+  rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap, aiWrap);
+
   const redraw = (): void => {
     const current = session.requireKit();
     if (!current) return;
     redrawCanvasOnly();
     refreshViewBar();
     drawSize(sizeWrap, current, redraw, session, commitKit);
-    drawTabs(tabsWrap, session, redraw);
-    const showParts = session.tab === "shape";
-    if (showParts) partsWrap.removeAttribute("hidden");
-    else partsWrap.setAttribute("hidden", "");
-    if (session.tab === "ai") {
-      drawAiTab(aiWrap, current, tileset, session, redraw, commitKit);
-      rightWrap.replaceChildren(tabsWrap, aiWrap);
-    } else {
-      drawTools(toolsWrap, session, redraw);
-      drawFilterBar(filterWrap, session, () => drawPalette(paletteWrap, tileset, session, redraw));
-      drawPalette(paletteWrap, tileset, session, redraw);
+    // #338 의 refresh 방식을 쓴다 — 예전 replaceChildren 재부모가 붓을 고를 때마다 팔레트를
+    // 떼었다 붙여 흔들림을 만들었다. 여기에 #339 의 칸 힌트(hintsWrap)를 얹는다.
+    tabs.refresh();
+    tools.refresh();
+    syncPalette();
+    const shapeTab = session.tab === "shape";
+    setHidden(partsWrap, !shapeTab);
+    setHidden(hintsWrap, !shapeTab);
+    setHidden(toolsWrap, !shapeTab);
+    setHidden(filterWrap, !shapeTab);
+    setHidden(paletteWrap, !shapeTab);
+    setHidden(aiWrap, shapeTab);
+    if (shapeTab) {
       drawParts(partsWrap, current, session, redraw, commitKit);
-      rightWrap.replaceChildren(tabsWrap, toolsWrap, filterWrap, paletteWrap);
+      drawCellHints(hintsWrap, current, session, redraw, commitKit);
+    } else {
+      drawAiTab(aiWrap, current, tileset, session, redraw, commitKit);
     }
   };
 
@@ -334,6 +407,13 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
       session.tool = "paint";
       noteRecentTile(session, picked);
       redraw();
+      return;
+    }
+
+    // 칸 힌트는 드래그가 아니라 한 칸이다 — 누른 칸의 증분 축을 고르고 끝난다.
+    // 메모는 아래 목록에서 적는다(팝오버에 텍스트 입력을 넣으면 바깥클릭 닫기와 싸운다).
+    if (session.tool === "hint") {
+      applyCellHintGrowth(cell.cx, cell.cy, { x: pointer.clientX, y: pointer.clientY }, session, redraw, commitKit);
       return;
     }
 
@@ -461,6 +541,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
             ],
           }),
           partsWrap,
+          hintsWrap,
         ],
       }),
     ],
@@ -697,6 +778,49 @@ const REPEATABILITY_OPTIONS: readonly { readonly value: "" | "repeat" | "fixed";
 ];
 
 /**
+ * 증분 축 어휘 — 구조물 전체와 칸 하나가 **같은 단어**를 쓴다.
+ * 다른 단어를 쓰면 사람이 「구조물은 가로인데 칸은 수평」을 같은 뜻으로 읽을 이유가 없다.
+ */
+const GROWTH_AXIS_LABELS: Readonly<Record<StructureGrowthAxis, string>> = {
+  horizontal: "가로로 증분 가능",
+  vertical: "세로로 증분 가능",
+  both: "가로·세로 모두 증분 가능",
+};
+
+const GROWTH_AXES: readonly StructureGrowthAxis[] = ["horizontal", "vertical", "both"];
+
+/** 칸 힌트 배지·목록에 쓰는 짧은 표시. 칸이 작아 긴 말이 들어가지 않는다. */
+const GROWTH_AXIS_GLYPHS: Readonly<Record<StructureGrowthAxis, string>> = {
+  horizontal: "↔",
+  vertical: "↕",
+  both: "✛",
+};
+
+export function growthAxisLabel(axis: StructureGrowthAxis): string {
+  return GROWTH_AXIS_LABELS[axis];
+}
+
+/** 홈 레이어의 한글 라벨. 편집기 도구줄과 같은 어휘를 쓴다 — 하층/상층이 아니라 바닥/덧그림. */
+export function layerHomeLabel(layerHome: "lower" | "upper" | "perCell"): string {
+  return layerHome === "lower" ? "바닥" : layerHome === "upper" ? "덧그림" : "칸별";
+}
+
+const GROWTH_AXIS_OPTIONS: readonly { readonly value: "" | StructureGrowthAxis; readonly label: string }[] = [
+  { value: "", label: "미지정 — 반복 값을 따른다" },
+  ...GROWTH_AXES.map((axis) => ({ value: axis, label: GROWTH_AXIS_LABELS[axis] })),
+];
+
+const LAYER_HOME_OPTIONS: readonly {
+  readonly value: "" | "lower" | "upper" | "perCell";
+  readonly label: string;
+}[] = [
+  { value: "", label: "미지정 — 그림에서 유도" },
+  { value: "lower", label: "바닥" },
+  { value: "upper", label: "덧그림" },
+  { value: "perCell", label: "칸별" },
+];
+
+/**
  * 초안 프롬프트. 모델에 넘기는 것은 이것뿐이다 —
  * 크기·타일 행렬·각 타일의 사람 읽는 라벨·기존 이름 목록.
  * 라벨을 함께 주는 이유: 모델이 타일 번호의 의미를 추측하지 않게 한다.
@@ -706,11 +830,7 @@ export function buildAiMetaDraftPrompt(
   tileset: TilesetDef,
   existingNames: readonly string[],
 ): string {
-  const used = new Set<number>();
-  for (const row of kit.rows) {
-    for (const tile of row.tiles) if (tile !== TILE.EMPTY) used.add(tile);
-    for (const tile of row.upperTiles ?? []) if (tile !== TILE.EMPTY) used.add(tile);
-  }
+  const used = collectUsedTiles(kit);
   const legend = [...used]
     .sort((a, b) => a - b)
     .map((tile) => {
@@ -741,8 +861,17 @@ export function buildAiMetaDraftPrompt(
     `이미 쓰는 이름(중복 피할 것): ${existingNames.join(", ") || "없음"}`,
     "",
     "이 구조물의 description(무엇인지), placementRules(어디에 어떻게 놓는지),",
-    `tags(검색어 배열), role(${AI_ROLES.join("|")}), repeatability(repeat|fixed)를`,
+    `tags(검색어 배열), role(${AI_ROLES.join("|")}), repeatability(repeat|fixed),`,
+    `growthAxis(${GROWTH_AXES.join("|")}), layerHome(lower|upper|perCell), themes(어울리는 테마 배열)를`,
     "JSON 한 덩어리로만 답하라. repeatability 는 가로로 이어 찍어도 되면 repeat, 한 채로 완결이면 fixed.",
+    "growthAxis 는 **무한히 이어붙여도 그림이 성립하는 방향**이다 — 벽은 높이로 쌓으면 vertical,",
+    "울타리·성벽은 horizontal, 바닥 무늬처럼 사방으로 이어지면 both. 집·우물같이 한 채로 끝나는 것은 생략해라.",
+    "layerHome 은 바닥에 깔리면 lower, 사람 위로 덮이는 지붕·나뭇잎은 upper, 섞여 있으면 perCell.",
+    "",
+    "추가로 placement 배열을 낼 수 있다 — 이것은 산문이 아니라 **편집기가 실제로 검사하는 조건**이다.",
+    `각 항목은 {zone, facing, strength}. zone ∈ ${PLACEMENT_ZONES.join("|")},`,
+    `facing ∈ ${PLACEMENT_FACINGS.join("|")}(zone=againstWall 에서만 의미), strength ∈ hard|soft.`,
+    "확실하지 않으면 placement 를 아예 빼라 — 틀린 hard 조건은 시공을 막아 버린다.",
   ].join("\n");
 }
 
@@ -770,18 +899,54 @@ export function parseAiMetaDraft(text: string): StructureKitAiMeta | null {
   const repeatability = record.repeatability === "repeat" || record.repeatability === "fixed"
     ? record.repeatability
     : undefined;
+  const growthAxis = GROWTH_AXES.find((candidate) => candidate === record.growthAxis);
+  const layerHome = record.layerHome === "lower" || record.layerHome === "upper" || record.layerHome === "perCell"
+    ? record.layerHome
+    : undefined;
   const tags = Array.isArray(record.tags)
     ? record.tags.filter((tag): tag is string => typeof tag === "string")
     : undefined;
+  const themes = Array.isArray(record.themes)
+    ? record.themes.filter((theme): theme is string => typeof theme === "string" && theme.trim().length > 0)
+    : undefined;
+  const placement = parseAiPlacementConditions(record.placement);
 
   return {
     description,
     placementRules,
+    ...(placement.length > 0 ? { placement } : {}),
     ...(tags && tags.length > 0 ? { tags } : {}),
+    ...(themes && themes.length > 0 ? { themes } : {}),
     ...(role ? { role } : {}),
     ...(repeatability ? { repeatability } : {}),
+    ...(growthAxis ? { growthAxis } : {}),
+    ...(layerHome ? { layerHome } : {}),
     origin: "ai",
   };
+}
+
+/**
+ * 모델이 낸 배치 조건 파싱 — 아는 값만 통과시키고 나머지는 조용히 버린다.
+ * 모르는 zone 을 억지로 매핑하지 않는 이유: 틀린 hard 조건은 시공을 **막으므로**,
+ * "조건이 없다"보다 "엉뚱한 조건이 걸렸다"가 훨씬 나쁘다.
+ */
+function parseAiPlacementConditions(value: unknown): PlacementSurfaceCondition[] {
+  if (!Array.isArray(value)) return [];
+  const parsed: PlacementSurfaceCondition[] = [];
+  for (const entry of value.slice(0, 4)) {
+    if (typeof entry !== "object" || entry === null) continue;
+    const record = entry as Record<string, unknown>;
+    const zone = asPlacementZone(record.zone);
+    if (!zone) continue;
+    const facing = zone === "againstWall" ? asPlacementFacing(record.facing) : undefined;
+    parsed.push({
+      id: `pc_${randomUuid()}`,
+      strength: record.strength === "soft" ? "soft" : "hard",
+      zone,
+      ...(facing && facing !== "any" ? { facing } : {}),
+    });
+  }
+  return parsed;
 }
 
 /**
@@ -828,7 +993,27 @@ function drawCanvasStage(
   // 지금 어느 레이어를 칠하는지 — 예전에는 캔버스에 layer-lower/layer-upper 클래스를
   // 붙였지만 그 클래스에 CSS 정의가 없어서 시각 신호가 0 이었다(죽은 클래스).
   stage.dataset.layer = session.layer;
-  stage.replaceChildren(...(session.showGrid ? [canvas, gridOverlay, previewOverlay] : [canvas, previewOverlay]));
+  // 칸 힌트 배지 — 목록만 있으면 "어느 칸이었지"를 좌표로 역산해야 한다. 격자선처럼 겹치는
+  // 층으로 둔다(캔버스에 직접 그리면 타일셋 이미지가 늦게 로드될 때 지워진다 — 위 주석 참고).
+  const hintBadges = (kit.cellHints ?? []).map((hint) =>
+    el("div", {
+      class: "structure-kit-editor-hint-badge",
+      attrs: {
+        style: `left:${hint.dx * cellPx}px;top:${hint.dy * cellPx}px`,
+        title: cellHintTitle(hint),
+      },
+      text: hint.growth ? GROWTH_AXIS_GLYPHS[hint.growth] : "\u270e",
+    }),
+  );
+  const hintOverlay = hintBadges.length > 0
+    ? [el("div", { class: "structure-kit-editor-hints-overlay", children: hintBadges })]
+    : [];
+  stage.replaceChildren(
+    canvas,
+    ...(session.showGrid ? [gridOverlay] : []),
+    ...hintOverlay,
+    previewOverlay,
+  );
 }
 
 /** 드래그 중 어디가 칠해질지 미리 보여준다. 맵 편집기의 고스트와 같은 역할. */
@@ -862,83 +1047,166 @@ function drawShapePreview(
 /** 팔레트 한 칸의 픽셀 크기 — CSS 의 .structure-kit-editor-swatch 와 같은 값이어야 한다. */
 const SWATCH_PX = 26;
 
+/** 보이기/숨기기 한 줄짜리 헬퍼 — hidden 속성은 FakeDom 에서도 그대로 읽힌다. */
+function setHidden(node: HTMLElement, hidden: boolean): void {
+  if (hidden) node.setAttribute("hidden", "");
+  else node.removeAttribute("hidden");
+}
+
+/**
+ * 이 킷이 지금 쓰고 있는 타일 번호. 두 레이어를 모두 본다.
+ *
+ * 왜 필요한가: 480칸 팔레트에서 "이미 이 구조물에 쓴 타일"이 구별되지 않으면 사용자는
+ * 방금 지붕에 쓴 타일을 다시 찾으려고 시트를 눈으로 훑는다. 표식과 [안 쓴 타일만] 필터가
+ * 같은 집합을 본다.
+ */
+export function collectUsedTiles(kit: SectionStructureKitDef): Set<number> {
+  const used = new Set<number>();
+  for (const row of kit.rows) {
+    for (const tile of row.tiles) if (tile !== TILE.EMPTY) used.add(tile);
+    for (const tile of row.upperTiles ?? []) if (tile !== TILE.EMPTY) used.add(tile);
+  }
+  return used;
+}
+
+type PaletteView = {
+  /**
+   * 이미 만들어 둔 480칸의 **클래스만** 갱신한다 — 스크롤·포커스가 그대로 남는다.
+   * 지금 킷이 쓰는 타일 칸수를 돌려준다 — 필터 줄의 숫자가 같은 집합에서 나와야 하기 때문이다.
+   */
+  readonly refresh: () => number;
+};
+
 /**
  * 타일 팔레트. 480칸을 **전부** 유지한다 — 구조물은 지붕 변형처럼 세부 타일이 필요해서
  * 맵 팔레트처럼 오토타일을 대표 1칸으로 접으면 만들 수 없는 구조물이 생긴다.
  * 검색·분류에 걸리지 않은 칸은 숨기지 않고 흐리게만 한다: 칸의 위치가 원본 시트의 좌표라
  * 숨기면 "어디쯤 타일"인지 감각이 깨진다(맵 편집기의 커스텀 아틀라스와 같은 판단).
+ * 예외는 [안 쓴 타일만] 뿐이다 — 사용자가 명시적으로 켠 필터이고, 걸러지는 쪽이 소수다.
  *
- * 제목(title)에 한글 라벨을 넣는다 — 예전에는 타일 번호 문자열뿐이었다.
+ * **노드는 열 때 한 번만 만든다.** 예전에는 타일을 고를 때마다 480개를 재생성하고
+ * 부모에 다시 붙여서 스크롤이 맨 위로 튀었다(실측 400 → 0).
  */
-function drawPalette(
+function createPalette(
   host: HTMLElement,
   tileset: TilesetDef,
   session: EditorSession,
-  redraw: () => void,
-): void {
-  // 480칸을 재생성하면 스크롤 위치가 사라진다. 다시 그리는 경로가 여럿(도구 전환·타일 선택·
-  // 레이어 전환)이라 호출부마다 챙기지 않고 여기서 한 번에 복원한다.
-  const scrollTop = host.scrollTop;
-  const visible = new Set(
-    filterTileIndexes(tileset, {
-      category: session.category,
-      query: session.search,
-      recent: session.recent,
-    }),
-  );
+  onPick: () => void,
+): PaletteView {
   const swatches: HTMLElement[] = [];
   for (let tile = 0; tile < tileset.count; tile += 1) {
-    // 고른 타일은 필터에 안 걸려도 항상 선명해야 한다 — 아니면 "선택 중"인 칸이 흐려진다.
-    const dimmed = !visible.has(tile) && session.tile !== tile;
+    const label = tileDisplayLabelForIndex(tile);
+    const index = tile;
     swatches.push(
       el("button", {
-        class: `structure-kit-editor-swatch${tile === session.tile ? " active" : ""}${dimmed ? " is-filtered-out" : ""}`,
+        class: "structure-kit-editor-swatch",
         attrs: {
           type: "button",
           style: tilesetTileBackgroundStyle(tileset, tile, SWATCH_PX),
-          title: tileDisplayLabelForIndex(tile),
           // 칸에 글자가 없어 접근성 이름이 title 뿐이다. 지금 잡힌 붓은 색으로만
-          // 구별되므로 aria-pressed 로도 알려야 한다.
-          "aria-label": tileDisplayLabelForIndex(tile),
-          "aria-pressed": tile === session.tile ? "true" : "false",
+          // 구별되므로 aria-pressed 로도 알려야 한다. 사용 여부는 refresh 가 덧붙인다.
+          title: label,
+          "aria-label": label,
+          "aria-pressed": "false",
         },
         dataset: { testid: `structure-kit-editor-tile-${tile}` },
         on: {
           click: () => {
-            session.tile = tile;
-            // 도구가 지우기·스포이트·부위였으면 칠하기로 돌린다. 사각형·타원·채우기는
+            session.tile = index;
+            // 도구가 지우기·스포이트·부위·칸 힌트였으면 칠하기로 돌린다. 사각형·타원·채우기는
             // 타일만 바꿔 그 도구를 계속 쓰게 둔다 — 맵 편집기와 같은 감각이다.
-            if (session.tool === "erase" || session.tool === "pick" || session.tool === "part") {
+            if (
+              session.tool === "erase" || session.tool === "pick"
+              || session.tool === "part" || session.tool === "hint"
+            ) {
               session.tool = "paint";
             }
-            noteRecentTile(session, tile);
-            redraw();
+            noteRecentTile(session, index);
+            onPick();
           },
         },
       }),
     );
   }
-  if (visible.size === 0) {
-    swatches.push(
-      el("div", {
-        class: "structure-kit-editor-palette-empty",
-        text: "조건에 맞는 타일이 없습니다.",
-        dataset: { testid: "structure-kit-editor-palette-empty" },
+  const empty = el("div", {
+    class: "structure-kit-editor-palette-empty",
+    text: "조건에 맞는 타일이 없습니다.",
+    dataset: { testid: "structure-kit-editor-palette-empty" },
+  });
+  host.replaceChildren(...swatches, empty);
+
+  // 마지막으로 그린 상태의 지문. 칠하기 드래그는 칸마다 refresh 를 부르므로,
+  // 바뀐 것이 없으면 480번의 DOM 쓰기를 아예 하지 않는다.
+  let signature = "";
+
+  const refresh = (): number => {
+    const kit = findKit(session.tilesetId, session.kitId);
+    const used = kit ? collectUsedTiles(kit) : new Set<number>();
+    const next = [
+      session.tile,
+      session.category,
+      session.search,
+      session.unusedOnly ? "unused" : "all",
+      session.recent.join(","),
+      [...used].sort((a, b) => a - b).join(","),
+    ].join("|");
+    if (next === signature) return used.size;
+    signature = next;
+
+    const visible = new Set(
+      filterTileIndexes(tileset, {
+        category: session.category,
+        query: session.search,
+        recent: session.recent,
       }),
     );
-  }
-  host.replaceChildren(...swatches);
-  if (scrollTop > 0) host.scrollTop = scrollTop;
+    let shown = 0;
+    for (let tile = 0; tile < swatches.length; tile += 1) {
+      const swatch = swatches[tile];
+      if (!swatch) continue;
+      const isActive = tile === session.tile;
+      const isUsed = used.has(tile);
+      // 고른 타일은 필터에 안 걸려도 항상 선명하고 사라지지 않는다 — 아니면 "선택 중"인 칸이
+      // 흐려지거나 [안 쓴 타일만] 을 켜는 순간 지금 쓰는 붓이 화면에서 없어진다.
+      const hidden = session.unusedOnly && isUsed && !isActive;
+      const matches = visible.has(tile) && !hidden;
+      swatch.classList.toggle("active", isActive);
+      swatch.classList.toggle("is-filtered-out", !matches && !isActive);
+      swatch.classList.toggle("is-used", isUsed);
+      setHidden(swatch, hidden);
+      swatch.setAttribute("aria-pressed", isActive ? "true" : "false");
+      const label = isUsed
+        ? `${tileDisplayLabelForIndex(tile)} · 이 구조물에 사용 중`
+        : tileDisplayLabelForIndex(tile);
+      swatch.setAttribute("title", label);
+      swatch.setAttribute("aria-label", label);
+      if (matches) shown += 1;
+    }
+    setHidden(empty, shown > 0);
+    return used.size;
+  };
+
+  refresh();
+  return { refresh };
 }
 
+type FilterBarView = {
+  /** 분류칩 활성 표시와 "사용 중 N칸" 숫자만 고친다 — 검색창 노드는 건드리지 않는다. */
+  readonly refresh: (usedCount: number) => void;
+};
+
 /**
- * 팔레트 위 검색창 + 분류칩. 분류 목록과 필터 계산은 맵 팔레트와 같은 출처
+ * 팔레트 위 검색창 + 분류칩 + [안 쓴 타일만]. 분류 목록과 필터 계산은 맵 팔레트와 같은 출처
  * (panels/tilePaletteFilter.ts)를 쓴다 — 규칙이 두 곳에서 갈라지지 않게.
  *
- * 팔레트만 다시 그리는 콜백(redrawPalette)을 받는 이유: 검색어를 한 글자 칠 때마다
- * 전체를 재렌더하면 입력 포커스와 커서 위치가 날아간다.
+ * 노드를 한 번만 만드는 이유는 팔레트와 같다. 특히 검색창을 다시 만들면 한 글자 칠 때마다
+ * 포커스와 커서 위치가 날아간다.
  */
-function drawFilterBar(host: HTMLElement, session: EditorSession, redrawPalette: () => void): void {
+function createFilterBar(
+  host: HTMLElement,
+  session: EditorSession,
+  onFilterChange: () => void,
+): FilterBarView {
   const search = el("input", {
     class: "structure-kit-editor-search",
     attrs: { type: "search", placeholder: "번호·이름·태그로 타일 찾기" },
@@ -949,45 +1217,107 @@ function drawFilterBar(host: HTMLElement, session: EditorSession, redrawPalette:
         const target = event.currentTarget;
         if (!(target instanceof HTMLInputElement)) return;
         session.search = target.value;
-        redrawPalette();
+        onFilterChange();
       },
     },
   });
 
   const chips = TILE_CATEGORIES.map((category) =>
     el("button", {
-      class: `structure-kit-editor-chip${session.category === category.id ? " active" : ""}`,
-      attrs: { type: "button", "aria-pressed": session.category === category.id ? "true" : "false" },
+      class: "structure-kit-editor-chip",
+      attrs: { type: "button", "aria-pressed": "false" },
       text: category.label,
       dataset: { testid: `structure-kit-editor-category-${category.id}` },
       on: {
         click: () => {
           session.category = category.id;
-          // 칩은 활성 표시가 바뀌어야 하니 이 줄도 다시 그린다.
-          drawFilterBar(host, session, redrawPalette);
-          redrawPalette();
+          applyChipState();
+          onFilterChange();
         },
       },
     }),
   );
 
-  host.replaceChildren(search, el("div", { class: "structure-kit-editor-chips", children: chips }));
+  const applyChipState = (): void => {
+    TILE_CATEGORIES.forEach((category, index) => {
+      const chip = chips[index];
+      if (!chip) return;
+      const active = session.category === category.id;
+      chip.classList.toggle("active", active);
+      chip.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  };
+
+  // 체크박스인 이유: 필터를 켜 둔 상태가 화면에 계속 남아야 한다. 분류칩에 섞으면
+  // "집" 같은 분류와 배타가 되어 둘을 같이 걸 수 없다 — 실제 저작은 둘을 겹쳐 쓴다.
+  const unusedBox = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "structure-kit-editor-unused-only" },
+    on: {
+      change: (event: Event) => {
+        const target = event.currentTarget;
+        if (!(target instanceof HTMLInputElement)) return;
+        session.unusedOnly = target.checked;
+        onFilterChange();
+      },
+    },
+  });
+  // 숫자를 `data-used-count` 로도 낸다. 테스트가 "사용 중 2칸" 같은 **문구**를 잡으면
+  // 카피를 다듬는 순간 관계없는 테스트가 깨진다 — 기계가 읽는 것은 값이어야 한다.
+  const usedCountLabel = el("span", {
+    class: "structure-kit-editor-used-count",
+    dataset: { testid: "structure-kit-editor-used-count", usedCount: "0" },
+    text: "",
+  });
+
+  host.replaceChildren(
+    search,
+    el("div", { class: "structure-kit-editor-chips", children: chips }),
+    el("div", {
+      class: "structure-kit-editor-filter-row",
+      children: [
+        el("label", {
+          class: "structure-kit-editor-unused-label",
+          children: [unusedBox, el("span", { text: "안 쓴 타일만" })],
+        }),
+        usedCountLabel,
+      ],
+    }),
+  );
+  applyChipState();
+
+  return {
+    refresh: (usedCount: number) => {
+      applyChipState();
+      usedCountLabel.dataset.usedCount = String(usedCount);
+      usedCountLabel.textContent = usedCount > 0 ? `사용 중 ${usedCount}칸` : "사용 중 없음";
+    },
+  };
 }
 
-function drawTabs(host: HTMLElement, session: EditorSession, redraw: () => void): void {
-  const button = (label: string, testid: string, tab: EditorSession["tab"]): HTMLElement =>
+type TabsView = { readonly refresh: () => void };
+
+function createTabs(host: HTMLElement, session: EditorSession, onSwitch: () => void): TabsView {
+  const make = (label: string, testid: string, tab: EditorSession["tab"]): HTMLElement =>
     el("button", {
-      class: `btn small${session.tab === tab ? " primary" : ""}`,
+      class: "btn small",
       attrs: { type: "button" },
       text: label,
       dataset: { testid },
-      on: { click: () => { session.tab = tab; redraw(); } },
+      on: { click: () => { session.tab = tab; onSwitch(); } },
     });
 
-  host.replaceChildren(
-    button("모양", "structure-kit-editor-tab-shape", "shape"),
-    button("AI 메타", "structure-kit-editor-tab-ai", "ai"),
-  );
+  const buttons: readonly { readonly node: HTMLElement; readonly tab: EditorSession["tab"] }[] = [
+    { node: make("모양", "structure-kit-editor-tab-shape", "shape"), tab: "shape" },
+    { node: make("AI 메타", "structure-kit-editor-tab-ai", "ai"), tab: "ai" },
+  ];
+  host.replaceChildren(...buttons.map((entry) => entry.node));
+
+  const refresh = (): void => {
+    for (const entry of buttons) entry.node.classList.toggle("primary", session.tab === entry.tab);
+  };
+  refresh();
+  return { refresh };
 }
 
 /**
@@ -1008,52 +1338,73 @@ const TOOL_BUTTONS: readonly {
   { tool: "fill", label: "이어진 곳 채우기", icon: "fill", testid: "structure-kit-editor-tool-fill" },
   { tool: "pick", label: "스포이트", icon: "eyedropper", testid: "structure-kit-editor-tool-pick" },
   { tool: "part", label: "부위 그리기", icon: "select", testid: "structure-kit-editor-tool-part" },
+  { tool: "hint", label: "칸 힌트 (증분 축·메모)", icon: "template", testid: "structure-kit-editor-tool-hint" },
 ];
 
-function drawTools(host: HTMLElement, session: EditorSession, redraw: () => void): void {
+type ToolsView = { readonly refresh: () => void };
+
+/** 뭐가 바뀐는지 — 레이어는 캔버스 테두리까지 바꾸므로 호출부가 구별해야 한다. */
+type ToolChange = "tool" | "layer";
+
+/**
+ * 도구·레이어 버튼. 노드를 한 번만 만들고 활성 표식은 refresh 가 클래스로만 바꾼다 —
+ * 예전에는 도구를 누를 때마다 오른쪽 열을 통째 다시 조립해서 팔레트 스크롤이 튀었다.
+ */
+function createTools(
+  host: HTMLElement,
+  session: EditorSession,
+  onChange: (changed: ToolChange) => void,
+): ToolsView {
   // 아이콘은 맵 편집기의 SVG 팩토리를 그대로 쓴다 — 유니코드 글리프는 폰트에 따라
   // 안 그려지거나 뭉개져서 무슨 도구인지 알 수 없었다. (makeTileToolbar 자체는 부르지
   // 않는다: installToolbarBadgeRefresh 가 모듈 전역을 마지막 호출자로 덮어써서
   // 맵 팔레트의 자동 갱신이 이 편집기로 샌다.)
-  const toolButton = (entry: (typeof TOOL_BUTTONS)[number]): HTMLElement =>
-    el("button", {
-      class: `btn small structure-kit-editor-tool${session.tool === entry.tool ? " primary" : ""}`,
+  const toolNodes = TOOL_BUTTONS.map((entry) => ({
+    tool: entry.tool,
+    node: el("button", {
+      class: "btn small structure-kit-editor-tool",
       // aria-pressed 는 맵 도구막대와 같은 규약이다. 아이콘 전용 버튼이라 이게 없으면
       // 화면 낭독기 쪽에서 지금 어느 도구가 잡혀 있는지 알 방법이 색뿐이다.
-      attrs: {
-        type: "button",
-        title: entry.label,
-        "aria-label": entry.label,
-        "aria-pressed": session.tool === entry.tool ? "true" : "false",
-      },
+      attrs: { type: "button", title: entry.label, "aria-label": entry.label, "aria-pressed": "false" },
       children: [makeSvgIcon(entry.icon)],
       dataset: { testid: entry.testid },
-      on: { click: () => { session.tool = entry.tool; redraw(); } },
-    });
+      on: { click: () => { session.tool = entry.tool; onChange("tool"); } },
+    }),
+  }));
 
-  const layerButton = (label: string, testid: string, layer: KitLayer): HTMLElement =>
-    el("button", {
-      class: `btn small structure-kit-editor-layer-btn${session.layer === layer ? " primary" : ""}`,
-      attrs: {
-        type: "button",
-        "aria-label": `${label} 레이어`,
-        "aria-pressed": session.layer === layer ? "true" : "false",
-      },
-      text: label,
-      dataset: { testid },
-      on: { click: () => { session.layer = layer; redraw(); } },
-    });
+  const layerNodes = [
+    { layer: "lower" as KitLayer, label: "바닥", testid: "structure-kit-editor-layer-lower" },
+    { layer: "upper" as KitLayer, label: "덧그림", testid: "structure-kit-editor-layer-upper" },
+  ].map((entry) => ({
+    layer: entry.layer,
+    node: el("button", {
+      class: "btn small structure-kit-editor-layer-btn",
+      attrs: { type: "button", "aria-label": `${entry.label} 레이어`, "aria-pressed": "false" },
+      text: entry.label,
+      dataset: { testid: entry.testid },
+      on: { click: () => { session.layer = entry.layer; onChange("layer"); } },
+    }),
+  }));
 
   host.replaceChildren(
-    el("div", { class: "structure-kit-editor-tool-row", children: TOOL_BUTTONS.map(toolButton) }),
-    el("div", {
-      class: "structure-kit-editor-tool-row",
-      children: [
-        layerButton("바닥", "structure-kit-editor-layer-lower", "lower"),
-        layerButton("덧그림", "structure-kit-editor-layer-upper", "upper"),
-      ],
-    }),
+    el("div", { class: "structure-kit-editor-tool-row", children: toolNodes.map((entry) => entry.node) }),
+    el("div", { class: "structure-kit-editor-tool-row", children: layerNodes.map((entry) => entry.node) }),
   );
+
+  const refresh = (): void => {
+    for (const entry of toolNodes) {
+      const active = session.tool === entry.tool;
+      entry.node.classList.toggle("primary", active);
+      entry.node.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+    for (const entry of layerNodes) {
+      const active = session.layer === entry.layer;
+      entry.node.classList.toggle("primary", active);
+      entry.node.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+  };
+  refresh();
+  return { refresh };
 }
 
 /** 캔버스 아래 보기 줄 — 되돌리기 · 확대 · 격자. */
@@ -1183,11 +1534,13 @@ function drawSize(
               const result = resizeKit(current, next.width, next.height);
               // 크기 변경도 되돌릴 수 있어야 한다 — 부위가 잘리는 편집이라 특히.
               commitKit(current, result.kit);
-              if (result.clamped > 0 || result.dropped > 0) {
+              if (result.clamped > 0 || result.dropped > 0 || result.droppedHints > 0) {
                 // 조용히 지우지 않는다 — 사용자가 입구가 사라진 걸 나중에야 알게 하면 안 된다.
+                // 칸 힌트도 같은 규약이다: 1×1 이라 잘릴 수 없고 삭제만 있으므로 따로 센다.
                 const parts = [
                   result.clamped > 0 ? `부위 ${result.clamped}개 잘림` : "",
-                  result.dropped > 0 ? `${result.dropped}개 삭제` : "",
+                  result.dropped > 0 ? `부위 ${result.dropped}개 삭제` : "",
+                  result.droppedHints > 0 ? `칸 힌트 ${result.droppedHints}개 삭제` : "",
                 ].filter(Boolean);
                 toast(parts.join(", "), "info");
               }
@@ -1403,6 +1756,166 @@ function autoEstimateEntranceParts(kit: SectionStructureKitDef): StructureKitPar
   return estimated;
 }
 
+/** 배지·목록의 마우스오버 문구. 축과 메모를 한 문장으로 합친다. */
+function cellHintTitle(hint: StructureKitCellHint): string {
+  const axis = hint.growth ? growthAxisLabel(hint.growth) : "메모";
+  return hint.note ? `(${hint.dx},${hint.dy}) ${axis} — ${hint.note}` : `(${hint.dx},${hint.dy}) ${axis}`;
+}
+
+/** 팝오버가 없는 환경(노드 유닛 테스트)에서 쓰는 결정적 순환: 가로 → 세로 → 양방향 → 없음. */
+function nextCellHintGrowth(current: StructureGrowthAxis | undefined): StructureGrowthAxis | null {
+  if (current === undefined) return "horizontal";
+  if (current === "horizontal") return "vertical";
+  if (current === "vertical") return "both";
+  return null;
+}
+
+/**
+ * 한 칸의 증분 축을 고른다. 팝오버를 띄울 수 있으면 목록에서 고르게 하고,
+ * 못 띄우는 환경이면 같은 값들을 정해진 순서로 순환한다 — 어느 쪽이든 축은 이 네 값뿐이다.
+ */
+function applyCellHintGrowth(
+  cx: number,
+  cy: number,
+  point: { readonly x: number; readonly y: number },
+  session: EditorSession,
+  redraw: () => void,
+  commitKit: CommitKit,
+): void {
+  const write = (growth: StructureGrowthAxis | null): void => {
+    const target = session.requireKit();
+    if (!target) return;
+    commitKit(target, setCellHint(target, cx, cy, { growth }));
+    redraw();
+  };
+  const current = session.requireKit();
+  if (!current) return;
+  const existing = cellHintAt(current, cx, cy);
+  if (!openCellHintMenu(point, existing?.growth, write)) write(nextCellHintGrowth(existing?.growth));
+}
+
+/**
+ * 증분 축 팝오버. 부위 종류 팝오버와 같은 위젯·같은 이유(클릭 지점 배치·바깥클릭/Esc·화살표 이동).
+ * window 가 없는 환경에서는 false 를 돌려주고 호출부가 순환 경로로 넘어간다.
+ */
+function openCellHintMenu(
+  point: { readonly x: number; readonly y: number },
+  currentGrowth: StructureGrowthAxis | undefined,
+  pick: (growth: StructureGrowthAxis | null) => void,
+): boolean {
+  if (typeof window === "undefined" || typeof document === "undefined") return false;
+  openMapContextMenu({
+    mapId: "structure-kit-cell-hint",
+    mapName: "칸 힌트",
+    point,
+    items: [
+      ...GROWTH_AXES.map((axis) => ({
+        action: () => pick(axis),
+        icon: axis === "vertical" ? "layers" : axis === "both" ? "composite" : "terrain",
+        id: `cell-hint-${axis}`,
+        label: axis === currentGrowth ? `${growthAxisLabel(axis)} (현재)` : growthAxisLabel(axis),
+        testId: `structure-kit-editor-hint-option-${axis}`,
+      })),
+      {
+        action: () => pick(null),
+        icon: "close",
+        id: "cell-hint-clear",
+        label: "증분 축 지우기",
+        testId: "structure-kit-editor-hint-option-clear",
+      },
+    ],
+  });
+  const menu = document.querySelector<HTMLElement>('[data-testid="map-context-menu-structure-kit-cell-hint"]');
+  if (menu) {
+    menu.dataset.testid = "structure-kit-editor-hint-menu";
+    menu.setAttribute("aria-label", "칸 힌트 고르기");
+    menu.classList.add("structure-kit-part-kind-menu");
+  }
+  return true;
+}
+
+/**
+ * 칸 힌트 목록 — 칸마다 축과 **사람이 쓴 한 줄**이 붙는다.
+ * 메모를 여기서 받는 이유: 이 문장이 AI 프롬프트에 그대로 실린다. 「가로로 증분 가능」 같은
+ * 축 표현은 드롭다운이 담당하고, 「창 사이는 2칸 띄운다」처럼 축으로 못 적는 것은 이 칸이 받는다.
+ */
+function drawCellHints(
+  host: HTMLElement,
+  kit: SectionStructureKitDef,
+  session: EditorSession,
+  redraw: () => void,
+  commitKit: CommitKit,
+): void {
+  const hints = kit.cellHints ?? [];
+  const rows: HTMLElement[] = [
+    el("div", {
+      class: "structure-kit-editor-parts-head",
+      children: [
+        el("div", {
+          class: "structure-kit-editor-parts-title",
+          text: `칸 힌트 (${hints.length})`,
+        }),
+      ],
+    }),
+  ];
+
+  if (hints.length === 0) {
+    rows.push(
+      el("p", {
+        class: "structure-kit-quiet",
+        dataset: { testid: "structure-kit-editor-cell-hints-empty" },
+        text: "[칸 힌트] 도구로 칸을 누르면 «가로로 증분 가능» 같은 축을 붙입니다. 벽처럼 끝없이 이어지는 부분에 씁니다.",
+      }),
+    );
+  }
+
+  const chips = hints.map((hint) =>
+    el("div", {
+      class: "structure-kit-editor-part-row",
+      dataset: { testid: `structure-kit-editor-cell-hint-${hint.dx}-${hint.dy}` },
+      children: [
+        el("span", { class: "structure-kit-editor-part-range", text: `(${hint.dx},${hint.dy})` }),
+        el("button", {
+          class: "btn small structure-kit-editor-hint-axis",
+          attrs: { type: "button", title: "증분 축 고르기" },
+          text: hint.growth ? growthAxisLabel(hint.growth) : "축 없음",
+          dataset: { testid: `structure-kit-editor-cell-hint-axis-${hint.dx}-${hint.dy}` },
+          on: {
+            click: (event: Event) => {
+              applyCellHintGrowth(hint.dx, hint.dy, pointFromButtonEvent(event), session, redraw, commitKit);
+            },
+          },
+        }),
+        el("input", {
+          class: "structure-kit-editor-hint-note",
+          attrs: { type: "text", placeholder: "이 칸 설명", "aria-label": `(${hint.dx},${hint.dy}) 칸 설명` },
+          value: hint.note ?? "",
+          dataset: { testid: `structure-kit-editor-cell-hint-note-${hint.dx}-${hint.dy}` },
+          on: {
+            change: (event: Event) => {
+              const target = event.currentTarget;
+              if (!(target instanceof HTMLInputElement)) return;
+              const current = session.requireKit();
+              if (!current) return;
+              commitKit(current, setCellHint(current, hint.dx, hint.dy, { note: target.value || null }));
+              redraw();
+            },
+          },
+        }),
+        partActionButton("✕", "칸 힌트 삭제", `structure-kit-editor-cell-hint-delete-${hint.dx}-${hint.dy}`, () => {
+          const current = session.requireKit();
+          if (!current) return;
+          commitKit(current, removeCellHint(current, hint.dx, hint.dy));
+          redraw();
+        }),
+      ],
+    }),
+  );
+  if (chips.length > 0) rows.push(el("div", { class: "structure-kit-editor-parts-list", children: chips }));
+
+  host.replaceChildren(...rows);
+}
+
 function drawAiTab(
   host: HTMLElement,
   kit: SectionStructureKitDef,
@@ -1488,6 +2001,96 @@ function drawAiTab(
       children: [el("span", { text: label }), select],
     });
 
+  /**
+   * 쉼표로 나누는 문자열 목록 필드(태그·테마).
+   * 칩 UI 로 하지 않은 이유: 값 어휘가 **열린 집합**이다 — 실내 테마 7종은 방 채우기 전용이고
+   * 야외 구조물의 테마는 사람이 짓는다("사막 마을"). 고를 수 있는 값만 고르게 해야 하는 곳은
+   * 배치 조건이고 그건 기계가 검사한다. 이쪽은 사람이 지은 말이라 닫아 둘 근거가 없다.
+   */
+  const listField = (
+    label: string,
+    testid: string,
+    placeholder: string,
+    values: readonly string[] | undefined,
+    apply: (next: string[]) => void,
+  ): HTMLElement =>
+    el("label", {
+      class: "structure-kit-editor-ai-field",
+      children: [
+        el("span", { text: label }),
+        el("input", {
+          attrs: { type: "text", placeholder },
+          value: (values ?? []).join(", "),
+          dataset: { testid },
+          on: {
+            change: (event: Event) => {
+              const target = event.currentTarget;
+              if (!(target instanceof HTMLInputElement)) return;
+              apply(
+                target.value
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter((item) => item.length > 0),
+              );
+            },
+          },
+        }),
+      ],
+    });
+
+  // 증분 축 — 「반복」 드롭다운이 표현하지 못하는 것을 맡는다: 그쪽은 가로 전용이다.
+  // 이 값이 세로를 포함하면 stamp_structure_kit 의 세로 반복(repeatY)이 열린다.
+  const growthSelect = el("select", {
+    dataset: { testid: "structure-kit-editor-ai-growth" },
+    children: GROWTH_AXIS_OPTIONS.map((option) =>
+      el("option", {
+        attrs: (draft.growthAxis ?? "") === option.value
+          ? { value: option.value, selected: "" }
+          : { value: option.value },
+        text: option.label,
+      }),
+    ),
+    on: {
+      change: (event: Event) => {
+        const target = event.currentTarget;
+        if (!(target instanceof HTMLSelectElement)) return;
+        const axis = GROWTH_AXES.find((candidate) => candidate === target.value);
+        if (axis) draft.growthAxis = axis;
+        else delete draft.growthAxis;
+      },
+    },
+  });
+
+  // 홈 레이어. 자동 유도값을 같은 줄에 적어 둔다 — 「미지정」이 무엇으로 읽히는지 모르면
+  // 사람은 이 칸을 건드릴 이유를 못 찾는다.
+  const layerSelect = el("select", {
+    dataset: { testid: "structure-kit-editor-ai-layer" },
+    children: LAYER_HOME_OPTIONS.map((option) =>
+      el("option", {
+        attrs: (draft.layerHome ?? "") === option.value
+          ? { value: option.value, selected: "" }
+          : { value: option.value },
+        text: option.label,
+      }),
+    ),
+    on: {
+      change: (event: Event) => {
+        const target = event.currentTarget;
+        if (!(target instanceof HTMLSelectElement)) return;
+        if (target.value === "lower" || target.value === "upper" || target.value === "perCell") {
+          draft.layerHome = target.value;
+        } else {
+          delete draft.layerHome;
+        }
+      },
+    },
+  });
+
+  // 배치 조건 — 「설명 / 배치 규칙」과 달리 **기계가 검사하는** 조건이다.
+  // 여기서 hard 로 걸어 둔 조건을 어기면 사람이 팔레트로 찍어도, AI 가 stamp_structure_kit 을
+  // 불러도 시공이 거부된다. 산문(배치 규칙)은 남겨 둔다 — 사람이 읽는 설명은 여전히 필요하다.
+  const conditionsBlock = renderPlacementConditionEditor(draft, redraw);
+
   host.replaceChildren(
     el("div", {
       class: "structure-kit-editor-ai-head",
@@ -1505,9 +2108,32 @@ function drawAiTab(
       ],
     }),
     area("설명", "structure-kit-editor-ai-description", draft.description, (next) => { draft.description = next; }),
-    area("배치 규칙", "structure-kit-editor-ai-placement", draft.placementRules, (next) => { draft.placementRules = next; }),
+    area("배치 규칙(설명용 문장)", "structure-kit-editor-ai-placement", draft.placementRules, (next) => { draft.placementRules = next; }),
+    conditionsBlock,
     selectField("반복", repeatabilitySelect),
+    selectField("증분 축 (무한 확장 방향)", growthSelect),
     selectField("분류", roleSelect),
+    selectField(`레이어 (미지정이면 지금 그림은 ${layerHomeLabel(structureKitLayerHome(kit))})`, layerSelect),
+    listField(
+      "태그",
+      "structure-kit-editor-ai-tags",
+      "쉼표로 나눔 — 예: 벽, 방어, 석조",
+      draft.tags,
+      (next) => {
+        if (next.length > 0) draft.tags = next;
+        else delete draft.tags;
+      },
+    ),
+    listField(
+      "사용 테마",
+      "structure-kit-editor-ai-themes",
+      "쉼표로 나눔 — 예: bedroom, tavern, 사막 마을",
+      draft.themes,
+      (next) => {
+        if (next.length > 0) draft.themes = next;
+        else delete draft.themes;
+      },
+    ),
     el("button", {
       class: "btn primary",
       attrs: { type: "button" },
@@ -1530,6 +2156,150 @@ function drawAiTab(
   );
 }
 
+/**
+ * 배치 조건 편집기 — zone·방향·강도 세 개의 드롭다운 한 줄이 조건 하나다.
+ *
+ * 자유 텍스트를 파싱하지 않고 드롭다운으로만 받는 이유: 파싱은 실패하면 **조용히** 조건이
+ * 사라지고, 사라진 조건은 "검사했는데 통과했다"와 구분되지 않는다. 고를 수 있는 값만 고르게 한다.
+ *
+ * `draft` 를 제자리에서 고친다 — 세션 초안 규약(수락 버튼을 눌러야 store 에 커밋)을 그대로 따른다.
+ * 줄을 더하거나 지운 뒤에는 redraw 로 다시 그린다(초안은 session.draft 에 살아 있다).
+ */
+function renderPlacementConditionEditor(draft: StructureKitAiMeta, redraw: () => void): HTMLElement {
+  const conditions = draft.placement ?? [];
+
+  const zoneSelect = (condition: PlacementSurfaceCondition): HTMLElement =>
+    el("select", {
+      dataset: { testid: "structure-kit-editor-condition-zone" },
+      attrs: { "aria-label": "배치 면" },
+      children: PLACEMENT_ZONES.map((zone) =>
+        el("option", {
+          attrs: condition.zone === zone ? { value: zone, selected: "" } : { value: zone },
+          text: placementZoneLabel(zone),
+        }),
+      ),
+      on: {
+        change: (event: Event) => {
+          const target = event.currentTarget;
+          if (!(target instanceof HTMLSelectElement)) return;
+          const zone = asPlacementZone(target.value);
+          if (!zone) return;
+          condition.zone = zone;
+          // 방향은 `againstWall` 에서만 뜻이 있다 — 다른 면으로 바꾸면 키를 지운다.
+          if (zone !== "againstWall") delete condition.facing;
+          redraw();
+        },
+      },
+    });
+
+  const facingSelect = (condition: PlacementSurfaceCondition): HTMLElement =>
+    el("select", {
+      dataset: { testid: "structure-kit-editor-condition-facing" },
+      attrs: { "aria-label": "어느 쪽이 벽" },
+      children: PLACEMENT_FACINGS.map((facing) =>
+        el("option", {
+          attrs: (condition.facing ?? "any") === facing ? { value: facing, selected: "" } : { value: facing },
+          text: facingLabel(facing),
+        }),
+      ),
+      on: {
+        change: (event: Event) => {
+          const target = event.currentTarget;
+          if (!(target instanceof HTMLSelectElement)) return;
+          const facing = asPlacementFacing(target.value);
+          if (!facing) return;
+          if (facing === "any") delete condition.facing;
+          else condition.facing = facing;
+          redraw();
+        },
+      },
+    });
+
+  const strengthSelect = (condition: PlacementSurfaceCondition): HTMLElement =>
+    el("select", {
+      dataset: { testid: "structure-kit-editor-condition-strength" },
+      attrs: { "aria-label": "강도" },
+      children: [
+        el("option", {
+          attrs: condition.strength === "hard" ? { value: "hard", selected: "" } : { value: "hard" },
+          text: "필수 — 어기면 못 찍음",
+        }),
+        el("option", {
+          attrs: condition.strength === "soft" ? { value: "soft", selected: "" } : { value: "soft" },
+          text: "권장 — 경고만",
+        }),
+      ],
+      on: {
+        change: (event: Event) => {
+          const target = event.currentTarget;
+          if (!(target instanceof HTMLSelectElement)) return;
+          condition.strength = target.value === "soft" ? "soft" : "hard";
+          redraw();
+        },
+      },
+    });
+
+  const row = (condition: PlacementSurfaceCondition, index: number): HTMLElement =>
+    el("li", {
+      class: "structure-kit-editor-condition-row",
+      dataset: { testid: "structure-kit-editor-condition-row" },
+      children: [
+        zoneSelect(condition),
+        // 방향 칸은 `againstWall` 에서만 뜻이 있으므로 그때만 보여 준다 — 안 쓰는 칸을
+        // 비활성으로 남겨 두면 "왜 안 먹지"를 유발한다.
+        ...(condition.zone === "againstWall" ? [facingSelect(condition)] : []),
+        strengthSelect(condition),
+        el("span", {
+          class: "structure-kit-editor-condition-preview",
+          text: describePlacementSurface(condition),
+        }),
+        el("button", {
+          class: "btn small",
+          attrs: { type: "button", title: "이 조건 지우기", "aria-label": "이 조건 지우기" },
+          text: "✕",
+          dataset: { testid: "structure-kit-editor-condition-remove" },
+          on: {
+            click: () => {
+              draft.placement = conditions.filter((_, position) => position !== index);
+              if (draft.placement.length === 0) delete draft.placement;
+              redraw();
+            },
+          },
+        }),
+      ],
+    });
+
+  return el("div", {
+    class: "structure-kit-editor-ai-field structure-kit-editor-conditions",
+    dataset: { testid: "structure-kit-editor-conditions" },
+    children: [
+      el("span", { text: "배치 조건 (실제로 검사함)" }),
+      el("p", {
+        class: "structure-kit-editor-condition-hint",
+        text: conditions.length === 0
+          ? "조건이 없으면 아무 자리에나 찍힙니다. 예: [벽에 붙은 바닥] + [북쪽] + [필수] 로 걸면 북쪽이 벽이 아닌 자리에서는 찍히지 않습니다."
+          : "«필수» 조건을 어기면 사람이 찍어도 AI 가 찍어도 거부됩니다.",
+      }),
+      el("ul", { class: "structure-kit-editor-condition-list", children: conditions.map(row) }),
+      el("button", {
+        class: "btn small",
+        attrs: { type: "button" },
+        text: "+ 조건 추가",
+        dataset: { testid: "structure-kit-editor-condition-add" },
+        on: {
+          click: () => {
+            draft.placement = [
+              ...conditions,
+              { id: `pc_${randomUuid()}`, strength: "hard", zone: "againstWall", facing: "north" },
+            ];
+            redraw();
+          },
+        },
+      }),
+    ],
+  });
+}
+
 async function requestAiMetaDraft(
   kit: SectionStructureKitDef,
   tileset: TilesetDef,
@@ -1540,16 +2310,30 @@ async function requestAiMetaDraft(
     .filter((candidate) => candidate.id !== kit.id)
     .map((candidate) => candidate.name ?? "구조물");
 
+  // 브라우저 저장 설정은 OAuth·모델이 항상 백필되므로 모양만 보면 언제나 준비됨이다. 캐시가
+  // 차가운 checking은 첫 사용을 잠그지 않지만, 조회로 확인된 미연결·오프라인·오류는 401 호출 전에 막는다.
+  const config = loadAiConfig();
+  if (!isAssistantEndpointReady(config, getAiConnectionStatus(config))) {
+    toast("AI 연결을 먼저 완료하세요. 편집기 헤더의 AI 설정에서 로그인한 뒤 다시 시도해 주세요.", "error");
+    return;
+  }
+
   toast("AI 초안을 요청하는 중...", "info");
   try {
-    const result = await chatCompletion(loadAiConfig(), {
+    const result = await chatCompletion(resolveSurfaceAiConfig("structure-kit", config), {
       messages: [
         {
           role: "system",
-          content:
-            "너는 2D 타일 RPG 편집기의 구조물 어휘 사서다."
-            + " 주어진 타일 행렬을 보고 이 구조물이 무엇이고 어디에 놓아야 하는지 기술한다."
-            + " JSON 한 덩어리로만 답하고 다른 말은 붙이지 않는다.",
+          // 공용 봉투 경유. includePolicy 는 끈다 — 산출물이 JSON 한 덩어리라 마무리 톤 규칙이 방해된다.
+          // 성향은 켠다: 구조물 이름·배치 설명의 어투가 사람 취향을 따라야 한다.
+          content: composeSystemPrompt({
+            surface: "structure-kit",
+            body:
+              "너는 2D 타일 RPG 편집기의 구조물 어휘 사서다."
+              + " 주어진 타일 행렬을 보고 이 구조물이 무엇이고 어디에 놓아야 하는지 기술한다."
+              + " JSON 한 덩어리로만 답하고 다른 말은 붙이지 않는다.",
+            includeMemory: true,
+          }),
         },
         { role: "user", content: buildAiMetaDraftPrompt(kit, tileset, existingNames) },
       ],

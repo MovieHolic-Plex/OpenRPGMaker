@@ -20,6 +20,11 @@ export type HouseLotPlan = {
   readonly door?: boolean;
   readonly windows?: HouseKitWindowsOption;
   readonly yard: readonly YardDecorPlan[];
+  /** 형태 어휘 — buildHouseKit 로 그대로 흘려보낸다(외장 실루엣을 바꾸는 축). */
+  readonly stories?: 1 | 2 | 3;
+  readonly lowWall?: boolean;
+  readonly chimney?: boolean;
+  readonly roofDeck?: boolean;
 };
 
 export type BuildHouseLotsInput = {
@@ -89,6 +94,10 @@ export function buildHouseLots(draft: Project, input: BuildHouseLotsInput): Buil
       doorEvent: linkedInterior,
       ...(house.ownerName === undefined ? {} : { ownerName: house.ownerName }),
       ...(house.windows === undefined ? {} : { windows: house.windows }),
+      ...(house.stories === undefined ? {} : { stories: house.stories }),
+      ...(house.lowWall === undefined ? {} : { lowWall: house.lowWall }),
+      ...(house.chimney === undefined ? {} : { chimney: house.chimney }),
+      ...(house.roofDeck === undefined ? {} : { roofDeck: house.roofDeck }),
     });
     if (houseResult.warnings) warnings.push(...houseResult.warnings);
 

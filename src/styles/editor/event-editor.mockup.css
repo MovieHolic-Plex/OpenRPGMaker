@@ -1241,7 +1241,10 @@
   overflow: auto;
 }
 
-.event-editor .event-contents-fieldset > .event-page-preview-host {
+/* 미리보기·플로우는 같은 콘텐츠 트랙을 쓰는 파생 보기다. 플로우는 예전에 도구 팝오버
+   안에서 미리보기 **위에** 떠 재생 컨트롤을 덮었다 — 이제 형제 보기라 겹치지 않는다. */
+.event-editor .event-contents-fieldset > .event-page-preview-host,
+.event-editor .event-contents-fieldset > .event-page-flow-host {
   display: grid;
   grid-column: 1 / -1;
   grid-row: 2;
@@ -1250,7 +1253,8 @@
 }
 
 /* `[hidden]` 은 (0,4,0) 이라 위 display:grid 규칙 (0,3,0) 을 이미 이긴다 — !important 는 불필요했다. */
-.event-editor .event-contents-fieldset > .event-page-preview-host[hidden] {
+.event-editor .event-contents-fieldset > .event-page-preview-host[hidden],
+.event-editor .event-contents-fieldset > .event-page-flow-host[hidden] {
   display: none;
 }
 

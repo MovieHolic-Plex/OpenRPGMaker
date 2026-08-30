@@ -18,6 +18,7 @@ import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSugg
 import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID, type InteriorRoomTheme } from "@/editor/interiorRoomPipeline";
+import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import {
   albumEntries,
   albumEntryId,
@@ -204,10 +205,20 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   const selectedKit = selectedEntry?.kind === "kit" ? selectedEntry.kit : null;
   const selectedObject = selectedEntry?.kind === "object" ? selectedEntry.object : null;
 
-  // 헤더
+  // 헤더 — 설명문 대신 아이콘 칩. 원래 문장은 "타일셋에 묶입니다. 한 타일셋의 구조물은 다른
+  // 타일셋에 섞이지 않습니다." 였고 두 줄 75.7px 을 먹었다. 사실은 하나뿐이라 칩 하나로 옮긴다.
   host.append(
-    el("h3", { text: "구조물", dataset: { testid: "structure-kit-heading" } }),
-    el("p", { text: "타일셋에 묶입니다. 한 타일셋의 구조물은 다른 타일셋에 섞이지 않습니다." })
+    el("header", {
+      class: "db-tab-note",
+      children: [
+        el("h3", { text: "구조물", dataset: { testid: "structure-kit-heading" } }),
+        el("span", {
+          class: "db-tab-note-chip",
+          children: [makeDatabaseTabIcon("tilesets"), el("span", { text: "타일셋별로 분리됨" })],
+          attrs: { title: "한 타일셋의 구조물은 다른 타일셋에 섞이지 않습니다." },
+        }),
+      ],
+    }),
   );
 
   const workspace = el("div", {
@@ -591,6 +602,14 @@ function matchesQuery(entry: StructureAlbumEntry, query: string): boolean {
   }
   const kit = entry.kit;
   if ((kit.name ?? "").toLowerCase().includes(query)) return true;
+  // 어휘를 적을 수 있게 만든 값은 찾을 수 있어야 한다 — 태그·테마를 검색이 못 보면
+  // 사람이 적어 넣은 뒤 다시 찾을 방법이 이름뿐이다.
+  if ((kit.ai?.tags ?? []).some((tag) => tag.toLowerCase().includes(query))) return true;
+  if ((kit.ai?.themes ?? []).some((theme) => theme.toLowerCase().includes(query))) return true;
+  if (
+    kit.kind === "section"
+    && (kit.cellHints ?? []).some((hint) => (hint.note ?? "").toLowerCase().includes(query))
+  ) return true;
   return (kit.parts ?? []).some(
     (part) => partKindName(part.kind).includes(query) || (part.note ?? "").toLowerCase().includes(query),
   );

@@ -39,7 +39,6 @@ export type EditorWelcomeResult = {
   /** Full AI prompt sent to the 감독 console for the current map. */
   readonly prompt: string | null;
   readonly autoSend: boolean;
-  readonly replaceWithBlank: boolean;
   readonly presetId?: WelcomeGenrePresetId;
   readonly source?: "chip" | "free-text" | "manual-system-preset";
   readonly systemPresetPlan?: GenreBlankProjectSystemPresetPlan;
@@ -238,7 +237,6 @@ export function presentEditorWelcome(
         intent: trimmed,
         prompt: buildWelcomeFreeTextPrompt(trimmed),
         autoSend: true,
-        replaceWithBlank: false,
         source: "free-text",
         dismiss: true,
         action: "start",
@@ -252,7 +250,6 @@ export function presentEditorWelcome(
         intent: label,
         prompt: buildWelcomeGenrePresetPrompt(preset),
         autoSend: true,
-        replaceWithBlank: false,
         presetId,
         source: "chip",
         dismiss: true,
@@ -293,7 +290,6 @@ export function presentEditorWelcome(
           intent: label,
           prompt: null,
           autoSend: false,
-          replaceWithBlank: false,
           presetId,
           source: "manual-system-preset",
           systemPresetPlan,
@@ -314,7 +310,6 @@ export function presentEditorWelcome(
         intent: null,
         prompt: null,
         autoSend: false,
-        replaceWithBlank: false,
         dismiss: true,
         action: "skip",
       });

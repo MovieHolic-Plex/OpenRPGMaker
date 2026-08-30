@@ -13,6 +13,10 @@
 // 수명은 **세션의 활성 BuildSpec** 이다(고스트는 한 턴짜리라 수명이 다르다). 턴 시작마다
 // `syncAgentBlueprintWithSpec(session.getActiveSpec())` 로 맞추고, 새 대화·패널 폐기에서
 // `clearAgentBlueprint()` 로 지운다. 자세한 사고 기록은 syncAgentBlueprintWithSpec 주석에 있다.
+//
+// 다만 **표시**의 수명은 스펙보다 짧다: 계획에 남은 일이 없으면(전 칸 done) 읽기 경로
+// `agentBlueprintForMap` 이 빈 목록을 내어 캔버스에서 물러난다 — 상태는 진실을 그대로 들고
+// 있으므로 물려받기·정산은 불변이다. 사유는 그 함수 주석에 있다.
 
 import { orderedAssets, type AffectedRegion, type BuildSpec, type SpecAsset } from "@/ai/buildSpec";
 import { blueprintRegionsForToolCall, type AppliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
@@ -115,8 +119,37 @@ export function getAgentBlueprintState(): AgentBlueprintState {
   return { mapId, entries: [...entries], revision };
 }
 
+/**
+ * 계획에 남은 일이 없으면 청사진은 할 일을 다 했다 — 캔버스에서 물러난다.
+ *
+ * 실측 결함: 조수에게 명령해 시공이 **끝난 뒤에도** 맵 위에 계획 사각형과 라벨(`1/2 지형 ✓`,
+ * blueprintEntryCaption)이 그대로 남았다. 청사진의 수명이 세션의 활성 `BuildSpec` 에 매여
+ * 있고(턴 시작마다 syncAgentBlueprintWithSpec 이 다시 깐다) `clearAgentBlueprint` 는
+ * dropSession/패널 dispose 에서만 불리기 때문이다 — 즉 결과가 다 나온 완성된 맵 위에 회색 ✓
+ * 라벨이 최대 40장 영구히 덮여 있고, 대화를 버리지 않고 걷는 수단은 **원본 보기 꾹 누름**
+ * 하나뿐이었다(순간 토글이다). 사용자가 보고 싶은 것은 자기 결과물이지 다 끝난 진행 표시가 아니다.
+ */
+export function isAgentBlueprintComplete(entries: readonly BlueprintEntry[]): boolean {
+  return entries.length > 0 && entries.every((entry) => entry.status === "done");
+}
+
+/**
+ * 렌더러가 보는 유일한 읽기 경로다 — 완료된 계획을 여기서 감춘다.
+ *
+ * 왜 상태를 지우지 않는가: `setAgentBlueprintFromSpec` 은 `done` 을 **사각형 기준으로 물려받아**
+ * 턴 시작 재동기화(스펙 자동 확장 포함)가 진행을 날리지 않게 한다. 완료 시점에
+ * `clearAgentBlueprint()` 를 부르면 물려받을 상태가 사라지므로 다음 턴의
+ * `syncAgentBlueprintWithSpec(activeSpec)` 이 **다 지어진 맵 위에 전량 planned 파랑 계획을
+ * 되살린다**. 상태는 진실을 그대로 들고(정산·물려받기·turnAdvanced 전부 불변) 캔버스만
+ * 물러나면 재부활이 구조적으로 불가능하다 — 되깔린 계획도 여전히 전량 done 이라 감춰진 채다.
+ *
+ * 되감김은 그대로 보인다: 턴 끝 정산(settleAgentBlueprintTurn)이 적용되지 않은 칸을 `planned`
+ * 로 되돌리면 완료가 아니므로 계획이 남는다 — "이건 안 들어갔다" 는 참인 정보다. 스펙
+ * 자동 확장이 `planned` 에셋을 덧붙이는 경우도 같은 이유로 다시 그려진다.
+ */
 export function agentBlueprintForMap(state: AgentBlueprintState, currentMapId: MapId | null): readonly BlueprintEntry[] {
   if (!currentMapId || state.mapId !== currentMapId) return [];
+  if (isAgentBlueprintComplete(state.entries)) return [];
   return state.entries;
 }
 

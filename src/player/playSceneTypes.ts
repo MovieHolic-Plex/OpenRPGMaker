@@ -199,6 +199,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   activeMapAnimations: Set<Phaser.GameObjects.Container>;
   /** 체공 그림자 풀. 키는 `PLAYER_SHADOW_KEY` 또는 이벤트 id — 스프라이트 풀과 1:1. */
   characterShadows?: Map<string, import("@/player/characterShadow").ShadowImage>;
+  /** 체공 스쿼시의 기준 배율 풀. 그림자 풀과 같은 키·같은 수명이다. */
+  characterHopScales?: Map<string, import("@/player/characterHop").HopScale>;
   /** 주인공의 진행 중인 체공. null 이면 접지 상태다. */
   playerHop: PlayerHopState | null;
   getMapId(): MapId;

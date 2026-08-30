@@ -89,7 +89,7 @@ export const FACE_SCHEMA: JsonSchema = {
 };
 
 /**
- * `CutsceneBeat` (editor/cutscene) — 12 variant 유니온. 전 variant 키를 나열하면 스키마가 비대해지므로
+ * `CutsceneBeat` (editor/cutscene) — 13 variant 유니온. 전 variant 키를 나열하면 스키마가 비대해지므로
  * `kind` enum + 최빈 필드만 선언하고 variant 전용 필드는 `additionalProperties` 로 허용한다.
  */
 export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
@@ -97,12 +97,15 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
   properties: {
     kind: {
       type: "string",
-      enum: ["say", "moveActor", "camera", "picture", "music", "tint", "flash", "shake", "wait", "parallel", "label", "jump"],
+      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump"],
     },
     speaker: { type: "string" },
     text: { type: "string" },
     lines: { type: "array", items: { type: "string" } },
+    emotion: { type: "string" },
+    autoAdvance: { type: "boolean" },
     face: FACE_SCHEMA,
+    direction: { type: "string", enum: ["in", "out"] },
     target: { type: "string" },
     eventId: { type: "string" },
     mode: { type: "string" },
@@ -111,6 +114,40 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     durationMs: { type: "integer" },
     label: { type: "string" },
     wait: { type: "boolean" },
+  },
+  required: ["kind"],
+  additionalProperties: true,
+};
+
+/**
+ * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 17 variant.
+ * `kind` 와 식별 필드만 선언하고 variant 전용 값(`value` 는 boolean|number 로 타입이 갈린다)은
+ * `additionalProperties` 로 넘긴다. 단일 `type` 만 허용되는 스키마에서 boolean|number 는 표현 불가다.
+ */
+export const CONDITION_SCHEMA: JsonSchema = {
+  type: "object",
+  description:
+    "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
+    "kind=all|any → conditions[]. kind=not → condition. value 는 kind 에 따라 boolean/number 로 갈린다 " +
+    "(스키마가 단일 type 만 허용하므로 properties 에는 선언하지 않는다).",
+  properties: {
+    kind: {
+      type: "string",
+      // 손으로 복사한 목록은 드리프트한다 — 실측으로 `run`(로그라이크 런)이 빠져 모델이 쓸 수 없었다.
+      // 단일 진실 소스는 commandKindRegistry.CONDITION_KINDS 다.
+      enum: [...CONDITION_KINDS],
+    },
+    state: { type: "string", enum: [...RELATIONSHIP_STATES] },
+    switchId: { type: "string" },
+    variableId: { type: "string" },
+    itemId: { type: "string" },
+    actorId: { type: "string" },
+    op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
+    amount: { type: "integer" },
+    phase: { type: "string", enum: ["morning", "day", "evening", "night"] },
+    season: { type: "string", enum: ["spring", "summer", "fall", "winter"] },
+    activity: { type: "string" },
+    result: { type: "string", enum: ["victory", "defeat", "escape"] },
   },
   required: ["kind"],
   additionalProperties: true,
@@ -137,58 +174,15 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
         required: ["text"],
       },
     },
-    conditions: { type: "array", description: "EventPageCondition[]", items: COMMAND_SCHEMA },
+    conditions: {
+      type: "array",
+      description:
+        "이 페이지가 활성화되는 '등장 조건'(EventPageCondition[]). 모든 조건이 참이어야 활성 후보가 된다. 빈 배열=무조건. "
+        + "런타임은 조건이 맞는 **마지막** 페이지 하나만 실행하므로, 조건 없는 페이지를 여러 장 만들면 마지막 1장만 나오고 앞 장은 죽는다.",
+      items: CONDITION_SCHEMA,
+    },
     commands: { type: "array", description: "Command[]", items: COMMAND_SCHEMA },
   },
-};
-
-/**
- * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 17 variant.
- * `kind` 와 식별 필드만 선언하고 variant 전용 값(`value` 는 boolean|number 로 타입이 갈린다)은
- * `additionalProperties` 로 넘긴다. 단일 `type` 만 허용되는 스키마에서 boolean|number 는 표현 불가다.
- */
-export const CONDITION_SCHEMA: JsonSchema = {
-  type: "object",
-  description:
-    "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
-    "kind=all|any → conditions[]. kind=not → condition. value 는 kind 에 따라 boolean/number 로 갈린다 " +
-    "(스키마가 단일 type 만 허용하므로 properties 에는 선언하지 않는다).",
-  properties: {
-    kind: {
-      type: "string",
-      enum: [
-        "switch",
-        "variable",
-        "selfSwitch",
-        "actor",
-        "item",
-        "gold",
-        "timer",
-        "timePhase",
-        "season",
-        "npcActivity",
-        "friendshipAtLeast",
-        "relationshipAtLeast",
-        "battleResult",
-        "all",
-        "any",
-        "not",
-      ],
-    },
-    state: { type: "string", enum: [...RELATIONSHIP_STATES] },
-    switchId: { type: "string" },
-    variableId: { type: "string" },
-    itemId: { type: "string" },
-    actorId: { type: "string" },
-    op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
-    amount: { type: "integer" },
-    phase: { type: "string", enum: ["morning", "day", "evening", "night"] },
-    season: { type: "string", enum: ["spring", "summer", "fall", "winter"] },
-    activity: { type: "string" },
-    result: { type: "string", enum: ["victory", "defeat", "escape"] },
-  },
-  required: ["kind"],
-  additionalProperties: true,
 };
 
 /** `LightSource` (project/types/events). `at` 은 `{x,y}` | `{eventId}` | `"player"` 유니온이라 키 합집합. */

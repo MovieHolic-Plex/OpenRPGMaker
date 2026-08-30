@@ -129,6 +129,24 @@ export function loadLatestConversation(): ConversationRecord | null {
 }
 
 /**
+ * **이 프로젝트 범위**의 최신 대화.
+ *
+ * 왜 따로 있는가 (실측): 부팅 자동 복원이 `loadLatestConversation()`(전역 최신) 하나를 집어
+ * 스코프가 다르면 복원을 포기했다. 두 프로젝트를 번갈아 열면 다른 프로젝트의 대화가 더 최근이라
+ * **내 프로젝트의 대화가 그대로 있는데도 매번 빈 새 대화로 시작**했다 — 사용자가 ＋를 누르지도
+ * 않았는데 새 세션이 강요되는 것으로 보인다. 저장 배열은 최신이 앞이지만(saveConversation 이
+ * prepend) 원격 미러/수동 병합으로 순서가 흐트러질 수 있어 savedAt 으로 최댓값을 고른다.
+ */
+export function loadLatestConversationForScope(scopeKey: string): ConversationRecord | null {
+  let latest: ConversationRecord | null = null;
+  for (const conversation of readConversations()) {
+    if (conversation.projectContextKey !== scopeKey) continue;
+    if (!latest || conversation.savedAt > latest.savedAt) latest = conversation;
+  }
+  return latest;
+}
+
+/**
  * 대화 저장/복원 범위. 원격 프로젝트는 durable row id를 쓰고, durable row가 없는 로컬 세션은
  * 새로고침 뒤에도 재구성 가능한 프로젝트 모양(제목 + 시작 맵)을 쓴다. 로컬 세션의 런타임 identity
  * id는 별도로 프로젝트 전환 감지에만 사용한다.
@@ -150,7 +168,10 @@ export function clearConversations(): void {
 export function deriveTitle(entries: readonly AuditEntry[]): string {
   for (const entry of entries) {
     if (entry.kind !== "user") continue;
-    const title = entry.text.trim();
+    // `[컨텍스트] 현재 맵: …` 는 패널이 붙이는 기계 생성 footer 다(aiChatPanel 의 contextFooter).
+    // 제목에 그대로 들어가면 목록의 모든 줄이 같은 맵 이름으로 시작해 사람이 대화를 못 가른다
+    // (실측 2026-08-30, 이전 대화 모달: "동굴 입구에 표지판을 세워줘 [컨텍스트] 현재 맵: 이슬 …").
+    const title = (entry.text.split("\n\n[컨텍스트]")[0] ?? entry.text).trim();
     if (title.length > 0) return title.length > TITLE_LIMIT ? `${title.slice(0, TITLE_LIMIT)}...` : title;
   }
   return "(빈 대화)";

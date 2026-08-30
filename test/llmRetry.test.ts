@@ -23,7 +23,7 @@ import type { ChatResult } from "@/ai/llmClient";
 
 const CONFIG: AiConfig = {
   baseUrl: "http://llm.test/v1",
-  model: "minimax/minimax-m3",
+  model: "stub-model",
   apiKey: "sk-test",
   maxToolCalls: 8,
   maxTokens: 512,

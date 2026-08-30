@@ -1,3 +1,5 @@
+import { registerModal } from "@/editor/ui/modalStack";
+
 const SKIP_SELECT_CLASSES = [
   "rich-native-select",
   "shop-processing-native-select",
@@ -36,6 +38,7 @@ type OpenMenu = {
   readonly list: HTMLElement;
   readonly options: MenuOption[];
   activeIndex: number;
+  unregisterLayer?: () => void;
 };
 
 /**
@@ -55,6 +58,7 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     const current = openMenu;
     if (!current) return;
     openMenu = null;
+    current.unregisterLayer?.();
     current.owner.trigger.setAttribute("aria-expanded", "false");
     current.owner.trigger.removeAttribute("aria-controls");
     current.popover.remove();
@@ -291,6 +295,12 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
       options,
       activeIndex: selectedIndex >= 0 ? selectedIndex : firstEnabled,
     };
+    // 열린 팝오버를 modalStack 최상위 층으로 올린다. modalStack 은 keydown 을 document 캡처
+    // 단계에서 잡아 stopPropagation 하므로(ui/modalStack.ts), 층으로 등록하지 않으면 Esc 가
+    // 이 컴포넌트의 핸들러에 도달하기 전에 모달 전체를 닫는다 — 드롭다운과 모달이 한 번에 사라진다.
+    openMenu.unregisterLayer = registerModal(popover, () => {
+      closeMenu(true);
+    });
     instance.trigger.setAttribute("aria-expanded", "true");
     instance.trigger.setAttribute("aria-controls", list.id);
     options.forEach((entry, index) => {
@@ -518,7 +528,9 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
 }
 
 function shouldSkipSelect(select: HTMLSelectElement): boolean {
-  return select.hidden
+  // hidden 은 "until-found" 문자열도 담을 수 있어 lib.dom 타입이 string | boolean 이다.
+  // 그 값도 숨김 상태이므로 참·거짓만 본다.
+  return Boolean(select.hidden)
     || select.multiple
     || select.size > 1
     || select.getAttribute("aria-hidden") === "true"

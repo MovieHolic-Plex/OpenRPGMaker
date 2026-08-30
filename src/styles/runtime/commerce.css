@@ -18,22 +18,18 @@
   gap: 10px;
   padding: 8px 12px;
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   color: var(--runtime-window-text);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-11);
 }
 
 .runtime-commerce-overlay .runtime-overlay-title {
   color: var(--runtime-window-muted);
   border-bottom: 1px solid rgba(242, 251, 255, 0.42);
-  font: 700 var(--runtime-font-size-11)/1.2 var(--runtime-pixel-font);
+  font: 700 var(--runtime-font-size-11)/1.2 var(--runtime-ui-font);
   padding-bottom: 4px;
 }
 
@@ -57,15 +53,11 @@
 .runtime-commerce-actions button {
   min-width: 88px;
   padding: 4px 12px;
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   background: var(--runtime-window-fill-fallback);
   color: var(--runtime-window-text);
-  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-ui-font);
   cursor: default;
 }
 
@@ -112,7 +104,7 @@
   transform: translateX(-50%);
   width: min(360px, calc(100% - 24px));
   color: var(--runtime-window-text);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-11);
 }
 
@@ -121,12 +113,8 @@
   gap: 6px;
   padding: 8px 10px;
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   max-height: 190px;
   overflow: hidden;
 }
@@ -151,10 +139,10 @@
   width: 100%;
   padding: 5px 8px;
   border: 1px solid transparent;
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   background: transparent;
   color: var(--runtime-window-text);
-  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-ui-font);
   text-align: left;
   cursor: default;
 }
@@ -184,7 +172,7 @@
   transform: translateX(-50%);
   width: min(480px, calc(100% - 24px));
   color: var(--runtime-window-text);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-11);
 }
 
@@ -193,12 +181,8 @@
   gap: 6px;
   padding: 8px 10px;
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   max-height: 260px;
   overflow: hidden;
 }
@@ -247,10 +231,10 @@
   width: 100%;
   padding: 5px 8px;
   border: 1px solid transparent;
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   background: transparent;
   color: var(--runtime-window-text);
-  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-ui-font);
   text-align: left;
   cursor: default;
 }

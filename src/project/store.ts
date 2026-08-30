@@ -8,7 +8,7 @@ import { repairInteriorTransparentPropLayers } from "./defaults/interiorTranspar
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
-import { loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
+import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import {
   loadProjectFromSupabase,
   saveProjectMapPatchToSupabase,
@@ -97,7 +97,12 @@ export type AutoSaveState =
   | { readonly kind: "pending" }
   | { readonly kind: "saving" }
   | { readonly kind: "saved"; readonly at: number }
-  | { readonly kind: "error"; readonly message: string; readonly retryCount?: number };
+  | {
+      readonly kind: "error";
+      readonly message: string;
+      readonly retryCount?: number;
+      readonly code?: "session-not-persisted";
+    };
 
 export type ProjectFlushResult =
   | { readonly kind: "disabled" }
@@ -931,7 +936,12 @@ class ProjectStore {
 
   private scheduleAutoSave(): void {
     if (!this.loaded) return;
-    if (!this.remotePersistenceEnabled) return;
+    if (!this.remotePersistenceEnabled) {
+      if (this.remotePersistenceDisabledReason === "dev-showcase" && isSaveSkippedLocation()) {
+        this.setAutoSaveState(nonPersistentSessionAutoSaveState());
+      }
+      return;
+    }
     if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
     this.clearAutoSaveRetry();
     this.setAutoSaveState({ kind: "pending" });
@@ -1058,7 +1068,12 @@ class ProjectStore {
         ) {
           result = await this.persistCurrent();
         }
-        this.setAutoSaveState(autoSaveStateForFlushResult(result));
+        this.setAutoSaveState(autoSaveStateForFlushResult(
+          result,
+          this.remotePersistenceDisabledReason === "dev-showcase"
+            && isSaveSkippedLocation()
+            && this.dirtySinceLastPersist,
+        ));
         this.autoSaveRetryCount = 0;
         this.stopHealthCheck();
         return result;
@@ -1253,11 +1268,12 @@ function ensureMapTreeCoversAllMaps(project: Project): boolean {
   return repairMapTreeOrphans(project);
 }
 
-function autoSaveStateForFlushResult(result: ProjectFlushResult): AutoSaveState {
+function autoSaveStateForFlushResult(result: ProjectFlushResult, sessionNotPersisted = false): AutoSaveState {
   switch (result.kind) {
     case "saved":
-    case "saved-local":
       return { kind: "saved", at: Date.now() };
+    case "saved-local":
+      return sessionNotPersisted ? nonPersistentSessionAutoSaveState() : { kind: "saved", at: Date.now() };
     case "conflict":
       return { kind: "error", message: "온라인 저장이 충돌했습니다. 저장본을 다시 불러온 뒤 저장하세요." };
     case "disabled":
@@ -1267,6 +1283,14 @@ function autoSaveStateForFlushResult(result: ProjectFlushResult): AutoSaveState 
     case "not-loaded":
       return { kind: "idle" };
   }
+}
+
+function nonPersistentSessionAutoSaveState(): AutoSaveState {
+  return {
+    kind: "error",
+    code: "session-not-persisted",
+    message: "이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요.",
+  };
 }
 
 function autoSaveErrorMessage(error: unknown): string {

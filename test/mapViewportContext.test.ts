@@ -12,13 +12,12 @@ describe("computeMapViewport", () => {
   const map = { id: "map_a", width: 40, height: 30 };
 
   it("centers on camera world mid and reports visible tile rect", () => {
-    // tileSize 16, zoom 1: view 320×240 → 20×15 tiles starting at scroll (160,80) = tile (10,5)
+    // tileSize 16: 보이는 월드 사각형 320×240 → 20×15 칸, 좌상단 (160,80) = 타일 (10,5)
     const snap = computeMapViewport(map, {
-      scrollX: 160,
-      scrollY: 80,
-      zoom: 1,
-      viewWidthPx: 320,
-      viewHeightPx: 240,
+      worldLeftPx: 160,
+      worldTopPx: 80,
+      worldWidthPx: 320,
+      worldHeightPx: 240,
       tileSize: 16,
     });
     expect(snap.mapId).toBe("map_a");
@@ -34,11 +33,10 @@ describe("computeMapViewport", () => {
 
   it("clamps to map bounds near origin", () => {
     const snap = computeMapViewport(map, {
-      scrollX: 0,
-      scrollY: 0,
-      zoom: 1,
-      viewWidthPx: 64,
-      viewHeightPx: 64,
+      worldLeftPx: 0,
+      worldTopPx: 0,
+      worldWidthPx: 64,
+      worldHeightPx: 64,
       tileSize: 16,
     });
     expect(snap.centerX).toBe(2);
@@ -47,6 +45,25 @@ describe("computeMapViewport", () => {
     expect(snap.y).toBe(0);
     expect(snap.w).toBe(4);
     expect(snap.h).toBe(4);
+  });
+
+  it("uses the zoom-corrected worldView so the reported center is the visual center", () => {
+    // 실측 회귀(줌 2): scroll(400,300), 캔버스 1133×700 → worldView.x = 400 + 1133/2 - 1133/4 = 683.25.
+    // 옛 입력 모양은 worldLeft=scrollX 라 중심을 (42,29)로 보고했다 — 실제 시각 중심은 (60,40)으로 18칸/11칸 어긋났다.
+    const big = { id: "map_big", width: 200, height: 200 };
+    const snap = computeMapViewport(big, {
+      worldLeftPx: 683.25,
+      worldTopPx: 475,
+      worldWidthPx: 566.5,
+      worldHeightPx: 350,
+      tileSize: 16,
+    });
+    expect(snap.centerX).toBe(60);
+    expect(snap.centerY).toBe(40);
+    expect(snap.x).toBeLessThanOrEqual(60);
+    expect(snap.x + snap.w).toBeGreaterThan(60);
+    expect(snap.y).toBeLessThanOrEqual(40);
+    expect(snap.y + snap.h).toBeGreaterThan(40);
   });
 });
 
@@ -75,6 +92,9 @@ describe("mapRegionForContext / formatViewportContextBlock", () => {
       { mapId: "map_market", centerX: 7, centerY: 4, x: 2, y: 1, w: 10, h: 8 },
       "장터",
     );
+    // 마지막 칸은 x+w-1 / y+h-1 — 반열림 끝값(12,9)은 영역에 없는 칸이라 찍히면 모델이 한 칸 밀린다.
+    expect(text).toContain("(2,1)~(11,8)");
+    expect(text).not.toContain("(2,1)~(12,9)");
     expect(text).toContain("(7, 4)");
     expect(text).toContain("map_market");
     expect(text).toContain("장터");

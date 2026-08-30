@@ -1,6 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { AI_CONFIG_STORAGE_KEY, resetAiTransportHealth } from "@/ai/llmClient";
+import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
 import { createStructureKitFromHouse, importStructureKits, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
-import { buildAiMetaDraftPrompt, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
+import { buildAiMetaDraftPrompt, collectUsedTiles, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
@@ -10,11 +12,32 @@ let restoreDom: (() => void) | undefined;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
+  const values = new Map<string, string>();
+  values.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+    authMode: "chatgpt",
+    providerId: "google-antigravity",
+    model: "gemini-3.7-flash",
+  }));
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => void values.set(key, value),
+      removeItem: (key: string) => void values.delete(key),
+      clear: () => values.clear(),
+    },
+  });
+  resetAiConnectionStatusCache();
+  resetAiTransportHealth();
 });
 
 afterEach(() => {
   restoreDom?.();
   restoreDom = undefined;
+  resetAiConnectionStatusCache();
+  resetAiTransportHealth();
+  Reflect.deleteProperty(globalThis, "localStorage");
+  vi.unstubAllGlobals();
   store.update((project) => {
     for (const tileset of Object.values(project.tilesets)) {
       delete tileset.structureKits;
@@ -352,6 +375,55 @@ describe("AI 메타 탭", () => {
     expect(stored.ai).toBeUndefined();
   });
 
+  it("연결 상태가 확인되면 미연결은 초안 요청을 막고 연결됨은 통과시킨다", async () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    (document.querySelector("[data-testid='structure-kit-editor-tab-ai']") as unknown as FakeElement).click();
+    const draftButton = document.querySelector("[data-testid='structure-kit-editor-ai-draft']") as unknown as FakeElement;
+
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/auth/status")) {
+        return new Response(JSON.stringify({ connected: false }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await refreshAiConnectionStatus();
+    draftButton.click();
+    await Promise.resolve();
+    expect(fetchMock.mock.calls.filter(([input]) => String(input).includes("/v1/chat/completions"))).toHaveLength(0);
+
+    resetAiConnectionStatusCache();
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/auth/status")) {
+        return new Response(JSON.stringify({ connected: true }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({
+        description: "돌담 우물",
+        placementRules: "마을 광장에 둔다",
+      }) } }] }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    });
+
+    await refreshAiConnectionStatus();
+    draftButton.click();
+    expect(fetchMock.mock.calls.filter(([input]) => String(input).includes("/v1/chat/completions"))).toHaveLength(1);
+  });
+
   it("수락하면 폼 값이 저장되고 origin 이 user 가 된다", () => {
     seedKit();
     openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
@@ -470,4 +542,259 @@ describe("importStructureKits", () => {
     expect(imported.ai?.origin).toBe("ai");
   });
 
+});
+describe("AI 메타 초안 파싱 — 새 어휘", () => {
+  it("growthAxis·layerHome·themes 를 읽는다", () => {
+    const draft = parseAiMetaDraft(JSON.stringify({
+      description: "돌 성벽",
+      placementRules: "경계를 따라",
+      growthAxis: "vertical",
+      layerHome: "upper",
+      themes: ["성채", " ", "dungeon"],
+      tags: ["벽"],
+    }));
+    expect(draft).not.toBeNull();
+    expect(draft!.growthAxis).toBe("vertical");
+    expect(draft!.layerHome).toBe("upper");
+    expect(draft!.themes).toEqual(["성채", "dungeon"]);
+    // 어떤 자동 경로도 origin 을 user 로 만들지 않는다.
+    expect(draft!.origin).toBe("ai");
+  });
+
+  it("모르는 축·레이어 값은 버린다", () => {
+    const draft = parseAiMetaDraft(JSON.stringify({
+      description: "d", placementRules: "", growthAxis: "diagonal", layerHome: "middle",
+    }));
+    expect(draft!.growthAxis).toBeUndefined();
+    expect(draft!.layerHome).toBeUndefined();
+  });
+
+  it("초안 프롬프트가 새 필드를 실제로 요구한다", () => {
+    const kit = seedKit();
+    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const prompt = buildAiMetaDraftPrompt(kit, tileset, []);
+    expect(prompt).toContain("growthAxis");
+    expect(prompt).toContain("layerHome");
+    expect(prompt).toContain("themes");
+  });
+});
+
+describe("AI 메타 탭 — 수정할 수 있는 축이 화면에 있다", () => {
+  const pick = (id: string): FakeElement | null =>
+    document.querySelector(`[data-testid='${id}']`) as unknown as FakeElement | null;
+  const readKit = (): SectionStructureKitDef => (store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.structureKits ?? [])
+    .find((candidate) => candidate.id === "kit_edit") as SectionStructureKitDef;
+
+  function openAiTab(): void {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tab-ai")!.click();
+  }
+
+  it("증분 축·레이어·태그·테마 칸이 모두 있다", () => {
+    openAiTab();
+    for (const id of [
+      "structure-kit-editor-ai-growth",
+      "structure-kit-editor-ai-layer",
+      "structure-kit-editor-ai-tags",
+      "structure-kit-editor-ai-themes",
+    ]) {
+      expect(pick(id), id).not.toBeNull();
+    }
+  });
+
+  it("고친 값이 수락 뒤 store 에 남는다", () => {
+    openAiTab();
+    const growth = pick("structure-kit-editor-ai-growth")!;
+    growth.value = "vertical";
+    growth.dispatchEvent(new Event("change"));
+    const layer = pick("structure-kit-editor-ai-layer")!;
+    layer.value = "upper";
+    layer.dispatchEvent(new Event("change"));
+    const themes = pick("structure-kit-editor-ai-themes")!;
+    themes.value = "성채, tavern";
+    themes.dispatchEvent(new Event("change"));
+    const tags = pick("structure-kit-editor-ai-tags")!;
+    tags.value = "벽, 방어";
+    tags.dispatchEvent(new Event("change"));
+
+    pick("structure-kit-editor-ai-accept")!.click();
+
+    const ai = readKit().ai!;
+    expect(ai.growthAxis).toBe("vertical");
+    expect(ai.layerHome).toBe("upper");
+    expect(ai.themes).toEqual(["성채", "tavern"]);
+    expect(ai.tags).toEqual(["벽", "방어"]);
+    expect(ai.origin).toBe("user");
+  });
+
+  it("비운 목록 칸은 키 자체를 지운다", () => {
+    openAiTab();
+    const tags = pick("structure-kit-editor-ai-tags")!;
+    tags.value = "벽";
+    tags.dispatchEvent(new Event("change"));
+    tags.value = " , ";
+    tags.dispatchEvent(new Event("change"));
+    pick("structure-kit-editor-ai-accept")!.click();
+    expect(readKit().ai!.tags).toBeUndefined();
+  });
+});
+
+describe("칸 힌트 도구", () => {
+  const pick = (id: string): FakeElement | null =>
+    document.querySelector(`[data-testid='${id}']`) as unknown as FakeElement | null;
+  const readKit = (): SectionStructureKitDef => (store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.structureKits ?? [])
+    .find((candidate) => candidate.id === "kit_edit") as SectionStructureKitDef;
+
+  function pressCell(): void {
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+  }
+
+  /* window 가 없는 이 파일에서는 팝오버를 띄울 수 없으므로 결정적 순환 경로가 돈다.
+     축의 집합은 두 경로에서 같다 — 순환 순서를 못 박아 둔다. */
+  it("도구를 잡고 칸을 누르면 가로 → 세로 → 양방향 → 없음 순으로 돈다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tool-hint")!.click();
+
+    pressCell();
+    expect(readKit().cellHints).toEqual([{ dx: 0, dy: 0, growth: "horizontal" }]);
+    pressCell();
+    expect(readKit().cellHints![0]!.growth).toBe("vertical");
+    pressCell();
+    expect(readKit().cellHints![0]!.growth).toBe("both");
+    pressCell();
+    expect(readKit().cellHints).toBeUndefined();
+  });
+
+  it("힌트를 붙이면 목록에 축과 설명 칸이 생기고, 설명이 store 에 남는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tool-hint")!.click();
+    pressCell();
+
+    expect(pick("structure-kit-editor-cell-hint-0-0")).not.toBeNull();
+    const note = pick("structure-kit-editor-cell-hint-note-0-0")!;
+    note.value = "가로로 무한히 이어붙일 수 있는 벽 몸통";
+    note.dispatchEvent(new Event("change"));
+
+    expect(readKit().cellHints![0]!.note).toBe("가로로 무한히 이어붙일 수 있는 벽 몸통");
+  });
+
+  it("삭제 버튼이 그 칸의 힌트만 지운다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    pick("structure-kit-editor-tool-hint")!.click();
+    pressCell();
+    expect(readKit().cellHints).toHaveLength(1);
+
+    pick("structure-kit-editor-cell-hint-delete-0-0")!.click();
+    expect(readKit().cellHints).toBeUndefined();
+  });
+
+  it("힌트가 없을 때는 무엇을 하는 도구인지 적어 둔다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    expect(pick("structure-kit-editor-cell-hints-empty")).not.toBeNull();
+  });
+});
+
+describe("collectUsedTiles", () => {
+  it("두 레이어에서 쓰는 타일을 모으고 빈 칸은 뺀다", () => {
+    const used = collectUsedTiles({
+      id: "k",
+      kind: "section",
+      width: 2,
+      height: 2,
+      rows: [
+        { tiles: [240, -1], upperTiles: [116, -1] },
+        { tiles: [-1, 300] },
+      ],
+    } as SectionStructureKitDef);
+    expect([...used].sort((a, b) => a - b)).toEqual([116, 240, 300]);
+  });
+});
+
+/* 사용자가 "팔레트에서 클릭해서 그리는데 state 때문에 화면이 자꾸 흔들린다"고 했다.
+   실측(1440×900): 팔레트를 400px 내려 타일을 하나 고르면 scrollTop 400 → 0,
+   검색창에 글자를 치다 타일을 고르면 activeElement 가 search → BODY.
+   원인은 redraw 가 rightWrap.replaceChildren 로 같은 노드를 **재부모**하고 480칸을
+   재생성한 것이다. 노드 정체성이 유지되는지로 회귀를 못 박는다 — FakeDom 은 스크롤을
+   흉내내지 않으므로 정체성이 이 계약의 검사 가능한 형태다. */
+describe("편집기 팔레트 안정성", () => {
+  const swatch = (tile: number): FakeElement =>
+    document.querySelector(`[data-testid='structure-kit-editor-tile-${tile}']`) as unknown as FakeElement;
+
+  it("타일을 골라도 팔레트 노드를 다시 만들지 않는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    const before = swatch(421);
+    const searchBefore = document.querySelector("[data-testid='structure-kit-editor-search']");
+    before.click();
+
+    expect(swatch(421)).toBe(before);
+    expect(document.querySelector("[data-testid='structure-kit-editor-search']")).toBe(searchBefore);
+    expect(before.className).toContain("active");
+  });
+
+  it("도구·분류를 바꿔도 팔레트와 검색창 노드가 그대로다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    const paletteBefore = document.querySelector("[data-testid='structure-kit-editor-palette']");
+    const searchBefore = document.querySelector("[data-testid='structure-kit-editor-search']");
+    (document.querySelector("[data-testid='structure-kit-editor-tool-erase']") as unknown as FakeElement).click();
+    (document.querySelector("[data-testid='structure-kit-editor-category-house']") as unknown as FakeElement).click();
+
+    expect(document.querySelector("[data-testid='structure-kit-editor-palette']")).toBe(paletteBefore);
+    expect(document.querySelector("[data-testid='structure-kit-editor-search']")).toBe(searchBefore);
+    const chip = document.querySelector("[data-testid='structure-kit-editor-category-house']") as unknown as FakeElement;
+    expect(chip.className).toContain("active");
+  });
+
+  it("이 구조물이 쓰는 타일에 사용 표식이 붙는다", () => {
+    seedKit(); // 240 · 116 을 쓴다
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+
+    expect(swatch(240).className).toContain("is-used");
+    expect(swatch(116).className).toContain("is-used");
+    expect(swatch(421).className).not.toContain("is-used");
+    // 문구가 아니라 기계가 읽는 값을 본다 — 카피를 다듬어도 이 계약은 깨지지 않는다.
+    const count = document.querySelector("[data-testid='structure-kit-editor-used-count']") as unknown as FakeElement;
+    expect(count.dataset.usedCount).toBe("2");
+  });
+
+  it("[안 쓴 타일만] 을 켜면 쓰인 타일이 숨고, 지금 잡은 붓은 남는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    // 안 쓰는 타일을 붓으로 잡아 둔다 — 기본 붓(잔디 240)은 이 킷이 쓰는 타일이다.
+    swatch(421).click();
+
+    const box = document.querySelector("[data-testid='structure-kit-editor-unused-only']") as unknown as FakeElement;
+    box.checked = true;
+    box.dispatchEvent(new Event("change"));
+
+    expect(swatch(240).getAttribute("hidden")).toBe("");
+    expect(swatch(116).getAttribute("hidden")).toBe("");
+    expect(swatch(421).getAttribute("hidden")).toBeNull();
+
+    box.checked = false;
+    box.dispatchEvent(new Event("change"));
+    expect(swatch(240).getAttribute("hidden")).toBeNull();
+  });
+
+  it("칠하면 그 타일이 사용 표식을 얻는다", () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    expect(swatch(421).className).not.toContain("is-used");
+
+    swatch(421).click();
+    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
+    canvas.dispatchEvent(Object.assign(new Event("pointerdown"), { clientX: 1, clientY: 1, button: 0 }));
+    canvas.dispatchEvent(Object.assign(new Event("pointerup"), { clientX: 1, clientY: 1, button: 0 }));
+
+    expect(swatch(421).className).toContain("is-used");
+  });
 });

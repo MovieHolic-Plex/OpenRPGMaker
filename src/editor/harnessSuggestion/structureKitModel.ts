@@ -155,15 +155,51 @@ export function structureKitUnitCells(kit: StructureKitDef): PaletteStampCell[] 
 }
 
 /**
- * 반복(가로 이어 찍기) 가능 여부.
- * ai.repeatability 가 있으면 그것이 정본 — 사람이 "한 채 완결"이라 표시한 우물·간판을
- * stamp_structure_kit 의 repeat 기본값 3 이 3개로 늘리는 것을 막는다.
- * 없으면 기존 동작(section 은 반복, house 는 한 채) 유지 — 하위 호환.
+ * 반복(가로 이어 찍기) 가능 여부. 가로 축 하나만 보는 짧은 물음 — 정본은 structureKitGrowthAxes.
+ * 기존 호출부(팔레트 선반·인스펙터·contextBuilder)가 이 이름을 쓰고 있으므로 남긴다.
  */
 export function structureKitRepeatable(kit: StructureKitDef): boolean {
-  if (kit.ai?.repeatability === "fixed") return false;
-  if (kit.ai?.repeatability === "repeat") return true;
-  return kit.kind === "section";
+  return structureKitGrowthAxes(kit).x;
+}
+
+/** 가로·세로 각각 이어 찍을 수 있는가. */
+export interface StructureGrowthAxes {
+  readonly x: boolean;
+  readonly y: boolean;
+}
+
+/**
+ * 증분 축 판정 — 세 층이 이 순서로 이긴다.
+ *
+ *   ① `ai.growthAxis`  사람이 새로 적어 준 축. 벽은 vertical, 울타리는 horizontal.
+ *   ② `ai.repeatability`  사람이 "한 채 완결"이라 표시한 우물·간판을 가로 3번 반복하는 것을 막는다.
+ *   ③ `kind`  아무 메타도 없는 상태의 예전 동작 — section 은 가로 반복, house 는 한 채.
+ *
+ * 어느 지점에서도 세로 반복은 **사람이 명시한 경우에만** 켜진다 — 집이 세로로 3채 쌓이는 사고는
+ * 눈에 잘 띄지도 않고 되돌리기도 번거롭다.
+ */
+export function structureKitGrowthAxes(kit: StructureKitDef): StructureGrowthAxes {
+  const axis = kit.ai?.growthAxis;
+  if (axis) return { x: axis !== "vertical", y: axis !== "horizontal" };
+  if (kit.ai?.repeatability === "fixed") return { x: false, y: false };
+  if (kit.ai?.repeatability === "repeat") return { x: true, y: false };
+  return { x: kit.kind === "section", y: false };
+}
+
+/**
+ * 홈 레이어 — 사람이 선언했으면 그것, 없으면 실제 칸에서 유도한다.
+ * 타일이 하나도 없는 빈 킷은 "lower" — 그 킷은 아직 그림이 없으므로 기본값이 필요하다.
+ */
+export function structureKitLayerHome(kit: StructureKitDef): "lower" | "upper" | "perCell" {
+  if (kit.ai?.layerHome) return kit.ai.layerHome;
+  let hasLower = false;
+  let hasUpper = false;
+  for (const cell of structureKitUnitCells(kit)) {
+    if (cell.layer === "upper") hasUpper = true;
+    else hasLower = true;
+    if (hasLower && hasUpper) return "perCell";
+  }
+  return hasUpper ? "upper" : "lower";
 }
 
 /** 킷 → 팔레트 스탬프(기존 드래그 스탬프 페인트 경로 재사용 — TilePaintEngine.applyPaletteStamp). */

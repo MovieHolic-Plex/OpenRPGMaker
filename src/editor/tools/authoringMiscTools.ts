@@ -30,7 +30,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 const DIRECTIONS = ["down", "left", "right", "up"] as const satisfies readonly Dir[];
 const RESOURCE_KINDS = [
   "chipset", "charset", "battle", "battleCharset", "battleWeapon", "backdrop",
-  "gameOver", "monster", "faceset", "picture", "system", "system2", "title", "music", "sound",
+  "gameOver", "monster", "faceset", "picture", "movie", "system", "system2", "title", "music", "sound",
 ] as const satisfies readonly ResourceKind[];
 const SEASONS = ["spring", "summer", "fall", "winter"] as const;
 

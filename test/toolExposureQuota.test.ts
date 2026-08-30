@@ -139,4 +139,19 @@ describe("노출 상한 도메인 쿼터", () => {
     expect(names.length).toBeLessThanOrEqual(40);
     expect(names).toContain("plan_world");
   });
+
+  it("exposes farm spatial write tools when core+database domains are active", () => {
+    const domains = new Set<ToolDomain>(["core", "database"]);
+    const names = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
+    expect(names.length).toBeLessThanOrEqual(40);
+    for (const name of [
+      "create_farm_plot",
+      "upsert_farm_building_type",
+      "upsert_home_decoration_type",
+      "upsert_farm_animal_building",
+      "set_session_farm_state",
+    ]) {
+      expect(names, name).toContain(name);
+    }
+  });
 });

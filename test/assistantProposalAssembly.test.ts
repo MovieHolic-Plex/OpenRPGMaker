@@ -9,8 +9,8 @@ import type { ChatResult } from "@/ai/llmClient";
 
 const CONFIG = {
   baseUrl: "x",
-  model: "minimax/minimax-m3",
-  liteModel: "minimax/minimax-m3",
+  model: "stub-model",
+  liteModel: "stub-model",
   apiKey: "sk",
   maxToolCalls: 12,
   maxTokens: 2048,

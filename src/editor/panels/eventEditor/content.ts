@@ -1,4 +1,5 @@
 import { editorState } from "@/editor/editorState";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import {
   buildEventBeginnerTemplate,
   type EventBeginnerTemplateId,
@@ -24,11 +25,12 @@ import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import { hasEventAiStagedDraft, renderEventAiAssist } from "./aiAssist";
+import { eventAiStagedCommands, hasEventAiStagedDraft, renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
-import { renderEventPagePreview, renderEventScriptFlowchart } from "./eventScriptModernViews";
+import { renderEventPageFlow, renderEventPagePreview } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
+import { applyMemoryOpeningTemplate } from "./memoryOpeningTemplate";
 import { renderCommandList } from "./commandList";
 import {
   beginEventViewSession,
@@ -167,9 +169,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     issues: activePageIssues,
     runtimeSupport: (command) => commandRuntimeSupport(command, "map"),
     pickerContext: "map",
+    openCommandPicker: (containerPath) => openCommandPickerForActions(actions, containerPath),
   });
   cmdList.querySelector(".empty-hint")?.remove();
-  cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id));
+  cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id, activePage.id));
   cmdList.addEventListener("dblclick", (event) => {
     if (event.target === cmdList) {
       cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
@@ -187,6 +190,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const previewHost = el("div", {
     class: "event-page-preview-host",
     dataset: { testid: "event-page-preview-host" },
+  });
+  const flowHost = el("div", {
+    class: "event-page-flow-host",
+    dataset: { testid: "event-page-flow-host" },
   });
   let currentMode: StoryboardMode = storyboardMode;
   // 스토리 보기의 선택도 목록과 **같은** 인스펙터를 채운다. 예전에는 카드 한 번 클릭이
@@ -213,6 +220,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       onMove: (path, direction) => actions.moveCommand(path, direction),
       onDelete: (path) => actions.deleteCommand(path),
       onAddNext: () => openCommandPickerForActions(actions),
+      onAddToBranch: (containerPath) => openCommandPickerForActions(actions, containerPath),
       // 빈 이벤트 CTA: 말하기 / 장소 옮기기 / 상점 열기는 피커를 거치지 않고 바로 편집면으로.
       onQuickStart: (kind) => {
         openNewEventCommandDialog(newCommand(kind), (command) => actions.addCommand([], command));
@@ -226,18 +234,42 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     applyViewMode();
   };
   let viewToggle = renderViewToggle(currentMode, changeMode);
+  const commandCount = el("span", {
+    class: "event-editor-column-count",
+    dataset: { testid: "event-editor-command-count" },
+  });
+  const refreshCommandCount = (): void => {
+    const stagedCommands = eventAiStagedCommands(mapId, eventId, activePage.id);
+    const count = totalCommandCount(stagedCommands ?? activePage.commands);
+    const staged = stagedCommands !== null;
+    commandCount.textContent = `${count}개`;
+    commandCount.title = staged
+      ? `AI 초안 적용 시 작성한 명령 ${count}개 (분기 안 명령 포함)`
+      : `작성한 명령 ${count}개 (분기 안 명령 포함)`;
+    commandCount.setAttribute(
+      "aria-label",
+      staged ? `AI 초안 적용 시 작성한 명령 ${count}개, 분기 안 명령 포함` : `작성한 명령 ${count}개, 분기 안 명령 포함`,
+    );
+  };
+  refreshCommandCount();
   // 툴바가 아직 없는 시점에도 applyViewMode 가 안전하게 호출되도록 기본값은 빈 함수다.
   let syncToolbarState: () => void = () => {};
   function applyViewMode(): void {
-    const isPreview = currentMode === "preview";
-    const isStoryboard = currentMode === "storyboard";
-    // 적용 대기 중인 AI 초안이 있으면 목록 자리를 초안이 쓴다. 렌더 순서와 무관하게 같은 답이
-    // 나와야 하므로 DOM 이 아니라 aiAssist 의 모듈 상태를 읽는다.
+    // 적용 대기 중인 AI 초안은 **보기 방식보다 우선한다**. 렌더 순서와 무관하게 같은 답이
+    // 나와야 하므로 DOM 이 아니라 aiAssist 의 모듈 상태를 읽는다. 기본 보기(스토리)에서
+    // 초안 자리가 `hidden` 이면 「위 목록에 표시했어요」라고 말하면서 아무것도 보이지 않는다.
+    // flow 보기(main 이 추가)도 같은 규칙을 따른다 — 초안이 있으면 초안이 자리를 쓴다.
     const isStaged = hasEventAiStagedDraft(mapId, eventId, activePage.id);
-    cmdList.hidden = isStoryboard || isPreview || isStaged;
-    stagedHost.hidden = isStoryboard || isPreview || !isStaged;
+    const isPreview = currentMode === "preview" && !isStaged;
+    const isStoryboard = currentMode === "storyboard" && !isStaged;
+    const isFlow = currentMode === "flow" && !isStaged;
+    // 초안을 켜고 끄면 명령 수가 달라지므로 보기 전환마다 배지를 다시 센다.
+    refreshCommandCount();
+    cmdList.hidden = isStoryboard || isPreview || isFlow || isStaged;
+    stagedHost.hidden = !isStaged;
     storyboardEl.hidden = !isStoryboard;
     previewHost.hidden = !isPreview;
+    flowHost.hidden = !isFlow;
     const nextToggle = renderViewToggle(currentMode, changeMode);
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
@@ -256,6 +288,18 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       previewHost.replaceChildren(renderEventPagePreview({ mapId, eventId, page: activePage }));
     } else {
       previewHost.replaceChildren();
+    }
+    // 플로우는 미리보기가 마지막으로 보던 단계를 짚는다. 미리보기에서 넘어온 직후에
+    // 다시 그려야 그 단계가 반영되므로 보기 전환마다 새로 만든다.
+    if (isFlow) {
+      flowHost.replaceChildren(renderEventPageFlow({
+        mapId,
+        eventId,
+        page: activePage,
+        onSelect: selectStoryboardCommand,
+      }));
+    } else {
+      flowHost.replaceChildren();
     }
     syncToolbarState();
   }
@@ -327,11 +371,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     columnLabel(
       "commands",
       "이 페이지가 하는 일",
-      "위에서 아래로 차례대로 실행됩니다",      el("span", {
-        class: "event-editor-column-count",
-        text: `${activePage.commands.length}개`,
-        dataset: { testid: "event-editor-command-count" },
-      }),
+      "위에서 아래로 차례대로 실행됩니다",
+      commandCount,
     ),
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
@@ -342,6 +383,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         storyboardHost,
         previewHost,
         stagedHost,
+        flowHost,
         cmdList,
       ],
     }),
@@ -656,18 +698,6 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
 }
 
 function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
-  // 도크가 있으면 그 조상을 통해 칼럼을 집는다 — 에디터 본문이 동시에 다수 마운트되도 섞이지 않는다.
-  const commandsColumn = (): HTMLElement | null =>
-    aiDock?.closest(".event-editor-commands-column") ?? document.querySelector(".event-editor-commands-column");
-  const open = (selector: string): void => {
-    const column = commandsColumn();
-    const tools = column?.querySelector<HTMLDetailsElement>("[data-testid='event-editor-aux-tools']");
-    const details = column?.querySelector<HTMLDetailsElement>(selector);
-    if (!details) return;
-    if (tools) tools.open = true;
-    details.open = true;
-    details.scrollIntoView({ block: "nearest" });
-  };
   // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
   // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
   const aiButton = aiDock ? toolbarButton("✧", "AI 명령", "event-command-quick-ai") : null;
@@ -683,13 +713,11 @@ function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   return el("div", {
     class: "event-editor-command-aux-group",
     attrs: { role: "group", "aria-label": "보조 도구" },
-    // «▶ 미리보기» 버튼은 없다. 보기 방식 세그먼트(`event-view-toggle-preview`)와 같은
-    // `changeMode("preview")` 로 들어가는 중복 컨트롤이었고, 같은 라벨로 나란히 서 있었다.
-    // 미리보기는 세그먼트가 소유한다. 플로우는 팝오버를 여는 별개 동작이라 남는다.
-    children: [
-      ...(aiButton ? [aiButton] : []),
-      toolbarButton("⌘", "플로우 보기", "event-command-quick-flow", () => open("[data-testid='event-script-flowchart']")),
-    ],
+    // «▶ 미리보기»·«⌘ 플로우 보기» 버튼은 없다. 둘 다 보기 방식 세그먼트
+    // (`event-view-toggle-preview` / `event-view-toggle-flow`)와 같은 화면으로 들어가는
+    // 중복 컨트롤이었다. 플로우는 그 위에 팝오버로 떠서 미리보기의 재생 컨트롤을 덮기까지 했다.
+    // 파생 보기의 입구는 세그먼트 하나다.
+    children: aiButton ? [aiButton] : [],
   });
 }
 
@@ -698,10 +726,10 @@ function renderEventToolsMenu(
   eventId: string,
   page: EventPage
 ): HTMLDetailsElement {
+  // 플로우차트는 여기 없다 — 보기 방식 세그먼트의 「플로우」가 칼럼 전체를 쓴다.
   const auxTools = el("div", {
     class: "event-editor-command-tools-popover event-editor-aux-tools",
     children: [
-      renderEventScriptFlowchart({ mapId, eventId, page }),
       renderFollowerPresetBar({
         insertCommandsAt: (index, commands) => {
           for (let i = 0; i < commands.length; i += 1) {
@@ -786,20 +814,33 @@ function activePageCommands(mapId: MapId, eventId: string, pageId: string): Comm
     ?.commands ?? [];
 }
 
+/**
+ * 개수 배지는 저작한 `Command` 객체를 센다 — 분기 안에 중첩된 명령도 재귀로 포함한다.
+ * 분기 머리글·빈 분기·묶음 끝 마커는 실행 명령이 아니므로 세지 않는다.
+ */
+function totalCommandCount(commands: readonly Command[]): number {
+  return commands.reduce(
+    (sum, command) =>
+      sum + 1 + eventCommandBranches(command).reduce((inner, branch) => inner + totalCommandCount(branch.commands), 0),
+    0,
+  );
+}
+
 function renderEmptyCommandLine(
   actions: CommandListActions,
   showBeginnerTemplates: boolean,
   mapId: MapId,
   eventId: string,
+  pageId: string,
 ): HTMLElement {
   const openPicker = () => openCommandPickerForActions(actions);
   const line = el("button", {
     class: "cmd-empty-line",
-    text: "명령 추가 — 더블클릭 또는 위 [+ 명령]",
-    attrs: { type: "button", title: "더블클릭해서 명령을 추가" },
+    text: "+ 여기에 명령 추가",
+    attrs: { type: "button", title: "이 페이지의 마지막에 명령을 하나 넣어줍니다" },
     dataset: { testid: "event-command-empty-line" },
     on: {
-      dblclick: (event) => {
+      click: (event) => {
         event.preventDefault();
         event.stopPropagation();
         openPicker();
@@ -818,12 +859,14 @@ function renderEmptyCommandLine(
     readonly label: string;
     readonly templateId?: EventBeginnerTemplateId;
     readonly testId: string;
+    readonly memoryOpening?: boolean;
   }[] = [
     { label: "대사하는 NPC", templateId: "talking-npc", testId: "event-template-talking-npc" },
     { label: "보물상자", templateId: "treasure-chest", testId: "event-template-treasure-chest" },
     { label: "문/맵 이동", templateId: "transfer", testId: "event-template-transfer" },
     { label: "상점", templateId: "shop", testId: "event-template-shop" },
     { label: "전투 시작", templateId: "battle", testId: "event-template-battle" },
+    { label: "회상 오프닝", testId: "event-template-memory-opening", memoryOpening: true },
     { label: "빈 이벤트 / 명령 검색", testId: "event-template-empty-search" },
   ];
   return el("div", {
@@ -846,6 +889,10 @@ function renderEmptyCommandLine(
           dataset: { testid: template.testId },
           on: {
             click: () => {
+              if (template.memoryOpening) {
+                applyMemoryOpeningTemplate(mapId, eventId, pageId);
+                return;
+              }
               if (!template.templateId) {
                 openPicker();
                 return;
@@ -865,7 +912,10 @@ function renderEmptyCommandLine(
   });
 }
 
-function openCommandPickerForActions(actions: CommandListActions): void {
+function openCommandPickerForActions(
+  actions: CommandListActions,
+  containerPath: readonly number[] = [],
+): void {
   if (document.querySelector('[data-testid="event-command-picker"]')) return;
   openEventCommandPicker({
     title: "명령 추가",
@@ -873,7 +923,7 @@ function openCommandPickerForActions(actions: CommandListActions): void {
     // 명령을 고르면 피커를 먼저 닫는다. 편집 창이 피커 위에 쌓이면 확인이 뒤 창에 먹힌다.
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
-        actions.addCommand([], editedCommand);
+        actions.addCommand(containerPath, editedCommand);
       });
     },
   });

@@ -6,7 +6,7 @@
 //
 // 예산은 **모델에서 끌어낸다**(resolveRequestCharBudget). 고정 52,000자는 사라진 공급자(CPEN)의
 // 검증 상한이었고, 그것이 창 1M 토큰짜리 모델의 기억까지 잘라내고 있었다.
-import { DEFAULT_CONTEXT_WINDOW, resolveContextWindow } from "./contextCompaction";
+import { AUTO_COMPACTION_TRIGGER_TOKENS, DEFAULT_COMPACTION_SETTINGS, resolveContextWindow } from "./contextCompaction";
 import type { AiConfig, ChatMessage, ContentPart } from "./llmClient";
 import { DEFAULT_CHARS_PER_TOKEN } from "./tokenBudget";
 
@@ -24,15 +24,21 @@ const KEEP_RECENT_MESSAGES = 6;
 /**
  * 작업 창 상한(토큰) — **제품 선택**이다. 모델 창이 이보다 커도 여기서 멈춘다.
  *
- * DEFAULT_CONTEXT_WINDOW(128,000)를 그대로 쓴다. 이 값은 이미 "모델을 모를 때" 의 보수적 기본이고
- * 압축 문턱도 그 기준으로 잡혀 있었으므로(128,000 - reserve 16,384 = 111,616토큰), 이걸 상한으로
- * 삼으면 **압축이 켜지는 지점이 지금과 같다**. 이 변경은 요약 시점을 옮기는 게 아니라 문자
- * 클램프가 그 지점보다 79배 좁게 걸려 있던 것을 바로잡는 것이다.
+ * 자동 압축 지점(`AUTO_COMPACTION_TRIGGER_TOKENS` = 200,000 토큰)에서 파생한다. 문턱은 `창 - 예비분`
+ * 이므로 지점을 그대로 얻으려면 창 = 지점 + 예비분 이어야 한다(216,384).
  *
- * gemini-3.7-flash 의 실제 창은 1,048,576 토큰이지만(pi-catalog google-antigravity) 창을 다 쓰면
- * 요청당 입력이 최대 1M 토큰(입력 $0.75/1M)까지 자란다 — 창이 남는다고 다 쓸 이유가 없다.
+ * 예전에는 DEFAULT_CONTEXT_WINDOW(128,000)를 상한으로 삼아 문턱이 111,616 토큰이었다. 그러니
+ * 창 1,048,576 짜리 기본 모델(gemini-3.7-flash)이 **창의 11% 지점에서 앞부분 기억을 요약으로
+ * 바꿔 버렸다** — 창이 남는데도 이르게 잊었다. 반대로 모델 창을 그대로 쓰면 문턱이 1,032,192 가
+ * 되어 압축이 사실상 안 돌고 요청당 입력만 1M 토큰으로 자란다. 200,000 은 그 사이에 명시한 지점이다.
+ *
+ * 함의: 문자 클램프(resolveRequestCharBudget)도 같은 창을 보므로 함께 넘어진다. 그게 의도다 —
+ * 클램프가 압축이 남기기로 한 분량보다 좁으면 요약 직후 그 결과가 다시 잘린다(이 파일 상단 주석).
+ * gemini 기준 예산은 216,384 × 4 = 865,536자로 여전히 창(1M 토큰) 안에 잡힌다.
+ *
+ * 창이 이 상한보다 작은 모델(claude-/glm- 200,000)은 자기 창이 먼저 걸리므로 동작이 바뀌지 않는다.
  */
-export const WORKING_CONTEXT_TOKEN_CAP = DEFAULT_CONTEXT_WINDOW;
+export const WORKING_CONTEXT_TOKEN_CAP = AUTO_COMPACTION_TRIGGER_TOKENS + DEFAULT_COMPACTION_SETTINGS.reserveTokens;
 
 /** cpenrouter 경로 판정 — llmClient.isCpenGateway 와 같은 규칙(순환 import 회피용 국소 사본). */
 function isCpenRoute(model: string, baseUrl: string): boolean {
@@ -145,6 +151,78 @@ function compactUserParts(parts: ContentPart[]): ContentPart[] {
 export function compactMessagesForRequest(
   messages: readonly ChatMessage[],
   budgetChars: number = REQUEST_MESSAGE_CHAR_BUDGET,
+): ChatMessage[] {
+  // 툴 짝 복구는 **마지막**에 돈다 — 아래 3차 폐기가 tool 응답만 버려 짝을 깰 수 있기 때문이다.
+  return repairToolCallProtocol(clampMessagesToBudget(messages, budgetChars));
+}
+
+/**
+ * 전송 사본의 **툴콜 프로토콜 불변식**을 세운다: assistant `tool_calls` 는 호출마다 정확히 한 개의
+ * `role:"tool"` 응답을 갖고, 짝 없는 tool 응답은 없다.
+ *
+ * 왜 사본 계층에 있는가(2026-08-30 실측): 툴 실행 도중 예외가 나면 세션의 영구 대화에는
+ * `assistant(tool_calls)` 만 남고 응답이 없다. 그 뒤 **모든** 요청이 같은 400 으로 죽는다 —
+ * OpenAI 호환 게이트웨이는 `tool_calls` 뒤에 짝 응답을 요구하고, Gemini Cloud Code Assist 는
+ * `Please ensure that function call turn comes immediately after a user turn or after a function
+ * response turn` 으로 거부한다. 즉 한 번의 예외가 그 세션을 영구히 못 쓰게 만든다.
+ * 세션 루프는 이제 응답을 보장하지만(실패 결과라도 붙인다), 이미 저장된 대화·아직 모르는 경로를
+ * 위해 전송 경계에서도 같은 불변식을 세운다. 원본(this.messages)은 감사용으로 손대지 않는다.
+ */
+export function repairToolCallProtocol(messages: readonly ChatMessage[]): ChatMessage[] {
+  const called = new Set<string>();
+  for (const message of messages) {
+    for (const call of message.tool_calls ?? []) called.add(call.id);
+  }
+  const answered = new Set<string>();
+  const repaired: ChatMessage[] = [];
+  for (const message of messages) {
+    if (message.role === "tool") {
+      // 짝 없는 function response 는 그 자체로 같은 400 을 부른다.
+      if (message.tool_call_id === undefined || !called.has(message.tool_call_id)) continue;
+      if (answered.has(message.tool_call_id)) continue; // 같은 id 중복 응답도 거부 사유다.
+      answered.add(message.tool_call_id);
+      repaired.push(message);
+      continue;
+    }
+    repaired.push(message);
+  }
+  const unanswered: ChatMessage[] = [];
+  for (const call of repaired.flatMap((message) => message.tool_calls ?? [])) {
+    if (answered.has(call.id)) continue;
+    answered.add(call.id);
+    unanswered.push(lostToolResponse(call.id, call.function.name));
+  }
+  if (unanswered.length === 0) return repaired;
+  // 유실 응답은 해당 assistant 메시지 바로 뒤에 꽂는다(공급자는 순서까지 본다).
+  const byId = new Map(unanswered.map((message) => [message.tool_call_id!, message] as const));
+  const ordered: ChatMessage[] = [];
+  for (const message of repaired) {
+    ordered.push(message);
+    if (message.role !== "tool" && message.tool_calls) {
+      const own = message.tool_calls.map((call) => byId.get(call.id)).filter((entry): entry is ChatMessage => entry !== undefined);
+      // 같은 assistant 의 응답들 사이 순서는 공급자가 id 로 짝을 맞추므로 무관하다 —
+      // 지켜야 하는 것은 "호출 메시지 다음에 응답들이 온다" 라는 바깥 순서뿐이다.
+      ordered.push(...own);
+    }
+  }
+  return ordered;
+}
+
+function lostToolResponse(toolCallId: string, name: string): ChatMessage {
+  return {
+    role: "tool",
+    tool_call_id: toolCallId,
+    name,
+    content: JSON.stringify({
+      ok: false,
+      summary: `'${name}' 결과가 유실됐습니다(앞선 턴이 중단됨). 필요하면 다시 호출하세요.`,
+    }),
+  };
+}
+
+function clampMessagesToBudget(
+  messages: readonly ChatMessage[],
+  budgetChars: number,
 ): ChatMessage[] {
   if (totalMessagesCharLength(messages) <= budgetChars) return [...messages];
   const result: ChatMessage[] = messages.map((message) => ({

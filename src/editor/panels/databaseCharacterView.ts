@@ -163,20 +163,15 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
   return el("div", {
     class: "db-life-header",
     children: [
-      el("p", {
-        class: "db-record-intro",
-        dataset: { testid: "db-characters-intro" },
-        text: "여러 맵에 등장하는 같은 주민의 호감도, 생일, 선물 취향과 반응을 한곳에서 관리합니다.",
-      }),
       renderLifePanel({
         testid: "db-character-readiness",
-        eyebrow: "플레이 연결",
-        title: "주민 관계 준비 상태",
-        description: "주민 프로필을 이벤트에 연결하고, 사용할 관계 기능을 시스템에서 켜세요.",
+        title: "주민 관계",
+        headingTestid: "db-characters-intro",
         cards: [
           {
             testid: "db-character-readiness-gifts",
-            label: "선물·호감도",
+            icon: "gift",
+            label: "선물",
             value: giftReady ? "사용 중" : "설정 필요",
             detail: giftReady ? "선물 취향과 반응이 플레이에 적용됩니다." : "시스템에서 선물 기능을 켜세요.",
             state: giftReady ? "ready" : "needs-setup",
@@ -188,7 +183,8 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
           },
           {
             testid: "db-character-readiness-calendar",
-            label: "생일 달력",
+            icon: "calendar",
+            label: "생일",
             value: calendarReady ? "사용 중" : "설정 필요",
             detail: calendarReady ? "계절과 날짜로 생일을 판정합니다." : "생일을 쓰려면 시간 기능을 켜세요.",
             state: calendarReady ? "ready" : "needs-setup",
@@ -200,7 +196,8 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
           },
           {
             testid: "db-character-readiness-profiles",
-            label: "등록 프로필",
+            icon: "people",
+            label: "프로필",
             value: `${profileCount}명`,
             detail: `${linkedCount}명이 맵 이벤트에 연결됨`,
             state: profileCount > 0 ? "ready" : "needs-setup",
@@ -208,7 +205,8 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
           },
           {
             testid: "db-character-readiness-issues",
-            label: "연결 경고",
+            icon: "warning",
+            label: "연결",
             value: issueCount > 0 ? `${issueCount}건` : "문제 없음",
             detail: issueCount > 0 ? `프로필 없음 ${orphans.length} · 미등장 ${unused.length}` : "모든 주민 프로필이 맵 이벤트에 연결되었습니다.",
             state: issueCount > 0 ? "needs-setup" : "ready",
@@ -418,13 +416,12 @@ function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
 
   return renderLifePanel({
     testid: "db-character-overview",
-    eyebrow: "관계 요약",
     title: profile.displayName?.trim() || entry.characterId,
-    description: "이 프로필이 현재 커버하는 등장 장소와 관계 콘텐츠입니다.",
     compact: true,
     cards: [
       {
         testid: "db-character-overview-links",
+        icon: "map",
         label: "등장 연결",
         value: `${entry.usageCount}개 이벤트`,
         detail: `${entry.mapCount}개 맵에서 사용`,
@@ -432,6 +429,7 @@ function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
       },
       {
         testid: "db-character-overview-gifts",
+        icon: "gift",
         label: "선물 취향",
         value: `${giftCount}개 아이템`,
         detail: "좋아함·괜찮음·싫어함 합계",
@@ -439,6 +437,7 @@ function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
       },
       {
         testid: "db-character-overview-birthday",
+        icon: "calendar",
         label: "생일",
         value: profile.birthday ? `${profile.birthday.season} ${profile.birthday.day}일` : "미설정",
         detail: profile.birthday ? "생일 선물 보너스에 사용" : "원하면 계절과 날짜를 지정하세요.",
@@ -446,6 +445,7 @@ function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
       },
       {
         testid: "db-character-overview-responses",
+        icon: "item",
         label: "선물 반응",
         value: `${responseCount}개 문구`,
         detail: "선호도별 기본 대사",

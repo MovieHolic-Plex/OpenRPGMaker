@@ -1,8 +1,14 @@
 import { isHouseKitId } from "@/editor/houseKit";
 import { ToolError } from "@/editor/tools/types";
+import {
+  HOUSE_TEMPLATE_DEFS,
+  findHouseTemplateDef,
+  houseTemplateWingsAt,
+} from "@/project/defaults/houseTemplateCatalog";
 
 import {
   booleanOrDefault,
+  optionalBoolean,
   optionalInteger,
   optionalString,
   rejectUnknownKeys,
@@ -16,14 +22,16 @@ import type {
   AuthorHousePlan,
   AuthorHouseRequest,
   HouseInteriorMode,
+  HouseStories,
   HouseWindowOptions,
   HouseWing,
   HouseYardIntent,
 } from "./contracts";
 
-const SINGLE_KEYS = ["kind", "mapId", "kitId", "wings", "interior", "door", "ownerName", "windows", "yard"] as const;
+const SHAPE_KEYS = ["templateId", "stories", "lowWall", "chimney", "roofDeck"] as const;
+const SINGLE_KEYS = ["kind", "mapId", "kitId", "wings", "interior", "door", "ownerName", "windows", "yard", ...SHAPE_KEYS] as const;
 const LOTS_KEYS = ["kind", "mapId", "houses", "seed"] as const;
-const PLAN_KEYS = ["kitId", "wings", "interior", "door", "ownerName", "windows", "yard"] as const;
+const PLAN_KEYS = ["kitId", "wings", "interior", "door", "ownerName", "windows", "yard", ...SHAPE_KEYS] as const;
 
 type HouseCore = Omit<AuthorHousePlan, "yard">;
 
@@ -115,14 +123,84 @@ function parseHouseCore(record: BoundaryRecord, scope: string): HouseCore {
   }
   const ownerName = optionalString(record, "ownerName", scope);
   const windows = parseWindows(record["windows"], scope);
+  const shape = parseShape(record, scope, parseWings(requiredArray(record, "wings", scope), scope), kitId);
   return {
-    kitId,
-    wings: parseWings(requiredArray(record, "wings", scope), scope),
+    kitId: shape.kitId,
+    wings: shape.wings,
     interior: parseInteriorMode(record["interior"], scope),
     door: booleanOrDefault(record, "door", { scope, defaultValue: true }),
     ...(ownerName === undefined ? {} : { ownerName }),
     ...(windows === undefined ? {} : { windows }),
+    ...(shape.templateId === undefined ? {} : { templateId: shape.templateId }),
+    ...(shape.stories === undefined ? {} : { stories: shape.stories }),
+    ...(shape.lowWall === undefined ? {} : { lowWall: shape.lowWall }),
+    ...(shape.chimney === undefined ? {} : { chimney: shape.chimney }),
+    ...(shape.roofDeck === undefined ? {} : { roofDeck: shape.roofDeck }),
   };
+}
+
+type ShapeResolution = {
+  readonly kitId: AuthorHousePlan["kitId"];
+  readonly wings: readonly HouseWing[];
+  readonly templateId?: string;
+  readonly stories?: HouseStories;
+  readonly lowWall?: boolean;
+  readonly chimney?: boolean;
+  readonly roofDeck?: boolean;
+};
+
+/**
+ * 형태 어휘 해석. templateId 가 있으면 wings[0] 을 앵커로 카탈로그 날개를 전개하고,
+ * 그 템플릿이 강제하는 킷·층수·낮은벽·옥상데크를 인자보다 우선 적용한다
+ * (aframe 은 h 가 폭에 종속, rooftop-deck 은 파랑 평지붕 전용 — 어기면 시공이 깨진다).
+ */
+function parseShape(
+  record: BoundaryRecord,
+  scope: string,
+  wings: readonly HouseWing[],
+  requestedKitId: AuthorHousePlan["kitId"],
+): ShapeResolution {
+  const stories = parseStories(record, scope);
+  const lowWall = optionalBoolean(record, "lowWall", scope);
+  const chimney = optionalBoolean(record, "chimney", scope);
+  const roofDeck = optionalBoolean(record, "roofDeck", scope);
+  const templateId = optionalString(record, "templateId", scope);
+  if (templateId === undefined) {
+    return {
+      kitId: requestedKitId,
+      wings,
+      ...(stories === undefined ? {} : { stories }),
+      ...(lowWall === undefined ? {} : { lowWall }),
+      ...(chimney === undefined ? {} : { chimney }),
+      ...(roofDeck === undefined ? {} : { roofDeck }),
+    };
+  }
+  const def = findHouseTemplateDef(templateId);
+  if (!def) {
+    throw new ToolError(
+      `${scope}.templateId '${templateId}' 는 알 수 없는 형태입니다. 사용 가능: ${HOUSE_TEMPLATE_DEFS.map((entry) => entry.id).join(", ")}`,
+      { code: "invalid-args" },
+    );
+  }
+  const anchor = wings[0] as HouseWing;
+  return {
+    kitId: def.kitId ?? requestedKitId,
+    wings: houseTemplateWingsAt(def, anchor.x, anchor.y),
+    templateId: def.id,
+    ...(def.lowWall ? { lowWall: true } : lowWall === undefined ? {} : { lowWall }),
+    ...(def.lowWall ? {} : { stories: def.stories ?? stories ?? 1 }),
+    ...(chimney === undefined ? {} : { chimney }),
+    ...(def.roofDeck ? { roofDeck: true } : roofDeck === undefined ? {} : { roofDeck }),
+  };
+}
+
+function parseStories(record: BoundaryRecord, scope: string): HouseStories | undefined {
+  const stories = optionalInteger(record, "stories", scope);
+  if (stories === undefined) return undefined;
+  if (stories !== 1 && stories !== 2 && stories !== 3) {
+    throw new ToolError(`${scope}.stories must be 1, 2 or 3.`, { code: "invalid-args" });
+  }
+  return stories;
 }
 
 function parseWings(values: readonly unknown[], scope: string): readonly HouseWing[] {

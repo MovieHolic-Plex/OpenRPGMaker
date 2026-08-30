@@ -48,7 +48,7 @@
   --battle-hud-height: 34%;
   background: #000;
   display: grid;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-11);
   gap: 16px;
   grid-template-columns: minmax(560px, 30%) minmax(1040px, 1fr) minmax(600px, 28%);

@@ -93,7 +93,9 @@
 
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head {
   display: grid;
-  grid-template-columns: auto 3px auto 1fr auto;
+  /* 자식 수는 얼굴·지원·검사 배지 유무로 달라진다. 요약을 고정된 minmax 트랙에
+     넣어 선택 요소가 생겨도 얼굴이 1fr 를 차지하거나 요약이 암시 auto 트랙으로 밀리지 않는다. */
+  grid-template-columns: auto auto 3px auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 9px;
   padding: 7px 9px;
@@ -115,6 +117,37 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 32%, transparent), 0 2px 10px rgba(42,37,33,.10);
   background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 7%, var(--bg-raised, var(--mk-raised, #FFFDF8)));
 }
+
+/* ── 실행 순서 번호 ──────────────────────────────────────────────────
+   칼럼 라벨은 «위에서 아래로 차례대로 실행됩니다» 라고 약속하지만 예전에는 그 순서를
+   화면에 적는 것이 하나도 없었다. 번호는 자기 컨테이너 안에서 1 부터 다시 시작한다. */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-step {
+  color: var(--text-3);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  min-width: 14px;
+  text-align: right;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-step,
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-step {
+  color: var(--blk-cat);
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-summary {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-summary > .cmd-kind {
+  flex: 1 1 auto;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .command-runtime-badge { grid-column: 6; }
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .event-command-issue-badge { grid-column: 7; }
 
 /* ── ◆ 접두 문자를 색 거터로 ─────────────────────────────────────── */
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-prefix {
@@ -185,15 +218,14 @@
   content: attr(data-label);
 }
 
+/* 좁은 폭에서도 **낱말을 지우지 않는다**. 예전에는 24px 글리프만 남겨서, 이 줄이 어떤
+   종류의 일인지 알려주는 유일한 표시가 칼럼이 좁아질 때 정확히 사라졌다. 실제 폭별 행·요약
+   기하는 `output/evidence/event-do-column/after/*.json` 이 기록한다. */
 @media (max-width: 1050px) {
   .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon {
-    min-width: 24px;
-    width: 24px;
-    padding: 0;
-  }
-
-  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon::after {
-    display: none;
+    min-width: 0;
+    padding: 0 5px;
+    font-size: 9px;
   }
 }
 

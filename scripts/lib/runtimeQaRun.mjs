@@ -98,6 +98,36 @@ async function waitForTestid(page, op) {
   );
 }
 
+/**
+ * 마운트만 말고 **실제로 보이기까지** 기다린다. 상점·이름입력처럼 페이드로 뒤어오는
+ * 창은 `waitFor: present` 직후에 조상 opacity 가 아직 0 이라, visibleText 축이 "화면에 없다
+ * (alpha 0)" 로 붙는다(실제: shop-open 바로 그것). 여기서 공짜 대기(sleep)를 넣으면 하드웨어
+ * 상황에 따라 통과 여부가 바뀌는 테스트가 된다. 시간이 아니라 **상태**를 기다린다 —
+ * visibleText 가 보는 것과 동일한 조건(통과 조상 alpha · display · visibility · 상자 크기)을
+ * 그대로 폴링하고, 제한 시간을 넘기만 하면 실패한다.
+ */
+async function waitForVisibleTestid(page, op) {
+  await page.waitForFunction(
+    ([testid, minAlpha]) => {
+      const node = document.querySelector(`[data-testid="${testid}"]`);
+      if (!node) return false;
+      const rect = node.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return false;
+      let alpha = 1;
+      for (let cursor = node; cursor && cursor !== document.documentElement; cursor = cursor.parentElement) {
+        const style = getComputedStyle(cursor);
+        if (style.display === "none" || style.visibility === "hidden") return false;
+        alpha *= Number(style.opacity);
+      }
+      return alpha >= minAlpha;
+    },
+    // 축의 판정선과 **같은 값**이어야 한다(runtimeQa.mjs: alpha > 0.05). 1.0 에 가깝게 잡으면
+    // 상점처럼 조상이 의도적으로 반투명한(0.96) 창은 영원히 조건을 못 넘어 30초 타임아웃이 난다(실측).
+    [op.testid, op.minAlpha ?? 0.06],
+    { timeout: op.timeoutMs ?? 30_000 },
+  );
+}
+
 async function waitForRuntimePredicate(page, predicate, argument, timeoutMs = 30_000) {
   await page.waitForFunction(
     ([predicateSource, value]) => {
@@ -208,6 +238,9 @@ async function applyOp(page, op, runState) {
       return;
     case "waitFor":
       await waitForTestid(page, op);
+      return;
+    case "waitForVisible":
+      await waitForVisibleTestid(page, op);
       return;
     case "pressUntil": {
       // 매 입력 후 조건을 확인하므로 초과 입력이 구조적으로 불가능하다.

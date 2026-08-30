@@ -1,5 +1,12 @@
-import type { AuthorVillageRequest, ConstructionDiffTotals, ConstructionOutcome, NewVillageTarget } from "@/editor/construction/contracts";
+import type {
+  AuthorVillageRequest,
+  ConstructionDiffTotals,
+  ConstructionOutcome,
+  ConstructionRect,
+  NewVillageTarget,
+} from "@/editor/construction/contracts";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { MIN_SIZE } from "./village/constants";
 import type { GameMap, Project } from "@/project/types";
 import { summarizeChanges } from "./changeset";
 import { assertMapIdAvailable } from "./mapHelpers";
@@ -52,6 +59,32 @@ export function createExactVillageMap(project: Project, target: NewVillageTarget
   }
 }
 
+/**
+ * 뷰포트 스냅샷 중심을 가운데로 둔 시공 사각형. 한 변은 최소 시공 크기(minSpan)이고,
+ * 맵을 벗어나면 안쪽으로 밀고, 맵 자체가 minSpan 보다 작으면 맵 크기로 줄인다.
+ * 스냅샷의 w/h(최대 16타일, DEFAULT_VIEWPORT_MAX_SPAN)는 쓰지 않는다 — 파서·빌더가 20 미만을
+ * 거부하므로(MIN_SIZE) 화면 크기를 그대로 넘기면 invalid-args 가 된다.
+ */
+export function viewportVillageBounds(
+  snapshot: { readonly mapId: string; readonly centerX: number; readonly centerY: number },
+  mapSize: { readonly width: number; readonly height: number },
+  minSpan: number = MIN_SIZE,
+): ConstructionRect {
+  const w = Math.min(minSpan, mapSize.width);
+  const h = Math.min(minSpan, mapSize.height);
+  return {
+    x: clampStart(snapshot.centerX, w, mapSize.width),
+    y: clampStart(snapshot.centerY, h, mapSize.height),
+    w,
+    h,
+  };
+}
+
+function clampStart(center: number, span: number, limit: number): number {
+  const start = Math.round(center) - Math.floor(span / 2);
+  return Math.max(0, Math.min(start, limit - span));
+}
+
 export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDomainArgs {
   return {
     mapId: request.target.mapId,
@@ -63,6 +96,7 @@ export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDo
     ...(request.settlementLayout === undefined ? {} : { settlementLayout: request.settlementLayout }),
     ...(request.npcCount === undefined ? {} : { npcCount: request.npcCount }),
     ...(request.seed === undefined ? {} : { seed: request.seed }),
+    ...(request.presetId === undefined ? {} : { presetId: request.presetId }),
     interior: request.interior ?? true,
     doorEvent: request.interior ?? true,
   };

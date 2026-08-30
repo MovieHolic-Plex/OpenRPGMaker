@@ -223,8 +223,32 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     expect(findByTestId(bodyRoot, "workspace-panel-dock-tiles-right")).not.toBeNull();
   }, 120_000);
 
-  it("초보 모드의 타일 행은 끌 수 없는 고정 행이고 이유를 말한다", async () => {
+  it("초보 모드에서는 레일 플라이아웃만 제공하고 렌더되지 않는 도크 토글은 어디에도 내놓지 않는다", async () => {
     storage.setItem(UI_MODE_KEY, "beginner");
+    setWorkspaceDocks(["tiles", "maps"]);
+    const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
+    const { listEditorCommands } = await import("@/editor/commandRegistry");
+
+    for (const node of renderWorkspaceBar()) document.body.append(node);
+
+    const bodyRoot = fake(document.body as unknown as HTMLElement);
+    // Ctrl+K도 같은 capability 판정을 써야 한다. 현재 HEAD는 maps 명령을 남겨 저장값만
+    // 바꾸고 mapTree=false인 빈 호스트에는 아무 변화도 만들지 못했다.
+    const commandIds = listEditorCommands().map((command) => command.id);
+    expect(commandIds).not.toContain("workspace-panel-tiles");
+    expect(commandIds).not.toContain("workspace-panel-maps");
+    expect(commandIds).not.toContain("workspace-panel-maps-left");
+    expect(commandIds).not.toContain("workspace-panel-maps-right");
+    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("화면 배치와 밀도");
+    expect(findByTestId(bodyRoot, "workspace-panels-menu")?.getAttribute("aria-label")).toBe("화면 배치와 밀도");
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-tiles")).toBeNull();
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-maps")).toBeNull();
+    expect(findByTestId(bodyRoot, "workspace-panel-row-tiles")).toBeNull();
+    expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toEqual(["tiles", "maps"]);
+  }, 120_000);
+
+  it("표준 모드에서는 이 메뉴가 패널 토글의 유일한 집이다", async () => {
+    storage.setItem(UI_MODE_KEY, "standard");
     setWorkspaceDocks(["tiles", "maps"]);
     const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
 
@@ -232,16 +256,11 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
 
     const bodyRoot = fake(document.body as unknown as HTMLElement);
     const tilesToggle = findByTestId(bodyRoot, "workspace-panel-toggle-tiles");
-    const mapsToggle = findByTestId(bodyRoot, "workspace-panel-toggle-maps");
-    // 고정은 aria-disabled 로 알리고, `disabled` 속성은 걸지 않는다 — disabled 버튼은
-    // 포커스를 못 받아서 이유가 적힌 title 에 키보드로 닿지 못하기 때문이다.
-    expect(tilesToggle?.getAttribute("aria-disabled")).toBe("true");
-    expect(tilesToggle?.disabled).toBe(false);
-    expect(tilesToggle?.getAttribute("title") ?? "").toContain("끌 수 없습니다");
-    // 그리고 진짜로 안 눈다: 클릭해도 지속된 레이아웃의 tiles 멤버쉽이 그대로여야 한다.
+    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("패널 배치와 밀도");
+    expect(tilesToggle).not.toBeNull();
+    expect(tilesToggle?.getAttribute("aria-disabled")).toBeNull();
+    // 그리고 진짜로 된다 — 레일이 없는 모드에서는 이 토글이 지속 구성을 바꿔야 한다.
     tilesToggle?.click();
-    expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toContain("tiles");
-    expect(mapsToggle?.getAttribute("aria-disabled")).toBeNull();
-    expect(mapsToggle?.disabled).toBe(false);
+    expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).not.toContain("tiles");
   }, 120_000);
 });

@@ -274,17 +274,24 @@ function renderStartPosition(context: EditSceneRenderContext): void {
 function renderSelection(context: EditSceneRenderContext): void {
   const selection = editorState.get().selection;
   if (!selection || selection.mapId !== context.mapId) return;
-  const rect = context.scene.add.rectangle(
-    selection.x * TILE_SIZE,
-    selection.y * TILE_SIZE,
-    selection.width * TILE_SIZE,
-    selection.height * TILE_SIZE,
-    0x3bc9db,
-    0.12
-  );
-  rect.setOrigin(0, 0);
-  rect.setStrokeStyle(2, 0x3bc9db, 0.9);
-  context.overlayLayer.add(rect);
+  const x = selection.x * TILE_SIZE;
+  const y = selection.y * TILE_SIZE;
+  const w = selection.width * TILE_SIZE;
+  const h = selection.height * TILE_SIZE;
+
+  // 이중 테두리: 어두운 바깥 + 밝은 청록 안쪽. 단색 청록 하나였을 때는 물·하늘 타일 위에서
+  // 경계가 배경에 묻혀 어디까지 골랐는지 보이지 않았다. 어느 지형 위에서도 한쪽은 대비를 낸다.
+  // 마칭앤츠 애니메이션은 쓰지 않는다 — 이 편집기는 매 프레임 작업으로 렉을 겪은 이력이 있고,
+  // 정적 이중선으로 목적(경계 판독)은 달성된다.
+  const outline = context.scene.add.rectangle(x, y, w, h, 0x3bc9db, 0.12);
+  outline.setOrigin(0, 0);
+  outline.setStrokeStyle(4, 0x10333a, 0.75);
+  context.overlayLayer.add(outline);
+
+  const inner = context.scene.add.rectangle(x, y, w, h, 0x000000, 0);
+  inner.setOrigin(0, 0);
+  inner.setStrokeStyle(2, 0x7fe7f5, 1);
+  context.overlayLayer.add(inner);
 }
 
 function applyCameraView(scene: Phaser.Scene, map: GameMap): void {

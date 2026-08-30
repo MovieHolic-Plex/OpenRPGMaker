@@ -8,17 +8,19 @@ export type AiBootIntentTarget = {
   readonly send?: (text: string) => void | Promise<void>;
 };
 
+/**
+ * 웰컴 → 채팅 핸드오프 요청. 예전에는 `replaceWithBlank`·`presetId` 를 같이 실어 보냈지만
+ * 소비자가 없었다(2026-08-30 실측: peek/consume 호출처 0건). 남은 계약은 프롬프트와
+ * 자동 전송 여부뿐이다 — 장르 프리셋의 결정적 적용은 welcomeGenrePresetApply 가 담당한다.
+ */
 export type PendingWelcomePipeline = {
   readonly prompt: string;
   readonly autoSend: boolean;
-  readonly replaceWithBlank: boolean;
-  readonly presetId?: string;
   readonly source: "chip" | "free-text";
 };
 
 let pendingIntent: string | null = null;
 let pendingAutoSend = false;
-let pendingPipeline: PendingWelcomePipeline | null = null;
 let target: AiBootIntentTarget | null = null;
 let welcomeIntentAppliedThisBoot = false;
 let suppressCoachForMount = false;
@@ -36,23 +38,7 @@ export function setPendingAiBootIntent(text: string, options?: { readonly autoSe
 }
 
 export function setPendingWelcomePipeline(pipeline: PendingWelcomePipeline): void {
-  const prompt = pipeline.prompt.trim();
-  if (!prompt) {
-    pendingPipeline = null;
-    return;
-  }
-  pendingPipeline = { ...pipeline, prompt };
-  setPendingAiBootIntent(prompt, { autoSend: pipeline.autoSend });
-}
-
-export function peekPendingWelcomePipeline(): PendingWelcomePipeline | null {
-  return pendingPipeline;
-}
-
-export function consumePendingWelcomePipeline(): PendingWelcomePipeline | null {
-  const value = pendingPipeline;
-  pendingPipeline = null;
-  return value;
+  setPendingAiBootIntent(pipeline.prompt, { autoSend: pipeline.autoSend });
 }
 
 export function peekPendingAiBootIntent(): string | null {
@@ -74,7 +60,6 @@ export function peekPendingAiBootAutoSend(): boolean {
 export function clearPendingAiBootIntent(): void {
   pendingIntent = null;
   pendingAutoSend = false;
-  pendingPipeline = null;
 }
 
 /**

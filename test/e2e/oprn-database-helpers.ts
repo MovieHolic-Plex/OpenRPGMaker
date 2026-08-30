@@ -31,6 +31,8 @@ export const DATABASE_TAB_SPECS = [
   { label: "Life Collections", slug: "life-collections", testId: "db-tab-life-collections" },
   { label: "Tilesets", slug: "tilesets", testId: "db-tab-tilesets" },
   { label: "Structure Kits", slug: "structure-kits", testId: "db-tab-structure-kits" },
+  { label: "Villages", slug: "villages", testId: "db-tab-villages" },
+  { label: "Factions", slug: "factions", testId: "db-tab-factions" },
   { label: "Common Events", slug: "common-events", testId: "db-tab-common-events" },
   { label: "System", slug: "system", testId: "db-tab-system" },
   { label: "Terms", slug: "terms", testId: "db-tab-terms" },

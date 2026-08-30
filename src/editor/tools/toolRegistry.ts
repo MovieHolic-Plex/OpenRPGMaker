@@ -16,6 +16,7 @@ import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
 import { HOUSE_KIT_TOOLS } from "./houseKitTools";
 import { HOUSE_LOT_TOOLS } from "./houseLotTools";
+import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
@@ -45,6 +46,7 @@ import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
+import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
@@ -153,6 +155,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_KIT_TOOLS, "tile"),
   ...withDomain(HOUSE_LOT_TOOLS, "tile"),
+  ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile"),
@@ -203,6 +206,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GROUP_LAYOUT_TOOLS, "tile"),
   ...withDomain(GROUP_SAMPLE_TOOLS, "tile"),
   ...withDomain(VISION_QUERY_TOOLS, "map"),
+  // 도메인을 주지 않는다 — 도메인 없는 툴은 모든 모드의 라운드로빈 트림을 통과하면서 핀을 쓰지 않는다.
+  // isPinnedTool은 도메인이 있는 툴만 핀할 수 있어, map 도메인과 핀을 함께 주면 상한(40)의 한 자리를
+  // 강제로 예약한다. 실측에서는 그 예약 때문에 test/regionIntentExposure.test.ts의 대표 도구 보장 3건이 실패했다.
+  ...VIEW_FOCUS_TOOLS,
   ...withDomain(PLACEMENT_TOOLS, "tile"),
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
 ]);
@@ -297,6 +304,9 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
   ["database", new Set([
     // 상성표/속성 요청의 대표 도구.
     "set_type_chart", "upsert_item", "upsert_enemy",
+    // 농장 건물·집 장식 쓰기 툴. 쿼터 트림에 밀리면 모델이 "농장 건물 기능이 없다"고 보고한다.
+    "upsert_farm_building_type", "upsert_home_decoration_type",
+    "upsert_farm_animal_building", "set_session_farm_state", "create_farm_plot",
   ])],
   ["map", new Set([
     // reset_project 는 map 핀에서 뺐다 — "이 맵 처음부터 다시 칠해줘" 같은 부분 재작업 요청에
@@ -493,8 +503,8 @@ function applyExposureLimit(exposed: readonly ToolDefinition[], domains: Readonl
     if (limited.length <= MAX_EXPOSED_TOOLS) break;
     removed.add(domain);
     limited = limited.filter((tool) => {
-      if (tool.domains?.includes("core") || !tool.domains) return true;
-      return !tool.domains.some((toolDomain) => removed.has(toolDomain));
+      if (isPinnedTool(tool, domains) || tool.domains?.includes("core") || !tool.domains) return true;
+      return tool.domains.some((toolDomain) => !removed.has(toolDomain));
     });
   }
   return trimToExposureCap(limited, domains);

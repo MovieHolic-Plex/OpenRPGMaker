@@ -38,6 +38,12 @@ export const HOUSE_INTERIOR_EXIT = { x: 10, y: 16 } as const;
 export const HOUSE_DOOR_CHARSET_TEXTURE = "tex_easyrpg_charset_object1";
 export const HOUSE_DOOR_FRAME_WAIT_MS = 100;
 export const HOUSE_DOOR_OPEN_HOLD_MS = 180;
+/**
+ * 문 열림 효과음 — CC0 카탈로그 「문 열기 01」(Kenney RPG Audio, 0.92초).
+ * 파일이 레포에 있어(public/assets/se/kenney-rpg/dooropen-1.ogg) 오프라인에서도 울린다.
+ * 리소스 id 는 seCatalog 소속이라 이벤트 참조 검증(resourceReferenceValidation)을 그대로 통과한다.
+ */
+export const HOUSE_DOOR_OPEN_SE = "cc0-se-kra-dooropen-1";
 
 export type HouseDoorVariant = {
   readonly textureKey: typeof HOUSE_DOOR_CHARSET_TEXTURE;
@@ -110,7 +116,8 @@ export function houseDoorOpenCommands(options: {
   readonly entryX?: number;
   readonly entryY?: number;
 }): Command[] {
-  const commands: Command[] = [];
+  // 효과음은 첫 프레임과 같은 틱에 — 열림 모션(100+100+180ms)보다 SE 가 길어도 전이 뒤까지 이어진다.
+  const commands: Command[] = [{ kind: "playAudio", resourceId: HOUSE_DOOR_OPEN_SE, loop: false }];
   for (const step of [0, 1, 2] as const) {
     commands.push({
       kind: "setEventGraphicPattern",

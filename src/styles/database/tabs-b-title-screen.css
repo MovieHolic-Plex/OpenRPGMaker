@@ -8,7 +8,7 @@
    그 패치는 font-family 만 강제해서, 타이틀에 새 텍스트를 추가하면 조용히
    Malgun Gothic 으로 돌아가는 함정이기도 했다. */
 .rm-title-screen {
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
 
   --oprn-title-sky-glow: rgba(255, 255, 255, 0.12);
   --oprn-title-vignette: rgba(42, 37, 33, 0.14);
@@ -31,7 +31,7 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   color: var(--oprn-title-text);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   image-rendering: pixelated;
   isolation: isolate;
   overflow: hidden;
@@ -108,12 +108,8 @@
 }
 .rm-title-menu {
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   box-sizing: border-box;
   display: grid;
@@ -130,7 +126,7 @@
   appearance: none;
   background: transparent;
   border: 0;
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   color: var(--oprn-title-text);
   /* RM2003 title is keyboard-only — no mouse cursor affordance. */
   cursor: default;
@@ -186,17 +182,13 @@
 }
 .rm-title-input-hint {
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   bottom: 18px;
   box-shadow: none;
   box-sizing: border-box;
   color: rgba(255, 255, 255, 0.98);
-  font: 700 var(--runtime-font-size-18)/1.2 var(--runtime-pixel-font);
+  font: 700 var(--runtime-font-size-18)/1.2 var(--runtime-ui-font);
   left: 50%;
   letter-spacing: 0;
   min-width: min(230px, calc(100vw - 96px));
@@ -222,15 +214,11 @@
 .main-menu-button,
 .game-over-panel button {
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   color: var(--runtime-window-text);
   cursor: default;
-  font: 700 var(--runtime-font-size-11)/1.25 var(--runtime-pixel-font);
+  font: 700 var(--runtime-font-size-11)/1.25 var(--runtime-ui-font);
   min-height: 30px;
   padding: 6px 10px;
 }
@@ -288,17 +276,13 @@
   --oprn-status-text: var(--oprn-title-text, var(--bg-overlay));
   background: var(--runtime-window-fill-fallback);
   color: var(--oprn-status-text);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   box-shadow: none;
   bottom: 0;
   box-sizing: border-box;
   display: grid;
-  font: 700 var(--runtime-font-size-9)/1.2 var(--runtime-pixel-font);
+  font: 700 var(--runtime-font-size-9)/1.2 var(--runtime-ui-font);
   gap: 4px;
   /* B안 2열 — 좌측 한 창(레일 + 파티), 우측 전체가 작업 영역.
      기존 3열(60px 레일 | 120px 파티 | 나머지 상세)에서는 작업 영역이 화면 1/3 뿐이라

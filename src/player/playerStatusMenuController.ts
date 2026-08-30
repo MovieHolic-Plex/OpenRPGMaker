@@ -637,6 +637,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   }
 
   function isSaveEnabled(session: PlaySession): boolean {
+    if (store.getCurrent().maps[session.currentMapId]?.disableSave === true) return false;
     return session.m2Runtime?.access.save !== false;
   }
 

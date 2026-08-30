@@ -2,6 +2,7 @@
 // 이벤트 쓰기 툴: upsert_event / place_npc / create_transfer_pair / place_battle_blocker
 //              / duplicate_event / remove_event / move_event.
 
+import { shadowedPageWarnings } from "@/project/eventPageShadow";
 import { isPassable } from "@/project/collision";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
 import { validateShopStock } from "@/project/io/shapeCommandFields";
@@ -20,6 +21,7 @@ import {
   charsetGraphic,
   compileSimplePages,
   resolveGraphic,
+  resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
   type GraphicSpec,
 } from "./eventCompile";
@@ -41,6 +43,7 @@ import {
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
+const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"]);
 
 /** place_npc/make_villager face 인자 → FaceGraphic. 실제 배치된 charset 기준으로 맞춘다. */
 function resolvePlaceNpcFaceArg(
@@ -175,6 +178,17 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[]): voi
 }
 
 /**
+ * 말을 걸어야 실행되는데 그래픽이 비어 있는 페이지는 "보이지 않는 NPC" 다 — 플레이어가 찾을
+ * 방법이 없으므로 의도된 저작이 아니다. 투명 이벤트를 원할 때는 `graphic:{transparent:true}` 가
+ * 명시적 경로이므로, 그 표시가 없는 대화형 action 페이지에만 주민 기본 그래픽을 채운다.
+ */
+function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
+  if (page.trigger?.kind !== "action" || page.priority === "below") return false;
+  if (page.graphic?.transparent === true || page.graphic?.sprite !== undefined) return false;
+  return (page.commands ?? []).some((command) => DIALOGUE_COMMAND_KINDS.has(command.kind));
+}
+
+/**
  * `EventPage` 필수 필드를 채운다.
  *
  * 모델은 이벤트 레벨에만 trigger 를 주고 페이지에는 conditions/commands 만 담아 보내는 일이 흔하다.
@@ -187,13 +201,28 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
   if (page.id === undefined) { page.id = pageId; filled.push("id"); }
   if (page.name === undefined) { page.name = event.id; filled.push("name"); }
   if (page.conditions === undefined) { page.conditions = []; filled.push("conditions"); }
-  if (page.graphic === undefined) { page.graphic = {}; filled.push("graphic"); }
   if (page.trigger === undefined) {
     page.trigger = event.trigger ?? { kind: "action" };
     filled.push(`trigger(${page.trigger.kind})`);
   }
   if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
   if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
+  if (isInvisibleTalkablePage(page)) {
+    const siblingGraphic = event.pages?.find(
+      (sibling) => sibling !== page && sibling.graphic?.sprite !== undefined,
+    )?.graphic;
+    page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : resolveGraphicQuery("villager");
+    warnings?.push(
+      siblingGraphic
+        ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
+        : `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
+          `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
+          `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
+    );
+  } else if (page.graphic === undefined) {
+    page.graphic = {};
+    filled.push("graphic");
+  }
   if (filled.length > 0) {
     warnings?.push(`${event.id}.${pageId}: 필수 페이지 필드 자동 보완 — ${filled.join(", ")}`);
   }
@@ -207,6 +236,7 @@ function assertEventShape(event: GameEvent, warnings?: string[]): void {
     for (const page of event.pages ?? []) {
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
     }
+    for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
   } catch (cause) {
     if (cause instanceof ToolError) throw cause;
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {
@@ -530,7 +560,7 @@ const placeNpc: ToolDefinition = {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
-    assertEventShape(event);
+    assertEventShape(event, normalizationWarnings);
     upsertEventIntoMap(map, event);
     const adjusted = finalX !== requestedX || finalY !== requestedY;
     const warnings = [
@@ -787,7 +817,7 @@ const makeVillager: ToolDefinition = {
         ...(talkFriendship ? { talkFriendship } : {}),
       };
     }
-    assertEventShape(event);
+    assertEventShape(event, warnings);
     upsertEventIntoMap(map, event);
     const finalX = reusedEvent?.x ?? home.x;
     const finalY = reusedEvent?.y ?? home.y;
@@ -1232,15 +1262,30 @@ function workPoint(project: Project, defaultMapId: string, raw: unknown, label: 
   return { mapId, x, y };
 }
 
+/**
+ * 주민 대사 페이지 조립. **조건 없는 대사는 페이지를 나누지 않는다.**
+ *
+ * 실측 결함(이 변경에서 발견): 기본 인사 페이지를 항상 먼저 넣고 dialogue 항목마다 페이지를
+ * 하나씩 밀어넣었다. dialogue 에 when 이 없는 항목이 둘이면 조건 없는 페이지가 셋이 되고,
+ * 런타임은 조건이 맞는 **마지막** 페이지 하나만 실행하므로 앞의 둘은 영원히 안 나온다
+ * (`make_villager` 가 dialogue 2줄로 "대사 페이지 3개" 를 보고하면서 실제로는 마지막 1줄만
+ * 나왔다). 조건 없는 대사는 한 페이지의 여러 줄로 합쳐야 저작 의도대로 전부 나온다.
+ */
 function villagerPages(rawDialogue: unknown, schedule: readonly NpcScheduleEntry[], warnings: string[]): SimplePage[] {
-  const pages: SimplePage[] = [{ lines: ["안녕하세요."] }];
+  const conditional: SimplePage[] = [];
+  const defaultLines: string[] = [];
   if (rawDialogue !== undefined) {
     if (!Array.isArray(rawDialogue)) throw new ToolError("dialogue는 {when?,text}[] 배열이어야 합니다.", { code: "villager-dialogue" });
     rawDialogue.forEach((entry, index) => {
       const page = dialoguePageFromRecord(entry, index, warnings);
-      if (page) pages.push(page);
+      if (!page) return;
+      if ((page.conditions ?? []).length === 0) defaultLines.push(...(page.lines ?? []));
+      else conditional.push(page);
     });
   }
+  // 조건 없는 대사가 하나도 없을 때만 기본 인사를 쓴다 — 저작자가 준 대사를 인사가 덮지 않게.
+  const basePage: SimplePage = { lines: defaultLines.length > 0 ? defaultLines : ["안녕하세요."] };
+  const pages: SimplePage[] = [basePage, ...conditional];
   if (pages.length === 1) {
     for (const activity of activityLabels(schedule)) {
       pages.push({ conditions: [{ kind: "npcActivity", activity }], lines: [defaultActivityLine(activity)] });
@@ -1457,7 +1502,7 @@ const placeBattleBlocker: ToolDefinition = {
     const intro = (args.intro as string[] | undefined) ?? ["적이 앞을 가로막았다!"];
     const victory = (args.victory as string[] | undefined) ?? ["길이 열렸다."];
     const victoryItems = (args.victoryItems as Array<{ itemId: string; amount: number }> | undefined) ?? [];
-    const graphic = resolveGraphic(args.graphic as GraphicSpec | undefined);
+    const graphic = resolveGraphic((args.graphic as GraphicSpec | undefined) ?? { query: "monster" });
     const event = buildFieldMonsterEvent({
       eventId: id,
       x,
@@ -1471,9 +1516,10 @@ const placeBattleBlocker: ToolDefinition = {
     });
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    const warnings = adjusted
-      ? [placementAdjustedWarning(`전투 블로커 '${troopId}'`, { x: requestedX, y: requestedY }, { x, y })]
-      : [];
+    const warnings = [
+      ...(args.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
+      ...(adjusted ? [placementAdjustedWarning(`전투 블로커 '${troopId}'`, { x: requestedX, y: requestedY }, { x, y })] : []),
+    ];
     return {
       summary: `${map.name}에 전투 블로커 '${troopId}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
       data: { eventId: id, clearSwitchId, x, y, adjusted },
@@ -1584,7 +1630,7 @@ const makeChaseScene: ToolDefinition = {
     if (!inMapBounds(map, chaser.at.x, chaser.at.y)) {
       throw new ToolError(`추격자 위치가 맵 밖입니다: (${chaser.at.x}, ${chaser.at.y})`, { code: "chaser-out-of-bounds", mapId: map.id, x: chaser.at.x, y: chaser.at.y });
     }
-    const graphic = resolveGraphic(chaser.graphic as GraphicSpec | undefined);
+    const graphic = resolveGraphic((chaser.graphic as GraphicSpec | undefined) ?? { query: "monster" });
     const id = genId("ev_chaser");
     // 추격자는 캐릭터형 — 벽 위에서 시작하면 첫 프레임부터 갇힌다.
     const placement = resolveEventPlacement(draft, map, chaser.at.x, chaser.at.y, {
@@ -1633,9 +1679,10 @@ const makeChaseScene: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(draft, map) : undefined;
-    const warnings = placement.adjusted
-      ? [placementAdjustedWarning("추격자", chaser.at, placement)]
-      : [];
+    const warnings = [
+      ...(chaser.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
+      ...(placement.adjusted ? [placementAdjustedWarning("추격자", chaser.at, placement)] : []),
+    ];
     return {
       summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
       data: { eventId: id, safeZone, activateSwitch, checkpointEventId, x: placement.x, y: placement.y, adjusted: placement.adjusted },
@@ -2170,12 +2217,13 @@ function cutscenePage(
   pageId: string,
   name: string,
   trigger: Trigger,
-  commands: Command[]
+  commands: Command[],
+  conditions: EventPage["conditions"] = []
 ): EventPage {
   return {
     id: pageId,
     name,
-    conditions: [],
+    conditions,
     graphic: { transparent: true },
     trigger,
     priority: "below",
@@ -2207,7 +2255,10 @@ function resolveCutsceneMusicResources(project: Project, beats: readonly Cutscen
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
-    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. beat 종류: " +
+    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. " +
+    "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
+    "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
+    "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
     "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves,wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait}, " +
     "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, tint{color|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump. " +
     "예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]}",
@@ -2222,6 +2273,8 @@ const scriptCutscene: ToolDefinition = {
       trigger: { type: "string", enum: ["action", "auto", "parallel", "playerTouch", "touch"], description: "기본 action. playerTouch/touch 는 통행 가능 칸에 착지한다." },
       beats: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
       skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
+      mode: { type: "string", enum: ["replace", "append"], description: "기본 replace. 같은 이벤트에서 이름 컷신 페이지를 교체한다. append는 페이지를 쌓는다." },
+      once: { type: "boolean", description: "true면 셀프스위치 A가 꺼져 있을 때만 재생하고 끝나면 A를 켠다." },
     },
     required: ["mapId", "beats"],
   },
@@ -2257,7 +2310,18 @@ const scriptCutscene: ToolDefinition = {
       throw cause;
     }
     const existing = map.events.find((event) => event.id === eventId);
-    const page = cutscenePage(`${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`, "컷신", trigger, commands);
+    const mode = args.mode === "append" ? "append" : "replace";
+    const once = args.once === true;
+    if (once) {
+      commands = [...commands, { kind: "setSelfSwitch", key: "A", value: true }];
+    }
+    const page = cutscenePage(
+      `${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`,
+      "컷신",
+      trigger,
+      commands,
+      once ? [{ kind: "selfSwitch", key: "A", value: false }] : []
+    );
     const outcome = existing ? "modified" : "added";
     let event: GameEvent;
     if (existing) {
@@ -2276,7 +2340,10 @@ const scriptCutscene: ToolDefinition = {
           existing.y = placement.y;
         }
       }
-      existing.pages = [...(existing.pages ?? []), page];
+      const pages = existing.pages ?? [];
+      existing.pages = mode === "append"
+        ? [...pages, page]
+        : [...pages.filter((entry) => entry.name !== "컷신"), page];
       event = existing;
     } else {
       const pos = cutsceneEventPosition(draft, map, args);
