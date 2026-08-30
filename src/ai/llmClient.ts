@@ -535,15 +535,71 @@ function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): strin
 // 스트리밍 tool_calls delta 누적기(index별로 id/name/arguments를 이어붙인다).
 interface ToolCallAccum { id: string; name: string; arguments: string }
 
+/**
+ * tool_call_id 를 **호출마다 유일**하게 만든다.
+ *
+ * 왜(2026-08-30 실측): 두 파싱 경계가 모두 id 없는 응답을 그대로 통과시켰다. 스트리밍은 빈 id 를
+ * `call_${name}` 으로 채워 **같은 툴을 병렬로 2회 호출하면 두 호출이 같은 id** 를 갖고,
+ * 비스트리밍은 `String(tc.id ?? "")` 로 **빈 문자열 id** 를 만들었다. 세션은 호출마다
+ * `role:"tool"` 응답에 그 id 를 실으므로 결과는 중복·빈 `tool_call_id` 다 — OpenAI 호환
+ * 게이트웨이는 400 으로 턴을 죽이고, Gemini Cloud Code Assist 는 function response 짝을
+ * 못 맞춰 다음 라운드부터 대화를 거부한다. 공급자가 준 id 는 그대로 존중하고, 없거나 겹칠
+ * 때만 위치를 섞어 유일하게 만든다.
+ */
+function uniqueToolCallId(raw: string, position: number, name: string, used: Set<string>): string {
+  const trimmed = raw.trim();
+  const base = trimmed.length > 0 ? trimmed : `call_${position}_${name.length > 0 ? name : "tool"}`;
+  if (!used.has(base)) {
+    used.add(base);
+    return base;
+  }
+  let suffix = position;
+  let candidate = `${base}_${suffix}`;
+  while (used.has(candidate)) {
+    suffix += 1;
+    candidate = `${base}_${suffix}`;
+  }
+  used.add(candidate);
+  return candidate;
+}
+
 function assembleToolCalls(accum: Map<number, ToolCallAccum>): ToolCall[] | undefined {
   if (accum.size === 0) return undefined;
-  return [...accum.entries()].sort((a, b) => a[0] - b[0]).map(([, tc]) => ({ id: tc.id || `call_${tc.name}`, type: "function" as const, function: { name: tc.name, arguments: tc.arguments } }));
+  const used = new Set<string>();
+  return [...accum.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([, tc], position) => ({
+      id: uniqueToolCallId(tc.id, position, tc.name, used),
+      type: "function" as const,
+      function: { name: tc.name, arguments: tc.arguments },
+    }));
+}
+
+/**
+ * `index` 없는 delta 의 슬롯을 고른다.
+ *
+ * 왜(2026-08-30 실측): 옛 구현은 `index` 가 없으면 무조건 0 이었다. 한 delta 배치에 병렬 툴콜
+ * 2건이 오면 둘이 같은 슬롯에 누적돼 이름과 인자가 이어붙었다 — `fill_region` + `place_npc`
+ * → 이름 `"fill_regionplace_npc"`, 인자 `'{"a":1}{"b":2}'`. 남는 것은 `등록되지 않은 툴`
+ * 한 건이고 두 호출은 통째로 사라진다.
+ *
+ * 규칙: 배치 안의 위치를 기본 슬롯으로 쓰고, 그 슬롯이 이미 **이름을 가진** 호출인데 이 delta
+ * 가 또 새 이름을 선언하면 이어붙이기가 아니라 새 호출이므로 빈 슬롯을 새로 딴다. 인자만 담긴
+ * 후속 청크는 이름을 선언하지 않으므로 같은 슬롯에 정상적으로 이어붙는다.
+ */
+function toolCallDeltaSlot(accum: Map<number, ToolCallAccum>, delta: Record<string, unknown>, position: number): number {
+  if (typeof delta.index === "number") return delta.index;
+  const existing = accum.get(position);
+  const fn = delta.function as Record<string, unknown> | undefined;
+  const declaresName = typeof fn?.name === "string" && fn.name.length > 0;
+  if (!existing || existing.name.length === 0 || !declaresName) return position;
+  return Math.max(...accum.keys()) + 1;
 }
 
 function applyToolCallDelta(accum: Map<number, ToolCallAccum>, deltas: unknown): void {
   if (!Array.isArray(deltas)) return;
-  for (const d of deltas as Array<Record<string, unknown>>) {
-    const index = typeof d.index === "number" ? d.index : 0;
+  (deltas as Array<Record<string, unknown>>).forEach((d, position) => {
+    const index = toolCallDeltaSlot(accum, d, position);
     const cur = accum.get(index) ?? { id: "", name: "", arguments: "" };
     if (typeof d.id === "string") cur.id = d.id;
     const fn = d.function as Record<string, unknown> | undefined;
@@ -552,7 +608,7 @@ function applyToolCallDelta(accum: Map<number, ToolCallAccum>, deltas: unknown):
       if (typeof fn.arguments === "string") cur.arguments += fn.arguments;
     }
     accum.set(index, cur);
-  }
+  });
 }
 
 // SSE 스트림을 파싱해 content/tool_calls를 조립한다. onToken은 content delta마다 호출.
@@ -652,14 +708,19 @@ function parseNonStream(json: Record<string, unknown>, requestedModel?: string):
   const choice = choices?.[0];
   const msg = (choice?.message ?? {}) as Record<string, unknown>;
   const rawToolCalls = msg.tool_calls as Array<Record<string, unknown>> | undefined;
-  const tool_calls: ToolCall[] | undefined = rawToolCalls?.map((tc) => ({
-    id: String(tc.id ?? ""),
-    type: "function",
-    function: {
-      name: String((tc.function as Record<string, unknown> | undefined)?.name ?? ""),
-      arguments: String((tc.function as Record<string, unknown> | undefined)?.arguments ?? ""),
-    },
-  }));
+  const usedIds = new Set<string>();
+  const tool_calls: ToolCall[] | undefined = rawToolCalls?.map((tc, position) => {
+    const name = String((tc.function as Record<string, unknown> | undefined)?.name ?? "");
+    return {
+      // 숫자 id 를 주는 게이트웨이도 있다 — 문자열로 정규화만 하고 값은 버리지 않는다.
+      id: uniqueToolCallId(tc.id === undefined || tc.id === null ? "" : String(tc.id), position, name, usedIds),
+      type: "function" as const,
+      function: {
+        name,
+        arguments: String((tc.function as Record<string, unknown> | undefined)?.arguments ?? ""),
+      },
+    };
+  });
   const message: ChatMessage = {
     role: "assistant",
     content: typeof msg.content === "string" ? msg.content : null,
