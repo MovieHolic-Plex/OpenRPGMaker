@@ -120,15 +120,14 @@ type TileRect = {
 };
 
 type CameraView = {
-  readonly scrollX: number;
-  readonly scrollY: number;
+  readonly worldView: { readonly x: number; readonly y: number };
   readonly zoom: number;
 };
 
 export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSize = TILE_SIZE): TileRect {
   return {
-    x: Math.round((rect.x * tileSize - camera.scrollX) * camera.zoom),
-    y: Math.round((rect.y * tileSize - camera.scrollY) * camera.zoom),
+    x: Math.round((rect.x * tileSize - camera.worldView.x) * camera.zoom),
+    y: Math.round((rect.y * tileSize - camera.worldView.y) * camera.zoom),
     width: Math.max(1, Math.round(rect.width * tileSize * camera.zoom)),
     height: Math.max(1, Math.round(rect.height * tileSize * camera.zoom)),
   };
@@ -137,6 +136,10 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
 // 위치 헬퍼는 selectionOverlayAnchor.ts — 테스트/재사용용 re-export
 import { tileRectToClientRect } from "@/editor/selectionOverlayAnchor";
 export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
+
+export function regionTaskBadgeText(phase: "running" | "pending"): string | null {
+  return phase === "pending" ? "✓ 변경 확인 대기" : null;
+}
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
@@ -1555,8 +1558,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const isChips = popup.classList.contains("selection-action-chips");
     const camera = this.cameras.main;
     const selectionRect = tileRectToScreenRect(selection, {
-      scrollX: camera.scrollX,
-      scrollY: camera.scrollY,
+      worldView: { x: camera.worldView.x, y: camera.worldView.y },
       zoom: camera.zoom,
     });
     const canvasRect = canvas.getBoundingClientRect();
@@ -1621,7 +1623,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const task = this.activeRegionTask;
     const mapId = this.mapId();
     const host = this.game.canvas?.parentElement;
-    if (!task || task.mapId !== mapId || !host) {
+    const badgeText = task ? regionTaskBadgeText(task.phase) : null;
+    if (!task || task.mapId !== mapId || !host || !badgeText) {
       this.regionTaskBadge?.remove();
       this.regionTaskBadge = null;
       return;
@@ -1633,11 +1636,11 @@ export class EditScene extends PhaserRuntime.Scene {
       host.append(badge);
       this.regionTaskBadge = badge;
     }
-    this.regionTaskBadge.textContent = task.phase === "pending" ? "✓ 변경 확인 대기" : "✨ AI 작업 중…";
+    this.regionTaskBadge.textContent = badgeText;
     const camera = this.cameras.main;
     const rect = tileRectToScreenRect(
       { x: task.region.x, y: task.region.y, width: task.region.width, height: task.region.height },
-      { scrollX: camera.scrollX, scrollY: camera.scrollY, zoom: camera.zoom },
+      { worldView: { x: camera.worldView.x, y: camera.worldView.y }, zoom: camera.zoom },
     );
     const canvasRect = this.game.canvas.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();

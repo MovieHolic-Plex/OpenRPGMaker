@@ -23,6 +23,7 @@ import { editorState } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
   clearAgentGhostPreview,
+  clearAgentGhostRunningTool,
   createThrottledAgentGhostPreviewUpdater,
   setAgentGhostDraftMapProvider,
   setAgentGhostRunningTool,
@@ -121,7 +122,8 @@ import {
   savePanelCollapsed,
   type AiFontSize,
 } from "./aiPanelLayout";
-import { formatAiRunningStatus, parseAutonomousRunBudget, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
+import { narrateAiActivity } from "@/editor/aiActivityNarration";
+import { formatAiRunningStatus, parseAutonomousRunBudget, renderToolActivityEntry, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
 import {
   createConversationLogHost,
   renderStreamedMarkdown,
@@ -302,8 +304,13 @@ export function decorateAssistantMentions(
   if (strip) bubble.append(strip);
 }
 
+export const AI_ACTIVITY_MIN_DWELL_MS = 400;
+
+export type AiActivityScheduler = (callback: () => void, delayMs: number) => () => void;
+
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
+  readonly activityScheduler?: AiActivityScheduler;
   readonly getChatDock?: () => ChatDock;
   readonly onChatDockToggle?: () => void;
   readonly onChatDockChange?: (next: ChatDock) => void;
@@ -331,6 +338,14 @@ export function teardownAiChatPanel(): void {
 export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement {
   teardownAiChatPanel();
   const now = options.clock ?? (() => Date.now());
+  const scheduleActivity = options.activityScheduler ?? ((callback: () => void, delayMs: number): (() => void) => {
+    if (typeof window !== "undefined" && typeof window.setTimeout === "function") {
+      const timer = window.setTimeout(callback, delayMs);
+      return () => window.clearTimeout(timer);
+    }
+    const timer = globalThis.setTimeout(callback, delayMs);
+    return () => globalThis.clearTimeout(timer);
+  });
   const runRegion = options.regionTaskRunner ?? runRegionTask;
   const readChatDock = (): ChatDock => options.getChatDock?.() ?? editorState.get().chatDock;
   const readTemperature = (): AssistantTemperature =>
@@ -422,6 +437,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let dockToggleLock: HTMLButtonElement | null = null;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let runningPhaseStatus: string | null = null;
+  let runningActivity: {
+    readonly toolName: string;
+    readonly row: HTMLElement;
+    readonly line: HTMLElement;
+  } | null = null;
+  type PendingActivitySwap = {
+    cancel: () => void;
+    readonly finalize: () => void;
+  };
+  const pendingActivitySwaps: PendingActivitySwap[] = [];
   // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 오류면 열린 상태를 유지한다.
   let collapseAfterAiWork = false;
   // executeTurn/영역 작업 콜백은 패널 크롬을 만들기 전에 정의되므로, 접힘 상태도
@@ -527,6 +552,99 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     clearLastReasoning,
     isLastReasoningBox,
   } = conversationLog;
+
+  const refreshLiveActivity = (): void => {
+    if (!runningActivity) return;
+    const narration = narrateAiActivity({ toolName: runningActivity.toolName });
+    // aria-live 영역은 같은 문자열을 다시 써도 재낭독될 수 있다. 문구가 실제로 바뀔 때만 쓴다.
+    if (runningActivity.line.textContent !== narration.line) {
+      runningActivity.line.textContent = narration.line;
+    }
+  };
+  const flushPendingActivitySwapsThrough = (target?: PendingActivitySwap): void => {
+    const lastIndex = target ? pendingActivitySwaps.indexOf(target) : pendingActivitySwaps.length - 1;
+    if (lastIndex < 0) return;
+    const ready = pendingActivitySwaps.splice(0, lastIndex + 1);
+    for (const pending of ready) {
+      pending.cancel();
+      pending.finalize();
+    }
+  };
+  const flushPendingActivitySwaps = (): void => flushPendingActivitySwapsThrough();
+  const startLiveActivity = (toolName: string, index: number): void => {
+    // 동기 도구가 연달아 오면 앞 행을 먼저 확정해 기록 순서를 지키고 마지막 행만 머문다.
+    flushPendingActivitySwaps();
+    runningActivity?.row.remove();
+    if (runningProgress) runningProgress.toolCount = Math.max(runningProgress.toolCount, index);
+    const line = el("span", { class: "ai-activity-live-line" });
+    const row = el("div", {
+      class: "ai-activity-live",
+      attrs: { role: "status", "aria-live": "polite" },
+      dataset: { testid: "ai-activity-live" },
+      children: [
+        el("span", { class: "ai-activity-live-spinner", attrs: { "aria-hidden": "true" } }),
+        line,
+      ],
+    });
+    runningActivity = { toolName, row, line };
+    refreshLiveActivity();
+    log.append(row);
+    log.scrollTop = log.scrollHeight;
+    refreshRunningStatus(false);
+  };
+  const completeLiveActivity = (
+    toolName: string,
+    result: Parameters<typeof appendToolLine>[1],
+    args?: Record<string, unknown>,
+  ): void => {
+    const matchedLiveActivity = runningActivity?.toolName === toolName;
+    if (!matchedLiveActivity) bumpToolProgress();
+    const before = new Set(log.querySelectorAll(".ai-tool-activity-line"));
+    appendToolLine(toolName, result, args);
+    const rendered = [...log.querySelectorAll(".ai-tool-activity-line")].find((entry) => !before.has(entry))
+      ?? renderToolActivityEntry(toolName, result);
+    if (!runningActivity || runningActivity.toolName !== toolName) return;
+
+    const activity = runningActivity;
+    const liveRow = activity.row;
+    const completedHost = rendered.parentElement;
+    if (!completedHost) {
+      liveRow.remove();
+      if (runningActivity === activity) runningActivity = null;
+      refreshRunningStatus(false);
+      log.scrollTop = log.scrollHeight;
+      return;
+    }
+    rendered.remove();
+    const finalize = (): void => {
+      if (result.ok) {
+        liveRow.className = rendered.className;
+        liveRow.dataset.testid = "ai-tool-entry";
+        liveRow.removeAttribute("role");
+        liveRow.removeAttribute("aria-live");
+        liveRow.textContent = rendered.textContent ?? "";
+      } else {
+        liveRow.className = "ai-activity-completed";
+        liveRow.dataset.testid = "ai-tool-entry";
+        liveRow.removeAttribute("role");
+        liveRow.removeAttribute("aria-live");
+        liveRow.replaceChildren(rendered);
+      }
+      liveRow.remove();
+      completedHost.append(liveRow);
+      if (runningActivity === activity) runningActivity = null;
+      refreshRunningStatus(false);
+      log.scrollTop = log.scrollHeight;
+    };
+    const pending: PendingActivitySwap = { cancel: () => {}, finalize };
+    pendingActivitySwaps.push(pending);
+    // 동기 도구 실행 중 흐른 벽시계 시간은 브라우저가 그린 시간이 아니다. 완료 이벤트 뒤부터
+    // 온전한 표시 시간을 예약해야 긴 동기 작업도 최소 한 프레임 이상 사용자에게 보인다.
+    pending.cancel = scheduleActivity(
+      () => flushPendingActivitySwapsThrough(pending),
+      AI_ACTIVITY_MIN_DWELL_MS,
+    );
+  };
 
   // 사용자가 보고 싶은 것은 툴 호출 목록이 아니라 “무엇이 어떻게 바뀌었는가” 다. 자동 적용·수동
   // 재생 없이 상통 상태로 넘어가는 모든 적용 경로가 이 카드 하나로 모인다.
@@ -922,11 +1040,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const refreshRunningStatus = (record = false): void => {
     if (!runningProgress) return;
+    refreshLiveActivity();
+    const activityLine = runningActivity
+      ? narrateAiActivity({ toolName: runningActivity.toolName }).line
+      : undefined;
     // 분모는 세션의 실제 안전핀(config.maxToolCalls) — 하드코딩 30은 실한도(200)와 어긋나 "77/30" 같은 모순 표기를 냈다.
-    setStatus(formatAiRunningStatus(runningProgress.startedAt, now(), runningProgress.toolCount, loadAiConfig().maxToolCalls, runningPhaseStatus), record);
+    setStatus(formatAiRunningStatus(
+      runningProgress.startedAt,
+      now(),
+      runningProgress.toolCount,
+      loadAiConfig().maxToolCalls,
+      runningPhaseStatus,
+      activityLine,
+    ), record);
   };
   const beginTurnProgress = (): void => {
     runningPhaseStatus = null;
+    runningActivity = null;
     runningProgress = { startedAt: now(), toolCount: 0 };
     // 접힘 레일의 상태 점: 진행 중 표시를 켜고 직전 턴의 알림 점은 지운다.
     panel.classList.add("is-turn-running");
@@ -943,10 +1073,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshRunningStatus(false);
   };
   const endTurnProgress = (): void => {
+    // 정상·중단·오류 어느 종료든 예약된 완료 행을 먼저 확정해 스피너와 기록 유실을 막는다.
+    flushPendingActivitySwaps();
     if (progressTimer !== null && typeof window !== "undefined") window.clearInterval(progressTimer);
     progressTimer = null;
     runningProgress = null;
     runningPhaseStatus = null;
+    clearAgentGhostRunningTool();
+    runningActivity?.row.remove();
+    runningActivity = null;
     panel.classList.remove("is-turn-running");
     syncGlassIdle();
   };
@@ -1103,11 +1238,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         }
         currentStreamNodes = [];
       } else if (event.type === "tool_started") {
-        // 상태칩이 실행 중 도구를 즉시 반영 (tool_started는 실행 직전에 발화된다).
+        // 채팅과 상태 배지 모두 실행 직전에 구체적인 현재 작업을 반영한다.
         setAgentGhostRunningTool(event.name);
+        startLiveActivity(event.name, event.index);
       } else if (event.type === "tool_call") {
-        bumpToolProgress();
-        appendToolLine(event.name, event.result, event.args);
+        completeLiveActivity(event.name, event.result, event.args);
         ghostPreviewUpdater.handleToolCall(event);
         // 청사진 진행 — 이번 호출이 어느 칸을 짓고 있는지로 planned/building/done 을 옮긴다.
         // 쓰기 여부를 같이 넘긴다: 이 훅은 성공한 **모든** 툴콜에서 발화하므로 읽기 툴
@@ -1605,9 +1740,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         }
         return;
       }
+      if (event.type === "tool_started") {
+        setAgentGhostRunningTool(event.name);
+        startLiveActivity(event.name, event.index);
+        return;
+      }
       if (event.type === "tool_call") {
-        bumpToolProgress();
-        appendToolLine(event.name, event.result, event.args);
+        completeLiveActivity(event.name, event.result, event.args);
         recordRegionAudit({
           kind: "tool",
           name: event.name,
