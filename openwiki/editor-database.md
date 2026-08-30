@@ -268,28 +268,91 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 
 ## 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
 
-계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 수치는 30탭 +
-서브섹션 49곳을 1024x768 / 1280x800 / 1680x1050 / 1920x1200 네 뷰포트에서 순회해 얻은 것이다.
+계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 모든 수치는
+**레포지토리에 들어 있는 단 두 파일**로 재계산된다:
+
+- `verify-shots/db-ux/before/probe.json` — 29탭, expert, 1680x1050
+- `verify-shots/db-ux/after/probe.json` — 30탭, expert, 1680x1050
+
+`/tmp` 에만 있는 순회 결과를 이 문서의 근거로 쓰지 마라. 재현할 수 없는 수치는 없는 수치다.
+(네 뷰포트 관찰은 아래 "줄상자 바닥" 절에 따로 적는다.)
+
+`before` 에는 `tilesets` · `factions` 가 **없다**(29탭). 그 두 탭이 `0 -> 107.5px` 로 보이면
+회귀가 아니라 계수 누락이다. `residents` 는 before 에서
+`tab button not found: db-tab-residents` 로 에러난 상태다.
 
 ### 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
 
-| 요소 | 이전 | 이후 |
+집계는 `탭수 × 합계px` 이고, 괄호는 탭 하나당 평균이다.
+
+| 선택자 | 이전 | 이후 |
 |---|---|---|
-| `.db-life-header` (생활 3탭) | 215.2px | 50.0px |
-| `.db-life-panel` | 171.2px | 50.0px |
-| `.db-battle-studio-heading` (전투 3탭) | 97.1px | 37.8px |
-| `.db-record-intro` | 36.0px | 제거 |
-| `.db-overview-hero` | 118.5px | 78.4px |
-| 탭 간 작업영역 높이 흔들림 | 275px | 0px |
+| `.db-life-header` (생활) | 3× 645.6 (215.2) | 3× 150.0 (50.0) |
+| `.db-life-panel` | 3× 655.8 (218.6) | 3× 150.0 (50.0) |
+| `.db-battle-studio-heading` (전투) | 4× 388.4 (97.1) | 4× 151.2 (37.8) |
+| `.db-overview-hero` | 1× 118.5 | 1× 78.4 |
+| `.db-record-intro` | 4× 144.0 (36.0) | 1× 34.2 |
+| `.db-tab-note` (구조물) | — (아래 주석) | 1× 42.1 |
+| **`.db-ws-hero`** | **17× 1828.4 (85.1~151.1)** | **18× 1799.4 — 압축 안 함** |
+| 헤더 합계 (전체 탭) | 3882.7 | 2517.8 |
+| 헤더 합계 탭간 편차 | 677.5 | 193.7 |
+
+작업영역 높이(`workspaceH`)는 before/after 모두 **모든 탭에서 796px, 편차 0** 이다.
+진단 문서의 "흔들림 275px" 는 이 하네스의 지표로는 재현되지 않는다 — 실제로 움직이는 것은
+위 표의 **헤더 합계 편차(677.5 -> 193.7)** 다. 이 둘을 헷갈리지 마라.
+
+`.db-tab-note` 주석: 커밋된 before 에는 이 컨테이너가 없다. 당시 구조물 탭은 맨 `h3` + `p` 였고
+프로브 선택자 목록에 안 걸렸다. `fbd2d9fb` 가 같은 내용을 `.db-tab-note` 로 감싸자 75.7px 로
+잡혔고(그 커밋 메시지는 "아이콘 바로 압축" 이라고 적었지만 설명문은 그대로 있었다), `c9ae257d` 가
+문단을 칩으로 바꿔 42.1px 가 됐다.
+
+#### `.db-ws-hero` 는 일부러 압축하지 않았다
+
+이게 **살아남은 가장 큰 헤더 덩어리**다. 17탭 1828.4px 로, 이번에 압축한
+`.db-life-header`(645.6) + `.db-life-panel`(655.8) + `.db-battle-studio-heading`(388.4) = 1689.8 을
+**합친 것보다 통째로 크다.** 그런데도 안 건드렸고, 이유는 이것이다:
+
+`databaseWorkspace.ts` 의 `detailHero` 는 설명문이 아니라 **레코드 신원 헤더**다 —
+`.db-ws-hero-media`(56px 썸네일/캔버스) · `-title` · `-tags` · `-actions`(툴바). "내가 무엇을
+편집하는지 · 어떻게 생겼는지 · 무엇을 할 수 있는지" 를 지는 기능 요소라서, 다른 탭에 쓴 변환
+(문단을 지우고 사실 하나를 칩으로)의 대상이 아니다. 유일한 설명문은 선택적인
+`.db-ws-hero-sub` 뿐이다.
+
+샴탕하게 짜려면 **`.db-ws-hero-sub` 만**, 그것도 부제목이 탭 이름을 되뇌는 탭에서만 떼라.
+썸네일 레이아웃과 툴바는 건드리지 마라 — 그건 자기 커밋과 자기 before/after 가 필요한 별건이다.
 
 설명 문단을 지우고 같은 정보를 아이콘 + 수치 칩으로 옮긴다. 개요 탭은 제목 옆 5개 칩(세계·이야기·
 등장인물·시스템·시작 지점)과 9개 수치 칩이 표준이다.
+
+#### 헤더 압축의 재사용 패턴 — `.db-tab-note` + `.db-tab-note-chip`
+
+한 줄로 줄일 헤더가 또 나오면 **새 패턴을 발명하지 말고 이것을 쓴다.** 여섯 번째 방식이 생기는 것을
+막으려고 여기에 적는다.
+
+- `.db-tab-note` 는 원래 `.db-record-intro` 와 공용인 "인트로 / 노트 띠" 스타일이다
+  (`desktop-record-shell/10-tab-chrome-unify.css` 의 `Shared intro / note strip`). 이 브랜치가
+  만든 클래스가 아니라 브랜치 이전부터 있었다.
+- 그 안에 `.db-tab-note-chip` 이 있을 때만 제목과 칩을 한 줄에 놓는다. 게이트는
+  `.db-tab-note:has(.db-tab-note-chip)` 이다 — 칩이 없는 기존 사용처의 모양은 건드리지 않는다.
+- 칩 내용은 `makeDatabaseTabIcon(<탭 id>)` + `<span>` 라벨. 저작 예시는
+  `src/editor/panels/structureKitDbTab.ts` (구조물 탭).
+- 칩의 글자 크기는 정확히 **11px** 이다. 모달 전역 최소 가독 크기와 같은 값으로 맞춘 것이니
+  더 줄이지 마라.
+
+긴 문장을 칩의 `title` 에만 넣는 것은 **보조 정보일 때만** 허용된다. `title` 은 hover 전용이라
+키보드·터치로 닿지 않고 스크린리더 announce 도 일관되지 않는다. 그 문장이 없으면 기능을 오해할
+수준이면 칩을 `<button type="button">` + popover 로 만들거나 `aria-describedby` 로 시각적
+숨김 텍스트를 붙여라.
 
 ### 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
 
 순서가 계약이다. `appearance: none` 으로 브라우저 스피너를 먼저 없애면 마우스로 값을 조절할 방법이
 사라진다. `databaseControls.ts` 가 스테퍼 버튼을 붙인 뒤에 스피너를 지운다.
-실측: `numberUnskinned` 122 → 0, `rangeUnskinned` 6 → 0, `detailsMarker` 3 → 0.
+실측(커밋된 before/after probe.json): `numberUnskinned` **120** → 0, `rangeUnskinned` 6 → 0,
+`detailsMarker` 3 → 0, `checkUnskinned` 0 → 0.
+
+이미지 쪽도 같은 쌍에서 나온다: `imgZero` 9 → 0, `bgZero` 7 → 0, `imgBroken` 0 → 0.
+0px 이미지는 **깨진 것과 조상이 접힌 것**을 반드시 갈라 봐야 한다 — 함정은 `openwiki/testing.md`.
 
 **`selectUnskinned` 는 이미 0 이었다.** "네이티브 select 141개가 OS 껍데기를 노출한다" 는 진단은
 런타임에서 반증됐다 — 기존 CSS 가 이미 `appearance:none` 을 먹이고 있었다. 커스텀 select 위젯을
@@ -309,10 +372,24 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 글자가 안 깎이는 값으로 정해야 한다. `clamp()`/`vw` 를 쓰는 제목은 **가장 좁은 지원 럭(1024px)에서**
 재라 — 넓은 럭에서만 보면 반드시 놓친다.
 
-작은 글자 바닥은 같은 파일의 `font-size: max(11.5px, 1em)` 이 런타임에서 처리한다(`tinyFont` 389 → 0).
+작은 글자 바닥은 같은 파일의 `font-size: max(11.5px, 1em)` 이 런타임에서 처리한다
+(`tinyFont` **366** → 0).
+
+**문턱은 11px 이고, 그게 뭘 증명하는지 정확히 알아야 한다.** 프로브의 `TINY_FLOOR` 는 11 이다.
+진단 기준선이 "11px 미만" 을 셌고 before 도 그 자로 366 을 기록했으니 비교 가능성을 지키려면 같은
+자를 써야 한다. 실측: 문턱을 11.5 로 올리면 726건이 새로 걸리는데 **전부 정확히 11px** 이고 11px
+미만은 0건이다. 즉 `tinyFont 0` 은 "11px 미만 글자가 없다" 는 뜻이고, "모든 글자가 11.5px 이상"
+이라는 뜻이 **아니다.** 소스의 `9px`/`11px` 선언을 일괄 치환하는 방식은 70개 파일을 흔들면서
+관측되는 이득이 없어 쓰지 않았다 — 런타임 바닥이 이미 같은 일을 한다.
+
+**가상 요소도 재야 한다(`tinyPseudo`).** `::before`/`::after` 의 `content` 는 자식 텍스트 노드가
+아니라서 `ownText` 검사에 절대 걸리지 않는데 화면에는 글자가 그려진다. 안 재면 `tinyFont 0` 이
+"작은 글자가 없다" 가 아니라 "안 봤다" 가 된다. 이 계수기를 붙이자마자 모달 전역에서 유일한 11px
+미만 렌더링 텍스트가 드러났다 — `sidebar.css` 의 `.db-tab-group::after` 셰브론(`▾`) 10px,
+30탭 × 6개 = 180건. 11px 로 올려 `tinyPseudo` 0 이 됐다. 장식 글리프도 예외로 두지 않는다.
 소스의 `9px`/`11px` 선언을 일괄 치환하는 방식은 70개 파일을 흔들면서 관측되는 이득이 없어 쓰지 않았다.
 
-**`lowLineHeight` 24건은 의도적으로 남아 있다.** `system-studio.css` 의 `font: .../1 !important`
+**`lowLineHeight` 480 → 25 이고, 남은 25건은 의도적이다.** `system-studio.css` 의 `font: .../1 !important`
 단축 지정을 받는 고정 높이 버튼들(비율 1.0)이다. 중요도 없는 longhand 는 중요도 있는 shorthand 를
 특이도로 못 이긴다. 이들은 실제로 글자가 깎이지 않고(`selfClipped` 0) 제목 계열도 아니다. 여기에
 `!important` 를 되살리면 CSS 예산 래칫이 986 → 987 로 올라간다 — 관측되는 이득 없이 게이트만 잃는다.

@@ -161,11 +161,31 @@ const MEASURE = () => {
   }
 
   // ---- 3. text: 요소 자신의 클리핑 + 작은 폰트 ---------------------------
-  const text = { selfClipped: [], tinyFont: [], lowLineHeight: [] };
+  // 진단 기준선(docs/2026-08-29-database-uiux-brainstorm.md)이 "11px 미만" 을 셌고
+  // verify-shots/db-ux/before/probe.json 도 그 기준으로 366 을 기록했다. 비교 가능성을 지키려면
+  // 같은 문턱을 써야 한다 — 11.5 로 올리면 11px 선언 726건이 새로 걸려 before/after 가 다른 자를
+  // 쓰게 된다. 실측: 11.5 문턱에서 걸리는 726건은 전부 정확히 11px 이고 11px 미만은 0건이다.
+  const TINY_FLOOR = 11;
+  const text = { selfClipped: [], tinyFont: [], lowLineHeight: [], tinyPseudo: [] };
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
   let node = walker.currentNode;
   while (node) {
     if (node instanceof HTMLElement && visible(node)) {
+      const label = `${node.tagName.toLowerCase()}.${String(node.className || "").split(" ")[0]}`;
+      // 가상 요소의 content 는 자식 텍스트 노드가 아니라서 아래 ownText 검사에 절대 걸리지
+      // 않는다. 그런데 실제로는 글자가 그려진다 — 이미지 실패 문구가 대표적이다.
+      // 재지 않으면 tinyFont 0 이 "작은 글자가 없다" 가 아니라 "안 봤다" 가 된다.
+      for (const pseudo of ["::before", "::after"]) {
+        const ps = getComputedStyle(node, pseudo);
+        const raw = ps.content;
+        if (!raw || raw === "none" || raw === "normal") continue;
+        const shown = raw.startsWith('"') && raw.length > 2 ? raw.slice(1, -1) : "";
+        if (!shown.trim()) continue;
+        const pfs = parseFloat(ps.fontSize);
+        if (pfs > 0 && pfs < TINY_FLOOR) {
+          text.tinyPseudo.push({ el: `${label}${pseudo}`, fs: pfs, sample: shown.slice(0, 20) });
+        }
+      }
       // 자체 텍스트를 가진 요소만
       const ownText = Array.from(node.childNodes).some((c) => c.nodeType === 3 && c.textContent.trim().length > 0);
       if (ownText) {
@@ -174,12 +194,11 @@ const MEASURE = () => {
         const lh = cs.lineHeight === "normal" ? fs * 1.2 : parseFloat(cs.lineHeight);
         const ratio = fs > 0 ? lh / fs : 0;
         const clipsSelf = cs.overflowY === "hidden" || cs.overflowY === "clip";
-        const label = `${node.tagName.toLowerCase()}.${String(node.className || "").split(" ")[0]}`;
         // 요소 자신이 클립하는데 콘텐츠가 상자를 넘는다 → 글리프가 깎인다
         if (clipsSelf && node.scrollHeight > node.clientHeight + 1) {
           text.selfClipped.push({ el: label, over: node.scrollHeight - node.clientHeight, fs, lh, sample: node.textContent.trim().slice(0, 24) });
         }
-        if (fs < 11) text.tinyFont.push({ el: label, fs, sample: node.textContent.trim().slice(0, 18) });
+        if (fs < TINY_FLOOR) text.tinyFont.push({ el: label, fs, sample: node.textContent.trim().slice(0, 18) });
         if (ratio > 0 && ratio < 1.2) text.lowLineHeight.push({ el: label, fs, lh, ratio: Number(ratio.toFixed(3)) });
       }
     }
@@ -234,6 +253,10 @@ const MEASURE = () => {
     text: {
       selfClipped: text.selfClipped.length,
       tinyFont: text.tinyFont.length,
+      tinyPseudo: text.tinyPseudo.length,
+      pseudoSamples: Object.entries(
+        text.tinyPseudo.reduce((acc, e) => { const k = `${e.el}@${e.fs}px "${e.sample}"`; acc[k] = (acc[k] ?? 0) + 1; return acc; }, {})
+      ).slice(0, 6),
       lowLineHeight: text.lowLineHeight.length,
       clipSamples: text.selfClipped.slice(0, 10),
       tinySamples: Object.entries(
@@ -316,7 +339,7 @@ for (const slug of TABS) {
     console.log(
       `ok  ${slug.padEnd(18)} sel=${m.native.selectUnskinned} num=${m.native.numberUnskinned} det=${m.native.detailsMarker}` +
       ` | imgBroken=${m.images.imgBroken} imgZero=${m.images.imgZero} bgZero=${m.images.bgZero} hidden=${m.images.imgHidden + m.images.bgHidden} badUrl=${m.badUrls.length}` +
-      ` | clip=${m.text.selfClipped} tiny=${m.text.tinyFont} lh=${m.text.lowLineHeight}` +
+      ` | clip=${m.text.selfClipped} tiny=${m.text.tinyFont} pseudo=${m.text.tinyPseudo} lh=${m.text.lowLineHeight}` +
       ` | hdr=${m.space.headerTotal} ws=${m.space.workspaceH}`
     );
 
@@ -397,6 +420,7 @@ report.totals = {
   badUrls: sum((t) => t.badUrls.length),
   selfClipped: sum((t) => t.text.selfClipped),
   tinyFont: sum((t) => t.text.tinyFont),
+  tinyPseudo: sum((t) => t.text.tinyPseudo),
   lowLineHeight: sum((t) => t.text.lowLineHeight),
   failedImageRequests: failedRequests.length,
   tabsMeasured: Object.values(report.tabs).filter((t) => !t?.error).length,

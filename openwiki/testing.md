@@ -106,8 +106,24 @@ PROBE_BASE=http://127.0.0.1:9873/ PROBE_OUT=/tmp/probe PROBE_SUBNAV=1 node scrip
 
 세는 것: `selectUnskinned`(computed `appearance` 가 `none` 이 아닌 select), `numberUnskinned`,
 `rangeUnskinned`, `detailsMarker`, `imgBroken`/`imgZero`/`bgZero`/`badUrls`, `selfClipped`(자기
-`overflow` 로 글자가 깎인 요소), `tinyFont`, `lowLineHeight`, 탭별 헤더 비용과 작업영역 높이,
-그리고 **탭별 모달 창 rect**.
+`overflow` 로 글자가 깎인 요소), `tinyFont`, `tinyPseudo`, `lowLineHeight`, 탭별 헤더 비용과
+작업영역 높이, 그리고 **탭별 모달 창 rect**.
+
+### 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
+
+초기 하네스는 자식 텍스트 노드(`nodeType === 3`)가 있는 요소만 재서, `::before`/`::after` 의
+`content` 는 **구조상 단 한 건도 재지 않았다.** 그러는 동안 `tinyFont 0` 은 "작은 글자가 없다" 로
+읽혔지만 실제로는 "가상 요소를 안 봤다" 였다. `tinyPseudo` 를 붙이자 모달 전역에서 유일하게 11px
+미만으로 렌더링되는 텍스트가 드러났다 — `sidebar.css` 의 `.db-tab-group::after` 셰브론(`▾`)
+10px, 30탭 × 6개 = 180건.
+
+교훈: **계수기가 0 이라고 보고하면 그 표면이 범위에 들어오는지 먼저 증명하라.** 일부러 깨뜨린
+표본을 만들어 계수기가 실제로 오르는지 보는 것이 가장 짧다(`db-placeholder-proof.mjs` 가 이미
+이미지 쪽에서 같은 짓을 한다).
+
+그리고 `TINY_FLOOR` 는 11 이며 이건 재단이 아니라 **기준선과 같은 자**다. 진단 문서와
+`before/probe.json` 이 모두 "11px 미만" 을 셌다. 문턱을 11.5 로 올리면 726건이 새로 걸리는데
+전부 정확히 11px 이다 — before/after 가 다른 자를 쓰면 비교가 무의미하니 가볍게 바꾸지 말 것.
 
 곁딸린 하네스: `scripts/qa/db-placeholder-proof.mjs`(살아 있는 썸네일을 실제로 깨뜨려 자리표시자가
 보이는지 증명), `scripts/shoot-db-tabs.mjs`(탭 스크린샷 30장).

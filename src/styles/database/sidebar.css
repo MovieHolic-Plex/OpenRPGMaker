@@ -271,10 +271,13 @@
 }
 
 
+/* 11px 은 모달 전역의 최소 가독 크기다. 장식 글리프도 예시로 두지 않는다 — db-ux-probe 의
+   tinyPseudo 가 가상 요소를 재기 시작하면서 이 10px 이 모달 전역에서 유일한 11px 미만
+   렌더링 텍스트로 드러났다(30탭 × 6개 = 180건). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group::after {
   color: var(--db-studio-text-3, #94A3B8);
   content: "\25BE";
-  font-size: 10px;
+  font-size: 11px;
   margin-left: auto;
   transition: transform 120ms ease;
 }
