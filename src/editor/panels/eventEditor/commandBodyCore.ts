@@ -138,7 +138,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     options: TEXT_EMOTION_SEGMENTS,
     value: emotionValue,
     testid: "event-command-text-emotion",
-    ariaLabel: "감정",
+    ariaLabel: "말투·연출",
   });
   const autoAdvance = el("input", {
     attrs: { type: "checkbox" },
@@ -165,9 +165,14 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
       ...(autoAdvance.checked ? { autoAdvance: true } : {}),
     };
   };
-  const refreshPreview = () => {
+  // 연출은 **바뀐 순간에만** 프리뷰에서 재생한다. 프리뷰는 본문을 한 글자 칠 때마다 다시
+  // 그려지므로 늘 재생하면 창이 타자마다 튀어 글을 쓸 수 없다.
+  let previewedEmotion = emotionValue as string;
+  const refreshPreview = (replayPresentation = false) => {
     clearChildren(previewCanvas);
-    previewCanvas.append(renderCommandPreview(readDraft(), { face: context.previewFace }));
+    previewCanvas.append(
+      renderCommandPreview(readDraft(), { face: context.previewFace, replayPresentation })
+    );
   };
   const refreshLimitHint = () => {
     const lines = body.value.split(/\r?\n/);
@@ -186,7 +191,10 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   };
   const apply = () => {
     refreshLimitHint();
-    refreshPreview();
+    const nextEmotion = emotion.select.value || "neutral";
+    const changed = nextEmotion !== previewedEmotion;
+    previewedEmotion = nextEmotion;
+    refreshPreview(changed);
     context.actions.replaceCommand(context.path, readDraft());
   };
   speaker.addEventListener("change", apply);
@@ -197,27 +205,35 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   autoAdvance.addEventListener("change", apply);
 
   refreshLimitHint();
-  const advancedOpen = Boolean(cmd.emotion && cmd.emotion !== "neutral") || cmd.autoAdvance === true;
+  // 「말투·연출」은 고급 옵션이 아니다. 이 값이 창 등장 곡선·글자 속도·화면 연출을 고르므로
+  // 문장을 쓰는 자리에서 바로 보여야 한다(예전에는 접힌 details 안에 있어 아무도 안 썼다).
+  const presentation = el("div", {
+    class: "event-command-text-presentation-field",
+    dataset: { testid: "event-command-text-presentation" },
+    children: [
+      el("div", {
+        class: "event-command-text-presentation-heading",
+        children: [
+          el("span", { class: "event-command-text-body-label", text: "말투·연출" }),
+          el("span", { text: "창이 뜨는 모습과 글자 속도가 함께 바뀝니다." }),
+        ],
+      }),
+      emotion.root,
+    ],
+  });
   const advanced = el("details", {
     class: "event-command-text-advanced",
     dataset: { testid: "event-command-text-advanced" },
   }) as HTMLDetailsElement;
-  advanced.open = advancedOpen;
+  advanced.open = cmd.autoAdvance === true;
   advanced.append(
     el("summary", {
       class: "event-command-text-advanced-summary",
-      text: "고급 옵션 (감정 · 자동 넘김)",
+      text: "고급 옵션 (자동 넘김)",
     }),
     el("p", {
       class: "event-command-text-speaker-hint",
       text: "예전 「고급 대화」 기능입니다. 얼굴은 별도 「얼굴 바꾸기」 명령을 쓰세요.",
-    }),
-    el("div", {
-      class: "event-command-text-advanced-row",
-      children: [
-        el("span", { class: "event-command-text-body-label", text: "감정" }),
-        emotion.root,
-      ],
     }),
     el("label", {
       class: "event-command-text-auto-advance-label",
@@ -291,6 +307,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
             body,
           ],
         }),
+        presentation,
         easyTools,
         advanced,
         controlDetails,

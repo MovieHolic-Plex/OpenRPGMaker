@@ -3,6 +3,8 @@ import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { parseDialogueText } from "@/player/dialogue";
+import { dialoguePresentationCssVars, dialoguePresentationProfile } from "@/player/dialoguePresentation";
+import { prefersReducedMotion } from "@/player/characterLanding";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
 import { faceDisplayModeOf, renderFacesetCrop } from "./facesetPreview";
 import { SPEAK_SAMPLE_BODY, SPEAK_SAMPLE_SPEAKER } from "@/editor/eventCommands/quickAuthoringDefaults";
@@ -52,6 +54,12 @@ export type CommandPreviewContext = {
   readonly hostEventId?: string;
   readonly forkTaken?: "then" | "else";
   readonly skipped?: boolean;
+  /**
+   * 「말투·연출」 진입 연출을 프리뷰에서 한 번 재생한다. 호출부가 **연출이 바뀐 순간에만**
+   * 켠다 — 프리뷰는 본문을 한 글자 칠 때마다 다시 그려지므로, 늘 켜 두면 창이
+   * 타자마다 튀어 글을 쓸 수 없다.
+   */
+  readonly replayPresentation?: boolean;
 };
 
 // 명령 편집 모달 우측 "이미지 리치" 프리뷰 패널. staged command 를 받아 종류별 시각화를
@@ -95,7 +103,11 @@ type VisualPreviewHandlers = {
 };
 
 const visualPreviewHandlers: VisualPreviewHandlers = {
-  text: (cmd, context) => messageWindowMock(cmd.speaker, cmd.body, false, context?.face),
+  text: (cmd, context) =>
+    messageWindowMock(cmd.speaker, cmd.body, false, context?.face, {
+      emotion: cmd.emotion,
+      replay: context?.replayPresentation === true,
+    }),
   changeFace: faceStage,
   displayTextSettings: settingsMessageMock,
   choices: choicesMock,
@@ -165,11 +177,32 @@ function m2VisualPreview(cmd: Extract<Command, { kind: "m2Command" }>, context?:
   return summaryCard(cmd, context);
 }
 
+/**
+ * 프리뷰 창에 런타임과 같은 연출 상태를 얹는다. 키프레임 이름과 감정별 매핑은 CSS 가
+ * 갖고 있고 프리뷰는 그 규칙을 그대로 재사용한다 — `dialogue.css` 는 에디터 CSS 그래프에도
+ * 들어 있다(`styles/index.css` → `runtime/playerRuntime.css` → `../dialogue.css`).
+ * 그래서 여기서는 dataset 과 변수만 심고 곡선은 손대지 않는다.
+ * `test/dialoguePreviewPresentationCss.test.ts` 가 두 선택자 집합이 어긋나지 않게 잠근다.
+ */
+function applyPreviewPresentation(win: HTMLElement, emotion: string | undefined, replay: boolean): void {
+  const profile = dialoguePresentationProfile(emotion, {
+    reducedMotion: typeof window !== "undefined" && typeof window.matchMedia === "function" && prefersReducedMotion(),
+  });
+  win.dataset.dialogueEmotion = profile.emotion;
+  win.dataset.dialogueMotion = profile.motion ? "on" : "off";
+  for (const [name, value] of Object.entries(dialoguePresentationCssVars(profile))) {
+    win.style.setProperty(name, value);
+  }
+  // phase 는 재생 요청이 있을 때만 심는다. 없으면 규칙이 안 걸려 정착 상태로 그려진다.
+  if (replay) win.dataset.dialoguePhase = "enter";
+}
+
 function messageWindowMock(
   speaker: string | undefined,
   body: string,
   faceRight: boolean,
-  face?: CommandPreviewContext["face"]
+  face?: CommandPreviewContext["face"],
+  presentation?: { readonly emotion?: string; readonly replay: boolean }
 ): HTMLElement {
   const stage = el("div", { class: "ecp-stage" });
   // System.png 전체 시트를 border-image fill 로 쓰면 팔레트/숫자 스트립이 창을 덮는다.
@@ -186,6 +219,7 @@ function messageWindowMock(
     class: "ecp-message-window" + sideClass + faceClass + (speakerName ? " has-speaker" : ""),
     dataset: { testid: "ecp-message-window", ...(authored ? {} : { sample: "true" }) },
   });
+  if (presentation) applyPreviewPresentation(win, presentation.emotion, presentation.replay);
   // [중간-3] 직전 changeFace 상태가 있으면 화자 얼굴을 프리뷰에 반영.
   // Crop only — no editor resource-id chrome inside the play mock.
   if (shownFace) {

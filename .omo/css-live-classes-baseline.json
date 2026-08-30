@@ -1,9 +1,9 @@
 {
- "ranAt": "2026-08-30T03:27:51.273Z",
+ "ranAt": "2026-08-30T04:03:24.310Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
-   "added": 515
+   "added": 516
   },
   {
    "path": "test/fixtures/eventEditorM2Surface.baseline.json",
@@ -2161,6 +2161,7 @@
     "src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css",
     "src/styles/editor/event-editor.part-3/09-condition-groups.css",
     "src/styles/editor/event-editor.part-4.css",
+    "src/styles/editor/harness-suggestion.css",
     "src/styles/resources/resource-manager.css",
     "src/styles/shell/editor-ui-modes.css",
     "src/styles/shell/figma-editor/02-menus-toolbar-tools.css",
@@ -4816,6 +4817,9 @@
    "props": [
     "align-items",
     "align-self",
+    "animation",
+    "animation-name",
+    "animation-timing-function",
     "backdrop-filter",
     "background",
     "background-image",
@@ -4846,6 +4850,7 @@
     "padding",
     "position",
     "transform",
+    "transform-origin",
     "width",
     "z-index"
    ],
@@ -4853,6 +4858,12 @@
     "align-items:center",
     "align-items:stretch",
     "align-self:center",
+    "animation-name:dialogue-box-enter-fade",
+    "animation-name:dialogue-box-enter-pop",
+    "animation-name:dialogue-box-enter-soft",
+    "animation-timing-function:linear",
+    "animation-timing-function:var(--runtime-dialogue-enter-ease-soft)",
+    "animation:dialogue-box-enter var(--dialogue-enter-ms) var(--runtime-dialogue-enter-ease) both",
     "backdrop-filter:none",
     "backdrop-filter:var(--runtime-dialogue-glass-filter)",
     "background-image:none !important",
@@ -4898,6 +4909,7 @@
     "overflow:hidden",
     "padding:10px 12px",
     "position:relative",
+    "transform-origin:50% 100%",
     "transform:scalex(-1)",
     "width:100%",
     "width:96px",
@@ -9373,23 +9385,6 @@
     "src/styles/editor/event-editor.modernize.css"
    ]
   },
-  "event-command-text-advanced-row": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "grid-template-columns"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:grid",
-    "gap:6px",
-    "grid-template-columns:auto minmax(0, 1fr)"
-   ],
-   "sheets": [
-    "src/styles/editor/event-editor.modernize.css"
-   ]
-  },
   "event-command-text-advanced-summary": {
    "props": [
     "align-items",
@@ -9847,6 +9842,42 @@
    "decls": [
     "color:var(--text-dim, var(--text-3, #6b5f52))",
     "font:500 11px/1.35 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.modernize.css"
+   ]
+  },
+  "event-command-text-presentation-field": {
+   "props": [
+    "display",
+    "gap"
+   ],
+   "decls": [
+    "display:grid",
+    "gap:7px"
+   ],
+   "sheets": [
+    "src/styles/editor/event-editor.modernize.css"
+   ]
+  },
+  "event-command-text-presentation-heading": {
+   "props": [
+    "align-items",
+    "color",
+    "display",
+    "flex-wrap",
+    "font",
+    "gap",
+    "justify-content"
+   ],
+   "decls": [
+    "align-items:baseline",
+    "color:var(--text-3, #766c60)",
+    "display:flex",
+    "flex-wrap:wrap",
+    "font:500 10px/1.35 inter, \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
+    "gap:6px 10px",
+    "justify-content:space-between"
    ],
    "sheets": [
     "src/styles/editor/event-editor.modernize.css"
@@ -19258,10 +19289,13 @@
   },
   "flipped": {
    "props": [
+    "--face-flip",
     "transform"
    ],
    "decls": [
-    "transform:scalex(-1)"
+    "--face-flip:-1",
+    "transform:scalex(-1)",
+    "transform:scalex(var(--face-flip))"
    ],
    "sheets": [
     "src/styles/dialogue.css",

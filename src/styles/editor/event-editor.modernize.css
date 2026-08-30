@@ -513,7 +513,8 @@
 }
 
 .event-command-text-body-heading,
-.event-command-text-tools-heading {
+.event-command-text-tools-heading,
+.event-command-text-presentation-heading {
   align-items: baseline;
   display: flex;
   flex-wrap: wrap;
@@ -531,9 +532,16 @@
   gap: 7px;
 }
 
-.event-command-text-tools-heading > span:last-child {
+.event-command-text-tools-heading > span:last-child,
+.event-command-text-presentation-heading > span:last-child {
   color: var(--text-3, #766C60);
   font: 500 10px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* 「말투·연출」은 접힌 고급 옵션에서 승격된 자리다. 문장 도구와 같은 층으로 보이게 둔다. */
+.event-command-text-presentation-field {
+  display: grid;
+  gap: 7px;
 }
 
 .event-command-text-tools-row {
@@ -634,13 +642,6 @@
 .event-command-text-advanced[open] > :not(summary),
 .event-command-text-control-details[open] > :not(summary) {
   margin-inline: 10px;
-}
-
-.event-command-text-advanced-row {
-  align-items: center;
-  display: grid;
-  gap: 6px;
-  grid-template-columns: auto minmax(0, 1fr);
 }
 
 .event-command-text-auto-advance-label {

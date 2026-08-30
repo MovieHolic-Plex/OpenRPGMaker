@@ -16,11 +16,38 @@
   --runtime-dialogue-bust-width: 88px;
   --runtime-dialogue-full-height: 164px;
   --runtime-dialogue-full-width: 92px;
+
+  /* 연출 지속시간은 src/player/dialoguePresentation.ts 가 상자에 인라인으로 심는다.
+     여기 값은 폴백일 뿐이다 — 없으면 var() 가 무효가 되어 animation-duration 이 0s 로
+     떨어지고 연출이 통째로 죽는다(battleTransition 의 TS/CSS 이중 기재 실수 회피). */
+  --dialogue-enter-ms: 170ms;
+  --dialogue-exit-ms: 120ms;
+  --dialogue-nameplate-delay-ms: 40ms;
+  --dialogue-portrait-ms: 200ms;
+  --dialogue-scrim-ms: 180ms;
+  --dialogue-scrim-opacity: 0.28;
+
+  /* 이름표 길이는 감정에 따라 변하지 않는다(지연만 변한다) — 그래서 TS 가 아니라 여기 있다. */
+  --runtime-dialogue-nameplate-ms: 150ms;
+
+  /* 글자 한 칸이 밝아지는 시간. 감정별로 변하는 것은 글자 *간격*(charDelayScale) 쪽이고
+     한 글자의 페이드 길이는 고정이라 이름표와 같은 이유로 CSS 가 갖는다.
+     기본 간격 24ms 보다 길어서 4~5 자가 겹쳐 밝아지며 부드러운 선두가 생긴다. */
+  --runtime-dialogue-char-ms: 110ms;
+
+  /* 흔들림 길이도 감정에 따라 변하지 않는다 — 흔드느냐 마느냐만 프로파일이 정한다. */
+  --runtime-dialogue-shake-ms: 120ms;
+  --runtime-dialogue-flash-ms: 140ms;
+
+  /* 이징은 CSS 만의 것이다 — TS 는 길이만 정하고 곡선은 여기서 고른다. */
+  --runtime-dialogue-enter-ease: cubic-bezier(0.16, 0.84, 0.3, 1);
+  --runtime-dialogue-enter-ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --runtime-dialogue-exit-ease: cubic-bezier(0.4, 0, 1, 1);
 }
 
 /* 런타임 z-index 밴드: 픽처 레이어 26 < 타이머 29
-   < 미니맵·핸드 슬롯·존 피드백 30 < 대사창 39 < action-hud 40. 이 값이 없으면 대사창은
-   인라인 z-index 를 갖는 픽처 슬롯이 대사를 덮는다(스프링 초상·이벤트 CG 전부 해당). */
+   < 미니맵·핸드 슬롯·존 피드백 30 < 대사 스크림 38 < 대사창 39 < action-hud 40. 이 값이 없으면
+   대사창은 인라인 z-index 를 갖는 픽처 슬롯이 대사를 덮는다(스프링 초상·이벤트 CG 전부 해당). */
 .dialogue-overlay {
   align-items: stretch;
   bottom: 0;
@@ -429,8 +456,16 @@
   width: var(--face-width, var(--runtime-dialogue-face-size));
 }
 
+/* 뒤집기를 변수로 둔다. 진입 연출의 translateX 가 transform 을 통째로 덮어써서
+   200ms 동안 초상화가 제자리로 펴지는 것을 막는 유일한 방법이다 —
+   keyframe 이 scaleX(var(--face-flip)) 로 같이 실어야 한다. */
+.dialogue-face {
+  --face-flip: 1;
+}
+
 .dialogue-face.flipped {
-  transform: scaleX(-1);
+  --face-flip: -1;
+  transform: scaleX(var(--face-flip));
 }
 
 .dialogue-face.missing {
@@ -752,8 +787,386 @@
   }
 }
 
+/* === 대화창 등장/퇴장 연출 ===
+   상태는 상자의 data-dialogue-* 에 있다. 오버레이가 아니다 — resetOverlay() 가
+   className 을 통짜로 대입해서(dialogue.ts) 오버레이에 얹은 연출 클래스는 매 대사마다 지워진다.
+
+   오버슈트는 세로에만 준다. 전폭 상자에서 가로 확대는 좌우 끝이 몇 px 대칭으로 벌어질 뿐
+   지각되지 않는 반면, 1280 뷰포트에서 상자 좌우 여백의 16px 하한을 깨서
+   test/e2e/dialogue-modern-skin.spec.ts 의 leftGutter/rightGutter 단정을 무너뜨린다.
+   그래서 scaleX 는 어떤 프레임에서도 1 을 넘지 않는다(축소는 여백을 넓히므로 안전). */
+.dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 100%;
+}
+
+.dialogue-overlay.position-top .dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 0%;
+}
+
+.dialogue-overlay.position-center .dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 50%;
+}
+
+.dialogue-box[data-dialogue-phase="enter"] {
+  animation: dialogue-box-enter var(--dialogue-enter-ms) var(--runtime-dialogue-enter-ease) both;
+}
+
+.dialogue-box[data-dialogue-emotion="happy"][data-dialogue-phase="enter"],
+.dialogue-box[data-dialogue-emotion="surprised"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-pop;
+}
+
+.dialogue-box[data-dialogue-emotion="sad"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-soft;
+  animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+}
+
+.dialogue-box[data-dialogue-phase="exit"] {
+  animation: dialogue-box-exit var(--dialogue-exit-ms) var(--runtime-dialogue-exit-ease) both;
+  /* 퇴장 중인 상자는 유령 클릭을 먹지 않는다 — 기본값이 pointer-events: auto 다. */
+  pointer-events: none;
+}
+
+/* 움직임을 끈 자리: 창은 그대로 떠야 한다. opacity 만 남기고 이동·신축을 없앤다.
+   src/styles/runtime/juice.css 의 원칙 — 움직임만 끄고 의미 신호는 남긴다. */
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-fade;
+  animation-timing-function: linear;
+}
+
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="exit"] {
+  animation-name: dialogue-box-exit-fade;
+  animation-timing-function: linear;
+}
+
+@keyframes dialogue-box-enter {
+  0% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease);
+    opacity: 0.35;
+    transform: translate3d(0, 8px, 0) scaleY(0.86);
+  }
+
+  58% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+    opacity: 1;
+    transform: translate3d(0, -3px, 0) scaleY(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-enter-pop {
+  0% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease);
+    opacity: 0.3;
+    transform: translate3d(0, 10px, 0) scaleY(0.82);
+  }
+
+  56% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+    opacity: 1;
+    transform: translate3d(0, -4px, 0) scaleY(1.075);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-enter-soft {
+  0% {
+    opacity: 0.2;
+    transform: translate3d(0, 10px, 0) scaleY(0.94);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-exit {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0) scaleY(0.96);
+  }
+}
+
+/* === 화자 이름표·초상화 진입 ===
+   상자의 진입 단계에만 걸린다 — 세션 첫 창에서만 phase="enter" 가 나타나므로
+   연속 대사에서 이름표가 매 줄 다시 튀어나오지 않는다.
+
+   transform 과 opacity 만 건드린다. 레이아웃 속성은 절대 애니메이션하지 않는다 —
+   .dialogue-box.has-speaker 의 padding-top 은 페이지당 줄 수 계산(dialogueMaxLines)에
+   직접 들어가서, 움직이면 대사가 페이지 중간에서 잘린다. */
+.dialogue-box[data-dialogue-phase="enter"] .speaker.speaker-nameplate {
+  animation:
+    dialogue-nameplate-enter var(--runtime-dialogue-nameplate-ms)
+    var(--runtime-dialogue-enter-ease) var(--dialogue-nameplate-delay-ms) both;
+}
+
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-face {
+  animation: dialogue-face-enter var(--dialogue-portrait-ms) var(--runtime-dialogue-enter-ease) both;
+}
+
+/* 초상화는 자기 쪽에서 들어온다. 오른쪽 배치는 오른쪽에서. */
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-face.dialogue-face-side-right,
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-content.face-right .dialogue-face {
+  animation-name: dialogue-face-enter-right;
+}
+
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] .speaker.speaker-nameplate,
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] .dialogue-face {
+  animation-name: dialogue-child-enter-fade;
+  animation-delay: 0s;
+  animation-timing-function: linear;
+}
+
+@keyframes dialogue-nameplate-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dialogue-face-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px) scaleX(var(--face-flip));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scaleX(var(--face-flip));
+  }
+}
+
+@keyframes dialogue-face-enter-right {
+  0% {
+    opacity: 0;
+    transform: translateX(10px) scaleX(var(--face-flip));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scaleX(var(--face-flip));
+  }
+}
+
+@keyframes dialogue-child-enter-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* === 글자별 등장 ===
+   src/player/dialogueTextRenderer.ts 가 글자를 하나씩 append 하고 이미 붙은 노드는
+   절대 건드리지 않는다. 그래서 각 span 은 삽입될 때 딱 한 번 재생된다 — 예전처럼
+   본문을 매 틱 전량 재생성하면 이 애니메이션이 프레임마다 되감겼다.
+
+   phase 게이트를 걸지 않는다. 이름표·초상화와 달리 글자 연출은 "세션 첫 창"이 아니라
+   **글자가 새로 붙을 때마다** 일어나는 것이 정상이다. 대신 프로파일이 켰을 때만
+   돈다 — reducedMotion 이면 TS 가 data-dialogue-char-reveal 을 아예 심지 않는다.
+
+   opacity 만 쓴다. span 은 인라인 박스이고 인라인 박스는 transform 을 무시한다.
+   inline-block 으로 바꾸면 픽셀 폰트의 베이스라인·줄높이와 줄바꿈 단위가 흔들린다. */
+.dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char {
+  animation: dialogue-char-enter var(--runtime-dialogue-char-ms) linear both;
+}
+
+/* 건너뛰기로 한꺼번에 붙은 글자. 수십 자가 동시에 밝아지면 어수선하다. */
+.dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char.dialogue-char-instant {
+  animation: none;
+}
+
+@keyframes dialogue-char-enter {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* === 화면 단위 연출: 스크림과 흔들림 ===
+   스크림은 .dialogue-overlay 의 **형제**다. 오버레이는 position-top/bottom 에서 높이가
+   화면의 27% 뿐이라 그 안에 두면 화면을 덮을 수 없다.
+
+   평평하게 깔지 않고 창이 있는 쪽으로 몰린 비네트를 쓴다. 전면 28% 디밍은 모든 대사에서
+   맵을 통째로 탁하게 만든다 — 대비만 얻고 화면은 잃는다. 그래서 창 쪽이 짙고 반대쪽은
+   완전히 투명하다.
+
+   불투명도와 길이는 dialoguePresentation.ts 가 --dialogue-scrim-* 로 심는다. */
+.dialogue-scrim {
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 38;
+}
+
+/* 디밍과 플래시를 각각 자기 레이어에 둔다. 스크림 자체의 opacity 를 애니메이션하면
+   플래시가 그 값에 눌려 흐려진다(놀람은 스크림 페이드와 플래시가 동시에 시작한다). */
+.dialogue-scrim::before,
+.dialogue-scrim::after {
+  bottom: 0;
+  content: "";
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.dialogue-scrim::before {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 0%,
+    rgba(0, 0, 0, calc(var(--dialogue-scrim-opacity) * 0.45)) 24%,
+    rgba(0, 0, 0, 0) 56%
+  );
+  opacity: 0;
+  transition: opacity var(--dialogue-scrim-ms) ease;
+}
+
+.dialogue-scrim.position-top::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 0%,
+    rgba(0, 0, 0, calc(var(--dialogue-scrim-opacity) * 0.45)) 24%,
+    rgba(0, 0, 0, 0) 56%
+  );
+}
+
+/* 화면 가운데 창은 가장자리에서 안쪽으로 좁혀 온다. */
+.dialogue-scrim.position-center::before {
+  background: radial-gradient(
+    ellipse 72% 68% at 50% 50%,
+    rgba(0, 0, 0, 0) 38%,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 100%
+  );
+}
+
+.dialogue-scrim[data-dialogue-scrim="on"]::before {
+  opacity: 1;
+}
+
+.dialogue-scrim::after {
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+}
+
+.dialogue-scrim[data-dialogue-flash="1"]::after {
+  animation: dialogue-scrim-flash var(--runtime-dialogue-flash-ms) ease-out both;
+}
+
+@keyframes dialogue-scrim-flash {
+  0% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 분노는 창이 자리잡은 **뒤에** 한 번 튄다. phase="shown" 을 게이트로 쓰면 세션 첫 창은
+   진입 → 흔들림 순서로 이어지고, 세션 중간의 분노 대사는(진입 없이 shown 으로 뜬다)
+   삽입 즉시 흔들린다. 진입 연출과 같은 규칙에 넣으면 둘이 transform 을 다투고
+   세션 중간 대사는 아예 흔들리지 않는다.
+
+   화면 흔들기를 Phaser 카메라(playSceneMapCommands.ts)로 하면 DOM 대화창에는 안 먹는다.
+   좌우 진폭은 3px 로 묶는다 — 전폭 상자의 좌우 여백 하한이 16px 이고
+   test/e2e/dialogue-modern-skin.spec.ts 가 그 값을 잰다. */
+.dialogue-box[data-dialogue-shake="1"][data-dialogue-phase="shown"] {
+  animation: dialogue-box-shake var(--runtime-dialogue-shake-ms) ease-in-out both;
+}
+
+@keyframes dialogue-box-shake {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  22% {
+    transform: translate3d(-3px, 0, 0);
+  }
+
+  48% {
+    transform: translate3d(3px, 0, 0);
+  }
+
+  74% {
+    transform: translate3d(-2px, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes dialogue-box-enter-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dialogue-box-exit-fade {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dialogue-box.page-ready .dialogue-page-cursor {
+    animation: none;
+  }
+
+  /* TS 가 reducedMotion 을 못 읽는 경로(명시 override 등)의 안전망이다.
+     [data-dialogue-emotion] 을 함께 붙여야 감정별 animation-name 규칙(특이도 0,3,0)을
+     이긴다 — 이게 없으면 happy·sad 는 안전망을 통과해 버린다. */
+  .dialogue-box[data-dialogue-emotion][data-dialogue-phase="enter"] {
+    animation-name: dialogue-box-enter-fade;
+    animation-timing-function: linear;
+  }
+
+  .dialogue-box[data-dialogue-emotion][data-dialogue-phase="exit"] {
+    animation-name: dialogue-box-exit-fade;
+    animation-timing-function: linear;
+  }
+
+  /* 흔들림·글자 등장·플래시는 통째로 없앤다. 스크림 디밍은 남긴다 —
+     움직임이 아니라 분위기·대비 신호다 (src/styles/runtime/juice.css 의 원칙). */
+  .dialogue-box[data-dialogue-shake="1"][data-dialogue-phase="shown"],
+  .dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char,
+  .dialogue-scrim[data-dialogue-flash="1"]::after {
     animation: none;
   }
 }

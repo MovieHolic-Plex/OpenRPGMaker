@@ -11,7 +11,12 @@ import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeCustomPalette, makeGridPalette, gridPaletteDisplayTile } from "@/editor/panels/tilePaletteGrid";
-import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
+import {
+  TILE_CATEGORIES,
+  filterTileIndexes,
+  type TileCategoryId,
+} from "@/editor/panels/tilePaletteFilter";
+import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
@@ -33,23 +38,10 @@ import { captureFocus, restoreFocus, applyRovingTabindex } from "@/editor/panels
 // 이제 한 면이다: 선택칩 → 도구 → 필터 한 줄 → 팔레트 → 붓 보조 → 타일 속성 → 킷.
 // 탭 전환 0회. 검색·카테고리는 팔레트 자체를 필터링한다.
 
-type TileCategoryId = "all" | "recent" | "terrain" | "water" | "house" | "fence" | "decor";
-
-type TileCategory = {
-  readonly id: TileCategoryId;
-  readonly label: string;
-};
-
-const TILE_CATEGORIES: readonly TileCategory[] = [
-  // 기본은 "전체" — 단일 면에서 "최근"을 기본으로 두면 첫 페인트에 팔레트가 거의 비어 보인다.
-  { id: "all", label: "전체" },
-  { id: "recent", label: "최근" },
-  { id: "terrain", label: "지형" },
-  { id: "water", label: "물" },
-  { id: "house", label: "집" },
-  { id: "fence", label: "울타리" },
-  { id: "decor", label: "장식" },
-] as const;
+// 분류 목록과 필터 계산은 panels/tilePaletteFilter.ts 로 옮겼다 — 구조물 편집기도 같은
+// 검색·분류를 쓰는데, 여기 있던 비공개 함수는 아래 모듈 전역을 직접 읽어서 그대로
+// 공유하면 두 팔레트의 필터 상태가 함께 움직인다. 상태는 이 파일이 계속 들고,
+// 계산만 넘긴다.
 
 let activeTileCategory: TileCategoryId = "all";
 let tileSearchQuery = "";
@@ -442,49 +434,11 @@ function filteredTileIdSet(tileset: TilesetDef): ReadonlySet<number> | null {
 }
 
 function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
-  const normalizedQuery = tileSearchQuery.trim().toLowerCase();
-  const source =
-    activeTileCategory === "recent"
-      ? recentTiles.filter((index) => index < tileset.count)
-      : Array.from({ length: tileset.count }, (_, index) => index);
-  const combined = isDefaultTilesetTexture(tileset);
-  return source.filter((index) => {
-    if (combined) {
-      const tile = describeChipsetTile(index);
-      if (!matchesCategory(activeTileCategory, tile.tags, tile.usage, tileset.priority[index] ?? "lower")) return false;
-      if (normalizedQuery.length === 0) return true;
-      return [
-        String(index),
-        tile.label,
-        tile.description,
-        tile.aiLabel,
-        tile.key,
-        tile.tags.join(" "),
-        tileDisplayLabelForIndex(index),
-      ].some((value) => value.toLowerCase().includes(normalizedQuery));
-    }
-    const meta = tileset.tileMeta?.[index];
-    const tags = meta?.tags ?? (meta?.role ? [meta.role] : []);
-    if (!matchesCategory(activeTileCategory, tags, meta?.role ?? "", tileset.priority[index] ?? "lower")) return false;
-    if (normalizedQuery.length === 0) return true;
-    return [String(index), meta?.label ?? "", meta?.description ?? "", meta?.role ?? "", tags.join(" ")]
-      .some((value) => value.toLowerCase().includes(normalizedQuery));
+  return filterTileIndexes(tileset, {
+    category: activeTileCategory,
+    query: tileSearchQuery,
+    recent: recentTiles,
   });
-}
-
-function matchesCategory(
-  category: TileCategoryId,
-  tags: readonly string[],
-  usage: string,
-  layer: "lower" | "upper"
-): boolean {
-  if (category === "all") return true;
-  if (category === "recent") return true;
-  if (category === "terrain") return layer === "lower" && ["terrain", "path", "edge", "detail"].includes(usage);
-  if (category === "water") return tags.some((tag) => ["water", "lake", "shore", "waterfall"].includes(tag));
-  if (category === "house") return tags.includes("house") || tags.includes("building") || tags.includes("roof");
-  if (category === "fence") return tags.includes("fence");
-  return usage === "decoration" || layer === "upper";
 }
 
 export function selectPaletteTile(index: number): void {

@@ -32,6 +32,7 @@
    "event-command-text-limit-hint",
    "event-command-text-live-preview",
    "event-command-text-palette",
+   "event-command-text-presentation",
    "event-command-text-speaker",
    "event-command-text-tool-emphasis",
    "event-command-text-tool-hero-name",
@@ -49,7 +50,6 @@
    "ecp-stage",
    "event-command-preview",
    "event-command-text-advanced",
-   "event-command-text-advanced-row",
    "event-command-text-advanced-summary",
    "event-command-text-auto-advance-label",
    "event-command-text-body-field",
@@ -72,6 +72,8 @@
    "event-command-text-palette-name",
    "event-command-text-palette-row",
    "event-command-text-palette-sub",
+   "event-command-text-presentation-field",
+   "event-command-text-presentation-heading",
    "event-command-text-preview-canvas",
    "event-command-text-preview-card",
    "event-command-text-section-head",
@@ -132,7 +134,7 @@
    "Ⅱ잠시 멈춤",
    "↵줄 바꿈",
    "人주인공 이름",
-   "고급 옵션 (감정 · 자동 넘김)",
+   "고급 옵션 (자동 넘김)",
    "기본",
    "기쁨",
    "놀람",
@@ -155,7 +157,7 @@
   "tags": {
    "button": 22,
    "details": 2,
-   "div": 22,
+   "div": 23,
    "input": 2,
    "label": 2,
    "option": 5,
@@ -163,7 +165,7 @@
    "section": 2,
    "select": 1,
    "small": 1,
-   "span": 47,
+   "span": 48,
    "strong": 1,
    "summary": 2,
    "textarea": 1
@@ -200,6 +202,7 @@
    "event-command-text-limit-hint": "div",
    "event-command-text-live-preview": "div",
    "event-command-text-palette": "div",
+   "event-command-text-presentation": "div",
    "event-command-text-speaker": "input",
    "event-command-text-tool-emphasis": "button",
    "event-command-text-tool-hero-name": "button",
@@ -213,7 +216,7 @@
    "event-command-text-limit-hint": "최대 #줄 / #자 권장",
    "event-command-text-live-preview": "문장 표시hello"
   },
-  "testidCount": 37,
+  "testidCount": 38,
   "controlCount": 26
  },
  "changeFace": {

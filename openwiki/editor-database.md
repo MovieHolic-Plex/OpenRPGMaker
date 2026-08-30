@@ -265,3 +265,25 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - **형제 탭은 이미 같은 처방을 갖고 있었다.** 타일셋 탭은 `tabs-a.part-2.css` / `desktop.css` 에서 `:has(.tileset-db-workspace)` 로 고쳐 뒀고 **구조물 탭만 빠져 있었다.** 새로 발명할 것이 없었다.
 - **마커 클래스로 하면 안 된다.** `renderActiveTab` 이 body 를 `replaceChildren` 만 하므로 TS 에서 붙인 className·dataset 이 탭을 바꾼 뒤에도 남아 다른 탭으로 샌다. `:has()` 로 판정해야 한다. `sidebar.css` 쪽 선택자가 특이도는 높지만 `display` 를 건드리지 않아 충돌하지 않는다.
 - **복제가 막다른 길이었다.** 내장 킷은 "편집하려면 [내 구조물로 복제]를 쓰세요"라고 안내하는데, 복제 핸들러가 사본을 만들고 목록만 다시 그려서 인스펙터가 계속 원본을 봤다. 선택을 사본으로 옮길 때는 **`session.selectedKitId` 만으로 부족하다** — `session.source`(`"builtin"` 이면 사용자 킷이 걸러진다)와 `session.searchQuery` 를 함께 맞춰야 한다. 안 그러면 선택 복구 로직이 `visibleEntries[0]` 으로 즉시 갈아탄다. `[+ 새 구조물]` 핸들러가 옳은 순서의 선례다.
+
+### 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
+
+잘림을 고친 뒤에도 사용자는 "수정 UI UX 가 매우 불편하다, 모달보다 50%쯤 더 커야 하고 실제 타일 칠하는 편집기와 비슷해야 한다"고 했다. 크기만의 문제가 아니라 결함 셋이 겹쳐 있었다.
+
+- **다이얼로그 배경이 투명했다.** `.db-enemy-dialog` 가 `var(--oprn-chrome)` / `var(--oprn-light)` 를 쓰는데 **그 토큰은 저장소 어디에도 정의돼 있지 않다.** `--oprn-*` 60개 중 23개가 그렇다. 대체값 없는 미정의 커스텀 프로퍼티는 계산값 시점에 **선언 자체를 무효로** 만들어 `background` 가 초기값 `transparent` 로 떨어진다 — 그래서 편집기를 열면 뒤의 DB 표가 그대로 뚫고 보였다. `--bg-overlay` / `--border-default`, 헤더는 `--accent` 그라디언트로 교체했다. **경고: 이 함정은 콘솔 에러도 남기지 않는다.** 남은 20개는 상태·배우·적 표 소관이라 별건으로 남겼다.
+- **창이 내용 크기로 잡혀 있었다.** 실측 732×537 인데 허용된 자리는 1424×884 였다. `[data-testid="structure-kit-editor"] > .db-enemy-dialog` 에 `width: min(1424px, calc(100vw - 16px))` + 같은 꼴의 `height` 를 준다. DB 모달(z 900)과 편집기 백드롭(`--z-popover-high` 1200)이 별개 층이라 **DB 모달 크기 불변식 e2e 를 건드리지 않고** 독립적으로 커질 수 있다.
+- **`pointermove` 리스너가 없어서** 한 칸 칠할 때마다 따로 클릭해야 했다. pointer capture + `buttons & 1` 가드로 드래그 스트로크를 붙였다. 이미 그 타일이면 no-op 이라 중복 store 쓰기와 리렌더가 사라진다.
+
+"맵 편집기를 그대로 가져다 쓰면 되지 않나" 의 답은 **절반만**이다. 맵 쪽은 Phaser 씬(`EditScene`)이고 구조물 쪽은 DOM `<canvas>` 라 칠하기 엔진·격자·줌은 다시 만들어야 한다. 재사용한 것은 순수 함수와 아이콘뿐이다.
+
+- **`makeTileToolbar` 는 쓰지 않는다.** `installToolbarBadgeRefresh` 가 `latestToolbarRerender` 모듈 전역을 덮어써서 맵 도구막대가 같이 흔들린다. 아이콘 팩토리 `makeSvgIcon`(`tileToolbarIcons.ts`)만 가져왔다. `buildSvgIcon` 은 `viewBox` 만 주고 width/height 를 붙이지 않으니 **쓰는 쪽 CSS 가 크기를 정해야 한다** — 보기 줄을 빼먹었더니 되돌리기 버튼이 내용 없는 빈 알약으로 보였다.
+- **팔레트 격자도 자체 구현이다.** `makeGridPalette` 는 순수해서 쓸 수는 있지만 ① 칸 크기가 컨테이너 쿼리(`--chipset-cell: 100cqi`)에 묶여 임의 다이얼로그에 옮겨 담을 수 없고 ② 오토타일을 대표 1칸으로 접고 레이어로 걸러 480칸 중 일부가 사라진다. 편집기는 480칸 전부를 보여야 한다.
+- **검색·분류는 `tilePaletteFilter.ts` 로 뽑아 공유한다.** 원래 `tilePalette.ts` 의 비공개 함수였고 `activeTileCategory`·`tileSearchQuery`·`recentTiles` **모듈 전역**을 직접 읽었다 — 그대로 부르면 맵 팔레트 필터가 편집기와 함께 움직인다. 그래서 상태는 호출부가 들고 파일은 순수 계산만 한다. 규칙을 복사하지 않은 이유는 이 저장소에 이미 타일 칠하기 구현이 셋(Phaser 맵 / 구조물 / `tilesetAiTerrainExample.ts`)이라 넷째 사본이 생기면 정본이 사라진다.
+- **되돌리기는 킷 단위 스택(80단)**이고 `recordProjectSnapshot` 을 쓰지 않는다. 그쪽은 스트로크마다 프로젝트 전체를 `structuredClone` 하고, DB 모달 취소가 `truncateMapEditHistoryFromMarker` 로 그 이력을 통째로 지운다. 단축키는 문서 레벨 capture 리스너이고 `!overlay.isConnected` 일 때 스스로 떼어진다 — 백드롭 클릭과 Esc 는 우리 닫기 콜백을 지나지 않는다.
+- **격자선은 DOM 오버레이다.** `renderTileCellsToCanvas` 는 캔버스를 즉시 돌려주고 타일셋 이미지가 로드되면 **비동기로 다시 그린다** — 캔버스에 직접 그은 선은 그때 지워진다.
+- **`fitScale` 은 높이도 본다.** 옛 `canvasScale` 은 폭만 봐서 3×64 같은 긴 킷이 세로로 터졌다. 배율은 1..8 로 조인다.
+- **`place-content: center` 는 `safe` 를 붙여야 한다.** 캔버스가 칸보다 크면 위/왼쪽으로 넘친 부분이 **스크롤로 닿지 않는다.** 3×40 킷을 최소 배율 1x 로 봐도 세로가 남는데, 실측으로 `scrollHeight` 가 300 → 200 으로 줄고 첫 줄이 칸 위 99px 지점에 박혀 영구히 가려졌다. `safe center` 는 잘림이 생길 때만 시작 정렬로 물러난다.
+- **빈 칸은 배경 타일로 메우지 않는다.** 인스펙터 썸네일과 달리 편집기에서는 "비어 있음" 과 "풀을 칠했음" 이 구별돼야 한다. 설계의 "인스펙터와 통일" 항목을 의도적으로 어긴 곳이다.
+- 레이어 이름은 하층/상층 → **바닥/덧그림**, 덧그림일 때 스테이지에 점선 테두리. testid(`structure-kit-editor-layer-lower/upper`)는 그대로다.
+- 새 testid: `-tool-rect/-ellipse/-fill/-pick`, `-undo`, `-redo`, `-zoom-in/-out/-fit/-value`, `-grid-toggle`, `-search`, `-category-<id>`. 기존 `-tile-<n>` · `-tool-paint/erase/part` · `-layer-*` 는 유지해 테스트 변경이 없다.
+- 실측(1440×900): 창 1424×884 · 배경 불투명 · 창밖 삐짐 0 · 캔버스 720×640(5x) · 팔레트 300×596/480칸 · 드래그 한 번에 6칸 · 검색 "문" 9칸 · 분류 "집" 75칸 · 팔레트 스크롤 300 유지. 1366×768 / 1280×720 에서도 도구·분류칩·보기 줄이 한 줄에 들어간다.

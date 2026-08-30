@@ -15,6 +15,7 @@ export function isDialogue(value: unknown): value is DialogueUI {
   return (
     typeof Reflect.get(value, "showText") === "function" &&
     typeof Reflect.get(value, "showChoices") === "function" &&
-    typeof Reflect.get(value, "hide") === "function"
+    typeof Reflect.get(value, "hide") === "function" &&
+    typeof Reflect.get(value, "close") === "function"
   );
 }
