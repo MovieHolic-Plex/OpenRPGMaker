@@ -15,13 +15,20 @@
 //
 // 좌측 메타 레일은 폐기했다(2026-08-21, 감독 지시): 유리·사이드에서 레일 한 열이 버튼
 // **하나**만 담아, 열 자체가 그 버튼 하나를 위한 장식이 되고 하단을 어지럽혔다. 이제 메타
-// 진입점은 액션 행 좌측의 `☰` 하나뿐이고 설정은 그 메뉴 안의 항목이다.
+// 진입점은 액션 행 좌측의 `☰` 와 `⌾`(성향) 둘이고, 나머지 설정은 ☰ 메뉴 안의 항목이다.
 // 조수 스킬 기능이 제거되면서 슬래시 팝오버(`/` 목록)와 그 앵커 버튼도 함께 사라졌다.
+//
+// `⌾` 성향(2026-08-30 감독 지시): AI 가 대화에서 배운 취향 목록. 배웠다는 알림이 채팅 버블로
+// 뜨므로 확인·삭제도 같은 패널에 있어야 한다(AI 설정 모달에 두면 배운 자리와 고치는 자리가
+// 갈라진다). 같은 팝오버 기계에 세 번째 종류로 넣었다 — 배타적 열림·바깥 클릭·Escape 를
+// 공짜로 얻고, 흐름 밖이라 "바 높이 = f(textarea 줄 수)" 불변식도 그대로다.
 
 import { el } from "@/util/dom";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
-export type ComposerPopover = "suggest" | "menu";
+export type ComposerPopover = "suggest" | "menu" | "preference";
+
+const POPOVER_KINDS = ["suggest", "menu", "preference"] as const;
 
 export interface ComposerElements {
   /** 패널에 마운트되는 바 루트(기존 `.ai-command-bar` testid 유지). */
@@ -31,6 +38,8 @@ export interface ComposerElements {
   readonly commandMenu: HTMLElement;
   readonly commandMenuToggle: HTMLButtonElement;
   readonly newChatButton: HTMLButtonElement;
+  /** 성향 팝오버 토글. `preferenceContent` 를 주지 않았으면 null. */
+  readonly preferenceToggle: HTMLButtonElement | null;
   readonly hint: HTMLElement;
   readonly openPopover: (kind: ComposerPopover | null) => void;
   readonly openKind: () => ComposerPopover | null;
@@ -50,6 +59,14 @@ export interface ComposerOptions {
   readonly statusGroup: HTMLElement;
   readonly onNewChat: () => void;
   readonly onPopoverChange?: (kind: ComposerPopover | null) => void;
+  /**
+   * "AI 가 기억한 내 성향" 팝오버의 내용. **주입으로 받는다** — 컴포저가
+   * `aiPreferenceMemorySettings` 를 직접 import 하면 성향 저장소(localStorage 접근)가
+   * 컴포저 단위 테스트의 모듈 그래프에 들어온다. 안 주면 버튼도 팝오버도 만들지 않는다.
+   */
+  readonly preferenceContent?: HTMLElement;
+  /** 성향 팝오버가 열릴 때. 목록을 다시 읽는 자리다(대화 중 증류로 내용이 바뀐다). */
+  readonly onPreferenceOpen?: () => void;
 }
 
 export function createComposerElements(options: ComposerOptions): ComposerElements {
@@ -78,6 +95,32 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   commandMenu.hidden = true;
 
+  // 성향 버튼 — ☰ 옆 작은 토글. 아이콘은 ⌾("기억해 둔 점") 하나로 두고 라벨은 title/aria 에 둔다.
+  // 액션 행은 고정 높이 한 줄이라 글자 라벨을 넣으면 컨텍스트 칩 자리를 먹는다.
+  const preferenceToggle = options.preferenceContent
+    ? (el("button", {
+      class: "ai-composer-menu-btn ai-preference-toggle",
+      text: "⌾",
+      attrs: {
+        type: "button",
+        title: "AI 가 기억한 내 성향 — 확인·고정·삭제",
+        "aria-label": "AI 가 기억한 내 성향",
+        "aria-expanded": "false",
+        "aria-haspopup": "dialog",
+      },
+      dataset: { testid: "ai-preference-toggle" },
+      on: { click: () => openPopover(openState === "preference" ? null : "preference") },
+    }) as HTMLButtonElement)
+    : null;
+
+  const preferencePopover = el("div", {
+    class: "ai-composer-popover ai-preference-popover",
+    attrs: { role: "dialog", "aria-label": "AI 가 기억한 내 성향" },
+    dataset: { testid: "ai-preference-popover" },
+    ...(options.preferenceContent ? { children: [options.preferenceContent] } : {}),
+  });
+  preferencePopover.hidden = true;
+
   // 추천 칩 팝오버 — 입력창 포커스 + 빈 값일 때 자동으로 뜬다(전용 토글 버튼 없음).
   // 흐름 밖이라 열림/닫힘이 바 높이를 건드리지 않는다(구 구조의 점프 원인).
   const suggestPopover = el("div", {
@@ -103,7 +146,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         class: "ai-composer-actions-lead",
         // 접기(#5efa6611) 와 새 대화(#198) 는 둘 다 이 고정 행의 왼쪽에 산다 — 한쪽이 다른 쪽을
         // 밀어내면 도크별 접기나 새 대화 진입점이 사라진다.
-        children: [options.collapseButton, newChatButton, commandMenuToggle, options.contextChips, options.queueIndicator],
+        children: [
+          options.collapseButton,
+          newChatButton,
+          commandMenuToggle,
+          ...(preferenceToggle ? [preferenceToggle] : []),
+          options.contextChips,
+          options.queueIndicator,
+        ],
       }),
       el("div", {
         class: "ai-composer-actions-trail",
@@ -122,7 +172,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     class: "ai-command-bar",
     dataset: { testid: "ai-command-bar" },
     // 팝오버는 셸의 형제로 두고 absolute 로 띄운다 — 흐름 밖.
-    children: [suggestPopover, commandMenu, composer],
+    children: [suggestPopover, commandMenu, preferencePopover, composer],
   });
 
   // 키 힌트는 입력 중에만 필요한 안내다. 상시 노출은 액션 행을 영구 점유했다(실측 160x15).
@@ -134,21 +184,26 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   options.input.addEventListener("blur", onInputBlur);
 
   const popoverOf = (kind: ComposerPopover): HTMLElement =>
-    kind === "suggest" ? suggestPopover : commandMenu;
+    kind === "suggest" ? suggestPopover : kind === "preference" ? preferencePopover : commandMenu;
   const toggleOf = (kind: ComposerPopover): HTMLElement | null =>
-    kind === "suggest" ? null : commandMenuToggle;
+    kind === "suggest" ? null : kind === "preference" ? preferenceToggle : commandMenuToggle;
 
   const openPopover = (kind: ComposerPopover | null): void => {
     if (openState === kind) return;
-    openState = kind;
-    for (const candidate of ["suggest", "menu"] as const) {
-      const open = candidate === kind;
+    // 성향 팝오버는 내용을 주지 않았으면 존재하지 않는다 — 열라는 요청을 조용히 닫기로 바꾼다.
+    const target = kind === "preference" && !options.preferenceContent ? null : kind;
+    if (openState === target) return;
+    openState = target;
+    for (const candidate of POPOVER_KINDS) {
+      const open = candidate === target;
       popoverOf(candidate).hidden = !open;
       toggleOf(candidate)?.setAttribute("aria-expanded", String(open));
       toggleOf(candidate)?.classList.toggle("is-active", open);
     }
-    commandBar.classList.toggle("has-popover", kind !== null);
-    options.onPopoverChange?.(kind);
+    commandBar.classList.toggle("has-popover", target !== null);
+    // 목록 갱신은 **열기 직후** 한 번만 — 매 턴 갱신하면 닫힌 팝오버를 위해 localStorage 를 계속 읽는다.
+    if (target === "preference") options.onPreferenceOpen?.();
+    options.onPopoverChange?.(target);
   };
 
   // 바깥 클릭·Escape 로 닫힌다 — 이전엔 토글 재클릭만이 유일한 닫기 경로여서
@@ -183,6 +238,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     commandMenu,
     commandMenuToggle,
     newChatButton,
+    preferenceToggle,
     hint,
     openPopover,
     openKind: () => openState,

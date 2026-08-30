@@ -294,6 +294,13 @@ export interface ChatRequest {
   signal?: AbortSignal;
   // AssistantSession처럼 상위 계층이 라운드 단위 재시도를 맡을 때 llmClient의 1회 재시도를 끈다.
   disableTransientRetry?: boolean;
+  // JSON 전용 응답 강제(OpenAI 호환). 타일셋 매핑·성향 증류처럼 산출물이 JSON 객체 하나인 호출용.
+  // 이 필드가 없던 동안 그런 호출들은 llmClient를 우회해 직접 fetch 했고, 그래서 OAuth 분기와
+  // 재시도·타임아웃을 각자 재구현하다 조용히 죽었다(tilesetAiCpenClient 주석의 2026-08-21 사고).
+  response_format?: { type: "json_object" };
+  // 분류/추출 호출의 표집 온도. 대화 경로는 지정하지 않아 공급자 기본값을 쓴다(현행 동작).
+  // 직접 fetch 하던 타일셋 매핑이 0.2를 쓰고 있었고, 흡수하면서 그 값을 잃지 않으려 통과시킨다.
+  temperature?: number;
 }
 
 export interface ChatResult { message: ChatMessage; finishReason: string | null; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } }
@@ -518,6 +525,8 @@ function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): strin
   // 미지원 공급자가 usage를 안 주면 소비 측(tokenBudget 관측)이 조용히 건너뛴다.
   if (stream) body.stream_options = { include_usage: true };
   if (req.tools && req.tools.length > 0) { body.tools = req.tools; body.tool_choice = req.tool_choice ?? "auto"; }
+  if (req.response_format) body.response_format = req.response_format;
+  if (typeof req.temperature === "number" && Number.isFinite(req.temperature)) body.temperature = req.temperature;
   // reasoning 필드는 공급자가 지원할 때만 붙인다(실측: cpen 은 reasoning → 400).
   if (effective.reasoningEffort && effective.reasoningEffort !== "off") {
     if (capability.supportsReasoningField) {
