@@ -18,13 +18,15 @@ export interface CanvasRect {
 
 /** 오버레이가 한 변을 "충분히 가로지른다"고 볼 최소 비율 — 이보다 짧으면 모서리 장식일 뿐 잘라낼 근거가 없다. */
 const CROSS_RATIO = 0.6;
-/** 잘라낸 뒤 남아야 하는 최소 폭/높이(px). 이보다 좁아지면 그 가림은 무시한다. */
-const DEFAULT_MIN_SPAN_PX = 240;
+/** 잘라낸 뒤 눈으로 볼 수 있는 최소 폭/높이(px). 이보다 좁은 조각만 남으면 그 가림은 무시한다. */
+const DEFAULT_MIN_SPAN_PX = 64;
 
 /**
  * 캔버스를 덮는 오버레이(조수 유리 카드 등)를 뺀, 실제로 맵이 보이는 최대 사각형.
- * 한 방향씩만 깎는다(좌/우/상/하) — 오버레이가 캔버스 한 변을 충분히 가로지를 때만 그 변에서 깎고,
- * 남는 폭/높이가 minSpanPx 아래로 내려가면 그 오버레이는 무시한다(가림이 화면을 다 먹는 경우).
+ * 한 방향씩만 깎는다(좌/우/상/하). 60% 교차 비율은 어느 변을 깎을지 결정하고,
+ * minSpanPx 는 그 결과가 눈으로 보기 어려운 좁은 조각일 때만 깎기를 거부한다.
+ * 실측한 600×500 캔버스에서는 폭 360px 카드 오른쪽에 228px가 남으므로, 정상 가시 영역을 버리던
+ * 240px 대신 64px를 기본값으로 삼는다.
  */
 export function unoccludedCanvasRect(
   canvas: CanvasRect,
@@ -46,7 +48,7 @@ export function unoccludedCanvasRect(
       // 좌우 중 더 넓게 남는 쪽으로 깎는다.
       const keepRight = current.x + current.width - (inter.x + inter.width);
       const keepLeft = inter.x - current.x;
-      if (Math.max(keepRight, keepLeft) >= minSpanPx) {
+      if (Math.max(keepRight, keepLeft) > 0 && Math.max(keepRight, keepLeft) >= minSpanPx) {
         current =
           keepRight >= keepLeft
             ? { x: inter.x + inter.width, y: current.y, width: keepRight, height: current.height }
@@ -57,7 +59,7 @@ export function unoccludedCanvasRect(
     if (crossesHorizontally) {
       const keepBelow = current.y + current.height - (inter.y + inter.height);
       const keepAbove = inter.y - current.y;
-      if (Math.max(keepBelow, keepAbove) >= minSpanPx) {
+      if (Math.max(keepBelow, keepAbove) > 0 && Math.max(keepBelow, keepAbove) >= minSpanPx) {
         current =
           keepBelow >= keepAbove
             ? { x: current.x, y: inter.y + inter.height, width: current.width, height: keepBelow }

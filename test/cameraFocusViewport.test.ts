@@ -19,6 +19,38 @@ describe("unoccludedCanvasRect", () => {
     expect(unoccludedCanvasRect(CANVAS, [GLASS])).toEqual({ x: 432, y: 0, width: 701, height: 700 });
   });
 
+  it("600×500 캔버스에서도 실제 카드 뒤가 아닌 오른쪽 영역에 대상을 놓는다", () => {
+    const canvas: CanvasRect = { x: 0, y: 0, width: 600, height: 500 };
+    const card: CanvasRect = { x: 12, y: 12, width: 360, height: 460 };
+    const unoccluded = unoccludedCanvasRect(canvas, [card]);
+    const canvasCenterX = canvas.x + canvas.width / 2;
+    const canvasCenterY = canvas.y + canvas.height / 2;
+
+    const containsCanvasCenter =
+      canvasCenterX >= unoccluded.x &&
+      canvasCenterX < unoccluded.x + unoccluded.width &&
+      canvasCenterY >= unoccluded.y &&
+      canvasCenterY < unoccluded.y + unoccluded.height;
+    expect(containsCanvasCenter).toBe(false);
+    expect(unoccluded.x).toBeGreaterThanOrEqual(372);
+
+    const targetWorldX = 1000;
+    const targetWorldY = 800;
+    const zoom = 2;
+    const lookAt = cameraLookAtForTarget({ targetWorldX, targetWorldY, canvas, unoccluded, zoom });
+    const targetScreenX = canvasCenterX + (targetWorldX - lookAt.x) * zoom;
+    const targetScreenY = canvasCenterY + (targetWorldY - lookAt.y) * zoom;
+    expect(targetScreenX).toBeCloseTo(unoccluded.x + unoccluded.width / 2, 10);
+    expect(targetScreenY).toBeCloseTo(unoccluded.y + unoccluded.height / 2, 10);
+
+    const targetIsBehindCard =
+      targetScreenX >= card.x &&
+      targetScreenX < card.x + card.width &&
+      targetScreenY >= card.y &&
+      targetScreenY < card.y + card.height;
+    expect(targetIsBehindCard).toBe(false);
+  });
+
   it("남는 폭이 minSpanPx 아래면 그 가림은 무시한다 — 화면을 다 먹은 경우 계산이 무의미하다", () => {
     const wide: CanvasRect = { x: 0, y: 0, width: 1000, height: 700 };
     expect(unoccludedCanvasRect(CANVAS, [wide], 240)).toEqual(CANVAS);
@@ -42,8 +74,6 @@ describe("cameraLookAtForTarget", () => {
     const canvasCenterY = CANVAS.y + CANVAS.height / 2;
     const unoccludedCenterX = unoccluded.x + unoccluded.width / 2;
     const unoccludedCenterY = unoccluded.y + unoccluded.height / 2;
-    expect(lookAt.x).toBeCloseTo(targetWorldX - (unoccludedCenterX - canvasCenterX) / zoom, 10);
-    expect(lookAt.y).toBeCloseTo(targetWorldY - (unoccludedCenterY - canvasCenterY) / zoom, 10);
 
     // 왕복 검증: 카메라 중심은 캔버스 중앙에 대응하므로 대상의 화면 좌표가 가시 중앙에 떨어져야 한다.
     expect(canvasCenterX + (targetWorldX - lookAt.x) * zoom).toBeCloseTo(unoccludedCenterX, 10);
