@@ -3,6 +3,7 @@
 // graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
 import { faceGraphicFromEventGraphic, faceGraphicForCharset } from "@/assets/charsetFaceMap";
+import { shadowedPageWarnings } from "@/project/eventPageShadow";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { searchResources } from "@/assets/resourceSearch";
@@ -396,7 +397,12 @@ export function compileSimplePages(
   graphic: EventPageGraphic,
   options: EventCompileOptions = {}
 ): EventPage[] {
-  return pages.map((page, index) => compileSimplePage(`${idPrefix}_p${index}`, name, page, graphic, { ...options, path: `pages[${index}]` }));
+  const compiled = pages.map((page, index) =>
+    compileSimplePage(`${idPrefix}_p${index}`, name, page, graphic, { ...options, path: `pages[${index}]` })
+  );
+  // 여기서 경고를 내야 모델이 같은 턴에 고칠 수 있다 — 린트는 사용자가 돌려야 보인다.
+  for (const warning of shadowedPageWarnings(`'${name}'`, compiled)) options.warnings?.push(warning);
+  return compiled;
 }
 
 export function compileSimplePage(

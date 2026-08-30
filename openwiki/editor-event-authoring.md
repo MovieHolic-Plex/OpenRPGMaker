@@ -12,6 +12,56 @@
 - 런타임 일정 상태는 `event.id`를 전역 key로 사용한다. 따라서 프로젝트 내 같은 이벤트 ID가 둘 이상이고 그중 하나라도 일정 행을 가지면 hard reference error다. 기존 프로젝트 호환을 위해 모두 unscheduled인 중복 이벤트 ID는 이 규칙이 차단하지 않는다.
 - 맵 삭제 영향(`MapDeletionImpact.incomingScheduleRows`)은 삭제되는 맵 자신이 아니라 살아남는 attached/orphan host의 정확한 일정 행을 열거한다. cascade는 대상 맵을 가리키는 일정 행만 제거하고 이벤트 page/command와 다른 일정 행을 보존한다.
 
+## AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
+
+**신고:** "랜덤하게 대사 치는 NPC" 를 요청했더니 AI 가 대사 후보를 **페이지 여러 장**에 나눠 담았고
+플레이하면 한 장만 나왔다. 근본 원인은 셋이고 전부 고쳤다.
+
+1. **프롬프트에 페이지 의미론이 아예 없었다.** 24개 작업 수칙 어디에도 "동시에 활성인 페이지는 1장"
+   이라는 말이 없었고, 8번 수칙은 오히려 "분기 대사로 **페이지를** 풍부하게 구성하세요" 라고 적혀 있어
+   다중 페이지 저작을 **권장**했다. `src/ai/eventPageSemantics.ts` 의 `EVENT_PAGE_SEMANTICS_BLOCK` 이
+   툴 능력 색인과 **같은 예산 밖 고정 자리**에 붙는다(소형 예산에서 잘리면 모델이 죽는 페이지를
+   저작하므로 잘려서는 안 된다). 8번 수칙은 "한 페이지 안을 풍부하게" 로 고쳤다.
+2. **조건 스키마가 커맨드 스키마였다.** `SIMPLE_PAGE_SCHEMA.conditions` 의 `items` 가
+   `COMMAND_SCHEMA` 였다 — 옆에 `CONDITION_SCHEMA` 가 있는데도. 그래서 모델에게 노출된
+   `conditions[].kind` enum 은 커맨드 kind 까지 포함한 잡탕이었다. 게다가 `CONDITION_SCHEMA` 의
+   enum 은 손으로 복사한 16종이라 `run`(로그라이크 런)이 빠져 있었다 — 이제
+   `commandKindRegistry.CONDITION_KINDS` 를 그대로 쓴다(SSOT, 테스트가 고정).
+3. **죽은 페이지를 아무도 경고하지 않았다.** `src/project/eventPageShadow.ts` 가 판정한다:
+   뒤 페이지 조건 집합이 앞 페이지 조건 집합의 **부분집합**이면 앞 페이지는 절대 발동하지 않는다
+   (조건 0개 페이지는 앞 전부를 가린다). `all:[a,b]` 중첩과 키 순서에 속지 않게 정규화한다.
+   판정을 **세 곳**이 공유한다 — `compileSimplePages`(place_npc/make_villager 가 같은 턴에 경고를 받는다),
+   `assertEventShape`(upsert_event), `projectLint`(`event-page-shadowed` warning),
+   `explainEvent`(`shadowedByPageNumber` + summary).
+
+### 우선순위는 1페이지가 아니다 (바꾸지 않았다)
+
+`io/pageResolution.resolveEventPage` 는 **마지막 페이지부터 거꾸로** 훑어 조건이 맞는 첫 페이지를
+쓴다 = **뒤 페이지가 앞 페이지를 덮는다.** 이것이 RM2K3 규칙이고 표준 저작 관용구
+("페이지 1 = 기본, 뒤에 조건 페이지를 덧붙여 덮는다")가 여기 의존한다. 1페이지 우선으로 뒤집으면
+기존 프로젝트의 모든 진행 상태 페이지가 죽는다. 따라서 엔진은 그대로 두고 **모델이 이 규칙을 알도록**
+고쳤다. 증상("1페이지만 나온다")은 규칙이 아니라 조건 없는 페이지를 여러 장 만든 저작의 결과다.
+
+### 랜덤 대사는 페이지가 아니다
+
+엔진에 랜덤 변수 연산은 없다(`VariableOperand = number | {kind:"var"}`). 랜덤은
+`m2Command` `m2-211-weighted-branch`(runtime full, `m2ModernRuntime.selectWeightedIndex`)가
+`fields.table` 가중치로 결과 변수를 뽑는 것이고, 그 변수를 `fork` 로 갈라 대사를 나눈다 —
+**전부 한 페이지 안에서**. 이 패턴이 프롬프트 블록과 경고 힌트 양쪽에 박혀 있다.
+
+### 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
+
+라이브 검증에서 나온 잔여 결함이다. 프롬프트를 고친 뒤 모델은 "말 걸 때마다 다음 대사"를
+페이지 1(무조건)/2(`selfSwitch A`)/3(`selfSwitch B`)로 **옳게** 나눴는데 `setSelfSwitch` 를
+하나도 넣지 않았다 — 조건은 맞고 가려짐도 없는데 2·3 페이지가 영원히 잠겼다. 결과가 같으므로
+같이 잡는다: `findUnwrittenSelfSwitchGates` 는 페이지 조건이 요구하는 `selfSwitch`(value:true) 를
+그 이벤트의 **어느 페이지 커맨드에서도**(fork·choices·loop 안쪽까지 내려가) 켜지 않으면 지목한다.
+전역 `switch` 는 기존 `story-flag:read-without-write` 가 이미 보므로 중복하지 않는다.
+린트 코드는 `event-selfswitch-gate-unwritten`, explain_event 는 `unwrittenSelfSwitchKeys`.
+
+계약 테스트: `test/aiEventPageSemantics.test.ts`(21건), 예산 고정은
+`test/aiToolCapabilityIndex.test.ts`.
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Event authoring, event pages, event commands, move routes, command dialogs, and cutscene/horror/puzzle tools.
