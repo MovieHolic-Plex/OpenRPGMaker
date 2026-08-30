@@ -16,6 +16,7 @@ import type {
   VariableDef,
 } from "./base";
 import type { ProjectDatabaseRecords, SystemRecords } from "./database";
+import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord } from "./village";
 import type { AnyQuestDef } from "../quest/questDef";
 import type { ProjectWorld } from "../world/types";
 import type { WorldGraph } from "../worldGraph/types";
@@ -483,6 +484,12 @@ export interface Project {
   maps: Record<MapId, GameMap>;
   mapConnections?: MapConnection[];
   villageInfoDocuments?: VillageInfoDocument[];
+  // 데이터베이스 「마을」탭 레코드 — 사용자가 만든 집 형태와 배치 프리셋.
+  // 마을 하네스(author_village)가 시공 전에 읽고, AI 컨텍스트에도 실린다.
+  // 프로젝트에 있으면 전부 사용자 저작이다(내장 34종은 코드 카탈로그가 정본).
+  // optional이라 마이그레이션 불필요.
+  villageTemplates?: VillageHouseTemplateRecord[];
+  villagePresets?: VillageLayoutPresetRecord[];
   // AI 리치 설명 문서(채팅 present_doc 툴 산출물). optional이라 마이그레이션 불필요.
   aiDocuments?: AiDocument[];
   // 조수에게 항상 주는 사용자 고정 지침(ai/projectInstructions.ts). 시스템 프롬프트의 예산 밖

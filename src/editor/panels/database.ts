@@ -16,6 +16,7 @@ import {
   stopSkillAnimationStagesIn,
 } from "@/editor/panels/databaseSkillAnimationStage";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import {
   renderSwitchesTab,
   renderTermsTab,
@@ -58,6 +59,7 @@ export type DatabaseTab =
   | "system"
   | "terms"
   | "terrain"
+  | "villages"
   | "switches"
   | "tilesets"
   | "variables";
@@ -88,6 +90,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
+  { id: "villages", label: "마을", testid: "db-tab-villages" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
   { id: "terms", label: "용어", testid: "db-tab-terms" },
@@ -117,7 +120,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   // 지형은 전투 데이터가 아니라 맵 데이터다 — 타일셋·구조물과 같은 그룹에 둔다.
-  { label: "세계", slug: "world", tabs: ["tilesets", "structureKits", "terrain", "commonEvents"] },
+  { label: "세계", slug: "world", tabs: ["tilesets", "structureKits", "villages", "terrain", "commonEvents"] },
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
 
@@ -382,6 +385,9 @@ function databaseTabCount(tab: DatabaseTab): number | null {
         (sum, tileset) => sum + (tileset.structureKits?.length ?? 0),
         0,
       );
+    case "villages":
+      // 내장 34종은 세지 않는다 — 배지는 "사용자가 저작한 것" 만 센다.
+      return (project.villageTemplates?.length ?? 0) + (project.villagePresets?.length ?? 0);
     default:
       return null;
   }
@@ -589,6 +595,9 @@ function renderActiveTab(
       break;
     case "structureKits":
       renderStructureKitsTab(body, rerender);
+      break;
+    case "villages":
+      renderVillageTab(body, rerender);
       break;
     case "system":
       renderSystemTab(body, rerender);

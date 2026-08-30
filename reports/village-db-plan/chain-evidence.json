@@ -1,0 +1,26 @@
+{
+  "promptSection": "## 마을 저작 데이터(유저가 데이터베이스 「마을」탭에서 정한 값 — 코드 기본값보다 우선)\n유저가 직접 만든 프리셋과 집 형태입니다. 마을 요청에서 이 id를 쓰면 유저가 정한 값 그대로 시공됩니다:\n### 배치 프리셋 (author_village presetId 로 지정)\n- 내 산골 마을 (vpreset: 집 6채, street-grid, 길 dirt, 폭 3, 광장 garden, 마당 workshop, NPC 4)\n  형태 후보: my-house, rect-small\n  메모: 산골 분위기, 넓은 흙길\n### 내 집 형태 (housePlans[].templateId 로 지정)\n- 내 장옥 (my-house, 8x9, 킷 timber-hall)\n  메모: 촌장 집으로 쓰는 넓은 장옥\nauthor_village({ target, houseCount, countPolicy, presetId }) 로 프리셋을 적용하세요. 목록에 없는 id는 쓰지 마세요.",
+  "summary": "Village authored: 6/6 houses on map_existing.",
+  "plazaTags": [
+    "commons",
+    "road-loop",
+    "preset:vpreset",
+    "garden",
+    "kit-target:3",
+    "shape-target:4",
+    "multistory-target:1"
+  ],
+  "houseCount": 6,
+  "houseShapes": [
+    "my-house",
+    "rect-small",
+    "rect-small",
+    "my-house",
+    "rect-small",
+    "rect-small"
+  ],
+  "shapeTally": {
+    "my-house": 2,
+    "rect-small": 4
+  }
+}

@@ -29,6 +29,12 @@ export type SettlementLayout = "plaza-ring" | "street-grid" | "clusters";
 
 export interface VillageIntent {
   readonly theme: string;
+  /** 이 시공에 쓸 형태 카탈로그 — 내장 34종 + 사용자 형태(프리셋 화이트리스트 적용 후). */
+  readonly templateCatalog: readonly HouseTemplate[];
+  /** 적용된 사용자 프리셋 id — 설계도에 기록해 재현 가능하게 한다. */
+  readonly presetId?: string;
+  /** 적용된 프리셋 이름(사람이 읽는 라벨). */
+  readonly presetName?: string;
   readonly pathStyle: RoadStyle;
   readonly kitMix: KitMix;
   readonly yardStyle: YardStyle;

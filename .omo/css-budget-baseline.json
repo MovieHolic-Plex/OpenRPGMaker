@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T10:09:10.350Z",
+  "generatedAt": "2026-08-30T13:10:51.022Z",
   "metrics": {
     "hexLiterals": 1669,
     "important": 985,
     "undefinedVars": 59,
     "globalRootFiles": 10,
-    "cssFileCount": 263
+    "cssFileCount": 264
   },
   "details": {
     "hexByFile": {
@@ -547,6 +547,7 @@
       "src/styles/database/modern/tilesets.css",
       "src/styles/database/modern/troops.css",
       "src/styles/database/modern/utility-records.css",
+      "src/styles/database/modern/village.css",
       "src/styles/database/modern/weather-animals.css",
       "src/styles/database/overview-dashboard.css",
       "src/styles/database/play-resolution.css",

@@ -233,7 +233,8 @@ export function createConversationLogHost(options: {
       : Boolean(lastRow && lastReasoning && lastRow.contains(lastReasoning.box));
     if (lastReasoning && reasoningCurrent) {
       lastReasoning.state.count += 1;
-      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, lastReasoning.body.hidden);
+      // hidden 은 lib.dom 에서 string | boolean 이다("until-found") — 접힘 여부는 참·거짓으로 본다.
+      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, Boolean(lastReasoning.body.hidden));
       log.scrollTop = log.scrollHeight;
       return { box: lastReasoning.box, body: appendReasoningItem(lastReasoning.body) };
     }

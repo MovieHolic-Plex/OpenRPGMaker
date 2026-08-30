@@ -528,7 +528,9 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
 }
 
 function shouldSkipSelect(select: HTMLSelectElement): boolean {
-  return select.hidden
+  // hidden 은 "until-found" 문자열도 담을 수 있어 lib.dom 타입이 string | boolean 이다.
+  // 그 값도 숨김 상태이므로 참·거짓만 본다.
+  return Boolean(select.hidden)
     || select.multiple
     || select.size > 1
     || select.getAttribute("aria-hidden") === "true"

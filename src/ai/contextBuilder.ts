@@ -7,6 +7,7 @@
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
+import { villageAuthoringData } from "@/editor/tools/village/authoringData";
 import { structureKitRepeatable } from "@/editor/harnessSuggestion/structureKitModel";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
@@ -398,6 +399,50 @@ function houseKitSection(): string {
   ].join("\n");
 }
 
+/**
+ * 사용자가 데이터베이스 「마을」탭에 저장한 형태·프리셋. 구조물 킷 섹션과 같은 발상 —
+ * "유저가 정해둔 값이 코드 기본값보다 우선"임을 모델에게 알리고 id를 넘긴다.
+ */
+function villageAuthoringSection(project: Project): string {
+  const { templates, presets } = villageAuthoringData(project);
+  if (templates.length === 0 && presets.length === 0) return "";
+  const lines: string[] = [];
+  if (presets.length > 0) {
+    lines.push("### 배치 프리셋 (author_village presetId 로 지정)");
+    for (const preset of presets) {
+      const bits = [
+        preset.houseCount === undefined ? "" : `집 ${preset.houseCount}채`,
+        preset.settlementLayout ?? "",
+        preset.pathStyle === undefined ? "" : `길 ${preset.pathStyle}`,
+        preset.roadWidth === undefined ? "" : `폭 ${preset.roadWidth}`,
+        preset.plazaStyle === undefined ? "" : `광장 ${preset.plazaStyle}`,
+        preset.yardStyle === undefined ? "" : `마당 ${preset.yardStyle}`,
+        preset.groundTheme === undefined ? "" : `지면 ${preset.groundTheme}`,
+        preset.npcCount === undefined ? "" : `NPC ${preset.npcCount}`,
+      ].filter(Boolean).join(", ");
+      lines.push(`- ${preset.name || preset.id} (${preset.id}${bits ? `: ${bits}` : ""})`);
+      if (preset.templateIds && preset.templateIds.length > 0) {
+        lines.push(`  형태 후보: ${preset.templateIds.join(", ")}`);
+      }
+      if (preset.note) lines.push(`  메모: ${preset.note.slice(0, 100)}`);
+    }
+  }
+  if (templates.length > 0) {
+    lines.push("### 내 집 형태 (housePlans[].templateId 로 지정)");
+    for (const template of templates) {
+      const kit = template.kitId ? `, 킷 ${template.kitId}` : "";
+      lines.push(`- ${template.name || template.id} (${template.id}, ${template.w}x${template.h}${kit})`);
+      if (template.note) lines.push(`  메모: ${template.note.slice(0, 100)}`);
+    }
+  }
+  return [
+    "## 마을 저작 데이터(유저가 데이터베이스 「마을」탭에서 정한 값 — 코드 기본값보다 우선)",
+    "유저가 직접 만든 프리셋과 집 형태입니다. 마을 요청에서 이 id를 쓰면 유저가 정한 값 그대로 시공됩니다:",
+    ...lines,
+    "author_village({ target, houseCount, countPolicy, presetId }) 로 프리셋을 적용하세요. 목록에 없는 id는 쓰지 마세요.",
+  ].join("\n");
+}
+
 function clusterRulePreferenceSection(project: Project, mapId: string | undefined): string {
   const tilesetIds = currentTilesetIds(project, mapId);
   const lines: string[] = [];
@@ -494,6 +539,10 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   if (tileVocabulary) sections.push(tileVocabulary);
   const structureKits = structureKitSection(project, currentMapId);
   if (structureKits) sections.push(structureKits);
+  // 사용자 저작 마을 데이터는 코드 상수 요약(집 키트)보다 앞이다 — 예산 초과 시 뒤에서 잘리므로
+  // 순서가 곧 우선순위다. 유저가 정한 값이 잘려 나가면 모델이 기본값으로 되돌아간다.
+  const villageAuthoring = villageAuthoringSection(project);
+  if (villageAuthoring) sections.push(villageAuthoring);
   sections.push(houseKitSection());
   const clusterRulePreferences = clusterRulePreferenceSection(project, currentMapId);
   if (clusterRulePreferences) sections.push(clusterRulePreferences);

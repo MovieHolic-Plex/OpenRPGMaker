@@ -15,12 +15,12 @@ import {
   expandRect,
   HOUSE_KITS,
   HOUSE_MARGIN,
-  HOUSE_TEMPLATES,
   pointInMap,
   rectsOverlap,
   shuffled,
   type BuiltHouse,
   type HouseCandidate,
+  type HouseTemplate,
   type Plaza,
   type Rect,
   type SettlementLayout,
@@ -201,7 +201,7 @@ export function buildHouses(
   terrainBlocked?: ReadonlySet<number>,
   boulevard?: HouseBoulevardHint,
 ): BuiltHouse[] {
-  const available = houseCandidates(area, plaza, target, intent.settlementLayout, boulevard);
+  const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard);
   const candidates = [
     ...shuffled(available.filter((candidate) => candidate.organic), rng),
     ...shuffled(available.filter((candidate) => !candidate.organic), rng),
@@ -267,7 +267,7 @@ export function buildHouses(
   tryCandidates(candidates);
   // 변형 레이아웃에서 집이 모자라면 고전 위·아래 밴드로 보충
   if (houses.length < target && intent.settlementLayout !== "plaza-ring") {
-    tryCandidates(shuffled(houseCandidates(area, plaza, target, "plaza-ring", boulevard), rng));
+    tryCandidates(shuffled(houseCandidates(area, plaza, target, intent.templateCatalog, "plaza-ring", boulevard), rng));
   }
   if (houses.length < target) {
     warnings.push(`집 후보 진단: 후보 ${candidates.length}개 중 ${houses.length}/${target} 시공 (area ${area.w}×${area.h})`);
@@ -319,10 +319,11 @@ function houseCandidates(
   area: Rect,
   plaza: Plaza,
   target: number,
+  catalog: readonly HouseTemplate[],
   settlement: SettlementLayout = "plaza-ring",
   boulevard?: HouseBoulevardHint,
 ): HouseCandidate[] {
-  const minTemplateWidth = Math.min(...HOUSE_TEMPLATES.map((template) => template.w));
+  const minTemplateWidth = Math.min(...catalog.map((template) => template.w));
   const wantedColumns = Math.ceil(target / 2);
   // 슬롯 폭은 카탈로그 최대 폭 8을 기본으로 — 폭 8 슬롯이 한 열도 안 서는 좁은 맵만
   // 최소 폭으로 강등한다. (예전 로직은 "모든 열이 8폭으로 서는가"를 물어서 대형 맵이
@@ -331,7 +332,7 @@ function houseCandidates(
   const slotWidth = maxWideColumns >= 1 ? 8 : minTemplateWidth;
   const maxColumns = Math.max(1, Math.floor(area.w / (slotWidth + HOUSE_MARGIN * 2)));
   const columns = Math.max(1, Math.min(wantedColumns, maxColumns));
-  const templates = HOUSE_TEMPLATES.filter((template) => template.w <= slotWidth);
+  const templates = catalog.filter((template) => template.w <= slotWidth);
   const span = columns * slotWidth + (columns - 1) * HOUSE_MARGIN * 2;
   const xStart = area.x + Math.max(HOUSE_MARGIN, Math.floor((area.w - span) / 2));
   const candidates: HouseCandidate[] = [];
