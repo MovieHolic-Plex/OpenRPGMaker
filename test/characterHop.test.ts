@@ -18,6 +18,7 @@ import {
   hopSpeedRatio,
   hopStretchScale,
   applyHopScale,
+  FALL_PERSPECTIVE_MAX,
   HOP_PERSPECTIVE_MAX,
   jumpArcLiftPx,
   jumpHop,
@@ -30,6 +31,7 @@ import {
   MIN_IMPACT_LIFT_PX,
 } from "@/player/characterLanding";
 import { shadowAlphaForLift, shadowScaleForLift } from "@/player/characterShadow";
+import { TILE_SIZE } from "@/assets/bundled";
 
 describe("character hop curves", () => {
   it("점프 아크는 양 끝이 접지이고 중간이 최고점이다", () => {
@@ -143,9 +145,28 @@ describe("landing impact plan", () => {
     expect(high?.dust).toBe(true);
   });
 
+  it("높이가 커지면 먼지 구름도 커진다 — 흔들림·소리와 같은 세기를 쓴다", () => {
+    const low = landingImpactPlan(fallHop({ heightPx: TILE_SIZE + 2 }));
+    const high = landingImpactPlan(fallHop({}));
+    // 하한 바로 위(18px)는 기존 크기에서 거의 안 움직이고, 포화(4 칸) 이상은 뚜렷하게 크다.
+    expect(low?.dustEndScale).toBeGreaterThanOrEqual(1.6);
+    expect(low?.dustEndScale).toBeLessThan(1.7);
+    expect(low?.dustRingEndScale).toBeGreaterThanOrEqual(2.6);
+    expect(low?.dustRingEndScale).toBeLessThan(2.75);
+    expect(high?.dustEndScale).toBeCloseTo(2.6, 6);
+    expect(high?.dustRingEndScale).toBeCloseTo(4.4, 6);
+    // 링은 항상 코어보다 넓다 — 두 겹이 구분돼야 터지는 타이밍이 보인다.
+    expect(high?.dustRingEndScale).toBeGreaterThan(high?.dustEndScale ?? 0);
+    // 4 칸에서 포화하므로 8 칸과 12 칸은 같다.
+    expect(landingImpactPlan(fallHop({ heightPx: TILE_SIZE * 12 }))?.dustEndScale).toBeCloseTo(2.6, 6);
+  });
+
   it("모션 축소 환경에서는 흔들림·먼지를 버리고 소리만 남긴다", () => {
     const plan = landingImpactPlan(fallHop({}), { reducedMotion: true });
     expect(plan).toMatchObject({ shakeMs: 0, shakeRatio: 0, dust: false, se: DEFAULT_LANDING_SE });
+    // 먼지를 안 낼 때 크기는 0 이다 — 호출부가 실수로 스프라이트를 만들지 않게.
+    expect(plan?.dustEndScale).toBe(0);
+    expect(plan?.dustRingEndScale).toBe(0);
   });
 });
 
@@ -224,21 +245,40 @@ describe("hop squash and stretch", () => {
 
 describe("hop perspective scale", () => {
   it("높을 때 크고, 접지에서 정확히 1 로 닫힌다", () => {
-    const fall = fallHop({ heightPx: 64 });
-    // 시작 높이(=게이트 상한 64px) 에서 최대 배율.
-    expect(hopPerspectiveScale(fall, 64)).toEqual({ x: 1 + HOP_PERSPECTIVE_MAX, y: 1 + HOP_PERSPECTIVE_MAX });
+    // 기본 낙하 높이(8 칸) = 낙하 게이트 상한이라 시작 배율이 정확히 ×3 이다.
+    const fall = fallHop({ heightPx: DEFAULT_FALL_HEIGHT_PX });
+    expect(hopPerspectiveScale(fall, DEFAULT_FALL_HEIGHT_PX)).toEqual({
+      x: 1 + FALL_PERSPECTIVE_MAX,
+      y: 1 + FALL_PERSPECTIVE_MAX,
+    });
     expect(hopPerspectiveScale(fall, 0)).toEqual({ x: 1, y: 1 });
     // 정규화 리프트에 선형 — 절반 높이면 증가분도 절반이다.
-    expect(hopPerspectiveScale(fall, 32).y).toBeCloseTo(1 + HOP_PERSPECTIVE_MAX / 2, 6);
+    const half = hopPerspectiveScale(fall, DEFAULT_FALL_HEIGHT_PX / 2);
+    expect(half.y).toBeCloseTo(1 + FALL_PERSPECTIVE_MAX / 2, 6);
     // 원근은 등방 확대다 — 스트레치처럼 가로를 줄이지 않는다.
-    const mid = hopPerspectiveScale(fall, 32);
-    expect(mid.x).toBe(mid.y);
+    expect(half.x).toBe(half.y);
+  });
+
+  it("낮게 저작한 낙하는 그만큼 비례해 덜 받는다 — 2 칸 낙하가 ×3 으로 부풀지 않는다", () => {
+    const shallow = fallHop({ heightPx: TILE_SIZE * 2 });
+    // 8 칸 게이트의 1/4 이라 시작 배율은 1 + 2×0.25 = 1.5 다.
+    expect(hopPerspectiveScale(shallow, TILE_SIZE * 2).y).toBeCloseTo(1 + FALL_PERSPECTIVE_MAX * 0.25, 6);
+  });
+
+  it("점프는 낙하보다 훨씬 약한 원근을 받는다 — 뛸 때마다 화면이 줌하지 않게", () => {
+    // 같은 4 칸 높이라도 점프는 점프 상수(0.35/4 칸), 낙하는 낙하 상수(2/8 칸) 를 쓴다.
+    const height = TILE_SIZE * 4;
+    expect(hopPerspectiveScale(jumpHop({ heightPx: height }), height).y).toBeCloseTo(1 + HOP_PERSPECTIVE_MAX, 6);
+    expect(hopPerspectiveScale(fallHop({ heightPx: height }), height).y).toBeCloseTo(
+      1 + FALL_PERSPECTIVE_MAX * 0.5,
+      6
+    );
   });
 
   it("리프트가 범위를 벗어나도 배율은 1..1+MAX 안에 머문다", () => {
-    const fall = fallHop({ heightPx: 64 });
+    const fall = fallHop({ heightPx: DEFAULT_FALL_HEIGHT_PX });
     expect(hopPerspectiveScale(fall, -10)).toEqual({ x: 1, y: 1 });
-    expect(hopPerspectiveScale(fall, 999).y).toBeCloseTo(1 + HOP_PERSPECTIVE_MAX, 6);
+    expect(hopPerspectiveScale(fall, 999).y).toBeCloseTo(1 + FALL_PERSPECTIVE_MAX, 6);
     // 높이 0 인 홉은 0 으로 나누지 않고 중립을 낸다.
     expect(hopPerspectiveScale(fallHop({ heightPx: 0 }), 0)).toEqual({ x: 1, y: 1 });
   });

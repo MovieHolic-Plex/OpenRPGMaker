@@ -47,10 +47,23 @@ const DUST_RING_START_SCALE = 0.8;
 const DUST_RING_END_SCALE = 2.6;
 const DUST_RING_START_ALPHA = 0.22;
 
+/**
+ * 높은 곳에서 떨어지면 먼지도 커진다 — 아래 값은 **포화 높이(4 칸)** 에서의 최종 지름이다.
+ *
+ * 왜 높이에 묶는가: 낙하가 시작 배율 ×3 을 받으므로(`FALL_PERSPECTIVE_MAX`) 8 칸에서 떨어진
+ * 캐릭터 밑에 1 칸 홉과 같은 크기의 구름이 피면 충격이 안 실린다. 흔들림·소리와 같은
+ * `impactStrength` 를 쓰므로 세 신호가 같은 높이에서 같이 커진다.
+ */
+const DUST_END_SCALE_MAX = 2.6;
+const DUST_RING_END_SCALE_MAX = 4.4;
+
 export type LandingImpactPlan = {
   readonly shakeMs: number;
   readonly shakeRatio: number;
   readonly dust: boolean;
+  /** 먼지 두 겹의 최종 지름 배율. 0 이면 먼지를 내지 않는다. */
+  readonly dustEndScale: number;
+  readonly dustRingEndScale: number;
   readonly se?: string;
 };
 
@@ -76,6 +89,10 @@ export function landingImpactPlan(hop: CharacterHop, options: LandingImpactOptio
     shakeMs: motion ? Math.round(SHAKE_MS_MIN + (SHAKE_MS_MAX - SHAKE_MS_MIN) * strength) : 0,
     shakeRatio: motion ? SHAKE_RATIO_MIN + (SHAKE_RATIO_MAX - SHAKE_RATIO_MIN) * strength : 0,
     dust: motion,
+    dustEndScale: motion ? DUST_END_SCALE + (DUST_END_SCALE_MAX - DUST_END_SCALE) * strength : 0,
+    dustRingEndScale: motion
+      ? DUST_RING_END_SCALE + (DUST_RING_END_SCALE_MAX - DUST_RING_END_SCALE) * strength
+      : 0,
     se,
   };
 }
@@ -115,20 +132,25 @@ export function playLandingImpact(
 ): void {
   if (!plan) return;
   if (plan.shakeMs > 0) scene.cameras.main.shake(plan.shakeMs, plan.shakeRatio);
-  if (plan.dust) spawnLandingDust(scene, groundX, groundY);
+  if (plan.dust) spawnLandingDust(scene, plan, groundX, groundY);
   if (plan.se !== undefined && playSe) playSe(plan.se);
 }
 
 /** 그림자 텍스처를 재활용해 퍼지며 사라지는 먼지. 새 스프라이트시트가 필요 없다. */
-function spawnLandingDust(scene: LandingSceneContext, groundX: number, groundY: number): void {
+function spawnLandingDust(
+  scene: LandingSceneContext,
+  plan: LandingImpactPlan,
+  groundX: number,
+  groundY: number
+): void {
   installCharacterShadowTexture(scene);
-  spawnDustLayer(scene, groundX, groundY, DUST_START_SCALE, DUST_END_SCALE, DUST_START_ALPHA, DUST_MS);
+  spawnDustLayer(scene, groundX, groundY, DUST_START_SCALE, plan.dustEndScale, DUST_START_ALPHA, DUST_MS);
   spawnDustLayer(
     scene,
     groundX,
     groundY,
     DUST_RING_START_SCALE,
-    DUST_RING_END_SCALE,
+    plan.dustRingEndScale,
     DUST_RING_START_ALPHA,
     DUST_RING_MS
   );

@@ -190,18 +190,36 @@ export function hopLandingSquashScale(hop: CharacterHop): HopScale {
  * 착지 스쿼시가 접지 크기에서 시작한다.
  */
 export const HOP_PERSPECTIVE_MAX = 0.35;
-/** 이 시작 높이에서 원근이 최대. 4 칸 — 제자리 홉(12px)은 6% 만 받아 줌 글리치로 보이지 않는다. */
+/** 이 시작 높이에서 점프 원근이 최대. 4 칸 — 제자리 홉(12px)은 6% 만 받아 줌 글리치로 보이지 않는다. */
 const PERSPECTIVE_GATE_LIFT_PX = TILE_SIZE * 4;
 
-function perspectiveGate(startLiftPx: number): number {
-  return clampProgress(startLiftPx / PERSPECTIVE_GATE_LIFT_PX);
+/**
+ * 낙하는 원근을 훨씬 세게 받는다 — 시작 배율 **×3**.
+ *
+ * 왜 낙하만 다른가: `dropIn` 은 화면 밖에서 떨어져 들어오는 **등장** 연출이라 "아주 높은 곳에서
+ * 온다" 가 연출의 전부다. 반면 점프는 캐릭터가 계속 화면에 있는 이동 수단이고, 같은 배율을 걸면
+ * 걸어 다니다 뛸 때마다 화면이 줌하는 것처럼 보인다(4 칸 점프가 ×2.5 가 된다). 그래서 채널은
+ * 공유하고 상수만 갈라 놓는다.
+ *
+ * 게이트가 8 칸인 이유: 기본 낙하 높이(`DEFAULT_FALL_HEIGHT_PX`)와 같게 두어 **기본값이 정확히
+ * ×3** 이 되게 한다. 더 낮게 저작한 낙하는 그만큼 비례해 줄어든다 — 2 칸 낙하가 ×3 으로 부풀면
+ * 높이 정보가 거짓이 된다.
+ */
+export const FALL_PERSPECTIVE_MAX = 2;
+const FALL_PERSPECTIVE_GATE_LIFT_PX = TILE_SIZE * 8;
+
+function perspectiveLimits(hop: CharacterHop): { readonly max: number; readonly gatePx: number } {
+  return hop.kind === "fall"
+    ? { max: FALL_PERSPECTIVE_MAX, gatePx: FALL_PERSPECTIVE_GATE_LIFT_PX }
+    : { max: HOP_PERSPECTIVE_MAX, gatePx: PERSPECTIVE_GATE_LIFT_PX };
 }
 
 /** 이번 프레임의 원근 배율. 가로·세로가 같은 값이다 — 원근은 부피 보존이 아니라 거리다. */
 export function hopPerspectiveScale(hop: CharacterHop, liftPx: number): HopScale {
   const startPx = clampHopLiftPx(hop.liftPx);
   if (startPx <= 0) return HOP_SCALE_NEUTRAL;
-  const amount = HOP_PERSPECTIVE_MAX * perspectiveGate(startPx) * clampProgress(liftPx / startPx);
+  const { max, gatePx } = perspectiveLimits(hop);
+  const amount = max * clampProgress(startPx / gatePx) * clampProgress(liftPx / startPx);
   return { x: 1 + amount, y: 1 + amount };
 }
 

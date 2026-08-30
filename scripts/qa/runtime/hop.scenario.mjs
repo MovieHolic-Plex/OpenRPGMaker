@@ -88,11 +88,16 @@ export const hopScenario = {
       ops: [
         { kind: "face", dir: "down" },
         {
+          // 4000ms 다(실측): 이 시나리오는 1200ms 동안 순간 상태를 "기다린 뒤 읽는" 방식으로
+          // 주장하는데 읽기 지연(스크린샷 150~300ms)이 비행의 25% 나 된다. 길게 뛰면 같은
+          // 지연이 7% 로 줄어 다음 비트의 최고점 주장이 흔들리지 않는다.
           kind: "playerRoute",
-          moves: [{ kind: "jump", dx: 0, dy: 2, heightPx: 48, durationMs: 1200 }],
+          moves: [{ kind: "jump", dx: 0, dy: 2, heightPx: 48, durationMs: 4000 }],
         },
-        // 낮은 고도 창. 포물선은 이 구간을 오르며·내리며 두 번 지나므로 놓칠 수 없다.
-        { kind: "waitForLift", minPx: 4, maxPx: 14 },
+        // ⚠️ 상한(maxPx) 을 두면 안 된다: 포물선은 저고도 띠를 오르며·내리며 두 번 지나므로
+        // **내려오는 쪽**을 잡을 수 있고, 그러면 다음 비트의 최고점은 이미 지나가 30 초
+        // 타임아웃까지 간다(실측: 5 회 중 1 회). 하한만 두면 첫 만족 표본이 항상 상승 구간이다.
+        { kind: "waitForLift", minPx: 4 },
       ],
       expect: { playerLiftPxAtLeast: 4, playerShadowVisible: true, playerAirborne: true },
       shot: true,
@@ -100,8 +105,10 @@ export const hopScenario = {
     {
       id: "jump-apex",
       note: "최고점 — 저작 heightPx 48 이 런타임까지 전달된다",
+      // 기다림은 40px 로 좁게 걸고(저작 48px 이 실제로 실렸다는 증거), 기다림이 성공한 뒤
+      // 읽는 기대값은 한 단 낮춘다 — 그 사이 스크린샷 지연만큼 포물선이 이미 내려오기 때문이다.
       ops: [{ kind: "waitForLift", minPx: 40 }],
-      expect: { playerLiftPxAtLeast: 40, playerShadowVisible: true, playerAirborne: true },
+      expect: { playerLiftPxAtLeast: 30, playerShadowVisible: true, playerAirborne: true },
       shot: true,
     },
     {
