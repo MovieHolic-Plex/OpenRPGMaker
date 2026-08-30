@@ -17,6 +17,18 @@ import {
   type DialogueTextSegment,
 } from "@/player/dialoguePagination";
 import { showNumberInput, type DialogueNumberInputRequest } from "@/player/dialogueNumberInput";
+import {
+  mountDialoguePage,
+  renderDialogueSegments,
+  type DialoguePageRenderer,
+} from "@/player/dialogueTextRenderer";
+import {
+  dialoguePresentationCssVars,
+  dialoguePresentationProfile,
+  dialogueScaledCharDelayMs,
+  type DialoguePresentationProfile,
+} from "@/player/dialoguePresentation";
+import { prefersReducedMotion } from "@/player/characterLanding";
 import { isCancelKey, isConfirmKey, normalizeKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
@@ -41,6 +53,13 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   readonly face?: FaceGraphic;
   /** true 면 페이지 타이핑 종료 후 키 입력 없이 다음으로. */
   readonly autoAdvance?: boolean;
+  /**
+   * 「문장 표시」 커맨드의 연출 선택자. 감정 이름이 그대로 연출 프로파일을 고른다
+   * (src/player/dialoguePresentation.ts). 모르는 값과 빈 값은 neutral 로 떨어진다.
+   */
+  readonly emotion?: string;
+  /** 검사용 주입 구멍. 생략하면 matchMedia 를 본다. */
+  readonly reducedMotion?: boolean;
 };
 
 export type DialogueChoicesRequest = DialogueSurfaceSettings & {
@@ -88,21 +107,107 @@ export interface DialogueUI {
   // Show choices and resolve with the selected option index.
   showChoices(request: DialogueChoicesRequest): Promise<number>;
   showNumberInput(request: DialogueNumberInputRequest): Promise<number>;
-  // Hide any active dialogue overlay.
+  /** 즉시 컷. 창 전환처럼 대사창이 남아 있으면 안 되는 자리에서 쓴다. */
   hide(): void;
+  /** 퇴장 연출을 재생한 뒤 창을 뺀다. 대화 세션이 끝나는 자리에서 쓴다. */
+  close(): void;
 }
 
-export function createDialogueUI(host: HTMLElement): DialogueUI {
+/** 지연 실행 주입 구멍. 취소 함수를 돌려준다. createBattleTransition 과 같은 형태. */
+export type DialogueSchedule = (callback: () => void, delayMs: number) => () => void;
+
+const defaultDialogueSchedule: DialogueSchedule = (callback, delayMs) => {
+  // window 가 없는 환경(node 단위 테스트, test/fakeDom.ts)에서는 지연 없이 끝낸다 —
+  // 퇴장 연출은 브라우저 전용이고, 여기서 예약을 걸면 DOM 이 영원히 안 비워진다.
+  if (typeof window === "undefined") {
+    callback();
+    return () => {};
+  }
+  const id = window.setTimeout(callback, delayMs);
+  return () => window.clearTimeout(id);
+};
+
+export function createDialogueUI(
+  host: HTMLElement,
+  schedule: DialogueSchedule = defaultDialogueSchedule
+): DialogueUI {
+  // 스크림은 오버레이의 **형제**여야 한다. 오버레이는 position-top/bottom 에서 높이가
+  // 화면의 27% 뿐이라 그 안에 두면 화면을 덮을 수 없다. z-index 38 — 대사창(39) 아래,
+  // 존 피드백·미니맵(30) 위. 크롭 inset 은 runtime/playSurface.css 가 맞춘다.
+  const scrim = el("div", { class: "dialogue-scrim", attrs: { "aria-hidden": "true" } });
   const overlay = el("div", { class: "dialogue-overlay" });
   applySystemWindowSkinVariable(overlay);
-  host.append(overlay);
+  host.append(scrim, overlay);
 
-  function showText(request: DialogueTextRequest): Promise<void> {
+  // 퇴장 예약. 상자를 즉시 파괴하지 않고 이만큼 미뤄 두기 때문에 퇴장 연출이 재생된다.
+  let pendingExit: { readonly cancelTimer: () => void; readonly finish: () => void } | null = null;
+  // 지금 열려 있는 창의 퇴장 길이. close() 가 프로파일을 다시 볼 수 없어서 들고 있는다.
+  let activeExitMs = 0;
+
+  const clearOverlay = (): void => {
     clearChildren(overlay);
     resetOverlay(overlay);
+    resetScrim(scrim);
+  };
+
+  /**
+   * 오버레이를 새 창이 인수한다. 돌려주는 값은 **인수 직전에 창이 열려 있었는가** —
+   * 그게 곧 대화 세션이 이어지는 중인가다. 세션 플래그를 따로 들 필요가 없다.
+   *
+   * 연속 대사는 advance() → cleanup() → resolve() → (마이크로태스크) → 다음 showText 가
+   * 같은 tick, 페인트 전에 일어난다. 그래서 cleanup 이 걸어 둔 퇴장 예약은 한 프레임도
+   * 그려지지 않고 여기서 취소되고, 진입 연출도 다시 재생되지 않는다.
+   */
+  const takeOverOverlay = (): boolean => {
+    const wasOpen = overlay.firstChild !== null;
+    if (pendingExit) {
+      pendingExit.cancelTimer();
+      pendingExit = null;
+    }
+    clearOverlay();
+    return wasOpen;
+  };
+
+  const beginExit = (box: HTMLElement, exitMs: number): void => {
+    if (pendingExit) return;
+    box.dataset.dialoguePhase = "exit";
+    // 스크림도 같이 걷힌다. 다음 대사가 이어지면 takeOverOverlay() 가 같은 tick 에 다시
+    // 켜므로 페인트에는 꺼진 프레임이 나타나지 않는다.
+    delete scrim.dataset.dialogueScrim;
+    let settled = false;
+    const finish = (): void => {
+      if (settled) return;
+      settled = true;
+      pendingExit = null;
+      clearOverlay();
+    };
+    const cancelTimer = schedule(finish, exitMs);
+    // schedule 이 동기로 끝냈으면(node 환경) 예약을 남기지 않는다.
+    if (!settled) pendingExit = { cancelTimer, finish };
+  };
+
+  const beginEnter = (box: HTMLElement, enterMs: number, animate: boolean): void => {
+    if (!animate) {
+      box.dataset.dialoguePhase = "shown";
+      return;
+    }
+    box.dataset.dialoguePhase = "enter";
+    schedule(() => {
+      if (box.dataset.dialoguePhase === "enter") box.dataset.dialoguePhase = "shown";
+    }, enterMs);
+  };
+
+  function showText(request: DialogueTextRequest): Promise<void> {
+    const wasOpen = takeOverOverlay();
     return new Promise<void>((resolve) => {
       const box = dialogueBox("", "dialogue-box");
       const position = applyTextSettings(overlay, box, request);
+      const profile = dialoguePresentationProfile(request.emotion, {
+        reducedMotion: resolveReducedMotion(request.reducedMotion),
+      });
+      applyDialoguePresentation(box, profile);
+      applyDialogueScrim(scrim, profile, position);
+      activeExitMs = profile.exitMs;
       const portraitMode = dialoguePortraitMode(request.face);
       const isPortrait = portraitMode !== "face";
       const content = el("div", {
@@ -155,16 +260,25 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
         maxLines: dialogueMaxLines(bodyEl),
         fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH,
       });
+      // 진입 연출은 페이지네이션이 끝난 뒤에 건다. 연출은 transform/opacity 뿐이라
+      // clientHeight 에 영향이 없지만, 순서를 고정해 두면 나중에 레이아웃 속성을
+      // 실수로 애니메이션해도 측정이 먼저 끝나 있다(줄 수가 틀어지면 문장이 조용히 잘린다).
+      beginEnter(box, profile.enterMs, !wasOpen);
       let pageIndex = 0;
       let visibleChars = 0;
       let tokenIndex = 0;
       let typing = true;
       let waitingForControl = false;
       let autoClosePage = request.autoAdvance === true;
-      let charDelayMs = DEFAULT_DIALOGUE_CHAR_DELAY_MS;
+      // 프로파일 배율은 기본 지연에만 적용한다. \s[n] 로 명시한 속도는 저작자 의도라
+      // 그대로 이긴다(executeControl 의 "speed" 분기가 배율 없이 덮어쓴다).
+      let charDelayMs = dialogueScaledCharDelayMs(DEFAULT_DIALOGUE_CHAR_DELAY_MS, profile);
       let fastMode = false;
       let timer = 0;
       let goldWindow: HTMLElement | undefined;
+      // 페이지마다 새로 마운트한다. 타이핑은 이 렌더러에 "몇 글자까지" 만 알려주고
+      // 이미 붙은 글자 노드는 건드리지 않는다 — 그래야 글자 연출이 되감기지 않는다.
+      let pageRenderer: DialoguePageRenderer | undefined;
 
       const currentSegments = (): readonly DialogueTextSegment[] => pages[pageIndex]?.segments ?? [];
       const currentTokens = (): readonly DialoguePlaybackToken[] => dialoguePlaybackTokens(currentSegments());
@@ -229,12 +343,12 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
             executeControl(token.control, true);
           }
         }
-        renderDialogueSegments(bodyEl, currentSegments());
+        pageRenderer?.revealAll();
         markPageReady();
         if (autoClosePage) timer = window.setTimeout(advance, 0);
       };
       const completeTypedPage = (): void => {
-        renderDialogueSegments(bodyEl, currentSegments());
+        pageRenderer?.revealAll();
         markPageReady();
         if (autoClosePage) timer = window.setTimeout(advance, 0);
       };
@@ -258,7 +372,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
           }
           if (token?.kind === "char") {
             visibleChars += 1;
-            renderDialogueSegments(bodyEl, currentSegments(), visibleChars);
+            pageRenderer?.reveal(visibleChars);
             timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
             return;
           }
@@ -274,7 +388,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
         waitingForControl = false;
         autoClosePage = request.autoAdvance === true;
         box.classList.remove("page-ready");
-        renderDialogueSegments(bodyEl, currentSegments(), 0);
+        pageRenderer = mountDialoguePage(bodyEl, currentSegments());
         timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
       };
       const advance = () => {
@@ -306,8 +420,9 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
         clearTimeout(timer);
         box.removeEventListener("click", advance);
         document.removeEventListener("keydown", onKey);
-        clearChildren(overlay);
-        resetOverlay(overlay);
+        // 즉시 파괴하지 않고 퇴장을 예약한다. 뒤에 대사가 이어지면 다음 showText 의
+        // takeOverOverlay() 가 페인트 전에 취소하고, 이어지지 않으면 퇴장이 재생된다.
+        beginExit(box, profile.exitMs);
       };
       box.addEventListener("click", advance);
       document.addEventListener("keydown", onKey);
@@ -316,14 +431,20 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
   }
 
   function showChoices(request: DialogueChoicesRequest): Promise<number> {
+    // 대사 직후 선택지는 같은 창 세션이다 — 여기서 진입 연출을 다시 재생하면 안 된다.
+    const wasOpen = takeOverOverlay();
     return new Promise<number>((resolve) => {
-      clearChildren(overlay);
-      resetOverlay(overlay);
       const position = applyOverlayPosition(overlay, request);
       overlay.classList.add("choices-active");
       if (request.options.length >= 4) overlay.classList.add("choices-compact");
       const choicesWindow = dialogueBox("choices", "dialogue-box");
       applyTextSettings(overlay, choicesWindow, request, position);
+      const choicesProfile = dialoguePresentationProfile(undefined, {
+        reducedMotion: resolveReducedMotion(undefined),
+      });
+      applyDialoguePresentation(choicesWindow, choicesProfile);
+      applyDialogueScrim(scrim, choicesProfile, position);
+      activeExitMs = choicesProfile.exitMs;
       const choicesEl = el("div", { class: "choice-list", dataset: { testid: "runtime-choices" } });
       if (request.prompt) {
         const promptEl = el("div", {
@@ -336,8 +457,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       let onKey: (event: KeyboardEvent) => void;
       const finish = (index: number): void => {
         document.removeEventListener("keydown", onKey);
-        clearChildren(overlay);
-        resetOverlay(overlay);
+        beginExit(choicesWindow, choicesProfile.exitMs);
         resolve(index);
       };
       let selectedIndex = 0;
@@ -404,19 +524,38 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
 
       choicesWindow.append(choicesEl);
       overlay.append(choicesWindow);
+      beginEnter(choicesWindow, choicesProfile.enterMs, !wasOpen);
     });
   }
 
+  /** 즉시 컷. 퇴장 예약이 걸려 있으면 취소하고 바로 비운다. */
   function hide(): void {
-    clearChildren(overlay);
-    resetOverlay(overlay);
+    if (pendingExit) {
+      pendingExit.cancelTimer();
+      pendingExit = null;
+    }
+    clearOverlay();
+  }
+
+  /** 퇴장 연출을 재생한 뒤 비운다. 이미 예약이 걸려 있으면 그대로 둔다. */
+  function close(): void {
+    const box = overlay.querySelector<HTMLElement>(".dialogue-box");
+    if (!box) {
+      hide();
+      return;
+    }
+    beginExit(box, activeExitMs);
   }
 
   return {
     showText,
     showChoices,
-    showNumberInput: (request) => showNumberInput(overlay, request, { applyTextSettings, resetOverlay }),
+    showNumberInput: (request) => {
+      takeOverOverlay();
+      return showNumberInput(overlay, request, { applyTextSettings, resetOverlay });
+    },
     hide,
+    close,
   };
 }
 
@@ -525,26 +664,6 @@ function resolveActorName(context: DialogueTextContext | undefined, index: numbe
 function clampDialogueColor(index: number): number {
   if (!Number.isFinite(index)) return 0;
   return Math.max(0, Math.min(19, Math.trunc(index)));
-}
-
-function renderDialogueSegments(target: HTMLElement, segments: readonly DialogueTextSegment[], visibleChars = Infinity): void {
-  clearChildren(target);
-  let remaining = visibleChars;
-  for (const segment of segments) {
-    if (remaining <= 0) break;
-    const chars = Array.from(segment.text);
-    const text = chars.slice(0, remaining).join("");
-    remaining -= chars.length;
-    if (!text) continue;
-    if (segment.colorIndex === 0) {
-      target.append(document.createTextNode(text));
-      continue;
-    }
-    target.append(el("span", {
-      class: `dialogue-color dialogue-color-${segment.colorIndex}`,
-      text,
-    }));
-  }
 }
 
 function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindowPosition, hostWidth: number): number {
@@ -670,6 +789,58 @@ function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSett
 
 function resetOverlay(overlay: HTMLElement): void {
   overlay.className = "dialogue-overlay";
+}
+
+function resetScrim(scrim: HTMLElement): void {
+  scrim.className = "dialogue-scrim";
+  delete scrim.dataset.dialogueScrim;
+  delete scrim.dataset.dialogueFlash;
+}
+
+/**
+ * 화면 단위 연출. 스크림은 창이 아니라 **화면**에 걸리므로 상자가 아니라 자기 엘리먼트에
+ * 얹는다. 위치 클래스를 같이 실어 어두워지는 쪽을 창이 있는 쪽으로 맞춘다 —
+ * 창이 위에 있는데 아래를 어둡게 하면 방향이 어긋난 채 화면만 탁해진다.
+ *
+ * 변수는 `dialoguePresentationCssVars` 를 통째로 심는다. 스크림이 쓰는 두 개만 골라
+ * 손으로 다시 쓰면 그게 곧 TS/CSS 이중 기재와 같은 어긋남의 씨앗이 된다.
+ */
+function applyDialogueScrim(
+  scrim: HTMLElement,
+  profile: DialoguePresentationProfile,
+  position: MessageWindowPosition
+): void {
+  scrim.className = `dialogue-scrim position-${position}`;
+  for (const [name, value] of Object.entries(dialoguePresentationCssVars(profile))) {
+    scrim.style.setProperty(name, value);
+  }
+  scrim.dataset.dialogueScrim = "on";
+  if (profile.flash) scrim.dataset.dialogueFlash = "1";
+  else delete scrim.dataset.dialogueFlash;
+}
+
+function resolveReducedMotion(override: boolean | undefined): boolean {
+  if (typeof override === "boolean") return override;
+  // prefersReducedMotion() 은 window.matchMedia 를 그대로 부른다. node 환경 테스트와
+  // test/fakeDom.ts 처럼 document 만 있는 환경에서 죽지 않게 여기서 가드한다.
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+  return prefersReducedMotion();
+}
+
+/**
+ * 연출 상태를 **상자에** 얹는다. 오버레이에 얹으면 안 된다 — resetOverlay() 가
+ * className 을 통짜로 덮어쓰기 때문에 조용히 지워진다.
+ * CSS 는 [data-dialogue-*] 와 var(--dialogue-*) 로 이 값을 받는다.
+ */
+function applyDialoguePresentation(box: HTMLElement, profile: DialoguePresentationProfile): void {
+  box.dataset.dialogueEmotion = profile.emotion;
+  box.dataset.dialogueMotion = profile.motion ? "on" : "off";
+  if (profile.shake) box.dataset.dialogueShake = "1";
+  if (profile.flash) box.dataset.dialogueFlash = "1";
+  if (profile.charReveal) box.dataset.dialogueCharReveal = "1";
+  for (const [name, value] of Object.entries(dialoguePresentationCssVars(profile))) {
+    box.style.setProperty(name, value);
+  }
 }
 
 function effectivePosition(model: {

@@ -61,7 +61,10 @@
   transform-origin: top left;
   width: var(--play-logical-width);
 }
+/* .dialogue-scrim 은 대화창과 같은 화면 영역을 덮어야 한다. 크롭된 바깥까지 어둡게 하면
+   정수 배율에서 잘려 나가는 띠가 보이는 화면과 다르게 칠해진다. */
 .player-layout .play-stage > .dialogue-overlay,
+.player-layout .play-stage > .dialogue-scrim,
 .player-layout .play-stage > .name-entry-overlay,
 .player-layout .play-stage > .touch-pad {
   bottom: var(--play-crop-bottom);

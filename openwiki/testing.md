@@ -64,6 +64,18 @@ node node_modules/vitest/vitest.mjs run --configLoader bundle \
   --root /home/main/.herdr/worktrees/rpg-zzu/<name> test/characterHop.test.ts
 ```
 
+**단, `cwd` 를 보는 테스트는 이 우회로 조용히 남의 코드를 잰다** (2026-08-30 실측).
+`--root` 는 vitest 의 탐색 루트만 옮기고 `process.cwd()` 는 그대로 본 레포다. `test/playerRuntimeCss.test.ts` 는
+`build({ configFile: resolve("vite.player.config.ts") })` 로 **cwd 기준** 설정을 읽어 익스포트 플레이어를
+빌드하므로, 이 우회로 돌리면 워크트리 CSS 가 아니라 **main 의 CSS** 를 검사한다. 증상이 고약하다 —
+공통 선택자(`.dialogue-overlay`)는 통과하고 이번 브랜치가 새로 넣은 이름만 "누락"으로 뜬다.
+빌드·플러그인·설정 파일을 cwd 로 찾는 테스트는 워크트리 안에서 직접 돌린다(위 심볼릭 링크가 있으면 된다).
+
+```bash
+cd /home/main/.herdr/worktrees/rpg-zzu/<name>
+node node_modules/vitest/vitest.mjs run test/playerRuntimeCss.test.ts
+```
+
 타입체크는 워크트리 tsconfig 를 상속한 임시 설정에 `node_modules` 경로를 얹는다. `"*": ["*", ".../node_modules/*"]` 매핑을 빼면 `phaser` 가 TS2307 로 터지면서 수백 개 가짜 에러가 번진다.
 
 ```json
@@ -72,6 +84,38 @@ node node_modules/vitest/vitest.mjs run --configLoader bundle \
     "@/*": ["src/*"],
     "*": ["*", "/home/main/z-project/rpg-zzu/node_modules/*"] } } }
 ```
+
+**e2e 는 위 우회가 안 통한다** (2026-08-30 실측). Playwright 의 `webServer` 는 설정 파일이 있는 디렉터리에서
+`npm run dev` 를 돌리므로 워크트리에 vite 가 실재해야 한다. 본 레포 패키지를 **개별 심볼릭 링크**로 걸면
+`.vite` 캐시가 워크트리에 남아 공유 `node_modules` 를 오염시키지 않는다. 디렉터리를 통째로 링크하면
+vite 가 공유 캐시에 쓰기 시작해 다른 세션과 충돌한다.
+
+```bash
+SRC=/home/main/z-project/rpg-zzu/node_modules
+DST=/home/main/.herdr/worktrees/rpg-zzu/<name>/node_modules
+for e in "$SRC"/* "$SRC"/.bin; do b=$(basename "$e"); [ -e "$DST/$b" ] || ln -s "$e" "$DST/$b"; done
+```
+
+**이 개별 링크 형태가 `server.fs.allow` 를 뚫는다** (2026-08-30 실측). `node_modules` **디렉터리
+자체는 실물**이므로 `realpathSync("./node_modules")` 는 자기 자신으로 풀려 아무것도 넓히지 못하고,
+`/@fs/…/node_modules/phaser/dist/phaser.min.js` 가 403 으로 죽는다. 증상이 엉뚱한 데서 나온다 —
+게임이 통째로 안 뜨므로 `qa:runtime` 이 "런타임 훅 없음" 으로 모든 비트를 실패시킨다(포트·타임아웃
+문제로 오진하기 쉽다). `vite.player-qa.config.ts` 의 `fsAllowRoots()` 는 이제 `node_modules` 안
+**링크들의 대상 쪽**(스코프 패키지는 한 단계 더)을 넓힌다. 판별: 서버 로그의
+`outside of Vite serving allow list` 와 함께 찍히는 allow 목록에 본 레포 경로가 있는지 본다.
+
+그다음 **포트를 반드시 고정해서** 돌린다. `playwright.config.ts` 는 `reuseExistingServer: true` 라서
+기본 포트 9173 에 다른 워크트리의 서버가 이미 떠 있으면 **남의 코드를 조용히 테스트한다.**
+출력에 `[WebServer]` 줄이 보이면 이 실행이 직접 띄운 것이다.
+
+```bash
+DEV_SERVER_PORT=9351 E2E_BOOT_TIMEOUT_MS=90000 npx playwright test test/e2e/<spec>.spec.ts
+```
+
+`E2E_BOOT_TIMEOUT_MS` 는 `seedProjectFromSupabaseCanonical` 내부의 `edit-canvas` 대기(기본 15초)를 늘린다 —
+콜드 부팅이 그보다 느려 스펙이 통째로 빨개지는 일이 흔하다. 다만 `startNewGameFromTitle` 에
+`waitForRuntimeState: false` 를 주는 방식으로 부팅을 건너뛰지는 말 것. 자동시작 분기가 스테이지만 보고
+곧장 반환해서 **게임이 시작되기 전에** 다음 단계로 넘어간다.
 
 ## Roguelike run Phase 0–3 coverage (2026-08-24)
 
@@ -227,6 +271,68 @@ Evidence expectations:
 - Database CRUD/navigation and runtime visibility: `test/p2SpatialEditorAuthoring.test.ts`, Database sidebar suites, and `test/p2SpatialRuntimeUi.test.ts`.
 - Root integration performs real browser QA at 1024x768 and 1440x900 using `db-tab-farm-spatial`, `db-spatial-workspace`, `db-spatial-hero-image`, CRUD testids, and `life-ledger-tab-spaces`. This isolated implementation does not claim browser evidence.
 
+## 대화창 연출 focused gate (2026-08-30)
+
+연출의 실패는 **조용하다.** 예외도 콘솔 경고도 없이 "아무 일도 일어나지 않는" 정상 화면이 되므로
+스크린샷으로도 구분되지 않는다. 그래서 판정 경로를 세 층으로 나눠 둔다.
+
+- `test/dialoguePresentation.test.ts` — 순수 프로파일 표. 알 수 없는 `emotion` → `neutral` 폴백,
+  감정별 성격(슬픔은 느리게, 분노·놀람은 빠르게), `reducedMotion` 이 흔들림·per-char 는 끄고
+  스크림·타이핑 배율은 남기는 것, 그리고 **모든 지속시간이 `dialoguePresentationCssVars` 에 실려 나가는지**.
+  마지막 항목이 `battleTransition.ts` 식 TS/CSS 값 어긋남(close 260 vs 190)의 회귀 게이트다.
+- `test/dialoguePresentationCss.test.ts` — `src/styles/dialogue.css` **텍스트**를 직접 읽는다.
+  ① 참조하는 모든 `animation-name` 에 실제 `@keyframes` 가 있는지(클래스만 붙고 죽은 모션 탐지),
+  ② TS 가 심는 `--dialogue-*` 전부에 `:root` 폴백이 있는지(없으면 `animation-duration` 이 0s 로 떨어진다),
+  ③ `dialogue-box-*` keyframes 가 `scaleX`/등방 `scale()` 을 쓰지 않는지,
+  ④ reduced-motion 안전망 선택자가 `[data-dialogue-emotion]` 을 물어 감정별 규칙(특이도 0,3,0)을 이기는지.
+  ①③④ 는 다른 어떤 검사로도 잡히지 않는다.
+- `test/dialogueTextRenderer.test.ts` — 증분 본문 렌더러. 핵심은 **노드 동일성**이다.
+  전량 재생성으로 되돌아가면 글자별 CSS 애니메이션이 매 틱 되감기는데, 그 회귀는 화면으로도
+  computed style 로도 보이지 않는다("매번 처음부터"인 동안에도 계속 재생 중으로 읽힌다).
+  노드가 유지되는지를 직접 재는 것만이 판정이다. `test/dialogue.test.ts` 에 **배선**까지 확인하는
+  같은 단정이 하나 더 있다 — 렌더러만 멀쩡하고 `dialogue.ts` 가 옛 경로로 돌아가는 경우를 잡는다.
+- `test/dialogue.test.ts` — 생명주기. `schedule` 을 주입해 fake timer 없이 결정적으로 검사한다
+  (세션 첫 창만 진입 재생, `close()` 는 연출 후 비움 / `hide()` 는 즉시 컷, 연출 상태가 `resetOverlay` 의
+  className 통짜 대입에 지워지지 않음). **타이핑 타이밍 기대값(24ms·159ms 단위)은 손대지 않는다** —
+  진입 연출은 타이핑과 동시에 도는 순수 시각 효과라서 `startPage(0)` 시점이 바뀌지 않는다는 증거다.
+- `test/e2e/dialogue-presentation-motion.spec.ts` — 실제 브라우저의 `getComputedStyle`.
+  위 세 층이 다 통과해도 화면에서 죽을 수 있는 경우(특이도에 밀림, `var()` 무효, keyframe 이름 어긋남)를
+  여기서만 잡는다. 두 가지 함정 대응이 스펙에 박혀 있다:
+  - 진입 연출은 140~260ms 뒤 `phase="shown"` 이 되며 `animation` 선언 자체가 사라진다. 폴링으로는
+    못 잡으므로 `addInitScript` 의 **MutationObserver 로 상자 삽입 순간**의 계산된 스타일을 낚아채 둔다.
+  - 트리거는 `{kind:"auto"}` 이벤트를 쓴다. 실행 히트박스 클릭에 의존하지 않는다 —
+    `runtimeDom.ts` 의 `upsertEventMarker` 는 **마커를 처음 만들 때만** 클릭 리스너를 붙이는데
+    `playSceneAutonomous.ts:99,179` 는 `onActivate` 없이 같은 함수를 부른다. 자율이동 경로가 마커를
+    먼저 그리면 그 마커는 영구히 클릭이 안 먹는다. 클릭 기반 대화 e2e 가 원래 불안정한 이유다.
+- `test/playerRuntimeCss.test.ts` 의 `REQUIRED_RUNTIME_SELECTORS` 에 `dialogue-box-enter`/`-exit`/`dialogue-char-enter`
+  를 넣어 둔다. 에디터 테스트플레이는 에디터 CSS 가 같이 로드돼 정상으로 보이므로, **익스포트 플레이어에
+  규칙이 실렸는지는 실제 vite 빌드를 돌리는 이 검사만 판정한다.** 이 검사는 `cwd` 기준으로 설정을 읽으므로
+  워크트리 안에서 직접 돌려야 한다(위 "워크트리에 `node_modules` 가 없을 때" 참고).
+- 스크림은 e2e 에서 **의사요소를 직접 읽어야** 보인다. 디밍은 `::before`, 플래시는 `::after` 에 있어서
+  요소 자신의 계산된 스타일에는 아무것도 안 잡힌다 — `getComputedStyle(scrim, "::before")` 를 쓴다.
+  스크림 사각형이 오버레이와 같은 좌·우·아래를 갖는지도 같이 잰다(같은 `playSurface.css` 규칙이 둘의
+  크롭 inset 을 맞춘다). **크롭 정합은 익스포트 플레이어(`surfaceScaleMode: "integer"`)로 실측했고
+  결론은 "따라갈 크롭이 없다" 다** (2026-08-30, `npm run qa:runtime -- --scenario dialogue` 게이트 통과 +
+  같은 하네스로 기하 측정): 1024×768 / 논리 320×240 에서 `--play-crop-*` 이 네 변 모두 `0px` 이고
+  `.dialogue-scrim` 사각형이 `.play-stage` 와 **완전히 같다**(32,24 부터 960×720). 정수 배율은
+  `Math.floor(containScale)` 이라 무대가 뷰포트를 넘을 수 없어서(`playSurfaceScale.ts:39`) 남는 여백은
+  레터박스이고 `.play-stage` **밖**이다 — 스크림이 잘려 나가는 띠를 칠할 경로가 애초에 없다.
+  `playSurface.css` 의 inset 목록에 든 것은 cover/crop 모드가 생길 때를 위한 대비다.
+  측정 함정 하나: 디밍은 `--dialogue-scrim-ms`(140~260ms) 전이라서 창이 뜬 **직후**에 읽으면
+  `::before` opacity 가 `0.26` 처럼 중간값으로 잡힌다. 정착값을 볼 거면 400ms 쯤 기다려라.
+- `test/dialoguePreviewPresentationCss.test.ts` — 에디터 프리뷰와 게임의 감정→keyframe 짝을
+  두 CSS 파일에서 뽑아 대조한다. 프리뷰 창은 `.ecp-message-window`, 게임 창은 `.dialogue-box` 라
+  규칙을 두 번 적어야 하고, 그 중복은 조용히 어긋난다 — 프리뷰만 옛 곡선으로 튀어도 예외가 없고,
+  프리뷰가 존재 이유("게임에서 이렇게 보인다")를 거짓말한다. keyframes 정의는 복제하지 않고
+  `dialogue.css` 것을 그대로 부르므로 그 파일이 에디터 그래프에 실려 있는지(`index.css` →
+  `runtime/playerRuntime.css` → `../dialogue.css`)도 같이 본다. 사슬이 끊기면 규칙은 남고
+  애니메이션만 사라진다.
+- `test/dialoguePresentationAuthoring.test.ts` — 저작 UI. ① 「말투·연출」이 접힌
+  `event-command-text-advanced` **밖에** 있는지(안에 있던 동안은 아무도 안 썼다. 되접히면 기능이
+  다시 안 보이게 죽는다), ② 프리뷰가 **연출이 바뀐 호출에만** `data-dialogue-phase="enter"` 를
+  붙이는지. ②를 놓치면 프리뷰가 본문 한 글자마다 통째로 다시 그려지므로 창이 타자마다 튀어
+  **글을 쓸 수 없다** — 기능이 아니라 편집이 망가지는 회귀라서 화면 없이 여기서 잡는다.
+
 ## 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
 
 - `playwright.config.ts` 의 `webServer.command` 는 `npm run dev -- --port <DEV_SERVER_PORT>` 인데
@@ -356,7 +462,10 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   (`vite.config.ts:350-354`, 실측 3회). 반드시 전용 `cacheDir` / `VITE_CACHE_DIR`.
 - `vite.config.ts` 의 `server.fs.allow` 는 `../rpg-zzu/node_modules`(구 형제 워크트리
   `rpg-zzu-*`)만 넓힌다. **`.claude/worktrees/*` 에서는 존재하지 않는 경로로 풀려 편집기
-  dev 서버가 phaser 를 403 으로 막는다.** 올바른 일반화는 `realpathSync("./node_modules")`.
+  dev 서버가 phaser 를 403 으로 막는다.** `realpathSync("./node_modules")` 로는 **부족하다**
+  (2026-08-30 실측): 워크트리의 `node_modules` 는 디렉터리 자체가 실물이고 그 안의 패키지가
+  하나씩 링크된 형태라 자기 자신으로 풀린다. 링크 **대상**의 부모까지 넓혀야 한다
+  (`vite.player-qa.config.ts` 의 `fsAllowRoots()` 가 그 형태다).
 - 고정 키 횟수로 대사를 소진하면 닫힌 뒤 남은 Enter 가 NPC 를 재발동시켜 선택지가 다시
   열린다. `pressUntil` op(매 입력 후 조건 확인)을 써라.
 - **`__oprnDebug.teleport` 는 맵 비교를 세션 쓰기보다 먼저 해야 한다 (2026-08-28 수정).**

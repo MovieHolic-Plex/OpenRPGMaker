@@ -90,6 +90,9 @@ type DialogueState = {
 };
 
 async function readDialogueState(page: Page): Promise<DialogueState> {
+  // 진입 연출이 끝난 프레임에서만 잰다. 상자는 등장할 때 translateY·scaleY 로 움직이고
+  // getBoundingClientRect 는 transform 을 포함하므로, 연출 도중에 재면 좌표가 흔들린다.
+  await expect(page.getByTestId("dialogue-box")).toHaveAttribute("data-dialogue-phase", "shown");
   return page.evaluate(() => {
     const stage = document.querySelector(".play-stage");
     const box = document.querySelector('[data-testid="dialogue-box"]');

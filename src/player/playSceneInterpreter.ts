@@ -84,7 +84,8 @@ async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEve
     scene.running = previousRunning;
     scene.lastActionTargetKey = "";
     scene.setInputEnabled(previousInputEnabled);
-    dialogueUi(scene)?.hide();
+    // 대화 세션이 끝나는 자리 — 퇴장 연출을 재생하고 빠진다(transfer 만 하드 컷).
+    dialogueUi(scene)?.close();
     scene.refreshRuntimeSurfaces();
   }
 }
@@ -123,7 +124,7 @@ async function runTalkPath(
     scene.running = previousRunning;
     scene.lastActionTargetKey = "";
     scene.setInputEnabled(previousInputEnabled);
-    dialogue.hide();
+    dialogue.close();
     scene.refreshRuntimeSurfaces();
   }
 }
@@ -200,7 +201,7 @@ export async function runCommands(
     scene.running = options.allowNested === true ? previousRunning : false;
     scene.lastActionTargetKey = "";
     scene.setInputEnabled(options.allowNested === true ? previousInputEnabled : true);
-    dialogue.hide();
+    dialogue.close();
     scene.refreshRuntimeSurfaces();
   }
 }
@@ -278,6 +279,7 @@ async function consumeBlockingStep(
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
         autoAdvance: step.autoAdvance === true,
+        emotion: step.emotion,
       });
       {
         const skipped = skipController.takeResult();

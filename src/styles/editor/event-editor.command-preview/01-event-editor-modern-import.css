@@ -207,6 +207,47 @@
   min-height: 120px;
 }
 .ecp-message-window.face-right { flex-direction: row-reverse; }
+
+/* === 프리뷰 「말투·연출」 진입 재생 ===
+   런타임과 **같은 keyframe** 을 쓴다. src/styles/dialogue.css 는 에디터 그래프에도
+   실려 있으므로(styles/index.css → runtime/playerRuntime.css → ../dialogue.css)
+   이름만 부르면 된다. 규칙을 다시 적는 이유는 셀렉터가 `.dialogue-box` 를 요구하는데
+   프리뷰 창은 `.ecp-message-window` 라서다.
+
+   감정→keyframe 짝이 런타임과 어긋나면 제작자가 고른 연출과 프리뷰가 달라진다.
+   test/dialoguePreviewPresentationCss.test.ts 가 두 선택자 집합을 대조해 잠근다. */
+.ecp-message-window[data-dialogue-phase] {
+  transform-origin: 50% 100%;
+}
+
+.ecp-message-window[data-dialogue-phase="enter"] {
+  animation: dialogue-box-enter var(--dialogue-enter-ms) var(--runtime-dialogue-enter-ease) both;
+}
+
+.ecp-message-window[data-dialogue-emotion="happy"][data-dialogue-phase="enter"],
+.ecp-message-window[data-dialogue-emotion="surprised"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-pop;
+}
+
+.ecp-message-window[data-dialogue-emotion="sad"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-soft;
+  animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+}
+
+.ecp-message-window[data-dialogue-motion="off"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-fade;
+  animation-timing-function: linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 런타임과 같은 특이도 셈. 감정별 animation-name 규칙이 (0,3,0) 이므로
+     [data-dialogue-emotion] 을 함께 붙여야 이 안전망이 이긴다. */
+  .ecp-message-window[data-dialogue-emotion][data-dialogue-phase="enter"] {
+    animation-name: dialogue-box-enter-fade;
+    animation-timing-function: linear;
+  }
+}
+
 .ecp-message-window.transparent {
   background: transparent;
   backdrop-filter: none;
