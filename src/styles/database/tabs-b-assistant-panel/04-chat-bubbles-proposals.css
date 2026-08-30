@@ -42,6 +42,17 @@
   grid-column: 1 / -1;
   min-width: 0;
 }
+/* 그리고 배치를 칩 하나에 맡기지 않는다 — 줄의 두 칸을 **주인이 직접** 잡는다.
+   프리픽스는 1열, 본문은 2열로 못 박으면 나중에 무엇이 어디로 꽂히든(칩·첨부·미래의 무엇)
+   자동 배치는 새 행으로 밀려나고 본문 칸을 훔칠 수 없다. 실측 근거: 칩을 본문의 형제로
+   꽂는 경로(`lastAssistant.after`)가 1열을 358px 로 벌려 본문을 0px 로 눌렀다. */
+.ai-command-row > .ai-command-prefix {
+  grid-column: 1;
+}
+.ai-command-row > .ai-command-row-body {
+  grid-column: 2;
+  min-width: 0;
+}
 /* 채팅 버블 — 프리미엄 가독성 (여백·대비·꼬리) */
 .ai-chat-bubble {
   border-radius: 14px;

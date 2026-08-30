@@ -377,15 +377,19 @@
 /* 3) 전체 기록을 열면 패널이 뷰포트 밖으로 나갔다.
    실측(float·glass + is-history-open): 패널 rect=306,49,520,800 인데 뷰포트는 800 —
    아래로 49px, 컴포저 입력은 18px 잘렸다. 원인은 08-studio-mode-start-screen.css:330 의
-   `height: 100vh; max-height: 100vh` 다. 패널은 `position: absolute` 로 `.canvas-area`
-   (톱바 아래 49px 에서 시작, overflow hidden) 안에 있으므로 100vh 는 호스트보다 정확히
-   톱바 높이만큼 크다. 호스트 기준(100%)으로 바꾸면 두 잘림이 함께 사라진다. */
+   `height: 100vh; max-height: 100vh` 다. 호스트는 항상 `.canvas-area`(톱바 아래 49px 에서
+   시작, overflow hidden) 이므로 100vh 는 호스트보다 정확히 톱바 높이만큼 크다.
+
+   이 상태에서 도크마다 패널의 포함 블록이 다른 것이 핵심이다 — 앞선 주석은 두 도크를 한
+   문장으로 뭉개 서로 모순됐다(재검토 지적). 실측으로 다시 쓴다:
+     - float: `.ai-chat-float-host`(position:absolute; inset:0) 안의 자식이라 이미 호스트 기준.
+     - glass: 도크 기하 규칙이 전부 `:not(.is-history-open)` 로 이 상태를 배제하므로 base 의
+       `position: fixed` 가 살아남고, 그러면 `height: 100%` 가 호스트(751px)가 아니라
+       **뷰포트**(800px) 기준으로 풀려 패널이 y=0..800 이 된다. 컴포저가 이 열의 제일 위라
+       (glass 는 `order: -1`) 입력창 상단 18px 가 `.canvas-area` 에 잘렸다.
+   그래서 이 상태에서만 둘을 호스트 기준(absolute + 100%)으로 못 박는다. float 에는 무해하고
+   glass 는 fixed 를 내려놓는다. */
 .ai-chat-panel.is-history-open:not(.chat-dock-side) {
-  /* `position` 까지 같이 바꿔야 하는 이지(2차 실측): glass 도킹은 패넌이 `position: fixed`
-     니, `height: 100%` 가 호스트(751px)가 아니라 **뷰포트**(800px)를 기준으로 해석된다.
-     그러면 패넌은 y=0..800 이 되어 톱바 높이만큼 위로 올라가고, 컴포저가 그 열의 제일 위라
-     (glass 는 `order: -1`) 입력창 상단 18px 가 `.canvas-area` 에 잘렸다.
-     float 도킹은 이미 호스트 기준 absolute 로 동작하므로 같은 기준으로 맞춘다. */
   position: absolute;
   height: 100%;
   max-height: 100%;
@@ -407,4 +411,3 @@
   right: auto;
   width: 100%;
 }
-

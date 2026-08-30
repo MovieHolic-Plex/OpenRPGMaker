@@ -1109,8 +1109,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     get autonomousRunState() { return autonomousRunState; },
     applyProposal: (calls, assistantBubble) => applyProposal(calls, assistantBubble),
     noteNoChanges: (result, extraWarnings) => noteNoChanges(result, extraWarnings),
-    emitChangeCard: (input) => emitChangeCard(input),
-    beginAutonomousRun: () => beginAutonomousRun(),
     endAutonomousRun: () => endAutonomousRun(),
     refreshAutonomousRunSurface: () => refreshAutonomousRunSurface(),
     appendMilestoneFeedLine: (kind, title, detail) => appendMilestoneFeedLine(kind, title, detail),

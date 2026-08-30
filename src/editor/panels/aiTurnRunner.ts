@@ -17,7 +17,7 @@ import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import type { AssistantSession, ProposedCall, SessionEvent, TurnResult } from "@/ai/assistantSession";
 import type { WorkPlan } from "@/ai/workPlan";
 import type { BuildSpec } from "@/ai/buildSpec";
-import type { AiDocument, Project } from "@/project/types";
+import type { AiDocument } from "@/project/types";
 import {
   beginAgentBlueprintTurn,
   commitAgentBlueprintProgress,
@@ -62,17 +62,8 @@ export interface AiTurnRunnerDeps {
   // ── 제안 · 변경 카드 ─────────────────────────────────────
   readonly applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<boolean>;
   readonly noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
-  readonly emitChangeCard: (input: {
-    readonly before: Project;
-    readonly after: Project;
-    readonly mapId: string;
-    readonly title: string;
-    readonly detail?: string;
-    readonly calls: readonly ProposedCall[];
-  }) => void;
 
   // ── 자율 런 표면 ─────────────────────────────────────────
-  readonly beginAutonomousRun: () => void;
   readonly endAutonomousRun: () => void;
   readonly refreshAutonomousRunSurface: () => void;
   readonly appendMilestoneFeedLine: (kind: "applied" | "apply-failed", title: string, detail: string) => void;

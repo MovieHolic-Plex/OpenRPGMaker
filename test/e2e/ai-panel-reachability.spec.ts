@@ -56,6 +56,33 @@ const SEED_CONVERSATION = {
     },
     { kind: "user", text: "길부터 깔아줘.", at: new Date().toISOString() },
     {
+      // 넓은 표·긴 URL·긴 린트 덤프를 한 자리에 모은 메시지 — 적대적 리뷰가 짚은 "시드가 단일
+      // 시나리오라 표/URL/작업기록이 판정에 안 들어온다"는 사각지대를 메운다. 긴 `pre` 는
+      // `foldWorkLogs` 가 `details.ai-work-log` 로 갈아 넣으므로, 펼침 단계에서 그 details 까지
+      // 열어야 비로소 판정 대상이 된다(아래 expandAll).
+      kind: "assistant",
+      text: [
+        "배치 전 린트 결과입니다. 상세는 발간 보고서를 보십시오:",
+        "https://example.invalid/rpg-zzu/reports/2026-08-30/layout-placement-validate/map_village_30_100x100/full-dump-with-a-very-long-unbreakable-path-segment.json",
+        "",
+        "| 항목 | 값 | 기준 | 범위 | 대상 | 처방 |",
+        "| --- | --- | --- | --- | --- | --- |",
+        "| 설명 없는 타일 | 15개 | 0개 | map_village_30_100x100 전역 | 12,13,44,45,46,47 | 설명 보강 |",
+        "| 겹친 구조물 | 2동 | 0동 | 광장 남쪽 (24,20)~(31,27) | shop_b, well_a | 한 칸 밀기 |",
+        "| 못 간 길 | 1군데 | 0군데 | 북문 (24,20) 앞 | road_seg_7 | 재포장 |",
+        "",
+        "```",
+        "layoutPlacementValidate: map_village_30_100x100",
+        "  warn  tree_count_zero        나무 0그루 — region 한정 보수로 전환함",
+        "  warn  overlap_structure      shop_b(24,20) ∩ well_a(25,21) — 1칸 겹침",
+        "  warn  unreachable_segment    road_seg_7(24,19) — 북문과 맞닿지 않음",
+        "  info  tile_desc_missing      15개(12,13,44,45,46,47,88,89,90,91,120,121,122,123,124)",
+        "  info  budget                 타일 42/57 설명 보유, 이벤트 20/32 사용",
+        "```",
+      ].join("\n"),
+      at: new Date().toISOString(),
+    },
+    {
       kind: "assistant",
       text: [
         "북쪽 숲 입구에서 광장 북문까지 폭 2칸 길을 깔았습니다.",
@@ -170,42 +197,85 @@ async function unreachable(page: Page): Promise<readonly Unreachable[]> {
     /**
      * 요소를 스톤롤로 끌어온다. `scrollIntoView` 를 샨다 — 그것은 어떤 스톤로포트를
      * 얼마만큼 움질지를 부라우서 헴리스틱으로 정하고(실측: 로그가 550px 더 움질 수
-     * 있는데 scrollTop=58 에서 멈추고 요소가 186px 밖에 남았다), 게이트가 그 헴리스틱을
+     * 있는데 scrollTop=58 에서 멈추고 요소가 186px 밖에 남았다), 게이트가 그 휴리스틱을
      * 검사하면 제품 결함과 분간이 안 된다. 지금은 사용자가 할 수 있는 일만 한다:
-     * 조상 스톤러를 살짝 안쪽부터 밖으로 한 칸씩 움진다.
+     * 조상 스크롤러를 안쪽부터 밖으로 한 칸씩 직접 움직인다.
      */
-    const bringIntoView = (node: HTMLElement): void => {
+    const scrollableX = (node: HTMLElement, style: CSSStyleDeclaration): boolean =>
+      /auto|scroll/u.test(style.overflowX) && node.scrollWidth > node.clientWidth + 1;
+    const scrollableY = (node: HTMLElement, style: CSSStyleDeclaration): boolean =>
+      /auto|scroll/u.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1;
+    // 판정이 실제로 만진 스크롤러만 기억한다 — 문서 전체를 0 으로 밀면 맵 트리·팔레트가
+    // 사용자가 보던 자리를 잃고 증거 스크린샷이 사용자 화면이 아니게 된다.
+    const touched = new Map<HTMLElement, { top: number; left: number }>();
+    const remember = (node: HTMLElement): void => {
+      if (!touched.has(node)) touched.set(node, { top: node.scrollTop, left: node.scrollLeft });
+    };
+    /**
+     * 어떤 스크롤러가 실제로 보여줄 수 있는 사각형은 자기 박스가 아니라, **자기 박스와 자기를
+     * 자르는 모든 조상 박스의 교집합**이다. 실측(1024x768 side): 로그 박스는 아래로 더
+     * 뻗어 있는데 `.ai-rising-overlay` 가 그 아래를 잘라, 로그 박스 기준으로 맞추면 요소가
+     * 여전히 64px 가려진 채 "다 끌어왔다" 고 판정됐다 — 사용자는 더 스크롤할 수 있었다.
+     */
+    const visibleBox = (node: HTMLElement): { top: number; bottom: number; left: number; right: number } => {
+      const r = node.getBoundingClientRect();
+      let box = { top: r.top, bottom: r.bottom, left: r.left, right: r.right };
       for (let cursor = node.parentElement; cursor; cursor = cursor.parentElement) {
         const s = getComputedStyle(cursor);
-        const scrolls = /auto|scroll/u.test(`${s.overflowX}${s.overflowY}`);
-        if (scrolls) {
-          const box = cursor.getBoundingClientRect();
-          const rect = node.getBoundingClientRect();
-          if (rect.bottom > box.bottom) cursor.scrollTop += rect.bottom - box.bottom;
-          else if (rect.top < box.top) cursor.scrollTop -= box.top - rect.top;
-          if (rect.right > box.right) cursor.scrollLeft += rect.right - box.right;
-          else if (rect.left < box.left) cursor.scrollLeft -= box.left - rect.left;
+        if (clips(s, "x") || clips(s, "y") || /auto|scroll/u.test(`${s.overflowX}${s.overflowY}`)) {
+          const c = cursor.getBoundingClientRect();
+          box = {
+            top: Math.max(box.top, c.top),
+            bottom: Math.min(box.bottom, c.bottom),
+            left: Math.max(box.left, c.left),
+            right: Math.min(box.right, c.right),
+          };
         }
         if (cursor === document.body) break;
+      }
+      return box;
+    };
+    /**
+     * 요소를 한 **가장자리** 기준으로 끌어온다. 왜 가장자리별인가: 요소가 보이는 영역보다
+     * 크면(긴 답변 본문·펼친 실패 상세) 위아래를 동시에 보이게 할 수 없다 — 아래를 맞추면
+     * 위가 나가고, 위를 맞추면 아래가 나간다. 한 함수로 둘을 다 맞추려 하면 두 패스가
+     * 서로를 되돌리며 진동하고, 그 잔량이 "잘림" 으로 보고된다(실측: 11건 가짜 양성).
+     * 사람은 그런 자료를 훑어 읽는다 — 그래서 판정도 "이 가장자리를 볼 수 있나" 를 따로 묻는다.
+     */
+    const align = (node: HTMLElement, edge: "start" | "end"): void => {
+      // 두 번 돈다: 안쪽 스크롤러를 움직이면 바깥 스크롤러 기준 좌표가 바뀐다.
+      for (let pass = 0; pass < 2; pass += 1) {
+        for (let cursor = node.parentElement; cursor; cursor = cursor.parentElement) {
+          const s = getComputedStyle(cursor);
+          const box = visibleBox(cursor);
+          const rect = node.getBoundingClientRect();
+          // 축은 반드시 따로 본다. `overflow-x: hidden; overflow-y: auto` 를 한 불리언으로
+          // 합치면 가로로 못 움직이는 상자에도 scrollLeft 를 쓰게 되는데 Chromium 은 그 쓰기를
+          // 받아들인다 — 사용자가 절대 볼 수 없는 가로 잘림이 게이트에서 사라진다(가짜 음성).
+          if (scrollableY(cursor, s)) {
+            remember(cursor);
+            if (edge === "end") { if (rect.bottom > box.bottom) cursor.scrollTop += rect.bottom - box.bottom; }
+            else if (rect.top < box.top) cursor.scrollTop -= box.top - rect.top;
+          }
+          if (scrollableX(cursor, s)) {
+            remember(cursor);
+            if (edge === "end") { if (rect.right > box.right) cursor.scrollLeft += rect.right - box.right; }
+            else if (rect.left < box.left) cursor.scrollLeft -= box.left - rect.left;
+          }
+          if (cursor === document.body) break;
+        }
       }
     };
 
     const hits: Unreachable[] = [];
-    // 판정은 스톤을 움직이므로 끝나면 원래 자리로 되돌린다 — 그러지 않으면 이후의 상태와
-    // 증거 스톤샷이 사용자가 보는 화면이 아니게 된다.
-    const scrollMemo = [...document.querySelectorAll<HTMLElement>("*")]
-      .filter((node) => node.scrollTop !== 0 || node.scrollLeft !== 0)
-      .map((node) => ({ node, top: node.scrollTop, left: node.scrollLeft }));
     for (const node of targets) {
-      bringIntoView(node);
-      const rect = node.getBoundingClientRect();
-      if (rect.width < 4 || rect.height < 4) continue;
+      align(node, "end");
+      if (node.getBoundingClientRect().height < 4 || node.getBoundingClientRect().width < 4) continue;
       let worst: Unreachable | null = null;
       const scrollerInfo = ((): string => {
         for (let cursor = node.parentElement; cursor; cursor = cursor.parentElement) {
           const s = getComputedStyle(cursor);
-          const scrolls = /auto|scroll/u.test(`${s.overflowX}${s.overflowY}`);
-          if (scrolls) {
+          if (scrollableX(cursor, s) || scrollableY(cursor, s)) {
             return `${label(cursor)} client=${cursor.clientHeight} scroll=${cursor.scrollHeight} top=${Math.round(cursor.scrollTop)}`;
           }
           if (cursor === document.body) break;
@@ -221,28 +291,31 @@ async function unreachable(page: Page): Promise<readonly Unreachable[]> {
           scroller: scrollerInfo,
         };
       };
-      for (let parent = node.parentElement; parent; parent = parent.parentElement) {
-        const s = getComputedStyle(parent);
-        const clipX = clips(s, "x");
-        const clipY = clips(s, "y");
-        if (clipX || clipY) {
+      /** 이 가장자리를 끌어온 뒤에도 남은 초과분만 센다 — 반대쪽 가장자리는 이 패스의 관심이 아니다. */
+      const measure = (edge: "start" | "end"): void => {
+        const rect = node.getBoundingClientRect();
+        for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+          const s = getComputedStyle(parent);
           const box = parent.getBoundingClientRect();
-          if (clipX) record(label(parent), Math.max(box.left - rect.left, rect.right - box.right), "x");
-          if (clipY) record(label(parent), Math.max(box.top - rect.top, rect.bottom - box.bottom), "y");
+          if (clips(s, "y")) {
+            record(label(parent), edge === "end" ? rect.bottom - box.bottom : box.top - rect.top, "y");
+          }
+          if (clips(s, "x")) {
+            record(label(parent), edge === "end" ? rect.right - box.right : box.left - rect.left, "x");
+          }
+          if (parent === document.body) break;
         }
-        if (parent === document.body) break;
-      }
-      record("viewport", Math.max(-rect.left, rect.right - window.innerWidth), "x");
-      record("viewport", Math.max(-rect.top, rect.bottom - window.innerHeight), "y");
+        record("viewport", edge === "end" ? rect.bottom - window.innerHeight : -rect.top, "y");
+        record("viewport", edge === "end" ? rect.right - window.innerWidth : -rect.left, "x");
+      };
+      measure("end");
+      align(node, "start");
+      measure("start");
       if (worst) hits.push(worst);
     }
-    for (const node of document.querySelectorAll<HTMLElement>("*")) {
-      if (node.scrollTop !== 0) node.scrollTop = 0;
-      if (node.scrollLeft !== 0) node.scrollLeft = 0;
-    }
-    for (const memo of scrollMemo) {
-      memo.node.scrollTop = memo.top;
-      memo.node.scrollLeft = memo.left;
+    for (const [node, memo] of touched) {
+      node.scrollTop = memo.top;
+      node.scrollLeft = memo.left;
     }
     return hits;
   });
@@ -289,20 +362,28 @@ async function horizontalDrift(page: Page): Promise<readonly string[]> {
  * 밀어낸 것이었다(본문 rect 0×485). 스크롤로는 복구되지 않으므로 별도 계약으로 못 박는다.
  */
 async function squeezed(page: Page): Promise<readonly string[]> {
-  return await page.evaluate(() => {
-    const hits: string[] = [];
-    for (const body of document.querySelectorAll<HTMLElement>(".ai-chat-log .ai-command-row-body")) {
-      const text = (body.textContent ?? "").trim();
-      if (text.length < 8) continue;
-      const row = body.closest<HTMLElement>(".ai-command-row");
-      const rowWidth = row?.getBoundingClientRect().width ?? 0;
-      if (rowWidth < 80) continue; // 접힌/숨은 줄은 판정하지 않는다.
-      const width = body.getBoundingClientRect().width;
-      if (width >= rowWidth * 0.5) continue;
-      hits.push(`본문 ${Math.round(width)}px / 줄 ${Math.round(rowWidth)}px :: ${text.slice(0, 24)}`);
-    }
-    return hits;
-  });
+  // 두 프레임에 걸쳐 두 번 재고 **둘 다** 눌렸을 때만 보고한다. 한 번만 재면 칩 렌더가
+  // 끼어든 순간의 과도 상태를 잡아 게이트가 흔들린다(실측: 같은 코드로 8건 → 0건).
+  const sample = async (): Promise<readonly string[]> =>
+    await page.evaluate(() => {
+      const hits: string[] = [];
+      for (const body of document.querySelectorAll<HTMLElement>(".ai-chat-log .ai-command-row-body")) {
+        const text = (body.textContent ?? "").trim();
+        if (text.length < 8) continue;
+        const row = body.closest<HTMLElement>(".ai-command-row");
+        const rowWidth = row?.getBoundingClientRect().width ?? 0;
+        if (rowWidth < 80) continue; // 접힌/숨은 줄은 판정하지 않는다.
+        const width = body.getBoundingClientRect().width;
+        if (width >= rowWidth * 0.5) continue;
+        hits.push(`본문 ${Math.round(width)}px / 줄 ${Math.round(rowWidth)}px :: ${text.slice(0, 24)}`);
+      }
+      return hits;
+    });
+  const first = await sample();
+  if (first.length === 0) return first;
+  await page.evaluate(() => new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done()))));
+  const second = await sample();
+  return first.filter((line) => second.includes(line));
 }
 
 const VIEWPORTS = [
@@ -333,6 +414,10 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
       await click(page, "ai-turn-group-toggle");
       await page.evaluate(() => {
         for (const node of document.querySelectorAll<HTMLElement>(".ai-tool-activity-toggle")) node.click();
+        // 접힌 `<details>`(작업 기록 `details.ai-work-log`, 실패 상세 `.ai-tool-failure`)도 전부 연다 —
+        // 판정에서 닫힌 details 를 제외하므로(Chromium 이 버려진 기하를 돌려준다), 열지 않으면
+        // 그 안의 `pre`·표가 영원히 사각지대로 남는다(적대적 리뷰 중대 ①).
+        for (const node of document.querySelectorAll<HTMLDetailsElement>(".ai-chat-log details")) node.open = true;
       });
       if (viewport.name === "1280x800") {
         await page.screenshot({ path: path.join(OUT, `${applied}-2-expanded.png`) });
@@ -343,6 +428,15 @@ test("조수 패널의 어떤 요소도 스크롤 후에 잘려 남지 않는다
       if (viewport.name === "1280x800") {
         await page.screenshot({ path: path.join(OUT, `${applied}-3-after-probe.png`) });
       }
+
+      // 펼침은 다시 접고 나간다. 턴 그룹 토글은 `is-collapsed` 를 뒤집기만 하고 툴 항목은
+      // `list.hidden = !list.hidden` 이라, 되돌리지 않으면 다음 독(float·glass)의 "기본"
+      // 상태 재기가 사실은 펼친 상태가 된다 — 기본 상태는 side 만 검사되고 있었다(재검토 지적).
+      await page.evaluate(() => {
+        for (const node of document.querySelectorAll<HTMLElement>(".ai-tool-activity-toggle")) node.click();
+      });
+      await click(page, "ai-turn-group-toggle");
+      await expect(page.locator(".ai-turn-group.is-collapsed").first()).toBeAttached();
 
       await click(page, "ai-dock-toggle");
       if (viewport.name === "1280x800") {

@@ -34,6 +34,7 @@ export interface AiRunSurface {
   // ── 가변 실행 상태(소유자는 패널) ─────────────────────────
   turnBusy: boolean;
   readonly disposed: boolean;
+  /** 두 런너는 턴 시작에서 `false` 로 되돌리기만 한다 — 읽는 곳은 패널의 중단 경로다. */
   abortNoticeShown: boolean;
   activeAbortController: AbortController | null;
   collapseAfterAiWork: boolean;

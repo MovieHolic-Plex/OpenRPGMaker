@@ -43,6 +43,14 @@ describe("커맨드 줄 안에 꽂히는 상자는 그리드 배치를 명시한
     expect(body).toMatch(/grid-template-columns:\s*auto\s+minmax\(0,\s*1fr\)/u);
   });
 
+  it("두 칸의 주인이 직접 칸을 잡는다 — 배치를 칩 규칙 하나에 맡기면 다음에 꽂히는 상자가 또 훔친다", () => {
+    const css = read(BUBBLES_CSS);
+    expect(ruleBody(css, ".ai-command-row > .ai-command-prefix")).toMatch(/grid-column:\s*1\b/u);
+    const body = ruleBody(css, ".ai-command-row > .ai-command-row-body");
+    expect(body).toMatch(/grid-column:\s*2\b/u);
+    expect(body).toMatch(/min-width:\s*0/u);
+  });
+
   it("칩은 여전히 마지막 답변 줄 안에 꽂힌다 — 줄 밖으로 옮기면 위 규칙이 아니라 DOM 이 계약이다", () => {
     expect(read(PANEL_TS)).toMatch(/lastAssistant\.after\(chipsHost\)/u);
   });
