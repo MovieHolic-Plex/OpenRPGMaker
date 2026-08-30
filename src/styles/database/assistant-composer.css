@@ -70,6 +70,47 @@
   color: var(--text-1);
 }
 
+/* 방금 적용한 AI 변경 되돌리기. 구 `.ai-completion-strip` 밴드(맵 위 fixed)를 대체한다 —
+   같은 액션 행에 살면서 28px 고정 높이를 지키므로 바 높이/clearance 를 건드리지 않는다.
+   색은 행의 다른 버튼과 같은 토큰만 쓴다(밴드는 --accent 42% 테두리로 혼자 튀었다). */
+.ai-composer-undo {
+  align-items: center;
+  background: var(--control-bg, transparent);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 4px;
+  height: 28px;
+  line-height: 1;
+  min-height: 0;
+  padding: 0 10px;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.ai-composer-undo::before {
+  content: "↩";
+  font-size: 12px;
+}
+
+.ai-composer-undo:hover,
+.ai-composer-undo:focus-visible {
+  background: var(--control-bg-hover);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+  outline: none;
+}
+
+.ai-composer-undo[hidden] {
+  display: none;
+}
+
 /* 메뉴 항목 우측의 단축키 배지(예: 스킬 찾기 `/`). */
 .ai-command-menu-key {
   border: 1px solid var(--border-default);

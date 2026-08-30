@@ -7,6 +7,7 @@
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, peekPreviousProject, undoMapEdit } from "@/editor/mapEditHistory";
 import {
   clearAiApplyCompletion,
+  completionUndoIsCurrent,
   publishAiApplyCompletion,
   subscribeAiApplyCompletion,
   type AiApplyCompletionContext,
@@ -89,7 +90,6 @@ import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
 import { createDirectorRestoreButton } from "./aiDirectorChrome";
 // queueController extracted for future use — reserved (aiQueueController.ts).
-import { buildAiCompletionStrip, type AiCompletionStripHandle } from "./aiCompletionStrip";
 import { openAiSettingsModal } from "./aiSettingsModal";
 import {
   directorStartPrompts,
@@ -2261,6 +2261,42 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   refreshUndoLastButton();
   if (typeof window !== "undefined") window.addEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
+
+  // 적용 직후 되돌리기 — 컴포저 액션 행에 사는 유일한 상시 표면. 맵 위 `ai-completion-strip`
+  // 밴드를 대체한다(2026-08-30). 밴드가 하던 두 일 중 요약은 변경 카드 제목이 이미 같은
+  // 문장(proposalHumanSummaryLine)으로 들고 있어 중복이었고, 남은 하나가 이 버튼이다.
+  // 동작은 ☰ 메뉴·숨은 툴바 훅과 같은 `undoLastButton` 으로 위임한다 — 되돌리기 경로가
+  // 갈라지면 배지("되돌림")와 시스템 말풍선이 진입점마다 달라진다.
+  let appliedCompletion: AiApplyCompletionContext | null = null;
+  const undoAppliedButton = el("button", {
+    class: "ai-composer-undo",
+    text: "되돌리기",
+    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "방금 적용한 AI 변경 되돌리기" },
+    dataset: { testid: "ai-composer-undo" },
+    on: {
+      click: () => {
+        const context = appliedCompletion;
+        if (!context || !completionUndoIsCurrent(context)) {
+          refreshUndoApplied();
+          return;
+        }
+        undoLastButton.click();
+        clearAiApplyCompletion(context);
+      },
+    },
+  }) as HTMLButtonElement;
+  // 되돌릴 수 있을 때만 존재한다 — 히스토리 top 이 AI 체크포인트가 아니게 되면(사용자가
+  // 직접 편집했거나 이미 되돌렸다) 누를 수 없는 버튼을 남기지 않고 행에서 빼 버린다.
+  const refreshUndoApplied = (): void => {
+    const context = appliedCompletion;
+    const active = Boolean(context && completionUndoIsCurrent(context));
+    undoAppliedButton.hidden = !active;
+    undoAppliedButton.setAttribute("aria-hidden", String(!active));
+    if (active && context) {
+      undoAppliedButton.setAttribute("title", `방금 적용한 변경 되돌리기 — ${context.summary}`);
+    }
+  };
+  refreshUndoApplied(); // 부트 직후는 되돌릴 AI 변경이 없다 — 속성과 프로퍼티를 함께 맞춘다.
   let studio = typeof localStorage !== "undefined" && localStorage.getItem(STUDIO_MODE_KEY) === "1";
   let historyOpen = false;
   let applyHistoryOpen: (next: boolean) => void = () => {};
@@ -2534,6 +2570,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseButton,
     sendButton,
     abortButton,
+    undoAppliedButton,
     contextChips,
     composerChips,
     queueIndicator,
@@ -2557,17 +2594,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   volatileZone.classList.add("ai-volatile-dashed");
   volatileZone.setAttribute("title", "휘발 영역 — 대화가 비어 있을 때 접히고, 입력 포커스 시 펼쳐집니다");
   volatileLogMount.hidden = true;
-  const completionHost = el("div", {
-    class: "ai-completion-host",
-    dataset: { testid: "ai-completion-host" },
-  });
   const stickyProposalZone = el("div", {
     class: "ai-rising-sticky-zone",
     dataset: { testid: "ai-rising-sticky-zone" },
-    // 적용 완료 액션과 0건 알림을 맵 위에서 잃지 않는 고정 영역에 둔다.
-    children: [completionHost, proposalNoticeHost],
+    // 0건 알림을 맵 위에서 잃지 않는 고정 영역. 적용 완료 스트립(`ai-completion-host`)은
+    // 여기 살았지만 2026-08-30 에 걷었다 — 요약은 변경 카드가, 되돌리기는 컴포저 액션
+    // 행의 `ai-composer-undo` 가 맡는다(맵 위 떠 있는 밴드는 팔레트도 어긋났다).
+    children: [proposalNoticeHost],
   });
-  // 오버레이는 **휘발 로그 전용**이다. 완료 스트립/알림(stickyProposalZone)은 여기 두면
+  // 오버레이는 **휘발 로그 전용**이다. 0건 알림(stickyProposalZone)은 여기 두면
   // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로 기본 도크인 유리와 float 에서는
   // 스티키 존이 문서에서 빠진다. 도크와 무관하게 패널 자식으로 붙이고 위치는 CSS가 잡는다.
   const risingOverlay = el("div", {
@@ -3043,16 +3078,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   applyGlassFold();
   refreshSendEnabled(); // 부트 직후도 보낼 게 없으므로 전송은 비활성에서 시작해야 한다.
 
-  let completionStripHandle: AiCompletionStripHandle | null = null;
+  // 적용 결과 스토어는 이제 컴포저의 되돌리기 버튼 하나만 구동한다(맵 위 밴드 없음).
+  // 히스토리 이벤트도 같이 듣는다 — 사용자가 직접 편집하면 AI 체크포인트가 top 에서
+  // 밀리므로 그 순간 버튼이 사라져야 한다(`completionUndoIsCurrent`).
   const renderCompletion = (context: AiApplyCompletionContext | null): void => {
-    completionStripHandle?.dispose();
-    completionStripHandle = null;
-    completionHost.replaceChildren();
-    if (!context || disposed) return;
-    completionStripHandle = buildAiCompletionStrip({ context });
-    completionHost.append(completionStripHandle.element);
+    appliedCompletion = disposed ? null : context;
+    refreshUndoApplied();
   };
   const unsubscribeCompletion = subscribeAiApplyCompletion(renderCompletion);
+  if (typeof window !== "undefined") window.addEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoApplied);
 
   applyHistoryOpen = (next: boolean): void => {
     historyOpen = next;
@@ -3386,8 +3420,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     unsubscribeContextEditor();
     unsubscribeContextStore();
     unsubscribeCompletion();
-    completionStripHandle?.dispose();
-    completionStripHandle = null;
+    appliedCompletion = null;
     commandBarClearanceObserver?.disconnect();
     composerShell.dispose();
 
@@ -3395,6 +3428,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       window.removeEventListener("resize", onViewportResize);
       window.removeEventListener(AI_SELECTION_CONTEXT_EVENT, handleSelectionContextEvent);
       window.removeEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
+      window.removeEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoApplied);
       if (window.__oprnAiHarness === harnessAccessor) delete window.__oprnAiHarness;
       if (ownsCommandPaletteHotkey) {
         document.removeEventListener?.("keydown", onCommandPaletteKeyDown);

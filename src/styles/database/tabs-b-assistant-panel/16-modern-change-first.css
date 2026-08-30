@@ -585,13 +585,6 @@
   overflow-wrap: anywhere;
 }
 
-.ai-completion-strip {
-  border-radius: var(--radius-l);
-  gap: var(--space-2);
-  line-height: 1.6;
-  padding: var(--space-2) var(--space-3);
-}
-
 /* ── 5. 모션 감축 ───────────────────────────────────────────────
    위에서 추가한 전환은 전부 무효화한다(clip-path 는 JS 가 직접 세우므로 전환 대상이 아니다). */
 @media (prefers-reduced-motion: reduce) {

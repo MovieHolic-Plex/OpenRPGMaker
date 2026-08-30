@@ -44,6 +44,8 @@ export interface ComposerOptions {
   readonly collapseButton: HTMLButtonElement;
   readonly sendButton: HTMLButtonElement;
   readonly abortButton: HTMLButtonElement;
+  /** 방금 적용한 AI 변경 되돌리기 — 되돌릴 게 있을 때만 보인다(패널이 hidden 을 관리). */
+  readonly undoAppliedButton: HTMLButtonElement;
   readonly contextChips: HTMLElement;
   readonly composerChips: HTMLElement;
   readonly queueIndicator: HTMLElement;
@@ -103,7 +105,18 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
         class: "ai-composer-actions-lead",
         // 접기(#5efa6611) 와 새 대화(#198) 는 둘 다 이 고정 행의 왼쪽에 산다 — 한쪽이 다른 쪽을
         // 밀어내면 도크별 접기나 새 대화 진입점이 사라진다.
-        children: [options.collapseButton, newChatButton, commandMenuToggle, options.contextChips, options.queueIndicator],
+        // 되돌리기는 ☰ 다음 자리다 — 예전엔 맵 위에 뜨는 `ai-completion-strip` 밴드가
+        // 이 일을 했지만(요약 + 되돌리기), 도크와 무관한 fixed 밴드라 팔레트도 어긋나고
+        // 변경 카드 제목과 요약이 그대로 겹쳤다(2026-08-30 감독 지시로 밴드 제거).
+        // 이 행은 고정 높이라 버튼이 켜져도 바 높이가 변하지 않는다 — clearance 재측정 없음.
+        children: [
+          options.collapseButton,
+          newChatButton,
+          commandMenuToggle,
+          options.undoAppliedButton,
+          options.contextChips,
+          options.queueIndicator,
+        ],
       }),
       el("div", {
         class: "ai-composer-actions-trail",
