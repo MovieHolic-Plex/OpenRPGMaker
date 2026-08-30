@@ -18,6 +18,7 @@ import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSugg
 import { structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID, type InteriorRoomTheme } from "@/editor/interiorRoomPipeline";
+import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import {
   albumEntries,
   albumEntryId,
@@ -204,13 +205,18 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   const selectedKit = selectedEntry?.kind === "kit" ? selectedEntry.kit : null;
   const selectedObject = selectedEntry?.kind === "object" ? selectedEntry.object : null;
 
-  // 헤더
+  // 헤더 — 설명문 대신 아이콘 칩. 원래 문장은 "타일셋에 묶입니다. 한 타일셋의 구조물은 다른
+  // 타일셋에 섞이지 않습니다." 였고 두 줄 75.7px 을 먹었다. 사실은 하나뿐이라 칩 하나로 옮긴다.
   host.append(
     el("header", {
       class: "db-tab-note",
       children: [
         el("h3", { text: "구조물", dataset: { testid: "structure-kit-heading" } }),
-        el("p", { text: "타일셋에 묶입니다. 한 타일셋의 구조물은 다른 타일셋에 섞이지 않습니다." }),
+        el("span", {
+          class: "db-tab-note-chip",
+          children: [makeDatabaseTabIcon("tilesets"), el("span", { text: "타일셋별로 분리됨" })],
+          attrs: { title: "한 타일셋의 구조물은 다른 타일셋에 섞이지 않습니다." },
+        }),
       ],
     }),
   );
