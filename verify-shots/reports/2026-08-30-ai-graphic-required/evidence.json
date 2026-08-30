@@ -1,0 +1,123 @@
+{
+  "enemyToolResults": [
+    {
+      "id": "enemy_ai_skeleton_archer",
+      "name": "해골 궁수",
+      "summary": "적 '해골 궁수' 추가",
+      "warnings": [
+        "enemy.monsterResourceId 누락 → 이름 \"해골 궁수\" 으로 \"generated-enemy-skeleton-archer\" 를 붙였습니다. 다른 외형을 원하면 list_resources(kind:\"monster\")로 고른 뒤 다시 지정하세요."
+      ]
+    },
+    {
+      "id": "enemy_ai_cave_bat",
+      "name": "동굴 박쥐",
+      "summary": "적 '동굴 박쥐' 추가",
+      "warnings": [
+        "enemy.monsterResourceId 누락 → 이름 \"동굴 박쥐\" 으로 \"generated-enemy-bat-cave\" 를 붙였습니다. 다른 외형을 원하면 list_resources(kind:\"monster\")로 고른 뒤 다시 지정하세요."
+      ]
+    },
+    {
+      "id": "enemy_ai_blue_slime",
+      "name": "푸른 슬라임",
+      "summary": "적 '푸른 슬라임' 추가",
+      "warnings": [
+        "enemy.monsterResourceId 누락 → 이름 \"푸른 슬라임\" 으로 \"generated-enemy-slime-blue\" 를 붙였습니다. 다른 외형을 원하면 list_resources(kind:\"monster\")로 고른 뒤 다시 지정하세요."
+      ]
+    },
+    {
+      "id": "enemy_ai_stone_golem",
+      "name": "돌 골렘",
+      "summary": "적 '돌 골렘' 추가",
+      "warnings": [
+        "enemy.monsterResourceId 누락 → 이름 \"돌 골렘\" 으로 \"generated-enemy-golem-stone\" 를 붙였습니다. 다른 외형을 원하면 list_resources(kind:\"monster\")로 고른 뒤 다시 지정하세요."
+      ]
+    },
+    {
+      "id": "enemy_ai_fire_spirit",
+      "name": "불의 정령",
+      "summary": "적 '불의 정령' 추가",
+      "warnings": [
+        "enemy.monsterResourceId 누락 → 이름 \"불의 정령\" 으로 \"generated-enemy-spirit-01\" 를 붙였습니다. 다른 외형을 원하면 list_resources(kind:\"monster\")로 고른 뒤 다시 지정하세요."
+      ]
+    },
+    {
+      "id": "enemy_ai_red_dragon",
+      "name": "붉은 용",
+      "summary": "적 '붉은 용' 추가",
+      "warnings": [
+        "enemy.monsterResourceId 누락 → 이름 \"붉은 용\" 으로 \"generated-enemy-dragon-red\" 를 붙였습니다. 다른 외형을 원하면 list_resources(kind:\"monster\")로 고른 뒤 다시 지정하세요."
+      ]
+    }
+  ],
+  "speciesResult": {
+    "summary": "몬스터 species '푸른 슬라임' 추가",
+    "warnings": [
+      "species.graphic.monsterResourceId 누락 → 이름 \"푸른 슬라임\" 으로 \"generated-enemy-slime-blue\" 를 붙였습니다. 다른 외형을 원하면 list_resources(kind:\"monster\")로 고른 뒤 다시 지정하세요."
+    ]
+  },
+  "npcResult": {
+    "summary": "이슬 장터 마을에 이벤트 'ev_ai_talker' 추가 — 미지원 커맨드 0건",
+    "warnings": [
+      "ev_ai_talker.pages[0]: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, 다른 외형이 필요하면 place_npc {graphic:{query:\"…\"}} 를 쓰세요.",
+      "ev_ai_talker.pages[0]: 필수 페이지 필드 자동 보완 — id, name, trigger(action), priority, movement"
+    ]
+  },
+  "assignedGraphics": {
+    "enemies": [
+      {
+        "id": "enemy_ai_skeleton_archer",
+        "name": "해골 궁수",
+        "monsterResourceId": "generated-enemy-skeleton-archer"
+      },
+      {
+        "id": "enemy_ai_cave_bat",
+        "name": "동굴 박쥐",
+        "monsterResourceId": "generated-enemy-bat-cave"
+      },
+      {
+        "id": "enemy_ai_blue_slime",
+        "name": "푸른 슬라임",
+        "monsterResourceId": "generated-enemy-slime-blue"
+      },
+      {
+        "id": "enemy_ai_stone_golem",
+        "name": "돌 골렘",
+        "monsterResourceId": "generated-enemy-golem-stone"
+      },
+      {
+        "id": "enemy_ai_fire_spirit",
+        "name": "불의 정령",
+        "monsterResourceId": "generated-enemy-spirit-01"
+      },
+      {
+        "id": "enemy_ai_red_dragon",
+        "name": "붉은 용",
+        "monsterResourceId": "generated-enemy-dragon-red"
+      }
+    ],
+    "species": [
+      {
+        "id": "species_ai_blue_slime",
+        "name": "푸른 슬라임",
+        "monsterResourceId": "generated-enemy-slime-blue"
+      }
+    ],
+    "npcSprite": "tex_easyrpg_charset_people1",
+    "npcTransparent": null
+  },
+  "refillWarnings": [
+    "enemy.monsterResourceId 누락 → 이름 \"해골 궁수\" 으로 \"generated-enemy-skeleton-archer\" 를 붙였습니다. 다른 외형을 원하면 list_resources(kind:\"monster\")로 고른 뒤 다시 지정하세요."
+  ],
+  "indoorNpcResult": {
+    "mapId": "map_house_interior_30_map_village_30_100x100_1",
+    "summary": "민재의 집 내부에 이벤트 'ev_ai_talker_indoor' 추가 — 미지원 커맨드 0건",
+    "warnings": [
+      "ev_ai_talker_indoor.pages[0]: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, 다른 외형이 필요하면 place_npc {graphic:{query:\"…\"}} 를 쓰세요.",
+      "ev_ai_talker_indoor.pages[0]: 필수 페이지 필드 자동 보완 — id, name, trigger(action), priority, movement"
+    ]
+  },
+  "indoorNpcSprite": {
+    "sprite": "tex_easyrpg_charset_people1",
+    "transparent": null
+  }
+}
