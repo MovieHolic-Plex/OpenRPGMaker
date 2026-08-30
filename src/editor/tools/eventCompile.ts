@@ -3,7 +3,6 @@
 // graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
 import { faceGraphicFromEventGraphic, faceGraphicForCharset } from "@/assets/charsetFaceMap";
-import { shadowedPageWarnings } from "@/project/eventPageShadow";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { searchResources } from "@/assets/resourceSearch";
@@ -400,8 +399,9 @@ export function compileSimplePages(
   const compiled = pages.map((page, index) =>
     compileSimplePage(`${idPrefix}_p${index}`, name, page, graphic, { ...options, path: `pages[${index}]` })
   );
-  // 여기서 경고를 내야 모델이 같은 턴에 고칠 수 있다 — 린트는 사용자가 돌려야 보인다.
-  for (const warning of shadowedPageWarnings(`'${name}'`, compiled)) options.warnings?.push(warning);
+  // 죽은 페이지 판정은 여기서 하지 않는다. place_npc·make_villager 는 둘 다 뒤에서
+  // assertEventShape(event, warnings) 로 끝나는데, 그쪽이 **나중에 덧붙는 페이지**
+  // (friendshipUnlock·상점)까지 본다. 양쪽에서 내면 같은 결함이 두 번 보고돼 하나가 둘로 보인다.
   return compiled;
 }
 

@@ -343,3 +343,41 @@ describe("make_villager does not ship dead pages of its own", () => {
     expect(warnings).not.toContain("m2-211-weighted-branch");
   });
 });
+
+describe("diagnostics are reported once and cannot crash a project load", () => {
+  it("place_npc reports each dead page exactly once", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "place_npc", {
+      mapId: ctx.project.startMapId,
+      x: 3,
+      y: 3,
+      id: "gossip_once",
+      name: "\uc7a1\ud654\uc0c1",
+      pages: [{ lines: ["a"] }, { lines: ["b"] }, { lines: ["c"] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const warnings = (result.diff?.warnings ?? []) as readonly string[];
+    const deadLines = warnings.filter((warning) => warning.includes("\uc808\ub300 \ubc1c\ub3d9\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4"));
+    // 죽은 페이지 2장 → 2줄. 같은 줄이 두 번 나오면 하나의 결함이 둘로 보인다.
+    expect(deadLines).toHaveLength(2);
+    expect(new Set(deadLines).size).toBe(deadLines.length);
+    expect(warnings.filter((warning) => warning.includes("m2-211-weighted-branch"))).toHaveLength(1);
+  });
+
+  it("survives a self-referential command graph instead of throwing", () => {
+    const looping = { kind: "fork", condition: { kind: "switch", switchId: "s", value: true } } as Record<string, unknown>;
+    looping.then = [looping];
+    const event = {
+      id: "cyclic",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        { ...page("p1"), commands: [looping as unknown as Command] },
+        page("p2", [{ kind: "selfSwitch", key: "A", value: true }]),
+      ],
+    } as unknown as GameEvent;
+    expect(() => findUnwrittenSelfSwitchGates(event)).not.toThrow();
+  });
+});

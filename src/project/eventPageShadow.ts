@@ -119,12 +119,18 @@ const EXTERNAL_CONTROL_TRANSFER_KINDS: ReadonlySet<Command["kind"]> = new Set([
   "battleProcessing",
 ]);
 
+// 진짜 커맨드 트리는 수십 단계를 넘지 않는다. 상한을 두는 이유는 깊이가 아니라 **순환**이다 —
+// 이 판정기는 projectLint 를 타고 프로젝트 로드마다 돌므로, 자기 자신을 참조하는 객체 하나에
+// RangeError 로 죽으면 경고 하나를 놓치는 것이 아니라 로드가 통째로 실패한다.
+const MAX_COMMAND_WALK_DEPTH = 64;
+
 /** Walk every nested value because command arrays can appear below arrays of branch records. */
-function collectSelfSwitchWrites(value: unknown, into: Set<string>): boolean {
+function collectSelfSwitchWrites(value: unknown, into: Set<string>, depth = 0): boolean {
+  if (depth > MAX_COMMAND_WALK_DEPTH) return true;
   if (Array.isArray(value)) {
     let hasExternalControlTransfer = false;
     for (const entry of value) {
-      hasExternalControlTransfer = collectSelfSwitchWrites(entry, into) || hasExternalControlTransfer;
+      hasExternalControlTransfer = collectSelfSwitchWrites(entry, into, depth + 1) || hasExternalControlTransfer;
     }
     return hasExternalControlTransfer;
   }
@@ -137,7 +143,7 @@ function collectSelfSwitchWrites(value: unknown, into: Set<string>): boolean {
     hasExternalControlTransfer = true;
   }
   for (const nested of Object.values(record)) {
-    hasExternalControlTransfer = collectSelfSwitchWrites(nested, into) || hasExternalControlTransfer;
+    hasExternalControlTransfer = collectSelfSwitchWrites(nested, into, depth + 1) || hasExternalControlTransfer;
   }
   return hasExternalControlTransfer;
 }
