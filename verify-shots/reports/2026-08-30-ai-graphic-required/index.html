@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 가 만든 NPC·몬스터의 외형 누락 — rpg-zzu · 2026-08-30</title>
+<style>
+  :root {
+    --ink: #16181d; --muted: #5b6472; --line: #dfe3ea; --bg: #f7f8fa; --card: #ffffff;
+    --indigo: #4f46e5; --indigo-soft: #eef0ff; --green: #0f7a4a; --green-soft: #e8f6ee;
+    --red: #b42318; --red-soft: #fdecea; --amber: #8a5a00; --amber-soft: #fdf3e0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 48px 24px 96px; background: var(--bg); color: var(--ink);
+    font: 16px/1.7 -apple-system, "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+  }
+  main { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 30px; line-height: 1.3; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-size: 21px; margin: 56px 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--line); }
+  h3 { font-size: 17px; margin: 32px 0 10px; }
+  p { margin: 0 0 14px; }
+  .lede { color: var(--muted); font-size: 17px; margin-bottom: 28px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 32px; padding: 0; list-style: none; }
+  .meta li { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; font-size: 13px; color: var(--muted); }
+  .meta b { color: var(--ink); font-weight: 600; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; margin: 0 0 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  figure { margin: 0 0 18px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; background: #fbfbfd; }
+  figcaption { padding: 12px 16px; font-size: 13.5px; color: var(--muted); border-top: 1px solid var(--line); }
+  figcaption b { color: var(--ink); }
+  code, kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; background: #f1f3f7; padding: 1px 5px; border-radius: 4px; }
+  pre { background: #14161b; color: #e6e9ef; padding: 16px 18px; border-radius: 10px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
+  pre code { background: none; color: inherit; padding: 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; margin: 0 0 16px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .tag { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; }
+  .tag.bad { background: var(--red-soft); color: var(--red); }
+  .tag.good { background: var(--green-soft); color: var(--green); }
+  .tag.warn { background: var(--amber-soft); color: var(--amber); }
+  .tag.info { background: var(--indigo-soft); color: var(--indigo); }
+  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .ba { grid-template-columns: 1fr; } }
+  .note { border-left: 3px solid var(--indigo); background: var(--indigo-soft); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 0 0 18px; font-size: 15px; }
+  .footnote { color: var(--muted); font-size: 14px; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin: 0 0 6px; }
+  a { color: var(--indigo); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>AI 가 NPC·몬스터를 만들 때 이미지를 빼먹던 결함</h1>
+<p class="lede">
+  “AI 가 캐릭터나 몬스터를 만들 때 이미지(외형·칩셋)를 자꾸 빼먹는다”는 신고를 추적한 기록.
+  원인은 모델의 부주의가 아니라 <b>저작 툴이 빈 외형을 통과시키고, 한국어 이름으로는 리소스를 찾을 수 없던 것</b>이었다.
+  8개 저작 경로를 닫고 한국어 리소스 색인을 넣었다.
+</p>
+
+<ul class="meta">
+  <li>저장소 <b>rpg-zzu</b></li>
+  <li>날짜 <b>2026-08-30</b></li>
+  <li>PR <b>#352 · #359 · #366</b> (전부 병합)</li>
+  <li>심사 <b>ultrabrain 3회</b> (2회 변경 요구 → 승인)</li>
+  <li>회귀 테스트 <b>77 passed</b></li>
+  <li>촬영 <b>편집기 실화면 · 12단계 전부 green</b></li>
+</ul>
+
+<h2>한 장으로 보는 결과</h2>
+<p>
+  같은 몬스터 카드다. 왼쪽은 옛 툴이 저장하던 상태(<code>monsterResourceId</code> 없음),
+  오른쪽은 <code>upsert_enemy</code> 를 <b>외형 필드 없이</b> 다시 호출한 결과.
+  이름 “해골 궁수” 만 보고 해골 궁수 스프라이트를 찾아 붙였다.
+</p>
+
+<div class="ba">
+  <figure>
+    <img src="img/01-before-hero-no-graphic.png" alt="외형이 비어 (없음) 으로 표시된 몬스터 카드">
+    <figcaption><span class="tag bad">수정 전</span> 외형 슬롯이 <b>(없음)</b>. 전투에 들어가면 스킨 공용 스프라이트로 대체돼 <b>모든 적이 같은 모습</b>이 된다.</figcaption>
+  </figure>
+  <figure>
+    <img src="img/02-after-hero-autofilled.png" alt="해골 궁수 스프라이트가 붙은 몬스터 카드">
+    <figcaption><span class="tag good">수정 후</span> <code>generated-enemy-skeleton-archer</code> 자동 배정. 무엇을 왜 붙였는지 경고로 함께 알린다.</figcaption>
+  </figure>
+</div>
+
+<h2>왜 모델이 필드를 빼먹었나</h2>
+<p>
+  “모델이 게을러서”가 아니었다. 두 가지가 겹쳤다.
+</p>
+<div class="card">
+  <h3 style="margin-top:0">1. 빈 외형이 그냥 통과했다</h3>
+  <p>
+    <code>upsert_enemy</code>·<code>define_monster_species</code>·<code>upsert_event</code> 는 외형 필드가 없어도 커밋됐다.
+    결과는 저장 시점에 보이지 않고 <b>전투에 들어가거나 맵을 돌아다닐 때</b> 드러난다 —
+    <code>battleFieldDom.ts:547</code> 이 적 레코드의 이미지가 없으면 스킨 공용 스프라이트로 폴백하기 때문이다.
+  </p>
+  <h3>2. 한국어 이름으로는 리소스를 찾을 수 없었다</h3>
+  <p>
+    몬스터 리소스 id 는 전부 영어 어간(<code>generated-enemy-skeleton-archer</code>)인데 저작 이름은 한국어(“해골 궁수”)다.
+    <code>searchResources("monster", "슬라임")</code> 은 <b>0건</b>이었고, 한국어를 <code>monsterResourceId</code> 에 그대로 넣으면
+    <code>invalid-args</code> 로 튕겼다. 즉 <b>모델에게는 “필드를 빼는 것”이 유일하게 통과하는 선택</b>이었다.
+  </p>
+</div>
+<div class="note">
+  이 두 번째 항목이 핵심이다. 검증만 강화하면 모델은 계속 거부당하다 “그 기능이 없습니다”로 후퇴한다.
+  통과할 수 있는 길(한국어 검색)을 먼저 열고, 그다음에 빈 값을 보정했다.
+</div>
+
+<h2>한국어 이름 6종 실측</h2>
+<p>
+  <code>upsert_enemy</code> 를 한국어 이름 + <b>외형 필드 없이</b> 6번 호출한 결과. 전부 서로 다른, 이름에 맞는 스프라이트를 받았다.
+</p>
+
+<div class="grid">
+  <figure><img src="img/03-1-hero-enemy_ai_skeleton_archer.png" alt="해골 궁수"><figcaption><b>해골 궁수</b> → <code>skeleton-archer</code></figcaption></figure>
+  <figure><img src="img/03-2-hero-enemy_ai_cave_bat.png" alt="동굴 박쥐"><figcaption><b>동굴 박쥐</b> → <code>bat-cave</code></figcaption></figure>
+  <figure><img src="img/03-3-hero-enemy_ai_blue_slime.png" alt="푸른 슬라임"><figcaption><b>푸른 슬라임</b> → <code>slime-blue</code></figcaption></figure>
+  <figure><img src="img/03-4-hero-enemy_ai_stone_golem.png" alt="돌 골렘"><figcaption><b>돌 골렘</b> → <code>golem-stone</code></figcaption></figure>
+  <figure><img src="img/03-5-hero-enemy_ai_fire_spirit.png" alt="불의 정령"><figcaption><b>불의 정령</b> → <code>spirit-01</code></figcaption></figure>
+  <figure><img src="img/03-6-hero-enemy_ai_red_dragon.png" alt="붉은 용"><figcaption><b>붉은 용</b> → <code>dragon-red</code></figcaption></figure>
+</div>
+
+<figure>
+  <img src="img/04-enemy-list.png" alt="데이터베이스 몬스터 목록 #30-#35 가 각각 다른 스프라이트를 가진 상태">
+  <figcaption>
+    목록 <b>#30–#35</b> 가 AI 가 방금 만든 6종이다. 전부 다른 아이콘 — 예전이라면 여기가 전부 같은 모습이었을 자리다.
+    왼쪽 사이드바 <b>몬스터 종족 10</b> 도 자동 배정된 종족을 포함한다.
+  </figcaption>
+</figure>
+
+<figure>
+  <img src="img/05-species-autofilled.png" alt="몬스터 종족 탭">
+  <figcaption><code>define_monster_species</code> 도 같은 경로를 탄다 — “푸른 슬라임” 종족이 <code>generated-enemy-slime-blue</code> 를 받았다.</figcaption>
+</figure>
+
+<h3>모델이 실제로 받는 경고</h3>
+<p>보정을 조용히 하지 않는다. 무엇을 왜 붙였는지, 바꾸려면 무엇을 하면 되는지 함께 돌려준다.</p>
+<pre><code>enemy.monsterResourceId 누락 → 이름 "해골 궁수" 으로
+"generated-enemy-skeleton-archer" 를 붙였습니다.
+다른 외형을 원하면 list_resources(kind:"monster")로 고른 뒤 다시 지정하세요.</code></pre>
+
+<h2>닫은 경로 8개</h2>
+<p>
+  1차 심사에서 세 곳을 닫았는데, 리뷰어가 <b>같은 결함을 그대로 내는 경로 4곳</b>을 더 찾아냈다.
+  “적을 하나 만들었더니 보이는데, 액션 전투 적을 만들면 안 보인다” 같은 구멍이 남으면 신고는 반복된다.
+</p>
+<table>
+  <thead><tr><th>경로</th><th>증상</th><th>조치</th></tr></thead>
+  <tbody>
+    <tr><td><code>upsert_enemy</code></td><td>전투에서 공용 스프라이트로 대체</td><td>이름으로 해석 후 자동 배정</td></tr>
+    <tr><td><code>define_monster_species</code></td><td>같음</td><td>같음</td></tr>
+    <tr><td><code>upsert_event</code></td><td>말을 걸어야 하는 NPC가 <b>투명</b></td><td>대화 있는 <code>action</code> 페이지에 주민 charset</td></tr>
+    <tr><td><code>make_action_enemy</code></td><td><b>보이지 않는 필드 몬스터</b> — <code>defaultFieldSpawnGraphic</code> 이 이 필드로 오버월드 스프라이트를 유도</td><td>생성 분기에 자동 배정</td></tr>
+    <tr><td><code>place_battle_blocker</code></td><td><b>길을 막는 몬스터가 투명</b> — <code>resolveGraphic(undefined)</code> 이 <code>{transparent:true}</code></td><td><code>{query:"monster"}</code> 기본값</td></tr>
+    <tr><td><code>make_chase_scene</code></td><td>추격자가 투명</td><td>같음</td></tr>
+    <tr><td>다중 페이지 NPC</td><td>셀프스위치가 넘어가면 <b>NPC 외형이 바뀜</b>(1p <code>people2</code> → 2p <code>people1</code>)</td><td>sprite 있는 형제 페이지를 복제 재사용</td></tr>
+    <tr><td><code>add_companion</code></td><td>합류 NPC가 투명 → 이후 <b>사람 동료에게 몬스터 스프라이트</b></td><td>액터 charset → 없으면 주민 charset</td></tr>
+  </tbody>
+</table>
+
+<h3>일부러 건드리지 않은 것</h3>
+<ul>
+  <li><code>graphic:{transparent:true}</code> — 투명 이벤트의 <b>명시적</b> 경로. 표시가 있으면 보정하지 않는다.</li>
+  <li><code>auto</code>/<code>parallel</code> 컷신 이벤트 — 말을 걸 대상이 아니므로 보일 필요가 없다.</li>
+  <li><code>priority:"below"</code> — 바닥 마커(벽 조사 등) 관례. 여기에 주민을 세우면 오탐이다.</li>
+  <li><code>place_trap</code> — 스키마가 “생략 시 투명”을 명시한다.</li>
+  <li>몬스터 동료(<code>monsterFieldGraphic</code>) — 몬스터 charset 유지가 맞다.</li>
+</ul>
+
+<h2>심사 3회</h2>
+<p>독립 심사자가 매번 코드를 읽고 직접 실행해 확인했다. 두 번 막혔고, 두 번 모두 실제 재현된 결함이었다.</p>
+<div class="card">
+  <p><span class="tag bad">1차 REQUEST_CHANGES</span> 위 표의 아래 4경로 + 다중 페이지 문제를 지적. “<code>make_action_enemy</code> 는 초크포인트를 완전히 우회한다”를 소스로 입증.</p>
+  <p><span class="tag bad">2차 REQUEST_CHANGES</span> 4경로는 닫혔음을 확인(형제 페이지 <code>structuredClone</code> 이 진짜 복제인지, <code>below</code> 게이트가 새 구멍인지까지 검증). 대신 <b>새 결함 1건</b>을 재현 — <code>add_companion</code> 폴백이 <code>tex_easyrpg_charset_monster1</code>, 즉 사람 동료에게 몬스터 그림. <b>테스트가 그 잘못된 id 를 기대값으로 고정</b>하고 있어 스스로는 잡을 수 없는 상태였다.</p>
+  <p><span class="tag good">3차 APPROVE</span> 실제 툴 경로로 재확인: <code>tex_easyrpg_charset_people1</code>. 몬스터 동료는 <code>monster1</code> 유지, <code>action:"remove"</code> 는 투명 유지, 액터 자기 charset·슬롯 보존.</p>
+</div>
+
+<h2>검증</h2>
+<table>
+  <thead><tr><th>게이트</th><th>결과</th></tr></thead>
+  <tbody>
+    <tr><td><code>test/aiGraphicAutofill.test.ts</code> (신규)</td><td><span class="tag good">15 passed</span> 8경로 + 명시 opt-out + 오탐 방지를 고정</td></tr>
+    <tr><td>인접 계약 11파일</td><td><span class="tag good">77 passed</span> DB·NPC 배치·이벤트 필수필드·런타임 그래픽·전투 정합성·동료 규칙</td></tr>
+    <tr><td><code>tsc --noEmit</code></td><td><span class="tag good">변경 파일 0 진단</span> 레포 전체 645건은 선재 빨간 기준선</td></tr>
+    <tr><td><code>openwiki:verify</code></td><td><span class="tag good">ok</span> 위키 실측 항목이 코드와 일치</td></tr>
+    <tr><td>편집기 실화면 촬영</td><td><span class="tag good">12/12 green</span> <code>scripts/capture-ai-graphic-required.mts</code></td></tr>
+  </tbody>
+</table>
+
+<h3>NPC·동료는 데이터로 확인</h3>
+<p>
+  편집기 맵 뷰는 이벤트를 <b>E 배지</b>로 그리므로 스프라이트가 화면에 보이지 않는다.
+  그래서 NPC 쪽은 저장된 값으로 확인했다 — 심사자도 같은 값을 독립적으로 재확인했다.
+</p>
+<table>
+  <thead><tr><th>대상</th><th>저장된 스프라이트</th><th>transparent</th></tr></thead>
+  <tbody>
+    <tr><td>대화형 <code>action</code> NPC (<code>upsert_event</code>)</td><td><code>tex_easyrpg_charset_people1</code></td><td>없음</td></tr>
+    <tr><td>실내 맵 NPC (재확인)</td><td><code>tex_easyrpg_charset_people1</code></td><td>없음</td></tr>
+    <tr><td>사람 동료 합류 이벤트 (<code>add_companion</code>)</td><td><code>tex_easyrpg_charset_people1</code></td><td>없음</td></tr>
+    <tr><td>몬스터 동료 (대조군)</td><td><code>tex_easyrpg_charset_monster1</code></td><td>없음</td></tr>
+    <tr><td><code>action:"remove"</code> 이벤트 (대조군)</td><td>—</td><td><b>true (의도)</b></td></tr>
+  </tbody>
+</table>
+
+<figure>
+  <img src="img/07-map-npc-canvas.png" alt="실내 맵에 배치된 이벤트가 E 배지로 표시된 편집기 캔버스">
+  <figcaption>
+    참고 — 편집기 캔버스는 이벤트를 <b>E 배지</b>로 표시한다. 위 <code>ev_ai_talker_indoor</code> 가 그중 하나이며,
+    스프라이트 자체는 이 표면에 렌더되지 않으므로 시각 증거로 쓸 수 없다.
+  </figcaption>
+</figure>
+
+<h2>남은 것</h2>
+<p class="footnote">
+  범위 밖 선재 결함 1건을 심사 중에 발견했고, 별도 티켓 대상이다:
+  <code>characterResourceId</code> 가 없는 액터의 <code>addFollower</code> 는 <code>actorId</code> 만 실어서
+  <code>followerFromInput</code> 이 <code>null</code> 을 돌려준다 — <b>합류 이벤트는 이제 보이고 사람 모습이지만, 런타임에서 동료가 실제로 붙지 않는다.</b>
+  이 PR 계열은 “보이는가”까지를 다뤘고, “붙는가”는 다른 결함이다.
+</p>
+<p class="footnote">
+  또한 “불의 정령”은 <code>spirit-fire</code> 가 아니라 <code>spirit-01</code> 로 해석된다. 정령 계열이라 틀리지 않지만
+  가장 정확한 후보는 아니다 — 색인 점수 조정 여지로 남겨 둔다.
+</p>
+
+<p class="footnote" style="margin-top:32px">
+  재현: <code>DEV_SERVER_PORT=&lt;free&gt; npx vite</code> 후
+  <code>SHOOT_BASE=http://127.0.0.1:&lt;port&gt;/ npx tsx scripts/capture-ai-graphic-required.mts</code>.
+  원자료는 같은 폴더의 <a href="evidence.json">evidence.json</a>.
+</p>
+
+</main>
+</body>
+</html>
