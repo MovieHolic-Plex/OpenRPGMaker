@@ -96,6 +96,71 @@ function relativeDeviation(frame: number[], reference: number[]): number {
   return worst;
 }
 
+/** 알파가 있는 픽셀의 경계 상자 — 머리 영역을 피사체 기준으로 잡기 위해 필요하다. */
+function subjectBox(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number) {
+  let top = cellHeight;
+  let bottom = -1;
+  let left = cellWidth;
+  let right = -1;
+  for (let y = 0; y < cellHeight; y += 1) {
+    for (let x = 0; x < cellWidth; x += 1) {
+      if (png.data[(y * png.width + cellIndex * cellWidth + x) * 4 + 3] > 8) {
+        if (y < top) top = y;
+        if (y > bottom) bottom = y;
+        if (x < left) left = x;
+        if (x > right) right = x;
+      }
+    }
+  }
+  return { top, bottom, left, right };
+}
+
+/**
+ * **머리 영역만** 같은 7버킷으로 잰다(피사체 상단 30%).
+ *
+ * 왜 전신 지표로 부족한가 — 실측: hero-04 의 3차 클립은 의상은 지켰지만 **고개를 돌려 얼굴을
+ * 보였다**. 뒷모습 배틀러에서는 색 드리프트보다 나쁜 결함인데, 머리는 피사체의 일부라
+ * 전신 상대편차가 0.125 로 통과했다. 같은 지표를 머리 영역에 걸면 1.941 로 드러난다.
+ *
+ * 실측 분리도: 실린 칸 0.167 / 0.337 / 0.526 / 0.665 대 고개 돌린 칸 1.941.
+ */
+function headShares(png: PNG, cellIndex: number, cellWidth: number, cellHeight: number): number[] {
+  const { top, bottom, left, right } = subjectBox(png, cellIndex, cellWidth, cellHeight);
+  if (bottom < 0) return [0, 0, 0, 0, 0, 0, 0];
+  const headEnd = top + Math.round((bottom - top) * 0.3);
+  let blue = 0;
+  let red = 0;
+  let green = 0;
+  let warm = 0;
+  let bright = 0;
+  let dark = 0;
+  let lumaSum = 0;
+  let total = 0;
+  for (let y = top; y <= headEnd; y += 1) {
+    for (let x = left; x <= right; x += 1) {
+      const i = (y * png.width + cellIndex * cellWidth + x) * 4;
+      if (png.data[i + 3] <= 8) continue;
+      const r = png.data[i];
+      const g = png.data[i + 1];
+      const b = png.data[i + 2];
+      total += 1;
+      const isBlue = b - r > 30 && b - g > 30;
+      const isRed = r - b > 40 && r - g > 25;
+      const isGreen = g - r > 12 && g - b > 12;
+      if (isBlue) blue += 1;
+      else if (isRed) red += 1;
+      else if (isGreen) green += 1;
+      else if (r - b > 15) warm += 1;
+      const mean = (r + g + b) / 3;
+      if (mean > 170 && !isBlue && !isRed && !isGreen) bright += 1;
+      if (mean < 60) dark += 1;
+      lumaSum += 0.299 * r + 0.587 * g + 0.114 * b;
+    }
+  }
+  if (total === 0) return [0, 0, 0, 0, 0, 0, 0];
+  return [...[blue, red, green, warm, bright, dark].map((count) => count / total), lumaSum / total / 255];
+}
+
 /** 두 칸의 픽셀 변화 비율 — 색 채널 합 차가 24를 넘는 픽셀. */
 function cellChange(png: PNG, a: number, b: number, cellWidth: number, cellHeight: number): number {
   let changed = 0;
@@ -162,11 +227,33 @@ describe("후면 배틀러 idle — 카탈로그와 그림", () => {
       for (let index = 0; index < entry.frameCount; index += 1) {
         const frame = colorShares(strip, index, entry.cellWidth, entry.cellHeight);
         const deviation = relativeDeviation(frame, reference);
-        // 0.15 = 실측 분리선. 실린 칸들은 0.07~0.10, 망토가 덮인 칸 0.42, 갈색 튜닉 0.999.
+        // 0.15 는 불량 쪽에서 정했다. 실린 칸 전 칸 worst 0.071/0.075/0.080/0.092,
+    // 망토가 덮인 칸 0.42, 갈색 튜닉으로 바뀐 칸 0.999 — 가장 가까운 불량과 2.8배 떨어진다.
         expect(
           deviation,
           `${entry.resourceId}: 칸 ${index} 의 색 분포가 원본에서 상대 ${(deviation * 100).toFixed(0)}% 벗어났다 = 다른 옷이다`
         ).toBeLessThan(0.15);
+      }
+    }
+  });
+
+  /**
+   * 상한 1.0 은 **불량 쪽에서** 정했다. 실린 칸의 최악이 0.665, 고개를 돌린 칸이 1.941 이라
+   * 1.0 은 알려진 불량보다 1.94배 아래에 있다. 머리 버킷 지분이 작아(hero-04 는 머리의
+   * 녹색이 2.9%) 상대편차가 본래 출렁이므로 전신 상한(0.15)보다 느슨할 수밖에 없다.
+   */
+  it("모든 칸이 뒷모습을 유지한다 — 고개를 돌려 얼굴을 보이면 실패한다", () => {
+    for (const entry of BACK_IDLE) {
+      const source = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path.replace("/idle/", "/"))));
+      const referenceHead = headShares(source, 0, source.width, source.height);
+      const strip = PNG.sync.read(readFileSync(path.join(ROOT, "public", entry.path)));
+      for (let index = 0; index < entry.frameCount; index += 1) {
+        const frame = headShares(strip, index, entry.cellWidth, entry.cellHeight);
+        const deviation = relativeDeviation(frame, referenceHead);
+        expect(
+          deviation,
+          `${entry.resourceId}: 칸 ${index} 의 머리가 원본과 다르다 (상대 ${deviation.toFixed(3)}) = 고개를 돌렸거나 머리 장식이 바뀌었다`
+        ).toBeLessThanOrEqual(1.0);
       }
     }
   });
