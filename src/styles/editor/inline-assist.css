@@ -194,6 +194,24 @@
   50% { opacity: 0.55; }
 }
 
+/* 선택 영역 크기 배지 — 드래그 중에도 갱신되어 W×H 를 놓기 전에 알려준다.
+   region-task-badge(작업 진행 중)와 같은 배치 규약이되, 진행 상태가 아니라 정적 사실이라
+   맥동하지 않고 중립색이다. 두 배지가 같이 뜰 수 있어 세로 위치를 22px / 26px 로 어긋냈다. */
+.region-size-badge {
+  /* 토큰만 쓴다 — `var(--x, #hex)` 폴백도 예산 게이트가 하드코딩 hex 로 센다.
+     --text-1 은 정의된 잉크색이고, 캔버스 위에서 흰 글자를 받칠 만큼 어둡다. */
+  background: color-mix(in srgb, var(--text-1) 82%, transparent);
+  border-radius: 999px;
+  color: var(--on-accent);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+  pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 29;
+}
+
 /* Ctrl+K 팔레트 셸 — 구 스킬 팔레트 CSS(assistant-skills.css)와 함께 있던 백드롭·창·항목
    규칙을 여기로 가져왔다. 스킬 기능 제거로 그 파일이 사라졌고, 팔레트는 자립해야 한다.
    항목은 flex 한 줄이다 — 그리드로 두면 버튼이 shrink-to-fit으로 붕괴해 라벨이 한 글자만 남는다. */

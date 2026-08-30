@@ -60,15 +60,17 @@ import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
 import { openStructurePlacementContextMenu } from "@/editor/panels/structurePlacementContextMenu";
 import {
   isRegionTaskModalOpen,
-  openRegionTaskModal,
+  isRegionTaskRegionLocked,
   REGION_TASK_MODAL_EVENT,
+  retargetRegionTaskModal,
 } from "@/editor/panels/regionTaskModal";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
-import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { setEditorMapViewport } from "@/editor/editorMapViewport";
+import { setRegionClientRectResolver } from "@/editor/regionClientRect";
+import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
 import {
@@ -185,6 +187,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
   private activeRegionTask: { readonly mapId: string; readonly region: RegionRect; readonly phase: "running" | "pending"; readonly runId: number | null } | null = null;
   private regionTaskBadge: HTMLElement | null = null;
+  /** 선택 영역 위에 붙는 W×H 배지. 드래그 중에도 갱신되어 크기를 놓기 전에 알려준다. */
+  private regionSizeBadge: HTMLElement | null = null;
   private eventMarkerTooltipEl: HTMLElement | null = null;
   private eventMarkerTooltipKey = "";
   private readonly handleRegionTaskStatus = (event: Event): void => {
@@ -333,6 +337,10 @@ export class EditScene extends PhaserRuntime.Scene {
       };
     }
 
+    // 선택 액션 바가 영역 작업 창을 열 때 대상 영역의 화면 사각형(avoid)을 알아야 한다.
+    // 그 계산은 Phaser 카메라를 읽으므로 여기서만 가능하다 — 등록소에 꽂아 둔다.
+    setRegionClientRectResolver((region) => this.regionClientRect(region));
+
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
     this.events.once(PhaserRuntime.Scenes.Events.DESTROY, () => this.cleanup());
@@ -372,6 +380,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.regionTaskBadge?.remove();
     this.regionTaskBadge = null;
     this.activeRegionTask = null;
+    this.regionSizeBadge?.remove();
+    this.regionSizeBadge = null;
+    setRegionClientRectResolver(null);
     setEditorMapViewport(null);
   }
 
@@ -549,6 +560,11 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private beginRightRegionGesture(ptr: Phaser.Input.Pointer): void {
+    // 영역 작업이 돌고 있거나 결과 검토 중이면 대상 영역이 잠긴다. 창은 비모달이라 캔버스가
+    // 살아 있고, 그 상태로 새 영역을 잡으면 선택과 창이 서로 다른 곳을 가리킨다 —
+    // 「적용」이 화면에 보이는 선택이 아닌 옛 영역을 고치게 된다. 그래서 제스처를 아예
+    // 시작하지 않는다(지시 단계라면 finishRightRegionGesture 가 창을 새 영역으로 옮긴다).
+    if (isRegionTaskRegionLocked()) return;
     const mapId = this.mapId();
     if (!mapId) return;
     const map = store.getCurrent().maps[mapId];
@@ -600,10 +616,12 @@ export class EditScene extends PhaserRuntime.Scene {
 
     const screen = this.pointerScreenPosition(ptr);
     if (significant && rect) {
-      // 우클릭 드래그 → 영역 선택 확정 + **놓은 자리에 영역 작업 창을 바로 띄운다.**
-      // 예전에는 선택 칩 바만 떴고 그 안의 「AI」를 한 번 더 눌러야 이 창이 나왔다.
-      // 우클릭 드래그로 영역을 잡는 목적이 사실상 AI 작업이므로 그 한 단계를 없앴다.
-      // 칩(복사/붙여넣기/지우기)은 창을 닫으면 선택이 남아 있어 그때 나타난다.
+      // 우클릭 드래그 → **영역을 잡는 동작**이다. 놓은 자리에 선택 액션 바가 뜨고,
+      // AI 작업은 그 바의 첫 버튼이다.
+      // 한동안은 여기서 영역 작업 창을 바로 열었는데(우클릭 드래그의 목적이 사실상 AI라는
+      // 전제), 그러면 복사·붙여넣기·지우기·구조물 저장이 전부 창 뒤로 밀려 Esc(취소
+      // 어포던스)를 거쳐야 닿았다. 실수로 드래그해도 큰 창이 떴다. 제스처는 선택까지만 하고
+      // 무엇을 할지는 바에서 고른다.
       this.lastRightDragScreen = screen;
       selectTileRegion(gesture.mapId, {
         mapId: gesture.mapId,
@@ -612,15 +630,16 @@ export class EditScene extends PhaserRuntime.Scene {
         width: rect.width,
         height: rect.height,
       });
-      this.openRegionAiPopover(
-        gesture.mapId,
-        { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
-        screen,
-      );
+      // 창이 떠 있는 채로 다시 영역을 잡았다면 그건 **대상 재지정**이다. 창을 새 영역으로
+      // 갈아 끼우고(입력해 둔 지시문은 따라온다) 칩 바나 첫사용 힌트는 띄우지 않는다 —
+      // 창이 이미 그 자리에 있고, 칩 바는 창이 열려 있는 동안 물러나 있다.
+      if (retargetRegionTaskModal(rect, screen)) return;
+      notifyRightDragRegionSelected();
       return;
     }
 
-    // 이미 잡혀 있는 다중 선택 안을 우클릭 탭 → 그 영역 AI 팝오버 (스포이트 대신).
+    // 이미 잡혀 있는 다중 선택 안을 우클릭 탭 → 그 선택을 유지하고 액션 바를 놓은 자리로
+    // 되살린다(스포이트로 선택을 잃지 않는다). 예전에는 여기서 AI 창을 열었다.
     const existing = editorState.get().selection;
     if (
       existing &&
@@ -628,11 +647,8 @@ export class EditScene extends PhaserRuntime.Scene {
       isSignificantRegionDrag(existing) &&
       isCellInsideSelection(existing, end.x, end.y)
     ) {
-      this.openRegionAiPopover(
-        existing.mapId,
-        { x: existing.x, y: existing.y, width: existing.width, height: existing.height },
-        screen,
-      );
+      this.lastRightDragScreen = screen;
+      this.renderBuildPaletteOverlay();
       return;
     }
 
@@ -662,32 +678,13 @@ export class EditScene extends PhaserRuntime.Scene {
     this.getTilePaintEngine().pickTileAtPointer(ptr);
   }
 
-  private openRegionAiPopover(
-    mapId: MapId,
-    region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number },
-    screen: { readonly x: number; readonly y: number },
-  ): void {
-    if (!canEditMap(mapId)) {
-      toast(mapEditLockNotice(mapId), "error");
-      return;
-    }
-    requestAiSelectionContext(
-      { mapId, x: region.x, y: region.y, width: region.width, height: region.height },
-      false,
-    );
-    const avoid = this.regionClientRect(region);
-    openRegionTaskModal({
-      mapId,
-      region,
-      anchor: { x: screen.x, y: screen.y },
-      ...(avoid ? { avoid } : {}),
-    });
-  }
-
   /**
    * 타일 영역의 클라이언트(화면) 사각형. 영역 작업 팝오버가 대상 영역과 캔버스 고스트
-   * 미리보기를 덮지 않도록 넘긴다. 카메라/캔버스를 못 읽는 환경에서는 null 이고, 그때는
-   * 팝오버가 기존 anchor 배치를 그대로 쓴다.
+   * 미리보기를 덮지 않도록 넘긴다(`avoid`). 카메라/캔버스를 못 읽는 환경에서는 null 이고,
+   * 그때는 팝오버가 기존 anchor 배치를 그대로 쓴다.
+   *
+   * 창을 여는 주체는 이제 선택 액션 바(Phaser 비의존 DOM)라, 이 계산을
+   * regionClientRect 등록소로 내보낸다.
    */
   private regionClientRect(region: {
     readonly x: number;
@@ -896,6 +893,10 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private handleEscapeKey(): boolean {
+    // 영역 작업 창이 떠 있으면 Esc 는 그 창의 것이다. 창이 비모달이 되면서 포커스가
+    // 캔버스에 있는 채로 Esc 가 여기까지 올 수 있게 됐는데, 그때 선택까지 지워 버리면
+    // Esc 한 번에 창과 선택이 함께 사라져 칩 바로 돌아갈 수 없다.
+    if (isRegionTaskModalOpen()) return false;
     // 붙여넣기 미리보기 취소가 최우선.
     if (cancelPastePreview()) {
       this.clearPastePreviewGhost();
@@ -1509,8 +1510,12 @@ export class EditScene extends PhaserRuntime.Scene {
     if (typeof document === "undefined") return;
     const selection = editorState.get().selection;
     const mapId = this.mapId();
-    // 영역 작업 창이 열려 있으면 칩/팔레트 오버레이를 띄우지 않는다 — 우클릭 드래그가 창을
-    // 바로 열게 되면서 둘이 동시에 떠 화면이 어수선해졌다. 창을 닫으면 다시 나타난다.
+    // 크기 배지는 칩 바와 수명이 다르다 — 영역 작업 창이 열려 있는 동안에도 대상 영역을
+    // 가리키고 있어야 한다. 그래서 아래 가드들보다 먼저, 항상 갱신한다.
+    // (이 함수는 redraw·pan·창 토글 모두에서 불리므로 배지 추적점으로 충분하다.)
+    this.renderRegionSizeBadge();
+    // 영역 작업 창이 열려 있으면 칩/팔레트 오버레이를 띄우지 않는다 — 창과 칩 바가 같은
+    // 자리에 겹쳐 화면이 어수선해진다. 창을 닫으면 다시 나타난다.
     if (isRegionTaskModalOpen()) {
       this.clearBuildPaletteOverlay();
       this.renderRegionTaskBadge();
@@ -1616,6 +1621,42 @@ export class EditScene extends PhaserRuntime.Scene {
     this.buildPalettePopup?.remove();
     this.buildPalettePopup = null;
     this.buildPalettePopupKey = "";
+  }
+
+  /**
+   * 선택 영역 위 W×H 배지. 드래그 **중에도** 갱신되므로 크기를 놓기 전에 알 수 있다 —
+   * 예전에는 놓은 뒤 칩 바에서야 크기가 나왔고, 캔버스에는 청록 사각형 하나뿐이었다.
+   * 크기 정보가 선택 사각형 옆에 붙으므로 칩 바에서는 그 텍스트를 뺐다.
+   * 배치·수명 관리는 renderRegionTaskBadge 와 같은 모양(캔버스 호스트에 DOM 하나).
+   */
+  private renderRegionSizeBadge(): void {
+    if (typeof document === "undefined") return;
+    const selection = editorState.get().selection;
+    const mapId = this.mapId();
+    const host = this.game?.canvas?.parentElement;
+    const camera = this.cameras?.main;
+    if (!selection || selection.mapId !== mapId || !host || !camera) {
+      this.regionSizeBadge?.remove();
+      this.regionSizeBadge = null;
+      return;
+    }
+    if (!this.regionSizeBadge || !this.regionSizeBadge.isConnected) {
+      const badge = document.createElement("div");
+      badge.className = "region-size-badge";
+      badge.dataset.testid = "region-size-badge";
+      host.append(badge);
+      this.regionSizeBadge = badge;
+    }
+    this.regionSizeBadge.textContent = `${selection.width}×${selection.height}`;
+    const rect = tileRectToScreenRect(
+      { x: selection.x, y: selection.y, width: selection.width, height: selection.height },
+      { worldView: { x: camera.worldView.x, y: camera.worldView.y }, zoom: camera.zoom },
+    );
+    const canvasRect = this.game.canvas.getBoundingClientRect();
+    const hostRect = host.getBoundingClientRect();
+    // 작업 진행 배지(region-task-badge)와 같은 자리를 쓰지 않도록 왼쪽 위 모서리에 붙인다.
+    this.regionSizeBadge.style.left = `${Math.round(canvasRect.left - hostRect.left + rect.x)}px`;
+    this.regionSizeBadge.style.top = `${Math.round(canvasRect.top - hostRect.top + rect.y - 22)}px`;
   }
 
   private renderRegionTaskBadge(): void {

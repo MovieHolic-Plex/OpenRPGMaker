@@ -14,6 +14,21 @@ export function selectTileRegion(mapId: MapId, selection: TileSelection): boolea
   if (!isInsideMap(selection.x, selection.y, map.width, map.height)) return false;
   const width = Math.min(selection.width, map.width - selection.x);
   const height = Math.min(selection.height, map.height - selection.y);
+  // 값이 같으면 통지하지 않는다. editorState.set 의 무변경 판정은 **참조 비교**라
+  // 새 객체 리터럴은 언제나 "변경"으로 통과하고, 통지 하나가 좌측 독 전체 재구축을
+  // 부른다(editor.ts refreshPanels). 우클릭 영역 드래그는 pointermove 마다 여기를
+  // 호출하므로 같은 칸 안에서 움직이는 프레임이 그대로 재구축이 됐다.
+  const current = editorState.get().selection;
+  if (
+    current &&
+    current.mapId === mapId &&
+    current.x === selection.x &&
+    current.y === selection.y &&
+    current.width === width &&
+    current.height === height
+  ) {
+    return true;
+  }
   editorState.set({
     selection: { mapId, x: selection.x, y: selection.y, width, height },
   });

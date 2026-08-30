@@ -10,12 +10,24 @@
   z-index: var(--z-popover-high);
 }
 
-/* 우클릭 드래그 직후: 어두운 풀스크린 대신 가벼운 클릭-아웃 레이어 + 포인터 근처 팝오버 */
+/* 포인터 근처 팝오버 변형은 **비모달**이다 — 캔버스를 막지 않는다.
+   예전에는 이 요소가 inset:0 풀스크린인 채로 틴트만 낮췄다. 그래서 창이 떠 있는 동안
+   팬·줌·영역 재지정이 전부 막혔고(자기가 바꿀 대상을 볼 수 없었다), 바깥 클릭은 곧
+   폐기였다. 영역 작업은 본질적으로 공간 작업이므로 대상을 보면서 해야 한다.
+   요소 자체는 남긴다 — coachMarks 의 "표면이 떠 있다" 판정이 이 클래스를 찾고,
+   openRegionTaskModal 의 반환값이 이 노드다.
+   pointer-events:none 이면 `event.target === backdrop` 이 성립하지 않아 바깥클릭-폐기
+   핸들러는 자연히 죽는다(별도 삭제 불필요). 중앙 모달 변형은 그대로 모달이다. */
 .region-task-backdrop-popover {
   align-items: flex-start;
-  background: rgba(15, 23, 42, 0.08);
+  background: transparent;
   justify-content: flex-start;
   padding: 0;
+  pointer-events: none;
+}
+
+.region-task-backdrop-popover > .region-task-popover {
+  pointer-events: auto;
 }
 
 .region-task-popover {
@@ -308,16 +320,6 @@
   accent-color: var(--accent);
   cursor: pointer;
 }
-.region-task-partial-apply {
-  background: transparent;
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-s);
-  color: var(--accent);
-}
-.region-task-partial-apply:disabled {
-  cursor: default;
-  opacity: 0.4;
-}
 
 /* ── F: 영역 통계 칩 ── */
 .region-task-stats-chip {
@@ -425,7 +427,6 @@
   margin-top: var(--space-2);
 }
 .region-task-partial-host.hidden { display: none; }
-.region-task-partial-apply.hidden { display: none; }
 
 /* 어시스턴트 문단은 툴 추적 줄과 구분한다 */
 .region-task-log-line.is-assistant {
@@ -621,56 +622,55 @@ body.region-task-modal-open .ai-authoring-examples {
   pointer-events: none;
 }
 
-/* ── 추천 카테고리 줄 (Tier 1: Filter Pills) ── */
-/* 가로 스크롤이라는 사실을 보이게 한다. 예전에는 다섯 번째 칩이 경계에서 그냥 잘려
-   "여기가 끝" 처럼 읽혔다 — 오른쪽 끝을 페이드로 흐려 더 있다는 것을 알린다. */
+/* ── 「모두 보기」 시트 — 명령 전체를 계열별로 ──────────────────────────────────
+   예전에는 이 자리에 카테고리 필터 칩 8개가 **가로 스크롤러**로 상주했다. 380px 폭
+   팝오버에서는 다섯 번째 칩이 경계에서 잘렸고(페이드 마스크를 덧대도 여전히 스크롤이었다),
+   칩을 누르면 아래 추천 줄이 그 계열로 갈아치워져 "지금 무엇을 보고 있나"가 상태로 남았다.
+   지금은 세로로 흐르는 접이식 시트다 — 잘릴 것이 없고, 남는 상태도 없다. */
 .region-task-categories {
+  border-top: 1px solid var(--border-subtle);
   display: flex;
-  flex-wrap: nowrap;
-  gap: var(--space-1);
-  /* 마스크는 알파만 쓴다 — 색 리터럴 없이 currentColor(불투명)로 그린다. */
-  mask-image: linear-gradient(to right, currentColor 0, currentColor calc(100% - 20px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, currentColor 0, currentColor calc(100% - 20px), transparent 100%);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding-bottom: 2px;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  max-height: 42vh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding-top: var(--space-2);
   scrollbar-width: thin;
+  /* 아래쪽 페이드 — 시트가 넘칠 때 마지막 줄이 경계에서 **딱 잘린 채로** 끝나면 그게 다인 줄
+     읽힌다(가로 스크롤러 시절의 잘린 다섯 번째 칩과 같은 실수다). 세로 스크롤이라 스크롤바도
+     같이 나오지만, 페이드가 "아래에 더 있다"를 먼저 말한다.
+     hex 리터럴을 쓰지 않는다 — 예산 게이트가 센다. 마스크는 알파만 보므로 keyword 로 충분하다. */
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, black calc(100% - 16px), transparent);
 }
-.region-task-categories .region-task-category-chip {
-  flex: 0 0 auto;
-}
-.region-task-category-chip {
-  align-items: center;
-  background: var(--control-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: 999px;
-  color: var(--editor-text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  font: 500 11px/1 var(--font-ui, system-ui, sans-serif);
+.region-task-categories.hidden { display: none; }
+.region-task-category-group {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-1);
-  padding: 4px var(--space-2);
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
-  white-space: nowrap;
 }
-.region-task-category-chip svg {
+/* 소제목은 누를 것이 아니다 — 명령 칩과 무게를 확실히 벌려 "계열 이름"으로 읽히게 한다. */
+.region-task-category-group-title {
+  align-items: center;
+  color: var(--editor-text-soft, var(--editor-text-muted));
+  display: flex;
+  font: 600 10px/1 var(--font-ui, system-ui, sans-serif);
+  gap: var(--space-1);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.region-task-category-group-title svg {
   flex-shrink: 0;
-  height: 14px;
+  height: 12px;
   vertical-align: middle;
-  width: 14px;
+  width: 12px;
 }
-.region-task-category-chip:hover,
-.region-task-category-chip:focus-visible {
-  background: var(--control-bg-hover);
-  border-color: var(--border-default);
-  color: var(--editor-text);
-  outline: none;
-}
-.region-task-category-chip.is-active {
-  background: var(--accent-muted);
-  border-color: var(--accent);
-  color: var(--accent);
-  font-weight: 600;
+.region-task-category-group-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
 }
 
 /* ── 추천 명령 목록 (Tier 2: Icon + Label structured rows/cards) ── */
@@ -701,12 +701,29 @@ body.region-task-modal-open .ai-authoring-examples {
   vertical-align: middle;
   width: 14px;
 }
-/* 「전체 추천」으로 돌아가는 칩 — 명령 칩과 같은 줄에 있지만 명령이 아니므로 조용하게. */
-.region-task-suggest-chip.is-reset {
+/* 「모두 보기」 칩 — 같은 줄에 있지만 명령이 아니라 목록을 여는 문이므로 조용하게. */
+.region-task-suggest-chip.is-browse-all {
   background: transparent;
   color: var(--editor-text-muted);
 }
-.region-task-suggest-chip.is-reset svg { color: var(--editor-text-muted); }
+.region-task-suggest-chip.is-browse-all svg { color: var(--editor-text-muted); }
+.region-task-suggest-chip.is-browse-all.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+/* 펼침 상태를 글리프로도 말한다 — 색만으로는 접혔는지 열렸는지 알 수 없다. */
+.region-task-browse-chevron {
+  border-bottom: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  height: 5px;
+  transform: rotate(45deg);
+  transition: transform var(--transition-fast);
+  width: 5px;
+}
+.region-task-suggest-chip.is-browse-all.is-active .region-task-browse-chevron {
+  transform: rotate(-135deg);
+}
 .region-task-suggest-chip:hover,
 .region-task-suggest-chip:focus-visible {
   background: var(--bg-raised);
@@ -975,6 +992,12 @@ body.region-task-modal-open .ai-authoring-examples {
   font: inherit;
   font-weight: 600;
   padding: var(--space-2) var(--space-4);
+}
+/* 구역 체크를 전부 풀면 적용할 게 없다. 적용 버튼이 하나로 합쳐지면서 이 상태가
+   주 CTA 에 나타난다 — 예전에는 따로 있던 「선택 적용」 버튼만 흐려졌다. */
+.region-task-apply:disabled {
+  cursor: default;
+  opacity: 0.45;
 }
 .region-task-retry,
 .region-task-discard {

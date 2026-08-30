@@ -259,7 +259,7 @@ export function renderEditor(main: HTMLElement): void {
   unsubLayoutBbox = installLayoutBboxOverlay();
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
-  unsubEditor = editorState.subscribe(() => refreshPanels());
+  unsubEditor = editorState.subscribe(() => scheduleFullPanelRefresh());
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
     syncLeftDock();
@@ -657,6 +657,21 @@ function setEditorLeftSafe(px: string): void {
   document.documentElement?.style?.setProperty?.("--editor-left-safe", px);
 }
 
+// editorState 통지 하나가 좌측 독 전체 + 캔버스 툴바 재구축이다. 우클릭 영역 드래그는
+// 지나간 칸마다 통지를 내므로, 한 틱 안의 여러 통지를 한 번으로 접는다. 최종 상태만
+// 반영하면 되므로 정합성 손실은 없다 — mapHistoryPanel 의 scheduleMapHistoryPanelMount 와 같은 모양.
+let fullPanelRefreshQueued = false;
+function scheduleFullPanelRefresh(): void {
+  if (fullPanelRefreshQueued) return;
+  fullPanelRefreshQueued = true;
+  const run = (): void => {
+    fullPanelRefreshQueued = false;
+    refreshPanels();
+  };
+  if (typeof queueMicrotask === "function") queueMicrotask(run);
+  else setTimeout(run, 0);
+}
+
 function refreshPanels(change?: ProjectChangeDescriptor): void {
   refreshAuthoringJourney(change);
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
@@ -856,8 +871,11 @@ function isRandomBattleTestRequest(value: unknown): value is { readonly kind: "r
 // 소비자는 E2E/내보내기 도구(숨은 <pre>)뿐이라 150ms 지연은 관측 불가.
 let projectExportTimer: ReturnType<typeof setTimeout> | null = null;
 
+// 숨은 `project-export-json` 미러는 프로젝트 전체를 JSON.stringify 한다. 선행 잠금
+// (`if (timer) return`)이면 버스트 중 150ms 마다 타이머가 재무장되어 반복 직렬화됐다 —
+// 우클릭 드래그 2초에 열 번 넘게 돌았다. 후행 엣지로 바꿔 버스트가 끝난 뒤 한 번만 돈다.
 function updateProjectExport(): void {
-  if (projectExportTimer) return;
+  if (projectExportTimer) clearTimeout(projectExportTimer);
   projectExportTimer = setTimeout(() => {
     projectExportTimer = null;
     if (!projectExportNode) return;
