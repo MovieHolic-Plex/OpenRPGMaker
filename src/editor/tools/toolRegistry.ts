@@ -297,6 +297,9 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
   ["database", new Set([
     // 상성표/속성 요청의 대표 도구.
     "set_type_chart", "upsert_item", "upsert_enemy",
+    // 농장 건물·집 장식 쓰기 툴. 쿼터 트림에 밀리면 모델이 "농장 건물 기능이 없다"고 보고한다.
+    "upsert_farm_building_type", "upsert_home_decoration_type",
+    "upsert_farm_animal_building", "set_session_farm_state", "create_farm_plot",
   ])],
   ["map", new Set([
     // reset_project 는 map 핀에서 뺐다 — "이 맵 처음부터 다시 칠해줘" 같은 부분 재작업 요청에
@@ -493,8 +496,8 @@ function applyExposureLimit(exposed: readonly ToolDefinition[], domains: Readonl
     if (limited.length <= MAX_EXPOSED_TOOLS) break;
     removed.add(domain);
     limited = limited.filter((tool) => {
-      if (tool.domains?.includes("core") || !tool.domains) return true;
-      return !tool.domains.some((toolDomain) => removed.has(toolDomain));
+      if (isPinnedTool(tool, domains) || tool.domains?.includes("core") || !tool.domains) return true;
+      return tool.domains.some((toolDomain) => !removed.has(toolDomain));
     });
   }
   return trimToExposureCap(limited, domains);

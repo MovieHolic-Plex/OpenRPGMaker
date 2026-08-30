@@ -29,6 +29,7 @@ import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventPagePreview, renderEventScriptFlowchart } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
+import { applyMemoryOpeningTemplate } from "./memoryOpeningTemplate";
 import { renderCommandList } from "./commandList";
 import {
   beginEventViewSession,
@@ -169,7 +170,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     pickerContext: "map",
   });
   cmdList.querySelector(".empty-hint")?.remove();
-  cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id));
+  cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id, activePage.id));
   cmdList.addEventListener("dblclick", (event) => {
     if (event.target === cmdList) {
       cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
@@ -791,6 +792,7 @@ function renderEmptyCommandLine(
   showBeginnerTemplates: boolean,
   mapId: MapId,
   eventId: string,
+  pageId: string,
 ): HTMLElement {
   const openPicker = () => openCommandPickerForActions(actions);
   const line = el("button", {
@@ -818,12 +820,14 @@ function renderEmptyCommandLine(
     readonly label: string;
     readonly templateId?: EventBeginnerTemplateId;
     readonly testId: string;
+    readonly memoryOpening?: boolean;
   }[] = [
     { label: "대사하는 NPC", templateId: "talking-npc", testId: "event-template-talking-npc" },
     { label: "보물상자", templateId: "treasure-chest", testId: "event-template-treasure-chest" },
     { label: "문/맵 이동", templateId: "transfer", testId: "event-template-transfer" },
     { label: "상점", templateId: "shop", testId: "event-template-shop" },
     { label: "전투 시작", templateId: "battle", testId: "event-template-battle" },
+    { label: "회상 오프닝", testId: "event-template-memory-opening", memoryOpening: true },
     { label: "빈 이벤트 / 명령 검색", testId: "event-template-empty-search" },
   ];
   return el("div", {
@@ -846,6 +850,10 @@ function renderEmptyCommandLine(
           dataset: { testid: template.testId },
           on: {
             click: () => {
+              if (template.memoryOpening) {
+                applyMemoryOpeningTemplate(mapId, eventId, pageId);
+                return;
+              }
               if (!template.templateId) {
                 openPicker();
                 return;

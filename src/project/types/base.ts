@@ -32,6 +32,7 @@ export type ResourceKind =
   | "monster"
   | "faceset"
   | "picture"
+  | "movie"
   | "system"
   | "system2"
   | "title"

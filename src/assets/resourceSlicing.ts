@@ -24,6 +24,10 @@ export type ResourceSlicingSpec =
   | {
       readonly kind: "audio";
       readonly unit: "audio";
+    }
+  | {
+      readonly kind: "video";
+      readonly unit: "video";
     };
 
 export const RESOURCE_SLICING = {
@@ -82,6 +86,7 @@ export const RESOURCE_SLICING = {
   // 얼굴은 그림 한 장이다. 4x4 시트 + 칸 번호 모델은 파일 분할(scripts/slice-faceset-sheets.mjs)로 끝났다.
   faceset: { kind: "whole-image", unit: "image" },
   picture: { kind: "whole-image", unit: "image" },
+  movie: { kind: "video", unit: "video" },
   system: { kind: "whole-image", unit: "image" },
   system2: { kind: "whole-image", unit: "image" },
   title: { kind: "whole-image", unit: "image" },

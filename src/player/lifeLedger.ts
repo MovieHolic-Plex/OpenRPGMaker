@@ -10,7 +10,16 @@ import { resolveSellPrice } from "@/project/upgrades";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { orientedFootprint } from "@/project/spatialPlacements";
-import { rotateHomeDecoration, upgradeFarmBuilding } from "@/project/spatialPlacementTransactions";
+import {
+  moveFarmBuilding,
+  moveHomeDecoration,
+  placeFarmBuilding,
+  placeHomeDecoration,
+  removeFarmBuilding,
+  removeHomeDecoration,
+  rotateHomeDecoration,
+  upgradeFarmBuilding,
+} from "@/project/spatialPlacementTransactions";
 import type { StatusMenuDetail, StatusMenuDetailEntry } from "@/player/playerStatusMenuDetailTypes";
 
 export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers", "animals", "spaces", "collections", "museum"] as const;
@@ -123,6 +132,16 @@ function spatialEntries(
   onMutation?: (ok: boolean, message: string) => void,
 ): { entries: StatusMenuDetailEntry[]; emptyLabel: string } {
   const entries: StatusMenuDetailEntry[] = [];
+  for (const type of project.database.farmBuildingTypes ?? []) {
+    entries.push({
+      label: `${type.name} 배치`, value: `${session.currentMapId} (${session.x}, ${session.y})`,
+      testId: `life-ledger-space-building-place-${type.id}`,
+      onActivate: () => notify(onMutation, placeFarmBuilding(project, session, {
+        instanceId: nextSpatialInstanceId(session, "building", type.id), typeId: type.id,
+        mapId: session.currentMapId, x: session.x, y: session.y, orientation: "down",
+      }), `${type.name}을(를) 배치했습니다`),
+    });
+  }
   for (const placement of Object.values(session.farmBuildingPlacements ?? {})) {
     const type = project.database.farmBuildingTypes?.find((candidate) => candidate.id === placement.typeId);
     const level = type?.levels.find((candidate) => candidate.level === placement.level);
@@ -133,6 +152,15 @@ function spatialEntries(
       description: `${map?.name ?? placement.mapId} (${placement.x}, ${placement.y}) · ${orientationLabel(placement.orientation)}`,
       testId: `life-ledger-space-building-${placement.instanceId}`,
       disabled: true,
+    });
+    entries.push({
+      label: `${type?.name ?? placement.typeId} 이동`, value: `현재 위치 (${session.x}, ${session.y})로 이동`,
+      testId: `life-ledger-space-building-move-${placement.instanceId}`,
+      onActivate: () => notify(onMutation, moveFarmBuilding(project, session, placement.instanceId, session.currentMapId, session.x, session.y), `${type?.name ?? placement.typeId}을(를) 이동했습니다`),
+    }, {
+      label: `${type?.name ?? placement.typeId} 철거`, value: "배치에서 제거", destructive: true,
+      testId: `life-ledger-space-building-remove-${placement.instanceId}`,
+      onActivate: () => notify(onMutation, removeFarmBuilding(session, placement.instanceId), `${type?.name ?? placement.typeId}을(를) 철거했습니다`),
     });
     const nextLevel = type?.levels.find((candidate) => candidate.level === placement.level + 1);
     if (nextLevel) {
@@ -150,6 +178,17 @@ function spatialEntries(
       });
     }
   }
+  for (const type of project.database.homeDecorationTypes ?? []) {
+    entries.push({
+      label: `${type.name} 배치`, value: `${session.currentMapId} (${session.x}, ${session.y})`,
+      testId: `life-ledger-space-decoration-place-${type.id}`,
+      onActivate: () => notify(onMutation, placeHomeDecoration(project, session, {
+        instanceId: nextSpatialInstanceId(session, "decoration", type.id), typeId: type.id,
+        mapId: session.currentMapId, x: session.x, y: session.y,
+        orientation: type.allowedOrientations[0] ?? "down",
+      }), `${type.name}을(를) 배치했습니다`),
+    });
+  }
   for (const placement of Object.values(session.homeDecorationPlacements ?? {})) {
     const type = project.database.homeDecorationTypes?.find((candidate) => candidate.id === placement.typeId);
     const map = project.maps[placement.mapId];
@@ -160,6 +199,15 @@ function spatialEntries(
       description: `${map?.name ?? placement.mapId} (${placement.x}, ${placement.y})`,
       testId: `life-ledger-space-decoration-${placement.instanceId}`,
       disabled: true,
+    });
+    entries.push({
+      label: `${type?.name ?? placement.typeId} 이동`, value: `현재 위치 (${session.x}, ${session.y})로 이동`,
+      testId: `life-ledger-space-decoration-move-${placement.instanceId}`,
+      onActivate: () => notify(onMutation, moveHomeDecoration(project, session, placement.instanceId, session.currentMapId, session.x, session.y), `${type?.name ?? placement.typeId}을(를) 이동했습니다`),
+    }, {
+      label: `${type?.name ?? placement.typeId} 치우기`, value: "인벤토리로 회수", destructive: true,
+      testId: `life-ledger-space-decoration-remove-${placement.instanceId}`,
+      onActivate: () => notify(onMutation, removeHomeDecoration(project, session, placement.instanceId), `${type?.name ?? placement.typeId}을(를) 치웠습니다`),
     });
     if (type && type.allowedOrientations.length > 1) {
       const currentIndex = type.allowedOrientations.indexOf(placement.orientation);
@@ -177,7 +225,18 @@ function spatialEntries(
       });
     }
   }
-  return { entries, emptyLabel: "배치된 범용 건물이나 집 장식이 없습니다" };
+  return { entries, emptyLabel: "배치할 수 있는 범용 건물이나 집 장식이 없습니다" };
+}
+
+function nextSpatialInstanceId(session: PlaySession, kind: "building" | "decoration", typeId: string): string {
+  const placements = kind === "building" ? session.farmBuildingPlacements : session.homeDecorationPlacements;
+  let ordinal = 1;
+  let instanceId = `ledger:${kind}:${typeId}:${ordinal}`;
+  while (placements?.[instanceId]) {
+    ordinal += 1;
+    instanceId = `ledger:${kind}:${typeId}:${ordinal}`;
+  }
+  return instanceId;
 }
 
 function spatialCostLabel(project: Project, cost: import("@/project/types").SpatialPlacementCost | undefined): string {

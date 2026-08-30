@@ -4,6 +4,8 @@ import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 export const CUTSCENE_END_LABEL = "cutscene_end";
 export const CUTSCENE_LOCK_FLAG = "cutscene:inputLocked";
 export const CUTSCENE_SKIPPABLE_FLAG = "cutscene:skippable";
+export const CUTSCENE_HIDE_HUD_FLAG = "cutscene:hideHud";
+export const CUTSCENE_HUD_HIDDEN_CLASS = "cutscene-hud-hidden";
 
 function ownerFlag(ownerId: string | undefined): string {
   return `cutscene:owner:${ownerId || "anonymous"}`;
@@ -43,4 +45,8 @@ export function isCutsceneInputLocked(session: Pick<PlaySessionLike, "flags">): 
 
 export function isCutsceneSkippable(session: Pick<PlaySessionLike, "flags">): boolean {
   return isCutsceneInputLocked(session) && session.flags[CUTSCENE_SKIPPABLE_FLAG] === true;
+}
+
+export function isCutsceneHudHidden(session: Pick<PlaySessionLike, "flags">): boolean {
+  return isCutsceneInputLocked(session) || session.flags[CUTSCENE_HIDE_HUD_FLAG] === true;
 }

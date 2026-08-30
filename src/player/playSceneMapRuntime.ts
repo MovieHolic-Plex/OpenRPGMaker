@@ -23,6 +23,10 @@ import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { applyStoredCameraState } from "@/player/playSceneCamera";
+import {
+  CUTSCENE_HUD_HIDDEN_CLASS,
+  isCutsceneHudHidden,
+} from "@/player/cutsceneControl";
 import { runCommands } from "@/player/playSceneInterpreter";
 import { abortHop, clearAllHopScales, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { destroyAllCharacterShadows } from "@/player/characterShadow";
@@ -431,6 +435,7 @@ export function activeRuntimeEvents(
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
   const project = store.getCurrent();
+  syncCutsceneHudVisibility(scene);
   // Production boundary: the broad debug snapshot (all runtime event views, session records,
   // mover snapshots) exists only for QA instrumentation. A shipped player syncs the visible
   // HUD and picture layer directly and never builds or serializes that payload.
@@ -508,6 +513,23 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
   });
   scene.runtimeDom.syncAudioState(scene.session.audio);
   scene.runtimeDom.syncPictureLayer(scene.session.pictures);
+}
+
+type CutsceneHudHost = {
+  readonly classList: { toggle(token: string, force?: boolean): unknown };
+};
+
+function isCutsceneHudHost(value: unknown): value is CutsceneHudHost {
+  return !!value && typeof value === "object" && "classList" in value;
+}
+
+export function syncCutsceneHudVisibility(scene: {
+  readonly game: { readonly registry: { get(key: string): unknown } };
+  readonly session: PlaySceneContext["session"];
+}): void {
+  const host = scene.game.registry.get("dialogueHost");
+  if (!isCutsceneHudHost(host)) return;
+  host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden(scene.session));
 }
 
 export function refreshRuntimeSurfaces(scene: PlaySceneContext): void {
