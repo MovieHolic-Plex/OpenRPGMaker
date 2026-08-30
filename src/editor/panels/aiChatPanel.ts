@@ -69,7 +69,6 @@ import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMen
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
 import { createDirectorRestoreButton } from "./aiDirectorChrome";
-// queueController extracted for future use — reserved (aiQueueController.ts).
 import { buildAiCompletionStrip, type AiCompletionStripHandle } from "./aiCompletionStrip";
 import { openAiSettingsModal } from "./aiSettingsModal";
 import {
@@ -91,16 +90,10 @@ import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import { createChatResizeChrome } from "./aiChatResizeChrome";
 import {
   applyAiFontSize,
-  clampPanelSize,
-  clampPanelSizeToViewport,
   GLASS_FOLD_IDLE_MS,
   loadAiFontSize,
-  loadDockPanelSize,
   loadPanelCollapsed,
-  PANEL_SIZE_LIMITS,
-  SIDE_CHAT_WIDTH,
   saveAiFontSize,
-  saveDockPanelSize,
   savePanelCollapsed,
   type AiFontSize,
 } from "./aiPanelLayout";
