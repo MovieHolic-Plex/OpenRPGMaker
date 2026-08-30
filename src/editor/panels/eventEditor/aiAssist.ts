@@ -77,6 +77,14 @@ let currentDockRoot: HTMLDetailsElement | null = null;
 let registeredDockRoot: HTMLDetailsElement | null = null;
 let currentSelectionTeardown: (() => void) | null = null;
 let panelInstanceId = 0;
+// 생성이 끝나는 시점의 **살아 있는** 도크. 스토어 갱신 한 번이면 에디터 본문을 통째로 다시
+// 그리므로, 요청을 보낸 렌더의 DOM 은 이미 문서에서 떨어져 나간 노드일 수 있다. 그때 자기 클로저의
+// stagedHost 에 그리면 화면엔 아무것도 안 나온다 — 목록은 초안이 있다고 숨고, 초안은 없는 상태.
+let liveDock: {
+  key: string;
+  renderStaged: () => void;
+  setStatus: (text: string, kind?: StatusKind) => void;
+} | null = null;
 
 const TARGET_NAME_MAX = 18;
 
@@ -307,6 +315,9 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     ],
   }) as HTMLButtonElement;
 
+  const liveDockFor = (stateKey: string): { renderStaged: () => void; setStatus: (text: string, kind?: StatusKind) => void } =>
+    liveDock && liveDock.key === stateKey ? liveDock : { renderStaged, setStatus };
+
   const generate = async (): Promise<void> => {
     if (generateBtn.disabled) return;
     const prompt = input.value.trim();
@@ -351,17 +362,21 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       const rows = diffCommandLists(page.commands, after);
       state.staged = { rows, excluded: new Set<string>(), scope: result.scope };
       const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
-      setStatus(
+      const settled = liveDockFor(key);
+      settled.setStatus(
         hasCommandDiffChanges(rows)
           ? `${stagedDiffSummary(rows, new Set())} — 위 목록에서 확인하세요.${fixedNote}`
           : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`
       );
-      renderStaged();
+      settled.renderStaged();
     } catch (cause) {
       // 검증기 원문(kind/필드 이름)은 원인 추적에 필요하니 버리지 않고, 사용자가 다음에
       // 무엇을 할지 아는 한 줄을 앞에 붙인다.
       const detail = cause instanceof Error ? cause.message : String(cause);
-      setStatus(`명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`, "error");
+      liveDockFor(key).setStatus(
+        `명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`,
+        "error",
+      );
     } finally {
       generateBtn.disabled = false;
     }
@@ -482,6 +497,10 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     })
   );
   renderStaged();
+  // 생성 중에 본문이 다시 그려진 경우 새 도크도 「생성 중」을 이어받는다 — 안 그러면 버튼이
+  // 다시 활성돼 같은 원으로 둘째 호출을 또 넣을 수 있다.
+  if (state.statusKind === "busy") generateBtn.disabled = true;
+  liveDock = { key, renderStaged, setStatus };
   return root;
 }
 
