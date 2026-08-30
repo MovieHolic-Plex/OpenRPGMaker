@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
+import { loadAiConfig, resetAiTransportHealth } from "@/ai/llmClient";
+import { getAiConnectionStatus, refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
 import {
   hasCpenTilesetApiKey,
   normalizeCpenResponseText,
@@ -19,9 +22,13 @@ describe("requestCpenTilesetMapping", () => {
     const windowStub = testWindow();
     vi.stubGlobal("window", windowStub);
     vi.stubGlobal("localStorage", windowStub.localStorage);
+    resetAiConnectionStatusCache();
+    resetAiTransportHealth();
   });
 
   afterEach(() => {
+    resetAiConnectionStatusCache();
+    resetAiTransportHealth();
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
   });
@@ -107,6 +114,33 @@ describe("requestCpenTilesetMapping", () => {
     expect(url).toBe("/v1/chat/completions");
     expect(readHeader(init, "Authorization")).toBeNull();
     expect(readHeader(init, "X-Rpgzzu-Provider")).toBe(DEFAULT_PROVIDER);
+  });
+
+  it("Given stored browser config When live auth changes Then tileset and assistant readiness stay identical", async () => {
+    const authFetch = vi.fn(async () => new Response(JSON.stringify({ connected: false }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }));
+    vi.stubGlobal("fetch", authFetch);
+
+    await refreshAiConnectionStatus();
+    let config = loadAiConfig();
+    let status = getAiConnectionStatus(config);
+    expect(status.kind).toBe("disconnected");
+    expect(hasCpenTilesetApiKey()).toBe(isAssistantEndpointReady(config, status));
+    expect(hasCpenTilesetApiKey()).toBe(false);
+
+    resetAiConnectionStatusCache();
+    authFetch.mockResolvedValue(new Response(JSON.stringify({ connected: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }));
+    await refreshAiConnectionStatus();
+    config = loadAiConfig();
+    status = getAiConnectionStatus(config);
+    expect(status.kind).toBe("ready");
+    expect(hasCpenTilesetApiKey()).toBe(isAssistantEndpointReady(config, status));
+    expect(hasCpenTilesetApiKey()).toBe(true);
   });
 
   it("Given the LLM rejects the request When requesting a tileset mapping Then it reports the humanized failure", async () => {

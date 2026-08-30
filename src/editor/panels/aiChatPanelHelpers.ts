@@ -13,7 +13,7 @@ import {
   proposalHasChangedMap,
   requestLikelyExpectsChange,
 } from "@/ai/proposalCompleteness";
-import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
+import { isAssistantEndpointReady, type AssistantConnectionReadiness } from "@/ai/assistantEndpoint";
 import { loadAiConfig } from "@/ai/llmClient";
 import type { AiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
@@ -48,8 +48,11 @@ export function isWriteTool(name: string): boolean {
 
 // 준비 판정의 선언 지점은 ai/assistantEndpoint 다. 이 이름은 패널·모달 여덟 군데가 쓰고 있어
 // 그대로 남기고 위임한다 — 판정 규칙을 여기 다시 적으면 표면마다 갈라지던 원래 문제로 돌아간다.
-export function isAiConfigReady(config: AiConfig): boolean {
-  return isAssistantEndpointReady(config);
+export function isAiConfigReady(
+  config: AiConfig,
+  connectionStatus?: AssistantConnectionReadiness,
+): boolean {
+  return isAssistantEndpointReady(config, connectionStatus);
 }
 
 export function phaseStatusText(phase: Extract<SessionEvent, { type: "phase" }>["value"]): string {

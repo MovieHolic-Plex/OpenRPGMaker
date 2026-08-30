@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   REGION_SURFACE_MAX_TOOL_CALLS,
@@ -7,7 +7,14 @@ import {
   resolveSurfaceAiConfig,
   type AiSurface,
 } from "@/ai/assistantEndpoint";
+import { REGION_TASK_MAX_TOOL_CALLS } from "@/editor/regionTask/runRegionTask";
 import type { AiConfig } from "@/ai/llmClient";
+import { AI_CONFIG_STORAGE_KEY, loadAiConfig, resetAiTransportHealth } from "@/ai/llmClient";
+import {
+  getAiConnectionStatus,
+  refreshAiConnectionStatus,
+  resetAiConnectionStatusCache,
+} from "@/editor/panels/aiConnectionStatus";
 
 const ALL_SURFACES: readonly AiSurface[] = [
   "chat",
@@ -17,6 +24,28 @@ const ALL_SURFACES: readonly AiSurface[] = [
   "structure-kit",
   "tileset-analysis",
 ];
+
+beforeEach(() => {
+  const values = new Map<string, string>();
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => void values.set(key, value),
+      removeItem: (key: string) => void values.delete(key),
+      clear: () => values.clear(),
+    },
+  });
+  resetAiConnectionStatusCache();
+  resetAiTransportHealth();
+});
+
+afterEach(() => {
+  resetAiConnectionStatusCache();
+  resetAiTransportHealth();
+  Reflect.deleteProperty(globalThis, "localStorage");
+  vi.unstubAllGlobals();
+});
 
 function companionConfig(overrides: Partial<AiConfig> = {}): AiConfig {
   return {
@@ -34,6 +63,11 @@ function companionConfig(overrides: Partial<AiConfig> = {}): AiConfig {
 }
 
 describe("resolveSurfaceAiConfig", () => {
+  it("keeps the shipped region-task tool-call ceiling at 24", () => {
+    expect(REGION_SURFACE_MAX_TOOL_CALLS).toBe(24);
+    expect(REGION_TASK_MAX_TOOL_CALLS).toBe(24);
+  });
+
   it("Given any surface When resolving Then the endpoint fields stay identical to the assistant config", () => {
     // 이 스펙이 막는 결함: 표면이 자기 baseUrl/authMode/providerId 를 정하면 '조수 하나로 통일' 이
     // 깨진다. 과거 타일셋 AI 가 직접 baseUrl 을 조립하다 조용히 죽은 경로가 그것이었다.
@@ -102,6 +136,44 @@ describe("resolveSurfaceAiConfig", () => {
 });
 
 describe("isAssistantEndpointReady", () => {
+  it("Given browser-stored config When the auth cache is cold Then the first attempt stays available", () => {
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "apiKey",
+      baseUrl: "https://discarded.invalid/v1",
+      apiKey: "discarded-key",
+      model: "   ",
+    }));
+
+    const config = loadAiConfig();
+    const status = getAiConnectionStatus(config);
+
+    // loadAiConfig normalizes this otherwise-invalid blob to OAuth plus a default model. Shape readiness alone
+    // is therefore true in every browser; the live status is the part that can later close the gate.
+    expect(config.authMode).toBe("chatgpt");
+    expect(config.model.trim()).not.toBe("");
+    expect(status.kind).toBe("checking");
+    expect(isAssistantEndpointReady(config, status)).toBe(true);
+  });
+
+  it("Given browser-stored config When refresh reports logged out Then readiness blocks", async () => {
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "chatgpt",
+      providerId: "google-antigravity",
+      model: "gemini-3.7-flash",
+    }));
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(
+      JSON.stringify({ connected: false }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    )));
+
+    await refreshAiConnectionStatus();
+    const config = loadAiConfig();
+    const status = getAiConnectionStatus(config);
+
+    expect(status.kind).toBe("disconnected");
+    expect(isAssistantEndpointReady(config, status)).toBe(false);
+  });
+
   it("Given companion transport When no client key is stored Then it is ready", () => {
     // OAuth(동반 서비스)는 자격 증명을 브라우저에 두지 않는 것이 정상 상태다.
     expect(isAssistantEndpointReady(companionConfig())).toBe(true);

@@ -1,4 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { AI_CONFIG_STORAGE_KEY, resetAiTransportHealth } from "@/ai/llmClient";
+import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
 import { createStructureKitFromHouse, importStructureKits, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { buildAiMetaDraftPrompt, collectUsedTiles, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
@@ -10,11 +12,32 @@ let restoreDom: (() => void) | undefined;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
+  const values = new Map<string, string>();
+  values.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+    authMode: "chatgpt",
+    providerId: "google-antigravity",
+    model: "gemini-3.7-flash",
+  }));
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => void values.set(key, value),
+      removeItem: (key: string) => void values.delete(key),
+      clear: () => values.clear(),
+    },
+  });
+  resetAiConnectionStatusCache();
+  resetAiTransportHealth();
 });
 
 afterEach(() => {
   restoreDom?.();
   restoreDom = undefined;
+  resetAiConnectionStatusCache();
+  resetAiTransportHealth();
+  Reflect.deleteProperty(globalThis, "localStorage");
+  vi.unstubAllGlobals();
   store.update((project) => {
     for (const tileset of Object.values(project.tilesets)) {
       delete tileset.structureKits;
@@ -350,6 +373,55 @@ describe("AI 메타 탭", () => {
     const stored = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
       .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
     expect(stored.ai).toBeUndefined();
+  });
+
+  it("연결 상태가 확인되면 미연결은 초안 요청을 막고 연결됨은 통과시킨다", async () => {
+    seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_edit", () => {});
+    (document.querySelector("[data-testid='structure-kit-editor-tab-ai']") as unknown as FakeElement).click();
+    const draftButton = document.querySelector("[data-testid='structure-kit-editor-ai-draft']") as unknown as FakeElement;
+
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/auth/status")) {
+        return new Response(JSON.stringify({ connected: false }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await refreshAiConnectionStatus();
+    draftButton.click();
+    await Promise.resolve();
+    expect(fetchMock.mock.calls.filter(([input]) => String(input).includes("/v1/chat/completions"))).toHaveLength(0);
+
+    resetAiConnectionStatusCache();
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/auth/status")) {
+        return new Response(JSON.stringify({ connected: true }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({
+        description: "돌담 우물",
+        placementRules: "마을 광장에 둔다",
+      }) } }] }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    });
+
+    await refreshAiConnectionStatus();
+    draftButton.click();
+    expect(fetchMock.mock.calls.filter(([input]) => String(input).includes("/v1/chat/completions"))).toHaveLength(1);
   });
 
   it("수락하면 폼 값이 저장되고 origin 이 user 가 된다", () => {
