@@ -267,7 +267,7 @@ export function openStructureKitEditor(tilesetId: TilesetId, kitId: string, onCl
     if (showParts) partsWrap.removeAttribute("hidden");
     else partsWrap.setAttribute("hidden", "");
     if (session.tab === "ai") {
-      drawAiTab(aiWrap, current, tileset, session, redraw);
+      drawAiTab(aiWrap, current, tileset, session, redraw, commitKit);
       rightWrap.replaceChildren(tabsWrap, aiWrap);
     } else {
       drawTools(toolsWrap, session, redraw);
@@ -1409,6 +1409,7 @@ function drawAiTab(
   tileset: TilesetDef,
   session: EditorSession,
   redraw: () => void,
+  commitKit: (before: SectionStructureKitDef, next: SectionStructureKitDef) => void,
 ): void {
   const current = session.draft ?? kit.ai ?? { description: "", placementRules: "", origin: "ai" as const };
   const pendingApproval = current.origin !== "user";
@@ -1517,7 +1518,9 @@ function drawAiTab(
           const target = session.requireKit();
           if (!target) return;
           // 제로 부트스트랩: 여기가 origin 을 "user" 로 만드는 유일한 지점이다.
-          replaceStructureKit(session.tilesetId, { ...target, ai: { ...draft, origin: "user" } });
+          // commitKit 을 지나야 한다. replaceStructureKit 을 직접 부르면 future 가 남아서,
+          // 되돌리기 뒤에 수락하면 다음 다시하기가 사용자가 보증한 메타를 지운다.
+          commitKit(target, { ...target, ai: { ...draft, origin: "user" } });
           session.draft = null;
           toast("AI 메타를 승인했습니다", "ok");
           redraw();

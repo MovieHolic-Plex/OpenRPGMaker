@@ -129,6 +129,44 @@ describe("openStructureKitEditor", () => {
       .find((kit) => kit.id === "kit_edit") as SectionStructureKitDef;
     expect(stored.rows[0]!.tiles[0]).toBe(421);
   });
+  /* 되돌리기 뒤에 수락하면 다음 다시하기가 사용자가 보증한 메타를 지웠다. 수락이
+     commitKit 을 우회해 replaceStructureKit 을 직접 불러서 재시도 분기(future)가
+     남아 있었기 때문이다. 사용자가 "내가 보증" 을 누른 값이 조용히 사라지는 경로다. */
+  it("되돌리기 뒤 AI 메타를 수락하면 다시하기가 그것을 지우지 않는다", () => {
+    const kit = seedKit();
+    openStructureKitEditor(DEFAULT_TILESET_ID, kit.id, () => {});
+    const pick = (id: string): FakeElement | null =>
+      document.querySelector(`[data-testid='${id}']`) as unknown as FakeElement | null;
+    const readKit = () => (store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.structureKits ?? [])
+      .find((c) => c.id === kit.id);
+
+    // 이력 한 칸: 크기 변경은 commitKit 을 지난다
+    const width = pick("structure-kit-editor-width");
+    expect(width).toBeTruthy();
+    width!.value = String((kit.width ?? 2) + 1);
+    width!.dispatchEvent(new Event("change"));
+    expect(readKit()?.width).toBe((kit.width ?? 2) + 1);
+
+    // 되돌린다 — 이 순간 future 에 항목이 생긴다
+    pick("structure-kit-editor-undo")!.click();
+    expect(readKit()?.width).toBe(kit.width);
+
+    // 그 상태에서 AI 메타를 수락한다
+    pick("structure-kit-editor-tab-ai")!.click();
+    const role = pick("structure-kit-editor-ai-role");
+    expect(role).toBeTruthy();
+    role!.value = "house";
+    role!.dispatchEvent(new Event("change"));
+    const accept = pick("structure-kit-editor-ai-accept");
+    expect(accept).toBeTruthy();
+    accept!.click();
+    expect(readKit()?.ai?.origin).toBe("user");
+
+    // 다시하기 — 수락한 메타가 살아 있어야 한다
+    const redo = pick("structure-kit-editor-redo");
+    if (redo) redo.click();
+    expect(readKit()?.ai?.origin).toBe("user");
+  });
 });
 
 describe("편집기 크기 조절", () => {
@@ -431,4 +469,5 @@ describe("importStructureKits", () => {
     expect(imported).toBeDefined();
     expect(imported.ai?.origin).toBe("ai");
   });
+
 });
