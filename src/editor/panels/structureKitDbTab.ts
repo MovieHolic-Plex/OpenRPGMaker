@@ -6,6 +6,7 @@
 // 3. 빈 상태 정확한 카피: "이 타일셋에는 아직 구조물이 없습니다."
 // 4. 인스펙터는 이 파일이 배치만 한다 — 내용·액션 계약은 structureKitInspector.ts 를 본다.
 // 5. 원본(source) 칩은 앨범 안의 세 갈래 — 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물. 실내 오브젝트는 실내 칩셋 전용.
+// 6. 공간 종류(침실·주방 문법)는 형제 탭 tilesetSpacesTab 이 소유한다. 이 파일은 방 카드를 그리지 않는다.
 
 import { editorState } from "@/editor/editorState";
 import {
@@ -24,7 +25,6 @@ import {
   albumEntryId,
   entriesForSource,
   interiorObjectThemeLabels,
-  interiorThemeCards,
   STRUCTURE_KIT_SOURCES,
   type StructureAlbumEntry,
   type StructureKitDbSource,
@@ -42,7 +42,6 @@ import { clearSelectedTileset, getSelectedTilesetId, setSelectedTileset } from "
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type {
-  InteriorRoomKindRecord,
   StructureKitDef,
   StructureKitPart,
   StructureKitPartKind,
@@ -58,20 +57,7 @@ interface ActiveSessionState {
   selectedKitId: string | null;
   selectedObjectId: string | null;
   searchQuery: string;
-  themeFilter: string | null;
   checkedKitIds: Set<string>;
-}
-
-export type StructureKitFolderView = "kits" | "spaces";
-let folderView: StructureKitFolderView = "kits";
-
-export function setStructureKitFolderView(view: StructureKitFolderView): void {
-  folderView = view;
-  if (view === "spaces") session.source = "interior";
-}
-
-export function getStructureKitFolderView(): StructureKitFolderView {
-  return folderView;
 }
 
 const session: ActiveSessionState = {
@@ -80,19 +66,16 @@ const session: ActiveSessionState = {
   selectedKitId: null,
   selectedObjectId: null,
   searchQuery: "",
-  themeFilter: null,
   checkedKitIds: new Set(),
 };
 
 export function resetStructureKitsTabSession(): void {
-  folderView = "kits";
   session.tilesetId = null;
   session.source = "all";
   session.selectedKitId = null;
   session.selectedObjectId = null;
   setInspectorSelectedPartId(null);
   session.searchQuery = "";
-  session.themeFilter = null;
   session.checkedKitIds.clear();
   clearSelectedTileset();
 }
@@ -114,7 +97,6 @@ export function focusUserStructureKit(kitId: string): void {
   session.selectedObjectId = null;
   if (session.source !== "all" && session.source !== "user") session.source = "user";
   session.searchQuery = "";
-  session.themeFilter = null;
   setInspectorSelectedPartId(null);
 }
 
@@ -208,10 +190,8 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   // 팔레트 선반과 같은 합집합 규약: 내장 파라메트릭 킷 → 실내 오브젝트 → 등록 킷 순.
   const allEntries = albumEntries(activeTileset);
   const query = session.searchQuery.trim().toLowerCase();
-  const themeFilterActive = session.source === "interior" ? session.themeFilter : null;
   const visibleEntries = entriesForSource(allEntries, session.source)
-    .filter((entry) => matchesQuery(entry, query))
-    .filter((entry) => matchesThemeFilter(entry, themeFilterActive));
+    .filter((entry) => matchesQuery(entry, query));
 
   // 체크는 지금 보이는 행에만 뜻이 있다 — 원본 칩·검색으로 가려지면 그 선택은 화면에서 사라진다.
   // 푸터 개수·내보내기 버튼 라벨·실제 내보내기 대상을 전부 이 한 배열에서 갈라내 서로 어긋나지
@@ -239,7 +219,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
       class: "db-tab-note",
       children: [
         el("h3", {
-          text: folderView === "spaces" ? "공간 종류" : "구조물",
+          text: "구조물",
           dataset: { testid: "structure-kit-heading" },
         }),
         el("span", {
@@ -283,7 +263,6 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
           click: () => {
             session.source = source.id;
             setInspectorSelectedPartId(null);
-            if (source.id !== "interior") session.themeFilter = null;
             refresh(host, rerender);
           },
         },
@@ -392,11 +371,6 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     }),
   );
   tableCol.append(tools);
-
-  // 2-a. 방 종류(테마) 문법 — 실내 오브젝트 원본에서만. AI 가 방을 채울 때 요구하는 역할을 그림으로 보여준다.
-  if (folderView === "spaces") {
-    tableCol.append(renderThemeGrammar(activeTileset, themeFilterActive, host, rerender));
-  }
 
   if (allEntries.length === 0) {
     const emptyWrap = el("div", {
@@ -644,199 +618,6 @@ function matchesQuery(entry: StructureAlbumEntry, query: string): boolean {
   return (kit.parts ?? []).some(
     (part) => partKindName(part.kind).includes(query) || (part.note ?? "").toLowerCase().includes(query),
   );
-}
-
-/** 테마 필터 — 고른 방 종류에 속한 실내 오브젝트만 남긴다. 킷 행은 테마 개념이 없어 그대로 통과. */
-function matchesThemeFilter(entry: StructureAlbumEntry, theme: string | null): boolean {
-  if (!theme) return true;
-  if (entry.kind !== "object") return true;
-  return entry.object.themes.includes(theme);
-}
-
-/**
- * 방 종류 카드 그리드 — 카드 한 장이 "이 방에 반드시 있어야 하는 역할"과 그 역할을 채우는
- * 카탈로그 오브젝트의 래스터다. 카드를 누르면 표가 그 방의 오브젝트로 좁혀지고, 다시 누르면 풀린다.
- */
-function renderThemeGrammar(
-  tileset: TilesetDef,
-  activeTheme: string | null,
-  host: HTMLElement,
-  rerender: () => void,
-): HTMLElement {
-  const grid = el("div", {
-    class: "structure-kit-theme-grid",
-    dataset: { testid: "structure-kit-theme-grid" },
-    children: [
-      el("div", { class: "structure-kit-theme-grid-title", text: "방 종류 — AI 가 이 방을 채울 때 요구하는 오브젝트" }),
-    ],
-  });
-
-  for (const card of interiorThemeCards(tileset)) {
-    const theme = card.theme;
-    const slots = card.roles.filter((slot) => slot.object !== undefined);
-    const modifiers = card.modifierLabels;
-
-    const body =
-      slots.length === 0
-        ? [
-            el("p", {
-              class: "structure-kit-quiet",
-              dataset: { testid: `structure-kit-theme-${theme}-no-roles` },
-              text: "필수 오브젝트가 없는 방입니다 — 자유 배치.",
-            }),
-          ]
-        : slots.map((slot) => {
-            const canvas = interiorObjectCanvas(tileset, slot.object!, 1);
-            return el("div", {
-              class: "structure-kit-theme-role",
-              dataset: { testid: `structure-kit-theme-${theme}-role-${slot.role}` },
-              children: [
-                el("div", { class: "structure-kit-theme-role-thumb", children: [canvas] }),
-                el("span", { class: "structure-kit-theme-role-label", text: slot.label }),
-              ],
-            });
-          });
-
-    grid.append(
-      el("button", {
-        class: `structure-kit-theme-card${theme === activeTheme ? " active" : ""}`,
-        attrs: { type: "button" },
-        dataset: { testid: `structure-kit-theme-${theme}` },
-        children: [
-          el("div", { class: "structure-kit-theme-card-title", text: card.label }),
-          el("div", { class: "structure-kit-theme-roles", children: body }),
-          el("div", {
-            class: "structure-kit-theme-modifiers",
-            text: modifiers.length > 0 ? `분위기: ${modifiers.join(" · ")}` : "분위기 제안 없음",
-          }),
-        ],
-        on: {
-          click: () => {
-            session.themeFilter = session.themeFilter === theme ? null : theme;
-            setInspectorSelectedPartId(null);
-            refresh(host, rerender);
-          },
-        },
-      }),
-    );
-  }
-
-  grid.append(renderRoomKindEditor(tileset, host, rerender));
-  return grid;
-}
-
-function writeRoomKinds(tilesetId: string, kinds: InteriorRoomKindRecord[]): void {
-  store.update((project) => {
-    const tileset = project.tilesets[tilesetId];
-    if (!tileset) return;
-    tileset.interiorRoomKinds = kinds.map((kind) => ({ ...kind, requiredRoles: [...kind.requiredRoles] }));
-  }, { scope: "database", label: "방 종류 수정" });
-}
-
-function renderRoomKindEditor(tileset: TilesetDef, host: HTMLElement, rerender: () => void): HTMLElement {
-  const kinds = tileset.interiorRoomKinds ?? [];
-  const rows = kinds.map((kind, index) =>
-    el("div", {
-      class: "structure-kit-kind-row",
-      dataset: { testid: `structure-kit-kind-row-${kind.id}` },
-      children: [
-        el("input", {
-          attrs: { type: "text", value: kind.label, "aria-label": "방 이름" },
-          dataset: { testid: `structure-kit-kind-label-${kind.id}` },
-          on: {
-            change: (event: Event) => {
-              const target = event.currentTarget;
-              if (!(target instanceof HTMLInputElement)) return;
-              const next = kinds.map((entry, entryIndex) =>
-                entryIndex === index ? { ...entry, label: target.value.trim() || entry.id } : entry,
-              );
-              writeRoomKinds(tileset.id, next);
-              refresh(host, rerender);
-            },
-          },
-        }),
-        el("input", {
-          attrs: {
-            type: "text",
-            value: kind.requiredRoles.join(", "),
-            placeholder: "필수 역할: bed, stove",
-            "aria-label": "필수 역할",
-          },
-          dataset: { testid: `structure-kit-kind-roles-${kind.id}` },
-          on: {
-            change: (event: Event) => {
-              const target = event.currentTarget;
-              if (!(target instanceof HTMLInputElement)) return;
-              const requiredRoles = target.value.split(",").map((role) => role.trim()).filter(Boolean);
-              const next = kinds.map((entry, entryIndex) =>
-                entryIndex === index ? { ...entry, requiredRoles } : entry,
-              );
-              writeRoomKinds(tileset.id, next);
-              refresh(host, rerender);
-            },
-          },
-        }),
-        el("label", {
-          children: [
-            el("input", {
-              attrs: kind.walkway ? { type: "checkbox", checked: "" } : { type: "checkbox" },
-              dataset: { testid: `structure-kit-kind-walkway-${kind.id}` },
-              on: {
-                change: (event: Event) => {
-                  const target = event.currentTarget;
-                  if (!(target instanceof HTMLInputElement)) return;
-                  const next = kinds.map((entry, entryIndex) =>
-                    entryIndex === index
-                      ? { ...entry, ...(target.checked ? { walkway: true } : { walkway: undefined }) }
-                      : entry,
-                  );
-                  writeRoomKinds(tileset.id, next);
-                  refresh(host, rerender);
-                },
-              },
-            }),
-            el("span", { text: "복도" }),
-          ],
-        }),
-        el("button", {
-          class: "btn small",
-          attrs: { type: "button" },
-          text: "삭제",
-          dataset: { testid: `structure-kit-kind-delete-${kind.id}` },
-          on: {
-            click: () => {
-              writeRoomKinds(tileset.id, kinds.filter((_, entryIndex) => entryIndex !== index));
-              refresh(host, rerender);
-            },
-          },
-        }),
-      ],
-    }),
-  );
-  return el("div", {
-    class: "structure-kit-kind-editor",
-    dataset: { testid: "structure-kit-kind-editor" },
-    children: [
-      el("div", { class: "structure-kit-theme-grid-title", text: "방 종류 편집 — 이 타일셋에서 AI 가 방을 채울 문법" }),
-      ...rows,
-      el("button", {
-        class: "btn small",
-        attrs: { type: "button" },
-        text: "+ 방 종류",
-        dataset: { testid: "structure-kit-kind-add" },
-        on: {
-          click: () => {
-            const id = `kind_${Date.now().toString(36)}`;
-            writeRoomKinds(tileset.id, [
-              ...kinds,
-              { id, label: "새 방", requiredRoles: [] },
-            ]);
-            refresh(host, rerender);
-          },
-        },
-      }),
-    ],
-  });
 }
 
 /** 실내 오브젝트 행 — 실래스터 썸네일 + 이름 + 크기 + 속한 테마. */

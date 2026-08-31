@@ -206,18 +206,36 @@ The Database modal was modernized in six waves while keeping every hard contract
 타일셋 워크스페이스 **안쪽** 섹션 탭(타일 규칙/단어장/구성)은 그대로 둔다. 레일 면은
 그 모드의 바로가기이고, 안쪽 탭을 없애면 기존 e2e 가 깨진다.
 
+## 공간 종류와 구조물은 다른 면이다 (2026-09-01)
+
+`공간 종류`(`tilesetSpaces`, `src/editor/panels/tilesetSpacesTab.ts`) 는 장소 문법이고,
+`구조물` 은 찍을 타일 덩어리다. 예전에는 공간 종류 탭이 `setStructureKitFolderView("spaces")`
+로 구조물 앨범을 열어 실내 오브젝트 표·[+ 새 구조물]·방 카드가 한 화면에 섞였다.
+
+| | 공간 종류 | 구조물 |
+|---|---|---|
+| 무엇인가 | 침실·주방·광장처럼 **장소의 문법** | 집·우물·침대처럼 **찍는 모양** |
+| 데이터 | `tileset.interiorRoomKinds` | `tileset.structureKits` + 내장 킷 + 실내 가구 |
+| 화면 | 카드 + 이름·필수 역할·분위기·복도 | 앨범·원본 칩·래스터 표·편집기 |
+| 하지 않는 일 | 타일을 찍거나 킷을 복제 | 방 문법을 정의 |
+
+실내 칩셋만 기본 7종을 시드한다. 마을 칩셋에 침실을 기본으로 얹지 않는다.
+공간 카드의 역할 썸네일은 그 역할을 채우는 가구의 **미리보기**일 뿐이고, 가구를
+고치는 자리는 구조물 탭이다. 계약: `test/tilesetSpacesTab.test.ts`,
+`test/databaseTilesetFolder.test.ts`, `test/structureKitDbTab.test.ts` 의
+「구조물 탭은 공간 종류를 그리지 않는다」.
+
 ## '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
 
 `src/editor/panels/structureKitDbTab.ts` + 데이터 계층 `src/editor/panels/structureKitDbSources.ts`.
 
 - **목록 규약은 합집합**: `builtinHouseStructureKitsFor(tileset)` 먼저, 그 다음 `tileset.structureKits`. `src/editor/tools/structureKitTools.ts` 와 `src/editor/harnessSuggestion/structureKitShelf.ts` 가 쓰는 규약과 같다 — 탭·AI 툴·팔레트 선반의 목록이 갈리면 회귀다. 이전에는 탭만 `tileset.structureKits` 를 읽어 새 프로젝트에서 항상 빈 앨범이었다.
 - **타일셋 레일이 앨범 축, 원본 칩이 그 안의 필터**: `structure-kit-source-all` / `-builtin` / `-interior` / `-user` (라벨 전체 · 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물). 각 칩의 숫자는 그 원본이 지금 나열하는 행 수와 같다.
-- **실내 오브젝트는 타일셋 데이터**: `interiorObjectsForTileset` 은 그 타일셋의 실내 가구 킷(`ai.snap` / `ai.interiorRole` / `learnedFrom: interior-catalog`)을 돌려준다. 실내 칩셋은 코드 카탈로그를 시드·폴백한다. 방 종류는 `tileset.interiorRoomKinds`(필수 역할·복도 여부). AI 방 채우기는 이 타일셋 레코드를 읽는다. "한 타일셋의 구조물은 다른 타일셋에 섞이지 않는다"는 기존 IA 규약을 그대로 지킨다.
+- **실내 오브젝트는 타일셋 데이터**: `interiorObjectsForTileset` 은 그 타일셋의 실내 가구 킷(`ai.snap` / `ai.interiorRole` / `learnedFrom: interior-catalog`)을 돌려준다. 실내 칩셋은 코드 카탈로그를 시드·폴백한다. **방·공간 종류는 이 탭이 아니다** — `tileset.interiorRoomKinds` 는 형제 탭 `tilesetSpaces` 가 저작한다. "한 타일셋의 구조물은 다른 타일셋에 섞이지 않는다"는 기존 IA 규약을 그대로 지킨다.
 - **행은 실제 래스터**: 오브젝트 행 `structure-kit-object-<id>` 은 `INTERIOR_OBJECT_CATALOG` 의 셀을 `renderTileCellsToCanvas` 로 그린다(받침 타일 `VR.FLOOR`). 킷 행 `structure-kit-db-<kitId>` 은 기존대로 `assembledKitCells`.
-- **방 종류 카드**: `structure-kit-theme-<themeId>` (7종), 카드 안의 역할 칸은 `structure-kit-theme-<themeId>-role-<role>` 이고 그 역할을 대표하는 카탈로그 오브젝트 썸네일이 붙는다. 카드를 누르면 표가 그 테마 오브젝트로 좁혀지고 다시 누르면 풀린다. 필수 역할이 없는 창고·복도는 빈 줄 대신 그 사실을 적는다.
 - **가상 항목은 파괴적 액션이 없다**: 내장 파라메트릭 킷(`learnedFrom === "builtin-parametric"`)과 실내 카탈로그 오브젝트는 프로젝트 데이터가 아니라 코드다 — 이름 변경·삭제를 노출하지 않고 인스펙터가 그 이유를 적는다. 등록 킷의 액션은 이름 변경, 부위 삭제, 문에서 입구 추정, 팔레트에서 쓰기, 복제, 편집, 낱개 내보내기, 삭제다.
 - **빈 상태 카피는 불변**: 앨범에 아무것도 없을 때 `structure-kit-db-empty` + `이 타일셋에는 아직 구조물이 없습니다.`. 원본·검색·테마 필터 때문에 행만 없는 경우는 `structure-kit-source-empty` 로 구분해 안내한다.
-- 커버리지: `test/structureKitDbTab.test.ts` (앨범 기본 선택, 내장 킷 노출, 레일 카운트, 빈 카피, rows 없는 malformed 킷 무크래시, 내장 킷 삭제 버튼 부재, 세 원본 칩 카운트 일치, 오브젝트 인스펙터, 테마 카드 7종·역할 썸네일·필터 토글). 스타일은 `src/styles/editor/harness-suggestion.css`.
+- 커버리지: `test/structureKitDbTab.test.ts` (앨범 기본 선택, 내장 킷 노출, 레일 카운트, 빈 카피, rows 없는 malformed 킷 무크래시, 내장 킷 삭제 버튼 부재, 세 원본 칩 카운트 일치, 오브젝트 인스펙터, 공간 종류 카드 부재). 스타일은 `src/styles/editor/harness-suggestion.css`.
 
 ## '구조물' 편집기와 파일 입출력 (2026-08-29)
 

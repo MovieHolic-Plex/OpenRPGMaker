@@ -7,10 +7,8 @@ import {
 } from "@/editor/panels/database";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { getTilesetMetadataEditMode } from "@/editor/panels/tilesetMetadataEditor";
-import {
-  getStructureKitFolderView,
-  resetStructureKitsTabSession,
-} from "@/editor/panels/structureKitDbTab";
+import { resetStructureKitsTabSession } from "@/editor/panels/structureKitDbTab";
+import { resetTilesetSpacesTabSession } from "@/editor/panels/tilesetSpacesTab";
 import { getSelectedTilesetId, setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -32,11 +30,13 @@ beforeEach(() => {
   });
   store.replace(createBlankProject());
   resetStructureKitsTabSession();
+  resetTilesetSpacesTabSession();
   setDatabaseActiveTab("worldGen");
 });
 
 afterEach(() => {
   resetStructureKitsTabSession();
+  resetTilesetSpacesTabSession();
   restoreDom?.();
   restoreDom = undefined;
 });
@@ -79,11 +79,13 @@ describe("세계 → 타일셋 중간 카테고리", () => {
     }
   });
 
-  it("공간 종류를 누르면 구조물 탭이 공간 면으로 열린다", () => {
+  it("공간 종류를 누르면 전용 워크스페이스가 열린다", () => {
     const host = renderHost();
     host.querySelector("[data-testid='db-tab-tileset-spaces']")!.click();
     expect(getDatabaseActiveTab()).toBe("tilesetSpaces");
-    expect(getStructureKitFolderView()).toBe("spaces");
+    expect(host.querySelector("[data-testid='tileset-spaces-workspace']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-new']")).toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-source-all']")).toBeNull();
   });
 
   it("오토타일 설정은 타일셋 워크스페이스를 autotile 모드로 연다", () => {
@@ -104,7 +106,8 @@ describe("세계 → 타일셋 중간 카테고리", () => {
   it("공간 종류 면의 제목은 「공간 종류」다", () => {
     const host = renderHost();
     host.querySelector("[data-testid='db-tab-tileset-spaces']")!.click();
-    expect(host.querySelector("[data-testid='structure-kit-heading']")?.textContent).toBe("공간 종류");
+    expect(host.querySelector("[data-testid='tileset-spaces-heading']")?.textContent).toBe("공간 종류");
+    expect(host.querySelector("[data-testid='structure-kit-heading']")).toBeNull();
   });
 
   it("통행에서 고른 칩셋이 구조물 앨범에도 이어진다", () => {

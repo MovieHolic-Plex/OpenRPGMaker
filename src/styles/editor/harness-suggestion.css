@@ -71,7 +71,8 @@
    빠져 있었다. TS 에서 마커 클래스를 붙이면 안 된다 — renderActiveTab 이 body 를
    replaceChildren 만 해서 className/dataset 이 탭 전환 후에도 남아 다른 탭으로 샌다.
    sidebar.css 쪽이 특이도가 높지만 display 를 건드리지 않으므로 충돌하지 않는다. */
-.db-body.db-shared-workspace:has(.structure-kit-album-workspace) {
+.db-body.db-shared-workspace:has(.structure-kit-album-workspace),
+.db-body.db-shared-workspace:has(.tileset-spaces-workspace) {
   display: flex;
   flex-direction: column;
 }
@@ -718,9 +719,17 @@
   color: var(--text-2, #5C5348);
 }
 
-.structure-kit-theme-modifiers {
-  font-size: 10.5px;
-  color: var(--text-3, #6B5F52);
+  /* 공간 종류 인스펙터의 db-field 는 라벨 위·입력 아래. 앨범 인스펙터 폭 352px. */
+.tileset-spaces-workspace .structure-kit-inspector .db-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.tileset-spaces-workspace .structure-kit-inspector input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* 실내 오브젝트 인스펙터의 사실 목록 — 역할 · 레이어 · 배치 규약 · 사용 테마. */
