@@ -293,7 +293,12 @@ describe("shared MP validation and target UI", () => {
     controller.destroy();
   });
 
-  it("leaves native button Enter to one browser click instead of double-dispatching from root/window", () => {
+  // 이 테스트는 예전에 "Enter 는 루트에서 아무 것도 하지 않고 네이티부 click 에 맡긴다" 를
+  // 단정하고, 버라이지가 들려준다는 그 click 을 직접 `attack.click()` 로 흔들어 맞추었다.
+  // 실밌우저에서는 그 click 이 안 뜰다(실측: 전투 커맨드 버튼에 포커스를 주고 Enter 를
+  // 눌러도 click 이벤트가 아예 없었다). 그래서 이 단정이 곰 Enter 확정을 전투 메뉴에서만
+  // 죽여 둔 결함을 가려 준 샘이었다. 진짜 계약은 "Enter 한 번 = 확정 한 번" 이다.
+  it("confirms once on Enter and does not double-dispatch with the click path", () => {
     vi.useFakeTimers();
     const project = battleProject();
     store.replace(project);
@@ -308,9 +313,9 @@ describe("shared MP validation and target UI", () => {
     attack?.focus();
 
     if (!attack) throw new Error("missing attack button");
+    // Enter 한 번에 확정 한 번. preventDefault 가 네이티부 활성화를 막으므로
+    // 루트/윈도우 핸들러가 직접 처리해도 이중 발화가 없다.
     pressKey("Enter", attack);
-    expect(begin).not.toHaveBeenCalled();
-    attack.click();
     expect(begin).toHaveBeenCalledTimes(1);
     controller.destroy();
   });

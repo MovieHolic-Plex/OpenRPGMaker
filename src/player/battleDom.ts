@@ -322,12 +322,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // Enter 는 포커스된 네이티브 버튼을 keydown 에서 스스로 활성화한다. 그 한 번만
   // 통과시키고 루트 핸들러는 비켜선다. Space 는 keydown 을 preventDefault 하면
   // 네이티브 활성화가 취소되므로 여기서 직접 처리해도 이중 발화가 없다.
-  function isNativeButtonEnter(event: KeyboardEvent): boolean {
-    return event.key === "Enter"
-      && event.target instanceof HTMLButtonElement
-      && root.contains(event.target)
-      && !event.target.disabled;
-  }
+  // ↑ 이 전제가 거짓이었다(실측). 전투 커맨드 버튼은 포커스가 있어도 Enter keydown 에
+  // 네이티부 click 을 단 한 번도 발행하지 않았다 — keydown key=Enter 다음에 click 이벤트가
+  // 아예 없었고(z 는 trusted=false click 이 뜨며 정상 동작), 그 사이 루트 핸들러는
+  // 뱄서서 있었다. 그래서 keyBindings 의 정본 CONFIRM_KEYS(z·enter·space·e) 가 약속한
+  // Enter 확정이 **전투 메뉴에서만 묵묵하게 죽었다**: 대사를 Enter 로 넘기고 전투에 들어온
+  // 플레이어가 이어서 Enter 를 눌러도 메뉴가 아무 반응을 하지 않았다(화면 안내는 "Z 확인").
+  // 이제 Space 와 동일하게 처리한다 — preventDefault 가 네이티부 활성화를 취소하므로
+  // 직접 확정해도 이중 발화가 없다.
 
   function onKeydown(event: KeyboardEvent): void {
     // 첫 사용자 입력에서 오디오 컨텍스트를 깨운다(autoplay 정책).
@@ -335,9 +337,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const snapshot = options.runtime.snapshot();
     if (snapshot.result) {
       if (isBattleConfirmKey(event)) {
-        // Native buttons already dispatch one click for Enter. Let that click bubble to
-        // the result handler instead of also confirming from the root key handler.
-        if (isNativeButtonEnter(event)) return;
         event.preventDefault();
         // 클릭 핸들러와 같은 이유로, 결과 연출이 화면에 도달했을 때만 확정한다.
         if (directorState.step === "result" && !resultSent) {
@@ -398,10 +397,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     if (isBattleConfirmKey(event)) {
-      // Enter on a focused native button must be handled by the browser exactly once.
-      // Z has no native activation, so it still goes through the shared cursor model.
-      if (isNativeButtonEnter(event)) return;
-      if (handleConfirm(snapshot)) event.preventDefault();
+      // preventDefault 로 네이티부 활성화를 잠가 놓고 z 와 같은 커서 모델로 통일한다.
+      event.preventDefault();
+      handleConfirm(snapshot);
     }
   }
   const rootKeydownEvents = new WeakSet<KeyboardEvent>();
