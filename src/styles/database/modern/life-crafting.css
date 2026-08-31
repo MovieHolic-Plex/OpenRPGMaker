@@ -3,55 +3,35 @@
 
    원칙
    1. 이 시트는 **정제 전용**이다. 마크업은 이미 스타일이 있는 프리미티브
-      (`db-ws-*`, `db-filter-chip`, `db-life-nested-row`)로만 조립돼 있어서,
-      이 파일을 @import 하지 않아도 탭은 읽을 수 있는 상태로 뜬다.
-      여기서 고치는 건 (a) 섹션 레일 밀도, (b) 4열 레벨 보상 행,
-      (c) 카드 안 체크박스 목록의 이중 테두리 — 세 가지뿐이다.
+      (`db-ws-*`)로만 조립돼 있어서, 이 파일을 @import 하지 않아도 탭은 읽을
+      수 있는 상태로 뜬다. 여기서 고치는 건 (a) 섹션 서브탭 한 줄 스크롤,
+      (b) 4열 레벨 보상 행, (c) 카드 안 체크박스 목록의 이중 테두리.
    2. 색은 `--db-studio-*` 만 쓴다. 새 hex 없음.
    3. 전부 `.database-modal-backdrop .database-modal-window .database-modal-body`
       아래로 스코프한다.
    ========================================================================= */
 
-/* ── 섹션 레일 ───────────────────────────────────────────────────────────────
-   예전 `.db-life-section-tabs` 는 `justify-content: flex-end; max-width: 760px`
-   였다. 1680px 에서 열 개 알약이 줄바꿈하면서 마지막 '가공 설비' 하나만 오른쪽
-   둘째 줄에 떨어져, 여덟 개 레코드 종류 사이를 오가는 유일한 수단이 고장 난
-   장식처럼 보였다(P0). 여기서는 폭 제한도 오른쪽 정렬도 두지 않는다. */
+/* ── 섹션 서브탭 ────────────────────────────────────────────────────────────
+   사이드바가 이미 '생활 기술·제작' 제목을 들고 있으므로 헤더에 제목을 다시
+   넣지 않는다. 열 개 항목은 줄바꿈하지 않고 가로로 흘린다 — wrap 하면 마지막
+   '가공 설비' 가 둘째 줄에 홀로 떨어져 이동 수단처럼 안 보인다. */
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rail {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: flex-start;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-section-nav {
+  flex-wrap: nowrap;
+  gap: 0;
   max-width: none;
-  padding: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rail-chip {
-  align-items: center;
-  display: inline-flex;
-  gap: 6px;
-  line-height: 1.6;
-  min-height: 26px;
-  padding: 1px 8px 1px 10px;
-  white-space: nowrap;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rail-chip .db-life-rail-count {
-  background: var(--db-studio-inset);
-  color: var(--db-studio-text-2);
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rail-chip.active .db-life-rail-count {
-  background: var(--db-studio-surface);
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-section-nav .db-ws-section-tab.active .db-ws-section-badge {
+  background: var(--db-studio-accent-soft);
   color: var(--db-studio-accent);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rail-title {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-life-workspace"] .db-ws-detail-body:has(> .db-ws-empty) {
+  align-content: center;
 }
 
 /* ── 레벨 보상 행 ────────────────────────────────────────────────────────────

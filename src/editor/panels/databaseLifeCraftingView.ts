@@ -10,7 +10,6 @@ import {
   listSearch,
   listToolbar,
   sectionCard,
-  statStrip,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import type { CraftIngredient, CraftRecipe } from "@/project/craftRecipes";
@@ -40,33 +39,19 @@ type LifeRecord = LifeSkillRecord | CraftRecipe | ItemUpgradeRule | SellPriceEnt
 // ---------------------------------------------------------------------------
 // 섹션 사전
 //
-// 이 탭은 여덟 종류의 레코드 + 두 개의 설정 패키지를 한 화면에서 다룬다. 예전에는
-// 그 열 개가 `justify-content: flex-end; max-width: 760px` 알약 줄에 몰려 있어서
-// 1680px 에서 마지막 '가공 설비' 하나가 오른쪽 둘째 줄에 홀로 떨어졌다 — 유일한
-// 이동 수단이 고장 난 장식처럼 보였다. 그리고 어느 섹션을 골라도 신규 프로젝트에서는
-// `<strong>아직 레코드가 없습니다.</strong>` 한 줄뿐이라, "이게 뭘 하는 데이터인지"
-// 를 알 방법이 없었다(감사: 상세 창 여백 99%).
-//
-// 그래서 섹션마다 설명·선행 조건·이웃 섹션을 여기 한 곳에 적어 두고, 레일/빈 상태/
-// 히어로가 전부 같은 사전을 읽게 한다.
+// 사이드바 탭 하나 안에 레코드 8종 + 설정 2종이 들어 있다. 이동은 워크스페이스
+// 서브탭(`db-ws-section-tab`)만 쓴다 — 제목을 칩 줄에 섞거나, 빈 상세에 현황 보드를
+// 다시 깔지 않는다.
 // ---------------------------------------------------------------------------
 
 type SectionMeta = {
   readonly id: LifeSection;
   readonly label: string;
   readonly testid: string;
-  /** 히어로 눈썹 라벨. */
-  readonly eyebrow: string;
-  /** 한 줄 요약 — 레일 칩 title, 히어로 subtitle, 현황 보드 카드에 공용. */
+  /** 탭 title 도움말 · 빈 상태 한 줄. */
   readonly blurb: string;
-  /** 빈 상태 본문 — "이게 뭔지" 를 모르는 사람에게 하는 설명. */
   readonly emptyBody: string;
   readonly searchPlaceholder: string;
-  /** "이 섹션이 하는 일" 카드 줄들. */
-  readonly purpose: readonly string[];
-  /** "먼저 준비할 것" 카드 줄들. */
-  readonly prep: readonly string[];
-  /** 빈 상태의 보조 CTA 가 데려갈 이웃 섹션. */
   readonly related?: LifeSection;
 };
 
@@ -75,178 +60,90 @@ const SECTIONS: readonly SectionMeta[] = [
     id: "skills",
     label: "생활 기술",
     testid: "db-life-section-skills",
-    eyebrow: "LIFE SKILL",
-    blurb: "농사·채광·낚시 같은 활동의 숙련도와 레벨 보상을 정의합니다.",
+    blurb: "농사·채광·낚시 같은 활동의 숙련도와 레벨 보상",
     emptyBody: "생활 기술은 플레이어가 활동할 때 오르는 숙련도입니다. 레벨이 오를 때 스위치를 켜거나 제작법을 해금할 수 있습니다.",
     searchPlaceholder: "생활 기술 검색",
-    purpose: [
-      "기술 종류(농사·채광·채집·낚시·전투)마다 최대 레벨을 정합니다.",
-      "레벨업 보상으로 스위치를 켜거나 제작법을 해금합니다.",
-      "이벤트 명령 '생활 기술 경험치 변경'이 여기 등록한 ID를 참조합니다.",
-    ],
-    prep: [
-      "보상으로 켤 스위치는 스위치 탭에서 먼저 만들어 두세요.",
-      "보상으로 해금할 제작법은 제작법 섹션에서 먼저 만듭니다.",
-    ],
     related: "recipes",
   },
   {
     id: "recipes",
     label: "제작법",
     testid: "db-life-section-recipes",
-    eyebrow: "RECIPE",
-    blurb: "재료와 골드를 결과 아이템으로 바꾸는 규칙입니다.",
+    blurb: "재료와 골드를 결과 아이템으로 바꾸는 규칙",
     emptyBody: "제작법은 '재료 + 골드 → 결과 아이템' 한 줄짜리 규칙입니다. 이벤트 명령 '제작'이 이 목록을 그대로 씁니다.",
     searchPlaceholder: "제작법 검색",
-    purpose: [
-      "재료 아이템과 수량, 결과 아이템과 수량을 짝짓습니다.",
-      "골드 비용을 함께 요구할 수 있습니다.",
-      "'해금 후 제작 가능'을 켜면 꾸러미·레벨 보상으로 열기 전까지 잠깁니다.",
-    ],
-    prep: [
-      "재료와 결과로 쓸 아이템을 아이템 탭에서 먼저 등록하세요.",
-      "잠금 제작법을 쓸 거라면 해금 경로(꾸러미 또는 생활 기술 보상)를 함께 정합니다.",
-    ],
     related: "skills",
   },
   {
     id: "upgrades",
     label: "도구 강화",
     testid: "db-life-section-upgrades",
-    eyebrow: "UPGRADE",
-    blurb: "도구 아이템을 상위 도구로 바꾸고 작업 범위를 넓힙니다.",
+    blurb: "도구를 상위 도구로 바꾸고 작업 범위를 넓힘",
     emptyBody: "도구 강화는 '강화 전 아이템 → 강화 후 아이템' 교체 규칙입니다. 강화된 도구가 한 번에 갈아엎는 칸 수와 에너지 배율도 여기서 정합니다.",
     searchPlaceholder: "도구 강화 검색",
-    purpose: [
-      "강화 전/후 아이템과 필요한 재료·골드를 정합니다.",
-      "강화 도구 능력을 켜면 효과 범위(최대 9×9)와 에너지 배율을 지정합니다.",
-      "이벤트 명령 '도구 강화 적용'이 여기 등록한 ID를 참조합니다.",
-    ],
-    prep: [
-      "강화 전/후 도구 아이템을 아이템 탭에서 먼저 만듭니다.",
-      "에너지 배율을 쓰려면 에너지 섹션의 설정이 있어야 체감됩니다.",
-    ],
     related: "energy",
   },
   {
     id: "sellPrices",
     label: "판매 가격",
     testid: "db-life-section-sell-prices",
-    eyebrow: "SELL PRICE",
-    blurb: "아이템 한 개를 팔았을 때 받는 골드입니다.",
+    blurb: "아이템 한 개를 팔았을 때 받는 골드",
     emptyBody: "판매 가격은 아이템당 한 줄입니다. 출하 상자와 상점 판매가 이 값을 그대로 씁니다.",
     searchPlaceholder: "아이템 검색",
-    purpose: [
-      "아이템 하나당 판매가를 한 번만 등록합니다(중복 등록은 막힙니다).",
-      "출하 정산이 이 가격으로 하루 수입을 계산합니다.",
-      "가격이 없는 아이템은 출하 상자에서 값이 매겨지지 않습니다.",
-    ],
-    prep: [
-      "팔 아이템을 아이템 탭에서 먼저 등록하세요.",
-      "출하로 정산하려면 출하 섹션의 설정을 만들어 둡니다.",
-    ],
     related: "shipping",
   },
   {
     id: "toolActions",
     label: "도구 행동",
     testid: "db-life-section-tool-actions",
-    eyebrow: "TOOL ACTION",
-    blurb: "어떤 도구가 맵의 무엇에 어떤 작업을 하는지 연결합니다.",
+    blurb: "도구가 맵의 무엇에 어떤 작업을 하는지 연결",
     emptyBody: "도구 행동은 '이 도구를 들고 이 지형/오브젝트를 누르면 이 작업이 일어난다'는 규칙입니다. 밭 갈기·물 주기·채광·낚시가 전부 여기서 열립니다.",
     searchPlaceholder: "도구 행동 검색",
-    purpose: [
-      "아이템 또는 도구 종류(괭이·물뿌리개·도끼·곡괭이)를 조건으로 겁니다.",
-      "밭 갈기·물 주기·베기·채광·낚시·수확 중 하나를 행동으로 정합니다.",
-      "경작 가능 구역이나 대상 오브젝트 종류로 범위를 좁힐 수 있습니다.",
-    ],
-    prep: [
-      "도구로 쓸 아이템을 아이템 탭에서 먼저 만듭니다.",
-      "경작 가능 구역은 지형·타일셋 설정에서 표시해 둬야 합니다.",
-    ],
     related: "upgrades",
   },
   {
     id: "energy",
     label: "에너지",
     testid: "db-life-section-energy",
-    eyebrow: "ENERGY",
-    blurb: "하루 동안 쓸 수 있는 작업량의 총량입니다.",
+    blurb: "하루 동안 쓸 수 있는 작업량의 총량",
     emptyBody: "에너지는 도구 작업 한 번마다 줄어드는 하루치 체력입니다. 설정을 만들면 최대치·시작값·하루 회복량을 정할 수 있습니다.",
     searchPlaceholder: "",
-    purpose: [
-      "최대 에너지와 하루를 시작할 때의 값을 정합니다.",
-      "잠을 자면 회복되는 양을 정합니다.",
-      "도구 강화의 에너지 배율이 이 값에 곱해집니다.",
-    ],
-    prep: ["도구 행동을 먼저 만들어야 에너지가 실제로 줄어드는 걸 볼 수 있습니다."],
     related: "toolActions",
   },
   {
     id: "shipping",
     label: "출하",
     testid: "db-life-section-shipping",
-    eyebrow: "SHIPPING",
-    blurb: "하루가 끝날 때 출하 상자를 정산하고 기록을 남깁니다.",
+    blurb: "하루가 끝날 때 출하 상자를 정산하고 기록을 남김",
     emptyBody: "출하는 상자에 넣어 둔 물건을 자정에 판매 가격으로 정산하는 규칙입니다. 설정을 만들면 기록 보관 일수와 허용 아이템을 고를 수 있습니다.",
     searchPlaceholder: "",
-    purpose: [
-      "하루가 끝날 때 상자 안 아이템을 판매 가격으로 정산합니다.",
-      "기록 보관 일수만큼 수입 내역을 남깁니다.",
-      "출하 가능한 아이템을 전체 허용 또는 목록으로 제한할 수 있습니다.",
-    ],
-    prep: ["정산 대상 아이템의 판매 가격을 먼저 등록해야 값이 매겨집니다."],
     related: "sellPrices",
   },
   {
     id: "worldUnlocks",
     label: "지역 해금",
     testid: "db-life-section-world-unlocks",
-    eyebrow: "WORLD UNLOCK",
-    blurb: "다리 수리·광산 개방 같은 지역 개방 상태에 이름을 붙입니다.",
+    blurb: "다리 수리·광산 개방 같은 지역 개방 상태",
     emptyBody: "지역 해금은 '어디가 열렸는가'를 이름으로 관리하는 목록입니다. 꾸러미 보상이 이 항목을 열고, 연결된 스위치가 맵 이벤트를 움직입니다.",
     searchPlaceholder: "지역 해금 검색",
-    purpose: [
-      "해금 항목마다 이름과 연결 스위치를 정합니다.",
-      "꾸러미 완료 보상이 이 항목을 열 수 있습니다.",
-      "연결한 스위치로 맵 이벤트의 통행/출현 조건을 겁니다.",
-    ],
-    prep: ["연결할 스위치를 스위치 탭에서 먼저 만들어 두세요."],
     related: "bundles",
   },
   {
     id: "bundles",
     label: "꾸러미",
     testid: "db-life-section-bundles",
-    eyebrow: "BUNDLE",
-    blurb: "아이템을 모아 바치면 보상과 해금을 주는 수집 과제입니다.",
+    blurb: "아이템을 모아 바치면 보상과 해금을 주는 수집 과제",
     emptyBody: "꾸러미는 '요구 아이템을 모두 채우면 보상을 준다'는 수집 과제입니다. 골드·아이템·스위치·지역 해금·제작법을 한 번에 보상으로 줄 수 있습니다.",
     searchPlaceholder: "꾸러미 검색",
-    purpose: [
-      "필요한 아이템과 수량을 나열합니다.",
-      "완료 보상으로 골드·아이템·스위치를 줍니다.",
-      "지역 해금과 제작법을 함께 열 수 있습니다.",
-    ],
-    prep: [
-      "요구/보상 아이템을 아이템 탭에서 먼저 등록합니다.",
-      "보상으로 열 지역 해금과 제작법을 각 섹션에서 먼저 만듭니다.",
-    ],
     related: "worldUnlocks",
   },
   {
     id: "makers",
     label: "가공 설비",
     testid: "db-life-section-makers",
-    eyebrow: "MAKER",
-    blurb: "시간을 들여 투입 아이템을 생산 아이템으로 바꾸는 설비입니다.",
+    blurb: "시간을 들여 투입 아이템을 생산 아이템으로 바꾸는 설비",
     emptyBody: "가공 설비는 '넣고 기다리면 나오는' 장치입니다. 치즈 프레스·양조통처럼 투입 아이템과 가공 시간을 정하면 됩니다.",
     searchPlaceholder: "가공 설비 검색",
-    purpose: [
-      "투입 아이템과 생산 아이템을 짝짓습니다.",
-      "가공에 걸리는 게임 내 시간(분)을 정합니다.",
-      "제작법과 달리 즉시 완성되지 않고 시간이 흘러야 나옵니다.",
-    ],
-    prep: ["투입/생산 아이템을 아이템 탭에서 먼저 등록하세요."],
     related: "recipes",
   },
 ];
@@ -292,6 +189,7 @@ export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void): 
   if (!isRecordSection(activeSection)) {
     const shell = workspaceShell({
       header,
+      list: configListPane(activeSection),
       detail: configDetail(activeSection, rerender),
       testid: "db-life-workspace",
     });
@@ -318,39 +216,30 @@ export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void): 
 }
 
 // ---------------------------------------------------------------------------
-// 섹션 레일 (헤더)
+// 섹션 서브탭
 // ---------------------------------------------------------------------------
 
-/**
- * 열 개 섹션 칩을 **왼쪽부터 자연스럽게 흘려 채운다**. 예전 `.db-life-section-tabs` 의
- * `justify-content: flex-end; max-width: 760px` 조합이 마지막 칩을 오른쪽 둘째 줄에
- * 홀로 남기던 P0 를 구조적으로 없앤다 — 여기서는 폭 제한도, 오른쪽 정렬도 없다.
- * 칩 자체는 이미 스타일이 있는 `.db-filter-chip` 을 그대로 쓴다.
- */
 function sectionRailHeader(project: Project, rerender: () => void): HTMLElement {
-  const rail = el("div", {
-    class: "db-filter-chips db-life-rail",
+  return el("nav", {
+    class: "db-ws-section-tabs db-life-section-nav",
     attrs: { role: "tablist", "aria-label": "생활 데이터 종류" },
-    children: [
-      el("div", {
-        class: "db-life-rail-title",
-        children: [el("h2", { class: "db-ws-hero-title", text: "생활 기술·제작" })],
-      }),
-      ...SECTIONS.map((section) => {
+    dataset: { testid: "db-life-crafting-header" },
+    children: SECTIONS.map((section) => {
       const count = sectionCount(project, section.id);
       const active = activeSection === section.id;
       return el("button", {
-        class: `db-filter-chip db-life-rail-chip${active ? " active" : ""}`,
+        class: `db-ws-section-tab${active ? " active" : ""}`,
         attrs: {
           type: "button",
           role: "tab",
           title: section.blurb,
+          "aria-label": `${section.label} ${count}개`,
           "aria-selected": String(active),
         },
         dataset: { testid: section.testid, section: section.id },
         children: [
-          el("span", { class: "db-life-rail-label", text: section.label }),
-          el("span", { class: "db-ws-count db-life-rail-count", text: String(count) }),
+          el("span", { class: "db-ws-section-tab-label", text: section.label }),
+          ...(count > 0 ? [el("span", { class: "db-ws-section-badge", text: String(count) })] : []),
         ],
         on: {
           click: () => {
@@ -358,12 +247,9 @@ function sectionRailHeader(project: Project, rerender: () => void): HTMLElement 
             rerender();
           },
         },
-        });
-      }),
-    ],
+      });
+    }),
   });
-
-  return sectionCard({ children: [rail], testid: "db-life-crafting-header" });
 }
 
 // ---------------------------------------------------------------------------
@@ -461,145 +347,68 @@ function rowSub(section: RecordSection, record: LifeRecord): string | undefined 
 }
 
 // ---------------------------------------------------------------------------
-// 빈 섹션 브리핑
-//
-// 감사에서 가장 나빴던 자리. 여덟 섹션 전부가 신규 프로젝트에서 보여 주던 화면이
-// `아직 레코드가 없습니다.` 한 줄이었고, 상세 창의 99% 가 흰 여백이었다. 이제는
-// "이게 무슨 데이터인지 / 무엇을 먼저 만들어야 하는지 / 다른 섹션은 지금 몇 개인지"
-// 를 같은 자리에서 답한다.
+// 빈 섹션
 // ---------------------------------------------------------------------------
 
 function sectionBriefing(section: RecordSection, rerender: () => void): HTMLElement {
   const meta = sectionMeta(section);
-  const project = store.getCurrent();
   const related = meta.related ? sectionMeta(meta.related) : undefined;
 
   return detailPane({
-    hero: detailHero({
-      eyebrow: meta.eyebrow,
-      title: meta.label,
-      subtitle: meta.blurb,
-      tags: ["0개", "레코드를 만들면 여기에 편집기가 열립니다"],
-      testid: `db-life-hero-${section}`,
-    }),
     body: [
-      lifeStatStrip(project, section),
-      el("div", {
-        class: "db-ws-stack",
-        children: [
-          // 빈 상태는 카드 안에 넣는다. 그냥 두면 `.db-ws-empty { max-width: 420px; margin: auto }`
-          // 때문에 1000px 짜리 상세 창 한 줄이 통째로 흰 띠가 된다(감사 H 축이 잡던 바로 그 모양).
-          sectionCard({
-            children: [
-              wsEmptyState({
-                icon: "＋",
-                title: `${meta.label} 레코드가 아직 없습니다`,
-                body: meta.emptyBody,
-                compact: true,
-                action: {
-                  label: `첫 ${meta.label} 만들기`,
-                  kind: "primary",
-                  testid: "db-life-empty-add",
-                  onClick: () => addRecord(section, rerender),
-                },
-                ...(related
-                  ? {
-                    secondary: {
-                      label: `${related.label} 섹션 열기`,
-                      kind: "ghost" as const,
-                      testid: "db-life-empty-related",
-                      onClick: () => {
-                        activeSection = related.id;
-                        rerender();
-                      },
-                    },
-                  }
-                  : {}),
-                testid: "db-life-empty",
-              }),
-            ],
-            testid: `db-life-empty-card-${section}`,
-          }),
-          sectionCard({
-            title: "이 섹션이 하는 일",
-            children: meta.purpose.map((line) => el("p", { class: "db-life-help", text: `· ${line}` })),
-            testid: `db-life-purpose-${section}`,
-          }),
-          sectionCard({
-            title: "먼저 준비할 것",
-            children: meta.prep.map((line) => el("p", { class: "db-life-help", text: `· ${line}` })),
-            testid: `db-life-prep-${section}`,
-          }),
-          ...SECTIONS.map((entry) => sectionBoardCard(project, entry, rerender)),
-        ],
+      wsEmptyState({
+        icon: "＋",
+        title: `${meta.label} 없음`,
+        body: meta.emptyBody,
+        action: {
+          label: `첫 ${meta.label} 만들기`,
+          kind: "primary",
+          testid: "db-life-empty-add",
+          onClick: () => addRecord(section, rerender),
+        },
+        ...(related
+          ? {
+            secondary: {
+              label: `${related.label} 보기`,
+              kind: "ghost" as const,
+              testid: "db-life-empty-related",
+              onClick: () => {
+                activeSection = related.id;
+                rerender();
+              },
+            },
+          }
+          : {}),
+        testid: "db-life-empty",
       }),
     ],
     testid: `db-life-detail-${section}`,
   });
 }
 
-/** 생활 데이터 전체의 준비 상태. 어느 섹션이 비어 있어도 "다음에 뭘 할지"가 보인다. */
-function lifeStatStrip(project: Project, section: LifeSection): HTMLElement {
+function configListPane(section: ConfigSection): HTMLElement {
   const meta = sectionMeta(section);
-  const total = SECTIONS.filter((entry) => isRecordSection(entry.id))
-    .reduce((sum, entry) => sum + sectionCount(project, entry.id), 0);
-  const packages = (project.system.energy ? 1 : 0) + (project.system.shipping ? 1 : 0);
-  const items = project.database.items.length;
-  return statStrip([
-    {
-      label: "이 섹션",
-      value: isRecordSection(section) ? `${sectionCount(project, section)}개` : sectionCount(project, section) === 1 ? "설정됨" : "설정 없음",
-      hint: meta.label,
-      tone: sectionCount(project, section) === 0 ? "warn" : "good",
-      testid: "db-life-stat-section",
-    },
-    {
-      label: "생활 레코드 전체",
-      value: `${total}개`,
-      hint: "여덟 개 레코드 섹션 합계",
-      tone: total === 0 ? "warn" : "neutral",
-      testid: "db-life-stat-total",
-    },
-    {
-      label: "설정 패키지",
-      value: `${packages}/2`,
-      hint: "에너지 · 출하",
-      tone: packages === 2 ? "good" : "neutral",
-      testid: "db-life-stat-packages",
-    },
-    {
-      label: "아이템",
-      value: `${items}개`,
-      hint: "재료·결과로 고를 수 있는 아이템",
-      tone: items === 0 ? "bad" : "neutral",
-      testid: "db-life-stat-items",
-    },
-  ], { testid: "db-life-stats" });
-}
-
-/** 현황 보드의 섹션 카드 — 지금 몇 개인지 + 무슨 데이터인지 + 바로 이동. */
-function sectionBoardCard(project: Project, meta: SectionMeta, rerender: () => void): HTMLElement {
-  const count = sectionCount(project, meta.id);
-  const configured = isRecordSection(meta.id) ? count > 0 : count === 1;
-  return sectionCard({
+  const configured = sectionCount(store.getCurrent(), section) === 1;
+  return listPane({
     title: meta.label,
-    hint: isRecordSection(meta.id) ? `${count}개` : configured ? "설정됨" : "설정 없음",
-    children: [
-      el("p", { class: "db-life-help", text: meta.blurb }),
-      el("button", {
-        class: "db-ws-btn db-ws-btn-ghost",
-        text: meta.id === activeSection ? "지금 보는 섹션" : configured ? "열기" : "만들러 가기",
-        attrs: { type: "button", ...(meta.id === activeSection ? { disabled: "true" } : {}) },
-        dataset: { testid: `db-life-board-${meta.id}` },
-        on: {
-          click: () => {
-            activeSection = meta.id;
-            rerender();
-          },
-        },
-      }),
-    ],
-    testid: `db-life-board-card-${meta.id}`,
+    count: configured ? 1 : 0,
+    rows: configured
+      ? [listRow({
+        name: meta.label,
+        sub: "설정됨",
+        number: 1,
+        active: true,
+        testid: `db-life-row-${section}`,
+        onSelect: () => undefined,
+      })]
+      : [],
+    empty: wsEmptyState({
+      icon: "○",
+      title: "설정 없음",
+      compact: true,
+      testid: "db-life-list-empty",
+    }),
+    testid: `db-life-list-pane-${section}`,
   });
 }
 
@@ -608,13 +417,11 @@ function sectionBoardCard(project: Project, meta: SectionMeta, rerender: () => v
 // ---------------------------------------------------------------------------
 
 function recordDetail(section: RecordSection, record: LifeRecord, index: number, rerender: () => void): HTMLElement {
-  const meta = sectionMeta(section);
+  const sub = rowSub(section, record);
   return detailPane({
     hero: detailHero({
-      eyebrow: meta.eyebrow,
       title: labelFor(section, record, index),
-      subtitle: meta.blurb,
-      tags: [`#${index + 1}`, ...(rowSub(section, record) ? [rowSub(section, record) as string] : [])],
+      tags: sub ? [sub] : undefined,
       testid: `db-life-hero-${section}`,
     }),
     body: recordInspector(section, record, index, rerender),
@@ -913,48 +720,18 @@ function configDetail(section: ConfigSection, rerender: () => void): HTMLElement
 
   if (!value) {
     return detailPane({
-      hero: detailHero({
-        eyebrow: meta.eyebrow,
-        title: meta.label,
-        subtitle: meta.blurb,
-        tags: ["설정 없음"],
-        testid: `db-life-hero-${section}`,
-      }),
       body: [
-        lifeStatStrip(project, section),
-        el("div", {
-          class: "db-ws-stack",
-          children: [
-            sectionCard({
-              children: [
-                wsEmptyState({
-                  icon: "＋",
-                  title: section === "energy" ? "에너지 규칙이 아직 없습니다" : "출하 규칙이 아직 없습니다",
-                  body: meta.emptyBody,
-                  compact: true,
-                  action: {
-                    label: "설정 만들기",
-                    kind: "primary",
-                    testid: "db-life-package-create",
-                    onClick: () => createConfigPackage(section, rerender),
-                  },
-                  testid: "db-life-package-empty",
-                }),
-              ],
-              testid: `db-life-empty-card-${section}`,
-            }),
-            sectionCard({
-              title: "이 설정이 하는 일",
-              children: meta.purpose.map((line) => el("p", { class: "db-life-help", text: `· ${line}` })),
-              testid: `db-life-purpose-${section}`,
-            }),
-            sectionCard({
-              title: "먼저 준비할 것",
-              children: meta.prep.map((line) => el("p", { class: "db-life-help", text: `· ${line}` })),
-              testid: `db-life-prep-${section}`,
-            }),
-            ...SECTIONS.map((entry) => sectionBoardCard(project, entry, rerender)),
-          ],
+        wsEmptyState({
+          icon: "＋",
+          title: `${meta.label} 설정 없음`,
+          body: meta.emptyBody,
+          action: {
+            label: "설정 만들기",
+            kind: "primary",
+            testid: "db-life-package-create",
+            onClick: () => createConfigPackage(section, rerender),
+          },
+          testid: "db-life-package-empty",
         }),
       ],
       testid: `db-life-package-pane-${section}`,
@@ -963,14 +740,10 @@ function configDetail(section: ConfigSection, rerender: () => void): HTMLElement
 
   return detailPane({
     hero: detailHero({
-      eyebrow: meta.eyebrow,
       title: meta.label,
-      subtitle: meta.blurb,
-      tags: ["설정됨"],
       testid: `db-life-hero-${section}`,
     }),
     body: [
-      lifeStatStrip(project, section),
       el("div", {
         class: "db-ws-stack db-life-inspector",
         children: section === "energy" ? [...energyCards(rerender)] : [...shippingCards(rerender)],

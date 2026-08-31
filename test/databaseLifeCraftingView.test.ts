@@ -404,4 +404,22 @@ describe("database life skill and crafting view", () => {
     expect(store.getCurrent().system.itemUpgrades?.[0]?.id).toBe("upgrade_ref");
     expect(store.getCurrent().system.worldUnlocks?.[0]?.id).toBe("unlock_ref");
   });
+
+  it("keeps section switching in a tab strip and does not dump every section into the empty detail", () => {
+    const host = renderTab();
+    findByTestId(host, "db-life-section-skills")?.click();
+    const header = findByTestId(host, "db-life-crafting-header");
+    expect(header).not.toBeNull();
+    expect(header?.querySelector("h2")).toBeNull();
+    expect(findByTestId(host, "db-life-section-makers")).not.toBeNull();
+    expect(findByTestId(host, "db-life-empty-add")).not.toBeNull();
+    expect(findByTestId(host, "db-life-board-makers")).toBeNull();
+    expect(findByTestId(host, "db-life-stats")).toBeNull();
+    expect(findByTestId(host, "db-life-list-pane-skills")).not.toBeNull();
+
+    findByTestId(host, "db-life-section-energy")?.click();
+    expect(findByTestId(host, "db-life-list-pane-energy")).not.toBeNull();
+    expect(findByTestId(host, "db-life-package-create")).not.toBeNull();
+    expect(findByTestId(host, "db-life-board-skills")).toBeNull();
+  });
 });
