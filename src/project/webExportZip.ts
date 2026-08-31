@@ -3,6 +3,7 @@ import { pathCollisionKey } from "@/project/playerDeploymentManifest";
 import type { FetchBytes, VerifiedPlayerDeployment } from "@/project/playerDeploymentManifest";
 import type { ZipEntry } from "@/project/packageZip";
 import { dataUrlBytes } from "@/project/webExportAssets";
+import { prunedRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import type { PreparedWebExport, WebExportAsset } from "@/project/webExportTypes";
 
 const encoder = new TextEncoder();
@@ -18,7 +19,12 @@ export async function exactWebExportEntries(
   for (const file of deployment.bundleFiles) {
     addExactEntry({ entries, collisionIndex, entry: { name: file.zipPath, bytes: file.bytes } });
   }
+  // SDK 매니페스트는 전량 검증하되(위조 탐지 유지), 이 프로젝트가 안 쓰는 기능의 아트는 싣지
+  // 않는다. 빼는 판단은 webExportRuntimeAssets 의 조건부 그룹 **한 곳** 에만 있고, 여기서는
+  // 그 목록만 따른다 — 매니페스트에 있는데 그 목록에 없는 것은 무조건 싣는다(안전한 쪽 기본값).
+  const prunedPaths = prunedRuntimeAssetPaths(prepared.project);
   for (const asset of deployment.runtimeAssets) {
+    if (prunedPaths.has(asset.zipPath)) continue;
     addExactEntry({ entries, collisionIndex, entry: { name: asset.zipPath, bytes: asset.bytes } });
   }
   const missingAssets = prepared.assets.filter((asset) => (
