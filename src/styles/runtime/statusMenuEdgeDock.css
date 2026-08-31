@@ -432,6 +432,20 @@
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
 }
 
+.oprn-status-menu [data-testid="status-menu-owned-equipment-worn"] {
+  grid-template-columns: max-content minmax(0, 1fr);
+  white-space: nowrap;
+}
+
+.oprn-status-menu [data-testid="status-menu-owned-equipment-worn"] .status-menu-detail-value {
+  justify-self: start;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .oprn-status-menu .status-menu-detail-action {
   appearance: none;
   cursor: default;
