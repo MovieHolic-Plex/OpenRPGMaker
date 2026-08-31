@@ -2360,14 +2360,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     || applyingProposal
     || proposalApi.pendingProposalMessage !== null
     || hasPendingQuestion();
+  const syncComposerFocus = (): void => {
+    const active = typeof document === "undefined" ? null : document.activeElement;
+    panel.classList.toggle("is-composer-focused", Boolean(active && commandBar.contains(active)));
+  };
   syncGlassIdle = (): void => {
     const busy = assistantEngaged()
       || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
-      || Boolean(log.querySelector("[data-testid=ai-command-row-user]"));
+      || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
+      || log.childElementCount > 0;
     const idle = !busy;
     // `is-glass-idle`(glass 전용)과 `is-map-first-idle`(dock !== "float" 조건)은 둘 다
     // float 단일 도크에서 절대 참이 될 수 없어 삭제했다. 남는 축은 하나다.
+    // 유휴·빈 대화는 입력줄을 좁히고, 턴·대화가 있으면 로그 카드를 펼친다.
     panel.classList.toggle("is-assistant-idle", idle);
+    panel.classList.toggle("is-assistant-log-open", !idle);
+    syncComposerFocus();
     refreshNextSteps();
   };
   refreshTemperatureChrome = (): void => {
@@ -2448,6 +2456,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   collapseButton.addEventListener("click", toggleCollapsed);
   collapsedRestore.addEventListener("click", restoreCollapsed);
+  commandBar.addEventListener("focusin", syncGlassIdle);
+  commandBar.addEventListener("focusout", () => {
+    // focusout 은 다음 포커스보다 먼저 난다 — 같은 틱의 새 activeElement 를 읽게 미룬다.
+    queueMicrotask(syncGlassIdle);
+  });
   // pointerenter/leave + keydown·input·focusin·wheel·scroll 5종 리스너는 유휴 자동
   // 접힘 타이머를 다시 세기 위한 배선이었다. 타이머가 사라져 리스너도 사라진다.
   applyCollapsed();

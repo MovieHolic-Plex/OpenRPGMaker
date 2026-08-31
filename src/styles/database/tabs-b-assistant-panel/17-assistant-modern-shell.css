@@ -11,6 +11,7 @@
   --ai-shell-gap: 12px;
   --ai-shell-radius: 14px;
   --ai-shell-control: 34px;
+  --ai-float-compact-width: 420px;
 }
 
 /* ── 유리면 ─────────────────────────────────────────────────── */
@@ -148,6 +149,76 @@
 /* 유리 도크 접힘(is-glass-folded)과 도크별 order 뒤집기, 접힌 카드 기하 규칙은 도크 축과 함께
    걷었다(2026-08-31). 접힘은 이제 is-collapsed 한 축뿐이고, 크기 조절 손잡이는 항상
    .ai-command-bar 왼쪽 모서리에 붙어 폭만 바꾼다 — assistant-command-bar.css 가 소유한다. */
+
+/* ── 캡슐 넓힘/줄임 (2026-08-31) ──────────────────────────────────────────
+   유휴·빈 대화는 입력줄만 좁게 두고, 포커스·턴·대화가 있으면 폭을 되돌리고 로그를
+   입력줄 위로 펼친다. 도크를 되살리지 않는다 — 표면은 여전히 입력줄 캡슐 하나다.
+   패널 자체는 투명(inset:0 이 맵을 크림으로 덮지 않게). 로그 카드만 불투명. */
+
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open) .ai-command-bar {
+  transition:
+    width 220ms ease,
+    max-width 220ms ease;
+}
+
+.ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-composer-focused):not(.is-studio):not(.is-history-open) .ai-command-bar {
+  max-width: min(var(--ai-float-compact-width, 420px), calc(100vw - 24px));
+  width: min(var(--ai-float-compact-width, 420px), calc(100vw - 24px));
+}
+
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open) .ai-chat-body {
+  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  bottom: var(--ai-command-bar-clearance, 110px);
+  box-shadow: var(--shadow-modal);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 12px;
+  transition:
+    max-height 220ms ease,
+    opacity 160ms ease,
+    width 220ms ease,
+    padding 160ms ease;
+  width: min(var(--ai-float-bar-width, 640px), calc(100vw - 24px));
+}
+
+.ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-composer-focused):not(.is-studio):not(.is-history-open) .ai-chat-body {
+  width: min(var(--ai-float-compact-width, 420px), calc(100vw - 24px));
+}
+
+.ai-chat-panel.chat-dock-float.is-assistant-log-open:not(.is-studio):not(.is-history-open) .ai-chat-body {
+  max-height: min(42vh, 480px);
+  opacity: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  pointer-events: auto;
+}
+
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open) .ai-glass-log {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open) .ai-glass-log > .ai-chat-log {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 
 /* ── 잘림 수선 (2026-08-30, test/e2e/ai-panel-reachability.spec.ts 실측) ──────
    판정 기준은 "기하가 넘쳤는가" 가 아니라 **"스크롤한 뒤에도 못 보는가"** 다. 게이트가
