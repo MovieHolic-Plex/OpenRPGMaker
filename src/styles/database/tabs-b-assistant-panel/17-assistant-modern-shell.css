@@ -29,17 +29,6 @@
    유리는 도크별로 분기하지 않는다. 유리·입력줄 도크에서는 패널이 맵 위에 떠 있어 프로스티드로
    읽히고, 사이드 도크는 레이아웃 컬럼이라 뒤가 셸 배경(#F7F8F8)뿐이므로 같은 알파가
    거의 흰색으로 합성된다 — 규칙 하나로 두 결과가 다 맞는다. */
-.editor-layout .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle),
-.ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
-  background: var(--bg-glass-panel);
-  -webkit-backdrop-filter: var(--glass-blur-panel);
-  backdrop-filter: var(--glass-blur-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.06),
-    0 18px 44px -12px rgba(15, 23, 42, 0.22);
-}
 
 /* ── 헤더 ───────────────────────────────────────────────────── */
 /* 없다. `.ai-chat-header` 는 2026-08-28 에 DOM 에서 제거됐다(aiChatPanel.ts).
@@ -47,23 +36,6 @@
    담고 있던 실기능은 ☰ 와 ▾ 둘뿐이었다. */
 
 /* ── 본문 리듬 ──────────────────────────────────────────────── */
-.ai-chat-panel.chat-dock-glass .ai-chat-main,
-.ai-chat-panel.chat-dock-side .ai-chat-main {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: var(--ai-shell-gap);
-  min-height: 0;
-  /* 헤더가 사라져 본문이 카드의 첫 자식이 됐다. 12px 는 64px 헤더 **아래** 숨쉴 틈으로
-     맞춘 값이라 이제 부족하다 — 18px 둥근 모서리에 글자가 붙는다. 카드 인셋 16px 로 올린다. */
-  padding-top: var(--ai-shell-gutter);
-}
-
-.ai-chat-panel.chat-dock-glass .ai-glass-log,
-.ai-chat-panel.chat-dock-glass .ai-chat-log,
-.ai-chat-panel.chat-dock-side .ai-chat-log {
-  padding: 0 var(--ai-shell-gutter) var(--ai-shell-gap);
-}
 
 .ai-chat-log > * + * {
   margin-top: 10px;
@@ -71,20 +43,8 @@
 
 /* 빈 대화: 아무것도 담지 않은 로그 껍데기는 자리를 먹지 않고, 시작 블록이 가운데로 올라온다.
    `:empty` 로는 못 잡는다 — 껍데기 안에 빈 .ai-chat-log 엘리먼트가 실제로 들어 있다. */
-.ai-chat-panel[data-ai-conversation="empty"].chat-dock-glass .ai-glass-log,
-.ai-chat-panel[data-ai-conversation="empty"].chat-dock-glass.is-glass-idle .ai-glass-log,
-.ai-chat-panel[data-ai-conversation="empty"] .ai-history-log-mount,
-/* 사이드 도크가 이 목록에서 빠져 있었다 — 실측(before/10-dock-side-panel.png)에서 대화가
-   비어도 515×400 짜리 빈 회색 상자가 그대로 남았다. 유리와 같은 규칙을 적용한다. */
-.ai-chat-panel[data-ai-conversation="empty"].chat-dock-side .ai-rising-volatile-zone,
-.ai-chat-panel[data-ai-conversation="empty"].chat-dock-side .ai-glass-log {
+.ai-chat-panel[data-ai-conversation="empty"] .ai-history-log-mount {
   display: none;
-}
-
-.ai-chat-panel[data-ai-conversation="empty"].chat-dock-glass .ai-chat-main,
-.ai-chat-panel[data-ai-conversation="empty"].chat-dock-side .ai-chat-main {
-  justify-content: center;
-  padding-bottom: var(--ai-shell-gutter);
 }
 
 
@@ -93,36 +53,8 @@
    아래쪽은 스크롤로도 못 본다 — 실측(e2e): 껍데기 167..462 인데 로그 167..581 이어서 변경 카드의
    되돌리기 줄(507..539)이 영구히 잘렸다. 껍데기를 세로 flex 로 만들어 로그가 껍데기 높이에서
    자기 스크롤을 갖게 한다. */
-.ai-chat-panel.chat-dock-glass .ai-glass-log {
-  display: flex;
-  flex-direction: column;
-}
-
-.ai-chat-panel.chat-dock-glass .ai-glass-log > .ai-chat-log {
-  flex: 1 1 auto;
-  max-height: 100%;
-  min-height: 0;
-}
 
 /* ── 시작 블록 ──────────────────────────────────────────────── */
-.ai-chat-panel .ai-next-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 0 var(--ai-shell-gutter);
-}
-
-.ai-chat-panel[data-ai-conversation="empty"] .ai-next-steps {
-  background: none;
-  border: 0;
-}
-
-.ai-chat-panel .ai-next-steps-hint {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.5;
-  margin: 0;
-}
 
 .ai-chat-panel .ai-authoring-examples {
   align-items: center;
@@ -167,25 +99,6 @@
 }
 
 /* ── 컴포저 ─────────────────────────────────────────────────── */
-.ai-chat-panel.chat-dock-glass .ai-command-bar,
-.ai-chat-panel.chat-dock-side .ai-command-bar {
-  padding: var(--ai-shell-gap) var(--ai-shell-gutter) var(--ai-shell-gutter);
-}
-
-.ai-chat-panel.chat-dock-glass .ai-composer,
-.ai-chat-panel.chat-dock-side .ai-composer {
-  /* 유리 위에 뜬 불투명 흰 카드로 읽히면 안 된다 — 유리면보다 살짝 밝은 인셋으로 앉힌다.
-     실측 전: rgb(255,255,255) 로 패널과 같은 색이라 경계가 테두리 1px 뿐이었다. */
-  background: color-mix(in srgb, var(--bg-raised) 62%, transparent);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--ai-shell-radius);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  gap: 8px;
-  padding: 10px 12px;
-  transition:
-    border-color 120ms ease,
-    box-shadow 120ms ease;
-}
 
 .ai-chat-panel .ai-composer:focus-within {
   border-color: color-mix(in srgb, var(--gold) 55%, var(--border-subtle));
@@ -233,13 +146,6 @@
 }
 
 /* ── 크기 조절 손잡이 ───────────────────────────────────────── */
-.ai-chat-panel.chat-dock-glass > .ai-chat-resize-handle {
-  opacity: 0.45;
-}
-
-.ai-chat-panel.chat-dock-glass:hover > .ai-chat-resize-handle {
-  opacity: 1;
-}
 
 /* ── 유리 도크 접힘(fold) — 입력줄이 위, 대화가 아래로 열린다 ──────
    왼쪽 위 조수는 기본적으로 입력줄 한 줄로 접혀 있고, 클릭하거나 AI 작업이 시작되면
@@ -260,17 +166,6 @@
    입력줄을 맨 위로 올린다 — DOM 을 재배치하면 세 도크가 함께 바뀐다.
    stickyZone(완료 스트립 · 0건 알림)은 입력줄 바로 아래에 두어 접힌 상태에서도
    결과와 [되돌리기]가 보이게 한다. */
-.ai-chat-panel.chat-dock-glass > .ai-command-bar {
-  order: -1;
-}
-
-.ai-chat-panel.chat-dock-glass > .ai-rising-sticky-zone {
-  order: 0;
-}
-
-.ai-chat-panel.chat-dock-glass > .ai-chat-body {
-  order: 1;
-}
 
 /* ── 아래로 펼치는 트랜지션 ────────────────────────────────────
    왜 `max-height` 인가: 본문은 02-chat-dock.css:120 에서 `flex: 1 1 auto;
@@ -283,19 +178,6 @@
    열림 값이 `none` 이면 트랜지션이 돌지 않으므로(none 은 길이가 아니다)
    길이를 명시한다. 카드는 이미 `max-height: calc(100% - 24px)` 로 조여져
    있으므로 100vh 는 열린 상태에서 사실상 무해한 상한이다. */
-.ai-chat-panel.chat-dock-glass > .ai-chat-body {
-  max-height: 100vh;
-  transition:
-    max-height var(--transition-med),
-    opacity var(--transition-fast);
-}
-
-.ai-chat-panel.chat-dock-glass.is-glass-folded > .ai-chat-body {
-  max-height: 0;
-  opacity: 0;
-  /* 접히는 동안 스크롤바가 번쩍이지 않게 auto 를 덮는다. */
-  overflow: hidden;
-}
 
 /* ── 접힌 카드 기하 ───────────────────────────────────────────
    앵커(inset: 12px … 12px)는 02-chat-dock.css:94 그대로 둔다. 같은 자리에서
@@ -310,17 +192,3 @@
    접혀도 카드는 620px 로 남는다 — 실측(e2e chat-dock-switch): 접힘 rect 520x620,
    컴포저는 156px. 같은 `:not()` 짝을 달아 (0,8,0)/(0,7,0) 으로 올려야 이긴다.
    (0,7,0) 은 13 의 첫 선택자와 동점이지만 이 파일이 뒤에 import 되므로 이긴다.) */
-.editor-layout .ai-chat-panel.chat-dock-glass.is-glass-folded:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle),
-.ai-chat-panel.chat-dock-glass.is-glass-folded:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
-  height: auto;
-}
-
-.ai-chat-panel.chat-dock-glass.is-glass-folded > .ai-chat-resize-handle {
-  display: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ai-chat-panel.chat-dock-glass > .ai-chat-body {
-    transition: none;
-  }
-}

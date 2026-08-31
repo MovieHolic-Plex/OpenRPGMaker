@@ -1,59 +1,7 @@
 /* ── Dock mode clarity: side panel vs floating bar ── */
-
-.ai-dock-mode-btn {
-  align-items: center;
-  background: var(--control-bg);
-  border: 1px solid var(--border-default);
-  border-radius: 999px;
-  color: var(--text-2);
-  cursor: pointer;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font: 700 11px/1 var(--font-ui, system-ui, sans-serif);
-  height: 24px;
-  letter-spacing: 0.02em;
-  padding: 0 10px;
-  white-space: nowrap;
-}
-.ai-dock-mode-btn:hover,
-.ai-dock-mode-btn:focus-visible {
-  border-color: var(--border-strong);
-  color: var(--text-1);
-  outline: none;
-}
-.ai-dock-mode-btn[data-dock-mode="side"],
-.ai-dock-mode-btn[data-dock-mode="float"],
-.ai-dock-mode-btn[data-dock-mode="glass"] {
-  background: transparent;
-  border-color: var(--border-default);
-  color: var(--text-2);
-}
 /* 사이드 패널: 도크 뱃지는 더보기 메뉴로만 — 입력줄 뱃지 소음 제거 */
-.ai-chat-panel.chat-dock-side .ai-dock-mode-btn {
-  display: none;
-}
 
 /* Side: cream column, 1px line. No indigo stripe. */
-.editor-layout .ai-chat-side-panel {
-  background: var(--bg-surface);
-  border-left: 1px solid var(--border-subtle);
-  box-shadow: none;
-}
-.ai-chat-panel.chat-dock-side {
-  background: var(--bg-surface);
-}
-.ai-chat-panel.chat-dock-side .ai-command-bar {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  border-top: 1px solid var(--border-subtle);
-  box-shadow: none;
-  margin-top: 4px;
-  padding: 8px 0 0;
-}
-.ai-chat-panel.chat-dock-side .ai-command-bar::before {
-  content: none;
-}
 
 /* Float: capsule over the map (not a side column) */
 .ai-chat-panel.chat-dock-float .ai-command-bar {

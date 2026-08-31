@@ -233,7 +233,7 @@ export function createConversationLogHost(options: {
       : Boolean(lastRow && lastReasoning && lastRow.contains(lastReasoning.box));
     if (lastReasoning && reasoningCurrent) {
       lastReasoning.state.count += 1;
-      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, lastReasoning.body.hidden);
+      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, Boolean(lastReasoning.body.hidden));
       log.scrollTop = log.scrollHeight;
       return { box: lastReasoning.box, body: appendReasoningItem(lastReasoning.body) };
     }

@@ -37,13 +37,29 @@ export function savePanelSize(size: PanelSize): void {
   localStorage.setItem(PANEL_SIZE_KEY, JSON.stringify(clampPanelSize(size)));
 }
 
-// ── 도크(모드)별 패널 크기 ────────────────────────────────────────
-// 패널은 dock 모드(glass/side/float)마다 쓰임새가 달라 한 저장값으로는 서로 다른 폭(예:
-// clamp(360px, 38vw, 520px) 글래스 카드 vs 533px 사이드 컬럼)을 모두 담을 수 없다. 그래서 도크마다 별도 키에
-// 저장하고, 누락 시 기존 글로벌 값으로 폴백해 기존 사용자 크기를 보존한다.
-export type PanelDock = "glass" | "side" | "float";
+// ── 컴포저 캡슐 폭 ──────────────────────────────────────────────
+// 예전에는 도크(glass/side/float)마다 `oprn:ai-panel-size:<dock>` 키를 따로 두고, 누락 시
+// 글로벌 값으로 폴백했다. 도크가 하나(입력줄)라서 저장할 표면도 하나 — 캡슐 폭이다.
+// 낡은 per-dock 키는 읽지 않는다. 대신 최초 1회는 옛 float 값을 그대로 물려받아
+// 사용자가 맞춰 둔 폭을 잃지 않게 한다.
+const LEGACY_FLOAT_SIZE_KEY = "oprn:ai-panel-size:float";
 
-const dockKey = (dock: PanelDock): string => `oprn:ai-panel-size:${dock}`;
+export function loadPanelBarSize(): PanelSize | null {
+  if (typeof localStorage === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(PANEL_SIZE_KEY) ?? localStorage.getItem(LEGACY_FLOAT_SIZE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<PanelSize>;
+    if (typeof parsed.width !== "number" || typeof parsed.height !== "number") return null;
+    return clampPanelSize({ width: parsed.width, height: parsed.height });
+  } catch {
+    return null;
+  }
+}
+
+export function savePanelBarSize(size: PanelSize): void {
+  savePanelSize(size);
+}
 
 /**
  * 뷰포트에 반응형으로 크기를 제한한다. PANEL_SIZE_LIMITS로 1차 클램프한 뒤,
@@ -69,30 +85,6 @@ export function clampPanelSizeToViewport(
   };
 }
 
-export function loadDockPanelSize(dock: PanelDock): PanelSize | null {
-  if (typeof localStorage === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(dockKey(dock));
-    // per-dock 키가 없으면 레거시 글로벌 값으로 폴백 (기존 사용자 크기 보존)
-    if (!raw) return loadPanelSize();
-    const parsed = JSON.parse(raw) as Partial<PanelSize>;
-    if (typeof parsed.width !== "number" || typeof parsed.height !== "number") return null;
-    return clampPanelSize({ width: parsed.width, height: parsed.height });
-  } catch {
-    return null;
-  }
-}
-
-export function saveDockPanelSize(dock: PanelDock, size: PanelSize): void {
-  if (typeof localStorage === "undefined") return;
-  localStorage.setItem(dockKey(dock), JSON.stringify(clampPanelSize(size)));
-}
-
-export function clearDockPanelSize(dock: PanelDock): void {
-  if (typeof localStorage === "undefined") return;
-  localStorage.removeItem(dockKey(dock));
-}
-
 // ── 도킹 사이드바 폭(§2.3 — G4) ──────────────────────────────────
 // fixed 오버레이(is-docked / 기록 패널)용 폭. 좌측 리사이저로 조절해 localStorage에 유지한다.
 const DOCK_WIDTH_KEY = "oprn:ai-dock-width";
@@ -112,43 +104,6 @@ export function loadDockWidth(): number {
 export function saveDockWidth(width: number): void {
   if (typeof localStorage === "undefined") return;
   localStorage.setItem(DOCK_WIDTH_KEY, String(clampDockWidth(width)));
-}
-
-// ── 사이드 flex 도크 폭 (chatDock: "side") ───────────────────────
-// 에디터 레이아웃 사용 가능 폭의 1/3. 캔버스 최소 폭을 위해 max를 상한으로 묶는다.
-export const SIDE_CHAT_WIDTH = {
-  ratio: 1 / 3,
-  min: 320,
-  max: 720,
-  /** CSS 변수 미적용 시 폴백 (넓은 모니터 ~1/3 근처). */
-  cssFallback: 480,
-} as const;
-
-/**
- * side dock 컬럼 폭(px). `usableWidth`는 레이아웃 content 폭(패딩 제외).
- * `reservedForCanvas`는 좌패널+리사이저+캔버스 최소 등 사이드 외 예산.
- */
-export function resolveSideChatWidth(
-  usableWidth: number,
-  reservedForCanvas = 0,
-  preferredWidth?: number | null,
-): number {
-  if (!Number.isFinite(usableWidth) || usableWidth <= 0) return SIDE_CHAT_WIDTH.min;
-  const fallback = Math.floor(usableWidth * SIDE_CHAT_WIDTH.ratio);
-  const preferred = Number.isFinite(preferredWidth) && Number(preferredWidth) > 0
-    ? Number(preferredWidth)
-    : fallback;
-  const maxByCanvas =
-    reservedForCanvas > 0
-      ? Math.max(SIDE_CHAT_WIDTH.min, Math.floor(usableWidth - reservedForCanvas))
-      : SIDE_CHAT_WIDTH.max;
-  const upper = Math.min(SIDE_CHAT_WIDTH.max, maxByCanvas);
-  return Math.round(Math.min(upper, Math.max(SIDE_CHAT_WIDTH.min, preferred)));
-}
-
-/** @deprecated Use resolveSideChatWidth when a persisted/user preferred width is available. */
-export function computeSideChatWidth(usableWidth: number, reservedForCanvas = 0): number {
-  return resolveSideChatWidth(usableWidth, reservedForCanvas);
 }
 
 // ── 글자 크기 3단(V3C 채팅 관측성) ──────────────────────────────
@@ -198,13 +153,3 @@ export function savePanelCollapsed(collapsed: boolean): void {
 
 /** AI 작업으로 자동 펼친 뒤 턴이 끝나면 다시 접기까지 대기(ms). */
 export const AUTO_COLLAPSE_AFTER_AI_MS = 0;
-
-/**
- * 유리 도크의 본문 접힘(fold) 유휴 지연(ms).
- *
- * `is-collapsed`(48px 칩)와 다른 축이다 — fold 는 대화 본문만 접고 입력줄은 남긴다.
- * 그래서 2026-08-27 에 `AUTO_COLLAPSE_AFTER_AI_MS = 0` 으로 죽인 자동 접기와 달리
- * 답이 얼굴 뒤로 사라지지 않는다. 저장하지 않는다: 유휴 접힘이 있으면 "펼침"은
- * 안정된 사용자 선택이 아니므로 localStorage 키는 낡을 뿐이다.
- */
-export const GLASS_FOLD_IDLE_MS = 8000;

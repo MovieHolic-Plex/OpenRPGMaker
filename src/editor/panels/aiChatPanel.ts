@@ -18,7 +18,6 @@ import {
   persistAssistantTemperature,
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
-import { chatDockHint, cycleChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
@@ -109,16 +108,12 @@ import {
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import {
   applyAiFontSize,
-  clampPanelSize,
-  clampPanelSizeToViewport,
-  GLASS_FOLD_IDLE_MS,
   loadAiFontSize,
-  loadDockPanelSize,
+  loadPanelBarSize,
   loadPanelCollapsed,
   PANEL_SIZE_LIMITS,
-  SIDE_CHAT_WIDTH,
   saveAiFontSize,
-  saveDockPanelSize,
+  savePanelBarSize,
   savePanelCollapsed,
   type AiFontSize,
 } from "./aiPanelLayout";
@@ -157,23 +152,20 @@ export {
   AI_FONT_SIZE_KEY,
   AI_FONT_SIZE_SCALE,
   AUTO_COLLAPSE_AFTER_AI_MS,
-  GLASS_FOLD_IDLE_MS,
   MAP_FIRST_MIGRATION_KEY,
   PANEL_SIZE_LIMITS,
   applyAiFontSize,
   clampPanelSize,
   clampPanelSizeToViewport,
-  clearDockPanelSize,
   loadAiFontSize,
-  loadDockPanelSize,
+  loadPanelBarSize,
   loadPanelCollapsed,
   loadPanelSize,
   saveAiFontSize,
-  saveDockPanelSize,
+  savePanelBarSize,
   savePanelCollapsed,
   savePanelSize,
   type AiFontSize,
-  type PanelDock,
   type PanelSize,
 } from "./aiPanelLayout";
 export {
@@ -311,9 +303,6 @@ export type AiActivityScheduler = (callback: () => void, delayMs: number) => () 
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
   readonly activityScheduler?: AiActivityScheduler;
-  readonly getChatDock?: () => ChatDock;
-  readonly onChatDockToggle?: () => void;
-  readonly onChatDockChange?: (next: ChatDock) => void;
   readonly getAssistantTemperature?: () => AssistantTemperature;
   readonly onAssistantTemperatureChange?: (next: AssistantTemperature) => void;
   readonly onSideWidthPreview?: (width: number, panelHeight: number) => void;
@@ -347,7 +336,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     return () => globalThis.clearTimeout(timer);
   });
   const runRegion = options.regionTaskRunner ?? runRegionTask;
-  const readChatDock = (): ChatDock => options.getChatDock?.() ?? editorState.get().chatDock;
   const readTemperature = (): AssistantTemperature =>
     parseAssistantTemperature(options.getAssistantTemperature?.() ?? editorState.get().assistantTemperature);
   let refreshTemperatureChrome: () => void = () => {};
@@ -434,7 +422,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     sendButton.classList.toggle("is-not-ready", empty && !turnBusy);
     sendButton.setAttribute("aria-disabled", String(turnBusy || empty));
   };
-  let dockToggleLock: HTMLButtonElement | null = null;
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let runningPhaseStatus: string | null = null;
   let runningActivity: {
@@ -454,16 +441,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // TDZ 상태의 collapsed를 읽어 턴을 시작하기 전에 실패한다.
   let collapsed = loadPanelCollapsed();
   let autoCollapseTimer: number | null = null;
-  // 유리 도크의 본문 접힘(fold). `collapsed`(48px 칩)와 다른 축이며 glass 에서만 쓴다 —
-  // 입력줄은 남고 대화 본문만 아래로 여닫힌다. 저장하지 않는다(GLASS_FOLD_IDLE_MS 주석 참조).
-  // 왼쪽 위 조수는 접힌 입력줄로 시작하고, glass 에서는 fold 가 칩 접힘을 대체하므로
-  // 저장된 `oprn:ai-panel-collapsed === "1"` 도 fold 로 라우팅한다(멱등, 새 키 없음).
-  let glassFolded = readChatDock() === "glass";
-  if (glassFolded) collapsed = false;
-  let glassFoldTimer: number | null = null;
-  let glassFoldArmed = false;
-  let glassFoldHovered = false;
-  let volatileZone: HTMLElement | null = null;
   // 원탭 답변 칩 — 컨트롤러보다 먼저 만들어 질문 대기 중 페이드를 막는다.
   const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
   const hasPendingQuestion = (): boolean => chipsHost.childElementCount > 0;
@@ -471,13 +448,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let expandForAiWork: () => void = () => {};
   let scheduleCollapseAfterAiWork: () => void = () => {};
   let clearAutoCollapseTimer: () => void = () => {};
-  let applyGlassFold: () => void = () => {};
-  let scheduleGlassFold: (options?: { failed?: boolean }) => void = () => {};
-  let clearGlassFoldTimer: () => void = () => {};
-  const revealVolatileZone = (): void => {
-    if (!volatileZone) return;
-    volatileZone.hidden = false;
-  };
+  // 휘발 존(ai-rising-volatile-zone)은 사이드 도크 전용 오버레이였다. 도크가 하나가
+  // 되면서 마운트되는 곳이 없어져 이 두 훅은 아무 데도 닿지 않는다 — 계약만 남긴다.
+  const revealVolatileZone = (): void => {};
   let exportButton: HTMLButtonElement | null = null;
   const hasExportableConversation = (): boolean =>
     [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
@@ -503,7 +476,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 컴포저 셸은 파일 하단에서 조립된다(입력·전송·칩이 모두 있어야 하므로).
   // 그 전에 정의되는 핸들러들이 팝오버/실측을 부를 수 있어 늦은 바인딩으로 노출한다 —
-  // 이 파일이 이미 쓰는 패턴(refreshDockLabels, syncGlassIdle 등)과 동일.
+  // 이 파일이 이미 쓰는 패턴(applyAssistantViewPolicy, syncGlassIdle 등)과 같다.
   let openComposerPopover: (kind: ComposerPopover | null) => void = () => {};
   let composerPopoverKind: () => ComposerPopover | null = () => null;
   let syncCommandBarClearance: () => void = () => {};
@@ -527,12 +500,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     startScreen?.remove();
     startScreen = null;
   };
-  // 대화가 비어 있고(시작 화면만) 진행 중이 아니면 휘발 존을 접어 맵을 가리지 않는다.
-  // (입력창 포커스 시에는 revealVolatileZone으로 다시 펼쳐 웰컴/스킬 카드를 보여준다.)
-  const hideVolatileIfIdle = (): void => {
-    if (startScreen === null || turnBusy || runningProgress || !volatileZone) return;
-    volatileZone.hidden = true;
-  };
+  // 휘발 존이 사라져 접을 것이 없다(사이드 도크 전용이었다). 호출부 계약만 유지한다.
+  const hideVolatileIfIdle = (): void => {};
 
   const conversationLog = createConversationLogHost({
     log,
@@ -729,10 +698,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
     onProposalSettled: () => {
       // 검토 카드가 닫힌 뒤 — 자동 펼침이었다면 맵으로 화면을 되돌린다.
-      if (!turnBusy) {
-        scheduleCollapseAfterAiWork();
-        scheduleGlassFold();
-      }
+      if (!turnBusy) scheduleCollapseAfterAiWork();
     },
   });
   const noteNoChanges = proposalApi.noteNoChanges;
@@ -1032,11 +998,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 전송은 항상 마운트 — 진행 중엔 비활성(disabled)으로 두고 중단은 형제로 노출한다.
     sendButton.hidden = false;
     refreshSendEnabled();
-    if (dockToggleLock) {
-      dockToggleLock.disabled = turnBusy;
-      dockToggleLock.setAttribute("aria-disabled", String(turnBusy));
-      if (turnBusy) dockToggleLock.setAttribute("title", "작업이 끝난 뒤에 위치를 바꿀 수 있습니다.");
-    }
+    // 도크 버튼을 턴 중에 잠그던 배선은 걷었다 — 바꿀 도크가 없으니 잠글 것도 없다.
   };
   const refreshRunningStatus = (record = false): void => {
     if (!runningProgress) return;
@@ -1548,9 +1510,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
-      // 유리 도크 본문 접힘 예약 — 시작 시 접혀 있었는지와 무관하다(fold 는 입력줄을 남기므로
-      // 답이 사라지지 않는다). 실패한 턴은 읽을 수 있게 열어 둔다.
-      scheduleGlassFold({ failed: turnFailed });
       // 접혀 시작한 턴만 종료 후 재접기. 이미 열린 패널은 그대로 둔다.
       if (collapseAfterAiWork) {
         if (turnFailed) {
@@ -1823,7 +1782,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
       if (!cancelled) notifyIfObscuredByTestPlay();
       drainPendingSends();
-      scheduleGlassFold({ failed: regionFailed });
       if (collapseAfterAiWork) {
         if (regionFailed) collapseAfterAiWork = false;
         else scheduleCollapseAfterAiWork();
@@ -1868,10 +1826,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   input.addEventListener("keydown", (event) => {
     // 엔터 = 즉시 전송, Shift+Enter = 줄바꿈. IME 조합 중(한글 입력 확정)에는 전송하지 않는다.
     const composing = event.isComposing || (event as KeyboardEvent & { keyCode?: number }).keyCode === 229;
-    // Escape 우선순위: 열린 팝오버 → 선택 영역 작업. 팝오버가 떠 있는데 선택 컨텍스트가
-    // 먼저 해제돼 사용자가 "무엇이 닫혔는지" 알 수 없던 문제를 없앤다.
+    // Escape 우선순위: **사용자가 연** 팝오버 → 선택 영역 작업. 팝오버가 떠 있는데 선택
+    // 컨텍스트가 먼저 해제돼 사용자가 "무엇이 닫혔는지" 알 수 없던 문제를 없앤다.
+    //
+    // 단 `suggest` 팝오버는 예외다 — 「빈 입력 + 포커스」만으로 저절로 열린다(syncSuggestPopover).
+    // 선택 영역을 끌고 오면 칩이 붙으면서 입력창에 포커스가 가므로 이 팝오버가 **항상** 함께
+    // 열리는데, 그때 Escape 를 팝오버가 먹으면 감독이 끄려던 칩은 안 꺼지고 두 번 눌러야 한다.
+    // (도크가 float 하나가 되기 전에는 이 조건에 `dock === "float"` 이 걸려 있어 유리 카드에서는
+    //  팝오버가 안 열렸고, 그래서 이 충돌이 드러나지 않았다.)
     if (event.key === "Escape") {
-      if (composerPopoverKind() !== null) {
+      const popover = composerPopoverKind();
+      if (popover !== null && !(popover === "suggest" && selectionTaskActive)) {
         event.preventDefault();
         openComposerPopover(null);
         return;
@@ -1951,6 +1916,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-next-steps",
     dataset: { testid: "ai-next-steps" },
   });
+  /**
+   * 「다음에 뭘 하지」 블록 — 한 줄 안내 + 저작 예제 칩.
+   *
+   * 2026-08-31: 이 블록은 원래 유리/사이드 카드 **본문**에 붙어 있었고, 그래서 도크 축을
+   * 지우면 마운트 조건(`dock === "glass" || dock === "side"`)이 영구히 거짓이 되어 안내와
+   * 예제 칩 6개가 통째로 닿을 수 없게 된다. 카드는 없어져도 기능이 없어질 이유는 없으므로
+   * **컴포저 추천 팝오버 안으로 옮겼다** — 팝오버가 열리는 조건(입력창 포커스 + 빈 값)이
+   * 원래 카드가 뜨던 조건과 같다.
+   *
+   * 예제는 6개 전부 낸다. 카드 시절에는 `slice(0, 4)` 로 잘랐는데, 자른 이유는 카드 폭이
+   * 좁아서였고 팝오버는 캡슐 폭(기본 640px)을 쓴다.
+   */
   const refreshNextSteps = (): void => {
     if (typeof document === "undefined") return;
     const brief = readAgentBrief();
@@ -1959,11 +1936,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       || Boolean(log.querySelector("[data-testid=ai-command-row]"));
     syncConversationState();
     const busy = hasLog || Boolean(turnBusy || runningProgress);
-    const dock = readChatDock();
-    const show = (dock === "glass" || dock === "side")
-      && readTemperature() === "quiet-gold"
-      && !busy
-      && input.value.trim() === "";
+    const show = readTemperature() === "quiet-gold" && !busy && input.value.trim() === "";
     nextSteps.hidden = !show;
     if (!show) {
       nextSteps.replaceChildren();
@@ -1975,31 +1948,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncInputHeight();
       refreshComposerChips();
     };
-    const children: HTMLElement[] = [
+    nextSteps.replaceChildren(
       el("p", {
         class: "ai-next-steps-hint",
         dataset: { testid: "ai-next-steps-hint" },
         text: nextStepHint(brief),
       }),
-      buildAiAuthoringExamples({
-        examples: AI_AUTHORING_EXAMPLES.slice(0, 4),
-        onPick: pickExample,
-      }),
-    ];
-
-    nextSteps.replaceChildren(...children);
+      buildAiAuthoringExamples({ examples: AI_AUTHORING_EXAMPLES, onPick: pickExample }),
+    );
   };
-  // 추천 칩 팝오버는 입력창이 비어 있고 포커스가 있을 때만 뜬다(float 전용 —
-  // 유리·사이드는 ai-next-steps 카드가 같은 일을 한다). 흐름 밖이라 열림/닫힘이
+  // 추천 칩 팝오버는 입력창이 비어 있고 포커스가 있을 때만 뜬다. 흐름 밖이라 열림/닫힘이
   // 바 높이를 건드리지 않는다.
   const syncSuggestPopover = (): void => {
     if (typeof document === "undefined") return;
     const focused = document.activeElement === input;
+    // 팝오버 안에는 감독 프롬프트 칩과 「다음에 뭘 하지」 블록 둘이 산다 — 어느 한쪽에
+    // 내용이 있으면 열 이유가 있다. (칩만 보던 시절에는 프롬프트가 0개인 맵에서 안내와
+    // 예제 칩이 함께 묻혔다.)
     const wantOpen =
-      readChatDock() === "float"
-      && focused
+      focused
       && input.value.trim() === ""
-      && composerChips.childElementCount > 0;
+      && (composerChips.childElementCount > 0 || !nextSteps.hidden);
     const kind = composerPopoverKind();
     if (wantOpen && kind === null) openComposerPopover("suggest");
     else if (!wantOpen && kind === "suggest") openComposerPopover(null);
@@ -2105,7 +2074,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const unsubscribeContextEditor = editorState.subscribe(() => {
     refreshContextChips();
     refreshComposerChips();
-    refreshDockLabels();
+    applyAssistantViewPolicy();
     refreshTemperatureChrome();
   });
   const unsubscribeContextStore = store.subscribe(() => {
@@ -2174,8 +2143,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-harness" },
     on: { click: openHarness },
   });
-  const currentChatDock = (): ChatDock => readChatDock();
-  let refreshDockLabels: () => void = () => {};
+  let applyAssistantViewPolicy: () => void = () => {};
   let syncGlassIdle: () => void = () => {};
   const applyTemperature = (next: AssistantTemperature): void => {
     const parsed = parseAssistantTemperature(next);
@@ -2186,39 +2154,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     refreshTemperatureChrome();
   };
-  const changeDock = (next: ChatDock): void => {
-    if (options.onChatDockChange) options.onChatDockChange(next);
-    else editorState.set({ chatDock: next });
-    refreshDockLabels();
-  };
-  const onDockToggleClick = (): void => {
-    if (turnBusy || runningProgress) {
-      toast("작업이 끝난 뒤에 위치를 바꿀 수 있습니다.", "info");
-      return;
-    }
-    if (options.onChatDockToggle) options.onChatDockToggle();
-    else changeDock(cycleChatDock(currentChatDock()));
-    refreshDockLabels();
-  };
-  // testid 호환용 숨은 토글(레이아웃 테스트·E2E).
-  const dockToggleButton = el("button", {
-    class: "ai-chat-tools-button",
-    attrs: { type: "button", hidden: "", "aria-hidden": "true" },
-    dataset: { testid: "chat-dock-toggle" },
-    on: { click: onDockToggleClick },
-  }) as HTMLButtonElement;
-  // (구 `chat-dock-toggle-bar` 훅 삭제 — src/ test/ 어디에서도 참조가 없었고
-  //  같은 동작을 `chat-dock-toggle` 이 이미 제공한다. 실측: grep 참조 0건.)
-  // 도킹은 2모드만(float/side) — studio/collapsed는 별도 상태이며 도크 선택에 노출하지 않는다.
+  // 도크 전환 진입점 5개(`chat-dock-toggle` 숨은 토글 · `ai-dock-mode-btn` 모드 배지 ·
+  // `ai-chat-detach` 떼기 · 두 ☰ 메뉴의 「도크 전환」 항목)는 전부 걷었다. 남겨 두면
+  // 「입력줄」이라고만 적힌 채 눌러도 토스트만 뜨는 노드가 되어, 있지도 않은 선택지를
+  // 광고한다. 대신 `panel.dataset.chatDock` 은 `"float"` 로 고정 노출한다 — 레이아웃
+  // 테스트가 "어디에 붙었나"를 읽는 단일 창구다.
   // z-layers: panel 30 / bar 40 / overlay 41 / palette 80 — 56/50/62 난장 정리
-  // 도크 모드 토글: 플로팅 커맨드 바와 더보기 메뉴에만 둔다(헤더 뱃지 제거 = 시각 소음 감소).
-  const dockModeButton = el("button", {
-    class: "ai-dock-mode-btn",
-    attrs: { type: "button" },
-    dataset: { testid: "ai-dock-mode-btn", dockMode: currentChatDock() },
-    on: { click: onDockToggleClick },
-  }) as HTMLButtonElement;
-  dockToggleLock = dockModeButton;
   exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
     text: "내보내기",
@@ -2326,39 +2267,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { role: "menu", hidden: "" },
     dataset: { testid: "ai-more-menu" },
   });
-  // 도크 항목은 두 메뉴가 각자 하나씩 갖는다(같은 빌더 산출물). 메뉴 조립 후 대입된다.
-  let moreMenuDockItem: HTMLButtonElement | null = null;
-  let commandDockItem: HTMLButtonElement | null = null;
-  const applyDockModeChrome = (mode: ChatDock): void => {
-    const actionLabel = nextChatDockActionLabel(mode);
-    const nextHint = chatDockHint(mode);
-    dockModeButton.textContent = actionLabel;
-    dockModeButton.dataset.dockMode = mode;
-    dockModeButton.setAttribute("title", nextHint);
-    dockModeButton.setAttribute("aria-label", nextHint);
-    for (const item of [moreMenuDockItem, commandDockItem]) {
-      if (!item) continue;
-      item.textContent = actionLabel;
-      item.setAttribute("title", nextHint);
-    }
-  };
-  const refreshMoreMenuDockLabel = (): void => {
-    applyDockModeChrome(currentChatDock());
-  };
-  refreshMoreMenuDockLabel();
+  // (구 `refreshMoreMenuDockLabel` + `moreMenuDockItem`/`commandDockItem` 삭제 — 두 ☰ 메뉴의
+  //  「도크 전환」 항목 텍스트를 현재 도크에 맞춰 매번 갈아 끼우던 함수와 그 핸들이다.
+  //  항목 자체가 없어졌다.)
   const closeMoreMenu = (): void => {
     moreMenu.hidden = true;
     moreMenuToggle.setAttribute("aria-expanded", "false");
   };
   const positionMoreMenu = (): void => {
-    const isGlass = currentChatDock() === "glass";
-    if (isGlass) {
-      moreMenu.classList.remove("is-viewport-anchored");
-      moreMenu.style.left = "";
-      moreMenu.style.top = "";
-      moreMenu.style.right = "0";
-      return;
-    }
     const anchor = moreMenuToggle.getBoundingClientRect();
     const width = moreMenu.offsetWidth || 228;
     const height = moreMenu.offsetHeight || 180;
@@ -2382,7 +2298,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         moreMenu.hidden = !open;
         moreMenuToggle.setAttribute("aria-expanded", String(open));
         if (open) {
-          refreshMoreMenuDockLabel();
           refreshTemperatureChrome();
           positionMoreMenu();
         }
@@ -2429,7 +2344,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     startNewChat: () => startNewConversation("manual"),
     undoLast: () => undoLastButton.click(),
     exportAudit: () => exportButton?.click(),
-    toggleDock: () => onDockToggleClick(),
     openHistory: () => {
       historyButton.click();
       applyHistoryOpen(true);
@@ -2470,7 +2384,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeMoreMenu,
     actions: sharedMenuActions,
   });
-  moreMenuDockItem = headerMenu.dockItem;
   const headerTemperatureSection = createAssistantTemperatureMenuSection({
     variant: "header",
     current: readTemperature,
@@ -2485,19 +2398,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       el("summary", {
         class: "ai-more-actions-summary",
         text: "작업",
-        attrs: { title: "되돌리기·내보내기·도크·기록·툴" },
+        attrs: { title: "되돌리기·내보내기·기록·툴" },
       }),
       ...headerMenu.items,
     ],
   });
+
   moreMenu.replaceChildren(headerTemperatureSection, headerActionsFold);
-  const detachButton = el("button", {
-    class: "ai-chat-icon-btn ai-chat-detach-btn",
-    text: "↗",
-    attrs: { type: "button", title: "조수 패널 떼기", "aria-label": "조수 패널 떼기" },
-    dataset: { testid: "ai-chat-detach" },
-    on: { click: () => changeDock("float") },
-  });
   const moreWrap = el("div", {
     class: "ai-more-wrap",
     children: [moreMenuToggle, moreMenu],
@@ -2507,22 +2414,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 통째로 걷었다 — 실측 518×73px 이 담고 있던 실기능은 ☰ 와 ▾ 뿐이었다.
   // 남은 버튼들은 아래 숨은 훅 컨테이너(`ai-chat-toolbar`)로 옮긴다. 화면에는 없고
   // (hidden + inert + display:none) 접기 상태 기계와 테스트 계약만 살아 있다.
-  // 감독 판단: 이 진입점들(더보기 9종·새 대화·도크·떼기)의 소실은 수용됨.
-  // 숨은 훅 컨테이너(화면에 안 보임: hidden + inert + CSS display:none).
-  // "죽은 버튼" 이 아니다 — 실측(2026-08-22) 결과 여기 담긴 9개 중 8개는 테스트가 직접
-  // 참조하고(ai-tools-browser 3파일 · ai-studio-toggle 3 · ai-dock-toggle 3 ·
-  // chat-dock-toggle 3 · ai-export 2 · ai-undo-last 2 · ai-harness 1 · ai-font-cycle 1),
-  // ☰ 메뉴 항목들도 이 버튼의 click() 을 눌러 동작한다. 참조가 0건이던 것은
-  // chat-dock-toggle-bar 하나뿐이라 그것만 걷었다. 지우려면 테스트 계약부터 옮겨야 한다.
+  // "죽은 버튼" 이 아니다 — 여기 담긴 것들은 테스트가 직접 참조하거나(ai-tools-browser ·
+  // ai-studio-toggle · ai-dock-toggle · ai-export · ai-undo-last · ai-harness · ai-font-cycle)
+  // ☰ 메뉴 항목이 이 버튼의 click() 을 눌러 동작한다. 지우려면 테스트 계약부터 옮겨야 한다.
+  // 2026-08-31 에 도크 3종(chat-dock-toggle · ai-dock-mode-btn · ai-chat-detach)은 빠졌다 —
+  // 세 개 모두 도크 축이 없어진 뒤로는 누를 곳이 아니라 광고판이었다.
   const toolbar = el("div", {
     class: "ai-chat-toolbar is-empty",
     dataset: { testid: "ai-chat-toolbar" },
     attrs: { hidden: "" },
     children: [
-      toolsButton, harnessButton, studioButton, historyButton, dockToggleButton, exportButton, undoLastButton, fontButton,
+      toolsButton, harnessButton, studioButton, historyButton, exportButton, undoLastButton, fontButton,
       // 구 헤더 잔류물. 접기 버튼은 실제 컴포저 액션 행으로 이동했고, 나머지는
       // 화면에서는 사라졌지만 테스트와 메뉴 위임용 훅으로 남는다.
-      newSessionButton, dockModeButton, detachButton, moreWrap,
+      newSessionButton, moreWrap,
     ],
   });
   toolbar.inert = true;
@@ -2536,6 +2441,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     abortButton,
     contextChips,
     composerChips,
+    nextSteps,
     queueIndicator,
     statusGroup,
     onNewChat: () => startNewConversation("manual"),
@@ -2543,20 +2449,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;
-  const commandMenuToggle = composerShell.commandMenuToggle;
   openComposerPopover = composerShell.openPopover;
   composerPopoverKind = composerShell.openKind;
-  dockModeButton.hidden = false;
-  dockModeButton.removeAttribute("aria-hidden");
-  const volatileLogMount = el("div", {
-    class: "ai-rising-volatile-zone",
-    dataset: { testid: "ai-rising-volatile-zone" },
-    children: [log],
-  });
-  volatileZone = volatileLogMount;
-  volatileZone.classList.add("ai-volatile-dashed");
-  volatileZone.setAttribute("title", "휘발 영역 — 대화가 비어 있을 때 접히고, 입력 포커스 시 펼쳐집니다");
-  volatileLogMount.hidden = true;
   const completionHost = el("div", {
     class: "ai-completion-host",
     dataset: { testid: "ai-completion-host" },
@@ -2567,23 +2461,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 적용 완료 액션과 0건 알림을 맵 위에서 잃지 않는 고정 영역에 둔다.
     children: [completionHost, proposalNoticeHost],
   });
-  // 오버레이는 **휘발 로그 전용**이다. 완료 스트립/알림(stickyProposalZone)은 여기 두면
-  // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로 기본 도크인 유리와 float 에서는
-  // 스티키 존이 문서에서 빠진다. 도크와 무관하게 패널 자식으로 붙이고 위치는 CSS가 잡는다.
-  const risingOverlay = el("div", {
-    class: "ai-rising-overlay",
-    dataset: { testid: "ai-rising-overlay" },
-    children: [volatileLogMount],
-  });
+  // `.ai-rising-overlay` + 그 안의 휘발 로그 존은 사이드 도크에서만 마운트되던 표면이다.
+  // 도크가 하나가 되면서 마운트 조건이 영구히 거짓이 되어 통째로 걷었다. 완료 스트립과
+  // 0건 알림은 원래도 여기 두면 안 됐고(스티키 존), 지금도 패널 직속 자식이다.
   const historyLogMount = el("div", { class: "ai-history-log-mount" });
   // AI 표면은 기본/전문가 공통 — expert-only board 없음. 시작 화면·스킬·기록이 동일.
   const glassLogMount = el("div", {
     class: "ai-glass-log",
     dataset: { testid: "ai-glass-log" },
+    // 로그의 최초 부모. 예전에는 휘발 존이 들고 있다가 mountLog 가 즉시 옮겨 왔다.
+    children: [log],
   });
+  // `nextSteps` 는 여기 있지 않다 — 컴포저 추천 팝오버로 옮겼다(위 refreshNextSteps 주석).
   const mainColumn = el("div", {
     class: "ai-chat-main",
-    children: [nextSteps, glassLogMount, historyLogMount, chipsHost],
+    children: [glassLogMount, historyLogMount, chipsHost],
   });
   const body = el("div", { class: "ai-chat-body", children: [mainColumn] });
 
@@ -2593,11 +2485,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: {
       testid: "ai-panel",
       uiDensity: "shared",
-      chatDock: currentChatDock(),
+      chatDock: "float",
       temperature: readTemperature(),
       aiConversation: "empty",
     },
-    children: [toolbar, body, collapsedRestore, risingOverlay, stickyProposalZone, commandBar],
+    children: [toolbar, body, collapsedRestore, stickyProposalZone, commandBar],
   });
   panelRoot = panel;
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
@@ -2607,15 +2499,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   syncCommandBarClearance = (): void => {
     const rect = commandBar.getBoundingClientRect();
     if (rect.height <= 0 || typeof window === "undefined") return;
-    // glass 는 컴포저가 카드 **맨 위**에 있으므로 `innerHeight - top` 이 사실상 뷰포트
-    // 전체가 된다. 이 값을 읽는 .ai-rising-overlay 는 side 에서만 마운트되니 지금은
-    // 실피해가 없지만, 남겨 두면 오버레이가 glass 로 오는 날 조용히 터진다.
-    if (readChatDock() !== "glass") {
-      const clearance = Math.max(60, Math.ceil(window.innerHeight - composerShell.measuredTop()) + 12);
-      panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
-    } else {
-      panel.style.removeProperty("--ai-command-bar-clearance");
-    }
+    const clearance = Math.max(60, Math.ceil(window.innerHeight - composerShell.measuredTop()) + 12);
+    panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
     document.body?.style.setProperty("--ai-command-bar-inset", `${Math.max(72, Math.ceil(rect.height) + 24)}px`);
   };
   const commandBarClearanceObserver =
@@ -2629,8 +2514,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     window.__oprnAiHarness = harnessAccessor;
   }
 
-  // 도크마다 사용자가 실제로 보는 크기 소유자가 다르다: glass는 카드, side는 에디터
-  // 셸 컬럼, float은 컴포저 캡슐이다. 저장은 기존 도크별 PanelSize 키를 그대로 쓴다.
+  // 크기 소유자는 하나다: 컴포저 캡슐(commandBar)의 폭. 예전에는 glass=카드(폭+높이),
+  // side=에디터 셸 컬럼, float=캡슐 3가지를 도크별 localStorage 키로 따로 들고 있었고
+  // 리사이즈 핸들의 방향·앵커·aria 도 도크마다 갈렸다.
   const resizableDock = (): boolean =>
     !panel.classList.contains("is-studio")
     && !panel.classList.contains("is-docked")
@@ -2639,25 +2525,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     typeof window === "undefined"
       ? { width: 1280, height: 900 }
       : { width: window.innerWidth, height: window.innerHeight };
-  const dockSizes: Record<ChatDock, { width: number; height: number } | null> = {
-    glass: loadDockPanelSize("glass"),
-    side: loadDockPanelSize("side"),
-    float: loadDockPanelSize("float"),
-  };
+  let barSize = loadPanelBarSize();
   const sizeProps = ["width", "height", "maxWidth", "maxHeight"] as const;
   const clearPanelSize = (): void => {
     for (const prop of sizeProps) panel.style[prop] = "";
   };
-  const floatWidthLimits = (): { min: number; max: number } => ({
+  const barWidthLimits = (): { min: number; max: number } => ({
     min: PANEL_SIZE_LIMITS.minWidth,
     max: Math.max(PANEL_SIZE_LIMITS.minWidth, Math.min(PANEL_SIZE_LIMITS.maxWidth, viewportNow().width - 24)),
   });
-  const clampWidthForDock = (dock: ChatDock, width: number): number => {
-    const limits = dock === "side" ? SIDE_CHAT_WIDTH : floatWidthLimits();
+  const clampBarWidth = (width: number): number => {
+    const limits = barWidthLimits();
     return Math.round(Math.min(limits.max, Math.max(limits.min, width)));
   };
-  const measuredSurface = (dock: ChatDock): DOMRect | { width: number; height: number } =>
-    (dock === "float" ? commandBar : panel).getBoundingClientRect?.() ?? { width: dock === "float" ? 640 : 360, height: 120 };
+  const measuredSurface = (): DOMRect | { width: number; height: number } =>
+    commandBar.getBoundingClientRect?.() ?? { width: 640, height: 120 };
   const resizeHandle = el("div", {
     class: "ai-chat-resize-handle",
     attrs: {
@@ -2670,82 +2552,44 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-resize-handle" },
   });
   const syncResizeAria = (): void => {
-    const dock = currentChatDock();
-    const limits = dock === "glass"
-      ? { min: PANEL_SIZE_LIMITS.minWidth, max: PANEL_SIZE_LIMITS.maxWidth }
-      : dock === "side" ? SIDE_CHAT_WIDTH : floatWidthLimits();
-    const rect = measuredSurface(dock);
+    const limits = barWidthLimits();
+    const rect = measuredSurface();
     resizeHandle.setAttribute("aria-valuemin", String(limits.min));
     resizeHandle.setAttribute("aria-valuemax", String(limits.max));
-    resizeHandle.setAttribute("aria-valuenow", String(Math.round(rect.width || dockSizes[dock]?.width || limits.min)));
+    resizeHandle.setAttribute("aria-valuenow", String(Math.round(rect.width || barSize?.width || limits.min)));
   };
   const applySize = (): void => {
-    const dock = currentChatDock();
     clearPanelSize();
     commandBar.style.removeProperty("--ai-float-bar-width");
-    if (!resizableDock()) return;
-    if (dock === "glass" && dockSizes.glass) {
-      const fitted = clampPanelSizeToViewport(dockSizes.glass, viewportNow());
-      // 폭은 접혀도 유지한다 — 안 그러면 CSS clamp(360px,38vw,520px) 로 돌아가서
-      // 펼치는 순간 카드 폭이 튄다. 높이는 컴포저 한 줄로 줄어야 하므로 인라인 값을
-      // 비워 17-assistant-modern-shell.css 끝의 `height: auto` 가 이기게 한다.
-      panel.style.width = `${fitted.width}px`;
-      panel.style.maxWidth = `${fitted.width}px`;
-      if (!(glassFolded && dock === "glass")) {
-        panel.style.height = `${fitted.height}px`;
-        panel.style.maxHeight = `${fitted.height}px`;
-      }
-    } else if (dock === "float" && dockSizes.float) {
-      const width = clampWidthForDock("float", dockSizes.float.width);
-      commandBar.style.setProperty("--ai-float-bar-width", `${width}px`);
-    }
+    if (!resizableDock() || !barSize) return;
+    commandBar.style.setProperty("--ai-float-bar-width", `${clampBarWidth(barSize.width)}px`);
   };
   const mountResizeHandle = (): void => {
-    const dock = currentChatDock();
     resizeHandle.remove();
-    resizeHandle.classList.toggle("is-corner-end", dock === "glass");
-    resizeHandle.classList.toggle("is-edge-start", dock !== "glass");
-    resizeHandle.setAttribute("aria-orientation", dock === "glass" ? "horizontal" : "vertical");
-    resizeHandle.setAttribute(
-      "aria-label",
-      dock === "glass" ? "조수 카드 폭과 높이 조절" : dock === "side" ? "조수 사이드 폭 조절" : "조수 입력줄 폭 조절",
-    );
-    (dock === "float" ? commandBar : panel).append(resizeHandle);
+    resizeHandle.classList.add("is-edge-start");
+    resizeHandle.setAttribute("aria-orientation", "vertical");
+    resizeHandle.setAttribute("aria-label", "조수 입력줄 폭 조절");
+    commandBar.append(resizeHandle);
     syncResizeAria();
   };
-  const updateDockSize = (dock: ChatDock, width: number, height: number, commit: boolean): void => {
-    if (dock === "glass") {
-      dockSizes.glass = clampPanelSize({ width, height });
-    } else {
-      const next = { width: clampWidthForDock(dock, width), height: Math.round(height) };
-      dockSizes[dock] = next;
-      if (dock === "side") {
-        if (commit) options.onSideWidthCommit?.(next.width, next.height);
-        else options.onSideWidthPreview?.(next.width, next.height);
-      }
-    }
+  const updateBarSize = (width: number, height: number, commit: boolean): void => {
+    barSize = { width: clampBarWidth(width), height: Math.round(height) };
     applySize();
     syncResizeAria();
-    if (commit && dockSizes[dock]) {
-      // editor callback is the side shell's owner; direct panel renders still persist for unit/embedded use.
-      if (dock !== "side" || !options.onSideWidthCommit) saveDockPanelSize(dock, dockSizes[dock]!);
-    }
+    if (commit) savePanelBarSize(barSize);
   };
   let activeResizeCleanup: (() => void) | null = null;
   resizeHandle.addEventListener("pointerdown", (event: PointerEvent) => {
     if (!resizableDock()) return;
     event.preventDefault();
     activeResizeCleanup?.();
-    const dock = currentChatDock();
     const startX = event.clientX;
-    const startY = event.clientY;
-    const rect = measuredSurface(dock);
-    const startWidth = rect.width || dockSizes[dock]?.width || (dock === "float" ? 640 : 360);
-    const startHeight = rect.height || dockSizes[dock]?.height || 620;
+    const rect = measuredSurface();
+    const startWidth = rect.width || barSize?.width || 640;
+    const startHeight = rect.height || barSize?.height || 620;
+    // 핸들은 캡슐 왼쪽 끝에 있다 — 왼쪽으로 끌면 넓어진다(dx 부호 반전).
     const onMove = (move: PointerEvent): void => {
-      const dx = move.clientX - startX;
-      const dy = move.clientY - startY;
-      updateDockSize(dock, startWidth + (dock === "glass" ? dx : -dx), startHeight + (dock === "glass" ? dy : 0), false);
+      updateBarSize(startWidth - (move.clientX - startX), startHeight, false);
     };
     const cleanupResize = (): void => {
       window.removeEventListener("pointermove", onMove);
@@ -2754,8 +2598,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     };
     const onUp = (): void => {
       cleanupResize();
-      const size = dockSizes[dock];
-      if (size) updateDockSize(dock, size.width, size.height, true);
+      if (barSize) updateBarSize(barSize.width, barSize.height, true);
     };
     activeResizeCleanup = cleanupResize;
     window.addEventListener("pointermove", onMove);
@@ -2763,19 +2606,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   resizeHandle.addEventListener("keydown", (event: KeyboardEvent) => {
     if (!resizableDock()) return;
-    const dock = currentChatDock();
     const step = event.shiftKey ? 32 : 8;
-    const rect = measuredSurface(dock);
-    const current = dockSizes[dock] ?? { width: rect.width || (dock === "float" ? 640 : 360), height: rect.height || 620 };
+    const rect = measuredSurface();
+    const current = barSize ?? { width: rect.width || 640, height: rect.height || 620 };
     let width = current.width;
-    let height = current.height;
-    if (event.key === "ArrowLeft") width += dock === "glass" ? -step : step;
-    else if (event.key === "ArrowRight") width += dock === "glass" ? step : -step;
-    else if (dock === "glass" && event.key === "ArrowUp") height -= step;
-    else if (dock === "glass" && event.key === "ArrowDown") height += step;
+    if (event.key === "ArrowLeft") width += step;
+    else if (event.key === "ArrowRight") width -= step;
     else return;
     event.preventDefault();
-    updateDockSize(dock, width, height, true);
+    updateBarSize(width, current.height, true);
   });
   applySize();
   mountResizeHandle();
@@ -2786,14 +2625,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   if (typeof window !== "undefined") window.addEventListener("resize", onViewportResize);
 
-  const remountComposerTail = (includeOverlay: boolean): void => {
-    const tail: HTMLElement[] = includeOverlay
-      ? [risingOverlay, stickyProposalZone, commandBar]
-      : [stickyProposalZone, commandBar];
-    for (const node of tail) node.remove();
-    panel.append(...tail);
-    mountResizeHandle();
-  };
   /**
    * 로그 배치의 **단일 상태 함수**. (도크 × 기록/스튜디오) → 슬롯 하나.
    *
@@ -2805,32 +2636,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 슬롯은 `panel.dataset.logSlot` 으로 노출한다 — 부모 체인을 뒤지지 않고 현재 배치를
    * 읽을 수 있게 하는 단일 지표다.
    */
-  const logSlotForDock = (mode: ChatDock): "glass" | "volatile" | "none" => {
-    switch (mode) {
-      case "glass":
-        return "glass";
-      case "side":
-        return "volatile";
-      case "float":
-        // float 도 유리 마운트에 로그를 유지한다 — 바와 로그를 함께 유지해 상태/오류가 증발하지 않게.
-        return "glass";
-      default: {
-        const unreachable: never = mode;
-        throw new Error(`unknown chat dock: ${String(unreachable)}`);
-      }
-    }
-  };
   const mountLog = (): void => {
-    const slot = historyOpen || studio ? "history" : logSlotForDock(readChatDock());
-    const target = slot === "history"
-      ? historyLogMount
-      : slot === "glass"
-        ? glassLogMount
-        : slot === "volatile" ? volatileLogMount : null;
+    // 슬롯은 둘이다: 기록/스튜디오가 열려 있으면 기록 마운트, 아니면 유리 마운트.
+    // (도크 × 기록/스튜디오 3×2 표가 이 한 줄로 줄었다. "volatile" 슬롯은 사이드
+    // 도크와 함께 사라졌다.)
+    const slot = historyOpen || studio ? "history" : "glass";
+    const target = slot === "history" ? historyLogMount : glassLogMount;
     panel.dataset.logSlot = slot;
     if (log.parentElement === target) return;
     log.remove();
-    target?.append(log);
+    target.append(log);
   };
   syncGlassIdle = (): void => {
     const busy = panel.classList.contains("is-turn-running")
@@ -2838,10 +2653,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
       || Boolean(turnBusy || runningProgress);
     const idle = !busy;
-    const dock = readChatDock();
+    // `is-glass-idle`(glass 전용)과 `is-map-first-idle`(dock !== "float" 조건)은 둘 다
+    // float 단일 도크에서 절대 참이 될 수 없어 삭제했다. 남는 축은 하나다.
     panel.classList.toggle("is-assistant-idle", idle);
-    panel.classList.toggle("is-glass-idle", idle && dock === "glass");
-    panel.classList.toggle("is-map-first-idle", idle && dock !== "float" && readTemperature() === "map-first");
     refreshNextSteps();
   };
   refreshTemperatureChrome = (): void => {
@@ -2853,36 +2667,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncGlassIdle();
   };
   const applyComposerViewPolicy = (): void => {
-    const mode = readChatDock();
     if (!historyOpen && !studio) removeStartScreen();
-    // 오버레이(휘발 존)는 사이드 도크만 가진다. 유리는 카드 본문에 로그를 달고,
-    // float도 유리 로그 마운트를 사용한다 — 테스트 계약이다.
-    if (mode === "side") {
-      if (!panel.contains(risingOverlay)) remountComposerTail(true);
-    } else {
-      risingOverlay.remove();
-    }
     mountLog();
-    if (panel.dataset.logSlot === "volatile" && volatileZone) {
-      volatileZone.hidden = false;
-    }
-    applyGlassFold(); // fold 는 glass 전용 — 도크가 바뀌면 클래스도 따라가야 한다.
-    if (mode === "glass") {
-      syncGlassIdle();
-      return;
-    }
-    panel.classList.remove("is-glass-idle");
     refreshNextSteps();
   };
 
-  // 셰브론은 도크마다 다른 것을 여닫는다: glass 는 대화 본문(fold), 나머지는 패널 전체(칩).
-  // 같은 버튼·testid·aria 배선을 공유하므로 라벨만 갈라 쓴다.
+  // 셰브론이 여닫는 것은 하나다: 패널 전체(칩 접힘). glass 도크의 본문 접힘(fold)이
+  // 두 번째 축이었고 함께 사라졌다.
   const syncCollapseButtonChrome = (): void => {
-    const glass = readChatDock() === "glass";
-    const shut = glass ? glassFolded : collapsed;
-    const label = glass
-      ? (shut ? "조수 대화 펼치기" : "조수 대화 접기")
-      : (shut ? "AI 패널 펼치기" : "AI 패널 접기");
+    const shut = collapsed;
+    const label = shut ? "AI 패널 펼치기" : "AI 패널 접기";
     collapseButton.textContent = shut ? "▸" : "▾";
     collapseButton.setAttribute("title", label);
     collapseButton.setAttribute("aria-label", label);
@@ -2904,85 +2698,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (autoCollapseTimer !== null && typeof window !== "undefined") window.clearTimeout(autoCollapseTimer);
     autoCollapseTimer = null;
   };
-  // ── 유리 도크 본문 접힘(fold) ────────────────────────────────────────────
-  // is-collapsed 와 다른 축이다: 입력줄·완료 스트립은 남고 대화 본문만 여닫힌다.
-  // 접힘 중 자식이 Tab 으로 잡히지 않게 inert 를 세운다 — CSS 는 max-height:0 으로
-  // 접으므로(display:none 이 아니라 트랜지션이 돌아야 한다) 요소가 트리에 남는다.
-  applyGlassFold = (): void => {
-    const glass = readChatDock() === "glass";
-    const folded = glass && glassFolded;
-    if (!glass) disarmGlassFold();
-    panel.classList.toggle("is-glass-folded", folded);
-    // 가짜 DOM(test/fakeDom)에는 inert 프로퍼티가 없으므로 속성으로 폴백한다.
-    const inertable = body as HTMLElement & { inert?: boolean };
-    if (typeof inertable.inert === "boolean") inertable.inert = folded;
-    else if (folded) body.setAttribute("inert", "");
-    else body.removeAttribute("inert");
-    syncCollapseButtonChrome();
-    applySize(); // 접힘 중에는 커스텀 카드 크기를 해제한다.
-  };
-  clearGlassFoldTimer = (): void => {
-    if (glassFoldTimer !== null && typeof window !== "undefined") window.clearTimeout(glassFoldTimer);
-    glassFoldTimer = null;
-  };
-  // 무장(armed)과 타이머를 분리한다. hover 는 타이머만 끊고 무장은 남겨 포인터가 떠나면
-  // 다시 센다. 셰브론으로 직접 펼친 것은 무장을 해제해, 마우스를 옮겼다고 닫히지 않는다.
-  const disarmGlassFold = (): void => {
-    glassFoldArmed = false;
-    clearGlassFoldTimer();
-  };
-  const unfoldGlass = (): void => {
-    disarmGlassFold();
-    if (!glassFolded) return;
-    glassFolded = false;
-    applyGlassFold();
-  };
-  // 유휴 접힘을 걸어도 되는 상태인가. 2026-08-27 에 자동 접기를 걷어낸 이유(답이 사라짐)를
-  // 여기서 막는다 — 실패한 턴, 답을 기다리는 질문, 쓰던 입력, 위로 스크롤해 읽는 중,
-  // 포인터가 카드 위에 있는 경우에는 접지 않는다.
-  const canScheduleGlassFold = (failed: boolean): boolean => {
-    if (readChatDock() !== "glass" || glassFolded || failed) return false;
-    if (panel.classList.contains("is-turn-running") || panel.classList.contains("is-turn-error")) return false;
-    if (turnBusy || runningProgress !== null || hasPendingQuestion()) return false;
-    if (glassFoldHovered || input.value.trim() !== "") return false;
-    if (typeof document !== "undefined" && document.activeElement && panel.contains(document.activeElement)) return false;
-    // 로그를 위로 올려 읽는 중이면 접지 않는다(바닥에서 4px 이내면 최신을 보고 있는 것).
-    const drift = log.scrollHeight - log.clientHeight - log.scrollTop;
-    if (Number.isFinite(drift) && drift > 4) return false;
-    return true;
-  };
-  const armGlassFoldTimer = (): void => {
-    clearGlassFoldTimer();
-    if (!glassFoldArmed || !canScheduleGlassFold(false)) return;
-    if (typeof window === "undefined" || typeof window.setTimeout !== "function") return;
-    glassFoldTimer = window.setTimeout(() => {
-      glassFoldTimer = null;
-      if (!canScheduleGlassFold(false)) return;
-      glassFoldArmed = false;
-      glassFolded = true;
-      applyGlassFold();
-    }, GLASS_FOLD_IDLE_MS);
-  };
-  // 턴이 끝날 때 부른다 — 여기서만 무장한다.
-  scheduleGlassFold = (options?: { failed?: boolean }): void => {
-    if (!canScheduleGlassFold(options?.failed === true)) {
-      clearGlassFoldTimer();
-      return;
-    }
-    glassFoldArmed = true;
-    armGlassFoldTimer();
-  };
-  // 조작이 있으면 대기를 처음부터 다시 센다. 무장되지 않았으면 아무 일도 하지 않는다 —
-  // 조작 자체가 접기를 시작하게 하면 안 된다.
-  const restartGlassFoldTimer = (): void => {
-    if (!glassFoldArmed) return;
-    armGlassFoldTimer();
-  };
   // 접힌 패널을 AI 작업용으로 펼친다. 이미 열려 있으면 폭만 유지하고 종료 후 재접기 플래그는 유지.
   // 자동 경로 — 사용자의 저장된 접힘 선택(savePanelCollapsed)은 건드리지 않는다.
   expandForAiWork = (): void => {
     clearAutoCollapseTimer();
-    unfoldGlass(); // "내용이 나와야 하는 경우" — 턴 시작 3곳이 모두 이 함수를 지난다.
     if (!collapsed) return;
     collapsed = false;
     if (studio) applyStudio(false);
@@ -2995,17 +2714,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseAfterAiWork = false;
   };
   const toggleCollapsed = (): void => {
-    // glass 에서는 이 셰브론이 fold 토글이다 — 입력줄이 항상 보이므로 칩 접힘은 중복이고,
-    // 셰브론을 두 개 두면 무엇이 무엇을 접는지 읽히지 않는다.
-    if (readChatDock() === "glass") {
-      if (glassFolded) unfoldGlass();
-      else {
-        clearGlassFoldTimer();
-        glassFolded = true;
-        applyGlassFold();
-      }
-      return;
-    }
     clearAutoCollapseTimer();
     collapsed = !collapsed;
     // 수동으로 접으면 예약 취소. 수동으로 펼치면 다음 AI 턴 전까지는 연 상태 유지.
@@ -3016,8 +2724,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const restoreCollapsed = (): void => {
     // 공개 진입점("조수 열기" · openAiAssistantPanel · 브리지 open)이 여기로 온다.
-    // glass 에서 여는 것은 fold 를 여는 것이다 — 칩 접힘은 그 도크에서 쓰지 않는다.
-    unfoldGlass();
     if (!collapsed) return;
     clearAutoCollapseTimer();
     collapsed = false;
@@ -3027,20 +2733,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   collapseButton.addEventListener("click", toggleCollapsed);
   collapsedRestore.addEventListener("click", restoreCollapsed);
-  // 유휴 대기는 조작이 있으면 처음부터 다시 센다. hover 중에는 아예 접지 않는다.
-  panel.addEventListener("pointerenter", () => {
-    glassFoldHovered = true;
-    clearGlassFoldTimer();
-  });
-  panel.addEventListener("pointerleave", () => {
-    glassFoldHovered = false;
-    restartGlassFoldTimer();
-  });
-  for (const type of ["keydown", "input", "focusin", "wheel", "scroll"] as const) {
-    panel.addEventListener(type, restartGlassFoldTimer, { passive: true });
-  }
+  // pointerenter/leave + keydown·input·focusin·wheel·scroll 5종 리스너는 유휴 자동
+  // 접힘 타이머를 다시 세기 위한 배선이었다. 타이머가 사라져 리스너도 사라진다.
   applyCollapsed();
-  applyGlassFold();
   refreshSendEnabled(); // 부트 직후도 보낼 게 없으므로 전송은 비활성에서 시작해야 한다.
 
   let completionStripHandle: AiCompletionStripHandle | null = null;
@@ -3058,9 +2753,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     historyOpen = next;
     if (historyOpen) {
       panel.classList.add("is-history-open");
-      // side flex 도크에서는 본문이 곧 기록 영역 — fixed is-docked 오버레이를 켜지 않는다.
-      if (!panel.classList.contains("chat-dock-side")) panel.classList.add("is-docked");
-      else panel.classList.remove("is-docked");
+      panel.classList.add("is-docked");
       historyButton.textContent = "×";
       historyButton.setAttribute("title", "전체 기록 닫기");
       historyButton.setAttribute("aria-label", "전체 기록 닫기");
@@ -3071,7 +2764,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyButton.setAttribute("aria-label", "전체 기록 열기");
     }
     if (typeof document !== "undefined" && document.body) {
-      // side/float 공통: fixed 오버레이 inset 도킹 body 클래스는 쓰지 않는다(이중 패딩 흔들림).
+      // fixed 오버레이 inset 도킹 body 클래스는 쓰지 않는다(이중 패딩 흔들림).
       document.body.classList.remove("ai-panel-docked");
       document.body.classList.add("ai-command-bar-active");
     }
@@ -3125,23 +2818,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeCommandMenu,
     onChange: applyTemperature,
   });
-  commandDockItem = composerMenu.dockItem;
-  refreshDockLabels = (): void => {
-    const mode = currentChatDock();
-    panel.dataset.chatDock = mode;
-    applyDockModeChrome(mode);
+  // 구 이름은 `refreshDockLabels` 였다 — 도크별 버튼 라벨을 다시 계산하는 일이 본업이었고,
+  // 그 일이 없어진 지금 남은 것은 "패널 표면을 현재 상태에 맞춰 다시 그린다" 하나다.
+  applyAssistantViewPolicy = (): void => {
+    panel.dataset.chatDock = "float";
     applyComposerViewPolicy();
-    // 유리·사이드는 레일에서 ✨ 를 숨긴다(ai-next-steps 카드가 대신) — 도크를 바꿀 때
-    // 떠 있던 추천 팝오버를 정리하지 않으면 보이지 않는 팝오버가 남는다.
     syncSuggestPopover();
     syncCommandBarClearance();
     applySize();
     mountResizeHandle();
   };
-  refreshDockLabels();
-  commandMenuToggle.addEventListener("click", () => {
-    if (!commandMenu.hidden) refreshMoreMenuDockLabel();
-  });
+  applyAssistantViewPolicy();
   commandMenu.replaceChildren(composerTemperatureSection, ...composerMenu.items);
   refreshTemperatureChrome();
 
@@ -3379,7 +3066,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endAutonomousRun(); // 진행 중이던 자율 런 표면 정리.
     endTurnProgress();
     clearAutoCollapseTimer();
-    clearGlassFoldTimer();
     activeResizeCleanup?.();
     activeResizeCleanup = null;
 

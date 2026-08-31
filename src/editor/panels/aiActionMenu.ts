@@ -1,15 +1,18 @@
 // editor/panels/aiActionMenu.ts
 // AI 패널 2차 액션 메뉴의 **항목 목록 단일 구현**.
 //
-// 왜: 헤더 ☰(`.ai-more-menu` 안 접힌 `작업`)와 컴포저 ☰(`.ai-command-menu`)가 같은 5개 항목
-// (되돌리기 · 내보내기 · 도크 전환 · 전체 기록 · 툴 브라우저)을 각각 따로 만들고 있었다.
-// 두 벌이라 도크 라벨 갱신도 두 곳(`moreMenuDockItem`, `commandDockItem`)에서 따로 했고,
+// 왜: 헤더 ☰(`.ai-more-menu` 안 접힌 `작업`)와 컴포저 ☰(`.ai-command-menu`)가 같은 항목
+// (되돌리기 · 내보내기 · 전체 기록 · 툴 브라우저)을 각각 따로 만들고 있었다. 두 벌이라
 // 한쪽에만 항목을 추가하면 조용히 갈라졌다. 컨테이너/위치/열림 상태는 서로 달라야 하므로
 // (헤더는 자체 pointerdown 핸들러, 컴포저는 팝오버 셸이 소유) **항목만** 공유한다.
 //
+// 2026-08-31: 「도크 전환」 항목을 걷었다. 도크 축(glass/side/float)이 삭제돼 갈 곳이
+// 하나뿐인데, 항목은 남아 라벨만 「입력줄」로 고정된 채 눌러도 토스트만 떴다 — 메뉴가
+// 있지도 않은 선택지를 광고하는 상태였다. 그래서 5개 → 4개.
+//
 // testid 는 두 표면이 서로 다르다(기존 테스트 계약 유지):
-//   헤더   ai-more-undo / ai-more-export / ai-more-dock / ai-more-history / ai-more-tools
-//   컴포저 ai-command-menu-undo / ai-command-menu-export / ai-command-menu-dock /
+//   헤더   ai-more-undo / ai-more-export / ai-more-history / ai-more-tools
+//   컴포저 ai-command-menu-undo / ai-command-menu-export /
 //          (전체 기록은 원래 testid 없음) / ai-command-menu-tools
 
 import { el } from "@/util/dom";
@@ -20,7 +23,6 @@ export interface AiActionMenuActions {
   readonly startNewChat: () => void;
   readonly undoLast: () => void;
   readonly exportAudit: () => void;
-  readonly toggleDock: () => void;
   readonly openHistory: () => void;
   readonly openTools: () => void;
   readonly startInterview: () => void;
@@ -31,8 +33,6 @@ export interface AiActionMenuActions {
 export interface AiActionMenuItems {
   /** 메뉴 컨테이너에 그대로 넣을 항목들(선언 순서 = 표시 순서). */
   readonly items: readonly HTMLButtonElement[];
-  /** 도크 전환 항목 — 라벨이 현재 도크에 따라 바뀌므로 호출자가 들고 있어야 한다. */
-  readonly dockItem: HTMLButtonElement;
 }
 
 interface ItemSpec {
@@ -86,12 +86,6 @@ export function createAiActionMenuItems(options: {
     title: "대화 로그 내보내기",
     run: options.actions.exportAudit,
   });
-  // 라벨/툴팁은 applyDockModeChrome 이 현재 도크에 맞춰 덮어쓴다(초기값은 자리표시).
-  const dockItem = build({
-    label: "플로팅 바로 전환",
-    testid: header ? "ai-more-dock" : "ai-command-menu-dock",
-    run: options.actions.toggleDock,
-  });
   const history = build({
     label: "전체 기록",
     testid: header ? "ai-more-history" : null,
@@ -124,8 +118,5 @@ export function createAiActionMenuItems(options: {
     run: options.actions.startDemoTeach,
   });
 
-  return {
-    items: [newChat, undo, exportItem, dockItem, history, tools, interview, learnStructure, demoTeach],
-    dockItem,
-  };
+  return { items: [newChat, undo, exportItem, history, tools, interview, learnStructure, demoTeach] };
 }

@@ -27,7 +27,6 @@
 }
 
 /* ?볦? ?꾪겕/?ㅽ뒠?붿삤: 3??*/
-.ai-chat-panel.chat-dock-side .ai-start-grid,
 .ai-chat-panel.is-docked .ai-start-grid,
 .ai-chat-panel.is-history-open .ai-start-grid,
 .ai-chat-panel.is-studio .ai-start-grid {
@@ -35,7 +34,6 @@
 }
 
 @media (max-width: 420px) {
-  .ai-chat-panel.chat-dock-side .ai-start-grid,
   .ai-chat-panel.is-docked .ai-start-grid,
   .ai-chat-panel.is-history-open .ai-start-grid,
   .ai-chat-panel.is-studio .ai-start-grid {

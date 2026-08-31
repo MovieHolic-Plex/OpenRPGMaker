@@ -157,10 +157,6 @@
 }
 
 /* 좁은 폭에서는 힌트를 먼저 버린다(전송 버튼·컨텍스트가 우선). */
-.ai-chat-panel.chat-dock-glass .ai-composer-hint,
-.ai-chat-panel.chat-dock-side .ai-composer-hint {
-  display: none;
-}
 
 /* 전송 / 중단 — 턴 중에는 서로 자리를 바꾼다(둘 다 상주, 한쪽만 표시). */
 .ai-composer-actions .ai-chat-send,
@@ -235,6 +231,27 @@
   gap: var(--space-1);
 }
 
+/* 「다음에 뭘 하지」 블록 — 2026-08-31 에 유리·사이드 카드 본문에서 이 팝오버로 옮겨 왔다.
+   카드가 없어지면서 이 두 선택자를 잡던 도크 스코프 규칙도 함께 삭제됐으므로, 팝오버 안에서
+   쓰는 기본 여백/서체를 여기서 다시 정한다. */
+.ai-composer-suggest .ai-next-steps {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 7px;
+  margin-top: 7px;
+  padding-top: 7px;
+}
+
+.ai-composer-suggest .ai-next-steps[hidden] {
+  display: none;
+}
+
+.ai-next-steps-hint {
+  color: var(--text-2);
+  font: 600 12px/1.35 var(--font-ui);
+  margin: 0;
+}
+
 .ai-composer-chip {
   background: var(--control-bg);
   border: 1px solid var(--border-default);
@@ -255,23 +272,8 @@
 }
 
 /* ── 도크별 조정 ── */
-.ai-chat-panel.chat-dock-glass .ai-composer,
-.ai-chat-panel.chat-dock-side .ai-composer {
-  backdrop-filter: none;
-  box-shadow: none;
-}
-
-.ai-chat-panel.chat-dock-side .ai-composer {
-  border-color: var(--border-subtle);
-}
 
 /* 좁은 카드에서는 팝오버가 카드를 넘지 않게 폭을 맞춘다. */
-.ai-chat-panel.chat-dock-glass .ai-composer-popover,
-.ai-chat-panel.chat-dock-side .ai-composer-popover {
-  left: 0;
-  max-width: none;
-  right: 0;
-}
 
 @media (max-width: 720px) {
   .ai-composer-hint {
