@@ -32,6 +32,7 @@ import {
 } from "@/editor/agentBlueprint";
 import { appliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
 import { focusEditorRegion, type EditorFocusRegion } from "@/editor/editorReferenceNavigation";
+import { shouldClearAiHighlightSelection } from "@/editor/transientEditorChrome";
 import {
   clearAgentGhostPreview,
   createThrottledAgentGhostPreviewUpdater,
@@ -172,6 +173,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     // 고스트 렌더러가 승인 전 초안 맵을 에디터 컴포지터 경로로 합성해 찍도록 공급한다.
     setAgentGhostDraftMapProvider((mapId) => session.getProposedProject().maps[mapId]);
     let confirmedBuildSpecThisTurn: BuildSpec | null = null;
+    let highlightedRegionThisTurn = false;
     let turnFailed = false; // 접힘 레일 알림 점의 색(완료=초록/오류=빨강) 결정용.
     let turnResult: TurnResult | null = null;
     let turnCatchError: string | undefined;
@@ -280,6 +282,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 사용자에게는 아무 일도 일어나지 않는다(툴은 성공했는데 "어디를 묻는지" 가 안 보였다).
         if (event.name === "highlight_map_region" && event.result.ok) {
           const region = event.result.data as EditorFocusRegion;
+          highlightedRegionThisTurn = true;
           editorState.set({ selection: { mapId: region.mapId, x: region.x, y: region.y, width: region.w, height: region.h } });
           focusEditorRegion(region);
         }
@@ -542,6 +545,10 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           /* ignore */
         });
         return;
+      }
+      // highlight_map_region 은 질문용 강조라 사용자 선택이 아니다. 턴이 끝나면 사각형을 걷는다.
+      if (shouldClearAiHighlightSelection(highlightedRegionThisTurn) && editorState.get().selection) {
+        editorState.set({ selection: null });
       }
       deps.surface.endTurnProgress();
       if (deps.surface.activeAbortController === abortController) deps.surface.activeAbortController = null;

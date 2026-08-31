@@ -37,6 +37,7 @@ import {
   renderEventLayerClickFeedback,
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
+import { retainEventLayerClickFeedback } from "@/editor/transientEditorChrome";
 import {
   buildEventMarkerTooltipModel,
   eventLayerSwitchNotice,
@@ -474,6 +475,15 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private redrawForStoreChange(change: ProjectChangeDescriptor): void {
     const mapId = this.mapId();
+    const nextFeedback = retainEventLayerClickFeedback({
+      feedback: this.eventLayerClickFeedback,
+      currentMapId: mapId,
+      changeOrigin: change.origin,
+    });
+    if (nextFeedback !== this.eventLayerClickFeedback) {
+      this.eventLayerClickFeedback = nextFeedback;
+      this.renderEventLayerClickFeedback();
+    }
     const plan = planEditSceneRenderForStoreChange({
       change,
       currentMapId: mapId,
@@ -1284,6 +1294,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.deferredCameraFocus = null;
       this.clearHoverPreview();
       this.clearAgentFocusHighlight();
+      this.clearEventLayerClickFeedback();
       this.lastPaintKey = "";
       this.dragOperationHandler?.clear();
     }
@@ -1503,6 +1514,15 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     tip.style.left = `${Math.round(placement.left)}px`;
     tip.style.top = `${Math.round(placement.top)}px`;
+  }
+
+  private clearEventLayerClickFeedback(): void {
+    if (this.eventLayerClickFeedback === null) {
+      this.eventClickFeedbackLayer?.removeAll(true);
+      return;
+    }
+    this.eventLayerClickFeedback = null;
+    this.renderEventLayerClickFeedback();
   }
 
   private renderEventLayerClickFeedback(): void {
