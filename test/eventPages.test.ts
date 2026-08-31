@@ -13,6 +13,7 @@ import {
   hasCopiedEventPage,
   pasteEventPage,
   moveEventPage,
+  moveEventPageTo,
   replaceEventPageCommandAt,
   setEventPageTextCommand,
   updateEventPage,
@@ -200,6 +201,23 @@ describe("event pages", () => {
     expect(names).toContain("페이지 1 복사본 2");
     expect(names).toContain("페이지 1 복사본 3");
     expect(new Set(names).size).toBe(names.length);
+  });
+
+  it("moves a page to an arbitrary index and no-ops when already there", () => {
+    const mapId = store.getCurrent().startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    const second = addEventPage(mapId, eventId);
+    const third = addEventPage(mapId, eventId);
+    const first = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages![0]!.id;
+
+    expect(moveEventPageTo(mapId, eventId, first, 2)).toBe(true);
+    expect(store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages!.map((page) => page.id))
+      .toEqual([second, third, first]);
+    expect(moveEventPageTo(mapId, eventId, first, 2)).toBe(false);
+    expect(moveEventPageTo(mapId, eventId, first, 99)).toBe(false);
+    expect(moveEventPageTo(mapId, eventId, first, -3)).toBe(true);
+    expect(store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages!.map((page) => page.id))
+      .toEqual([first, second, third]);
   });
 
   it("copies and reorders pages without corrupting sibling commands", () => {
