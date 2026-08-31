@@ -25,6 +25,8 @@ export interface AiActionMenuActions {
   readonly undoLast: () => void;
   readonly exportAudit: () => void;
   readonly openHistory: () => void;
+  /** 스튜디오 셸 토글 — 숨은 `ai-studio-toggle` 훅을 누른다. 메뉴 항목 testid 는 훅과 다르다. */
+  readonly toggleStudio: () => void;
   readonly openTools: () => void;
   /** 저장된 대화 목록(이어가기) — 기존 '전체 기록'(현재 대화의 감사 로그)과 다른 것이다. */
   readonly openConversations: () => void;
@@ -101,6 +103,13 @@ export function createAiActionMenuItems(options: {
     testid: header ? "ai-more-history" : null,
     run: options.actions.openHistory,
   });
+  const studio = build({
+    label: "스튜디오",
+    testid: header ? "ai-more-studio" : "ai-command-menu-studio",
+    title: "타일 편집 대신 장면 모니터·채팅·덱으로 연출한다",
+    ariaLabel: "AI 스튜디오 전환",
+    run: options.actions.toggleStudio,
+  });
   const tools = build({
     label: "툴 브라우저",
     testid: header ? "ai-more-tools" : "ai-command-menu-tools",
@@ -172,6 +181,7 @@ export function createAiActionMenuItems(options: {
       undo,
       exportItem,
       history,
+      studio,
       tools,
       settings,
       interview,

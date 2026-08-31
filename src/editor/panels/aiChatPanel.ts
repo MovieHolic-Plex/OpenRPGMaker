@@ -120,13 +120,14 @@ import {
   type AiFontSize,
 } from "./aiPanelLayout";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
-import { formatAiRunningStatus, renderToolActivityEntry, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
+import { formatAiRunningStatus, formatToolActivityLine, renderToolActivityEntry, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
 import {
   createConversationLogHost,
 } from "./aiConversationLog";
 import { anchoredPopupPosition } from "./popupPosition";
 import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
-import { changePreviewChips, renderChangePreviewCard } from "./aiChangePreview";
+import { changePreviewChips, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
+import { createStudioShell, type StudioShell } from "./aiStudioShell";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
 import { createAiTurnRunner } from "./aiTurnRunner";
 import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
@@ -345,10 +346,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     status.textContent = text;
     status.dataset.statusTone = statusToneOf(text);
     setAiBridgeLastStatus(text);
+    studioShell?.setStatus(text);
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
   let panelRoot: HTMLElement | null = null;
+  let studioShell: StudioShell | null = null;
+  const studioToolLines: string[] = [];
+  let lastStudioChange: ChangePreviewInput | null = null;
   // 빈 로그 껍데기(.ai-glass-log·.ai-history-log-mount)를 접고 시작 블록을 가운데로 올리는 CSS 훅.
   // 턴 행 testid 가 아니라 **로그의 자식 유무**로 판정해야 한다 — 복원된 대화는 그 testid 를 달지
   // 않아 testid 로 세면 복원된 로그를 숨긴다. `:empty` 로도 못 잡는다 — 껍데기 안에 빈
@@ -525,6 +530,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const matchedLiveActivity = runningActivity?.toolName === toolName;
     if (!matchedLiveActivity) bumpToolProgress();
     const before = new Set(log.querySelectorAll(".ai-tool-activity-line"));
+    studioToolLines.unshift(formatToolActivityLine(toolName, result));
+    if (studioToolLines.length > 40) studioToolLines.length = 40;
+    studioShell?.setToolLines(studioToolLines);
     appendToolLine(toolName, result, args);
     const rendered = [...log.querySelectorAll(".ai-tool-activity-line")].find((entry) => !before.has(entry))
       ?? renderToolActivityEntry(toolName, result);
@@ -599,6 +607,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         undoMapEdit();
       },
     });
+    lastStudioChange = {
+      before: input.before,
+      after: input.after,
+      mapId: input.mapId,
+      title: input.title,
+      ...(input.detail ? { detail: input.detail } : {}),
+      chips: diffs.length > 0 ? changePreviewChips(combineDiffs(diffs)) : [],
+      onUndo: () => {
+        noteAiChangeUndone({ toolNames: input.calls.map((call) => call.name) });
+        undoMapEdit();
+      },
+    };
+    studioShell?.setChangePreview(lastStudioChange);
     appendChangeCard(card);
   };
 
@@ -790,6 +811,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     log.replaceChildren();
     startScreen = null;
     closeToolActivity();
+    studioToolLines.length = 0;
+    lastStudioChange = null;
+    studioShell?.setToolLines(studioToolLines);
+    studioShell?.setChangePreview(null);
+    studioShell?.setWorkPlan(null, false);
     // 이어받는 전환은 시작 화면을 깔지 않는다 — 곧 복원된 대화가 그 자리를 채운다(깜빡임 제거).
     if (!resumeTarget) ensureStartScreen();
     setStatus(resumeTarget ? "이전 대화" : reason === "project-switch" ? "새 프로젝트 — 새 대화" : "새 대화");
@@ -1161,6 +1187,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const endAutonomousRun = (): void => {
     autonomousRunState = null;
     clearAutonomousRunSurface();
+    studioShell?.setWorkPlan(null, false);
   };
   const ensureAutonomousRunSurface = (): HTMLElement => {
     if (!autonomousRunSurface) {
@@ -1184,6 +1211,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(autonomousFeedHost!);
     surface.replaceChildren(checklist);
+    studioShell?.setWorkPlan(autonomousRunState.plan, autonomousRunState.active);
   };
   // 마일스톤 자동 적용/적용 실패 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
   const appendMilestoneFeedLine = (kind: "applied" | "apply-failed", title: string, detail: string): void => {
@@ -1768,10 +1796,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshComposerChips();
     applyAssistantViewPolicy();
     refreshTemperatureChrome();
+    if (studioShell?.attached()) {
+      studioShell.refreshScenes();
+      studioShell.refreshMonitor();
+    }
   });
   const unsubscribeContextStore = store.subscribe(() => {
     refreshContextChips();
     refreshComposerChips();
+    if (studioShell?.attached()) {
+      studioShell.refreshScenes();
+      studioShell.refreshMonitor();
+    }
     // 프로젝트가 바뀌었으면(새 프로젝트 생성·다른 작업 열기·로엄 복원) 대화를 새로 시작한다 —
     // 이전 프로젝트의 계획·제안·맵 좌표는 새 프로젝트에서 전부 무의미하거나 해롭다.
     const identity = store.getProjectIdentity();
@@ -2108,6 +2144,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyButton.click();
       applyHistoryOpen(true);
     },
+    toggleStudio: () => studioButton.click(),
     openTools: () => toolsButton.click(),
     openConversations: openConversationHistory,
     openInstructions: () => {
@@ -2581,7 +2618,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   historyButton.addEventListener("click", () => applyHistoryOpen(!historyOpen));
 
-  // 스튜디오 모드 적용: 넓은 레이아웃 + 스킬 레일 상시 노출.
+  // 스튜디오 모드: 타일 에디터를 덮는 장면|모니터|채팅+덱 셸. 기본 입력줄 캡슐은 그대로 둔다.
   applyStudio = (next: boolean): void => {
     studio = next;
     if (typeof localStorage !== "undefined") localStorage.setItem(STUDIO_MODE_KEY, studio ? "1" : "0");
@@ -2595,18 +2632,32 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       panel.classList.add("is-studio");
       panel.setAttribute("style", ""); // 커스텀 크기 대신 전체 폭.
-      // 스튜디오는 전체 오버레이라 기록 패널을 넓은 워크스페이스로 전환한다.
+      // 로그 슬롯은 기록 마운트. is-history-open 은 다른 오버레이라 붙이지 않는다.
       historyOpen = true;
       panel.classList.remove("is-docked");
-      if (typeof document !== "undefined" && document.body) document.body.classList.remove("ai-panel-docked");
+      if (typeof document !== "undefined" && document.body) {
+        document.body.classList.remove("ai-panel-docked");
+        document.body.classList.add("ai-studio-open");
+      }
+      studioShell?.attach(panel, { historyLogMount, commandBar });
+      studioShell?.setStatus(status.textContent ?? "");
+      studioShell?.setWorkPlan(autonomousRunState?.plan ?? null, autonomousRunState?.active === true);
+      studioShell?.setChangePreview(lastStudioChange);
+      studioShell?.setToolLines(studioToolLines);
       studioButton.setAttribute("aria-label", "AI 스튜디오 되돌리기");
       applyComposerViewPolicy();
     } else {
+      studioShell?.detach();
       panel.classList.remove("is-studio");
       studioButton.setAttribute("aria-label", "AI 스튜디오 펼치기");
+      if (typeof document !== "undefined" && document.body) document.body.classList.remove("ai-studio-open");
       applyHistoryOpen(false);
     }
   };
+  studioShell = createStudioShell({
+    onExit: () => applyStudio(false),
+    onFontZoom: (delta) => setLogFontSize(delta),
+  });
   studioButton.addEventListener("click", () => applyStudio(!studio));
 
   // float 컴포저 ☰ — 헤더 햄버거와 **동일한 항목 구현**(aiActionMenu.ts) + 스킬 찾기·설정.
@@ -2874,6 +2925,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endTurnProgress();
     clearAutoCollapseTimer();
     resizeChrome.dispose();
+    studioShell?.dispose();
+    studioShell = null;
 
     unsubscribeContextEditor();
     unsubscribeContextStore();
@@ -2896,7 +2949,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (typeof document !== "undefined") {
       document.removeEventListener("pointerdown", onMoreMenuPointerDown);
       document.removeEventListener("keydown", onMoreMenuKeyDown);
-      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked");
+      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked", "ai-studio-open");
     }
 
     cleanupAiAssistBridge?.();

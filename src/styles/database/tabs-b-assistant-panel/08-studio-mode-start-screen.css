@@ -1,4 +1,7 @@
-/* ?? AI ?ㅽ뒠?붿삤 紐⑤뱶 + ?쒖옉 ?붾㈃ + ? 諛?+ ?붾젅??2026-07-05) ????? */
+/* 스튜디오 모드 셸 + 시작 화면 + 기록 마운트.
+   스튜디오만 타일 에디터를 덮는 연출 워크스페이스다. 기본 조수(입력줄 캡슐)는
+   17-assistant-modern-shell.css 가 소유하고, 이 파일의 .is-studio 규칙은 그 기하에서 뺀다. */
+
 .ai-chat-body {
   display: flex;
   flex: 1;
@@ -16,74 +19,365 @@
   min-width: 0;
 }
 
-/* ??紐⑤뱶: ?쒕엻???대㈃ 蹂몃Ц ???ㅻ뜑 ?꾨옒)???볤쾶 ?щ떎. */
-
-/* ?ㅽ뒠?붿삤: ?먮뵒?곕? ??뒗 ?볦? ?뚰겕?ㅽ럹?댁뒪. 醫????/ ???ㅽ궗 ?덉씪.
-   (2026-07-08 ?ъ꽕怨? ?댁쟾??醫곸? ?꾪궧 ?⑤꼸??洹몃?濡??섎젮 ?볦븘 而ㅻ㎤??諛붽? ?⑤꼸 ?꾩뿉
-   寃뱀퀜 ?④퀬 ?ㅽ궗 ?덉씪? ?щ챸 臾댁옣?앹씠?덈떎. ?먯튃: ?붿옄???좏겙留??ъ슜,
-   ?섎떒??而ㅻ㎤??諛??꾩슜 ?ㅽ듃由??뺣낫, ?덉씪? ?쒕㈃(surface) ??移대뱶濡? */
-.ai-chat-panel.is-studio {
-  left: 12px;
-  right: 12px;
-  top: 96px;
-  bottom: 12px;
-  width: auto;
-  max-width: none;
+/* ── 스튜디오: 톱바 아래 전면 오버레이. 호스트는 캔버스 안이라 absolute 로는
+   좌측 타일 레일을 못 가린다. fixed + 톱바 48px 아래부터. */
+.ai-chat-panel.chat-dock-float.is-studio {
+  background: var(--bg-base);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  inset: 48px 0 0 0;
   max-height: none;
-  z-index: 60;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-l);
-  box-shadow: var(--shadow-modal);
+  max-width: none;
+  overflow: hidden;
+  padding: 0;
+  pointer-events: auto;
+  position: fixed;
+  width: auto;
+  z-index: 45;
+}
+
+.ai-chat-panel.is-studio > :not(.ai-studio-shell) {
+  display: none;
+}
+
+.ai-studio-shell {
+  background: var(--bg-base);
+  color: var(--text-1);
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: 200px minmax(0, 1fr) 380px;
+  grid-template-rows: minmax(0, 1fr) 280px;
+  min-height: 0;
+  min-width: 0;
+  pointer-events: auto;
+}
+
+.ai-studio-scenes {
+  background: var(--bg-raised);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  min-height: 0;
+  padding: 12px;
+}
+
+.ai-studio-kicker,
+.ai-studio-card-kicker {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.ai-studio-scene-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.ai-studio-scene-group {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 10px 8px 4px;
+}
+
+.ai-studio-scene {
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  padding: 8px;
+  text-align: left;
+}
+
+.ai-studio-scene b {
+  color: var(--text-1);
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ai-studio-scene span {
+  font-size: 12px;
+}
+
+.ai-studio-scene.is-on {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.ai-studio-scene.is-on b {
+  color: var(--accent);
+}
+
+.ai-studio-monitor {
+  background: var(--text-1);
+  display: grid;
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  overflow: hidden;
+  place-items: center;
+  position: relative;
+}
+
+.ai-studio-monitor-stage {
+  align-items: center;
+  display: flex;
+  height: 78%;
+  justify-content: center;
+  max-width: 86%;
   overflow: hidden;
 }
 
-.ai-chat-panel.is-studio .ai-chat-toolbar {
+.ai-studio-monitor-thumb {
+  background: color-mix(in srgb, var(--text-1) 82%, var(--bg-raised));
+  border: 2px solid color-mix(in srgb, var(--text-1) 92%, black);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--text-1) 82%, var(--bg-raised));
+  image-rendering: pixelated;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.ai-studio-monitor-label {
+  background: var(--bg-scrim);
+  border-radius: 999px;
+  bottom: 10px;
+  color: var(--bg-raised);
+  font-size: 11px;
+  font-weight: 700;
+  left: 12px;
+  padding: 4px 8px;
+  position: absolute;
+}
+
+.ai-studio-chat {
+  background: var(--bg-raised);
+  border-left: 1px solid var(--border-subtle);
+  display: grid;
+  grid-column: 3;
+  grid-row: 1 / 3;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.ai-studio-who {
+  align-items: flex-start;
   border-bottom: 1px solid var(--border-subtle);
-  padding: var(--space-1) var(--space-3);
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 12px 14px;
 }
 
-/* ?ㅽ뒠?붿삤???꾩씠肄?踰꾪듉? ?ㅼ궗???덊듃 ?源??뺣낫(湲由ы봽-留뚰븳 ?ш린 湲덉?). */
-.ai-chat-panel.is-studio .ai-chat-toolbar button {
-  min-height: 28px;
-  min-width: 28px;
-  padding: var(--space-1) var(--space-2);
+.ai-studio-who-title {
+  align-items: center;
+  display: flex;
+  font-size: 14px;
+  font-weight: 800;
+  gap: 8px;
+  margin: 0;
 }
 
-.ai-chat-panel.is-studio .ai-chat-body {
-  flex-direction: row;
-  gap: 0;
-  /* ?섎떒 怨좎젙 而ㅻ㎤??諛??⑤꼸 ?먯떇, fixed)媛 濡쒓렇 留덉?留?以꾩쓣 媛由ъ? ?딅룄濡??ㅽ듃由??뺣낫. */
-  padding-bottom: 84px;
+.ai-studio-face {
+  background: var(--accent-muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  display: inline-block;
+  height: 28px;
+  width: 28px;
 }
 
-.ai-chat-panel.is-studio .ai-chat-log {
+.ai-studio-who-line {
+  color: var(--text-2);
+  font-size: 12px;
+  margin: 4px 0 0;
+}
+
+.ai-studio-exit {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  height: 28px;
+  padding: 0 11px;
+}
+
+.ai-studio-exit:hover,
+.ai-studio-exit:focus-visible {
+  border-color: var(--accent-border);
+  outline: none;
+}
+
+.ai-studio-chat-log,
+.ai-studio-chat-log .ai-history-log-mount {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ai-studio-chat-log .ai-chat-log {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   max-height: none;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+  width: 100%;
 }
 
-.ai-chat-panel.is-studio .ai-chat-bubble,
-.ai-chat-panel.is-studio .ai-command-row {
-  max-width: 780px;
+.ai-studio-chat-log .ai-chat-log::before {
+  content: "";
+  flex: 1 1 auto;
 }
 
-/* 而ㅻ㎤??諛붾? ?ㅽ뒠?붿삤 ?섎떒 ?ㅽ듃由쎌쓽 ?쇰?泥섎읆 ?뺣젹. */
-.ai-chat-panel.is-studio .ai-command-bar {
-  bottom: 26px;
+.ai-chat-panel.chat-dock-float.is-studio .ai-command-bar {
+  bottom: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+  left: auto;
+  max-width: none;
+  padding: 0;
+  pointer-events: auto;
+  position: relative;
+  right: auto;
+  width: auto;
+  z-index: 1;
 }
 
-/* ?꾩껜 濡쒓렇媛 ?대? 蹂댁씠誘濡?誘몃땲 ?ㅽ듃由??섎컻 議?? 以묐났 ???④릿??
-   怨좎젙 議??쒖븞 pill/?뚮┝)? ?좎????뱀씤 ?湲곕? ?껋? ?딅뒗?? */
+.ai-chat-panel.chat-dock-float.is-studio .ai-composer {
+  border-left: 0;
+  border-radius: 0;
+  border-right: 0;
+  border-bottom: 0;
+  box-shadow: none;
+  max-width: none;
+  width: 100%;
+}
 
-/* ?쒖옉 ?붾㈃: ?곷떒 怨좎젙 + ?ㅽ겕濡?(?몃줈 以묒븰 ?ъ뿰 ?쒓굅). */
-.ai-chat-panel.is-studio .ai-start-screen {
-  justify-content: flex-start;
+.ai-studio-deck {
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  grid-column: 2;
+  grid-row: 2;
+  grid-template-rows: 36px minmax(0, 1fr);
   min-height: 0;
 }
 
-/* 醫곸? ?붾㈃: ?ㅽ궗 ?덉씪???묒뼱 ??붿뿉 ?꾪룺??以?? */
-@media (max-width: 1100px) {
-  .ai-chat-panel.is-studio .ai-chat-body > .ai-skill-drawer {
-    display: none;
+.ai-studio-tabs {
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 4px;
+  padding: 0 10px;
+}
+
+.ai-studio-tab {
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  height: 28px;
+  padding: 0 10px;
+}
+
+.ai-studio-tab.is-on {
+  background: var(--bg-inset);
+  color: var(--text-1);
+}
+
+.ai-studio-deck-pane {
+  min-height: 0;
+  overflow: auto;
+  padding: 10px;
+}
+
+.ai-studio-work,
+.ai-studio-tool-list {
+  background: var(--bg-inset);
+  border-radius: 10px;
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+}
+
+.ai-studio-goal {
+  color: var(--text-2);
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.ai-studio-work-item,
+.ai-studio-tool-line {
+  display: flex;
+  font-size: 13px;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.ai-studio-tool-line {
+  color: var(--text-2);
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 12px;
+  justify-content: flex-start;
+}
+
+.ai-studio-work-mark {
+  font-weight: 700;
+}
+
+.ai-studio-work-mark.is-done {
+  color: var(--success);
+}
+
+.ai-studio-work-mark.is-in_progress {
+  color: var(--accent);
+}
+
+.ai-studio-empty {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+@media (max-width: 1180px) {
+  .ai-studio-shell {
+    grid-template-columns: 168px minmax(0, 1fr) 320px;
+    grid-template-rows: minmax(0, 1fr) 220px;
+  }
+}
+
+@media (max-width: 860px) {
+  .ai-studio-shell {
+    grid-template-columns: 140px minmax(0, 1fr) 260px;
+    grid-template-rows: minmax(0, 1fr) 180px;
   }
 }
 
@@ -375,4 +669,3 @@
   line-height: 1.4;
   opacity: 0.85;
 }
-
