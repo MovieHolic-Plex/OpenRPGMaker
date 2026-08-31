@@ -1115,7 +1115,25 @@ footer {
   gap: 6px;
   height: 28px;
   max-width: 240px;
+  user-select: none;
   white-space: nowrap;
+}
+
+.event-editor .evt-page-segments .evt-page-segment[draggable="true"] {
+  cursor: grab;
+}
+
+.event-editor .evt-page-segments .evt-page-segment.is-dragging {
+  cursor: grabbing;
+  opacity: 0.55;
+}
+
+.event-editor .evt-page-segments .evt-page-segment.evt-page-drop-before {
+  box-shadow: inset 2px 0 0 0 var(--accent);
+}
+
+.event-editor .evt-page-segments .evt-page-segment.evt-page-drop-after {
+  box-shadow: inset -2px 0 0 0 var(--accent);
 }
 
 .event-editor .evt-page-segment-title {
@@ -1168,6 +1186,8 @@ footer {
   min-height: 26px;
   min-width: 0;
   padding: 0 8px;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 /* 순서 이동은 화살표 한 글자라 정사각형으로 좁힌다. */

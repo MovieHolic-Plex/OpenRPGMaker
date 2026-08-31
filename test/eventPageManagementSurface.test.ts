@@ -17,6 +17,7 @@ import { editorState } from "@/editor/editorState";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { renderClassicPageTabStrip, renderPageActions } from "@/editor/panels/eventEditor/pageProps";
 import { openPageTabContextMenu } from "@/editor/panels/eventEditor/pageTabContextMenu";
+import { pageTabDropIndex } from "@/editor/panels/eventEditor/pageTabDragDrop";
 import { modalStackEntryCountForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
 import { addEventPage, clearCopiedEventPage, copyEventPageToClipboard } from "@/editor/eventPages";
 import { addEvent } from "@/editor/eventActions";
@@ -321,6 +322,55 @@ describe("페이지 관리 작업면", () => {
     document.querySelector<HTMLElement>('[data-testid="event-page-menu-duplicate"]')!
       .dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     expect(modalStackEntryCountForTest()).toBe(baseline);
+  });
+
+  it("페이지가 한 장이면 탭을 끌 수 없다", () => {
+    const strip = renderClassicPageTabStrip(mapId, currentEvent(), pages()[0]!);
+    const tab = strip.querySelector<HTMLElement>(".evt-page-segment[data-page-id]");
+    expect(tab?.getAttribute("draggable")).toBe("false");
+  });
+
+  it("페이지가 두 장 이상이면 탭을 끌 수 있고, 복제 버튼은 브라우저 기본 드래그를 막는다", () => {
+    addEventPage(mapId, eventId);
+    const event = currentEvent();
+    const strip = renderClassicPageTabStrip(mapId, event, (event.pages ?? [])[0]!);
+    document.body.append(strip);
+    const tabs = [...strip.querySelectorAll<HTMLElement>(".evt-page-segment[data-page-id]")];
+    expect(tabs).toHaveLength(2);
+    for (const tab of tabs) expect(tab.getAttribute("draggable")).toBe("true");
+    expect(tabs[0]!.title).toContain("끌어다 놓아");
+
+    const host = actions();
+    const duplicate = button(host, "event-page-duplicate");
+    expect(duplicate.getAttribute("draggable")).toBe("false");
+    const drag = new Event("dragstart", { bubbles: true, cancelable: true });
+    duplicate.dispatchEvent(drag);
+    expect(drag.defaultPrevented).toBe(true);
+  });
+
+  it("탭 드롭은 소스 제거를 보정한 자리에 꽂는다", () => {
+    expect(pageTabDropIndex(0, 2, false)).toBe(2);
+    expect(pageTabDropIndex(2, 0, true)).toBe(0);
+    expect(pageTabDropIndex(1, 1, false)).toBe(1);
+  });
+
+  it("탭을 다른 탭 위에 떨어뜨리면 페이지 순서가 바뀐다", () => {
+    addEventPage(mapId, eventId);
+    addEventPage(mapId, eventId);
+    const [first, second, third] = pages();
+    editorState.set({ selectedEventPageId: first!.id });
+    const strip = renderClassicPageTabStrip(mapId, currentEvent(), first!);
+    document.body.append(strip);
+    const source = strip.querySelector<HTMLElement>(`[data-page-id="${first!.id}"]`)!;
+    const target = strip.querySelector<HTMLElement>(`[data-page-id="${third!.id}"]`)!;
+    target.getBoundingClientRect = () => ({
+      x: 0, y: 0, top: 0, left: 0, right: 80, bottom: 28, width: 80, height: 28, toJSON: () => ({}),
+    });
+
+    source.dispatchEvent(new Event("dragstart", { bubbles: true }));
+    target.dispatchEvent(new MouseEvent("drop", { bubbles: true, cancelable: true, clientX: 70 }));
+
+    expect(pages().map((page) => page.id)).toEqual([second!.id, third!.id, first!.id]);
   });
 
   it("거부된 경계 이동은 성공 토스트를 만들지 않는다", () => {

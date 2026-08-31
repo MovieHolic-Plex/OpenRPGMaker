@@ -187,18 +187,45 @@ export function deleteEventPage(mapId: MapId, eventId: string, pageId: string): 
 }
 
 export function moveEventPage(mapId: MapId, eventId: string, pageId: string, delta: -1 | 1): boolean {
+  const pages = pageList(mapId, eventId);
+  const index = pages.findIndex((page) => page.id === pageId);
+  if (index < 0) return false;
+  const nextIndex = index + delta;
+  if (nextIndex < 0 || nextIndex >= pages.length) return false;
+  return moveEventPageTo(
+    mapId,
+    eventId,
+    pageId,
+    nextIndex,
+    `페이지 순서 이동: ${pageName(mapId, eventId, pageId)} (${delta < 0 ? "앞으로" : "뒤로"})`,
+  );
+}
+
+/**
+ * 페이지를 임의 인덱스로 옮긴다. 탭 드래그 재정렬의 한 번의 `store.update` 경계다.
+ * `toIndex` 는 배열 범위로 클램프하고, 제자리면 false 다.
+ */
+export function moveEventPageTo(
+  mapId: MapId,
+  eventId: string,
+  pageId: string,
+  toIndex: number,
+  label?: string,
+): boolean {
   const movedName = pageName(mapId, eventId, pageId);
   let moved = false;
   store.update((project) => {
     const pages = project.maps[mapId]?.events.find((item) => item.id === eventId)?.pages;
-    if (!pages) return;
+    if (!pages || pages.length === 0) return;
     const index = pages.findIndex((page) => page.id === pageId);
-    const nextIndex = index + delta;
-    if (index < 0 || nextIndex < 0 || nextIndex >= pages.length) return;
+    if (index < 0) return;
+    const clamped = Math.max(0, Math.min(pages.length - 1, Math.trunc(toIndex)));
+    if (index === clamped) return;
     const [page] = pages.splice(index, 1);
-    pages.splice(nextIndex, 0, page);
+    if (!page) return;
+    pages.splice(clamped, 0, page);
     moved = true;
-  }, pageChange(mapId, eventId, `페이지 순서 이동: ${movedName} (${delta < 0 ? "앞으로" : "뒤로"})`));
+  }, pageChange(mapId, eventId, label ?? `페이지 순서 이동: ${movedName}`));
   return moved;
 }
 

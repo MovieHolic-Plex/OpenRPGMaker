@@ -257,6 +257,17 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - 탭 포커스 복원은 위치 testid 가 아니라 `data-page-id` 로 새 렌더 트리를 다시 찾는다.
   - 1024px 이하에서는 액션 문구를 줄이고 페이지바 안의 탭 스트립만 가로 스크롤을 소유한다.
     고정 액션을 `overflow:hidden` 밖으로 자르는 구조는 금지다.
+  - **탭은 드래그로 순서를 바꾼다** (`pageTabDragDrop.ts`). 페이지가 2장 이상이면
+    `.evt-page-segment` 에 `draggable="true"` 이고, 떨어뜨린 칸의 왼쪽/오른쪽 반으로
+    앞/뒤를 고른다. 모델은 `moveEventPageTo` 한 번의 `store.update` 다 — `moveEventPage(±1)`
+    을 반복하지 마라(중간 상태가 감사 로그와 구독 렌더를 여러 번 깨운다). 드롭 소스는
+    MIME `getData` 가 아니라 모듈 변수(`draggingPageId`)다(맵 트리와 같은 함정).
+    `text/uri-list` 나 URL 모양 `text/plain` 은 넣지 않는다 — 브라우저 크롬에 떨어뜨리면
+    탐색이 된다.
+  - **복제·복사·붙여넣기 버튼은 네이티브 드래그를 막는다.** 복제 글리프 `⧉`(`U+29C9`)와
+    짧은 라벨은 브라우저가 기본 텍스트/링크 드래그로 가져가고, 주소창·파일 대화상자에
+    떨어뜨리면 「브라우즈」로 이어지며 클릭(실제 복제)은 삼킨다. 버튼은 `draggable="false"`
+    + `dragstart` `preventDefault` + `user-select:none` / `-webkit-user-drag:none` 이다.
   - 계약: `test/eventPageManagementSurface.test.ts`, `test/eventPages.test.ts`,
     `test/eventEditorModal.test.ts`. 표면 기준선
     `test/fixtures/eventEditorShellSurface.baseline.json` 과 CSS 실사용 클래스 기준선을 함께 갱신했다.

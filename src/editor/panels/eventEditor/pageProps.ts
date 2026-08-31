@@ -31,6 +31,7 @@ import { renderPageFootprint } from "./pageFootprint";
 import { UNIT_FOOTPRINT, normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { renderPageMovement } from "./pageMovement";
 import { openPageTabContextMenu } from "./pageTabContextMenu";
+import { enablePageTabDrag, enablePageTabDropTarget } from "./pageTabDragDrop";
 import {
   type EventEditorTriggerKind,
   EVENT_PRIORITY_OPTIONS,
@@ -234,62 +235,64 @@ export function renderClassicPageTabStrip(
     attrs: { role: "tablist", "aria-label": "이벤트 페이지" },
     dataset: { testid: "evt-header-page-tabs" },
   });
+  const canDrag = pages.length > 1;
   pages.forEach((page, index) => {
     const isActive = page.id === activePage.id;
     const pageErrors = validation?.issues.filter((i) => i.pageId === page.id && (i.severity === "error" || i.severity === "warning")).length ?? 0;
-    pageButtons.append(
-      el("button", {
-        class: "btn evt-page-segment" + (isActive ? " active" : ""),
-        dataset: { testid: `evt-page-segment-${index + 1}`, pageId: page.id },
-        attrs: {
-          type: "button",
-          role: "tab",
-          // role=tab 은 aria-selected 만 사용한다. aria-pressed 는 toggle 버튼 속성이라 같이 쓰면
-          // 스크린리더가 "눌림/선택됨"을 이중으로 읽는다.
-          "aria-selected": isActive ? "true" : "false",
-          // roving tabindex: 탭 줄 전제가 Tab 하나로 진입하고 방향키로 움직인다.
-          tabindex: isActive ? "0" : "-1",
-          title: pageTabTooltip(page, index),
+    const tab = el("button", {
+      class: "btn evt-page-segment" + (isActive ? " active" : ""),
+      dataset: { testid: `evt-page-segment-${index + 1}`, pageId: page.id },
+      attrs: {
+        type: "button",
+        role: "tab",
+        // role=tab 은 aria-selected 만 사용한다. aria-pressed 는 toggle 버튼 속성이라 같이 쓰면
+        // 스크린리더가 "눌림/선택됨"을 이중으로 읽는다.
+        "aria-selected": isActive ? "true" : "false",
+        // roving tabindex: 탭 줄 전제가 Tab 하나로 진입하고 방향키로 움직인다.
+        tabindex: isActive ? "0" : "-1",
+        title: pageTabTooltip(page, index, canDrag),
+      },
+      children: [
+        el("span", { class: "evt-page-segment-number", text: String(index + 1) }),
+        el("span", { class: "evt-page-segment-title", text: page.name.trim() || `페이지 ${index + 1}` }),
+        el("span", {
+          class: "evt-page-segment-cond",
+          text: pageTabConditionText(page),
+          dataset: { testid: `evt-page-cond-${index + 1}` },
+        }),
+        ...(pageErrors > 0 ? [el("i", { class: "warn" })] : []),
+      ],
+      on: {
+        click: (event) => {
+          const button = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
+          const container = button?.parentElement;
+          container?.querySelectorAll<HTMLElement>(".evt-page-segment").forEach((node) => {
+            const active = node === button;
+            node.classList.toggle("active", active);
+            node.setAttribute("aria-selected", active ? "true" : "false");
+            node.setAttribute("tabindex", active ? "0" : "-1");
+          });
+          editorState.set({ selectedEventPageId: page.id });
         },
-        children: [
-          el("span", { class: "evt-page-segment-number", text: String(index + 1) }),
-          el("span", { class: "evt-page-segment-title", text: page.name.trim() || `페이지 ${index + 1}` }),
-          el("span", {
-            class: "evt-page-segment-cond",
-            text: pageTabConditionText(page),
-            dataset: { testid: `evt-page-cond-${index + 1}` },
-          }),
-          ...(pageErrors > 0 ? [el("i", { class: "warn" })] : []),
-        ],
-        on: {
-          click: (event) => {
-            const button = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
-            const container = button?.parentElement;
-            container?.querySelectorAll<HTMLElement>(".evt-page-segment").forEach((node) => {
-              const active = node === button;
-              node.classList.toggle("active", active);
-              node.setAttribute("aria-selected", active ? "true" : "false");
-              node.setAttribute("tabindex", active ? "0" : "-1");
-            });
-            editorState.set({ selectedEventPageId: page.id });
-          },
-          keydown: (event) => handlePageTabKeydown(event, mapId, ev, pages, index),
-          contextmenu: (event) => {
-            if (!(event instanceof MouseEvent)) return;
-            event.preventDefault();
-            openPageTabContextMenu({
-              x: event.clientX,
-              y: event.clientY,
-              mapId,
-              event: ev,
-              page,
-              index,
-              requestDelete: (target) => void requestEventPageDeletion(mapId, ev.id, target),
-            });
-          },
+        keydown: (event) => handlePageTabKeydown(event, mapId, ev, pages, index),
+        contextmenu: (event) => {
+          if (!(event instanceof MouseEvent)) return;
+          event.preventDefault();
+          openPageTabContextMenu({
+            x: event.clientX,
+            y: event.clientY,
+            mapId,
+            event: ev,
+            page,
+            index,
+            requestDelete: (target) => void requestEventPageDeletion(mapId, ev.id, target),
+          });
         },
-      })
-    );
+      },
+    }) as HTMLButtonElement;
+    enablePageTabDrag(tab, { mapId, eventId: ev.id, page, canDrag });
+    enablePageTabDropTarget(tab, { mapId, eventId: ev.id, pageId: page.id, pages });
+    pageButtons.append(tab);
   });
   pageButtons.append(
     el("button", {
@@ -380,11 +383,12 @@ function pageTabConditionText(page: EventPage): string {
   return conditions.length === 1 ? first : `${first} 외 ${conditions.length - 1}`;
 }
 
-function pageTabTooltip(page: EventPage, index: number): string {
+function pageTabTooltip(page: EventPage, index: number, canDrag: boolean): string {
   const name = page.name.trim() || "(이름 없음)";
   const conditions = page.conditions ?? [];
   const summary = conditions.length > 0 ? conditions.map(pageConditionSummary).join(" / ") : "조건 없음";
-  return `페이지 ${index + 1} — ${name}\n${summary}`;
+  const dragHint = canDrag ? "\n끌어다 놓아 순서를 바꿉니다 (뒤에 있을수록 조건이 맞을 때 이깁니다)" : "";
+  return `페이지 ${index + 1} — ${name}\n${summary}${dragHint}`;
 }
 
 function pageConditionSummary(condition: EventPageCondition): string {
@@ -511,6 +515,7 @@ function pageButton(
     type: "button",
     title,
     "aria-label": accessibleName ?? text,
+    draggable: "false",
   };
   if (disabled) attrs.disabled = "";
   const variantClass = variant ? ` event-page-action-${variant}` : "";
@@ -519,7 +524,20 @@ function pageButton(
     children: [el("span", { class: "event-page-button-label", text })],
     dataset: { testid: testId },
     attrs,
-    on: onClick ? { click: onClick } : undefined,
+    on: {
+      // 복제 글리프(⧉)와 짧은 라벨은 브라우저가 기본 텍스트/링크 드래그로 가져간다.
+      // 떨어뜨린 곳이 주소창·파일 대화상자면 「브라우즈」로 이어지고, 클릭(복제)은 삼킨다.
+      dragstart: (event) => event.preventDefault(),
+      ...(onClick
+        ? {
+            click: (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onClick();
+            },
+          }
+        : {}),
+    },
   }) as HTMLButtonElement;
 }
 
