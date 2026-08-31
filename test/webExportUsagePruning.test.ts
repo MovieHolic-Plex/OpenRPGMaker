@@ -1,4 +1,5 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { PLAYER_RUNTIME_AUDIO_RESOURCE_IDS } from "@/player/playerRuntimeAudioIds";
 import { createBlankProject } from "@/project/defaults";
 import { collectWebExportAssets } from "@/project/webExportAssets";
 import type { Project } from "@/project/types";
@@ -19,10 +20,14 @@ function audioFileOf(project: Project, resourceId: string | undefined): string |
 }
 
 describe("web export usage pruning", () => {
-  it("ships exactly the tracks the project actually plays", () => {
+  it("ships exactly the tracks the project plays plus the ones the player hardcodes", () => {
     // Given
     const project = createBlankProject();
     const played = [project.system.defaultBgmResourceId, project.system.battleBgmResourceId]
+      .map((id) => audioFileOf(project, id))
+      .filter((path): path is string => path !== null);
+    // 맵에 BGM 이 없을 때의 폴백처럼 소스에 박힌 재생 — 프로젝트 문자열에는 없다.
+    const hardcoded = PLAYER_RUNTIME_AUDIO_RESOURCE_IDS
       .map((id) => audioFileOf(project, id))
       .filter((path): path is string => path !== null);
 
@@ -31,9 +36,9 @@ describe("web export usage pruning", () => {
 
     // Then
     expect(played.length).toBe(2);
-    for (const path of played) expect(audio).toContain(path);
+    expect(hardcoded.length).toBeGreaterThan(0);
     // 「0 개가 아니다」 로는 카탈로그 전량이 실려도 통과한다 — 집합 자체를 고정한다.
-    expect([...audio].sort()).toEqual([...played].sort());
+    expect([...audio].sort()).toEqual([...new Set([...played, ...hardcoded])].sort());
   });
 
   it("does not ship the file behind a catalog row that nothing references", () => {

@@ -1,3 +1,4 @@
+import { listBundledPlayAssetPaths } from "@/assets/bundledAssetWarmup";
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
 import { createBlankProject } from "@/project/defaults";
@@ -82,6 +83,34 @@ describe("web export runtime assets", () => {
 
     // Then
     for (const path of farmingCardPaths) expect(planned.has(path)).toBe(false);
+  });
+
+  it("keeps the life-ledger art in the collected list once the project enables that system", () => {
+    // Given
+    const project = withLifeLedgerData(createBlankProject());
+
+    // When
+    const planned = new Set(collectWebExportAssets(project).map((asset) => asset.zipPath));
+
+    // Then
+    for (const path of farmingCardPaths) expect(planned.has(path)).toBe(true);
+  });
+
+  // 부팅 검증의 단위 테스트판. player.ts 가 기동 직후 warmBundledPlayAssets(project) 로 실제
+  // 요청하는 경로가 곧 「부팅에 필요한 것」 이다. 그 집합이 산출물에 없으면 내보낸 게임이 404 로
+  // 깨진다 — 프루닝을 더 좁힐 때 여기가 먼저 빨개져야 한다.
+  it("ships every path the exported player warms at boot", () => {
+    // Given
+    const project = createBlankProject();
+    const warmed = listBundledPlayAssetPaths(project);
+
+    // When
+    const planned = new Set(collectWebExportAssets(project).map((asset) => asset.zipPath));
+
+    // Then
+    expect(warmed.length).toBeGreaterThan(0);
+    const missing = warmed.filter((path) => !planned.has(path));
+    expect(missing).toEqual([]);
   });
 
   // 프루닝이 안전한 근거는 「지금 안 쓴다」가 아니라 「플레이 중에도 쓰이게 될 수 없다」다.
