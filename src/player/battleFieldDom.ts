@@ -99,19 +99,15 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 1:1 대치 — 선두 1명만, 적 크고 중앙 상단, 아군 좌하 대형.
   // 다마리 분기 y +10: 148px 스프라이트가 y=76 줄에서 필드 위로 11px 잘렸다(실측).
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
-  // VX 전면: 적은 필드 상단 중앙, 아군은 하단 일렬(상태 띠 바로 위).
-  // 3마리 적의 y 는 한 줄(90) — 예전 2×2 뒷줄(142)은 아군 발(148)과 겹쳤다.
+  // RM2003 전면: 적만 필드에 선다. 아군은 하단 상태 창 숫자로만 보인다.
+  // 3마리 적의 y 는 한 줄(90) — 픽스처 battleEnemyFeetRatios.json 이 잠근 값.
   rm2003: {
-    partyFacing: "front",
-    partyScale: 1.15,
+    partyFacing: "hidden",
     enemy: (i, n) => ({
       x: Math.round(160 + (i - (n - 1) / 2) * 70),
-      y: n <= 1 ? 88 : 90 + (i % 2) * 8,
+      y: n <= 1 ? 110 : 90 + (i % 2) * 8,
     }),
-    party: (i, n) => ({
-      x: n <= 1 ? 220 : Math.round(112 + (i + 0.5) * (196 / n)),
-      y: 148,
-    }),
+    party: () => ({ x: 160, y: 150 }),
   },
   // RM2000 프론트뷰: 숨김 파티, 적 중앙 수평.
   rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 76 }), party: () => ({ x: 160, y: 150 }) },
@@ -401,9 +397,7 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
   if (effectiveId && backdrop.dataset.backdropResourceId !== effectiveId) {
     backdrop.dataset.backdropResourceId = effectiveId;
     const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
-    backdrop.style.backgroundImage = url
-      ? `linear-gradient(rgba(5, 10, 24, 0.08), rgba(2, 4, 12, 0.22)), url("${url}")`
-      : "";
+    backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
   }
 }
 
@@ -601,6 +595,13 @@ function appendEffectsLayer(field: HTMLElement): HTMLElement {
   return layer;
 }
 
+/** rm2003 은 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터 PNG 알파를
+ *  반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
+function battleBackdropImage(url: string): string {
+  if (activeSkin().id === "rm2003") return `url("${url}")`;
+  return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
+}
+
 function battleBackdrop(resourceId: string | undefined): HTMLElement {
   const backdrop = document.createElement("div");
   backdrop.className = "battle-backdrop";
@@ -615,9 +616,7 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
   if (effectiveId) backdrop.dataset.backdropResourceId = effectiveId;
   else backdrop.dataset.backdropFallback = "forest";
   backdrop.setAttribute("aria-label", "전투 배경");
-  if (url) {
-    backdrop.style.backgroundImage = `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
-  }
+  if (url) backdrop.style.backgroundImage = battleBackdropImage(url);
   return backdrop;
 }
 

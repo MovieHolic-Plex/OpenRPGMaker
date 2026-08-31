@@ -40,15 +40,7 @@ describe("적 세로 배치 기하", () => {
     });
   }
 
-  it("rm2003 4인 파티의 가로 간격은 스프라이트 폭보다 넓다", () => {
-    const place = BATTLER_PLACEMENTS.rm2003;
-    const left = place.party(0, 4);
-    const right = place.party(1, 4);
-    expect(Math.abs(right.x - left.x)).toBeGreaterThanOrEqual(48);
-  });
-
-  it("rm2003 전면 구도는 아군이 적보다 앞에 선다", () => {
-    const place = BATTLER_PLACEMENTS.rm2003;
-    expect(place.party(0, 1).y).toBeGreaterThan(place.enemy(0, 1).y);
+  it("rm2003 전면 구도는 아군 스프라이트를 숨긴다", () => {
+    expect(BATTLER_PLACEMENTS.rm2003.partyFacing).toBe("hidden");
   });
 });

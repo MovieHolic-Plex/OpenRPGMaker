@@ -106,20 +106,15 @@ describe("아군 배틀러 스프라이트 선택", () => {
     expect(node?.dataset.actorBackBattler).toBeUndefined();
   });
 
-  it("정면 스킨은 저작된 전투 시트를 그대로 쓴다 — 뒷모습이 끼어들지 않는다", () => {
+  it("rm2003 전면 구도는 아군 스프라이트 노드를 만들지 않는다", () => {
     const field = renderField({
       skin: "rm2003",
       battleCharacterResourceId: "generated-actor-hero-03-battle",
     });
 
-    const node = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor");
-    expect(node?.dataset.partyFacing).toBe("front");
-    expect(node?.dataset.authoredBattler).toBe("true");
-    expect(node?.dataset.actorBackBattler).toBeUndefined();
-    // 정면은 <img> 가 아니라 시트를 배경으로 깐 span 이다(3×8 시트에서 프레임을 오려 쓴다).
-    expect(allyImage(field), "정면 경로는 통짜 <img> 를 쓰지 않는다").toBeNull();
-    const sprite = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor-sprite");
-    expect(sprite?.style.backgroundImage).toContain("hero-03-battle.png");
-    expect(sprite?.style.backgroundImage).not.toContain("-back.png");
+    const group = field.querySelector<HTMLElement>(".battle-actor-group");
+    expect(group?.dataset.partyFacing).toBe("hidden");
+    expect(group?.dataset.hidden).toBe("true");
+    expect(field.querySelector(".battle-actor-group .battle-actor")).toBeNull();
   });
 });
