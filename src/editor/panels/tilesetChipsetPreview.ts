@@ -13,12 +13,12 @@ import {
   startGroupDrag,
   stopGroupDrag,
 } from "@/editor/panels/tilesetGroupEditor";
-import { cellTitle, hasAiMetadata, isUnlabeledTile, passageText } from "@/editor/panels/tilesetMetadataControls";
+import { cellTitle, hasAiMetadata, isUnlabeledTile } from "@/editor/panels/tilesetMetadataControls";
 import { openTilesetTileContextMenu } from "@/editor/panels/tilesetTileContextMenu";
 import { modeHelpText, type TilesetEditMode } from "@/editor/panels/tilesetUsageGuide";
 import { tileLayerHome, type TileLayerHome } from "@/editor/tileLayerClassification";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
-import { passageMarkForTile } from "@/project/tilesetPassage";
+import { passageMarkForTile, type PassageMark } from "@/project/tilesetPassage";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -34,6 +34,9 @@ type ChipsetPreviewModel = {
   readonly onOpenFullSheet?: () => void;
   /** 미라벨(라벨·설명 비어 있음) 타일만 강조 */
   readonly unlabeledOnly?: boolean;
+  readonly passagePaint?: PassageMark;
+  readonly onPaintStrokeStart?: () => void;
+  readonly onPaintStrokeEnd?: () => void;
 };
 
 type LayerFilter = "all" | "lower" | "upper";
@@ -41,6 +44,9 @@ type LayerFilter = "all" | "lower" | "upper";
 /** 기본 2x — 한 화면에 더 많은 행. 전체 시트는 프리뷰 박스 안 스크롤. */
 const PREVIEW_SCALES = [2, 3, 4] as const;
 let previewScale: number = 2;
+let passageDragActive = false;
+let passagePaintedByPointer = false;
+let passageDragModel: ChipsetPreviewModel | null = null;
 let layerFilter: LayerFilter = "all";
 let unlabeledOnlyFilter = false;
 let previewPanState: PreviewPanState | null = null;
@@ -63,13 +69,14 @@ export function renderChipsetPreviewPanel(model: ChipsetPreviewModel): HTMLEleme
 
 function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
   const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
+  const passageChrome = model.mode === "passage";
   return el("div", {
-    class: "tileset-db-preview-header",
+    class: `tileset-db-preview-header${passageChrome ? " passage-chrome" : ""}`,
     children: [
       el("div", {
         class: "tileset-db-preview-title-row",
         children: [
-          el("div", { class: "tileset-db-preview-title", text: "타일 그림판" }),
+          ...(passageChrome ? [] : [el("div", { class: "tileset-db-preview-title", text: "타일 그림판" })]),
           el("div", {
             class: "tileset-db-layer-filter",
             attrs: { role: "tablist", "aria-label": "레이어 필터" },
@@ -78,23 +85,27 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
               renderLayerFilterButton({ filter: "all", text: "전체", title: "하위·상위 전부 표시", model }),
               renderLayerFilterButton({ filter: "lower", text: "하위", title: "하위 레이어 타일만 강조", model }),
               renderLayerFilterButton({ filter: "upper", text: "상위", title: "상위 레이어 타일만 강조", model }),
-              el("button", {
-                class: unlabeledOn ? "active" : "",
-                text: "미라벨",
-                attrs: {
-                  type: "button",
-                  role: "tab",
-                  title: "라벨·설명이 비어 있는 타일만 강조",
-                  "aria-selected": String(unlabeledOn),
-                },
-                dataset: { testid: "tileset-filter-unlabeled" },
-                on: {
-                  click: () => {
-                    unlabeledOnlyFilter = !unlabeledOnlyFilter;
-                    stableRerender(model.rerender);
-                  },
-                },
-              }),
+              ...(passageChrome
+                ? []
+                : [
+                    el("button", {
+                      class: unlabeledOn ? "active" : "",
+                      text: "미라벨",
+                      attrs: {
+                        type: "button",
+                        role: "tab",
+                        title: "라벨·설명이 비어 있는 타일만 강조",
+                        "aria-selected": String(unlabeledOn),
+                      },
+                      dataset: { testid: "tileset-filter-unlabeled" },
+                      on: {
+                        click: () => {
+                          unlabeledOnlyFilter = !unlabeledOnlyFilter;
+                          stableRerender(model.rerender);
+                        },
+                      },
+                    }),
+                  ]),
             ],
           }),
         ],
@@ -110,10 +121,14 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
               model,
             }),
           ),
-          renderScrollButton({ axis: "x", direction: -1, text: "←", title: "왼쪽으로 이동" }),
-          renderScrollButton({ axis: "x", direction: 1, text: "→", title: "오른쪽으로 이동" }),
-          renderScrollButton({ axis: "y", direction: -1, text: "↑", title: "위로 이동" }),
-          renderScrollButton({ axis: "y", direction: 1, text: "↓", title: "아래로 이동" }),
+          ...(passageChrome
+            ? []
+            : [
+                renderScrollButton({ axis: "x", direction: -1, text: "←", title: "왼쪽으로 이동" }),
+                renderScrollButton({ axis: "x", direction: 1, text: "→", title: "오른쪽으로 이동" }),
+                renderScrollButton({ axis: "y", direction: -1, text: "↑", title: "위로 이동" }),
+                renderScrollButton({ axis: "y", direction: 1, text: "↓", title: "아래로 이동" }),
+              ]),
           ...(model.onOpenFullSheet
             ? [
                 el("button", {
@@ -221,11 +236,15 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
         class: "tileset-db-click-grid",
         children: Array.from({ length: model.tileset.count }, (_, index) => renderTileCell(model, index)),
       }),
-      el("div", {
-        class: "tileset-db-preview-meta",
-        dataset: { testid: "tileset-db-preview-meta" },
-        text: previewMetaText(model, rows),
-      }),
+      ...(model.mode === "passage"
+        ? []
+        : [
+            el("div", {
+              class: "tileset-db-preview-meta",
+              dataset: { testid: "tileset-db-preview-meta" },
+              text: previewMetaText(model, rows),
+            }),
+          ]),
     ],
     on: {
       auxclick: (event) => {
@@ -345,8 +364,20 @@ function handleTileClick(model: ChipsetPreviewModel, tile: number, event: Event)
     handleAiTileClick(tile, event, rerender);
     return;
   }
-  if (model.mode === "passage" || model.mode === "terrain") {
-    // 통행/지형: 클릭 = 규칙 토글. 사이드 폼은 스크롤 유지하며 갱신.
+  if (model.mode === "passage") {
+    model.onSelectTile(tile, { quiet: true });
+    paintSelectedCell(tile);
+    if (!passagePaintedByPointer) {
+      model.onPaintStrokeStart?.();
+      model.onApplyModeTile(tile);
+      model.onPaintStrokeEnd?.();
+      paintPassageCell(tile, model.passagePaint ?? "o");
+      rerender();
+    }
+    passagePaintedByPointer = false;
+    return;
+  }
+  if (model.mode === "terrain") {
     model.onSelectTile(tile, { quiet: true });
     model.onApplyModeTile(tile);
     rerender();
@@ -362,6 +393,7 @@ function handlePointerDown(model: ChipsetPreviewModel, tile: number, event: Even
   event.preventDefault();
   if (model.mode === "group") startGroupDrag(tile, event, () => stableRerender(model.rerender));
   if (model.mode === "ai") startAiSelectionDrag(tile, event, () => stableRerender(model.rerender));
+  if (model.mode === "passage") startPassageDrag(model, tile);
 }
 
 function handlePointerEnter(model: ChipsetPreviewModel, tile: number): void {
@@ -373,13 +405,54 @@ function handlePointerEnter(model: ChipsetPreviewModel, tile: number): void {
     model.onSelectTile(tile, { quiet: true });
     extendAiSelectionDrag(tile);
   }
+  if (model.mode === "passage") extendPassageDrag(tile);
+}
+
+function startPassageDrag(model: ChipsetPreviewModel, tile: number): void {
+  passageDragActive = true;
+  passagePaintedByPointer = true;
+  passageDragModel = model;
+  model.onPaintStrokeStart?.();
+  model.onSelectTile(tile, { quiet: true });
+  model.onApplyModeTile(tile);
+  paintPassageCell(tile, model.passagePaint ?? "o");
+  paintSelectedCell(tile);
+  window.addEventListener("pointerup", stopPassageDrag, { once: true });
+  window.addEventListener("pointercancel", stopPassageDrag, { once: true });
+}
+
+function extendPassageDrag(tile: number): void {
+  if (!passageDragActive || !passageDragModel) return;
+  passageDragModel.onSelectTile(tile, { quiet: true });
+  passageDragModel.onApplyModeTile(tile);
+  paintPassageCell(tile, passageDragModel.passagePaint ?? "o");
+  paintSelectedCell(tile);
+}
+
+function stopPassageDrag(): void {
+  if (!passageDragActive) return;
+  passageDragActive = false;
+  const model = passageDragModel;
+  passageDragModel = null;
+  model?.onPaintStrokeEnd?.();
+  if (model) stableRerender(model.rerender);
+}
+
+function paintPassageCell(tile: number, mark: PassageMark): void {
+  const cell = document.querySelector(`[data-tile="${tile}"]`);
+  if (!(cell instanceof HTMLElement)) return;
+  cell.classList.remove("mark-o", "mark-x", "mark-star");
+  cell.classList.add(`mark-${mark}`);
+  cell.textContent = mark === "o" ? "" : mark === "star" ? "★" : "X";
 }
 
 function cellText(model: ChipsetPreviewModel, tile: number): string {
   if (model.mode === "terrain") return String(model.tileset.terrain[tile] ?? 0);
   if (model.mode === "ai") return hasAiMetadata(model.tileset, tile) ? "AI" : "";
   if (model.mode === "group") return groupCellText(model.tileset, tile);
-  return passageText(model.tileset, tile);
+  const mark = passageMarkForTile(model.tileset, tile);
+  if (mark === "o") return "";
+  return mark === "star" ? "★" : "X";
 }
 
 /** 테스트/디버그용: 현재 프리뷰 배율 */

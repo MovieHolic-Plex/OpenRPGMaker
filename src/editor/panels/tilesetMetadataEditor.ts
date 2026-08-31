@@ -20,51 +20,86 @@ import {
   type TilesetEditMode,
   type TilesetSectionTab,
 } from "@/editor/panels/tilesetUsageGuide";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { markUserTileRuntimeMetadata, setTileLayerOverride, userTileLayerOverride, type TileLayerChoice } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import { confirmUserTileMetadata } from "@/project/tilesetPalette";
 import { isCombinedTownTileset } from "@/project/tilesetHarness";
-import { blockedFlag, isBlockedPassage, passableFlag } from "@/project/tilesetPassage";
-import type { TileAiMetadata, TilesetDef } from "@/project/types";
+import { tilesetImageUrl } from "@/editor/tilesetImage";
+import {
+  isBlockedPassage,
+  passageMarkForTile,
+  passableFlag,
+  setPassageMark,
+  togglePassageDirection,
+  type PassageMark,
+} from "@/project/tilesetPassage";
+import type { PassFlag, TileAiMetadata, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
 let selectedTile = 0;
 let editMode: TilesetEditMode = "passage";
+/** 통행 탭의 붓. 클릭·드래그가 이 규칙을 칠한다(토글 아님). */
+let passagePaint: PassageMark = "o";
+
+const PASSAGE_META: Record<PassageMark, NonNullable<TileAiMetadata["passage"]>> = {
+  o: "passable",
+  x: "solid",
+  star: "star",
+};
 
 export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
   clampSelectedTile(tileset);
+  const paintLayout = editMode === "passage" || editMode === "terrain";
+  const preview = renderChipsetPreviewPanel({
+    tileset,
+    mode: editMode,
+    selectedTile,
+    unlabeledOnly: getUnlabeledOnlyFilter(),
+    passagePaint,
+    rerender,
+    onApplyModeTile: (tile) => applyActiveModeClick(tileset.id, tile),
+    onPaintStrokeStart: beginPassagePaintStroke,
+    onPaintStrokeEnd: endPassagePaintStroke,
+    onSelectTile: (tile, options) => {
+      selectedTile = tile;
+      // quiet: 우클릭 메뉴 — 전체 리마운트/스크롤 점프 금지
+      if (options?.quiet) return;
+      rerender();
+    },
+    onOpenFullSheet: () => openTilesetSettingsModal(tileset.id, rerender),
+  });
+  const sidebar = renderEditSidebar(tileset, rerender);
+  const tools = paintLayout ? renderToolBox(tileset, rerender) : null;
   return el("div", {
-    class: `tileset-db-edit-area${editMode === "group" ? " knowledge-mode" : ""}`,
-    children: [
-      renderEditSidebar(tileset, rerender),
-      renderChipsetPreviewPanel({
-        tileset,
-        mode: editMode,
-        selectedTile,
-        unlabeledOnly: getUnlabeledOnlyFilter(),
-        rerender,
-        onApplyModeTile: (tile) => applyActiveModeClick(tileset.id, tile),
-        onSelectTile: (tile, options) => {
-          selectedTile = tile;
-          // quiet: 우클릭 메뉴 — 전체 리마운트/스크롤 점프 금지
-          if (options?.quiet) return;
-          rerender();
-        },
-        onOpenFullSheet: () => openTilesetSettingsModal(tileset.id, rerender),
-      }),
-    ],
+    class: `tileset-db-edit-area${editMode === "group" ? " knowledge-mode" : ""}${paintLayout ? " passage-paint" : ""}`,
+    children: paintLayout
+      ? [...(tools ? [tools] : []), preview, sidebar]
+      : [sidebar, preview],
   });
 }
 
 function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const tab = getTilesetSectionTab();
-  const toolbox = renderToolBox(rerender);
+  const toolbox = renderToolBox(tileset, rerender);
   if (editMode === "group") {
     return el("div", {
       class: "tileset-db-edit-sidebar tileset-knowledge-sidebar",
       children: [renderTileGroupPanel(tileset, rerender)],
+    });
+  }
+  if (editMode === "passage") {
+    return el("div", {
+      class: "tileset-db-edit-sidebar tileset-passage-inspector",
+      children: [renderPassageInspector(tileset, rerender)],
+    });
+  }
+  if (editMode === "terrain") {
+    return el("div", {
+      class: "tileset-db-edit-sidebar",
+      children: [renderSelectedTilePanel(tileset, rerender)],
     });
   }
   return el("div", {
@@ -169,22 +204,170 @@ function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): H
 }
 
 // 현재 탭에 속한 편집 모드만 노출한다 — 화면당 기능을 1/3로 줄이는 3탭 재편의 핵심.
-function renderToolBox(rerender: () => void): HTMLElement | null {
+function renderToolBox(tileset: TilesetDef, rerender: () => void): HTMLElement | null {
   const modes = TILESET_TAB_MODES[getTilesetSectionTab()];
-  if (modes.length <= 1) return null;
+  const paint = editMode === "passage" ? renderPassagePaintTools(tileset, rerender) : null;
+  if (modes.length <= 1 && !paint) return null;
   return el("div", {
     class: "tileset-db-tools",
     attrs: { role: "tablist", "aria-label": "타일셋 작업" },
-    children: modes.map((modeId) => {
-      const guide = TILESET_EDIT_MODES.find((entry) => entry.id === modeId);
-      return el("button", {
-        class: modeId === editMode ? "active" : "",
-        text: guide?.label ?? modeId,
-        attrs: { type: "button", role: "tab", "aria-selected": String(modeId === editMode) },
-        dataset: { testid: `tileset-edit-mode-${modeId}` },
-        on: { click: () => setMode(modeId, rerender) },
-      });
-    }),
+    children: [
+      ...modes.map((modeId) => {
+        const guide = TILESET_EDIT_MODES.find((entry) => entry.id === modeId);
+        return el("button", {
+          class: modeId === editMode ? "active" : "",
+          text: guide?.label ?? modeId,
+          attrs: { type: "button", role: "tab", "aria-selected": String(modeId === editMode) },
+          dataset: { testid: `tileset-edit-mode-${modeId}` },
+          on: { click: () => setMode(modeId, rerender) },
+        });
+      }),
+      ...(paint ? [paint] : []),
+    ],
+  });
+}
+
+function renderPassagePaintTools(tileset: TilesetDef, rerender: () => void): HTMLElement {
+  const paintButton = (mark: PassageMark, label: string, testid: string): HTMLElement =>
+    el("button", {
+      class: `database-footer-button tileset-passage-choice${passagePaint === mark ? " active" : ""}`,
+      text: label,
+      attrs: { type: "button", "aria-pressed": String(passagePaint === mark), title: `${label} 붓 — 시트에서 클릭·드래그` },
+      dataset: { testid },
+      on: {
+        click: () => {
+          passagePaint = mark;
+          applyPassageMark(tileset.id, selectedTile, mark);
+          rerender();
+        },
+      },
+    });
+  return el("fieldset", {
+    class: "oprn-db-fieldset tileset-rule-passage",
+    dataset: { testid: "tileset-rule-passage" },
+    children: [
+      el("legend", { text: "붓" }),
+      el("div", {
+        class: "tileset-rule-buttons",
+        children: [
+          paintButton("o", "통과", "tileset-passage-open"),
+          paintButton("x", "막힘", "tileset-passage-blocked"),
+          paintButton("star", "위표시", "tileset-passage-star"),
+        ],
+      }),
+    ],
+  });
+}
+
+function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTMLElement {
+  const meta = metadataForTile(tileset, selectedTile);
+  const home = tileLayerHome(tileset, selectedTile);
+  const homeLabel = home === "both" ? "양쪽" : home === "upper" ? "상위" : "하위";
+  const mark = passageMarkForTile(tileset, selectedTile);
+  const markLabel = mark === "x" ? "막힘" : mark === "star" ? "위표시" : "통과";
+  const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
+  const passage = tileset.passability[selectedTile] ?? passableFlag();
+  return el("section", {
+    class: "tileset-db-selected-tile tileset-passage-inspector-body",
+    dataset: { testid: "tileset-selected-tile-panel" },
+    children: [
+      el("div", {
+        class: "tileset-db-selected-header",
+        children: [
+          el("strong", { text: `${selectedTile}번` }),
+          el("span", {
+            class: `tileset-selected-layer-badge layer-${home}`,
+            dataset: { testid: "tileset-selected-layer-badge" },
+            text: homeLabel,
+          }),
+          el("span", { text: markLabel }),
+        ],
+      }),
+      el("div", {
+        class: "tileset-passage-zoom-row",
+        children: [renderTileZoom(tileset, selectedTile), renderPassageCompass(tileset.id, passage, rerender)],
+      }),
+      ...renderTileMeaningEditors(tileset, meta, "rules"),
+      ...renderRuleControls(tileset, rerender).filter((node) => String(node.className ?? "").includes("tileset-rule-layer")),
+      el("div", {
+        class: "tileset-legend-sheet-info",
+        dataset: { testid: "tileset-sheet-info" },
+        text: `${tileset.count}칸 · ${tileset.tilesPerRow}열×${rows}행`,
+      }),
+      el("ul", {
+        class: "tileset-layer-legend",
+        dataset: { testid: "tileset-layer-legend" },
+        children: [
+          el("li", { class: "tileset-legend-item layer-lower", text: "하위 초록 테" }),
+          el("li", { class: "tileset-legend-item layer-upper", text: "상위 파란 테" }),
+        ],
+      }),
+    ],
+  });
+}
+
+function renderTileZoom(tileset: TilesetDef, tile: number): HTMLElement {
+  const size = tileset.tileSize;
+  const zoom = 4;
+  const col = tile % tileset.tilesPerRow;
+  const row = Math.floor(tile / tileset.tilesPerRow);
+  const sheetW = tileset.tilesPerRow * size * zoom;
+  return el("div", {
+    class: "tileset-passage-zoom",
+    attrs: {
+      title: `${tile}번`,
+      style: [
+        `width:${size * zoom}px`,
+        `height:${size * zoom}px`,
+        `background-image:url("${tilesetImageUrl(tileset)}")`,
+        `background-size:${sheetW}px auto`,
+        `background-position:-${col * size * zoom}px -${row * size * zoom}px`,
+      ].join(";"),
+    },
+  });
+}
+
+function renderPassageCompass(tilesetId: string, passage: PassFlag, rerender: () => void): HTMLElement {
+  const edge = (key: keyof PassFlag, glyph: string): HTMLElement =>
+    el("button", {
+      class: `tileset-passage-edge ${passage[key] ? "open" : "shut"}`,
+      text: glyph,
+      attrs: {
+        type: "button",
+        title: passage[key] ? "통과 — 누르면 막힘" : "막힘 — 누르면 통과",
+        "aria-pressed": String(passage[key]),
+      },
+      dataset: { testid: `tileset-knowledge-passage-${key}` },
+      on: {
+        click: () => {
+          recordProjectSnapshot();
+          store.update((project) => {
+            const target = project.tilesets[tilesetId];
+            if (!target) return;
+            target.passability[selectedTile] = togglePassageDirection(
+              target.passability[selectedTile] ?? passableFlag(),
+              key,
+            );
+            const blocked = isBlockedPassage(target.passability[selectedTile]);
+            markUserTileRuntimeMetadata(target, selectedTile, { passage: blocked ? "solid" : "passable" });
+          }, { scope: "project", label: "타일 통행 방향" });
+          rerender();
+        },
+      },
+    });
+  return el("div", {
+    class: "tileset-passage-compass",
+    children: [
+      el("span"),
+      edge("up", "↑"),
+      el("span"),
+      edge("left", "←"),
+      el("span", { class: "tileset-passage-compass-hub", text: "방향" }),
+      edge("right", "→"),
+      el("span"),
+      edge("down", "↓"),
+      el("span"),
+    ],
   });
 }
 
@@ -329,20 +512,42 @@ function renderTileMeaningEditors(
 }
 
 function applyActiveModeClick(tilesetId: string, tile: number): void {
+  if (editMode === "passage") {
+    applyPassageMark(tilesetId, tile, passagePaint);
+    return;
+  }
   store.update((project) => {
     const target = project.tilesets[tilesetId];
     if (!target) return;
-    if (editMode === "passage") {
-      // 통행<->차단 토글. 레이어는 레이어 컨트롤로만 바꾼다(★ 순환 폐지 — 투명 칩 규칙과 충돌 방지).
-      const blocked = isBlockedPassage(target.passability[tile]);
-      target.passability[tile] = blocked ? passableFlag() : blockedFlag();
-      markUserTileRuntimeMetadata(target, tile, { passage: blocked ? "passable" : "solid" });
-    }
     if (editMode === "terrain") {
       target.terrain[tile] = ((target.terrain[tile] ?? 0) + 1) % 10;
       markUserTileRuntimeMetadata(target, tile, { terrainTag: target.terrain[tile] });
     }
-  });
+  }, { scope: "project", label: "타일 지면 종류" });
+}
+
+let passageStrokeOpen = false;
+
+export function beginPassagePaintStroke(): void {
+  if (passageStrokeOpen) return;
+  recordProjectSnapshot();
+  passageStrokeOpen = true;
+}
+
+export function endPassagePaintStroke(): void {
+  passageStrokeOpen = false;
+}
+
+function applyPassageMark(tilesetId: string, tile: number, mark: PassageMark): void {
+  const current = store.getCurrent().tilesets[tilesetId];
+  if (!current || passageMarkForTile(current, tile) === mark) return;
+  if (!passageStrokeOpen) recordProjectSnapshot();
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    if (!target) return;
+    setPassageMark(target, tile, mark);
+    markUserTileRuntimeMetadata(target, tile, { passage: PASSAGE_META[mark] });
+  }, { scope: "project", label: "타일 통행" });
 }
 
 function updateLayerChoice(tilesetId: string, choice: TileLayerChoice): void {
@@ -353,12 +558,7 @@ function updateLayerChoice(tilesetId: string, choice: TileLayerChoice): void {
 }
 
 function updatePassage(tilesetId: string, blocked: boolean): void {
-  store.update((project) => {
-    const target = project.tilesets[tilesetId];
-    if (!target) return;
-    target.passability[selectedTile] = blocked ? blockedFlag() : passableFlag();
-    markUserTileRuntimeMetadata(target, selectedTile, { passage: blocked ? "solid" : "passable" });
-  });
+  applyPassageMark(tilesetId, selectedTile, blocked ? "x" : "o");
 }
 
 function updateTerrain(tilesetId: string, value: number): void {
@@ -410,6 +610,14 @@ export function applyTilesetFolderFacet(tab: string): void {
 
 export function getTilesetMetadataEditMode(): TilesetEditMode {
   return editMode;
+}
+
+export function getTilesetPassagePaint(): PassageMark {
+  return passagePaint;
+}
+
+export function setTilesetPassagePaint(mark: PassageMark): void {
+  passagePaint = mark;
 }
 
 export function getTilesetSectionTab(): TilesetSectionTab {

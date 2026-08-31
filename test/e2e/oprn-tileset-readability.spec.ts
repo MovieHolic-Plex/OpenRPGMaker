@@ -32,7 +32,7 @@ test("tileset section tabs keep Korean controls readable and split features", as
   await expectReadableControl(page.getByTestId("tileset-settings-open"), "tileset detailed passage button");
 
   await expect(page.getByTestId("tileset-edit-mode-passage")).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByTestId("tileset-db-cell-0")).toHaveText(/^(O|X|★)$/);
+  await expect(page.getByTestId("tileset-db-cell-0")).toHaveClass(/mark-(o|x|star)/);
   await page.getByTestId("tileset-edit-mode-terrain").click();
   await expect(page.getByTestId("tileset-edit-mode-terrain")).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("tileset-db-cell-0")).toHaveText(/^\d+$/);

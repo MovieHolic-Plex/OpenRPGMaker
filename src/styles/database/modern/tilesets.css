@@ -23,7 +23,7 @@
 /* ── 셸: 이름이 긴 칩셋 목록이라 기본(240~268px)보다 조금 넓게 ───────────── */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws.db-ws-tilesets {
-  grid-template-columns: minmax(256px, 300px) minmax(0, 1fr);
+  grid-template-columns: minmax(176px, 200px) minmax(0, 1fr);
 }
 
 /* ── 목록: 말줄임 금지 ───────────────────────────────────────────────────
@@ -72,8 +72,26 @@
 
 /* 이 탭의 주인공은 칩셋 그림판이다 — 그 위 띠(속성/탭)는 최소한만 차지한다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-detail-body {
-  gap: 8px;
-  padding: 10px 14px 12px;
+  gap: 6px;
+  padding: 6px 10px 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-hero {
+  min-height: 0;
+  padding: 6px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-hero-eyebrow,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-hero-sub {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-hero-title {
+  font-size: 15px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-hero-tags {
+  margin-top: 2px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-detail-body > .db-ws-card {
@@ -182,6 +200,111 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-sidebar .tileset-db-selected-tile {
   max-height: none;
   overflow: visible;
+}
+
+/* 통행/지형: 시트가 주인공. 도구는 윗줄, 인스펙터는 오른쪽 얇은 열. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) minmax(168px, 196px);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-tools {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-column: 1 / -1;
+  grid-template-columns: none;
+  padding: 6px 8px 4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-tools::before {
+  content: none;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-rule-passage {
+  border: 0;
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-rule-passage legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-preview-wrap {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-edit-sidebar {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-zoom-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-zoom {
+  background-color: #1b2430;
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  image-rendering: pixelated;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-compass {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 36px 40px 36px;
+  grid-template-rows: 32px 32px 32px;
+  place-items: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-edge {
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font: 800 14px/1 "Segoe UI", sans-serif;
+  height: 100%;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-edge.open {
+  background: var(--success);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-edge.shut {
+  background: var(--danger);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-compass-hub {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-preview-header.passage-chrome {
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-card:has(.oprn-tileset-properties) {
+  padding: 6px 10px;
 }
 
 /* 편집 도구(통행/지형)는 128px 열 시절에 한 줄 한 개로 쌓여 있었다. 열이 240px 이
@@ -353,6 +476,10 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area {
     grid-template-columns: minmax(200px, 236px) minmax(0, 1fr);
   }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.passage-paint {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 900px) {
@@ -360,5 +487,10 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(280px, 1fr);
     overflow-y: auto;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.passage-paint {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(240px, 1fr) auto;
   }
 }
