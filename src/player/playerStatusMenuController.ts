@@ -17,7 +17,12 @@ import type { ActorInitialEquipment, SkillId } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import type { LifeLedgerTabId } from "@/player/lifeLedger";
 import { moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
-import { currentStatusMenu, statusMenuDetailActionButtons, wrapStatusMenuIndex } from "@/player/playerStatusMenuControllerDom";
+import {
+  adoptStatusMenuPanel,
+  currentStatusMenu,
+  statusMenuDetailActionButtons,
+  wrapStatusMenuIndex,
+} from "@/player/playerStatusMenuControllerDom";
 import type { PlayerStatusMenuController, PlayerStatusMenuControllerOptions } from "@/player/playerStatusMenuControllerTypes";
 import {
   equipStatusMenuItem,
@@ -71,10 +76,18 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     confirmToTitlePending = false;
   };
 
-  const replaceMenu = (panel: HTMLElement): void => {
-    options.layout.querySelector("[data-testid='main-menu']")?.remove();
+  const replaceMenu = (panel: HTMLElement): HTMLElement => {
     panel.dataset.testid = "main-menu";
-    (options.getPlayStage() ?? options.layout).append(panel);
+    const host = options.getPlayStage() ?? options.layout;
+    const existing =
+      host.querySelector<HTMLElement>("[data-testid='main-menu']")
+      ?? options.layout.querySelector<HTMLElement>("[data-testid='main-menu']");
+    if (!existing || existing.dataset.statusMenuClosing === "1") {
+      existing?.remove();
+      host.append(panel);
+      return panel;
+    }
+    return adoptStatusMenuPanel(existing, panel);
   };
 
   const renderMenu = (message?: string, nextCommand: StatusMenuRailId = selectedCommand): HTMLElement | null => {
@@ -166,9 +179,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onToTitle: confirmToTitle,
       },
     });
-    replaceMenu(panel);
+    const live = replaceMenu(panel);
     syncRenderedDetailCursor();
-    return panel;
+    return live;
   };
 
   const toggleMenu = (): void => {

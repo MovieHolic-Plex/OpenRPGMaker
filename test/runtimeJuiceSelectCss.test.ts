@@ -14,6 +14,25 @@ describe("runtime menu-select juice CSS", () => {
     expect(selectRuleBody).not.toMatch(/transform:/);
   });
 
+  it("moves the ESC overlay only when the menu opens or closes", () => {
+    const overlayIdle = groupedRule(juiceCss, [
+      ".oprn-status-menu.juice-menu-select",
+      ".oprn-status-menu.juice-menu-confirm",
+      ".oprn-status-menu.juice-menu-back",
+      ".oprn-status-menu.juice-menu-invalid",
+    ]);
+    expect(overlayIdle).toMatch(/animation:\s*none/);
+    expect(overlayIdle).not.toMatch(/transform:/);
+
+    expect(groupedRule(juiceCss, [".juice-menu-open", ".juice-title-enter"])).toMatch(
+      /juice-menu-open-pop/,
+    );
+    expect(groupedRule(juiceCss, [".juice-menu-back", ".juice-menu-close"])).toMatch(
+      /juice-menu-back-slide/,
+    );
+    expect(selectRule(juiceCss, ".juice-menu-invalid")).toMatch(/juice-menu-invalid-shake/);
+  });
+
   it("keeps the ESC-menu cursor highlight without bloom", () => {
     const selectedDock = selectRule(
       dockCss,
