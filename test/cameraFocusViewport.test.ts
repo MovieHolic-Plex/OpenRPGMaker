@@ -5,6 +5,8 @@
 import { describe, expect, it } from "vitest";
 import {
   cameraLookAtForTarget,
+  filterAssistantOverlayRects,
+  mergeNearbyRects,
   unoccludedCanvasRect,
   visibleTileRectFromViewport,
   type CanvasRect,
@@ -85,6 +87,43 @@ describe("cameraLookAtForTarget", () => {
     const zeroZoom = cameraLookAtForTarget({ targetWorldX: 10, targetWorldY: 20, canvas: CANVAS, unoccluded, zoom: 0 });
     const oneZoom = cameraLookAtForTarget({ targetWorldX: 10, targetWorldY: 20, canvas: CANVAS, unoccluded, zoom: 1 });
     expect(zeroZoom).toEqual(oneZoom);
+  });
+});
+
+describe("filterAssistantOverlayRects", () => {
+  it("캔버스 전체를 덮는 inset:0 패널은 버린다 — 투명 호스트라 가림이 아니다", () => {
+    expect(filterAssistantOverlayRects(CANVAS, [CANVAS])).toEqual([]);
+  });
+
+  it("입력줄·기록 카드는 남긴다", () => {
+    const bar: CanvasRect = { x: 480, y: 580, width: 640, height: 110 };
+    const log: CanvasRect = { x: 480, y: 160, width: 640, height: 400 };
+    expect(filterAssistantOverlayRects(CANVAS, [CANVAS, bar, log])).toEqual([bar, log]);
+  });
+});
+
+describe("mergeNearbyRects + 캡슐 가림", () => {
+  it("오른쪽 아래 입력줄과 그 위 기록 카드를 한 덩어리로 합쳐 오른쪽을 깎는다", () => {
+    const bar: CanvasRect = { x: 481, y: 576, width: 640, height: 110 };
+    const log: CanvasRect = { x: 481, y: 160, width: 640, height: 400 };
+    const merged = mergeNearbyRects([bar, log]);
+    expect(merged).toHaveLength(1);
+    expect(merged[0]).toEqual({ x: 481, y: 160, width: 640, height: 526 });
+
+    const unoccluded = unoccludedCanvasRect(CANVAS, merged);
+    expect(unoccluded.x).toBe(0);
+    expect(unoccluded.width).toBe(481);
+    expect(unoccluded.height).toBe(700);
+  });
+
+  it("오른쪽 아래 캡슐+기록이 캔버스 높이의 60%를 못 넘어도 오른쪽을 깎는다", () => {
+    const canvas: CanvasRect = { x: 0, y: 0, width: 1613, height: 957 };
+    const bar: CanvasRect = { x: 961, y: 835, width: 640, height: 110 };
+    const log: CanvasRect = { x: 961, y: 535, width: 640, height: 280 };
+    const unoccluded = unoccludedCanvasRect(canvas, mergeNearbyRects([bar, log]));
+    expect(unoccluded.x).toBe(0);
+    expect(unoccluded.width).toBe(961);
+    expect(unoccluded.height).toBe(957);
   });
 });
 

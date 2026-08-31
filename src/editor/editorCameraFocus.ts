@@ -111,8 +111,6 @@ export function planCameraFocus(
 
   if (!target.onlyIfOffscreen) return withZoom;
   if (visible === null || visible.width <= 0 || visible.height <= 0) return null;
-  // 줌을 낮춰야 다 보이는 상황이면 "이미 보고 있다" 판정보다 제안이 앞선다.
-  if (suggestedZoom !== null) return withZoom;
 
   const fitsInView = keep.width + marginTiles * 2 <= visible.width && keep.height + marginTiles * 2 <= visible.height;
   if (fitsInView) {
@@ -121,10 +119,11 @@ export function planCameraFocus(
       keep.y - marginTiles >= visible.y &&
       keep.x + keep.width + marginTiles <= visible.x + visible.width &&
       keep.y + keep.height + marginTiles <= visible.y + visible.height;
-    return inside ? null : center;
+    return inside ? null : withZoom;
   }
 
   // 화면보다 큰 대상: 중심이 화면 중앙 절반 안에 있으면 이미 보고 있다.
+  // 줌 맞춤은 화면 밖일 때만 — 보고 있는 자리를 줌 아웃으로 빼앗지 않는다.
   const coreX = visible.x + visible.width / 4;
   const coreY = visible.y + visible.height / 4;
   const centerInCore =
@@ -132,7 +131,7 @@ export function planCameraFocus(
     centerY >= coreY &&
     centerX <= coreX + visible.width / 2 &&
     centerY <= coreY + visible.height / 2;
-  return centerInCore ? null : center;
+  return centerInCore ? null : withZoom;
 }
 
 /**

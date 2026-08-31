@@ -20,6 +20,8 @@ import {
 } from "@/editor/editorCameraFocus";
 import {
   cameraLookAtForTarget,
+  filterAssistantOverlayRects,
+  mergeNearbyRects,
   unoccludedCanvasRect,
   visibleTileRectFromViewport,
   type CanvasRect,
@@ -1308,7 +1310,16 @@ export class EditScene extends PhaserRuntime.Scene {
     const overlayLayer = this.overlayLayer;
     const gridGraphics = this.gridGraphics;
     if (!tileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
-    renderEditScene({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid, tileIndex: this.tileIndex, resetCamera });
+    renderEditScene({
+      scene: this,
+      tileLayer,
+      overlayLayer,
+      gridGraphics,
+      mapId: mid,
+      tileIndex: this.tileIndex,
+      resetCamera,
+      preserveCameraLookAt: resetCamera && !mapChanged,
+    });
     this.renderEventLayerClickFeedback();
     this.renderAgentGhostPreview();
     // 청사진도 고스트와 같이 다시 그린다 — 청사진 스토어 구독만으로는 부족하다. 맵 전환은
@@ -1744,20 +1755,21 @@ export class EditScene extends PhaserRuntime.Scene {
 
   /**
    * 캔버스 위에 떠 있는 조수 표면 사각형 — DOM 을 재는 유일한 지점이다.
-   * 대상은 캔버스 열에 얹힌 유리 도크 호스트(.ai-chat-float-host, panels/editor.ts)의 카드와 컴포저 바다.
-   * 사이드 도크는 캔버스 옆 열이라 교차하지 않으므로 아래 교차 검사에서 저절로 걸러진다.
+   * 투명 inset:0 패널(ai-panel)은 가림이 아니므로 세지 않는다. 입력줄과 펼친 기록 카드만
+   * 모은 뒤 한 덩어리로 합쳐 가림 계산에 넘긴다.
    */
   private assistantOverlayRects(canvas: CanvasRect): readonly CanvasRect[] {
     if (typeof document === "undefined" || typeof document.querySelector !== "function") return [];
     const host = document.querySelector<HTMLElement>(".ai-chat-float-host");
     if (!host || typeof host.querySelectorAll !== "function") return [];
     const rects: CanvasRect[] = [];
-    for (const node of host.querySelectorAll<HTMLElement>('[data-testid="ai-panel"], [data-testid="ai-command-bar"]')) {
+    for (const node of host.querySelectorAll<HTMLElement>('[data-testid="ai-command-bar"], [data-testid="ai-chat-body"]')) {
       if (typeof node.getBoundingClientRect !== "function") continue;
       const style = typeof window !== "undefined" && typeof window.getComputedStyle === "function"
         ? window.getComputedStyle(node)
         : null;
-      if (style && (style.display === "none" || style.visibility === "hidden")) continue;
+      if (style && (style.display === "none" || style.visibility === "hidden" || style.opacity === "0")) continue;
+      if (style && parseFloat(style.maxHeight) === 0) continue;
       const rect = node.getBoundingClientRect();
       if (!(rect.width > 0) || !(rect.height > 0)) continue;
       // 실제로 캔버스를 덮는 것만 센다 — 접힌 카드가 캔버스 밖에 있으면 가림이 아니다.
@@ -1765,7 +1777,7 @@ export class EditScene extends PhaserRuntime.Scene {
       if (rect.bottom <= canvas.y || rect.top >= canvas.y + canvas.height) continue;
       rects.push({ x: rect.left, y: rect.top, width: rect.width, height: rect.height });
     }
-    return rects;
+    return mergeNearbyRects(filterAssistantOverlayRects(canvas, rects));
   }
 
   private renderBuildPaletteOverlay(): void {

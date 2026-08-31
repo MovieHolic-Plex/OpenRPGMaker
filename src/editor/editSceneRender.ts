@@ -3,6 +3,7 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
+import { planEditorCameraCenter, viewportCenterWorld } from "@/editor/cameraStability";
 import { tilePassability } from "@/project/collision";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
@@ -33,6 +34,8 @@ export interface EditSceneRenderContext {
   readonly mapId: MapId;
   readonly tileIndex?: EditSceneTileIndex;
   readonly resetCamera?: boolean;
+  /** 같은 맵에서 줌만 바뀐 경우 true. 맵 전환이면 넘기지 않아 한가운데로 둔다. */
+  readonly preserveCameraLookAt?: boolean;
 }
 
 export type EditSceneTileIndex = Map<string, Phaser.GameObjects.GameObject[]>;
@@ -52,7 +55,7 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   context.overlayLayer.removeAll(true);
   context.gridGraphics.clear();
 
-  if (context.resetCamera) applyCameraView(context.scene, map);
+  if (context.resetCamera) applyCameraView(context.scene, map, context.preserveCameraLookAt === true);
   const tileObjectsUpdated = renderTiles(context, map, mapOnlyCapture);
   if (mapOnlyCapture) return { tileObjectsUpdated };
   if (state.tool === "collision") renderCollisionOverlay(context, map);
@@ -294,20 +297,40 @@ function renderSelection(context: EditSceneRenderContext): void {
   context.overlayLayer.add(inner);
 }
 
-function applyCameraView(scene: Phaser.Scene, map: GameMap): void {
+function applyCameraView(scene: Phaser.Scene, map: GameMap, preserveLookAt: boolean): void {
   const mapW = map.width * TILE_SIZE;
   const mapH = map.height * TILE_SIZE;
   const cam = scene.cameras.main;
+  const previousCenter = preserveLookAt ? readCameraLookAt(cam) : null;
   cam.setZoom(editorState.get().zoom);
   const paddingX = Math.max(TILE_SIZE * 8, cam.width / cam.zoom / 2);
   const paddingY = Math.max(TILE_SIZE * 8, cam.height / cam.zoom / 2);
   cam.setBounds(-paddingX, -paddingY, mapW + paddingX * 2, mapH + paddingY * 2);
   const focus = devCameraFocusTile(map);
-  if (focus) {
-    cam.centerOn((focus.x + 0.5) * TILE_SIZE, (focus.y + 0.5) * TILE_SIZE);
-    return;
-  }
-  cam.centerOn(mapW / 2, mapH / 2);
+  const center = planEditorCameraCenter({
+    mapWidthPx: mapW,
+    mapHeightPx: mapH,
+    previousCenter,
+    preserveLookAt,
+    devFocusWorld: focus
+      ? { x: (focus.x + 0.5) * TILE_SIZE, y: (focus.y + 0.5) * TILE_SIZE }
+      : null,
+  });
+  cam.centerOn(center.x, center.y);
+}
+
+function readCameraLookAt(cam: Phaser.Cameras.Scene2D.Camera): { x: number; y: number } | null {
+  const mid = cam.midPoint;
+  if (mid && Number.isFinite(mid.x) && Number.isFinite(mid.y)) return { x: mid.x, y: mid.y };
+  if (!Number.isFinite(cam.scrollX) || !Number.isFinite(cam.scrollY)) return null;
+  if (!Number.isFinite(cam.width) || !Number.isFinite(cam.height) || cam.width <= 0 || cam.height <= 0) return null;
+  return viewportCenterWorld({
+    scrollX: cam.scrollX,
+    scrollY: cam.scrollY,
+    width: cam.width,
+    height: cam.height,
+    zoom: cam.zoom,
+  });
 }
 
 function isMapOnlyCaptureMode(): boolean {

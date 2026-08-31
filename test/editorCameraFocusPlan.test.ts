@@ -160,8 +160,7 @@ describe("planCameraFocus — 줌 맞추기(fit)", () => {
     expect(plan).toEqual({ centerTileX: 20, centerTileY: 20 });
   });
 
-  it("줌을 제안할 때는 '이미 보고 있다' 판정보다 제안이 앞선다", () => {
-    // 중심이 화면 중앙부에 있어 예전 규칙이면 null 이지만, 줌을 낮추면 다 담을 수 있으므로 계획을 낸다.
+  it("이미 보고 있으면 줌을 낮추지 않는다 — 조수 자동 이동이 화면을 빼앗지 않는다", () => {
     const plan = planCameraFocus(
       target({ bounds: { x: 10, y: 10, width: 20, height: 20 }, onlyIfOffscreen: true }),
       { width: 60, height: 60 },
@@ -169,7 +168,18 @@ describe("planCameraFocus — 줌 맞추기(fit)", () => {
       1,
       { currentZoom: 4, zoomLevels: ZOOM_LEVELS }
     );
-    expect(plan).toEqual({ centerTileX: 20, centerTileY: 20, zoom: 3 });
+    expect(plan).toBeNull();
+  });
+
+  it("화면 밖 큰 대상은 줌을 낮춰 데려간다", () => {
+    const plan = planCameraFocus(
+      target({ bounds: { x: 40, y: 40, width: 20, height: 20 }, onlyIfOffscreen: true }),
+      { width: 60, height: 60 },
+      { x: 0, y: 0, width: 20, height: 12 },
+      1,
+      { currentZoom: 4, zoomLevels: ZOOM_LEVELS }
+    );
+    expect(plan).toEqual({ centerTileX: 50, centerTileY: 50, zoom: 2 });
   });
 
   it("현재 줌이 이미 가장 낮으면 제안할 줌이 없다", () => {
