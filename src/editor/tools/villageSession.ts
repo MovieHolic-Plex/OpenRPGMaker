@@ -996,8 +996,6 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
 
   // 왜 dense·impassable 이 다른 경로인가: 숲은 한 수종을 밀집하는 것이 아니라 수종·덤불·
   // 하층식생이 섞인 지형이다. 한 재료 dense 는 렌더에서 밑동 없는 세로 사슬로 읽혔다.
-  // 왜 dense·impassable 이 다른 경로인가: 숲은 한 수종을 밀집하는 것이 아니라 수종·뎌불·
-  // 하층식생이 섞인 지형이다. 한 재료 dense 는 렌더에서 밑동 없는 세로 사슬로 읽혔다.
   // 이 툴은 llmExposed:false 라 기본값도 dense 다 — 생성 규칙 기본값은 아래 자연 산포 경로가 쓴다.
   if (forestCompositionApplies(density) && typeof args.count !== "number") {
     let composed = 0;
