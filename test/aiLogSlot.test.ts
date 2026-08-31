@@ -1,10 +1,12 @@
-// 로그 마운트 단일 출처 회귀 스펙 — 3단계(도크·로그 마운트 단일화).
+// 로그 마운트 단일 출처 회귀 스펙.
 //
 // 고정하는 것: 같은 `log` 엘리먼트의 배치를 결정하는 코드가 세 함수(도크 정책·기록 열기·
 // 스튜디오)에 흩어져 있어, 상태 조합마다 어느 마운트에 붙는지 코드로 알 수 없었다. 이제
 // `mountLog()` 하나가 정하고 결과를 `panel.dataset.logSlot` 으로 노출한다.
 //
-// 표는 2026-08-23 브라우저 실측(verify-shots/ai-dock-log-mount/matrix-before.json)과 같다.
+// 2026-08-31: 도크가 float 하나가 되면서 슬롯 표가 (도크 3 × 기록/스튜디오 2) 에서
+// **둘**로 줄었다 — 기록/스튜디오가 열려 있으면 `history`, 아니면 `glass`.
+// 사이드 도크 전용이던 `volatile` 슬롯과 `.ai-rising-overlay` 는 함께 삭제됐다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
@@ -36,7 +38,6 @@ beforeEach(() => {
     layer: "lower",
     tool: "paint",
     selection: null,
-    chatDock: "float",
   });
 });
 
@@ -48,20 +49,9 @@ afterEach(() => {
 
 function renderPanel(): FakeElement {
   const panel = renderWithFakeDom(() => renderAiChatPanel());
-  // 부팅 접힘 상태에서는 도크 정책이 돌지 않는다 — 펼쳐서 잰다.
+  // 부팅 접힘 상태에서는 뷰 정책이 돌지 않는다 — 펼쳐서 잰다.
   findByTestId(panel, "ai-collapsed-restore")?.click();
   return panel;
-}
-
-/** 도크를 원하는 값까지 순환시킨다(glass → side → float → glass). */
-function setDock(panel: FakeElement, want: string): void {
-  const toggle = findByTestId(panel, "chat-dock-toggle");
-  if (!toggle) throw new Error("dock toggle missing");
-  for (let i = 0; i < 4; i += 1) {
-    if (panel.dataset.chatDock === want) return;
-    toggle.click();
-  }
-  throw new Error(`dock ${want} 로 못 갔다`);
 }
 
 function logParentClass(panel: FakeElement): string {
@@ -71,43 +61,31 @@ function logParentClass(panel: FakeElement): string {
 }
 
 describe("로그 슬롯은 한 곳에서 정해진다", () => {
-  it("도크별 기본 뷰: 유리는 카드 본문, 사이드는 휘발 존, float 은 유리 로그를 유지", () => {
+  it("기본 뷰는 유리 로그 마운트 하나다", () => {
     const panel = renderPanel();
-
-    setDock(panel, "glass");
-    expect(panel.dataset.logSlot).toBe("glass");
-    expect(logParentClass(panel)).toContain("ai-glass-log");
-
-    setDock(panel, "side");
-    expect(panel.dataset.logSlot).toBe("volatile");
-    expect(logParentClass(panel)).toContain("ai-rising-volatile-zone");
-
-    setDock(panel, "float");
+    expect(panel.dataset.chatDock).toBe("float");
     expect(panel.dataset.logSlot).toBe("glass");
     expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
     expect(logParentClass(panel)).toContain("ai-glass-log");
   });
 
-  it("기록을 열면 도크와 무관하게 기록 마운트로 간다", () => {
+  it("기록을 열면 기록 마운트로 가고, 닫으면 기본 슬롯으로 돌아온다", () => {
     const panel = renderPanel();
     const history = findByTestId(panel, "ai-dock-toggle");
     if (!history) throw new Error("history toggle missing");
 
-    for (const dock of ["glass", "side", "float"]) {
-      setDock(panel, dock);
-      history.click();
-      expect(panel.dataset.logSlot, dock).toBe("history");
-      expect(logParentClass(panel), dock).toContain("ai-history-log-mount");
-      history.click();
-      // 닫으면 그 도크의 기본 슬롯으로 되돌아온다 — 예전에는 닫는 쪽이 항상 휘발 존에
-      // 넣고 뒤이어 도크 정책이 다시 옮기는 이중 이동이었다.
-      expect(panel.dataset.logSlot, dock).toBe(dock === "glass" ? "glass" : dock === "side" ? "volatile" : "glass");
-    }
+    history.click();
+    expect(panel.dataset.logSlot).toBe("history");
+    expect(logParentClass(panel)).toContain("ai-history-log-mount");
+
+    history.click();
+    // 예전에는 닫는 쪽이 항상 휘발 존에 넣고 뒤이어 도크 정책이 다시 옮기는 이중 이동이었다.
+    expect(panel.dataset.logSlot).toBe("glass");
+    expect(logParentClass(panel)).toContain("ai-glass-log");
   });
 
-  it("스튜디오도 기록 마운트를 쓰고, 끄면 도크 기본으로 돌아온다", () => {
+  it("스튜디오도 기록 마운트를 쓰고, 끄면 기본으로 돌아온다", () => {
     const panel = renderPanel();
-    setDock(panel, "side");
     const studio = findByTestId(panel, "ai-studio-toggle");
     if (!studio) throw new Error("studio toggle missing");
 
@@ -116,50 +94,36 @@ describe("로그 슬롯은 한 곳에서 정해진다", () => {
     expect(logParentClass(panel)).toContain("ai-history-log-mount");
 
     studio.click();
-    expect(panel.dataset.logSlot).toBe("volatile");
-    expect(logParentClass(panel)).toContain("ai-rising-volatile-zone");
+    expect(panel.dataset.logSlot).toBe("glass");
+    expect(logParentClass(panel)).toContain("ai-glass-log");
   });
 
-  it("오버레이는 사이드 도크만 가진다", () => {
+  it("사이드 도크 전용 오버레이·휘발 존은 어느 상태에서도 없다", () => {
     const panel = renderPanel();
-
-    setDock(panel, "side");
-    expect(findByTestId(panel, "ai-rising-overlay")).toBeTruthy();
-
-    setDock(panel, "float");
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
+    expect(findByTestId(panel, "ai-rising-volatile-zone")).toBeNull();
 
-    setDock(panel, "glass");
+    findByTestId(panel, "ai-dock-toggle")?.click();
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
+    expect(findByTestId(panel, "ai-rising-volatile-zone")).toBeNull();
   });
 
   // 완료 스트립(`ai-completion-host`)은 2026-08-30 에 걷었다 — 되돌리기는 컴포저의
-  // `ai-composer-undo` 로 옮겼고, 스티키 존은 0건 알림 전용으로 남는다.
-  it("0건 알림 호스트와 컴포저 되돌리기는 남고 승인 UI는 어느 도크에도 없다", () => {
+  // `ai-composer-undo` 로 옮겼고, 스티키 존은 0건 알림 전용으로 남는다. 표면은 하나뿐이라
+  // 도크를 돌며 볼 것도 없다(도크 축 삭제 2026-08-31).
+  it("0건 알림 호스트와 컴포저 되돌리기는 남고 승인 UI는 없다", () => {
     const panel = renderPanel();
-
-    for (const dock of ["glass", "side", "float"]) {
-      setDock(panel, dock);
-      expect(findByTestId(panel, "ai-rising-sticky-zone"), dock).toBeTruthy();
-      expect(findByTestId(panel, "ai-completion-host"), dock).toBeNull();
-      expect(findByTestId(panel, "ai-composer-undo"), dock).toBeTruthy();
-      expect(findByTestId(panel, "ai-proposal-reopen"), dock).toBeNull();
-      expect(findByTestId(panel, "ai-proposal-pin-host"), dock).toBeNull();
-      expect(findByTestId(panel, "ai-proposal-host"), dock).toBeNull();
-      expect(findByTestId(panel, "ai-proposal-modal"), dock).toBeNull();
-      expect(findByTestId(panel, "ai-proposal-card"), dock).toBeNull();
+    expect(findByTestId(panel, "ai-rising-sticky-zone")).toBeTruthy();
+    expect(findByTestId(panel, "ai-composer-undo")).toBeTruthy();
+    for (const dead of [
+      "ai-completion-host",
+      "ai-proposal-reopen",
+      "ai-proposal-pin-host",
+      "ai-proposal-host",
+      "ai-proposal-modal",
+      "ai-proposal-card",
+    ]) {
+      expect(findByTestId(panel, dead), dead).toBeNull();
     }
-  });
-
-  it("혼발 존은 페이드 클래스를 다시 달지 않는다", () => {
-    // 페이드(is-faded, opacity .42)는 삭제됐다 — 오버레이가 사이드 전용이 된 뒤로는
-    // 사이드 CSS 가 항상 opacity:1 로 덮어 쓰는 죽은 효과었고, 상주하는 패널을 흐리는 것은
-    // 자체로 오답이다. 타이머 둔 것도 둘(컨트롤러 + 로컬)이었다.
-    const panel = renderPanel();
-    setDock(panel, "side");
-    const zone = findByTestId(panel, "ai-rising-volatile-zone");
-
-    expect(zone?.hidden).toBe(false);
-    expect(zone?.className).not.toContain("is-faded");
   });
 });

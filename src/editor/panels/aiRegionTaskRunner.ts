@@ -91,7 +91,6 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
     deps.surface.sendButton.disabled = true;
     deps.surface.collapseAfterAiWork = deps.surface.collapsed;
     deps.surface.expandForAiWork();
-    deps.surface.revealVolatileZone();
     deps.surface.closeToolActivity();
     deps.surface.appendBubble("user", text);
     recordRegionAudit({
@@ -260,7 +259,6 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
       });
       if (!cancelled) deps.surface.notifyIfObscuredByTestPlay();
       deps.surface.drainPendingSends();
-      deps.surface.scheduleGlassFold({ failed: regionFailed });
       if (deps.surface.collapseAfterAiWork) {
         if (regionFailed) deps.surface.collapseAfterAiWork = false;
         else deps.surface.scheduleCollapseAfterAiWork();

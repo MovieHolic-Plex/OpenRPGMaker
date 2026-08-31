@@ -2,7 +2,8 @@
  * 조수(AI 어시스턴트) 패널 축소/크기조절 QA.
  *
  * 목적: "패널을 접을(축소) 수 있는 눌 수 있는 컨트롤이 화면에 있는가"와
- * "드래그로 실제로 크기가 변하는가"를 도크(glass/side/float)마다 실측한다.
+ * "드래그로 실제로 크기가 변하는가"를 실측한다. 구 판본은 도크(glass/side/float)마다
+ * 한 번씩 돌았지만, 도크 축이 2026-08-31 에 사라져 표면은 입력줄 캡슐 하나다.
  *
  * Usage:
  *   RPG_ZZU_URL=http://127.0.0.1:9823 node scripts/qa/assistant-resize-collapse-qa.mjs --label before
@@ -82,9 +83,8 @@ const probe = async () => {
     };
     const handleEl = document.querySelector('[data-testid="ai-resize-handle"]');
     const handleRect = handleEl?.getBoundingClientRect() ?? null;
-    const resizeTargetEl = panelEl.dataset.chatDock === "float"
-      ? document.querySelector('[data-testid="ai-command-bar"]')
-      : panelEl;
+    // 크기가 바뀌는 표면은 캡슐 하나다(구 glass/side 는 `ai-panel` 이 대상이었다).
+    const resizeTargetEl = document.querySelector('[data-testid="ai-command-bar"]') ?? panelEl;
     const targetRect = resizeTargetEl?.getBoundingClientRect() ?? rect;
     return {
       dock: panelEl.dataset.chatDock,
@@ -126,29 +126,7 @@ const probe = async () => {
   });
 };
 
-const setDock = async (dock) => {
-  await page.evaluate((d) => {
-    const w = window;
-    if (typeof w.__oprnSetChatDock === "function") {
-      w.__oprnSetChatDock(d);
-      return;
-    }
-    // 폴백: 숨은 훅 버튼으로 도크 순환
-    const btn = document.querySelector('[data-testid="chat-dock-toggle"]');
-    for (let i = 0; i < 3; i += 1) {
-      const panelEl = document.querySelector('[data-testid="ai-panel"]');
-      if (panelEl?.dataset.chatDock === d) return;
-      btn?.click();
-    }
-  }, dock);
-  await page.waitForFunction(
-    (d) => document.querySelector('[data-testid="ai-panel"]')?.dataset.chatDock === d,
-    dock,
-    { timeout: 5_000 },
-  );
-};
-
-/** 손잡이를 드래그해서 dock별 실제 surface 크기가 바뀌는지 확인한다. */
+/** 손잡이를 드래그해서 캡슐 크기가 실제로 바뀌는지 확인한다. */
 const dragResize = async (dx, dy) => {
   const before = await probe();
   const h = before.controls.resizeHandle;
@@ -189,28 +167,24 @@ const tryVisibleCollapse = async () => {
   return { possible: after.collapsed, reason: after.collapsed ? "collapsed via visible control" : "click did not collapse" };
 };
 
-const report = { label, base: BASE, at: new Date().toISOString(), docks: {}, consoleErrors: [] };
+const report = { label, base: BASE, at: new Date().toISOString(), capsule: null, consoleErrors: [] };
 
-for (const dock of ["glass", "side", "float"]) {
-  await setDock(dock);
-  const shotFile = await shot(`${dock}-idle`);
+{
+  const shotFile = await shot("capsule-idle");
   const before = await probe();
-  const growDelta = dock === "glass" ? { dx: 160, dy: 120 } : { dx: -160, dy: 120 };
-  const resize = await dragResize(growDelta.dx, growDelta.dy);
-  const shrink = resize.worked
-    ? await dragResize(-growDelta.dx, -growDelta.dy)
-    : { attempted: false, reason: "grow failed" };
+  // 캡슐은 왼쪽 edge 손잡이로 폭만 늘린다 — 높이는 textarea 행수가 정한다.
+  const resize = await dragResize(-160, 120);
+  const shrink = resize.worked ? await dragResize(160, -120) : { attempted: false, reason: "grow failed" };
   const collapse = await tryVisibleCollapse();
-  const collapsedShot = collapse.possible ? await shot(`${dock}-collapsed`) : null;
+  const collapsedShot = collapse.possible ? await shot("capsule-collapsed") : null;
   if (collapse.possible) {
-    // 다시 펼쳐 다음 도크 측정에 영향 없게
     const restore = page.getByTestId("ai-collapsed-restore");
     if (await restore.isVisible().catch(() => false)) await restore.click();
     await page.getByTestId("ai-panel").evaluate((node) => {
       if (node.classList.contains("is-collapsed")) throw new Error("restore state did not apply");
     });
   }
-  report.docks[dock] = { probe: before, resizeGrow: resize, resizeShrink: shrink, collapse, shots: [shotFile, collapsedShot].filter(Boolean) };
+  report.capsule = { probe: before, resizeGrow: resize, resizeShrink: shrink, collapse, shots: [shotFile, collapsedShot].filter(Boolean) };
 }
 
 report.consoleErrors = consoleErrors.slice(0, 20);

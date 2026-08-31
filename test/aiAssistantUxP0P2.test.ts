@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { DEFAULT_CHAT_DOCK } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
@@ -32,7 +31,7 @@ function installFakeLocalStorage(): void {
 
 beforeEach(() => {
   store.replace(createBlankProject());
-  editorState.set({ chatDock: "float" });
+  editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
 });
@@ -52,10 +51,8 @@ afterEach(() => {
 });
 
 describe("AI assistant UX P0–P2", () => {
-  it("defaults chatDock preference to glass", () => {
-    expect(DEFAULT_CHAT_DOCK).toBe("glass");
-  });
-
+  // 삭제: "defaults chatDock preference to glass" — 도크 축(glass/side/float)이 2026-08-31 에
+  // 사라졌다. 고를 도크가 하나(입력줄 캡슐)뿐이라 기본값이라는 개념 자체가 없다.
   it("keeps routine AI settings out of the assistant panel chrome", () => {
     // Break: a header or command-bar settings button is duplicated inside the assistant panel.
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
@@ -67,13 +64,13 @@ describe("AI assistant UX P0–P2", () => {
     expect(headerSettings).toBeNull();
     expect(newChat?.getAttribute("aria-label")).toContain("새 대화");
     expect(more?.textContent).toContain("☰");
-    // 내보내기·도크는 햄버거 안 작업 접기
+    // 내보내기는 햄버거 안 작업 접기. (도크 전환 항목은 도크 축과 함께 삭제됐다.)
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     const moreMenu = findByTestId(panel, "ai-more-menu");
     const fold = findByTestId(moreMenu!, "ai-more-actions");
     expect(fold).not.toBeNull();
     expect(findByTestId(fold!, "ai-more-export")).not.toBeNull();
-    expect(findByTestId(fold!, "ai-more-dock")).not.toBeNull();
+    expect(findByTestId(fold!, "ai-more-dock")).toBeNull();
   });
 
   it("opens a dedicated settings modal with config fields", () => {

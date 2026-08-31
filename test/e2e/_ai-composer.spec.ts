@@ -53,23 +53,8 @@ async function barHeight(page: Page): Promise<number> {
   return Math.round(box!.height);
 }
 
-/** 도크 순환(glass → side → float → glass). 토글은 숨은 훅이라 evaluate 로 누른다. */
-async function cycleDock(page: Page): Promise<string> {
-  const before = await page.getByTestId("ai-panel").getAttribute("data-chat-dock");
-  const expected = before === "glass" ? "side" : before === "side" ? "float" : "glass";
-  await page.getByTestId("chat-dock-toggle").evaluate((node) => (node as HTMLButtonElement).click());
-  await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-chat-dock", expected);
-  return expected;
-}
-
-/** 부팅 기본은 glass 다. 컴포저 ☰ 는 float 전용(유리·사이드는 헤더가 소유)이라 명시 전환. */
-async function setDock(page: Page, target: string): Promise<void> {
-  for (let i = 0; i < 4; i += 1) {
-    if ((await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) === target) return;
-    await cycleDock(page);
-  }
-  throw new Error(`dock ${target} 로 전환하지 못했다`);
-}
+// (구 `cycleDock` / `setDock` 삭제 — 도크 축이 2026-08-31 에 사라졌다. 순환할 대상도,
+//  "float 전용" 이라 명시 전환해야 할 이유도 없다. 컴포저는 언제나 입력줄 캡슐 하나다.)
 
 /** 컴포저 박스 모델 실측 — 높이 상수의 근거를 로그에 남긴다. */
 async function composerBoxes(page: Page): Promise<string> {
@@ -95,7 +80,6 @@ test("H) 단일 행 상태에서는 컴포저 바 높이가 상수다", async ({
   test.setTimeout(180_000);
   await boot(page);
   // 컴포저 ☰ 가 살아 있는 도크에서 잰다(float — 헤더가 숨겨져 컴포저가 유일한 진입점).
-  await setDock(page, "float");
   const input = page.getByTestId("ai-input");
 
   const idle = await barHeight(page);
@@ -168,7 +152,6 @@ test("H) 단일 행 상태에서는 컴포저 바 높이가 상수다", async ({
 test("P) 열린 action popover와 resize edge 밖은 맵 클릭을 삼키지 않는다", async ({ page }) => {
   test.setTimeout(120_000);
   await boot(page);
-  await setDock(page, "float");
   await page.getByTestId("ai-command-menu-toggle").click();
   await expect(page.getByTestId("ai-command-menu")).toBeVisible();
 
@@ -216,27 +199,22 @@ test("C) leading slash is ordinary text and arrow keys move the textarea caret",
   await shot(page, "c1-slash-caret");
 });
 
-test("도크 3종 컴포저 증거 스샷", async ({ page }) => {
-  // 부팅(freshProject 100×100 마을) + 도크 순환만으로 30초 기본값에 붙는다 — 진단 스펙 관례대로 넉넉히.
+test("컴포저 캡슐 증거 스샷", async ({ page }) => {
+  // 구 이름은 「도크 3종 컴포저 증거 스샷」이었고 도크를 순환하며 3장을 찍었다.
   test.setTimeout(120_000);
   await boot(page);
-  for (let i = 0; i < 3; i += 1) {
-    const mode = await cycleDock(page);
-    const bar = page.getByTestId("ai-command-bar");
-    const height = await barHeight(page);
-    log(`DOCK ${mode} barHeight=${height} | ${await composerBoxes(page)}`);
-    await shot(page, `dock-${mode}-full`);
-    await shot(bar, `dock-${mode}-bar`);
-    // 어떤 도크에서도 컴포저는 입력과 전송 버튼을 잃지 않는다.
-    await expect(page.getByTestId("ai-input")).toBeVisible();
-    await expect(page.getByTestId("ai-send")).toBeVisible();
-  }
+  await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-chat-dock", "float");
+  const bar = page.getByTestId("ai-command-bar");
+  log(`CAPSULE barHeight=${await barHeight(page)} | ${await composerBoxes(page)}`);
+  await shot(page, "capsule-full");
+  await shot(bar, "capsule-bar");
+  await expect(page.getByTestId("ai-input")).toBeVisible();
+  await expect(page.getByTestId("ai-send")).toBeVisible();
 });
 
 test("header remains removed and composer action row owns collapse/menu", async ({ page }) => {
   test.setTimeout(120_000);
   await boot(page);
-  await setDock(page, "float");
 
   await expect(page.locator(".ai-chat-header")).toHaveCount(0);
   const actions = page.getByTestId("ai-composer-actions");

@@ -36,7 +36,6 @@ export interface ComposerElements {
   readonly composer: HTMLElement;
   readonly actions: HTMLElement;
   readonly commandMenu: HTMLElement;
-  readonly commandMenuToggle: HTMLButtonElement;
   readonly newChatButton: HTMLButtonElement;
   /** 성향 팝오버 토글. `preferenceContent` 를 주지 않았으면 null. */
   readonly preferenceToggle: HTMLButtonElement | null;
@@ -57,6 +56,8 @@ export interface ComposerOptions {
   readonly undoAppliedButton: HTMLButtonElement;
   readonly contextChips: HTMLElement;
   readonly composerChips: HTMLElement;
+  /** 「다음에 뭘 하지」 블록. 추천 팝오버 안, 감독 프롬프트 칩 바로 아래에 붙는다. */
+  readonly nextSteps: HTMLElement;
   readonly queueIndicator: HTMLElement;
   readonly statusGroup: HTMLElement;
   /** 맥락 게이지 버튼 + 그 팝오버(aiContextMeter). 둘 다 있어야 슬롯이 붙는다. */
@@ -150,11 +151,15 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
 
   // 추천 칩 팝오버 — 입력창 포커스 + 빈 값일 때 자동으로 뜬다(전용 토글 버튼 없음).
   // 흐름 밖이라 열림/닫힘이 바 높이를 건드리지 않는다(구 구조의 점프 원인).
+  //
+  // `nextSteps`(한 줄 안내 + 저작 예제 칩)는 2026-08-31 에 여기로 이사했다. 원래는 유리/사이드
+  // 카드 본문에 있었고 도크 축이 삭제되면서 마운트 지점을 잃었다 — 열림 조건이 이 팝오버와
+  // 같으므로(빈 입력 + 포커스) 같은 자리에 둔다. 순서: 감독 프롬프트 칩 → 안내 → 예제.
   const suggestPopover = el("div", {
     class: "ai-composer-popover ai-composer-suggest",
     attrs: { role: "group", "aria-label": "추천 지시" },
     dataset: { testid: "ai-suggest-popover" },
-    children: [options.composerChips],
+    children: [options.composerChips, options.nextSteps],
   });
   suggestPopover.hidden = true;
 
@@ -290,7 +295,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     composer,
     actions,
     commandMenu,
-    commandMenuToggle,
     newChatButton,
     preferenceToggle,
     hint,

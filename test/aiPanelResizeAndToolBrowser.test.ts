@@ -1,7 +1,6 @@
 // 패널 크기 커스텀 + 툴 브라우저 계약(2026-07-05).
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { clampPanelSize, loadPanelSize, PANEL_SIZE_LIMITS, renderAiChatPanel, savePanelSize } from "@/editor/panels/aiChatPanel";
-import { computeSideChatWidth, resolveSideChatWidth, SIDE_CHAT_WIDTH } from "@/editor/panels/aiPanelLayout";
 import { filterToolCategories, openToolBrowserModal, TOOL_CATEGORIES, totalToolCount } from "@/editor/panels/toolBrowserModal";
 import { activeTools } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -37,32 +36,13 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
-describe("사이드 도크 폭 (1/3)", () => {
-  it("usable 폭의 1/3을 반환하고 min/max로 클램프한다", () => {
-    expect(computeSideChatWidth(1500)).toBe(Math.floor(1500 * SIDE_CHAT_WIDTH.ratio));
-    // 960/3=320 → min 경계, 1080/3=360 → 순수 1/3
-    expect(computeSideChatWidth(960)).toBe(SIDE_CHAT_WIDTH.min);
-    expect(computeSideChatWidth(1080)).toBe(360);
-    // 너무 좁으면 min
-    expect(computeSideChatWidth(400)).toBe(SIDE_CHAT_WIDTH.min);
-    // max 상한
-    expect(computeSideChatWidth(3000)).toBe(SIDE_CHAT_WIDTH.max);
-    // 캔버스 예산으로 상한을 더 조인다
-    expect(computeSideChatWidth(1200, 1000)).toBe(SIDE_CHAT_WIDTH.min);
-    expect(computeSideChatWidth(0)).toBe(SIDE_CHAT_WIDTH.min);
-  });
-
-  it("저장 preferred width는 일시적인 viewport clamp와 분리된다", () => {
-    const preferred = 610;
-    expect(resolveSideChatWidth(1500, 0, preferred)).toBe(preferred);
-    expect(resolveSideChatWidth(900, 700, preferred)).toBe(SIDE_CHAT_WIDTH.min);
-    expect(resolveSideChatWidth(1500, 0, preferred)).toBe(preferred);
-    expect(resolveSideChatWidth(1500, 0, null)).toBe(500);
-    expect(resolveSideChatWidth(1200, 700, 680)).toBe(500);
-  });
-});
-
+// 삭제(2026-08-31): describe("사이드 도크 폭 (1/3)") 2케이스 — `computeSideChatWidth` /
+// `resolveSideChatWidth` / `SIDE_CHAT_WIDTH` 가 사이드 도크와 함께 삭제됐다. 캔버스는 항상
+// 전폭이고 `--ai-chat-side-width` 는 영구 0px 다.
 describe("패널 크기 커스텀", () => {
+  // 삭제: "저장된 크기가 있으면 유리 카드에 인라인 크기로 적용되고, 리사이즈 핸들이 렌더된다" —
+  // 패널 인라인 크기는 삭제된 계약이다. 저장 폭 적용·핸들 렌더는 test/aiPanelGlassResize.test.ts
+  // 가 새 표면(컴포저 캡슐의 `--ai-float-bar-width`)으로 덮는다.
   it("클램프 범위를 강제하고 저장/복원이 왕복한다", () => {
     expect(clampPanelSize({ width: 100, height: 100 })).toEqual({ width: PANEL_SIZE_LIMITS.minWidth, height: PANEL_SIZE_LIMITS.minHeight });
     expect(clampPanelSize({ width: 5000, height: 5000 })).toEqual({ width: PANEL_SIZE_LIMITS.maxWidth, height: PANEL_SIZE_LIMITS.maxHeight });
@@ -71,20 +51,6 @@ describe("패널 크기 커스텀", () => {
     // 손상된 저장값은 무시.
     storage.set("oprn:ai-panel-size", "{broken");
     expect(loadPanelSize()).toBeNull();
-  });
-
-  it("저장된 크기가 있으면 유리 카드에 인라인 크기로 적용되고, 리사이즈 핸들이 렌더된다", () => {
-    // 레거시 전역 키에만 저장해도 도크별 로더가 폴백으로 읽는다(기존 사용자 크기 보존).
-    savePanelSize({ width: 500, height: 640 });
-    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    // glass 는 접힌 입력줄로 부팅한다 — 셰브론으로 펼친 뒤에야 인라인 높이가 붙는다
-    // (폭은 접혀도 유지된다: test/aiPanelGlassResize.test.ts).
-    findByTestId(panel, "ai-collapse")?.click();
-    expect(findByTestId(panel, "ai-resize-handle")).toBeTruthy();
-    // 크기는 style **속성 문자열**을 덮어쓰지 않고 개별 프로퍼티로 쓴다 — 같은 인라인 스타일에
-    // --ai-command-bar-clearance 와 --ai-font-scale 이 함께 살기 때문이다(속성 통째 쓰기가 그들을 지웠다).
-    expect(panel.style.width).toBe("500px");
-    expect(panel.style.height).toBe("640px");
   });
 });
 

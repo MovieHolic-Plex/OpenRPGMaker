@@ -58,7 +58,6 @@ export const AI_UI_ACTIONS = {
   conversationExport: "conversation-export",
   instructionsSave: "instructions-save",
   turnRewind: "turn-rewind",
-  dockSwitch: "dock-switch",
   panelCollapse: "panel-collapse",
   newConversation: "new-conversation",
   turnAbort: "turn-abort",

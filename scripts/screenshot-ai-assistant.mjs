@@ -72,14 +72,15 @@ if (await page.getByTestId("ai-config-baseurl").isVisible().catch(() => false)) 
 }
 await shot(page, "08-ai-panel-with-settings.png", panel);
 
-// Toggle dock modes
-console.log("dock toggle…");
-const dock = page.getByTestId("chat-dock-toggle");
-if (await dock.isVisible().catch(() => false)) {
-  await dock.click();
+// 구 09번 컷은 `chat-dock-toggle` 을 눌러 다른 도크를 찍었다. 도크 축이 2026-08-31 에
+// 사라져 토글도 다른 도크도 없다 — 대신 접힘/복귀를 찍는다. 지금 남은 유일한 표면 전환이다.
+console.log("collapse toggle…");
+const collapse = page.getByTestId("ai-collapse");
+if (await collapse.isVisible().catch(() => false)) {
+  await collapse.click();
   await page.waitForTimeout(500);
-  await shot(page, "09-ai-dock-toggled.png", panel);
-  await dock.click();
+  await shot(page, "09-ai-collapsed.png");
+  await page.getByTestId("ai-collapsed-restore").click();
   await page.waitForTimeout(400);
 }
 

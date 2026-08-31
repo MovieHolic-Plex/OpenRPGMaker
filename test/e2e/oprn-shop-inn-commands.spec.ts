@@ -66,12 +66,14 @@ async function addCommerceCommand(page: Page, command: PickerCommand): Promise<L
  * `div.ai-chat-main … intercepts pointer events`. 저작 조작 전에 조수를 옆 열로 옮긴다.
  */
 async function moveAssistantOutOfCanvas(page: Page): Promise<void> {
-  const layout = page.getByTestId("editor-layout");
-  for (let attempt = 0; attempt < 4; attempt++) {
-    if (((await layout.getAttribute("class")) ?? "").includes("chat-dock-side")) break;
-    await page.getByTestId("chat-dock-toggle").evaluate((node) => (node as HTMLButtonElement).click());
-  }
-  await expect(layout).toHaveClass(/chat-dock-side/);
+  // 예전에는 사이드 도크로 옮겨 캔버스에서 빼냈다. 도크 축이 삭제돼(2026-08-31) 갈 열이
+  // 없으므로 **접는다** — 접힌 조수는 복귀 알약 하나로 줄어 캔버스 클릭을 가로채지 않는다.
+  const panel = page.getByTestId("ai-panel");
+  if (((await panel.getAttribute("class")) ?? "").includes("is-collapsed")) return;
+  const collapse = page.getByTestId("ai-collapse");
+  await collapse.evaluate((node) => (node as HTMLButtonElement).click());
+  await expect(panel).toHaveClass(/is-collapsed/);
+  await expect(page.getByTestId("ai-command-bar")).toBeHidden();
 }
 
 async function openEventEditorAtMapTile(page: Page): Promise<void> {

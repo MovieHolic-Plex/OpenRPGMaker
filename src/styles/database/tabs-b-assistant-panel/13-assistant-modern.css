@@ -10,31 +10,12 @@
    `:not(.is-map-first-idle)` 를 더한 이유: 12-assistant-temperature.css:67 이 그 상태에서
    패널을 투명·무반응으로 만들려 하는데, 같은 (0,6,0) 인 이 규칙이 뒤에 import 돼
    매번 되살렸다. 실측상 '입력줄만' 온도에서 불투명 흰 카드가 그대로 떠 있었다. */
-.editor-layout .ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle),
-.ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
-  height: min(620px, calc(100% - 24px));
-  inset: 12px auto auto 12px;
-  max-height: calc(100% - 24px);
-  max-width: clamp(360px, 38vw, 520px);
-  overflow: hidden;
-  padding: 0;
-  pointer-events: auto;
-  position: absolute;
-  width: clamp(360px, 38vw, 520px);
-  z-index: 31;
-}
-
-.ai-chat-panel.chat-dock-glass:not(.is-collapsed) {
-  display: flex;
-  flex-direction: column;
-}
 
 /* 헤더 밴드(.ai-chat-header)와 얼굴 명패(.ai-header-title-row / .ai-director-plate /
    .ai-director-copy / .ai-director-face / .ai-director-name / .ai-director-line /
    .ai-header-actions) 규칙은 2026-08-28 헤더 폐기와 함께 삭제했다. 셀렉터가 매칭할
    엘리먼트가 DOM 에 더는 없다 — aiDirectorChrome.ts 는 복귀 버튼 하나만 만든다. */
 
-.ai-dock-mode-btn,
 .ai-chat-collapse {
   align-items: center;
   background: transparent;
@@ -51,27 +32,9 @@
   padding: 0 8px;
 }
 
-.ai-dock-mode-btn:hover,
 .ai-chat-collapse:hover {
   background: var(--control-bg-hover, var(--bg-inset));
   color: var(--text-1);
-}
-
-.ai-chat-panel.chat-dock-glass .ai-chat-body,
-.ai-chat-panel.chat-dock-side .ai-chat-body {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.ai-chat-panel.chat-dock-glass .ai-glass-log,
-.ai-chat-panel.chat-dock-glass .ai-chat-log,
-.ai-chat-panel.chat-dock-side .ai-chat-log {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: auto;
-  padding: 12px 12px 8px;
 }
 
 .ai-chat-log .ai-chat-assistant,
@@ -102,27 +65,14 @@
   font-size: 12px;
 }
 
-.ai-next-steps {
-  gap: 8px;
-  padding: 4px 12px 8px;
-}
-
-.ai-next-steps-hint {
-  color: var(--text-2);
-  font-size: 13px;
-  font-weight: 600;
-}
-
 .ai-authoring-examples,
-.ai-composer-chips,
-.ai-next-steps [role="group"] {
+.ai-composer-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.ai-authoring-examples button,
-.ai-next-steps button:not(.ai-next-steps-more) {
+.ai-authoring-examples button {
   background: var(--bg-inset);
   border: 1px solid transparent;
   border-radius: 999px;
@@ -133,8 +83,7 @@
   padding: 0 10px;
 }
 
-.ai-authoring-examples button:hover,
-.ai-next-steps button:not(.ai-next-steps-more):hover {
+.ai-authoring-examples button:hover {
   border-color: color-mix(in srgb, var(--gold) 35%, transparent);
 }
 
@@ -149,43 +98,10 @@
   text-align: left;
 }
 
-.ai-chat-panel.chat-dock-glass .ai-next-steps .ai-start-visual-gallery,
-.ai-chat-panel.chat-dock-side .ai-next-steps .ai-start-visual-gallery,
 .ai-next-steps-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.ai-chat-panel.chat-dock-glass .ai-next-steps .ai-start-visual-card,
-.ai-chat-panel.chat-dock-side .ai-next-steps .ai-start-visual-card {
-  align-items: center;
-  background: var(--bg-surface);
-  border: 1px solid var(--studio-line, var(--border-subtle));
-  border-radius: 12px;
-  box-shadow: none;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 48px minmax(0, 1fr);
-  min-height: 56px;
-  padding: 6px 10px;
-  text-align: left;
-}
-
-.ai-chat-panel.chat-dock-glass .ai-next-steps .ai-start-visual-stage,
-.ai-chat-panel.chat-dock-side .ai-next-steps .ai-start-visual-stage {
-  background: var(--bg-inset);
-  border-radius: 8px;
-  height: 48px;
-  overflow: hidden;
-  width: 48px;
-}
-
-.ai-chat-panel.chat-dock-glass .ai-next-steps .ai-start-visual-label,
-.ai-chat-panel.chat-dock-side .ai-next-steps .ai-start-visual-label {
-  color: var(--text-1);
-  font-size: 13px;
-  font-weight: 700;
 }
 
 .ai-tool-activity {
@@ -210,70 +126,6 @@
   padding: 4px 2px 0 10px;
 }
 
-.ai-chat-panel.chat-dock-side .ai-rising-overlay,
-.ai-chat-panel.chat-dock-side .ai-rising-volatile-zone,
-.ai-chat-panel.chat-dock-side .ai-history-log-mount {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.ai-chat-panel.chat-dock-side .ai-volatile-dashed {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-
-.ai-chat-panel.chat-dock-side.is-collapsed > .ai-chat-body,
-.ai-chat-panel.chat-dock-side.is-collapsed > .ai-command-bar,
-.ai-chat-panel.chat-dock-side.is-collapsed > .ai-rising-overlay {
-  display: none;
-}
-
-.ai-chat-panel.chat-dock-side.is-collapsed > .ai-collapsed-restore {
-  align-self: flex-start;
-}
-
-.ai-dock-mode-btn {
-  font-size: 0;
-  min-width: 32px;
-  padding: 0;
-  width: 32px;
-}
-
-.ai-dock-mode-btn::before {
-  border: 1.5px solid currentColor;
-  border-radius: 3px;
-  content: "";
-  display: block;
-  height: 11px;
-  width: 11px;
-}
-
-.ai-chat-panel.chat-dock-glass .ai-command-bar,
-.ai-chat-panel.chat-dock-side .ai-command-bar {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  flex: 0 0 auto;
-  padding: 8px 12px 12px;
-}
-
-.ai-chat-panel.chat-dock-glass .ai-composer,
-.ai-chat-panel.chat-dock-side .ai-composer {
-  background: var(--bg-inset);
-  border: 1px solid transparent;
-  border-radius: 14px;
-  box-shadow: none;
-}
-
-.ai-chat-panel.chat-dock-glass .ai-composer:focus-within,
-.ai-chat-panel.chat-dock-side .ai-composer:focus-within {
-  border-color: color-mix(in srgb, var(--gold) 45%, var(--border-default));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 16%, transparent);
-}
-
 .ai-chat-panel .ai-send,
 .ai-chat-panel [data-testid="ai-send"] {
   background: var(--gold);
@@ -286,15 +138,4 @@
 .ai-chat-panel .ai-send:disabled,
 .ai-chat-panel [data-testid="ai-send"]:disabled {
   opacity: 0.45;
-}
-
-.ai-chat-panel.chat-dock-side {
-  background: var(--bg-surface);
-}
-
-.editor-layout .ai-chat-side-panel {
-  background: var(--bg-surface);
-  border-left: 1px solid var(--studio-line, var(--border-subtle));
-  box-shadow: none;
-  min-width: min(320px, 36vw);
 }

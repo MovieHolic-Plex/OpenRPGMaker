@@ -301,7 +301,7 @@ function fieldsFold(seq: number, fields: readonly EditActivityField[]): HTMLElem
     dataset: { testid: `edit-activity-fields-toggle-${seq}` },
   });
   toggle.addEventListener("click", () => {
-    const open = body.hidden;
+    const open = Boolean(body.hidden);
     body.hidden = !open;
     toggle.setAttribute("aria-expanded", open ? "true" : "false");
     toggle.textContent = foldLabel(fields.length, open);

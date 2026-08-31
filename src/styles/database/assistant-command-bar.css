@@ -9,20 +9,8 @@ body.ai-command-bar-active .editor-layout {
   padding-bottom: var(--ai-command-bar-inset);
 }
 
-body.ai-chat-dock-float.ai-command-bar-active .editor-layout,
-body.ai-chat-dock-glass.ai-command-bar-active .editor-layout,
-body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
+body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
   padding-bottom: 0;
-}
-
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  inset: auto;
-  max-height: none;
-  padding: 0;
-  width: 0;
 }
 
 /* float 모드 셸: 위 규칙의 inset/width 를 되살린다.
@@ -32,16 +20,6 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
    실측(2026-08-21, HEAD 7bb7f851): float 에서 panel 0×0, 바 rect x=-322 로 화면 밖.
    그래서 :not(.chat-dock-side):not(.chat-dock-glass) 를 더해 (0,7,0) 로 올린다
    (float 에서는 항상 참이므로 선택 대상은 그대로다). */
-.ai-chat-panel.chat-dock-float:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) {
-  inset: 0;
-  width: auto;
-}
-
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-toolbar,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-body,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-collapsed-restore {
-  display: none;
-}
 
 .ai-command-bar {
   align-items: end;
@@ -71,33 +49,6 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   position: absolute;
   right: 12px;
   width: min(var(--ai-float-bar-width, 640px), calc(100vw - 24px));
-}
-
-.ai-chat-panel.chat-dock-glass .ai-command-bar {
-  align-items: stretch;
-  bottom: auto;
-  flex: 0 0 auto;
-  grid-template-columns: minmax(0, 1fr);
-  justify-content: stretch;
-  left: auto;
-  position: relative;
-  right: auto;
-  z-index: 1;
-  gap: 6px;
-  padding: 8px 4px 4px;
-}
-
-.ai-chat-panel.chat-dock-side .ai-command-bar {
-  align-items: stretch;
-  bottom: auto;
-  flex: 0 0 auto;
-  grid-template-columns: minmax(0, 1fr);
-  left: auto;
-  position: relative;
-  right: auto;
-  z-index: 1;
-  gap: 6px;
-  padding: 8px 10px 10px;
 }
 
 /* 대기/새 대화 등 idle 상태는 하단 점유를 줄인다 */
@@ -265,14 +216,6 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   color: var(--text-1);
 }
 
-.ai-chat-detach-btn {
-  display: none;
-}
-
-.ai-chat-panel.chat-dock-side .ai-chat-detach-btn {
-  display: inline-grid;
-}
-
 .ai-chat-toolbar.is-empty,
 .ai-chat-toolbar[hidden] {
   display: none !important;
@@ -357,11 +300,6 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   .ai-command-bar {
     bottom: 10px;
     grid-template-columns: minmax(0, calc(100vw - 24px));
-    width: calc(100vw - 20px);
-  }
-
-  .ai-rising-overlay {
-    bottom: var(--ai-command-bar-clearance, 108px);
     width: calc(100vw - 20px);
   }
 }

@@ -130,19 +130,6 @@ export function listEditorCommands(): readonly EditorCommand[] {
         })),
       ];
     }),
-    ...([
-      { dock: "glass", label: "왼쪽 카드" },
-      { dock: "side", label: "오른쪽 고정" },
-      { dock: "float", label: "입력줄" },
-    ] as const).map(({ dock, label }): EditorCommand => ({
-      id: `assistant-dock-${dock}`,
-      label: `화면: 조수 — ${label}`,
-      category: "화면",
-      keywords: ["assistant", "chat", "dock", "조수", "채팅", "도크", "위치", label],
-      run: () => {
-        void import("@/editor/panels/editor").then((module) => module.setChatDock(dock));
-      },
-    })),
     {
       id: "test-play",
       label: "화면: 시연 실행 실행",
@@ -184,15 +171,6 @@ export function listEditorCommands(): readonly EditorCommand[] {
       category: "도구",
       keywords: ["build", "palette", "건축", "팔레트"],
       run: () => setBuildPaletteEnabled(!isBuildPaletteEnabled()),
-    },
-    {
-      id: "toggle-chat-dock",
-      label: "화면: AI 채팅 도크 전환",
-      category: "화면",
-      keywords: ["chat", "dock", "ai", "채팅", "도크", "glass", "조수", "유리"],
-      run: () => {
-        void import("@/editor/panels/editor").then((mod) => mod.toggleChatDock());
-      },
     },
     {
       id: "help-shortcuts",

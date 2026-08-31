@@ -116,20 +116,15 @@ test("baseline: 조수 하단/도크/컴포저 실측", async ({ page }) => {
     await input.fill("");
   }
 
-  // 도크 순환
-  const docks: string[] = [];
-  for (let i = 0; i < 3; i += 1) {
-    await page.getByTestId("chat-dock-toggle").evaluate((n) => (n as HTMLButtonElement).click());
-    await page.waitForTimeout(700);
-    const dock = (await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) ?? "?";
-    docks.push(dock);
-    await page.screenshot({ path: `${OUT}/1${i}-dock-${dock}.png` });
-    report[`dock_${dock}_geometry`] = await panelGeometry(page);
-    report[`dock_${dock}_bottom`] = await bottomInventory(page, `dock-${dock}`);
-  }
-  report.docks = docks;
+  // 붙는 곳은 하나다 — 구 「도크 순환」 루프(`chat-dock-toggle` 3연타)는 2026-08-31 에 걷었다.
+  // 순환할 대상이 없으니 지금 표면 한 장을 그대로 남긴다.
+  const dock = (await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) ?? "?";
+  await page.screenshot({ path: `${OUT}/10-dock-${dock}.png` });
+  report[`dock_${dock}_geometry`] = await panelGeometry(page);
+  report[`dock_${dock}_bottom`] = await bottomInventory(page, `dock-${dock}`);
+  report.docks = [dock];
 
   writeFileSync(`${OUT}/baseline-report.json`, JSON.stringify(report, null, 2), "utf8");
-  log(`docks=${docks.join(",")}`);
+  log(`dock=${dock}`);
   log(JSON.stringify(report.bootGeometry));
 });

@@ -56,8 +56,6 @@ export interface AiRunSurface {
   // ── 접힘/펼침 · 알림 ─────────────────────────────────────
   readonly expandForAiWork: () => void;
   readonly scheduleCollapseAfterAiWork: () => void;
-  readonly scheduleGlassFold: (options?: { failed?: boolean }) => void;
-  readonly revealVolatileZone: () => void;
   readonly notifyIfObscuredByTestPlay: () => void;
 
   // ── 큐 · 저장 · 재전송 ───────────────────────────────────

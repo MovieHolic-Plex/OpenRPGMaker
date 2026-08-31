@@ -85,7 +85,8 @@ function installBrowserGlobals(): void {
   Object.defineProperty(document, "documentElement", { configurable: true, value: document.createElement("html") });
 }
 
-function renderPanel(dock: "glass" | "side" | "float" = "glass"): FakeElement {
+// 도크는 float 하나뿐이라 렌더 인자가 없다 (구 `getChatDock` 옵션 삭제).
+function renderPanel(): FakeElement {
   storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
     ...defaultAiConfig(),
     apiKey: "sk-test",
@@ -94,7 +95,7 @@ function renderPanel(dock: "glass" | "side" | "float" = "glass"): FakeElement {
     authMode: "apiKey",
     agentMode: "chat",
   }));
-  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 1_000 }) as unknown as FakeElement;
 }
 
 async function flushAsync(): Promise<void> {
@@ -118,7 +119,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_SUPABASE_URL", "");
   vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
   store.replace(createBlankProject());
-  editorState.set({ currentMapId: null, selection: null, chatDock: "glass" });
+  editorState.set({ currentMapId: null, selection: null });
   resetMapEditHistory();
 });
 
@@ -132,27 +133,34 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
+// 도크 축 삭제(float 단일) — 「유리 도크는 카드 안에 물린다」 분기가 없어져, 더보기 메뉴는
+// 항상 뷰포트 기준으로 앵커된다. 케이스를 지우지 않고 그 반대 계약으로 뒤집었다.
 describe("Assistant After UX contracts", () => {
-  it("glass dock clamps more menu inside card without is-viewport-anchored and does not use 360px fallback height", () => {
-    const panel = renderPanel("glass");
+  it("더보기 메뉴는 언제나 뷰포트에 앵커된다 — 카드 안 물림 분기는 없다", () => {
+    // Break: 유리 도크용 in-card 분기가 되살아나 `right: 0` 로 붙거나 좌표를 안 심는다.
+    const panel = renderPanel();
     const menu = findByTestId(panel, "ai-more-menu") as FakeElement;
     if (menu) menu.hidden = true;
 
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     expect(menu?.hidden).toBe(false);
-    // In glass dock, menu should prefer in-card positioning rather than viewport fixed
-    expect(menu?.classList.contains("is-viewport-anchored")).toBe(false);
+    expect(menu?.classList.contains("is-viewport-anchored")).toBe(true);
+    // anchoredPopupPosition 결과를 인라인 좌표로 심는다 — right 로 붙이는 경로는 없다.
+    expect(menu?.style.left ?? "").toMatch(/^-?\d+(\.\d+)?px$/);
+    expect(menu?.style.top ?? "").toMatch(/^-?\d+(\.\d+)?px$/);
+    expect(menu?.style.right ?? "").toBe("");
   });
 
-  it("folds header undo/dock actions under 작업 so the idle-view menu hugs", () => {
-    const panel = renderPanel("glass");
+  it("folds header undo/export actions under 작업 so the idle-view menu hugs", () => {
+    const panel = renderPanel();
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     const menu = findByTestId(panel, "ai-more-menu") as FakeElement;
     const fold = findByTestId(menu, "ai-more-actions");
     expect(fold).not.toBeNull();
     expect(fold?.textContent ?? "").toContain("작업");
-    expect(findByTestId(fold!, "ai-more-dock")).not.toBeNull();
     expect(findByTestId(fold!, "ai-more-export")).not.toBeNull();
+    // 「도크 전환」 항목은 도크 축과 함께 삭제됐다.
+    expect(findByTestId(fold!, "ai-more-dock")).toBeNull();
     // 대기 화면 라디오는 접기 밖 — 펼치지 않아도 바로 보인다.
     expect(findByTestId(fold!, "ai-temperature-quiet-gold")).toBeNull();
     expect(findByTestId(menu, "ai-temperature-quiet-gold")).not.toBeNull();
@@ -167,7 +175,7 @@ describe("Assistant After UX contracts", () => {
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText, proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
 
-    const panel = renderPanel("glass");
+    const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "동굴 입구 만들어줘";
     findByTestId(panel, "ai-send")?.click();
@@ -188,7 +196,7 @@ describe("Assistant After UX contracts", () => {
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "적용 준비", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
 
-    const panel = renderPanel("glass");
+    const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "길 깔아";
     findByTestId(panel, "ai-send")?.click();

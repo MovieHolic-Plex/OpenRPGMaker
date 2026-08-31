@@ -105,24 +105,20 @@ async function record(name) {
   await page.screenshot({ path: `${OUT}/${name}.png` });
 }
 
-await record("00-glass-idle");
+await record("00-capsule-idle");
 
 // 대화가 있는 상태로 만든다(전송 → 404 오류가 나도 로그는 생긴다)
 const input = page.getByTestId("ai-input");
 await input.fill("테스트 지시");
 await input.press("Enter");
 await page.waitForTimeout(2600);
-await record("01-glass-active");
+await record("01-capsule-active");
 
-// 도크 순환: glass → side → float → glass
-for (let i = 0; i < 3; i += 1) {
-  await page.getByTestId("chat-dock-toggle").evaluate((n) => n.click());
-  await page.waitForTimeout(900);
-  const dock = (await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) ?? `?${i}`;
-  await record(`1${i}-dock-${dock}`);
-}
+// 구 판본은 `chat-dock-toggle` 을 3번 눌러 glass → side → float 를 이어 찍었다.
+// 도크 축이 2026-08-31 에 사라지면서 찍을 표면은 하나다.
+await record(`10-dock-${(await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) ?? "?"}`);
 
-// 유리 카드 확대 — 리사이즈 핸들을 끝까지 끌어 본다(헤더 잔존 확인)
+// 캡슐 확대 — 리사이즈 핸들을 끝까지 끌어 본다(헤더 잔존 확인)
 const grew = await page.evaluate(() => {
   const panel = document.querySelector("[data-testid='ai-panel']");
   if (!panel) return "no-panel";
@@ -133,7 +129,7 @@ const grew = await page.evaluate(() => {
   return { before, after: [panel.getBoundingClientRect().width, panel.getBoundingClientRect().height] };
 });
 report.grew = grew;
-await record("20-glass-grown");
+await record("20-grown");
 
 // 접기 → 복귀
 await page.evaluate(() => document.querySelector("[data-testid='ai-collapse']")?.click());

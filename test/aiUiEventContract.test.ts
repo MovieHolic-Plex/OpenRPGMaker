@@ -28,7 +28,6 @@ const CALL_SITES: Readonly<Record<keyof typeof AI_UI_ACTIONS, string>> = {
   conversationExport: PANEL,
   instructionsSave: INSTRUCTIONS_MODAL,
   turnRewind: PANEL,
-  dockSwitch: PANEL,
   panelCollapse: PANEL,
   newConversation: PANEL,
   turnAbort: PANEL,

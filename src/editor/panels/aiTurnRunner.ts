@@ -151,7 +151,6 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     // 접혀 시작한 턴만 종료 후 재접기. 이미 열린 첫 방문/펼침은 열린 채 유지.
     deps.surface.collapseAfterAiWork = deps.surface.collapsed;
     deps.surface.expandForAiWork();
-    deps.surface.revealVolatileZone();
     deps.surface.beginTurnProgress();
     deps.surface.refreshAbortButton();
     deps.refreshContextMeter(); // 진행 중에는 압축 버튼이 잠긴다(busy) — 그 상태를 즉시 반영한다.
@@ -619,7 +618,6 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       deps.surface.drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
       // 유리 도크 본문 접힘 예약 — 시작 시 접혀 있었는지와 무관하다(fold 는 입력줄을 남기므로
       // 답이 사라지지 않는다). 실패한 턴은 읽을 수 있게 열어 둔다.
-      deps.surface.scheduleGlassFold({ failed: turnFailed });
       // 접혀 시작한 턴만 종료 후 재접기. 이미 열린 패널은 그대로 둔다.
       if (deps.surface.collapseAfterAiWork) {
         if (turnFailed) {

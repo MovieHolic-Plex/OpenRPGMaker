@@ -1,17 +1,16 @@
 // aiPanelLayoutResponsive.test.ts
-// 도킹 모드별 패널 크기(per-dock) + 뷰포트 반응형 클램프 계약(2026-08-25).
+// 컴포저 캡슐 폭 저장 + 뷰포트 반응형 클램프 계약.
+// 2026-08-31: 도크가 float 하나가 되면서 per-dock 키(oprn:ai-panel-size:<dock>) 3종이
+// 캡슐 폭 하나로 합쳐졌다. 낡은 float 키는 최초 1회만 읽어 사용자 폭을 물려받는다.
 // vitest 환경은 "node" — 돔 대신 storage(globalThis.localStorage)만 스텁한다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   clampPanelSize,
   clampPanelSizeToViewport,
-  clearDockPanelSize,
-  loadDockPanelSize,
-  loadPanelSize,
+  loadPanelBarSize,
   PANEL_SIZE_LIMITS,
-  saveDockPanelSize,
+  savePanelBarSize,
   savePanelSize,
-  type PanelDock,
 } from "@/editor/panels/aiPanelLayout";
 
 let storage: Map<string, string>;
@@ -60,35 +59,32 @@ describe("clampPanelSizeToViewport", () => {
   });
 });
 
-describe("도크별 저장/복원 (per-dock)", () => {
-  it("도크마다 독립적으로 왕복한다 — glass/side 각각, float은 저장 없으면 null", () => {
-    saveDockPanelSize("glass", { width: 400, height: 700 });
-    saveDockPanelSize("side", { width: 560, height: 880 });
-    expect(loadDockPanelSize("glass")).toEqual({ width: 400, height: 700 });
-    expect(loadDockPanelSize("side")).toEqual({ width: 560, height: 880 });
-    // float은 저장도 레거시도 없음 → null
-    expect(loadDockPanelSize("float")).toBeNull();
+describe("캡슐 폭 저장/복원", () => {
+  it("저장한 폭을 그대로 왕복하고, 저장이 없으면 null 이다", () => {
+    expect(loadPanelBarSize()).toBeNull();
+    savePanelBarSize({ width: 560, height: 880 });
+    expect(loadPanelBarSize()).toEqual({ width: 560, height: 880 });
   });
 
-  it("도크 키가 없으면 레거시 글로벌 값(oprn:ai-panel-size)으로 폴백한다", () => {
-    savePanelSize({ width: 500, height: 600 });
-    // per-dock 키가 없으면 어느 도크든 레거시 값을 그대로 쓴다
-    expect(loadDockPanelSize("glass")).toEqual({ width: 500, height: 600 });
-    expect(loadDockPanelSize("side")).toEqual({ width: 500, height: 600 });
+  it("낡은 float 도크 키를 물려받는다 — 도크 삭제로 사용자 폭을 잃지 않는다", () => {
+    storage.set("oprn:ai-panel-size:float", JSON.stringify({ width: 620, height: 700 }));
+    expect(loadPanelBarSize()).toEqual({ width: 620, height: 700 });
   });
 
-  it("clearDockPanelSize는 도크 키를 지워 null로 되돌린다 (레거시 없음)", () => {
-    saveDockPanelSize("glass", { width: 400, height: 700 });
-    expect(loadDockPanelSize("glass")).toEqual({ width: 400, height: 700 });
-    clearDockPanelSize("glass");
-    expect(loadDockPanelSize("glass")).toBeNull();
+  it("새 키가 있으면 낡은 float 키보다 우선한다", () => {
+    storage.set("oprn:ai-panel-size:float", JSON.stringify({ width: 620, height: 700 }));
+    savePanelSize({ width: 480, height: 640 });
+    expect(loadPanelBarSize()).toEqual({ width: 480, height: 640 });
+  });
+
+  it("삭제된 glass/side 키는 더 이상 읽지 않는다", () => {
+    storage.set("oprn:ai-panel-size:glass", JSON.stringify({ width: 400, height: 700 }));
+    storage.set("oprn:ai-panel-size:side", JSON.stringify({ width: 560, height: 880 }));
+    expect(loadPanelBarSize()).toBeNull();
   });
 
   it("저장된 쓰레기 값은 예외 없이 null을 돌려준다", () => {
-    storage.set("oprn:ai-panel-size:glass", '{"width":"wide"}');
-    expect(loadDockPanelSize("glass")).toBeNull();
+    storage.set("oprn:ai-panel-size", '{"width":"wide"}');
+    expect(loadPanelBarSize()).toBeNull();
   });
 });
-
-// 저장 시 도크 키가 어떤 형태로 쓰이는지 타입 체크용 (런타임 무관)
-void ((): PanelDock | undefined => undefined)();

@@ -53,15 +53,10 @@ const tree = () =>
     return lines.join("\n");
   });
 
-const out = [];
-out.push("########## dock=glass\n" + (await tree()));
-for (let i = 0; i < 2; i += 1) {
-  await page.getByTestId("chat-dock-toggle").evaluate((n) => n.click());
-  await page.waitForTimeout(900);
-  const dock = await page.getByTestId("ai-panel").getAttribute("data-chat-dock");
-  out.push(`########## dock=${dock}\n` + (await tree()));
-}
-const text = out.join("\n\n");
+// 구 판본은 glass 한 장을 찍고 `chat-dock-toggle` 을 2번 눌러 side/float 를 이어 찍었다.
+// 도크 축이 2026-08-31 에 사라져 찍을 표면은 하나다.
+const dock = await page.getByTestId("ai-panel").getAttribute("data-chat-dock");
+const text = `########## dock=${dock}\n` + (await tree());
 writeFileSync("verify-shots/shell-consistency/tree.txt", text, "utf8");
 console.log(text);
 await browser.close();

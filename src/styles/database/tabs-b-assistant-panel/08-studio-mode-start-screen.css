@@ -73,9 +73,6 @@
 
 /* ?꾩껜 濡쒓렇媛 ?대? 蹂댁씠誘濡?誘몃땲 ?ㅽ듃由??섎컻 議?? 以묐났 ???④릿??
    怨좎젙 議??쒖븞 pill/?뚮┝)? ?좎????뱀씤 ?湲곕? ?껋? ?딅뒗?? */
-.ai-chat-panel.is-studio .ai-rising-volatile-zone {
-  display: none;
-}
 
 /* ?쒖옉 ?붾㈃: ?곷떒 怨좎젙 + ?ㅽ겕濡?(?몃줈 以묒븰 ?ъ뿰 ?쒓굅). */
 .ai-chat-panel.is-studio .ai-start-screen {
@@ -226,7 +223,6 @@
   letter-spacing: -0.01em;
 }
 
-.ai-chat-panel.chat-dock-side .ai-start-visual-gallery,
 .ai-chat-panel.is-history-open .ai-start-visual-gallery {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -324,21 +320,6 @@
 .ai-start-guide strong {
   color: var(--text-1);
   font-weight: 600;
-}
-
-
-.ai-chat-panel.is-history-open:not(.chat-dock-side) {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: var(--ai-dock-width, 520px);
-  max-width: 52vw;
-  max-height: 100vh;
-  height: 100vh;
-  border-radius: 0;
-  border-top: none;
-  border-right: none;
-  border-bottom: none;
 }
 
 .ai-history-log-mount {

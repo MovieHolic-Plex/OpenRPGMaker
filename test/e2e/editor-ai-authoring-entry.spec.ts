@@ -15,7 +15,7 @@ async function dismissBootOverlays(page: Page): Promise<void> {
   await expect(page.getByTestId("standard-welcome-card")).toHaveCount(0);
 }
 
-test("접힌 조수에서 제공자와 네 저작 예제를 확인하고 입력을 시작한다", async ({ page }) => {
+test("접힌 조수에서 제공자와 여섯 저작 예제를 확인하고 입력을 시작한다", async ({ page }) => {
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript((collapsedKey) => {
@@ -42,30 +42,32 @@ test("접힌 조수에서 제공자와 네 저작 예제를 확인하고 입력�
   await expect(page.getByTestId("ai-settings-modal")).toHaveCount(0);
 
   const panel = page.getByTestId("ai-panel");
-  // glass 도크는 칩 접힘(is-collapsed) 대신 본문 접힘(fold)을 쓴다 — 저장된 "1" 도
-  // fold 로 라우팅된다(openwiki/editor-ai-panel.md 2026-08-30).
-  await expect(panel).toHaveClass(/is-glass-folded/);
-  await expect(panel).not.toHaveClass(/is-collapsed/);
+  // 저장된 "1" 은 패널 접힘(is-collapsed) 하나로 간다 — 구 유리 카드의 본문 접힘
+  // (is-glass-folded)은 도크 축과 함께 2026-08-31 에 삭제됐다.
+  await expect(panel).toHaveClass(/is-collapsed/);
+  await expect(panel).not.toHaveClass(/is-glass-folded/);
   // 현재 저작 진입점은 접힌 카드에 남는 입력줄과 disclosure 셰브론이다.
   await expect(page.getByTestId("ai-input")).toBeVisible();
   const disclosure = page.getByTestId("ai-collapse");
   await expect(disclosure).toHaveAttribute("aria-label", "조수 대화 펼치기");
   await disclosure.click();
 
-  await expect(panel).not.toHaveClass(/is-glass-folded/);
+  await expect(panel).not.toHaveClass(/is-collapsed/);
   await page.getByTestId("ai-input").click();
   await expect(page.getByTestId("ai-input")).toBeFocused();
+  // 저작 예제 6개는 컴포저 추천 팝오버 안에 있다 — 입력창이 비어 있고 포커스를 받으면
+  // 저절로 열린다(구 유리 카드 본문의 `ai-next-steps` 가 여기로 이사했다).
+  await expect(page.getByTestId("ai-suggest-popover")).toBeVisible();
   await expect(page.getByTestId("ai-authoring-examples")).toBeVisible();
   const examples = page.locator("[data-testid^='ai-authoring-example-']");
-  await expect(examples).toHaveCount(4);
-  await expect(examples).toHaveText(["길", "NPC", "상점", "상자"]);
+  await expect(examples).toHaveCount(6);
+  await expect(examples).toHaveText(["길", "NPC", "상점", "상자", "집", "퀘스트"]);
   const examplesBox = await page.getByTestId("ai-authoring-examples").boundingBox();
   const composerBox = await page.getByTestId("ai-command-bar").boundingBox();
   expect(examplesBox).not.toBeNull();
   expect(composerBox).not.toBeNull();
-  // glass 는 입력줄이 카드 **맨 위**다(order: -1) — 대화·예제가 그 아래로 열린다.
-  // 접힌 한 줄이 그 자리에 남아 있어야 클릭 없이 바로 타이핑할 수 있다.
-  expect(composerBox!.y + composerBox!.height).toBeLessThanOrEqual(examplesBox!.y);
+  // 팝오버는 캡슐 위로 뜬다 — 예제가 입력줄을 덮지 않아야 클릭 없이 바로 타이핑할 수 있다.
+  expect(examplesBox!.y + examplesBox!.height).toBeLessThanOrEqual(composerBox!.y + composerBox!.height);
   await page.screenshot({
     path: path.join(EVIDENCE, "authoring-entry-and-provider.png"),
     animations: "disabled",

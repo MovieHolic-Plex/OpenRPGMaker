@@ -5,7 +5,6 @@ import {
   parseAssistantTemperature,
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
-import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { editorState } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
@@ -36,11 +35,6 @@ import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
-import {
-  loadDockPanelSize,
-  resolveSideChatWidth,
-  saveDockPanelSize,
-} from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import {
@@ -85,7 +79,6 @@ const BASIC_RAIL_FALLBACK_WIDTH = 72;
 type LoadedEditorLayout = {
   readonly leftWidth: number;
   readonly mapTreeHeight: number;
-  readonly chatDock: ChatDock;
   readonly assistantTemperature: AssistantTemperature;
 };
 
@@ -98,7 +91,6 @@ let mapTreeResizer: HTMLElement | null = null;
 let phaserHost: HTMLElement | null = null;
 let canvasToolbarRoot: HTMLElement | null = null;
 let chatFloatRoot: HTMLElement | null = null;
-let chatSideRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let authoringJourneyRoot: HTMLElement | null = null;
@@ -109,10 +101,7 @@ let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
-let chatDock = initialLayout.chatDock;
 let assistantTemperature = initialLayout.assistantTemperature;
-let preferredSideChatWidth = loadDockPanelSize("side")?.width ?? null;
-let previewSideChatWidth: number | null = null;
 let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
 let unsubWorkspace: (() => void) | null = null;
@@ -124,27 +113,15 @@ export function renderEditor(main: HTMLElement): void {
   installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__oprnEditorTool.
   applyEditorUiModeClasses(getEditorUiMode());
 
-  // 첫 페인트부터 dock class를 붙여 0폭→목표폭 애니메이션/리플로우를 막는다.
+  // 도크는 하나(입력줄 = float)다. 예전에는 glass/side/float 3분기가 첫 페인트부터
+  // 클래스와 `--ai-chat-side-width` 를 갈라 잡았다 — side 가 사라지면서 캔버스는 항상
+  // 전폭이고 이 변수는 영구 0 이다.
   const layout = el("div", {
-    class: `editor-layout ${layoutDockClass(chatDock)}`,
+    class: "editor-layout chat-dock-float",
     dataset: { testid: "editor-layout" },
   });
-  // applyLayout 전에도 1/3 폭 폴백을 심어 사이드 컬럼이 420→재계산으로 점프하지 않게 한다.
-  if (chatDock === "side") {
-    const bootWidth = resolveSideChatWidth(
-      typeof window !== "undefined" && window.innerWidth > 0 ? window.innerWidth : 1280,
-      MIN_CANVAS_WIDTH + 6 + LEFT_PANEL_MIN_WIDTH,
-      preferredSideChatWidth,
-    );
-    layout.style.setProperty("--ai-chat-side-width", `${bootWidth}px`);
-    document.documentElement?.style?.setProperty?.("--ai-chat-side-width", `${bootWidth}px`);
-    document.body?.classList?.add?.("ai-chat-dock-side");
-    document.body?.classList?.remove?.("ai-chat-dock-float", "ai-chat-dock-glass", "ai-panel-docked");
-  } else {
-    layout.style.setProperty("--ai-chat-side-width", "0px");
-    document.body?.classList?.add?.(chatDock === "glass" ? "ai-chat-dock-glass" : "ai-chat-dock-float");
-    document.body?.classList?.remove?.("ai-chat-dock-side", chatDock === "glass" ? "ai-chat-dock-float" : "ai-chat-dock-glass");
-  }
+  layout.style.setProperty("--ai-chat-side-width", "0px");
+  document.body?.classList?.add?.("ai-chat-dock-float");
   const left = el("div", { class: "left-panel" });
   const canvasArea = el("div", { class: "canvas-area" });
   const canvasScrollShell = el("div", {
@@ -179,11 +156,6 @@ export function renderEditor(main: HTMLElement): void {
     class: "ai-chat-float-host",
     dataset: { testid: "chat-float-host" },
   });
-  const chatSidePanel = el("aside", {
-    class: "right-panel ai-chat-side-panel",
-    dataset: { testid: "chat-side-panel" },
-  });
-
   leftResizer = el("div", {
     class: "resizer resizer-left",
     attrs: { title: "드래그로 크기 조절", role: "separator", "aria-label": "좌측 패널 너비 조절", "aria-orientation": "vertical", tabindex: "0" },
@@ -196,25 +168,10 @@ export function renderEditor(main: HTMLElement): void {
   const persistenceBanner = renderPersistenceModeBanner();
   if (persistenceBanner) canvasArea.append(persistenceBanner);
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics, chatFloatHost);
-  layout.append(left, leftResizer, canvasArea, chatSidePanel);
+  layout.append(left, leftResizer, canvasArea);
   const aiPanel = renderAiChatPanel({
-    getChatDock: () => chatDock,
-    onChatDockToggle: toggleChatDock,
-    onChatDockChange: setChatDock,
     getAssistantTemperature: () => assistantTemperature,
     onAssistantTemperatureChange: setAssistantTemperature,
-    onSideWidthPreview: (width) => {
-      previewSideChatWidth = width;
-      applyLayout();
-      scheduleFitCanvas();
-    },
-    onSideWidthCommit: (width, panelHeight) => {
-      previewSideChatWidth = null;
-      preferredSideChatWidth = width;
-      applyLayout();
-      saveDockPanelSize("side", { width, height: panelHeight });
-      scheduleFitCanvas();
-    },
   });
   main.append(layout, projectExportNodeElement());
 
@@ -222,36 +179,18 @@ export function renderEditor(main: HTMLElement): void {
   phaserHost = phaserContainer;
   canvasToolbarRoot = canvasToolbar;
   chatFloatRoot = chatFloatHost;
-  chatSideRoot = chatSidePanel;
   aiChatPanelRoot = aiPanel;
   mapLockBannerRoot = mapLockBanner;
   authoringJourneyRoot = authoringJourney;
 
-  applyChatDockLayout();
+  mountAssistantOverlay();
   applyLayout();
   applyEditorUiModeLayout();
   refreshPanels();
   ensureCurrentMapLock();
   bindLeftResizer();
   // 맵 트리 리사이저는 도크가 만들 때(mountLeftDock) 함께 묶인다 — 재마운트마다 새 노드다.
-  if (typeof ResizeObserver !== "undefined") {
-    const ro = new ResizeObserver(() => {
-      if (chatDock === "side") {
-        const usable = document.querySelector<HTMLElement>(".editor-layout")?.clientWidth ?? window.innerWidth;
-        const w = resolveSideChatWidth(
-          usable,
-          MIN_CANVAS_WIDTH + 6 + LEFT_PANEL_MIN_WIDTH,
-          previewSideChatWidth ?? preferredSideChatWidth,
-        );
-        document.documentElement.style.setProperty("--ai-chat-side-width", `${w}px`);
-        const layoutEl = document.querySelector<HTMLElement>(".editor-layout");
-        if (layoutEl) layoutEl.style.setProperty("--ai-chat-side-width", `${w}px`);
-      }
-    });
-    const layoutHost = document.querySelector<HTMLElement>(".editor-layout");
-    if (layoutHost) ro.observe(layoutHost);
-    (window as unknown as Record<string, unknown>)["__oprnLayoutRO"] = ro;
-  }
+  // 레이아웃 ResizeObserver 는 side 도크 폭을 다시 재는 것만 하던 것이라 함께 걷었다.
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
@@ -441,26 +380,13 @@ export function teardownEditor(): void {
   phaserHost = null;
   canvasToolbarRoot = null;
   chatFloatRoot = null;
-  chatSideRoot = null;
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   projectExportNode = null;
-  document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-glass", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
-}
-
-export function toggleChatDock(): void {
-  setChatDock(cycleChatDock(chatDock));
-}
-
-export function setChatDock(next: ChatDock): void {
-  chatDock = parseChatDock(next, chatDock);
-  applyChatDockLayout();
-  applyLayout();
-  saveEditorLayout();
-  scheduleFitCanvas();
+  document.body.classList.remove("ai-chat-dock-float", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
 
 export function setAssistantTemperature(next: AssistantTemperature): void {
@@ -470,37 +396,23 @@ export function setAssistantTemperature(next: AssistantTemperature): void {
   saveEditorLayout();
 }
 
-function layoutDockClass(dock: ChatDock): string {
-  if (dock === "side") return "chat-dock-side";
-  if (dock === "glass") return "chat-dock-glass";
-  return "chat-dock-float";
-}
-
-function applyChatDockLayout(): void {
-  if (!chatFloatRoot || !chatSideRoot || !aiChatPanelRoot) return;
-  editorState.set({ chatDock, assistantTemperature });
+/**
+ * 조수 패널을 캔버스 위 float 호스트에 붙인다.
+ *
+ * 예전 이름은 `applyChatDockLayout` 이고 3개 도크 × (레이아웃·패널·body) 9번의
+ * classList.toggle 로 클래스를 갈랐다. 도크가 하나면 고정 클래스 하나로 끝난다.
+ */
+function mountAssistantOverlay(): void {
+  if (!chatFloatRoot || !aiChatPanelRoot) return;
+  editorState.set({ assistantTemperature });
   aiChatPanelRoot.dataset.temperature = assistantTemperature;
-  const layoutEl = chatFloatRoot.parentElement?.parentElement ?? null;
-  layoutEl?.classList.toggle("chat-dock-side", chatDock === "side");
-  layoutEl?.classList.toggle("chat-dock-float", chatDock === "float");
-  layoutEl?.classList.toggle("chat-dock-glass", chatDock === "glass");
-  aiChatPanelRoot.classList.toggle("chat-dock-side", chatDock === "side");
-  aiChatPanelRoot.classList.toggle("chat-dock-float", chatDock === "float");
-  aiChatPanelRoot.classList.toggle("chat-dock-glass", chatDock === "glass");
-  // side flex 도크는 is-docked(fixed 오버레이)와 섞지 않는다 — body inset 이중 적용/흔들림 방지.
-  if (chatDock === "side") {
-    aiChatPanelRoot.classList.remove("is-docked");
-    document.body.classList.remove("ai-panel-docked");
-  } else if (aiChatPanelRoot.classList.contains("is-history-open")) {
+  aiChatPanelRoot.classList.add("chat-dock-float");
+  if (aiChatPanelRoot.classList.contains("is-history-open")) {
     aiChatPanelRoot.classList.add("is-docked");
   }
-  document.body.classList.toggle("ai-chat-dock-side", chatDock === "side");
-  document.body.classList.toggle("ai-chat-dock-float", chatDock === "float");
-  document.body.classList.toggle("ai-chat-dock-glass", chatDock === "glass");
-  const target = chatDock === "side" ? chatSideRoot : chatFloatRoot;
-  if (aiChatPanelRoot.parentElement !== target) {
+  if (aiChatPanelRoot.parentElement !== chatFloatRoot) {
     aiChatPanelRoot.remove();
-    target.append(aiChatPanelRoot);
+    chatFloatRoot.append(aiChatPanelRoot);
   }
 }
 
@@ -594,16 +506,9 @@ function applyLayout(): void {
     usableWidth = layoutWidth - padL - padR;
   }
   const resizerWidth = leftResizer.offsetWidth || 6;
-  // 사이드 도크는 레이아웃 폭의 1/3. 접힘 레일(CSS 44px)은 :has(.is-collapsed)가 덮어쓴다.
-  const sideWidth =
-    chatDock === "side"
-      ? resolveSideChatWidth(
-        usableWidth,
-        MIN_CANVAS_WIDTH + resizerWidth + LEFT_PANEL_MIN_WIDTH,
-        previewSideChatWidth ?? preferredSideChatWidth,
-      )
-      : 0;
-  publishSideChatWidth(layoutEl, sideWidth);
+  // 조수는 캔버스 위에 떠 있으므로 레이아웃 폭 예산을 먹지 않는다. side 도크가 있던
+  // 시절에는 여기서 1/3 을 잘라 갔다 — 이제 캔버스가 그 폭을 되돌려 받는다.
+  layoutEl?.style?.setProperty?.("--ai-chat-side-width", "0px");
 
   // 좌측 사이드바(타일+맵 트리)는 편집 모드에서 항상 보인다. 프리셋·접힘 토글·좁은
   // 뷰포트가 열을 display:none 으로 지울 수 없다.
@@ -619,7 +524,7 @@ function applyLayout(): void {
   }
   leftRoot.style.display = "";
   // 실제 사용 가능한 폭 = 레이아웃 콘텐츠폭 − 좌우 패딩. 캔버스 최소폭을 먼저 확보한 뒤 좌패널 상한을 잡는다.
-  const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth - sideWidth);
+  const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth);
   const preferredLeftWidth = chrome.leftPanelMaxWidthPx ? Math.min(leftWidth, chrome.leftPanelMaxWidthPx) : leftWidth;
   const effectiveLeftWidth = Math.min(preferredLeftWidth, maxLeftForCanvas);
   leftRoot.style.width = `${effectiveLeftWidth}px`;
@@ -627,20 +532,6 @@ function applyLayout(): void {
   leftResizer.style.display = "";
   // AI 미니 스트림/제안 오버레이가 좌패널을 덮지 않도록 실제 패널 폭을 전역 변수로 발행.
   setEditorLeftSafe(`${effectiveLeftWidth + resizerWidth}px`);
-}
-
-/** CSS `--ai-chat-side-width` 와 TS 좌패널 예산을 동일 값으로 맞춘다. */
-function publishSideChatWidth(layoutEl: HTMLElement | null, sideWidth: number): void {
-  const px = sideWidth > 0 ? `${sideWidth}px` : "0px";
-  layoutEl?.style?.setProperty?.("--ai-chat-side-width", px);
-  // float 모드에서도 변수를 0으로 고정해 이전 side 값이 남지 않게 한다.
-  if (sideWidth <= 0 && layoutEl) {
-    layoutEl.style.setProperty("--ai-chat-side-width", "0px");
-  }
-  // 폴백 문서 루트(사이드 패널이 layout 밖 선택자를 쓰는 경우 대비) — side일 때만 실제 값.
-  if (sideWidth > 0) {
-    document.documentElement?.style?.setProperty?.("--ai-chat-side-width", px);
-  }
 }
 
 /** 렌더된 폭(px). 아직 레이아웃되지 않았거나 fake DOM 이면 폴백. */
@@ -1029,7 +920,8 @@ function loadEditorLayout(): LoadedEditorLayout {
       leftWidth: typeof parsed.leftWidth === "number" ? clamp(parsed.leftWidth, LEFT_PANEL_MIN_WIDTH, LEFT_PANEL_MAX_WIDTH) : fallback.leftWidth,
       mapTreeHeight:
         typeof parsed.mapTreeHeight === "number" ? clamp(parsed.mapTreeHeight, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT) : fallback.mapTreeHeight,
-      chatDock: parseChatDock(parsed.chatDock, fallback.chatDock),
+      // 저장된 `chatDock` 은 읽지 않는다 — 도크가 하나뿐이라 복원할 것이 없다.
+      // 낡은 키는 다음 저장에서 자연히 사라진다(마이그레이션 불필요).
       assistantTemperature: parseAssistantTemperature(parsed.assistantTemperature, fallback.assistantTemperature),
     };
   } catch (error) {
@@ -1042,7 +934,6 @@ function defaultEditorLayout(): LoadedEditorLayout {
   return {
     leftWidth: LEFT_PANEL_DEFAULT_WIDTH,
     mapTreeHeight: MAP_TREE_DEFAULT_HEIGHT,
-    chatDock: "glass",
     assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
   };
 }
@@ -1051,7 +942,6 @@ function saveEditorLayout(): void {
   browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
     leftWidth,
     mapTreeHeight,
-    chatDock,
     assistantTemperature,
   }));
 }
