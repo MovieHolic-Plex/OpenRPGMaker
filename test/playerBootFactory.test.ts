@@ -112,14 +112,35 @@ async function loadAdapters(): Promise<readonly StartPlayGame[]> {
   return [editor.startPlayGame, exported.startPlayGame];
 }
 
-describe("player Phaser boot contract", () => {
+// 이 묶음은 테스트마다 vi.resetModules() 로 모듈 그래프를 버리고 @/app/mode 를 다시
+// import 했다. 그 재임포트가 CPU 경합 아래에서 **영구 교착**했다 — 실측(프로브): 테스트 본문
+// 시작 직후 `await import("@/app/mode")` 에서 60.6초 동안 아무 단계도 진행되지 않았고
+// (SUT 는 진입조차 못 했다) 타임아웃 뒤 남은 테스트는 정상 속도로 통과했다. 같은 실행의 다른
+// 테스트가 한가할 때와 같은 시간(5.6s/1.0s/0.6s)이었으므로 느려짐이 아니라 교착이다.
+// 5중 동시 실행에서 2/5 재현.
+//
+// 그래서 그래프를 한 번만 import 하고, 테스트 사이에는 **모듈이 들고 있는 상태만** 명시적으로
+// 되돌린다(각 어댑터의 destroyGame() 이 자기 싱글턴을 null 로 만든다). 재임포트가 없으므로
+// 교착 창이 사라지고, 반복 transform 비용도 없어진다.
+//
+// 상한을 따로 두는 이유: 첫 테스트가 그래프 초기 import 비용을 혼자 낸다(한가할 때 5.4s,
+// 공용 머신 부하에서 17s). 전역 testTimeout(15s)으로는 그 한 번이 부하에서 넘치고, 넘긴
+// 테스트의 남은 startPlayGame 이 뒤늦게 게임을 밀어 넣어 다음 테스트의 개수 단정까지 무너뜨렸다.
+describe("player Phaser boot contract", { timeout: 60_000 }, () => {
   beforeEach(() => {
     fakePhaser.reset();
     fakeProjectStore.current = undefined;
   });
 
-  afterEach(() => {
-    vi.resetModules();
+  afterEach(async () => {
+    // 두 어댑터의 모듈 싱글턴을 비운다. destroyGame() 이 fake 게임에 destroy 기록을 남기지만
+    // 다음 beforeEach 의 fakePhaser.reset() 이 배열을 비우므로 단정에 새지 않는다.
+    const [editor, exported] = await Promise.all([
+      import("@/app/mode"),
+      import("@/player/exportAppModeShim"),
+    ]);
+    editor.destroyGame();
+    exported.destroyGame();
     vi.clearAllMocks();
     document.body.replaceChildren();
   });
@@ -234,6 +255,9 @@ describe("player Phaser boot contract", () => {
 
     // Then
     expect(createPlayGame).toHaveBeenCalledTimes(2);
+    // 모듈 그래프를 공유하므로 스파이를 여기서 되돌린다 — 안 되돌리면 다음 테스트가
+    // 패치된 네임스페이스를 물려받는다(예전에는 resetModules 가 대신 버려 줬다).
+    createPlayGame.mockRestore();
   });
 
   it("keeps an untracked modal game outside editor global destroy ownership", async () => {

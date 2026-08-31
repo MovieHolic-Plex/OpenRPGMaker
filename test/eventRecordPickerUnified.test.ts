@@ -6,6 +6,9 @@
 // 네이티브 select 는 좁은 조건 칸에서 폭이 눌려 선택값이 읽히지 않았다(실측 91px,
 // "0001: 회복약" 이 들어가지 않음). 숨은 select 는 남긴다 — Playwright
 // selectOption 과 기존 change 파이프라인 호환 때문이며, 스위치/변수가 이미 쓰는 방식이다.
+//
+// 조건 칸은 이후 칩 팔레트로 바뀌어 **켜진 조건의 행만** 렌더한다. 그래서 픽커를 보려면
+// 네 종류 조건을 실제로 심어야 한다 — 빈 conditions 로는 행 자체가 없어 픽커도 없다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { createBlankProject } from "@/project/defaults";
@@ -28,7 +31,12 @@ function seed(): string {
         {
           id: "p1",
           name: "픽커",
-          conditions: [],
+          conditions: [
+            { kind: "switch", switchId: "sw_1", value: true },
+            { kind: "variable", variableId: "var_1", op: ">=", value: 0 },
+            { kind: "item", itemId: "item_potion", present: true },
+            { kind: "actor", actorId: "actor_hero", present: true },
+          ],
           graphic: {},
           trigger: { kind: "action" },
           priority: "same",

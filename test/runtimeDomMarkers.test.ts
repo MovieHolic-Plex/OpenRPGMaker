@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { RuntimeEventView } from "@/project/runtimeEventState";
+import { footprintBounds, UNIT_FOOTPRINT } from "@/project/footprint";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -42,6 +43,12 @@ function view(index: number, sprite: boolean): RuntimeEventView {
     trigger: { kind: "action" },
     priority: "same",
     overlapForbidden: true,
+    // 마커는 크기가 아니라 **계산된 사각**을 쓴다. 1x1 모든 사겁은 발밑 앵커에서 한 칸이다.
+    footprint: UNIT_FOOTPRINT,
+    passRows: UNIT_FOOTPRINT.height,
+    bodyRect: footprintBounds(index, index, UNIT_FOOTPRINT),
+    passRect: footprintBounds(index, index, UNIT_FOOTPRINT),
+    scale: 1,
     transparent: false,
     animationType: "normal",
     movement: { type: "fixed", speed: 3, frequency: 3 },
