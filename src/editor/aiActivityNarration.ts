@@ -79,7 +79,7 @@ const READ_ONLY_EVENT = new Set([
 ]);
 const READ_ONLY_VILLAGE = new Set([
   "critique_village", "evaluate_village_layer", "evaluate_village_look", "get_village_session",
-  "list_village_tree_assets",
+  "list_village_tree_assets", "look_at_houses",
 ]);
 const READ_ONLY_QUALITY = new Set([
   "evaluate_game_quality", "evaluate_dungeon_room", "evaluate_interior_room", "run_lint",

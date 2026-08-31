@@ -130,6 +130,9 @@ describe("shipped project battle skin authoring", () => {
   it("출하 프로젝트 팩터리는 지원 중인 배틀 스킨만 저작한다", async () => {
     const defaults = await import("@/project/defaults");
     const { createSkyStairProject } = await import("@/editor/content/skyStairGame");
+    const { createVillageShoppingStreetProject } = await import(
+      "@/editor/content/villageShoppingStreetProject"
+    );
     // Covered: createBlankProject, createDbExtractedHouseTemplateProject, createFarmingDemoProject,
     // createHouseTemplateGalleryProject, createLogCabinShowcaseProject, createMarketTownProject,
     // createRetroHouseShowcaseProject, createSampleAdventureProject,
@@ -138,11 +141,13 @@ describe("shipped project battle skin authoring", () => {
     // createSmallHouseVariantProject, createTownArchitectureCityProject, createTownArchitectureTestProject,
     // createTownCityShowcaseProject, createTownHouseShowcaseProject, createModernNocturneProject,
     // createSkyStairProject. Factories requiring arguments or network/Supabase access are intentionally skipped.
-    // createVillageShoppingStreetProject 는 제외한다 — defaultProject.ts:198 의 순환 차단용 CJS
-    // require("@/...") 가 vitest 에서 vite alias 를 못 풀어서, 포함하려면 Module.prototype.require
-    // 를 몽키패치해야 한다. 그 팩터리는 battleUiStyle 을 저작하지 않으므로 이 가드의 대상이 아니다.
+    // createVillageShoppingStreetProject 는 이제 editor 층(@/editor/content/villageShoppingStreetProject)
+    // 에 있고 정적 import 로 불러올 수 있다 — 예전의 순환 차단용 CJS require("@/...") 는 vitest 에서
+    // vite alias 를 못 풀어 호출 자체가 깨졌고, 번들러는 그 호출을 정적으로 따라가 플레이어 번들에
+    // 편집기 도구 그래프를 흘렸다(playerBuild 게이트). 그래서 이 가드에도 이제 포함한다.
     const factories = [
       ["createBlankProject", defaults.createBlankProject],
+      ["createVillageShoppingStreetProject", createVillageShoppingStreetProject],
       ["createDbExtractedHouseTemplateProject", defaults.createDbExtractedHouseTemplateProject],
       ["createFarmingDemoProject", defaults.createFarmingDemoProject],
       ["createHouseTemplateGalleryProject", defaults.createHouseTemplateGalleryProject],

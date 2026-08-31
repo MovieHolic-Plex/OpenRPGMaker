@@ -194,23 +194,9 @@ export function createMarketTownProject(): Project {
   return project;
 }
 
-declare const require: (id: string) => unknown;
-
-export function createVillageShoppingStreetProject(): Project {
-  // Lazy import — villageShoppingStreetBuild → toolRunner/store 순환을 defaultProject 초기화에서 끊음
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const {
-    buildVillageShoppingStreetProject,
-    villageShoppingStreetStartPos,
-  } = require("@/editor/content/villageShoppingStreetBuild") as typeof import("@/editor/content/villageShoppingStreetBuild");
-  // build_village 슬롯·HOUSE_MARGIN 알고리즘 + 동쪽 상점가 (하드코딩 집 origin 금지)
-  const built = buildVillageShoppingStreetProject({ seed: 11, houses: 6 });
-  const project = built.project;
-  if (!project.startPos || project.startPos.x < 0) {
-    project.startPos = villageShoppingStreetStartPos();
-  }
-  return project;
-}
+// createVillageShoppingStreetProject 는 여기 없다 — @/editor/content/villageShoppingStreetProject.
+// 그 팩터리는 villageShoppingStreetBuild(→ toolRunner → AI 도구 전량)에 의존하므로 defaults 에
+// 두면 플레이어 출하 번들이 편집기 도구 그래프를 통째로 끌어온다(playerBuild 게이트 실측).
 
 export function createDbExtractedHouseTemplateProject(): Project {
   return createProjectWithStarterMap(createDbExtractedHouseTemplateMap());
