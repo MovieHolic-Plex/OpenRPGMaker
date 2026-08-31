@@ -36,7 +36,7 @@ const REQUIRED_RUNTIME_SELECTORS = [
   ".picture-layer",
   ".runtime-screen-effect",
   // 누락 리소스 알림. 이 규칙은 editor/core.part-1.css 에만 있어서 출하 플레이어에서는
-  // 스타일 없는 static 부록이 되어 무대 아랫에 깔렸고 overflow 에 잔렸다.
+  // 스타일 없는 static 블록이 되어 무대 아래에 깔렸고 overflow 에 잘렸다.
   ".runtime-missing-resource",
   ".zone-feedback",
 ] as const;
@@ -121,6 +121,25 @@ describe("exported player runtime CSS", () => {
     expect(hasCssSelector(emittedCss, EDITOR_ONLY_SELECTOR_SENTINEL)).toBe(false);
   });
 
+  // 선택자 존재만 검사하면 규칙 안에 버그 값이 복원되어도 통과하므로 선언값까지 잠근다.
+  it("inverse-scales every missing-resource length in emitted bytes", () => {
+    const block = cssDeclarationBlock(emittedCss, ".runtime-missing-resource");
+    expect(block, "missing .runtime-missing-resource declaration block").toBeTruthy();
+
+    const lengthDeclarations = block!.split(";")
+      .map((declaration) => declaration.trim())
+      .filter((declaration) => /(?:\d+(?:\.\d+)?|\.\d+)(?:px\b|%)/u.test(declaration));
+    expect(lengthDeclarations.length, "missing-resource rule must contain measured lengths").toBeGreaterThan(0);
+    for (const declaration of lengthDeclarations) {
+      expect(declaration, `length is not inverse-scaled: ${declaration}`).toMatch(
+        /\/\s*var\(--play-scale\)/u,
+      );
+    }
+    expect(block, "bare font-size is multiplied by the transformed stage scale").not.toMatch(
+      /font-size:\s*(?:\d+(?:\.\d+)?|\.\d+)px(?:;|$)/u,
+    );
+  });
+
   it("uses one ordered runtime module list from both CSS entrypoints", async () => {
     // Given: the player-owned aggregator and both host entrypoints.
     const aggregator = await readFile(resolve("src/styles/runtime/playerRuntime.css"), "utf8");
@@ -170,6 +189,24 @@ function hasBattleSkinSelector(css: string, skin: string): boolean {
 function hasCssSelector(css: string, selector: string): boolean {
   const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
   return new RegExp(`${escapedSelector}(?=[\\s,{.:#\\[])`, "u").test(css);
+}
+
+/** 독립 CSS 규칙의 선언 본문을 중괄호 균형으로 떠낸다. */
+function cssDeclarationBlock(css: string, selector: string): string | undefined {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  const header = new RegExp(`${escapedSelector}\\s*\\{`, "gu");
+  const match = header.exec(css);
+  if (!match) return undefined;
+
+  let depth = 1;
+  let index = match.index + match[0].length;
+  const start = index;
+  while (index < css.length && depth > 0) {
+    if (css[index] === "{") depth += 1;
+    else if (css[index] === "}") depth -= 1;
+    index += 1;
+  }
+  return depth === 0 ? css.slice(start, index - 1) : undefined;
 }
 
 async function buildDisposableClosureWithout(importStatement: string): Promise<string> {

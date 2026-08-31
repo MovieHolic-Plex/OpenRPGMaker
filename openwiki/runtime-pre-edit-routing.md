@@ -20,9 +20,9 @@
     들어 있는 유일한 런타임 시트). 모든 치수를 `calc(<px> / var(--play-scale))` 로 나눠 화면상 크기를 고정하고,
     하단 좌측 코너 칩(실측 385×16px, 실효 글자 10px, `--runtime-glass-*` 다크 글래스)으로 뜬다.
     텍스트는 `resourceDisplayName` 으로 자원 이름을 보여주되 프로필이 없으면 **원본 id** 를 그대로 남긴다 —
-    `test/e2e/oprn-map-runtime.spec.ts` 와 `test/runtimeEventState.test.ts` 가 id 를 단정한다.
+    `test/e2e/oprn-map-runtime.spec.ts` 와 `test/runtimeDomMissingResource.test.ts` 가 id 를 단정한다.
     회귀: `test/runtimeDomMissingResource.test.ts`, `test/playerRuntimeCss.test.ts`(빌드된 출하 CSS 에
-    `.runtime-missing-resource` 가 실렸는지). 규칙이 편집기 시트에만 있던 동안 출하 플레이어에서는 스타일
+    `.runtime-missing-resource` 가 실리고 모든 길이 선언이 역스케일되는지). 규칙이 편집기 시트에만 있던 동안 출하 플레이어에서는 스타일
     없는 static 블록이 **1280×272px 로 무대 아래(y=960) 에 깔려 `overflow: hidden` 에 잘려 사라졌다** —
     저작자에게 필요한 신호가 출하물에서 통째로 죽어 있었다.
 - **QA instrumentation is an explicit boot capability (2026-08-28).** `__OPENRPG_BOOT__.qaInstrumentation` → `renderPlayer({ qaInstrumentation })` → `createPlayGame` registry → `PlayScene`. When it is off (every normal exported/community player boot) the runtime installs **no** `__oprnDebug`/`__oprnInput`/`__oprnCamera`/`__oprnPlayerSprite`/`__oprnCharacterSprites`/`__oprnActionCombat`/`__oprnSetActorVitals`/`__oprnSetMediaState` globals, creates **no** `runtime-state-json` / `audio-state-json` mirrors and no `.runtime-debug-marker` hitboxes, and never builds or serializes the broad debug snapshot; `syncRuntimeState` takes a narrow visible-HUD path instead (timer, calendar, picture layer keep working). When it is on, all of that is retained unchanged. Opted in by: `scripts/lib/runtimeQaRun.mjs` (the mandated runtime QA harness depends on `__oprnDebug` for `setSeed`/`teleport`/`readState`), editor play mode (`src/app/mode.ts`), and both editor Test Play modals — those are authoring surfaces, not the shipped player, so the existing editor e2e suite keeps its state dump. Regression: `test/runtimeQaInstrumentationBoundary.test.ts`, `test/runtime/instrumentation-boundary.spec.ts`. The QA `teleport` hook must load a changed destination map **exactly once** — a merge once duplicated that branch and loaded it twice.
