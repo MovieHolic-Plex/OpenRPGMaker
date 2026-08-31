@@ -120,29 +120,32 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
   const state = editorState.get();
   const selectedId = state.selectedEventId;
   const events = editorWorkingEvents(map.events);
-  const overlapping = activeLayer === "event" ? overlappingEventIds(events) : new Set<string>();
+  const eventLayer = activeLayer === "event";
+  const overlapping = eventLayer ? overlappingEventIds(events) : new Set<string>();
   for (const event of events) {
     const cx = event.x * TILE_SIZE + TILE_SIZE / 2;
     const cy = event.y * TILE_SIZE + TILE_SIZE / 2;
     const position = { x: cx, y: cy };
-    if (activeLayer === "event") {
-      const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId);
-      const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
-      const body = normalizeCharacterFootprint(page?.footprint);
+    const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId);
+    const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
+    const body = normalizeCharacterFootprint(page?.footprint);
+    const spriteTexture = editorEventMarkerTexture(project, graphic);
+    if (eventLayer) {
       const passRows = normalizePassRows(page?.passRows, body.height);
-      const spriteTexture = editorEventMarkerTexture(project, graphic);
       // 몸 사각이 1x1 을 넘으면 사각 오버레이가 크기를 말해 주므로 한 칸 마커는 접는다.
       if (isUnitBody(body)) {
         context.overlayLayer.add(createEditableEventMarker(context.scene, position, spriteTexture !== null));
       } else {
         addFootprintOverlay(context, event, body, passRows, overlapping.has(event.id));
       }
-      if (spriteTexture) {
-        context.overlayLayer.add(
-          createEditableEventSprite(context.scene, event, body, graphic, spriteTexture)
-        );
-      }
-    } else {
+    }
+    // 부팅 기본 레이어는 바닥이다. 스프라이트를 이벤트 레이어에만 그리면
+    // 맵을 열었을 때 NPC가 E 배지로만 보여 "아무것도 없다"가 된다.
+    if (spriteTexture) {
+      context.overlayLayer.add(
+        createEditableEventSprite(context.scene, event, body, graphic, spriteTexture)
+      );
+    } else if (!eventLayer) {
       context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy));
     }
     if (event.id === selectedId) addSelectedEventRing(context, position);
