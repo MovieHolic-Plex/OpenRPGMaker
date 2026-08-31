@@ -95,6 +95,16 @@ function reachableRatio(project: Project, map: GameMap, area: Rect): number {
   return reachableCellCount(project, map, area) / (area.w * area.h);
 }
 
+function encloseAreaWithSolidBushes(map: GameMap, area: Rect): void {
+  for (let y = area.y - 1; y <= area.y + area.h; y += 1) {
+    for (let x = area.x - 1; x <= area.x + area.w; x += 1) {
+      const onRing = x === area.x - 1 || x === area.x + area.w
+        || y === area.y - 1 || y === area.y + area.h;
+      if (onRing) map.upperTiles[y * map.width + x] = 289;
+    }
+  }
+}
+
 function plant(project: Project, args: Record<string, unknown>, area: Rect = AREA) {
   const tool = VILLAGE_SESSION_TOOLS.find((entry) => entry.name === "plant_tree_clusters");
   if (!tool) throw new Error("plant_tree_clusters 툴이 없다");
@@ -156,6 +166,18 @@ describe("forestPlacementPlan", () => {
     const half = forestPlacementPlan({ area, footprintCells: 4, density: "dense", share: 0.5 });
     expect(half.count).toBeLessThan(whole.count);
     expect(half.count * 2).toBeGreaterThanOrEqual(whole.count);
+  });
+});
+
+describe("outside-enterable forest cells", () => {
+  it("바깥 한 겹이 solid 덤불로 닫힌 4×4 영역은 진입 가능한 칸이 0이다", () => {
+    const { project, map } = createProject(14);
+    const enclosed = { x: 5, y: 5, w: 4, h: 4 } as const;
+    encloseAreaWithSolidBushes(map, enclosed);
+
+    // 왜 경계 passable 칸을 바로 seed하면 안 되는가: 이 픽스처는 내부 16칸이 전부 잔디지만
+    // 바깥→안쪽 canMove 진입은 하나도 없다. 옛 구현은 그래도 16칸 전부를 보고했다.
+    expect(reachableCellCount(project, map, enclosed)).toBe(0);
   });
 });
 

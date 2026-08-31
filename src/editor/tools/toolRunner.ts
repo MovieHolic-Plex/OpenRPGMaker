@@ -8,6 +8,7 @@
 
 import type { LintIssue } from "@/project/lint/projectLint";
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
+import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
 import { commitChangeset, createDraft, summarizeChanges } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
@@ -114,7 +115,9 @@ export function runToolDefinition(
 
   try {
     // 후처리: 나무 밑동 위 수관(upper) 강제 — 고아 밑동(14,5 등) 방지.
-    const treeRepair = repairTreePairsOnProject(draft);
+    const treeRepair = repairTreePairsOnProject(draft, {
+      canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(draft),
+    });
     const treeRepairNote = formatTreePairRepairSummary(treeRepair);
 
     const diff = summarizeChanges(before, draft);

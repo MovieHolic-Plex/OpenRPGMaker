@@ -32,6 +32,25 @@ const UNDERGROWTH_LABEL = "키큰 풀";
 const BLOCKING_BUSH_LABELS: readonly string[] = ["덤불"];
 
 /**
+ * repairTreePairs 가 보존할 수 있는 타일은 숲 합성이 gap closure에 실제로 쓰는 blocking-bush
+ * id뿐이다. 라벨을 현재 타일셋에서 다시 풀어 일반 가구·상자·장식까지 예외가 넓어지지 않게 한다.
+ */
+export function resolveForestCanopyReplacementExemptTileIds(project: Project): ReadonlySet<number> {
+  const tileIds = new Set<number>();
+  for (const map of Object.values(project.maps)) {
+    const tileset = project.tilesets[map.tilesetId];
+    if (!tileset) continue;
+    for (const label of BLOCKING_BUSH_LABELS) {
+      const access = resolveMaterialByLabel(tileset, label, { preferGroup: false, preferRoles: ["prop", "decoration"] });
+      if (access.status === "missing" || access.kind === "group") continue;
+      const pass = tilePassability(tileset, TILE.GRASS, access.tileId);
+      if (!pass.up && !pass.down && !pass.left && !pass.right) tileIds.add(access.tileId);
+    }
+  }
+  return tileIds;
+}
+
+/**
  * 수종 지분. 왜 덤불이 끼는가: 밑동을 보이게 하면 나무 한 그루가 세로 2칸(수관+밑동)을 쓰므로
  * 통행을 막는 칸은 최대 절반이다(실측: 밑동 규칙만 넣은 침엽수 dense = 통행 가능 50.0%).
  * 덤불(1칸·solid)은 밑동이 없어 그 상한에 걸리지 않는다 — 울창함을 실제 통행 차단으로

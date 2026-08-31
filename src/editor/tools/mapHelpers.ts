@@ -1,7 +1,7 @@
 // editor/tools/mapHelpers.ts
 // 맵 타일 조작 순수 헬퍼(도구 공용). emberQuestGame.ts의 setLower/setUpper/rect 관례를 그대로 따른다.
 
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { ToolError } from "./types";
@@ -144,7 +144,7 @@ export function passableCellCount(
 }
 
 /**
- * 영역 경계에서 **걸어 들어올 수 있는** 칸 수. passableCellCount 와 달리 경로를 본다 —
+ * 영역 **밖에서 걸어 들어올 수 있는** 칸 수. passableCellCount 와 달리 실제 진입 경로를 본다 —
  * 사방이 막혀 밖에서 닿지 않는 안쪽 주머니는 세지 않는다. "지나갈 수 없다"를 말할 때
  * 필요한 수치다(수관 타일은 통행 가능이라 통행 가능 칸 수만으로는 판단할 수 없다).
  */
@@ -162,33 +162,42 @@ export function reachableCells(
   map: GameMap,
   area: { readonly x: number; readonly y: number; readonly w: number; readonly h: number },
 ): Point[] {
+  const insideArea = (x: number, y: number): boolean => (
+    x >= area.x && y >= area.y && x < area.x + area.w && y < area.y + area.h
+  );
   const seen = new Set<string>();
   const queue: Point[] = [];
   const reached: Point[] = [];
-  const push = (x: number, y: number): void => {
-    if (x < area.x || y < area.y || x >= area.x + area.w || y >= area.y + area.h) return;
-    if (!inMapBounds(map, x, y)) return;
+  const enter = (outsideX: number, outsideY: number, x: number, y: number): void => {
+    if (!insideArea(x, y) || !inMapBounds(map, outsideX, outsideY)) return;
     const key = `${x},${y}`;
-    if (seen.has(key)) return;
-    if (!isPassable(project, map, x, y)) return;
+    if (seen.has(key) || !canMove(project, map, outsideX, outsideY, x, y)) return;
     seen.add(key);
     queue.push({ x, y });
   };
+  // 왜 영역 경계 자체를 시작점으로 삼으면 안 되는가(4×4 실측): 바로 바깥 한 겹이 덤불로
+  // 완전히 막혀 입구가 0개여도, 안쪽 경계가 passable 이라는 이유만으로 16칸 전부를 셌다.
+  // 실제 런타임과 같은 canMove 로 바깥 인접 칸에서 경계를 넘을 수 있을 때만 시작한다.
   for (let x = area.x; x < area.x + area.w; x += 1) {
-    push(x, area.y);
-    push(x, area.y + area.h - 1);
+    enter(x, area.y - 1, x, area.y);
+    enter(x, area.y + area.h, x, area.y + area.h - 1);
   }
   for (let y = area.y; y < area.y + area.h; y += 1) {
-    push(area.x, y);
-    push(area.x + area.w - 1, y);
+    enter(area.x - 1, y, area.x, y);
+    enter(area.x + area.w, y, area.x + area.w - 1, y);
   }
   while (queue.length > 0) {
     const cell = queue.pop()!;
-    push(cell.x + 1, cell.y);
-    push(cell.x - 1, cell.y);
-    push(cell.x, cell.y + 1);
-    push(cell.x, cell.y - 1);
     reached.push(cell);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const x = cell.x + dx;
+      const y = cell.y + dy;
+      if (!insideArea(x, y)) continue;
+      const key = `${x},${y}`;
+      if (seen.has(key) || !canMove(project, map, cell.x, cell.y, x, y)) continue;
+      seen.add(key);
+      queue.push({ x, y });
+    }
   }
   return reached;
 }
