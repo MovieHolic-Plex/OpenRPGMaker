@@ -33,7 +33,7 @@ export function defaultBattleRecords() {
       // 생성 로스터의 1:1 아트 매핑을 강제한다(`-01` 접미사만 공유 예외).
       // speciesId 없음: 짝이던 species_extra_105 가 더미 species 와 함께 제거됐다(2026-08-28).
       // generatedEnemyRecords() 100종도 speciesId 를 달지 않으므로 기본 로스터의 표준 형태다.
-      normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","monsterResourceId":"generated-enemy-skeleton-01","stats":{"maxHp":130,"maxMp":10,"attack":13,"defense":20,"mind":10,"agility":10},"rewards":{"exp":12,"gold":11,"dropItemId":"item_bone","dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}],"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
+      normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","speciesId":"species_mine_skeleton","monsterResourceId":"generated-enemy-skeleton-01","stats":{"maxHp":130,"maxMp":10,"attack":13,"defense":20,"mind":10,"agility":10},"rewards":{"exp":12,"gold":11,"dropItemId":"item_bone","dropRatePercent":15},"actions":[{"skillId":"skill_attack","priority":5,"condition":{"kind":"always"}}],"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
       ...generatedEnemyRecords(),
     ],
     troops: [
@@ -126,6 +126,9 @@ export function defaultBattleRecords() {
       normalizeMonsterSpeciesRecord({"id":"species_cave_bat","name":"동굴 박쥐","types":["normal"],"graphic":{"monsterResourceId":"generated-enemy-bat-01","graphicHue":0,"transparent":true,"flying":false},"baseStats":{"maxHp":24,"maxMp":10,"attack":12,"defense":10,"mind":8,"agility":10},"captureRate":0.4,"skillsByLevel":[{"level":1,"skillId":"skill_attack"}]}),
       normalizeMonsterSpeciesRecord({"id":"species_stone_golem","name":"돌 골렘","types":["normal"],"graphic":{"monsterResourceId":"generated-enemy-golem-01","graphicHue":0,"transparent":true,"flying":false},"baseStats":{"maxHp":26,"maxMp":10,"attack":13,"defense":11,"mind":8,"agility":10},"captureRate":0.4,"skillsByLevel":[{"level":1,"skillId":"skill_attack"}]}),
       normalizeMonsterSpeciesRecord({"id":"species_ember_drake","name":"붉은 드래곤","types":["normal"],"graphic":{"monsterResourceId":"generated-enemy-dragon-01","graphicHue":0,"transparent":true,"flying":false},"baseStats":{"maxHp":28,"maxMp":10,"attack":14,"defense":12,"mind":8,"agility":10},"captureRate":0.4,"skillsByLevel":[{"level":1,"skillId":"skill_attack"}]}),
+      // 광산 해골 궁수의 짝 종족. 필드 스폰 적은 speciesId 로 종족을 가리켜야 포획·도감·진화
+      // 파이프라인에 들어간다 — 이 레코드가 없던 동안 광산 궁수만 종족 없는 적으로 떠 있었다.
+      normalizeMonsterSpeciesRecord({"id":"species_mine_skeleton","name":"광산 해골","types":["normal"],"graphic":{"monsterResourceId":"generated-enemy-skeleton-01","graphicHue":0,"transparent":true,"flying":false},"baseStats":{"maxHp":25,"maxMp":10,"attack":13,"defense":12,"mind":8,"agility":10},"captureRate":0.4,"skillsByLevel":[{"level":1,"skillId":"skill_attack"}]}),
       // enemy_extra_006~120 짝이던 species_extra_006~120 115건은 함께 제거했다(2026-08-28).
     ],
   };

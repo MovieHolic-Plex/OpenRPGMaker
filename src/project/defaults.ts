@@ -73,7 +73,6 @@ export {
   createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
   createMarketTownProject,
-  createVillageShoppingStreetProject,
   createRetroHouseShowcaseProject,
   createSampleAdventureProject,
   createScarloxyDemoProject,

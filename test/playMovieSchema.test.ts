@@ -100,10 +100,12 @@ describe("playMovie 명령 계약", () => {
     });
   });
 
-  it("런타임이 착지했으므로 맵 컨텍스트에서 전체 지원으로 승격된다", () => {
+  it("맵·공통은 런타임이 착지해 전체 지원이고, 전투 실행기가 없는 troop 은 부분 지원이다", () => {
     expect(commandRuntimeSupport({ ...VALID_MOVIE }, "map")).toBe("runtime-full");
     expect(commandRuntimeSupport({ ...VALID_MOVIE }, "common")).toBe("runtime-full");
-    expect(commandRuntimeSupport({ ...VALID_MOVIE }, "troop")).toBe("runtime-full");
+    // src/battle/battleEvents.ts 가 이 kind 를 logUnsupported 로 기록하고 false 를 돌린다.
+    // troop 을 full 로 적으면 전투 페이지 저작 표면이 "전투에서도 그대로 돈다"고 거짓 표시한다.
+    expect(commandRuntimeSupport({ ...VALID_MOVIE }, "troop")).toBe("runtime-partial");
   });
 
   it("검증기가 알 수 없는 동영상 리소스를 오류로 잡는다", () => {

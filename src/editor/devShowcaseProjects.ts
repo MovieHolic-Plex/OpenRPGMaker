@@ -4,7 +4,6 @@ import {
   createHouseTemplateGalleryProject,
   createLogCabinShowcaseProject,
   createMarketTownProject,
-  createVillageShoppingStreetProject,
   createRetroHouseShowcaseProject,
   createSampleAdventureProject,
   createScarloxyDemoProject,
@@ -20,6 +19,7 @@ import {
   type SmallHouseVariantIndex,
   type TownHouseShowcaseStyle,
 } from "@/project/defaults";
+import { createVillageShoppingStreetProject } from "@/editor/content/villageShoppingStreetProject";
 import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
 import type { Project } from "@/project/types";
 

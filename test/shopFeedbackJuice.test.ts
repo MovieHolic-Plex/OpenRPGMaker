@@ -153,9 +153,11 @@ describe("수량 스테퍼가 상한에 부딪히면 버저", () => {
     updateShopQuantityTotal(overlay);
     const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
     expect(input?.max).toBe("16");
-    expect(input?.title).toBe("←/→ 로 1~16 수량 조절");
-    // 낭독되는 라벨도 실제 상한을 말해야 한다 — "1~99" 고정이면 16개까지만 살 수 있는
-    // 물건에서 거짓 안내가 된다. title 은 스크린리더 낭독이 보장되지 않으므로 라벨에 담는다.
+    // 낭독되는 라벨이 실제 상한을 말해야 한다 — "1~99" 고정이면 16개까지만 살 수 있는
+    // 물건에서 거짓 안내가 된다. 안내는 title 이 아니라 aria-label 에만 담는다: title 은
+    // 낭독이 보장되지 않고 키보드 전용 출하 표면에서는 마우스에만 뜨는 장식이다
+    // (runtimeDomTitleGuard 가 출하 런타임의 title 쓰기를 금지한다).
+    expect(input?.title).toBe("");
     expect(input?.getAttribute("aria-label")).toBe("수량 — ←/→ 로 1~16 조절");
   });
 
