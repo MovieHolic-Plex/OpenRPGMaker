@@ -346,6 +346,7 @@ describe("키 온보딩과 설정 접근성", () => {
     // 「도크 전환」 항목은 갈 곳이 하나뿐이 된 뒤 삭제됐다.
     expect(findByTestId(menu!, "ai-command-menu-dock")).toBeNull();
     expect(findByTestId(menu!, "ai-command-menu-tools")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-command-menu-studio")).toBeTruthy();
     expect(findByTestId(menu!, "ai-new-session")).toBeNull();
     expect(findByTestId(menu!, "ai-studio-toggle")).toBeNull();
     expect((globalThis.document as unknown as { body: FakeElement }).body.classList.contains("ai-command-bar-active")).toBe(true);

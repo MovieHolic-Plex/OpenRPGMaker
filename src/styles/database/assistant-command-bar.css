@@ -60,11 +60,8 @@ body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
   display: none;
 }
 
-/* 스튜디오에선 좌패널이 어차피 패널 뒤에 있으므로 스튜디오 폭 기준 중앙 정렬. */
-.ai-chat-panel.is-studio .ai-command-bar {
-  left: 36px;
-  right: 36px;
-}
+/* 스튜디오 입력줄 기하는 08-studio-mode-start-screen.css 가 소유한다.
+   여기서 left/right 를 주면 채팅 열 안 relative 배치를 덮어 바가 다시 캔버스를 가로지른다. */
 
 /* ☰ 토글의 40px 독립 버튼 스타일은 폐기 — 액션 행의 .ai-composer-menu-btn
    (assistant-composer.css)이 크기·상태를 소유한다. */
