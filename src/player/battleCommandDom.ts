@@ -6,7 +6,7 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
-import { hpBarState } from "@/player/battleFieldDom";
+import { disambiguatedBattlerName, hpBarState } from "@/player/battleFieldDom";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
@@ -333,15 +333,9 @@ function syncEnemyListName(
   name.append(level);
 }
 
-export function disambiguatedBattlerName(
-  battler: BattleBattlerSnapshot,
-  peers: readonly BattleBattlerSnapshot[],
-): string {
-  const duplicates = peers.filter((peer) => peer.name === battler.name);
-  if (duplicates.length < 2) return battler.name;
-  const index = duplicates.findIndex((peer) => peer.id === battler.id);
-  return `${battler.name} ${Math.max(0, index) + 1}`;
-}
+// 동명 구분은 필드 이름표도 써야 해서 battleFieldDom(하위 계층)으로 내렸다.
+// 여기서 다시 내보내 기존 소비자(battleDirectorDom·battleSequencer)의 경로를 유지한다.
+export { disambiguatedBattlerName };
 
 function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand): SkillId[] {
   if (!actor) return command?.skillId ? [command.skillId] : [];
