@@ -1,13 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { renderStructureKitsTab, resetStructureKitsTabSession, setStructureKitFolderView } from "@/editor/panels/structureKitDbTab";
+import { renderStructureKitsTab, resetStructureKitsTabSession } from "@/editor/panels/structureKitDbTab";
 import { registerStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef, StructureKitDef } from "@/project/types";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
-import { INTERIOR_ROOM_THEME_CATALOG, INTERIOR_ROOM_THEMES, INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
-import { interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
+import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { FakeElement, installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | undefined;
@@ -424,80 +423,21 @@ describe("structureKitDbTab 3원본 앨범(내장·실내 오브젝트·내가 �
   });
 });
 
-describe("structureKitDbTab 방 종류 테마 문법 뷰", () => {
-  function renderInteriorThemeView(): FakeElement {
+describe("structureKitDbTab 은 공간 종류를 그리지 않는다", () => {
+  it("실내 앨범에서도 공간 종류 카드와 [+ 공간 종류]가 없다", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
 
     const host = new FakeElement("div");
-    setStructureKitFolderView("spaces");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
     host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`)!.click();
-    host.querySelector("[data-testid='structure-kit-source-interior']")!.click();
-    return host;
-  }
 
-  // j. 일곱 테마 카드가 실내 앨범에 모두 렌더된다.
-  it("실내 앨범에서 일곱 개 방 종류 카드가 모두 렌더된다", () => {
-    const host = renderInteriorThemeView();
-
-    expect(INTERIOR_ROOM_THEMES.length).toBe(7);
-    for (const theme of INTERIOR_ROOM_THEMES) {
-      const card = host.querySelector(`[data-testid='structure-kit-theme-${theme}']`);
-      expect(card, theme).not.toBeNull();
-      expect(card!.textContent).toContain(INTERIOR_ROOM_THEME_CATALOG[theme].label);
-    }
-    expect(host.querySelectorAll(".structure-kit-theme-card").length).toBe(7);
-
-    // 필수 역할이 없는 방(창고·복도)은 빈 줄이 아니라 한국어 안내를 둔다.
-    for (const theme of ["storage", "corridor"] as const) {
-      const card = host.querySelector(`[data-testid='structure-kit-theme-${theme}']`)!;
-      expect(card.querySelector("canvas")).toBeNull();
-      expect(card.textContent).toContain("필수 오브젝트가 없는 방입니다");
-    }
-  });
-
-  // k. 침실 카드는 침대 역할 오브젝트를, 선술집 카드는 탁자·카운터 두 역할을 덮는다.
-  it("침실 카드는 침대 역할 썸네일을, 선술집 카드는 탁자·카운터 역할을 함께 보여준다", () => {
-    const host = renderInteriorThemeView();
-
-    const bedroom = host.querySelector("[data-testid='structure-kit-theme-bedroom']")!;
-    const bedSlot = bedroom.querySelector("[data-testid='structure-kit-theme-bedroom-role-bed']");
-    expect(bedSlot).not.toBeNull();
-    expect(bedSlot!.querySelector("canvas")).not.toBeNull();
-    expect(bedroom.textContent).toContain("침대");
-
-    const tavern = host.querySelector("[data-testid='structure-kit-theme-tavern']")!;
-    const tableSlot = tavern.querySelector("[data-testid='structure-kit-theme-tavern-role-table']");
-    const counterSlot = tavern.querySelector("[data-testid='structure-kit-theme-tavern-role-counter']");
-    expect(tableSlot).not.toBeNull();
-    expect(counterSlot).not.toBeNull();
-    expect(tableSlot!.querySelector("canvas")).not.toBeNull();
-    expect(counterSlot!.querySelector("canvas")).not.toBeNull();
-    expect(tavern.textContent).toContain("탁자");
-    expect(tavern.textContent).toContain("카운터");
-    // 제안 분위기도 한국어로 노출된다(선술집: rustic|luxury).
-    expect(tavern.textContent).toContain("소박함");
-    expect(tavern.textContent).toContain("화려함");
-  });
-
-  // l. 서재 카드를 고르면 표가 서재 테마 오브젝트로만 좁혀지고, 다시 누르면 풀린다.
-  it("서재 카드를 고르면 표가 서재 테마 오브젝트로 좁혀지고 다시 누르면 해제된다", () => {
-    const host = renderInteriorThemeView();
-
-    expect(host.querySelector("[data-testid='structure-kit-object-bed_h']")).not.toBeNull();
-
-    host.querySelector("[data-testid='structure-kit-theme-study']")!.click();
-
-    expect(host.querySelector("[data-testid='structure-kit-object-bookshelf']")).not.toBeNull();
-    // bed_h는 침실 전용이라 서재 필터에서 사라진다.
-    expect(host.querySelector("[data-testid='structure-kit-object-bed_h']")).toBeNull();
-    expect(host.querySelectorAll(".structure-kit-row").length).toBe(interiorObjectsForTheme("study").length);
-
-    host.querySelector("[data-testid='structure-kit-theme-study']")!.click();
-    expect(host.querySelector("[data-testid='structure-kit-object-bed_h']")).not.toBeNull();
-    expect(host.querySelectorAll(".structure-kit-row").length).toBe(INTERIOR_OBJECT_CATALOG.length);
+    expect(host.querySelector("[data-testid='tileset-spaces-kind-grid']")).toBeNull();
+    expect(host.querySelector("[data-testid='tileset-spaces-kind-add']")).toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-theme-grid']")).toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-new']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='structure-kit-heading']")?.textContent).toBe("구조물");
   });
 });
 

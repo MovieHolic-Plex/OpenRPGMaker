@@ -1,13 +1,14 @@
 // project/types/interior.ts
-// 타일셋에 붙는 실내 방 문법 — 가구 모양은 structureKits(스냅·역할 메타)이고,
-// 방 종류는 이 레코드다. 배치 알고리즘 자체는 코드(interiorRoomPipeline)에 남는다.
+// 타일셋에 붙는 공간 종류 문법 — 가구·건물 모양은 structureKits 이고,
+// 장소 종류(침실·주방·광장…)는 이 레코드다. 배치 알고리즘은 interiorRoomPipeline 에 남는다.
 
 /** 가구를 어디에 붙일지. 실내 오브젝트 카탈로그 InteriorObjectSnap 과 같은 값. */
 export type InteriorFurnitureSnap = "wall-north" | "wall-any" | "floor" | "free";
 
 /**
- * 이 타일셋에서 AI 가 고를 수 있는 방 한 종류.
+ * 이 타일셋에서 AI 가 고를 수 있는 공간 한 종류.
  * requiredRoles 는 같은 타일셋 가구의 ai.interiorRole 과 맞춘다.
+ * 저작 화면 이름은 「공간 종류」 — 구조물 탭과 데이터를 섞지 않는다.
  */
 export interface InteriorRoomKindRecord {
   id: string;

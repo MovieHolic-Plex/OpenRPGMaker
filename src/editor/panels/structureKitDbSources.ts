@@ -147,9 +147,9 @@ export interface InteriorThemeCard {
   readonly modifierLabels: readonly string[];
 }
 
-/** 테마 문법 전체를 카드 목록으로 — 타일셋 방 종류가 있으면 그것, 없으면 기본 7종. */
+/** 테마 문법 전체를 카드 목록으로 — 타일셋에 저작된 공간 종류만. 기본 7종 폴백은 시드가 담당한다. */
 export function interiorThemeCards(tileset?: TilesetDef): readonly InteriorThemeCard[] {
-  const kinds = tileset?.interiorRoomKinds ?? [...BUILTIN_INTERIOR_ROOM_KINDS];
+  const kinds = tileset?.interiorRoomKinds ?? [];
   const objects = interiorObjectsForTileset(tileset);
   return kinds.map((kind) => {
     const theme = kind.id;

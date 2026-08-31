@@ -30,9 +30,10 @@ import {
 } from "@/editor/panels/databaseUtilityRecordViews";
 import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
-import { renderStructureKitsTab, setStructureKitFolderView } from "@/editor/panels/structureKitDbTab";
+import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { applyTilesetFolderFacet } from "@/editor/panels/tilesetMetadataEditor";
 import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
+import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
 import {} from "@/editor/uiCopy";
@@ -780,12 +781,10 @@ function renderActiveTab(
       renderTilesetsTab(body, rerender);
       break;
     case "structureKits":
-      setStructureKitFolderView("kits");
       renderStructureKitsTab(body, rerender);
       break;
     case "tilesetSpaces":
-      setStructureKitFolderView("spaces");
-      renderStructureKitsTab(body, rerender);
+      renderTilesetSpacesTab(body, rerender);
       break;
     case "villages":
       renderVillageTab(body, rerender);
