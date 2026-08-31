@@ -13,8 +13,7 @@ import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { beginKitStampCapture, checkKitStampConditions, commitKitStampCapture } from "@/editor/structurePlacementActions";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import { visibleTilePickAt } from "@/editor/tilePicking";
-import { topTileInStack } from "@/project/mapOverlayTiles";
+import { layerTilePickAt, visibleTilePickAt, type VisibleTilePick } from "@/editor/tilePicking";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -126,6 +125,18 @@ export class TilePaintEngine {
             if (capture) commitKitStampCapture(capture);
             break;
           }
+          if (selectedTile < 0) {
+            // 덧그림 공백 붓 = 지우개. 바닥에서는 공백을 칠하지 않는다(체커 구멍).
+            if (tileLayer === "upper") {
+              eraseVisibleTilesBulk(
+                mid,
+                tileLayer,
+                brushStrokePoints({ centerX: x, centerY: y, size: brushSize }),
+                { autoConnect: autoConnectMode },
+              );
+            }
+            break;
+          }
           // 브러시 전 칸을 한 번의 updateMap 으로 (셀마다 clone 금지)
           paintTilesBulk(
             mid,
@@ -136,6 +147,7 @@ export class TilePaintEngine {
         break;
       case "fill":
         if (firstStrokeTile) {
+          if (selectedTile < 0 && tileLayer === "lower") break;
           recordTileEditSnapshot(mid);
           fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
         }
@@ -179,8 +191,24 @@ export class TilePaintEngine {
   pickVisibleTileAt(mapId: MapId, x: number, y: number): void {
     const map = store.getCurrent().maps[mapId];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
-    const pick = visibleTilePickAt(map, y * map.width + x);
+    const index = y * map.width + x;
+    const layer = editorState.get().layer;
+    const pick =
+      layer === "upper" ? layerTilePickAt(map, index, "upper") : visibleTilePickAt(map, index);
     if (!pick) return;
+    this.commitPick(pick);
+  }
+
+  pickTileAt(target: TilePickTarget): void {
+    const map = store.getCurrent().maps[target.mapId];
+    if (!map) return;
+    if (target.x < 0 || target.y < 0 || target.x >= map.width || target.y >= map.height) return;
+    const pick = layerTilePickAt(map, target.y * map.width + target.x, target.layer);
+    if (!pick) return;
+    this.commitPick(pick);
+  }
+
+  private commitPick(pick: VisibleTilePick): void {
     this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });
     editorState.set({
       activePaletteStamp: null,
@@ -190,27 +218,6 @@ export class TilePaintEngine {
     });
     // 전문가 모드: 우클릭 스포이트 후 팔레트 타일 그림판(하위/상위 레이어 시트)로 이동
     revealPaletteTileFromMap(pick.tile);
-  }
-
-  pickTileAt(target: TilePickTarget): void {
-    const map = store.getCurrent().maps[target.mapId];
-    if (!map) return;
-    if (target.x < 0 || target.y < 0 || target.x >= map.width || target.y >= map.height) return;
-    const index = target.y * map.width + target.x;
-    const tile =
-      target.layer === "upper"
-        ? topTileInStack(map, "upper", index) ?? map.upperTiles[index]
-        : topTileInStack(map, "lower", index) ?? map.lowerTiles[index];
-    const fallbackTile =
-      target.layer === "upper" ? topTileInStack(map, "lower", index) ?? map.lowerTiles[index] : tile;
-    const selectedTile = tile >= 0 ? tile : fallbackTile;
-    if (selectedTile < 0) return;
-    editorState.set({
-      selectedTile,
-      layer: target.layer,
-      tool: "paint",
-    });
-    revealPaletteTileFromMap(selectedTile);
   }
 }
 

@@ -133,7 +133,7 @@ function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTML
   const hasTile = selectedTile >= 0 && selectedTile < tileset.count;
   // 기본 타일 그림판 라벨(tileDisplayLabelForIndex)은 이미 "360 흙길 중심"처럼 번호로 시작 — 번호 중복 표기를 막는다.
   const name = hasTile ? quickTileName(tileset, selectedTile) : "";
-  const label = !hasTile ? "없음" : name.startsWith(`${selectedTile} `) ? name : `${selectedTile} ${name}`;
+  const label = !hasTile ? "공백" : name.startsWith(`${selectedTile} `) ? name : `${selectedTile} ${name}`;
   const chip = el("div", {
     class: "selected-tile-status",
     attrs: { title: `선택 타일: ${label} · 타일셋: ${tileset.name}` },

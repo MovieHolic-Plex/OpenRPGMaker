@@ -21,6 +21,9 @@ export function tilesetHasLayerClassification(tileset: TilesetDef): boolean {
 }
 
 export function tileLayerHome(tileset: TilesetDef, tile: number): TileLayerHome {
+  // 공백은 어느 레이어 붓이든 그 레이어에 쓴다. priority[-1] 폴백이 lower 로
+  // 떨어지면 덧그림 지우개가 바닥을 비운다.
+  if (tile < 0) return "both";
   // 1) 사용자가 DB 타일셋 편집기에서 명시한 레이어가 최우선.
   const override = userTileLayerOverride(tileset, tile);
   if (override) return override;
