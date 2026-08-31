@@ -403,7 +403,7 @@ describe("structureKitDbTab 3원본 앨범(내장·실내 오브젝트·내가 �
     expect(host.querySelector("[data-testid='structure-kit-db-name-bookshelf']")).toBeNull();
     const hint = host.querySelector("[data-testid='structure-kit-object-hint']");
     expect(hint).not.toBeNull();
-    expect(hint!.textContent).toContain("코드");
+    expect(hint!.textContent).toMatch(/타일셋|코드/);
   });
 
   it("실내 오브젝트 인스펙터에 [팔레트에서 쓰기]가 있다", () => {

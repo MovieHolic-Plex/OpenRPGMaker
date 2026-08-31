@@ -30,12 +30,19 @@ import {
 import { DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 // 순환 의존(카탈로그 → 이 모듈의 interiorVocabTiles)이므로 import 순서상 마지막에 둔다:
 // 카탈로그 본문이 실행될 때 DARK_WALL_TILE 등 상위 상수가 이미 초기화되어 있어야 한다.
-import { interiorObjectById, type InteriorObjectCell } from "@/editor/interiorObjectCatalog";
+import { INTERIOR_OBJECT_CATALOG, interiorObjectById, type InteriorObjectCell } from "@/editor/interiorObjectCatalog";
+import {
+  resolveInteriorRoomVocab,
+  seedInteriorTilesetCatalog,
+  type InteriorRoomVocab,
+} from "@/editor/interiorRoomVocab";
+import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
 import { asPlacementFacing } from "@/project/placementSurface";
 import type {
   ClusterRule,
   GameEvent,
   GameMap,
+  InteriorRoomKindRecord,
   MapId,
   PlacementFacing,
   PlacementZone,
@@ -314,7 +321,8 @@ export type RoomSpec = {
   readonly y: number;
   readonly w: number;
   readonly h: number;
-  readonly theme?: InteriorRoomTheme;
+  /** 타일셋 방 종류 id. 기본 7종은 InteriorRoomTheme 과 같다. */
+  readonly theme?: string;
   /** Composable mood/program overlays; e.g. dining+sacred or study+martial. */
   readonly modifiers?: readonly InteriorThemeModifier[];
   // 방별 바닥 재질(예: 돌바닥 12, 널 바닥 102, 돗자리 139). 미지정이면 plan.floorTile → 나무 바닥 72.
@@ -368,6 +376,31 @@ export const INTERIOR_ROOM_THEME_CATALOG: Readonly<Record<InteriorRoomTheme, Int
   corridor: { label: "복도", requiredRoles: [], suggestedModifiers: ["luxury", "sacred", "martial"] },
 };
 
+let activeInteriorVocab: InteriorRoomVocab | null = null;
+
+export function interiorVocabFromTileset(tileset: Project["tilesets"][string] | undefined): InteriorRoomVocab {
+  return resolveInteriorRoomVocab(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
+}
+
+function currentInteriorVocab(): InteriorRoomVocab {
+  return activeInteriorVocab ?? interiorVocabFromTileset(undefined);
+}
+
+function withInteriorVocab<T>(vocab: InteriorRoomVocab | undefined, fn: () => T): T {
+  if (!vocab) return fn();
+  const previous = activeInteriorVocab;
+  activeInteriorVocab = vocab;
+  try {
+    return fn();
+  } finally {
+    activeInteriorVocab = previous;
+  }
+}
+
+export function seedDefaultInteriorCatalog(tileset: Project["tilesets"][string]): boolean {
+  return seedInteriorTilesetCatalog(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
+}
+
 export type InteriorRoomPlan = {
   readonly mapId: MapId;
   readonly name: string;
@@ -375,7 +408,10 @@ export type InteriorRoomPlan = {
   readonly height: number;
   readonly wings: readonly Wing[];
   readonly door: DoorSpec;
-  readonly theme: InteriorRoomTheme;
+  /** 타일셋 방 종류 id. 기본 7종은 InteriorRoomTheme. */
+  readonly theme: string;
+  /** 가구·방 종류를 읽을 타일셋. 생략 시 실내 칩셋. */
+  readonly tilesetId?: string;
   /** Plan-wide composable overlays; room.modifiers overrides this list for that room. */
   readonly themeModifiers?: readonly InteriorThemeModifier[];
   readonly seed?: number;
@@ -643,6 +679,7 @@ export function ensureInteriorRoomHarness(project: Project): boolean {
     }
   }
   if (changed) ts.tileGroups = [...byId.values()];
+  changed = seedDefaultInteriorCatalog(ts) || changed;
   return changed;
 }
 
@@ -671,7 +708,7 @@ export function createEmptyRoomMap(plan: InteriorRoomPlan): GameMap {
     name: plan.name,
     width: plan.width,
     height: plan.height,
-    tilesetId: INTERIOR_ROOM_TILESET_ID,
+    tilesetId: plan.tilesetId ?? INTERIOR_ROOM_TILESET_ID,
     tileSize: DEFAULT_TILE_SIZE,
     lowerTiles,
     upperTiles: new Array(plan.width * plan.height).fill(TILE.EMPTY),
@@ -749,32 +786,38 @@ export function validateInteriorRoomPlan(plan: InteriorRoomPlan): string[] {
   return issues;
 }
 
-export function runInteriorRoomPipeline(plan: InteriorRoomPlan): {
+export function runInteriorRoomPipeline(plan: InteriorRoomPlan, vocab?: InteriorRoomVocab): {
   readonly map: GameMap;
   readonly log: string[];
   readonly ok: boolean;
   readonly warnings: string[];
 } {
-  let map = createEmptyRoomMap(plan);
-  const log: string[] = [];
-  const warnings: string[] = [];
-  for (const layer of INTERIOR_ROOM_BUILD_ORDER) {
-    const result = applyInteriorRoomLayer(map, plan, layer);
-    map = result.map;
-    log.push(`[${layer}] ${result.summary}`);
-    warnings.push(...result.warnings);
-    if (!result.ok && (layer === "critique" || layer === "plan")) {
-      return { map, log, ok: false, warnings };
+  return withInteriorVocab(vocab, () => {
+    let map = createEmptyRoomMap(plan);
+    const log: string[] = [];
+    const warnings: string[] = [];
+    for (const layer of INTERIOR_ROOM_BUILD_ORDER) {
+      const result = applyInteriorRoomLayer(map, plan, layer, vocab);
+      map = result.map;
+      log.push(`[${layer}] ${result.summary}`);
+      warnings.push(...result.warnings);
+      if (!result.ok && (layer === "critique" || layer === "plan")) {
+        return { map, log, ok: false, warnings };
+      }
     }
-  }
-  return { map, log, ok: true, warnings };
+    return { map, log, ok: true, warnings };
+  });
 }
 
 export function applyInteriorRoomLayer(
   map: GameMap,
   plan: InteriorRoomPlan,
   layer: RoomLayer,
+  vocab?: InteriorRoomVocab,
 ): BuildPhaseResult {
+  if (vocab) {
+    return withInteriorVocab(vocab, () => applyInteriorRoomLayer(map, plan, layer));
+  }
   const warnings: string[] = [];
   switch (layer) {
     case "plan": {
@@ -1017,7 +1060,7 @@ function paintRoomSpace(
   map: GameMap,
   floor: boolean[],
   mask: boolean[],
-  theme: InteriorRoomTheme,
+  theme: string,
   plan: InteriorRoomPlan,
   room?: RoomSpec,
 ): string[] {
@@ -1040,8 +1083,11 @@ function paintRoomSpace(
     }
   }
   paintThemeFurniture(map, mask, theme, plan.door, room, luxury);
-  applyThemeModifiers(map, mask, modifiers, plan.door);
-  placeSouthFiller(map, mask, theme, plan.door, mask.filter(Boolean).length);
+  if (isBuiltinInteriorTheme(theme)) {
+    applyThemeModifiers(map, mask, modifiers, plan.door);
+    placeSouthFiller(map, mask, theme, plan.door, mask.filter(Boolean).length);
+  }
+  ensureRequiredRoles(map, mask, theme, plan.door, room);
   for (const c of sentinels) {
     if (getU(map, c.x, c.y) === ENTRY_SENTINEL) setU(map, c.x, c.y, TILE.EMPTY);
   }
@@ -1097,10 +1143,16 @@ export function furnishInteriorSpace(
   map: GameMap,
   plan: InteriorRoomPlan,
   roomId: string,
-  themeOverride?: InteriorRoomTheme,
+  themeOverride?: string,
   seed?: number,
   modifierOverride?: readonly InteriorThemeModifier[],
+  vocab?: InteriorRoomVocab,
 ): { plan: InteriorRoomPlan; warnings: string[] } {
+  if (vocab) {
+    return withInteriorVocab(vocab, () =>
+      furnishInteriorSpace(map, plan, roomId, themeOverride, seed, modifierOverride),
+    );
+  }
   const rooms = plan.rooms ?? [];
   const idx = rooms.findIndex((r) => r.id === roomId);
   if (idx < 0) throw new Error(`room 없음: ${roomId} (rooms=${rooms.map((r) => r.id).join(",")})`);
@@ -1284,7 +1336,11 @@ export function evaluateInteriorRoom(
   plan: InteriorRoomPlan,
   attempt = 1,
   maxAttempts = 3,
+  vocab?: InteriorRoomVocab,
 ): InteriorRoomLookReport {
+  if (vocab) {
+    return withInteriorVocab(vocab, () => evaluateInteriorRoom(map, plan, attempt, maxAttempts));
+  }
   const floor = floorMaskFromPlan(plan);
   const issues: string[] = [];
 
@@ -1398,7 +1454,7 @@ export function evaluateInteriorRoom(
 function themeManifestWarnings(
   map: GameMap,
   floor: boolean[],
-  theme: InteriorRoomTheme,
+  theme: string,
   roomId?: string,
 ): string[] {
   const area = floor.filter(Boolean).length;
@@ -1415,15 +1471,35 @@ function themeManifestWarnings(
   };
   const where = roomId ? `room=${roomId}` : "map";
   const out: string[] = [];
-  const grammar = INTERIOR_ROOM_THEME_CATALOG[theme];
-  for (const role of grammar.requiredRoles) {
+  const kind = currentInteriorVocab().kindsById.get(theme);
+  const grammar = isBuiltinInteriorTheme(theme) ? INTERIOR_ROOM_THEME_CATALOG[theme] : undefined;
+  const requiredRoles = kind?.requiredRoles ?? grammar?.requiredRoles ?? [];
+  const label = kind?.label ?? grammar?.label ?? theme;
+  for (const role of requiredRoles) {
     if (role === "counter" && area < 30) continue;
-    const semantic = INTERIOR_SEMANTIC_TILE_CATALOG[role];
-    if (!hasTile(semantic.tileIds, semantic.layer)) {
-      out.push(`manifest: ${semantic.label} 없는 ${grammar.label} (${where})`);
+    const tiles = tilesForRole(role);
+    if (tiles.tileIds.length === 0) continue;
+    if (!hasTile(tiles.tileIds, tiles.layer)) {
+      out.push(`manifest: ${tiles.label} 없는 ${label} (${where})`);
     }
   }
   return out;
+}
+
+function tilesForRole(role: string): { label: string; tileIds: readonly number[]; layer: "lower" | "upper" | "both" } {
+  const objects = [...currentInteriorVocab().objectsById.values()].filter((object) => object.role === role);
+  if (objects.length > 0) {
+    const tileIds = objects.flatMap((object) => object.cells.map((cell) => cell.tile));
+    const layers = new Set(objects.flatMap((object) => object.cells.map((cell) => cell.layer)));
+    const layer: "lower" | "upper" | "both" = layers.size > 1 ? "both" : layers.has("upper") ? "upper" : "lower";
+    const semantic = role in INTERIOR_SEMANTIC_TILE_CATALOG
+      ? INTERIOR_SEMANTIC_TILE_CATALOG[role as InteriorSemanticTileRole]
+      : undefined;
+    return { label: semantic?.label ?? objects[0]!.label, tileIds, layer };
+  }
+  const semantic = INTERIOR_SEMANTIC_TILE_CATALOG[role as InteriorSemanticTileRole];
+  if (semantic) return { label: semantic.label, tileIds: semantic.tileIds, layer: semantic.layer };
+  return { label: role, tileIds: [], layer: "upper" };
 }
 
 function applyThemeModifiers(
@@ -1460,10 +1536,115 @@ function applyThemeModifiers(
   }
 }
 
+function isBuiltinInteriorTheme(theme: string): theme is InteriorRoomTheme {
+  return (INTERIOR_ROOM_THEMES as readonly string[]).includes(theme);
+}
+
+function ensureRequiredRoles(
+  map: GameMap,
+  floor: boolean[],
+  theme: string,
+  door: DoorSpec,
+  room?: RoomSpec,
+): void {
+  const kind = currentInteriorVocab().kindsById.get(theme);
+  const required = kind?.requiredRoles ?? [];
+  if (required.length === 0) return;
+  for (const role of required) {
+    const tiles = tilesForRole(role);
+    if (tiles.tileIds.length === 0) continue;
+    const hasRole = tiles.tileIds.some((tile) => {
+      for (let y = 0; y < map.height; y += 1) {
+        for (let x = 0; x < map.width; x += 1) {
+          if (!floor[y * map.width + x]) continue;
+          if (tiles.layer !== "lower" && getU(map, x, y) === tile) return true;
+          if (tiles.layer !== "upper" && getL(map, x, y) === tile) return true;
+        }
+      }
+      return false;
+    });
+    if (hasRole) continue;
+    const object = [...currentInteriorVocab().objectsById.values()].find((entry) => entry.role === role);
+    if (!object) continue;
+    placeCatalogObject(map, floor, door, object, room);
+  }
+}
+
+function paintGenericThemeFurniture(
+  map: GameMap,
+  floor: boolean[],
+  kind: InteriorRoomKindRecord,
+  door: DoorSpec,
+  room?: RoomSpec,
+): void {
+  const vocab = currentInteriorVocab();
+  const themed = [...vocab.objectsById.values()].filter(
+    (object) => object.themes.includes(kind.id) || (object.role !== null && kind.requiredRoles.includes(object.role)),
+  );
+  const required = kind.requiredRoles
+    .map((role) => themed.find((object) => object.role === role)
+      ?? [...vocab.objectsById.values()].find((object) => object.role === role))
+    .filter((object): object is NonNullable<typeof object> => object !== undefined);
+  for (const object of required) {
+    placeCatalogObject(map, floor, door, object, room);
+  }
+  for (const object of themed) {
+    if (object.role && kind.requiredRoles.includes(object.role)) continue;
+    if (kind.walkway && (object.snap === "floor" || object.snap === "free")) continue;
+    placeCatalogObject(map, floor, door, object, room);
+  }
+}
+
+function placeCatalogObject(
+  map: GameMap,
+  floor: boolean[],
+  door: DoorSpec,
+  object: { cells: readonly InteriorObjectCell[]; snap: string; width: number; height: number },
+  room?: RoomSpec,
+): boolean {
+  const inRoom = (cell: { x: number; y: number }): boolean => {
+    if (!room) return true;
+    return cell.x >= room.x && cell.x < room.x + room.w && cell.y >= room.y && cell.y < room.y + room.h;
+  };
+  const candidates =
+    object.snap === "floor" || object.snap === "free"
+      ? listOpenFloor(floor, map, door).filter(inRoom)
+      : object.snap === "wall-any"
+        ? listWallSnapFloor(floor, map, door).filter(inRoom)
+        : listNorthFloor(floor, map).filter(inRoom);
+  for (const origin of rotated(candidates)) {
+    if (!canPaintObject(map, object.cells, origin.x, origin.y, door)) continue;
+    paintObjectCells(map, object.cells, origin.x, origin.y);
+    return true;
+  }
+  return false;
+}
+
+function canPaintObject(
+  map: GameMap,
+  cells: readonly InteriorObjectCell[],
+  ox: number,
+  oy: number,
+  door: DoorSpec,
+): boolean {
+  for (const cell of cells) {
+    const x = ox + cell.dx;
+    const y = oy + cell.dy;
+    if (!inBounds(x, y, map.width, map.height)) return false;
+    if (x === door.x && y === door.y) return false;
+    if (cell.layer === "upper" && !isUpperEmpty(map, x, y)) return false;
+    if (cell.layer === "lower") {
+      const existing = getL(map, x, y);
+      if (houseShellWallMembers().has(existing) || existing === VR.VOID) return false;
+    }
+  }
+  return true;
+}
+
 function paintThemeFurniture(
   map: GameMap,
   floor: boolean[],
-  theme: InteriorRoomTheme,
+  theme: string,
   door: DoorSpec,
   room?: RoomSpec,
   luxury = false,
@@ -1484,6 +1665,12 @@ function paintThemeFurniture(
   const variant = (((room?.x ?? door.x) + (room?.y ?? door.y)) + Math.floor(RNG() * 3)) % 3;
   const plan = { theme, door } as const;
   // No indoor plants (user rule).
+
+  if (!isBuiltinInteriorTheme(theme)) {
+    const kind = currentInteriorVocab().kindsById.get(theme);
+    if (kind) paintGenericThemeFurniture(map, floor, kind, door, room);
+    return;
+  }
 
   if (plan.theme === "corridor") {
     // 복도: 통행이 주인 — 바닥 점유물 금지, 벽 장식과 벽에 붙는 전시물(흉상/갑옷)만.
@@ -1662,6 +1849,8 @@ let RNG: () => number = mulberry32(1);
  * 정의가 없으면 즉시 실패 — 어휘 오타가 조용히 반쪽 가구로 새어나가지 않게.
  */
 function objectCells(id: string): readonly InteriorObjectCell[] {
+  const fromVocab = currentInteriorVocab().objectsById.get(id);
+  if (fromVocab) return fromVocab.cells;
   const def = interiorObjectById(id);
   if (!def) throw new Error(`실내 오브젝트 정의 없음: ${id}`);
   return def.cells;
@@ -1820,7 +2009,7 @@ function placeCounterRun(
 function placeSouthFiller(
   map: GameMap,
   floor: boolean[],
-  theme: InteriorRoomTheme,
+  theme: string,
   door: DoorSpec,
   area: number,
 ): void {
@@ -1940,8 +2129,8 @@ function fillSparseQuadrants(map: GameMap, floor: boolean[], plan: InteriorRoomP
     }
     return false;
   };
-  const goods = QUADRANT_FILLER_GOODS[plan.theme];
-  if (goods.length === 0) return;
+  const goods = isBuiltinInteriorTheme(plan.theme) ? QUADRANT_FILLER_GOODS[plan.theme] : undefined;
+  if (!goods || goods.length === 0) return;
   const snap = listWallSnapFloor(floor, map, plan.door).filter((c) => !corridor.has(c.y * w + c.x));
   const judged = [0, 1, 2, 3].filter((q) => eligible[q]! >= 12);
   if (judged.length === 0) return;

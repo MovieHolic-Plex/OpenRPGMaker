@@ -197,7 +197,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 
 - **목록 규약은 합집합**: `builtinHouseStructureKitsFor(tileset)` 먼저, 그 다음 `tileset.structureKits`. `src/editor/tools/structureKitTools.ts` 와 `src/editor/harnessSuggestion/structureKitShelf.ts` 가 쓰는 규약과 같다 — 탭·AI 툴·팔레트 선반의 목록이 갈리면 회귀다. 이전에는 탭만 `tileset.structureKits` 를 읽어 새 프로젝트에서 항상 빈 앨범이었다.
 - **타일셋 레일이 앨범 축, 원본 칩이 그 안의 필터**: `structure-kit-source-all` / `-builtin` / `-interior` / `-user` (라벨 전체 · 내장 건물 · 실내 오브젝트 · 내가 저장한 구조물). 각 칩의 숫자는 그 원본이 지금 나열하는 행 수와 같다.
-- **실내 오브젝트는 실내 칩셋 전용**: `interiorObjectsForTileset` 이 `easyrpg_chipset_interior`(`INTERIOR_ROOM_TILESET_ID`) 에서만 카탈로그를 돌려준다. "한 타일셋의 구조물은 다른 타일셋에 섞이지 않는다"는 기존 IA 규약을 그대로 지킨다.
+- **실내 오브젝트는 타일셋 데이터**: `interiorObjectsForTileset` 은 그 타일셋의 실내 가구 킷(`ai.snap` / `ai.interiorRole` / `learnedFrom: interior-catalog`)을 돌려준다. 실내 칩셋은 코드 카탈로그를 시드·폴백한다. 방 종류는 `tileset.interiorRoomKinds`(필수 역할·복도 여부). AI 방 채우기는 이 타일셋 레코드를 읽는다. "한 타일셋의 구조물은 다른 타일셋에 섞이지 않는다"는 기존 IA 규약을 그대로 지킨다.
 - **행은 실제 래스터**: 오브젝트 행 `structure-kit-object-<id>` 은 `INTERIOR_OBJECT_CATALOG` 의 셀을 `renderTileCellsToCanvas` 로 그린다(받침 타일 `VR.FLOOR`). 킷 행 `structure-kit-db-<kitId>` 은 기존대로 `assembledKitCells`.
 - **방 종류 카드**: `structure-kit-theme-<themeId>` (7종), 카드 안의 역할 칸은 `structure-kit-theme-<themeId>-role-<role>` 이고 그 역할을 대표하는 카탈로그 오브젝트 썸네일이 붙는다. 카드를 누르면 표가 그 테마 오브젝트로 좁혀지고 다시 누르면 풀린다. 필수 역할이 없는 창고·복도는 빈 줄 대신 그 사실을 적는다.
 - **가상 항목은 파괴적 액션이 없다**: 내장 파라메트릭 킷(`learnedFrom === "builtin-parametric"`)과 실내 카탈로그 오브젝트는 프로젝트 데이터가 아니라 코드다 — 이름 변경·삭제를 노출하지 않고 인스펙터가 그 이유를 적는다. 등록 킷의 액션은 이름 변경, 부위 삭제, 문에서 입구 추정, 팔레트에서 쓰기, 복제, 편집, 낱개 내보내기, 삭제다.

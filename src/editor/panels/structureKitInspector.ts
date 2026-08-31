@@ -121,26 +121,37 @@ export function renderObjectInspector(
               },
             },
           }),
-          el("button", {
-            class: "btn primary",
-            attrs: { type: "button" },
-            text: "내 구조물로 복제",
-            dataset: { testid: `structure-kit-duplicate-${object.id}` },
-            on: {
-              click: () => {
-                const copy = duplicateIntoTileset(tileset.id, object);
-                toast(`'${copy.name}' — 사본은 그림만 가져옵니다. AI 실내 방 채우기는 원본 카탈로그만 씁니다.`, "info");
-                // 목록만 다시 그리면 선택이 원본에 남아 "복제했는데 아무 일도 안 남" 이 된다.
-                enterEditor(copy.id);
+          ...(tileset.structureKits?.some((kit) => kit.id === object.id)
+            ? [el("button", {
+              class: "btn primary",
+              attrs: { type: "button" },
+              text: "편집",
+              dataset: { testid: `structure-kit-object-edit-${object.id}` },
+              on: {
+                click: () => enterEditor(object.id),
               },
-            },
-          }),
+            })]
+            : [el("button", {
+              class: "btn primary",
+              attrs: { type: "button" },
+              text: "내 구조물로 복제",
+              dataset: { testid: `structure-kit-duplicate-${object.id}` },
+              on: {
+                click: () => {
+                  const copy = duplicateIntoTileset(tileset.id, object);
+                  toast(`'${copy.name}' 사본을 만들었습니다. 역할·스냅·테마가 있으면 AI 방 채우기가 읽습니다.`, "ok");
+                  enterEditor(copy.id);
+                },
+              },
+            })]),
         ],
       }),
       el("p", {
         class: "structure-kit-quiet",
         dataset: { testid: "structure-kit-object-hint" },
-        text: "실내 오브젝트는 코드로 관리되는 카탈로그입니다 — 고치려면 [내 구조물로 복제]를 쓰세요.",
+        text: tileset.structureKits?.some((kit) => kit.id === object.id)
+          ? "이 타일셋에 저장된 가구입니다. AI 방 채우기가 이 모양·역할을 읽습니다."
+          : "실내 오브젝트는 코드 카탈로그 폴백입니다 — 고치려면 [내 구조물로 복제]를 쓰세요.",
       }),
     ],
   });
@@ -178,6 +189,8 @@ function learnedFromLabel(learnedFrom: StructureKitLearnedFrom): string {
       return "내장 파라메트릭";
     case "db-authored":
       return "데이터베이스에서 작성";
+    case "interior-catalog":
+      return "실내 카탈로그 시드";
   }
 }
 

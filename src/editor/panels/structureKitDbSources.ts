@@ -10,9 +10,10 @@ import {
   type InteriorObjectDef,
   type InteriorObjectSnap,
 } from "@/editor/interiorObjectCatalog";
+import { interiorFurnitureKits, interiorObjectFromKit, isInteriorFurnitureKit } from "@/editor/interiorRoomVocab";
+import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
 import {
   INTERIOR_ROOM_THEME_CATALOG,
-  INTERIOR_ROOM_THEMES,
   INTERIOR_ROOM_TILESET_ID,
   INTERIOR_SEMANTIC_TILE_CATALOG,
   VR,
@@ -46,10 +47,13 @@ export type StructureAlbumEntry =
   | { readonly kind: "kit"; readonly source: "builtin" | "user"; readonly kit: StructureKitDef }
   | { readonly kind: "object"; readonly source: "interior"; readonly object: InteriorObjectDef };
 
-/** 실내 오브젝트는 실내 칩셋에서만 노출한다. */
-export function interiorObjectsForTileset(tileset: Pick<TilesetDef, "id"> | undefined): readonly InteriorObjectDef[] {
-  if (!tileset || tileset.id !== INTERIOR_ROOM_TILESET_ID) return [];
-  return INTERIOR_OBJECT_CATALOG;
+/** 실내 가구 — 타일셋에 시드된 킷이 있으면 그것, 실내 칩셋은 코드 카탈로그 폴백. */
+export function interiorObjectsForTileset(tileset: TilesetDef | undefined): readonly InteriorObjectDef[] {
+  if (!tileset) return [];
+  const fromKits = interiorFurnitureKits(tileset).map(interiorObjectFromKit);
+  if (fromKits.length > 0) return fromKits;
+  if (tileset.id === INTERIOR_ROOM_TILESET_ID) return INTERIOR_OBJECT_CATALOG;
+  return [];
 }
 
 /** 앨범(타일셋) 전체 행 — 내장 킷 → 실내 오브젝트 → 등록 킷 순. */
@@ -63,6 +67,7 @@ export function albumEntries(tileset: TilesetDef | undefined): readonly Structur
     entries.push({ kind: "object", source: "interior", object });
   }
   for (const kit of tileset.structureKits ?? []) {
+    if (isInteriorFurnitureKit(kit)) continue;
     entries.push({ kind: "kit", source: "user", kit });
   }
   return entries;
@@ -83,8 +88,13 @@ export function albumEntryId(entry: StructureAlbumEntry): string {
 }
 
 /** 오브젝트가 속한 테마의 한국어 이름 목록. */
-export function interiorObjectThemeLabels(object: InteriorObjectDef): readonly string[] {
-  return object.themes.map((theme) => INTERIOR_ROOM_THEME_CATALOG[theme].label);
+export function interiorObjectThemeLabels(
+  object: InteriorObjectDef,
+  tileset?: TilesetDef,
+): readonly string[] {
+  const kinds = tileset?.interiorRoomKinds ?? BUILTIN_INTERIOR_ROOM_KINDS;
+  const labels = new Map(kinds.map((kind) => [kind.id, kind.label]));
+  return object.themes.map((theme) => labels.get(theme) ?? INTERIOR_ROOM_THEME_CATALOG[theme as InteriorRoomTheme]?.label ?? theme);
 }
 
 /** 레이어 한국어 이름. */
@@ -109,7 +119,7 @@ export function interiorObjectSnapLabel(snap: InteriorObjectSnap): string {
 /** 의미 역할 한국어 이름. 장식류(role=null)는 '장식'. */
 export function interiorObjectRoleLabel(object: InteriorObjectDef): string {
   if (!object.role) return "장식";
-  return INTERIOR_SEMANTIC_TILE_CATALOG[object.role].label;
+  return INTERIOR_SEMANTIC_TILE_CATALOG[object.role as InteriorSemanticTileRole]?.label ?? object.role;
 }
 
 /** 조합형 분위기(modifier)의 한국어 이름 — 파이프라인은 영문 키만 갖고 있어 UI 이름은 여기서 정한다. */
@@ -123,7 +133,7 @@ export const INTERIOR_THEME_MODIFIER_LABELS: Readonly<Record<InteriorThemeModifi
 
 /** 테마 문법의 필수 역할 한 칸 — 그 역할을 대표하는 실내 오브젝트가 붙는다. */
 export interface InteriorThemeRoleSlot {
-  readonly role: InteriorSemanticTileRole;
+  readonly role: string;
   readonly label: string;
   /** 같은 테마 안에서 이 역할을 맡는 첫 오브젝트. 카탈로그에 없으면 undefined. */
   readonly object: InteriorObjectDef | undefined;
@@ -131,26 +141,32 @@ export interface InteriorThemeRoleSlot {
 
 /** '방 종류' 카드 한 장 — 테마 이름, 필수 역할, 제안 분위기. */
 export interface InteriorThemeCard {
-  readonly theme: InteriorRoomTheme;
+  readonly theme: string;
   readonly label: string;
   readonly roles: readonly InteriorThemeRoleSlot[];
   readonly modifierLabels: readonly string[];
 }
 
-/** 테마 문법 전체를 카드 목록으로 — 선언 순서(INTERIOR_ROOM_THEMES)를 유지한다. */
-export function interiorThemeCards(): readonly InteriorThemeCard[] {
-  return INTERIOR_ROOM_THEMES.map((theme) => {
-    const grammar = INTERIOR_ROOM_THEME_CATALOG[theme];
-    const objects = interiorObjectsForTheme(theme);
+/** 테마 문법 전체를 카드 목록으로 — 타일셋 방 종류가 있으면 그것, 없으면 기본 7종. */
+export function interiorThemeCards(tileset?: TilesetDef): readonly InteriorThemeCard[] {
+  const kinds = tileset?.interiorRoomKinds ?? [...BUILTIN_INTERIOR_ROOM_KINDS];
+  const objects = interiorObjectsForTileset(tileset);
+  return kinds.map((kind) => {
+    const theme = kind.id;
+    const themed = objects.filter((object) => object.themes.includes(kind.id));
+    const fallback = interiorObjectsForTheme(kind.id);
+    const pool = themed.length > 0 ? themed : fallback;
     return {
       theme,
-      label: grammar.label,
-      roles: grammar.requiredRoles.map((role) => ({
-        role,
-        label: INTERIOR_SEMANTIC_TILE_CATALOG[role].label,
-        object: objects.find((object) => object.role === role),
+      label: kind.label,
+      roles: kind.requiredRoles.map((role) => ({
+        role: role as InteriorSemanticTileRole,
+        label: INTERIOR_SEMANTIC_TILE_CATALOG[role as InteriorSemanticTileRole]?.label ?? role,
+        object: pool.find((object) => object.role === role),
       })),
-      modifierLabels: grammar.suggestedModifiers.map((modifier) => INTERIOR_THEME_MODIFIER_LABELS[modifier]),
+      modifierLabels: (kind.suggestedModifiers ?? []).map(
+        (modifier) => INTERIOR_THEME_MODIFIER_LABELS[modifier as InteriorThemeModifier] ?? modifier,
+      ),
     };
   });
 }

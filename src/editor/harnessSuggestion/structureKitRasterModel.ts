@@ -314,8 +314,7 @@ export function bakeStructureKit(kit: StructureKitDef, id: string, name: string)
 }
 
 /**
- * 실내 오브젝트 → section. role·snap·themes 는 버린다.
- * 그 메타는 실내 방 생성 파이프라인의 문법이고, 사본은 그 문법에 등록되지 않는다.
+ * 실내 오브젝트 → section. 역할·스냅·테마는 ai 메타로 남긴다 — 파이프라인이 같은 킷을 가구로 읽는다.
  */
 export function bakeInteriorObject(object: InteriorObjectDef, id: string, name: string): SectionStructureKitDef {
   return {
@@ -330,6 +329,13 @@ export function bakeInteriorObject(object: InteriorObjectDef, id: string, name: 
       Math.max(1, object.height),
     ),
     learnedFrom: "db-authored",
+    ai: {
+      description: "",
+      placementRules: "",
+      ...(object.role ? { interiorRole: object.role } : {}),
+      snap: object.snap,
+      themes: [...object.themes],
+    },
   };
 }
 

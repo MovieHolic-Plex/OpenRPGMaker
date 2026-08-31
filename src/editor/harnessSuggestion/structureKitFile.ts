@@ -298,9 +298,17 @@ function readAiMeta(raw: unknown): StructureKitAiMeta | undefined {
   const placement = Array.isArray(record.placement) ? readPlacementConditions(record.placement) : [];
   // 예전엔 두 자유 문장이 비면 메타를 통째로 버렸다. 그러면 「증분 축·테마·배치 조건만
   // 적은 벽」이 가져오기에서 어휘를 전부 잃는다 — 한 칸이라도 내용이 있으면 살린다.
+  const interiorRole = typeof record.interiorRole === "string" && record.interiorRole.trim()
+    ? record.interiorRole.trim()
+    : undefined;
+  const snap = record.snap === "wall-north" || record.snap === "wall-any"
+    || record.snap === "floor" || record.snap === "free"
+    ? record.snap
+    : undefined;
   const hasAnything = Boolean(
     description || placementRules || role || repeatability || growthAxis || layerHome
-    || tags.length > 0 || themes.length > 0 || placement.length > 0,
+    || tags.length > 0 || themes.length > 0 || placement.length > 0
+    || interiorRole || snap,
   );
   if (!hasAnything) return undefined;
   return {
@@ -313,6 +321,8 @@ function readAiMeta(raw: unknown): StructureKitAiMeta | undefined {
     ...(growthAxis ? { growthAxis } : {}),
     ...(layerHome ? { layerHome } : {}),
     ...(placement.length > 0 ? { placement } : {}),
+    ...(interiorRole ? { interiorRole } : {}),
+    ...(snap ? { snap } : {}),
     ...(record.origin === "user" || record.origin === "ai" ? { origin: record.origin } : {}),
     ...(record.confidence === "high" || record.confidence === "medium" || record.confidence === "low"
       ? { confidence: record.confidence }

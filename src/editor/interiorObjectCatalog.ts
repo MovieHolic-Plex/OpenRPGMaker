@@ -32,13 +32,13 @@ export interface InteriorObjectDef {
   readonly id: string;
   readonly label: string;
   /** 테마 문법의 필수 역할과 이어지는 의미 역할. 장식류는 null. */
-  readonly role: InteriorSemanticTileRole | null;
+  readonly role: string | null;
   readonly width: number;
   readonly height: number;
   /** 대표 레이어(역할 카탈로그의 layer와 일치). 칸별 레이어는 cells가 정본. */
   readonly layer: "lower" | "upper";
   readonly cells: readonly InteriorObjectCell[];
-  readonly themes: readonly InteriorRoomTheme[];
+  readonly themes: readonly string[];
   readonly snap: InteriorObjectSnap;
 }
 
@@ -159,7 +159,7 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
 const BY_ID = new Map<string, InteriorObjectDef>(INTERIOR_OBJECT_CATALOG.map((entry) => [entry.id, entry]));
 
 /** 해당 테마에서 쓸 수 있는 오브젝트 목록(선언 순서 유지). */
-export function interiorObjectsForTheme(theme: InteriorRoomTheme): readonly InteriorObjectDef[] {
+export function interiorObjectsForTheme(theme: string): readonly InteriorObjectDef[] {
   return INTERIOR_OBJECT_CATALOG.filter((entry) => entry.themes.includes(theme));
 }
 

@@ -1,7 +1,7 @@
 import {
   furnishInteriorSpace,
+  interiorVocabFromTileset,
   type InteriorRoomPlan,
-  type InteriorRoomTheme,
   type InteriorThemeModifier,
 } from "@/editor/interiorRoomPipeline";
 import type { GameMap, Project } from "@/project/types";
@@ -94,7 +94,7 @@ export function rerollRoomDraft(
   sessionId: string,
   roomId: string,
   seed: number,
-  theme?: InteriorRoomTheme,
+  theme?: string,
 ): RoomRerollResult {
   const session = loadRequired(project, sessionId);
   if (session.kitId !== INTERIOR_ROOM_KIT.kitId) throw new Error("room-only reroll은 villager-room-v1만 지원합니다.");
@@ -108,7 +108,15 @@ export function rerollRoomDraft(
 
   const before = structuredClone(map);
   const normalizedSeed = Math.trunc(seed);
-  const outcome = furnishInteriorSpace(map, plan, roomId, theme, normalizedSeed);
+  const outcome = furnishInteriorSpace(
+    map,
+    plan,
+    roomId,
+    theme,
+    normalizedSeed,
+    undefined,
+    interiorVocabFromTileset(project.tilesets[plan.tilesetId ?? map.tilesetId]),
+  );
   restoreOutsideRoom(map, before, room);
   const report = INTERIOR_ROOM_KIT.evaluate!(map, outcome.plan, 1);
   const issues: RoomHarnessIssue[] = [

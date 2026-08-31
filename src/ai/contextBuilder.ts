@@ -7,6 +7,7 @@
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
+import { INTERIOR_ROOM_TILESET_ID, interiorVocabFromTileset } from "@/editor/interiorRoomPipeline";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { villageAuthoringData } from "@/editor/tools/village/authoringData";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
@@ -371,6 +372,39 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
   ].join("\n");
 }
 
+function interiorCatalogSection(project: Project, mapId: string | undefined): string {
+  const tilesetIds = new Set<string>(currentTilesetIds(project, mapId));
+  tilesetIds.add(INTERIOR_ROOM_TILESET_ID);
+  const lines: string[] = [
+    "## 타일셋 실내 문법 (start_interior_room_session / run_interior_room_pipeline 이 읽음)",
+    "가구 모양과 방 종류는 데이터베이스 구조물 탭의 그 타일셋 데이터다. stamp_structure_kit 으로 찍지 마라.",
+  ];
+  let any = false;
+  for (const tilesetId of tilesetIds) {
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset) continue;
+    const vocab = interiorVocabFromTileset(tileset);
+    if (vocab.kindsById.size === 0 && vocab.objectsById.size === 0) continue;
+    any = true;
+    lines.push(`### ${tileset.name} (${tilesetId})`);
+    for (const kind of vocab.kindsById.values()) {
+      const roles = kind.requiredRoles.length > 0 ? kind.requiredRoles.join(", ") : "필수 없음";
+      lines.push(`- 방 ${kind.id} (${kind.label}): 필수 ${roles}${kind.walkway ? " · 복도(바닥 가구 없음)" : ""}`);
+    }
+    const objects = [...vocab.objectsById.values()].slice(0, 16);
+    for (const object of objects) {
+      lines.push(
+        `- 가구 ${object.id}: ${object.label}`
+          + `${object.role ? ` 역할=${object.role}` : ""} 스냅=${object.snap}`
+          + `${object.themes.length > 0 ? ` 테마=${object.themes.join(",")}` : ""}`,
+      );
+    }
+    if (vocab.objectsById.size > 16) lines.push(`- …외 ${vocab.objectsById.size - 16}개 가구`);
+  }
+  if (!any) return "";
+  return lines.join("\n");
+}
+
 function houseKitSection(): string {
   const kits = Object.values(HOUSE_KITS).map((kit) => `- ${kit.id}: ${kit.name}`);
   // 모양(templateId)과 색(kitId)은 서로 다른 축이다. 예전에는 색 축만 안내해서
@@ -534,6 +568,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   if (tileVocabulary) sections.push(tileVocabulary);
   const structureKits = structureKitSection(project, currentMapId);
   if (structureKits) sections.push(structureKits);
+  const interiorCatalog = interiorCatalogSection(project, currentMapId);
+  if (interiorCatalog) sections.push(interiorCatalog);
   // 사용자 저작 마을 데이터는 코드 상수 요약(집 키트)보다 앞이다 — 예산 초과 시 뒤에서 잘리므로
   // 순서가 곧 우선순위다. 유저가 정한 값이 잘려 나가면 모델이 기본값으로 되돌아간다.
   const villageAuthoring = villageAuthoringSection(project);

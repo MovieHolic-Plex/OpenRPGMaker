@@ -7,8 +7,8 @@ import {
   furnishInteriorSpace,
   INTERIOR_ROOM_THEMES,
   INTERIOR_THEME_MODIFIERS,
+  interiorVocabFromTileset,
   type InteriorRoomPlan,
-  type InteriorRoomTheme,
   type InteriorThemeModifier,
 } from "@/editor/interiorRoomPipeline";
 import {
@@ -37,7 +37,7 @@ const INTERIOR_ROOM_RECT_SCHEMA: JsonSchema = {
     y: { type: "integer" },
     w: { type: "integer" },
     h: { type: "integer" },
-    theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
+    theme: { type: "string" },
     floorTile: { type: "integer" },
   },
   required: ["x", "y", "w", "h"],
@@ -78,7 +78,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           description:
             "공간 구조 bbox [{id,x,y,w,h,theme?,floorTile?}] — 상하 인접 방은 3행 간격(파티션). "
             + "지정 시 wings 대신 사용. '실내'는 상위 개념이고 배치는 공간(방) 단위: 방마다 역할 테마"
-            + "(bedroom|study|dining|kitchen|storage|tavern|corridor)와 바닥 재질을 준다. "
+            + "(기본 7종 또는 타일셋에 저장한 방 종류 id)와 바닥 재질을 준다. "
             + "corridor는 복도 — 바닥 점유물 없이 벽 장식·전시물만 놓인다(저택 통로에 사용).",
           items: INTERIOR_ROOM_RECT_SCHEMA,
         },
@@ -88,7 +88,16 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           items: COORD_SCHEMA,
         },
         door: { ...COORD_SCHEMA, description: "{x,y} 남측 입구(floor 남 경계)" },
-        theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
+        theme: {
+          type: "string",
+          description:
+            "방 종류 id. 기본값 bedroom|study|dining|kitchen|storage|tavern|corridor. "
+            + "데이터베이스 구조물 탭의 타일셋 방 종류 id 도 받는다.",
+        },
+        tilesetId: {
+          type: "string",
+          description: "가구·방 종류를 읽을 타일셋. 생략 시 실내 칩셋 easyrpg_chipset_interior",
+        },
         themeModifiers: {
           type: "array",
           items: { type: "string", enum: [...INTERIOR_THEME_MODIFIERS] },
@@ -164,7 +173,8 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         rooms: { type: "array", items: INTERIOR_ROOM_RECT_SCHEMA, description: "방 구조 bbox [{id,x,y,w,h,theme?}]" },
         innerDoors: { type: "array", items: COORD_SCHEMA, description: "파티션 개구부 [{x,y}]" },
         door: COORD_SCHEMA,
-        theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
+        theme: { type: "string" },
+        tilesetId: { type: "string" },
         themeModifiers: {
           type: "array",
           items: { type: "string", enum: [...INTERIOR_THEME_MODIFIERS] },
@@ -213,8 +223,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         roomId: { type: "string", description: "플랜 rooms[].id — 재시공할 공간" },
         theme: {
           type: "string",
-          enum: [...INTERIOR_ROOM_THEMES],
-          description: "역할 테마 교체(미지정 시 기존 테마 유지). corridor=복도(바닥 점유물 없음)",
+          description: "역할 테마 교체(미지정 시 기존 테마 유지). 기본 7종 또는 타일셋 방 종류 id",
         },
         modifiers: {
           type: "array",
@@ -256,9 +265,9 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       if (session.lockedRoomIds.includes(roomId)) {
         throw new ToolError(`잠긴 방은 재시공할 수 없습니다: ${roomId}`, { code: "room-locked" });
       }
-      const theme = args.theme !== undefined ? (String(args.theme) as InteriorRoomTheme) : undefined;
-      if (theme !== undefined && !INTERIOR_ROOM_THEMES.includes(theme)) {
-        throw new ToolError(`theme must be ${INTERIOR_ROOM_THEMES.join("|")}`, { code: "invalid-args" });
+      const theme = args.theme !== undefined ? String(args.theme).trim() : undefined;
+      if (theme !== undefined && !theme) {
+        throw new ToolError("theme 이 비어 있다", { code: "invalid-args" });
       }
       const seed = args.seed !== undefined ? Math.floor(Number(args.seed)) : undefined;
       const modifiers = args.modifiers === undefined
@@ -269,7 +278,15 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       }
       let outcome: { plan: InteriorRoomPlan; warnings: string[] };
       try {
-        outcome = furnishInteriorSpace(map, plan, roomId, theme, seed, modifiers);
+        outcome = furnishInteriorSpace(
+          map,
+          plan,
+          roomId,
+          theme,
+          seed,
+          modifiers,
+          interiorVocabFromTileset(draft.tilesets[plan.tilesetId ?? map.tilesetId]),
+        );
       } catch (error) {
         throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" });
       }
