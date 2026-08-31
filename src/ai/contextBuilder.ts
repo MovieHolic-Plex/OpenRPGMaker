@@ -9,10 +9,6 @@ import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { villageAuthoringData } from "@/editor/tools/village/authoringData";
-import {
-  structureKitGrowthAxes,
-  structureKitLayerHome,
-} from "@/editor/harnessSuggestion/structureKitModel";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
@@ -136,6 +132,7 @@ const INTRO = [
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
   "11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 author_house를 우선 사용하고,",
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
+  "    구조물 스탬프(stamp_structure_kit / stamp_structure)는 사람 팔레트 전용이다. 타일 시공에 쓰지 마세요.",
   "    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house를 올리지 말고",
   "    start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**의 실내 맵을 시공하세요",
   "    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.",
@@ -353,64 +350,24 @@ function tileSemanticsSection(project: Project): string {
   return ["## 타일 지식(사용자가 가르침 — 타일 깔 때 최우선 근거)", ...lines].join("\n");
 }
 
-// 유저 붓질에서 학습·등록된 구조 킷(내 구조물) — 봇도 같은 킷으로 시공할 수 있음을 알린다.
-// 타일 행렬은 여기 다 싣지 않는다(기계 표면) — list_structure_kits로 조회, 시공은 stamp_structure_kit.
+// 사람이 등록한 구조 킷은 팔레트 스탬프 전용이다. 목록을 시공 재료로 주면
+// 모델이 stamp_structure_kit 으로 집을 찍는다(2026-08-31 실측).
 function structureKitSection(project: Project, mapId: string | undefined): string {
-  const lines: string[] = [];
+  const names: string[] = [];
   for (const tilesetId of currentTilesetIds(project, mapId)) {
     const tileset = project.tilesets[tilesetId];
     for (const kit of tileset?.structureKits ?? []) {
-      const size = kit.kind === "house"
-        ? {
-            width: Math.max(...kit.wings.map((wing) => wing.x + wing.w), 1),
-            height: Math.max(...kit.wings.map((wing) => wing.y + wing.h), 1),
-          }
-        : { width: kit.width, height: kit.height };
-      // 증분 축을 축 두 개로 적는다 — "반복 가능" 한 마디는 가로만 뜻해서, 세로로 쌓는 벽을
-      // 모델이 알 방법이 없었다. stamp_structure_kit 의 repeat/repeatY 가 정확히 이 값을 본다.
-      const axes = structureKitGrowthAxes(kit);
-      const growthText = axes.x && axes.y
-        ? "가로·세로 증분 가능"
-        : axes.x
-          ? "가로 증분 가능"
-          : axes.y
-            ? "세로 증분 가능"
-            : "한 채 완결";
-      lines.push(
-        `- ${kit.name ?? "구조물"} (${kit.id}, ${size.width}x${size.height}`
-        + `${kit.ai?.role ? `, ${kit.ai.role}` : ""}, ${growthText}, 레이어 ${structureKitLayerHome(kit)})`,
-      );
-      if (kit.ai?.description) lines.push(`  설명: ${kit.ai.description.slice(0, 100)}`);
-      if (kit.ai?.placementRules) lines.push(`  배치: ${kit.ai.placementRules.slice(0, 100)}`);
-      if (kit.ai?.themes && kit.ai.themes.length > 0) lines.push(`  테마: ${kit.ai.themes.join(", ")}`);
-      if (kit.ai?.tags && kit.ai.tags.length > 0) lines.push(`  태그: ${kit.ai.tags.join(", ")}`);
-      // 칸 힌트는 사람이 칸 하나하나에 적은 것이라 자르지 않고 앞 6개까지 싣는다 —
-      // 「이 열은 세로로 증분 가능」이 잘려 나가면 무한 확장 구조물을 통째로 못 쓴다.
-      const cellHints = kit.kind === "section" ? kit.cellHints ?? [] : [];
-      for (const hint of cellHints.slice(0, 6)) {
-        lines.push(
-          `  칸(${hint.dx},${hint.dy}): ${hint.growth ?? "메모"}${hint.note ? ` — ${hint.note.slice(0, 60)}` : ""}`,
-        );
-      }
-      if (cellHints.length > 6) lines.push(`  …칸 힌트 ${cellHints.length - 6}개 더(list_structure_kits로 조회)`);
-      // 배치 조건은 산문이 아니라 **집행되는 조건**이다 — 어기면 stamp_structure_kit 이 거부한다.
-      // 그래서 100자 자르기(placementRules)와 달리 전부 싣는다. 조건 수는 실무상 1~3개다.
-      for (const condition of kit.ai?.placement ?? []) {
-        lines.push(
-          `  배치 조건[${condition.strength === "hard" ? "필수" : "권장"}]: ${describePlacementSurface(condition)}`
-          + `${condition.message?.trim() ? ` — ${condition.message.trim().slice(0, 60)}` : ""}`,
-        );
-      }
+      names.push(kit.name ?? kit.id);
     }
   }
-  if (lines.length === 0) return "";
+  if (names.length === 0) return "";
+  const shown = names.slice(0, 12);
+  const extra = names.length > 12 ? ` 외 ${names.length - 12}개` : "";
   return [
-    "## 내 구조물(유저가 가르친 구조 킷 — 반복 구조 시공의 최우선 재료)",
-    "유저가 손으로 찍어 등록한 반복 단면입니다. 성벽/울타리류 반복 구조 요청 시 개별 타일 대신 이 킷을 쓰세요:",
-    ...lines,
-    "상세(타일 행렬·칸 힌트)는 list_structure_kits, 시공은 stamp_structure_kit(mapId, kitId, origin, repeat, repeatY).",
-    "repeat 는 가로, repeatY 는 세로 반복입니다. 증분 축이 허용하지 않는 방향은 1회로 조여집니다 —",
-    "성벽을 높이로 쌓으려면 «세로 증분 가능» 구조물을 골라 repeatY 를 주세요.",
+    "## 구조물 스탬프는 사람 팔레트 전용",
+    `사람이 등록한 구조물: ${shown.join(", ")}${extra}.`,
+    "타일 시공에 stamp_structure_kit / stamp_structure 를 쓰지 마세요.",
+    "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props.",
   ].join("\n");
 }
 

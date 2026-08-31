@@ -7,11 +7,11 @@ import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
 import type { PlacementSurfaceCondition, Project, StructureKitDef } from "@/project/types";
 
 /**
- * 배치 조건이 **실제로 집행되는지** — stamp_structure_kit 경로.
+ * 배치 조건이 **실제로 집행되는지**.
  *
- * 사람이 팔레트로 찍는 경로(TilePaintEngine)는 같은 함수
+ * 사람이 팔레트로 찍는 경로(TilePaintEngine)는
  * (`checkKitStampConditions` → `evaluatePlacementConditions`)를 쓴다 — 그쪽 스트로크·안내 규칙은
- * test/structureKitBrushConditions.test.ts 가 본다. 여기서는 AI 도구 경로를 고정한다.
+ * test/structureKitBrushConditions.test.ts 가 본다. AI 도구 stamp_structure_kit 은 시공 자체가 거부된다.
  */
 
 /** 화덕처럼 «북쪽 벽에 등을 대는» 1×2 세로쌍 킷. */
@@ -73,23 +73,22 @@ describe("stamp_structure_kit — 배치 조건 집행", () => {
   it("조건에 맞는 자리(발밑이 벽 아래 바닥)에는 찍힌다", () => {
     const { project, mapId } = projectWithStoveKit([STOVE_CONDITION]);
     const context = { project };
-    // 좌상단 (4,2) → 상단이 벽 행(y=2), 발밑이 y=3 바닥, 그 위(y=2)가 벽.
+    const before = [...context.project.maps[mapId]!.lowerTiles];
     const result = runTool(context, "stamp_structure_kit", {
       mapId,
       kitId: "kit_stove",
       origin: { x: 4, y: 2 },
       repeat: 1,
     });
-    expect(result.ok).toBe(true);
-    const map = context.project.maps[mapId]!;
-    expect(map.lowerTiles[3 * map.width + 4]).toBe(KIT_BOTTOM);
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("사람 팔레트");
+    expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 
   it("북쪽이 벽이 아닌 자리에서는 **거부한다** — 한 칸도 쓰지 않는다", () => {
     const { project, mapId } = projectWithStoveKit([STOVE_CONDITION]);
     const context = { project };
     const before = [...context.project.maps[mapId]!.lowerTiles];
-    // 좌상단 (4,5) → 발밑 y=6 위쪽(y=5)이 바닥이므로 조건 위반.
     const result = runTool(context, "stamp_structure_kit", {
       mapId,
       kitId: "kit_stove",
@@ -97,13 +96,11 @@ describe("stamp_structure_kit — 배치 조건 집행", () => {
       repeat: 1,
     });
     expect(result.ok).toBe(false);
-    expect(result.summary + JSON.stringify(result.issues ?? [])).toContain("배치 조건");
-    // 실패한 시공은 맵을 건드리지 않아야 한다.
+    expect(result.summary).toContain("사람 팔레트");
     expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 
   it("반복 시공 중 하나라도 위반하면 전부 거부한다 — 반쯤 찍힌 상태를 남기지 않는다", () => {
-    // 벽 행을 왼쪽 절반만 남긴다 → 오른쪽으로 이어 찍으면 뒤쪽 반복이 위반.
     const { project, mapId } = projectWithStoveKit([STOVE_CONDITION]);
     const map = project.maps[mapId]!;
     for (let x = 5; x < map.width; x += 1) map.lowerTiles[2 * map.width + x] = FLOOR_TILE;
@@ -129,10 +126,8 @@ describe("stamp_structure_kit — 배치 조건 집행", () => {
       origin: { x: 4, y: 5 },
       repeat: 1,
     });
-    expect(result.ok).toBe(true);
-    expect(result.summary).toContain("배치 조건 권장 위반");
-    const map = context.project.maps[mapId]!;
-    expect(map.lowerTiles[6 * map.width + 4]).toBe(KIT_BOTTOM);
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("사람 팔레트");
   });
 
   it("조건이 없는 킷은 예전처럼 아무 자리에나 찍힌다 — 하위 호환", () => {
@@ -144,7 +139,8 @@ describe("stamp_structure_kit — 배치 조건 집행", () => {
       origin: { x: 4, y: 5 },
       repeat: 1,
     });
-    expect(result.ok).toBe(true);
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("사람 팔레트");
   });
 });
 
@@ -152,13 +148,17 @@ describe("AI 컨텍스트 — 배치 조건은 잘리지 않고 실린다", () =
   it("조건이 프롬프트에 «필수»로 들어가고, 거부된다는 사실까지 알린다", () => {
     const { project, mapId } = projectWithStoveKit([STOVE_CONDITION]);
     const prompt = buildSystemPrompt(project, { currentMapId: mapId });
-    expect(prompt).toContain("배치 조건[필수]");
-    expect(prompt).toContain("북쪽(위) 벽에 붙은 바닥");
+    expect(prompt).toContain("화덕");
+    expect(prompt).toContain("사람 팔레트 전용");
+    expect(prompt).toContain("author_house");
+    expect(prompt).not.toContain("배치 조건[필수]");
   });
 
   it("soft 조건은 «권장»으로 표시된다", () => {
     const { project, mapId } = projectWithStoveKit([{ ...STOVE_CONDITION, strength: "soft" }]);
     const prompt = buildSystemPrompt(project, { currentMapId: mapId });
-    expect(prompt).toContain("배치 조건[권장]");
+    expect(prompt).toContain("화덕");
+    expect(prompt).toContain("사람 팔레트 전용");
+    expect(prompt).not.toContain("배치 조건[권장]");
   });
 });

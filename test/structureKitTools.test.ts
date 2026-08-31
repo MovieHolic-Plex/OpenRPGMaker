@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { createEmptyToolProject, runTool } from "@/editor/tools";
+import { createEmptyToolProject, getTool, runTool, toOpenAiTools } from "@/editor/tools";
+import { STAMP_STRUCTURE_KIT_BLOCKED } from "@/editor/tools/structureKitTools";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import type { Project, StructureKitDef } from "@/project/types";
+
+function expectAiStampBlocked(result: { ok: boolean; summary: string }): void {
+  expect(result.ok).toBe(false);
+  expect(result.summary).toContain("사람 팔레트");
+  expect(result.summary).toContain("author_house");
+}
 
 // 성벽 정단면 1×5 킷 — 프로토 데모에서 [등록]으로 저장되는 것과 동일한 shape.
 const WALL_KIT: StructureKitDef = {
@@ -79,6 +86,7 @@ describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는
       repeatability: "fixed",
     });
     const context = { project };
+    const before = [...context.project.maps[mapId]!.lowerTiles];
 
     const result = runTool(context, "stamp_structure_kit", {
       mapId,
@@ -86,13 +94,8 @@ describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는
       origin: { x: 0, y: 0 },
       repeat: 5,
     });
-    expect(result.ok).toBe(true);
-
-    const map = context.project.maps[mapId]!;
-    expect(map.lowerTiles[0]).toBe(421);
-    expect(map.lowerTiles[1]).toBe(421);
-    // 폭 2 킷이 1회만 찍혔다면 x=2 는 원래 타일 그대로다.
-    expect(map.lowerTiles[2]).not.toBe(421);
+    expectAiStampBlocked(result);
+    expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 
   it("repeat 인 킷은 repeat 를 그대로 따른다 — house 종류라 fallback 이면 false 다", () => {
@@ -125,18 +128,17 @@ describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는
       repeat: 3,
     });
 
-    expect(result.ok).toBe(true);
-    expect((result.data as { repeat: number }).repeat).toBe(3);
+    expectAiStampBlocked(result);
   });
 
   it("ai 가 없으면 기존 동작(section 은 반복)을 유지한다", () => {
     const { project, mapId } = projectWithRepeatKit(undefined);
     const context = { project };
 
-    runTool(context, "stamp_structure_kit", {
+    expectAiStampBlocked(runTool(context, "stamp_structure_kit", {
       mapId, kitId: "kit_repeat_test", origin: { x: 0, y: 0 }, repeat: 3,
-    });
-    expect(context.project.maps[mapId]!.lowerTiles[4]).toBe(421);
+    }));
+    expect(context.project.maps[mapId]!.lowerTiles[4]).not.toBe(421);
   });
 
   it("ai 는 있지만 repeatability 가 없으면 기존 동작(section 은 반복)을 유지한다", () => {
@@ -146,10 +148,10 @@ describe("repeatability — 한 채 완결 구조물이 3개씩 찍히지 않는
     });
     const context = { project };
 
-    runTool(context, "stamp_structure_kit", {
+    expectAiStampBlocked(runTool(context, "stamp_structure_kit", {
       mapId, kitId: "kit_repeat_test", origin: { x: 0, y: 0 }, repeat: 3,
-    });
-    expect(context.project.maps[mapId]!.lowerTiles[4]).toBe(421);
+    }));
+    expect(context.project.maps[mapId]!.lowerTiles[4]).not.toBe(421);
   });
 });
 
@@ -210,9 +212,11 @@ describe("AI 가 받는 구조물 정보", () => {
     const { project, mapId } = projectWithDescribedKit();
     const prompt = buildSystemPrompt(project, { currentMapId: mapId });
 
-    expect(prompt).toContain("돌담을 두른 두레우물.");
-    expect(prompt).toContain("마을 광장 중앙");
-    expect(prompt).toContain("한 채 완결");
+    expect(prompt).toContain("우물");
+    expect(prompt).toContain("사람 팔레트 전용");
+    expect(prompt).toContain("stamp_structure_kit");
+    expect(prompt).toContain("author_house");
+    expect(prompt).not.toMatch(/시공은 stamp_structure_kit/);
   });
 });
 
@@ -239,6 +243,7 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
   it("stamp_structure_kit이 단면을 가로 repeat회로 결정론 시공한다", () => {
     const { project, mapId } = projectWithKit();
     const context = { project };
+    const before = [...context.project.maps[mapId]!.lowerTiles];
 
     const result = runTool(context, "stamp_structure_kit", {
       mapId,
@@ -247,17 +252,8 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
       repeat: 6,
     });
 
-    expect(result.ok).toBe(true);
-    const map = context.project.maps[mapId]!;
-    const wallColumn = [19, 49, 109, 51, 81];
-    for (let x = 3; x < 9; x += 1) {
-      for (let row = 0; row < 5; row += 1) {
-        expect(map.lowerTiles[(2 + row) * map.width + x], `cell (${x},${2 + row})`).toBe(wallColumn[row]!);
-      }
-    }
-    // 시공 범위 밖은 건드리지 않는다.
-    expect(map.lowerTiles[2 * map.width + 9]).not.toBe(19);
-    expect(result.diff?.tilesChanged ?? 0).toBeGreaterThanOrEqual(30);
+    expectAiStampBlocked(result);
+    expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 
   it("맵 밖 시공·없는 킷은 게이트에서 거부된다", () => {
@@ -277,8 +273,7 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
       origin: { x: 1, y: 1 },
       repeat: 3,
     });
-    expect(missing.ok).toBe(false);
-    expect(missing.summary).toContain("kit_none");
+    expectAiStampBlocked(missing);
   });
 
   it("list_structure_kits가 부위를 상대좌표(dx,dy)로 실어 준다", () => {
@@ -304,15 +299,8 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
 
     const result = runTool(context, "stamp_structure_kit", { mapId, kitId: "kit_shop_test", origin });
 
-    expect(result.ok).toBe(true);
-    const data = result.data as { parts?: { id: string; kind: string; x: number; y: number; w: number; h: number; note?: string }[] };
-    expect(data.parts).toEqual([
-      { id: "pt_entrance", kind: "entrance", x: 7, y: 5, w: 1, h: 3, note: "남쪽 현관" },
-      { id: "pt_sign", kind: "sign", x: 8, y: 5, w: 1, h: 1 },
-    ]);
-    // 워프 칸 규약: 입구의 dy + h - 1 행. 별도 warpCell 필드 없이 여기서 계산된다.
-    const entrance = data.parts!.find((part) => part.kind === "entrance")!;
-    expect({ x: entrance.x, y: entrance.y + entrance.h - 1 }).toEqual({ x: 7, y: 7 });
+    expectAiStampBlocked(result);
+    expect(result.data).toBeUndefined();
   });
 
   it("stamp_structure_kit은 부위가 있어도 맵 이벤트를 심지 않는다", () => {
@@ -326,9 +314,8 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
       origin: { x: 6, y: 4 },
     });
 
-    expect(result.ok).toBe(true);
+    expectAiStampBlocked(result);
     expect(context.project.maps[mapId]!.events).toHaveLength(before);
-    expect(result.diff?.eventsAdded ?? 0).toBe(0);
   });
 
   it("부위 없는 킷 시공은 parts 필드를 만들지 않는다", () => {
@@ -341,8 +328,8 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
       repeat: 2,
     });
 
-    expect(result.ok).toBe(true);
-    expect((result.data as { parts?: unknown }).parts).toBeUndefined();
+    expectAiStampBlocked(result);
+    expect(result.data).toBeUndefined();
   });
 
   it("시스템 프롬프트에 '내 구조물' 다이제스트가 실린다", () => {
@@ -350,9 +337,10 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
 
     const prompt = buildSystemPrompt(project, { currentMapId: mapId });
 
-    expect(prompt).toContain("내 구조물");
+    expect(prompt).toContain("사람 팔레트 전용");
     expect(prompt).toContain("성벽 단면");
     expect(prompt).toContain("stamp_structure_kit");
+    expect(prompt).toContain("author_house");
   });
 });
 
@@ -406,20 +394,12 @@ describe("증분 축 — 세로로 무한히 이어지는 구조물", () => {
 
   it("repeatY 로 세로로 쌓는다 — 예전에는 가로 반복밖에 없었다", () => {
     const { context, mapId } = verticalWallProject();
+    const before = [...context.project.maps[mapId]!.lowerTiles];
     const result = runTool(context, "stamp_structure_kit", {
       mapId, kitId: "kit_vwall", origin: { x: 4, y: 0 }, repeatY: 4,
     });
-    expect(result.ok).toBe(true);
-    const map = context.project.maps[mapId]!;
-    // 1×3 킷 4단 = 12칸이 x=4 열에 연속으로 들어간다.
-    const column = Array.from({ length: 12 }, (_unused, y) => map.lowerTiles[y * map.width + 4]);
-    expect(column).toEqual([19, 49, 81, 19, 49, 81, 19, 49, 81, 19, 49, 81]);
-    const data = result.data as { repeatY: number; repeat: number; height: number; placementIds: string[] };
-    expect(data.repeatY).toBe(4);
-    expect(data.repeat).toBe(1);
-    expect(data.height).toBe(12);
-    // 단위마다 배치 기록이 하나 — "맨 위 한 단만 지워줘"가 가능해야 한다.
-    expect(data.placementIds).toHaveLength(4);
+    expectAiStampBlocked(result);
+    expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 
   it("세로 증분 킷은 repeat(가로)를 줘도 1회로 조이고 그 사실을 말한다", () => {
@@ -427,13 +407,9 @@ describe("증분 축 — 세로로 무한히 이어지는 구조물", () => {
     const result = runTool(context, "stamp_structure_kit", {
       mapId, kitId: "kit_vwall", origin: { x: 0, y: 0 }, repeat: 5,
     });
-    expect(result.ok).toBe(true);
-    // 조인 사실이 문장에 남아야 한다 — 말없이 조이면 모델은 5칸을 채웠다고 믿는다.
-    expect(result.summary).toContain("증분 축 제한");
-    expect((result.data as { repeat: number }).repeat).toBe(1);
-    // 옆 열은 손대지 않았다 — create_map 이 깔아 둔 지면이 그대로다(빈 칸은 -1 이 아니다).
+    expectAiStampBlocked(result);
     const map = context.project.maps[mapId]!;
-    expect(map.lowerTiles[1]).not.toBe(19);
+    expect(map.lowerTiles[0]).not.toBe(19);
   });
 
   it("세로 증분이 없는 킷에 repeatY 를 주면 1회로 조인다 — 조용히 3층이 생기지 않는다", () => {
@@ -442,9 +418,7 @@ describe("증분 축 — 세로로 무한히 이어지는 구조물", () => {
     const result = runTool(context, "stamp_structure_kit", {
       mapId, kitId: "kit_wall_test", origin: { x: 0, y: 0 }, repeat: 1, repeatY: 3,
     });
-    expect(result.ok).toBe(true);
-    expect(result.summary).toContain("증분 축 제한");
-    expect((result.data as { repeatY: number }).repeatY).toBe(1);
+    expectAiStampBlocked(result);
   });
 
   it("맵을 벗어나는 세로 반복은 한 칸도 쓰지 않고 거부한다", () => {
@@ -462,16 +436,37 @@ describe("증분 축 — 세로로 무한히 이어지는 구조물", () => {
     const result = runTool(context, "stamp_structure_kit", {
       mapId, kitId: "kit_vwall", origin: { x: 0, y: 0 }, repeatY: 0,
     });
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("repeatY");
+    expectAiStampBlocked(result);
   });
 
   it("시스템 프롬프트가 축·테마·칸 힌트를 사람 말로 싣는다", () => {
     const { context } = verticalWallProject();
     const prompt = buildSystemPrompt(context.project);
-    expect(prompt).toContain("세로 증분 가능");
-    expect(prompt).toContain("테마: 성채");
-    expect(prompt).toContain("세로로 증분 가능");
-    expect(prompt).toContain("repeatY");
+    expect(prompt).toContain("성벽 기둥");
+    expect(prompt).toContain("사람 팔레트 전용");
+    expect(prompt).toContain("author_house");
+    expect(prompt).not.toContain("repeatY");
+  });
+});
+
+describe("AI 는 구조물 스탬프를 시공할 수 없다", () => {
+  it("LLM 스키마에 stamp_structure_kit 이 없고, 호출하면 맵을 건드리지 않고 거절한다", () => {
+    const tool = getTool("stamp_structure_kit");
+    expect(tool?.deprecated).toBe(true);
+    expect(tool?.supersededBy).toBe("author_house");
+    const exposed = toOpenAiTools().map((entry) => entry.function.name);
+    expect(exposed).not.toContain("stamp_structure_kit");
+
+    const { project, mapId } = projectWithKit();
+    const context = { project };
+    const before = [...context.project.maps[mapId]!.lowerTiles];
+    const result = runTool(context, "stamp_structure_kit", {
+      mapId,
+      kitId: "kit_wall_test",
+      origin: { x: 1, y: 1 },
+    });
+    expectAiStampBlocked(result);
+    expect(result.summary).toContain(STAMP_STRUCTURE_KIT_BLOCKED);
+    expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 });

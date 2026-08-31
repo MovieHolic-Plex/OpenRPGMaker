@@ -80,6 +80,7 @@ export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Ma
   ["build_house", "author_house"],
   ["build_house_kit", "author_house"],
   ["build_house_lots", "author_house"],
+  ["stamp_structure_kit", "author_house"],
   ["plan_village", "author_village"],
   ["materialize_village_spec", "author_village"],
   ["revise_village_plan", "author_village"],
