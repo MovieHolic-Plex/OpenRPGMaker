@@ -21,4 +21,5 @@ export const AGENT_UX_POLICY_LINES = [
   "- 집 다양성(필수): 모양 축(templateId)과 색 축(kitId)은 별개다. **집마다 서로 다른 templateId를 배정하라** — rect-large/rect-2f/rect-3f/cottage-low/barn-low/l/l-mirror/l-wide/t-porch/porch-cottage/annex/u/courtyard/z-offset/estate-shed-r/aframe-mid/rooftop-deck 등 34종이 있고, 생략하면 wings 그대로의 사각형이 되어 전부 비슷해진다. kitId도 지붕색 3군(blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall·aframe-stone)을 섞어 고르고, stories·lowWall·chimney로 실루엣을 더 갈라라. 깐 직후 look_at_houses(mapId)로 관찰해 verdict가 monotonous/mixed면 advice의 안 쓴 templateId로 다시 깔아라.",
   // 답변 속 이름은 패널이 클릭 가능한 이동 링킬로 바꾼다(src/editor/aiAnswerLinks.ts) — 모델이 이름을 바꿔 부르면 링킬가 사라진다.
   "- 위치 안내: 사용자가 '어디야 / 어디에 있어 / 보여줘 / 거기로 가자'처럼 위치를 물으면 말로 설명하기 전에 focus_editor_view로 화면을 그곳으로 옮기세요. 또 답변에서 맵·NPC·건물·상점을 가리킬 때는 프로젝트에 저장된 이름을 그대로 쓰세요 — 저장된 이름은 사용자가 눌러 이동할 수 있는 링킬가 되지만, 이름을 바꿔 부르거나 짧게 줄이면 그 링킬가 사라집니다.",
+  "- 벽 밀착(필수): 맵 이동·타일·가구를 벽에 붙일 때 1칸 띄우지 마세요. 맵 끝 이동은 가장자리 칸(x=0 / x=width-1 / y=0 / y=height-1)에, 문 앞 이동은 벽과 맞닿은 통행 가능 칸에 놓으세요. playerTouch 출입구를 벽 칸 위에 놓으면 발동하지 않습니다. fill_region/paint_tiles rect도 벽 바로 안쪽까지 채우세요(마지막 칸은 x+w-1).",
 ].join("\n");

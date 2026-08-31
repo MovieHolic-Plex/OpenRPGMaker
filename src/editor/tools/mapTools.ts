@@ -60,6 +60,7 @@ import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } 
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 import { resolveEventPlacement } from "./eventTools";
+import { expandCellsAgainstWalls } from "./wallFlush";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -242,7 +243,7 @@ const manageMapTree: ToolDefinition = {
 
 const paintTiles: ToolDefinition = {
   name: "paint_tiles",
-  description: "타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. 지형 오토타일 멤버(흙길/모래 등)는 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함).",
+  description: "타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). rect는 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다. 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. 지형 오토타일 멤버(흙길/모래 등)는 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함).",
   mode: "write",
   parameters: {
     type: "object",
@@ -288,6 +289,7 @@ const paintTiles: ToolDefinition = {
       if (!from || !to) throw new ToolError("rect 모드는 from/to가 필요합니다.");
       for (let y = Math.min(from.y, to.y); y <= Math.max(from.y, to.y); y += 1)
         for (let x = Math.min(from.x, to.x); x <= Math.max(from.x, to.x); x += 1) targetCells.push({ x, y });
+      targetCells = expandCellsAgainstWalls(draft, map, targetCells);
     } else if (mode === "line") {
       if (!from || !to) throw new ToolError("line 모드는 from/to가 필요합니다.");
       targetCells = lineCells(from, to);

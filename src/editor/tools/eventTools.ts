@@ -30,6 +30,7 @@ import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
+import { snapFlushToWall } from "./wallFlush";
 import {
   COMMAND_SCHEMA,
   COORD_SCHEMA,
@@ -1106,11 +1107,14 @@ function transferEndpoint(
   maxRadius = 3,
 ): { gate: Point; landing: Point } | null {
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
+  // 벽에서 1칸 안쪽·벽 칸 위 요청은 벽과 맞닿은 통행 칸으로 먼저 당긴다.
+  // playerTouch+below 는 벽 위에서 발동하지 않는다.
+  const origin = snapFlushToWall(project, map, requestedX, requestedY, occupied);
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
-        const gate = { x: requestedX + dx, y: requestedY + dy };
+        const gate = { x: origin.x + dx, y: origin.y + dy };
         if (!inMapBounds(map, gate.x, gate.y) || occupied.has(`${gate.x},${gate.y}`)) continue;
         const landing = passableLanding(project, map, gate.x, gate.y);
         if (!landing || (landing.x === gate.x && landing.y === gate.y)) continue;
@@ -1380,7 +1384,10 @@ function cleanOptionalString(raw: unknown): string | undefined {
 
 const createTransferPair: ToolDefinition = {
   name: "create_transfer_pair",
-  description: "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 착지점은 상대 출입구에 인접한 통행 가능 칸으로 자동 선정(즉시 재전이 방지).",
+  description:
+    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다"
+    + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
+    + " 착지점은 상대 출입구에 인접한 통행 가능 칸으로 자동 선정(즉시 재전이 방지).",
   mode: "write",
   parameters: {
     type: "object",
