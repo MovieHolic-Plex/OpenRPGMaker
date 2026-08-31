@@ -10,6 +10,7 @@ import {
   teardownAiChatPanel,
 } from "@/editor/panels/aiChatPanel";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+
 import { clearConversations, conversationScopeKey, saveConversation } from "@/ai/conversationStore";
 import { clearAgentGhostPreview, getAgentGhostPreviewState, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { createBlankProject } from "@/project/defaults";
@@ -73,7 +74,7 @@ describe("글자 크기 3단 (V3C ①)", () => {
 
   it("설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다", () => {
     // 글자 크기 select 는 채팅 본문 인라인 폼이 아니라 **전용 설정 모달** 안에 있다(UX P0/P1 에서
-    // 인라인 ai-config 폼을 걷어냈다). 패널 ☰ 의 ⚙ 설정 항목이 그 모달로 가는 출하 경로다.
+    // 인라인 ai-config 폼을 걷어냈다). 패널 테스트는 톱바가 없어서 ☰ 설정으로 연다.
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
     const panel = renderPanel();
     (findByTestId(panel, "ai-command-menu-settings") as unknown as FakeElement).click();

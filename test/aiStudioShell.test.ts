@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createStudioShell } from "@/editor/panels/aiStudioShell";
+import { renderTopbar } from "@/editor/panels/menu";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -112,13 +113,16 @@ describe("패널 스튜디오 모드", () => {
     expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
   });
 
-  it("숨은 토글과 ☰ 스튜디오 항목이 같은 셸을 연다", () => {
+  it("톱바 스튜디오와 숨은 훅이 같은 셸을 열고, ☰ 에는 없다", () => {
     const panel = renderPanel();
+    const topbar = new FakeElement("div");
+    renderTopbar(topbar as unknown as HTMLElement);
     const menu = findByTestId(panel, "ai-command-menu");
     expect(findByTestId(menu!, "ai-studio-toggle")).toBeNull();
-    expect(findByTestId(menu!, "ai-command-menu-studio")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-command-menu-studio")).toBeNull();
+    expect(findByTestId(topbar, "topbar-ai-studio")).toBeTruthy();
 
-    findByTestId(panel, "ai-command-menu-studio")?.click();
+    findByTestId(panel, "ai-studio-toggle")?.click();
     expect(panel.classList.contains("is-studio")).toBe(true);
     expect(findByTestId(panel, "ai-studio-shell")).toBeTruthy();
     expect(panel.dataset.logSlot).toBe("history");
@@ -135,7 +139,7 @@ describe("패널 스튜디오 모드", () => {
     findByTestId(panel, "ai-studio-toggle")?.click();
     expect(findByTestId(panel, "ai-studio-shell")).toBeTruthy();
 
-    findByTestId(panel, "ai-studio-exit")?.click();
+    findByTestId(panel, "ai-studio-toggle")?.click();
     expect(panel.classList.contains("is-studio")).toBe(false);
     expect(findByTestId(panel, "ai-studio-shell")).toBeNull();
     expect(panel.dataset.logSlot).toBe("glass");

@@ -113,19 +113,11 @@ describe("isMetadataOnlyProposal", () => {
 });
 
 describe("패널 인터뷰 UI", () => {
-  it("🎓 맵 인터뷰 버튼과 원탭 칩 호스트가 렌더된다", () => {
+  it("원탭 칩 호스트는 남고, 스킬 서러 가르치기 3종은 ☰ 에 두지 않는다", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(panel, "ai-interview")).toBeTruthy();
     expect(findByTestId(panel, "ai-quick-replies")).toBeTruthy();
-  });
-
-  it("📐 선택 영역 학습 버튼이 렌더된다", () => {
-    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(panel, "ai-learn-structure")).toBeTruthy();
-  });
-
-  it("✍️ 시연 버튼이 렌더된다 — 틀린 추측을 직접 깔아서 교정하는 진입점", () => {
-    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(panel, "ai-demo-teach")).toBeTruthy();
+    expect(findByTestId(panel, "ai-interview")).toBeNull();
+    expect(findByTestId(panel, "ai-learn-structure")).toBeNull();
+    expect(findByTestId(panel, "ai-demo-teach")).toBeNull();
   });
 });

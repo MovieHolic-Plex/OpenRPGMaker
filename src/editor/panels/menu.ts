@@ -11,6 +11,11 @@ import {
 } from "@/editor/editorUiMode";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
+import {
+  AI_STUDIO_CHANGE_EVENT,
+  readStudioMode,
+  requestAiStudioToggle,
+} from "@/editor/aiStudioMode";
 import { openHelpModal } from "@/editor/panels/helpModal";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { openDbConnectionSettings, renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
@@ -77,6 +82,7 @@ let disposeToolbarOverflows: (() => void)[] = [];
 // 여러 번 불린다(mode.ts: editorState 구독 / enterMode / 신원·워크스페이스·UI모드 구독) —
 // 구독을 끊지 않으면 편집 몇 분 만에 같은 리스너가 수십 개 쌓여 죽은 DOM을 계속 그린다.
 let disposeSaveStatus: (() => void) | null = null;
+let disposeStudioButton: (() => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
 // 칩을 붙잡아 두는 데 쓴다. 톱바가 다시 그려져도 에피소드는 이어져야 하므로 모듈 상태다.
@@ -87,6 +93,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeToolbarOverflows = [];
   disposeSaveStatus?.();
   disposeSaveStatus = null;
+  disposeStudioButton?.();
+  disposeStudioButton = null;
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   applyToolbarCollapsed(readToolbarCollapsed());
   const mode = getMode();
@@ -111,7 +119,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   });
   trailing.append(
     renderTopbarSaveStatus(topbar),
-    ...(mode === "edit" ? [renderTestPlayButton(), renderTopbarAiSettingsButton()] : []),
+    ...(mode === "edit" ? [renderTopbarStudioButton(), renderTestPlayButton(), renderTopbarAiSettingsButton()] : []),
     renderQuickBattleTestButton(),
     renderCommitHistoryButton(),
     renderTopbarIdentityControl(topbar),
@@ -141,6 +149,36 @@ function renderProductBrand(): HTMLElement {
       el("span", { class: "editor-product-brand-text", text: EDITOR_PRODUCT_BRAND }),
     ],
   });
+}
+
+function renderTopbarStudioButton(): HTMLElement {
+  const paint = (button: HTMLButtonElement, open: boolean): void => {
+    button.classList.toggle("is-on", open);
+    button.setAttribute("aria-pressed", String(open));
+    button.setAttribute("title", open ? "스튜디오 닫고 타일 편집으로" : "AI 스튜디오 — 장면 모니터와 조수");
+  };
+  const button = el("button", {
+    class: "topbar-ai-studio",
+    text: "스튜디오",
+    attrs: {
+      type: "button",
+      "aria-label": "AI 스튜디오",
+      "aria-pressed": "false",
+      title: "AI 스튜디오 — 장면 모니터와 조수",
+    },
+    dataset: { testid: "topbar-ai-studio" },
+    on: { click: () => requestAiStudioToggle() },
+  }) as HTMLButtonElement;
+  paint(button, readStudioMode());
+  const onChange = (event: Event): void => {
+    const detail = event instanceof CustomEvent ? event.detail as { open?: boolean } | undefined : undefined;
+    paint(button, typeof detail?.open === "boolean" ? detail.open : readStudioMode());
+  };
+  if (typeof window !== "undefined") {
+    window.addEventListener(AI_STUDIO_CHANGE_EVENT, onChange);
+    disposeStudioButton = () => window.removeEventListener(AI_STUDIO_CHANGE_EVENT, onChange);
+  }
+  return button;
 }
 
 function renderTopbarAiSettingsButton(): HTMLElement {
