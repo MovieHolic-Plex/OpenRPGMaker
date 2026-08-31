@@ -330,14 +330,16 @@ describe("키 온보딩과 설정 접근성", () => {
     expect(findByTestId(commandBar!, "ai-input")).toBeTruthy();
     expect(findByTestId(commandBar!, "ai-send")).toBeTruthy();
     expect(findByTestId(commandBar!, "ai-context-chips")).toBeTruthy();
-    expect(findByTestId(panel, "ai-rising-overlay")).toBeTruthy();
+    // `.ai-rising-overlay` 는 사이드 도크 전용 표면이라 2026-08-31 에 삭제됐다.
+    expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
     expect(menu?.hidden).toBe(true);
 
     findByTestId(panel, "ai-command-menu-toggle")?.click();
     expect(menu?.hidden).toBe(false);
     expect(findByTestId(menu!, "ai-command-menu-undo")).toBeTruthy();
     expect(findByTestId(menu!, "ai-command-menu-export")).toBeTruthy();
-    expect(findByTestId(menu!, "ai-command-menu-dock")).toBeTruthy();
+    // 「도크 전환」 항목은 갈 곳이 하나뿐이 된 뒤 삭제됐다.
+    expect(findByTestId(menu!, "ai-command-menu-dock")).toBeNull();
     expect(findByTestId(menu!, "ai-command-menu-tools")).toBeTruthy();
     expect(findByTestId(menu!, "ai-new-session")).toBeNull();
     expect(findByTestId(menu!, "ai-studio-toggle")).toBeNull();
@@ -363,7 +365,6 @@ describe("키 온보딩과 설정 접근성", () => {
   });
 
   it("401 오류 버블에도 설정 열기 버튼을 붙인다", async () => {
-    editorState.set({ chatDock: "float" });
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "bad-key" }));
     vi.stubGlobal("fetch", vi.fn(async () => new Response("no key", { status: 401 })));
     const panel = renderPanel();

@@ -149,7 +149,8 @@ describe("commandRegistry", () => {
       "layer-lower",
       "layer-upper",
       "layer-event",
-      "toggle-chat-dock",
+      // 구 `toggle-chat-dock` 은 2026-08-31 에 삭제됐다 — 도크가 하나뿐이라 「전환」이
+      // 갈 곳이 없다. 부재 계약은 아래 워크스페이스 케이스가 담당한다.
     ];
     expect(commands.filter((command) => requiredIds.includes(command.id)).map((command) => command.id).sort()).toEqual([...requiredIds].sort());
   });
@@ -171,11 +172,16 @@ describe("commandRegistry", () => {
       expect(ids).toContain(`workspace-panel-${panel.id}-right`);
     }
     expect(ids).not.toContain("workspace-panel-assistant-left");
-    expect(ids).toEqual(expect.arrayContaining([
+    // 조수 도크 명령 4종(assistant-dock-glass/side/float · toggle-chat-dock)은 2026-08-31
+    // 도크 축 삭제와 함께 빠졌다. 팔레트에 다시 나타나면 회귀다.
+    for (const dead of [
       "assistant-dock-glass",
       "assistant-dock-side",
       "assistant-dock-float",
-    ]));
+      "toggle-chat-dock",
+    ]) {
+      expect(ids, dead).not.toContain(dead);
+    }
   });
 
   it("공통 저작 작업 네 개가 명령 팔레트에도 정확히 한 번 등록된다", () => {

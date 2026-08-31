@@ -158,11 +158,12 @@ test("after: 조수 하단/도크/컴포저/크기조절 실측", async ({ page 
   await page.waitForTimeout(600);
   const reopened = await page.getByTestId("ai-panel").boundingBox();
   report.resizePersisted = reopened ? [Math.round(reopened.width), Math.round(reopened.height)] : null;
-  report.storedSizes = await page.evaluate(() =>
-    Object.fromEntries(
-      ["glass", "side", "float"].map((dock) => [dock, localStorage.getItem(`oprn:ai-panel-size:${dock}`)]),
-    ),
-  );
+  // 크기 키도 하나로 합쳐졌다 — 구 `oprn:ai-panel-size:<dock>` 3종은 `oprn:ai-panel-size`
+  // 하나가 되고, `:float` 만 이전용으로 읽힌다.
+  report.storedSizes = await page.evaluate(() => ({
+    current: localStorage.getItem("oprn:ai-panel-size"),
+    legacyFloat: localStorage.getItem("oprn:ai-panel-size:float"),
+  }));
   await page.screenshot({ path: `${OUT}/07-after-reload.png` });
 
   // C3 — 언급 썸네일 렌더러를 실제 프로젝트 데이터로 확인(턴 없이 직접 장식).
@@ -171,23 +172,16 @@ test("after: 조수 하단/도크/컴포저/크기조절 실측", async ({ page 
     return win.__oprnMentionProbe ?? "no-probe-hook";
   });
 
-  // 도크 순환 — 하단 인벤토리 비교.
-  const docks: string[] = [];
-  for (let i = 0; i < 3; i += 1) {
-    await page.getByTestId("chat-dock-toggle").evaluate((n) => (n as HTMLButtonElement).click());
-    await page.waitForTimeout(700);
-    const dock = (await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) ?? "?";
-    docks.push(dock);
-    await page.screenshot({ path: `${OUT}/1${i}-dock-${dock}.png` });
-    report[`dock_${dock}_geometry`] = await panelGeometry(page);
-    report[`dock_${dock}_bottom`] = await bottomInventory(page, `dock-${dock}`);
-  }
-  report.docks = docks;
+  // 붙는 곳은 하나다 — 구 「도크 순환」 루프와, C5 전에 한 번 더 돌리던 토글 클릭은
+  // 2026-08-31 에 걷었다(`chat-dock-toggle` 삭제). 지금 표면 한 장만 인벤토리에 남긴다.
+  const dock = (await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) ?? "?";
+  await page.screenshot({ path: `${OUT}/10-dock-${dock}.png` });
+  report[`dock_${dock}_geometry`] = await panelGeometry(page);
+  report[`dock_${dock}_bottom`] = await bottomInventory(page, `dock-${dock}`);
+  report.docks = [dock];
 
-  // C5 — 하단 밴드가 캔버스 클릭을 삼키지 않는지. 조수 토글은 32px 하나만 남았으니,
-  // 그 밖의 하단 지점에서는 허상 단추 밴드가 아니라 실제 캔버스가 집혀야 한다.
-  await page.getByTestId("chat-dock-toggle").evaluate((n) => (n as HTMLButtonElement).click());
-  await page.waitForTimeout(600);
+  // C5 — 하단 밴드가 캔버스 클릭을 삼키지 않는지. 조수 캡슐이 차지한 폭 밖의 하단
+  // 지점에서는 허상 단추 밴드가 아니라 실제 캔버스가 집혀야 한다.
   report.bottomHitTest = await page.evaluate(() => {
     const vh = window.innerHeight;
     const probes = [700, 900, 1100, 1300, 1500].map((x) => ({ x, y: vh - 40 }));
@@ -206,7 +200,7 @@ test("after: 조수 하단/도크/컴포저/크기조절 실측", async ({ page 
   await page.locator(".ai-composer").screenshot({ path: `${OUT}/31-composer.png` });
 
   writeFileSync(`${OUT}/after-report.json`, JSON.stringify(report, null, 2), "utf8");
-  log(`docks=${docks.join(",")}`);
+  log(`dock=${dock}`);
   log(`resize=${JSON.stringify(report.resize)} persisted=${JSON.stringify(report.resizePersisted)}`);
   log(`send empty=${String(report.sendAriaEmpty)} typed=${String(report.sendAriaTyped)}`);
 });

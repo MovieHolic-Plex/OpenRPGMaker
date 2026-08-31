@@ -114,10 +114,10 @@ async function flushAsync(): Promise<void> {
   for (let i = 0; i < 20; i += 1) await Promise.resolve();
 }
 
-// 칩 접힘(`is-collapsed`) 축은 side·float 것이다. glass 는 대화 본문만 접는 fold 로
-// 갈라졌고(입력줄이 남는다), 그 계약은 test/aiGlassFold.test.ts 가 갖는다.
-function renderPanel(dock: "glass" | "side" | "float" = "side"): FakeElement {
-  return renderWithFakeDom(() => renderAiChatPanel({ getChatDock: () => dock }));
+// 접힘 축은 하나다: 패널 전체 칩 접힘(`is-collapsed`). glass 도크의 본문 접힘(fold)이
+// 두 번째 축이었고 도크 삭제와 함께 사라졌다 — 이제 도크 인자도 없다.
+function renderPanel(): FakeElement {
+  return renderWithFakeDom(() => renderAiChatPanel());
 }
 
 function expandPanel(panel: FakeElement): void {
@@ -145,11 +145,16 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
+// 삭제: "glass 는 저장된 '1' 을 칩 접힘이 아니라 fold 로 라우팅한다" — fold 축(`is-glass-folded`)
+// 자체가 없어져 주제가 사라졌다. 저장값이 칩 접힘으로 되돌아온다는 새 계약은 아래 복원 케이스가 잡는다.
 describe("AI 패널 자동 펼침/접기", () => {
-  it("부팅 시 저장된 접힘 선택('1')을 복원한다", () => {
+  it("부팅 시 저장된 접힘 선택('1')을 복원한다 — fold 로 새지 않는다", () => {
     storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
+    // Break: 저장값이 다시 본문 접힘(fold)으로 라우팅돼 칩이 안 서고 입력줄만 남는다.
+    expect(panel.classList.contains("is-glass-folded")).toBe(false);
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1"); // 부팅이 덮어쓰지 않는다.
   });
 
   it("접힌 채 전송하면 펼치고, 턴이 끝나도 답을 읽도록 열어 둔다", async () => {
@@ -189,15 +194,6 @@ describe("AI 패널 자동 펼침/접기", () => {
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
-  });
-
-  it("glass 는 저장된 '1' 을 칩 접힘이 아니라 fold 로 라우팅한다", () => {
-    // Break: glass 가 48px 칩으로 접히면 입력줄이 사라지고 답이 얼굴 뒤로 숨는다.
-    storage.set("oprn:ai-panel-collapsed", "1");
-    const panel = renderPanel("glass");
-    expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(panel.classList.contains("is-glass-folded")).toBe(true);
-    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1"); // 새 키도, 덮어쓰기도 없다.
   });
 
   it("스킬 어시스트 이벤트도 자동 펼침 경로를 탄다", async () => {

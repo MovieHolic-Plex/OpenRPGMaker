@@ -31,14 +31,15 @@ describe("assistant temperature copy", () => {
         setItem: (key: string, value: string) => void values.set(key, String(value)),
       },
     });
-    values.set("oprn:editor-layout:v4", JSON.stringify({ chatDock: "side", leftWidth: 320 }));
+    // 같이 저장된 다른 키를 지우지 않는다는 것이 요점이다(구 `chatDock` 자리).
+    values.set("oprn:editor-layout:v4", JSON.stringify({ mapTreeHeight: 220, leftWidth: 320 }));
 
     expect(parseAssistantTemperature("ink-only")).toBe("ink-only");
     expect(parseAssistantTemperature("unknown")).toBe("quiet-gold");
     persistAssistantTemperature("map-first");
 
     expect(JSON.parse(values.get("oprn:editor-layout:v4") ?? "{}")).toEqual({
-      chatDock: "side",
+      mapTreeHeight: 220,
       leftWidth: 320,
       assistantTemperature: "map-first",
     });

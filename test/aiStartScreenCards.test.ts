@@ -39,7 +39,6 @@ beforeEach(() => {
     layer: "lower",
     tool: "paint",
     selection: null,
-    chatDock: "float",
   });
 });
 

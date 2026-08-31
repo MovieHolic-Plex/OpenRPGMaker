@@ -43,7 +43,7 @@ function fake(node: HTMLElement): FakeElement {
 function installStorage(): void {
   storage = new MemoryStorage();
   storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
-  storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 300, chatDock: "glass" }));
+  storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 300 }));
   Object.defineProperty(globalThis, "localStorage", { configurable: true, writable: true, value: storage });
 }
 
