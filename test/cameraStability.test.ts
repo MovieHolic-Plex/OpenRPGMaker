@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { viewportCenterWorld, type CameraViewport } from "@/editor/cameraStability";
+import { planEditorCameraCenter, viewportCenterWorld, type CameraViewport } from "@/editor/cameraStability";
 
 /**
  * Phaser Camera.centerOn(x, y) 의 역연산:
@@ -63,3 +63,42 @@ describe("cameraStability — viewport center preservation on resize", () => {
     expect(afterCenter).toEqual(focal);
   });
 });
+
+describe("planEditorCameraCenter — 줌만 바뀔 때는 보고 있던 점을 유지한다", () => {
+  const map = { mapWidthPx: 40 * 16, mapHeightPx: 30 * 16 };
+
+  it("맵이 바뀌었거나 이전 중심이 없으면 맵 한가운데다", () => {
+    expect(planEditorCameraCenter({
+      ...map,
+      previousCenter: null,
+      preserveLookAt: false,
+      devFocusWorld: null,
+    })).toEqual({ x: 320, y: 240 });
+
+    expect(planEditorCameraCenter({
+      ...map,
+      previousCenter: { x: 80, y: 64 },
+      preserveLookAt: false,
+      devFocusWorld: null,
+    })).toEqual({ x: 320, y: 240 });
+  });
+
+  it("같은 맵에서 줌만 바뀌면 이전 look-at 을 그대로 쓴다 — 맵 중앙으로 붙지 않는다", () => {
+    expect(planEditorCameraCenter({
+      ...map,
+      previousCenter: { x: 80, y: 64 },
+      preserveLookAt: true,
+      devFocusWorld: null,
+    })).toEqual({ x: 80, y: 64 });
+  });
+
+  it("개발용 focus 쿼리가 있으면 보존보다 앞선다", () => {
+    expect(planEditorCameraCenter({
+      ...map,
+      previousCenter: { x: 80, y: 64 },
+      preserveLookAt: true,
+      devFocusWorld: { x: 8.5 * 16, y: 4.5 * 16 },
+    })).toEqual({ x: 136, y: 72 });
+  });
+});
+

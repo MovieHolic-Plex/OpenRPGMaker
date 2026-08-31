@@ -285,7 +285,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           const region = event.result.data as EditorFocusRegion;
           highlightedRegionThisTurn = true;
           editorState.set({ selection: { mapId: region.mapId, x: region.x, y: region.y, width: region.w, height: region.h } });
-          focusEditorRegion(region);
+          focusEditorRegion(region, { onlyIfOffscreen: true });
         }
         // 조수의 화면 이동 요청: 맵을 열고 카메라를 보내고 잠깐 강조한다(선택 상태는 건드리지 않는다).
         if (event.name === "focus_editor_view" && event.result.ok) {

@@ -23,15 +23,21 @@ export interface EditorFocusRegion {
 export interface FocusEditorRegionOptions {
   /** 잠깐 반짝이는 강조 사각형을 함께 띄운다(선택 상태는 건드리지 않는다). */
   readonly highlight?: boolean;
+  /**
+   * 대상이 이미 화면 안에 있으면 카메라를 움직이지 않는다.
+   * 조수가 질문용으로 영역을 강조할 때만 켠다. 사용자가 링크를 눌렀거나 "어디야?"라고
+   * 물은 경로는 기본(꺼짐) — 눌렀는데 아무 일도 없는 것이 더 나쁘다.
+   */
+  readonly onlyIfOffscreen?: boolean;
 }
 
 /**
  * 맵을 열고 카메라를 영역 중심으로 보낸다.
  *
- * `onlyIfOffscreen` 을 쓰지 않는다: 이 경로는 사용자가 링크를 눌렀거나 "어디야?"라고 물어서
- * 시작된다 — 눌렀는데 아무 일도 일어나지 않는 것이 화면을 빼앗기는 것보다 나쁘다
- * (`editorCameraFocus.ts` 의 옵션 주석과 같은 판단). 사용자가 드래그·페인트 중이면 씬이
- * `shouldDeferCameraFocus` 로 알아서 미룬다.
+ * `onlyIfOffscreen` 기본은 꺼져 있다: 사용자가 링크를 눌렀거나 "어디야?"라고 물어서
+ * 시작되는 이동은 눌렀는데 아무 일도 일어나지 않는 것이 화면을 빼앗기는 것보다 나쁘다.
+ * 조수 질문용 `highlight_map_region` 만 `{ onlyIfOffscreen: true }` 를 넘긴다.
+ * 사용자가 드래그·페인트 중이면 씬이 `shouldDeferCameraFocus` 로 알아서 미룬다.
  */
 export function focusEditorRegion(region: EditorFocusRegion, options: FocusEditorRegionOptions = {}): boolean {
   const map = store.getCurrent().maps[region.mapId];
@@ -49,6 +55,7 @@ export function focusEditorRegion(region: EditorFocusRegion, options: FocusEdito
     tileX: Math.floor(bounds.x + bounds.width / 2),
     tileY: Math.floor(bounds.y + bounds.height / 2),
     bounds,
+    ...(options.onlyIfOffscreen === true ? { onlyIfOffscreen: true } : {}),
   });
   if (options.highlight) {
     requestAgentFocusHighlight({ mapId: region.mapId, cells: [], bounds, score: 1 });

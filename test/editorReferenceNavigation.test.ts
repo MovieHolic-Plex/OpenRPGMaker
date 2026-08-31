@@ -145,6 +145,13 @@ describe("editor reference navigation", () => {
     expect(cameraRequests[0]?.bounds).toEqual({ x: 2, y: 3, width: 4, height: 4 });
   });
 
+  it("조수 질문용 강조는 화면 밖일 때만 카메라를 요청한다", () => {
+    focusEditorRegion({ mapId: project.startMapId, x: 2, y: 3, w: 4, h: 4 }, { onlyIfOffscreen: true });
+
+    expect(cameraRequests[0]?.onlyIfOffscreen).toBe(true);
+    expect(cameraRequests[0]?.bounds).toEqual({ x: 2, y: 3, width: 4, height: 4 });
+  });
+
   it("clamps a region that runs past the map edge", () => {
     focusEditorRegion({ mapId: "map_house_interior_1", x: 18, y: 15, w: 10, h: 10 });
 

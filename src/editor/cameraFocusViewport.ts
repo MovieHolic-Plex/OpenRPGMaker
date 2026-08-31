@@ -1,11 +1,9 @@
 /**
  * 카메라 초점 기하학 — 순수 계산만 둔다(Phaser·DOM import 없음).
  *
- * 조수 채팅 독의 기본 모습은 캔버스 위에 떠 있는 유리 카드다
- * (src/styles/database/tabs-b-assistant-panel/02-chat-dock.css: .ai-chat-float-host inset:0 z-index:32,
- * .ai-chat-panel.chat-dock-glass inset 12px auto auto 12px, width clamp(360px,38vw,520px)).
- * 즉 캔버스 전체 중앙에 대상을 맞추면 그 카드 뒤로 들어가 "아무 일도 안 일어난 것"처럼 보인다.
- * 그래서 가림을 뺀 사각형을 먼저 구하고, 그 사각형의 중앙에 대상이 오도록 카메라 lookAt 을 옮긴다.
+ * 조수 표면은 캔버스 위 입력줄 캡슐과, 턴이 열리면 그 위에 펼치는 기록 카드다.
+ * `.ai-chat-panel` 자체는 inset:0 투명 호스트라 캔버스 전체를 덮지만 가림이 아니다.
+ * 입력줄+기록 카드를 한 덩어리로 합친 뒤에 가림을 빼야, 60% 교차 비율이 오른쪽 열을 알아본다.
  */
 
 /** 캔버스 기준 CSS 픽셀 사각형. */
@@ -20,11 +18,25 @@ export interface CanvasRect {
 const CROSS_RATIO = 0.6;
 /** 잘라낸 뒤 눈으로 볼 수 있는 최소 폭/높이(px). 이보다 좁은 조각만 남으면 그 가림은 무시한다. */
 const DEFAULT_MIN_SPAN_PX = 64;
+/** 캔버스 면적의 이 비율 이상을 덮으면 투명 호스트로 보고 버린다. */
+const FULL_COVER_RATIO = 0.85;
+/** 인접한 조수 조각을 한 덩어리로 볼 최대 간격(px). */
+const OVERLAY_MERGE_GAP_PX = 24;
+/** 이 거리 안에 있으면 캔버스 변에 붙어 있다고 본다. */
+const EDGE_FLUSH_PX = 24;
+/** 변에 붙은 열로 깎을 최소 폭. 접힌 「조수」 단추는 이보다 좁다. */
+const EDGE_COLUMN_MIN_WIDTH = 200;
+/** 입력줄만 있을 때는 열로 안 깎고, 기록 카드까지 붙으면 깎는다. */
+const EDGE_COLUMN_MIN_HEIGHT = 200;
+/** 변에 붙은 가로 띠로 깎을 최소 높이. */
+const EDGE_ROW_MIN_HEIGHT = 80;
 
 /**
  * 캔버스를 덮는 오버레이(조수 유리 카드 등)를 뺀, 실제로 맵이 보이는 최대 사각형.
  * 한 방향씩만 깎는다(좌/우/상/하). 60% 교차 비율은 어느 변을 깎을지 결정하고,
  * minSpanPx 는 그 결과가 눈으로 보기 어려운 좁은 조각일 때만 깎기를 거부한다.
+ * 오른쪽 아래 캡슐+기록은 큰 창에서 높이 60%를 못 넘기므로, 변에 붙은 열/띠는
+ * 교차 비율과 별도로 그 변을 깎는다.
  * 실측한 600×500 캔버스에서는 폭 360px 카드 오른쪽에 228px가 남으므로, 정상 가시 영역을 버리던
  * 240px 대신 64px를 기본값으로 삼는다.
  */
@@ -64,11 +76,37 @@ export function unoccludedCanvasRect(
           keepBelow >= keepAbove
             ? { x: current.x, y: inter.y + inter.height, width: current.width, height: keepBelow }
             : { x: current.x, y: current.y, width: current.width, height: keepAbove };
+        continue;
       }
     }
+
+    const edgeCrop = cropFlushEdge(current, inter, minSpanPx);
+    if (edgeCrop) current = edgeCrop;
   }
 
   return { x: current.x, y: current.y, width: Math.max(0, current.width), height: Math.max(0, current.height) };
+}
+
+/** 변에 붙은 열/띠는 60% 교차를 못 해도 그 변을 깎는다. 오른쪽 아래 캡슐이 여기 해당한다. */
+function cropFlushEdge(current: CanvasRect, inter: CanvasRect, minSpanPx: number): CanvasRect | null {
+  const rightGap = current.x + current.width - (inter.x + inter.width);
+  const leftGap = inter.x - current.x;
+  const bottomGap = current.y + current.height - (inter.y + inter.height);
+  const topGap = inter.y - current.y;
+
+  if (rightGap <= EDGE_FLUSH_PX && inter.width >= EDGE_COLUMN_MIN_WIDTH && inter.height >= EDGE_COLUMN_MIN_HEIGHT && leftGap >= minSpanPx) {
+    return { x: current.x, y: current.y, width: leftGap, height: current.height };
+  }
+  if (leftGap <= EDGE_FLUSH_PX && inter.width >= EDGE_COLUMN_MIN_WIDTH && inter.height >= EDGE_COLUMN_MIN_HEIGHT && rightGap >= minSpanPx) {
+    return { x: inter.x + inter.width, y: current.y, width: rightGap, height: current.height };
+  }
+  if (bottomGap <= EDGE_FLUSH_PX && inter.height >= EDGE_ROW_MIN_HEIGHT && topGap >= minSpanPx) {
+    return { x: current.x, y: current.y, width: current.width, height: topGap };
+  }
+  if (topGap <= EDGE_FLUSH_PX && inter.height >= EDGE_ROW_MIN_HEIGHT && bottomGap >= minSpanPx) {
+    return { x: current.x, y: inter.y + inter.height, width: current.width, height: bottomGap };
+  }
+  return null;
 }
 
 /**
@@ -122,6 +160,72 @@ export function visibleTileRectFromViewport(input: {
 
 function safeZoom(zoom: number): number {
   return Number.isFinite(zoom) && zoom > 0 ? zoom : 1;
+}
+
+/**
+ * inset:0 투명 패널처럼 캔버스를 거의 다 덮는 사각형은 가림이 아니다.
+ * 입력줄·기록 카드만 남긴다.
+ */
+export function filterAssistantOverlayRects(
+  canvas: CanvasRect,
+  rects: readonly CanvasRect[],
+): CanvasRect[] {
+  if (!isUsableRect(canvas)) return [];
+  const canvasArea = canvas.width * canvas.height;
+  const kept: CanvasRect[] = [];
+  for (const rect of rects) {
+    if (!isUsableRect(rect)) continue;
+    const inter = intersect(canvas, rect);
+    if (!inter) continue;
+    if (inter.width * inter.height >= canvasArea * FULL_COVER_RATIO) continue;
+    kept.push(rect);
+  }
+  return kept;
+}
+
+/**
+ * 겹치거나 가까이 붙은 사각형을 한 덩어리로 합친다.
+ * 입력줄과 그 위 기록 카드는 각각 60% 교차에 못 미치지만, 합치면 오른쪽 열로 깎인다.
+ */
+export function mergeNearbyRects(
+  rects: readonly CanvasRect[],
+  gapPx = OVERLAY_MERGE_GAP_PX,
+): CanvasRect[] {
+  const items = rects.filter(isUsableRect).map((rect) => ({ ...rect }));
+  if (items.length <= 1) return items;
+  let merged = true;
+  while (merged) {
+    merged = false;
+    for (let i = 0; i < items.length; i += 1) {
+      for (let j = i + 1; j < items.length; j += 1) {
+        if (!rectsAreNearby(items[i], items[j], gapPx)) continue;
+        items[i] = unionRect(items[i], items[j]);
+        items.splice(j, 1);
+        merged = true;
+        break;
+      }
+      if (merged) break;
+    }
+  }
+  return items;
+}
+
+function rectsAreNearby(a: CanvasRect, b: CanvasRect, gapPx: number): boolean {
+  const padded: CanvasRect = {
+    x: a.x - gapPx,
+    y: a.y - gapPx,
+    width: a.width + gapPx * 2,
+    height: a.height + gapPx * 2,
+  };
+  return intersect(padded, b) !== null;
+}
+
+function unionRect(a: CanvasRect, b: CanvasRect): CanvasRect {
+  const x0 = Math.min(a.x, b.x);
+  const y0 = Math.min(a.y, b.y);
+  const x1 = Math.max(a.x + a.width, b.x + b.width);
+  const y1 = Math.max(a.y + a.height, b.y + b.height);
+  return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }
 
 function isUsableRect(rect: CanvasRect): boolean {
