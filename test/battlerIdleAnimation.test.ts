@@ -180,17 +180,15 @@ describe("배틀러 idle 애니메이션 — 카탈로그", () => {
 });
 
 describe("배틀러 idle 애니메이션 — 적 배틀러(<img> 유지)", () => {
-  it("등록된 적은 <img> 그대로이고 src 는 정적 원본, 애니메이션은 배경으로 붙는다", () => {
+  it("필드 적은 정적 원본만 그린다 — idle 스트립을 붙이지 않는다", () => {
     const field = fieldFor("troop_golem_guard");
     const golem = field.querySelector<HTMLElement>('[data-record-id="enemy_stone_golem"] .battle-enemy-image');
     expect(golem).toBeTruthy();
-    // (2) 엘리먼트 종류 계약 — 여기서 span 으로 바뀌면 스킨 크기 규칙과 rect 프로브가 깨진다.
     expect(golem?.tagName).toBe("IMG");
     expect((golem as HTMLImageElement).getAttribute("src")).toContain("monster-golem-01.png");
-    expect(golem?.dataset.battlerAnim).toBe("generated-enemy-golem-01");
-    expect(golem?.style.getPropertyValue("--battler-anim-frames")).toBe("8");
-    expect(golem?.style.getPropertyValue("--battler-anim-url")).toContain("idle/monster-golem-01.png");
-    expect(golem?.style.getPropertyValue("--battler-anim-duration")).toMatch(/^\d+ms$/);
+    expect((golem as HTMLImageElement).getAttribute("src")).not.toContain("/idle/");
+    expect(golem?.dataset.battlerAnim).toBeUndefined();
+    expect(golem?.style.getPropertyValue("--battler-anim-url")).toBe("");
   });
 
   it("등록되지 않은 적은 애니메이션 속성이 붙지 않는다", () => {

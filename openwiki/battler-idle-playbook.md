@@ -3,7 +3,7 @@
 새 배틀러에 idle 애니메이션을 **추가하는 절차**다. 왜 그렇게 설계됐는지(런타임 계약·CSS·폴백)는
 `openwiki/runtime-battle.md` 의 배틀러 idle 절에 있다. 이 쪽은 "어떻게 새로 만드는가"만 다룬다.
 
-세 티어가 이미 돌아간다: 적 몬스터(슬라임·박쥐·골렘), 정면 액터(hero-01~06), 후면 액터(hero-01~04).
+세 티어가 이미 돌아간다: 정면 액터(hero-01~06), 후면 액터(hero-01~04), (카탈로그에만 있는) 적 몬스터 스트립. **필드 적 `.battle-enemy-image` 는 idle 을 붙이지 않는다** — 스트립 알파가 몬스터를 반투명하게 만들었다. 파티 몬스터·액터만 idle 경로를 탄다.
 카탈로그는 `src/assets/battlerIdleAnimations.ts`, 계약은 `test/battlerIdleAnimation.test.ts` 와
 `test/battlerBackIdleAnimation.test.ts`.
 

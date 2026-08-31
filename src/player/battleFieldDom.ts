@@ -666,7 +666,9 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   if (url) {
     const image = document.createElement("img");
     image.className = "battle-enemy-image";
-    applyIdleAnimationToImage(image, resourceId);
+    // 필드 적은 정적 원본만 그린다. idle 스트립은 영상 키드 프레임이라 반투명 픽셀이
+    // 섞여 있고, CSS 가 `object-position` 으로 src 를 밀어 그 스트립만 보여 몬스터가
+    // 반투명해 보였다(실측: 정적 원본 mid-alpha 0%, idle 스트립 골렘 1.23%).
     image.alt = `${enemy.name} 몬스터`;
     image.src = url;
     enemyNode.append(image);
