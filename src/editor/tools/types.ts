@@ -111,6 +111,18 @@ export interface SimplePage {
   readonly showText?: readonly string[];
   readonly messages?: readonly string[];
   readonly text?: string;
+  /** 페이지 표시 이름. 생략 시 NPC 이름. */
+  readonly name?: string;
+  /**
+   * 이 페이지의 캐릭터 그래픽. 생략 시 이벤트 공통 graphic.
+   * 퀘스트 완료 후 외형 변경·합류 후 투명 등에 쓴다.
+   */
+  readonly graphic?: {
+    readonly query?: string;
+    readonly textureKey?: string;
+    readonly characterIndex?: number;
+    readonly transparent?: boolean;
+  };
   /** 대화 페이스. 생략 시 place_npc graphic charset에서 자동 매핑. */
   readonly face?: {
     readonly resourceId?: string;

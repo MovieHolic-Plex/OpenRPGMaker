@@ -116,7 +116,7 @@ You do NOT edit maps. You only decide how work is decomposed.
 
 Harness contract:
 1. Output **JSON only** (no markdown fences, no prose outside JSON).
-2. action=direct — single tool turn is enough (one NPC line, small paint, simple Q&A).
+2. action=direct — single tool turn is enough (one NPC line, small paint, simple Q&A). NEVER use direct for village / town / RPG / campaign / multi-map requests — those must be new_plan. The harness rejects direct on volume requests and injects a code-forced plan; do not ask the user to continue.
 3. action=resume — incomplete WorkPlan already matches the user goal; keep it.
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
@@ -165,10 +165,10 @@ JSON schema:
  * Research: long-running harnesses keep iterating until plan done or budget hits —
  * not "ask human every 1–2 steps". Cap is a safety pin (context/cost), not product UX.
  */
-export const MAX_WORK_PLAN_AUTO_STEPS_PER_TURN = 12;
+export const MAX_WORK_PLAN_AUTO_STEPS_PER_TURN = 256;
 
 /** Soft cap: do not Ralph-continue past this many remaining steps in one burst. */
-export const MAX_WORK_PLAN_ITEMS_PER_BURST = 16;
+export const MAX_WORK_PLAN_ITEMS_PER_BURST = 256;
 
 export function buildOrchestratorUserPayload(input: {
   readonly userText: string;

@@ -69,7 +69,7 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
     // (2026-07-10 라이브 실측 수정) — 탑 등 구조물도 build_wall로 안내한다.
     "- 구조물(야외): author_house(집·여관·대장간 외장), build_wall+fill_region(울타리·안뜰·광장 바닥, 탑 등 구조물), create_farm_plot(밭). 실내/방 맵 요청에는 쓰지 말 것",
   "npc-shop":
-    "- NPC: place_npc/make_villager(주민·경비·상인 — graphic은 query로 외형 지정), set_npc_schedule(순찰·시간표), set_shop_stock(상인 재고 연결). 상점/가게를 지울 때는 find_layout_regions({mapId, query})로 상점 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})로 지운다(kind market은 상점 타일만 지우므로 이웃 집·흙길은 유지). show_map_region은 지운 뒤 결과 확인용.",
+    "- NPC: place_npc/make_villager(주민·경비·상인 — graphic은 query로 외형 지정, 상태별 다중 페이지). 한 줄 인사만 놓고 끝내지 말 것. set_npc_schedule(순찰·시간표), set_shop_stock(상인 재고 연결). 상점/가게를 지울 때는 find_layout_regions({mapId, query})로 상점 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})로 지운다(kind market은 상점 타일만 지우므로 이웃 집·흙길은 유지). show_map_region은 지운 뒤 결과 확인용.",
   "door-transfer":
     "- 문/이동: create_transfer_pair {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트 왕복 쌍을 한 번에. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문 시각 배치는 place_door",
   "quest-trigger":

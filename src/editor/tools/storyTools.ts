@@ -133,7 +133,7 @@ const findFlagUsage: ToolDefinition = {
 
 const explainEventTool: ToolDefinition = {
   name: "explain_event",
-  description: "맵 이벤트 페이지 조건을 현재 세션값(없으면 에디터 기본값)으로 평가해 비활성 원인과 최종 활성 페이지를 설명한다.",
+  description: "맵 이벤트 페이지 조건을 현재 세션값(없으면 에디터 기본값)으로 평가해 비활성 원인과 최종 활성 페이지를 설명한다. 복잡한 NPC를 놓은 뒤 지금 활성인 페이지가 의도한 기본 페이지인지 확인할 때 쓴다.",
   mode: "read",
   domains: ["event", "quest", "system"],
   invalidArgsExample: { mapId: "map_blank_start", eventId: "ev_mayor" },

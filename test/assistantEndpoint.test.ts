@@ -62,8 +62,8 @@ function companionConfig(overrides: Partial<AiConfig> = {}): AiConfig {
 }
 
 describe("resolveSurfaceAiConfig", () => {
-  it("keeps the region surface tool-call ceiling at 24", () => {
-    expect(REGION_SURFACE_MAX_TOOL_CALLS).toBe(24);
+  it("keeps the region surface tool-call ceiling at the generous chat default", () => {
+    expect(REGION_SURFACE_MAX_TOOL_CALLS).toBe(2000);
   });
 
   it("Given any surface When resolving Then the endpoint fields stay identical to the assistant config", () => {
@@ -107,7 +107,7 @@ describe("resolveSurfaceAiConfig", () => {
   });
 
   it("Given the region surface When the user allows more tool calls Then the surface ceiling wins", () => {
-    const resolved = resolveSurfaceAiConfig("region", companionConfig({ maxToolCalls: 200 }));
+    const resolved = resolveSurfaceAiConfig("region", companionConfig({ maxToolCalls: 5000 }));
 
     expect(resolved.maxToolCalls).toBe(REGION_SURFACE_MAX_TOOL_CALLS);
   });

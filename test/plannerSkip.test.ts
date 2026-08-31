@@ -26,6 +26,12 @@ describe("plannerSkipReason", () => {
     expect(plannerSkipReason("빈 프로젝트에 강이 있는 마을을 하나 만들고 집 8채를 지어줘")).toBeNull();
     expect(plannerSkipReason("퀘스트 하나 만들고 엔딩까지 이어줘")).toBeNull();
     expect(plannerSkipReason("맵을 3개 만들고 마을과 던전을 연결해줘")).toBeNull();
+    expect(plannerSkipReason("음 다른맵을 더 만들자")).toBeNull();
+  });
+
+  it("짧은 RPG 요청도 볼륨 계약 때문에 플래너를 건너뛰지 않는다", () => {
+    expect(plannerSkipReason("중형 RPG를 만들어줘")).toBeNull();
+    expect(plannerSkipReason("알피지 캠페인 하나")).toBeNull();
   });
 
   it("긴 지시인데 다단계 표지가 없으면 플래너를 남긴다", () => {

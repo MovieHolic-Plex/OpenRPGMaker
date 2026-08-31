@@ -61,7 +61,7 @@ import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply }
 import { projectApprovalFingerprint, reviewRegionDraft, type HarnessReviewReport } from "./harnessReview";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
-// 상한 값 자체는 표면 정책(assistantEndpoint)이 소유한다. 이 이름은 진행 표시("도구 3/24")를
+// 상한 값 자체는 표면 정책(assistantEndpoint)이 소유한다. 이 이름은 진행 표시("도구 3/2000")를
 // 그리는 regionTaskModal 이 쓰고 있어 그대로 재노출한다.
 export const REGION_TASK_MAX_TOOL_CALLS = REGION_SURFACE_MAX_TOOL_CALLS;
 

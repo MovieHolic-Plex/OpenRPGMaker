@@ -107,12 +107,27 @@ describe("AI surfaces that teach page semantics", () => {
   it("page semantics exposes the machine-consumed authoring tokens", () => {
     expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("m2-211-weighted-branch");
     expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("selfSwitch");
+    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("find_events");
+    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("get_story_state");
+    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("characterId");
+    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("friendshipAtLeast");
+    expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("복잡한 NPC");
+  });
+
+  it("work rules tell the model to look up then author state-variant pages", () => {
+    const prompt = buildSystemPrompt(createBlankProject(), { budgetChars: 12_000 });
+    expect(prompt).toContain("복잡한 NPC 저작");
+    expect(prompt).toContain("find_events");
+    expect(prompt).toContain("상태별 NPC");
+    expect(prompt).not.toContain("한 페이지 안을");
   });
 
   it("SimplePage.conditions is typed as a condition, not a command", () => {
     const conditions = SIMPLE_PAGE_SCHEMA.properties?.conditions as { items?: unknown; description?: string };
     expect(conditions.items).toBe(CONDITION_SCHEMA);
     expect(conditions.description).toContain("마지막");
+    expect(SIMPLE_PAGE_SCHEMA.properties?.name).toBeTruthy();
+    expect(SIMPLE_PAGE_SCHEMA.properties?.graphic).toBeTruthy();
   });
 
   it("condition kind enum is the registry, so no kind is silently missing", () => {
@@ -342,6 +357,40 @@ describe("make_villager does not ship dead pages of its own", () => {
     expect(warnings).not.toContain("setSelfSwitch");
     expect(warnings).not.toContain("m2-211-weighted-branch");
   });
+
+  it("dialogue.when accepts switch/selfSwitch/friendship conditions", () => {
+    const { result, event } = villager([
+      { text: "처음 뵙겠습니다." },
+      { when: { switchId: "quest_started" }, text: "그 부탁, 진행 중이지?" },
+      { when: { selfSwitch: "A" }, text: "또 왔네." },
+      { when: { friendshipAtLeast: 50 }, text: "이제 친구지." },
+    ]);
+    expect(result.ok, result.summary).toBe(true);
+    const kinds = (event?.pages ?? []).flatMap((page) => page.conditions.map((condition) => condition.kind));
+    expect(kinds).toEqual(expect.arrayContaining(["switch", "selfSwitch", "friendshipAtLeast"]));
+    expect(findShadowedPages(event?.pages ?? [])).toEqual([]);
+  });
+
+  it("pages 인자는 선택지와 상태 전환이 있는 복잡한 NPC를 그대로 싣는다", () => {
+    const { result, event } = villager([], {
+      pages: [
+        {
+          name: "촌장 · 기본",
+          lines: ["밭은 잘 돌아가나?"],
+          commands: [{ kind: "changeFriendship", delta: 10 }, { kind: "setSelfSwitch", key: "A", value: true }],
+        },
+        {
+          name: "촌장 · 재방문",
+          conditions: [{ kind: "selfSwitch", key: "A", value: true }],
+          lines: ["또 와줬군."],
+        },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(event?.pages?.map((page) => page.name)).toEqual(["촌장 · 기본", "촌장 · 재방문"]);
+    expect(findShadowedPages(event?.pages ?? [])).toEqual([]);
+    expect(findUnwrittenSelfSwitchGates(event ?? {})).toEqual([]);
+  });
 });
 
 describe("diagnostics are reported once and cannot crash a project load", () => {
@@ -379,5 +428,63 @@ describe("diagnostics are reported once and cannot crash a project load", () => 
       ],
     } as unknown as GameEvent;
     expect(() => findUnwrittenSelfSwitchGates(event)).not.toThrow();
+  });
+});
+
+describe("place_npc can author a multi-page NPC with characterId", () => {
+  it("keeps distinct conditioned pages, names, and friendship identity", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "place_npc", {
+      mapId: ctx.project.startMapId,
+      x: 4,
+      y: 4,
+      name: "촌장",
+      id: "ev_mayor_rich",
+      characterId: "mayor",
+      pages: [
+        {
+          name: "촌장 · 기본",
+          lines: ["밭은 잘 돌아가나?"],
+          commands: [{ kind: "changeFriendship", delta: 10 }],
+        },
+        {
+          name: "촌장 · 친밀",
+          conditions: [{ kind: "friendshipAtLeast", value: 200 }],
+          lines: ["자네라면 이 마을을 맡겨도 되겠어."],
+          commands: [{ kind: "changeFriendship", delta: 10 }],
+        },
+        {
+          name: "촌장 · 밤",
+          conditions: [{ kind: "timePhase", phase: "night" }],
+          lines: ["밤은 조용히 보내게."],
+        },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ eventId: "ev_mayor_rich", pageCount: 3, characterId: "mayor" });
+    const event = ctx.project.maps[ctx.project.startMapId]?.events.find((entry) => entry.id === "ev_mayor_rich");
+    expect(event?.characterId).toBe("mayor");
+    expect(event?.pages?.map((page) => page.name)).toEqual(["촌장 · 기본", "촌장 · 친밀", "촌장 · 밤"]);
+    expect(findShadowedPages(event?.pages ?? [])).toEqual([]);
+    const warnings = ((result.diff?.warnings ?? []) as readonly string[]).join("\n");
+    expect(warnings).not.toContain("절대 발동하지 않습니다");
+  });
+
+  it("allocates characterId when friendship is authored without one", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "place_npc", {
+      mapId: ctx.project.startMapId,
+      x: 5,
+      y: 5,
+      name: "안내인",
+      id: "ev_guide_heart",
+      pages: [
+        { lines: ["처음 뵙겠소."] },
+        { conditions: [{ kind: "friendshipAtLeast", value: 20 }], lines: ["이젠 친구지."] },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(typeof result.data?.characterId).toBe("string");
+    expect(String(result.data?.characterId).length).toBeGreaterThan(0);
   });
 });

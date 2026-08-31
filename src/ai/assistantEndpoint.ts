@@ -58,8 +58,8 @@ interface SurfacePolicy {
   readonly maxToolCallsCeiling?: number;
 }
 
-/** 영역 작업 한 번의 툴콜 상한. runRegionTask 가 재노출한다(옛 상수 이름을 쓰는 호출부 보존). */
-export const REGION_SURFACE_MAX_TOOL_CALLS = 24;
+/** 영역 작업 한 번의 툴콜 상한. 채팅 조수 기본(2000)과 같게 후하게 잡는다. runRegionTask 가 재노출한다. */
+export const REGION_SURFACE_MAX_TOOL_CALLS = 2000;
 
 /**
  * 타일셋 매핑 응답의 상속된 고정 출력 예산. cpen은 전송층이 어차피 8192로 clamp하므로 이 핀의

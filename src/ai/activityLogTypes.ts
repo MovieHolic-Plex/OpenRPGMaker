@@ -40,6 +40,17 @@ export type AiActivityResult = {
   readonly orphaned?: boolean;
   /** 이 턴이 만든 프로젝트 커밋. 예전에는 audit 텍스트의 `commit=` 를 정규식으로 긁어야 했다. */
   readonly commitIds?: readonly string[];
+  /** 이 목표가 태운 토큰·경과·과정. 있으면 로그 요약에 그대로 싣는다. */
+  readonly recap?: {
+    readonly elapsedMs: number;
+    readonly promptTokens: number;
+    readonly completionTokens: number;
+    readonly llmCalls: number;
+    readonly toolCalls: number;
+    readonly ralphContinues: number;
+    readonly volumeContinues: number;
+    readonly process: readonly string[];
+  };
 };
 
 export type AiActivityDiagnosticKind =

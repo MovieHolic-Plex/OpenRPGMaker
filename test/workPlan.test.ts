@@ -360,6 +360,7 @@ describe("수정 요청 — 계획 단계에서 신축으로 새지 않는다", 
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("Repair/adjust");
     // 금지·보존 제약은 축약 예외.
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("금지·보존 제약");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("NEVER use direct for village");
   });
 
   it("플래너 페이로드에 대상 선택 규칙이 매 턴 실린다", () => {

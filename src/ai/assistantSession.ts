@@ -143,6 +143,26 @@ import {
   verifyTargetMapChanged,
   type BattlePhaseSimulation,
 } from "./workItemOutcome";
+import {
+  MAX_VOLUME_CONTINUES_PER_TURN,
+  buildVolumeWorkPlan,
+  formatVolumeContinueMessage,
+  measureVolume,
+  placedNpcIdFrom,
+  requestNeedsVolumePlan,
+  verifyPlacedNpcsHaveStatePages,
+  volumeBarForRequest,
+  volumeGaps,
+  volumeUnmet,
+  type VolumeBar,
+  type VolumeSnapshot,
+} from "./volumeContract";
+import {
+  buildRunRecap,
+  serializeRunRecap,
+  usageDelta,
+  type RunRecap,
+} from "./runRecap";
 
 const MAX_ESCALATED_TOOLS_PER_TURN = 16;
 const MAX_BASE_TURN_TOOL_SCHEMAS = 40;
@@ -176,7 +196,9 @@ export type SessionEvent =
   | { type: "milestone_applied"; title: string; toolCount: number; commitId: string | null }
   // 자동 적용이 차단됐다(파괴적/어휘/규칙 verdict 또는 완성도 경고) — 카드가 렌더되어
   // 사용자 승인을 기다린다(런 일시정지).
-  | { type: "proposal_paused"; reason: string; warnings?: readonly string[] };
+  | { type: "proposal_paused"; reason: string; warnings?: readonly string[] }
+  /** 사용자 목표(자율 런이면 드라이버 전체)가 끝났을 때 토큰·경과·과정 계량. */
+  | { type: "run_recap"; recap: RunRecap };
 
 // 제안(changeset)에 담기는 개별 쓰기 툴콜.
 export interface ProposedCall {
@@ -196,6 +218,8 @@ export interface TurnResult {
   error?: string;
   /** 어려운 요청의 다층 To-do 진행 상태(있으면 UI/브리지에 노출). */
   workPlan?: WorkPlan;
+  /** 이 사용자 목표가 태운 토큰·경과·과정. 채팅에는 토큰 줄만, 로그에는 전부. */
+  recap?: RunRecap;
 }
 
 // 감사 로그 항목(Phase 1 헤드리스 러너로 리플레이 가능한 시퀀스).
@@ -537,7 +561,7 @@ const TRANSIENT_NETWORK_RETRY_GUIDANCE = "일시적 네트워크 문제로 보�
 
 /**
  * 자율 런(autonomous driver)의 총 예산 — 자동 계속 턴 수 상한.
- * 턴당 Ralph 상한(MAX_WORK_PLAN_AUTO_STEPS_PER_TURN=12)과 별개로, 하나의 목표에 대해
+ * 턴당 Ralph 상한(MAX_WORK_PLAN_AUTO_STEPS_PER_TURN)과 별개로, 하나의 목표에 대해
  * 하니스가 사용자 개입 없이 소비할 수 있는 총 턴 수를 묶는다. 소진 시
  * agent_run_budget_exhausted 감사를 남기고 멈추며, 사용자의 「계속」 한마디로 재가동된다.
  */
@@ -808,6 +832,17 @@ export class AssistantSession {
   private turnItemBattleSimulations = new Map<string, BattlePhaseSimulation>();
   /** 현재 WorkItem 이 등록한 퀘스트 id — 완주 검증 대상. */
   private turnItemQuestIds = new Set<string>();
+  /** 현재 WorkItem 이 place_npc/make_villager 로 만든 이벤트 id — 상태별 페이지 게이트. */
+  private turnItemPlacedNpcIds = new Set<string>();
+  /**
+   * 볼륨 계약은 **사용자 목표 런** 단위다. 자율 드라이버의 「계속」 턴이 시작 스냅샷을
+   * 다시 찍으면 직전 턴에서 채운 맵이 기준이 되어 같은 막대를 또 요구한다.
+   */
+  private runVolumeBaseline: VolumeSnapshot | null = null;
+  private runVolumeBar: VolumeBar | null = null;
+  private runVolumeGoal: string | null = null;
+  /** 이번 사용자 턴 안에서 볼륨 미달로 재주입한 횟수(턴마다 0으로 리셋). */
+  private volumeContinueUsed = 0;
   /**
    * 같은 항목이 매 라운드 같은 차단 사유를 다시 찍지 않도록 하는 중복 방지 키(`항목id::사유`).
    * 사유까지 키에 넣는다 — 산출물 미완성 → 완성도 경고처럼 차단 이유가 바뀌면 다시 알려야
@@ -1159,9 +1194,16 @@ export class AssistantSession {
     } else {
       this.milestoneApplyFailed = false;
     }
-    if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal);
+    const startedAt = Date.now();
+    const usageBefore = this.usageTotals;
+    const auditFrom = this.audit.length;
+    if (opts?.autonomous !== true) {
+      const result = await this.executeUserTurn(text, onEvent, signal);
+      return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, onEvent);
+    }
     const first = await this.executeUserTurn(text, onEvent, signal);
-    return this.runAutonomousDriver(first, onEvent, signal);
+    const last = await this.runAutonomousDriver(first, onEvent, signal);
+    return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, onEvent);
   }
 
   /**
@@ -1202,7 +1244,8 @@ export class AssistantSession {
       this.pushAudit({ kind: "status", text: "agent_run:stopped-apply-failed — 마일스톤 적용 실패로 현재 자율 실행을 멈춥니다 (프로젝트 저장소 변경 없음)" });
       return false;
     }
-    if (!this.workPlan || isWorkPlanComplete(this.workPlan)) return false;
+    const volumeOpen = this.volumeUnmetNow();
+    if ((!this.workPlan || isWorkPlanComplete(this.workPlan)) && !volumeOpen) return false;
     if (this.autoRunSteps >= AGENT_RUN_MAX_TOTAL_STEPS) {
       this.pushAudit({
         kind: "status",
@@ -1222,10 +1265,13 @@ export class AssistantSession {
     // Ralph 지속 판정을 그대로 재사용(두 번째 휴리스틱을 만들지 않는다). autoStepsUsed=0 은
     // 다음 턴을 시작해도 되는가(턴 시작 시점)의 판정이고, assistantText 는 직전 턴이 사용자
     // 질문으로 끝났는지 판별한다 — 질문이면 false(문의 대기, 자동 송신 금지).
-    return shouldRalphContinue(this.workPlan, {
-      autoStepsUsed: 0,
-      assistantText: this.rawLastTurnAssistantText(last),
-    });
+    const assistantText = this.rawLastTurnAssistantText(last);
+    if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
+      return shouldRalphContinue(this.workPlan, { autoStepsUsed: 0, assistantText });
+    }
+    // 계획이 끝났거나 없어도 볼륨 막대가 비면 코드가 다음 턴을 연다. 사용자 「계속」이 아니다.
+    if (volumeOpen && assistantTextLooksLikeQuestion(assistantText)) return false;
+    return volumeOpen;
   }
 
   /** 드라이버의 질문 판별용 원문 — 계획 게시판 접미어(행 끝 정규식 오염)를 제거한 최종 응답. */
@@ -1286,7 +1332,10 @@ export class AssistantSession {
     this.turnItemAuthoredTroopIds = new Set();
     this.turnItemBattleSimulations = new Map();
     this.turnItemQuestIds = new Set();
+    this.turnItemPlacedNpcIds = new Set();
     this.lastOutcomeBlockedKey = null;
+    this.armVolumeContract(intentText);
+    this.volumeContinueUsed = 0;
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
     this.skipPlannerThisTurn = false;
@@ -1335,6 +1384,8 @@ export class AssistantSession {
         throw cause;
       }
     }
+
+    this.forceVolumeWorkPlanIfNeeded(intentText, onEvent);
 
     try {
       const result = await this.runTurnLoop(onEvent, signal);
@@ -1403,6 +1454,8 @@ export class AssistantSession {
       if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
         this.injectWorkPlanOrchestration();
         this.emitWorkPlan(onEvent);
+      } else if (this.forceVolumeWorkPlanIfNeeded(text, onEvent, "planner:error volume-contract")) {
+        onEvent({ type: "status", text: "플래너 실패 — 볼륨 계약 계획으로 진행" });
       } else if (text.trim().length >= 60) {
         this.workPlan = buildDefaultWorkPlan(text);
         this.emitWorkPlan(onEvent);
@@ -1419,6 +1472,8 @@ export class AssistantSession {
       if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
         this.injectWorkPlanOrchestration();
         this.emitWorkPlan(onEvent);
+      } else if (this.forceVolumeWorkPlanIfNeeded(text, onEvent, "planner:parse-fail volume-contract")) {
+        onEvent({ type: "status", text: `플래너 응답을 해석하지 못해 볼륨 계약 계획으로 진행합니다 (${parsed.error})` });
       } else if (text.trim().length >= 60) {
         this.workPlan = buildDefaultWorkPlan(text);
         this.emitWorkPlan(onEvent);
@@ -1431,6 +1486,9 @@ export class AssistantSession {
     const decision = parsed.decision;
 
     if (decision.action === "direct") {
+      if (this.forceVolumeWorkPlanIfNeeded(text, onEvent, `planner:direct-rejected ${decision.reason ?? ""}`.trim())) {
+        return;
+      }
       this.pushAudit({ kind: "status", text: `planner:direct ${decision.reason ?? ""}` });
       return;
     }
@@ -1496,6 +1554,87 @@ export class AssistantSession {
       type: "status",
       text: `Ralph 연속 실행 (${this.workPlanAutoStepsThisUserMessage}/${MAX_WORK_PLAN_AUTO_STEPS_PER_TURN}) — 미완료 항목 재주입`,
     });
+  }
+
+  /**
+   * 볼륨 막대는 사용자 목표 런에 고정한다. 「계속」/빈 문장은 직전 막대를 유지하고,
+   * 볼륨과 무관한 새 요청은 풀어 준다.
+   */
+  private armVolumeContract(intentText: string): void {
+    const bar = volumeBarForRequest(intentText);
+    if (bar) {
+      this.runVolumeBaseline = measureVolume(this.ctx.project);
+      this.runVolumeBar = bar;
+      this.runVolumeGoal = intentText;
+      return;
+    }
+    if (intentText.trim() === "계속" && this.runVolumeBar) return;
+    this.runVolumeBaseline = null;
+    this.runVolumeBar = null;
+    this.runVolumeGoal = null;
+  }
+
+  private volumeGapsNow(): string[] {
+    if (!this.runVolumeBar || !this.runVolumeBaseline) return [];
+    return volumeGaps(this.runVolumeBaseline, measureVolume(this.getProposedProject()), this.runVolumeBar);
+  }
+
+  private volumeUnmetNow(): boolean {
+    if (!this.runVolumeBar || !this.runVolumeBaseline) return false;
+    return volumeUnmet(this.runVolumeBaseline, measureVolume(this.getProposedProject()), this.runVolumeBar);
+  }
+
+  /**
+   * 마을/RPG 요청에서 플래너 direct·스킵·없음 을 코드가 거부하고 WorkPlan 을 강제한다.
+   * 이미 미완료 계획이 있으면 덮지 않는다 — 생성기 계획을 존중하고 볼륨 재주입이 얕은 완료를 잡는다.
+   */
+  private forceVolumeWorkPlanIfNeeded(
+    goal: string,
+    onEvent: (event: SessionEvent) => void,
+    audit = "volume-contract:forced-plan",
+  ): boolean {
+    const source = this.runVolumeGoal ?? goal;
+    if (!requestNeedsVolumePlan(source) && !requestNeedsVolumePlan(goal)) return false;
+    if (this.workPlan && !isWorkPlanComplete(this.workPlan)) return false;
+    this.workPlan = buildVolumeWorkPlan(source);
+    this.skipPlannerThisTurn = false;
+    this.lastMilestoneCompletionItemId = null;
+    this.turnSuccessfulTools.clear();
+    this.successfulToolsWorkItemId = this.workPlan.currentItemId;
+    this.pushAudit({ kind: "status", text: audit });
+    onEvent({
+      type: "status",
+      text: "볼륨 계약: 코드가 다단계 계획을 강제합니다. 사용자 「계속」을 기다리지 않습니다.",
+    });
+    this.emitWorkPlan(onEvent);
+    this.injectWorkPlanOrchestration();
+    return true;
+  }
+
+  /** 모델이 볼륨 미달인 채 퇴장하면 Ralph 다음으로 재주입한다. 사용자 「계속」이 아니다. */
+  private injectVolumeContinue(onEvent: (event: SessionEvent) => void, finalText: string): boolean {
+    if (this.milestoneApplyFailed) return false;
+    if (assistantTextLooksLikeQuestion(finalText)) return false;
+    if (this.volumeContinueUsed >= MAX_VOLUME_CONTINUES_PER_TURN) return false;
+    const gaps = this.volumeGapsNow();
+    if (gaps.length === 0) return false;
+    this.volumeContinueUsed += 1;
+    if (
+      requestNeedsVolumePlan(this.runVolumeGoal ?? "") &&
+      (!this.workPlan || isWorkPlanComplete(this.workPlan))
+    ) {
+      this.forceVolumeWorkPlanIfNeeded(this.runVolumeGoal ?? "", onEvent, "volume-contract:replan");
+    }
+    this.pushOrchestrationMessage(formatVolumeContinueMessage(gaps));
+    this.pushAudit({
+      kind: "status",
+      text: `volume-contract:continue ${this.volumeContinueUsed}/${MAX_VOLUME_CONTINUES_PER_TURN} ${gaps.join(";")}`,
+    });
+    onEvent({
+      type: "status",
+      text: `볼륨 계약 미달 — 코드가 이어서 실행합니다 (${this.volumeContinueUsed}/${MAX_VOLUME_CONTINUES_PER_TURN})`,
+    });
+    return true;
   }
 
   private applyWorkPlanTool(name: string, args: Record<string, unknown>): ToolResult {
@@ -1591,6 +1730,7 @@ export class AssistantSession {
     this.turnItemAuthoredTroopIds.clear();
     this.turnItemBattleSimulations.clear();
     this.turnItemQuestIds.clear();
+    this.turnItemPlacedNpcIds.clear();
     this.lastOutcomeBlockedKey = null;
     this.successfulToolsWorkItemId = currentItemId;
   }
@@ -1621,7 +1761,9 @@ export class AssistantSession {
         this.turnItemBattleSimulations,
       );
       if (!phases.ok) return phases;
-      return verifyAuthoredQuestsPlayable(project, this.turnItemQuestIds);
+      const quests = verifyAuthoredQuestsPlayable(project, this.turnItemQuestIds);
+      if (!quests.ok) return quests;
+      return verifyPlacedNpcsHaveStatePages(project, this.turnItemPlacedNpcIds);
     };
   }
 
@@ -1941,11 +2083,35 @@ export class AssistantSession {
       return { assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" };
     }
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
+    const startedAt = Date.now();
+    const usageBefore = this.usageTotals;
+    const auditFrom = this.audit.length;
     try {
-      return await this.runTurnLoop(onEvent, signal);
+      const result = await this.runTurnLoop(onEvent, signal);
+      return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, onEvent);
     } finally {
       this.removeOrchestrationMessages();
     }
+  }
+
+  /** 사용자 목표가 끝날 때 토큰·경과·과정을 감사에 남기고 채팅용 한 줄을 보낸다. */
+  private finishRunRecap(
+    result: TurnResult,
+    startedAt: number,
+    usageBefore: SessionUsageTotals,
+    auditFrom: number,
+    onEvent: (event: SessionEvent) => void,
+  ): TurnResult {
+    const recap = buildRunRecap({
+      elapsedMs: Date.now() - startedAt,
+      usage: usageDelta(usageBefore, this.usageTotals),
+      audit: this.audit.slice(auditFrom),
+      stoppedReason: result.stoppedReason,
+      proposedWrites: result.proposedCalls.length,
+    });
+    this.pushAudit({ kind: "status", text: `run-recap ${serializeRunRecap(recap)}` });
+    onEvent({ type: "run_recap", recap });
+    return { ...result, recap };
   }
 
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
@@ -2446,7 +2612,7 @@ export class AssistantSession {
     if (orchestrated) this.emitPhase(onEvent, phase);
     if (this.workPlan) this.addExecutionHintIfNeeded();
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고
-    // (maxToolCalls 기본 200은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
+    // (maxToolCalls 기본 2000은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
     let spentOutputTokens = 0;
 
     for (let round = 0; round < this.config.maxToolCalls; round += 1) {
@@ -2644,6 +2810,14 @@ export class AssistantSession {
           this.pushAudit({ kind: "status", text: "zero-change-rekick" });
           continue;
         }
+        // 볼륨 계약: 모델이 "됐습니다"로 나가도 맵/NPC/상점/퀘스트 최소치가 비면 코드가 재주입한다.
+        // 사용자 「계속」에 맡기지 않는다. Ralph(미완료 계획) · 밑그림 재킥 다음에 온다.
+        if (this.injectVolumeContinue(onEvent, finalText)) {
+          phase = "execute";
+          executionStarted = true;
+          if (orchestrated || this.workPlan) this.emitPhase(onEvent, "execute");
+          continue;
+        }
         // 레이어 검증(자문): 최종 응답 전에 1회 돌려 지적을 근거로 남긴다. 런은 멈추지 않는다.
         await this.sweepFinishedLayers(onEvent);
         // 최종 응답.
@@ -2753,6 +2927,8 @@ export class AssistantSession {
             // 퀘스트: 등록한 id 를 기록한다 — 완주 검증은 게이트가 직접 돌린다.
             const questId = authoredQuestIdFrom(name, args);
             if (questId) this.turnItemQuestIds.add(questId);
+            const npcId = placedNpcIdFrom(name, toolResult.data, args);
+            if (npcId) this.turnItemPlacedNpcIds.add(npcId);
           }
           if (name === "find_tools") {
             const discovered = discoveredToolNames(toolResult);

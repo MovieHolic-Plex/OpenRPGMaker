@@ -48,6 +48,7 @@ import {
   type TileGridData,
 } from "./aiChatPanelHelpers";
 import { parseAutonomousRunBudget, type AutonomousRunBudget } from "./aiChatRenderers";
+import { formatRunRecapPlayerLine } from "@/ai/runRecap";
 import { renderStreamedMarkdown } from "./aiConversationLog";
 import { decorateAssistantMentions, foldWorkLogs } from "./aiBubbleDecorations";
 import type { AiRunSurface } from "./aiRunSurface";
@@ -352,6 +353,12 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 확정하지 않으면 뒤이은 중단이 이미 들어간 시공까지 planned 로 되돌린다(마일스톤 적용은
         // turnProposals 를 비우므로 턴 끝의 정산은 그 호출들을 볼 수 없다).
         commitAgentBlueprintProgress();
+      } else if (event.type === "run_recap") {
+        const line = formatRunRecapPlayerLine(event.recap);
+        deps.surface.setStatus(line);
+        const body = deps.surface.appendBubble("system", line);
+        body.classList.add("ai-run-recap");
+        body.dataset.testid = "ai-run-recap";
       } else if (event.type === "proposal_paused") {
         deps.appendMilestoneFeedLine("apply-failed", event.reason, "프로젝트 저장소 변경 없음");
       }
@@ -593,6 +600,20 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           stoppedReason: turnResult?.stoppedReason,
           proposedCalls: turnResult?.proposedCalls.length,
           assistantText: turnResult?.assistantText,
+          ...(turnResult?.recap
+            ? {
+                recap: {
+                  elapsedMs: turnResult.recap.elapsedMs,
+                  promptTokens: turnResult.recap.usage.promptTokens,
+                  completionTokens: turnResult.recap.usage.completionTokens,
+                  llmCalls: turnResult.recap.usage.calls,
+                  toolCalls: turnResult.recap.toolCalls,
+                  ralphContinues: turnResult.recap.ralphContinues,
+                  volumeContinues: turnResult.recap.volumeContinues,
+                  process: turnResult.recap.process.map((step) => step.text),
+                },
+              }
+            : {}),
         },
         toolCalls: toolFromAudit.length > 0 ? toolFromAudit : toolFromProposed,
         audit,
