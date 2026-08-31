@@ -140,7 +140,22 @@ describe("eraseVisibleTile — 레이어별 지우개 범위", () => {
     expect(upperAt(map, 5, 5)).toBe(TILE.FLOWERS);
   });
 
-  it("수관(upper)을 지우면 밑동(lower)까지 같이 지워 repair 복구를 막는다", () => {
+  it("수관 아래 바닥이 비어 있으면 수관을 지운 뒤 그 칸을 지면으로 메운다", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = store.getCurrent().maps[mapId];
+    map.lowerTiles[9 * map.width + 8] = TILE.EMPTY;
+    map.upperTiles[9 * map.width + 8] = 260;
+    map.lowerTiles[10 * map.width + 8] = 290;
+
+    eraseVisibleTile(mapId, "upper", 8, 9);
+
+    const after = currentMap();
+    expect(upperAt(after, 8, 9)).toBe(TILE.EMPTY);
+    expect(lowerAt(after, 8, 9)).toBe(TILE.GRASS);
+    expect(lowerAt(after, 8, 10)).toBe(TILE.GRASS);
+  });
+
+  it("수관(upper)을 지우면 밑동(lower)까지 같이 걷어 repair 복구를 막되 지면은 남긴다", () => {
     const mapId = store.getCurrent().startMapId;
     const map = store.getCurrent().maps[mapId];
     // 침엽수: 밑동 lower (8,10)=290, 수관 upper (8,9)=260
@@ -151,10 +166,10 @@ describe("eraseVisibleTile — 레이어별 지우개 범위", () => {
 
     const after = currentMap();
     expect(upperAt(after, 8, 9)).toBe(TILE.EMPTY);
-    expect(lowerAt(after, 8, 10)).toBe(TILE.EMPTY);
+    expect(lowerAt(after, 8, 10)).toBe(TILE.GRASS);
   });
 
-  it("밑동(lower)을 지우면 수관(upper)도 같이 지운다", () => {
+  it("밑동(lower)을 지우면 수관(upper)도 같이 지우고 밑동 칸은 지면으로 되돌린다", () => {
     const mapId = store.getCurrent().startMapId;
     const map = store.getCurrent().maps[mapId];
     map.lowerTiles[12 * map.width + 6] = 290;
@@ -163,11 +178,11 @@ describe("eraseVisibleTile — 레이어별 지우개 범위", () => {
     eraseVisibleTile(mapId, "lower", 6, 12);
 
     const after = currentMap();
-    expect(lowerAt(after, 6, 12)).toBe(TILE.EMPTY);
+    expect(lowerAt(after, 6, 12)).toBe(TILE.GRASS);
     expect(upperAt(after, 6, 11)).toBe(TILE.EMPTY);
   });
 
-  it("활엽수 2×2 수관 한쪽을 지우면 2×2 전체가 비워진다", () => {
+  it("활엽수 2×2 수관 한쪽을 지우면 2×2 전체가 비워지고 밑동은 지면으로 돌아간다", () => {
     const mapId = store.getCurrent().startMapId;
     const map = store.getCurrent().maps[mapId];
     // (4,5)(5,5) canopy 262|263, (4,6)(5,6) trunk 292|293
@@ -181,8 +196,8 @@ describe("eraseVisibleTile — 레이어별 지우개 범위", () => {
     const after = currentMap();
     expect(upperAt(after, 4, 5)).toBe(TILE.EMPTY);
     expect(upperAt(after, 5, 5)).toBe(TILE.EMPTY);
-    expect(lowerAt(after, 4, 6)).toBe(TILE.EMPTY);
-    expect(lowerAt(after, 5, 6)).toBe(TILE.EMPTY);
+    expect(lowerAt(after, 4, 6)).toBe(TILE.GRASS);
+    expect(lowerAt(after, 5, 6)).toBe(TILE.GRASS);
   });
 });
 
