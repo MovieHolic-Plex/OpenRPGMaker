@@ -19,3 +19,26 @@ export function statusMenuDetailActionButtons(layout: HTMLElement): HTMLButtonEl
 export function wrapStatusMenuIndex(index: number, length: number): number {
   return ((index % length) + length) % length;
 }
+
+/**
+ * 열린 오버레이 루트는 유지하고 내용만 갈아끼운다.
+ * 커서 이동마다 루트를 제거하면 backdrop-filter 가 맵을 한 프레임 드러낸다.
+ * 켜기·끄기는 루트를 붙이거나 떼는 기존 경로를 탄다.
+ */
+export function adoptStatusMenuPanel(existing: HTMLElement, next: HTMLElement): HTMLElement {
+  existing.className = next.className;
+  const nextCss = next.style.cssText;
+  if (typeof nextCss === "string") existing.style.cssText = nextCss;
+  for (const name of ["aria-label", "aria-modal", "role"] as const) {
+    const value = next.getAttribute(name);
+    if (value === null) existing.removeAttribute(name);
+    else existing.setAttribute(name, value);
+  }
+  const nextData = { ...next.dataset };
+  for (const key of Object.keys(existing.dataset)) {
+    if (!(key in nextData)) delete existing.dataset[key];
+  }
+  Object.assign(existing.dataset, nextData);
+  existing.replaceChildren(...Array.from(next.childNodes));
+  return existing;
+}

@@ -74,6 +74,19 @@
 }
 
 /*
+ * ESC 메뉴 오버레이는 켜고 끌 때만 움직인다. 결정·뒤로·거절 모션을 이 루트에
+ * 얹으면 backdrop-filter 가 맵을 같이 흔든다. 상점 행의 juice-menu-invalid
+ * 흔들림은 행 노드에 붙으므로 여기 선택자에 안 걸린다.
+ */
+.oprn-status-menu.juice-menu-select,
+.oprn-status-menu.juice-menu-confirm,
+.oprn-status-menu.juice-menu-back,
+.oprn-status-menu.juice-menu-invalid {
+  animation: none;
+  outline: none;
+}
+
+/*
  * 모션 민감 사용자에게는 흔들림이 실제로 해롭다. 다만 거절 신호 자체를 없애면
  * '왜 안 되는지' 알 수 없으므로, 움직임만 끄고 붉은 테두리는 남긴다.
  */
