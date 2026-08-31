@@ -245,8 +245,21 @@
   padding-right: 2px;
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-main.no-side-pane {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-advanced-details {
+  margin-top: 4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-advanced-details > summary {
+  cursor: pointer;
+  font-size: 12px;
+}
+
 /* 접힘(기본): 보조 열은 레일 폭만, 본문은 빠진다 → 남는 폭 전부 그림판으로. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-main:not(.side-open) {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-main:not(.side-open):not(.no-side-pane) {
   grid-template-columns: minmax(0, 1fr) 26px;
 }
 

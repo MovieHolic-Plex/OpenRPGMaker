@@ -34,9 +34,11 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(sandGroup?.tileIds).toEqual(CHIPSET_TILE_GROUPS.sandGround);
     expect(tileset.tileMeta?.[360]).toMatchObject({
       label: "흙길 중앙",
+      description: "",
       repeatability: "auto",
       source: "bundled-default",
     });
+    expect(roadGroup?.description.length).toBeGreaterThan(0);
   });
 
   it("tree canopies are upper ★ and trunks are lower solid for forest stacking", () => {

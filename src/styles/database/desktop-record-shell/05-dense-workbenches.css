@@ -186,6 +186,10 @@
     grid-template-columns: minmax(520px, 1fr) minmax(220px, 260px);
   }
 
+  .database-modal-body .oprn-tileset-main.no-side-pane {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .database-modal-body .oprn-tileset-terrain-pane,
   .database-modal-body .oprn-tileset-main > :last-child {
     min-height: 0;

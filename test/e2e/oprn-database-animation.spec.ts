@@ -59,10 +59,10 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
 
   await page.getByTestId("db-tab-tilesets").click();
   await page.getByTestId("tileset-oprn-name").locator("input").fill("Town Proof Tileset");
-  await page.getByTestId("tileset-oprn-mode-terrain").click();
   await page.getByTestId("tileset-field-terrain-tag").fill("7");
-  await page.getByTestId("tileset-oprn-mode-ai").click();
+  await page.getByTestId("tileset-section-tab-knowledge").click();
   await page.getByTestId("tileset-field-ai-label").fill("Proof grass edge");
+  await page.getByTestId("tileset-tile-meaning-details").locator("summary").click();
   await page.getByTestId("tileset-field-ai-description").fill("Persisted from the Database tilesets tab");
 
   const edited = await exportedProject(page);
@@ -92,6 +92,5 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
   await expect(page.getByTestId("db-field-name")).toHaveValue("Impact Burst");
   await page.getByTestId("db-tab-tilesets").click();
   await expect(page.getByTestId("tileset-oprn-name").locator("input")).toHaveValue("Town Proof Tileset");
-  await page.getByTestId("tileset-oprn-mode-ai").click();
   await expect(page.getByTestId("tileset-field-ai-label")).toHaveValue("Proof grass edge");
 });

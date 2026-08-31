@@ -2,6 +2,7 @@ import { renderAiQuestionPanel } from "@/editor/panels/tilesetAiQuestionEditor";
 import { renderAutotileEditorPanel } from "@/editor/panels/tilesetAutotileEditor";
 import { renderChipsetPreviewPanel } from "@/editor/panels/tilesetChipsetPreview";
 import { renderTileGroupPanel } from "@/editor/panels/tilesetGroupEditor";
+import { textControl } from "@/editor/panels/databaseControls";
 import {
   ensureTileMeta,
   listUnlabeledTileIds,
@@ -25,7 +26,6 @@ import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import { confirmUserTileMetadata } from "@/project/tilesetPalette";
 import { isCombinedTownTileset } from "@/project/tilesetHarness";
-import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
 import { blockedFlag, isBlockedPassage, passableFlag } from "@/project/tilesetPassage";
 import type { TileAiMetadata, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
@@ -108,10 +108,6 @@ function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): H
             text: unlabeled.length === 0 ? "완료" : `${unlabeled.length}개 남음`,
           }),
         ],
-      }),
-      el("p", {
-        class: "tileset-rule-note",
-        text: "라벨·설명이 둘 다 비어 있는 칩. 아래 필드로 채운 뒤 다음 → 로 순회합니다. 그림판 미리보기의「미라벨」필터와 연동.",
       }),
       el("div", {
         class: "tileset-unlabeled-queue-actions",
@@ -219,10 +215,8 @@ function renderSelectedTilePanel(tileset: TilesetDef, rerender: () => void): HTM
           }),
         ],
       }),
-      // 라벨/설명: 탭·모드와 무관하게 항상 편집 (칩 클릭 → 바로 고치기)
-      ...renderTileMeaningEditors(tileset, meta),
+      ...renderTileMeaningEditors(tileset, meta, tab),
       ...(tab === "rules" ? renderRuleControls(tileset, rerender) : []),
-      ...(tab === "knowledge" ? [renderSelectedTileUsage(tileset)] : []),
     ],
   });
 }
@@ -297,58 +291,41 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
   ];
 }
 
-/** 선택 타일 라벨·설명 — 데이터베이스에서 바로 고치는 주 진입점. */
-function renderTileMeaningEditors(tileset: TilesetDef, meta: TileAiMetadata): HTMLElement[] {
+/** 규칙 탭은 라벨만. 설명은 지식 탭의 접힌 details. */
+function renderTileMeaningEditors(
+  tileset: TilesetDef,
+  meta: TileAiMetadata,
+  tab: TilesetSectionTab,
+): HTMLElement[] {
+  const labelField = textControl("", meta.label, (value) => updateMetadata(tileset.id, { label: value }), "tileset-field-ai-label");
+  if (tab !== "knowledge") {
+    return [
+      el("fieldset", {
+        class: "oprn-db-fieldset tileset-tile-meaning-edit",
+        dataset: { testid: "tileset-tile-meaning-edit" },
+        children: [el("legend", { text: "라벨" }), labelField],
+      }),
+    ];
+  }
+  const summary = meta.label.trim() || "설명";
   return [
     el("fieldset", {
       class: "oprn-db-fieldset tileset-tile-meaning-edit",
       dataset: { testid: "tileset-tile-meaning-edit" },
       children: [
-        el("legend", { text: "의미 (라벨·설명)" }),
-        el("div", {
-          class: "tileset-rule-note",
-          text: "칩을 클릭한 뒤 여기서 고칩니다. 저장은 DB 확인/프로젝트 저장. source=user 로 표시되어 AI 검색·하네스보다 우선합니다.",
+        el("legend", { text: "라벨" }),
+        labelField,
+        el("details", {
+          class: "tileset-advanced-details",
+          dataset: { testid: "tileset-tile-meaning-details" },
+          children: [
+            el("summary", { text: summary }),
+            textAreaControl("설명", meta.description, (value) => updateMetadata(tileset.id, { description: value }), "tileset-field-ai-description"),
+          ],
         }),
-        textAreaControl("라벨", meta.label, (value) => updateMetadata(tileset.id, { label: value }), "tileset-field-ai-label"),
-        textAreaControl("설명", meta.description, (value) => updateMetadata(tileset.id, { description: value }), "tileset-field-ai-description"),
       ],
     }),
   ];
-}
-
-function renderSelectedTileUsage(tileset: TilesetDef): HTMLElement {
-  const usage = summarizeTileUsage(tileset, selectedTile);
-  return el("section", {
-    class: "tileset-db-selected-tile tileset-selected-usage",
-    dataset: { testid: "tileset-selected-usage" },
-    children: [
-      el("div", { class: "tileset-selected-label", dataset: { testid: "tileset-selected-meaning" }, text: usage.label }),
-      renderTagRow(usage.tags),
-      el("div", { class: "tileset-selected-description", text: usage.description }),
-      el("div", {
-        class: "tileset-selected-groups",
-        children: usage.groups.length > 0
-          ? usage.groups.map((group) =>
-              el("div", {
-                class: "tileset-selected-group",
-                text: `${group.name} / ${group.role} / ${group.defaultLayer}`,
-              })
-            )
-          : [el("div", { class: "tileset-selected-group empty", text: "No semantic group" })],
-      }),
-      el("div", { class: "tileset-selected-rules", dataset: { testid: "tileset-selected-rules" }, text: usage.ruleText }),
-    ],
-  });
-}
-
-function renderTagRow(tags: readonly string[]): HTMLElement {
-  return el("div", {
-    class: "tileset-selected-tags",
-    dataset: { testid: "tileset-selected-tags" },
-    children: tags.length > 0
-      ? tags.map((tag) => el("span", { class: "tileset-meaning-tag", text: tag }))
-      : [el("span", { class: "tileset-meaning-tag empty", text: "untagged" })],
-  });
 }
 
 function applyActiveModeClick(tilesetId: string, tile: number): void {

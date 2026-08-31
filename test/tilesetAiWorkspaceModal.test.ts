@@ -6,6 +6,7 @@ import {
   isTilesetAiWorkspaceOpen,
   openTilesetAiWorkspace,
 } from "@/editor/panels/tilesetAiWorkspaceModal";
+import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { renderTilesetEditor } from "@/editor/panels/tilesetSettingsDetails";
 import {
   resetTilesetAiReviewSessions,
@@ -109,12 +110,16 @@ describe("AI tileset workspace entry", () => {
     expect(findByTestId(panel, "tileset-ai-review-manual")).toBeNull();
   });
 
-  it("puts one AI Tileset launcher at the bottom of the normal editor", () => {
-    // Given / When
+  it("puts the AI Tileset launcher on the workspace hero, not the editor body", () => {
     const editor = renderWithFakeDom(() => renderTilesetEditor(currentTileset(), () => undefined));
+    expect(findByTestId(editor, "tileset-ai-workspace-open")).toBeNull();
 
-    // Then
-    expect(findByTestId(editor, "tileset-ai-workspace-open")?.textContent).toContain("AI");
+    const host = renderWithFakeDom(() => {
+      const root = document.createElement("div");
+      renderTilesetsTab(root, () => undefined);
+      return root;
+    });
+    expect(findByTestId(host, "tileset-ai-workspace-open")?.textContent).toContain("AI");
   });
 });
 

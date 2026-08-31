@@ -120,7 +120,7 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
                   class: "tileset-db-fullsheet-btn",
                   text: "전체창",
                   attrs: { type: "button", title: "그림판 전체를 별도 창에서 통행(O/X/★) 편집" },
-                  dataset: { testid: "tileset-settings-open-header" },
+                  dataset: { testid: "tileset-settings-open" },
                   on: { click: () => model.onOpenFullSheet?.() },
                 }),
               ]

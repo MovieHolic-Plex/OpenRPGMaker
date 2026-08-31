@@ -62,13 +62,6 @@ export function renderAiQuestionPanel(tileset: TilesetDef, rerender: () => void,
             },
           }),
           el("div", {
-            class: "tileset-ai-question-text",
-            text:
-              selectedTiles.length === 0
-                ? "칩을 고르면 AI가 라벨, 설명, 묶음, 배치 규칙을 제안합니다. 지형 번호는 지형 탭에서 확인합니다."
-                : "라벨, 설명, 묶음, 배치 규칙만 제안합니다. 지형 번호는 지형 탭에서 확인합니다.",
-          }),
-          el("div", {
             class: "tileset-ai-api-status",
             text: hasApiKey
               ? "외부 AI 연결됨"
