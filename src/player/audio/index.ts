@@ -61,8 +61,12 @@ export function stopAudioCommand(): void {
 }
 
 // 특정 채널만 정지.
-export function stopAudioChannel(channel: AudioChannel): void {
-  getAudioEngine().stopChannel(channel);
+export function stopAudioChannel(channel: AudioChannel, fadeMs?: number): void {
+  if (fadeMs === undefined) {
+    getAudioEngine().stopChannel(channel);
+    return;
+  }
+  getAudioEngine().stopChannel(channel, fadeMs);
 }
 
 // 세이브 로드 후 BGM/BGS 재개.
