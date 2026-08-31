@@ -137,7 +137,7 @@ function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): H
       el("div", {
         class: "tileset-unlabeled-queue-header",
         children: [
-          el("strong", { text: "미라벨 타일 큐" }),
+          el("strong", { text: "미분류 타일 큐" }),
           el("span", {
             dataset: { testid: "tileset-unlabeled-count" },
             text: unlabeled.length === 0 ? "완료" : `${unlabeled.length}개 남음`,
@@ -156,14 +156,14 @@ function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): H
           }),
           el("button", {
             class: "database-footer-button",
-            text: idxInQueue >= 0 ? `다음 (${idxInQueue + 1}/${unlabeled.length})` : "첫 미라벨",
+            text: idxInQueue >= 0 ? `다음 (${idxInQueue + 1}/${unlabeled.length})` : "첫 미분류",
             attrs: { type: "button", ...(unlabeled.length === 0 ? { disabled: "true" } : {}) },
             dataset: { testid: "tileset-unlabeled-next" },
             on: { click: () => go(1) },
           }),
           el("button", {
             class: `database-footer-button${filterOn ? " active" : ""}`,
-            text: filterOn ? "미라벨 필터 ON" : "미라벨 필터",
+            text: filterOn ? "미분류 필터 ON" : "미분류 필터",
             attrs: { type: "button" },
             dataset: { testid: "tileset-unlabeled-filter-toggle" },
             on: {

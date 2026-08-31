@@ -196,7 +196,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 
 `세계` 레일은 `생성 규칙`(프로젝트 전역) 다음에 **타일셋 폴더**를 둔다. 폴더 자식은
 통행(`db-tab-tilesets`, testid 유지 — e2e 가 이 버튼을 누른다) · 오토타일 설정 ·
-미라벨 모아보기 · 구조물 · 공간 종류. 마을·지형·공용 이벤트는 폴더 밖 형제다.
+미분류 모아보기 · 구조물 · 공간 종류. 마을·지형·공용 이벤트는 폴더 밖 형제다.
 
 칩셋 선택은 `oprn:database.selectedTilesetId` 한 키를 공유한다. 「방」 단독 탭은 없다 —
 공간 종류는 통행과 같은 층의 이 칩셋 면이다. 폴더 버튼 testid `db-tileset-folder` 는

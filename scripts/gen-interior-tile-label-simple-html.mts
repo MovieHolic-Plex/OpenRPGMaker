@@ -247,7 +247,7 @@ for (let tile = 0; tile < COUNT; tile++) {
     tile,
     bucket: "unknown",
     label: u?.label ?? "",
-    why: u?.label ? "user partial" : `미라벨 · ${region} · solid ${(solidRatio(tile) * 100).toFixed(0)}%`,
+    why: u?.label ? "user partial" : `미분류 · ${region} · solid ${(solidRatio(tile) * 100).toFixed(0)}%`,
     layer: pos.col >= 18 ? "upper?" : "lower?",
     from: "backlog",
   });

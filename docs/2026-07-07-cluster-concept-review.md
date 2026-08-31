@@ -99,7 +99,7 @@ freshProject 실측 (probe-log.txt, 02~12번 스크린샷):
 
 ### [낮음-3] suggest_group_from_range 추론 폭 부족
 
-3×3이면 무조건 `autotile_3x3`(벽 9분할과 구분 불가), `animated_terrain` 추론 경로 없음, 2×2 등은 `source_rect`로 뭉갬(`rangeClassifyTools.ts:158-164`). role 추론이 라벨 문자열 정규식 의존(171-179)이라 미라벨 타일셋(=미분류 74%)에서는 대부분 terrain으로 수렴.
+3×3이면 무조건 `autotile_3x3`(벽 9분할과 구분 불가), `animated_terrain` 추론 경로 없음, 2×2 등은 `source_rect`로 뭉갬(`rangeClassifyTools.ts:158-164`). role 추론이 라벨 문자열 정규식 의존(171-179)이라 미분류 타일셋(74%)에서는 대부분 terrain으로 수렴.
 
 ### [낮음-4] 스탬프 브러시의 키워드 결합
 

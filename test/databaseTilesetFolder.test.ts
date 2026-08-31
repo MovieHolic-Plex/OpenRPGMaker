@@ -54,7 +54,7 @@ describe("세계 → 타일셋 중간 카테고리", () => {
     expect(host.querySelector("[data-testid='db-tileset-folder']")?.textContent).toContain("타일셋");
     expect(host.querySelector("[data-testid='db-tab-tilesets']")?.textContent).toContain("통행");
     expect(host.querySelector("[data-testid='db-tab-tileset-autotile']")?.textContent).toContain("오토타일");
-    expect(host.querySelector("[data-testid='db-tab-tileset-unlabeled']")?.textContent).toContain("미라벨");
+    expect(host.querySelector("[data-testid='db-tab-tileset-unlabeled']")?.textContent).toContain("미분류");
     expect(host.querySelector("[data-testid='db-tab-structure-kits']")?.textContent).toContain("구조물");
     expect(host.querySelector("[data-testid='db-tab-tileset-spaces']")?.textContent).toContain("공간 종류");
     expect(TILESET_FOLDER_TAB_IDS).toEqual([
