@@ -1,7 +1,7 @@
 import { readFile, writeFile, stat } from "node:fs/promises";
 
 const SHOTS = "verify-shots/ai-db-generate";
-const OUT = "reports/ai-db-generate-report.html";
+const OUT = "reports/2026-08-31-ai-database-generation.html";
 
 const MIME = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg" };
 
