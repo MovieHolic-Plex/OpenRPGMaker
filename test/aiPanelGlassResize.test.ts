@@ -128,6 +128,7 @@ describe("컴포저 캡슐은 저장된 폭으로 열린다", () => {
     const { panel, commandBar } = renderSurface();
 
     expect(barWidth(commandBar)).toBe("520px");
+    expect(panel.style["--ai-float-bar-width"]).toBe("520px");
     expectNoInlinePanelSize(panel);
   });
 
@@ -271,5 +272,61 @@ describe("키보드는 폭만 조절한다", () => {
     expect(up.defaultPrevented).toBe(false);
     expect(down.defaultPrevented).toBe(false);
     expectNoInlinePanelSize(panel);
+  });
+});
+
+describe("기록 카드 높이는 상단 핸들로 조절한다", () => {
+  const LOG_HEIGHT_KEY = "oprn:ai-log-height";
+
+  function logHandleOf(panel: FakeElement): FakeElement {
+    const handle = findByTestId(panel, "ai-log-resize-handle");
+    if (!handle) throw new Error("ai-log-resize-handle missing");
+    return handle;
+  }
+
+  it("저장된 기록 높이를 패널 CSS 변수로 적용한다 — 입력줄 폭 키의 height 는 쓰지 않는다", () => {
+    installFakeWindow();
+    storage.set(SIZE_KEY, JSON.stringify({ width: 520, height: 880 }));
+    storage.set(LOG_HEIGHT_KEY, "280");
+    const { panel, commandBar } = renderSurface();
+    expect(barWidth(commandBar)).toBe("520px");
+    expect(panel.style["--ai-float-log-height"]).toBe("280px");
+    expectNoInlinePanelSize(panel);
+  });
+
+  it("기록 핸들은 카드 상단의 가로 분리자이고, 위로 끌면 높아진다", () => {
+    installFakeWindow();
+    storage.set(LOG_HEIGHT_KEY, "360");
+    const { panel } = renderSurface();
+    panel.classList.add("is-assistant-log-open");
+    const logHandle = logHandleOf(panel);
+
+    expect(logHandle.className).toContain("is-log-top");
+    expect(logHandle.getAttribute("aria-orientation")).toBe("horizontal");
+    expect(logHandle.getAttribute("aria-label")).toBe("조수 기록 높이 조절");
+
+    logHandle.dispatchEvent(pointerEvent("pointerdown", 400, 300));
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 400, 200));
+    globalThis.window.dispatchEvent(pointerEvent("pointerup", 400, 200));
+
+    expect(panel.style["--ai-float-log-height"]).toBe("460px");
+    expect(storage.get(LOG_HEIGHT_KEY)).toBe("460");
+  });
+
+  it("위 화살표는 기록을 키우고 아래 화살표는 줄인다 — 입력줄 폭은 그대로", () => {
+    installFakeWindow();
+    storage.set(SIZE_KEY, JSON.stringify({ width: 520, height: 400 }));
+    storage.set(LOG_HEIGHT_KEY, "360");
+    const { panel, commandBar } = renderSurface();
+    panel.classList.add("is-assistant-log-open");
+    const logHandle = logHandleOf(panel);
+
+    logHandle.dispatchEvent(keyEvent("ArrowUp"));
+    expect(panel.style["--ai-float-log-height"]).toBe("368px");
+    expect(barWidth(commandBar)).toBe("520px");
+
+    logHandle.dispatchEvent(keyEvent("ArrowDown", true));
+    expect(panel.style["--ai-float-log-height"]).toBe("336px");
+    expect(savedSize()).toEqual({ width: 520, height: 400 });
   });
 });

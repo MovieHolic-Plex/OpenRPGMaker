@@ -40,7 +40,9 @@
 }
 
 .ai-chat-panel.chat-dock-float .ai-command-bar,
-.ai-chat-panel.chat-dock-float .ai-chat-resize-handle {
+.ai-chat-panel.chat-dock-float .ai-chat-resize-handle,
+.ai-chat-panel.chat-dock-float.is-assistant-log-open .ai-chat-body,
+.ai-chat-panel.chat-dock-float.is-history-open .ai-chat-body {
   pointer-events: auto;
 }
 

@@ -78,14 +78,19 @@
 /* float 만 컴포저가 절대 위치라 흐름 위치가 캔버스 최상단으로 튄다 — 이 도크에서만 바 위
    고정 밴드로 띄운다. 컨테이너는 클릭을 삼키지 않고 인터랙티브 자식만 되살린다. */
 .ai-chat-panel.chat-dock-float .ai-rising-sticky-zone {
-  bottom: var(--ai-command-bar-clearance, 76px);
-  left: calc(var(--editor-left-safe, 264px) + 12px);
-  margin: 0 auto;
-  max-width: 780px;
+  bottom: calc(var(--ai-command-bar-clearance, 76px) + var(--ai-float-log-offset, 0px) + 8px);
+  left: auto;
+  margin: 0;
+  max-width: none;
   pointer-events: none;
   position: fixed;
-  right: 24px;
+  right: 12px;
+  width: min(var(--ai-float-bar-width, 640px), calc(100vw - 24px));
   z-index: 41; /* 오버레이와 같은 층 — 커맨드 바(40) 위, 모달(72) 아래 */
+}
+
+.ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-composer-focused):not(.is-studio):not(.is-history-open) .ai-rising-sticky-zone {
+  width: min(var(--ai-float-compact-width, 420px), calc(100vw - 24px));
 }
 
 /* 적용 완료 스트립(`.ai-completion-*`)은 2026-08-30 에 제거했다. 맵 위에 떠 있는 fixed

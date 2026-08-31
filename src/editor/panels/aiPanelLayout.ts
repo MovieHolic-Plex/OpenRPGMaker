@@ -106,11 +106,48 @@ export function saveDockWidth(width: number): void {
   localStorage.setItem(DOCK_WIDTH_KEY, String(clampDockWidth(width)));
 }
 
+// ── 기록 카드 높이 ─────────────────────────────────────────────
+// 입력줄 폭은 `oprn:ai-panel-size`.height 를 쓰지 않는다 — 그 필드는 구 유리 카드
+// 높이(400~880)라서 기록 카드에 물리면 뷰포트를 삼킨다. 기록 높이는 별 키.
+const LOG_HEIGHT_KEY = "oprn:ai-log-height";
+export const LOG_HEIGHT_LIMITS = { min: 140, max: 720 } as const;
+export const DEFAULT_LOG_HEIGHT = 360;
+
+export function clampLogHeight(
+  height: number,
+  viewport: { readonly width: number; readonly height: number },
+  clearancePx: number,
+): number {
+  const remaining = (Number.isFinite(viewport.height) && viewport.height > 0 ? viewport.height : 900)
+    - Math.max(72, Number.isFinite(clearancePx) ? clearancePx : 110)
+    - 24;
+  const max = Math.max(LOG_HEIGHT_LIMITS.min, Math.min(LOG_HEIGHT_LIMITS.max, remaining));
+  if (!Number.isFinite(height)) return LOG_HEIGHT_LIMITS.min;
+  return Math.round(Math.min(max, Math.max(LOG_HEIGHT_LIMITS.min, height)));
+}
+
+export function loadLogHeight(): number | null {
+  if (typeof localStorage === "undefined") return null;
+  const raw = Number(localStorage.getItem(LOG_HEIGHT_KEY));
+  return Number.isFinite(raw) && raw > 0 ? raw : null;
+}
+
+export function saveLogHeight(height: number): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(LOG_HEIGHT_KEY, String(Math.round(height)));
+}
+
 // ── 글자 크기 3단(V3C 채팅 관측성) ──────────────────────────────
 // 채팅 로그·프로포절 카드·도구 로그가 패널의 data-ai-font-size + CSS 변수(--ai-font-scale)로 함께 스케일된다.
 export const AI_FONT_SIZE_KEY = "oprn:ai-font-size";
 export type AiFontSize = "small" | "normal" | "large";
 export const AI_FONT_SIZE_SCALE: Record<AiFontSize, string> = { small: "0.85", normal: "1", large: "1.2" };
+export const AI_FONT_SIZE_ORDER: readonly AiFontSize[] = ["small", "normal", "large"];
+export const AI_FONT_SIZE_PERCENT: Record<AiFontSize, string> = {
+  small: "85%",
+  normal: "100%",
+  large: "120%",
+};
 
 export function loadAiFontSize(): AiFontSize {
   if (typeof localStorage === "undefined") return "normal";
@@ -126,6 +163,12 @@ export function saveAiFontSize(size: AiFontSize): void {
 export function applyAiFontSize(target: HTMLElement, size: AiFontSize): void {
   target.dataset.aiFontSize = size;
   target.style.setProperty("--ai-font-scale", AI_FONT_SIZE_SCALE[size]);
+}
+
+export function stepAiFontSize(current: AiFontSize, delta: number): AiFontSize {
+  const index = AI_FONT_SIZE_ORDER.indexOf(current);
+  const next = Math.max(0, Math.min(AI_FONT_SIZE_ORDER.length - 1, (index < 0 ? 1 : index) + delta));
+  return AI_FONT_SIZE_ORDER[next] ?? current;
 }
 
 /**
