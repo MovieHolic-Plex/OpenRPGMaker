@@ -172,6 +172,9 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 맵이 BGM 을 정하지 않았을 때 쓰는 프로젝트 기본 BGM. 화이트리스트 정규화이므로
     // 여기 없으면 왕복 1회에 사라진다(skillSystem 이 실제로 그렇게 사라진 전례가 위에 있다).
     defaultBgmResourceId: cleanOptionalId(system.defaultBgmResourceId),
+    battleVictoryMeResourceId: cleanOptionalId(system.battleVictoryMeResourceId),
+    battleDefeatSeResourceId: cleanOptionalId(system.battleDefeatSeResourceId),
+    battleEscapeSeResourceId: cleanOptionalId(system.battleEscapeSeResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
     // 기본 스킨(vxace)만 저장하지 않는다. 명시적 rm2003/classic 선택은 반드시 보존해야 한다 —

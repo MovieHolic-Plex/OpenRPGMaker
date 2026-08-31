@@ -41,7 +41,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   rm2003: {
-    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 사이드뷰", layout: "sideview", showAllySprites: true,
+    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "파란 창 · 전면 필드", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "wipe-blue",
     themeVars: {
       "--battle-window-bg": "rgba(14,18,34,.96)",

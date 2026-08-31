@@ -99,21 +99,15 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 1:1 대치 — 선두 1명만, 적 크고 중앙 상단, 아군 좌하 대형.
   // 다마리 분기 y +10: 148px 스프라이트가 y=76 줄에서 필드 위로 11px 잘렸다(실측).
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
-  // RM2003 사이드뷰: 적 좌열, 아군 우열. 3마리 적의 y(96/96/142)는 접지 픽스처 잠금이라
-  // n>=3 분기를 바꾸면 `test/fixtures/battleEnemyFeetRatios.json` 을 다시 재야 한다.
-  // 1:1 은 같은 접지 선(y=108)에서 중앙으로 당긴다. 2열 파티는 가로 70 — 예전 46 은
-  // 스프라이트 폭(60px·scale 1.25)보다 좁아 얼굴이 겹쳤다(실측).
+  // RM2003 전면: 적만 필드에 선다. 아군은 하단 상태 창 숫자로만 보인다.
+  // 3마리 적의 y 는 한 줄(90) — 픽스처 battleEnemyFeetRatios.json 이 잠근 값.
   rm2003: {
-    partyFacing: "front",
-    partyScale: 1.2,
-    enemy: (i, n) => (n <= 1
-      ? { x: 90, y: 108 }
-      : n === 2
-        ? { x: 52 + i * 80, y: 104 }
-        : { x: 68 + (i % 2) * 58, y: 96 + Math.floor(i / 2) * 46 }),
-    party: (i, n) => (n <= 1
-      ? { x: 232, y: 108 }
-      : { x: 204 + (i % 2) * 70, y: 88 + Math.floor(i / 2) * 56 }),
+    partyFacing: "hidden",
+    enemy: (i, n) => ({
+      x: Math.round(160 + (i - (n - 1) / 2) * 70),
+      y: n <= 1 ? 124 : 104 + (i % 2) * 8,
+    }),
+    party: () => ({ x: 160, y: 150 }),
   },
   // RM2000 프론트뷰: 숨김 파티, 적 중앙 수평.
   rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 76 }), party: () => ({ x: 160, y: 150 }) },
@@ -403,9 +397,7 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
   if (effectiveId && backdrop.dataset.backdropResourceId !== effectiveId) {
     backdrop.dataset.backdropResourceId = effectiveId;
     const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
-    backdrop.style.backgroundImage = url
-      ? `linear-gradient(rgba(5, 10, 24, 0.08), rgba(2, 4, 12, 0.22)), url("${url}")`
-      : "";
+    backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
   }
 }
 
@@ -603,6 +595,13 @@ function appendEffectsLayer(field: HTMLElement): HTMLElement {
   return layer;
 }
 
+/** rm2003 은 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터 PNG 알파를
+ *  반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
+function battleBackdropImage(url: string): string {
+  if (activeSkin().id === "rm2003") return `url("${url}")`;
+  return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
+}
+
 function battleBackdrop(resourceId: string | undefined): HTMLElement {
   const backdrop = document.createElement("div");
   backdrop.className = "battle-backdrop";
@@ -617,9 +616,7 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
   if (effectiveId) backdrop.dataset.backdropResourceId = effectiveId;
   else backdrop.dataset.backdropFallback = "forest";
   backdrop.setAttribute("aria-label", "전투 배경");
-  if (url) {
-    backdrop.style.backgroundImage = `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
-  }
+  if (url) backdrop.style.backgroundImage = battleBackdropImage(url);
   return backdrop;
 }
 
@@ -669,7 +666,9 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   if (url) {
     const image = document.createElement("img");
     image.className = "battle-enemy-image";
-    applyIdleAnimationToImage(image, resourceId);
+    // 필드 적은 정적 원본만 그린다. idle 스트립은 영상 키드 프레임이라 반투명 픽셀이
+    // 섞여 있고, CSS 가 `object-position` 으로 src 를 밀어 그 스트립만 보여 몬스터가
+    // 반투명해 보였다(실측: 정적 원본 mid-alpha 0%, idle 스트립 골렘 1.23%).
     image.alt = `${enemy.name} 몬스터`;
     image.src = url;
     enemyNode.append(image);

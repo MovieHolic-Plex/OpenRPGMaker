@@ -31,6 +31,8 @@ describe("battle skin registry", () => {
     expect(resolveSkinId("vxace")).toBe("vxace");
     expect(getBattleSkin("vxace").layout).toBe("frontview");
     expect(getBattleSkin("vxace").showAllySprites).toBe(false);
+    expect(getBattleSkin("rm2003").showAllySprites).toBe(false);
+    expect(getBattleSkin("rm2003").layout).toBe("frontview");
   });
 
   it("모든 스킨은 label·layout·themeVars를 갖는다", () => {

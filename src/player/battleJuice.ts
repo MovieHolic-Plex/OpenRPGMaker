@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
+import { beginBattleResultAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
 import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/battleSfx";
 
 export type BattleJuiceEvent =
@@ -29,7 +30,7 @@ const BATTLE_SFX: Record<BattleJuiceEvent, string> = {
   faint: "easyrpg-sound-collapse2",
   defend: "easyrpg-sound-barrier1",
   escape: "easyrpg-sound-escape",
-  victory: "easyrpg-sound-chime2",
+  victory: "easyrpg-sound-chime1",
   defeat: "easyrpg-sound-collapse1",
 };
 
@@ -98,6 +99,15 @@ export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | 
  * **처음 성공한 하나만** 낸다. 호출자는 여기 말고 다른 오디오 경로를 겹치지 말 것.
  */
 export function playBattleCue(event: BattleJuiceEvent): void {
+  if (event === "victory" || event === "defeat" || event === "escape") {
+    beginBattleResultAudio();
+    if (playAuthoredBattleResultCue(store.getCurrent(), event)) return;
+  }
+  // 저작 슬롯이 비었을 때: 승리는 합성 팡파레(전투곡에 묻히지 않게 BGM 을 먼저 끊는다).
+  if (event === "victory") {
+    playSynthVoice("victory");
+    return;
+  }
   const primary = BATTLE_SFX[event];
   const fallback = SFX_FALLBACK[event];
   if (tryPlay(primary)) return;

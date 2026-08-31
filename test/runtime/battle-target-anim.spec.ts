@@ -16,7 +16,8 @@
 //  2. "전투에서 '흰색 박스'로 타겟을 표시하는 게 싫다."
 //     원인: `06-damage-flash-targeting.css` 의
 //     `.battle-target-selected { outline: 4px solid var(--oprn-battle-window-light) }`.
-//     지금: 코너 리티클 + 스프라이트 펄스 두 겹으로 바꿨다.
+//     지금: 코너 리티클만. 스프라이트 펄스(`battle-target-pulse`)는 몬스터가
+//     반투명으로 깜빡여 삭제했다.
 //
 // 왜 여기(test/runtime)인가: 편집기 셸을 태우는 `test/e2e/` 전투 스펙은 main 기준선에서도
 // `startNewGameFromTitle` 이 런타임 부팅에 실패해 돌지 않는다(실측 2026-08-30:
@@ -134,10 +135,8 @@ test("selected battler is marked by a reticle and a sprite pulse, never by a whi
     expect(state.bracketsWidth, "코너 리티클 상자가 0 이다 — 조준 표시를 통째로 잃었다").toBeGreaterThan(0);
     expect(state.bracketsHeight).toBeGreaterThan(0);
 
-    // 3) 대체 연출이 실제로 돌고 있다. 무늬 많은 스프라이트·배경 위에서 리티클만으로는
-    //    안 보인다는 지적을 pokemon 스킨이 먼저 받았고, 그 해법을 기본 경로로 올린 것이다.
-    expect(state.spriteAnimationName).toContain("battle-target-pulse");
-    expect(state.spritePlayState).toBe("running");
+    // 3) 조준 펄스는 쓰지 않는다. filter/밝기 토글이 몬스터를 반투명으로 깜빡였다.
+    expect(state.spriteAnimationName).not.toContain("battle-target-pulse");
 
     await page.locator(".battle-scene").screenshot({ path: `${SHOT_DIR}/target-select-reticle.png` });
   });

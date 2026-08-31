@@ -6,11 +6,10 @@
 // 배틀러가 여전히 보이는지는 진짜 브라우저에서만 잡힌다.
 //
 // 실측 근거로 남긴 것:
-//  1) 적 배틀러(`<img>`)의 `background-position-x` 가 시간에 따라 여러 값을 거친다.
-//  2) 그 값들이 모두 프레임 경계(k/(N-1) × 100%)에 떨어진다 — 중간값이 나오면 steps 가 아니다.
-//  3) `<img>` 가 그대로 `<img>` 이고 `src` 는 정적 원본이며 `naturalWidth > 0` 이다.
-//  4) 주인공(정면 48px 시트)도 idle 스트립으로 프레임을 넘긴다.
-//  5) 배틀러 상자가 0×0 이 아니다(배경만 남기면서 상자가 죽는 회귀를 막는다).
+//  1) 필드 적(`<img>`)은 idle 스트립을 붙이지 않는다 — 정적 원본만 그린다.
+//  2) 주인공(정면 48px 시트)은 idle 스트립으로 프레임을 넘긴다.
+//  3) 그 값들이 칸 경계의 배수다.
+//  4) 배틀러 상자가 0×0 이 아니다.
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
@@ -58,7 +57,6 @@ async function sampleBattlers(page: Page): Promise<BattlerSample[]> {
       };
     };
     return [
-      read(".battle-enemy-image[data-battler-anim]"),
       read(".battle-actor-sprite[data-battler-anim]"),
     ].filter((entry): entry is BattlerSample => entry !== null);
   }) as Promise<BattlerSample[]>;
@@ -130,10 +128,14 @@ test("배틀러 idle 애니메이션이 출하 플레이어에서 프레임을 �
     // 애니메이션이 붙은 배틀러가 화면에 실제로 있어야 한다 — 없으면 이 가드가 공허해진다.
     const first = await sampleBattlers(page);
     const selectors = first.map((entry) => entry.selector);
-    expect(selectors, "적 배틀러와 주인공 시트 둘 다 애니메이션이 붙어야 한다").toEqual([
-      ".battle-enemy-image[data-battler-anim]",
+    expect(selectors, "주인공 시트에 idle 이 붙어야 한다").toEqual([
       ".battle-actor-sprite[data-battler-anim]",
     ]);
+    const enemyIdle = await page.locator(".battle-enemy-image[data-battler-anim]").count();
+    expect(enemyIdle, "필드 적은 idle 스트립을 쓰면 반투명해진다").toBe(0);
+    const enemyImg = page.locator(".battle-enemy-image").first();
+    await expect(enemyImg).toBeVisible();
+    expect(await enemyImg.getAttribute("src")).not.toContain("/idle/");
 
     const timeline: BattlerSample[][] = [];
     for (let i = 0; i < 14; i += 1) {

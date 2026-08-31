@@ -108,6 +108,9 @@ function checkUnplayableAudio(project: Project, issues: LintIssue[]): void {
   const slots: { readonly label: string; readonly resourceId?: string }[] = [
     { label: "system.battleBgmResourceId", resourceId: project.system.battleBgmResourceId },
     { label: "system.defaultBgmResourceId", resourceId: project.system.defaultBgmResourceId },
+    { label: "system.battleVictoryMeResourceId", resourceId: project.system.battleVictoryMeResourceId },
+    { label: "system.battleDefeatSeResourceId", resourceId: project.system.battleDefeatSeResourceId },
+    { label: "system.battleEscapeSeResourceId", resourceId: project.system.battleEscapeSeResourceId },
     { label: "system.titleScreen.musicResourceId", resourceId: project.system.titleScreen?.musicResourceId },
   ];
   for (const [mapId, map] of Object.entries(project.maps)) {

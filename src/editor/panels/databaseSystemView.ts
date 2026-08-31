@@ -331,6 +331,80 @@ function systemSectionNodes(
             else delete draft.system.monsterBattleParty;
           });
         }),
+      ]),
+      rm2k3Fieldset("전투 오디오", [
+        resourcePickerControl({
+          label: "기본 BGM",
+          resourceId: project.system.defaultBgmResourceId,
+          kind: "music",
+          testid: "db-field-system-default-bgm",
+          allowClear: true,
+          dialogTitle: "기본 BGM",
+          onChange: (result) => {
+            updateSystem((draft) => {
+              draft.system.defaultBgmResourceId = emptyToUndefined(result.resourceId);
+            }, "system:default-bgm");
+          },
+          rerender,
+        }),
+        resourcePickerControl({
+          label: "전투 BGM",
+          resourceId: project.system.battleBgmResourceId,
+          kind: "music",
+          testid: "db-field-system-battle-bgm",
+          allowClear: true,
+          dialogTitle: "전투 BGM",
+          onChange: (result) => {
+            updateSystem((draft) => {
+              draft.system.battleBgmResourceId = emptyToUndefined(result.resourceId);
+            }, "system:battle-bgm");
+          },
+          rerender,
+        }),
+        resourcePickerControl({
+          label: "승리 팡파레",
+          resourceId: project.system.battleVictoryMeResourceId,
+          kind: "music",
+          testid: "db-field-system-battle-victory-me",
+          allowClear: true,
+          dialogTitle: "승리 팡파레",
+          onChange: (result) => {
+            updateSystem((draft) => {
+              draft.system.battleVictoryMeResourceId = emptyToUndefined(result.resourceId);
+            }, "system:battle-victory-me");
+          },
+          rerender,
+        }),
+        resourcePickerControl({
+          label: "패배 SE",
+          resourceId: project.system.battleDefeatSeResourceId,
+          kind: "sound",
+          testid: "db-field-system-battle-defeat-se",
+          allowClear: true,
+          dialogTitle: "패배 SE",
+          onChange: (result) => {
+            updateSystem((draft) => {
+              draft.system.battleDefeatSeResourceId = emptyToUndefined(result.resourceId);
+            }, "system:battle-defeat-se");
+          },
+          rerender,
+        }),
+        resourcePickerControl({
+          label: "도주 SE",
+          resourceId: project.system.battleEscapeSeResourceId,
+          kind: "sound",
+          testid: "db-field-system-battle-escape-se",
+          allowClear: true,
+          dialogTitle: "도주 SE",
+          onChange: (result) => {
+            updateSystem((draft) => {
+              draft.system.battleEscapeSeResourceId = emptyToUndefined(result.resourceId);
+            }, "system:battle-escape-se");
+          },
+          rerender,
+        }),
+      ]),
+      rm2k3Fieldset("시작 설정 기타", [
         checkboxField("선물 시스템", "db-field-system-gift-system", project.system.giftSystem === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.giftSystem = true;
