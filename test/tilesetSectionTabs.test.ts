@@ -281,6 +281,12 @@ describe("타일셋 섹션 3탭 UI", () => {
     const editor = renderEditor();
     expect(getTilesetSectionTab()).toBe("compose");
     expect(findByTestId(editor, "tileset-autotile-editor")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-autotile-toolbar")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-autotile-layout-cells-9")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-autotile-layout-cells-11")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-autotile-layout-custom")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-autotile-hint")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-selected-tile-panel")).toBeNull();
     expect(findByTestId(editor, "terrain-template-section")).toBeNull();
     expect(findByTestId(editor, "tileset-side-pane-toggle")).toBeNull();
     setTilesetMetadataEditMode("passage", () => {}); // 다른 테스트를 위해 복귀.

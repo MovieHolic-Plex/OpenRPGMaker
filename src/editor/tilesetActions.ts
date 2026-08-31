@@ -254,6 +254,35 @@ export function addAutotileGroupFromTemplate(
   return { ok: true, groupId: created };
 }
 
+// 이미 있는 그룹의 타일 블록을 템플릿으로 다시 채운다. 이름·id 는 유지.
+export function applyAutotileTemplateToGroup(
+  tilesetId: TilesetId,
+  groupId: string,
+  kind: AutotileTemplateKind,
+  anchorTile: number,
+): AutotileTemplateActionResult {
+  if (kind === "animated-water") {
+    return addAutotileGroupFromTemplate(tilesetId, kind, anchorTile);
+  }
+  const tileset = store.getCurrent().tilesets[tilesetId];
+  if (!tileset) return { ok: false, error: "타일셋을 찾을 수 없습니다." };
+  const group = tileset.autotileGroups?.find((entry) => entry.id === groupId);
+  if (!group) return { ok: false, error: "내장 그룹은 복제한 뒤에 블록을 바꿀 수 있습니다." };
+  const built = buildTemplateGroup(kind, anchorTile, tileset.tilesPerRow, tileset.count);
+  if ("error" in built) return { ok: false, error: built.error };
+  recordProjectSnapshot();
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    const current = target?.autotileGroups?.find((entry) => entry.id === groupId);
+    if (!current) return;
+    current.neighborhood = built.neighborhood;
+    current.memberTileIds = [...built.memberTileIds];
+    current.connectTileIds = [...built.connectTileIds];
+    current.variantMap = { ...built.variantMap };
+  }, { scope: "project", label: "오토타일 블록 적용" });
+  return { ok: true, groupId };
+}
+
 // 내장 폴백 승계(rmTypeExpander.ts registerAutotileGroup 과 동일 규약):
 // 자체 정의가 하나도 없는 타일셋이면 현재 유효한 그룹(기본 타일 그림판 = 내장 4종)을
 // 편집 가능한 깊은 사본으로 먼저 넣는다. 비기본 타일셋은 빈 배열이라 no-op.
