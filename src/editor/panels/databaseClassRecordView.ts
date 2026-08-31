@@ -41,7 +41,7 @@ const ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name: string
 ];
 
 const GRADE_KO: Record<ActorRateGrade, string> = {
-  A: "약함",
+  A: "매우 약함",
   B: "약함",
   C: "보통",
   D: "강함",
@@ -114,6 +114,7 @@ const CLASS_ROLE_LABELS: Readonly<Record<ClassBuildRole, string>> = {
   guardian: "수비형",
   caster: "마력형",
   agile: "기동형",
+  uniform: "균일 성장",
 };
 
 function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
@@ -136,9 +137,9 @@ function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
       children: [
         el("div", {
           children: [
-            el("span", { class: "db-class-build-eyebrow", text: "CLASS BLUEPRINT" }),
+            el("span", { class: "db-class-build-eyebrow", dataset: { testid: "db-class-build-eyebrow" }, text: "직업 설계" }),
             el("h3", { text: "역할·빌드 요약" }),
-            el("p", { text: "Lv 20 성장 곡선과 연결된 주인공을 기준으로, 런타임에서 이 직업 빌드가 사용할 수 있는 장비까지 요약합니다." }),
+            el("p", { text: "Lv 20 성장과 이 직업이 착용할 수 있는 장비, 연결된 주인공을 요약합니다." }),
           ],
         }),
         el("strong", { class: `db-class-role db-class-role-${summary.role}`, text: CLASS_ROLE_LABELS[summary.role] }),
@@ -149,7 +150,7 @@ function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
       children: [
         classBuildMetric("습득 스킬", summary.skillCount),
         classBuildMetric("전투 명령", summary.commandCount),
-        classBuildMetric("이 직업 빌드에서 사용 가능한 장비", summary.equipmentCount),
+        classBuildMetric("착용 장비", summary.equipmentCount),
         classBuildMetric("승급 경로", summary.promotionCount),
       ],
     }),
@@ -206,16 +207,22 @@ function nameInput(record: ClassRecord): HTMLElement {
   const input = el("input", {
     value: record.name,
     dataset: { testid: "db-field-name" },
-    attrs: { maxlength: "12", type: "text" },
+    attrs: { maxlength: "12", type: "text", title: "직업명 · 최대 12자" },
   }) as HTMLInputElement;
   input.addEventListener("input", () => updateDatabaseRecord("classes", record.id, { name: input.value }));
   return el("label", { class: "db-field db-class-name-field", children: [el("span", { text: "직업명" }), input] });
 }
 
 function spritePreview(record: ClassRecord): HTMLElement {
-  const asset = EASYRPG_CHARSET_ASSETS[0];
-  const url = resolveAssetResourceUrl(asset.id, { project: store.getCurrent() });
-  const source = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });
+  const project = store.getCurrent();
+  const actor = project.database.actors.find((entry) => entry.classId === record.id);
+  const resourceId = actor?.characterResourceId ?? EASYRPG_CHARSET_ASSETS[0]?.id;
+  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : "";
+  const source = charsetFrameSource({
+    characterIndex: actor?.characterIndex ?? 0,
+    direction: "down",
+    pattern: 1,
+  });
   const style = url
     ? [
       `--class-sprite-url:url("${url}")`,
@@ -225,6 +232,7 @@ function spritePreview(record: ClassRecord): HTMLElement {
     : "";
   return el("div", {
     class: "db-class-sprite-preview",
+    dataset: { testid: "db-class-sprite-preview" },
     attrs: { role: "img", "aria-label": `${record.name} 캐릭터 미리보기`, style },
     children: [el("span")],
   });
@@ -284,8 +292,6 @@ function commandHeader(): HTMLElement {
       el("span", { text: "순서" }),
       el("span", { text: "명령 이름" }),
       el("span", { text: "종류" }),
-      el("span", { text: "스킬 그룹" }),
-      el("span", { text: "스킬" }),
       el("span", { text: "삭제" }),
     ],
   });
@@ -305,12 +311,16 @@ function commandRow(
   }) as HTMLInputElement;
   const kind = kindSelect(command.kind, index === 0 ? "db-field-class-command-kind" : undefined);
   const subset = el("input", {
+    class: "db-class-command-subset",
     value: command.skillSubsetName ?? "",
     dataset: index === 0 ? { testid: "db-field-class-command-subset" } : undefined,
     attrs: { type: "text", placeholder: "스킬 그룹", "aria-label": "스킬 그룹" },
   }) as HTMLInputElement;
   const skill = recordSelect(command.skillId ?? "", store.getCurrent().database.skills, index === 0 ? "db-picker-class-command-skill" : undefined);
-  applyCommandFieldState(readCommandKind(kind.value), subset, skill);
+  skill.classList.add("db-class-command-skill");
+  skill.setAttribute("aria-label", "스킬");
+  const extra = el("div", { class: "db-class-command-extra", children: [subset, skill] });
+  applyCommandFieldState(readCommandKind(kind.value), subset, skill, extra);
 
   const apply = (): void => {
     const next = editableClassCommands(sourceCommands(record)).map((entry, entryIndex) =>
@@ -331,6 +341,7 @@ function commandRow(
   subset.addEventListener("input", apply);
   skill.addEventListener("change", apply);
   kind.addEventListener("change", () => {
+    applyCommandFieldState(readCommandKind(kind.value), subset, skill, extra);
     apply();
     onChanged();
   });
@@ -365,7 +376,7 @@ function commandRow(
 
   return el("div", {
     class: "db-class-command-row",
-    children: [up, down, name, kind, subset, skill, remove],
+    children: [up, down, name, kind, remove, extra],
   });
 }
 
@@ -406,12 +417,18 @@ function commandFieldVisibility(kind: ClassBattleCommandKind): { readonly subset
   return { subset: false, skill: false };
 }
 
-function applyCommandFieldState(kind: ClassBattleCommandKind, subset: HTMLInputElement, skill: HTMLSelectElement): void {
+function applyCommandFieldState(
+  kind: ClassBattleCommandKind,
+  subset: HTMLInputElement,
+  skill: HTMLSelectElement,
+  extra?: HTMLElement,
+): void {
   const visibility = commandFieldVisibility(kind);
   subset.disabled = !visibility.subset;
   skill.disabled = !visibility.skill;
   subset.classList.toggle("is-inert", !visibility.subset);
   skill.classList.toggle("is-inert", !visibility.skill);
+  if (extra) extra.hidden = !visibility.subset && !visibility.skill;
 }
 
 function newCommandId(): string {
@@ -524,44 +541,16 @@ function equipmentSelect(record: ClassRecord, onSummaryChanged: () => void): HTM
 }
 
 function promotionControls(record: ClassRecord, onSummaryChanged: () => void): HTMLElement[] {
-  const promotions = record.promotions?.length ? record.promotions : [{ toClassId: "", requires: {} }];
-  const rows = promotions.map((promotion, index) => {
-    const project = store.getCurrent();
-    const toClass = recordSelect(promotion.toClassId, project.database.classes, index === 0 ? "db-picker-class-promotion-to" : undefined);
-    const level = numberInput(promotion.requires.level, "레벨", index === 0 ? "db-field-class-promotion-level" : undefined);
-    const switchId = recordSelect(promotion.requires.switchId ?? "", storyFlagRecords("switch"), index === 0 ? "db-picker-class-promotion-switch" : undefined);
-    const itemId = recordSelect(promotion.requires.itemId ?? "", project.database.items, index === 0 ? "db-picker-class-promotion-item" : undefined);
-    const variableId = recordSelect(promotion.requires.variableId ?? "", storyFlagRecords("variable"), index === 0 ? "db-picker-class-promotion-variable" : undefined);
-    const atLeast = numberInput(promotion.requires.atLeast, "이상", index === 0 ? "db-field-class-promotion-at-least" : undefined);
-    const remove = el("button", { class: "db-class-set-button", text: "삭제", attrs: { type: "button" } });
-    const apply = (): void => {
-      savePromotion(record, index, {
-        toClassId: toClass.value,
-        requires: {
-          level: optionalNumber(level),
-          switchId: switchId.value || undefined,
-          itemId: itemId.value || undefined,
-          variableId: variableId.value || undefined,
-          atLeast: optionalNumber(atLeast),
-        },
-      });
-      onSummaryChanged();
-    };
-    for (const input of [toClass, level, switchId, itemId, variableId, atLeast]) {
-      input.addEventListener("change", apply);
-      input.addEventListener("input", apply);
-    }
-    remove.addEventListener("click", () => {
-      const next = [...(currentClass(record).promotions ?? [])];
-      next.splice(index, 1);
-      updateDatabaseRecord("classes", record.id, { promotions: next });
-      onSummaryChanged();
-    });
-    return el("div", {
-      class: "db-class-command-row",
-      children: [toClass, level, switchId, itemId, variableId, atLeast, remove],
-    });
+  const rowsHost = el("div", {
+    class: "db-class-promotion-rows",
+    dataset: { testid: "db-class-promotion-rows" },
   });
+  const refresh = (): void => {
+    const live = currentClass(record);
+    const promotions = live.promotions?.length ? live.promotions : [{ toClassId: "", requires: {} }];
+    rowsHost.replaceChildren(...promotions.map((promotion, index) => promotionRow(record, promotion, index, refresh, onSummaryChanged)));
+    onSummaryChanged();
+  };
   const add = el("button", {
     class: "db-class-set-button",
     text: "승급 추가",
@@ -572,11 +561,75 @@ function promotionControls(record: ClassRecord, onSummaryChanged: () => void): H
         updateDatabaseRecord("classes", record.id, {
           promotions: [...(currentClass(record).promotions ?? []), { toClassId: firstPromotionTarget(record), requires: {} }],
         });
-        onSummaryChanged();
+        refresh();
       },
     },
   });
-  return [add, el("div", { class: "db-class-command-rows", children: rows })];
+  refresh();
+  return [add, rowsHost];
+}
+
+function promotionRow(
+  record: ClassRecord,
+  promotion: NonNullable<ClassRecord["promotions"]>[number],
+  index: number,
+  refresh: () => void,
+  onSummaryChanged: () => void,
+): HTMLElement {
+  const project = store.getCurrent();
+  const toClass = recordSelect(promotion.toClassId, project.database.classes, index === 0 ? "db-picker-class-promotion-to" : undefined);
+  const level = numberInput(promotion.requires.level, "레벨", index === 0 ? "db-field-class-promotion-level" : undefined);
+  const switchId = recordSelect(promotion.requires.switchId ?? "", storyFlagRecords("switch"), index === 0 ? "db-picker-class-promotion-switch" : undefined);
+  const itemId = recordSelect(promotion.requires.itemId ?? "", project.database.items, index === 0 ? "db-picker-class-promotion-item" : undefined);
+  const variableId = recordSelect(promotion.requires.variableId ?? "", storyFlagRecords("variable"), index === 0 ? "db-picker-class-promotion-variable" : undefined);
+  const atLeast = numberInput(promotion.requires.atLeast, "이상", index === 0 ? "db-field-class-promotion-at-least" : undefined);
+  const apply = (): void => {
+    savePromotion(record, index, {
+      toClassId: toClass.value,
+      requires: {
+        level: optionalNumber(level),
+        switchId: switchId.value || undefined,
+        itemId: itemId.value || undefined,
+        variableId: variableId.value || undefined,
+        atLeast: optionalNumber(atLeast),
+      },
+    });
+    onSummaryChanged();
+  };
+  for (const input of [toClass, level, switchId, itemId, variableId, atLeast]) {
+    input.addEventListener("change", apply);
+    input.addEventListener("input", apply);
+  }
+  const remove = el("button", {
+    class: "db-class-set-button",
+    text: "삭제",
+    attrs: { type: "button" },
+    on: {
+      click: () => {
+        const next = [...(currentClass(record).promotions ?? [])];
+        next.splice(index, 1);
+        updateDatabaseRecord("classes", record.id, { promotions: next });
+        refresh();
+      },
+    },
+  });
+  return el("div", {
+    class: "db-class-promotion-row",
+    dataset: { testid: index === 0 ? "db-class-promotion-row" : `db-class-promotion-row-${index}` },
+    children: [
+      promotionField("전직", toClass),
+      promotionField("레벨", level),
+      promotionField("스위치", switchId),
+      promotionField("아이템", itemId),
+      promotionField("변수", variableId),
+      promotionField("이상", atLeast),
+      remove,
+    ],
+  });
+}
+
+function promotionField(label: string, control: HTMLElement): HTMLElement {
+  return el("label", { class: "db-class-promotion-field", children: [el("span", { text: label }), control] });
 }
 
 function savePromotion(record: ClassRecord, index: number, promotion: NonNullable<ClassRecord["promotions"]>[number]): void {
@@ -614,10 +667,9 @@ function rateRows(record: ClassRecord, kind: "state" | "element"): HTMLElement[]
     const value = rates[entry.id] ?? "C";
     const testid = kind === "state" ? `db-picker-class-state-rate-${entry.id}` : `db-picker-class-element-rate-${entry.id}`;
     const select = gradeSelect(value, testid);
+    const name = el("span", { class: "db-class-rate-name", text: entry.name });
     select.addEventListener("change", () => updateRate(record, kind, entry.id, select.value));
-    const ko = GRADE_KO[value as ActorRateGrade] ?? value;
-    const label = kind === "state" ? `${entry.name} · ${ko} ${stateRatePercentage(value as ActorRateGrade)}%` : `${entry.name} · ${ko}`;
-    return el("label", { class: "db-class-rate-row", children: [select, el("span", { text: label })] });
+    return el("label", { class: "db-class-rate-row", children: [name, select] });
   });
 }
 
@@ -665,7 +717,11 @@ function storyFlagRecords(kind: "switch" | "variable"): readonly { readonly id: 
 
 function kindSelect(value: ClassBattleCommandKind, testid?: string): HTMLSelectElement {
   const select = el("select", { dataset: testid ? { testid } : undefined }) as HTMLSelectElement;
-  COMMAND_KINDS.forEach((kind) => select.append(el("option", { text: COMMAND_KIND_LABELS[kind], attrs: { value: kind } })));
+  const kinds = COMMAND_KINDS.filter((kind) => {
+    if (kind === "guard" || kind === "event") return kind === value;
+    return true;
+  });
+  kinds.forEach((kind) => select.append(el("option", { text: COMMAND_KIND_LABELS[kind], attrs: { value: kind } })));
   select.value = value;
   return select;
 }

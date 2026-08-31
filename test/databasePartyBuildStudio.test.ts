@@ -238,13 +238,13 @@ describe("actor build preview", () => {
 });
 
 describe("class build summary", () => {
-  it("counts equipment available to actors in the class build through runtime canEquip semantics", () => {
-    // Break caught: the summary manually unions class ids and ignores actor-specific runtime permissions.
+  it("counts class-side equipment and ignores actor-only canEquip grants", () => {
+    // Break caught: actor-only grants and classIds self-wildcard inflated the banner to the whole catalog.
     const project = createBlankProject();
     const actor = project.database.actors[0];
     const klass = project.database.classes.find((entry) => entry.id === actor?.classId);
     if (!actor || !klass) throw new Error("fixture needs an actor and assigned class");
-    klass.equipmentPermissions = { actorIds: [], classIds: [], equipmentIds: [] };
+    klass.equipmentPermissions = { actorIds: [actor.id], classIds: [klass.id], equipmentIds: [] };
     project.database.equipment = [
       normalizeEquipmentRecord({
         id: "equip_actor_allowed",
@@ -261,7 +261,7 @@ describe("class build summary", () => {
       normalizeEquipmentRecord({ id: "equip_disallowed", name: "Disallowed", slot: "helmet" }),
     ];
 
-    expect(classBuildSummary(project, klass.id)?.equipmentCount).toBe(2);
+    expect(classBuildSummary(project, klass.id)?.equipmentCount).toBe(1);
   });
 
   it("counts class-common equipment for a promotion-only class with no directly assigned actors", () => {
@@ -293,8 +293,8 @@ describe("class build summary", () => {
     expect(classBuildSummary(project, klass.id)?.equipmentCount).toBe(2);
   });
 
-  it("applies the classIds permission path even when a class has no directly assigned actors", () => {
-    // Break caught: the classIds branch of runtime canEquip disappears when there is no actor to call it with.
+  it("does not treat classIds self-listing as an all-equipment grant on the class tab", () => {
+    // Break caught: classIds:[self] made the banner count every item while the checklist showed a handful.
     const project = createBlankProject();
     const klass = project.database.classes[1];
     if (!klass) throw new Error("fixture needs a promotion-only class");
@@ -305,7 +305,7 @@ describe("class build summary", () => {
       normalizeEquipmentRecord({ id: "equip_class_id_two", name: "Class id two", slot: "armor" }),
     ];
 
-    expect(classBuildSummary(project, klass.id)?.equipmentCount).toBe(2);
+    expect(classBuildSummary(project, klass.id)?.equipmentCount).toBe(0);
   });
 
   it("derives its role and backlink counts without mutating project data", () => {
@@ -385,7 +385,42 @@ describe("class build summary", () => {
 
     findByTestId(form, "db-class-promotion-add")?.click();
     expect(findByTestId(form, "db-class-build-summary")?.dataset.promotionCount).toBe("1");
+    expect(form.querySelectorAll(".db-class-promotion-row").length).toBe(1);
     findByTestId(form, "db-class-promotion-add")?.click();
     expect(findByTestId(form, "db-class-build-summary")?.dataset.promotionCount).toBe("2");
+    expect(form.querySelectorAll(".db-class-promotion-row").length).toBe(2);
+  });
+
+  it("labels a Korean build eyebrow and a unique default warrior role", () => {
+    const project = createBlankProject();
+    const klass = project.database.classes[0];
+    if (!klass) throw new Error("fixture needs the default warrior class");
+    store.replace(project);
+
+    const form = document.createElement("section") as unknown as FakeElement;
+    renderClassRecordForm(form as unknown as HTMLElement, klass);
+
+    expect(findByTestId(form, "db-class-build-eyebrow")?.textContent).toBe("직업 설계");
+    expect(classBuildSummary(project, klass.id)?.role).toBe("striker");
+    expect(findByTestId(form, "db-class-build-summary")?.dataset.role).toBe("striker");
+    const catalog = project.database.equipment.length;
+    expect(classBuildSummary(project, klass.id)?.equipmentCount).toBeLessThan(catalog);
+    const sprite = findByTestId(form, "db-class-sprite-preview");
+    expect(sprite?.getAttribute("style") ?? "").toContain("--class-sprite-url:");
+    expect(findByTestId(form, "db-picker-class-state-rate-state_death")?.textContent).toContain("매우 약함");
+    expect(findByTestId(form, "db-picker-class-state-rate-state_death")?.textContent).toContain("약함");
+    const kindValues = (findByTestId(form, "db-field-class-command-kind")?.children ?? [])
+      .filter((child) => child.tagName === "OPTION")
+      .map((child) => child.getAttribute("value") ?? child.value);
+    expect(kindValues).not.toContain("guard");
+    expect(kindValues).not.toContain("event");
+  });
+
+  it("calls equal growth uniform instead of a designed balanced role", () => {
+    const project = createBlankProject();
+    const klass = project.database.classes[0];
+    if (!klass) throw new Error("fixture needs a class");
+    klass.parameterCurves = levelCurves({ attack: 10, defense: 10, mind: 10, agility: 10 });
+    expect(classBuildSummary(project, klass.id)?.role).toBe("uniform");
   });
 });
