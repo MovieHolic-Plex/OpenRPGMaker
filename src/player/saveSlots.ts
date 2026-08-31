@@ -17,6 +17,8 @@ import {
   economyValueOrUndefined,
   normalizeEconomyValue,
   sanitizeEconomyRecord,
+  sanitizeShopHaggleState,
+  sanitizeShopShelf,
   sanitizeShopTradeCounts,
 } from "@/project/economyValues";
 import { syncMonsterPartyFollowers } from "@/project/followers";
@@ -139,6 +141,10 @@ export type SaveSnapshot = {
     readonly shopMileagePoints?: PlaySession["shopMileagePoints"];
     readonly shopPawnTickets?: PlaySession["shopPawnTickets"];
     readonly shopLastRestockDayKey?: PlaySession["shopLastRestockDayKey"];
+    readonly shopMerchantGold?: PlaySession["shopMerchantGold"];
+    readonly shopHaggleState?: PlaySession["shopHaggleState"];
+    readonly shopReputation?: PlaySession["shopReputation"];
+    readonly shopShelf?: PlaySession["shopShelf"];
     readonly energy?: PlaySession["energy"];
     readonly shippingQueue?: PlaySession["shippingQueue"];
     readonly shippingLastSettledDayKey?: PlaySession["shippingLastSettledDayKey"];
@@ -306,6 +312,10 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       shopMileagePoints: economyValueOrUndefined(session.shopMileagePoints),
       shopPawnTickets: structuredClone(session.shopPawnTickets),
       shopLastRestockDayKey: structuredClone(session.shopLastRestockDayKey),
+      shopMerchantGold: sanitizeEconomyRecord(session.shopMerchantGold),
+      shopHaggleState: sanitizeShopHaggleState(session.shopHaggleState),
+      shopReputation: sanitizeEconomyRecord(session.shopReputation),
+      shopShelf: sanitizeShopShelf(session.shopShelf),
       energy: nonNegativeIntegerOrUndefined(session.energy),
       shippingQueue: structuredClone(session.shippingQueue ?? {}),
       shippingLastSettledDayKey: session.shippingLastSettledDayKey,
@@ -486,6 +496,10 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.shopMileagePoints = economyValueOrUndefined(snapshot.session.shopMileagePoints);
   if (snapshot.session.shopPawnTickets) session.shopPawnTickets = structuredClone(snapshot.session.shopPawnTickets);
   if (snapshot.session.shopLastRestockDayKey) session.shopLastRestockDayKey = structuredClone(snapshot.session.shopLastRestockDayKey);
+  session.shopMerchantGold = sanitizeEconomyRecord(snapshot.session.shopMerchantGold);
+  session.shopHaggleState = sanitizeShopHaggleState(snapshot.session.shopHaggleState);
+  session.shopReputation = sanitizeEconomyRecord(snapshot.session.shopReputation);
+  session.shopShelf = sanitizeShopShelf(snapshot.session.shopShelf);
   if (typeof snapshot.session.energy === "number") session.energy = snapshot.session.energy;
   const shippingEnabled = project.system.shipping?.enabled === true;
   session.shippingQueue = shippingEnabled
@@ -839,6 +853,10 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       shopMileagePoints: economyValueOrUndefined(session.shopMileagePoints),
       shopPawnTickets: isShopPawnTicketsRecord(session.shopPawnTickets) ? session.shopPawnTickets : undefined,
       shopLastRestockDayKey: isStringRecord(session.shopLastRestockDayKey) ? session.shopLastRestockDayKey : undefined,
+      shopMerchantGold: sanitizeEconomyRecord(session.shopMerchantGold),
+      shopHaggleState: sanitizeShopHaggleState(session.shopHaggleState),
+      shopReputation: sanitizeEconomyRecord(session.shopReputation),
+      shopShelf: sanitizeShopShelf(session.shopShelf),
       energy: nonNegativeIntegerOrUndefined(session.energy),
       shippingQueue: parsePositiveIntegerRecord(session.shippingQueue),
       shippingLastSettledDayKey: typeof session.shippingLastSettledDayKey === "string" && session.shippingLastSettledDayKey.trim()

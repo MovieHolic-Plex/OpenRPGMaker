@@ -6,9 +6,11 @@ import { addEvent } from "@/editor/eventActions";
 import {
   addEventPageCommandAt,
   addEventPage,
+  clearCopiedEventPage,
   copyEventPage,
   copyEventPageToClipboard,
   deleteEventPage,
+  hasCopiedEventPage,
   pasteEventPage,
   moveEventPage,
   replaceEventPageCommandAt,
@@ -20,10 +22,42 @@ import { resolveEventPage } from "@/project/io";
 import { store } from "@/project/store";
 
 beforeEach(() => {
+  clearCopiedEventPage();
   store.replace(createBlankProject());
 });
 
 describe("event pages", () => {
+  it("기지 id 가 사라진 붙여넣기는 맨 앞(낮은 우선순위)에 넣고 승자가 되지 않는다", () => {
+    // 맵 단위 되돌리기·원격 리로드가 페이지를 지워도 editorState 는 재조정되지 않는다 —
+    // 그 낡은 id 로 끝에 붙이면 붙여넣기가 가장 높은 우선순위를 얻는다(막으려는 바로 그 역전).
+    const mapId = store.getCurrent().startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    addEventPage(mapId, eventId);
+    const before = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages!;
+    const survivors = before.map((page) => page.id);
+    expect(copyEventPageToClipboard(mapId, eventId, before[0]!.id)).toBe(true);
+
+    const pastedId = pasteEventPage(mapId, eventId, "page_does_not_exist");
+
+    const event = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!;
+    expect(event.pages!.map((page) => page.id)).toEqual([pastedId, ...survivors]);
+    expect(resolveEventPage(event, { switches: {}, variables: {}, inventory: {}, partyActorIds: [] })?.id)
+      .not.toBe(pastedId);
+  });
+
+  it("clears a copied page when the project is switched", () => {
+    const projectA = store.getCurrent();
+    const mapId = projectA.startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    const pageId = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages![0]!.id;
+    updateEventPage(mapId, eventId, pageId, { name: "PROJECT_A_SECRET" });
+    expect(copyEventPageToClipboard(mapId, eventId, pageId)).toBe(true);
+
+    store.replace(createBlankProject(), { change: { projectSwitch: true } });
+
+    expect(hasCopiedEventPage()).toBe(false);
+  });
+
   it("creates new events with a page-backed command model", () => {
     const project = store.getCurrent();
     const mapId = project.startMapId;
@@ -120,6 +154,52 @@ describe("event pages", () => {
     // "페이지 3" 이 이미 존재하므로 새 페이지는 "페이지 4" 가 된다 (충돌 회피).
     expect(newPage?.name).toBe("페이지 4");
     expect(names.filter((name) => name === newPage?.name)).toHaveLength(1);
+  });
+
+  it("keeps duplicate and paste below the source priority at first, middle, and last positions", () => {
+    for (const operation of ["duplicate", "paste"] as const) {
+      for (const sourceIndex of [0, 1, 2]) {
+        clearCopiedEventPage();
+        store.replace(createBlankProject());
+        const mapId = store.getCurrent().startMapId;
+        const eventId = addEvent(mapId, 2, 2);
+        addEventPage(mapId, eventId);
+        addEventPage(mapId, eventId);
+        const beforePages = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages!;
+        const source = beforePages[sourceIndex]!;
+        editorState.set({ selectedEventPageId: source.id });
+        const eventBefore = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!;
+        const winnerBefore = resolveEventPage(eventBefore, { switches: {}, variables: {}, inventory: {}, partyActorIds: [] })?.id;
+
+        const insertedId = operation === "duplicate"
+          ? copyEventPage(mapId, eventId, source.id)
+          : (copyEventPageToClipboard(mapId, eventId, source.id), pasteEventPage(mapId, eventId));
+
+        const eventAfter = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!;
+        const sourceAfterIndex = eventAfter.pages!.findIndex((page) => page.id === source.id);
+        expect(eventAfter.pages![sourceAfterIndex - 1]?.id, `${operation} source index ${sourceIndex}`).toBe(insertedId);
+        expect(resolveEventPage(eventAfter, { switches: {}, variables: {}, inventory: {}, partyActorIds: [] })?.id)
+          .toBe(winnerBefore);
+      }
+    }
+  });
+
+  it("numbers repeated duplicate and paste names without collisions", () => {
+    const mapId = store.getCurrent().startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    const sourceId = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages![0]!.id;
+
+    copyEventPage(mapId, eventId, sourceId);
+    copyEventPage(mapId, eventId, sourceId);
+    copyEventPageToClipboard(mapId, eventId, sourceId);
+    editorState.set({ selectedEventPageId: sourceId });
+    pasteEventPage(mapId, eventId);
+
+    const names = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages!.map((page) => page.name);
+    expect(names).toContain("페이지 1 복사본");
+    expect(names).toContain("페이지 1 복사본 2");
+    expect(names).toContain("페이지 1 복사본 3");
+    expect(new Set(names).size).toBe(names.length);
   });
 
   it("copies and reorders pages without corrupting sibling commands", () => {

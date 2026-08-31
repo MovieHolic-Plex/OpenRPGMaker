@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { houseDoorFrameIndex } from "@/editor/houseInteriors";
+import { houseDoorFrameIndex, HOUSE_DOOR_OPEN_SE } from "@/editor/houseInteriors";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -70,12 +70,22 @@ test("build_village door action opens and transfers into the generated house int
   await tapKey(page, "Space", 30);
   const observedFrames = await frameCapture;
   expect(observedFrames).toContain(scenario.expectedOpenFrame);
+  // 문 여는 효과음은 SE 채널 원샷 — QA 거울에 카탈로그 리소스 id 가 그대로 찍힌다.
+  await expect.poll(async () => (await audioState(page)).se?.resourceId).toBe(HOUSE_DOOR_OPEN_SE);
+  const doorSe = await audioState(page);
+  expect(doorSe.se?.loop).toBe(false);
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe(scenario.interiorMapId);
   const inside = await runtimeState(page);
   expect(inside.player).toEqual(scenario.entry);
   await page.screenshot({ path: `${EVIDENCE_DIR}/play-inside-house.png`, fullPage: true });
 
-  await tapKey(page, "ArrowDown", 180);
+  // 전이 직후엔 페이드 동안 입력이 잠겨 있다 — 한 번 눌러보고 끝내면 그 탭이 삼켜져 실패한다.
+  // 입력이 열린 뒤 나가기 칸으로 내려가는 걸 유계 재시도한다(타이밍 운에 의존하지 않는다).
+  await expect.poll(async () => (await runtimeState(page)).inputEnabled).toBe(true);
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    await tapKey(page, "ArrowDown", 180);
+    if ((await runtimeState(page)).mapId === scenario.villageMapId) break;
+  }
   await expect.poll(async () => (await runtimeState(page)).mapId).toBe(scenario.villageMapId);
   const returned = await runtimeState(page);
   expect(returned.player).toEqual(scenario.front);
@@ -86,6 +96,7 @@ test("build_village door action opens and transfers into the generated house int
     inside,
     returned,
     observedFrames,
+    doorSe,
   }, null, 2), "utf8");
 });
 
@@ -116,6 +127,15 @@ async function runtimeState(page: Page): Promise<RuntimeState> {
   const text = await page.getByTestId("runtime-state-json").textContent();
   if (!text) throw new Error("missing runtime state");
   return JSON.parse(text) as RuntimeState;
+}
+
+type AudioState = { readonly se?: { readonly resourceId: string; readonly loop: boolean } };
+
+async function audioState(page: Page): Promise<AudioState> {
+  const node = page.getByTestId("audio-state-json");
+  if ((await node.count()) === 0) return {};
+  const text = await node.first().textContent();
+  return text ? (JSON.parse(text) as AudioState) : {};
 }
 
 async function collectDoorFrames(page: Page, doorEventId: string, durationMs: number): Promise<unknown[]> {

@@ -29,6 +29,12 @@ export type SettlementLayout = "plaza-ring" | "street-grid" | "clusters";
 
 export interface VillageIntent {
   readonly theme: string;
+  /** 이 시공에 쓸 형태 카탈로그 — 내장 34종 + 사용자 형태(프리셋 화이트리스트 적용 후). */
+  readonly templateCatalog: readonly HouseTemplate[];
+  /** 적용된 사용자 프리셋 id — 설계도에 기록해 재현 가능하게 한다. */
+  readonly presetId?: string;
+  /** 적용된 프리셋 이름(사람이 읽는 라벨). */
+  readonly presetName?: string;
   readonly pathStyle: RoadStyle;
   readonly kitMix: KitMix;
   readonly yardStyle: YardStyle;
@@ -203,6 +209,12 @@ export interface HouseCandidate {
 export interface BuiltHouse {
   readonly bbox: Rect;
   readonly doorAt: Point;
+  /**
+   * 문 칸(상·하) 의 정본 하위 타일. 문 이벤트가 외형을 맡으면 킷 벽 타일,
+   * 이벤트 없는 타일 문이면 116/146 이다. 길·지형·조경 패스가 덮었을 때
+   * restoreHouseDoors 가 이 값으로 되돌리고, audit 이 훼손 여부를 이 값으로 센다.
+   */
+  readonly doorTiles?: { readonly top: number; readonly bottom: number };
   readonly front: Point;
   readonly kitId: HouseKitId;
   readonly stories: 1 | 2 | 3;

@@ -49,6 +49,8 @@
 | `reserveTokens` | `16_384` | `src/ai/contextCompaction.ts:34` | 요약 생성 및 다음 응답 생성을 위해 남겨두는 여유 토큰 |
 | `keepRecentTokens` | `20_000` | `src/ai/contextCompaction.ts:35` | 압축 시 요약하지 않고 원문 그대로 유지할 최근 대화 토큰 분량 |
 | `DEFAULT_CONTEXT_WINDOW` | `128_000` | `src/ai/contextCompaction.ts:42` | 미지정 모델 대상 보수적 컨텍스트 창 기본값 |
+| `AUTO_COMPACTION_TRIGGER_TOKENS` | `200_000` | `src/ai/contextCompaction.ts` | **자동 압축이 도는 지점**(제품 선택, 감독 지시 2026-08-30). 작업 창 상한이 여기서 파생된다 |
+| `WORKING_CONTEXT_TOKEN_CAP` | `216_384` | `src/ai/messageBudget.ts` | 압축 문턱과 문자 클램프가 같이 보는 작업 창 = 지점 + 예비분 |
 | `BASE64_RUN_RE` | `/[A-Za-z0-9+/=_-]{512,}/g` | `src/ai/contextCompaction.ts:84` | base64 런 판정 정규식 (512자 이상 연속 문자) |
 | `BASE64_CHAR_WEIGHT` | `4` | `src/ai/contextCompaction.ts:85` | base64 런 문자당 가중치 (문자당 1토큰으로 보수적 평가) |
 | `ESTIMATED_IMAGE_CHARS` | `4800` | `src/ai/contextCompaction.ts:77` | 원격/짧은 URL 이미지의 최소 등가 문자 수 바닥값 |
@@ -69,7 +71,10 @@
 
 ### 압축 트리거 판정 (`shouldCompact`, `resolveThresholdContextTokens`)
 - 모델 접두사에 따라 컨텍스트 윈도우를 계산한다 (`src/ai/contextCompaction.ts:48-69`). 예: `gemini-`는 1,048,576, `claude-`는 200,000, `gpt-5`/`codex`는 400,000.
-- 트리거 임계값 = `contextWindow - reserveTokens` (`src/ai/contextCompaction.ts:153`). 기본 모델 기준 `128,000 - 16,384 = 111,616` 토큰.
+- 트리거 임계값 = `창 - reserveTokens`. 여기서 "창" 은 **모델 창이 아니라 작업 창**이다 — `assistantSession.runCompaction` 은 `resolveWorkingContextTokens(config)`(= `min(모델 창, WORKING_CONTEXT_TOKEN_CAP)`, CPEN 경로 예외)를 넘긴다.
+- 작업 창 상한이 `AUTO_COMPACTION_TRIGGER_TOKENS + reserveTokens = 216,384` 이므로 창이 넉넉한 모델(gemini 1,048,576 / gpt-5 400,000)의 **지점은 정확히 200,000 토큰**이다. 창이 그보다 좁은 모델(claude-/glm- 200,000)은 자기 창이 먼저 걸린다(`200,000 - 16,384 = 183,616`).
+- 예전 상한은 `DEFAULT_CONTEXT_WINDOW`(128,000)여서 지점이 111,616 이었다. 창 1M 짜리 기본 모델이 **창의 11% 에서 앞부분 기억을 요약으로 바꿔 버렸다** — 창이 남는데도 이르게 잊었다. 반대로 모델 창을 그대로 쓰면 1,032,192 가 되어 사실상 압축이 없다. 200,000 은 그 사이에 명시한 지점이다.
+- 게이지(`describeContextUsage`)도 같은 창을 받는다(`getContextUsage` 가 `contextWindow: resolveWorkingContextTokens(this.config)` 를 넘긴다). 모델 창으로 세면 gemini 에서 "맥락 3%" 인데 압축이 도는 모순이 보인다.
 - 공급자가 보고한 실측 `lastPromptTokens`와 로컬 `estimateContextTokens` 중 큰 쪽을 기준으로 판정한다 (`src/ai/contextCompaction.ts:144-149`). 단, 공급자 캐시 스파이크로 과금 토큰이 로컬 추정치의 8배를 초과하고 추정치가 50,000 이상이면 로컬 추정을 신뢰한다.
 
 ### 절단점 탐색 (`findCompactionCutPoint`)

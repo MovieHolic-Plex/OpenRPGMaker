@@ -34,6 +34,7 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import {
@@ -198,7 +199,7 @@ export function renderEditor(main: HTMLElement): void {
   unsubLayoutBbox = installLayoutBboxOverlay();
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
-  unsubEditor = editorState.subscribe(() => refreshPanels());
+  unsubEditor = editorState.subscribe(() => scheduleFullPanelRefresh());
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
     syncLeftDock();
@@ -210,6 +211,10 @@ export function renderEditor(main: HTMLElement): void {
   unsubWorkspace = subscribeWorkspace(() => syncLeftDock());
   installSelectionChipHint();
   installToolCursor();
+  // 하단 연결 칩은 제거됐으므로 그 옛 렌더 경로가 더는 인증 캐시를 데우지 않는다. 부팅에서 한 번
+  // 조회해 구조 키트·클러스터·타일셋 게이트가 실제 연결 상태를 보게 한다. 완료 전 checking은
+  // 각 게이트가 허용하므로 느린 companion 조회가 사용자를 잠그지는 않는다.
+  void refreshAiConnectionStatus();
   scheduleEditorAssetWarmup();
   maybeStartBasicCoachMarks();
   maybeStartStandardWelcomeCard();
@@ -548,6 +553,21 @@ function setEditorLeftSafe(px: string): void {
   document.documentElement?.style?.setProperty?.("--editor-left-safe", px);
 }
 
+// editorState 통지 하나가 좌측 독 전체 + 캔버스 툴바 재구축이다. 우클릭 영역 드래그는
+// 지나간 칸마다 통지를 내므로, 한 틱 안의 여러 통지를 한 번으로 접는다. 최종 상태만
+// 반영하면 되므로 정합성 손실은 없다 — mapHistoryPanel 의 scheduleMapHistoryPanelMount 와 같은 모양.
+let fullPanelRefreshQueued = false;
+function scheduleFullPanelRefresh(): void {
+  if (fullPanelRefreshQueued) return;
+  fullPanelRefreshQueued = true;
+  const run = (): void => {
+    fullPanelRefreshQueued = false;
+    refreshPanels();
+  };
+  if (typeof queueMicrotask === "function") queueMicrotask(run);
+  else setTimeout(run, 0);
+}
+
 function refreshPanels(change?: ProjectChangeDescriptor): void {
   refreshAuthoringJourney(change);
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
@@ -747,8 +767,11 @@ function isRandomBattleTestRequest(value: unknown): value is { readonly kind: "r
 // 소비자는 E2E/내보내기 도구(숨은 <pre>)뿐이라 150ms 지연은 관측 불가.
 let projectExportTimer: ReturnType<typeof setTimeout> | null = null;
 
+// 숨은 `project-export-json` 미러는 프로젝트 전체를 JSON.stringify 한다. 선행 잠금
+// (`if (timer) return`)이면 버스트 중 150ms 마다 타이머가 재무장되어 반복 직렬화됐다 —
+// 우클릭 드래그 2초에 열 번 넘게 돌았다. 후행 엣지로 바꿔 버스트가 끝난 뒤 한 번만 돈다.
 function updateProjectExport(): void {
-  if (projectExportTimer) return;
+  if (projectExportTimer) clearTimeout(projectExportTimer);
   projectExportTimer = setTimeout(() => {
     projectExportTimer = null;
     if (!projectExportNode) return;

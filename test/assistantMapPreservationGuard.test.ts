@@ -17,7 +17,7 @@ type ChatResult = import("@/ai/llmClient").ChatResult;
 const CONFIG: import("@/ai/llmClient").AiConfig = {
   authMode: "apiKey",
   baseUrl: "x",
-  model: "minimax/minimax-m3",
+  model: "stub-model",
   apiKey: "sk",
   maxToolCalls: 12,
   maxTokens: 8192,

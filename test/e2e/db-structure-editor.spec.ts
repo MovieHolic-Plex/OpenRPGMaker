@@ -119,6 +119,83 @@ test.describe("데이터베이스 구조물 편집기", () => {
     await page.getByTestId("structure-kit-import-cancel").click();
   });
 
+  // 팔레트가 흔들리지 않는지 — 유닛(FakeDom)은 scrollTop 을 흉내내지 않으므로 브라우저 몫이다.
+  // 고치기 전 실측(1440×900, 12×10 킷): 팔레트를 400px 내려 타일을 하나 고르면 scrollTop 400 → 0,
+  // 검색창에 글자를 치다 타일을 고르면 activeElement 가 search → BODY 로 떨어졌다.
+  // 원인은 redraw 가 rightWrap.replaceChildren 로 같은 노드를 재부모하고 480칸을 재생성한 것.
+  test("타일을 골라도 팔레트 스크롤과 검색어가 그대로다", async ({ page }) => {
+    await openStructureTab(page);
+    await newBlankKit(page);
+
+    const palette = page.getByTestId("structure-kit-editor-palette");
+    await expect(palette).toBeVisible();
+    // 3×3 은 팔레트가 스크롤될 만큼만 있으면 되므로 킷 크기는 그대로 둔다.
+    await palette.evaluate((node) => { node.scrollTop = 400; });
+    expect(await palette.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
+
+    // 스크롤된 자리에서 실제로 보이는 칸을 좌표로 누른다 — locator.click() 의 자동 스크롤을
+    // 거치면 "스크롤이 유지됐다"는 판정이 무의미해진다.
+    const target = await palette.evaluate((node) => {
+      const box = node.getBoundingClientRect();
+      for (const swatch of node.querySelectorAll(".structure-kit-editor-swatch")) {
+        const rect = swatch.getBoundingClientRect();
+        if (rect.top > box.top + 20 && rect.bottom < box.bottom - 20) {
+          return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2, testid: swatch.getAttribute("data-testid") };
+        }
+      }
+      return null;
+    });
+    expect(target).not.toBeNull();
+    if (!target) return;
+
+    await page.mouse.click(target.x, target.y);
+    await expect(page.getByTestId(target.testid!)).toHaveClass(/active/);
+    expect(await palette.evaluate((node) => node.scrollTop)).toBe(400);
+
+    // 검색 중에 붓을 바꿔도 검색어가 남고 팔레트가 다시 만들어지지 않는다.
+    await page.getByTestId("structure-kit-editor-search").fill("문");
+    await page.mouse.click(target.x, target.y);
+    await expect(page.getByTestId("structure-kit-editor-search")).toHaveValue("문");
+    expect(await palette.evaluate((node) => node.scrollTop)).toBe(400);
+  });
+
+  // 이미 쓴 타일 구분 + [안 쓴 타일만] 필터. 사용자 요청: "이미 쓰인 타일은 구분해서 표현해야
+  // 하고, 사용하지 않은 타일만 보기 같은 체크박스가 있어야 한다."
+  test("칠한 타일은 팔레트에서 사용 표식을 얻고 [안 쓴 타일만] 으로 걸러진다", async ({ page }) => {
+    await openStructureTab(page);
+    await newBlankKit(page);
+
+    await page.getByTestId("structure-kit-editor-tile-240").click();
+    const canvas = page.getByTestId("structure-kit-editor-canvas");
+    const box = (await canvas.boundingBox())!;
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+    await expect(page.getByTestId("structure-kit-editor-tile-240")).toHaveClass(/is-used/);
+    await expect(page.getByTestId("structure-kit-editor-used-count")).toHaveAttribute("data-used-count", "1");
+
+    // 다른 타일을 붓으로 잡은 뒤 켜야 한다 — 지금 잡은 붓은 필터에서 면제되기 때문이다.
+    await page.getByTestId("structure-kit-editor-tile-421").click();
+    await page.getByTestId("structure-kit-editor-unused-only").check();
+    await expect(page.getByTestId("structure-kit-editor-tile-240")).toBeHidden();
+    await expect(page.getByTestId("structure-kit-editor-tile-421")).toBeVisible();
+
+    await page.getByTestId("structure-kit-editor-unused-only").uncheck();
+    await expect(page.getByTestId("structure-kit-editor-tile-240")).toBeVisible();
+
+    // 탭 전환은 노드를 떼지 않고 hidden 을 토글하므로, `[hidden]`(UA 규칙)이 이 파일의
+    // `display: grid/flex` 에 지지 않는지가 새 계약이다. 지면 AI 탭에서 팔레트가 그대로 남는다.
+    await page.getByTestId("structure-kit-editor-tab-ai").click();
+    await expect(page.getByTestId("structure-kit-editor-ai-description")).toBeVisible();
+    await expect(page.getByTestId("structure-kit-editor-palette")).toBeHidden();
+    await expect(page.getByTestId("structure-kit-editor-parts")).toBeHidden();
+
+    // 돌아오면 팔레트도 표식도 그대로다 — 노드를 다시 만드지 않았으니 상태가 살아 있어야 한다.
+    await page.getByTestId("structure-kit-editor-tab-shape").click();
+    await expect(page.getByTestId("structure-kit-editor-palette")).toBeVisible();
+    await expect(page.getByTestId("structure-kit-editor-tile-240")).toHaveClass(/is-used/);
+    await expect(page.getByTestId("structure-kit-editor-used-count")).toHaveAttribute("data-used-count", "1");
+  });
+
   // 잘림 회귀 방지. locator.click() 은 scrollIntoViewIfNeeded 를 먼저 하므로 사람이 못 누르는
   // 버튼도 눌러 버린다 — 즉 클릭 성공은 증거가 안 된다. 스크롤 없이 그 자리에 실제로 무엇이
   // 있는지(elementFromPoint)와 스크롤 여지가 0인지로 판정한다.

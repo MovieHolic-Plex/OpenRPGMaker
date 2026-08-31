@@ -1,0 +1,277 @@
+[
+  {
+    "key": "opened",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-240",
+      "focusTestid": "BODY",
+      "searchValue": "",
+      "canvasBox": {
+        "x": 370,
+        "y": 209,
+        "w": 384,
+        "h": 384
+      },
+      "zoom": "맞춤 (8x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "after-resize",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-240",
+      "focusTestid": "BODY",
+      "searchValue": "",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "before-tile-pick",
+    "value": {
+      "paletteScrollTop": 400,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-240",
+      "focusTestid": "BODY",
+      "searchValue": "",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "picked-swatch",
+    "value": "structure-kit-editor-tile-150"
+  },
+  {
+    "key": "after-tile-pick",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-150",
+      "focusTestid": "BODY",
+      "searchValue": "",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "SCROLL-JUMP",
+    "value": {
+      "before": 400,
+      "after": 0
+    }
+  },
+  {
+    "key": "picked-swatch-after-click",
+    "value": {
+      "gone": false,
+      "inView": true,
+      "hitSelf": true,
+      "hitTestid": "structure-kit-editor-tile-150",
+      "top": 625
+    }
+  },
+  {
+    "key": "canvas-box",
+    "value": {
+      "x": 178,
+      "y": 80.53125,
+      "width": 768,
+      "height": 640
+    }
+  },
+  {
+    "key": "after-drag",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-150",
+      "focusTestid": "BODY",
+      "searchValue": "",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "second-pick-scroll",
+    "value": {
+      "picked": "structure-kit-editor-tile-110",
+      "before": 250,
+      "after": 0
+    }
+  },
+  {
+    "key": "after-typing-search",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-110",
+      "focusTestid": "structure-kit-editor-search",
+      "searchValue": "문",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "after-pick-while-searching",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-28",
+      "focusTestid": "BODY",
+      "searchValue": "문",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "after-layer-switch",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-28",
+      "focusTestid": "BODY",
+      "searchValue": "문",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "after-tool-rect",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-28",
+      "focusTestid": "BODY",
+      "searchValue": "문",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "after-undo",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-28",
+      "focusTestid": "BODY",
+      "searchValue": "문",
+      "canvasBox": {
+        "x": 178,
+        "y": 81,
+        "w": 768,
+        "h": 640
+      },
+      "zoom": "맞춤 (4x)",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "after-zoom-in",
+    "value": {
+      "paletteScrollTop": 0,
+      "paletteScrollHeight": 1350,
+      "paletteClientHeight": 596,
+      "swatchCount": 480,
+      "activeTestid": "structure-kit-editor-tile-28",
+      "focusTestid": "BODY",
+      "searchValue": "문",
+      "canvasBox": {
+        "x": 20,
+        "y": 40,
+        "w": 1152,
+        "h": 960
+      },
+      "zoom": "6x",
+      "parts": "부위 (0)문에서 추정[부위 그리기]로 캔버스를 끌면 종류를 고르는 창이"
+    }
+  },
+  {
+    "key": "used-tile-affordances",
+    "value": {
+      "swatchesWithUsedMark": 0,
+      "unusedCheckbox": false
+    }
+  },
+  {
+    "key": "consoleErrors",
+    "value": [
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    ]
+  }
+]

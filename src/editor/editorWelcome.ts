@@ -39,7 +39,6 @@ export type EditorWelcomeResult = {
   /** Full AI prompt sent to the 감독 console for the current map. */
   readonly prompt: string | null;
   readonly autoSend: boolean;
-  readonly replaceWithBlank: boolean;
   readonly presetId?: WelcomeGenrePresetId;
   readonly source?: "chip" | "free-text" | "manual-system-preset";
   readonly systemPresetPlan?: GenreBlankProjectSystemPresetPlan;
@@ -238,7 +237,6 @@ export function presentEditorWelcome(
         intent: trimmed,
         prompt: buildWelcomeFreeTextPrompt(trimmed),
         autoSend: true,
-        replaceWithBlank: false,
         source: "free-text",
         dismiss: true,
         action: "start",
@@ -252,7 +250,6 @@ export function presentEditorWelcome(
         intent: label,
         prompt: buildWelcomeGenrePresetPrompt(preset),
         autoSend: true,
-        replaceWithBlank: false,
         presetId,
         source: "chip",
         dismiss: true,
@@ -293,7 +290,6 @@ export function presentEditorWelcome(
           intent: label,
           prompt: null,
           autoSend: false,
-          replaceWithBlank: false,
           presetId,
           source: "manual-system-preset",
           systemPresetPlan,
@@ -314,7 +310,6 @@ export function presentEditorWelcome(
         intent: null,
         prompt: null,
         autoSend: false,
-        replaceWithBlank: false,
         dismiss: true,
         action: "skip",
       });
@@ -431,7 +426,10 @@ export function presentEditorWelcome(
       dataset: { testid: EDITOR_WELCOME_TESTIDS.moreToggle },
       on: {
         click: () => {
-          const opening = moreGrid.hidden;
+          // TS 7 부터 HTMLElement.hidden 은 boolean | "until-found" 다. 여기서는
+          // "until-found" 도 숨은 것으로 세는 게 맞으므로 Boolean 으로 좁힌다 —
+          // 좁히지 않으면 typecheck 게이트가 이 한 줄로 멈춘다.
+          const opening = Boolean(moreGrid.hidden);
           moreGrid.hidden = !opening;
           moreToggle.setAttribute("aria-expanded", opening ? "true" : "false");
           moreToggle.classList.toggle("is-open", opening);

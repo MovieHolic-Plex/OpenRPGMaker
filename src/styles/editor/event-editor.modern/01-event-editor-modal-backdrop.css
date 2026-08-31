@@ -319,33 +319,6 @@ body.event-editor-modal-open .coach-mark-card {
   color: var(--text-3);
 }
 
-.event-page-button-icon {
-  height: 18px;
-  position: relative;
-  width: 18px;
-}
-
-.event-page-button-icon-new::before,
-.event-page-button-icon-new::after {
-  background: var(--event-modern-accent);
-  content: "";
-  left: 8px;
-  position: absolute;
-  top: 3px;
-}
-
-.event-page-button-icon-new::before {
-  height: 12px;
-  width: 2px;
-}
-
-.event-page-button-icon-new::after {
-  height: 2px;
-  left: 3px;
-  top: 8px;
-  width: 12px;
-}
-
 .event-editor-workbench {
   /* 이 페이지가 하는 일 쪽 비중을 조금 더 줘서 짧은 스크립트에서도 리스트 면적을 확보 */
   --event-editor-settings-track: clamp(320px, 36vw, 540px);

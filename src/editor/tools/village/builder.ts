@@ -36,6 +36,7 @@ import {
   runTerrainConstraintPass,
 } from "../villageTerrainPass";
 import { inferRequirementsFromQuery } from "../villageRequirements";
+import { resolveWorldGenRules } from "@/project/worldGenRules";
 import { isPassable } from "@/project/collision";
 import { scrubPlacementConflicts } from "@/project/lint/layoutPlacementValidate";
 import { isCombinedTownTileset } from "@/project/tilesetHarness/combinedTown";
@@ -54,12 +55,20 @@ import {
   ROAD_TILES,
   uniqueId,
   type BuiltHouse,
+  type HouseTemplate,
   type Plaza,
   type Point,
   type Rect,
   type SettlementLayout,
   type VillageIntent,
 } from "./constants";
+import {
+  matchVillageArchetype,
+  presetOverrides,
+  villagePresetById,
+  villageTemplateCatalog,
+  type PresetOverrides,
+} from "./authoringData";
 import { auditVillage, critiqueBuiltVillage, critiqueVillageMap, roadComponentNotes } from "./audit";
 import { placeVillageDecor } from "./decor";
 import { placeHouseLotFences } from "./fences";
@@ -101,12 +110,41 @@ export function buildVillageDomain(
   const housePlan = coerceHousePlan(merged.houses ?? merged.houseCount, merged.housePlans);
   const interiorEnabled = merged.interior !== false;
   const doorEventEnabled = merged.doorEvent !== false;
+  // 문 외형의 주인 — 이벤트를 만들면 Object1 문 스프라이트가 문이고, 문 타일은 깔지 않는다.
+  const doorEventsPlanned = interiorEnabled && doorEventEnabled;
   const fencesEnabled = merged.fences !== false;
   const decorEnabled = merged.decor !== false;
-  const intent = resolveVillageIntent(merged, housePlan);
+  const warnings: string[] = [];
+  // 사용자 저작 데이터 층 — 데이터베이스 「마을」탭 레코드가 코드 기본값을 이긴다.
+  // 우선순위: 명시 인자 > 프리셋 > 테마 추론 > 씨앗값 파생.
+  const presetId = typeof merged.presetId === "string" ? merged.presetId.trim() : "";
+  const preset = presetId ? villagePresetById(draft, presetId) : undefined;
+  if (presetId && !preset) {
+    warnings.push(`마을 프리셋 '${presetId}'을 찾을 수 없어 코드 기본값으로 시공했다.`);
+  }
+  const presetValues = presetOverrides(preset);
+  // 우선순위 규약대로 **명시 인자가 프리셋을 이긴다.** 프리셋의 templateIds 는 무작위 선택을
+  // 좁히는 화이트리스트인데, 호출자가 housePlans[i].templateId 로 형태를 못박았다면 그것은
+  // 좁히기의 대상이 아니라 요구다. 합집합을 취하지 않으면 카탈로그에서 걸러져 후보가 0 이 되고
+  // houses.ts 의 강제 배치 검사가 house-template-unplaced 로 통째로 중단한다 — 모델이 프롬프트만
+  // 보고 만들 수 있는 조합(프리셋 + 명시 형태)이 도구 전체를 죽이는 셈이다.
+  const forcedTemplateIds = housePlan.templates.filter(
+    (id): id is string => typeof id === "string" && id.trim().length > 0,
+  );
+  const allowedTemplateIds =
+    presetValues.templateIds && presetValues.templateIds.length > 0
+      ? [...new Set([...presetValues.templateIds, ...forcedTemplateIds])]
+      : presetValues.templateIds;
+  const catalog = villageTemplateCatalog(draft, allowedTemplateIds);
+  warnings.push(...catalog.warnings);
+  if (preset) {
+    warnings.push(`마을 프리셋 적용: ${preset.name || preset.id} (형태 후보 ${catalog.templates.length}종).`);
+  }
+  if (merged.npcCount === undefined && presetValues.npcCount !== undefined) merged.npcCount = presetValues.npcCount;
+  if (merged.groundTheme === undefined && presetValues.groundTheme !== undefined) merged.groundTheme = presetValues.groundTheme;
+  const intent = resolveVillageIntent(merged, housePlan, presetValues, catalog.templates, preset?.id, preset?.name);
   const windows = coerceWindows(merged.windows);
   const overrides = npcOverrides(merged.npcs);
-  const warnings: string[] = [];
   if (!intent.theme && !hasExplicitVillageIntent(merged) && !merged.planId) {
     warnings.push(
       "계획/의도 없이 기본 레시피로 시공했다. " +
@@ -129,15 +167,16 @@ export function buildVillageDomain(
   }
   // 쿼리 상식 스펙: 강/호수 자리를 비운 채 주거 영역만 시공
   const planForReq = typeof merged.planId === "string" ? loadVillagePlan(draft, merged.planId) : undefined;
+  const worldGenRules = resolveWorldGenRules(draft.system.worldGen);
   const requirements = planForReq?.requirements
     ?? (typeof intent.theme === "string" && intent.theme
-      ? inferRequirementsFromQuery(intent.theme)
+      ? inferRequirementsFromQuery(intent.theme, worldGenRules)
       : undefined);
   const baseArea = villageBuildArea(map, createArgs.bounds);
   assertBuildAreaSize(map, baseArea);
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
   const terrainMasks = requirements && requirements.landmarks.length > 0
-    ? buildTerrainConstraintMasks(map, requirements, baseArea)
+    ? buildTerrainConstraintMasks(map, requirements, baseArea, worldGenRules)
     : undefined;
   const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
   const area = intersectRects(baseArea, reserved);
@@ -158,7 +197,8 @@ export function buildVillageDomain(
   // 면적 비례 기본 집 수(2026-07-17) — 요청이 없으면 100×100에도 8채가 깔리던 밀도 붕괴 방지.
   const targetHouses = housePlan.explicit
     ? housePlan.count
-    : Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
+    : presetValues.houseCount
+      ?? Math.min(MAX_HOUSES, Math.max(DEFAULT_HOUSES, Math.round((area.w * area.h) / 380)));
   // 대로 골격(대형 맵, 리서치 spine-first): 밴드를 집 배치 전에 예약해 구멍 없는 직선 대로 보장.
   const boulevard = villageBoulevard(area, plaza);
   const houseBlockedIdx = new Set<number>(terrainBlockedCells(terrainMasks) ?? []);
@@ -179,6 +219,7 @@ export function buildVillageDomain(
     map, coreArea, plaza, targetHouses, rng, windows, intent, warnings,
     houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
     boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
+    !doorEventsPlanned,
   );
   perfLap("houses");
   if (houses.length === 0) {
@@ -232,7 +273,7 @@ export function buildVillageDomain(
   const skipTerrain = args.skipTerrain === true || merged.skipTerrain === true;
   let landmarkNotes: string[] = [];
   if (!skipTerrain && requirements && requirements.landmarks.length > 0) {
-    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea);
+    const terrain = runTerrainConstraintPass(draft, map, requirements, warnings, baseArea, worldGenRules);
     landmarkNotes = [...terrain.notes];
     if (terrain.notes.length > 0) warnings.push(`terrainPass: ${terrain.notes.join("; ")}`);
     restoreHouseDoors(map, houses);
@@ -289,7 +330,7 @@ export function buildVillageDomain(
       }
     }
   }
-  const houseInteriors = interiorEnabled && doorEventEnabled
+  const houseInteriors = doorEventsPlanned
     ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
     : [];
   perfLap("interiors");
@@ -572,7 +613,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       if (raw.houses === undefined && raw.housePlans !== undefined) raw.houses = raw.housePlans;
       if (raw.houses === undefined && typeof raw.houseCount === "number") raw.houses = raw.houseCount;
       const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 1;
-      const { plan, issues, ok } = normalizeVillagePlan(raw, seed);
+      const { plan, issues, ok } = normalizeVillagePlan(raw, seed, resolveWorldGenRules(draft.system.worldGen));
       if (!ok) {
         throw new ToolError(
           `마을 계획 검증 실패: ${issues.filter((i) => i.severity === "error").map((i) => i.message).join(" / ")}`,
@@ -719,7 +760,11 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       if (!plan) throw new ToolError(`planId '${planId}' 없음`, { code: "plan-not-found" });
       const evaluation = args.evaluation as VillageLookReport;
       const patch = planPatchFromLookReport(plan, evaluation);
-      const { plan: next, issues, ok } = normalizeVillagePlan(patch, plan.seed + 1);
+      const { plan: next, issues, ok } = normalizeVillagePlan(
+        patch,
+        plan.seed + 1,
+        resolveWorldGenRules(draft.system.worldGen),
+      );
       if (!ok) {
         throw new ToolError(`계획 패치 실패: ${issues.map((i) => i.message).join(" / ")}`, { code: "invalid-plan" });
       }
@@ -1155,29 +1200,37 @@ function hasExplicitVillageIntent(args: Record<string, unknown>): boolean {
   );
 }
 
-function resolveVillageIntent(args: Record<string, unknown>, housePlan: HousePlanCoerced): VillageIntent {
+function resolveVillageIntent(
+  args: Record<string, unknown>,
+  housePlan: HousePlanCoerced,
+  presetValues: PresetOverrides,
+  templateCatalog: readonly HouseTemplate[],
+  presetId: string | undefined,
+  presetName: string | undefined,
+): VillageIntent {
   const theme = typeof args.theme === "string" ? args.theme.trim() : "";
   const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 1;
-  const inferred = inferIntentFromTheme(theme);
+  // 프리셋이 있으면 테마 추론보다 앞선다 — 사용자가 직접 정한 값이 휴리스틱을 이긴다.
+  const inferred = { ...inferIntentFromTheme(theme), ...presetValues };
   const pathStyle = args.pathStyle !== undefined ? coercePathStyle(args.pathStyle) : (inferred.pathStyle ?? DEFAULT_ROAD_STYLE);
   const kitMix = coerceEnum(args.kitMix, ["mixed", "blue-stone", "bright-plaster", "amber-wood", "slate-wood"] as const, inferred.kitMix ?? "mixed", "kitMix");
   const yardStyle = coerceEnum(args.yardStyle, ["mixed", "garden", "workshop", "market", "minimal"] as const, inferred.yardStyle ?? "mixed", "yardStyle");
   const plazaStyle = coerceEnum(args.plazaStyle, ["market", "garden", "empty"] as const, inferred.plazaStyle ?? "market", "plazaStyle");
   const edgeTrees = coerceEnum(args.edgeTrees, ["conifer", "dense", "none"] as const, inferred.edgeTrees ?? "conifer", "edgeTrees");
   const plazaLayout = coerceEnum(args.plazaLayout, ["center", "north", "south", "west", "east"] as const, inferred.plazaLayout ?? "center", "plazaLayout");
-  // 길 폭·자연도·배치 패턴: 명시 인자 없으면 seed로 다양화 (전부 1칸 직선 금지)
+  // 길 폭·자연도·배치 패턴: 명시 인자 → 프리셋 → seed 파생 (전부 1칸 직선 금지)
   const roadWidth = typeof args.roadWidth === "number" && Number.isInteger(args.roadWidth)
     ? Math.min(MAX_ROAD_WIDTH, Math.max(2, args.roadWidth))
-    : (seed % 2 === 0 ? 3 : DEFAULT_ROAD_WIDTH);
+    : presetValues.roadWidth ?? (seed % 2 === 0 ? 3 : DEFAULT_ROAD_WIDTH);
   const roadNaturalness = typeof args.roadNaturalness === "number" && Number.isFinite(args.roadNaturalness)
     ? Math.min(1, Math.max(0.35, args.roadNaturalness))
-    : 0.4 + ((seed >>> 3) % 4) * 0.1; // 0.4~0.7
+    : presetValues.roadNaturalness ?? 0.4 + ((seed >>> 3) % 4) * 0.1; // 0.4~0.7
   // plaza-ring을 기본으로 두고 seed로 가끔만 변형 (항상 clusters면 집 수가 줄어 회귀)
-  const defaultSettlement: SettlementLayout = seed % 5 === 0
+  const defaultSettlement: SettlementLayout = presetValues.settlementLayout ?? (seed % 5 === 0
     ? "clusters"
     : seed % 3 === 0
       ? "street-grid"
-      : "plaza-ring";
+      : "plaza-ring");
   const settlementLayout = coerceEnum(
     args.settlementLayout,
     ["plaza-ring", "street-grid", "clusters"] as const,
@@ -1186,6 +1239,9 @@ function resolveVillageIntent(args: Record<string, unknown>, housePlan: HousePla
   );
   return {
     theme,
+    templateCatalog,
+    ...(presetId ? { presetId } : {}),
+    ...(presetName ? { presetName } : {}),
     pathStyle,
     kitMix,
     yardStyle,
@@ -1203,29 +1259,13 @@ function resolveVillageIntent(args: Record<string, unknown>, housePlan: HousePla
   };
 }
 
+/**
+ * 테마 문장 → 원형 값. 갈래별 값은 `authoringData.ts` 의 `VILLAGE_ARCHETYPES` 가 정본이다 —
+ * 데이터베이스 「마을」탭의 「원형에서 만들기」가 같은 배열을 읽으므로, 여기에 갈래를 더하면
+ * 화면에도 저절로 나타난다. (성곽·석조 = 포석 129 블록 돌길, 참조 맵 학습 2026-07-16)
+ */
 function inferIntentFromTheme(theme: string): Partial<Pick<VillageIntent, "pathStyle" | "kitMix" | "yardStyle" | "plazaStyle" | "edgeTrees" | "plazaLayout">> {
-  if (!theme) return {};
-  const t = theme.toLowerCase();
-  // 성곽·석조 마을 = 포석(129 블록) 돌길 (참조 맵 학습 2026-07-16)
-  if (/성곽|석조|돌길|성문|castle|citadel/.test(t)) {
-    return { pathStyle: "stone", yardStyle: "workshop", plazaStyle: "garden", edgeTrees: "conifer" };
-  }
-  if (/어촌|항구|바다|호수|강가|해안|coast|harbor|lake|river|beach|sand/.test(t)) {
-    return { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", plazaLayout: "south", edgeTrees: "conifer" };
-  }
-  if (/장터|시장|market|fair|축제/.test(t)) {
-    return { pathStyle: "sand", yardStyle: "market", plazaStyle: "market", edgeTrees: "conifer" };
-  }
-  if (/농|밭|촌락|farm|rural|목장|목축/.test(t)) {
-    return { pathStyle: "dirt", yardStyle: "garden", plazaStyle: "garden", edgeTrees: "dense", plazaLayout: "center" };
-  }
-  if (/광산|산골|mine|mountain|채석/.test(t)) {
-    return { pathStyle: "dirt", yardStyle: "workshop", plazaStyle: "empty", edgeTrees: "dense", kitMix: "blue-stone" };
-  }
-  if (/정원|꽃|garden/.test(t)) {
-    return { pathStyle: "sand", yardStyle: "garden", plazaStyle: "garden", edgeTrees: "conifer" };
-  }
-  return {};
+  return matchVillageArchetype(theme)?.values ?? {};
 }
 
 function coerceEnum<T extends string>(
@@ -1470,6 +1510,8 @@ function setVillageHarnessLayoutPlan(
           "commons",
           "road-loop",
           ...(settlementLayout === "street-grid" ? ["street-grid"] : []),
+          // 어떤 사용자 프리셋으로 지었는지 — 같은 마을을 다시 뽑을 때의 단서.
+          ...(intent.presetId ? [`preset:${intent.presetId}`] : []),
           intent.plazaStyle,
           `kit-target:${kitTarget}`,
           `shape-target:${shapeTarget}`,

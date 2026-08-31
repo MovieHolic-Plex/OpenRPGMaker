@@ -16,8 +16,15 @@
  "bare": {
   "testidCount": 181,
   "controlCount": 100,
-  "classCount": 214,
+  "classCount": 210,
   "labelCount": 77,
   "detailsConverted": 2
+ },
+ "flow": {
+  "testidCount": 198,
+  "controlCount": 109,
+  "classCount": 237,
+  "labelCount": 100,
+  "detailsConverted": 4
  }
 }

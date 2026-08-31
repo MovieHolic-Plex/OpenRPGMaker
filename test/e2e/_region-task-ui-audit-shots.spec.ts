@@ -67,19 +67,20 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByTestId("edit-canvas").locator("canvas")).toBeVisible();
 });
 
-test("지시 단계 — 카테고리·전체 추천 칩·초안 만들기·자동완성", async ({ page }) => {
+test("지시 단계 — 「모두 보기」 시트·초안 만들기·자동완성", async ({ page }) => {
   test.setTimeout(120_000);
   await shot(page, "01-editor.png");
 
   await openCompose(page);
   await shotOf(page, "region-task-modal", "03-modal-compose.png");
 
-  // 카테고리 필터: 「전체 추천」 칩이 함께 뜨고 명령이 2개 이상 남는다.
-  await page.getByTestId("region-category-polish").click();
-  await expect(page.getByTestId("region-suggest-reset")).toBeVisible();
+  // 「모두 보기」: 전체 명령이 계열 소제목으로 묶여 한 번에 펼쳐진다.
+  await page.getByTestId("region-task-browse-all").click();
+  await expect(page.getByTestId("region-category-polish")).toBeVisible();
   await shotOf(page, "region-task-modal", "04-modal-category.png");
+  await page.getByTestId("region-task-browse-all").click();
 
-  // `/` 자동완성 — 켜진 카테고리 안에서만 찾는다.
+  // `/` 자동완성 — 전체 명령에서 찾는다.
   const input = page.getByTestId("region-task-input");
   await input.click();
   await input.fill("/");

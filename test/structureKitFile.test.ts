@@ -240,3 +240,108 @@ describe("planImport", () => {
     expect(plan.diagnostics).toHaveLength(1);
   });
 });
+
+describe("어휘 왕복 — 내보내고 다시 가져와도 값이 남는다", () => {
+  function vocabularyWall(): SectionStructureKitDef {
+    return {
+      id: "kit_vocab_wall",
+      kind: "section",
+      name: "성벽",
+      width: 1,
+      height: 3,
+      rows: [{ tiles: [19] }, { tiles: [49] }, { tiles: [81] }],
+      cellHints: [
+        { dx: 0, dy: 1, growth: "vertical", note: "세로로 증분 가능" },
+        { dx: 0, dy: 0, note: "여기가 맨 위 갓 — 반복하지 말 것" },
+      ],
+      learnedFrom: "db-authored",
+      ai: {
+        description: "돌 성벽 단면",
+        placementRules: "마을 경계를 따라",
+        growthAxis: "vertical",
+        layerHome: "lower",
+        themes: ["성채", "bedroom"],
+        tags: ["벽", "방어"],
+        role: "wall",
+        placement: [{ id: "pc_1", zone: "againstWall", facing: "north", strength: "hard" }],
+        origin: "user",
+      },
+    };
+  }
+
+  function roundTrip(kit: SectionStructureKitDef): SectionStructureKitDef {
+    const text = serializeStructureKitFile(tileset(), [kit], AT);
+    const { file, diagnostics } = parseStructureKitFile(text);
+    expect(diagnostics).toEqual([]);
+    expect(file.kits).toHaveLength(1);
+    return file.kits[0]!;
+  }
+
+  it("증분 축·레이어·테마·태그가 살아남는다", () => {
+    const back = roundTrip(vocabularyWall());
+    expect(back.ai?.growthAxis).toBe("vertical");
+    expect(back.ai?.layerHome).toBe("lower");
+    expect(back.ai?.themes).toEqual(["성채", "bedroom"]);
+    expect(back.ai?.tags).toEqual(["벽", "방어"]);
+  });
+
+  it("칸 힌트가 축과 메모 그대로 살아남는다", () => {
+    const back = roundTrip(vocabularyWall());
+    expect(back.cellHints).toEqual([
+      { dx: 0, dy: 1, growth: "vertical", note: "세로로 증분 가능" },
+      { dx: 0, dy: 0, note: "여기가 맨 위 갓 — 반복하지 말 것" },
+    ]);
+  });
+
+  /* 배치 조건은 «필수»면 시공을 막는다. 파서가 이걸 안 읽던 탓에 파일을 한 번 거치면
+     조건이 조용히 사라져, 못 찍히던 자리에 갑자기 찍혔다. */
+  it("기계가 검사하는 배치 조건이 살아남는다", () => {
+    const back = roundTrip(vocabularyWall());
+    expect(back.ai?.placement).toEqual([
+      { id: "pc_1", zone: "againstWall", facing: "north", strength: "hard" },
+    ]);
+  });
+
+  it("모르는 zone 은 조건째로 버린다 — 틀린 필수 조건은 조건 없음보다 나쁘다", () => {
+    const text = JSON.stringify({
+      format: "rpgzzu-structure-kits",
+      version: 1,
+      tileset: { id: tileset().id, name: tileset().name },
+      kits: [{
+        ...vocabularyWall(),
+        ai: { description: "d", placementRules: "", placement: [{ id: "x", zone: "onTheMoon", strength: "hard" }] },
+      }],
+    });
+    const { file } = parseStructureKitFile(text);
+    expect(file.kits[0]!.ai?.placement).toBeUndefined();
+  });
+
+  it("행렬 밖 칸 힌트는 버린다", () => {
+    const text = JSON.stringify({
+      format: "rpgzzu-structure-kits",
+      version: 1,
+      tileset: { id: tileset().id, name: tileset().name },
+      kits: [{ ...vocabularyWall(), cellHints: [{ dx: 9, dy: 9, growth: "both" }, { dx: 0, dy: 2, growth: "both" }] }],
+    });
+    const { file } = parseStructureKitFile(text);
+    expect(file.kits[0]!.cellHints).toEqual([{ dx: 0, dy: 2, growth: "both" }]);
+  });
+
+  /* 예전엔 description/placementRules 가 둘 다 비면 ai 를 통째로 버렸다 — 축·테마만
+     적은 구조물이 파일을 거치며 어휘를 전부 잃었다. */
+  it("자유 문장이 비어도 축만 적힌 메타는 살아남는다", () => {
+    const text = JSON.stringify({
+      format: "rpgzzu-structure-kits",
+      version: 1,
+      tileset: { id: tileset().id, name: tileset().name },
+      kits: [{
+        ...vocabularyWall(),
+        cellHints: [],
+        ai: { description: "", placementRules: "", growthAxis: "both", themes: ["사막 마을"] },
+      }],
+    });
+    const { file } = parseStructureKitFile(text);
+    expect(file.kits[0]!.ai?.growthAxis).toBe("both");
+    expect(file.kits[0]!.ai?.themes).toEqual(["사막 마을"]);
+  });
+});

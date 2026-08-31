@@ -117,7 +117,10 @@ export class FakeElement extends FakeNode {
   scrollTop = 0;
   selectionEnd: number | null = 0;
   selectionStart: number | null = 0;
-  style: Record<string, string> & { setProperty: (name: string, value: string) => void } = createFakeStyle();
+  // 선언 타입은 `createFakeStyle()` 이 정말 주는 것을 그대로 받는다. 손으로 `setProperty`
+  // 하나만 적어 두면 `getPropertyValue` 가 인덱스 시그니처의 `string` 으로 해석돼
+  // "호출할 수 없는 식" 이 된다 — 런타임에는 있는 함수를 타입만 없다고 말하는 셈이다.
+  style: FakeStyle = createFakeStyle();
   type = "";
   value = "";
   isContentEditable = false;
@@ -326,8 +329,14 @@ export class FakeElement extends FakeNode {
   }
 }
 
-function createFakeStyle(): Record<string, string> & { setProperty: (name: string, value: string) => void; removeProperty: (name: string) => void; getPropertyValue: (name: string) => string } {
-  const style = {} as Record<string, string> & { setProperty: (name: string, value: string) => void; removeProperty: (name: string) => void; getPropertyValue: (name: string) => string };
+type FakeStyle = Record<string, string> & {
+  setProperty: (name: string, value: string) => void;
+  removeProperty: (name: string) => void;
+  getPropertyValue: (name: string) => string;
+};
+
+function createFakeStyle(): FakeStyle {
+  const style = {} as FakeStyle;
   style.setProperty = (name: string, value: string): void => {
     style[name] = value;
   };

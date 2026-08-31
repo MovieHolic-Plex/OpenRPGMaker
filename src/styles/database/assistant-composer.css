@@ -23,9 +23,10 @@
   box-shadow: 0 8px 28px rgba(42, 37, 33, 0.12), 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
-/* ── 액션 행 좌측 아이콘 버튼: 새 대화 + 메타 메뉴 ──
-   구 좌측 레일(/ · ✨ · ☰)은 폐기했다. 두 버튼은 기존 고정 한 줄 안에 있으므로 컴포저
-   높이를 늘리지 않으며, 새 대화는 모든 도크에서 항상 보이는 직접 진입점이다. */
+/* ── 액션 행 좌측 아이콘 버튼: 새 대화(+) · 메타 메뉴(☰) · 성향(⌾) ──
+   구 좌측 레일(/ · ✨ · ☰)은 폐기했다. 세 버튼 모두 기존 고정 한 줄 안에 있으므로 컴포저
+   높이를 늘리지 않으며, 새 대화는 모든 도크에서 항상 보이는 직접 진입점이다.
+   성향(⌾)은 이 규칙을 그대로 쓴다 — 28px 정사각형·hover·is-active 가 이미 다 있다. */
 .ai-composer-menu-btn {
   align-items: center;
   background: transparent;
@@ -68,6 +69,47 @@
   background: var(--accent-muted);
   border-color: var(--accent-border);
   color: var(--text-1);
+}
+
+/* 방금 적용한 AI 변경 되돌리기. 구 `.ai-completion-strip` 밴드(맵 위 fixed)를 대체한다 —
+   같은 액션 행에 살면서 28px 고정 높이를 지키므로 바 높이/clearance 를 건드리지 않는다.
+   색은 행의 다른 버튼과 같은 토큰만 쓴다(밴드는 --accent 42% 테두리로 혼자 튀었다). */
+.ai-composer-undo {
+  align-items: center;
+  background: var(--control-bg, transparent);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 4px;
+  height: 28px;
+  line-height: 1;
+  min-height: 0;
+  padding: 0 10px;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.ai-composer-undo::before {
+  content: "↩";
+  font-size: 12px;
+}
+
+.ai-composer-undo:hover,
+.ai-composer-undo:focus-visible {
+  background: var(--control-bg-hover);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+  outline: none;
+}
+
+.ai-composer-undo[hidden] {
+  display: none;
 }
 
 /* 메뉴 항목 우측의 단축키 배지(예: 스킬 찾기 `/`). */
@@ -196,7 +238,7 @@
   display: none;
 }
 
-/* ── 팝오버 3종: `.ai-command-bar` 직접 자식, absolute, 닫히면 display:none ──
+/* ── 팝오버 3종(추천·☰ 메뉴·성향): `.ai-command-bar` 직접 자식, absolute, 닫히면 display:none ──
    투명한 전면 레이어를 두지 않는다 — 보이지 않는 레이어가 맵 클릭을 삼킨 P0 사고
    (2026-08-19, 회귀 스펙 test/e2e/_ai-assistant-hostile-eval.spec.ts H 히트테스트). */
 .ai-composer-popover {
@@ -269,6 +311,161 @@
   background: var(--control-bg-hover);
   border-color: var(--accent-border);
   outline: none;
+}
+
+/* ── 성향 팝오버(⌾) ──────────────────────────────────────────────
+   "AI 가 기억한 내 성향" 목록. 내용은 aiPreferenceMemorySettings.ts 가 만들고 목록 내부
+   스타일은 .ai-preference-* 가 맡는다(tabs-b-assistant-panel/07-viewer-modal-settings.css).
+   여기서 하는 일은 껍데기뿐이다: 띄우고, 폭을 주고, 넘치면 스크롤.
+
+   max-height 가 필수다. 상한이 전역 16 + 프로젝트 8 이라 최악 24행인데, 팝오버는
+   bottom:100% 로 위로 자라므로 높이를 안 묶으면 목록이 패널 천장을 뚫고 맵 위로 나간다. */
+.ai-preference-popover {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: var(--shadow-pop);
+  left: 0;
+  max-height: min(420px, 60vh);
+  max-width: 560px;
+  overflow-y: auto;
+  padding: 9px;
+}
+
+/* 팝오버 안에서는 바깥 테두리가 이중이 된다 — 껍데기가 이미 테두리를 갖고 있다. */
+.ai-preference-popover .ai-preference-settings {
+  border: none;
+  margin-top: 0;
+  padding: 0;
+}
+
+/* 목록 자체 스크롤러는 끈다. 팝오버가 스크롤을 맡으므로 두 겹이면 안쪽이 먼저 잠겨
+   추가 입력칸과 '전체 비우기' 가 손에 닿지 않는다. */
+.ai-preference-popover .ai-preference-list {
+  max-height: none;
+  overflow-y: visible;
+}
+
+/* ── 맥락 게이지: 액션 행의 28px 칩 하나 + 그 팝오버 ──
+   게이지는 숫자를 담으므로 정사각형이 아니다(폭만 풀고 높이는 28px 계약을 지킨다).
+   톤 3단계는 자동 압축 임계 기준이다 — idle / near(임계 80%) / warn(임계 초과). */
+.ai-composer-menu-btn.ai-context-meter {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 0 7px;
+  width: auto;
+}
+
+.ai-context-meter[data-tone="near"] {
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+  color: var(--warning);
+}
+
+.ai-context-meter[data-tone="warn"] {
+  background: var(--danger-muted);
+  border-color: color-mix(in srgb, var(--danger) 50%, transparent);
+  color: var(--danger);
+}
+
+.ai-context-panel {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  gap: var(--space-1);
+  left: 0;
+  max-height: min(52vh, 460px);
+  max-width: 380px;
+  overflow-y: auto;
+  padding: var(--space-2);
+}
+
+.ai-context-panel-headline {
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+
+.ai-context-panel-line {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.ai-context-panel-section-label {
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  padding-top: var(--space-1);
+  text-transform: uppercase;
+}
+
+.ai-context-panel-usage {
+  color: var(--text-1);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-context-panel-models {
+  display: grid;
+  gap: 2px;
+}
+
+.ai-context-panel-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.ai-context-panel-actions .ai-assistant-action {
+  text-align: center;
+}
+
+.ai-context-panel-actions .ai-assistant-action[hidden] {
+  display: none;
+}
+
+.ai-context-summary[hidden] {
+  display: none;
+}
+
+.ai-context-summary-toggle {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  padding: 0;
+  text-align: left;
+}
+
+.ai-context-summary-toggle:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.ai-context-summary-body {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  margin: var(--space-1) 0 0;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--space-1);
+  white-space: pre-wrap;
+}
+
+.ai-context-summary-body[hidden] {
+  display: none;
 }
 
 /* ── 도크별 조정 ── */

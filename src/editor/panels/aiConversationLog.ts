@@ -11,7 +11,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
 import { stripQuickReplyLine } from "@/ai/interviewPrompt";
-import { renderMarkdown } from "@/util/markdown";
+import { renderAssistantAnswer } from "./aiAnswerLinkRender";
 import { el } from "@/util/dom";
 import {
   reasoningToggleText,
@@ -105,7 +105,10 @@ export function markPriorTurns(log: HTMLElement): void {
 
   const previewSource = toWrap.find((node) => node.dataset.role === "user");
   const previewBody = previewSource?.querySelector(".ai-command-row-body") ?? previewSource;
-  const preview = (previewBody?.textContent ?? "이전 턴").replace(/\s+/gu, " ").trim().slice(0, 36) || "이전 턴";
+  // 요약은 한 줄로 줄인다. 자를 때는 말줄임표를 붙인다 — 없으면 문장이 단어 중간에서
+  // 끊겨(실측: "…북쪽 숲에서 마을") 잘린 UI 로 읽힌다.
+  const previewFull = (previewBody?.textContent ?? "이전 턴").replace(/\s+/gu, " ").trim();
+  const preview = (previewFull.length > 36 ? `${previewFull.slice(0, 36)}…` : previewFull) || "이전 턴";
 
   const body = el("div", {
     class: "ai-turn-group-body",
@@ -147,12 +150,10 @@ export function appendConversationBubble(options: {
   readonly log: HTMLElement;
   readonly role: AiBubbleRole;
   readonly text: string;
-  readonly revealVolatileZone: () => void;
   readonly removeStartScreen: () => void;
   /** 복원·감사 로그용 시각(날짜 구분선). */
   readonly at?: Date | string | null;
 }): HTMLElement {
-  options.revealVolatileZone();
   options.removeStartScreen();
   if (options.role === "user") {
     ensureDayDivider(options.log, parseAiDayDate(options.at));
@@ -178,7 +179,7 @@ export function appendConversationBubble(options: {
   const displayText = options.role === "assistant" || options.role === "system"
     ? stripQuickReplyLine(options.text)
     : options.text;
-  if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderMarkdown(displayText));
+  if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderAssistantAnswer(displayText));
   else if (displayText) body.textContent = displayText;
   options.log.append(row);
   options.log.scrollTop = options.log.scrollHeight;
@@ -189,7 +190,7 @@ export function renderStreamedMarkdown(target: HTMLElement | null): void {
   if (!target) return;
   const body = target.querySelector(".ai-command-row-body") ?? target;
   const raw = body.textContent ?? "";
-  if (raw.trim()) body.replaceChildren(renderMarkdown(raw));
+  if (raw.trim()) body.replaceChildren(renderAssistantAnswer(raw));
 }
 
 export interface ConversationLogHost {
@@ -208,13 +209,12 @@ export interface ConversationLogHost {
 
 export function createConversationLogHost(options: {
   readonly log: HTMLElement;
-  readonly revealVolatileZone: () => void;
   readonly removeStartScreen: () => void;
 }): ConversationLogHost {
-  const { log, revealVolatileZone, removeStartScreen } = options;
+  const { log, removeStartScreen } = options;
 
   const appendBubble = (role: AiBubbleRole, text: string, at?: Date | string | null): HTMLElement =>
-    appendConversationBubble({ log, role, text, revealVolatileZone, removeStartScreen, at });
+    appendConversationBubble({ log, role, text, removeStartScreen, at });
 
   // 모델의 추론(reasoning) 스트림을 접이식 상자로 보여준다 — 기본 접힘(💭), 클릭하면 펼침.
   // 병합(추론 N회) 시 각 추론의 원문 전체를 별도 아이템으로 보존한다 — 펼치면 전부 보인다(V3C).
@@ -225,7 +225,6 @@ export function createConversationLogHost(options: {
     return item;
   };
   const appendReasoning = (): { box: HTMLElement; body: HTMLElement } => {
-    revealVolatileZone();
     removeStartScreen();
     const lastRow = lastCommandRow(log);
     const reasoningCurrent = lastReasoning?.box.parentNode === log
@@ -233,6 +232,7 @@ export function createConversationLogHost(options: {
       : Boolean(lastRow && lastReasoning && lastRow.contains(lastReasoning.box));
     if (lastReasoning && reasoningCurrent) {
       lastReasoning.state.count += 1;
+      // hidden 은 lib.dom 에서 string | boolean 이다("until-found") — 접힘 여부는 참·거짓으로 본다.
       lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, Boolean(lastReasoning.body.hidden));
       log.scrollTop = log.scrollHeight;
       return { box: lastReasoning.box, body: appendReasoningItem(lastReasoning.body) };
@@ -278,7 +278,6 @@ export function createConversationLogHost(options: {
     toolActivity = null;
   };
   const appendToolLine = (name: string, result: ToolResult, args?: Record<string, unknown>): void => {
-    revealVolatileZone();
     if (!toolActivity) {
       const list = el("div", { class: "ai-tool-activity-list" });
       list.hidden = true;
@@ -350,7 +349,6 @@ export function createConversationLogHost(options: {
 
   // 타일 이미지를 채팅에 렌더한다(show_tiles 툴콜).
   const appendTileThumbs = (tilesetId: string, tiles: readonly number[]): void => {
-    revealVolatileZone();
     removeStartScreen();
     const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
     if (!tileset) return;
@@ -377,7 +375,6 @@ export function createConversationLogHost(options: {
 
   // AI 리치 문서(present_doc)를 마지막 커맨드 줄에 붙인다.
   const appendAiDocument = (documentData: AiDocument): void => {
-    revealVolatileZone();
     removeStartScreen();
     const bubble = el("div", {
       class: "ai-command-attachment ai-chat-doc",
@@ -390,7 +387,6 @@ export function createConversationLogHost(options: {
 
   // 맵 영역을 하위+상위 합성 그리드로 채팅에 렌더 — 구조물 학습 인터뷰의 시각 자료.
   const appendTileGrid = (data: TileGridData): void => {
-    revealVolatileZone();
     removeStartScreen();
     const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
     if (!tileset) return;
@@ -429,7 +425,6 @@ export function createConversationLogHost(options: {
   // 변경 카드는 툴 활동보다 먼저 읽혀야 한다 — 사용자의 관심은 "무엇이 바뀌었나"이고
   // 툴 호출 내역은 각주다. 이미 붙은 툴 활동은 떼어 카드 뒤로 옮기고 조용하게 만든다.
   const appendChangeCard = (card: HTMLElement): HTMLElement => {
-    revealVolatileZone();
     removeStartScreen();
     const host = lastCommandRow(log) ?? log;
     const wrap = el("div", {

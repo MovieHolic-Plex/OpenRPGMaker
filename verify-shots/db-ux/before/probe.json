@@ -1,0 +1,3015 @@
+{
+  "base": "http://127.0.0.1:9873/",
+  "uiMode": "expert",
+  "viewport": {
+    "WIDTH": 1680,
+    "HEIGHT": 1050
+  },
+  "at": "2026-08-29T21:23:24.755Z",
+  "tabs": {
+    "overview": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 1,
+        "lowLineHeight": 3,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-overview-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-overview-hero",
+            "h": 118.5
+          }
+        ],
+        "headerTotal": 118.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "actors": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 5,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-initial-level"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-max-level"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-actor-skill-level-0"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-actor-critical-rate"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 1,
+        "bgTotal": 8,
+        "bgZero": 2,
+        "brokenSamples": [],
+        "zeroSamples": [
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/faceset/Actor1/00.png",
+            "cls": "actor-face-image",
+            "alt": "얼굴 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 48,
+            "complete": true
+          }
+        ],
+        "bgZeroSamples": [
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/charset/Actor1.png",
+            "cls": "actor-sheet-crop",
+            "w": 0,
+            "h": 0
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/generated/starter/hero-01-battle.png",
+            "cls": "actor-sheet-crop",
+            "w": 0,
+            "h": 0
+          }
+        ]
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 17,
+        "lowLineHeight": 6,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "small.@10px",
+            6
+          ],
+          [
+            "span.db-actor-status@10px",
+            6
+          ],
+          [
+            "span.@10px",
+            5
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "classes": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 5,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-class-skill-level"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-class-skill-level-1"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-class-skill-level-2"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-class-promotion-level"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 6,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 6,
+        "lowLineHeight": 21,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.@10px",
+            5
+          ],
+          [
+            "span.db-class-build-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-class-command-move@1",
+            10
+          ],
+          [
+            "button.db-class-command-remove@1",
+            5
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "skills": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 8,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-power"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-skill-mp-flat"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-skill-mp-percent"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-skill-success"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 1,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 17,
+        "lowLineHeight": 13,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-skill-backlink-kind@10px",
+            6
+          ],
+          [
+            "small.db-skill-backlink-relationship@10px",
+            6
+          ],
+          [
+            "span.db-skill-effect-icon@10px",
+            4
+          ],
+          [
+            "strong.db-skill-composer-label@10.5px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "span.db-skill-effect-icon@1",
+            4
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.db-ws-btn@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "button.db-ws-card-toggle@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "items": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 6,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 2,
+        "detailsMarker": 1,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-price"
+            },
+            {
+              "cls": "db-stepper-input",
+              "appearance": "auto",
+              "testid": "db-field-item-hp-percent-stepper"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-item-hp-flat"
+            },
+            {
+              "cls": "db-stepper-input",
+              "appearance": "auto",
+              "testid": "db-field-item-mp-percent-stepper"
+            }
+          ],
+          "details": [
+            {
+              "cls": "(none)",
+              "display": "list-item",
+              "listStyleType": "disclosure-closed"
+            }
+          ]
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 7,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 45,
+        "lowLineHeight": 6,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-list-sub@10.5px",
+            27
+          ],
+          [
+            "span.db-filter-chip-count@9.5px",
+            7
+          ],
+          [
+            "small.@10px",
+            3
+          ],
+          [
+            "h4.db-item-section-label@10.5px",
+            3
+          ],
+          [
+            "span.db-filter-cluster@10px",
+            2
+          ],
+          [
+            "button.btn@10px",
+            2
+          ],
+          [
+            "span.@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 103.1
+          }
+        ],
+        "headerTotal": 103.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "equipment": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 12,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 2,
+        "detailsMarker": 1,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-price"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-equipment-attack"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-equipment-defense"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-equipment-mind"
+            }
+          ],
+          "details": [
+            {
+              "cls": "(none)",
+              "display": "list-item",
+              "listStyleType": "disclosure-closed"
+            }
+          ]
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 1,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 21,
+        "lowLineHeight": 6,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-list-sub@10.5px",
+            11
+          ],
+          [
+            "span.db-filter-chip-count@9.5px",
+            6
+          ],
+          [
+            "span.@10px",
+            2
+          ],
+          [
+            "button.btn@10px",
+            2
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 151.1
+          }
+        ],
+        "headerTotal": 151.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "enemies": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 15,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 1,
+        "detailsMarker": 1,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-enemy-level"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-enemy-max-hp"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-enemy-max-mp"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-enemy-attack"
+            }
+          ],
+          "details": [
+            {
+              "cls": "(none)",
+              "display": "list-item",
+              "listStyleType": "disclosure-closed"
+            }
+          ]
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 5,
+        "lowLineHeight": 15,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "button.btn@10px",
+            1
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ],
+          [
+            "small.@10px",
+            1
+          ],
+          [
+            "span.db-enemy-faction-source@10px",
+            1
+          ],
+          [
+            "span.db-enemy-faction-stance@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            7
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "span.db-enemy-faction-source@1",
+            1
+          ],
+          [
+            "span.db-enemy-faction-stance@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-record-intro",
+            "h": 36
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 122
+          },
+          {
+            "sel": ".db-collection-gate-warn",
+            "h": 34
+          }
+        ],
+        "headerTotal": 192,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "monster-species": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 10,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-monster-species-hue"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-monster-species-capture-rate"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-monster-species-hp"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-monster-species-mp"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 28,
+        "lowLineHeight": 13,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-list-sub@10.5px",
+            9
+          ],
+          [
+            "span.db-life-card-label@10px",
+            4
+          ],
+          [
+            "small.db-life-card-detail@10px",
+            4
+          ],
+          [
+            "button.db-life-card-action@10px",
+            4
+          ],
+          [
+            "button.btn@10px",
+            2
+          ],
+          [
+            "span.@10px",
+            2
+          ],
+          [
+            "span.db-life-panel-eyebrow@10px",
+            1
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ],
+          [
+            "p.db-monster-species-empty-row@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            7
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-record-intro",
+            "h": 36
+          },
+          {
+            "sel": ".db-life-header",
+            "h": 215.2
+          },
+          {
+            "sel": ".db-life-panel",
+            "h": 171.2
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          },
+          {
+            "sel": ".db-collection-gate-warn",
+            "h": 34
+          }
+        ],
+        "headerTotal": 566.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "troops": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 4,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-troop-active-slots"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-troop-member-x"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-troop-member-y"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-troop-sim-level"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 1,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 22,
+        "lowLineHeight": 33,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.@10.5px",
+            7
+          ],
+          [
+            "div.db-troop-preview-party-marker@10px",
+            4
+          ],
+          [
+            "span.db-troop-field-label@10.5px",
+            3
+          ],
+          [
+            "span.db-ws-stat-label@10.5px",
+            3
+          ],
+          [
+            "span.db-troop-legend-chip@10.5px",
+            2
+          ],
+          [
+            "button.btn@10px",
+            1
+          ],
+          [
+            "span.db-troop-member-index@10.5px",
+            1
+          ],
+          [
+            "span.db-troop-member-coords@10.5px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            16
+          ],
+          [
+            "div.db-troop-preview-party-marker@1",
+            4
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "span.@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "span.db-troop-member-index@1",
+            1
+          ],
+          [
+            "span.db-troop-member-coords@1",
+            1
+          ],
+          [
+            "button.db-troop-event-page-tab@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-collection-gate-warn",
+            "h": 34
+          }
+        ],
+        "headerTotal": 34,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "elements": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 6,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "db-el-reference",
+              "appearance": "auto",
+              "testid": "db-elements-reference-damage"
+            },
+            {
+              "cls": "db-elements-damage-input",
+              "appearance": "auto",
+              "testid": "db-field-element-damage-A"
+            },
+            {
+              "cls": "db-elements-damage-input",
+              "appearance": "auto",
+              "testid": "db-field-element-damage-B"
+            },
+            {
+              "cls": "db-elements-damage-input",
+              "appearance": "auto",
+              "testid": "db-field-element-damage-C"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 23,
+        "lowLineHeight": 26,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-el-kind-thumb@10px",
+            17
+          ],
+          [
+            "span.db-ws-stat-label@10.5px",
+            4
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ],
+          [
+            "span.@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "span.db-el-kind-thumb@1",
+            17
+          ],
+          [
+            "button.db-ws-btn@1",
+            3
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          }
+        ],
+        "headerTotal": 110.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "states": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 15,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-state-rating"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-state-accuracy"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-state-recover-turn"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-state-recover-chance"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "lowLineHeight": 7,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "div.db-state-animation-preview@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "animations": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 8,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-animation-frame-width"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-animation-frame-height"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-animation-columns"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-animation-cell-pattern-0"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 28,
+        "lowLineHeight": 44,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "th.@10px",
+            9
+          ],
+          [
+            "button.@10px",
+            5
+          ],
+          [
+            "span.@10px",
+            3
+          ],
+          [
+            "strong.@10px",
+            3
+          ],
+          [
+            "button.db-animation-frame-row@10px",
+            3
+          ],
+          [
+            "h4.@10px",
+            2
+          ],
+          [
+            "span.db-battle-studio-kicker@10px",
+            1
+          ],
+          [
+            "button.db-animation-play-button@10px",
+            1
+          ],
+          [
+            "button.btn@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "th.@1",
+            9
+          ],
+          [
+            "span.db-animation-pattern-number@1",
+            8
+          ],
+          [
+            "button.@1",
+            5
+          ],
+          [
+            "span.@1",
+            3
+          ],
+          [
+            "strong.@1",
+            3
+          ],
+          [
+            "button.db-animation-frame-row@1",
+            3
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "td.@1",
+            2
+          ],
+          [
+            "h4.@1",
+            2
+          ],
+          [
+            "button.btn@1",
+            2
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-battle-studio-heading",
+            "h": 97.1
+          }
+        ],
+        "headerTotal": 97.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "battle-screen": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 1,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-battle-screen-active-slots"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 7,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 13,
+        "lowLineHeight": 13,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.@9px",
+            4
+          ],
+          [
+            "span.@10px",
+            3
+          ],
+          [
+            "span.db-battle-studio-kicker@10px",
+            1
+          ],
+          [
+            "span.db-list-sub@10.5px",
+            1
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ],
+          [
+            "span.db-studio-live-chip@9px",
+            1
+          ],
+          [
+            "small.@10px",
+            1
+          ],
+          [
+            "button.btn@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "span.@1",
+            4
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.db-ws-btn@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "h3.@1.15",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-battle-studio-heading",
+            "h": 97.1
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          }
+        ],
+        "headerTotal": 207.2,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "battle-commands": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 7,
+        "lowLineHeight": 29,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-command-card-index@10px",
+            4
+          ],
+          [
+            "span.db-battle-studio-kicker@10px",
+            1
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ],
+          [
+            "span.db-studio-live-chip@9px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            18
+          ],
+          [
+            "span.db-command-card-index@1",
+            4
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "h3.@1.15",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-battle-studio-heading",
+            "h": 97.1
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          }
+        ],
+        "headerTotal": 207.2,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "terrain": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 6,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-terrain-damage-0"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-terrain-encounter-0"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-terrain-damage-1"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-terrain-encounter-1"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 4,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 25,
+        "lowLineHeight": 9,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.@10px",
+            7
+          ],
+          [
+            "span.@10.5px",
+            6
+          ],
+          [
+            "span.db-list-sub@10.5px",
+            3
+          ],
+          [
+            "span.db-ws-stat-label@10.5px",
+            3
+          ],
+          [
+            "button.btn@10px",
+            2
+          ],
+          [
+            "span.db-battle-studio-kicker@10px",
+            1
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ],
+          [
+            "span.db-studio-live-chip@9px",
+            1
+          ],
+          [
+            "small.@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.db-ws-btn@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "h3.@1.15",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-battle-studio-heading",
+            "h": 97.1
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          }
+        ],
+        "headerTotal": 207.2,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "crops": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 20,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 13,
+        "lowLineHeight": 32,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-life-card-label@10px",
+            4
+          ],
+          [
+            "small.db-life-card-detail@10px",
+            4
+          ],
+          [
+            "button.db-life-card-action@10px",
+            4
+          ],
+          [
+            "span.db-life-panel-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "span.db-cx-starter-arrow@1",
+            12
+          ],
+          [
+            "span.db-cx-starter-cta@1",
+            8
+          ],
+          [
+            "button.db-ws-btn@1",
+            4
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "span.empty-state__icon@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-record-intro",
+            "h": 36
+          },
+          {
+            "sel": ".db-life-header",
+            "h": 215.2
+          },
+          {
+            "sel": ".db-life-panel",
+            "h": 171.2
+          }
+        ],
+        "headerTotal": 422.4,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "characters": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 4,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 27,
+        "lowLineHeight": 10,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-life-card-label@10px",
+            8
+          ],
+          [
+            "small.db-life-card-detail@10px",
+            8
+          ],
+          [
+            "button.db-life-card-action@10px",
+            3
+          ],
+          [
+            "span.db-list-sub@10.5px",
+            3
+          ],
+          [
+            "span.db-life-panel-eyebrow@10px",
+            2
+          ],
+          [
+            "span.db-cx-status-chip@10.5px",
+            2
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            4
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-record-intro",
+            "h": 36
+          },
+          {
+            "sel": ".db-life-header",
+            "h": 215.2
+          },
+          {
+            "sel": ".db-life-panel",
+            "h": 171.2
+          },
+          {
+            "sel": ".db-life-panel",
+            "h": 142.2
+          },
+          {
+            "sel": ".db-ws-hero",
+            "h": 112.9
+          }
+        ],
+        "headerTotal": 677.5,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "life-crafting": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 6,
+        "lowLineHeight": 23,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-ws-stat-label@10.5px",
+            4
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            2
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            15
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "span.empty-state__icon@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          }
+        ],
+        "headerTotal": 110.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "life-collections": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 1,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-life-collections-system-energy"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 5,
+        "lowLineHeight": 18,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-ws-stat-label@10.5px",
+            4
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            9
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.db-ws-card-toggle@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "span.empty-state__icon@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 85.1
+          }
+        ],
+        "headerTotal": 85.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "farm-animals": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 1,
+        "lowLineHeight": 8,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "span.empty-state__icon@1",
+            1
+          ],
+          [
+            "button.db-ws-btn@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          }
+        ],
+        "headerTotal": 110.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "farm-spatial": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 5,
+        "lowLineHeight": 15,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-ws-stat-label@10.5px",
+            4
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            8
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "span.empty-state__icon@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 85.1
+          }
+        ],
+        "headerTotal": 85.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "daily-weather": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 1,
+        "lowLineHeight": 8,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "span.empty-state__icon@1",
+            1
+          ],
+          [
+            "button.db-ws-btn@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          }
+        ],
+        "headerTotal": 110.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "residents": {
+      "error": "Error: tab button not found: db-tab-residents"
+    },
+    "structure-kits": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 9,
+        "lowLineHeight": 3,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.structure-kit-part-badge@10.5px",
+            6
+          ],
+          [
+            "button.btn@10px",
+            3
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "common-events": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 0,
+        "lowLineHeight": 11,
+        "clipSamples": [],
+        "tinySamples": [],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            3
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "span.empty-state__icon@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "switches": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 2,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": null
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": null
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 12,
+        "lowLineHeight": 16,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-ws-usage-where@10px",
+            8
+          ],
+          [
+            "span.db-ws-range-label@10.5px",
+            3
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-row-delete@1",
+            6
+          ],
+          [
+            "button.db-ws-btn@1",
+            3
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "div.db-ws-readout@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 89.1
+          }
+        ],
+        "headerTotal": 89.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "variables": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 2,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": null
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": null
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 9,
+        "lowLineHeight": 11,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-ws-usage-where@10px",
+            4
+          ],
+          [
+            "span.db-ws-range-label@10.5px",
+            3
+          ],
+          [
+            "span.db-list-sub@10.5px",
+            1
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.db-ws-btn@1",
+            3
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ],
+          [
+            "button.db-ws-row-delete@1",
+            1
+          ],
+          [
+            "div.db-ws-readout@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 89.1
+          }
+        ],
+        "headerTotal": 89.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "terms": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 0,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 0,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 0,
+        "bgTotal": 0,
+        "bgZero": 0,
+        "brokenSamples": [],
+        "zeroSamples": [],
+        "bgZeroSamples": []
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 9,
+        "lowLineHeight": 6,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "span.db-term-status@10.5px",
+            6
+          ],
+          [
+            "div.db-term-preview-title@10px",
+            2
+          ],
+          [
+            "span.db-ws-hero-eyebrow@10px",
+            1
+          ]
+        ],
+        "lhSamples": [
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ],
+          [
+            "button.database-modal-maximize@1",
+            1
+          ],
+          [
+            "button.database-modal-close@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [
+          {
+            "sel": ".db-ws-hero",
+            "h": 110.1
+          }
+        ],
+        "headerTotal": 110.1,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    },
+    "system": {
+      "native": {
+        "selectUnskinned": 0,
+        "numberUnskinned": 14,
+        "checkUnskinned": 0,
+        "rangeUnskinned": 1,
+        "detailsMarker": 0,
+        "samples": {
+          "select": [],
+          "number": [
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-system-resolution-width"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-system-resolution-height"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-system-active-slots"
+            },
+            {
+              "cls": "(none)",
+              "appearance": "auto",
+              "testid": "db-field-system-time-minutes-per-second"
+            }
+          ],
+          "details": []
+        }
+      },
+      "images": {
+        "imgBroken": 0,
+        "imgZero": 8,
+        "bgTotal": 6,
+        "bgZero": 5,
+        "brokenSamples": [],
+        "zeroSamples": [
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "db-resource-picker-inline-thumb",
+            "alt": "타이틀 리소스 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 320,
+            "complete": true
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/ui/windowskin-default.png",
+            "cls": "db-resource-picker-inline-thumb",
+            "alt": "시스템 리소스 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 96,
+            "complete": true
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/system2/System2C.png",
+            "cls": "db-resource-picker-inline-thumb",
+            "alt": "전투 시스템 리소스 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 80,
+            "complete": true
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "db-resource-picker-inline-thumb",
+            "alt": "배경 리소스 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 320,
+            "complete": true
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "(none)",
+            "alt": "타이틀 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 320,
+            "complete": true
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "(none)",
+            "alt": "시작화면 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 320,
+            "complete": true
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/ui/windowskin-default.png",
+            "cls": "(none)",
+            "alt": "시스템 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 96,
+            "complete": true
+          },
+          {
+            "src": "http://127.0.0.1:9873/assets/easyrpg/system2/System2C.png",
+            "cls": "(none)",
+            "alt": "전투 미리보기",
+            "w": 0,
+            "h": 0,
+            "naturalWidth": 80,
+            "complete": true
+          }
+        ],
+        "bgZeroSamples": [
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/faceset/Actor1/00.png",
+            "cls": "db-system-party-face",
+            "w": 0,
+            "h": 0
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/faceset/Actor2/00.png",
+            "cls": "db-system-party-face",
+            "w": 0,
+            "h": 0
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/faceset/People1/00.png",
+            "cls": "db-system-party-face",
+            "w": 0,
+            "h": 0
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/faceset/People2/00.png",
+            "cls": "db-system-party-face",
+            "w": 0,
+            "h": 0
+          },
+          {
+            "url": "http://127.0.0.1:9873/assets/easyrpg/title/Title1.png",
+            "cls": "db-title-workbench-stage",
+            "w": 0,
+            "h": 0
+          }
+        ]
+      },
+      "text": {
+        "selfClipped": 0,
+        "tinyFont": 11,
+        "lowLineHeight": 75,
+        "clipSamples": [],
+        "tinySamples": [
+          [
+            "strong.@10px",
+            4
+          ],
+          [
+            "small.@8px",
+            4
+          ],
+          [
+            "b.is-switch@10px",
+            3
+          ]
+        ],
+        "lhSamples": [
+          [
+            "span.@1",
+            20
+          ],
+          [
+            "strong.is-value@1",
+            12
+          ],
+          [
+            "button.db-system-section-nav@1",
+            10
+          ],
+          [
+            "span.db-system-studio-card-icon@1",
+            7
+          ],
+          [
+            "em.is-ok@1",
+            3
+          ],
+          [
+            "b.is-switch@1",
+            3
+          ],
+          [
+            "span.db-system-studio-card-open@1",
+            3
+          ],
+          [
+            "button.database-footer-button@1",
+            3
+          ],
+          [
+            "button.db-system-studio-filter@1",
+            2
+          ],
+          [
+            "button.database-ai-toggle@1",
+            1
+          ]
+        ]
+      },
+      "space": {
+        "headers": [],
+        "headerTotal": 0,
+        "bodyH": 796,
+        "workspaceH": 796,
+        "windowW": 1628,
+        "windowH": 900,
+        "windowLeft": 26
+      },
+      "badUrls": []
+    }
+  },
+  "failedImageRequests": [],
+  "pageErrors": [],
+  "totals": {
+    "selectUnskinned": 0,
+    "numberUnskinned": 120,
+    "checkUnskinned": 0,
+    "rangeUnskinned": 6,
+    "detailsMarker": 3,
+    "imgBroken": 0,
+    "imgZero": 9,
+    "bgZero": 7,
+    "badUrls": 0,
+    "selfClipped": 0,
+    "tinyFont": 366,
+    "lowLineHeight": 480,
+    "failedImageRequests": 0,
+    "tabsMeasured": 28,
+    "tabsErrored": 1,
+    "workspaceHeightSwing": 0
+  },
+  "workspaceHeights": {
+    "overview": 796,
+    "actors": 796,
+    "classes": 796,
+    "skills": 796,
+    "items": 796,
+    "equipment": 796,
+    "enemies": 796,
+    "monster-species": 796,
+    "troops": 796,
+    "elements": 796,
+    "states": 796,
+    "animations": 796,
+    "battle-screen": 796,
+    "battle-commands": 796,
+    "terrain": 796,
+    "crops": 796,
+    "characters": 796,
+    "life-crafting": 796,
+    "life-collections": 796,
+    "farm-animals": 796,
+    "farm-spatial": 796,
+    "daily-weather": 796,
+    "structure-kits": 796,
+    "common-events": 796,
+    "switches": 796,
+    "variables": 796,
+    "terms": 796,
+    "system": 796
+  }
+}

@@ -33,6 +33,10 @@ const TABS = [
   ["daily-weather", "db-tab-daily-weather"],
   ["farm-animals", "db-tab-farm-animals"],
   ["farm-spatial", "db-tab-farm-spatial"],
+  // factions 는 등록된 탭이지만 이 목록에 버전을 넘어 마 버지고 있어 before/after 대조에서
+  // 항상 제외되어 있었다(2026-08-30 발견). 정본은 database.ts:36 DatabaseTab 유니온 이고
+  // 실제 등록 탭은 30개다 — 이 목록이 29개여서 한 탭이 무증상으로 검증망을 모른다.
+  ["factions", "db-tab-factions"],
   ["life-collections", "db-tab-life-collections"],
   ["tilesets", "db-tab-tilesets"],
   ["structure-kits", "db-tab-structure-kits"],

@@ -21,8 +21,8 @@
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { field, matchesNameOrId, numberField, toggleSwitch } from "@/editor/panels/databaseControls";
+import { renderLifePanel } from "@/editor/panels/databaseLifeUi";
 import {
-  detailHero,
   detailPane,
   emptyState,
   listPane,
@@ -31,7 +31,6 @@ import {
   listToolbar,
   noticeBar,
   sectionCard,
-  statStrip,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
@@ -133,26 +132,27 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
   }
   if (!selection) panels.append(panelHost("db-life-collections-empty", true, onboardingBoard(rerender)));
 
-  const detail = detailPane({
-    hero: detailHero({
-      eyebrow: "발견과 기록",
-      title: selection ? selectionTitle(project, selection) : "낚시·채집·박물관",
-      subtitle: `물고기 ${fish.length} · 낚시터 ${spots.length} · 채집 구역 ${areas.length} · 박물관 보상 ${rewards.length}`,
-      tags: selection ? [GROUP_LABEL[selection.kind], shortId(selection.id)] : undefined,
-      media: el("img", {
-        class: "db-life-hero-art",
-        attrs: { src: FARMING_LIFE_UI_ASSETS.foraging, alt: "계절 채집과 수집 도감", loading: "lazy" },
-        dataset: { testid: "db-life-collections-hero-image" },
-      }),
-      testid: "db-life-collections-hero",
+  const summary = renderLifePanel({
+    testid: "db-life-collections-stats",
+    title: selection ? selectionTitle(project, selection) : "생활 컬렉션",
+    headingTestid: "db-life-collections-hero",
+    media: el("img", {
+      class: "db-life-panel-art",
+      attrs: { src: FARMING_LIFE_UI_ASSETS.foraging, alt: "계절 채집과 수집 도감", loading: "lazy" },
+      dataset: { testid: "db-life-collections-hero-image" },
     }),
+    compact: true,
+    cards: [
+      { testid: "db-life-collections-stat-fish", icon: "capture", label: "물고기", value: String(fish.length), detail: "지급 아이템 연결", state: fish.length ? "ready" : "info", onClick: () => { lifeFilter = "fish"; rerender(); } },
+      { testid: "db-life-collections-stat-fishing", icon: "field", label: "낚시터", value: String(spots.length), detail: "출현 조건 표", state: spots.length ? "ready" : "info", onClick: () => { lifeFilter = "fishing"; rerender(); } },
+      { testid: "db-life-collections-stat-forage", icon: "crop", label: "채집", value: String(areas.length), detail: "계절별 드롭", state: areas.length ? "ready" : "info", onClick: () => { lifeFilter = "forage"; rerender(); } },
+      { testid: "db-life-collections-stat-museum", icon: "item", label: "박물관", value: String(rewards.length), detail: "한 번만 지급", state: rewards.length ? "ready" : "info", onClick: () => { lifeFilter = "museum"; rerender(); } },
+    ],
+  });
+
+  const detail = detailPane({
     body: [
-      shrinkless(statStrip([
-        { label: "물고기", value: String(fish.length), hint: "지급 아이템 연결", tone: fish.length ? "good" : "neutral", onClick: () => { lifeFilter = "fish"; rerender(); }, testid: "db-life-collections-stat-fish" },
-        { label: "낚시터", value: String(spots.length), hint: "출현 조건 표", tone: spots.length ? "good" : "neutral", onClick: () => { lifeFilter = "fishing"; rerender(); }, testid: "db-life-collections-stat-fishing" },
-        { label: "채집 구역", value: String(areas.length), hint: "계절별 드롭", tone: areas.length ? "good" : "neutral", onClick: () => { lifeFilter = "forage"; rerender(); }, testid: "db-life-collections-stat-forage" },
-        { label: "박물관 보상", value: String(rewards.length), hint: "한 번만 지급", tone: rewards.length ? "good" : "neutral", onClick: () => { lifeFilter = "museum"; rerender(); }, testid: "db-life-collections-stat-museum" },
-      ], { testid: "db-life-collections-stats" })),
+      shrinkless(summary),
       panels,
       shrinkless(systemStack(project, rerender)),
     ],
@@ -180,11 +180,6 @@ function pushGroup(rows: HTMLElement[], kind: LifeCollectionKind, built: readonl
       ...(visible.length > 0 ? visible : [el("p", { class: "db-life-group-empty", text: "검색과 일치하는 항목이 없습니다." })]),
     ],
   }));
-}
-
-/** 히어로 배지는 줄바꿈이 안 된다 — 긴 id 가 좁은 폭에서 히어로를 넘치게 하는 걸 막는다. */
-function shortId(id: string): string {
-  return id.length > 26 ? `${id.slice(0, 24)}…` : id;
 }
 
 function shrinkless(node: HTMLElement): HTMLElement {

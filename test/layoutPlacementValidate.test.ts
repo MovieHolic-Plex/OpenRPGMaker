@@ -4,6 +4,7 @@ import { TILE } from "@/project/defaults/constants";
 import { LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
 import {
   formatLayoutValidationSummary,
+  LAYOUT_TREE_TILE_IDS,
   layoutValidationBlocking,
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
@@ -118,6 +119,38 @@ describe("repairLayoutPlacement", () => {
     expect(repaired.project.maps[MAP].lowerTiles).toEqual(beforeLower);
     expect(layoutRepairIdle(repaired.counts)).toBe(true);
     expect(layoutValidationBlocking(repaired.remaining)).toEqual([]);
+  });
+
+  it("region 을 주면 그 상자 안에만 보식한다 — 밖에 심으면 게이트는 여전히 0그루를 본다", () => {
+    const project = createBlankProject();
+    const region = { x: 2, y: 2, width: 6, height: 6 };
+    const repaired = repairLayoutPlacement(project, {
+      mapId: MAP,
+      instruction: "나무 놓아줘",
+      toolNames: ["place_props"],
+      region,
+    });
+
+    expect(repaired.counts.treesPlanted).toBeGreaterThan(0);
+
+    const map = repaired.project.maps[MAP];
+    const planted: Array<{ x: number; y: number }> = [];
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        const index = y * map.width + x;
+        if (LAYOUT_TREE_TILE_IDS.has(map.upperTiles[index]) || LAYOUT_TREE_TILE_IDS.has(map.lowerTiles[index])) {
+          planted.push({ x, y });
+        }
+      }
+    }
+
+    expect(planted.length).toBeGreaterThan(0);
+    for (const cell of planted) {
+      expect(cell.x).toBeGreaterThanOrEqual(region.x);
+      expect(cell.x).toBeLessThan(region.x + region.width);
+      expect(cell.y).toBeGreaterThanOrEqual(region.y);
+      expect(cell.y).toBeLessThan(region.y + region.height);
+    }
   });
 });
 

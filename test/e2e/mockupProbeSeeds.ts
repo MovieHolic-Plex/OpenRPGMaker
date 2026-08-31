@@ -1,5 +1,5 @@
 // new-editor/mockup/event-editor-mockup.html 과 1:1 로 대응하는 목표화면 시드.
-// 목업의 블록 캔버스(최상위 8 + 분기 4 = 명령 12개, 마커 3 = 15행), 레일(페이지 3개,
+// 목업의 블록 캔버스(최상위 8 + 분기 5 = 명령 13개, 마커 3 = 16행), 레일(페이지 3개,
 // 조건 0/2/1), 인스펙터(그림 번호 1 선택) 상태를 재현한다.
 // - emptyEventProject(): 빈 이벤트 캔버스(빈스펙터 빈 상태) 검증용 최소 프로젝트.
 import { createBlankProject, DEFAULT_ITEM_ID } from "@/project/defaults";
@@ -52,7 +52,7 @@ export function emptyEventProject(): { project: Project; eventId: string } {
 // - 페이지 1 의뢰 제안(조건 없음): 선택지 "나중에" 분기 무진행 + 그림 번호 1 중복 -> 경고 2
 //   (탭 배지는 보이지 않는 페이지 경고 대신 무진행만 세도록 overlapForbidden=false)
 // - 페이지 2 진행 중(스위치 0001 + 변수>=1): 보이지 않는 그래픽 -> 경고 1
-// - 페이지 3 완료 후(스위치 0002): 명령 12개/15행, 보이지 않는 충돌 경고
+// - 페이지 3 완료 후(스위치 0002): 명령 13개/16행, 보이지 않는 충돌 경고
 export function mockupProject(): { project: Project; eventId: string } {
   const project = createBlankProject();
   project.switches = [
@@ -150,7 +150,7 @@ function page2(): EventPage {
   };
 }
 
-// 페이지 3 — 완료 후(스위치 0002). 명령 12개(분기 4 포함) = 15행.
+// 페이지 3 — 완료 후(스위치 0002). 명령 13개(분기 5 포함) = 16행.
 function page3(): EventPage {
   const say = (body: string): Command => ({ kind: "text", speaker: "북문 경비병", body });
   const commands: Command[] = [
@@ -164,6 +164,7 @@ function page3(): EventPage {
           branch: [
             { kind: "setSwitch", switchId: "0001", value: true },
             { kind: "setVariable", variableId: "0001", op: "=", value: 0 },
+            { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-00", position: "left", flipHorizontally: false },
             say("고맙네. 자네 덕분이야!"),
           ],
         },

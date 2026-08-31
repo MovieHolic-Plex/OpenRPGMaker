@@ -36,8 +36,8 @@ export type PanelDef = {
   /**
    * 패널 본문을 host 에 그린다. host 는 매번 비워진 상태로 들어온다.
    *
-   * `assistant` 는 예외로 render 가 없다 — AI 독은 자체 수명주기(글래스/플로트/사이드
-   * 3형태 + 대화 상태)를 갖고 `editor.ts` 의 applyChatDockLayout 이 노드를 **이동**시킨다.
+   * `assistant` 는 예외로 render 가 없다 — 조수는 자체 수명주기(대화 상태)를 갖고
+   * `editor.ts` 의 `mountAssistantOverlay` 가 노드를 **이동**시킨다.
    * 다시 그리면 대화가 날아가므로 레지스트리는 자리만 알려주고 그리지 않는다.
    */
   readonly render?: (host: HTMLElement) => void;

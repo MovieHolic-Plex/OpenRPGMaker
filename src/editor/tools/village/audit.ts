@@ -79,11 +79,14 @@ export function critiqueVillageMap(project: Project, args: Record<string, unknow
 
 export function auditVillage(map: GameMap, houses: readonly BuiltHouse[], upperBefore: readonly number[], area: Rect): VillageAudit {
   const doorsConnected = houses.filter((house) => doorHasRoad(map, house.doorAt)).length;
-  // 문 타일 자체가 살아있는지(도로 관통 등으로 덮이지 않았는지)도 직접 검사한다.
+  // 문 칸이 살아있는지(도로 관통 등으로 덮이지 않았는지)도 직접 검사한다.
+  // 기준은 시공 직후 기록한 house.doorTiles — 이벤트 문이면 킷 벽 타일, 타일 문이면 116/146.
   const lowerAt = (x: number, y: number): number => map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
-  const doorsIntact = houses.filter(
-    (house) => lowerAt(house.doorAt.x, house.doorAt.y) === DOOR_BOTTOM_TILE && lowerAt(house.doorAt.x, house.doorAt.y - 1) === DOOR_TOP_TILE
-  ).length;
+  const doorsIntact = houses.filter((house) => {
+    const tiles = house.doorTiles ?? { top: DOOR_TOP_TILE, bottom: DOOR_BOTTOM_TILE };
+    return lowerAt(house.doorAt.x, house.doorAt.y) === tiles.bottom
+      && lowerAt(house.doorAt.x, house.doorAt.y - 1) === tiles.top;
+  }).length;
   let roadInsideHouses = 0;
   for (const house of houses) {
     for (let y = house.bbox.y; y < house.bbox.y + house.bbox.h; y += 1) {

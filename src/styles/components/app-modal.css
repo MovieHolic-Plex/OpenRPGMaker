@@ -60,4 +60,46 @@
     border-color: var(--danger, #C6403D);
     color: var(--on-accent, #fff);
   }
+
+  /* AI 차단 게이트 경고(editor/ui/aiGateModal.ts) — 위 프리미티브에 목록/원문 영역만 얹는다. */
+  .ai-gate-card {
+    border-color: var(--danger);
+    max-width: 520px;
+  }
+  .ai-gate-section-title {
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+  .ai-gate-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding-left: var(--space-4);
+  }
+  .ai-gate-list-item {
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .ai-gate-detail {
+    background: var(--bg-inset);
+    border-radius: var(--radius-m);
+    padding: var(--space-2);
+  }
+  .ai-gate-detail-summary {
+    color: var(--text-2);
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .ai-gate-detail-body {
+    font-size: 12px;
+    margin: var(--space-2) 0 0;
+    max-height: 180px;
+    overflow: auto;
+    white-space: pre-wrap;
+  }
 }

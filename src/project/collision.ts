@@ -115,6 +115,28 @@ export function isPassable(
 }
 
 /**
+ * transfer 착지처럼 좌표를 직접 정할 때 쓰는 런타임 통행 권위.
+ *
+ * 왜 `isPassable` 만으로 부족한가: 한 방향 비트만 열린 타일은 레거시 OR 판정을 통과해도
+ * 이웃과 비트가 맞지 않으면 네 방향 어디로도 나갈 수 없다. 런타임과 저작 검증이 이 함수를
+ * 함께 써야 AI가 허용한 좌표를 플레이어가 다시 옮기는 불일치가 생기지 않는다.
+ */
+export function isPassableLanding(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number
+): boolean {
+  if (!isPassable(project, map, x, y)) return false;
+  return (
+    canMove(project, map, x, y, x + 1, y) ||
+    canMove(project, map, x, y, x - 1, y) ||
+    canMove(project, map, x, y, x, y + 1) ||
+    canMove(project, map, x, y, x, y - 1)
+  );
+}
+
+/**
  * 발자국 전체가 통과 가능한가. 이동 방향의 **선행 모서리**만 검사한다 —
  * 3x3 이 오른쪽으로 갈 때 새로 밟는 건 오른쪽 열 3칸뿐이고 9칸 전부가 아니다.
  *

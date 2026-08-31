@@ -24,6 +24,9 @@ export type HouseYardIntent = string | {
   readonly count: number;
 };
 
+/** 집 외장 층수 — 벽 밴드 행 수 = 2 + (2*stories-1). lowWall 이면 무시된다. */
+export type HouseStories = 1 | 2 | 3;
+
 export type AuthorHousePlan = {
   readonly kitId: HouseKitId;
   readonly wings: readonly HouseWing[];
@@ -32,6 +35,18 @@ export type AuthorHousePlan = {
   readonly ownerName?: string;
   readonly windows?: HouseWindowOptions;
   readonly yard: readonly HouseYardIntent[];
+  /**
+   * 형태 카탈로그(houseTemplateCatalog, 34종) id. 주면 wings 는 **앵커**로만 쓰이고
+   * (wings[0].x, wings[0].y 를 원점으로) 카탈로그 날개가 전개된다 — ㄱ자·ㄷ자·중정·
+   * 현관 돌출 같은 비사각 형태를 여기로만 얻을 수 있다.
+   */
+  readonly templateId?: string;
+  readonly stories?: HouseStories;
+  /** 낮은 벽(상단+하단 2행) — 헛간·창고·오두막. stories 를 무시한다. */
+  readonly lowWall?: boolean;
+  readonly chimney?: boolean;
+  /** 옥상 판자 데크 + 벽면 사다리 — 파랑 평지붕(blue-stone/slate-wood) 전용. */
+  readonly roofDeck?: boolean;
 };
 
 export type AuthorHouseSingleRequest = Omit<AuthorHousePlan, "yard"> & {
@@ -96,6 +111,8 @@ export type AuthorVillageRequest = {
   readonly theme?: string;
   readonly seed?: number;
   readonly interior?: boolean;
+  /** 데이터베이스 「마을」탭의 배치 프리셋 id — 사용자가 정한 값을 시공에 적용한다. */
+  readonly presetId?: string;
 };
 
 export type CanonicalConstructionRoute = "author_house" | "author_village";

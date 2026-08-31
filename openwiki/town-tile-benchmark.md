@@ -39,7 +39,7 @@
 |---|---|
 | 1·4 | `autotileVariantForMask` × `DEFAULT_ROAD_AUTOTILE_GROUP` |
 | 5·6·9 | `houseKit.stampRectHouseKit` (나인슬라이스 / A자 피라미드 문법) |
-| 7 | `village/houses.ts` 문 규약 — 하위 레이어 상단 116 / 하단 146 |
+| 7 | `village/houses.ts` 문 규약 — 하위 레이어 상단 116 / 하단 146 (**타일 문 모드 한정**: 문 이벤트를 만드는 기본 시공은 타일을 깔지 않고 이벤트 스프라이트가 문이다. 벤치마크 정답 픽스처는 타일 문을 계속 쓴다) |
 | 8 | `village/fences.ts` `placeHouseLotFences` (모서리 강등 로직 포함) |
 | 3 | `benchmark/groundTruth.deriveTreePairs()` |
 | 통행성·레이어 | `defaultTilesets()[easyrpg_chipset_combined_town]` |

@@ -165,14 +165,19 @@ async function openEventEditor(page: Page, mapId: string): Promise<Locator> {
   return editor;
 }
 
-/** Prefer the flowchart chip; fall back to the AI chip when absent. */
+/**
+ * 겹침 검사용 보조 칩을 하나 연다.
+ *
+ * 예전 1순위였던 `event-script-flowchart` 는 이 목록에 없다 — 플로우는 도구 팝오버
+ * 아코디언에서 「이 페이지가 하는 일」 칼럼의 네 번째 보기 방식으로 승격됐고,
+ * 그러면서 겹칠 수 있는 오버레이 자체를 그만뒀다.
+ */
 async function openAuxChip(editor: Locator): Promise<Locator> {
   const shell = editor.getByTestId("event-editor-aux-tools");
   const shellOpen = await shell.evaluate((node) => node instanceof HTMLDetailsElement && node.open);
   if (!shellOpen) await shell.locator(":scope > summary").click();
 
   const candidates = [
-    "event-script-flowchart",
     "ai-event-assist",
   ] as const;
 

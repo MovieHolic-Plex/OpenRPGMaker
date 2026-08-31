@@ -27,6 +27,8 @@ Authored project schema, defaults, validation, migration, references, and persis
 - Optional `system.genre` is limited to the five IDs in `src/project/genrePackId.ts`, is preserved by normalize/serialize/deserialize, and rejects unsupported strings during shape validation. It is editor authoring metadata only: all packs use the same `Project` schema and runtime, and player code must not branch on it. Pack definitions and readiness live in `src/editor/genrePacks.ts`.
 - `GameMap.roguelikeRoom?` is additive authored room metadata: `{ roomId?, resetEventState?, encounterSlots?: [{ id, choices: [{ fieldSpawnId, weight?, minFloor?, maxFloor? }] }] }`. Slots reference field spawns on the same map, have unique non-empty ids, require at least one choice, use positive integer weights, and accept floor bounds 1–9999 with `minFloor <= maxFloor`. `resetEventState` defaults to true and scopes authored event self switches plus `Erase Event` state to the current room generation; false opts out. Omission preserves legacy field-spawn behavior and requires no schema-version bump. Runtime run state remains in `PlaySession.roguelikeRun`, not in project JSON.
 - **DB-is-truth for database records (2026-07-24):** Supabase `current_json` is the canonical source for authored database collections (items, skills, states, battleAnimations, battlerAnimations). `repairSupabaseCurrentJson` in `src/project/supabaseProjectSync.ts` no longer backfills missing records from `defaultItemRecords()` / `defaultSkillRecords()` / etc. on load — a sparse DB row loads as-is. JSON defaults only **seed new projects** via `createBlankProject` → `saveProjectToSupabase` (a DB write). Local is cache-only; there is no local-JSON-as-truth path (enforced by `test/noLocalProjectDb.test.ts` and the `supabase-project-root` ontology contract). Verified by `test/supabaseProjectSync.test.ts` (no-backfill unit) and `test/supabaseCanonicalRoundtrip.live.test.ts` (live load→save→reload).
+- **번들 기본 카탈로그 보충은 Supabase 백필과 다른 층이다 (2026-08-30):** 위의 "보충 금지"는 `repairSupabaseCurrentJson` 이 **원격 행**에 손대지 않는다는 규칙이다. 그와 별개로 `ensureDefaultDatabaseIconResources()` (`src/project/defaults/defaultDatabaseIconResources.ts`, `store.normalizeCurrentProject` 에서 호출) 는 **번들 기본 아이템과 기본 장비**를 id 기준으로 보충한다 — 없는 id 만 넣고 이미 있는 레코드는 절대 덮지 않는다. 이 층이 필요한 이유는 실측이다: 편집기 기본 예제(`createSampleAdventureProject`)가 동결된 export 픽스처 `src/project/defaults/fixtures/dew-village-demo.json` 를 복제하는데, 그 픽스처에는 아이템 21개·장비 11개만 들어 있다. 아이템만 보충하고 장비는 보충하지 않던 비대칭 때문에 코드의 기본 장비 86종 중 11종만 화면에 보였다. 계약은 `test/defaultEquipmentBackfill.test.ts` 가 고정한다(모든 `defaultEquipmentRecords()` id 존재 + 사용자가 고친 이름 보존). **한계는 그대로 적어 둔다: 사용자가 의도적으로 지운 기본 레코드는 다음 로드에 다시 살아난다.** 보충이 `changed` 를 세우므로 그 부활이 다음 저장에 실려 나갈 수 있다. 아이템 보충이 원래 갖고 있던 성질이고 이번 변경이 만든 것은 아니지만, "보충 금지" 이야기의 유일한 실질 예외라서 명시한다.
+- **저장이 스킵되는 세션은 화면이 그렇다고 말해야 한다 (2026-08-30):** `?freshProject=1` / `?blankProject=1` / dev 쇼케이스 위치는 의도적으로 `remotePersistenceEnabled = false` 이고 `isSaveSkippedLocation()` 이면 localStorage 기록조차 스킵한다. 예전에는 이 상태에서 편집해도 자동 저장 표시가 조용해서(또는 `saved` 로 보여서) 사용자가 저장됐다고 믿었고, 다시 열면 추가한 레코드가 사라졌다. 이제 `store` 가 이 조합에서 `{ kind: "error", code: "session-not-persisted" }` 를 세워 톱바 저장 칩(`db-autosave-state`)에 "이 세션은 저장되지 않습니다" 를 띄운다. 저장이 안 되는 것은 의도된 동작이고, 조용했던 것이 결함이었다. 계약은 `test/itemAddPersistence.test.ts` 가 실제 store·실제 `addDatabaseRecord` 경로로 고정한다.
 - Runtime item-use charges are optional save/session data for backward compatibility. Missing or malformed charge maps normalize to an empty map; finite-use transitions own inventory/charge conservation. `src/project/itemQuantities.ts` owns the shared `ITEM_QUANTITY_MAX` (9,999,999), safe-integer validation, and result resolution. `changeItem`/`changeItemsAtomically` reject an unsafe current value, delta, or result before touching inventory or charge cursors; shipping, bundles, upgrades, makers, farming, crafting, storage transfers, and shop purchases/sales commit item movement through that contract. Chest save parsing and direct snapshot restore preserve valid chest metadata while dropping zero, unsafe, or over-cap inventory rows. Runtime equipment reads use effective normalized equipment, while user equip/unequip writes go through the strict atomic transition authority and never mint or delete inventory.
 - Optional `GameMap.layoutPlan` stores generation bbox design after village/market builds (`MapLayoutPlan` / `MapLayoutRegion` in `types/project.ts`). Helpers: `src/project/mapLayoutPlan.ts` (`findLayoutRegions`, `rankRegionsByCenter`). Do not discard plan after stamping tiles — keep for “move blue house in center” style queries.
 - `ActorRecord.faceResourceId` stores a standalone 48×48 face graphic resource id. `ActorRecord.characterIndex` (0..7) remains an optional sheet cell defaulting to 0 when omitted. `ActorRecord.faceIndex` is removed. Project schema version is bumped to 4 (`SCHEMA_VERSION = 4`); `migrateV3toV4` rewrites stored legacy (sheet id, faceIndex) pairs to standalone face resource ids on load, treating an omitted index as cell 0. Normalization may drop explicit characterIndex 0 to keep legacy JSON compact; editor previews and list thumbnails treat missing characterIndex as 0.
@@ -53,7 +55,12 @@ Authored project schema, defaults, validation, migration, references, and persis
 - `Project.worldGraph` is optional authored declarative map topology data. Its canonical shape lives in `src/project/worldGraph/`: nodes are `{mapId, role: "town"|"field"|"dungeon"|"interior", label?}` and edges connect `from.mapId/exit` to `to.mapId/entry` with kind `"transfer"` or `"adjacent"` (`"transfer"` default). The graph is normalized on load, permits planned nodes before maps exist as warnings, and `projectLint` includes `lintWorldGraph` for transfer destination/event-overlap errors plus adjacent boundary passability warnings. Actual player travel still uses normal event `transfer` commands; `link_maps`/`build_world` generate those events with stable IDs.
 - Web export treats authored project JSON as the source of truth but strips editor-only event drafts and prunes `assets.uploaded` to statically referenced resource ids before writing `project.json`. `prepareWebExport()` must deserialize the serialized JSON once for shape validation before any package/download path reports success.
 - Loading v3 projects migrates legacy `villageInfoDocuments` into `Project.world` only when world is absent or empty. Each document becomes a `place` world entity linked to its map, while the original `villageInfoDocuments` field is preserved for one-version rollback and repeated deserialize/serialize cycles must not duplicate entities.
-- `createBlankProject()` is a true blank authoring seed: one 20x15 default-chipset grass map named `빈 맵`, no events, a valid start position, and a one-actor starting party using the standard default database/system records needed to enter play mode. The sample adventure is intentionally separate as `createSampleAdventureProject()` (loads the editor-authored 《이슬 마을의 종》 fixture under `src/project/defaults/fixtures/dew-village-demo.json`) and should be requested explicitly when tests or UI flows need example content. Regenerate with `npx playwright test test/e2e/author-dew-village-editor-demo.spec.ts`.
+- `createBlankProject()` is a true blank authoring seed: one 20x15 default-chipset grass map named `빈 맵`, no events, a valid start position, and a one-actor starting party using the standard default database/system records needed to enter play mode. The sample adventure is intentionally separate as `createSampleAdventureProject()` (loads the editor-authored 《이슬 장터 — 30분》 fixture under `src/project/defaults/fixtures/dew-village-demo.json`, 16 maps) and should be requested explicitly when tests or UI flows need example content.
+- **The shipped fixture's default-database tables are a derived artifact, not a hand-frozen snapshot.** `items`, `equipment`, `skills`, `states`, and `battleAnimations` are generated from the code defaults by `npm run fixture:sync` (`scripts/sync-fixture-default-database.mts`, merge rule in `scripts/lib/fixtureDefaultDatabase.mts`); `test/fixtureDefaultDatabaseDrift.test.ts` fails with that recovery command when they drift. The merge replaces default-id rows with the code value and preserves rows whose id is not a code default, so authored records survive. Maps, events, and every other table stay hand-authored — content scripts grow those.
+  - Why the gate exists (measured 2026-08-30): content scripts read this fixture, add maps/events, and write it back, so the database froze at whatever it was when first exported. The demo shipped with all 11 equipment rows missing `accuracy`/`criticalRate`, 18 rows pointing at other records' icons (16 items + 2 equipment — `item_hi_potion` → `cc0-jetrel-potion-red`, `item_sword_manual` → a bronze sword instead of a book, `equip_iron_sword` and `equip_steel_sword` → both the bronze sword), empty `attackElementIds`/`stateDefenseIds`, and three stale prices. `ensureDefaultDatabaseIconResources` could not repair it because that pass only fills *empty* icon fields — a wrong value is left alone. `test/sampleAdventureNeedsNoBackfill.test.ts` now pins that the load-time pass finds nothing to do for the shipped demo.
+  - Refreshing `items`/`equipment` alone is not valid: their rows reference `anim_gen_*` animations, `state_*` rows, and `skill_item_*` skills, so a partial sync leaves dangling references and `validateProjectReferences` throws. The five tables move together.
+  - `test/e2e/author-dew-village-editor-demo.spec.ts` does **not** write this file. It writes a separate 2-map authoring smoke output to `test/fixtures/projects/dew-village-demo.json` and hard-asserts that 2-map shape. The two files share a name but are different artifacts; the earlier "regenerate with that playwright spec" note pointed at the wrong path and is how the shipped fixture went stale unnoticed.
+- **`test/fixtures/projects/dew-village-demo.json` is deliberately kept old.** It is the legacy specimen for the three legacy-repair tests in `test/supabaseProjectSync.test.ts` (imported as `dewVillageDemoLegacySpecimen`), which need a pre-migration project to have anything to repair — `retiredEquipmentItemReplacement` rewrites an existing row and does nothing when the row is absent. Do not "helpfully" refresh it or point those tests at the shipped fixture: the tests would pass vacuously.
 - Shop economy session fields `shopLoyaltySpend` / `shopTradeCounts` / `shopMileagePoints` / `shopPawnTickets` / `shopLastRestockDayKey` persist S/A/B shop economy state (loyalty discount, dynamic pricing, mileage). Purchases preflight the player stack, player/merchant gold, and trade counters before committing the item grant; sales likewise preflight inventory, payout capacity, merchant gold, and every shop ledger before checking `changeItemsAtomically` and committing gold/count changes. A full, unsafe, or overflowing value leaves inventory, player gold, trade ledgers, and merchant gold unchanged. Mileage accrues **only on successful purchase** via `mileageRate` and is **deducted on refund** via `refundShopMileage`. Repair/appraisal services gate on `appraisalUnidentifiedPool` — empty pool disables the menu and returns `failed` (no gold is charged). Festival/traveling shops are **condition-gated**: `festivalFlag`/`travelingRouteId` must be wrapped in a `fork`/`condition` event; runtime does not auto-show a closed festival shop.
 - `TilesetDef.transparentColor` is an optional authored-project hex color key (`#rrggbb`) set by the editor. It is persisted with the tileset, validated as an optional string, and render-time transparency should prefer it over bundled chipset default color keys.
 - `TilesetDef.kind` optionally classifies a sheet as `"rpg2k"` or `"custom"`. Legacy records infer uploaded or non-480 sheets as custom; bundled 480-chip sheets remain RPG2K. Editor tileset selectors group both categories. Custom map palettes preserve exact source-cell order (up to ten visible columns) and must not apply Combined Town tile-number/autotile-collapse semantics; explicit tile metadata and priority still control layer routing.
@@ -104,3 +111,63 @@ projectId 를 `persistTimerProjectId` 에 함께 들고 있는다.
 동일성으로 단언하는데(실제 타이머 사용), 이 중복 쓰기가 단언 앞뒤로 오가며 `savedAt` 만 달라지는
 **경합**을 만들었다. 테스트를 느슨하게 하는 대신 중복 쓰기 자체를 없앴다. 계약 테스트:
 `test/eventDraftVaultPersistDebounce.test.ts`.
+
+## Boot normalizers must not create dangling references (2026-08-30)
+
+`store.normalizeCurrentProject` 는 부팅마다 13개 정규화기를 돌린다. 그중
+`ensureDefaultDatabaseIconResources` 는 이름과 달리 **기본 아이템 카탈로그 187종을 프로젝트에
+밀어넣는다.** 그 아이템들은 기본 스킬·상태 테이블(`defaultSkillRecords`/`defaultStateRecords`)을
+참조하므로, 자기 스킬·상태 세트가 더 작은 프로젝트(예제 어드벤처 = 이슬 장터: items 21 / skills 21 /
+states 5)에 아이템만 넣으면 **프로젝트가 부팅 중에 스스로 참조 무결성을 깬다.**
+
+실측(2026-08-30): 이슬 장터 로드 직후 참조 위반 0건 → 아이템 주입 후 82건. AI 런의 `run_lint` 가
+그 54건(런 시점 기준)을 잡아 레이어 검증이 3회 연속 실패하고 런이 죽었다. 게다가 에이전트가 고아
+레코드를 `delete_database_record` 로 지우려 하면 커밋 게이트가 **같은 왕복 오류**로 거부해 청소가
+불가능한 교착이 됐다.
+
+계약:
+- 기본 레코드를 주입하는 정규화기는 주입 대상이 참조하는 기본 스킬·상태를 **같이** 보강한다
+  (`ensureItemReferences`). 기본 세트로도 채울 수 없는 참조를 가진 레코드는 주입하지 않는다.
+- `state_death` 는 엔진 내장 상태다(`references.stateIdExists`) — 레코드가 없어도 유효하다.
+- 검증: `test/bootNormalizerReferenceSafety.test.ts` 가 계약을 고정한다 — 예제 어드벤처·빈
+  프로젝트 모두 부팅 DB 정규화(`ensureDefaultDatabaseIconResources` →
+  `ensureBundledBattleAnimations`) 후 참조 위반이 **0** 이어야 하고, 주입된 아이템은 없는
+  스킬·상태를 가리키지 않아야 한다. 두 정규화기의 선언 순서가 계약의 일부다(아이템의
+  animationId 는 뒤따르는 애니메이션 보강이 채운다).
+- 커밋 게이트 기준선 대조는 집계 메시지를 줄 단위 원자로 쪼개 비교한다
+  (`changeset.issueAtoms`) — 그러지 않으면 위반 하나를 지우는 편집이 "새 오류"로 분류돼 청소가
+  영구 차단된다.
+
+## `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+
+`.oprn` 은 예전부터 편집기 전용 "프로젝트 파일"이었다. 게임을 남에게 넘기는 경로는 「웹 게임
+내보내기」뿐이었고 그 산출물은 `player.html` + `project.json` + 에셋이 흩어진 **여러 파일 ZIP** 이라
+압축을 풀고 웹 서버에 올려야 돌아간다. 즉 **파일 하나를 건네 게임을 여는 경로가 없었다.**
+
+계약:
+- **컨테이너는 그대로다.** `src/project/package.ts` 의 `createProjectPackage` / `readProjectPackage`
+  가 정본이고 확장자는 `RPGZZU_EXTENSION = ".oprn"`, MIME 은 `application/vnd.openrpg.project+zip`.
+  새 포맷을 만들지 않았다 — 이미 단일 파일 ZIP 이고 업로드 에셋도 `assets.uploaded[].dataUrl` 로
+  안에 들어 있다.
+- **플레이어가 `.oprn` 을 연다.** `src/player/exportEntry.ts` 는 번들 `project.json` 을 못 읽으면
+  죽지 않고 `renderOprnGameFilePicker`(`src/player/oprnGameFilePicker.ts`) 를 띄운다. 파일 선택 또는
+  드래그&드롭 → `readOprnGameFile` → 기존 `startPlayer` 경로(제목·hostBridge)를 탄다. 단, 파일로 연
+  게임의 세이브 네임스페이스는 그 파일의 `exportedProjectId` 로 정한다. 주소에 번들된 게임을 위한
+  호스트 `saveNamespace` 나 `/play/<slug>` 를 물려받지 않아 서로 다른 게임의 세이브가 섞이지 않는다.
+  번들 게임은 기존 우선순위(호스트 값 → 커뮤니티 slug → 프로젝트 ID)를 그대로 유지한다.
+  `?open=1` 로 번들 게임이 있어도 열기 화면을 강제할 수 있다.
+- **판정 로직은 DOM 과 분리한다.** `src/player/oprnGameFile.ts` 가 확장자/MIME 판정
+  (`isOprnGameFile`), 드롭 목록에서 게임 파일 고르기(`pickOprnGameFile`), 디코드
+  (`readOprnGameFile` — 던지지 않고 `{ok:false, message}` 를 준다) 를 소유한다. 그래서 브라우저 없이
+  `test/oprnGameFile.test.ts` 로 고정된다.
+- **에셋이 왜 따라오는가.** 번들 에셋은 플레이어 앱 안에 있고 저작자가 올린 그림은 프로젝트 JSON 의
+  data URL 이다. 그래서 `.oprn` 하나로 화면이 정상 렌더된다 — 별도 에셋 폴더가 필요 없다.
+- **플레이어는 `.json` 프로젝트를 받지 않는다.** 편집기 「가져오기」는 레거시 호환으로 `.json` 을
+  계속 받지만, 플레이어 열기 화면은 `.oprn`/`.rpgzzu` 만 받는다. 게임 배포 표면을 좁게 유지한다.
+
+검증: `test/e2e/oprn-single-file-game.spec.ts` 가 한 스펙에서 세 구간을 전부 통과시킨다 —
+편집기에서 내보낸 `.oprn` 한 개(ZIP 매직 `PK` 확인) → `player.html?open=1` 의 보이는 버튼과 실제
+`filechooser`, 이어서 실제 `DataTransfer` 드롭으로 각각 열어 타이틀 화면 기동(`document.title` 이
+내보낸 파일명 어간과 일치) → 같은 파일을 빈 프로젝트 편집기로 되가져와 맵 수가 원본과 같아짐.
+세이브 네임스페이스의 파일/번들 분기는 `test/oprnGameFile.test.ts` 가 고정한다. 증거 PNG 는
+`verify-shots/oprn-single-file-game/`.

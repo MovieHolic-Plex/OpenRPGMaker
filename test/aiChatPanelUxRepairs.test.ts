@@ -91,6 +91,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  // 패널을 살려두면 진행 중 턴이 restoreDom 이후에도 죽은 DOM 에 버블을 쓰고(실측: 이 파일에서
+  // "document is not defined" unhandled rejection 4건), dispose 의 persistConversation 이 다음
+  // 테스트의 clearConversations 뒤에 대화를 되살려 내보내기 버튼 상태까지 오염시켰다.
+  teardownAiChatPanel();
+  clearConversations();
   setInlineProposalActions(null);
   restoreWindow?.();
   restoreDom?.();
@@ -371,17 +376,24 @@ describe("키 온보딩과 설정 접근성", () => {
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "테스트";
     findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
 
-    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
+    // 전송은 fetch → Response → 스트림 판독을 지나므로 마이크로태스크 flush 만으로는
+    // 오류 버블이 붙기 전에 단정이 돌았다(실측: 이 단정이 기준선에서 null 로 실패). 조건 자체를
+    // 기다린다 — 고정 sleep 이 아니라 상한이 있는 조건 대기다.
+    await vi.waitFor(() => {
+      expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
+    }, { timeout: 2_000, interval: 5 });
     // OAuth 경로의 401 문구는 Google Gemini 로그인을 안내한다 — apiKey 시절의 "인증 실패" 가 아니다.
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("Gemini");
   });
 
-  it("설정 아이콘은 전용 모달을 열고 첫 입력에 포커스한다", () => {
-    // Break: settings still expands an inline ai-config details instead of the modal.
+  it("☰ 의 설정 항목은 전용 모달을 열고 첫 입력에 포커스한다", () => {
+    // 진입점은 크롬 아이콘이 아니라 ☰ 메뉴 항목이다: `ai-settings-toggle`(헤더 아이콘)과
+    // `ai-settings-command-bar`(커맨드바 단추)는 "패널 크롬에 설정을 중복해 놓지 않는다" 는
+    // 2026-08-30 계약이 금지한다(test/aiAssistantUxP0P2, test/aiChatPanelSettings). 열리는
+    // 표면(전용 모달 + 첫 입력 포커스)은 그대로 못박는다.
     const panel = renderPanel();
-    findByTestId(panel, "ai-settings-toggle")?.click();
+    findByTestId(panel, "ai-command-menu-settings")?.click();
 
     const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
     expect(modal).not.toBeNull();
@@ -391,7 +403,9 @@ describe("키 온보딩과 설정 접근성", () => {
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {
     const panel = renderPanel();
-    for (const testId of ["ai-settings-toggle", "ai-collapse", "ai-studio-toggle", "ai-new-session"]) {
+    // 출하되는 아이콘 버튼 집합. ai-studio-toggle·ai-new-session 은 패널 크롬에서 빠져
+    // 숨은 훅 컨테이너로 갔고(헤더 제거), 설정은 ☰ 항목이다 — 라벨 계약은 그 셋에 걸린다.
+    for (const testId of ["ai-command-menu-settings", "ai-collapse", "ai-new-chat", "ai-command-menu-toggle"]) {
       expect(findByTestId(panel, testId)?.getAttribute("aria-label"), testId).toBeTruthy();
     }
   });

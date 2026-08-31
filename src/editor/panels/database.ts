@@ -11,7 +11,12 @@ import { renderFarmSpatialTab } from "@/editor/panels/databaseFarmSpatialView";
 import { renderFactionsTab } from "@/editor/panels/databaseFactionView";
 import { renderLifeCollectionsTab } from "@/editor/panels/databaseLifeCollectionsView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
+import {
+  resumeSkillAnimationStagesIn,
+  stopSkillAnimationStagesIn,
+} from "@/editor/panels/databaseSkillAnimationStage";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import {
   renderSwitchesTab,
   renderTermsTab,
@@ -27,6 +32,7 @@ import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
+import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
 import {} from "@/editor/uiCopy";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { store } from "@/project/store";
@@ -54,9 +60,11 @@ export type DatabaseTab =
   | "system"
   | "terms"
   | "terrain"
+  | "villages"
   | "switches"
   | "tilesets"
-  | "variables";
+  | "variables"
+  | "worldGen";
 
 const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = [
   { id: "overview", label: "개요", testid: "db-tab-overview" },
@@ -83,7 +91,9 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
+  { id: "worldGen", label: "생성 규칙", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
+  { id: "villages", label: "마을", testid: "db-tab-villages" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
   { id: "terms", label: "용어", testid: "db-tab-terms" },
@@ -113,7 +123,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   // 지형은 전투 데이터가 아니라 맵 데이터다 — 타일셋·구조물과 같은 그룹에 둔다.
-  { label: "세계", slug: "world", tabs: ["tilesets", "structureKits", "terrain", "commonEvents"] },
+  { label: "세계", slug: "world", tabs: ["worldGen", "tilesets", "structureKits", "villages", "terrain", "commonEvents"] },
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
 
@@ -186,6 +196,24 @@ function applyGroupCollapse(header: HTMLElement): void {
     if (classes.contains("db-tab-group")) {
       hidden = collapsed.has(child.dataset.groupSlug ?? "");
       child.setAttribute("aria-expanded", String(!hidden));
+      // 접힌 그룹은 자식 탭 버튼을 전부 가리므로, 핸드리지 이름만 남으면 안에 무엇이 들었는지
+      // 알 수가 없다. 상태 전이가 37개인데 한 그룹만 열리므로 보이는 것은 6개라 — 쓰는 사람은
+      // «구조물» 같은 탭이 사라진 줄 알게 된다(사용자 실제 보고, 2026-08-30).
+      // 그래서 접힌 동안에만 속한 탭 이름을 부제로 보여 어디를 눌러야 하는지 답해 준다.
+      const slug = child.dataset.groupSlug ?? "";
+      const group = TAB_GROUPS.find((candidate) => candidate.slug === slug);
+      const hint = child.querySelector<HTMLElement>(".db-tab-group-peek");
+      if (group) {
+        const names = group.tabs.map((id) => tabFor(id).label).join("·");
+        if (hint) {
+          hint.textContent = hidden ? names : "";
+          hint.hidden = !hidden;
+        }
+        child.setAttribute(
+          "title",
+          hidden ? `${group.label} 그룹 펼치기 — ${names}` : `${group.label} 그룹 접기`,
+        );
+      }
       continue;
     }
     if (!classes.contains("db-tab")) continue;
@@ -268,11 +296,29 @@ export function renderDatabasePanel(container: HTMLElement): void {
     appendTabSearch(header);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {
+      const groupCount = groupRecordCount(group);
       header.append(el("div", {
         class: "db-tab-group",
-        text: group.label,
-        attrs: { title: `${group.label} 그룹 펼치기/접기` },
-        dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
+        // 접힌 그룹은 라벨 한 낱말만 남는다 — 「마을」이 「세계」 안에 있다는 걸 알 길이
+        // 탭 검색뿐이었다(사용자 실제 보고: 구조물이 사라진 줄 알았다). 세 갈래로 답한다.
+        //  1) 눈에 보이는 부제(.db-tab-group-peek) — hover 없이 읽힌다.
+        //  2) 툴팁 — 마우스로도 닿는다.
+        //  3) 탭 수 배지 — 안에 몇 개가 접혀 있는지 센다.
+        attrs: { title: `${group.label} 그룹 펼치기/접기 — ${groupTabLabels(group)}` },
+        dataset: {
+          testid: `db-tab-group-${group.slug}`,
+          groupSlug: group.slug,
+          // 배지는 탭과 같은 규칙(0 은 표시하지 않음).
+          ...(groupCount > 0 ? { tabCount: String(groupCount) } : {}),
+        },
+        children: [
+          // 라벨을 **별도 span 으로** 둔다. 헤더 textContent 를 그대로 비교하는 계약이 있어
+          // (databaseNavMode·db-desktop-matrix) 부제를 헤더에 직접 넣으면 그 계약이 깨진다 —
+          // 실제로 깼다(02afd56f). 계약은 .db-tab-group-label 을 보도록 함께 고쳤다.
+          el("span", { class: "db-tab-group-label", text: group.label }),
+          // 접혀 있을 때 applyGroupCollapse 가 여기에 속한 탭 이름을 쓴다.
+          el("span", { class: "db-tab-group-peek", attrs: { hidden: "" } }),
+        ],
         on: {
           click: () => {
             const collapsed = collapsedGroupSlugs();
@@ -373,14 +419,28 @@ function databaseTabCount(tab: DatabaseTab): number | null {
         .filter((id) => id !== PLAYER_FACTION_ID && id !== DEFAULT_ENEMY_FACTION_ID)).size;
     case "tilesets":
       return Object.keys(project.tilesets).length;
+    case "worldGen":
+      return project.system.worldGen?.keywords?.length ?? 0;
     case "structureKits":
       return Object.values(project.tilesets).reduce(
         (sum, tileset) => sum + (tileset.structureKits?.length ?? 0),
         0,
       );
+    case "villages":
+      // 내장 34종은 세지 않는다 — 배지는 "사용자가 저작한 것" 만 센다.
+      return (project.villageTemplates?.length ?? 0) + (project.villagePresets?.length ?? 0);
     default:
       return null;
   }
+}
+
+/** 그룹 헤더에 실을 합계. 컬렉션이 아닌 탭(개요/시스템 등)은 null 이므로 0 으로 센다. */
+function groupRecordCount(group: DatabaseTabGroup): number {
+  return group.tabs.reduce((sum, id) => sum + (databaseTabCount(id) ?? 0), 0);
+}
+
+function groupTabLabels(group: DatabaseTabGroup): string {
+  return group.tabs.map((id) => tabFor(id).label).join(", ");
 }
 
 function refreshTabCounts(container: HTMLElement): void {
@@ -393,6 +453,15 @@ function refreshTabCounts(container: HTMLElement): void {
     const count = databaseTabCount(tab.id);
     if (count === null || count === 0) delete button.dataset.count;
     else button.dataset.count = String(count);
+  }
+  // 그룹 배지도 같이 갱신한다 — 안 하면 접힌 그룹이 undo/redo 뒤에도 옛 합계를 들고 있다.
+  for (const node of Array.from(header.querySelectorAll(".db-tab-group"))) {
+    if (!(node instanceof HTMLElement)) continue;
+    const group = TAB_GROUPS.find((entry) => entry.slug === node.dataset.groupSlug);
+    if (!group) continue;
+    const count = groupRecordCount(group);
+    if (count === 0) delete node.dataset.tabCount;
+    else node.dataset.tabCount = String(count);
   }
 }
 
@@ -496,10 +565,13 @@ function renderActiveTab(
   let cache = tabRenderCacheFor(container);
   const cached = options.forceFresh ? undefined : cache.views.get(tab);
   if (cached) {
+    stopSkillAnimationStagesIn(body);
     body.replaceChildren(...cached);
+    resumeSkillAnimationStagesIn(body);
     return;
   }
 
+  stopSkillAnimationStagesIn(body);
   body.replaceChildren();
   const rerender = (): void => {
     // A debounced callback from a tab that has since been detached must not repaint
@@ -582,6 +654,12 @@ function renderActiveTab(
       break;
     case "structureKits":
       renderStructureKitsTab(body, rerender);
+      break;
+    case "villages":
+      renderVillageTab(body, rerender);
+      break;
+    case "worldGen":
+      renderWorldGenTab(body, rerender);
       break;
     case "system":
       renderSystemTab(body, rerender);

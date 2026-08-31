@@ -15,6 +15,7 @@ import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
 import { renderActorStudioList } from "@/editor/panels/databaseActorStudio";
 import { databaseReferenceMessage } from "@/editor/databaseReferences";
 import { skillFields } from "@/editor/panels/databaseBasicRecordFields";
+import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
 import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
@@ -101,6 +102,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     const liveRecords = store.getCurrent().database[collection];
     const record = id ? liveRecords.find((entry) => entry.id === id) : undefined;
     if (!record) {
+      stopSkillAnimationStagesIn(detailPane);
       detailPane.replaceChildren(el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "레코드가 없습니다." }));
       return;
     }
@@ -112,6 +114,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     };
     const form = recordForm(collection, record, rerender, onRename);
     form.classList.add("oprn-detail-form", `oprn-detail-${collection}`);
+    stopSkillAnimationStagesIn(detailPane);
     detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
   };
 
@@ -245,10 +248,38 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
       },
     }),
     deleteButton(collection, rerender),
+    ...(collection === "items" || collection === "enemies" ? [aiGenerateButton(collection, rerender)] : []),
     ...(collection === "battleAnimations" ? [generatedEffectInstallButton(rerender)] : []),
     viewToggle(collection, rerender)
   );
   return wrap;
+}
+
+function aiGenerateButton(collection: "items" | "enemies", rerender: () => void): HTMLElement {
+  const kind = collection === "items" ? "item" : "enemy";
+  return el("button", {
+    class: "btn small",
+    text: "AI로 생성",
+    dataset: { testid: "db-ai-generate-open" },
+    attrs: {
+      type: "button",
+      title: kind === "item"
+        ? "설명을 주면 AI 가 아이템 레코드와 아이콘 그림을 만들어 등록합니다."
+        : "설명을 주면 AI 가 적 레코드와 몬스터 그림을 만들어 등록합니다.",
+    },
+    on: {
+      // 정적 import 금지: 이 모듈은 store 청크에서 초기화되는데 생성 모달은
+      // aiDatabaseGeneration → applyChangesetToStore → 툴 레지스트리를 끌어와
+      // 초기화 순환을 만든다. 실측(2026-08-30): 정적으로 묶으면 `npm run build:app`
+      // 은 통과하지만 출하 번들 부팅이 `Cannot read properties of undefined
+      // (reading 'deprecated')` 로 죽는다(dev·vitest 는 순환을 견뎌 못 잡는다).
+      click: () => {
+        void import("@/editor/panels/databaseAiGenerateDialog").then((module) => {
+          module.openDatabaseAiGenerateDialog({ kind, rerender });
+        });
+      },
+    },
+  });
 }
 
 function generatedEffectInstallButton(rerender: () => void): HTMLElement {

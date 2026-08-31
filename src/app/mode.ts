@@ -10,7 +10,8 @@ import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProject
 import { setAiConfigProvider } from "@/project/editorIdentity";
 import { setAiActivityRecorder } from "@/project/tileMetadataDb";
 import { loadAiConfig } from "@/ai/llmClient";
-import { recordAiActivity } from "@/ai/activityLog";
+import { recordAiActivity, recordAiUiActionBatch } from "@/ai/activityLog";
+import { installAiUiEventCapture, setAiUiEventSink } from "@/ai/uiEventLog";
 import { PRODUCT_BRAND } from "@/brand";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
@@ -82,6 +83,12 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     setDevProjectFactory(createDevShowcaseProjectForLocation);
     setAiConfigProvider(loadAiConfig);
     setAiActivityRecorder(recordAiActivity as (input: unknown) => Promise<unknown>);
+    // AI 표면의 프론트 액션 수집. 수집기는 순수하게 모으고, «어디로 보낼지» 는 여기서 정한다
+    // (setAiActivityRecorder 와 같은 배선 규약). 위임 리스너 1개라 앞으로 추가되는 버튼도 들어온다.
+    setAiUiEventSink((events) => {
+      void recordAiUiActionBatch(events).catch(() => undefined);
+    });
+    installAiUiEventCapture();
     deepLinkedProjectAtBoot = hasDeepLinkedProject();
     // 첫 방문 게이트(2026-08-18 UX 리뷰 P0-1): URL에 ?project= 없고, 이 기기에 저장된
     // 선택한 작업도 없는 진짜 첫 방문은 배포 기본(공유) 프로젝트 행을 편집 대상으로 열지
@@ -182,11 +189,16 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
       maybeStartBasicCoachMarks();
       maybeStartStandardWelcomeCard();
     } else if (result.prompt) {
+      // 장르 칩의 결정적 부분(system.* 토글)은 AI 보다 먼저 적용한다 — 모델이 토글 툴을 부르지
+      // 않아도 장르 엔진은 켜져 있어야 한다(2026-08-30 실측: 포스터 클릭 경로에서
+      // applyGenrePreset 이 한 번도 호출되지 않았다).
+      if (result.source === "chip" && result.presetId) {
+        const { applyWelcomeGenrePresetToOpenProject } = await import("@/editor/welcomeGenrePresetApply");
+        applyWelcomeGenrePresetToOpenProject(result.presetId);
+      }
       setPendingWelcomePipeline({
         prompt: result.prompt,
         autoSend: result.autoSend,
-        replaceWithBlank: false,
-        presetId: result.presetId,
         source: result.source === "chip" ? "chip" : "free-text",
       });
     } else {

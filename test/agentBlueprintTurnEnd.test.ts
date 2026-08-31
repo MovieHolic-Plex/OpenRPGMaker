@@ -135,9 +135,25 @@ const READ_ARGS = { mapId: MAP_ID, x: 0, y: 0, w: 6, h: 5 } as const;
  * 1라운드는 밑그림 확정 + 집 칸 시공, 2라운드부터는 `afterFirstRound()` 가 턴을 끝낸다.
  * (중단이면 abort 를 누르고 던지고, 오류면 401 을 돌려준다.)
  */
+/**
+ * LLM 왕복만 라운드로 센다.
+ *
+ * 왜 URL 을 보는가: 이 하네스는 «fetch 는 곧 LLM 호출» 로 짜여 있었는데, 턴은 LLM 말고도 요청을
+ * 낸다 — 활동 로그의 디스크 미러(`/__oprn/ai-activity`)가 그렇고, 그 요청이 라운드를 한 칸
+ * 훔치면 1라운드 툴콜 대본이 미러에게 배달되고 모델은 «끝» 응답을 받는다(실측: 툴 0건, 청사진
+ * 0칸으로 다섯 케이스가 한꺼번에 빨감). 라운드 대본은 LLM 요청에만 답한다.
+ */
+function isLlmRequest(input: unknown): boolean {
+  const url = typeof input === "string" ? input : String((input as { url?: unknown })?.url ?? input);
+  return url.includes("/chat/completions");
+}
+
+const okResponse = (): Response => new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } });
+
 function scriptTurn(afterFirstRound: () => Response | never): void {
   let round = 0;
-  vi.stubGlobal("fetch", vi.fn(async () => {
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown) => {
+    if (!isLlmRequest(input)) return okResponse();
     round += 1;
     if (round === 1) {
       return sseToolCallsResponse([
@@ -152,17 +168,18 @@ function scriptTurn(afterFirstRound: () => Response | never): void {
 /** 라운드별 응답을 그대로 지정한다 — 마지막 응답은 남은 라운드에서 되쓴다. */
 function scriptRounds(rounds: readonly (() => Response | never)[]): void {
   let round = 0;
-  vi.stubGlobal("fetch", vi.fn(async () => {
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown) => {
+    if (!isLlmRequest(input)) return okResponse();
     const step = rounds[Math.min(round, rounds.length - 1)];
     round += 1;
     return step();
   }));
 }
 
-async function runTurn(panel: FakeElement): Promise<void> {
+async function runTurn(panel: FakeElement, text = "야외에 집 한 채 지어줘"): Promise<void> {
   const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
   // "야외" 표지가 없으면 intentClarify 가 실내/야외를 되묻고 툴 라운드로 가지 않는다.
-  input.value = "야외에 집 한 채 지어줘";
+  input.value = text;
   (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
   await flushUntilTurnEnd(panel);
 }
@@ -247,6 +264,31 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     expect((getLatestAiActivityLog()?.result.proposedCalls ?? 0) > 0).toBe(true);
     expect(store.getCurrent()).toBe(before);
     expect(statusById()).toEqual({ house_a: "planned" });
+  });
+
+  // 리뷰 지적: 캔버스가 다 지은 계획을 물러나게 하면 상태줄이 여전히 "밑그림 확정 — 에셋 N개" 를
+  // 찍어 맵과 서로 다른 말을 한다. 그 분기는 쓰기 제안 0건인 턴에서만 달리므로 시공이 끝난 뒤의
+  // 조회 턴이 정확히 그 상황이다.
+  it("다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다", async () => {
+    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    // 1턴: 계획을 세우고 집을 실제로 지어 적용까지 간다.
+    scriptTurn(() => sseTextResponse("집을 지었습니다."));
+    await runTurn(panel);
+    expect(statusById()).toEqual({ house_a: "done" });
+    expect(getAgentBlueprintState().entries).toHaveLength(1);
+
+    // 2턴: 스펙은 세션에 그대로 살아 있고(턴 간 유지) 쓰기 제안은 0건인 조회 턴.
+    scriptRounds([
+      () => sseToolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]),
+      () => sseTextResponse("지어진 집을 확인했습니다."),
+    ]);
+    // 시공 지시가 아니라 조회다 — 완성도 린트가 경고를 내면 상태줄 분기에 닿지 못한다.
+    await runTurn(panel, "야외 맵 상태가 지금 어떤지 알려줘");
+
+    const status = findByTestId(panel, "ai-status") as unknown as FakeElement;
+    expect(status.textContent ?? "").not.toContain("밑그림 확정");
+    // 계획은 다 지어졌으므로 캔버스에서도 물러난 상태다 — 두 표면이 같은 말을 한다.
+    expect(statusById()).toEqual({ house_a: "done" });
   });
 
   // 4차 리뷰 N4-7: 쓰기 제안이 0건인 종료(변경 없음 분기)도 정산을 부른다. 그 분기가 정산을

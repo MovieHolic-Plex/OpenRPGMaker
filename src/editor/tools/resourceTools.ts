@@ -84,7 +84,7 @@ function readPngSizeFromDataUrl(dataUrl: string): { width: number; height: numbe
 
 const RESOURCE_KINDS = [
   "chipset", "charset", "battle", "battleCharset", "battleWeapon", "backdrop",
-  "gameOver", "monster", "faceset", "picture", "system", "system2", "title", "music", "sound",
+  "gameOver", "monster", "faceset", "picture", "movie", "system", "system2", "title", "music", "sound",
 ] as const satisfies readonly ResourceKind[];
 
 function parseKind(value: unknown): ResourceKind {

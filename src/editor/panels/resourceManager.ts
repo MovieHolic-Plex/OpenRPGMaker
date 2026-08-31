@@ -17,13 +17,14 @@ import { renderResourceWorkbench, type ResourceCategory } from "./resourceManage
 import { faceCellSuffix, planFacesetSheetSplit, sliceFacesetSheetDataUrls, type FacesetSheetSplitPlan } from "@/assets/facesetSheetSlicing";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { resourceKindFromUpload } from "./resourceManagerUtils";
+import { importMediaResource, mediaImportRuleFor } from "./resourceManagerMediaImport";
 
 type TilesetEnsureResult = {
   readonly id: TilesetDef["id"];
   readonly created: boolean;
 };
 
-const RESOURCE_CATEGORIES = [
+export const RESOURCE_MANAGER_CATEGORIES = [
   { kind: "backdrop", label: "전투 배경" },
   { kind: "battle", label: "전투 애니메이션" },
   { kind: "battleCharset", label: "전투 캐릭터셋" },
@@ -35,6 +36,7 @@ const RESOURCE_CATEGORIES = [
   { kind: "monster", label: "몬스터" },
   { kind: "music", label: "음악 (BGM)" },
   { kind: "picture", label: "그림" },
+  { kind: "movie", label: "동영상" },
   { kind: "sound", label: "효과음 (SE)" },
   { kind: "system", label: "시스템" },
   { kind: "system2", label: "시스템 2" },
@@ -90,27 +92,24 @@ export function renderResourceManager(container: HTMLElement): void {
   });
 
   const fileInput = document.createElement("input");
+  const mediaRule = mediaImportRuleFor(selectedResourceKind);
   fileInput.type = "file";
-  fileInput.accept = selectedResourceKind === "music" || selectedResourceKind === "sound"
-    ? "audio/wav,audio/mpeg,audio/ogg,.wav,.mp3,.ogg"
-    : "image/png,image/jpeg";
+  fileInput.accept = mediaRule?.accept ?? "image/png,image/jpeg";
   fileInput.style.display = "none";
   fileInput.dataset.testid = "resource-file-input";
   fileInput.addEventListener("change", () => {
     const file = fileInput.files?.[0];
     if (!file) return;
-    // Category list owns selectedResourceKind (includes music/sound). kindSel is image-only.
-    const kind = selectedResourceKind;
-    if (kind === "music" || kind === "sound") {
-      importAudioResource(file, kind, container);
+    if (mediaRule !== null) {
+      importMediaResource(file, mediaRule, () => renderResourceManager(container));
     } else {
-      importImageResource(file, kind, container);
+      importImageResource(file, selectedResourceKind, container);
     }
     fileInput.value = "";
   });
 
   renderResourceWorkbench(container, {
-    categories: RESOURCE_CATEGORIES,
+    categories: RESOURCE_MANAGER_CATEGORIES,
     selectedKind: selectedResourceKind,
     profiles: project.resourceProfiles,
     uploaded,
@@ -252,45 +251,6 @@ async function importFacesetSheetAsFaces(
   });
   toast(`얼굴 시트를 낱장 ${slices.length}장으로 나눠 등록했습니다.`, "ok");
   renderResourceManager(container);
-}
-
-function importAudioResource(file: File, kind: ResourceKind, container: HTMLElement): void {
-  const maxBytes = 8 * 1024 * 1024;
-  if (file.size > maxBytes) {
-    toast("파일이 너무 큽니다 (8MB 초과).", "error");
-    return;
-  }
-  const lower = file.name.toLowerCase();
-  if (!/\.(wav|mp3|ogg)$/i.test(lower)) {
-    toast("WAV/MP3/OGG 파일만 가져올 수 있습니다.", "error");
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = () => {
-    const dataUrl = String(reader.result ?? "");
-    if (!dataUrl.startsWith("data:audio/")) {
-      toast("오디오 데이터만 가져올 수 있습니다.", "error");
-      return;
-    }
-    const id = genId(kind === "music" ? "bgm" : "se");
-    const asset: UploadedAsset = {
-      id,
-      name: file.name.replace(/\.[^.]+$/, ""),
-      kind,
-      dataUrl,
-      meta: {},
-    };
-    store.update((project) => {
-      project.assets.uploaded[id] = asset;
-      if (!project.resourceProfiles.some((profile) => profile.assetId === id)) {
-        project.resourceProfiles.push({ kind, name: asset.name, assetId: id });
-      }
-    });
-    toast("오디오 가져오기 완료: " + asset.name, "ok");
-    renderResourceManager(container);
-  };
-  reader.onerror = () => toast("오디오 파일을 읽지 못했습니다.", "error");
-  reader.readAsDataURL(file);
 }
 
 function addTilesetFromUpload(asset: UploadedAsset): void {

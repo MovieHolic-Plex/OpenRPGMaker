@@ -145,50 +145,123 @@
   padding: 0 14px;
 }
 
-/* ── 크기 조절 손잡이 ───────────────────────────────────────── */
+/* 유리 도크 접힘(is-glass-folded)과 도크별 order 뒤집기, 접힌 카드 기하 규칙은 도크 축과 함께
+   걷었다(2026-08-31). 접힘은 이제 is-collapsed 한 축뿐이고, 크기 조절 손잡이는 항상
+   .ai-command-bar 왼쪽 모서리에 붙어 폭만 바꾼다 — assistant-command-bar.css 가 소유한다. */
 
-/* ── 유리 도크 접힘(fold) — 입력줄이 위, 대화가 아래로 열린다 ──────
-   왼쪽 위 조수는 기본적으로 입력줄 한 줄로 접혀 있고, 클릭하거나 AI 작업이 시작되면
-   대화 본문이 그 아래로 펼쳐진다. progressive disclosure — 접힌 상태로 남는 한 줄이
-   trigger 이고 아래로 흘러나오는 본문이 flyout 이다.
+/* ── 잘림 수선 (2026-08-30, test/e2e/ai-panel-reachability.spec.ts 실측) ──────
+   판정 기준은 "기하가 넘쳤는가" 가 아니라 **"스크롤한 뒤에도 못 보는가"** 다. 게이트가
+   `scrollIntoView` 로 끌어온 뒤에도 클리퍼 밖에 남은 요소를 42건 잡았고, 원인은 셋이었다.
 
-   `is-collapsed`(48px 칩)와 다른 축이다: fold 는 `.ai-chat-body` 만 접고 입력줄·완료
-   스트립은 남긴다. glass 에서는 fold 가 칩 접힘을 대체하며, 상태 기계는 aiChatPanel.ts 의
-   applyGlassFold/scheduleGlassFold 가 소유한다.
+   왜 새 파일이 아니라 이 파일 끝인가: check-css-budget.mjs 가 cssFileCount(263)를 래칫으로
+   막고 있고, 이 파일이 조수 셸 기하의 마지막 레이어라 캐스케이드 위치가 새 18번 파일과 같다. */
 
-   왜 새 파일이 아니라 이 파일 끝인가: check-css-budget.mjs 가 cssFileCount 를 래칫으로
-   막고 있고(262), 이 파일이 조수 셸 기하의 마지막 레이어라 여기 끝이 새 18 번 파일의
-   시작과 캐스케이드 위치가 같다. */
+/* 1) 코드 블록이 대화 열보다 넓어져 영구히 안 읽혔다.
+   실측: `renderMarkdown` 의 코드 펜스는 `pre > code` 이고 `white-space: pre` 라 줄바꿈이
+   없다. 386px 열에서 `<code>` 가 614px 로 자라고(+228), 가장 가까운 클리퍼인
+   `.ai-turn-group` 이 `overflow: hidden` 이라 **가로 스크롤바가 없다** — side 도크 +250px,
+   glass +197px, 1024 폭에서 +383px 이 잘렸다.
+   그래서 코드 블록 자신을 스크롤러로 만든다. 열 폭을 넘지 않게 `max-width: 100%` 와
+   flex/grid 아이템의 자동 최소 크기를 끄는 `min-width: 0` 이 함께 있어야 한다
+   (`.ai-command-row` 이 grid 라 이것을 빼면 트랙이 콘텐츠 폭으로 늘어난다). */
+.ai-chat-log .ai-command-row-body pre,
+.ai-chat-log .md pre {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
 
-/* ── 순서 뒤집기 ──────────────────────────────────────────────
-   DOM 순서는 [toolbar, body, collapsedRestore, risingOverlay, stickyZone,
-   commandBar] 이고 side/float 이 그 순서를 쓴다. glass 에서만 order 로
-   입력줄을 맨 위로 올린다 — DOM 을 재배치하면 세 도크가 함께 바뀐다.
-   stickyZone(완료 스트립 · 0건 알림)은 입력줄 바로 아래에 두어 접힌 상태에서도
-   결과와 [되돌리기]가 보이게 한다. */
+.ai-chat-log .ai-command-row-body pre > code,
+.ai-chat-log .md pre > code {
+  display: block;
+  min-width: 0;
+}
 
-/* ── 아래로 펼치는 트랜지션 ────────────────────────────────────
-   왜 `max-height` 인가: 본문은 02-chat-dock.css:120 에서 `flex: 1 1 auto;
-   min-height: 0; overflow: auto` 로 카드의 스크롤 영역을 맡고 있다.
-   `grid-template-rows: 0fr→1fr` 로 바꾸면 flex-grow 가 상자를 먼저 늘려
-   펼칠 때 카드가 즉시 최대 높이로 튀고 행만 안에서 자란다. `height: auto` 도
-   `flex` 와 같은 이유로 못 쓴다. `max-height` 는 flex 의 used size 를 그대로
-   덮으므로 flex 체인과 스크롤러(.ai-chat-log)를 한 줄도 건드리지 않는다.
+/* 인라인 코드·긴 경로/URL 토큰은 열을 밀지 않고 끊는다(본문은 이미 anywhere 다). */
+.ai-chat-log .ai-command-row-body code,
+.ai-chat-log .md code {
+  overflow-wrap: anywhere;
+}
 
-   열림 값이 `none` 이면 트랜지션이 돌지 않으므로(none 은 길이가 아니다)
-   길이를 명시한다. 카드는 이미 `max-height: calc(100% - 24px)` 로 조여져
-   있으므로 100vh 는 열린 상태에서 사실상 무해한 상한이다. */
+/* 마크다운 표도 같은 이유로 자기 스크롤을 갖는다(펜스와 달리 래퍼가 없다). */
+.ai-chat-log .ai-command-row-body table,
+.ai-chat-log .md table {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
 
-/* ── 접힌 카드 기하 ───────────────────────────────────────────
-   앵커(inset: 12px … 12px)는 02-chat-dock.css:94 그대로 둔다. 같은 자리에서
-   아래로 열려야 하므로, 좌하단으로 내려가는 is-collapsed 와 달리 움직이지
-   않는 것이 이 상태의 핵심이다. 높이는 컴포저 + 완료 스트립까지만 —
-   aiChatPanel 의 applySize 가 인라인 height/maxHeight 를 비워 이 규칙을 살린다.
-   폭은 그대로 둔다(펼칠 때 카드가 튀지 않게).
+/* 2) 이전 턴 그룹의 클립은 소유자(09-ux-polish-density.css)에서 직접 내렸다 — 여기서 덮지
+   않는다. 덮으면 두 레이어가 서로 모순된 말을 하고, 계약 테스트가 어느 줄을 잠갔는지 사람이
+   추적할 수 없다(test/aiTurnGroupSquash.test.ts 가 그 계약을 지킨다).
+   실측: 펼친 그룹 안의 툴 상세가 그룹 아래로 371px, 코드 블록이 가로로 250px 잘렸고
+   그룹은 스크롤러가 아니라 스크롤로도 볼 수 없었다. */
 
-   왜 `:not()` 을 넷이나 달고 있는가: 13-assistant-modern.css:15 가
-   `height: min(620px, calc(100% - 24px))` 를 (0,7,0)/(0,6,0) 으로 선언한다.
-   짧게 `.chat-dock-glass.is-glass-folded`(0,3,0) 로 쓰면 본문이 max-height:0 으로
-   접혀도 카드는 620px 로 남는다 — 실측(e2e chat-dock-switch): 접힘 rect 520x620,
-   컴포저는 156px. 같은 `:not()` 짝을 달아 (0,8,0)/(0,7,0) 으로 올려야 이긴다.
-   (0,7,0) 은 13 의 첫 선택자와 동점이지만 이 파일이 뒤에 import 되므로 이긴다.) */
+/* 3) 전체 기록을 열면 패널이 뷰포트 밖으로 나갔다.
+   실측(float·glass + is-history-open): 패널 rect=306,49,520,800 인데 뷰포트는 800 —
+   아래로 49px, 컴포저 입력은 18px 잘렸다. 원인은 08-studio-mode-start-screen.css:330 의
+   `height: 100vh; max-height: 100vh` 다. 호스트는 항상 `.canvas-area`(톱바 아래 49px 에서
+   시작, overflow hidden) 이므로 100vh 는 호스트보다 정확히 톱바 높이만큼 크다.
+
+   이 상태에서 도크마다 패널의 포함 블록이 다른 것이 핵심이다 — 앞선 주석은 두 도크를 한
+   문장으로 뭉개 서로 모순됐다(재검토 지적). 실측으로 다시 쓴다:
+     - float: `.ai-chat-float-host`(position:absolute; inset:0) 안의 자식이라 이미 호스트 기준.
+     - glass: 도크 기하 규칙이 전부 `:not(.is-history-open)` 로 이 상태를 배제하므로 base 의
+       `position: fixed` 가 살아남고, 그러면 `height: 100%` 가 호스트(751px)가 아니라
+       **뷰포트**(800px) 기준으로 풀려 패널이 y=0..800 이 된다. 컴포저가 이 열의 제일 위라
+       (glass 는 `order: -1`) 입력창 상단 18px 가 `.canvas-area` 에 잘렸다.
+   그래서 이 상태에서만 둘을 호스트 기준(absolute + 100%)으로 못 박는다. float 에는 무해하고
+   glass 는 fixed 를 내려놓는다. */
+.ai-chat-panel.is-history-open {
+  position: absolute;
+  height: 100%;
+  max-height: 100%;
+}
+
+/* 4) 전역 기록에서 입력줄이 패널 밖에 남아 버튼이 잘렸다.
+   실측(float + is-history-open): 입력창과 컴포저 버튼 3개가 `.canvas-area` 밖으로
+   36·72·108px 나가 가로로 잘리고, glass 는 입력창이 아래로 18px 잘렸다. 원인은 커맨드 바가
+   도크별로 띄우는 위치(base `position: fixed`, float `position: absolute`)를 전역 기록
+   모드에서도 유지하기 때문이다 — 이 모드에서 패널은 전체 높이 열이 되므로 바는 그 열의
+   마지막 행으로 **평범하게 흐르면 된다**(DOM 순서가 이미 […, stickyZone, commandBar] 다).
+   (0,4,0) 으로 올리는 이유: assistant-command-bar.css 의 도크 규칙이 (0,3,0) 이라
+   같은 (0,3,0) 으로 쓰면 import 순서에 운을 맡긴다. */
+.ai-chat-panel.is-history-open > .ai-command-bar {
+  bottom: auto;
+  left: auto;
+  max-width: none;
+  position: static;
+  right: auto;
+  width: 100%;
+}
+
+/* 답변 안의 내부 이동 링크 — 조수가 부른 맵·NPC 이름을 눌러 그 자리로 간다.
+   버튼이지만 본문 흐름 안의 낱말이므로 버튼 크롬(테두리·배경·최소 높이)을 걷어내고
+   밑줄만 남긴다. `min-height`/`padding` 을 상속하면 한 낱말이 문장 줄높이를 밀어 올린다. */
+.ai-chat-log .ai-answer-link {
+  background: none;
+  border: 0;
+  border-radius: 2px;
+  color: var(--accent);
+  cursor: pointer;
+  display: inline;
+  font: inherit;
+  min-height: 0;
+  padding: 0;
+  text-align: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+.ai-chat-log .ai-answer-link:hover,
+.ai-chat-log .ai-answer-link:focus-visible {
+  background: var(--accent-muted);
+  text-decoration-style: solid;
+}
+
+/* 같은 이름이 여러 곳이면 바로 데려갈 수 없다 — 찾기 창을 연다는 뜻을 표시로 구분한다. */
+.ai-chat-log .ai-answer-link[data-ref-kind="ambiguous"] {
+  color: var(--gold-deep);
+}

@@ -11,7 +11,7 @@ import type { Project } from "@/project/types";
 import { inMapBounds, passableCellCount, setLower, setUpper } from "./mapHelpers";
 import { poissonScatter } from "./naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "./naturalToolArgs";
-import { isPathSurfaceTile, runScatterObject, type ScatterPacking } from "./placementTools";
+import { isPathSurfaceTile, protectedEventCells, runScatterObject, type ScatterPacking } from "./placementTools";
 import { ToolError, type ToolExecResult } from "./types";
 import { layerForVocabTile, type Rect } from "./v3/rmTypeExpander";
 
@@ -27,6 +27,9 @@ export type PlacePropsInput = {
   readonly seed?: number;
   /** "dense"는 빈틈 없이 채워 통행을 막는다. 기본 "natural". */
   readonly packing?: ScatterPacking;
+  /** 숲 합성 전용 — 수관이 단의 밑동을 덮지 않게 한다(나무 한 그루가 눈에 보이도록).
+   *  산포 경로가 planForestScatter 로 갈라지는 스위치다. */
+  readonly trunkVisible?: boolean;
 };
 
 export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolExecResult {
@@ -44,6 +47,7 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     ...(input.naturalness === undefined ? {} : { naturalness: input.naturalness }),
     ...(input.seed === undefined ? {} : { seed: input.seed }),
     ...(input.packing === undefined ? {} : { packing: input.packing }),
+    ...(input.trunkVisible === undefined ? {} : { trunkVisible: input.trunkVisible }),
   };
   const access = resolveMaterialByLabel(tileset, input.material, {
     preferGroup: true,
@@ -87,6 +91,9 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
   const tileHome: VocabLayerHome = declared === "lower" || declared === "upper" ? declared : "perCell";
   const home = layerForVocabTile(tileset, tileHome, tileId);
   const passableBefore = passableCellCount(draft, map, input.area);
+  // 시작칸·이벤트칸을 덮으면 무결성 게이트가 커밋 전체를 거부한다 — 그룹 경로는 이미 피하는데
+  // 단일 타일 경로만 안 피했다(실측: dense 덤불이 시작칸을 막아 숲 시공이 통째로 반려됐다).
+  const protectedCells = protectedEventCells(draft, map);
   let placed = 0;
   for (const cell of targets) {
     if (placed >= input.count) break;
@@ -95,6 +102,7 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     if (map.upperTiles[index] !== TILE.EMPTY) continue;
     if (!isPassable(draft, map, cell.x, cell.y)) continue;
     if (isPathSurfaceTile(map.lowerTiles[index])) continue;
+    if (protectedCells.has(`${cell.x},${cell.y}`)) continue;
     if (home === "upper") setUpper(map, cell.x, cell.y, tileId);
     else setLower(map, cell.x, cell.y, tileId);
     placed += 1;

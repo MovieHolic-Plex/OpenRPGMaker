@@ -1,16 +1,27 @@
 // evals/llmSuite.eval.ts
-// 실제 LLM(기본 minimax/minimax-m3 — v3 설계 합의, VITE_LLM_MODEL로 재정의)로 골든 태스크를 헤드리스 구동·채점한다.
+// 실제 LLM으로 골든 태스크를 헤드리스 구동·채점한다.
 // evals/run.mjs가 .env.local을 process.env로 로드한 뒤 evals/vitest.config.mjs로 실행한다.
 // VITE_LLM_API_KEY가 없으면 스킵(네트워크/비용). 결과는 evals/results/<ts>.json에 요약만 저장.
+//
+// 모델 기본값은 **제공자 레지스트리에서 파생한다**(하드코딩 금지). 예전 폴백은
+// `src/ai/ohMyPiProviders.ts` 레지스트리에 없는 고아 문자열이었다 —
+// 앱 기본 모델이 두 번 바뀌는 동안(glm → gemini) 이 자리만 남아, 에디터가 쓰는 모델과 채점
+// 모델이 조용히 갈라졌다. `defaultModelForAuthMode` 는 그 제공자 카탈로그의 첫 항목(=
+// `provider.defaultModel`, 계약은 test/modelCatalog.test.ts)을 돌려주므로 출처가 하나로 묶인다.
+// 게이트웨이가 다른 이름을 쓰면 `VITE_LLM_MODEL` 로 덮는다.
 
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { chatCompletion, type AiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
+import { defaultModelForAuthMode } from "@/ai/modelCatalog";
+import { DEFAULT_OH_MY_PI_PROVIDER } from "@/ai/ohMyPiProviders";
 import { scoreProject } from "@/evals/goldenTask";
 import { GOLDEN_TASKS } from "@/evals/goldenTasks";
 
 const API_KEY = process.env.VITE_LLM_API_KEY ?? "";
-const MODEL = process.env.VITE_LLM_MODEL ?? "minimax/minimax-m3";
+/** 채점 대상 모델. 기본은 공장 기본 제공자의 권장 모델이고 `VITE_LLM_MODEL` 로 덮을 수 있다. */
+const MODEL = process.env.VITE_LLM_MODEL?.trim()
+  || defaultModelForAuthMode("chatgpt", DEFAULT_OH_MY_PI_PROVIDER);
 const BASE_URL = process.env.VITE_LLM_API_URL ?? "https://example.invalid/v1";
 const MAX_TOOL_CALLS = Number(process.env.EVAL_MAX_TOOLCALLS ?? 15);
 const TASK_COUNT = Number(process.env.EVAL_TASKS ?? 4);
@@ -95,7 +106,7 @@ async function runTask(taskIndex: number): Promise<TaskOutcome> {
 }
 
 describe.skipIf(!API_KEY)("evals — 실제 LLM 골든 스위트", () => {
-  it(`상위 ${TASK_COUNT}개 태스크를 기본 모델(minimax-m3)로 구동·채점한다`, async () => {
+  it(`상위 ${TASK_COUNT}개 태스크를 기본 모델(${MODEL})로 구동·채점한다`, async () => {
     const count = Math.min(TASK_COUNT, GOLDEN_TASKS.length);
     const outcomes: TaskOutcome[] = [];
     for (let i = 0; i < count; i += 1) outcomes.push(await runTask(i));

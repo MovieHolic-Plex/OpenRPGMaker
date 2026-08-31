@@ -10,6 +10,7 @@
     "cindrill",
     "cleaf",
     "draem",
+    "emberkit",
     "finiette",
     "finsta",
     "friolera",
@@ -17,9 +18,11 @@
     "ivieron",
     "jacana",
     "larvea",
+    "mossling",
     "pluma",
     "plumette",
     "pouch",
+    "puddlup",
     "sparchu"
   ],
   "battleAnimations": [
@@ -438,12 +441,68 @@
       "file": "scarloxy-chipset-indoor.png",
       "blocks": [
         {
-          "name": "indoor-all",
+          "name": "bed-mint",
           "col": 0,
           "row": 0,
-          "w": 10,
-          "h": 9,
-          "kind": "indoor"
+          "w": 3,
+          "h": 6,
+          "kind": "furniture"
+        },
+        {
+          "name": "counter-wood",
+          "col": 3,
+          "row": 0,
+          "w": 2,
+          "h": 2,
+          "kind": "furniture"
+        },
+        {
+          "name": "wall-window",
+          "col": 3,
+          "row": 2,
+          "w": 2,
+          "h": 2,
+          "kind": "furniture"
+        },
+        {
+          "name": "bed-lavender",
+          "col": 5,
+          "row": 0,
+          "w": 3,
+          "h": 6,
+          "kind": "furniture"
+        },
+        {
+          "name": "cabinet-white",
+          "col": 8,
+          "row": 0,
+          "w": 2,
+          "h": 2,
+          "kind": "furniture"
+        },
+        {
+          "name": "wall-screen",
+          "col": 8,
+          "row": 2,
+          "w": 2,
+          "h": 2,
+          "kind": "furniture"
+        },
+        {
+          "name": "sofa-yellow",
+          "col": 0,
+          "row": 6,
+          "w": 3,
+          "h": 3,
+          "kind": "furniture"
+        },
+        {
+          "name": "sofa-mint",
+          "col": 3,
+          "row": 6,
+          "w": 3,
+          "h": 3,
+          "kind": "furniture"
         }
       ]
     }

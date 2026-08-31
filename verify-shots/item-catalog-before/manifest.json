@@ -1,0 +1,89 @@
+{
+  "base": "http://127.0.0.1:9851",
+  "capturedAt": "2026-08-30T06:09:38.087Z",
+  "shots": [
+    {
+      "name": "01-items-tab-overview",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/01-items-tab-overview.png",
+      "note": "데이터베이스 → 아이템 탭. 왼쪽 목록이 기본 아이템 전체다."
+    },
+    {
+      "name": "02-item-normalGoods",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/02-item-normalGoods.png",
+      "note": "아이템 종류 \"일반 물품\" 의 레코드 예시: 기름 등불"
+    },
+    {
+      "name": "02-item-medicine",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/02-item-medicine.png",
+      "note": "아이템 종류 \"약\" 의 레코드 예시: 우유병"
+    },
+    {
+      "name": "02-item-book",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/02-item-book.png",
+      "note": "아이템 종류 \"기술서\" 의 레코드 예시: 집중의 기술서"
+    },
+    {
+      "name": "02-item-seed",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/02-item-seed.png",
+      "note": "아이템 종류 \"씨앗\" 의 레코드 예시: 민첩의 씨앗"
+    },
+    {
+      "name": "02-item-special",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/02-item-special.png",
+      "note": "아이템 종류 \"특수\" 의 레코드 예시: 강화 포획 구슬"
+    },
+    {
+      "name": "02-item-switch",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/02-item-switch.png",
+      "note": "아이템 종류 \"스위치\" 의 레코드 예시: 봉인 기동석"
+    },
+    {
+      "name": "03-equipment-tab-overview",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/03-equipment-tab-overview.png",
+      "note": "데이터베이스 → 장비 탭. 무기·방패·갑옷·투구·장식 전체 목록."
+    },
+    {
+      "name": "04-equipment-shield",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/04-equipment-shield.png",
+      "note": "장비 슬롯 \"shield\" 의 레코드 예시: 참나무 방패"
+    },
+    {
+      "name": "04-equipment-armor",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/04-equipment-armor.png",
+      "note": "장비 슬롯 \"armor\" 의 레코드 예시: 견습 로브"
+    },
+    {
+      "name": "04-equipment-helmet",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/04-equipment-helmet.png",
+      "note": "장비 슬롯 \"helmet\" 의 레코드 예시: 여행자 모자"
+    },
+    {
+      "name": "05-item-added",
+      "file": "/home/main/z-project/rpg-zzu-items10/verify-shots/item-catalog-before/05-item-added.png",
+      "note": "+추가 직후. 목록 행 27 → 27, 새 레코드가 선택된 상태."
+    }
+  ],
+  "perType": {
+    "itemTotal": 208,
+    "byType": {
+      "medicine": 59,
+      "special": 35,
+      "normalGoods": 99,
+      "book": 3,
+      "seed": 8,
+      "switch": 4
+    },
+    "equipmentTotal": 11,
+    "bySlot": {
+      "weapon": 6,
+      "shield": 1,
+      "armor": 2,
+      "helmet": 1,
+      "accessory": 1
+    }
+  },
+  "addRecord": {
+    "before": 27,
+    "after": 27
+  }
+}

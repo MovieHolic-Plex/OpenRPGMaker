@@ -26,12 +26,8 @@
   gap: 4px;
   padding: 6px 10px;
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
 }
 
 .name-entry-cell {
@@ -70,7 +66,7 @@
   color: #cdd5ff;
   background: var(--runtime-window-fill-fallback);
   border: 1px solid rgba(245, 251, 255, 0.64);
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   cursor: default;
   font-size: var(--runtime-font-size-11);
   transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
@@ -95,12 +91,8 @@
   gap: 3px;
   padding: 8px;
   background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
 }
 
 .name-entry-row {
@@ -115,7 +107,7 @@
   color: var(--runtime-window-text);
   background: transparent;
   border: 1px solid #2c3868;
-  border-radius: 0;
+  border-radius: var(--runtime-glass-radius-small);
   cursor: default;
   font-size: var(--runtime-font-size-11);
   line-height: 1;
@@ -137,12 +129,8 @@
 
 .name-entry-action {
   padding: 6px 20px;
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
   cursor: default;
   font-size: var(--runtime-font-size-11);
 }

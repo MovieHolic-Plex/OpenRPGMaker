@@ -256,20 +256,15 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
   return el("div", {
     class: "db-life-header",
     children: [
-      el("p", {
-        class: "db-record-intro",
-        dataset: { testid: "db-monster-species-intro" },
-        text: "종족은 성장·포획 정보를, 몬스터는 전투 스탯·드롭을, 전투 그룹과 맵 출현은 실제 등장 위치를 담당합니다.",
-      }),
       renderLifePanel({
         testid: "db-monster-pipeline",
-        eyebrow: "전투 연결",
-        title: "몬스터 파이프라인",
-        description: "종족 → 몬스터 → 전투 그룹 → 필드 출현과 보상 연결을 한눈에 확인합니다.",
+        title: "몬스터 종족",
+        headingTestid: "db-monster-species-intro",
         cards: [
           {
             testid: "db-monster-pipeline-links",
-            label: "종족 연결 몬스터",
+            icon: "link",
+            label: "몬스터",
             value: `${linkedEnemies.length}/${project.database.enemies.length}`,
             detail: linkedEnemies.length > 0 ? "전투 몬스터가 종족을 참조합니다." : "몬스터 탭에서 포획 종족을 연결하세요.",
             state: linkedEnemies.length > 0 ? "ready" : "needs-setup",
@@ -282,7 +277,8 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
           },
           {
             testid: "db-monster-pipeline-spawns",
-            label: "필드 출현",
+            icon: "map",
+            label: "출현",
             value: `${spawnCount}개 · ${spawnMaps.length}맵`,
             detail: spawnCount > 0 ? "맵의 출현 영역에서 전투 그룹이 등장합니다." : "맵에 fieldSpawns를 연결하세요.",
             state: spawnCount > 0 ? "ready" : "needs-setup",
@@ -295,7 +291,8 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
           },
           {
             testid: "db-monster-pipeline-drops",
-            label: "드롭 보상",
+            icon: "drop",
+            label: "드롭",
             value: `${dropEnemies.length}종`,
             detail: dropEnemies.length > 0 ? "유효한 아이템 드롭이 연결되어 있습니다." : "몬스터 보상에 드롭 아이템을 지정하세요.",
             state: dropEnemies.length > 0 ? "ready" : "needs-setup",
@@ -308,7 +305,8 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
           },
           {
             testid: "db-monster-pipeline-mode",
-            label: "플레이 방식",
+            icon: "capture",
+            label: "방식",
             value: project.system.monsterCollection === true ? "포획 사용" : "전투 중심",
             detail: project.system.monsterCollection === true ? "전투 중 포획 기능이 열립니다." : "종족은 전투 연결 정보로만 사용됩니다.",
             state: project.system.monsterCollection === true ? "ready" : "info",

@@ -3,9 +3,16 @@ import "@/player/player.css";
 import "@/storageBoot";
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
+import { RPGZZU_EXTENSION } from "@/project/package";
+import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
+import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
-import { exportedProjectId, setExportedProject } from "@/player/exportProjectStoreShim";
+import { setExportedProject } from "@/player/exportProjectStoreShim";
+import {
+  resolveExportSaveNamespace,
+  type ExportProjectSource,
+} from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
 import { stopAllAudio } from "@/player/audio";
 
@@ -32,19 +39,56 @@ function readBootConfig(): OpenRpgBootConfig {
 void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
+  const boot = readBootConfig();
+  if (new URLSearchParams(window.location.search).has("open")) {
+    openGameFilePicker(root, boot, "");
+    return;
+  }
+  const bundled = await loadBundledProject(boot);
+  if (bundled.ok) {
+    startPlayer(root, boot, bundled.project, "bundled");
+    return;
+  }
+  openGameFilePicker(root, boot, bundled.message);
+}
+
+type BundledProjectLoad =
+  | { readonly ok: true; readonly project: Project }
+  | { readonly ok: false; readonly message: string };
+
+async function loadBundledProject(boot: OpenRpgBootConfig): Promise<BundledProjectLoad> {
   try {
-    const boot = readBootConfig();
     const response = await fetch(boot.projectUrl ?? new URL("project.json", window.location.href));
-    if (!response.ok) throw new Error(`project.json 로드 실패 (${response.status})`);
-    const project = deserialize(await response.text());
+    if (response.status === 404) {
+      return { ok: false, message: `이 주소에는 번들된 게임이 없습니다. ${RPGZZU_EXTENSION} 게임 파일을 열어 주세요.` };
+    }
+    if (!response.ok) return { ok: false, message: `project.json 로드 실패 (${response.status})` };
+    return { ok: true, project: deserialize(await response.text()) };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : String(error) };
+  }
+}
+
+function openGameFilePicker(root: HTMLElement, boot: OpenRpgBootConfig, reason: string): void {
+  renderOprnGameFilePicker(root, {
+    reason,
+    onOpen: (project) => startPlayer(root, boot, project, "opened-file"),
+  });
+}
+
+function startPlayer(
+  root: HTMLElement,
+  boot: OpenRpgBootConfig,
+  project: Project,
+  source: ExportProjectSource,
+): void {
+  try {
     setExportedProject(project);
-    const communitySlug = /^\/play\/([^/]+)/.exec(window.location.pathname)?.[1];
-    setSaveSlotStorageNamespace(
-      boot.saveNamespace
-        ?? (communitySlug
-          ? `rpgzzu-export:${decodeURIComponent(communitySlug)}`
-          : `rpgzzu-export:${exportedProjectId(project)}`),
-    );
+    setSaveSlotStorageNamespace(resolveExportSaveNamespace(project, {
+      source,
+      hostSaveNamespace: boot.saveNamespace,
+      pathname: window.location.pathname,
+    }));
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
     const host = parseHostBridge(boot);

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우클릭 영역작업 UI/UX 재정비 — 실측 보고서 v3</title>
+<style>
+  :root {
+    --ink: #201c18;
+    --ink-2: #5d5449;
+    --line: #e2dbcf;
+    --paper: #fbf8f2;
+    --card: #fff;
+    --accent: #4a57d6;
+    --good: #1f7a4d;
+    --bad: #a8322a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font: 15px/1.65 -apple-system, "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+    margin: 0;
+    padding: 40px 20px 80px;
+  }
+  main { margin: 0 auto; max-width: 1080px; }
+  h1 { font-size: 27px; letter-spacing: -0.01em; margin: 0 0 6px; }
+  h2 {
+    border-bottom: 2px solid var(--ink);
+    font-size: 20px;
+    margin: 52px 0 18px;
+    padding-bottom: 6px;
+  }
+  h3 { font-size: 16px; margin: 30px 0 10px; }
+  .meta {
+    color: var(--ink-2);
+    font-size: 13px;
+    margin-bottom: 30px;
+  }
+  .meta code { font-size: 12px; }
+  code {
+    background: #efe9dd;
+    border-radius: 4px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px;
+    padding: 1px 5px;
+  }
+  .lede {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 16px 20px;
+  }
+  table {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 16px 0;
+    width: 100%;
+  }
+  th, td {
+    border-bottom: 1px solid var(--line);
+    padding: 9px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f4efe5; font-weight: 700; }
+  tr:last-child td { border-bottom: none; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .was { color: var(--bad); }
+  .now { color: var(--good); font-weight: 700; }
+  figure {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin: 0;
+    overflow: hidden;
+  }
+  figure img { display: block; height: auto; width: 100%; }
+  figcaption {
+    border-top: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+  figcaption b { color: var(--ink); }
+  .shots {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    margin: 20px 0;
+  }
+  .shots.wide { grid-template-columns: 1fr; }
+  .shots.wide figure { max-width: 900px; }
+  ul { padding-left: 22px; }
+  li { margin: 5px 0; }
+  .tag {
+    background: #efe9dd;
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 6px;
+    padding: 2px 9px;
+  }
+  .tag.ok { background: #dff0e5; color: var(--good); }
+  .tag.no { background: #f6e0de; color: var(--bad); }
+  footer {
+    border-top: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: 13px;
+    margin-top: 60px;
+    padding-top: 18px;
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>우클릭 영역작업 UI/UX 재정비</h1>
+<p class="meta">
+  2026-08-31 · 브랜치 <code>영역작업009</code> · 기반 커밋 <code>84bfc655</code> · 작업 커밋 <code>181c2570</code><br>
+  PR <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/337">MovieHolic-Plex/rpg-zzu#337</a> ·
+  캡처 <code>reports/region-task-ui/shots-v3/</code> (라이브 e2e 실행 산출)
+</p>
+
+<p class="lede">
+  맵 캔버스 우클릭 영역작업의 <b>네 층</b>을 정리했다: 제스처 계약, 창의 모달성, 드래그 성능, 발견성.
+  2026-08-30 감사(<code>reports/region-task-ui/REPORT.html</code>)는 <b>창 내부</b>만 봤고 이 네 층은 손대지 않았다.
+  이 보고서의 모든 화면은 실행 중인 편집기에서 e2e 로 찍은 것이고, 성능 수치는 목업 카운터가 아니라
+  실제 좌측 독 조립 횟수다.
+</p>
+
+<h2>1. 제스처 — 우클릭 드래그는 «영역을 잡는 동작»이다</h2>
+
+<table>
+  <tr><th style="width:26%"></th><th>전</th><th>후</th></tr>
+  <tr>
+    <td>드래그를 놓았을 때</td>
+    <td class="was">영역 작업 창이 즉시 열린다</td>
+    <td class="now">놓은 자리에 액션 바 (<code>✨AI 작업 · 복사 · 붙여넣기 · 지우기 · 구조물로 저장 · ✕</code>)</td>
+  </tr>
+  <tr>
+    <td>복사·지우기까지의 거리</td>
+    <td class="was">Esc(=취소 어포던스)로 창을 닫아야 도달</td>
+    <td class="now">바로 옆 버튼</td>
+  </tr>
+  <tr>
+    <td>실수로 드래그했을 때</td>
+    <td class="was">큰 창이 뜬다</td>
+    <td class="now">선택만 잡힌다</td>
+  </tr>
+  <tr>
+    <td>크기(W×H) 표시</td>
+    <td class="was">칩 바 안 정적 텍스트 <code>8×6</code> — 버튼 줄에 앉아 버튼처럼 읽혔다</td>
+    <td class="now">선택 사각형 옆 배지. 드래그 <b>중에도</b> 갱신된다</td>
+  </tr>
+</table>
+
+<div class="shots wide">
+  <figure>
+    <img src="shots-v3/05-right-drag-chips.png" alt="우클릭 드래그를 놓은 자리에 액션 바가 뜨고 선택 사각형 위에 6×5 배지가 붙는다">
+    <figcaption>
+      <b>놓은 자리에 액션 바.</b> <code>✨AI 작업</code> 이 첫 주 버튼이다. 선택 사각형 위 <code>6×5</code> 배지가
+      크기를 말하고, 테두리는 이중 스트로크(어두운 바깥 + 밝은 안쪽)라 잔디·모래 어디서든 경계가 읽힌다.
+      창은 뜨지 않는다 — e2e 가 <code>region-task-popover</code> 개수 0 을 단정한다.
+    </figcaption>
+  </figure>
+</div>
+
+<div class="shots">
+  <figure>
+    <img src="shots-v3/08-selection-chips.png" alt="선택 액션 바">
+    <figcaption>액션 바 단독. 크기 텍스트가 빠지고 <code>AI 작업</code> 이 맨 앞으로 왔다.</figcaption>
+  </figure>
+  <figure>
+    <img src="shots-v3/08b-selection-chips-armed.png" alt="지우기 확인 상태">
+    <figcaption>넓은 영역 <code>지우기</code> 는 한 번 더 물어본다 — 바로 옆이 <code>복사</code> 라 오클릭 거리가 짧다.</figcaption>
+  </figure>
+</div>
+
+<h2>2. 창을 비모달로</h2>
+
+<p>
+  팝오버 변형의 백드롭은 <code>position:fixed; inset:0</code> 이었다. 창이 떠 있는 동안 팬·줌·영역 재지정이
+  불가능했고 — <b>자기가 바꿀 대상을 볼 수 없었다</b> — 바깥 클릭은 곧 <code>discardAndClose()</code> 였다.
+  창을 대상 옆에 세우는 <code>placePopoverBesideRect</code> 까지 만들어 둔 걸 보면 "대상을 보면서 작업한다"가
+  원래 의도였는데 백드롭이 그걸 무효화하고 있었다.
+</p>
+
+<ul>
+  <li>팝오버 변형 백드롭 → 투명 + <code>pointer-events:none</code>. <b>요소는 남긴다</b> — coachMarks 의
+      "모달 열림" 판정이 <code>.region-task-backdrop</code> 을 찾는다. <code>pointer-events:none</code> 이면
+      <code>event.target === backdrop</code> 이 성립하지 않아 바깥클릭-폐기는 자연히 죽는다.</li>
+  <li>중앙 모달 변형(메뉴 진입)은 <b>그대로 모달</b>이다.</li>
+  <li>Escape 를 <code>document</code> 단축키 경로에도 걸어 포커스가 캔버스에 있어도 닫힌다.
+      캔버스의 Esc 핸들러는 창이 열려 있으면 소유권을 창에 넘긴다 — Esc 1회는 창만 닫고 선택은 남는다.</li>
+</ul>
+
+<h3>재지정 — 창이 새 영역으로 갈아 끼워진다</h3>
+<p>
+  창이 비모달이 되면 창을 띄운 채 캔버스에서 영역을 다시 잡을 수 있다. 그때 <b>선택만 바뀌고 창이 옛 영역을
+  들고 있으면 「적용」이 화면에 보이는 선택과 다른 곳을 고친다.</b> 이건 비모달화가 만들어낸 새 함정이라
+  같이 막았다: 지시 단계라면 창이 새 영역으로 갈아 끼워지고 적어 둔 지시문이 따라온다. 실행 중·검토 중에는
+  영역이 잠긴다 — 돌고 있는 작업이나 승인 대기 결과를 말없이 버리지 않는다.
+</p>
+
+<div class="shots">
+  <figure>
+    <img src="shots-v3/05b-right-drag-popover.png" alt="AI 작업 버튼이 창을 연다">
+    <figcaption><code>AI 작업</code> 이 창을 연다. 창은 대상 사각형 <b>옆</b>에 서고 캔버스는 어두워지지 않는다.</figcaption>
+  </figure>
+  <figure>
+    <img src="shots-v3/05c-nonmodal-redrag.png" alt="창이 열린 채 다시 드래그하면 창의 좌표가 새 영역으로 바뀐다">
+    <figcaption>
+      창이 뜬 채로 다시 드래그 → 좌표 칩이 <code>(38,44) 5×5</code> 로 바뀌고 입력해 둔
+      <code>여기에 길을 깔아줘</code> 는 그대로 따라왔다.
+    </figcaption>
+  </figure>
+</div>
+
+<h2>3. 드래그 렉 — 숫자로</h2>
+
+<p>
+  <code>updateRightRegionGesture</code> 는 pointermove 마다 <code>selectTileRegion</code> 을 부르고,
+  <code>editorState.subscribe(() =&gt; refreshPanels())</code> 는 키 검사도 코얼레싱도 없이 좌측 독
+  <code>tiles</code>/<code>maps</code>/<code>assistant</code> 의 <code>render(host)</code> 를 처음부터 다시 실행했다.
+  게다가 <code>selectTileRegion</code> 은 <b>매번 새 객체 리터럴</b>을 만들고 <code>editorState.set</code> 의
+  무변경 판정은 참조 비교라, 같은 칸 안에서 마우스를 흔드는 프레임도 전부 통지가 됐다.
+</p>
+
+<table>
+  <tr><th>시나리오</th><th class="num">전</th><th class="num">후</th><th>가드</th></tr>
+  <tr>
+    <td>40프레임 · 8단계 드래그 → 좌측 독 재구축</td>
+    <td class="num was">40회</td><td class="num now">1회</td>
+    <td rowspan="2"><code>test/rightDragPanelRebuilds.test.ts</code></td>
+  </tr>
+  <tr>
+    <td>같은 사각형 30회 재제출 → 재구축</td>
+    <td class="num was">30회</td><td class="num now">0회</td>
+  </tr>
+  <tr>
+    <td>드래그 2초 중 프로젝트 전체 <code>JSON.stringify</code></td>
+    <td class="num was">13회</td><td class="num now">1회</td>
+    <td>후행 엣지 디바운스</td>
+  </tr>
+</table>
+
+<p>
+  세 방어선을 걸었다. ① <code>selectTileRegion</code> 이 값 비교로 무변경 통지를 삼킨다.
+  ② <code>editorState</code> 통지 N개가 한 틱에서 재구축 1회로 접힌다(<code>queueMicrotask</code>,
+  헤드리스 폴백 <code>setTimeout</code>).
+  ③ 숨은 <code>project-export-json</code> 미러의 디바운스를 선행 잠금(<code>if (timer) return</code>)에서
+  후행 엣지로 바꿨다 — 선행 잠금은 버스트 중 150ms 마다 타이머가 재무장되어 <b>반복</b> 직렬화됐다.
+</p>
+<p>
+  재구축 횟수는 목업 <code>renderTilePalette</code> 호출 수로 센다. <code>renderDockPanels</code> 를 직접
+  목업하면 독이 실제로 조립되지 않아 계약이 사라진다. 「빨라졌다」는 체감 보고 대신, 고치기 전 코드로
+  되돌려 같은 테스트를 돌려 40/30 이라는 전 값을 받아 적었다.
+</p>
+
+<h2>4. 창 내부 위계</h2>
+
+<h3>적용 버튼을 하나로</h3>
+<p>
+  검토 단계에 적용 버튼이 <b>둘</b>이었고 서로 다른 범위를 가졌다. 하단 CTA <code>적용 · N칸</code> 은
+  언제나 <b>전량</b>이었고, 체크를 반영하는 <code>선택한 M칸만 적용</code> 은 본문 위쪽에 따로 생겼다.
+  즉 <b>구역 체크를 풀고 그 아래 큰 버튼을 누르면 의도와 반대로 전부 적용됐다.</b>
+</p>
+<ul>
+  <li>버튼 하나가 체크 상태를 읽어 범위를 정한다. 전부 체크면 <code>적용 · N칸</code>, 일부면
+      <code>선택한 M칸만 적용</code>, 전부 풀면 <code>적용할 구역을 고르세요</code> + disabled.</li>
+  <li>라벨은 청크 개수가 아니라 <b>칸 수</b>다. 예전에는 37칸짜리 덩어리 하나를 고르면 「선택 1칸 적용」이라고
+      찍었다 — 정반대로 읽히는 오표기였다.</li>
+  <li>체크를 푼 덩어리는 미리보기에서도 빠진 것으로 보인다(<code>is-excluded</code>) — 어느 칸을 버리는지가 보인다.</li>
+</ul>
+
+<div class="shots">
+  <figure>
+    <img src="shots-v3/04-chunk-hover.png" alt="검토 단계: 구역 체크 트리와 단일 적용 버튼">
+    <figcaption>
+      <b>검토 단계.</b> 구역 트리 아래 적용 버튼은 하나뿐(<code>적용 · 4칸</code>)이고 체크를 풀면
+      라벨과 범위가 함께 좁아진다. <code>region-task-partial-apply</code> testid 는 사라졌다.
+    </figcaption>
+  </figure>
+  <figure>
+    <img src="shots-v3/06-change-list.png" alt="변경 목록">
+    <figcaption>지형이 아닌 변경(NPC·상자)도 목록에 줄로 선다.</figcaption>
+  </figure>
+</div>
+
+<h3>카테고리 필터 8개 → 상태 없는 「모두 보기」 시트</h3>
+<p>
+  지시 단계는 380px 폭에 세로 블록 6개였다. 카테고리 칩 8개가 <b>가로 스크롤러</b>로 상주해 다섯 번째 칩이
+  경계에서 반쯤 잘렸는데 스크롤 어포던스가 없었다. 칩을 누르면 아래 추천 줄이 그 계열로 갈아치워져
+  "지금 무엇을 보고 있나"가 상태로 남았고 — <code>/</code> 자동완성 범위까지 그 상태를 <b>조용히</b> 따라갔다.
+</p>
+<p>
+  이제 필터 상태가 없다. 추천 줄은 항상 이 영역에 맞춘 4개고, 전체 명령은 <code>모두 보기 (+18)</code> 시트가
+  계열 소제목으로 묶어 한 번에 펼친다. <code>(+18)</code> 이 범위를 말해 주므로 "추천 4개가 전부"라는 오해를
+  막던 원래 의도도 지킨다. 시트는 세로로 흐르고, 넘칠 때 아래쪽 페이드로 "더 있다"를 말한다.
+</p>
+
+<div class="shots">
+  <figure>
+    <img src="shots-v3/08-categories.png" alt="지시 단계 — 추천 4개 + 모두 보기 칩">
+    <figcaption><b>접힘.</b> 추천 4개 + <code>모두 보기 (+18)</code>. 잘리는 칩이 없다.</figcaption>
+  </figure>
+  <figure>
+    <img src="shots-v3/09-category-npc.png" alt="모두 보기 시트가 계열별로 펼쳐진 모습">
+    <figcaption>
+      <b>펼침.</b> 타일·구조물·다듬기·NPC·상호작용… 계열 소제목 아래 칩이 줄바꿈으로 흐른다.
+      아래쪽 페이드가 남은 내용을 알린다. 추천 줄은 <b>그대로 남는다</b> — 갈아치워지지 않는다.
+    </figcaption>
+  </figure>
+</div>
+
+<h2>5. 발견성</h2>
+<table>
+  <tr><th style="width:34%">표면</th><th>전</th><th>후</th></tr>
+  <tr>
+    <td>도움말 단축키 표 · 본문</td>
+    <td class="was">"우클릭" 항목 <b>0건</b> (<code>가운데 드래그</code> 는 있었다)</td>
+    <td class="now"><code>우클릭</code> → 타일 집기 / <code>우클릭 드래그</code> → 영역 선택</td>
+  </tr>
+  <tr>
+    <td>첫 사용 힌트</td>
+    <td class="was">선택 <b>도구</b> 전환 시점에 뜬다 — 우클릭 사용자를 못 잡고, 기본 모드는 도구막대에
+        선택 도구가 없어 아예 안 뜬다</td>
+    <td class="now">첫 <b>우클릭 드래그 성공</b> 직후 1회
+        (<code>oprn:hint-right-drag-region-v1</code>, 기존 키와 분리)</td>
+  </tr>
+</table>
+<p>
+  좌드래그 선택 도구용 기존 힌트는 그대로 뒀다 — 둘은 다른 제스처고, 키가 달라 한쪽을 봤다고
+  다른 쪽이 사라지지 않는다(단위 테스트가 이 분리를 단정한다).
+</p>
+
+<h2>6. 검증</h2>
+
+<table>
+  <tr><th style="width:24%">게이트</th><th>결과</th></tr>
+  <tr>
+    <td><span class="tag ok">통과</span> 유닛 (관련 19파일)</td>
+    <td>
+      <b>159/162 통과.</b> 빨간 3건(<code>mapEditCommands</code> 2 + <code>autosaveStatus</code> 1)은
+      기반 커밋 <code>84bfc655</code> 를 뜬 <b>분리 워크트리</b>에서 같은 3건이 나온다 — 이 브랜치가
+      새로 만든 실패는 <b>0</b>. (이 저장소 전체 스위트는 clean main 에서도 84~93 파일이 빨갛다.)
+    </td>
+  </tr>
+  <tr>
+    <td><span class="tag ok">통과</span> e2e</td>
+    <td>
+      <b>15/15.</b> <code>region-task-redesign</code> · <code>right-drag-chips-anchored</code> ·
+      <code>region-task-monochrome</code>. 출력에 <code>[WebServer]</code> 줄이 있어 남의 dev 서버가 아닌
+      자기 서버에 붙었음을 확인.
+    </td>
+  </tr>
+  <tr>
+    <td><span class="tag ok">통과</span> <code>gates:css</code></td>
+    <td>
+      회귀 0건. <code>hexLiterals</code> 1697 → 1697(±0), <code>undefinedVars</code> 63 → <b>61</b>(−2).
+      <code>--save-baseline</code> 은 쓰지 않았다(래칫을 영구히 풀기 때문).
+    </td>
+  </tr>
+  <tr>
+    <td><span class="tag ok">통과</span> 성능 실측</td>
+    <td>재구축 40 → 1, 30 → 0. 영구 가드로 테스트에 남겼다.</td>
+  </tr>
+</table>
+
+<h3>계약이 뒤집힌 테스트</h3>
+<ul>
+  <li><code>region-task-redesign.spec.ts</code> — "우클릭 드래그는 영역 작업 창을 바로 띄운다" 를
+      <b>의도적으로 뒤집었다</b>: 액션 바가 뜨고 <code>AI 작업</code> 이 창을 연다.</li>
+  <li><code>_verify_right_drag_chips.spec.ts</code> → <code>right-drag-chips-anchored.spec.ts</code>.
+      진단 접두어를 떼고 정식 스펙으로 승격. 창이 칩 바를 가리던 시기에는 이 단정이 구조적으로
+      성립할 수 없어 방치돼 있었다.</li>
+  <li><code>regionTaskUiAudit.test.ts</code> 의 카테고리 필터 관련 2건은 <b>지켜야 할 대상이 사라져</b>
+      삭제하고, "전체 명령이 계열별로 한 번에 펼쳐진다" 로 대체했다.</li>
+</ul>
+
+<h2>7. 담지 않은 것</h2>
+<ul>
+  <li><span class="tag no">제외</span> 선택 사각형 <b>리사이즈 핸들</b> — 실제 리사이즈 구현 없이 핸들만
+      그리면 거짓 어포던스다. 재지정은 "다시 드래그"로 해결했다.</li>
+  <li><span class="tag no">제외</span> <b>마칭앤츠 애니메이션</b> — 이 편집기는 매 프레임 작업으로 렉을
+      겪은 이력이 있다. 정적 이중 스트로크로 목적(경계 판독)을 달성했다.</li>
+  <li><span class="tag no">제외</span> 칩 바 오버플로 <code>⋯</code> 메뉴 — 접힌 컨테이너가 기존 testid
+      경로를 깨고, 이 저장소는 <code>details</code>/<code>[open]</code> 에 데인 이력이 있다.</li>
+  <li><span class="tag no">제외</span> 중앙 모달(메뉴 진입)의 모달성 · 수정자 키 분기(Shift+우드래그) ·
+      AI 실행 결과 품질/프롬프트/툴 계약.</li>
+</ul>
+
+<footer>
+  손댄 파일 10 + 테스트 12(신규 2 · 승격 1) · <code>829+ / 358−</code><br>
+  이 보고서: <code>/home/main/.herdr/worktrees/rpg-zzu/009/reports/region-task-ui/REPORT-v3.html</code>
+</footer>
+
+</main>
+</body>
+</html>

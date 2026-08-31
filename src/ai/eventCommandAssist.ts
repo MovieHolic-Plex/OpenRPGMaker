@@ -17,6 +17,8 @@
 
 import { newCommand } from "@/editor/eventCommandFactory";
 import { commandBranches } from "@/editor/tools/commandTraversal";
+import { isPassableLanding } from "@/project/collision";
+import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import { COMMAND_GUARANTEES } from "@/project/commandGuaranteeRegistry";
 import {
@@ -25,8 +27,16 @@ import {
 } from "@/project/io/commandReferenceValidation";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
-import type { Command, EventPage, GameEvent, Project } from "@/project/types";
-import { chatCompletion, configForLiteModel, type AiConfig, type ChatMessage } from "./llmClient";
+import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import { resolveSurfaceAiConfig } from "./assistantEndpoint";
+import {
+  EVENT_RESOURCE_SLOT_LABELS,
+  eventResourceIdSet,
+  listEventResourceOptions,
+  type EventResourceSlot,
+} from "./eventResourceCatalog";
+import { chatCompletion, type AiConfig, type ChatMessage } from "./llmClient";
+import { composeSystemPrompt } from "./systemPromptEnvelope";
 
 export interface EventAssistContext {
   readonly project: Project;
@@ -62,17 +72,51 @@ const MAX_REF_ENTRIES = 40;
 const MAX_EXISTING_CHARS = 12000;
 // 최초 1회 + 자가수정 2회.
 const MAX_ATTEMPTS = 3;
-
-// 선언된 저작 표면을 우회해 명령을 프롬프트에 노출하면 해당 명령의 참조 계약도 우회된다.
-const AI_COMMAND_KINDS = COMMAND_KINDS.filter(
+// 이동 대상 맵의 중앙에서 시작해 전체 맵을 훑는다. 일부만 보고 "착지 칸 없음"으로
+// 물러서면 멀리 정상 칸이 있는 맵의 함정 좌표를 검증 없이 통과시키기 때문이다.
+// 리소스 명령을 숨기면 얼굴·소리 같은 일급 저작 기능을 잃는다. 대신 **종류별** id 목록을
+// 프롬프트에 싣고(eventResourceCatalog) 같은 집합으로 kind 별 검증을 걸어, 잘못 고른 id 는
+// 자가수정 루프가 다시 고치게 한다.
+const AI_SURFACE_KINDS = COMMAND_KINDS.filter(
   (kind) => COMMAND_GUARANTEES[kind].authoringSurfaces.includes("ai"),
 );
+
+// 어떤 kind 가 어떤 리소스 종류를 요구하는가. 프롬프트 절·검증·kind 노출이 이 표 하나를 본다.
+const RESOURCE_SLOTS_BY_KIND = {
+  changeFace: ["faceset"],
+  playAudio: ["music", "sound"],
+  showPicture: ["picture"],
+  playMovie: ["movie"],
+} as const satisfies Partial<Record<Command["kind"], readonly EventResourceSlot[]>>;
+
+type ResourceBoundKind = keyof typeof RESOURCE_SLOTS_BY_KIND;
+
+function isResourceBoundKind(kind: string): kind is ResourceBoundKind {
+  return kind in RESOURCE_SLOTS_BY_KIND;
+}
+
+/**
+ * 이 프로젝트에서 실제로 쓸 수 있는 kind 목록.
+ *
+ * 고를 리소스가 하나도 없는 kind 는 **뺀다**. 특히 동영상은 업로드로만 들어오므로 블랭크
+ * 프로젝트에서는 playMovie 가 만들어 낼 수 있는 모든 값이 구조적으로 틀린다 — 목록에 실으면
+ * 모델이 id 를 발명하고 자가수정 루프가 3회를 태운 뒤 실패한다. 하드코딩이 아니라 프로젝트를
+ * 보고 정한다.
+ */
+export function aiCommandKinds(project: Project): readonly Command["kind"][] {
+  return AI_SURFACE_KINDS.filter((kind) => {
+    if (!isResourceBoundKind(kind)) return true;
+    return RESOURCE_SLOTS_BY_KIND[kind].some(
+      (slot) => listEventResourceOptions(slot, project).length > 0,
+    );
+  });
+}
 
 // ── 프롬프트 조립 ────────────────────────────────────────────────────────────
 
 // newCommand 기본값들을 그대로 직렬화한 kind별 JSON 예시(단일 진실 소스 유지).
-function commandExampleLines(): string[] {
-  return AI_COMMAND_KINDS.map(
+function commandExampleLines(kinds: readonly Command["kind"][]): string[] {
+  return kinds.map(
     (kind) => `- ${kind}: ${JSON.stringify(newCommand(kind))}`
   );
 }
@@ -84,6 +128,72 @@ function refSection(title: string, entries: readonly { id: string; name: string 
     lines.push(`- …외 ${entries.length - shown.length}개 생략(위 목록의 id만 사용)`);
   }
   return [`### ${title}`, ...(lines.length ? lines : ["- (없음 — 이 종류를 참조하는 커맨드를 만들지 말 것)"])].join("\n");
+}
+
+// 이동 대상 맵은 크기만으로 부족하다 — 모델이 (0,0) 처럼 "안전해 보이는" 좌표를 쓰는데
+// 실내 맵의 (0,0) 은 거의 항상 벽이라 플레이어가 벽 안에서 시작한다. 실제로 밟을 수 있는
+// 칸 하나를 같이 실어 준다. 중앙부터 전체 맵을 훑어, 멀리 정상 칸이 있는데도 검증의
+// 안전 밸브가 켜지는 일을 막는다.
+function suggestedLandingCell(project: Project, map: GameMap): { x: number; y: number } | null {
+  const centerX = Math.floor(map.width / 2);
+  const centerY = Math.floor(map.height / 2);
+  const maxRadius = Math.max(map.width, map.height);
+  for (let radius = 0; radius < maxRadius; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const x = centerX + dx;
+        const y = centerY + dy;
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+        if (isPassableLanding(project, map, x, y)) return { x, y };
+      }
+    }
+  }
+  return null;
+}
+
+function mapReferenceLabel(project: Project, mapId: string, map: GameMap): string {
+  const size = `가로 ${map.width} × 세로 ${map.height}`;
+  const landing = suggestedLandingCell(project, map);
+  const landingNote = landing
+    ? `, 밟을 수 있는 칸 예: x=${landing.x} y=${landing.y}`
+    : "";
+  return `${map.name || mapId} (${size}${landingNote})`;
+}
+
+/**
+ * 리소스 id 는 **종류별로** 싣는다. 한 덩어리로 실으면 상한 40개가 칩셋·아이콘으로
+ * 차버리고 얼굴·소리·그림 id 는 하나도 보이지 않는다(직전 구현이 그랬다: 1851개 중 앞
+ * 40개가 전부 tex_* / cc0-jetrel-*). 지금 노출된 kind 가 쓰는 종류만 실어 프롬프트 예산을
+ * 지키고, 각 절은 refSection 이 MAX_REF_ENTRIES 로 같이 자른다.
+ */
+function resourceSlotSection(project: Project, kinds: readonly Command["kind"][]): string {
+  const slots: EventResourceSlot[] = [];
+  for (const kind of kinds) {
+    if (!isResourceBoundKind(kind)) continue;
+    for (const slot of RESOURCE_SLOTS_BY_KIND[kind]) {
+      if (!slots.includes(slot)) slots.push(slot);
+    }
+  }
+  if (slots.length === 0) return "## 리소스 id (이 프로젝트에는 고를 리소스가 없다)";
+
+  const usage: string[] = [];
+  for (const kind of kinds) {
+    if (!isResourceBoundKind(kind)) continue;
+    const labels = RESOURCE_SLOTS_BY_KIND[kind].map((slot) => EVENT_RESOURCE_SLOT_LABELS[slot]);
+    usage.push(`- ${kind}.resourceId \u2190 ${labels.join(" 또는 ")} 목록에서만 고른다.`);
+  }
+
+  return [
+    "## 리소스 id (종류가 다른 리소스를 섞어 쓰면 반려된다)",
+    ...usage,
+    ...slots.map((slot) =>
+      refSection(
+        `${EVENT_RESOURCE_SLOT_LABELS[slot]} id`,
+        listEventResourceOptions(slot, project).map((option) => ({ id: option.id, name: option.name })),
+      ),
+    ),
+  ].join("\n");
 }
 
 /** 기존 목록을 온전한 JSON 으로 실을 수 있으면 "page", 아니면 "append". */
@@ -116,25 +226,26 @@ function existingCommandsSection(page: EventPage | undefined, scope: AssistScope
 function outputContractSection(scope: AssistScope): string {
   const common = [
     "2. 각 원소는 위 스키마의 Command 객체여야 한다.",
-    "3. switchId/variableId/itemId/troopId/actorId/mapId는 반드시 위 목록의 id를 사용한다.",
-    "4. playAudio/showPicture/changeFace 등 resourceId가 필요한 커맨드와 m2Command는 사용하지 않는다.",
-    "5. 요청이 모호하면 가장 단순하고 안전한 해석으로 생성한다.",
+    "3. switchId/variableId/itemId/troopId/actorId/mapId/resourceId는 반드시 위 목록의 id를 사용한다.",
+    "4. 위 kind 목록에 없는 명령은 만들지 않는다.",
+    "5. transfer 의 x,y 는 대상 맵 크기 안이면서 밟을 수 있는 칸이어야 한다. 확실하지 않으면 위 목록의 «밟을 수 있는 칸 예» 를 쓴다.",
+    "6. 요청이 모호하면 가장 단순하고 안전한 해석으로 생성한다.",
   ];
   if (scope === "append") {
     return [
       "## 출력 규약(반드시 준수)",
       "1. 출력은 **뒤에 붙일 새 커맨드 JSON 배열 하나**뿐이다. 설명·주석·여는 말 금지. ```json 펜스는 허용.",
       ...common,
-      "6. 기존 커맨드를 다시 출력하지 마라 — 출력한 것이 그대로 뒤에 붙는다.",
+      "7. 기존 커맨드를 다시 출력하지 마라 — 출력한 것이 그대로 뒤에 붙는다.",
     ].join("\n");
   }
   return [
     "## 출력 규약(반드시 준수)",
     "1. 출력은 **이 페이지의 고친 뒤 최종 커맨드 JSON 배열 하나**뿐이다. 설명·주석·여는 말 금지. ```json 펜스는 허용.",
     ...common,
-    "6. 최종 목록이므로 **바꾸지 않을 기존 커맨드도 그대로 다시 포함**한다. 순서도 최종 순서다.",
-    "7. 지울 커맨드는 출력에서 빼고, 고칠 커맨드는 고친 값으로 넣는다. 요청에 없는 커맨드를 임의로 지우지 마라.",
-    "8. 요청이 '추가'라면 기존 목록에 새 커맨드를 끼운 전체 목록을 출력한다.",
+    "7. 최종 목록이므로 **바꾸지 않을 기존 커맨드도 그대로 다시 포함**한다. 순서도 최종 순서다.",
+    "8. 지울 커맨드는 출력에서 빼고, 고칠 커맨드는 고친 값으로 넣는다. 요청에 없는 커맨드를 임의로 지우지 마라.",
+    "9. 요청이 '추가'라면 기존 목록에 새 커맨드를 끼운 전체 목록을 출력한다.",
   ].join("\n");
 }
 
@@ -142,6 +253,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   const { project, mapId, event, page, selection, selectionLabel } = context;
   const scope = resolveAssistScope(page);
   const mapName = project.maps[mapId]?.name ?? mapId;
+  const kinds = aiCommandKinds(project);
   const sections: string[] = [];
 
   // 선택 위치는 사람 말로만 싣는다. 예전에는 경로 배열(`[2,-2,1]`)을 그대로 넣었는데,
@@ -169,10 +281,10 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   sections.push(
     [
       "## Command 스키마",
-      `사용 가능한 kind: ${AI_COMMAND_KINDS.join(", ")}`,
+      `사용 가능한 kind: ${kinds.join(", ")}`,
       "",
       "kind별 기본값 JSON 예시(필드 구조 참고 — 값은 요청에 맞게 채울 것):",
-      ...commandExampleLines(),
+      ...commandExampleLines(kinds),
       "",
       "중첩 규칙:",
       '- fork: {"kind":"fork","condition":<Condition>,"then":[<Command>...],"else":[<Command>...]} (else는 선택).',
@@ -195,12 +307,16 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
       refSection("액터", project.database.actors),
       refSection(
         "맵",
-        Object.entries(project.maps).map(([id, map]) => ({ id, name: map.name }))
+        Object.entries(project.maps).map(([id, map]) => ({
+          id,
+          name: mapReferenceLabel(project, id, map),
+        }))
       ),
     ].join("\n")
   );
 
   sections.push(existingCommandsSection(page, scope));
+  sections.push(resourceSlotSection(project, kinds));
   sections.push(outputContractSection(scope));
 
   return sections.join("\n\n");
@@ -280,10 +396,116 @@ export function parseAndValidate(
     validateCommands(commands, referenceContext);
     // io 검증이 다루지 않는 참조 보강(changeItem.itemId / changeParty.actorId).
     validateSupplementalReferences(commands, referenceContext);
+    validateTransferBounds(commands, project);
+    // resourceId 는 집합 소속만으로 부족하다 — 종류까지 맞지 않으면 조용히 깨진 이벤트가 된다.
+    validateResourceSlots(commands, project);
   } catch (cause) {
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
   return { ok: true, commands };
+}
+
+// transfer 의 좌표는 맵 밖으로 나갈 수 있다. 프롬프트에 맵 크기를 실어도 모델은 (0,0) 같은
+// "안전해 보이는" 값을 자주 쓰는데, 대부분 맵 테두리(벽)라 플레이어가 벽 안에 갇힌다.
+// 여기서 잡아 주면 자가수정 루프가 스스로 고친다.
+//
+// 착지 칸 탐색은 **맵당 한 번**만 한다. 전에는 transfer 명령마다·시도마다 다시 계산해서
+// 전면 통행 불가 맵이 섞이면 전수 탐색을 반복했다(실측: 128×128 맵 100개 1.46s).
+function validateTransferBounds(commands: readonly Command[], project: Project): void {
+  validateTransferBoundsWith(commands, project, new Map<string, { x: number; y: number } | null>());
+}
+
+function validateTransferBoundsWith(
+  commands: readonly Command[],
+  project: Project,
+  landingCache: Map<string, { x: number; y: number } | null>,
+): void {
+  for (const command of commands) {
+    if (command.kind === "transfer") {
+      const map = project.maps[command.mapId];
+      if (map) {
+        if (command.x < 0 || command.y < 0 || command.x >= map.width || command.y >= map.height) {
+          throw new Error(
+            `transfer: 좌표가 맵 «${map.name || command.mapId}» 밖입니다(x=${command.x}, y=${command.y}; 가로 ${map.width} × 세로 ${map.height}).`,
+          );
+        }
+        if (!isPassableLanding(project, map, command.x, command.y)) {
+          if (!landingCache.has(command.mapId)) {
+            landingCache.set(command.mapId, suggestedLandingCell(project, map));
+          }
+          // 밟을 수 있는 칸을 하나도 못 찾는 맵(타일셋 미해석 등)은 판정 근거가 없으니 반려하지 않는다.
+          const landing = landingCache.get(command.mapId) ?? null;
+          if (landing) {
+            throw new Error(
+              `transfer: 좌표(x=${command.x}, y=${command.y})가 맵 «${map.name || command.mapId}» 에서 밟을 수 없는 칸입니다. 밟을 수 있는 칸을 쓰세요. 예: x=${landing.x} y=${landing.y}`,
+            );
+          }
+        }
+      }
+    }
+    for (const branch of commandBranches(command)) {
+      validateTransferBoundsWith(branch.commands, project, landingCache);
+    }
+  }
+}
+
+/**
+ * resourceId 를 **종류까지** 대조한다.
+ *
+ * io/commandReferenceValidation 은 전역 리소스 집합 소속만 보므로
+ * `{"kind":"playAudio","resourceId":"tex_easyrpg_chipset_dungeon"}` 가 그대로 통과해
+ * **소리 없는 이벤트**가 조용히 저장된다. 자가수정 루프가 고칠 수 있는 오류로 바꿔 둔다.
+ */
+function validateResourceSlots(commands: readonly Command[], project: Project): void {
+  const cache = new Map<EventResourceSlot, Set<string>>();
+  const idsOf = (slot: EventResourceSlot): Set<string> => {
+    const cached = cache.get(slot);
+    if (cached) return cached;
+    const fresh = eventResourceIdSet(slot, project);
+    cache.set(slot, fresh);
+    return fresh;
+  };
+  walkResourceSlots(commands, project, idsOf);
+}
+
+function walkResourceSlots(
+  commands: readonly Command[],
+  project: Project,
+  idsOf: (slot: EventResourceSlot) => Set<string>,
+): void {
+  for (const command of commands) {
+    if (isResourceBoundKind(command.kind)) {
+      // kind 별 튜플로 좁혀지면 `includes("picture")` 가 never 비교가 되므로 슬롯 목록으로 넓힌다.
+      const slots: readonly EventResourceSlot[] = RESOURCE_SLOTS_BY_KIND[command.kind];
+      const resourceId = (command as { readonly resourceId?: string }).resourceId ?? "";
+      // 빈 칸은 저작상 유효하다 — changeFace 는 «얼굴 지우기» 를 빈 문자열로 표현한다.
+      if (resourceId.trim().length > 0) {
+        // 그림 칸은 런타임(resolvePictureSource)이 해석하면 유효하다 — 폼도 자유 입력이고
+        // 「그림 선택」 픽커는 `kind: "image"` 로 454개를 제시한다. 큐레이션 목록을 검증
+        // 기준으로 쓰면 픽커가 권한 이미지 164개(scarloxy-monster-icon-*, monster 로 올린
+        // 업로드 등)를 반려해, 저작 UI 로 만든 정당한 명령을 «잘못됐다»고 하게 된다(실측).
+        // 해석기는 오디오 업로드를 거부하므로 종류 교차 보호는 그대로 살아 있다.
+        // 알려진 한계: playMovie 는 미등록 id 폴백(playSceneMovies.ts:30-39)이 있어 이론상
+        // 같은 false-reject 가 가능하지만, 동영상 슬롯이 비면 kind 자체를 빼므로 오늘은 도달 불가다.
+        const allowed = slots.includes("picture")
+          ? resolvePictureSource(resourceId, project) !== null
+          : slots.some((slot) => idsOf(slot).has(resourceId));
+        if (!allowed) {
+          const labels = slots.map((slot) => EVENT_RESOURCE_SLOT_LABELS[slot]).join(" 또는 ");
+          const example = slots
+            .flatMap((slot) => listEventResourceOptions(slot, project).slice(0, 1))
+            .map((option) => option.id)[0];
+          throw new Error(
+            `${command.kind}: resourceId «${resourceId}» 는 ${labels} 리소스가 아닙니다.`
+            + (example
+              ? ` ${labels} 목록의 id 를 쓰세요. 예: ${example}`
+              : ` 이 프로젝트에는 ${labels} 리소스가 없으니 이 명령을 쓰지 마세요.`),
+          );
+        }
+      }
+    }
+    for (const branch of commandBranches(command)) walkResourceSlots(branch.commands, project, idsOf);
+  }
 }
 
 function validateAiAuthoringSurfaces(commands: readonly Command[]): void {
@@ -340,13 +562,27 @@ export async function runEventCommandAssist(options: {
   readonly context: EventAssistContext;
   readonly onDelta?: (delta: string) => void;
   readonly signal?: AbortSignal;
+  /** 프로젝트 한정 성향 조회 키(conversationScopeKey). 없으면 전역 성향만 붙는다. */
+  readonly projectScopeKey?: string;
 }): Promise<AssistRunResult> {
   const { prompt, context, onDelta, signal } = options;
-  const config = configForLiteModel(options.config);
+  const config = resolveSurfaceAiConfig("event-command", options.config);
   const scope = resolveAssistScope(context.page);
   const allowEmpty = scope === "page" && (context.page?.commands.length ?? 0) > 0;
   const messages: ChatMessage[] = [
-    { role: "system", content: buildEventAssistPrompt(context) },
+    {
+      role: "system",
+      // 공용 봉투 경유 — 이 채널이 사람 성향을 받는 유일한 지점이다.
+      // includePolicy 는 끈다: 산출물이 JSON 커맨드 배열이라 AGENT_UX_POLICY_LINES 의 마무리 톤 규칙
+      // ("최종 응답은 3~5문장")이 "JSON 배열만 출력"과 정면으로 충돌하고, 정책이 언급하는 툴
+      // (author_house·configure_time_system 등)은 이 채널에 아예 없다.
+      content: composeSystemPrompt({
+        surface: "event-command",
+        body: buildEventAssistPrompt(context),
+        includeMemory: true,
+        ...(options.projectScopeKey ? { projectScopeKey: options.projectScopeKey } : {}),
+      }),
+    },
     { role: "user", content: prompt },
   ];
 

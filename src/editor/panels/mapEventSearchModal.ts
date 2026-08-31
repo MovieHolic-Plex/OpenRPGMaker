@@ -23,7 +23,12 @@ const EMPTY_RESULT_COPY = "일치하는 항목이 없습니다. 맵·이벤트 �
 
 let closeActiveModal: (() => void) | null = null;
 
-export function openMapEventSearchModal(): void {
+export interface OpenMapEventSearchOptions {
+  /** 여는 지점에서 바로 찾을 이름. 조수 답변에서 같은 이름이 여러 곳이라 한 곳을 고를 수 없을 때 쓴다. */
+  readonly initialQuery?: string;
+}
+
+export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {}): void {
   closeActiveModal?.();
   const opener = document.activeElement;
   let scope: SearchScope = "selectedMap";
@@ -374,6 +379,13 @@ export function openMapEventSearchModal(): void {
   document.body.append(backdrop);
   renderScope();
   renderResults();
+  if (options.initialQuery) {
+    // 이름이 다른 맵에 있을 수 있으니 범위를 전체로 올린 뒤 찾는다.
+    input.value = options.initialQuery;
+    scope = "all";
+    renderScope();
+    applySearch();
+  }
   input.focus();
 }
 

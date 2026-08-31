@@ -2,7 +2,69 @@ import { appendToTree } from "@/project/mapTree";
 import { isPassable, tilePassability } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import type { GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
+import type { FootprintWing, HouseKitWindowsOption } from "@/editor/houseKit";
+import type { HouseStoryCount } from "@/editor/houseInteriors";
+import { houseBBox } from "./houseLotDecor";
 import { ToolError } from "./types";
+import { applyRoofDeck } from "./village/houses";
+
+/** 외장 형태 축 — templateId 가 카탈로그에서 정해 주거나 호출자가 직접 준다. */
+export type HouseShapeOptions = {
+  /** 외장 층수 — 벽 밴드 행 수를 늘린다. 없으면 1층. */
+  readonly stories?: HouseStoryCount;
+  /** 낮은 벽(상단+하단 2행) — 헛간·창고. stories 를 무시한다. */
+  readonly lowWall?: boolean;
+  /** 옥상 판자 데크 + 벽면 사다리(파랑 평지붕 전용). */
+  readonly roofDeck?: boolean;
+  /** 우측 사선 지붕 굴뚝. */
+  readonly chimney?: boolean;
+  readonly windows?: HouseKitWindowsOption;
+};
+
+export type HouseExteriorPlan = {
+  /** 외장에 실제로 적용된 층수 — 실내 층수와 울타리도 이 값을 따라야 한다. */
+  readonly stories: HouseStoryCount;
+  /** stampFootprintHouseKit 에 그대로 펼치는 형태 인자(kitId·wings 제외). */
+  readonly stampOptions: Record<string, unknown>;
+  /** 요약에 붙일 형태 표기(", 낮은벽" / ", 2층" / ""). */
+  readonly note: string;
+};
+
+/** 형태 축을 스탬퍼 입력과 요약 표기로 접는다. lowWall 은 stories 를 무시한다. */
+export function houseExteriorPlan(options: HouseShapeOptions): HouseExteriorPlan {
+  const stories: HouseStoryCount = options.lowWall ? 1 : options.stories ?? 1;
+  return {
+    stories,
+    stampOptions: {
+      stories,
+      ...(options.lowWall ? { lowWall: true } : {}),
+      ...(options.windows === undefined ? {} : { windows: options.windows }),
+      ...(options.chimney ? { chimney: true } : {}),
+    },
+    note: options.lowWall ? ", 낮은벽" : stories > 1 ? `, ${stories}층` : "",
+  };
+}
+
+/** 실내 층수는 외장과 같아야 한다 — 명시값이 정본, 없을 때만 높이 휴리스틱(2026-08-31 어긋남 교정). */
+export function houseInteriorStories(
+  explicit: HouseStoryCount | undefined,
+  wings: readonly FootprintWing[],
+): HouseStoryCount {
+  if (explicit) return explicit;
+  return wings.some((wing) => wing.h >= 11) ? 3 : wings.some((wing) => wing.h >= 9) ? 2 : 1;
+}
+
+/** 옥상 데크는 스탬퍼 뒤에 얹는다. 얹었으면 true(요약 장식 표기용). */
+export function applyHouseRoofDeck(
+  map: GameMap,
+  wings: readonly FootprintWing[],
+  doorAt: { readonly x: number; readonly y: number } | undefined,
+  enabled: boolean | undefined,
+): boolean {
+  if (enabled !== true || doorAt === undefined) return false;
+  applyRoofDeck(map, houseBBox(wings), doorAt);
+  return true;
+}
 
 export function uniqueProjectId(draft: Project, prefix: string, body: string): string {
   const cleanBody = body.replace(/[^a-zA-Z0-9_]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 64) || "1";

@@ -7,11 +7,16 @@
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
-import { structureKitRepeatable } from "@/editor/harnessSuggestion/structureKitModel";
+import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
+import { villageAuthoringData } from "@/editor/tools/village/authoringData";
+import { structureKitGrowthAxes, structureKitLayerHome } from "@/editor/harnessSuggestion/structureKitModel";
+import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
+import { aiInstructionsSection } from "./projectInstructions";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
+import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
 import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
 import {
   formatViewportContextBlock,
@@ -34,6 +39,18 @@ export interface ContextOptions {
    * 구조 키트·맵 요약이 이전 맵을 설명해, 라이브 뷰포트 블록과 서로 다른 맵을 가리킨다.
    */
   getCurrentMapId?: () => string | null | undefined;
+  /**
+   * 프로젝트 한정 성향 조회 키(conversationScopeKey 값). 패널이 넣고 세션이 성향 조회에 쓴다.
+   * 없으면 전역 성향만 붙는다 — 전역 성향은 이 값과 무관하게 항상 붙는다(사람의 취향은
+   * 프로젝트를 넘어 유지되는 게 요점이다).
+   */
+  projectScopeKey?: string;
+  /**
+   * 조립된 사람 성향 블록. 세션이 매 조립 시 buildPreferenceMemorySection 으로 채운다.
+   * 이 파일은 localStorage 를 읽지 않는다(머리 주석의 "순수 함수" 계약) — 그래서 조회 키가 아니라
+   * 완성된 문자열을 받는다.
+   */
+  preferenceMemorySection?: string;
 }
 
 export function resolveContextMapId(options: ContextOptions): string | undefined {
@@ -110,7 +127,7 @@ const INTRO = [
   "6. 툴 호출을 아끼지 마세요. 조회·검증·재시도에 필요한 만큼 깊게 사용하세요(제한은 토큰 예산뿐).",
   "7. 여러 개를 요청받으면(예: NPC 3명, 집 2채) 전부 만들 때까지 멈추지 마세요. 일부만 하고 끝내는 것은 실패입니다.",
   "   사용자가 '진행/계속/진행해/진행하라고'라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요.",
-  "8. '깊은 대화'를 요청받으면 choices(선택지)와 분기 대사로 페이지를 풍부하게 구성하세요. lines에 여러 줄을 담을 수 있습니다.",
+  "8. '깊은 대화'를 요청받으면 choices(선택지)와 분기 대사로 **한 페이지 안을** 풍부하게 구성하세요(페이지 수를 늘리는 것이 아니다 — 아래 페이지 의미론 참조). lines에 여러 줄을 담을 수 있습니다.",
   "9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요.",
   "10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.",
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
@@ -264,7 +281,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(위치)·kitId·yard 태그만(firewood/mailbox/bench_h/…), 좌표는 코드. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지). **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(앵커 위치)·templateId(모양 34종)·kitId(색)·stories/lowWall/chimney·yard 태그만(firewood/mailbox/bench_h/…), 세부 좌표는 코드. 여러 채면 templateId 를 집마다 다르게 주고 look_at_houses 로 확인. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지). **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
     trimDigestLines(lines, 700),
   ].join("\n");
 }
@@ -297,13 +314,15 @@ const RESOURCE_HINT = [
 ].join("\n");
 
 type ClusterRuleStrength = "hard" | "medium" | "soft";
-type ClusterRuleKind = "adjacency" | "spacing" | "count";
+type ClusterRuleKind = "adjacency" | "spacing" | "count" | "surface";
 
 interface ClusterRuleHint {
   readonly id: string;
   readonly kind: ClusterRuleKind;
   readonly strength: ClusterRuleStrength;
   readonly message?: string;
+  /** surface 규칙은 params 로 조건이 정해지므로 문장 없이도 뜻을 복원할 수 있다. */
+  readonly params?: Record<string, unknown>;
 }
 
 // 사용자가 가르친 타일 지식(맵 인터뷰 결과) 요약 — 챗봇 타일 깔기의 근거.
@@ -344,13 +363,41 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
             height: Math.max(...kit.wings.map((wing) => wing.y + wing.h), 1),
           }
         : { width: kit.width, height: kit.height };
-      const repeatable = structureKitRepeatable(kit);
+      // 증분 축을 축 두 개로 적는다 — "반복 가능" 한 마디는 가로만 뜻해서, 세로로 쌓는 벽을
+      // 모델이 알 방법이 없었다. stamp_structure_kit 의 repeat/repeatY 가 정확히 이 값을 본다.
+      const axes = structureKitGrowthAxes(kit);
+      const growthText = axes.x && axes.y
+        ? "가로·세로 증분 가능"
+        : axes.x
+          ? "가로 증분 가능"
+          : axes.y
+            ? "세로 증분 가능"
+            : "한 채 완결";
       lines.push(
         `- ${kit.name ?? "구조물"} (${kit.id}, ${size.width}x${size.height}`
-        + `${kit.ai?.role ? `, ${kit.ai.role}` : ""}, ${repeatable ? "반복 가능" : "한 채 완결"})`,
+        + `${kit.ai?.role ? `, ${kit.ai.role}` : ""}, ${growthText}, 레이어 ${structureKitLayerHome(kit)})`,
       );
       if (kit.ai?.description) lines.push(`  설명: ${kit.ai.description.slice(0, 100)}`);
       if (kit.ai?.placementRules) lines.push(`  배치: ${kit.ai.placementRules.slice(0, 100)}`);
+      if (kit.ai?.themes && kit.ai.themes.length > 0) lines.push(`  테마: ${kit.ai.themes.join(", ")}`);
+      if (kit.ai?.tags && kit.ai.tags.length > 0) lines.push(`  태그: ${kit.ai.tags.join(", ")}`);
+      // 칸 힌트는 사람이 칸 하나하나에 적은 것이라 자르지 않고 앞 6개까지 싣는다 —
+      // 「이 열은 세로로 증분 가능」이 잘려 나가면 무한 확장 구조물을 통째로 못 쓴다.
+      const cellHints = kit.kind === "section" ? kit.cellHints ?? [] : [];
+      for (const hint of cellHints.slice(0, 6)) {
+        lines.push(
+          `  칸(${hint.dx},${hint.dy}): ${hint.growth ?? "메모"}${hint.note ? ` — ${hint.note.slice(0, 60)}` : ""}`,
+        );
+      }
+      if (cellHints.length > 6) lines.push(`  …칸 힌트 ${cellHints.length - 6}개 더(list_structure_kits로 조회)`);
+      // 배치 조건은 산문이 아니라 **집행되는 조건**이다 — 어기면 stamp_structure_kit 이 거부한다.
+      // 그래서 100자 자르기(placementRules)와 달리 전부 싣는다. 조건 수는 실무상 1~3개다.
+      for (const condition of kit.ai?.placement ?? []) {
+        lines.push(
+          `  배치 조건[${condition.strength === "hard" ? "필수" : "권장"}]: ${describePlacementSurface(condition)}`
+          + `${condition.message?.trim() ? ` — ${condition.message.trim().slice(0, 60)}` : ""}`,
+        );
+      }
     }
   }
   if (lines.length === 0) return "";
@@ -358,19 +405,76 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
     "## 내 구조물(유저가 가르친 구조 킷 — 반복 구조 시공의 최우선 재료)",
     "유저가 손으로 찍어 등록한 반복 단면입니다. 성벽/울타리류 반복 구조 요청 시 개별 타일 대신 이 킷을 쓰세요:",
     ...lines,
-    "상세(타일 행렬)는 list_structure_kits, 시공은 stamp_structure_kit(mapId, kitId, origin, repeat).",
+    "상세(타일 행렬·칸 힌트)는 list_structure_kits, 시공은 stamp_structure_kit(mapId, kitId, origin, repeat, repeatY).",
+    "repeat 는 가로, repeatY 는 세로 반복입니다. 증분 축이 허용하지 않는 방향은 1회로 조여집니다 —",
+    "성벽을 높이로 쌓으려면 «세로 증분 가능» 구조물을 골라 repeatY 를 주세요.",
   ].join("\n");
 }
 
 function houseKitSection(): string {
-  const lines = Object.values(HOUSE_KITS).map((kit) => `- ${kit.id}: ${kit.name}`);
+  const kits = Object.values(HOUSE_KITS).map((kit) => `- ${kit.id}: ${kit.name}`);
+  // 모양(templateId)과 색(kitId)은 서로 다른 축이다. 예전에는 색 축만 안내해서
+  // "다양성 확보" 지시를 지켜도 같은 사각형의 색만 바뀐 집이 나왔다(2026-08-31).
+  const shapes = HOUSE_TEMPLATE_DEFS.map((def) => `${def.id}(${def.w}×${def.h})`).join(", ");
   return [
-    "## 집 키트 요약",
-    ...lines,
-    "여러 채 시공 시 각 집에 서로 다른 kitId를 배정해 외관 다양성을 확보하라. 같은 kit 반복 금지.",
+    "## 집 외관 — 모양 축과 색 축을 **둘 다** 흔들어라",
+    `### 모양: author_house 의 templateId (${HOUSE_TEMPLATE_DEFS.length}종)`,
+    shapes,
+    "templateId 를 생략하면 wings 그대로의 사각형이 된다 — 여러 채를 깔 때 생략하면 결과가 단조로워진다.",
+    "templateId 를 주면 wings[0]의 x·y 만 앵커로 쓰이고 치수는 카탈로그가 정한다.",
+    "추가 형태 축: stories(1~3, 2층은 h≥9) · lowWall(헛간·창고) · chimney · roofDeck(파랑 평지붕 전용).",
+    "### 색: kitId",
+    ...kits,
+    "kitId 6종은 지붕색 3가지로 접힌다 — blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall·aframe-stone. 색군까지 섞어라.",
+    "### 시공·검증",
     "2채 이상은 author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지).",
+    "집을 깐 직후 **look_at_houses(mapId)** 로 눈으로 확인하라. verdict 가 monotonous/mixed 면 advice 의 안 쓴 templateId 를 골라 다시 깔아라.",
     "wing 제약: w≥3, h≥5 (지붕+벽 포함). windows: false | {} | {spacing:N} (true 불가).",
     "길/모래는 paint_road(style=dirt/sand)가 8방 오토타일로 성형합니다.",
+  ].join("\n");
+}
+
+/**
+ * 사용자가 데이터베이스 「마을」탭에 저장한 형태·프리셋. 구조물 킷 섹션과 같은 발상 —
+ * "유저가 정해둔 값이 코드 기본값보다 우선"임을 모델에게 알리고 id를 넘긴다.
+ */
+function villageAuthoringSection(project: Project): string {
+  const { templates, presets } = villageAuthoringData(project);
+  if (templates.length === 0 && presets.length === 0) return "";
+  const lines: string[] = [];
+  if (presets.length > 0) {
+    lines.push("### 배치 프리셋 (author_village presetId 로 지정)");
+    for (const preset of presets) {
+      const bits = [
+        preset.houseCount === undefined ? "" : `집 ${preset.houseCount}채`,
+        preset.settlementLayout ?? "",
+        preset.pathStyle === undefined ? "" : `길 ${preset.pathStyle}`,
+        preset.roadWidth === undefined ? "" : `폭 ${preset.roadWidth}`,
+        preset.plazaStyle === undefined ? "" : `광장 ${preset.plazaStyle}`,
+        preset.yardStyle === undefined ? "" : `마당 ${preset.yardStyle}`,
+        preset.groundTheme === undefined ? "" : `지면 ${preset.groundTheme}`,
+        preset.npcCount === undefined ? "" : `NPC ${preset.npcCount}`,
+      ].filter(Boolean).join(", ");
+      lines.push(`- ${preset.name || preset.id} (${preset.id}${bits ? `: ${bits}` : ""})`);
+      if (preset.templateIds && preset.templateIds.length > 0) {
+        lines.push(`  형태 후보: ${preset.templateIds.join(", ")}`);
+      }
+      if (preset.note) lines.push(`  메모: ${preset.note.slice(0, 100)}`);
+    }
+  }
+  if (templates.length > 0) {
+    lines.push("### 내 집 형태 (housePlans[].templateId 로 지정)");
+    for (const template of templates) {
+      const kit = template.kitId ? `, 킷 ${template.kitId}` : "";
+      lines.push(`- ${template.name || template.id} (${template.id}, ${template.w}x${template.h}${kit})`);
+      if (template.note) lines.push(`  메모: ${template.note.slice(0, 100)}`);
+    }
+  }
+  return [
+    "## 마을 저작 데이터(유저가 데이터베이스 「마을」탭에서 정한 값 — 코드 기본값보다 우선)",
+    "유저가 직접 만든 프리셋과 집 형태입니다. 마을 요청에서 이 id를 쓰면 유저가 정한 값 그대로 시공됩니다:",
+    ...lines,
+    "author_village({ target, houseCount, countPolicy, presetId }) 로 프리셋을 적용하세요. 목록에 없는 id는 쓰지 마세요.",
   ].join("\n");
 }
 
@@ -424,7 +528,7 @@ function isClusterRuleHint(rule: unknown): rule is ClusterRuleHint {
 }
 
 function isClusterRuleKind(value: unknown): value is ClusterRuleKind {
-  return value === "adjacency" || value === "spacing" || value === "count";
+  return value === "adjacency" || value === "spacing" || value === "count" || value === "surface";
 }
 
 function isClusterRuleStrength(value: unknown): value is ClusterRuleStrength {
@@ -436,12 +540,22 @@ function strengthLabel(strength: ClusterRuleStrength): string {
 }
 
 function kindLabel(kind: ClusterRuleKind): string {
-  return kind === "adjacency" ? "인접성" : kind === "spacing" ? "간격" : "개수";
+  if (kind === "adjacency") return "인접성";
+  if (kind === "spacing") return "간격";
+  if (kind === "surface") return "배치 면";
+  return "개수";
 }
 
 function ruleText(rule: ClusterRuleHint): string {
   const message = rule.message?.trim();
-  return message ? message.slice(0, 120) : `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
+  if (message) return message.slice(0, 120);
+  // 배치 면은 params 가 조건 그 자체다 — 문장이 없어도 "북쪽(위) 벽에 붙은 바닥"까지 복원한다.
+  // 이 규칙은 실제로 집행되므로(찍는 순간 검사) 모델이 조건을 정확히 알아야 한다.
+  if (rule.kind === "surface") {
+    const surface = surfaceRuleFromClusterRule({ id: rule.id, kind: "surface", params: rule.params ?? {}, strength: "hard" });
+    if (surface) return `${describePlacementSurface(surface)}에만 놓입니다(어기면 시공이 거부됨)`;
+  }
+  return `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
 }
 
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.
@@ -460,6 +574,10 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   if (tileVocabulary) sections.push(tileVocabulary);
   const structureKits = structureKitSection(project, currentMapId);
   if (structureKits) sections.push(structureKits);
+  // 사용자 저작 마을 데이터는 코드 상수 요약(집 키트)보다 앞이다 — 예산 초과 시 뒤에서 잘리므로
+  // 순서가 곧 우선순위다. 유저가 정한 값이 잘려 나가면 모델이 기본값으로 되돌아간다.
+  const villageAuthoring = villageAuthoringSection(project);
+  if (villageAuthoring) sections.push(villageAuthoring);
   sections.push(houseKitSection());
   const clusterRulePreferences = clusterRulePreferenceSection(project, currentMapId);
   if (clusterRulePreferences) sections.push(clusterRulePreferences);
@@ -482,17 +600,31 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   }
   // 현재 맵 머리는 예산 밖 고정 버지 — 절단 뒤에 붙인다(#262).
   if (mapRegion.header) assembled += `\n\n${mapRegion.header}`;
-  return withCapabilityIndex(assembled);
+  // 감독 지침도 능력 색인·성향 기억과 같은 **예산 밖 고정분**이다. 예산 안에 두면 tokenBudget 보정이
+  // 예산을 6,000자까지 줄인 세션에서 슬라이싱에 통째로 잘려, 사용자가 박아 둔 규칙이 조용히
+  // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
+  return withProjectInstructions(withFixedBlocks(assembled, options.preferenceMemorySection), project.aiInstructions);
 }
 
-// 색인 삽입 지점: INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.
-// 어느 경우도 색인 전부가 남는다(어떤 기능이 존재하는가 = 상세 지침보다 우선하는 정보).
-function withCapabilityIndex(assembled: string): string {
+function withProjectInstructions(assembled: string, instructions: string | undefined): string {
+  const section = aiInstructionsSection(instructions);
+  return section ? `${assembled}\n\n${section}` : assembled;
+}
+
+// 예산 밖 고정 블록: 툴 능력 색인 + 이벤트 페이지 의미론 + 사람 성향.
+// 삽입 지점은 INTRO 가 잘리지 않았으면 INTRO 다음, INTRO 자체가 잘린 초소형 예산이라면 맨 앞.
+// 어느 경우도 세 블록 전부가 남는다 — 색인은 "어떤 기능이 존재하는가"(상세 지침보다 우선하는 정보),
+// 페이지 의미론은 잘리면 모델이 조용히 죽는 이벤트 페이지를 저작하고,
+// 성향은 예산 슬라이싱에 걸리면 통째로 사라져 "AI 가 나를 기억하지 못한다"가 그대로 재발한다.
+// 성향 블록은 자체 하드캡(12줄/1,200자)이 있어 예산 밖에 둬도 프롬프트를 잡아먹지 않는다.
+function withFixedBlocks(assembled: string, preferenceMemorySection?: string): string {
   const index = buildToolCapabilityIndex();
+  const memory = preferenceMemorySection?.trim() ?? "";
+  const fixed = [index, EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
   if (assembled.startsWith(INTRO)) {
-    return `${INTRO}\n\n${index}${assembled.slice(INTRO.length)}`;
+    return `${INTRO}\n\n${fixed}${assembled.slice(INTRO.length)}`;
   }
-  return `${index}\n\n${assembled}`;
+  return `${fixed}\n\n${assembled}`;
 }
 
 function trimDigestLines(lines: readonly string[], maxTokens: number): string {

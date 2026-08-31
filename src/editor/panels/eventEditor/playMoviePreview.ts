@@ -3,9 +3,6 @@
 // showAnimation 표시면(showAnimationPlayback.ts)과 같은 규약이다: 고르는 곳과 재생되는 곳이
 // 한 표면 안에 있고, 가짜 연출을 그리지 않는다 — 진짜 <video> 를 걸고 브라우저가 재생한다.
 //
-// 리소스 식별을 업로드 kind 로 하지 않는 이유: ResourceKind 에는 아직 "movie" 가 없고,
-// 넣으면 src/assets/resourceSlicing.ts 의 `satisfies Record<ResourceKind, …>` 가 깨진다
-// (이 레인 밖 파일). 그래서 **미디어 타입**으로 알아본다.
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -32,10 +29,15 @@ export type MovieResourceEntry = {
   readonly group?: string;
 };
 
-/** 프로젝트에 올라온 동영상 리소스(이름 오름차순). */
+/**
+ * 프로젝트에 올라온 동영상 리소스(이름 오름차순).
+ *
+ * 종류(kind)가 근거다 — "movie" 로 등재된 업로드는 데이터 URL 이 무엇이든 동영상이다.
+ * 전용 종류가 생기기 전에 다른 kind 로 올라간 레거시 업로드만 미디어 타입으로 구제한다.
+ */
 export function listMovieResources(project: Pick<Project, "assets">): readonly MovieResourceEntry[] {
   return Object.values(project.assets.uploaded)
-    .filter((asset) => isMovieMedia(asset.dataUrl) || isMovieMedia(asset.name))
+    .filter((asset) => asset.kind === "movie" || isMovieMedia(asset.dataUrl))
     .map((asset) => ({ id: asset.id, name: asset.name.trim() || asset.id }))
     .sort((left, right) => left.name.localeCompare(right.name, "ko"));
 }

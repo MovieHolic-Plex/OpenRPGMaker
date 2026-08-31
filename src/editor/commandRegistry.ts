@@ -5,7 +5,7 @@ import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
-import { dockZoneHasHost, isLeftDockPinned } from "@/editor/workspace/leftDockPanels";
+import { dockZoneHasHost, isLeftDockPanelOffered } from "@/editor/workspace/leftDockPanels";
 import { allPanels } from "@/editor/workspace/panelRegistry";
 import { WORKSPACE_PRESETS, type WorkspaceDensity } from "@/editor/workspace/workspaceLayout";
 import {
@@ -86,8 +86,9 @@ export function listEditorCommands(): readonly EditorCommand[] {
     { id: "layer-lower", label: "레이어: 바닥", category: "레이어", keywords: ["lower", "타일", "바닥", "하위"], hotkey: "F5", run: () => applyLayer("lower") },
     { id: "layer-upper", label: "레이어: 덧그림", category: "레이어", keywords: ["upper", "오브젝트", "덧그림", "장식", "상위"], hotkey: "F6", run: () => applyLayer("upper") },
     { id: "layer-event", label: "레이어: 이벤트", category: "레이어", keywords: ["event", "이벤트"], hotkey: "F7", run: () => applyLayer("event") },
-    // 작업 프리셋 — 예전 「초보/표준/전문가」 모드 명령을 대체한다. keywords 에 구 모드
-    // 이름을 남겨 예전 이름으로 검색하는 사용자를 막지 않는다.
+    // 작업 프리셋 — 예전 「초보/표준/전문가」 모드 명령을 대체한다. 이 표면은 이름대로
+    // 도크 배치만 바꾼다. 작업 칩의 선택 표기도 「현재 레이아웃 프리셋」이라고 명시하므로,
+    // 데이터 모달이나 레이어 전환까지 몰래 실행하지 않는다. keywords 에 구 모드 이름을 남긴다.
     ...WORKSPACE_PRESETS.map((preset): EditorCommand => ({
       id: `workspace-preset-${preset.id}`,
       label: `화면: 프리셋 — ${preset.label}`,
@@ -102,10 +103,10 @@ export function listEditorCommands(): readonly EditorCommand[] {
       keywords: ["density", "밀도", label, ...keywords],
       run: () => setWorkspaceDensity(density),
     })),
-    // 패널 도킹 — ⌘K 에서 좌/우 도크로 바로 보낸다. 고정 패널과 호스트 없는 도크는
-    // 탑바 ▤ 메뉴처럼 명령 자체를 내놓지 않고, 열린 팔레트가 낡아도 실행 시 다시 막는다.
+    // 패널 도킹 — ⌘K 에서 좌/우 도크로 바로 보낸다. 고정 패널, 현재 크롬에서 렌더되지
+    // 않는 패널, 호스트 없는 도크는 명령 자체를 내놓지 않고 열린 팔레트가 낡아도 다시 막는다.
     ...allPanels().filter((panel) => panel.id !== "assistant").flatMap((panel): readonly EditorCommand[] => {
-      if (isLeftDockPinned(panel.id, getEditorChrome().paletteRail)) return [];
+      if (!isLeftDockPanelOffered(panel.id, getEditorChrome())) return [];
       return [
         {
           id: `workspace-panel-${panel.id}`,
@@ -113,7 +114,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
           category: "화면",
           keywords: ["panel", "dock", "패널", "도크", panel.title],
           run: () => {
-            if (isLeftDockPinned(panel.id, getEditorChrome().paletteRail)) return;
+            if (!isLeftDockPanelOffered(panel.id, getEditorChrome())) return;
             toggleWorkspacePanel(panel.id);
           },
         },
@@ -123,7 +124,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
           category: "화면",
           keywords: ["panel", "dock", "move", "패널", "도크", "이동", panel.title],
           run: () => {
-            if (isLeftDockPinned(panel.id, getEditorChrome().paletteRail) || !dockZoneHasHost(zone)) return;
+            if (!isLeftDockPanelOffered(panel.id, getEditorChrome()) || !dockZoneHasHost(zone)) return;
             moveWorkspacePanel(panel.id, zone);
           },
         })),

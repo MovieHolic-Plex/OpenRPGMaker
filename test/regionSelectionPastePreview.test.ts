@@ -190,7 +190,7 @@ describe("renderSelectionActionChips — 복사/붙여넣기/지우기/해제 �
     restore();
   });
 
-  it("복사/지우기/AI/해제 버튼이 렌더된다", async () => {
+  it("AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다", async () => {
     const { editorState } = await import("@/editor/editorState");
     const { renderSelectionActionChips } = await import("@/editor/selectionActionChips");
     editorState.set({ clipboard: null });
@@ -201,7 +201,12 @@ describe("renderSelectionActionChips — 복사/붙여넣기/지우기/해제 �
     expect(findByTestId(body, "selection-chip-clear")).toBeTruthy();
     expect(findByTestId(body, "selection-chip-ai")).toBeTruthy();
     expect(findByTestId(body, "selection-chip-dismiss")).toBeTruthy();
-    expect(findByTestId(body, "selection-chips-size")?.textContent).toBe("5×6");
+    // 「AI 작업」이 주 진입점이므로 맨 앞이다 — 예전에는 크기 텍스트와 복사·지우기 뒤였다.
+    const first = (bar as unknown as FakeElement).children?.[0];
+    expect(first?.dataset?.testid).toBe("selection-chip-ai");
+    // 크기(W×H)는 캔버스의 선택 사각형 옆 배지(region-size-badge, EditScene)로 옮겼다.
+    // 정적 사실이 버튼들 사이에 앉아 버튼처럼 읽혔고, 정작 사각형 옆에는 아무 표시가 없었다.
+    expect(findByTestId(body, "selection-chips-size")).toBeNull();
   });
 
   it("클립보드가 있으면 붙여넣기 버튼이 나타난다", async () => {

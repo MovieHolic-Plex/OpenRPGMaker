@@ -5,6 +5,9 @@ import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { saveSelectionAsStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import type { TileSelection } from "@/editor/editorState";
 import { editorState } from "@/editor/editorState";
+import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
+import { resolveRegionClientRect } from "@/editor/regionClientRect";
+import { toast } from "@/util/toast";
 import {
   cancelPastePreview,
   clearSelection,
@@ -13,6 +16,8 @@ import {
   enterPastePreview,
 } from "@/editor/mapClipboard";
 import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
+import { POLISH_INSTRUCTION } from "@/editor/regionTask/suggestedCommands";
+import type { RegionTaskMode } from "@/editor/regionTask/runRegionTask";
 import { el } from "@/util/dom";
 
 /** 이 칸 수를 넘는 「지우기」는 두 번 눌러야 실행된다. 3×4 이하는 즉시 실행(기존 동작). */
@@ -24,12 +29,22 @@ export interface SelectionChipPreset {
   readonly title: string;
   /** null이면 지시 입력을 위해 모달만 연다(autoRun 없음). */
   readonly instruction: string | null;
+  /** "polish" 면 다듬기(주변 어울림 재구성) 경로로 실행한다. */
+  readonly mode?: RegionTaskMode;
 }
 
-// 영역 모달(suggestedCommands)과 중복되는 구조물/길/다듬기 단축 칩은 두지 않는다.
-// 캔버스 칩은 모달 진입 1개만 — 세부 추천은 모달 안에서 보여준다.
+// 구조물/길 같은 "무엇을 만들지" 단축 칩은 여기 두지 않는다 — 그건 지시문 선택이라 모달 안
+// 추천 칩의 일이다. 다만 **다듬기는 지시문을 고를 것이 없다**(대상=이 사각형, 목표=주변 어울림).
+// 모달을 열어 문장을 확인하고 실행 버튼을 누르는 왕복이 순손실이라 원탭으로 캔버스에 둔다.
 export const SELECTION_CHIP_PRESETS: readonly SelectionChipPreset[] = [
   { id: "ai", label: "AI", title: "이 영역에 자연어 지시로 AI 작업", instruction: null },
+  {
+    id: "polish",
+    label: "다듬기",
+    title: "이 영역을 주변과 어울리게 AI가 다시 짜기 (타일·이벤트 전권)",
+    instruction: POLISH_INSTRUCTION,
+    mode: "polish",
+  },
 ] as const;
 
 export function selectionChipModalOptions(
@@ -37,11 +52,18 @@ export function selectionChipModalOptions(
   selection: TileSelection,
   anchor?: { readonly x: number; readonly y: number },
 ): RegionTaskModalOptions {
+  const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
+  // 창이 자기가 바꿀 영역을 덮지 않도록 대상의 화면 사각형을 넘긴다. 이 계산은 Phaser
+  // 카메라를 읽어야 해서 EditScene 이 등록소에 꽂아 둔다 — 등록이 없으면(테스트·헤드리스)
+  // null 이고 창은 anchor 배치로 폴백한다.
+  const avoid = anchor ? resolveRegionClientRect(region) : null;
   return {
     mapId: selection.mapId,
-    region: { x: selection.x, y: selection.y, width: selection.width, height: selection.height },
+    region,
     ...(preset.instruction !== null ? { initialInstruction: preset.instruction, autoRun: true } : {}),
+    ...(preset.mode ? { mode: preset.mode } : {}),
     ...(anchor ? { anchor } : {}),
+    ...(avoid ? { avoid } : {}),
   };
 }
 
@@ -67,6 +89,7 @@ function makeAiSparkIcon(): SVGSVGElement {
 export function renderSelectionActionChips(
   selection: TileSelection,
   openModal: typeof openRegionTaskModal = openRegionTaskModal,
+  onPastePreviewCancel: () => void = () => undefined,
 ): HTMLElement {
   const hasClipboard = editorState.get().clipboard !== null;
   const bar = el("div", {
@@ -75,14 +98,48 @@ export function renderSelectionActionChips(
     dataset: { testid: "selection-action-chips" },
   });
 
-  // 크기 라벨
-  bar.append(
-    el("span", {
-      class: "selection-action-chips-size",
-      text: `${selection.width}×${selection.height}`,
-      dataset: { testid: "selection-chips-size" },
-    }),
-  );
+  // AI 칩이 이 바의 첫 버튼이자 주 버튼이다 — 우클릭 드래그로 영역을 잡는 가장 흔한
+  // 목적이고, 나머지(복사·지우기)는 그 다음이다. 예전에는 맨 끝에 있었고 그 앞자리를
+  // `8×6` 정적 텍스트가 차지해 버튼 줄 안에서 버튼처럼 읽혔다.
+  // 크기 표시는 캔버스의 선택 사각형 위 배지(region-size-badge)로 옮겼다 — 원래 붙어야 할
+  // 자리이고, 드래그 중에도 보인다.
+  for (const preset of SELECTION_CHIP_PRESETS) {
+    const isAi = preset.id === "ai";
+    bar.append(
+      // AI 칩에 아이콘만 두면 무엇을 하는 버튼인지 눈으로 알 수 없어(title 은 마우스를
+      // 올려야 나온다) 스파클 + 글자 라벨을 함께 둔다.
+      el("button", {
+        class: "selection-action-chip" + (isAi ? " is-primary" : ""),
+        attrs: {
+          type: "button",
+          title: preset.title,
+          "aria-label": preset.title,
+        },
+        dataset: { testid: `selection-chip-${preset.id}` },
+        children: isAi
+          ? [makeAiSparkIcon(), el("span", { class: "selection-action-chip-text", text: "AI 작업" })]
+          : undefined,
+        text: isAi ? undefined : preset.label,
+        on: {
+          click: (event) => {
+            // 잠긴 맵은 AI 가 쓸 수 없다. 예전에는 EditScene 이 창을 열기 직전에 봤는데,
+            // 창을 여는 주체가 이 칩으로 옮겨졌으므로 검사도 함께 옮긴다.
+            if (!canEditMap(selection.mapId)) {
+              toast(mapEditLockNotice(selection.mapId), "error");
+              return;
+            }
+            requestAiSelectionContext(selection, false);
+            const mouse = event as MouseEvent;
+            const anchor =
+              typeof mouse.clientX === "number" && (mouse.clientX !== 0 || mouse.clientY !== 0)
+                ? { x: mouse.clientX, y: mouse.clientY }
+                : undefined;
+            openModal(selectionChipModalOptions(preset, selection, anchor));
+          },
+        },
+      }),
+    );
+  }
 
   // 복사
   bar.append(
@@ -155,39 +212,6 @@ export function renderSelectionActionChips(
     }),
   );
 
-  // AI 칩
-  for (const preset of SELECTION_CHIP_PRESETS) {
-    const isAi = preset.id === "ai";
-    bar.append(
-      // AI 칩은 이 바의 주 진입점이다 — 아이콘만 두면 무엇을 하는 버튼인지 눈으로 알 수 없어
-      // (title 은 마우스를 올려야 나온다) 스파클 + 글자 라벨을 함께 둔다.
-      el("button", {
-        class: "selection-action-chip" + (isAi ? " is-primary" : ""),
-        attrs: {
-          type: "button",
-          title: preset.title,
-          "aria-label": preset.title,
-        },
-        dataset: { testid: `selection-chip-${preset.id}` },
-        children: isAi
-          ? [makeAiSparkIcon(), el("span", { class: "selection-action-chip-text", text: "AI 작업" })]
-          : undefined,
-        text: isAi ? undefined : preset.label,
-        on: {
-          click: (event) => {
-            requestAiSelectionContext(selection, false);
-            const mouse = event as MouseEvent;
-            const anchor =
-              typeof mouse.clientX === "number" && (mouse.clientX !== 0 || mouse.clientY !== 0)
-                ? { x: mouse.clientX, y: mouse.clientY }
-                : undefined;
-            openModal(selectionChipModalOptions(preset, selection, anchor));
-          },
-        },
-      }),
-    );
-  }
-
   // 선택 해제
   bar.append(
     el("button", {
@@ -195,7 +219,13 @@ export function renderSelectionActionChips(
       text: "✕",
       attrs: { type: "button", title: "선택 해제 (Esc)" },
       dataset: { testid: "selection-chip-dismiss" },
-      on: { click: () => { cancelPastePreview(); clearSelection(); } },
+      on: {
+        click: () => {
+          cancelPastePreview();
+          clearSelection();
+          onPastePreviewCancel();
+        },
+      },
     }),
   );
 

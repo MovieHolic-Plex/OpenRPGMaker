@@ -413,10 +413,12 @@ describe("AI 패널 크롬", () => {
     expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
     expect(findByTestId(panel, "ai-rising-volatile-zone")).toBeNull();
-    // 완료 스트립·0건 알림이 사는 고정 영역은 패널 직속으로 남는다.
+    // 0건 알림이 사는 고정 영역은 패널 직속으로 남는다. 완료 스트립(`ai-completion-host`)은
+    // 2026-08-30 에 걷혔다 — 되돌리기는 컴포저 액션 행의 `ai-composer-undo` 가 맡는다.
     const sticky = findByTestId(panel, "ai-rising-sticky-zone");
     expect(sticky?.parentElement).toBe(panel);
-    expect(sticky?.contains(findByTestId(panel, "ai-completion-host"))).toBe(true);
+    expect(findByTestId(panel, "ai-completion-host")).toBeNull();
+    expect(findByTestId(panel, "ai-composer-undo")).toBeTruthy();
   });
 
   it("float history remounts the work log outside the rising overlay", () => {

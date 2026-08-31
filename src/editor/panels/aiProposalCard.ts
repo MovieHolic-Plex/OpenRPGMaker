@@ -12,16 +12,14 @@ import { stripContextFooter } from "@/ai/modifyIntent";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { summarizeChanges } from "@/editor/tools";
+import { commitGateNotice } from "@/ai/aiGateNotice";
+import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import {
-  formatLayoutRepairSummary,
-  layoutRepairDidWork,
-  repairLayoutPlacement,
-} from "@/project/lint/layoutPlacementRepair";
-import {
   formatLayoutValidationSummary,
-  layoutValidationBlocking,
+  validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
+import type { LintIssue } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -248,25 +246,26 @@ export function createProposalHost(options: {
     const softList = collectVocabSoftConfirms(calls);
     const softMarked = markSoftVocabApprovalsOnProject(proposed, calls);
 
-    // 배치 충돌은 사람에게 되돌리지 않는다. 물/벽 위 소품은 육지로 옮기거나 정리한다.
+    // 배치 검증은 진단이다. 적용을 막지도, AI 가 깐 타일을 옮기거나 지우지도 않는다.
     const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
     // 지시문은 **사용자 발화만** 쓴다. `[컨텍스트] 현재 맵: 숲 입구 …` footer 가 섞이면 맵 이름이
     // 나무 지시로 오인돼 배치 검증이 헛돌았다(assistantSession 의 의도 스캔과 같은 처리).
     const instruction = stripContextFooter(lastUser && lastUser.kind === "user" ? lastUser.text : "");
-    const repaired = repairLayoutPlacement(proposed, {
-      mapId: currentHistoryMapId() ?? undefined,
-      instruction,
-      toolNames: calls.map((call) => call.name),
-    });
-    const layoutBlocking = layoutValidationBlocking(repaired.remaining);
-    if (layoutBlocking.length > 0) {
-      setStatus("배치 검증 실패");
-      const summary = formatLayoutValidationSummary(repaired.remaining);
-      appendBubble("system", `❌ ${summary}`);
-      toast(summary, "error");
-      return false;
+    // 영역작업(AI) 뒤의 검증게이트 배제(2026-08-30): 예전에는 여기서 repairLayoutPlacement 로
+    // AI 배치를 옮기고 지운 뒤, 남은 error 로 적용 전체를 반려했다. 그 결과 사용자에게는
+    // "아무것도 안 됐다" 또는 "깐 게 사라졌다" 만 남았다. 이제 사실만 계산해 적용 후 알린다.
+    // 진단기가 예외를 던져도 적용은 진행한다 — 검증기 사고는 AI 작업물을 볼모로 잡을 이유가 아니다.
+    let layoutIssues: readonly LintIssue[] = [];
+    try {
+      layoutIssues = validateLayoutPlacement(proposed, {
+        mapId: currentHistoryMapId() ?? undefined,
+        instruction,
+        toolNames: calls.map((call) => call.name),
+      });
+    } catch (cause) {
+      console.warn("[aiProposal] 배치 진단에 실패했지만 적용은 진행합니다:", cause);
     }
-    const applyProject = repaired.project;
+    const applyProject = proposed;
 
     // 커밋 게이트 검증 → undo 스냅샷 → store.replace → await 커밋 로그는
     // 공유 적용 함수(applyProposedProject)가 수행한다 — 마일스톤 자동 적용과 같은 경로.
@@ -288,6 +287,9 @@ export function createProposalHost(options: {
     if (!applied.ok) {
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
+      // 예전에는 이 게이트만 채팅에 아무 기록도 남기지 않았다 — 토스트가 사라지면 흔적이 없다.
+      appendBubble("system", `❌ 무결성 검사에 막혀 적용하지 않았습니다: ${applied.issue ?? "무결성 오류"}`);
+      showAiGateNotice(commitGateNotice(applied.issues ?? (applied.issue ? [applied.issue] : [])));
       return false;
     }
     setStatus("대기");
@@ -295,12 +297,9 @@ export function createProposalHost(options: {
     lastAppliedProposalMessage = pendingProposalMessage;
     pendingProposalMessage = null;
     appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. 되돌리려면 [되돌리기](Ctrl+Z).`);
-    if (layoutRepairDidWork(repaired.counts)) {
-      appendBubble("system", formatLayoutRepairSummary(repaired.counts));
-    }
-    // 차단하지 않는 배치 경고(예: 나무 0그루 판정)는 숨기지 않고 남긴다 — 타일은 이미 깔렸다.
-    if (repaired.remaining.length > 0) {
-      appendBubble("system", `⚠️ ${formatLayoutValidationSummary(repaired.remaining)}`);
+    // 배치 진단은 숨기지 않고 남긴다 — 타일은 이미 깔렸고, 마음에 안 들면 되돌리기가 답이다.
+    if (layoutIssues.length > 0) {
+      appendBubble("system", `⚠️ ${formatLayoutValidationSummary(layoutIssues)}`);
     }
     if (softMarked > 0) {
       appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);

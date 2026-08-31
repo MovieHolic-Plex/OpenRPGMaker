@@ -145,22 +145,9 @@
   z-index: 2;
 }
 
-.event-editor-aux-tools .event-script-flowchart {
-  background: var(--event-modern-field);
-  border: 1px solid var(--event-modern-border);
-  border-radius: 999px;
-  box-shadow: none;
-  flex: 0 0 auto;
-  min-width: 0;
-}
-
-.event-editor-aux-tools .event-script-flowchart[open] {
-  border-color: color-mix(in srgb, var(--event-modern-accent) 45%, var(--event-modern-border));
-  border-radius: 999px;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 18%, transparent);
-  /* 금지: flex: 1 1 100% — 열리면 행 전체를 먹어 cmd-list 를 붕괴시킴 */
-  flex: 0 0 auto;
-}
+/* 플로우차트 칩(`.event-script-flowchart`) 규칙은 여기 없다 — 플로우는 도구 팝오버 안
+   아코디언이 아니라 보기 방식 세그먼트의 「플로우」이고, 칼럼 전체를 쓴다.
+   `.event-aux-chip-*` 는 다른 보조 도구가 계속 쓰므로 남는다. */
 
 .event-aux-chip-summary {
   align-items: center;
@@ -228,36 +215,10 @@
   display: none;
 }
 
-.event-editor-aux-tools .event-script-flowchart[open] > .event-aux-chip-summary {
-  color: var(--text-1);
-  display: inline-flex;
-  min-height: 38px;
-  width: auto;
-}
-
-/* 기능 본문은 도구 칩 행 아래 오버레이로 열려 캔버스 높이를 바꾸지 않는다.
-   크기는 «분기를 읽을 수 있는가» 로 정한다. 예전 `min(280px, 42vh)` 는 1440px 높이에서도
-   280px 만 썼고, 폭은 `left:0; right:0` 이라 도구 팝오버 너비(실측 618px)에 묶였다 —
-   최상위 명령 7개 중 2개만 보이고 노드 중간에서 잘렸다. 플로우는 가로로 벌어지는 분기
-   컬럼을 그리므로 폭이 특히 아프다. 오른쪽에 붙이고 왼쪽으로 자라게 둔다. */
-.event-editor-aux-tools .event-script-flowchart[open] > .event-flowchart-body {
-  background: color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #FFFDF8));
-  border: 1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border));
-  border-radius: 10px;
-  top: calc(100% + 6px);
-  bottom: auto;
-  box-shadow:
-    0 10px 28px var(--bg-surface),
-    0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent);
-  left: auto;
-  max-height: min(72vh, 760px);
-  min-width: min(760px, 78vw);
-  overflow: auto;
-  position: absolute;
-  right: 0;
-  width: auto;
-  z-index: 8;
-}
+/* 플로우 본문을 도구 칩 아래 절대 배치 오버레이로 띄우던 규칙은 삭제했다.
+   그 방식은 크기를 팝오버 폭(실측 618×280)에 묶어 최상위 명령 7개 중 2개만 보였고,
+   무엇보다 미리보기 **위에** 떠서 「자동 재생」과 단계 카운터를 덮었다.
+   지금 플로우 레이아웃은 `.event-page-flow` (event-editor.modernize.css) 가 소유한다. */
 
 .event-contents-fieldset .cmd-list {
   background: var(--event-modern-field);

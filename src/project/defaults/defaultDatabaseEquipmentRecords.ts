@@ -1,6 +1,7 @@
 import type { EquipmentRecord } from "../types";
 import { normalizeEquipmentRecord } from "../databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_CLASS_ID, DEFAULT_EQUIPMENT_ID } from "./constants";
+import { defaultCatalogFillEquipmentRecords } from "./defaultCatalogFillEquipment";
 import { generatedEquipmentRecords } from "./generatedItemRecords";
 import {
   ACTOR_GUARDIAN_ID,
@@ -298,5 +299,6 @@ export function defaultEquipmentRecords(): EquipmentRecord[] {
     }),
     // 생성 아이콘 100종 중 무기·방어구·장식 계열. 가격은 특수 축의 강도와 명중·능력치 대가를 함께 반영한다.
     ...generatedEquipmentRecords(),
+    ...defaultCatalogFillEquipmentRecords(),
   ];
 }

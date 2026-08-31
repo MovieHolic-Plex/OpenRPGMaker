@@ -26,6 +26,7 @@ import {
   dialoguePresentationCssVars,
   dialoguePresentationProfile,
   dialogueScaledCharDelayMs,
+  dialogueSpeakerInsetPx,
   type DialoguePresentationProfile,
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
@@ -235,15 +236,15 @@ export function createDialogueUI(
         box.append(renderFace(request.face));
       }
       // 화자 이름은 본문과 분리된 네임플레이트로 창 상단에 붙인다 (Fields of Mistria 식).
+      let nameplate: HTMLElement | undefined;
       if (request.speaker?.trim()) {
         box.classList.add("has-speaker");
-        box.append(
-          el("div", {
-            class: "speaker speaker-nameplate",
-            text: request.speaker.trim(),
-            dataset: { testid: "dialogue-speaker" },
-          })
-        );
+        nameplate = el("div", {
+          class: "speaker speaker-nameplate",
+          text: request.speaker.trim(),
+          dataset: { testid: "dialogue-speaker" },
+        });
+        box.append(nameplate);
       }
       const cursor = el("div", {
         class: "dialogue-page-cursor",
@@ -252,6 +253,9 @@ export function createDialogueUI(
       });
       box.append(cursor);
       overlay.append(box);
+      // 이름표가 본문 첫 줄을 덮지 않게 여백을 재서 심는다. 오버레이에 붙인 **뒤**라야
+      // offsetHeight 가 나오고, 줄 수를 세기 **전**이라야 그 줄 수가 실제 본문 칸을 본다.
+      if (nameplate) reserveSpeakerInset(box, nameplate);
 
       const measure = createDialogueTextMeasure(bodyEl);
       const pages = paginateDialogueSegments(parseDialogueText(request.body, request.textContext), {
@@ -720,6 +724,27 @@ function dialogueMaxLines(bodyEl: HTMLElement): number {
   if (!Number.isFinite(resolved) || resolved <= 0) return DIALOGUE_LINES_PER_PAGE;
   // 0.05 는 서브픽셀 반올림 여유다(23.9/10.8 = 2.213 처럼 딱 맞지 않는 값이 정상).
   return Math.max(1, Math.floor(available / resolved + 0.05));
+}
+
+/**
+ * 이름표가 파고든 깊이만큼 본문을 내린다. 근거와 실측은
+ * `dialogueSpeakerInsetPx` 주석에 있다 — 여기는 DOM 을 읽어 넘기는 통로다.
+ *
+ * `offsetTop`/`offsetHeight` 를 쓴다. 무대가 `--play-scale` 로 확대되므로
+ * `getBoundingClientRect()` 는 배율이 섞인 화면 px 를 주고, 그 값을 padding 으로 심으면
+ * 배율만큼 부풀어 본문 칸이 사라진다.
+ */
+function reserveSpeakerInset(box: HTMLElement, nameplate: HTMLElement): void {
+  const view = box.ownerDocument?.defaultView;
+  if (!view) return;
+  const fallback = Number.parseFloat(view.getComputedStyle(box).paddingTop);
+  const inset = dialogueSpeakerInsetPx(
+    nameplate.offsetTop,
+    nameplate.offsetHeight,
+    Number.isFinite(fallback) ? fallback : 0
+  );
+  if (inset === undefined) return;
+  box.style.setProperty("--runtime-dialogue-speaker-inset", `${inset}px`);
 }
 
 function createDialogueTextMeasure(reference: HTMLElement): DialogueTextMeasure {

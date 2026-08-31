@@ -3,6 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { repairTreePairsOnMap, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { runTool } from "@/editor/tools/toolRunner";
+import { resolveForestCanopyReplacementExemptTileIds } from "@/editor/tools/forestComposition";
 
 const MAP = "map_blank_start";
 
@@ -61,5 +62,49 @@ describe("repairTreePairs", () => {
     const result = repairTreePairsOnProject(project);
     expect(result.canopiesPlaced).toBeGreaterThanOrEqual(1);
     expect(map.upperTiles[2 * map.width + 3]).toBe(262);
+  });
+
+  it("밑동 위 덤불은 수관으로 덮어쓰지 않는다 — impassable 숲이 다시 뚫린다", () => {
+    // 수관 타일(260·262·263)은 칩셋에서 4방향 통행 가능이다(주인공이 나무 뒤로 지나가는 관례).
+    // 그래서 impassable 숲은 그 칸의 상위 레이어에 막는 칩(덤불 289)을 둬서 경로를 끊는다.
+    // 보정이 덤불을 수관으로 되돌리면 그 경로가 살아난다(실측: 밴드 통행 13%→35%).
+    const project = createBlankProject();
+    const map = project.maps[MAP];
+    map.lowerTiles[5 * map.width + 5] = 290; // 침엽 밑동
+    map.upperTiles[4 * map.width + 5] = 289; // 그 위에 덤불(저작 의도)
+    const result = repairTreePairsOnMap(map, {
+      canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(project),
+    });
+    expect(map.upperTiles[4 * map.width + 5]).toBe(289);
+    expect(result.canopiesPlaced).toBe(0);
+  });
+
+  it("밑동 위 일반 소품은 수관으로 보정한다 — post-write hook 계약을 우회하지 못한다", () => {
+    // 왜 이 케이스인가(실측): 나무 상자 237도 "다른 오버레이" 예외에 들어가 수관 없는 밑동과
+    // 머리 위 상자가 그대로 hook을 통과했다. forest gap-closing 덤불 id 외에는 원래 계약대로 보정한다.
+    const directProject = createBlankProject();
+    const directMap = directProject.maps[MAP];
+    directMap.lowerTiles[5 * directMap.width + 5] = 290;
+    directMap.upperTiles[4 * directMap.width + 5] = 237;
+
+    const direct = repairTreePairsOnMap(directMap, {
+      canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(directProject),
+    });
+    expect(direct.canopiesPlaced).toBe(1);
+    expect(directMap.upperTiles[4 * directMap.width + 5]).toBe(260);
+
+    const ctx = { project: createBlankProject() };
+    const hookedMap = ctx.project.maps[MAP];
+    hookedMap.lowerTiles[5 * hookedMap.width + 5] = 290;
+    hookedMap.upperTiles[4 * hookedMap.width + 5] = 237;
+    const hooked = runTool(ctx, "place_npc", {
+      mapId: MAP,
+      x: 1,
+      y: 1,
+      name: "테스트",
+      pages: [{ lines: ["ok"] }],
+    });
+    expect(hooked.ok).toBe(true);
+    expect(ctx.project.maps[MAP].upperTiles[4 * hookedMap.width + 5]).toBe(260);
   });
 });

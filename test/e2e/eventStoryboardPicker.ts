@@ -93,9 +93,10 @@ async function dblclickMapCenter(page: Page): Promise<void> {
 /**
  * 시드된 기존 이벤트의 편집기를 맵에서 직접 연다.
  *
- * 사이드바 이벤트 목록(`event-list-row-*`)은 현재 워크스페이스 프리셋에 등록돼 있지 않아
- * 진입 경로로 쓸 수 없다. 대신 하니스용 커서 진단(`cursor-position`)으로 타일↔화면 좌표를
- * 실측해서 대상 타일을 더블클릭한다 — 매직 픽셀 상수 없이 결정적이다.
+ * 사이드바 이벤트 목록(`event-list-row-*`) testid 자체는 `eventEditor.ts` 가 실제로 발행한다.
+ * 다만 초보 모드는 그 목록 패널을 마운트하지 않아 진입 경로로 쓸 수 없다. 대신 하니스용
+ * 커서 진단(`cursor-position`)으로 타일↔화면 좌표를 실측해서 대상 타일을 더블클릭한다 —
+ * 매직 픽셀 상수 없이 결정적이다.
  */
 export async function openSeededEventEditor(page: Page, tile: { readonly x: number; readonly y: number }): Promise<Locator> {
   await page.getByTestId("layer-event").click();

@@ -2,6 +2,7 @@ import { compareVariableValue } from "@/project/conditionEvaluation";
 import { timePhaseFor } from "@/project/gameTime";
 import { evalCondition, getFriendship, getSwitch, getTimer, getVariable } from "@/project/session";
 import { storyFlagForTarget, targetShortLabel } from "@/project/storyFlags";
+import { findShadowedPages, findUnwrittenSelfSwitchGates } from "@/project/eventPageShadow";
 import type { Condition, GameEvent, Project } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
@@ -29,6 +30,10 @@ export interface StoryEventPageTrace {
   readonly conditionsMet: boolean;
   readonly conditions: StoryConditionTrace[];
   readonly falseConditions: string[];
+  /** 조건이 참이어도 이 페이지 대신 실행되는 뒤 페이지 번호 — 있으면 이 페이지는 죽은 데이터다. */
+  readonly shadowedByPageNumber?: number;
+  /** 이 페이지를 여는 selfSwitch 중 이벤트 안에서 아무도 켜지 않는 키 — 있으면 영원히 잠긴다. */
+  readonly unwrittenSelfSwitchKeys?: readonly string[];
 }
 
 export interface StoryEventExplanation {
@@ -66,7 +71,19 @@ export function explainEvent(
       falseConditions,
     };
   });
-  const active = activePageNumber(pages);
+  const shadowByIndex = new Map(findShadowedPages(event.pages).map((shadow) => [shadow.index, shadow.byIndex + 1]));
+  const gateByIndex = new Map(findUnwrittenSelfSwitchGates(event).map((gate) => [gate.index, gate.keys]));
+  const tracedPages = pages.map((page, index): StoryEventPageTrace => {
+    const shadowedBy = shadowByIndex.get(index);
+    const gateKeys = gateByIndex.get(index);
+    if (shadowedBy === undefined && gateKeys === undefined) return page;
+    return {
+      ...page,
+      ...(shadowedBy === undefined ? {} : { shadowedByPageNumber: shadowedBy }),
+      ...(gateKeys === undefined ? {} : { unwrittenSelfSwitchKeys: gateKeys }),
+    };
+  });
+  const active = activePageNumber(tracedPages);
   const note = sessionSource === "editor-default"
     ? "플레이 세션 없음: 스위치 OFF/변수 0 기본값으로 평가"
     : undefined;
@@ -76,8 +93,8 @@ export function explainEvent(
     sessionSource,
     note,
     activePageNumber: active,
-    pages,
-    summary: summaryFor(sessionSource, active, pages),
+    pages: tracedPages,
+    summary: summaryFor(sessionSource, active, tracedPages),
   };
 }
 
@@ -318,6 +335,15 @@ function summaryFor(
   const source = sessionSource === "editor-default" ? "editor-default" : "live-session";
   const firstBlocked = pages.find((page) => page.falseConditions.length > 0);
   const active = activePageNumberValue ?? "없음";
-  if (!firstBlocked) return `${source}: 활성 페이지 ${active}`;
-  return `${source}: 활성 페이지 ${active}; 페이지 ${firstBlocked.pageNumber} 비활성: ${firstBlocked.falseConditions[0]}`;
+  const shadowed = pages.filter((page) => page.shadowedByPageNumber !== undefined);
+  // 가려진 페이지가 있으면 그것이 첫 진단이다 — 조건이 맞아도 영원히 실행되지 않는 저작이므로.
+  const shadowNote = shadowed.length === 0
+    ? ""
+    : `; 절대 발동하지 않는 페이지 ${shadowed.map((page) => `${page.pageNumber}(→${page.shadowedByPageNumber})`).join(", ")}`;
+  const locked = pages.filter((page) => (page.unwrittenSelfSwitchKeys ?? []).length > 0);
+  const lockNote = locked.length === 0
+    ? ""
+    : `; 켜는 곳이 없어 영원히 잠긴 페이지 ${locked.map((page) => `${page.pageNumber}(selfSwitch ${(page.unwrittenSelfSwitchKeys ?? []).join("/")})`).join(", ")}`;
+  if (!firstBlocked) return `${source}: 활성 페이지 ${active}${shadowNote}${lockNote}`;
+  return `${source}: 활성 페이지 ${active}; 페이지 ${firstBlocked.pageNumber} 비활성: ${firstBlocked.falseConditions[0]}${shadowNote}${lockNote}`;
 }

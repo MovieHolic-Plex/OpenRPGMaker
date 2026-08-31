@@ -396,7 +396,13 @@ export function compileSimplePages(
   graphic: EventPageGraphic,
   options: EventCompileOptions = {}
 ): EventPage[] {
-  return pages.map((page, index) => compileSimplePage(`${idPrefix}_p${index}`, name, page, graphic, { ...options, path: `pages[${index}]` }));
+  const compiled = pages.map((page, index) =>
+    compileSimplePage(`${idPrefix}_p${index}`, name, page, graphic, { ...options, path: `pages[${index}]` })
+  );
+  // 죽은 페이지 판정은 여기서 하지 않는다. place_npc·make_villager 는 둘 다 뒤에서
+  // assertEventShape(event, warnings) 로 끝나는데, 그쪽이 **나중에 덧붙는 페이지**
+  // (friendshipUnlock·상점)까지 본다. 양쪽에서 내면 같은 결함이 두 번 보고돼 하나가 둘로 보인다.
+  return compiled;
 }
 
 export function compileSimplePage(

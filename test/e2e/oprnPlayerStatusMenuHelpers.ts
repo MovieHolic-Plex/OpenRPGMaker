@@ -19,21 +19,18 @@ export const COMMAND_SCREENSHOTS = {
   wait: ".omo/ulw-loop/rpg-status-menu-ko-actions/evidence/C001-wait-panel.png",
 } as const;
 
+/* 레일은 6칸 도크다(playerStatusMenuModel.ts: items·skills·equipment + 파티/기록/시스템 그룹 입구).
+ * 예전 목록은 12개 명령을 전부 레일에 세운 설계였고, 지금은 뒤 9개가 그룹 트레이 안으로 접혔다.
+ * 그래서 `status-menu-command-monsters` 같은 testid 는 레일에 아예 없다 — 개수 검사와
+ * 라벨 검사는 도크 6칸만 본다. 접힌 명령은 FOLDED_COMMAND_GROUPS 를 타는 selectCommand 로 확인한다.
+ * 라벨은 그룹 입구에 화살표(`파티 ▸`)가 붙을 수 있어 부분 일치로 본다. */
 export const COMMAND_LABELS = [
   ["items", "아이템"],
   ["skills", "스킬"],
   ["equipment", "장비"],
-  // STATUS_MENU_COMMAND_IDS 에 monsters 가 추가됐는데 이 목록만 안 따라와서
-  // statusMenuCommandsFullyVisible 의 개수 검사가 12 != 11 로 계속 실패했다.
-  ["monsters", "몬스터"],
-  ["save", "저장"],
-  ["load", "로드"],
-  ["status", "상태"],
-  ["row", "열 바꾸기"],
-  ["formation", "진형"],
-  ["quests", "임무"],
-  ["wait", "대기 ON"],
-  ["to-title", "타이틀"],
+  ["party-menu", "파티"],
+  ["record-menu", "기록"],
+  ["system-menu", "시스템"],
 ] as const;
 
 export async function startActualPlay(page: Page, project = seededStatusMenuProject(), route = "/?e2eVitals=1"): Promise<void> {
@@ -142,19 +139,158 @@ const FOLDED_COMMAND_GROUPS: Readonly<Record<string, string>> = {
   "to-title": "system-menu",
 };
 
+/* 레일 순서(playerStatusMenuModel.ts 의 STATUS_MENU_RAIL_ENTRY_IDS). 좌우 방향키가 이 순서로
+ * 돌고(끝에서 감김), 그룹 입구를 고르면 트레이가 미리보기로 펼쳐진다. */
+const RAIL_ORDER = ["items", "skills", "equipment", "party-menu", "record-menu", "system-menu"] as const;
+
+/*
+ * 런타임 메뉴는 **키보드 전용**이다. player.css 의
+ *   .player-layout.system-shell[data-play-input-owner="keyboard-only"] > * { pointer-events: none !important }
+ * 가 플레이 표면 전체를 히트테스트에서 빼기 때문에 `locator.click()` 은 영원히 대기한다
+ * (실측: 레일 버튼 클릭 30초 타임아웃, 트레이·상세 행도 동일). 예전 스펙이 클릭으로
+ * 통과한 건 기본 선택이 이미 아이템이라 클릭 없이도 제목이 맞았던 경우뿐이다.
+ * 그래서 선택은 방향키 + 확인키(z)로 한다.
+ */
+async function railCursor(page: Page): Promise<string | null> {
+  return page.evaluate(() => {
+    const rail = document.querySelector("[data-testid='status-menu-command-rail']");
+    const current = rail?.querySelector("[data-testid^='status-menu-command-'][aria-current='true']");
+    return current instanceof HTMLElement ? (current.dataset.testid ?? "").replace("status-menu-command-", "") : null;
+  });
+}
+
+async function trayCursor(page: Page): Promise<string | null> {
+  return page.evaluate(() => {
+    const current = document.querySelector("[data-testid^='status-menu-group-command-'][aria-current='true']");
+    return current instanceof HTMLElement ? (current.dataset.testid ?? "").replace("status-menu-group-command-", "") : null;
+  });
+}
+
+/** 상세 패널에 들어가 있으면 레일로 돌아온다 — 그 상태에서 방향키를 누르면 패널 커서가 움직인다. */
+async function returnToRail(page: Page): Promise<void> {
+  const panel = page.getByTestId("status-menu-detail");
+  for (let guard = 0; guard < 5; guard += 1) {
+    if ((await page.getByTestId("status-menu-command-rail").count()) === 0) {
+      await page.keyboard.press("x");
+      await expect(page.getByTestId("status-menu-command-rail")).toBeVisible();
+      return;
+    }
+    if ((await panel.count()) === 0 || (await panel.getAttribute("aria-hidden")) === "true") return;
+    await page.keyboard.press("x");
+    await waitForPanelSettled(page);
+  }
+}
+
+async function moveCursor(
+  page: Page,
+  read: () => Promise<string | null>,
+  order: readonly string[],
+  target: string,
+): Promise<void> {
+  for (let guard = 0; guard <= order.length; guard += 1) {
+    const current = await read();
+    if (current === target) return;
+    const from = current ? order.indexOf(current) : -1;
+    const to = order.indexOf(target);
+    if (to < 0) throw new Error(`선택 목록에 없는 항목: ${target}`);
+    // 감기는 목록이라 짧은 쪽으로 돈다.
+    const forward = from < 0 || (to - from + order.length) % order.length <= (from - to + order.length) % order.length;
+    await page.keyboard.press(forward ? "ArrowRight" : "ArrowLeft");
+    // 고정 대기는 느린 GPU(swiftshader)에서 한 프레임을 못 기다려 커서가 밀린다 —
+    // 커서가 실제로 움직일 때까지 짧게 기다린다.
+    await waitForChange(page, read, current);
+  }
+  throw new Error(`커서를 ${target} 로 옮기지 못했다 (현재 ${await read()})`);
+}
+
+/** 값이 바뀔 때까지(최대 2초) 기다린다. 안 바뀌면 그대로 진행해 상위 루프가 판단한다. */
+async function waitForChange(
+  page: Page,
+  read: () => Promise<string | null>,
+  previous: string | null,
+): Promise<void> {
+  const deadline = Date.now() + 2000;
+  while (Date.now() < deadline) {
+    await page.waitForTimeout(25);
+    if ((await read()) !== previous) return;
+  }
+}
+
+export async function focusRailEntry(page: Page, railId: string): Promise<void> {
+  await returnToRail(page);
+  await moveCursor(page, () => railCursor(page), RAIL_ORDER, railId);
+}
+
+/** 그룹 트레이 안의 명령 순서(playerStatusMenuModel.ts 의 RAIL_GROUPS). */
+const GROUP_COMMAND_ORDER: Readonly<Record<string, readonly string[]>> = {
+  "party-menu": ["status", "row", "formation", "monsters"],
+  "record-menu": ["quests", "relationships", "life-ledger"],
+  "system-menu": ["save", "load", "wait", "to-title"],
+};
+
+/** 확인/취소 뒤 상세 패널이 다시 그려질 틈을 준다(두 프레임 정도). */
+async function waitForPanelSettled(page: Page): Promise<void> {
+  await page.waitForTimeout(80);
+}
+
 export async function selectCommand(page: Page, commandId: string, title: string): Promise<void> {
   if ((await page.getByTestId("status-menu-command-rail").count()) === 0) {
     await page.keyboard.press("x");
     await expect(page.getByTestId("status-menu-command-rail")).toBeVisible();
   }
+  await returnToRail(page);
   const groupEntryId = FOLDED_COMMAND_GROUPS[commandId];
+  await moveCursor(page, () => railCursor(page), RAIL_ORDER, groupEntryId ?? commandId);
+  await page.keyboard.press("z");
+  await waitForPanelSettled(page);
   if (groupEntryId) {
-    await page.getByTestId(`status-menu-command-${groupEntryId}`).click();
-    await page.getByTestId(`status-menu-group-command-${commandId}`).click();
-  } else {
-    await page.getByTestId(`status-menu-command-${commandId}`).click();
+    const trayOrder = GROUP_COMMAND_ORDER[groupEntryId];
+    await moveCursor(page, () => trayCursor(page), trayOrder, commandId);
+    await page.keyboard.press("z");
+    await waitForPanelSettled(page);
   }
   await expect(page.getByTestId("status-menu-detail-title")).toHaveText(title);
+  await enterDetailPanel(page);
+}
+
+/**
+ * 레일에서 명령을 고르면 상세 패널은 **미리보기**로만 뜬다 — main 모드에서는
+ * `aria-hidden`+`inert` 라 안의 행이 보이지도, 눌리지도 않는다(playerStatusMenu.ts).
+ * 확인 키로 패널에 들어가야 행 조작이 가능하다. 이 단계를 빼면 스펙이
+ * `status-menu-item-item_potion` 같은 행에서 "element is not visible" 로 타임아웃한다.
+ */
+export async function enterDetailPanel(page: Page): Promise<void> {
+  const panel = page.getByTestId("status-menu-detail");
+  if ((await panel.getAttribute("aria-hidden")) === "true") {
+    await page.keyboard.press("z");
+  }
+  await expect(panel).toBeVisible();
+}
+
+/** 상세 패널 안에서 원하는 행으로 커서를 옮기고 확인키를 누른다(클릭은 히트테스트가 없어 안 된다). */
+export async function chooseDetailRow(page: Page, testId: string): Promise<void> {
+  const rows = await page.evaluate(() => {
+    const panel = document.querySelector("[data-testid='status-menu-detail']");
+    return Array.from(panel?.querySelectorAll("[data-testid]") ?? [])
+      .filter((node) => node instanceof HTMLElement && node.matches("button, [role='menuitem'], [role='option']"))
+      .map((node) => (node as HTMLElement).dataset.testid ?? "");
+  });
+  if (!rows.includes(testId)) throw new Error(`상세 패널에 ${testId} 가 없다 (있는 행: ${rows.join(", ")})`);
+  const read = async (): Promise<string | null> =>
+    page.evaluate(() => {
+      const panel = document.querySelector("[data-testid='status-menu-detail']");
+      const current = panel?.querySelector("[data-testid][aria-current='true']");
+      return current instanceof HTMLElement ? (current.dataset.testid ?? null) : null;
+    });
+  for (let guard = 0; guard <= rows.length; guard += 1) {
+    const current = await read();
+    if (current === testId) break;
+    await page.keyboard.press("ArrowDown");
+    await waitForChange(page, read, current);
+  }
+  if ((await read()) !== testId) throw new Error(`상세 커서를 ${testId} 로 옮기지 못했다`);
+  await page.keyboard.press("z");
+  await waitForPanelSettled(page);
 }
 
 export async function screenshotMenu(page: Page, path: string): Promise<void> {
