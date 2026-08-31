@@ -177,26 +177,25 @@
 }
 
 .tileset-db-cell.mark-o {
-  color: var(--text-1);
+  color: transparent;
+  font-size: 0;
 }
 
 .tileset-db-cell.mark-x {
   background: rgba(163, 58, 50, 0.34);
-  color: #ffdad6;
+  color: #fff;
 }
 
 .tileset-db-cell.mark-star {
-  background: rgba(46, 111, 158, 0.28);
-  color: #d9ecff;
-  /* 셀 크기에 비례해 ★가 그래픽을 덜 가리게 */
-  font-size: clamp(11px, calc(var(--tileset-cell) * 0.45), 22px);
+  background: rgba(180, 83, 9, 0.18);
+  color: #fff;
+  font-size: clamp(9px, calc(var(--tileset-cell) * 0.28), 13px);
   line-height: 1;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.65);
 }
 
-.tileset-db-cell.mark-o,
 .tileset-db-cell.mark-x {
-  font-size: clamp(10px, calc(var(--tileset-cell) * 0.32), 16px);
+  font-size: clamp(9px, calc(var(--tileset-cell) * 0.28), 13px);
 }
 
 .tileset-db-cell.layer-upper.mark-star {

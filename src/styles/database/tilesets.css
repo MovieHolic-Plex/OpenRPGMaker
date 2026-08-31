@@ -160,6 +160,11 @@
   overflow: hidden;
 }
 
+.database-modal-body .oprn-tileset-main .tileset-db-edit-area.passage-paint {
+  grid-template-columns: minmax(0, 1fr) minmax(168px, 196px);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
 .database-modal-body .oprn-tileset-main .tileset-db-edit-sidebar {
   gap: 6px;
 }

@@ -27,7 +27,6 @@ const SIDE_PANE_KEY = "oprn.tileset.sidePaneOpen";
 
 const SIDE_PANE_NAMES: Partial<Record<TilesetSectionTab, string>> = {
   knowledge: "생성 감사",
-  rules: "그림판 범례",
 };
 
 /** 테스트의 가짜 DOM 처럼 `window` 는 있고 `localStorage` 는 없는 환경도 있다. */
@@ -91,59 +90,7 @@ function renderTilesetWorkbench(tileset: TilesetDef, tab: TilesetSectionTab, rer
 }
 
 function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerender: () => void): HTMLElement {
-  if (tab === "rules") {
-    const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
-    return el("aside", {
-      class: "oprn-tileset-terrain-pane tileset-rules-legend-pane",
-      children: [
-        el("fieldset", {
-          class: "oprn-db-fieldset",
-          dataset: { testid: "tileset-rules-side" },
-          children: [
-            el("legend", { text: "그림판 범례" }),
-            el("div", {
-              class: "tileset-legend-sheet-info",
-              dataset: { testid: "tileset-sheet-info" },
-              text: `${tileset.count}칸 · ${tileset.tilesPerRow}열 × ${rows}행 · ${tileset.tileSize}px`,
-            }),
-            el("ul", {
-              class: "tileset-layer-legend",
-              dataset: { testid: "tileset-layer-legend" },
-              children: [
-                el("li", {
-                  class: "tileset-legend-item layer-lower",
-                  children: [
-                    el("span", { class: "tileset-legend-swatch layer-lower", attrs: { "aria-hidden": "true" } }),
-                    el("span", { text: "하위 — 지면·벽·몸통 (초록 테)" }),
-                  ],
-                }),
-                el("li", {
-                  class: "tileset-legend-item layer-upper",
-                  children: [
-                    el("span", { class: "tileset-legend-swatch layer-upper", attrs: { "aria-hidden": "true" } }),
-                    el("span", { text: "상위 — 수관·지붕·오버레이 (파란 테)" }),
-                  ],
-                }),
-                el("li", {
-                  class: "tileset-legend-item layer-both",
-                  children: [
-                    el("span", { class: "tileset-legend-swatch layer-both", attrs: { "aria-hidden": "true" } }),
-                    el("span", { text: "양쪽 — 어느 레이어에도 사용 가능" }),
-                  ],
-                }),
-              ],
-            }),
-            el("ul", {
-              class: "tileset-passage-legend",
-              children: [
-                el("li", { text: "O 통행 · X 차단 · ★ 상위 표시" }),
-              ],
-            }),
-          ],
-        }),
-      ],
-    });
-  }
+  void tab;
   return el("aside", {
     class: "oprn-tileset-terrain-pane",
     children: [

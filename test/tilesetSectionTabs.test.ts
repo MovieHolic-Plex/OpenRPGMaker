@@ -4,7 +4,13 @@
 // - 지형 템플릿(교과서)은 구성 탭으로 이사했다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderTilesetEditor } from "@/editor/panels/tilesetSettingsDetails";
-import { getTilesetSectionTab, setTilesetMetadataEditMode, setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
+import {
+  getTilesetPassagePaint,
+  getTilesetSectionTab,
+  setTilesetMetadataEditMode,
+  setTilesetPassagePaint,
+  setTilesetSectionTab,
+} from "@/editor/panels/tilesetMetadataEditor";
 import { createEditorModalDirtyCloseController } from "@/editor/panels/editorModalDirtyState";
 import {
   closeTilesetMeaningDialog,
@@ -17,7 +23,7 @@ import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { defaultTileset } from "@/project/defaults/defaultAssets";
 import { applyCombinedTownHarness } from "@/project/tilesetHarness";
-import { setPassageMark } from "@/project/tilesetPassage";
+import { passageMarkForTile, setPassageMark } from "@/project/tilesetPassage";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -240,6 +246,34 @@ describe("타일셋 섹션 3탭 UI", () => {
     expect(findByTestId(editor, "tileset-field-ai-description")).toBeTruthy();
     expect(findByTestId(editor, "tileset-selected-usage")).toBeNull();
     setTilesetMetadataEditMode("passage", () => {});
+  });
+
+  it("통행 붓은 클릭한 칸에 고른 규칙을 칠하고 통과 칸은 글자를 비운다", () => {
+    setTilesetPassagePaint("x");
+    let editor = renderEditor();
+    expect(getTilesetPassagePaint()).toBe("x");
+    const open = findByTestId(editor, "tileset-passage-open") as unknown as HTMLElement;
+    const blocked = findByTestId(editor, "tileset-passage-blocked") as unknown as HTMLElement;
+    const star = findByTestId(editor, "tileset-passage-star") as unknown as HTMLElement;
+    expect(open).toBeTruthy();
+    expect(blocked).toBeTruthy();
+    expect(star).toBeTruthy();
+
+    const tilesetId = DEFAULT_TILESET_ID;
+    expect(passageMarkForTile(store.getCurrent().tilesets[tilesetId]!, 0)).toBe("x");
+    setTilesetPassagePaint("o");
+    editor = renderEditor();
+    (findByTestId(editor, "tileset-db-cell-0") as unknown as HTMLElement).click();
+    expect(passageMarkForTile(store.getCurrent().tilesets[tilesetId]!, 0)).toBe("o");
+    editor = renderEditor();
+    const cell = findByTestId(editor, "tileset-db-cell-0") as unknown as { textContent?: string };
+    expect(String(cell.textContent ?? "")).toBe("");
+
+    setTilesetPassagePaint("x");
+    editor = renderEditor();
+    (findByTestId(editor, "tileset-db-cell-0") as unknown as HTMLElement).click();
+    expect(passageMarkForTile(store.getCurrent().tilesets[tilesetId]!, 0)).toBe("x");
+    setTilesetPassagePaint("o");
   });
 
   it("구성 탭에는 오토타일 섹션만 렌더된다", () => {

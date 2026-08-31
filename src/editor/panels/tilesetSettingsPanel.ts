@@ -153,18 +153,16 @@ function renderTilesetDetail(tileset: TilesetDef, rerender: () => void): HTMLEle
   const parts = splitLegacyEditor(tileset, rerender);
   const body: HTMLElement[] = [];
 
-  if (parts.properties) {
-    // 카드 제목은 일부러 없다 — fieldset legend 가 이미 "이름 / 타일셋 그래픽 /
-    // 투명색" 을 말하고 있어서 머리글을 얹으면 34px 을 그림판에서 뺏기만 한다.
-    body.push(sectionCard({ children: [parts.properties], testid: "db-tileset-properties-card" }));
-  }
   if (parts.sectionTabs) body.push(parts.sectionTabs);
   if (parts.workbench) body.push(parts.workbench);
+  if (parts.properties) {
+    // 이름·그래픽·투명색은 통행 편집의 주인공이 아니다. 시트 아래에 둔다.
+    body.push(sectionCard({ children: [parts.properties], testid: "db-tileset-properties-card" }));
+  }
   if (parts.fallback) body.push(parts.fallback);
 
   const detail = detailPane({
     hero: detailHero({
-      eyebrow: "타일셋",
       title: tileset.name || "(이름 없음)",
       tags: heroTags(tileset),
       actions: [
