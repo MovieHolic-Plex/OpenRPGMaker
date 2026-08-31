@@ -97,7 +97,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "통행", testid: "db-tab-tilesets" },
   { id: "tilesetAutotile", label: "오토타일 설정", testid: "db-tab-tileset-autotile" },
-  { id: "tilesetUnlabeled", label: "미라벨 모아보기", testid: "db-tab-tileset-unlabeled" },
+  { id: "tilesetUnlabeled", label: "미분류 모아보기", testid: "db-tab-tileset-unlabeled" },
   { id: "worldGen", label: "생성 규칙", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
   { id: "tilesetSpaces", label: "공간 종류", testid: "db-tab-tileset-spaces" },
@@ -135,7 +135,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
 
-/** 세계 그룹 안에서 타일셋 폴더로 묶는 자식 탭 — 통행·오토타일·미라벨·구조물·공간 종류. */
+/** 세계 그룹 안에서 타일셋 폴더로 묶는 자식 탭 — 통행·오토타일·미분류·구조물·공간 종류. */
 export const TILESET_FOLDER_TAB_IDS: readonly DatabaseTab[] = [
   "tilesets",
   "tilesetAutotile",
@@ -601,7 +601,7 @@ function appendTilesetFolder(
       class: `db-tab-folder${childActive ? " open" : ""}`,
       attrs: {
         type: "button",
-        title: "타일셋 — 이 칩셋의 통행·오토타일·미라벨·구조물·공간 종류",
+        title: "타일셋 — 이 칩셋의 통행·오토타일·미분류·구조물·공간 종류",
         "aria-label": "타일셋",
         "aria-expanded": "true",
       },

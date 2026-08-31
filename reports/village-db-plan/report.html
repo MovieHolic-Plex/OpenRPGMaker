@@ -371,7 +371,7 @@
 
   <figure>
     <img src="img/ref-tile-paintboard.png" alt="타일 그림판 — 480칩 30열×16행, 통행 O/X 표식과 오토타일 그룹 테두리">
-    <figcaption>타일 그림판이 위 번호들의 출처다. 바닥글이 <code>480칩 · 30열×16행 · 2x · 전체 레이어 · 통행</code>이고, 칩마다 통행 표식 <code>O</code>/<code>X</code>와 오토타일 그룹 테두리가 겹쳐 그려진다. 하위탭은 <code>전체 / 하위 / 상위 / 미라벨</code> — 마지막 탭이 라벨 없는 칩을 모으는 큐다. 마을 코드가 참조하는 건 이 격자의 좌표뿐이고, 그래서 텍스처가 바뀌면 전부 다른 그림이 된다.</figcaption>
+    <figcaption>타일 그림판이 위 번호들의 출처다. 바닥글이 <code>480칩 · 30열×16행 · 2x · 전체 레이어 · 통행</code>이고, 칩마다 통행 표식 <code>O</code>/<code>X</code>와 오토타일 그룹 테두리가 겹쳐 그려진다. 하위탭은 <code>전체 / 하위 / 상위 / 미분류</code> — 마지막 탭이 라벨 없는 칩을 모으는 큐다. 마을 코드가 참조하는 건 이 격자의 좌표뿐이고, 그래서 텍스처가 바뀌면 전부 다른 그림이 된다.</figcaption>
   </figure>
   <p class="fine">마을 코드가 직접 찍는 원시 타일 번호들. 이 번호가 <code>combined_town</code> 좌표라서 다른 타일셋에서는 전혀 다른 그림이 된다.</p>
 
@@ -533,7 +533,7 @@
   <div class="shots s3">
     <figure><img src="img/ref-structure-kits-tab.png" alt="구조물 탭 — 합본 마을 타일셋의 내장 킷 6종, 전부 부위 없음"><figcaption>구조물 탭. 원본 칩은 <code>전체 6</code> / <code>내장 건물 6</code> / <code>실내 오브젝트 0</code> / <code>내가 저장한 구조물 0</code>, 그 아래가 타일셋별 목록이다(<code>합본 마을 6</code>, <code>실내 28</code>, 나머지 0). 킷 6종이 <code>houseKit.ts</code>의 id 순서와 이름까지 일치한다 — 파랑 지붕+석벽(<code>blue-stone</code>) … 빨간 A자 지붕+석벽(<code>aframe-stone</code>). 전부 <code>9×8</code>이고 <strong>부위 열이 전부 <code>부위 없음</code></strong>이다. 내장 항목 인스펙터는 편집·삭제를 렌더하지 않고 <code>내 구조물로 복제</code>·<code>팔레트에서 쓰기</code> 둘만 둔다.</figcaption></figure>
     <figure><img src="img/db-tab-reference.png" alt="진영 탭 — 예약 진영, 저작됨/기본값 배지, 대칭 태도 행렬"><figcaption>진영 탭이 마을 탭이 베낄 형태에 가장 가깝다. 예약 레코드는 <code>ID는 바꿀 수 없습니다</code>로 잠그고 이름만 열어두며, 행렬 셀마다 <code>저작됨</code>/<code>기본값</code>을 표시해 내장값과 사용자값을 한 화면에서 구분한다. 상단 카드가 <code>전체 진영 2</code>·<code>저작한 관계 0</code>으로 「기본값과 다른 쌍」만 세는 것도 같은 발상이다. <span class="fine">이 탭이 바로 <code>DATABASE_TAB_SPECS</code> 29개에서 빠진 그 탭이다 — 모달 크기 스윕이 여기를 안 지난다.</span></figcaption></figure>
-    <figure><img src="img/ref-tileset-knowledge.png" alt="타일셋 타일 지식 하위탭 — 미라벨 큐 237개 남음, 검사기 5역할 전부 OK"><figcaption>타일 지식 하위탭. 미라벨 큐가 <code>237개 남음</code>(= 480 − 243, 배지와 일치)인데 검사기는 <code>Ready for city/house/road/water/decor</code> 5역할 전부 OK다 — 2-4에서 말한 「존재만 보고 개수는 안 보는」 검사가 화면으로 확인된다. 마을이 번호를 버리려면 이 큐가 비워져야 한다. <span class="fine">검사기 패널만 문자열이 전부 영어 하드코딩이다(<code>tilesetCheckerSummary.ts:11-34</code>).</span></figcaption></figure>
+    <figure><img src="img/ref-tileset-knowledge.png" alt="타일셋 타일 지식 하위탭 — 미분류 큐 237개 남음, 검사기 5역할 전부 OK"><figcaption>타일 지식 하위탭. 미분류 큐가 <code>237개 남음</code>(= 480 − 243, 배지와 일치)인데 검사기는 <code>Ready for city/house/road/water/decor</code> 5역할 전부 OK다 — 2-4에서 말한 「존재만 보고 개수는 안 보는」 검사가 화면으로 확인된다. 마을이 번호를 버리려면 이 큐가 비워져야 한다. <span class="fine">검사기 패널만 문자열이 전부 영어 하드코딩이다(<code>tilesetCheckerSummary.ts:11-34</code>).</span></figcaption></figure>
   </div>
 
   <h3>3-1. 그대로 베껴 쓸 패턴</h3>

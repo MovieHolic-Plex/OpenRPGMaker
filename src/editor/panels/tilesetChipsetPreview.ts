@@ -32,7 +32,7 @@ type ChipsetPreviewModel = {
   readonly onSelectTile: (tile: number, options?: { readonly quiet?: boolean }) => void;
   /** Optional: open full-sheet passage modal from the preview chrome. */
   readonly onOpenFullSheet?: () => void;
-  /** 미라벨(라벨·설명 비어 있음) 타일만 강조 */
+  /** 미분류(라벨·설명 비어 있음) 타일만 강조 */
   readonly unlabeledOnly?: boolean;
   readonly passagePaint?: PassageMark;
   readonly onPaintStrokeStart?: () => void;
@@ -90,7 +90,7 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
                 : [
                     el("button", {
                       class: unlabeledOn ? "active" : "",
-                      text: "미라벨",
+                      text: "미분류",
                       attrs: {
                         type: "button",
                         role: "tab",
@@ -258,7 +258,7 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
 function previewMetaText(model: ChipsetPreviewModel, rows: number): string {
   const filterLabel = layerFilter === "all" ? "전체 레이어" : layerFilter === "lower" ? "하위만" : "상위만";
   const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
-  const unlabeledLabel = unlabeledOn ? " · 미라벨 강조" : "";
+  const unlabeledLabel = unlabeledOn ? " · 미분류 강조" : "";
   return `${model.tileset.count}칩 · ${model.tileset.tilesPerRow}열×${rows}행 · ${previewScale}x · ${filterLabel}${unlabeledLabel} · ${modeHelpText(model.mode)} · 스크롤: 휠·←→↑↓·중클릭 드래그 (전체 시트)`;
 }
 
@@ -277,8 +277,8 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
     text: cellText(model, index),
     attrs: {
       type: "button",
-      title: `${cellTitle(model.tileset, index)} · ${layerHomeLabel(home)}${unlabeled ? " · 미라벨" : ""} · 우클릭: 의미/통행/레이어`,
-      "aria-label": `타일 ${index} ${layerHomeLabel(home)}${unlabeled ? " 미라벨" : ""}. 우클릭으로 의미 편집`,
+      title: `${cellTitle(model.tileset, index)} · ${layerHomeLabel(home)}${unlabeled ? " · 미분류" : ""} · 우클릭: 의미/통행/레이어`,
+      "aria-label": `타일 ${index} ${layerHomeLabel(home)}${unlabeled ? " 미분류" : ""}. 우클릭으로 의미 편집`,
     },
     dataset: {
       testid: `tileset-db-cell-${index}`,

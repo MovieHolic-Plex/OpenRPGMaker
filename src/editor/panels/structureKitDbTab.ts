@@ -185,7 +185,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   const current = store.getCurrent();
   const tilesets = Object.values(current.tilesets);
 
-  // 타일셋 폴더 자식(통행·오토타일·미라벨·구조물·공간 종류)은 칩셋 선택을 공유한다.
+  // 타일셋 폴더 자식(통행·오토타일·미분류·구조물·공간 종류)은 칩셋 선택을 공유한다.
   // 앨범 클릭은 setSelectedTileset 도 같이 쓰므로 여기 재도입이 방금 고른 앨범을 덮지 않는다.
   // 테스트는 resetStructureKitsTabSession → clearSelectedTileset 으로 공유 선택을 비운다.
   const sharedTilesetId = getSelectedTilesetId();
