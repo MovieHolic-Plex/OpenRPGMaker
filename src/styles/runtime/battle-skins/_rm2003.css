@@ -117,6 +117,7 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy {
   background: none;
+  filter: none;
   text-align: center;
   transform: translate(-50%, -100%);
   z-index: 3;
@@ -132,12 +133,11 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy .battle-enemy-image {
   border-radius: 0;
-  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.55));
+  filter: none;
   height: 180px;
   object-fit: contain;
   opacity: 1;
   width: 160px;
-  --battle-sprite-filter: none;
 }
 
 /* RM2003 원작은 적 이름표를 필드에 띄우지 않는다. 조준은 코너 괄호만. */

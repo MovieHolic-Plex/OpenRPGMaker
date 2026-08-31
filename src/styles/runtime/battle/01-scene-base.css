@@ -144,7 +144,7 @@
   transform: translate(-50%, -100%);
   border: 0;
   border-radius: 0;
-  background: radial-gradient(ellipse at 50% 55%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 55%, transparent 85%);
+  background: none;
   color: var(--oprn-battle-text);
   font-size: 0;
   font-weight: 400;
@@ -184,15 +184,9 @@
   image-rendering: pixelated;
   object-fit: contain;
   width: 224px;
-  /* 적 스프라이트를 배경에서 분리. **변수로 한 번 선언**하고 filter 는 그 변수만 참조한다 —
-     조준 펄스(06-damage-flash-targeting.css: battle-target-pulse)처럼 filter 를 애니메이션하는
-     규칙이 이 기본 보정을 통째로 날리지 않게 하려는 것이다. CSS 애니메이션은 filter 속성을
-     대체하므로 키프레임이 이 변수를 다시 깔아 줘야 한다. 빈 폴백 `var(--x, )` 은 유효한
-     문법이고, 변수가 없는 아군 스프라이트에서는 아무것도 더하지 않는다. */
-  --battle-sprite-filter: brightness(1.4) contrast(1.5) saturate(1.4);
-  filter: var(--battle-sprite-filter, );
-  background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.3) 60%, transparent 80%);
-  border-radius: 50%;
+  background: none;
+  border-radius: 0;
+  filter: none;
   opacity: 1;
 }
 

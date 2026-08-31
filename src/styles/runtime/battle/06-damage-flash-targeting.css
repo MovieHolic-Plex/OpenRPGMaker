@@ -135,7 +135,6 @@
 
 .battle-target-candidate {
   cursor: default;
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.55));
 }
 
 .battle-target-candidate::after {
@@ -164,40 +163,8 @@
   animation: none;
 }
 
-/* 무늬 많은 스프라이트·배경 위에서도 "이놈" 이 보이게 그림 자체를 맥동시킨다. pokemon
-   스킨이 감독 지적("타겟팅 박스가 잘 안 보임") 뒤 검증한 방식을 기본 경로로 올린 것이다.
-   노드가 아니라 그림에 거는 이유: .battle-enemy 의 filter 는 접지 그림자
-   (07-640-scene-turn-ribbon.css:190)가 이미 쓰고 있어 노드에 걸면 그림자가 함께 깜빡인다. */
-.battle-target-selected .battle-enemy-image,
-.battle-target-selected .battle-actor-image,
-.battle-target-selected .battle-actor-sprite {
-  /* 윤곽 색은 창틀 밝은 톤 토큰을 쓴다 — 스킨이 톤을 바꾸면 조준 윤곽도 따라간다
-     (pokemon 스킨은 _pokemon.css 에서 #f8f8f8 로 재정의). 하드코딩 hex 는 CSS 예산
-     래칫이 잡는다 — src/styles/TOKENS.md §4. */
-  --battle-target-ink: var(--oprn-battle-window-light);
-  animation: battle-target-pulse 0.62s steps(1, end) infinite;
-}
-
-/* 두 단계 모두 `--battle-sprite-filter` 를 **먼저** 깔고 그 위에 보정을 더한다.
-   `filter: none` 으로 두면 `.battle-enemy-image` 의 기본 보정
-   (01-scene-base.css: brightness(1.4) contrast(1.5) saturate(1.4) — 스프라이트를 배경에서
-   분리하는 보정)이 0.62초마다 통째로 사라져 선택된 적만 배경에 묻혔다 깨어나듯 깜빡인다.
-   CSS 애니메이션은 filter 속성을 대체하므로 기본값을 키프레임이 다시 깔아 주는 것 말고는
-   방법이 없다. 변수가 없는 아군 스프라이트에서는 빈 폴백이 아무것도 더하지 않는다. */
-@keyframes battle-target-pulse {
-  0% {
-    filter:
-      var(--battle-sprite-filter, )
-      brightness(1.5)
-      drop-shadow(2px 0 0 var(--battle-target-ink))
-      drop-shadow(-2px 0 0 var(--battle-target-ink))
-      drop-shadow(0 2px 0 var(--battle-target-ink))
-      drop-shadow(0 -2px 0 var(--battle-target-ink));
-  }
-  50% {
-    filter: var(--battle-sprite-filter, );
-  }
-}
+/* 조준은 코너 리티클만 쓴다. 예전 `battle-target-pulse` 는 선택 스프라이트의
+   filter/밝기를 0.62초마다 껐다 켜서 몬스터가 반투명으로 깜빡였다. */
 
 /* 배틀러 버튼은 **UA 기본 포커스 링을 쓰지 않는다.**
    흰 사각형(outline: 4px solid …)을 지우기만 했을 때 브라우저 기본 링이 그 자리를 그대로
@@ -227,7 +194,6 @@
 .battle-has-result .battle-target-selected .battle-actor-image,
 .battle-has-result .battle-target-selected .battle-actor-sprite {
   animation: none;
-  filter: none;
 }
 
 .battle-has-result .battle-target-candidate::after {

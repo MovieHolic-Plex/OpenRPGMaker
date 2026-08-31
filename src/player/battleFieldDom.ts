@@ -105,7 +105,7 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
     partyFacing: "hidden",
     enemy: (i, n) => ({
       x: Math.round(160 + (i - (n - 1) / 2) * 70),
-      y: n <= 1 ? 110 : 90 + (i % 2) * 8,
+      y: n <= 1 ? 124 : 104 + (i % 2) * 8,
     }),
     party: () => ({ x: 160, y: 150 }),
   },
