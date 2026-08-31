@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankProject, DEFAULT_EQUIPMENT_ID } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { useItemFromMenu, type MenuItemUseResult } from "@/player/playerItemUse";
 import type { SaveSlotReadResult } from "@/player/saveSlots";
@@ -237,6 +237,40 @@ describe("player status menu", () => {
         // 81px 목록에 아이템 7개 중 2개만 보이고 셋째 행은 문장 중간에서 잘렸다. 아예 만들지 않는다.
         expect(row.querySelector(".status-menu-detail-description")).toBeNull();
       }
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("lists worn and packed equipment in the item bag", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const sword = project.database.equipment.find((record) => record.id === DEFAULT_EQUIPMENT_ID);
+      if (!sword) throw new Error("missing default sword");
+      const extra = project.database.equipment.find((record) => record.id !== DEFAULT_EQUIPMENT_ID);
+      if (!extra) throw new Error("missing extra equipment fixture");
+      session.inventory[extra.id] = 2;
+
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session,
+          slots: [],
+          selectedCommand: "items",
+          mode: "function",
+          actions: noopActions,
+        }),
+      );
+
+      const worn = findByTestId(menu, "status-menu-owned-equipment-worn");
+      expect(worn?.textContent).toContain("장착 중");
+      expect(worn?.textContent).toContain(sword.name);
+
+      const packed = findByTestId(menu, `status-menu-owned-equipment-${extra.id}`);
+      expect(packed?.textContent).toContain(extra.name);
+      expect(packed?.textContent).toContain("2개");
     } finally {
       restoreDom();
     }

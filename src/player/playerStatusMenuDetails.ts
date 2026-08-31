@@ -158,7 +158,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   }
 
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
-  const entries = project.database.items.filter((item) => inventory.has(item.id)).map((item) => ({
+  const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((item) => ({
     label: item.name,
     icon: itemEntryIcon(item),
     value: `${inventory.get(item.id) ?? 0}개`,
@@ -168,7 +168,55 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       ? () => options.onSelectItemTarget?.(item.id)
       : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
   }));
+  const { wornSummary, bagEntries } = ownedEquipmentEntries(options);
+  const entries = [...(wornSummary ? [wornSummary] : []), ...itemEntries, ...bagEntries];
   return { title: "아이템", entries, emptyLabel: "아이템이 없습니다" };
+}
+
+function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
+  readonly wornSummary: StatusMenuDetailEntry | undefined;
+  readonly bagEntries: readonly StatusMenuDetailEntry[];
+} {
+  const { project, session } = options;
+  const party = partyActors(project, session);
+  const wornNames: string[] = [];
+  const seenWorn = new Set<string>();
+  for (const actor of party) {
+    const worn = actorEquipment(project, session, actor);
+    for (const slot of EQUIPMENT_SLOTS) {
+      const equipmentId = worn[slot.id];
+      if (!equipmentId || seenWorn.has(equipmentId)) continue;
+      seenWorn.add(equipmentId);
+      const record = project.database.equipment.find((entry) => entry.id === equipmentId);
+      if (record) wornNames.push(record.name);
+    }
+  }
+  const wornSummary: StatusMenuDetailEntry | undefined = wornNames.length === 0
+    ? undefined
+    : {
+      label: "장착 중",
+      value: wornNames.join(", "),
+      testId: "status-menu-owned-equipment-worn",
+    };
+  const bagEntries = project.database.equipment.flatMap((equipment) => {
+    const bagCount = session.inventory[equipment.id] ?? 0;
+    if (bagCount <= 0) return [];
+    const actorId = party.find((actor) => actorEquipment(project, session, actor)[equipment.slot] === equipment.id)?.id
+      ?? party[0]?.id;
+    return [{
+      label: equipment.name,
+      icon: equipmentEntryIcon(equipment),
+      value: `${bagCount}개`,
+      description: equipment.description,
+      testId: `status-menu-owned-equipment-${equipment.id}`,
+      onActivate: actorId && options.onSelectEquipmentSlot
+        ? () => options.onSelectEquipmentSlot?.(actorId, equipment.slot)
+        : actorId && options.onSelectEquipmentActor
+          ? () => options.onSelectEquipmentActor?.(actorId)
+          : undefined,
+    }];
+  });
+  return { wornSummary, bagEntries };
 }
 
 function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
