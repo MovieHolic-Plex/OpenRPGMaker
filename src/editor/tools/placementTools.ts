@@ -126,6 +126,7 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
         footprintAt: stepFootprintAt,
         selectionSeed: seedForTool(rawArgs, legacySeed),
         trunkVisible: args.trunkVisible,
+        explicitOrigins: parseExplicitOrigins(rawArgs.origins),
       });
       placed.push(...dense.placed);
       footprints.push(...dense.footprints);
@@ -710,6 +711,24 @@ function rectAt(origin: Point, footprint: Footprint): Rect {
  * 겹침 규칙은 자연 경로와 같다 — 같은 레이어를 두 번 쓰지만 않으면 수관(upper)이 남의 밑동(lower)
  * 칸을 덮어도 된다. 그래야 나무가 실제로 맞닿아 통행이 막힌다.
  */
+/**
+ * 호출부가 지정한 배치 원점 목록. 숲 합성이 2×2 활엽수를 **대각 엇갈림 격자**로 세울 때 쓴다 —
+ * 후보를 코드가 고르면(행 우선이든 시드 셔플이든) 큰 원자가 서로 줄을 맞추거나 뭉쳐서
+ * "대각선으로 선 나무" 라는 의도가 나오지 않는다.
+ */
+function parseExplicitOrigins(raw: unknown): readonly { readonly x: number; readonly y: number }[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const parsed: { x: number; y: number }[] = [];
+  for (const entry of raw) {
+    if (typeof entry !== "object" || entry === null) continue;
+    const x = (entry as { x?: unknown }).x;
+    const y = (entry as { y?: unknown }).y;
+    if (typeof x !== "number" || typeof y !== "number") continue;
+    parsed.push({ x: Math.floor(x), y: Math.floor(y) });
+  }
+  return parsed.length > 0 ? parsed : undefined;
+}
+
 function planDensePlacements(input: {
   readonly map: GameMap;
   readonly area: Area;
@@ -718,8 +737,10 @@ function planDensePlacements(input: {
   readonly footprintAt: (step: number) => Footprint;
   readonly selectionSeed: number;
   readonly trunkVisible: boolean;
+  readonly explicitOrigins?: readonly { readonly x: number; readonly y: number }[];
 }): { readonly placed: readonly Rect[]; readonly footprints: readonly Footprint[] } {
   const { map, area, count, protectedCells, footprintAt } = input;
+  if (input.explicitOrigins) return planAtExplicitOrigins(input, input.explicitOrigins);
   // 숲은 행 우선 전수로 놓으면 수관줄·밑동줄이 짝짝이 반복하는 줄무늬이 된다 — 섞은 순서로 간다.
   if (input.trunkVisible) return planForestScatter(input);
   const organicRows = planDenseOrganicRows(input);
@@ -753,6 +774,38 @@ function planDensePlacements(input: {
     placed: selected.map((candidate) => candidate.rect),
     footprints: selected.map((candidate) => candidate.footprint),
   };
+}
+
+/** 지정된 원점만 순서대로 시도한다 — 맞지 않는 자리는 조용히 건너뛴다(격자가 영역 밖·보호셀에 걸릴 수 있다). */
+function planAtExplicitOrigins(
+  input: {
+    readonly map: GameMap;
+    readonly area: Area;
+    readonly count: number;
+    readonly protectedCells: ReadonlySet<string>;
+    readonly footprintAt: (step: number) => Footprint;
+  },
+  origins: readonly { readonly x: number; readonly y: number }[],
+): { readonly placed: readonly Rect[]; readonly footprints: readonly Footprint[] } {
+  const { map, area, count, protectedCells, footprintAt } = input;
+  const usedUpper = new Set<number>();
+  const usedLower = new Set<number>();
+  const placed: Rect[] = [];
+  const footprints: Footprint[] = [];
+  const maxX = area.x + area.w - 1;
+  const maxY = area.y + area.h - 1;
+  for (const origin of origins) {
+    if (placed.length >= count) break;
+    const footprint = footprintAt(placed.length);
+    if (origin.x < area.x || origin.y < area.y) continue;
+    if (origin.x + footprint.w - 1 > maxX || origin.y + footprint.h - 1 > maxY) continue;
+    if (!footprintFits(map, footprint, origin, protectedCells)) continue;
+    if (!denseCellsFree(map, footprint, origin, usedUpper, usedLower)) continue;
+    occupyDenseCells(map, footprint, origin, usedUpper, usedLower);
+    placed.push(rectAt(origin, footprint));
+    footprints.push(footprint);
+  }
+  return { placed, footprints };
 }
 
 /**
