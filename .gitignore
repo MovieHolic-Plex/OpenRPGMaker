@@ -80,6 +80,12 @@ evidence/
 # 안에 있는지, 레이일 폭이 색상표현과 일치하는지는 및음으로만 증명된다.
 !.omo/evidence/sidebar-ux/
 !.omo/evidence/sidebar-ux/**
+# 전투 이펙트 앵커·조준 표시 증거. 좌표와 조준 표시는 단위 테스트로 볼 수 없어
+# test/runtime/battle-target-anim.spec.ts 가 찍는 스크린샷이 정본 증거다.
+# 실측: 이 디렉터리의 PNG 두 개는 `git add -f` 로만 들어갔고(규칙 17행 `.omo/evidence/*` 가
+# 잡는다), 허용목록이 없으면 이펙트를 다시 찍어도 `git add -A` 가 그 갱신을 집지 않는다.
+!.omo/evidence/battle-anim-target/
+!.omo/evidence/battle-anim-target/**
 # 체공(hop) 연출 증거: 낙하가 "떨어진다"로 읽히는지는 정지 화면으로 증명되지 않는다.
 !.omo/evidence/character-hop/
 !.omo/evidence/character-hop/**
