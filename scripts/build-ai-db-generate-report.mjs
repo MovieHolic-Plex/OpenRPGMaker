@@ -1,7 +1,7 @@
 import { readFile, writeFile, stat } from "node:fs/promises";
 
 const SHOTS = "verify-shots/ai-db-generate";
-const OUT = "reports/ai-db-generate-report.html";
+const OUT = "reports/2026-08-31-ai-database-generation.html";
 
 const MIME = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg" };
 
@@ -170,13 +170,17 @@ Codex 가 열리면 바꿀 자리는 한 파일(<code>ohMyPiImageRuntime.ts</cod
 </div>
 
 <div class="card">
-<h3 style="margin-top:0">검토에서 고친 것 5가지</h3>
+<h3 style="margin-top:0">검토에서 고친 것 8가지</h3>
+<p style="margin:0 0 10px" class="muted">엄격한 검토를 4번 돌렸습니다. 아래는 검토가 잡아낸 실제 결함이고, 전부 고친 뒤 승인받았습니다.</p>
 <ul>
 <li><strong>취소를 막고 있었습니다.</strong> 만드는 동안 닫기 버튼이 잠겨서, 1분 넘게 걸리는 요청을 그만둘 방법이 없었습니다 → 「취소」로 바꿔 항상 누를 수 있게 했습니다.</li>
 <li><strong>취소를 “시간 초과”라고 알렸습니다.</strong> 사용자가 직접 취소한 것과 진짜 시간 초과를 구분해 다르게 씁니다.</li>
 <li><strong>“취소하면 안 써진다”를 말로만 했습니다.</strong> 그림이 다 온 뒤에 취소한 경우까지 테스트로 고정했습니다.</li>
 <li><strong>제일 위험한 코드에 테스트가 없었습니다.</strong> 그림 전송 부분(184줄)에 실제 pi-ai 를 태운 테스트를 붙였습니다.</li>
 <li><strong>로그인 안 됐을 때 영어가 나왔습니다.</strong> <code>Use /login to re-authenticate.</code> 라는, 이 제품에 없는 명령을 안내하고 있었습니다 → 한국어로 <em>AI 설정 → Google Antigravity 로그인</em> 을 안내합니다.</li>
+<li><strong>실패 종류를 잘못 짚었습니다.</strong> 그림이 안전 정책으로 막힌 경우까지 “로그인하세요”라고 잘못 안내했습니다 → 실제 서버 응답 상태로 구분합니다.</li>
+<li><strong>한 줄이 사라져도 아무도 몰랐습니다.</strong> 그림 전송에 꼭 필요한 코드 한 줄을 지워도 테스트가 통과했습니다 → 지우면 빨갛게 죽는 테스트를 만들었습니다.</li>
+<li><strong>한 번도 로그인 안 한 사람이 빠졌습니다.</strong> 가장 흔한 상태인데, 여기서만 다시 영어가 새어 나왔습니다 → 구조로 막았습니다.</li>
 </ul>
 </div>
 

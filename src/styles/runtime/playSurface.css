@@ -150,6 +150,7 @@
 .play-stage.cutscene-hud-hidden .hand-slot,
 .play-stage.cutscene-hud-hidden .action-hud,
 .play-stage.cutscene-hud-hidden .minimap-root,
+.play-stage.cutscene-hud-hidden .runtime-missing-resource,
 .play-stage.cutscene-hud-hidden .runtime-timer-hud,
 .play-stage.cutscene-hud-hidden .runtime-time-hud,
 .play-stage.cutscene-hud-hidden .touch-pad {
@@ -158,17 +159,17 @@
 
 /* ── 누락 리소스 알림 ─────────────────────────────────────────────────────────────
    `RuntimeDomOverlay.syncMissingResourceError` 가 붙이는 노드다. 이것은 **실패가 아니라
-   경고**다 — `renderEvents` 는 모트 튼 스프라이트를 기본 charset 으로 대심해 그리고 게임은
+   경고**다 — `renderEvents` 는 못 푼 스프라이트를 기본 charset 으로 대체해 그리고 게임은
    그대로 진행한다. 그러니 화면을 덮을 이유가 없다.
 
-   왜 모든 치수를 --play-scale 로 나누는가 (실출): 이 노드는 `transform: scale(var(--play-scale))`
+   왜 모든 치수를 --play-scale 로 나누는가 (실측): 이 노드는 `transform: scale(var(--play-scale))`
    가 걸린 `.play-stage` 의 자식이라 px 가 배율만큼 곱해진다. 1280×960 에서 --play-scale=4 이고,
-   이전 규칙(font-size 13px · padding 8/12px · 붉은 테도리)은 화면에서 **1232×292px, 실효 글자
-   52px** 로 똎다 — 뷰포트의 39% 다. 나누면 배율과 바로 화면상 크기가 고정된다.
+   이전 규칙(font-size 13px · padding 8/12px · 붉은 테두리)은 화면에서 **1232×292px, 실효 글자
+   52px** 로 떴다 — 뷰포트의 39% 다. 나누면 배율과 무관하게 화면상 크기가 고정된다.
 
    왜 이 파일인가: 이전엔 `editor/core.part-1.css` 에만 규칙이 있어서 **출하되는 내보내기
-   플레이어에는 스타일이 아예 없었다**. 실춝하면 스타일 없는 노드는 static 부록으로 흘러
-   1280×272px 로 무대 아랫(y=960)에 깔리고 `overflow: hidden` 에 잔려 조용하 사라졌다 —
+   플레이어에는 스타일이 아예 없었다**. 실측하면 스타일 없는 노드는 static 블록으로 흘러
+   1280×272px 로 무대 아래(y=960)에 깔리고 `overflow: hidden` 에 잘려 조용히 사라졌다 —
    저작자에게 필요한 신호가 출하물에선 통째로 죽어 있었다. playSurface.css 는 플레이어와
    편집기 양쪽 import 폐포에 모두 있으므로 두 표면이 한 규칙을 공유한다. */
 .runtime-missing-resource {
