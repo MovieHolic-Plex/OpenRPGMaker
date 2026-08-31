@@ -319,21 +319,14 @@ describe("edit scene event rendering", () => {
   });
 
   it.each<Layer>(["lower", "upper"])(
-    "renders saved event sprites on the %s tile layer, not E badges",
+    "renders events as compact E badges on the %s tile layer",
     (layer) => {
       const result = renderSelectedNpcEvent(layer);
       const objects = flattenObjects(result.overlayObjects);
       const badge = result.overlayObjects.find((object) => object.kind === "container" && object.x === 40 && object.y === 40);
+      const badgeBack = objects.find((object) => object.kind === "circle" && object.fillColor === 0x1f2937);
       const badgeText = objects.find((object) => object.kind === "text" && object.text === "E");
       const sprite = objects.find((object) => object.kind === "image" && object.texture === "tex_easyrpg_charset_people1");
-      const editBox = objects.find(
-        (object) =>
-          object.kind === "rectangle" &&
-          object.x === 40 &&
-          object.y === 40 &&
-          object.width === 12 &&
-          object.height === 12
-      );
       const ring = objects.find(
         (object) =>
           object.kind === "rectangle" &&
@@ -345,69 +338,11 @@ describe("edit scene event rendering", () => {
       );
 
       expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0xffffff, alpha: 0.08 });
-      expect(sprite).toMatchObject({ x: 40, y: 40, texture: "tex_easyrpg_charset_people1", frame: 0 });
-      expect(badge).toBeUndefined();
-      expect(badgeText).toBeUndefined();
-      expect(editBox).toBeUndefined();
-      expect(ring?.stroke).toMatchObject({ lineWidth: 2, color: 0x69db7c });
-    }
-  );
-
-  it.each<Layer>(["lower", "upper"])(
-    "keeps compact E badges on the %s tile layer for events with no sprite",
-    (layer) => {
-      const project = createBlankProject();
-      const map = project.maps[project.startMapId];
-      map.width = 4;
-      map.height = 4;
-      map.lowerTiles = new Array<number>(16).fill(-1);
-      map.upperTiles = new Array<number>(16).fill(-1);
-      map.events = [
-        {
-          id: "ev_blank",
-          x: 2,
-          y: 2,
-          trigger: { kind: "action" },
-          commands: [],
-          pages: [
-            {
-              id: "page_blank",
-              name: "Blank",
-              conditions: [],
-              graphic: { transparent: true },
-              trigger: { kind: "action" },
-              priority: "same",
-              movement: { type: "fixed", speed: 3, frequency: 3 },
-              commands: [],
-            },
-          ],
-        },
-      ];
-      store.replace(project);
-      editorState.set({
-        currentMapId: map.id,
-        layer,
-        selectedEventId: "ev_blank",
-        selectedEventPageId: null,
-        selection: null,
-        tool: "select",
-      });
-      const overlayObjects: MockObject[] = [];
-      renderEditScene({
-        scene: mockScene(),
-        tileLayer: mockContainer(),
-        overlayLayer: mockContainer(overlayObjects),
-        gridGraphics: mockGridGraphics(),
-        mapId: map.id,
-      });
-      const objects = flattenObjects(overlayObjects);
-      const badge = overlayObjects.find((object) => object.kind === "container" && object.x === 40 && object.y === 40);
-      const badgeText = objects.find((object) => object.kind === "text" && object.text === "E");
-      const sprite = objects.find((object) => object.kind === "image");
-
       expect(badge).toMatchObject({ alpha: 0.86 });
+      expect(badgeBack?.stroke).toMatchObject({ lineWidth: 1, color: 0xcbd5e1, alpha: 0.72 });
       expect(badgeText).toMatchObject({ origin: [0.5, 0.5] });
       expect(sprite).toBeUndefined();
+      expect(ring?.stroke).toMatchObject({ lineWidth: 2, color: 0x69db7c });
     }
   );
 
