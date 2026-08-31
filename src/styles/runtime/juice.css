@@ -38,16 +38,16 @@
   animation: juice-menu-confirm-press 180ms ease-out;
 }
 
-/* 커서 이동 — 아주 옅게 밝아진다. 매 이동마다 보이므로 과하면 피로하다. */
-@keyframes juice-menu-select-tick {
-  0% { filter: brightness(1); }
-  40% { filter: brightness(1.14); }
-  100% { filter: brightness(1); }
-}
-
+/*
+ * 커서 이동 — 소리는 runtimeJuice 가 낸다. 예전에는 오버레이 전체에
+ * filter:brightness(1.14) 를 걸었는데, .oprn-status-menu::after 가
+ * backdrop-filter 를 써서 매 화살표마다 무대가 재합성·번쩍였다.
+ * 선택 표시는 .selected 배경만으로 충분하다. 클래스는 소리·e2e
+ * (클래스 부착) 계약으로 남긴다. 부모에 filter/transform 을 다시 넣지 말 것.
+ */
 .juice-menu-select,
 .juice-title-select {
-  animation: juice-menu-select-tick 120ms ease-out;
+  animation: none;
 }
 
 /* 뒤로·닫기 — 뒤로 물러나는 방향. */
@@ -80,12 +80,10 @@
 @media (prefers-reduced-motion: reduce) {
   .juice-menu-invalid,
   .juice-menu-confirm,
-  .juice-menu-select,
   .juice-menu-back,
   .juice-menu-close,
   .juice-menu-open,
   .juice-title-confirm,
-  .juice-title-select,
   .juice-title-enter {
     animation: none;
   }
