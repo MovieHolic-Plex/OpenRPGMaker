@@ -152,16 +152,22 @@ describe("presentEditorWelcome", () => {
       expect(host.querySelectorAll(`[data-pack-id='${packId}']`)).toHaveLength(1);
     }
     expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(7);
+    const featured = host.querySelector(".editor-welcome-briefing-cards");
+    expect(featured?.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(3);
+    const more = host.querySelector("#editor-welcome-more-grid");
+    expect(more?.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(4);
     for (const presetId of ["partner-raise", "school-horror"]) {
       const variant = host.querySelector<HTMLElement>(`[data-preset-id='${presetId}']`);
       expect(variant).toBeTruthy();
+      expect(variant?.closest(".editor-welcome-briefing-cards")).toBeNull();
+      expect(variant?.closest("#editor-welcome-more-grid")).toBeTruthy();
       // A variant is a top-level poster, not nested under — and not an anchor for — its pack.
       expect(variant?.dataset.packId).toBeUndefined();
       expect(variant?.closest("[data-pack-id]")).toBeNull();
     }
   });
 
-  it("mounts a canvas briefing with one question, one input, and seven genre posters", () => {
+  it("mounts a canvas briefing with one question, one input, and three featured genre posters", () => {
     const host = document.createElement("div");
     document.body.append(host);
     void presentEditorWelcome(host);
@@ -173,12 +179,18 @@ describe("presentEditorWelcome", () => {
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`)).toBeTruthy();
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)?.textContent).toContain("만들기");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.textContent).toContain("빈 맵으로 시작");
-    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card']")).toHaveLength(7);
-    for (const caption of ["이브 같은", "갤러리 호러", "아오오니 같은", "학교 호러", "몬스터 수집", "파트너 육성", "농장 생활", "모험 JRPG", "회상 스토리"]) {
+    const featured = host.querySelector(".editor-welcome-briefing-cards");
+    expect(featured?.querySelectorAll("[data-testid^='editor-welcome-template-card']")).toHaveLength(3);
+    for (const caption of ["몬스터 수집", "모험 JRPG", "회상 스토리"]) {
+      expect(featured?.textContent).toContain(caption);
+    }
+    for (const caption of ["이브 같은", "갤러리 호러", "아오오니 같은", "학교 호러", "파트너 육성", "농장 생활"]) {
+      expect(featured?.textContent).not.toContain(caption);
       expect(host.textContent).toContain(caption);
     }
     // The system-preset action is one gear per poster, not a repeated full-width button.
     expect(host.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(7);
+    expect(featured?.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(3);
     expect(host.querySelector("[data-testid='editor-welcome-starter-card-0']")?.textContent).not.toContain("빈 프로젝트");
     expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
   });
@@ -268,9 +280,9 @@ describe("presentEditorWelcome", () => {
     expect(result.systemPresetPlan).toBeUndefined();
     expect(result.autoSend).toBe(true);
     expect(result.source).toBe("chip");
-    expect(result.intent).toBe("이브 같은 갤러리 호러");
-    expect(result.presetId).toBe("horror-gallery");
-    expect(result.prompt).toContain("make_gallery_room");
+    expect(result.intent).toBe("몬스터 수집");
+    expect(result.presetId).toBe("monster-collect");
+    expect(result.prompt).toContain("포획·도감·야생 조우");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeNull();
   });
 
@@ -294,12 +306,12 @@ describe("presentEditorWelcome", () => {
       action: "start",
       prompt: null,
       autoSend: false,
-      presetId: "horror-gallery",
+      presetId: "monster-collect",
       source: "manual-system-preset",
       systemPresetPlan: {
         kind: "blank-project-system-preset",
-        packId: "horror-chase",
-        recipeId: "horror-system",
+        packId: "monster-collect",
+        recipeId: "monster-system",
         preservesOpenProjectUntilRemoteVerified: true,
         aiRequired: false,
       },

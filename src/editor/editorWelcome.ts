@@ -3,12 +3,14 @@
 // finishEditorBoot wires presentEditorWelcome (mode.ts) after enterMode(edit).
 
 import {
+  WELCOME_FEATURED_POSTER_CARDS,
   WELCOME_GENRE_PRESETS,
+  WELCOME_HIDDEN_POSTER_CARDS,
   WELCOME_MORE_WORLDS,
-  WELCOME_POSTER_CARDS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
   type WelcomeGenrePresetId,
+  type WelcomePosterCard,
   welcomeGenreSystemPresetPlanById,
 } from "@/editor/welcomeGenrePresets";
 import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
@@ -24,7 +26,7 @@ export const EDITOR_WELCOME_TESTIDS = {
   systemPresetError: "editor-welcome-system-preset-error",
   promptInput: "editor-welcome-prompt-input",
   promptSubmit: "editor-welcome-prompt-submit",
-  /** Poster button — one per genre preset, in WELCOME_POSTER_CARDS order. */
+  /** Poster button — featured first, then collapsed hidden presets. */
   templateCard: "editor-welcome-template-card",
   /** Gear on a poster — applies that pack's system preset without AI. */
   starterCard: "editor-welcome-starter-card",
@@ -332,96 +334,103 @@ export function presentEditorWelcome(
       }
     });
 
+    const renderPosterOption = (card: WelcomePosterCard, index: number): HTMLElement => {
+      const { preset } = card;
+      return el("div", {
+        class: "editor-welcome-template-option",
+        // Anchor posters carry data-pack-id; sibling variants of an already-anchored pack do not,
+        // which keeps "each official pack once" true without demoting the variant visually.
+        dataset: {
+          presetId: preset.id,
+          ...(card.packAnchor ? { packId: card.packAnchor } : {}),
+        },
+        children: [
+          el("button", {
+            class: "editor-welcome-template-card editor-welcome-poster",
+            attrs: {
+              type: "button",
+              "aria-label": `${preset.label} — ${preset.blurb}`,
+            },
+            dataset: {
+              testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
+              templateId: preset.id,
+            },
+            on: {
+              click: () => startPreset(preset.id, preset.label),
+            },
+            children: [
+              posterImage(preset.thumb),
+              el("span", { class: "editor-welcome-poster-veil", attrs: { "aria-hidden": "true" } }),
+              el("span", {
+                class: "editor-welcome-poster-text",
+                children: [
+                  ...(card.reference
+                    ? [el("span", { class: "editor-welcome-poster-eyebrow", text: card.reference })]
+                    : []),
+                  el("span", { class: "editor-welcome-poster-title", text: card.title }),
+                  el("span", { class: "editor-welcome-poster-blurb", text: preset.blurb }),
+                ],
+              }),
+            ],
+          }),
+          el("button", {
+            class: "editor-welcome-poster-system",
+            text: "⚙",
+            attrs: {
+              type: "button",
+              title: `${preset.label} — AI 없이 시스템 설정만 적용`,
+              "aria-label": `${preset.label} 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)`,
+            },
+            dataset: {
+              testid: `${EDITOR_WELCOME_TESTIDS.starterCard}-${index}`,
+              templateId: preset.id,
+            },
+            on: { click: () => void startManualPreset(preset.id, preset.label) },
+          }),
+        ],
+      });
+    };
+
     const cards = el("div", {
       class: "editor-welcome-briefing-cards",
-      children: WELCOME_POSTER_CARDS.map((card, index) => {
-        const { preset } = card;
-        return el("div", {
-          class: "editor-welcome-template-option",
-          // Anchor posters carry data-pack-id; sibling variants of an already-anchored pack do not,
-          // which keeps "each official pack once" true without demoting the variant visually.
-          dataset: {
-            presetId: preset.id,
-            ...(card.packAnchor ? { packId: card.packAnchor } : {}),
-          },
-          children: [
-            el("button", {
-              class: "editor-welcome-template-card editor-welcome-poster",
-              attrs: {
-                type: "button",
-                "aria-label": `${preset.label} — ${preset.blurb}`,
-              },
-              dataset: {
-                testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
-                templateId: preset.id,
-              },
-              on: {
-                click: () => startPreset(preset.id, preset.label),
-              },
-              children: [
-                posterImage(preset.thumb),
-                el("span", { class: "editor-welcome-poster-veil", attrs: { "aria-hidden": "true" } }),
-                el("span", {
-                  class: "editor-welcome-poster-text",
-                  children: [
-                    ...(card.reference
-                      ? [el("span", { class: "editor-welcome-poster-eyebrow", text: card.reference })]
-                      : []),
-                    el("span", { class: "editor-welcome-poster-title", text: card.title }),
-                    el("span", { class: "editor-welcome-poster-blurb", text: preset.blurb }),
-                  ],
-                }),
-              ],
-            }),
-            el("button", {
-              class: "editor-welcome-poster-system",
-              text: "⚙",
-              attrs: {
-                type: "button",
-                title: `${preset.label} — AI 없이 시스템 설정만 적용`,
-                "aria-label": `${preset.label} 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)`,
-              },
-              dataset: {
-                testid: `${EDITOR_WELCOME_TESTIDS.starterCard}-${index}`,
-                templateId: preset.id,
-              },
-              on: { click: () => void startManualPreset(preset.id, preset.label) },
-            }),
-          ],
-        });
-      }),
+      children: WELCOME_FEATURED_POSTER_CARDS.map((card, index) => renderPosterOption(card, index)),
     });
 
     const moreGrid = el("div", {
       class: "editor-welcome-more-grid",
       attrs: { hidden: "" },
-      children: WELCOME_MORE_WORLDS.map((world, index) =>
-        el("button", {
-          class: "editor-welcome-poster editor-welcome-more-card",
-          attrs: { type: "button", "aria-label": `${world.label} — ${world.blurb}` },
-          dataset: {
-            testid: `${EDITOR_WELCOME_TESTIDS.moreCard}-${index}`,
-            worldId: world.id,
-          },
-          on: { click: () => startFreeText(world.intent) },
-          children: [
-            posterImage(world.thumb),
-            el("span", { class: "editor-welcome-poster-veil", attrs: { "aria-hidden": "true" } }),
-            el("span", {
-              class: "editor-welcome-poster-text",
-              children: [
-                el("span", { class: "editor-welcome-poster-title", text: world.label }),
-                el("span", { class: "editor-welcome-poster-blurb", text: world.blurb }),
-              ],
-            }),
-          ],
-        }),
-      ),
+      children: [
+        ...WELCOME_HIDDEN_POSTER_CARDS.map((card, index) =>
+          renderPosterOption(card, WELCOME_FEATURED_POSTER_CARDS.length + index),
+        ),
+        ...WELCOME_MORE_WORLDS.map((world, index) =>
+          el("button", {
+            class: "editor-welcome-poster editor-welcome-more-card",
+            attrs: { type: "button", "aria-label": `${world.label} — ${world.blurb}` },
+            dataset: {
+              testid: `${EDITOR_WELCOME_TESTIDS.moreCard}-${index}`,
+              worldId: world.id,
+            },
+            on: { click: () => startFreeText(world.intent) },
+            children: [
+              posterImage(world.thumb),
+              el("span", { class: "editor-welcome-poster-veil", attrs: { "aria-hidden": "true" } }),
+              el("span", {
+                class: "editor-welcome-poster-text",
+                children: [
+                  el("span", { class: "editor-welcome-poster-title", text: world.label }),
+                  el("span", { class: "editor-welcome-poster-blurb", text: world.blurb }),
+                ],
+              }),
+            ],
+          }),
+        ),
+      ],
     });
 
     const moreToggle = el("button", {
       class: "editor-welcome-more-toggle",
-      text: `이런 세계도 있어요 (${WELCOME_MORE_WORLDS.length})`,
+      text: `이런 세계도 있어요 (${WELCOME_HIDDEN_POSTER_CARDS.length + WELCOME_MORE_WORLDS.length})`,
       attrs: { type: "button", "aria-expanded": "false", "aria-controls": "editor-welcome-more-grid" },
       dataset: { testid: EDITOR_WELCOME_TESTIDS.moreToggle },
       on: {

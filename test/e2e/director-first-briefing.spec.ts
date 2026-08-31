@@ -50,27 +50,23 @@ test.describe("director first briefing", () => {
     await expect(page.getByTestId("editor-welcome-prompt-input")).toBeVisible();
     await expect(page.getByTestId("editor-welcome-prompt-submit")).toHaveText("만들기");
     await expect(page.getByTestId("editor-welcome-skip")).toHaveText("빈 맵으로 시작");
-    await expect(page.getByTestId("editor-welcome-template-card-0")).toContainText("갤러리 호러");
-    await expect(page.getByTestId("editor-welcome-template-card-1")).toContainText("학교 호러");
-    await expect(page.getByTestId("editor-welcome-template-card-2")).toContainText("몬스터 수집");
-    await expect(page.getByTestId("editor-welcome-template-card-3")).toContainText("회상 스토리");
-    await expect(page.getByTestId("editor-welcome-template-card-4")).toContainText("모험 JRPG");
-    await expect(page.getByTestId("editor-welcome-template-card-5")).toContainText("농장 생활");
-    await expect(page.getByTestId("editor-welcome-template-card-6")).toContainText("파트너 육성");
+    await expect(page.getByTestId("editor-welcome-template-card-0")).toContainText("몬스터 수집");
+    await expect(page.getByTestId("editor-welcome-template-card-1")).toContainText("회상 스토리");
+    await expect(page.getByTestId("editor-welcome-template-card-2")).toContainText("모험 JRPG");
+    await expect(page.getByTestId("editor-welcome-template-card-0")).toBeVisible();
+    await expect(page.getByTestId("editor-welcome-template-card-3")).toBeHidden();
+    await expect(page.getByTestId("editor-welcome-template-card-4")).toBeHidden();
+    await expect(page.getByTestId("editor-welcome-template-card-5")).toBeHidden();
+    await expect(page.getByTestId("editor-welcome-template-card-6")).toBeHidden();
 
     // One anchor poster per official pack; variants of the same pack are peers without data-pack-id.
-    const anchorPackIds = [
-      "horror-chase",
-      "monster-collect",
-      "story-cutscene",
-      "adventure-jrpg",
-      "farm-life",
-    ];
+    const featuredPackIds = ["monster-collect", "story-cutscene", "adventure-jrpg"];
+    const collapsedPackIds = ["horror-chase", "farm-life"];
     const renderedPackIds = await page.locator("[data-pack-id]").evaluateAll((nodes) =>
       nodes.map((node) => (node as HTMLElement).dataset.packId),
     );
-    expect(renderedPackIds).toEqual(anchorPackIds);
-    for (const packId of anchorPackIds) {
+    expect(renderedPackIds).toEqual([...featuredPackIds, ...collapsedPackIds]);
+    for (const packId of [...featuredPackIds, ...collapsedPackIds]) {
       await expect(page.locator(`[data-pack-id='${packId}']`)).toHaveCount(1);
     }
     for (const presetId of ["partner-raise", "school-horror"]) {
@@ -84,8 +80,17 @@ test.describe("director first briefing", () => {
     await expect(page.getByTestId("ai-next-steps")).toBeHidden();
     await expect(page.locator(".coach-mark-card")).toHaveCount(0);
 
+    await page.screenshot({
+      path: path.join(EVIDENCE, "C-featured-idle.png"),
+      animations: "disabled",
+    });
+
     await page.getByTestId("editor-welcome-more-toggle").click();
     await expect(page.locator("#editor-welcome-more-grid")).toBeVisible();
+    await expect(page.getByTestId("editor-welcome-template-card-3")).toContainText("갤러리 호러");
+    await expect(page.getByTestId("editor-welcome-template-card-4")).toContainText("학교 호러");
+    await expect(page.getByTestId("editor-welcome-template-card-5")).toContainText("농장 생활");
+    await expect(page.getByTestId("editor-welcome-template-card-6")).toContainText("파트너 육성");
     await expect(page.getByTestId("editor-welcome-more-card-0")).toBeVisible();
 
     await page.screenshot({
