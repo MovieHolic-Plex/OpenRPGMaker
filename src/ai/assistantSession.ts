@@ -105,9 +105,10 @@ import {
 } from "./proposalCompleteness";
 import {
   formatIntentClarifyMessage,
-  isProtocolLocked,
   resolveIntentClarification,
 } from "./intentClarify";
+import { plannerSkipReason } from "./plannerSkip";
+import { defaultYieldToUi, type YieldToUi } from "./yieldToUi";
 import {
   MAX_WORK_PLAN_AUTO_STEPS_PER_TURN,
   ORCHESTRATOR_SYSTEM_PROMPT,
@@ -674,6 +675,11 @@ export interface AssistantSessionOptions {
    * 기억하지 못하던 상태를 메꾸는 유일한 입력이다.
    */
   priorTranscript?: string;
+  /**
+   * 동기 도구 실행 직전에 이벤트 루프를 양보한다. 기본은 브라우저에서 rAF 1틱,
+   * Node/테스트는 즉시. 주입하면 테스트가 양보 횟수를 셀 수 있다.
+   */
+  yieldToUi?: YieldToUi;
 }
 
 /** 수동 압축(compactNow) 결과. 건너뜀은 사유를 사람 문장으로 돌려준다(UI 가 그대로 보여준다). */
@@ -687,6 +693,9 @@ export class AssistantSession {
   private readonly contextOptions: ContextOptions;
   // 비전 렌더러(브라우저 전용). 주입되면 '보여줘' 툴 이미지가 모델에 전달된다.
   private readonly renderImages?: ToolImageRenderer;
+  private readonly yieldToUi: YieldToUi;
+  /** 이번 턴이 플래너 왕복을 건너뛰었는가 — 계획 툴·검수·Ralph 도 같이 끈다. */
+  private skipPlannerThisTurn = false;
   // 누적 draft를 담는 툴 컨텍스트(연쇄 툴콜이 이전 변경을 본다).
   private ctx: ToolContext;
   private readonly messages: ChatMessage[] = [];
@@ -822,6 +831,7 @@ export class AssistantSession {
     this.peekPendingUserMessage = options.peekPendingUserMessage;
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
+    this.yieldToUi = options.yieldToUi ?? defaultYieldToUi;
     this.getTurnSelection = options.getTurnSelection;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
@@ -1279,6 +1289,7 @@ export class AssistantSession {
     this.lastOutcomeBlockedKey = null;
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
+    this.skipPlannerThisTurn = false;
 
     // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
     // F-05: auto/orchestrated 모드에서는 bare 집이라도 clarify로 멈추지 않고 planner/LLM으로 넘긴다.
@@ -1303,7 +1314,14 @@ export class AssistantSession {
     // 영역 작업 합성 문장은 이미 시공 경로가 잠겨 있다. 플래너 왕복은 같은 공급자
     // 크래시를 두 번 연속으로 만들 뿐이라 본문 툴 루프로 바로 간다.
     this.workPlanAutoStepsThisUserMessage = 0;
-    if ((this.orchestrationEnabled() || this.workPlan) && !isProtocolLocked(text)) {
+    // 짧은/질문/선택 턴은 플래너 왕복을 건너뛴다. 진행 중인 계획은 resume/replan 이
+    // 필요하므로 스킵하지 않는다. 영역 작업 protocol-lock 도 같은 함수가 잡는다.
+    const skipReason = this.workPlan ? null : plannerSkipReason(text);
+    this.skipPlannerThisTurn = skipReason !== null;
+    if (skipReason) {
+      this.pushAudit({ kind: "status", text: `planner:skip ${skipReason}` });
+    }
+    if ((this.orchestrationEnabled() || this.workPlan) && !this.skipPlannerThisTurn) {
       try {
         await this.runOrchestratorPlanner(text, onEvent, signal);
       } catch (cause) {
@@ -1728,6 +1746,12 @@ export class AssistantSession {
     onEvent({ type: "tool_started", name, index: this.turnToolStartedCount });
   }
 
+  /** 라이브 행·고스트가 한 프레임을 그릴 틈을 준다. 중단이면 양보하지 않는다. */
+  private async yieldForUi(signal?: AbortSignal): Promise<void> {
+    if (signal?.aborted) return;
+    await this.yieldToUi();
+  }
+
   private failMilestoneApply(
     completed: WorkItem,
     reason: string,
@@ -1775,6 +1799,7 @@ export class AssistantSession {
     const results: LayerVerdictInput[] = [];
     for (const call of calls) {
       this.emitToolStarted(onEvent, call.name);
+      await this.yieldForUi();
       const result = runTool(this.ctx, call.name, call.args);
       onEvent({ type: "tool_call", name: call.name, args: call.args, result });
       this.pushAudit({
@@ -2405,13 +2430,13 @@ export class AssistantSession {
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
     // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
     // 조건은 아래 `orchestrated` 와 같아야 한다 — 계획 단계를 알리면서 계획 툴을 숨기면 모순이다.
-    const planToolsOn = this.orchestrationEnabled() || Boolean(this.workPlan);
+    const planToolsOn = (this.orchestrationEnabled() || Boolean(this.workPlan)) && !this.skipPlannerThisTurn;
     // 계획 요구 툴(todo 8 실측): successTools/지시문에 명시된 툴은 도메인 게이트·40툴 상한에
     // 떨어져도 계획이 활성인 동안 반드시 노출한다(plan_world/play_walkthrough/build_village 등).
     // 도메인 캡 목록과 합집합을 만들고 중복은 제거한다(CPEN 128툴 상한 내 유지).
     const proposedByKey = this.turnProposals;
     let assistantText = "";
-    const orchestrated = this.orchestrationEnabled() || Boolean(this.workPlan);
+    const orchestrated = (this.orchestrationEnabled() || Boolean(this.workPlan)) && !this.skipPlannerThisTurn;
     let phase: AssistantPhase = this.workPlan ? "execute" : "plan";
     let executionStarted = Boolean(this.workPlan);
     let writeToolAttempts = 0;
@@ -2640,6 +2665,7 @@ export class AssistantSession {
         const args = this.resolveToolCallArgs(name, parsedCall.args);
         const tool = getTool(name);
         this.emitToolStarted(onEvent, name);
+        await this.yieldForUi(signal);
         if (tool?.mode === "write") writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다

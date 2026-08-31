@@ -157,7 +157,7 @@ describe("자율 실행 드라이버", () => {
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
 
-    await session.sendUserMessage("끝나지 않는 목표를 처리해줘", () => {}, undefined, { autonomous: true });
+    await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, () => {}, undefined, { autonomous: true });
 
     const statuses = statusTexts(session);
     expect(statuses.some((t) => t.includes("agent_run_budget_exhausted"))).toBe(true);
@@ -392,7 +392,7 @@ describe("자율 실행 드라이버", () => {
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
 
-    await session.sendUserMessage("끝나지 않는 목표를 처리해줘", () => {}, undefined, { autonomous: true });
+    await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, () => {}, undefined, { autonomous: true });
     let statuses = statusTexts(session);
     expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(AGENT_RUN_MAX_TOTAL_STEPS);
 
@@ -547,7 +547,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
     const events: SessionEvent[] = [];
 
-    const result = await session.sendUserMessage("이벤트 영역을 정리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(`${ORCH_GOAL}이벤트 영역을 정리해줘`, (event) => { events.push(event); }, undefined, { autonomous: true });
 
     // remove_event도 같은 마일스톤 적용 경로를 타며 전체 프로젝트 undo 스냅샷을 남긴다.
     expect(JSON.stringify(store.getCurrent())).toBe(before);
@@ -906,7 +906,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
     const events: SessionEvent[] = [];
 
-    const result = await session.sendUserMessage("타이틀을 바꿔줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, (event) => { events.push(event); }, undefined, { autonomous: true });
 
     const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     // 레이어당 1회만 검증한다 — 같은 지적으로 재검하지 않는다(markLayerVerified).
@@ -1054,6 +1054,8 @@ function assistantFinal(text: string): ChatResult {
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", liteModel: "stub-model", apiKey: "sk", maxToolCalls: 8, maxTokens: 512, agentMode: "chat" as const };
 const AUTO_SINGLE_CONFIG = { ...CONFIG, agentMode: "auto" as const };
 const ORCH_CONFIG = { ...CONFIG, model: "supervisor-model", liteModel: "executor-model", maxToolCalls: 12, agentMode: "auto" as const };
+/** 짧은 한 줄은 plannerSkip 이 본문으로 직행하므로, 플래너 계약을 재는 테스트는 다단계 표지를 붙인다. */
+const ORCH_GOAL = "마을 시나리오를 단계로 진행해줘. ";
 // 플래너 라운드(오케스트레이션 게이트 통과 시 항상 선행)가 소비하는 1스텝 — direct 로 통과시킨다.
 const PLANNER_DIRECT = assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
 // 공급자 고유 센티넬(예전엔 특정 공급자의 raw 구분자를 함께 넣었다)은 뺐다 — 감지는 공급자를
@@ -1090,8 +1092,8 @@ describe("AssistantSession 툴콜 루프", () => {
 
     await session.sendUserMessage("안녕", () => {});
 
-    // 이원화 config 라 플래너 라운드가 선행한다 — 플래너도 감독(config.model)을 쓰므로 두 호출 모두 main 모델.
-    expect(seenModels).toEqual(["main-session-model", "main-session-model"]);
+    // 짧은 인사는 플래너를 건너뛴다 — 본문 한 번만 감독 모델.
+    expect(seenModels).toEqual(["main-session-model"]);
     expect(JSON.parse(session.exportAudit()).model).toBe("main-session-model");
   }, 30000);
 
@@ -1299,7 +1301,7 @@ describe("AssistantSession 툴콜 루프", () => {
     const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
     const phases: string[] = [];
 
-    const result = await session.sendUserMessage("타이틀을 새 제목으로 바꿔줘", (event) => {
+    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
     });
 
@@ -1353,7 +1355,7 @@ describe("AssistantSession 툴콜 루프", () => {
     const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
     const phases: string[] = [];
 
-    const result = await session.sendUserMessage("길과 꽃을 칠해줘", (event) => {
+    const result = await session.sendUserMessage(`${ORCH_GOAL}길과 꽃을 칠해줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
     });
 
@@ -1398,7 +1400,7 @@ describe("AssistantSession 툴콜 루프", () => {
     const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, maxToolCalls: 24 }, chat });
     const phases: string[] = [];
 
-    const result = await session.sendUserMessage("타이틀을 새 제목으로 바꿔줘", (event) => {
+    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
     });
 
@@ -1453,7 +1455,7 @@ describe("AssistantSession 툴콜 루프", () => {
     const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, maxToolCalls: 32, maxTokens: 8192 }, chat });
     const phases: string[] = [];
 
-    const result = await session.sendUserMessage("40x40 맵에 작은 집 3채 NPC 5명 배치해줘", (event) => {
+    const result = await session.sendUserMessage(`${ORCH_GOAL}40x40 맵에 작은 집 3채 NPC 5명 배치해줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
     });
 
@@ -1502,7 +1504,7 @@ describe("AssistantSession 툴콜 루프", () => {
     const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
     const phases: string[] = [];
 
-    const result = await session.sendUserMessage("타이틀을 재킥 제목으로 바꿔줘", (event) => {
+    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 재킥 제목으로 바꿔줘`, (event) => {
       if (event.type === "phase") phases.push(event.value);
     });
 
@@ -1527,7 +1529,7 @@ describe("AssistantSession 툴콜 루프", () => {
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
 
-    const result = await session.sendUserMessage("타이틀을 바꿔줘", () => {});
+    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, () => {});
 
     expect(result.stoppedReason).toBe("final");
     expect(result.proposedCalls).toEqual([]);
@@ -1568,7 +1570,7 @@ describe("AssistantSession 툴콜 루프", () => {
     };
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
 
-    const result = await session.sendUserMessage("타이틀을 바꿔줘", () => {});
+    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, () => {});
 
     expect(result.stoppedReason).toBe("final");
     expect(result.assistantText).toBe("먼저 확인하겠습니다.");
@@ -1576,13 +1578,11 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(calls).toBe(1);
   }, 30000);
 
-  it("단순 대화 턴은 전환 없이 감독 모델 한 번으로 끝난다", async () => {
+  it("단순 대화 턴은 플래너 없이 감독 모델 한 번으로 끝난다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const seenModels: string[] = [];
     const chat = async (config: { readonly model: string }): Promise<ChatResult> => {
       seenModels.push(config.model);
-      // 첫 호출은 플래너(감독 모델) — direct 로 통과. 본문 턴도 감독 모델 한 번.
-      if (seenModels.length === 1) return assistantFinal('{"action":"direct","reason":"인사"}');
       return assistantFinal("안녕하세요.");
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
@@ -1595,9 +1595,9 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.stoppedReason).toBe("final");
     expect(result.assistantText).toBe("안녕하세요.");
     expect(result.proposedCalls).toEqual([]);
-    // 플래너 1 + 본문 1 — 모두 감독 모델, 모델 전환 없음.
-    expect(seenModels).toEqual(["supervisor-model", "supervisor-model"]);
-    expect(phases).toEqual(["plan"]);
+    expect(seenModels).toEqual(["supervisor-model"]);
+    expect(phases).toEqual([]);
+    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text === "planner:skip simple")).toBe(true);
   }, 30000);
 });
 
@@ -1608,17 +1608,29 @@ describe("agentMode 오케스트레이션 게이트", () => {
     return audit.some((entry) => entry.kind === "status" && entry.text === PLANNER_START);
   }
 
-  it("기본 설정(agentMode auto)은 단일 모델에서도 플래너 라운드를 돈다", async () => {
+  it("기본 설정(agentMode auto)이라도 짧은 요청은 플래너를 건너뛴다", async () => {
     const { AssistantSession, createBlankProject, llm } = await load();
     const chat = scriptedChat([
-      assistantFinal('{"action":"direct","reason":"간단한 요청"}'),
       assistantFinal("완료했습니다."),
     ]);
     const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
-    // default config = agentMode "auto" → model === liteModel 여부와 무관하게 플래너가 돈다.
+    expect(plannerStarted(session.getAuditEntries())).toBe(false);
+    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text === "planner:skip simple")).toBe(true);
+  }, 30000);
+
+  it("기본 설정(agentMode auto)은 마을 같은 다단계 요청에서 플래너 라운드를 돈다", async () => {
+    const { AssistantSession, createBlankProject, llm } = await load();
+    const chat = scriptedChat([
+      assistantFinal('{"action":"direct","reason":"마을 시공"}'),
+      assistantFinal("완료했습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat });
+
+    await session.sendUserMessage("빈 프로젝트에 강이 있는 마을을 하나 만들고 집 8채를 지어줘", () => {});
+
     expect(plannerStarted(session.getAuditEntries())).toBe(true);
   }, 30000);
 
@@ -1648,34 +1660,30 @@ describe("agentMode 오케스트레이션 게이트", () => {
     expect(plannerStarted(session.getAuditEntries())).toBe(false);
   }, 30000);
 
-  it("agentMode chat + 이원화 모델은 여전히 플래너를 돈다 (종래 동작 유지)", async () => {
+  it("agentMode chat + 이원화 모델도 짧은 요청은 플래너를 건너뛴다", async () => {
     const { AssistantSession, createBlankProject } = await load();
-    const chat = scriptedChat([
-      assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}'),
-      assistantFinal("완료했습니다."),
-    ]);
+    const chat = scriptedChat([assistantFinal("완료했습니다.")]);
     const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
-    expect(plannerStarted(session.getAuditEntries())).toBe(true);
+    expect(plannerStarted(session.getAuditEntries())).toBe(false);
   }, 30000);
 
-  it("형상 고정(사전 agentMode 없음): 이원화 모델은 플래너가 돈다 — 종래 동작", async () => {
+  it("이원화 모델은 마을 요청에서 플래너가 돈다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([
       assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}'),
       assistantFinal("완료했습니다."),
     ]);
-    // agentMode 키를 아예 설정하지 않은 세션(구형 저장 blob/테스트 주입 config)은 종래 판정을 유지한다.
     const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
 
-    await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
+    await session.sendUserMessage("빈 프로젝트에 강이 있는 마을을 하나 만들고 집 8채를 지어줘", () => {});
 
     expect(plannerStarted(session.getAuditEntries())).toBe(true);
   }, 30000);
 
-  it("노출 증명: auto+단일 모델은 set_work_plan 계획 툴이 노출되고, chat+단일 모델은 노출되지 않는다", async () => {
+  it("노출 증명: 짧은 auto 턴은 계획 툴을 숨기고, chat+단일 모델도 숨긴다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const exposedToolNames = async (config: Record<string, unknown>): Promise<string[]> => {
       const names: string[] = [];
@@ -1690,7 +1698,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
     };
 
     const autoNames = await exposedToolNames({ ...CONFIG, authMode: "apiKey" as const, agentMode: "auto" as const });
-    expect(autoNames).toContain("set_work_plan");
+    expect(autoNames).not.toContain("set_work_plan");
 
     const chatNames = await exposedToolNames({ ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const });
     expect(chatNames).not.toContain("set_work_plan");
@@ -1728,7 +1736,7 @@ describe("하네스 관측", () => {
     ];
     const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: scriptedChat(steps) });
 
-    await session.sendUserMessage("타이틀을 새 제목으로 바꿔줘", () => {});
+    await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, () => {});
 
     const entries = session.getAuditEntries();
     const injections = entries.filter(
@@ -1749,7 +1757,7 @@ describe("하네스 관측", () => {
       assistantFinal("완료: 타이틀을 바꿨습니다."),
     ];
     const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: scriptedChat(steps) });
-    await session.sendUserMessage("타이틀을 새 제목으로 바꿔줘", () => {});
+    await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, () => {});
 
     const snapshot = session.getHarnessSnapshot();
 
