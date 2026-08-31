@@ -1,7 +1,7 @@
 import type { GameMap } from "../types";
 import { stampDbHouseVariant, type DbHouseShapeVariant } from "./dbExtractedHouseVariants";
 import type { SmallHouseMaterial } from "@/project/defaults/contentBuilderTypes";
-import { paintTownPathNetwork, offsetTownRect } from "./townPathAutotile";
+import { paintTownPathNetwork, offsetTownRect, type TownPathSkip } from "./townPathAutotile";
 
 export type TownHouseShowcaseStyle = "l" | "courtyard" | "multi" | "road";
 export type TownCityPlotStyle = TownHouseShowcaseStyle | "plaster" | "stone";
@@ -35,46 +35,53 @@ export function stampTownHouseStyle(
   map: GameMap,
   style: TownHouseShowcaseStyle,
   originX: number,
-  originY: number
+  originY: number,
+  skipPath?: TownPathSkip
 ): void {
   switch (style) {
     case "courtyard":
-      stampTemplateHouse(map, { approachHeight: 6, material: "stone", originX, originY, variant: "wide" });
+      stampTemplateHouse(map, { approachHeight: 6, material: "stone", originX, originY, skipPath, variant: "wide" });
       stampTownMarketCounter(map, originX + 1, originY + 12);
       stampUpperPattern(map, originX + 12, originY + 12, [[FLOWER, -1, FLOWER]]);
       return;
     case "multi":
-      stampTemplateHouse(map, { approachHeight: 6, material: "plaster", originX, originY, variant: "compact" });
+      stampTemplateHouse(map, { approachHeight: 6, material: "plaster", originX, originY, skipPath, variant: "compact" });
       stampTownMarketCounter(map, originX + 11, originY + 12);
       stampUpperPattern(map, originX + 1, originY + 13, [[BENCH_LEFT, BENCH_RIGHT], [FLOWER, -1]]);
       return;
     case "road":
       // DB 추출 도어(329/359)를 사용하는 variant로 통일 — legacy template(116/146) 도어 사용 중단.
       // "wide" 변형을 써서 l/courtyard/multi와 각기 다른 houseShapeSignature를 만든다.
-      stampTemplateHouse(map, { approachHeight: 5, material: "wood", originX, originY, variant: "wide" });
-      paintTownPathNetwork(map, [offsetTownRect(originX, originY, ROAD_SHOWCASE_CROSS_PATH)]);
+      stampTemplateHouse(map, { approachHeight: 5, material: "wood", originX, originY, skipPath, variant: "wide" });
+      paintTownPathNetwork(map, [offsetTownRect(originX, originY, ROAD_SHOWCASE_CROSS_PATH)], skipPath);
       stampUpperPattern(map, originX + 2, originY + 9, [[TREE, -1, FLOWER], [TREE_BOTTOM, -1, -1]]);
       return;
     case "l":
-      stampTemplateHouse(map, { approachHeight: 3, material: "wood", originX, originY, variant: "l" });
+      stampTemplateHouse(map, { approachHeight: 3, material: "wood", originX, originY, skipPath, variant: "l" });
       stampUpperPattern(map, originX + 1, originY + 9, [[TREE, -1], [TREE_BOTTOM, FLOWER]]);
       return;
   }
 }
 
-export function stampTownCityPlot(map: GameMap, style: TownCityPlotStyle, originX: number, originY: number): void {
+export function stampTownCityPlot(
+  map: GameMap,
+  style: TownCityPlotStyle,
+  originX: number,
+  originY: number,
+  skipPath?: TownPathSkip
+): void {
   switch (style) {
     case "plaster":
-      stampTemplateHouse(map, { approachHeight: 6, material: "plaster", originX, originY, variant: "compact" });
+      stampTemplateHouse(map, { approachHeight: 6, material: "plaster", originX, originY, skipPath, variant: "compact" });
       return;
     case "stone":
-      stampTemplateHouse(map, { approachHeight: 6, material: "stone", originX, originY, variant: "wide" });
+      stampTemplateHouse(map, { approachHeight: 6, material: "stone", originX, originY, skipPath, variant: "wide" });
       return;
     case "courtyard":
     case "multi":
     case "road":
     case "l":
-      stampTownHouseStyle(map, style, originX, originY);
+      stampTownHouseStyle(map, style, originX, originY, skipPath);
       return;
   }
 }
@@ -105,6 +112,7 @@ function stampTemplateHouse(
     readonly material: SmallHouseMaterial;
     readonly originX: number;
     readonly originY: number;
+    readonly skipPath?: TownPathSkip;
     readonly variant: DbHouseShapeVariant;
   }
 ): void {
@@ -112,6 +120,7 @@ function stampTemplateHouse(
     approachHeight: input.approachHeight,
     material: input.material,
     origin: { x: input.originX, y: input.originY },
+    skipPath: input.skipPath,
     variant: input.variant,
   });
 }

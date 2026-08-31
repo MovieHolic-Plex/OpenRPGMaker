@@ -294,7 +294,6 @@ export const SHOP_QUANTITY_HARD_MAX = 99;
  */
 function applyQuantityMaxTo(input: HTMLInputElement, max: number): void {
   input.max = String(max);
-  input.title = `←/→ 로 1~${max} 수량 조절`;
   input.setAttribute("aria-label", `수량 — ←/→ 로 1~${max} 조절`);
 }
 

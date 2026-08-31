@@ -9,7 +9,10 @@ import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { villageAuthoringData } from "@/editor/tools/village/authoringData";
-import { structureKitGrowthAxes, structureKitLayerHome } from "@/editor/harnessSuggestion/structureKitModel";
+import {
+  structureKitGrowthAxes,
+  structureKitLayerHome,
+} from "@/editor/harnessSuggestion/structureKitModel";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";

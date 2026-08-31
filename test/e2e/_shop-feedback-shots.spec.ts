@@ -174,7 +174,8 @@ test("SE-2: 수량이 살 수 있는 만큼만 올라가고 상한에서 버저"
   const input = page.getByTestId("shop-quantity-input");
   // 200G / 12G = 16
   await expect(input).toHaveAttribute("max", "16");
-  await expect(input).toHaveAttribute("title", "←/→ 로 1~16 수량 조절");
+  // 안내는 aria-label 에만 담는다(출하 런타임은 native title 금지 — runtimeDomTitleGuard).
+  await expect(input).toHaveAttribute("aria-label", "수량 — ←/→ 로 1~16 조절");
   await shot(page, "03-quantity-max", overlay);
 
   // 상한까지 올린다(→ 15번). 조용해야 한다.

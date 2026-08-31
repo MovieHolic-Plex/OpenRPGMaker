@@ -33,7 +33,15 @@ function stubManualCommitLog(): void {
 }
 
 describe("Project store flush sha256 evidence", () => {
-  afterEach(() => {
+  afterEach(async () => {
+    // 앞 테스트가 store 를 건드리면 편집 활동 로그가 PERSIST_DEBOUNCE_MS 뒤에
+    // fetch("/__oprn/edit-activity") 를 쏜다. 그 타이머를 끄지 않으면 다음 테스트가 새로 세운
+    // fetch 스파이에 그 요청이 들어와 "저장 요청이 없어야 한다" 단정이 순서/부하에 따라 깨진다
+    // (실측: 두 번째 테스트가 1st spy call = edit-activity POST 로 실패).
+    // vi.resetModules() 는 다음 테스트 본문에서 일어나므로 여기서 import 하면 앞 테스트가
+    // 쓰던 그 모듈 인스턴스를 잡는다.
+    const { _resetEditActivityForTest } = await import("@/editor/editActivityLog");
+    _resetEditActivityForTest();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
     vi.unstubAllEnvs();

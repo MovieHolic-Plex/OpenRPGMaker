@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -134,11 +134,11 @@ describe("tilemap harness safety review diagnostics", () => {
     resetMapEditHistory();
     const candidate = structuredClone(base);
     candidate.meta.title = "Atomic candidate";
-    let throwOnce = true;
-    const unsubscribe = store.subscribe(() => {
-      if (!throwOnce) return;
-      throwOnce = false;
-      throw new Error("listener failed after assignment");
+    // 예외는 **교체 자체**에서 나게 만든다. store.emit 은 2026-08-29 부터 리스너 예외를
+    // try/catch 로 격리하므로(구독자 하나가 나머지를 죽이던 실측 결함), 던지는 구독자로는
+    // 더 이상 apply 경로에 예외가 도달하지 않는다 — 그 방식으로는 롤백이 검증되지 않는다.
+    const replaceSpy = vi.spyOn(store, "replace").mockImplementationOnce(() => {
+      throw new Error("store replacement failed after assignment");
     });
 
     try {
@@ -169,7 +169,7 @@ describe("tilemap harness safety review diagnostics", () => {
         expect.objectContaining({ kind: "project", mapId: base.startMapId }),
       ]);
     } finally {
-      unsubscribe();
+      replaceSpy.mockRestore();
       store.replace(createBlankProject(), { preserveEventDrafts: false });
     }
   });

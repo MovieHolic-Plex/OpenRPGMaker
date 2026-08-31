@@ -30,6 +30,8 @@ export type PlacePropsInput = {
   /** 숲 합성 전용 — 수관이 단의 밑동을 덮지 않게 한다(나무 한 그루가 눈에 보이도록).
    *  산포 경로가 planForestScatter 로 갈라지는 스위치다. */
   readonly trunkVisible?: boolean;
+  /** 숲 합성 전용 — 2×2 활엽수를 대각 엇갈림 격자에 세우려고 원점을 직접 준다. */
+  readonly origins?: readonly { readonly x: number; readonly y: number }[];
 };
 
 export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolExecResult {
@@ -48,6 +50,7 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     ...(input.seed === undefined ? {} : { seed: input.seed }),
     ...(input.packing === undefined ? {} : { packing: input.packing }),
     ...(input.trunkVisible === undefined ? {} : { trunkVisible: input.trunkVisible }),
+    ...(input.origins === undefined ? {} : { origins: input.origins }),
   };
   const access = resolveMaterialByLabel(tileset, input.material, {
     preferGroup: true,

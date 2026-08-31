@@ -3,12 +3,15 @@
 //   (1) paint_road 가 집 사이를 가로지르면 집 칸을 덮지 않고 우회한다
 //   (2) 우회해도 경로 연결성(문 앞 → 목표)이 유지된다
 //   (3) 장애물이 없는 맵에서는 결과가 예전과 바이트 동일하다(퇴행 방지)
-//   (4) lay_path 도 같은 보호를 받는다
+//   (4) lay_path 도 같은 보호를 받는다 — 두 레이어 바이트 동일로 검사한다
+//   (5) 폭 셀은 경로가 아니므로 우회로를 만들지 않는다(엉뚱한 들판 길 금지)
+//   (6) 끊긴 길은 커밋하지 않고 좌표와 함께 거절한다
+//   (7) 나무는 길이 치우고, 물은 마른 우회로가 없을 때만 건넌다
 
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
-import { repairRoadPath, roadObstacleMaskFor } from "@/editor/tools/roadObstacles";
+import { filterRoadWidthCells, repairRoadPath, roadObstacleMaskFor } from "@/editor/tools/roadObstacles";
 import type { Point } from "@/editor/tools/mapHelpers";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
@@ -53,6 +56,31 @@ function blockedCells(project: Project, map: GameMap): ReadonlySet<string> {
   return cells;
 }
 
+// 셀별 (lower,upper) 스냅샷 — "덮지 않았다"를 두 레이어 바이트 동일로 검사한다.
+function layerSnapshot(map: GameMap, keys: Iterable<string>): ReadonlyMap<string, string> {
+  const snapshot = new Map<string, string>();
+  for (const key of keys) {
+    const [x, y] = key.split(",").map(Number);
+    const index = y * map.width + x;
+    snapshot.set(key, `${map.lowerTiles[index] ?? TILE.EMPTY}/${map.upperTiles[index] ?? TILE.EMPTY}`);
+  }
+  return snapshot;
+}
+
+function changedCells(before: ReadonlyMap<string, string>, after: ReadonlyMap<string, string>): string[] {
+  return [...before.entries()].filter(([key, value]) => after.get(key) !== value).map(([key]) => key);
+}
+
+// 지표면(lower)만 보는 스냅샷 — 길이 쓰는 레이어가 lower 다.
+function groundSnapshot(map: GameMap, keys: Iterable<string>): ReadonlyMap<string, string> {
+  const snapshot = new Map<string, string>();
+  for (const key of keys) {
+    const [x, y] = key.split(",").map(Number);
+    snapshot.set(key, String(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY));
+  }
+  return snapshot;
+}
+
 function roadKeys(map: GameMap): ReadonlySet<string> {
   const keys = new Set<string>();
   for (let y = 0; y < map.height; y += 1) {
@@ -91,8 +119,9 @@ describe("도로 우회 — 건물 관통 방지", () => {
     const map = mapOf(ctx);
     const protectedCells = blockedCells(ctx.project, map);
     expect(protectedCells.size).toBeGreaterThan(20);
+    const before = layerSnapshot(map, protectedCells);
 
-    // 집 몸통 한가운데를 정확히 관통하는 폴리라인 — 예전 구현은 벽·지붕을 지웠다.
+    // 집 몸통을 정통으로 관통하는 폴리라인 — 벽·지붕이 이 경로상에 있다.
     const result = runTool(ctx, "paint_road", {
       mapId: MAP_ID,
       points: [{ x: 2, y: 9 }, { x: 37, y: 9 }],
@@ -102,8 +131,7 @@ describe("도로 우회 — 건물 관통 방지", () => {
 
     expectOk(result);
     const after = mapOf(ctx);
-    const overlap = [...roadKeys(after)].filter((key) => protectedCells.has(key));
-    expect(overlap).toEqual([]);
+    expect(changedCells(before, layerSnapshot(after, protectedCells))).toEqual([]);
     expect((result.data as { obstacleCells: number }).obstacleCells).toBeGreaterThan(0);
   });
 
@@ -133,8 +161,9 @@ describe("도로 우회 — 건물 관통 방지", () => {
     });
 
     expectOk(result);
-    const data = result.data as { detouredSegments: number; obstacleCells: number };
+    const data = result.data as { detouredSegments: number; obstacleCells: number; structureCells: number };
     expect(data.obstacleCells).toBeGreaterThan(0);
+    expect(data.structureCells).toBeGreaterThan(0);
     expect(data.detouredSegments).toBeGreaterThan(0);
     expect((result.diff?.warnings ?? []).join(" ")).toContain("통행 불가");
   });
@@ -151,6 +180,8 @@ describe("도로 우회 — 건물 관통 방지", () => {
     expect(repaired.blocked).toBe(0);
     expect(repaired.detours).toBe(0);
     expect(repaired.gaps).toBe(0);
+    expect(repaired.startBlocked).toBe(false);
+    expect(repaired.endBlocked).toBe(false);
   });
 
   it("빈 칸(EMPTY)은 장애물이 아니다 — 갓 만든 맵에서 길이 안 깔리는 퇴행 방지", () => {
@@ -160,13 +191,132 @@ describe("도로 우회 — 건물 관통 방지", () => {
     map.lowerTiles[index] = TILE.EMPTY;
     map.upperTiles[index] = TILE.EMPTY;
 
-    expect(roadObstacleMaskFor(ctx.project, map)(5, 9)).toBe(false);
+    expect(roadObstacleMaskFor(ctx.project, map)(5, 9)).toBe("open");
   });
 
-  it("lay_path 도 집 칸을 덮지 않는다", () => {
+  it("폭 셀은 경로가 아니라 표본이므로 우회로를 만들지 않는다", () => {
+    const { ctx } = context();
+    buildHouse(ctx, { x: 14, y: 7 }, 10, 10);
+    const map = mapOf(ctx);
+    const mask = roadObstacleMaskFor(ctx.project, map);
+    // 서로 인접하지 않은 폭 표본들 — 이 사이를 이으면 들판에 엉뚱한 길이 난다.
+    const samples: readonly Point[] = [{ x: 12, y: 11 }, { x: 16, y: 11 }, { x: 27, y: 11 }];
+
+    const filtered = filterRoadWidthCells(mask, samples);
+
+    expect(filtered.cells).toEqual([{ x: 12, y: 11 }, { x: 27, y: 11 }]);
+    expect(filtered.blocked).toBe(1);
+    expect(filtered.structureCells).toBe(1);
+  });
+
+  it("자연도 높은 paint_road 가 요청 경로 주변만 칠한다(엉뚱한 들판 길 금지)", () => {
+    const { ctx } = context();
+    buildHouse(ctx, { x: 14, y: 7 }, 10, 10);
+
+    expectOk(runTool(ctx, "paint_road", {
+      mapId: MAP_ID,
+      points: [{ x: 3, y: 12 }, { x: 36, y: 12 }],
+      style: "dirt",
+      naturalness: 0.9,
+      seed: 1,
+    }));
+
+    const painted = [...roadKeys(mapOf(ctx))].map((key) => {
+      const [x, y] = key.split(",").map(Number);
+      return { x, y };
+    });
+    // 집 위(y<7)는 요청 경로(y=12)와 무관한 들판이다 — 여기 칠하면 우회로가 폭 셀을 이은 것.
+    expect(painted.filter((cell) => cell.y < 7)).toEqual([]);
+  });
+
+  it("건물에 완전히 막히면 끊긴 길을 커밋하지 않고 좌표와 함께 거절한다", () => {
+    const { ctx } = context(12, 8);
+    const map = mapOf(ctx);
+    // 세로 벽으로 맵을 두 쪽으로 가른다 — 우회로가 존재할 수 없다.
+    for (let y = 0; y < map.height; y += 1) map.lowerTiles[y * map.width + 6] = 374;
+    const before = layerSnapshot(map, blockedCells(ctx.project, map));
+
+    const result = runTool(ctx, "paint_road", {
+      mapId: MAP_ID,
+      points: [{ x: 2, y: 4 }, { x: 10, y: 4 }],
+      style: "dirt",
+      naturalness: 0,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("끊깁");
+    expect(result.summary).toContain("6,4");
+    expect(changedCells(before, layerSnapshot(mapOf(ctx), before.keys()))).toEqual([]);
+    expect(roadKeys(mapOf(ctx)).size).toBe(0);
+  });
+
+  it("끝점이 벽이면 벽 앞까지 깔고 endpointBlocked 로 알린다", () => {
+    const { ctx } = context(12, 8);
+    const map = mapOf(ctx);
+    map.lowerTiles[4 * map.width + 9] = 374;
+
+    const result = runTool(ctx, "paint_road", {
+      mapId: MAP_ID,
+      points: [{ x: 2, y: 4 }, { x: 9, y: 4 }],
+      style: "dirt",
+      naturalness: 0,
+    });
+
+    expectOk(result);
+    const data = result.data as { endpointBlocked: boolean; disconnectedSegments: number };
+    expect(data.endpointBlocked).toBe(true);
+    expect(data.disconnectedSegments).toBe(0);
+    expect((result.diff?.warnings ?? []).join(" ")).toContain("끝점");
+    expect(mapOf(ctx).lowerTiles[4 * map.width + 9]).toBe(374);
+  });
+
+  it("나무는 길이 치운다 — 숲을 가로지르는 길이 뱀처럼 휘지 않는다", () => {
+    const { ctx } = context(20, 10);
+    const map = mapOf(ctx);
+    // 나무 = 통행 불가 밑동(290) + ★수관(260).
+    map.lowerTiles[5 * map.width + 9] = 290;
+    map.upperTiles[5 * map.width + 9] = 260;
+
+    expect(roadObstacleMaskFor(ctx.project, map)(9, 5)).toBe("open");
+
+    const result = runTool(ctx, "paint_road", {
+      mapId: MAP_ID,
+      points: [{ x: 2, y: 5 }, { x: 17, y: 5 }],
+      style: "dirt",
+      naturalness: 0,
+    });
+
+    expectOk(result);
+    expect((result.data as { detouredSegments: number }).detouredSegments).toBe(0);
+    expect(isRoadTile(mapOf(ctx).lowerTiles[5 * map.width + 9] ?? TILE.EMPTY)).toBe(true);
+  });
+
+  it("물은 마른 우회로가 있으면 살리고, 없으면 건너며 좌표로 알린다", () => {
+    const { ctx } = context(20, 10);
+    const map = mapOf(ctx);
+    for (let y = 0; y < map.height; y += 1) map.lowerTiles[y * map.width + 10] = TILE.WATER;
+
+    const result = runTool(ctx, "paint_road", {
+      mapId: MAP_ID,
+      points: [{ x: 2, y: 5 }, { x: 17, y: 5 }],
+      style: "dirt",
+      naturalness: 0,
+    });
+
+    expectOk(result);
+    const data = result.data as { disconnectedSegments: number; waterCrossings: number };
+    expect(data.disconnectedSegments).toBe(0);
+    expect(data.waterCrossings).toBeGreaterThan(0);
+    expect(roadFragments(mapOf(ctx))).toBe(1);
+    expect((result.diff?.warnings ?? []).join(" ")).toContain("다리");
+  });
+
+  it("lay_path 도 집 칸을 덮지 않는다(두 레이어 바이트 동일)", () => {
     const { ctx } = context();
     buildHouse(ctx, { x: 14, y: 5 }, 10, 9);
     const protectedCells = blockedCells(ctx.project, mapOf(ctx));
+    expect(protectedCells.size).toBeGreaterThan(20);
+    const before = layerSnapshot(mapOf(ctx), protectedCells);
 
     const result = runTool(ctx, "lay_path", {
       mapId: MAP_ID,
@@ -176,17 +326,33 @@ describe("도로 우회 — 건물 관통 방지", () => {
       seed: 5,
     });
 
-    if (!result.ok) {
-      // 기본 타일셋에 8-이웃 오토타일 어휘가 없으면 이 케이스는 계약 대상이 아니다.
-      expect(`${result.summary}`).toContain("8-이웃");
-      return;
-    }
-    const after = mapOf(ctx);
-    const stillBlocked = [...protectedCells].filter((key) => {
+    expectOk(result);
+    expect(changedCells(before, layerSnapshot(mapOf(ctx), protectedCells))).toEqual([]);
+    const data = result.data as { obstacleCells: number; structureCells: number; detouredSegments: number };
+    expect(data.structureCells).toBeGreaterThan(0);
+    expect(data.detouredSegments).toBeGreaterThan(0);
+    expect((result.diff?.warnings ?? []).join(" ")).toContain("통행 불가");
+  });
+
+  it("stamp_structure road 템플릿의 길이 기존 집 지표면을 덮지 않는다", () => {
+    const { ctx } = context(40, 32);
+    buildHouse(ctx, { x: 2, y: 14 }, 10, 8);
+    // 길이 덮으면 안 되는 것은 벽·지붕이 놓인 지표면이다(맨 잔디는 길이 덮어도 된다).
+    const structureGround = [...blockedCells(ctx.project, mapOf(ctx))].filter((key) => {
       const [x, y] = key.split(",").map(Number);
-      const index = y * after.width + x;
-      return (after.lowerTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY;
+      return (mapOf(ctx).lowerTiles[y * mapOf(ctx).width + x] ?? TILE.EMPTY) !== TILE.GRASS;
     });
-    expect(stillBlocked.length).toBe(protectedCells.size);
+    expect(structureGround.length).toBeGreaterThan(20);
+    const before = groundSnapshot(mapOf(ctx), structureGround);
+
+    // road 템플릿의 십자 길(원점 기준 y+14~15)이 집 몸통을 지나가게 원점을 잡는다.
+    expectOk(runTool(ctx, "stamp_structure", {
+      mapId: MAP_ID,
+      template: "road",
+      origin: { x: 0, y: 0 },
+      naturalness: 0,
+    }));
+
+    expect(changedCells(before, groundSnapshot(mapOf(ctx), structureGround))).toEqual([]);
   });
 });
