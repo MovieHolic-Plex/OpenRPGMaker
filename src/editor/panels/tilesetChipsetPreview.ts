@@ -15,6 +15,7 @@ import {
 } from "@/editor/panels/tilesetGroupEditor";
 import { cellTitle, hasAiMetadata, isUnlabeledTile } from "@/editor/panels/tilesetMetadataControls";
 import { openTilesetTileContextMenu } from "@/editor/panels/tilesetTileContextMenu";
+import { autotileComposerHint } from "@/editor/panels/tilesetAutotileEditor";
 import { modeHelpText, type TilesetEditMode } from "@/editor/panels/tilesetUsageGuide";
 import { tileLayerHome, type TileLayerHome } from "@/editor/tileLayerClassification";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
@@ -35,6 +36,7 @@ type ChipsetPreviewModel = {
   /** 미분류(라벨·설명 비어 있음) 타일만 강조 */
   readonly unlabeledOnly?: boolean;
   readonly passagePaint?: PassageMark;
+  readonly highlightTileIds?: ReadonlySet<number>;
   readonly onPaintStrokeStart?: () => void;
   readonly onPaintStrokeEnd?: () => void;
 };
@@ -70,13 +72,17 @@ export function renderChipsetPreviewPanel(model: ChipsetPreviewModel): HTMLEleme
 function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
   const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
   const passageChrome = model.mode === "passage";
+  const autotileChrome = model.mode === "autotile";
   return el("div", {
     class: `tileset-db-preview-header${passageChrome ? " passage-chrome" : ""}`,
     children: [
       el("div", {
         class: "tileset-db-preview-title-row",
         children: [
-          ...(passageChrome ? [] : [el("div", { class: "tileset-db-preview-title", text: "타일 그림판" })]),
+          ...(passageChrome ? [] : [el("div", {
+            class: "tileset-db-preview-title",
+            text: model.mode === "autotile" ? autotileComposerHint() : "타일 그림판",
+          })]),
           el("div", {
             class: "tileset-db-layer-filter",
             attrs: { role: "tablist", "aria-label": "레이어 필터" },
@@ -85,7 +91,7 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
               renderLayerFilterButton({ filter: "all", text: "전체", title: "하위·상위 전부 표시", model }),
               renderLayerFilterButton({ filter: "lower", text: "하위", title: "하위 레이어 타일만 강조", model }),
               renderLayerFilterButton({ filter: "upper", text: "상위", title: "상위 레이어 타일만 강조", model }),
-              ...(passageChrome
+              ...(passageChrome || autotileChrome
                 ? []
                 : [
                     el("button", {
@@ -271,9 +277,10 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
   const unlabeled = isUnlabeledTile(model.tileset, index);
   const dimmed = isLayerDimmed(home) || (unlabeledOn && !unlabeled) ? " layer-dimmed" : "";
   const unlabeledClass = unlabeled ? " unlabeled" : "";
+  const autotileMember = model.mode === "autotile" && model.highlightTileIds?.has(index) ? " autotile-member" : "";
   const rerender = () => stableRerender(model.rerender);
   return el("button", {
-    class: `tileset-db-cell mark-${mark} layer-${home}${selected}${aiSelected}${dimmed}${unlabeledClass}${model.mode === "group" ? groupCellClass(index) : ""}`,
+    class: `tileset-db-cell mark-${mark} layer-${home}${selected}${aiSelected}${dimmed}${unlabeledClass}${autotileMember}${model.mode === "group" ? groupCellClass(index) : ""}`,
     text: cellText(model, index),
     attrs: {
       type: "button",
@@ -383,6 +390,13 @@ function handleTileClick(model: ChipsetPreviewModel, tile: number, event: Event)
     rerender();
     return;
   }
+  if (model.mode === "autotile") {
+    model.onSelectTile(tile, { quiet: true });
+    paintSelectedCell(tile);
+    model.onApplyModeTile(tile);
+    rerender();
+    return;
+  }
   model.onSelectTile(tile);
 }
 
@@ -450,6 +464,7 @@ function cellText(model: ChipsetPreviewModel, tile: number): string {
   if (model.mode === "terrain") return String(model.tileset.terrain[tile] ?? 0);
   if (model.mode === "ai") return hasAiMetadata(model.tileset, tile) ? "AI" : "";
   if (model.mode === "group") return groupCellText(model.tileset, tile);
+  if (model.mode === "autotile") return "";
   const mark = passageMarkForTile(model.tileset, tile);
   if (mark === "o") return "";
   return mark === "star" ? "★" : "X";

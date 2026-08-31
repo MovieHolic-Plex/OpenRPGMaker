@@ -1,5 +1,10 @@
 import { renderAiQuestionPanel } from "@/editor/panels/tilesetAiQuestionEditor";
-import { renderAutotileEditorPanel } from "@/editor/panels/tilesetAutotileEditor";
+import {
+  applyAutotileSheetPick,
+  autotileHighlightTileIds,
+  renderAutotileEditorPanel,
+  renderAutotileLayoutToolbar,
+} from "@/editor/panels/tilesetAutotileEditor";
 import { renderChipsetPreviewPanel } from "@/editor/panels/tilesetChipsetPreview";
 import { renderTileGroupPanel } from "@/editor/panels/tilesetGroupEditor";
 import { textControl } from "@/editor/panels/databaseControls";
@@ -53,12 +58,14 @@ const PASSAGE_META: Record<PassageMark, NonNullable<TileAiMetadata["passage"]>> 
 export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
   clampSelectedTile(tileset);
   const paintLayout = editMode === "passage" || editMode === "terrain";
+  const autotileLayout = editMode === "autotile";
   const preview = renderChipsetPreviewPanel({
     tileset,
     mode: editMode,
     selectedTile,
     unlabeledOnly: getUnlabeledOnlyFilter(),
     passagePaint,
+    highlightTileIds: autotileLayout ? autotileHighlightTileIds(tileset) : undefined,
     rerender,
     onApplyModeTile: (tile) => applyActiveModeClick(tileset.id, tile),
     onPaintStrokeStart: beginPassagePaintStroke,
@@ -73,11 +80,14 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
   });
   const sidebar = renderEditSidebar(tileset, rerender);
   const tools = paintLayout ? renderToolBox(tileset, rerender) : null;
+  const autotileTools = autotileLayout ? renderAutotileLayoutToolbar(tileset, rerender) : null;
   return el("div", {
-    class: `tileset-db-edit-area${editMode === "group" ? " knowledge-mode" : ""}${paintLayout ? " passage-paint" : ""}`,
+    class: `tileset-db-edit-area${editMode === "group" ? " knowledge-mode" : ""}${paintLayout ? " passage-paint" : ""}${autotileLayout ? " autotile-compose" : ""}`,
     children: paintLayout
       ? [...(tools ? [tools] : []), preview, sidebar]
-      : [sidebar, preview],
+      : autotileLayout
+        ? [...(autotileTools ? [autotileTools] : []), preview, sidebar]
+        : [sidebar, preview],
   });
 }
 
@@ -102,6 +112,12 @@ function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLEleme
       children: [renderSelectedTilePanel(tileset, rerender)],
     });
   }
+  if (editMode === "autotile") {
+    return el("div", {
+      class: "tileset-db-edit-sidebar tileset-autotile-sidebar",
+      children: [renderAutotileEditorPanel(tileset, rerender)],
+    });
+  }
   return el("div", {
     class: "tileset-db-edit-sidebar",
     children: [
@@ -109,7 +125,6 @@ function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLEleme
       ...(tab === "knowledge" ? [renderUnlabeledQueuePanel(tileset, rerender)] : []),
       renderSelectedTilePanel(tileset, rerender),
       ...(editMode === "ai" ? [renderAiQuestionPanel(tileset, rerender, selectFirstAppliedTile)] : []),
-      ...(tab === "compose" ? [renderAutotileEditorPanel(tileset, rerender)] : []),
     ],
   });
 }
@@ -514,6 +529,11 @@ function renderTileMeaningEditors(
 function applyActiveModeClick(tilesetId: string, tile: number): void {
   if (editMode === "passage") {
     applyPassageMark(tilesetId, tile, passagePaint);
+    return;
+  }
+  if (editMode === "autotile") {
+    const tileset = store.getCurrent().tilesets[tilesetId];
+    if (tileset) applyAutotileSheetPick(tileset, tile);
     return;
   }
   store.update((project) => {

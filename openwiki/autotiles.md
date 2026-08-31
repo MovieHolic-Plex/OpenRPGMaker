@@ -92,7 +92,7 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
 ## 4. 오토타일 등록 경로 3가지
 
 1. **내장 승격** — `DEFAULT_AUTOTILE_GROUPS` (`autotileGroups.ts`) 에 `templateBlockGroup(id, name, anchor)` 한 줄. 마을 하네스 등 코드가 의존할 지형은 이 경로. 의미 라벨(`tileSemanticsCombinedTown.ts`)과 통행성(`chipsetMapping.ts`)도 함께 배선할 것.
-2. **DB 위저드** — DB→타일셋→구성→"템플릿에서 만들기": RM2K 3×4 / 3×3 / 3×2 / 애니메이션 물, 앵커 번호 하나로 생성. 커스텀 타일셋의 유일한 경로이자 사용자용.
+2. **DB 오토타일 설정** — DB→타일셋→오토타일 설정(구성 탭과 같은 면). 사람은 **9칸 / 11칸 / 커스텀** 카드를 고르고 칩셋에서 블록 왼쪽 위를 누르거나, 격자 칸마다 타일을 지정한다. 엔진 쪽은 그대로 `buildTemplateGroup("oprn-3x4"|"grid-3x3"|"grid-3x2")` (`tilesetAutotileTemplates.ts`).
 3. **API** — `addAutotileGroupFromTemplate` (`tilesetActions.ts`). 첫 커스텀 그룹 추가 시 내장 그룹 전체가 tileset 에 승계된다(내장 흙길/모래가 죽는 회귀 방지 규약 — 절대 생략 금지).
 
 등록만 하면 붓(`shapeTerrainAfterLowerEdit`)·`fill_region`(vocab 겹침 최대 그룹)·`lay_path` 가 자동으로 성형한다. 추가 배선 불필요.

@@ -253,6 +253,32 @@
   grid-row: 2;
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.autotile-compose {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.autotile-compose > .tileset-autotile-toolbar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.autotile-compose > .tileset-db-preview-wrap {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.autotile-compose > .tileset-db-edit-sidebar {
+  grid-column: 2;
+  grid-row: 2;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-zoom-row {
   display: flex;
   flex-direction: column;
@@ -480,6 +506,11 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.passage-paint {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.autotile-compose {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(240px, 1fr) auto;
+  }
 }
 
 @media (max-width: 900px) {
@@ -490,6 +521,11 @@
   }
 
   .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.passage-paint {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(240px, 1fr) auto;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.autotile-compose {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(240px, 1fr) auto;
   }

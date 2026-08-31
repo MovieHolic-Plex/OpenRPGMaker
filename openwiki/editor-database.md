@@ -206,6 +206,23 @@ The Database modal was modernized in six waves while keeping every hard contract
 타일셋 워크스페이스 **안쪽** 섹션 탭(타일 규칙/단어장/구성)은 그대로 둔다. 레일 면은
 그 모드의 바로가기이고, 안쪽 탭을 없애면 기존 e2e 가 깨진다.
 
+## 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
+
+`db-tab-tileset-autotile` 과 구성 탭은 같은 면이다. 예전의 멤버 번호 나열·16칸
+비트마스크·「템플릿에서 만들기」숫자 위저드는 기본 표면이 아니다.
+
+- **형식 카드:** 워크벤치 맨 위 전폭. 9칸(3×3) · 11칸(3×4, 외딴 점·오목 코너) · 커스텀.
+  카드를 고른 뒤 칩셋에서 블록 **왼쪽 위**를 누르면 그룹이 생긴다(`addAutotileGroupFromTemplate`).
+- **격자:** 오른쪽 사이드바는 오토타일 전용이다(선택 타일 인스펙터 없음). 선택된 그룹의
+  역할 격자가 먼저 보이고, 그룹 칩 목록은 그 아래 짧은 스크롤 띠다. 칸을 누른 뒤 시트를
+  누르면 그 역할만 바뀐다. 내장 그룹은 보기만 되고 「기본 그룹 불러오기」로 복사한다.
+- **시트 클릭** 은 `editMode === "autotile"` 에서 `applyAutotileSheetPick` 으로 간다
+  (예전엔 no-op 이었다). 멤버 칸은 `.autotile-member` 링으로 표시한다.
+- 비트마스크·연결 타일 숫자는 `<details>` 「고급」 안에만 남긴다. 6칸·물 애니메이션은
+  「6칸·물 애니메이션」 토글. 순수 계산은 `tilesetAutotileLayout.ts` /
+  `tilesetAutotileTemplates.ts`. Tests: `test/tilesetAutotileEditor.test.ts`,
+  `test/tilesetAutotileLayout.test.ts`.
+
 ## 공간 종류와 구조물은 다른 면이다 (2026-09-01)
 
 `공간 종류`(`tilesetSpaces`, `src/editor/panels/tilesetSpacesTab.ts`) 는 장소 문법이고,
