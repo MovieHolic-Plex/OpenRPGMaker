@@ -188,6 +188,26 @@
   width: var(--battle-sprite-frame-width);
 }
 
+/* 1:1 은 필드의 빈 가운데를 스프라이트가 메운다. 다인 파티의 겹침 방지 간격은 유지. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-group:not(:has(> .battle-enemy:nth-child(2))) .battle-enemy-image {
+  height: 160px;
+  width: 140px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group:not(:has(> .battle-actor:nth-child(2))) .battle-actor {
+  height: 112px;
+  width: 108px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group:not(:has(> .battle-actor:nth-child(2))) .battle-actor[data-authored-battler="true"] .battle-actor-sprite {
+  --battle-sprite-frame-height: 88px;
+  --battle-sprite-frame-width: 72px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group:not(:has(> .battle-actor:nth-child(2))) .battle-actor-platform {
+  width: 104px;
+}
+
 /* 발판은 그림자 타원 하나로 줄인다 — 예전 금색 띠는 창 크롬과 같은 계열이었다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-platform {
   background: radial-gradient(ellipse at 50% 50%, rgba(3, 5, 14, 0.55), rgba(3, 5, 14, 0));
@@ -251,6 +271,14 @@
 
 /* ---- Command rail (left side of the HUD band) ---------------------------- */
 
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-host {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+  min-width: 0;
+  z-index: 9;
+}
+
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-panel {
   align-content: start;
   background: var(--rm-hud-surface);
@@ -260,8 +288,9 @@
   box-shadow: none;
   display: grid;
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 1;
   grid-template-columns: minmax(0, 1fr);
+  height: 100%;
   /* 메뉴 트랙은 **행 수의 배수로 고정**한다. 1fr 로 두면 키 안내가 남긴 만큼을 받아
      행 피치의 배수가 깨지고 마지막 행이 반 잘린다(실측). 5행 120 + 4 + 안내 24 = 148. */
   grid-template-rows: calc(5 * var(--battle-command-row-height)) auto;
@@ -791,22 +820,14 @@
 /* ---- Target select ------------------------------------------------------- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-command-panel {
-  grid-template-rows: auto calc(3 * var(--battle-command-row-height)) auto;
+  grid-template-rows: calc(4 * var(--battle-command-row-height)) auto;
   row-gap: 4px;
 }
 
+/* 메시지 창이 이미 "○○을(를) 노린다"를 말하므로 프롬프트는 같은 이름을 한 번 더 쓰지 않는다.
+   노드는 QA testid 용으로 남기고 이 스킨에서만 접는다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-prompt {
-  align-self: start;
-  color: var(--battle-text-muted);
-  font-size: 12px;
-  grid-row: 1;
-  letter-spacing: 0.02em;
-  line-height: 1.4;
-  /* 자르지 않고 줄바꿈한다 — 잘리는 끝자리가 동명 적을 구별하는 순번이다(실측). */
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  padding: 0 10px 4px;
-  white-space: normal;
+  display: none;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu {
@@ -815,9 +836,9 @@
   display: grid;
   gap: 0;
   grid-auto-rows: var(--battle-command-row-height);
-  grid-row: 2;
+  grid-row: 1;
   grid-template-rows: none;
-  max-height: calc(3 * var(--battle-command-row-height));
+  max-height: calc(4 * var(--battle-command-row-height));
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -844,7 +865,7 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-key-prompts {
-  grid-row: 3;
+  grid-row: 2;
 }
 
 /* 선택된 적만 이름표 아래 HP 를 펼친다. */
@@ -1035,9 +1056,29 @@
   animation-delay: calc(120ms + var(--actor-index, 0) * 70ms);
 }
 
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-command-panel,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-party {
   animation: rm2003-hud-in 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* 인트로·연출 중 빈 커맨드 칸을 남기지 않는다. 공용 레이어는 visibility:hidden 이라
+   232px 트랙이 그대로 검게 비었다(실측). 칸을 접고 파티 띠를 전폭으로 민다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"],
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="acting"],
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="impact"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-command-host,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="acting"] .battle-command-host,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="impact"] .battle-command-host {
+  display: none;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-party,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="acting"] .battle-party,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="impact"] .battle-party {
+  border-left-width: 0;
+  grid-column: 1 / -1;
 }
 
 @keyframes rm2003-backdrop-in {

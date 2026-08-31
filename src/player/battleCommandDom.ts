@@ -49,7 +49,7 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
     panel.dataset.targetPresentation = "menu";
     panel.append(targetPrompt(snapshot, terms));
     const targetMenu = targetSelectionMenu(snapshot, options, terms);
-    targetMenu.append(targetCancelButton(options));
+    targetMenu.append(targetCancelButton(options, terms));
     panel.append(targetMenu);
     panel.append(keyPrompts());
     return panel;
@@ -74,6 +74,38 @@ export function enemyListPanel(snapshot: BattleSnapshot): HTMLElement {
   panel.className = "battle-enemy-list-panel";
   panel.append(enemyNameList(snapshot.enemies));
   return panel;
+}
+
+/** 표준 커맨드 종류는 클래스에 적힌 이름 대신 프로젝트 용어를 쓴다.
+ *  예전에는 attack/skill/item 만 용어를 타고 defend/escape/capture 는 `command.name` 이라
+ *  영어 용어 + 한글 방어/도주가 한 메뉴에 섞였다(실측: Attack / Skill / Item / 방어 / 도주). */
+export function battleCommandKindLabel(command: RuntimeBattleCommand, terms: ResolvedTerms): string {
+  const normalizedName = command.name.trim().toLowerCase();
+  switch (command.kind) {
+    case "attack":
+      return terms.attack;
+    case "skill":
+      return command.id === "cmd_skill"
+        || normalizedName === "skill"
+        || normalizedName === "스킬"
+        || normalizedName === "기술"
+        ? terms.skill
+        : command.name;
+    case "item":
+      return command.id === "cmd_item"
+        || normalizedName === "item"
+        || normalizedName === "아이템"
+        ? terms.item
+        : command.name;
+    case "defend":
+      return terms.defend;
+    case "escape":
+      return terms.escape;
+    case "capture":
+      return terms.capture;
+    default:
+      return command.name;
+  }
 }
 
 function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, targetMode: boolean): HTMLElement {
@@ -168,14 +200,7 @@ function commandControl(
   targetMode: boolean
 ): HTMLElement {
   const terms = resolveTerms(store.getCurrent());
-  const normalizedName = command.name.trim().toLowerCase();
-  const label = command.kind === "attack"
-    ? terms.attack
-    : command.kind === "skill" && (command.id === "cmd_skill" || normalizedName === "skill" || normalizedName === "스킬")
-      ? terms.skill
-      : command.kind === "item" && (command.id === "cmd_item" || normalizedName === "item" || normalizedName === "아이템")
-        ? terms.item
-        : command.name;
+  const label = battleCommandKindLabel(command, terms);
   switch (command.kind) {
     case "attack":
       return commandButton(label, commandTestId(command), "sword", "", () => {
@@ -209,18 +234,18 @@ function commandControl(
     }
     case "capture": {
       const items = captureItems(snapshot);
-      return commandButton(command.name, commandTestId(command), "target", items.length > 0 ? `${items.length}종` : "없음", () => {
+      return commandButton(label, commandTestId(command), "target", items.length > 0 ? `${items.length}종` : "없음", () => {
         if (targetMode || items.length === 0) return;
         options.setSubmenu({ kind: "capture" });
         options.render();
       }, targetMode || items.length === 0);
     }
     case "defend":
-      return commandButton(command.name, commandTestId(command), "shield", "", () => {
+      return commandButton(label, commandTestId(command), "shield", "", () => {
         if (!targetMode) options.runActorCommand({ kind: "defend" });
       }, targetMode);
     case "escape":
-      return commandButton(command.name, commandTestId(command), "boot", "", () => {
+      return commandButton(label, commandTestId(command), "boot", "", () => {
         if (!targetMode) options.runActorCommand({ kind: "escape" });
       }, targetMode || !snapshot.canEscape);
     case "switch": {
@@ -614,8 +639,8 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
   return menu;
 }
 
-function targetCancelButton(options: BattleCommandPanelOptions): HTMLButtonElement {
-  return commandButton("취소", "battle-target-cancel", "back", "", () => {
+function targetCancelButton(options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLButtonElement {
+  return commandButton(terms.back, "battle-target-cancel", "back", "", () => {
     if (options.cancelTargetSelection) {
       options.cancelTargetSelection();
       return;
