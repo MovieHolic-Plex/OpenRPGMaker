@@ -8,7 +8,8 @@ type FakeBrowserGlobals = {
   readonly window: typeof globalThis.window | undefined;
 };
 
-// tabs 레지스트리(database.ts)에 정의된 31개 testid — 그룹 재구성 + 상단 고정
+// tabs 레지스트리(database.ts)에 정의된 35개 testid — 타일셋 폴더 자식 3면 포함.
+// 폴더 버튼 `db-tileset-folder` 는 .db-tab 이 아니라 이 목록에 없다.
 // '개요' 엔트리 이후에도 전부 정확히 한 번씩 사이드바에 존재해야 한다(G006 + e2e 스윕 계약).
 // 순서는 `TAB_GROUPS` 파생이다(tabOrder 는 더 이상 손으로 쓰지 않는다).
 const EXPECTED_TABS = [
@@ -39,9 +40,13 @@ const EXPECTED_TABS = [
   "db-tab-farm-animals",
   "db-tab-farm-spatial",
   "db-tab-life-collections",
-  // 세계 — 지형은 전투 데이터가 아니라 맵 데이터다
+  // 세계 — 타일셋 폴더 자식 + 마을·지형
+  "db-tab-world-gen",
   "db-tab-tilesets",
+  "db-tab-tileset-autotile",
+  "db-tab-tileset-unlabeled",
   "db-tab-structure-kits",
+  "db-tab-tileset-spaces",
   "db-tab-villages",
   "db-tab-terrain",
   "db-tab-common-events",
@@ -113,18 +118,18 @@ describe("database sidebar navigation", () => {
 
     const groups = panelRoot.querySelectorAll(".db-tab-group");
     expect(groups.length).toBe(EXPECTED_GROUPS.length);
-    expect(groups.map((group) => group.textContent)).toEqual(EXPECTED_GROUPS);
+    expect(groups.map((group) => group.querySelector(".db-tab-group-label")?.textContent)).toEqual(EXPECTED_GROUPS);
   });
 
   // Break caught: life-skill, weather, and animal records remain hidden behind System counts.
-  it("keeps all 31 tab testids, including faction and life authoring surfaces", () => {
+  it("keeps all 35 tab testids, including faction and life authoring surfaces", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(31);
+    expect(EXPECTED_TABS.length).toBe(35);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(31);
+    expect(new Set(EXPECTED_TABS).size).toBe(35);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();

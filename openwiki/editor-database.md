@@ -191,6 +191,20 @@ The Database modal was modernized in six waves while keeping every hard contract
 - Product artwork is `/assets/farming/life-ui/decorating-card.png` (`db-spatial-hero-image`). CSS is isolated in `styles/database/desktop-record-shell/12-spatial-authoring.css`: a two-column 1440 layout collapses at a 980px container and again at 680px for the 1024 acceptance lane.
 - Stable browser entry points: `db-spatial-workspace`, `db-spatial-add-building-type`, `db-spatial-add-decoration-type`, `db-spatial-add-building-placement`, `db-spatial-add-decoration-placement`, plus record IDs prefixed `db-spatial-building-*` / `db-spatial-decoration-*`. Focused coverage: `test/p2SpatialEditorAuthoring.test.ts` and the Database sidebar suites.
 
+## 세계 그룹 — 타일셋이 중간 카테고리 (2026-09-01)
+
+`세계` 레일은 `생성 규칙`(프로젝트 전역) 다음에 **타일셋 폴더**를 둔다. 폴더 자식은
+통행(`db-tab-tilesets`, testid 유지 — e2e 가 이 버튼을 누른다) · 오토타일 설정 ·
+미라벨 모아보기 · 구조물 · 공간 종류. 마을·지형·공용 이벤트는 폴더 밖 형제다.
+
+칩셋 선택은 `oprn:database.selectedTilesetId` 한 키를 공유한다. 「방」 단독 탭은 없다 —
+공간 종류는 통행과 같은 층의 이 칩셋 면이다. 폴더 버튼 testid `db-tileset-folder` 는
+`.db-tab` 이 아니다(키보드/DOM 순서 계약은 자식 탭만 센다). 접힌 「세계」 부제는
+자식 다섯을 나열하지 않고 「타일셋」 한 낱말로 접는다.
+
+타일셋 워크스페이스 **안쪽** 섹션 탭(타일 규칙/단어장/구성)은 그대로 둔다. 레일 면은
+그 모드의 바로가기이고, 안쪽 탭을 없애면 기존 e2e 가 깨진다.
+
 ## '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
 
 `src/editor/panels/structureKitDbTab.ts` + 데이터 계층 `src/editor/panels/structureKitDbSources.ts`.
@@ -524,7 +538,7 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 
 마을 생성의 값은 전부 코드 상수였다. 집 형태 34종은 `HOUSE_TEMPLATES` 의 `wingsAt()` 함수였고, 길 폭·광장 모양·마당 스타일은 씨앗값과 테마 문자열에서 파생됐다. 사용자가 바꿀 자리가 없었고, AI 도 코드 요약만 읽었으므로 "내가 정한 대로 깔아 줘" 가 성립하지 않았다. 이 탭이 그 입력단이다.
 
-- **레일 위치**: 세계 그룹, `구조물` 과 `지형` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.
+- **레일 위치**: 세계 그룹, 타일셋 폴더(`공간 종류`)와 `지형` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.
 - **두 종류를 한 탭에서 저작한다.** 목록 창 칩(`db-village-kind-template` / `db-village-kind-preset`)이 축이고, 오른쪽 상세는 고른 종류를 편집한다. 저장 위치는 `project.villageTemplates` / `project.villagePresets` — 프로젝트에 있으면 **전부 사용자 저작**이다(내장 카탈로그는 코드에 남고 레코드가 되지 않는다).
 - **제로 부트스트랩**: 탭을 열기만 해서는 아무 레코드도 생기지 않는다. 두 배열은 그대로 `undefined` 다.
 - **화면의 선택지와 하네스가 받는 값은 같은 상수에서 나온다.** select 옵션은 `village/authoringData.ts` 의 `VILLAGE_PATH_STYLES` · `VILLAGE_PLAZA_LAYOUTS` · `VILLAGE_RANGE` 등을 그대로 쓴다. 예전에 화면과 하네스가 갈라졌던 항목(`roadWidth` 2~3, `roadNaturalness` 하한 0.35)이 여기 있다 — 갈라지면 사용자가 고른 값이 조용히 무시된다.

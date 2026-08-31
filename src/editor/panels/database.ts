@@ -30,8 +30,10 @@ import {
 } from "@/editor/panels/databaseUtilityRecordViews";
 import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
-import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
-import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
+import { renderStructureKitsTab, setStructureKitFolderView } from "@/editor/panels/structureKitDbTab";
+import { applyTilesetFolderFacet } from "@/editor/panels/tilesetMetadataEditor";
+import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
+import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
 import {} from "@/editor/uiCopy";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
@@ -57,6 +59,9 @@ export type DatabaseTab =
   | "elements"
   | "monsterSpecies"
   | "structureKits"
+  | "tilesetAutotile"
+  | "tilesetUnlabeled"
+  | "tilesetSpaces"
   | "system"
   | "terms"
   | "terrain"
@@ -90,9 +95,12 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "factions", label: "진영", testid: "db-tab-factions" },
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
-  { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
+  { id: "tilesets", label: "통행", testid: "db-tab-tilesets" },
+  { id: "tilesetAutotile", label: "오토타일 설정", testid: "db-tab-tileset-autotile" },
+  { id: "tilesetUnlabeled", label: "미라벨 모아보기", testid: "db-tab-tileset-unlabeled" },
   { id: "worldGen", label: "생성 규칙", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
+  { id: "tilesetSpaces", label: "공간 종류", testid: "db-tab-tileset-spaces" },
   { id: "villages", label: "마을", testid: "db-tab-villages" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
@@ -123,9 +131,22 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   // 지형은 전투 데이터가 아니라 맵 데이터다 — 타일셋·구조물과 같은 그룹에 둔다.
-  { label: "세계", slug: "world", tabs: ["worldGen", "tilesets", "structureKits", "villages", "terrain", "commonEvents"] },
+  { label: "세계", slug: "world", tabs: ["worldGen", "tilesets", "tilesetAutotile", "tilesetUnlabeled", "structureKits", "tilesetSpaces", "villages", "terrain", "commonEvents"] },
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
+
+/** 세계 그룹 안에서 타일셋 폴더로 묶는 자식 탭 — 통행·오토타일·미라벨·구조물·공간 종류. */
+export const TILESET_FOLDER_TAB_IDS: readonly DatabaseTab[] = [
+  "tilesets",
+  "tilesetAutotile",
+  "tilesetUnlabeled",
+  "structureKits",
+  "tilesetSpaces",
+];
+
+function isTilesetFolderTab(id: DatabaseTab): boolean {
+  return (TILESET_FOLDER_TAB_IDS as readonly string[]).includes(id);
+}
 
 // 개요는 그룹 밖에 고정되므로 앞에 붙인다.
 const tabOrder: readonly DatabaseTab[] = ["overview", ...TAB_GROUPS.flatMap((group) => group.tabs)];
@@ -204,7 +225,7 @@ function applyGroupCollapse(header: HTMLElement): void {
       const group = TAB_GROUPS.find((candidate) => candidate.slug === slug);
       const hint = child.querySelector<HTMLElement>(".db-tab-group-peek");
       if (group) {
-        const names = group.tabs.map((id) => tabFor(id).label).join("·");
+        const names = groupPeekNames(group).join("·");
         if (hint) {
           hint.textContent = hidden ? names : "";
           hint.hidden = !hidden;
@@ -214,6 +235,10 @@ function applyGroupCollapse(header: HTMLElement): void {
           hidden ? `${group.label} 그룹 펼치기 — ${names}` : `${group.label} 그룹 접기`,
         );
       }
+      continue;
+    }
+    if (classes.contains("db-tab-folder")) {
+      child.hidden = hidden;
       continue;
     }
     if (!classes.contains("db-tab")) continue;
@@ -329,7 +354,17 @@ export function renderDatabasePanel(container: HTMLElement): void {
           },
         },
       }));
-      for (const id of group.tabs) appendTabButton(header, body, container, tabFor(id));
+      let folderEmitted = false;
+      for (const id of group.tabs) {
+        if (chrome.databaseNav === "grouped" && isTilesetFolderTab(id)) {
+          if (!folderEmitted) {
+            appendTilesetFolder(header, body, container);
+            folderEmitted = true;
+          }
+          continue;
+        }
+        appendTabButton(header, body, container, tabFor(id));
+      }
     }
     applyGroupCollapse(header);
   } else {
@@ -419,6 +454,18 @@ function databaseTabCount(tab: DatabaseTab): number | null {
         .filter((id) => id !== PLAYER_FACTION_ID && id !== DEFAULT_ENEMY_FACTION_ID)).size;
     case "tilesets":
       return Object.keys(project.tilesets).length;
+    case "tilesetAutotile": {
+      const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
+      return tileset?.autotileGroups?.length ?? 0;
+    }
+    case "tilesetUnlabeled": {
+      const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
+      return tileset ? listUnlabeledTileIds(tileset).length : 0;
+    }
+    case "tilesetSpaces": {
+      const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
+      return tileset?.interiorRoomKinds?.length ?? 0;
+    }
     case "worldGen":
       return project.system.worldGen?.keywords?.length ?? 0;
     case "structureKits":
@@ -439,8 +486,26 @@ function groupRecordCount(group: DatabaseTabGroup): number {
   return group.tabs.reduce((sum, id) => sum + (databaseTabCount(id) ?? 0), 0);
 }
 
+/** 접힌 그룹 부제·툴팁에 쓸 이름. 세계는 다섯 타일셋 면을 「타일셋」 한 낱말로 접는다. */
+function groupPeekNames(group: DatabaseTabGroup): string[] {
+  if (group.slug !== "world") return group.tabs.map((id) => tabFor(id).label);
+  const names: string[] = [];
+  let folderEmitted = false;
+  for (const id of group.tabs) {
+    if (isTilesetFolderTab(id)) {
+      if (!folderEmitted) {
+        names.push("타일셋");
+        folderEmitted = true;
+      }
+      continue;
+    }
+    names.push(tabFor(id).label);
+  }
+  return names;
+}
+
 function groupTabLabels(group: DatabaseTabGroup): string {
-  return group.tabs.map((id) => tabFor(id).label).join(", ");
+  return groupPeekNames(group).join(", ");
 }
 
 function refreshTabCounts(container: HTMLElement): void {
@@ -486,6 +551,8 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
   }
   let currentGroup: HTMLElement | null = null;
   let groupHasMatch = false;
+  let folderEl: HTMLElement | null = null;
+  let folderNameMatched = false;
   const closeGroup = (): void => {
     if (currentGroup) currentGroup.hidden = query !== "" && !groupHasMatch;
   };
@@ -495,14 +562,65 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
       closeGroup();
       currentGroup = child;
       groupHasMatch = false;
+      folderEl = null;
+      folderNameMatched = false;
+      continue;
+    }
+    if (child.classList.contains("db-tab-folder")) {
+      folderEl = child;
+      folderNameMatched = (child.textContent ?? "").toLowerCase().includes(query);
+      child.hidden = !folderNameMatched;
+      if (folderNameMatched) groupHasMatch = true;
       continue;
     }
     if (!child.classList.contains("db-tab")) continue;
-    const matches = query === "" || (child.textContent ?? "").toLowerCase().includes(query);
-    child.hidden = !matches;
-    if (matches) groupHasMatch = true;
+    const matches = (child.textContent ?? "").toLowerCase().includes(query);
+    const isFolderChild = child.dataset.folderChild === "1";
+    if (isFolderChild && folderNameMatched) {
+      child.hidden = false;
+      groupHasMatch = true;
+    } else {
+      child.hidden = !matches;
+      if (matches) {
+        groupHasMatch = true;
+        if (isFolderChild && folderEl) folderEl.hidden = false;
+      }
+    }
   }
   closeGroup();
+}
+
+function appendTilesetFolder(
+  header: HTMLElement,
+  body: HTMLElement,
+  container: HTMLElement,
+): void {
+  const childActive = isTilesetFolderTab(activeTab);
+  header.append(
+    el("button", {
+      class: `db-tab-folder${childActive ? " open" : ""}`,
+      attrs: {
+        type: "button",
+        title: "타일셋 — 이 칩셋의 통행·오토타일·미라벨·구조물·공간 종류",
+        "aria-label": "타일셋",
+        "aria-expanded": "true",
+      },
+      dataset: { testid: "db-tileset-folder" },
+      children: [makeDatabaseTabIcon("tilesets"), "타일셋"],
+      on: {
+        click: () => {
+          if (isTilesetFolderTab(activeTab)) return;
+          setDatabaseActiveTab("tilesets");
+          expandGroupFor(header, "tilesets");
+          updateTabButtons(header);
+          renderActiveTab(body, container);
+        },
+      },
+    }),
+  );
+  for (const id of TILESET_FOLDER_TAB_IDS) {
+    appendTabButton(header, body, container, tabFor(id), { folderChild: true });
+  }
 }
 
 function appendTabButton(
@@ -510,6 +628,7 @@ function appendTabButton(
   body: HTMLElement,
   container: HTMLElement,
   tab: { readonly id: DatabaseTab; readonly label: string; readonly testid: string },
+  options?: { readonly folderChild?: boolean },
 ): void {
   const count = databaseTabCount(tab.id);
   header.append(
@@ -520,10 +639,11 @@ function appendTabButton(
       // 노드를 안 가지므로 button.textContent 는 라벨 그대로 남는다(G006 라벨 계약).
       children: [makeDatabaseTabIcon(tab.id), tab.label],
       attrs: { type: "button", title: tab.label, "aria-label": tab.label },
-      dataset:
-        count === null || count === 0
-          ? { testid: tab.testid }
-          : { testid: tab.testid, count: String(count) },
+      dataset: {
+        testid: tab.testid,
+        ...(count !== null && count > 0 ? { count: String(count) } : {}),
+        ...(options?.folderChild ? { folderChild: "1" } : {}),
+      },
       on: {
         click: () => {
           if (activeTab === tab.id) return;
@@ -546,6 +666,10 @@ function updateTabButtons(header: HTMLElement): void {
     if (!(button instanceof HTMLElement)) continue;
     if (button.dataset.testid === activeTestId) button.classList.add("active");
     else button.classList.remove("active");
+  }
+  const folder = header.querySelector(".db-tab-folder");
+  if (folder instanceof HTMLElement) {
+    folder.classList.toggle("open", isTilesetFolderTab(activeTab));
   }
   revealActiveTab(header);
 }
@@ -650,9 +774,17 @@ function renderActiveTab(
       renderCommonEventsTab(body, rerender);
       break;
     case "tilesets":
+    case "tilesetAutotile":
+    case "tilesetUnlabeled":
+      applyTilesetFolderFacet(tab);
       renderTilesetsTab(body, rerender);
       break;
     case "structureKits":
+      setStructureKitFolderView("kits");
+      renderStructureKitsTab(body, rerender);
+      break;
+    case "tilesetSpaces":
+      setStructureKitFolderView("spaces");
       renderStructureKitsTab(body, rerender);
       break;
     case "villages":

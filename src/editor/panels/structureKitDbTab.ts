@@ -38,6 +38,7 @@ import {
   renderObjectInspector,
   setInspectorSelectedPartId,
 } from "@/editor/panels/structureKitInspector";
+import { clearSelectedTileset, getSelectedTilesetId, setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type {
@@ -61,6 +62,18 @@ interface ActiveSessionState {
   checkedKitIds: Set<string>;
 }
 
+export type StructureKitFolderView = "kits" | "spaces";
+let folderView: StructureKitFolderView = "kits";
+
+export function setStructureKitFolderView(view: StructureKitFolderView): void {
+  folderView = view;
+  if (view === "spaces") session.source = "interior";
+}
+
+export function getStructureKitFolderView(): StructureKitFolderView {
+  return folderView;
+}
+
 const session: ActiveSessionState = {
   tilesetId: null,
   source: "all",
@@ -72,6 +85,7 @@ const session: ActiveSessionState = {
 };
 
 export function resetStructureKitsTabSession(): void {
+  folderView = "kits";
   session.tilesetId = null;
   session.source = "all";
   session.selectedKitId = null;
@@ -80,6 +94,7 @@ export function resetStructureKitsTabSession(): void {
   session.searchQuery = "";
   session.themeFilter = null;
   session.checkedKitIds.clear();
+  clearSelectedTileset();
 }
 
 /**
@@ -170,12 +185,15 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   const current = store.getCurrent();
   const tilesets = Object.values(current.tilesets);
 
-  // 기본 앨범 결정: 현재 맵 타일셋
+  // 타일셋 폴더 자식(통행·오토타일·미라벨·구조물·공간 종류)은 칩셋 선택을 공유한다.
+  // 앨범 클릭은 setSelectedTileset 도 같이 쓰므로 여기 재도입이 방금 고른 앨범을 덮지 않는다.
+  // 테스트는 resetStructureKitsTabSession → clearSelectedTileset 으로 공유 선택을 비운다.
+  const sharedTilesetId = getSelectedTilesetId();
+  if (sharedTilesetId && current.tilesets[sharedTilesetId]) session.tilesetId = sharedTilesetId;
   if (!session.tilesetId || !current.tilesets[session.tilesetId]) {
     const currentMapId = editorState.get().currentMapId ?? current.startMapId;
     const currentMap = current.maps[currentMapId];
-    const defaultTilesetId = currentMap?.tilesetId ?? tilesets[0]?.id ?? "";
-    session.tilesetId = defaultTilesetId;
+    session.tilesetId = currentMap?.tilesetId ?? tilesets[0]?.id ?? "";
   }
 
   let activeTileset = current.tilesets[session.tilesetId] ?? tilesets[0];
@@ -220,7 +238,10 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     el("header", {
       class: "db-tab-note",
       children: [
-        el("h3", { text: "구조물", dataset: { testid: "structure-kit-heading" } }),
+        el("h3", {
+          text: folderView === "spaces" ? "공간 종류" : "구조물",
+          dataset: { testid: "structure-kit-heading" },
+        }),
         el("span", {
           class: "db-tab-note-chip",
           children: [makeDatabaseTabIcon("tilesets"), el("span", { text: "타일셋별로 분리됨" })],
@@ -286,6 +307,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
       on: {
         click: () => {
           session.tilesetId = tileset.id;
+          setSelectedTileset(tileset.id);
           session.selectedKitId = null;
           session.selectedObjectId = null;
           setInspectorSelectedPartId(null);
@@ -372,11 +394,7 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
   tableCol.append(tools);
 
   // 2-a. 방 종류(테마) 문법 — 실내 오브젝트 원본에서만. AI 가 방을 채울 때 요구하는 역할을 그림으로 보여준다.
-  if (
-    session.source === "interior"
-    || (activeTileset?.interiorRoomKinds?.length ?? 0) > 0
-    || activeTileset?.id === INTERIOR_ROOM_TILESET_ID
-  ) {
+  if (folderView === "spaces") {
     tableCol.append(renderThemeGrammar(activeTileset, themeFilterActive, host, rerender));
   }
 

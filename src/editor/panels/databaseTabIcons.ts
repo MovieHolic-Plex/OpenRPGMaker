@@ -1,4 +1,4 @@
-// 데이터베이스 사이드바 레일 아이콘 — 30개 탭의 SVG 선 아이콘 세트.
+// 데이터베이스 사이드바 레일 아이콘 — 레일 탭의 SVG 선 아이콘 세트.
 //
 // 왜 CSS 가 아니라 여기인가 (실측):
 //   전에는 글리프가 `sidebar.css` 의 per-testid 규칙 24줄(`content: "<유니코드 글리프>" !important`)이었다.
@@ -166,10 +166,25 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M7.6 11.8 4.4 11.8 7.6 3.4 10.8 11.8z" } },
     { tag: "path", attrs: { d: "M14.6 11.8a2.8 2.8 0 1 1 0-5.6 2.8 2.8 0 0 1 0 5.6z" } },
   ],
-  // 타일셋 — 3×3 격자
+  // 타일셋(통행) — 3×3 격자
   tilesets: [
     { tag: "rect", attrs: { x: "3.4", y: "3.4", width: "15.2", height: "15.2", rx: "1.6" } },
     { tag: "path", attrs: { d: "M8.5 3.4v15.2M13.5 3.4v15.2M3.4 8.5h15.2M3.4 13.5h15.2" } },
+  ],
+  tilesetAutotile: [
+    { tag: "rect", attrs: { x: "3.4", y: "3.4", width: "15.2", height: "15.2", rx: "1.6" } },
+    { tag: "path", attrs: { d: "M3.4 11h15.2M11 3.4v15.2" } },
+    { tag: "path", attrs: { d: "M5.2 14.8c1.8-1.4 3.4-1.4 5.2 0s3.4 1.4 5.2 0" } },
+  ],
+  tilesetUnlabeled: [
+    { tag: "rect", attrs: { x: "3.6", y: "3.6", width: "6.4", height: "6.4", rx: "1.2" } },
+    { tag: "rect", attrs: { x: "12", y: "3.6", width: "6.4", height: "6.4", rx: "1.2" } },
+    { tag: "rect", attrs: { x: "3.6", y: "12", width: "6.4", height: "6.4", rx: "1.2" } },
+    { tag: "path", attrs: { d: "M13.2 16.2h4.8M15.6 13.8v4.8" } },
+  ],
+  tilesetSpaces: [
+    { tag: "path", attrs: { d: "M4.2 18.2V7.2L11 3.6l6.8 3.6v11" } },
+    { tag: "rect", attrs: { x: "8.4", y: "11.2", width: "5.2", height: "7", rx: "0.6" } },
   ],
   // 구조물 — 쌓은 블록(아이소 큐브)
   structureKits: [

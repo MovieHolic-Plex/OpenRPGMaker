@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { renderStructureKitsTab, resetStructureKitsTabSession } from "@/editor/panels/structureKitDbTab";
+import { renderStructureKitsTab, resetStructureKitsTabSession, setStructureKitFolderView } from "@/editor/panels/structureKitDbTab";
 import { registerStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
@@ -431,6 +431,7 @@ describe("structureKitDbTab 방 종류 테마 문법 뷰", () => {
     editorState.set({ currentMapId: mapId });
 
     const host = new FakeElement("div");
+    setStructureKitFolderView("spaces");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
     host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`)!.click();
     host.querySelector("[data-testid='structure-kit-source-interior']")!.click();
