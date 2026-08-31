@@ -15,6 +15,7 @@ import type { GameMap, MapId, Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import type { YardDecorKind } from "../houseLotDecor";
 import type { ToolDefinition, ToolExecResult } from "../types";
+import type { ForestDensity } from "../forestDensity";
 import type {
   EdgeTrees,
   KitMix,
@@ -40,6 +41,8 @@ export interface VillageIntent {
   readonly yardStyle: YardStyle;
   readonly plazaStyle: PlazaStyle;
   readonly edgeTrees: EdgeTrees;
+  /** 모델이 넘긴 숲 밀도. 생략하면 가장자리 나무는 기본 dense, 지형 패스는 저작 개수. */
+  readonly forestDensity?: ForestDensity;
   readonly plazaLayout: PlazaLayout;
   readonly roadWidth: number;
   readonly roadNaturalness: number;

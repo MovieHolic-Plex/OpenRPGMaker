@@ -188,6 +188,19 @@ describe("canonical construction contract baseline", () => {
     expect(legacy).not.toHaveProperty("settlementLayout");
     expect(legacy).not.toHaveProperty("npcCount");
   });
+  it("parses forestDensity enum and rejects Korean theme scraping", () => {
+    const parsed = parseAuthorVillageRequest({
+      ...existingVillageRequest,
+      housePlans: undefined,
+      forestDensity: "impassable",
+    });
+    expect(parsed.forestDensity).toBe("impassable");
+    expect(parseAuthorVillageRequest({ ...existingVillageRequest, housePlans: undefined })).not.toHaveProperty("forestDensity");
+    const parse = (): void => {
+      parseAuthorVillageRequest({ ...existingVillageRequest, housePlans: undefined, forestDensity: "울창한 숲" });
+    };
+    expectToolError(parse, "invalid-args");
+  });
   it.each([
     ["groundTheme", "winter"],
     ["settlementLayout", "city"],

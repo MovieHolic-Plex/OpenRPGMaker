@@ -14,7 +14,8 @@ import {
   coerceForestDensity,
   DEFAULT_FOREST_DENSITY,
   forestCoverageTarget,
-  forestDensityFromText,
+  forestTreeKindFromResolvedMaterial,
+  parseOptionalForestDensity,
   forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
@@ -114,20 +115,44 @@ function plant(project: Project, args: Record<string, unknown>, area: Rect = ARE
   return result;
 }
 
-describe("forestDensityFromText", () => {
-  it("숲 표현은 dense, 울창·빽빽·통행 불가 표현은 impassable 로 읽는다", () => {
-    expect(forestDensityFromText("이 영역을 침엽수 숲으로 채워줘")).toBe("dense");
-    expect(forestDensityFromText("강촌마을")).toBeUndefined();
-    expect(forestDensityFromText("울창한 숲을 만들어줘")).toBe("impassable");
-    expect(forestDensityFromText("빽빽한 나무로 길을 막아줘")).toBe("impassable");
-    expect(forestDensityFromText("나무를 드문드문 심은 숲")).toBe("sparse");
+describe("forest density is structured-only", () => {
+  it("사용자 문장이 아니라 enum 인자만 읽는다", () => {
+    expect(parseOptionalForestDensity("dense")).toBe("dense");
+    expect(parseOptionalForestDensity("impassable")).toBe("impassable");
+    expect(parseOptionalForestDensity("sparse")).toBe("sparse");
+    expect(parseOptionalForestDensity(undefined)).toBeUndefined();
+    expect(parseOptionalForestDensity("울창한 숲을 만들어줘")).toBeUndefined();
+    expect(parseOptionalForestDensity("이 영역을 침엽수 숲으로 채워줘")).toBeUndefined();
   });
 
-  it("기본값은 dense — '숲'이라는 말 자체가 빽빽함을 뜻한다", () => {
+  it("기본값은 dense — 도구 인자를 생략한 군락 시공의 fallback", () => {
     expect(DEFAULT_FOREST_DENSITY).toBe("dense");
     expect(coerceForestDensity(undefined)).toBe("dense");
     expect(coerceForestDensity("garbage")).toBe("dense");
     expect(coerceForestDensity("sparse")).toBe("sparse");
+  });
+
+  it("수종은 해석된 그룹 id·정확 라벨로만 가른다", () => {
+    expect(forestTreeKindFromResolvedMaterial({
+      kind: "group",
+      groupId: "harness-combined-town-conifer-tree",
+      groupName: "침엽수",
+      matchedLabel: "침엽수",
+    })).toBe("침엽수");
+    expect(forestTreeKindFromResolvedMaterial({
+      kind: "group",
+      groupId: "harness-combined-town-broadleaf-tree-2x2",
+      groupName: "활엽수",
+      matchedLabel: "활엽수",
+    })).toBe("활엽수");
+    expect(forestTreeKindFromResolvedMaterial({
+      kind: "tile",
+      matchedLabel: "나무 상자",
+    })).toBeUndefined();
+    expect(forestTreeKindFromResolvedMaterial({
+      kind: "tile",
+      matchedLabel: "conifer forest please",
+    })).toBeUndefined();
   });
 });
 
@@ -310,8 +335,8 @@ describe("place_props density — 모델이 실제로 닿는 라이브 툴", () 
 describe("author_village — 모델이 실제로 지나는 마을 파사드", () => {
   it("「울창한 숲 마을」의 숲 밴드가 두껍고 거의 통행 불가다", () => {
     // 왜 파사드인가: plant_tree_clusters·run_village_session·build_village 는 모두
-    // llmExposed:false 다. 사용자 문구가 밀도로 이어지는 유일한 실경로가 author_village →
-    // runTerrainConstraintPass → applyTerrainPassFromMasks 이다.
+    // llmExposed:false 다. 밀도가 라이브로 닿는 경로는 author_village({ forestDensity }) →
+    // runTerrainConstraintPass → applyTerrainPassFromMasks 이다. 테마 문장을 정규식으로 읽지 않는다.
     // 실측 before(같은 하네스): 밴드 커버리지 27.7% · 통행 가능 79.5%.
     const size = 50;
     const context = { project: createEmptyToolProject("dense forest village") };
@@ -322,6 +347,7 @@ describe("author_village — 모델이 실제로 지나는 마을 파사드", ()
       houseCount: 4,
       countPolicy: "exact",
       theme: "울창한 숲 마을",
+      forestDensity: "impassable",
       seed: 7,
       interior: false,
     });
@@ -342,5 +368,28 @@ describe("author_village — 모델이 실제로 지나는 마을 파사드", ()
     expect(reachable, `숲 밴드의 ${Math.round(reachable * 100)}% 에 밖에서 걸어 들어올 수 있다`)
       .toBeLessThan(0.2);
     void passable;
+  });
+
+  it("테마 문장만으로는 밀도를 올리지 않는다 — forestDensity enum이 필요하다", () => {
+    const size = 50;
+    const context = { project: createEmptyToolProject("theme-only forest village") };
+    expect(runTool(context, "create_map", { id: "map_v", name: "숲 마을", width: size, height: size }).ok).toBe(true);
+
+    const result = runToolDefinition(context, AUTHOR_VILLAGE_TOOL, {
+      target: { kind: "existing", mapId: "map_v" },
+      houseCount: 4,
+      countPolicy: "exact",
+      theme: "울창한 숲 마을",
+      seed: 7,
+      interior: false,
+    });
+    expect(result.ok, result.summary).toBe(true);
+
+    const depth = Math.max(4, Math.floor(size * 0.14));
+    const band = { x: size - depth, y: 1, w: depth, h: size - 2 } as const;
+    const map = context.project.maps.map_v!;
+    const coverage = treeCoverage(map, band);
+    expect(coverage, `테마만으로 숲 밴드가 ${Math.round(coverage * 100)}% 덮였다`)
+      .toBeLessThan(0.45);
   });
 });

@@ -9,10 +9,11 @@ import { broadleafCountFor, coniferCountFor, resolveWorldGenRules } from "@/proj
  * 충돌했다 — #355 가 #350 보다 먼저 갈라졌기 때문에 #355 쪽 코드는 «의도적 대체» 가 아니라
  * 그냥 구버전이다.
  *
- * 그래서 «요청문이 저작 기본값을 이긴다» 로 합성했다. 이 테스트는 그 우선순위가 필요하다는
- * 근거(저작 기본값이 훨씬 드물다)를 숫자로 못 박는다. 순서가 뒤집히면 #350 이 되돌아간다.
+ * 그래서 «모델이 넘긴 density enum이 저작 기본값을 이긴다» 로 합성했다. 이 테스트는 그
+ * 우선순위가 필요하다는 근거(저작 기본값이 훨씬 드물다)를 숫자로 못 박는다. 순서가 뒤집히면
+ * #350 이 되돌아간다. 사용자 문장 정규식은 쓰지 않는다.
  */
-describe("숲 밀도 — 요청문이 저작 기본값을 이긴다", () => {
+describe("숲 밀도 — 모델 density enum이 저작 기본값을 이긴다", () => {
   const area = { x: 0, y: 0, w: 10, h: 10 } as const;
   const areaTiles = area.w * area.h;
   const forest = resolveWorldGenRules(undefined).forest;

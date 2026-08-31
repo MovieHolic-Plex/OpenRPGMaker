@@ -7,6 +7,7 @@ import type { Project } from "@/project/types";
 import { DEFAULT_WORLD_GEN_RULES, type ResolvedWorldGenRules } from "@/project/worldGenRules";
 import { isYardDecorKind, type YardDecorKind } from "./houseLotDecor";
 import { ToolError } from "./types";
+import { parseOptionalForestDensity } from "./forestDensity";
 import {
   inferRequirementsFromQuery,
   requirementsSummary,
@@ -120,11 +121,19 @@ export function normalizeVillagePlan(
   const theme = typeof input.theme === "string" ? input.theme.trim() : "";
   if (!theme) issues.push({ severity: "warning", message: "theme이 비어 있다. 기본 톤으로 정규화한다." });
 
-  // 쿼리 상식 스펙 — theme/query 문자열에서 강·숲·장터 등 필수 요소 추출
+  // 쿼리 상식 스펙 — theme/query 문자열에서 강·숲·장터 등 필수 요소 추출.
+  // 숲 밀도는 모델이 forestDensity enum 으로 넣는다. 문장을 정규식으로 읽지 않는다.
   const queryText = typeof input.query === "string" && input.query.trim() ? input.query.trim() : theme;
+  const forestDensity = parseOptionalForestDensity(input.forestDensity)
+    ?? (input.requirements && typeof input.requirements === "object"
+      ? parseOptionalForestDensity((input.requirements as Partial<VillageRequirements>).forestDensity)
+      : undefined);
   const requirements = input.requirements && typeof input.requirements === "object"
-    ? mergeRequirements(queryText, input.requirements as Partial<VillageRequirements>, rules)
-    : inferRequirementsFromQuery(queryText, rules);
+    ? mergeRequirements(queryText, {
+      ...(input.requirements as Partial<VillageRequirements>),
+      ...(forestDensity ? { forestDensity } : {}),
+    }, rules)
+    : inferRequirementsFromQuery(queryText, rules, { forestDensity });
   if (requirements.landmarks.length > 0) {
     issues.push({
       severity: "warning",
@@ -331,8 +340,10 @@ function mergeRequirements(
   partial: Partial<VillageRequirements>,
   rules: ResolvedWorldGenRules,
 ): VillageRequirements {
-  const base = inferRequirementsFromQuery(query, rules);
-  if (!partial.landmarks) return base;
+  const base = inferRequirementsFromQuery(query, rules, { forestDensity: partial.forestDensity });
+  if (!partial.landmarks) {
+    return partial.forestDensity ? { ...base, forestDensity: partial.forestDensity } : base;
+  }
   const landmarks = [...new Set([...(partial.landmarks as LandmarkKind[]), ...base.landmarks])];
   return {
     ...base,

@@ -13,6 +13,7 @@ import {
   type WorldGenLandmarkKind,
   type WorldGenSide,
 } from "@/project/worldGenRules";
+import type { ForestDensity } from "./forestDensity";
 
 export type LandmarkKind = WorldGenLandmarkKind;
 
@@ -30,6 +31,11 @@ export interface VillageRequirements {
   readonly forestSide: "west" | "east" | "north" | "south";
   /** 사용자가 숲 자리를 말하면(오른쪽 위 등) 강 반대편·저작 기본값을 이긴다. */
   readonly forestAnchor?: SpatialAnchor;
+  /**
+   * 이번 요청의 숲 밀도. 모델이 author_village / plan_village 의 forestDensity enum 으로 넘긴다.
+   * 생략하면 지형 패스는 DB 생성 규칙 저작 개수를 쓴다. 쿼리 문자열을 코드가 읽지 않는다.
+   */
+  readonly forestDensity?: ForestDensity;
 }
 
 const LANDMARK_LABEL: Record<LandmarkKind, string> = {
@@ -48,6 +54,7 @@ const LANDMARK_LABEL: Record<LandmarkKind, string> = {
 export function inferRequirementsFromQuery(
   query: string,
   rules: ResolvedWorldGenRules = DEFAULT_WORLD_GEN_RULES,
+  options: { readonly forestDensity?: ForestDensity } = {},
 ): VillageRequirements {
   const q = (query ?? "").trim();
   const landmarks = matchWorldGenKeywords(q, rules.keywords).landmarks;
@@ -83,6 +90,7 @@ export function inferRequirementsFromQuery(
     riverSide,
     forestSide,
     ...(forestAnchor ? { forestAnchor } : {}),
+    ...(options.forestDensity ? { forestDensity: options.forestDensity } : {}),
   };
 }
 

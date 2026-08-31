@@ -127,6 +127,13 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
         npcCount: { type: "integer", minimum: 0, maximum: 512, description: "Exact requested village NPC population." },
         theme: { type: "string" },
+        forestDensity: {
+          type: "string",
+          enum: ["sparse", "normal", "dense", "impassable"],
+          description:
+            "숲 밀도. 모델이 사용자 요청을 읽어 넣는다(숲=dense, 울창/빽빽/밀림/통행 불가=impassable, 드문드문/가로수=sparse). "
+            + "코드는 테마 문장을 정규식으로 읽지 않는다. 생략하면 DB 생성 규칙의 저작 개수.",
+        },
         seed: { type: "integer" },
         interior: { type: "boolean" },
         presetId: {

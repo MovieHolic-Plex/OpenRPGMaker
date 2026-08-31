@@ -25,7 +25,8 @@ import {
   type VillageSettlementLayout,
 } from "./contracts";
 
-const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "theme", "seed", "interior", "presetId"] as const;
+const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "theme", "forestDensity", "seed", "interior", "presetId"] as const;
+const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
 const HOUSE_PLAN_KEYS = ["kitId", "yard", "ownerName", "templateId", "program"] as const;
@@ -47,6 +48,7 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
     throw new ToolError("authorVillage.housePlans length must equal houseCount.", { code: "invalid-args" });
   }
   const theme = optionalString(request, "theme", "authorVillage");
+  const forestDensity = parseOptionalEnum(request["forestDensity"], FOREST_DENSITIES, "authorVillage.forestDensity");
   // 사용자 저작 프리셋 id — 데이터베이스 「마을」탭 레코드를 가리킨다. 없는 id는 빌더가 경고로 흘린다.
   const presetId = optionalString(request, "presetId", "authorVillage");
   const seed = optionalInteger(request, "seed", "authorVillage");
@@ -66,6 +68,7 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
     ...(settlementLayout === undefined ? {} : { settlementLayout: settlementLayout as VillageSettlementLayout }),
     ...(npcCount === undefined ? {} : { npcCount }),
     ...(theme === undefined ? {} : { theme }),
+    ...(forestDensity === undefined ? {} : { forestDensity }),
     ...(presetId === undefined ? {} : { presetId }),
     ...(seed === undefined ? {} : { seed }),
     ...(interior === undefined ? {} : { interior }),

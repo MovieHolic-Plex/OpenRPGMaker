@@ -8,7 +8,6 @@ import type { GameMap, Project } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
 import {
   DEFAULT_FOREST_DENSITY,
-  forestDensityFromText,
   forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
@@ -283,7 +282,7 @@ export function placeVillageDecor(
     // edgeTrees="dense" 만 숲 밀도 축을 탄다 — "conifer" 는 숲 요구가 아니라 마을 가장자리 나무라
     // 옛 개수를 그대로 둔다(실측: 밀도를 여기에도 밀었더니 50×50 시공이 1.6s → 31s 가 됐다).
     const density = intent.edgeTrees === "dense"
-      ? forestDensityFromText(intent.theme) ?? DEFAULT_FOREST_DENSITY
+      ? intent.forestDensity ?? DEFAULT_FOREST_DENSITY
       : undefined;
     const broadleafPlan = density
       ? forestPlacementPlan({ area, footprintCells: treeFootprintCells("활엽수"), density, share: 0.05 })

@@ -15,7 +15,6 @@ import {
 } from "@/project/worldGenRules";
 import { forestCompositionApplies, plantForestComposition } from "./forestComposition";
 import {
-  forestDensityFromText,
   forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
@@ -256,8 +255,7 @@ export function runTerrainConstraintPass(
   readonly notes: string[];
 } {
   const masks = buildTerrainConstraintMasks(map, requirements, area, rules);
-  const density = forestDensityFromText(requirements.query);
-  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, rules, density);
+  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, rules, requirements.forestDensity);
   return {
     masks,
     waterOps: applied.waterOps,

@@ -1,9 +1,10 @@
-// 숲 밀도 — "숲"·"울창한 숲"을 실제로 빽빽하게 깔기 위한 단일 근거.
+// 숲 밀도 — 모델이 넘긴 density enum 을 그루 수·패킹으로 바꾸는 단일 근거.
 //
 // 왜 필요한가 (실측 2026-08-30): plant_tree_clusters / stepForestBig 의 기본 개수가
 // `min(10, 면적/28)` 로 캡돼 있어서 40×40 숲 밴드(1600칸)에 2×2 활엽수 10그루 = 40타일,
 // 커버리지 2.5% 가 나왔다. 사용자가 보는 결과는 "숲"이 아니라 "잔디밭에 나무 몇 그루"다.
 // 숲은 그 지역을 사실상 통행 불가로 만드는 지형이므로, 밀도를 이름 붙은 축으로 올린다.
+// 사용자 문장 정규식은 쓰지 않는다 — 숲/울창/드문드문 매핑은 조수가 density enum 으로 넣는다.
 
 export type ForestDensity = "sparse" | "normal" | "dense" | "impassable";
 
@@ -48,27 +49,41 @@ export function forestPackingFor(density: ForestDensity): "natural" | "dense" {
   return density === "dense" || density === "impassable" ? "dense" : "natural";
 }
 
-/** 통행 불가급 밀도를 뜻하는 표현 — 울창/빽빽/밀림/원시림/들어갈 수 없는. */
-const IMPASSABLE_WORDS = /울창|빽빽|빼곡|밀림|정글|원시림|태초의 숲|통행\s*불가|지나갈 수 없|들어갈 수 없|막아|impassable|impenetrable|jungle/;
-/** 숲 자체를 뜻하는 표현 — 이 말이 나오면 기본이 dense 다. */
-const FOREST_WORDS = /숲|삼림|산림|수풀|나무숲|forest|woods|woodland/;
-/** 명시적으로 드문 배치를 요구하는 표현. */
-const SPARSE_WORDS = /드문드문|듬성|산발|몇 그루|가로수|드물게|sparse|scattered/;
-
 /**
- * 사용자 문구에서 숲 밀도를 읽는다. 숲 관련 표현이 없으면 undefined(호출자 기본값 유지).
- * 우선순위: 통행 불가 > 드문드문 > 숲.
+ * 도구 인자에서만 밀도를 읽는다. 사용자 문장·테마 문자열을 훑지 않는다 —
+ * 숲/울창/드문드문 매핑은 모델이 density enum 으로 넘긴다.
  */
-export function forestDensityFromText(text: string | undefined | null): ForestDensity | undefined {
-  if (typeof text !== "string" || text.trim().length === 0) return undefined;
-  if (IMPASSABLE_WORDS.test(text)) return "impassable";
-  if (SPARSE_WORDS.test(text)) return "sparse";
-  if (FOREST_WORDS.test(text)) return "dense";
-  return undefined;
+export function parseOptionalForestDensity(value: unknown): ForestDensity | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  return FOREST_DENSITIES.includes(value as ForestDensity) ? (value as ForestDensity) : undefined;
 }
 
 export function coerceForestDensity(value: unknown, fallback: ForestDensity = DEFAULT_FOREST_DENSITY): ForestDensity {
   return FOREST_DENSITIES.includes(value as ForestDensity) ? (value as ForestDensity) : fallback;
+}
+
+export type ForestTreeKind = "침엽수" | "활엽수";
+
+/**
+ * 이미 해석된 재료(칩셋 그룹·라벨)가 숲 합성 대상인지. 호출자가 넣은 원문 쿼리를
+ * 정규식으로 분류하지 않는다 — resolveMaterialByLabel 이 고른 그룹 id / 정확 라벨만 본다.
+ */
+export function forestTreeKindFromResolvedMaterial(input: {
+  readonly kind: "group" | "tile";
+  readonly groupId?: string;
+  readonly groupName?: string;
+  readonly matchedLabel?: string;
+}): ForestTreeKind | undefined {
+  const id = input.groupId ?? "";
+  if (id.includes("broadleaf-tree")) return "활엽수";
+  if (id.includes("conifer-tree") || id.includes("dry-tree")) return "침엽수";
+  const name = input.groupName ?? "";
+  if (name === "활엽수") return "활엽수";
+  if (name === "침엽수" || name === "마른나무") return "침엽수";
+  const label = input.matchedLabel ?? "";
+  if (label === "활엽수") return "활엽수";
+  if (label === "침엽수" || label === "마른나무") return "침엽수";
+  return undefined;
 }
 
 export type ForestPlacementPlan = {

@@ -35,7 +35,6 @@ import {
   coerceForestDensity,
   DEFAULT_FOREST_DENSITY,
   FOREST_DENSITIES,
-  forestDensityFromText,
   forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
@@ -145,6 +144,11 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
         houses: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
         npcs: { type: "array", items: VILLAGE_NPC_PLAN_SCHEMA },
         pathStyle: { type: "string" },
+        forestDensity: {
+          type: "string",
+          enum: [...FOREST_DENSITIES],
+          description: "숲 밀도 enum. 모델이 넣는다(숲=dense, 울창/통행 불가=impassable). 생략하면 생성 규칙 저작 개수.",
+        },
         settlementLayout: { type: "string" },
         roadWidth: { type: "integer" },
         buildOrder: {
@@ -217,7 +221,8 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
     description:
       "숲 레이어 스킬: 지정 영역에 나무 군락을 심는다. " +
       "style=broadleaf-2x2(기본 권장 대목) | conifer | mixed. " +
-      "density=sparse|normal|dense|impassable(기본 dense; 순서대로 15%/40%/80%/100%). 숲·삼림=dense, 울창한·빽빽한·밀림·통행 불가=impassable. " +
+      "density=sparse|normal|dense|impassable(기본 dense; 순서대로 15%/40%/80%/100%). " +
+      "모델이 density enum을 넣는다(숲=dense, 울창/빽빽/통행 불가=impassable, 드문드문=sparse). 사용자 문장을 코드가 읽지 않는다. " +
       "count 를 비우면 밀도×영역 면적으로 그루 수를 산출한다 — 직접 준 작은 count 로는 숲이 되지 않는다. " +
       "카탈로그는 list_village_tree_assets. 강촌 숲은 conifer 후 broadleaf-2x2를 따로 호출.",
     mode: "write",
@@ -345,6 +350,7 @@ function startVillageSession(draft: Project, args: Record<string, unknown>): Too
         houses: args.houses,
         npcs: args.npcs,
         buildOrder: args.buildOrder,
+        forestDensity: args.forestDensity,
       },
       seed,
       resolveWorldGenRules(draft.system.worldGen),
@@ -808,13 +814,13 @@ function stepForestConifer(
   const areas = masks.forestRects.length > 0
     ? masks.forestRects
     : edgeBands(map);
-  const requestedDensity = forestDensityFromText(session.query);
+  const requestedDensity = plan.requirements.forestDensity;
   const density = requestedDensity ?? DEFAULT_FOREST_DENSITY;
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
-    // 왜 두 출처를 합치는가: 요청문이 밀도를 말하면 그 요청이 개수·패킹을 이긴다. 아무 말이
-    // 없을 때는 DB 「세계 → 생성 규칙」의 저작 개수·간격·자연도를 그대로 쓴다.
+    // 왜 두 출처를 합치는가: 모델이 forestDensity enum을 주면 그 요청이 개수·패킹을 이긴다.
+    // 생략하면 DB 「세계 → 생성 규칙」의 저작 개수·간격·자연도를 그대로 쓴다.
     const shape = forestPlacementPlan({
       area,
       footprintCells: treeFootprintCells("침엽수"),
@@ -847,12 +853,12 @@ function stepForestBig(
   const areas = masks.forestRects.length > 0
     ? masks.forestRects
     : edgeBands(map);
-  const requestedDensity = forestDensityFromText(session.query);
+  const requestedDensity = plan.requirements.forestDensity;
   const density = requestedDensity ?? DEFAULT_FOREST_DENSITY;
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
-    // 활엽수도 같은 우선순위다. 요청이 있으면 밀도 개수·패킹, 없으면 저작 기본값을 쓴다.
+    // 활엽수도 같은 우선순위다. 모델이 forestDensity를 주면 밀도 개수·패킹, 없으면 저작 기본값을 쓴다.
     const shape = forestPlacementPlan({
       area,
       footprintCells: treeFootprintCells("활엽수"),
