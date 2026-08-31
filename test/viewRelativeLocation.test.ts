@@ -53,11 +53,10 @@ describe("viewport visible frame vs clipped context", () => {
     const snap = computeMapViewport(
       { id: "map_a", width: 40, height: 30 },
       {
-        scrollX: 160,
-        scrollY: 80,
-        zoom: 1,
-        viewWidthPx: 320,
-        viewHeightPx: 240,
+        worldLeftPx: 160,
+        worldTopPx: 80,
+        worldWidthPx: 320,
+        worldHeightPx: 240,
         tileSize: 16,
       },
     );
