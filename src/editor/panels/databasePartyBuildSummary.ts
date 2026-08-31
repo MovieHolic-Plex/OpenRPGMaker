@@ -1,6 +1,6 @@
 import { actorDerivedStats, learnedSkillIds } from "@/battle/battleBattlers";
 import { ACTOR_PARAMETER_KEYS, clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
-import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
+import { effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import type {
   ActorInitialEquipment,
   ActorParameterKey,
@@ -45,7 +45,7 @@ export type ActorBuildReferenceWarning =
       readonly reason: "missing";
     };
 
-export type ClassBuildRole = "balanced" | "striker" | "guardian" | "caster" | "agile";
+export type ClassBuildRole = "balanced" | "striker" | "guardian" | "caster" | "agile" | "uniform";
 
 export type ClassBuildSummary = {
   readonly classId: ClassId;
@@ -141,9 +141,11 @@ export function classBuildSummary(project: Project, classId: ClassId): ClassBuil
     actorIds: actors.map((actor) => actor.id),
     skillCount: record.learnedSkills.length,
     commandCount: record.battleCommands.length,
+    // 직업 탭 체크리스트(equipmentIds) + 장비 레코드의 직업 제한만 센다.
+    // canEquip 의 actorIds/classIds 자기참조는 전 장비 허용 와일드카드라 배너가 86,
+    // 체크는 6처럼 어긋났다. 런타임 canEquip 은 그대로 두고 요약만 저작 표면과 맞춘다.
     equipmentCount: project.database.equipment.filter((equipment) =>
       classAllowsEquipment(record, equipment, classId)
-      || actors.some((actor) => canEquip(project, actor, equipment, classId))
     ).length,
     promotionCount: record.promotions?.length ?? 0,
   };
@@ -155,7 +157,6 @@ function classAllowsEquipment(
   classId: ClassId,
 ): boolean {
   return equipment.equippableClassIds.includes(classId)
-    || record.equipmentPermissions.classIds.includes(classId)
     || record.equipmentPermissions.equipmentIds.includes(equipment.id);
 }
 
@@ -210,13 +211,17 @@ function classRoleAtLevel(
   curves: Project["database"]["classes"][number]["parameterCurves"],
   level: number,
 ): ClassBuildRole {
-  const candidates: readonly { readonly role: Exclude<ClassBuildRole, "balanced">; readonly value: number }[] = [
+  const candidates: readonly { readonly role: Exclude<ClassBuildRole, "balanced" | "uniform">; readonly value: number }[] = [
     { role: "striker", value: parameterValueAtLevel(curves.attack, level) },
     { role: "guardian", value: parameterValueAtLevel(curves.defense, level) },
     { role: "caster", value: parameterValueAtLevel(curves.mind, level) },
     { role: "agile", value: parameterValueAtLevel(curves.agility, level) },
   ];
   const sorted = [...candidates].sort((left, right) => right.value - left.value);
-  if (!sorted[0] || sorted[0].value === sorted[1]?.value) return "balanced";
-  return sorted[0].role;
+  const top = sorted[0];
+  if (!top) return "uniform";
+  if (top.value === sorted[1]?.value) {
+    return sorted.every((entry) => entry.value === top.value) ? "uniform" : "balanced";
+  }
+  return top.role;
 }

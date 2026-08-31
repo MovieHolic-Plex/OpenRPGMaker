@@ -1,12 +1,8 @@
-﻿import type { ClassBattleCommand, ClassRecord } from "../types";
+﻿import { ACTOR_LEVEL_MAX } from "../actorModel";
+import type { ActorParameterCurves, ActorParameterKey, ClassBattleCommand, ClassRecord } from "../types";
 import { normalizeClassRecord } from "../databaseRecordModel";
-import { DEFAULT_ACTOR_ID, DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_SKILL_ID } from "./constants";
+import { DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_SKILL_ID } from "./constants";
 import {
-  ACTOR_CLERIC_ID,
-  ACTOR_GUARDIAN_ID,
-  ACTOR_MAGE_ID,
-  ACTOR_RANGER_ID,
-  ACTOR_SCOUT_ID,
   CLASS_CLERIC_ID,
   CLASS_GUARDIAN_ID,
   CLASS_MAGE_ID,
@@ -30,6 +26,50 @@ const STANDARD_BATTLE_COMMANDS = [
   { id: "cmd_change", name: "교체", kind: "switch" },
 ] as const satisfies readonly ClassBattleCommand[];
 
+type ClassGrowthRole = "striker" | "guardian" | "caster" | "agile";
+
+function interpolateCurve(start: number, end: number): number[] {
+  const last = Math.max(1, ACTOR_LEVEL_MAX - 1);
+  return Array.from({ length: ACTOR_LEVEL_MAX }, (_, index) =>
+    Math.round(start + (end - start) * (index / last)),
+  );
+}
+
+function roleParameterCurves(role: ClassGrowthRole): ActorParameterCurves {
+  const primary: Record<ClassGrowthRole, ActorParameterKey> = {
+    striker: "attack",
+    guardian: "defense",
+    caster: "mind",
+    agile: "agility",
+  };
+  const starts: Record<ActorParameterKey, number> = {
+    maxHp: 40,
+    maxMp: role === "caster" ? 24 : 12,
+    attack: 14,
+    defense: 14,
+    mind: 14,
+    agility: 14,
+  };
+  const ends: Record<ActorParameterKey, number> = {
+    maxHp: role === "guardian" ? 900 : 720,
+    maxMp: role === "caster" ? 320 : 160,
+    attack: 90,
+    defense: 90,
+    mind: 90,
+    agility: 90,
+  };
+  starts[primary[role]] = 22;
+  ends[primary[role]] = 200;
+  return {
+    maxHp: interpolateCurve(starts.maxHp, ends.maxHp),
+    maxMp: interpolateCurve(starts.maxMp, ends.maxMp),
+    attack: interpolateCurve(starts.attack, ends.attack),
+    defense: interpolateCurve(starts.defense, ends.defense),
+    mind: interpolateCurve(starts.mind, ends.mind),
+    agility: interpolateCurve(starts.agility, ends.agility),
+  };
+}
+
 export function defaultClassRecords(): ClassRecord[] {
   const records = [
     normalizeClassRecord({
@@ -39,9 +79,10 @@ export function defaultClassRecords(): ClassRecord[] {
       animationId: DEFAULT_ANIMATION_ID,
       skillIds: [DEFAULT_SKILL_ID, "skill_sword_slash", "skill_focus"],
       battleCommands: [...STANDARD_BATTLE_COMMANDS],
+      parameterCurves: roleParameterCurves("striker"),
       equipmentPermissions: {
-        actorIds: [DEFAULT_ACTOR_ID],
-        classIds: [DEFAULT_CLASS_ID],
+        actorIds: [],
+        classIds: [],
         equipmentIds: [...HERO_EQUIPMENT_IDS],
       },
     }),
@@ -52,9 +93,10 @@ export function defaultClassRecords(): ClassRecord[] {
       animationId: DEFAULT_ANIMATION_ID,
       skillIds: [DEFAULT_SKILL_ID, "skill_sword_slash", "skill_focus"],
       battleCommands: [...STANDARD_BATTLE_COMMANDS],
+      parameterCurves: roleParameterCurves("guardian"),
       equipmentPermissions: {
-        actorIds: [ACTOR_GUARDIAN_ID],
-        classIds: [CLASS_GUARDIAN_ID],
+        actorIds: [],
+        classIds: [],
         equipmentIds: [...GUARDIAN_EQUIPMENT_IDS],
       },
     }),
@@ -65,9 +107,10 @@ export function defaultClassRecords(): ClassRecord[] {
       animationId: "anim_magic",
       skillIds: [DEFAULT_SKILL_ID, "skill_arcane_bolt", "skill_heal", "skill_sleep_mist", "skill_weaken"],
       battleCommands: [...STANDARD_BATTLE_COMMANDS],
+      parameterCurves: roleParameterCurves("caster"),
       equipmentPermissions: {
-        actorIds: [ACTOR_MAGE_ID],
-        classIds: [CLASS_MAGE_ID],
+        actorIds: [],
+        classIds: [],
         equipmentIds: [...MAGE_EQUIPMENT_IDS],
       },
     }),
@@ -78,9 +121,10 @@ export function defaultClassRecords(): ClassRecord[] {
       animationId: "anim_poison",
       skillIds: [DEFAULT_SKILL_ID, "skill_sword_slash", "skill_poison_sting"],
       battleCommands: [...STANDARD_BATTLE_COMMANDS],
+      parameterCurves: roleParameterCurves("agile"),
       equipmentPermissions: {
-        actorIds: [ACTOR_SCOUT_ID],
-        classIds: [CLASS_SCOUT_ID],
+        actorIds: [],
+        classIds: [],
         equipmentIds: [...SCOUT_EQUIPMENT_IDS],
       },
     }),
@@ -91,9 +135,10 @@ export function defaultClassRecords(): ClassRecord[] {
       animationId: "anim_heal",
       skillIds: [DEFAULT_SKILL_ID, "skill_heal", "skill_focus", "skill_sleep_mist"],
       battleCommands: [...STANDARD_BATTLE_COMMANDS],
+      parameterCurves: roleParameterCurves("caster"),
       equipmentPermissions: {
-        actorIds: [ACTOR_CLERIC_ID],
-        classIds: [CLASS_CLERIC_ID],
+        actorIds: [],
+        classIds: [],
         equipmentIds: [...CLERIC_EQUIPMENT_IDS],
       },
     }),
@@ -104,9 +149,10 @@ export function defaultClassRecords(): ClassRecord[] {
       animationId: "anim_arrow",
       skillIds: [DEFAULT_SKILL_ID, "skill_sword_slash", "skill_poison_sting", "skill_weaken"],
       battleCommands: [...STANDARD_BATTLE_COMMANDS],
+      parameterCurves: roleParameterCurves("agile"),
       equipmentPermissions: {
-        actorIds: [ACTOR_RANGER_ID],
-        classIds: [CLASS_RANGER_ID],
+        actorIds: [],
+        classIds: [],
         equipmentIds: [...RANGER_EQUIPMENT_IDS],
       },
     }),

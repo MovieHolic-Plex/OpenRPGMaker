@@ -31,7 +31,8 @@
       "exp commands promotion"
       "options state element"
       "equipment equipment equipment";
-    grid-template-columns: minmax(300px, 0.9fr) minmax(330px, 1fr) minmax(270px, 0.82fr);
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.2fr) minmax(0, 0.9fr);
+    overflow-x: hidden;
     /* 고정 px 행(84/190/118/84)은 내용이 그보다 크면 패널 `overflow: hidden` 과 맞물려
        조용히 잘라냈다 — 애니메이션 패널(legend + 스프라이트 미리보기 + 셀렉트)과
        상태·속성 유효도 패널이 84px 안에 들어갈 리가 없었다(감사 H 축 P0).
@@ -83,14 +84,30 @@
     width: 100%;
   }
 
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-animation {
+    min-height: 108px;
+    overflow: visible;
+  }
+
   .database-modal-body .oprn-record-classes .db-class-sprite-preview {
     align-items: center;
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
     display: grid;
-    height: 34px;
+    height: 52px;
     justify-items: center;
     margin-bottom: 6px;
+    overflow: hidden;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-sprite-preview > span {
+    background-image: var(--class-sprite-url);
+    background-position: var(--class-sprite-x) var(--class-sprite-y);
+    background-repeat: no-repeat;
+    display: block;
+    height: 48px;
+    image-rendering: pixelated;
+    width: 48px;
   }
 
   .database-modal-body .oprn-record-classes .db-class-curves-grid {
@@ -107,19 +124,29 @@
     padding: 4px 8px;
   }
 
-  /* promotion UI 가 재사용하므로 전투 명령 리디자인과 분리 — 기본 규칙 유지 */
-  .database-modal-body .oprn-record-classes .db-class-command-rows {
+  .database-modal-body .oprn-record-classes .db-class-promotion-rows {
     display: grid;
-    gap: 5px;
-    max-height: 176px;
+    gap: 8px;
+    max-height: 220px;
     overflow: auto;
     padding-right: 2px;
   }
 
-  .database-modal-body .oprn-record-classes .db-class-command-row {
+  .database-modal-body .oprn-record-classes .db-class-promotion-row {
+    border: 1px solid var(--db-modern-line-soft, rgba(92, 72, 42, 0.12));
     display: grid;
-    gap: 8px;
-    grid-template-columns: minmax(0, 1fr) 128px;
+    gap: 6px;
+    min-width: 0;
+    padding: 8px;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-promotion-field {
+    align-items: center;
+    display: grid;
+    font-size: 11px;
+    gap: 6px;
+    grid-template-columns: 48px minmax(0, 1fr);
+    margin: 0;
   }
 
   .database-modal-body .oprn-record-classes .db-class-set-button {
@@ -142,8 +169,8 @@
 
   .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-header {
     display: grid;
-    gap: 6px;
-    grid-template-columns: 26px 26px minmax(70px, 1fr) 108px minmax(70px, 1fr) 128px 26px;
+    gap: 4px;
+    grid-template-columns: 22px 22px minmax(0, 1fr) minmax(88px, 0.9fr) 22px;
     color: var(--text-2, var(--db-modern-text));
     font: 600 11px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     padding: 2px 2px 4px;
@@ -157,8 +184,43 @@
   .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row {
     align-items: center;
     display: grid;
-    gap: 6px;
-    grid-template-columns: 26px 26px minmax(70px, 1fr) 108px minmax(70px, 1fr) 128px 26px;
+    gap: 4px;
+    grid-template-areas:
+      "up down name kind remove"
+      "extra extra extra extra extra";
+    grid-template-columns: 22px 22px minmax(0, 1fr) minmax(88px, 0.9fr) 22px;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row > .db-class-command-move:first-child {
+    grid-area: up;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row > .db-class-command-move:nth-child(2) {
+    grid-area: down;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row > input[type="text"]:not(.db-class-command-subset) {
+    grid-area: name;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row > select:not(.db-class-command-skill) {
+    grid-area: kind;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row > .db-class-command-remove {
+    grid-area: remove;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-extra {
+    display: grid;
+    gap: 4px;
+    grid-area: extra;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-extra[hidden] {
+    display: none;
   }
 
   .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row :is(input, select) {
@@ -167,7 +229,7 @@
   }
 
   .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row .is-inert {
-    opacity: 0.4;
+    display: none;
   }
 
   .database-modal-body .oprn-record-classes .db-class-command-move,
@@ -195,17 +257,20 @@
   }
 
   .database-modal-body .oprn-record-classes .db-class-command-row-locked .db-class-command-lock {
+    grid-area: auto;
     grid-column: 1 / span 2;
     text-align: center;
   }
 
   .database-modal-body .oprn-record-classes .db-class-command-row-locked .db-class-command-locked-name {
-    grid-column: 3 / span 1;
+    grid-area: auto;
+    grid-column: 3;
     font-weight: 600;
   }
 
   .database-modal-body .oprn-record-classes .db-class-command-row-locked .db-class-command-locked-tag {
-    grid-column: 4 / span 4;
+    grid-area: auto;
+    grid-column: 4 / span 2;
     font-size: 11px;
     opacity: 0.8;
   }
@@ -304,7 +369,7 @@
     align-items: center;
     display: grid;
     gap: 8px;
-    grid-template-columns: 54px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(118px, 0.95fr);
     min-height: 28px;
   }
 
@@ -322,7 +387,8 @@
 
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-state,
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-element {
-    max-height: 100%;
+    max-height: 200px;
+    min-height: 168px;
     overflow: auto;
   }
 
@@ -330,8 +396,12 @@
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-exp,
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-commands,
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-skills,
-  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-promotion,
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-equipment {
+    overflow: auto;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-promotion {
+    min-height: 220px;
     overflow: auto;
   }
 
@@ -348,11 +418,21 @@
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-equipment {
     display: grid;
     gap: 4px 10px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+    max-height: 260px;
   }
 
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-equipment legend {
     grid-column: 1 / -1;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-equipment-checklist {
+    display: grid;
+    gap: 4px 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-height: 200px;
+    min-width: 0;
+    overflow: auto;
   }
 }
 
@@ -394,9 +474,9 @@
 
 .database-modal-body .oprn-record-classes .db-class-build-eyebrow {
   color: #3d7189;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.04em;
 }
 
 .database-modal-body .oprn-record-classes .db-class-role {
@@ -530,4 +610,8 @@
 .database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel {
   grid-area: auto;
   min-width: 0;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-equipment-checklist {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
