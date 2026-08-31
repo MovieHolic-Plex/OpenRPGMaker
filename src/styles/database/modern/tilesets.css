@@ -218,13 +218,86 @@
   margin-top: 2px;
 }
 
-/* 우측 보조 패널(범례 / 검사 요약 / 오토타일)도 카드처럼 보이게. */
+/* ── 우측 보조 패널: 접기 ────────────────────────────────────────────────
+   범례·감사·오토타일은 참고 자료지 편집 대상이 아니다. 항상 200~230px 를 물고
+   있으면 30열 시트(2x 에서 960px)가 1680px 화면에서도 절반만 보였다. 그래서
+   기본은 세로 레일로 접고, 레일을 누르면 펼친다. 열 수는 그대로 2 개 —
+   다른 셸(`desktop-record-shell`, 레거시)의 2열 규칙을 깨지 않기 위해
+   `aside` 안쪽에서 레일/본문을 나눈다. */
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-terrain-pane {
-  align-content: start;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 26px minmax(0, 1fr);
   min-height: 0;
+  overflow: hidden;
+  padding-right: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-side-pane-body {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  min-width: 0;
   overflow-x: hidden;
   overflow-y: auto;
   padding-right: 2px;
+}
+
+/* 접힘(기본): 보조 열은 레일 폭만, 본문은 빠진다 → 남는 폭 전부 그림판으로. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-main:not(.side-open) {
+  grid-template-columns: minmax(0, 1fr) 26px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-main:not(.side-open) .oprn-tileset-terrain-pane {
+  grid-template-columns: 26px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-main:not(.side-open) .tileset-side-pane-body {
+  display: none;
+}
+
+/* 레일은 화살표 하나가 아니라 패널 이름을 세로로 적는다 — 무엇이 접혀 있는지 보이게. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-side-rail {
+  align-items: center;
+  background: var(--db-studio-surface-2, rgba(15, 23, 42, 0.04));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 6px;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  cursor: pointer;
+  display: flex;
+  font: 600 11.5px/1 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  min-height: 0;
+  padding: 8px 0;
+  white-space: nowrap;
+  width: 26px;
+  writing-mode: vertical-rl;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-side-rail:hover {
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-side-rail.open {
+  background: transparent;
+  border-color: var(--db-studio-accent, var(--db-studio-accent));
+  color: var(--db-studio-accent, var(--db-studio-accent));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-side-rail:focus-visible {
+  outline: 2px solid var(--db-studio-accent, var(--db-studio-accent));
+  outline-offset: 1px;
+}
+
+/* 좁은 열에서 한국어 범례가 가로로 잘리지 않게 — 어절 단위로 접는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-legend-item,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-legend li,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-checker-row span {
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 /* 좁은 열에서 액션 버튼 라벨이 잘리지 않게 — 줄바꿈 허용 + 자동 높이. */
@@ -242,10 +315,26 @@
    같은 3열을 그대로 유지해 사이드바가 40px 까지 눌리며 내용을 잘라먹었다. */
 
 @media (max-width: 1180px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench {
+  /* 한 열로 접힌 뒤에는 보조 패널이 시트 아래 전폭 행이 된다 — 여기서 세로 레일은
+     의미가 없으니 감추고 본문을 항상 펼친다. */
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench:not(.side-open) {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(320px, 1fr) auto;
     overflow-y: auto;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-terrain-pane,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-main:not(.side-open) .oprn-tileset-terrain-pane {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .oprn-tileset-main:not(.side-open) .tileset-side-pane-body {
+    display: grid;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-side-rail {
+    display: none;
   }
 
   .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area {
