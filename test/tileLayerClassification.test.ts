@@ -31,6 +31,10 @@ describe("tileLayerHome — 홈 레이어 판정", () => {
     expect(tileLayerHome(bundledTileset(), 441)).toBe("both");
   });
 
+  it("공백(EMPTY)은 요청 레이어를 따른다 — 덧그림 지우개가 바닥으로 라우팅되면 안 된다", () => {
+    expect(tileLayerHome(bundledTileset(), TILE.EMPTY)).toBe("both");
+  });
+
   it("분류 없는 타일셋(priority 전부 lower)에서는 요청 레이어를 존중하도록 both를 반환한다", () => {
     const tileset = bundledTileset();
     const unclassified: TilesetDef = {

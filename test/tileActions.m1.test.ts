@@ -172,6 +172,15 @@ describe("paintTile — layer routing", () => {
       restoreDom();
     }
   });
+
+  it("덧그림에 공백을 칠하면 덧그림만 비우고 바닥은 남긴다", () => {
+    const mapId = store.getCurrent().startMapId;
+    paintTile(mapId, "lower", 5, 5, TILE.WATER);
+    paintTile(mapId, "upper", 5, 5, TILE.FLOWERS);
+    paintTile(mapId, "upper", 5, 5, TILE.EMPTY);
+    expect(upperAt(currentMap(), 5, 5)).toBe(TILE.EMPTY);
+    expect(at(currentMap(), 5, 5)).toBe(TILE.WATER);
+  });
 });
 
 describe("fillTile — flood fill", () => {

@@ -386,7 +386,7 @@ function makeTilesBody(selectedTile: number, tileset: TilesetDef): HTMLElement {
   section.append(
     el("div", {
       class: "basic-selected-tile",
-      text: selectedTile >= 0 && selectedTile < tileset.count ? `${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}` : "없음",
+      text: selectedTile >= 0 && selectedTile < tileset.count ? `${selectedTile} ${tileDisplayLabelForIndex(selectedTile)}` : "공백",
       dataset: { testid: "selected-tile-status" },
     }),
   );
