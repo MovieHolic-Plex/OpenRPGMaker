@@ -60,6 +60,35 @@ export function stopAudioCommand(): void {
   getAudioEngine().stopAll(true);
 }
 
+/** 저작된 원샷 음악(ME). URL 을 못 풀면 false — 호출부가 폴백을 낸다. */
+export function playMusicEffect(
+  resourceId: string | undefined,
+  project: Pick<Project, "assets">,
+): boolean {
+  return playChannelResource("me", resourceId, project);
+}
+
+/** 저작된 효과음. URL 을 못 풀면 false. */
+export function playSoundEffect(
+  resourceId: string | undefined,
+  project: Pick<Project, "assets">,
+): boolean {
+  return playChannelResource("se", resourceId, project);
+}
+
+function playChannelResource(
+  channel: AudioChannel,
+  resourceId: string | undefined,
+  project: Pick<Project, "assets">,
+): boolean {
+  const id = resourceId?.trim();
+  if (!id) return false;
+  const url = resolveAudioSource(id, project);
+  if (url === null) return false;
+  getAudioEngine().play(channel, id, url, false);
+  return true;
+}
+
 // 특정 채널만 정지.
 export function stopAudioChannel(channel: AudioChannel, fadeMs?: number): void {
   if (fadeMs === undefined) {

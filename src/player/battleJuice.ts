@@ -1,6 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
-import { beginBattleResultAudio } from "@/player/battleAudio";
+import { beginBattleResultAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
 import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/battleSfx";
 
 export type BattleJuiceEvent =
@@ -101,9 +101,9 @@ export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | 
 export function playBattleCue(event: BattleJuiceEvent): void {
   if (event === "victory" || event === "defeat" || event === "escape") {
     beginBattleResultAudio();
+    if (playAuthoredBattleResultCue(store.getCurrent(), event)) return;
   }
-  // 승리는 짧은 차임이 전투곡에 묻히므로, BGM 을 끊은 뒤 합성 팡파레를 우선한다.
-  // 샘플이 있으면 같이 들려 빈약해지니 합성만 쓴다.
+  // 저작 슬롯이 비었을 때: 승리는 합성 팡파레(전투곡에 묻히지 않게 BGM 을 먼저 끊는다).
   if (event === "victory") {
     playSynthVoice("victory");
     return;

@@ -81,6 +81,7 @@ const setProjectSettings: ToolDefinition = {
         properties: {
           titleResourceId: { type: "string" }, systemResourceId: { type: "string" }, battleSystemResourceId: { type: "string" },
           defaultBgmResourceId: { type: "string" }, battleBgmResourceId: { type: "string" },
+          battleVictoryMeResourceId: { type: "string" }, battleDefeatSeResourceId: { type: "string" }, battleEscapeSeResourceId: { type: "string" },
         },
         additionalProperties: false,
       },
@@ -121,7 +122,7 @@ const setProjectSettings: ToolDefinition = {
     }
     if (args.resources && typeof args.resources === "object" && !Array.isArray(args.resources)) {
       const resources = args.resources as Record<string, unknown>;
-      for (const key of ["titleResourceId", "systemResourceId", "battleSystemResourceId", "defaultBgmResourceId", "battleBgmResourceId"] as const) {
+      for (const key of ["titleResourceId", "systemResourceId", "battleSystemResourceId", "defaultBgmResourceId", "battleBgmResourceId", "battleVictoryMeResourceId", "battleDefeatSeResourceId", "battleEscapeSeResourceId"] as const) {
         if (typeof resources[key] === "string") draft.system[key] = resources[key];
       }
       changed.push("리소스");

@@ -83,6 +83,25 @@ describe("database system view", () => {
     expect(findByTestId(host, "db-type-chart-fire-water")).not.toBeNull();
   });
 
+  it("writes authored battle audio slots from the system tab", () => {
+    const host = renderSystem();
+    const setPicker = (testid: string, resourceId: string): void => {
+      const input = findByTestId(host, testid);
+      if (!input) throw new Error(`missing picker ${testid}`);
+      input.value = resourceId;
+      input.dispatchEvent(new Event("input"));
+    };
+    setPicker("db-field-system-battle-bgm", "cc0-bgm-rtp-btl-001");
+    setPicker("db-field-system-battle-victory-me", "cc0-bgm-rtp-ttl-001");
+    setPicker("db-field-system-battle-defeat-se", "easyrpg-sound-collapse1");
+    setPicker("db-field-system-battle-escape-se", "easyrpg-sound-escape");
+    const system = store.getCurrent().system;
+    expect(system.battleBgmResourceId).toBe("cc0-bgm-rtp-btl-001");
+    expect(system.battleVictoryMeResourceId).toBe("cc0-bgm-rtp-ttl-001");
+    expect(system.battleDefeatSeResourceId).toBe("easyrpg-sound-collapse1");
+    expect(system.battleEscapeSeResourceId).toBe("easyrpg-sound-escape");
+  });
+
   it("writes battle flow, gift system, and time system gates", () => {
     const host = renderSystem();
 

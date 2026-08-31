@@ -1,6 +1,8 @@
-import { playAudioCommand, stopAudioChannel } from "@/player/audio";
+import { playAudioCommand, playMusicEffect, playSoundEffect, stopAudioChannel } from "@/player/audio";
 import type { PlaySession } from "@/project/session";
-import type { Project } from "@/project/types";
+import type { Project, SystemRecords } from "@/project/types";
+
+export type BattleResultCueKind = "victory" | "defeat" | "escape";
 
 export interface BattleAudioSession {
   readonly fieldBgmResourceId?: string;
@@ -23,6 +25,22 @@ export function enterBattleAudio(project: Project, session: PlaySession): Battle
  */
 export function beginBattleResultAudio(): void {
   stopAudioChannel("bgm", 80);
+}
+
+export function authoredBattleResultResourceId(
+  system: Pick<SystemRecords, "battleVictoryMeResourceId" | "battleDefeatSeResourceId" | "battleEscapeSeResourceId">,
+  kind: BattleResultCueKind,
+): string | undefined {
+  if (kind === "victory") return system.battleVictoryMeResourceId;
+  if (kind === "defeat") return system.battleDefeatSeResourceId;
+  return system.battleEscapeSeResourceId;
+}
+
+/** 자료집에서 고른 승패 큐를 재생한다. 없거나 URL 을 못 풀면 false → 호출부가 폴백. */
+export function playAuthoredBattleResultCue(project: Project, kind: BattleResultCueKind): boolean {
+  const resourceId = authoredBattleResultResourceId(project.system, kind);
+  if (kind === "victory") return playMusicEffect(resourceId, project);
+  return playSoundEffect(resourceId, project);
 }
 
 /**

@@ -3,10 +3,20 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("@/player/audio", () => ({
   playAudioCommand: vi.fn(),
   stopAudioChannel: vi.fn(),
+  playMusicEffect: vi.fn(),
+  playSoundEffect: vi.fn(),
 }));
 
-import { playAudioCommand, stopAudioChannel } from "@/player/audio";
-import { beginBattleResultAudio, enterBattleAudio, exitBattleAudio } from "@/player/battleAudio";
+import { playAudioCommand, playMusicEffect, playSoundEffect, stopAudioChannel } from "@/player/audio";
+import {
+  authoredBattleResultResourceId,
+  beginBattleResultAudio,
+  enterBattleAudio,
+  exitBattleAudio,
+  playAuthoredBattleResultCue,
+} from "@/player/battleAudio";
+import { normalizeSystemRecords } from "@/project/databaseRecordModel";
+import { createBlankProject } from "@/project/defaults";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 
@@ -49,5 +59,41 @@ describe("battle audio", () => {
     vi.mocked(stopAudioChannel).mockClear();
     beginBattleResultAudio();
     expect(stopAudioChannel).toHaveBeenCalledWith("bgm", 80);
+  });
+
+  it("자료집 승리 팡파레가 있으면 ME 로 재생한다", () => {
+    vi.mocked(playMusicEffect).mockReturnValue(true);
+    const project = {
+      system: { battleVictoryMeResourceId: "cc0-bgm-rtp-ttl-001" },
+    } as Project;
+    expect(authoredBattleResultResourceId(project.system, "victory")).toBe("cc0-bgm-rtp-ttl-001");
+    expect(playAuthoredBattleResultCue(project, "victory")).toBe(true);
+    expect(playMusicEffect).toHaveBeenCalledWith("cc0-bgm-rtp-ttl-001", project);
+  });
+
+  it("패배·도주 슬롯은 SE 채널로 재생한다", () => {
+    vi.mocked(playSoundEffect).mockReturnValue(true);
+    const project = {
+      system: {
+        battleDefeatSeResourceId: "easyrpg-sound-collapse1",
+        battleEscapeSeResourceId: "easyrpg-sound-escape",
+      },
+    } as Project;
+    expect(playAuthoredBattleResultCue(project, "defeat")).toBe(true);
+    expect(playSoundEffect).toHaveBeenCalledWith("easyrpg-sound-collapse1", project);
+    expect(playAuthoredBattleResultCue(project, "escape")).toBe(true);
+    expect(playSoundEffect).toHaveBeenCalledWith("easyrpg-sound-escape", project);
+  });
+
+  it("자료집 승패 슬롯은 정규화 왕복에서 사라지지 않는다", () => {
+    const out = normalizeSystemRecords({
+      ...createBlankProject().system,
+      battleVictoryMeResourceId: "cc0-bgm-rtp-ttl-001",
+      battleDefeatSeResourceId: "easyrpg-sound-collapse1",
+      battleEscapeSeResourceId: "easyrpg-sound-escape",
+    });
+    expect(out.battleVictoryMeResourceId).toBe("cc0-bgm-rtp-ttl-001");
+    expect(out.battleDefeatSeResourceId).toBe("easyrpg-sound-collapse1");
+    expect(out.battleEscapeSeResourceId).toBe("easyrpg-sound-escape");
   });
 });

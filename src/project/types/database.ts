@@ -1052,6 +1052,12 @@ export interface SystemRecords {
   battleBgmResourceId?: string;
   /** 맵이 BGM 을 지정하지 않았을 때(mode=parent 상속 실패 포함) 쓰는 프로젝트 기본 BGM. */
   defaultBgmResourceId?: string;
+  /** 승리 시 한 번 재생하는 팡파레(ME). 비우면 런타임 합성 팡파레. */
+  battleVictoryMeResourceId?: string;
+  /** 패배 시 효과음. 비우면 기본 붕괴음. */
+  battleDefeatSeResourceId?: string;
+  /** 도주 시 효과음. 비우면 기본 도주음. */
+  battleEscapeSeResourceId?: string;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   battleUiStyle?: BattleUiStyle;
