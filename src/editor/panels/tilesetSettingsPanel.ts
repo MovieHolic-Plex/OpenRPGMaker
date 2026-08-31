@@ -26,7 +26,6 @@ import {
   listPane,
   listRow,
   listSearch,
-  listToolbar,
   sectionCard,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
@@ -124,18 +123,6 @@ function renderTilesetList(
         compact: true,
       })
       : emptyState({ icon: "▦", title: "타일셋이 없습니다", compact: true }),
-    // 최대 개수는 RM 계열 UI 의 자리표시자다. 실제 조정 기능이 없으므로 라벨에서 먼저
-    // 밝히고(고정), 툴팁으로 이유를 준다 — e2e 계약(tileset-oprn-maximum-count 가
-    // disabled)을 지키면서 "왜 눌리지 않는지"를 사용자에게 알려주는 최소 정직.
-    toolbar: listToolbar([
-      {
-        label: "최대 개수 (고정)",
-        onClick: () => {},
-        disabled: true,
-        title: "타일셋 개수는 프로젝트 소재 구성에 따라 정해집니다. 이 창에서는 조정하지 않습니다.",
-        testid: "tileset-oprn-maximum-count",
-      },
-    ]),
     testid: "db-tilesets-list-pane",
   });
   revealSelectedTileset(pane);
@@ -179,13 +166,12 @@ function renderTilesetDetail(tileset: TilesetDef, rerender: () => void): HTMLEle
     hero: detailHero({
       eyebrow: "타일셋",
       title: tileset.name || "(이름 없음)",
-      subtitle: "가운데 그림판에서 타일을 고르고 레이어 · 통행 · 의미를 지정합니다.",
       tags: heroTags(tileset),
       actions: [
         {
           label: "AI 타일셋",
           kind: "primary",
-          title: "전체를 먼저 분석한 뒤, 모르는 부분만 대화로 확인합니다.",
+          title: "타일셋 전체를 분석하고 애매한 칸만 확인합니다.",
           testid: "tileset-ai-workspace-open",
           onClick: () => openTilesetAiWorkspace(tileset.id, rerender),
         },
@@ -200,15 +186,10 @@ function renderTilesetDetail(tileset: TilesetDef, rerender: () => void): HTMLEle
 }
 
 function heroTags(tileset: TilesetDef): readonly string[] {
-  const rows = Math.max(1, Math.ceil(tileset.count / Math.max(1, tileset.tilesPerRow)));
   const passage = passageSummary(tileset);
-  const labeled = (tileset.tileMeta ?? []).filter((meta) => (meta?.label ?? "").trim().length > 0).length;
   return [
     `${tileset.count}칸`,
-    `${tileset.tilesPerRow}열 × ${rows}행`,
-    `${tileset.tileSize}px`,
     `O ${passage.open} · X ${passage.blocked} · ★ ${passage.upper}`,
-    `라벨 ${labeled}/${tileset.count}`,
   ];
 }
 
@@ -249,13 +230,10 @@ type EditorParts = {
 };
 
 /**
- * `renderTilesetEditor` 는 [속성, 그림판 워크벤치, AI 런처] 세 조각을 고정 순서로 만든다.
- * 세 조각을 2행 grid 에 밀어 넣은 것이 clipped/overlap 의 원인이었으므로, 여기서 조각을
- * 꺼내 상세 창 본문(단일 스크롤 flex 열)에 순서대로 놓는다.
+ * `renderTilesetEditor` 는 [속성, 그림판 워크벤치] 두 조각을 만든다.
+ * 예전 세 번째 조각(AI 런처)은 히어로 액션이 정본이라 편집기에서 빼 두었다.
  *
  * - 속성: 섹션 3탭(규칙/지식/구성)을 밖으로 꺼내 워크벤치 바로 위 레일로 세운다.
- * - AI 런처: 히어로의 기본 액션으로 승격했으므로 여기서는 버린다(라벨과 버튼이
- *   패널 양 끝으로 갈라져 있던 P0 를 구조적으로 제거).
  */
 function splitLegacyEditor(tileset: TilesetDef, rerender: () => void): EditorParts {
   const editor = renderTilesetEditor(tileset, rerender);

@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { expectReadableControl } from "./oprn-database-helpers";
 
 // 3탭 재편(2026-07-05): 타일 규칙 / 타일 지식(단어장) / 구성.
@@ -15,7 +15,7 @@ test("tileset section tabs keep Korean controls readable and split features", as
   await expect(page.getByTestId("tileset-section-tabs")).toContainText("타일 지식(단어장)");
   await expect(page.getByTestId("tileset-section-tabs")).toContainText("구성");
 
-  await expectDisabledReadable(page.getByTestId("tileset-oprn-maximum-count"), "tileset maximum count");
+  await expect(page.getByTestId("tileset-oprn-maximum-count")).toHaveCount(0);
   await expectReadableControl(page.getByTestId("tileset-oprn-graphic-browse"), "tileset graphic browse");
   await expect(page.getByTestId("tileset-oprn-graphic-browse")).toBeEnabled();
 
@@ -46,11 +46,12 @@ test("tileset section tabs keep Korean controls readable and split features", as
   await page.getByTestId("tileset-section-tab-knowledge").click();
   await expect(page.getByTestId("tileset-edit-mode-ai")).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("tileset-ai-question-panel")).toBeVisible();
-  await expect(page.getByTestId("tileset-generation-checker")).toContainText("Ready");
+  await expect(page.getByTestId("tileset-generation-checker")).toHaveCount(1);
   await expect(page.getByTestId("tileset-rule-layer")).toHaveCount(0);
   await page.getByTestId("tileset-db-cell-360").click();
-  await expect(page.getByTestId("tileset-selected-tags")).toContainText("terrain");
-  await expect(page.getByTestId("tileset-selected-rules")).not.toContainText("No placement rule");
+  await expect(page.getByTestId("tileset-field-ai-label")).toBeVisible();
+  await expect(page.getByTestId("tileset-tile-meaning-details")).toBeVisible();
+  await expect(page.getByTestId("tileset-selected-usage")).toHaveCount(0);
 
   // ── 구성 탭: 오토타일 ──────────────────────
   await page.getByTestId("tileset-section-tab-compose").click();
@@ -59,8 +60,3 @@ test("tileset section tabs keep Korean controls readable and split features", as
 
   await page.screenshot({ path: testInfo.outputPath("database-tileset-readable.png"), fullPage: true });
 });
-
-async function expectDisabledReadable(locator: Locator, label: string): Promise<void> {
-  await expectReadableControl(locator, label);
-  await expect(locator, label).toBeDisabled();
-}

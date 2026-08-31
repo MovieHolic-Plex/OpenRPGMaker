@@ -71,9 +71,8 @@ function renderManualKnowledgeInspector(tileset: TilesetDef, rerender: () => voi
       renderKnowledgeTextField("이름", draft.name, "tileset-knowledge-name", (value) => updateKnowledgeDraft({ name: value })),
       renderPassageControls(draft.passage, rerender),
       renderLayerMatrix(tileset, rerender),
-      renderKnowledgeTextArea("설명", draft.description, (value) => updateKnowledgeDraft({ description: value })),
-      renderKnowledgeTextArea("배치 규칙(설명용 문장)", draft.placementRules, (value) => updateKnowledgeDraft({ placementRules: value })),
       renderSurfaceControls(draft, rerender),
+      renderProseFields(draft),
       renderCompileStatus(compiled),
       el("div", {
         class: "tileset-knowledge-actions",
@@ -104,10 +103,22 @@ function renderSelectionSummary(geometry: ReturnType<typeof knowledgeGeometry>):
     : `${geometry.tileIds.length}칸 · ${geometry.width}×${geometry.height} · (${geometry.x}, ${geometry.y})`;
   return el("section", {
     class: "tileset-knowledge-selection",
+    attrs: { title: "드래그: 사각형 · Ctrl/Cmd: 추가 · Shift: 기준점부터 확장" },
     children: [
       el("strong", { text: "선택 영역" }),
       el("span", { text: summary, dataset: { testid: "tileset-knowledge-selection-summary" } }),
-      el("small", { text: "드래그: 사각형 · Ctrl/Cmd: 추가 · Shift: 기준점부터 확장" }),
+    ],
+  });
+}
+
+function renderProseFields(draft: KnowledgeDraft): HTMLElement {
+  return el("details", {
+    class: "tileset-advanced-details",
+    dataset: { testid: "tileset-knowledge-prose" },
+    children: [
+      el("summary", { text: "설명" }),
+      renderKnowledgeTextArea("설명", draft.description, (value) => updateKnowledgeDraft({ description: value })),
+      renderKnowledgeTextArea("배치 규칙", draft.placementRules, (value) => updateKnowledgeDraft({ placementRules: value })),
     ],
   });
 }
@@ -217,7 +228,7 @@ function renderSurfaceControls(draft: KnowledgeDraft, rerender: () => void): HTM
     class: "tileset-knowledge-section",
     dataset: { testid: "tileset-knowledge-surface" },
     children: [
-      el("strong", { text: "배치 면 (실제로 검사함)" }),
+      el("strong", { text: "배치 면" }),
       el("div", {
         class: "tileset-knowledge-preset-row",
         children: draft.surfaceZone === "againstWall"

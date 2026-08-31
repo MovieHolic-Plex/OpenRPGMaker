@@ -58,12 +58,11 @@ test.describe("QA sweep: tilesets tab", () => {
     expect(probe.empty, `empty body (len=${probe.detailTextLen})`).toBe(false);
     expect(probe.detailTextLen).toBeGreaterThan(40);
     expect(probe.enabledButtons).toBeGreaterThan(0);
-    expect(probe.disabledButtons).toBeGreaterThan(0);
 
     await expect(page.getByTestId(TOWN_ROW)).toBeVisible();
     await expect(page.getByTestId(DUNGEON_ROW)).toBeEnabled();
     await expect(page.getByTestId("tileset-oprn-name-input")).toBeEnabled();
-    await expect(page.getByTestId("tileset-oprn-maximum-count")).toBeDisabled();
+    await expect(page.getByTestId("tileset-oprn-maximum-count")).toHaveCount(0);
     await expect(page.getByTestId("tileset-oprn-graphic-browse")).toBeEnabled();
     await expect(page.getByTestId("tileset-section-tab-rules")).toBeEnabled();
     await expect(page.getByTestId("tileset-settings-open")).toBeEnabled();

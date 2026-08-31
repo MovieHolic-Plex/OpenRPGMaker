@@ -429,13 +429,14 @@ function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: n
   if (tile < 0 || tile >= tileset.count) return false;
   const meta = tileset.tileMeta?.[tile];
   if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group, meta);
-  // 실내 팩: 라벨·태그·통행성은 타일별 큐레이션 정본에서, 나머지 계약(레이어/설명)은 그룹에서.
+  // 실내 팩: 라벨·태그·통행성은 타일별 큐레이션 정본에서, 레이어는 그룹에서.
+  // 타일 description 은 비움 — 그룹 산문은 그룹 레코드에만 둔다.
   // 통행성 per-타일 오버라이드(2026-07-13): 가구는 solid, 바닥 장식은 passable — 그룹 일괄값의 한계 해소.
   const semantic = isInteriorPackTileset(tileset) ? INTERIOR_SEMANTIC_BY_INDEX.get(tile) : undefined;
   const passage = semantic?.passage ?? group.passage;
   const nextMeta: TileAiMetadata = {
     label: semantic ? semantic.label : `${group.name} ${tile}`,
-    description: group.description,
+    description: "",
     tags: semantic ? [...semantic.tags] : undefined,
     role: group.role,
     repeatability: group.repeatability,

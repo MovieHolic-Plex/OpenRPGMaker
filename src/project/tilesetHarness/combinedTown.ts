@@ -172,7 +172,7 @@ function applyTileContract(tileset: TilesetDef, group: CombinedTownHarnessGroup,
   let changed = false;
   const nextMeta: TileAiMetadata = {
     label: labelForTile(group, tile, descriptor.label),
-    description: group.description,
+    description: "",
     role: group.role,
     repeatability: group.repeatability,
     defaultLayer: group.defaultLayer,

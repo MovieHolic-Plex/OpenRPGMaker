@@ -131,7 +131,7 @@ describe("타일셋 섹션 3탭 UI", () => {
     // 좌측 의미 폼(보조) + 칩 우클릭 메뉴(주 경로) — 둘 다 존재
     expect(findByTestId(editor, "tileset-tile-meaning-edit")).toBeTruthy();
     expect(findByTestId(editor, "tileset-field-ai-label")).toBeTruthy();
-    expect(findByTestId(editor, "tileset-field-ai-description")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-field-ai-description")).toBeNull();
     // 규칙 탭에는 AI 메타/그룹 모드 버튼이 노출되지 않는다 — 기능 분리.
     expect(findByTestId(editor, "tileset-edit-mode-ai")).toBeNull();
     expect(findByTestId(editor, "tileset-edit-mode-group")).toBeNull();
@@ -233,12 +233,22 @@ describe("타일셋 섹션 3탭 UI", () => {
     expect(findByTestId(editor, "tileset-layer-warning")).toBeTruthy(); // 투명 칩 하위 경고.
   });
 
+  it("지식 탭에서 설명 필드는 접힌 details 안에 있다", () => {
+    setTilesetSectionTab("knowledge", () => {});
+    const editor = renderEditor();
+    expect(findByTestId(editor, "tileset-tile-meaning-details")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-field-ai-description")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-selected-usage")).toBeNull();
+    setTilesetMetadataEditMode("passage", () => {});
+  });
+
   it("구성 탭에는 오토타일 섹션만 렌더된다", () => {
     setTilesetSectionTab("compose", () => {});
     const editor = renderEditor();
     expect(getTilesetSectionTab()).toBe("compose");
     expect(findByTestId(editor, "tileset-autotile-editor")).toBeTruthy();
     expect(findByTestId(editor, "terrain-template-section")).toBeNull();
+    expect(findByTestId(editor, "tileset-side-pane-toggle")).toBeNull();
     setTilesetMetadataEditMode("passage", () => {}); // 다른 테스트를 위해 복귀.
   });
 });

@@ -143,6 +143,10 @@
   overflow: hidden;
 }
 
+.database-modal-body .oprn-tileset-main.no-side-pane {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* 좌측 편집 도구/선택 타일 열은 128px 이었다 — "자동 / 하위 / 상위" 세 버튼 중 셋째가
    통째로 잘리고 의미 입력이 한 줄에 6~7자만 들어가던 폭이다. */
 .database-modal-body .oprn-tileset-main .tileset-db-edit-area {
@@ -225,11 +229,21 @@
   padding: 6px 8px 8px;
 }
 
-.database-modal-body .oprn-tileset-main .tileset-tile-meaning-edit textarea {
+.database-modal-body .oprn-tileset-main .tileset-tile-meaning-edit textarea,
+.database-modal-body .oprn-tileset-main .tileset-tile-meaning-edit input {
   min-height: 2.6em;
   width: 100%;
   resize: vertical;
   font: 400 12px/1.35 var(--font-ui, system-ui, sans-serif);
+}
+
+.database-modal-body .oprn-tileset-main .tileset-advanced-details {
+  margin-top: 6px;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-advanced-details > summary {
+  cursor: pointer;
+  font-size: 12px;
 }
 
 .database-modal-body .oprn-tileset-main .tileset-tile-meaning-edit textarea[data-testid="tileset-field-ai-description"] {
