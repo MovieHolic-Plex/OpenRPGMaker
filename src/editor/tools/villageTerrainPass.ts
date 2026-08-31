@@ -24,6 +24,7 @@ import {
 import type { ToolDefinition } from "./types";
 import type { VillageRequirements } from "./villageRequirements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
+import { resolveSpatialRect } from "@/ai/viewRelativeLocation";
 
 export interface Rect {
   readonly x: number;
@@ -95,12 +96,17 @@ export function buildTerrainConstraintMasks(
   }
 
   if (requirements.landmarks.includes("forest")) {
-    const side = requirements.forestSide;
-    const forest = offsetRect(sideRect(area.w, area.h, side, forestDepth), area);
+    const forest = requirements.forestAnchor
+      ? resolveSpatialRect(area, requirements.forestAnchor)
+      : offsetRect(sideRect(area.w, area.h, requirements.forestSide, forestDepth), area);
     // 물 마스크와 겹치면 물은 유지, 숲은 물 칸 제외하고 칠함
     forestRects.push(forest);
     paintRole(roles, width, forest, "forest", /* skipWater */ true);
-    notes.push(`mask forest@${side} ${forest.w}×${forest.h}`);
+    notes.push(
+      requirements.forestAnchor
+        ? `mask forest@${requirements.forestAnchor.horizontal}-${requirements.forestAnchor.vertical} ${forest.w}×${forest.h}`
+        : `mask forest@${requirements.forestSide} ${forest.w}×${forest.h}`,
+    );
   }
 
   // buildable 밖은 blocked (주거 시공 금지 힌트)

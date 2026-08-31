@@ -4,6 +4,7 @@
 // 낱말 → 랜드마크 대응표와 방향 기본값은 이제 `system.worldGen` 저작 데이터가 지배한다
 // (`@/project/worldGenRules`). 규칙을 넘기지 않으면 내장 기본 규칙 = 예전 정규식과 같은 판정.
 
+import { parseSpatialPhrase, type SpatialAnchor } from "@/ai/viewRelativeLocation";
 import {
   DEFAULT_WORLD_GEN_RULES,
   matchWorldGenKeywords,
@@ -27,6 +28,8 @@ export interface VillageRequirements {
   /** 레이아웃 힌트 */
   readonly riverSide: "west" | "east" | "north" | "south";
   readonly forestSide: "west" | "east" | "north" | "south";
+  /** 사용자가 숲 자리를 말하면(오른쪽 위 등) 강 반대편·저작 기본값을 이긴다. */
+  readonly forestAnchor?: SpatialAnchor;
 }
 
 const LANDMARK_LABEL: Record<LandmarkKind, string> = {
@@ -56,13 +59,21 @@ export function inferRequirementsFromQuery(
 
   // 강이 있으면 서쪽 물·동쪽 숲이 기본(마을이 강 옆). 호수만 있으면 북쪽 물·남쪽 숲.
   // 저자가 방향을 못 박으면(`auto` 아님) 그 값이 이 상식을 덮는다.
+  // 이번 요청에 위치 말(오른쪽 위 등)이 있으면 그게 최우선이다.
   let riverSide: WorldGenSide = "west";
   if (landmarks.includes("lake") && !landmarks.includes("river") && !landmarks.includes("harbor")) {
     riverSide = "north";
   }
   if (rules.water.side !== "auto") riverSide = rules.water.side;
-  const forestSide: WorldGenSide =
-    rules.forest.side !== "auto" ? rules.forest.side : oppositeWorldGenSide(riverSide);
+  const spoken = parseSpatialPhrase(q);
+  const forestAnchor = spoken
+    ? { horizontal: spoken.horizontal, vertical: spoken.vertical }
+    : undefined;
+  const forestSide: WorldGenSide = forestAnchor
+    ? sideFromAnchor(forestAnchor)
+    : rules.forest.side !== "auto"
+      ? rules.forest.side
+      : oppositeWorldGenSide(riverSide);
 
   return {
     query: q || "(빈 쿼리)",
@@ -71,7 +82,16 @@ export function inferRequirementsFromQuery(
     mustExist,
     riverSide,
     forestSide,
+    ...(forestAnchor ? { forestAnchor } : {}),
   };
+}
+
+function sideFromAnchor(anchor: SpatialAnchor): WorldGenSide {
+  if (anchor.horizontal === "right") return "east";
+  if (anchor.horizontal === "left") return "west";
+  if (anchor.vertical === "top") return "north";
+  if (anchor.vertical === "bottom") return "south";
+  return "east";
 }
 
 /** requirements가 톤 힌트를 덮을 때 (pathStyle 등). 저자가 `auto` 를 벗어난 값을 고르면 그게 최종이다. */
