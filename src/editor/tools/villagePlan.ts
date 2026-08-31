@@ -356,6 +356,9 @@ function mergeRequirements(
     ],
     riverSide: partial.riverSide ?? base.riverSide,
     forestSide: partial.forestSide ?? base.forestSide,
+    ...(partial.forestAnchor ?? base.forestAnchor
+      ? { forestAnchor: partial.forestAnchor ?? base.forestAnchor }
+      : {}),
   };
 }
 

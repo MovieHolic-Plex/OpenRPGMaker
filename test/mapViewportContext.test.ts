@@ -178,4 +178,38 @@ describe("AssistantSession viewport user turn", () => {
     expect(String(user?.content)).toContain("(5, 6)");
     expect(String(user?.content)).toContain("여기 나무 심어줘");
   });
+
+  it("turns 오른쪽 위 into a computed box on the visible camera, not the 16-tile clip", async () => {
+    const { AssistantSession } = await import("@/ai/assistantSession");
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const session = new AssistantSession(project, {
+      contextOptions: {
+        currentMapId: mapId,
+        viewport: {
+          mapId,
+          centerX: 20,
+          centerY: 12,
+          x: 12,
+          y: 4,
+          w: 16,
+          h: 16,
+          viewX: 10,
+          viewY: 4,
+          viewW: 20,
+          viewH: 12,
+        },
+      },
+      chat: async () => ({
+        message: { role: "assistant", content: "ok" },
+        finishReason: "stop",
+      }),
+    });
+    await session.sendUserMessage("오른쪽 위에 숲을깔라");
+    const user = session.getMessages().find((m) => m.role === "user");
+    const text = String(user?.content);
+    expect(text).toContain("추측 금지");
+    expect(text).toContain("(20,4) 10×6");
+    expect(text).toContain("오른쪽 위에 숲을깔라");
+  });
 });

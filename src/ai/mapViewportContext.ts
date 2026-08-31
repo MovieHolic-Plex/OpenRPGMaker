@@ -29,6 +29,11 @@ export type MapViewportSnapshot = {
   readonly y: number;
   readonly w: number;
   readonly h: number;
+  /** 카메라가 실제로 비추는 타일 상자(maxSpan 클립 전). 위치 지시(오른쪽 위 등)의 기준. */
+  readonly viewX?: number;
+  readonly viewY?: number;
+  readonly viewW?: number;
+  readonly viewH?: number;
 };
 
 /** 컨텍스트/이미지에 넣을 최대 한 변(타일). 너무 크면 토큰·렌더 비용이 큼. */
@@ -65,6 +70,10 @@ export function computeMapViewport(
 
   let w = Math.max(1, x1 - x0);
   let h = Math.max(1, y1 - y0);
+  const visibleX = x0;
+  const visibleY = y0;
+  const visibleW = w;
+  const visibleH = h;
 
   // 화면에 보이는 영역이 너무 넓으면 중심 기준으로 maxSpan 안으로 자른다.
   if (w > maxSpan) {
@@ -86,6 +95,10 @@ export function computeMapViewport(
     y: y0,
     w,
     h,
+    viewX: visibleX,
+    viewY: visibleY,
+    viewW: visibleW,
+    viewH: visibleH,
   };
 }
 
@@ -126,7 +139,7 @@ export function formatViewportContextBlock(
     `- 화면 중앙 타일: **(${viewport.centerX}, ${viewport.centerY})**`,
     `- 가시 영역(타일): (${viewport.x},${viewport.y})~(${x1},${y1}) — ${viewport.w}×${viewport.h} (양 끝 칸 포함)`,
     "- 영역 표기 규약(툴 공통): 좌상단 기준, w/h 는 칸 수, 마지막 칸은 x+w-1 / y+h-1.",
-    "- 사용자 말의 \"여기/이 근처/화면/가운데\"는 위 좌표를 기준으로 해석하세요.",
+    "- 사용자 말의 \"여기/이 근처/화면/가운데/위/아래/왼쪽/오른쪽\"은 **지금 보고 있는 화면** 기준입니다. 맵 전체의 구석이 아닙니다.",
     "- 상세 타일/이벤트는 get_map_region / show_map_region으로 이 영역 또는 주변을 조회하세요.",
   ];
   const grid = formatPassabilityGrid(viewport, project);

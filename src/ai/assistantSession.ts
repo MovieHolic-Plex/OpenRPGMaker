@@ -63,6 +63,11 @@ import {
   mapRegionImagePayload,
 } from "./mapViewportContext";
 import {
+  formatResolvedSpatialBlock,
+  implicitSpecFromViewLocation,
+  resolveTurnViewLocation,
+} from "./viewRelativeLocation";
+import {
   chatCompletion,
   configForLiteModel,
   isLlmAbortError,
@@ -1253,7 +1258,8 @@ export class AssistantSession {
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
-    this.turnImplicitSpec = implicitSpecFromContext(text);
+    this.turnImplicitSpec = implicitSpecFromContext(text)
+      ?? this.implicitSpecFromViewPhrase(intentText);
     this.carryoverSpecForTurn = this.activeSpec && this.activeSpecTurnIndex < this.currentTurnIndex
       ? structuredClone(this.activeSpec)
       : null;
@@ -1922,6 +1928,18 @@ export class AssistantSession {
     this.audit.push({ ...entry, at: new Date().toISOString() });
   }
 
+  /** 선택 영역이 없을 때, 「오른쪽 위」 같은 말을 지금 화면 상자로 바꿔 암묵 명세로 쓴다. */
+  private implicitSpecFromViewPhrase(intentText: string): BuildSpec | null {
+    const viewport = resolveContextViewport(this.contextOptions);
+    const located = resolveTurnViewLocation(intentText, viewport);
+    if (!viewport || !located) return null;
+    return implicitSpecFromViewLocation({
+      mapId: viewport.mapId,
+      requestText: intentText,
+      rect: located.rect,
+    });
+  }
+
   /** 이번 턴의 편집 상황(맵·뷰포트·선택) 스냅샷 — 감사 기록과 맵 이동 판정의 단일 출처. */
   private captureTurnContext(): ConversationTurnContext {
     return buildConversationTurnContext(this.ctx.project, {
@@ -2139,7 +2157,11 @@ export class AssistantSession {
     const map = this.ctx.project.maps[viewport.mapId];
     const mapName = map?.name ?? viewport.mapId;
     const viewportBlock = formatViewportContextBlock(viewport, mapName, this.ctx.project);
-    const combinedText = `${viewportBlock}\n\n---\n\n${text}`;
+    const located = resolveTurnViewLocation(stripContextFooter(text), viewport);
+    const locationBlock = located
+      ? `\n\n${formatResolvedSpatialBlock({ phrase: located.phrase.phrase, frame: located.frame, rect: located.rect })}`
+      : "";
+    const combinedText = `${viewportBlock}${locationBlock}\n\n---\n\n${text}`;
 
     if (!this.renderImages || !map) return combinedText;
 
@@ -2153,7 +2175,9 @@ export class AssistantSession {
         { type: "text", text: combinedText },
         {
           type: "text",
-          text: `아래는 사용자가 지금 보고 있는 맵 화면 근처 미리보기입니다 (${viewport.x},${viewport.y}) ${viewport.w}×${viewport.h}. "여기" 해석 시 이 이미지를 우선하세요.`,
+          text: located
+            ? `아래는 사용자가 지금 보고 있는 맵 화면입니다. 「${located.phrase.phrase}」는 (${located.rect.x},${located.rect.y}) ${located.rect.w}×${located.rect.h} — 이 상자 안에만 놓으세요.`
+            : `아래는 사용자가 지금 보고 있는 맵 화면 근처 미리보기입니다 (${viewport.x},${viewport.y}) ${viewport.w}×${viewport.h}. "여기" 해석 시 이 이미지를 우선하세요.`,
         },
       ];
       for (const image of images) {
@@ -2477,7 +2501,9 @@ export class AssistantSession {
           return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
         }
         const rawError = cause instanceof Error ? cause.message : String(cause);
-        const error = isRetryableLlmError(cause) ? appendTransientRetryGuidance(rawError) : rawError;
+        const error = isRetryableLlmError(cause) && !isOhMyPiWorkerCrash(cause)
+          ? appendTransientRetryGuidance(rawError)
+          : rawError;
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
