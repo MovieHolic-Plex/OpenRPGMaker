@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>에디터 AI 가 이벤트 '페이지' 를 이해하지 못한 문제 — 수정 보고서</title>
+<style>
+:root{--bg:#0f1117;--card:#171a23;--ink:#e8eaf0;--dim:#9aa3b5;--line:#262b38;
+--bad:#ff6b6b;--good:#4ade80;--warn:#fbbf24;--accent:#7aa2ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+font:16px/1.75 -apple-system,"Segoe UI","Noto Sans KR",sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:56px 24px 96px}
+h1{font-size:34px;line-height:1.3;margin:0 0 12px}
+h2{font-size:25px;margin:64px 0 8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+h3{font-size:19px;margin:34px 0 6px;color:var(--accent)}
+p,li{color:#d5d9e3}
+.lede{font-size:19px;color:var(--ink);background:var(--card);border-left:4px solid var(--accent);
+padding:20px 24px;border-radius:0 10px 10px 0;margin:24px 0 8px}
+.sub{color:var(--dim);font-size:14px;margin:0 0 40px}
+figure{margin:22px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+figure img{width:100%;display:block;border-radius:7px}
+figcaption{color:var(--dim);font-size:13.5px;margin-top:11px;line-height:1.6}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.two figure{margin:0}
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px;
+background:var(--card);border-radius:10px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#1d212c;color:var(--dim);font-weight:600;font-size:13px;
+letter-spacing:.03em;text-transform:uppercase}
+tr:last-child td{border-bottom:none}
+code{background:#212633;padding:2px 6px;border-radius:4px;font-size:13.5px;
+font-family:ui-monospace,"Cascadia Code",Consolas,monospace;color:#c9d4f5}
+pre{background:#0b0d12;border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+overflow-x:auto;font-size:13.5px;line-height:1.65}
+pre code{background:none;padding:0}
+.bad{color:var(--bad);font-weight:600}
+.good{color:var(--good);font-weight:600}
+.warn{color:var(--warn);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin:18px 0}
+.pill{display:inline-block;font-size:12.5px;padding:3px 11px;border-radius:999px;
+background:#212633;color:var(--dim);margin:0 6px 6px 0}
+.flow{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:18px 0}
+.flow .step{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:9px 15px;font-size:14px}
+.flow .arrow{color:var(--dim)}
+.path{background:#0b0d12;border:1px dashed var(--accent);border-radius:9px;
+padding:15px 18px;font-family:ui-monospace,Consolas,monospace;font-size:14.5px;
+color:#cfe0ff;word-break:break-all}
+.missing{color:var(--warn);font-size:14px}
+ul{padding-left:22px}
+li{margin:7px 0}
+.q{font-weight:600;color:var(--ink);font-size:17.5px;margin-bottom:2px}
+</style></head><body><div class="wrap">
+
+<h1>에디터 AI 가 이벤트 '페이지' 를 이해하지 못한 문제</h1>
+<p class="sub">2026-08-30 · 브랜치 <code>agent/ai-event-page-semantics</code> · PR <code>#365 → 373</code> · 상태 <b class='good'>병합 완료</b> (dd6f51ef)</p>
+
+<p class="lede">AI 에게 «말 걸 때마다 다른 대사를 하는 NPC» 를 시키면, 대사를 <b>페이지 여러 장</b>에 나눠 담았습니다. 그런데 이 엔진은 <b>페이지를 한 번에 딱 한 장만 켭니다.</b> 그래서 나머지는 만들어도 없는 것과 같았습니다. AI 가 이 규칙을 아예 몰랐던 것이 원인이고, 알려줬습니다. 고치는 과정에서 <b>편집기 자체가 같은 실수를 하고 있던 곳 2군데</b>도 찾아서 함께 고쳤습니다.</p>
+
+<h2>1. 무슨 일이었나</h2>
+
+<p>신고 내용은 이랬습니다. «랜덤하게 대사 치는 NPC 를 만들라고 했는데 여러 페이지를 만들어놓기만 해서
+1페이지만 나온다.»</p>
+<p>확인해 보니 절반은 맞고 절반은 달랐습니다. <b>여러 페이지를 만들어놓기만 한 것은 사실</b>이었습니다.
+다만 실제로 나오던 것은 1페이지가 아니라 <b>마지막 페이지</b>였습니다. 이 엔진은 페이지를 뒤에서부터
+훑기 때문입니다. 어느 쪽이든 결과는 같습니다 — 나머지 페이지는 죽은 데이터입니다.</p>
+<p>그리고 «랜덤» 은 애초에 페이지로 만들 수 있는 게 아니었습니다. AI 는 페이지를 «대사 후보 목록» 으로
+착각하고 있었습니다.</p>
+
+
+<h2>2. '페이지' 가 뭔가 (이게 핵심이다)</h2>
+
+<p>이 엔진의 이벤트 페이지는 <b>«상태별 얼굴»</b> 입니다. «대사 후보» 도 «순서대로 재생되는 장면» 도
+아닙니다.</p>
+<div class="card">
+<p><b>규칙은 딱 하나입니다.</b> 이벤트에 페이지가 몇 장이든, 게임은 <b>맨 뒤 페이지부터 거꾸로</b> 보면서
+«등장 조건이 다 맞는 첫 페이지» 하나만 켭니다. 나머지는 없는 것처럼 무시합니다.</p>
+</div>
+<p>그래서 이렇게 됩니다.</p>
+<ul>
+<li>조건 없는 페이지를 3장 만들면 → <b>마지막 1장만 영원히 나옵니다.</b> 앞의 2장은 죽습니다.</li>
+<li>제대로 하려면 → 1페이지는 조건 없이 «기본», 뒤 페이지에 «이때만» 조건을 걸어 덮습니다.</li>
+<li>단계를 넘기려면 → <b>조건과 «켜기» 가 짝</b>이어야 합니다. 1페이지 끝에서 «기억 A 켜기» 를 하고,
+2페이지에 «기억 A 가 켜졌을 때» 조건을 걸어야 넘어갑니다. 조건만 걸고 켜지 않으면 그 페이지는
+영원히 잠깁니다.</li>
+<li>랜덤은 → <b>페이지가 아니라 한 페이지 안에서</b> 합니다. 가중 분기로 숫자를 뽑고 그 숫자로
+대사를 갈라야 합니다.</li>
+</ul>
+
+
+<h3>눈으로 보는 차이 — 같은 NPC, 같은 요청</h3>
+<div class="two">
+<figure class=""><img alt="수정 전 페이지 탭" src="../../ai-event-pages/crop-before-tabs.png"><figcaption><b class='bad'>수정 전</b> — 페이지 3장이 모두 «조건 없음». 런타임은 마지막 1장만 실행하므로 1·2번 페이지는 죽은 데이터다.</figcaption></figure>
+<figure class=""><img alt="수정 후 페이지 탭" src="../../ai-event-pages/crop-after-tabs.png"><figcaption><b class='good'>수정 후</b> — 1번은 기본, 2번은 «이 이벤트 기억 A 켜짐», 3번은 «B 켜짐». 단계마다 하나씩 열린다.</figcaption></figure>
+</div>
+<div class="two">
+<figure class=""><img alt="수정 전 명령 목록" src="../../ai-event-pages/crop-before-commands.png"><figcaption><b class='bad'>수정 전</b> 1번 페이지 명령 — 대사만 있고 다음 단계로 넘기는 명령이 없다.</figcaption></figure>
+<figure class=""><img alt="수정 후 명령 목록" src="../../ai-event-pages/crop-after-commands.png"><figcaption><b class='good'>수정 후</b> 1번 페이지 명령 — 마지막에 «이 이벤트 기억: A 켜짐» 이 붙어 2번 페이지가 열린다.</figcaption></figure>
+</div>
+
+<h2>3. 원인 5가지</h2>
+
+<h3>① AI 가 볼 설명서에 이 규칙이 한 줄도 없었다 (가장 큰 원인)</h3>
+<p>AI 에게 주는 작업 수칙 24개를 다 뒤졌는데 «페이지는 한 번에 한 장» 이라는 말이 <b>없었습니다.</b>
+더 나쁜 건 8번 수칙이 이렇게 적혀 있었다는 겁니다 — «분기 대사로 <b>페이지를</b> 풍부하게 구성하세요».
+즉 <b>규칙을 안 알려준 채, 정확히 틀린 방향을 권장</b>하고 있었습니다.</p>
+<p>고침: 페이지 규칙 설명을 프롬프트에 넣었습니다. 그것도 «예산 밖 고정 자리» 에 넣었습니다 —
+대화가 길어지면 프롬프트를 잘라내는데, 이 설명이 잘리면 AI 가 다시 죽은 페이지를 만들기 때문입니다.
+8번 수칙은 «한 페이지 <b>안을</b> 풍부하게» 로 고쳤습니다.</p>
+
+<h3>② «등장 조건» 칸에 엉뚱한 사용법이 적혀 있었다</h3>
+<p>«이 조건들을 쓸 수 있다» 고 AI 에게 알려주는 명세에서, 조건 칸이 실수로 <b>명령 칸의 명세</b>를
+가리키고 있었습니다. 옆에 조건용 명세가 멀쩡히 있는데도요. 그래서 AI 가 본 «쓸 수 있는 조건 목록» 은
+명령어까지 뒤섞인 잡탕이었습니다.</p>
+<p>게다가 그 조건 목록은 손으로 베껴 쓴 것이라 실제 조건 하나(<code>run</code>)가 빠져 있었습니다.
+이제 목록을 손으로 베끼지 않고 <b>원본에서 그대로 가져옵니다.</b></p>
+
+<h3>③ 죽은 페이지를 아무도 알려주지 않았다</h3>
+<p>페이지가 죽어도 편집기·검사기·진단 도구 전부 <b>침묵</b>했습니다. 만든 사람은 게임을 켜서
+«왜 이 대사가 안 나오지» 할 때까지 알 수 없었습니다.</p>
+<p>고침: 판정기를 만들어 <b>네 곳</b>에 붙였습니다 — AI 가 만드는 즉시 받는 경고, 프로젝트 검사,
+그리고 «이 이벤트가 왜 안 나오나» 진단.</p>
+
+<h3>④ 조건만 걸고 «켜기» 를 안 한 것도 못 잡았다 (라이브 테스트로 발견)</h3>
+<p>①을 고친 뒤 다시 시켜보니 AI 가 페이지를 <b>제대로</b> 나눴습니다. 그런데 «기억 A 켜기» 명령을
+하나도 안 넣어서 2·3페이지가 영원히 잠겼습니다. 조건은 맞았는데 결과는 똑같이 죽은 겁니다.
+그래서 이것도 같이 잡게 했습니다.</p>
+
+<h3>⑤ 편집기 자신이 죽은 페이지를 만들고 있었다</h3>
+<p><code>make_villager</code>(주민 만들기)는 대사를 2줄 주면 <b>조건 없는 페이지 3장</b>을 만들었습니다.
+«대사 페이지 3개 만들었습니다» 라고 보고하면서 실제로는 마지막 1줄만 나왔습니다.
+<b>AI 탓이 아니라 도구 자체의 버그</b>였고, 신고된 증상과 똑같습니다.</p>
+
+
+<h2>4. 실제로 AI 에게 시켜봤다</h2>
+
+<p>말로만 «고쳤다» 고 하지 않기 위해, <b>실제 사용자가 말하는 문장을 그대로</b> AI 에게 먹이고 나온
+결과물을 기계로 채점했습니다. 편집기의 진짜 AI 처리 경로를 그대로 탑니다.</p>
+<p>같은 문장을 <b>고치기 전 코드</b>와 <b>고친 후 코드</b>에 각각 넣어 비교했습니다. 채점 기준도
+양쪽 동일한 자를 씁니다.</p>
+
+<table><thead><tr><th>시켜본 것</th><th>수정 전</th><th>수정 후</th></tr></thead>
+<tbody><tr><td><b>말 걸 때마다 다음 대사</b><br><span style='color:#9aa3b5'>«처음엔 인사, 두 번째엔 손녀 얘기, 세 번째부터 작별»</span></td><td>페이지 3장, <b class='bad'>전부 조건 없음</b><br>→ <b class='bad'>2장 죽음.</b> 마지막 작별 인사만 나옴</td><td>1장=기본 +«기억 A 켜기»<br>2장=«A 켜짐» +«B 켜기»<br>3장=«B 켜짐»<br>→ <b class='good'>죽은 페이지 0</b></td></tr>
+<tr><td><b>랜덤 대사</b><br><span style='color:#9aa3b5'>«말 걸 때마다 대사가 랜덤으로»</span></td><td><b class='bad'>이벤트를 아예 만들지 못함</b></td><td>1페이지 안에서 <b class='good'>가중 분기 + 대사 갈래 4개</b></td></tr>
+<tr><td><b>밤에만 다른 대사</b><br><span style='color:#9aa3b5'>«낮엔 쉬고, 밤엔 순찰 얘기»</span></td><td>1장=기본, 2장=«밤» 조건 (이건 원래도 됨)</td><td>동일 + 스스로 <b class='good'>진단 도구로 검증</b>까지 함</td></tr></tbody></table>
+
+<h3>편집기에서 직접 확인한 화면</h3>
+<figure class=""><img alt="수정 전 이벤트 편집기 전체" src="../../ai-event-pages/before-02-event-pages.png"><figcaption><b class='bad'>수정 전</b> — AI 가 만든 «할머니» NPC. 페이지 3장 전부 조건이 없어 실제로는 마지막 «작별 인사» 만 나온다. 사용자가 신고한 «1페이지만 나온다» 의 정체.</figcaption></figure>
+<figure class=""><img alt="수정 후 이벤트 편집기 전체" src="../../ai-event-pages/after-gated-02-event-pages.png"><figcaption><b class='good'>수정 후</b> — 같은 요청인데 조건과 «기억 켜기» 가 짝을 이뤄 붙었다. 말을 걸수록 다음 대사로 넘어간다. 상단 종 아이콘의 «2» 는 새로 붙은 경고 계측이다.</figcaption></figure>
+
+<h2>5. 질문에 대한 답</h2>
+
+<h3 class="q">Q. 이런 경우 우선순위가 1페이지가 맞나? 1페이지가 우선순위여야 한다.</h3>
+<div class="card">
+<p><b>현재 규칙(마지막 페이지 우선)이 맞습니다. 안 바꿨습니다.</b> 이 부분은 생각이 다릅니다.</p>
+<p>이유는 이렇습니다. 표준 저작 방식이 «1페이지에 기본을 두고, 뒤에 조건 페이지를 덧붙여 덮는다» 예요.
+1페이지 우선으로 뒤집으면 <b>기존 프로젝트의 모든 «진행되면 바뀌는» 페이지가 한꺼번에 죽습니다.</b>
+퀘스트를 깨도 NPC 대사가 안 바뀌게 됩니다.</p>
+<p>그리고 애초에 증상의 원인이 규칙이 아니었습니다. 조건 없는 페이지를 여러 장 만든 게 원인입니다.
+조건을 제대로 걸면 지금 규칙에서 정확히 의도대로 동작합니다 — 위 표의 «고친 후» 가 그 증거입니다.</p>
+<p>덧붙이면, 실제로 나오던 것도 1페이지가 아니라 마지막 페이지였습니다. 그래서 «1페이지 우선으로
+만들자» 는 방향은 증상과도 맞지 않았습니다.</p>
+</div>
+
+<h3 class="q">Q. 지금 에디터 AI 가 이벤트 만들 때 «등장 조건» 같은 걸 이해는 하는 거냐?</h3>
+<div class="card">
+<p><b>부분적으로 했고, 그마저 잘못된 명세를 보고 있었습니다. 지금은 제대로 이해합니다.</b></p>
+<p>조건 자체는 쓸 줄 알았습니다 — 실제로 «밤에만» 조건은 고치기 전에도 제대로 걸었습니다.
+문제는 두 가지였습니다.</p>
+<ul>
+<li>조건 칸의 명세가 <b>명령 칸 명세</b>를 가리켜서, AI 가 본 «쓸 수 있는 조건 목록» 이 잡탕이었습니다(원인 ②).</li>
+<li>조건을 걸긴 해도 «그래서 페이지가 하나만 켜진다» 는 <b>결과</b>를 몰랐습니다. 그래서 조건 없는
+페이지를 여러 장 쌓는 걸 문제라고 생각하지 않았습니다(원인 ①).</li>
+</ul>
+<p>고친 뒤 라이브 테스트에서 AI 가 쓴 조건: <code>timePhase:night</code>(밤), <code>selfSwitch:A</code>·
+<code>selfSwitch:B</code>(이벤트 기억). 조건과 «켜기» 를 짝지어 쓰는 것까지 했습니다.</p>
+</div>
+
+
+<h2>6. 어떻게 고쳤나</h2>
+
+<h3>AI 가 규칙을 알게 한다</h3>
+<p>페이지 규칙을 프롬프트의 <b>안 잘리는 자리</b>에 넣었습니다. 랜덤 대사의 정답 방법(가중 분기 +
+갈래)과 단계 진행 방법(조건과 켜기는 한 쌍)도 함께 적었습니다.</p>
+
+<h3>죽은 페이지를 즉시 알려준다</h3>
+<p>판정 두 개를 만들었습니다.</p>
+<ul>
+<li><b>가려진 페이지</b> — 뒤 페이지 조건이 앞 페이지 조건에 «포함» 되면 앞 페이지는 절대 안 켜집니다.
+조건 0개인 페이지는 앞의 전부를 가립니다.</li>
+<li><b>잠긴 페이지</b> — 조건이 요구하는 «기억» 을 이벤트 안에서 아무도 켜지 않으면 영원히 잠깁니다.</li>
+</ul>
+<p>둘 다 <b>오탐(멀쩡한 걸 죽었다고 하는 것)을 최우선으로 피하도록</b> 보수적으로 만들었습니다.
+남의 작업물을 «죽었다» 고 잘못 말하는 게 이 기능의 최악 실패니까요. 실제로 적대적 리뷰가 오탐 2건을
+잡아냈고 둘 다 고쳤습니다.</p>
+
+<h3>이 판정이 편집기 자신의 결함 2건을 찾아냈다</h3>
+<ul>
+<li><b>주민 만들기</b> — 대사 2줄 → 조건 없는 페이지 3장. 이제 조건 없는 대사는 <b>한 페이지의
+여러 줄로 합칩니다.</b></li>
+<li><b>하늘 계단 자동 이벤트</b> — «걸쇠» 페이지를 앞에, 무조건 실행 페이지를 뒤에 놓아서
+걸쇠가 안 걸렸습니다. 맵에 들어갈 때마다 같은 연출이 <b>계속 다시 실행</b>됐습니다.
+재미있는 건 같은 파일의 다른 함수엔 «순서를 뒤집으면 안 된다» 는 주석이 <b>이미 적혀 있었다</b>는
+점입니다. 200줄 아래에서 정반대로 돼 있었습니다. 순서를 바로잡았습니다.</li>
+</ul>
+
+
+<h2>7. 검증</h2>
+
+<ul>
+<li><b>테스트</b> — 관련 7개 파일 <b class="good">104건 단일 실행 통과</b>. 이 변경 전용 계약 테스트 31건 신규.</li>
+<li><b>타입 검사</b> — <code>tsc --noEmit</code> 클린(종료 코드 0).</li>
+<li><b>출하 콘텐츠 전수 감사</b> — 기본 제공 프로젝트 23종 전부 검사. 죽은 페이지
+<b class="good">0건</b>, 잠긴 페이지 <b class="good">0건</b>. (고치기 전엔 죽은 페이지 4건 +
+오탐 1건이 있었습니다.)</li>
+<li><b>브라우저 증거</b> — 실제 편집기에 AI 저작 결과를 띄워 스크린샷으로 남겼습니다(위 이미지).</li>
+</ul>
+<div class="card">
+<p><b>«회귀 없음» 을 어떻게 확인했나 (여기서 한 번 헛짚었습니다)</b></p>
+<p>게이트가 «새 실패 7건» 이라고 했습니다. 처음엔 기준 커밋을 잘못 골라 비교했고, 그래서 «내 탓 아님»
+판정이 근거가 약했습니다. 다시 <b>병합 대상인 <code>origin/main</code> 을 따로 체크아웃</b>해서
+같은 테스트를 돌렸더니 <b>실패 파일과 줄까지 완전히 동일</b>했습니다. 저장소 기준선 자체가 낡아서
+생긴 차이였고, 이 변경과 무관합니다.</p>
+</div>
+
+
+<h2>8. 리뷰 루프</h2>
+
+<div class="flow">
+<span class="step">구현</span><span class="arrow">→</span>
+<span class="step">적대적 리뷰 1차<br><b class="bad">변경 요구</b> (블로커 2)</span><span class="arrow">→</span>
+<span class="step">수정 에이전트<br>7건 반영</span><span class="arrow">→</span>
+<span class="step">적대적 리뷰 2차<br><b class="good">승인</b> (블로커 0)</span><span class="arrow">→</span>
+<span class="step">잔여 2건 추가 수정</span><span class="arrow">→</span>
+<span class="step"><b class="good">병합</b></span>
+</div>
+<p><b>1차 리뷰가 잡은 블로커 2건</b> — 둘 다 «멀쩡한 페이지를 죽었다고 잘못 말하는» 오탐이었습니다.</p>
+<ul>
+<li>«기억 켜기» 명령이 <b>선택지 갈래 안에</b> 숨어 있으면 못 찾았습니다. 실제 출하된 포켓몬 데모의
+교수 NPC 가 정확히 그 모양이었고, 멀쩡히 동작하는 이벤트를 «영원히 잠김» 이라고 신고했습니다.</li>
+<li>«기억» 은 이벤트 안에서만 쓴다고 가정했는데 <b>틀렸습니다.</b> 공용 이벤트를 불러서 켜면
+<b>부른 쪽의</b> 기억이 켜집니다. 이제 이런 «바깥으로 넘어가는» 명령이 있으면 판정을 아예
+포기합니다 — 잘못 말하는 것보다 침묵이 낫습니다.</li>
+</ul>
+<p><b>2차 리뷰는 승인</b>했고 7건 전부 해결 확인. 승인과 함께 남긴 비차단 지적 중, 제가 이 브랜치에서
+새로 만든 2건은 병합 전에 고쳤습니다 — 같은 결함이 <b>두 번 보고되던</b> 중복(하나가 둘로 보임),
+그리고 순환 참조 객체에서 <b>프로젝트 로드가 통째로 실패</b>할 수 있던 재귀 방어.</p>
+<p>의도적으로 안 고친 것도 있습니다. 판정을 더 엄격하게 좁히자는 지적은 <b>거절</b>했습니다 —
+좁히면 실제 «켜기» 를 놓쳐서 오탐이 생길 위험이 있고, 현재는 안전한 방향(놓치더라도 잘못 말하지
+않음)으로 기울어 있습니다.</p>
+
+
+<h2>9. 바뀐 파일</h2>
+<table><thead><tr><th>파일</th><th>무엇을</th></tr></thead>
+<tbody><tr><td><code>src/ai/eventPageSemantics.ts</code></td><td>AI 가 읽는 페이지 규칙 설명. 프롬프트가 잘려도 남는 자리에 고정</td></tr>
+<tr><td><code>src/ai/contextBuilder.ts</code></td><td>위 설명을 고정 자리에 끼우고, 페이지를 늘리라던 8번 수칙 수정</td></tr>
+<tr><td><code>src/editor/tools/schemaShapes.ts</code></td><td>«등장 조건» 명세가 명령 명세를 가리키던 것 교정 + 조건 목록을 원본에서 가져오게</td></tr>
+<tr><td><code>src/project/eventPageShadow.ts</code></td><td><b>신규</b> — 죽은 페이지·잠긴 페이지 판정(순수 함수)</td></tr>
+<tr><td><code>src/editor/tools/eventTools.ts</code></td><td>AI 가 만드는 즉시 경고 + 주민 만들기의 죽은 페이지 결함 수정</td></tr>
+<tr><td><code>src/project/lint/projectLint.ts</code></td><td>프로젝트 검사에 죽은 페이지·잠긴 페이지 항목 추가</td></tr>
+<tr><td><code>src/project/storyEventExplain.ts</code></td><td>«왜 안 나오나» 진단이 죽은/잠긴 페이지를 지목</td></tr>
+<tr><td><code>src/editor/content/skyStairMaps.ts</code></td><td>자동 이벤트 페이지 순서 교정(걸쇠가 안 걸리던 결함)</td></tr>
+<tr><td><code>src/editor/tools/eventCompile.ts</code></td><td>중복 경고 제거 — 판정을 한 곳으로 모음</td></tr>
+<tr><td><code>test/aiEventPageSemantics.test.ts</code></td><td><b>신규</b> 계약 테스트 31건</td></tr>
+<tr><td><code>test/e2e/_ai-event-page-evidence.spec.ts</code></td><td><b>신규</b> — 실제 편집기 스크린샷 증거 캡처</td></tr>
+<tr><td><code>scripts/ai-event-page-live-test.mts</code></td><td><b>신규</b> — 실제 프롬프트로 AI 를 돌려 결과를 채점하는 하네스</td></tr>
+<tr><td><code>openwiki/editor-event-authoring.md</code></td><td>위 내용 전부 기록(다음 사람이 같은 실수를 안 하도록)</td></tr></tbody></table>
+
+<h2>10. 남은 것 / 솔직한 한계</h2>
+
+<ul>
+<li><b>LLM 전송 경로는 대체품을 썼습니다.</b> 저장소에 들어 있던 OpenRouter 키가 만료(401)돼서,
+로컬에 OpenAI 호환 중계를 띄우고 제 세션 모델을 붙였습니다. <b>시스템 프롬프트·도구 명세·도구 실행은
+전부 진짜 코드 경로</b>이지만, 모델 자체는 실제 배포에서 쓰는 모델이 아닙니다. 실제 키로 한 번 더
+돌려보면 좋습니다.</li>
+<li><b>«밤에만» 시나리오는 실행마다 흔들립니다.</b> 어떤 실행에서는 이벤트를 안 만들기도 했습니다.
+모델의 비결정성이라 신뢰할 신호로 쓰지 않았습니다. 재현된 결정적 신호는 <b>죽은 페이지 2건 → 0건</b>
+쪽입니다.</li>
+<li><b>안 고치고 넘긴 것</b> — 다른 도구 7곳(<code>set_shop_stock</code> 등)이 아직 이 진단 결과를
+버립니다. 그 도구들의 결과 배관을 함께 바꿔야 해서 이번 범위에서 뺐습니다.</li>
+<li><b>PR 이 승인 전에 자동 병합됐습니다.</b> 저장소의 자동 통합 작업이 첫 PR(#365)의 앞 두 커밋을
+리뷰 승인 전에 main 으로 넣었습니다. 나머지 작업은 새 PR(#373)로 다시 올려 승인 후 병합했습니다.
+자동 통합이 리뷰 게이트를 앞지를 수 있다는 뜻이라, 그 자체가 살펴볼 만한 문제입니다.</li>
+</ul>
+
+
+</div></body></html>
