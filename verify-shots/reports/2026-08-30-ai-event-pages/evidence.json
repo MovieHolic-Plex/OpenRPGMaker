@@ -1,0 +1,193 @@
+{
+ "slug": "2026-08-30-ai-event-pages",
+ "title": "에디터 AI 가 이벤트 '페이지' 를 이해하지 못한 문제",
+ "prs": [
+  {
+   "number": 365,
+   "merged": true
+  },
+  {
+   "number": 373,
+   "merged": true,
+   "squash": "dd6f51ef"
+  }
+ ],
+ "rootCauses": [
+  "system prompt had no page semantics; rule 8 encouraged multiplying pages",
+  "SIMPLE_PAGE_SCHEMA.conditions.items pointed at COMMAND_SCHEMA; CONDITION_SCHEMA enum hand-copied and missing 'run'",
+  "no detection of shadowed (dead) pages",
+  "no detection of selfSwitch gates that nothing writes",
+  "make_villager itself emitted multiple unconditional pages"
+ ],
+ "runtimeRule": "io/pageResolution.resolveEventPage scans pages last->first and activates exactly one; last match wins (RM2K3)",
+ "pagePriorityDecision": "unchanged — last-match-wins is correct; flipping to page-1 priority would kill every progression page in existing projects",
+ "randomDialoguePrimitive": "m2Command commandId=m2-211-weighted-branch + fork(variable), all inside ONE page",
+ "newLintCodes": [
+  "event-page-shadowed",
+  "event-selfswitch-gate-unwritten"
+ ],
+ "liveTest": {
+  "harness": "scripts/ai-event-page-live-test.mts",
+  "transport": "local OpenAI-compatible shim backed by the session model (repo OPENROUTER_API_KEY returned 401); system prompt, tool schemas and tool execution are the real code paths",
+  "before": {
+   "random-dialogue-npc": {
+    "pageCounts": [],
+    "deadPages": 0,
+    "conditionKindsPerPage": [],
+    "usesWeightedBranch": false,
+    "usesSelfSwitchWrite": false,
+    "toolNames": []
+   },
+   "night-only-npc": {
+    "pageCounts": [],
+    "deadPages": 0,
+    "conditionKindsPerPage": [],
+    "usesWeightedBranch": false,
+    "usesSelfSwitchWrite": false,
+    "toolNames": []
+   },
+   "progress-npc": {
+    "pageCounts": [
+     3
+    ],
+    "deadPages": 2,
+    "conditionKindsPerPage": [
+     [
+      [],
+      [],
+      []
+     ]
+    ],
+    "usesWeightedBranch": false,
+    "usesSelfSwitchWrite": false,
+    "toolNames": [
+     "place_npc",
+     "set_build_spec",
+     "place_npc"
+    ]
+   }
+  },
+  "after": {
+   "random-dialogue-npc": {
+    "pageCounts": [
+     1
+    ],
+    "deadPages": 0,
+    "conditionKindsPerPage": [
+     [
+      []
+     ]
+    ],
+    "usesWeightedBranch": false,
+    "usesSelfSwitchWrite": false,
+    "toolNames": [
+     "find_tools",
+     "set_build_spec",
+     "declare_story_flag",
+     "place_npc",
+     "get_event",
+     "declare_story_flag"
+    ]
+   },
+   "night-only-npc": {
+    "pageCounts": [
+     2
+    ],
+    "deadPages": 0,
+    "conditionKindsPerPage": [
+     [
+      [],
+      [
+       "timePhase:night"
+      ]
+     ]
+    ],
+    "usesWeightedBranch": false,
+    "usesSelfSwitchWrite": false,
+    "toolNames": [
+     "configure_time_system",
+     "set_build_spec",
+     "place_npc",
+     "find_tools",
+     "explain_event"
+    ]
+   },
+   "progress-npc": {
+    "pageCounts": [
+     3
+    ],
+    "deadPages": 0,
+    "conditionKindsPerPage": [
+     [
+      [],
+      [
+       "selfSwitch:A"
+      ],
+      [
+       "selfSwitch:B"
+      ]
+     ]
+    ],
+    "usesWeightedBranch": false,
+    "usesSelfSwitchWrite": true,
+    "toolNames": [
+     "set_build_spec",
+     "place_npc",
+     "get_event",
+     "upsert_event",
+     "find_tools",
+     "explain_event"
+    ]
+   }
+  }
+ },
+ "shippedDefectsFoundByNewLint": [
+  {
+   "file": "src/editor/tools/eventTools.ts",
+   "what": "make_villager produced 3 unconditional pages from 2 dialogue lines; only the last ran"
+  },
+  {
+   "file": "src/editor/content/skyStairMaps.ts",
+   "what": "autoEvent ordered the selfSwitch latch page before the unconditional run page, so the latch never caught and auto events re-ran on every map entry"
+  }
+ ],
+ "bundledProjectAudit": {
+  "factories": 23,
+  "deadPages": 0,
+  "unwrittenGates": 0,
+  "beforeDeadPages": 4
+ },
+ "verification": {
+  "vitest": "7 files / 104 tests passing in one run",
+  "typecheck": "tsc --noEmit -p tsconfig.app.json clean (exit 0)",
+  "regressionBaseline": "gate-flagged suites produce byte-identical failures on a clean origin/main checkout; stored gates baseline (2026-08-19) is stale"
+ },
+ "reviewLoop": [
+  {
+   "round": 1,
+   "verdict": "REQUEST_CHANGES",
+   "blockers": 2,
+   "other": 5
+  },
+  {
+   "round": 2,
+   "verdict": "APPROVE",
+   "blockers": 0,
+   "nonBlockingLeft": 4,
+   "fixedBeforeMerge": [
+    "duplicate warnings",
+    "recursion depth guard"
+   ]
+  }
+ ],
+ "screenshots": [
+  "after-gated-01-editor-map.png",
+  "after-gated-02-event-pages.png",
+  "before-01-editor-map.png",
+  "before-02-event-pages.png",
+  "crop-after-commands.png",
+  "crop-after-tabs.png",
+  "crop-before-commands.png",
+  "crop-before-tabs.png"
+ ]
+}
