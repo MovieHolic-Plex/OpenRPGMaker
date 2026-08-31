@@ -14,6 +14,7 @@ import { naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE, rngForTool, see
 import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
 import { placementSoftPenalty } from "./placementScoring";
 import { resolvePlacementStructure, type StructureCellEdit } from "./placementStructure";
+import { mulberry32 } from "@/util/rng";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 type Area = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
@@ -36,6 +37,8 @@ type ScatterArgs = {
   readonly preferSoftRules: boolean;
   readonly applyStructure: boolean;
   readonly packing: ScatterPacking;
+  /** true 면 수관이 남의 밑동을 덮지 않는다 — 숲 합성 전용(일반 소품 밀집은 영향 없음). */
+  readonly trunkVisible: boolean;
 };
 type Footprint = { readonly w: number; readonly h: number; readonly lower: readonly number[]; readonly upper: readonly number[] };
 type ChooseInput = {
@@ -115,7 +118,8 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
         count: args.count,
         protectedCells,
         footprintAt: stepFootprintAt,
-        offsetSeed: seedForTool(rawArgs, legacySeed),
+        selectionSeed: seedForTool(rawArgs, legacySeed),
+        trunkVisible: args.trunkVisible,
       });
       placed.push(...dense.placed);
       footprints.push(...dense.footprints);
@@ -256,6 +260,7 @@ function parseArgs(args: Record<string, unknown>): ScatterArgs {
     avoidProtected: bool(args["avoidProtected"] ?? true, "avoidProtected"),
     preferSoftRules: bool(args["preferSoftRules"] ?? true, "preferSoftRules"),
     applyStructure: bool(args["applyStructure"] ?? true, "applyStructure"),
+    trunkVisible: args["trunkVisible"] === true,
   };
 }
 
@@ -487,7 +492,11 @@ function defaultGrassTile(tileset: TilesetDef): number {
 }
 
 /** 이벤트·transfer·시작칸만 — 지형 점유는 footprintFits 가 레이어별로 본다(숲 겹침용). */
-function protectedEventCells(project: Project, map: GameMap): Set<string> {
+/**
+ * 시작칸·이벤트칸·transfer 목적지 — 여기에 소품을 놓으면 무결성 게이트가 커밋 전체를 거부한다
+ * (실측 2026-08-30: 합성 숲 dense 가 시작칸을 덮어 `start-position` 오류로 통째로 반려됐다).
+ */
+export function protectedEventCells(project: Project, map: GameMap): Set<string> {
   const blocked = new Set<string>();
   const visit = (commands: readonly Command[]): void => {
     for (const command of commands) {
@@ -681,9 +690,15 @@ function planDensePlacements(input: {
   readonly count: number;
   readonly protectedCells: ReadonlySet<string>;
   readonly footprintAt: (step: number) => Footprint;
-  readonly offsetSeed: number;
+  readonly selectionSeed: number;
+  readonly trunkVisible: boolean;
 }): { readonly placed: readonly Rect[]; readonly footprints: readonly Footprint[] } {
   const { map, area, count, protectedCells, footprintAt } = input;
+  // 숲은 행 우선 전수로 놓으면 수관줄·밑동줄이 짝짝이 반복하는 줄무늬이 된다 — 섞은 순서로 간다.
+  if (input.trunkVisible) return planForestScatter(input);
+  const organicRows = planDenseOrganicRows(input);
+  if (organicRows) return organicRows;
+
   const usedUpper = new Set<number>();
   const usedLower = new Set<number>();
   const candidates: { readonly rect: Rect; readonly footprint: Footprint }[] = [];
@@ -707,21 +722,199 @@ function planDensePlacements(input: {
     };
   }
 
-  // 왜 앞 count개를 그대로 쓰지 않는가: 80% dense가 왼쪽 80% 벽 + 오른쪽 빈 띠가 되면
-  // 커버리지는 맞아도 숲으로 읽히지 않는다. 선형 전수 결과에서 등간격으로 골라 빈틈을 고르게 남긴다.
-  const offset = input.offsetSeed % candidates.length;
-  const selected: typeof candidates = [];
-  const chosen = new Set<number>();
-  for (let step = 0; step < count; step += 1) {
-    let index = (offset + Math.floor(((step + 0.5) * candidates.length) / count)) % candidates.length;
-    while (chosen.has(index)) index = (index + 1) % candidates.length;
-    chosen.add(index);
-    selected.push(candidates[index]!);
-  }
+  const selected = selectDenseBlueNoise(candidates, count, input.selectionSeed);
   return {
     placed: selected.map((candidate) => candidate.rect),
     footprints: selected.map((candidate) => candidate.footprint),
   };
+}
+
+/**
+ * 숲 전용 밀집 — 후보를 **시드로 섞은 순서**로 훑으며 놓는다.
+ *
+ * 왜 행 우선이 아닌가(실측): 밑동 가림 금지 + 행 우선 전수는 수관줄·밑동줄이 짝짝이 반복하는
+ * **수평 줄밌무니**를 만들어 다시 기계적으로 읽혔다(24×24 전면이 ^/T 교대 줄무늬이었다).
+ * 무작위 순서로 놓으면 나무가 서로 다른 y 오프셋에 서고 틈이 불야정하게 남아 덤불·하층식생이 들어갈
+ * 자리가 생긴다. 점유 격자를 그대로 쓰므로 여전히 O(면적)이고 개수는 count 에서 멈춘다.
+ */
+function planForestScatter(input: {
+  readonly map: GameMap;
+  readonly area: Area;
+  readonly count: number;
+  readonly protectedCells: ReadonlySet<string>;
+  readonly footprintAt: (step: number) => Footprint;
+  readonly selectionSeed: number;
+}): { readonly placed: readonly Rect[]; readonly footprints: readonly Footprint[] } {
+  const { map, area, count, protectedCells, footprintAt } = input;
+  const usedUpper = new Set<number>();
+  const usedLower = new Set<number>();
+  const origins: Point[] = [];
+  const maxX = area.x + area.w - 1;
+  const maxY = area.y + area.h - 1;
+  for (let y = area.y; y <= maxY; y += 1) {
+    for (let x = area.x; x <= maxX; x += 1) origins.push({ x, y });
+  }
+  const rng = mulberry32(input.selectionSeed);
+  for (let index = origins.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(rng() * (index + 1));
+    [origins[index], origins[swap]] = [origins[swap]!, origins[index]!];
+  }
+
+  const placed: Rect[] = [];
+  const footprints: Footprint[] = [];
+  for (const origin of origins) {
+    if (placed.length >= count) break;
+    const footprint = footprintAt(placed.length);
+    if (origin.x + footprint.w - 1 > maxX || origin.y + footprint.h - 1 > maxY) continue;
+    if (!footprintFits(map, footprint, origin, protectedCells)) continue;
+    if (!denseCellsFree(map, footprint, origin, usedUpper, usedLower)) continue;
+    if (!trunkStaysVisible(map, footprint, origin, usedUpper, usedLower)) continue;
+    occupyDenseCells(map, footprint, origin, usedUpper, usedLower);
+    placed.push(rectAt(origin, footprint));
+    footprints.push(footprint);
+  }
+  return { placed, footprints };
+}
+
+/**
+ * count 보다 후보가 많을 때 빠질 자리를 seeded hard-core 표본으로 고른다.
+ * 첫 패스는 인접한 빈칸을 금지해 청색잡음처럼 흩뜨리고, 고밀도라 그 수만으로 부족할 때만
+ * 무작위 순서의 나머지 후보를 보충한다. 셔플·근방 검사는 모두 O(후보)이고 개수는 정확하다.
+ */
+function planDenseOrganicRows(input: {
+  readonly map: GameMap;
+  readonly area: Area;
+  readonly count: number;
+  readonly protectedCells: ReadonlySet<string>;
+  readonly footprintAt: (step: number) => Footprint;
+  readonly selectionSeed: number;
+}): { readonly placed: readonly Rect[]; readonly footprints: readonly Footprint[] } | null {
+  const footprint = input.footprintAt(0);
+  if (footprint.w < 2 || !sameDenseFootprint(footprint, input.footprintAt(input.count - 1))) return null;
+  const rows = input.area.h - footprint.h + 1;
+  const capacity = Math.floor(input.area.w / footprint.w);
+  if (rows < 1 || capacity < 1 || input.count > rows * capacity) return null;
+
+  const rng = mulberry32((input.selectionSeed ^ 0x9e3779b9) >>> 0);
+  const quotas = new Array<number>(rows).fill(Math.floor(input.count / rows));
+  const order = Array.from({ length: rows }, (_, index) => index);
+  shuffleDenseIndices(order, rng);
+  for (let index = 0; index < input.count % rows; index += 1) quotas[order[index]!]! += 1;
+  // 같은 평균이라도 모든 행이 10그루면 수관이 수평선으로 이어진다. seed 기반 전송으로
+  // 7~12그루 행을 섞되 합계는 보존해 세로 리듬까지 깨뜨린다.
+  const floor = Math.max(1, Math.floor(input.count / rows) - 3);
+  for (let attempt = 0; attempt < rows * 4; attempt += 1) {
+    const donor = Math.floor(rng() * rows);
+    const receiver = Math.floor(rng() * rows);
+    if (donor === receiver || quotas[donor]! <= floor || quotas[receiver]! >= capacity) continue;
+    quotas[donor]! -= 1;
+    quotas[receiver]! += 1;
+  }
+
+  const placed: Rect[] = [];
+  const footprints: Footprint[] = [];
+  for (let row = 0; row < rows; row += 1) {
+    const quota = quotas[row]!;
+    const gaps = new Array<number>(quota + 1).fill(0);
+    const slack = input.area.w - quota * footprint.w;
+    // 남는 칸을 gap마다 한 칸씩 돌리지 않고 무작위 gap에 누적한다. 그래야 빈칸도 등간격
+    // 점선이 되지 않고 작은 공터와 좁은 틈이 함께 생긴다.
+    for (let cell = 0; cell < slack; cell += 1) gaps[Math.floor(rng() * gaps.length)]! += 1;
+    let x = input.area.x + gaps[0]!;
+    for (let index = 0; index < quota; index += 1) {
+      const origin = { x, y: input.area.y + row };
+      if (!footprintFits(input.map, footprint, origin, input.protectedCells)) return null;
+      placed.push(rectAt(origin, footprint));
+      footprints.push(footprint);
+      x += footprint.w + gaps[index + 1]!;
+    }
+  }
+  return { placed, footprints };
+}
+
+function sameDenseFootprint(a: Footprint, b: Footprint): boolean {
+  return a.w === b.w && a.h === b.h
+    && a.upper.length === b.upper.length && a.upper.every((tile, index) => tile === b.upper[index])
+    && a.lower.length === b.lower.length && a.lower.every((tile, index) => tile === b.lower[index]);
+}
+
+function shuffleDenseIndices(values: number[], rng: () => number): void {
+  for (let index = values.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(rng() * (index + 1));
+    [values[index], values[swap]] = [values[swap]!, values[index]!];
+  }
+}
+
+function selectDenseBlueNoise<T extends { readonly rect: Rect }>(
+  candidates: readonly T[],
+  count: number,
+  seed: number,
+): readonly T[] {
+  const omitCount = candidates.length - count;
+  const rng = mulberry32(seed);
+  const order = candidates.map((_, index) => index);
+  for (let index = order.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(rng() * (index + 1));
+    [order[index], order[swap]] = [order[swap]!, order[index]!];
+  }
+
+  const omitted = new Set<number>();
+  const blockedOrigins = new Set<string>();
+  for (const index of order) {
+    if (omitted.size >= omitCount) break;
+    const rect = candidates[index]!.rect;
+    if (blockedOrigins.has(key(rect.x, rect.y))) continue;
+    omitted.add(index);
+    blockNearbyOrigins(blockedOrigins, rect);
+  }
+  // 왜 보충 패스가 필요한가: 보호셀·큰 발자국이 후보 격자를 찢으면 인접 금지만으로 목표 빈칸 수를
+  // 못 채울 수 있다. 실측 개수 계약을 버리지 않고 seeded 무작위 후보로 정확히 맞춘다.
+  for (const index of order) {
+    if (omitted.size >= omitCount) break;
+    omitted.add(index);
+  }
+  return candidates.filter((_, index) => !omitted.has(index));
+}
+
+function blockNearbyOrigins(blocked: Set<string>, rect: Rect): void {
+  for (let y = rect.y - 1; y <= rect.y + rect.h; y += 1) {
+    for (let x = rect.x - 1; x <= rect.x + rect.w; x += 1) blocked.add(key(x, y));
+  }
+}
+
+/**
+ * 수괰이 다른 나무 수괰 밑에 바로 오면 거부한다 — 밑동이 가리지면 나무 한 그루가 안 보이고
+ * 수괰만 이어진 생울타리 기둥이 된다(실측: 1칸 침엽수 dense 렌더가 세로 수관 사슬로 읽혔다).
+ * 가로 밀집은 말리지 않는다 — 그것이 젬을 닿는 수단이다. 검사는 상수 칸만 봐서 선형 시간을 지탄다.
+ */
+function trunkStaysVisible(
+  map: GameMap,
+  footprint: Footprint,
+  origin: Point,
+  usedUpper: ReadonlySet<number>,
+  usedLower: ReadonlySet<number>,
+): boolean {
+  for (let y = 0; y < footprint.h; y += 1) {
+    for (let x = 0; x < footprint.w; x += 1) {
+      const source = y * footprint.w + x;
+      const cellX = origin.x + x;
+      const cellY = origin.y + y;
+      if (!inMapBounds(map, cellX, cellY)) continue;
+      const index = cellY * map.width + cellX;
+      // 수관만 보지 않는다 — 덤불도 밑동을 덮으므로 상위 타일 전심을 막는다.
+      if ((footprint.upper[source] ?? TILE.EMPTY) !== TILE.EMPTY) {
+        if (usedLower.has(index)) return false;
+        if (isTreeTrunkTileId(map.lowerTiles[index] ?? TILE.EMPTY)) return false;
+      }
+      // 반대 방향도 막는다: 새 밑동이 이미 서 있는 수관 아래로 기어가도 가려진다.
+      // 이 방향을 막지 않았을 때 24×24 에서 가린 밑동이 16칸 남았다(실측).
+      if (isTreeTrunkTileId(footprint.lower[source] ?? TILE.EMPTY)) {
+        if (usedUpper.has(index)) return false;
+        if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) return false;
+      }
+    }
+  }
+  return true;
 }
 
 function denseCellsFree(

@@ -23,7 +23,9 @@ type DensitySpec = {
 
 const SPECS: Readonly<Record<ForestDensity, DensitySpec>> = {
   sparse: { coverage: 0.15, minGap: 3, naturalness: 0.55, packDense: false },
-  normal: { coverage: 0.4, minGap: 2, naturalness: 0.6, packDense: false },
+  // 왜 normal 간격은 1인가: 24×24 양 수종 실측에서 간격 2는 선언 40%에 대해 18.1%/25.5%에
+  // 멈췄고, 간격 1은 자연 산포를 유지하면서 35.1%/43.9%를 냈다.
+  normal: { coverage: 0.4, minGap: 1, naturalness: 0.6, packDense: false },
   // 왜 dense도 선형 packer인가: 24×24 실측에서 자연 산포는 231그루 요청 중 79그루만 놓고
   // 44% 커버리지·72.6% 통행 가능에 멈췄으며, 96×96은 399초에도 끝나지 않았다.
   dense: { coverage: 0.8, minGap: 0, naturalness: 0.65, packDense: true },
@@ -80,8 +82,16 @@ export function forestPlacementPlan(input: {
   const cells = Math.max(0, Math.floor(input.area.w)) * Math.max(0, Math.floor(input.area.h));
   const footprint = Math.max(1, Math.floor(input.footprintCells));
   const share = input.share === undefined ? 1 : Math.min(1, Math.max(0, input.share));
-  const count = Math.max(1, Math.ceil((cells * spec.coverage * share) / footprint));
-  return { count, minGap: spec.minGap, naturalness: spec.naturalness, packing: spec.packDense ? "dense" : "natural" };
+  // sparse 침엽수는 수관·밑동 두 칸이 드러나므로 개수 산정에서만 2칸으로 보정한다.
+  const sparseConifer = input.density === "sparse" && footprint === 1;
+  const countFootprint = sparseConifer ? 2 : footprint;
+  const count = Math.max(1, Math.ceil((cells * spec.coverage * share) / countFootprint));
+  return {
+    count,
+    minGap: sparseConifer ? 1 : spec.minGap,
+    naturalness: spec.naturalness,
+    packing: spec.packDense ? "dense" : "natural",
+  };
 }
 
 /**

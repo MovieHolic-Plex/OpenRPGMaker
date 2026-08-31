@@ -20,7 +20,8 @@ import {
 } from "@/editor/tools/forestDensity";
 import { AUTHOR_VILLAGE_TOOL } from "@/editor/tools/authorVillageTool";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
-import { passableCellCount } from "@/editor/tools/mapHelpers";
+import { passableCellCount, reachableCellCount } from "@/editor/tools/mapHelpers";
+import { isPassable } from "@/project/collision";
 import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3";
 import { VILLAGE_SESSION_TOOLS } from "@/editor/tools/villageSession";
 import { runTool, runToolDefinition } from "@/editor/tools/toolRunner";
@@ -53,16 +54,53 @@ function treeCoverage(map: GameMap, area: Rect): number {
   return treed / (area.w * area.h);
 }
 
+/** 지나갈 수 있는 칸의 마스크 — 합성 숲에서 "빈틈"은 나무가 없는 칸이 아니라 걸을 수 있는 칸이다. */
+function walkableGaps(project: Project, map: GameMap, area: Rect): readonly (readonly number[])[] {
+  return Array.from({ length: area.h }, (_, row) => Array.from({ length: area.w }, (_, column) => (
+    isPassable(project, map, area.x + column, area.y + row) ? 1 : 0
+  )));
+}
+
+function spatialCorrelation(mask: readonly (readonly number[])[], dx: number, dy: number): number {
+  const pairs: Array<readonly [number, number]> = [];
+  for (let y = 0; y < mask.length - dy; y += 1) {
+    for (let x = 0; x < (mask[y]?.length ?? 0) - dx; x += 1) {
+      pairs.push([mask[y]![x]!, mask[y + dy]![x + dx]!]);
+    }
+  }
+  const meanA = pairs.reduce((sum, pair) => sum + pair[0], 0) / pairs.length;
+  const meanB = pairs.reduce((sum, pair) => sum + pair[1], 0) / pairs.length;
+  let covariance = 0;
+  let varianceA = 0;
+  let varianceB = 0;
+  for (const [a, b] of pairs) {
+    covariance += (a - meanA) * (b - meanB);
+    varianceA += (a - meanA) ** 2;
+    varianceB += (b - meanB) ** 2;
+  }
+  return covariance / Math.sqrt(varianceA * varianceB);
+}
+
 /** 사용자가 실제로 느끼는 값 — 그 영역에서 걸어 다닐 수 있는 칸의 비율. */
 function passableRatio(project: Project, map: GameMap, area: Rect): number {
   return passableCellCount(project, map, area) / (area.w * area.h);
 }
 
-function plant(project: Project, args: Record<string, unknown>, area: Rect = AREA): void {
+/**
+ * 밖에서 걸어 들어올 수 있는 칸의 비율. "지나갈 수 없다"는 통행 가능 칸 수가 아니라 **경로**의
+ * 문제다 — 수관 타일은 칩셋에서 4방향 통행 가능이라(주인공이 나무 뒤로 지나가는 관례) 수관이
+ * 남아 있는 칸은 통행 가능으로 세어지지만, 사방이 막혀 있으면 아무도 그 칸에 닿지 못한다.
+ */
+function reachableRatio(project: Project, map: GameMap, area: Rect): number {
+  return reachableCellCount(project, map, area) / (area.w * area.h);
+}
+
+function plant(project: Project, args: Record<string, unknown>, area: Rect = AREA) {
   const tool = VILLAGE_SESSION_TOOLS.find((entry) => entry.name === "plant_tree_clusters");
   if (!tool) throw new Error("plant_tree_clusters 툴이 없다");
   const result = tool.run(project, { mapId: "map_forest", area: { ...area }, seed: 1, ...args });
   expect(result.summary).toContain("나무 군락 시공");
+  return result;
 }
 
 describe("forestDensityFromText", () => {
@@ -142,6 +180,28 @@ describe("plant_tree_clusters", () => {
     expect(densePassable).toBeGreaterThan(0);
   });
 
+  it("기본(dense)의 빈틈은 등간격 격자가 아니라 seeded 청색잡음으로 흩어진다", () => {
+    const first = createProject();
+    const firstResult = plant(first.project, { seed: 1, style: "conifer" });
+    const repeated = createProject();
+    plant(repeated.project, { seed: 1, style: "conifer" });
+    const otherSeed = createProject();
+    plant(otherSeed.project, { seed: 2, style: "conifer" });
+    const mask = walkableGaps(first.project, first.map, AREA);
+
+    expect(walkableGaps(repeated.project, repeated.map, AREA)).toEqual(mask);
+    expect(walkableGaps(otherSeed.project, otherSeed.map, AREA)).not.toEqual(mask);
+    expect((firstResult.data as { placed?: number }).placed).toBe((firstResult.data as { requested?: number }).requested);
+    // 왜 나무 마스크가 아니라 통행 마스크인가: 수종·덤불 합성 뒤로 dense 는 수관이 영역을 거의
+    // 다 덮어(실측 99.5%) 나무 마스크에는 빈틈이 남지 않는다. 사용자가 "기계적인 구멍 열"로 읽는
+    // 것은 지나갈 수 있는 칸이므로 그 마스크의 주기성을 잡는다.
+    // 왜 이 세 shift인가: 등간격 row-major 구현을 같은 helper로 재실측하면 상관이 0.3~0.77로 솟았다.
+    for (const [dx, dy] of [[6, 4], [6, 5], [7, 4]] as const) {
+      const correlation = spatialCorrelation(mask, dx, dy);
+      expect(correlation, `shift ${dx},${dy} 상관 ${correlation.toFixed(3)}`).toBeLessThan(0.18);
+    }
+  });
+
   it("기본(dense)이 100×100 에서도 선형 시간에 끝난다", () => {
     const { project, map } = createProject(104);
     const area = { x: 2, y: 2, w: 100, h: 100 } as const;
@@ -157,18 +217,20 @@ describe("plant_tree_clusters", () => {
     expect(passableRatio(project, map, area)).toBeLessThan(0.3);
   });
 
-  it("impassable 은 영역을 거의 통행 불가로 만든다", () => {
+  it("impassable 은 영역을 실제로 지나갈 수 없게 만든다", () => {
     const { project, map } = createProject();
     plant(project, { density: "impassable" });
     expect(treeCoverage(map, AREA)).toBeGreaterThan(0.8);
-    expect(passableRatio(project, map, AREA)).toBeLessThan(0.25);
+    // 경계에서 걸어 들어올 수 있는 칸이 없어야 한다. 수관만 남은 안쪽 주머니는 통행 가능으로
+    // 세어지지만 밖에서 닿지 않는다 — 그래서 여기서 재는 것은 경로다.
+    expect(reachableRatio(project, map, AREA)).toBe(0);
   });
 
   it("커버리지 실측을 요약에 적어 사용자가 밀도를 확인할 수 있다", () => {
     const { project } = createProject();
     const tool = VILLAGE_SESSION_TOOLS.find((entry) => entry.name === "plant_tree_clusters")!;
     const result = tool.run(project, { mapId: "map_forest", area: { ...AREA }, density: "impassable" });
-    expect(result.summary).toMatch(/나무 덮은 비율 \d+%/);
+    expect(result.summary).toMatch(/숲 덮은 비율 \d+%/);
     expect((result.data as { density?: string }).density).toBe("impassable");
   });
 });
@@ -186,6 +248,30 @@ describe("place_props density — 모델이 실제로 닿는 라이브 툴", () 
     expect(treeCoverage(map, AREA)).toBeGreaterThanOrEqual(forestCoverageTarget("dense"));
     expect(passableRatio(project, map, AREA)).toBeLessThan(0.3);
     expect((result.data as { packing?: string }).packing).toBe("dense");
+  });
+
+  it.each([
+    ["침엽수", "sparse"], ["침엽수", "normal"], ["침엽수", "dense"], ["침엽수", "impassable"],
+    ["활엽수", "sparse"], ["활엽수", "normal"], ["활엽수", "dense"], ["활엽수", "impassable"],
+  ] as const)("%s density=%s 가 선언 커버리지와 실측 허용 오차 안에 든다", (material, density) => {
+    const { project, map } = createProject(28);
+    const result = props.run(project, { mapId: "map_forest", area: { ...AREA }, material, density, seed: 3 });
+    const achieved = treeCoverage(map, AREA);
+    const target = forestCoverageTarget(density);
+
+    // 왜 밀도별 구간인가: 원자 발자국·수관/밑동 겹침 때문에 정확한 셀 비율은 만들 수 없다.
+    // 24×24 실측은 sparse 15~17%, normal 35~44%, dense 96~97%, impassable 100%다.
+    const measuredBounds = {
+      sparse: [0.14, 0.2],
+      normal: [0.34, 0.46],
+      dense: [0.9, 1],
+      impassable: [0.99, 1],
+    } as const;
+    const [minimum, maximum] = measuredBounds[density];
+    expect(achieved, `${material}/${density}: ${(achieved * 100).toFixed(1)}% vs ${(target * 100).toFixed(0)}%`)
+      .toBeGreaterThanOrEqual(minimum);
+    expect(achieved).toBeLessThanOrEqual(maximum);
+    expect((result.data as { requested?: number }).requested).toBeGreaterThan(0);
   });
 
   it("density 는 나무 재료 전용이고 count 는 여전히 직접 줄 수 있다", () => {
@@ -224,7 +310,13 @@ describe("author_village — 모델이 실제로 지나는 마을 파사드", ()
     const coverage = treeCoverage(map, band);
     const passable = passableRatio(context.project, map, band);
 
+    const reachable = reachableRatio(context.project, map, band);
     expect(coverage, `숲 밴드가 ${Math.round(coverage * 100)}% 만 덮였다`).toBeGreaterThan(0.6);
-    expect(passable, `숲 밴드의 ${Math.round(passable * 100)}% 가 걸어서 통과된다`).toBeLessThan(0.3);
+    // 남는 13%는 마을 도로가 밴드를 지나는 회랑이다(실측: 닿는 칸의 lower 가 대부분 길 표면).
+    // 길·물은 숲 합성이 절대 덮지 않는다 — 지나갈 길을 남기는 것은 저작의 선택이어야 한다.
+    // before(같은 하네스): 통행 가능 79.5%.
+    expect(reachable, `숲 밴드의 ${Math.round(reachable * 100)}% 에 밖에서 걸어 들어올 수 있다`)
+      .toBeLessThan(0.2);
+    void passable;
   });
 });

@@ -9,6 +9,7 @@ import {
   treeFootprintCells,
   type ForestDensity,
 } from "./forestDensity";
+import { forestCompositionApplies, plantForestComposition } from "./forestComposition";
 import type { ToolDefinition } from "./types";
 import type { VillageRequirements } from "./villageRequirements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
@@ -137,6 +138,24 @@ export function applyTerrainPassFromMasks(
   }
 
   for (const rect of masks.forestRects) {
+    // 왜 합성 경로인가: 한 재료를 밀집하면 밑동 없는 수관 사슬과 맨 잔디 틈이 남아 숲으로 안 읽힌다.
+    // dense·impassable 은 수종·덤불·하층식생을 한 경로에서 조립하고, 낮은 밀도만 자연 산포로 남는다.
+    if (forestCompositionApplies(forestDensity)) {
+      const composed = plantForestComposition(draft, {
+        mapId: map.id,
+        area: rect,
+        density: forestDensity,
+        seed: 7700 + rect.x * 13 + rect.y * 7,
+      });
+      warnings.push(...composed.warnings);
+      forestOps += composed.placed;
+      notes.push(
+        `terrainPass forest 합성 ${composed.materials.join("·") || "none"} ~${composed.placed}`
+        + ` + 하층식생 ${composed.undergrowthCells}칸 density=${forestDensity}`,
+      );
+      continue;
+    }
+
     // 활엽수 군락을 먼저 소량 심고 침엽수 선형 packer로 목표 커버리지를 채운다. 반대 순서는
     // 2×2 원자가 들어갈 틈을 먼저 없애 author_village 품질 게이트가 흔들렸다.
     const broadleafPlan = forestPlacementPlan({

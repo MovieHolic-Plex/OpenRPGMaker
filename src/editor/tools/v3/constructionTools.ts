@@ -16,8 +16,9 @@ import {
   type VocabSoftConfirm,
 } from "@/project/tileVocabulary";
 import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
+import { forestCompositionApplies, measureForestArea, plantForestComposition } from "../forestComposition";
 import { forestPlacementPlan, type ForestDensity, treeFootprintCells } from "../forestDensity";
-import { inMapBounds, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
+import { inMapBounds, reachableCellCount, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
 import { wobblePath } from "../naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
 import { placePropsOnDraft } from "../placePropsDomain";
@@ -552,7 +553,7 @@ const placeProps: ToolDefinition = {
   name: "place_props",
   description:
     "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region. "
-    + "숲은 density:sparse|normal|dense|impassable 로 요청하면 count·packing을 면적에서 자동 계산한다(숲 기본 dense=80%, 울창/빽빽=impassable). "
+    + "숲은 density:sparse|normal|dense|impassable 로 요청하면 count·packing을 면적에서 자동 계산한다(sparse=15%, normal=40%, 숲 기본 dense=80%, impassable=100%). "
     + "일반 소품을 빽빽하게·통행 불가로 놓을 때는 packing:\"dense\" + count=area 면적(결과에 남은 통행 칸 수).",
   mode: "write",
   version: 3,
@@ -571,7 +572,7 @@ const placeProps: ToolDefinition = {
       density: {
         type: "string",
         enum: ["sparse", "normal", "dense", "impassable"],
-        description: "나무 전용 밀도. count·packing을 area 면적에서 계산하며 dense=80%, impassable=100%",
+        description: "나무 전용 밀도. count·packing을 area 면적에서 계산: sparse=15%, normal=40%, dense=80%, impassable=100%",
       },
       minGap: { type: "integer", description: "간격(기본 1; 마을 산포는 2+ 권장)" },
       naturalness: { type: "number", description: "0~1(기본 0.5). <0.3=한곳 뭉침(uniform), 0.3~0.7=poisson 산포, >0.7=cluster" },
@@ -596,6 +597,46 @@ const placeProps: ToolDefinition = {
         ? "활엽수" as const
         : undefined;
     if (density && !forestMaterial) failWithExample("density는 침엽수/활엽수 material에만 쓸 수 있습니다", PROPS_EXAMPLE);
+    // 왜 density=dense·impassable 이 다른 경로인가: 숲은 나무 한 재료를 밀집하는 것이 아니라
+    // 수종·덤불·하층식생이 섞인 지형이다(렌더 실측: 한 재료 dense 는 산울타리 밭으로 읽혔다).
+    if (density && forestMaterial && args.count === undefined && forestCompositionApplies(density)) {
+      const seed = args.seed === undefined ? 11 : coerceInt(args.seed, "seed", PROPS_EXAMPLE);
+      const composition = plantForestComposition(draft, {
+        mapId: map.id,
+        area,
+        density,
+        seed,
+        primary: forestMaterial,
+      });
+      // 보고는 심은 것을 이름대로 적는다 — 덤불을 나무로 세면 실적 부풀리기다.
+      const measured = measureForestArea(map, [area]);
+      // 경계에서 걸어 들어올 수 있는 칸 수를 함께 적는다 — 수관 타일은 통행 가능이라
+      // "나무 몇 칸"만으로는 지나갈 수 있는지 말할 수 없다(impassable 은 이 값이 0이어야 한다).
+      const reachable = reachableCellCount(draft, map, area);
+      return {
+        summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h} 숲 합성(density=${density})`
+          + ` — ${composition.materials.join("·") || "배치 없음"} ${composition.placed}그루,`
+          + ` 숲 덮은 비율 ${Math.round(measured.forestCoverage * 100)}%`
+          + ` (나무 ${measured.treeCells}칸 = ${Math.round(measured.treeCoverage * 100)}%,`
+          + ` 덤불 ${measured.bushCells}칸, 하층식생 ${measured.undergrowthCells}칸,`
+          + ` 밖에서 걸어 들어올 수 있는 칸 ${reachable}).`,
+        data: {
+          placed: composition.placed,
+          requested: composition.requested,
+          packing: "dense",
+          density,
+          materials: composition.materials,
+          forestCoverage: measured.forestCoverage,
+          treeCoverage: measured.treeCoverage,
+          treeCells: measured.treeCells,
+          bushCells: measured.bushCells,
+          undergrowthCells: measured.undergrowthCells,
+          closedGaps: composition.closedGaps,
+          reachableCells: reachable,
+        },
+        ...(composition.warnings.length > 0 ? { warnings: [...composition.warnings] } : {}),
+      };
+    }
     const plan = density && forestMaterial
       ? forestPlacementPlan({ area, footprintCells: treeFootprintCells(forestMaterial), density })
       : undefined;

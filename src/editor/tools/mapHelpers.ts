@@ -143,6 +143,56 @@ export function passableCellCount(
   return passable;
 }
 
+/**
+ * 영역 경계에서 **걸어 들어올 수 있는** 칸 수. passableCellCount 와 달리 경로를 본다 —
+ * 사방이 막혀 밖에서 닿지 않는 안쪽 주머니는 세지 않는다. "지나갈 수 없다"를 말할 때
+ * 필요한 수치다(수관 타일은 통행 가능이라 통행 가능 칸 수만으로는 판단할 수 없다).
+ */
+export function reachableCellCount(
+  project: Project,
+  map: GameMap,
+  area: { readonly x: number; readonly y: number; readonly w: number; readonly h: number },
+): number {
+  return reachableCells(project, map, area).length;
+}
+
+/** reachableCellCount 의 칸 목록판 — 그 칸들을 실제로 막으려면 좌표가 필요하다. */
+export function reachableCells(
+  project: Project,
+  map: GameMap,
+  area: { readonly x: number; readonly y: number; readonly w: number; readonly h: number },
+): Point[] {
+  const seen = new Set<string>();
+  const queue: Point[] = [];
+  const reached: Point[] = [];
+  const push = (x: number, y: number): void => {
+    if (x < area.x || y < area.y || x >= area.x + area.w || y >= area.y + area.h) return;
+    if (!inMapBounds(map, x, y)) return;
+    const key = `${x},${y}`;
+    if (seen.has(key)) return;
+    if (!isPassable(project, map, x, y)) return;
+    seen.add(key);
+    queue.push({ x, y });
+  };
+  for (let x = area.x; x < area.x + area.w; x += 1) {
+    push(x, area.y);
+    push(x, area.y + area.h - 1);
+  }
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    push(area.x, y);
+    push(area.x + area.w - 1, y);
+  }
+  while (queue.length > 0) {
+    const cell = queue.pop()!;
+    push(cell.x + 1, cell.y);
+    push(cell.x - 1, cell.y);
+    push(cell.x, cell.y + 1);
+    push(cell.x, cell.y - 1);
+    reached.push(cell);
+  }
+  return reached;
+}
+
 // 지정 칸들 중 통행 불가가 된 셀 수와 그 칸에 남은 이벤트를 경고한다(passability 변화 감지용).
 export function passabilityWarning(project: Project, map: GameMap, cells: readonly Point[]): string | null {
   const blockedCells = new Set<string>();

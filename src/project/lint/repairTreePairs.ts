@@ -3,7 +3,7 @@
 // 쓰기 툴/붓질 후 post-hook 에서 호출.
 
 import { TILE } from "@/project/defaults/constants";
-import { isTreeTrunkTileId } from "@/project/tilesetHarness";
+import { isTreeTrunkTileId, TREE_CANOPY_TILE_IDS } from "@/project/tilesetHarness";
 import type { GameMap, Project } from "@/project/types";
 
 /** 밑동 타일 → 바로 위 칸에 와야 할 수관(upper) 타일. */
@@ -64,7 +64,13 @@ export function repairTreePairsOnMap(map: GameMap): TreePairRepairResult {
       }
 
       const aboveIndex = (y - 1) * map.width + x;
-      if (map.upperTiles[aboveIndex] !== canopy) {
+      const aboveUpper = map.upperTiles[aboveIndex] ?? TILE.EMPTY;
+      // 위 칸에 이미 다른 저작 오버레이(덤불·소품)가 있으면 건드리지 않는다. 수관을 덮어쓰면
+      // impassable 숲이 다시 뚫린다 — 수관 타일은 4방향 통행 가능이라(주인공이 나무 뒤로 지나가는
+      // 관례) 그 칸을 막는 유일한 방법이 상위 레이어의 막는 칩이고, 상위는 칸당 하나뿐이다.
+      // 나무는 밑동만 보이고 머리에 덤불이 서 있는 모습이 되지만, 그게 저작 의도다.
+      if (aboveUpper !== TILE.EMPTY && aboveUpper !== canopy && !TREE_CANOPY_TILE_IDS.has(aboveUpper)) continue;
+      if (aboveUpper !== canopy) {
         map.upperTiles[aboveIndex] = canopy;
         // 수관 아래가 완전 비면 잔디 받침(투명 수관 검정 방지). 밑동이면 유지.
         const aboveLower = map.lowerTiles[aboveIndex];
