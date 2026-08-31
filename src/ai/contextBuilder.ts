@@ -12,7 +12,6 @@ import { villageAuthoringData } from "@/editor/tools/village/authoringData";
 import {
   structureKitGrowthAxes,
   structureKitLayerHome,
-  structureKitRepeatable,
 } from "@/editor/harnessSuggestion/structureKitModel";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
