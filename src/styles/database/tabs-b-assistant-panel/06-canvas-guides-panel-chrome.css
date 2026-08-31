@@ -218,12 +218,36 @@
   background: var(--accent);
   opacity: 1;
 }
+.ai-chat-resize-handle.is-log-top {
+  bottom: auto;
+  cursor: ns-resize;
+  height: 28px;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: auto;
+  z-index: 6;
+}
+.ai-chat-resize-handle.is-log-top::before {
+  background: transparent;
+  border: 0;
+  content: none;
+}
+.ai-chat-resize-handle.is-log-top:hover,
+.ai-chat-resize-handle.is-log-top:focus-visible {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
 .ai-chat-resize-handle:focus-visible {
   outline: var(--focus-ring);
 }
 .ai-chat-panel.is-studio > .ai-chat-resize-handle,
 .ai-chat-panel.is-docked > .ai-chat-resize-handle,
-.ai-chat-panel.is-collapsed > .ai-chat-resize-handle {
+.ai-chat-panel.is-collapsed > .ai-chat-resize-handle,
+.ai-chat-panel.is-studio .ai-chat-resize-handle.is-log-top,
+.ai-chat-panel.is-docked .ai-chat-resize-handle.is-log-top,
+.ai-chat-panel.is-collapsed .ai-chat-resize-handle.is-log-top,
+.ai-chat-panel.is-history-open .ai-chat-resize-handle.is-log-top,
+.ai-chat-panel:not(.is-assistant-log-open) .ai-chat-resize-handle.is-log-top {
   display: none;
 }
 

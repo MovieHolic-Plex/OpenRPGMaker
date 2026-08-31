@@ -99,6 +99,26 @@ describe("글자 크기 3단 (V3C ①)", () => {
     expect(target.dataset.aiFontSize).toBe("small");
     expect(target.style["--ai-font-scale"]).toBe("0.85");
   });
+
+  it("기록 카드의 − / 100% / + 가 글자 크기를 바꾸고 영속한다", () => {
+    const panel = renderPanel();
+    const zoomOut = findByTestId(panel, "ai-log-zoom-out") as unknown as FakeElement;
+    const zoomIn = findByTestId(panel, "ai-log-zoom-in") as unknown as FakeElement;
+    const label = findByTestId(panel, "ai-log-zoom-label") as unknown as FakeElement;
+    expect(zoomOut && zoomIn && label).toBeTruthy();
+    expect(label.textContent).toBe("100%");
+
+    zoomIn.click();
+    expect(storage.get(AI_FONT_SIZE_KEY)).toBe("large");
+    expect(panel.dataset.aiFontSize).toBe("large");
+    expect(panel.style["--ai-font-scale"]).toBe("1.2");
+    expect(label.textContent).toBe("120%");
+    expect((zoomIn as { disabled?: boolean }).disabled).toBe(true);
+
+    zoomOut.click();
+    expect(panel.dataset.aiFontSize).toBe("normal");
+    expect(label.textContent).toBe("100%");
+  });
 });
 
 describe("도구 호출 상세 아코디언 (V3C ③)", () => {

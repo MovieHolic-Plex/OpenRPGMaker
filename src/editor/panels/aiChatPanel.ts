@@ -110,11 +110,13 @@ import {
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import { createChatResizeChrome } from "./aiChatResizeChrome";
 import {
+  AI_FONT_SIZE_PERCENT,
   applyAiFontSize,
   loadAiFontSize,
   loadPanelCollapsed,
   saveAiFontSize,
   savePanelCollapsed,
+  stepAiFontSize,
   type AiFontSize,
 } from "./aiPanelLayout";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
@@ -145,21 +147,29 @@ import {
 // ── 테스트/외부 호환 re-export (기존 import 경로 유지) ──────────────
 export {
   AI_FONT_SIZE_KEY,
+  AI_FONT_SIZE_ORDER,
+  AI_FONT_SIZE_PERCENT,
   AI_FONT_SIZE_SCALE,
   AUTO_COLLAPSE_AFTER_AI_MS,
+  DEFAULT_LOG_HEIGHT,
+  LOG_HEIGHT_LIMITS,
   MAP_FIRST_MIGRATION_KEY,
   PANEL_SIZE_LIMITS,
   applyAiFontSize,
+  clampLogHeight,
   clampPanelSize,
   clampPanelSizeToViewport,
   loadAiFontSize,
+  loadLogHeight,
   loadPanelBarSize,
   loadPanelCollapsed,
   loadPanelSize,
   saveAiFontSize,
+  saveLogHeight,
   savePanelBarSize,
   savePanelCollapsed,
   savePanelSize,
+  stepAiFontSize,
   type AiFontSize,
   type PanelSize,
 } from "./aiPanelLayout";
@@ -422,6 +432,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let openComposerPopover: (kind: ComposerPopover | null) => void = () => {};
   let composerPopoverKind: () => ComposerPopover | null = () => null;
   let syncCommandBarClearance: () => void = () => {};
+  let refreshLogZoomChrome: () => void = () => {};
+  const applyPanelFontSize = (size: AiFontSize): void => {
+    applyAiFontSize(panel, size);
+    refreshLogZoomChrome();
+  };
 
   // 설정은 전용 모달로 연다(채팅 본문 인라인 폼 제거 — UX P0/P1).
   // 저장 시 진행 중 세션 config도 즉시 갱신한다.
@@ -432,7 +447,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       onSaved: (config) => {
         controller.session?.updateConfig(config);
       },
-      onFontSizeChange: (size) => applyAiFontSize(panel, size),
+      onFontSizeChange: (size) => applyPanelFontSize(size),
     });
   };
 
@@ -1998,9 +2013,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     on: {
       click: () => {
         const order: AiFontSize[] = ["small", "normal", "large"];
-        const next = order[(order.indexOf(loadAiFontSize()) + 1) % order.length];
+        const next = order[(order.indexOf(loadAiFontSize()) + 1) % order.length] ?? "normal";
         saveAiFontSize(next);
-        applyAiFontSize(panel, next);
+        applyPanelFontSize(next);
       },
     },
   });
@@ -2259,7 +2274,67 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-main",
     children: [glassLogMount, historyLogMount, chipsHost],
   });
-  const body = el("div", { class: "ai-chat-body", children: [mainColumn] });
+  const logZoomOut = el("button", {
+    class: "ai-log-zoom-btn",
+    text: "−",
+    attrs: { type: "button", title: "기록 축소", "aria-label": "기록 글자 축소" },
+    dataset: { testid: "ai-log-zoom-out" },
+  }) as HTMLButtonElement;
+  const logZoomLabel = el("span", {
+    class: "ai-log-zoom-label",
+    text: AI_FONT_SIZE_PERCENT.normal,
+    attrs: { "aria-live": "polite" },
+    dataset: { testid: "ai-log-zoom-label" },
+  });
+  const logZoomIn = el("button", {
+    class: "ai-log-zoom-btn",
+    text: "+",
+    attrs: { type: "button", title: "기록 확대", "aria-label": "기록 글자 확대" },
+    dataset: { testid: "ai-log-zoom-in" },
+  }) as HTMLButtonElement;
+  const logZoom = el("div", {
+    class: "ai-log-zoom",
+    attrs: { role: "group", "aria-label": "기록 글자 크기" },
+    dataset: { testid: "ai-log-zoom" },
+    children: [logZoomOut, logZoomLabel, logZoomIn],
+  });
+  const logChrome = el("div", {
+    class: "ai-log-chrome",
+    dataset: { testid: "ai-log-chrome" },
+    children: [
+      el("span", { class: "ai-log-grip", attrs: { "aria-hidden": "true" } }),
+      logZoom,
+    ],
+  });
+  const body = el("div", {
+    class: "ai-chat-body",
+    dataset: { testid: "ai-chat-body" },
+    children: [logChrome, mainColumn],
+  });
+  const setLogFontSize = (delta: number): void => {
+    const next = stepAiFontSize(loadAiFontSize(), delta);
+    saveAiFontSize(next);
+    applyPanelFontSize(next);
+  };
+  logZoomOut.addEventListener("click", (event) => {
+    event.preventDefault();
+    setLogFontSize(-1);
+  });
+  logZoomIn.addEventListener("click", (event) => {
+    event.preventDefault();
+    setLogFontSize(1);
+  });
+  body.addEventListener("wheel", (event: WheelEvent) => {
+    if (!event.ctrlKey && !event.metaKey) return;
+    event.preventDefault();
+    setLogFontSize(event.deltaY < 0 ? 1 : -1);
+  }, { passive: false });
+  refreshLogZoomChrome = (): void => {
+    const size = loadAiFontSize();
+    logZoomLabel.textContent = AI_FONT_SIZE_PERCENT[size];
+    logZoomOut.disabled = size === "small";
+    logZoomIn.disabled = size === "large";
+  };
 
   const panel = el("aside", {
     class: "ai-chat-panel",
@@ -2290,6 +2365,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   commandBarClearanceObserver?.observe(commandBar);
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
+  refreshLogZoomChrome();
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__oprnAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
   const harnessAccessor = () => controller.session?.getHarnessSnapshot() ?? null;
   if (typeof window !== "undefined") {
@@ -2308,7 +2384,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const resizeChrome = createChatResizeChrome({
     panel,
     commandBar,
+    logBody: body,
     resizable: resizableDock,
+    logResizable: () =>
+      resizableDock()
+      && panel.classList.contains("is-assistant-log-open")
+      && !panel.classList.contains("is-history-open"),
   });
   const applySize = resizeChrome.applySize;
   const mountResizeHandle = resizeChrome.mountHandle;
