@@ -69,12 +69,19 @@ export function resolveForestCanopyReplacementExemptTileIds(project: Project): R
  */
 const VISIBLE_TRUNK_CELLS = { "활엽수": 4, "침엽수": 2, "덤불": 1 } as const;
 
-// 지분 실측(24×24, 밑동 보이는 규칙): 덤불 0.46 = 커버리지 88% · 통행 가능 37.5% → dense 가
-// 아니라 산책로였다. 0.6 = 커버리지 99.5% · 통행 가능 26.2%, 0.7 이상은 자리가 차서 포화한다.
+// 지분 실측 이력과 2026-08-31 개정:
+// 이전 판은 덤불 0.60 이었다. 렌더로 보면 덤불이 250개 깔려 **같은 스프라이트 하나가 격자로
+// 반복되는 벽지**가 됐다(사용자 지적의 실체). 덤불 재료는 사실상 단일 칩(289)이다.
 //
-// impassable 이 dense 와 같은 배합인 이유: 덤불 지분을 더 올려 막으려 하면(0.7) 나무가 굶어
-// 나무 34% · 덤불 밭이 되고 렌더가 "덤불 격자"로 읽혔다. 두 등급의 차이는 **배합이 아니라
-// 남은 틈을 닫는지**다 — 같은 숲을 만들고 impassable 만 closeGapsWithBushes 로 통행을 끊는다.
+// 그럼 덤불을 줄이면 되느냐 — 안 된다. 실측(26×20): 나무 중심(0.55/0.30/0.12)은 보기는 좋지만
+// 통행 가능 49.8% · 커버리지 69% 로, dense 가 지키기로 한 계약(<30% 통행 · ≥90% 커버리지)을
+// 둘 다 깨다. 2×2 나무는 밑동 한 칸만 막고 수관은 통행 가능이라, 지면을 막는 것은 덤불뿐이다.
+//
+// 스프라이트 다샘화(놓인 덤불 일부를 통나무·그루터기·돌로 교체)도 실측으로 막혔다: 그 칩들은
+// 이 칩셋에서 **통행 가능 prop** 이고 treeCoverage 집계에도 안 들어간다 — 한 칸 바꿀 때마다
+// 커버리지가 1칸 줄고 그 칸이 다시 열린다(실측: 커버리지 99%→75%, 통행 26%→31%).
+// 즉 지면을 막으면서 커버리지로 세어지는 칩은 289 하나뿐이고, dense/impassable 의 수치 계약은
+// 그 한 칩을 거의 카펫처럼 깔도록 강제한다. 시각적 반복은 이 계약과 정면으로 충돌한다.
 const MIX: Readonly<Record<"dense" | "impassable", { broadleaf: number; conifer: number; bush: number }>> = {
   dense: { broadleaf: 0.3, conifer: 0.34, bush: 0.6 },
   impassable: { broadleaf: 0.3, conifer: 0.34, bush: 0.6 },
@@ -142,6 +149,10 @@ export function plantForestComposition(draft: Project, input: {
         packing: "dense",
         trunkVisible: true,
         seed: input.seed + index * 101,
+        // 2×2 활엽수만 원점을 직접 준다 — 큰 원자가 대각선으로 서야 숲의 결이 보인다.
+        ...(layer.material === "활엽수"
+          ? { origins: staggeredBroadleafOrigins(input.area, input.seed, count) }
+          : {}),
       });
       const layerPlaced = Number((result.data as { placed?: number } | undefined)?.placed ?? 0);
       if (layerPlaced > 0) materials.push(layer.material);
@@ -156,7 +167,7 @@ export function plantForestComposition(draft: Project, input: {
   const closedGaps = input.density === "impassable"
     ? closeGapsWithBushes(draft, map, input.area, input.seed)
     : 0;
-  const undergrowthCells = paintUndergrowth(draft, map, input.area, input.seed);
+  const undergrowthCells = paintForestFloor(draft, map, input.area, input.seed);
   return { placed, requested, materials, undergrowthCells, warnings, liftedTrunks: lifted, closedGaps };
 }
 
@@ -258,22 +269,99 @@ function shareWithPrimary(
  * 통행성은 건드리지 않는다 — `키큰 풀` 은 잔디와 같은 passable 이고, 밑동·길·물·상위 소품이
  * 있는 칸은 손대지 않는다. 그래서 밀도가 요구한 것보다 더 막히는 일이 없다.
  */
-function paintUndergrowth(draft: Project, map: GameMap, area: Rect, seed: number): number {
+/**
+ * 2×2 활엽수 원점 — **대각 엇갈림 격자**.
+ *
+ * 왜 격자를 직접 만드는가 (2026-08-31 사용자 지적): 배치기가 후보를 고르면(행 우선이든 시드
+ * 셔플이든) 2×2 원자가 가로로 줄을 맞추거나 뭉쳐서 "나무 몇 줄"로 읽혔다. 사용자가 원한 결은
+ * **2×2 나무가 대각선으로 서고 그 사이로 다른 것이 엮이는** 숲이다.
+ *
+ * 규칙: 가로 3칸(2 + 틈 1)·세로 3칸 간격의 격자에 행마다 x 를 1칸씩 누적 이동시킨다 —
+ * 누적이므로 원자들이 ↘ 방향 대각선을 이룬다(행마다 0,1,2,0,1,2… 로 감는다). 완전한 자를 대면
+ * 기계적이라 시드 지터를 ±1 준다. 지터는 격자 주기(3)보다 작아 대각선 결은 유지된다.
+ */
+function staggeredBroadleafOrigins(area: Rect, seed: number, limit: number): readonly { x: number; y: number }[] {
+  const STEP = 3;
+  const rng = mulberry32((seed ^ 0x2ac1) >>> 0);
+  const origins: { x: number; y: number }[] = [];
+  let row = 0;
+  for (let y = area.y; y < area.y + area.h - 1; y += STEP) {
+    const shift = row % STEP;
+    for (let x = area.x + shift; x < area.x + area.w - 1; x += STEP) {
+      const jitterX = rng() < 0.34 ? (rng() < 0.5 ? -1 : 1) : 0;
+      const jitterY = rng() < 0.22 ? (rng() < 0.5 ? -1 : 1) : 0;
+      origins.push({
+        x: Math.max(area.x, Math.min(area.x + area.w - 2, x + jitterX)),
+        y: Math.max(area.y, Math.min(area.y + area.h - 2, y + jitterY)),
+      });
+    }
+    row += 1;
+  }
+  // 격자 순서 그대로면 앞줄만 채우고 count 에서 끊긴다 — 셔플해 영역 전체에 골고루 남긴다.
+  for (let i = origins.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = origins[i]!;
+    origins[i] = origins[j]!;
+    origins[j] = tmp;
+  }
+  return origins.slice(0, Math.max(limit, Math.ceil(limit * 1.6)));
+}
+
+/**
+ * 숲 바닥에 엮는 재료 — 스와치 실측(2026-08-31)으로 고른 것만 쓴다.
+ *
+ * 왜 지면 타일이 아니라 **투명 스프라이트**인가: `groundDetail`(402 분홍 흙 · 432/433 회색 자갈)은
+ * 칸 전체를 채우는 하드 엣지 사각형이라 한 칸씩 흩으면 잔디 위에 **분홍·회색 네모**가 뜬다
+ * (렌더 실측: 글리치로 읽혔다). 통나무·그루터기·돌·들꽃은 투명 배경 스프라이트라 잔디에 얹혀도
+ * 경계가 안 보이고 숲 바닥의 잡동사니로 읽힌다.
+ *
+ * 제외한 것: `smallObjects` 의 349(문짝)·350(새집)·351(화분)·352(항아리)와 `upperObjects` 전부는
+ * 사람이 만든 물건이라 숲에 두면 마을처럼 보인다. `stakeObjects`(378·408·438)는 울타리 말뚝이다.
+ */
+const FLOOR_LITTER: readonly number[] = [
+  259, // 쓰러진 통나무·마른 가지
+  440, // 그루터기
+  319, // 작은 돌
+  348, // 들꽃
+];
+
+/** 바닥 톤을 바꾸는 짙은 풀 — 점무늬 변형은 넓게 깔면 벽지가 되므로 진한 단색 위주로 쓴다. */
+const FLOOR_DARK_GRASS: readonly number[] = [245, 275, 335];
+
+/**
+ * 숲 바닥 — 잔디 한 종류가 아니라 **여러 재료를 엮는다**.
+ *
+ * 왜 (2026-08-31 사용자 지적): 잔디만 깔린 숲은 나무를 아무리 심어도 평평하다.
+ * `skyStairMaps.ts` 가 이미 적어 둔 교훈이고, 밀도 작업이 그걸 놓쳤다.
+ *
+ * 두 층으로 엮는다:
+ * 1. **바닥 톤** — 짙은 풀을 저주파 얼룩으로 깔아 밝고 어두운 결을 만든다. 칸마다 독립 난수를
+ *    쓰면 소금후추처럼 지저분하고, 넓게 채우면 점무늬 벽지가 된다 — 얼룩 임계로 덩어리를 만든다.
+ * 2. **잡동사니** — 통나무·그루터기·돌·들꽃을 상위 레이어에 드물게 얹는다. 상위가 빈 칸에만
+ *    얹어 수관·덤불을 지우지 않고, 보호셀(시작칸·이벤트)은 반드시 건너뛴다 — 여기서 막는 칩을
+ *    올리면 시공 제안이 통째로 반려된다(단일 타일 경로에서 이미 겪은 결함이다).
+ */
+function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number): number {
   const tileset = draft.tilesets[map.tilesetId];
   if (!tileset) return 0;
   const access = resolveMaterialByLabel(tileset, UNDERGROWTH_LABEL, { preferGroup: true, preferRoles: ["terrain"] });
-  const variants = access.status === "missing"
+  const inChipset = (tile: number): boolean => TALL_GRASS_TILES.includes(tile);
+  const tall = access.status === "missing"
     ? []
     : access.kind === "group"
-      ? access.group.tileIds.filter((tile) => TALL_GRASS_TILES.includes(tile))
+      ? access.group.tileIds.filter(inChipset)
       : [access.tileId];
-  if (variants.length === 0) return 0;
+  // 짙은 단색 변형이 있으면 그것만, 없으면 조회된 것을 그대로 쓴다.
+  const tone = FLOOR_DARK_GRASS.filter((tile) => tall.includes(tile));
+  const toneTiles = tone.length > 0 ? tone : tall;
 
+  const protectedCells = protectedEventCells(draft, map);
   const rng = mulberry32((seed ^ 0x51f7) >>> 0);
-  // 값 노이즈 대신 셀별 결정적 해시 — 같은 seed·좌표면 같은 변형이 나오고 덩어리도 생긴다.
-  const noise = (x: number, y: number): number => {
-    const hash = Math.imul(x * 73856093 ^ y * 19349663 ^ seed, 0x27d4eb2d) >>> 0;
-    return (hash % 1024) / 1024;
+  /** 저주파 얼룩 — 주기가 다른 두 해시를 겹쳐 덩어리를 만든다. */
+  const blob = (x: number, y: number, salt: number): number => {
+    const a = Math.imul((Math.floor(x / 3) * 73856093) ^ (Math.floor(y / 3) * 19349663) ^ (seed + salt), 0x27d4eb2d) >>> 0;
+    const b = Math.imul((Math.floor(x / 7) * 83492791) ^ (Math.floor(y / 5) * 2971215073) ^ (seed + salt * 7), 0x165667b1) >>> 0;
+    return ((a % 1024) / 1024) * 0.6 + ((b % 1024) / 1024) * 0.4;
   };
   const grass = new Set<number>([TILE.GRASS, ...CHIPSET_TILE_GROUPS.grassGround, ...TALL_GRASS_TILES]);
   let painted = 0;
@@ -288,10 +376,16 @@ function paintUndergrowth(draft: Project, map: GameMap, area: Rect, seed: number
       if (isTreeTrunkTileId(lower) || isTreeTrunkTileId(upper)) continue;
       // 수관 아래도 칠한다 — 수관은 투명 칩이라 바닥이 그대로 비친다.
       if (upper !== TILE.EMPTY && !isTreeCanopyTileId(upper)) continue;
-      if (noise(x, y) < 0.18) continue;
-      const variant = variants[Math.floor(rng() * variants.length)] ?? variants[0]!;
-      // setLower 는 같은 칸 upper 를 비운다 — 수관을 지우면 안 되므로 하위만 직접 쓴다.
-      map.lowerTiles[index] = variant;
+
+      if (toneTiles.length > 0 && blob(x, y, 3) > 0.55) {
+        map.lowerTiles[index] = toneTiles[Math.floor(rng() * toneTiles.length)] ?? toneTiles[0]!;
+        painted += 1;
+      }
+      // 잡동사니는 빈 상위 칸에만, 보호셀은 건너뛴다.
+      if (upper !== TILE.EMPTY) continue;
+      if (protectedCells.has(`${x},${y}`)) continue;
+      if (rng() >= 0.11) continue;
+      map.upperTiles[index] = FLOOR_LITTER[Math.floor(rng() * FLOOR_LITTER.length)] ?? FLOOR_LITTER[0]!;
       painted += 1;
     }
   }
