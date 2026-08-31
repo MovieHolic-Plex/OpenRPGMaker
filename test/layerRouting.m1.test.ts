@@ -182,6 +182,33 @@ describe("eraseVisibleTile — 레이어별 지우개 범위", () => {
     expect(upperAt(after, 6, 11)).toBe(TILE.EMPTY);
   });
 
+  it("하위에 잘못 깔린 투명 소품을 지우면 구멍이 아니라 지면이 남는다", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = store.getCurrent().maps[mapId];
+    map.lowerTiles[8 * map.width + 2] = TILE.FLOWERS;
+    map.lowerTiles[8 * map.width + 3] = 378;
+
+    eraseVisibleTile(mapId, "lower", 2, 8);
+    eraseVisibleTile(mapId, "lower", 3, 8);
+
+    const after = currentMap();
+    expect(lowerAt(after, 2, 8)).toBe(TILE.GRASS);
+    expect(lowerAt(after, 3, 8)).toBe(TILE.GRASS);
+  });
+
+  it("덧그림 장식 아래 바닥이 비어 있으면 장식을 지운 뒤 지면을 메운다", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = store.getCurrent().maps[mapId];
+    map.lowerTiles[7 * map.width + 4] = TILE.EMPTY;
+    map.upperTiles[7 * map.width + 4] = TILE.FLOWERS;
+
+    eraseVisibleTile(mapId, "upper", 4, 7);
+
+    const after = currentMap();
+    expect(upperAt(after, 4, 7)).toBe(TILE.EMPTY);
+    expect(lowerAt(after, 4, 7)).toBe(TILE.GRASS);
+  });
+
   it("활엽수 2×2 수관 한쪽을 지우면 2×2 전체가 비워지고 밑동은 지면으로 돌아간다", () => {
     const mapId = store.getCurrent().startMapId;
     const map = store.getCurrent().maps[mapId];
