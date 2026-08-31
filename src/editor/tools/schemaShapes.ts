@@ -57,6 +57,11 @@ export const COMMAND_SCHEMA: JsonSchema = {
     switchId: { type: "string" },
     variableId: { type: "string" },
     label: { type: "string" },
+    key: { type: "string", description: "selfSwitch 키 A|B|C|D" },
+    delta: { type: "integer", description: "changeFriendship 변화량" },
+    speaker: { type: "string" },
+    body: { type: "string", description: "text 대사 본문" },
+    commandId: { type: "string", description: "m2Command id, 예: m2-211-weighted-branch" },
   },
   required: ["kind"],
   // variant 전용 필드는 커맨드 shape 검증기가 본다.
@@ -148,6 +153,8 @@ export const CONDITION_SCHEMA: JsonSchema = {
     season: { type: "string", enum: ["spring", "summer", "fall", "winter"] },
     activity: { type: "string" },
     result: { type: "string", enum: ["victory", "defeat", "escape"] },
+    key: { type: "string", enum: ["A", "B", "C", "D"], description: "selfSwitch 키" },
+    npcKey: { type: "string", description: "friendshipAtLeast 대상. 비우면 이 이벤트 characterId" },
   },
   required: ["kind"],
   additionalProperties: true,
@@ -161,6 +168,8 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
     showText: { type: "array", description: "lines 별칭", items: { type: "string" } },
     messages: { type: "array", description: "lines 별칭", items: { type: "string" } },
     text: { type: "string", description: "단일 대사" },
+    name: { type: "string", description: "페이지 표시 이름(예: '촌장 · 기본'). 생략 시 NPC 이름" },
+    graphic: GRAPHIC_SPEC_SCHEMA,
     face: FACE_SCHEMA,
     choices: {
       type: "array",
@@ -178,7 +187,8 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
       type: "array",
       description:
         "이 페이지가 활성화되는 '등장 조건'(EventPageCondition[]). 모든 조건이 참이어야 활성 후보가 된다. 빈 배열=무조건. "
-        + "런타임은 조건이 맞는 **마지막** 페이지 하나만 실행하므로, 조건 없는 페이지를 여러 장 만들면 마지막 1장만 나오고 앞 장은 죽는다.",
+        + "런타임은 조건이 맞는 **마지막** 페이지 하나만 실행하므로, 조건 없는 페이지를 여러 장 만들면 마지막 1장만 나오고 앞 장은 죽는다. "
+        + "상태별 NPC는 페이지마다 서로 다른 조건을 걸어라(기본=빈 배열, 그다음 selfSwitch/switch/timePhase/friendshipAtLeast 등).",
       items: CONDITION_SCHEMA,
     },
     commands: { type: "array", description: "Command[]", items: COMMAND_SCHEMA },

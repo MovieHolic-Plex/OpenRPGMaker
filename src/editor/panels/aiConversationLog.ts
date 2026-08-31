@@ -11,6 +11,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
 import { stripQuickReplyLine } from "@/ai/interviewPrompt";
+import { formatRunRecapPlayerLine, parseRunRecapPayload } from "@/ai/runRecap";
 import { renderAssistantAnswer } from "./aiAnswerLinkRender";
 import { el } from "@/util/dom";
 import {
@@ -332,6 +333,15 @@ export function createConversationLogHost(options: {
     if (entry.kind === "assistant" && entry.text.trim()) {
       closeToolActivity();
       appendBubble("assistant", stripQuickReplyLine(entry.text), entry.at);
+      return;
+    }
+    if (entry.kind === "status" && entry.text.startsWith("run-recap ")) {
+      const recap = parseRunRecapPayload(entry.text);
+      if (recap) {
+        const body = appendBubble("system", formatRunRecapPlayerLine(recap), entry.at);
+        body.classList.add("ai-run-recap");
+        body.dataset.testid = "ai-run-recap";
+      }
       return;
     }
     if (entry.kind === "tool") {

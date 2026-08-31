@@ -42,7 +42,7 @@ export interface AiConfig {
   // 실행 모델: 쓰기 툴 루프와 반복/배치 보조 호출. 저장값이 없으면 DEFAULT_LITE_MODEL을 쓴다.
   liteModel?: string;
   apiKey: string;
-  // 라운드 안전핀(사용자 노출 X). 사용자 제한은 maxTokens(출력 토큰 예산) 하나다.
+  // 라운드 안전핀. 기본은 후하게 잡고(2000), 설정 UI 에 노출하지 않는다. 사용자 제한은 maxTokens.
   maxToolCalls: number;
   maxTokens: number;
   reasoningEffort?: "off" | "low" | "medium" | "high";
@@ -76,7 +76,11 @@ export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
 // cpenrouter(cpenrouter.space) 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 먼저
 // 소비되고 content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion
 // 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.
-export const DEFAULT_MAX_TOKENS = 32768;
+export const DEFAULT_MAX_TOKENS = 200_000;
+export const DEFAULT_MAX_TOOL_CALLS = 2000;
+/** 저장 blob 에 남아 있으면 '옛 공장 기본'으로 보고 새 기본으로 승격한다. */
+const LEGACY_DEFAULT_MAX_TOKENS = new Set([2048, 10240, 32768]);
+const LEGACY_DEFAULT_MAX_TOOL_CALLS = new Set([200]);
 
 // envApiKey()/envBaseUrl() 은 제거했다. `VITE_LLM_API_URL` 이 에디터의 authMode·baseUrl 을 정하던
 // 통로였고, 그게 AI 를 반복적으로 죽인 원인이다(근거는 defaultAiConfig 주석). OAuth 는 클라이언트
@@ -108,7 +112,7 @@ export function defaultAiConfig(): AiConfig {
     // OAuth 는 클라이언트 키를 쓰지 않는다. 동반 서비스(pi-ai)가 자기 저장소의 자격 증명으로
     // 전송하므로 여기서 env 키를 실어 보내면 apiKey 경로가 되살아난다.
     apiKey: "",
-    maxToolCalls: 200,
+    maxToolCalls: DEFAULT_MAX_TOOL_CALLS,
     maxTokens: DEFAULT_MAX_TOKENS,
     // 감독 단계 기본 추론 강도. 벽시계·비용을 아끼려고 낮게 시작한다(실행 단계는 off).
     reasoningEffort: "low",
@@ -220,10 +224,12 @@ export function loadAiConfig(): AiConfig {
       // OAuth 는 클라이언트 키를 쓰지 않는다 — 저장된 키도, env 키도 싣지 않는다.
       apiKey: "",
       maxToolCalls: Number.isFinite(parsed.maxToolCalls) && Number(parsed.maxToolCalls) > 0
-        ? Math.floor(Number(parsed.maxToolCalls))
+        ? (LEGACY_DEFAULT_MAX_TOOL_CALLS.has(Math.floor(Number(parsed.maxToolCalls)))
+          ? base.maxToolCalls
+          : Math.floor(Number(parsed.maxToolCalls)))
         : base.maxToolCalls,
-      // 옛 기본값 2048/10240이 저장돼 있으면 미설정으로 간주하고 새 기본으로 승격.
-      maxTokens: Number.isFinite(parsed.maxTokens) && Number(parsed.maxTokens) !== 2048 && Number(parsed.maxTokens) !== 10240
+      // 옛 공장 기본(2048/10240/32768)이 저장돼 있으면 미설정으로 간주하고 새 기본으로 승격.
+      maxTokens: Number.isFinite(parsed.maxTokens) && !LEGACY_DEFAULT_MAX_TOKENS.has(Number(parsed.maxTokens))
         ? Number(parsed.maxTokens)
         : base.maxTokens,
       reasoningEffort:

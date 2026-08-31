@@ -207,7 +207,7 @@ export function buildTurnGuide(input: TurnGuideInput): string {
     "- 지면/수역/바닥 면: fill_region { material:\"물\" 또는 \"잔디\" } + 원형·둥근은 shape=circle(필수). 그룹 id 금지. rect만 쓰면 네모. 타원=ellipse",
     `- 길/도로: paint_road { mapId, style:"dirt"|"sand", points:[{x,y},...] } — 흙길 오토타일 성형. ${scope ? "영역 안 " : ""}동선·호수 둘레 산책로에 사용`,
     "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것. 마을 숲은 author_village({ forestDensity }) — 테마 문장만 넣고 density를 빼지 말 것",
-    "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지. 상점 NPC는 make_villager({shop}) 1회 또는 place_npc 1회(같은 역할 중복 금지)",
+    "- 주민/NPC: place_npc 또는 make_villager — 상태별 다중 페이지(조건이 달라야 산다). graphic 생략 시 villager 기본. 물 위 NPC 금지. 상점 NPC는 make_villager({shop}) 1회 또는 place_npc 1회(같은 역할 중복 금지). 한 줄 인사만 놓고 끝내지 말 것",
     ...(scope
       ? [`- tile_query ask:\"labels\" 는 mapId:\"${scope.mapId}\" 를 넣어 현재 맵 타일셋 라벨만 조회(기본값=야외 타일셋 — 실내 맵에서 가로 탁자 등 오조회 주의)`]
       : ["- tile_query ask:\"labels\" 는 mapId 를 넣어 대상 맵 타일셋 라벨만 조회(기본값=야외 타일셋 — 실내 맵에서 가로 탁자 등 오조회 주의)"]),

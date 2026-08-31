@@ -172,7 +172,18 @@ const getMapRegion: ToolDefinition = {
     }
     const events = map.events
       .filter((event) => event.x >= x0 && event.x < x1 && event.y >= y0 && event.y < y1)
-      .map((event) => ({ id: event.id, x: event.x, y: event.y, pages: (event.pages ?? []).length }));
+      .map((event) => {
+        const catalog = eventCatalogFields(event);
+        return {
+          id: event.id,
+          x: event.x,
+          y: event.y,
+          name: catalog.name,
+          pages: catalog.pageCount,
+          conditionKinds: catalog.conditionKinds,
+          ...(catalog.characterId ? { characterId: catalog.characterId } : {}),
+        };
+      });
     const water = waterBoundsInMap(map, x0, y0, x1, y1);
     const area = Math.max(1, (x1 - x0) * (y1 - y0));
     const large = area > 24 * 24;
@@ -206,7 +217,8 @@ const getMapRegion: ToolDefinition = {
 
 const findEvents: ToolDefinition = {
   name: "find_events",
-  description: "이벤트를 이름/커맨드 종류/스위치 참조로 검색한다.",
+  description:
+    "이벤트를 이름/id/대사/커맨드 종류/스위치 참조로 검색한다. 각 매치는 페이지 수·조건 kind·characterId 를 포함하므로, 새 NPC를 놓을 때 풍부한 예를 고른 뒤 get_event 로 템플릿을 읽어라.",
   mode: "read",
   parameters: {
     type: "object",
@@ -223,11 +235,20 @@ const findEvents: ToolDefinition = {
     const commandKind = args.commandKind as string | undefined;
     const referencesSwitch = args.referencesSwitch as string | undefined;
     const maps = mapId ? [requireMap(project, mapId)] : Object.values(project.maps);
-    const matches: Array<{ mapId: string; eventId: string; x: number; y: number }> = [];
+    const matches: Array<{
+      mapId: string;
+      eventId: string;
+      x: number;
+      y: number;
+      name: string;
+      pageCount: number;
+      conditionKinds: string[];
+      characterId?: string;
+    }> = [];
     for (const map of maps) {
       for (const event of map.events) {
         const pages = eventPages(event);
-        const nameHit = !nameContains || pages.some((page) => page.name.includes(nameContains));
+        const nameHit = !nameContains || eventSearchText(event).includes(nameContains);
         let commandHit = !commandKind;
         let switchHit = !referencesSwitch;
         for (const page of pages) {
@@ -240,18 +261,56 @@ const findEvents: ToolDefinition = {
           });
           if (referencesSwitch && page.conditions.some((c) => conditionReferencesSwitch(c, referencesSwitch))) switchHit = true;
         }
-        if (nameHit && commandHit && switchHit) matches.push({ mapId: map.id, eventId: event.id, x: event.x, y: event.y });
+        if (nameHit && commandHit && switchHit) {
+          matches.push({
+            mapId: map.id,
+            eventId: event.id,
+            x: event.x,
+            y: event.y,
+            ...eventCatalogFields(event),
+          });
+        }
       }
     }
     return { summary: `이벤트 ${matches.length}개 검색됨`, data: { matches } };
   },
 };
 
+function eventSearchText(event: GameEvent): string {
+  const parts = [event.id, event.characterId ?? ""];
+  for (const page of eventPages(event)) {
+    parts.push(page.name);
+    walkCommands(page.commands, (command) => {
+      if (command.kind === "text") {
+        if (command.body) parts.push(command.body);
+        if (command.speaker) parts.push(command.speaker);
+      }
+    });
+  }
+  return parts.join("\n");
+}
+
+function eventCatalogFields(event: GameEvent): {
+  name: string;
+  pageCount: number;
+  conditionKinds: string[];
+  characterId?: string;
+} {
+  const pages = eventPages(event);
+  const conditionKinds = [...new Set(pages.flatMap((page) => page.conditions.map((condition) => condition.kind)))];
+  return {
+    name: pages[0]?.name || event.id,
+    pageCount: pages.length,
+    conditionKinds,
+    ...(event.characterId ? { characterId: event.characterId } : {}),
+  };
+}
+
 // 이벤트 전체 내용 조회 — 수정(upsert_event) 전에 현재 페이지/커맨드를 읽는 용도.
 // find_events는 위치만 주므로, 내용을 모른 채 덮어써 대사가 사라지는 사고를 막는다.
 const getEvent: ToolDefinition = {
   name: "get_event",
-  description: "이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라.",
+  description: "이벤트의 전체 정의(위치/그래픽/페이지/커맨드)를 반환한다. upsert_event로 수정하기 전에 반드시 현재 내용을 이걸로 읽어라. 새 NPC를 놓을 때도 find_events 가 고른 풍부한 예를 템플릿으로 읽을 때 사용한다.",
   mode: "read",
   parameters: {
     type: "object",

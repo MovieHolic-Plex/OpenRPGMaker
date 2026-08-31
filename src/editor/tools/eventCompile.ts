@@ -397,7 +397,13 @@ export function compileSimplePages(
   options: EventCompileOptions = {}
 ): EventPage[] {
   const compiled = pages.map((page, index) =>
-    compileSimplePage(`${idPrefix}_p${index}`, name, page, graphic, { ...options, path: `pages[${index}]` })
+    compileSimplePage(
+      `${idPrefix}_p${index}`,
+      name,
+      page,
+      resolvePageGraphic(page, graphic),
+      { ...options, path: `pages[${index}]` },
+    )
   );
   // 죽은 페이지 판정은 여기서 하지 않는다. place_npc·make_villager 는 둘 다 뒤에서
   // assertEventShape(event, warnings) 로 끝나는데, 그쪽이 **나중에 덧붙는 페이지**
@@ -450,9 +456,10 @@ export function compileSimplePage(
   }
   commands.push(...normalizeCommands(page.commands, `${path}.commands`, options.warnings));
   const priority = options.priority ?? "same";
+  const pageName = typeof page.name === "string" && page.name.trim() ? page.name.trim() : name;
   return {
     id,
-    name,
+    name: pageName,
     conditions: normalizeConditions(page.conditions, `${path}.conditions`, options.warnings),
     graphic,
     trigger: { kind: "action" },
@@ -461,6 +468,25 @@ export function compileSimplePage(
     movement: options.movement ?? PASSIVE_MOVEMENT,
     commands,
   };
+}
+
+function resolvePageGraphic(page: SimplePage, fallback: EventPageGraphic): EventPageGraphic {
+  const spec = graphicSpecFromPage(page);
+  return spec ? resolveGraphic(spec) : fallback;
+}
+
+function graphicSpecFromPage(page: SimplePage): GraphicSpec | undefined {
+  const spec = page.graphic;
+  if (!spec || typeof spec !== "object") return undefined;
+  if (spec.transparent === true) return { transparent: true };
+  if (typeof spec.query === "string" && spec.query.trim()) return { query: spec.query.trim() };
+  if (typeof spec.textureKey === "string" && spec.textureKey.trim()) {
+    return {
+      textureKey: spec.textureKey.trim(),
+      ...(typeof spec.characterIndex === "number" ? { characterIndex: spec.characterIndex } : {}),
+    };
+  }
+  return undefined;
 }
 
 function faceFromSimplePage(page: SimplePage): FaceGraphic | null {

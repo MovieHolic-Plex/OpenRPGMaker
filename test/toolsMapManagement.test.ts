@@ -13,6 +13,41 @@ function ctxWithMap(width = 12, height = 12): { context: ToolContext; mapId: str
   return { context, mapId: "map_mgmt" };
 }
 
+describe("find_events catalog", () => {
+  it("페이지 수·조건·이름을 돌려 새 NPC의 템플릿을 고를 수 있다", () => {
+    const { context, mapId } = ctxWithMap();
+    expect(runTool(context, "place_npc", {
+      mapId,
+      x: 3,
+      y: 3,
+      name: "촌장",
+      id: "ev_mayor_catalog",
+      characterId: "mayor",
+      pages: [
+        { name: "촌장 · 기본", lines: ["밭은 잘 돌아가나?"] },
+        { name: "촌장 · 친밀", conditions: [{ kind: "friendshipAtLeast", value: 200 }], lines: ["멜론이 익으면 가져오게."] },
+      ],
+    }).ok).toBe(true);
+
+    const byName = runTool(context, "find_events", { mapId, nameContains: "촌장" });
+    expect(byName.ok, byName.summary).toBe(true);
+    const matches = (byName.data as { matches: Array<Record<string, unknown>> }).matches;
+    expect(matches).toHaveLength(1);
+    expect(matches[0]).toMatchObject({
+      eventId: "ev_mayor_catalog",
+      pageCount: 2,
+      characterId: "mayor",
+    });
+    expect(matches[0]?.conditionKinds).toEqual(expect.arrayContaining(["friendshipAtLeast"]));
+
+    const region = runTool(context, "get_map_region", { mapId, x: 0, y: 0, w: 8, h: 8 });
+    expect(region.ok, region.summary).toBe(true);
+    const events = (region.data as { events: Array<Record<string, unknown>> }).events;
+    const mayor = events.find((entry) => entry.id === "ev_mayor_catalog");
+    expect(mayor).toMatchObject({ name: "촌장 · 기본", pages: 2, characterId: "mayor" });
+  });
+});
+
 describe("get_event", () => {
   it("이벤트 전체 정의를 돌려주고, 없으면 보유 목록을 안내한다", () => {
     const { context, mapId } = ctxWithMap();

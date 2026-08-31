@@ -65,6 +65,11 @@
   font-size: 12px;
 }
 
+.ai-run-recap {
+  color: var(--text-3, var(--text-2));
+  font-size: 11px;
+}
+
 .ai-authoring-examples,
 .ai-composer-chips {
   display: flex;

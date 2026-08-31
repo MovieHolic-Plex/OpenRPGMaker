@@ -68,6 +68,7 @@ describe("aiConfig 저장/로드", () => {
     // OAuth 는 클라이언트 키를 쓰지 않는다 — env 키 폴백도 없앴다.
     expect(initial.apiKey).toBe("");
     expect(initial.maxTokens).toBe(DEFAULT_MAX_TOKENS); // 사용자 제한은 출력 토큰 예산 하나.
+    expect(initial.maxToolCalls).toBe(2000);
 
     // 병합 자체를 보는 테스트. 모델은 Codex 카탈로그 안의 값이어야 교정에 걸리지 않는다.
     saveAiConfig({ ...initial, maxTokens: 4000 });
@@ -79,6 +80,27 @@ describe("aiConfig 저장/로드", () => {
     // ID 라서, OAuth 경로에서 오류 없이 제공자 기본 모델로 강등됐다(감독이 고른 모델이 답하지 않음).
     expect(DEFAULT_MODEL).toBe("gemini-3.7-flash");
     expect(DEFAULT_LITE_MODEL).toBe("gemini-3.7-flash");
+  });
+
+  it("옛 공장 기본 토큰·툴콜은 새 기본으로 승격하고, 사용자가 고른 값은 존중한다", async () => {
+    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    const store = installLocalStorage();
+    const { loadAiConfig, AI_CONFIG_STORAGE_KEY, DEFAULT_MAX_TOKENS, DEFAULT_MAX_TOOL_CALLS } = await loadClient();
+
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "chatgpt", maxTokens: 32768, maxToolCalls: 200,
+    }));
+    const promoted = loadAiConfig();
+    expect(promoted.maxTokens).toBe(DEFAULT_MAX_TOKENS);
+    expect(promoted.maxToolCalls).toBe(DEFAULT_MAX_TOOL_CALLS);
+
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "chatgpt", maxTokens: 48000, maxToolCalls: 50,
+    }));
+    const kept = loadAiConfig();
+    expect(kept.maxTokens).toBe(48000);
+    expect(kept.maxToolCalls).toBe(50);
   });
 
   it("ChatGPT 모드에 저장된 비-gpt 모델은 로드 시점에 권장 기본으로 교정된다", async () => {

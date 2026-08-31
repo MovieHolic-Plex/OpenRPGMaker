@@ -73,8 +73,34 @@
 중복하지 않는다.
 린트 코드는 `event-selfswitch-gate-unwritten`, explain_event 는 `unwrittenSelfSwitchKeys`.
 
-계약 테스트: `test/aiEventPageSemantics.test.ts`(29건), 예산 고정은
+계약 테스트: `test/aiEventPageSemantics.test.ts`, 예산 고정은
 `test/aiToolCapabilityIndex.test.ts`.
+
+## 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
+
+2026-08-30 수정은 죽은 페이지(조건 없는 페이지 여러 장)를 막았지만, 8번 수칙이
+"한 페이지 안을 풍부하게"로만 기울어 **상태별 다중 페이지 NPC 자체를 모델이 피했다.**
+실제 증상: 한 줄 인사 NPC만 놓고 `find_events`/`get_event`/`get_story_state` 를 부르지 않음.
+
+고친 계약:
+
+1. `EVENT_PAGE_SEMANTICS_BLOCK` 에 「복잡한 NPC 저작(단편 금지)」 절. 쓰기 전
+   `find_events` → `get_event`(풍부한 예) → `get_story_state` → `get_database_records` →
+   `list_npc_graphics` → `place_npc`. 상태 패턴: 재방문 selfSwitch / 퀘스트 switch /
+   호감 `characterId`+`friendshipAtLeast` / 시간·계절. 한 만남 안의 분기는 여전히 그 페이지의
+   `choices`(페이지를 늘리지 않음).
+2. 작업 수칙 8은 두 층을 구분한다. 영역 가이드·`place_npc` description 도 같은 조회 순서를 말한다.
+3. `place_npc` 에 `characterId`, 페이지별 `name`/`graphic`. 호감 조건/커맨드만 있고
+   `characterId` 가 없으면 이름에서 할당한다.
+4. `make_villager` `dialogue.when` 이 switch/selfSwitch/variable/item/friendship 을 받고,
+   복잡한 분기는 `pages: SimplePage[]` 로 우회한다.
+5. `find_events` / `get_map_region` 이벤트가 이름·페이지 수·조건 kind·characterId 를 돌려
+   템플릿을 고른 뒤 `get_event` 로 읽을 수 있다.
+6. `find_events`/`get_event` 는 기존 event 핀. `explain_event`/`get_story_state`/`declare_story_flag` 는
+   프롬프트가 이름을 말해 능력 색인·find_tools 경로로 잡는다(핀을 늘리면 tile+event 복합 턴에서
+   실내 하네스 핀이 밀린다).
+
+죽은 페이지 금지(조건 없는 페이지 여러 장, selfSwitch 조건만 걸고 안 켜기)는 그대로다.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 

@@ -10,6 +10,7 @@ import {
 import {
   DEFAULT_BASE_URL,
   DEFAULT_LITE_MODEL,
+  DEFAULT_MAX_TOKENS,
   DEFAULT_MODEL,
   defaultAiConfig,
   loadAiConfig,
@@ -162,7 +163,7 @@ export function renderAiSettingsForm(options: {
     liteModel.refresh(authMode, next);
     persistAuthMode();
   });
-  const maxTokensDescription = "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 32768이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.";
+  const maxTokensDescription = `한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 ${DEFAULT_MAX_TOKENS}이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.`;
   const maxTokens = textField("최대 토큰", maxTokensDescription, String(config.maxTokens), "ai-config-maxtokens", "number");
   maxTokens.input.setAttribute("min", "256");
   maxTokens.input.setAttribute("max", "1000000");

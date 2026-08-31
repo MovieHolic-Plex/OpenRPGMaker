@@ -1266,7 +1266,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const activityLine = runningActivity
       ? narrateAiActivity({ toolName: runningActivity.toolName }).line
       : undefined;
-    // 분모는 세션의 실제 안전핀(config.maxToolCalls) — 하드코딩 30은 실한도(200)와 어긋나 "77/30" 같은 모순 표기를 냈다.
+    // 분모는 세션의 실제 안전핀(config.maxToolCalls) — 하드코딩 분모를 쓰지 마라(실한도와 어긋나 "77/30" 같은 모순 표기를 냈다).
     setStatus(formatAiRunningStatus(
       runningProgress.startedAt,
       now(),

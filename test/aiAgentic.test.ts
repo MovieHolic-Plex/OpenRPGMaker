@@ -1,5 +1,5 @@
 // 에이전틱 개선(2026-07-04) 회귀 테스트.
-// - 사용자 제한은 출력 토큰 예산 하나(기본 32768) — 예산 소진 시 token-budget으로 정지.
+// - 사용자 제한은 출력 토큰 예산 하나(기본 200000) — 예산 소진 시 token-budget으로 정지.
 // - SimplePage 별칭(showText/text/messages)이 대사로 컴파일된다(조용한 유실 방지).
 // - place_npc는 통행 불가/점유 좌표를 근처 통행 가능 칸으로 자동 조정한다.
 import { describe, expect, it } from "vitest";

@@ -70,10 +70,9 @@ export function resolveContextViewport(options: ContextOptions): MapViewportSnap
 // 12,000 을 유지하면 그 초과분을 밸런스 상수·리소스 조회·집 키트·클러스터 규칙 섹션을 통째로
 // 버려서 메꾼다 — 수정 축을 넣은 대가로 다른 지침이 조용히 사라지는 교환이라 예산을 올렸다.
 //
-// 13,200 → 20,000 (2026-08-30 모델 기준 재산정). 이 예산은 목표치가 아니라 **상한**이고 조립분은
-// 프로젝트가 가진 내용만큼만 자라다 포화한다(실측: 맵 5개 19,514자에서 멈춤 — 예산을 20,000 에서
-// 200,000 으로 올려도 한 글자도 늘지 않는다. 뷰포트를 100×100 으로 키워도 20,580 포화).
-// 그래서 20,000 은 "현실적인 프로젝트에서 드롭이 일어나지 않는 지점"이고, 그 위는 무의미하다.
+// 13,200 → 20,000 (2026-08-30) → 100,000 (2026-09-01). 중형 RPG 는 맵 목록·실내 문법·이벤트
+// 요약이 2만 자를 쉽게 넘긴다. 조립분은 가진 내용만큼만 자라므로 빈 프로젝트는 그대로 짧고,
+// 큰 프로젝트만 꼬리를 덜 자른다. tokenBudget 하한은 기준의 0.5× 이므로 축소 장치는 살아 있다.
 //
 // 창 비례로 잡지 않는 이유: gemini-3.7-flash 의 창은 1,048,576 토큰(pi-catalog
 // google-antigravity 항목)이라 20,000자 ≈ 5,000토큰은 창의 0.5% 다. 1%만 잡아도 40,000자인데
@@ -83,7 +82,7 @@ export function resolveContextViewport(options: ContextOptions): MapViewportSnap
 //
 // 섹션 드롭 기구는 그대로 남는다: 맵 목록은 맵당 약 130자로 선형 증가해 100맵에서 32,614자가
 // 되므로(dropOrder 밖의 summary 섹션) 큰 프로젝트에서는 여전히 꼬리 보호가 필요하다.
-export const DEFAULT_BUDGET_CHARS = 20000;
+export const DEFAULT_BUDGET_CHARS = 100_000;
 // 예산 초과 시 잘린 항목 수 노출에 사용.
 export interface ContextBudgetReport {
   readonly usedChars: number;
@@ -104,7 +103,7 @@ const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   // 고칠 것인가"를 말하지 않아, "이 침실 좀 고쳐줘"가 신규 시공 경로를 탔다.
   "**대상 선택(라우팅보다 먼저):** 신규 표지(새/새로/추가/create)가 없으면 기존 산출물이 대상이다. '이/여기/지금'은 아래 현재 맵 요약의 mapId다. 수정 요청에 새 맵을 만들지 말고, '새로 만들지 마'면 create_map/duplicate_map/방 세션 시작을 쓰지 않는다.",
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height,plannedMap}, countPolicy:\"exact\"). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **실내/방 맵 신규=start_interior_room_session 또는 run_interior_room_pipeline(반드시 새 mapId·이름). 기존 실내 맵 수정=그 mapId로 furnish_interior_space·fill_region·tile_erase·place_props(대상은 list_interior_room_sessions). 기존 맵 id로 세션 시작은 그 맵을 통째로 지우므로 map-exists로 거부된다. 실내 요청에는 author_house/author_village 금지**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(상태별 다중 페이지. 대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height,plannedMap}, countPolicy:\"exact\"). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **실내/방 맵 신규=start_interior_room_session 또는 run_interior_room_pipeline(반드시 새 mapId·이름). 기존 실내 맵 수정=그 mapId로 furnish_interior_space·fill_region·tile_erase·place_props(대상은 list_interior_room_sessions). 기존 맵 id로 세션 시작은 그 맵을 통째로 지우므로 map-exists로 거부된다. 실내 요청에는 author_house/author_village 금지**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
 ].join("\n");
 
@@ -127,7 +126,7 @@ const INTRO = [
   "6. 툴 호출을 아끼지 마세요. 조회·검증·재시도에 필요한 만큼 깊게 사용하세요(제한은 토큰 예산뿐).",
   "7. 여러 개를 요청받으면(예: NPC 3명, 집 2채) 전부 만들 때까지 멈추지 마세요. 일부만 하고 끝내는 것은 실패입니다.",
   "   사용자가 '진행/계속/진행해/진행하라고'라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요.",
-  "8. '깊은 대화'를 요청받으면 choices(선택지)와 분기 대사로 **한 페이지 안을** 풍부하게 구성하세요(페이지 수를 늘리는 것이 아니다 — 아래 페이지 의미론 참조). lines에 여러 줄을 담을 수 있습니다.",
+  "8. NPC 대화는 두 층이다. 한 만남 안의 분기는 한 페이지의 choices. 상태별 NPC(퀘스트·호감·시간·재방문)는 조건이 다른 페이지 여러 장 — 아래 페이지 의미론. 조건 없는 페이지를 여러 장 만들지 마라.",
   "9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요.",
   "10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.",
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",

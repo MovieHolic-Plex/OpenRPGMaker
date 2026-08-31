@@ -1055,7 +1055,7 @@ const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model",
 const AUTO_SINGLE_CONFIG = { ...CONFIG, agentMode: "auto" as const };
 const ORCH_CONFIG = { ...CONFIG, model: "supervisor-model", liteModel: "executor-model", maxToolCalls: 12, agentMode: "auto" as const };
 /** 짧은 한 줄은 plannerSkip 이 본문으로 직행하므로, 플래너 계약을 재는 테스트는 다단계 표지를 붙인다. */
-const ORCH_GOAL = "마을 시나리오를 단계로 진행해줘. ";
+const ORCH_GOAL = "이 작업을 단계로 진행해줘. ";
 // 플래너 라운드(오케스트레이션 게이트 통과 시 항상 선행)가 소비하는 1스텝 — direct 로 통과시킨다.
 const PLANNER_DIRECT = assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
 // 공급자 고유 센티넬(예전엔 특정 공급자의 raw 구분자를 함께 넣었다)은 뺐다 — 감지는 공급자를
@@ -1552,7 +1552,7 @@ describe("AssistantSession 툴콜 루프", () => {
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
 
-    const result = await session.sendUserMessage("마을을 꾸며줘", () => {});
+    const result = await session.sendUserMessage("던전 입구 타일만 칠해줘", () => {});
 
     expect(result.stoppedReason).toBe("final");
     expect(result.proposedCalls).toEqual([]);
@@ -1626,12 +1626,20 @@ describe("agentMode 오케스트레이션 게이트", () => {
     const chat = scriptedChat([
       assistantFinal('{"action":"direct","reason":"마을 시공"}'),
       assistantFinal("완료했습니다."),
+      assistantFinal("완료했습니다."),
+      assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat });
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...llm.defaultAiConfig(), maxToolCalls: 4 },
+      chat,
+    });
 
     await session.sendUserMessage("빈 프로젝트에 강이 있는 마을을 하나 만들고 집 8채를 지어줘", () => {});
 
     expect(plannerStarted(session.getAuditEntries())).toBe(true);
+    expect(
+      session.getAuditEntries().some((entry) => entry.kind === "status" && String(entry.text).startsWith("planner:direct-rejected")),
+    ).toBe(true);
   }, 30000);
 
   it("영역 작업 합성 문장은 agentMode auto여도 플래너를 건너뛴다", async () => {
@@ -1675,12 +1683,17 @@ describe("agentMode 오케스트레이션 게이트", () => {
     const chat = scriptedChat([
       assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}'),
       assistantFinal("완료했습니다."),
+      assistantFinal("완료했습니다."),
+      assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
 
     await session.sendUserMessage("빈 프로젝트에 강이 있는 마을을 하나 만들고 집 8채를 지어줘", () => {});
 
     expect(plannerStarted(session.getAuditEntries())).toBe(true);
+    expect(
+      session.getAuditEntries().some((entry) => entry.kind === "status" && String(entry.text).startsWith("planner:direct-rejected")),
+    ).toBe(true);
   }, 30000);
 
   it("노출 증명: 짧은 auto 턴은 계획 툴을 숨기고, chat+단일 모델도 숨긴다", async () => {

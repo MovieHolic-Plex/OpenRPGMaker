@@ -8,6 +8,7 @@
 
 import { isProtocolLocked } from "./intentClarify";
 import { stripContextFooter } from "./modifyIntent";
+import { requestNeedsVolumePlan } from "./volumeContract";
 
 export type PlannerSkipReason = "protocol-locked" | "question" | "selection" | "simple";
 
@@ -18,7 +19,7 @@ const QUESTION_RE =
   /[?？]|뭐야|무엇|어디|왜 |왜요|설명해|알려줘|알려 줘|보여줘|보여 줘|뭐가|몇 개|몇개|누구/u;
 
 const MULTI_STEP_RE =
-  /마을|도시|정착지|퀘스트|스토리|던전|캠페인|시나리오|엔딩|컷신|여러\s*맵|맵을\s*\d|세계\s*를|탐험|여관|대장간|시장|광장|author_village|build_village|먼저.{0,12}(?:그\s*다음|그리고)|단계로|레이어로/u;
+  /마을|도시|정착지|퀘스트|스토리|던전|캠페인|시나리오|엔딩|컷신|여러\s*맵|다른\s*맵|맵을\s*더|맵을\s*\d|세계\s*를|탐험|여관|대장간|시장|광장|author_village|build_village|먼저.{0,12}(?:그\s*다음|그리고)|단계로|레이어로/u;
 
 function looksLikeQuestion(text: string): boolean {
   const trimmed = text.trim();
@@ -41,7 +42,7 @@ export function plannerSkipReason(rawText: string): PlannerSkipReason | null {
   const text = stripContextFooter(rawText).trim();
   if (!text) return "simple";
   if (looksLikeQuestion(text)) return "question";
-  if (MULTI_STEP_RE.test(text)) return null;
+  if (MULTI_STEP_RE.test(text) || requestNeedsVolumePlan(text)) return null;
   if (text.length < PLANNER_SKIP_MAX_CHARS) return "simple";
   return null;
 }

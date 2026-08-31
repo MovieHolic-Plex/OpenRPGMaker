@@ -133,6 +133,14 @@ function summarize(record) {
     instruction: record.instruction ?? "",
     ...(record.result?.error ? { error: record.result.error } : {}),
     ...(record.result?.stoppedReason ? { stoppedReason: record.result.stoppedReason } : {}),
+    ...(record.result?.recap
+      ? {
+          elapsedMs: record.result.recap.elapsedMs,
+          promptTokens: record.result.recap.promptTokens,
+          completionTokens: record.result.recap.completionTokens,
+          llmCalls: record.result.recap.llmCalls,
+        }
+      : {}),
     toolCalls: (record.toolCalls ?? []).length,
     ...(failedTools.length > 0 ? { failedTools } : {}),
     diagnostics,

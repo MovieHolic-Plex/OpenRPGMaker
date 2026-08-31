@@ -9,7 +9,7 @@ import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
-import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
@@ -488,7 +488,11 @@ function findNearbySimilarNpc(
 
 const placeNpc: ToolDefinition = {
   name: "place_npc",
-  description: `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. pages는 SimplePage로 EventPage로 컴파일된다. **대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다.`,
+  description:
+    `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. 쓰기 전 find_events/get_event/get_story_state 로 기존 NPC·플래그를 읽고, 상태별 페이지(기본 + 조건이 다른 뒤 페이지)로 구성하라. `
+    + "한 줄 인사만 놓고 끝내지 마라. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. "
+    + "pages는 SimplePage로 EventPage로 컴파일된다. 페이지마다 name/graphic/conditions 를 줄 수 있다. 호감/선물은 characterId 를 명시. "
+    + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -500,8 +504,14 @@ const placeNpc: ToolDefinition = {
       graphic: GRAPHIC_SPEC_SCHEMA,
       face: FACE_SCHEMA,
       movement: { type: "string", enum: ["fixed", "random"] },
-      pages: { type: "array", description: "SimplePage[]", items: SIMPLE_PAGE_SCHEMA },
+      pages: {
+        type: "array",
+        description:
+          "상태별 SimplePage[]. 페이지 1=조건 없는 기본, 뒤 페이지는 서로 다른 conditions(switch/selfSwitch/timePhase/friendshipAtLeast 등). 조건 없는 페이지를 여러 장 만들지 마라.",
+        items: SIMPLE_PAGE_SCHEMA,
+      },
       id: { type: "string" },
+      characterId: { type: "string", description: "공유 호감/선물 키. 호감 페이지를 쓰면 필수. 생략 시 호감 조건/커맨드가 있으면 이름에서 할당" },
     },
     required: ["mapId", "x", "y", "name", "pages"],
   },
@@ -560,6 +570,16 @@ const placeNpc: ToolDefinition = {
     } else {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
+    const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
+      ? args.characterId.trim()
+      : undefined;
+    if (requestedCharacterId) {
+      event.characterId = allocateCharacterId(draft, requestedCharacterId, name, normalizationWarnings);
+    } else if (eventUsesFriendship(event)) {
+      event.characterId = event.characterId
+        ?? allocateCharacterId(draft, undefined, name, normalizationWarnings);
+      normalizationWarnings.push(`호감 페이지/커맨드 → characterId '${event.characterId}' 자동 할당`);
+    }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
     assertEventShape(event, normalizationWarnings);
     upsertEventIntoMap(map, event);
@@ -568,11 +588,13 @@ const placeNpc: ToolDefinition = {
       ...(adjusted ? [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${finalX}, ${finalY})`] : []),
       ...normalizationWarnings,
     ];
+    const pageCount = event.pages?.length ?? 0;
     const normalizationSummary = normalizationWarnings.length > 0 ? ` — SimplePage 정규화 경고 ${normalizationWarnings.length}건` : "";
     const reuseSummary = reused ? ` — 기존 NPC 병합 갱신` : "";
+    const pageSummary = ` — 페이지 ${pageCount}개`;
     return {
-      summary: `${map.name}에 NPC '${name}' 배치 (${finalX}, ${finalY})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}${reuseSummary}${normalizationSummary}`,
-      data: { eventId: id, x: finalX, y: finalY, adjusted, reused },
+      summary: `${map.name}에 NPC '${name}' 배치 (${finalX}, ${finalY})${pageSummary}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}${reuseSummary}${normalizationSummary}`,
+      data: { eventId: id, x: finalX, y: finalY, adjusted, reused, pageCount, characterId: event.characterId },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -632,7 +654,7 @@ const setNpcSchedule: ToolDefinition = {
 const makeVillager: ToolDefinition = {
   name: "make_villager",
   description:
-    "home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue를 함께 설정한다. 같은 맵에 동일 event id 또는 characterId가 이미 있으면 새 주민을 복제하지 않고 기존 위치·생략한 대사 페이지를 보존하며 갱신한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다.",
+    "home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue/pages를 함께 설정한다. 복잡한 상태별 페이지(선택지·selfSwitch·퀘스트 스위치)는 pages 를 쓰고, 간단한 조건 대사는 dialogue.when 을 쓴다. 같은 맵에 동일 event id 또는 characterId가 이미 있으면 새 주민을 복제하지 않고 기존 위치·생략한 대사 페이지를 보존하며 갱신한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -654,9 +676,15 @@ const makeVillager: ToolDefinition = {
           workHours: { type: "array", description: "[시작시각, 종료시각]", items: { type: "integer" } },
         },
       },
+      pages: {
+        type: "array",
+        description:
+          "상태별 SimplePage[]. 주면 dialogue 대신 이 페이지를 쓴다. 선택지·setSelfSwitch·상점 외 커맨드가 필요하면 이쪽.",
+        items: SIMPLE_PAGE_SCHEMA,
+      },
       dialogue: {
         type: "array",
-        description: "{when?,text}[] — when 조건에 맞는 대사 페이지",
+        description: "{when?,text}[] — when 조건에 맞는 대사 페이지. 복잡한 분기는 pages 를 써라.",
         items: {
           type: "object",
           properties: {
@@ -668,6 +696,15 @@ const makeVillager: ToolDefinition = {
                 activity: { type: "string" },
                 timePhase: { type: "string", enum: ["morning", "day", "evening", "night"] },
                 season: { type: "string", enum: ["spring", "summer", "fall", "winter"] },
+                switchId: { type: "string", description: "켜진 스위치(기본 value=true). switchValue 로 극성" },
+                switchValue: { type: "boolean" },
+                selfSwitch: { type: "string", enum: ["A", "B", "C", "D"] },
+                variableId: { type: "string" },
+                op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
+                value: { type: "integer", description: "variable 비교값" },
+                itemId: { type: "string" },
+                present: { type: "boolean" },
+                friendshipAtLeast: { type: "integer" },
               },
             },
           },
@@ -737,11 +774,21 @@ const makeVillager: ToolDefinition = {
     if (exactIdMatch) warnings.push(`동일 event id NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     else if (characterIdMatch) warnings.push(`동일 characterId NPC 재사용 → id:${id} (중복 이벤트 대신 갱신)`);
     else if (nearbyMatch) warnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
-    const pages = compileSimplePages(id, name, villagerPages(args.dialogue, schedule, warnings), graphic, {
-      movement: PASSIVE,
-      warnings,
-      face: resolvePlaceNpcFaceArg(args.face, graphic),
-    });
+    const authoredPages = Array.isArray(args.pages) ? args.pages as SimplePage[] : undefined;
+    if (authoredPages && args.dialogue !== undefined) {
+      warnings.push("pages 와 dialogue 가 함께 오면 pages 가 이기고 dialogue 는 무시됩니다.");
+    }
+    const pages = compileSimplePages(
+      id,
+      name,
+      authoredPages ?? villagerPages(args.dialogue, schedule, warnings),
+      graphic,
+      {
+        movement: PASSIVE,
+        warnings,
+        face: resolvePlaceNpcFaceArg(args.face, graphic),
+      },
+    );
     const giftPrefs = parseGiftPrefs(draft, args.giftPrefs, "giftPrefs");
     const giftResponses = parseGiftResponses(args.giftResponses, "giftResponses");
     const shopStock = parseOptionalShopStock(draft, (args.shop as Record<string, unknown> | undefined)?.stock, "shop.stock");
@@ -786,7 +833,7 @@ const makeVillager: ToolDefinition = {
     let event: GameEvent;
     if (reusedEvent) {
       event = structuredClone(reusedEvent);
-      const replacesDialoguePages = args.dialogue !== undefined || unlockAt !== undefined;
+      const replacesDialoguePages = args.dialogue !== undefined || authoredPages !== undefined || unlockAt !== undefined;
       if (replacesDialoguePages) {
         event.pages = pages;
       } else if (args.graphic !== undefined) {
@@ -818,6 +865,7 @@ const makeVillager: ToolDefinition = {
         ...(talkFriendship ? { talkFriendship } : {}),
       };
     }
+    ensureEventStoryFlags(draft, event, warnings);
     assertEventShape(event, warnings);
     upsertEventIntoMap(map, event);
     const finalX = reusedEvent?.x ?? home.x;
@@ -1325,9 +1373,64 @@ function dialogueConditionsFromWhen(raw: unknown, label: string, warnings: strin
   if (activity) conditions.push({ kind: "npcActivity", activity });
   if (record.timePhase !== undefined) conditions.push({ kind: "timePhase", phase: parseTimePhaseArg(record.timePhase, `${label}.timePhase`) });
   if (record.season !== undefined) conditions.push({ kind: "season", season: parseSeasonArg(record.season, `${label}.season`) });
+  const switchId = cleanOptionalString(record.switchId);
+  if (switchId) {
+    const value = record.switchValue === false || record.value === false ? false : true;
+    conditions.push({ kind: "switch", switchId, value });
+  }
+  const selfSwitchRaw = record.selfSwitch ?? record.selfSwitchKey;
+  if (selfSwitchRaw !== undefined) {
+    conditions.push({
+      kind: "selfSwitch",
+      key: parseSelfSwitchKey(selfSwitchRaw, `${label}.selfSwitch`),
+      value: record.value === false ? false : true,
+    });
+  }
+  const variableId = cleanOptionalString(record.variableId);
+  if (variableId) {
+    conditions.push({
+      kind: "variable",
+      variableId,
+      op: parseVariableOp(record.op, `${label}.op`),
+      value: numberArg(record.value, `${label}.value`),
+    });
+  }
+  const itemId = cleanOptionalString(record.itemId);
+  if (itemId) {
+    conditions.push({ kind: "item", itemId, present: record.present === false ? false : true });
+  }
+  if (record.friendshipAtLeast !== undefined) {
+    conditions.push({ kind: "friendshipAtLeast", value: numberArg(record.friendshipAtLeast, `${label}.friendshipAtLeast`) });
+  }
   if (record.hourRange !== undefined) warnings.push(`${label}.hourRange는 이벤트 페이지 조건으로 직접 표현되지 않아 무시됩니다.`);
   if (record.dayRange !== undefined) warnings.push(`${label}.dayRange는 이벤트 페이지 조건으로 직접 표현되지 않아 무시됩니다.`);
   return conditions;
+}
+
+const SELF_SWITCH_KEYS: readonly SelfSwitchKey[] = ["A", "B", "C", "D"];
+const VARIABLE_OPS = ["==", ">=", "<=", ">", "<", "!="] as const;
+
+function parseSelfSwitchKey(raw: unknown, label: string): SelfSwitchKey {
+  if (typeof raw === "string" && (SELF_SWITCH_KEYS as readonly string[]).includes(raw)) return raw as SelfSwitchKey;
+  throw new ToolError(`${label}은 A/B/C/D 중 하나여야 합니다.`, { code: "self-switch-key" });
+}
+
+function parseVariableOp(raw: unknown, label: string): (typeof VARIABLE_OPS)[number] {
+  if (typeof raw === "string" && (VARIABLE_OPS as readonly string[]).includes(raw)) {
+    return raw as (typeof VARIABLE_OPS)[number];
+  }
+  if (raw === undefined) return ">=";
+  throw new ToolError(`${label}은 ==/>=/<=/>/</!= 중 하나여야 합니다.`, { code: "variable-op" });
+}
+
+function numberArg(raw: unknown, label: string): number {
+  if (typeof raw === "number" && Number.isFinite(raw)) return Math.trunc(raw);
+  throw new ToolError(`${label} 숫자가 필요합니다.`, { code: "number-arg" });
+}
+
+function eventUsesFriendship(event: GameEvent): boolean {
+  const blob = JSON.stringify(event.pages ?? []);
+  return blob.includes("friendshipAtLeast") || blob.includes("changeFriendship") || blob.includes("getFriendship");
 }
 
 function activityLabels(schedule: readonly NpcScheduleEntry[]): string[] {
