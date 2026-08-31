@@ -4,6 +4,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 // Autotile groups: RM-style — painting a group body (e.g. dirt 421, dark wall 366)
 // always reshapes edges/corners. Manual autoConnectMode does not suppress that.
+import { resolveForestCanopyReplacementExemptTileIds } from "@/editor/tools/forestComposition";
 import { repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -139,7 +140,11 @@ export function paintTilesBulk(
         previousTile: lowerPrevious,
       });
     }
-    if (repairTrees) repairTreePairsOnMap(m);
+    if (repairTrees) {
+      repairTreePairsOnMap(m, {
+        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
+      });
+    }
   }, { cells: changedTileCellsForPlannedEdits(mapId, edits, shapeAutotile) });
 }
 
@@ -250,7 +255,9 @@ export function eraseTilesBulk(
       });
     }
     // 의도적으로 짝을 지운 뒤에는 수관을 다시 심지 않도록, 남은 고아 밑동만 정리
-    repairTreePairsOnMap(m);
+    repairTreePairsOnMap(m, {
+      canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
+    });
   }, {
     cells: unique.flatMap((s) => changedTileCellsForEdit(mapId, s.layer, [{ x: s.x, y: s.y }], shapeAutotile)),
   });
@@ -410,7 +417,9 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
     });
     // 하위 지형 채우기는 상위(수관 등)를 재작성하지 않는다.
     if (targetLayer === "upper" || !isLowerTerrainTile(tileset, newTile)) {
-      repairTreePairsOnMap(m);
+      repairTreePairsOnMap(m, {
+        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
+      });
     }
   }, {
     cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, shapeAutotile),

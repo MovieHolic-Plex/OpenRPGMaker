@@ -13,6 +13,14 @@ import {
   waterShapeFor,
   type ResolvedWorldGenRules,
 } from "@/project/worldGenRules";
+import { forestCompositionApplies, plantForestComposition } from "./forestComposition";
+import {
+  forestDensityFromText,
+  forestPackingFor,
+  forestPlacementPlan,
+  treeFootprintCells,
+  type ForestDensity,
+} from "./forestDensity";
 import type { ToolDefinition } from "./types";
 import type { VillageRequirements } from "./villageRequirements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
@@ -124,6 +132,7 @@ export function applyTerrainPassFromMasks(
   masks: TerrainConstraintMasks,
   warnings: string[],
   rules: ResolvedWorldGenRules = resolveWorldGenRules(draft.system.worldGen),
+  forestDensity?: ForestDensity,
 ): { readonly waterOps: number; readonly forestOps: number; readonly notes: string[] } {
   const fill = requireTool("fill_region");
   const props = requireTool("place_props");
@@ -144,45 +153,80 @@ export function applyTerrainPassFromMasks(
   }
 
   for (const rect of masks.forestRects) {
-    const areaTiles = rect.w * rect.h;
-    const count = coniferCountFor(areaTiles, forest);
-    const bigCount = broadleafCountFor(areaTiles, forest);
-    try {
-      const result = props.run(draft, {
+    // 왜 요청 밀도와 저작 규칙을 함께 받는가: 요청문은 이번 숲의 개수·패킹을 정하지만,
+    // 생성 규칙은 밴드 깊이와 수종별 간격·자연도의 정본이다. 요청이 없으면 저작 개수도 그대로 쓴다.
+    if (forestDensity && forestCompositionApplies(forestDensity)) {
+      const composed = plantForestComposition(draft, {
         mapId: map.id,
         area: rect,
-        material: "침엽수",
-        count,
-        minGap: forest.coniferGap,
-        naturalness: forest.coniferNaturalness,
+        density: forestDensity,
         seed: 7700 + rect.x * 13 + rect.y * 7,
       });
-      if (result.warnings) warnings.push(...result.warnings);
-      const placed = typeof (result.data as { placed?: number } | undefined)?.placed === "number"
-        ? (result.data as { placed: number }).placed
-        : count;
-      forestOps += placed;
-      notes.push(`terrainPass forest conifer ~${placed}`);
-    } catch (err) {
-      warnings.push(err instanceof Error ? err.message : String(err));
+      warnings.push(...composed.warnings);
+      forestOps += composed.placed;
+      notes.push(
+        `terrainPass forest 합성 ${composed.materials.join("·") || "none"} ~${composed.placed}`
+        + ` + 하층식생 ${composed.undergrowthCells}칸 density=${forestDensity}`,
+      );
+      continue;
     }
-    // 2×2 활엽수 대목 — multi-turn forest_big 레이어와 동일 품질 목표
+
+    const areaTiles = rect.w * rect.h;
+    const densityForPlan = forestDensity ?? "dense";
+    // 큰 2×2 원자를 먼저 보호한다. 침엽수를 먼저 패킹하면 활엽수 군락이 들어갈 문이 닫힌다.
+    const broadleafPlan = forestPlacementPlan({
+      area: rect,
+      footprintCells: treeFootprintCells("활엽수"),
+      density: densityForPlan,
+      share: 0.05,
+    });
+    const broadleafCount = forestDensity
+      ? Math.max(3, broadleafPlan.count)
+      : broadleafCountFor(areaTiles, forest);
     try {
       const big = props.run(draft, {
         mapId: map.id,
         area: rect,
         material: "활엽수",
-        count: bigCount,
+        count: broadleafCount,
         minGap: forest.broadleafGap,
         naturalness: forest.broadleafNaturalness,
+        packing: forestDensity ? forestPackingFor(forestDensity) : "natural",
         seed: 8800 + rect.x * 17 + rect.y * 11,
       });
       if (big.warnings) warnings.push(...big.warnings);
       const placedBig = typeof (big.data as { placed?: number } | undefined)?.placed === "number"
         ? (big.data as { placed: number }).placed
-        : bigCount;
+        : broadleafCount;
       forestOps += placedBig;
       notes.push(`terrainPass forest broadleaf-2x2 ~${placedBig}`);
+    } catch (err) {
+      warnings.push(err instanceof Error ? err.message : String(err));
+    }
+
+    const coniferPlan = forestPlacementPlan({
+      area: rect,
+      footprintCells: treeFootprintCells("침엽수"),
+      density: densityForPlan,
+    });
+    const coniferCount = forestDensity ? coniferPlan.count : coniferCountFor(areaTiles, forest);
+    try {
+      const result = props.run(draft, {
+        mapId: map.id,
+        area: rect,
+        material: "침엽수",
+        count: coniferCount,
+        minGap: forest.coniferGap,
+        naturalness: forest.coniferNaturalness,
+        packing: forestDensity ? forestPackingFor(forestDensity) : "natural",
+        seed: 7700 + rect.x * 13 + rect.y * 7,
+      });
+      if (result.warnings) warnings.push(...result.warnings);
+      const placed = typeof (result.data as { placed?: number } | undefined)?.placed === "number"
+        ? (result.data as { placed: number }).placed
+        : coniferCount;
+      forestOps += placed;
+      notes.push(`terrainPass forest conifer ~${placed}${forestDensity ? ` density=${forestDensity}` : " authored"}`);
     } catch (err) {
       warnings.push(err instanceof Error ? err.message : String(err));
     }
@@ -206,7 +250,8 @@ export function runTerrainConstraintPass(
   readonly notes: string[];
 } {
   const masks = buildTerrainConstraintMasks(map, requirements, area, rules);
-  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, rules);
+  const density = forestDensityFromText(requirements.query);
+  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, rules, density);
   return {
     masks,
     waterOps: applied.waterOps,

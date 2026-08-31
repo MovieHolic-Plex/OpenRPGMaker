@@ -36,9 +36,11 @@ import {
   DEFAULT_FOREST_DENSITY,
   FOREST_DENSITIES,
   forestDensityFromText,
+  forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
 } from "./forestDensity";
+import { forestCompositionApplies, measureForestArea, plantForestComposition } from "./forestComposition";
 
 const CONIFER_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 const BROADLEAF_2X2_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}broadleaf-tree-2x2`;
@@ -215,7 +217,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
     description:
       "숲 레이어 스킬: 지정 영역에 나무 군락을 심는다. " +
       "style=broadleaf-2x2(기본 권장 대목) | conifer | mixed. " +
-      "density=sparse|normal|dense|impassable(기본 dense). 숲·삼림=dense, 울창한·빽빽한·밀림·통행 불가=impassable. " +
+      "density=sparse|normal|dense|impassable(기본 dense; 순서대로 15%/40%/80%/100%). 숲·삼림=dense, 울창한·빽빽한·밀림·통행 불가=impassable. " +
       "count 를 비우면 밀도×영역 면적으로 그루 수를 산출한다 — 직접 준 작은 count 로는 숲이 되지 않는다. " +
       "카탈로그는 list_village_tree_assets. 강촌 숲은 conifer 후 broadleaf-2x2를 따로 호출.",
     mode: "write",
@@ -231,7 +233,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
         density: {
           type: "string",
           enum: [...FOREST_DENSITIES],
-          description: "밀도(기본 dense). impassable = 빈틈 없이 맞닿게 채워 그 지대를 통행 불가로 만든다",
+          description: "밀도: sparse=15%, normal=40%, dense=80%(기본), impassable=100%. impassable은 맞닿게 채워 통행을 막는다",
         },
         count: { type: "integer", description: "생략 권장 — density 와 영역 면적에서 자동 산출된다" },
         minGap: { type: "integer" },
@@ -811,25 +813,22 @@ function stepForestConifer(
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
-    // 요청문이 «울창한·빽빽한» 처럼 밀도를 말했으면 그 말이 이긴다(#350). 말이 없을 때만
-    // 프로젝트의 저작된 생성 규칙을 기본값으로 쓴다(#355). 저작 규칙의 기본값은 100타일당
-    // 10그루라 #350 의 촘촘함 36그루·통행불가 45그루보다 훨씬 드물다 — 순서가 뒤집히면
-    // «울창한 숲» 이 다시 잔디밭이 된다.
+    // 왜 두 출처를 합치는가: 요청문이 밀도를 말하면 그 요청이 개수·패킹을 이긴다. 아무 말이
+    // 없을 때는 DB 「세계 → 생성 규칙」의 저작 개수·간격·자연도를 그대로 쓴다.
     const shape = forestPlacementPlan({
       area,
       footprintCells: treeFootprintCells("침엽수"),
       density,
       share: CONIFER_COVERAGE_SHARE,
     });
-    const count = requestedDensity ? shape.count : coniferCountFor(area.w * area.h, rules.forest);
     placed += placeProps(draft, {
       mapId: map.id,
       area,
       material: "침엽수",
-      count,
-      minGap: requestedDensity ? shape.minGap : rules.forest.coniferGap,
-      naturalness: requestedDensity ? shape.naturalness : rules.forest.coniferNaturalness,
-      packing: shape.packing,
+      count: requestedDensity ? shape.count : coniferCountFor(area.w * area.h, rules.forest),
+      minGap: rules.forest.coniferGap,
+      naturalness: rules.forest.coniferNaturalness,
+      packing: requestedDensity ? forestPackingFor(density) : "natural",
       seed: session.seed + 7700 + i * 13,
     }, warnings);
   }
@@ -853,25 +852,21 @@ function stepForestBig(
   let placed = 0;
   for (let i = 0; i < areas.length; i += 1) {
     const area = areas[i]!;
-    // 요청문이 «울창한·빽빽한» 처럼 밀도를 말했으면 그 말이 이긴다(#350). 말이 없을 때만
-    // 프로젝트의 저작된 생성 규칙을 기본값으로 쓴다(#355). 저작 규칙의 기본값은 100타일당
-    // 10그루라 #350 의 촘촘함 36그루·통행불가 45그루보다 훨씬 드물다 — 순서가 뒤집히면
-    // «울창한 숲» 이 다시 잔디밭이 된다.
+    // 활엽수도 같은 우선순위다. 요청이 있으면 밀도 개수·패킹, 없으면 저작 기본값을 쓴다.
     const shape = forestPlacementPlan({
       area,
       footprintCells: treeFootprintCells("활엽수"),
       density,
       share: 1 - CONIFER_COVERAGE_SHARE,
     });
-    const count = requestedDensity ? shape.count : broadleafCountFor(area.w * area.h, rules.forest);
     placed += placeProps(draft, {
       mapId: map.id,
       area,
       material: "활엽수",
-      count,
-      minGap: requestedDensity ? shape.minGap : rules.forest.broadleafGap,
-      naturalness: requestedDensity ? shape.naturalness : rules.forest.broadleafNaturalness,
-      packing: shape.packing,
+      count: requestedDensity ? shape.count : broadleafCountFor(area.w * area.h, rules.forest),
+      minGap: rules.forest.broadleafGap,
+      naturalness: rules.forest.broadleafNaturalness,
+      packing: requestedDensity ? forestPackingFor(density) : "natural",
       seed: session.seed + 8800 + i * 17,
     }, warnings);
   }
@@ -974,7 +969,7 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
   const forest = worldGen.forest;
   const seed = typeof args.seed === "number" ? args.seed : 1;
   const density = coerceForestDensity(args.density);
-  // 인자로 온 density 가 우선이고(#350), 없으면 저작된 생성 규칙을 기본값으로 쓴다(#355).
+  // 직접 density를 준 호출은 그 요청이 개수·패킹을 이긴다. 생략한 호출은 저작 생성 규칙이 기본이다.
   const requestedDensityArg = args.density !== undefined;
   const warnings: string[] = [];
 
@@ -999,6 +994,62 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
         ? (["침엽수"] as const)
         : (["활엽수"] as const);
 
+  // 왜 dense·impassable 이 다른 경로인가: 숲은 한 수종을 밀집하는 것이 아니라 수종·덤불·
+  // 하층식생이 섞인 지형이다. 한 재료 dense 는 렌더에서 밑동 없는 세로 사슬로 읽혔다.
+  // 이 툴은 llmExposed:false 라 기본값도 dense 다 — 생성 규칙 기본값은 아래 자연 산포 경로가 쓴다.
+  if (forestCompositionApplies(density) && typeof args.count !== "number") {
+    let composed = 0;
+    let requestedCells = 0;
+    const usedMaterials = new Set<string>();
+    let undergrowth = 0;
+    let lifted = 0;
+    let closedGaps = 0;
+    for (let i = 0; i < areas.length; i += 1) {
+      const area = areas[i]!;
+      const result = plantForestComposition(draft, {
+        mapId,
+        area,
+        density,
+        seed: seed + i * 17,
+        ...(style === "conifer" ? { primary: "침엽수" as const } : {}),
+        ...(style === "broadleaf-2x2" ? { primary: "활엽수" as const } : {}),
+      });
+      composed += result.placed;
+      requestedCells += result.requested;
+      undergrowth += result.undergrowthCells;
+      lifted += result.liftedTrunks;
+      closedGaps += result.closedGaps;
+      for (const material of result.materials) usedMaterials.add(material);
+      warnings.push(...result.warnings);
+    }
+    const clustersComposed = countBroadleaf2x2(map);
+    const measured = measureForestArea(map, areas);
+    return {
+      summary: `나무 군락 시공: style=${style}, density=${density}, placed≈${composed}/${requestedCells},`
+        + ` 2×2군락=${clustersComposed}, 숲 덮은 비율 ${Math.round(measured.forestCoverage * 100)}%`
+        + ` (나무 ${measured.treeCells}칸 = ${Math.round(measured.treeCoverage * 100)}%,`
+        + ` 덤불 ${measured.bushCells}칸, 하층식생 ${measured.undergrowthCells}칸)`,
+      data: {
+        mapId,
+        style,
+        density,
+        placed: composed,
+        requested: requestedCells,
+        forestCoverage: measured.forestCoverage,
+        treeCoverage: measured.treeCoverage,
+        treeCells: measured.treeCells,
+        bushCells: measured.bushCells,
+        tree2x2Clusters: clustersComposed,
+        materials: [...usedMaterials],
+        undergrowthCells: measured.undergrowthCells,
+        undergrowthPainted: undergrowth,
+        liftedTrunks: lifted,
+        closedGaps,
+      },
+      warnings: warnings.length > 0 ? warnings : undefined,
+    };
+  }
+
   let placed = 0;
   let requested = 0;
   for (let g = 0; g < materials.length; g += 1) {
@@ -1012,19 +1063,16 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
         share: 1 / materials.length,
       });
       const isBig = material === "활엽수";
-      const defaultCount = requestedDensityArg
-        ? shape.count
-        : isBig
-          ? broadleafCountFor(area.w * area.h, forest)
-          : coniferCountFor(area.w * area.h, forest);
       const count = typeof args.count === "number"
         ? Math.max(1, Math.floor(args.count / materials.length / areas.length))
-        : defaultCount;
+        : requestedDensityArg
+          ? shape.count
+          : isBig
+            ? broadleafCountFor(area.w * area.h, forest)
+            : coniferCountFor(area.w * area.h, forest);
       const minGap = typeof args.minGap === "number"
         ? Math.max(0, args.minGap)
-        : requestedDensityArg
-          ? shape.minGap
-          : isBig ? forest.broadleafGap : forest.coniferGap;
+        : isBig ? forest.broadleafGap : forest.coniferGap;
       requested += count;
       placed += placeProps(draft, {
         mapId,
@@ -1032,26 +1080,29 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
         material,
         count,
         minGap,
-        naturalness: requestedDensityArg
-          ? shape.naturalness
-          : isBig ? forest.broadleafNaturalness : forest.coniferNaturalness,
-        packing: shape.packing,
+        naturalness: isBig ? forest.broadleafNaturalness : forest.coniferNaturalness,
+        packing: requestedDensityArg ? forestPackingFor(density) : "natural",
         seed: seed + g * 100 + i * 17,
       }, warnings);
     }
   }
 
   const clusters = countBroadleaf2x2(map);
-  const coverage = forestCoverageRatio(map, areas);
+  const measured = measureForestArea(map, areas);
   return {
-    summary: `나무 군락 시공: style=${style}, density=${density}, placed≈${placed}/${requested}, 2×2군락=${clusters}, 나무 덮은 비율 ${Math.round(coverage * 100)}%`,
+    summary: `나무 군락 시공: style=${style}, density=${density}, placed≈${placed}/${requested}, 2×2군락=${clusters},`
+      + ` 숲 덮은 비율 ${Math.round(measured.forestCoverage * 100)}%`
+      + ` (나무 ${measured.treeCells}칸 = ${Math.round(measured.treeCoverage * 100)}%, 덤불 ${measured.bushCells}칸)`,
     data: {
       mapId,
       style,
       density,
       placed,
       requested,
-      treeCoverage: coverage,
+      forestCoverage: measured.forestCoverage,
+      treeCoverage: measured.treeCoverage,
+      treeCells: measured.treeCells,
+      bushCells: measured.bushCells,
       tree2x2Clusters: clusters,
       materials: [...materials],
     },
@@ -1285,41 +1336,13 @@ function edgeBands(map: GameMap): { x: number; y: number; w: number; h: number }
   ];
 }
 
-const TREE_UPPER_TILES = new Set([260, 261, 262, 263, 289]);
-const TREE_LOWER_TILES = new Set([290, 291, 292, 293]);
+const TREE_CANOPY_TILES = new Set([260, 261, 262, 263]);
+const TREE_TRUNK_TILES = new Set([290, 291, 292, 293]);
 
-function isTreeCell(map: GameMap, x: number, y: number): boolean {
-  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
-  const i = y * map.width + x;
-  const u = map.upperTiles[i] ?? 0;
-  const l = map.lowerTiles[i] ?? 0;
-  return TREE_UPPER_TILES.has(u) || TREE_LOWER_TILES.has(l) || TREE_LOWER_TILES.has(u);
-}
-
-/** 시공 보고용 실측 — 지정 rect 들에서 나무가 덮은 칸 비율(0~1). 중복 rect 는 칸 단위로 합집합. */
-function forestCoverageRatio(
-  map: GameMap,
-  areas: readonly { x: number; y: number; w: number; h: number }[],
-): number {
-  const cells = new Set<number>();
-  let treed = 0;
-  for (const area of areas) {
-    for (let y = area.y; y < area.y + area.h; y += 1) {
-      for (let x = area.x; x < area.x + area.w; x += 1) {
-        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
-        const key = y * map.width + x;
-        if (cells.has(key)) continue;
-        cells.add(key);
-        if (isTreeCell(map, x, y)) treed += 1;
-      }
-    }
-  }
-  return cells.size === 0 ? 0 : treed / cells.size;
-}
-
+/** 맵 전체의 나무 칸 수 — 덤불(288/289)은 나무가 아니므로 세지 않는다. */
 function countTreeCells(map: GameMap): number {
-  const upper = new Set([260, 261, 262, 263, 289]);
-  const lower = new Set([290, 291, 292, 293]);
+  const upper = TREE_CANOPY_TILES;
+  const lower = TREE_TRUNK_TILES;
   let n = 0;
   for (let i = 0; i < map.lowerTiles.length; i += 1) {
     const u = map.upperTiles[i] ?? 0;
