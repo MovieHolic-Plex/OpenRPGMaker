@@ -114,8 +114,7 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
   건너뛰며(`clusterRuleValidators.ts:110-130`), 잘못된 params 는 조용히 무시한다. 확신할 수 없을 때
   위반이라고 말하지 않는 것이 오탐을 막는 장치다.
 
-  구조물 킷의 `hard` 조건은 배치 시점에 거부한다(`structureKitTools.ts:158-181`) — 다만 킷마다
-  옵트인이고, `soft` 는 경고로 내려가며, 오류 문구가 고칠 자리를 지목한다("데이터베이스 → 구조물 →
-  [편집] → AI 메타 탭의 «배치 조건»"). `list_structure_kits` 가 `placementText` 를 내보내 모델이
-  좌표를 고르기 **전에** 제약을 읽는다. 내장 킷은 아직 `placement` 를 하나도 싣지 않아 기존 킷은
-  전부 무검사로 남는다.
+  구조물 킷의 `hard` 조건은 사람 팔레트가 찍는 시점에 거부한다(`structurePlacementActions.ts`) —
+  킷마다 옵트인이고, `soft` 는 경고로 내려가며, 오류 문구가 고칠 자리를 지목한다("데이터베이스 → 구조물 →
+  [편집] → AI 메타 탭의 «배치 조건»"). AI 도구 `stamp_structure_kit` 은 2026-08-31 부터 시공 자체가
+  거부된다. `list_structure_kits` 는 조회만 하고 시공 경로를 안내하지 않는다.

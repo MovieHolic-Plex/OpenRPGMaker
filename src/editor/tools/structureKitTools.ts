@@ -1,9 +1,8 @@
 // editor/tools/structureKitTools.ts
 // 유저 붓질에서 학습·등록된 구조 킷(tileset.structureKits)의 하네스 접점.
-// 보이지 않는 하네스 v2 §③ "등록된 킷은 즉시 build_*·팔레트 스탬프에서 사용 가능"의 봇 쪽 절반:
 //  - list_structure_kits (read)  — 킷의 존재·정확한 타일 행을 기계가 읽는다.
-//  - stamp_structure_kit (write) — 타일 선택은 전부 킷 데이터가 담당, LLM은 위치·반복 횟수만 넘긴다
-//    (castleKit/houseKit과 같은 결정론 시공 규약 — LLM이 타일 id를 고르는 경로를 만들지 않는다).
+//  - stamp_structure_kit (write) — **AI 시공 금지**(2026-08-31). 사람 팔레트 스탬프 전용.
+//    호출되면 맵을 건드리지 않고 거절한다. 집=author_house, 벽=build_wall, 지형=fill_region.
 
 import { builtinHouseStructureKitsFor } from "@/editor/harnessSuggestion/builtinHouseStructureKits";
 import {
@@ -40,11 +39,10 @@ function availableKits(tileset: TilesetDef | undefined): StructureKitDef[] {
 const listStructureKits: ToolDefinition = {
   name: "list_structure_kits",
   description:
-    "사용자가 붓질로 가르쳐 등록한 구조 킷(내 스탬프) 목록. mapId를 주면 그 맵 타일셋의 킷만. "
-    + "각 킷의 rows는 하위/상위 레이어 타일 id 행렬(기계 표면) — 시공은 stamp_structure_kit로. "
-    + "parts는 입구·간판·자리 등 부위의 상대좌표(dx,dy) — 절대좌표는 stamp_structure_kit이 돌려준다. "
-    + "placementText가 있으면 그 킷은 배치 조건이 걸린 것이다 — «필수»는 어긴 좌표에서 시공이 거부된다. "
-    + "growth.x/growth.y는 그 축으로 무한히 이어 붙여도 되는지이고, cellHints는 칸별 증분 축·설명이다.",
+    "사람이 팔레트에 등록한 구조 킷 목록(읽기 전용). mapId를 주면 그 맵 타일셋의 킷만. "
+    + "이 킷은 사람 팔레트 스탬프 전용이다 — 타일 시공에 stamp_structure_kit를 쓰지 말 것. "
+    + "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props. "
+    + "rows/parts/placementText/growth/cellHints는 사람이 등록한 내용의 조회 표면일 뿐이다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -132,37 +130,37 @@ const listStructureKits: ToolDefinition = {
   },
 };
 
+/** AI 가 stamp_structure_kit 을 부르면 돌려주는 거절 문장. 테스트·프롬프트가 같은 문구를 본다. */
+export const STAMP_STRUCTURE_KIT_BLOCKED =
+  "구조물 스탬프(stamp_structure_kit)는 사람 팔레트 전용입니다. 타일 시공에 쓰지 마세요. "
+  + "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props.";
+
 const stampStructureKit: ToolDefinition = {
   name: "stamp_structure_kit",
   description:
-    "등록된 구조 킷(내 스탬프)을 맵에 시공한다. 단위 단면(width×height)을 origin 좌상단부터 가로로 repeat회 이어 찍는다. "
-    + "타일 선택은 킷 데이터가 전담 — 개별 타일 id를 넘기지 말 것. 킷 목록·크기는 list_structure_kits로 먼저 확인. "
-    + "부위가 있는 킷은 parts를 절대좌표(x,y)로 돌려주며 이벤트는 생성하지 않는다 — 워프는 그 좌표로 따로 만든다. "
-    + "반복 1회마다 배치 기록(map.structurePlacements)이 하나씩 남아 나중에 그 한 채만 다시 찍거나 지울 수 있다(placementIds). "
-    + "킷에 «필수» 배치 조건이 있으면 조건을 어긴 좌표에서는 한 칸도 쓰지 않고 거부한다 — 조건과 실패 이유는 오류 문장에 실려 온다. "
-    + "같은 좌표로 다시 부르지 말고 list_structure_kits의 placement를 보고 자리를 옮겨라. "
-    + "repeat는 가로, repeatY는 세로다. 사람이 «증분 축»에 그 방향을 적어 두지 않은 킷은 그 축으로 1회만 찍힌다 — "
-    + "성벽을 높이로 쌓으려면 growth.y가 true인 킷을 고르고 repeatY를 줘라.",
+    "AI 시공 금지. 구조물 스탬프는 사람 팔레트 전용이다. "
+    + "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      kitId: { type: "string", description: "list_structure_kits의 kitId. 생략 시 kitName으로 조회" },
-      kitName: { type: "string", description: "킷 이름(부분 일치). kitId가 있으면 무시" },
-      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단(단면 첫 열의 첫 행)" },
-      repeat: { type: "integer", description: "가로 반복 횟수(기본 3, 1~50). 킷이 가로 증분 불가면 1로 조여진다" },
-      repeatY: {
-        type: "integer",
-        description:
-          "세로 반복 횟수(기본 1, 1~50). 킷의 증분 축이 세로를 포함할 때만 먹는다 — "
-          + "list_structure_kits의 growth.y가 true인 킷(벽·기둥 등)에만 쓸 것.",
-      },
+      kitId: { type: "string", description: "쓰지 말 것 — 이 도구는 거부된다" },
+      kitName: { type: "string" },
+      origin: { ...COORD_SCHEMA, description: "{x,y}" },
+      repeat: { type: "integer" },
+      repeatY: { type: "integer" },
     },
     required: ["mapId", "origin"],
   },
-  invalidArgsExample: { mapId: "map_blank_start", kitId: "kit_...", origin: { x: 3, y: 4 }, repeat: 6 },
-  run(draft, args): ToolExecResult {
+  invalidArgsExample: { mapId: "map_blank_start", kitId: "kit_...", origin: { x: 3, y: 4 } },
+  run(_draft, _args): ToolExecResult {
+    throw new ToolError(STAMP_STRUCTURE_KIT_BLOCKED, { code: "stamp-blocked" });
+  },
+};
+
+/** 사람 팔레트·계약 테스트용 시공 엔진. AI 툴 run() 은 이 함수를 부르지 않는다. */
+export function applyStampStructureKit(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const tileset = draft.tilesets[map.tilesetId];
     const kit = resolveKit(tileset, args);
@@ -253,8 +251,7 @@ const stampStructureKit: ToolDefinition = {
         ...(parts.length > 0 ? { parts } : {}),
       },
     };
-  },
-};
+}
 
 /** 부위 상대좌표 → 시공 절대좌표. 타일과 달리 부위는 한 킷 당 한 번만 — origin에 고정된 힌트다.
  * 입구의 워프 칸은 y + h - 1 행(규약) — 이 툴은 이벤트를 만들지 않고 좌표만 돌려준다. */

@@ -61,20 +61,15 @@ describe("HouseStructureKitDef — 파라메트릭 전개", () => {
 describe("stamp_structure_kit — 집 킷 시공", () => {
   it("내장 집 킷을 origin에 1회 시공하고 repeat는 무시한다(한 채 완결 단위)", () => {
     const { context, mapId } = townContext();
+    const before = [...context.project.maps[mapId]!.lowerTiles];
     const result = runTool(context, "stamp_structure_kit", {
       mapId,
       kitId: "kit_house_blue-stone",
       origin: { x: 3, y: 2 },
       repeat: 3,
     });
-    expect(result.ok).toBe(true);
-    expect((result.data as { repeat: number }).repeat).toBe(1);
-
-    const map = context.project.maps[mapId]!;
-    // 문 타일(남쪽 벽 중앙): x = 3+4 = 7, y = 2+7 = 9
-    expect(map.lowerTiles[9 * map.width + 7]).toBe(146);
-    expect(map.lowerTiles[8 * map.width + 7]).toBe(116);
-    // repeat 무시 — 두 번째 채가 있을 자리(x=12 이후 열)는 잔디 그대로
-    expect(map.lowerTiles[9 * map.width + 3 + 9 + 4]).toBe(GRASS);
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("사람 팔레트");
+    expect(context.project.maps[mapId]!.lowerTiles).toEqual(before);
   });
 });

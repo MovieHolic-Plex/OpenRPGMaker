@@ -196,17 +196,9 @@ describe("AI 도구 stamp_structure_kit — 반복마다 배치를 따로 남긴
       origin: { x: 1, y: 1 },
       repeat: 3,
     });
-    expect(result.ok).toBe(true);
-
-    const placements = structurePlacementsOf(context.project.maps[mapId]!);
-    expect(placements).toHaveLength(3);
-    expect(placements.map((placement) => placement.x)).toEqual([1, 4, 7]);
-    expect(new Set(placements.map((placement) => placement.id)).size).toBe(3);
-    for (const placement of placements) {
-      expect({ w: placement.w, h: placement.h }).toEqual({ w: 3, h: 2 });
-      // afterHash 는 킷 정의가 아니라 실제 맵 타일에서 되읽은 값이어야 한다.
-      expect(structurePlacementIsOverpainted(context.project.maps[mapId]!, placement)).toBe(false);
-    }
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("사람 팔레트");
+    expect(structurePlacementsOf(context.project.maps[mapId]!)).toHaveLength(0);
   });
 
   it("기본 repeat(3) 도 배치를 3개 남긴다 — 하나로 뭉치지 않는다", () => {
@@ -214,8 +206,9 @@ describe("AI 도구 stamp_structure_kit — 반복마다 배치를 따로 남긴
     runTool(context, "create_map", { name: "배치맵", width: 20, height: 15 });
     const mapId = Object.keys(context.project.maps)[0]!;
     context.project.tilesets[tilesetIdOf(context.project, mapId)]!.structureKits = [structuredClone(HUT_KIT)];
-    runTool(context, "stamp_structure_kit", { mapId, kitId: HUT_KIT.id, origin: { x: 0, y: 0 } });
-    expect(structurePlacementsOf(context.project.maps[mapId]!)).toHaveLength(3);
+    const result = runTool(context, "stamp_structure_kit", { mapId, kitId: HUT_KIT.id, origin: { x: 0, y: 0 } });
+    expect(result.ok).toBe(false);
+    expect(structurePlacementsOf(context.project.maps[mapId]!)).toHaveLength(0);
   });
 });
 

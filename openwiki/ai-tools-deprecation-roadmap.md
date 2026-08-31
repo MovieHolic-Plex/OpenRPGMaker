@@ -11,6 +11,7 @@
 | 갈래 | 목록 위치 | 개수 | 대체 |
 |---|---|---|---|
 | v1 타일 배치/지식/조회 | `v2/index.ts` `V1_TILE_SUPERSEDED` | 20 | v3 정공법(`fill_region`, `tile_erase`, `place_props`, `build_house_kit`) · `propose_tile_vocabulary` · `tile_query` |
+| 구조물 스탬프 시공 | `toolRegistry.ts` `CONSTRUCTION_WRITE_SUPERSEDED` | 1 (`stamp_structure_kit`) | `author_house` / `build_wall` / `fill_region` — **2단계(실행 차단)** 2026-08-31. 사람 팔레트는 유지 |
 | 구 지식 UI 보조 | `toolRegistry.ts` `LEGACY_TILE_KNOWLEDGE_SUPERSEDED` | 5 | `propose_tile_vocabulary` · `tile_query` |
 | 구 v2 배치 래퍼 | `v2/index.ts` `REMOVED_V2_PLACE_TOOLS` | 4 | **이미 제거됨** — 이름 매핑만 테스트/문서용으로 잔존 |
 
