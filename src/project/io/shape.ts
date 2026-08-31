@@ -8,6 +8,7 @@ import { normalizeWorldGraph } from "../worldGraph";
 import { normalizePalettePresetId } from "../tilesetPalette";
 import { normalizeFarmAnimalStartInstances } from "../p1FoundationRecords";
 import { normalizeFarmBuildingPlacements, normalizeHomeDecorationPlacements } from "../spatialPlacements";
+import { HOUSE_TEMPLATE_DEFS } from "../defaults/houseTemplateCatalog";
 import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { repairProjectReferences, validateProjectReferences } from "./references";
 import { validateConditionShape } from "./shapeCommandFields";
@@ -80,6 +81,8 @@ export function validateProjectV4(data: JsonRecord): Project {
   validateTestPresets(data.testPresets, new Set(Object.keys(maps)));
   validateEndings(data.endings);
   validateFactions(data.factions);
+  validateVillageTemplates(data.villageTemplates);
+  validateVillagePresets(data.villagePresets, idSet(data.villageTemplates));
   validateCharacters(data.characters);
   const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
@@ -431,4 +434,112 @@ function normalizeShopCommands(project: Project): void {
     }
   }
   for (const ce of project.commonEvents ?? []) normalize(ce.commands as unknown[]);
+}
+
+/**
+ * 사용자가 「마을」탭에서 만든 집 형태를 검사한다.
+ *
+ * 이 배열은 **전부 사용자 저작**이다(내장 34종은 코드 카탈로그가 정본이고 프로젝트에 복사되지
+ * 않는다). 그런데 검증이 없으면 잘못된 값이 조용히 로드된 뒤 탭을 열거나 시공기가 읽는 순간
+ * TypeError 로 터진다 — 사용자는 "저장은 됐는데 열면 죽는 프로젝트"를 갖게 되고, 어디가
+ * 문제인지 알 수 없다. 로드 지점에서 필드 이름과 함께 막는 것이 낫다.
+ *
+ * 열거형(kitId·pathStyle 같은 문자열)은 값을 좁히지 않는다 — types 레이어가 editor 레이어를
+ * import 하지 않는다는 계약이 있고, 읽는 쪽이 좁히도록 설계됐다. 여기서 막는 것은 **모양**이다.
+ */
+/** 내장 34종 id. 프리셋 화이트리스트가 이 id 를 가리키는 것은 정상이다(카탈로그가 정본). */
+const BUILT_IN_HOUSE_TEMPLATE_IDS: ReadonlySet<string> = new Set(HOUSE_TEMPLATE_DEFS.map((def) => def.id));
+
+function validateVillageTemplates(value: unknown): void {
+  if (value === undefined) return;
+  for (const [index, entry] of requireArray("villageTemplates", value).entries()) {
+    const label = `villageTemplates[${index}]`;
+    const template = requireRecord(label, entry);
+    requireString(`${label}.id`, template.id);
+    requireString(`${label}.name`, template.name);
+    // w/h 는 후보 슬롯 폭 필터에 쓰인다. 0 이나 음수면 배치 루프가 후보를 영원히 못 찾거나
+    // 음수 폭으로 타일 인덱스를 계산해 맵 밖을 쓴다.
+    for (const key of ["w", "h"] as const) {
+      const n = requireNumber(`${label}.${key}`, template[key]);
+      assert(Number.isInteger(n) && n >= 1 && n <= 64, `${label}.${key}는 1~64 정수여야 합니다.`);
+    }
+    if (template.stories !== undefined) {
+      const stories = requireNumber(`${label}.stories`, template.stories);
+      assert(stories === 1 || stories === 2 || stories === 3, `${label}.stories는 1·2·3 중 하나여야 합니다.`);
+    }
+    if (template.lowWall !== undefined) requireBoolean(`${label}.lowWall`, template.lowWall);
+    if (template.roofDeck !== undefined) requireBoolean(`${label}.roofDeck`, template.roofDeck);
+    if (template.kitId !== undefined) requireString(`${label}.kitId`, template.kitId);
+    if (template.clonedFrom !== undefined) requireString(`${label}.clonedFrom`, template.clonedFrom);
+    if (template.note !== undefined) requireString(`${label}.note`, template.note);
+    // 날개가 비면 집이 아니다 — 전개 함수가 빈 사각형 목록으로 문 판정을 하다 죽는다.
+    const wings = requireArray(`${label}.wings`, template.wings);
+    assert(wings.length >= 1, `${label}.wings는 최소 한 개여야 합니다.`);
+    for (const [wingIndex, wingEntry] of wings.entries()) {
+      const wingLabel = `${label}.wings[${wingIndex}]`;
+      const wing = requireRecord(wingLabel, wingEntry);
+      for (const key of ["x", "y"] as const) {
+        const n = requireNumber(`${wingLabel}.${key}`, wing[key]);
+        assert(Number.isInteger(n), `${wingLabel}.${key}는 정수여야 합니다.`);
+      }
+      for (const key of ["w", "h"] as const) {
+        const n = requireNumber(`${wingLabel}.${key}`, wing[key]);
+        assert(Number.isInteger(n) && n >= 1, `${wingLabel}.${key}는 1 이상 정수여야 합니다.`);
+      }
+    }
+  }
+}
+
+/**
+ * 마을 배치 프리셋을 검사한다. 예전엔 씨앗값으로 몰래 정해졌던 값들의 이름 붙은 묶음이다.
+ *
+ * `templateIds` 는 이 프리셋이 쓸 집 형태 화이트리스트다. 없는 id 를 가리키면 카탈로그가
+ * 통째로 걸러져 후보가 0 이 되고, 시공기는 "집을 못 놓았다"로 중단한다 — 사용자 눈에는
+ * 이유 없는 실패다. 그래서 시공 후보 집합과 대조한다.
+ *
+ * 후보는 **내장 34종 + 저작 형태** 다. 예전엔 저작 형태만 봤는데, 화면의 화이트리스트 고르기
+ * (`db-village-preset-template-picker`)는 카탈로그 전체를 체크박스로 내주고 하네스
+ * (`villageTemplateCatalog`)도 내장 id 를 그대로 받는다 — 그래서 사용자가 「작은 집」을 골라
+ * 저장하면 그 프로젝트 파일이 다음 열기에서 ProjectFormatError 로 튕겼다.
+ */
+function validateVillagePresets(value: unknown, templateIds: ReadonlySet<string>): void {
+  if (value === undefined) return;
+  for (const [index, entry] of requireArray("villagePresets", value).entries()) {
+    const label = `villagePresets[${index}]`;
+    const preset = requireRecord(label, entry);
+    requireString(`${label}.id`, preset.id);
+    requireString(`${label}.name`, preset.name);
+    for (const [key, min, max] of [
+      ["houseCount", 1, 32],
+      ["roadWidth", 2, 3],
+      ["roadNaturalness", 0.35, 1],
+      ["npcCount", 0, 512],
+    ] as const) {
+      if (preset[key] === undefined) continue;
+      const n = requireNumber(`${label}.${key}`, preset[key]);
+      assert(Number.isFinite(n) && n >= min && n <= max, `${label}.${key}는 ${min}~${max} 사이여야 합니다.`);
+    }
+    for (const key of [
+      "pathStyle",
+      "settlementLayout",
+      "kitMix",
+      "yardStyle",
+      "plazaStyle",
+      "plazaLayout",
+      "edgeTrees",
+      "groundTheme",
+      "note",
+    ] as const) {
+      if (preset[key] !== undefined) requireString(`${label}.${key}`, preset[key]);
+    }
+    if (preset.templateIds !== undefined) {
+      for (const [idIndex, id] of requireArray(`${label}.templateIds`, preset.templateIds).entries()) {
+        const templateId = requireString(`${label}.templateIds[${idIndex}]`, id);
+        assert(
+          templateIds.has(templateId) || BUILT_IN_HOUSE_TEMPLATE_IDS.has(templateId),
+          `${label}.templateIds[${idIndex}]가 내장 형태에도 villageTemplates에도 없습니다: ${templateId}`,
+        );
+      }
+    }
+  }
 }

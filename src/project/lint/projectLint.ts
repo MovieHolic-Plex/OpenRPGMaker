@@ -11,6 +11,8 @@
 //  - transfer-retrigger    (warning) transfer 목적지에 playerTouch 이벤트(무한 재전이 위험)
 //  - playerTouch-impassable (warning) 밟기형(priority≠same) touch/playerTouch 이벤트가 통행 불가 타일 위(영구 미발동)
 //  - event-unreachable       (warning) 자신의 몸 칸과 그 4방향 이웃이 전부 통행 불가라 접근 불가능한 이벤트
+//  - event-page-shadowed   (warning) 뒤 페이지가 항상 덮어 절대 발동하지 않는 이벤트 페이지
+//  - event-selfswitch-gate-unwritten (warning) selfSwitch 로 잠긴 페이지인데 그것을 켜는 커맨드가 없음
 //  - event-footprint-impassable (warning) 다중 타일 이벤트의 통행 사각이 통행 불가 칸을 덮음(걸어서 닿을 수 없는 자리)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 **몸 사각** 겹침
 //  - map-size              (warning) 256×256 초과 맵
@@ -22,6 +24,7 @@
 //  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { describeShadowedPage, describeUnwrittenSelfSwitchGate, findShadowedPages, findUnwrittenSelfSwitchGates } from "../eventPageShadow";
 import {
   battleEventCommandRuntimeSupport,
   commandRuntimeSupport,
@@ -71,6 +74,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkTransfers(project, issues);
   checkPlayerTouchTilePassability(project, issues);
   checkEventUnreachable(project, issues);
+  checkEventPageShadow(project, issues);
   checkEventFootprintPassability(project, issues);
   checkDuplicateEventPositions(project, issues);
   checkMapSizes(project, issues);
@@ -326,6 +330,37 @@ function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
           `이벤트에 도달할 수 없습니다 — 자신의 칸과 4방향 이웃이 모두 통행 불가입니다: ` +
           `${map.id} ${event.id} (${event.x}, ${event.y}) — 통행 가능한 칸으로 옮기세요.`,
       });
+    }
+  }
+}
+
+// (f'') 뒤 페이지가 항상 덮어 절대 발동하지 않는 페이지.
+// 런타임은 조건이 맞는 마지막 페이지 하나만 실행하므로, 뒤 페이지 조건이 앞 페이지 조건의
+// 부분집합이면 앞 페이지는 죽은 데이터다. 저작 의도가 조용히 사라지는 자리이므로 warning 으로 잡는다.
+function checkEventPageShadow(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const pageCount = (event.pages ?? []).length;
+      for (const gate of findUnwrittenSelfSwitchGates(event)) {
+        issues.push({
+          severity: "warning",
+          code: "event-selfswitch-gate-unwritten",
+          mapId: map.id,
+          x: event.x,
+          y: event.y,
+          message: `${map.id} ${event.id}: ${describeUnwrittenSelfSwitchGate(gate, pageCount)}`,
+        });
+      }
+      for (const shadow of findShadowedPages(event.pages)) {
+        issues.push({
+          severity: "warning",
+          code: "event-page-shadowed",
+          mapId: map.id,
+          x: event.x,
+          y: event.y,
+          message: `${map.id} ${event.id}: ${describeShadowedPage(shadow, pageCount)}`,
+        });
+      }
     }
   }
 }

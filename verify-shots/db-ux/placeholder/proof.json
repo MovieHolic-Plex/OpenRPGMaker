@@ -1,0 +1,53 @@
+{
+  "before": {
+    "thumbs": 27,
+    "placeholders": 0,
+    "failed": 0
+  },
+  "after": {
+    "brokenImgs": 0,
+    "placeholders": 8,
+    "visiblePlaceholders": 8,
+    "failedMarked": 8,
+    "samples": [
+      {
+        "cls": "db-list-thumb db-list-thumb-image db-image-placeholder db-im",
+        "w": 32,
+        "h": 32,
+        "text": "회복약 썸네일",
+        "aria": "회복약 썸네일 이미지 불러오기 실패"
+      },
+      {
+        "cls": "db-list-thumb db-list-thumb-image db-image-placeholder db-im",
+        "w": 32,
+        "h": 32,
+        "text": "포획 구슬 썸네일",
+        "aria": "포획 구슬 썸네일 이미지 불러오기 실패"
+      },
+      {
+        "cls": "db-list-thumb db-list-thumb-image db-image-placeholder db-im",
+        "w": 32,
+        "h": 32,
+        "text": "마력약 썸네일",
+        "aria": "마력약 썸네일 이미지 불러오기 실패"
+      },
+      {
+        "cls": "db-list-thumb db-list-thumb-image db-image-placeholder db-im",
+        "w": 32,
+        "h": 32,
+        "text": "해독초 썸네일",
+        "aria": "해독초 썸네일 이미지 불러오기 실패"
+      },
+      {
+        "cls": "db-list-thumb db-list-thumb-image db-image-placeholder db-im",
+        "w": 32,
+        "h": 32,
+        "text": "각성초 썸네일",
+        "aria": "각성초 썸네일 이미지 불러오기 실패"
+      }
+    ],
+    "zeroSized": 0
+  },
+  "brokeCount": 8,
+  "verdict": "PASS"
+}

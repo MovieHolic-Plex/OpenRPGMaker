@@ -41,6 +41,7 @@ const TAB_TESTID: Record<string, string> = {
   terrain: "db-tab-terrain",
   tilesets: "db-tab-tilesets",
   structureKits: "db-tab-structure-kits",
+  villages: "db-tab-villages",
   commonEvents: "db-tab-common-events",
   system: "db-tab-system",
   terms: "db-tab-terms",

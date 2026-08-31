@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { clearAgentGhostPreview, subscribeAgentGhostPreview, type AgentGhostPreviewState } from "@/editor/agentGhostPreview";
-import { clipMapCellsToRegion, type RegionRect } from "@/editor/regionTask/clipToRegion";
+import { clipEventsToRegion, clipMapCellsToRegion, type RegionRect } from "@/editor/regionTask/clipToRegion";
 import { __clearPendingRegionApplyForTest } from "@/editor/regionTask/pendingRegionApply";
 import { runRegionTask, type RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
-import type { Project } from "@/project/types";
+import type { GameEvent, Project } from "@/project/types";
 
 const MAP_ID = "map_clip";
 const W = 10;
@@ -107,6 +107,66 @@ describe("clipMapCellsToRegion", () => {
 
     expect(clippedCells).toBe(0);
     expect(project).toBe(proposed);
+  });
+});
+
+// 이 블록이 고정하는 것: "영역 밖 이동을 막는다" 가 **삭제가 아니라 원상 복구**여야 한다.
+// 예전 구현은 `밖(base) + 안(proposed)` 두 목록을 이어 붙였고, 그래서 안에 있던 이벤트를
+// 모델이 1칸 밖으로 옮기면 두 목록 어디에도 들지 못해 이벤트가 통째로 사라졌다.
+describe("clipEventsToRegion", () => {
+  const npc = (id: string, x: number, y: number): GameEvent => ({
+    id,
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+  });
+
+  it("영역 안 → 밖으로 옮긴 이벤트는 사라지지 않고 원위치로 되돌아온다", () => {
+    const base = [npc("ev_in", 2, 2)];
+    const proposed = [npc("ev_in", 8, 8)]; // 영역 밖
+
+    const result = clipEventsToRegion(base, proposed, REGION);
+
+    expect(result.map((event) => event.id)).toEqual(["ev_in"]);
+    expect(result[0]).toMatchObject({ x: 2, y: 2 });
+  });
+
+  it("영역 밖 → 안으로 끌어온 이벤트는 밖 상태가 정본이고 id 가 중복되지 않는다", () => {
+    const base = [npc("ev_out", 8, 8)];
+    const proposed = [npc("ev_out", 2, 2)]; // 영역 안으로 이동 시도
+
+    const result = clipEventsToRegion(base, proposed, REGION);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ id: "ev_out", x: 8, y: 8 });
+  });
+
+  it("영역 안 이동은 허용하고, 영역 안 삭제도 허용한다(다듬기 전권)", () => {
+    const base = [npc("ev_a", 1, 1), npc("ev_b", 3, 3), npc("ev_far", 9, 9)];
+    const proposed = [npc("ev_a", 2, 3), npc("ev_far", 9, 9)]; // ev_b 삭제
+
+    const result = clipEventsToRegion(base, proposed, REGION);
+
+    const byId = new Map(result.map((event) => [event.id, event]));
+    expect(byId.get("ev_a")).toMatchObject({ x: 2, y: 3 });
+    expect(byId.has("ev_b")).toBe(false);
+    expect(byId.get("ev_far")).toMatchObject({ x: 9, y: 9 });
+  });
+
+  it("영역 밖 신규 이벤트는 통과시키지 않는다", () => {
+    const result = clipEventsToRegion([], [npc("ev_new", 8, 8)], REGION);
+    expect(result).toEqual([]);
+  });
+
+  it("영역 안 신규 이벤트는 통과시킨다", () => {
+    const result = clipEventsToRegion([], [npc("ev_new", 2, 2)], REGION);
+    expect(result.map((event) => event.id)).toEqual(["ev_new"]);
+  });
+
+  it("영역 밖 이벤트 삭제는 되돌린다 — 밖은 base 가 정본이다", () => {
+    const result = clipEventsToRegion([npc("ev_far", 9, 9)], [], REGION);
+    expect(result.map((event) => event.id)).toEqual(["ev_far"]);
   });
 });
 

@@ -1,0 +1,58 @@
+{
+  "report": {
+    "1280x800/side/restored": [],
+    "1280x800/side/expanded": [],
+    "1280x800/side/history": [],
+    "1280x800/float/restored": [],
+    "1280x800/float/expanded": [],
+    "1280x800/float/history": [],
+    "1280x800/glass/restored": [],
+    "1280x800/glass/expanded": [],
+    "1280x800/glass/history": [],
+    "1024x768/side/restored": [],
+    "1024x768/side/expanded": [],
+    "1024x768/side/history": [],
+    "1024x768/float/restored": [],
+    "1024x768/float/expanded": [],
+    "1024x768/float/history": [],
+    "1024x768/glass/restored": [],
+    "1024x768/glass/expanded": [],
+    "1024x768/glass/history": []
+  },
+  "drift": {
+    "1280x800/side/restored": [],
+    "1280x800/side/expanded": [],
+    "1280x800/float/restored": [],
+    "1280x800/float/expanded": [],
+    "1280x800/glass/restored": [],
+    "1280x800/glass/expanded": [],
+    "1024x768/side/restored": [],
+    "1024x768/side/expanded": [],
+    "1024x768/float/restored": [],
+    "1024x768/float/expanded": [],
+    "1024x768/glass/restored": [],
+    "1024x768/glass/expanded": []
+  },
+  "squeeze": {
+    "1280x800/side/restored": [],
+    "1280x800/side/expanded": [],
+    "1280x800/float/restored": [],
+    "1280x800/float/expanded": [],
+    "1280x800/glass/restored": [],
+    "1280x800/glass/expanded": [],
+    "1024x768/side/restored": [],
+    "1024x768/side/expanded": [],
+    "1024x768/float/restored": [],
+    "1024x768/float/expanded": [],
+    "1024x768/glass/restored": [],
+    "1024x768/glass/expanded": []
+  },
+  "vsqueeze": {
+    "1280x800/side": [],
+    "1280x800/float": [],
+    "1280x800/glass": [],
+    "1024x768/side": [],
+    "1024x768/float": [],
+    "1024x768/glass": []
+  }
+}

@@ -4,6 +4,7 @@
 import type { BuildSpec, SpecAsset } from "@/ai/buildSpec";
 import { MIXABLE_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import type { Project } from "@/project/types";
+import { DEFAULT_WORLD_GEN_RULES, type ResolvedWorldGenRules } from "@/project/worldGenRules";
 import { isYardDecorKind, type YardDecorKind } from "./houseLotDecor";
 import { ToolError } from "./types";
 import {
@@ -105,7 +106,11 @@ export const MIN_HOUSES = 4;
 export const MAX_HOUSES = 32;
 const DEFAULT_SEED = 1;
 
-export function normalizeVillagePlan(raw: unknown, seedFallback = DEFAULT_SEED): NormalizePlanResult {
+export function normalizeVillagePlan(
+  raw: unknown,
+  seedFallback = DEFAULT_SEED,
+  rules: ResolvedWorldGenRules = DEFAULT_WORLD_GEN_RULES,
+): NormalizePlanResult {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     throw new ToolError("plan은 객체여야 합니다.", { code: "invalid-args" });
   }
@@ -118,8 +123,8 @@ export function normalizeVillagePlan(raw: unknown, seedFallback = DEFAULT_SEED):
   // 쿼리 상식 스펙 — theme/query 문자열에서 강·숲·장터 등 필수 요소 추출
   const queryText = typeof input.query === "string" && input.query.trim() ? input.query.trim() : theme;
   const requirements = input.requirements && typeof input.requirements === "object"
-    ? mergeRequirements(queryText, input.requirements as Partial<VillageRequirements>)
-    : inferRequirementsFromQuery(queryText);
+    ? mergeRequirements(queryText, input.requirements as Partial<VillageRequirements>, rules)
+    : inferRequirementsFromQuery(queryText, rules);
   if (requirements.landmarks.length > 0) {
     issues.push({
       severity: "warning",
@@ -127,7 +132,7 @@ export function normalizeVillagePlan(raw: unknown, seedFallback = DEFAULT_SEED):
     });
   }
 
-  const inferred = { ...inferFromTheme(theme), ...styleHintsFromRequirements(requirements) };
+  const inferred = { ...inferFromTheme(theme), ...styleHintsFromRequirements(requirements, rules) };
   const pathStyle = enumOr(input.pathStyle, ["sand", "dirt", "stone"] as const, inferred.pathStyle ?? "sand", "pathStyle", issues);
   const kitMix = enumOr(input.kitMix, ["mixed", ...MIXABLE_HOUSE_KIT_IDS] as const, inferred.kitMix ?? "mixed", "kitMix", issues);
   const yardStyle = enumOr(input.yardStyle, ["mixed", "garden", "workshop", "market", "minimal"] as const, inferred.yardStyle ?? "mixed", "yardStyle", issues);
@@ -321,8 +326,12 @@ export function villagePlanToBuildArgs(plan: VillagePlan, extra: Record<string, 
   };
 }
 
-function mergeRequirements(query: string, partial: Partial<VillageRequirements>): VillageRequirements {
-  const base = inferRequirementsFromQuery(query);
+function mergeRequirements(
+  query: string,
+  partial: Partial<VillageRequirements>,
+  rules: ResolvedWorldGenRules,
+): VillageRequirements {
+  const base = inferRequirementsFromQuery(query, rules);
   if (!partial.landmarks) return base;
   const landmarks = [...new Set([...(partial.landmarks as LandmarkKind[]), ...base.landmarks])];
   return {

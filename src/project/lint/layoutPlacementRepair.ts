@@ -10,6 +10,7 @@ import {
   LAYOUT_TREE_TRUNK_IDS,
   scrubPlacementConflicts,
   validateLayoutPlacement,
+  type LayoutRegion,
   type LayoutValidateOptions,
 } from "./layoutPlacementValidate";
 
@@ -55,7 +56,7 @@ export function repairLayoutPlacement(project: Project, opts: LayoutValidateOpti
   if (remaining.some((issue) => issue.code === "layout-tree-missing")) {
     for (const mapId of mapIds) {
       const map = next.maps[mapId];
-      if (map) plantMissingTrees(next, map, counts);
+      if (map) plantMissingTrees(next, map, counts, opts.region);
     }
     remaining = validateLayoutPlacement(next, opts);
   }
@@ -203,11 +204,23 @@ function completeOrDropTrees(project: Project, map: GameMap, counts: LayoutRepai
   }
 }
 
-function plantMissingTrees(project: Project, map: GameMap, counts: LayoutRepairCounts): void {
-  const budget = Math.min(8, Math.max(2, Math.floor((map.width * map.height) / 80)));
+// 보식은 **검사한 영역 안에서만** 한다. 검증은 region 한정인데 보식이 맵 전체를 훑으면
+// 영역 밖에 심고도 게이트는 그대로 0그루를 보는 어긋남이 생겼다(선택 영역 작업 경로).
+function plantMissingTrees(
+  project: Project,
+  map: GameMap,
+  counts: LayoutRepairCounts,
+  region?: LayoutRegion,
+): void {
+  const x0 = Math.max(0, region?.x ?? 0);
+  const y0 = Math.max(0, region?.y ?? 0);
+  const x1 = Math.min(map.width, region ? region.x + region.width : map.width);
+  const y1 = Math.min(map.height - 1, region ? region.y + region.height : map.height - 1);
+  const cells = Math.max(1, (x1 - x0) * (y1 - y0));
+  const budget = Math.min(8, Math.max(2, Math.floor(cells / 80)));
   let planted = 0;
-  for (let y = 0; y < map.height - 1 && planted < budget; y += 1) {
-    for (let x = 0; x < map.width && planted < budget; x += 1) {
+  for (let y = y0; y < y1 && planted < budget; y += 1) {
+    for (let x = x0; x < x1 && planted < budget; x += 1) {
       if (!isFreeLand(project, map, x, y) || !isFreeLand(project, map, x, y + 1)) continue;
       if (
         project.startMapId === map.id

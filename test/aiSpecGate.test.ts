@@ -39,7 +39,7 @@ function finalMsg(text: string): ChatResult {
 }
 
 // authMode 는 AiConfig 필수 필드다 — 빠뜨리면 이 상수를 쓰는 모든 세션 생성 지점이 타입 에러가 된다.
-const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "minimax/minimax-m3", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
+const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
 
 // 20×20 맵 m1이 있는 프로젝트.
 function projectWithMap() {

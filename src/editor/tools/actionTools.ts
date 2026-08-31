@@ -2,6 +2,7 @@ import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeActionCombatConfig, normalizeEnemyActionProfile } from "@/project/actionCombat";
 import { normalizeProjectFactions, PLAYER_FACTION_ID } from "@/project/factions";
 import { requireMap } from "./mapHelpers";
+import { assignMonsterResourceId, monsterGraphicAssignmentWarning } from "./monsterGraphicAssignment";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import type { EnemyActionProfile, EnemyRecord, FactionDef, FactionRelationDef, FieldSpawnDef, Project } from "@/project/types";
 
@@ -79,7 +80,11 @@ const setActionCombat: ToolDefinition = {
   },
 };
 
-function upsertActionEnemy(draft: Project, args: Record<string, unknown>): { enemy: EnemyRecord; outcome: "added" | "modified" } {
+function upsertActionEnemy(
+  draft: Project,
+  args: Record<string, unknown>,
+  warnings: string[],
+): { enemy: EnemyRecord; outcome: "added" | "modified" } {
   const enemyId = args.enemyId as string;
   const profile = normalizeEnemyActionProfile(args.actionProfile as Partial<EnemyActionProfile> | undefined);
   if (!profile) throw new ToolError("actionProfile이 비었거나 유효하지 않습니다. attack.kind는 melee/projectile/dash 중 하나여야 합니다.", { code: "invalid-action-profile" });
@@ -108,6 +113,11 @@ function upsertActionEnemy(draft: Project, args: Record<string, unknown>): { ene
   });
   enemy.actionProfile = profile;
   if (factionId !== undefined) enemy.factionId = factionId;
+  const assignment = assignMonsterResourceId(draft, enemy);
+  if (assignment) {
+    enemy.monsterResourceId = assignment.resourceId;
+    warnings.push(monsterGraphicAssignmentWarning("enemy.monsterResourceId", enemy, assignment));
+  }
   draft.database.enemies.push(enemy);
   return { enemy, outcome: "added" };
 }
@@ -153,7 +163,8 @@ const makeActionEnemy: ToolDefinition = {
     required: ["enemyId", "actionProfile"],
   },
   run(draft, args): ToolExecResult {
-    const { enemy, outcome } = upsertActionEnemy(draft, args);
+    const warnings: string[] = [];
+    const { enemy, outcome } = upsertActionEnemy(draft, args, warnings);
     const notes: string[] = [`적 '${enemy.name}' ${outcome === "added" ? "추가" : "수정"}(actionProfile)`];
     const spawn = args.spawn as Record<string, unknown> | undefined;
     if (spawn) {
@@ -185,7 +196,11 @@ const makeActionEnemy: ToolDefinition = {
       notes.push(`맵 '${map.name}'에 스폰 ${def.id} 추가`);
       if (map.actionCombat !== true) notes.push("주의: 이 맵은 아직 액션 옵트인이 아닙니다 — set_action_combat { enabled:true, mapId } 필요");
     }
-    return { summary: notes.join(" / "), data: { enemyId: enemy.id, actionProfile: enemy.actionProfile ?? null } };
+    return {
+      summary: notes.join(" / "),
+      data: { enemyId: enemy.id, actionProfile: enemy.actionProfile ?? null },
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
   },
 };
 

@@ -4,6 +4,7 @@ import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { isSandTile } from "@/project/defaults/sandAutotile";
 import { isCobbleTile } from "@/project/defaults/cobbleAutotile";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
+import { mapSurfaceProbe, type SurfaceProbe } from "@/project/placementSurface";
 import { isTreeCanopyTileId, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { Command, GameMap, PaletteSlotRole, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
@@ -52,6 +53,7 @@ type ChooseInput = {
   readonly map: GameMap;
   readonly group: TileGroupMetadata;
   readonly preferSoftRules: boolean;
+  readonly probe: SurfaceProbe;
 };
 type UniformChooseInput = Omit<ChooseInput, "choices"> & {
   readonly maxGap: number;
@@ -65,6 +67,7 @@ type RankedChooseInput = {
   readonly minGap: number;
   readonly placed: readonly Rect[];
   readonly preferSoftRules: boolean;
+  readonly probe: SurfaceProbe;
   readonly rankByPoint: ReadonlyMap<string, number>;
   readonly remaining: number;
 };
@@ -102,6 +105,9 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
           }), group, tileset);
     const protectedCells = args.avoidProtected ? protectedEventCells(draft, map) : new Set<string>();
     const candidates = origins(map, args.area, footprint).filter((origin) => footprintFits(map, footprint, origin, protectedCells));
+    // 배치 면 채점용 프로브는 루프 밖에서 한 번 만든다 — 스텝마다 만들면 후보 수만큼 재생성된다.
+    // 루프 안에서는 맵을 쓰지 않으므로(쓰기는 touched 로 뒤에 한 번) 찍기 전 지형을 보는 것이 맞다.
+    const surfaceProbe = mapSurfaceProbe(draft, map);
     const legacySeed = scatterSeedSignature(map, args);
     const seed = args.seed === undefined ? legacySeed : String(args.seed);
     const ranked = args.mode === "uniform" || args.packing === "dense"
@@ -151,10 +157,11 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
           map,
           group,
           preferSoftRules: args.preferSoftRules,
+          probe: surfaceProbe,
           rankByPoint: ranked.rankByPoint,
           remaining,
         })
-        : chooseUniform({ allowed, placed, footprint: stepFootprint, minGap: args.minGap, maxGap: args.maxGap, seed, step, map, group, preferSoftRules: args.preferSoftRules });
+        : chooseUniform({ allowed, placed, footprint: stepFootprint, minGap: args.minGap, maxGap: args.maxGap, seed, step, map, group, preferSoftRules: args.preferSoftRules, probe: surfaceProbe });
       placed.push(rectAt(chosen, stepFootprint));
       footprints.push(stepFootprint);
     }
@@ -166,12 +173,22 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
       ? applyStructureEdits(map, resolvePlacementStructure({ map, tileset, group, placed }))
       : [];
     const skipped = args.count - placed.length;
+    if (placed.length === 0) {
+      // 라이브 QA 사고: '키큰 풀' 로 채운 영역에 침엽수를 깔면 0그루가 놓이는데도 ok 로 끝나
+      // 나무 한 그루 없는 "빽빽한 숲" 이 완성으로 보고됐다. 0개 배치는 성공이 아니다.
+      throw new ToolError(
+        `${sourceNameOf(picker, group)}를 ${args.count}개 요청했지만 영역 (${args.area.x},${args.area.y}) ${args.area.w}×${args.area.h} 에 한 개도 놓지 못했습니다`
+        + " — 상위 레이어 소품/키큰 풀·물·길·통행 불가 칸이 영역을 덮고 있습니다."
+        + " tile_erase 로 상위 레이어를 비우고 다시 시도하거나, 다른 영역을 쓰세요.",
+        { code: "placement-zero", mapId: map.id },
+      );
+    }
     const warning = passabilityWarning(draft, map, [...touched, ...structureTouched]);
     const atomicTileCount = picker ? 1 : nonEmptyFootprintTileCount(footprint);
     const clusterNote = !picker && hardClusterRuleCount(group) > 0
       ? ` = ${placed.length * atomicTileCount}타일(클러스터 동반 배치 포함)`
       : "";
-    const sourceName = picker ? `${picker.presetId}/${picker.role}` : group.name;
+    const sourceName = sourceNameOf(picker, group);
     const passableAfter = passableCellCount(draft, map, args.area);
     // dense 를 시킨 쪽은 "정말 못 지나가나" 를 알고 싶어 한다. 남은 통행 칸을 세서 말해준다.
     const passabilityNote = args.packing === "dense"
@@ -195,6 +212,15 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
       },
       warnings: warning ? [warning] : undefined,
     };
+}
+
+function sourceNameOf(
+  // paletteTilePickerForTool 은 «고른 것 없음» 을 null 로 준다. undefined 만 받으면 호출부마다
+  // ?? undefined 를 붙여야 해서 정의를 넓힌다.
+  picker: { readonly presetId: string; readonly role: string } | null | undefined,
+  group: { readonly name: string },
+): string {
+  return picker ? `${picker.presetId}/${picker.role}` : group.name;
 }
 
 const scatterObject: ToolDefinition = {
@@ -1068,7 +1094,7 @@ function chooseUniform(input: UniformChooseInput): Point {
  * 전 후보 "남은 자리 최대화"는 넓은 들에서 격자 채우기를 만들어 산포가 깨지므로 쓰지 않는다.
  */
 function choose(input: ChooseInput): Point {
-  const { choices, seed, step, map, group, preferSoftRules, placed, footprint } = input;
+  const { choices, seed, step, map, group, preferSoftRules, placed, footprint, probe } = input;
   const first = choices[0];
   if (!first) throw new ToolError("배치 후보가 없습니다.", { code: "no-placement" });
   let best = first;
@@ -1076,7 +1102,7 @@ function choose(input: ChooseInput): Point {
   let bestRank = Number.POSITIVE_INFINITY;
   for (const candidate of choices) {
     const candidateRect = rectAt(candidate, footprint);
-    const penalty = preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map }) : 0;
+    const penalty = preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map, probe }) : 0;
     const rank = hash(`${seed}|${step}|${candidate.x},${candidate.y}`);
     if (penalty < bestPenalty || (penalty === bestPenalty && rank < bestRank)) {
       best = candidate;
@@ -1093,7 +1119,7 @@ function choose(input: ChooseInput): Point {
  * soft 규칙은 동점 처리.
  */
 function chooseRanked(input: RankedChooseInput & { readonly remaining: number }): Point {
-  const { allowed, choices, placed, footprint, minGap, map, group, preferSoftRules, rankByPoint, remaining } = input;
+  const { allowed, choices, placed, footprint, minGap, map, group, preferSoftRules, probe, rankByPoint, remaining } = input;
   const first = choices[0];
   if (!first) throw new ToolError("배치 후보가 없습니다.", { code: "no-placement" });
 
@@ -1108,7 +1134,7 @@ function chooseRanked(input: RankedChooseInput & { readonly remaining: number })
       candidate,
       future,
       rank: rankByPoint.get(pointKey(candidate)) ?? Number.POSITIVE_INFINITY,
-      penalty: preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map }) : 0,
+      penalty: preferSoftRules ? placementSoftPenalty({ group, candidate: candidateRect, placed, map, probe }) : 0,
     };
   });
 

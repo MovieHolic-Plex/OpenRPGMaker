@@ -126,12 +126,12 @@ test("C1 standard viewport — Option A shell contract", async ({ page }) => {
 
   const modal = page.getByTestId("event-editor-modal");
 
-  // Header page segments exist; at least one is active (aria-pressed).
+  // Header page segments exist; at least one is active (aria-selected).
   const segments = modal.locator("[data-testid^='evt-page-segment']");
   await expect(segments.first()).toBeVisible();
   expect(await segments.count()).toBeGreaterThanOrEqual(1);
   const activeCount = await segments.evaluateAll((nodes) =>
-    nodes.filter((node) => node instanceof HTMLElement && node.getAttribute("aria-pressed") === "true").length,
+    nodes.filter((node) => node instanceof HTMLElement && node.getAttribute("aria-selected") === "true").length,
   );
   expect(activeCount, `expected >=1 active of ${await segments.count()} segments`).toBeGreaterThanOrEqual(1);
   // 세그먼트는 48px 타이틀바 안에서 잘렸다(2줄 리치 탭). 이제 전용 페이지 행이 유일한 집이다.
@@ -257,8 +257,9 @@ test("C4 interaction — page segment switching, add command, and undo", async (
   expect(page1FirstRowText.length).toBeGreaterThan(0);
 
   // Click segment 2 -> the first command row text must change.
+  // role=tab 은 aria-selected 만 사용한다(aria-pressed 는 toggle 버튼 속성).
   const segmentIndex = (segments: ReturnType<typeof modal.locator>): Promise<number> =>
-    segments.evaluateAll((nodes) => nodes.findIndex((node) => node instanceof HTMLElement && node.getAttribute("aria-pressed") === "true"));
+    segments.evaluateAll((nodes) => nodes.findIndex((node) => node instanceof HTMLElement && node.getAttribute("aria-selected") === "true"));
   await segments.nth(1).click();
   await expect.poll(async () => (await segmentIndex(segments))).toBe(1);
 

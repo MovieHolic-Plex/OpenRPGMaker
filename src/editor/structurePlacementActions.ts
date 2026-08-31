@@ -14,6 +14,11 @@ import { structureKitSize, structureKitUnitCells } from "@/editor/harnessSuggest
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import {
+  evaluatePlacementConditions,
+  mapSurfaceProbe,
+  type PlacementSurfaceVerdict,
+} from "@/project/placementSurface";
+import {
   captureStructureTiles,
   cellsOwnedByLaterPlacements,
   clipStructureRectToMap,
@@ -61,6 +66,52 @@ export function structureKitForPlacement(
 /** 킷이 사라진 배치(고아). 지우기는 되고 재시공만 막힌다. */
 export function structurePlacementIsOrphan(mapId: MapId, placement: StructurePlacement): boolean {
   return structureKitForPlacement(store.getCurrent(), mapId, placement) === undefined;
+}
+
+/**
+ * 킷의 배치 조건(`kit.ai.placement`)을 이 자리에 대고 검사한다 — **찍기 전** 지형을 본다.
+ *
+ * 조건이 없으면 빈 판정이라 기존 킷은 전부 그대로 통과한다(하위 호환).
+ * rect 가 맵을 벗어나면 clip 하지 않고 **원래 rect 로** 검사한다 — 맵 밖은 벽으로 세므로
+ * "경계에 등을 댔다"가 성립해야 하고, clip 하면 발밑 줄이 엉뚱한 행으로 올라간다.
+ */
+export function evaluateKitPlacementConditions(input: {
+  readonly mapId: MapId;
+  readonly kit: StructureKitDef;
+  readonly rect: StructureRect;
+}): PlacementSurfaceVerdict {
+  const project = store.getCurrent();
+  const map = project.maps[input.mapId];
+  if (!map) return { blocked: [], warnings: [] };
+  return evaluatePlacementConditions({
+    conditions: input.kit.ai?.placement,
+    probe: mapSurfaceProbe(project, map),
+    rect: input.rect,
+  });
+}
+
+/**
+ * 사람이 팔레트 스탬프로 찍기 직전 조건 검사. 구조물 킷 스탬프가 아니면 null(검사 대상 아님).
+ * 좌표는 스탬프 좌상단이고 크기는 스탬프 크기 — `beginKitStampCapture` 와 같은 사각을 본다.
+ */
+export function checkKitStampConditions(
+  mapId: MapId,
+  stamp: PaletteStamp,
+  x: number,
+  y: number,
+): { readonly kit: StructureKitDef; readonly verdict: PlacementSurfaceVerdict } | null {
+  const kitId = stamp.kitId;
+  if (!kitId) return null;
+  const project = store.getCurrent();
+  const map = project.maps[mapId];
+  if (!map) return null;
+  const kit = findStructureKit(project.tilesets[map.tilesetId], kitId);
+  if (!kit) return null;
+  if ((kit.ai?.placement ?? []).length === 0) return null;
+  return {
+    kit,
+    verdict: evaluateKitPlacementConditions({ kit, mapId, rect: { x, y, w: stamp.width, h: stamp.height } }),
+  };
 }
 
 export interface KitStampCapture {

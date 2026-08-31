@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { getEditorUiMode, resetEditorUiModeForTests } from "@/editor/editorUiMode";
-import { resetWorkspaceForTests } from "@/editor/workspace/workspaceStore";
+import { uiLabel } from "@/editor/uiCopy";
+import { resetWorkspaceForTests, setWorkspacePreset } from "@/editor/workspace/workspaceStore";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -96,6 +97,40 @@ describe("genre-neutral authoring task launcher", () => {
     findByTestId(root, "authoring-task-test")?.click();
     expect(dispatchEvent).toHaveBeenCalledTimes(1);
     expect(dispatchEvent.mock.calls[0]?.[0]).toMatchObject({ type: "oprn:test-play-window" });
+  });
+
+  // Break: ▤ 패널 메뉴가 같은 프리셋 3개를 「레이아웃」 이라는 두 번째 이름으로 다시 내놓는다.
+  // 그 줄들은 authoringTasks 가 대체한 「작업 런처처럼 보이지만 레이아웃 프리셋만 내놓는 컨트롤」
+  // 이었고, 톱바 한 줄 안에서 맵/이벤트/데이터를 두 번 말하게 만들었다.
+  it("패널 메뉴에 작업 프리셋을 두 번째 이름으로 다시 내놓지 않는다", () => {
+    const root = renderBar();
+    for (const preset of ["map", "event", "data"]) {
+      expect(findByTestId(root, `workspace-layout-${preset}`), preset).toBeNull();
+    }
+    // 밀도·편집 모드는 이 메뉴가 계속 소유한다 — 지운 것은 중복된 프리셋 줄뿐이다.
+    expect(findByTestId(root, "workspace-density-comfortable")).toBeTruthy();
+    expect(findByTestId(root, "workspace-ui-mode-standard")).toBeTruthy();
+  });
+
+  // Break: 프리셋 줄의 상호배타 선택을 aria-pressed 독립 토글로 옮기고, 단순 배치 변경을
+  // 「데이터 작업 중」처럼 읽었다. bare setWorkspacePreset도 거짓말하지 않는 문구를 고정한다.
+  it("현재 레이아웃 프리셋만 aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는다", () => {
+    setWorkspacePreset("data");
+    expect(mocks.openDatabaseModal).not.toHaveBeenCalled();
+
+    const root = renderBar();
+    const data = findByTestId(root, "authoring-task-data");
+    const map = findByTestId(root, "authoring-task-map");
+    const test = findByTestId(root, "authoring-task-test");
+    expect(data?.getAttribute("aria-current")).toBe("true");
+    expect(data?.getAttribute("aria-label")).toContain("현재 레이아웃 프리셋");
+    expect(data?.getAttribute("title")).toContain("현재 레이아웃 프리셋");
+    expect(map?.getAttribute("aria-current")).toBeNull();
+    expect(test?.getAttribute("aria-current")).toBeNull();
+    expect(test?.getAttribute("aria-label")).not.toContain("작업 열기");
+    expect(test?.getAttribute("aria-label")).toBe(test?.getAttribute("title"));
+    expect(test?.getAttribute("aria-label")).toContain(uiLabel("testPlay"));
+    for (const button of [data, map, test]) expect(button?.getAttribute("aria-pressed")).toBeNull();
   });
 
   // Break caught: selecting Data silently upgrades guided users to dense/expert chrome.

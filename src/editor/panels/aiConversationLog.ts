@@ -11,7 +11,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
 import { stripQuickReplyLine } from "@/ai/interviewPrompt";
-import { renderMarkdown } from "@/util/markdown";
+import { renderAssistantAnswer } from "./aiAnswerLinkRender";
 import { el } from "@/util/dom";
 import {
   reasoningToggleText,
@@ -105,7 +105,10 @@ export function markPriorTurns(log: HTMLElement): void {
 
   const previewSource = toWrap.find((node) => node.dataset.role === "user");
   const previewBody = previewSource?.querySelector(".ai-command-row-body") ?? previewSource;
-  const preview = (previewBody?.textContent ?? "이전 턴").replace(/\s+/gu, " ").trim().slice(0, 36) || "이전 턴";
+  // 요약은 한 줄로 줄인다. 자를 때는 말줄임표를 붙인다 — 없으면 문장이 단어 중간에서
+  // 끊겨(실측: "…북쪽 숲에서 마을") 잘린 UI 로 읽힌다.
+  const previewFull = (previewBody?.textContent ?? "이전 턴").replace(/\s+/gu, " ").trim();
+  const preview = (previewFull.length > 36 ? `${previewFull.slice(0, 36)}…` : previewFull) || "이전 턴";
 
   const body = el("div", {
     class: "ai-turn-group-body",
@@ -178,7 +181,7 @@ export function appendConversationBubble(options: {
   const displayText = options.role === "assistant" || options.role === "system"
     ? stripQuickReplyLine(options.text)
     : options.text;
-  if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderMarkdown(displayText));
+  if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderAssistantAnswer(displayText));
   else if (displayText) body.textContent = displayText;
   options.log.append(row);
   options.log.scrollTop = options.log.scrollHeight;
@@ -189,7 +192,7 @@ export function renderStreamedMarkdown(target: HTMLElement | null): void {
   if (!target) return;
   const body = target.querySelector(".ai-command-row-body") ?? target;
   const raw = body.textContent ?? "";
-  if (raw.trim()) body.replaceChildren(renderMarkdown(raw));
+  if (raw.trim()) body.replaceChildren(renderAssistantAnswer(raw));
 }
 
 export interface ConversationLogHost {
@@ -233,7 +236,8 @@ export function createConversationLogHost(options: {
       : Boolean(lastRow && lastReasoning && lastRow.contains(lastReasoning.box));
     if (lastReasoning && reasoningCurrent) {
       lastReasoning.state.count += 1;
-      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, lastReasoning.body.hidden);
+      // hidden 은 lib.dom 에서 string | boolean 이다("until-found") — 접힘 여부는 참·거짓으로 본다.
+      lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, Boolean(lastReasoning.body.hidden));
       log.scrollTop = log.scrollHeight;
       return { box: lastReasoning.box, body: appendReasoningItem(lastReasoning.body) };
     }

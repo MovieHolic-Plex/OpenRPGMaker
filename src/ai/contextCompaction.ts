@@ -36,10 +36,38 @@ export const DEFAULT_COMPACTION_SETTINGS: CompactionSettings = {
 };
 
 /**
+ * 사용자가 직접 누른 압축의 잔존 창. 자동(20,000)보다 좁다.
+ *
+ * 자동 압축은 "창이 넘칠 것 같아서" 도는 것이라 최근 맥락을 넉넉히 남기는 편이 안전하다.
+ * 수동은 반대다 — 사람이 지금 자리를 비우려고 누른 것이므로 20,000 을 남기면 중간 크기 대화
+ * (전체가 20,000 안쪽)에서 잘라낼 앞부분이 아예 없어 버튼이 "할 일이 없다"만 답한다.
+ */
+export const MANUAL_COMPACTION_SETTINGS: CompactionSettings = {
+  enabled: true,
+  reserveTokens: 16_384,
+  keepRecentTokens: 6_000,
+};
+
+/**
  * 모델을 모를 때 쓰는 보수적 컨텍스트 창. 실제보다 작게 잡으면 압축이 좀 자주 돌 뿐이지만,
  * 크게 잡으면 압축 전에 공급자가 컨텍스트 초과로 턴을 죽인다 — 그래서 아래쪽으로 틀린다.
  */
 export const DEFAULT_CONTEXT_WINDOW = 128_000;
+
+/**
+ * 자동 압축이 도는 지점(토큰) — **제품 선택**이다. 감독 지시(2026-08-30): "20만 토큰 넘으면
+ * compaction 하게 하고".
+ *
+ * 실측 근거: 이 값이 들어오기 전 작업 창 상한은 `DEFAULT_CONTEXT_WINDOW`(128,000)였고 문턱은
+ * `128,000 - 16,384 = 111,616` 토큰이었다. 기본 모델 `gemini-3.7-flash` 의 실제 창은 1,048,576
+ * 토큰이므로 창의 11% 지점에서 앞부분 기억을 요약으로 바꿔 버린 셈이다 — 창이 남는데도 이르게
+ * 잊었다. 반대로 창을 그대로 쓰면 문턱이 1,032,192 가 되어 사실상 압축이 없다. 둘 다 아니라
+ * "20만 토큰"을 명시적 지점으로 고정한다.
+ *
+ * 작업 창(messageBudget.WORKING_CONTEXT_TOKEN_CAP)은 이 값에서 파생된다: 창 = 지점 + 예비분.
+ * 창이 이 지점보다 작은 모델(claude-/glm- 200,000)은 자기 창이 먼저 걸리므로 동작이 바뀌지 않는다.
+ */
+export const AUTO_COMPACTION_TRIGGER_TOKENS = 200_000;
 
 /**
  * 모델별 컨텍스트 창. 접두사 기준으로만 판정한다 — 카탈로그(modelCatalog.ts)가 자주 늘어나고
@@ -55,7 +83,6 @@ const CONTEXT_WINDOW_BY_MODEL_PREFIX: ReadonlyArray<readonly [string, number]> =
   ["qwen", 262_144],
   ["kimi", 262_144],
   ["glm-", 200_000],
-  ["minimax", 200_000],
 ];
 
 export function resolveContextWindow(model: string): number {
@@ -151,6 +178,59 @@ export function resolveThresholdContextTokens(usageTokens: number, estimateToken
 export function shouldCompact(contextTokens: number, contextWindow: number, settings: CompactionSettings): boolean {
   if (!settings.enabled) return false;
   return contextTokens > contextWindow - settings.reserveTokens;
+}
+
+/**
+ * 지금 대화가 모델 창의 어디쯤인가 — 자동 압축 임계 판정과 **같은 입력**으로 계산한 사람용 요약.
+ *
+ * UI 가 자기 방식으로 다시 세면(예: 문자 수/4) 게이지와 실제 압축 시점이 어긋나 "62% 인데 왜
+ * 압축했지" 가 된다. 그래서 게이지도 shouldCompact 와 같은 resolveThresholdContextTokens 를 쓴다.
+ */
+export interface ContextUsage {
+  /** 로컬 추정(estimateContextTokens). */
+  readonly estimateTokens: number;
+  /** 직전 요청에 공급자가 과금한 prompt_tokens. 아직 없으면 0. */
+  readonly usageTokens: number;
+  /** 임계 판정에 실제로 쓰이는 값. */
+  readonly contextTokens: number;
+  readonly contextWindow: number;
+  readonly reserveTokens: number;
+  /** 이 값을 넘으면 자동 압축이 돈다. */
+  readonly thresholdTokens: number;
+  /** 창 대비 사용률 0..1(1 을 넘을 수 있다 — 넘으면 그대로 넘겼다고 보고한다). */
+  readonly ratio: number;
+  readonly overThreshold: boolean;
+}
+
+export function describeContextUsage(args: {
+  readonly messages: readonly ChatMessage[];
+  readonly model: string;
+  readonly usageTokens?: number;
+  readonly extraChars?: number;
+  readonly settings?: CompactionSettings;
+  /**
+   * 판정에 실제로 쓰이는 작업 창(messageBudget.resolveWorkingContextTokens). 생략하면 모델 창을
+   * 쓴다. 게이지가 모델 창으로 세면 gemini(1M)에서 "맥락 3%" 인데 압축이 도는 모순이 보인다 —
+   * 압축을 부르는 쪽과 **같은 창**을 넘겨야 표시와 실제가 일치한다.
+   */
+  readonly contextWindow?: number;
+}): ContextUsage {
+  const settings = args.settings ?? DEFAULT_COMPACTION_SETTINGS;
+  const estimateTokens = estimateContextTokens(args.messages, args.extraChars ?? 0);
+  const usageTokens = Math.max(0, args.usageTokens ?? 0);
+  const contextTokens = resolveThresholdContextTokens(usageTokens, estimateTokens);
+  const contextWindow = args.contextWindow ?? resolveContextWindow(args.model);
+  const thresholdTokens = contextWindow - settings.reserveTokens;
+  return {
+    estimateTokens,
+    usageTokens,
+    contextTokens,
+    contextWindow,
+    reserveTokens: settings.reserveTokens,
+    thresholdTokens,
+    ratio: contextWindow > 0 ? contextTokens / contextWindow : 0,
+    overThreshold: shouldCompact(contextTokens, contextWindow, settings),
+  };
 }
 
 // ── 절단점 탐색 ──────────────────────────────────────────────────────────────

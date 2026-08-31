@@ -1,9 +1,11 @@
 import { inBounds, isPassable } from "@/project/collision";
-import { footprintCells, isSpatialFootprint, isSpatialOrientation } from "@/project/spatialPlacements";
+import { rectsOverlap } from "@/project/footprint";
+import { footprintCells, isSpatialFootprint, isSpatialOrientation, orientedFootprint } from "@/project/spatialPlacements";
 import type { PlaySession } from "@/project/session";
 import type {
   Dir,
   FarmBuildingPlacement,
+  FootprintRect,
   HomeDecorationPlacement,
   Project,
   SpatialFootprint,
@@ -22,6 +24,24 @@ export type SpatialPlacementIdentity = {
   readonly kind: SpatialPlacementKind;
   readonly instanceId: string;
 };
+
+export function isSpatialPlacementBlocking(
+  project: Project,
+  session: PlaySession,
+  mapId: string,
+  rect: FootprintRect,
+): boolean {
+  for (const placement of Object.values(session.farmBuildingPlacements ?? {})) {
+    const footprint = resolveBuildingFootprint(project, placement);
+    if (placement.mapId === mapId && footprint && placementOverlapsRect(placement, footprint, rect)) return true;
+  }
+  for (const placement of Object.values(session.homeDecorationPlacements ?? {})) {
+    const type = project.database.homeDecorationTypes?.find((entry) => entry.id === placement.typeId);
+    if (placement.mapId === mapId && type?.blocksMovement && isSpatialFootprint(type.footprint)
+      && placementOverlapsRect(placement, type.footprint, rect)) return true;
+  }
+  return false;
+}
 
 /**
  * Checks the complete rotated footprint against the authored map and every
@@ -82,6 +102,19 @@ export function resolveDecorationFootprint(
 ): SpatialFootprint | undefined {
   const type = project.database.homeDecorationTypes?.find((entry) => entry.id === placement.typeId);
   return type && isSpatialFootprint(type.footprint) ? type.footprint : undefined;
+}
+
+function placementOverlapsRect(
+  placement: FarmBuildingPlacement | HomeDecorationPlacement,
+  footprint: SpatialFootprint,
+  rect: FootprintRect,
+): boolean {
+  if (!isSpatialOrientation(placement.orientation)) return true;
+  const size = orientedFootprint(footprint, placement.orientation);
+  return rectsOverlap(rect, {
+    left: placement.x, right: placement.x + size.width - 1,
+    top: placement.y, bottom: placement.y + size.height - 1,
+  });
 }
 
 function footprintsIntersect(

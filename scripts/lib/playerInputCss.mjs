@@ -6,6 +6,8 @@ const OWNER_SELECTORS = [
   "[data-play-input-owner='touch-controls']",
   "[data-play-input-owner=\"host-fullscreen\"]",
   "[data-play-input-owner='host-fullscreen']",
+  "[data-play-input-owner=\"game-file-open\"]",
+  "[data-play-input-owner='game-file-open']",
 ];
 
 export async function shippedCssClosure(entryFile) {

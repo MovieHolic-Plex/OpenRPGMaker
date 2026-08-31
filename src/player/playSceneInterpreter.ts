@@ -193,10 +193,14 @@ export async function runCommands(
     let result = interpreter.start();
     scene.refreshRuntimeSurfaces();
     while (result.kind !== "done") {
+      if (isCutsceneSkippable(scene.session)) {
+        scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
+      }
       result = await consumeBlockingStep(scene, interpreter, result, currentEventId, skipController);
     }
   } finally {
     skipController.dispose();
+    scene.clearRuntimeOverlay("cutscene-skip-hint");
     releaseCutsceneControlForOwner(scene.session, currentEventId);
     scene.running = options.allowNested === true ? previousRunning : false;
     scene.lastActionTargetKey = "";
@@ -376,20 +380,31 @@ async function consumeBlockingStep(
       if (target === PLAYER_MOVE_TARGET) {
         // 주인공 강제 이동: 이벤트 무버가 아니라 플레이어를 한 칸씩 걷게 한다.
         startPlayerRoute(scene, step.moves, step.repeat);
-        if (step.wait) await waitForPlayerRouteComplete(scene);
+        if (step.wait) {
+          await Promise.race([waitForPlayerRouteComplete(scene), skipController.waitForSkip()]);
+        }
       } else {
         scene.registerAutonomousMover(target, step.moves, step.repeat);
         scene.commandMoveRouteEventIds.add(target);
-        if (step.wait) await waitForMoverComplete(scene, target);
+        if (step.wait) {
+          await Promise.race([waitForMoverComplete(scene, target), skipController.waitForSkip()]);
+        }
+      }
+      {
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
       }
       return resumeAfterSurface(scene, interpreter);
     }
     case "eraseEvent":
       eraseRuntimeEvent(scene, step.eventId ?? currentEventId);
       return resumeAfterSurface(scene, interpreter);
-    case "waitForAllMovement":
-      await waitForAllCommandMovement(scene);
+    case "waitForAllMovement": {
+      await Promise.race([waitForAllCommandMovement(scene), skipController.waitForSkip()]);
+      const skipped = skipController.takeResult();
+      if (skipped) return skipped;
       return resumeAfterSurface(scene, interpreter);
+    }
     case "stopAllMovement":
       stopCommandMovement(scene);
       return resumeAfterSurface(scene, interpreter);
@@ -423,7 +438,9 @@ async function consumeBlockingStep(
     case "playAudio":
       setAudioState(scene.session, step);
       playAudioCommand(step, store.getCurrent());
-      scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
+      // 배너는 "지금 흐르는 곡"을 알리는 장치라 루프(BGM/BGS)만 띄운다. 원샷 SE 까지 띄우면
+      // clear 경로가 stopAudio 뿐이라 문 열림 효과음 하나에 리소스 id 가 화면에 박혀 남는다.
+      if (step.loop) scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "stopAudio":
@@ -441,9 +458,12 @@ async function consumeBlockingStep(
     case "scrollMap":
       await scene.panScreen(step);
       return resumeAfterSurface(scene, interpreter);
-    case "cameraControl":
-      await applyCameraControl(scene, step);
+    case "cameraControl": {
+      await Promise.race([applyCameraControl(scene, step), skipController.waitForSkip()]);
+      const skipped = skipController.takeResult();
+      if (skipped) return skipped;
       return resumeAfterSurface(scene, interpreter);
+    }
     case "setLighting":
       await applyLightingStep(scene, step);
       return resumeAfterSurface(scene, interpreter);
@@ -478,7 +498,13 @@ async function consumeBlockingStep(
       await playOpenChest(scene, { chestId: step.chestId });
       return resumeAfterSurface(scene, interpreter);
     case "shop":
-      return resumeWithValue(scene, interpreter, await playShop(scene, step));
+      // 상점 원장은 맵+이벤트로 가른다 — 예전에는 전부 "global" 하나를 공유해서 대장간에서
+      // 흥정하다 상인을 화나게 하면 잡화점 주인도 같이 화나 있었다.
+      return resumeWithValue(
+        scene,
+        interpreter,
+        await playShop(scene, step, { mapId: scene.map?.id, eventId: currentEventId }),
+      );
     case "inn":
       return resumeWithValue(scene, interpreter, await playInn(scene, step));
     case "gameOver":

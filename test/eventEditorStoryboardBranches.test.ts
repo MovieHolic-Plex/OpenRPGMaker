@@ -67,6 +67,8 @@ describe("storyboard renders each branch name exactly once", () => {
     const host = renderStoryboard([command], { onSelect: (path) => selected.push(path) });
 
     expect(host.querySelectorAll(".event-storyboard-branch-command")).toHaveLength(4);
+    expect([...host.querySelectorAll<HTMLElement>(".event-storyboard-branch-step")].map((node) => node.textContent))
+      .toEqual(["1", "2", "3", "1"]);
     const nested = host.querySelector<HTMLElement>("[data-cmd-path='[0,0,2]']");
     expect(nested?.textContent).toContain("고맙네. 자네 덕분이야!");
     nested?.click();
@@ -111,6 +113,17 @@ describe("storyboard renders each branch name exactly once", () => {
     const four = renderStoryboard([choicesCommand(["가", "나", "다", "라"], true)]);
     expect([...four.querySelectorAll(".event-storyboard-branch-label")].map((n) => n.textContent))
       .toEqual(["가", "나", "다", "라", "취소했을 때"]);
+  });
+
+  it("uses the shared empty-branch copy and opens that branch's add route", () => {
+    const targets: number[][] = [];
+    const host = renderStoryboard([{ kind: "loop", body: [] }], {
+      onAddToBranch: (path) => targets.push(path),
+    });
+    const empty = host.querySelector<HTMLButtonElement>(".event-storyboard-branch-empty");
+    expect(empty?.textContent).toBe("비어 있음 — 여기에 명령 추가");
+    empty?.click();
+    expect(targets).toEqual([[0, -5]]);
   });
 
   it("renders no branch panel for commands without branches", () => {

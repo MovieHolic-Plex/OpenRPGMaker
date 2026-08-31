@@ -66,4 +66,4 @@ interface HousePreset {
 
 - tsc 0 / vitest 전체(2293+) 불변 + 신규(ㄱ자 열별 벽·지붕 배치, 프리셋 선택, 마을 순서) 테스트.
 - E2E: ㄱ자 프리셋 시공 스크린샷(벽 두 단 + ㄱ자 지붕), 마을 프리미티브(집 N채 + 사이 길).
-- 모델 정책: minimax/minimax-m3 유지.
+- 모델 정책: **폐기됨(2026-08-30).** 모델은 제공자 레지스트리(`src/ai/ohMyPiProviders.ts`)와 `src/ai/llmClient.ts` 기본값이 정한다.

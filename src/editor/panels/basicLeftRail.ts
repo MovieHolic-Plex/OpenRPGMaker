@@ -101,7 +101,7 @@ function installDocumentListeners(): void {
     if (flyoutState.open === null) return;
     const target = event.target;
     if (target instanceof Node && lastContainer?.contains(target)) return;
-    dispatchFlyout({ type: "outside-click" });
+    dispatchFlyout({ type: "dismiss" });
   });
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape" || flyoutState.open === null) return;
@@ -156,14 +156,19 @@ export function renderBasicLeftRail(container: HTMLElement): void {
 
 /**
  * 모듈에 남은 열림 상태가 지금 그리려는 DOM 과 어긋나는가.
- * 컨테이너가 바뀌었거나 끊겼거나, 그 안에 이전 레일이 더 없으면(다른 모드가 덮어썼다)
- * 이 렌더는 "이어서 그리기"가 아니므로 열림은 사용자 의도가 아니다.
+ * 컨테이너가 바뀌었거나 끊겼으면 이 렌더는 "이어서 그리기"가 아니므로 열림은 사용자 의도가 아니다.
+ *
+ * 예전에는 `container.querySelector('[data-testid="basic-left-rail"]') === null` 도 함께 봤다
+ * ("다른 모드가 덮어썼다"를 잡으려는 의도였다). 그 조건은 의도한 것을 한 번도 잡지 못하면서
+ * 정상 경로를 매번 오진했다 — renderTilePalette 는 clearChildren 뒤에 이 함수를 부르므로
+ * 레일은 **항상** 없다. 결과: 맵을 고르면 editorState 변경 → 좌패널 재렌더 → 열림 상태 초기화로
+ * 맵 플라이아웃이 스스로 닫혔다(실측: 행 클릭 후 basic-rail-flyout 이 DOM 에서 사라짐).
+ * 모드 전환은 subscribeEditorUiMode 가 이미 초기화한다.
  */
 function isStaleFlyoutState(container: HTMLElement): boolean {
   if (flyoutState.open === null) return false;
   if (lastContainer !== container) return true;
-  if (lastContainer.isConnected === false) return true;
-  return lastContainer.querySelector('[data-testid="basic-left-rail"]') === null;
+  return lastContainer.isConnected === false;
 }
 
 function makeToolsColumn(activeTool: Tool): HTMLElement {
@@ -404,6 +409,10 @@ function makeTilesBody(selectedTile: number, tileset: TilesetDef): HTMLElement {
           click: () => {
             const layer = editorState.get().layer === "event" ? "lower" : editorState.get().layer;
             editorState.set({ selectedTile: index, tool: "paint", paintShape: "pen", layer });
+            // 고르면 물러난다 — 이 플라이아웃은 캔버스를 덮으므로 열려 있으면 방금 고른 타일을
+            // 가려진 자리에 칠할 수 없다. 계속 고르고 싶으면 핀을 쓴다(dismiss 는 핀을 존중).
+            // 예전에는 isStaleFlyoutState 오진이 이 닫기를 «우연히» 해 주고 있었다.
+            dispatchFlyout({ type: "dismiss" });
           },
         },
       }),

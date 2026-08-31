@@ -28,6 +28,7 @@ import { registerModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderAiAuthSettings } from "./aiAuthSettings";
+import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
 export type AiSettingsFocus = "first" | "apiKey";
 
@@ -89,9 +90,14 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
     ],
   });
 
+  // 네이티브 select 는 이 모달에서 OS 크롬 그대로 떠서 주변 카드·입력과 어긋났다. 이벤트
+  // 편집기와 같은 커스텀 리스트박스로 올린다 — 네이티브 요소는 값·change 원천으로 남는다.
+  const customSelects = installEventEditorCustomSelects(backdrop);
+
   const close = registerModal(backdrop, () => {
     // 인증 패널은 기기 로그인 폴링 타이머를 들고 있다 — 정리하지 않으면 모달이 닫힌 뒤에도
     // /auth/status 를 3초마다 계속 때린다.
+    customSelects.dispose();
     form.dispose();
     backdrop.remove();
     if (activeAiSettingsClose === close) activeAiSettingsClose = null;
@@ -352,6 +358,10 @@ export function renderAiSettingsForm(options: {
     on: { click: () => persist(true) },
   });
 
+  // "AI 가 기억한 내 성향" 은 **의도적으로 여기 없다** (2026-08-30 감독 지시). 진입점은 채팅
+  // 컴포저의 ⌾ 버튼이 여는 팝오버다 — 성향은 대화에서 배우고 배웠다는 알림도 채팅 버블로 뜨니,
+  // 확인·삭제가 이 모달에 있으면 배운 자리와 고치는 자리가 갈라진다. 여기 추가하지 말 것.
+  // 이 폼에 `projectScopeKey` 옵션이 없는 것도 그래서다(성향이 유일한 사용처였다).
   const form = el("div", {
     class: "ai-config-form ai-settings-form",
     dataset: { testid: "ai-config" },

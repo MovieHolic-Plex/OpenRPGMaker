@@ -326,7 +326,19 @@ function formatCaptureError(e: unknown): string {
  * 분기를 **한 번도 타지 않는다**. CSS 실사용 정본 래칫이 이 두 클래스의 소실로 잡아냈다.
  * 사용자가 이벤트를 만들면 가장 먼저 보는 화면이라 엣지 케이스가 아니다.
  */
-type ShellVariant = { readonly bare?: boolean };
+/**
+ * `flow: true` 는 **플로우 보기를 켠 상태**다.
+ *
+ * 왜 따로 잡는가 (실측): #364 이전에는 플로우 마크업이 기본 보기에서도 미리 렌더돼 숨어
+ * 있었고, 그래서 `bare` 표본의 classCount 하한선이 그 마크업을 세고 있었다. #364 가 플로우를
+ * `event-page-flow-host` 로 옮기면서 **지연 렌더**로 바꾸자(content.ts: isFlow 일 때만
+ * renderEventPageFlow) 기본 표본에서 event-flow-* 클래스 10종이 사라졌다.
+ *
+ * 기능은 살아 있는데 표본이 못 보는 상태였다. 하한선을 낮춰서 넘기면 «플로우가 정말 지워지는
+ * 회귀» 를 앞으로 못 잡는다 — 그래서 하한선을 낮추는 대신 **플로우를 켠 표본을 추가**해
+ * 가드가 계속 그 마크업을 세게 한다.
+ */
+type ShellVariant = { readonly bare?: boolean; readonly flow?: boolean };
 
 /** selectedPageIndex 를 지정해 렌더한다. index 1 = 2페이지 선택(다중 페이지 사각 차단). */
 function captureShell(selectedPageIndex: number, variant: ShellVariant = {}): ShellSurface {
@@ -380,6 +392,13 @@ function captureShell(selectedPageIndex: number, variant: ShellVariant = {}): Sh
   const container = document.createElement("div");
   try {
     renderEventEditorContent(container, mapId, ev.id);
+    if (variant.flow) {
+      // 플로우는 지연 렌더다. 세그먼트를 실제로 눌러서 host 가 채워진 뒤에 잰다 —
+      // 버튼이 사라지면 여기서 던져서 «입구가 없어진 회귀» 도 같이 잡힌다.
+      const toggle = container.querySelector<HTMLElement>('[data-testid="event-view-toggle-flow"]');
+      if (!toggle) throw new Error("플로우 보기 세그먼트(event-view-toggle-flow)가 없다");
+      toggle.click();
+    }
   } catch (e) {
     return emptySurface(formatCaptureError(e));
   }
@@ -582,7 +601,14 @@ function shellMetrics(surface: ShellSurface): FloorMetrics {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** 수확은 파일당 한 번만 한다 — 렌더가 모듈 전역(open-state 셋)을 만지므로 재수확은 순서 의존을 만든다. */
-const actual = { page1: captureShell(0), page2: captureShell(1), bare: captureShell(0, { bare: true }) };
+const actual = {
+  page1: captureShell(0),
+  page2: captureShell(1),
+  bare: captureShell(0, { bare: true }),
+  // #364 가 플로우를 지연 렌더로 바꾼 뒤 기본 표본이 event-flow-* 를 못 본다. 플로우를 켠
+  // 표본을 따로 잡아 가드가 그 마크업을 계속 세게 한다.
+  flow: captureShell(0, { flow: true }),
+};
 const crashed = Object.entries(actual).filter(([, surface]) => surface.error);
 
 describe("이벤트에디터 셸 표면 스냅샷", () => {

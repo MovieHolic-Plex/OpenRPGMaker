@@ -2,6 +2,7 @@ import { el } from "@/util/dom";
 import {
 } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 
 const AVATAR_CHIP_SIZE = 40;
 
@@ -21,6 +22,26 @@ export function textControl(label: string, value: string, onInput: (value: strin
 // step 을 주면 <input type="number"> 의 기본 step=1 대신 소수 입력이 유효값이 된다.
 // 이게 없으면 6.25(=1/16) 같은 값이 브라우저 검증에서 :invalid 로 표시된다.
 export type NumberFieldBounds = { readonly min: number; readonly max: number; readonly step?: number };
+
+const NUMBER_STEPPER_ICONS: Readonly<Record<"dec" | "inc", readonly SvgNodeSpec[]>> = {
+  dec: [{ tag: "path", attrs: { d: "M5 11h12" } }],
+  inc: [
+    { tag: "path", attrs: { d: "M5 11h12" } },
+    { tag: "path", attrs: { d: "M11 5v12" } },
+  ],
+};
+
+function numberStepperIcon(kind: "dec" | "inc"): SVGSVGElement {
+  const icon = buildSvgIcon(NUMBER_STEPPER_ICONS[kind]);
+  icon.setAttribute("class", "db-number-stepper-icon");
+  return icon;
+}
+
+function decimalPlaces(value: number): number {
+  const [coefficient, exponentText] = String(value).toLowerCase().split("e");
+  const fractionPlaces = coefficient?.split(".")[1]?.length ?? 0;
+  return Math.max(0, fractionPlaces - Number(exponentText ?? 0));
+}
 
 export type SliderStepperBounds = {
   readonly min: number;
@@ -111,18 +132,49 @@ export function numberField(
     if (!bounds) return numeric;
     return Math.min(bounds.max, Math.max(bounds.min, numeric));
   };
-  input.addEventListener("input", () => {
+  const decrement = el("button", {
+    class: "db-number-stepper-button db-number-stepper-dec",
+    attrs: { type: "button", "aria-label": `${label} 감소` },
+    dataset: { testid: `${testid}-dec` },
+    children: [numberStepperIcon("dec")],
+  });
+  const increment = el("button", {
+    class: "db-number-stepper-button db-number-stepper-inc",
+    attrs: { type: "button", "aria-label": `${label} 증가` },
+    dataset: { testid: `${testid}-inc` },
+    children: [numberStepperIcon("inc")],
+  });
+  const syncButtonState = (): void => {
+    const current = normalize(Number(input.value));
+    decrement.disabled = bounds !== undefined && current <= bounds.min;
+    increment.disabled = bounds !== undefined && current >= bounds.max;
+  };
+  const commitInput = (rewrite: boolean): void => {
     const next = normalize(Number(input.value));
     // 클램프가 실제로 값을 바꿨을 때만 되쓴다 — 타이핑 중 커서 점프 방지.
-    if (bounds && input.value !== "" && String(next) !== input.value) input.value = String(next);
+    if (rewrite || (bounds && input.value !== "" && String(next) !== input.value)) input.value = String(next);
+    syncButtonState();
     onInput(next);
-  });
-  input.addEventListener("change", () => {
-    const next = normalize(Number(input.value));
-    input.value = String(next);
-    onInput(next);
-  });
-  return field(label, input);
+  };
+  input.addEventListener("input", () => commitInput(false));
+  input.addEventListener("change", () => commitInput(true));
+
+  const stepBy = (direction: -1 | 1): void => {
+    const step = bounds?.step ?? 1;
+    const current = normalize(Number(input.value));
+    const precision = Math.min(12, Math.max(decimalPlaces(current), decimalPlaces(step), decimalPlaces(bounds?.min ?? 0)));
+    input.value = String(normalize(Number((current + direction * step).toFixed(precision))));
+    // 타이핑과 같은 이벤트/콜백 경로를 사용해 호출자의 저장·리렌더 동작을 보존한다.
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+  decrement.addEventListener("click", () => stepBy(-1));
+  increment.addEventListener("click", () => stepBy(1));
+  syncButtonState();
+
+  return field(
+    label,
+    el("span", { class: "db-number-stepper", children: [decrement, input, increment] })
+  );
 }
 
 export function selectField(

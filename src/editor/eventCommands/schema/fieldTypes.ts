@@ -35,8 +35,7 @@ export type RecordSource =
   | "animation"
   | "image"
   | "audio"
-  /** 동영상. 전용 피커가 생기기 전엔 record-source 표식을 달고 자유 입력으로 떨어진다. */
-  | "video";
+  | "movie";
 
 type FieldBase = {
   readonly label: string;

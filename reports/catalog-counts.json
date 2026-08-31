@@ -1,0 +1,16 @@
+{
+  "measuredAt": "2026-08-30",
+  "method": "npx vite-node scripts/report-default-catalog-counts.mts (before = origin/main 98969996, after = agent/items10)",
+  "before": {
+    "itemTotal": 208,
+    "items": { "normalGoods": 99, "medicine": 59, "book": 3, "seed": 8, "special": 35, "switch": 4 },
+    "equipmentTotal": 75,
+    "equipment": { "weapon": 31, "shield": 6, "armor": 9, "helmet": 7, "accessory": 22 }
+  },
+  "after": {
+    "itemTotal": 226,
+    "items": { "normalGoods": 99, "medicine": 59, "book": 11, "seed": 11, "special": 35, "switch": 11 },
+    "equipmentTotal": 86,
+    "equipment": { "weapon": 31, "shield": 11, "armor": 11, "helmet": 11, "accessory": 22 }
+  }
+}

@@ -18,12 +18,12 @@ describe("basicFlyoutReducer", () => {
     expect(s.open).toBeNull();
   });
 
-  it("바깥 클릭은 핀 없을 때만 닫는다", () => {
+  it("자동 닫기(바깥 클릭·타일 선택)는 핀 없을 때만 닫는다", () => {
     let s = basicFlyoutReducer(INITIAL_BASIC_FLYOUT_STATE, { type: "toggle", id: "tiles" });
     s = basicFlyoutReducer(s, { type: "pin-toggle" });
-    expect(basicFlyoutReducer(s, { type: "outside-click" }).open).toBe("tiles");
+    expect(basicFlyoutReducer(s, { type: "dismiss" }).open).toBe("tiles");
     s = basicFlyoutReducer(s, { type: "pin-toggle" });
-    expect(basicFlyoutReducer(s, { type: "outside-click" }).open).toBeNull();
+    expect(basicFlyoutReducer(s, { type: "dismiss" }).open).toBeNull();
   });
 
   it("Escape는 핀 상태와 무관하게 닫고 핀을 푼다", () => {

@@ -139,6 +139,10 @@ export type StepResult =
       mileageRate?: number;
       /** 가게 투자 레벨 0..5 — 상인 매입 예산 배수. */
       investmentLevel?: number;
+      restockPolicy?: import("@/project/types").ShopRestockPolicy;
+      economy?: import("@/project/types").ShopEconomyConfig;
+      blackMarketFlag?: string;
+      festivalFlag?: string;
     }
   | {
       kind: "inn";

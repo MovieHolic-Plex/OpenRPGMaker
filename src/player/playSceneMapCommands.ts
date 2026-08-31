@@ -1,4 +1,4 @@
-import { canMove, isPassable } from "@/project/collision";
+import { isPassable, isPassableLanding } from "@/project/collision";
 import { setMapTileOverride } from "@/project/session";
 import { store } from "@/project/store";
 import type { MapId, TransferFade } from "@/project/types";
@@ -179,30 +179,6 @@ export function shakeCamera(scene: PlaySceneContext, step: ShakeScreenStep): Pro
   });
 }
 
-/**
- * 이 칸에서 **밖으로 한 걸음이라도 나갈 수 있는가**.
- *
- * 왜 필요한가(2026-07-27 실측): 착지 판정은 `isPassable` 을 썼는데, 그 함수는 스스로
- * "레거시 호환: 단순 passability(방향 무시) — EditScene 표시 등에 사용" 이라고 적혀 있는
- * 4방향 OR 판정이다. 반면 실제 이동은 `canMove` 로 **출발 칸의 나가는 비트 AND 도착 칸의
- * 들어오는 비트**를 본다. 둘의 기준이 달라서, 한 방향만 열린 타일(나무 데크 가장자리
- * 192/228/229/230 처럼 실제로 존재한다)에 transfer 로 내려놓으면 isPassable 은 통과시키지만
- * canMove 는 네 방향 모두 막아 **완전히 갇힌다**. 저장소에 갇힘 탈출 로직은 없다.
- */
-function canLeaveTile(
-  project: ReturnType<typeof store.getCurrent>,
-  map: ReturnType<typeof store.getCurrent>["maps"][MapId],
-  x: number,
-  y: number
-): boolean {
-  return (
-    canMove(project, map, x, y, x + 1, y) ||
-    canMove(project, map, x, y, x - 1, y) ||
-    canMove(project, map, x, y, x, y + 1) ||
-    canMove(project, map, x, y, x, y - 1)
-  );
-}
-
 export function nearestPassableTile(
   project: ReturnType<typeof store.getCurrent>,
   map: ReturnType<typeof store.getCurrent>["maps"][MapId],
@@ -211,14 +187,11 @@ export function nearestPassableTile(
 ): { x: number; y: number } {
   const fx = Math.max(0, Math.min(map.width - 1, x));
   const fy = Math.max(0, Math.min(map.height - 1, y));
-  // 착지 가능 = 밟을 수 있고(isPassable) **거기서 나갈 수도 있다**(canLeaveTile).
-  const landable = (px: number, py: number): boolean =>
-    isPassable(project, map, px, py) && canLeaveTile(project, map, px, py);
-  if (landable(fx, fy)) return { x: fx, y: fy };
+  if (isPassableLanding(project, map, fx, fy)) return { x: fx, y: fy };
   for (let radius = 0; radius < Math.max(map.width, map.height); radius++) {
     for (let dy = -radius; dy <= radius; dy++) {
       for (let dx = -radius; dx <= radius; dx++) {
-        if (landable(fx + dx, fy + dy)) return { x: fx + dx, y: fy + dy };
+        if (isPassableLanding(project, map, fx + dx, fy + dy)) return { x: fx + dx, y: fy + dy };
       }
     }
   }

@@ -116,6 +116,34 @@ describe("nested event command drag/drop DOM", () => {
     expect(moveCommandTo).toHaveBeenCalledWith([0, FORK_THEN_BRANCH_INDEX, 0], 1);
   });
 
+  it("routes a drop on the empty branch button to that branch instead of the root list", () => {
+    const moveCommandAcross = vi.fn();
+    const commands: Command[] = [
+      {
+        kind: "fork",
+        condition: { kind: "switch", switchId: "sw_0001", value: true },
+        then: [],
+      },
+      { kind: "text", body: "move me" },
+    ];
+    const host = renderWithFakeDom(() => {
+      const root = document.createElement("div");
+      renderCommandList(root, commands, [], baseActions({ moveCommandAcross }));
+      return root;
+    });
+    const empty = host.querySelector(
+      `[data-testid="event-command-branch-empty-0-${FORK_THEN_BRANCH_INDEX}"]`,
+    ) as unknown as FakeElement | null;
+
+    expect(empty?.dataset.containerPath).toBe(JSON.stringify([0, FORK_THEN_BRANCH_INDEX]));
+    empty?.dispatchEvent(dropEvent([1]));
+    expect(moveCommandAcross).toHaveBeenCalledWith(
+      [1],
+      [0, FORK_THEN_BRANCH_INDEX],
+      Number.MAX_SAFE_INTEGER,
+    );
+  });
+
   it("renders an empty branch drop zone and routes root-to-branch moves across containers", () => {
     const moveCommandAcross = vi.fn();
     const commands: Command[] = [

@@ -156,7 +156,7 @@ test("A 초보 부팅 — 첫 화면·시작 표면", async ({ page }) => {
   for (const [tid, name] of [
     ["ai-start-examples", "A03-start-examples"],
     ["ai-start-visual-gallery", "A04-visual-gallery"],
-    ["ai-connection-status", "A05-connection-status"],
+    ["topbar-ai-settings", "A05-ai-settings-entry"],
     ["ai-start-recent-work", "A06-recent-work"],
     ["ai-start-history", "A07-history"],
   ] as const) {
@@ -515,9 +515,10 @@ test("I 빈 상태 CTA → 실작업 제안 흐름", async ({ page }) => {
   await page.waitForTimeout(1_500);
   await shot(page, "I04-after-turn-full");
   // 적용 완료 표면만 남고 승인 pill/카드/모달은 없어야 한다.
-  const completion = page.locator('[data-testid="ai-completion-strip"]').first();
-  if (await completion.isVisible().catch(() => false)) await shot(completion, "I05-completion-strip");
-  else log("ABSENT ai-completion-strip after CTA turn");
+  // 맵 위 완료 스트립은 제거됐다(2026-08-30) — 적용 직후 되돌리기는 컴포저 액션 행에 뜬다.
+  const completion = page.locator('[data-testid="ai-composer-undo"]').first();
+  if (await completion.isVisible().catch(() => false)) await shot(completion, "I05-composer-undo");
+  else log("ABSENT ai-composer-undo after CTA turn");
   for (const tid of ["ai-proposal-pill", "ai-proposal-card", "ai-proposal-modal"] as const) {
     const count = await page.locator(`[data-testid="${tid}"]`).count();
     log(`${tid} count after CTA turn: ${count}`);

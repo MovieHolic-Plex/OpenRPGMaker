@@ -58,8 +58,11 @@ import {
   type TownHouseShowcaseStyle,
   singleNodeTree,
 } from "./defaultMaps";
-// Editor-authored sample demo export (blankProject → editor modules → fixture).
-// Regenerate: npx playwright test test/e2e/author-dew-village-editor-demo.spec.ts
+// 샘플 데모 export. 이 파일의 database.items / database.equipment 는 **파생물**이다 —
+// 생성: npm run fixture:sync (지키는 게이트: test/fixtureDefaultDatabaseDrift.test.ts).
+// 맵·이벤트는 콘텐츠 스크립트가 이 파일을 읽어 직접 생장시킨 생장분이다.
+// test/e2e/author-dew-village-editor-demo.spec.ts 는 이 파일을 쓰지 않는다 — 그 e2e 는
+// test/fixtures/projects/ 밑에 2맵 저작 스모크 산출물을 따로 남긴다.
 import dewVillageDemoFixture from "./fixtures/dew-village-demo.json" with { type: "json" };
 const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
 const BLANK_PROJECT_START_MAP_ID = "map_blank_start";

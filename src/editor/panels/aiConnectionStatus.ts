@@ -1,6 +1,6 @@
-// 상태바 "AI 연동" 칩 — DB 연동 칩(renderDbConnectionStatus)과 동일한 패턴.
-// 영역 작업(runRegionTask)·AI 채팅은 LLM 호출을 하므로, OAuth/apiKey 가 미연동이면 401 로 실패한다.
-// 사용자가 "영역 작업이 왜 안 되나?" 모르게 두지 않도록 상태바에 AI 연동 상태를 항상 노출한다.
+// 에디터 AI 연결 상태의 공유 캐시.
+// 브라우저의 게이트는 동기 판정이어야 하므로 companion `/auth/status`의 마지막 결과를 보관한다.
+// 하단 상태바 칩은 퇴역했으며, 부팅 warm-up과 인증 설정의 mutation 경계가 이 캐시를 갱신한다.
 //
 // 평가 전략:
 // - chatgpt(= 동반 서비스 전송, 에디터의 유일한 경로): companion `/auth/status` 조회가 필요하므로
@@ -20,25 +20,13 @@ import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
 import type { ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
 import { getAiModelDemotion, getAiTransportHealth, isProxyAuth, loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
-import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
-import { openAiSettingsModal, type AiSettingsFocus } from "./aiSettingsModal";
-import { el } from "@/util/dom";
 
 /**
- * 칩이 말할 수 있는 상태. `offline`(도달 불가)과 `error`(응답했지만 실패)를 나눈다 —
+ * 연결 게이트가 구분하는 상태. `offline`(도달 불가)과 `error`(응답했지만 실패)를 나눈다 —
  * 예전에는 "보조 프로그램이 죽음 / 안 켜짐 / 그냥 로그아웃" 세 가지가 **같은 라벨 "AI 로그인",
  * 같은 이모지, 같은 색**으로 보였고 차이는 hover 툴팁에만 있었다.
  */
 export type AiConnectionKind = "ready" | "disconnected" | "checking" | "offline" | "error";
-
-/** 상태별 이모지. 색 CSS 와 함께 "무엇이 문제인가"를 한눈에 가른다. */
-const AI_CONNECTION_ICON: Record<AiConnectionKind, string> = {
-  ready: "🤖",
-  checking: "⏳",
-  disconnected: "🔑",
-  offline: "🔌",
-  error: "⚠️",
-};
 
 export interface AiConnectionStatus {
   readonly kind: AiConnectionKind;
@@ -78,6 +66,7 @@ function isStoredCredential(status: CachedOAuthStatus): boolean {
 
 let aiOAuthCachedStatus: CachedOAuthStatus | null = null;
 let refreshInFlightProviderId: string | null = null;
+let refreshGeneration = 0;
 
 type AiConnectionStatusCore = Omit<AiConnectionStatus, "providerId" | "providerLabel">;
 
@@ -242,11 +231,14 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
     return;
   }
   const providerId = parseOhMyPiProvider(config.providerId);
+  const generation = refreshGeneration;
   if (refreshInFlightProviderId === providerId) return;
   refreshInFlightProviderId = providerId;
   try {
     const auth = await fetchChatGptAuthStatus(providerId);
-    if (parseOhMyPiProvider(loadAiConfig().providerId) !== providerId) return;
+    // 로그인/로그아웃이 reset 뒤 새 조회를 시작했다면, 그보다 먼저 시작한 부팅 조회가 늦게 와도
+    // 새 인증 상태를 덮지 않는다. providerId 만 비교하면 같은 기본 제공자에서 이 경합을 못 잡는다.
+    if (generation !== refreshGeneration || parseOhMyPiProvider(loadAiConfig().providerId) !== providerId) return;
     const next: CachedOAuthStatus = {
       providerId,
       connected: auth.connected,
@@ -266,7 +258,7 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
     aiOAuthCachedStatus = next;
     if (changed) onChange?.();
   } catch (error) {
-    if (parseOhMyPiProvider(loadAiConfig().providerId) !== providerId) return;
+    if (generation !== refreshGeneration || parseOhMyPiProvider(loadAiConfig().providerId) !== providerId) return;
     // (B) 서버가 응답했지만 실패(4xx/5xx) — 서버가 알려준 원인을 캐시에 담아 툴팁에 노출한다.
     // instanceof 대신 오류 이름으로 판별한다: 테스트가 이 모듈을 vi.mock 으로 통째 교체하면
     // 클래스 정체성이 달라질 수 있기 때문. 일반 Error(= 닿지 못함, (A))는 이 이름이 아니다.
@@ -290,67 +282,19 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
     aiOAuthCachedStatus = next;
     if (changed) onChange?.();
   } finally {
-    if (refreshInFlightProviderId === providerId) refreshInFlightProviderId = null;
+    // 무효화된 옛 요청의 finally 가 같은 제공자의 새 요청을 in-flight 목록에서 지우면 중복 조회가
+    // 다시 허용된다. 시작 세대가 아직 현재일 때만 자기 슬롯을 반납한다.
+    if (generation === refreshGeneration && refreshInFlightProviderId === providerId) {
+      refreshInFlightProviderId = null;
+    }
   }
 }
 
 /** 캐시를 초기화(로그아웃·설정 변경 직후 재평가 유도). */
 export function resetAiConnectionStatusCache(): void {
   aiOAuthCachedStatus = null;
-}
-
-/** 상태바 AI 연동 칩. 클릭 시 AI 설정 모달을 연다(DB 연동 칩과 동일 패턴). */
-export function renderAiConnectionStatus(onRefresh: () => void): HTMLElement {
-  const status = getAiConnectionStatus();
-  // 상태마다 다른 이모지를 준다 — 예전에는 세 갈래 삼항이 전부 같은 로봇 이모지를 돌려주어
-  // 아이콘이 아무 정보도 싣지 않았고, 상태별 색 CSS 도 없어서 네 상태가 똑같이 보였다.
-  const icon = AI_CONNECTION_ICON[status.kind];
-  const button = el("button", {
-    // auth-${authMode} 클래스는 걷었다 — 소비하는 스타일시트가 없고, 자격 종류는 이제 2값이 아니다.
-    class: `editor-statusbar-cell ai-connection-status ${status.kind}`,
-    attrs: { type: "button", title: status.title },
-    children: [el("span", { class: "ai-connection-label", text: `${icon} ${status.label}` })],
-    dataset: { testid: "ai-connection-status" },
-    on: {
-      click: () => {
-        const current = getAiConnectionStatus();
-        // 미연결이면 "지금 키를 넣어야 하는가"를 인증 패널이 판단하게 넘긴다.
-        const focusTarget: AiSettingsFocus | undefined =
-          current.kind === "disconnected" ? "apiKey" : undefined;
-        openAiSettingsModal({
-          focusTarget,
-          // 칩에서 로그인·키 저장을 마치면 칩 자신이 즉시 진실해져야 한다. 예전에는 onSaved 를
-          // 넘기지 않아 로그인한 뒤에도 낡은 캐시를 계속 보여 줬다.
-          // (실행 중 AssistantSession 의 낡은 config 갱신은 aiChatPanel 이 맡는다 — 그 파일은
-          //  동시 작업 중이라 여기서 배선하지 않았다. 후속 부채.)
-          onSaved: () => {
-            resetAiConnectionStatusCache();
-            onRefresh();
-            void refreshAiConnectionStatus(onRefresh);
-          },
-        });
-      },
-    },
-  });
-  // 칩 우클릭 = 강제 재조회(chatgpt 모드). 동기 평가(apiKey)는 즉시 ready 이므로 불필요.
-  button.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
-    void refreshAiConnectionStatus(onRefresh);
-  });
-  return button;
-}
-
-/** 상태 칩(연결 설정)과 분리된, 실제 저작 패널로 가는 명시적인 진입점. */
-export function renderAiAuthoringEntry(): HTMLElement {
-  return el("button", {
-    class: "editor-statusbar-cell ai-authoring-entry strong",
-    text: "✨ AI로 만들기",
-    attrs: {
-      type: "button",
-      title: "AI 패널을 열어 길·NPC·상점·상자·집·퀘스트를 만듭니다",
-      "aria-label": "AI로 만들기",
-    },
-    dataset: { testid: "ai-authoring-entry" },
-    on: { click: () => void openAiAssistantPanel() },
-  });
+  // 같은 제공자에서 진행 중인 부팅 조회도 인증 변경 전 상태를 담고 있다. 세대를 올려 그 응답을
+  // 폐기하고 슬롯을 비워야 applyStatus 직후의 재조회가 실제로 시작된다.
+  refreshGeneration += 1;
+  refreshInFlightProviderId = null;
 }

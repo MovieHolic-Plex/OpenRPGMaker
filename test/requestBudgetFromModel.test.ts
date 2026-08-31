@@ -8,6 +8,7 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  AUTO_COMPACTION_TRIGGER_TOKENS,
   DEFAULT_COMPACTION_SETTINGS,
   resolveContextWindow,
   shouldCompact,
@@ -57,11 +58,12 @@ describe("resolveRequestCharBudget", () => {
     expect(resolveWorkingContextTokens(GEMINI)).toBe(WORKING_CONTEXT_TOKEN_CAP);
   });
 
-  it("압축 문턱은 이 변경으로 움직이지 않는다", () => {
-    // 이 PR 은 요약 시점을 옮기지 않는다 — 클램프만 고친다. 작업 창 상한이
-    // DEFAULT_CONTEXT_WINDOW 와 같으므로 문턱(창 - reserve)은 옛 값 그대로다.
+  it("압축 문턱은 명시한 지점(20만 토큰)이다", () => {
+    // 원래 이 항목은 "문턱은 안 움직인다(111,616)" 를 잠갔다. 문자 클램프만 고치는 변경이었으니
+    // 그때는 맞았다. 지금은 지점 자체가 제품 선택이다(감독 지시 2026-08-30: "20만 토큰 넘으면
+    // compaction"). 창 128,000 에서 파생된 111,616 은 더 이상 기준이 아니다.
     const threshold = resolveWorkingContextTokens(GEMINI) - DEFAULT_COMPACTION_SETTINGS.reserveTokens;
-    expect(threshold).toBe(128_000 - DEFAULT_COMPACTION_SETTINGS.reserveTokens);
+    expect(threshold).toBe(AUTO_COMPACTION_TRIGGER_TOKENS);
   });
 
   /**
@@ -125,5 +127,26 @@ describe("resolveWorkingContextTokens", () => {
     const working = resolveWorkingContextTokens(GEMINI);
     const clampTokens = Math.floor(resolveRequestCharBudget(GEMINI) / DEFAULT_CHARS_PER_TOKEN);
     expect(clampTokens).toBeGreaterThanOrEqual(working);
+  });
+});
+
+describe("자동 압축 지점(20만 토큰)", () => {
+  // 감독 지시(2026-08-30): "20만 토큰 넘으면 compaction 하게 하고".
+  // 예전에는 작업 창 상한이 128,000 이라 문턱이 111,616 이었다 — 창 1M 짜리 기본 모델이
+  // 창의 11% 에서 앞부분 기억을 요약으로 바꿔 버렸다.
+  it("창이 넉넉한 모델은 정확히 20만 토큰에서 압축한다", () => {
+    for (const config of [GEMINI, CODEX]) {
+      const threshold = resolveWorkingContextTokens(config) - DEFAULT_COMPACTION_SETTINGS.reserveTokens;
+      expect(threshold, config.model).toBe(AUTO_COMPACTION_TRIGGER_TOKENS);
+      expect(shouldCompact(AUTO_COMPACTION_TRIGGER_TOKENS, resolveWorkingContextTokens(config), DEFAULT_COMPACTION_SETTINGS), config.model).toBe(false);
+      expect(shouldCompact(AUTO_COMPACTION_TRIGGER_TOKENS + 1, resolveWorkingContextTokens(config), DEFAULT_COMPACTION_SETTINGS), config.model).toBe(true);
+    }
+  });
+
+  it("창이 20만보다 좁은 모델은 자기 창이 먼저 걸린다", () => {
+    const claude = { model: "claude-opus-4-8", baseUrl: "https://api.anthropic.test/v1" };
+    expect(resolveWorkingContextTokens(claude)).toBe(resolveContextWindow(claude.model));
+    const threshold = resolveWorkingContextTokens(claude) - DEFAULT_COMPACTION_SETTINGS.reserveTokens;
+    expect(threshold).toBeLessThan(AUTO_COMPACTION_TRIGGER_TOKENS);
   });
 });

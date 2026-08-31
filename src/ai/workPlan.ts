@@ -716,6 +716,13 @@ export type CompleteWorkItemResult =
   | { ok: true; item: WorkItem }
   | { ok: false; reason: string; item?: WorkItem };
 
+/** 아직 열려 있는(대기/진행) 항목 id — 오류 메시지에서 모델에 유효값을 알려주는 용도. */
+export function openWorkItemIds(plan: WorkPlan): string[] {
+  return plan.layers.flatMap((layer) => layer.items)
+    .filter((item) => item.status === "pending" || item.status === "in_progress")
+    .map((item) => item.id);
+}
+
 export function completeWorkItemById(
   plan: WorkPlan,
   itemId: string,
@@ -734,7 +741,9 @@ export function completeWorkItemById(
     if (plan.currentItemId === itemId) activateFirstPending(plan);
     return { ok: true, item: it };
   }
-  return { ok: false, reason: `항목을 찾지 못했습니다: ${itemId}` };
+  // 실측(2026-08-30): 모델이 "L1-1" 같은 라벨을 지어내 complete_work_item 을 반복 실패했다.
+  // 유효 id 를 오류에 실어 보내면 같은 턴에서 스스로 교정한다.
+  return { ok: false, reason: `항목을 찾지 못했습니다: ${itemId} — 유효한 항목 id: ${openWorkItemIds(plan).join(", ") || "(없음)"}` };
 }
 
 export function skipWorkItemById(plan: WorkPlan, itemId: string, note?: string): WorkItem | null {

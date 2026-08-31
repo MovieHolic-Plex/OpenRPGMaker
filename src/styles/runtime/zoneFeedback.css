@@ -1,6 +1,6 @@
 .zone-feedback {
   color: var(--runtime-window-text);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--runtime-ui-font);
   font-size: var(--runtime-font-size-9);
   inset: 0;
   pointer-events: none;
@@ -13,9 +13,12 @@
 .zone-feedback-toast,
 .zone-feedback-objective,
 .zone-feedback-prompt {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image: var(--runtime-window-skin) var(--runtime-window-slice);
+  background: var(--runtime-glass-panel);
+  border: 1px solid var(--runtime-glass-hairline);
+  /* handSlot.css 와 같은 이유로 윈도스킨 칠을 멈줌다 — slice fill 이 배경을 덮는다. */
+  border-image: none;
+  border-radius: var(--runtime-glass-radius-small);
+  box-shadow: var(--runtime-glass-shadow);
   box-sizing: border-box;
   line-height: 1.4;
   max-width: 72%;

@@ -1,0 +1,182 @@
+{
+  "label": "after-gated",
+  "model": "shim-session-model",
+  "startedAt": "2026-08-30T21:32:28.239Z",
+  "results": [
+    {
+      "scenario": "random-dialogue-npc",
+      "ask": "말할 때마다 대사가 랜덤으로 바뀌는 NPC (사용자가 실제로 신고한 시나리오)",
+      "prompt": "지금 맵에 잡화상 아저씨 NPC 를 한 명 만들어줘. 말을 걸 때마다 대사가 랜덤으로 바뀌어야 해 — 대사 후보는 3~4개 정도면 되고, 같은 대사가 계속 나오면 안 돼.",
+      "model": "shim-session-model",
+      "stoppedReason": "final",
+      "durationMs": 212499,
+      "assistantText": "",
+      "toolNames": [
+        "find_tools",
+        "set_build_spec",
+        "declare_story_flag",
+        "place_npc",
+        "get_event",
+        "declare_story_flag"
+      ],
+      "events": [
+        {
+          "eventId": "ev_npc_5e604e47-0938-4f6a-a400-5e928f3c7700",
+          "conditionKindsPerPage": [
+            []
+          ],
+          "commandKindsPerPage": [
+            [
+              "changeFace",
+              "text"
+            ]
+          ],
+          "pageCount": 1,
+          "conditionsPerPage": [
+            0
+          ],
+          "unconditionalPages": 1,
+          "shadowedPages": [],
+          "usesWeightedBranch": false,
+          "usesFork": false,
+          "usesSelfSwitchWrite": false,
+          "textCommandCount": 1
+        }
+      ],
+      "verdict": {
+        "authoredAnyEvent": true,
+        "deadPages": 0,
+        "multiUnconditionalPages": false,
+        "usesRandomPrimitive": false,
+        "usesConditions": false
+      }
+    },
+    {
+      "scenario": "night-only-npc",
+      "ask": "등장 조건(밤에만 다른 대사) 이해 여부",
+      "prompt": "마을 광장에 야경꾼 NPC 를 만들어줘. 낮에 말을 걸면 '해가 밝으니 나는 쉬어야지' 라고 하고, 밤에 말을 걸면 순찰 이야기를 해야 해.",
+      "model": "shim-session-model",
+      "stoppedReason": "final",
+      "durationMs": 104371,
+      "assistantText": "광장 자리(10, 8)에 야경꾼을 세우고, 시간에 따라 대사가 바뀌도록 했습니다. 기본 대사는 낮의 \"해가 밝으니 나는 쉬어야지\"이고, 밤이 되면 순찰 이야기로 자동 교체됩니다. 시간대에 반응하도록 게임 시간 흐름도 함께 켜 두었습니다. 확인해 보니 지금(아침)은 낮 대사가, 밤에는 순찰 대사가 나오는 상태입니다.",
+      "toolNames": [
+        "configure_time_system",
+        "set_build_spec",
+        "place_npc",
+        "find_tools",
+        "explain_event"
+      ],
+      "events": [
+        {
+          "eventId": "ev_npc_260e6042-44e3-4f5e-8292-218f3ada09ec",
+          "conditionKindsPerPage": [
+            [],
+            [
+              "timePhase:night"
+            ]
+          ],
+          "commandKindsPerPage": [
+            [
+              "changeFace",
+              "text",
+              "text"
+            ],
+            [
+              "changeFace",
+              "text",
+              "text",
+              "text"
+            ]
+          ],
+          "pageCount": 2,
+          "conditionsPerPage": [
+            0,
+            1
+          ],
+          "unconditionalPages": 1,
+          "shadowedPages": [],
+          "usesWeightedBranch": false,
+          "usesFork": false,
+          "usesSelfSwitchWrite": false,
+          "textCommandCount": 5
+        }
+      ],
+      "verdict": {
+        "authoredAnyEvent": true,
+        "deadPages": 0,
+        "multiUnconditionalPages": false,
+        "usesRandomPrimitive": false,
+        "usesConditions": true
+      }
+    },
+    {
+      "scenario": "progress-npc",
+      "ask": "단계 진행(말 걸 때마다 다음 대사) 이해 여부",
+      "prompt": "할머니 NPC 를 만들어줘. 처음 말을 걸면 인사를 하고, 두 번째로 말을 걸면 손녀 이야기를 하고, 세 번째부터는 계속 같은 작별 인사만 반복해야 해.",
+      "model": "shim-session-model",
+      "stoppedReason": "final",
+      "durationMs": 107037,
+      "assistantText": "할머니 NPC를 맵 가운데(10, 6)에 세우고 말 걸 때마다 단계가 올라가도록 제안했습니다. 처음엔 반가운 인사, 두 번째엔 먼 도시로 떠난 손녀 이야기, 그 뒤로는 계속 같은 작별 인사가 나옵니다. 대사마다 할머니 얼굴 그림이 함께 뜨고, 단계 기억 장치가 제대로 이어지는지도 확인했습니다. 제안을 수락하시면 실제 프로젝트에 반영됩니다.",
+      "toolNames": [
+        "set_build_spec",
+        "place_npc",
+        "get_event",
+        "upsert_event",
+        "find_tools",
+        "explain_event"
+      ],
+      "events": [
+        {
+          "eventId": "ev_npc_8af12d0b-bd50-462b-88d0-fa331341f133",
+          "conditionKindsPerPage": [
+            [],
+            [
+              "selfSwitch:A"
+            ],
+            [
+              "selfSwitch:B"
+            ]
+          ],
+          "commandKindsPerPage": [
+            [
+              "changeFace",
+              "text",
+              "text",
+              "setSelfSwitch"
+            ],
+            [
+              "changeFace",
+              "text",
+              "text",
+              "text",
+              "setSelfSwitch"
+            ],
+            [
+              "changeFace",
+              "text"
+            ]
+          ],
+          "pageCount": 3,
+          "conditionsPerPage": [
+            0,
+            1,
+            1
+          ],
+          "unconditionalPages": 1,
+          "shadowedPages": [],
+          "usesWeightedBranch": false,
+          "usesFork": false,
+          "usesSelfSwitchWrite": true,
+          "textCommandCount": 6
+        }
+      ],
+      "verdict": {
+        "authoredAnyEvent": true,
+        "deadPages": 0,
+        "multiUnconditionalPages": false,
+        "usesRandomPrimitive": false,
+        "usesConditions": true
+      }
+    }
+  ]
+}

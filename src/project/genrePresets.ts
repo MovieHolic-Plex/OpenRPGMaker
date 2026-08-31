@@ -50,21 +50,3 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
       break;
   }
 }
-
-const WELCOME_TO_GENRE: Readonly<Record<string, GenrePresetId>> = {
-  "monster-collect": "monster-collect",
-  "farm-life": "farm-life",
-  "horror-gallery": "horror-chase",
-  "school-horror": "horror-chase",
-  "partner-raise": "monster-collect",
-  "adventure-jrpg": "adventure-jrpg",
-  "story-cutscene": "story-cutscene",
-};
-
-/**
- * 환영 화면의 presetId 를 GenrePresetId 로 매핑한다.
- * 매핑이 없는 presetId (partner-raise, adventure-jrpg, story-cutscene 등)는 undefined.
- */
-export function welcomePresetToGenrePreset(presetId: string | undefined): GenrePresetId | undefined {
-  return presetId ? WELCOME_TO_GENRE[presetId] : undefined;
-}

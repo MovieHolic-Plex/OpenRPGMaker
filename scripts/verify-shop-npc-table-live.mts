@@ -157,8 +157,8 @@ async function main() {
 
   const splitConfig: AiConfig = {
     baseUrl,
-    model: DEFAULT_MODEL, // minimax
-    liteModel: DEFAULT_LITE_MODEL, // flash-lite
+    model: DEFAULT_MODEL,
+    liteModel: DEFAULT_LITE_MODEL,
     apiKey,
     maxToolCalls: 40,
     maxTokens: 8192,
@@ -175,10 +175,10 @@ async function main() {
 
   mkdirSync(OUT_DIR, { recursive: true });
   const reports = [];
-  // 1) 기본 이원화 (MiniMax 감독 + lite 실행)
-  reports.push(await runOnce("split-minimax-supervisor", splitConfig, instruction));
-  // 2) 둘 다 lite (로그 thrash 재현 조건)
-  reports.push(await runOnce("both-flash-lite", bothLite, instruction));
+  // 1) 기본 이원화 (감독 DEFAULT_MODEL + 실행 DEFAULT_LITE_MODEL)
+  reports.push(await runOnce("split-supervisor", splitConfig, instruction));
+  // 2) 둘 다 실행 모델 (로그 thrash 재현 조건)
+  reports.push(await runOnce("both-lite", bothLite, instruction));
 
   const outPath = resolve(OUT_DIR, `shop-npc-table-${Date.now()}.json`);
   writeFileSync(outPath, JSON.stringify(reports, null, 2), "utf8");

@@ -176,12 +176,13 @@ test("capture event editor progressive disclosure evidence", async ({ page }) =>
   await modalShot(page, "04b-modal-only-page-preview.png");
   await modal.getByTestId("event-view-toggle-storyboard").click({ force: true });
 
-  // 5) Flow exclusive
-  const flow = modal.getByTestId("event-script-flowchart");
-  await flow.locator("summary").click({ force: true });
+  // 5) Flow view — 보기 방식이라 미리보기와 배타적이다 (예전엔 그 위에 겹쳐 뜨는 팝오버였다)
+  await modal.getByTestId("event-view-toggle-flow").click({ force: true });
+  await expect(modal.getByTestId("event-page-flow")).toBeVisible();
   await page.waitForTimeout(250);
   await screenshotEvidence(page, EVIDENCE_DIR, "05-aux-flow-open-exclusive.png");
   await modalShot(page, "05b-modal-only-aux-flow.png");
+  await modal.getByTestId("event-view-toggle-storyboard").click({ force: true });
 
   // 6) AI chip
   const ai = modal.getByTestId("ai-event-assist");

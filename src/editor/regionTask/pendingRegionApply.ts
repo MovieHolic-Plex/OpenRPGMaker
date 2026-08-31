@@ -1,5 +1,9 @@
 // Single editor-memory approval gate for region drafts. Full, partial, inline and headless apply
-// entry points all pass stale-base and hard playability review before one store-history mutation.
+// entry points all pass the stale-base check before one store-history mutation.
+//
+// 진단(reviewRegionDraft)은 적용을 막지 않는다 — 영역작업(AI) 뒤의 검증게이트는 배제됐다(2026-08-30).
+// 남은 거부 사유는 단 둘이다: 기준 프로젝트가 바뀌었거나(다른 편집을 덮어쓰게 된다),
+// 상태 전이 오류(이미 처리됨·적용 중)다.
 import { replaceAgentGhostPreviewFromProjectDiff } from "@/editor/agentGhostPreview";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import {
@@ -22,7 +26,6 @@ export interface PendingApplyOutcome {
   readonly ok: boolean;
   readonly applied: boolean;
   readonly error?: string;
-  readonly blockers: readonly string[];
 }
 
 export type NpcScheduleResolution = "enable-time" | "keep-fixed";
@@ -38,7 +41,7 @@ export interface PendingRegionApplyInput {
   readonly report?: HarnessReviewReport;
   /** Current authored state; stale-base comparison is mandatory at click time. */
   readonly getCurrentProject: () => Project;
-  /** Optional stricter caller review; the central gate always falls back to reviewRegionDraft. */
+  /** Optional caller-specific diagnostics; the default is reviewRegionDraft. Advisory only. */
   readonly reviewProject?: (project: Project) => HarnessReviewResult;
   /** Exactly one store-history apply. */
   readonly onApply: (project: Project) => void;
@@ -56,7 +59,6 @@ export interface PendingRegionApply {
   readonly instruction: string;
   readonly settled: boolean;
   readonly report?: HarnessReviewReport;
-  readonly blockers: readonly string[];
   readonly lastApplyError?: string;
   readonly roomDrafts: readonly RoomDraftSummary[];
   apply(): PendingApplyOutcome;
@@ -131,31 +133,22 @@ export function setPendingRegionApply(input: PendingRegionApplyInput): PendingRe
   };
 
   const applyCandidate = (requested: Project): PendingApplyOutcome => {
-    if (settled) return { ok: false, applied: false, error: "이미 처리된 제안입니다.", blockers: [] };
-    if (applying) {
-      const error = "제안을 처리 중입니다.";
-      return { ok: false, applied: false, error, blockers: [error] };
-    }
+    if (settled) return { ok: false, applied: false, error: "이미 처리된 제안입니다." };
+    if (applying) return { ok: false, applied: false, error: "제안을 처리 중입니다." };
     const live = input.getCurrentProject();
     if (projectApprovalFingerprint(live) !== baseFingerprint) {
       lastApplyError = "기준 프로젝트가 변경되었습니다. 새 기준으로 다시 생성하세요.";
       emit();
-      return { ok: false, applied: false, error: lastApplyError, blockers: [lastApplyError] };
+      return { ok: false, applied: false, error: lastApplyError };
     }
     candidate = requested;
+    // 진단은 보고서만 갱실한다. 진단기가 통으로 티지도 적용은 계속한다 — 진단 실패가
+    // AI 작업물을 볼모하는 것이지 사용자 작업물을 볼모하는 것이 아니다.
     try {
       reviewCandidate();
     } catch (cause) {
       const detail = cause instanceof Error ? cause.message : String(cause);
-      lastApplyError = `플레이 가능성 검사에 실패했습니다: ${detail}`;
-      emit();
-      return { ok: false, applied: false, error: lastApplyError, blockers: [lastApplyError] };
-    }
-    const blockers = report?.blockers ?? [];
-    if (blockers.length > 0) {
-      lastApplyError = `플레이 가능성 검사에서 차단되었습니다: ${blockers[0]}`;
-      emit();
-      return { ok: false, applied: false, error: lastApplyError, blockers };
+      console.warn("[regionTask] 진단 실행에 실패했지만 적용은 진행합니다:", detail);
     }
 
     applying = true;
@@ -167,11 +160,11 @@ export function setPendingRegionApply(input: PendingRegionApplyInput): PendingRe
       const detail = cause instanceof Error ? cause.message : String(cause);
       lastApplyError = `프로젝트 적용에 실패했습니다: ${detail}`;
       emit();
-      return { ok: false, applied: false, error: lastApplyError, blockers: [lastApplyError] };
+      return { ok: false, applied: false, error: lastApplyError };
     }
     applying = false;
     finishSettlement();
-    return { ok: true, applied: true, blockers: [] };
+    return { ok: true, applied: true };
   };
 
   const pending: PendingRegionApply = {
@@ -184,7 +177,6 @@ export function setPendingRegionApply(input: PendingRegionApplyInput): PendingRe
     instruction: input.instruction,
     get settled() { return settled; },
     get report() { return report; },
-    get blockers() { return report?.blockers ?? []; },
     get lastApplyError() { return lastApplyError; },
     get roomDrafts() { return listRoomDrafts(candidate); },
     apply: () => applyCandidate(candidate),
@@ -250,7 +242,6 @@ function publishHeadlessHook(): void {
           changedCells: current.changedCells,
           changedEvents: current.changedEvents,
           settled: current.settled,
-          blockers: current.blockers,
           metrics: current.report?.metrics,
         }
       : null,

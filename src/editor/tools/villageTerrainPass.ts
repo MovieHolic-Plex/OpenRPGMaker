@@ -3,13 +3,23 @@
 
 import type { GameMap, Project } from "@/project/types";
 import {
-  DEFAULT_FOREST_DENSITY,
+  broadleafCountFor,
+  coniferCountFor,
+  DEFAULT_WORLD_GEN_RULES,
+  forestBandDepth,
+  lakeDiameter,
+  resolveWorldGenRules,
+  riverBandDepth,
+  waterShapeFor,
+  type ResolvedWorldGenRules,
+} from "@/project/worldGenRules";
+import { forestCompositionApplies, plantForestComposition } from "./forestComposition";
+import {
   forestDensityFromText,
   forestPlacementPlan,
   treeFootprintCells,
   type ForestDensity,
 } from "./forestDensity";
-import { forestCompositionApplies, plantForestComposition } from "./forestComposition";
 import type { ToolDefinition } from "./types";
 import type { VillageRequirements } from "./villageRequirements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
@@ -43,6 +53,7 @@ export function buildTerrainConstraintMasks(
   map: Pick<GameMap, "width" | "height">,
   requirements: VillageRequirements,
   area: Rect = { x: 0, y: 0, w: map.width, h: map.height },
+  rules: ResolvedWorldGenRules = DEFAULT_WORLD_GEN_RULES,
 ): TerrainConstraintMasks {
   const { width, height } = map;
   const roles: TerrainCellRole[] = new Array(width * height).fill("buildable");
@@ -50,8 +61,9 @@ export function buildTerrainConstraintMasks(
   const waterRects: Rect[] = [];
   const forestRects: Rect[] = [];
 
-  const strip = Math.min(6, Math.max(4, Math.floor(Math.min(area.w, area.h) * 0.12)));
-  const forestDepth = Math.max(4, Math.floor(Math.min(area.w, area.h) * 0.14));
+  const shortSide = Math.min(area.w, area.h);
+  const strip = riverBandDepth(shortSide, rules.water);
+  const forestDepth = forestBandDepth(shortSide, rules.forest);
 
   let buildable: Rect = area;
 
@@ -65,7 +77,7 @@ export function buildTerrainConstraintMasks(
   }
 
   if (requirements.landmarks.includes("lake")) {
-    const size = Math.max(8, Math.floor(Math.min(area.w, area.h) * (requirements.landmarks.includes("river") ? 0.14 : 0.28)));
+    const size = lakeDiameter(shortSide, rules.water, requirements.landmarks.includes("river"));
     const lake = offsetRect(lakeRect(area.w, area.h, requirements.riverSide, size, requirements.landmarks.includes("river")), area);
     waterRects.push(lake);
     paintRole(roles, width, lake, "water");
@@ -118,17 +130,19 @@ export function applyTerrainPassFromMasks(
   map: GameMap,
   masks: TerrainConstraintMasks,
   warnings: string[],
-  forestDensity: ForestDensity = DEFAULT_FOREST_DENSITY,
+  rules: ResolvedWorldGenRules = resolveWorldGenRules(draft.system.worldGen),
+  forestDensity?: ForestDensity,
 ): { readonly waterOps: number; readonly forestOps: number; readonly notes: string[] } {
   const fill = requireTool("fill_region");
   const props = requireTool("place_props");
   let waterOps = 0;
   let forestOps = 0;
   const notes = [...masks.notes];
+  const forest = rules.forest;
 
   for (const rect of masks.waterRects) {
-    // 강: 긴 축이면 ellipse, 호수에 가까운 정사각이면 circle
-    const shape = Math.abs(rect.w - rect.h) <= 2 ? "circle" : "ellipse";
+    // 강: 긴 축이면 ellipse, 호수에 가까운 정사각이면 circle — 저자가 모양을 고정하면 그 값.
+    const shape = waterShapeFor(rect.w, rect.h, rules.water);
     const painted = runFill(fill, draft, map.id, rect, shape, warnings);
     waterOps += painted;
     // 실패(0칸)를 시공 완료로 기록하지 않는다 — 게이트·로그가 이 노트를 근거로 삼는다.
@@ -138,9 +152,9 @@ export function applyTerrainPassFromMasks(
   }
 
   for (const rect of masks.forestRects) {
-    // 왜 합성 경로인가: 한 재료를 밀집하면 밑동 없는 수관 사슬과 맨 잔디 틈이 남아 숲으로 안 읽힌다.
-    // dense·impassable 은 수종·덤불·하층식생을 한 경로에서 조립하고, 낮은 밀도만 자연 산포로 남는다.
-    if (forestCompositionApplies(forestDensity)) {
+    // 왜 요청 밀도와 저작 규칙을 함께 받는가: 요청문은 이번 숲의 개수·패킹을 정하지만,
+    // 생성 규칙은 밴드 깊이와 수종별 간격·자연도의 정본이다. 요청이 없으면 저작 개수도 그대로 쓴다.
+    if (forestDensity && forestCompositionApplies(forestDensity)) {
       const composed = plantForestComposition(draft, {
         mapId: map.id,
         area: rect,
@@ -156,29 +170,33 @@ export function applyTerrainPassFromMasks(
       continue;
     }
 
-    // 활엽수 군락을 먼저 소량 심고 침엽수 선형 packer로 목표 커버리지를 채운다. 반대 순서는
-    // 2×2 원자가 들어갈 틈을 먼저 없애 author_village 품질 게이트가 흔들렸다.
+    const areaTiles = rect.w * rect.h;
+    const densityForPlan = forestDensity ?? "dense";
+    // 큰 2×2 원자를 먼저 보호한다. 침엽수를 먼저 패킹하면 활엽수 군락이 들어갈 문이 닫힌다.
     const broadleafPlan = forestPlacementPlan({
       area: rect,
       footprintCells: treeFootprintCells("활엽수"),
-      density: forestDensity,
+      density: densityForPlan,
       share: 0.05,
     });
+    const broadleafCount = forestDensity
+      ? Math.max(3, broadleafPlan.count)
+      : broadleafCountFor(areaTiles, forest);
     try {
       const big = props.run(draft, {
         mapId: map.id,
         area: rect,
         material: "활엽수",
-        count: Math.max(3, broadleafPlan.count),
-        minGap: broadleafPlan.minGap,
-        naturalness: broadleafPlan.naturalness,
-        packing: broadleafPlan.packing,
+        count: broadleafCount,
+        minGap: forest.broadleafGap,
+        naturalness: forest.broadleafNaturalness,
+        packing: forestDensity ? broadleafPlan.packing : "natural",
         seed: 8800 + rect.x * 17 + rect.y * 11,
       });
       if (big.warnings) warnings.push(...big.warnings);
       const placedBig = typeof (big.data as { placed?: number } | undefined)?.placed === "number"
         ? (big.data as { placed: number }).placed
-        : broadleafPlan.count;
+        : broadleafCount;
       forestOps += placedBig;
       notes.push(`terrainPass forest broadleaf-2x2 ~${placedBig}`);
     } catch (err) {
@@ -188,25 +206,26 @@ export function applyTerrainPassFromMasks(
     const coniferPlan = forestPlacementPlan({
       area: rect,
       footprintCells: treeFootprintCells("침엽수"),
-      density: forestDensity,
+      density: densityForPlan,
     });
+    const coniferCount = forestDensity ? coniferPlan.count : coniferCountFor(areaTiles, forest);
     try {
       const result = props.run(draft, {
         mapId: map.id,
         area: rect,
         material: "침엽수",
-        count: coniferPlan.count,
-        minGap: coniferPlan.minGap,
-        naturalness: coniferPlan.naturalness,
-        packing: coniferPlan.packing,
+        count: coniferCount,
+        minGap: forest.coniferGap,
+        naturalness: forest.coniferNaturalness,
+        packing: forestDensity ? coniferPlan.packing : "natural",
         seed: 7700 + rect.x * 13 + rect.y * 7,
       });
       if (result.warnings) warnings.push(...result.warnings);
       const placed = typeof (result.data as { placed?: number } | undefined)?.placed === "number"
         ? (result.data as { placed: number }).placed
-        : coniferPlan.count;
+        : coniferCount;
       forestOps += placed;
-      notes.push(`terrainPass forest conifer ~${placed} density=${forestDensity}`);
+      notes.push(`terrainPass forest conifer ~${placed}${forestDensity ? ` density=${forestDensity}` : " authored"}`);
     } catch (err) {
       warnings.push(err instanceof Error ? err.message : String(err));
     }
@@ -222,15 +241,16 @@ export function runTerrainConstraintPass(
   requirements: VillageRequirements,
   warnings: string[],
   area?: Rect,
+  rules: ResolvedWorldGenRules = resolveWorldGenRules(draft.system.worldGen),
 ): {
   readonly masks: TerrainConstraintMasks;
   readonly waterOps: number;
   readonly forestOps: number;
   readonly notes: string[];
 } {
-  const masks = buildTerrainConstraintMasks(map, requirements, area);
-  const density = forestDensityFromText(requirements.query) ?? DEFAULT_FOREST_DENSITY;
-  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, density);
+  const masks = buildTerrainConstraintMasks(map, requirements, area, rules);
+  const density = forestDensityFromText(requirements.query);
+  const applied = applyTerrainPassFromMasks(draft, map, masks, warnings, rules, density);
   return {
     masks,
     waterOps: applied.waterOps,
@@ -242,11 +262,12 @@ export function runTerrainConstraintPass(
 export function villageBuildAreaFromMasks(
   map: Pick<GameMap, "width" | "height">,
   requirements: VillageRequirements | undefined,
+  rules: ResolvedWorldGenRules = DEFAULT_WORLD_GEN_RULES,
 ): Rect {
   if (!requirements || requirements.landmarks.length === 0) {
     return { x: 0, y: 0, w: map.width, h: map.height };
   }
-  return buildTerrainConstraintMasks(map, requirements).buildableRect;
+  return buildTerrainConstraintMasks(map, requirements, undefined, rules).buildableRect;
 }
 
 function sideRect(

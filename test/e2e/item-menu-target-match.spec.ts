@@ -1,11 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
-import { openTestPlayWindow, seedDefaultProject } from "./oprnPlayerStatusMenuHelpers";
+import { chooseDetailRow, openTestPlayWindow, seedDefaultProject, selectCommand } from "./oprnPlayerStatusMenuHelpers";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/item-menu-target-match";
 
 test("item menu uses the Korean detail-and-target structure", async ({ page }) => {
+  // 키보드 이동 + 편집기 부팅까지 합치면 기본 30초로는 빡빡하다.
+  test.setTimeout(60_000);
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1932, height: 1448 });
   await seedDefaultProject(page);
@@ -15,14 +17,16 @@ test("item menu uses the Korean detail-and-target structure", async ({ page }) =
   await expect(page.getByTestId("play-stage")).toBeVisible({ timeout: 15000 });
 
   await page.keyboard.press("X");
-  await page.getByTestId("status-menu-command-items").click();
+  // 런타임 메뉴는 키보드 전용이다(player.css 가 플레이 표면을 히트테스트에서 뺀다) —
+  // 레일 선택도 상세 진입도 방향키/확인키로 한다.
+  await selectCommand(page, "items", "아이템");
   await expect(page.getByTestId("status-menu-detail-title")).toHaveText("아이템");
   await expect(page.getByTestId("status-menu-detail")).toContainText("회복약");
   await expect(page.getByTestId("status-menu-detail")).toContainText("2개");
   await expect(page.getByTestId("status-menu-detail").locator("[data-testid^='status-menu-item-']")).toHaveCount(6);
   await expectClassicStatusMenuGone(page);
 
-  await page.getByTestId("status-menu-item-item_potion").click();
+  await chooseDetailRow(page, "status-menu-item-item_potion");
   await expect(page.getByTestId("status-menu-detail-title")).toContainText("대상 선택: 회복약");
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toContainText("주인공");
   await expect(page.getByTestId("status-menu-item-target-actor_hero")).toContainText(/HP \d+\/\d+/);

@@ -105,8 +105,8 @@ test("① 첫 화면과 진입점", async ({ page }) => {
   const gallery = page.getByTestId("ai-start-visual-gallery");
   if (await gallery.isVisible().catch(() => false)) await shot(gallery, "04-start-visual-gallery");
 
-  const status = page.getByTestId("ai-connection-status");
-  if (await status.isVisible().catch(() => false)) await shot(status, "05-connection-status");
+  const settings = page.getByTestId("topbar-ai-settings");
+  if (await settings.isVisible().catch(() => false)) await shot(settings, "05-ai-settings-entry");
 });
 
 test("② 슬래시 스킬과 도구 목록", async ({ page }) => {

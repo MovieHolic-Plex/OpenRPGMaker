@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   closeRegionTaskModal,
+  isRegionTaskRegionLocked,
   openRegionTaskModal,
   positionRegionTaskPopover,
+  retargetRegionTaskModal,
 } from "@/editor/panels/regionTaskModal";
 import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
@@ -203,6 +205,47 @@ describe("openRegionTaskModal", () => {
   });
 });
 
+// 창이 비모달이 된 뒤로 사용자는 창을 띄운 채 캔버스에서 영역을 다시 잡을 수 있다.
+// 그때 선택만 바뀌고 창이 옛 영역을 들고 있으면 「적용」이 **화면에 보이는 선택이 아닌**
+// 옛 영역을 고친다. 그래서 EditScene 의 우클릭 드래그가 이 두 함수로 창을 갈아 끼운다.
+describe("영역 재지정 (retargetRegionTaskModal)", () => {
+  it("지시 단계에서는 새 영역으로 갈아 끼우고 적어 둔 지시문을 옮겨 온다", () => {
+    restoreDom = installFakeDom();
+    const root = openModal({ mapId: "m1", region: REGION, run: vi.fn() });
+    const input = findByTestId(root, "region-task-input");
+    if (input) input.value = "길을 깔아줘";
+    expect(isRegionTaskRegionLocked()).toBe(false);
+
+    expect(retargetRegionTaskModal({ x: 9, y: 9, width: 2, height: 2 })).toBe(true);
+
+    // 창은 새로 지어졌으므로 body 에서 다시 찾는다 — 예전 노드는 떼어졌다.
+    const body = document.body as unknown as FakeElement;
+    expect(findByTestId(body, "region-task-chip")?.textContent).toContain("(9,9) 2×2");
+    expect(findByTestId(body, "region-task-input")?.value).toBe("길을 깔아줘");
+  });
+
+  it("창이 없으면 아무것도 하지 않고 false", () => {
+    restoreDom = installFakeDom();
+    expect(isRegionTaskRegionLocked()).toBe(false);
+    expect(retargetRegionTaskModal({ x: 1, y: 1, width: 3, height: 3 })).toBe(false);
+  });
+
+  it("실행 중에는 영역이 잠긴다 — 돌고 있는 작업을 말없이 버리지 않는다", async () => {
+    restoreDom = installFakeDom();
+    // 끝나지 않는 runner: 실행 단계에 머문다.
+    const run = vi.fn(() => new Promise<never>(() => {}));
+    const root = openModal({ mapId: "m1", region: REGION, run: run as never });
+    const input = findByTestId(root, "region-task-input");
+    if (input) input.value = "나무";
+    findByTestId(root, "region-task-run")?.click();
+    await flush();
+
+    expect(isRegionTaskRegionLocked()).toBe(true);
+    expect(retargetRegionTaskModal({ x: 9, y: 9, width: 2, height: 2 })).toBe(false);
+    expect(findByTestId(root, "region-task-chip")?.textContent).toContain("(2,3) 4×5");
+  });
+});
+
 function fakePendingResult(overrides: Partial<RegionTaskResult> = {}): RegionTaskResult {
   const base = { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never;
   const clipped = { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never;
@@ -217,7 +260,7 @@ function fakePendingResult(overrides: Partial<RegionTaskResult> = {}): RegionTas
     getCurrentProject: () => base,
     reviewProject: (project) => ({
       project,
-      report: { issues: [], blockers: [], checkpoints: [], metrics: {}, repairLimit: 0 } as never,
+      report: { issues: [], metrics: {} } as never,
     }),
     onApply: () => {},
     onDiscard: () => {},
@@ -327,13 +370,13 @@ describe("pending 비교 UI", () => {
     expect(findByTestId(rootB, "region-task-input")).not.toBeNull();
   });
 
-  it("카테고리 칩과 추천 칩이 SVG 아이콘과 라벨을 렌더한다", () => {
+  it("계열 소제목과 추천 칩이 SVG 아이콘과 라벨을 렌더한다", () => {
     restoreDom = installFakeDom();
     const root = openModal({ mapId: "m1", region: REGION });
-    const categoryChip = root.querySelector(".region-task-category-chip");
-    expect(categoryChip).not.toBeNull();
-    expect(categoryChip?.querySelector("svg")).not.toBeNull();
-    expect(categoryChip?.querySelector(".region-task-chip-label")).not.toBeNull();
+    const categoryTitle = root.querySelector(".region-task-category-group-title");
+    expect(categoryTitle).not.toBeNull();
+    expect(categoryTitle?.querySelector("svg")).not.toBeNull();
+    expect(categoryTitle?.querySelector(".region-task-chip-label")).not.toBeNull();
 
     const suggestChip = root.querySelector(".region-task-suggest-chip");
     expect(suggestChip).not.toBeNull();

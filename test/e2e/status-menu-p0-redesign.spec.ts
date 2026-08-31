@@ -1,6 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import {
+  chooseDetailRow,
+  focusRailEntry,
   openTestPlayWindow,
   screenshotMenu,
   seededStatusMenuProject,
@@ -17,6 +19,8 @@ const EVIDENCE_DIR = "evidence/browser-screenshots/status-menu-p0-redesign";
 //   P0-3 포커스 모델(활성 하나 / 비활성 감광)
 //   P0-4 리스트 클리핑 제거 + 스크롤 어포던스
 test("keeps the redesigned status menu readable without clipping any text", async ({ page }) => {
+  // 키보드 이동으로 전 화면을 돌기 때문에 기본 30초로는 빡빡하다.
+  test.setTimeout(90_000);
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await startPlayOnMap(page);
   await openStatusMenu(page);
@@ -65,8 +69,8 @@ test("keeps the redesigned status menu readable without clipping any text", asyn
   await screenshotMenu(page, `${EVIDENCE_DIR}/equipment-grouped-rail-and-gauges.png`);
 
   // 목업 C — 장비 후보로 들어가면 사이드바가 "변화" 블록으로 바뀌고 증감이 보인다.
-  await page.getByTestId("status-menu-equipment-actor-actor_hero").click();
-  await page.getByTestId("status-menu-equipment-slot-weapon").click();
+  await chooseDetailRow(page, "status-menu-equipment-actor-actor_hero");
+  await chooseDetailRow(page, "status-menu-equipment-slot-weapon");
   await expect(page.getByTestId("status-menu-stat-delta")).toBeVisible();
   // 파티 대신 뜬다 — 둘 다 넣으면 사이드바를 넘긴다.
   await expect(page.getByTestId("status-menu-party")).toHaveCount(0);
@@ -88,7 +92,9 @@ test("keeps the redesigned status menu readable without clipping any text", asyn
   await page.keyboard.press("x");
 
   // B안 — 접힌 시스템 그룹이 작업 영역에 펼쳐지고, 타이틀은 거기서 파괴적으로 표시된다.
-  await page.getByTestId("status-menu-command-system-menu").click();
+  await focusRailEntry(page, "system-menu");
+  // 트레이는 확인키로 들어가야 보인다(레일 선택만으로는 inert 미리보기).
+  await page.keyboard.press("z");
   await expect(page.getByTestId("status-menu-detail-title")).toHaveText("시스템");
   for (const commandId of ["save", "load", "wait", "to-title"]) {
     await expect(page.getByTestId(`status-menu-group-command-${commandId}`)).toBeVisible();

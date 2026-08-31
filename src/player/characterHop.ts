@@ -103,16 +103,134 @@ export function jumpArcLiftPx(progress: number, peakPx: number): number {
 }
 
 /**
- * 낙하 — 등가속(중력). height*(1-p²) 는 p=0 에서 height, p=1 에서 0 이고
- * 도함수가 -2·height·p 라 시작 속도 0 에서 선형으로 빨라진다.
+ * 낙하 헤드스타트 — 낙하 구간을 자유낙하 곡선의 **중간부터** 잘라 쓴다.
+ *
+ * 왜 (실측): 초속 0 인 순수 `1-p²` 는 620ms / 128px 기본값에서 앞 절반(310ms)에 32px,
+ * 즉 전체의 25% 만 내려온다. 화면에서는 캐릭터가 위쪽에 붙어 어물거리다 마지막에 훅
+ * 지나가 "떨어진다" 보다 "사라진다" 로 읽힌다.
+ *
+ * 그리고 `dropIn` 은 **화면 밖에서 떨어져 들어오는** 등장 연출이라 등장 순간의 속도가 0 인
+ * 것이 오히려 비물리적이다. u = p₀ + (1-p₀)p 로 곡선을 p₀ 지점부터 시작하면 가속도는
+ * 그대로 등가속이면서 초속만 붙는다. 0.45 에서 앞 절반 이동량이 25% → 41% 가 된다.
+ */
+export const FALL_HEAD_START = 0.45;
+
+/**
+ * 낙하 — 등가속(중력)에 헤드스타트를 얹는다. (1-u²)/(1-p₀²) 는 p=0 에서 1, p=1 에서 0 이고
+ * 도함수 크기가 u 에 비례해 계속 빨라진다(등가속 유지).
  */
 export function fallLiftPx(progress: number, heightPx: number): number {
   const p = clampProgress(progress);
-  return clampHopLiftPx(heightPx) * (1 - p * p);
+  const u = FALL_HEAD_START + (1 - FALL_HEAD_START) * p;
+  const span = 1 - FALL_HEAD_START * FALL_HEAD_START;
+  return clampHopLiftPx(heightPx) * ((1 - u * u) / span);
 }
 
 export function characterHopLiftPx(hop: CharacterHop, progress: number): number {
   return hop.kind === "fall" ? fallLiftPx(progress, hop.liftPx) : jumpArcLiftPx(progress, hop.liftPx);
+}
+
+/**
+ * 스쿼시·스트레치 채널 — 리프트만 있는 강체 이동은 무게가 없다. 빠를 때 세로로 늘고
+ * 착지에서 납작해지는 두 프레임이 "떨어졌다" 를 만든다.
+ *
+ * 스케일은 이 런타임에서 아무도 안 건드린다(액션 전투 스윙 스쿼시가 같은 채널을 같은 방식으로
+ * 쓴다 — playSceneActionCombat.ts `pulsePlayerSwing`). 원점이 (0.5, 1) 이라 세로 스케일은
+ * **발밑을 축으로** 늘어난다 — 접지선이 흔들리지 않는다.
+ */
+export const HOP_STRETCH_MAX = 0.22;
+export const HOP_SQUASH_MAX = 0.26;
+export const HOP_SQUASH_MS = 150;
+/** 이 높이에서 스쿼시·스트레치가 최대. 3 칸 — 제자리 홉(12px)이 만화처럼 늘어나지 않게 잠근다. */
+const SQUASH_GATE_LIFT_PX = TILE_SIZE * 3;
+
+export type HopScale = { readonly x: number; readonly y: number };
+
+export const HOP_SCALE_NEUTRAL: HopScale = { x: 1, y: 1 };
+
+/** 곡선의 최대 속도를 1 로 정규화한 이번 프레임의 속력. 낙하는 헤드스타트만큼 이미 빠르다. */
+export function hopSpeedRatio(hop: CharacterHop, progress: number): number {
+  const p = clampProgress(progress);
+  if (hop.kind === "fall") return FALL_HEAD_START + (1 - FALL_HEAD_START) * p;
+  // 점프 도함수는 4·peak·(1-2p) — 이·착지에서 최대, 최고점에서 0 이다.
+  return Math.abs(1 - 2 * p);
+}
+
+function squashGate(liftPx: number): number {
+  return Math.max(0, Math.min(1, clampHopLiftPx(liftPx) / SQUASH_GATE_LIFT_PX));
+}
+
+/** 체공 중 스트레치. 세로로 늘린 만큼 가로를 조금 줄여 부피가 유지되는 것처럼 보이게 한다. */
+export function hopStretchScale(hop: CharacterHop, progress: number): HopScale {
+  const amount = HOP_STRETCH_MAX * squashGate(hop.liftPx) * hopSpeedRatio(hop, progress);
+  return { x: 1 - amount * 0.6, y: 1 + amount };
+}
+
+/** 착지 프레임의 눌림. 즉시 이 값으로 눌렀다가 HOP_SQUASH_MS 동안 원래대로 튀어 돌아온다. */
+export function hopLandingSquashScale(hop: CharacterHop): HopScale {
+  const amount = HOP_SQUASH_MAX * squashGate(hop.liftPx);
+  return { x: 1 + amount * 0.7, y: 1 - amount };
+}
+
+/**
+ * 원근 채널 — 공중에 있는 동안 스프라이트를 키운다.
+ *
+ * 왜 필요한가 (실측): 탑다운에서 "화면상 세로 이동" 은 북/남으로 걷는 것과 픽셀 변화가 같다.
+ * 리프트만 있으면 8 칸 낙하가 "위쪽 타일에서 걸어 내려온다" 로 읽힌다 — 높이를 주장하는 신호가
+ * 그림자(0.35→0.75) 하나뿐이기 때문이다. 크기 변화만이 "지면 위의 먼 곳" 과 "카메라에 가까운
+ * 공중" 을 구분한다.
+ *
+ * 왜 정규화 리프트에 **선형** 인가: 핀홀 모델(D/(D−lift)) 은 ds/dlift 가 높은 곳에서 최대라
+ * 성장분을 화면 밖에서 다 써버리고 착지 직전 구간에서는 크기가 거의 멈춘다. 리프트에 선형이면
+ * 낙하 곡선의 등가속이 그대로 실려 초반엔 크게 유지되다 마지막 구간에서 1 로 빠르게 수축한다 —
+ * 눈이 보고 있는 구간에서 변화가 일어난다.
+ *
+ * 발밑 앵커는 `hopOriginY` 가 scaleY 로 나누기 때문에 배율과 무관하게 유지된다. 즉 스프라이트는
+ * **위로만** 커지고 접지선은 그대로다. p=1 에서 리프트가 정확히 0 이므로 배율도 정확히 1 로 닫힌다 —
+ * 착지 스쿼시가 접지 크기에서 시작한다.
+ */
+export const HOP_PERSPECTIVE_MAX = 0.35;
+/** 이 시작 높이에서 점프 원근이 최대. 4 칸 — 제자리 홉(12px)은 6% 만 받아 줌 글리치로 보이지 않는다. */
+const PERSPECTIVE_GATE_LIFT_PX = TILE_SIZE * 4;
+
+/**
+ * 낙하는 원근을 훨씬 세게 받는다 — 시작 배율 **×3**.
+ *
+ * 왜 낙하만 다른가: `dropIn` 은 화면 밖에서 떨어져 들어오는 **등장** 연출이라 "아주 높은 곳에서
+ * 온다" 가 연출의 전부다. 반면 점프는 캐릭터가 계속 화면에 있는 이동 수단이고, 같은 배율을 걸면
+ * 걸어 다니다 뛸 때마다 화면이 줌하는 것처럼 보인다(4 칸 점프가 ×2.5 가 된다). 그래서 채널은
+ * 공유하고 상수만 갈라 놓는다.
+ *
+ * 게이트가 8 칸인 이유: 기본 낙하 높이(`DEFAULT_FALL_HEIGHT_PX`)와 같게 두어 **기본값이 정확히
+ * ×3** 이 되게 한다. 더 낮게 저작한 낙하는 그만큼 비례해 줄어든다 — 2 칸 낙하가 ×3 으로 부풀면
+ * 높이 정보가 거짓이 된다.
+ */
+export const FALL_PERSPECTIVE_MAX = 2;
+const FALL_PERSPECTIVE_GATE_LIFT_PX = TILE_SIZE * 8;
+
+function perspectiveLimits(hop: CharacterHop): { readonly max: number; readonly gatePx: number } {
+  return hop.kind === "fall"
+    ? { max: FALL_PERSPECTIVE_MAX, gatePx: FALL_PERSPECTIVE_GATE_LIFT_PX }
+    : { max: HOP_PERSPECTIVE_MAX, gatePx: PERSPECTIVE_GATE_LIFT_PX };
+}
+
+/** 이번 프레임의 원근 배율. 가로·세로가 같은 값이다 — 원근은 부피 보존이 아니라 거리다. */
+export function hopPerspectiveScale(hop: CharacterHop, liftPx: number): HopScale {
+  const startPx = clampHopLiftPx(hop.liftPx);
+  if (startPx <= 0) return HOP_SCALE_NEUTRAL;
+  const { max, gatePx } = perspectiveLimits(hop);
+  const amount = max * clampProgress(startPx / gatePx) * clampProgress(liftPx / startPx);
+  return { x: 1 + amount, y: 1 + amount };
+}
+
+/**
+ * 한 프레임의 체공 배율 — 스트레치(속도) × 원근(높이). 두 채널을 곱해 하나로 넘긴다.
+ * 곱인 이유: 스트레치는 부피 보존(세로↑ 가로↓)이고 원근은 등방 확대라 서로 다른 축의 정보다.
+ */
+export function hopAirScale(hop: CharacterHop, progress: number): HopScale {
+  const stretch = hopStretchScale(hop, progress);
+  const perspective = hopPerspectiveScale(hop, characterHopLiftPx(hop, progress));
+  return { x: stretch.x * perspective.x, y: stretch.y * perspective.y };
 }
 
 /**
@@ -129,12 +247,36 @@ export function hopOriginY(liftPx: number, spriteHeight: number, scaleY: number)
   return 1 + clampHopLiftPx(liftPx) / denominator;
 }
 
-/** 리프트를 받을 수 있는 스프라이트의 최소 계약. mockSprite 도 이 형태를 만족한다. */
+/**
+ * 리프트를 받을 수 있는 스프라이트의 최소 계약. mockSprite 도 이 형태를 만족한다.
+ * `setScale` 은 optional 이다 — 목 스프라이트에 없으면 스쿼시만 조용히 빠지고 리프트는 남는다.
+ */
 export type HopSprite = {
   readonly height?: number;
+  readonly scaleX?: number;
   readonly scaleY?: number;
   setOrigin(x: number, y: number): void;
+  setScale?(x: number, y: number): void;
 };
+
+/**
+ * 스케일을 기준 배율에 곱해서 얹는다. 기준을 곱하는 이유: 저작 스케일이 걸린 스프라이트에서
+ * 절대값을 쓰면 스쿼시가 끝난 뒤 원래 크기를 잃는다.
+ *
+ * ⚠️ 리프트보다 **먼저** 불러야 한다 — `applyCharacterLift` 가 그 시점의 `scaleY` 로 원점을
+ * 나누므로, 스케일을 나중에 바꾸면 리프트가 세로 배율만큼 어긋난다.
+ */
+export function applyHopScale(sprite: HopSprite | undefined, base: HopScale, scale: HopScale): void {
+  if (!sprite?.setScale) return;
+  sprite.setScale(base.x * scale.x, base.y * scale.y);
+}
+
+/** 스프라이트의 현재 배율 — 체공 시작 프레임에 기준으로 붙잡아 둘 값. */
+export function hopBaseScaleOf(sprite: HopSprite | undefined): HopScale {
+  const x = typeof sprite?.scaleX === "number" && sprite.scaleX !== 0 ? sprite.scaleX : 1;
+  const y = typeof sprite?.scaleY === "number" && sprite.scaleY !== 0 ? sprite.scaleY : 1;
+  return { x, y };
+}
 
 export function applyCharacterLift(sprite: HopSprite | undefined, liftPx: number): void {
   if (!sprite) return;

@@ -1,8 +1,14 @@
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import {
+  asPlacementFacing,
+  asPlacementZone,
+  PLACEMENT_FACINGS,
+  PLACEMENT_ZONES,
+} from "@/project/placementSurface";
 import type { ClusterRule, ClusterRuleStrength, TilesetDef } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
-const CLUSTER_RULE_KINDS: readonly ClusterRule["kind"][] = ["adjacency", "spacing", "count"];
+const CLUSTER_RULE_KINDS: readonly ClusterRule["kind"][] = ["adjacency", "spacing", "count", "surface"];
 const CLUSTER_RULE_STRENGTHS: readonly ClusterRuleStrength[] = ["hard", "medium", "soft"];
 const ADJACENCY_RELATIONS = ["aAboveB", "aBelowB", "aLeftOfB", "aRightOfB"] as const;
 
@@ -12,7 +18,13 @@ export const CLUSTER_RULE_SCHEMA = {
   type: "object",
   properties: {
     id: { type: "string", description: "규칙 id. 같은 id는 갱신" },
-    kind: { type: "string", enum: CLUSTER_RULE_KINDS, description: "adjacency/spacing/count" },
+    kind: {
+      type: "string",
+      enum: CLUSTER_RULE_KINDS,
+      description:
+        "adjacency=타일 짝의 상하좌우 / spacing=최소 간격 / count=개수 / "
+        + "surface=배치 면(어떤 자리에 놓이는가). surface 는 params {zone, facing} 를 받는다.",
+    },
     strength: { type: "string", enum: CLUSTER_RULE_STRENGTHS, description: "hard=error, medium=warning, soft=info" },
     params: { type: "object", additionalProperties: true, description: "kind별 파라미터" },
     message: { type: "string", description: "lint에 표시할 한국어 메시지" },
@@ -103,6 +115,29 @@ function spacingParams(params: Record<string, unknown>): Record<string, unknown>
   return { minGap: requirePositiveInteger(params.minGap, "params.minGap") };
 }
 
+/**
+ * 배치 면 파라미터. zone 은 필수, facing 은 `againstWall` 에서만 뜻이 있다.
+ * 이 규칙이 있어야 「화덕은 북쪽 벽에 붙는다」가 산문이 아니라 검사 가능한 조건이 된다.
+ */
+function surfaceParams(params: Record<string, unknown>): Record<string, unknown> {
+  const zone = asPlacementZone(params.zone);
+  if (!zone) {
+    throw new ToolError(
+      `알 수 없는 params.zone: ${String(params.zone)} — ${PLACEMENT_ZONES.join("/")} 중 하나여야 합니다.`,
+      { code: "invalid-args" },
+    );
+  }
+  if (params.facing === undefined) return { zone };
+  const facing = asPlacementFacing(params.facing);
+  if (!facing) {
+    throw new ToolError(
+      `알 수 없는 params.facing: ${String(params.facing)} — ${PLACEMENT_FACINGS.join("/")} 중 하나여야 합니다.`,
+      { code: "invalid-args" },
+    );
+  }
+  return { facing, zone };
+}
+
 function countParams(params: Record<string, unknown>): Record<string, unknown> {
   const min = optionalNonNegativeInteger(params.min, "params.min");
   const max = optionalNonNegativeInteger(params.max, "params.max");
@@ -131,6 +166,8 @@ function paramsForRule(tileset: TilesetDef, kind: ClusterRule["kind"], rawParams
       return spacingParams(params);
     case "count":
       return countParams(params);
+    case "surface":
+      return surfaceParams(params);
   }
 }
 

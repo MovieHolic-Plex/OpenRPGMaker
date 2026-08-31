@@ -7,7 +7,7 @@
 
 ## Browser evidence
 
-- `authoring-entry-and-provider.png`: statusbar `AI로 만들기` entry, current provider, and six authoring examples.
+- `authoring-entry-and-provider.png`: the now-retired statusbar `AI로 만들기` entry, current provider, and six authoring examples (historical capture; current entry is the glass assistant's persistent input/disclosure).
 - `shop-example-prefill.png`: the shop example fills and focuses the composer without auto-sending.
 - `live-composite-before.png`: remote project loaded before the live AI turn.
 - `live-composite-applied-and-saved.png`: `get_event → set_shop_stock → get_event`, accepted proposal, and completed save.

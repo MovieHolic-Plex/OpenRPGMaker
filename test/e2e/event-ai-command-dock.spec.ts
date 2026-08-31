@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
@@ -243,6 +244,41 @@ test("행마다 «이건 빼기»로 골라 적용할 수 있다", async ({ page
   await editor.getByTestId("ai-event-apply").click();
   await expect(rows).toHaveCount(MOCK_FINAL.length - 1);
   console.info(`event-ai-dock partial apply measurement: offered=${MOCK_ADDED.length} applied=${MOCK_ADDED.length - 1}`);
+});
+
+test("제외 토글 뒤 배지와 적용 예정 행 번호가 같은 결과를 말한다", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await mockLlm(page, MOCK_FINAL);
+
+  const editor = await openDock(page, probeProject());
+  await editor.getByTestId("ai-event-input").fill("상자를 열면 잠금 기억을 켠다");
+  await editor.getByTestId("ai-event-generate").click();
+
+  const addRows = editor.locator('[data-staged-status="add"][data-staged-id]');
+  await expect(addRows).toHaveCount(MOCK_ADDED.length);
+  await addRows.first().locator(".cmd-staged-toggle").click();
+
+  const count = editor.getByTestId("event-editor-command-count");
+  const numberedSteps = editor.locator('[data-testid="ai-event-staged"] .cmd-step');
+  await expect(count).toHaveText(`${MOCK_FINAL.length - 1}개`);
+  await expect(numberedSteps).toHaveText(["1", "2", "3", "4"]);
+  const excludedAdd = editor.locator('[data-staged-reverted="true"][data-staged-id]');
+  await expect(excludedAdd.locator(".cmd-step")).toHaveCount(0);
+
+  const evidenceDir = "output/evidence/event-do-column/after";
+  await mkdir(evidenceDir, { recursive: true });
+  await editor.locator(".event-editor-commands-column").screenshot({
+    path: `${evidenceDir}/staged-toggle-badge-row-numbers.png`,
+  });
+  await writeFile(
+    `${evidenceDir}/staged-toggle-badge-row-numbers.json`,
+    `${JSON.stringify({
+      badge: await count.textContent(),
+      numberedSteps: await numberedSteps.allTextContents(),
+      excludedAddHasNumber: await excludedAdd.locator(".cmd-step").count() > 0,
+    }, null, 2)}\n`,
+    "utf8",
+  );
 });
 
 test("지난 오류는 다시 입력하면 사라지고, Escape 는 도크만 닫는다", async ({ page }) => {

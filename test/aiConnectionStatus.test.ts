@@ -2,15 +2,7 @@
 // 영역 작업(runRegionTask)·AI 채팅은 LLM 호출을 하므로 OAuth/apiKey 미연동 시 401 로 실패.
 // 상태바가 인증 상태를 알려주는지 검증한다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
-
-// openAiSettingsModal 은 무거운 의존(aiSettingsForm/modelCatalog/fetchChatGptAuthStatus)을
-// 끌고 와 fakeDom 에서 깨지므로 칩 클릭 테스트에서는 호출 사실만 검증한다.
-const openAiSettingsModal = vi.fn();
-vi.mock("@/editor/panels/aiSettingsModal", () => ({
-  openAiSettingsModal: (...args: unknown[]) => openAiSettingsModal(...args),
-  closeAiSettingsModal: vi.fn(),
-}));
+import { installFakeDom } from "./fakeDom";
 
 // fetchChatGptAuthStatus 를 테스트에서 제어한다.
 const fetchChatGptAuthStatus = vi.fn();
@@ -269,40 +261,6 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     // 동일 상태로 두 번째 조회 — 변경 없음.
     await refreshAiConnectionStatus(() => { changed += 1; });
     expect(changed).toBe(1);
-  });
-});
-
-describe("renderAiConnectionStatus — 상태바 칩", () => {
-  it("OAuth 연결됨 상태에서 칩은 버튼이고 라벨에 '연결됨' 이 포함된다", async () => {
-    const store = installLocalStorage();
-    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, planType: "plus" });
-    const { renderAiConnectionStatus, refreshAiConnectionStatus } = await loadModule();
-    // chatgpt 모드의 ready 는 동반 서비스 조회 결과 캐시에서 나온다 — 먼저 채운다.
-    await refreshAiConnectionStatus(() => undefined);
-    const chip = renderWithFakeDom(() => renderAiConnectionStatus(() => undefined));
-    expect(chip.tagName.toLowerCase()).toBe("button");
-    expect(chip.dataset.testid).toBe("ai-connection-status");
-    expect(chip.textContent).toContain("Google Antigravity");
-    expect(chip.textContent).toContain("연결됨");
-  });
-
-  it("칩 클릭 시 AI 설정 모달을 연다", async () => {
-    const store = installLocalStorage();
-    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
-    const { renderAiConnectionStatus, refreshAiConnectionStatus } = await loadModule();
-    await refreshAiConnectionStatus(() => undefined);
-    const chip = renderWithFakeDom(() => renderAiConnectionStatus(() => undefined)) as FakeElement;
-    openAiSettingsModal.mockClear();
-    chip.click();
-    expect(openAiSettingsModal).toHaveBeenCalledTimes(1);
-    const opts = openAiSettingsModal.mock.calls[0]?.[0] as { focusTarget?: string; onSaved?: unknown } | undefined;
-    // 미연결이면 "지금 키를 넣어야 하는가"는 인증 패널이 판단한다 — 칩은 의도만 넘긴다.
-    expect(opts?.focusTarget).toBe("apiKey");
-    // 칩에서 로그인·키 저장을 마치면 칩 자신이 즉시 진실해져야 한다(예전에는 onSaved 를 안 넘겨
-    // 로그인 후에도 낡은 캐시를 보여 줬다).
-    expect(typeof opts?.onSaved).toBe("function");
   });
 });
 

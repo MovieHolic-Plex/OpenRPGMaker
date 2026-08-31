@@ -1417,8 +1417,10 @@ function autoEvent(id: string, x: number, y: number, commands: readonly Command[
     id,
     x,
     y,
+    // 무조건 페이지를 **먼저**, 걸쇠(selfSwitch A) 페이지를 나중에 — gate() 와 같은 규칙이다.
+    // 마지막 매칭이 이기므로 순서를 뒤집으면 무조건 페이지가 영원히 이기고, 걸쇠가 걸리지 않아
+    // 자동 이벤트가 맵에 들어올 때마다 다시 실행된다(실측: 새 event-page-shadowed 린트가 4건 지목).
     [
-      page(`${id}_done`, "완료", [selfSwitchOn("A")], [], NO_GRAPHIC, PASSIVE, "below"),
       page(
         `${id}_run`,
         "자동",
@@ -1428,6 +1430,7 @@ function autoEvent(id: string, x: number, y: number, commands: readonly Command[
         PASSIVE,
         "below"
       ),
+      page(`${id}_done`, "완료", [selfSwitchOn("A")], [], NO_GRAPHIC, PASSIVE, "below"),
     ],
     "auto"
   );

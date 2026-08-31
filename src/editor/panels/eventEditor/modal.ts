@@ -15,9 +15,10 @@ import { showConfirm } from "@/editor/ui/modal";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
 import { store, type AutoSaveState } from "@/project/store";
-import type { MapId } from "@/project/types";
+import type { EventPage, MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { clearEventAiLiveDock } from "./aiAssist";
 import {
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
@@ -230,6 +231,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     customSelects.dispose();
     globalThis.clearInterval(checkpointTimer);
     clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
+    clearEventAiLiveDock();
     unsubscribeStore();
     unsubscribeEditor();
     unsubscribeAutoSave();
@@ -294,10 +296,17 @@ function renderModalHeader(
     class: "event-name",
     value: eventName,
     attrs: { type: "text", placeholder: "이벤트 이름", "aria-label": "이벤트 이름" },
-    dataset: { testid: "event-editor-name" },
+    dataset: { testid: "event-editor-name", pageId: activePage?.id ?? "" },
     on: {
+      // 활성 페이지를 **입력 시점에** 다시 읽는다.
+      //
+      // 실측 2026-08-30: 헤더는 모달을 열 때 한 번만 렌더되고 refresh 는 페이지 카운터만
+      // 갱신했다. 그래서 이 핸들러가 열 때 잡힌 `activePage`(=1페이지)를 계속 붙들고 있었고,
+      // 2페이지를 고른 뒤 이름을 고치면 **1페이지 이름이 바뀌었다**. 상자에 뜨는 값도
+      // 1페이지 이름에 묶여 있었다 (`페이지 2/4` 인데 상자는 `페이지 1`).
       change: () => {
-        if (activePage) updateEventPage(mapId, eventId, activePage.id, { name: nameInput.value });
+        const target = activeEventPageOf(mapId, eventId);
+        if (target) updateEventPage(mapId, eventId, target.id, { name: nameInput.value });
       },
     },
   });
@@ -527,6 +536,12 @@ function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: strin
   }
 }
 
+function activeEventPageOf(mapId: MapId, eventId: string): EventPage | undefined {
+  const pages = store.getCurrent().maps[mapId]?.events.find((entry) => entry.id === eventId)?.pages ?? [];
+  const selectedPageId = editorState.get().selectedEventPageId;
+  return pages.find((page) => page.id === selectedPageId) ?? pages[0];
+}
+
 function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditorRequest): void {
   const map = store.getCurrent().maps[request.mapId];
   const ev = map?.events.find((entry) => entry.id === request.eventId);
@@ -536,6 +551,20 @@ function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditor
   const counter = header.querySelector<HTMLElement>('[data-testid="event-editor-header-page-count"]');
   if (!activePage || !counter) return;
   counter.textContent = `페이지 ${pages.indexOf(activePage) + 1}/${pages.length}`;
+  const nameInput = header.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
+  if (!nameInput) return;
+  // 같은 페이지를 보고 있으면 사용자가 타이핑 중인 값을 뺏지 않는다. 페이지가 바뀌었으면 상자에
+  // 남은 글자는 **다른 페이지의 이름**이므로 포커스가 있더라도 덮어쓴다 — 모달이 열릴 때
+  // focus trap 이 이 상자를 먼저 잡으므로 "포커스 있으면 건드리지 않기"만으로는 상자가 열 때의
+  // 페이지 이름에 그대로 묶여 있었다.
+  if (nameInput.dataset.pageId !== activePage.id) {
+    nameInput.value = activePage.name;
+    nameInput.dataset.pageId = activePage.id;
+  }
+  // 페이지가 여러 장이면 이 상자는 "이벤트"가 아니라 그 페이지의 이름이다 — 이름을 정직하게 붙인다.
+  const label = pages.length > 1 ? `페이지 이름 (${pages.indexOf(activePage) + 1}/${pages.length})` : "이벤트 이름";
+  nameInput.setAttribute("aria-label", label);
+  nameInput.title = pages.length > 1 ? "지금 고른 페이지의 이름이에요. 페이지마다 따로 지을 수 있어요." : "이벤트 이름";
 }
 
 function refreshModalHeaderSaveState(header: HTMLElement, footer: HTMLElement): void {
@@ -708,6 +737,7 @@ function readScrollNumber(node: HTMLElement, key: "scrollLeft" | "scrollTop"): n
 type EventEditorInteractionSnapshot = {
   readonly focusTestId?: string;
   readonly focusTestIdIndex?: number;
+  readonly focusPageId?: string;
   readonly focusCustomSelectFor?: string;
   readonly focusCommandPath?: string;
   readonly selectionEnd?: number;
@@ -728,6 +758,7 @@ function captureEventEditorInteraction(root: HTMLElement): EventEditorInteractio
   const selection = active as (HTMLInputElement | HTMLTextAreaElement | null);
   return {
     ...(focusTestId ? { focusTestId, focusTestIdIndex: Math.max(0, matchingFocusNodes.indexOf(active!)) } : {}),
+    ...(active?.dataset.pageId ? { focusPageId: active.dataset.pageId } : {}),
     ...(focusCustomSelectFor ? { focusCustomSelectFor } : {}),
     ...(active?.closest<HTMLElement>(".cmd-item, .row, .leaf")?.dataset.cmdPath
       ? { focusCommandPath: active.closest<HTMLElement>(".cmd-item, .row, .leaf")!.dataset.cmdPath }
@@ -751,7 +782,11 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
   if (snapshot.selectedCommandPath) selectRenderedCommand(root, snapshot.selectedCommandPath);
 
   let focusTarget: HTMLElement | null = null;
-  if (snapshot.focusCustomSelectFor) {
+  if (snapshot.focusPageId) {
+    focusTarget = Array.from(root.querySelectorAll<HTMLElement>(".evt-page-segment[data-page-id]"))
+      .find((candidate) => candidate.dataset.pageId === snapshot.focusPageId) ?? null;
+  }
+  if (!focusTarget && snapshot.focusCustomSelectFor) {
     focusTarget = root.querySelector<HTMLElement>(`[data-custom-select-for="${snapshot.focusCustomSelectFor}"]`);
   }
   if (!focusTarget && snapshot.focusTestId) {

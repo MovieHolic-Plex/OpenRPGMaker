@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>초보 맵 사이드바 — 340px 한 칸에서 «목록 | 상세» 2단으로 (2026-08-30)</title>
+<style>
+  :root {
+    color-scheme: light;
+    --plane:        #f9f9f7;
+    --surface-1:    #fcfcfb;
+    --surface-2:    #f2f1ec;
+    --text-primary: #0b0b0b;
+    --text-secondary:#52514e;
+    --text-muted:   #898781;
+    --gridline:     #e1e0d9;
+    --border:       rgba(11,11,11,0.10);
+    --series-1:     #2a78d6;
+    --delta-good:   #006300;
+    --critical:     #d03b3b;
+    --warn:         #a86a00;
+    --code-bg:      #f2f1ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --plane:        #0d0d0d;
+      --surface-1:    #1a1a19;
+      --surface-2:    #222220;
+      --text-primary: #ffffff;
+      --text-secondary:#c3c2b7;
+      --text-muted:   #898781;
+      --gridline:     #2c2c2a;
+      --border:       rgba(255,255,255,0.10);
+      --series-1:     #3987e5;
+      --delta-good:   #0ca30c;
+      --critical:     #e06060;
+      --warn:         #d9a13a;
+      --code-bg:      #222220;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --plane:#0d0d0d; --surface-1:#1a1a19; --surface-2:#222220;
+    --text-primary:#fff; --text-secondary:#c3c2b7; --text-muted:#898781;
+    --gridline:#2c2c2a; --border:rgba(255,255,255,0.10);
+    --series-1:#3987e5; --delta-good:#0ca30c; --critical:#e06060; --warn:#d9a13a; --code-bg:#222220;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--plane); color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 16px; line-height: 1.72; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 40px 24px 96px; }
+  .toggle { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+  .toggle button {
+    background: var(--surface-1); color: var(--text-secondary); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer;
+  }
+  header { border-bottom: 2px solid var(--text-primary); padding-bottom: 22px; margin-bottom: 30px; }
+  h1 { font-size: 34px; line-height: 1.28; margin: 0 0 14px; letter-spacing: -0.02em; }
+  h2 {
+    font-size: 23px; margin: 54px 0 14px; padding-top: 16px;
+    border-top: 1px solid var(--gridline); letter-spacing: -0.01em;
+  }
+  h3 { font-size: 17px; margin: 30px 0 10px; color: var(--text-primary); }
+  p { margin: 0 0 15px; }
+  .meta { color: var(--text-muted); font-size: 14px; line-height: 1.65; margin: 0; }
+  .lede {
+    background: var(--surface-1); border-left: 3px solid var(--series-1);
+    border-radius: 0 10px 10px 0; padding: 20px 22px; margin: 0 0 26px;
+  }
+  .lede p:last-child { margin-bottom: 0; }
+  code {
+    background: var(--code-bg); border-radius: 4px; padding: 1px 5px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.885em;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 15px 17px; overflow-x: auto; font-size: 13px; line-height: 1.62; margin: 0 0 18px;
+  }
+  pre code { background: none; padding: 0; }
+  .kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(196px, 1fr)); gap: 12px; margin: 24px 0 8px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 15px 16px; }
+  .tile .label { font-size: 12px; color: var(--text-muted); text-transform: none; margin-bottom: 6px; }
+  .tile .value { font-size: 31px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.1; }
+  .tile .value .unit { font-size: 15px; font-weight: 400; color: var(--text-muted); }
+  .tile .delta { font-size: 12.5px; margin-top: 5px; color: var(--delta-good); }
+  .tile .delta.bad { color: var(--critical); }
+  .tile .delta.flat { color: var(--text-muted); }
+  figure { margin: 0; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0 8px; }
+  .solo { margin: 18px 0 8px; }
+  .pair img, .solo img {
+    width: 100%; height: auto; display: block; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface-2);
+  }
+  figcaption { font-size: 13px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6; }
+  figcaption b { color: var(--text-primary); }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 11px; border-bottom: 1px solid var(--gridline); vertical-align: top; }
+  th { font-size: 12.5px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--baseline, var(--text-muted)); }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ok { color: var(--delta-good); font-weight: 600; }
+  .no { color: var(--critical); font-weight: 600; }
+  .fp { font-size: 13.5px; color: var(--text-muted); margin-top: -2px; }
+  .callout {
+    background: var(--surface-1); border: 1px solid var(--border); border-left: 3px solid var(--warn);
+    border-radius: 0 10px 10px 0; padding: 16px 18px; margin: 20px 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  ul, ol { margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  a { color: var(--series-1); }
+  .path {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 11px 13px; font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 13px; word-break: break-all; margin-bottom: 10px;
+  }
+  @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="toggle"><button id="themeBtn" type="button">테마 전환</button></div>
+
+<header>
+  <h1>초보 맵 사이드바<br>— 340px 한 칸에서 «목록 | 상세» 2단으로</h1>
+  <p class="meta">
+    2026-08-30 · 브랜치 <code>map</code> · 커밋 <code>31ae45f6</code> ·
+    기준 <code>69ce7415</code> ·
+    PR <a href="https://github.com/MovieHolic-Plex/rpg-zzu/pull/311">#311</a><br>
+    감독 지적: “왼쪽에 있는 맵을 클릭하면 사이드바가 켜지잖아. 이거 UI 가 불만이고, 정보량이 너무 적다.”<br>
+    표면: 초보 모드 아이콘 레일 → <code>맵</code> 버튼 → 플라이아웃 (<code>renderMapList(host, {variant:"basic"})</code>)<br>
+    이 문서의 화면 사진은 전부 <b>실제 에디터를 띄워서 찍은 것</b>이다. 수정 전 사진은 기준 커밋
+    <code>69ce7415</code> 를 별 워크트리(<code>/tmp/rpg-zzu-mapbase</code>, 포트 9412)에 띄워 <b>같은 프로브로</b>
+    찍었다. 손으로 만든 목업은 없다.
+  </p>
+</header>
+
+<div class="lede">
+  <p><strong>목록이 식별 정보를 담고 있지 않았다. 폭이 없어서다.</strong></p>
+  <p>샘플 프로젝트(16맵)를 띄워 재보니 플라이아웃은 <b>340px 한 칸</b>이고, 행이 말하는 것은
+  <code>13×10 · 1이벤트 · 문2</code> 뿐이었다. 같은 규격으로 찍은 집 내부 <b>12행이 전부 같은 글자</b>였다.
+  행에 글자를 더 넣어도 1fr 트랙이 93.59px 이라 그대로 말줄임된다. 그래서 칸을 하나 늘렸다:
+  왼쪽 320px 은 이름을 읽는 목록, 오른쪽은 고른 맵의 상세.</p>
+  <p>재는 과정에서 <b>맵을 고르면 사이드바가 스스로 사라지는 결함</b>도 나왔다. 감독이 “불만”이라고 한 것의
+  절반은 이것이었을 것이다 — 2단으로 만들어도 클릭하면 사라지면 상세를 볼 방법이 없다. 원인은 “다른 모드가
+  덮어썼는가”를 판정하던 코드가 정상 재렌더를 매번 오진한 것이었다.</p>
+</div>
+
+<h2>1. 수정 전 — 무엇이 부족했나</h2>
+
+<div class="kpi">
+  <div class="tile">
+    <div class="label">플라이아웃 폭</div>
+    <div class="value">340<span class="unit">px · 1칸</span></div>
+    <div class="delta bad">상세를 놓을 자리가 없다</div>
+  </div>
+  <div class="tile">
+    <div class="label">16행이 만든<br>서로 다른 메타 문자열</div>
+    <div class="value">5<span class="unit">종</span></div>
+    <div class="delta bad">한 문자열을 12행이 공유</div>
+  </div>
+  <div class="tile">
+    <div class="label">고른 맵에 대해 읽을 수 있는<br>사실의 개수</div>
+    <div class="value">0<span class="unit">개</span></div>
+    <div class="delta bad">맵 설정은 플라이아웃에 없다</div>
+  </div>
+  <div class="tile">
+    <div class="label">행을 클릭한 뒤<br>사이드바</div>
+    <div class="value">사라짐</div>
+    <div class="delta bad">고른 맵을 볼 표면이 없다</div>
+  </div>
+</div>
+
+<div class="pair">
+  <figure>
+    <img src="2026-08-30-map-sidebar-two-pane-explorer-assets/before-wide-start.png" alt="수정 전 340px 맵 플라이아웃. 집 내부 행들이 모두 같은 메타 문자열을 보여준다.">
+    <figcaption><b>수정 전.</b> 340px 한 칸. <code>민재의 집 내부</code>부터 아래로 전부
+    <code>13×10 · 1이벤트 · 문2</code> — 이름만 다르고 나머지는 같은 글자다. 헤더에는 조작법 설명이
+    두 줄을 상시 점유하고 있다.</figcaption>
+  </figure>
+  <figure>
+    <img src="2026-08-30-map-sidebar-two-pane-explorer-assets/before-wide-child-nofly.png" alt="수정 전, 행을 클릭한 직후. 플라이아웃이 화면에서 사라졌다.">
+    <figcaption><b>수정 전, 행을 클릭한 직후.</b> 캔버스는 고른 집 내부로 바뀌었지만
+    <b>사이드바가 DOM 에서 사라졌다</b>(<code>flyoutAlive: false</code>). 다음 맵을 고르려면 레일의
+    <code>맵</code> 버튼을 다시 눌러야 한다.</figcaption>
+  </figure>
+</div>
+
+<h2>2. 수정 후</h2>
+
+<div class="kpi">
+  <div class="tile">
+    <div class="label">플라이아웃 폭</div>
+    <div class="value">700<span class="unit">px · 2칸</span></div>
+    <div class="delta">목록 320 + 상세 342</div>
+  </div>
+  <div class="tile">
+    <div class="label">고른 맵에 대해 읽을 수 있는<br>사실의 개수</div>
+    <div class="value">16<span class="unit">개</span></div>
+    <div class="delta">0 → 16</div>
+  </div>
+  <div class="tile">
+    <div class="label">행을 클릭한 뒤<br>사이드바</div>
+    <div class="value">유지</div>
+    <div class="delta">상세가 고른 맵을 따라온다</div>
+  </div>
+  <div class="tile">
+    <div class="label">1100px 미만</div>
+    <div class="value">1<span class="unit">칸으로 접힘</span></div>
+    <div class="delta flat">상세가 목록 아래로 내려간다</div>
+  </div>
+</div>
+
+<div class="solo">
+  <figure>
+    <img src="2026-08-30-map-sidebar-two-pane-explorer-assets/after-wide-start.png" alt="수정 후 700px 2단 탐색기. 왼쪽 목록, 오른쪽에 시작 맵의 상세가 펼쳐져 있다.">
+    <figcaption><b>수정 후, 시작 맵을 고른 상태.</b> 왼쪽은 이름 위주 목록, 오른쪽은 비율 맞춘 미리보기와
+    크기·타일셋·BGM·상위/하위 맵, 이벤트 구성(NPC 4 · 이동문 15 · 보물상자 0 · 상점·여관 1 · 기타 0 = 20개),
+    연결(나가는 15 · 들어오는 15 · 맵 연결 0), 인카운터, 진단. 아래 동작 줄은 스크롤러 밖에 고정된다.</figcaption>
+  </figure>
+</div>
+
+<div class="pair">
+  <figure>
+    <img src="2026-08-30-map-sidebar-two-pane-explorer-assets/after-wide-child.png" alt="수정 후, 집 내부 행을 클릭한 상태. 사이드바가 유지되고 상세가 그 맵으로 바뀌었다.">
+    <figcaption><b>수정 후, 같은 클릭.</b> 사이드바가 살아 있고 상세가 <code>소라의 집 내부</code>로 따라왔다.
+    미리보기는 13×10 방이라 캔버스 자체가 그 비율로 만들어진다 — 고정 상자였다면 좌우에 검은 띠가 남는다.</figcaption>
+  </figure>
+  <figure>
+    <img src="2026-08-30-map-sidebar-two-pane-explorer-assets/after-narrow.png" alt="1000px 창에서 상세가 목록 아래로 내려간 1단 배치.">
+    <figcaption><b>1000×820 창.</b> 2단이 들어갈 폭이 없으면 <code>grid-template-columns</code> 가
+    단일 트랙(실측 334px)으로 접히고 상세는 목록 아래로 내려간다. 플라이아웃 폭도 360px 로 같이 줄어든다.</figcaption>
+  </figure>
+</div>
+
+<h2>3. 상세 칸이 지는 네 갈래</h2>
+
+<p>감독이 고른 항목 전부다. 값은 <code>src/project/mapInspection.ts</code> 가 계산하고, 그리기는
+<code>src/editor/panels/mapInspectorPane.ts</code> 가 한다 — 동작은 <code>mapList.ts</code> 가 주입한다
+(그렇게 하지 않으면 두 파일이 서로를 import 한다).</p>
+
+<table>
+  <thead><tr><th>갈래</th><th>보여주는 값</th><th>왜 이게 필요한가</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>맵 속성</b></td>
+      <td>미리보기, <code>13×10 · 130칸</code>, 타일셋 이름, BGM, 상위 맵, 하위 맵 수</td>
+      <td><code>100×100</code> 이 몇 칸인지 감이 안 온다. 타일셋·BGM 은 여기 오기 전엔 맵 설정 대화상자를 열어야만 보였다.</td>
+    </tr>
+    <tr>
+      <td><b>이벤트 구성</b></td>
+      <td>NPC · 이동문 · 보물상자 · 상점·여관 · 기타 (합 = total)</td>
+      <td><code>20이벤트</code> 는 “뭐가 20개인지”를 말하지 않는다. 한 이벤트는 한 칸에만 들어가고, 문이 달린 상점은 문으로 센다.</td>
+    </tr>
+    <tr>
+      <td><b>연결·고립 진단</b></td>
+      <td>나가는 이동 / 들어오는 이동 / 맵 연결, <span class="no">고립</span>·<span class="no">도달 불가</span> 경고</td>
+      <td>트리에서 자식으로 묶어도 문이 없으면 플레이어는 못 간다. 시작 맵에서 이동만 타고 오는 BFS 로 판정한다.</td>
+    </tr>
+    <tr>
+      <td><b>인카운터</b></td>
+      <td>조우율 · 적 그룹 수 · 표 줄수, 액션 전투 여부</td>
+      <td>조우율이 0 이면 표가 있어도 안 뜬다. “조우율만 있고 적이 없다”는 경고로 잡는다.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>진단은 5종이다: <code>tileset-missing</code>, <code>unlinked</code>, <code>unreachable</code>,
+<code>encounter-empty</code>, <code>no-events</code>. 경고가 있으면 접힌 아래로 내려가지 않게
+<b>맨 위로 올린다</b> — 손을 써야 하는 유일한 정보라서다.</p>
+
+<h2>4. 같이 고친 결함 — 맵을 고르면 사이드바가 사라졌다</h2>
+
+<p><code>renderBasicLeftRail</code> 은 그리기 전에 “모듈에 남은 열림 상태가 지금 DOM 과 어긋나는가”를 물었다.
+세 조건 중 마지막이 이랬다.</p>
+
+<pre><code>// 고치기 전
+return lastContainer.querySelector('[data-testid="basic-left-rail"]') === null;</code></pre>
+
+<p>의도는 “다른 모드가 이 컨테이너를 덮어썼다”를 잡는 것이었다. 그런데 이 레일을 그리는 유일한 호출자
+<code>renderTilePalette</code> 는 <b><code>clearChildren</code> 뒤에</b> 이 함수를 부른다. 컨테이너는 방금
+비워졌으니 레일은 <b>항상</b> 없다. 결과:</p>
+
+<ul>
+  <li>의도한 상황은 <b>한 번도</b> 잡지 못했다 — 다른 모드에서는 이 함수에 도달하지 않는다.</li>
+  <li><code>editorState</code> 가 바뀔 때마다 열림 상태가 날아갔다. 맵 선택, 도구 전환, 레이어 전환 전부.
+  <code>editorState.set</code> → <code>refreshPanels</code> → <code>renderLeftDockPanels</code> →
+  <code>renderTilePalette</code> 경로다.</li>
+</ul>
+
+<p>모드 전환은 <code>subscribeEditorUiMode</code> 가 이미 열림 상태를 초기화한다(B-5 회귀 방지). 그래서
+저 조건을 지우고 컨테이너 동일성·연결성만 본다.</p>
+
+<div class="callout">
+  <p><b>이 오진에 얹혀 있던 동작이 하나 있었다.</b> 타일 플라이아웃은 캔버스를 덮는 오버레이라
+  “타일을 고르면 닫힌다”가 맞는 동작인데, 그 닫힘을 <b>이 버그가 우연히</b> 해 주고 있었다. 그대로 고치면
+  타일을 고른 뒤 방금 고른 타일을 가려진 자리에 칠할 수 없게 된다. 그래서 타일 클릭에서 명시적으로
+  <code>dismiss</code> 를 보낸다 — 핀을 걸어 뒀으면 존중한다. 리듀서의 <code>outside-click</code> 은
+  두 호출자의 뜻이 같아져 <code>dismiss</code> 로 이름을 바꿨다.</p>
+</div>
+
+<h3>부수 수정 — 상위 맵이 전부 「루트」로 읽혔다</h3>
+
+<p>첫 판은 트리 루트를 부모로 세지 않았다. 그런데 이 저장소의 <code>mapTree</code> 루트는 <b>실제 마을 맵</b>이고
+집 내부들이 그 자식이다. 그래서 집 내부 12장이 전부 <code>상위 맵: 루트</code>가 됐다. 합성 분류 폴더가 루트일
+때만 부모로 보지 않는다. 단위테스트가 잡았다.</p>
+
+<h2>5. 왜 행을 늘리지 않고 칸을 늘렸나</h2>
+
+<p><code>map-panel.modern.css</code> 의 기존 주석에 이 상한이 실측으로 적혀 있다: 340px 1단에서 행의
+<code>1fr</code> 트랙은 <b>93.59px</b>, 메타가 필요한 폭은 <b>98px</b>. 이미 넘쳤다는 뜻이다. 게다가
+<code>test/e2e/map-panel-modern.spec.ts</code> 가 <b>“이름과 메타가 자기 칸 안에서 말줄임된다”</b> 와
+<b>“시작 배지가 메타를 덮지 않는다(겹침 0px)”</b> 를 세 모드 전부에서 잡는다. 행에 글자를 더 넣는 방향은
+그 게이트에 막힌다.</p>
+
+<p>그래서 목록 칸은 이름을 읽는 폭으로 남기고, 행에서는 오히려 <code>문N</code> 을 뺐다 — 나가는/들어오는/연결로
+쪼갠 값이 상세 칸에 있다. 다만 <b>0 일 때는 그 자리에 <code>고립</code> 을 남긴다</b>: 행에서 손을 써야 하는
+유일한 신호라서다.</p>
+
+<p>높이는 <code>--map-explorer-height</code> 한 키로 목록·상세가 같이 움직인다. 상세는 헤더·필터가 없어
+<code>+120px</code> 를 더 쓴다 — 안 더하면 진단 줄이 접힌 아래로 내려갔다(실측). CSS 파일은 새로 만들지 않았다
+(<code>cssFileCount</code> 래칫 유지).</p>
+
+<h2>6. 검증</h2>
+
+<table>
+  <thead><tr><th>게이트</th><th class="num">결과</th><th>무엇을 보장하나</th></tr></thead>
+  <tbody>
+    <tr><td><code>test/mapInspection.test.ts</code></td><td class="num"><span class="ok">14 통과</span> (신규)</td><td>이벤트 분류 우선순위, 분기 안 transfer, 도달성 BFS, 진단 5종, BGM 어휘, 옵션 플래그</td></tr>
+    <tr><td><code>test/mapList.test.ts</code></td><td class="num"><span class="ok">13 통과</span> (3 신규)</td><td>2단 마크업, 동작 줄이 스크롤러 밖에 있음, 비활성 버튼이 이유를 말함, 폴더 빈 상태</td></tr>
+    <tr><td><code>test/basicLeftRail.test.ts</code></td><td class="num"><span class="ok">17 통과</span> (2 신규)</td><td>컨테이너를 비운 뒤 재렌더해도 플라이아웃 생존, 타일 고르면 물러나고 핀이면 남음</td></tr>
+    <tr><td><code>test/basicRailFlyout.test.ts</code></td><td class="num"><span class="ok">9 통과</span></td><td>리듀서 (<code>dismiss</code> 개명 반영)</td></tr>
+    <tr><td><code>sidebarFocus</code> + <code>sidebarKeyboardNav</code></td><td class="num"><span class="ok">16 통과</span></td><td>재렌더 후 포커스 생존, 로빙 탭인덱스</td></tr>
+    <tr><td>e2e <code>map-panel-modern.spec.ts</code></td><td class="num"><span class="ok">11 통과</span></td><td>expert/standard/<b>beginner</b> 3모드 — 배지 겹침 0px, 텍스트 절단 0, testid 9종 생존</td></tr>
+    <tr><td>e2e <code>map-tree-thumbnails.spec.ts</code></td><td class="num"><span class="ok">3 통과</span></td><td>모든 행이 실제 렌더된 썸네일, 초보 플라이아웃 중첩 동일</td></tr>
+    <tr><td><code>tsc -p tsconfig.app.json</code></td><td class="num"><span class="ok">0건</span></td><td>—</td></tr>
+    <tr><td><code>npm run gates:css</code></td><td class="num"><span class="ok">통과</span></td><td>회귀 0건, <code>undefinedVars</code> 63→61, <code>cssFileCount</code> 263 유지</td></tr>
+  </tbody>
+</table>
+
+<p class="fp">e2e 는 <code>DEV_SERVER_PORT=9411</code> — 내가 띄운 서버다.
+Playwright 설정이 <code>reuseExistingServer: true</code> 라서 기본 포트로 돌리면 다른 세션의 dev 서버에 붙어
+<b>남의 코드를 찍는다</b>. 이 저장소에서 이미 한 번 밟은 함정이다.</p>
+
+<h2>7. 만든 것 / 바꾼 것</h2>
+
+<table>
+  <thead><tr><th>파일</th><th>무엇</th></tr></thead>
+  <tbody>
+    <tr><td><code>src/project/mapInspection.ts</code></td><td><b>신규.</b> 순수 모델. DOM 을 모른다 → 단위테스트 대상. <code>collectMapInspection</code>, <code>reachableMapIdsFromStart</code>, <code>isFolderNode</code></td></tr>
+    <tr><td><code>src/editor/panels/mapInspectorPane.ts</code></td><td><b>신규.</b> 그리기만. 동작은 주입받는다. 동작 줄은 스크롤러 밖</td></tr>
+    <tr><td><code>src/editor/panels/mapList.ts</code></td><td>초보 분기를 2단 탐색기로. 헤더 추출, 행 메타에서 <code>문N</code> 제거 + <code>고립</code> 추가, 조작법을 도구설명으로</td></tr>
+    <tr><td><code>src/editor/panels/mapThumbnail.ts</code></td><td>크기를 옵션으로 열었다. 캐시 키에 크기 포함. 34px 행 썸네일과 큰 미리보기가 같은 렌더러를 쓴다</td></tr>
+    <tr><td><code>src/editor/panels/basicLeftRail.ts</code></td><td><code>isStaleFlyoutState</code> 오진 제거, 타일 클릭에 명시적 <code>dismiss</code></td></tr>
+    <tr><td><code>src/editor/panels/basicRailFlyout.ts</code></td><td><code>outside-click</code> → <code>dismiss</code> 개명(뜻이 같은 두 호출자)</td></tr>
+    <tr><td><code>src/styles/editor/map-panel.modern.css</code></td><td>§초보 플라이아웃 2단 탐색기 추가. 1100px 분기</td></tr>
+    <tr><td><code>src/styles/shell/editor-ui-modes.css</code></td><td><code>.is-maps</code> 폭 340 → 700px, 좁은 창 360px</td></tr>
+  </tbody>
+</table>
+
+<h2>8. 다시 만들어 보려면</h2>
+
+<pre><code># 수정 후 (이 브랜치)
+npx vite --host 127.0.0.1 --port 9411 --strictPort
+DEV_SERVER_PORT=9411 npx playwright test test/e2e/map-panel-modern.spec.ts
+
+# 수정 전 (기준 커밋을 별 워크트리에 띄운다 — 이 워크트리는 다른 세션과 공유된다)
+git worktree add /tmp/rpg-zzu-mapbase 69ce7415 --detach
+ln -s /home/main/z-project/rpg-zzu/node_modules /tmp/rpg-zzu-mapbase/node_modules
+cd /tmp/rpg-zzu-mapbase &amp;&amp; npx vite --host 127.0.0.1 --port 9412 --strictPort</code></pre>
+
+<p class="fp">전후 사진을 찍은 프로브(<code>scripts/_probe-map-capture.mts</code>)는 진단용이라 커밋하지 않고
+지웠다. 읽어낸 수치는 <code>before-report.json</code> / <code>after-report.json</code> 에 그대로 남아 있다.</p>
+
+<h2>9. 증거 파일</h2>
+
+<div class="path">Z:\home\main\.herdr\worktrees\rpg-zzu\map\docs\2026-08-30-map-sidebar-two-pane-explorer-assets\</div>
+<ul>
+  <li><code>before-wide-start.png</code> / <code>after-wide-start.png</code> — 플라이아웃 대조 (340px 1칸 ↔ 700px 2칸)</li>
+  <li><code>before-wide-child-nofly.png</code> / <code>after-wide-child.png</code> — 행 클릭 후 대조 (사라짐 ↔ 상세가 따라옴)</li>
+  <li><code>before-narrow.png</code> / <code>after-narrow.png</code> — 1000×820 창 대조</li>
+  <li><code>before-report.json</code> / <code>after-report.json</code> — 브라우저에서 읽어낸 상자 크기·메타 문자열 통계 원본</li>
+</ul>
+
+<script>
+  (function () {
+    var btn = document.getElementById("themeBtn");
+    btn.addEventListener("click", function () {
+      var root = document.documentElement;
+      var now = root.getAttribute("data-theme");
+      if (!now) {
+        var dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        root.setAttribute("data-theme", dark ? "light" : "dark");
+        return;
+      }
+      root.setAttribute("data-theme", now === "dark" ? "light" : "dark");
+    });
+  })();
+</script>
+
+</div>
+</body>
+</html>

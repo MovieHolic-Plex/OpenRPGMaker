@@ -117,10 +117,7 @@ function studioHeader(project: Project, warnings: number, search: HTMLInputEleme
         class: "db-system-studio-heading",
         children: [
           el("div", {
-            children: [
-              el("p", { class: "db-system-studio-eyebrow", text: "GAME SYSTEMS" }),
-              el("h2", { text: "시스템 개요" }),
-            ],
+            children: [el("h2", { text: "시스템 개요" })],
           }),
           el("div", {
             class: "db-system-studio-health",
@@ -140,7 +137,6 @@ function studioHeader(project: Project, warnings: number, search: HTMLInputEleme
             class: "db-system-studio-search",
             children: [search],
           }),
-          el("span", { class: "db-system-studio-readonly", text: "읽기 전용 요약" }),
           el("button", {
             class: "db-system-studio-play",
             text: "플레이 테스트",

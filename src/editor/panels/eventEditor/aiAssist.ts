@@ -19,7 +19,10 @@
 // 스토어 갱신 때마다 에디터 본문이 통째로 재렌더되므로, 입력 초안/펼침 상태/초안 diff 는
 // 모듈 레벨 캐시(이벤트+페이지 키)로 보존해 재렌더 후 복원한다.
 
+import { eventCommandGateNotice } from "@/ai/aiGateNotice";
+import { conversationScopeKey } from "@/ai/conversationStore";
 import { runEventCommandAssist, resolveAssistScope, type AssistScope } from "@/ai/eventCommandAssist";
+import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
@@ -77,6 +80,20 @@ let currentDockRoot: HTMLDetailsElement | null = null;
 let registeredDockRoot: HTMLDetailsElement | null = null;
 let currentSelectionTeardown: (() => void) | null = null;
 let panelInstanceId = 0;
+// 생성이 끝나는 시점의 **살아 있는** 도크. 스토어 갱신 한 번이면 에디터 본문을 통째로 다시
+// 그리므로, 요청을 보낸 렌더의 DOM 은 이미 문서에서 떨어져 나간 노드일 수 있다. 그때 자기 클로저의
+// stagedHost 에 그리면 화면엔 아무것도 안 나온다 — 목록은 초안이 있다고 숨고, 초안은 없는 상태.
+let liveDock: {
+  key: string;
+  renderStaged: () => void;
+  setStatus: (text: string, kind?: StatusKind) => void;
+  setGenerating: (busy: boolean) => void;
+} | null = null;
+
+/** 이벤트 에디터가 닫히면 분리된 DOM 클로저를 더는 완료 대상으로 보지 않는다. */
+export function clearEventAiLiveDock(): void {
+  liveDock = null;
+}
 
 const TARGET_NAME_MAX = 18;
 
@@ -128,9 +145,15 @@ function stateOf(projectKey: string, key: string): PanelState {
  * 초안을 보일지 결정할 때 읽는다(렌더 순서에 상관없이 같은 답을 내야 하므로 모듈 상태를 본다).
  */
 export function hasEventAiStagedDraft(mapId: MapId, eventId: string, pageId: string): boolean {
+  return eventAiStagedCommands(mapId, eventId, pageId) !== null;
+}
+
+/** 배지·번호가 적용 전 초안 결과를 기준으로 말할 수 있도록 후보 명령 목록을 계산한다. */
+export function eventAiStagedCommands(mapId: MapId, eventId: string, pageId: string): Command[] | null {
   const { projectKey, key } = stateKeyOf(mapId, eventId, pageId);
-  if (panelStatesProjectKey !== projectKey) return false;
-  return Boolean(panelStates.get(key)?.staged);
+  if (panelStatesProjectKey !== projectKey) return null;
+  const staged = panelStates.get(key)?.staged;
+  return staged ? applyCommandDiff(staged.rows, staged.excluded) : null;
 }
 
 // 칩 배지는 한국어만 쓴다. 예전에는 `busy`/`error`/`ready`/`draft` 영문 기계 토큰이
@@ -327,6 +350,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     }
     generateBtn.disabled = true;
     setStatus("명령 초안을 만들고 있어요…", "busy");
+    const beforeCommands = JSON.stringify(page.commands);
     try {
       const project = store.getCurrent();
       const event = project.maps[mapId]?.events.find((entry) => entry.id === eventId);
@@ -342,28 +366,61 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
           selection,
           selectionLabel: selectedCommandName(cmdList, page.commands) ?? undefined,
         },
+        // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
+        projectScopeKey: conversationScopeKey(store.getProjectIdentity(), project),
       });
+      const livePage = store.getCurrent().maps[mapId]?.events
+        .find((entry) => entry.id === eventId)
+        ?.pages?.find((entry) => entry.id === page.id);
+      if (!livePage || JSON.stringify(livePage.commands) !== beforeCommands) {
+        state.staged = null;
+        state.status = "명령 목록이 생성 중에 바뀌었어요. 현재 목록으로 다시 만들어 주세요.";
+        state.statusKind = "error";
+        const activeDock = liveDock && liveDock.key === key ? liveDock : null;
+        activeDock?.setStatus(state.status, "error");
+        activeDock?.renderStaged();
+        return;
+      }
+      const liveBefore = livePage.commands;
       // 모델 출력이 "page" 면 그게 곧 최종 목록이고, "append" 면 기존 목록에 끼워 최종 목록을 만든다.
       // 어느 쪽이든 아래 diff 는 같은 일을 한다 — 무엇이 달라지는지 목록 위에 그린다.
       const after = result.scope === "page"
         ? result.commands
-        : withAppended(page.commands, selection, result.commands);
-      const rows = diffCommandLists(page.commands, after);
+        : withAppended(liveBefore, selection, result.commands);
+      const rows = diffCommandLists(liveBefore, after);
       state.staged = { rows, excluded: new Set<string>(), scope: result.scope };
       const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
-      setStatus(
-        hasCommandDiffChanges(rows)
-          ? `${stagedDiffSummary(rows, new Set())} — 위 목록에서 확인하세요.${fixedNote}`
-          : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`
-      );
-      renderStaged();
+      state.status = hasCommandDiffChanges(rows)
+        ? `${stagedDiffSummary(rows, new Set())} — 위 목록에서 확인하세요.${fixedNote}`
+        : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`;
+      state.statusKind = "";
+      const settled = liveDock && liveDock.key === key ? liveDock : null;
+      // 페이지 전환·에디터 닫기 뒤에는 맞는 도크가 없다. 상태만 보존하고 분리된 DOM 은 그리지 않는다.
+      settled?.setStatus(state.status);
+      settled?.renderStaged();
     } catch (cause) {
       // 검증기 원문(kind/필드 이름)은 원인 추적에 필요하니 버리지 않고, 사용자가 다음에
       // 무엇을 할지 아는 한 줄을 앞에 붙인다.
       const detail = cause instanceof Error ? cause.message : String(cause);
-      setStatus(`명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`, "error");
+      state.status = `명령을 만들지 못했어요. 문장을 조금 더 구체적으로 적고 다시 시도해 보세요. — ${detail}`;
+      state.statusKind = "error";
+      const activeDock = liveDock && liveDock.key === key ? liveDock : null;
+      activeDock?.setStatus(state.status, "error");
+      // 한 줄 상태 텍스트는 검증기 원문이 붙으면 끝이 잘린다. append scope 에서는 애초에
+      // 지우기·고치기가 표현 불가라는 사실도 여기서만 말할 수 있다 — 모달로 올린다.
+      showAiGateNotice(eventCommandGateNotice({
+        message: detail,
+        scope,
+        commandCount: page.commands.length,
+      }));
     } finally {
+      // 자기 클로저의 버튼과 **살아 있는 도크의 버튼**을 모두 푼다. 생성 중 스토어가 갱신되면
+      // 이 클로저의 버튼은 문서에서 떨어져 나간 옛 도크 것이고, 새 도크는 `statusKind === "busy"`
+      // 를 보고 자기 버튼을 잠갔다. 상태 쓰기는 재렌더를 부르지 않으므로 여기서 직접 풀지 않으면
+      // 사용자가 다시 생성할 방법이 영구히 없어진다.
       generateBtn.disabled = false;
+      const active = liveDock && liveDock.key === key ? liveDock : null;
+      if (active) active.setGenerating(false);
     }
   };
 
@@ -482,6 +539,15 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     })
   );
   renderStaged();
+  // 생성 중에 본문이 다시 그려진 경우 새 도크도 「생성 중」을 이어받는다 — 안 그러면 버튼이
+  // 다시 활성돼 같은 원으로 둘째 호출을 또 넣을 수 있다.
+  if (state.statusKind === "busy") generateBtn.disabled = true;
+  liveDock = {
+    key,
+    renderStaged,
+    setStatus,
+    setGenerating: (busy) => { generateBtn.disabled = busy; },
+  };
   return root;
 }
 
@@ -496,6 +562,7 @@ export function eventAiDockModalStackForTest(): { readonly entries: number; read
 export function resetEventAiStagedForTest(): void {
   panelStates.clear();
   panelStatesProjectKey = "";
+  clearEventAiLiveDock();
 }
 
 function bindCurrentDockRoot(

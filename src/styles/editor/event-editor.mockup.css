@@ -1155,45 +1155,13 @@
   min-height: 26px;
 }
 
-/* 탭 스트립 + 페이지 액션 버튼을 한 줄로 (목업: 탭 옆 ＋, 액션은 우측) */
+/* 탭 스트립 + 페이지 액션 버튼의 배치는 balanced.css 한 곳이 소유한다. */
 .event-editor > .event-editor-pagebar {
   display: flex;
-  align-items: stretch;
-  justify-content: flex-start;
-  gap: 6px;
   flex: 0 0 auto;
-  padding: 5px 14px 0;
-  border-bottom: 1px solid var(--mk-line);
   min-height: 0;
 }
 
-.event-editor > .event-editor-pagebar > .event-page-number-tabs {
-  flex: 0 1 auto;
-  width: auto;
-  max-width: calc(100% - 140px);
-  min-width: 0;
-}
-
-.event-editor > .event-editor-pagebar > .event-page-tabs {
-  flex: 0 0 auto;
-  align-self: stretch;
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 10px 6px;
-  margin-left: 8px;
-  border-left: 1px solid var(--mk-line-soft, var(--mk-line));
-  background: color-mix(in srgb, var(--mk-surface) 55%, transparent);
-  border-radius: 0 0 0 6px;
-}
-
-.event-editor > .event-editor-pagebar > .event-page-tabs .btn {
-  align-self: stretch;
-  height: 30px;
-  font-size: 12px;
-  font-weight: 400;
-}
 
 /* 실행 내용의 제목과 보기 전환은 페이지바의 우측 헤더로 승격한다.
  * 캔버스 안에서 별도 행을 쓰지 않아 같은 모달 높이에서 명령 보드가 더 커진다. */
@@ -1273,7 +1241,10 @@
   overflow: auto;
 }
 
-.event-editor .event-contents-fieldset > .event-page-preview-host {
+/* 미리보기·플로우는 같은 콘텐츠 트랙을 쓰는 파생 보기다. 플로우는 예전에 도구 팝오버
+   안에서 미리보기 **위에** 떠 재생 컨트롤을 덮었다 — 이제 형제 보기라 겹치지 않는다. */
+.event-editor .event-contents-fieldset > .event-page-preview-host,
+.event-editor .event-contents-fieldset > .event-page-flow-host {
   display: grid;
   grid-column: 1 / -1;
   grid-row: 2;
@@ -1282,7 +1253,8 @@
 }
 
 /* `[hidden]` 은 (0,4,0) 이라 위 display:grid 규칙 (0,3,0) 을 이미 이긴다 — !important 는 불필요했다. */
-.event-editor .event-contents-fieldset > .event-page-preview-host[hidden] {
+.event-editor .event-contents-fieldset > .event-page-preview-host[hidden],
+.event-editor .event-contents-fieldset > .event-page-flow-host[hidden] {
   display: none;
 }
 
@@ -1442,24 +1414,7 @@
   background: transparent;
 }
 
-.event-editor > .event-editor-pagebar {
-  align-items: center;
-  justify-content: flex-start;
-  padding-right: 10px;
-}
 
-.event-editor > .event-editor-pagebar > .event-page-tabs {
-  position: relative;
-  display: block;
-  align-self: center;
-  min-height: 0;
-  margin-left: 2px;
-  padding: 0 0 5px;
-  border: 0;
-  background: transparent;
-}
-
-.event-editor .event-page-actions-summary,
 .event-editor .event-editor-command-edit-summary,
 .event-editor .event-editor-command-tools-summary,
 .event-editor-footer-more-summary {
@@ -1468,24 +1423,12 @@
   user-select: none;
 }
 
-.event-editor .event-page-actions-summary::-webkit-details-marker,
 .event-editor .event-editor-command-edit-summary::-webkit-details-marker,
 .event-editor .event-editor-command-tools-summary::-webkit-details-marker,
 .event-editor-footer-more-summary::-webkit-details-marker {
   display: none;
 }
 
-.event-editor .event-page-actions-summary {
-  min-width: 70px;
-  padding: 7px 10px;
-  border: 1px solid var(--mk-line);
-  border-radius: 4px;
-  color: var(--mk-t2);
-  font-size: 11.5px;
-  text-align: center;
-}
-
-.event-editor .event-page-actions-summary::after,
 .event-editor .event-editor-command-edit-summary::after,
 .event-editor .event-editor-command-tools-summary::after,
 .event-editor-footer-more-summary::after {
@@ -1495,37 +1438,11 @@
   font-size: 9px;
 }
 
-.event-editor .event-page-tabs[open] > .event-page-actions-summary,
 .event-editor .event-editor-command-edit-menu[open] > .event-editor-command-edit-summary,
 .event-editor .event-editor-command-tools-menu[open] > .event-editor-command-tools-summary,
 .event-editor-footer-more[open] > .event-editor-footer-more-summary {
   color: var(--mk-t1);
   border-color: color-mix(in srgb, var(--mk-accent) 48%, var(--mk-line));
-}
-
-.event-editor .event-page-tabs > .event-page-action-buttons {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + 4px);
-  right: 0;
-  display: grid;
-  width: 170px;
-  padding: 6px;
-  gap: 4px;
-  background: var(--mk-raised);
-  border: 1px solid var(--mk-line);
-  border-radius: 6px;
-  box-shadow: 0 12px 28px var(--shadow-pop);
-}
-
-.event-editor .event-page-tabs:not([open]) > .event-page-action-buttons {
-  display: none;
-}
-
-.event-editor .event-page-tabs > .event-page-action-buttons .btn {
-  width: 100%;
-  min-height: 30px;
-  text-align: left;
 }
 
 .event-editor .event-contents-fieldset {

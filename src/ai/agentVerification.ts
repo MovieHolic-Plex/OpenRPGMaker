@@ -19,11 +19,15 @@
 // mixes the two. The final-layer scenario is sourced verbatim from the layer's own
 // successful play_walkthrough call args only.
 //
-// Retry contract (canonical, shared with todo 5): up to 2 repair re-kicks per layer
-// after the initial verification failure = at most 3 verification attempts; a 3rd
-// consecutive failure stops the layer with reason "verification_failed". Warnings never
-// consume retry budget. evaluate_game_quality blocks ONLY on projectLint errors
-// (toolRegistry evaluate_game_quality verdict contract: data.verdict.blocked).
+// ADVISORY CONTRACT (2026-08-30): this module reports, it does not gate. There is no retry
+// budget and no stop reason — a blocking verdict is recorded as run evidence and the run
+// continues. Measured cause for the change: the boot normalizer injected default items whose
+// skill/state references the loaded project could not satisfy, so run_lint reported the same
+// 54 pre-existing violations on every attempt. The gate burned its 3 attempts on damage the
+// agent had not caused and could not repair (every cleanup commit was refused by the commit
+// gate), killing the run at 217s with the 48-turn budget untouched.
+// evaluate_game_quality still reports blocking ONLY on projectLint errors (toolRegistry
+// evaluate_game_quality verdict contract: data.verdict.blocked).
 
 export const RUN_LINT_TOOL = "run_lint";
 export const EVALUATE_GAME_QUALITY_TOOL = "evaluate_game_quality";
@@ -32,12 +36,6 @@ export const PLAY_WALKTHROUGH_TOOL = "play_walkthrough";
 
 /** Tools that author quest records (questId = args.id / args.def.key). */
 export const DEFINE_QUEST_FAMILY = ["define_quest", "create_quest"] as const;
-
-/** Retry budget: 2 repair re-kicks per layer → at most 3 verification attempts. */
-export const MAX_REPAIR_REKICKS = 2;
-export const MAX_VERIFICATION_ATTEMPTS = MAX_REPAIR_REKICKS + 1;
-
-export const STOP_REASON = "verification_failed";
 
 /** Canonical per-layer tool names (order = execution order). */
 export const LAYER_VERIFICATION_TOOLS = {
@@ -99,32 +97,14 @@ export interface Verdict {
   readonly warnings: readonly string[];
 }
 
-/** Retry counter for one layer: number of repair re-kicks already issued (0..2). */
-export interface RetryState {
-  readonly layerId: string;
-  readonly attempts: number;
-}
-
-export type RetryAction = "proceed" | "repair" | "stop";
-
-export interface RetryOutcome {
-  readonly action: RetryAction;
-  readonly state: RetryState;
-  /** Present only when action === "stop". */
-  readonly reason?: "verification_failed";
-  /** Present only when action === "repair" — re-kick message for the session. */
-  readonly repairInstruction?: string;
-}
-
 export interface LayerVerdictInput {
   readonly name: string;
   readonly result: ToolResultLike;
 }
 
-export interface LayerGateResult {
+export interface LayerReport {
   readonly calls: readonly VerificationCall[];
   readonly verdict: Verdict;
-  readonly outcome: RetryOutcome;
 }
 
 // ── classification ───────────────────────────────────────────────
@@ -342,63 +322,18 @@ export function parseLayerVerdict(results: readonly LayerVerdictInput[]): Verdic
   return { pass: blocking.length === 0, blockingIssues: blocking, warnings };
 }
 
-// ── retry tracking ───────────────────────────────────────────────
-
-export function createRetryState(layerId: string): RetryState {
-  return { layerId, attempts: 0 };
-}
-
 /**
- * Repair instruction for the session's existing re-kick mechanism (assistantSession
- * pushOrchestrationMessage tone: Korean imperative, lists the blocking items, states the
- * remaining budget — mirrors "검수 보완 지시: ..." pattern).
+ * Composed report: select the verification calls for the layer and parse the executed tool
+ * results into a verdict. Pure — the session executes `calls`, feeds `results` back, and
+ * records the verdict as evidence. Nothing here can stop a run.
  */
-export function buildRepairInstruction(verdict: Verdict, attemptsUsed: number): string {
-  const lines = [
-    "검증 게이트가 통과하지 못했습니다. 아래 차단 항목을 수정한 뒤 이 레이어 작업을 이어서 진행하고 다시 검증하세요.",
-    ...verdict.blockingIssues.map((issue) => `- ${issue}`),
-    `(재검증 기회 ${MAX_REPAIR_REKICKS}회 중 ${attemptsUsed}회 사용 — 초과 시 레이어 중단)`,
-  ];
-  return lines.join("\n");
-}
-
-/**
- * Retry decision after one verification attempt for a layer.
- * - pass → proceed (budget resets; warnings never consumed budget since pass requires
- *   zero blocking issues).
- * - fail with attempts already at the re-kick cap → stop (reason "verification_failed").
- * - fail otherwise → repair re-kick (attempts + 1) with a repair instruction.
- * Stale state for a different layer is treated as fresh (pure, stateless across layers).
- */
-export function evaluateRetry(state: RetryState, layerId: string, verdict: Verdict): RetryOutcome {
-  const effective = state.layerId === layerId ? state : { layerId, attempts: 0 };
-  if (verdict.pass) {
-    return { action: "proceed", state: { layerId, attempts: 0 } };
-  }
-  if (effective.attempts >= MAX_REPAIR_REKICKS) {
-    return { action: "stop", state: effective, reason: STOP_REASON };
-  }
-  const attempts = effective.attempts + 1;
-  return {
-    action: "repair",
-    state: { layerId, attempts },
-    repairInstruction: buildRepairInstruction(verdict, attempts),
-  };
-}
-
-/**
- * Composed gate: select the verification calls for the layer, parse the executed tool
- * results into a verdict, and produce the retry outcome. Pure — the session executes
- * `calls` and feeds `results` back.
- */
-export function runLayerVerificationGate(
+export function runLayerVerificationReport(
   layer: LayerDescriptor,
   history: readonly VerificationCallRecord[],
-  results: readonly LayerVerdictInput[],
-  retryState: RetryState
-): LayerGateResult {
-  const calls = selectVerificationCalls(layer, history);
-  const verdict = parseLayerVerdict(results);
-  const outcome = evaluateRetry(retryState, layer.id ?? "", verdict);
-  return { calls, verdict, outcome };
+  results: readonly LayerVerdictInput[]
+): LayerReport {
+  return {
+    calls: selectVerificationCalls(layer, history),
+    verdict: parseLayerVerdict(results),
+  };
 }

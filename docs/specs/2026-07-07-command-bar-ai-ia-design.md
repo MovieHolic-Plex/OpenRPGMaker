@@ -41,7 +41,7 @@
 - **동작 불변**: 슬래시·컨텍스트칩·큐·승인시공·스트리밍 전부 기존 함수 재사용, 위치만 변경.
 - **testid 계약 유지**(E2E 호환): `ai-input`, `ai-send`, `ai-proposal-accept`, `ai-status`, `ai-chat-log`. 신규: `ai-command-bar`, `ai-command-menu`, `ai-rising-overlay`.
 - 위험: `:empty` 숨김 규칙, dock inset↔bottom inset 전환, 페이드 타이머가 승인카드 존을 침범하지 않게 격리, 스트리밍 중 페이드 억제.
-- 모델 정책: 모든 LLM `minimax/minimax-m3` 유지. 테스트가 옛 모델 기대하면 테스트를 minimax로.
+- 모델 정책: **폐기됨(2026-08-30).** 당시엔 특정 저가 공급자 하나로 모든 LLM 을 고정했지만 그 공급자는 더 쓰지 않는다. 모델은 제공자 레지스트리(`src/ai/ohMyPiProviders.ts` — Antigravity·Codex 둘뿐)와 그 카탈로그(`src/ai/modelCatalog.ts`)가 정하고, 기본값은 `DEFAULT_MODEL`/`DEFAULT_LITE_MODEL` 이다 — 스펙 문서에 모델 ID 를 박지 않는다.
 
 ## 검증
 1. `npx tsc --noEmit` 0, `npx vitest run` 2287+ 유지(신규 테스트 포함). 옛 헤더/도크 단언 테스트는 신 IA로 갱신.
