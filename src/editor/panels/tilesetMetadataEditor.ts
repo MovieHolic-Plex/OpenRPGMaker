@@ -392,6 +392,22 @@ export function setTilesetMetadataEditMode(mode: TilesetEditMode, rerender: () =
   setMode(mode, rerender);
 }
 
+/** 세계 → 타일셋 폴더 자식이 본문을 그릴 때 편집 모드만 맞춘다. rerender 는 탭 렌더가 한다. */
+export function applyTilesetFolderFacet(tab: string): void {
+  if (tab === "tilesetAutotile") {
+    editMode = "autotile";
+    setUnlabeledOnlyFilter(false);
+    return;
+  }
+  if (tab === "tilesetUnlabeled") {
+    editMode = "ai";
+    setUnlabeledOnlyFilter(true);
+    return;
+  }
+  editMode = "passage";
+  setUnlabeledOnlyFilter(false);
+}
+
 export function getTilesetMetadataEditMode(): TilesetEditMode {
   return editMode;
 }

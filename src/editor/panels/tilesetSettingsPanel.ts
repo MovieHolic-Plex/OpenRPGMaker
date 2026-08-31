@@ -275,11 +275,28 @@ function selectTileset(tilesets: readonly TilesetDef[]): TilesetDef | undefined 
   return selected;
 }
 
+export function getSelectedTilesetId(): string | null {
+  return selectedTilesetId ?? readStoredSelectedTilesetId() ?? currentMapTilesetId();
+}
+
 function setSelectedTileset(tilesetId: string): void {
   selectedTilesetId = tilesetId;
   if (typeof window === "undefined") return;
   window.localStorage.setItem(TILESET_SELECTION_KEY, tilesetId);
 }
+
+/** 테스트·세션 리셋용. 폴더 자식이 공유하는 칩셋 선택을 비운다. */
+export function clearSelectedTileset(): void {
+  selectedTilesetId = null;
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(TILESET_SELECTION_KEY);
+  } catch {
+    // 테스트 스텁이 localStorage 를 안 줄 수 있다.
+  }
+}
+
+export { setSelectedTileset };
 
 function readStoredSelectedTilesetId(): string | null {
   if (typeof window === "undefined") return null;
