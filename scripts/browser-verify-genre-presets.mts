@@ -55,7 +55,12 @@ async function runPack(page: Page, packId: OfficialGenrePackId): Promise<PackRes
     await page.screenshot({ path: welcomeShot });
     screenshots.push(welcomeShot);
 
-    await page.locator(`[data-pack-id="${packId}"]`).click();
+    const packCard = page.locator(`[data-pack-id="${packId}"]`);
+    if (!(await packCard.isVisible())) {
+      await page.getByTestId("editor-welcome-more-toggle").click();
+      await packCard.waitFor({ state: "visible", timeout: 5_000 });
+    }
+    await packCard.click();
     await page.getByTestId("editor-welcome").waitFor({ state: "detached", timeout: 20_000 });
     const selectedShot = join(folder, "02-selected.png");
     await page.screenshot({ path: selectedShot });

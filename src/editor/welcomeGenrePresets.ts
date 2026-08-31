@@ -259,18 +259,26 @@ export const WELCOME_INSPIRATION_MINIS: readonly WelcomeInspirationMini[] = [
 ] as const;
 
 /**
- * Gallery order. Worlds people already have a title for lead, because that is how the request
- * arrives ("이브 같은 게임 만들어줘"). Every preset gets one equal-weight poster — variants are no
- * longer demoted to grey sub-chips under a pack card.
+ * First-screen posters. Horror / farm / partner stay in the catalog and the collapsed
+ * 「이런 세계도 있어요」 tier — they are hidden, not deleted.
  */
-const WELCOME_POSTER_ORDER: readonly WelcomeGenrePresetId[] = [
-  "horror-gallery",
-  "school-horror",
+const WELCOME_FEATURED_POSTER_ORDER: readonly WelcomeGenrePresetId[] = [
   "monster-collect",
   "story-cutscene",
   "adventure-jrpg",
+] as const;
+
+const WELCOME_HIDDEN_POSTER_ORDER: readonly WelcomeGenrePresetId[] = [
+  "horror-gallery",
+  "school-horror",
   "farm-life",
   "partner-raise",
+] as const;
+
+/** Featured first so pack anchors land on the visible posters whenever possible. */
+const WELCOME_POSTER_ORDER: readonly WelcomeGenrePresetId[] = [
+  ...WELCOME_FEATURED_POSTER_ORDER,
+  ...WELCOME_HIDDEN_POSTER_ORDER,
 ] as const;
 
 export type WelcomePosterCard = {
@@ -278,16 +286,19 @@ export type WelcomePosterCard = {
   /** Small line above the title, present only when the world quotes a reference. */
   readonly reference?: string;
   readonly title: string;
+  /** True when the poster sits in the first-screen grid. Hidden posters stay in the collapsed tier. */
+  readonly featured: boolean;
   /**
    * Anchor poster for its official pack, or null for a sibling variant of a pack already anchored.
    * Exactly one poster per GenrePackId is an anchor, so the five-official-packs DOM gate
    * (scripts/browser-verify-genre-presets.mts) keeps its exactly-once contract while variants of the
-   * same pack render as peers in the grid.
+   * same pack remain peers — featured or collapsed.
    */
   readonly packAnchor: GenrePackId | null;
 };
 
 function buildPosterCards(): readonly WelcomePosterCard[] {
+  const featured = new Set<WelcomeGenrePresetId>(WELCOME_FEATURED_POSTER_ORDER);
   const anchored = new Set<GenrePackId>();
   return WELCOME_POSTER_ORDER.map((id) => {
     const preset = welcomeGenrePresetById(id);
@@ -298,12 +309,17 @@ function buildPosterCards(): readonly WelcomePosterCard[] {
       preset,
       reference: preset.reference,
       title: preset.posterTitle ?? preset.label,
+      featured: featured.has(id),
       packAnchor,
     };
   });
 }
 
 export const WELCOME_POSTER_CARDS: readonly WelcomePosterCard[] = buildPosterCards();
+export const WELCOME_FEATURED_POSTER_CARDS: readonly WelcomePosterCard[] =
+  WELCOME_POSTER_CARDS.filter((card) => card.featured);
+export const WELCOME_HIDDEN_POSTER_CARDS: readonly WelcomePosterCard[] =
+  WELCOME_POSTER_CARDS.filter((card) => !card.featured);
 
 export type WelcomeStarterTemplateId = "snow-village-inn" | "forest-dungeon" | "reunion-cutscene" | "harbor-market";
 

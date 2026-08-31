@@ -1,8 +1,10 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import {
+  WELCOME_FEATURED_POSTER_CARDS,
   WELCOME_GENRE_CHECKLIST_LINES,
   WELCOME_GENRE_PRESETS,
+  WELCOME_HIDDEN_POSTER_CARDS,
   WELCOME_INSPIRATION_MINIS,
   WELCOME_MORE_WORLDS,
   WELCOME_POSTER_CARDS,
@@ -66,7 +68,7 @@ describe("welcomeGenrePresets", () => {
     expect(preset).toBeTruthy();
     const prompt = buildWelcomeGenrePresetPrompt(preset!);
     expect(prompt).toContain(preset!.label);
-    expect(prompt).toContain("승인 전 커밋 금지");
+    expect(prompt).toContain("지금 열려 있는 프로젝트에 이어서 작업한다");
     for (const line of WELCOME_GENRE_CHECKLIST_LINES) {
       expect(prompt).toContain(line.slice(0, 12));
     }
@@ -75,7 +77,7 @@ describe("welcomeGenrePresets", () => {
   it("builds free-text prompts with user intent", () => {
     const prompt = buildWelcomeFreeTextPrompt("  고양이 카페 RPG  ");
     expect(prompt).toContain("고양이 카페 RPG");
-    expect(prompt).toContain("승인 전 커밋 금지");
+    expect(prompt).toContain("지금 열려 있는 프로젝트에 이어서 작업한다");
   });
 
   it("exposes smaller secondary inspiration strip entries", () => {
@@ -88,13 +90,32 @@ describe("welcomeGenrePresets", () => {
     expect(WELCOME_POSTER_CARDS.map((card) => card.preset.id))
       .toEqual(expect.arrayContaining(WELCOME_GENRE_PRESETS.map((preset) => preset.id)));
     expect(WELCOME_POSTER_CARDS).toHaveLength(WELCOME_GENRE_PRESETS.length);
+    expect(WELCOME_FEATURED_POSTER_CARDS.map((card) => card.preset.id)).toEqual([
+      "monster-collect",
+      "story-cutscene",
+      "adventure-jrpg",
+    ]);
+    expect(WELCOME_HIDDEN_POSTER_CARDS.map((card) => card.preset.id)).toEqual([
+      "horror-gallery",
+      "school-horror",
+      "farm-life",
+      "partner-raise",
+    ]);
 
     const anchors = WELCOME_POSTER_CARDS.map((card) => card.packAnchor).filter((packId) => packId !== null);
     expect([...anchors].sort()).toEqual([...GENRE_PACK_IDS].sort());
 
-    // The referenced worlds lead, and their reference sits in the eyebrow so the title stays short.
-    expect(WELCOME_POSTER_CARDS[0]).toMatchObject({ reference: "이브 같은", title: "갤러리 호러" });
-    expect(WELCOME_POSTER_CARDS[1]).toMatchObject({ reference: "아오오니 같은", title: "학교 호러" });
+    expect(WELCOME_FEATURED_POSTER_CARDS[0]).toMatchObject({ title: "몬스터 수집", featured: true });
+    expect(WELCOME_HIDDEN_POSTER_CARDS[0]).toMatchObject({
+      reference: "이브 같은",
+      title: "갤러리 호러",
+      featured: false,
+    });
+    expect(WELCOME_HIDDEN_POSTER_CARDS[1]).toMatchObject({
+      reference: "아오오니 같은",
+      title: "학교 호러",
+      featured: false,
+    });
     for (const card of WELCOME_POSTER_CARDS) {
       expect(card.title.trim().length).toBeGreaterThan(0);
       expect(card.title).not.toContain("같은");

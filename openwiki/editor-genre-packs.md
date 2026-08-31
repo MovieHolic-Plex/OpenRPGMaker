@@ -6,7 +6,7 @@ Genre packs are editor-side authoring guidance over the single canonical `Projec
 
 - `src/project/genrePackId.ts` owns the five persisted IDs: `adventure-jrpg`, `monster-collect`, `horror-chase`, `story-cutscene`, and `farm-life`.
 - `src/editor/genrePacks.ts` owns the machine-readable registry: starter, navigation, vocabulary, recipes, lint mappings, journeys, and runtime requirements.
-- `src/editor/welcomeGenrePresets.ts` maps all seven welcome presets to a real pack and blank-project system-preset recipe. The production briefing renders exactly one card for each of the five canonical packs with stable `data-pack-id`; `partner-raise` and `school-horror` remain nested inspiration prompts rather than duplicate pack cards. `buildWelcomeGenrePresetPrompt` remains an optional AI enhancement; it is not the pack contract.
+- `src/editor/welcomeGenrePresets.ts` maps all seven welcome presets to a real pack and blank-project system-preset recipe. The first-screen briefing shows three featured posters (`monster-collect`, `story-cutscene`, `adventure-jrpg`). Horror, farm, and partner-raise posters stay in the collapsed 「이런 세계도 있어요」 tier — hidden, not deleted. The DOM still carries exactly one `data-pack-id` per official pack. `buildWelcomeGenrePresetPrompt` remains an optional AI enhancement; it is not the pack contract.
 - `src/editor/welcomeGenreSystemPresetAction.ts` is the confirmed manual system-preset boundary. It passes a detached result to `store.loadNewRemoteProjectTransactionally`; there is no local-only success fallback.
 - `src/project/genrePresets.ts` only applies standard `system.*` opt-ins. Player/runtime modules must not switch on `system.genre`.
 
@@ -33,9 +33,9 @@ These checks reuse the canonical `Project`, `projectLint`, `collectProjectRefere
 
 - `test/genrePackRegistry.test.ts`: exact registry set, complete machine data, all-seven welcome mappings, honest blank-system-preset results, detached preset isolation, farm configuration negative controls, and fail-closed playability.
 - `test/genrePersistence.test.ts`: five-ID serialization roundtrip and rejection of arbitrary IDs.
-- `test/editorWelcome.test.ts`: the live DOM exposes the confirmed system-preset action separately from AI, renders the canonical five `data-pack-id` values exactly once with variants nested, and stays mounted on failure.
+- `test/editorWelcome.test.ts`: the live DOM exposes the confirmed system-preset action separately from AI, renders three featured posters plus four collapsed genre posters, keeps the canonical five `data-pack-id` values exactly once, and stays mounted on failure.
 - `test/welcomeGenreSystemPresetAction.test.ts`: confirmed plans use the verified remote-switch boundary and do not mutate an open-project object.
 - `test/transactionalNewRemoteProject.test.ts`: target save/reload and staged browser-config quota failures preserve the open project, draft storage, config, URL, and welcome DOM.
-- `test/e2e/director-first-briefing.spec.ts`: Chromium boots the production editor welcome and gates the exact canonical five pack nodes plus nested partner/school-horror inspirations.
+- `test/e2e/director-first-briefing.spec.ts`: Chromium boots the production editor welcome, gates the three featured posters, and reveals the remaining genre posters only after expanding 「이런 세계도 있어요」.
 
 When extending packs, add capability requirements that the shared runtime already understands. Add a shared runtime capability first if none exists; never add a genre branch to player code.
