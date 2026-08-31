@@ -13,7 +13,7 @@
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
 import { chromium } from "@playwright/test";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { runRuntimeQa, startPlayerQaServer } from "./lib/runtimeQaRun.mjs";
 
 const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
@@ -33,7 +33,7 @@ function parseArgs(argv) {
 
 async function loadScenario(name) {
   const path = join(REPO_ROOT, "scripts/qa/runtime", `${name}.scenario.mjs`);
-  const module = await import(path);
+  const module = await import(pathToFileURL(path).href);
   const scenario =
     module.default ?? Object.values(module).find((value) => value && Array.isArray(value.beats));
   if (!scenario) throw new Error(`${path} 에서 시나리오를 찾지 못했다(beats 배열 필요)`);

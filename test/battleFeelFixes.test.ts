@@ -21,6 +21,8 @@ import {
 } from "@/player/battleSequencer";
 import { TERM_KEYS } from "@/project/terms";
 import { defaultTerms } from "@/project/defaults/defaultDatabase";
+import { battleCommandKindLabel } from "@/player/battleCommandDom";
+import type { RuntimeBattleCommand } from "@/battle/battleCommands";
 import type { MutableBattler } from "@/battle/battleBattlers";
 
 function battler(overrides: Partial<MutableBattler> = {}): MutableBattler {
@@ -161,5 +163,21 @@ describe("F12: 방어·도주 라벨도 용어 사전에 들어간다", () => {
     expect(TERM_KEYS).toContain("escape");
     expect(defaultTerms().defend).toBe("방어");
     expect(defaultTerms().escape).toBe("도주");
+  });
+
+  it("표준 커맨드는 클래스 이름이 영어여도 용어를 따른다", () => {
+    const terms = defaultTerms();
+    const command = (kind: RuntimeBattleCommand["kind"], name: string, id: string): RuntimeBattleCommand => ({
+      id,
+      name,
+      kind,
+    });
+    expect(battleCommandKindLabel(command("attack", "Hit", "cmd_attack"), terms)).toBe("공격");
+    expect(battleCommandKindLabel(command("skill", "기술", "cmd_skill"), terms)).toBe("스킬");
+    expect(battleCommandKindLabel(command("item", "Bag", "cmd_item"), terms)).toBe("아이템");
+    expect(battleCommandKindLabel(command("defend", "Guard", "cmd_defend"), terms)).toBe("방어");
+    expect(battleCommandKindLabel(command("escape", "Run", "cmd_escape"), terms)).toBe("도주");
+    expect(battleCommandKindLabel(command("capture", "Catch", "cmd_capture"), terms)).toBe("포획");
+    expect(battleCommandKindLabel(command("skill", "검격", "cmd_slash"), terms)).toBe("검격");
   });
 });

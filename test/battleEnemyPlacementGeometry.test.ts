@@ -39,4 +39,16 @@ describe("적 세로 배치 기하", () => {
       }
     });
   }
+
+  it("rm2003 4인 파티의 가로 간격은 스프라이트 폭보다 넓다", () => {
+    const place = BATTLER_PLACEMENTS.rm2003;
+    const left = place.party(0, 4);
+    const right = place.party(1, 4);
+    expect(Math.abs(right.x - left.x)).toBeGreaterThanOrEqual(64);
+  });
+
+  it("rm2003 1:1 은 같은 접지 선에 선다", () => {
+    const place = BATTLER_PLACEMENTS.rm2003;
+    expect(place.enemy(0, 1).y).toBe(place.party(0, 1).y);
+  });
 });
