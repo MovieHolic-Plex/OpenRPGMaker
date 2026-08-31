@@ -20,7 +20,7 @@ import {
   subscribeAiApplyCompletion,
   type AiApplyCompletionContext,
 } from "@/editor/aiApplyCompletion";
-import type { ChangeSummary, Project } from "@/project/types";
+import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import {
   parseAssistantTemperature,
@@ -41,6 +41,8 @@ import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import { buildTurnGuide, type TurnScope } from "@/ai/turnGuide";
+import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
 import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
@@ -1349,6 +1351,32 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.turnAbort, detail: { toolsSoFar, droppedQueue } });
   };
 
+  // 이 턴이 손댈 범위. 선택 사각형이 현재 맵의 것이고, 요청이 «영역을 벗어나는 의도»(예: 새 맵
+  // 시공)가 아닐 때만 스코프로 쓴다. 없으면 null — 재료·도구 규칙만 붙고 사각형 제약은 빠진다.
+  const resolveTurnScope = (instruction: string): TurnScope | null => {
+    const state = editorState.get();
+    const selection = state.selection;
+    if (!selection) return null;
+    if (isRegionEscapingIntent(instruction)) return null;
+    const project = store.getCurrent();
+    const mapId = state.currentMapId ?? project.startMapId ?? null;
+    if (!mapId || selection.mapId !== mapId || !project.maps[selection.mapId]) return null;
+    return {
+      mapId: selection.mapId,
+      region: { x: selection.x, y: selection.y, width: selection.width, height: selection.height },
+    };
+  };
+
+  // 재료 라벨 예시를 뽑을 타일셋. 스코프가 없으면 현재 열린 맵 것을 쓴다 — 라벨 힌트가 빠지면
+  // 모델이 그룹 id 를 재료로 쓰는 실수로 돌아간다.
+  const tilesetForTurn = (scopeMapId?: string): TilesetDef | undefined => {
+    const project = store.getCurrent();
+    const mapId = scopeMapId ?? editorState.get().currentMapId ?? project.startMapId ?? null;
+    if (!mapId) return undefined;
+    const map = project.maps[mapId];
+    return map ? project.tilesets[map.tilesetId] : undefined;
+  };
+
   const sendText = async (
     text: string,
     displayAs?: string,
@@ -1375,8 +1403,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const autonomous = loadAiConfig().agentMode === "auto";
     // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
     if (autonomous) beginAutonomousRun();
+    // 도구 규칙(재료 라벨·소품/보물상자 구분·shape=circle·길/도로 등)은 **선택 여부와 무관하게**
+    // 붙인다. 예전에는 이 규칙이 영역 작업 전용 경로에만 있어서, 선택 영역 없이 조수에게 같은
+    // 말을 하면 다른 규칙을 받았다 — 가방 그룹을 재료로 쓰거나, 장식 나무상자를 place_chest 로
+    // 놓거나, 원형 호수를 네모로 채우는 실수가 조수 쪽에서만 반복됐다(PR #378 의 관찰).
+    // 사각형 제약 문구는 스코프가 있을 때만 더 붙는다.
+    const turnScope = resolveTurnScope(trimmed);
+    const guide = buildTurnGuide({
+      instruction: trimmed,
+      ...(tilesetForTurn(turnScope?.mapId) ? { tileset: tilesetForTurn(turnScope?.mapId) } : {}),
+      scope: turnScope,
+    });
+    const payload = [trimmed, guide, contextFooter()].filter((part) => part.length > 0).join("\n\n");
     await executeTurn(session, trimmed, (onEvent, signal) =>
-      session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal, { autonomous }),
+      // instruction: 되묻기 판정용 원문. payload 에는 도구 가이드가 섞여 있어 그걸로 판정하면
+      // 가이드 문구의 실내·야외 표지가 매 턴 「집을 어떻게 만들까요?」 되묻기를 유발한다.
+      session.sendUserMessage(payload, onEvent, signal, { autonomous }),
       { autonomous }
     );
   };

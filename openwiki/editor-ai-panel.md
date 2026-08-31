@@ -118,6 +118,33 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **편집 크롬 복원 (2026-08-25):** 편집 모드는 메뉴/워크스페이스/테스트/클래식 툴바를 다시 노출한다. 하단 `.editor-statusbar`는 마운트하지 않는다.
 - **영역 작업 적용 후 드래그 선택은 해제된다 (2026-08-30):** 영역 작업이 맵에 반영되면 그 사각형은 「지금 무엇을 고를지」가 아니라 「방금 무엇이 바뀌었는지」를 가리키는 낡은 표시가 되고, 위에 뜬 선택 액션 칩(복사·지우기·구조물로 저장·AI)이 새로 만들어진 내용에 대한 지시로 오인된다. 그래서 `applyRegionProjectWithHistory`(영역 AI 실행·직접 실내 초안이 공유하는 **단일 store 반영 경로** — 즉시 적용·승인 후 적용·부분 적용·캔버스 인라인 수락·헤드리스 적용이 전부 이 함수를 지난다)가 반영 성공 뒤 `clearSelection()` 을 부른다. **적용된 맵의 선택만** 푼다(다른 맵에서 고른 영역은 이 적용과 무관). 버리기는 선택을 남긴다 — 다시 지시할 대상이 그 영역이다. 회귀 테스트: `test/regionTaskSelectionClear.test.ts`.
 - **영역 작업은 플래너를 건너뛴다 (2026-08-26):** `isProtocolLocked` 합성 문장(`영역 작업 도구 규칙`)은 `agentMode auto`여도 `runOrchestratorPlanner`를 호출하지 않는다. 시공 경로가 이미 잠긴 지시를 다시 분해하면 oh-my-pi 워커 크래시(500 / `worker exited`)를 플래너+본문으로 두 번 연속 재시도한다. 워커 크래시 500은 본문 루프에서 1회만 재시도한다.
+- **도구 규칙은 조수와 영역 작업이 공유한다 (2026-08-31, PR #378 의견만 반영):** 이전에는 도구
+  규칙(재료 라벨 힌트 · 장식 상자 vs 보물상자 · `shape=circle` · `paint_road`)이 **영역 작업
+  전용**이었다(`buildRegionTaskMessage` 의 `toolGuide` 배열). 그래서 선택 사각형 없이 조수에게
+  같은 말을 하면 같은 요청이 다른 규칙을 받았고, 가방 그룹을 재료로 쓰거나 장식 나무상자를
+  `place_chest` 로 놓거나 원형 호수를 네모로 채우는 실수가 조수 쪽에서만 반복됐다.
+  이제 정본은 `src/ai/turnGuide.ts` 의 `buildTurnGuide({ instruction, tileset, scope })` 하나다.
+  **스코프(선택 사각형)는 엔진이 아니라 인자다** — 있으면 «영역 밖 금지» 문구와 `tile_query` 의
+  `mapId` 가 더 붙고, 없으면 재료·도구 규칙만 붙는다. `buildRegionTaskMessage` 는 여기에 위임하고
+  footer 만 더하며(1115 → 986줄), `aiChatPanel.sendText` 는 `resolveTurnScope`(선택이 현재 맵
+  것이고 `isRegionEscapingIntent` 가 아닐 때만 스코프) + `tilesetForTurn` 으로 같은 가이드를
+  붙인다. `formatMaterialLabelHint` · `constructionFacadeLine` · `PROP_VOCAB` 도 turnGuide 가
+  정본이고 `runRegionTask` 는 재수출만 한다(기존 수입자 호환).
+  - **함정 (실측):** `buildTurnGuide(scope 있음)` 은 domainSeed · scopeLine 을 **이미 포함한다.**
+    호순부에서 그걸 또 붙이면 같은 문구가 두 번 들어가고, 늘어난 키워드가 **도구 노출 상한(40)을
+    잠식해 `build_house_kit` 같은 핵심 도구가 밀려난다.** 이 증상은 메시지 본문을 읽어도 안 보인다 —
+    `toOpenAiTools(undefined, { domains }).map(t => t.function.name)` 을 직접 세라.
+  - **위임이 무해함을 증명하는 방법:** 동일 입력(**타일셋 포함**)으로 메시지를 파일로 덤프해
+    `origin/main` 워킹트리와 `diff` 한다 — 바이트 일치해야 한다. 규칙 줄(`- ` 시작)만 비교하는
+    것보다 안전하다: 시드·스코프 줄은 `- ` 로 시작하지 않아 그 범위에서 안 보이고, 상한(40) 증상을
+    정확히 그 함정이 만들었다. 계약 테스트: `test/turnGuideSharedRules.test.ts`
+    (사보타주: 스코프 없을 때 가이드를 `""` 로 만들면 7건 실패, 두 경로를 갈라놓으면 2건 실패).
+  - **옛 PR #378 을 그대로 붙이지 말 것:** base 가 main 보다 319커밋 뒤여서 영역작업 하위 시스템
+    31파일을 지우고, `analyzeRegionBlend`(#347 다듬기) · `verificationGate` 배제(#335) ·
+    `resolveSurfaceAiConfig`(#349) · 적용 뒤 선택 해제(#354)를 전부 되돌린다. 생산적인 신규분은
+    `turnGuide.ts` 하나라 그것만 가져왔다. 또 #378 은 «결과는 사용자 승인 후에만 반영된다» 문장을
+    떨궈서 되살렸다 — 조수도 제안 카드로 승인을 받는다.
+
 - **영역 작업 bare 집 → 야외 집 직시공(2026-07-24 수정):** 영역 작업(`buildRegionTaskMessage`)에서 사용자가 현재 맵 위에 선택 영역을 준 상태로 “집”이라고만 하면, 이전엔 “야외/실내 되묻기”로 턴이 끝났다(0건 호출). 이제 영역 선택 자체가 현재 맵 위 야외 시공 의도의 신호이므로 `author_house(kind:"single")`로 바로 시공한다. `constructionFacadeLine`의 bare fallback은 `/집/`만 잡고 `/건물/`은 잡지 않는다 — 탑/성벽/대장간 등은 structure 가이드가 `build_wall`/`create_farm_plot`으로 안내한다. 채팅 경로(영역 footer 없음)는 `resolveIntentClarification`(`intentClarify.ts` PROTOCOL_LOCKED_RE)가 여전히 bare 집을 사전 차단해 되묻는다 — 영역 메시지만 “영역 작업 도구 규칙” 마커로 protocol-lock 을 우회한다. 단위 테스트: `test/regionTaskRun.test.ts`.
 
 - **AI 리�튂 문서(`present_doc`, core ?꾨찓??:** AI媛 ?쒓컖 ?먮즺媛 ?꾩슂???ㅻ챸(?ㅽ넗???구조쨌???문법·비교????**?섏씠釉뚮━??블록 문서**濡?만든?? 블록: `markdown`/`table`/`sheetMap`(칩�뀑+議??ㅻ쾭?덉씠)/`tileBlockCard`(?곸뿭 ?�롭 카드)/`paintDemo`(RM2k3 3횞4 블록 ?명꽣?숉떚釉??섏씤??/`html`(sandbox iframe, allow-scripts留?. 구조??블록? **?댁븘?덈뒗 ??쇱뀑**(`tilesetImageUrl`)?먯꽌 그려??base64 불필?붋룹??좏겙. 채팅 踰꾨툝濡??몃씪???뚮뜑(`aiChatPanel` present_doc ????`aiConversationLog.appendAiDocument` ??`aiDocRenderers.ts`), `project.aiDocuments[]`???곸냽(`list_ai_docs`濡?조회). Code: `src/editor/tools/aiDocTools.ts`, `src/editor/panels/aiDocRenderers.ts`. Tests: `test/aiDocTools.test.ts`.

@@ -16,7 +16,6 @@ import { recordAiActivityFromRegionLog } from "@/ai/activityLog";
 import { conversationScopeKey } from "@/ai/conversationStore";
 import { distillPreferences } from "@/ai/preferenceDistiller";
 import { observeTurn, shouldDistillPreferences } from "@/ai/preferenceSignals";
-import { requestLikelyModifiesExisting } from "@/ai/modifyIntent";
 import { REGION_SURFACE_MAX_TOOL_CALLS, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { loadAiConfig } from "@/ai/llmClient";
 import {
@@ -40,11 +39,10 @@ import {
   truncateMapEditHistoryFromMarker,
 } from "@/editor/mapEditHistory";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
-import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
+import { ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
 import { store } from "@/project/store";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
-import { isBagGroupId, isBagMaterialQuery } from "@/project/materialPolicy";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
 import { validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
@@ -52,7 +50,13 @@ import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion"
 import { analyzeRegionBlend, describeBlendBreak, describeBlockedEntrance, expandRegion, polishRegionSeams } from "./regionBlend";
 import { buildRegionPolishMessage } from "./regionPolish";
 import { analyzeRegionSurroundings } from "./regionSurroundings";
-import { REGION_INTENT_KEYWORDS, regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
+import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
+// 도구 규칙과 그 부품(재료 라벨 힌트·시공 facade 시그니처)의 정본은 turnGuide 다 — 영역 작업과
+// 조수가 같은 문구를 쓰려면 한 곳에만 있어야 한다. 기존 수입자(test/materialPolicy.test.ts,
+// regionPolish)를 깨지 않도록 여기서 재수출한다.
+import { buildTurnGuide, formatMaterialLabelHint } from "@/ai/turnGuide";
+
+export { formatMaterialLabelHint };
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
 import { projectApprovalFingerprint, reviewRegionDraft, type HarnessReviewReport } from "./harnessReview";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
@@ -404,84 +408,6 @@ export function formatApprovedPropVocabHint(tileset: TilesetDef | undefined): st
   return formatMaterialLabelHint(tileset);
 }
 
-export function formatMaterialLabelHint(tileset: TilesetDef | undefined): string {
-  if (!tileset) {
-    return `- 소품 재료: (타일셋 없음) tile_query ask:"labels" — 예: "침엽수", "나무 상자", "과일박스" (가방·그룹 id 금지)`;
-  }
-  // 구체 소품 우선. 마을 소품(small-props) 가방은 시공 material 후보에서 제외.
-  const preferred = [
-    BUILD_PALETTE_GROUP_IDS.tree,
-    REGION_PROP_VOCAB.woodBox,
-    REGION_PROP_VOCAB.fruitBox,
-    BUILD_PALETTE_GROUP_IDS.path,
-    BUILD_PALETTE_GROUP_IDS.water,
-  ];
-  const groups = tileset.tileGroups ?? [];
-  const preferredFound = preferred
-    .map((id) => groups.find((group) => group.id === id))
-    .filter((group): group is NonNullable<typeof group> => group != null && !isBagGroupId(group.id));
-  const propish = groups.filter((group) => {
-    if (isBagGroupId(group.id) || isBagMaterialQuery(group.name)) return false;
-    return (
-      group.role === "prop" || group.role === "terrain" || group.role === "water" || group.role === "fence"
-      || /tree|bush|flower|fence|path|water|road|box/i.test(group.id)
-    );
-  });
-  const ordered = [
-    ...preferredFound,
-    ...propish.filter((group) => !preferred.includes(group.id)),
-  ];
-  const unique = [...new Map(ordered.map((group) => [group.id, group])).values()].slice(0, 10);
-  if (unique.length === 0) {
-    return `- 소품 재료: tile_query ask:"labels" 로 라벨/설명을 찾아 place_props material 에 넣기 (가방·그룹 id 금지)`;
-  }
-  const list = unique.map((group) => `${group.name}(${group.role})`).join(", ");
-  return `- 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): ${list}`;
-}
-
-/**
- * 지시 텍스트에서 집/마을 시공 의도를 감지해 공식 facade 호출 시그니처 라인을 반환.
- *
- * 마을 분기는 **수량 정규식과 무관하게** 항상 `target:{kind:"existing",mapId,bounds}` 를 못박는다
- * (2026-08-29 modify 진단 근본원인 10). 옛 구현은 `집 N채인 마을` 이 걸릴 때만 target 을 적어줬고,
- * "이 마을 좀 정리해줘" 처럼 수량이 없으면 시그니처가 아예 안 붙어 모델이 author_village 기본값
- * (= 새 맵 생성)으로 갔다. 영역 작업은 정의상 **지금 열린 맵의 선택 사각형** 이 대상이라 새 맵이
- * 정답일 수 없고, bounds 를 생략하면 스코프 검사를 통과한 채 맵 전체가 재포장된다.
- */
-function constructionFacadeLine(instruction: string, mapId: MapId, region: RegionRect): string | null {
-  const boundsArg = `bounds:{x:${region.x},y:${region.y},w:${region.width},h:${region.height}}`;
-  const target = `target:{kind:"existing",mapId:"${mapId}",${boundsArg}}`;
-  // 마을 intent: "집 N채인 마을", "N채 마을"
-  const villageMatch = instruction.match(/집?\s*(\d+)채[인]?\s*마을/);
-  if (villageMatch) {
-    const n = parseInt(villageMatch[1]!, 10);
-    return `- 마을 시공: author_village { ${target}, houseCount:${n}, countPolicy:"exact" } — 정확히 ${n}채`;
-  }
-  // 수량 없는 마을 언급(집 언급도 없을 때) — 새 맵 금지·선택 영역 한정만 못박는다.
-  if (/마을/.test(instruction) && !/집/.test(instruction)) {
-    return `- 마을 작업: author_village { ${target} } — 새 맵을 만들지 말고 이 맵 선택 영역만 대상으로`;
-  }
-  // 야외 집 한 채 (author_house는 regionIntentGuideLines 구조물 가이드에 이미 노출 — 시그니처만 보강)
-  if (/야외\s*집\s*한\s*채|집\s*한\s*채/.test(instruction)) {
-    return `- 야외 집 시공 시그니처: { kind:"single", mapId:"${mapId}" } — 정확히 1채`;
-  }
-  // 야외 집 N채
-  const houseMatch = instruction.match(/(?:야외\s*)?집\s*(\d+)채/);
-  if (houseMatch) {
-    const n = parseInt(houseMatch[1]!, 10);
-    return `- 야외 집 시공 시그니처: { kind:"lots", mapId:"${mapId}" } — 정확히 ${n}채`;
-  }
-  // bare "집지어"/"집 만들어" — 영역 작업에서 야외 집 1채 기본(되묻지 않음).
-  // 영역 선택이 현재 맵 위이므로 야외 외장 의도로 간주한다(실내는 별도 표지가 있을 때만).
-  // "건물"(일반 건물)은 여기서 잡지 않는다 — 탑/성벽/대장간 등은 structure 가이드가
-  // build_wall/create_farm_plot 등으로 안내하고, 일반 "건물"은 가이드가 LLM에게 맡긴다.
-  // (이전 /집|건물/ 은 "탑 건물"·"성벽 건물" 을 author_house 로 오경로했다.)
-  if (/집/.test(instruction)) {
-    return `- 야외 집 시공: author_house { kind:"single", mapId:"${mapId}" } — 선택 영역 안에 1채 시공`;
-  }
-  return null;
-}
-
 // aiChatPanel.contextFooter와 동일한 [컨텍스트] 라인 포맷(buildSpec.ts의 정규식이 파싱).
 // 이 라인이 있어야 세션이 선택 영역을 이번 턴의 암묵적 명세로 인식한다.
 // 도메인 키워드(타일/npc)를 넣어 place_props·author_house·place_npc 가 노출되게 한다.
@@ -493,76 +419,20 @@ export function buildRegionTaskMessage(
   tileset?: TilesetDef,
 ): string {
   const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
-  const categories = routeRegionIntent(instruction);
-  // 실내 표지는 routeRegionIntent 결과가 아니라 키워드로 직접 본다 — 수정 요청이면 라우터가
-  // "interior"(신규 시공 가이드)를 이미 떨어내므로, 결과만 보면 "실내 수정"과 "실내 무관"을
-  // 구분할 수 없다.
-  const mentionsInterior = REGION_INTENT_KEYWORDS.interior.some((keyword) =>
-    instruction.toLowerCase().replace(/\s+/g, " ").includes(keyword),
-  );
-  const modifies = requestLikelyModifiesExisting(instruction);
-  // 실내 요청을 신규/수정으로 쪼갠다(2026-08-29 modify 진단 근본원인 8). 옛 `wantsInterior` 하나로는
-  // "이 침실 좀 고쳐줘" 가 "새 맵 전체를 시공하라" + "영역 밖 허용" 지시를 받아, 고칠 대상이 있는데도
-  // 새 실내 맵을 하나 더 만드는 경로로 밀렸다.
-  const wantsNewInterior = mentionsInterior && !modifies;
-  const wantsInteriorEdit = mentionsInterior && modifies;
-  // 영역 작업: 사용자가 현재 맵 위에 영역을 선택했으므로 "집"이라고만 해도 야외 집(현재 맵 외장)으로
-  // 간주한다. 실내는 명시적 표지(실내/인테리어)가 있을 때만 실내 경로.
-  // (이전: bare "집" → 야외/실내 되묻기 → "집지어"인데 아무것도 안 짓는 불만. 영역 선택 자체가
-  // 현재 맵 위 야외 시공 의도의 신호다 — 실내 신축은 새 맵으로 빠져나가므로 영역 선택과 모순.)
-  const bareHouse = !mentionsInterior && !modifies && /집/.test(instruction) && !/야외|외장|마을/.test(instruction);
-  // 실내 요청에만 야외 구조물 가이드를 뺀다(bare 집은 이제 야외 집으로 시공하므로 structure 유지).
-  const filteredCategories = mentionsInterior
-    ? categories.filter((c) => c !== "structure")
-    : categories;
-  const intentGuides = regionIntentGuideLines(filteredCategories);
-  // 신규 실내·수정 요청에는 시공 facade 시그니처를 붙이지 않는다 — 둘 다 "새로 지어라"는 신호다.
-  const facadeLine = wantsNewInterior || modifies ? null : constructionFacadeLine(instruction, mapId, region);
-  const toolGuide = [
-    "영역 작업 도구 규칙:",
-    ...(bareHouse ? ["- 집 요청(영역 선택): 선택 영역이 현재 맵 위이므로 야외 집으로 시공. 되묻지 말고 author_house(kind:\"single\")로 바로 시공하라."] : []),
-    wantsNewInterior
-      ? "- 실내/방: start_interior_room_session (새 mapId). 야외 시공 facade 금지. create_map만 하고 끝내지 말 것"
-      : wantsInteriorEdit
-        ? "- 실내 수정: 지금 열린 이 맵을 직접 편집한다(furnish_interior_space({mapId, roomId}) / fill_region / tile_erase / place_props). start_interior_room_session·run_interior_room_pipeline 금지 — 기존 맵의 타일·이벤트가 전부 삭제된다"
-        : "- 집/건물(야외 외장): 공식 시공 facade 사용 (벽 타일로 직사각 채우기 금지). 실내·방 맵 요청에는 야외 시공 facade 금지 → 실내 세션 툴",
-    ...(modifies
-      ? [`- 대상 맵 고정: 이 작업의 대상은 \`${mapId}\` 이다. create_map·duplicate_map 으로 새 맵을 만들지 말고 이 맵을 고쳐라. 여러 맵을 오가지 말 것`]
-      : []),
-    ...(facadeLine ? [facadeLine] : []),
-    "- 나무/바위/꽃 산포: place_props + material(타일 라벨/설명, 예 \"침엽수\"·\"꽃\"). 그룹 id·vocabId 금지. 같은 place_props는 1회",
-    formatMaterialLabelHint(tileset),
-    // 툴콜링 사고: "박스 2개" → small-props 가방. 구체 라벨만 허용.
-    `- 장식 박스/나무상자/나무박스: place_props { material: \"나무 상자\", count:N }. 과일박스= material:\"과일박스\". 마을 소품/small-props 가방·place_chest로 대체 금지`,
-    "- 보물상자(열면 아이템/골드·개봉 기억): place_chest 만. 보관/창고 상자(넣고 빼기): place_storage_chest. '박스'/'나무상자' 장식은 place_props — place_chest 금지",
-    "- 지면/수역/바닥 면: fill_region { material:\"물\" 또는 \"잔디\" } + 원형·둥근은 shape=circle(필수). 그룹 id 금지. rect만 쓰면 네모. 타원=ellipse",
-    "- 길/도로: paint_road { mapId, style:\"dirt\"|\"sand\", points:[{x,y},...] } — 흙길 오토타일 성형. 영역 안 동선·호수 둘레 산책로에 사용",
-    "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것",
-    "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지. 상점 NPC는 make_villager({shop}) 1회 또는 place_npc 1회(같은 역할 중복 금지)",
-    `- tile_query ask:\"labels\" 는 mapId:\"${mapId}\" 를 넣어 현재 맵 타일셋 라벨만 조회(기본값=야외 타일셋 — 실내 맵에서 가로 탁자 등 오조회 주의)`,
-    ...intentGuides,
-    "- 지원하지 않는 요청 부분은 시도하지 말고, 마지막 응답에 '못 한 것: …' 한 줄로 명시하라",
-    // "적용" 표기 금지: assistantToolMode.INTENT_KEYWORDS.battle.strong의 단음절 "적"과
-    // 부분일치로 충돌해(2026-07-10 라이브 실측 수정) 이 고정 문구가 매 턴 battle+database
-    // 도메인을 허위로 열고 노출 상한(40)을 잠식해 mirror_region 등 map/quest 도구를 밀어냈다.
-    "- 결과는 사용자 승인 후에만 반영된다. propose_tile_vocabulary 댄스는 하지 말 것",
-    wantsNewInterior
-      ? "- 실내 신규: 새 맵 시공은 선택 영역 밖이어도 허용한다. 현재 맵 타일은 불필요하면 건드리지 말 것"
-      : "- 영역 밖 타일·이벤트는 절대 수정하지 말 것",
-  ].join("\n");
-  // intent 스코핑용 키워드 — "맵" 단독 과활성은 피하고 타일/이벤트/소품 쓰기 도메인을 우선한다.
-  // map/quest 등 다른 도메인 도구의 노출은 여기서 시드를 보태 여는 게 아니라, footer의
-  // "현재 맵" 문구·가이드 문구 자체의 키워드(예: quest-trigger의 "퀘스트")로 이미 자연히
-  // 열리고, 상한(40) 슬라이스에 밀리는 핵심 도구는 toolRegistry.PINNED_TOOLS_BY_DOMAIN이
-  // 보장한다(2026-07-10 라이브 실측 수정 — 카테고리별 도메인 시드 병합은 A/B 실측상 효과가
-  // 없는 죽은 복잡도로 판정돼 제거했다).
-  const domainSeed = mentionsInterior
-    ? "(영역 작업: 타일 실내 방 맵 인테리어 집 npc 이벤트)"
-    : "(영역 작업: 타일 지형 나무 소품 집 npc 이벤트 주민)";
-  const scopeLine = wantsNewInterior
-    ? "이 작업은 실내/새 맵 시공이다. 선택 영역은 참고용이며 새 맵 전체를 시공하라."
-    : "이 작업은 아래 선택 영역 안에서만 수행하라.";
-  return `${instruction.trim()}\n\n${domainSeed}\n${toolGuide}\n\n${scopeLine}\n${footer}`;
+  // 도구 규칙은 **조수와 공유**한다(#378 의 의견). 예전에는 이 배열이 영역 작업 전용이어서,
+  // 선택 영역 없이 조수에게 같은 말을 하면 다른 규칙을 받았다 — 가방 그룹을 재료로 쓰거나,
+  // 장식 나무상자를 place_chest 로 놓거나, 원형 호수를 네모로 채우는 실수가 조수 쪽에서만
+  // 반복됐다. 이제 buildTurnGuide 한 곳에서 만들고 스코프(선택 사각형)만 인자로 넘긴다.
+  // 위임 전후 규칙 줄이 완전히 같음을 확인하고 바꿨다(6개 요청 유형 대조).
+  const toolGuide = buildTurnGuide({
+    instruction,
+    ...(tileset ? { tileset } : {}),
+    scope: { mapId, region },
+  });
+  // domainSeed·scopeLine 은 buildTurnGuide(scope 있음) 가 이미 붙인다. 여기서 또 붙이면 같은
+  // 문구가 두 번 들어가고, 늘어난 키워드가 도구 노출 상한(40)을 잠식해 build_house_kit 같은
+  // 핵심 도구가 밀려난다(실측: 이 중복으로 regionAiPlacementHarness 가 실패했다).
+  return `${instruction.trim()}\n\n${toolGuide}\n${footer}`;
 }
 
 // 영역 안에서 base 대비 lower/upper가 바뀐 셀 수(적용 여부 판단·요약용).
