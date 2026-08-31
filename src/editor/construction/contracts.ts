@@ -109,6 +109,11 @@ export type AuthorVillageRequest = {
   readonly settlementLayout?: VillageSettlementLayout;
   readonly npcCount?: number;
   readonly theme?: string;
+  /**
+   * 숲 밀도. 모델이 enum으로 넣는다. 생략하면 생성 규칙 저작 개수.
+   * 사용자 테마 문장을 코드가 읽지 않는다.
+   */
+  readonly forestDensity?: "sparse" | "normal" | "dense" | "impassable";
   readonly seed?: number;
   readonly interior?: boolean;
   /** 데이터베이스 「마을」탭의 배치 프리셋 id — 사용자가 정한 값을 시공에 적용한다. */

@@ -199,14 +199,14 @@ export function buildTurnGuide(input: TurnGuideInput): string {
       ? [`- 대상 맵 고정: 이 작업의 대상은 \`${scope.mapId}\` 이다. create_map·duplicate_map 으로 새 맵을 만들지 말고 이 맵을 고쳐라. 여러 맵을 오가지 말 것`]
       : []),
     ...(facadeLine ? [facadeLine] : []),
-    "- 나무/바위/꽃 산포: place_props + material(타일 라벨/설명, 예 \"침엽수\"·\"꽃\"). 그룹 id·vocabId 금지. 같은 place_props는 1회",
+    "- 나무/바위/꽃 산포: place_props + material(타일 라벨/설명, 예 \"침엽수\"·\"꽃\"). 그룹 id·vocabId 금지. 같은 place_props는 1회. 숲=density:\"dense\", 울창/빽빽/통행 불가=density:\"impassable\", 드문드문/가로수=density:\"sparse\" — 코드가 문장을 읽지 않으니 enum을 직접 넣어라",
     formatMaterialLabelHint(input.tileset),
     // 툴콜링 사고: "박스 2개" → small-props 가방. 구체 라벨만 허용.
     `- 장식 박스/나무상자/나무박스: place_props { material: \"나무 상자\", count:N }. 과일박스= material:\"과일박스\". 마을 소품/small-props 가방·place_chest로 대체 금지`,
     "- 보물상자(열면 아이템/골드·개봉 기억): place_chest 만. 보관/창고 상자(넣고 빼기): place_storage_chest. '박스'/'나무상자' 장식은 place_props — place_chest 금지",
     "- 지면/수역/바닥 면: fill_region { material:\"물\" 또는 \"잔디\" } + 원형·둥근은 shape=circle(필수). 그룹 id 금지. rect만 쓰면 네모. 타원=ellipse",
     `- 길/도로: paint_road { mapId, style:"dirt"|"sand", points:[{x,y},...] } — 흙길 오토타일 성형. ${scope ? "영역 안 " : ""}동선·호수 둘레 산책로에 사용`,
-    "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것",
+    "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것. 마을 숲은 author_village({ forestDensity }) — 테마 문장만 넣고 density를 빼지 말 것",
     "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지. 상점 NPC는 make_villager({shop}) 1회 또는 place_npc 1회(같은 역할 중복 금지)",
     ...(scope
       ? [`- tile_query ask:\"labels\" 는 mapId:\"${scope.mapId}\" 를 넣어 현재 맵 타일셋 라벨만 조회(기본값=야외 타일셋 — 실내 맵에서 가로 탁자 등 오조회 주의)`]

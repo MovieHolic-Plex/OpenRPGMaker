@@ -88,7 +88,7 @@ export function buildRegionPolishMessage(input: RegionPolishMessageInput): strin
     "- 먼저 get_map_region 으로 영역과 그 주변을 한 번 확인한 뒤 손대라(아래 브리핑으로 부족할 때만)",
     "- 지면/수역: fill_region { material:\"잔디\"|\"물\" … } — 원형·둥근 지형은 shape=circle",
     "- 길: paint_road { mapId, style:\"dirt\"|\"sand\", points:[{x,y},…] }",
-    "- 소품: place_props + material(타일 라벨, 예 \"침엽수\"·\"꽃\"). 그룹 id·가방 금지. 물 칸 위 금지",
+    "- 소품: place_props + material(타일 라벨, 예 \"침엽수\"·\"꽃\"). 그룹 id·가방 금지. 물 칸 위 금지. 숲=density:\"dense\", 울창/통행 불가=density:\"impassable\"(문장을 코드가 읽지 않음)",
     input.materialHint,
     `- tile_query ask:"labels" 는 mapId:"${mapId}" 를 넣어 이 맵 타일셋 라벨만 조회`,
     ...(input.extraGuides ?? []),

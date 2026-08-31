@@ -92,6 +92,7 @@ export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDo
     ...(request.target.kind === "existing" && request.target.bounds ? { bounds: request.target.bounds } : {}),
     ...(request.housePlans ? { housePlans: request.housePlans } : {}),
     ...(request.theme ? { theme: request.theme } : {}),
+    ...(request.forestDensity ? { forestDensity: request.forestDensity } : {}),
     ...(request.groundTheme === undefined ? {} : { groundTheme: request.groundTheme }),
     ...(request.settlementLayout === undefined ? {} : { settlementLayout: request.settlementLayout }),
     ...(request.npcCount === undefined ? {} : { npcCount: request.npcCount }),

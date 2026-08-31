@@ -17,7 +17,13 @@ import {
 } from "@/project/tileVocabulary";
 import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { forestCompositionApplies, measureForestArea, plantForestComposition } from "../forestComposition";
-import { forestPackingFor, forestPlacementPlan, type ForestDensity, treeFootprintCells } from "../forestDensity";
+import {
+  forestPackingFor,
+  forestPlacementPlan,
+  forestTreeKindFromResolvedMaterial,
+  type ForestDensity,
+  treeFootprintCells,
+} from "../forestDensity";
 import { inMapBounds, reachableCellCount, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
 import { wobblePath } from "../naturalScatter";
 import {
@@ -589,7 +595,9 @@ const placeProps: ToolDefinition = {
   name: "place_props",
   description:
     "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region. "
-    + "숲은 density:sparse|normal|dense|impassable 로 요청하면 count·packing을 면적에서 자동 계산한다(sparse=15%, normal=40%, 숲 기본 dense=80%, impassable=100%). "
+    + "숲은 모델이 density:sparse|normal|dense|impassable 을 넣으면 count·packing을 면적에서 자동 계산한다"
+    + "(sparse=15%, normal=40%, 숲=dense 80%, 울창/빽빽/통행 불가=impassable 100%). "
+    + "사용자 문장을 코드가 읽지 않는다 — 밀도 enum을 생략하면 일반 산포(count 필수). "
     + "일반 소품을 빽빽하게·통행 불가로 놓을 때는 packing:\"dense\" + count=area 면적(결과에 남은 통행 칸 수).",
   mode: "write",
   version: 3,
@@ -608,7 +616,7 @@ const placeProps: ToolDefinition = {
       density: {
         type: "string",
         enum: ["sparse", "normal", "dense", "impassable"],
-        description: "나무 전용 밀도. count·packing을 area 면적에서 계산: sparse=15%, normal=40%, dense=80%, impassable=100%",
+        description: "나무 전용 밀도. 모델이 넣는다(숲=dense, 울창/통행 불가=impassable). count·packing을 area 면적에서 계산. 사용자 문장을 코드가 읽지 않는다.",
       },
       minGap: { type: "integer", description: "간격(기본 1; 마을 산포는 2+ 권장)" },
       naturalness: { type: "number", description: "0~1(기본 0.5). <0.3=한곳 뭉침(uniform), 0.3~0.7=poisson 산포, >0.7=cluster" },
@@ -622,17 +630,25 @@ const placeProps: ToolDefinition = {
     required: ["mapId", "area", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
-    const { map } = requireMapContext(draft, args, PROPS_EXAMPLE);
+    const { map, tileset } = requireMapContext(draft, args, PROPS_EXAMPLE);
     const area = coerceRect(args.area, "area", PROPS_EXAMPLE);
     const density = coercePlacePropsForestDensity(args.density);
     const material = typeof args.material === "string" ? args.material.trim() : "";
     if (!material) failWithExample("material(타일 라벨/설명, 예: \"침엽수\"·\"나무 상자\")이 필요합니다", PROPS_EXAMPLE);
-    const forestMaterial = /침엽수|conifer/i.test(material)
-      ? "침엽수" as const
-      : /활엽수|broadleaf/i.test(material)
-        ? "활엽수" as const
-        : undefined;
-    if (density && !forestMaterial) failWithExample("density는 침엽수/활엽수 material에만 쓸 수 있습니다", PROPS_EXAMPLE);
+    const resolved = resolveMaterialByLabel(tileset, material, {
+      preferGroup: true,
+      preferRoles: ["prop", "terrain"],
+    });
+    const forestMaterial = resolved.status === "missing"
+      ? undefined
+      : forestTreeKindFromResolvedMaterial({
+        kind: resolved.kind,
+        ...(resolved.kind === "group" ? { groupId: resolved.group.id, groupName: resolved.group.name } : {}),
+        matchedLabel: resolved.matchedLabel,
+      });
+    if (density && resolved.status !== "missing" && !forestMaterial) {
+      failWithExample("density는 침엽수/활엽수 material에만 쓸 수 있습니다", PROPS_EXAMPLE);
+    }
     // 왜 density=dense·impassable 이 다른 경로인가: 숲은 나무 한 재료를 밀집하는 것이 아니라
     // 수종·덤불·하층식생이 섞인 지형이다(렌더 실측: 한 재료 dense 는 산울타리 밭으로 읽혔다).
     if (density && forestMaterial && args.count === undefined && forestCompositionApplies(density)) {

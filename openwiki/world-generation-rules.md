@@ -44,7 +44,8 @@ AI 가 마을을 깔 때 쓰는 **물·숲·길 수치와 낱말 판정**을 프
 `system.worldGen` → `resolveWorldGenRules()` → 아래 전부:
 
 - `villageTerrainPass.ts`: `buildTerrainConstraintMasks` (강 띠·호수 지름·숲 깊이·방향),
-  `applyTerrainPassFromMasks` (수면 모양·나무 수·간격·자연스러움)
+  `applyTerrainPassFromMasks` (수면 모양·나무 수·간격·자연스러움).
+  숲 **밀도**는 모델이 넘긴 `requirements.forestDensity` enum 이다. 쿼리 정규식은 없다.
 - `villageRequirements.ts`: `inferRequirementsFromQuery` (낱말→랜드마크, 방향 기본값),
   `styleHintsFromRequirements` (길·광장·마당·테두리 나무)
 - `villagePlan.ts`: `normalizeVillagePlan`

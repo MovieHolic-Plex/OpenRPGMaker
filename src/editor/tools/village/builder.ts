@@ -36,6 +36,7 @@ import {
   runTerrainConstraintPass,
 } from "../villageTerrainPass";
 import { inferRequirementsFromQuery } from "../villageRequirements";
+import { FOREST_DENSITIES, parseOptionalForestDensity } from "../forestDensity";
 import { resolveWorldGenRules } from "@/project/worldGenRules";
 import { isPassable } from "@/project/collision";
 import { scrubPlacementConflicts } from "@/project/lint/layoutPlacementValidate";
@@ -168,10 +169,13 @@ export function buildVillageDomain(
   // 쿼리 상식 스펙: 강/호수 자리를 비운 채 주거 영역만 시공
   const planForReq = typeof merged.planId === "string" ? loadVillagePlan(draft, merged.planId) : undefined;
   const worldGenRules = resolveWorldGenRules(draft.system.worldGen);
-  const requirements = planForReq?.requirements
+  const inferredRequirements = planForReq?.requirements
     ?? (typeof intent.theme === "string" && intent.theme
-      ? inferRequirementsFromQuery(intent.theme, worldGenRules)
+      ? inferRequirementsFromQuery(intent.theme, worldGenRules, { forestDensity: intent.forestDensity })
       : undefined);
+  const requirements = inferredRequirements && intent.forestDensity
+    ? { ...inferredRequirements, forestDensity: intent.forestDensity }
+    : inferredRequirements;
   const baseArea = villageBuildArea(map, createArgs.bounds);
   assertBuildAreaSize(map, baseArea);
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
@@ -551,6 +555,11 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       properties: {
         theme: { type: "string", description: "마을 테마/사용자 쿼리(예: 강촌마을). 강·숲·장터 등 필수 스펙을 자동 추출한다." },
         query: { type: "string", description: "theme과 별도 원문 쿼리. 있으면 스펙 추출에 우선." },
+        forestDensity: {
+          type: "string",
+          enum: [...FOREST_DENSITIES],
+          description: "숲 밀도. 모델이 넣는다(숲=dense, 울창/빽빽/통행 불가=impassable, 드문드문=sparse). 사용자 문장을 코드가 읽지 않는다.",
+        },
         pathStyle: { type: "string", enum: ["sand", "dirt", "stone"], description: "stone=유기 돌마당 필드(성곽·석조 마을)" },
         kitMix: { type: "string", enum: ["mixed", "blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"] },
         yardStyle: { type: "string", enum: ["mixed", "garden", "workshop", "market", "minimal"] },
@@ -860,6 +869,11 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           type: "string",
           description:
             "마을 테마 한 줄(예: 강가 어촌, 산골 광산촌, 장터 마을). pathStyle/yardStyle 등 미지정 시 휴리스틱으로 추론한다.",
+        },
+        forestDensity: {
+          type: "string",
+          enum: [...FOREST_DENSITIES],
+          description: "숲 밀도 enum. 모델이 넣는다. 생략하면 생성 규칙 저작 개수. 사용자 문장을 코드가 읽지 않는다.",
         },
         houseCount: { type: "integer", description: "집 수(4~32). houses/housePlans 없을 때 사용. 미지정 시 면적 비례 기본값." },
         fences: { type: "boolean", description: "집 필지 울타리(기본 true). false면 울타리를 깔지 않는다." },
@@ -1209,6 +1223,10 @@ function resolveVillageIntent(
   presetName: string | undefined,
 ): VillageIntent {
   const theme = typeof args.theme === "string" ? args.theme.trim() : "";
+  const forestDensity = parseOptionalForestDensity(args.forestDensity);
+  if (args.forestDensity !== undefined && forestDensity === undefined) {
+    throw new ToolError("forestDensity는 sparse|normal|dense|impassable 중 하나여야 합니다.", { code: "invalid-args" });
+  }
   const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 1;
   // 프리셋이 있으면 테마 추론보다 앞선다 — 사용자가 직접 정한 값이 휴리스틱을 이긴다.
   const inferred = { ...inferIntentFromTheme(theme), ...presetValues };
@@ -1239,6 +1257,7 @@ function resolveVillageIntent(
   );
   return {
     theme,
+    ...(forestDensity ? { forestDensity } : {}),
     templateCatalog,
     ...(presetId ? { presetId } : {}),
     ...(presetName ? { presetName } : {}),
