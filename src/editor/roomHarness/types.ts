@@ -53,11 +53,11 @@ export interface RoomHarnessKit<Plan = unknown> {
   nameOf(plan: Plan): string;
   createEmptyMap(plan: Plan): GameMap;
   /** 레이어 1개 시공(맵 사본 반환). */
-  applyLayer(map: GameMap, plan: Plan, layer: string): RoomLayerResult;
+  applyLayer(map: GameMap, plan: Plan, layer: string, project?: Project): RoomLayerResult;
   /** 원샷: 모든 레이어를 순서대로 시공. */
-  runPipeline(plan: Plan): RoomPipelineResult;
+  runPipeline(plan: Plan, project?: Project): RoomPipelineResult;
   /** 완성 맵 평가(선택). */
-  evaluate?(map: GameMap, plan: Plan, attempt: number): RoomEvalReport;
+  evaluate?(map: GameMap, plan: Plan, attempt: number, project?: Project): RoomEvalReport;
   /** 데모 식별자(테마명 등) → 데모 플랜. 미구현 시 엔진이 demoPlans에서 테마로 찾는다. */
   demoMatch?(demo: string): Plan | undefined;
   /** 세션 시작 로그 첫 줄(선택). */

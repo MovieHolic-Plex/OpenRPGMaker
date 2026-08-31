@@ -1,3 +1,5 @@
+import type { InteriorFurnitureSnap, InteriorRoomKindRecord } from "./interior";
+
 export type MapId = string;
 export type TilesetId = string;
 export type FlagName = string;
@@ -281,7 +283,7 @@ export interface StructureKitRow {
 // 스탬프 출처 유니언(2026-07-20, 스탬프 3부작 선행과제): 붓질 학습 외에 내장 파라메트릭 킷.
 // db-authored(2026-08-28): 데이터베이스 '구조물' 탭에서 직접 만들거나 복제·가져온 킷.
 // 이 값은 계보 표시 전용이다 — 편집 잠금은 앨범 엔트리의 source 로 판정한다(structureKitDbTab).
-export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric" | "db-authored";
+export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric" | "db-authored" | "interior-catalog";
 
 // 구조물 부위(2026-08, kit-parts 제안 §06·§07) — 타일을 바꾸지 않는 인스턴스 힌트.
 // 좌표는 킷 원점 기준 상대(dx,dy) — 시공 시점에 origin을 더해 절대좌표가 된다.
@@ -374,6 +376,15 @@ export interface StructureKitAiMeta {
    */
   themes?: string[];
   /**
+   * 실내 방 문법의 의미 역할(bed, stove, …). TileGroupRole 과 축이 달라 이름을 분리한다.
+   * 있으면 이 킷은 실내 가구로 취급되고, 방 종류의 requiredRoles 와 맞춘다.
+   */
+  interiorRole?: string;
+  /**
+   * 실내 배치 스냅. 있으면 이 킷은 실내 가구다. 파이프라인 전용 테마는 이 값으로 후보 칸을 고른다.
+   */
+  snap?: InteriorFurnitureSnap;
+  /**
    * v3 승인 보캐뷸러리 규약(원칙 0 Zero-Trust Perception).
    * 사용자 명시 수락으로 커밋될 때만 "user" 다 — 어떤 자동 경로도 이 값을 "user" 로 만들지 않는다.
    */
@@ -461,6 +472,11 @@ export interface TilesetDef {
   grammarProfile?: string;
   // 유저 붓질에서 학습된 구조 킷(조용한 제안 → [등록]). 직렬화 왕복에 안전하도록 optional.
   structureKits?: StructureKitDef[];
+  /**
+   * 이 타일셋의 방 종류. undefined 는 아직 시드 전(실내 칩셋은 하네스가 기본 7종을 심는다).
+   * 빈 배열은 사용자가 지운 상태 — 다시 시드하지 않는다.
+   */
+  interiorRoomKinds?: InteriorRoomKindRecord[];
 }
 
 // 이웃 판정 범위: 4방향(상하좌우) 또는 8방향(대각 포함).

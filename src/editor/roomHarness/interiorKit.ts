@@ -2,19 +2,22 @@
 import {
   applyInteriorRoomLayer,
   createEmptyRoomMap,
+  type RoomLayer,
   ensureInteriorRoomHarness,
   evaluateInteriorRoom,
   INTERIOR_ROOM_BUILD_ORDER,
   INTERIOR_ROOM_DEMO_PLANS,
   INTERIOR_ROOM_KIT_ID,
   INTERIOR_ROOM_THEMES,
+  INTERIOR_ROOM_TILESET_ID,
   INTERIOR_THEME_MODIFIERS,
+  interiorVocabFromTileset,
   runInteriorRoomPipeline,
   type InteriorRoomPlan,
-  type InteriorRoomTheme,
   type InteriorThemeModifier,
   type Wing,
 } from "@/editor/interiorRoomPipeline";
+import type { Project } from "@/project/types";
 import { ToolError } from "@/editor/tools/types";
 import type { RoomHarnessKit } from "./types";
 
@@ -35,10 +38,13 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
   const name = String(args.name ?? mapId).trim();
   const width = Math.floor(Number(args.width ?? 16));
   const height = Math.floor(Number(args.height ?? 13));
-  const theme = String(args.theme ?? "bedroom") as InteriorRoomTheme;
-  if (!INTERIOR_ROOM_THEMES.includes(theme)) {
-    throw new ToolError(`theme must be ${INTERIOR_ROOM_THEMES.join("|")}`, { code: "invalid-args" });
+  const theme = String(args.theme ?? "bedroom").trim();
+  if (!theme) {
+    throw new ToolError("theme 이 비어 있다 — 타일셋 방 종류 id 또는 bedroom|study|dining|kitchen|storage|tavern|corridor", {
+      code: "invalid-args",
+    });
   }
+  const tilesetId = args.tilesetId !== undefined ? String(args.tilesetId).trim() : undefined;
   const door = args.door as { x?: number; y?: number } | undefined;
   if (!mapId || !door || typeof door.x !== "number" || typeof door.y !== "number") {
     throw new ToolError("mapId + door:{x,y} required", { code: "invalid-args" });
@@ -59,9 +65,9 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
   }));
   const rooms = hasRooms
     ? roomsRaw!.map((r: Record<string, unknown>, index) => {
-        const roomTheme = r.theme !== undefined ? (String(r.theme) as InteriorRoomTheme) : undefined;
-        if (roomTheme !== undefined && !INTERIOR_ROOM_THEMES.includes(roomTheme)) {
-          throw new ToolError(`rooms[${index}].theme must be ${INTERIOR_ROOM_THEMES.join("|")}`, { code: "invalid-args" });
+        const roomTheme = r.theme !== undefined ? String(r.theme).trim() : undefined;
+        if (roomTheme !== undefined && !roomTheme) {
+          throw new ToolError(`rooms[${index}].theme 이 비어 있다`, { code: "invalid-args" });
         }
         return {
           id: String(r.id ?? `room_${index}`),
@@ -98,7 +104,13 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
     seed: args.seed !== undefined ? Math.floor(Number(args.seed)) : Date.now() % 1_000_000,
     floorTile: args.floorTile !== undefined ? Math.floor(Number(args.floorTile)) : undefined,
     wallMaterial: wallMaterial as InteriorRoomPlan["wallMaterial"],
+    ...(tilesetId ? { tilesetId } : {}),
   };
+}
+
+function vocabFor(plan: InteriorRoomPlan, project?: Project) {
+  const tilesetId = plan.tilesetId ?? INTERIOR_ROOM_TILESET_ID;
+  return interiorVocabFromTileset(project?.tilesets[tilesetId]);
 }
 
 export const INTERIOR_ROOM_KIT: RoomHarnessKit<InteriorRoomPlan> = {
@@ -111,9 +123,10 @@ export const INTERIOR_ROOM_KIT: RoomHarnessKit<InteriorRoomPlan> = {
   mapIdOf: (plan) => plan.mapId,
   nameOf: (plan) => plan.name,
   createEmptyMap: createEmptyRoomMap,
-  applyLayer: applyInteriorRoomLayer,
-  runPipeline: runInteriorRoomPipeline,
-  evaluate: evaluateInteriorRoom,
+  applyLayer: (map, plan, layer, project) =>
+    applyInteriorRoomLayer(map, plan, layer as RoomLayer, vocabFor(plan, project)),
+  runPipeline: (plan, project) => runInteriorRoomPipeline(plan, vocabFor(plan, project)),
+  evaluate: (map, plan, attempt, project) => evaluateInteriorRoom(map, plan, attempt, 3, vocabFor(plan, project)),
   demoMatch: (demo) => INTERIOR_ROOM_DEMO_PLANS.find((p) => p.theme === demo),
   startLog: (plan) => `[plan] wings=${plan.wings.length} theme=${plan.theme}`,
 };

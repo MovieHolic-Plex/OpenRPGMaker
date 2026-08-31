@@ -36,6 +36,7 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 ## Interior object catalog is the shape source of truth (2026-08-28)
 
 - 가구 형상은 `src/editor/interiorObjectCatalog.ts` 가 데이터로 선언한다: `INTERIOR_OBJECT_CATALOG` 항목마다 `id`, 한국어 `label`, `role`(`InteriorSemanticTileRole | null`), `width`/`height`, `layer`, `cells`(`{dx,dy,layer,tile}[]`), `themes`, `snap`. 조회는 `interiorObjectById` / `interiorObjectsForTheme`.
+- **2026-08-31:** 실내 칩셋을 처음 열거나 하네스가 돌면 그 카탈로그가 `tileset.structureKits`(계보 `interior-catalog`, `ai.snap`/`ai.interiorRole`/`ai.themes`)와 `tileset.interiorRoomKinds` 로 시드된다. 이후 파이프라인은 타일셋 데이터를 읽고, 코드 카탈로그는 시드·폴백이다. 기본 7종(bedroom…) 배치는 여전히 코드 프로그램이고, **없는 방 종류 id** 는 역할·스냅으로 가구를 놓는 일반 배치기를 탄다. 벽·천장 문법은 아직 실내 칩셋 전용이다.
 - 파이프라인이 그 데이터를 소비한다: `src/editor/interiorRoomPipeline.ts` 의 `objectCells(id)` + `paintObjectCells(map, cells, ox, oy)` 가 침대(가로/세로)·책장·화덕·긴 탁자·카운터·피아노를 카탈로그 셀로 찍는다. 정의가 없는 id 는 즉시 예외 — 오타가 반쪽 가구로 새지 않는다.
 - 셀 모양이 `renderTileCellsToCanvas`(`kitRender.ts`)의 `{dx,dy,layer,tile}` 과 같으므로 에디터 UI(데이터베이스 '구조물' 탭)가 같은 데이터를 그대로 래스터로 그린다. 즉 사용자가 보는 그림과 AI 가 찍는 타일이 한 정본에서 나온다.
 - **변경의 심판은 패리티 테스트다**: `test/interiorRoomPipelineParity.test.ts` 가 `test/fixtures/interiorRoomDemoRooms.baseline.json`(데모 방 7종의 `lowerTiles`/`upperTiles`, 변경 전 코드에서 박제)과 바이트 단위로 비교한다. 카탈로그 셀을 하나만 바꿔도 이 테스트가 깨진다 — 배치를 의도적으로 바꿀 때만 픽스처를 다시 박제하고, 그 이유를 커밋 메시지에 남긴다.

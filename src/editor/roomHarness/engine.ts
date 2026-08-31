@@ -362,7 +362,7 @@ export function advanceRoomBuild(project: Project, sessionId: string, forceLayer
   }
   const map = project.maps[session.mapId];
   if (!map) throw new ToolError(`map 없음: ${session.mapId}`, { code: "map-not-found" });
-  const result = kit.applyLayer(map, session.plan, layer);
+  const result = kit.applyLayer(map, session.plan, layer, project);
   project.maps[session.mapId] = result.map;
   session.checklist[layer] = result.ok ? "done" : "failed";
   session.log.push(`[${layer}] ${result.summary}`);
@@ -406,7 +406,7 @@ export function runRoomPipeline(project: Project, kitId: string, args: Record<st
   }
   const mapId = kit.mapIdOf(plan);
   const replaceWarnings = guardExistingMap(project, mapId, args);
-  const result = kit.runPipeline(plan);
+  const result = kit.runPipeline(plan, project);
   project.maps[mapId] = result.map;
   stampRoomHarnessPlan(project, mapId, kit.kitId, plan);
   registerMapInTree(project, mapId);
@@ -430,7 +430,7 @@ export function evaluateRoom(project: Project, sessionId: string, attempt = 1): 
   if (!kit.evaluate) throw new ToolError(`${kit.kitId}는 평가를 지원하지 않는다`, { code: "invalid-args" });
   const map = project.maps[session.mapId];
   if (!map) throw new ToolError(`map 없음: ${session.mapId}`, { code: "map-not-found" });
-  const report = kit.evaluate(map, session.plan, attempt);
+  const report = kit.evaluate(map, session.plan, attempt, project);
   return {
     summary: report.ok ? `${kit.kitId} 평가 합격 (score ${report.score})` : `${kit.kitId} 평가 ${report.issues.length}건 (score ${report.score})`,
     data: { sessionId, mapId: session.mapId, report },

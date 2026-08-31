@@ -283,6 +283,27 @@ export function validateTileset(id: string, value: unknown): void {
       }
     }
   }
+  if (tileset.interiorRoomKinds !== undefined) {
+    for (const [index, kind] of requireArray(`tileset ${id}.interiorRoomKinds`, tileset.interiorRoomKinds).entries()) {
+      const record = requireRecord(`tileset ${id}.interiorRoomKinds[${index}]`, kind);
+      requireString(`tileset ${id}.interiorRoomKinds[${index}].id`, record.id);
+      requireString(`tileset ${id}.interiorRoomKinds[${index}].label`, record.label);
+      for (const role of requireArray(`tileset ${id}.interiorRoomKinds[${index}].requiredRoles`, record.requiredRoles)) {
+        requireString(`tileset ${id}.interiorRoomKinds[${index}].requiredRoles[]`, role);
+      }
+      if (record.suggestedModifiers !== undefined) {
+        for (const modifier of requireArray(
+          `tileset ${id}.interiorRoomKinds[${index}].suggestedModifiers`,
+          record.suggestedModifiers,
+        )) {
+          requireString(`tileset ${id}.interiorRoomKinds[${index}].suggestedModifiers[]`, modifier);
+        }
+      }
+      if (record.walkway !== undefined) {
+        requireBoolean(`tileset ${id}.interiorRoomKinds[${index}].walkway`, record.walkway);
+      }
+    }
+  }
   if (tileset.animationStrips !== undefined) {
     for (const [index, strip] of requireArray(`tileset ${id}.animationStrips`, tileset.animationStrips).entries()) {
       const record = requireRecord(`tileset ${id}.animationStrips[${index}]`, strip);

@@ -2089,6 +2089,36 @@ function drawAiTab(
   // 배치 조건 — 「설명 / 배치 규칙」과 달리 **기계가 검사하는** 조건이다.
   // 여기서 hard 로 걸어 둔 조건을 어기면 사람이 팔레트로 찍어도, AI 가 stamp_structure_kit 을
   // 불러도 시공이 거부된다. 산문(배치 규칙)은 남겨 둔다 — 사람이 읽는 설명은 여전히 필요하다.
+  const snapSelect = el("select", {
+    dataset: { testid: "structure-kit-editor-ai-snap" },
+    children: [
+      { value: "", label: "미지정 (실내 가구 아님)" },
+      { value: "wall-north", label: "북쪽 벽에 밀착" },
+      { value: "wall-any", label: "아무 벽면에 부착" },
+      { value: "floor", label: "바닥 위" },
+      { value: "free", label: "제약 없음" },
+    ].map((option) =>
+      el("option", {
+        attrs: (draft.snap ?? "") === option.value
+          ? { value: option.value, selected: "" }
+          : { value: option.value },
+        text: option.label,
+      }),
+    ),
+    on: {
+      change: (event: Event) => {
+        const target = event.currentTarget;
+        if (!(target instanceof HTMLSelectElement)) return;
+        if (target.value === "wall-north" || target.value === "wall-any"
+          || target.value === "floor" || target.value === "free") {
+          draft.snap = target.value;
+        } else {
+          delete draft.snap;
+        }
+      },
+    },
+  });
+
   const conditionsBlock = renderPlacementConditionEditor(draft, redraw);
 
   host.replaceChildren(
@@ -2114,6 +2144,18 @@ function drawAiTab(
     selectField("증분 축 (무한 확장 방향)", growthSelect),
     selectField("분류", roleSelect),
     selectField(`레이어 (미지정이면 지금 그림은 ${layerHomeLabel(structureKitLayerHome(kit))})`, layerSelect),
+    selectField("실내 배치 스냅", snapSelect),
+    listField(
+      "실내 역할",
+      "structure-kit-editor-ai-interior-role",
+      "방 종류의 필수 역할과 맞출 id — 예: bed, stove",
+      draft.interiorRole ? [draft.interiorRole] : [],
+      (next) => {
+        const role = next[0]?.trim();
+        if (role) draft.interiorRole = role;
+        else delete draft.interiorRole;
+      },
+    ),
     listField(
       "태그",
       "structure-kit-editor-ai-tags",
