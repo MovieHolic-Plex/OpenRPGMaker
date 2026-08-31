@@ -16,6 +16,7 @@ import {
 import { forestCompositionApplies, plantForestComposition } from "./forestComposition";
 import {
   forestDensityFromText,
+  forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
   type ForestDensity,
@@ -190,7 +191,7 @@ export function applyTerrainPassFromMasks(
         count: broadleafCount,
         minGap: forest.broadleafGap,
         naturalness: forest.broadleafNaturalness,
-        packing: forestDensity ? broadleafPlan.packing : "natural",
+        packing: forestDensity ? forestPackingFor(forestDensity) : "natural",
         seed: 8800 + rect.x * 17 + rect.y * 11,
       });
       if (big.warnings) warnings.push(...big.warnings);
@@ -217,7 +218,7 @@ export function applyTerrainPassFromMasks(
         count: coniferCount,
         minGap: forest.coniferGap,
         naturalness: forest.coniferNaturalness,
-        packing: forestDensity ? coniferPlan.packing : "natural",
+        packing: forestDensity ? forestPackingFor(forestDensity) : "natural",
         seed: 7700 + rect.x * 13 + rect.y * 7,
       });
       if (result.warnings) warnings.push(...result.warnings);

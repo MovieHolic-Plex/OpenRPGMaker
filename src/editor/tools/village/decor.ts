@@ -9,6 +9,7 @@ import { mulberry32, type Rng } from "@/util/rng";
 import {
   DEFAULT_FOREST_DENSITY,
   forestDensityFromText,
+  forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
 } from "../forestDensity";
@@ -314,7 +315,7 @@ export function placeVillageDecor(
       // 제곱으로 들어간다(실측 48×48 에 230그루 = 40s, 같은 수를 dense 로 = 63ms).
       minGap: coniferPlan?.minGap ?? 3,
       naturalness: coniferPlan?.naturalness ?? 0.62,
-      ...(coniferPlan ? { packing: coniferPlan.packing } : {}),
+      ...(density ? { packing: forestPackingFor(density) } : {}),
       seed: seed + 1000,
     }, warnings);
     // 석상 쉼터 — 포석(129 블록) 패치 위 석상/돌기둥. (바위 441/442는 전역 밴, 2026-07-17.)

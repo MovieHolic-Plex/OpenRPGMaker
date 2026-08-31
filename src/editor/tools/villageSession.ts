@@ -36,6 +36,7 @@ import {
   DEFAULT_FOREST_DENSITY,
   FOREST_DENSITIES,
   forestDensityFromText,
+  forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
 } from "./forestDensity";
@@ -827,7 +828,7 @@ function stepForestConifer(
       count: requestedDensity ? shape.count : coniferCountFor(area.w * area.h, rules.forest),
       minGap: rules.forest.coniferGap,
       naturalness: rules.forest.coniferNaturalness,
-      packing: requestedDensity ? shape.packing : "natural",
+      packing: requestedDensity ? forestPackingFor(density) : "natural",
       seed: session.seed + 7700 + i * 13,
     }, warnings);
   }
@@ -865,7 +866,7 @@ function stepForestBig(
       count: requestedDensity ? shape.count : broadleafCountFor(area.w * area.h, rules.forest),
       minGap: rules.forest.broadleafGap,
       naturalness: rules.forest.broadleafNaturalness,
-      packing: requestedDensity ? shape.packing : "natural",
+      packing: requestedDensity ? forestPackingFor(density) : "natural",
       seed: session.seed + 8800 + i * 17,
     }, warnings);
   }
@@ -995,7 +996,10 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
 
   // 왜 dense·impassable 이 다른 경로인가: 숲은 한 수종을 밀집하는 것이 아니라 수종·덤불·
   // 하층식생이 섞인 지형이다. 한 재료 dense 는 렌더에서 밑동 없는 세로 사슬로 읽혔다.
-  if (requestedDensityArg && forestCompositionApplies(density) && typeof args.count !== "number") {
+  // 왜 dense·impassable 이 다른 경로인가: 숲은 한 수종을 밀집하는 것이 아니라 수종·뎌불·
+  // 하층식생이 섞인 지형이다. 한 재료 dense 는 렌더에서 밑동 없는 세로 사슬로 읽혔다.
+  // 이 툴은 llmExposed:false 라 기본값도 dense 다 — 생성 규칙 기본값은 아래 자연 산포 경로가 쓴다.
+  if (forestCompositionApplies(density) && typeof args.count !== "number") {
     let composed = 0;
     let requestedCells = 0;
     const usedMaterials = new Set<string>();
@@ -1079,7 +1083,7 @@ function plantTreeClusters(draft: Project, args: Record<string, unknown>): ToolE
         count,
         minGap,
         naturalness: isBig ? forest.broadleafNaturalness : forest.coniferNaturalness,
-        packing: requestedDensityArg ? shape.packing : "natural",
+        packing: requestedDensityArg ? forestPackingFor(density) : "natural",
         seed: seed + g * 100 + i * 17,
       }, warnings);
     }

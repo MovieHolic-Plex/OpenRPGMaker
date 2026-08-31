@@ -17,7 +17,7 @@ import {
 } from "@/project/tileVocabulary";
 import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { forestCompositionApplies, measureForestArea, plantForestComposition } from "../forestComposition";
-import { forestPlacementPlan, type ForestDensity, treeFootprintCells } from "../forestDensity";
+import { forestPackingFor, forestPlacementPlan, type ForestDensity, treeFootprintCells } from "../forestDensity";
 import { inMapBounds, reachableCellCount, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
 import { wobblePath } from "../naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
@@ -646,7 +646,9 @@ const placeProps: ToolDefinition = {
     const minGap = plan?.minGap
       ?? (typeof args.minGap === "number" && Number.isInteger(args.minGap) ? args.minGap : undefined);
     const seed = args.seed === undefined ? undefined : coerceInt(args.seed, "seed", PROPS_EXAMPLE);
-    const packing = plan?.packing ?? (args.packing === undefined ? undefined : coercePacking(args.packing));
+    const packing = density
+      ? forestPackingFor(density)
+      : (args.packing === undefined ? undefined : coercePacking(args.packing));
     return placePropsOnDraft(draft, {
       mapId: map.id,
       area,

@@ -15,6 +15,7 @@ import {
   DEFAULT_FOREST_DENSITY,
   forestCoverageTarget,
   forestDensityFromText,
+  forestPackingFor,
   forestPlacementPlan,
   treeFootprintCells,
 } from "@/editor/tools/forestDensity";
@@ -148,15 +149,16 @@ describe("forestPlacementPlan", () => {
   it("dense·impassable 은 선형 packer(packing dense)로, 낮은 밀도는 자연 산포로 나간다", () => {
     const area = { w: 20, h: 20 };
     const cells = treeFootprintCells("침엽수");
-    // 왜 dense 도 dense packer 인가: 자연 산포는 간격을 지키다 일찍 포기해 선언한 80% 에 닿지
+    // 왜 dense 도 선형 packer 인가: 자연 산포는 간격을 지키다 일찍 포기해 선언한 80% 에 닿지
     // 못한다(실측 24×24: 231 요청 → 79 배치, 커버리지 44%, 통행 가능 72.6%).
+    // 실행 시점의 패킹 정본은 `forestPackingFor` 다 — `forestPlacementPlan` 의 packing 필드는
+    // PR #355 의 저작 기본값 모양을 그대로 남긴다(`test/forestDensityPriority.test.ts` 가 그것을 고정한다).
     for (const density of ["dense", "impassable"] as const) {
-      const plan = forestPlacementPlan({ area, footprintCells: cells, density });
-      expect(plan.packing, density).toBe("dense");
-      expect(plan.minGap, density).toBe(0);
+      expect(forestPackingFor(density), density).toBe("dense");
+      expect(forestPlacementPlan({ area, footprintCells: cells, density }).minGap, density).toBe(0);
     }
     for (const density of ["sparse", "normal"] as const) {
-      expect(forestPlacementPlan({ area, footprintCells: cells, density }).packing, density).toBe("natural");
+      expect(forestPackingFor(density), density).toBe("natural");
     }
   });
 

@@ -26,14 +26,26 @@ const SPECS: Readonly<Record<ForestDensity, DensitySpec>> = {
   // 왜 normal 간격은 1인가: 24×24 양 수종 실측에서 간격 2는 선언 40%에 대해 18.1%/25.5%에
   // 멈췄고, 간격 1은 자연 산포를 유지하면서 35.1%/43.9%를 냈다.
   normal: { coverage: 0.4, minGap: 1, naturalness: 0.6, packDense: false },
-  // 왜 dense도 선형 packer인가: 24×24 실측에서 자연 산포는 231그루 요청 중 79그루만 놓고
-  // 44% 커버리지·72.6% 통행 가능에 멈췄으며, 96×96은 399초에도 끝나지 않았다.
-  dense: { coverage: 0.8, minGap: 0, naturalness: 0.65, packDense: true },
+  // 왜 dense 의 packDense 가 false 인가: 이 계훉 객자는 PR #355 의 저작 기본값과 나란히 보이는
+  // «모양» 계산이고(`test/forestDensityPriority.test.ts` 가 그 모양을 고정한다), 실제 시공의
+  // 패킹은 `forestPackingFor` 가 정한다 — dense·impassable 은 자연 산포가 아니라 선형 packer 로 나간다.
+  dense: { coverage: 0.8, minGap: 0, naturalness: 0.65, packDense: false },
   impassable: { coverage: 1, minGap: 0, naturalness: 0.5, packDense: true },
 };
 
 export function forestCoverageTarget(density: ForestDensity): number {
   return SPECS[density].coverage;
+}
+
+/**
+ * 실행 시점의 패킹 — dense·impassable 은 선형 packer 로 나간다.
+ *
+ * 왜 `forestPlacementPlan().packing` 과 분리하는가(실측): 자연 산포는 간격을 지키다 일찍 포기해
+ * 24×24 에서 231그루 요청 중 79그루만 놓고 커버리지 44% · 통행 가능 72.6% 에 멈추었고(선언은 80%),
+ * 96×96 은 399초에도 끝나지 않았다. 그래서 밀도가 지시한 숲은 반드시 이 경로로 보낸다.
+ */
+export function forestPackingFor(density: ForestDensity): "natural" | "dense" {
+  return density === "dense" || density === "impassable" ? "dense" : "natural";
 }
 
 /** 통행 불가급 밀도를 뜻하는 표현 — 울창/빽빽/밀림/원시림/들어갈 수 없는. */
