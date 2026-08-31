@@ -16,6 +16,19 @@ import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
 
+/** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
+ *  필드 이름표·대상 목록·전투 로그가 **같은 문자열**을 쓰도록 이 함수 하나만 쓴다 —
+ *  이름표만 원본 이름을 쓰던 시절엔 동명 2마리가 화면에서 전혀 구분되지 않았다(실상). */
+export function disambiguatedBattlerName(
+  battler: BattleBattlerSnapshot,
+  peers: readonly BattleBattlerSnapshot[],
+): string {
+  const duplicates = peers.filter((peer) => peer.name === battler.name);
+  if (duplicates.length < 2) return battler.name;
+  const index = duplicates.findIndex((peer) => peer.id === battler.id);
+  return `${battler.name} ${Math.max(0, index) + 1}`;
+}
+
 /** targetId(적 id·아군 배틀러 id·recordId)를 실제 DOM 노드로 해석한다.
  *  아군 노드 testid는 `battle-actor-<recordId>`라 직접 조회가 실패하던 버그의 단일 수정 지점. */
 export function findBattlerNode(scope: HTMLElement | Document, targetId: string): HTMLElement | null {
@@ -659,7 +672,7 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   applyBattlerPose(enemyNode, enemy.pose);
   const name = document.createElement("span");
   name.className = "battle-enemy-name";
-  name.textContent = enemy.name;
+  name.textContent = disambiguatedBattlerName(enemy, snapshot.enemies);
   // 이름·순번·상태·HP 는 스프라이트 **아래에 겹쳐** 놓는다(.battle-enemy-chrome 이 절대 배치).
   // 흐름에 두면 HUD 를 펼칠 때 노드 높이가 변하고, 그 높이로 스프라이트 top 을 보정하던
   // 옛 코드(alignEnemyFeetToAuthoredY) 때문에 몬스터가 눈에 보이게 튀었다.

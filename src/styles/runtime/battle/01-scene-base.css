@@ -261,9 +261,13 @@
   width: var(--battle-sprite-frame-width, 144px);
 }
 
-.battle-actor + .battle-actor {
-  border-top: 2px solid rgba(216, 228, 255, 0.35);
-}
+/* HUD 파티 행 사이의 구분선을 노리고 쓴 규칙이 여기 있었다:
+     `.battle-actor + .battle-actor { border-top: 2px solid rgba(216,228,255,.35) }`
+   그런데 HUD 행의 클래스는 `.battle-actor-status` 라 그 선택자는 HUD 에 **한 번도 맞지 않았고**,
+   대신 `.battle-actor-group` 안의 **필드 스프라이트 노드**(같은 `.battle-actor`)에만 걸렸다.
+   필드 노드는 192px 높이의 절대 배치 상자라 그 border 가 스프라이트 몸통을 가로지르는
+   밝은 수평선으로 보였다 — rm2003 4인 편성에서 2·3·4번 노드에 3줄(실측: 노드 top 에
+   2px, 허공에서 끊김). 구분선이 필요하면 `.battle-actor-status` 로 다시 달아야 한다. */
 
 .battle-actor-image {
   width: 144px;

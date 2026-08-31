@@ -142,6 +142,11 @@
   line-height: 1.6;
   padding: 0 8px;
   text-shadow: none;
+  /* 알약은 한 줄이다. `.battle-enemy-chrome` 이 흐름 밖(absolute + translateX(-50%))이라
+     노드 폭(120px)을 넘겨도 스프라이트 배치·발 위치에 영향이 없다. 감싸지 않으면 6자 이름이
+     "초원 / 슬라임" 두 줄로 접히고, 동명 구분 순번까지 붙으면 세 줄이 된다(실측).
+     두 적의 가로 간격은 174px, 이 알약은 최장 저작 이름에서 ~165px 라 겹치지 않는다. */
+  white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-hud {
