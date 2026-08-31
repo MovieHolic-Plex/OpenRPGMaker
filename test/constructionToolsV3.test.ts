@@ -323,9 +323,11 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
       count: 20,
       seed: 1,
     });
-    expect(props.ok, props.summary).toBe(true);
+    // 호수 안 전부에 강제 산포하면 0개 — placement-zero 가 올바른 동작이다
+    // (0그루를 ok 로 남기면 "빽빽한 숲"이 완성으로 보고된다. test/placePropsZeroPlacement.test.ts).
+    expect(props.ok, props.summary).toBe(false);
+    expect(props.issues?.[0]?.code).toBe("placement-zero");
     const map = ctx.project.maps[MAP_ID];
-    // 물 칸 위 upper 에 소품이 있으면 안 됨
     let treesOnWater = 0;
     for (let y = 4; y < 14; y += 1) {
       for (let x = 4; x < 16; x += 1) {
@@ -334,8 +336,6 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
       }
     }
     expect(treesOnWater).toBe(0);
-    // 호수 안 전부에 강제 산포하면 0개일 수 있음 — 그게 올바른 동작
-    expect((props.data as { placed?: number }).placed ?? 0).toBe(0);
   });
 
   it("fill_region: transfer 목적지가 통행 불가가 될 때 해당 칸만 제외하고 warning으로 통과한다", () => {

@@ -146,6 +146,18 @@ describe("generate_map", () => {
       });
     }
 
+    it("border 생략 시 기본 입구는 맵 가장자리에 붙는다", () => {
+      const ctx: ToolContext = { project: createEmptyToolProject() };
+      const result = runTool(
+        ctx,
+        "generate_map",
+        { theme: "village", width: 20, height: 16, chokepoints: 0, seed: 3, id: "gen_edge_entrance" },
+        { dryRun: false },
+      );
+      expect(result.ok, result.summary).toBe(true);
+      expect((result.data as { entrance: { x: number; y: number } }).entrance).toEqual({ x: 0, y: 8 });
+    });
+
     it("border:\"wall\" 은 종전처럼 외곽 4변을 봉인한다", () => {
       const ctx: ToolContext = { project: createEmptyToolProject() };
       const result = runTool(

@@ -71,7 +71,7 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
   "npc-shop":
     "- NPC: place_npc/make_villager(주민·경비·상인 — graphic은 query로 외형 지정), set_npc_schedule(순찰·시간표), set_shop_stock(상인 재고 연결). 상점/가게를 지울 때는 find_layout_regions({mapId, query})로 상점 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})로 지운다(kind market은 상점 타일만 지우므로 이웃 집·흙길은 유지). show_map_region은 지운 뒤 결과 확인용.",
   "door-transfer":
-    "- 문/이동: create_transfer_pair {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트 왕복 쌍을 한 번에. 문 시각 배치는 place_door",
+    "- 문/이동: create_transfer_pair {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트 왕복 쌍을 한 번에. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문 시각 배치는 place_door",
   "quest-trigger":
     "- 상호작용: place_chest(보물상자 — contents.itemId/gold 지급, 개봉 기억), place_storage_chest(보관 상자 — openChest 입출고), place_savepoint(세이브 포인트), place_examine_hotspots(조사 지점) 또는 make_gallery_room(이브 갤러리 원큐), create_quest/declare_story_flag(퀘스트·플래그), script_cutscene 또는 script_cutscene_preset(투더문 회상/엔딩). 보물상자·세이브포인트는 반드시 place_chest/place_savepoint — place_npc/upsert_event 흉내 금지. 장식 박스·나무상자는 place_chest 금지(place_props wood-box).",
   "battle-trap":

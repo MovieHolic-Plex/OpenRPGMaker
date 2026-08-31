@@ -2,6 +2,7 @@
 
 import { passableLanding, upsertEventIntoMap } from "./eventTools";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
+import { snapFlushToWall } from "./wallFlush";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { appendToTree } from "@/project/mapTree";
 import { isPassable } from "@/project/collision";
@@ -279,8 +280,8 @@ function linkMapsInDraft(
   const toMap = requireMap(draft, stringField(options.to, "to.mapId"));
   const fromExit = boundaryFromEndpoint(options.from, "from");
   const toEntry = entryFromEndpoint(options.to, "to");
-  const gateA = gatePointForEndpoint(fromMap, options.from, fromExit, "from");
-  const gateB = gatePointForEndpoint(toMap, options.to, toEntry, "to", fromExit ? oppositeBoundary(fromExit, fromMap) : undefined);
+  const gateA = gatePointForEndpoint(draft, fromMap, options.from, fromExit, "from");
+  const gateB = gatePointForEndpoint(draft, toMap, options.to, toEntry, "to", fromExit ? oppositeBoundary(fromExit, fromMap) : undefined);
   const requestedLandingB = isPointRef(toEntry) ? toEntry : undefined;
   const landingB = requestedLandingB
     ? assertProvidedLanding(draft, toMap, requestedLandingB, gateB, "to.entry")
@@ -440,6 +441,7 @@ function transferGateEvent(id: string, point: Point, target: Command): GameEvent
 }
 
 function gatePointForEndpoint(
+  project: Project,
   map: GameMap,
   endpoint: JsonRecord,
   ref: WorldGraphBoundary | WorldGraphEntry | undefined,
@@ -447,13 +449,14 @@ function gatePointForEndpoint(
   fallbackSide?: WorldGraphSide
 ): Point {
   if (typeof endpoint.x === "number" && typeof endpoint.y === "number") {
-    const point = { x: endpoint.x, y: endpoint.y };
+    const point = snapFlushToWall(project, map, endpoint.x, endpoint.y);
     assertPointInMap(map, point, label);
     return point;
   }
   if (ref && isPointRef(ref)) {
-    assertPointInMap(map, ref, label);
-    return { x: ref.x, y: ref.y };
+    const point = snapFlushToWall(project, map, ref.x, ref.y);
+    assertPointInMap(map, point, label);
+    return point;
   }
   if (ref && isSideRef(ref)) return sideCenter(map, ref.side);
   if (ref && isRectRef(ref)) return rectCenterOnBoundary(map, ref, label);

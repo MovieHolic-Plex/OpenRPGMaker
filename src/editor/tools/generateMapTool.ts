@@ -60,7 +60,6 @@ function blankThemedMap(
   height: number,
   tilesetId: string,
   palette: ThemePalette,
-  pathTile: number,
   border: MapBorder,
 ): GameMap {
   const size = width * height;
@@ -85,7 +84,6 @@ function blankThemedMap(
       setLower(map, width - 1, y, palette.obstacle);
     }
   }
-  setLower(map, 1, Math.floor(height / 2), pathTile);
   return map;
 }
 
@@ -133,12 +131,15 @@ function assertGeneratedMapSize(width: number, height: number): void {
 }
 
 // L자 통로로 두 점을 잇되, 지나는 칸을 통행 가능한 floor로 만든다.
-function carvePath(map: GameMap, from: Point, to: Point, floor: number): void {
+// 외곽 벽 테두리가 있을 때만 가장자리 칸을 건너뛴다 — border none 인데도 1칸을
+// 비우면 맵 끝 이동을 벽에 붙일 자리가 없어진다.
+function carvePath(map: GameMap, from: Point, to: Point, floor: number, border: MapBorder): void {
   const corner: Point = { x: to.x, y: from.y };
   for (const cell of [...lineCells(from, corner), ...lineCells(corner, to)]) {
-    if (inMapBounds(map, cell.x, cell.y) && cell.x > 0 && cell.y > 0 && cell.x < map.width - 1 && cell.y < map.height - 1) {
-      setLower(map, cell.x, cell.y, floor);
-    }
+    if (!inMapBounds(map, cell.x, cell.y)) continue;
+    const onEdge = cell.x === 0 || cell.y === 0 || cell.x === map.width - 1 || cell.y === map.height - 1;
+    if (border === "wall" && onEdge) continue;
+    setLower(map, cell.x, cell.y, floor);
   }
 }
 
@@ -190,13 +191,13 @@ const generateMap: ToolDefinition = {
       height,
       tilesetId,
       palette,
-      generationPalette.path,
       border,
     );
     paintLayoutGrammar(map, generationProfile.layout, palette);
 
-    const entrance = (args.entrance as Point | undefined) ?? { x: 1, y: Math.floor(height / 2) };
-    const pois = ((args.pois as Point[] | undefined) ?? defaultPois(width, height)).filter((poi) => inMapBounds(map, poi.x, poi.y));
+    const inset = border === "wall" ? 1 : 0;
+    const entrance = (args.entrance as Point | undefined) ?? { x: inset, y: Math.floor(height / 2) };
+    const pois = ((args.pois as Point[] | undefined) ?? defaultPois(width, height, inset)).filter((poi) => inMapBounds(map, poi.x, poi.y));
     const density = Math.max(0, Math.min(100, (args.chokepoints as number | undefined) ?? 12));
 
     // 보호 셀(입구/POI + 그 인접)은 장애물을 놓지 않는다.
@@ -226,7 +227,7 @@ const generateMap: ToolDefinition = {
     setLower(map, entrance.x, entrance.y, generationPalette.path);
 
     // 입구→각 POI 통로 카빙.
-    for (const poi of pois) carvePath(map, entrance, poi, generationPalette.path);
+    for (const poi of pois) carvePath(map, entrance, poi, generationPalette.path, border);
 
     // 도달성 수리 루프: 미도달 POI가 없어질 때까지 통로를 다시 판다.
     let repairs = 0;
@@ -235,7 +236,7 @@ const generateMap: ToolDefinition = {
       const unreachable = pois.filter((poi) => !isAdjacentOrOn(reachable, poi.x, poi.y));
       if (unreachable.length === 0) break;
       for (const poi of unreachable) {
-        carvePath(map, entrance, poi, generationPalette.path);
+        carvePath(map, entrance, poi, generationPalette.path, border);
         repairs += 1;
       }
     }
@@ -265,11 +266,11 @@ const generateMap: ToolDefinition = {
   },
 };
 
-function defaultPois(width: number, height: number): Point[] {
+function defaultPois(width: number, height: number, inset: number): Point[] {
   return [
-    { x: width - 2, y: 1 },
-    { x: width - 2, y: height - 2 },
-    { x: Math.floor(width / 2), y: height - 2 },
+    { x: width - 1 - inset, y: inset },
+    { x: width - 1 - inset, y: height - 1 - inset },
+    { x: Math.floor(width / 2), y: height - 1 - inset },
   ];
 }
 
