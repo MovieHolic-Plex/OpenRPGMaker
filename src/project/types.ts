@@ -5,5 +5,6 @@ export type * from "./types/events";
 export type * from "./types/database";
 export type * from "./types/village";
 export type * from "./types/interior";
+export type * from "./types/conceptBundle";
 export type * from "./types/project";
 export type * from "./roguelikeRun";

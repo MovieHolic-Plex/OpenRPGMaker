@@ -186,6 +186,15 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M4.2 18.2V7.2L11 3.6l6.8 3.6v11" } },
     { tag: "rect", attrs: { x: "8.4", y: "11.2", width: "5.2", height: "7", rx: "0.6" } },
   ],
+  // 개념 꾸러미 — 뿌리에서 갈라지는 나무
+  scratchConcepts: [
+    { tag: "circle", attrs: { cx: "11", cy: "4.6", r: "2" } },
+    { tag: "path", attrs: { d: "M11 6.6v4.2" } },
+    { tag: "path", attrs: { d: "M11 10.8 6.4 14.2" } },
+    { tag: "path", attrs: { d: "M11 10.8 15.6 14.2" } },
+    { tag: "circle", attrs: { cx: "6.4", cy: "16.2", r: "1.8" } },
+    { tag: "circle", attrs: { cx: "15.6", cy: "16.2", r: "1.8" } },
+  ],
   // 구조물 — 쌓은 블록(아이소 큐브)
   structureKits: [
     { tag: "path", attrs: { d: "M11 2.9l7 4v8.2l-7 4-7-4V6.9z" } },
