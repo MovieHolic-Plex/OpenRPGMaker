@@ -284,6 +284,94 @@ describe("모달의 모드 스위치", () => {
     expect(runOperator.mock.results[0]!.value).toMatchObject({ ok: true, applied: false });
   });
 
+  it("문장 해석은 슬라이더를 채우기만 하고 생성하지 않는다", async () => {
+    const { project, mapId } = grassProject();
+    const runOperator = vi.fn(() => runOperatorTask(
+      { mapId, region: REGION, operatorId: "forest", seed: 1 },
+      { getProject: () => project, applyProject: () => undefined },
+    ));
+    const resolveIntent = vi.fn(async () => ({
+      operatorId: "forest",
+      params: { density: 0.95, path: false },
+      source: "llm" as const,
+      note: "숲 · 밀도 0.95 · 오솔길 끔",
+    }));
+    const root = openRegionTaskModal({
+      mapId,
+      region: REGION,
+      generationMode: "operator",
+      run: vi.fn(),
+      runOperator,
+      resolveIntent,
+      renderSnapshot: async () => document.createElement("div"),
+      projectForContext: () => project,
+    }) as unknown as FakeElement;
+
+    const input = findByTestId(root, "region-task-operator-intent-input") as unknown as { value: string };
+    input.value = "울창한 숲, 길은 빼줘";
+    findByTestId(root, "region-task-operator-intent-run")?.click();
+    await flush();
+    await flush();
+
+    expect(resolveIntent).toHaveBeenCalledWith("울창한 숲, 길은 빼줘");
+    // 해석만으로는 생성하지 않는다 — 사용자가 확인하고 만들기를 누른다.
+    expect(runOperator).not.toHaveBeenCalled();
+    const density = findByTestId(root, "region-task-operator-param-density") as unknown as { value: string };
+    const path = findByTestId(root, "region-task-operator-param-path") as unknown as { checked: boolean };
+    expect(density.value).toBe("0.95");
+    expect(path.checked).toBe(false);
+    expect(findByTestId(root, "region-task-operator-intent-note")?.textContent).toContain("AI 해석");
+  });
+
+  it("키워드 폴백으로 해석하면 AI 를 쓰지 않았다고 밝힌다", async () => {
+    const { project, mapId } = grassProject();
+    const root = openRegionTaskModal({
+      mapId,
+      region: REGION,
+      generationMode: "operator",
+      run: vi.fn(),
+      runOperator: vi.fn(),
+      resolveIntent: async () => ({
+        operatorId: "forest",
+        params: { density: 0.9 },
+        source: "heuristic" as const,
+        note: "숲 · 밀도 0.9",
+      }),
+      renderSnapshot: async () => document.createElement("div"),
+      projectForContext: () => project,
+    }) as unknown as FakeElement;
+
+    (findByTestId(root, "region-task-operator-intent-input") as unknown as { value: string }).value = "울창한 숲";
+    findByTestId(root, "region-task-operator-intent-run")?.click();
+    await flush();
+    await flush();
+    expect(findByTestId(root, "region-task-operator-intent-note")?.textContent).toContain("AI 미사용");
+  });
+
+  it("해석 실패는 오류로 표시하고 설정을 바꾸지 않는다", async () => {
+    const { project, mapId } = grassProject();
+    const root = openRegionTaskModal({
+      mapId,
+      region: REGION,
+      generationMode: "operator",
+      run: vi.fn(),
+      runOperator: vi.fn(),
+      resolveIntent: async () => ({ error: "문장에서 생성기를 알아내지 못했습니다" }),
+      renderSnapshot: async () => document.createElement("div"),
+      projectForContext: () => project,
+    }) as unknown as FakeElement;
+
+    const before = (findByTestId(root, "region-task-operator-param-density") as unknown as { value: string }).value;
+    (findByTestId(root, "region-task-operator-intent-input") as unknown as { value: string }).value = "멋있게";
+    findByTestId(root, "region-task-operator-intent-run")?.click();
+    await flush();
+    await flush();
+    const note = findByTestId(root, "region-task-operator-intent-note");
+    expect(note?.textContent).toContain("알아내지 못했습니다");
+    expect(note?.classList.contains("is-error")).toBe(true);
+    expect((findByTestId(root, "region-task-operator-param-density") as unknown as { value: string }).value).toBe(before);
+  });
+
   it("새 시드는 시드를 바꿔 다시 만든다", async () => {
     const { project, mapId } = grassProject();
     const seeds: (number | undefined)[] = [];

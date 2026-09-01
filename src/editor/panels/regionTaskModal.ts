@@ -64,6 +64,12 @@ import {
 import { getOperator, listOperators } from "@/editor/operators/operatorRegistry";
 import { defaultOperatorParams } from "@/editor/operators/operatorTypes";
 import {
+  isOperatorIntentFailure,
+  resolveOperatorIntent,
+  type OperatorIntentResult,
+} from "@/editor/operators/operatorIntent";
+import { completeOperatorIntent } from "@/editor/operators/operatorIntentClient";
+import {
   randomOperatorSeed,
   runOperatorTask,
   type OperatorTaskOptions,
@@ -118,6 +124,8 @@ export interface RegionTaskModalOptions {
   readonly runDirectRoomDraft?: DirectInteriorRoomDraftRunner;
   /** 테스트 주입: 생성기 모드(LLM 없는 오퍼레이터) 실행 경로. */
   readonly runOperator?: (options: OperatorTaskOptions) => OperatorTaskResult | Promise<OperatorTaskResult>;
+  /** 테스트 주입: 문장 → 생성기 의도 해석. 기본은 LLM 1콜 + 키워드 폴백. */
+  readonly resolveIntent?: (instruction: string) => Promise<OperatorIntentResult>;
   /** 모달을 열 때의 생성 모드. 생략하면 사용자가 마지막에 쓴 모드(기본 조수). */
   readonly generationMode?: GenerationMode;
   /** 테스트 주입: 썸네일 렌더러(기본 renderRegionSnapshot 캔버스). */
@@ -206,6 +214,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   const run: RegionTaskRunner = options.run ?? runRegionTask;
   const runDirectRoom = options.runDirectRoomDraft ?? runDirectInteriorRoomDraft;
   const runOperator = options.runOperator ?? runOperatorTask;
+  const resolveIntent = options.resolveIntent
+    ?? ((instruction: string) => resolveOperatorIntent(instruction, { complete: completeOperatorIntent }));
   const { region } = options;
 
   const chip = el("span", {
@@ -501,10 +511,36 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     attrs: { type: "button", title: "AI 호출 없이 이 영역을 생성합니다" },
     dataset: { testid: "region-task-operator-run" },
   }) as HTMLButtonElement;
+  // 문장 입력 — 모델은 이 한 줄을 (생성기 + 파라미터) 로 옮기기만 한다. 타일은 만지지 않는다.
+  const intentInput = el("input", {
+    class: "region-task-operator-intent-input",
+    attrs: {
+      type: "text",
+      placeholder: "문장으로: 예) 울창한 숲에 오솔길 하나",
+      "aria-label": "문장으로 생성기 설정",
+    },
+    dataset: { testid: "region-task-operator-intent-input" },
+  }) as HTMLInputElement;
+  const intentButton = el("button", {
+    class: "region-task-operator-intent-run",
+    text: "해석",
+    attrs: { type: "button", title: "문장을 읽어 아래 설정을 채웁니다" },
+    dataset: { testid: "region-task-operator-intent-run" },
+  }) as HTMLButtonElement;
+  const intentNote = el("div", {
+    class: "region-task-operator-intent-note hidden",
+    dataset: { testid: "region-task-operator-intent-note" },
+  });
+
   const operatorPanel = el("div", {
     class: "region-task-operator-panel hidden",
     dataset: { testid: "region-task-operator-panel" },
     children: [
+      el("div", {
+        class: "region-task-operator-intent",
+        children: [intentInput, intentButton],
+      }),
+      intentNote,
       el("div", {
         class: "region-task-operator-head",
         children: [operatorSelect, operatorHint],
@@ -1853,8 +1889,57 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     operatorRunButton.disabled = disabled;
     operatorReseedButton.disabled = disabled;
     operatorSelect.disabled = disabled;
+    intentInput.disabled = disabled;
+    intentButton.disabled = disabled;
     for (const input of operatorParamHost.querySelectorAll("input")) {
       (input as HTMLInputElement).disabled = disabled;
+    }
+  };
+
+  /**
+   * 문장 → 설정. 해석 결과를 **슬라이더에 채워 보여 준 뒤** 사용자가 만들기를 누른다.
+   * 곧바로 생성하지 않는 이유: 모델이 무엇으로 읽었는지가 화면에 남아야 사용자가 고칠 수 있다.
+   * (조수 경로의 실패 모드가 정확히 "무엇을 하려는지 모른 채 결과만 받는 것" 이었다.)
+   */
+  const interpretIntent = async (): Promise<void> => {
+    if (running) return;
+    const text = intentInput.value.trim();
+    if (!text) {
+      intentInput.focus();
+      return;
+    }
+    intentButton.disabled = true;
+    intentInput.disabled = true;
+    intentNote.classList.remove("hidden", "is-error");
+    intentNote.textContent = "해석 중…";
+    try {
+      const intent = await resolveIntent(text);
+      if (isOperatorIntentFailure(intent)) {
+        intentNote.classList.add("is-error");
+        intentNote.textContent = intent.error;
+        return;
+      }
+      const def = getOperator(intent.operatorId);
+      if (!def) {
+        intentNote.classList.add("is-error");
+        intentNote.textContent = `모르는 생성기입니다: ${intent.operatorId}`;
+        return;
+      }
+      operatorId = def.id;
+      operatorSelect.value = def.id;
+      operatorParams = { ...intent.params };
+      renderOperatorParams();
+      // 어떻게 읽었는지 + 누가 읽었는지를 함께 밝힌다. 키워드 폴백을 AI 해석으로 오해하면 안 된다.
+      const via = intent.source === "llm" ? "AI 해석" : "키워드 해석 (AI 미사용)";
+      intentNote.textContent = `${via} → ${intent.note} · [만들기]를 누르세요`;
+    } catch (cause) {
+      intentNote.classList.add("is-error");
+      intentNote.textContent = cause instanceof Error ? cause.message : String(cause);
+    } finally {
+      if (!running) {
+        intentButton.disabled = false;
+        intentInput.disabled = false;
+      }
     }
   };
 
@@ -1938,6 +2023,14 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   directRoomButton.addEventListener("click", () => void executeDirectRoom());
   operatorRunButton.addEventListener("click", () => void executeOperator(false));
   operatorReseedButton.addEventListener("click", () => void executeOperator(true));
+  intentButton.addEventListener("click", () => void interpretIntent());
+  intentInput.addEventListener("keydown", (event) => {
+    const key = (event as KeyboardEvent).key;
+    // IME 조합 중 Enter 는 한글 확정이다 — 여기서 해석을 걸면 글자가 잘린다.
+    if (key !== "Enter" || (event as KeyboardEvent).isComposing) return;
+    event.preventDefault();
+    void interpretIntent();
+  });
   operatorSelect.addEventListener("change", () => {
     const next = getOperator(operatorSelect.value);
     if (!next) return;

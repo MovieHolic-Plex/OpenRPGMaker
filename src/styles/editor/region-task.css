@@ -1267,3 +1267,44 @@ body.region-task-modal-open .ai-authoring-examples {
   cursor: default;
   opacity: 0.6;
 }
+
+/* 문장 입력 — 모델은 이 한 줄을 파라미터로 옮기기만 한다. */
+.region-task-operator-intent {
+  display: flex;
+  gap: var(--space-2);
+}
+.region-task-operator-intent-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  flex: 1;
+  font: inherit;
+  min-width: 0;
+  padding: 4px 8px;
+}
+.region-task-operator-intent-run {
+  background: transparent;
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
+  padding: 3px 12px;
+  white-space: nowrap;
+}
+.region-task-operator-intent-run:disabled,
+.region-task-operator-intent-input:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.region-task-operator-intent-note {
+  color: var(--editor-text-muted);
+  font: 400 11px/1.5 var(--font-ui, system-ui, sans-serif);
+}
+.region-task-operator-intent-note.hidden {
+  display: none;
+}
+.region-task-operator-intent-note.is-error {
+  color: var(--danger, #b91c1c);
+}
