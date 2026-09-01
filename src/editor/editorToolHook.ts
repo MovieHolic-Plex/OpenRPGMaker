@@ -37,7 +37,8 @@ import {
 import { serialize } from "@/project/io";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import type { GameEvent, MapId, Project } from "@/project/types";
-import { buildForestWrites, type ForestParams } from "@/editor/regionTask/forestWrites";
+import { buildForestWrites, forestPaletteFromSlots, type ForestParams } from "@/editor/regionTask/forestWrites";
+import { resolveMaterialSlots } from "@/editor/operators/materialSlots";
 import { sha256HexText } from "@/util/sha256";
 
 type RegionWrite = { readonly layer: "lower" | "upper"; readonly x: number; readonly y: number; readonly tile: number };
@@ -237,9 +238,13 @@ export function installEditorToolHook(): void {
     // forest 오퍼레이터 프로토타입(2026-09-01) — LLM 없이 파라미터·시드만으로 숲을 계산하고,
     // 기존 승인 흐름(runMock → pending)을 그대로 탄다. 적용은 result.pending.apply().
     forest: async (mapId, region, params, seed) => {
-      const map = store.getCurrent().maps[mapId];
+      const project = store.getCurrent();
+      const map = project.maps[mapId];
       if (!map) return runMockRegionTask(mapId, region, [], "forest operator");
-      const built = buildForestWrites(map, region, params, seed ?? Math.floor(Math.random() * 1_000_000_000));
+      // 재료는 프로덕션(runOperatorTask)과 같은 경로로 유도한다 — 하네스만 다른 타일을 쓰면
+      // 헤드리스 검증이 사용자가 보는 것과 어긋난다(실측: 길 391 vs 슬롯 본체 421).
+      const palette = forestPaletteFromSlots(resolveMaterialSlots(project.tilesets[map.tilesetId]));
+      const built = buildForestWrites(map, region, params, seed ?? Math.floor(Math.random() * 1_000_000_000), palette);
       const result = await runMockRegionTask(mapId, region, built.writes, "forest operator");
       return { ...result, trees: built.trees };
     },

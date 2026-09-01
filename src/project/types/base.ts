@@ -441,6 +441,15 @@ export type StructureKitDef = SectionStructureKitDef | HouseStructureKitDef;
 /** Editor-facing chipset classification. Omitted legacy records are inferred conservatively. */
 export type TilesetKind = "rpg2k" | "custom";
 
+/** 재료 슬롯 하나의 사용자 지정 값. 슬롯 id 목록은 editor/operators/materialSlots.ts 가 소유한다. */
+export interface MaterialSlotOverride {
+  tiles: number[];
+  /** 세로 2칸 원자(수관/밑동)일 때의 상·하 타일. */
+  pair?: { top: number; bottom: number };
+  layer?: "lower" | "upper";
+  passage?: "passable" | "solid";
+}
+
 export interface TilesetDef {
   id: TilesetId;
   name: string;
@@ -460,6 +469,12 @@ export interface TilesetDef {
   palettePresets?: PalettePreset[];
   suppressedHarnessGroupIds?: string[];
   transparentColor?: string;
+  /**
+   * 재료 슬롯 오버라이드(2026-09-01). 지형 오퍼레이터가 쓰는 재료를 사람이 보드에서 고친 값.
+   * 비워 두면 승인 어휘(tileGroups)에서 매번 유도한다 — 저장은 "사람이 고친 것" 만 한다.
+   * 해석기: editor/operators/materialSlots.ts
+   */
+  materialSlots?: Partial<Record<string, MaterialSlotOverride>>;
   // 범용 오토타일(지형 자동 연결) 그룹 정의. 없으면 내장 기본 그룹(흙길/모래)을 사용한다.
   autotileGroups?: AutotileGroup[];
   // 타일 애니메이션 스트립: baseTile 부터 가로로 frames 개 연속 프레임을 fps 로 재생.

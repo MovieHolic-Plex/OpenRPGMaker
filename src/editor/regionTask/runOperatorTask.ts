@@ -15,6 +15,7 @@ import { clearAgentGhostPreview, setAgentGhostPreviewHidden } from "@/editor/age
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { getOperator } from "@/editor/operators/operatorRegistry";
 import { clampOperatorParams, type OperatorParamValues, type OperatorWrite } from "@/editor/operators/operatorTypes";
+import { resolveMaterialSlots } from "@/editor/operators/materialSlots";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
 import { inRegion, type RegionRect } from "./clipToRegion";
@@ -113,7 +114,9 @@ export function runOperatorTask(
 
     const params = clampOperatorParams(def, options.params);
     const seed = Number.isFinite(options.seed) ? Math.trunc(options.seed as number) : randomOperatorSeed();
-    const built = def.build(sourceMap, options.region, params, seed);
+    // 재료는 그 맵의 타일셋에서 유도한다 — 오퍼레이터가 타일 번호를 직접 아는 일이 없게.
+    const slots = resolveMaterialSlots(base.tilesets[sourceMap.tilesetId]);
+    const built = def.build(sourceMap, options.region, params, seed, slots);
 
     const draft = cloneDetachedDraft(base);
     const written = applyWritesInRegion(draft, options.mapId, options.region, built.writes);

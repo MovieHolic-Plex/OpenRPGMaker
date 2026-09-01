@@ -12,6 +12,7 @@
 //  · 수관/밑동 페어: 활엽 260/290·262/292, 고사목 261/291.
 //  · 통행 가능 지면만 밟는다: 잔디 가족 + 흙길 391. (rpg-zzu-tile-passability)
 
+import type { ResolvedMaterialSlots } from "@/editor/operators/materialSlots";
 import type { RegionRect } from "./clipToRegion";
 
 export type ForestRegionWrite = {
@@ -53,6 +54,23 @@ const DEFAULTS: Required<ForestParams> = {
   groundNoise: true,
 };
 
+// ── 팔레트 ──
+// forest 가 아는 재료의 전부. 슬롯에서 유도하며(materialSlots.ts), 슬롯이 비면 아래
+// combined_town 기본값으로 떨어진다 — 재료가 없다고 기능이 죽지는 않게.
+export interface ForestPalette {
+  readonly groundBase: number;
+  readonly groundVariants: readonly number[];
+  readonly groundDark: number;
+  readonly path: number | null;
+  /** [수관(upper), 밑동(lower)] 쌍. 비어 있으면 나무를 심지 않는다. */
+  readonly species: readonly (readonly [number, number])[];
+  readonly dead: readonly [number, number] | null;
+  readonly bush: number | null;
+  readonly flower: number | null;
+  /** 이 위에만 그린다. 집·벽·물 등 기성 구조물 보호선. */
+  readonly paintable: ReadonlySet<number>;
+}
+
 // ── 타일 상수(combined_town 30×16 인덱스) ──
 const GRASS_BASE = 240;
 /** 지면 노이즈에 섞는 잔디 변형 — 전부 통행 가능 확인 목록에 있는 것만. */
@@ -76,6 +94,57 @@ const DEAD_SPECIES: readonly [number, number] = [261, 291];
 const BUSH = 289;
 const FLOWER = 348;
 const EMPTY_UPPER = -1;
+
+/** combined_town 기본 팔레트 — 슬롯이 비었을 때의 폴백이자, 슬롯 유도의 회귀 기준선. */
+export const COMBINED_TOWN_FOREST_PALETTE: ForestPalette = {
+  groundBase: GRASS_BASE,
+  groundVariants: GRASS_VARIANTS,
+  groundDark: DARK_GRASS,
+  path: DIRT_PATH,
+  species: SPECIES,
+  dead: DEAD_SPECIES,
+  bush: BUSH,
+  flower: FLOWER,
+  paintable: PAINTABLE_LOWER,
+};
+
+/**
+ * 재료 슬롯 → forest 팔레트. 슬롯이 없는 항목은 기본 팔레트 값을 그대로 쓴다
+ * (예: 나무 슬롯만 있는 칩셋이면 지면은 기본값으로 칠하고 나무만 그 칩셋 것으로 심는다).
+ */
+export function forestPaletteFromSlots(slots: ResolvedMaterialSlots | undefined): ForestPalette {
+  const base = COMBINED_TOWN_FOREST_PALETTE;
+  if (!slots) return base;
+  const ground = slots.ground;
+  const groundAlt = slots.groundAlt;
+  const path = slots.path;
+  // 수종은 슬롯에 잡힌 것을 전부 쓴다 — 한 종만 심으면 "뻔한 숲" 이 그대로 재발한다.
+  const species: (readonly [number, number])[] = (slots.tree?.pairs ?? (slots.tree?.pair ? [slots.tree.pair] : []))
+    .map((pair) => [pair.top, pair.bottom] as const);
+  const deadPair = slots.treeDead?.pair;
+  // 고사목 폴백은 **나무 재료가 통째로 없을 때만**. 낯선 칩셋에 combined_town 마른나무(261/291)가
+  // 섞여 들어가면 그 칩셋에 없는 타일이 맵에 박힌다.
+  const dead = deadPair
+    ? ([deadPair.top, deadPair.bottom] as const)
+    : (species.length > 0 ? null : base.dead);
+  // 지면으로 인정할 칸: 기본 보호선 + 이번 팔레트가 실제로 까는 지면·길 타일.
+  const paintable = new Set<number>(base.paintable);
+  for (const tile of ground?.tiles ?? []) paintable.add(tile);
+  for (const tile of groundAlt?.tiles ?? []) paintable.add(tile);
+  for (const tile of path?.tiles ?? []) paintable.add(tile);
+  return {
+    // body 를 쓴다 — 오토타일 그룹의 tileIds[0] 은 모서리라 한 칸 칠하기에 맞지 않는다.
+    groundBase: ground?.body ?? ground?.tiles[0] ?? base.groundBase,
+    groundVariants: ground && ground.tiles.length > 1 ? ground.tiles.slice(1) : base.groundVariants,
+    groundDark: groundAlt?.body ?? groundAlt?.tiles[0] ?? base.groundDark,
+    path: path?.body ?? path?.tiles[0] ?? base.path,
+    species: species.length > 0 ? species : base.species,
+    dead,
+    bush: slots.bush?.tiles[0] ?? base.bush,
+    flower: slots.flower?.tiles[0] ?? base.flower,
+    paintable,
+  };
+}
 
 /** mulberry32 — 시드 결정적 PRNG. */
 function makeRng(seed: number): () => number {
@@ -118,6 +187,7 @@ export function buildForestWrites(
   region: RegionRect,
   params: ForestParams = {},
   seed = 1,
+  palette: ForestPalette = COMBINED_TOWN_FOREST_PALETTE,
 ): ForestBuildResult {
   const p = { ...DEFAULTS, ...params };
   const density = clamp(p.density, 0, 1);
@@ -130,7 +200,7 @@ export function buildForestWrites(
   const w = x1 - x0 + 1;
   const h = y1 - y0 + 1;
   const idx = (x: number, y: number): number => y * map.width + x;
-  const paintable = (x: number, y: number): boolean => PAINTABLE_LOWER.has(map.lowerTiles[idx(x, y)] ?? -1);
+  const paintable = (x: number, y: number): boolean => palette.paintable.has(map.lowerTiles[idx(x, y)] ?? -1);
 
   // ── 군집 중심(밀도가 높을수록 많고 넓게) ──
   const clusterCount = Math.max(1, Math.round((w * h) / 130) + Math.round(density * 2));
@@ -217,14 +287,15 @@ export function buildForestWrites(
         if (pathCells.has(idx(x, y))) continue;
         const dark = cellNoise(seed, Math.floor(x / 3), Math.floor(y / 3), 7);
         if (dark < 0.16 + density * 0.1) {
-          putLower(x, y, DARK_GRASS);
+          putLower(x, y, palette.groundDark);
           continue;
         }
         const v = cellNoise(seed, x, y, 1);
-        if (v < 0.14) {
-          putLower(x, y, GRASS_VARIANTS[Math.floor(cellNoise(seed, x, y, 2) * GRASS_VARIANTS.length) % GRASS_VARIANTS.length]);
+        const variants = palette.groundVariants;
+        if (v < 0.14 && variants.length > 0) {
+          putLower(x, y, variants[Math.floor(cellNoise(seed, x, y, 2) * variants.length) % variants.length]!);
         } else {
-          putLower(x, y, GRASS_BASE);
+          putLower(x, y, palette.groundBase);
         }
       }
     }
@@ -235,7 +306,7 @@ export function buildForestWrites(
     const x = cell % map.width;
     const y = Math.floor(cell / map.width);
     if (!paintable(x, y)) continue;
-    putLower(x, y, DIRT_PATH);
+    if (palette.path !== null) putLower(x, y, palette.path);
   }
 
   // ── L2·L3 나무: 군집 점수 × 밀도, 위(수관 칸)가 영역 안일 때만 ──
@@ -257,8 +328,11 @@ export function buildForestWrites(
       if (rng() >= prob) continue;
       // 수직 겹침은 허용(그게 "숲")하되, 같은 칸 중복 밑동만 금지.
       if (trunkCells.has(cell)) continue;
-      const dead = rng() < clamp(p.deadRatio, 0, 1);
-      const species = dead ? DEAD_SPECIES : SPECIES[Math.floor(rng() * SPECIES.length) % SPECIES.length];
+      const wantsDead = rng() < clamp(p.deadRatio, 0, 1);
+      const living = palette.species;
+      const dead = wantsDead && palette.dead ? palette.dead : undefined;
+      if (!dead && living.length === 0) continue; // 나무 재료가 없는 칩셋 — 지면만 칠하고 끝낸다.
+      const species = dead ?? living[Math.floor(rng() * living.length) % living.length]!;
       putUpper(x, y - 1, species[0]);
       putLower(x, y, species[1]);
       trunkCells.add(cell);
@@ -279,7 +353,9 @@ export function buildForestWrites(
         const clear = inClearing(x, y);
         const prob = ub * (nearTree ? 0.16 : 0.045) + clear * ub * 0.05; // 공터엔 꽃이 조금.
         if (rng() >= prob) continue;
-        putUpper(x, y, rng() < (clear > 0 ? 0.25 : 0.62) ? BUSH : FLOWER);
+        const wantsBush = rng() < (clear > 0 ? 0.25 : 0.62);
+        const prop = (wantsBush ? palette.bush : palette.flower) ?? palette.flower ?? palette.bush;
+        if (prop !== null && prop !== undefined) putUpper(x, y, prop);
       }
     }
   }

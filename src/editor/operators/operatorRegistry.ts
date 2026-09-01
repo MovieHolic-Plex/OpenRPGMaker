@@ -4,7 +4,7 @@
 // 지금은 forest 하나뿐이다(프로토타입). water/village/road 는 같은 계약으로 뒤따른다 —
 // 계약이 먼저 서야 UI 를 두 번 짓지 않는다.
 
-import { buildForestWrites } from "@/editor/regionTask/forestWrites";
+import { buildForestWrites, forestPaletteFromSlots } from "@/editor/regionTask/forestWrites";
 import {
   clampOperatorParams,
   defaultOperatorParams,
@@ -24,7 +24,7 @@ const forestOperator: OperatorDef = {
     { kind: "toggle", id: "path", label: "오솔길", defaultValue: true, hint: "좌우를 잇는 통행 회랑" },
     { kind: "toggle", id: "groundNoise", label: "지면 변화", defaultValue: true },
   ],
-  build(map, region, params, seed) {
+  build(map, region, params, seed, slots) {
     const built = buildForestWrites(
       map,
       region,
@@ -37,6 +37,7 @@ const forestOperator: OperatorDef = {
         groundNoise: params.groundNoise as boolean,
       },
       seed,
+      forestPaletteFromSlots(slots),
     );
     return { writes: built.writes, note: `나무 ${built.trees}그루` };
   },

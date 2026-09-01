@@ -8,6 +8,7 @@
 
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import type { GameMap } from "@/project/types";
+import type { ResolvedMaterialSlots } from "./materialSlots";
 
 /** 오퍼레이터가 산출하는 타일 쓰기 한 칸. */
 export interface OperatorWrite {
@@ -55,8 +56,18 @@ export interface OperatorDef {
   /** 모드 패널에 한 줄로 뜨는 설명. */
   readonly hint: string;
   readonly params: readonly OperatorParamSpec[];
-  /** 순수 함수 — 맵을 변형하지 않고 쓰기 목록만 돌려준다. */
-  build(map: GameMap, region: RegionRect, params: OperatorParamValues, seed: number): OperatorBuildResult;
+  /**
+   * 순수 함수 — 맵을 변형하지 않고 쓰기 목록만 돌려준다.
+   * `slots` 는 그 맵 타일셋에서 유도한 재료다. 오퍼레이터는 타일 번호를 알지 못하고,
+   * 슬롯을 통해서만 칩셋에 닿는다 — 이것이 칩셋 독립성의 유일한 근거다.
+   */
+  build(
+    map: GameMap,
+    region: RegionRect,
+    params: OperatorParamValues,
+    seed: number,
+    slots?: ResolvedMaterialSlots,
+  ): OperatorBuildResult;
 }
 
 /** 스펙의 기본값 묶음. UI 최초 렌더와 헤드리스 호출이 같은 값에서 출발하게 한다. */
