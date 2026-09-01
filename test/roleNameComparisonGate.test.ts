@@ -1,4 +1,4 @@
-import { globSync, readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -56,8 +56,27 @@ const ALLOWED = new Map<string, { readonly lines: number; readonly why: string }
   ["src/project/tilesetHarness/themePacks.ts", { lines: 2, why: "terrainTag=0 강제 — 능력 필드가 water 만 표현, A-3 후보" }],
 ]);
 
+/**
+ * `src/` 아래 `.ts` 를 모은다(`.d.ts` 제외).
+ *
+ * `fs.globSync` 를 쓰지 않는 이유: 그 API 는 Node 22 이상에만 있고
+ * `.github/workflows/parity.yml` 은 7 개 잡 전부 node-version 20 을 고정한다.
+ * 거기서는 `globSync is not a function` 으로 이 파일 하나가 unit-tests 잡을
+ * 통째로 죽인다. CI 의 노드를 올리는 쪽은 7 개 잡에 영향을 주므로 택하지
+ * 않고, 순회를 직접 한다.
+ */
+function collectSourceFiles(dir: string, out: string[]): void {
+  for (const entry of readdirSync(join(process.cwd(), dir), { withFileTypes: true })) {
+    const path = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) collectSourceFiles(path, out);
+    else if (entry.isFile() && path.endsWith(".ts") && !path.endsWith(".d.ts")) out.push(path);
+  }
+}
+
 function sourceFiles(): string[] {
-  return globSync("src/**/*.ts", { cwd: process.cwd() }).filter((f) => !f.endsWith(".d.ts"));
+  const files: string[] = [];
+  collectSourceFiles("src", files);
+  return files.sort();
 }
 
 function offendingLines(file: string): string[] {
