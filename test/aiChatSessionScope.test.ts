@@ -153,14 +153,15 @@ describe("대화 저장 범위", () => {
 });
 
 describe("새 대화 진입점", () => {
-  it("Given any dock When the action menus render Then 새 대화 is available in both surfaces", () => {
+  it("Given any dock When the action menus render Then 새 대화는 ☰ 가 아니라 ＋ 에 있다", () => {
     const side = renderPanel("side");
     expect(findByTestId(side, "ai-new-session")).toBeTruthy();
-    expect(findByTestId(side, "ai-more-new-chat")?.textContent).toBe("새 대화");
+    expect(findByTestId(side, "ai-more-new-chat")).toBeNull();
+    expect(findByTestId(side, "ai-new-chat")).toBeTruthy();
 
-    // 헤더가 없는 입력줄(float) 에서는 컴포저 ☰ 가 유일한 2차 액션 표면이다.
     const float = renderPanel("float");
-    expect(findByTestId(float, "ai-command-menu-new-chat")?.textContent).toBe("새 대화");
+    expect(findByTestId(float, "ai-command-menu-new-chat")).toBeNull();
+    expect(findByTestId(float, "ai-new-chat")?.textContent).toBe("+");
   });
 
   it("Given any dock When the composer renders Then its fixed action row owns the visible new-chat control", () => {

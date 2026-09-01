@@ -103,27 +103,28 @@ describe("맥락 게이지가 컴포저 액션 행에 산다", () => {
 });
 
 describe("☰ 메뉴의 새 항목 3개", () => {
-  it("Given 컴포저 ☰ When 항목 확인 Then 이전 대화·맥락 압축·감독 지침이 있다", () => {
+  it("Given 컴포저 ☰ When 항목 확인 Then 맥락 압축·감독 지침이 있고 이전 대화는 🕒 에 있다", () => {
     const panel = renderPanel();
 
     const menu = findByTestId(panel, "ai-command-menu")!;
-    expect(findByTestId(menu, "ai-command-menu-conversations")!.textContent).toBe("이전 대화");
+    expect(findByTestId(menu, "ai-command-menu-conversations")).toBeNull();
     expect(findByTestId(menu, "ai-command-menu-compact")!.textContent).toBe("맥락 압축");
     expect(findByTestId(menu, "ai-command-menu-instructions")!.textContent).toBe("감독 지침");
+    expect(findByTestId(panel, "ai-open-conversations")).toBeTruthy();
   });
 
-  it("Given 헤더 ☰ When 항목 확인 Then 같은 3개가 legacy testid 로도 있다", () => {
+  it("Given 헤더 ☰ When 항목 확인 Then 압축·지침 legacy testid 가 있다", () => {
     const panel = renderPanel();
 
-    expect(findByTestId(panel, "ai-more-conversations")).not.toBeNull();
+    expect(findByTestId(panel, "ai-more-conversations")).toBeNull();
     expect(findByTestId(panel, "ai-more-compact")).not.toBeNull();
     expect(findByTestId(panel, "ai-more-instructions")).not.toBeNull();
   });
 
-  it("Given 이전 대화 항목 클릭 When 모달 Then 대화 목록이 열린다(죽은 코드였던 경로)", () => {
+  it("Given 이전 대화 단추 클릭 When 모달 Then 대화 목록이 열린다", () => {
     const panel = renderPanel();
 
-    (findByTestId(panel, "ai-command-menu-conversations") as unknown as HTMLElement).click();
+    (findByTestId(panel, "ai-open-conversations") as unknown as HTMLElement).click();
 
     const body = globalThis.document.body as unknown as FakeElement;
     const modal = findByTestId(body, "ai-history-modal");

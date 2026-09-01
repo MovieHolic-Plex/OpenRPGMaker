@@ -14,7 +14,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
-import { DEFAULT_CHAT_DOCK, type ChatDock } from "@/editor/chatDock";
 import { clearConversations } from "@/ai/conversationStore";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
@@ -53,16 +52,12 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
-function renderPanel(dock: ChatDock): FakeElement {
+function renderPanel(): FakeElement {
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
-  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 1_000 }) as unknown as FakeElement;
 }
 
 describe("☰ 메타 메뉴는 어느 도크에서도 숨지 않는다", () => {
-  it("기본 도크는 glass 다 — 여기서 메뉴가 숨으면 기본 상태의 메타 기능 전부가 사라진다", () => {
-    expect(DEFAULT_CHAT_DOCK).toBe("glass");
-  });
-
   it("02-chat-dock.css 의 어떤 display:none 블록도 .ai-command-menu-toggle 을 겨냥하지 않는다", () => {
     const css = readFileSync(DOCK_CSS, "utf8");
     const hidingBlocks = [...css.matchAll(/([^{}]+)\{([^}]*)\}/gu)].filter(([, , body]) =>
@@ -74,22 +69,19 @@ describe("☰ 메타 메뉴는 어느 도크에서도 숨지 않는다", () => {
     expect(offenders).toEqual([]);
   });
 
-  it.each(["glass", "side", "float"] as const)("%s 도크에서도 메뉴 토글과 항목이 패널에 있다", (dock) => {
-    const panel = renderPanel(dock);
+  it("메뉴 토글과 유일 항목이 패널에 있다", () => {
+    const panel = renderPanel();
     expect(findByTestId(panel, "ai-command-menu-toggle")).toBeTruthy();
     for (const testid of [
-      "ai-command-menu-new-chat",
-      "ai-command-menu-undo",
       "ai-command-menu-export",
-      "ai-command-menu-dock",
       "ai-command-menu-tools",
-      "ai-command-menu-settings",
-      "ai-command-menu-interview",
-      "ai-command-menu-learn-structure",
-      "ai-command-menu-demo-teach",
+      "ai-command-menu-compact",
+      "ai-command-menu-instructions",
     ]) {
-      expect(findByTestId(panel, testid), `${dock}/${testid}`).toBeTruthy();
+      expect(findByTestId(panel, testid), testid).toBeTruthy();
     }
+    expect(findByTestId(panel, "ai-command-menu-dock")).toBeNull();
+    expect(findByTestId(panel, "ai-command-menu-settings")).toBeTruthy();
   });
 });
 
@@ -97,13 +89,13 @@ describe("설정 진입점", () => {
   it("크롬 설정 단추(ai-settings-toggle·ai-settings-command-bar)는 여전히 만들지 않는다", () => {
     // 2026-08-30 계약: 조수 패널 크롬에는 설정 단추를 중복해 놓지 않는다. 진입점은
     // ☰ 메뉴 항목 하나다 — 이 둠이 함게 최종 표대 상태를 정의한다.
-    const panel = renderPanel("glass");
+    const panel = renderPanel();
     expect(findByTestId(panel, "ai-settings-toggle")).toBeNull();
     expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
   });
 
   it("☰ 의 설정 항목은 aria-label 을 갖고 전용 설정 모달을 연다", () => {
-    const panel = renderPanel("glass");
+    const panel = renderPanel();
     const settings = findByTestId(panel, "ai-command-menu-settings") as unknown as FakeElement;
     expect(settings.getAttribute("aria-label")).toBe("AI 설정 열기");
     settings.click();

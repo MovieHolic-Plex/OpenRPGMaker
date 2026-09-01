@@ -341,12 +341,15 @@ describe("키 온보딩과 설정 접근성", () => {
 
     findByTestId(panel, "ai-command-menu-toggle")?.click();
     expect(menu?.hidden).toBe(false);
-    expect(findByTestId(menu!, "ai-command-menu-undo")).toBeTruthy();
     expect(findByTestId(menu!, "ai-command-menu-export")).toBeTruthy();
-    // 「도크 전환」 항목은 갈 곳이 하나뿐이 된 뒤 삭제됐다.
-    expect(findByTestId(menu!, "ai-command-menu-dock")).toBeNull();
     expect(findByTestId(menu!, "ai-command-menu-tools")).toBeTruthy();
-    expect(findByTestId(menu!, "ai-command-menu-studio")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-command-menu-instructions")).toBeTruthy();
+    // 중복·잔재: 새 대화/이전 대화/되돌리기/설정/스튜디오/가르치기 3종/도크.
+    expect(findByTestId(menu!, "ai-command-menu-undo")).toBeNull();
+    expect(findByTestId(menu!, "ai-command-menu-dock")).toBeNull();
+    expect(findByTestId(menu!, "ai-command-menu-studio")).toBeNull();
+    expect(findByTestId(menu!, "ai-command-menu-settings")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-command-menu-new-chat")).toBeNull();
     expect(findByTestId(menu!, "ai-new-session")).toBeNull();
     expect(findByTestId(menu!, "ai-studio-toggle")).toBeNull();
     expect((globalThis.document as unknown as { body: FakeElement }).body.classList.contains("ai-command-bar-active")).toBe(true);
@@ -389,10 +392,6 @@ describe("키 온보딩과 설정 접근성", () => {
   });
 
   it("☰ 의 설정 항목은 전용 모달을 열고 첫 입력에 포커스한다", () => {
-    // 진입점은 크롬 아이콘이 아니라 ☰ 메뉴 항목이다: `ai-settings-toggle`(헤더 아이콘)과
-    // `ai-settings-command-bar`(커맨드바 단추)는 "패널 크롬에 설정을 중복해 놓지 않는다" 는
-    // 2026-08-30 계약이 금지한다(test/aiAssistantUxP0P2, test/aiChatPanelSettings). 열리는
-    // 표면(전용 모달 + 첫 입력 포커스)은 그대로 못박는다.
     const panel = renderPanel();
     findByTestId(panel, "ai-command-menu-settings")?.click();
 

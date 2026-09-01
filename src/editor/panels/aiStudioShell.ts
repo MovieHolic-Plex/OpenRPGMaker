@@ -102,18 +102,6 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   });
   const tabButtons = new Map<StudioDeckTab, HTMLButtonElement>();
 
-  const exitButton = el("button", {
-    class: "ai-studio-exit",
-    text: "타일 편집",
-    attrs: {
-      type: "button",
-      title: "스튜디오를 닫고 타일 편집으로 돌아간다",
-      "aria-label": "스튜디오 닫기",
-    },
-    dataset: { testid: "ai-studio-exit" },
-    on: { click: () => options.onExit() },
-  }) as HTMLButtonElement;
-
   const tabs = el("div", {
     class: "ai-studio-tabs",
     attrs: { role: "tablist", "aria-label": "스튜디오 덱" },
@@ -154,20 +142,8 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
           el("div", {
             class: "ai-studio-who",
             children: [
-              el("div", {
-                class: "ai-studio-who-copy",
-                children: [
-                  el("h1", {
-                    class: "ai-studio-who-title",
-                    children: [
-                      el("span", { class: "ai-studio-face", attrs: { "aria-hidden": "true" } }),
-                      "조수",
-                    ],
-                  }),
-                  statusLine,
-                ],
-              }),
-              exitButton,
+              el("h1", { class: "ai-studio-who-title", text: "조수" }),
+              statusLine,
             ],
           }),
           chatLogSlot,
@@ -369,7 +345,7 @@ function walkScenes(
       },
       children: [
         el("b", { text: map.name || node.mapId }),
-        el("span", { text: interior ? "실내" : "맵" }),
+        el("span", { class: "ai-studio-scene-kind", text: interior ? "실내" : "맵" }),
       ],
     }));
   }

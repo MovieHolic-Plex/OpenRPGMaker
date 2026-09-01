@@ -57,7 +57,8 @@
   .team-history-button,
   .team-identity-button,
   .quick-battle-test-button,
-  .topbar-ai-settings-button {
+  .topbar-ai-settings-button,
+  .topbar-ai-studio {
     align-items: center;
     background: var(--control-bg);
     border: 1px solid var(--editor-line);
@@ -91,10 +92,26 @@
   .quick-battle-test-button:hover,
   .quick-battle-test-button:focus-visible,
   .topbar-ai-settings-button:hover,
-  .topbar-ai-settings-button:focus-visible {
+  .topbar-ai-settings-button:focus-visible,
+  .topbar-ai-studio:hover,
+  .topbar-ai-studio:focus-visible {
     background: var(--control-bg-hover);
     border-color: var(--editor-line-strong);
     outline: none;
+  }
+
+  .topbar-ai-studio.is-on,
+  .topbar-ai-studio[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: transparent;
+    color: var(--on-accent);
+  }
+
+  .topbar-ai-studio.is-on:hover,
+  .topbar-ai-studio.is-on:focus-visible {
+    background: var(--accent-hover);
+    border-color: transparent;
+    color: var(--on-accent);
   }
 
   .quick-battle-test-button {
