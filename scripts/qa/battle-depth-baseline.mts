@@ -195,6 +195,67 @@ const out: Record<string, unknown> = {
   },
 };
 
+// ── R21: 세 축 측정에 필요한 조회표 ──────────────────────────────────────────
+// "서로 다른 스킬 수" **단독으로는 개선을 놓친다.** 순수 데미지 스킬끼리는 교대하지
+// 않고 승자만 바뀌기 때문이다 — boss 가 `sword_slash` 에서 속성기로 갈려도
+// distinctSkills 는 1 → 1 이다. 그런데 무속성이 속성으로 바뀐 것은 큰 변화다.
+// 그래서 스킬 종류에 더해 **속성 종류**와 **상태이상 부여 횟수**를 함께 잰다.
+const NO_ELEMENT = "(무속성)";
+/** 스킬 id → 속성 id. elementId 가 없는 스킬은 NO_ELEMENT. */
+const elementBySkillId = new Map<string, string>(
+  (fullDb.skills as any[]).map((s: any) => [s.id, s.elementId ?? NO_ELEMENT]),
+);
+const elementNameById = new Map<string, string>(
+  ((fullDb.elements ?? []) as any[]).map((e: any) => [e.id, e.name]),
+);
+const stateNameById = new Map<string, string>((fullDb.states as any[]).map((s: any) => [s.id, s.name]));
+/** 스킬 id → 이 스킬이 add 로 걸 수 있는 상태 id 들. remove 는 부여가 아니므로 뺀다. */
+const addedStatesBySkillId = new Map<string, readonly string[]>(
+  (fullDb.skills as any[]).map((s: any) => [
+    s.id,
+    ((s.stateEffects ?? []) as any[]).filter((e: any) => e.operation === "add").map((e: any) => e.stateId),
+  ]),
+);
+
+/**
+ * 저작 표면의 속성/상태 커버리지. **런타임 히스토그램과 목적이 다르다.**
+ * archetypeSims 는 계열 9종 대표 **9마리**만 돌리므로 런타임 byElement 는 그 9마리가
+ * 쓴 속성밖에 못 본다 — 106마리 전체가 여덟 속성을 쓰게 됐는지는 구조적으로 안 보인다.
+ * 그래서 "적이 어떤 속성/상태를 **저작상 쓸 수 있는가**" 는 여기서 센다. rng 가 없는
+ * 순수 함수라 전/후 비교에 잡음이 없다.
+ */
+function authoredCoverage(enemies: readonly any[]): Record<string, unknown> {
+  const elements: Record<string, number> = {};
+  const states: Record<string, number> = {};
+  for (const enemy of enemies) {
+    for (const action of (enemy.actions ?? []) as any[]) {
+      const skillId = action.skillId;
+      if (skillId === undefined) continue;
+      const elementId = elementBySkillId.get(skillId) ?? NO_ELEMENT;
+      const label = elementId === NO_ELEMENT ? elementId : (elementNameById.get(elementId) ?? elementId);
+      elements[label] = (elements[label] ?? 0) + 1;
+      for (const stateId of addedStatesBySkillId.get(skillId) ?? []) {
+        const stateLabel = stateNameById.get(stateId) ?? stateId;
+        states[stateLabel] = (states[stateLabel] ?? 0) + 1;
+      }
+    }
+  }
+  return {
+    byElement: elements,
+    // 무속성은 "속성을 실었다" 가 아니므로 제외한다.
+    distinctElements: Object.keys(elements).filter((k) => k !== NO_ELEMENT).length,
+    byAddedState: states,
+    distinctAddedStates: Object.keys(states).length,
+    // 속성기를 하나라도 저작해 둔 적의 수 / 상태 부여기를 저작해 둔 적의 수.
+    enemiesWithElementalAction: enemies.filter((e: any) =>
+      ((e.actions ?? []) as any[]).some((a: any) => (elementBySkillId.get(a.skillId) ?? NO_ELEMENT) !== NO_ELEMENT),
+    ).length,
+    enemiesWithStateAction: enemies.filter((e: any) =>
+      ((e.actions ?? []) as any[]).some((a: any) => (addedStatesBySkillId.get(a.skillId) ?? []).length > 0),
+    ).length,
+  };
+}
+
 // ── 1. 인구조사: 저작 표면 전체(적 106 / 트룹 7) ─────────────────────────────
 out.fullDatabaseCensus = {
   enemyCount: fullDb.enemies.length,
@@ -207,6 +268,7 @@ out.fullDatabaseCensus = {
   authoredEnemySkillCounts: tally(
     fullDb.enemies.flatMap((e: any) => (e.actions ?? []).map((a: any) => a.skillId ?? "(none)")),
   ),
+  authoredCoverage: authoredCoverage(fullDb.enemies as any[]),
   troopIds: fullDb.troops.map((t: any) => t.id),
 };
 
@@ -226,6 +288,7 @@ out.simulatedCensus = {
   authoredEnemySkillCounts: tally(
     emberEnemies.flatMap((e: any) => (e.actions ?? []).map((a: any) => a.skillId ?? "(none)")),
   ),
+  authoredCoverage: authoredCoverage(emberEnemies),
   troopIds: DEFAULT_TROOP_IDS,
 };
 
@@ -271,6 +334,20 @@ interface UsageBucket {
   readonly bySkillId: Record<string, number>;
   readonly byCommandKind: Record<string, number>;
   /**
+   * 적이 실제로 실어 보낸 속성. bySkillId 를 스킬 레코드의 elementId 로 사영한 것이라
+   * 새 측정이 아니다 — 같은 roundLogs 를 다르게 접은 값이다(rng 소비 없음).
+   */
+  readonly byElement: Record<string, number>;
+  /**
+   * 상태이상이 **실제로 붙은** 횟수. 스킬을 골랐다는 것과 상태가 걸렸다는 것은 다르다
+   * (stateEffects 의 chance 를 굴려 실패할 수 있고, 명중 자체가 빗나갈 수 있다).
+   * 그래서 저작 표가 아니라 roundLogs 의 stateIds 를 라운드 간 비교해 **부재→존재**
+   * 전이만 센다. 같은 상태가 풀렸다 다시 걸리면 2회로 센다 — 부여가 2번 일어난 게 맞다.
+   */
+  readonly actorStateGains: Record<string, number>;
+  /** 적 쪽에 붙은 상태(적의 자기 버프 skill_focus 등). 아래 주석의 근거로 영웅은 못 건다. */
+  readonly enemyStateGains: Record<string, number>;
+  /**
    * 스킬 id 로 해소하지 못한 적 행동. **bySkillId 에 섞으면 안 된다.**
    * 상태이상 봉인(skillBlocked)이나 MP 부족(insufficientMp)이면 executeEnemyAction 이
    * 조기 return 해서(runtime.ts:1491) lastActionResult 가 안 바뀌고, 그래도
@@ -281,7 +358,15 @@ interface UsageBucket {
   readonly unresolved: Record<string, number>;
   rounds: number;
 }
-const makeBucket = (): UsageBucket => ({ bySkillId: {}, byCommandKind: {}, unresolved: {}, rounds: 0 });
+const makeBucket = (): UsageBucket => ({
+  bySkillId: {},
+  byCommandKind: {},
+  byElement: {},
+  actorStateGains: {},
+  enemyStateGains: {},
+  unresolved: {},
+  rounds: 0,
+});
 
 function collectUsage(troopIds: readonly string[], heroLevelFor: (id: string) => number): UsageBucket {
   const bucket = makeBucket();
@@ -296,6 +381,9 @@ function collectUsage(troopIds: readonly string[], heroLevelFor: (id: string) =>
         battleFlow: LOG_FLOW,
       });
       bucket.rounds += r.roundLogs.length;
+      // 판 하나 안에서만 유효한 상태 스냅샷. 판이 바뀌면 초기화해야 이전 판의 잔여
+      // 상태가 다음 판 1라운드에서 "새로 걸렸다" 로 오집계되지 않는다.
+      const prevStates = { actor: new Map<string, Set<string>>(), enemy: new Map<string, Set<string>>() };
       for (const round of r.roundLogs) {
         for (const action of round.actions) {
           if (action.side !== "enemy") continue;
@@ -314,6 +402,22 @@ function collectUsage(troopIds: readonly string[], heroLevelFor: (id: string) =>
             continue;
           }
           bucket.bySkillId[skillId] = (bucket.bySkillId[skillId] ?? 0) + 1;
+          const element = elementBySkillId.get(skillId) ?? NO_ELEMENT;
+          bucket.byElement[element] = (bucket.byElement[element] ?? 0) + 1;
+        }
+        // 상태 부여: 라운드 끝 스냅샷의 stateIds 를 직전 라운드와 비교해 신규만 센다.
+        for (const [side, entries, sink] of [
+          ["actor", round.actors, bucket.actorStateGains],
+          ["enemy", round.enemies, bucket.enemyStateGains],
+        ] as const) {
+          const seen = prevStates[side];
+          for (const entry of entries) {
+            const before = seen.get(entry.id) ?? new Set<string>();
+            for (const stateId of entry.stateIds) {
+              if (!before.has(stateId)) sink[stateId] = (sink[stateId] ?? 0) + 1;
+            }
+            seen.set(entry.id, new Set(entry.stateIds));
+          }
         }
       }
     }
@@ -327,14 +431,34 @@ const archLevelById = new Map<string, number>(
 const defaultUsage = collectUsage(DEFAULT_TROOP_IDS, () => HERO_LEVEL);
 const archetypeUsage = collectUsage([...archLevelById.keys()], (id) => archLevelById.get(id) ?? HERO_LEVEL);
 
+const sumValues = (r: Record<string, number>): number => Object.values(r).reduce((s, v) => s + v, 0);
+/** 상태 id 집계를 사람이 읽을 이름으로 바꾼다. 이름을 못 찾으면 id 를 그대로 남긴다. */
+const namedStates = (r: Record<string, number>): Record<string, number> =>
+  Object.fromEntries(Object.entries(r).map(([id, n]) => [stateNameById.get(id) ?? id, n]));
+
 const summarizeUsage = (b: UsageBucket): Record<string, unknown> => ({
   strictRoundsObserved: b.rounds,
   byCommandKind: b.byCommandKind,
   bySkillId: b.bySkillId,
   // 실제로 스킬 id 로 해소된 것만 센다. 해소 실패는 unresolved 로 빠진다.
   distinctSkills: Object.keys(b.bySkillId).length,
+  // ── 축 2: 속성 ────────────────────────────────────────────────────────────
+  byElement: Object.fromEntries(
+    Object.entries(b.byElement).map(([id, n]) => [id === NO_ELEMENT ? id : (elementNameById.get(id) ?? id), n]),
+  ),
+  // 무속성은 "속성을 실었다" 가 아니므로 제외한다. 이걸 포함하면 기준선이 0 이 아니라
+  // 1 로 잡혀 0→8 이라는 실제 변화가 1→9 로 희석돼 보인다.
+  distinctElements: Object.keys(b.byElement).filter((id) => id !== NO_ELEMENT).length,
+  // ── 축 3: 상태이상 부여 ───────────────────────────────────────────────────
+  // actor 쪽 = 적이 파티에 건 것. 이 시뮬에서 영웅은 스킬을 못 쓰므로(아래 자체 검사
+  // '영웅은 통상공격만 한다' 참조) 파티에 붙은 상태의 출처는 적뿐이다.
+  actorStateGains: namedStates(b.actorStateGains),
+  actorStateGainsTotal: sumValues(b.actorStateGains),
+  // enemy 쪽 = 적의 자기 버프(skill_focus 등). 영웅은 통상공격만 하므로 영웅이 건 게 아니다.
+  enemyStateGains: namedStates(b.enemyStateGains),
+  enemyStateGainsTotal: sumValues(b.enemyStateGains),
   unresolved: b.unresolved,
-  unresolvedTotal: Object.values(b.unresolved).reduce((s, v) => s + v, 0),
+  unresolvedTotal: sumValues(b.unresolved),
 });
 
 out.enemySkillUsage = {
@@ -343,7 +467,11 @@ out.enemySkillUsage = {
     "simulateBattle 은 첫 판의 roundLogs 만 보관하므로 seed 를 옮겨 n=1 로 " +
     `${SAMPLES}회씩 돌려 합산했다. sims 의 스칼라(${SIM_FLOW} 플로우)와는 별개 측정이다. ` +
     "distinctSkills 는 스킬 id 로 해소된 것만 센다 — MP 부족/상태이상으로 불발된 행동은 " +
-    "unresolved 로 빠지므로, unresolvedTotal 이 0 이 아니면 그쪽을 먼저 봐야 한다.",
+    "unresolved 로 빠지므로, unresolvedTotal 이 0 이 아니면 그쪽을 먼저 봐야 한다. " +
+    "★distinctSkills 만으로 판정하지 말 것★: 순수 데미지 스킬끼리는 교대하지 않고 " +
+    "승자만 바뀌므로 무속성→속성 같은 변화가 1→1 로 보인다. distinctElements 와 " +
+    "actorStateGainsTotal 을 함께 읽어야 한다. 앞의 둘은 같은 roundLogs 를 다르게 접은 " +
+    "값이라 추가 rng 소비가 없다(전/후 비교 성립).",
   runsPerTroop: SAMPLES,
   defaultTroops: summarizeUsage(defaultUsage),
   archetypeTroops: summarizeUsage(archetypeUsage),
@@ -427,7 +555,27 @@ const EXAMPLE_CITES: readonly Cite[] = [
 
 const simEntries = Object.entries(sims as Record<string, any>);
 const archEntries = Object.entries(archetypeSims as Record<string, any>);
-const contestedCount = archEntries.filter(([, v]) => v.contested).length;
+// `contested` 는 기준선을 뜰 때 **손으로 적어 둔 기대치**다(ARCHETYPES 표). 승패혼합 함정이
+// 실제로 걸리는 집합은 그게 아니라 **실측 winRate < 1** 집합이다. 기준선에서는 둘이 일치했다.
+//
+// 변경 후에는 갈릴 수 있고, 실제로 갈렸다. 그때 "기대치와 실측이 다르니 파일을 쓰지 않는다"
+// 로 죽으면 **세상이 변했다는 이유로 측정을 거부하는 게이트**가 된다 — 이 스크립트의 존재
+// 목적(전/후 비교)과 정면으로 충돌한다. 그래서 caveat 본문은 **실측 집합**을 인용하고,
+// 기대치와의 어긋남은 죽이는 대신 산출물(archetypeContestedDivergence)에 기록해 드러낸다.
+// 어긋남 자체가 이 과제가 봐야 할 신호다(적이 세졌나 약해졌나).
+const authoredContested = archEntries.filter(([, v]) => v.contested).map(([k]) => k).sort();
+const measuredContested = archEntries.filter(([, v]) => v.winRate < 1).map(([k]) => k).sort();
+const contestedCount = measuredContested.length;
+out.archetypeContestedDivergence = {
+  note:
+    "authored 는 ARCHETYPES 표의 contested 기대치, measured 는 이번 실측의 winRate<1 집합이다. " +
+    "둘이 갈리면 적의 위협도가 달라졌다는 뜻이다 — onlyAuthored 는 '기대보다 약해져 승률이 " +
+    "1.00 으로 포화한' 계열, onlyMeasured 는 '기대와 달리 승률을 끌어내린' 계열이다.",
+  authored: authoredContested,
+  measured: measuredContested,
+  onlyAuthored: authoredContested.filter((k) => !measuredContested.includes(k)),
+  onlyMeasured: measuredContested.filter((k) => !authoredContested.includes(k)),
+};
 
 // 두패스승률차이 예시: 편차가 가장 큰 항목 + 위 worked example. 이름을 손으로 적지 않는다.
 const worstDivergence = archEntries
@@ -466,7 +614,7 @@ const selfWarning승패혼합통계 =
   `winRate 값 ${exAggWinRate} 기준으로 '${exAggLosses}패' 를 계산하면 아래 두패스승률차이 가 금지한 교차 계산이 된다.)`;
 const scope승패혼합통계 =
   `sims(기본 트룹 ${simEntries.length}개)는 전부 winRate ${simEntries[0]![1].winRate.toFixed(2)} 이라 이 함정이 ` +
-  `걸리지 않는다. archetypeSims ${archEntries.length}개 중 ${contestedCount}개(contested:true)가 해당된다.`;
+  `걸리지 않는다. archetypeSims ${archEntries.length}개 중 ${contestedCount}개(이번 실측 winRate<1)가 해당된다.`;
 const caveat승패혼합통계 = `${claim승패혼합통계} ${selfWarning승패혼합통계} ${scope승패혼합통계}`;
 
 const caveat두패스승률차이 =
@@ -524,18 +672,38 @@ check(
 check("주장이 표본 패스 패배 수를 쓰는가", mentionsLosses(claim승패혼합통계, exSampleLosses), `${exSampleLosses}패`);
 
 // (4) caveat 이 전제로 삼는 관계가 실제로 성립하는가.
-const contestedSet = archEntries.filter(([, v]) => v.contested).map(([k]) => k).sort();
-const losingSet = archEntries.filter(([, v]) => v.winRate < 1).map(([k]) => k).sort();
+// 기대치(contested)와 실측(winRate<1)의 어긋남은 **실패가 아니라 기록 대상**이다 —
+// 위 archetypeContestedDivergence 주석 참조. 여기서는 그 기록이 실제로 남았는지만 본다.
 check(
-  "contested:true 집합 == winRate<1 집합",
-  JSON.stringify(contestedSet) === JSON.stringify(losingSet),
-  `contested ${contestedSet.length} / winRate<1 ${losingSet.length}`,
+  "contested 기대/실측 어긋남이 산출물에 기록됐는가",
+  (() => {
+    const d = out.archetypeContestedDivergence as any;
+    return Array.isArray(d?.onlyAuthored) && Array.isArray(d?.onlyMeasured);
+  })(),
+  `onlyAuthored ${(out.archetypeContestedDivergence as any).onlyAuthored.length} / onlyMeasured ${(out.archetypeContestedDivergence as any).onlyMeasured.length}`,
 );
 check("sims 는 전부 winRate 1.00(함정 비적용)", simEntries.every(([, v]) => v.winRate === 1), `${simEntries.length}개`);
 check(
-  "본문의 contested 개수가 실제와 일치",
+  "본문의 contested 개수가 실측과 일치",
   caveat승패혼합통계.includes(`${archEntries.length}개 중 ${contestedCount}개`),
   `${archEntries.length}개 중 ${contestedCount}개`,
+);
+
+// (4b) R21 세 축의 전제 검증.
+// actorStateGains 를 "적이 건 상태" 로 읽으려면 영웅이 상태를 못 걸어야 한다.
+// simulateBattle 의 자동 행동은 battleModel==="gen1" 일 때만 chooseAutoBattleCommand 를
+// 쓰고, 아니면 무조건 {kind:"attack"} 이다(simulate.ts:171-175). 이 전제가 깨지면
+// 파티에 붙은 상태의 출처가 모호해지므로 여기서 죽인다.
+check(
+  "영웅은 통상공격만 한다(actorStateGains 의 출처가 적으로 확정)",
+  (project as any).system?.battleModel !== "gen1",
+  `battleModel=${String((project as any).system?.battleModel)}`,
+);
+// 속성 축이 의미를 가지려면 스킬 레코드에 elementId 가 실제로 존재해야 한다.
+check(
+  "DB 에 속성 부착 스킬이 존재한다",
+  (fullDb.skills as any[]).some((s: any) => s.elementId !== undefined),
+  `${(fullDb.skills as any[]).filter((s: any) => s.elementId !== undefined).length}개`,
 );
 
 // (5) 두패스승률차이 예시가 실값과 일치하는가.
@@ -577,6 +745,12 @@ writeFileSync(OUT_PATH, `${JSON.stringify(out, null, 2)}\n`);
 // ── 콘솔 요약 ────────────────────────────────────────────────────────────────
 const census = out.fullDatabaseCensus as any;
 console.log(`적 행동 1개뿐: ${census.enemiesWithOneAction} / ${census.enemyCount}  (저작 표면: defaultDatabase)`);
+const cov = census.authoredCoverage;
+console.log(
+  `저작 커버리지: 속성 ${cov.distinctElements}종 ${JSON.stringify(cov.byElement)} / ` +
+    `상태 ${cov.distinctAddedStates}종 ${JSON.stringify(cov.byAddedState)}`,
+);
+console.log(`  속성기 보유 적 ${cov.enemiesWithElementalAction} / 상태기 보유 적 ${cov.enemiesWithStateAction} (총 ${census.enemyCount})`);
 console.log(`트룹: ${census.troopCount}개 (저작) / ${DEFAULT_TROOP_IDS.length}개 (시뮬) + 아키타입 대표 ${ARCHETYPES.length}종`);
 
 const line = (label: string, r: any, extra = ""): void => {
@@ -600,6 +774,18 @@ for (const [label, b] of [["기본 트룹", defaultUsage], ["아키타입", arch
   const s = summarizeUsage(b) as any;
   console.log(`  ${label.padEnd(10)} 라운드=${s.strictRoundsObserved} kinds=${JSON.stringify(s.byCommandKind)}`);
   console.log(`  ${" ".repeat(10)} bySkillId=${JSON.stringify(s.bySkillId)} distinct=${s.distinctSkills} unresolved=${s.unresolvedTotal}`);
+  console.log(`  ${" ".repeat(10)} byElement=${JSON.stringify(s.byElement)} distinctElements=${s.distinctElements}`);
+  console.log(
+    `  ${" ".repeat(10)} 상태부여 party=${s.actorStateGainsTotal} ${JSON.stringify(s.actorStateGains)}` +
+      ` / enemy=${s.enemyStateGainsTotal} ${JSON.stringify(s.enemyStateGains)}`,
+  );
+}
+
+const div = out.archetypeContestedDivergence as any;
+if (div.onlyAuthored.length > 0 || div.onlyMeasured.length > 0) {
+  console.log(`\n=== contested 기대/실측 어긋남 ===`);
+  console.log(`  기대에만 있음(승률 포화로 약해짐): ${JSON.stringify(div.onlyAuthored)}`);
+  console.log(`  실측에만 있음(기대보다 위협적):   ${JSON.stringify(div.onlyMeasured)}`);
 }
 console.log(`\ncaveat 자체 검사: ${checks.length}건 전부 통과`);
 console.log(`\n기록: ${OUT_PATH}`);

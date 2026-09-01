@@ -15,9 +15,12 @@ const STEPS = Number(process.env.STEPS ?? 26);
 
 await mkdir(OUT, { recursive: true });
 
-const raw = JSON.parse(
-  await readFile(new URL("test/fixtures/projects/editor-authored-demo-v3.json", `file://${REPO_ROOT}`), "utf8"),
-);
+// 기본 픽스처는 **저장된 프로젝트**라 defaultDatabase 의 최신 저작을 물려받지 않는다.
+// 실측(2026-09-01): 이 픽스처의 적 29마리 중 25마리가 행동 1개뿐이고 skill_dark/earth/
+// holy/wind/ice 는 아예 없다. 즉 기본값 쪽 적 행동 변경을 이 픽스처로는 증명할 수 없다.
+// PROJECT_JSON 으로 defaults 에서 뽑은 프로젝트를 물려 그 경로를 열어 준다.
+const PROJECT_JSON = process.env.PROJECT_JSON ?? "test/fixtures/projects/editor-authored-demo-v3.json";
+const raw = JSON.parse(await readFile(new URL(PROJECT_JSON, `file://${REPO_ROOT}`), "utf8"));
 if (SKIN) {
   raw.database ??= {};
   raw.database.system ??= {};
@@ -76,6 +79,15 @@ const SNAP = () => page.evaluate(() => {
         anim: n ? getComputedStyle(n).animationName : null,
       };
     }),
+    // 상태이상 배지가 **화면에** 남았는지. 글리프는 CSS ::before 에만 있어 textContent 로는
+    // 안 잡히므로(battleFieldDom.ts:1131 주석) ::before content 와 조상까지 곱한 실효
+    // 불투명도를 같이 읽는다 — DOM 에만 있고 눈에는 없는 경우를 가려내기 위해서다.
+    statusBadges: [...document.querySelectorAll(".battle-status-icon")].map((n) => ({
+      owner: n.dataset.testid ?? null,
+      name: n.dataset.statusName ?? null,
+      glyph: getComputedStyle(n, "::before").content,
+      effective: cum(n),
+    })),
     resultPanel: !!document.querySelector(".battle-result-panel"),
   };
 });
@@ -87,6 +99,9 @@ const record = async (label) => {
   log.push(s);
   const worst = Math.min(1, ...s.enemies.filter((e) => e.effective !== null).map((e) => e.effective));
   console.log(`[${label}] phase=${s.phase} step=${s.step} minEffectiveOpacity=${Number.isFinite(worst) ? worst : "n/a"} msg=${JSON.stringify(s.message)}`);
+  for (const b of s.statusBadges) {
+    console.log(`    [상태배지] ${b.owner} name=${b.name} glyph=${b.glyph} eff=${b.effective}`);
+  }
   for (const e of s.enemies) {
     console.log(`    ${e.name} defeated=${e.defeated} sel=${e.selected} node=${e.nodeOpacity} img=${e.imgOpacity} eff=${e.effective} anim=${e.anim} filter=${e.filter}`);
   }
