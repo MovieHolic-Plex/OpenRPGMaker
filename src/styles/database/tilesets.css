@@ -1659,8 +1659,8 @@
   gap: 6px 10px;
   grid-template-columns: 44px minmax(0, 1fr);
   grid-template-rows: auto auto;
-  min-height: 48px;
-  padding: 6px 8px;
+  min-height: 40px;
+  padding: 4px 8px;
   text-align: left;
 }
 
@@ -1781,6 +1781,13 @@
   gap: 6px;
 }
 
+.tileset-autotile-groups-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
 .tileset-autotile-groups-label {
   color: var(--text-2);
   font: 600 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
@@ -1790,7 +1797,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-height: 92px;
+  max-height: 72px;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -1976,6 +1983,13 @@
 .tileset-autotile-passage-row > span {
   color: var(--text-2);
   font: 600 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.tileset-db-small-button.active,
+.tileset-db-small-button[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .tileset-db-small-button.danger {

@@ -18,6 +18,7 @@ import {
 } from "@/editor/panels/tilesetMetadataControls";
 import { getUnlabeledOnlyFilter, setUnlabeledOnlyFilter } from "@/editor/panels/tilesetChipsetPreview";
 import { openTilesetSettingsModal } from "@/editor/panels/tilesetPassageModal";
+import { getTilesetPassagePaint, setTilesetPassagePaint } from "@/editor/panels/tilesetPassagePaint";
 import {
   tabForTilesetMode,
   TILESET_TAB_MODES,
@@ -46,8 +47,8 @@ import { el } from "@/util/dom";
 
 let selectedTile = 0;
 let editMode: TilesetEditMode = "passage";
-/** 통행 탭의 붓. 클릭·드래그가 이 규칙을 칠한다(토글 아님). */
-let passagePaint: PassageMark = "o";
+/** 방향별 통행. 리렌더마다 접히면 연속으로 방향을 못 고친다. */
+let compassOpen = true;
 
 const PASSAGE_META: Record<PassageMark, NonNullable<TileAiMetadata["passage"]>> = {
   o: "passable",
@@ -64,7 +65,7 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
     mode: editMode,
     selectedTile,
     unlabeledOnly: getUnlabeledOnlyFilter(),
-    passagePaint,
+    passagePaint: getTilesetPassagePaint(),
     highlightTileIds: autotileLayout ? autotileHighlightTileIds(tileset) : undefined,
     rerender,
     onApplyModeTile: (tile) => applyActiveModeClick(tileset.id, tile),
@@ -243,15 +244,16 @@ function renderToolBox(rerender: () => void): HTMLElement | null {
 }
 
 function renderPassagePaintTools(rerender: () => void): HTMLElement {
+  const current = getTilesetPassagePaint();
   const paintButton = (mark: PassageMark, label: string, testid: string): HTMLElement =>
     el("button", {
-      class: `database-footer-button tileset-passage-choice${passagePaint === mark ? " active" : ""}`,
+      class: `database-footer-button tileset-passage-choice${current === mark ? " active" : ""}`,
       text: label,
-      attrs: { type: "button", "aria-pressed": String(passagePaint === mark), title: `${label} 붓 — 시트에서 클릭·드래그` },
+      attrs: { type: "button", "aria-pressed": String(current === mark), title: `${label} — 시트에서 클릭·드래그로 칠합니다` },
       dataset: { testid },
       on: {
         click: () => {
-          passagePaint = mark;
+          setTilesetPassagePaint(mark);
           rerender();
         },
       },
@@ -260,26 +262,25 @@ function renderPassagePaintTools(rerender: () => void): HTMLElement {
     class: "oprn-db-fieldset tileset-rule-passage",
     dataset: { testid: "tileset-rule-passage" },
     children: [
-      el("legend", { text: "붓 — 시트에서 클릭·드래그" }),
+      el("legend", { text: "통행 붓" }),
       el("div", {
         class: "tileset-rule-buttons",
         children: [
           paintButton("o", "통과", "tileset-passage-open"),
           paintButton("x", "막힘", "tileset-passage-blocked"),
-          paintButton("star", "위표시", "tileset-passage-star"),
+          paintButton("star", "위 ★", "tileset-passage-star"),
         ],
       }),
-      el("span", { class: "tileset-passage-paint-hint", text: "시트에서 클릭·드래그" }),
+      el("span", { class: "tileset-passage-paint-hint", text: "시트에서 클릭·드래그로 칠합니다" }),
     ],
   });
 }
 
 function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTMLElement {
-  const meta = metadataForTile(tileset, selectedTile);
   const home = tileLayerHome(tileset, selectedTile);
   const homeLabel = home === "both" ? "양쪽" : home === "upper" ? "상위" : "하위";
   const mark = passageMarkForTile(tileset, selectedTile);
-  const markLabel = mark === "x" ? "막힘" : mark === "star" ? "위표시" : "통과";
+  const markLabel = mark === "x" ? "막힘" : mark === "star" ? "위 ★" : "통과";
   const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
   const passage = tileset.passability[selectedTile] ?? passableFlag();
   return el("section", {
@@ -302,15 +303,21 @@ function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTML
         class: "tileset-passage-zoom-row",
         children: [renderTileZoom(tileset, selectedTile)],
       }),
-      el("details", {
-        class: "tileset-autotile-advanced",
-        dataset: { testid: "tileset-passage-compass-details" },
-        children: [
-          el("summary", { text: "방향별 통행" }),
-          renderPassageCompass(tileset.id, passage, rerender),
-        ],
-      }),
-      ...renderTileMeaningEditors(tileset, meta, "rules"),
+      (() => {
+        const details = el("details", {
+          class: "tileset-autotile-advanced",
+          dataset: { testid: "tileset-passage-compass-details" },
+          children: [
+            el("summary", { text: "방향별 통행" }),
+            renderPassageCompass(tileset.id, passage, rerender),
+          ],
+        });
+        if (compassOpen) details.setAttribute("open", "");
+        details.addEventListener("toggle", () => {
+          compassOpen = details.open;
+        });
+        return details;
+      })(),
       ...renderRuleControls(tileset, rerender).filter((node) => String(node.className ?? "").includes("tileset-rule-layer")),
       el("div", {
         class: "tileset-legend-sheet-info",
@@ -536,7 +543,7 @@ function renderTileMeaningEditors(
 
 function applyActiveModeClick(tilesetId: string, tile: number): void {
   if (editMode === "passage") {
-    applyPassageMark(tilesetId, tile, passagePaint);
+    applyPassageMark(tilesetId, tile, getTilesetPassagePaint());
     return;
   }
   if (editMode === "autotile") {
@@ -640,13 +647,7 @@ export function getTilesetMetadataEditMode(): TilesetEditMode {
   return editMode;
 }
 
-export function getTilesetPassagePaint(): PassageMark {
-  return passagePaint;
-}
-
-export function setTilesetPassagePaint(mark: PassageMark): void {
-  passagePaint = mark;
-}
+export { getTilesetPassagePaint, setTilesetPassagePaint } from "@/editor/panels/tilesetPassagePaint";
 
 export function getTilesetSectionTab(): TilesetSectionTab {
   return tabForTilesetMode(editMode);

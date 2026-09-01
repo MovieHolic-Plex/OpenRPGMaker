@@ -31,6 +31,7 @@ import {
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { AUTOTILE_DIR } from "@/project/defaults/autotileEngine";
+import { passageMarkForTile, type PassageMark } from "@/project/tilesetPassage";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -43,7 +44,7 @@ let replaceSelected = false;
 let selectedRole: AutotileRole | null = null;
 let lastMessage = "";
 let lastIsError = false;
-let extraOpen = false;
+let extraOpen = true;
 let advancedOpen = false;
 
 export function resetAutotileComposerState(): void {
@@ -53,7 +54,7 @@ export function resetAutotileComposerState(): void {
   selectedRole = null;
   lastMessage = "";
   lastIsError = false;
-  extraOpen = false;
+  extraOpen = true;
   advancedOpen = false;
 }
 
@@ -181,11 +182,10 @@ export function renderAutotileEditorPanel(tileset: TilesetDef, rerender: () => v
     class: "tileset-autotile-editor",
     dataset: { testid: "tileset-autotile-editor" },
     children: [
-      renderIntro(tileset, rerender),
-      renderGroupList(tileset, groups, customGroupIds, rerender),
       ...(selected
         ? [renderComposer(tileset, selected, readOnly, rerender)]
         : [el("div", { class: "tileset-autotile-empty", text: "아직 오토타일이 없습니다. 9칸이나 11칸을 고르고 시트에서 블록을 누르세요." })]),
+      renderGroupList(tileset, groups, customGroupIds, rerender),
     ],
   });
 }
@@ -199,7 +199,7 @@ export function renderAutotileLayoutToolbar(tileset: TilesetDef, rerender: () =>
         class: "tileset-autotile-toolbar-head",
         children: [
           el("strong", { text: "오토타일 형식" }),
-          el("span", { text: "형식을 고른 뒤 시트에서 왼쪽 위를 누르거나, 이미 있는 블록을 누르면 내용이 보입니다." }),
+          el("span", { text: "형식을 고른 뒤 시트에서 블록 왼쪽 위를 누르세요." }),
         ],
       }),
       renderLayoutPicker(tileset, rerender),
@@ -209,17 +209,19 @@ export function renderAutotileLayoutToolbar(tileset: TilesetDef, rerender: () =>
   });
 }
 
-function renderIntro(tileset: TilesetDef, rerender: () => void): HTMLElement {
+function renderGroupList(
+  tileset: TilesetDef,
+  groups: readonly AutotileGroup[],
+  customGroupIds: ReadonlySet<string>,
+  rerender: () => void,
+): HTMLElement {
   return el("div", {
-    class: "tileset-autotile-intro",
+    class: "tileset-autotile-groups",
     children: [
-      el("p", {
-        class: "tileset-autotile-lead",
-        text: "아래 격자에서 이 오토타일이 어떻게 짜였는지 보고, 칸을 눌러 시트 타일로 바꿉니다.",
-      }),
       el("div", {
-        class: "tileset-autotile-intro-actions",
+        class: "tileset-autotile-groups-head",
         children: [
+          el("div", { class: "tileset-autotile-groups-label", text: "이 칩셋의 오토타일" }),
           el("button", {
             class: "tileset-db-small-button",
             text: "기본 그룹 불러오기",
@@ -235,6 +237,47 @@ function renderIntro(tileset: TilesetDef, rerender: () => void): HTMLElement {
             },
           }),
         ],
+      }),
+      el("div", {
+        class: `tileset-autotile-list${groups.length === 0 ? " is-empty" : ""}`,
+        dataset: { testid: "tileset-autotile-list" },
+        children: groups.map((group) => {
+      const layout = inferAutotileLayoutKind(group);
+      const roles = rolesFromGroup(group);
+      const thumb = bodyTileOf(roles, group.memberTileIds);
+      const active = group.id === selectedGroupId;
+      const builtin = !customGroupIds.has(group.id);
+      return el("button", {
+        class: `tileset-autotile-group-chip${active ? " is-active" : ""}`,
+        attrs: { type: "button" },
+        dataset: { testid: `tileset-autotile-group-${group.id}` },
+        on: {
+          click: () => {
+            selectedGroupId = group.id;
+            pendingLayout = null;
+            selectedRole = firstEmptyRole(layout, roles);
+            lastMessage = "";
+            rerender();
+          },
+        },
+        children: [
+          tileThumb(tileset, thumb, THUMB_SIZE),
+          el("span", { class: "tileset-autotile-group-name", text: group.name }),
+          el("span", {
+            class: "tileset-autotile-layout-badge",
+            text: layoutLabel(layout),
+            dataset: { testid: `tileset-autotile-layout-badge-${group.id}` },
+          }),
+          ...(builtin
+            ? [el("span", {
+                class: "tileset-autotile-builtin-badge",
+                text: "내장",
+                dataset: { testid: `tileset-autotile-builtin-${group.id}` },
+              })]
+            : []),
+        ],
+      });
+        }),
       }),
     ],
   });
@@ -365,64 +408,6 @@ function renderHint(rerender: () => void): HTMLElement {
   });
 }
 
-function renderGroupList(
-  tileset: TilesetDef,
-  groups: readonly AutotileGroup[],
-  customGroupIds: ReadonlySet<string>,
-  rerender: () => void,
-): HTMLElement {
-  if (groups.length === 0) {
-    return el("div", { class: "tileset-autotile-list is-empty", dataset: { testid: "tileset-autotile-list" } });
-  }
-  return el("div", {
-    class: "tileset-autotile-groups",
-    children: [
-      el("div", { class: "tileset-autotile-groups-label", text: "이 칩셋의 오토타일" }),
-      el("div", {
-        class: "tileset-autotile-list",
-        dataset: { testid: "tileset-autotile-list" },
-        children: groups.map((group) => {
-      const layout = inferAutotileLayoutKind(group);
-      const roles = rolesFromGroup(group);
-      const thumb = bodyTileOf(roles, group.memberTileIds);
-      const active = group.id === selectedGroupId;
-      const builtin = !customGroupIds.has(group.id);
-      return el("button", {
-        class: `tileset-autotile-group-chip${active ? " is-active" : ""}`,
-        attrs: { type: "button" },
-        dataset: { testid: `tileset-autotile-group-${group.id}` },
-        on: {
-          click: () => {
-            selectedGroupId = group.id;
-            pendingLayout = null;
-            selectedRole = firstEmptyRole(layout, roles);
-            lastMessage = "";
-            rerender();
-          },
-        },
-        children: [
-          tileThumb(tileset, thumb, THUMB_SIZE),
-          el("span", { class: "tileset-autotile-group-name", text: group.name }),
-          el("span", {
-            class: "tileset-autotile-layout-badge",
-            text: layoutLabel(layout),
-            dataset: { testid: `tileset-autotile-layout-badge-${group.id}` },
-          }),
-          ...(builtin
-            ? [el("span", {
-                class: "tileset-autotile-builtin-badge",
-                text: "내장",
-                dataset: { testid: `tileset-autotile-builtin-${group.id}` },
-              })]
-            : []),
-        ],
-      });
-        }),
-      }),
-    ],
-  });
-}
-
 function renderComposer(
   tileset: TilesetDef,
   group: AutotileGroup,
@@ -549,11 +534,12 @@ function renderSlotGrid(
 }
 
 function renderPassageShortcuts(tileset: TilesetDef, group: AutotileGroup, rerender: () => void): HTMLElement {
+  const current = majorityPassageMark(tileset, group.memberTileIds);
   const paint = (mark: "o" | "x" | "star", label: string, testid: string): HTMLElement =>
     el("button", {
-      class: "tileset-db-small-button",
+      class: `tileset-db-small-button${current === mark ? " active" : ""}`,
       text: label,
-      attrs: { type: "button", title: `${group.name} 멤버 칸 전부 ${label}` },
+      attrs: { type: "button", title: `${group.name} 멤버 칸 전부 ${label}`, "aria-pressed": String(current === mark) },
       dataset: { testid },
       on: {
         click: () => {
@@ -572,9 +558,17 @@ function renderPassageShortcuts(tileset: TilesetDef, group: AutotileGroup, reren
       el("span", { text: "이 블록 통행" }),
       paint("o", "통과", "tileset-autotile-passage-open"),
       paint("x", "막힘", "tileset-autotile-passage-blocked"),
-      paint("star", "위", "tileset-autotile-passage-star"),
+      paint("star", "위 ★", "tileset-autotile-passage-star"),
     ],
   });
+}
+
+function majorityPassageMark(tileset: TilesetDef, tileIds: readonly number[]): PassageMark {
+  const counts: Record<PassageMark, number> = { o: 0, x: 0, star: 0 };
+  for (const tile of tileIds) counts[passageMarkForTile(tileset, tile)] += 1;
+  if (counts.x >= counts.o && counts.x >= counts.star) return "x";
+  if (counts.star >= counts.o) return "star";
+  return "o";
 }
 
 function renderComposerActions(
