@@ -33,6 +33,7 @@ import {
   RPGZZU_MIME,
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
 import { store, type AutoSaveState } from "@/project/store";
 import type { Project } from "@/project/types";
@@ -530,6 +531,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         // 했다. 둘을 한 자리에 모으고 무엇을 내보내는지 이름에 쓴다.
         item("프로젝트 파일 내보내기...", "menu-project-export", () => void exportProjectPackage()),
         item("웹 게임 내보내기...", "menu-project-export-web", () => void doExportWebGame()),
+        item("실행형 HTML 내보내기...", "menu-project-export-standalone", () => void doExportStandaloneHtml()),
       ];
     case "tools":
       // 모달 편집기만 담는다. 되돌리기/다시 실행과 레이어 3종은 사이드바가 소유하므로 빠졌다.
@@ -911,6 +913,33 @@ async function doExportWebGame(): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     toast(`게임 내보내기 실패: ${message}`, "error");
+  }
+}
+
+/**
+ * 웹 서버 없이 더블클릭으로 도는 HTML 한 장. 웹 게임 내보내기와 재료는 같고, 에셋을 data URL 로
+ * 문서 안에 넣는다는 점만 다르다 — `file://` 에서는 옆 파일도 못 읽기 때문이다.
+ */
+async function doExportStandaloneHtml(): Promise<void> {
+  try {
+    await store.flush().catch((error) => {
+      console.error("[standalone-export] flush before export failed:", error);
+      toast("저장은 실패했지만 현재 상태로 실행형 HTML 을 만듭니다", "info");
+    });
+    toast("실행형 HTML 을 만드는 중... (에셋을 문서에 넣느라 수십 초 걸립니다)", "info");
+    const result = await createStandaloneHtmlExport(store.getCurrent());
+    downloadBlob(result.blob, result.fileName);
+    const size = (result.summary.htmlBytes / 1048576).toFixed(1);
+    const missing = result.summary.missingAssets.length;
+    toast(
+      missing === 0
+        ? `실행형 HTML 완료: ${size}MB, 에셋 ${result.summary.assetCount}개`
+        : `실행형 HTML 완료(경고): ${size}MB, 못 넣은 에셋 ${missing}개`,
+      missing === 0 ? "ok" : "info",
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    toast(`실행형 HTML 내보내기 실패: ${message}`, "error");
   }
 }
 

@@ -7,6 +7,7 @@ import { RPGZZU_EXTENSION } from "@/project/package";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
+import { readStandalonePayload } from "@/player/standalonePayload";
 import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
 import { setExportedProject } from "@/player/exportProjectStoreShim";
 import {
@@ -40,6 +41,13 @@ void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   const boot = readBootConfig();
+  // 단일 HTML 로 내보낸 게임: 프로젝트도 에셋도 이 문서 안에 있다. fetch 가 막히는 file:// 에서
+  // 돌아야 하므로 네트워크를 타는 아래 경로보다 **먼저** 본다.
+  const standalone = readStandalonePayload();
+  if (standalone) {
+    startPlayer(root, boot, deserialize(standalone.projectJson), "opened-file");
+    return;
+  }
   if (new URLSearchParams(window.location.search).has("open")) {
     openGameFilePicker(root, boot, "");
     return;

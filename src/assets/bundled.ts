@@ -1,3 +1,4 @@
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import type Phaser from "phaser";
 import { BUILTIN_SPRITE_SLICING, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import {
@@ -104,20 +105,20 @@ export function findBundledImageAsset(textureKey: string): BundledImageAsset | u
 const RAW_CHARSET_TEXTURE_SUFFIX = "__raw";
 export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void {
   const usedTextures = project ? projectBundledTextureKeys(project) : null;
-  scene.load.image(TEX_TILESET, ASSET_TILESET);
+  scene.load.image(TEX_TILESET, withInlineAsset(ASSET_TILESET));
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
-    scene.load.image(chipsetLoadTextureKey(asset.textureKey), asset.path);
+    scene.load.image(chipsetLoadTextureKey(asset.textureKey), withInlineAsset(asset.path));
   }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
-    scene.load.image(rawCharsetTextureKey(asset.textureKey), asset.path);
+    scene.load.image(rawCharsetTextureKey(asset.textureKey), withInlineAsset(asset.path));
   }
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.id)) continue;
-    scene.load.image(asset.id, asset.path);
+    scene.load.image(asset.id, withInlineAsset(asset.path));
   }
-  scene.load.image(TEX_DIALOGUE_FRAME, ASSET_DIALOGUE_FRAME);
+  scene.load.image(TEX_DIALOGUE_FRAME, withInlineAsset(ASSET_DIALOGUE_FRAME));
 
   scene.load.on("loaderror", (file: Phaser.Loader.File) => {
     if (
