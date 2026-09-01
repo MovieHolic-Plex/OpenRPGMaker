@@ -17,7 +17,27 @@ export interface GrammarProfile {
   readonly layerHomeByRole: Readonly<Record<TileGroupRole, VocabLayerHome>>;
   // 오토타일 이웃 판정 범위. 8 = inner corner 포함 variantMap(RM-TYPE 필수).
   readonly autotileNeighborhood: 4 | 8;
+  /**
+   * 테마 적격성 능력 → 그 능력을 만족하는 역할 목록. capability → role[] 역인덱스이며
+   * RoleCapabilities(역할별 속성)와는 방향이 반대다. 출처: aiPreviewThemeGrammar:110-115
+   *
+   * 표에 없는 능력은 소비처의 폴백(prop/fence/roof)으로 떨어진다. AiPreviewThemeCapability
+   * 8종 중 decorProp 이 여기에 해당한다(원본도 명시 분기가 없었다).
+   */
+  readonly themeCapabilityRoles: Readonly<Record<string, readonly string[]>>;
 }
+
+// 두 프로파일이 공유하는 값. 현행 groupsForCapability 는 프로파일을 참조하지 않고
+// 단일 매핑만 쓰므로, 양쪽에 같은 표를 주는 것이 동작 변화 0 이다.
+const SHARED_THEME_CAPABILITY_ROLES: Readonly<Record<string, readonly string[]>> = {
+  walkableFloor: ["terrain"],
+  solidBoundary: ["wall"],
+  wallFace: ["wall"],
+  roomTrim: ["building", "prop"],
+  buildingShell: ["building", "prop"],
+  doorOrEntrance: ["building", "prop"],
+  waterOrHazard: ["water"],
+};
 
 export const DEFAULT_GRAMMAR_PROFILE_ID = "rm-type";
 
@@ -45,6 +65,7 @@ export const RM_TYPE_GRAMMAR_PROFILE: GrammarProfile = {
     prop: "perCell", // 투명 배경 소품은 상위, 불투명 소품은 하위.
   },
   autotileNeighborhood: 8,
+  themeCapabilityRoles: SHARED_THEME_CAPABILITY_ROLES,
 };
 
 // MODERN-EXTERIORS — Modern Exteriors v42.3 스탬프 도시 방언.
@@ -71,6 +92,7 @@ export const MODERN_EXTERIORS_GRAMMAR_PROFILE: GrammarProfile = {
     prop: "lower",
   },
   autotileNeighborhood: 4,
+  themeCapabilityRoles: SHARED_THEME_CAPABILITY_ROLES,
 };
 
 const REGISTRY = new Map<string, GrammarProfile>([
