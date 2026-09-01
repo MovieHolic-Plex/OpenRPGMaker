@@ -186,6 +186,32 @@ export function listSearch(options: {
   return el("div", { class: "db-search db-ws-search", children: [input] });
 }
 
+/**
+ * 리렌더로 교체된 같은 `data-testid` 노드에 포커스를 되돌린다.
+ *
+ * 이 저장소의 상세 폼은 값이 바뀌면 노드를 통째로 교체한다. 그러면 방금 조작한 컨트롤이
+ * 분리되고 포커스가 `<body>` 로 떨어져, 키보드 사용자는 다음 Tab 에서 문서 처음으로
+ * 돌아간다(진영 태도 셀·치명타 체크박스에서 실측).
+ *
+ * **첫 성공에서 멈추면 안 된다.** 한 조작이 리렌더를 두 번 유발한다(직접 호출 + 스토어
+ * 구독). 실측(2026-09-01, 진영 태도 셀 Enter): 프레임 1 에서 복원이 성공하지만 약 20ms 뒤
+ * 두 번째 교체가 그 노드를 떼어내 포커스가 다시 `<body>` 로 간다. 그래서 성공 여부와
+ * 무관하게 몇 프레임 더 지켜보며, 대상이 포커스를 잃으면 새 노드로 다시 얹는다.
+ *
+ * 테스트용 fake DOM 은 `focus()`/`requestAnimationFrame` 이 없을 수 있어 있을 때만 쓴다.
+ */
+export function restoreFocusAfterRerender(testid: string, frames = 8): void {
+  if (typeof requestAnimationFrame !== "function") return;
+  const tick = (remaining: number): void => {
+    const next = document.querySelector<HTMLElement>(`[data-testid="${testid}"]`);
+    // 대상이 사라졌으면 되돌릴 자리가 없다 — 조용히 끝낸다.
+    if (!next) return;
+    if (document.activeElement !== next && typeof next.focus === "function") next.focus();
+    if (remaining > 0) requestAnimationFrame(() => tick(remaining - 1));
+  };
+  requestAnimationFrame(() => tick(frames));
+}
+
 export type ToolbarAction = {
   readonly label: string;
   readonly onClick: () => void;
@@ -194,6 +220,11 @@ export type ToolbarAction = {
   readonly disabled?: boolean;
   readonly title?: string;
   readonly testid?: string;
+  /**
+   * 좁은 툴바용 짧은 라벨("삭제")과 보조기술용 이름("적 슬롯 삭제")이 달라야 할 때 쓴다.
+   * 한 화면에 "삭제" 가 여러 개 있으면 접근명만으로는 무엇을 지우는지 구분할 수 없다.
+   */
+  readonly ariaLabel?: string;
 };
 
 /**
@@ -210,6 +241,7 @@ export function listToolbar(actions: readonly ToolbarAction[]): HTMLElement {
         type: "button",
         ...(action.disabled ? { disabled: "true" } : {}),
         ...(action.title ? { title: action.title } : {}),
+        ...(action.ariaLabel ? { "aria-label": action.ariaLabel } : {}),
       },
       ...(action.testid ? { dataset: { testid: action.testid } } : {}),
       on: { click: action.onClick },

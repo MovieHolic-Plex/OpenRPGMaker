@@ -100,9 +100,10 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
 
   const list = listPane({
     title: "몬스터 종족",
-    count: species.length,
+    // 필터가 걸리면 `보이는/전체` 로 적는다 — 필터 전 개수만 보여주면 행 0 개인데 "9개"가 된다.
+    count: query && rows.length !== species.length ? `${rows.length}/${species.length}개` : species.length,
     search: listSearch({
-      placeholder: "종족 검색",
+      placeholder: "이름 또는 ID 검색",
       value: speciesSearch,
       testid: "db-monster-species-search",
       onInput: (value) => {
@@ -628,7 +629,9 @@ function skillsByLevelCard(record: MonsterSpeciesRecord, rerender: () => void): 
         el("button", {
           class: "db-ws-btn db-ws-btn-danger",
           text: "삭제",
-          attrs: { type: "button" },
+          // 한 탭에 "삭제" 접근명이 3 개(목록·스킬 행·진화 행) 있어 보조기술에서 구분되지
+          // 않았다. 보이는 글자는 좁은 행에 맞춰 그대로 두고 접근명만 무엇을 지우는지 밝힌다.
+          attrs: { type: "button", "aria-label": `${index + 1}번째 레벨업 스킬 삭제` },
           dataset: { testid: `db-monster-species-skill-delete-${index}` },
           on: {
             click: () => {
@@ -716,7 +719,7 @@ function evolutionsCard(record: MonsterSpeciesRecord, rerender: () => void): HTM
         el("button", {
           class: "db-ws-btn db-ws-btn-danger",
           text: "삭제",
-          attrs: { type: "button" },
+          attrs: { type: "button", "aria-label": `${index + 1}번째 진화 규칙 삭제` },
           dataset: { testid: `db-monster-species-evo-delete-${index}` },
           on: {
             click: () => {

@@ -60,41 +60,65 @@ export function panel(title: string, children: HTMLElement[], gridClass?: string
   return el("fieldset", { class: gridClass ? `db-advanced-panel ${gridClass}` : "db-advanced-panel", children: [el("legend", { text: title }), ...children] });
 }
 
+/**
+ * 데이터베이스 안에서 뜨는 보조 대화상자(리소스 피커 · AI 생성 · 셀 일괄 편집…)의 공용 껍데기.
+ *
+ * 접근성 계약 세 가지를 여기서 한 번에 지킨다. 이걸 호출부마다 맡기면 실제로 갈린다 —
+ * 실측(2026-09-01): AI 생성은 포커스가 안으로 들어갔지만 리소스 피커는 들어가지 않았고,
+ * 둘 다 `role`/`aria-modal` 이 없어 스크린리더에 대화상자로 알려지지 않았다.
+ *   1. `role="dialog"` + `aria-modal` + 제목 연결
+ *   2. 열 때 포커스를 안으로, 닫을 때 부르기 전 요소로 되돌린다
+ *
+ * 버튼 클래스는 `.btn small` 을 그대로 쓴다. `db-ws-btn` 토큰 블록은 전부
+ * `.database-modal-body` 하위로 스코프돼 있고 이 대화상자는 `document.body` 에 붙기 때문에,
+ * 갈아치우면 스타일이 통째로 사라진다(UA 기본 버튼이 된다). 전역 `.btn.small { flex: 1 }`
+ * 인플레이션은 CSS 쪽에서 `.db-enemy-dialog footer` 로 한정해 되돌린다.
+ */
 export function openDialog(testid: string, title: string, content: HTMLElement[], actions: readonly { readonly label: string; readonly testid: string; readonly action?: () => void }[]): void {
   const overlay = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid } });
+  const returnFocusTo = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   const close = (): void => {
     unregisterModal(overlay);
     overlay.remove();
+    // 대화상자를 닫으면 포커스가 body 로 떨어져 다음 Tab 이 문서 처음으로 되돌아간다.
+    returnFocusTo?.focus();
   };
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) close();
   });
   registerModal(overlay, close);
-  overlay.append(
-    el("div", {
-      class: "db-enemy-dialog",
-      children: [
-        el("header", { text: title }),
-        el("main", { children: content }),
-        el("footer", {
-          children: actions.map((entry) =>
-            el("button", {
-              class: "btn small",
-              text: entry.label,
-              dataset: { testid: entry.testid },
-              on: {
-                click: () => {
-                  entry.action?.();
-                  close();
-                },
+  const titleId = `${testid}-title`;
+  const dialog = el("div", {
+    class: "db-enemy-dialog",
+    attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": titleId, tabindex: "-1" },
+    children: [
+      el("header", { text: title, attrs: { id: titleId } }),
+      el("main", { children: content }),
+      el("footer", {
+        children: actions.map((entry) =>
+          el("button", {
+            class: "btn small",
+            text: entry.label,
+            attrs: { type: "button" },
+            dataset: { testid: entry.testid },
+            on: {
+              click: () => {
+                entry.action?.();
+                close();
               },
-            })
-          ),
-        }),
-      ],
-    })
-  );
+            },
+          })
+        ),
+      }),
+    ],
+  });
+  overlay.append(dialog);
   document.body.append(overlay);
+  // 첫 조작 가능한 요소로 포커스를 옮긴다. 없으면 대화상자 자신(tabindex=-1)이 받는다.
+  const firstFocusable = dialog.querySelector<HTMLElement>(
+    'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+  );
+  (firstFocusable ?? dialog).focus();
 }
 
 export function currentEnemy(record: EnemyRecord): EnemyRecord {

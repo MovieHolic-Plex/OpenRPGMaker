@@ -19,6 +19,7 @@ import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimati
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
 import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
+import { emptyState } from "@/editor/panels/databaseWorkspace";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
@@ -127,17 +128,19 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
 
   let listEl: HTMLElement;
   let listPane: HTMLElement;
+  // 필터 통과 행은 **한 번만** 계산하고 목록·푸터가 같은 배열을 쓴다. 예전에는 목록이
+  // 자체 필터를, 푸터가 필터 전 개수를 써서 "0행에 29개" 가 나왔다. 배우 스튜디오 경로도
+  // 자체 인라인 필터(검색만, 카테고리 무시)를 들고 있어 같은 결함이 잠재해 있었다.
+  const visible = visibleRecordRows(collection, records);
   const actorStudioActive = collection === "actors" && viewModeForCollection(collection) === "list";
   if (actorStudioActive) {
-    const query = searchQueryForCollection(collection);
-    const filteredActors = (records as ActorRecord[]).filter((record) => matchesNameOrId(record.name, record.id, query));
     const studio = renderActorStudioList({
       actors: records as ActorRecord[],
-      filteredActors,
+      filteredActors: visible.map((row) => row.record as ActorRecord),
       selectedId: selected?.id,
       project: store.getCurrent(),
       search: recordSearch(collection, rerender),
-      footer: recordListFooter(records.length),
+      footer: recordListFooter(visible.length, records.length),
       toolbar: toolbar(collection, rerender),
       onSelect,
     });
@@ -147,7 +150,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     listEl.addEventListener("scroll", () => setListScrollTopForCollection(collection, listEl.scrollTop));
     detailPane.classList.add("db-studio-inspector-pane");
   } else {
-    listEl = recordList(collection, records, onSelect);
+    listEl = recordList(collection, records, visible, onSelect, rerender);
     listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
     const chips = categoryFilterChips(collection, rerender);
     listPane.append(
@@ -155,7 +158,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
       recordSearch(collection, rerender),
       ...(chips ? [chips] : []),
       listEl,
-      recordListFooter(records.length),
+      recordListFooter(visible.length, records.length),
       toolbar(collection, rerender),
     );
   }
@@ -354,6 +357,9 @@ function deleteButton(collection: DatabaseCollection, rerender: () => void): HTM
   const button = el("button", {
     class: "btn danger small",
     text: DELETE_IDLE_LABEL,
+    // 탭마다 "삭제" 가 여러 개(레코드 · 하위 행 · 페이지)라 접근명만으로는 무엇을 지우는지
+    // 알 수 없다. 보이는 글자는 좁은 툴바에 맞춰 두고 접근명에 컬렉션을 밝힌다.
+    attrs: { "aria-label": `선택한 ${COLLECTION_LABELS[collection]} 삭제` },
     dataset: { testid: "db-delete-selected" },
     on: {
       click: () => {
@@ -408,8 +414,11 @@ function deleteButton(collection: DatabaseCollection, rerender: () => void): HTM
 }
 
 function recordSearch(collection: DatabaseCollection, rerender: () => void): HTMLElement {
+  // 문구는 그룹 안에서 통일한다 — 같은 동작(matchesNameOrId)에 "레코드 검색"/"종족 검색"/
+  // "이름 또는 ID 검색" 세 문구가 섞여 있었다. 실제 술어를 그대로 적은 쪽으로 모은다.
+  const placeholder = "이름 또는 ID 검색";
   const input = el("input", {
-    attrs: { type: "search", placeholder: "레코드 검색" },
+    attrs: { type: "search", placeholder, "aria-label": placeholder },
     value: searchQueryForCollection(collection),
   });
   input.addEventListener("input", () => {
@@ -440,11 +449,17 @@ type VisibleRow = {
   readonly visibleIndex: number;
 };
 
-function recordList(
+/**
+ * 필터(카테고리 칩 + 검색어)를 통과한 행만 고른다.
+ *
+ * 목록 렌더와 카운트 배지가 **같은 술어**를 써야 한다. 이 함수를 분리하기 전에는
+ * `recordList` 안에서만 필터링하고 푸터에는 `records.length`(필터 전)를 넘겨서,
+ * 없는 이름을 검색하면 행 0 개인데 배지가 "29개"라고 말했다(2026-09-01 실측).
+ */
+function visibleRecordRows(
   collection: DatabaseCollection,
-  records: DatabaseRecords[DatabaseCollection],
-  onSelect: (id: string) => void
-): HTMLElement {
+  records: DatabaseRecords[DatabaseCollection]
+): VisibleRow[] {
   const searchQuery = searchQueryForCollection(collection);
   // 저장된 필터 id가 현재 컬렉션의 칩 목록에 없으면 'all'로 취급한다(손상/낡은
   // localStorage 값에서도 크래시 없이 전체 목록을 보여준다).
@@ -457,6 +472,60 @@ function recordList(
     if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
     visibleIndex += 1;
     visible.push({ record, originalIndex, visibleIndex });
+  }
+  return visible;
+}
+
+function recordList(
+  collection: DatabaseCollection,
+  records: DatabaseRecords[DatabaseCollection],
+  /** 호출부가 계산해 넘긴다 — 푸터 카운트와 같은 배열이어야 한다. */
+  visible: readonly VisibleRow[],
+  onSelect: (id: string) => void,
+  rerender: () => void
+): HTMLElement {
+  const searchQuery = searchQueryForCollection(collection);
+  const categoryFilter = effectiveCategoryFilter(collection);
+
+  // 필터 결과가 0 이면 가상 목록 대신 빈 상태를 그린다. 빈 `.db-list` 만 남기면
+  // 목록 창이 통째로 붕괴해(적 그룹에서 4px 로 실측) 검색을 지울 방법도 안 보인다.
+  if (visible.length === 0) {
+    const filtered = searchQuery.length > 0 || categoryFilter !== "all";
+    // `db-ws-list` 도 함께 붙인다 — 빈 상태 중앙 정렬 규칙이 `.db-ws-list.db-ws-list-empty`
+    // 로 선언돼 있어서 `db-list db-ws-list-empty` 만으로는 정렬이 적용되지 않는다.
+    return el("div", {
+      class: "db-list db-ws-list db-ws-list-empty",
+      children: [
+        filtered
+          ? emptyState({
+            icon: "⌕",
+            title: "검색 결과가 없습니다",
+            // 컬렉션 이름을 조사와 붙이면 "몬스터이(가)" 처럼 어색해진다. 이름은 목록 창
+            // 제목이 이미 말하고 있으므로 본문은 조사 없이 "항목"으로 둔다.
+            body: searchQuery.length > 0
+              ? `"${searchQuery}" 와 일치하는 항목이 없습니다.`
+              : "이 분류에 해당하는 항목이 없습니다.",
+            compact: true,
+            testid: "db-record-list-empty",
+            action: {
+              label: "필터 지우기",
+              onClick: () => {
+                setSearchQueryForCollection(collection, "");
+                setCategoryFilterForCollection(collection, "all");
+                rerender();
+              },
+              testid: "db-record-list-empty-clear",
+            },
+          })
+          : emptyState({
+            icon: "○",
+            title: `${COLLECTION_LABELS[collection]} — 아직 없습니다`,
+            body: "[+ 추가]로 첫 레코드를 만드세요.",
+            compact: true,
+            testid: "db-record-list-empty",
+          }),
+      ],
+    });
   }
 
   // 갤러리 모드 = 카드 그리드 + columns 가상화, 리스트 모드 = 기존 행 렌더 그대로.
@@ -740,10 +809,19 @@ function recordForm(
   }
 }
 
-function recordListFooter(count: number): HTMLElement {
+/**
+ * 목록 카운트. 필터가 걸려 있으면 `보이는/전체` 로 적어 "0개를 보여주면서 29개라고 말하는"
+ * 상태를 만들지 않는다.
+ */
+function recordListFooter(visibleCount: number, totalCount: number): HTMLElement {
+  const filtered = visibleCount !== totalCount;
   return el("div", {
     class: "oprn-record-list-footer",
-    children: [el("span", { class: "oprn-record-count", text: `${count}개` })],
+    children: [el("span", {
+      class: "oprn-record-count",
+      text: filtered ? `${visibleCount}/${totalCount}개` : `${totalCount}개`,
+      ...(filtered ? { attrs: { title: `필터로 ${totalCount}개 중 ${visibleCount}개만 보입니다` } } : {}),
+    })],
   });
 }
 

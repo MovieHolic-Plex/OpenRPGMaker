@@ -36,6 +36,7 @@ import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
 import type { EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { classicEnemyFormation } from "@/battle/battleBattlers";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { simulateBattle } from "@/battle/simulate";
@@ -124,16 +125,24 @@ function identityPanel(record: TroopRecord, rerender: () => void): HTMLElement {
       testid: "db-troop-generate-name",
       title: "배치한 적 이름을 이어 붙여 그룹 이름을 만듭니다",
       onClick: () => {
-        updateDatabaseRecord("troops", record.id, { name: generatedTroopName(record) });
+        // 사람이 쓴 이름을 즉시 덮어쓴다. updateDatabaseRecord 가 스냅샷을 남기므로 되돌릴
+        // 수는 있지만, 그 사실을 알리지 않으면 저작물이 조용히 사라진 것처럼 보인다.
+        const previous = record.name;
+        const next = generatedTroopName(record);
+        updateDatabaseRecord("troops", record.id, { name: next });
+        toast(`이름을 "${next}"로 바꿨습니다 (이전 "${previous}") — Ctrl+Z로 되돌릴 수 있습니다.`, "ok");
         rerender();
       },
     },
     {
+      // 라벨은 e2e 계약이다(oprn-database-battle-records.spec.ts 가 "배경 변경" 을 요구).
+      // "차례로 넘긴다"는 사실은 title 과 아래 토스트가 말한다.
       label: "배경 변경",
       testid: "db-troop-change-background",
       title: "지형 레코드에 등록된 전투 배경을 차례로 넘깁니다",
       onClick: () => {
         updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: nextBattleBackground(record.previewBackgroundResourceId) });
+        toast("전투 배경을 다음 것으로 넘겼습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
         rerender();
       },
     },
@@ -332,6 +341,9 @@ function memberEditor(
     },
     {
       label: "삭제",
+      // 이 탭에는 "삭제" 가 3 개(적 그룹 · 적 슬롯 · 전투 이벤트 페이지)라 접근명으로는
+      // 구분되지 않았다. 보이는 글자는 좁은 툴바에 맞춰 두고 접근명만 구체화한다.
+      ariaLabel: "선택한 적 슬롯 삭제",
       kind: "danger",
       testid: "db-troop-member-delete",
       disabled: members.length === 0,

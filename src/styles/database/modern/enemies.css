@@ -134,7 +134,9 @@
   align-items: center;
   display: grid;
   gap: 8px;
-  grid-template-columns: minmax(64px, 84px) minmax(0, 1fr);
+  /* 최소 폭을 76px 로 올린다 — 64px 로는 "이동 간격(ms)"(84px 필요) 같은 라벨이 잘렸다.
+     상한은 그대로 둬서 입력 칸이 더 좁아지지는 않게 한다. */
+  grid-template-columns: minmax(76px, 84px) minmax(0, 1fr);
   margin: 0;
   min-width: 0;
 }

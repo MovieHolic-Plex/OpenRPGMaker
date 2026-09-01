@@ -23,6 +23,16 @@ export function textControl(label: string, value: string, onInput: (value: strin
 // 이게 없으면 6.25(=1/16) 같은 값이 브라우저 검증에서 :invalid 로 표시된다.
 export type NumberFieldBounds = { readonly min: number; readonly max: number; readonly step?: number };
 
+/**
+ * 스위치가 꺼져 있어 지금은 쓰이지 않는 값을 잠글 때 쓴다. 잠금은 `disabled` 하나로
+ * 끝내지 말고 **왜 잠겼는지**를 `disabledReason` 으로 같이 준다 — 이유 없는 회색 입력은
+ * 고장으로 읽힌다.
+ */
+export type NumberFieldOptions = {
+  readonly disabled?: boolean;
+  readonly disabledReason?: string;
+};
+
 const NUMBER_STEPPER_ICONS: Readonly<Record<"dec" | "inc", readonly SvgNodeSpec[]>> = {
   dec: [{ tag: "path", attrs: { d: "M5 11h12" } }],
   inc: [
@@ -118,13 +128,18 @@ export function numberField(
   testid: string,
   value: number,
   onInput: (value: number) => void,
-  bounds?: NumberFieldBounds
+  bounds?: NumberFieldBounds,
+  options?: NumberFieldOptions
 ): HTMLElement {
   const attrs: Record<string, string> = { type: "number" };
   if (bounds) {
     attrs.min = String(bounds.min);
     attrs.max = String(bounds.max);
     if (bounds.step !== undefined) attrs.step = String(bounds.step);
+  }
+  if (options?.disabled) {
+    attrs.disabled = "true";
+    if (options.disabledReason) attrs.title = options.disabledReason;
   }
   const input = el("input", { attrs, value, dataset: { testid } });
   const normalize = (raw: number): number => {
@@ -145,6 +160,11 @@ export function numberField(
     children: [numberStepperIcon("inc")],
   });
   const syncButtonState = (): void => {
+    if (options?.disabled) {
+      decrement.disabled = true;
+      increment.disabled = true;
+      return;
+    }
     const current = normalize(Number(input.value));
     decrement.disabled = bounds !== undefined && current <= bounds.min;
     increment.disabled = bounds !== undefined && current >= bounds.max;
@@ -173,7 +193,10 @@ export function numberField(
 
   return field(
     label,
-    el("span", { class: "db-number-stepper", children: [decrement, input, increment] })
+    el("span", {
+      class: `db-number-stepper${options?.disabled ? " is-disabled" : ""}`,
+      children: [decrement, input, increment],
+    })
   );
 }
 
@@ -343,7 +366,12 @@ function faceChipAvatar(actor: AvatarChipActor): HTMLElement {
 }
 
 export function field(label: string, control: HTMLElement): HTMLElement {
-  return el("label", { class: "db-field", children: [el("span", { text: label }), control] });
+  // 라벨 칸은 `text-overflow: ellipsis` 라 좁아지면 글자가 잘린다("이동 간격(ms)" 가
+  // "이동 간격(..." 로 실측됐다). 잘려도 전체 문구에 닿을 수 있게 title 을 항상 건다.
+  return el("label", {
+    class: "db-field",
+    children: [el("span", { text: label, attrs: { title: label } }), control],
+  });
 }
 
 export function emptyToUndefined(value: string): string | undefined {

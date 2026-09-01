@@ -124,6 +124,17 @@
   padding: 0 10px 10px;
 }
 
+/* 스코프 없는 전역 `.btn.small { flex: 1 }`(tabs-b-resource-manager.css)이 여기까지 새어
+   「선택/취소」 같은 버튼을 대화상자 전폭 바로 만든다. 이 대화상자는 `document.body` 에
+   붙어서 `.database-modal-body` 로 스코프된 되돌림 규칙이 닿지 않으므로 여기서 되돌린다.
+   (버튼을 `db-ws-btn` 으로 갈아치우는 우회는 쓰지 않는다 — 그 토큰 블록도 전부
+   `.database-modal-body` 하위라 스타일이 통째로 사라진다.) */
+.db-enemy-dialog footer .btn.small {
+  flex: 0 0 auto;
+  /* WCAG 2.5.8 최소 대상 크기. 모달 안 규칙은 여기까지 닿지 않는다. */
+  min-height: 24px;
+}
+
 .db-enemy-dialog textarea {
   background-color: var(--oprn-enemy-table-bg);
   border: 1px solid var(--border-default);

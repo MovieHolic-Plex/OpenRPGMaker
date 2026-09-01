@@ -1,0 +1,123 @@
+{
+  "recordSearchNoResult": {
+    "enemies": {
+      "found": true,
+      "placeholder": "이름 또는 ID 검색",
+      "ariaLabel": "이름 또는 ID 검색",
+      "rows": 0,
+      "listH": 162,
+      "hasNoResultCopy": true,
+      "paneTextTail": "몬스터⌕검색 결과가 없습니다\"zzz존재하지않음zzz\" 와 일치하는 항목이 없습니다.필터 지우기0/29개+ 추가복제삭제AI로 생성갤러리목록"
+    },
+    "monster-species": {
+      "found": true,
+      "placeholder": "이름 또는 ID 검색",
+      "ariaLabel": "이름 또는 ID 검색",
+      "rows": 0,
+      "listH": 506,
+      "hasNoResultCopy": true,
+      "paneTextTail": "몬스터 종족0/9개⌕검색 결과가 없습니다\"zzz존재하지않음zzz\" 와 일치하는 종족이 없습니다.+ 추가복제삭제"
+    },
+    "troops": {
+      "found": true,
+      "placeholder": "이름 또는 ID 검색",
+      "ariaLabel": "이름 또는 ID 검색",
+      "rows": 0,
+      "listH": 162,
+      "hasNoResultCopy": true,
+      "paneTextTail": "적 그룹⌕검색 결과가 없습니다\"zzz존재하지않음zzz\" 와 일치하는 항목이 없습니다.필터 지우기0/6개+ 추가복제삭제갤러리목록"
+    },
+    "factions": {
+      "found": true,
+      "placeholder": "이름 또는 ID 검색",
+      "ariaLabel": "이름 또는 ID 검색",
+      "rows": 0,
+      "listH": 616,
+      "hasNoResultCopy": true,
+      "paneTextTail": "진영0/2개⌕검색 결과가 없습니다“zzz존재하지않음zzz”와 일치하는 진영이 없습니다.+ 추가복제삭제"
+    }
+  },
+  "tabSearchNoResult": {
+    "containerClass": "",
+    "visibleTabButtons": -1,
+    "containerHeight": -1,
+    "textAfterSearchBox": "",
+    "hasNoResultCopy": false
+  },
+  "factions.matrixAria": {
+    "gridClass": "db-faction-matrix-rowgroup",
+    "gridRole": "row",
+    "cellRole": "gridcell",
+    "ancestorChain": [
+      {
+        "cls": "db-faction-matrix-rowgroup",
+        "role": "row"
+      },
+      {
+        "cls": "db-faction-matrix",
+        "role": "grid"
+      },
+      {
+        "cls": "db-faction-matrix-scroll",
+        "role": null
+      },
+      {
+        "cls": "db-ws-card-body",
+        "role": null
+      },
+      {
+        "cls": "db-ws-card",
+        "role": null
+      }
+    ],
+    "hasRowRole": true
+  },
+  "factions.focusAfterActivate": {
+    "focusedBefore": true,
+    "labelBefore": "player와 enemy: -1 적, 기본값",
+    "labelAfter": "player와 enemy: 0 중립, 저작됨",
+    "valueChanged": true,
+    "sameNodeAfterRender": false,
+    "focusStillOnCell": true,
+    "activeAfter": "button.db-faction-stance-cell"
+  },
+  "narrow1280": {
+    "enemies": {
+      "w": 1034,
+      "h": 672,
+      "overflowX": false,
+      "scrollW": 1024,
+      "clientW": 1024,
+      "verticalHidden": 0,
+      "truncatedLeaves": 1
+    },
+    "monster-species": {
+      "w": 1034,
+      "h": 672,
+      "overflowX": false,
+      "scrollW": 1024,
+      "clientW": 1024,
+      "verticalHidden": 0,
+      "truncatedLeaves": 1
+    },
+    "troops": {
+      "w": 1034,
+      "h": 672,
+      "overflowX": false,
+      "scrollW": 1024,
+      "clientW": 1024,
+      "verticalHidden": 44,
+      "truncatedLeaves": 1
+    },
+    "factions": {
+      "w": 1034,
+      "h": 672,
+      "overflowX": false,
+      "scrollW": 1024,
+      "clientW": 1024,
+      "verticalHidden": 0,
+      "truncatedLeaves": 0
+    }
+  },
+  "__pageErrors": []
+}

@@ -77,7 +77,7 @@ try {
   manifest.perType = perType;
   console.log("[counts]", JSON.stringify(perType));
 
-  const search = page.getByPlaceholder("레코드 검색");
+  const search = page.getByPlaceholder("이름 또는 ID 검색");
 
   // 종류별 대표 레코드 한 장씩. 목록 행의 data-record-name 으로 실제 이름을 뽑아 검색한다.
   for (const [type, label] of Object.entries(ITEM_TYPE_LABELS)) {
@@ -108,7 +108,7 @@ try {
       console.log(`[skip] ${slot}: 레코드를 못 찾음`);
       continue;
     }
-    const equipSearch = page.getByPlaceholder("레코드 검색");
+    const equipSearch = page.getByPlaceholder("이름 또는 ID 검색");
     await equipSearch.fill(name);
     const row = page.locator(`[data-testid^='db-record-row-'][data-record-name='${name.replace(/'/g, "\\'")}']`).first();
     await row.waitFor({ state: "visible", timeout: 15_000 });

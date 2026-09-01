@@ -41,8 +41,11 @@ export function renderTroopBattleEventPanel(record: TroopRecord, rerender: () =>
       }),
       eventToolbar(record, page, rerender),
       qualityStrip(page),
-      pageTabs(record, page, rerender),
-      conditionStrip(record, page, rerender),
+      // 페이지가 0 개면 탭 줄과 조건 줄은 **아예 만들지 않는다**. `hidden` 속성으로 숨기려던
+      // 시도는 실패한다 — UA 의 `[hidden]{display:none}` 이 이 두 클래스의 author
+      // `display:flex`(modern/troops.css:682,718)에 지고, 빈 5px 구분선과 16px 빈 알약이
+      // 남는다(headless Chromium 실측). 이 저장소에 같은 함정 기록이 네 곳 있다.
+      ...(page ? [pageTabs(record, page, rerender), conditionStrip(record, page, rerender)] : []),
       el("div", {
         class: "db-troop-event-details",
         dataset: { testid: "db-troop-event-details" },
@@ -80,12 +83,8 @@ function emptyPageControls(record: TroopRecord, rerender: () => void): HTMLEleme
         testid: "db-troop-event-empty-add-page",
         onClick: () => addPage(record, rerender),
       },
-      secondary: {
-        label: "보상 흐름 템플릿",
-        kind: "ghost",
-        testid: "db-troop-event-empty-template",
-        onClick: () => applyPayoffTemplate(record, undefined, rerender),
-      },
+      // 두 번째 액션은 두지 않는다 — 바로 위 툴바에 같은 「보상 흐름 템플릿」 버튼이 있어서
+      // 페이지 0 개일 때 같은 버튼이 화면에 두 번 떴다(접근명 중복 2 건으로 실측).
     }),
   ];
 }
@@ -132,7 +131,8 @@ function eventToolbar(record: TroopRecord, page: BattleEventPageRecord | undefin
       inertButton("붙여넣기", "전투 이벤트 페이지 클립보드는 아직 없습니다 — 명령 목록에서 개별 명령을 붙여넣으세요"),
       button("삭제", "db-troop-event-delete-page", () => {
         if (page) removePage(record, page.id, rerender);
-      }, "danger", page ? "지금 보고 있는 페이지를 지웁니다 (Ctrl+Z 로 복구)" : "지울 페이지가 없습니다", !page),
+      }, "danger", page ? "지금 보고 있는 페이지를 지웁니다 (Ctrl+Z 로 복구)" : "지울 페이지가 없습니다", !page,
+      "전투 이벤트 페이지 삭제"),
     ],
   });
 }
@@ -166,12 +166,18 @@ function qualityStrip(page: BattleEventPageRecord | undefined): HTMLElement {
   });
 }
 
+/**
+ * 페이지 탭 줄. 호출부가 페이지가 있을 때만 부른다.
+ *
+ * 예전에는 페이지 0 개일 때 비활성 "1" 칩을 그려서, 헤더가 "페이지 0개" 라고 말하는 옆에서
+ * 1 번 페이지가 있는 것처럼 보였다(모순 실측 2026-09-01).
+ */
 function pageTabs(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): HTMLElement {
   return el("div", {
     class: "db-troop-event-page-tabs",
-    children: record.battleEventPages.length > 0
-      ? record.battleEventPages.map((entry, index) => pageTab(record, entry, index, entry.id === page?.id, rerender))
-      : [el("button", { class: "db-troop-event-page-tab active", attrs: { type: "button", disabled: "true" }, text: "1" })],
+    children: record.battleEventPages.map((entry, index) =>
+      pageTab(record, entry, index, entry.id === page?.id, rerender)
+    ),
   });
 }
 
@@ -190,12 +196,13 @@ function pageTab(record: TroopRecord, entry: BattleEventPageRecord, index: numbe
   }) as HTMLButtonElement;
 }
 
+/**
+ * 조건 줄. 호출부가 페이지가 있을 때만 부른다 — 값 없는 "조건 (없음)" 카드는 바로 아래
+ * 빈 상태와 같은 사실을 한 번 더 말하면서 조작할 수 있는 것처럼 보였다.
+ */
 function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): HTMLElement {
   if (!page) {
-    return el("div", {
-      class: "db-troop-event-condition-strip",
-      children: [el("span", { text: "조건" }), el("strong", { text: "(없음)" })],
-    });
+    return el("div", { class: "db-troop-event-condition-strip" });
   }
   const conditionKind = kindOfBattleEventCondition(page.conditions[0]);
   const extras =
@@ -344,12 +351,14 @@ function button(
   onClick: () => void,
   kind: "primary" | "ghost" | "danger" = "ghost",
   title?: string,
-  disabled = false
+  disabled = false,
+  /** 같은 탭에 동명 버튼이 여러 개일 때 보조기술용 이름만 구체화한다. */
+  ariaLabel?: string
 ): HTMLButtonElement {
   const node = el("button", {
     class: `db-ws-btn db-ws-btn-${kind} db-troop-event-tool`,
     text: label,
-    attrs: { type: "button", ...(title ? { title } : {}) },
+    attrs: { type: "button", ...(title ? { title } : {}), ...(ariaLabel ? { "aria-label": ariaLabel } : {}) },
     dataset: { testid },
   }) as HTMLButtonElement;
   node.disabled = disabled;

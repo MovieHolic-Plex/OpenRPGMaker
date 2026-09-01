@@ -113,11 +113,16 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
       })
     : null;
 
+  // 이 대화상자는 databaseEnemyRecordSupport 의 openDialog 를 쓰지 않고 직접 조립한다
+  // (생성 진행 상태를 버튼에 반영해야 해서). 그래서 접근성 속성도 여기서 직접 지킨다 —
+  // 실측(2026-09-01)에서 role/aria-modal 이 없어 스크린리더에 대화상자로 알려지지 않았다.
+  const titleId = `db-ai-generate-title-${kind}`;
   overlay.append(
     el("div", {
       class: "db-enemy-dialog",
+      attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": titleId, tabindex: "-1" },
       children: [
-        el("header", { text: `AI로 ${label} 생성` }),
+        el("header", { text: `AI로 ${label} 생성`, attrs: { id: titleId } }),
         el("main", {
           children: [
             el("label", { children: [el("span", { text: `만들고 싶은 ${label} 설명` }), brief] }),

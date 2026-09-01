@@ -155,11 +155,17 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
         value: String(hue),
         dataset: { testid: `${prefix}-hue` },
       }) as HTMLInputElement;
+      // 슬라이더에 수치가 없으면 뒤 패널의 「그래픽 Hue」 스테퍼와 같은 값인지 확인할 방법이 없다.
+      const hueReadout = el("output", { class: "db-resource-picker-hue-value", text: `${hue}°` });
       hueInput.addEventListener("input", () => {
         hue = clampHue(Number(hueInput.value));
+        hueReadout.textContent = `${hue}°`;
         refreshPreview();
       });
-      indexPanel.append(el("label", { class: "db-resource-picker-hue", children: [el("span", { text: "색조" }), hueInput] }));
+      indexPanel.append(el("label", {
+        class: "db-resource-picker-hue",
+        children: [el("span", { text: "색조" }), hueInput, hueReadout],
+      }));
     }
   };
 
@@ -170,7 +176,8 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
 
   const actions: { readonly label: string; readonly testid: string; readonly action?: () => void }[] = [
     {
-      label: "OK",
+      // 한국어 UI 안에서 이 대화상자만 OK/Cancel 였다("지우기" 만 한글이라 더 어긋났다).
+      label: "선택",
       testid: `${prefix}-ok`,
       action: () => {
         if (!selectedId) return;
@@ -181,7 +188,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
         });
       },
     },
-    { label: "Cancel", testid: `${prefix}-cancel` },
+    { label: "취소", testid: `${prefix}-cancel` },
   ];
   if (options.allowClear) {
     actions.unshift({

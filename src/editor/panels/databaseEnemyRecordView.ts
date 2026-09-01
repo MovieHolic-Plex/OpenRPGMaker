@@ -1,7 +1,7 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
-import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
+import { databaseFieldSupport, databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
@@ -24,7 +24,7 @@ import type { EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
-import { detailHero, emptyState, listToolbar, noticeBar, sectionCard } from "@/editor/panels/databaseWorkspace";
+import { detailHero, emptyState, listToolbar, noticeBar, restoreFocusAfterRerender, sectionCard } from "@/editor/panels/databaseWorkspace";
 // JS import 로 넣는다 — 번들 순서상 index.css 의 studio-theme.css 뒤에 오므로,
 // studio-theme 이 남긴 `grid-area: combat !important` 같은 잔재를 !important 남발 없이 이긴다.
 // (databaseUtilityRecordViews.ts 가 modern/utility-records.css 를 넣는 방식과 동일.)
@@ -99,7 +99,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
             enemyCard("그래픽", "graphic", graphicFields(record, rerender)),
             enemyCard("종족", "species", speciesFields(record, rerender), { hint: "포획해 키우는 몬스터의 원본" }),
             enemyCard("보상", "rewards", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })]),
-            enemyCard("치명타 %", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record) })]),
+            enemyCard("치명타 %", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: "N 을 넣으면 1/N 확률로 치명타" }),
             enemyCard("옵션", "options", optionFields(record)),
             enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }),
             enemyCard("상태 유효도", "state", rateRows(record, "state")),
@@ -623,14 +623,23 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     el("div", {
       class: "db-enemy-graphic-flags",
       children: [
-        checkboxField("투명", "db-field-enemy-transparent", record.transparent, (transparent) => {
-          updateDatabaseRecord("enemies", record.id, { transparent });
-          updateGraphicPreviewState(transparent, currentEnemy(record).flying);
-        }),
-        checkboxField("비행", "db-field-enemy-flying", record.flying, (flying) => {
-          updateDatabaseRecord("enemies", record.id, { flying });
-          updateGraphicPreviewState(currentEnemy(record).transparent, flying);
-        }),
+        // 두 필드는 런타임이 읽지 않는다(databaseFieldSupport: authoringOnly). 라벨 글자를
+        // 늘려 그 사실을 적으려다 좁은 flags 행에서 30px 넘쳐 잘렸다(적합성 게이트 clipped
+        // 1→2 로 실측). 결론은 바로 아래 안내 요약이 말하므로 라벨은 짧게 두고 툴팁만 단다.
+        withTitle(
+          checkboxField("투명", "db-field-enemy-transparent", record.transparent, (transparent) => {
+            updateDatabaseRecord("enemies", record.id, { transparent });
+            updateGraphicPreviewState(transparent, currentEnemy(record).flying);
+          }),
+          databaseFieldSupport("transparent").help,
+        ),
+        withTitle(
+          checkboxField("비행", "db-field-enemy-flying", record.flying, (flying) => {
+            updateDatabaseRecord("enemies", record.id, { flying });
+            updateGraphicPreviewState(currentEnemy(record).transparent, flying);
+          }),
+          databaseFieldSupport("flying").help,
+        ),
       ],
     }),
     textField("리소스", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
@@ -667,16 +676,35 @@ function rewardFields(record: EnemyRecord): HTMLElement[] {
   ];
 }
 
-function criticalFields(record: EnemyRecord): HTMLElement[] {
+function criticalFields(record: EnemyRecord, rerender: () => void): HTMLElement[] {
+  // 「사용」이 꺼져 있으면 확률 입력을 잠근다. 잠그기 전에는 꺼진 상태에서도 값이 편집을
+  // 받아들여(30 → 7 실측) 저장은 되지만 전투에는 아무 영향이 없었다 — 죽은 입력이다.
+  // 같은 패턴을 진영 탭의 「처치당 가중치」가 이미 쓰고 있다.
   return [
-    checkboxField("사용", "db-field-enemy-critical-enabled", record.criticalHit.enabled, (enabled) =>
-      updateDatabaseRecord("enemies", record.id, { criticalHit: { ...currentEnemy(record).criticalHit, enabled } })
-    ),
-    numberField("1 /", "db-field-enemy-critical-one-in", record.criticalHit.oneIn, (oneIn) =>
+    checkboxField("사용", "db-field-enemy-critical-enabled", record.criticalHit.enabled, (enabled) => {
+      updateDatabaseRecord("enemies", record.id, { criticalHit: { ...currentEnemy(record).criticalHit, enabled } });
+      // 확률 입력의 잠금 상태가 이 체크박스에 달려 있으므로 폼을 다시 그린다. 리렌더는 이
+      // 체크박스 노드를 교체하므로 포커스가 body 로 떨어진다 — 같은 좌표의 새 노드로 되돌린다.
+      rerender();
+      restoreFocusAfterRerender("db-field-enemy-critical-enabled");
+    }),
+    // 라벨은 "1/N" 까지만 — 좁은 치명타 행에서 "확률 1/N" 은 30px 넘쳐 잘렸다(게이트 실측).
+    // 뜻은 카드 힌트가 문장으로 말한다. 원래 라벨 "1 /" 은 끊긴 조각처럼 읽혔다.
+    numberField("1/N", "db-field-enemy-critical-one-in", record.criticalHit.oneIn, (oneIn) =>
       updateDatabaseRecord("enemies", record.id, { criticalHit: { ...currentEnemy(record).criticalHit, oneIn } }),
-      { min: 1, max: 999 }
+      { min: 1, max: 999 },
+      {
+        disabled: !record.criticalHit.enabled,
+        disabledReason: "[사용]을 켜면 치명타 확률을 편집할 수 있습니다",
+      }
     ),
   ];
+}
+
+/** 라벨 글자를 늘리지 않고 설명만 붙인다 — 좁은 행에서 절단을 만들지 않는 방법. */
+function withTitle(node: HTMLElement, title: string): HTMLElement {
+  node.title = title;
+  return node;
 }
 
 function optionFields(record: EnemyRecord): HTMLElement[] {

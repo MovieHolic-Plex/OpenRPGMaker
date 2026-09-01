@@ -114,6 +114,30 @@
   box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
 }
 
+/* 잠긴 스테퍼는 눈으로도 잠겨 보여야 한다. `disabled` 만 걸고 색을 그대로 두면
+   (진영 「처치당 가중치」가 그랬다 — opacity 1.0 실측) 사용자는 입력이 고장 난 줄 안다.
+   대비 하한을 지키려고 텍스트는 text-2 로 두고 배경만 inset 으로 낮춘다. */
+.database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled {
+  background-color: var(--db-studio-inset);
+  border-style: dashed;
+}
+
+.database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled > input[type="number"] {
+  background-color: transparent;
+  color: var(--db-studio-text-2);
+  cursor: not-allowed;
+}
+
+/* `background:` 단축은 쓰지 않는다 — background-image 를 none 으로 리셋해 select 의
+   chevron(두 겹 background-image)이 사라진다. databaseSelectChevronGuard 가 이걸 잡는다. */
+.database-modal-backdrop .database-modal-window input:disabled,
+.database-modal-backdrop .database-modal-window select:disabled {
+  background-color: var(--db-studio-inset);
+  border-style: dashed;
+  color: var(--db-studio-text-2);
+  cursor: not-allowed;
+}
+
 .database-modal-backdrop .database-modal-window .db-number-stepper-button {
   align-items: center;
   background: var(--db-studio-inset);

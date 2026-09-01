@@ -347,6 +347,13 @@
   opacity: 1;
 }
 
+/* 탭 검색 무결과 안내. 사이드바가 통째로 빈 공백이 되던 자리를 채운다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search-empty {
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin: 4px 2px 0;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus {
   border-color: var(--db-studio-accent, #4A57D6);
   box-shadow: 0 0 0 2px rgba(74,87,214,.16);
