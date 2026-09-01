@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openResourceModal } from "@/editor/panels/resourceModal";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -35,6 +36,7 @@ beforeEach(() => {
 
 afterEach(() => {
   document.querySelector("[data-testid='database-modal']")?.remove();
+  document.querySelector("[data-testid='resource-modal']")?.remove();
   resetModalStackForTest();
   restoreDom?.();
   restoreDom = undefined;
@@ -89,6 +91,21 @@ describe("데이터베이스 중첩 다이얼로그의 Escape 계층", () => {
     // 계층이 하나씩 벗겨진다 — 중첩창이 사라진 뒤의 Escape 는 데이터베이스 몫이다.
     dispatchEscape();
     expect(exists("database-modal")).toBe(false);
+  });
+
+  // 도크 모드 백드롭은 pointer-events: none 이라 데이터베이스를 켠 채로 툴바의
+  // 리소스 관리자를 열 수 있다. 그때도 Escape 는 위층 창 몫이다.
+  it("리소스 관리자를 데이터베이스 위에 열어도 Escape 는 리소스 관리자만 닫는다", () => {
+    openDatabaseModal("actors");
+    openResourceModal();
+    expect(exists("resource-modal")).toBe(true);
+
+    dispatchEscape();
+
+    expect({ nested: exists("resource-modal"), database: exists("database-modal") }).toEqual({
+      nested: false,
+      database: true,
+    });
   });
 
   it("속성 최대 개수 다이얼로그도 같은 계층 규칙을 따른다", () => {
