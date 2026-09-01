@@ -52,6 +52,16 @@ export function defaultSkillRecords(): SkillRecord[] {
     }),
     skill("skill_fire", "화염", "enemy", 30, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "fire" }),
     skill("skill_water", "물대포", "enemy", 28, "anim_magic", "물 타입 공격에 대응하는 기본 기술입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "water" }),
+    // 적 전용 속성 공격. 적마다 11개씩 저작된 속성 저항은 적이 속성 공격을 해야만
+    // 의미를 갖는데, 기존에는 fire/water/grass 3종뿐이라 나머지 저항이 전부 사문이었다.
+    // 아이템 효과 스킬(skill_item_thunder_stone = "뇌전석 효과")을 적 기술로 재사용하면
+    // 드래곤의 기술 이름이 "뇌전석 효과"로 뜬다. 그래서 별도 레코드를 둔다.
+    skill("skill_ice", "빙결", "enemy", 30, "anim_gen_ice_shatter", "얼음 속성으로 적을 얼립니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "ice" }),
+    skill("skill_thunder", "낙뢰", "enemy", 30, "anim_gen_thunder_strike", "번개 속성으로 적을 내리칩니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "thunder" }),
+    skill("skill_earth", "암석 파쇄", "enemy", 30, "anim_gen_earth_spike", "대지 속성으로 적을 짓누릅니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "earth" }),
+    skill("skill_wind", "질풍참", "enemy", 28, "anim_gen_wind_slice", "바람 속성으로 적을 베어냅니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "wind" }),
+    skill("skill_dark", "암흑 파동", "enemy", 30, "anim_gen_shadow_pulse", "어둠 속성으로 적을 침식합니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "dark" }),
+    skill("skill_holy", "성광", "enemy", 30, "anim_gen_holy_beam", "신성 속성으로 적을 정화합니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "holy" }),
     skill("skill_item_holy_water", "성수 효과", "enemy", 30, "anim_magic", "성수 계열 아이템이 사용하는 신성 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "holy" }),
     skill("skill_item_thunder_stone", "뇌전석 효과", "enemy", 34, "anim_magic", "뇌전석 계열 아이템이 사용하는 번개 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "thunder" }),
     skill("skill_item_frost_vial", "서리병 효과", "enemy", 32, "anim_magic", "서리병 계열 아이템이 사용하는 얼음 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "ice" }),

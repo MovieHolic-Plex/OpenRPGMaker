@@ -55068,6 +55068,144 @@
         "stateEffects": []
       },
       {
+        "id": "skill_ice",
+        "name": "빙결",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_ice_shatter",
+        "description": "얼음 속성으로 적을 얼립니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "ice",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_thunder",
+        "name": "낙뢰",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_thunder_strike",
+        "description": "번개 속성으로 적을 내리칩니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "thunder",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_earth",
+        "name": "암석 파쇄",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_earth_spike",
+        "description": "대지 속성으로 적을 짓누릅니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "earth",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_wind",
+        "name": "질풍참",
+        "scope": "enemy",
+        "power": 28,
+        "animationId": "anim_gen_wind_slice",
+        "description": "바람 속성으로 적을 베어냅니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "wind",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_dark",
+        "name": "암흑 파동",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_shadow_pulse",
+        "description": "어둠 속성으로 적을 침식합니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "dark",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_holy",
+        "name": "성광",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_holy_beam",
+        "description": "신성 속성으로 적을 정화합니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "holy",
+        "stateEffects": []
+      },
+      {
         "id": "skill_item_holy_water",
         "name": "성수 효과",
         "scope": "enemy",
