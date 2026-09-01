@@ -384,10 +384,17 @@
   border-radius: 8px !important;
   box-shadow: none !important;
 }
+/* 섹션 제목은 `--db-studio-text-3`(#94A3B8) 이었다 — 흰 패널 위 **2.56:1** 로 AA(4.5:1)에
+   한참 못 미쳤고, 이 규칙이 `!important` 라서 다른 레이어가 아무리 고쳐도 이겼다(실측:
+   legend 12종 전부 미달). 섹션 제목은 보조 텍스트가 아니라 폼의 구조를 알려주는 정보다.
+   `--db-studio-text-2`(#475569, 약 7:1)로 올린다. */
 .database-modal-backdrop .database-modal-window fieldset > legend {
-  color: var(--db-studio-text-3) !important;
+  color: var(--db-studio-text-2, #475569) !important;
   font: 600 11px/1.3 "Malgun Gothic", system-ui, sans-serif !important;
   padding: 0 4px;
+  /* 한글에 `uppercase` 는 무효라 Latin 전제 토큰의 흔적이다 — 섞여 있는 영문·숫자만
+     들쭉날쭉 대문자가 되므로 떼어낸다. */
+  text-transform: none !important;
 }
 
 /* list thumb 24px */

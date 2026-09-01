@@ -104,7 +104,7 @@ function actorRow(actor: ActorRecord, className: string, selected: boolean, proj
     children: [
       el("span", {
         class: "db-actor-identity-cell",
-        attrs: { role: "cell" },
+        attrs: { role: "gridcell" },
         children: [
           thumbnail ?? el("span", { class: "db-actor-avatar-fallback", text: actor.name.slice(0, 1) || "?" }),
           el("span", {
@@ -116,21 +116,23 @@ function actorRow(actor: ActorRecord, className: string, selected: boolean, proj
           }),
         ],
       }),
-      tableCell(className, "cell"),
-      tableCell(String(actor.initialLevel), "cell", "numeric"),
-      tableCell(NUMBER_FORMAT.format(initialHp), "cell", "numeric"),
+      tableCell(className, "gridcell"),
+      tableCell(String(actor.initialLevel), "gridcell", "numeric"),
+      tableCell(NUMBER_FORMAT.format(initialHp), "gridcell", "numeric"),
       // 맵 표시: 기본값(보임)까지 초록 알약으로 그리면 모든 행에 같은 뱃지가 도배돼
       // 정작 예외인 "투명"이 눈에 안 띈다 — 예외일 때만 뱃지를 세운다.
       el("span", {
         class: `db-actor-status${actor.characterTransparent ? " is-hidden" : " is-default"}`,
-        attrs: { role: "cell" },
+        attrs: { role: "gridcell" },
         text: actor.characterTransparent ? "투명" : "보임",
       }),
     ],
   });
 }
 
-function tableCell(text: string, role: "cell" | "columnheader", className = ""): HTMLElement {
+// `role="grid"` 의 행이 소유하는 셀 역할은 `gridcell` 이다 — `cell` 은 `role="table"` 전용이라
+// 대화형 그리드 안에서는 매핑이 어긋난다(ARIA 1.2). 헤더는 `columnheader` 그대로 맞다.
+function tableCell(text: string, role: "gridcell" | "columnheader", className = ""): HTMLElement {
   return el("span", { class: className, attrs: { role }, text });
 }
 

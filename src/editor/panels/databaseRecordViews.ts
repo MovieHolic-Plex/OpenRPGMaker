@@ -120,6 +120,11 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
 
   // 레코드 선택 시: 리스트를 통째로 재빌드하지 않고 활성 행 표시 + 디테일만 교체한다.
   const onSelect = (id: string): void => {
+    // 선택이 바뀌면 삭제 무장을 해제한다 — 툴바는 여기서 재빌드되지 않으므로 그냥 두면
+    // A 를 arm 한 라벨(`정말 삭제?`)이 B 를 고른 뒤에도 남고, 그 상태에서 누른 첫 클릭은
+    // 가드에 막혀 **아무 반응 없이 삼켜진다**(실측: 삭제까지 2클릭 필요). 상태는 안전했지만
+    // 표시가 거짓말을 했다.
+    disarmDelete(collection);
     setSelectedRecordId(collection, id);
     markActiveRow(listEl, id);
     renderDetail(id);
@@ -346,10 +351,23 @@ const DELETE_CONFIRM_WINDOW_MS = 3000;
 // armedRecordId 로 "어떤 레코드에 대해 armed 되었는지"를 추적한다 — 그렇지 않으면
 // A 를 arm 한 뒤 3초 내 B 로 선택을 바꾸고 삭제를 다시 누르면 B 가 확인 없이
 // 즉시 삭제되는 사고가 난다(armed 상태가 레코드 전환을 가로질러 생존).
+// 무장 상태를 컬렉션별 모듈 레지스트리에 둔다 — 버튼 클로저 안에만 있으면 `onSelect`(툴바를
+// 재빌드하지 않는다)에서 해제할 방법이 없어 라벨이 낡는다.
+type ArmedDelete = { recordId: string; until: number; button: HTMLElement; timer: number | null };
+const ARMED_DELETE = new Map<DatabaseCollection, ArmedDelete>();
+
+function disarmDelete(collection: DatabaseCollection): void {
+  const armed = ARMED_DELETE.get(collection);
+  if (!armed) return;
+  if (armed.timer !== null) window.clearTimeout(armed.timer);
+  ARMED_DELETE.delete(collection);
+  armed.button.textContent = DELETE_IDLE_LABEL;
+  armed.button.classList.remove("confirming");
+}
+
 function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
-  let armedUntil = 0;
-  let armedRecordId: string | null = null;
-  let resetTimer: number | null = null;
+  // 툴바가 다시 그려지면 이전 버튼 참조는 죽는다 — 새 버튼이 주인이 되도록 등록을 비운다.
+  disarmDelete(collection);
 
   const button = el("button", {
     class: "btn danger small",
@@ -369,30 +387,23 @@ function deleteButton(collection: DatabaseCollection, rerender: () => void): HTM
         }
 
         const now = Date.now();
-        const isArmedForSelected = armedRecordId === selected && now <= armedUntil;
+        const armed = ARMED_DELETE.get(collection);
+        const isArmedForSelected = armed?.recordId === selected && now <= armed.until;
         if (!isArmedForSelected) {
           // 새로 arm 하는 대상이 이전 armed 대상과 달라도(레코드 전환) 그냥 이 레코드로
           // 다시 arm 한다 — 삭제하지 않고 "정말 삭제?" 상태와 타이머만 리셋.
-          armedRecordId = selected;
-          armedUntil = now + DELETE_CONFIRM_WINDOW_MS;
+          disarmDelete(collection);
           button.textContent = DELETE_CONFIRM_LABEL;
           button.classList.add("confirming");
-          if (resetTimer !== null) window.clearTimeout(resetTimer);
-          resetTimer = window.setTimeout(() => {
-            resetTimer = null;
-            if (Date.now() >= armedUntil) {
-              armedRecordId = null;
-              button.textContent = DELETE_IDLE_LABEL;
-              button.classList.remove("confirming");
-            }
+          const timer = window.setTimeout(() => {
+            const current = ARMED_DELETE.get(collection);
+            if (current && current.button === button && Date.now() >= current.until) disarmDelete(collection);
           }, DELETE_CONFIRM_WINDOW_MS + 100);
+          ARMED_DELETE.set(collection, { recordId: selected, until: now + DELETE_CONFIRM_WINDOW_MS, button, timer });
           return;
         }
 
-        armedUntil = 0;
-        armedRecordId = null;
-        button.textContent = DELETE_IDLE_LABEL;
-        button.classList.remove("confirming");
+        disarmDelete(collection);
         const result = deleteDatabaseRecord(collection, selected);
         if (!result.ok) {
           toast(result.message, "error");
@@ -457,6 +468,29 @@ function recordList(
     if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
     visibleIndex += 1;
     visible.push({ record, originalIndex, visibleIndex });
+  }
+
+  // 결과가 없으면 빈 흰 박스를 남기지 않는다 — 주인공 탭(액터 스튜디오)만 안내 문구가 있고
+  // 직업·스킬·아이템·장비는 테두리만 있는 빈 영역이라 "검색이 걸린 것"인지 "데이터가 없는 것"인지
+  // 구별할 수 없었다(실측). 공용 셸에서 한 번만 처리한다.
+  if (visible.length === 0) {
+    const label = COLLECTION_LABELS[collection];
+    const reason = searchQuery
+      ? `검색 조건에 맞는 ${label}이 없습니다.`
+      : categoryFilter !== "all"
+        ? `이 분류에 해당하는 ${label}이 없습니다.`
+        : `${label} 레코드가 없습니다. 아래 '+ 추가'로 만들 수 있습니다.`;
+    return el("div", {
+      class: "db-list db-list-empty",
+      attrs: { role: "status" },
+      dataset: { testid: "db-list-empty" },
+      children: [
+        el("span", { class: "db-list-empty-title", text: reason }),
+        ...(searchQuery || categoryFilter !== "all"
+          ? [el("span", { class: "db-list-empty-hint", text: "검색어나 분류를 비우면 전체가 보입니다." })]
+          : []),
+      ],
+    });
   }
 
   // 갤러리 모드 = 카드 그리드 + columns 가상화, 리스트 모드 = 기존 행 렌더 그대로.

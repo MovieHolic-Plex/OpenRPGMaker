@@ -11,3 +11,6 @@
 @import "./desktop-record-shell/10-tab-chrome-unify.css";
 @import "./desktop-record-shell/11-life-authoring.css";
 @import "./desktop-record-shell/12-spatial-authoring.css";
+/* 14 는 파티 그룹 감사 후속 수정 — 앞선 레이어들이 같은 선택자를 여러 번 덮으므로 맨 뒤에 둔다.
+   (13-actor-studio.css 는 styles/index.css 가 별도로 더 늦게 import 한다) */
+@import "./desktop-record-shell/14-party-ux-fixes.css";
