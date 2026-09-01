@@ -44,7 +44,11 @@ describe("hierarchy event editor presentation layer", () => {
 
   it("renders the event name in the titlebar and compact presence in settings", () => {
     expect(modalSource).toContain("event-editor-name");
-    expect(modalSource).toContain("event-editor-event-id");
+    // 이벤트 정체성은 «이름 + 좌표» 다(DESIGN.md §5). 예전 헤더의 `0007` 은 ID 가 아니라
+    // 맵 events 배열의 순번(findIndex+1)을 4자리로 채운 값이라 앞 이벤트를 지우면 밀렸다 —
+    // 안정적인 식별자처럼 보이지만 아니었으므로 제거했다. 되살리지 말 것.
+    expect(modalSource).not.toContain("event-editor-event-id");
+    expect(modalSource).toContain("event-editor-coords");
     expect(modalSource).toContain("event-editor-npc-chip");
     expect(pagePropsSource).toContain("class: \"presence\"");
     expect(pagePropsSource).not.toContain("1. 언제 나타날까요?");

@@ -2,7 +2,8 @@
   .event-storyboard-host { min-height: 0; }
   .event-view-toggle { display: inline-flex; gap: 3px; padding: 3px; border-radius: 8px; background: var(--bg-inset); border: 1px solid var(--border-subtle); width: fit-content; }
   .event-view-toggle-btn { appearance: none; min-height: 28px; padding: 4px 10px; border-radius: 6px; border: 1px solid transparent; background: transparent; color: var(--text-2); font: 700 12px var(--font-ui); cursor: pointer; }
-  .event-view-toggle-btn.is-active { background: var(--bg-surface); color: var(--text-1); border-color: var(--border-default); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  /* 선택 상태의 출처는 `aria-selected` 다 (event-editor.balanced.css 와 동일 규약). */
+  .event-view-toggle-btn[aria-selected="true"] { background: var(--bg-surface); color: var(--text-1); border-color: var(--border-default); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
   .event-view-toggle-btn:hover { color: var(--text-1); }
   .event-view-toggle-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 

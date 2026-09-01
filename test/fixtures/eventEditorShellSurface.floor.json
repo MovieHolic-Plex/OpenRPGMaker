@@ -1,29 +1,29 @@
 {
  "page1": {
-  "testidCount": 194,
-  "controlCount": 117,
-  "classCount": 234,
-  "labelCount": 87,
+  "testidCount": 211,
+  "controlCount": 122,
+  "classCount": 242,
+  "labelCount": 99,
   "detailsConverted": 4
  },
  "page2": {
-  "testidCount": 221,
-  "controlCount": 148,
-  "classCount": 260,
-  "labelCount": 91,
+  "testidCount": 254,
+  "controlCount": 165,
+  "classCount": 262,
+  "labelCount": 103,
   "detailsConverted": 4
  },
  "bare": {
-  "testidCount": 181,
-  "controlCount": 100,
-  "classCount": 210,
-  "labelCount": 77,
+  "testidCount": 184,
+  "controlCount": 105,
+  "classCount": 209,
+  "labelCount": 89,
   "detailsConverted": 2
  },
  "flow": {
   "testidCount": 198,
   "controlCount": 109,
-  "classCount": 237,
+  "classCount": 236,
   "labelCount": 100,
   "detailsConverted": 4
  }

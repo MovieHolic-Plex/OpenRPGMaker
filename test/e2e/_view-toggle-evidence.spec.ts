@@ -95,7 +95,7 @@ test("evidence: 3뷰 토글 상태 캡처", async ({ page }) => {
   await editor.getByTestId("event-view-toggle-preview").click();
   await page.waitForTimeout(700);
   facts.previewBefore = await editor.evaluate((root) => ({
-    pressed: root.querySelector('[data-testid="event-view-toggle-preview"]')?.getAttribute("aria-pressed"),
+    selected: root.querySelector('[data-testid="event-view-toggle-preview"]')?.getAttribute("aria-selected"),
     pos: root.querySelector(".event-script-live-position")?.textContent ?? null,
   }));
   await shot("07-preview");
@@ -115,8 +115,8 @@ test("evidence: 3뷰 토글 상태 캡처", async ({ page }) => {
   });
   await page.waitForTimeout(900);
   facts.previewAfterEdit = await editor.evaluate((root) => ({
-    pressedPreview: root.querySelector('[data-testid="event-view-toggle-preview"]')?.getAttribute("aria-pressed"),
-    pressedStoryboard: root.querySelector('[data-testid="event-view-toggle-storyboard"]')?.getAttribute("aria-pressed"),
+    selectedPreview: root.querySelector('[data-testid="event-view-toggle-preview"]')?.getAttribute("aria-selected"),
+    selectedStoryboard: root.querySelector('[data-testid="event-view-toggle-storyboard"]')?.getAttribute("aria-selected"),
     pos: root.querySelector(".event-script-live-position")?.textContent ?? null,
     previewPresent: !!root.querySelector('[data-testid="event-page-preview"]'),
   }));

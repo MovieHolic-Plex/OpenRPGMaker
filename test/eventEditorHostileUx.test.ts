@@ -83,9 +83,9 @@ it("defaults to the storyboard and does not offer a fake graph tab", () => {
 it("opens the command picker from a storyboard add card without switching views", () => {
   render(host);
   host.querySelector<HTMLButtonElement>('[data-testid="event-view-toggle-storyboard"]')?.click();
-  expect(host.querySelector('[data-testid="event-view-toggle-storyboard"]')?.getAttribute("aria-pressed")).toBe("true");
+  expect(host.querySelector('[data-testid="event-view-toggle-storyboard"]')?.getAttribute("aria-selected")).toBe("true");
   host.querySelector<HTMLButtonElement>('[data-testid="event-storyboard-add"]')?.click();
-  expect(host.querySelector('[data-testid="event-view-toggle-storyboard"]')?.getAttribute("aria-pressed")).toBe("true");
+  expect(host.querySelector('[data-testid="event-view-toggle-storyboard"]')?.getAttribute("aria-selected")).toBe("true");
   expect(host.querySelector<HTMLElement>(".event-storyboard")?.hidden).toBe(false);
   expect(document.querySelector('[data-testid="event-command-picker"]')).toBeTruthy();
 });

@@ -437,24 +437,57 @@ export function renderViewToggle(
     preview: "차례대로 실행되는 모습을 봅니다",
     flow: "분기가 어떻게 갈라지는지 봅니다",
   };
+  // 「여럿 중 하나」는 tablist 다 — 독립 토글 넷이 아니다.
+  //
+  // 예전엔 `role="group"` + 버튼마다 `aria-pressed` 였다. aria-pressed 는 각자 눌리고 풀리는
+  // 토글 버튼의 속성이라, 보조기술에는 «네 개를 동시에 켤 수도 있는 스위치 묶음»으로 읽혔다.
+  // 바로 옆 페이지 탭 줄은 같은 모달 안에서 이미 tablist + aria-selected 로 맞춰져 있고
+  // (`pageProps.ts`), 거기엔 aria-pressed 를 섞지 말라는 주석까지 있다. 규칙을 아는
+  // 코드베이스가 이 컨트롤에서만 어기고 있었다.
+  //
+  // 로빙 tabindex 도 같이 맞춘다. 넷 다 tabindex 기본값이라 보기 세그먼트 하나가 Tab 정지를
+  // 4개 먹었다(페이지 탭 줄은 1개). 상태 클래스도 `on` 과 `is-active` 두 개를 같이 달아
+  // 두 CSS 세대를 동시에 먹이고 있었는데, 이제 상태의 출처는 `aria-selected` 하나다.
   const bar = el("div", {
     class: "seg event-view-toggle",
-    attrs: { role: "group", "aria-label": "보기 방식" },
+    attrs: { role: "tablist", "aria-label": "보기 방식" },
     dataset: { testid: "event-view-toggle" },
   });
-  for (const mode of modes) {
+  const buttons: HTMLElement[] = [];
+  const focusMode = (index: number): void => {
+    const next = buttons[((index % modes.length) + modes.length) % modes.length];
+    next?.focus();
+    next?.click();
+  };
+  modes.forEach((mode, index) => {
+    const selected = mode === current;
     const btn = el("button", {
-      class: `${mode === current ? "on " : ""}event-view-toggle-btn${mode === current ? " is-active" : ""}`,
+      class: "event-view-toggle-btn",
       text: labels[mode],
       attrs: {
         type: "button",
+        role: "tab",
         title: hints[mode],
-        "aria-pressed": mode === current ? "true" : "false",
+        "aria-selected": selected ? "true" : "false",
+        tabindex: selected ? "0" : "-1",
       },
       dataset: { testid: `event-view-toggle-${mode}` },
-      on: { click: () => { if (mode !== current) { setStoryboardMode(mode); onChange(mode); } } },
+      on: {
+        click: () => { if (mode !== current) { setStoryboardMode(mode); onChange(mode); } },
+        keydown: (event: Event) => {
+          if (!(event instanceof KeyboardEvent)) return;
+          switch (event.key) {
+            case "ArrowLeft": event.preventDefault(); focusMode(index - 1); return;
+            case "ArrowRight": event.preventDefault(); focusMode(index + 1); return;
+            case "Home": event.preventDefault(); focusMode(0); return;
+            case "End": event.preventDefault(); focusMode(modes.length - 1); return;
+            default: return;
+          }
+        },
+      },
     });
+    buttons.push(btn);
     bar.append(btn);
-  }
+  });
   return bar;
 }

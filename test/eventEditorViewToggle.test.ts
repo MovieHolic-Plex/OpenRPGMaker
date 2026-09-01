@@ -105,7 +105,7 @@ describe("이벤트 에디터 3뷰 토글", () => {
     // modal.ts 의 store.subscribe(refresh) 가 하는 일 — 본문을 통째로 다시 그린다.
     rerender();
 
-    expect(host.querySelector('[data-testid="event-view-toggle-preview"]')?.getAttribute("aria-pressed")).toBe("true");
+    expect(host.querySelector('[data-testid="event-view-toggle-preview"]')?.getAttribute("aria-selected")).toBe("true");
     expect(host.querySelector('[data-testid="event-page-preview"]')).toBeTruthy();
     // 미리보기는 확인용 보기라 저작 보기로 저장되지는 않는다.
     expect(localStorage.getItem("oprn:storyboard-mode")).not.toBe("preview");

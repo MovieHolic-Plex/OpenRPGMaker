@@ -114,7 +114,7 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
 
     expect(host.querySelector('[data-testid="event-page-preview"]')).toBeTruthy();
     const toggle = host.querySelector<HTMLElement>('[data-testid="event-view-toggle-preview"]');
-    expect(toggle?.getAttribute("aria-pressed")).toBe("true");
+    expect(toggle?.getAttribute("aria-selected")).toBe("true");
   });
 
   it("미리보기는 다음 열기까지 남는 저작 보기로 저장되지 않는다", () => {
