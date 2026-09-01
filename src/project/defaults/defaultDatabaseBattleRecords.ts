@@ -19,7 +19,11 @@ export function defaultBattleRecords() {
       //   궁수  hp 130 / def 20 → 스윙 35, 4방
       normalizeEnemyRecord({"id":"enemy_cave_bat","name":"동굴 박쥐","speciesId":"species_cave_bat","monsterResourceId":"generated-enemy-bat-01","stats":{"maxHp":150,"maxMp":10,"attack":11,"defense":14,"mind":10,"agility":10},"rewards":{"exp":9,"gold":8,"dropRatePercent":15},"actions":archetypeActions("flyer"),"actionProfile":{"contactDamage":10,"aggroRange":7,"moveIntervalMs":220,"knockbackResist":0,"attack":{"kind":"melee","windupMs":300,"recoverMs":250,"damage":14,"range":1,"cooldownMs":800}}}),
             normalizeEnemyRecord({"id":"enemy_stone_golem","name":"돌 골렘","speciesId":"species_stone_golem","monsterResourceId":"generated-enemy-golem-01","stats":{"maxHp":200,"maxMp":10,"attack":12,"defense":30,"mind":10,"agility":10},"rewards":{"exp":11,"gold":10,"dropRatePercent":15},"actions":archetypeActions("bulwark"),"actionProfile":{"contactDamage":24,"aggroRange":5,"moveIntervalMs":600,"knockbackResist":0.8,"attack":{"kind":"melee","windupMs":1100,"recoverMs":500,"damage":40,"range":1,"cooldownMs":1600}}}),
-      normalizeEnemyRecord({"id":"enemy_dragon","name":"붉은 드래곤","speciesId":"species_ember_drake","monsterResourceId":"generated-enemy-dragon-01","stats":{"maxHp":35,"maxMp":10,"attack":14,"defense":9,"mind":10,"agility":10},"rewards":{"exp":13,"gold":12,"dropRatePercent":15},"actions":archetypeActions("boss", "skill_fire")}),
+      // maxMp 40: 4MP 속성기 10회 예산. 다른 보스 10마리(generatedEnemyRecords)와 같은 값이다.
+      // MP 가 비용 미만이면 turn 조건 버스트까지 점수 계산 전에 필터되므로(runtime.ts:1798)
+      // maxMp 10 으로는 3턴 주기 버스트가 6턴 안에 소진됐다. mind 는 스타터 스케일
+      // (attack 8~14)이라 이미 정체성기가 이긴다 — 규칙 대상인 생성 로스터와 달리 손대지 않는다.
+      normalizeEnemyRecord({"id":"enemy_dragon","name":"붉은 드래곤","speciesId":"species_ember_drake","monsterResourceId":"generated-enemy-dragon-01","stats":{"maxHp":35,"maxMp":40,"attack":14,"defense":9,"mind":10,"agility":10},"rewards":{"exp":13,"gold":12,"dropRatePercent":15},"actions":archetypeActions("boss", "skill_fire")}),
       // enemy_extra_006~120 115건 제거(2026-08-28). maxHp 40,45,50,55… / attack 15,17,18,20… 의
       // 등차수열 더미였고 아트도 enemy-art-NNN.png 공용 슬롯이었다. 실제 몬스터는 위 5종 +
       // enemy_mine_skel_archer + generatedEnemyRecords() 100종이다.

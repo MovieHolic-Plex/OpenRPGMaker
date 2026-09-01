@@ -11,8 +11,8 @@
 // 대상 HP 비율·킬샷 가능 여부·회복 필요를 실시간으로 읽는 효용도 AI
 // (runtime.ts chooseEnemyAction)가 상황에 맞게 고른다.
 //
-// MP 예산: 적 maxMp 는 보스를 뺀 전원이 10 이다. 4MP 특수기는 2회뿐이므로 모든
-// 아키타입에 MP 0 스킬을 최소 1개 넣어 고갈 시 행동 불능을 막는다.
+// MP 예산: 적 maxMp 는 보스를 뺀 전원이 10 이다(보스 11마리는 40 — Task 5). 4MP 특수기가
+// 비보스에서는 2회뿐이므로 모든 아키타입에 MP 0 스킬을 최소 1개 넣어 고갈 시 행동 불능을 막는다.
 //
 // ── 우선순위 규칙 (R14) ─────────────────────────────────────────────────────
 // Task 4 가 이 헬퍼로 적 100마리를 덮으므로 규칙을 여기 못박는다.
@@ -40,27 +40,28 @@
 // attack 과 sword_slash 를 같은 5 로 둔 게 그 이유다. 둘 다 MP 0 무기 공격이라
 // 어느 쪽이 이겨도 정체성 손실이 없고 고갈 방어도 유지된다.
 //
-// 알려진 한계: 데미지 효용은 `max(0, power + 스탯/2 − 대상방어/2)` 라, 적 mind 가
-// 전원 10 인 지금은 방어가 높은 상대 앞에서 마법 계열이 0 으로 포화한다. 포화하면
-// 우선순위만 남고, 유료기는 MP 부족 시 **점수 계산 전에** 필터된다(runtime.ts:1798).
-// 그래서 싼 보조기와 비싼 속성기를 같이 든 계열(bulwark·curse)은 우선순위만으로는
-// 완전히 못 고친다 — MP 예산·mind 스탯(Task 5)과 묶여야 한다.
+// 알려진 한계: 데미지 효용은 `max(0, power + 스탯/2 − 대상방어/2)` 라 방어가 높은 상대
+// 앞에서는 위력이 낮은 쪽이 먼저 0 으로 포화한다. 포화하면 그쪽만 `-1000 + priority`
+// 밴드로 강등되므로(runtime.ts:1822) 우선순위 차이로도 못 살린다. 실제로 남은 잔재는
+// `blob` 하나다 — 위력 8 짜리 `poison_sting` 은 대상방어가 `공격력/2 + 8`~`+9` 인 딱 두
+// 칸에서 자기만 잘려 위력 10 짜리 기본 공격에 진다. 유료기는 MP 부족 시 **점수 계산
+// 전에** 필터된다(runtime.ts:1798) — 그래서 보스는 maxMp 40 을 받는다.
 //
-// ── 배정 주의: 이 헬퍼는 공격력 스케일에 중립이 아니다 ───────────────────────
-// 데미지형 정체성 스킬(`skill_poison_sting`·속성기)은 **적 공격력이 크면 죽는다.**
-// 물리 스킬의 효용은 공격력에 비례해 커지는데 적 mind 가 전원 10 으로 고정이라
-// 마법 위력은 `30 + 5` 에 묶이기 때문이다. 우선순위로는 못 메운다 — 100점대 효용
-// 차이를 한 단계(10점)로 넘을 수 없다.
+// ── 공격력 스케일: mind = attack 규칙으로 해소했다 (Task 5) ──────────────────
+// 데미지형 정체성 스킬(`skill_poison_sting`·속성기)은 전부 `statistic: "mind"` 인데
+// 적 mind 가 **전원 10** 이던 시절에는 마법 위력이 `power + 5` 에 묶였다. 반면 물리
+// 무료기의 효용은 적 attack 에 비례해 커진다. 그래서 공격력이 큰 적은 속성기·독침이
+// 영구히 사장됐다(실측: 공격력 13 → blob `poison_sting 424`, 공격력 100 → `attack 199`
+// 로 poison 0).
 //
-// 실측(임시 트룹 40판, 주인공 Lv1):
-//   공격력 13 → blob `poison_sting 424` / caster `attack 215, fire 208`
-//   공격력 100 → blob `attack 199`(poison 0) / caster `attack 199`(fire 0)
+// 지금은 **생성 로스터 100마리의 `mind` 가 그 적의 `attack` 과 같다.** 그러면 마법
+// 정체성기와 물리 무료기가 같은 스탯 항 `floor(스탯/2)` 를 갖게 되어 우열이 공격력에서
+// 분리되고, 위력차 + 우선순위차만 남는다(전부 정체성기 쪽이 앞선다). 이 성질은
+// `test/enemyActionArchetypes.test.ts` 가 공격력 9~214 전 구간에서 검사한다.
+// 규칙을 깨는 적을 새로 넣으면(예: mind 만 낮게) 그 검사가 먼저 빨개진다.
 //
-// 그래서 **`blob`·`caster` 는 저공격력 적에 배정한다.** 고공격력 적(생성 로스터의
-// attack 은 9~214 로 퍼져 있다)에 붙이면 행동이 여러 개여도 사실상 단일 행동이 된다.
-// 고공격력 적에는 상태 기반 계열(`venom`·`brute`·`flyer`·`tactician`)이 안전하다 —
-// 그쪽 효용은 상태 부여 확률이라 공격력에 안 밀린다. 속성 계열을 꼭 붙여야 하면
-// Task 5 의 mind 상향 이후 재측정할 것.
+// mind 를 올려도 플레이어 쪽 수치는 안 바뀐다 — 적 mind 가 마법 방어력으로 쓰이는 건
+// `battleModel === "gen1"` 일 때뿐이고(battleDamage.usesMagicalDefense), 기본 DB 는 rm2k3 다.
 import type { EnemyActionPattern } from "../types/database";
 
 /** 평범한 무료 데미지. */
@@ -103,9 +104,38 @@ function everyNthTurn(skillId: string, priority: number, interval: number): Enem
   };
 }
 
+/**
+ * 적이 쓸 수 있는 속성 공격 스킬. **저항 시드 표(`DEFAULT_ELEMENT_RATE_LABELS`)에 있는
+ * 속성만** 나열한다 — 시드 표에 없는 속성은 맞는 쪽(액터·직업)의 `elementRates` 에 등급이
+ * 없어 `elementMultiplierFor` 가 배율 1.0 으로 조기 반환하므로, 속성을 붙여도 무속성과
+ * 수치가 완전히 같아진다. 그래서 `skill_leaf`(elementId `"grass"`)는 여기 없다.
+ */
+export type ElementAttackSkillId =
+  | "skill_fire"
+  | "skill_water"
+  | "skill_ice"
+  | "skill_thunder"
+  | "skill_earth"
+  | "skill_wind"
+  | "skill_holy"
+  | "skill_dark";
+
+// ── 개체 속성 매핑 두 표의 오타 안전장치 ────────────────────────────────────
+// 이 두 표는 이 파일의 유일한 **무성(無聲) 실패 경로**다: 키를 오타내면 조회가
+// `undefined` 를 내고 archetypeActions 의 `?? "skill_arcane_bolt"` 가 그대로 삼켜
+// 무속성으로 조용히 떨어진다. 나머지 90마리의 아키타입 배정은 `EnemyArchetype` 유니언이
+// 있어 오타가 곧 컴파일 오류인데, 여기만 그 보호가 없었다.
+//
+// 그래서 `Record<string, string>` 주석을 떼고 `as const` 로 **키를 리터럴 타입으로 고정**
+// 한다. 표의 키를 오타내면 그 키를 점 접근하는 generatedEnemyRecords.ts 가 즉시 타입
+// 오류가 된다(`속성 'enemy_salamander_flame' 이(가) … 형식에 없습니다`).
+// `satisfies` 는 값 쪽 — 실재하지 않는 스킬 id 를 못 쓰게 한다.
+// 컴파일이 못 보는 두 가지(표의 키와 레코드 id 가 어긋난 짝짓기, 아무도 안 읽는 죽은
+// 항목)는 test/enemyActionArchetypes.test.ts 가 소스 줄을 파싱해 막는다.
+
 /** 정령·원소 계열은 개체마다 속성이 다르다. 저항 프로필에서 추론하지 않는다 —
  *  저항은 "무엇에 강한가" 이지 "무엇을 쓰는가" 가 아니다. 명시적으로 적는다. */
-export const SPIRIT_ELEMENT_SKILLS: Record<string, string> = {
+export const SPIRIT_ELEMENT_SKILLS = {
   enemy_spirit_fire: "skill_fire",
   enemy_spirit_water: "skill_water",
   enemy_spirit_earth: "skill_earth",
@@ -116,7 +146,33 @@ export const SPIRIT_ELEMENT_SKILLS: Record<string, string> = {
   enemy_sylph_air: "skill_wind",
   enemy_undine_sea: "skill_water",
   enemy_salamander_flame: "skill_fire",
-};
+} as const satisfies Record<string, ElementAttackSkillId>;
+
+/**
+ * 드래곤·보스 10마리의 속성. 정령과 같은 이유로 명시한다 — `boss` 아키타입에 속성을
+ * 안 넘기면 전원이 폴백 `skill_arcane_bolt`(무속성)로 떨어져 붉은 용이 불을 안 뿜고
+ * 청룡과 본 드래곤이 구분되지 않는다. 스타터 `enemy_dragon` 은 이 표를 쓰지 않고
+ * defaultDatabaseBattleRecords.ts 에서 직접 `"skill_fire"` 를 넘긴다.
+ *
+ * 배정 근거는 이름의 주제성이다. 여덟 속성을 전부 쓴다:
+ *   새끼 용·붉은 용 = 불 / 청룡 = 번개(청룡은 뇌룡 계열이고, 정령 10마리가 유일하게
+ *   안 쓰는 속성이 thunder 다) / 본 드래곤·마왕 = 어둠 / 히드라 = 물(레르네의 물뱀) /
+ *   베히모스 = 대지 / 타락 천사 = 신성(천사의 힘은 남았다 — 어둠은 이미 둘이다) /
+ *   부유하는 눈 = 얼음(응시로 얼린다) / 식충 식물 = 바람(포자를 날린다. `skill_leaf`
+ *   의 grass 는 저항 시드 표에 없어 무속성과 수치가 같아지므로 쓰지 않는다).
+ */
+export const BOSS_ELEMENT_SKILLS = {
+  enemy_dragon_whelp: "skill_fire",
+  enemy_dragon_red: "skill_fire",
+  enemy_dragon_blue: "skill_thunder",
+  enemy_dragon_bone: "skill_dark",
+  enemy_hydra_three: "skill_water",
+  enemy_behemoth_horn: "skill_earth",
+  enemy_demon_lord: "skill_dark",
+  enemy_angel_fallen: "skill_holy",
+  enemy_eye_floating: "skill_ice",
+  enemy_plant_carnivore: "skill_wind",
+} as const satisfies Record<string, ElementAttackSkillId>;
 
 /**
  * @param elementSkillId `caster`/`boss` 가 쓸 속성 공격 스킬.
