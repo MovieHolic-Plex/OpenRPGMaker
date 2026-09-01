@@ -30,7 +30,8 @@ export const PLAYER_RUNTIME_AUDIO_RESOURCE_IDS: readonly string[] = Object.freez
   "easyrpg-sound-attack1",
   "easyrpg-sound-barrier1",
   "easyrpg-sound-blow4",
-  "easyrpg-sound-chime2",
+  // 승리음. #989ec8da 에서 chime2 → chime1 로 갈렸다 — 감시 테스트가 양방향으로 잡아 줬다.
+  "easyrpg-sound-chime1",
   "easyrpg-sound-collapse1",
   "easyrpg-sound-collapse2",
   "easyrpg-sound-damage2",
