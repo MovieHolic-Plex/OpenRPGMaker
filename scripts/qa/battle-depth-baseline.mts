@@ -201,10 +201,17 @@ const out: Record<string, unknown> = {
         "'전투가 짧아졌다' 가 같은 방향으로 움직인다. avgTurns 증가를 성공 신호로 쓰면 " +
         "정반대로 읽힌다. 승률이 크게 달라진 항목은 avgTurns/avgHpRemaining 을 직접 " +
         "비교하지 말고, winRate 를 먼저 보고 승률이 비슷한 항목끼리만 비교하라. " +
-        "실례(이 기준선): archetypeSims['드래곤·보스'] 는 winRate 0.1 인데 " +
-        "perBattleTurns 가 {mean:15, stddev:0, min:15, max:15} 다. 전투가 결정적이어서가 " +
-        "아니라 50판 중 45판이 15턴에 파티 전멸로 끝나서다 — 이 15는 '전투 깊이' 가 아니라 " +
-        "'전멸까지 걸린 시간' 이다. sims(기본 트룹 5개)는 전부 winRate 1.00 이라 이 함정이 " +
+        "실례(이 기준선): archetypeSims['드래곤·보스'] 의 perBattleTurns 는 " +
+        "{mean:15, stddev:0, min:15, max:15} 다. stddev 0 에 min=max=15 라는 건 그 표본 패스 " +
+        "50판이 **승패와 무관하게 전부 15턴** 에 끝났다는 뜻이다 — 같은 패스의 승률인 " +
+        "perBattleWinRate.mean 0.02 로 보면 1승 49패인데, **유일한 1승도 15턴**이었다. " +
+        "같은 항목의 perBattleHpRemaining 은 {mean:1.86, stddev:13.02, min:0, max:93} 로 " +
+        "승패에 따라 0 과 93 으로 갈리는데, 턴수만 승패에 전혀 반응하지 않는다. " +
+        "즉 이 15는 '전투 깊이' 가 아니라 '지금 이 전투에는 턴수를 바꿀 변수가 없다' 는 " +
+        "증거이고, 그래서 깊이 지표로 쓸 수 없다. " +
+        "(이 예시의 승패 수는 perBattleTurns 와 **같은 표본 패스**에서 읽었다. 집계 패스의 " +
+        "winRate 0.1 로 '45패' 를 계산하면 아래 두패스승률차이 가 금지한 교차 계산이 된다.) " +
+        "sims(기본 트룹 5개)는 전부 winRate 1.00 이라 이 함정이 " +
         "걸리지 않는다. archetypeSims 9개 중 7개(contested:true)가 해당된다.",
       두패스승률차이:
         "같은 항목의 winRate(집계 패스)와 perBattleWinRate.mean(표본 패스)이 눈에 띄게 " +
