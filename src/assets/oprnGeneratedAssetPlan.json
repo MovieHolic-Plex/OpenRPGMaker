@@ -75,18 +75,18 @@
         "width": 96,
         "height": 96
       },
-      "prompt": "Original green-blue meadow slime monster generated from a magenta chroma-key source and promoted with alpha transparency",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, magenta pixels in visible subject",
+      "prompt": "Original green meadow slime as a fully opaque matte JRPG monster sprite, hard cel shading, magenta chroma-key background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, magenta pixels in visible subject, glass gel, see-through body",
       "status": "promoted",
       "rawPath": ".omo/evidence/battle-generated-magenta-20260626/raw/monster-slime-01-magenta-source.png",
       "promotedPath": "public/assets/generated/starter/monster-slime-01.png",
       "resourceId": "generated-enemy-slime-01",
-      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33",
+      "sha256": "22d4a49dadaf05ca84298c2ec24c4ddbd8b943594414c01b03f4bb43f9b02143",
       "provenance": {
-        "generator": "imagegen",
+        "generator": "grok",
         "mode": "live",
         "promptVersion": "battle-magenta-v2",
-        "createdAt": "2026-06-26T15:57:00.000+09:00"
+        "createdAt": "2026-09-01T00:00:00.000+09:00"
       }
     },
     {
