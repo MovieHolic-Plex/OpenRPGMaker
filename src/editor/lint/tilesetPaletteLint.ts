@@ -1,4 +1,5 @@
 import { tileAt } from "@/project/collision";
+import { roleCapabilities } from "@/project/tileRoles";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import {
   paletteRolesForTile,
@@ -101,27 +102,22 @@ function checkPassageConsistency(map: GameMap, tileset: TilesetDef, issues: Lint
       const tile = visibleTile(map, x, y);
       if (tile < 0 || tile >= tileset.count) continue;
       const role = primaryTileRole(tileset, tile);
-      if (role !== "path" && role !== "wall") continue;
+      if (role === null) continue;
+      const expected = roleCapabilities(tileset, role).expectedPassage;
+      if (expected === undefined) continue;
       const blocked = isBlockedPassage(tileset.passability[tile]);
-      if (role === "path" && blocked) {
-        issues.push({
-          severity: "warning",
-          code: "tileset-palette-passage",
-          mapId: map.id,
-          x,
-          y,
-          message: `통행 일관성: path 역할 타일 ${tile}이 통행 불가입니다 (${map.name} ${x},${y})`,
-        });
-      } else if (role === "wall" && !blocked) {
-        issues.push({
-          severity: "warning",
-          code: "tileset-palette-passage",
-          mapId: map.id,
-          x,
-          y,
-          message: `통행 일관성: wall 역할 타일 ${tile}이 통행 가능입니다 (${map.name} ${x},${y})`,
-        });
-      }
+      const violated = expected === "passable" ? blocked : !blocked;
+      if (!violated) continue;
+      issues.push({
+        severity: "warning",
+        code: "tileset-palette-passage",
+        mapId: map.id,
+        x,
+        y,
+        message: expected === "passable"
+          ? `통행 일관성: ${role} 역할 타일 ${tile}이 통행 불가입니다 (${map.name} ${x},${y})`
+          : `통행 일관성: ${role} 역할 타일 ${tile}이 통행 가능입니다 (${map.name} ${x},${y})`,
+      });
     }
   }
 }
