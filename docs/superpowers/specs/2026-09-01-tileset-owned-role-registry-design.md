@@ -58,11 +58,17 @@ grammarProfiles.ts:51-53
 매 단계가 항상 green이며 언제든 멈출 수 있다.
 
 ```
-A-1  roleCapabilities(tileset, roleId) 조회 함수 도입.
+A-1  roleCapabilities(tileset, roleId) 조회 함수 도입.          ✅ 실행 완료
      내부는 기존 enum 상수 표. 동작 변화 0. 순수 리팩터.
-A-2  15개 분기를 하나씩 조회 함수로 이관. 분기당 커밋 1개.
-A-3  role: string 개방 + 오버라이드 + 마이그레이션 + DB 탭.
+A-2  15개 분기를 하나씩 조회 함수로 이관. 분기당 커밋 1개.        ✅ 실행 완료 (게이트 green)
+A-3  role: string 개방 + 오버라이드 + 마이그레이션 + DB 탭.       ← 다음
 ```
+
+A-1·A-2 는 `docs/superpowers/plans/2026-09-01-role-capability-adapter.md` 로 실행했고, 그
+과정에서 본 스펙의 사실 관계가 여러 곳 갱신되었다(능력 7→8개, `terrainTag` 타입,
+`themeCapabilityRoles`, `AiPreviewThemeCapability` 8종). **A-3 을 계획하기 전에 ② 절의
+"⚠️ A-3 제약" 을 먼저 읽어라** — 2단 해석을 새로 짓는 대신 기존 3단 사슬과 화해해야 한다는
+것이 실행에서 나온 가장 무거운 발견이다.
 
 B안(단번 전환)을 택하지 않은 이유는 타입 에러가 16곳에서 동시에 터지고 `TileGroupJunctionRule.withRole` 같은 연쇄가 섞여 회귀 원인 특정이 어렵기 때문이다. C안(병행 필드)은 진실을 두 갈래로 영구 고착시켜 이번 개편의 동기와 정면으로 충돌한다.
 
@@ -70,17 +76,33 @@ B안(단번 전환)을 택하지 않은 이유는 타입 에러가 16곳에서 �
 
 ## ① 역할·능력 스키마
 
-능력 어휘는 15개 분기에서 귀납했다.
+능력 어휘는 15개 분기에서 귀납했다(전체 16개 중 `turnGuide.ts:60` 은 아래 "제외" 절 참조).
+
+실행 결산: **10개가 능력으로 이관**됐고, 1개는 능력이 아니라 프로파일 표
+(`themeCapabilityRoles`)로 갔고, 1개는 제외(`turnGuide`), 1개는 능력으로 접히지 않아
+유지(`buildPaletteCore` 의 `layerHome` 컬럼 — ② 절 제약 참조), 2개는 A-3 로 이월했다
+(`paletteLayerForTile` 중복, `themePacks` 의 `terrainTag = 0`). ⑦ 절의 게이트 표를 볼 것.
 
 | 능력 | 타입 | 대체하는 분기 |
 |---|---|---|
-| `layerHome` | `lower\|upper\|perCell` | `groupSampleBuilder.ts:174`, `buildPaletteCore.ts:93` |
-| `sampleAs` | `nineSlice\|verticalPair\|roof\|single` | `groupSampleBuilder.ts:54,59,60` |
+| `layerHome` | `lower\|upper\|perCell` | `buildPaletteCore.ts:93`, `grammarProfiles.ts:57-65` |
+| `sampleLayer` | `lower\|upper` (선택) | `groupSampleBuilder.ts:174` |
+| `sampleAs` | `nineSlice\|verticalPair\|roof` | `groupSampleBuilder.ts:54,59,60` |
 | `expectedPassage` | `passable\|solid` (선택) | `tilesetPaletteLint.ts:104,106,115` |
 | `requiresPatternGrammar` | `boolean` | `aiPreviewContracts.ts:432` |
 | `autotile` | `boolean` | `tileVocabulary.ts:259` |
-| `terrainTag` | `number` (선택) | `combinedTown.ts:349` |
+| `terrainTag` | `"water"` (선택) | `combinedTown.ts:349` |
 | `needsBackdrop` | `boolean` | `groupSampleBuilder.ts:199` |
+
+`layerHome` 과 `sampleLayer` 는 이름이 비슷하지만 다른 질문이며 **답이 다르다.**
+`grammarProfiles.ts:65` 는 `prop: "perCell"`(어휘 홈 — 재료가 어느 레이어에 사는가)이고
+`groupSampleBuilder.ts:174` 는 `role === "prop" → "upper"`(샘플 렌더 레이어 — 미리보기를
+어디에 그리는가)다. 하나로 합치면 동작이 바뀐다. **A-1 실행에서 확인됨.**
+
+`terrainTag` 가 답하는 질문은 "이 역할의 태그 숫자가 몇인가"가 아니라 "이 역할이 물 태그를
+원하는가"다. 숫자(`TERRAIN_TAG.WATER`)는 소비처인 `combinedTown.terrainTagForGroup`
+(`combinedTown.ts:349`)이 아는 값이다. 능력 표가 태그 상수를 알면 하네스 구현이 스키마로
+새어 나온다.
 
 ### 제외: `turnGuide.ts:60`
 
@@ -99,17 +121,18 @@ B안(단번 전환)을 택하지 않은 이유는 타입 에러가 16곳에서 �
 
 산포를 정말 막고 싶다면 그것은 `scatter_object`(`placementTools.ts:227`)에 검증을 넣는 별개 기능 요청이다. 현재 그 도구는 역할을 보지 않으므로 침대도 흩뿌려진다.
 
-신규 파일 `src/project/types/roles.ts`:
+신규 파일 `src/project/types/roles.ts`(A-1 은 이 표를 `src/project/tileRoles.ts` 에 임시로 두었다 — A-3 에서 `GrammarProfile.roles` 로 이사한다):
 
 ```ts
 export interface RoleCapabilities {
   layerHome: "lower" | "upper" | "perCell";
-  sampleAs?: "nineSlice" | "verticalPair" | "roof" | "single";
+  sampleLayer?: "lower" | "upper";
+  sampleAs?: "nineSlice" | "verticalPair" | "roof";  // 초안의 "single" 은 대응 분기가 없어 뺐다
   expectedPassage?: "passable" | "solid";
-  requiresPatternGrammar?: boolean;
-  autotile?: boolean;
-  terrainTag?: number;
-  needsBackdrop?: boolean;
+  requiresPatternGrammar: boolean;
+  autotile: boolean;
+  terrainTag?: "water";
+  needsBackdrop: boolean;
 }
 
 export interface TileRoleDef {
@@ -121,6 +144,11 @@ export interface TileRoleDef {
 }
 ```
 
+`requiresPatternGrammar`·`autotile`·`needsBackdrop` 은 선택이 아니라 **필수**다. A-1 구현이
+세 소비처에서 모두 `false` 를 유의미한 답(= "이 역할은 아니다")으로 읽고 있음을 확인해
+`?` 를 뺐다 — 선택 필드로 두면 "표에 안 적었다"와 "false 다"가 구별되지 않는다
+(`src/project/tileRoles.ts:26-32`).
+
 `origin`/`source`를 그대로 쓰는 이유는 `isTrustedGroupSource()`(`tileVocabulary.ts:58`)의 승인 판정을 역할에도 물려받기 위해서다.
 
 `TileGroupJunctionRule.withRole`은 `TileGroupRole` → `string`으로 넓히고, 검증은 "레지스트리에 있는 id인가"로 바뀐다.
@@ -131,9 +159,31 @@ export interface TileRoleDef {
 building  castle  fence  path  prop  roof  terrain  wall  water
 ```
 
-`furniture`는 `prop`에 병합한다. 7개 능력 중 두 역할을 가르는 값이 하나도 없고, "벽에 붙는다" 같은 배치 제약은 이미 `PlacementZone`(`base.ts:123-135`)이 킷·그룹 단위로 담당하기 때문이다(`base.ts:118-119` 주석 참조).
+`furniture`는 `prop`에 병합한다. 8개 능력 중 두 역할을 가르는 값이 하나도 없고, "벽에 붙는다" 같은 배치 제약은 이미 `PlacementZone`(`base.ts:123-135`)이 킷·그룹 단위로 담당하기 때문이다(`base.ts:118-119` 주석 참조).
 
 "실내 가구"라는 구분은 태그(`TileGroupMetadata.tags` / `TileAiMetadata.tags`)로 유지한다. 역할은 엔진이 어떻게 다룰지를, 태그는 사람과 AI가 어떻게 찾을지를 정한다.
+
+#### 병합의 필수 선행 단계 — 가구 태그를 **심어야** 한다 (A-3, 실측 확인)
+
+"태그로 유지한다"는 위 문장은 태그가 이미 있다는 뜻이 **아니다.** 없다. 측정 결과:
+
+```
+src/project/defaults/tileSemanticsInterior.ts
+  role: "furniture" 인 항목            57
+  그 중 tags.includes("furniture")      0
+  그 중 tags.includes("가구")            0
+```
+
+실내 시맨틱의 `entries(indexes, label, role, passage, tags)` 는 `tags` 에 **라벨을 앞에
+붙인다**(`tileSemanticsCombinedTown.ts:23`). 그래서 붙는 태그는 `"세로 긴 탁자 상단(캡)"`
+같은 개별 이름이고, 나머지 태그도 `table`/`shelf`/`cabinet` 처럼 품목 단위다. 가구 전체를
+묶는 상위 태그가 없다.
+
+따라서 병합 순서는 **태그 심기 → 역할 치환**이며 반대로 하면 안 된다. `role: "furniture"`
+를 `prop` 으로 바꾸는 순간 `benchmark/interior/groundTruth.ts:213,216` 의 `furnitureSolid`
+정답지가 조용히 빈 집합을 본다(예외도 실패도 없이 지표만 무의미해진다). 선택지는
+(a) 57 항목에 공통 태그 부여, (b) 품목 태그 화이트리스트, (c) 정답지를 태그 축에서
+떼어내기 중 하나이며 A-3 에서 정한다. 이 때문에 계획의 Task 10 은 취소되었다.
 
 ---
 
@@ -148,7 +198,62 @@ roleCapabilities(tileset, roleId)
    ⇒ 능력 필드 단위 병합
 ```
 
-병합 단위는 레코드 전체가 아니라 **능력 필드 하나하나**다. 레코드 교체 방식이면 "wall은 다 같은데 통행성만 다르다"를 표현하려 7개 능력을 다시 써야 하고, 나중에 능력이 추가될 때 사용자 데이터가 조용히 낡는다.
+병합 단위는 레코드 전체가 아니라 **능력 필드 하나하나**다. 레코드 교체 방식이면 "wall은 다 같은데 통행성만 다르다"를 표현하려 8개 능력을 다시 써야 하고, 나중에 능력이 추가될 때 사용자 데이터가 조용히 낡는다.
+
+### ⚠️ A-3 제약 — 2단 해석은 신천지가 아니다. `vocabLayerHomeFor` 와 화해해야 한다
+
+**A-2 실행에서 나온 가장 무거운 발견이다. 위의 "2단 해석"을 그대로 새로 짓지 마라.**
+같은 철학의 해석 사슬이 이미 **그룹 층에** 3단으로 존재하며, 그것이 실제 맵 편집 결과를
+결정한다.
+
+```ts
+// src/editor/tools/v3/rmTypeExpander.ts:59-64
+export function vocabLayerHomeFor(group: TileGroupMetadata, profile: GrammarProfile): VocabLayerHome {
+  if (group.layerHome) return group.layerHome;                     // 1) 그룹 오버라이드
+  if (group.defaultLayer === "lower" || group.defaultLayer === "upper") return group.defaultLayer;
+  const derived = groupLayerHome(group);                           // 2) 타일에서 유도
+  return derived === "perCell" ? profile.layerHomeByRole[group.role] : derived;  // 3) 프로파일 시드
+}
+```
+
+스펙 ②의 2단(타일셋 오버라이드 → 프로파일 시드)과 위 3단(그룹 오버라이드 → 타일 유도 →
+프로파일 시드)은 **같은 질문에 답하는 두 사슬**이다. A-3 에서 `roleCapabilities()` 안에
+2단 해석을 따로 깔면 `layerHome` 의 진실이 다시 두 갈래로 갈라진다 — 이번 개편이 없애려던
+바로 그 병이다.
+
+**Task 9 가 이것을 실측으로 확인했다.** `BUILD_PALETTE_GROUP_CLAIMS`
+(`src/editor/panels/buildPaletteCore.ts:92-101`)의 `layerHome` 컬럼을 "역할과 중복"이라
+보고 지우려 했으나 **삭제를 취소했다.** 중복이 아니다.
+
+| claim | role | 표의 `layerHome` | 역할 기본값 |
+|---|---|---|---|
+| `door` | `prop` | **lower** | perCell |
+| `window` | `prop` | **upper** | perCell |
+| `tree` | `prop` | **perCell** | perCell |
+| `prop` | `prop` | **upper** | perCell |
+| `roof` | `roof` | **lower** | perCell |
+
+`role: "prop"` 4 항목이 서로 다른 3 개 값을 갖는다. **역할을 키로 하는 어떤 조회도 이 표를
+재현할 수 없다.** 클레임 값은 `ensureBuildPaletteTileGroups`(`buildPaletteCore.ts:162-163`)
+에서 `group.layerHome` / `group.defaultLayer` 에 기록되고, 그것이 위 사슬의 1·2 순위로
+들어가 `layerForVocabTile()` → 실제 맵 편집의 `layer` 필드까지 간다. 즉
+**`place_door`·`place_window`·`build_roof`·`build_wall`·`lay_path`·`place_props` 가
+`lowerTiles` 냐 `upperTiles` 냐를 이 값이 결정한다.** 장식이 아니라 동작이다.
+
+A-3 이 해야 할 일은 사슬을 새로 만드는 것이 아니라 **기존 사슬의 마지막 단(프로파일 시드)을
+`roleCapabilities()` 로 교체하고, 그 위에 타일셋 오버라이드 단을 끼워 넣는 것**이다. 목표
+형태:
+
+```
+group.layerHome                      ← 그룹 오버라이드 (유지, 삭제 불가)
+  → group.defaultLayer               ← 유지
+  → groupLayerHome(group)            ← 유지 (타일 단위 유도)
+  → roleCapabilities(tileset, role)  ← 이 한 단만 새로 끼운다
+       = tileset.roleOverrides[role].layerHome ?? profile.roles[role].caps.layerHome
+```
+
+`layerHome` 을 "역할이 정하는 값"으로 단순화하려는 시도는 A-3 에서도 실패한다. 역할은
+**가장 약한 폴백**이며, 그것이 이 사슬이 존재하는 이유다.
 
 ### 스키마 변경
 
@@ -160,6 +265,12 @@ export interface GrammarProfile {
   readonly supportedPatternKinds: readonly GrammarPatternKind[];
   readonly roles: Readonly<Record<string, TileRoleDef>>;
   readonly autotileNeighborhood: 4 | 8;
+  /**
+   * 테마 적격성 능력 → 역할 목록. capability → role[] 역인덱스라 RoleCapabilities 와
+   * 방향이 반대다. 그래서 능력 표가 아니라 프로파일의 별도 컬럼이다.
+   * 출처: aiPreviewThemeGrammar.groupsForCapability. A-2 에서 이관 완료.
+   */
+  readonly themeCapabilityRoles: Readonly<Record<string, readonly string[]>>;
 }
 
 // types/base.ts — TilesetDef 에 추가
@@ -171,13 +282,38 @@ export interface GrammarProfile {
 
 `suppressedRoleIds`는 `suppressedHarnessGroupIds`(`combinedTown.ts:76`)와 같은 계약이다. 역할 추가는 `roleOverrides`에 프로파일에 없는 id를 넣는 것으로 되며, 이때만 `layerHome`이 필수다(폴백 불가).
 
+### `themeCapabilityRoles` — 폴백이 방어가 아니라 본체다
+
+`AiPreviewThemeCapability`(`src/project/aiPreviewContracts.ts:24-32`)는 **8종**이다.
+
+```
+buildingShell  decorProp  doorOrEntrance  roomTrim
+solidBoundary  walkableFloor  wallFace  waterOrHazard
+```
+
+표(`grammarProfiles.ts:33-41`)에는 이 중 **7종만** 들어 있다. `decorProp` 은 **의도적으로
+빠져 있다** — 원본 `groupsForCapability` 에도 `decorProp` 명시 분기가 없었고 catch-all
+`prop`/`fence`/`roof` 로 떨어졌기 때문이다. 그 동작을 그대로 재현하려면 표에 넣지 않고
+폴백으로 흘려야 한다.
+
+```ts
+// src/project/aiPreviewThemeGrammar.ts:116-118
+const table = tilesetGrammarProfile(tileset).themeCapabilityRoles;
+const roles = table[capability] ?? ["prop", "fence", "roof"];
+```
+
+즉 이 `??` 는 방어 코드가 아니라 **`decorProp` 의 유일한 정답 경로**다. A-3 에서 표를
+"완전하게" 만들려고 `decorProp: [...]` 를 채우거나 폴백을 지우면 동작이 바뀐다. 지우려면
+먼저 `decorProp` 의 답이 정말 `["prop","fence","roof"]` 인지 정하고 표에 명시적으로 넣어야
+하며, 그것은 동작 변화를 수반하는 별개 결정이다.
+
 ### 출처 추적
 
 ```ts
 roleCapabilitySources(tileset, roleId): Record<keyof RoleCapabilities, "override" | "profile" | "default">
 ```
 
-DB 탭 배지 전용이다. 읽기 경로(15개 분기)는 사용하지 않는다.
+DB 탭 배지 전용이다. 읽기 경로(이관된 10개 분기)는 사용하지 않는다.
 
 ### 유보: 사용자 저작 프로파일(3단)
 
@@ -255,7 +391,7 @@ interface MaterialSetRecord {
 | `ground` | `terrain` | 동의어 |
 | `boundary` | `fence` | 동의어 |
 | `decor` | `prop` | 동의어 |
-| `furniture` | `prop` | 능력 차이 없음(①) |
+| `furniture` | `prop` | 능력 차이 없음(①). **선행: 가구 태그 심기** — ①의 "병합의 필수 선행 단계" 참조 |
 | `path` | `path` | 신규 정식 역할 |
 | 나머지 8종 | 그대로 | |
 
@@ -296,7 +432,7 @@ TILESET_FOLDER_TAB_IDS (database.ts:140)   5개 → 8개
 
 선례는 이미 둘 있다 — `structureKits`(`database.ts:473`)와 `tilesetSpaces`(`:468`)가 타일셋 소유 배열을 렌더하는 탭이다.
 
-**`tileRoles` 탭** — 행 = 역할, 열 = 능력 7개. 셀마다 출처 배지(프로파일 시드 / 타일셋 오버라이드 / 사용자 정의)를 달며 `roleCapabilitySources()`가 먹인다. 시드 역할은 끄기(`suppressedRoleIds`)만 되고 삭제는 안 된다.
+**`tileRoles` 탭** — 행 = 역할, 열 = 능력 8개. 셀마다 출처 배지(프로파일 시드 / 타일셋 오버라이드 / 사용자 정의)를 달며 `roleCapabilitySources()`가 먹인다. 시드 역할은 끄기(`suppressedRoleIds`)만 되고 삭제는 안 된다.
 
 **`materialSets` 탭** — 집 키트·던전 테마·마당 테마가 합류한다. 편집기는 `역할 → 파트역할 → 타일` 3단 선택이다.
 
@@ -325,9 +461,15 @@ TILESET_FOLDER_TAB_IDS (database.ts:140)   5개 → 8개
 
 **A-1** — 유일한 합격 기준은 "아무것도 안 바뀌었다"이다. `roleCapabilities()`가 기존 두 enum 표와 모든 입력에서 같은 값을 내는지 전수 검증한다.
 
-이 시점의 역할 집합은 통합 후 9종이 아니라 **구 어휘 13종**이다(`TileGroupRole` 8 + `PaletteSlotRole` 8 − 공유 3). 통합은 A-3의 마이그레이션에서 일어나므로, A-1 테스트는 13종 × 능력 7개 = 91칸을 덮어야 한다. 9종으로 줄어드는 것은 A-3 이후의 상태다.
+이 시점의 역할 집합은 통합 후 9종이 아니라 **구 어휘 13종**이다(`TileGroupRole` 8 + `PaletteSlotRole` 8 − 공유 3). 통합은 A-3의 마이그레이션에서 일어나므로, A-1 테스트는 13종 × 능력 8개 = 104칸을 덮어야 한다. 9종으로 줄어드는 것은 A-3 이후의 상태다.
 
 **A-2** — 분기 하나당 커밋 하나. 각 커밋은 해당 분기를 덮는 기존 테스트가 green이어야 넘어간다. 덮는 테스트가 없는 분기는 먼저 특성화 테스트를 쓰고 이관한다.
+
+**순수 리팩터의 검증은 revert 가 아니라 변이(mutation)다.** "소스 편집을 되돌려 테스트가
+실패하는지 본다"는 방법은 동작 변화 0 인 이관에서 **논리적으로 성립하지 않는다** — 올바른
+특성화 테스트는 구 코드와 신 코드 양쪽에서 통과하는 것이 정상이고, revert 시 실패했다면
+그것은 동작을 바꿨다는 뜻이다. 대신 **이관본을 일부러 망가뜨려**(분기 교환, 조건 삭제,
+메시지 문자 변경) 테스트가 red 로 가는지 확인하고 되돌린다. A-2 전체에서 이 방법을 썼다.
 
 **A-3**
 - 구 스키마 픽스처(`defaults/fixtures/dew-village-demo.json`) → 마이그레이션 → 신 스키마 왕복 검증
@@ -335,6 +477,23 @@ TILESET_FOLDER_TAB_IDS (database.ts:140)   5개 → 8개
 - 시드 3상태(`undefined` / 값 / `[]`) 각각의 재시드 동작
 
 **판정 방식** — 공유 머신이므로 실패 수는 의미가 없다. 기준선 워크트리를 두고 실패 집합의 차집합으로 판정한다. dev 서버 포트는 명령에 명시적으로 박는다.
+
+### A-2 완료 게이트 (구현 완료) 와 살아남은 22 줄
+
+`test/roleNameComparisonGate.test.ts` 가 `src/**/*.ts` 를 훑어 타일 역할 이름 비교
+(`\brole === "<소문자>"`)를 찾고, 허용 목록 **11 파일 / 22 줄** 밖에 있으면 실패한다. 줄 수를
+파일별로 못 박아 두므로 새 비교가 들어오면 게이트가 잡고, 이관이 진행돼 비교가 사라지면
+"허용 항목이 죽었다"고 알려 목록도 함께 낡지 않는다.
+
+살아남은 22 줄은 **역할로 접히지 않는다고 판정한 곳**이며, 그 중 둘은 A-3 이 다뤄야 한다.
+
+| 잔여 | 왜 남았나 | A-3 |
+|---|---|---|
+| `mapTools.ts:666`, `placementTools.ts:1288` | `paletteLayerForTile()` 이 **두 파일에 글자 단위로 중복**되어 있다. `role === "decor" \|\| "furniture" \|\| "roof" → upper` 로 레이어를 정하는데 그 답이 `layerHome` 과 **다르다**(`roof` 의 `layerHome` 은 `perCell`). 이 저장소의 **네 번째** layerHome 계열 의미다 — `layerHome`, `sampleLayer`, 클레임 오버라이드에 이어. | 중복 제거 + 네 의미의 관계 정리 |
+| `themePacks.ts:444,522` | `group.role === "terrain" → terrainTag = 0` 을 강제한다. 현재 `terrainTag` 능력은 `"water"` 만 표현하므로 **이 값을 담을 수 없다.** | 능력을 `"water" \| "normal"` 로 넓힐지, 하네스 관심사로 남길지 결정 |
+
+나머지는 프롬프트 예시 휴리스틱(`turnGuide.ts`), 선언 표의 키, 역할로 그룹을 고르는 질의
+(비교가 아니라 검색), UI 라벨이며 이관 대상이 아니다.
 
 ---
 

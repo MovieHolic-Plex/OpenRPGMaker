@@ -6,9 +6,72 @@
 
 **Architecture:** 스펙의 A안(어댑터 우선)이다. A-1에서 조회 함수를 도입하되 내부는 기존 상수 표를 그대로 재현해 동작 변화 0을 증명하고, A-2에서 분기를 하나씩 조회 함수로 옮긴다. `role: string` 개방·마이그레이션·DB UI는 이 계획에 없다(A-3, 별도 계획).
 
-**Tech Stack:** TypeScript, vitest 3.2.4 (`npm test`), `tsc --noEmit` (`npm run typecheck`)
+**Tech Stack:** TypeScript, vitest (`npm test`), `tsc --noEmit` (`npm run typecheck`)
+
+> `package.json:89` 은 `"vitest": "3.2.4"` 로 고정돼 있으나 **설치된 실체는 4.1.10** 이다
+> (`npx vitest --version` → `vitest/4.1.10 linux-x64 node-v24.11.1`). 계획 초안이 적은
+> 3.2.4 는 매니페스트 값을 그대로 베낀 것이었다. 실행 중 4.x 로 인한 문제는 없었다.
 
 **Spec:** `docs/superpowers/specs/2026-09-01-tileset-owned-role-registry-design.md`
+
+---
+
+## 실행 결과 (2026-09-01) — 이 계획은 이제 역사다
+
+**A-1 · A-2 전체 실행 완료.** 커밋 `34e5815b` ~ `a81116d8`.
+
+| Task | 결과 |
+|---|---|
+| 1 (A-1 조회 함수) | 완료. 다만 `PaletteSlotRole` 전용 5종에 유추로 적었던 샘플 능력 2칸을 **뺐다** — 출처 함수의 인자 타입이 `TileGroupRole` 이라 그 5종은 도달조차 못 한다(`b2908ebc`) |
+| 2 · 3 (`groupSampleBuilder` 5분기) | 완료 |
+| 4 (`expectedPassage`) | 완료. 브리프의 특성화 테스트 2개가 **공허했다**(경고 0건) — 구현자가 위반을 직접 구성해 5개로 넓혔다 |
+| 5 · 6 · 7 (`requiresPatternGrammar`·`autotile`·`terrainTag`) | 완료 |
+| 8 (`themeCapabilityRoles`) | 완료. `AiPreviewThemeCapability` 는 7종이 아니라 **8종**이었고 `decorProp` 은 표에 넣지 않고 폴백으로 흘린다 |
+| 9 (`layerHome` 컬럼 제거) | **Step 3 취소 — 컬럼 유지.** 가설이 틀렸다. 아래 참조 |
+| 10 (`furniture` 필터 태그화) | **취소 — 무변경.** 아래 참조 |
+| 11 (A-2 게이트) | 완료. 허용 목록 11 파일 / 22 줄 |
+| 12 (문서 갱신) | 이 커밋 |
+
+### Task 9 — 삭제 취소, 그리고 A-3 의 방향을 바꾼 발견
+
+`BUILD_PALETTE_GROUP_CLAIMS` 의 `layerHome` 컬럼이 역할과 중복이라는 가설은 **틀렸다.**
+`role: "prop"` 4 항목이 서로 다른 3 개 값(`door`=lower, `window`=upper, `tree`=perCell,
+`prop`=upper)을 갖는다. 역할을 키로 하는 어떤 조회도 재현할 수 없다.
+
+더 중요한 것은 이 값이 **이미 3단 해석 사슬의 1 순위**라는 사실이다 —
+`vocabLayerHomeFor()`(`src/editor/tools/v3/rmTypeExpander.ts:59-64`) 가
+`group.layerHome → group.defaultLayer → 타일 유도 → profile.layerHomeByRole[role]` 순으로
+푼다. 그리고 그 답이 `place_door`/`place_window`/`build_roof`/`lay_path`/`place_props` 가
+`lowerTiles` 냐 `upperTiles` 냐를 결정한다.
+
+즉 **스펙 ②의 "2단 해석"은 빈 땅이 아니다.** A-3 은 병행 사슬을 새로 짓지 말고 기존
+사슬의 마지막 단만 `roleCapabilities()` 로 교체해야 한다. 스펙 ② 절에 "⚠️ A-3 제약"
+소절로 못 박았다.
+
+### Task 10 — 취소 (측정 결과 죽은 코드가 될 것이었다)
+
+`entry.role === "furniture"` 를 태그 검사로 바꾸려 했으나, `role: "furniture"` 인
+시맨틱 항목 **57 개 중 `furniture` 태그를 가진 것도 `가구` 태그를 가진 것도 0 개**였다.
+실내 시맨틱은 태그에 **라벨을 앞에 붙이고**(`tileSemanticsCombinedTown.ts:23`) 나머지
+태그도 `table`/`shelf`/`cabinet` 처럼 품목 단위라 상위 태그가 없다.
+
+계획대로 `|| tags.includes("furniture") || tags.includes("가구")` 를 붙였다면 두 항이
+57 항목 전부에서 **영구히 false** 인 죽은 코드가 되고, `furniture` → `prop` 병합 후에는
+벤치마크가 조용히 빈 집합을 본다. 계획의 Step 3 에 있던 탈출구("태그가 없으면 A-3 으로
+넘긴다")를 따라 무변경으로 종료했다. 가구 태그를 **심는 것**이 A-3 의 선행 작업이며
+스펙 ①에 기록했다.
+
+### 검증 방법 정정 — revert 아니라 변이
+
+이 계획과 파생 브리프는 "소스 편집을 되돌려 테스트가 실패하는지 확인하라"고 지시했다.
+**순수 리팩터에서 성립할 수 없는 요구다.** 동작 변화가 0 이면 올바른 특성화 테스트는 구
+코드와 신 코드 양쪽에서 통과하는 게 정상이고, 되돌려서 실패했다면 그것은 동작을 바꿨다는
+뜻이다. 이 계획의 다른 제약("이관 전에 통과해야 한다. 실패하면 테스트가 틀린 것")과 정면
+모순이었다.
+
+실제로 쓴 방법은 **변이 테스트**다 — 이관본을 일부러 망가뜨리고(분기 교환, `undefined`
+경로 삭제, 메시지 공백 1개 삭제) 테스트가 red 로 가는지 확인한 뒤 되돌린다. 아래 각
+Task 의 "Expected: PASS" 단계는 이 방법으로 읽어야 한다.
 
 ## Global Constraints
 
@@ -35,8 +98,10 @@
 | `src/project/tilesetHarness/combinedTown.ts` | 분기 1개 이관 (`:348`) | 수정 |
 | `src/editor/tools/v3/grammarProfiles.ts` | `themeCapabilityRoles` 표 추가 | 수정 |
 | `src/project/aiPreviewThemeGrammar.ts` | 역인덱스를 프로파일 표로 이관 (`:110-115`) | 수정 |
-| `src/editor/panels/buildPaletteCore.ts` | 중복 `layerHome` 컬럼 제거 (`:92-101`) | 수정 |
-| `src/benchmark/interior/groundTruth.ts` | `role === "furniture"` 필터를 태그 기반으로 | 수정 |
+| `src/editor/panels/buildPaletteCore.ts` | ~~중복 `layerHome` 컬럼 제거 (`:92-101`)~~ | **무변경** — 중복이 아니었다 (Task 9) |
+| `src/benchmark/interior/groundTruth.ts` | ~~`role === "furniture"` 필터를 태그 기반으로~~ | **무변경** — 태그가 없었다 (Task 10) |
+| `test/roleNameComparisonGate.test.ts` | A-2 완료 게이트 (허용 11 파일 / 22 줄) | 신규 |
+| `test/buildPaletteClaimLayerHome.test.ts` | 클레임 `layerHome` 이 역할과 갈리는 4건 고정 | 신규 |
 
 ## 계획 작성 중 발견한 스펙 수정 2건
 
@@ -51,7 +116,14 @@ groupSampleBuilder.ts:174  role === "prop" → "upper"       ← 샘플 렌더 �
 
 하나로 합치면 동작이 바뀐다. `layerHome`과 `sampleLayer`로 가른다. **능력 7개 → 8개.**
 
-**② `aiPreviewThemeGrammar.ts:110-115`는 `RoleCapabilities`가 아니다.** `AiPreviewThemeCapability`(7종: `walkableFloor` `solidBoundary` `wallFace` `roomTrim` `buildingShell` `doorOrEntrance` `waterOrHazard`) → 역할 목록의 **역인덱스**다. 역할별 능력이 아니라 프로파일의 별도 표(`themeCapabilityRoles`)로 둔다.
+**② `aiPreviewThemeGrammar.ts:110-115`는 `RoleCapabilities`가 아니다.** `AiPreviewThemeCapability`(→ 역할 목록)의 **역인덱스**다. 역할별 능력이 아니라 프로파일의 별도 표(`themeCapabilityRoles`)로 둔다.
+
+> **실행 정정:** `AiPreviewThemeCapability` 는 위에 적은 7종이 아니라 **8종**이다
+> (`src/project/aiPreviewContracts.ts:24-32`) — `decorProp` 이 빠져 있었다. 그리고
+> `decorProp` 은 표에 **넣지 않는다.** 원본에도 `decorProp` 명시 분기가 없어 catch-all
+> `["prop","fence","roof"]` 로 떨어졌기 때문이다. 따라서 Task 8 Step 6 의
+> `?? ["prop", "fence", "roof"]` 는 방어 코드가 아니라 **`decorProp` 의 유일한 정답
+> 경로**이며 지우면 동작이 바뀐다.
 
 ---
 
@@ -225,12 +297,27 @@ export function roleCapabilities(_tileset: TilesetDef, roleId: string): RoleCapa
 }
 ```
 
+> **실행 정정 2건 (커밋 `b2908ebc`) — 위 블록은 초안이고 최종형은 `src/project/tileRoles.ts` 다.**
+>
+> 1. `decor`·`furniture` 의 `sampleLayer: "upper"` / `needsBackdrop: true` 를 **뺐다.**
+>    이 값들의 출처인 `groupSampleBuilder` 의 `targetLayer`/`backdropTile` 은 인자 타입이
+>    `TileGroupRole` 이라 `PaletteSlotRole` 전용 5종은 **애초에 도달하지 못한다.** 즉 현행
+>    동작에서 이들의 답은 "없음"이고, 유추한 값을 적어 두면 A-3 에서 역할이 열리는 순간
+>    없던 잔디 배경이 생긴다 — 동작 변화 0 위반. `layerHome` 만 가까운 그룹 역할에서
+>    베끼는 면책이 적용된다.
+> 2. 반환 타입을 `Readonly<RoleCapabilities>` 로 바꿨다. 표 항목(또는 `BASE` 싱글턴)의
+>    **참조**를 그대로 넘기므로, 10개 호출부 중 한 곳이 필드를 대입하면 프로세스 전역이
+>    오염된다.
+>
+> 또한 위 인터페이스의 `sampleAs` 에서 `"single"` 을 뺐다 — 스펙 ① 은 4값으로 적었으나
+> 실제 분기는 `nineSlice`/`verticalPair`/`roof` 3값만 만든다.
+
 - [ ] **Step 4: 통과를 확인한다**
 
 Run: `npm test -- test/tileRoleCapabilities.test.ts`
 Expected: PASS (5 tests)
 
-`layerHome` 일치 테스트가 실패하면 표를 고치는 게 아니라 **`grammarProfiles.ts:37-46`을 다시 베껴야 한다.** 프로파일이 정본이다.
+`layerHome` 일치 테스트가 실패하면 표를 고치는 게 아니라 **`grammarProfiles.ts:57-65`을 다시 베껴야 한다.** 프로파일이 정본이다.
 
 - [ ] **Step 5: 타입 검사**
 
@@ -836,6 +923,10 @@ Run: `grep -rn "AiPreviewThemeCapability" src/project/ | head -5`
 
 7종(`walkableFloor` `solidBoundary` `wallFace` `roomTrim` `buildingShell` `doorOrEntrance` `waterOrHazard`)으로 알고 있으나 **추측하지 말고 정의를 읽어 맞춘다.**
 
+> **실측: 8종이었다.** `decorProp` 이 추가로 있다(`aiPreviewContracts.ts:24-32`). 아래
+> Step 4 의 표는 7종만 담고 `decorProp` 은 Step 6 의 폴백으로 흘리는 것이 맞다 — 원본에도
+> `decorProp` 분기가 없었으므로 그것이 동작 변화 0 이다.
+
 - [ ] **Step 2: 특성화 테스트를 쓴다**
 
 ```ts
@@ -935,7 +1026,14 @@ aiPreviewThemeGrammar.ts:110-115 의 5중 role 필터를 GrammarProfile
 
 ---
 
-### Task 9: `buildPaletteCore` — 중복 `layerHome` 컬럼 제거
+### Task 9: `buildPaletteCore` — 중복 `layerHome` 컬럼 제거 — **Step 3 취소 (컬럼 유지)**
+
+> **실행 결과:** Step 1·2 만 수행했다. Step 2 가 **FAIL** — 8 항목 중 4 건이 역할 기본값과
+> 어긋나고 `role: "prop"` 이 3 개 값을 갖는다. 계획의 Step 2 지시("FAIL 이면 여기서 멈추고
+> 보고한다")대로 삭제를 취소했다. 불일치를 고정하는 테스트만 남겼다(`2fe4bbcc`).
+>
+> 이 실패가 A-3 의 방향을 바꿨다 — 위 "실행 결과 § Task 9" 와 스펙 ② 의 "⚠️ A-3 제약" 참조.
+> 아래 Step 3~5 는 **실행하지 않았다.** 기록으로만 남긴다.
 
 **Files:**
 - Modify: `src/editor/panels/buildPaletteCore.ts:85-101`
@@ -1029,7 +1127,22 @@ BUILD_PALETTE_GROUP_CLAIMS 는 분기가 아니라 선언 표였고 role 과 lay
 
 ---
 
-### Task 10: `benchmark/interior/groundTruth` — `furniture` 필터를 태그 기반으로
+### Task 10: `benchmark/interior/groundTruth` — `furniture` 필터를 태그 기반으로 — **취소 (무변경, A-3 이월)**
+
+> **취소 사유 (측정):** `role: "furniture"` 인 시맨틱 항목 57 개 중
+> `tags.includes("furniture")` = **0**, `tags.includes("가구")` = **0**. 실내 시맨틱은 태그에
+> 라벨을 앞에 붙이고(`tileSemanticsCombinedTown.ts:23`) 나머지 태그도 `table`/`shelf`/
+> `cabinet` 처럼 품목 단위라 가구를 묶는 상위 태그가 존재하지 않는다.
+>
+> Step 3 의 `|| tags.includes("furniture") || tags.includes("가구")` 를 넣었다면 두 항이
+> 57 항목 전부에서 **영구히 false** 인 죽은 코드가 되고, `furniture` → `prop` 병합 후에는
+> `furnitureSolid` 정답지가 **조용히 빈 집합**을 본다(예외도 실패도 없이 지표만 무의미해진다).
+> Step 3 에 적어 둔 탈출구("태그가 없으면 `role === "furniture"` 를 남기고 A-3 으로 넘긴다")
+> 를 따라 무변경으로 종료했다.
+>
+> **A-3 로 넘긴 실제 작업:** `furniture` → `prop` 병합 **전에** 가구 식별 수단을 먼저
+> 만들어야 한다 — (a) 57 항목에 공통 태그 부여, (b) 품목 태그 화이트리스트, (c) 정답지를
+> 태그 축에서 떼어내기. 스펙 ① 의 "병합의 필수 선행 단계" 에 기록했다.
 
 **Files:**
 - Modify: `src/benchmark/interior/groundTruth.ts:213,216`
@@ -1095,6 +1208,16 @@ role === furniture 도 or 조건으로 남겨 병합 전후 양쪽에서 동작�
 - Produces: 없음
 
 A-2 의 목표는 "role 이름 비교가 코드에서 사라진다"였다. 그것을 테스트로 못 박아 A-3 이후에도 되돌아가지 않게 한다.
+
+> **실행 정정 3건:**
+> 1. 아래 정규식 `/\.role\s*===\s*["'][a-z]+["']/` 는 선행 점을 강제해 **맨 지역변수**
+>    (`role === "path"`)를 놓친다. `\brole` 로 바꿨고, `\brole` 이 `paletteRole` 을 물지
+>    않음을 10 케이스로 직접 검증했다.
+> 2. `fs.globSync` 는 이 환경에서 쓸 수 없어 `readdirSync` 재귀 순회로 바꿨다(`a81116d8`).
+> 3. 허용 목록은 5곳이 아니라 **11 파일 / 22 줄**이다. 파일별 **줄 수까지** 못 박아
+>    새 비교가 들어와도 잡히고, 이관이 진행돼 비교가 사라지면 "허용 항목이 죽었다"고
+>    알려 목록이 함께 낡지 않는다. 그 중 2건(`paletteLayerForTile` 중복,
+>    `themePacks` 의 `terrainTag = 0`)은 A-3 후보로 표시했다 — 스펙 ⑦ 의 표 참조.
 
 - [ ] **Step 1: 게이트 테스트를 쓴다**
 
@@ -1166,7 +1289,7 @@ git add test/roleNameComparisonGate.test.ts
 git commit -m "test(tile): role 이름 비교 잔여를 0 으로 못 박는다 (A-2 게이트)
 
 A-2 의 목표가 지켜졌는지 테스트로 강제한다. 허용 목록은 '역할로 접히지
-않는다'고 판정해 의도적으로 남긴 5곳이며 각각 이유가 적혀 있다.
+않는다'고 판정해 의도적으로 남긴 11 파일 / 22 줄이며 각각 이유가 적혀 있다.
 
 이 게이트가 있으면 A-3 에서 role 을 string 으로 열 때 새 이름 비교가
 슬쩍 들어오는 것을 막을 수 있다."
@@ -1182,6 +1305,20 @@ A-2 의 목표가 지켜졌는지 테스트로 강제한다. 허용 목록은 '�
 **Interfaces:** 없음 (문서)
 
 계획 작성 중 스펙과 어긋나는 사실 2건이 나왔다. 스펙이 정본이므로 갱신한다.
+
+> **실행 시점에는 2건이 아니라 8건이었다.** 아래 Step 1·1b·2 외에 A-1·A-2 실행이 다음을
+> 추가로 드러냈고 스펙·계획 양쪽에 반영했다.
+>
+> | 발견 | 반영 위치 |
+> |---|---|
+> | `AiPreviewThemeCapability` 8종 (`decorProp` 누락) + 폴백이 본체 | 스펙 ② "themeCapabilityRoles" |
+> | **스펙 ② 의 2단 해석에 선례가 있다** (`vocabLayerHomeFor` 3단 사슬) | 스펙 ② "⚠️ A-3 제약" |
+> | Task 9 삭제 취소 — `role: "prop"` 이 3개 값 | 스펙 ② "⚠️ A-3 제약" |
+> | Task 10 취소 — 가구 태그가 0개, 심어야 한다 | 스펙 ① "병합의 필수 선행 단계" |
+> | 게이트 잔여 22줄 중 A-3 후보 2건 (`paletteLayerForTile` 중복, `terrainTag = 0`) | 스펙 ⑦ "A-2 완료 게이트" |
+> | `requiresPatternGrammar`·`autotile`·`needsBackdrop` 은 필수 필드 | 스펙 ① 인터페이스 |
+> | 검증은 revert 가 아니라 변이 | 스펙 ⑦ / 이 계획 "실행 결과" |
+> | vitest 실체는 4.1.10 (매니페스트는 3.2.4) | 이 계획 Tech Stack |
 
 - [ ] **Step 1: 능력 개수를 7 → 8 로 고치고 `sampleLayer` 를 추가한다**
 
@@ -1245,6 +1382,20 @@ RoleCapabilities 가 아니다. GrammarProfile.themeCapabilityRoles 로 둔다."
 의도적인 분리다. 스펙이 A안을 택한 이유가 "16개 분기 중 몇 개는 지금 의미가 불분명하고, 하나씩 옮기면 드러난다"였고, 계획 작성 단계에서 이미 두 건이 드러났다(`layerHome` 분열, 테마 역인덱스). A-2 를 실제로 수행하면 더 나올 것이고, 그 결과를 보고 A-3 계획을 쓰는 것이 A안의 요지다.
 
 A-3 계획을 쓰기 위한 선행 조건:
-- Task 11 게이트가 green (role 이름 비교 잔여 0)
-- Task 12 로 스펙이 실제 능력 목록과 일치
-- Task 9 Step 2 의 불일치 목록이 비어 있거나, 비어 있지 않은 이유가 문서화됨
+- ~~Task 11 게이트가 green (role 이름 비교 잔여 0)~~ → **충족.** 잔여 0 이 아니라 허용
+  목록 11 파일 / 22 줄로 고정되었고 각 줄에 이유가 붙었다. "잔여 0" 은 애초에 달성 불가능한
+  목표였다 — 선언 표의 키와 역할로 그룹을 고르는 질의는 비교가 아니지만 정규식에는 걸린다.
+- ~~Task 12 로 스펙이 실제 능력 목록과 일치~~ → **충족** (이 커밋)
+- ~~Task 9 Step 2 의 불일치 목록이 비어 있거나, 비어 있지 않은 이유가 문서화됨~~ →
+  **비어 있지 않았고, 이유가 문서화되었다.** 4 건 불일치. 스펙 ② "⚠️ A-3 제약"
+
+**A-3 이 계획 첫 줄에서 읽어야 할 것 — 우선순위 순:**
+
+1. **스펙 ② "⚠️ A-3 제약"** — 2단 해석을 새로 짓지 마라. `vocabLayerHomeFor` 의 3단 사슬과
+   화해해야 한다. A-2 실행의 가장 무거운 발견이다.
+2. **스펙 ① "병합의 필수 선행 단계"** — `furniture` → `prop` 치환 전에 가구 태그를 심어야
+   한다. 순서를 뒤집으면 벤치마크가 조용히 죽는다.
+3. **스펙 ⑦ 게이트 표** — A-3 이 손봐야 하는 잔여 2건. 특히 `paletteLayerForTile` 은 이
+   저장소의 **네 번째** layerHome 계열 의미이며 두 파일에 중복돼 있다.
+4. **스펙 ② "themeCapabilityRoles"** — `?? ["prop","fence","roof"]` 폴백은 지우면 안 된다.
+   `decorProp` 의 유일한 경로다.
