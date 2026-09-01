@@ -18,8 +18,8 @@
 // Task 4 가 이 헬퍼로 적 100마리를 덮으므로 규칙을 여기 못박는다.
 //
 //     5 = 고정 위력 무료 데미지 (sword_slash 22 / throwing_knife 18)
+//     5 = 보스의 속성기(always)    ← 보스만 예외. 아래 boss 케이스 주석 참조
 //     7 = **앵커** `skill_attack`  ← 회당 피해의 축
-//     7 = 보스의 속성기(always)    ← 보스만 예외. 아래 boss 케이스 주석 참조
 //     8 = 정체성기 (weaken·focus·sleep_mist·heal·속성기·arcane_bolt·poison_sting)
 //     9 = 보스의 turn 조건 버스트
 //
@@ -78,9 +78,17 @@ const FIXED_FREE = 5;
 const ANCHOR = 7;
 /**
  * 보스의 속성기(always). 앵커(7)보다 **두 칸 아래**인데 `mind = attack` 로스터에서는
- * 이게 정확히 **점수 동률**이 된다: 속성기 `5*10 + 위력 30 + 스탯/2` = 앵커
+ * 이게 **점수 동률**이 된다: 속성기 `5*10 + 위력 30 + 스탯/2` = 앵커
  * `7*10 + 위력 10 + 스탯/2` = `80 + 스탯/2`. 우선순위 2칸(20)이 위력차(30−10)를 정확히
  * 상쇄하고, 동률이면 runtime.ts:1865-1867 이 무작위로 갈라 둘이 섞인다.
+ *
+ * ⚠️ **상쇄는 속성기 위력이 30 일 때만 정확하다.** 8속성 중 `skill_water`·`skill_wind` 는
+ * 위력 28 이고 폴백 `skill_arcane_bolt` 도 28 이라, 코어가 `78 + 스탯/2` 로 앵커보다
+ * **2점 낮아 always 슬롯이 영구히 죽는다**. 실측: `enemy_hydra_three`(water) 164 < 앵커 166,
+ * `enemy_plant_carnivore`(wind) 143 < 앵커 145 — 둘 다 `mind = attack` 을 지키는데도
+ * 죽는다(원인은 스탯이 아니라 위력 28). 그 둘은 turn 버스트(9)로 3턴마다만 속성을 쓴다.
+ * 출하 트룹에는 편성돼 있지 않아 현재 플레이 영향은 없다. 위력별로 이 상수를 나누거나
+ * 위력 28 속성기의 위력을 30 으로 맞추는 것이 후속 과제다.
  *
  * 왜 보스만 이런가 — 다른 계열은 유료기를 앵커 위(8)에 둬도 maxMp 10 이 2회로 묶어
  * 주는데, 보스는 maxMp 40 이라 4MP 속성기를 10회 쓴다. 전투가 그보다 짧으면 사실상
@@ -244,7 +252,9 @@ export function archetypeActions(archetype: EnemyArchetype, elementSkillId?: str
         always("skill_sleep_mist", IDENTITY),
       ];
     case "boss":
-      // 보스만 속성기를 IDENTITY(8) 가 아니라 **앵커와 동률(7)** 로 둔다.
+      // 보스만 속성기를 IDENTITY(8) 가 아니라 BOSS_ELEMENT(**우선순위 5**) 로 둔다.
+      // 우선순위는 앵커(7)보다 낮지만 위력차가 상쇄해 **점수**가 동률이 된다(위력 30 기준.
+      // 위력 28 인 water/wind 는 2점 낮아 always 슬롯이 죽는다 — BOSS_ELEMENT JSDoc 참조).
       // "유료기는 MP 가 자기제한하니 앵커 위가 안전하다" 는 전제가 보스에서만 깨지기
       // 때문이다 — 보스 maxMp 는 40(emberQuest 드래곤은 60)이라 4MP 속성기를 10~15 회
       // 쓴다. 전투가 그보다 짧으면 사실상 무제한이라 앵커를 통째로 밀어낸다.
