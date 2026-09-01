@@ -50,6 +50,16 @@ export const DEFAULT_ELEMENT_RATE_LABELS: readonly { readonly id: string; readon
   { id: "earth", name: "Earth" },
   { id: "wind", name: "Wind" },
   { id: "holy", name: "Holy" },
+  // dark 는 elements 테이블(defaultElementRecords)에 원래 있었는데 이 시드 표에만 빠져
+  // 있었다. 새 개념 추가가 아니라 표 사이 불일치 교정이다. 등급이 비면 둘이 죽는다:
+  //  (1) DB 편집기의 저항 행이 이 표로 그려져서(actorRecordBattlePanels) dark 행 자체가
+  //      없다 — 아무도 dark 저항을 저작할 수 없고 적의 skill_dark 는 영원히 중립이다.
+  //  (2) runtime.elementMultiplierFor 는 등급이 없으면 typeMultiplier 만 돌려주고 조기
+  //      반환하므로, 장비의 dark 속성 방어(equipmentEffects.elementalDefenseIds)까지
+  //      함께 무시된다. 등급 "C"(=1.0 중립)를 깔면 그 경로가 살아난다.
+  // 방향 주의: 적이 dark 로 때릴 때 소비되는 건 맞는 쪽인 **액터·직업의** elementRates 다
+  // (적의 elementRates 는 플레이어가 적을 때릴 때 쓰인다).
+  { id: "dark", name: "Dark" },
 ] as const;
 
 export function defaultActorCharacterResourceId(actor: Pick<ActorRecord, "id">): string | undefined {
