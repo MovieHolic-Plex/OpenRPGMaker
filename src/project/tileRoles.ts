@@ -1,0 +1,78 @@
+// project/tileRoles.ts
+// 역할 능력 조회 (A-1). 15개 분기에 흩어진 role 이름 비교를 한 함수로 모은다.
+//
+// A-1 규약: 이 표의 값은 창작이 아니라 기존 코드에서 베낀 것이다. 각 필드에
+// 출처 주석이 붙어 있고, 값을 "더 맞게" 고치는 것은 A-1 범위가 아니다 —
+// 동작 변화 0 이 이 단계의 유일한 합격 기준이다.
+//
+// A-3 에서 이 표는 GrammarProfile.roles 로 이사하고 타일셋 오버라이드가 붙는다.
+
+import type { TilesetDef } from "./types";
+
+export interface RoleCapabilities {
+  /** 어휘 홈 — 재료가 어느 레이어에 사는가. 출처: grammarProfiles.layerHomeByRole */
+  layerHome: "lower" | "upper" | "perCell";
+  /**
+   * 그룹 샘플 미리보기를 그릴 레이어. layerHome 과 **다른 질문**이며 prop 에서 답이 갈린다
+   * (layerHome=perCell, sampleLayer=upper). 출처: groupSampleBuilder.targetLayer:174
+   * undefined = 역할로 결정하지 않고 tileset.priority 를 따른다.
+   */
+  sampleLayer?: "lower" | "upper";
+  /** 문법이 없을 때의 샘플 모양. 출처: groupSampleBuilder.buildBaseGroupSample:54,59,60 */
+  sampleAs?: "nineSlice" | "verticalPair" | "roof";
+  /** 통행 일관성 린트의 기대값. undefined = 검사하지 않음. 출처: tilesetPaletteLint:104-115 */
+  expectedPassage?: "passable" | "solid";
+  /** 패턴 문법 필수 여부. 출처: aiPreviewContracts.needsPatternGrammar:431 */
+  requiresPatternGrammar: boolean;
+  /** 문법 없이도 오토타일로 취급. 출처: tileVocabulary.isAutotileGroup:257 */
+  autotile: boolean;
+  /** 지형 태그 강제. undefined = 폴백 유지. 출처: combinedTown.terrainTagForGroup:348 */
+  terrainTag?: "water";
+  /** 샘플 배경에 잔디를 깔아야 하는가. 출처: groupSampleBuilder.backdropTile:199 */
+  needsBackdrop: boolean;
+}
+
+const BASE: RoleCapabilities = {
+  layerHome: "lower",
+  requiresPatternGrammar: false,
+  autotile: false,
+  needsBackdrop: false,
+};
+
+/**
+ * 구 어휘 13종의 능력 표. TileGroupRole 8 + PaletteSlotRole 8 − 공유 3.
+ * 두 enum 이 한 표에 섞여 있는 것은 의도적이다 — A-3 에서 통합될 예정이고,
+ * 그때까지 호출자는 어느 enum 에서 온 값인지 신경 쓰지 않아도 된다.
+ */
+export const LEGACY_ROLE_CAPABILITIES: Record<string, RoleCapabilities> = {
+  // ── TileGroupRole ──────────────────────────────────────────────
+  terrain: { ...BASE, layerHome: "lower", requiresPatternGrammar: true },
+  water: { ...BASE, layerHome: "lower", requiresPatternGrammar: true, autotile: true, terrainTag: "water" },
+  wall: { ...BASE, layerHome: "lower", sampleAs: "nineSlice", expectedPassage: "solid", requiresPatternGrammar: true },
+  building: { ...BASE, layerHome: "lower" },
+  castle: { ...BASE, layerHome: "lower" },
+  fence: { ...BASE, layerHome: "upper" },
+  roof: { ...BASE, layerHome: "perCell", sampleAs: "roof" },
+  prop: { ...BASE, layerHome: "perCell", sampleLayer: "upper", sampleAs: "verticalPair", needsBackdrop: true },
+
+  // ── PaletteSlotRole 전용 (낱개 타일·팔레트 슬롯) ────────────────
+  // 이 5종은 grammarProfiles.layerHomeByRole 에 없다 — layerHome 은 가장
+  // 가까운 그룹 역할에서 베낀다(ground→terrain, boundary→fence, decor→prop).
+  ground: { ...BASE, layerHome: "lower" },
+  path: { ...BASE, layerHome: "lower", expectedPassage: "passable" },
+  decor: { ...BASE, layerHome: "perCell", sampleLayer: "upper", needsBackdrop: true },
+  boundary: { ...BASE, layerHome: "upper" },
+  furniture: { ...BASE, layerHome: "perCell", sampleLayer: "upper", needsBackdrop: true },
+};
+
+/**
+ * 역할의 능력을 돌려준다. 모르는 역할에는 BASE 폴백을 준다 —
+ * 조용한 폴백을 택한 이유는 getGrammarProfile(grammarProfiles.ts:82)이 알 수 없는
+ * 프로파일 id 에 대해 이미 같은 규약(조용히 기본값)을 쓰기 때문이다.
+ *
+ * tileset 인자는 A-1 에서 쓰이지 않는다. A-3 에서 tileset.roleOverrides 를
+ * 읽으므로 시그니처를 미리 확정해 두어 호출자를 두 번 고치지 않는다.
+ */
+export function roleCapabilities(_tileset: TilesetDef, roleId: string): RoleCapabilities {
+  return LEGACY_ROLE_CAPABILITIES[roleId] ?? BASE;
+}
