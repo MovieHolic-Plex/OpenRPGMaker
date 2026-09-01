@@ -1138,3 +1138,132 @@ body.region-task-modal-open .ai-authoring-examples {
 .region-task-diagnostics-summary:hover {
   color: var(--editor-text);
 }
+
+/* ── 생성 모드 스위치 ──
+   조수(문장) 와 생성기(파라미터) 는 입력 방식이 달라 한 화면에 겹쳐 두면 지금 어느 쪽에
+   말하는지 잃는다. 세그먼트 하나로 갈라 놓고, 조수 쪽 화면은 그대로 둔다. */
+.region-task-mode-switch {
+  align-self: flex-start;
+  background: var(--bg-inset);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+}
+.region-task-mode-button {
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--radius-s) - 2px);
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
+  padding: 2px 10px;
+}
+.region-task-mode-button:hover {
+  color: var(--editor-text);
+}
+.region-task-mode-button.is-active {
+  background: var(--editor-surface, #fff);
+  color: var(--editor-text);
+}
+
+/* 생성기 모드에서 조수 입력부를 숨긴다. 각 요소의 hidden 상태는 건드리지 않는다 —
+   시트·자동완성은 자기 열림 여부를 hidden 으로 들고 있어서 여기서 지우면 모드를 되돌릴 때
+   닫혀 있어야 할 것이 열린 채로 나온다. */
+.region-task-prompt.is-operator-mode > .region-task-suggestions,
+.region-task-prompt.is-operator-mode > .region-task-categories,
+.region-task-prompt.is-operator-mode > .region-task-input,
+.region-task-prompt.is-operator-mode > .region-task-autocomplete,
+.region-task-prompt.is-operator-mode .region-task-direct-disclosure,
+.region-task-prompt.is-operator-mode .region-task-polish,
+.region-task-prompt.is-operator-mode .region-task-run {
+  display: none;
+}
+
+.region-task-operator-panel {
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+.region-task-operator-panel.hidden {
+  display: none;
+}
+.region-task-operator-head {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.region-task-operator-hint {
+  color: var(--editor-text-muted);
+  font: 400 11px/1.5 var(--font-ui, system-ui, sans-serif);
+}
+.region-task-operator-params {
+  display: grid;
+  gap: var(--space-1) var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.region-task-operator-slider {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 56px 1fr 34px;
+}
+.region-task-operator-name,
+.region-task-operator-readout,
+.region-task-operator-seed-label,
+.region-task-operator-seed-value {
+  color: var(--editor-text-muted);
+  font: 400 11px/1.5 var(--font-ui, system-ui, sans-serif);
+}
+.region-task-operator-readout,
+.region-task-operator-seed-value {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.region-task-operator-range {
+  min-width: 0;
+  width: 100%;
+}
+.region-task-operator-toggle {
+  align-items: center;
+  color: var(--editor-text);
+  display: flex;
+  font: 400 11px/1.5 var(--font-ui, system-ui, sans-serif);
+  gap: var(--space-1);
+}
+.region-task-operator-foot {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.region-task-operator-seed-value {
+  flex: 1;
+  text-align: left;
+}
+.region-task-operator-reseed {
+  background: transparent;
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
+  padding: 3px 10px;
+}
+.region-task-operator-run {
+  background: var(--accent, #4f46e5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: #fff;
+  cursor: pointer;
+  font: 600 11px/1.6 var(--font-ui, system-ui, sans-serif);
+  padding: 3px 12px;
+}
+.region-task-operator-run:disabled,
+.region-task-operator-reseed:disabled {
+  cursor: default;
+  opacity: 0.6;
+}

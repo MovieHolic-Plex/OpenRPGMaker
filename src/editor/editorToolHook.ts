@@ -12,6 +12,7 @@ import {
   type RectHouseStampResult,
 } from "@/editor/houseKit";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { selectEditorMap } from "@/editor/mapSelection";
 import {
   applyBuildPalettePrimitive,
   ensureBuildPaletteTileGroups,
@@ -36,6 +37,7 @@ import {
 import { serialize } from "@/project/io";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import type { GameEvent, MapId, Project } from "@/project/types";
+import { buildForestWrites, type ForestParams } from "@/editor/regionTask/forestWrites";
 import { sha256HexText } from "@/util/sha256";
 
 type RegionWrite = { readonly layer: "lower" | "upper"; readonly x: number; readonly y: number; readonly tile: number };
@@ -90,11 +92,20 @@ let projectE2EBootstrap: ProjectE2EBootstrap | null = null;
 // 헤드리스 영역 작업 검증용. Phaser 캔버스 입력/LLM 없이 실제 store에 clip/적용을 재현한다.
 type RegionTaskHarness = {
   currentMapId: () => MapId;
+  /** 에디터 화면을 해당 맵으로 전환한다(헤드리스 스크린샷용). */
+  selectMap: (mapId: MapId) => boolean;
   setSelection: (selection: { mapId: MapId; x: number; y: number; width: number; height: number } | null) => void;
   readCell: (mapId: MapId, layer: "lower" | "upper", x: number, y: number) => number | null;
   /** 영역 안에서 아직 걸어 들어갈 수 있는 칸 수 — "아예 통행불가능하게" 를 실측할 유일한 창구. */
   passableCount: (mapId: MapId, area: { x: number; y: number; w: number; h: number }) => number | null;
   runMock: (mapId: MapId, region: RegionRect, writes: readonly RegionWrite[]) => Promise<RegionTaskResult>;
+  /** forest 오퍼레이터 프로토타입 — 시드 결정적 숲 writes 를 계산해 runMock 승인 흐름에 태운다. */
+  forest: (
+    mapId: MapId,
+    region: RegionRect,
+    params?: ForestParams,
+    seed?: number,
+  ) => Promise<RegionTaskResult & { readonly trees?: number }>;
   /** writes 를 주면 모달이 그 결과로 자동 실행되어 제안 검토 UI 까지 렌더된다.
    *  mode:"polish" 는 다듬기 경로 — 승인 화면의 여백 프레임·어울림 지표가 이 값에서만 나온다. */
   openModal: (
@@ -205,6 +216,7 @@ export function installEditorToolHook(): void {
 
   w.__oprnRegionTaskHarness = {
     currentMapId: () => editorState.get().currentMapId ?? store.getCurrent().startMapId,
+    selectMap: (mapId) => selectEditorMap(mapId),
     setSelection: (selection) => editorState.set({ selection: selection ?? null }),
     readCell: (mapId, layer, x, y) => {
       const map = store.getCurrent().maps[mapId];
@@ -222,6 +234,15 @@ export function installEditorToolHook(): void {
     // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 승인 게이트까지 재현한다 —
     // 적용하려면 반환된 result.pending.apply() 또는 window.__oprnRegionTaskPending.apply()를 호출.
     runMock: (mapId, region, writes) => runMockRegionTask(mapId, region, writes, "headless mock"),
+    // forest 오퍼레이터 프로토타입(2026-09-01) — LLM 없이 파라미터·시드만으로 숲을 계산하고,
+    // 기존 승인 흐름(runMock → pending)을 그대로 탄다. 적용은 result.pending.apply().
+    forest: async (mapId, region, params, seed) => {
+      const map = store.getCurrent().maps[mapId];
+      if (!map) return runMockRegionTask(mapId, region, [], "forest operator");
+      const built = buildForestWrites(map, region, params, seed ?? Math.floor(Math.random() * 1_000_000_000));
+      const result = await runMockRegionTask(mapId, region, built.writes, "forest operator");
+      return { ...result, trees: built.trees };
+    },
     // 모달을 통째로 목업 실행에 물린다 — 제안 검토 UI(before/after, 변경 칸 하이라이트,
     // 적용/다시 만들기/버리기)는 실제 LLM 없이 이 경로로만 e2e 검증할 수 있다.
     openModal: (mapId, region: Parameters<typeof openRegionTaskModal>[0]["region"], writes, events, mode) => {
