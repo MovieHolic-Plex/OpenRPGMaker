@@ -8,6 +8,7 @@ import {
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
   TEX_DIALOGUE_FRAME,
 } from "@/assets/bundled";
+import { hasInlineAssets } from "@/assets/inlineAssetStore";
 import { imageWarmSupported, warmImageUrls } from "@/assets/imageWarmQueue";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import type { Project } from "@/project/types";
@@ -44,6 +45,11 @@ export function listBundledPlayAssetPaths(project?: Project): readonly string[] 
  */
 export function warmBundledPlayAssets(project?: Project): Promise<void> {
   if (!imageWarmSupported()) {
+    return Promise.resolve();
+  }
+  // 단일 HTML 빌드는 그림이 이미 문서 안 data URL 이다. 워밍은 이득이 없고(HTTP 캐시를 노리는
+  // 최적화다) file:// 에서는 원본 경로를 그대로 때려 ERR_FILE_NOT_FOUND 만 36건 찍는다.
+  if (hasInlineAssets()) {
     return Promise.resolve();
   }
   const paths = listBundledPlayAssetPaths(project);
