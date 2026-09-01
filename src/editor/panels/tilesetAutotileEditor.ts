@@ -12,6 +12,7 @@ import {
   layoutLabel,
   rolesFromGroup,
   templateKindForLayout,
+  tilesInLayoutBlock,
   type AutotileLayoutKind,
   type AutotileRole,
   type AutotileRoleTiles,
@@ -20,9 +21,11 @@ import {
   addAutotileGroup,
   addAutotileGroupFromTemplate,
   applyAutotileTemplateToGroup,
+  ensureEditableAutotileGroups,
   removeAutotileGroup,
   seedDefaultAutotileGroups,
   setAutotileVariant,
+  setTilesPassageMark,
   updateAutotileGroup,
 } from "@/editor/tilesetActions";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -67,7 +70,21 @@ export function autotileComposerHint(): string {
   if (pendingLayout === "cells-6") return "6칸(3×2) 블록의 왼쪽 위 칸을 누르세요";
   if (pendingLayout === "custom") return "칸을 고른 뒤 시트에서 타일을 지정하세요";
   if (selectedRole) return `${AUTOTILE_ROLE_LABEL[selectedRole]} 칸에 넣을 타일을 누르세요`;
-  return "오토타일 블록을 고르거나, 칸을 누른 뒤 타일을 지정하세요";
+  return "시트에서 오토타일 블록을 누르거나, 위에서 9칸·11칸을 고르세요";
+}
+
+export function autotilePendingLayout(): AutotileLayoutKind | "animated-water" | null {
+  return pendingLayout;
+}
+
+export function autotileHoverTileIds(tileset: TilesetDef, tile: number): ReadonlySet<number> {
+  if (pendingLayout && pendingLayout !== "custom") {
+    return new Set(tilesInLayoutBlock(pendingLayout, tile, tileset.tilesPerRow, tileset.count));
+  }
+  const groups = autotileGroupsForTileset(tileset);
+  const hit = groups.find((group) => group.memberTileIds.includes(tile));
+  if (hit) return new Set(hit.memberTileIds);
+  return autotileHighlightTileIds(tileset);
 }
 
 export function applyAutotileSheetPick(tileset: TilesetDef, tile: number): void {
@@ -109,10 +126,28 @@ export function applyAutotileSheetPick(tileset: TilesetDef, tile: number): void 
 
   const group = selectedGroupOf(tileset);
   const customIds = new Set((tileset.autotileGroups ?? []).map((entry) => entry.id));
-  if (!group || !customIds.has(group.id)) {
-    setMessage("먼저 9칸·11칸·커스텀을 고르거나, 편집할 그룹을 선택하세요.", true);
+  if (selectedRole && group && customIds.has(group.id)) {
+    assignRoleTile(tileset, group, tile);
     return;
   }
+
+  const hit = autotileGroupsForTileset(tileset).find((entry) => entry.memberTileIds.includes(tile));
+  if (hit) {
+    selectedGroupId = hit.id;
+    selectedRole = null;
+    pendingLayout = null;
+    setMessage(`${hit.name} — 칸을 누르면 시트에서 바꿀 수 있습니다.`, false);
+    return;
+  }
+
+  if (!group || !customIds.has(group.id)) {
+    setMessage("위에서 9칸이나 11칸을 고른 뒤, 시트에서 블록 왼쪽 위를 누르세요.", true);
+    return;
+  }
+  assignRoleTile(tileset, group, tile);
+}
+
+function assignRoleTile(tileset: TilesetDef, group: AutotileGroup, tile: number): void {
   const layout = composerLayout(group);
   const roles = { ...rolesFromGroup(group) };
   const role = selectedRole ?? firstEmptyRole(layout, roles);
@@ -164,7 +199,7 @@ export function renderAutotileLayoutToolbar(tileset: TilesetDef, rerender: () =>
         class: "tileset-autotile-toolbar-head",
         children: [
           el("strong", { text: "오토타일 형식" }),
-          el("span", { text: "9칸·11칸·커스텀을 고른 뒤, 아래 시트에서 블록의 왼쪽 위를 누르세요." }),
+          el("span", { text: "형식을 고른 뒤 시트에서 왼쪽 위를 누르거나, 이미 있는 블록을 누르면 내용이 보입니다." }),
         ],
       }),
       renderLayoutPicker(tileset, rerender),
@@ -403,15 +438,34 @@ function renderComposer(
     children: [
       renderComposerHeader(tileset, group, layout, readOnly, rerender),
       renderSlotGrid(tileset, group, layout, roles, readOnly, rerender),
+      renderPassageShortcuts(tileset, group, rerender),
       el("div", {
         class: "tileset-autotile-progress",
         text: readOnly
-          ? "내장 그룹은 보기만 됩니다. 기본 그룹 불러오기로 복사하면 편집할 수 있습니다."
+          ? "칸을 누르면 내장 그룹을 복사해 편집할 수 있습니다."
           : `${progress.filled}/${progress.total}칸 지정됨`,
         dataset: { testid: "tileset-autotile-progress" },
       }),
       ...(readOnly
-        ? []
+        ? [el("div", {
+            class: "tileset-autotile-composer-actions",
+            children: [
+              el("button", {
+                class: "tileset-db-small-button",
+                text: "이 그룹 편집",
+                attrs: { type: "button", title: "내장 그룹을 이 타일셋에 복사해 칸을 바꿀 수 있게 합니다" },
+                dataset: { testid: "tileset-autotile-edit-builtin" },
+                on: {
+                  click: () => {
+                    ensureEditableAutotileGroups(tileset.id);
+                    lastMessage = "이제 칸을 눌러 시트 타일로 바꿀 수 있습니다.";
+                    lastIsError = false;
+                    rerender();
+                  },
+                },
+              }),
+            ],
+          })]
         : [renderComposerActions(tileset, group, layout, rerender)]),
       renderAdvanced(tileset, group, readOnly, rerender),
     ],
@@ -470,12 +524,13 @@ function renderSlotGrid(
           attrs: {
             type: "button",
             title: tileId === undefined ? `${AUTOTILE_ROLE_LABEL[role]} — 비어 있음` : `${AUTOTILE_ROLE_LABEL[role]} · ${tileId}번`,
-            ...(readOnly ? { disabled: "true" } : {}),
           },
           dataset: { testid: `tileset-autotile-slot-${group.id}-${role}` },
           on: {
             click: () => {
-              if (readOnly) return;
+              if (readOnly) {
+                ensureEditableAutotileGroups(tileset.id);
+              }
               pendingLayout = null;
               selectedRole = role;
               lastMessage = `${AUTOTILE_ROLE_LABEL[role]} 칸에 넣을 타일을 시트에서 누르세요.`;
@@ -490,6 +545,35 @@ function renderSlotGrid(
         });
       }),
     ),
+  });
+}
+
+function renderPassageShortcuts(tileset: TilesetDef, group: AutotileGroup, rerender: () => void): HTMLElement {
+  const paint = (mark: "o" | "x" | "star", label: string, testid: string): HTMLElement =>
+    el("button", {
+      class: "tileset-db-small-button",
+      text: label,
+      attrs: { type: "button", title: `${group.name} 멤버 칸 전부 ${label}` },
+      dataset: { testid },
+      on: {
+        click: () => {
+          setTilesPassageMark(tileset.id, group.memberTileIds, mark);
+          const how = mark === "x" ? "막힘으로" : mark === "star" ? "위(★)로" : "통과로";
+          lastMessage = `${group.name} ${group.memberTileIds.length}칸을 ${how} 칠했습니다.`;
+          lastIsError = false;
+          rerender();
+        },
+      },
+    });
+  return el("div", {
+    class: "tileset-autotile-passage-row",
+    dataset: { testid: "tileset-autotile-passage" },
+    children: [
+      el("span", { text: "이 블록 통행" }),
+      paint("o", "통과", "tileset-autotile-passage-open"),
+      paint("x", "막힘", "tileset-autotile-passage-blocked"),
+      paint("star", "위", "tileset-autotile-passage-star"),
+    ],
   });
 }
 

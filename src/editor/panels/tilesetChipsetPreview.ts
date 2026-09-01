@@ -15,7 +15,7 @@ import {
 } from "@/editor/panels/tilesetGroupEditor";
 import { cellTitle, hasAiMetadata, isUnlabeledTile } from "@/editor/panels/tilesetMetadataControls";
 import { openTilesetTileContextMenu } from "@/editor/panels/tilesetTileContextMenu";
-import { autotileComposerHint } from "@/editor/panels/tilesetAutotileEditor";
+import { autotileComposerHint, autotileHoverTileIds } from "@/editor/panels/tilesetAutotileEditor";
 import { modeHelpText, type TilesetEditMode } from "@/editor/panels/tilesetUsageGuide";
 import { tileLayerHome, type TileLayerHome } from "@/editor/tileLayerClassification";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
@@ -135,8 +135,9 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
                 renderScrollButton({ axis: "y", direction: -1, text: "↑", title: "위로 이동" }),
                 renderScrollButton({ axis: "y", direction: 1, text: "↓", title: "아래로 이동" }),
               ]),
-          ...(model.onOpenFullSheet
-            ? [
+          ...(autotileChrome || !model.onOpenFullSheet
+            ? []
+            : [
                 el("button", {
                   class: "tileset-db-fullsheet-btn",
                   text: "전체창",
@@ -144,8 +145,7 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
                   dataset: { testid: "tileset-settings-open" },
                   on: { click: () => model.onOpenFullSheet?.() },
                 }),
-              ]
-            : []),
+              ]),
         ],
       }),
     ],
@@ -278,9 +278,10 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
   const dimmed = isLayerDimmed(home) || (unlabeledOn && !unlabeled) ? " layer-dimmed" : "";
   const unlabeledClass = unlabeled ? " unlabeled" : "";
   const autotileMember = model.mode === "autotile" && model.highlightTileIds?.has(index) ? " autotile-member" : "";
+  const markClass = model.mode === "autotile" ? "" : ` mark-${mark}`;
   const rerender = () => stableRerender(model.rerender);
   return el("button", {
-    class: `tileset-db-cell mark-${mark} layer-${home}${selected}${aiSelected}${dimmed}${unlabeledClass}${autotileMember}${model.mode === "group" ? groupCellClass(index) : ""}`,
+    class: `tileset-db-cell${markClass} layer-${home}${selected}${aiSelected}${dimmed}${unlabeledClass}${autotileMember}${model.mode === "group" ? groupCellClass(index) : ""}`,
     text: cellText(model, index),
     attrs: {
       type: "button",
@@ -303,7 +304,10 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
         event.preventDefault();
         if (model.mode === "ai") startAiSelectionDrag(index, event, rerender);
       },
-      pointerenter: () => handlePointerEnter(model, index),
+      pointerenter: () => {
+        handlePointerEnter(model, index);
+        if (model.mode === "autotile") paintAutotileHover(autotileHoverTileIds(model.tileset, index));
+      },
       mouseenter: () => {
         if (model.mode === "ai") {
           model.onSelectTile(index, { quiet: true });
@@ -346,6 +350,17 @@ function handleTileContextMenu(model: ChipsetPreviewModel, tile: number, event: 
     clientY: mouse?.clientY ?? 0,
     rerender: () => stableRerender(model.rerender),
   });
+}
+
+function paintAutotileHover(ids: ReadonlySet<number>): void {
+  const root = document.querySelector(".tileset-db-click-grid");
+  if (!root) return;
+  for (const node of root.querySelectorAll(".autotile-hover")) {
+    node.classList.remove("autotile-hover");
+  }
+  for (const tile of ids) {
+    root.querySelector(`[data-tile="${tile}"]`)?.classList.add("autotile-hover");
+  }
 }
 
 function paintSelectedCell(tile: number): void {

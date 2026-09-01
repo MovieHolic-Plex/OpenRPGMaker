@@ -6,6 +6,7 @@ import {
   resetAutotileComposerState,
 } from "@/editor/panels/tilesetAutotileEditor";
 import { createBlankProject, DEFAULT_TILESET_ID } from "@/project/defaults";
+import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
@@ -89,5 +90,15 @@ describe("tileset autotile editor", () => {
     applyAutotileSheetPick(tileset, 64);
     const updated = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.autotileGroups?.find((group) => group.id === custom!.id);
     expect(updated?.memberTileIds).toContain(64);
+  });
+
+  it("시트에서 내장 그룹 멤버를 누르면 그 그룹을 선택한다", () => {
+    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const dirt = autotileGroupsForTileset(tileset).find((group) => group.id === "builtin_dirt_road");
+    expect(dirt?.memberTileIds[0]).toBeDefined();
+    applyAutotileSheetPick(tileset, dirt!.memberTileIds[0]!);
+    const root = renderWithFakeDom(() => renderAutotileEditorPanel(tileset, vi.fn()));
+    expect(findByTestId(root, "tileset-autotile-composer-builtin_dirt_road")).toBeTruthy();
+    expect(findByTestId(root, "tileset-autotile-passage-blocked")).toBeTruthy();
   });
 });

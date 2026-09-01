@@ -242,6 +242,12 @@
   clip: rect(0 0 0 0);
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-paint-hint {
+  color: var(--text-2);
+  font: 400 12px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-preview-wrap {
   grid-column: 1;
   grid-row: 2;
