@@ -20,6 +20,7 @@
 import { clampElementListCount, resizeElementRecords } from "@/editor/databaseElementList";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { pruneDanglingElementRates } from "@/project/io/references";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { field, matchesNameOrId } from "@/editor/panels/databaseControls";
 import { isElementKind, selectUtilityRecord } from "@/editor/panels/databaseUtilityRecordControls";
 import {
@@ -197,7 +198,10 @@ function openElementMaxCountDialog(current: number, onApply: (count: number) => 
     class: "db-enemy-dialog-backdrop",
     dataset: { testid: "db-elements-max-dialog" },
   });
-  const close = (): void => backdrop.remove();
+  const close = (): void => {
+    unregisterModal(backdrop);
+    backdrop.remove();
+  };
   backdrop.append(
     el("div", {
       class: "db-enemy-dialog",
@@ -238,6 +242,7 @@ function openElementMaxCountDialog(current: number, onApply: (count: number) => 
     }),
   );
   document.body.append(backdrop);
+  registerModal(backdrop, close);
   input.focus();
   input.select();
 }

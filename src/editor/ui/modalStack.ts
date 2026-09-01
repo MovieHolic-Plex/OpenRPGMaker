@@ -91,6 +91,17 @@ export function unregisterModal(element: Element): void {
   stack.splice(index, 1);
 }
 
+/**
+ * Escape 를 소유한 중첩 계층이 살아 있는가.
+ * 자체 document 리스너로 Escape 를 처리하는 하위 모달(데이터베이스 모달 등)이
+ * "내 위에 창이 떠 있으면 손대지 않는다"를 판정하는 데 쓴다. 리스너 등록 순서에
+ * 의존하지 않으므로 캡처/버블 순서와 무관하게 안전하다.
+ */
+export function hasOpenModalLayer(): boolean {
+  pruneDetached();
+  return stack.length > 0;
+}
+
 /** Test helper: how many live modals are registered. */
 export function modalStackDepthForTest(): number {
   pruneDetached();

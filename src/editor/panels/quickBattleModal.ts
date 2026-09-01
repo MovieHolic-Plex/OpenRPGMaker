@@ -1,4 +1,5 @@
 import { createBattleRuntime } from "@/battle/runtime";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { nextSessionRandom, startSession } from "@/project/session";
 import { store } from "@/project/store";
@@ -9,7 +10,7 @@ import { el } from "@/util/dom";
 // 들리고 Escape 리스너가 중복된다(결함 1b). testPlayModal.battleSceneController 와
 // 동일한 패턴으로 모듈 레벨에서 추적해 새 모달 오픈 시 먼저 destroy() 한다.
 let quickBattleController: BattleDomController | null = null;
-// 이전 모달의 Escape keydown 리스너 제거 함수. 새 모달 오픈 시 호출해 중복을 막는다.
+// 이전 모달의 Escape 계층 해제 함수. 새 모달 오픈 시 호출해 중복 등록을 막는다.
 let removeQuickBattleKeydown: (() => void) | null = null;
 
 // 데이터베이스 기본 레코드 폼의 "퀵 전투 테스트" 버튼(databaseBasicRecordFields.ts)이
@@ -139,12 +140,8 @@ export function openQuickBattleModal(troopId: string): void {
 
   closeBtn.onclick = close;
 
-  function onKeydown(e: KeyboardEvent): void {
-    if (e.key === "Escape") {
-      e.stopPropagation();
-      close();
-    }
-  }
-  window.addEventListener("keydown", onKeydown);
-  removeQuickBattleKeydown = () => window.removeEventListener("keydown", onKeydown);
+  // Escape 는 공용 모달 스택이 라우팅한다. window 리스너로 잡으면 버블 순서상
+  // document 에 붙은 데이터베이스 모달 핸들러가 먼저 돌아 바깥 데이터베이스가 닫혔다.
+  registerModal(overlay, close);
+  removeQuickBattleKeydown = () => unregisterModal(overlay);
 }
