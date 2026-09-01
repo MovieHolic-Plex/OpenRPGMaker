@@ -195,7 +195,8 @@
 
   <div class="cards">
     <div class="card"><div class="t">LLM 산출물</div>
-      <span class="from">툴콜 수십 개 (좌표·타일 인덱스)</span><br>→ <span class="to">JSON 한 개 (≤ 15줄)</span></div>
+      <span class="from">툴콜 수십 개 (좌표·타일 인덱스)</span><br>→ <span class="to">JSON 한 개 (≤ 15줄)</span><br>
+      <span style="color:var(--dim);font-size:12.5px">실측: <code>{"op":"forest","params":{"density":0.9,"clearings":2,"path":false}}</code></span></div>
     <div class="card"><div class="t">다양성</div>
       <span class="from">관찰 리포트로 프롬프트 되먹임</span><br>→ <span class="to">시드 비복원 표본추출로 보장</span></div>
     <div class="card"><div class="t">검증</div>
@@ -220,6 +221,25 @@
       파라미터 슬라이더·시드가 뜨고 <b>AI 를 한 번도 부르지 않는다</b>.
       오른쪽: 그 산출물이 <b>조수와 똑같은 승인 카드</b>로 들어온다 — before/after, 부분 적용 체크박스, 통행 진단, undo 1개까지 전부 재사용.
       만드는 길만 둘이고, 검토·적용하는 길은 하나다.
+    </figcaption>
+  </figure>
+
+  <figure>
+    <div class="fig-label good">출하됨 — 의도 파서: 문장은 파라미터가 되고, 타일은 코드가 깐다 (실제 LLM 응답)</div>
+    <div class="fig-row">
+      <div class="fig-col" style="flex:1 1 300px">
+        <img class="shot" src="assets/ed-intent-parsed.png" alt="문장을 파라미터로 옮긴 결과">
+      </div>
+      <div class="fig-col" style="flex:1 1 340px">
+        <img class="shot" src="assets/ed-intent-result.png" alt="그 파라미터로 생성한 숲">
+      </div>
+    </div>
+    <figcaption>
+      입력: <b>"숲을 울창하게, 오솔길은 빼고 공터 두 개"</b> → 모델이 낸 것은 <code>{"op":"forest","params":{"density":0.9,"clearings":2,"path":false}}</code> <b>JSON 한 줄뿐</b>이다.
+      타일 번호도 좌표도 모델을 거치지 않는다. 슬라이더가 그대로 움직여(밀도 0.9 · 공터 2 · 오솔길 끔)
+      <b>모델이 무엇으로 읽었는지 사용자가 보고 고칠 수 있고</b>, 그다음 [만들기]가 코드로 깐다.
+      결과 실측: 나무 307그루 · <b>길 타일 0개</b>(“빼고” 준수) · 공터 가시 · 565칸 승인 대기.
+      LLM 이 없거나 20초를 넘기면 키워드 해석으로 떨어지고, 그때는 “AI 미사용”이라고 화면에 밝힌다.
     </figcaption>
   </figure>
 </header>
@@ -642,7 +662,7 @@
     <tr><td><b>1</b></td><td><b>슬롯 보드</b> — 고정 슬롯 스키마 + 보드 UI + 번들 9종 시드 스크립트(시맨틱 테이블 → 슬롯 1회 변환)</td><td>오토타일 카드·통행 붓·메타데이터 에디터 재사용. 이 단계만으로 A-3 대체 완료</td></tr>
     <tr><td><b>2</b></td><td><b>forest · water · scatter · clear</b> 오퍼레이터 + 변형 3장 + 슬라이더 (스튜디오 버튼, LLM 없이)</td><td class="keep">forest + <b>생성기 모드 UI 출하 완료</b>(모드 스위치·파라미터·시드·승인 재사용, 테스트 16개) — 남은 것: 슬롯 참조로 일반화, water/scatter/clear, 변형 3장 썸네일</td></tr>
     <tr><td><b>3</b></td><td><b>village · road · field</b> — 34 템플릿 + 킷 비복원 추출 + 필지/A* 골목</td><td>authorHouseExecution 시공부 재사용, 지휘부만 교체</td></tr>
-    <tr><td><b>4</b></td><td><b>의도 파서</b> 연결(경량 경로) → 구 경로 철거: volumeContract · WorkPlan · buildSpec 게이트 · 직접 페인팅 · 시맨틱 테이블</td><td>철거는 마지막 — 신·구가 잠시 병존하되 기본값은 신경로</td></tr>
+    <tr><td><b>4</b></td><td><b>의도 파서</b> 연결(경량 경로) → 구 경로 철거: volumeContract · WorkPlan · buildSpec 게이트 · 직접 페인팅 · 시맨틱 테이블</td><td class="keep">파서 <b>출하 완료</b>(LLM 1콜 · JSON 한 줄 · 20초 타임아웃 · 키워드 폴백, 테스트 15개) — 철거는 신경로가 실사용으로 증명된 뒤</td></tr>
   </table>
   <p>
     순서의 논리: <b>가치가 앞에, 위험이 뒤에.</b> 1–2단계는 LLM 을 건드리지 않아 회귀 위험이 없고,
