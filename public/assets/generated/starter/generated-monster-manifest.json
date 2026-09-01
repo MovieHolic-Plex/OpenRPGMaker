@@ -184,7 +184,7 @@
   {
     "id": "generated-enemy-slime-01",
     "fileName": "monster-slime-01.png",
-    "sha256": "19d5135cd508ae15b43675cd086c17dd9b581631c06ab0156a0a0d002f61290e",
+    "sha256": "22d4a49dadaf05ca84298c2ec24c4ddbd8b943594414c01b03f4bb43f9b02143",
     "model": "google/gemini-2.5-flash-image",
     "keyedPixels": 7033
   },
