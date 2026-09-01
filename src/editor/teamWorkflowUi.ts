@@ -1,4 +1,5 @@
 import { PRODUCT_BRAND } from "@/brand";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { currentHumanEditorIdentity, setOwnerLabel, type EditorIdentity } from "@/project/editorIdentity";
 import { listProjectCommitsFromSupabase, type SupabaseProjectCommitListItem } from "@/project/supabaseProjectSync";
 import { el } from "@/util/dom";
@@ -275,6 +276,9 @@ function toggleIdentityMenu(anchor: HTMLElement, identity: EditorIdentity, onIde
   menu.style.top = `${Math.round(rect.bottom + 6)}px`;
   document.body.append(menu);
   activeIdentityMenu = menu;
+  // Escape 계층을 점유한다 — 도크 모드에서는 데이터베이스를 켠 채 이 메뉴를 열 수 있고,
+  // 등록하지 않으면 Escape 가 흘러 데이터베이스가 대신 닫힌다.
+  registerModal(menu, closeIdentityMenu);
   input.focus();
   window.setTimeout(() => document.addEventListener("pointerdown", onTeamPopoverPointerDown), 0);
 }
@@ -302,6 +306,7 @@ function closeIdentityMenu(): void {
     document.querySelectorAll<HTMLElement>("[data-testid='topbar-identity']").forEach((node) => node.setAttribute("aria-expanded", "false"));
     return;
   }
+  unregisterModal(activeIdentityMenu);
   activeIdentityMenu.remove();
   activeIdentityMenu = null;
   document.querySelectorAll<HTMLElement>("[data-testid='topbar-identity']").forEach((node) => node.setAttribute("aria-expanded", "false"));
@@ -320,6 +325,7 @@ function toggleCommitHistoryPanel(anchor?: HTMLElement): void {
   });
   activeCommitPanel = panel;
   document.body.append(panel);
+  registerModal(panel, closeCommitHistoryPanel);
   if (anchor) {
     anchor.setAttribute("aria-expanded", "true");
     const rect = anchor.getBoundingClientRect();
@@ -336,6 +342,7 @@ function closeCommitHistoryPanel(): void {
     document.querySelectorAll<HTMLElement>("[data-testid='commit-history-toggle']").forEach((node) => node.setAttribute("aria-expanded", "false"));
     return;
   }
+  unregisterModal(activeCommitPanel);
   activeCommitPanel.remove();
   activeCommitPanel = null;
   document.querySelectorAll<HTMLElement>("[data-testid='commit-history-toggle']").forEach((node) => node.setAttribute("aria-expanded", "false"));
