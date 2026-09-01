@@ -362,15 +362,39 @@ out.enemySkillUsage = {
 // 검사한다.
 type Pass = "aggregate" | "sample";
 interface Cite {
-  /** 이 수를 읽어온 산출물 경로. 검사 때 여기서 다시 읽어 대조한다. */
+  /** 이 수를 읽어온 산출물 경로. 값도 패스도 전부 여기서 나온다. */
   readonly path: string;
-  /** 이 수가 나온 패스. 설명 대상과 같아야 한다. */
-  readonly pass: Pass;
+  /**
+   * 이 수가 나온 패스. **경로에서 유도한다 — 손으로 선언하지 않는다.**
+   * 손으로 적으면 "선언한 패스 == 기대 패스" 검사가 항진명제가 되어, 집계 지표를
+   * "sample" 이라 선언해 놓고 표본 패스 주장에 인용해도 무사통과한다(실측 확인).
+   * 분류 불가면 undefined — 검사에서 실패시킨다.
+   */
+  readonly pass: Pass | undefined;
   readonly value: number;
 }
 
 function readPath(root: unknown, path: string): unknown {
   return path.split(".").reduce<any>((node, key) => (node === undefined ? undefined : node[key]), root);
+}
+
+/**
+ * 경로만 보고 어느 패스의 산출물인지 판정한다. 산출물 구조가 이미 답을 정해 두었다:
+ * `perBattle*` 는 표본 패스(n=1 × SAMPLES) 전용이고, `winRate`/`avgTurns`/
+ * `avgHpRemaining`/`avgPotionsUsed` 는 집계 패스(n=SAMPLES 1회)의 필드다.
+ * `perBattleWinRate` 처럼 이름에 winRate 가 들어간 표본 필드가 있으므로 perBattle 판정이
+ * 먼저 와야 한다.
+ * 분류할 수 없으면 undefined 를 돌려준다 — 조용히 넘기면 새로 추가된 지표가 검사 밖으로 샌다.
+ */
+function passOf(path: string): Pass | undefined {
+  if (/\.perBattle[A-Za-z]+\./.test(path)) return "sample";
+  if (/\.(winRate|avgTurns|avgHpRemaining|avgPotionsUsed)$/.test(path)) return "aggregate";
+  return undefined;
+}
+
+/** 경로 하나로 값과 패스를 **함께** 끌어온다. 둘이 어긋날 여지를 없앤다. */
+function cite(path: string): Cite {
+  return { path, pass: passOf(path), value: readPath(out, path) as number };
 }
 
 const EXAMPLE_TROOP = "드래곤·보스";
@@ -380,15 +404,15 @@ const ex = (archetypeSims as Record<string, any>)[EXAMPLE_TROOP];
 const EXAMPLE_PASS: Pass = "sample";
 const P = `archetypeSims.${EXAMPLE_TROOP}`;
 
-const exTurnsMean: Cite = { path: `${P}.perBattleTurns.mean`, pass: "sample", value: ex.perBattleTurns.mean };
-const exTurnsStddev: Cite = { path: `${P}.perBattleTurns.stddev`, pass: "sample", value: ex.perBattleTurns.stddev };
-const exTurnsMin: Cite = { path: `${P}.perBattleTurns.min`, pass: "sample", value: ex.perBattleTurns.min };
-const exTurnsMax: Cite = { path: `${P}.perBattleTurns.max`, pass: "sample", value: ex.perBattleTurns.max };
-const exSampleWinMean: Cite = { path: `${P}.perBattleWinRate.mean`, pass: "sample", value: ex.perBattleWinRate.mean };
-const exHpMean: Cite = { path: `${P}.perBattleHpRemaining.mean`, pass: "sample", value: ex.perBattleHpRemaining.mean };
-const exHpStddev: Cite = { path: `${P}.perBattleHpRemaining.stddev`, pass: "sample", value: ex.perBattleHpRemaining.stddev };
-const exHpMin: Cite = { path: `${P}.perBattleHpRemaining.min`, pass: "sample", value: ex.perBattleHpRemaining.min };
-const exHpMax: Cite = { path: `${P}.perBattleHpRemaining.max`, pass: "sample", value: ex.perBattleHpRemaining.max };
+const exTurnsMean = cite(`${P}.perBattleTurns.mean`);
+const exTurnsStddev = cite(`${P}.perBattleTurns.stddev`);
+const exTurnsMin = cite(`${P}.perBattleTurns.min`);
+const exTurnsMax = cite(`${P}.perBattleTurns.max`);
+const exSampleWinMean = cite(`${P}.perBattleWinRate.mean`);
+const exHpMean = cite(`${P}.perBattleHpRemaining.mean`);
+const exHpStddev = cite(`${P}.perBattleHpRemaining.stddev`);
+const exHpMin = cite(`${P}.perBattleHpRemaining.min`);
+const exHpMax = cite(`${P}.perBattleHpRemaining.max`);
 // 승/패 수는 **표본 패스 승률**에서 유도한다. 집계 패스 winRate 로 계산하면 교차 패스다.
 const exSampleWins = Math.round(exSampleWinMean.value * SAMPLES);
 const exSampleLosses = SAMPLES - exSampleWins;
@@ -430,7 +454,7 @@ const claim승패혼합통계 =
   `{mean:${exTurnsMean.value}, stddev:${exTurnsStddev.value}, min:${exTurnsMin.value}, max:${exTurnsMax.value}} 다. ` +
   `stddev ${exTurnsStddev.value}, min=max=${exTurnsMax.value} — 이는 그 표본 패스 ` +
   `${SAMPLES}판이 **승패와 무관하게 전부 ${exTurnsMax.value}턴** 에 끝났다는 뜻이다 — 같은 패스의 승률인 ` +
-  `perBattleWinRate.mean ${exSampleWinMean.value} 로 보면 ${exSampleWins}승 ${exSampleLosses}패인데, ` +
+  `perBattleWinRate.mean 값 ${exSampleWinMean.value} 기준으로 보면 ${exSampleWins}승 ${exSampleLosses}패인데, ` +
   `**유일한 ${exSampleWins}승도 ${exTurnsMax.value}턴**이었다. ` +
   `같은 항목의 perBattleHpRemaining 은 {mean:${exHpMean.value}, stddev:${exHpStddev.value}, ` +
   `min:${exHpMin.value}, max:${exHpMax.value}} 로 ` +
@@ -464,21 +488,29 @@ const check = (name: string, ok: boolean, detail = ""): void => {
   checks.push({ name, ok, detail });
 };
 
-// (1) 인용한 각 수가 산출물의 실값과 일치하는가. 경로에서 다시 읽어 대조한다.
-for (const cite of EXAMPLE_CITES) {
-  const actual = readPath(out, cite.path);
-  check(`인용값 == 산출물값  ${cite.path}`, actual === cite.value, `인용 ${cite.value} vs 실제 ${String(actual)}`);
+// 패배 수 대조용. `5패` 가 `45패` 의 접미사로 걸리는 오탐을 막으려고 앞자리 숫자를 배제한다.
+const mentionsLosses = (text: string, losses: number): boolean =>
+  new RegExp(`(?<!\\d)${losses}패`).test(text);
+
+// (1) 경로가 산출물에서 **숫자로 해소되는가**. 경로 오타/구조 변경을 잡는다.
+//     (값은 이 경로에서 읽어 문자열을 조립하므로 "값 == 산출물값" 은 항진명제라 무의미하다.
+//      실제로 위험한 것은 경로가 조용히 undefined 로 풀려 본문에 undefined 가 박히는 쪽이다.)
+for (const c of EXAMPLE_CITES) {
+  check(`경로가 숫자로 해소  ${c.path}`, Number.isFinite(c.value), `값 ${String(c.value)}`);
 }
 
 // (2) ★핵심★ 인용한 수가 **설명 대상과 같은 패스**에서 왔는가.
-//     라운드 3 의 결함이 정확히 이것이었다. 값 일치 검사((1))로는 절대 못 잡는다.
-for (const cite of EXAMPLE_CITES) {
-  check(`패스 일치(${EXAMPLE_PASS})  ${cite.path}`, cite.pass === EXAMPLE_PASS, `실제 ${cite.pass}`);
+//     라운드 3 의 결함이 정확히 이것이었다. (1) 같은 값 검사로는 절대 못 잡는다.
+//     pass 는 passOf(path) 로 **유도**한 값이다 — 손으로 선언하면 이 검사가 항진명제가 되어
+//     집계 지표를 표본 패스 주장에 인용해도 무사통과한다(라운드 4 의 실제 구멍이었다).
+for (const c of EXAMPLE_CITES) {
+  check(`패스 분류 가능  ${c.path}`, c.pass !== undefined, "passOf 가 분류하지 못했다(새 지표?)");
+  check(`패스 일치(${EXAMPLE_PASS})  ${c.path}`, c.pass === EXAMPLE_PASS, `유도된 패스 ${String(c.pass)}`);
 }
 check(
   "승/패 수를 표본 패스 승률에서 유도했는가",
   exSampleWins === Math.round(exSampleWinMean.value * SAMPLES) && exSampleWinMean.pass === "sample",
-  `${exSampleWins}승 ${exSampleLosses}패 (perBattleWinRate.mean ${exSampleWinMean.value})`,
+  `${exSampleWins}승 ${exSampleLosses}패 (perBattleWinRate.mean ${exSampleWinMean.value}, 유도 패스 ${String(exSampleWinMean.pass)})`,
 );
 
 // (3) 교차 패스 오염 탐지: 두 패스의 패배 수가 다를 때, 본문이 집계 패스 쪽 수를
@@ -486,15 +518,10 @@ check(
 // 검사 대상은 **주장 조각**이다. 경고 조각은 반례로 집계 패스 수를 일부러 인용한다.
 check(
   "주장에 집계 패스 패배 수를 쓰지 않았는가",
-  exAggLosses === exSampleLosses || !claim승패혼합통계.includes(`${exAggLosses}패`),
+  exAggLosses === exSampleLosses || !mentionsLosses(claim승패혼합통계, exAggLosses),
   `집계 ${exAggLosses}패 / 표본 ${exSampleLosses}패`,
 );
-check("주장이 표본 패스 패배 수를 쓰는가", claim승패혼합통계.includes(`${exSampleLosses}패`), `${exSampleLosses}패`);
-// 경고 조각이 살아 있는지도 확인한다 — 다음 사람이 같은 실수를 하지 않게 하는 장치다.
-check(
-  "교차 계산 자기경고가 남아 있는가",
-  selfWarning승패혼합통계.includes("같은 표본 패스") && selfWarning승패혼합통계.includes("교차 계산"),
-);
+check("주장이 표본 패스 패배 수를 쓰는가", mentionsLosses(claim승패혼합통계, exSampleLosses), `${exSampleLosses}패`);
 
 // (4) caveat 이 전제로 삼는 관계가 실제로 성립하는가.
 const contestedSet = archEntries.filter(([, v]) => v.contested).map(([k]) => k).sort();
@@ -518,6 +545,22 @@ for (const d of [worstDivergence, exampleDivergence]) {
     `두패스 예시 실값 일치  ${d.key}`,
     entry.winRate === d.agg && entry.perBattleWinRate.mean === d.sample,
     `${d.agg} vs ${d.sample}`,
+  );
+}
+
+// (6) 조립 검사: 실제로 산출물에 들어간 문자열이 세 조각을 전부 담고 있는가.
+//     지역 변수를 자기 자신과 대조하면 항진명제라 무의미하다 — **기록된 값**(out) 을 읽는다.
+//     조립 중 조각이 빠지면(특히 교차 계산 자기경고) 다음 사람이 같은 실수를 되풀이한다.
+const written승패혼합통계 = readPath(out, "meta.caveats.승패혼합통계");
+for (const [label, segment] of [
+  ["주장", claim승패혼합통계],
+  ["자기경고", selfWarning승패혼합통계],
+  ["적용범위", scope승패혼합통계],
+] as const) {
+  check(
+    `산출물에 ${label} 조각이 담겼는가`,
+    typeof written승패혼합통계 === "string" && written승패혼합통계.includes(segment),
+    `${segment.slice(0, 24)}…`,
   );
 }
 
