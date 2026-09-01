@@ -1308,3 +1308,90 @@ body.region-task-modal-open .ai-authoring-examples {
 .region-task-operator-intent-note.is-error {
   color: var(--danger, #b91c1c);
 }
+
+/* 재료 슬롯 보드 — 자동 해석 결과를 실물 타일로 드러내고 틀린 칸만 고치게 한다. */
+.region-task-slot-disclosure {
+  border-top: 1px solid var(--editor-line);
+  padding-top: var(--space-2);
+}
+.region-task-slot-summary {
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  font: 600 11px/1.4 var(--font-ui, system-ui, sans-serif);
+  list-style: none;
+  padding: 2px 0;
+}
+.region-task-slot-summary::-webkit-details-marker { display: none; }
+.region-task-slot-summary:hover { color: var(--editor-text); }
+.slot-board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+.slot-board-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.slot-board-count {
+  color: var(--editor-text);
+  font: 600 11px/1.5 var(--font-ui, system-ui, sans-serif);
+}
+.slot-board-hint,
+.slot-board-note,
+.slot-board-badge {
+  color: var(--editor-text-muted);
+  font: 400 10.5px/1.5 var(--font-ui, system-ui, sans-serif);
+}
+.slot-board-grid {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+}
+.slot-board-card {
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+}
+.slot-board-card.is-empty { border-style: dashed; opacity: 0.7; }
+.slot-board-card.is-user { border-color: var(--accent, #4f46e5); }
+.slot-board-name {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-1);
+  justify-content: space-between;
+}
+.slot-board-name > span:first-child {
+  color: var(--editor-text);
+  font: 600 11px/1.4 var(--font-ui, system-ui, sans-serif);
+}
+.slot-board-chips {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  min-height: 30px;
+}
+.slot-board-chip {
+  border: 1px solid var(--editor-line);
+  border-radius: 3px;
+  flex: none;
+}
+.slot-board-actions { display: flex; gap: 4px; }
+.slot-board-set,
+.slot-board-reset {
+  background: transparent;
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  flex: 1;
+  font: 600 10.5px/1.5 var(--font-ui, system-ui, sans-serif);
+  padding: 2px 6px;
+}
+.slot-board-reset:disabled { cursor: default; opacity: 0.45; }

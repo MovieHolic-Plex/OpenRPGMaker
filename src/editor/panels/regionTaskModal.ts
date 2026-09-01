@@ -69,6 +69,7 @@ import {
   type OperatorIntentResult,
 } from "@/editor/operators/operatorIntent";
 import { completeOperatorIntent } from "@/editor/operators/operatorIntentClient";
+import { renderMaterialSlotBoard } from "@/editor/panels/materialSlotBoard";
 import {
   randomOperatorSeed,
   runOperatorTask,
@@ -532,6 +533,24 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     dataset: { testid: "region-task-operator-intent-note" },
   });
 
+  // 재료 보드 — 접어 둔다. 번들 칩셋은 자동으로 채워지므로 평소엔 열 일이 없고,
+  // 결과가 이상할 때 "무엇으로 깔리는지" 를 확인·교정하는 자리다.
+  const slotBoardHost = el("div", { class: "region-task-slot-board-host" });
+  const slotBoardDisclosure = el("details", {
+    class: "region-task-slot-disclosure",
+    dataset: { testid: "region-task-slot-disclosure" },
+    children: [
+      el("summary", {
+        class: "region-task-slot-summary",
+        children: [
+          el("span", { class: "region-task-direct-chevron" }),
+          el("span", { text: "이 칩셋의 재료 확인·교정" }),
+        ],
+      }),
+      slotBoardHost,
+    ],
+  }) as HTMLDetailsElement;
+
   const operatorPanel = el("div", {
     class: "region-task-operator-panel hidden",
     dataset: { testid: "region-task-operator-panel" },
@@ -555,7 +574,40 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
           operatorRunButton,
         ],
       }),
+      slotBoardDisclosure,
     ],
+  });
+
+  /** 보드는 열 때 한 번만 그린다 — 타일 칩이 많아 모달을 열 때마다 그리면 낭비다. */
+  let slotBoardRendered = false;
+  const renderSlotBoardOnce = (): void => {
+    if (slotBoardRendered) return;
+    const project = options.projectForContext?.() ?? store.getCurrent();
+    const map = project.maps[options.mapId];
+    const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+    if (!tileset) {
+      slotBoardHost.append(el("div", { class: "region-task-operator-hint", text: "이 맵의 그림 세트를 찾을 수 없습니다." }));
+      slotBoardRendered = true;
+      return;
+    }
+    slotBoardHost.append(renderMaterialSlotBoard({
+      tileset,
+      onChange: () => {
+        // 보드는 타일셋 객체를 직접 고친다. 그대로 두면 store 리스너·자동저장이 돌지 않아
+        // 화면에는 반영됐는데 저장은 안 되는 상태가 된다 — 바뀐 프로젝트를 다시 실어 알린다.
+        // (슬롯을 고치면 다음 생성부터 바로 반영된다. 재료는 저장이 아니라 매번 유도되기 때문이다.)
+        if (!options.projectForContext) {
+          store.replace(structuredClone(store.getCurrent()), {
+            change: { label: "재료 슬롯 변경", origin: "human" },
+          });
+        }
+        setSummary("재료를 바꿨습니다 — [만들기]를 누르면 새 재료로 생성합니다.");
+      },
+    }));
+    slotBoardRendered = true;
+  };
+  slotBoardDisclosure.addEventListener("toggle", () => {
+    if (slotBoardDisclosure.open) renderSlotBoardOnce();
   });
 
   /** 파라미터 위젯은 스펙에서 만든다 — 오퍼레이터를 늘려도 이 함수만 그대로 돈다. */
