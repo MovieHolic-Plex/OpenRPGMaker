@@ -7,6 +7,7 @@ import {
   userTileLayerOverride,
   type TileLayerChoice,
 } from "@/editor/runtimeTileMetadata";
+import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { store } from "@/project/store";
 import { blockedFlag, isBlockedPassage, passableFlag } from "@/project/tilesetPassage";
 import { el } from "@/util/dom";
@@ -17,6 +18,8 @@ type MenuItem = {
   readonly testId: string;
   readonly disabled?: boolean;
   readonly separatorBefore?: boolean;
+  /** 있으면 menuitemradio 로 낸다 — 레이어 3택처럼 배타 선택인 항목. */
+  readonly checked?: boolean;
   readonly action: () => void;
 };
 
@@ -49,7 +52,8 @@ export function openTilesetTileContextMenu(input: {
     },
     {
       id: "toggle-passage",
-      label: blocked ? "통행 허용으로 변경 (O)" : "통행 차단으로 변경 (X)",
+      // 예전 라벨의 "(O)"/"(X)" 는 단축키처럼 읽혔다. 무엇으로 바뀌는지만 쓴다.
+      label: blocked ? "통행 허용으로 바꾸기" : "통행 차단으로 바꾸기",
       testId: "tileset-ctx-toggle-passage",
       separatorBefore: true,
       action: () => {
@@ -65,20 +69,23 @@ export function openTilesetTileContextMenu(input: {
     },
     {
       id: "layer-auto",
-      label: layer === null ? "✓ 레이어 · 자동" : "레이어 · 자동",
+      label: "레이어 · 자동",
+      checked: layer === null,
       testId: "tileset-ctx-layer-auto",
       separatorBefore: true,
       action: () => setLayer(input.tilesetId, input.tile, "auto", input.rerender),
     },
     {
       id: "layer-lower",
-      label: layer === "lower" ? "✓ 레이어 · 하위" : "레이어 · 하위",
+      label: "레이어 · 하위",
+      checked: layer === "lower",
       testId: "tileset-ctx-layer-lower",
       action: () => setLayer(input.tilesetId, input.tile, "lower", input.rerender),
     },
     {
       id: "layer-upper",
-      label: layer === "upper" ? "✓ 레이어 · 상위" : "레이어 · 상위",
+      label: "레이어 · 상위",
+      checked: layer === "upper",
       testId: "tileset-ctx-layer-upper",
       action: () => setLayer(input.tilesetId, input.tile, "upper", input.rerender),
     },
@@ -218,6 +225,16 @@ function openMeaningDialog(tilesetId: string, tile: number, rerender: () => void
       el("header", {
         class: "tileset-meaning-dialog-header",
         children: [
+          // 이름을 붙이려는 그림을 실제로 보여준다 — 예전에는 미리보기가 하나도 없어서
+          // 볼 수 없는 칩에 이름을 지어야 했다(창이 시트를 가린 채로).
+          el("div", {
+            class: "tileset-meaning-dialog-thumb",
+            attrs: {
+              style: `${tilesetTileBackgroundStyle(tileset, tile, 48)};width:48px;height:48px`,
+              "aria-hidden": "true",
+            },
+            dataset: { testid: "tileset-meaning-dialog-thumb" },
+          }),
           el("strong", { text: `${tile}번 타일 · 의미 편집` }),
           el("button", {
             class: "tileset-meaning-dialog-close",
@@ -241,7 +258,7 @@ function openMeaningDialog(tilesetId: string, tile: number, rerender: () => void
           }),
           el("p", {
             class: "tileset-meaning-hint",
-            text: "저장하면 source=user 로 표시됩니다. 프로젝트/DB 확인으로 영구 반영하세요.",
+            text: "적용하면 이 타일은 「사람이 확정한 지식」이 되어 AI 재분석이 덮지 않습니다.",
           }),
         ],
       }),
@@ -315,14 +332,21 @@ function renderItem(item: MenuItem): HTMLButtonElement {
       .join(" "),
     attrs: {
       type: "button",
-      role: "menuitem",
+      // 배타 선택은 menuitemradio + aria-checked 로 낸다. 예전에는 평범한 menuitem 라벨 앞에
+      // "✓" 글자만 붙여서 보조기술이 선택 상태를 전혀 알 수 없었다.
+      role: item.checked === undefined ? "menuitem" : "menuitemradio",
+      ...(item.checked === undefined ? {} : { "aria-checked": String(item.checked) }),
       tabindex: "-1",
       "aria-disabled": String(Boolean(item.disabled)),
       title: item.label,
     },
     dataset: { testid: item.testId },
     children: [
-      el("span", { class: "map-context-menu-icon", attrs: { "aria-hidden": "true" }, text: " " }),
+      el("span", {
+        class: "map-context-menu-icon",
+        attrs: { "aria-hidden": "true" },
+        text: item.checked ? "✓" : " ",
+      }),
       el("span", { class: "map-context-menu-label", text: item.label }),
       el("span", { class: "map-context-menu-shortcut", text: "" }),
     ],

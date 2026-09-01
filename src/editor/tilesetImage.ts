@@ -86,6 +86,14 @@ function previewSizeCss(previewSize: number | string): string {
   return typeof previewSize === "number" ? `${previewSize}px` : previewSize;
 }
 
+/** 타일셋에 붙이기 전 후보 그래픽의 URL — 그래픽 고르기 미리보기가 쓴다. */
+export function tilesetImageSourceUrl(image: TilesetDef["image"]): string {
+  if (image.type === "uploaded") {
+    return store.getCurrent().assets.uploaded[image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL;
+  }
+  return bundledTilesetImageUrl(image.id) ?? DEFAULT_TILESET_IMAGE_URL;
+}
+
 function bundledTilesetImageUrl(textureKey: string): string | null {
   if (textureKey === TEX_TILESET) return DEFAULT_TILESET_IMAGE_URL;
   const asset = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((candidate) => candidate.textureKey === textureKey);

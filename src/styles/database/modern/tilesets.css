@@ -26,23 +26,36 @@
   grid-template-columns: minmax(176px, 200px) minmax(0, 1fr);
 }
 
-/* ── 목록: 말줄임 금지 ───────────────────────────────────────────────────
-   `.db-list-name` 은 공용 레이어에서 overflow:hidden + ellipsis 다. 타일셋 이름은
-   "합본 마을 · EasyRPG (CC0)" 처럼 길어서 그 규칙 그대로면 8 행 전부가 게이트의
-   clipped 로 잡히고, 사용자는 어떤 칩셋인지 못 읽는다. 접히게 두면 잘림이 0 이 된다. */
+/* ── 목록: 이름 한 줄, 메타 아랫줄 ───────────────────────────────────────
+   목록 폭이 172px 인데 이름·「N개 맵」배지·#n 셋을 한 줄에 놓으면 배지(49px)와
+   번호(48px)와 간격(16px)이 113px 을 먼저 가져가고 이름에 39px 만 남았다. 그러면
+   24자 제목이 여덟 줄로 접혀 행이 100px 이 되고 목록 아래로 12px 잘렸다 — 하필
+   맵에 실제로 쓰이는 칩셋(배지가 붙는 유일한 행)에서만 터졌다.
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-list .db-list-row .db-list-name {
-  overflow: visible;
-  overflow-wrap: anywhere;
-  text-overflow: clip;
-  white-space: normal;
-}
+   이름에 첫 줄을 통째로 주고 배지·번호를 아랫줄로 내린다. 이름은 두 줄까지 접고
+   그 뒤로만 말줄임한다(행 전체 title 에 전체 이름과 id 가 이미 있다). */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-list .db-list-row {
   align-items: center;
+  column-gap: 6px;
+  flex-wrap: wrap;
   min-height: 34px;
   padding-bottom: 6px;
   padding-top: 6px;
+  row-gap: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-list .db-list-row .db-list-name {
+  display: -webkit-box;
+  flex: 1 1 100%;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 /* 이름 → 사용 맵 배지 → #n 순서. 공용 레이어 기본은 name/#n/배지라 배지가 번호
@@ -54,6 +67,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-list .db-list-row .db-list-number {
+  flex: 0 0 auto;
+  margin-left: auto;
   order: 3;
 }
 
@@ -61,6 +76,42 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-toolbar > .db-ws-btn[disabled] {
   color: var(--db-studio-text-2, var(--db-studio-text-2));
   opacity: 1;
+}
+
+/* ── 시트 칸: 어떤 그림 위에서도 읽히는 통행 글리프 ─────────────────────
+   예전에는 글리프가 near-black(#0f172a) + 같은 색 그림자였다. 밝은 잔디 위에서는 읽혔지만
+   던전 계열 어두운 칩 위에서는 검정 위 검정이 되어 사라졌고, 통과는 아예 글리프가 없어서
+   「통과」인지 「안 보이는 것」인지 구별할 수 없었다. 흰 글자 + 어두운 외곽선으로 바꾼다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-click-grid .tileset-db-cell {
+  align-items: center;
+  color: var(--on-accent);
+  font: 700 13px/1 "Cascadia Mono", Consolas, monospace;
+  justify-content: center;
+  padding: 0;
+  text-shadow:
+    0 0 2px rgb(9 12 20 / 0.95),
+    1px 1px 0 rgb(9 12 20 / 0.9),
+    -1px -1px 0 rgb(9 12 20 / 0.9),
+    1px -1px 0 rgb(9 12 20 / 0.9),
+    -1px 1px 0 rgb(9 12 20 / 0.9);
+}
+
+/* 통과는 존재를 알리는 정도의 점이면 충분하다 — 막힘/위보다 조용해야 시트가 안 시끄럽다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-click-grid .tileset-db-cell.mark-o {
+  font-size: 16px;
+  opacity: 0.72;
+}
+
+/* 키보드 포커스: 워크벤치 안 컨트롤은 UA 기본 1px 외곽선이라 픽셀아트 위에서 안 보였다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets :is(.tileset-db-cell, .tileset-db-tools button, .tileset-db-preview-scale button, .tileset-db-layer-tabs button, .tileset-db-small-button):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-click-grid .tileset-db-cell:focus-visible {
+  outline-offset: 1px;
+  z-index: 2;
 }
 
 /* ── 상세 본문: 속성 카드 / 탭 레일 / 워크벤치 ──────────────────────────── */
@@ -220,18 +271,29 @@
   padding: 6px 8px 4px;
 }
 
+/* 레거시 레이어(event-editor-legacy)의 `.tileset-db-tools button { width: 100% }` 는 2열 그리드용
+   이었다. 위에서 grid → flex 로 바꾸면서 그 규칙이 살아남아 통행/지형 탭이 902px 전폭 막대 두 개로
+   세로로 쌓였고, 도구 줄 하나가 편집 영역 높이의 30% 를 먹었다(1024 폭에서 시트 가시율 14%). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-tools > button {
+  flex: 0 0 auto;
+  width: auto;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-tools::before {
   content: none;
   margin: 0;
 }
 
+/* 모드 탭(통행/지형)과 붓(통과/막힘/위)은 다른 개념인데 같은 줄에 같은 모양으로 붙어 있어
+   구분이 안 됐다. 붓 묶음 앞에 세로 구분선을 둔다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-rule-passage {
   border: 0;
+  border-left: 1px solid var(--border-default);
   display: flex;
   gap: 6px;
   margin: 0;
   min-width: 0;
-  padding: 0;
+  padding: 0 0 0 10px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-rule-passage legend {
@@ -311,7 +373,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .tileset-passage-edge {
   border: 0;
   border-radius: 8px;
-  color: #fff;
+  color: var(--on-accent);
   font: 800 14px/1 "Segoe UI", sans-serif;
   height: 100%;
   width: 100%;

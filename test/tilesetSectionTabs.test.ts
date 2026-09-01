@@ -3,6 +3,7 @@
 // - 통행/지형 편집도 user 메타로 기록되어 하네스 재적용에 살아남는다.
 // - 지형 템플릿(교과서)은 구성 탭으로 이사했다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { passageGlyph } from "@/editor/panels/tilesetChipsetPreview";
 import { renderTilesetEditor } from "@/editor/panels/tilesetSettingsDetails";
 import {
   getTilesetPassagePaint,
@@ -248,7 +249,9 @@ describe("타일셋 섹션 3탭 UI", () => {
     setTilesetMetadataEditMode("passage", () => {});
   });
 
-  it("통행 붓은 클릭한 칸에 고른 규칙을 칠하고 통과 칸은 글자를 비운다", () => {
+  // 통과 칸도 글리프를 가진다. 예전에는 통과가 "글자 없음"이라 어두운 칩 위에서
+  // 「통과」와 「글리프가 안 보임」을 구별할 수 없었다.
+  it("통행 붓은 클릭한 칸에 고른 규칙을 칠하고 통과 칸에도 표시가 남는다", () => {
     setTilesetPassagePaint("x");
     let editor = renderEditor();
     expect(getTilesetPassagePaint()).toBe("x");
@@ -267,7 +270,7 @@ describe("타일셋 섹션 3탭 UI", () => {
     expect(passageMarkForTile(store.getCurrent().tilesets[tilesetId]!, 0)).toBe("o");
     editor = renderEditor();
     const cell = findByTestId(editor, "tileset-db-cell-0") as unknown as { textContent?: string };
-    expect(String(cell.textContent ?? "")).toBe("");
+    expect(String(cell.textContent ?? "")).toBe(passageGlyph("o"));
 
     setTilesetPassagePaint("x");
     editor = renderEditor();
