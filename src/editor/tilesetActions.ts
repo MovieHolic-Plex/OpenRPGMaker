@@ -9,6 +9,7 @@ import {
   buildTemplateGroup,
   type AutotileTemplateKind,
 } from "@/editor/panels/tilesetAutotileTemplates";
+import { setPassageMark, type PassageMark } from "@/project/tilesetPassage";
 import type { AutotileGroup, PassFlag, TileAiMetadata, TileGraft, TilesetDef, TilesetId } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
 
@@ -200,6 +201,38 @@ export function seedDefaultAutotileGroups(tilesetId: TilesetId): void {
     if (!tileset) return;
     tileset.autotileGroups = [...(tileset.autotileGroups ?? []), ...cloneDefaultAutotileGroups()];
   });
+}
+
+/** 내장 폴백만 있는 타일셋을 편집 가능한 사본으로 승계한다. 이미 커스텀이 있으면 no-op. */
+export function ensureEditableAutotileGroups(tilesetId: TilesetId): void {
+  const tileset = store.getCurrent().tilesets[tilesetId];
+  if (!tileset || (tileset.autotileGroups && tileset.autotileGroups.length > 0)) return;
+  recordProjectSnapshot();
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    if (!target) return;
+    inheritBuiltinFallbackGroups(target);
+  }, { scope: "project", label: "오토타일 그룹 편집 시작" });
+}
+
+const PASSAGE_META: Record<PassageMark, "passable" | "solid" | "star"> = {
+  o: "passable",
+  x: "solid",
+  star: "star",
+};
+
+export function setTilesPassageMark(tilesetId: TilesetId, tiles: readonly number[], mark: PassageMark): void {
+  if (tiles.length === 0) return;
+  recordProjectSnapshot();
+  store.update((project) => {
+    const target = project.tilesets[tilesetId];
+    if (!target) return;
+    for (const tile of tiles) {
+      if (tile < 0 || tile >= target.count) continue;
+      setPassageMark(target, tile, mark);
+      markUserTileRuntimeMetadata(target, tile, { passage: PASSAGE_META[mark] });
+    }
+  }, { scope: "project", label: "타일 통행" });
 }
 
 export type AutotileTemplateActionResult = { ok: true; groupId?: string } | { ok: false; error: string };

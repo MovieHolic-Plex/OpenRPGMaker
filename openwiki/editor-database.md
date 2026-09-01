@@ -216,8 +216,11 @@ The Database modal was modernized in six waves while keeping every hard contract
 - **격자:** 오른쪽 사이드바는 오토타일 전용이다(선택 타일 인스펙터 없음). 선택된 그룹의
   역할 격자가 먼저 보이고, 그룹 칩 목록은 그 아래 짧은 스크롤 띠다. 칸을 누른 뒤 시트를
   누르면 그 역할만 바뀐다. 내장 그룹은 보기만 되고 「기본 그룹 불러오기」로 복사한다.
-- **시트 클릭** 은 `editMode === "autotile"` 에서 `applyAutotileSheetPick` 으로 간다
-  (예전엔 no-op 이었다). 멤버 칸은 `.autotile-member` 링으로 표시한다.
+- **시트 클릭:** `editMode === "autotile"` 에서 `applyAutotileSheetPick`. 9칸/11칸이 선택된 뒤에는
+  블록 왼쪽 위로 그룹을 만들고, 아니면 **이미 있는 그룹 멤버를 누르면 그 그룹을 고른다**.
+  호버 시 블록 칸에 `.autotile-hover`. 멤버 칸은 `.autotile-member`.
+- **통행:** 오토타일 격자 아래 「이 블록 통행」으로 멤버 칸 전부를 통과/막힘/위로 칠한다.
+  내장 그룹은 「이 그룹 편집」 또는 칸 클릭으로 승계한 뒤 칸을 바꿀 수 있다.
 - 비트마스크·연결 타일 숫자는 `<details>` 「고급」 안에만 남긴다. 6칸·물 애니메이션은
   「6칸·물 애니메이션」 토글. 순수 계산은 `tilesetAutotileLayout.ts` /
   `tilesetAutotileTemplates.ts`. Tests: `test/tilesetAutotileEditor.test.ts`,

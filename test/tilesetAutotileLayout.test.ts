@@ -5,6 +5,7 @@ import {
   inferAutotileLayoutKind,
   layoutLabel,
   rolesFromGroup,
+  tilesInLayoutBlock,
 } from "@/editor/panels/tilesetAutotileLayout";
 import { buildTemplateGroup } from "@/editor/panels/tilesetAutotileTemplates";
 import { DEFAULT_COBBLE_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -29,5 +30,13 @@ describe("autotile layout helpers", () => {
     const patch = groupPatchFromRoles("cells-9", roles);
     expect(patch?.memberTileIds).toEqual(built.memberTileIds);
     expect(Object.keys(patch?.variantMap ?? {})).toHaveLength(16);
+  });
+
+  it("9칸 호버 블록은 앵커에서 3×3 인덱스를 만든다", () => {
+    expect(tilesInLayoutBlock("cells-9", 33, DEFAULT_TILES_PER_ROW, DEFAULT_TILE_COUNT)).toEqual([
+      33, 34, 35,
+      33 + DEFAULT_TILES_PER_ROW, 34 + DEFAULT_TILES_PER_ROW, 35 + DEFAULT_TILES_PER_ROW,
+      33 + DEFAULT_TILES_PER_ROW * 2, 34 + DEFAULT_TILES_PER_ROW * 2, 35 + DEFAULT_TILES_PER_ROW * 2,
+    ]);
   });
 });

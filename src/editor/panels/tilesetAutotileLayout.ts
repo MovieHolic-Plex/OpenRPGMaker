@@ -48,9 +48,9 @@ export const AUTOTILE_LAYOUT_GUIDES: readonly {
   blurb: string;
   templateKind: AutotileTemplateGroupKind | null;
 }[] = [
-  { id: "cells-9", label: "9칸", blurb: "3×3 격자 — 모서리·변·몸통", templateKind: "grid-3x3" },
-  { id: "cells-11", label: "11칸", blurb: "3×4 블록 — 외딴 점과 오목 코너까지", templateKind: "oprn-3x4" },
-  { id: "custom", label: "커스텀", blurb: "칸마다 직접 지정하거나 다른 형식", templateKind: null },
+          { id: "cells-9", label: "9칸", blurb: "3×3 모서리·변·몸통", templateKind: "grid-3x3" },
+  { id: "cells-11", label: "11칸", blurb: "3×4 외딴 점·오목 코너", templateKind: "oprn-3x4" },
+  { id: "custom", label: "커스텀", blurb: "칸마다 직접 지정", templateKind: null },
 ];
 
 const ROLES_9: readonly AutotileRole[] = [
@@ -119,6 +119,34 @@ export function layoutLabel(kind: AutotileLayoutKind): string {
   if (kind === "cells-9") return "9칸";
   if (kind === "cells-6") return "6칸";
   return "커스텀";
+}
+
+export function layoutBlockSize(kind: AutotileLayoutKind | "animated-water"): { rows: number; cols: number } {
+  if (kind === "cells-9") return { rows: 3, cols: 3 };
+  if (kind === "cells-6") return { rows: 2, cols: 3 };
+  if (kind === "animated-water") return { rows: 1, cols: 3 };
+  if (kind === "custom") return { rows: 1, cols: 1 };
+  return { rows: 4, cols: 3 };
+}
+
+export function tilesInLayoutBlock(
+  kind: AutotileLayoutKind | "animated-water",
+  anchorTile: number,
+  tilesPerRow: number,
+  tileCount: number,
+): number[] {
+  const { rows, cols } = layoutBlockSize(kind);
+  const column = anchorTile % tilesPerRow;
+  if (column + cols > tilesPerRow) return [];
+  const last = anchorTile + (rows - 1) * tilesPerRow + (cols - 1);
+  if (last >= tileCount) return [];
+  const tiles: number[] = [];
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      tiles.push(anchorTile + row * tilesPerRow + col);
+    }
+  }
+  return tiles;
 }
 
 export function templateKindForLayout(kind: AutotileLayoutKind): AutotileTemplateGroupKind | null {

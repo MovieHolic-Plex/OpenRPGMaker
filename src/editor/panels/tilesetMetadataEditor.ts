@@ -79,7 +79,7 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
     onOpenFullSheet: () => openTilesetSettingsModal(tileset.id, rerender),
   });
   const sidebar = renderEditSidebar(tileset, rerender);
-  const tools = paintLayout ? renderToolBox(tileset, rerender) : null;
+  const tools = paintLayout ? renderToolBox(rerender) : null;
   const autotileTools = autotileLayout ? renderAutotileLayoutToolbar(tileset, rerender) : null;
   return el("div", {
     class: `tileset-db-edit-area${editMode === "group" ? " knowledge-mode" : ""}${paintLayout ? " passage-paint" : ""}${autotileLayout ? " autotile-compose" : ""}`,
@@ -93,7 +93,7 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
 
 function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const tab = getTilesetSectionTab();
-  const toolbox = renderToolBox(tileset, rerender);
+  const toolbox = renderToolBox(rerender);
   if (editMode === "group") {
     return el("div", {
       class: "tileset-db-edit-sidebar tileset-knowledge-sidebar",
@@ -219,9 +219,9 @@ function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): H
 }
 
 // 현재 탭에 속한 편집 모드만 노출한다 — 화면당 기능을 1/3로 줄이는 3탭 재편의 핵심.
-function renderToolBox(tileset: TilesetDef, rerender: () => void): HTMLElement | null {
+function renderToolBox(rerender: () => void): HTMLElement | null {
   const modes = TILESET_TAB_MODES[getTilesetSectionTab()];
-  const paint = editMode === "passage" ? renderPassagePaintTools(tileset, rerender) : null;
+  const paint = editMode === "passage" ? renderPassagePaintTools(rerender) : null;
   if (modes.length <= 1 && !paint) return null;
   return el("div", {
     class: "tileset-db-tools",
@@ -242,7 +242,7 @@ function renderToolBox(tileset: TilesetDef, rerender: () => void): HTMLElement |
   });
 }
 
-function renderPassagePaintTools(tileset: TilesetDef, rerender: () => void): HTMLElement {
+function renderPassagePaintTools(rerender: () => void): HTMLElement {
   const paintButton = (mark: PassageMark, label: string, testid: string): HTMLElement =>
     el("button", {
       class: `database-footer-button tileset-passage-choice${passagePaint === mark ? " active" : ""}`,
@@ -252,7 +252,6 @@ function renderPassagePaintTools(tileset: TilesetDef, rerender: () => void): HTM
       on: {
         click: () => {
           passagePaint = mark;
-          applyPassageMark(tileset.id, selectedTile, mark);
           rerender();
         },
       },
@@ -261,7 +260,7 @@ function renderPassagePaintTools(tileset: TilesetDef, rerender: () => void): HTM
     class: "oprn-db-fieldset tileset-rule-passage",
     dataset: { testid: "tileset-rule-passage" },
     children: [
-      el("legend", { text: "붓" }),
+      el("legend", { text: "붓 — 시트에서 클릭·드래그" }),
       el("div", {
         class: "tileset-rule-buttons",
         children: [
@@ -270,6 +269,7 @@ function renderPassagePaintTools(tileset: TilesetDef, rerender: () => void): HTM
           paintButton("star", "위표시", "tileset-passage-star"),
         ],
       }),
+      el("span", { class: "tileset-passage-paint-hint", text: "시트에서 클릭·드래그" }),
     ],
   });
 }
@@ -300,7 +300,15 @@ function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTML
       }),
       el("div", {
         class: "tileset-passage-zoom-row",
-        children: [renderTileZoom(tileset, selectedTile), renderPassageCompass(tileset.id, passage, rerender)],
+        children: [renderTileZoom(tileset, selectedTile)],
+      }),
+      el("details", {
+        class: "tileset-autotile-advanced",
+        dataset: { testid: "tileset-passage-compass-details" },
+        children: [
+          el("summary", { text: "방향별 통행" }),
+          renderPassageCompass(tileset.id, passage, rerender),
+        ],
       }),
       ...renderTileMeaningEditors(tileset, meta, "rules"),
       ...renderRuleControls(tileset, rerender).filter((node) => String(node.className ?? "").includes("tileset-rule-layer")),
