@@ -14,62 +14,82 @@
 // MP 예산: 적 maxMp 는 보스를 뺀 전원이 10 이다(보스 11마리는 40 — Task 5). 4MP 특수기가
 // 비보스에서는 2회뿐이므로 모든 아키타입에 MP 0 스킬을 최소 1개 넣어 고갈 시 행동 불능을 막는다.
 //
-// ── 우선순위 규칙 (R14) ─────────────────────────────────────────────────────
+// ── 우선순위 규칙 (R14 → B1 개정) ───────────────────────────────────────────
 // Task 4 가 이 헬퍼로 적 100마리를 덮으므로 규칙을 여기 못박는다.
 //
-//   규칙 1. 정체성 스킬(상태 부여·속성)은 같은 아키타입의 평범한 데미지 스킬보다
-//           우선순위를 **낮게 두지 않는다.**
-//   규칙 2. 우선순위는 **MP 소비 순서**를 표현한다(유료 > 무료).
-//
-//     5 = 평범한 무료 데미지 (attack / sword_slash / throwing_knife)
-//     6 = 무료 정체성        (poison_sting)
-//     7 = 유료 정체성        (weaken·focus·sleep_mist·heal·속성기·arcane_bolt)
+//     5 = 고정 위력 무료 데미지 (sword_slash 22 / throwing_knife 18)
+//     7 = **앵커** `skill_attack`  ← 회당 피해의 축
+//     7 = 보스의 속성기(always)    ← 보스만 예외. 아래 boss 케이스 주석 참조
+//     8 = 정체성기 (weaken·focus·sleep_mist·heal·속성기·arcane_bolt·poison_sting)
 //     9 = 보스의 turn 조건 버스트
 //
-// 왜 정체성 스킬을 올리는가 — 선택 점수식이 그 가치를 못 보기 때문이다.
-// chooseEnemyAction 은 `score = max(1,priority)*10 + utility` 로 고르는데
-// (runtime.ts:1820), utility 를 내는 enemySkillUtility 는 `effect.kind === "damage"` 면
-// **stateEffects 를 보지 않고 즉시 데미지 효용으로 반환한다**(runtime.ts:1896-1898).
-// 그래서 skill_poison_sting 의 독 85% 는 점수에 0 으로 기여하고, 위력 8 짜리 마법
-// 공격으로만 평가돼 기본 공격에 영구히 진다. 우선순위가 그 맹점을 보정한다.
+// ── 가장 중요한 사실: `skill_attack` 만 스탯에 비례한다 ─────────────────────
+// 런타임의 두 경로가 서로 다른 위력을 쓴다.
+//   실제 피해 해결: `power = skillId === DEFAULT_SKILL_ID ? user.attackPower : skill.power`
+//                  (runtime.ts:1953) → skill_attack 의 실위력은 DB 의 10 이 **아니라**
+//                  시전자 attackPower(로스터 9~214) 다.
+//   AI 효용 계산:   `enemyDamageUtility(user, target, skill.power, ...)`(runtime.ts:1897)
+//                  → 여기엔 **10** 이 들어간다. 바로 위 1877 행의 기본값
+//                  `power = user.attackPower` 가 정답인데 이 호출이 덮어쓴다.
+// 즉 AI 는 자기 최강수를 최대 20배 과소평가한다. 저작 스킬(위력 8~30)을 무조건 위에
+// 두면 적이 통상공격을 영구히 버리고 회당 피해가 1/4 로 준다(실측: 출하 트룹 4개
+// 합계 피해 806 → 180, −78%).
 //
-// 왜 같은 값(동점)을 일부러 쓰는가 — 동점이 유일한 교대 메커니즘이다.
-// chooseEnemyAction 은 최고점이 동점이면 그 중 하나를 **무작위로** 고른다
-// (runtime.ts:1865-1867). 점수가 다르면 `Δscore = 10·Δpriority + Δ데미지효용` 이
-// 전투 내내 상수라 낮은 쪽은 **한 번도** 안 나온다. brute/tactician/boss 에서
-// attack 과 sword_slash 를 같은 5 로 둔 게 그 이유다. 둘 다 MP 0 무기 공격이라
-// 어느 쪽이 이겨도 정체성 손실이 없고 고갈 방어도 유지된다.
+// 그래서 규칙은 "정체성 우선" 이 아니라 **"앵커를 밀어낼 수 있는가"** 로 나뉜다:
+//   · 고정 위력 무료기(slash/knife)는 MP 가 없어 자기제한이 안 된다 → **앵커 아래(5)**.
+//     한번 이기면 전투 내내 이겨서 앵커를 통째로 대체한다.
+//   · 유료 정체성기는 MP 가 사용 횟수를 묶는다(4MP·maxMp 10 → 2회) → **앵커 위(8)**
+//     가 안전하다. 몇 번 쓰고 MP 가 마르면 앵커가 자연히 이어받는다. 상태기는 상태가
+//     이미 걸려 있으면 효용 0 으로 강등돼(runtime.ts:1822) 이중으로 자기제한된다.
+//   · `poison_sting` 만 예외다. 무료라 자기제한이 없는데도 8 에 둔다 — blob 의 유일한
+//     정체성이라 내리면 그 계열이 통상공격만 하는 원래 문제로 돌아간다. 대가는
+//     실측으로 안다(출하 troop_forest_hornets 93.4 → 82.4, −12%). blob/venom 은
+//     로스터에서 가장 약한 계열이라 절대 손실이 작다.
+//
+// 왜 낮은 쪽은 아예 안 나오는가 — 점수는 `max(1,priority)*10 + utility`(runtime.ts:1820)
+// 인데 두 데미지 스킬의 `Δscore` 는 전투 내내 상수다. 그래서 우선순위 배치는 "몇 번
+// 쓰이나" 가 아니라 **"영구히 쓰이나 / 영구히 죽나"** 를 정한다. 동점일 때만
+// 무작위로 갈린다(runtime.ts:1865-1867).
 //
 // 알려진 한계: 데미지 효용은 `max(0, power + 스탯/2 − 대상방어/2)` 라 방어가 높은 상대
-// 앞에서는 위력이 낮은 쪽이 먼저 0 으로 포화한다. 포화하면 그쪽만 `-1000 + priority`
-// 밴드로 강등되므로(runtime.ts:1822) 우선순위 차이로도 못 살린다. 실제로 남은 잔재는
-// `blob` 하나다 — 위력 8 짜리 `poison_sting` 은 대상방어가 `공격력/2 + 8`~`+9` 인 딱 두
-// 칸에서 자기만 잘려 위력 10 짜리 기본 공격에 진다. 유료기는 MP 부족 시 **점수 계산
-// 전에** 필터된다(runtime.ts:1798) — 그래서 보스는 maxMp 40 을 받는다.
+// 앞에서는 위력이 낮은 쪽이 먼저 0 으로 포화하고, 포화한 쪽만 `-1000 + priority` 밴드로
+// 강등된다(runtime.ts:1822). 유료기는 MP 부족 시 **점수 계산 전에** 필터된다
+// (runtime.ts:1798) — 그래서 보스는 maxMp 40 을 받는다.
 //
-// ── 공격력 스케일: mind = attack 규칙으로 해소했다 (Task 5) ──────────────────
-// 데미지형 정체성 스킬(`skill_poison_sting`·속성기)은 전부 `statistic: "mind"` 인데
-// 적 mind 가 **전원 10** 이던 시절에는 마법 위력이 `power + 5` 에 묶였다. 반면 물리
-// 무료기의 효용은 적 attack 에 비례해 커진다. 그래서 공격력이 큰 적은 속성기·독침이
-// 영구히 사장됐다(실측: 공격력 13 → blob `poison_sting 424`, 공격력 100 → `attack 199`
-// 로 poison 0).
+// ── `mind = attack` 규칙이 고치는 것과 못 고치는 것 (R16 정정) ───────────────
+// 생성 로스터 100마리는 `mind` 가 그 적의 `attack` 과 같다(Task 5). 이 규칙이 고치는
+// 것은 **AI 의 선택**이다: 마법 정체성기와 물리 스킬이 같은 스탯 항 `floor(스탯/2)` 를
+// 갖게 돼 우열이 위력차 + 우선순위차만 남고, 공격력이 커져도 정체성기가 안 죽는다.
+// `test/enemyActionArchetypes.test.ts` 가 공격력 9~214 전 구간에서 이걸 검사한다.
 //
-// 지금은 **생성 로스터 100마리의 `mind` 가 그 적의 `attack` 과 같다.** 그러면 마법
-// 정체성기와 물리 무료기가 같은 스탯 항 `floor(스탯/2)` 를 갖게 되어 우열이 공격력에서
-// 분리되고, 위력차 + 우선순위차만 남는다(전부 정체성기 쪽이 앞선다). 이 성질은
-// `test/enemyActionArchetypes.test.ts` 가 공격력 9~214 전 구간에서 검사한다.
-// 규칙을 깨는 적을 새로 넣으면(예: mind 만 낮게) 그 검사가 먼저 빨개진다.
+// **못 고치는 것: 실제 피해 격차.** `skill_attack` 의 위력 항은 공유되는
+// `floor(스탯/2)` 가 아니라 `attackPower` **그 자체**다(runtime.ts:1953). 그래서 실피해
+// 격차는 `attackPower − power` 이고 공격력이 클수록 벌어진다. mind 를 올려도 이 격차는
+// 한 칸도 안 줄고, AI 의 잘못된 평가만 이긴다. 회당 피해를 지키는 건 오직 우선순위
+// 배치(앵커 7 > 고정 무료기 5)뿐이다.
 //
 // mind 를 올려도 플레이어 쪽 수치는 안 바뀐다 — 적 mind 가 마법 방어력으로 쓰이는 건
 // `battleModel === "gen1"` 일 때뿐이고(battleDamage.usesMagicalDefense), 기본 DB 는 rm2k3 다.
 import type { EnemyActionPattern } from "../types/database";
 
-/** 평범한 무료 데미지. */
-const PLAIN = 5;
-/** 무료 정체성 — 점수식이 상태 부여 가치를 못 보므로 평범한 무료기보다 한 칸 위. */
-const IDENTITY_FREE = 6;
-/** 유료 정체성 — MP 가 있는 동안 먼저 쓰고, 고갈되면 자동으로 무료기로 내려온다. */
-const IDENTITY_PAID = 7;
+/** 고정 위력 무료 데미지(sword_slash 22 / throwing_knife 18). 앵커 아래에 둔다. */
+const FIXED_FREE = 5;
+/** 앵커 = `skill_attack`. 실위력이 시전자 attackPower 인 유일한 스킬이라 회당 피해의 축이다. */
+const ANCHOR = 7;
+/**
+ * 보스의 속성기(always). 앵커(7)보다 **두 칸 아래**인데 `mind = attack` 로스터에서는
+ * 이게 정확히 **점수 동률**이 된다: 속성기 `5*10 + 위력 30 + 스탯/2` = 앵커
+ * `7*10 + 위력 10 + 스탯/2` = `80 + 스탯/2`. 우선순위 2칸(20)이 위력차(30−10)를 정확히
+ * 상쇄하고, 동률이면 runtime.ts:1865-1867 이 무작위로 갈라 둘이 섞인다.
+ *
+ * 왜 보스만 이런가 — 다른 계열은 유료기를 앵커 위(8)에 둬도 maxMp 10 이 2회로 묶어
+ * 주는데, 보스는 maxMp 40 이라 4MP 속성기를 10회 쓴다. 전투가 그보다 짧으면 사실상
+ * 무제한이라 앵커를 통째로 밀어낸다(실측 공격력 100 보스: 8 → `fire 418 / attack 0`,
+ * 5 → `fire 194 / attack 120`).
+ */
+const BOSS_ELEMENT = 5;
+/** 정체성기. MP(또는 상태 중복)로 자기제한되므로 앵커 위가 안전하다. */
+const IDENTITY = 8;
 /** 보스 전용 turn 조건 버스트. */
 const BURST = 9;
 
@@ -183,58 +203,60 @@ export function archetypeActions(archetype: EnemyArchetype, elementSkillId?: str
   const elemental = elementSkillId ?? "skill_arcane_bolt";
   switch (archetype) {
     case "blob":
-      return [always("skill_attack", PLAIN), always("skill_poison_sting", IDENTITY_FREE)];
+      return [always("skill_attack", ANCHOR), always("skill_poison_sting", IDENTITY)];
     case "venom":
       return [
-        always("skill_attack", PLAIN),
-        always("skill_poison_sting", IDENTITY_FREE),
-        always("skill_weaken", IDENTITY_PAID),
+        always("skill_attack", ANCHOR),
+        always("skill_poison_sting", IDENTITY),
+        always("skill_weaken", IDENTITY),
       ];
     case "brute":
       return [
-        always("skill_attack", PLAIN),
-        always("skill_sword_slash", PLAIN),
-        always("skill_focus", IDENTITY_PAID),
+        always("skill_attack", ANCHOR),
+        always("skill_sword_slash", FIXED_FREE),
+        always("skill_focus", IDENTITY),
       ];
     case "curse":
       return [
-        always("skill_attack", PLAIN),
-        always("skill_dark", IDENTITY_PAID),
-        always("skill_weaken", IDENTITY_PAID),
+        always("skill_attack", ANCHOR),
+        always("skill_dark", IDENTITY),
+        always("skill_weaken", IDENTITY),
       ];
     case "caster":
-      return [always("skill_attack", PLAIN), always(elemental, IDENTITY_PAID)];
+      return [always("skill_attack", ANCHOR), always(elemental, IDENTITY)];
     case "bulwark":
       return [
-        always("skill_attack", PLAIN),
-        always("skill_earth", IDENTITY_PAID),
-        always("skill_focus", IDENTITY_PAID),
+        always("skill_attack", ANCHOR),
+        always("skill_earth", IDENTITY),
+        always("skill_focus", IDENTITY),
       ];
     case "tactician":
       return [
-        always("skill_attack", PLAIN),
-        always("skill_sword_slash", PLAIN),
-        always("skill_weaken", IDENTITY_PAID),
-        always("skill_heal", IDENTITY_PAID),
+        always("skill_attack", ANCHOR),
+        always("skill_sword_slash", FIXED_FREE),
+        always("skill_weaken", IDENTITY),
+        always("skill_heal", IDENTITY),
       ];
     case "flyer":
       return [
-        always("skill_attack", PLAIN),
-        always("skill_throwing_knife", PLAIN),
-        always("skill_sleep_mist", IDENTITY_PAID),
+        always("skill_attack", ANCHOR),
+        always("skill_throwing_knife", FIXED_FREE),
+        always("skill_sleep_mist", IDENTITY),
       ];
     case "boss":
-      // turn 조건은 보스 전용이다. 같은 속성기를 always(7)/turn(9) 두 벌로 두는 건
-      // 낭비가 아니다 — 공격력이 크면 sword_slash(5)의 데미지 효용이 always(7)를
-      // 이기지만 turn(9)는 못 이긴다. 즉 버스트는 always 가 죽는 구간에서 속성기를
-      // 살려두는 안전망이다(실측: 공격력 100 보스 `sword_slash 317, fire 107`).
-      // 단 "확정 발화"는 아니다 — turn 항목도 다른 행동과 똑같이 MP 검사를 통과해야
-      // 한다(runtime.ts:1798 → battleSkillUse.ts:40). MP 가 비용 미만이면 버스트도
-      // 후보에서 빠진다.
+      // 보스만 속성기를 IDENTITY(8) 가 아니라 **앵커와 동률(7)** 로 둔다.
+      // "유료기는 MP 가 자기제한하니 앵커 위가 안전하다" 는 전제가 보스에서만 깨지기
+      // 때문이다 — 보스 maxMp 는 40(emberQuest 드래곤은 60)이라 4MP 속성기를 10~15 회
+      // 쓴다. 전투가 그보다 짧으면 사실상 무제한이라 앵커를 통째로 밀어낸다.
+      // 실측(출하 troop_dragon, 피해량): 속성기 8 → 68.9 / 동률 7 → 298.3.
+      //
+      // 그래서 주기 발화는 turn 버스트(9)가 맡는다. 버스트는 3턴에 한 번만 후보가 되므로
+      // 앵커를 밀어내지 않으면서 속성을 보여준다. 단 "확정 발화" 는 아니다 — turn 항목도
+      // 다른 행동과 똑같이 MP 검사를 통과해야 한다(runtime.ts:1798 → battleSkillUse.ts:40).
       return [
-        always("skill_attack", PLAIN),
-        always("skill_sword_slash", PLAIN),
-        always(elemental, IDENTITY_PAID),
+        always("skill_attack", ANCHOR),
+        always("skill_sword_slash", FIXED_FREE),
+        always(elemental, BOSS_ELEMENT),
         everyNthTurn(elemental, BURST, 3),
       ];
   }

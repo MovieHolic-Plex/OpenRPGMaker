@@ -42,34 +42,104 @@ describe("archetypeActions", () => {
     }
   });
 
-  // R14 규칙 1. 점수식은 damage 스킬의 stateEffects 를 안 본다(runtime.ts:1896-1898).
-  // 정체성 스킬을 평범한 무료 공격보다 낮게 두면 Δscore 가 전투 내내 상수라 낮은 쪽은
-  // **한 번도** 안 나온다(라운드 1 실측: poison_sting·earth·dark·throwing_knife 사장).
-  it("정체성 스킬(상태·속성·유료)이 평범한 무료 데미지보다 낮은 우선순위를 갖지 않는다", () => {
+  // R14 규칙 1 (B1 개정). 점수식은 damage 스킬의 stateEffects 를 안 본다
+  // (runtime.ts:1896-1898). 상태·보조 정체성기는 효용이 "상태 부여 확률" 이라 데미지
+  // 축과 단위가 다르므로, 앵커보다 **우선순위**가 낮으면 영구히 사장된다.
+  //
+  // 데미지형 정체성기는 이 검사가 아니라 아래 "점수 축약형" 검사가 본다 — 우선순위만
+  // 보면 보스 속성기(5)가 앵커(7)보다 낮아 오탐이 난다. 실제로는 위력차가 우선순위차를
+  // 상쇄해 **점수가 동률**이다(BOSS_ELEMENT 주석 참조).
+  it("상태·보조 정체성기가 앵커보다 낮은 우선순위를 갖지 않는다", () => {
     for (const a of archetypes) {
       const patterns = archetypeActions(a, "skill_fire");
-      const plain = patterns.filter((p) => !isIdentitySkill(p.skillId));
-      const identity = patterns.filter((p) => isIdentitySkill(p.skillId));
-      if (plain.length === 0 || identity.length === 0) continue;
-      const worstIdentity = Math.min(...identity.map((p) => p.priority));
-      const bestPlain = Math.max(...plain.map((p) => p.priority));
+      const anchor = patterns.find((p) => p.skillId === "skill_attack");
+      const support = patterns.filter(
+        (p) => isIdentitySkill(p.skillId) && skillById.get(p.skillId)?.effect?.kind !== "damage",
+      );
+      if (!anchor || support.length === 0) continue;
+      const worst = Math.min(...support.map((p) => p.priority));
       expect(
-        worstIdentity,
-        `${a}: 정체성 최저 ${worstIdentity} < 평범 최고 ${bestPlain} — 낮은 쪽은 영구히 사장된다`,
-      ).toBeGreaterThanOrEqual(bestPlain);
+        worst,
+        `${a}: 상태·보조 정체성기 최저 ${worst} < 앵커 ${anchor.priority} — 영구히 사장된다`,
+      ).toBeGreaterThanOrEqual(anchor.priority);
     }
   });
 
-  // R14 규칙 2. 유료기가 무료기보다 낮으면 MP 를 고스란히 남긴 채 전투가 끝난다.
-  it("유료 스킬이 같은 아키타입의 무료 스킬보다 낮은 우선순위를 갖지 않는다", () => {
+  // 데미지형 정체성기는 우선순위가 아니라 **점수 축약형**으로 본다.
+  // `core = priority*10 + power + floor(스탯/2)` 이고 대상 관련 항은 모든 데미지 스킬이
+  // 공유하므로(runtime.ts:1881-1888), 두 데미지 스킬의 우열은 core 로 정해진다.
+  // 앵커의 core 는 AI 가 보는 위력 10 으로 계산한다 — 실피해는 attackPower 지만
+  // **선택**을 하는 건 AI 의 잘못된 평가 쪽이다(runtime.ts:1897 vs 1953).
+  it("데미지형 정체성기의 점수가 앵커보다 낮지 않다 — mind = attack 구간 전체", () => {
+    const losers: string[] = [];
     for (const a of archetypes) {
       const patterns = archetypeActions(a, "skill_fire");
-      const paid = patterns.filter((p) => mpCostOf(p.skillId) > 0);
+      for (let stat = 9; stat <= 214; stat += 1) {
+        const core = (p: (typeof patterns)[number]) =>
+          Math.max(1, p.priority) * 10 + (skillById.get(p.skillId)?.power ?? 0) + Math.floor(stat / 2);
+        const damage = patterns.filter((p) => skillById.get(p.skillId)?.effect?.kind === "damage");
+        const identity = damage.filter((p) => isIdentitySkill(p.skillId));
+        const anchor = damage.find((p) => p.skillId === "skill_attack");
+        if (!anchor || identity.length === 0) continue;
+        // 보스는 always(동률) + turn 버스트(위) 두 벌을 갖는다. "정체성이 살아 있는가" 는
+        // 그중 **최선**으로 판정한다 — 버스트가 주기 발화를 맡는 설계다.
+        const best = Math.max(...identity.map(core));
+        if (best < core(anchor)) losers.push(`${a}@stat${stat}: 정체성 ${best} < 앵커 ${core(anchor)}`);
+      }
+    }
+    expect(losers.slice(0, 5), `${losers.length}건 사장`).toEqual([]);
+  });
+
+  // B1 규칙 3 — **앵커 불변식.** 이게 이 파일에서 회당 피해를 지키는 유일한 장치다.
+  //
+  // 런타임의 두 경로가 다른 위력을 쓴다: 실제 피해는
+  // `skillId === DEFAULT_SKILL_ID ? user.attackPower : skill.power`(runtime.ts:1953) 라
+  // skill_attack 의 실위력이 시전자 attackPower(로스터 9~214)인데, AI 효용은
+  // `enemyDamageUtility(user, target, skill.power, …)`(runtime.ts:1897) 로 **10** 을 본다.
+  // 그래서 고정 위력 무료기(sword_slash 22 / throwing_knife 18)를 앵커 위에 두면 AI 가
+  // 자기 최강수를 영구히 버린다 — 실측 출하 트룹 4개 합계 피해 806 → 180(−78%).
+  //
+  // 유료 정체성기는 MP 가 횟수를 묶어서 앵커 위에 둬도 안전하지만(몇 번 쓰고 내려온다),
+  // **무료** 고정 위력기는 자기제한이 없어 한번 이기면 전투 내내 이긴다. 그래서 이 검사는
+  // MP 0 짜리 순수 데미지 스킬만 본다.
+  it("앵커(skill_attack)가 고정 위력 무료 데미지 스킬보다 우선순위가 높다", () => {
+    for (const a of archetypes) {
+      const patterns = archetypeActions(a, "skill_fire");
+      const anchor = patterns.find((p) => p.skillId === "skill_attack");
+      expect(anchor, `${a}: 앵커 skill_attack 이 없다`).toBeDefined();
+      // 고정 위력 무료 데미지 = MP 0 + damage 효과 + 상태·속성 없음(= 정체성 아님).
+      const fixedFree = patterns.filter(
+        (p) =>
+          p.skillId !== "skill_attack" &&
+          mpCostOf(p.skillId) === 0 &&
+          skillById.get(p.skillId)?.effect?.kind === "damage" &&
+          !isIdentitySkill(p.skillId),
+      );
+      for (const rival of fixedFree) {
+        expect(
+          anchor!.priority,
+          `${a}: ${rival.skillId}(${rival.priority}) 가 앵커(${anchor!.priority}) 이상이다 — ` +
+            `앵커가 영구히 사장되고 회당 피해가 위력 ${skillById.get(rival.skillId)?.power} 로 고정된다`,
+        ).toBeGreaterThan(rival.priority);
+      }
+    }
+  });
+
+  // R14 규칙 2 (B1 개정). "유료 > 무료" 를 전면 적용하던 규칙은 보스에서 역효과였다 —
+  // 보스 maxMp 는 40 이라 유료 속성기가 자기제한되지 않고 앵커를 통째로 밀어낸다.
+  // 그래서 규칙을 **비-데미지 유료기**(상태·보조)로 좁힌다. 이쪽은 상태가 이미 걸려
+  // 있으면 효용 0 으로 강등돼(runtime.ts:1822) MP 와 상태 중복이 이중으로 묶어준다.
+  it("유료 상태·보조기가 같은 아키타입의 무료 스킬보다 낮은 우선순위를 갖지 않는다", () => {
+    for (const a of archetypes) {
+      const patterns = archetypeActions(a, "skill_fire");
+      const paidSupport = patterns.filter(
+        (p) => mpCostOf(p.skillId) > 0 && skillById.get(p.skillId)?.effect?.kind !== "damage",
+      );
       const free = patterns.filter((p) => mpCostOf(p.skillId) === 0);
-      if (paid.length === 0 || free.length === 0) continue;
-      const worstPaid = Math.min(...paid.map((p) => p.priority));
+      if (paidSupport.length === 0 || free.length === 0) continue;
+      const worstPaid = Math.min(...paidSupport.map((p) => p.priority));
       const bestFree = Math.max(...free.map((p) => p.priority));
-      expect(worstPaid, `${a}: 유료 최저 ${worstPaid} < 무료 최고 ${bestFree}`).toBeGreaterThanOrEqual(bestFree);
+      expect(worstPaid, `${a}: 유료 상태·보조 최저 ${worstPaid} < 무료 최고 ${bestFree}`).toBeGreaterThanOrEqual(bestFree);
     }
   });
 
@@ -462,10 +532,13 @@ describe("보스 MP 예산", () => {
 // 칸에서 자기만 잘려 기본공격(위력 10)에 진다 — 우선순위 차이로는 못 메우는 구조적 잔재다.
 type ScoredDamage = { readonly id: string; readonly core: number };
 
-/** 이 적의 `actions` 중 데미지 효과 스킬만, 대상 소거한 점수 축약형으로 환산한다. */
+/** 이 적의 `actions` 중 데미지 효과 스킬만, 대상 소거한 점수 축약형으로 환산한다.
+ *
+ *  turn 조건 패턴도 센다(B1). 보스의 속성기는 `always`(앵커와 동률) + `turn` 버스트(위)
+ *  두 벌인데, `always` 만 보면 "정체성이 죽었다" 로 오판한다 — 주기 발화를 맡는 건
+ *  버스트다. 대신 아래 검사는 정체성 쪽 **최선**과 평범 쪽 최선을 비교한다. */
 function damageCores(enemy: any, identity: boolean): ScoredDamage[] {
   return (enemy.actions ?? [])
-    .filter((p: any) => p.condition.kind === "always")
     .map((p: any) => ({ pattern: p, skill: skillById.get(p.skillId) }))
     .filter((e: any) => e.skill?.effect?.kind === "damage" && isIdentitySkill(e.pattern.skillId) === identity)
     .map((e: any) => ({
@@ -492,10 +565,11 @@ describe("적 mind 스케일 (R16)", () => {
       const plain = damageCores(enemy, false);
       if (identity.length === 0 || plain.length === 0) continue;
       const bestPlain = plain.reduce((a, b) => (a.core >= b.core ? a : b));
-      for (const entry of identity) {
-        if (entry.core < bestPlain.core) {
-          losers.push(`${enemy.id}(atk ${enemy.stats.attack}/mind ${enemy.stats.mind}): ${entry.id} ${entry.core} < ${bestPlain.id} ${bestPlain.core}`);
-        }
+      // 정체성 쪽은 **최선**으로 판정한다(B1). 보스처럼 같은 스킬을 always/turn 두 벌로
+      // 든 경우 always 하나만 보면 오판한다 — 주기 발화를 맡는 건 버스트 쪽이다.
+      const bestIdentity = identity.reduce((a, b) => (a.core >= b.core ? a : b));
+      if (bestIdentity.core < bestPlain.core) {
+        losers.push(`${enemy.id}(atk ${enemy.stats.attack}/mind ${enemy.stats.mind}): ${bestIdentity.id} ${bestIdentity.core} < ${bestPlain.id} ${bestPlain.core}`);
       }
     }
     expect(losers, `정체성기가 사장된다:\n${losers.join("\n")}`).toEqual([]);
