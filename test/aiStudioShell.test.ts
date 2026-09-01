@@ -71,13 +71,16 @@ describe("스튜디오 셸 단독", () => {
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-deck")).toBeTruthy();
     expect((findByTestId(shell.root as unknown as FakeElement, "ai-studio-composer") as FakeElement).childNodes)
       .toContain(bar);
-    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-work")?.className).toContain("is-on");
-    expect(shell.root.textContent).toContain("아직 작업 계획이 없습니다");
+    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-tools")?.className).toContain("is-on");
+    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-grid")).toBeTruthy();
+    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-card")?.textContent).toContain("NPC 놓기");
+    expect(shell.root.textContent).not.toContain("Canonical");
+    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-monitor-thumb")).toBeNull();
 
+    findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-work")?.click();
+    expect(shell.root.textContent).toContain("아직 작업 계획이 없습니다");
     findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-changes")?.click();
     expect(shell.root.textContent).toContain("아직 비교할 변경이 없습니다");
-    findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-tools")?.click();
-    expect(shell.root.textContent).toContain("이번 장면에서 쓴 도구가 여기 쌓입니다");
 
     shell.setWorkPlan({
       id: "plan",
@@ -147,5 +150,31 @@ describe("패널 스튜디오 모드", () => {
     expect(logParent instanceof FakeElement ? logParent.className : "").toContain("ai-glass-log");
     expect(findByTestId(panel, "ai-command-bar")?.parentElement).toBe(panel);
     expect(storage.get("oprn:ai-studio")).toBe("0");
+  });
+
+  it("모니터는 살아 있는 맵 캔버스를 들이고, 도구 카드는 입력줄을 채운다", () => {
+    const body = (globalThis.document as unknown as { body: FakeElement }).body;
+    const shellWrap = new FakeElement("div");
+    shellWrap.className = "editor-canvas-scroll-shell";
+    const canvas = new FakeElement("div");
+    canvas.dataset.testid = "edit-canvas";
+    canvas.setAttribute("data-testid", "edit-canvas");
+    shellWrap.append(canvas);
+    body.append(shellWrap);
+
+    const panel = renderPanel();
+    findByTestId(panel, "ai-studio-toggle")?.click();
+
+    const monitor = findByTestId(panel, "ai-studio-monitor-stage");
+    expect(monitor?.querySelector("[data-testid=edit-canvas]")).toBeTruthy();
+    expect(findByTestId(panel, "ai-studio-monitor-thumb")).toBeNull();
+
+    const card = findByTestId(panel, "ai-studio-tool-card");
+    card?.click();
+    const input = findByTestId(panel, "ai-input") as unknown as { value: string };
+    expect(input.value.length).toBeGreaterThan(0);
+
+    findByTestId(panel, "ai-studio-toggle")?.click();
+    expect(body.querySelector("[data-testid=edit-canvas]")).toBeTruthy();
   });
 });

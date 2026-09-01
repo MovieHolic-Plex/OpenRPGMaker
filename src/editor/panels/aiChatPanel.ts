@@ -2600,6 +2600,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   studioShell = createStudioShell({
     onExit: () => applyStudio(false),
     onFontZoom: (delta) => setLogFontSize(delta),
+    onUseTool: (tool) => {
+      const lead = tool.description.split(/[.\n]/u)[0]?.trim() || tool.name;
+      input.value = `${lead} (${tool.name})`;
+      input.dispatchEvent(new Event("input"));
+      refreshSendEnabled();
+      input.focus();
+    },
   });
   studioButton.addEventListener("click", () => applyStudio(!studio));
   const onStudioToggleRequest = (): void => applyStudio(!studio);

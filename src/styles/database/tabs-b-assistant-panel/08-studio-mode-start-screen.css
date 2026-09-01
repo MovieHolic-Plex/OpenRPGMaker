@@ -144,32 +144,85 @@ body.ai-studio-open .topbar {
 }
 
 .ai-studio-monitor {
-  background: var(--text-1);
+  background: var(--bg-canvas, var(--bg-inset));
   display: grid;
   grid-column: 2;
   grid-row: 1;
+  min-height: 0;
   min-width: 0;
   overflow: hidden;
-  place-items: center;
+  padding: 0;
   position: relative;
 }
 
 .ai-studio-monitor-stage {
-  align-items: center;
-  display: flex;
-  height: 82%;
-  justify-content: center;
-  max-width: 88%;
+  min-height: 0;
+  min-width: 0;
   overflow: hidden;
+  position: relative;
 }
 
-.ai-studio-monitor-thumb {
-  background: color-mix(in srgb, var(--text-1) 82%, var(--bg-raised));
-  border-radius: 4px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  image-rendering: pixelated;
+/* 캔버스 셸의 톱바 예약(--editor-canvas-chrome-top, persistence :has)을 덮어
+   모니터 칸을 끝까지 채운다. 안 그러면 위가 74px 비어 그림 액자처럼 보인다. */
+body.ai-studio-open .canvas-area .ai-studio-monitor-stage .editor-canvas-scroll-shell {
+  --editor-canvas-chrome-top: 0px;
+  --editor-canvas-chrome-bottom: 0px;
+  bottom: 0;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+.ai-studio-monitor-stage .phaser-container,
+.ai-studio-monitor-stage .phaser-container > canvas {
+  display: block;
+  height: 100% !important;
   max-height: 100%;
   max-width: 100%;
+  width: 100% !important;
+}
+
+.ai-studio-monitor-chrome {
+  pointer-events: none;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 4;
+}
+
+.ai-studio-monitor-chrome .canvas-toolbar,
+.ai-studio-monitor-chrome .canvas-toolbar.is-basic-chrome,
+.ai-studio-monitor-chrome .canvas-toolbar.is-docked-chrome {
+  background: var(--bg-glass, var(--bg-raised));
+  border: 1px solid var(--border-subtle);
+  height: auto;
+  left: auto;
+  max-width: none;
+  pointer-events: auto;
+  position: relative;
+  right: auto;
+  top: auto;
+  transform: none;
+}
+
+.ai-studio-monitor-chrome .canvas-ai-workbench,
+.ai-studio-monitor-chrome .canvas-toolbar-save-group,
+.ai-studio-monitor-chrome .canvas-toolbar-expand {
+  display: none;
+}
+
+.ai-studio-monitor-empty {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  height: 100%;
+  justify-content: center;
+  opacity: 0.72;
 }
 
 .ai-studio-monitor-label {
@@ -181,7 +234,13 @@ body.ai-studio-open .topbar {
   font-weight: 700;
   left: 12px;
   padding: 4px 8px;
+  pointer-events: none;
   position: absolute;
+  z-index: 3;
+}
+
+body.ai-studio-open .coach-mark-card {
+  display: none;
 }
 
 .ai-studio-chat {
@@ -308,6 +367,48 @@ body.ai-studio-open .topbar {
 .ai-studio-work,
 .ai-studio-tool-list {
   min-height: 100%;
+}
+
+.ai-studio-tool-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+}
+
+.ai-studio-tool-card {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 4px;
+  min-height: 58px;
+  padding: 10px;
+  text-align: left;
+}
+
+.ai-studio-tool-card:hover,
+.ai-studio-tool-card:focus-visible {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  outline: none;
+}
+
+.ai-studio-tool-card b {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ai-studio-tool-mode {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ai-studio-tool-mode.is-write {
+  color: var(--accent);
 }
 
 .ai-studio-work,

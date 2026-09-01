@@ -1,9 +1,8 @@
-// AI 스튜디오 셸 — 타일 에디터를 덮는 연출 워크스페이스.
+// AI 스튜디오 셸 — 살아 있는 맵 에디터를 모니터에 들이고, 아래 덱에 AI 도구를 깐다.
 //
-// 기본 조수는 캔버스 위 입력줄 캡슐이다. 스튜디오만 이 레이아웃이다:
-//   장면 목록 | 맵 모니터
-//                 덱(작업/변경/도구)     | 오른쪽 전고 채팅
-// 모니터는 타일 팔레트가 아니라 썸네일 미리보기다. 채팅은 오른쪽에만 산다.
+//   장면 목록 | 맵 에디터(실제 Phaser 캔버스)
+//                 AI 도구 덱                    | 오른쪽 전고 채팅
+// 썸네일 그림이 아니다. 모니터는 edit-canvas 를 재부모화해서 줌·팬·클릭이 그대로 된다.
 
 import type { WorkItem, WorkPlan } from "@/ai/workPlan";
 import { editorState } from "@/editor/editorState";
@@ -12,13 +11,14 @@ import {
   renderChangePreviewCard,
   type ChangePreviewInput,
 } from "@/editor/panels/aiChangePreview";
-import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
+import { filterToolCategories, FREQUENT_TOOL_NAMES } from "@/editor/panels/toolBrowserModal";
+import type { ToolDefinition } from "@/editor/tools/types";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
-export type StudioDeckTab = "work" | "changes" | "tools";
+export type StudioDeckTab = "tools" | "work" | "changes";
 
 export interface StudioShellPieces {
   readonly historyLogMount: HTMLElement;
@@ -28,6 +28,7 @@ export interface StudioShellPieces {
 export interface StudioShellOptions {
   readonly onExit: () => void;
   readonly onFontZoom: (delta: number) => void;
+  readonly onUseTool?: (tool: ToolDefinition) => void;
 }
 
 export interface StudioShell {
@@ -54,21 +55,64 @@ const WORK_STATUS_LABEL: Record<WorkItem["status"], string> = {
 };
 
 const DECK_TABS: readonly { readonly id: StudioDeckTab; readonly label: string }[] = [
+  { id: "tools", label: "도구" },
   { id: "work", label: "작업" },
   { id: "changes", label: "변경" },
-  { id: "tools", label: "도구" },
 ];
+
+const TOOL_SHORT: Record<string, string> = {
+  place_npc: "NPC 놓기",
+  author_house: "집 짓기",
+  build_wall: "벽",
+  paint_road: "길",
+  fill_region: "영역 채우기",
+  place_props: "소품",
+  place_door: "문",
+  generate_map: "맵 만들기",
+  tile_query: "타일 보기",
+  create_map: "새 맵",
+  resize_map: "맵 크기",
+  author_village: "마을 짓기",
+  paint_tiles: "타일 칠하기",
+  stamp_structure: "건물 찍기",
+  find_events: "이벤트 찾기",
+  run_lint: "맵 검사",
+  get_map_region: "영역 보기",
+  create_quest: "퀘스트",
+  link_maps: "맵 연결",
+};
+
+const STUDIO_EXTRA_TOOLS = [
+  "create_map",
+  "resize_map",
+  "author_village",
+  "paint_tiles",
+  "stamp_structure",
+  "find_events",
+  "run_lint",
+  "get_map_region",
+  "create_quest",
+  "link_maps",
+] as const;
+
+type ParkedNode = {
+  readonly node: HTMLElement;
+  readonly parent: HTMLElement;
+  readonly next: ChildNode | null;
+};
 
 export function createStudioShell(options: StudioShellOptions): StudioShell {
   let attachedTo: HTMLElement | null = null;
   let logHome: HTMLElement | null = null;
   let barHome: HTMLElement | null = null;
   let pieces: StudioShellPieces | null = null;
-  let deckTab: StudioDeckTab = "work";
+  let deckTab: StudioDeckTab = "tools";
   let workPlan: WorkPlan | null = null;
   let workActive = false;
   let changePreview: ChangePreviewInput | null = null;
   let toolLines: readonly string[] = [];
+  let parked: ParkedNode[] = [];
+  let fitObserver: ResizeObserver | null = null;
 
   const sceneList = el("div", {
     class: "ai-studio-scene-list",
@@ -78,10 +122,14 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     class: "ai-studio-monitor-stage",
     dataset: { testid: "ai-studio-monitor-stage" },
   });
+  const monitorChrome = el("div", {
+    class: "ai-studio-monitor-chrome",
+    dataset: { testid: "ai-studio-monitor-chrome" },
+  });
   const monitorLabel = el("span", {
     class: "ai-studio-monitor-label",
     dataset: { testid: "ai-studio-monitor-label" },
-    text: "모니터",
+    text: "맵 에디터",
   });
   const statusLine = el("p", {
     class: "ai-studio-who-line",
@@ -133,7 +181,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
       el("section", {
         class: "ai-studio-monitor",
         dataset: { testid: "ai-studio-monitor" },
-        children: [monitorStage, monitorLabel],
+        children: [monitorStage, monitorChrome, monitorLabel],
       }),
       el("aside", {
         class: "ai-studio-chat",
@@ -178,29 +226,19 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     el("p", { class: "ai-studio-empty", text });
 
   const renderDeck = (): void => {
+    if (deckTab === "tools") {
+      deckPane.replaceChildren(renderToolsPane(options.onUseTool));
+      return;
+    }
     if (deckTab === "work") {
       deckPane.replaceChildren(renderWorkPane(workPlan, workActive));
       return;
     }
-    if (deckTab === "changes") {
-      if (!changePreview) {
-        deckPane.replaceChildren(emptyHint("아직 비교할 변경이 없습니다. 조수가 맵을 고치면 이전/이후가 여기 뜹니다."));
-        return;
-      }
-      deckPane.replaceChildren(renderChangePreviewCard(changePreview));
+    if (!changePreview) {
+      deckPane.replaceChildren(emptyHint("아직 비교할 변경이 없습니다. 조수가 맵을 고치면 이전/이후가 여기 뜹니다."));
       return;
     }
-    if (toolLines.length === 0) {
-      deckPane.replaceChildren(emptyHint("이번 장면에서 쓴 도구가 여기 쌓입니다."));
-      return;
-    }
-    deckPane.replaceChildren(
-      el("div", {
-        class: "ai-studio-tool-list",
-        dataset: { testid: "ai-studio-tool-list" },
-        children: toolLines.map((line) => el("div", { class: "ai-studio-tool-line", text: line })),
-      }),
-    );
+    deckPane.replaceChildren(renderChangePreviewCard(changePreview));
   };
 
   const refreshScenes = (): void => {
@@ -218,22 +256,65 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     const project = store.getCurrent();
     const mapId = editorState.get().currentMapId ?? project.startMapId;
     const map = project.maps[mapId];
-    monitorStage.replaceChildren();
-    if (!map) {
-      monitorLabel.textContent = "모니터 · 맵 없음";
-      return;
+    monitorLabel.textContent = map ? `맵 에디터 · ${map.name || mapId}` : "맵 에디터";
+    if (parked.length > 0) return;
+    if (monitorStage.querySelector("[data-testid=edit-canvas]")) return;
+    if (!monitorStage.querySelector("[data-testid=ai-studio-monitor-empty]")) {
+      monitorStage.replaceChildren(el("div", {
+        class: "ai-studio-monitor-empty",
+        dataset: { testid: "ai-studio-monitor-empty" },
+        text: "맵을 여기서 직접 움직입니다",
+      }));
     }
-    const size = monitorThumbSize(map.width, map.height);
-    const canvas = createMapThumbnail(mapId, {
-      className: "ai-studio-monitor-thumb",
-      height: size.height,
-      testId: "ai-studio-monitor-thumb",
-      width: size.width,
-    });
-    canvas.style.width = `${size.width}px`;
-    canvas.style.height = `${size.height}px`;
-    monitorStage.append(canvas);
-    monitorLabel.textContent = `모니터 · ${map.name || mapId}`;
+  };
+
+  const adoptLiveMap = (): void => {
+    releaseLiveMap();
+    const canvas = typeof document === "undefined"
+      ? null
+      : document.querySelector<HTMLElement>("[data-testid=edit-canvas]");
+    const toolbar = typeof document === "undefined"
+      ? null
+      : document.querySelector<HTMLElement>("[data-testid=editor-zoom-controls]");
+    const shell = canvas?.closest(".editor-canvas-scroll-shell") as HTMLElement | null;
+    parkNode(shell ?? canvas);
+    parkNode(toolbar);
+    monitorStage.replaceChildren();
+    if (shell) monitorStage.append(shell);
+    else if (canvas) monitorStage.append(canvas);
+    else {
+      monitorStage.append(el("div", {
+        class: "ai-studio-monitor-empty",
+        dataset: { testid: "ai-studio-monitor-empty" },
+        text: "맵을 여기서 직접 움직입니다",
+      }));
+    }
+    if (toolbar) monitorChrome.append(toolbar);
+    requestCanvasFit();
+    if (typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(() => requestCanvasFit());
+    }
+  };
+
+  const parkNode = (node: HTMLElement | null | undefined): void => {
+    if (!node || !node.parentElement) return;
+    parked.push({ node, parent: node.parentElement, next: node.nextSibling });
+    node.remove();
+  };
+
+  const releaseLiveMap = (): void => {
+    for (const item of parked.slice().reverse()) {
+      item.node.remove();
+      const parent = item.parent;
+      if (item.next && item.next.parentNode === parent && typeof parent.insertBefore === "function") {
+        parent.insertBefore(item.node, item.next);
+      } else {
+        parent.append(item.node);
+      }
+    }
+    parked = [];
+    monitorChrome.replaceChildren();
+    requestCanvasFit();
   };
 
   const attach = (panel: HTMLElement, next: StudioShellPieces): void => {
@@ -253,12 +334,20 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     composerSlot.append(next.commandBar);
     panel.append(root);
     attachedTo = panel;
+    adoptLiveMap();
     refreshScenes();
     refreshMonitor();
     showTab(deckTab);
+    if (typeof ResizeObserver !== "undefined") {
+      fitObserver = new ResizeObserver(() => requestCanvasFit());
+      fitObserver.observe(monitorStage);
+    }
   };
 
   const detach = (): void => {
+    fitObserver?.disconnect();
+    fitObserver = null;
+    releaseLiveMap();
     if (!pieces) {
       root.remove();
       attachedTo = null;
@@ -275,7 +364,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     barHome = null;
   };
 
-  showTab("work");
+  showTab("tools");
 
   return {
     root,
@@ -292,22 +381,37 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
       workPlan = plan;
       workActive = active;
       if (plan && attachedTo) showTab("work");
-      else renderDeck();
+      else if (deckTab === "work") renderDeck();
     },
     setChangePreview(input) {
       changePreview = input;
       if (input && attachedTo) showTab("changes");
-      else renderDeck();
+      else if (deckTab === "changes") renderDeck();
     },
     setToolLines(lines) {
       toolLines = lines;
-      if (deckTab === "tools") renderDeck();
+      if (deckTab === "tools" && toolLines.length > 0) {
+        // 라이브 도구 호출 로그는 카드 그리드 아래 보조로만 쓴다 — 덱 주인공은 도구 팔레트.
+        void toolLines;
+      }
     },
     setDeckTab: showTab,
     dispose() {
       detach();
     },
   };
+}
+
+function requestCanvasFit(): void {
+  if (typeof window === "undefined") return;
+  const fire = (): void => window.dispatchEvent(new Event("resize"));
+  fire();
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(() => {
+      fire();
+      requestAnimationFrame(fire);
+    });
+  }
 }
 
 function walkScenes(
@@ -354,17 +458,60 @@ function walkScenes(
   }
 }
 
-function monitorThumbSize(mapWidth: number, mapHeight: number): { width: number; height: number } {
-  const maxW = 560;
-  const maxH = 360;
-  const cell = 8;
-  const w = Math.max(1, mapWidth * cell);
-  const h = Math.max(1, mapHeight * cell);
-  const scale = Math.min(maxW / w, maxH / h, 3);
-  return {
-    width: Math.max(120, Math.round(w * scale)),
-    height: Math.max(90, Math.round(h * scale)),
-  };
+function toolShortLabel(tool: ToolDefinition): string {
+  const mapped = TOOL_SHORT[tool.name];
+  if (mapped) return mapped;
+  const cut = tool.description.split(/[.\n(]/u)[0]?.trim() ?? tool.name;
+  return cut.length > 10 ? `${cut.slice(0, 9)}…` : cut;
+}
+
+function renderToolCard(tool: ToolDefinition, onUseTool?: (tool: ToolDefinition) => void): HTMLElement {
+  return el("button", {
+    class: "ai-studio-tool-card",
+    attrs: {
+      type: "button",
+      title: tool.description,
+    },
+    dataset: { testid: "ai-studio-tool-card", tool: tool.name },
+    on: {
+      click: () => onUseTool?.(tool),
+    },
+    children: [
+      el("b", { text: toolShortLabel(tool) }),
+      el("span", {
+        class: tool.mode === "write" ? "ai-studio-tool-mode is-write" : "ai-studio-tool-mode",
+        text: tool.mode === "write" ? "편집" : "조회",
+      }),
+    ],
+  });
+}
+
+function studioDeckTools(): ToolDefinition[] {
+  const byName = new Map(
+    filterToolCategories("").flatMap((category) => category.tools).map((tool) => [tool.name, tool]),
+  );
+  const cards: ToolDefinition[] = [];
+  const seen = new Set<string>();
+  for (const name of [...FREQUENT_TOOL_NAMES, ...STUDIO_EXTRA_TOOLS]) {
+    if (seen.has(name)) continue;
+    const tool = byName.get(name);
+    if (!tool) continue;
+    seen.add(name);
+    cards.push(tool);
+  }
+  return cards;
+}
+
+function renderToolsPane(onUseTool?: (tool: ToolDefinition) => void): HTMLElement {
+  const cards = studioDeckTools();
+  if (cards.length === 0) {
+    return el("p", { class: "ai-studio-empty", text: "쓸 수 있는 AI 도구가 없습니다." });
+  }
+  return el("div", {
+    class: "ai-studio-tool-grid",
+    dataset: { testid: "ai-studio-tool-grid" },
+    children: cards.map((tool) => renderToolCard(tool, onUseTool)),
+  });
 }
 
 function renderWorkPane(plan: WorkPlan | null, active: boolean): HTMLElement {
