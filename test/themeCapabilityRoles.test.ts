@@ -4,7 +4,11 @@ import type { AiPreviewThemeEligibilityEvidence, AiPreviewThemeId } from "@/proj
 import { generateAiPreviewThemeMap } from "@/project/aiPreviewThemeGrammar";
 import { TILE } from "@/project/defaults/constants";
 import { defaultTileset } from "@/project/defaults/defaultAssets";
-import { MODERN_EXTERIORS_GRAMMAR_PROFILE, RM_TYPE_GRAMMAR_PROFILE } from "@/editor/tools/v3/grammarProfiles";
+import {
+  MODERN_EXTERIORS_GRAMMAR_PROFILE,
+  registerGrammarProfile,
+  RM_TYPE_GRAMMAR_PROFILE,
+} from "@/editor/tools/v3/grammarProfiles";
 import type { TileGroupMetadata, TileGroupRole } from "@/project/types";
 
 // 역할별 대표 타일 id. 서로 겹치지 않게 두어 맵에 찍힌 숫자만 보고
@@ -44,7 +48,11 @@ function evidence(roles: readonly TileGroupRole[]): AiPreviewThemeEligibilityEvi
 
 // generateAiPreviewThemeMap → firstCapabilityTile → groupsForCapability 로 실제로
 // 내려가는 유일한 공개 진입점. 표만 읽는 특성화 테스트와 달리 함수 본문을 통과한다.
-function themeMap(themeId: AiPreviewThemeId, roles: readonly TileGroupRole[]) {
+function themeMap(
+  themeId: AiPreviewThemeId,
+  roles: readonly TileGroupRole[],
+  grammarProfile?: string
+) {
   return generateAiPreviewThemeMap({
     charsetAssetId: "charset-1",
     charsetTextureKey: "charset-1",
@@ -54,9 +62,35 @@ function themeMap(themeId: AiPreviewThemeId, roles: readonly TileGroupRole[]) {
     name: "테스트 맵",
     themeEligibility: { ...evidence(roles), themeId },
     themeId,
-    tileset: defaultTileset(),
+    tileset: { ...defaultTileset(), grammarProfile },
     width: 5,
   });
+}
+
+// 표가 완전히 빈 프로파일. 모든 능력이 소비처의 폴백으로 떨어지므로,
+// module-private 인 groupsForCapability 의 폴백 분기를 공개 진입점만으로 관통할 수 있다.
+const EMPTY_TABLE_PROFILE_ID = "test-empty-theme-capability-table";
+registerGrammarProfile({
+  id: EMPTY_TABLE_PROFILE_ID,
+  label: "테스트용 빈 themeCapabilityRoles",
+  supportedPatternKinds: ["single"],
+  layerHomeByRole: {
+    terrain: "lower",
+    water: "lower",
+    wall: "lower",
+    building: "lower",
+    castle: "lower",
+    fence: "upper",
+    roof: "perCell",
+    prop: "perCell",
+  },
+  autotileNeighborhood: 8,
+  themeCapabilityRoles: {},
+});
+
+// 빈 표 프로파일에서 walkableFloor 를 폴백으로 흘려보낸 뒤 바닥에 찍힌 타일을 돌려준다.
+function fallbackFloorTile(roles: readonly TileGroupRole[]): number | undefined {
+  return themeMap("interior-house", roles, EMPTY_TABLE_PROFILE_ID).map.lowerTiles[FLOOR];
 }
 
 // width 5 / height 5 기준 좌표 → lowerTiles 인덱스.
@@ -115,10 +149,33 @@ describe("groupsForCapability (동작)", () => {
   });
 
   it("역할이 하나도 안 맞으면 타일을 못 고른다", () => {
-    // terrain 이 없으니 walkableFloor 는 null → floorTile 이 TILE.EMPTY(0) 로 떨어지고,
+    // terrain 이 없으니 walkableFloor 는 null → floorTile 이 TILE.EMPTY(-1) 로 떨어지고,
     // wall 도 없으니 wallTile 은 floorTile 을 물려받는다.
     const { map } = themeMap("interior-house", ["water", "fence", "roof", "castle"]);
     expect(map.lowerTiles[FLOOR]).toBe(TILE.EMPTY);
     expect(map.lowerTiles[BORDER]).toBe(TILE.EMPTY);
+  });
+});
+
+// 이 블록이 지키는 것: 표에 없는 능력의 폴백 목록 내용. decorProp 은 표에 없으므로
+// 전적으로 이 폴백에 의존하며, 공개 진입점은 decorProp 을 쓰지 않는다. 따라서 폴백
+// 리터럴을 직접 고정하지 않으면 decorProp 보증이 비어 있게 된다.
+describe("groupsForCapability 폴백 (표에 없는 능력)", () => {
+  it("폴백은 prop 을 포함한다", () => {
+    expect(fallbackFloorTile(["terrain", "prop"])).toBe(TILE_BY_ROLE.prop);
+  });
+
+  it("폴백은 fence 를 포함한다", () => {
+    expect(fallbackFloorTile(["terrain", "fence"])).toBe(TILE_BY_ROLE.fence);
+  });
+
+  it("폴백은 roof 를 포함한다", () => {
+    expect(fallbackFloorTile(["terrain", "roof"])).toBe(TILE_BY_ROLE.roof);
+  });
+
+  it("폴백은 prop/fence/roof 외의 역할은 받지 않는다", () => {
+    // terrain·water·wall·building·castle 만 있으면 폴백은 아무것도 못 고른다.
+    // 폴백이 "전부 허용"으로 넓어지면 이 단정이 깨진다.
+    expect(fallbackFloorTile(["terrain", "water", "wall", "building", "castle"])).toBe(TILE.EMPTY);
   });
 });
