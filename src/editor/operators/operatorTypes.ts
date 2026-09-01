@@ -40,9 +40,19 @@ export interface OperatorToggleParam {
   readonly hint?: string;
 }
 
-export type OperatorParamSpec = OperatorRangeParam | OperatorToggleParam;
+/** 몇 갈래 중 하나. 수치로 뭉갤 수 없는 축(마을 배치 형태 등)에 쓴다. */
+export interface OperatorChoiceParam {
+  readonly kind: "choice";
+  readonly id: string;
+  readonly label: string;
+  readonly options: readonly { readonly value: string; readonly label: string }[];
+  readonly defaultValue: string;
+  readonly hint?: string;
+}
 
-export type OperatorParamValues = Readonly<Record<string, number | boolean>>;
+export type OperatorParamSpec = OperatorRangeParam | OperatorToggleParam | OperatorChoiceParam;
+
+export type OperatorParamValues = Readonly<Record<string, number | boolean | string>>;
 
 export interface OperatorBuildResult {
   readonly writes: readonly OperatorWrite[];
@@ -71,8 +81,8 @@ export interface OperatorDef {
 }
 
 /** 스펙의 기본값 묶음. UI 최초 렌더와 헤드리스 호출이 같은 값에서 출발하게 한다. */
-export function defaultOperatorParams(def: OperatorDef): Record<string, number | boolean> {
-  const values: Record<string, number | boolean> = {};
+export function defaultOperatorParams(def: OperatorDef): Record<string, number | boolean | string> {
+  const values: Record<string, number | boolean | string> = {};
   for (const spec of def.params) values[spec.id] = spec.defaultValue;
   return values;
 }
@@ -81,7 +91,7 @@ export function defaultOperatorParams(def: OperatorDef): Record<string, number |
  * 스펙 밖 키를 버리고 범위를 강제한다. UI·하네스·향후 LLM 의도 파서가 모두 이 문을 지나므로
  * 오퍼레이터 본체는 값 검증을 하지 않아도 된다(신뢰 경계가 여기 하나뿐).
  */
-export function clampOperatorParams(def: OperatorDef, input: OperatorParamValues | undefined): Record<string, number | boolean> {
+export function clampOperatorParams(def: OperatorDef, input: OperatorParamValues | undefined): Record<string, number | boolean | string> {
   const values = defaultOperatorParams(def);
   if (!input) return values;
   for (const spec of def.params) {
@@ -89,6 +99,11 @@ export function clampOperatorParams(def: OperatorDef, input: OperatorParamValues
     if (raw === undefined) continue;
     if (spec.kind === "toggle") {
       if (typeof raw === "boolean") values[spec.id] = raw;
+      continue;
+    }
+    if (spec.kind === "choice") {
+      // 목록 밖 값은 버린다 — 모델이 지어낸 배치 이름이 생성기까지 내려가지 않게.
+      if (typeof raw === "string" && spec.options.some((option) => option.value === raw)) values[spec.id] = raw;
       continue;
     }
     const numeric = typeof raw === "number" ? raw : Number(raw);

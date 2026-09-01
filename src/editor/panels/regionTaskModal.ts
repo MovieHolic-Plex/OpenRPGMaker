@@ -454,7 +454,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   let generationMode: GenerationMode = options.generationMode ?? readGenerationMode();
   const operators = listOperators();
   let operatorId = operators[0]?.id ?? "forest";
-  let operatorParams: Record<string, number | boolean> = operators[0] ? defaultOperatorParams(operators[0]) : {};
+  let operatorParams: Record<string, number | boolean | string> = operators[0] ? defaultOperatorParams(operators[0]) : {};
   let operatorSeed = randomOperatorSeed();
 
   const modeAssistantButton = el("button", {
@@ -617,6 +617,27 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     if (!def) return;
     operatorHint.textContent = def.hint;
     for (const spec of def.params) {
+      if (spec.kind === "choice") {
+        const select = el("select", {
+          class: "region-task-direct-select",
+          attrs: { id: `region-task-op-${spec.id}`, ...(spec.hint ? { title: spec.hint } : {}) },
+          dataset: { testid: `region-task-operator-param-${spec.id}` },
+          children: spec.options.map((option) => el("option", {
+            text: option.label,
+            attrs: { value: option.value },
+          })),
+        }) as HTMLSelectElement;
+        select.value = String(operatorParams[spec.id] ?? spec.defaultValue);
+        select.addEventListener("change", () => {
+          operatorParams = { ...operatorParams, [spec.id]: select.value };
+        });
+        operatorParamHost.append(el("label", {
+          class: "region-task-operator-slider",
+          attrs: { for: `region-task-op-${spec.id}` },
+          children: [el("span", { class: "region-task-operator-name", text: spec.label }), select],
+        }));
+        continue;
+      }
       if (spec.kind === "toggle") {
         const input = el("input", {
           attrs: { type: "checkbox", id: `region-task-op-${spec.id}` },

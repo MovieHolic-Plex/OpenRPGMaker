@@ -16,7 +16,7 @@ import { getOperator, listOperators } from "./operatorRegistry";
 
 export interface OperatorIntent {
   readonly operatorId: string;
-  readonly params: Record<string, number | boolean>;
+  readonly params: Record<string, number | boolean | string>;
   /** llm = 모델이 해석 · heuristic = 키워드 폴백. 사용자에게 그대로 밝힌다. */
   readonly source: "llm" | "heuristic";
   /** 로그·요약에 그대로 실리는 사람용 한 줄(예: "숲 · 밀도 0.9 · 오솔길 끔"). */
@@ -37,6 +37,10 @@ function describeParam(spec: OperatorParamSpec): string {
   const hint = spec.hint ? ` — ${spec.hint}` : "";
   if (spec.kind === "toggle") {
     return `  · ${spec.id} (${spec.label}): true|false, 기본 ${spec.defaultValue}${hint}`;
+  }
+  if (spec.kind === "choice") {
+    const options = spec.options.map((option) => `"${option.value}"(${option.label})`).join(" | ");
+    return `  · ${spec.id} (${spec.label}): ${options} 중 하나, 기본 "${spec.defaultValue}"${hint}`;
   }
   return `  · ${spec.id} (${spec.label}): ${spec.min}~${spec.max} 사이 수, 기본 ${spec.defaultValue}${hint}`;
 }
@@ -81,7 +85,7 @@ function extractJsonObject(text: string): unknown {
 }
 
 /** 사람이 읽는 한 줄 — 기본값과 다른 것만 적는다(무엇을 바꿨는지가 정보다). */
-export function describeIntent(def: OperatorDef, params: Record<string, number | boolean>): string {
+export function describeIntent(def: OperatorDef, params: Record<string, number | boolean | string>): string {
   const changed = def.params
     .filter((spec) => params[spec.id] !== spec.defaultValue)
     .map((spec) => {
@@ -107,7 +111,7 @@ export function parseOperatorIntentJson(text: string, source: "llm" | "heuristic
     return { error: `모르는 생성기입니다: ${opId || "(없음)"} — 가능한 값: ${known}` };
   }
   const rawParams = (record.params && typeof record.params === "object" && !Array.isArray(record.params))
-    ? record.params as Record<string, number | boolean>
+    ? record.params as Record<string, number | boolean | string>
     : {};
   const params = clampOperatorParams(def, rawParams);
   return { operatorId: def.id, params, source, note: describeIntent(def, params) };
@@ -115,7 +119,7 @@ export function parseOperatorIntentJson(text: string, source: "llm" | "heuristic
 
 // ── 키워드 폴백 ──
 // LLM 이 없거나 실패했을 때의 최소 해석. 모델을 흉내 내려 하지 않고, 확실한 말만 잡는다.
-type KeywordRule = { readonly test: RegExp; readonly apply: Record<string, number | boolean> };
+type KeywordRule = { readonly test: RegExp; readonly apply: Record<string, number | boolean | string> };
 
 const FOREST_KEYWORDS: readonly KeywordRule[] = [
   { test: /울창|빽빽|무성|우거|빼곡|짙은/, apply: { density: 0.9 } },
@@ -127,7 +131,18 @@ const FOREST_KEYWORDS: readonly KeywordRule[] = [
   { test: /오솔길|산책로|샛길/, apply: { path: true } },
 ];
 
+const VILLAGE_KEYWORDS: readonly KeywordRule[] = [
+  { test: /광장/, apply: { layout: "plaza" } },
+  { test: /흩어|드문드문\s*집|산촌|띄엄/, apply: { layout: "scatter" } },
+  { test: /길\s*따라|가로변|한\s*줄/, apply: { layout: "spine" } },
+  { test: /같은\s*모양|연립|막사|줄지어/, apply: { uniform: true } },
+  { test: /큰\s*마을|많이|번화/, apply: { houses: 9 } },
+  { test: /작은\s*마을|조촐|몇\s*채/, apply: { houses: 3 } },
+];
+
+// 마을을 숲보다 먼저 본다 — "숲속 마을" 은 마을이다(집이 주인공).
 const OPERATOR_KEYWORDS: readonly { readonly id: string; readonly test: RegExp }[] = [
+  { id: "village", test: /마을|촌락|동네|집을|가옥|취락|村/ },
   { id: "forest", test: /숲|나무|수목|삼림|우거|나무를/ },
 ];
 
@@ -141,11 +156,20 @@ export function heuristicOperatorIntent(instruction: string): OperatorIntentResu
     const known = listOperators().map((operator) => operator.label).join(", ");
     return { error: `문장에서 생성기를 알아내지 못했습니다 — 지금 쓸 수 있는 것: ${known}` };
   }
-  const applied: Record<string, number | boolean> = {};
-  if (def.id === "forest") {
-    for (const rule of FOREST_KEYWORDS) {
-      if (rule.test.test(text)) Object.assign(applied, rule.apply);
-    }
+  const applied: Record<string, number | boolean | string> = {};
+  const rules = def.id === "forest" ? FOREST_KEYWORDS : def.id === "village" ? VILLAGE_KEYWORDS : [];
+  for (const rule of rules) {
+    if (rule.test.test(text)) Object.assign(applied, rule.apply);
+  }
+  // "집 다섯 채" 처럼 숫자가 직접 나오면 그걸 우선한다.
+  if (def.id === "village") {
+    const digits = text.match(/(\d+)\s*채/);
+    const words = text.match(/([한두세네다섯여섯일곱여덟아홉열]+)\s*채/);
+    const wordMap: Record<string, number> = {
+      한: 1, 두: 2, 세: 3, 네: 4, 다섯: 5, 여섯: 6, 일곱: 7, 여덟: 8, 아홉: 9, 열: 10,
+    };
+    if (digits) applied.houses = Number(digits[1]);
+    else if (words && wordMap[words[1]!]) applied.houses = wordMap[words[1]!]!;
   }
   const params = clampOperatorParams(def, applied);
   return { operatorId: def.id, params, source: "heuristic", note: describeIntent(def, params) };

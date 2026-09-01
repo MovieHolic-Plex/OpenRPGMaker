@@ -6,6 +6,11 @@
 
 import { buildForestWrites, forestPaletteFromSlots } from "@/editor/regionTask/forestWrites";
 import {
+  buildVillageWrites,
+  villagePaletteFromSlots,
+  type VillageLayout,
+} from "@/editor/regionTask/villageWrites";
+import {
   clampOperatorParams,
   defaultOperatorParams,
   type OperatorDef,
@@ -43,7 +48,39 @@ const forestOperator: OperatorDef = {
   },
 };
 
-const OPERATORS: readonly OperatorDef[] = [forestOperator];
+const villageOperator: OperatorDef = {
+  id: "village",
+  label: "마을",
+  hint: "도로 스파인 · 필지 · 집 34종 비복원 추출 · 골목 · 울타리",
+  params: [
+    { kind: "range", id: "houses", label: "집 수", min: 1, max: 12, step: 1, defaultValue: 5 },
+    {
+      kind: "choice", id: "layout", label: "배치", defaultValue: "spine",
+      options: [
+        { value: "spine", label: "길 따라" },
+        { value: "plaza", label: "광장 중심" },
+        { value: "scatter", label: "흩어진" },
+      ],
+    },
+    { kind: "toggle", id: "uniform", label: "같은 모양으로", defaultValue: false, hint: "연립·막사. 끄면 34종에서 비복원 추출" },
+  ],
+  build(map, region, params, seed, slots) {
+    const built = buildVillageWrites(
+      map,
+      region,
+      {
+        houses: params.houses as number,
+        layout: params.layout as VillageLayout,
+        uniform: params.uniform as boolean,
+      },
+      seed,
+      villagePaletteFromSlots(slots),
+    );
+    return { writes: built.writes, note: built.note };
+  },
+};
+
+const OPERATORS: readonly OperatorDef[] = [forestOperator, villageOperator];
 
 export function listOperators(): readonly OperatorDef[] {
   return OPERATORS;
@@ -54,7 +91,7 @@ export function getOperator(id: string): OperatorDef | undefined {
 }
 
 /** UI·하네스 공용 진입점 — 알 수 없는 id 나 범위 밖 값은 여기서 걸러진다. */
-export function resolveOperatorParams(id: string, input?: OperatorParamValues): Record<string, number | boolean> | undefined {
+export function resolveOperatorParams(id: string, input?: OperatorParamValues): Record<string, number | boolean | string> | undefined {
   const def = getOperator(id);
   if (!def) return undefined;
   return input ? clampOperatorParams(def, input) : defaultOperatorParams(def);
