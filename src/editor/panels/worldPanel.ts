@@ -1,3 +1,4 @@
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import type { WorldRef } from "@/project/world/types";
@@ -24,11 +25,8 @@ export function openWorldPanel(): HTMLElement {
   const close = (): void => {
     if (closed) return;
     closed = true;
+    unregisterModal(backdrop);
     backdrop.remove();
-    document.removeEventListener("keydown", onKeyDown);
-  };
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") close();
   };
 
   const panel = renderWorldPanel({ onClose: close });
@@ -36,8 +34,10 @@ export function openWorldPanel(): HTMLElement {
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
-  document.addEventListener("keydown", onKeyDown);
   document.body.append(backdrop);
+  // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
+  // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
+  registerModal(backdrop, close);
   panel.querySelector<HTMLElement>("[data-testid='world-search']")?.focus();
   return panel;
 }

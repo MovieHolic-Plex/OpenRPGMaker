@@ -3,6 +3,7 @@
 // 실제 맵은 절대 바뀌지 않는다(맵 영역을 복사한 사본 또는 빈 잔디 캔버스).
 // 붓질 순서가 그대로 기록되어 설명과 함께 AI에게 전달된다(demonstrationPrompt가 조립).
 
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { searchResources } from "@/assets/resourceSearch";
@@ -304,18 +305,14 @@ export function openDemoTeachModal(options: DemoTeachOptions): HTMLElement {
   });
 
   const close = (): void => {
+    unregisterModal(backdrop);
     backdrop.remove();
-    document.removeEventListener?.("keydown", onKeyDown);
-  };
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") close();
   };
   closeButton.addEventListener("click", close);
   cancelButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
-  document.addEventListener?.("keydown", onKeyDown);
 
   sendButton.addEventListener("click", () => {
     if (strokes.length === 0) {
@@ -338,5 +335,8 @@ export function openDemoTeachModal(options: DemoTeachOptions): HTMLElement {
   refreshBrush();
   refreshAllCells();
   document.body.append(backdrop);
+  // Escape 는 공용 모달 스택이 라우팅한다 — 자체 document 리스너는 데이터베이스 모달의
+  // Escape 핸들러와 같은 버블 단계라 등록 순서에 따라 바깥이 먼저 닫혔다.
+  registerModal(backdrop, close);
   return backdrop;
 }

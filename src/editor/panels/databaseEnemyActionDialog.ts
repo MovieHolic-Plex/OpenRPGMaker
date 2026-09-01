@@ -3,6 +3,7 @@ import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { selectField } from "@/editor/panels/databaseControls";
 import { openRecordPickerPanel } from "@/editor/panels/eventEditor/recordPickerDialog";
 import { currentEnemy, openDialog, panel, replaceAction } from "@/editor/panels/databaseEnemyRecordSupport";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { EnemyActionCondition, EnemyActionPattern, EnemyActionSwitchEffect, EnemyRecord, SkillId } from "@/project/types";
@@ -96,12 +97,15 @@ export function openActionContextMenu(record: EnemyRecord, index: number, action
     children: contextMenuActions(record, index, action, rerender),
   });
   const close = (): void => {
+    unregisterModal(menu);
     menu.remove();
     document.querySelectorAll(".db-enemy-action-context-target").forEach((node) => node.classList.remove("db-enemy-action-context-target"));
   };
   menu.addEventListener("click", close);
   setTimeout(() => document.addEventListener("click", close, { once: true }), 0);
   document.body.append(menu);
+  // Escape 계층을 점유한다 — 등록하지 않으면 Escape 가 흘러 데이터베이스가 대신 닫힌다.
+  registerModal(menu, close);
   const rect = menu.getBoundingClientRect();
   menu.style.left = `${Math.max(0, Math.min(event.clientX, window.innerWidth - rect.width - 4))}px`;
   menu.style.top = `${Math.max(0, Math.min(event.clientY, window.innerHeight - rect.height - 4))}px`;
