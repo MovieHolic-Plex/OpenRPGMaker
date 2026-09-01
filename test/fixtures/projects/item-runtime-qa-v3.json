@@ -76657,6 +76657,144 @@
         "stateEffects": []
       },
       {
+        "id": "skill_ice",
+        "name": "빙결",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_ice_shatter",
+        "description": "얼음 속성으로 적을 얼립니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "ice",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_thunder",
+        "name": "낙뢰",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_thunder_strike",
+        "description": "번개 속성으로 적을 내리칩니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "thunder",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_earth",
+        "name": "암석 파쇄",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_earth_spike",
+        "description": "대지 속성으로 적을 짓누릅니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "earth",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_wind",
+        "name": "질풍참",
+        "scope": "enemy",
+        "power": 28,
+        "animationId": "anim_gen_wind_slice",
+        "description": "바람 속성으로 적을 베어냅니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "wind",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_dark",
+        "name": "암흑 파동",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_shadow_pulse",
+        "description": "어둠 속성으로 적을 침식합니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "dark",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_holy",
+        "name": "성광",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_holy_beam",
+        "description": "신성 속성으로 적을 정화합니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "holy",
+        "stateEffects": []
+      },
+      {
         "id": "skill_item_holy_water",
         "name": "성수 효과",
         "scope": "enemy",
@@ -88423,12 +88561,12 @@
       },
       {
         "id": "item_catalog_attack_manual",
-        "name": "기초 전투 교범",
+        "name": "투척술 교범",
         "imageResourceId": "cc0-jetrel-book-sword",
         "iconResourceId": "cc0-jetrel-book-sword",
         "scope": "ally",
         "price": 240,
-        "description": "선택한 아군이 기본 공격 기술을 확실하게 익힙니다.",
+        "description": "선택한 아군에게 원거리에서 단검을 던지는 투척술을 가르칩니다.",
         "type": "book",
         "occasion": "field",
         "consumable": true,
@@ -88447,7 +88585,7 @@
         },
         "onlyUsableInMenu": false,
         "onlyEffectiveOnDeadActors": false,
-        "learnedSkillId": "skill_attack",
+        "learnedSkillId": "skill_throwing_knife",
         "usageMessage": "normal",
         "occasionField": true,
         "occasionBattle": false,
@@ -89115,7 +89253,7 @@
         "imageResourceId": "cc0-jetrel-gen2-might-seed",
         "iconResourceId": "cc0-jetrel-gen2-might-seed",
         "scope": "ally",
-        "price": 680,
+        "price": 1200,
         "description": "선택한 아군의 네 가지 전투 능력을 영구히 1씩 올립니다.",
         "type": "seed",
         "occasion": "field",
@@ -96881,19 +97019,11 @@
         },
         "equippableActorIds": [
           "actor_hero",
-          "actor_guardian",
-          "actor_mage",
-          "actor_scout",
-          "actor_cleric",
-          "actor_ranger"
+          "actor_guardian"
         ],
         "equippableClassIds": [
           "class_hero",
-          "class_guardian",
-          "class_mage",
-          "class_scout",
-          "class_cleric",
-          "class_ranger"
+          "class_guardian"
         ],
         "cursed": false,
         "twoHanded": false,

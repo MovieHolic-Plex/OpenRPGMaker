@@ -76657,6 +76657,144 @@
         "stateEffects": []
       },
       {
+        "id": "skill_ice",
+        "name": "빙결",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_ice_shatter",
+        "description": "얼음 속성으로 적을 얼립니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "ice",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_thunder",
+        "name": "낙뢰",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_thunder_strike",
+        "description": "번개 속성으로 적을 내리칩니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "thunder",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_earth",
+        "name": "암석 파쇄",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_earth_spike",
+        "description": "대지 속성으로 적을 짓누릅니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "earth",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_wind",
+        "name": "질풍참",
+        "scope": "enemy",
+        "power": 28,
+        "animationId": "anim_gen_wind_slice",
+        "description": "바람 속성으로 적을 베어냅니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "wind",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_dark",
+        "name": "암흑 파동",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_shadow_pulse",
+        "description": "어둠 속성으로 적을 침식합니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "dark",
+        "stateEffects": []
+      },
+      {
+        "id": "skill_holy",
+        "name": "성광",
+        "scope": "enemy",
+        "power": 30,
+        "animationId": "anim_gen_holy_beam",
+        "description": "신성 속성으로 적을 정화합니다.",
+        "type": "normal",
+        "mpCost": {
+          "flat": 4,
+          "percentMax": 0
+        },
+        "successRate": 100,
+        "variance": 10,
+        "hitRate": 100,
+        "effect": {
+          "kind": "damage",
+          "statistic": "mind",
+          "affects": "hp"
+        },
+        "elementId": "holy",
+        "stateEffects": []
+      },
+      {
         "id": "skill_item_holy_water",
         "name": "성수 효과",
         "scope": "enemy",
@@ -88422,6 +88560,1245 @@
         }
       },
       {
+        "id": "item_catalog_attack_manual",
+        "name": "투척술 교범",
+        "imageResourceId": "cc0-jetrel-book-sword",
+        "iconResourceId": "cc0-jetrel-book-sword",
+        "scope": "ally",
+        "price": 240,
+        "description": "선택한 아군에게 원거리에서 단검을 던지는 투척술을 가르칩니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_throwing_knife",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_fire_grimoire",
+        "name": "홍염 마도서",
+        "imageResourceId": "cc0-jetrel-book-magic",
+        "iconResourceId": "cc0-jetrel-book-magic",
+        "scope": "ally",
+        "price": 390,
+        "description": "선택한 아군에게 불꽃을 다루는 화염 마법을 가르칩니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_fire",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_water_grimoire",
+        "name": "청류 마도서",
+        "imageResourceId": "cc0-jetrel-book-magic",
+        "iconResourceId": "cc0-jetrel-book-magic",
+        "scope": "ally",
+        "price": 380,
+        "description": "선택한 아군이 물줄기를 쏘는 물대포 기술을 배웁니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_water",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_leaf_scroll",
+        "name": "푸른 잎 비전서",
+        "imageResourceId": "cc0-jetrel-scroll",
+        "iconResourceId": "cc0-jetrel-scroll",
+        "scope": "ally",
+        "price": 350,
+        "description": "선택한 아군에게 날카로운 잎날 공격법을 전수합니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_leaf",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_healing_tome",
+        "name": "온기의 치유서",
+        "imageResourceId": "cc0-jetrel-skill-book",
+        "iconResourceId": "cc0-jetrel-skill-book",
+        "scope": "ally",
+        "price": 420,
+        "description": "선택한 아군이 상처를 회복시키는 치유 기술을 익힙니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_heal",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_poison_codex",
+        "name": "독침 연구서",
+        "imageResourceId": "cc0-jetrel-notebook",
+        "iconResourceId": "cc0-jetrel-notebook",
+        "scope": "ally",
+        "price": 370,
+        "description": "선택한 아군에게 독을 묻힌 침 공격 요령을 가르칩니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_poison_sting",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_sleep_scroll",
+        "name": "꿈안개 주문서",
+        "imageResourceId": "cc0-jetrel-scroll",
+        "iconResourceId": "cc0-jetrel-scroll",
+        "scope": "ally",
+        "price": 410,
+        "description": "선택한 아군이 적을 잠재우는 수면 안개를 습득합니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_sleep_mist",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_weaken_manual",
+        "name": "쇠약의 전술서",
+        "imageResourceId": "cc0-jetrel-skill-book",
+        "iconResourceId": "cc0-jetrel-skill-book",
+        "scope": "ally",
+        "price": 400,
+        "description": "선택한 아군에게 적의 방어를 낮추는 약화술을 전합니다.",
+        "type": "book",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "learnedSkillId": "skill_weaken",
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_balance_seed",
+        "name": "균형의 씨앗",
+        "imageResourceId": "cc0-jetrel-seed-bag",
+        "iconResourceId": "cc0-jetrel-seed-bag",
+        "scope": "ally",
+        "price": 540,
+        "description": "선택한 아군의 공격력과 방어력을 영구히 1씩 높입니다.",
+        "type": "seed",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 1,
+          "defense": 1,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_insight_seed",
+        "name": "통찰의 씨앗",
+        "imageResourceId": "cc0-jetrel-gen2-wisdom-seed",
+        "iconResourceId": "cc0-jetrel-gen2-wisdom-seed",
+        "scope": "ally",
+        "price": 560,
+        "description": "선택한 아군의 정신력과 민첩성을 영구히 1씩 더합니다.",
+        "type": "seed",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 1,
+          "agility": 1
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_mastery_seed",
+        "name": "숙련의 씨앗",
+        "imageResourceId": "cc0-jetrel-gen2-might-seed",
+        "iconResourceId": "cc0-jetrel-gen2-might-seed",
+        "scope": "ally",
+        "price": 1200,
+        "description": "선택한 아군의 네 가지 전투 능력을 영구히 1씩 올립니다.",
+        "type": "seed",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 1,
+          "defense": 1,
+          "mind": 1,
+          "agility": 1
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_gate_relay",
+        "name": "성문 기동패",
+        "imageResourceId": "cc0-jetrel-gen2-bridge-relay",
+        "iconResourceId": "cc0-jetrel-gen2-bridge-relay",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 성문 개방 이벤트 스위치를 켭니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_gate_open",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_lighthouse_relay",
+        "name": "등대 점화패",
+        "imageResourceId": "cc0-jetrel-gen2-sun-relay",
+        "iconResourceId": "cc0-jetrel-gen2-sun-relay",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 등대 불빛 점화 스위치를 작동시킵니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_lighthouse_lit",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_lift_relay",
+        "name": "승강기 기동패",
+        "imageResourceId": "cc0-jetrel-gear",
+        "iconResourceId": "cc0-jetrel-gear",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 광산 승강기 운행 스위치를 켭니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_mine_lift",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_fountain_relay",
+        "name": "분수 작동패",
+        "imageResourceId": "cc0-jetrel-crystal",
+        "iconResourceId": "cc0-jetrel-crystal",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 광장 분수의 작동 스위치를 전환합니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_fountain_flow",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_archive_relay",
+        "name": "서고 해제패",
+        "imageResourceId": "cc0-jetrel-old-key-scroll",
+        "iconResourceId": "cc0-jetrel-old-key-scroll",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 비밀 서고의 잠금 해제 스위치를 켭니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_archive_unlock",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_beacon_relay",
+        "name": "봉화 점화패",
+        "imageResourceId": "cc0-jetrel-torch",
+        "iconResourceId": "cc0-jetrel-torch",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 산마루 봉화 점화 스위치를 작동시킵니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_beacon_lit",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
+        "id": "item_catalog_aqueduct_relay",
+        "name": "수로 전환패",
+        "imageResourceId": "cc0-jetrel-gen2-moon-relay",
+        "iconResourceId": "cc0-jetrel-gen2-moon-relay",
+        "scope": "none",
+        "price": 0,
+        "description": "메뉴에서 사용해 지하 수로의 흐름 전환 스위치를 켭니다.",
+        "type": "switch",
+        "occasion": "field",
+        "consumable": true,
+        "stateEffects": [],
+        "consumptionLimit": "noLimit",
+        "usableActorIds": [],
+        "usableClassIds": [],
+        "healStateIds": [],
+        "hpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "mpRecovery": {
+          "flat": 0,
+          "percentMax": 0
+        },
+        "onlyUsableInMenu": false,
+        "onlyEffectiveOnDeadActors": false,
+        "usageMessage": "normal",
+        "switchId": "sw_catalog_aqueduct_route",
+        "occasionField": true,
+        "occasionBattle": false,
+        "seedParameterBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equipmentProfile": {
+          "statBonuses": {
+            "attack": 0,
+            "defense": 0,
+            "mind": 0,
+            "agility": 0
+          },
+          "equippableActorIds": [],
+          "equippableClassIds": [],
+          "twoHanded": false,
+          "mpCost": 0,
+          "accuracy": 90,
+          "criticalRate": 0,
+          "attackElementIds": [],
+          "stateInflictIds": [],
+          "stateInflictionChance": 100,
+          "effectFlags": {
+            "preemptive": false,
+            "doubleAttack": false,
+            "attackAll": false,
+            "ignoreDodge": false,
+            "preventCriticalHits": false,
+            "increasePhysicalDodge": false,
+            "halfMpCost": false,
+            "negateTerrainDamage": false,
+            "fixedEquipment": false
+          },
+          "elementalDefenseIds": [],
+          "stateDefenseIds": [],
+          "stateDefenseMode": "resist",
+          "stateResistanceChance": 0
+        }
+      },
+      {
         "id": "item_gen_potion_small",
         "name": "작은 물약",
         "imageResourceId": "cc0-jetrel-gen-potion-small",
@@ -95155,6 +96532,523 @@
         "stateDefenseIds": [],
         "stateDefenseMode": "resist",
         "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_shield_buckler",
+        "name": "매사냥꾼 원형 방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-wood",
+        "iconResourceId": "cc0-jetrel-gen-shield-wood",
+        "slot": "shield",
+        "price": 145,
+        "description": "가벼운 원형 틀이 팔의 움직임을 살려 빠른 반격과 급소 공격을 돕습니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 6,
+          "mind": 0,
+          "agility": 1
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_ranger",
+          "actor_scout"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_ranger",
+          "class_scout"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 2,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_shield_ember_ward",
+        "name": "잿불 수호 방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-iron",
+        "iconResourceId": "cc0-jetrel-gen-shield-iron",
+        "slot": "shield",
+        "price": 275,
+        "description": "겹친 철판 사이의 내열재가 화염을 흩어 뜨거운 전장에서 전열을 지킵니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 9,
+          "mind": 2,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_cleric"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [
+          "fire"
+        ],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_shield_fortress",
+        "name": "요새문 대방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-tower",
+        "iconResourceId": "cc0-jetrel-gen-shield-tower",
+        "slot": "shield",
+        "price": 470,
+        "description": "성문처럼 두꺼운 판이 타격을 받아 내지만 무거워서 움직임이 크게 둔해집니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 16,
+          "mind": 0,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian"
+        ],
+        "equippableClassIds": [
+          "class_guardian"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": true
+        },
+        "elementalDefenseIds": [
+          "hit"
+        ],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_shield_hymn",
+        "name": "성가대 은방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-mirror",
+        "iconResourceId": "cc0-jetrel-gen-shield-mirror",
+        "slot": "shield",
+        "price": 315,
+        "description": "은빛 공명판이 주문의 흐름을 붙들어 침묵 저주 속에서도 기도를 이어 가게 합니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 8,
+          "mind": 5,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_cleric"
+        ],
+        "equippableClassIds": [
+          "class_cleric"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [
+          "state_silence"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 35
+      },
+      {
+        "id": "equip_fill_shield_moon_mirror",
+        "name": "월광 거울 방패",
+        "imageResourceId": "cc0-jetrel-gen-shield-mirror",
+        "iconResourceId": "cc0-jetrel-gen-shield-mirror",
+        "slot": "shield",
+        "price": 420,
+        "description": "달빛으로 닦은 거울 면이 암흑 마력을 흘려보내고 정확한 방패술을 보조합니다.",
+        "statBonuses": {
+          "attack": 1,
+          "defense": 11,
+          "mind": 4,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_cleric"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_cleric"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 99,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [
+          "dark"
+        ],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_armor_storm_chain",
+        "name": "폭풍고리 사슬갑옷",
+        "imageResourceId": "cc0-jetrel-gen-armor-chain",
+        "iconResourceId": "cc0-jetrel-gen-armor-chain",
+        "slot": "armor",
+        "price": 430,
+        "description": "절연 가죽으로 엮은 가벼운 사슬이 번개를 분산하면서 기동성을 유지합니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 12,
+          "mind": 2,
+          "agility": 1
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_ranger",
+          "actor_scout"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_ranger",
+          "class_scout"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [
+          "thunder"
+        ],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_armor_oath_plate",
+        "name": "불퇴서약 판금갑옷",
+        "imageResourceId": "cc0-jetrel-gen-armor-plate",
+        "iconResourceId": "cc0-jetrel-gen-armor-plate",
+        "slot": "armor",
+        "price": 650,
+        "description": "맞물린 판금과 고정 끈이 공격을 약화시키는 위압에도 자세가 무너지지 않게 합니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 19,
+          "mind": 1,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian"
+        ],
+        "equippableClassIds": [
+          "class_guardian"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [
+          "state_attack_down"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 40
+      },
+      {
+        "id": "equip_fill_helmet_falcon",
+        "name": "매눈 정찰 투구",
+        "imageResourceId": "cc0-jetrel-gen-helm-leather",
+        "iconResourceId": "cc0-jetrel-gen-helm-leather",
+        "slot": "helmet",
+        "price": 150,
+        "description": "넓은 시야를 남긴 가죽 덮개가 민첩한 정찰과 빈틈을 찌르는 공격에 알맞습니다.",
+        "statBonuses": {
+          "attack": 1,
+          "defense": 4,
+          "mind": 0,
+          "agility": 2
+        },
+        "equippableActorIds": [
+          "actor_ranger",
+          "actor_scout"
+        ],
+        "equippableClassIds": [
+          "class_ranger",
+          "class_scout"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 2,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      },
+      {
+        "id": "equip_fill_helmet_frost_hood",
+        "name": "설원 현자 두건",
+        "imageResourceId": "cc0-jetrel-gen-helm-leather",
+        "iconResourceId": "cc0-jetrel-gen-helm-leather",
+        "slot": "helmet",
+        "price": 225,
+        "description": "서리풀을 누빈 두건이 냉기를 막고 긴 야영 중에도 정신을 맑게 유지합니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 3,
+          "mind": 5,
+          "agility": 1
+        },
+        "equippableActorIds": [
+          "actor_mage",
+          "actor_cleric",
+          "actor_ranger"
+        ],
+        "equippableClassIds": [
+          "class_mage",
+          "class_cleric",
+          "class_ranger"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [
+          "ice"
+        ],
+        "stateDefenseIds": [
+          "state_sleep"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 25
+      },
+      {
+        "id": "equip_fill_helmet_rune",
+        "name": "침묵파쇄 룬투구",
+        "imageResourceId": "cc0-jetrel-gen-helm-iron",
+        "iconResourceId": "cc0-jetrel-gen-helm-iron",
+        "slot": "helmet",
+        "price": 335,
+        "description": "관자놀이의 룬 각인이 정신을 보호해 적의 침묵 마법에도 주문 집중을 붙잡습니다.",
+        "statBonuses": {
+          "attack": 0,
+          "defense": 7,
+          "mind": 4,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_guardian",
+          "actor_mage",
+          "actor_cleric"
+        ],
+        "equippableClassIds": [
+          "class_guardian",
+          "class_mage",
+          "class_cleric"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [
+          "state_silence"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 45
+      },
+      {
+        "id": "equip_fill_helmet_vanguard",
+        "name": "선봉대 뿔투구",
+        "imageResourceId": "cc0-jetrel-gen-helm-horned",
+        "iconResourceId": "cc0-jetrel-gen-helm-horned",
+        "slot": "helmet",
+        "price": 410,
+        "description": "앞으로 굽은 뿔과 보강 이마판이 돌격의 위력을 높이고 공격 약화를 버텨 냅니다.",
+        "statBonuses": {
+          "attack": 3,
+          "defense": 9,
+          "mind": 1,
+          "agility": 0
+        },
+        "equippableActorIds": [
+          "actor_hero",
+          "actor_guardian"
+        ],
+        "equippableClassIds": [
+          "class_hero",
+          "class_guardian"
+        ],
+        "cursed": false,
+        "twoHanded": false,
+        "accuracy": 100,
+        "criticalRate": 4,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [
+          "state_attack_down"
+        ],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 30
       }
     ],
     "enemies": [

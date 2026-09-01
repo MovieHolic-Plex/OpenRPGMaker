@@ -103,6 +103,18 @@ describe("database behavioral parity - battle records", () => {
   });
 
   it("states: a skill's authored stateEffects inflict the state and accelerate the kill", () => {
+    // n 이 왜 50 인가 — **줄이지 말 것.** 이 검사는 "독 도트가 킬을 앞당긴다" 는 관계를
+    // 두 표본의 평균 턴수 차이로 본다. 그런데 독을 붙이면 상태 판정 롤이 하나 더 들어가
+    // 이후 rng 스트림이 통째로 밀린다(mulberry32 는 n판이 스트림 하나를 공유 —
+    // simulate.ts:240). 적이 행동 레퍼토리를 갖게 된 뒤로는 적의 행동 선택까지 그 스트림을
+    // 소비하므로 밀림 폭이 커졌다.
+    //
+    // 실측(2026-09-01): n=3 에서는 seed 에 따라 부호가 뒤집힌다 — seed 1 +1.67(역전),
+    // seed 2 -3.67, seed 3 +3.00(역전). seed 1..60 을 훑으면 독이 빠른 쪽이 49/60 로,
+    // 관계는 참인데 표본이 그걸 못 잡는 상태였다. n=50 은 seed 1..10 에서 10/10,
+    // 차이 -1.28 ~ -2.64 로 안정된다(n=40 은 10/10 이지만 최소 여유가 -0.48 로 얇다).
+    //
+    // 즉 이건 기대치를 새 값으로 덮은 게 아니라, 잡음을 재던 표본을 효과를 재도록 키운 것이다.
     const run = (withPoison: boolean): number => {
       const project = editorProject(() => {
         tankyEnemy(9999);
@@ -113,7 +125,7 @@ describe("database behavioral parity - battle records", () => {
           stateEffects: withPoison ? ([{ stateId: "state_poison", chance: 100 }] as never) : [],
         });
       });
-      return battle(project, { troopId: DEFAULT_TROOP_ID, heroLevel: 20, n: 3, seed: 1, battleFlow: "strict", strictScript: script("skill", { skillId: DEFAULT_SKILL_ID }) }).avgTurns;
+      return battle(project, { troopId: DEFAULT_TROOP_ID, heroLevel: 20, n: 50, seed: 1, battleFlow: "strict", strictScript: script("skill", { skillId: DEFAULT_SKILL_ID }) }).avgTurns;
     };
     expect(run(true)).toBeLessThan(run(false));
   });
