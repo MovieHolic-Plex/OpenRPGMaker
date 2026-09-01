@@ -134,9 +134,9 @@ describe("타일셋 섹션 3탭 UI", () => {
     expect(findByTestId(editor, "tileset-section-tab-compose")).toBeTruthy();
     expect(findByTestId(editor, "tileset-rule-layer")).toBeTruthy();
     expect(findByTestId(editor, "tileset-rule-passage")).toBeTruthy();
-    // 좌측 의미 폼(보조) + 칩 우클릭 메뉴(주 경로) — 둘 다 존재
-    expect(findByTestId(editor, "tileset-tile-meaning-edit")).toBeTruthy();
-    expect(findByTestId(editor, "tileset-field-ai-label")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-passage-compass-details")?.getAttribute("open")).not.toBeNull();
+    expect(findByTestId(editor, "tileset-tile-meaning-edit")).toBeNull();
+    expect(findByTestId(editor, "tileset-field-ai-label")).toBeNull();
     expect(findByTestId(editor, "tileset-field-ai-description")).toBeNull();
     // 규칙 탭에는 AI 메타/그룹 모드 버튼이 노출되지 않는다 — 기능 분리.
     expect(findByTestId(editor, "tileset-edit-mode-ai")).toBeNull();

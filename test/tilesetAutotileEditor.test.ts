@@ -101,4 +101,19 @@ describe("tileset autotile editor", () => {
     expect(findByTestId(root, "tileset-autotile-composer-builtin_dirt_road")).toBeTruthy();
     expect(findByTestId(root, "tileset-autotile-passage-blocked")).toBeTruthy();
   });
+
+  it("격자가 그룹 목록보다 위에 있고 6칸·물이 처음부터 보인다", () => {
+    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const panel = renderWithFakeDom(() => renderAutotileEditorPanel(tileset, vi.fn()));
+    const toolbar = renderWithFakeDom(() => renderAutotileLayoutToolbar(tileset, vi.fn()));
+    const composer = findByTestId(panel, "tileset-autotile-composer-builtin_dirt_road");
+    const list = findByTestId(panel, "tileset-autotile-list");
+    expect(composer).toBeTruthy();
+    expect(list).toBeTruthy();
+    const children = (panel as unknown as FakeElement).childNodes as FakeElement[];
+    expect(children[0]?.dataset.testid).toBe("tileset-autotile-composer-builtin_dirt_road");
+    expect(children[1]?.className).toContain("tileset-autotile-groups");
+    expect(findByTestId(toolbar, "tileset-autotile-layout-cells-6")).toBeTruthy();
+    expect(findByTestId(toolbar, "tileset-autotile-layout-animated-water")).toBeTruthy();
+  });
 });
