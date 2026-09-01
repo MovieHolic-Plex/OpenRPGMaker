@@ -1,4 +1,5 @@
 import { TILE } from "@/project/defaults/constants";
+import { roleCapabilities } from "@/project/tileRoles";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import type { TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 
@@ -50,14 +51,15 @@ export function buildGroupSample(tileset: TilesetDef, input: GroupSampleInput): 
 
 function buildBaseGroupSample(tileset: TilesetDef, input: GroupSampleInput): GroupSample {
   const grammar = input.patternGrammar;
+  const caps = roleCapabilities(tileset, input.role);
   if (grammar?.kind === "repeatable_block") return repeatableBlockSample(tileset, input);
-  if (grammar?.kind === "nine_slice_expandable" || input.role === "wall") return nineSliceSample(tileset, input);
+  if (grammar?.kind === "nine_slice_expandable" || caps.sampleAs === "nineSlice") return nineSliceSample(tileset, input);
   if (grammar?.kind === "vertical_expandable") return verticalSample(tileset, input);
   if (grammar?.kind === "horizontal_expandable") return horizontalSample(tileset, input);
   if (grammar?.kind === "autotile_3x3") return autotileSample(tileset, input);
   // 문법 없는 prop 은 정확히 2타일(침엽수 등)일 때만 세로 쌍. 벤치·소품 가방(3+)은 세로로 묶지 않는다.
-  if (!grammar && input.role === "prop" && input.tileIds.length === 2) return verticalSample(tileset, input);
-  if (input.role === "roof") return roofSample(tileset, input);
+  if (!grammar && caps.sampleAs === "verticalPair" && input.tileIds.length === 2) return verticalSample(tileset, input);
+  if (caps.sampleAs === "roof") return roofSample(tileset, input);
   return fallbackSample(tileset, input);
 }
 
