@@ -190,38 +190,8 @@ const out: Record<string, unknown> = {
         "(simulate.ts:163) 이 스크립트는 inventory/potionItemId 를 주지 않는다. " +
         "'AI 가 포션을 안 썼다(=쉬웠다)' 가 아니라 '쓸 수 없다' 이다. 전/후 비교에서 읽지 말 것.",
     },
-    caveats: {
-      승패혼합통계:
-        "winRate 가 1 미만인 항목의 avgTurns / avgHpRemaining 은 **승리 판과 패배 판을 " +
-        "섞은 평균**이다. simulateBattle 은 승패를 가리지 않고 totalTurns/totalHp 를 " +
-        "누적하고(simulate.ts:257-260), 파티가 전멸하면 hpRemaining 이 0 으로 들어간다" +
-        "(simulate.ts:186). 따라서 이 두 지표는 winRate 와 **반드시 함께** 읽어야 한다. " +
-        "★방향 함정★: 적이 강해지면 winRate 가 내려가고 → 전멸 판이 늘어 avgHpRemaining 이 " +
-        "내려가며 → 더 일찍 전멸해 avgTurns 도 **내려간다**. 즉 '전투가 깊어졌다' 와 " +
-        "'전투가 짧아졌다' 가 같은 방향으로 움직인다. avgTurns 증가를 성공 신호로 쓰면 " +
-        "정반대로 읽힌다. 승률이 크게 달라진 항목은 avgTurns/avgHpRemaining 을 직접 " +
-        "비교하지 말고, winRate 를 먼저 보고 승률이 비슷한 항목끼리만 비교하라. " +
-        "실례(이 기준선): archetypeSims['드래곤·보스'] 의 perBattleTurns 는 " +
-        "{mean:15, stddev:0, min:15, max:15} 다. stddev 0 에 min=max=15 라는 건 그 표본 패스 " +
-        "50판이 **승패와 무관하게 전부 15턴** 에 끝났다는 뜻이다 — 같은 패스의 승률인 " +
-        "perBattleWinRate.mean 0.02 로 보면 1승 49패인데, **유일한 1승도 15턴**이었다. " +
-        "같은 항목의 perBattleHpRemaining 은 {mean:1.86, stddev:13.02, min:0, max:93} 로 " +
-        "승패에 따라 0 과 93 으로 갈리는데, 턴수만 승패에 전혀 반응하지 않는다. " +
-        "즉 이 15는 '전투 깊이' 가 아니라 '지금 이 전투에는 턴수를 바꿀 변수가 없다' 는 " +
-        "증거이고, 그래서 깊이 지표로 쓸 수 없다. " +
-        "(이 예시의 승패 수는 perBattleTurns 와 **같은 표본 패스**에서 읽었다. 집계 패스의 " +
-        "winRate 0.1 로 '45패' 를 계산하면 아래 두패스승률차이 가 금지한 교차 계산이 된다.) " +
-        "sims(기본 트룹 5개)는 전부 winRate 1.00 이라 이 함정이 " +
-        "걸리지 않는다. archetypeSims 9개 중 7개(contested:true)가 해당된다.",
-      두패스승률차이:
-        "같은 항목의 winRate(집계 패스)와 perBattleWinRate.mean(표본 패스)이 눈에 띄게 " +
-        "다를 수 있다. 실측(이 기준선): 골렘·구조물 0.58 vs 0.42, 드래곤·보스 0.10 vs 0.02. " +
-        "모순이 아니라 표본 잡음이다 — mulberry32 는 n판 전체가 rng 스트림 하나를 " +
-        "공유하므로(simulate.ts:240) 'n=50 한 번' 과 'n=1 을 seed 옮겨 50번' 은 롤 소비 " +
-        "순서가 달라 서로 다른 50판을 뽑는다. n=50 에서는 이 정도 편차가 정상이다. " +
-        "전/후 비교는 **같은 패스끼리만** 하라(winRate↔winRate, " +
-        "perBattleWinRate.mean↔perBattleWinRate.mean). 둘을 교차 비교하면 없는 변화를 만든다.",
-    },
+    // caveats 는 sims/archetypeSims 를 잰 뒤 그 값에서 **생성**한다(아래 5절).
+    // 손으로 숫자를 적지 않는 이유는 그 절의 주석에 있다.
   },
 };
 
@@ -379,6 +349,185 @@ out.enemySkillUsage = {
   archetypeTroops: summarizeUsage(archetypeUsage),
 };
 
+// ── 5. caveat 생성 + 자체 검사 ───────────────────────────────────────────────
+// caveat 이 인용하는 수치를 **산출물 값에서 생성**한다. 문자열에 손으로 숫자를 적지
+// 않으므로 값이 어긋날 수 없다.
+//
+// 왜 이렇게까지 하는가(실제 사고): 라운드 3 에서 "50판 중 45판이 15턴에 전멸" 이라고
+// 손으로 적었는데, 45 는 **집계 패스**의 winRate 0.1 에서 나온 수인 반면 그것이 설명하는
+// perBattleTurns 는 **표본 패스** 산출물이었다. 표본 패스의 실제 패배 수는 49 다.
+// 오독을 막으려고 쓴 문서가 옆 caveat 이 금지한 교차 패스 계산을 시연하고 있었다.
+// 값이 존재하는지만 보는 검사로는 이걸 못 잡는다 — 45 는 JSON 안에 실제로 존재하는
+// 수였기 때문이다. 그래서 각 인용 수치가 **어느 패스에서 왔는지**를 함께 들고 다니며
+// 검사한다.
+type Pass = "aggregate" | "sample";
+interface Cite {
+  /** 이 수를 읽어온 산출물 경로. 검사 때 여기서 다시 읽어 대조한다. */
+  readonly path: string;
+  /** 이 수가 나온 패스. 설명 대상과 같아야 한다. */
+  readonly pass: Pass;
+  readonly value: number;
+}
+
+function readPath(root: unknown, path: string): unknown {
+  return path.split(".").reduce<any>((node, key) => (node === undefined ? undefined : node[key]), root);
+}
+
+const EXAMPLE_TROOP = "드래곤·보스";
+const ex = (archetypeSims as Record<string, any>)[EXAMPLE_TROOP];
+// 이 예시는 perBattleTurns(= 표본 패스 산출물)를 설명한다. 따라서 인용하는 수는
+// 전부 표본 패스에서 와야 한다. 아래 검사가 이 불변식을 강제한다.
+const EXAMPLE_PASS: Pass = "sample";
+const P = `archetypeSims.${EXAMPLE_TROOP}`;
+
+const exTurnsMean: Cite = { path: `${P}.perBattleTurns.mean`, pass: "sample", value: ex.perBattleTurns.mean };
+const exTurnsStddev: Cite = { path: `${P}.perBattleTurns.stddev`, pass: "sample", value: ex.perBattleTurns.stddev };
+const exTurnsMin: Cite = { path: `${P}.perBattleTurns.min`, pass: "sample", value: ex.perBattleTurns.min };
+const exTurnsMax: Cite = { path: `${P}.perBattleTurns.max`, pass: "sample", value: ex.perBattleTurns.max };
+const exSampleWinMean: Cite = { path: `${P}.perBattleWinRate.mean`, pass: "sample", value: ex.perBattleWinRate.mean };
+const exHpMean: Cite = { path: `${P}.perBattleHpRemaining.mean`, pass: "sample", value: ex.perBattleHpRemaining.mean };
+const exHpStddev: Cite = { path: `${P}.perBattleHpRemaining.stddev`, pass: "sample", value: ex.perBattleHpRemaining.stddev };
+const exHpMin: Cite = { path: `${P}.perBattleHpRemaining.min`, pass: "sample", value: ex.perBattleHpRemaining.min };
+const exHpMax: Cite = { path: `${P}.perBattleHpRemaining.max`, pass: "sample", value: ex.perBattleHpRemaining.max };
+// 승/패 수는 **표본 패스 승률**에서 유도한다. 집계 패스 winRate 로 계산하면 교차 패스다.
+const exSampleWins = Math.round(exSampleWinMean.value * SAMPLES);
+const exSampleLosses = SAMPLES - exSampleWins;
+// 인용하면 안 되는 수(집계 패스에서 유도한 패배 수). 검사에서 본문에 없는지 확인한다.
+const exAggWinRate: number = ex.winRate;
+const exAggLosses = SAMPLES - Math.round(exAggWinRate * SAMPLES);
+
+const EXAMPLE_CITES: readonly Cite[] = [
+  exTurnsMean, exTurnsStddev, exTurnsMin, exTurnsMax,
+  exSampleWinMean, exHpMean, exHpStddev, exHpMin, exHpMax,
+];
+
+const simEntries = Object.entries(sims as Record<string, any>);
+const archEntries = Object.entries(archetypeSims as Record<string, any>);
+const contestedCount = archEntries.filter(([, v]) => v.contested).length;
+
+// 두패스승률차이 예시: 편차가 가장 큰 항목 + 위 worked example. 이름을 손으로 적지 않는다.
+const worstDivergence = archEntries
+  .map(([k, v]) => ({ key: k, agg: v.winRate, sample: v.perBattleWinRate.mean, gap: Math.abs(v.winRate - v.perBattleWinRate.mean) }))
+  .sort((a, b) => b.gap - a.gap)[0]!;
+const exampleDivergence = { key: EXAMPLE_TROOP, agg: exAggWinRate, sample: exSampleWinMean.value };
+const fmtDiv = (d: { key: string; agg: number; sample: number }): string => `${d.key} ${d.agg} vs ${d.sample}`;
+
+// 본문을 세 조각으로 나눈다. 아래 검사 (3)이 **주장(claim)** 조각만 검사하기 위해서다.
+// 경고(selfWarning) 조각은 "이렇게 계산하면 틀린다" 며 집계 패스 수를 **일부러** 인용하므로,
+// 본문 전체를 검사하면 그 교육용 인용까지 오탐으로 잡힌다(실제로 첫 실행에서 잡혔다).
+// 불변식은 "주장에 교차 패스 수를 쓰지 않는다" 이지 "본문에 그 수가 없다" 가 아니다.
+const claim승패혼합통계 =
+  "winRate 가 1 미만인 항목의 avgTurns / avgHpRemaining 은 **승리 판과 패배 판을 " +
+  "섞은 평균**이다. simulateBattle 은 승패를 가리지 않고 totalTurns/totalHp 를 " +
+  "누적하고(simulate.ts:257-260), 파티가 전멸하면 hpRemaining 이 0 으로 들어간다" +
+  "(simulate.ts:186). 따라서 이 두 지표는 winRate 와 **반드시 함께** 읽어야 한다. " +
+  "★방향 함정★: 적이 강해지면 winRate 가 내려가고 → 전멸 판이 늘어 avgHpRemaining 이 " +
+  "내려가며 → 더 일찍 전멸해 avgTurns 도 **내려간다**. 즉 '전투가 깊어졌다' 와 " +
+  "'전투가 짧아졌다' 가 같은 방향으로 움직인다. avgTurns 증가를 성공 신호로 쓰면 " +
+  "정반대로 읽힌다. 승률이 크게 달라진 항목은 avgTurns/avgHpRemaining 을 직접 " +
+  "비교하지 말고, winRate 를 먼저 보고 승률이 비슷한 항목끼리만 비교하라. " +
+  `실례(이 기준선): archetypeSims['${EXAMPLE_TROOP}'] 의 perBattleTurns 는 ` +
+  `{mean:${exTurnsMean.value}, stddev:${exTurnsStddev.value}, min:${exTurnsMin.value}, max:${exTurnsMax.value}} 다. ` +
+  `stddev ${exTurnsStddev.value}, min=max=${exTurnsMax.value} — 이는 그 표본 패스 ` +
+  `${SAMPLES}판이 **승패와 무관하게 전부 ${exTurnsMax.value}턴** 에 끝났다는 뜻이다 — 같은 패스의 승률인 ` +
+  `perBattleWinRate.mean ${exSampleWinMean.value} 로 보면 ${exSampleWins}승 ${exSampleLosses}패인데, ` +
+  `**유일한 ${exSampleWins}승도 ${exTurnsMax.value}턴**이었다. ` +
+  `같은 항목의 perBattleHpRemaining 은 {mean:${exHpMean.value}, stddev:${exHpStddev.value}, ` +
+  `min:${exHpMin.value}, max:${exHpMax.value}} 로 ` +
+  `승패에 따라 ${exHpMin.value} / ${exHpMax.value} 두 값으로 갈리는데, 턴수만 승패에 전혀 반응하지 않는다. ` +
+  `즉 이 값(${exTurnsMax.value})은 '전투 깊이' 가 아니라 '지금 이 전투에는 턴수를 바꿀 변수가 없다' 는 ` +
+  "증거이고, 그래서 깊이 지표로 쓸 수 없다.";
+const selfWarning승패혼합통계 =
+  "(이 예시의 승패 수는 perBattleTurns 와 **같은 표본 패스**에서 읽었다. 집계 패스의 " +
+  `winRate 값 ${exAggWinRate} 기준으로 '${exAggLosses}패' 를 계산하면 아래 두패스승률차이 가 금지한 교차 계산이 된다.)`;
+const scope승패혼합통계 =
+  `sims(기본 트룹 ${simEntries.length}개)는 전부 winRate ${simEntries[0]![1].winRate.toFixed(2)} 이라 이 함정이 ` +
+  `걸리지 않는다. archetypeSims ${archEntries.length}개 중 ${contestedCount}개(contested:true)가 해당된다.`;
+const caveat승패혼합통계 = `${claim승패혼합통계} ${selfWarning승패혼합통계} ${scope승패혼합통계}`;
+
+const caveat두패스승률차이 =
+  "같은 항목의 winRate(집계 패스)와 perBattleWinRate.mean(표본 패스)이 눈에 띄게 " +
+  `다를 수 있다. 실측(이 기준선): ${fmtDiv(worstDivergence)}, ${fmtDiv(exampleDivergence)}. ` +
+  "모순이 아니라 표본 잡음이다 — mulberry32 는 n판 전체가 rng 스트림 하나를 " +
+  `공유하므로(simulate.ts:240) 'n=${SAMPLES} 한 번' 과 'n=1 을 seed 옮겨 ${SAMPLES}번' 은 롤 소비 ` +
+  `순서가 달라 서로 다른 ${SAMPLES}판을 뽑는다. n=${SAMPLES} 에서는 이 정도 편차가 정상이다. ` +
+  "전/후 비교는 **같은 패스끼리만** 하라(winRate↔winRate, " +
+  "perBattleWinRate.mean↔perBattleWinRate.mean). 둘을 교차 비교하면 없는 변화를 만든다.";
+
+(out.meta as any).caveats = { 승패혼합통계: caveat승패혼합통계, 두패스승률차이: caveat두패스승률차이 };
+
+// ── 자체 검사 ────────────────────────────────────────────────────────────────
+// 통과 못 하면 파일을 쓰지 않고 종료 코드 1 로 죽는다. 조용히 잘못된 기준선을 남기면
+// Task 6 이 그걸 진실로 믿는다.
+const checks: { readonly name: string; readonly ok: boolean; readonly detail: string }[] = [];
+const check = (name: string, ok: boolean, detail = ""): void => {
+  checks.push({ name, ok, detail });
+};
+
+// (1) 인용한 각 수가 산출물의 실값과 일치하는가. 경로에서 다시 읽어 대조한다.
+for (const cite of EXAMPLE_CITES) {
+  const actual = readPath(out, cite.path);
+  check(`인용값 == 산출물값  ${cite.path}`, actual === cite.value, `인용 ${cite.value} vs 실제 ${String(actual)}`);
+}
+
+// (2) ★핵심★ 인용한 수가 **설명 대상과 같은 패스**에서 왔는가.
+//     라운드 3 의 결함이 정확히 이것이었다. 값 일치 검사((1))로는 절대 못 잡는다.
+for (const cite of EXAMPLE_CITES) {
+  check(`패스 일치(${EXAMPLE_PASS})  ${cite.path}`, cite.pass === EXAMPLE_PASS, `실제 ${cite.pass}`);
+}
+check(
+  "승/패 수를 표본 패스 승률에서 유도했는가",
+  exSampleWins === Math.round(exSampleWinMean.value * SAMPLES) && exSampleWinMean.pass === "sample",
+  `${exSampleWins}승 ${exSampleLosses}패 (perBattleWinRate.mean ${exSampleWinMean.value})`,
+);
+
+// (3) 교차 패스 오염 탐지: 두 패스의 패배 수가 다를 때, 본문이 집계 패스 쪽 수를
+//     패배 수로 인용하고 있으면 라운드 3 의 결함이 재발한 것이다.
+// 검사 대상은 **주장 조각**이다. 경고 조각은 반례로 집계 패스 수를 일부러 인용한다.
+check(
+  "주장에 집계 패스 패배 수를 쓰지 않았는가",
+  exAggLosses === exSampleLosses || !claim승패혼합통계.includes(`${exAggLosses}패`),
+  `집계 ${exAggLosses}패 / 표본 ${exSampleLosses}패`,
+);
+check("주장이 표본 패스 패배 수를 쓰는가", claim승패혼합통계.includes(`${exSampleLosses}패`), `${exSampleLosses}패`);
+// 경고 조각이 살아 있는지도 확인한다 — 다음 사람이 같은 실수를 하지 않게 하는 장치다.
+check(
+  "교차 계산 자기경고가 남아 있는가",
+  selfWarning승패혼합통계.includes("같은 표본 패스") && selfWarning승패혼합통계.includes("교차 계산"),
+);
+
+// (4) caveat 이 전제로 삼는 관계가 실제로 성립하는가.
+const contestedSet = archEntries.filter(([, v]) => v.contested).map(([k]) => k).sort();
+const losingSet = archEntries.filter(([, v]) => v.winRate < 1).map(([k]) => k).sort();
+check(
+  "contested:true 집합 == winRate<1 집합",
+  JSON.stringify(contestedSet) === JSON.stringify(losingSet),
+  `contested ${contestedSet.length} / winRate<1 ${losingSet.length}`,
+);
+check("sims 는 전부 winRate 1.00(함정 비적용)", simEntries.every(([, v]) => v.winRate === 1), `${simEntries.length}개`);
+check(
+  "본문의 contested 개수가 실제와 일치",
+  caveat승패혼합통계.includes(`${archEntries.length}개 중 ${contestedCount}개`),
+  `${archEntries.length}개 중 ${contestedCount}개`,
+);
+
+// (5) 두패스승률차이 예시가 실값과 일치하는가.
+for (const d of [worstDivergence, exampleDivergence]) {
+  const entry = (archetypeSims as Record<string, any>)[d.key];
+  check(
+    `두패스 예시 실값 일치  ${d.key}`,
+    entry.winRate === d.agg && entry.perBattleWinRate.mean === d.sample,
+    `${d.agg} vs ${d.sample}`,
+  );
+}
+
+const failed = checks.filter((c) => !c.ok);
+if (failed.length > 0) {
+  console.error(`\n✗ caveat 자체 검사 실패 ${failed.length}/${checks.length} — 파일을 쓰지 않는다.`);
+  for (const c of failed) console.error(`  FAIL  ${c.name}${c.detail ? `  (${c.detail})` : ""}`);
+  process.exit(1);
+}
+
 mkdirSync(dirname(OUT_PATH), { recursive: true });
 writeFileSync(OUT_PATH, `${JSON.stringify(out, null, 2)}\n`);
 
@@ -409,4 +558,5 @@ for (const [label, b] of [["기본 트룹", defaultUsage], ["아키타입", arch
   console.log(`  ${label.padEnd(10)} 라운드=${s.strictRoundsObserved} kinds=${JSON.stringify(s.byCommandKind)}`);
   console.log(`  ${" ".repeat(10)} bySkillId=${JSON.stringify(s.bySkillId)} distinct=${s.distinctSkills} unresolved=${s.unresolvedTotal}`);
 }
+console.log(`\ncaveat 자체 검사: ${checks.length}건 전부 통과`);
 console.log(`\n기록: ${OUT_PATH}`);
