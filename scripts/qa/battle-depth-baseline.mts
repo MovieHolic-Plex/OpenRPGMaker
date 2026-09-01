@@ -134,8 +134,11 @@ function spread(values: readonly number[]): Record<string, number> {
  *  - 집계 패스: n=SAMPLES 를 한 번 불러 브리프가 지정한 스칼라를 그대로 받는다.
  *  - 표본 패스: n=1 을 seed 를 옮겨 SAMPLES 회 불러 판당 값을 모은다(분산용).
  *    simulateBattle 은 집계만 돌려주므로 판당 값을 얻으려면 이 방법뿐이다.
- * 두 패스는 rng 스트림이 달라 평균이 미세하게 다를 수 있다 — 그래서 표본 패스의 평균도
- * 같이 기록한다(perBattle*.mean). 전/후 비교는 같은 패스끼리만 하면 성립한다.
+ * 두 패스는 rng 스트림이 달라 평균이 다르다. "미세하게" 가 아니다 — mulberry32 는 n판
+ * 전체가 스트림 하나를 공유하므로(simulate.ts:240) 두 패스는 아예 다른 50판을 뽑는다.
+ * 실측 편차: 골렘·구조물 winRate 0.58 vs perBattleWinRate.mean 0.42, 드래곤·보스 0.10 vs 0.02.
+ * 그래서 표본 패스의 평균도 같이 기록한다(perBattle*.mean). 전/후 비교는 같은 패스끼리만
+ * 하면 성립한다 — meta.caveats.두패스승률차이 참조.
  */
 function measureTroop(troopId: string, heroLevel: number): Record<string, unknown> {
   const agg = simulateBattle({ project, troopId, heroLevel, n: SAMPLES, seed: SEED, battleFlow: SIM_FLOW });
@@ -186,6 +189,31 @@ const out: Record<string, unknown> = {
         "항상 0 이다. simulateBattle 은 potionItemId 가 없으면 회복 아이템을 쓰지 않는데" +
         "(simulate.ts:163) 이 스크립트는 inventory/potionItemId 를 주지 않는다. " +
         "'AI 가 포션을 안 썼다(=쉬웠다)' 가 아니라 '쓸 수 없다' 이다. 전/후 비교에서 읽지 말 것.",
+    },
+    caveats: {
+      승패혼합통계:
+        "winRate 가 1 미만인 항목의 avgTurns / avgHpRemaining 은 **승리 판과 패배 판을 " +
+        "섞은 평균**이다. simulateBattle 은 승패를 가리지 않고 totalTurns/totalHp 를 " +
+        "누적하고(simulate.ts:257-260), 파티가 전멸하면 hpRemaining 이 0 으로 들어간다" +
+        "(simulate.ts:186). 따라서 이 두 지표는 winRate 와 **반드시 함께** 읽어야 한다. " +
+        "★방향 함정★: 적이 강해지면 winRate 가 내려가고 → 전멸 판이 늘어 avgHpRemaining 이 " +
+        "내려가며 → 더 일찍 전멸해 avgTurns 도 **내려간다**. 즉 '전투가 깊어졌다' 와 " +
+        "'전투가 짧아졌다' 가 같은 방향으로 움직인다. avgTurns 증가를 성공 신호로 쓰면 " +
+        "정반대로 읽힌다. 승률이 크게 달라진 항목은 avgTurns/avgHpRemaining 을 직접 " +
+        "비교하지 말고, winRate 를 먼저 보고 승률이 비슷한 항목끼리만 비교하라. " +
+        "실례(이 기준선): archetypeSims['드래곤·보스'] 는 winRate 0.1 인데 " +
+        "perBattleTurns 가 {mean:15, stddev:0, min:15, max:15} 다. 전투가 결정적이어서가 " +
+        "아니라 50판 중 45판이 15턴에 파티 전멸로 끝나서다 — 이 15는 '전투 깊이' 가 아니라 " +
+        "'전멸까지 걸린 시간' 이다. sims(기본 트룹 5개)는 전부 winRate 1.00 이라 이 함정이 " +
+        "걸리지 않는다. archetypeSims 9개 중 7개(contested:true)가 해당된다.",
+      두패스승률차이:
+        "같은 항목의 winRate(집계 패스)와 perBattleWinRate.mean(표본 패스)이 눈에 띄게 " +
+        "다를 수 있다. 실측(이 기준선): 골렘·구조물 0.58 vs 0.42, 드래곤·보스 0.10 vs 0.02. " +
+        "모순이 아니라 표본 잡음이다 — mulberry32 는 n판 전체가 rng 스트림 하나를 " +
+        "공유하므로(simulate.ts:240) 'n=50 한 번' 과 'n=1 을 seed 옮겨 50번' 은 롤 소비 " +
+        "순서가 달라 서로 다른 50판을 뽑는다. n=50 에서는 이 정도 편차가 정상이다. " +
+        "전/후 비교는 **같은 패스끼리만** 하라(winRate↔winRate, " +
+        "perBattleWinRate.mean↔perBattleWinRate.mean). 둘을 교차 비교하면 없는 변화를 만든다.",
     },
   },
 };
