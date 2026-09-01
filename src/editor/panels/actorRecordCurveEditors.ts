@@ -3,6 +3,7 @@ import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import type { ActorParameterKey, ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { curvePreviewGraph } from "@/editor/panels/databaseCurvePreview";
 // 주인공 곡선 에디터 전용 CSS — 데스크톱(≥901px)에서 display:none 으로 사라진 곡선 컬럼 복원
 // + 다이얼로그 스타일을 모든 화면 폭에서 제공(qa-actors Critical). A 배치의 파일과 충돌하지
 // 않도록 curve* 계열 신규 파일로 분리하고 TS 에서 직접 로드한다.
@@ -37,7 +38,7 @@ export function actorCurveCards(actor: ActorRecord): HTMLElement[] {
       card.replaceChildren(
         el("strong", { text: PARAMETER_LABELS[key] }),
         el("span", { text: `Lv${currentLevel}:${parameterValueAtLevel(curve, currentLevel)}` }),
-        el("div", { class: "actor-curve-graph", children: curveBars(curve, currentLevel) })
+        curvePreviewGraph("actor-curve-graph", curve, currentLevel)
       );
     };
     renderers.push(render);
@@ -265,31 +266,6 @@ function curveColumn(value: number, values: readonly number[], level: number, ac
 function curveHeight(value: number, values: readonly number[]): number {
   const max = Math.max(...values, 1);
   return Math.max(2, Math.round(Math.pow(value / max, 0.62) * 100));
-}
-
-function curveBars(curve: readonly number[], activeLevel: number): HTMLElement[] {
-  const max = Math.max(...curve, 1);
-  return previewSampleIndexes(curve.length, activeLevel).map((index) => {
-    const value = curve[index] ?? curve[curve.length - 1] ?? 1;
-    const level = index + 1;
-    return el("i", {
-      class: level === activeLevel ? "active" : "",
-      attrs: {
-        "aria-label": `Lv${level}: ${value}`,
-        "data-level": String(level),
-        "data-value": String(value),
-        style: `height:${Math.max(5, Math.round((value / max) * 100))}%`,
-      },
-    });
-  });
-}
-
-function previewSampleIndexes(length: number, activeLevel: number): number[] {
-  const lastIndex = Math.max(0, length - 1);
-  const indexes = new Set<number>();
-  for (let step = 0; step < 33; step += 1) indexes.add(Math.round((step / 32) * lastIndex));
-  indexes.add(Math.min(lastIndex, Math.max(0, activeLevel - 1)));
-  return [...indexes].sort((left, right) => left - right);
 }
 
 function dialogNumberInput(testid: string, value: number, min: number, max: number): HTMLInputElement {

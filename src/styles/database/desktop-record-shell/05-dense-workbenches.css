@@ -89,8 +89,9 @@
     max-height: 168px;
   }
 
+  /* 좁은 폭에서도 같은 이유로 고정 px 를 쓰지 않는다(위 브레이크포인트 주석 참고). */
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
-    grid-template-rows: 76px 168px 100px 76px minmax(56px, auto);
+    grid-template-rows: repeat(4, minmax(min-content, auto)) minmax(56px, auto);
   }
 
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel {
@@ -794,8 +795,17 @@
     padding: 2px 8px;
   }
 
+  /* 고정 px 행은 안 된다 — 이 파일은 03-class-panels.css 보다 늦게 import 되므로 여기서
+     px 를 못 박으면 그쪽의 내용 기반 행 수정이 조용히 무효가 된다(실측: 여기 값이 이겼다).
+     행이 내용보다 작으면 패널이 자기 행을 넘겨 **아래 행 위에 겹쳐 그려진다**:
+       1행 92px  대 `.db-class-panel-animation{min-height:108px}`  → 16px 초과,
+         `전투 애니메이션` 필드 라벨(y440)과 `전투 명령` legend(y444)가 합성돼 판독 불가
+       3행 122px 대 `.db-class-panel-promotion{min-height:220px}` → 98px 초과,
+         `속성 유효도` legend 를 덮음
+     px 값은 "이 정도면 들어간다"는 추측이었고 패널의 min-height 와 어긋나 있었다.
+     하한을 내용으로 두고 넘치는 총높이는 `.oprn-detail-form{overflow-y:auto}` 가 받는다. */
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
-    grid-template-rows: 92px 248px 122px 88px minmax(64px, auto);
+    grid-template-rows: repeat(4, minmax(min-content, auto)) minmax(64px, auto);
   }
 
   .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-animation,
@@ -809,15 +819,22 @@
 
   .database-modal-body .oprn-record-classes .db-class-curves-grid {
     gap: 8px 10px;
-    grid-auto-rows: minmax(60px, 1fr);
+    grid-auto-rows: minmax(78px, 1fr);
     height: 100%;
     min-height: 0;
   }
 
+  /* `align-content` 는 grid/flex 전용이다 — `display` 를 세우지 않아 이 규칙 자체가 무효였고,
+     카드가 block 으로 흘러 `<strong>최대 HP</strong><span>Lv1:40</span>` 가 인라인 같은 줄에
+     gap 0 으로 붙어 화면에 `최대 HPLv1:40` 으로 렌더됐다(실측 gap 0px, 6장 전부).
+     라벨/값/그래프를 각자 행에 세운다 — 주인공 쪽 `.actor-curve` 와 같은 해부구조다. */
   .database-modal-body .oprn-record-classes .db-class-curve {
     align-content: center;
     box-sizing: border-box;
-    min-height: 60px;
+    display: grid;
+    gap: 2px;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 78px;
     padding: 8px 10px 7px;
   }
 
@@ -826,8 +843,33 @@
     line-height: 18px;
   }
 
+  /* 이 그래프에는 `height` 외의 규칙이 저장소 어디에도 없었다 — `display` 도 막대 배경도
+     없어서 `<i>` 막대가 인라인·무배경으로 렌더돼 **막대가 한 번도 보인 적이 없었다**.
+     주인공 쪽 `.actor-curve-graph` 와 같은 해부구조를 세우고, 열 개수는 렌더러가 내려주는
+     `--curve-samples` 로 받아 막대 수와 어긋나지 않게 한다. */
   .database-modal-body .oprn-record-classes .db-class-curve-graph {
-    height: 9px;
+    align-items: end;
+    background: var(--surface-recessed, rgba(15, 23, 42, 0.06));
+    display: grid;
+    gap: 1px;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(var(--curve-samples, 9), minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    height: 26px;
+    overflow: hidden;
+    padding: 2px;
+    width: 100%;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-curve-graph i {
+    background: var(--accent-primary, #4a57d6);
+    border-radius: 1px 1px 0 0;
+    display: block;
+    min-height: 1px;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-curve-graph i.active {
+    background: var(--accent-editor, #0f7a4a);
   }
 
   .database-modal-body .oprn-record-classes :is(.db-class-command-rows, .db-class-command-list) {

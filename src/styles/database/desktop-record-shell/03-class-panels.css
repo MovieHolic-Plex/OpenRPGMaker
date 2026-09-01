@@ -36,8 +36,17 @@
     /* 고정 px 행(84/190/118/84)은 내용이 그보다 크면 패널 `overflow: hidden` 과 맞물려
        조용히 잘라냈다 — 애니메이션 패널(legend + 스프라이트 미리보기 + 셀렉트)과
        상태·속성 유효도 패널이 84px 안에 들어갈 리가 없었다(감사 H 축 P0).
-       내용이 행 높이를 정하게 하고, 스크롤은 바깥 `.oprn-detail-form` 이 맡는다. */
-    grid-template-rows: repeat(4, minmax(0, auto)) minmax(64px, auto);
+       내용이 행 높이를 정하게 하고, 스크롤은 바깥 `.oprn-detail-form` 이 맡는다.
+
+       하한이 `0` 이면 안 된다 — 컨테이너에 `min-height:100%` 가 걸려 있어 행이 내용보다
+       **작게 압축되고**, 그러면 아이템이 자기 행을 넘겨 아래 행 위에 겹쳐 그려진다.
+       실측(1600×1000): 1행 92px 인데 `.db-class-panel-animation{min-height:108px}` 가
+       16px 넘쳐 `전투 애니메이션` 필드 라벨(y440)과 아래 `전투 명령` legend(y444)가
+       합성돼 둘 다 판독 불가였다(겹침 651px²). 3행 122px 대 `.db-class-panel-promotion
+       {min-height:220px}` 도 같은 방식으로 `속성 유효도` legend 를 덮었다(570px²).
+       `min-content` 를 하한으로 두면 행은 내용 아래로 못 줄어들고, 넘치는 총높이는
+       위의 `.oprn-detail-form{overflow-y:auto}` 가 받는다. */
+    grid-template-rows: repeat(4, minmax(min-content, auto)) minmax(64px, auto);
     min-height: 100%;
     min-width: 0;
   }
@@ -170,7 +179,10 @@
   .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-header {
     display: grid;
     gap: 4px;
-    grid-template-columns: 22px 22px minmax(0, 1fr) minmax(88px, 0.9fr) 22px;
+    /* 이름 열의 하한이 `0` 이라 1100px 폭에서 19px 까지 쪼그라들었고, 헤더 `명령 이름` 이
+       `명`/`령`/`이`/`름` 4줄 낱자로 적층됐다(실측). 헤더 글자가 한 줄로 들어가는
+       최소 폭을 하한으로 준다. */
+    grid-template-columns: 22px 22px minmax(68px, 1fr) minmax(88px, 0.9fr) 22px;
     color: var(--text-2, var(--db-modern-text));
     font: 600 11px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     padding: 2px 2px 4px;
@@ -188,7 +200,10 @@
     grid-template-areas:
       "up down name kind remove"
       "extra extra extra extra extra";
-    grid-template-columns: 22px 22px minmax(0, 1fr) minmax(88px, 0.9fr) 22px;
+    /* 이름 열의 하한이 `0` 이라 1100px 폭에서 19px 까지 쪼그라들었고, 헤더 `명령 이름` 이
+       `명`/`령`/`이`/`름` 4줄 낱자로 적층됐다(실측). 헤더 글자가 한 줄로 들어가는
+       최소 폭을 하한으로 준다. */
+    grid-template-columns: 22px 22px minmax(68px, 1fr) minmax(88px, 0.9fr) 22px;
   }
 
   .database-modal-body .oprn-record-classes .db-class-command-list .db-class-command-row > .db-class-command-move:first-child {
