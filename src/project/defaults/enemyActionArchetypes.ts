@@ -45,6 +45,22 @@
 // 우선순위만 남고, 유료기는 MP 부족 시 **점수 계산 전에** 필터된다(runtime.ts:1798).
 // 그래서 싼 보조기와 비싼 속성기를 같이 든 계열(bulwark·curse)은 우선순위만으로는
 // 완전히 못 고친다 — MP 예산·mind 스탯(Task 5)과 묶여야 한다.
+//
+// ── 배정 주의: 이 헬퍼는 공격력 스케일에 중립이 아니다 ───────────────────────
+// 데미지형 정체성 스킬(`skill_poison_sting`·속성기)은 **적 공격력이 크면 죽는다.**
+// 물리 스킬의 효용은 공격력에 비례해 커지는데 적 mind 가 전원 10 으로 고정이라
+// 마법 위력은 `30 + 5` 에 묶이기 때문이다. 우선순위로는 못 메운다 — 100점대 효용
+// 차이를 한 단계(10점)로 넘을 수 없다.
+//
+// 실측(임시 트룹 40판, 주인공 Lv1):
+//   공격력 13 → blob `poison_sting 424` / caster `attack 215, fire 208`
+//   공격력 100 → blob `attack 199`(poison 0) / caster `attack 199`(fire 0)
+//
+// 그래서 **`blob`·`caster` 는 저공격력 적에 배정한다.** 고공격력 적(생성 로스터의
+// attack 은 9~214 로 퍼져 있다)에 붙이면 행동이 여러 개여도 사실상 단일 행동이 된다.
+// 고공격력 적에는 상태 기반 계열(`venom`·`brute`·`flyer`·`tactician`)이 안전하다 —
+// 그쪽 효용은 상태 부여 확률이라 공격력에 안 밀린다. 속성 계열을 꼭 붙여야 하면
+// Task 5 의 mind 상향 이후 재측정할 것.
 import type { EnemyActionPattern } from "../types/database";
 
 /** 평범한 무료 데미지. */
@@ -153,7 +169,12 @@ export function archetypeActions(archetype: EnemyArchetype, elementSkillId?: str
       ];
     case "boss":
       // turn 조건은 보스 전용이다. 같은 속성기를 always(7)/turn(9) 두 벌로 두는 건
-      // 낭비가 아니다 — 3턴마다 확정 발화를 얹고, 그 사이에도 MP 가 남으면 쓴다.
+      // 낭비가 아니다 — 공격력이 크면 sword_slash(5)의 데미지 효용이 always(7)를
+      // 이기지만 turn(9)는 못 이긴다. 즉 버스트는 always 가 죽는 구간에서 속성기를
+      // 살려두는 안전망이다(실측: 공격력 100 보스 `sword_slash 317, fire 107`).
+      // 단 "확정 발화"는 아니다 — turn 항목도 다른 행동과 똑같이 MP 검사를 통과해야
+      // 한다(runtime.ts:1798 → battleSkillUse.ts:40). MP 가 비용 미만이면 버스트도
+      // 후보에서 빠진다.
       return [
         always("skill_attack", PLAIN),
         always("skill_sword_slash", PLAIN),
