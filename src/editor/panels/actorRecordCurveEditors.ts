@@ -1,5 +1,6 @@
 import { ACTOR_PARAMETER_KEYS, parameterValueAtLevel, totalExpForLevel } from "@/project/actorModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { ActorParameterKey, ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -78,7 +79,10 @@ function openActorParameterDialog(actor: ActorRecord, initialKey: ActorParameter
   let activeLevel = lastEditedParameterLevel(actor.id, initialKey);
   // 다이얼로그 안의 편집은 draft 에만 쌓는다 — "취소"가 진짜 취소가 되도록(P7).
   let draft = cloneParameterCurves(currentActorParameterCurves(actor));
-  const close = (): void => backdrop.remove();
+  const close = (): void => {
+    unregisterModal(backdrop);
+    backdrop.remove();
+  };
   const levelInput = dialogNumberInput("db-actor-parameter-level", activeLevel, 1, 99);
   const valueInput = dialogNumberInput("db-actor-parameter-value", parameterValueAtLevel(draft[activeKey], activeLevel), 1, 99999);
   const valueLabel = el("span", { text: PARAMETER_LABELS[activeKey] });
@@ -164,10 +168,14 @@ function openActorParameterDialog(actor: ActorRecord, initialKey: ActorParameter
   renderTabs();
   renderGraph();
   document.body.append(backdrop);
+  registerModal(backdrop, close);
 }
 
 function openActorExperienceDialog(actor: ActorRecord, refresh: () => void = () => undefined): void {
-  const close = (): void => backdrop.remove();
+  const close = (): void => {
+    unregisterModal(backdrop);
+    backdrop.remove();
+  };
   // draft 분리 — 취소 시 폐기(P7).
   let draft: ActorRecord["expCurve"] = { ...currentActorExpCurve(actor) };
   const baseInput = dialogNumberInput("db-actor-exp-base", draft.base, 0, 999999);
@@ -225,6 +233,7 @@ function openActorExperienceDialog(actor: ActorRecord, refresh: () => void = () 
   }));
   renderExp();
   document.body.append(backdrop);
+  registerModal(backdrop, close);
 }
 
 function currentActorParameterCurves(actor: ActorRecord): ActorRecord["parameterCurves"] {

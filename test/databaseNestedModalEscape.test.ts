@@ -93,6 +93,34 @@ describe("데이터베이스 중첩 다이얼로그의 Escape 계층", () => {
     expect(exists("database-modal")).toBe(false);
   });
 
+  // 배우 탭에도 같은 이름의 곡선 편집기가 따로 있다(actorRecordCurveEditors.ts).
+  // 직업 탭만 고치고 여기를 빠뜨려 사용자가 같은 버그를 다시 만났다.
+  it("배우 능력치 곡선 다이얼로그도 Escape 로 자기만 닫는다", () => {
+    openDatabaseModal("actors");
+    clickTestId("db-actor-curve-edit-maxHp");
+    expect(exists("db-actor-parameter-dialog")).toBe(true);
+
+    dispatchEscape();
+
+    expect({ nested: exists("db-actor-parameter-dialog"), database: exists("database-modal") }).toEqual({
+      nested: false,
+      database: true,
+    });
+  });
+
+  it("배우 경험치 곡선 다이얼로그도 Escape 로 자기만 닫는다", () => {
+    openDatabaseModal("actors");
+    clickTestId("db-actor-exp-edit");
+    expect(exists("db-actor-exp-dialog")).toBe(true);
+
+    dispatchEscape();
+
+    expect({ nested: exists("db-actor-exp-dialog"), database: exists("database-modal") }).toEqual({
+      nested: false,
+      database: true,
+    });
+  });
+
   // 도크 모드 백드롭은 pointer-events: none 이라 데이터베이스를 켠 채로 툴바의
   // 리소스 관리자를 열 수 있다. 그때도 Escape 는 위층 창 몫이다.
   it("리소스 관리자를 데이터베이스 위에 열어도 Escape 는 리소스 관리자만 닫는다", () => {
