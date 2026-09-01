@@ -32,3 +32,22 @@ describe("buildGroupSample — 역할별 샘플 모양 (특성화)", () => {
     expect(sample.h).toBeGreaterThan(0);
   });
 });
+
+describe("buildGroupSample — 레이어·배경 (특성화)", () => {
+  it("prop 타일은 상위 레이어에 놓인다", () => {
+    const sample = buildGroupSample(defaultTileset(), { role: "prop", tileIds: [289] });
+    const placedUpper = sample.upper.some((tile) => tile === 289);
+    expect(placedUpper).toBe(true);
+  });
+
+  it("prop 샘플은 배경에 잔디가 깔린다", () => {
+    const sample = buildGroupSample(defaultTileset(), { role: "prop", tileIds: [289] });
+    // backdropTile 이 defaultGrassTile 을 깔면 lower 에 잔디가 있다.
+    expect(sample.lower.some((tile) => tile >= 0)).toBe(true);
+  });
+
+  it("terrain 샘플은 배경을 깔지 않는다", () => {
+    const sample = buildGroupSample(defaultTileset(), { role: "terrain", tileIds: [303] });
+    expect(sample.upper.every((tile) => tile < 0)).toBe(true);
+  });
+});

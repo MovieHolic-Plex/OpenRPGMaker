@@ -171,9 +171,11 @@ function placeOnLayer(sample: GroupSample, x: number, y: number, tile: number, l
 
 function targetLayer(tileset: TilesetDef, role: TileGroupRole, tile: number): Layer {
   // 숲: 수관 upper + 밑동 lower — 같은 칸에 겹쳐야 숲이 된다.
+  // 이 두 줄은 타일 단위 사실이라 역할 능력으로 접히지 않는다.
   if (isTreeCanopyTileId(tile)) return "upper";
   if (isTreeTrunkTileId(tile)) return "lower";
-  if (role === "prop") return "upper";
+  const sampleLayer = roleCapabilities(tileset, role).sampleLayer;
+  if (sampleLayer) return sampleLayer;
   return tileset.priority[tile] === "upper" ? "upper" : "lower";
 }
 
@@ -198,7 +200,8 @@ function defaultGrassTile(tileset: TilesetDef): number {
 }
 
 function backdropTile(tileset: TilesetDef, input: GroupSampleInput): number {
-  return input.role === "prop" || input.tileIds.some((tile) => targetLayer(tileset, input.role, validTile(tileset, tile)) === "upper")
+  const needsBackdrop = roleCapabilities(tileset, input.role).needsBackdrop;
+  return needsBackdrop || input.tileIds.some((tile) => targetLayer(tileset, input.role, validTile(tileset, tile)) === "upper")
     ? defaultGrassTile(tileset)
     : EMPTY_TILE;
 }
