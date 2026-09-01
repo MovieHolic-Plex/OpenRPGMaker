@@ -404,7 +404,9 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
 
 function requestCanvasFit(): void {
   if (typeof window === "undefined") return;
-  const fire = (): void => window.dispatchEvent(new Event("resize"));
+  const fire = (): void => {
+    window.dispatchEvent(new Event("resize"));
+  };
   fire();
   if (typeof requestAnimationFrame === "function") {
     requestAnimationFrame(() => {
