@@ -1,0 +1,450 @@
+{
+  "meta": {
+    "generatedFrom": "scripts/qa/battle-depth-baseline.mts",
+    "heroLevel": 5,
+    "samples": 50,
+    "seed": 12345,
+    "simSubstrate": "createEmberQuestProject()",
+    "censusSurface": "defaultDatabase()",
+    "note": "sims 는 emberQuest 프로젝트(트룹 5개, 재조정된 적 스탯)에서 돌린다. fullDatabaseCensus 는 저작 표면인 defaultDatabase() 전체(적 106, 트룹 7)를 센다. emberQuest 는 defaultDatabase 를 걸러 만들되 적의 actions 는 그대로 물려받으므로 행동 레퍼토리 변경은 양쪽에 함께 나타난다."
+  },
+  "fullDatabaseCensus": {
+    "enemyCount": 106,
+    "troopCount": 7,
+    "skillCount": 27,
+    "enemiesWithOneAction": 106,
+    "enemyActionCounts": {
+      "enemy_slime": 1,
+      "enemy_meadow_slime": 1,
+      "enemy_cave_bat": 1,
+      "enemy_stone_golem": 1,
+      "enemy_dragon": 1,
+      "enemy_mine_skel_archer": 1,
+      "enemy_slime_blue": 1,
+      "enemy_slime_red": 1,
+      "enemy_slime_green": 1,
+      "enemy_slime_metal": 1,
+      "enemy_slime_king": 1,
+      "enemy_slime_cube": 1,
+      "enemy_ooze_black": 1,
+      "enemy_ooze_acid": 1,
+      "enemy_bat_cave": 1,
+      "enemy_bat_vampire": 1,
+      "enemy_bee_giant": 1,
+      "enemy_spider_cave": 1,
+      "enemy_spider_widow": 1,
+      "enemy_scorpion_sand": 1,
+      "enemy_beetle_horn": 1,
+      "enemy_mantis_blade": 1,
+      "enemy_centipede_fire": 1,
+      "enemy_moth_dust": 1,
+      "enemy_worm_sand": 1,
+      "enemy_ant_soldier": 1,
+      "enemy_wolf_grey": 1,
+      "enemy_wolf_dire": 1,
+      "enemy_boar_tusk": 1,
+      "enemy_bear_brown": 1,
+      "enemy_tiger_saber": 1,
+      "enemy_rat_giant": 1,
+      "enemy_bird_hawk": 1,
+      "enemy_snake_viper": 1,
+      "enemy_cat_shadow": 1,
+      "enemy_goat_mountain": 1,
+      "enemy_crab_rock": 1,
+      "enemy_hound_hell": 1,
+      "enemy_ape_stone": 1,
+      "enemy_deer_forest": 1,
+      "enemy_skeleton_bone": 1,
+      "enemy_skeleton_archer": 1,
+      "enemy_skeleton_knight": 1,
+      "enemy_zombie_rot": 1,
+      "enemy_ghoul_grave": 1,
+      "enemy_ghost_pale": 1,
+      "enemy_wraith_dark": 1,
+      "enemy_lich_frost": 1,
+      "enemy_mummy_bandage": 1,
+      "enemy_banshee_wail": 1,
+      "enemy_revenant_vengeful": 1,
+      "enemy_bonepile_crawler": 1,
+      "enemy_spirit_fire": 1,
+      "enemy_spirit_water": 1,
+      "enemy_spirit_earth": 1,
+      "enemy_spirit_wind": 1,
+      "enemy_spirit_light": 1,
+      "enemy_spirit_dark": 1,
+      "enemy_wisp_blue": 1,
+      "enemy_sylph_air": 1,
+      "enemy_undine_sea": 1,
+      "enemy_salamander_flame": 1,
+      "enemy_golem_stone": 1,
+      "enemy_golem_iron": 1,
+      "enemy_golem_clay": 1,
+      "enemy_golem_crystal": 1,
+      "enemy_armor_living": 1,
+      "enemy_sword_flying": 1,
+      "enemy_mimic_chest": 1,
+      "enemy_scarecrow_field": 1,
+      "enemy_puppet_string": 1,
+      "enemy_totem_cursed": 1,
+      "enemy_goblin_scout": 1,
+      "enemy_goblin_brute": 1,
+      "enemy_orc_warrior": 1,
+      "enemy_orc_shaman": 1,
+      "enemy_kobold_digger": 1,
+      "enemy_bandit_mask": 1,
+      "enemy_mage_rogue": 1,
+      "enemy_knight_fallen": 1,
+      "enemy_lizardman_spear": 1,
+      "enemy_harpy_cliff": 1,
+      "enemy_minotaur_maze": 1,
+      "enemy_centaur_plains": 1,
+      "enemy_troll_cave": 1,
+      "enemy_ogre_club": 1,
+      "enemy_imp_mischief": 1,
+      "enemy_fish_piranha": 1,
+      "enemy_squid_deep": 1,
+      "enemy_shark_land": 1,
+      "enemy_eel_electric": 1,
+      "enemy_griffin_sky": 1,
+      "enemy_wyvern_cliff": 1,
+      "enemy_roc_giant": 1,
+      "enemy_gargoyle_stone": 1,
+      "enemy_phoenix_rebirth": 1,
+      "enemy_dragon_whelp": 1,
+      "enemy_dragon_red": 1,
+      "enemy_dragon_blue": 1,
+      "enemy_dragon_bone": 1,
+      "enemy_hydra_three": 1,
+      "enemy_behemoth_horn": 1,
+      "enemy_demon_lord": 1,
+      "enemy_angel_fallen": 1,
+      "enemy_eye_floating": 1,
+      "enemy_plant_carnivore": 1
+    },
+    "enemyMaxMp": {
+      "enemy_slime": 10,
+      "enemy_meadow_slime": 10,
+      "enemy_cave_bat": 10,
+      "enemy_stone_golem": 10,
+      "enemy_dragon": 10,
+      "enemy_mine_skel_archer": 10,
+      "enemy_slime_blue": 10,
+      "enemy_slime_red": 10,
+      "enemy_slime_green": 10,
+      "enemy_slime_metal": 10,
+      "enemy_slime_king": 10,
+      "enemy_slime_cube": 10,
+      "enemy_ooze_black": 10,
+      "enemy_ooze_acid": 10,
+      "enemy_bat_cave": 10,
+      "enemy_bat_vampire": 10,
+      "enemy_bee_giant": 10,
+      "enemy_spider_cave": 10,
+      "enemy_spider_widow": 10,
+      "enemy_scorpion_sand": 10,
+      "enemy_beetle_horn": 10,
+      "enemy_mantis_blade": 10,
+      "enemy_centipede_fire": 10,
+      "enemy_moth_dust": 10,
+      "enemy_worm_sand": 10,
+      "enemy_ant_soldier": 10,
+      "enemy_wolf_grey": 10,
+      "enemy_wolf_dire": 10,
+      "enemy_boar_tusk": 10,
+      "enemy_bear_brown": 10,
+      "enemy_tiger_saber": 10,
+      "enemy_rat_giant": 10,
+      "enemy_bird_hawk": 10,
+      "enemy_snake_viper": 10,
+      "enemy_cat_shadow": 10,
+      "enemy_goat_mountain": 10,
+      "enemy_crab_rock": 10,
+      "enemy_hound_hell": 10,
+      "enemy_ape_stone": 10,
+      "enemy_deer_forest": 10,
+      "enemy_skeleton_bone": 10,
+      "enemy_skeleton_archer": 10,
+      "enemy_skeleton_knight": 10,
+      "enemy_zombie_rot": 10,
+      "enemy_ghoul_grave": 10,
+      "enemy_ghost_pale": 10,
+      "enemy_wraith_dark": 10,
+      "enemy_lich_frost": 10,
+      "enemy_mummy_bandage": 10,
+      "enemy_banshee_wail": 10,
+      "enemy_revenant_vengeful": 10,
+      "enemy_bonepile_crawler": 10,
+      "enemy_spirit_fire": 10,
+      "enemy_spirit_water": 10,
+      "enemy_spirit_earth": 10,
+      "enemy_spirit_wind": 10,
+      "enemy_spirit_light": 10,
+      "enemy_spirit_dark": 10,
+      "enemy_wisp_blue": 10,
+      "enemy_sylph_air": 10,
+      "enemy_undine_sea": 10,
+      "enemy_salamander_flame": 10,
+      "enemy_golem_stone": 10,
+      "enemy_golem_iron": 10,
+      "enemy_golem_clay": 10,
+      "enemy_golem_crystal": 10,
+      "enemy_armor_living": 10,
+      "enemy_sword_flying": 10,
+      "enemy_mimic_chest": 10,
+      "enemy_scarecrow_field": 10,
+      "enemy_puppet_string": 10,
+      "enemy_totem_cursed": 10,
+      "enemy_goblin_scout": 10,
+      "enemy_goblin_brute": 10,
+      "enemy_orc_warrior": 10,
+      "enemy_orc_shaman": 10,
+      "enemy_kobold_digger": 10,
+      "enemy_bandit_mask": 10,
+      "enemy_mage_rogue": 10,
+      "enemy_knight_fallen": 10,
+      "enemy_lizardman_spear": 10,
+      "enemy_harpy_cliff": 10,
+      "enemy_minotaur_maze": 10,
+      "enemy_centaur_plains": 10,
+      "enemy_troll_cave": 10,
+      "enemy_ogre_club": 10,
+      "enemy_imp_mischief": 10,
+      "enemy_fish_piranha": 10,
+      "enemy_squid_deep": 10,
+      "enemy_shark_land": 10,
+      "enemy_eel_electric": 10,
+      "enemy_griffin_sky": 10,
+      "enemy_wyvern_cliff": 10,
+      "enemy_roc_giant": 10,
+      "enemy_gargoyle_stone": 10,
+      "enemy_phoenix_rebirth": 10,
+      "enemy_dragon_whelp": 10,
+      "enemy_dragon_red": 10,
+      "enemy_dragon_blue": 10,
+      "enemy_dragon_bone": 10,
+      "enemy_hydra_three": 10,
+      "enemy_behemoth_horn": 10,
+      "enemy_demon_lord": 10,
+      "enemy_angel_fallen": 10,
+      "enemy_eye_floating": 10,
+      "enemy_plant_carnivore": 10
+    },
+    "authoredEnemySkillCounts": {
+      "skill_attack": 106
+    },
+    "troopIds": [
+      "troop_slime",
+      "troop_slime_pair",
+      "troop_bat_swarm",
+      "troop_forest_hornets",
+      "troop_golem_guard",
+      "troop_mine_archers",
+      "troop_dragon"
+    ]
+  },
+  "simulatedCensus": {
+    "enemyCount": 5,
+    "troopCount": 5,
+    "enemiesWithOneAction": 5,
+    "enemyActionCounts": {
+      "enemy_slime": 1,
+      "enemy_meadow_slime": 1,
+      "enemy_cave_bat": 1,
+      "enemy_stone_golem": 1,
+      "enemy_dragon": 1
+    },
+    "enemyMaxMp": {
+      "enemy_slime": 10,
+      "enemy_meadow_slime": 10,
+      "enemy_cave_bat": 10,
+      "enemy_stone_golem": 10,
+      "enemy_dragon": 60
+    }
+  },
+  "skillCosts": {
+    "skill_attack": {
+      "name": "공격",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_sword_slash": {
+      "name": "검격",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_arcane_bolt": {
+      "name": "마법탄",
+      "mpFlat": 4,
+      "mpPercentMax": 0
+    },
+    "skill_fire": {
+      "name": "화염",
+      "mpFlat": 4,
+      "mpPercentMax": 0
+    },
+    "skill_water": {
+      "name": "물대포",
+      "mpFlat": 4,
+      "mpPercentMax": 0
+    },
+    "skill_item_holy_water": {
+      "name": "성수 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_thunder_stone": {
+      "name": "뇌전석 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_frost_vial": {
+      "name": "서리병 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_quake_stone": {
+      "name": "지진석 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_gale_fan": {
+      "name": "질풍 부채 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_shadow_dust": {
+      "name": "그림자 가루 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_leaf": {
+      "name": "잎날",
+      "mpFlat": 3,
+      "mpPercentMax": 0
+    },
+    "skill_heal": {
+      "name": "치유",
+      "mpFlat": 3,
+      "mpPercentMax": 0
+    },
+    "skill_poison_sting": {
+      "name": "독침",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_sleep_mist": {
+      "name": "수면 안개",
+      "mpFlat": 5,
+      "mpPercentMax": 0
+    },
+    "skill_focus": {
+      "name": "집중",
+      "mpFlat": 2,
+      "mpPercentMax": 0
+    },
+    "skill_weaken": {
+      "name": "약화",
+      "mpFlat": 3,
+      "mpPercentMax": 0
+    },
+    "skill_item_potion": {
+      "name": "회복약 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_hi_potion": {
+      "name": "상급 회복약 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_ether": {
+      "name": "마력약 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_elixir": {
+      "name": "엘릭서 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_throwing_knife": {
+      "name": "투척 단검",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_poison_vial": {
+      "name": "독병 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_antidote": {
+      "name": "해독 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_wake": {
+      "name": "각성 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_panacea": {
+      "name": "만능 치료 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_guard": {
+      "name": "수호 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    }
+  },
+  "sims": {
+    "troop_slime_pair": {
+      "samples": 50,
+      "winRate": 1,
+      "avgTurns": 2,
+      "avgPotionsUsed": 0,
+      "avgHpRemaining": 634
+    },
+    "troop_bat_swarm": {
+      "samples": 50,
+      "winRate": 1,
+      "avgTurns": 3,
+      "avgPotionsUsed": 0,
+      "avgHpRemaining": 400.34
+    },
+    "troop_forest_hornets": {
+      "samples": 50,
+      "winRate": 1,
+      "avgTurns": 3,
+      "avgPotionsUsed": 0,
+      "avgHpRemaining": 556.46
+    },
+    "troop_golem_guard": {
+      "samples": 50,
+      "winRate": 1,
+      "avgTurns": 3.48,
+      "avgPotionsUsed": 0,
+      "avgHpRemaining": 437.46
+    },
+    "troop_dragon": {
+      "samples": 50,
+      "winRate": 1,
+      "avgTurns": 2.4,
+      "avgPotionsUsed": 0,
+      "avgHpRemaining": 335.7
+    }
+  },
+  "enemySkillUsage": {
+    "note": "battleFlow:'strict' 전용 측정. roundLogs 는 strict 플로우에서만 기록되고, simulateBattle 은 첫 판의 roundLogs 만 보관하므로 seed 를 옮겨 n=1 로 50회씩 돌려 합산했다. sims 의 스칼라(기본 gauge 플로우)와는 별개 측정이다.",
+    "runsPerTroop": 50,
+    "strictRoundsObserved": 705,
+    "byCommandKind": {
+      "enemySkill": 634
+    },
+    "bySkillId": {
+      "skill_attack": 634
+    },
+    "distinctSkills": 1
+  }
+}
