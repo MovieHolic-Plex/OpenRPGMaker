@@ -56,13 +56,20 @@ export const LEGACY_ROLE_CAPABILITIES: Record<string, RoleCapabilities> = {
   prop: { ...BASE, layerHome: "perCell", sampleLayer: "upper", sampleAs: "verticalPair", needsBackdrop: true },
 
   // ── PaletteSlotRole 전용 (낱개 타일·팔레트 슬롯) ────────────────
-  // 이 5종은 grammarProfiles.layerHomeByRole 에 없다 — layerHome 은 가장
+  // 이 5종은 grammarProfiles.layerHomeByRole 에 없다 — **layerHome 만** 가장
   // 가까운 그룹 역할에서 베낀다(ground→terrain, boundary→fence, decor→prop).
+  //
+  // 그 면책은 layerHome 에만 적용된다. 샘플 관련 능력(sampleLayer·sampleAs·
+  // needsBackdrop)은 여기 두지 않는다 — 출처인 groupSampleBuilder 의
+  // targetLayer/backdropTile 은 인자 타입이 TileGroupRole 이라 이 5종이
+  // 애초에 도달하지 못한다. 즉 현행 동작에서 이들의 답은 "없음"이고,
+  // 유추한 값을 적어 두면 A-3 에서 역할이 열리는 순간 없던 잔디 배경이
+  // 생긴다(동작 변화 0 위반).
   ground: { ...BASE, layerHome: "lower" },
   path: { ...BASE, layerHome: "lower", expectedPassage: "passable" },
-  decor: { ...BASE, layerHome: "perCell", sampleLayer: "upper", needsBackdrop: true },
+  decor: { ...BASE, layerHome: "perCell" },
   boundary: { ...BASE, layerHome: "upper" },
-  furniture: { ...BASE, layerHome: "perCell", sampleLayer: "upper", needsBackdrop: true },
+  furniture: { ...BASE, layerHome: "perCell" },
 };
 
 /**
@@ -72,7 +79,11 @@ export const LEGACY_ROLE_CAPABILITIES: Record<string, RoleCapabilities> = {
  *
  * tileset 인자는 A-1 에서 쓰이지 않는다. A-3 에서 tileset.roleOverrides 를
  * 읽으므로 시그니처를 미리 확정해 두어 호출자를 두 번 고치지 않는다.
+ *
+ * 반환은 Readonly 다 — 표 항목(또는 BASE 싱글턴)의 **참조**를 그대로 넘기므로
+ * 호출자가 한 곳에서 필드를 대입하면 프로세스 전역이 오염된다. 15개 호출부가
+ * 이 객체를 만질 예정이라 타입으로 막아 둔다.
  */
-export function roleCapabilities(_tileset: TilesetDef, roleId: string): RoleCapabilities {
+export function roleCapabilities(_tileset: TilesetDef, roleId: string): Readonly<RoleCapabilities> {
   return LEGACY_ROLE_CAPABILITIES[roleId] ?? BASE;
 }
