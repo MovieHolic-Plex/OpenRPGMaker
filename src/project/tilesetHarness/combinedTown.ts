@@ -15,6 +15,7 @@ import {
   type CombinedTownHarnessGroup,
 } from "./combinedTownGroups";
 import { applyEasyRpgThemeMetadataPacks } from "./themePacks";
+import { roleCapabilities } from "@/project/tileRoles";
 
 const passable: PassFlag = { up: true, down: true, left: true, right: true };
 const solid: PassFlag = { up: false, down: false, left: false, right: false };
@@ -176,7 +177,7 @@ function applyTileContract(tileset: TilesetDef, group: CombinedTownHarnessGroup,
     role: group.role,
     repeatability: group.repeatability,
     defaultLayer: group.defaultLayer,
-    terrainTag: terrainTagForGroup(group, descriptor.terrainTag),
+    terrainTag: terrainTagForGroup(tileset, group, descriptor.terrainTag),
     passage: group.passage,
     confidence: group.confidence,
     source: "bundled-default",
@@ -229,7 +230,7 @@ function setTileRuntimeContract(
   }
   const terrain = hasUserRuntime && typeof meta?.terrainTag === "number"
     ? meta.terrainTag
-    : terrainTagForGroup(group, describeChipsetTile(tile).terrainTag);
+    : terrainTagForGroup(tileset, group, describeChipsetTile(tile).terrainTag);
   if (tileset.terrain[tile] !== terrain) {
     tileset.terrain[tile] = terrain;
     changed = true;
@@ -345,8 +346,9 @@ function resolveRuntimeLayer(group: CombinedTownHarnessGroup): "lower" | "upper"
   return "lower";
 }
 
-function terrainTagForGroup(group: CombinedTownHarnessGroup, fallback: number): number {
-  if (group.role === "water") return TERRAIN_TAG.WATER;
+function terrainTagForGroup(tileset: TilesetDef, group: CombinedTownHarnessGroup, fallback: number): number {
+  if (roleCapabilities(tileset, group.role).terrainTag === "water") return TERRAIN_TAG.WATER;
+  // id 기반 조건 — 역할로 접히지 않는다. 흙길 그룹의 role 은 terrain 이다.
   if (group.id.includes("dirt-road")) return TERRAIN_TAG.NORMAL;
   return fallback;
 }
