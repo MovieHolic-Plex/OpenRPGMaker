@@ -11,9 +11,18 @@
   transform: translate(-50%, -100%) translateX(8px);
   filter: brightness(0.95);
 }
-.battle-actor[data-battle-pose="dead"],
-.battle-enemy[data-battle-pose="dead"] {
+/* 아군은 쓰러진 채로 필드에 남는다 — 흐리게+탈색이 곧 상태 표시다. */
+.battle-actor[data-battle-pose="dead"] {
   opacity: 0.35;
+  filter: grayscale(0.8);
+}
+
+/* 적은 남지 않고 **퇴장한다**. 불투명도는 `15-juice-capture-fx.css` 의 battle-death-fade
+   가 소유하므로 여기서 정적 opacity 를 주면 안 된다 — 피격 juice 가 노드의 animation
+   슬롯을 가져가 death-fade 가 멈춘 사이 이 값이 그대로 드러나, 몬스터 몸통으로 배경이
+   비쳤다(실측: 막타 후 약 400ms 동안 opacity 0.35 고정). 탈색만 남겨 즉시 "죽었다" 를
+   읽히게 한다. */
+.battle-enemy[data-battle-pose="dead"] {
   filter: grayscale(0.8);
 }
 .battle-enemy[data-battle-pose="attack"] {
