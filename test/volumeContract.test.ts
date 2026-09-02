@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { buildTurnGuide } from "@/ai/turnGuide";
 import {
   MAX_VOLUME_CONTINUES_PER_TURN,
   buildVolumeWorkPlan,
@@ -81,6 +82,34 @@ describe("volume contract — 어떤 요청이 막을 세우나", () => {
       shops: 0,
       quests: 0,
     });
+  });
+});
+
+describe("volume contract — 패널 가이드 문구는 막대를 세우지 않는다", () => {
+  // 2026-09-03 실측(「여관 지어줘」 감사 로그): 패널이 붙인 「도구 규칙」 가이드의 마을·상점·NPC 낱말이
+  // 의도 스캔에 섞여 volume-contract:forced-plan 이 찍히고, 여관 완성 뒤 「상점 +0」 재주입으로
+  // 시작 맵에 마을·NPC 3명·상점을 덤으로 지었다.
+  it("「여관 지어줘」 + 도구 규칙 가이드 + footer 는 계획 강제도 막대도 없다", () => {
+    const guide = buildTurnGuide({ instruction: "여관 지어줘" });
+    expect(guide).toMatch(/마을|상점/u);
+    const payload = ["여관 지어줘", guide, "[컨텍스트] 현재 맵: 빈 맵 (map_blank_start)"].join("\n\n");
+    expect(requestNeedsVolumePlan(payload)).toBe(false);
+    expect(volumeBarForRequest(payload)).toBeNull();
+  });
+
+  it("마을 요청은 가이드가 붙어도 종전 막대 그대로다", () => {
+    const guide = buildTurnGuide({ instruction: "강이 있는 마을을 만들어줘" });
+    const payload = ["강이 있는 마을을 만들어줘", guide].join("\n\n");
+    expect(requestNeedsVolumePlan(payload)).toBe(true);
+    expect(volumeBarForRequest(payload)).toEqual({ authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: 0 });
+  });
+
+  it("강제 계획의 항목은 막대가 요구하는 축만 — 상점만 부족한 막대에 허브 맵·NPC 항목이 붙지 않는다", () => {
+    const shopOnly = buildVolumeWorkPlan("상점 하나 만들어줘");
+    const titles = shopOnly.layers.flatMap((layer) => layer.items.map((item) => item.title));
+    expect(titles).toEqual(["상점"]);
+    const village = buildVolumeWorkPlan("마을을 만들어줘");
+    expect(village.layers.flatMap((layer) => layer.items.map((item) => item.title))).toEqual(["허브 맵", "상태별 NPC", "상점"]);
   });
 });
 

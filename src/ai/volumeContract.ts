@@ -132,22 +132,27 @@ export function buildVolumeWorkPlan(goal: string, now = new Date()): WorkPlan {
     instruction: string;
     doneWhen: string;
     successTools: readonly string[];
-  }> = [
-    {
+  }> = [];
+  // 항목은 막대가 요구하는 것만 — 막대가 0인 축의 항목을 넣으면 요청과 무관한 산출물(허브 맵·NPC)이
+  // 「완료 조건」이 되어 코드가 그것을 짓게 몰아간다(2026-09-01 20프롬프트 실사의 폭주 경로).
+  if (bar.authoredMaps > 0) {
+    items.push({
       title: "허브 맵",
       instruction:
         "author_village 또는 fill_region+author_house+paint_road 로 허브 맵을 채운다. 빈 create_map 만 하고 끝내지 말 것.",
       doneWhen: "허브 맵에 지형·길이 있고 빈 잔디가 아니다",
-      successTools: bar.authoredMaps > 0 ? ["author_village"] : ["fill_region"],
-    },
-    {
+      successTools: ["author_village"],
+    });
+  }
+  if (bar.multiPageNpcs > 0) {
+    items.push({
       title: "상태별 NPC",
       instruction:
         `find_events/get_event/get_story_state 로 기존 플래그를 본 뒤 place_npc 로 상태별 페이지 NPC를 최소 ${bar.multiPageNpcs}명 만든다. 한 줄 인사 금지.`,
       doneWhen: `조건이 다른 페이지를 가진 NPC ${bar.multiPageNpcs}명`,
       successTools: ["place_npc"],
-    },
-  ];
+    });
+  }
   if (bar.shops > 0) {
     items.push({
       title: "상점",
@@ -162,6 +167,16 @@ export function buildVolumeWorkPlan(goal: string, now = new Date()): WorkPlan {
       instruction: "define_quest 로 등록하고 verify_quest 로 완주 가능한지 확인한다. upsert_event 로 퀘스트를 손으로 조립하지 말 것.",
       doneWhen: "verify_quest 통과 퀘스트 1개",
       successTools: ["define_quest", "verify_quest"],
+    });
+  }
+  if (items.length === 0) {
+    // 막대가 전부 0인데 여기까지 왔다면 호출자 규칙(requestNeedsVolumePlan)이 어긋난 것 — 빈 계획으로 조수를
+    // 묶지 않고 요청 그대로를 한 항목으로 둔다.
+    items.push({
+      title: "요청 수행",
+      instruction: goal.slice(0, 400),
+      doneWhen: "요청한 산출물이 프로젝트에 있다",
+      successTools: [],
     });
   }
   return workPlanFromOrchestratorDecision(

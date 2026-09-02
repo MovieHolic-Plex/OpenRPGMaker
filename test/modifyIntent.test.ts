@@ -8,6 +8,7 @@ import {
   requestLikelyModifiesExisting,
   stripContextFooter,
 } from "@/ai/modifyIntent";
+import { buildTurnGuide } from "@/ai/turnGuide";
 
 describe("수정 의도 판정", () => {
   it.each([
@@ -74,6 +75,17 @@ describe("컨텍스트 footer", () => {
 
   it("footer 를 걷어낸다", () => {
     expect(stripContextFooter(`여기 좀 고쳐줘\n\n${footer}`)).toBe("여기 좀 고쳐줘");
+  });
+
+  it("턴 가이드 블록(도구 규칙)도 걷어낸다 — 가이드의 마을·상점·NPC 낱말이 의도 스캔에 섞이면 볼륨 계약이 무장된다", () => {
+    const guide = buildTurnGuide({ instruction: "여관 지어줘" });
+    expect(guide).toContain("도구 규칙:");
+    expect(guide).toMatch(/마을|상점|NPC/u);
+    const payload = ["여관 지어줘", guide, footer].join("\n\n");
+    expect(stripContextFooter(payload)).toBe("여관 지어줘");
+    // 스코프가 있으면 도메인 시드 줄이 가이드 앞에 선다 — 그 줄부터 뗀다.
+    const scoped = buildTurnGuide({ instruction: "여기에 집 지어줘", scope: { mapId: "map_town", region: { x: 0, y: 0, w: 5, h: 5 } } });
+    expect(stripContextFooter(["여기에 집 지어줘", scoped, footer].join("\n\n"))).toBe("여기에 집 지어줘");
   });
 
   it("footer 의 맵 이름이 의도 스캔에 섞이지 않는다", () => {

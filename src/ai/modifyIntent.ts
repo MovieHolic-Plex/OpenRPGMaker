@@ -107,9 +107,25 @@ function normalize(text: string): string {
  * 이 함수는 수정/생성 의도 스캔과 도메인 스캔에만 적용하고, 영역 라우터에는 적용하지 않는다.
  * LLM 에 보내는 원문 메시지는 언제나 footer 를 포함한 그대로 둔다.
  */
+/**
+ * 패널이 사용자 발화 뒤에 붙이는 기계 생성 텍스트의 첫 줄 — `buildTurnGuide` 의 「도구 규칙:」/「영역 작업 도구 규칙:」
+ * 머리와, 스코프가 있을 때 그 앞에 서는 「(영역 작업: …)」 도메인 시드. 이 줄부터 끝까지가 가이드·스코프 문장·footer 다.
+ */
+const TURN_GUIDE_START_RE = /^(?:\(영역 작업: |(?:영역 작업 )?도구 규칙:$)/u;
+
+/**
+ * 의도 스캔용 사용자 발화만 남긴다 — `[컨텍스트]` footer 와 **턴 가이드 블록** 을 뗀다.
+ *
+ * 2026-09-03 실측(`/tmp/inn-audit.json`, 「여관 지어줘」): 가이드 문구의 「마을=author_village」「상점 NPC」「주민/NPC」가
+ * 그대로 의도 스캔에 들어가 `requestNeedsVolumePlan` 이 참이 되고(volume-contract:forced-plan), 여관을 다 지은 뒤
+ * 「상점 +0 (최소 +1)」 로 볼륨 계약이 재주입돼 시작 맵에 마을·NPC 3명·상점을 덤으로 지었다. 공간 요청이면 무엇이든
+ * 가이드가 붙으므로 모든 시공 요청이 마을 막대를 받고 있었다(메모리 「볼륨 계약 폭주」의 경로).
+ */
 export function stripContextFooter(text: string): string {
-  return text
-    .split("\n")
+  const lines = text.split("\n");
+  const guideStart = lines.findIndex((line) => TURN_GUIDE_START_RE.test(line.trim()));
+  const own = guideStart >= 0 ? lines.slice(0, guideStart) : lines;
+  return own
     .filter((line) => !line.trimStart().startsWith("[컨텍스트]"))
     .join("\n")
     .trim();
