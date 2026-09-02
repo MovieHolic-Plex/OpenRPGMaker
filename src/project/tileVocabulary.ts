@@ -12,6 +12,7 @@
 // - 그룹 한정 예외: source === "bundled-default"(큐레이션 번들)는 origin:"user"와 동급 신뢰(2026-07-11).
 
 import type { PassFlag, Project, TileGroupMetadata, TilesetDef } from "./types";
+import { roleCapabilities } from "./tileRoles";
 import { bagMaterialRejectMessage, isBagGroup, isBagMaterialQuery } from "./materialPolicy";
 
 export type VocabLayerHome = "lower" | "upper" | "perCell";
@@ -254,9 +255,11 @@ function groupContainingTile(tileset: TilesetDef, tileId: number): TileGroupMeta
   return hits[0];
 }
 
-function isAutotileGroup(group: TileGroupMetadata): boolean {
+function isAutotileGroup(tileset: TilesetDef, group: TileGroupMetadata): boolean {
   const kind = group.patternGrammar?.kind;
-  return kind === "autotile_3x3" || kind === "animated_terrain" || group.role === "water";
+  // 문법이 명시되면 역할보다 문법이 이긴다 — 역할 능력으로 접히지 않는 우선순위다.
+  if (kind === "autotile_3x3" || kind === "animated_terrain") return true;
+  return roleCapabilities(tileset, group.role).autotile;
 }
 
 function findExactGroupByName(tileset: TilesetDef, query: string): TileGroupMetadata | undefined {
@@ -306,7 +309,7 @@ export function resolveMaterialByLabel(
   // 그룹 display name 완전 일치 우선(라벨 동의어 오염 방지 — "키큰 풀" ≠ "잔디").
   const exactGroup = findExactGroupByName(tileset, raw);
   if (exactGroup) {
-    if (options.requireAutotileGroup && !isAutotileGroup(exactGroup)) {
+    if (options.requireAutotileGroup && !isAutotileGroup(tileset, exactGroup)) {
       // fall through to tile scoring
     } else {
       const seedTile = exactGroup.tileIds[0] ?? 0;
@@ -359,7 +362,7 @@ export function resolveMaterialByLabel(
   for (const hit of strong.slice(0, 24)) {
     const group = groupContainingTile(tileset, hit.tileId);
     if (options.requireAutotileGroup) {
-      if (!group || !isAutotileGroup(group)) continue;
+      if (!group || !isAutotileGroup(tileset, group)) continue;
       return materialAccessForGroup(tileset, group, hit);
     }
     // 구체 라벨이 잡소품 가방에만 속한 타일(예: "팻말" 440)을 가리키면 가방으로 승격하지 않고 그 타일로 시공한다.

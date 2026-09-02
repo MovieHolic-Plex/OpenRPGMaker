@@ -1,4 +1,5 @@
 import { TILE } from "@/project/defaults/constants";
+import { roleCapabilities } from "@/project/tileRoles";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import type { TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 
@@ -50,14 +51,15 @@ export function buildGroupSample(tileset: TilesetDef, input: GroupSampleInput): 
 
 function buildBaseGroupSample(tileset: TilesetDef, input: GroupSampleInput): GroupSample {
   const grammar = input.patternGrammar;
+  const caps = roleCapabilities(tileset, input.role);
   if (grammar?.kind === "repeatable_block") return repeatableBlockSample(tileset, input);
-  if (grammar?.kind === "nine_slice_expandable" || input.role === "wall") return nineSliceSample(tileset, input);
+  if (grammar?.kind === "nine_slice_expandable" || caps.sampleAs === "nineSlice") return nineSliceSample(tileset, input);
   if (grammar?.kind === "vertical_expandable") return verticalSample(tileset, input);
   if (grammar?.kind === "horizontal_expandable") return horizontalSample(tileset, input);
   if (grammar?.kind === "autotile_3x3") return autotileSample(tileset, input);
   // 문법 없는 prop 은 정확히 2타일(침엽수 등)일 때만 세로 쌍. 벤치·소품 가방(3+)은 세로로 묶지 않는다.
-  if (!grammar && input.role === "prop" && input.tileIds.length === 2) return verticalSample(tileset, input);
-  if (input.role === "roof") return roofSample(tileset, input);
+  if (!grammar && caps.sampleAs === "verticalPair" && input.tileIds.length === 2) return verticalSample(tileset, input);
+  if (caps.sampleAs === "roof") return roofSample(tileset, input);
   return fallbackSample(tileset, input);
 }
 
@@ -169,9 +171,11 @@ function placeOnLayer(sample: GroupSample, x: number, y: number, tile: number, l
 
 function targetLayer(tileset: TilesetDef, role: TileGroupRole, tile: number): Layer {
   // 숲: 수관 upper + 밑동 lower — 같은 칸에 겹쳐야 숲이 된다.
+  // 이 두 줄은 타일 단위 사실이라 역할 능력으로 접히지 않는다.
   if (isTreeCanopyTileId(tile)) return "upper";
   if (isTreeTrunkTileId(tile)) return "lower";
-  if (role === "prop") return "upper";
+  const sampleLayer = roleCapabilities(tileset, role).sampleLayer;
+  if (sampleLayer) return sampleLayer;
   return tileset.priority[tile] === "upper" ? "upper" : "lower";
 }
 
@@ -196,7 +200,8 @@ function defaultGrassTile(tileset: TilesetDef): number {
 }
 
 function backdropTile(tileset: TilesetDef, input: GroupSampleInput): number {
-  return input.role === "prop" || input.tileIds.some((tile) => targetLayer(tileset, input.role, validTile(tileset, tile)) === "upper")
+  const needsBackdrop = roleCapabilities(tileset, input.role).needsBackdrop;
+  return needsBackdrop || input.tileIds.some((tile) => targetLayer(tileset, input.role, validTile(tileset, tile)) === "upper")
     ? defaultGrassTile(tileset)
     : EMPTY_TILE;
 }

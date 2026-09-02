@@ -82,14 +82,14 @@ export const HOUSE_KIT_CARDS: readonly BuildHouseKitCard[] = [
 export const DEFAULT_HOUSE_SHAPE_ID: BuildHouseShapeId = "rect";
 export const DEFAULT_HOUSE_KIT_ID: HouseKitId = "blue-stone";
 
-interface BuildPaletteGroupClaim {
+export interface BuildPaletteGroupClaim {
   readonly name: string;
   readonly role: TileGroupRole;
   readonly layerHome: "lower" | "upper" | "perCell";
   readonly patternKind?: NonNullable<NonNullable<TileGroupMetadata["patternGrammar"]>["kind"]>;
 }
 
-const BUILD_PALETTE_GROUP_CLAIMS: Record<BuildPaletteGroupRole, BuildPaletteGroupClaim> = {
+export const BUILD_PALETTE_GROUP_CLAIMS: Record<BuildPaletteGroupRole, BuildPaletteGroupClaim> = {
   wall: { name: "흰 집 벽", role: "wall", layerHome: "lower", patternKind: "nine_slice_expandable" },
   door: { name: "문", role: "prop", layerHome: "lower", patternKind: "vertical_expandable" },
   window: { name: "창문", role: "prop", layerHome: "upper" },

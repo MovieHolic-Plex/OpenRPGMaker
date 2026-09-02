@@ -1,5 +1,6 @@
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { type CharsetDirection, type EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
+import { roleCapabilities } from "@/project/tileRoles";
 import type { TileAiMetadata, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 
 export type AiPreviewConfidence = "high" | "low" | "medium";
@@ -411,7 +412,7 @@ function highConfidenceSemanticGroups(
     if (!isHighConfidenceSource(group.source)) return false;
     if (group.defaultLayer === "event") return false;
     if (group.tileIds.length === 0) return false;
-    if (needsPatternGrammar(group) && group.patternGrammar === undefined) return false;
+    if (needsPatternGrammar(tileset, group) && group.patternGrammar === undefined) return false;
     const lowEvidenceTiles = group.tileIds.filter((tile) => !hasHighConfidenceTileMetadata(tileset, tile));
     if (lowEvidenceTiles.length > 0) {
       missingEvidence.push({
@@ -428,8 +429,8 @@ function highConfidenceSemanticGroups(
 function isHighConfidenceSource(source: TileAiMetadata["source"]): boolean {
   return HIGH_CONFIDENCE_SOURCES.has(source);
 }
-function needsPatternGrammar(group: TileGroupMetadata): boolean {
-  return group.role === "terrain" || group.role === "water" || group.role === "wall";
+function needsPatternGrammar(tileset: TilesetDef, group: TileGroupMetadata): boolean {
+  return roleCapabilities(tileset, group.role).requiresPatternGrammar;
 }
 
 function uniqueGroups(groups: readonly TileGroupMetadata[]): readonly TileGroupMetadata[] {

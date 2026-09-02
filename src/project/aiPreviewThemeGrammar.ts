@@ -5,6 +5,7 @@ import {
   type AiPreviewThemeEligibilityEvidence,
   type AiPreviewThemeId,
 } from "@/project/aiPreviewContracts";
+import { tilesetGrammarProfile } from "@/editor/tools/v3/grammarProfiles";
 import { TILE } from "@/project/defaults/constants";
 import type { GameEvent, GameMap, TileGroupMetadata, TilesetDef } from "@/project/types";
 
@@ -99,7 +100,7 @@ function firstCapabilityTile(
   tileset: TilesetDef,
   capability: AiPreviewThemeCapability
 ): number | null {
-  const requirementGroups = groupsForCapability(evidence, capability);
+  const requirementGroups = groupsForCapability(tileset, evidence, capability);
   for (const group of requirementGroups) {
     const tile = group.tileIds.find((candidate) => Number.isInteger(candidate) && candidate >= 0 && candidate < tileset.count);
     if (tile !== undefined) return tile;
@@ -107,12 +108,15 @@ function firstCapabilityTile(
   return null;
 }
 
-function groupsForCapability(evidence: AiPreviewThemeEligibilityEvidence, capability: AiPreviewThemeCapability): readonly TileGroupMetadata[] {
-  if (capability === "walkableFloor") return evidence.semanticGroups.filter((group) => group.role === "terrain");
-  if (capability === "solidBoundary" || capability === "wallFace") return evidence.semanticGroups.filter((group) => group.role === "wall");
-  if (capability === "roomTrim" || capability === "buildingShell" || capability === "doorOrEntrance") return evidence.semanticGroups.filter((group) => group.role === "building" || group.role === "prop");
-  if (capability === "waterOrHazard") return evidence.semanticGroups.filter((group) => group.role === "water");
-  return evidence.semanticGroups.filter((group) => group.role === "prop" || group.role === "fence" || group.role === "roof");
+function groupsForCapability(
+  tileset: TilesetDef,
+  evidence: AiPreviewThemeEligibilityEvidence,
+  capability: AiPreviewThemeCapability
+): readonly TileGroupMetadata[] {
+  const table = tilesetGrammarProfile(tileset).themeCapabilityRoles;
+  // 표에 없는 능력은 기존 폴백(prop/fence/roof)을 그대로 쓴다.
+  const roles = table[capability] ?? ["prop", "fence", "roof"];
+  return evidence.semanticGroups.filter((group) => roles.includes(group.role));
 }
 
 function selectedCapabilitiesForTheme(themeId: AiPreviewThemeId, trimTile: number | null): readonly AiPreviewThemeCapability[] {
