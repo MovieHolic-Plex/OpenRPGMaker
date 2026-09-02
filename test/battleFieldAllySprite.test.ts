@@ -15,7 +15,7 @@ import battleFixture from "./fixtures/projects/battle-v3.json";
 // 순서가 네 단계라 회귀가 조용히 난다 — 액터별 뒷모습이 빠져도 공용 한 장으로 "그려지긴"
 // 하므로 렌더 성공만 보는 테스트는 통과한다. 그래서 **어느 파일이 붙었는지**를 못 박는다.
 
-type Skin = "pokemon" | "rm2003";
+type Skin = "pokemon" | "rm2000";
 
 function renderField(options: {
   readonly skin: Skin;
@@ -106,9 +106,9 @@ describe("아군 배틀러 스프라이트 선택", () => {
     expect(node?.dataset.actorBackBattler).toBeUndefined();
   });
 
-  it("rm2003 전면 구도는 아군 스프라이트 노드를 만들지 않는다", () => {
+  it("rm2000 전면 구도는 아군 스프라이트 노드를 만들지 않는다", () => {
     const field = renderField({
-      skin: "rm2003",
+      skin: "rm2000",
       battleCharacterResourceId: "generated-actor-hero-03-battle",
     });
 

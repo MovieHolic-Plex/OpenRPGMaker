@@ -205,7 +205,7 @@ function retryMeasuredAnchor(
  *
  * 레이어 엘리먼트를 그대로 쓰면 안 된다 — `.battle-animation-layer` 는 절대배치된 그리드
  * 아이템이고, 그 그리드 영역이 접히는 스킨에서는 자기 박스가 0×0 이 된다(실측 2026-08-30,
- * 출하 플레이어 + 기본 스킨 rm2003: `client 0x0 offset 0x0 connected true`). 그 0 으로
+ * 출하 플레이어 + 기본 스킨 rm2000: `client 0x0 offset 0x0 connected true`). 그 0 으로
  * 나누면 앵커가 통째로 폴백으로 떨어지고, 폴백이 쓰는 `--battle-node-x/y` 백분율도 **같은**
  * 0×0 박스에서 풀리므로 이펙트가 무대 좌상단으로 끌려간다 — 감독이 신고한 "좌표가 이상함" 의
  * 실제 모습이다.

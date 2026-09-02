@@ -234,7 +234,7 @@ describe("evaluateExpect", () => {
 });
 
 // 배틀러 배치 판정. 이 게이트가 조용히 통과하면 "몬스터가 필드 위로 잘려 나간" 상태가
-// 증거 없이 출하된다(실측: rm2003 앞줄 적 이미지 top=-13 vs field.top=24 → 37px 잘림).
+// 증거 없이 출하된다(실측: rm2000 앞줄 적 이미지 top=-13 vs field.top=24 → 37px 잘림).
 // CSS 레이아웃은 jsdom 이 계산하지 않으므로 실제 판정은 실브라우저 rect 로 하고,
 // 여기서는 그 rect 를 받아 사유를 만드는 순수 로직만 고정한다.
 describe("evaluateBattlerGeometry", () => {
@@ -251,7 +251,7 @@ describe("evaluateBattlerGeometry", () => {
     };
   }
   const battlers = (enemies: readonly RuntimeQaBattler[]) => ({
-    skin: "rm2003",
+    skin: "rm2000",
     directorStep: "command",
     field,
     enemies,
@@ -287,7 +287,7 @@ describe("evaluateBattlerGeometry", () => {
   });
 
   // 이미지는 필드 안이지만 **이름표/게이지 스택**이 밖으로 밀린 경우 — 발을 접지 띠까지 내리면
-  // 실제로 생겼던 결함이다(rm2003 앞줄 node.bottom=464 > field.bottom=444).
+  // 실제로 생겼던 결함이다(rm2000 앞줄 node.bottom=464 > field.bottom=444).
   it("이름표/게이지가 필드 하단 밖으로 나가면 보고한다", () => {
     const enemy = enemyAt("enemy-1", 390);
     expect(evaluateBattlerGeometry({}, battlers([enemy]))).toEqual([

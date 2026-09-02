@@ -1,4 +1,4 @@
-/* Temporary diagnostic probe: rm2003 command rail + actor battler node geometry. */
+/* Temporary diagnostic probe: rm2000 command rail + actor battler node geometry. */
 import { test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
@@ -10,14 +10,14 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { expect } from "@playwright/test";
 
-test("probe rm2003 command rail + actor node", async ({ page }) => {
+test("probe rm2000 command rail + actor node", async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 1360, height: 768 });
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   const fixtureText = await readFile(new URL("../fixtures/projects/battle-v3.json", import.meta.url), "utf8");
   const fixture = deserialize(fixtureText);
   const project = createBlankProject();
-  project.meta = { ...project.meta, title: "RM2003 probe" };
+  project.meta = { ...project.meta, title: "rm2000 probe" };
   const startMap = project.maps[project.startMapId]!;
   const battleEvents = fixture.maps.map_battle!.events;
   startMap.events = [

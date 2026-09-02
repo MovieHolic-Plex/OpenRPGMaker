@@ -12,10 +12,10 @@
 
 /* 총 배율 = 노드 scale(1.55) × 필드 뷰포트 zoom(~2.0) ≈ 3.1×. 목표 화면크기 ÷3.1 = css px.
    파티 목표 ~50×75px → css 16×24 × --battle-actor-scale. !important 로 베이스 규칙을 이긴다.
-   rm2003 은 제외한다 — 그 스킨은 `_rm2003.css` 에서 자기 스프라이트 박스를 `!important`
+   rm2000 은 제외한다 — 그 스킨은 `_rm2000.css` 에서 자기 스프라이트 박스를 `!important`
    없이 저작하므로, 여기의 `!important` 가 닿으면 스킨 값이 죽는다.
    `:not(:where(…))` 는 특정도 0 이라 나머지 11종의 캐스케이드는 1px 도 바뀌지 않는다. */
-.battle-actor:not(:where([data-battle-skin="rm2003"] *)) .battle-skin-actor-image {
+.battle-actor:not(:where([data-battle-skin="rm2000"] *)) .battle-skin-actor-image {
   width: calc(24px * var(--battle-actor-scale, 1)) !important;
   height: calc(32px * var(--battle-actor-scale, 1)) !important;
 }
@@ -41,8 +41,8 @@
 }
 
 /* 적: 총 배율 = 노드 scale(1.9) × 필드 zoom(2.0) ≈ 3.8×. 목표 ~144px → css 38px.
-   rm2003 제외 이유는 위 아군 규칙과 같다(특정도 보존 스코프). */
-.battle-scene[data-battle-skin]:not(:where([data-battle-skin="rm2003"])) .battle-enemy .battle-enemy-image {
+   rm2000 제외 이유는 위 아군 규칙과 같다(특정도 보존 스코프). */
+.battle-scene[data-battle-skin]:not(:where([data-battle-skin="rm2000"])) .battle-enemy .battle-enemy-image {
   width: 56px !important;
   height: 64px !important;
 }

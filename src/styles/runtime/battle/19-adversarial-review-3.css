@@ -3,7 +3,7 @@
 /* 죽은 배틀러 퇴장 연출 — 임팩트 순간 회색 석상으로 굳어 영구히 서 있던 것을,
    포켓몬처럼 주저앉으며 사라지게 한다. 노드는 남으므로(팝업 좌표 기준) 이미지만 보낸다. */
 /* 예전에는 여기서 `opacity: 1`(+ pointer-events)로 06 의 정적 `opacity: 0.42` 를
-   되돌렸다. 그 되돌림이 **pokemon 스킨에만** 걸려 있어서 기본 rm2003 을 포함한 나머지
+   되돌렸다. 그 되돌림이 **pokemon 스킨에만** 걸려 있어서 기본 rm2000 을 포함한 나머지
    스킨은 계속 반투명이었다. 이제 06 이 스프라이트에 정적 opacity 를 두지 않고,
    pointer-events 는 15 가 스킨 공통으로 끄므로 이 되돌림은 불필요하다. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.defeated .battle-enemy-image,

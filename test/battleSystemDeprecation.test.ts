@@ -14,7 +14,7 @@ import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 const DEPRECATED_IDS = [
-  "rm2000", "octopath", "chrono", "bravely", "dragonquest",
+  "octopath", "chrono", "bravely", "dragonquest",
   "ff", "mother", "goldensun", "mv", "vxace",
 ] as const;
 
@@ -35,19 +35,19 @@ function skinOptions(host: FakeElement): FakeElement[] {
 }
 
 describe("battle skin deprecation registry", () => {
-  it("활성 스킨은 pokemon·rm2003 둘뿐이다", () => {
-    expect(listActiveBattleSkinIds()).toEqual(["pokemon", "rm2003"]);
-    expect([...ACTIVE_BATTLE_SKIN_IDS]).toEqual(["pokemon", "rm2003"]);
+  it("활성 스킨은 pokemon·rm2000 둘뿐이다", () => {
+    expect(listActiveBattleSkinIds()).toEqual(["pokemon", "rm2000"]);
+    expect([...ACTIVE_BATTLE_SKIN_IDS]).toEqual(["pokemon", "rm2000"]);
   });
 
-  it("나머지 10종은 deprecated 로 표시된다", () => {
+  it("나머지 9종은 deprecated 로 표시된다", () => {
     for (const id of DEPRECATED_IDS) expect(isDeprecatedBattleSkin(id), id).toBe(true);
     expect(isDeprecatedBattleSkin("pokemon")).toBe(false);
-    expect(isDeprecatedBattleSkin("rm2003")).toBe(false);
+    expect(isDeprecatedBattleSkin("rm2000")).toBe(false);
   });
 
-  it("12종 등록과 resolveSkinId 동작은 그대로 유지된다(저장된 프로젝트 보존)", () => {
-    expect(listBattleSkinIds()).toHaveLength(12);
+  it("11종 등록과 resolveSkinId 동작은 그대로 유지된다(저장된 프로젝트 보존)", () => {
+    expect(listBattleSkinIds()).toHaveLength(11);
     expect(resolveSkinId("octopath")).toBe("octopath");
     expect(resolveSkinId("vxace")).toBe("vxace");
   });
@@ -68,7 +68,7 @@ describe("editor skin dropdown", () => {
 
   it("빈 프로젝트에서는 활성 스킨 2개만 보여준다", () => {
     const options = skinOptions(renderSystem());
-    expect(options.map((option) => option.value)).toEqual(["pokemon", "rm2003"]);
+    expect(options.map((option) => option.value)).toEqual(["pokemon", "rm2000"]);
   });
 
   it("저장된 deprecated 스킨은 '(지원 종료)' 항목으로 남겨 선택을 보존한다", () => {

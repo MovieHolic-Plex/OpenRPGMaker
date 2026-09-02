@@ -35,6 +35,10 @@ export const OP_KINDS = [
   // 마운트가 아니라 "실제로 보인다"를 기다린다. 페이드로 들어오는 창(상점 180ms)은
   // present 직후 조상 opacity 가 0 이라 visibleText 축이 alpha 0 으로 실패한다.
   "waitForVisible",
+  // 속성값 대기. 전투 씬은 인트로·연출 중 `data-battle-sequence-busy="true"` 로 입력을 버린다 —
+  // 그 사이에 누른 방향키는 조용히 사라져 다음 결정키가 엉뚱한 명령을 확정한다(실측: ↓ 가
+  // 버려지고 z 가 공격을 확정). testid 존재만으로는 이 상태를 표현할 수 없어 속성 축을 둔다.
+  "waitForAttr",
   "pressUntil",
   // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
   // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.
@@ -214,7 +218,7 @@ export function evaluateBattlerGeometry(spec, battlers) {
       );
     }
     // 라벨 축(하단): 노드는 스프라이트 **아래**에 이름표+HP/MP/ATB 를 쌓는다. 발을 접지 띠까지
-    // 내리면 이 라벨 스택이 필드 밖으로 밀려 이름·수치가 잘린다(실측: rm2003 앞줄 node.bottom=464
+    // 내리면 이 라벨 스택이 필드 밖으로 밀려 이름·수치가 잘린다(실측: rm2000 앞줄 node.bottom=464
     // vs field.bottom=444 → 20px 잘림). 이미지 축만으로는 통과하므로 노드 상자를 따로 본다.
     if (enemy.node && enemy.node.bottom > field.bottom) {
       failures.push(

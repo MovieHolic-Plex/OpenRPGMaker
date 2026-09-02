@@ -242,6 +242,17 @@ async function applyOp(page, op, runState) {
     case "waitForVisible":
       await waitForVisibleTestid(page, op);
       return;
+    case "waitForAttr":
+      await page.waitForFunction(
+        ([testid, attr, value]) => {
+          const node = document.querySelector(`[data-testid="${testid}"]`);
+          if (!node) return false;
+          return node.getAttribute(attr) === value;
+        },
+        [op.testid, op.attr, op.value],
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
     case "pressUntil": {
       // 매 입력 후 조건을 확인하므로 초과 입력이 구조적으로 불가능하다.
       // 정해진 횟수만 누르면 대사가 닫힌 뒤 남은 입력이 이벤트를 재발동시킨다.

@@ -118,11 +118,14 @@ export interface ClassOptions {
 
 export type BattleFlow = "gauge" | "strict";
 
-/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 12-스킨 union + legacy "classic". */
+/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 11-스킨 union + legacy 별칭 2종.
+ *  "rm2003" 은 정면 전투 스킨의 옛 id(2026-09-03 개명 전) 이고 "classic" 은 그보다 앞선 별칭이다.
+ *  둘 다 resolveSkinId 가 rm2000 으로 매핑한다 — 저장된 프로젝트가 깨지지 않게 타입에는 남긴다. */
 export type BattleUiStyle =
-  | "pokemon" | "rm2003" | "rm2000" | "octopath" | "chrono"
+  | "pokemon" | "rm2000" | "octopath" | "chrono"
   | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace"
-  | "classic"; // legacy alias, remapped by resolveSkinId → rm2003
+  | "rm2003" // legacy id, remapped by resolveSkinId → rm2000
+  | "classic"; // legacy alias, remapped by resolveSkinId → rm2000
 
 /** 전투 아군측 배틀러 소스 — actors: 파티 액터가 직접 싸움(기본),
  *  monsters: 잡은 파티 몬스터가 필드에 나서 싸움(포켓몬식). */

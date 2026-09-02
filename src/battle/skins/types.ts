@@ -1,5 +1,5 @@
 export type BattleSkinId =
-  | "pokemon" | "rm2003" | "rm2000" | "octopath" | "chrono"
+  | "pokemon" | "rm2000" | "octopath" | "chrono"
   | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace";
 
 export type BattleLayout = "sideview" | "frontview" | "active" | "firstperson";

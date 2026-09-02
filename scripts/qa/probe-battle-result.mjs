@@ -10,7 +10,7 @@ const PROJECT_URL = "/__runtime-qa/project.json";
 const FIXTURE = "test/fixtures/projects/editor-authored-demo-v3.json";
 
 const raw = JSON.parse(await readFile(new URL(FIXTURE, `file://${REPO_ROOT}`), "utf8"));
-raw.system = { ...raw.system, battleUiStyle: "rm2003" };
+raw.system = { ...raw.system, battleUiStyle: "rm2000" };
 const startMap = raw.maps[raw.startMapId];
 startMap.events = startMap.events.filter((e) => e.id !== "ev_probe");
 const commands = [{ kind: "battleProcessing", troopId: "troop_slime_pair", canEscape: true, canLose: true }];

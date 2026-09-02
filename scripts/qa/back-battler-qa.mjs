@@ -14,7 +14,7 @@
 // **파티 선두를 바꿔 6회** 돌린다. 이건 제품 코드를 QA 용으로 고치지 않으려는 선택이다.
 //
 // 사용:
-//   node scripts/qa/back-battler-qa.mjs                  # 6인 + rm2003 대조
+//   node scripts/qa/back-battler-qa.mjs                  # 6인 + rm2000 대조
 //   node scripts/qa/back-battler-qa.mjs --only=hero-03
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -202,7 +202,7 @@ const cases = ACTORS.filter((a) => !only || a.slug === only).map((a) => ({
 }));
 // 대조군: 같은 액터를 정면 스킨으로. 뒷모습이 정면 경로에 끼어들지 않는지 눈으로 본다.
 if (!only || only === "hero-01") {
-  cases.push({ id: "rm2003-hero-01", lead: "actor_hero", skin: "rm2003", note: "대조 · RM식 정면 — 저작 시트가 그대로 서야 한다" });
+  cases.push({ id: "rm2000-hero-01", lead: "actor_hero", skin: "rm2000", note: "대조 · 정면 전투 — 저작 시트가 그대로 서야 한다" });
   // 뒷모습이 없는 액터 — 예전 공용 스프라이트로 떨어진다. 크기·잘림 비교의 기준선이다.
   cases.push({ id: "pokemon-fallback-shared", lead: "actor_hero", skin: "pokemon", breakBackSlug: true, note: "대조 · 뒷모습 없음 → 예전 공용 ally-creature-back" });
 }

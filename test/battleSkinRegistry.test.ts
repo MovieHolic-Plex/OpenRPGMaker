@@ -5,15 +5,15 @@ import { createBlankProject } from "@/project/defaults";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 
 describe("battle skin registry", () => {
-  it("정확히 12개 스킨을 노출한다", () => {
-    expect(listBattleSkinIds()).toHaveLength(12);
-    expect(new Set(listBattleSkinIds()).size).toBe(12);
+  it("정확히 11개 스킨을 노출한다(2026-09-03: rm2003 → rm2000 개명, deprecated 감청 rm2000 흡수)", () => {
+    expect(listBattleSkinIds()).toHaveLength(11);
+    expect(new Set(listBattleSkinIds()).size).toBe(11);
   });
 
-  it("mv 스킨이 등록되어 있고 기존 10종은 그대로 유지된다", () => {
+  it("mv 스킨이 등록되어 있고 기존 9종은 그대로 유지된다", () => {
     const ids = listBattleSkinIds();
     const legacy = [
-      "pokemon", "rm2003", "rm2000", "octopath", "chrono",
+      "pokemon", "rm2000", "octopath", "chrono",
       "bravely", "dragonquest", "ff", "mother", "goldensun",
     ] as const;
     for (const id of legacy) expect(ids).toContain(id);
@@ -21,9 +21,14 @@ describe("battle skin registry", () => {
     expect(resolveSkinId("mv")).toBe("mv");
   });
 
-  it("rm2003 이 기본 스킨이다", () => {
-    expect(DEFAULT_BATTLE_SKIN_ID).toBe("rm2003");
-    expect(resolveSkinId(undefined)).toBe("rm2003");
+  it("rm2000 이 기본 스킨이다", () => {
+    expect(DEFAULT_BATTLE_SKIN_ID).toBe("rm2000");
+    expect(resolveSkinId(undefined)).toBe("rm2000");
+  });
+
+  it("옛 정면 스킨 id rm2003 은 rm2000 으로 풀린다(저장 프로젝트 마이그레이션)", () => {
+    expect(resolveSkinId("rm2003")).toBe("rm2000");
+    expect(listBattleSkinIds()).not.toContain("rm2003");
   });
 
   it("vxace 스킨이 등록되어 있다", () => {
@@ -31,8 +36,8 @@ describe("battle skin registry", () => {
     expect(resolveSkinId("vxace")).toBe("vxace");
     expect(getBattleSkin("vxace").layout).toBe("frontview");
     expect(getBattleSkin("vxace").showAllySprites).toBe(false);
-    expect(getBattleSkin("rm2003").showAllySprites).toBe(false);
-    expect(getBattleSkin("rm2003").layout).toBe("frontview");
+    expect(getBattleSkin("rm2000").showAllySprites).toBe(false);
+    expect(getBattleSkin("rm2000").layout).toBe("frontview");
   });
 
   it("모든 스킨은 label·layout·themeVars를 갖는다", () => {
@@ -46,12 +51,13 @@ describe("battle skin registry", () => {
   });
 
   it("legacy 값을 매핑한다(back-compat)", () => {
-    // 미설정/미지의 값 → 기본 스킨(rm2003). legacy "classic" 은 계속 rm2003 으로 남는다.
-    expect(resolveSkinId(undefined)).toBe("rm2003");
-    expect(resolveSkinId("classic")).toBe("rm2003");
+    // 미설정/미지의 값 → 기본 스킨(rm2000). legacy "classic"·"rm2003" 은 rm2000 으로 풀린다.
+    expect(resolveSkinId(undefined)).toBe("rm2000");
+    expect(resolveSkinId("classic")).toBe("rm2000");
+    expect(resolveSkinId("rm2003")).toBe("rm2000");
     expect(resolveSkinId("pokemon")).toBe("pokemon");
     expect(resolveSkinId("octopath")).toBe("octopath");
-    expect(resolveSkinId("bogus")).toBe("rm2003");
+    expect(resolveSkinId("bogus")).toBe("rm2000");
   });
 
   it("BATTLE_SKINS 키와 id가 일치한다", () => {
@@ -101,9 +107,9 @@ describe("battleUiStyle serialization", () => {
     expect(out.battleUiStyle).toBe("octopath");
   });
 
-  it("기본 스킨(rm2003)만 생략하고, 명시적 vxace 선택은 보존한다", () => {
+  it("기본 스킨(rm2000)만 생략하고, 명시적 vxace 선택은 보존한다", () => {
     const project = createBlankProject();
-    project.system.battleUiStyle = "rm2003";
+    project.system.battleUiStyle = "rm2000";
     expect((normalizeSystemRecords(project.system) as { battleUiStyle?: string }).battleUiStyle).toBeUndefined();
     project.system.battleUiStyle = "vxace";
     expect((normalizeSystemRecords(project.system) as { battleUiStyle?: string }).battleUiStyle).toBe("vxace");

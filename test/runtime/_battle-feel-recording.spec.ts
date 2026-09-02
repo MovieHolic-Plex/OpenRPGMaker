@@ -303,7 +303,7 @@ test("공격 시퀀스 연속 촬영 + 오디오 레이어(수정 후)", async (
     expect(commandLabels.join(" ")).not.toMatch(/Attack|Skill|Item/);
     // F01: 통상공격에 애니메이션이 실린다(예전에는 전 구간 null 이었다).
     expect(strip.some((sample) => sample.animation !== null)).toBe(true);
-    // F08: 메시지 창이 두 줄을 잘라먹지 않는다(rm2003 클래식은 44px 고정이었다).
+    // F08: 메시지 창이 두 줄을 잘라먹지 않는다(rm2000 클래식은 44px 고정이었다).
     const clipped = strip
       .map((sample) => sample.msgBox as { client: number; scroll: number } | null)
       .filter((box): box is { client: number; scroll: number } => Boolean(box) && box!.client > 0)

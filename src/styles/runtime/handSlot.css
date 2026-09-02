@@ -32,7 +32,7 @@
 
 /* 메뉴·대화창·전투가 열려 있으면 숨긴다(actionHud.css 의 :has() 관례, minimap 의 억제 목록과 같은 이유).
    .dialogue-overlay 는 항상 DOM 에 남고 내용만 비우므로 :empty 로 걸러야 한다.
-   전투 화면은 좌하단에 커맨드 창을 그린다 — 실측(1360x768, rm2003): 칩이 아이템·도주 칸을 덮었다. */
+   전투 화면은 좌하단에 커맨드 창을 그린다 — 실측(1360x768, rm2000): 칩이 아이템·도주 칸을 덮었다. */
 .play-stage:has(> [data-testid="main-menu"]) > .hand-slot,
 .play-stage:has(> [data-testid="battle-scene"]) > .hand-slot,
 .play-stage:has(> .dialogue-overlay:not(:empty)) > .hand-slot {

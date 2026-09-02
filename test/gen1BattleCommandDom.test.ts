@@ -120,7 +120,7 @@ describe("Gen1 monster battle command DOM", () => {
 
   it("keeps the classic RM2K3 actor command surface unchanged", () => {
     const project = createBlankProject();
-    project.system.battleUiStyle = "rm2003";
+    project.system.battleUiStyle = "rm2000";
     store.replace(project);
     const runtime = createBattleRuntime({
       project,
