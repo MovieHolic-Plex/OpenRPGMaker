@@ -53,3 +53,14 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 붙는다. 하드코딩은 **규칙 자체**뿐이고 벽·바닥 판정은 여전히 `passability` 에서 온다 — 타일 id
 목록으로 벽을 정하지 않는다. 이 규칙이 만드는 lint 코드는 `cluster-rule:surface:*` 라서 커밋을
 막지 않는다(`openwiki/editor-validation.md` 의 같은 날 항목 참조).
+
+
+## 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
+
+`InteriorRoomPlan.concept` 가 있으면 파이프라인은 테마 프로그램 대신 나무를 따른다. 데모 방 패리티 픽스처(`test/interiorRoomPipelineParity.test.ts`)는 이 분기를 타지 않으므로 그대로다.
+
+- **도면**은 `src/editor/conceptBundleResolve.ts` 의 `layoutConceptFacility` 가 장소 역할로 만든다: 방 줄(y=4, 가로 1열 파티션) → 3행 파티션 → 복도(3행) → 3행 파티션 → 홀(정문, 남쪽 행 중앙). 내부 문은 파티션 트림 행. 오버레이(`ConceptOverlay.rooms[roomId]`)는 방 인스턴스마다 장소·역할·물건·칩을 싣는다(`interiorKit.parseConceptOverlay`).
+- **구성**은 `src/editor/interiorConceptCompose.ts` 의 `composeConceptRoom` 이 방 하나씩 한다. 슬롯 종류: 벽걸이(`wall-any` → 크림 벽면 윗줄, 상위 레이어), 키 큰 가구(시계·갑옷·흉상·거울·진열대·화덕 → 상단이 벽면 아랫줄), 북벽(침대·책장·카운터·피아노), 복도 끝(transfer 칩=계단), 바닥(탁자 — 방 중앙, 좌석군 사이 통로), 구석(1×1 block), 러그(침대 발치, 통로 위 허용). 문에서 방 안으로 곧게 이어지는 **통로**와 정문 좌우는 가구 금지. 벽 물건 사이 1칸 간격은 자리가 모자라면 양보한다. 못 앉힌 물건은 `concept: <물건> 자리 없음 (<장소>)` 경고 — 숨기지 않는다.
+- **벽·천장**: 벽 문법은 그대로 쓰고, 그 뒤 `carveOutsideVoid` 가 바닥·벽면에 이웃한 한 겹만 천장으로 남기고 밖을 「암흑 공허」(116)로 비운다. 천장 정본 v2(검정 몸통)에서는 건물 밖과 천장이 같은 검정이라 「벽 위에 천장이 없다」고 읽혔기 때문이다.
+- **칩 집행**은 `src/editor/interiorConceptEvents.ts` 의 `attachConceptEvents` 가 furniture 층 끝(통행 확보 뒤)에 한다: transfer > sleep > loot > event 우선순위로 물건마다 이벤트 하나, 앵커는 최하단 행 중앙, `ev_concept_<mapId>_<thing>_<n>`. 개념 시설은 `attachPropInspectEvents`·`fillSparseQuadrants` 를 타지 않는다(나무에 없는 것을 보태지 않는다). `evaluate_interior_room` 의 필수 가구 검사는 개념 필수 물건(`conceptManifestWarnings`)으로 바뀐다.
+- **보고서 렌더러**: `scripts/lib/renderInteriorMapPng.mts` 는 에디터와 같은 `chipsetQuarterComposition` 으로 천장·벽 프레임을 그린다. 원시 셀로 그리면 천장이 풀밭 조각으로 찍혀 판정을 오염시킨다(2026-09-02 실측). 계약: `test/placeConceptRender.test.ts`.
