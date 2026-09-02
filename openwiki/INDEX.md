@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1320KB / 약 371,736 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1323KB / 약 372,778 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,8 +15,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 209KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 368 | ~60,466 |
-| `openwiki/editor-ai-tools.md` | 60KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 127 | ~17,081 |
+| `openwiki/editor-ai-panel.md` | 210KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 369 | ~60,752 |
+| `openwiki/editor-ai-tools.md` | 62KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 128 | ~17,649 |
 | `openwiki/editor-database.md` | 156KB | 49KB | 690 | ~44,494 |
 | `openwiki/editor-event-authoring.md` | 108KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 517 | ~31,302 |
 | `openwiki/editor-pre-edit-routing.md` | 60KB | 46KB | 166 | ~16,917 |
@@ -31,8 +31,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 24 | 165, 166, 167, 168, 169, 170, 182, 237 |
-| `openwiki/editor-ai-tools.md` | 5 | 68, 69, 73, 75, 77 |
+| `openwiki/editor-ai-panel.md` | 24 | 166, 167, 168, 169, 170, 171, 183, 238 |
+| `openwiki/editor-ai-tools.md` | 5 | 69, 70, 74, 76, 78 |
 | `openwiki/editor-database.md` | 7 | 101, 105, 106, 107, 115, 139, 142 |
 | `openwiki/editor-event-authoring.md` | 16 | 125, 126, 129, 134, 135, 136, 137, 138 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -48,12 +48,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 건수 | 참조 |
 |---|---|---|
 | `openwiki/agent-worktrees.md` | 3 | `result.md`, `status.json`, `task.json` |
-| `openwiki/ai-workflow.md` | 2 | `index.json`, `latest.json` |
+| `openwiki/ai-workflow.md` | 4 | `index.json`, `latest.json`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 1 | `project.json` |
 | `openwiki/bgm-catalog.md` | 1 | `catalog.raw.json` |
 | `openwiki/community-site.md` | 1 | `project.json` |
-| `openwiki/editor-ai-panel.md` | 23 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/workspaceBarAssistantDock.test.ts` |
-| `openwiki/editor-ai-tools.md` | 2 | `aiCommandBar.ts`, `aiProposalModal.ts` |
+| `openwiki/editor-ai-panel.md` | 31 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
+| `openwiki/editor-ai-tools.md` | 5 | `aiCommandBar.ts`, `aiProposalModal.ts`, `contextFooter.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/editor-database.md` | 4 | `enemy-art-NNN.png`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts` |
 | `openwiki/editor-event-authoring.md` | 5 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png` |
 | `openwiki/editor-event-commands.md` | 7 | `07-identifiable-previews.css`, `choicesDialog.ts`, `command-preview.css`, `event-editor.part-2/3.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `textCommandDialog.ts` |
@@ -143,15 +143,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L37` 3단계 — 이름 삭제 (메이저 정리)
 - `L42` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 19KB · 107줄 · ~5,118 토큰
+### `openwiki/ai-workflow.md` — 19KB · 108줄 · ~5,306 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
-- `L57` After changing files
-- `L64` Tool-calling architecture (human review map)
-- `L74` Headless Tool and MCP Access
-- `L83` Live editor AI assistant MCP (same UI session)
-- `L102` Refreshing the wiki
+- `L58` After changing files
+- `L65` Tool-calling architecture (human review map)
+- `L75` Headless Tool and MCP Access
+- `L84` Live editor AI assistant MCP (same UI session)
+- `L103` Refreshing the wiki
 
 ### `openwiki/architecture.md` — 10KB · 67줄 · ~2,449 토큰
 
@@ -219,23 +219,23 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 209KB · 368줄 · ~60,466 토큰 · 통째읽기 잘림 · 깨진 줄 24
+### `openwiki/editor-ai-panel.md` — 210KB · 369줄 · ~60,752 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
 - `L9` 패널 셸 · 도크 · 접기 · 컴포저
-- `L101` 세션 수명 · 대화 컨텍스트
-- `L111` 제안 적용 · 복구 · 완성도 린트
-- `L192` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L253` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L277` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L291` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L317` 저장 · 내보내기 · 프로젝트 생성
-- `L325` 제공자 · OAuth · 동반 서비스
-- `L349` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L102` 세션 수명 · 대화 컨텍스트
+- `L112` 제안 적용 · 복구 · 완성도 린트
+- `L193` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L254` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L278` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L292` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L318` 저장 · 내보내기 · 프로젝트 생성
+- `L326` 제공자 · OAuth · 동반 서비스
+- `L350` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
-### `openwiki/editor-ai-tools.md` — 60KB · 127줄 · ~17,081 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 62KB · 128줄 · ~17,649 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L90` Project-wide quality evaluation
-- `L96` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L91` Project-wide quality evaluation
+- `L97` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
 
 ### `openwiki/editor-database.md` — 156KB · 690줄 · ~44,494 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
