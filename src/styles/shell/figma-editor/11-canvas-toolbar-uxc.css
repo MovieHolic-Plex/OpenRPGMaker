@@ -138,3 +138,18 @@
     font-size: 12px;
   }
 }
+
+/* ── 캔버스 스크롤 셸 상단 여백 — 10-map-tree.css 에서 이관(2026-09-03, 그 파일은 좌측 사이드바 모던 레이어
+   editor/left-sidebar.modern.css 로 흡수됐다). 캐스케이드 위치는 바로 뒤 파일이라 결과가 같다. ── */
+/* UXC editor shell repairs: keep canvas controls in reserved top chrome while the
+   statusbar-free canvas extends to the bottom edge. */
+.editor-canvas-scroll-shell {
+  bottom: var(--editor-canvas-chrome-bottom, 0px);
+  top: var(--editor-canvas-chrome-top, 48px);
+}
+
+.persistence-mode-banner ~ .editor-canvas-scroll-shell,
+.canvas-area:has(.persistence-mode-banner) .editor-canvas-scroll-shell {
+  --editor-canvas-chrome-top: 74px;
+  top: var(--editor-canvas-chrome-top, 74px);
+}

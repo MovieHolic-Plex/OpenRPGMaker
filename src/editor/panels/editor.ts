@@ -47,6 +47,7 @@ import {
 // 좌측 패널 본문(팔레트·맵 트리)은 이제 패널 레지스트리가 그린다 — 여기서 직접 import 하지 않는다.
 import { dockSignature, mountDock, renderDockPanels, type DockMount } from "@/editor/workspace/dockHost";
 import { resolveLeftDockPanels } from "@/editor/workspace/leftDockPanels";
+import { isMapPanelCollapsed, subscribeMapPanel } from "@/editor/workspace/mapPanelSection";
 import type { PanelId } from "@/editor/workspace/panelRegistry";
 import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/workspaceStore";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -71,6 +72,25 @@ const MIN_CANVAS_WIDTH = 520;
 const MAP_TREE_DEFAULT_HEIGHT = 300;
 const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
+// 맵 트리 자동 높이 — 기본은 "내용에 맞춤"이다. 고정 300px 은 맵이 1~2개인 프로젝트에서
+// 좌패널 3분의 1을 빈 칸으로 두고 타일 시트를 눌렀다(실측 1440×900: 시트 275px 에 191칸 중
+// 8행). 하한은 리사이저 드롭 표적과 행 하나가 들어가는 150px, 상한은 좌패널 40% 또는 320px 중
+// 작은 쪽 — 맵이 많아도(실측 16개) 시트가 200px 아래로 눌리지 않는다. 사용자가 리사이저를 끌면
+// 수동으로 전환되고(mapTreeHeight 저장), 리사이저를 더블클릭하면 다시 자동이다.
+const MAP_TREE_AUTO_MIN_HEIGHT = 150;
+const MAP_TREE_AUTO_MAX_HEIGHT = 320;
+const MAP_TREE_AUTO_MAX_RATIO = 0.4;
+/** 자동 측정이 헤더·목록의 반올림으로 스크롤바를 만들지 않게 두는 여유. */
+const MAP_TREE_AUTO_SLACK = 6;
+/** 접힌 섹션 = 헤더 한 줄. 헤더를 아직 못 잰 첫 페인트의 폴백. */
+const MAP_TREE_COLLAPSED_FALLBACK_HEIGHT = 44;
+/**
+ * 자동 높이가 타일 시트에 남겨야 하는 최소 높이. 맵이 많을 때 상한(320/40%)만으로는 부족했다 —
+ * 1440×950 전문가 + 맵 16개에서 시트가 197px 로 눌렸다(팔레트 크롬 311px + 맵 320px). 시트는
+ * 이 면의 주 작업 영역이라(test/e2e/palette-tiles-come-first.spec.ts: 260px 하한) 맵 도크가
+ * 그 몫을 먹지 못하게 좌패널 높이에서 팔레트 크롬과 이 값을 뺀 만큼만 허용한다.
+ */
+const PALETTE_SHEET_RESERVE_HEIGHT = 280;
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
 // 초보 아이콘 레일의 출하 폭. CSS `--basic-rail-width` 가 원천이고 이 상수는 폭을 읽지 못할
 // 때(fake DOM, 첫 페인트 전)의 폴백이다. 48px 로 되돌리면 14px 한국어 라벨 2줄이 잘린다.
@@ -79,6 +99,8 @@ const BASIC_RAIL_FALLBACK_WIDTH = 72;
 type LoadedEditorLayout = {
   readonly leftWidth: number;
   readonly mapTreeHeight: number;
+  /** 맵 트리 높이를 내용에 맞춰 자동으로 잡는가. 리사이저를 끌면 false 가 된다. */
+  readonly mapTreeAuto: boolean;
   readonly assistantTemperature: AssistantTemperature;
 };
 
@@ -101,6 +123,12 @@ let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
+let mapTreeAuto = initialLayout.mapTreeAuto;
+/** 자동 모드가 마지막으로 잰 높이. 첫 페인트는 기본값으로 시작해 측정 뒤 갱신된다. */
+let mapTreeAutoHeight = MAP_TREE_DEFAULT_HEIGHT;
+let mapTreeFitRaf = 0;
+let mapTreeObserver: MutationObserver | null = null;
+let unsubMapPanel: (() => void) | null = null;
 let assistantTemperature = initialLayout.assistantTemperature;
 let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
@@ -209,6 +237,12 @@ export function renderEditor(main: HTMLElement): void {
   // 패널 이동·열기/닫기(프리셋 전환 포함)는 도크를 다시 짓는다. syncLeftDock 은 멱등이라
   // 프리셋 전환처럼 uiMode 구독자와 겹쳐 두 번 불려도 한 번만 조립한다.
   unsubWorkspace = subscribeWorkspace(() => syncLeftDock());
+  // 맵 섹션 접기/펴기 — 헤더 토글(mapList.ts)이 상태를 바꾸면 도크 행 높이를 따라 바꾼다.
+  unsubMapPanel = subscribeMapPanel(() => {
+    applyLayout();
+    scheduleFitCanvas();
+    scheduleMapTreeFit();
+  });
   installSelectionChipHint();
   installToolCursor();
   // 하단 연결 칩은 제거됐으므로 그 옛 렌더 경로가 더는 인증 캐시를 데우지 않는다. 부팅에서 한 번
@@ -247,6 +281,20 @@ function mountLeftDock(container: HTMLElement): void {
   leftMapRoot = leftDock.hosts.get("maps") ?? null;
   mapTreeResizer = leftDock.splitters[0] ?? null;
   bindMapTreeResizer();
+  observeMapTreeHost(leftMapRoot);
+}
+
+/**
+ * 맵 패널 내용이 바뀌면(맵 추가·삭제, 가지 접기, 필터 펼치기) 자동 높이를 다시 잰다.
+ * mapList 는 자기 안에서 `rerenderMapList` 로 다시 그리므로 editor.ts 의 renderLeftDockPanels
+ * 를 거치지 않는 경로가 많다 — 호스트의 자식 변화를 보는 것이 그 전부를 한 번에 잡는다.
+ */
+function observeMapTreeHost(host: HTMLElement | null): void {
+  mapTreeObserver?.disconnect();
+  mapTreeObserver = null;
+  if (!host || typeof MutationObserver === "undefined") return;
+  mapTreeObserver = new MutationObserver(() => scheduleMapTreeFit());
+  mapTreeObserver.observe(host, { attributeFilter: ["hidden"], attributes: true, childList: true, subtree: true });
 }
 
 function makeMapTreeResizer(): HTMLElement {
@@ -255,7 +303,8 @@ function makeMapTreeResizer(): HTMLElement {
     attrs: {
       "aria-label": "맵 트리 높이 조절",
       role: "separator",
-      title: "드래그로 맵 트리 높이 조절",
+      tabindex: "0",
+      title: "드래그로 맵 트리 높이 조절 · 더블클릭하면 내용에 맞춤",
     },
     dataset: { testid: "map-tree-height-resizer", uiDensity: "expert" },
   });
@@ -284,6 +333,7 @@ function renderLeftDockPanels(): void {
   const ids = [...leftDock.hosts.keys()].filter((id) => id !== "maps" || mapTreeAllowed);
   renderDockPanels(leftDock, ids);
   if (!mapTreeAllowed && leftMapRoot) clearChildren(leftMapRoot);
+  scheduleMapTreeFit();
 }
 
 export function applyEditorUiModeLayout(): void {
@@ -359,6 +409,12 @@ export function teardownEditor(): void {
   unsubUiMode?.();
   unsubLayoutBbox?.();
   unsubWorkspace?.();
+  unsubMapPanel?.();
+  unsubMapPanel = null;
+  mapTreeObserver?.disconnect();
+  mapTreeObserver = null;
+  if (mapTreeFitRaf && typeof cancelAnimationFrame === "function") cancelAnimationFrame(mapTreeFitRaf);
+  mapTreeFitRaf = 0;
   unsubStore = null;
   unsubEditor = null;
   unsubMapLocks = null;
@@ -486,6 +542,7 @@ function projectExportNodeElement(): HTMLElement {
 function onWindowResize(): void {
   applyLayout();
   scheduleFitCanvas();
+  scheduleMapTreeFit();
 }
 
 function applyLayout(): void {
@@ -528,7 +585,10 @@ function applyLayout(): void {
   const preferredLeftWidth = chrome.leftPanelMaxWidthPx ? Math.min(leftWidth, chrome.leftPanelMaxWidthPx) : leftWidth;
   const effectiveLeftWidth = Math.min(preferredLeftWidth, maxLeftForCanvas);
   leftRoot.style.width = `${effectiveLeftWidth}px`;
-  leftRoot.style.setProperty("--map-tree-height", `${mapTreeHeight}px`);
+  // 접힘 클래스를 먼저 발행한다 — 접힌 헤더의 margin-bottom:0 이 적용된 뒤에 재야 첫 계산과
+  // 이후 재계산(창 크기 변경 등)의 값이 같다.
+  syncMapTreeCollapsedChrome();
+  leftRoot.style.setProperty("--map-tree-height", `${effectiveMapTreeHeight()}px`);
   leftResizer.style.display = "";
   // AI 미니 스트림/제안 오버레이가 좌패널을 덮지 않도록 실제 패널 폭을 전역 변수로 발행.
   setEditorLeftSafe(`${effectiveLeftWidth + resizerWidth}px`);
@@ -551,6 +611,133 @@ function visibleWidth(node: HTMLElement): number {
 // fakeDom(단위 테스트)에는 documentElement가 없으므로 옵셔널 체이닝으로 가드.
 function setEditorLeftSafe(px: string): void {
   document.documentElement?.style?.setProperty?.("--editor-left-safe", px);
+}
+
+/** 도크 3행의 높이 — 접힘 > 자동 > 수동 순으로 결정한다. */
+function effectiveMapTreeHeight(): number {
+  if (isMapPanelCollapsed()) return mapTreeCollapsedHeight();
+  return mapTreeAuto ? mapTreeAutoHeight : mapTreeHeight;
+}
+
+/** 접힌 섹션은 헤더 한 줄만 남는다. 헤더가 아직 없으면(첫 페인트) 폴백 상수. */
+function mapTreeCollapsedHeight(): number {
+  const header = leftMapRoot?.querySelector<HTMLElement>(".map-tree-header");
+  if (!header || !leftMapRoot) return MAP_TREE_COLLAPSED_FALLBACK_HEIGHT;
+  const headerHeight = measuredHeight(header, 0);
+  if (headerHeight <= 0) return MAP_TREE_COLLAPSED_FALLBACK_HEIGHT;
+  return Math.round(headerHeight + verticalPadding(leftMapRoot) + verticalMargin(header));
+}
+
+/** 접힘 상태를 호스트·리사이저 클래스로 발행한다 — CSS 가 목록을 숨기고 리사이저를 잠근다. */
+function syncMapTreeCollapsedChrome(): void {
+  const collapsed = isMapPanelCollapsed();
+  leftMapRoot?.classList?.toggle?.("is-collapsed", collapsed);
+  if (mapTreeResizer) {
+    mapTreeResizer.classList?.toggle?.("is-disabled", collapsed);
+    mapTreeResizer.setAttribute("aria-disabled", String(collapsed));
+  }
+}
+
+function scheduleMapTreeFit(): void {
+  if (!mapTreeAuto || isMapPanelCollapsed()) return;
+  if (typeof requestAnimationFrame !== "function") {
+    fitMapTreeHeight();
+    return;
+  }
+  if (mapTreeFitRaf) return;
+  mapTreeFitRaf = requestAnimationFrame(() => {
+    mapTreeFitRaf = 0;
+    fitMapTreeHeight();
+  });
+}
+
+/** 자동 모드: 맵 패널 내용 높이를 재서 도크 3행을 맞춘다. 측정이 불가하면 그대로 둔다. */
+function fitMapTreeHeight(): void {
+  if (!leftRoot || !leftMapRoot || !mapTreeAuto || isMapPanelCollapsed()) return;
+  if (getEditorChrome().paletteRail || !getEditorChrome().mapTree) return;
+  const desired = measureMapTreeContentHeight(leftMapRoot);
+  if (desired === null) return;
+  const panelHeight = measuredHeight(leftRoot, 0);
+  const ratioCap = panelHeight > 0 ? Math.floor(panelHeight * MAP_TREE_AUTO_MAX_RATIO) : MAP_TREE_AUTO_MAX_HEIGHT;
+  const sheetCap = paletteSheetReserveCap(panelHeight);
+  const max = Math.max(MAP_TREE_AUTO_MIN_HEIGHT, Math.min(MAP_TREE_AUTO_MAX_HEIGHT, ratioCap, sheetCap));
+  const next = clamp(desired + MAP_TREE_AUTO_SLACK, MAP_TREE_AUTO_MIN_HEIGHT, max);
+  if (next === mapTreeAutoHeight) return;
+  mapTreeAutoHeight = next;
+  applyLayout();
+  scheduleFitCanvas();
+}
+
+/**
+ * 타일 시트에 PALETTE_SHEET_RESERVE_HEIGHT 를 남기고 맵 도크가 가져갈 수 있는 최대 높이.
+ * 팔레트 크롬(칩·도구·레이어·검색·분류·붓 보조·킷 = 호스트 높이 − 시트 높이)은 flex 0 0 auto 라
+ * 시트가 얼마나 눌려 있든 같은 값이 나온다. 시트가 없으면(이벤트 레이어 = 이벤트 편집기가 그 자리,
+ * 타일 도크를 뺀 구성) 제한하지 않는다.
+ */
+function paletteSheetReserveCap(panelHeight: number): number {
+  if (!leftRoot || panelHeight <= 0) return Number.POSITIVE_INFINITY;
+  const paletteHost = leftRoot.querySelector?.<HTMLElement>('[data-testid="left-palette-root"]');
+  const sheet = paletteHost?.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  if (!paletteHost || !sheet) return Number.POSITIVE_INFINITY;
+  const hostHeight = measuredHeight(paletteHost, 0);
+  const sheetHeight = measuredHeight(sheet, 0);
+  if (hostHeight <= 0 || sheetHeight <= 0) return Number.POSITIVE_INFINITY;
+  const chrome = Math.max(0, hostHeight - sheetHeight);
+  const resizerHeight = mapTreeResizer ? measuredHeight(mapTreeResizer, 6) : 6;
+  return Math.floor(panelHeight - resizerHeight - chrome - PALETTE_SHEET_RESERVE_HEIGHT);
+}
+
+/**
+ * 맵 패널의 자연 높이 = 호스트 세로 패딩 + 패널 자식(헤더·필터·목록)의 내용 높이.
+ * 목록은 `flex: 1` 로 도크 행을 채우는 스크롤 컨테이너라 자기 상자 높이(scrollHeight 도 상자를
+ * 따라간다)가 아니라 **자식 행들의 합**을 읽어야 한다 — 그렇지 않으면 "지금 높이"를 되받아
+ * 자동 맞춤이 한 번도 줄어들지 않는다(실측: 1행인데 305px). fake DOM 처럼 치수가 없으면
+ * null 을 돌려 자동 맞춤을 건너뛴다.
+ */
+function measureMapTreeContentHeight(host: HTMLElement): number | null {
+  const panel = host.querySelector?.<HTMLElement>(".map-tree-panel");
+  if (!panel) return null;
+  const list = panel.querySelector<HTMLElement>(".map-tree-list");
+  let total = verticalPadding(host);
+  let measuredAny = false;
+  for (const child of Array.from(panel.children)) {
+    if (!(child instanceof HTMLElement) || child.hidden) continue;
+    const content = child === list ? listContentHeight(child) : measuredHeight(child, 0);
+    if (!Number.isFinite(content) || content <= 0) continue;
+    measuredAny = true;
+    total += content + verticalMargin(child);
+  }
+  return measuredAny ? Math.ceil(total) : null;
+}
+
+/** 목록 자식(행 + 하위 그룹)의 높이 합 + 목록 자체의 세로 패딩. 하위 그룹은 안의 행을 포함한다. */
+function listContentHeight(list: HTMLElement): number {
+  let total = verticalPadding(list);
+  for (const child of Array.from(list.children)) {
+    if (!(child instanceof HTMLElement)) continue;
+    total += measuredHeight(child, 0) + verticalMargin(child);
+  }
+  return total;
+}
+
+function measuredHeight(node: HTMLElement, fallback: number): number {
+  const rect = node.getBoundingClientRect?.();
+  if (rect && Number.isFinite(rect.height) && rect.height > 0) return rect.height;
+  const offset = node.offsetHeight;
+  if (Number.isFinite(offset) && offset > 0) return offset;
+  return fallback;
+}
+
+function verticalPadding(node: HTMLElement): number {
+  const cs = typeof getComputedStyle === "function" ? getComputedStyle(node) : null;
+  if (!cs) return 0;
+  return (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+}
+
+function verticalMargin(node: HTMLElement): number {
+  const cs = typeof getComputedStyle === "function" ? getComputedStyle(node) : null;
+  if (!cs) return 0;
+  return (parseFloat(cs.marginTop) || 0) + (parseFloat(cs.marginBottom) || 0);
 }
 
 // editorState 통지 하나가 좌측 독 전체 + 캔버스 툴바 재구축이다. 우클릭 영역 드래그는
@@ -819,9 +1006,13 @@ function bindLeftResizer(): void {
 function bindMapTreeResizer(): void {
   if (!mapTreeResizer) return;
   mapTreeResizer.addEventListener("mousedown", (event: MouseEvent) => {
+    if (isMapPanelCollapsed()) return;
     event.preventDefault();
     const startY = event.clientY;
-    const startHeight = mapTreeHeight;
+    // 자동 모드에서 끌기 시작하면 지금 보이는 높이에서 이어간다 — 저장된 옛 수동값으로 튀지 않게.
+    const startHeight = mapTreeAuto ? mapTreeAutoHeight : mapTreeHeight;
+    mapTreeAuto = false;
+    mapTreeHeight = clamp(startHeight, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT);
     const onDrag = (moveEvent: MouseEvent): void => {
       const nextHeight = startHeight - (moveEvent.clientY - startY);
       mapTreeHeight = clamp(nextHeight, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT);
@@ -838,12 +1029,32 @@ function bindMapTreeResizer(): void {
     document.addEventListener("mouseup", onUp);
     document.body.classList.add("resizing");
   });
+  // 더블클릭 = 다시 자동(내용에 맞춤). 끌어서 만든 수동 높이에서 되돌아오는 유일한 길이다.
+  mapTreeResizer.addEventListener("dblclick", (event: MouseEvent) => {
+    if (isMapPanelCollapsed()) return;
+    event.preventDefault();
+    mapTreeAuto = true;
+    saveEditorLayout();
+    fitMapTreeHeight();
+    applyLayout();
+    scheduleFitCanvas();
+  });
   mapTreeResizer.addEventListener("keydown", (event: KeyboardEvent) => {
+    if (isMapPanelCollapsed()) return;
     const step = event.shiftKey ? 32 : 12;
-    if (event.key === "ArrowUp") { mapTreeHeight = clamp(mapTreeHeight + step, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
-    else if (event.key === "ArrowDown") { mapTreeHeight = clamp(mapTreeHeight - step, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
-    else if (event.key === "Home") { mapTreeHeight = MAP_TREE_MAX_HEIGHT; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
-    else if (event.key === "End") { mapTreeHeight = MAP_TREE_MIN_HEIGHT; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    const current = mapTreeAuto ? mapTreeAutoHeight : mapTreeHeight;
+    const manual = (next: number): void => {
+      mapTreeAuto = false;
+      mapTreeHeight = clamp(next, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT);
+      applyLayout();
+      scheduleFitCanvas();
+      saveEditorLayout();
+      event.preventDefault();
+    };
+    if (event.key === "ArrowUp") manual(current + step);
+    else if (event.key === "ArrowDown") manual(current - step);
+    else if (event.key === "Home") manual(MAP_TREE_MAX_HEIGHT);
+    else if (event.key === "End") manual(MAP_TREE_MIN_HEIGHT);
   });
 }
 
@@ -920,6 +1131,11 @@ function loadEditorLayout(): LoadedEditorLayout {
       leftWidth: typeof parsed.leftWidth === "number" ? clamp(parsed.leftWidth, LEFT_PANEL_MIN_WIDTH, LEFT_PANEL_MAX_WIDTH) : fallback.leftWidth,
       mapTreeHeight:
         typeof parsed.mapTreeHeight === "number" ? clamp(parsed.mapTreeHeight, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT) : fallback.mapTreeHeight,
+      // 키가 없는 옛 저장본: 높이가 기본값(300) 그대로면 손대지 않은 것이므로 자동으로 승격하고,
+      // 다른 값이면 리사이저를 끌어 만든 선택이므로 수동으로 남긴다.
+      mapTreeAuto: typeof parsed.mapTreeAuto === "boolean"
+        ? parsed.mapTreeAuto
+        : typeof parsed.mapTreeHeight !== "number" || parsed.mapTreeHeight === MAP_TREE_DEFAULT_HEIGHT,
       // 저장된 `chatDock` 은 읽지 않는다 — 도크가 하나뿐이라 복원할 것이 없다.
       // 낡은 키는 다음 저장에서 자연히 사라진다(마이그레이션 불필요).
       assistantTemperature: parseAssistantTemperature(parsed.assistantTemperature, fallback.assistantTemperature),
@@ -934,6 +1150,7 @@ function defaultEditorLayout(): LoadedEditorLayout {
   return {
     leftWidth: LEFT_PANEL_DEFAULT_WIDTH,
     mapTreeHeight: MAP_TREE_DEFAULT_HEIGHT,
+    mapTreeAuto: true,
     assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
   };
 }
@@ -942,6 +1159,7 @@ function saveEditorLayout(): void {
   browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
     leftWidth,
     mapTreeHeight,
+    mapTreeAuto,
     assistantTemperature,
   }));
 }

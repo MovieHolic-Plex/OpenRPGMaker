@@ -302,6 +302,50 @@ describe("에디터 레이아웃 크기 저장", () => {
     expect(resaveLayout(freshRoot)).toMatchObject({ leftWidth: 526, mapTreeHeight: 300 });
   }, 120_000);
 
+  it("맵 트리 높이는 기본이 자동이고, 리사이저를 끌면 수동으로 저장되며 더블클릭이 자동으로 되돌린다", async () => {
+    useStandardUiMode();
+    const { renderEditor } = await import("@/editor/panels/editor");
+    const main = document.createElement("main");
+    renderEditor(main);
+    const root = fakeElement(main);
+    const mapTreeResizer = findByTestId(root, "map-tree-height-resizer");
+    if (!mapTreeResizer) throw new Error("map tree resizer missing");
+
+    // 첫 저장(폭 리사이저 0px)에서 자동 플래그가 함께 남는다.
+    expect(resaveLayout(root)).toMatchObject({ mapTreeAuto: true, mapTreeHeight: 300 });
+
+    mapTreeResizer.dispatchEvent(mouseEvent("mousedown", { clientY: 0 }));
+    document.dispatchEvent(mouseEvent("mousemove", { clientY: -20 }));
+    document.dispatchEvent(mouseEvent("mouseup", {}));
+    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ mapTreeAuto: false, mapTreeHeight: 320 });
+    expect(cssVar(root.querySelector(".left-panel"), "--map-tree-height")).toBe("320px");
+
+    mapTreeResizer.dispatchEvent(mouseEvent("dblclick", {}));
+    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ mapTreeAuto: true });
+  }, 120_000);
+
+  it("자동 플래그가 없는 옛 저장본은 높이가 기본값이면 자동, 다른 값이면 수동으로 읽는다", async () => {
+    useStandardUiMode();
+    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 154 }));
+    vi.resetModules();
+    mockEditorDependencies();
+    const { renderEditor } = await import("@/editor/panels/editor");
+    const main = document.createElement("main");
+    renderEditor(main);
+    const root = fakeElement(main);
+    // 154 는 끌어서 만든 값 — 자동으로 덮지 않고 그대로 쓴다.
+    expect(cssVar(root.querySelector(".left-panel"), "--map-tree-height")).toBe("154px");
+    expect(resaveLayout(root)).toMatchObject({ mapTreeAuto: false, mapTreeHeight: 154 });
+
+    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 300 }));
+    vi.resetModules();
+    mockEditorDependencies();
+    const again = await import("@/editor/panels/editor");
+    const againMain = document.createElement("main");
+    again.renderEditor(againMain);
+    expect(resaveLayout(fakeElement(againMain))).toMatchObject({ mapTreeAuto: true });
+  }, 120_000);
+
   it("저장된 조수 대기 화면을 복원한다", async () => {
     storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
     storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({

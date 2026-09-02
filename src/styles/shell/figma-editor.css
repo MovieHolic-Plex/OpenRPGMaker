@@ -9,5 +9,5 @@
 @import "./figma-editor/07-context-menu-responsive.css";
 @import "./figma-editor/08-rm-palette-tools.css";
 @import "./figma-editor/09-rm-chipset-grid.css";
-@import "./figma-editor/10-map-tree.css";
+/* 10-map-tree.css 는 editor/left-sidebar.modern.css 로 흡수됐다(2026-09-03). 번호는 비워 둔다. */
 @import "./figma-editor/11-canvas-toolbar-uxc.css";
