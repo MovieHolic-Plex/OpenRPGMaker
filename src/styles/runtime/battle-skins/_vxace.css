@@ -25,7 +25,7 @@
                  그리고 더 넓은 **보라색 행동 게이지**(폭 61·높이 3). 적 이름·HP 숫자는 없다.
 
    battle.css 의 "Compact HUD layer" 가 `.battle-party` 등을 !important 로 강제하므로
-   여기서도 !important 를 쓴다. `[data-battle-ui-style]` 은 건드리지 않는다(rm2003 이 쓴다). */
+   여기서도 !important 를 쓴다. `[data-battle-ui-style]` 은 건드리지 않는다(rm2000 이 쓴다). */
 
 .battle-scene[data-battle-skin="vxace"] {
   --battle-window-bg: rgba(18, 24, 30, 0.74);
@@ -669,7 +669,7 @@
   width: 100% !important;
 }
 
-/* 보상 행은 밝은(rm2003 파란) 창을 전제한 색이라 어두운 창에서 보이지 않았다(실측). */
+/* 보상 행은 밝은(rm2000 파란) 창을 전제한 색이라 어두운 창에서 보이지 않았다(실측). */
 .battle-scene[data-battle-skin="vxace"] .battle-result-reward-card {
   background: rgba(255, 255, 255, 0.07) !important;
   border: 2px solid rgba(232, 228, 202, 0.4) !important;

@@ -7,7 +7,7 @@
 //   2) System2 는 게이지 시트다. border-image 로 쓰면 #ff9c00 키컬러가 창을 덮는다.
 //   3) 12종 전투 스킨 파셜이 창 표면을 하드코드 색으로 덮어 윈도스킨을 죽이지 않는다.
 //   4) 상점/대화/타이틀 메뉴는 같은 `--runtime-window-skin` 배관을 공유하되, 패널을 그
-//      비트맵으로 **칠하지는 않고** rm2003 전투 HUD 와 같은 유리 토큰으로 그린다. 배관과
+//      비트맵으로 **칠하지는 않고** rm2000 전투 HUD 와 같은 유리 토큰으로 그린다. 배관과
 //      프로젝트 데이터는 그대로다(JS 는 여전히 변수를 심고, 전투 다섯 창은 _windowskin.css
 //      계약을 지킨다). 증거: verify-shots/glass-runtime 의 before ↔ after 짝.
 import { readFileSync } from "node:fs";
@@ -111,7 +111,7 @@ describe("runtime play window skins — 전투 크롬", () => {
 
   it("스킨 파셜이 창 표면에서 border-image 를 죽이지 않는다", () => {
     const partials = [
-      "_pokemon", "_rm2003", "_rm2000", "_octopath", "_chrono", "_bravely",
+      "_pokemon", "_rm2000", "_octopath", "_chrono", "_bravely",
       "_dragonquest", "_ff", "_mother", "_goldensun", "_mv", "_vxace",
     ];
     for (const name of partials) {

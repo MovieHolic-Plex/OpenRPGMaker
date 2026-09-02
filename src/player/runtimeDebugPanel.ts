@@ -89,7 +89,7 @@ function ensureDebugPanelStyles(): void {
   border-radius:var(--radius-s,6px);color:var(--text-2,#9aa3b5);margin-top:var(--space-2,8px);padding:var(--space-1,4px);max-height:160px;overflow:auto;white-space:pre-wrap;font-size:11px;font-family:var(--font-mono,monospace)}
 /* ESC 상태 메뉴가 열려 있는 동안은 이 패널이 메뉴 푸터를 덮는다.
    실측(1280x900, 배율 3.417): 패널 849..871 vs 푸터 824..865 — 소지금·설명·시간이 있는
-   아래 16px 가 가려졌다. 전투도 같다 — 실측(1360x768, rm2003): 패널 711..739 vs 무대 밑변 743,
+   아래 16px 가 가려졌다. 전투도 같다 — 실측(1360x768, rm2000): 패널 711..739 vs 무대 밑변 743,
    상태창의 대기 순서와 조작 안내가 통째로 가렸다. 무대 높이를 깎으면 0.5 단위 배율이 한 단계
    내려가므로(1.4375→1.0) 공간을 뚝 떼는 대신 게임 UI 에 자리를 비킨다.
    이 패널은 테스트 플레이 창 전용 보조물이므로 게임 UI 에 양보한다.

@@ -1,6 +1,6 @@
-/* RM2003 turn-based battle screen — pixel/typography/geometry acceptance gate.
+/* rm2000 (front-view) turn-based battle screen — pixel/typography/geometry acceptance gate.
  *
- * Why this spec exists: later CSS work on the RM2003 battle screen is verified
+ * Why this spec exists: later CSS work on the rm2000 battle screen is verified
  * against these numbers, so every assertion here must be a **measurement of the
  * real battle screen**, never a selector or boot guard. The boot path is the same
  * one the shipping specs use (`seedProjectFromSupabaseCanonical` → editor
@@ -10,7 +10,7 @@
  *
  * The seeded project deliberately sets **neither** `system.battleUiStyle` nor
  * `system.battleFlow`: the gate asserts the *default* battle screen is the
- * RM2003 strict turn-based one. Everything else measures whatever the runtime
+ * rm2000 strict turn-based one. Everything else measures whatever the runtime
  * actually renders, so a wrong default shows up as a concrete attribute value
  * next to the concrete pixel numbers instead of hiding the rest of the report.
  *
@@ -38,11 +38,11 @@ import { waitForActorCommand } from "./battleReferenceProject";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
-const EVIDENCE_DIR = "output/evidence/battle-rm2003-pixel";
+const EVIDENCE_DIR = "output/evidence/battle-rm2000-pixel";
 const LOGICAL_WIDTH = 640;
 const LOGICAL_HEIGHT = 480;
-const COMMAND_COLUMN_LOGICAL = 168;
-const HUD_ROW_LOGICAL = 192;
+const COMMAND_COLUMN_LOGICAL = 184;
+const HUD_ROW_LOGICAL = 120;
 const MAX_FONT_SIZES = 4;
 /** Logical-px tolerance for "integer": browser rects are 1/64-px snapped, and the
  *  division by a fractional stage scale can only introduce error of that order. */
@@ -79,7 +79,7 @@ async function seedDefaultSkinBattleProject(page: Page, options: SeedOptions = {
   const fixtureText = await readFile(new URL("../fixtures/projects/battle-v3.json", import.meta.url), "utf8");
   const fixture = deserialize(fixtureText);
   const project = createBlankProject();
-  project.meta = { ...project.meta, title: "RM2003 픽셀 게이트" };
+  project.meta = { ...project.meta, title: "정면 전투 픽셀 게이트" };
 
   // The fixture's action event runs `battleProcessing` on `troop_slime`, which the
   // default database also owns. Its runtime debug marker is `event-battle-start`.
@@ -360,8 +360,8 @@ const probeBattle = (): Probe => {
 const installPhaseRecorder = (): void => {
   const store: Record<string, { left: number; top: number; width: number; height: number }> = {};
   const order: string[] = [];
-  (window as any).__rm2003PhaseRects = store;
-  (window as any).__rm2003PhaseOrder = order;
+  (window as any).__rm2000PhaseRects = store;
+  (window as any).__rm2000PhaseOrder = order;
   const capture = (): void => {
     const scene = document.querySelector<HTMLElement>("[data-testid='battle-scene']");
     if (!scene) return;
@@ -433,7 +433,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
-test("rm2003 gate (a) — an unauthored project boots the rm2003 strict battle screen", async ({ page }) => {
+test("rm2000 gate (a) — an unauthored project boots the rm2000 strict battle screen", async ({ page }) => {
   test.setTimeout(180_000);
   await seedDefaultSkinBattleProject(page);
   await enterBattle(page);
@@ -453,14 +453,14 @@ test("rm2003 gate (a) — an unauthored project boots the rm2003 strict battle s
   expect.soft(
     probe.skin,
     `default battle skin: data-battle-skin="${probe.skin}" (ui-style="${probe.uiStyle}") on a project that authors no battleUiStyle`,
-  ).toBe("rm2003");
+  ).toBe("rm2000");
   expect.soft(
     probe.flow,
     `default battle flow: data-battle-flow="${probe.flow}" (phase "${probe.phase}") on a project that authors no battleFlow`,
   ).toBe("strict");
 });
 
-test("rm2003 gate (b,c,d,e) — command/target phase pixel geometry and typography", async ({ page }) => {
+test("rm2000 gate (b,c,d,e) — command/target phase pixel geometry and typography", async ({ page }) => {
   test.setTimeout(180_000);
   await seedDefaultSkinBattleProject(page);
   await enterBattle(page);
@@ -541,7 +541,7 @@ test("rm2003 gate (b,c,d,e) — command/target phase pixel geometry and typograp
   ).toBe(0);
 });
 
-test("rm2003 gate (f) — keyboard-only phase walk keeps the field box byte-identical", async ({ page }) => {
+test("rm2000 gate (f) — keyboard-only phase walk keeps the field box byte-identical", async ({ page }) => {
   test.setTimeout(240_000);
   await mkdir(EVIDENCE_DIR, { recursive: true });
   // One actor + one one-shot enemy: the walk owns the whole round, so it reaches
@@ -577,7 +577,7 @@ test("rm2003 gate (f) — keyboard-only phase walk keeps the field box byte-iden
   await page.keyboard.press("z");
   // Wait on the concrete recorder predicate rather than on a brief attribute value.
   await page.waitForFunction(
-    () => "impact" in ((window as unknown as { __rm2003PhaseRects: Record<string, unknown> }).__rm2003PhaseRects),
+    () => "impact" in ((window as unknown as { __rm2000PhaseRects: Record<string, unknown> }).__rm2000PhaseRects),
     undefined,
     { timeout: 30_000 },
   );
@@ -588,9 +588,9 @@ test("rm2003 gate (f) — keyboard-only phase walk keeps the field box byte-iden
   await page.screenshot({ path: `${EVIDENCE_DIR}/result.png` });
 
   const rects = await page.evaluate(() =>
-    (window as unknown as { __rm2003PhaseRects: Record<string, Rect> }).__rm2003PhaseRects);
+    (window as unknown as { __rm2000PhaseRects: Record<string, Rect> }).__rm2000PhaseRects);
   const order = await page.evaluate(() =>
-    (window as unknown as { __rm2003PhaseOrder: string[] }).__rm2003PhaseOrder);
+    (window as unknown as { __rm2000PhaseOrder: string[] }).__rm2000PhaseOrder);
   const walk = ["intro", "command", "submenu", "target", "impact", "result"];
   const observed = walk.filter((phase) => phase in rects);
   expect(
@@ -609,7 +609,7 @@ test("rm2003 gate (f) — keyboard-only phase walk keeps the field box byte-iden
 });
 
 for (const partySize of [1, 2, 3, 4]) {
-  test(`rm2003 gate (g) — party ${partySize} × enemies 1..8 stay contained`, async ({ page }) => {
+  test(`rm2000 gate (g) — party ${partySize} × enemies 1..8 stay contained`, async ({ page }) => {
     test.setTimeout(600_000);
     const failures: string[] = [];
     for (const enemyCount of [1, 2, 3, 4, 5, 6, 7, 8]) {

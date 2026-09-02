@@ -478,7 +478,7 @@ function literalLabel(value: string): string {
     case "strict":
       return "엄격 턴제";
     case "classic":
-      return "클래식 (RM2003풍)";
+      return "클래식 (정면 전투)";
     case "pokemon":
       return "포켓몬풍";
     case "event":

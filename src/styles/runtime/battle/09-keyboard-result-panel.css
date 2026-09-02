@@ -14,7 +14,7 @@
    여기서 `grid-column: 2` 를 주면 없는 열을 가리켜 암시적 auto 열이 생기고, 그 열이 내용 폭을
    먼저 가져가 커맨드가 놓인 `minmax(0, 1fr)` 열이 0px 로 붕괴한다(최소값이 0이라 제동도 없다).
    그러면 커맨드 항목이 DOM 에는 있는데 폭 0 으로 눌려 화면에서 사라져 전투 진행이 막힌다.
-   rm2003 스킨만 `grid-column: 1` 로 국소 우회하고 있었다(_rm2003.css:535). */
+   rm2000 스킨만 `grid-column: 1` 로 국소 우회하고 있었다(_rm2000.css:535). */
 .battle-command-help,
 .battle-key-prompts,
 .battle-target-prompt {

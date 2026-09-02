@@ -4,7 +4,7 @@
 // 여기서는 전투 전용 픽스처를 쓴다(test/fixtures/projects/battle-v3.json, 실물에서 읽음):
 //   startMapId = map_battle (2×1), startPos = (0,0)
 //   이벤트 battle-start@(1,0), trigger=action, commands=[battleProcessing troop_slime]
-//   system.battleUiStyle 미설정 → resolveSkinId 가 기본 스킨 rm2003 으로 떨어진다.
+//   system.battleUiStyle 미설정 → resolveSkinId 가 기본 스킨 rm2000 으로 떨어진다.
 //     즉 이 시나리오는 **지원 유지되는 RM식 전투 화면**을 그대로 통과한다.
 //
 // 편집기 셸을 태우는 test/e2e/oprn-battle-layout-ux.spec.ts 계열은 test-play-window 가
@@ -12,8 +12,8 @@
 // 게임 화면 증거는 이 하네스로 잡는다 — AGENTS.md 의 편집기/런타임 QA 분리 규칙.
 
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
-export const battleRm2003Scenario = {
-  id: "battle-rm2003",
+export const battleRm2000Scenario = {
+  id: "battle-rm2000",
   projectFixture: "test/fixtures/projects/battle-v3.json",
   beats: [
     {
@@ -38,7 +38,7 @@ export const battleRm2003Scenario = {
     },
     {
       id: "battle-open",
-      note: "전투 이벤트 말걸기 → 전투 화면(기본 스킨 rm2003)이 실제로 마운트된다",
+      note: "전투 이벤트 말걸기 → 전투 화면(기본 스킨 rm2000)이 실제로 마운트된다",
       ops: [
         { kind: "face", dir: "right" },
         { kind: "action" },
@@ -59,4 +59,4 @@ export const battleRm2003Scenario = {
   ],
 };
 
-export default battleRm2003Scenario;
+export default battleRm2000Scenario;

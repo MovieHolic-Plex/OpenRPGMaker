@@ -36,7 +36,7 @@
      스코프에서 재정의한다. 색은 전역과 동일. */
   --focus-ring: 0 0 0 4px rgba(108, 121, 242, 0.55);
   /* 논리 해상도 스케일링 — battleStageScale.ts 가 컨테이너 크기에서 배율을 계산해
-     --battle-stage-scale / --battle-stage-offset-* 을 세팅한다. 스킨(rm2003)은 320×240
+     --battle-stage-scale / --battle-stage-offset-* 을 세팅한다. 스킨(rm2000)은 320×240
      (RM2003 해상도) 기준으로 저작됐는데 예전에는 640×480 에 transform 없이 붙어
      모든 치수가 의도의 절반으로 보였다(실측: 명령 레일 84px = 640 화면의 13%). */
   --battle-stage-scale: 1;
@@ -52,7 +52,7 @@
   --battle-field-border-width: 2px;
   /* 이 한 줄이 `--battle-stage-inset-top` 의 **유일한 선언**이다
      (감사: test/battleRm2003PixelGrid.test.ts). 스킨은 이 변수를 다시 선언하지 않고
-     스킨 노브 `--battle-stage-skin-inset-top` 만 재정의한다(rm2003 = 8px,
+     스킨 노브 `--battle-stage-skin-inset-top` 만 재정의한다(rm2000 = 8px,
      나머지 11종 = 미지정 → 48px). 그래서 배틀러 그룹·애니메이션 레이어·이펙트
      레이어가 어느 스킨에서든 하나의 값으로 같은 박스로 풀린다. */
   --battle-stage-inset-top: var(--battle-stage-skin-inset-top, 48px);
@@ -260,7 +260,7 @@
    그런데 HUD 행의 클래스는 `.battle-actor-status` 라 그 선택자는 HUD 에 **한 번도 맞지 않았고**,
    대신 `.battle-actor-group` 안의 **필드 스프라이트 노드**(같은 `.battle-actor`)에만 걸렸다.
    필드 노드는 192px 높이의 절대 배치 상자라 그 border 가 스프라이트 몸통을 가로지르는
-   밝은 수평선으로 보였다 — rm2003 4인 편성에서 2·3·4번 노드에 3줄(실측: 노드 top 에
+   밝은 수평선으로 보였다 — rm2000 4인 편성에서 2·3·4번 노드에 3줄(실측: 노드 top 에
    2px, 허공에서 끊김). 구분선이 필요하면 `.battle-actor-status` 로 다시 달아야 한다. */
 
 .battle-actor-image {
@@ -271,7 +271,7 @@
    상자 크기가 픽셀 글꼴 폭으로 실측돼 있어 비례 글꼴로 바꾸면 그대로 넘친다
    (실측, battle-text 시나리오: 적 이름 잘림 0.299 → 0.831, 파티 이름 0 → 0.035).
    창·명령 행처럼 **크롬**인 자리만 --runtime-ui-font 로 간다. 스킨이 이 라벨을
-   알약 같은 크롬으로 다시 그릴 때는 그 규칙에서 글꼴을 명시한다(_rm2003.css). */
+   알약 같은 크롬으로 다시 그릴 때는 그 규칙에서 글꼴을 명시한다(_rm2000.css). */
 .battle-enemy-name,
 .battle-enemy-hp-text,
 .battle-party .battle-actor-name,

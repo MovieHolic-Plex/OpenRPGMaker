@@ -1,4 +1,4 @@
-// Static invariant audit for the RM2003 battle stylesheet pixel grid.
+// Static invariant audit for the rm2000 battle stylesheet pixel grid.
 // Plain fs reads - no DOM, no CSS parsing library. Another node fixes the CSS;
 // this test only enumerates the offenders with file:line and the literal.
 
@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const ROOT = join(__dirname, "..");
-const SKIN = join(ROOT, "src/styles/runtime/battle-skins/_rm2003.css");
+const SKIN = join(ROOT, "src/styles/runtime/battle-skins/_rm2000.css");
 const BATTLE_DIR = join(ROOT, "src/styles/runtime/battle");
 const SKINS_DIR = join(ROOT, "src/styles/runtime/battle-skins");
 
@@ -51,27 +51,27 @@ function listCssFiles(dir: string): string[] {
   return out;
 }
 
-const RM2003 = readFileSync(SKIN, "utf8");
+const RM2000 = readFileSync(SKIN, "utf8");
 
-describe("battle rm2003 pixel grid (static CSS invariants)", () => {
-  it("(1) _rm2003.css contains zero !important", () => {
+describe("battle rm2000 pixel grid (static CSS invariants)", () => {
+  it("(1) _rm2000.css contains zero !important", () => {
     const hits: string[] = [];
-    RM2003.split("\n").forEach((text, i) => {
+    RM2000.split("\n").forEach((text, i) => {
       if (/!\s*important\b/.test(text)) hits.push(`${SKIN}:${i + 1}: !important`);
     });
     expect(
       hits,
-      `${hits.length} !important occurrences in _rm2003.css:\n${hits.join("\n")}`,
+      `${hits.length} !important occurrences in _rm2000.css:\n${hits.join("\n")}`,
     ).toEqual([]);
   });
 
-  it("(2) every px length literal in _rm2003.css is even (0 allowed)", () => {
-    const odd = pxLiterals(RM2003).filter(
+  it("(2) every px length literal in _rm2000.css is even (0 allowed)", () => {
+    const odd = pxLiterals(RM2000).filter(
       ({ value }) => Number.parseFloat(value) % 2 !== 0,
     );
     expect(
       odd,
-      `${odd.length} odd px literals in _rm2003.css:\n${odd
+      `${odd.length} odd px literals in _rm2000.css:\n${odd
         .map((o) => `${SKIN}:${o.line}: ${o.value}`)
         .join("\n")}`,
     ).toEqual([]);
@@ -95,8 +95,8 @@ describe("battle rm2003 pixel grid (static CSS invariants)", () => {
     ).toHaveLength(1);
   });
 
-  it("(4) distinct font-size px values in _rm2003.css: at most 4 members, all even", () => {
-    const sizes = fontSizes(RM2003);
+  it("(4) distinct font-size px values in _rm2000.css: at most 4 members, all even", () => {
+    const sizes = fontSizes(RM2000);
     const byValue = new Map<string, Array<{ line: number; value: string }>>();
     for (const s of sizes) {
       const list = byValue.get(s.value) ?? [];

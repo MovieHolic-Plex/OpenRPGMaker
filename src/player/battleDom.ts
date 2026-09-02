@@ -86,7 +86,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.testid = "battle-scene";
   // 전투 UI 스킨 — CSS가 [data-battle-ui-style="pokemon"] 로 레이아웃을 갈아입힌다.
   root.dataset.battleUiStyle = store.getCurrent().system.battleUiStyle === "pokemon" ? "pokemon" : "classic";
-  // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 12종 스킨을 갈아입힌다.
+  // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 등록 스킨을 갈아입힌다.
   // B: 12 vars 테마 엔진 — 레지스트리의 themeVars를 루트에 직접 주입한다(CSS 변수).
   const skinId = resolveSkinId(store.getCurrent().system.battleUiStyle);
   const skin = getBattleSkin(skinId);

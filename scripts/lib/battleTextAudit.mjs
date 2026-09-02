@@ -12,7 +12,7 @@
 // 돌려주므로, 잘림 판정과 "너무 작아 안 읽힘" 판정을 같은 좌표계에서 할 수 있다.
 //
 // 클리핑 조상 판정 — 세 갈래를 구분한다(초판은 이걸 섞어서 오판했다. 실측:
-// rm2003 skill-submenu 의 "검격/뒤로" 를 `clipped` 로 4건 올렸는데 그 행들은
+// rm2000 skill-submenu 의 "검격/뒤로" 를 `clipped` 로 4건 올렸는데 그 행들은
 // `overflow-y:auto` 인 메뉴의 스크롤 범위 안이라 커서가 scrollIntoView 로 데려온다 —
 // 즉 결함이 아니었다. 반대로 스크린샷에 **실제로** 반쯤 잘려 보이던 행(스크롤포트
 // 아래 경계에 걸친 행)은 한 건도 올리지 못했다. 위양성 4 + 위음성 1 이었다):
@@ -232,7 +232,7 @@ export function auditBattleText(options) {
 
     // 가리기(occlusion): 상자 안에 오온전하게 들어 있어도 **다른 불통명 요소가 위에
     // 그려지면** 사용자는 그 글자를 읽지 못한다. 사용자에게는 자림과 같은 증상이다
-    // — 실측: rm2003 대상 선택 국면에서 선택된 적의 HUD 카드 제목이 상단 메시지
+    // — 실측: rm2000 대상 선택 국면에서 선택된 적의 HUD 카드 제목이 상단 메시지
     // 창 밑에 들어가 이름이 안 보인다. 기하 계산은 이걸 잡지 못하므로 잉크 상자의
     // 여러 지점에서 elementFromPoint 를 찍어 확인한다.
     let occludedRatio = 0;
@@ -275,8 +275,8 @@ export function auditBattleText(options) {
     if (!animating && alpha * colorAlpha < minAlpha) reasons.push("transparent");
     // 잉크 허용 표본의 절반 이상이 불통명 상자에 만혀 있으면 사실상 안 보이는 것이다.
     // 단, 이 지표는 **게이트로 쓰지 않고 기록만 한다**. 이유(실측):
-    // `elementFromPoint` 는 `pointer-events: none` 인 요소를 건너눠다. rm2003 의
-    // 메시지 창은 `pointer-events: none`(_rm2003.css:312) 이므로 그 안의 글자를
+    // `elementFromPoint` 는 `pointer-events: none` 인 요소를 건너눠다. rm2000 의
+    // 메시지 창은 `pointer-events: none`(_rm2000.css) 이므로 그 안의 글자를
     // 찍으면 창이 아니라 **뒷배경이** 맞으며, 그걸 "위에 낯은 가림막" 으로 오판한다
     // (실제로 화면에 안 보이는 것은 적 HUD 카드 한 건인데 8건이 올라왔다).
     // 가림을 제대로 잡려면 힙테스트가 아니라 픽셀 버팜 별로 해야 한다.

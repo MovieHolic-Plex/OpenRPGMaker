@@ -33,7 +33,7 @@
   z-index: 1;
 }
 
-/* Side-view staging: enemy/party read as field protagonists. The rm2003 skin
+/* Side-view staging: enemy/party read as field protagonists. The rm2000 skin
    resets these transforms for its own sprite sizes; every other skin keeps
    the scaled node together with the _battlers.css sprite sizing. */
 .battle-enemy {

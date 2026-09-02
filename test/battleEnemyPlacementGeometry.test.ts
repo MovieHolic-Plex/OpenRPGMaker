@@ -13,7 +13,7 @@ const NO_TOP_CLIP_RATIO = fixture._axes.noTopClipRatio;
 const skinIds = Object.keys(fixture.skins) as (keyof typeof fixture.skins)[];
 
 describe("적 세로 배치 기하", () => {
-  it("픽스처가 12종 스킨을 모두 덮는다 — 스킨이 늘면 측정도 늘어야 한다", () => {
+  it("픽스처가 등록 스킨을 모두 덮는다 — 스킨이 늘면 측정도 늘어야 한다", () => {
     expect(skinIds.sort()).toEqual(Object.keys(BATTLER_PLACEMENTS).sort());
   });
 
@@ -40,7 +40,7 @@ describe("적 세로 배치 기하", () => {
     });
   }
 
-  it("rm2003 전면 구도는 아군 스프라이트를 숨긴다", () => {
-    expect(BATTLER_PLACEMENTS.rm2003.partyFacing).toBe("hidden");
+  it("rm2000 전면 구도는 아군 스프라이트를 숨긴다", () => {
+    expect(BATTLER_PLACEMENTS.rm2000.partyFacing).toBe("hidden");
   });
 });

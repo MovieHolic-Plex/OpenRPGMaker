@@ -200,11 +200,11 @@
    ========================================================================= */
 
 /* === 적 HP 노출 === */
-/* rm2003 스킨은 적 HUD 를 targetSelect 중 선택된 적에게만 펼쳤다. 그래서 "한 방 더면
+/* rm2000 스킨은 적 HUD 를 targetSelect 중 선택된 적에게만 펼쳤다. 그래서 "한 방 더면
    죽는다" 는 판단이 불가능했고 모든 턴이 같은 무게였다. 한 번이라도 피해를 입은 적은
    (battleFieldDom 이 data-battle-hp-revealed 를 세운다) 계속 남은 체력을 보여준다.
    아직 안 때린 적은 그대로 감춘다 — 정보 수집도 플레이다. */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"]
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"]
   .battle-enemy[data-battle-hp-revealed="true"] .battle-enemy-hud {
   display: grid;
 }

@@ -8,7 +8,7 @@ const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const PROJECT_URL = "/__runtime-qa/project.json";
 
 const raw = JSON.parse(await readFile(new URL("test/fixtures/projects/editor-authored-demo-v3.json", `file://${REPO_ROOT}`), "utf8"));
-raw.system = { ...raw.system, battleUiStyle: process.argv[2] ?? "rm2003" };
+raw.system = { ...raw.system, battleUiStyle: process.argv[2] ?? "rm2000" };
 const skillIds = raw.database.skills.slice(0, 6).map((s) => s.id);
 for (const actor of raw.database.actors) actor.learnedSkills = skillIds.map((id) => ({ skillId: id, level: 1 }));
 const startMap = raw.maps[raw.startMapId];
