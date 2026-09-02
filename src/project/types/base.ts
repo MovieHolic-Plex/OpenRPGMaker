@@ -1,3 +1,4 @@
+import type { ConceptBundleRecord } from "./conceptBundle";
 import type { InteriorFurnitureSnap, InteriorRoomKindRecord } from "./interior";
 
 export type MapId = string;
@@ -492,6 +493,11 @@ export interface TilesetDef {
    * 빈 배열은 사용자가 지운 상태 — 다시 시드하지 않는다.
    */
   interiorRoomKinds?: InteriorRoomKindRecord[];
+  /**
+   * 임시 개념 꾸러미(시설→장소→물건→칩). undefined 는 아직 시드 전.
+   * 빈 배열은 사용자가 지운 상태 — 다시 시드하지 않는다.
+   */
+  scratchConceptBundles?: ConceptBundleRecord[];
 }
 
 // 이웃 판정 범위: 4방향(상하좌우) 또는 8방향(대각 포함).

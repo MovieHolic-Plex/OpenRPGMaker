@@ -45,6 +45,7 @@ const TAB_TESTID: Record<string, string> = {
   tilesetUnlabeled: "db-tab-tileset-unlabeled",
   structureKits: "db-tab-structure-kits",
   tilesetSpaces: "db-tab-tileset-spaces",
+  scratchConcepts: "db-tab-scratch-concepts",
   villages: "db-tab-villages",
   commonEvents: "db-tab-common-events",
   system: "db-tab-system",

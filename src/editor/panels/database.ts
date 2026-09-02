@@ -33,6 +33,7 @@ import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { applyTilesetFolderFacet, setTilesetFolderTabRequestHandler } from "@/editor/panels/tilesetMetadataEditor";
 import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
+import { renderScratchConceptTab } from "@/editor/panels/scratchConceptTab";
 import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
@@ -63,6 +64,7 @@ export type DatabaseTab =
   | "tilesetAutotile"
   | "tilesetUnlabeled"
   | "tilesetSpaces"
+  | "scratchConcepts"
   | "system"
   | "terms"
   | "terrain"
@@ -102,6 +104,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "worldGen", label: "생성 규칙", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
   { id: "tilesetSpaces", label: "공간 종류", testid: "db-tab-tileset-spaces" },
+  { id: "scratchConcepts", label: "개념 꾸러미", testid: "db-tab-scratch-concepts" },
   { id: "villages", label: "마을", testid: "db-tab-villages" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
@@ -133,6 +136,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   // 지형은 전투 데이터가 아니라 맵 데이터다 — 타일셋·구조물과 같은 그룹에 둔다.
   { label: "세계", slug: "world", tabs: ["worldGen", "tilesets", "tilesetAutotile", "tilesetUnlabeled", "structureKits", "tilesetSpaces", "villages", "terrain", "commonEvents"] },
+  { label: "임시", slug: "scratch", tabs: ["scratchConcepts"] },
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
 
@@ -475,6 +479,10 @@ function databaseTabCount(tab: DatabaseTab): number | null {
     case "tilesetSpaces": {
       const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
       return tileset?.interiorRoomKinds?.length ?? 0;
+    }
+    case "scratchConcepts": {
+      const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
+      return tileset?.scratchConceptBundles?.length ?? 0;
     }
     case "worldGen":
       return project.system.worldGen?.keywords?.length ?? 0;
@@ -825,6 +833,9 @@ function renderActiveTab(
       break;
     case "tilesetSpaces":
       renderTilesetSpacesTab(body, rerender);
+      break;
+    case "scratchConcepts":
+      renderScratchConceptTab(body, rerender);
       break;
     case "villages":
       renderVillageTab(body, rerender);

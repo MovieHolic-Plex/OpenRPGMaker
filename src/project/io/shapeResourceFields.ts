@@ -1,3 +1,4 @@
+import { isConceptChipId } from "../types/conceptBundle";
 import { isPaletteSlotRole } from "../tilesetPalette";
 import { TERM_KEYS } from "../terms";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
@@ -301,6 +302,60 @@ export function validateTileset(id: string, value: unknown): void {
       }
       if (record.walkway !== undefined) {
         requireBoolean(`tileset ${id}.interiorRoomKinds[${index}].walkway`, record.walkway);
+      }
+    }
+  }
+  if (tileset.scratchConceptBundles !== undefined) {
+    for (const [index, bundle] of requireArray(`tileset ${id}.scratchConceptBundles`, tileset.scratchConceptBundles).entries()) {
+      const record = requireRecord(`tileset ${id}.scratchConceptBundles[${index}]`, bundle);
+      requireString(`tileset ${id}.scratchConceptBundles[${index}].id`, record.id);
+      requireString(`tileset ${id}.scratchConceptBundles[${index}].label`, record.label);
+      for (const [facilityIndex, facility] of requireArray(
+        `tileset ${id}.scratchConceptBundles[${index}].facilities`,
+        record.facilities,
+      ).entries()) {
+        const entry = requireRecord(`tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}]`, facility);
+        requireString(`tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].id`, entry.id);
+        requireString(`tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].label`, entry.label);
+        for (const placeId of requireArray(
+          `tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].placeIds`,
+          entry.placeIds,
+        )) {
+          requireString(`tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].placeIds[]`, placeId);
+        }
+      }
+      for (const [placeIndex, place] of requireArray(
+        `tileset ${id}.scratchConceptBundles[${index}].places`,
+        record.places,
+      ).entries()) {
+        const entry = requireRecord(`tileset ${id}.scratchConceptBundles[${index}].places[${placeIndex}]`, place);
+        requireString(`tileset ${id}.scratchConceptBundles[${index}].places[${placeIndex}].id`, entry.id);
+        requireString(`tileset ${id}.scratchConceptBundles[${index}].places[${placeIndex}].label`, entry.label);
+      }
+      for (const [thingIndex, thing] of requireArray(
+        `tileset ${id}.scratchConceptBundles[${index}].things`,
+        record.things,
+      ).entries()) {
+        const entry = requireRecord(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}]`, thing);
+        requireString(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].id`, entry.id);
+        requireString(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].label`, entry.label);
+        requireString(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].objectId`, entry.objectId);
+        for (const placeId of requireArray(
+          `tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].placeIds`,
+          entry.placeIds,
+        )) {
+          requireString(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].placeIds[]`, placeId);
+        }
+        for (const chip of requireArray(
+          `tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].chips`,
+          entry.chips,
+        )) {
+          const chipId = requireString(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].chips[]`, chip);
+          assert(isConceptChipId(chipId), `tileset ${id}: scratchConceptBundles[${index}].things[${thingIndex}] unknown chip`);
+        }
+        if (entry.required !== undefined) {
+          requireBoolean(`tileset ${id}.scratchConceptBundles[${index}].things[${thingIndex}].required`, entry.required);
+        }
       }
     }
   }

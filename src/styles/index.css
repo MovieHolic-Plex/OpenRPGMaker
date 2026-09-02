@@ -50,6 +50,7 @@
 @import "./database/system-font-section.css";
 @import "./database/system-studio.css";
 @import "./database/world-gen.css";
+@import "./database/scratch-concept.css";
 @import "./database/studio-theme.css";
 /* Collection-specific studio slices must follow the shared studio reset. */
 @import "./database/desktop-record-shell/13-actor-studio.css";

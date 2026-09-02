@@ -246,6 +246,19 @@ The Database modal was modernized in six waves while keeping every hard contract
 `test/databaseTilesetFolder.test.ts`, `test/structureKitDbTab.test.ts` 의
 「구조물 탭은 공간 종류를 그리지 않는다」.
 
+## 임시 → 개념 꾸러미 (2026-09-02)
+
+데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.
+세계·공간 종류·구조물과 아직 합치지 않는다 — 시설→장소→물건→칩 나무를 그림으로
+저작하는 실험 면이다. 시공 파이프(`author_village` / 실내 방)는 이 필드를 읽지 않는다.
+
+- 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
+- 실내 칩셋만 여관 초안을 시드한다(`SCRATCH_INN_BUNDLE`). 마을 칩셋에는 얹지 않는다.
+- 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
+- 칩은 닫힌 집합(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`). 산문 배치 규칙이 아니다.
+- 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·칩 토글·장소 소속).
+- 진입: `src/editor/panels/scratchConceptTab.ts`. 계약: `test/scratchConceptTab.test.ts`.
+
 ## '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
 
 `src/editor/panels/structureKitDbTab.ts` + 데이터 계층 `src/editor/panels/structureKitDbSources.ts`.
