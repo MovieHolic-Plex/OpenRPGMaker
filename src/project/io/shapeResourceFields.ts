@@ -1,4 +1,11 @@
-import { CONCEPT_PLACE_COUNT_MAX, isConceptChipId, isConceptPlaceRole, isConceptPlaceSize } from "../types/conceptBundle";
+import {
+  CONCEPT_PLACE_COUNT_MAX,
+  isConceptChipId,
+  isConceptFloorMaterial,
+  isConceptPlaceRole,
+  isConceptPlaceSize,
+  isConceptWallMaterial,
+} from "../types/conceptBundle";
 import { isPaletteSlotRole } from "../tilesetPalette";
 import { TERM_KEYS } from "../terms";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
@@ -317,6 +324,10 @@ export function validateTileset(id: string, value: unknown): void {
         const entry = requireRecord(`tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}]`, facility);
         requireString(`tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].id`, entry.id);
         requireString(`tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].label`, entry.label);
+        if (entry.wall !== undefined) {
+          const wall = requireString(`tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].wall`, entry.wall);
+          assert(isConceptWallMaterial(wall), `tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].wall unknown wall: ${wall}`);
+        }
         for (const placeId of requireArray(
           `tileset ${id}.scratchConceptBundles[${index}].facilities[${facilityIndex}].placeIds`,
           entry.placeIds,
@@ -345,6 +356,10 @@ export function validateTileset(id: string, value: unknown): void {
             typeof entry.count === "number" && Number.isInteger(entry.count) && entry.count >= 1 && entry.count <= CONCEPT_PLACE_COUNT_MAX,
             `${placePath}.count must be an integer 1..${CONCEPT_PLACE_COUNT_MAX}`,
           );
+        }
+        if (entry.floor !== undefined) {
+          const floor = requireString(`${placePath}.floor`, entry.floor);
+          assert(isConceptFloorMaterial(floor), `${placePath}.floor unknown floor: ${floor}`);
         }
       }
       for (const [thingIndex, thing] of requireArray(
