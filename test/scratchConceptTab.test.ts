@@ -104,6 +104,31 @@ describe("scratchConceptTab 편집", () => {
     expect(bundle.places.find((place) => place.id === "bedroom")?.label).toBe("객실");
   });
 
+  it("장소 역할·크기를 바꾸면 저장된다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    const role = host.querySelector("[data-testid='scratch-concept-place-role-bedroom']") as { value: string; dispatchEvent: (event: Event) => void };
+    role.value = "entrance";
+    role.dispatchEvent(new Event("change"));
+    const size = host.querySelector("[data-testid='scratch-concept-place-size-bedroom']") as { value: string; dispatchEvent: (event: Event) => void };
+    size.value = "l";
+    size.dispatchEvent(new Event("change"));
+    const place = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!.places.find((entry) => entry.id === "bedroom");
+    expect(place?.role).toBe("entrance");
+    expect(place?.size).toBe("l");
+  });
+
+  it("장소 개수를 바꾸면 저장되고 1은 비운다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    const count = host.querySelector("[data-testid='scratch-concept-place-count-bedroom']") as { value: string; dispatchEvent: (event: Event) => void };
+    expect(count.value).toBe("2");
+    count.value = "3";
+    count.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!.places.find((entry) => entry.id === "bedroom")?.count).toBe(3);
+    count.value = "1";
+    count.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!.places.find((entry) => entry.id === "bedroom")?.count).toBeUndefined();
+  });
+
   it("피커에서 물건을 넣으면 그 장소에 붙는다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     host.querySelector("[data-testid='scratch-concept-thing-add-bedroom']")!.click();
