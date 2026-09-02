@@ -75,6 +75,8 @@ export type ProjectChangeAnnotation = {
   /** 호출자가 **이미 계산해 둔** 필드 단위 변경만 넘긴다. 여기서 diff 를 계산하지 않는다. */
   readonly fields?: readonly EditActivityField[];
   readonly eventId?: string;
+  /** 이 편집을 한 한 줄 이유. AI 툴 reason 또는 사람 편집 라벨에서 온다. */
+  readonly reason?: string;
   /** 프로젝트 전체 교체 표시 — true면 프로젝트 단위 에디터 캐시가 무효화되고, false면 명시적으로 제외된다. */
   readonly projectSwitch?: boolean;
 };
@@ -886,6 +888,7 @@ class ProjectStore {
           : {}),
         ...(change.fields === undefined ? {} : { fields: change.fields }),
         ...(change.eventId === undefined ? {} : { eventId: change.eventId }),
+        ...(change.reason === undefined ? {} : { reason: change.reason }),
       });
     } catch (error) {
       // 관측이 편집을 막으면 안 된다 — 기록 실패는 경고로 남기고 편집은 그대로 진행한다.

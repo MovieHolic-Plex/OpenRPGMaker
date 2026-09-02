@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1311KB / 약 369,158 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1312KB / 약 369,518 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -143,7 +143,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L37` 3단계 — 이름 삭제 (메이저 정리)
 - `L42` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 18KB · 107줄 · ~4,976 토큰
+### `openwiki/ai-workflow.md` — 19KB · 107줄 · ~5,118 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
@@ -328,7 +328,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L45` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
 - `L58` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
 
-### `openwiki/editor-observability.md` — 22KB · 238줄 · ~6,487 토큰 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 22KB · 248줄 · ~6,705 토큰 · 깨진 줄 1
 
 - `L21` 계측 초크포인트는 `store.markLocalMutation` 하나다
 - `L51` 새 편집 기능을 추가할 때 — 라벨을 넣어라
@@ -338,7 +338,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L156` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
 - `L185` 로거
 - `L199` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
-- `L232` 검증
+- `L232` AI 툴·액션 이유 (2026-09-02)
+- `L242` 검증
 
 ### `openwiki/editor-pre-edit-routing.md` — 60KB · 166줄 · ~16,917 토큰 · 통째읽기 잘림 · 깨진 줄 5
 

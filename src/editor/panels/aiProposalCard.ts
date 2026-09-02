@@ -283,6 +283,7 @@ export function createProposalHost(options: {
       snapshotLabel: aiHistoryLabel(calls),
       snapshotMapId: currentHistoryMapId(),
       resetProject: calls.some((call) => call.name === "reset_project"),
+      reason: calls.map((call) => call.reason).filter((value): value is string => typeof value === "string" && value.trim().length > 0).join(" · ") || `AI 제안 적용: ${aiHistoryLabel(calls)}`,
     });
     if (!applied.ok) {
       setStatus("적용 실패");

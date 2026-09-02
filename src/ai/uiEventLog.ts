@@ -12,6 +12,7 @@
 // 클릭 사실만으로 결과를 알 수 없는 액션(압축·되감기·복원 등)은 `recordAiUiEvent` 를 직접
 // 불러 결과 수치를 함께 남긴다. 두 경로는 서로를 대체하지 않는다 — 위임은 빠짐없음을,
 // 명시 호출은 의미를 담당한다.
+import { reasonForUiAction } from "./toolReason";
 import { AI_UI_EVENT_SURFACES, type AiUiEvent, type AiUiEventInput } from "./uiEventTypes";
 
 export type { AiUiEvent, AiUiEventInput } from "./uiEventTypes";
@@ -145,6 +146,7 @@ export function recordAiUiEvent(input: AiUiEventInput): AiUiEvent {
     ...(input.label ? { label: clip(input.label, MAX_LABEL) } : {}),
     ...(input.disabled === undefined ? {} : { disabled: input.disabled }),
     ...(input.detail ? { detail: clipDetail(input.detail) } : {}),
+    reason: input.reason ?? reasonForUiAction({ action: input.action, label: input.label, testid: input.testid }),
   };
   rows.push(event);
   if (rows.length > MAX_EVENTS) rows.splice(0, rows.length - MAX_EVENTS);

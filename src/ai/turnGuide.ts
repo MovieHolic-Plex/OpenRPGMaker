@@ -219,6 +219,7 @@ export function buildTurnGuide(input: TurnGuideInput): string {
     // 도메인을 허위로 열고 노출 상한(40)을 잠식해 mirror_region 등 map/quest 도구를 밀어냈다.
     // #378 은 «결과는 사용자 승인 후에만 반영된다» 를 떨어냈다. 조수도 제안 카드로 승인을 받으므로
     // 그 사실은 양쪽 다 모델에게 말해야 한다 — main 문구를 그대로 쓴다.
+    "- 모든 툴 호출에 reason 한 줄을 넣어라. 지시의 어느 부분을 이 호출로 처리하는지. 없으면 실행되지 않는다",
     "- 결과는 사용자 승인 후에만 반영된다. propose_tile_vocabulary 댄스는 하지 말 것",
     ...(scope
       ? [

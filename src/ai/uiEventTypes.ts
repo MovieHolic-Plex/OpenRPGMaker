@@ -12,6 +12,8 @@ export interface AiUiEvent {
   readonly label?: string;
   readonly disabled?: boolean;
   readonly detail?: Record<string, unknown>;
+  /** 이 클릭/액션을 한 한 줄 이유. 예전 행에는 없을 수 있다. */
+  readonly reason?: string;
 }
 
 export interface AiUiEventInput {
@@ -21,6 +23,7 @@ export interface AiUiEventInput {
   readonly label?: string;
   readonly disabled?: boolean;
   readonly detail?: Record<string, unknown>;
+  readonly reason?: string;
   readonly at?: string;
 }
 

@@ -35,6 +35,7 @@ import { STORY_ARC_TOOLS } from "./storyArcTools";
 import { QUALITY_EVALUATION_TOOLS } from "./qualityEvaluation";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import { TIME_TOOLS } from "./timeTools";
+import { injectToolReasonSchema } from "@/ai/toolReason";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
 import { V1_TILE_SUPERSEDED } from "./v2";
 import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
@@ -523,7 +524,7 @@ export function toOpenAiTools(tools: readonly ToolDefinition[] = TOOL_REGISTRY, 
       function: {
         name: tool.name,
         description: tool.description,
-        parameters: tool.parameters,
+        parameters: injectToolReasonSchema(tool.parameters),
       },
     }));
 }

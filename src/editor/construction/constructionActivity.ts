@@ -17,6 +17,7 @@ export type ActivityAuditEntryLike = {
   readonly args?: Readonly<Record<string, unknown>>;
   readonly ok?: boolean;
   readonly summary?: string;
+  readonly reason?: string;
   readonly construction?: ConstructionAuditRecord;
 };
 
@@ -25,6 +26,7 @@ export type ConstructionActivityToolCall = {
   readonly args: Record<string, unknown>;
   readonly ok: boolean;
   readonly summary: string;
+  readonly reason?: string;
   readonly construction?: ConstructionAuditRecord;
 };
 
@@ -50,6 +52,7 @@ export function activityToolCallsFromAudit(
       args: { ...entry.args },
       ok: entry.ok,
       summary: construction === undefined ? entry.summary : summarizeConstructionActivity(construction),
+      ...(typeof entry.reason === "string" && entry.reason.trim() ? { reason: entry.reason.trim() } : {}),
       ...(construction === undefined ? {} : { construction }),
     }];
   });

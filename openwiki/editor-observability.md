@@ -229,6 +229,16 @@ done
 `editor/panels/tilesetTileContextMenu.ts`, `editor/panels/villageInfoModal.ts`,
 `player/runtimeDebugPanel.ts`, `project/characterIdIndex.ts`.
 
+## AI 툴·액션 이유 (2026-09-02)
+
+채팅 턴이 죽은 뒤에도 `tile_erase` 같은 쓰기의 **한 줄 이유**가 남아야 한다. 빈 pending 시작 행이 풍부한 행을 덮으면 안 된다.
+
+- 모델 툴: 스키마 필수 `reason`. 없으면 실행하지 않는다 (`src/ai/toolReason.ts`).
+- 하네스(검증·밑그림 NPC): 코드가 이유를 붙인다.
+- 프론트 클릭: `사용자 클릭: <label>` (`recordAiUiEvent`).
+- 편집 행위: `EditActivityEntry.reason` — AI 적용은 툴 reason, 사람 편집은 라벨에서 만든다.
+- 저장: 같은 값이 localStorage + Supabase `payload_json` / `entries_json` / 커밋 첨부 슬라이스에 실립니다. 중간 업서트는 `aiTurnRunner` 의 매 `tool_call`.
+
 ## 검증
 
 - 계측·라벨·병합 회귀: `npm test -- test/editActivityRecording.test.ts` (초크포인트 5메서드, 라벨 없는 집계, NPC 편집 세션 재현, 연속 병합, `EventDiff` 라벨).

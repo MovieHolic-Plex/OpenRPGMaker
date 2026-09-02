@@ -14,6 +14,8 @@ export type AiActivityToolCall = {
   readonly args: Record<string, unknown>;
   readonly ok?: boolean;
   readonly summary?: string;
+  /** 이 호출을 한 한 줄 이유. 예전 행에는 없을 수 있다. */
+  readonly reason?: string;
   readonly softConfirm?: unknown;
   readonly construction?: ConstructionAuditRecord;
 };
@@ -106,6 +108,8 @@ export type AiActivityIndex = {
   readonly commitIds: readonly string[];
   readonly mapIds: readonly string[];
   readonly userTexts: readonly string[];
+  /** 툴·UI 액션에 붙은 한 줄 이유. payload 를 열지 않고 SQL 로 찾기 위한 평탄 축. */
+  readonly reasons: readonly string[];
 };
 
 export type AiActivityLogInput = {
@@ -150,6 +154,7 @@ export type RegionActivityLogLike = {
     readonly args: Record<string, unknown>;
     readonly ok: boolean;
     readonly summary: string;
+    readonly reason?: string;
     readonly softConfirm?: unknown;
     readonly construction?: ConstructionAuditRecord;
   }[];

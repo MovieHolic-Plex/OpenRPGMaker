@@ -72,9 +72,11 @@ describe("ai ui event log", () => {
     recordAiUiEvent({
       surface: "context-panel",
       action: "context-compact",
+      label: "context-compact",
       detail: { beforeTokens: 110_869, afterTokens: 21_004 },
     });
     expect(listAiUiEvents(1)[0]?.detail).toEqual({ beforeTokens: 110_869, afterTokens: 21_004 });
+    expect(listAiUiEvents(1)[0]?.reason).toBe("사용자 클릭: context-compact");
   });
 
   it("flushes a batch to the sink and clears pending", () => {

@@ -8,6 +8,12 @@ import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
+import {
+  harnessToolReason,
+  injectToolReasonIntoOpenAiTool,
+  isUsableToolReason,
+  splitToolCallReason,
+} from "@/ai/toolReason";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { isDestructiveOutcome } from "@/ai/approvalPolicy";
 import { contextFooterMapId, requestLikelyExpectsExistingChange, stripContextFooter } from "@/ai/modifyIntent";
@@ -184,7 +190,7 @@ export type SessionEvent =
   | { type: "reasoning_token"; delta: string }
   | { type: "assistant_message"; content: string }
   | { type: "assistant_stream_reset" }
-  | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult }
+  | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult; reason?: string }
   // 툴 실행 직전에 나가는 신호 이벤트 — 결과 도착 전에 "지금 무엇을 하는 중"을 그릴 수 있게 한다.
   // index는 이번 턴의 1-based 실행 서수.
   | { type: "tool_started"; name: string; index: number }
@@ -209,6 +215,8 @@ export interface ProposedCall {
   destructive: boolean; // remove_event 등 파괴적 작업.
   requiresApproval?: boolean;
   approvalWarning?: string;
+  /** 이 쓰기를 한 한 줄 이유. 적용 감사·편집 로그로 복사된다. */
+  reason?: string;
 }
 
 export interface TurnResult {
@@ -228,7 +236,7 @@ export interface TurnResult {
 export type AuditEntry =
   | { kind: "user"; text: string; at?: string; context?: ConversationTurnContext }
   | { kind: "assistant"; text: string; toolCalls?: { name: string; args: string }[]; at?: string }
-  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; issues?: string[]; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
+  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; reason?: string; issues?: string[]; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
   | { kind: "status"; text: string; at?: string };
 
 // 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
@@ -1877,6 +1885,7 @@ export class AssistantSession {
       summary: `마일스톤: ${completed.title}`,
       toolNames: calls.map((call) => call.name),
       snapshotLabel: `마일스톤: ${completed.title}`,
+      reason: calls.map((call) => call.reason).filter(isUsableToolReason).join(" · ") || `마일스톤 적용: ${completed.title}`,
     });
     if (!applied.ok) {
       // 커밋 게이트 차단 — 저장소는 그대로 두고 현재 자율 런만 중단한다.
@@ -1962,14 +1971,16 @@ export class AssistantSession {
     for (const call of calls) {
       this.emitToolStarted(onEvent, call.name);
       await this.yieldForUi();
+      const reason = harnessToolReason("verification", call.name);
       const result = runTool(this.ctx, call.name, call.args);
-      onEvent({ type: "tool_call", name: call.name, args: call.args, result });
+      onEvent({ type: "tool_call", name: call.name, args: call.args, result, reason });
       this.pushAudit({
         kind: "tool",
         name: call.name,
         args: call.args,
         ok: result.ok,
         summary: result.summary,
+        reason,
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       results.push({ name: call.name, result });
@@ -2473,14 +2484,16 @@ export class AssistantSession {
         pages: [specNpcPage(name)],
       };
       this.emitToolStarted(onEvent, "place_npc");
+      const reason = harnessToolReason("spec-npc", name);
       const result = runTool(this.ctx, "place_npc", args, { dryRun: false });
-      onEvent({ type: "tool_call", name: "place_npc", args, result });
+      onEvent({ type: "tool_call", name: "place_npc", args, result, reason });
       this.pushAudit({
         kind: "tool",
         name: "place_npc",
         args,
         ok: result.ok,
         summary: `${result.summary} (밑그림 npc 에셋 자동 실행)`,
+        reason,
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       if (!result.ok || !result.diff) continue;
@@ -2492,6 +2505,7 @@ export class AssistantSession {
         result,
         destructive: false,
         requiresApproval: false,
+        reason,
       });
       placed += 1;
     }
@@ -2677,7 +2691,7 @@ export class AssistantSession {
       const tools = clampTurnToolSchemas(
         [...baseExposed, ...requiredTools, ...capability, ...toolSchemasForNames(["find_tools"])],
         capabilityNames,
-      );
+      ).map((tool) => injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
       const exposedNames = new Set(tools.map((tool) => tool.function.name));
       const capabilityExposed = [...capabilityNames].filter((name) => exposedNames.has(name));
@@ -2856,7 +2870,9 @@ export class AssistantSession {
       for (const call of toolCalls) {
         const parsedCall = parseToolCall(call);
         const name = parsedCall.name;
-        const args = this.resolveToolCallArgs(name, parsedCall.args);
+        const split = splitToolCallReason(this.resolveToolCallArgs(name, parsedCall.args));
+        const args = split.args;
+        const callReason = split.reason;
         const tool = getTool(name);
         this.emitToolStarted(onEvent, name);
         await this.yieldForUi(signal);
@@ -2879,6 +2895,12 @@ export class AssistantSession {
           // 스펙 게이트: set_build_spec은 세션이 직접 처리(검증·활성화)하고,
           // 공간 쓰기 툴은 검증된 밑그림의 할당 영역 안에서만 실행한다(구간 격리).
           let toolResult: ToolResult;
+          const recordedReason = isUsableToolReason(callReason)
+            ? callReason
+            : "이유 없음 — 모델이 reason 을 생략함";
+          if (split.missing && parsedCall.parseError === null) {
+            this.pushAudit({ kind: "status", text: `tool-args:missing-reason ${name}` });
+          }
           if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
             this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
@@ -2964,13 +2986,14 @@ export class AssistantSession {
             }
           }
           if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
-          onEvent({ type: "tool_call", name, args, result: toolResult });
+          onEvent({ type: "tool_call", name, args, result: toolResult, reason: recordedReason });
           this.pushAudit({
             kind: "tool",
             name,
             args,
             ok: toolResult.ok,
             summary: toolResult.summary,
+            reason: recordedReason,
             // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
             ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
           });
@@ -2988,6 +3011,7 @@ export class AssistantSession {
               args,
               summary: toolResult.summary,
               result: toolResult,
+              reason: recordedReason,
               // 이름 목록이 아니라 결과 diff 로 파괴성을 본다 — 기존 맵을 교체하거나 이벤트를 지운
               // 호출은 이름이 생성계여도 승인 카드를 거친다(진단 근본원인 9).
               destructive: isDestructiveOutcome(name, args, toolResult.diff),

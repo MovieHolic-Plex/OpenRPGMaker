@@ -22,6 +22,7 @@
 //   descriptor 에 이미 담긴 값(scope/mapId/cells/label)만 기록하고, 필드 단위 상세는
 //   호출자가 이미 계산해 둔 것(예: 이벤트 편집기의 EventDiff)을 넘겨줄 때만 붙인다.
 
+import { reasonForEditAction } from "@/ai/toolReason";
 import { EDIT_ACTIVITY_DISK_ENDPOINT } from "@/editor/editActivityEndpoint";
 import { STORAGE_PREFIX } from "@/util/appStorage";
 import { createLogger } from "@/util/logger";
@@ -86,6 +87,8 @@ export type EditActivityEntry = {
   readonly generation: number;
   readonly fields?: readonly EditActivityField[];
   readonly eventId?: string;
+  /** 이 편집을 한 한 줄 이유. 예전 행에는 없을 수 있다. */
+  readonly reason?: string;
 };
 
 export type EditActivityInput = {
@@ -98,6 +101,7 @@ export type EditActivityInput = {
   readonly generation: number;
   readonly fields?: readonly EditActivityField[];
   readonly eventId?: string;
+  readonly reason?: string;
 };
 
 let entries: EditActivityEntry[] = [];
@@ -242,6 +246,11 @@ export function recordEditActivity(input: EditActivityInput): EditActivityEntry 
     ...(input.cellCount === undefined ? {} : { cellCount: input.cellCount }),
     ...(input.eventId === undefined ? {} : { eventId: input.eventId }),
     ...(input.fields && input.fields.length > 0 ? { fields: clipFields(input.fields) } : {}),
+    reason: reasonForEditAction({
+      reason: input.reason,
+      label: input.label,
+      origin: input.origin,
+    }),
   };
   entries.push(entry);
   if (entries.length > MAX_ENTRIES) entries = entries.slice(-MAX_ENTRIES);
