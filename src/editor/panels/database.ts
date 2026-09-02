@@ -290,10 +290,27 @@ type DatabaseTabRenderCache = {
 // a cheap and exact invalidation boundary without hashing large database records.
 const tabRenderCaches = new WeakMap<HTMLElement, DatabaseTabRenderCache>();
 
+// 활성 탭 구독 — 모달 헤더의 현재 위치(그룹 › 탭) 표시처럼 레일 밖에서 활성 탭을 따라가야
+// 하는 표면용. DOM 이벤트 대신 순수 Set 인 이유: fake DOM 테스트에는 `document.dispatchEvent`
+// 가 없고, 구독자는 어차피 이 모듈 안의 setter 한 곳만 알면 된다.
+const activeTabListeners = new Set<(tab: DatabaseTab) => void>();
+
+export function subscribeDatabaseActiveTab(listener: (tab: DatabaseTab) => void): () => void {
+  activeTabListeners.add(listener);
+  return () => {
+    activeTabListeners.delete(listener);
+  };
+}
+
 export function setDatabaseActiveTab(tab: DatabaseTab): void {
   activeTab = tab;
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, tab);
+  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, tab);
+  for (const listener of activeTabListeners) listener(tab);
+}
+
+/** 탭이 속한 사이드바 그룹 라벨. 개요처럼 그룹 밖 탭은 undefined. */
+export function databaseTabGroupLabel(tab: DatabaseTab): string | undefined {
+  return groupForTab(tab)?.label;
 }
 export function switchDatabaseActiveTab(tab: DatabaseTab, panelRoot: HTMLElement): void {
   setDatabaseActiveTab(tab);

@@ -3,11 +3,13 @@ import { dismissCoachMarks } from "@/editor/coachMarks";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
+  databaseTabGroupLabel,
   databaseTabLabel,
   getDatabaseActiveTab,
   refreshDatabasePanel,
   renderDatabasePanel,
   setDatabaseActiveTab,
+  subscribeDatabaseActiveTab,
   type DatabaseTab,
 } from "@/editor/panels/database";
 import { createDatabaseModalDirtySession } from "@/editor/panels/databaseModalDirtySession";
@@ -24,9 +26,58 @@ import {
   type EditorModalCloseAttempt,
   type EditorModalDirtyDecision,
 } from "@/editor/panels/editorModalDirtyState";
+import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+
+// 창 컨트롤 아이콘 — 예전에는 "⇥ □ x" 텍스트 글리프였다. 글꼴에 따라 굵기·베이스라인이
+// 제각각이고 x 는 소문자 엑스라 닫기 버튼으로 읽히지 않았다. 규격은 레일 아이콘과 같다
+// (`tileToolbarIcons.ts`: 22×22 viewBox · stroke currentColor 1.8 · round cap/join).
+type WindowIconName = "dock" | "undock" | "maximize" | "restore" | "close" | "sparkle";
+
+const WINDOW_ICONS: Record<WindowIconName, readonly SvgNodeSpec[]> = {
+  dock: [
+    { tag: "rect", attrs: { x: "3", y: "4", width: "16", height: "14", rx: "2" } },
+    { tag: "path", attrs: { d: "M13 4v14" } },
+  ],
+  undock: [
+    { tag: "rect", attrs: { x: "3", y: "4", width: "16", height: "14", rx: "2" } },
+    { tag: "path", attrs: { d: "M9 4v14" } },
+  ],
+  maximize: [{ tag: "rect", attrs: { x: "4", y: "4", width: "14", height: "14", rx: "2" } }],
+  restore: [
+    { tag: "rect", attrs: { x: "3", y: "7", width: "12", height: "12", rx: "2" } },
+    { tag: "path", attrs: { d: "M7 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2" } },
+  ],
+  close: [{ tag: "path", attrs: { d: "M6 6l10 10M16 6L6 16" } }],
+  sparkle: [
+    { tag: "path", attrs: { d: "M11 3l1.7 4.6L17.3 9.3 12.7 11 11 15.6 9.3 11 4.7 9.3 9.3 7.6z" } },
+    { tag: "path", attrs: { d: "M17.5 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" } },
+  ],
+};
+
+function windowIcon(name: WindowIconName): SVGSVGElement {
+  const icon = buildSvgIcon(WINDOW_ICONS[name]);
+  icon.setAttribute("class", "database-modal-icon");
+  return icon;
+}
+
+/** 헤더 브레드크럼 "그룹 › 탭" 을 현재 활성 탭으로 다시 쓴다. 개요처럼 그룹 밖 탭은 탭 이름만 남긴다. */
+function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
+  const group = databaseTabGroupLabel(tab);
+  const label = databaseTabLabel(tab);
+  crumb.replaceChildren(
+    ...(group
+      ? [
+        el("span", { class: "database-modal-crumb-group", text: group }),
+        el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } }),
+      ]
+      : []),
+    el("span", { class: "database-modal-crumb-tab", text: label }),
+  );
+  crumb.dataset.tab = tab;
+}
 
 type ActiveDatabaseModalHandle = {
   readonly close: () => void;
@@ -70,21 +121,21 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   const body = el("div", { class: "database-modal-body" });
   const maximizeButton = el("button", {
     class: "database-modal-maximize",
-    text: "□",
     attrs: { type: "button", title: "전체 화면", "aria-label": "데이터베이스 전체 화면" },
     dataset: { testid: "database-modal-maximize" },
+    children: [windowIcon("maximize")],
   }) as HTMLButtonElement;
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "x",
     attrs: { type: "button", title: "닫기", "aria-label": "데이터베이스 닫기" },
     dataset: { testid: "database-modal-close" },
+    children: [windowIcon("close")],
   }) as HTMLButtonElement;
   const dockToggleButton = el("button", {
     class: "database-modal-dock-toggle",
-    text: "⇥",
     attrs: { type: "button", title: "사이드 도크로 전환", "aria-label": "사이드 도크로 전환" },
     dataset: { testid: "database-dock-toggle" },
+    children: [windowIcon("dock")],
   }) as HTMLButtonElement;
   const windowControls = el("div", {
     class: "database-modal-controls",
@@ -94,9 +145,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   // 응답/제안 카드는 기존 채팅 패널 흐름 그대로 — 여기서는 전송과 도크 열기만 한다.
   const aiToggleButton = el("button", {
     class: "database-ai-toggle",
-    text: "AI 어시스턴트",
     attrs: { type: "button", title: "AI 어시스턴트 열기", "aria-label": "에디터 AI 어시스턴트 열기", "aria-expanded": "false" },
     dataset: { testid: "database-ai-toggle" },
+    children: [windowIcon("sparkle"), "AI 어시스턴트"],
   }) as HTMLButtonElement;
   const aiInput = el("input", {
     class: "database-ai-input",
@@ -176,9 +227,22 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     event.preventDefault();
     runAiRequest();
   });
+  // 현재 위치 브레드크럼 — 레일에서 한 그룹만 펼쳐지므로 "어디를 편집하고 있나" 는 헤더가
+  // 답해야 한다. 활성 탭 구독으로 레일 클릭·G006 점프·Ctrl+T 순환을 전부 따라간다.
+  const crumb = el("nav", {
+    class: "database-modal-crumb",
+    attrs: { "aria-label": "현재 위치" },
+    dataset: { testid: "database-modal-crumb" },
+  });
+  writeCrumb(crumb, getDatabaseActiveTab());
+  const unsubscribeActiveTab = subscribeDatabaseActiveTab((tab) => writeCrumb(crumb, tab));
   const header = el("header", {
     class: "database-modal-header",
-    children: [el("h2", { text: "데이터베이스" }), aiToggleButton, windowControls],
+    children: [
+      el("div", { class: "database-modal-heading", children: [el("h2", { text: "데이터베이스" }), crumb] }),
+      aiToggleButton,
+      windowControls,
+    ],
   });
   const backdrop = el("div", {
     class: "database-modal-backdrop",
@@ -291,6 +355,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     modalClosed = true;
     if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
+    unsubscribeActiveTab();
     stopSkillAnimationStagesIn(backdrop);
     backdrop.remove();
     document.removeEventListener("keydown", controller.handleKeyDown);
@@ -388,7 +453,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
         },
       }),
       el("button", {
-        class: "database-footer-button",
+        class: "database-footer-button tertiary",
         text: "도움말",
         attrs: { type: "button" },
         on: { click: () => toast("데이터베이스에서 레코드와 시스템 설정을 조정합니다.", "ok") },
@@ -417,7 +482,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
       windowEl.style.top = "";
       windowEl.style.width = "";
       windowEl.style.height = "";
-      maximizeButton.textContent = "□";
+      maximizeButton.replaceChildren(windowIcon("maximize"));
       // 도크는 모달이 아니다 — 포커스를 가두지 않고 맵과 병행 조작하는 보조 패널.
       windowEl.setAttribute("role", "complementary");
       windowEl.removeAttribute("aria-modal");
@@ -427,7 +492,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     }
     maximizeButton.disabled = next;
     maximizeButton.setAttribute("aria-disabled", String(next));
-    dockToggleButton.textContent = next ? "⇤" : "⇥";
+    dockToggleButton.replaceChildren(windowIcon(next ? "undock" : "dock"));
     const label = next ? "창 모드로 복원" : "사이드 도크로 전환";
     dockToggleButton.setAttribute("title", label);
     dockToggleButton.setAttribute("aria-label", label);
@@ -570,7 +635,7 @@ function toggleMaximizedDatabaseModal(button: HTMLButtonElement): void {
     windowEl.style.width = "";
     windowEl.style.height = "";
   }
-  button.textContent = isMaximized ? "▣" : "□";
+  button.replaceChildren(windowIcon(isMaximized ? "restore" : "maximize"));
   button.title = isMaximized ? "창 크기로 복원" : "전체 화면";
   button.setAttribute("aria-label", isMaximized ? "데이터베이스 창 크기로 복원" : "데이터베이스 전체 화면");
 }
