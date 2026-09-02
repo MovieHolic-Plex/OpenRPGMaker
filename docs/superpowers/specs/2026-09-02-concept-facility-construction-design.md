@@ -66,3 +66,54 @@ y=16..20 [========= 홀 5행 ==========]            entrance, 정문은 남쪽 �
 - 계약: `test/placeConceptTool.test.ts` 확장(도면·구성·칩), `test/scratchConceptTab.test.ts`(역할·개수 편집), 기존 케이스 유지.
 - 조수: 스텁 LLM 으로 「여관 지어줘」 첫 라운드 노출에 `place_concept` 이 있고 호출이 맵을 만드는지, 그리고 실제 에디터에서 `__oprnAiBridge.send` 로 실제 LLM 턴(`test/e2e/_place-concept-inn-evidence.spec.ts`, 진단 스펙).
 - 판정은 이미지: `scripts/gen-place-concept-report.mts` 가 초안 vs 수정(피아노 삭제·책장 추가·식당 삭제·개명)을 나란히 찍고 달라진 셀을 표시한다.
+
+## 6. 시설 다양화 — 여관 하나에서 초안 아홉 종으로 (2026-09-02 후속)
+
+사용자 요청: 「개념 꾸러미를 통해 다양한 실내를 만들 수 있게」. 도면·구성·칩 집행 규칙은 그대로 두고 **데이터(초안)와 그 데이터를 드나드는 면**을 넓혔다.
+
+### 6.1 초안 묶음 (`src/project/defaults/conceptFacilityTemplates.ts`)
+
+| id | 시설 | 장소(역할·크기) | 벽 | 특징 |
+|---|---|---|---|---|
+| inn | 여관 | 침실 room·m ×2 → 복도 walkway → 식당/홀 entrance·l | 크림 | 기존 그대로(첫째) |
+| house | 민가 | 침방 room·s · 부엌 room·s(널) → 거실 entrance·l | 크림 | 화덕·식탁·돗자리 |
+| shop | 상점 | 물품 창고 room·s → 매장 entrance·l(널) | 크림 | 계산대·진열대·선반 |
+| tavern | 술집 | 주방 room·s(널) · 객실 room·s → 홀 entrance·l | 크림 | 카운터·피아노·간판·객실 침대 sleep |
+| library | 서재 | 개인 서재 room·m → 열람실 entrance·l(널) | 크림 | 책장 ×2 + 붉은 카펫 |
+| smithy | 대장간 | 자재 창고 room·s → 작업장 entrance·l(돌) | 석재 벽돌 | 화덕=단조로, 갑옷·검 거치대 |
+| church | 교회 | 사제실 room·s → 예배당 entrance·l(돌) | 크림 | 성상·제단·흉상 ×2·붉은 카펫 |
+| warehouse | 창고 | 보관실 entrance·l(널) | 크림 | 방 하나, 상자·술통 7개 |
+| guild | 길드 | 회의실 room·l → 복도 walkway → 접수홀 entrance·l(널) | 금빛 벽돌 | 카운터·의뢰 진열대·회의 탁자 |
+
+시드: `tileset.scratchConceptBundles === undefined` 인 실내 칩셋에 아홉 종을 한 번에 얹는다(`ensureConceptBundles`·DB 탭 `ensureScratchBundles`). 빈 배열은 여전히 재시드 금지. 옛 프로젝트(여관만 시드)는 시설 띠의 「초안 넣기」로 빠진 초안만 골라 넣는다 — 자동으로 되돌리지 않는다.
+
+### 6.2 스키마 확장 (선택 필드, 기본값은 필드 삭제)
+
+- 장소 `floor?: "wood" | "stone" | "plank" | "mat"` → `RoomSpec.floorTile`(72·12·102·139). 번호 표는 `conceptBundleResolve.CONCEPT_FLOOR_TILES`(파이프라인 미의존 유지).
+- 시설 `wall?: "cream" | "gold-brick" | "stone-brick"` → `InteriorRoomPlan.wallMaterial`. 파이프라인이 원래 갖고 있던 리틴트(가구 배치 뒤 통타일 교체)를 그대로 쓴다.
+- 검증기 `shapeResourceFields` 가 모르는 값을 거절하고 `cloneConceptBundle` 이 보존한다.
+
+### 6.3 구성기 보정 (초안 실측으로 드러난 것)
+
+1. **홀 넓힘** `BAND_SPREAD=1`: 복도 없이 방 둘 이상이 홀 바로 위에 서면 홀을 좌우 1열씩 넓힌다. 방문 착지 열(방 중앙)이 홀 북벽을 2칸 조각으로 쪼개 3칸 가구(카운터·피아노·책장)가 설 자리가 없었다.
+2. **러그 먼저**: 벽 가구(필수 먼저) → 러그 → 바닥·구석(필수 먼저). 러그 칸은 상위 레이어 가구에만 자리로 열린다(하부 레이어 상자·책장은 러그를 덮어 구멍을 내므로 불허). 입구 표지(`ENTRY_SENTINEL`) 위에도 깔린다. 방 전체를 훑어 중앙에 가장 가까운 자리를 고른다.
+3. **구석 소품 둘레 확장**: 네 구석 → 남·북 행 → 서·동 열 → 안쪽.
+4. **북벽 앵커 공유**: 북벽 가구·키 큰 가구·복도 끝 계단이 서로를 앵커로 보고 퍼진다(흉상 둘이 동쪽에 나란히 서던 결함).
+5. 조사 문장에 시설명(`ConceptEventOptions.facilityLabel`).
+
+### 6.4 조수 면
+
+- 툴 설명에 시설명·별칭 낱말(여관·상점·술집·주막·민가·서재·도서관·대장간·교회·성당·창고·길드) + 「지어줘·만들어줘」 → 「X 지어줘」가 승격(matchScore ≥ 20). 핀은 여전히 없다.
+- 시스템 프롬프트 개념 절은 **두 단계**다(2026-09-03). 초안 그대로(칩셋에 `scratchConceptBundles` 없음)면 시설명 한 줄(`query=시설명`, 약 200자). 사용자가 고친 나무(배열 있음)면 시설마다 한 줄(장소 `[역할·크기 ×개수·바닥]`·벽·물건 표식, 9시설 ≈ 1,500자). 빈 프로젝트 프롬프트가 20,000자 예산 중 약 19,250자를 이미 써서, 초안에도 시설별 줄을 싣자 뒤의 스타일 문서 발췌가 밀려났다(`test/worldAiExclusion.test.ts`). 장소마다 줄을 쓰던 첫 판은 더 컸다.
+- `concept-not-found` 오류에 지금 부를 수 있는 시설 목록.
+- 의도 라우터·되묻기에는 여관 외 시설명을 **넣지 않았다**. 「대장간 지어줘」는 야외 건물일 수 있으므로 기존대로 실내/야외를 되묻고, 실내로 답하면 place_concept 이 짓는다(코퍼스 `blacksmith-full` 은 structure+npc-shop).
+
+### 6.5 데이터베이스 면
+
+시설 띠(`scratch-concept-facilities`, 칩 `scratch-concept-facility-<bundleId>`, `+ 시설`, 빠진 초안만 보이는 `초안 넣기…` 셀렉트), 도구줄 `벽 재질`·`시설 삭제`, 장소 카드 `바닥`. 피커는 프로젝트 킷 뒤에 카탈로그에만 있는 소품을 잇는다. 카탈로그 10종 추가(성상·과일 선반·항아리 선반·곡물 자루·잡화 상자·물통·주전자·스툴·붉은 카펫·짚 돗자리, 역할 null).
+
+### 6.6 증거
+
+- `test/conceptFacilityTemplates.test.ts`(20): 초안마다 plan/walkability 경고 0·자리 없음 0·필수 물건 존재, 도면 다양성, 재질 리틴트, 승격, 프롬프트, 시드 규칙.
+- `test/scratchConceptTab.test.ts`(17): 시설 띠·초안 넣기·삭제·재질 저장·피커 소품.
+- 갤러리 보고서 `reports/concept-facilities/index.html`(`scripts/gen-concept-facility-gallery.mts`, 9/9) + 실제 에디터 사진(`test/e2e/_concept-facility-gallery.spec.ts`, 모델 호출 없음).

@@ -253,14 +253,16 @@ The Database modal was modernized in six waves while keeping every hard contract
 저작하는 실험 면이다. `place_concept(query)` 가 이 필드를 읽어 시공한다. 사용자가 고친 나무가 정본이다.
 
 - 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
-- 실내 칩셋만 여관 초안을 시드한다(`SCRATCH_INN_BUNDLE`). 마을 칩셋에는 얹지 않는다.
+- 실내 칩셋만 **시설 초안 묶음 아홉 종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 여관·민가·상점·술집·서재·대장간·교회·창고·길드, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
 - 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
 - 칩은 닫힌 집합(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`). 산문 배치 규칙이 아니다.
 - 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·칩 토글·장소 소속).
 - 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름, 칩 토글, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
 - **장소 도면 필드 (2026-09-02 시공 개편):** 장소 레코드에 선택 필드 `role`(`entrance` 홀·정문 / `walkway` 복도 / `room` 방), `size`(`s` 5×3 · `m` 7×4 · `l` 9×5), `count`(1..4, 같은 장소 여러 개) 가 붙었다. 장소 카드의 도면 열(`scratch-concept-place-role-<id>` / `-size-<id>` / `-count-<id>`)에서 고친다. 필드가 없는 옛 나무는 기본값(방·보통·1)으로 읽고, 복도는 라벨(복도·통로) 폴백으로 알아본다. 검증기(`shapeResourceFields`)가 모르는 role/size 와 범위 밖 count 를 거절한다.
 - 여관 초안 시드: 침실 `room·m·count 2`, 복도 `walkway`, 식당/홀 `entrance·l`. 도면은 남→북으로 홀(정문) → 복도 → 객실 ×2.
-- 진입: `src/editor/panels/scratchConceptTab.ts`. 계약: `test/scratchConceptTab.test.ts`, `test/placeConceptTool.test.ts`. 시공 쪽 설명은 `openwiki/editor-interior-room-harness.md` 「개념 시설 시공」.
+- **시설 띠·재질 (2026-09-02 시설 다양화):** 보드 위에 시설 띠(`scratch-concept-facilities`)가 이 타일셋의 꾸러미를 칩(`scratch-concept-facility-<bundleId>`)으로 늘어놓는다. `+ 시설`(`scratch-concept-facility-add`)은 빈 꾸러미를 만들고, 아직 없는 초안이 있으면 `초안 넣기…` 셀렉트(`scratch-concept-template-select`)가 그것만 보여 준다. 도구줄의 `시설 삭제`(`scratch-concept-facility-remove`)는 꾸러미를 지운다 — 마지막 것을 지우면 빈 배열이 남고 다시 시드하지 않는다(빈 화면의 `초안 N종 넣기`(`scratch-concept-seed-templates`)가 다시 넣는 유일한 길). 시설에 **벽 재질** `wall`(`cream`·`gold-brick`·`stone-brick`, `scratch-concept-facility-wall`), 장소에 **바닥 재질** `floor`(`wood`·`stone`·`plank`·`mat`, `scratch-concept-place-floor-<id>`)가 붙었다. 기본값(크림·나무)은 필드를 지운다. 시공 뒤 파이프라인 리틴트가 그 방 바닥·그 시설 벽면을 갈아 끼운다.
+- 피커는 프로젝트 킷 뒤에 카탈로그에만 있는 소품(성상·과일 선반·항아리 선반·곡물 자루·잡화 상자·물통·주전자·스툴·붉은 카펫·짚 돗자리)을 이어 보여 준다 — 킷을 옛 카탈로그로 시드한 프로젝트에서도 고를 수 있다. 러그류(`rug*`)는 기본 칩이 통행 가능·바닥, 계단류(`stairs*`)는 통행 가능·맵 연결.
+- 진입: `src/editor/panels/scratchConceptTab.ts`. 초안 데이터: `src/project/defaults/conceptFacilityTemplates.ts`. 계약: `test/scratchConceptTab.test.ts`, `test/conceptFacilityTemplates.test.ts`, `test/placeConceptTool.test.ts`. 시공 쪽 설명은 `openwiki/editor-interior-room-harness.md` 「개념 시설 시공」. 갤러리 보고서: `npx tsx scripts/gen-concept-facility-gallery.mts` → `reports/concept-facilities/index.html`.
 
 ## '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
 

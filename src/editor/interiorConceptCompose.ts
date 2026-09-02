@@ -82,6 +82,8 @@ export type ConceptComposeInput = {
   readonly resolveObject: (objectId: string) => InteriorObjectDef | undefined;
   /** 하위 타일이 통행 바닥 재질인가(나무·돌·널·돗자리). 파이프라인이 정본을 준다. */
   readonly isFloorTile: (tile: number) => boolean;
+  /** 파이프라인이 문 앞 입구 칸에 잠시 꽂는 상위 레이어 표지. 러그는 그 위에 깔려도 된다(걷는 바닥). */
+  readonly entrySentinel?: number;
 };
 
 export type ConceptComposeResult = {
@@ -92,7 +94,8 @@ export type ConceptComposeResult = {
 type SlotClass = "face" | "tall-face" | "north-end" | "north" | "floor" | "rug" | "corner";
 
 // 큰 가구(북벽)가 먼저 자리를 잡고 장식(키 큰 가구·벽걸이)이 남은 틈을 채운다. 계단은 복도 끝을 가장 먼저 받는다.
-const CLASS_ORDER: readonly SlotClass[] = ["north-end", "north", "face", "tall-face", "floor", "corner", "rug"];
+// 러그는 바닥 가구보다 먼저 깔린다 — 탁자·소품(상위 레이어)이 러그 위에 앉을 수 있다(정본 placeRugUnder 의 「탁자 밑 러그」).
+const CLASS_ORDER: readonly SlotClass[] = ["north-end", "north", "face", "tall-face", "rug", "floor", "corner"];
 
 type Point = { readonly x: number; readonly y: number };
 
@@ -112,6 +115,8 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   const taken = new Set<number>();
   /** 바닥 점유 가구 칸 — 러그가 밑으로 들어가지 못하는 칸. */
   const floorTaken = new Set<number>();
+  /** 러그가 깔린 칸 — 하부 타일은 러그지만 상위 레이어 가구는 그 위에 앉을 수 있다. */
+  const rugCells = new Set<number>();
   /** 벽 물건 사이 간격 칸 — 자리가 모자라면 양보한다(soft). */
   const soft = new Set<number>();
   /** 통로 — 문에서 방 안으로 곧게 이어지는 줄. 가구 금지, 러그는 허용. */
@@ -153,6 +158,9 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     taken.has(idx(x, y)) || lane.has(idx(x, y)) || (!loose && soft.has(idx(x, y)));
   const free = (x: number, y: number, loose = false): boolean =>
     inRoomFloor(x, y) && input.isFloorTile(lowerAt(x, y)) && upperEmpty(x, y) && !blocked(x, y, loose);
+  /** 상위 레이어 셀은 러그 위에도 앉는다. 하부 레이어 셀(상자·책장)은 러그를 덮어 구멍을 내므로 바닥 재질 칸만. */
+  const freeFor = (cell: InteriorObjectCell, x: number, y: number, loose = false): boolean =>
+    free(x, y, loose) || (cell.layer === "upper" && rugCells.has(idx(x, y)) && inRoomFloor(x, y) && upperEmpty(x, y) && !blocked(x, y, loose));
   const faceFree = (x: number, y: number, loose = false): boolean =>
     inBounds(x, y)
     && x >= room.x && x < room.x + room.w
@@ -161,10 +169,14 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     && upperEmpty(x, y)
     && !blocked(x, y, loose);
   // 러그는 침대 밑으로는 들어가고(정본 placeRugUnder) 다른 가구 밑으로는 들어가지 않는다. 통로 위는 허용(걷는 바닥).
+  const upperEmptyOrEntry = (x: number, y: number): boolean => {
+    const upper = map.upperTiles[idx(x, y)] ?? TILE.EMPTY;
+    return upper < 0 || (input.entrySentinel !== undefined && upper === input.entrySentinel);
+  };
   const rugFree = (x: number, y: number): boolean =>
     inRoomFloor(x, y)
     && input.isFloorTile(lowerAt(x, y))
-    && (bedCells.some((cell) => cell.x === x && cell.y === y) || (!floorTaken.has(idx(x, y)) && upperEmpty(x, y)));
+    && (bedCells.some((cell) => cell.x === x && cell.y === y) || (!floorTaken.has(idx(x, y)) && upperEmptyOrEntry(x, y)));
 
   const classify = (thing: ConceptOverlayThing, object: InteriorObjectDef): SlotClass => {
     if (object.snap === "wall-any") return "face";
@@ -172,7 +184,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
       return object.height === 2 && TALL_FACE_OVERLAP_IDS.has(object.id) ? "tall-face" : "north";
     }
     if (thing.chips.includes("transfer")) return "north-end";
-    if (object.id === "rug" || (thing.chips.includes("floor") && object.layer === "lower")) return "rug";
+    if (object.id.startsWith("rug") || (thing.chips.includes("floor") && object.layer === "lower")) return "rug";
     if (object.width === 1 && object.height === 1 && thing.chips.includes("block")) return "corner";
     return "floor";
   };
@@ -187,7 +199,12 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     }
     jobs.push({ thing, object, slot: classify(thing, object) });
   }
+  // 벽에 붙는 가구(필수 먼저) → 러그 → 바닥·구석 소품(필수 먼저). 러그는 상위 레이어 가구의 자리를 빼앗지 않으므로
+  // 필수 탁자보다 먼저 깔려도 손해가 없고, 반대로 탁자가 먼저 앉으면 러그가 들어갈 3×3 이 남지 않는다.
+  const groupOf = (slot: SlotClass): number => (slot === "rug" ? 1 : slot === "floor" || slot === "corner" ? 2 : 0);
   jobs.sort((a, b) => {
+    const group = groupOf(a.slot) - groupOf(b.slot);
+    if (group !== 0) return group;
     const req = Number(b.thing.required) - Number(a.thing.required);
     if (req !== 0) return req;
     const cls = CLASS_ORDER.indexOf(a.slot) - CLASS_ORDER.indexOf(b.slot);
@@ -196,9 +213,14 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   });
 
   const placedByClass = new Map<SlotClass, Point[]>();
+  // 북벽에 붙는 세 종류(북벽 가구·키 큰 가구·복도 끝 계단)는 한 줄을 나눠 쓰므로 서로를 앵커로 본다 —
+  // 그렇지 않으면 흉상 둘이 나란히 동쪽에만 선다(2026-09-02 교회 실측).
+  const NORTH_WALL_SLOTS: readonly SlotClass[] = ["north", "tall-face", "north-end"];
+  const anchorsFor = (slot: SlotClass): Point[] =>
+    (NORTH_WALL_SLOTS.includes(slot) ? NORTH_WALL_SLOTS : [slot]).flatMap((entry) => placedByClass.get(entry) ?? []);
   const spreadPick = (candidates: readonly Point[], slot: SlotClass, first: "west" | "center" | "east"): Point | null => {
     if (candidates.length === 0) return null;
-    const anchors = placedByClass.get(slot) ?? [];
+    const anchors = anchorsFor(slot);
     if (anchors.length === 0) {
       if (first === "west") return candidates[0] ?? null;
       if (first === "east") return candidates[candidates.length - 1] ?? null;
@@ -223,8 +245,11 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
       const y = oy + cell.dy;
       if (cell.layer === "upper") map.upperTiles[idx(x, y)] = cell.tile;
       else map.lowerTiles[idx(x, y)] = cell.tile;
-      taken.add(idx(x, y));
-      if (job.slot !== "rug") floorTaken.add(idx(x, y));
+      if (job.slot === "rug") rugCells.add(idx(x, y));
+      else {
+        taken.add(idx(x, y));
+        floorTaken.add(idx(x, y));
+      }
       placed.push({ x, y, layer: cell.layer, tile: cell.tile });
     }
     // 벽 물건 사이는 한 칸 띈다 — 북벽에 쟁여지지 않게. 자리가 모자라면 양보하는 간격이다.
@@ -290,7 +315,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
             const ok = object.cells.every((cell) => {
               const cx = x + cell.dx;
               const cy = oy + cell.dy;
-              return cell.dy === 0 ? faceFree(cx, cy, loose) : free(cx, cy, loose);
+              return cell.dy === 0 ? faceFree(cx, cy, loose) : freeFor(cell, cx, cy, loose);
             });
             if (ok) candidates.push({ x, y: oy });
           }
@@ -307,7 +332,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
         const pick = withRetry((loose) => {
           const candidates: Point[] = [];
           for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
-            if (cellsFit(object.cells, x, northRowY, (cx, cy) => free(cx, cy, loose))) candidates.push({ x, y: northRowY });
+            if (object.cells.every((cell) => freeFor(cell, x + cell.dx, northRowY + cell.dy, loose))) candidates.push({ x, y: northRowY });
           }
           return candidates;
         }, (candidates) => (job.slot === "north-end"
@@ -327,7 +352,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
         const candidates: Array<Point & { score: number }> = [];
         for (let y = interiorRows.from; y <= interiorRows.to - object.height + 1; y += 1) {
           for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
-            if (!cellsFit(object.cells, x, y, free)) continue;
+            if (!object.cells.every((cell) => freeFor(cell, x + cell.dx, y + cell.dy))) continue;
             // 좌석군 사이 통로: 이웃 칸에 다른 바닥 물건이 붙지 않게.
             const crowded = object.cells.some((cell) =>
               ([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) =>
@@ -345,19 +370,28 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
         break;
       }
       case "corner": {
+        // 1×1 바닥 소품: 네 구석 → 벽을 따라 둘레(남·북 행, 서·동 열) → 마지막으로 방 안쪽.
+        // 창고처럼 상자·술통이 여럿인 시설이 구석 넷에서 멈추지 않게 한다. 복도는 양 끝 열만 쓴다.
         const ends = input.role === "walkway"
           ? [room.x, room.x + room.w - 1].flatMap((x) => {
               const out: Point[] = [];
               for (let y = room.y; y < room.y + room.h; y += 1) out.push({ x, y });
               return out;
             })
-          : [
-              { x: room.x, y: room.y + room.h - 1 },
-              { x: room.x + room.w - 1, y: room.y + room.h - 1 },
-              { x: room.x, y: room.y },
-              { x: room.x + room.w - 1, y: room.y },
-            ];
-        const pick = ends.find((point) => free(point.x, point.y));
+          : perimeterCandidates(room);
+        const cell = object.cells[0]!;
+        let pick = ends.find((point) => freeFor(cell, point.x, point.y)) ?? ends.find((point) => freeFor(cell, point.x, point.y, true)) ?? null;
+        if (!pick && input.role !== "walkway") {
+          for (let y = interiorRows.from; y <= interiorRows.to && !pick; y += 1) {
+            for (let x = room.x; x < room.x + room.w; x += 1) {
+              if (!freeFor(cell, x, y)) continue;
+              const crowded = ([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) => floorTaken.has(idx(x + dx, y + dy)));
+              if (crowded) continue;
+              pick = { x, y };
+              break;
+            }
+          }
+        }
         if (pick) {
           paint(job, pick.x, pick.y, object.cells);
           done = true;
@@ -365,7 +399,8 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
         break;
       }
       case "rug": {
-        // 침대 발치에 앵커(정본 placeRugUnder: 러그 중심 = 침대 아래 칸). 없으면 방 중앙.
+        // 침대 발치에 앵커(정본 placeRugUnder: 러그 중심 = 침대 아래 칸). 없으면 방 안에서 중앙에 가장 가까운 자리.
+        // 탁자가 중앙을 차지한 방에서도 러그가 옆으로 비켜 앉도록 한 열만 보지 않고 방 전체를 훑는다.
         const candidates: Point[] = [];
         const bed = bedCells[0];
         if (bed) {
@@ -375,10 +410,19 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
           }
         }
         if (candidates.length === 0) {
-          const cx = Math.round(room.x + (room.w - object.width) / 2);
-          for (let y = interiorRows.from; y <= interiorRows.to - object.height + 1; y += 1) {
-            if (cellsFit(object.cells, cx, y, rugFree)) candidates.push({ x: cx, y });
+          const centerX = room.x + (room.w - object.width) / 2;
+          const centerY = room.y + (room.h - object.height) / 2;
+          const scored: Array<Point & { score: number }> = [];
+          for (let y = room.y; y <= room.y + room.h - object.height; y += 1) {
+            for (let x = room.x; x <= room.x + room.w - object.width; x += 1) {
+              if (!cellsFit(object.cells, x, y, rugFree)) continue;
+              // 북쪽 행(가구 줄)보다 방 안쪽을 선호한다.
+              const northPenalty = y === room.y ? 1.5 : 0;
+              scored.push({ x, y, score: Math.abs(x - centerX) + Math.abs(y - centerY) + northPenalty });
+            }
           }
+          scored.sort((a, b) => a.score - b.score || a.y - b.y || a.x - b.x);
+          for (const entry of scored) candidates.push({ x: entry.x, y: entry.y });
         }
         const pick = candidates[0];
         if (pick) {
@@ -392,6 +436,39 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   }
 
   return { placements, warnings };
+}
+
+/** 방 둘레 칸 — 네 구석, 남쪽 행, 북쪽 행, 서·동 열 순. 구석 소품이 벽을 따라 늘어선다. */
+function perimeterCandidates(room: ConceptRoomBox): Point[] {
+  const south = room.y + room.h - 1;
+  const east = room.x + room.w - 1;
+  const out: Point[] = [
+    { x: room.x, y: south },
+    { x: east, y: south },
+    { x: room.x, y: room.y },
+    { x: east, y: room.y },
+  ];
+  const seen = new Set(out.map((point) => `${point.x},${point.y}`));
+  const push = (x: number, y: number): void => {
+    const key = `${x},${y}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ x, y });
+  };
+  // 남쪽 행은 바깥에서 안쪽으로 — 문 통로(가운데)는 어차피 lane 이라 뒤로 간다.
+  for (let d = 1; d < room.w - 1; d += 1) {
+    push(room.x + d, south);
+    push(east - d, south);
+  }
+  for (let d = 1; d < room.w - 1; d += 1) {
+    push(room.x + d, room.y);
+    push(east - d, room.y);
+  }
+  for (let y = room.y + 1; y < south; y += 1) {
+    push(room.x, y);
+    push(east, y);
+  }
+  return out;
 }
 
 /**

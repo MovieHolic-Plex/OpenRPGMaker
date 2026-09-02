@@ -24,6 +24,8 @@ export type ConceptEventOptions = {
   readonly innPrice?: number;
   /** 계단·문 연결 대상. 없으면 같은 맵 정문(미연결). */
   readonly transferTarget?: ConceptTransferTarget | null;
+  /** 조사 문장에 넣는 시설명(「여관 카운터다」). 없으면 「시설」. */
+  readonly facilityLabel?: string;
 };
 
 export type ConceptConnection = {
@@ -53,9 +55,9 @@ function behaviorFor(chips: readonly string[]): Behavior | null {
   return null;
 }
 
-/** 조사 문장 — 물건 id 별 한 줄. 없는 id 는 라벨로 만든다. */
-const FLAVOR: Readonly<Record<string, string>> = {
-  counter: "여관 카운터다. 주인은 잠시 자리를 비웠다. 침대에서 쉴 수 있다.",
+/** 조사 문장 — 물건 id 별 한 줄. 시설명이 들어가는 줄은 함수다. 없는 id 는 라벨로 만든다. */
+const FLAVOR: Readonly<Record<string, string | ((facility: string) => string)>> = {
+  counter: (facility) => `${facility} 카운터다. 주인은 잠시 자리를 비웠다.`,
   clock: "괘종시계가 느리게 흔들린다.",
   piano: "피아노다. 건반에 먼지가 앉았다.",
   window: "창밖으로 길이 보인다.",
@@ -66,14 +68,39 @@ const FLAVOR: Readonly<Record<string, string>> = {
   table_long: "긴 탁자. 술잔 자국이 남아 있다.",
   table_chairs: "탁자와 의자. 방금 누가 앉았던 것 같다.",
   display: "진열대. 약병과 작은 검이 놓여 있다.",
-  cabinet: "캐비닛. 손님용 이불이 개어져 있다.",
+  cabinet: "캐비닛. 잘 개어진 이불이 들어 있다.",
   plant: "화분. 잎이 싱싱하다.",
   stairs: "위층으로 오르는 계단이다.",
   bookshelf: "책장. 여행기와 지도가 꽂혀 있다.",
+  bed_h: "침대. 잘 정돈되어 있다.",
+  bed_v: "침대. 잘 정돈되어 있다.",
+  stove: "화덕. 아직 온기가 남아 있다.",
+  hearth: "벽난로. 장작이 타닥거린다.",
+  cauldron: "가마솥. 무언가 끓고 있다.",
+  barrel: "술통. 두드리면 둔탁한 소리가 난다.",
+  crate: "나무 상자. 못이 단단히 박혀 있다.",
+  jars: "항아리. 소금과 곡물이 담겨 있다.",
+  box: "잡화 상자. 자잘한 도구가 들어 있다.",
+  grain: "곡물 자루. 거친 삼베 냄새.",
+  bucket: "물통. 물이 반쯤 차 있다.",
+  kettle: "주전자. 김이 오른다.",
+  stool: "스툴. 다리 하나가 짧다.",
+  sword_rack: "검 거치대. 손잡이가 닳아 있다.",
+  crystal: "수정구. 안개가 천천히 돈다.",
+  religious: (facility) => `${facility}의 성상이다. 잠시 고개를 숙인다.`,
+  fruit_shelf: "과일 선반. 사과 향이 난다.",
+  shelf_jars: "항아리 선반. 절임 냄새가 난다.",
+  tavern_sign: "간판. 오늘의 술이 적혀 있다.",
+  ladder: "사다리. 위 다락으로 이어진다.",
+  rug: "카펫. 발밑이 부드럽다.",
+  rug_red: "붉은 카펫. 귀한 손님을 맞는 길이다.",
+  rug_mat: "짚 돗자리. 바삭한 소리가 난다.",
 };
 
-function flavorFor(placement: ConceptPlacement): string {
-  return FLAVOR[placement.objectId] ?? `${placement.label}이다.`;
+function flavorFor(placement: ConceptPlacement, facility: string): string {
+  const entry = FLAVOR[placement.objectId];
+  if (typeof entry === "function") return entry(facility);
+  return entry ?? `${placement.label}이다.`;
 }
 
 function lootGoldFor(placement: ConceptPlacement, ordinal: number): number {
@@ -114,6 +141,7 @@ export function buildConceptEvents(
   const warnings: string[] = [];
   const occupied = new Set((map.events ?? []).map((event) => `${event.x},${event.y}`));
   const price = options.innPrice ?? DEFAULT_INN_PRICE;
+  const facility = options.facilityLabel?.trim() || "시설";
   let ordinal = 0;
 
   for (const placement of placements) {
@@ -148,7 +176,7 @@ export function buildConceptEvents(
         const linked = Boolean(options.transferTarget);
         base.pages = [
           page(`${id}_p`, placement.label, [
-            { kind: "text", body: linked ? flavorFor(placement) : `${flavorFor(placement)} 아직 이어진 곳이 없어 정문으로 돌아간다.` },
+            { kind: "text", body: linked ? flavorFor(placement, facility) : `${flavorFor(placement, facility)} 아직 이어진 곳이 없어 정문으로 돌아간다.` },
             { kind: "transfer", mapId: target.mapId, x: target.x, y: target.y, fade: "black" },
           ]),
         ];
@@ -185,7 +213,7 @@ export function buildConceptEvents(
         break;
       }
       case "event": {
-        base.pages = [page(`${id}_p`, placement.label, [{ kind: "text", body: flavorFor(placement) }])];
+        base.pages = [page(`${id}_p`, placement.label, [{ kind: "text", body: flavorFor(placement, facility) }])];
         break;
       }
     }

@@ -713,7 +713,7 @@ export function canCompleteWorkItem(
 }
 
 export type CompleteWorkItemResult =
-  | { ok: true; item: WorkItem }
+  | { ok: true; item: WorkItem; alreadyDone?: boolean }
   | { ok: false; reason: string; item?: WorkItem };
 
 /** 아직 열려 있는(대기/진행) 항목 id — 오류 메시지에서 모델에 유효값을 알려주는 용도. */
@@ -732,6 +732,14 @@ export function completeWorkItemById(
   for (const layer of plan.layers) {
     const it = layer.items.find((i) => i.id === itemId);
     if (!it) continue;
+    // 이미 끝난 항목은 idempotent 다(2026-09-02 실측, reports/place-concept-inn/e2e/receipt.json):
+    // place_concept 성공 → 라운드 끝 successTools 자동 완료(성공 툴 집합은 다음 항목 기준으로 비워짐)
+    // → 모델이 같은 항목을 명시 complete_work_item → 「성공 기록이 없습니다」 거부 → 모델이 같은 맵을
+    // 한 번 더 시공했다. 완료 게이트는 열려 있는 항목에만 의미가 있다.
+    if (it.status === "done" || it.status === "skipped") {
+      if (note && !it.note) it.note = note;
+      return { ok: true, item: it, alreadyDone: true };
+    }
     if (!options?.force) {
       const gate = canCompleteWorkItem(it, options?.successfulTools, options?.outcomeGate);
       if (!gate.ok) return { ok: false, reason: gate.reason, item: it };

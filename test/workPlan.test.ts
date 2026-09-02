@@ -207,6 +207,33 @@ describe("workPlan progress harness", () => {
     expect(isWorkPlanComplete(plan)).toBe(true);
   });
 
+  it("자동 완료된 항목을 모델이 다시 complete_work_item 하면 거부하지 않고 이미 끝났다고 답한다", () => {
+    // 2026-09-02 실측(reports/place-concept-inn/e2e/receipt.json): place_concept 성공 → 라운드 끝
+    // 자동 완료(성공 툴 집합 초기화) → 모델의 명시 complete_work_item 이 「place_concept 성공 기록이
+    // 없습니다」로 거부됨 → 모델이 같은 맵을 한 번 더 시공. 이미 done 인 항목은 idempotent 여야 한다.
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "여관",
+      layers: [{ title: "L", items: [{ id: "a", title: "여관 시공", instruction: "a", successTools: ["place_concept"] }] }],
+    });
+    const auto = advanceWorkPlanFromTools(plan, ["place_concept"]);
+    expect(auto.completed?.id).toBe("a");
+    const again = completeWorkItemById(plan, "a", undefined, { successfulTools: [] });
+    expect(again.ok).toBe(true);
+    if (again.ok) {
+      expect(again.alreadyDone).toBe(true);
+      expect(again.item.status).toBe("done");
+    }
+    // 아직 열려 있는 항목은 종전대로 게이트를 받는다.
+    const fresh = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "여관",
+      layers: [{ title: "L", items: [{ id: "a", title: "여관 시공", instruction: "a", successTools: ["place_concept"] }] }],
+    });
+    const refused = completeWorkItemById(fresh, "a", undefined, { successfulTools: [] });
+    expect(refused.ok).toBe(false);
+  });
+
   it("Ralph continues while plan incomplete and under cap", () => {
     const plan = workPlanFromOrchestratorDecision({
       action: "new_plan",

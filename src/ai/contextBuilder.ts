@@ -7,9 +7,21 @@
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
-import { conceptPlaceCount, conceptPlaceRole, conceptPlaceSize, listLiveConceptBundles } from "@/editor/conceptBundleResolve";
+import {
+  conceptFacilityWall,
+  conceptPlaceCount,
+  conceptPlaceFloor,
+  conceptPlaceRole,
+  conceptPlaceSize,
+  listLiveConceptBundles,
+} from "@/editor/conceptBundleResolve";
 import { INTERIOR_ROOM_TILESET_ID, interiorVocabFromTileset } from "@/editor/interiorRoomPipeline";
-import { CONCEPT_CHIP_LABELS, CONCEPT_PLACE_ROLE_LABELS, CONCEPT_PLACE_SIZE_LABELS } from "@/project/types/conceptBundle";
+import {
+  CONCEPT_FLOOR_MATERIAL_LABELS,
+  CONCEPT_PLACE_ROLE_LABELS,
+  CONCEPT_PLACE_SIZE_LABELS,
+  CONCEPT_WALL_MATERIAL_LABELS,
+} from "@/project/types/conceptBundle";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { villageAuthoringData } from "@/editor/tools/village/authoringData";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
@@ -378,30 +390,62 @@ function conceptBundleSection(project: Project): string {
   const listed = listLiveConceptBundles(project);
   const lines = [
     "## 개념 꾸러미 (place_concept 이 읽음)",
-    "사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 나무가 정본이다. 시설을 지을 때 방 종류 필수 역할로 합성하지 말고 place_concept(query)를 호출하라.",
+    "사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 나무가 정본이다. 아래 시설을 지을 때 방 종류 필수 역할로 합성하지 말고 place_concept(query)를 호출하라.",
   ];
   if (listed.length === 0) {
-    lines.push("- 지금 프로젝트에는 개념 꾸러미가 없다. 실내 칩셋이면 place_concept(\"여관\")이 여관 초안을 시드한다.");
+    lines.push("- 지금 프로젝트에는 개념 꾸러미가 없다. 실내 칩셋이면 place_concept 첫 호출이 시설 초안(여관·민가·상점·술집·서재·대장간·교회·창고·길드)을 시드한다.");
     return lines.join("\n");
   }
+  // 예산 규율(2026-09-03 실측): 빈 프로젝트의 시스템 프롬프트는 20,000자 예산 중 약 19,250자를 이미 쓴다.
+  // 시설마다 한 줄(9시설 ≈ 1,500자)을 기본 초안에도 싣자 뒤의 「게임 스타일 문서(발췌)」가 통째로 밀려났다
+  // (`test/worldAiExclusion.test.ts`). 그래서 두 단계다 —
+  //   · 초안 그대로(칩셋에 `scratchConceptBundles` 가 없음): 시설명 한 줄. 장소·재질은 코드 초안 값이라
+  //     모델이 미리 알 필요가 없다. place_concept 결과와 데이터베이스가 보여 준다.
+  //   · 사용자가 고친 나무(칩셋에 배열이 있음): 시설마다 한 줄 — 장소[역할·크기·×개수·바닥]·벽·물건 표시.
+  //     사용자 데이터는 마을 저작 절과 같은 이유로 코드 상수 요약보다 앞에 온다.
+  let detailed = false;
   for (const entry of listed) {
+    const materialized = project.tilesets[entry.tilesetId]?.scratchConceptBundles !== undefined;
+    if (!materialized) {
+      const labels = entry.bundles.flatMap((bundle) => bundle.facilities.map((facility) => facility.label));
+      lines.push(`- ${entry.tilesetName} 기본 초안 ${labels.length}종: ${labels.join("·")} (query=시설명). 장소·바닥·벽은 초안 값 — 데이터베이스에서 고치면 여기에 시설별로 실린다.`);
+      continue;
+    }
+    detailed = true;
     lines.push(`### ${entry.tilesetName} (${entry.tilesetId})`);
     for (const bundle of entry.bundles) {
-      const facility = bundle.facilities[0];
-      lines.push(`- 시설 ${facility?.label ?? bundle.label} (query="${facility?.label ?? bundle.label}")`);
-      for (const place of bundle.places) {
-        const things = bundle.things.filter((thing) => thing.placeIds.includes(place.id));
-        const body = things.length === 0
-          ? "물건 없음"
-          : things.map((thing) => {
-            const chips = thing.chips.map((chip) => CONCEPT_CHIP_LABELS[chip]).join(",");
-            return `${thing.label}${thing.required ? "[필수]" : ""}(${thing.objectId}${chips ? ` ${chips}` : ""})`;
-          }).join(" · ");
-        const count = conceptPlaceCount(place);
-        const plan = `${CONCEPT_PLACE_ROLE_LABELS[conceptPlaceRole(place)]}·${CONCEPT_PLACE_SIZE_LABELS[conceptPlaceSize(place)]}${count > 1 ? ` ×${count}` : ""}`;
-        lines.push(`  - 장소 ${place.label} [${plan}]: ${body}`);
+      for (const facility of bundle.facilities) {
+        const wall = conceptFacilityWall(facility);
+        const wallNote = wall === "cream" ? "" : ` [벽 ${CONCEPT_WALL_MATERIAL_LABELS[wall]}]`;
+        const places = facility.placeIds
+          .map((placeId) => bundle.places.find((place) => place.id === placeId))
+          .filter((place): place is NonNullable<typeof place> => Boolean(place))
+          .map((place) => {
+            const things = bundle.things.filter((thing) => thing.placeIds.includes(place.id)).map((thing) => {
+              const marks = [
+                thing.required ? "*" : "",
+                thing.chips.includes("sleep") ? "⌂" : "",
+                thing.chips.includes("loot") ? "$" : "",
+                thing.chips.includes("transfer") ? "↔" : "",
+              ].join("");
+              return `${thing.label}${marks}`;
+            });
+            const count = conceptPlaceCount(place);
+            const floor = conceptPlaceFloor(place);
+            const plan = [
+              CONCEPT_PLACE_ROLE_LABELS[conceptPlaceRole(place)],
+              CONCEPT_PLACE_SIZE_LABELS[conceptPlaceSize(place)],
+              ...(count > 1 ? [`×${count}`] : []),
+              ...(floor === "wood" ? [] : [CONCEPT_FLOOR_MATERIAL_LABELS[floor]]),
+            ].join("·");
+            return `${place.label}[${plan}](${things.length > 0 ? things.join(", ") : "물건 없음"})`;
+          });
+        lines.push(`- 시설 ${facility.label} (query="${facility.label}")${wallNote}: ${places.join(" → ") || "장소 없음"}`);
       }
     }
+  }
+  if (detailed) {
+    lines.splice(2, 0, "장소의 [역할·크기 ×개수·바닥] 과 시설의 벽 재질도 그 나무 값이다(바꾸려면 데이터베이스에서). 물건 표기: *필수 · ⌂수면 · $노획 · ↔맵 연결.");
   }
   return lines.join("\n");
 }

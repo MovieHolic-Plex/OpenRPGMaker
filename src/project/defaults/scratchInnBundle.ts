@@ -43,6 +43,7 @@ export function cloneConceptBundle(bundle: ConceptBundleRecord): ConceptBundleRe
       id: facility.id,
       label: facility.label,
       placeIds: [...facility.placeIds],
+      ...(facility.wall ? { wall: facility.wall } : {}),
     })),
     places: bundle.places.map((place) => ({
       id: place.id,
@@ -50,6 +51,7 @@ export function cloneConceptBundle(bundle: ConceptBundleRecord): ConceptBundleRe
       ...(place.role ? { role: place.role } : {}),
       ...(place.size ? { size: place.size } : {}),
       ...(place.count !== undefined ? { count: place.count } : {}),
+      ...(place.floor ? { floor: place.floor } : {}),
     })),
     things: bundle.things.map((thing) => ({
       id: thing.id,

@@ -1,0 +1,50 @@
+{
+  "startedAt": "2026-09-02T07:44:26.001Z",
+  "built": [
+    {
+      "id": "smithy",
+      "query": "대장간",
+      "mapId": "map_e2e_smithy",
+      "name": "대장간",
+      "size": "15x18",
+      "events": 5,
+      "rooms": 2,
+      "wallMaterial": "stone-brick",
+      "summary": "대장간 개념 꾸러미로 map_e2e_smithy 시공 — 방 2개, 정문 (7,14)"
+    },
+    {
+      "id": "tavern",
+      "query": "술집",
+      "mapId": "map_e2e_tavern",
+      "name": "술집",
+      "size": "19x18",
+      "events": 6,
+      "rooms": 3,
+      "wallMaterial": "cream",
+      "summary": "술집 개념 꾸러미로 map_e2e_tavern 시공 — 방 3개, 정문 (9,14)"
+    },
+    {
+      "id": "guild",
+      "query": "길드",
+      "mapId": "map_e2e_guild",
+      "name": "길드",
+      "size": "15x26",
+      "events": 8,
+      "rooms": 3,
+      "wallMaterial": "gold-brick",
+      "summary": "길드 개념 꾸러미로 map_e2e_guild 시공 — 방 3개, 정문 (7,22)"
+    },
+    {
+      "id": "church",
+      "query": "교회",
+      "mapId": "map_e2e_church",
+      "name": "교회",
+      "size": "15x18",
+      "events": 7,
+      "rooms": 2,
+      "wallMaterial": "cream",
+      "summary": "교회 개념 꾸러미로 map_e2e_church 시공 — 방 2개, 정문 (7,14)"
+    }
+  ],
+  "finishedAt": "2026-09-02T07:45:04.571Z"
+}

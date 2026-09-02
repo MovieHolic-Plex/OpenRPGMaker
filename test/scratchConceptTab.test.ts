@@ -3,6 +3,7 @@ import { editorState } from "@/editor/editorState";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { TAB_GROUPS } from "@/editor/panels/database";
 import { renderScratchConceptTab, resetScratchConceptTabSession } from "@/editor/panels/scratchConceptTab";
+import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
 import { validateTileset } from "@/project/io/shapeResourceFields";
@@ -60,11 +61,14 @@ describe("scratchConceptTab 실내 시드", () => {
     expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.scratchConceptBundles).toBeUndefined();
   });
 
-  it("실내 칩셋은 여관 초안을 시드하고 세 장소를 그린다", () => {
+  it("실내 칩셋은 시설 초안 묶음을 시드하고 첫 시설(여관)의 세 장소를 그린다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     const bundles = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles;
-    expect(bundles).toHaveLength(1);
+    expect(bundles).toHaveLength(CONCEPT_FACILITY_TEMPLATES.length);
     expect(bundles?.[0]?.id).toBe(SCRATCH_INN_BUNDLE.id);
+    for (const template of CONCEPT_FACILITY_TEMPLATES) {
+      expect(host.querySelector(`[data-testid='scratch-concept-facility-${template.id}']`), template.id).not.toBeNull();
+    }
     expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).not.toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-place-corridor']")).not.toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-place-dining']")).not.toBeNull();
@@ -73,7 +77,7 @@ describe("scratchConceptTab 실내 시드", () => {
     expect(host.querySelector("[data-testid='scratch-concept-line']")?.textContent).toContain("여관");
   });
 
-  it("빈 배열은 다시 시드하지 않는다", () => {
+  it("빈 배열은 다시 시드하지 않고, 빈 화면의 「초안 넣기」가 묶음을 넣는다", () => {
     store.update((project) => {
       const tileset = project.tilesets[INTERIOR_ROOM_TILESET_ID];
       if (tileset) tileset.scratchConceptBundles = [];
@@ -81,6 +85,93 @@ describe("scratchConceptTab 실내 시드", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     expect(host.querySelector("[data-testid='scratch-concept-empty']")).not.toBeNull();
     expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toEqual([]);
+    host.querySelector("[data-testid='scratch-concept-seed-templates']")!.click();
+    expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toHaveLength(CONCEPT_FACILITY_TEMPLATES.length);
+    expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).not.toBeNull();
+  });
+});
+
+describe("scratchConceptTab 시설 띠", () => {
+  function select(host: FakeElement, testid: string): { value: string; dispatchEvent: (event: Event) => void } {
+    return host.querySelector(`[data-testid='${testid}']`) as unknown as { value: string; dispatchEvent: (event: Event) => void };
+  }
+
+  it("시설 칩을 누르면 그 시설의 장소가 그려지고 벽 재질이 보인다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    expect(host.querySelector("[data-testid='scratch-concept-place-workshop']")).toBeNull();
+    host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-place-workshop']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).toBeNull();
+    expect(host.querySelector("[data-testid='scratch-concept-crumb']")?.textContent).toContain("대장간");
+    expect(select(host, "scratch-concept-facility-wall").value).toBe("stone-brick");
+    expect(select(host, "scratch-concept-place-floor-workshop").value).toBe("stone");
+    expect(host.querySelector("[data-testid='scratch-concept-line']")?.textContent).toContain("대장간");
+  });
+
+  it("벽·바닥 재질을 바꾸면 저장되고 기본값(크림·나무)은 필드를 비운다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
+    const wall = select(host, "scratch-concept-facility-wall");
+    wall.value = "cream";
+    wall.dispatchEvent(new Event("change"));
+    const floor = select(host, "scratch-concept-place-floor-workshop");
+    floor.value = "plank";
+    floor.dispatchEvent(new Event("change"));
+    const smithy = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.find((bundle) => bundle.id === "smithy")!;
+    expect(smithy.facilities[0]!.wall).toBeUndefined();
+    expect(smithy.places.find((place) => place.id === "workshop")?.floor).toBe("plank");
+    const floorAgain = select(host, "scratch-concept-place-floor-workshop");
+    floorAgain.value = "wood";
+    floorAgain.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.find((bundle) => bundle.id === "smithy")!.places.find((place) => place.id === "workshop")?.floor).toBeUndefined();
+  });
+
+  it("시설을 지우면 띠에서 빠지고 「초안 넣기」로 되돌릴 수 있다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    expect(host.querySelector("[data-testid='scratch-concept-template-select']")).toBeNull();
+    host.querySelector("[data-testid='scratch-concept-facility-church']")!.click();
+    host.querySelector("[data-testid='scratch-concept-facility-remove']")!.click();
+    let ids = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.map((bundle) => bundle.id);
+    expect(ids).not.toContain("church");
+    expect(ids).toHaveLength(CONCEPT_FACILITY_TEMPLATES.length - 1);
+    expect(host.querySelector("[data-testid='scratch-concept-facility-church']")).toBeNull();
+    const picker = select(host, "scratch-concept-template-select");
+    expect(picker).not.toBeNull();
+    picker.value = "church";
+    picker.dispatchEvent(new Event("change"));
+    ids = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.map((bundle) => bundle.id);
+    expect(ids).toContain("church");
+    expect(host.querySelector("[data-testid='scratch-concept-place-chapel']")).not.toBeNull();
+  });
+
+  it("마지막 시설까지 지우면 빈 배열이 남고 다시 시드하지 않는다", () => {
+    store.update((project) => {
+      const tileset = project.tilesets[INTERIOR_ROOM_TILESET_ID];
+      if (tileset) tileset.scratchConceptBundles = [cloneConceptBundle(SCRATCH_INN_BUNDLE)];
+    });
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-facility-remove']")!.click();
+    expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toEqual([]);
+    expect(host.querySelector("[data-testid='scratch-concept-empty']")).not.toBeNull();
+  });
+
+  it("「+ 시설」은 빈 시설을 만들고 그 시설로 옮긴다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-facility-add']")!.click();
+    const bundles = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!;
+    expect(bundles).toHaveLength(CONCEPT_FACILITY_TEMPLATES.length + 1);
+    expect(host.querySelector("[data-testid='scratch-concept-crumb']")?.textContent).toContain("새 시설");
+  });
+
+  it("피커에 카탈로그의 새 소품이 있고 러그는 통행·바닥 칩으로 들어온다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-add-bedroom']")!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-pick-religious']")).not.toBeNull();
+    host.querySelector("[data-testid='scratch-concept-pick-rug_red']")!.click();
+    const inn = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!;
+    const rug = inn.things.find((thing) => thing.objectId === "rug_red");
+    expect(rug?.placeIds).toContain("bedroom");
+    expect(rug?.chips).toEqual(["pass", "floor"]);
   });
 });
 
