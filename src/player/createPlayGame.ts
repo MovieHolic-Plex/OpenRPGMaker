@@ -3,6 +3,7 @@ import { ensurePhaser } from "@/app/phaserRuntime";
 import type { PlaySession } from "@/project/session";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { store } from "@/project/store";
+import { importWithRetry } from "@/util/dynamicImport";
 
 export type PlayGameBootOptions = {
   /** Enables export-player QA locators and mutation hooks. Never enabled by normal export boot. */
@@ -24,7 +25,7 @@ export async function createPlayGame(
   options: PlayGameBootOptions = {}
 ): Promise<Phaser.Game> {
   const PhaserRuntime = await ensurePhaser();
-  const { PlayScene } = await import("@/player/PlayScene");
+  const { PlayScene } = await importWithRetry(() => import("@/player/PlayScene"));
   const resolution = resolvePlayResolution(store.getCurrent().system);
   return new PhaserRuntime.Game({
     type: PhaserRuntime.AUTO,

@@ -16,6 +16,7 @@ export type PlayRecoveryInput = {
   readonly diagnostics?: string;
   readonly onRetry?: () => void;
   readonly onSafeMode?: () => void;
+  readonly onReload?: () => void;
 };
 
 export type PlayLoadingOverlay = {
@@ -152,6 +153,15 @@ export function mountPlayLoadingOverlay(
         attrs: { type: "button" },
         dataset: { testid: "play-recovery-safe-mode" },
         on: { click: input.onSafeMode },
+      }));
+    }
+    if (input.onReload) {
+      actions.append(el("button", {
+        class: "play-recovery-button",
+        text: "페이지 새로고침",
+        attrs: { type: "button" },
+        dataset: { testid: "play-recovery-reload" },
+        on: { click: input.onReload },
       }));
     }
     actions.append(el("button", {

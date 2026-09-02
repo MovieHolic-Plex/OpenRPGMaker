@@ -1,6 +1,9 @@
 import "@/player/player.css";
 // 세이브 슬롯 키(oprn:save-slot:*)를 읽기 전에 구 접두사를 옮긴다. src/storageBoot.ts 참고.
 import "@/storageBoot";
+import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
+
+installVitePreloadRecovery();
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
 import { RPGZZU_EXTENSION } from "@/project/package";

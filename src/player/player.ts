@@ -4,12 +4,18 @@ import { store } from "@/project/store";
 import { warnIfPlayBootIssues } from "@/project/playBootValidation";
 import { preflightProjectForPlay } from "@/project/playPreflight";
 import {
+  clearStaleModuleReloadMark,
+  consumeStaleModuleReload,
+  markStaleModuleReloaded,
+} from "@/app/moduleLoadRecovery";
+import {
   describeBootFailure,
   installBootProject,
   repairSummaries,
   safeModeProject,
   type PlayBootFailureContext,
 } from "@/player/playBootRecovery";
+import { isEngineModuleLoadFailure } from "@/util/dynamicImport";
 import { startSession, type PlaySession } from "@/project/session";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
@@ -302,6 +308,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onRetry: () => retryBoot(),
       // 안전 모드는 저작 내용 문제를 우회하는 수단이다 — 맵이 아예 없는 상태는 우회할 수 없다.
       ...(context.kind === "preflight-blocked" ? {} : { onSafeMode: () => retryBoot(true) }),
+      // 해시 청크 404 는 in-page retry 가 같은 옛 URL 을 다시 부른다 — 새로고침이 탈출구다.
+      ...(isEngineModuleLoadFailure(context.error) ? { onReload: () => window.location.reload() } : {}),
     });
   };
 
@@ -430,6 +438,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       markPlayRender(startedAt);
       loading.remove();
       bootDiag("ready", true, { detail: "boot complete" });
+      clearStaleModuleReloadMark();
       try {
         options.onPlayBootSuccess?.();
       } catch (callbackError) {
@@ -437,6 +446,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       }
     } catch (error) {
       console.error("[player] failed to start play game:", error);
+      if (isEngineModuleLoadFailure(error) && consumeStaleModuleReload()) {
+        markStaleModuleReloaded();
+        bootDiag("error", false, { error, detail: "stale-module-reload" });
+        try {
+          if (store.hasUnsavedChanges()) await store.flush();
+        } catch {
+          // 새로고침은 저장 실패와 무관하게 진행한다 — 옛 해시로는 플레이가 안 된다.
+        }
+        window.location.reload();
+        return;
+      }
       bootDiag("error", false, { error, detail: "bootPlayGame catch" });
       presentRecovery(loading, run, {
         kind: "boot-threw",

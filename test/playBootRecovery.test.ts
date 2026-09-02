@@ -20,6 +20,10 @@ vi.mock("@/player/runtimeDebugPanel", () => ({
 
 import { AUTHORING_TEST_BOOT_SUCCESS_EVENT } from "@/editor/authoringJourney";
 import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
+import {
+  STALE_MODULE_RELOAD_KEY,
+  clearStaleModuleReloadMark,
+} from "@/app/moduleLoadRecovery";
 import { clearRecentPlayBootDiagnosticsForTest } from "@/player/playBootDiagnostics";
 import { setExportedProject, store as exportProjectStore } from "@/player/exportProjectStoreShim";
 import { renderPlayer, teardownPlayer } from "@/player/player";
@@ -148,6 +152,10 @@ beforeEach(() => {
   storage.setItem(AUTO_START_KEY, "1");
   Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
   Object.defineProperty(globalThis, "localStorage", { configurable: true, value: storage });
+  const session = memoryStorage();
+  Object.defineProperty(window, "sessionStorage", { configurable: true, value: session });
+  Object.defineProperty(globalThis, "sessionStorage", { configurable: true, value: session });
+  clearStaleModuleReloadMark(session);
   store.replaceProject(createBlankProject());
   vi.spyOn(store, "flush").mockResolvedValue({ kind: "not-configured" });
   modeMocks.startPlayGame.mockReset();
@@ -170,6 +178,34 @@ describe("test play boot recovery", () => {
     await recovery;
 
     expect(recoveryReason()).toContain("WebGL 컨텍스트 생성 실패");
+  });
+
+  it("reloads once when PlayScene's hashed chunk fails to fetch", async () => {
+    const reload = vi.fn();
+    vi.spyOn(window.location, "reload").mockImplementation(reload);
+    modeMocks.startPlayGame.mockRejectedValueOnce(
+      new TypeError("Failed to fetch dynamically imported module: http://mdc-server:9888/assets/PlayScene-Dga2dGc8.js"),
+    );
+
+    await openTestPlayModal();
+    await vi.waitFor(() => expect(reload).toHaveBeenCalledOnce());
+
+    expect(window.sessionStorage.getItem(STALE_MODULE_RELOAD_KEY)).toBe("1");
+    expect(document.querySelector("[data-testid='play-recovery-panel']")).toBeNull();
+  });
+
+  it("shows a reload action after a stale-chunk reload already happened", async () => {
+    window.sessionStorage.setItem(STALE_MODULE_RELOAD_KEY, "1");
+    const recovery = nextRecoveryPanel();
+    modeMocks.startPlayGame.mockRejectedValueOnce(
+      new TypeError("Failed to fetch dynamically imported module: http://mdc-server:9888/assets/PlayScene-Dga2dGc8.js"),
+    );
+
+    await openTestPlayModal();
+    await recovery;
+
+    expect(recoveryReason()).toContain("PlayScene-Dga2dGc8.js");
+    expect(document.querySelector("[data-testid='play-recovery-reload']")).not.toBeNull();
   });
 
   it("shows a recovery panel when waiting for PlayScene times out", async () => {

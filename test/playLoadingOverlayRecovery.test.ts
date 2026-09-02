@@ -84,6 +84,24 @@ describe("playLoadingOverlay recovery", () => {
     expect(onSafeMode).toHaveBeenCalledOnce();
   });
 
+  it("offers a page reload action for stale engine-module failures", () => {
+    const host = mountHost();
+    const onReload = vi.fn();
+    const loading = mountPlayLoadingOverlay(host);
+
+    loading.showRecovery({
+      title: "플레이를 시작하지 못했습니다",
+      reason: "TypeError: Failed to fetch dynamically imported module: http://host/assets/PlayScene-aaa.js",
+      onRetry: () => undefined,
+      onReload,
+    });
+
+    const reload = host.querySelector<HTMLButtonElement>("[data-testid='play-recovery-reload']");
+    expect(reload?.textContent).toBe("페이지 새로고침");
+    reload?.click();
+    expect(onReload).toHaveBeenCalledOnce();
+  });
+
   it("copies the supplied diagnostics text", async () => {
     const host = mountHost();
     const writeText = vi.fn(async () => undefined);

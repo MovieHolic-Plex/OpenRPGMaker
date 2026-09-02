@@ -17,6 +17,7 @@ import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { syncProjectFontTheme } from "@/app/fontTheme";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
+import { importWithRetry } from "@/util/dynamicImport";
 import {
   markInitialEditRender,
   markModeSwitch,
@@ -483,7 +484,7 @@ export async function enterMode(mode: Mode): Promise<void> {
 // roundPixels: 픽셀 아트 흐림 방지. pixelArt 모드로 부드러운 보간 끔.
 export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
   const PhaserRuntime = await ensurePhaser();
-  const { EditScene } = await import("@/editor/EditScene");
+  const { EditScene } = await importWithRetry(() => import("@/editor/EditScene"));
   game = new PhaserRuntime.Game({
     type: PhaserRuntime.AUTO,
     parent,
