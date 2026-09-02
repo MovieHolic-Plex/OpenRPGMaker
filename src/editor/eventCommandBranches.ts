@@ -203,21 +203,3 @@ export const branchEmptyLabel = "비어 있음";
 /** 명령 피커를 여는 실제 버튼의 라벨. 빈 상태 + 지금 할 수 있는 행동을 한 줄로 말한다. */
 export const branchEmptyActionLabel = `${branchEmptyLabel} — 여기에 명령 추가`;
 
-/**
- * 목록 뷰가 분기 묶음 끝에 놓는 마커. 목록만 쓰는 chrome 이라 라벨과 분리했다.
- * 분기가 없는 명령은 `null`.
- */
-export function branchGroupEndLabel(command: Command): string | null {
-  if (eventCommandBranches(command).length === 0) return null;
-  switch (command.kind) {
-    case "choices": return "선택 끝";
-    case "fork": return "분기 끝";
-    case "loop": return "반복 끝";
-    case "shop": return "상점 분기 끝";
-    case "inn": return "여관 분기 끝";
-    case "battleProcessing": return "전투 결과 분기 끝";
-    case "promoteActor": return "승급 끝";
-    case "evolveMonster": return "진화 끝";
-    default: return null;
-  }
-}

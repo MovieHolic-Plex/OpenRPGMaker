@@ -1,6 +1,6 @@
 import { clearChildren, el } from "@/util/dom";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
-import { branchEmptyActionLabel, branchGroupEndLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
+import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
 import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
@@ -373,11 +373,8 @@ function appendCommandChildren(
       );
     });
   }
-  const endLabel = branchGroupEndLabel(cmd);
-  if (endLabel) {
-    const tone = eventCommandBranches(cmd)[0]?.tone ?? "fork";
-    host.append(renderMarkerLine(endLabel, depth, tone));
-  }
+  // 「선택 끝」「분기 끝」 마커 행은 두지 않는다 — 들여쓰기와 분기 머리 행이 이미 구조를 말하고,
+  // 끝 행은 정보 없이 세로 공간만 썼다(2026-09-03 제안서 §6·§8).
 }
 
 // 분기 마커 라인 (": 조건이 참일 때" 등). kind 별 클래스로 fork/choices/shop 마커를 톤으로 구분한다.
