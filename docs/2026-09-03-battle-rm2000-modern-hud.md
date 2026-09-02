@@ -117,14 +117,14 @@ HUD 로 바꿨다.
 이미 main 의 CSS(176/112)와 어긋나 있었고 편집기 test-play 경로 자체가 main 에서 실패한다는 기록이 있다
 (`scripts/qa/runtime/battle-rm2000.scenario.mjs` 머리 주석). 새 HUD 기하(184/120)로 상수를 갱신해 두었다.
 
-## 6. 2차 개선 — "아직 아쉽다" 에 답한 것 (같은 PR, 2026-09-03)
+## 6. 2차 개선 — "아직 아쉽다" 에 답한 것 (PR #450, 2026-09-03)
 
 1차 사진을 기준으로 다시 감사했다. 카드는 좋아졌지만 **전투가 일어나는 느낌**이 약했다 — 막타에
 화면이 번쩍이지 않고, 아군이 맞아도 화면 어디에도 신호가 없고, 4인 파티에서 누가 명령을 고르는지
 시선이 멀고, 카드 아래는 그냥 검은 띠였다. 그리고 남색 유리 위 남보라 강조는 전형적인 "AI 보라
 그라데이션" 으로 읽혔다.
 
-| 1차 (PR 첫 커밋) | 2차 |
+| 1차 (PR #449) | 2차 (PR #450) |
 |---|---|
 | ![r1 command](2026-09-03-battle-rm2000-modern-hud-assets/after-1p-command.png) | ![r2 command](2026-09-03-battle-rm2000-modern-hud-assets/r2-1p-command.png) |
 | ![r1 impact](2026-09-03-battle-rm2000-modern-hud-assets/after-1p-impact.png) | ![r2 impact](2026-09-03-battle-rm2000-modern-hud-assets/r2-1p-impact.png) |
