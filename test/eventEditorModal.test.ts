@@ -466,4 +466,32 @@ describe("RPG Maker style event editor entry points", () => {
     expect(store.getCurrent().maps[project.startMapId].events[0]?.pages?.[0]?.movement.type).toBe("random");
   });
 
+  it("keeps the workbench when a page is missing movement, graphic, or trigger", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const firstVisit = {
+      id: "page-1",
+      name: "첫 방문",
+    } as EventPage;
+    const counter = { ...eventPage(), id: "page-2", name: "단골 창구" };
+    map.events = [{ ...gameEvent(counter), x: 77, y: 17, pages: [firstVisit, counter] }];
+    store.replace(project);
+    editorState.set({
+      currentMapId: project.startMapId,
+      selectedEventId: "event-1",
+      selectedEventPageId: firstVisit.id,
+    });
+
+    openEventEditorModal(project.startMapId, "event-1");
+
+    const modal = document.querySelector('[data-testid="event-editor-modal"]');
+    expect(modal).not.toBeNull();
+    expect(modal?.querySelector('[data-testid="event-editor-content"]')).not.toBeNull();
+    expect(modal?.querySelector(".event-editor-workbench")).not.toBeNull();
+    expect(modal?.querySelector('[data-testid="event-editor-render-error"]')).toBeNull();
+    expect(modal?.querySelector('[data-testid="event-editor-identity"]')?.textContent).toBe("이벤트: 단골 창구");
+    expect(modal?.querySelector('[data-testid="event-editor-coords"]')?.textContent).toBe("77, 17");
+    expect(document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]')?.value).toBe("첫 방문");
+  });
+
 });

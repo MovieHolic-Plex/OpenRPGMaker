@@ -169,7 +169,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     actors: new Set(project.database.actors.map((entry) => entry.id)),
     animations: new Set(project.database.battleAnimations.map((entry) => entry.id)),
     classes: new Set(project.database.classes.map((entry) => entry.id)),
-    commonEvents: new Set(project.commonEvents.map((entry) => entry.id)),
+    commonEvents: new Set((project.commonEvents ?? []).map((entry) => entry.id)),
     endings: new Set((project.endings ?? []).map((entry) => entry.id)),
     equipment: new Set(project.database.equipment.map((entry) => entry.id)),
     factions: new Set([
@@ -207,17 +207,20 @@ function validatePage(
   refs: ReferenceSets,
   issues: EventDraftIssue[],
 ): void {
-  if (page.graphic.sprite?.id) {
-    requireReference(issues, page.id, "reference.resource.missing", "그래픽 리소스", page.graphic.sprite.id, refs.resources, {
+  const graphic = page.graphic ?? {};
+  const conditions = page.conditions ?? [];
+  const trigger = page.trigger ?? { kind: "action" as const };
+  if (graphic.sprite?.id) {
+    requireReference(issues, page.id, "reference.resource.missing", "그래픽 리소스", graphic.sprite.id, refs.resources, {
       testId: "event-classic-graphic",
     });
   }
 
-  page.conditions.forEach((condition) => validateCondition(condition, page.id, refs, issues));
-  validateMovement(project, page, refs, issues);
+  conditions.forEach((condition) => validateCondition(condition, page.id, refs, issues));
+  if (page.movement) validateMovement(project, page, refs, issues);
 
-  const riskyTrigger = page.trigger.kind === "auto" || page.trigger.kind === "parallel";
-  if (riskyTrigger && !hasRecursivePageCondition(page.conditions)) {
+  const riskyTrigger = trigger.kind === "auto" || trigger.kind === "parallel";
+  if (riskyTrigger && !hasRecursivePageCondition(conditions)) {
     issues.push({
       severity: "warning",
       code: "page.auto-parallel-ungated",
@@ -227,7 +230,7 @@ function validatePage(
     });
   }
 
-  const invisible = page.graphic.transparent === true || !page.graphic.sprite?.id;
+  const invisible = graphic.transparent === true || !graphic.sprite?.id;
   if (invisible && page.priority === "same" && (page.overlapForbidden ?? true)) {
     issues.push({
       severity: "warning",
@@ -238,7 +241,8 @@ function validatePage(
     });
   }
 
-  if (page.commands.length === 0) {
+  const commands = page.commands ?? [];
+  if (commands.length === 0) {
     issues.push({
       severity: "info",
       code: "page.empty",
@@ -248,7 +252,7 @@ function validatePage(
     return;
   }
 
-  if (!page.commands.some(commandHasEffect)) {
+  if (!commands.some(commandHasEffect)) {
     issues.push({
       severity: "info",
       code: "page.no-op",
@@ -257,11 +261,11 @@ function validatePage(
     });
   }
 
-  const visits = walkCommands(page.commands);
-  validateLabels(page.id, page.commands, issues);
-  validateBreakLoopPlacement(page.commands, page.id, issues);
-  validateLoopBodies(page.commands, page.id, issues);
-  validateVariableDivideByZero(page.commands, page.id, issues);
+  const visits = walkCommands(commands);
+  validateLabels(page.id, commands, issues);
+  validateBreakLoopPlacement(commands, page.id, issues);
+  validateLoopBodies(commands, page.id, issues);
+  validateVariableDivideByZero(commands, page.id, issues);
   for (const visit of visits) {
     validateCommand(project, mapId, event, page.id, visit, refs, issues);
   }

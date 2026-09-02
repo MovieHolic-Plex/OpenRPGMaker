@@ -8,6 +8,7 @@ import {
   deleteEventPage,
   hasCopiedEventPage,
   moveEventPage,
+  normalizeEventPage,
   pasteEventPage,
   subscribeCopiedEventPage,
   triggerFromKind,
@@ -254,7 +255,7 @@ export function renderClassicPageTabStrip(
       },
       children: [
         el("span", { class: "evt-page-segment-number", text: String(index + 1) }),
-        el("span", { class: "evt-page-segment-title", text: page.name.trim() || `페이지 ${index + 1}` }),
+        el("span", { class: "evt-page-segment-title", text: (page.name ?? "").trim() || `페이지 ${index + 1}` }),
         el("span", {
           class: "evt-page-segment-cond",
           text: pageTabConditionText(page),
@@ -384,7 +385,7 @@ function pageTabConditionText(page: EventPage): string {
 }
 
 function pageTabTooltip(page: EventPage, index: number, canDrag: boolean): string {
-  const name = page.name.trim() || "(이름 없음)";
+  const name = (page.name ?? "").trim() || "(이름 없음)";
   const conditions = page.conditions ?? [];
   const summary = conditions.length > 0 ? conditions.map(pageConditionSummary).join(" / ") : "조건 없음";
   const dragHint = canDrag ? "\n끌어다 놓아 순서를 바꿉니다 (뒤에 있을수록 조건이 맞을 때 이깁니다)" : "";
@@ -832,6 +833,7 @@ function priorityLabel(priority: EventPage["priority"]): string {
 }
 
 export function renderEventPageProps(mapId: MapId, eventId: string, page: EventPage, event?: GameEvent): HTMLElement {
+  page = normalizeEventPage(page);
   const wrap = el("div", { class: "event-page-props", dataset: { testid: "event-page-props" } });
   const trigger = selectWithOptions(TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger), "event-page-trigger-select");
   trigger.addEventListener("change", () => {
