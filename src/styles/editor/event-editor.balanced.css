@@ -2370,3 +2370,395 @@ footer {
   flex: 0 1 auto;
   margin-right: 4px;
 }
+
+/* ── 문법 고정 · 아이콘 (2026-09-03, 제안서 §13) ─────────────────────────────
+ * 글리프 문자(↑ ✎ ✕ ⛶ ❝ ◇ ➤ ¤ ★ △ …)를 editorIcons.ts 의 SVG 세트로 바꿨다. 옛 글리프를
+ * ::before(attr(data-glyph)) 로 그리던 규칙은 데이터 속성이 남아 있어도 더 이상 그리지 않는다
+ * — 두 번 그려지지 않게 여기서 끈다(이 시트가 캐스케이드 최종 승자다). */
+.event-editor-modal-window .ee-icon,
+.event-command-picker .ee-icon,
+.event-subdialog-backdrop .ee-icon {
+  display: inline-block;
+  flex: 0 0 16px;
+  height: 16px;
+  vertical-align: -3px;
+  width: 16px;
+}
+
+.event-editor-modal-window .cmd-cat-icon::before,
+.event-editor .event-storyboard-card-cat::before,
+.event-command-picker-tab::before,
+.event-command-picker-group-heading::before,
+.event-command-picker-command-icon::before {
+  content: none;
+}
+
+.event-editor-modal-window .cmd-cat-icon,
+.event-editor .event-storyboard-card-cat,
+.event-command-picker-command-icon,
+.event-command-picker-group-heading {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.event-editor-modal-window .cmd-cat-icon .ee-icon,
+.event-editor .event-storyboard-card-cat .ee-icon,
+.event-command-picker-command-icon .ee-icon,
+.event-command-picker-group-heading .ee-icon {
+  color: var(--cmdcat, currentColor);
+}
+
+.event-editor-modal-window .event-editor-command-tool,
+.event-editor-modal-window .event-storyboard-row-action,
+.event-editor-modal-window .event-inspector-preview-restart,
+.event-command-picker-tab {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* ── 문법 고정 · 글자 · 라운딩 · 대비 · 버튼 (2026-09-03, 제안서 §13) ─────────────────
+ * 실측(제안서 §2): 한 화면에 버튼 시그니처 26종 · 글자 크기 8종(10~18px, 11px 이하가 41~70%) ·
+ * 라운딩 10종 · 대비 4.5:1 미만 텍스트 37개. 원인은 세대마다 다른 값이라 여기서 한 번에 고정한다.
+ *   글자  12 보조 · 13 본문 · 15 제목 · 18 이벤트 이름
+ *   라운딩 6 바깥(카드·입력·버튼) · 4 안쪽(칩·알약) · 50% 점(dot)
+ *   색    --text-3 는 순백 위 12px 이상에서만. 틴트 위 보조 글자는 --text-2.
+ *   버튼  채움 · 테두리 · 유령 · 아이콘 · 위험 · 칩 여섯 묶음
+ * 선택자가 길거나 반복되는 곳은 blocks.css 등 앞 세대의 5중 클래스 선택자를 이기기 위한
+ * 특이도다(important 선언은 예산 래칫이 막는다). 게이트: scripts/qa-event-editor-ux.mjs C7~C11.
+ */
+
+/* 폼 컨트롤은 글자 크기를 상속하지 않는다(UA 13.333px) — 본문 13px 로 맞춘다. */
+.event-editor-modal-window button,
+.event-editor-modal-window input,
+.event-editor-modal-window select,
+.event-editor-modal-window textarea,
+.event-editor-modal-window summary,
+.event-command-picker button,
+.event-subdialog-backdrop button,
+.event-subdialog-backdrop input,
+.event-subdialog-backdrop select {
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+
+/* 보조 글자 12px — 세대별 9~11.5px 를 전부 올린다. */
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-step,
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle,
+.event-editor-modal-window .event-editor .cmd-list .cmd-line-marker,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-meta,
+.event-editor-modal-window .event-editor .event-editor-column-hint,
+.event-editor-modal-window .event-editor .event-editor-column-count,
+.event-editor-modal-window .event-editor .event-page-button-label,
+.event-editor-modal-window .event-editor .event-page-actions-label,
+.event-editor-modal-window .event-editor .evt-page-segment-cond,
+.event-editor-modal-window .event-editor .kicker,
+.event-editor-modal-window .event-editor legend,
+.event-editor-modal-window .event-editor small,
+.event-editor-modal-window .event-editor kbd,
+.event-editor-modal-window .event-editor .ai-event-example,
+.event-editor-modal-window .event-editor .ai-event-prompt-help,
+.event-editor-modal-window .event-editor .ai-event-target,
+.event-editor-modal-window .event-editor .ai-event-kbd,
+.event-editor-modal-window .event-editor .event-storyboard-card-thumb,
+.event-editor-modal-window .event-editor .event-storyboard-card-title .kind,
+.event-editor-modal-window .event-editor .event-storyboard-card-title,
+.event-editor-modal-window .event-editor .event-storyboard-branch-step,
+.event-editor-modal-window .event-editor .event-storyboard-branch-label,
+.event-editor-modal-window .event-editor .event-storyboard-row-action,
+.event-editor-modal-window .event-editor .event-command-text-palette-name,
+.event-editor-modal-window .event-editor .event-command-text-palette-hint,
+.event-editor-modal-window .event-editor .event-command-text-palette-label,
+.event-editor-modal-window .event-editor .event-command-text-palette-sub,
+.event-editor-modal-window .event-editor .event-command-text-tool-label,
+.event-editor-modal-window .event-editor .event-command-text-body-label,
+.event-editor-modal-window .event-editor .event-command-text-live-chip,
+.event-editor-modal-window .event-editor .event-command-text-limit-hint,
+.event-editor-modal-window .event-editor .event-command-text-advanced-summary,
+.event-editor-modal-window .event-editor .event-command-text-speaker-hint,
+.event-editor-modal-window .event-editor .event-command-text-control-summary-note,
+.event-editor-modal-window .event-editor .event-command-text-control-hint,
+.event-editor-modal-window .event-editor .cmd-summary-token,
+.event-editor-modal-window .event-editor-modal-footer .event-editor-draft-status,
+.event-editor-modal-window .event-editor-modal-footer .event-editor-remote-status {
+  font-size: 12px;
+}
+
+/* 본문 13px — 14px 로 튀던 값과 11px 라벨을 본문으로 되돌린다. */
+.event-editor-modal-window .event-editor .value,
+.event-editor-modal-window .event-editor .event-storyboard-card-detail,
+.event-editor-modal-window .event-editor .event-inspector-title,
+.event-editor-modal-window .event-editor .event-editor-command-tool,
+.event-editor-modal-window .event-editor .event-editor-command-edit-summary,
+.event-editor-modal-window .event-editor .event-editor-command-tools-summary,
+.event-editor-modal-window .event-editor .event-view-toggle-btn,
+.event-editor-modal-window .event-editor .event-command-text-tool-glyph {
+  font-size: 13px;
+}
+
+/* 제목 15px — 인스펙터 머리와 카드 제목. */
+.event-editor-modal-window .event-editor .event-inspector-kind,
+.event-editor-modal-window .event-editor .event-editor-column-label {
+  font-size: 15px;
+}
+
+/* 이벤트(페이지) 이름 18px 은 이미 그렇다. 닫기·전체 보기 버튼은 아이콘이라 글자 크기가 없다. */
+.event-editor-modal-window .event-editor-modal-header .icon-btn,
+.event-editor-modal-window .event-editor .event-inspector-close {
+  font-size: 13px;
+}
+
+/* 대비 — 틴트 위 보조 글자는 --text-2. --text-3 는 순백 위에서만 4.75:1 을 넘긴다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-meta,
+.event-editor-modal-window .event-editor .event-editor-column-hint,
+.event-editor-modal-window .event-editor .event-editor-column-count,
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-step,
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle,
+.event-editor-modal-window .event-editor .cmd-list .cmd-line-marker,
+.event-editor-modal-window .event-editor .event-storyboard-card-title .kind,
+.event-editor-modal-window .event-editor .event-storyboard-card-title,
+.event-editor-modal-window .event-editor .event-storyboard-branch-label,
+.event-editor-modal-window .event-editor .event-storyboard-branch-step,
+.event-editor-modal-window .event-editor .evt-page-segment-cond,
+.event-editor-modal-window .event-editor .ai-event-prompt-help,
+.event-editor-modal-window .event-editor .ai-event-target,
+.event-editor-modal-window .event-editor .kicker,
+.event-editor-modal-window .event-editor .event-command-text-palette-hint,
+.event-editor-modal-window .event-editor .event-command-text-tool-label,
+.event-editor-modal-window .event-editor .event-command-text-limit-hint,
+.event-editor-modal-window .event-editor .event-command-text-speaker-hint,
+.event-editor-modal-window .event-editor .event-command-text-control-summary-note,
+.event-editor-modal-window .event-editor .event-command-text-control-hint,
+.event-editor-modal-window .event-editor-modal-footer .event-editor-draft-status,
+.event-editor-modal-window .event-editor-modal-footer .event-editor-remote-status {
+  color: var(--text-2);
+}
+
+/* 선택지 토큰: 갈색 14% 틴트 위 갈색 글자(3.67:1)를 회색 바탕 위 갈색(5.6:1)으로. */
+.event-editor-modal-window .event-editor .cmd-summary-token.choice-option {
+  background: var(--control-bg);
+  color: var(--warning);
+}
+
+/* 라운딩 — 바깥 6px. */
+.event-editor-modal-window button,
+.event-editor-modal-window input,
+.event-editor-modal-window select,
+.event-editor-modal-window textarea,
+.event-editor-modal-window summary,
+.event-editor-modal-window fieldset,
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-group,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-group.is-open,
+.event-editor-modal-window .event-editor .event-storyboard-card,
+.event-editor-modal-window .event-editor .event-storyboard-branch-command,
+.event-editor-modal-window .event-editor .sprite,
+.event-editor-modal-window .event-editor .event-oprn-fieldset,
+.event-editor-modal-window .event-editor-modal-header .npc,
+.event-editor-modal-window .event-editor .event-command-text-tool,
+.event-editor-modal-window .event-editor .event-command-text-palette-button,
+.event-editor-modal-window .event-editor .ai-event-btn,
+.event-editor-modal-window .event-editor .event-editor-command-search,
+.event-command-picker button,
+.event-command-picker input,
+.event-subdialog-backdrop button,
+.event-subdialog-backdrop input,
+.event-subdialog-backdrop select {
+  border-radius: 6px;
+}
+
+/* 라운딩 — 안쪽 4px(칩·알약·작은 표식). */
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle,
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-prefix,
+.event-editor-modal-window .event-editor .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon,
+.event-editor-modal-window .event-editor .cmd-summary-token,
+.event-editor-modal-window .event-editor .cmd-summary-token.choice-option,
+.event-editor-modal-window .event-editor .ai-event-example,
+.event-editor-modal-window .event-editor .event-editor-column-count,
+.event-editor-modal-window .event-editor .event-storyboard-card-thumb,
+.event-editor-modal-window .event-editor .event-storyboard-card-cat,
+.event-editor-modal-window .event-editor .event-storyboard-branch-step,
+.event-editor-modal-window .event-editor .command-runtime-badge,
+.event-editor-modal-window .event-editor .event-command-issue-badge,
+.event-editor-modal-window .event-editor-modal-header .face,
+.event-editor-modal-window .event-editor kbd,
+.event-editor-modal-window .event-editor .ee-icon,
+.event-editor-modal-window .event-editor .event-command-text-live-chip {
+  border-radius: 4px;
+}
+
+/* ── 버튼 여섯 묶음 ─────────────────────────────────────────────────────── */
+
+/* 2 테두리(기본): 흰 바탕 · 기본 테두리 · 30px. 흰 바탕 위 --text-3 (비활성)도 4.75:1 을 넘긴다. */
+.event-editor-modal-window .btn,
+.event-editor-modal-window .event-editor .event-editor-command-tool,
+.event-editor-modal-window .event-editor .event-editor-command-edit-summary,
+.event-editor-modal-window .event-editor .event-editor-command-tools-summary,
+.event-editor-modal-window .event-editor .event-command-text-palette-button,
+.event-editor-modal-window .event-editor .event-command-text-tool,
+.event-editor-modal-window .event-editor .btn.evt-page-segment,
+.event-editor-modal-window .event-editor .btn.evt-page-segment-add,
+.event-editor-modal-window .event-editor .btn.event-page-action-button,
+.event-editor-modal-window .event-editor .event-inspector-preview-restart {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  color: var(--text-1);
+  font-weight: 500;
+  min-height: 30px;
+  height: 30px;
+  padding: 0 10px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-command-tool:disabled,
+.event-editor-modal-window .event-editor .btn.event-page-action-button.disabled,
+.event-editor-modal-window .event-editor .btn.event-page-action-button:disabled {
+  color: var(--text-3);
+}
+
+/* 선택된 페이지 탭. */
+.event-editor-modal-window .event-editor .btn.evt-page-segment[aria-selected="true"],
+.event-editor-modal-window .event-editor .btn.evt-page-segment.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+
+/* 1 채움: 한 화면에 하나씩(툴바 「+ 명령」, 푸터 「저장하고 닫기」, AI 「초안 만들기」). */
+.event-editor-modal-window .btn.primary,
+.event-editor-modal-window .event-editor .event-editor-command-tool.primary,
+.event-editor-modal-window .event-editor .ai-event-btn.primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  height: 30px;
+  min-height: 30px;
+}
+
+/* 3 유령: 배경 없음 · 글자 --text-2 · 30px. 보기 토글·세그먼트·취소·테스트·빈 줄. */
+.event-editor-modal-window .btn.ghost,
+.event-editor-modal-window .event-editor .event-view-toggle-btn,
+.event-editor-modal-window .event-editor .rich-segment,
+.event-editor-modal-window .event-editor .cmd-empty-line,
+.event-editor-modal-window .event-editor .event-storyboard-add,
+.event-editor-modal-window .event-editor-modal-header .event-editor-header-test {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-2);
+  font-weight: 500;
+  height: 30px;
+  min-height: 30px;
+}
+
+.event-editor-modal-window .event-editor .event-view-toggle-btn[aria-selected="true"],
+.event-editor-modal-window .event-editor .rich-segment.selected {
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* 4 아이콘: 28×28 정사각 · 배경 없음 · 글자 --text-2. */
+.event-editor-modal-window .event-editor-modal-header .icon-btn,
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-control,
+.event-editor-modal-window .event-editor .event-inspector-close,
+.event-editor-modal-window .event-editor .event-storyboard-row-action,
+.event-editor-modal-window .event-editor .event-editor-command-search-clear,
+.event-command-picker .event-command-picker-favorite {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-2);
+  display: inline-flex;
+  font-weight: 500;
+  height: 28px;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0;
+  width: 28px;
+}
+
+/* 5 위험 텍스트: 배경 없이 글자만 --danger. */
+.event-editor-modal-window .event-editor .event-storyboard-row-action.is-danger,
+.event-editor-modal-window .event-editor .btn.event-page-action-danger,
+.event-editor-modal-window .event-editor-modal-footer .btn.danger {
+  color: var(--danger);
+}
+
+/* 6 칩: 24px · 12px 글자 · 안쪽 4px 라운딩. */
+.event-editor-modal-window .event-editor .ai-event-example {
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  color: var(--text-2);
+  font-weight: 500;
+  height: 24px;
+  min-height: 24px;
+  padding: 0 8px;
+}
+
+/* 레일 그룹 헤더: 브라우저 기본 버튼 모양(회색 바탕·2px 테두리)을 명시적으로 지운다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-header {
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
+  font-weight: 600;
+  padding: 10px 12px;
+}
+
+/* 앞 세대 규칙이 더 특이한 곳 — 실측으로 남은 값(7px 푸터·헤더, 3px 툴바, 8px 컨테이너)을 같은 문법으로. */
+.event-editor-modal-window .event-editor-modal-footer .btn.event-editor-footer-button,
+.event-editor-modal-window .event-editor-modal-header .btn.ghost,
+.event-editor-modal-window .event-editor-modal-header .icon-btn.event-editor-modal-close,
+.event-editor-modal-window .event-editor .event-editor-command-toolbar .event-editor-command-tool,
+.event-editor-modal-window .event-editor .event-editor-command-toolbar .event-editor-command-tool.primary,
+.event-editor-modal-window .event-editor .event-editor-command-toolbar summary,
+.event-editor-modal-window .event-editor .event-editor-command-toolbar .event-view-toggle,
+.event-editor-modal-window .event-editor .event-editor-commands-column .cmd-list,
+.event-editor-modal-window .event-editor .event-storyboard .event-storyboard-add,
+.event-editor-modal-window .event-editor .ai-event-assist textarea,
+.event-editor-modal-window .event-editor .ai-event-assist .ai-event-input {
+  border-radius: 6px;
+}
+
+.event-editor-modal-window .event-editor .cmd-list .cmd-thumb,
+.event-editor-modal-window .event-editor .cmd-list .cmd-thumb-map {
+  border-radius: 4px;
+}
+
+/* 채움 버튼 굵기 하나(600). 푸터 저장 버튼이 650 으로 따로 놀았다. */
+.event-editor-modal-window .event-editor-modal-footer .btn.primary.event-editor-footer-button,
+.event-editor-modal-window .event-editor .event-editor-command-toolbar .event-editor-command-tool.primary {
+  font-weight: 600;
+}
+
+/* 스토리 보기 분기 안 줄의 종류 라벨(.kind 단독)도 보조 12px · --text-2. */
+.event-editor-modal-window .event-editor .event-storyboard .kind,
+.event-editor-modal-window .event-editor .event-storyboard-branch-command .kind,
+.event-editor-modal-window .event-editor legend,
+.event-editor-modal-window .event-editor fieldset > legend,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body legend {
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+/* 「+ 여기에 명령 추가」 빈 줄은 유령 버튼 문법(13px · 6px · 30px). */
+.event-editor-modal-window .event-editor .cmd-list .cmd-empty-line,
+.event-editor-modal-window .event-editor .cmd-list button.cmd-empty-line {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  height: 30px;
+  min-height: 30px;
+}
+
+/* 헤더 검증 종(경고 n) 칩 — 999px 알약 · 10.5~11px 글자였다. 안쪽 4px · 보조 12px 로. */
+.event-editor-modal-window .event-editor-modal-header .event-draft-validation-summary,
+.event-editor-modal-window .event-editor-modal-header .event-draft-validation-count,
+.event-editor-modal-window .event-editor-modal-header .event-draft-validation-tally {
+  border-radius: 4px;
+  font-size: 12px;
+}

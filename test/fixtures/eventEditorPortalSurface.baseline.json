@@ -96,6 +96,20 @@
    "btn",
    "command-runtime-badge",
    "editor-only",
+   "ee-icon",
+   "ee-icon-branch",
+   "ee-icon-chat",
+   "ee-icon-choice",
+   "ee-icon-close",
+   "ee-icon-coin",
+   "ee-icon-gear",
+   "ee-icon-info",
+   "ee-icon-party",
+   "ee-icon-route",
+   "ee-icon-sound",
+   "ee-icon-spark",
+   "ee-icon-star",
+   "ee-icon-warning",
    "event-command-picker-cancel",
    "event-command-picker-command",
    "event-command-picker-command-icon",
@@ -123,11 +137,14 @@
   ],
   "tags": {
    "button": 81,
+   "circle": 16,
    "div": 53,
    "h3": 1,
    "input": 1,
+   "path": 88,
    "section": 1,
-   "span": 86
+   "span": 96,
+   "svg": 87
   },
   "tagByTestid": {
    "command-picker-add-applyItemUpgrade": "button",
@@ -395,7 +412,7 @@
   ],
   "testidCount": 90,
   "controlCount": 82,
-  "classCount": 27,
+  "classCount": 41,
   "rootCount": 1
  },
  "commandPickerTab2": {
@@ -470,6 +487,18 @@
    "companion-card-name",
    "companion-portrait",
    "editor-only",
+   "ee-icon",
+   "ee-icon-chat",
+   "ee-icon-close",
+   "ee-icon-gear",
+   "ee-icon-growth",
+   "ee-icon-info",
+   "ee-icon-party",
+   "ee-icon-person",
+   "ee-icon-spark",
+   "ee-icon-star",
+   "ee-icon-sword",
+   "ee-icon-warning",
    "event-command-picker-cancel",
    "event-command-picker-command",
    "event-command-picker-command-icon",
@@ -500,11 +529,14 @@
   ],
   "tags": {
    "button": 52,
+   "circle": 16,
    "div": 36,
    "h3": 2,
    "input": 1,
+   "path": 54,
    "section": 2,
-   "span": 56
+   "span": 64,
+   "svg": 53
   },
   "tagByTestid": {
    "command-picker-add-battleProcessing": "button",
@@ -691,7 +723,7 @@
   ],
   "testidCount": 62,
   "controlCount": 53,
-  "classCount": 33,
+  "classCount": 45,
   "rootCount": 1
  },
  "commandPickerTab3": {
@@ -818,6 +850,19 @@
    "btn",
    "command-runtime-badge",
    "editor-only",
+   "ee-icon",
+   "ee-icon-chat",
+   "ee-icon-close",
+   "ee-icon-gear",
+   "ee-icon-image",
+   "ee-icon-info",
+   "ee-icon-lines",
+   "ee-icon-party",
+   "ee-icon-route",
+   "ee-icon-spark",
+   "ee-icon-star",
+   "ee-icon-sun",
+   "ee-icon-warning",
    "event-command-picker-cancel",
    "event-command-picker-command",
    "event-command-picker-command-icon",
@@ -845,11 +890,15 @@
   ],
   "tags": {
    "button": 93,
+   "circle": 16,
    "div": 58,
    "h3": 1,
    "input": 1,
+   "path": 99,
+   "rect": 4,
    "section": 1,
-   "span": 113
+   "span": 122,
+   "svg": 98
   },
   "tagByTestid": {
    "command-picker-add-addLight": "button",
@@ -1168,7 +1217,7 @@
   ],
   "testidCount": 117,
   "controlCount": 94,
-  "classCount": 27,
+  "classCount": 40,
   "rootCount": 1
  },
  "commandPickerTab4": {
@@ -1260,6 +1309,16 @@
    "btn",
    "command-runtime-badge",
    "editor-only",
+   "ee-icon",
+   "ee-icon-chat",
+   "ee-icon-close",
+   "ee-icon-gear",
+   "ee-icon-info",
+   "ee-icon-party",
+   "ee-icon-spark",
+   "ee-icon-star",
+   "ee-icon-tool",
+   "ee-icon-warning",
    "event-command-picker-cancel",
    "event-command-picker-command",
    "event-command-picker-command-icon",
@@ -1287,11 +1346,14 @@
   ],
   "tags": {
    "button": 59,
+   "circle": 28,
    "div": 38,
    "h3": 1,
    "input": 1,
+   "path": 62,
    "section": 1,
-   "span": 78
+   "span": 84,
+   "svg": 61
   },
   "tagByTestid": {
    "command-picker-add-ending": "button",
@@ -1509,7 +1571,7 @@
   ],
   "testidCount": 82,
   "controlCount": 60,
-  "classCount": 27,
+  "classCount": 37,
   "rootCount": 1
  },
  "commandPickerSearch": {
@@ -1540,6 +1602,16 @@
    "btn",
    "command-runtime-badge",
    "editor-only",
+   "ee-icon",
+   "ee-icon-chat",
+   "ee-icon-close",
+   "ee-icon-gear",
+   "ee-icon-info",
+   "ee-icon-party",
+   "ee-icon-spark",
+   "ee-icon-star",
+   "ee-icon-sun",
+   "ee-icon-warning",
    "event-command-picker-cancel",
    "event-command-picker-command",
    "event-command-picker-command-icon",
@@ -1570,11 +1642,14 @@
   ],
   "tags": {
    "button": 17,
+   "circle": 12,
    "div": 17,
    "h3": 1,
    "input": 1,
+   "path": 19,
    "section": 1,
-   "span": 20
+   "span": 25,
+   "svg": 18
   },
   "tagByTestid": {
    "command-picker-add-addLight": "button",
@@ -1643,7 +1718,7 @@
   ],
   "testidCount": 21,
   "controlCount": 18,
-  "classCount": 30,
+  "classCount": 40,
   "rootCount": 1
  },
  "commandPickerSearchInformational": {
@@ -1668,6 +1743,16 @@
    "btn",
    "command-runtime-badge",
    "editor-only",
+   "ee-icon",
+   "ee-icon-branch",
+   "ee-icon-chat",
+   "ee-icon-close",
+   "ee-icon-gear",
+   "ee-icon-info",
+   "ee-icon-party",
+   "ee-icon-spark",
+   "ee-icon-star",
+   "ee-icon-warning",
    "event-command-picker-alternate-route",
    "event-command-picker-cancel",
    "event-command-picker-command",
@@ -1699,11 +1784,14 @@
   ],
   "tags": {
    "button": 9,
+   "circle": 6,
    "div": 13,
    "h3": 1,
    "input": 1,
+   "path": 11,
    "section": 1,
-   "span": 10
+   "span": 15,
+   "svg": 10
   },
   "tagByTestid": {
    "command-picker-favorite-advanceTime": "button",
@@ -1752,7 +1840,7 @@
   ],
   "testidCount": 15,
   "controlCount": 10,
-  "classCount": 31,
+  "classCount": 41,
   "rootCount": 1
  },
  "commandPickerSearchEmpty": {
@@ -1772,6 +1860,14 @@
    "btn",
    "command-runtime-badge",
    "editor-only",
+   "ee-icon",
+   "ee-icon-chat",
+   "ee-icon-close",
+   "ee-icon-gear",
+   "ee-icon-info",
+   "ee-icon-party",
+   "ee-icon-spark",
+   "ee-icon-warning",
    "empty-hint",
    "event-command-picker-cancel",
    "event-command-picker-footer",
@@ -1793,11 +1889,14 @@
   ],
   "tags": {
    "button": 7,
+   "circle": 6,
    "div": 9,
    "h3": 1,
    "input": 1,
+   "path": 8,
    "section": 1,
-   "span": 5
+   "span": 9,
+   "svg": 7
   },
   "tagByTestid": {
    "event-command-picker": "div",
@@ -1835,7 +1934,7 @@
   ],
   "testidCount": 10,
   "controlCount": 8,
-  "classCount": 21,
+  "classCount": 29,
   "rootCount": 1
  },
  "commandPickerFavorites": {
@@ -1945,6 +2044,22 @@
    "btn",
    "command-runtime-badge",
    "editor-only",
+   "ee-icon",
+   "ee-icon-branch",
+   "ee-icon-chat",
+   "ee-icon-choice",
+   "ee-icon-close",
+   "ee-icon-coin",
+   "ee-icon-gear",
+   "ee-icon-info",
+   "ee-icon-party",
+   "ee-icon-route",
+   "ee-icon-sound",
+   "ee-icon-spark",
+   "ee-icon-star",
+   "ee-icon-starFilled",
+   "ee-icon-sun",
+   "ee-icon-warning",
    "event-command-picker-cancel",
    "event-command-picker-command",
    "event-command-picker-command-icon",
@@ -1976,11 +2091,14 @@
   ],
   "tags": {
    "button": 89,
+   "circle": 19,
    "div": 59,
    "h3": 3,
    "input": 1,
+   "path": 96,
    "section": 3,
-   "span": 98
+   "span": 108,
+   "svg": 95
   },
   "tagByTestid": {
    "command-picker-add-addLight": "button",
@@ -2276,7 +2394,7 @@
   ],
   "testidCount": 100,
   "controlCount": 90,
-  "classCount": 31,
+  "classCount": 47,
   "rootCount": 1
  },
  "commandPickerGrid": {
@@ -2376,6 +2494,20 @@
    "btn",
    "command-runtime-badge",
    "editor-only",
+   "ee-icon",
+   "ee-icon-branch",
+   "ee-icon-chat",
+   "ee-icon-choice",
+   "ee-icon-close",
+   "ee-icon-coin",
+   "ee-icon-gear",
+   "ee-icon-info",
+   "ee-icon-party",
+   "ee-icon-route",
+   "ee-icon-sound",
+   "ee-icon-spark",
+   "ee-icon-star",
+   "ee-icon-warning",
    "event-command-picker-cancel",
    "event-command-picker-command",
    "event-command-picker-command-icon",
@@ -2404,11 +2536,14 @@
   ],
   "tags": {
    "button": 81,
+   "circle": 16,
    "div": 53,
    "h3": 1,
    "input": 1,
+   "path": 88,
    "section": 1,
-   "span": 86
+   "span": 96,
+   "svg": 87
   },
   "tagByTestid": {
    "command-picker-add-applyItemUpgrade": "button",
@@ -2676,7 +2811,7 @@
   ],
   "testidCount": 90,
   "controlCount": 82,
-  "classCount": 28,
+  "classCount": 42,
   "rootCount": 1
  },
  "pageMoveRoute": {
@@ -2782,6 +2917,8 @@
    "ecp-move-target",
    "ecp-move-target-label",
    "ecp-move-target-name",
+   "ee-icon",
+   "ee-icon-close",
    "event-custom-select",
    "event-custom-select-chevron",
    "event-custom-select-native",
@@ -2837,11 +2974,12 @@
    "label": 21,
    "legend": 5,
    "option": 49,
+   "path": 1,
    "polyline": 1,
    "section": 1,
    "select": 5,
    "span": 128,
-   "svg": 1
+   "svg": 2
   },
   "tagByTestid": {
    "ecp-move-grid-box": "div",
@@ -3122,7 +3260,7 @@
   ],
   "testidCount": 83,
   "controlCount": 81,
-  "classCount": 60,
+  "classCount": 62,
   "rootCount": 1
  },
  "npcGraphic": {
@@ -3178,6 +3316,8 @@
    "active",
    "btn",
    "charset-thumb",
+   "ee-icon",
+   "ee-icon-close",
    "event-graphic-direct-box",
    "event-graphic-direction-group",
    "event-graphic-frame-probe",
@@ -3217,9 +3357,11 @@
    "input": 8,
    "label": 7,
    "legend": 2,
+   "path": 1,
    "section": 1,
    "span": 21,
-   "summary": 1
+   "summary": 1,
+   "svg": 1
   },
   "tagByTestid": {
    "event-graphic-cancel": "button",
@@ -3328,7 +3470,7 @@
   ],
   "testidCount": 46,
   "controlCount": 40,
-  "classCount": 32,
+  "classCount": 34,
   "rootCount": 1
  },
  "mapPoint": {
@@ -3344,6 +3486,8 @@
    "active",
    "btn",
    "cream-command-form",
+   "ee-icon",
+   "ee-icon-close",
    "event-custom-select",
    "event-custom-select-chevron",
    "event-custom-select-native",
@@ -3375,9 +3519,11 @@
    "h3": 1,
    "label": 1,
    "option": 1,
+   "path": 1,
    "section": 1,
    "select": 1,
-   "span": 4
+   "span": 4,
+   "svg": 1
   },
   "tagByTestid": {
    "event-page-npc-living-destination-cancel": "button",
@@ -3411,7 +3557,7 @@
   ],
   "testidCount": 6,
   "controlCount": 8,
-  "classCount": 26,
+  "classCount": 28,
   "rootCount": 1
  },
  "characterIdPicker": {
@@ -3430,6 +3576,8 @@
   ],
   "classes": [
    "btn",
+   "ee-icon",
+   "ee-icon-close",
    "event-character-id-picker",
    "event-character-id-picker-create",
    "event-character-id-picker-create-error",
@@ -3468,8 +3616,10 @@
    "input": 3,
    "label": 2,
    "p": 2,
+   "path": 1,
    "section": 2,
-   "span": 5
+   "span": 5,
+   "svg": 1
   },
   "tagByTestid": {
    "event-character-id-picker": "div",
@@ -3510,7 +3660,7 @@
   ],
   "testidCount": 11,
   "controlCount": 8,
-  "classCount": 31,
+  "classCount": 33,
   "rootCount": 1
  },
  "transferPlayer": {
@@ -3534,6 +3684,8 @@
    "active",
    "btn",
    "cream-command-form",
+   "ee-icon",
+   "ee-icon-close",
    "event-subdialog-backdrop",
    "event-subdialog-body",
    "event-subdialog-close",
@@ -3561,8 +3713,10 @@
    "input": 8,
    "label": 8,
    "legend": 2,
+   "path": 1,
    "section": 1,
-   "span": 8
+   "span": 8,
+   "svg": 1
   },
   "tagByTestid": {
    "event-transfer-player-dialog": "div",
@@ -3613,7 +3767,7 @@
   ],
   "testidCount": 14,
   "controlCount": 14,
-  "classCount": 20,
+  "classCount": 22,
   "rootCount": 1
  },
  "fieldMonsterTemplate": {
@@ -3633,6 +3787,8 @@
   ],
   "classes": [
    "btn",
+   "ee-icon",
+   "ee-icon-close",
    "event-custom-select",
    "event-custom-select-chevron",
    "event-custom-select-native",
@@ -3670,9 +3826,11 @@
    "label": 7,
    "option": 4,
    "p": 2,
+   "path": 1,
    "section": 1,
    "select": 1,
    "span": 15,
+   "svg": 1,
    "textarea": 2
   },
   "tagByTestid": {
@@ -3727,7 +3885,7 @@
   ],
   "testidCount": 12,
   "controlCount": 11,
-  "classCount": 28,
+  "classCount": 30,
   "rootCount": 1
  },
  "recordPickerSwitch": {
@@ -3762,6 +3920,8 @@
   ],
   "classes": [
    "btn",
+   "ee-icon",
+   "ee-icon-close",
    "event-record-picker",
    "event-record-picker-add",
    "event-record-picker-footer",
@@ -3799,8 +3959,10 @@
    "div": 14,
    "h3": 1,
    "input": 2,
+   "path": 1,
    "section": 1,
-   "span": 125
+   "span": 125,
+   "svg": 1
   },
   "tagByTestid": {
    "event-record-picker": "div",
@@ -3872,7 +4034,7 @@
   ],
   "testidCount": 27,
   "controlCount": 26,
-  "classCount": 32,
+  "classCount": 34,
   "rootCount": 1
  },
  "recordPickerItem": {
@@ -3886,6 +4048,8 @@
   ],
   "classes": [
    "btn",
+   "ee-icon",
+   "ee-icon-close",
    "event-record-picker",
    "event-record-picker-footer",
    "event-record-picker-footer-spacer",
@@ -3916,8 +4080,10 @@
    "h3": 1,
    "img": 3,
    "input": 1,
+   "path": 1,
    "section": 1,
-   "span": 15
+   "span": 15,
+   "svg": 1
   },
   "tagByTestid": {
    "event-record-picker": "div",
@@ -3949,7 +4115,7 @@
   ],
   "testidCount": 6,
   "controlCount": 7,
-  "classCount": 24,
+  "classCount": 26,
   "rootCount": 1
  },
  "commandEditDialog": {
@@ -4007,6 +4173,8 @@
    "ecp-message-text",
    "ecp-message-window",
    "ecp-stage",
+   "ee-icon",
+   "ee-icon-close",
    "event-command-edit-action",
    "event-command-edit-actions",
    "event-command-edit-body",
@@ -4070,12 +4238,14 @@
    "label": 2,
    "option": 5,
    "p": 2,
+   "path": 1,
    "section": 3,
    "select": 1,
    "small": 1,
    "span": 48,
    "strong": 1,
    "summary": 2,
+   "svg": 1,
    "textarea": 1
   },
   "tagByTestid": {
@@ -4195,7 +4365,7 @@
   ],
   "testidCount": 43,
   "controlCount": 29,
-  "classCount": 61,
+  "classCount": 63,
   "rootCount": 1
  },
  "commandListContextMenu": {

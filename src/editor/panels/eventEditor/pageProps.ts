@@ -1,5 +1,6 @@
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import {
   addEventPage,
   addEventPageCommand,
@@ -520,9 +521,11 @@ function pageButton(
   };
   if (disabled) attrs.disabled = "";
   const variantClass = variant ? ` event-page-action-${variant}` : "";
+  // 이동 화살표는 글리프 문자가 아니라 SVG 로 — 접근성 이름은 accessibleName 이 이미 말한다.
+  const arrowIcon = text === "←" ? "arrowLeft" : text === "→" ? "arrowRight" : null;
   return el("button", {
     class: `btn event-page-action-button${variantClass} ${disabled ? "disabled" : ""}`,
-    children: [el("span", { class: "event-page-button-label", text })],
+    children: [arrowIcon ? renderEditorIcon(arrowIcon) : el("span", { class: "event-page-button-label", text })],
     dataset: { testid: testId },
     attrs,
     on: {

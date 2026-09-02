@@ -337,7 +337,8 @@ describe("RPG Maker style event editor entry points", () => {
     expect(nameInput.value).toBe("첫 페이지");
 
     editorState.set({ selectedEventPageId: "page-2" });
-    expect(document.querySelector('[data-testid="event-editor-header-page-count"]')?.textContent).toBe("페이지 2/2");
+    // 「페이지 N/M」 카운터는 탭 줄과 중복이라 없앴다(2026-09-03). 순번은 이름 상자의 aria-label 이 말한다.
+    expect(document.querySelector('[data-testid="event-editor-header-page-count"]')).toBeNull();
     expect(nameInput.value).toBe("둘째 페이지");
     expect(nameInput.getAttribute("aria-label")).toBe("페이지 이름 (2/2)");
 
@@ -490,7 +491,11 @@ describe("RPG Maker style event editor entry points", () => {
     expect(modal?.querySelector(".event-editor-workbench")).not.toBeNull();
     expect(modal?.querySelector('[data-testid="event-editor-render-error"]')).toBeNull();
     expect(modal?.querySelector('[data-testid="event-editor-identity"]')?.textContent).toBe("이벤트: 단골 창구");
+    // 좌표 앞에 맵 이름 — 어느 맵의 (77, 17) 인지 헤더가 말한다(2026-09-03 제안서 §6).
+    expect(modal?.querySelector('[data-testid="event-editor-map-name"]')?.textContent).toBe(project.maps[project.startMapId]!.name);
     expect(modal?.querySelector('[data-testid="event-editor-coords"]')?.textContent).toBe("77, 17");
+    // NPC 가 연결되지 않은 이벤트는 「NPC 없음」 칩을 그리지 않는다.
+    expect(modal?.querySelector('[data-testid="event-editor-npc-chip"]')).toBeNull();
     expect(document.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]')?.value).toBe("첫 방문");
   });
 

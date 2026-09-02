@@ -1,6 +1,7 @@
 import { clearChildren, el } from "@/util/dom";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import { eventNameForSummary } from "./commandSummary";
 import type { Command, Dir, MapId, MoveCommand } from "@/project/types";
 import type { CommandEditContext } from "./types";
 import { mapSelectElement } from "./sharedPickers";
@@ -48,9 +49,21 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     if (targetSelect.value === "this") return "";
     return eventIdIn.value.trim();
   };
+  // 입력한 ID 가 어느 이벤트인지 이름으로 되읽어 준다 — 원시 ID 만 보이던 결함(2026-09-03 제안서 §6).
+  const eventNameHint = el("span", {
+    class: "move-route-target-name",
+    attrs: { "aria-live": "polite" },
+    dataset: { testid: "move-route-event-name" },
+  });
+  const syncTargetName = () => {
+    const id = eventIdIn.value.trim();
+    eventNameHint.textContent = targetSelect.value === "event" && id ? eventNameForSummary(id) : "";
+  };
   const syncTargetVisibility = () => {
     eventIdIn.style.display = targetSelect.value === "event" ? "" : "none";
+    syncTargetName();
   };
+  eventIdIn.addEventListener("input", syncTargetName);
   syncTargetVisibility();
 
   const repeat = el("input", {
@@ -373,6 +386,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
             el("span", { class: "move-route-target-label", text: "누구에게" }),
             targetSelect,
             eventIdIn,
+            eventNameHint,
           ],
         }),
         el("div", { class: "move-route-options", children: [repeatLabel, waitLabel, skippableLabel] }),

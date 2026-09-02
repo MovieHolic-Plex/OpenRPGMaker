@@ -6,6 +6,7 @@
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import { commandKindLabel } from "./options";
 import { inspectorTitle } from "./inspectorChoicesTitle";
 import { renderCommandBody } from "./commandBody";
@@ -90,7 +91,7 @@ export function showCommandInspector(target: InspectorTarget): void {
   const summary = stripKindPrefix(inspectorTitle(target.command), kindText);
   const closeButton = el("button", {
     class: "event-inspector-close",
-    text: "×",
+    children: [renderEditorIcon("close")],
     attrs: { type: "button", title: "선택 명령 닫기", "aria-label": "선택 명령 닫기" },
     dataset: { testid: "event-inspector-close" },
     on: {
@@ -135,7 +136,7 @@ export function showCommandInspector(target: InspectorTarget): void {
     children: [
       el("button", {
         class: "btn event-inspector-preview-restart",
-        text: "↻ 미리보기 새로고침",
+        children: [renderEditorIcon("refresh"), el("span", { text: "미리보기 새로고침" })],
         attrs: { type: "button", title: "현재 명령 데이터로 미리보기를 다시 그립니다." },
         dataset: { testid: "event-inspector-preview-restart" },
         // 폼까지 다시 그리면 입력 중이던 값·포커스가 날아간다 — 프리뷰만 교체한다.

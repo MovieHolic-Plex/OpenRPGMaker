@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이벤트 편집기 UX 개선 제안 — 네 화면을 한 문법으로 (2026-09-03)</title>
+<style>
+/* ── 프로젝트 토큰 (src/styles/tokens.css 값 그대로) ─────────────────────────── */
+:root{
+  --bg-base:#F7F8F8; --bg-surface:#F7F8F8; --bg-raised:#FFFFFF; --bg-overlay:#FFFFFF; --bg-inset:#EEF1F4;
+  --bg-hover:rgba(15,23,42,.05); --bg-active:rgba(15,23,42,.09);
+  --control-bg:rgba(15,23,42,.04); --control-bg-hover:rgba(15,23,42,.08);
+  --border-subtle:rgba(15,23,42,.08); --border-default:rgba(15,23,42,.127); --border-strong:rgba(15,23,42,.461);
+  --text-1:#0F172A; --text-2:#475569; --text-3:#626E89; --text-disabled:#94A3B8;
+  --accent:#4A57D6; --accent-hover:#3C48C4; --accent-muted:rgba(74,87,214,.12); --accent-border:rgba(74,87,214,.45); --on-accent:#fff;
+  --danger:#C6403D; --danger-muted:rgba(198,64,61,.13);
+  --success:#18764F; --success-muted:rgba(24,118,79,.13);
+  --warning:#8A5E00; --warning-muted:rgba(138,94,0,.13);
+  --radius-s:6px; --radius-m:10px; --radius-l:14px;
+  --shadow-pop:0 4px 12px rgba(15,23,42,.08),0 12px 32px rgba(15,23,42,.10);
+  --shadow-modal:0 8px 24px rgba(15,23,42,.10),0 24px 64px rgba(15,23,42,.14);
+  --font-ui:system-ui,"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"Cascadia Mono","JetBrains Mono","SFMono-Regular",Consolas,monospace;
+  /* 제안하는 명령 분류색 6종 (채도 낮춘 값) */
+  --cat-talk:#4A57D6; --cat-flow:#8A5E00; --cat-trade:#18764F; --cat-move:#0F7490; --cat-screen:#7A3E9D; --cat-system:#64748B;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg-inset);color:var(--text-1);font-family:var(--font-ui);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;word-break:keep-all}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px 120px}
+header.doc{padding:60px 0 36px;border-bottom:1px solid var(--border-default)}
+.doc-kicker{font-size:12.5px;color:var(--text-3);margin:0 0 12px}
+h1{font-size:36px;line-height:1.22;margin:0 0 14px;letter-spacing:-.02em}
+.lede{font-size:17px;color:var(--text-2);max-width:74ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:22px;font-size:12.5px;color:var(--text-3)}
+.meta b{color:var(--text-2);font-weight:600}
+section{margin-top:64px;scroll-margin-top:20px}
+h2{font-size:24px;letter-spacing:-.015em;margin:0 0 6px;line-height:1.3}
+h2 .no{display:inline-block;min-width:30px;color:var(--text-3);font-weight:600;font-size:15px;margin-right:6px;font-variant-numeric:tabular-nums}
+.h2sub{font-size:15px;color:var(--text-2);margin:0 0 20px;max-width:80ch}
+h3{font-size:17px;margin:34px 0 10px;letter-spacing:-.01em}
+p{margin:0 0 14px;color:var(--text-2);max-width:78ch}
+p strong,li strong,td strong{color:var(--text-1);font-weight:650}
+ul,ol{margin:0 0 14px;padding-left:20px;color:var(--text-2);max-width:78ch}
+li{margin:5px 0}
+a{color:var(--accent)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--control-bg);padding:1px 5px;border-radius:4px;color:var(--text-1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+figure{margin:0}
+.shot{display:block;border:1px solid var(--border-default);border-radius:var(--radius-s);overflow:hidden;background:var(--bg-raised)}
+.shot img{display:block;width:100%;height:auto}
+.shot.pix img{image-rendering:pixelated}
+figcaption{font-size:12.5px;color:var(--text-3);margin-top:8px;line-height:1.5}
+figcaption b{color:var(--text-2);font-weight:600}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:4px;margin-right:6px;vertical-align:1px}
+.tag.now{background:var(--danger-muted);color:var(--danger)}
+.tag.next{background:var(--success-muted);color:var(--success)}
+.tag.keep{background:var(--accent-muted);color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0 6px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border-subtle);vertical-align:top}
+th{font-size:12px;color:var(--text-3);font-weight:600;border-bottom:1px solid var(--border-default)}
+td.num,th.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.mono{font-family:var(--font-mono);font-size:12.5px}
+tr:last-child td{border-bottom:none}
+.bad{color:var(--danger);font-weight:650}
+.good{color:var(--success);font-weight:650}
+.dim{color:var(--text-3)}
+.verdict{border:1px solid var(--accent-border);background:var(--bg-raised);border-radius:var(--radius-m);padding:20px 24px;margin:28px 0 0}
+.verdict p{margin:0;color:var(--text-1);font-size:16.5px;max-width:none}
+.verdict p + p{margin-top:8px;color:var(--text-2);font-size:14.5px}
+.note{font-size:12.5px;color:var(--text-3);margin-top:8px}
+.kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0 4px}
+@media(max-width:900px){.kv{grid-template-columns:1fr 1fr}}
+.kv div{background:var(--bg-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-s);padding:12px 14px}
+.kv .k{font-size:12px;color:var(--text-3)}
+.kv .v{font-size:22px;font-weight:650;letter-spacing:-.01em;margin-top:2px;font-variant-numeric:tabular-nums;color:var(--text-1)}
+.kv .v small{font-size:12.5px;font-weight:500;color:var(--text-3);margin-left:4px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+@media(max-width:900px){.compare{grid-template-columns:1fr}}
+.foot{margin-top:80px;padding-top:24px;border-top:1px solid var(--border-default);font-size:12.5px;color:var(--text-3)}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:0 0 16px}
+
+/* ══ 목업 — 새 편집기를 CSS 로 재현 (1180px 폭 기준) ═══════════════════════ */
+.mk{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-m);overflow:hidden;box-shadow:var(--shadow-modal);font-size:13px;color:var(--text-1);line-height:1.4}
+.mk *{box-sizing:border-box}
+.mk button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:default}
+.mk-head{height:44px;display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--bg-raised);border-bottom:1px solid var(--border-subtle)}
+.mk-sprite{width:24px;height:32px;image-rendering:pixelated;object-fit:cover;object-position:0 0}
+.mk-name{font-size:15px;font-weight:650;padding:3px 8px;border-radius:var(--radius-s);border:1px solid transparent}
+.mk-name.edit{border-color:var(--border-default);background:var(--bg-raised)}
+.mk-where{color:var(--text-2);font-size:12.5px}
+.mk-where b{color:var(--text-1);font-weight:600}
+.mk-spacer{flex:1}
+.mk-btn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:var(--radius-s);border:1px solid var(--border-default);background:var(--bg-raised);font-size:13px;font-weight:500;color:var(--text-1)}
+.mk-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.mk-btn.ghost{border-color:transparent;background:transparent;color:var(--text-2)}
+.mk-btn.icon{width:30px;padding:0;justify-content:center;color:var(--text-2)}
+.mk-btn kbd{font-family:var(--font-mono);font-size:10.5px;color:var(--text-3);background:var(--control-bg);padding:1px 5px;border-radius:4px;border:1px solid var(--border-subtle)}
+.mk-btn.primary kbd{color:rgba(255,255,255,.85);background:rgba(255,255,255,.18);border-color:transparent}
+.mk-pages{height:40px;display:flex;align-items:center;gap:6px;padding:0 14px;background:var(--bg-surface);border-bottom:1px solid var(--border-subtle)}
+.mk-tab{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 10px;border-radius:var(--radius-s);border:1px solid var(--border-subtle);background:var(--bg-raised);color:var(--text-2);font-size:12.5px}
+.mk-tab b{color:var(--text-1);font-weight:600}
+.mk-tab .n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:4px;background:var(--control-bg);font-size:11px;font-weight:700;color:var(--text-2)}
+.mk-tab.on{border-color:var(--accent-border);background:var(--accent-muted)}
+.mk-tab.on .n{background:var(--accent);color:#fff}
+.mk-tab.warn{border-color:rgba(138,94,0,.4)}
+.mk-tab .w{display:inline-flex;align-items:center;gap:4px;color:var(--warning);font-size:11.5px;font-weight:600}
+.mk-body{display:grid;grid-template-columns:240px minmax(0,1fr) 360px;min-height:560px}
+.mk-body.wide{grid-template-columns:240px minmax(0,1fr)}
+.mk-body.a{grid-template-columns:220px minmax(0,1fr) 340px}
+.mk-col{min-width:0;border-right:1px solid var(--border-subtle);background:var(--bg-surface)}
+.mk-col:last-child{border-right:0}
+.mk-colhead{height:36px;display:flex;align-items:center;gap:8px;padding:0 14px;font-size:12px;color:var(--text-3);border-bottom:1px solid var(--border-subtle);white-space:nowrap;overflow:hidden}
+.mk-colhead span{overflow:hidden;text-overflow:ellipsis}
+.mk-colhead b{color:var(--text-1);font-weight:600;font-size:12.5px}
+/* 페이지 카드 */
+.mk-card{margin:12px;background:var(--bg-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-s);overflow:hidden}
+.mk-card .top{display:flex;gap:12px;align-items:center;padding:12px 12px 10px;border-bottom:1px solid var(--border-subtle)}
+.mk-card .top img{width:36px;height:48px;image-rendering:pixelated;object-fit:cover;object-position:0 0;background:var(--bg-inset);border-radius:4px}
+.mk-card .top .t{font-weight:600;font-size:13px}
+.mk-card .top .s{font-size:12px;color:var(--text-3);margin-top:1px}
+.mk-row{display:grid;grid-template-columns:52px 1fr 16px;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border-subtle);font-size:12.5px}
+.mk-row:last-child{border-bottom:0}
+.mk-row .k{color:var(--text-3);font-size:12px}
+.mk-row .v{color:var(--text-1);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mk-row .v.muted{color:var(--text-3);font-weight:400}
+.mk-row svg{color:var(--text-3)}
+.mk-row.sel{background:var(--accent-muted)}
+/* 대본 */
+.mk-tools{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--border-subtle)}
+.mk-search{flex:0 0 220px;display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border-radius:var(--radius-s);border:1px solid var(--border-default);background:var(--bg-raised);color:var(--text-3);font-size:12.5px}
+.mk-count{margin-left:auto;font-size:12px;color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mk-script{padding:6px 12px 12px}
+.mk-line{display:grid;grid-template-columns:34px 3px 22px 56px minmax(0,1fr);align-items:center;gap:0 8px;height:32px;padding:0 6px 0 0;border-radius:var(--radius-s);border:1px solid transparent;position:relative}
+.mk-line .no{font-size:11.5px;color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums;padding-right:2px}
+.mk-line .rail{width:3px;height:20px;border-radius:2px;background:var(--cat)}
+.mk-line .ic{display:grid;place-items:center;color:var(--cat)}
+.mk-line .kind{font-size:12px;color:var(--text-2);white-space:nowrap}
+.mk-line .sum{font-size:13px;color:var(--text-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mk-line .sum q{quotes:"“" "”";color:var(--text-1)}
+.mk-line .sum em{font-style:normal;color:var(--cat);font-weight:600}
+.mk-line .sum .pill{display:inline-block;font-size:11.5px;padding:0 6px;border-radius:4px;background:var(--control-bg);color:var(--text-2);margin-left:4px;vertical-align:1px}
+.mk-line.sel{background:var(--accent-muted);border-color:var(--accent-border)}
+.mk-line.d1{margin-left:24px}
+.mk-line.d2{margin-left:48px}
+.mk-branch{display:flex;align-items:center;gap:8px;height:26px;margin-left:24px;padding-left:0;font-size:12px;color:var(--text-2)}
+.mk-branch.d2{margin-left:48px}
+.mk-branch::before{content:"";width:12px;height:12px;border-left:1.5px solid var(--border-strong);border-bottom:1.5px solid var(--border-strong);border-radius:0 0 0 4px;margin:0 2px 8px 10px;opacity:.6}
+.mk-branch b{color:var(--text-1);font-weight:600}
+.mk-branch .cnt{color:var(--text-3);font-size:11.5px}
+.mk-guide{position:relative}
+.mk-guide::before{content:"";position:absolute;left:39px;top:0;bottom:0;border-left:1.5px dashed var(--border-default)}
+.mk-add{display:flex;align-items:center;gap:8px;height:30px;margin:4px 0 0 40px;color:var(--text-3);font-size:12.5px}
+.mk-add span.k{font-family:var(--font-mono);font-size:10.5px;background:var(--control-bg);padding:1px 5px;border-radius:4px}
+/* 인스펙터 */
+.mk-insp-head{height:36px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--border-subtle);font-size:12.5px}
+.mk-insp-head .no{font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums}
+.mk-insp-head b{font-weight:600}
+.mk-stage{margin:12px;border-radius:var(--radius-s);overflow:hidden;background:#1d2130;aspect-ratio:4/3;position:relative;border:1px solid var(--border-default)}
+.mk-stage .scene{position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 16px),
+  repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 16px)}
+.mk-stage .win{position:absolute;left:8px;right:8px;bottom:8px;height:36%;border-radius:4px;background:rgba(20,24,40,.96);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:#fff;padding:10px 12px;font-size:12px;line-height:1.5}
+.mk-stage .plate{position:absolute;left:8px;top:-12px;background:#2b3050;border:1px solid rgba(255,255,255,.35);border-radius:3px;padding:1px 8px;font-size:11px}
+.mk-stage .face{position:absolute;left:10px;top:10px;width:48px;height:48px;image-rendering:pixelated;border-radius:2px}
+.mk-stage .win.face-on{padding-left:66px}
+.mk-stage .choice{position:absolute;right:8px;top:8px;width:46%;border-radius:4px;background:rgba(20,24,40,.96);border:1px solid rgba(255,255,255,.35);color:#fff;padding:8px 10px;font-size:12px}
+.mk-stage .choice div{padding:2px 6px;border-radius:3px}
+.mk-stage .choice div.on{background:rgba(255,255,255,.16)}
+.mk-stage .label{position:absolute;right:8px;top:8px;font-size:10.5px;color:rgba(255,255,255,.55);letter-spacing:.02em}
+.mk-form{padding:4px 12px 12px;display:grid;gap:10px}
+.mk-f{display:grid;gap:4px}
+.mk-f label{font-size:12px;color:var(--text-2)}
+.mk-f label small{color:var(--text-3);margin-left:6px}
+.mk-in{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 10px;border-radius:var(--radius-s);border:1px solid var(--border-default);background:var(--bg-raised);font-size:13px;color:var(--text-1)}
+.mk-in.area{align-items:flex-start;padding:8px 10px;min-height:72px;line-height:1.5}
+.mk-in .caret{margin-left:auto;color:var(--text-3)}
+.mk-in.pick{border-color:var(--accent-border);background:var(--accent-muted);font-weight:500}
+.mk-seg{display:inline-flex;border:1px solid var(--border-default);border-radius:var(--radius-s);overflow:hidden;background:var(--bg-raised)}
+.mk-seg span{padding:0 10px;height:28px;display:inline-flex;align-items:center;font-size:12.5px;color:var(--text-2);border-right:1px solid var(--border-subtle)}
+.mk-seg span:last-child{border-right:0}
+.mk-seg span.on{background:var(--accent-muted);color:var(--accent);font-weight:600}
+.mk-hint{font-size:11.5px;color:var(--text-3)}
+.mk-foot{height:40px;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--bg-raised);border-top:1px solid var(--border-subtle);font-size:12.5px;color:var(--text-3)}
+.mk-foot .status{display:inline-flex;align-items:center;gap:6px;color:var(--success);font-weight:500}
+/* 사이드 시트 */
+.mk-sheet{position:relative}
+.mk-sheet .over{position:absolute;inset:0;background:var(--bg-raised);border-left:1px solid var(--border-default);box-shadow:-12px 0 32px rgba(15,23,42,.10);display:flex;flex-direction:column}
+.mk-maplist{padding:8px 12px;display:grid;gap:2px;font-size:12.5px}
+.mk-maplist div{padding:6px 8px;border-radius:4px;color:var(--text-2);display:flex;gap:8px;align-items:center}
+.mk-maplist div.on{background:var(--accent-muted);color:var(--text-1);font-weight:600}
+.mk-maplist div.sub{padding-left:24px}
+.mk-minimap{margin:8px 12px;border:1px solid var(--border-default);border-radius:var(--radius-s);overflow:hidden;position:relative;background:var(--bg-inset)}
+.mk-minimap img{display:block;width:100%;image-rendering:pixelated}
+.mk-minimap .dst{position:absolute;width:18px;height:18px;border:2px solid var(--accent);border-radius:3px;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+/* 인라인 팔레트 */
+.mk-pal{margin:6px 0 6px 40px;width:640px;max-width:calc(100% - 40px);background:var(--bg-overlay);border:1px solid var(--border-default);border-radius:var(--radius-m);box-shadow:var(--shadow-pop);overflow:hidden}
+.mk-pal .q{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-bottom:1px solid var(--border-subtle);font-size:13px}
+.mk-pal .q .cur{width:1.5px;height:16px;background:var(--accent)}
+.mk-pal .q .ph{color:var(--text-3)}
+.mk-pal .chips{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid var(--border-subtle);flex-wrap:wrap}
+.mk-chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:999px;border:1px solid var(--border-subtle);background:var(--bg-raised);font-size:11.5px;color:var(--text-2)}
+.mk-chip.on{background:var(--text-1);border-color:var(--text-1);color:#fff}
+.mk-chip i{width:8px;height:8px;border-radius:2px;background:var(--cat)}
+.mk-pal .cols{display:grid;grid-template-columns:1fr 1fr;padding:6px}
+.mk-pal .it{display:flex;align-items:center;gap:8px;height:28px;padding:0 8px;border-radius:4px;font-size:12.5px;color:var(--text-1)}
+.mk-pal .it svg{color:var(--cat)}
+.mk-pal .it .s{color:var(--text-3);font-size:11px;margin-left:auto}
+.mk-pal .it.on{background:var(--accent-muted)}
+.mk-pal .fo{display:flex;align-items:center;gap:14px;padding:8px 12px;border-top:1px solid var(--border-subtle);font-size:11.5px;color:var(--text-3)}
+.mk-pal .fo b{color:var(--text-2);font-weight:600}
+.mk-pal .fo a{margin-left:auto}
+/* 빈 상태 */
+.mk-empty{margin:24px auto;max-width:520px;text-align:center;padding:28px 20px}
+.mk-empty .t{font-size:15px;font-weight:600}
+.mk-empty .s{font-size:12.5px;color:var(--text-3);margin:4px 0 16px}
+.mk-empty .qs{display:flex;gap:8px;justify-content:center}
+.mk-empty .qs .mk-btn{height:34px}
+/* 문법 해부 그림 */
+.anat{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:900px){.anat{grid-template-columns:1fr}}
+.anat .box{background:var(--bg-raised);border:1px solid var(--border-subtle);border-radius:var(--radius-s);padding:14px}
+.anat .box h4{margin:0 0 10px;font-size:13px;color:var(--text-2);font-weight:600}
+.anat .lbl{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--text-3);margin-top:10px}
+.anat .lbl b{color:var(--text-2);font-weight:600}
+/* 팔레트 표 */
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px;border:1px solid rgba(15,23,42,.1)}
+.type-demo span{display:block;line-height:1.35}
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-chat" viewBox="0 0 16 16"><path d="M2 3h12v8H8l-3 3v-3H2z"/></symbol>
+  <symbol id="i-choice" viewBox="0 0 16 16"><path d="M3 4h1M6.5 4H13M3 8h1M6.5 8H13M3 12h1M6.5 12H13"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 16 16"><path d="M4 2v12M4 6c0 3 3 3 6 3h3M10.5 6.5 13 9l-2.5 2.5"/></symbol>
+  <symbol id="i-switch" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="7" rx="3.5"/><circle cx="10.5" cy="8" r="2"/></symbol>
+  <symbol id="i-var" viewBox="0 0 16 16"><path d="M6 2 4.5 14M11.5 2 10 14M2.5 6h12M1.5 10h12"/></symbol>
+  <symbol id="i-route" viewBox="0 0 16 16"><path d="M2 12c3 0 3-6 6-6s3 6 6 6M11 9l3 3-3 3"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/></symbol>
+  <symbol id="i-door" viewBox="0 0 16 16"><path d="M4 14V3h8v11M4 14h8M9.5 8.5h.01"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6 8h4M7 6.2v3.6"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 16 16"><path d="M1.5 3h2l1.6 7h7.4l1.5-5H5"/><circle cx="6" cy="13" r="1"/><circle cx="11.5" cy="13" r="1"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 16 16"><path d="M2 12.5V5.5M2 10h12v2.5M2 10V7h9a3 3 0 0 1 3 3"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 16 16"><path d="M3 6v4h2.5L9 13V3L5.5 6zM11.5 5.5a3.5 3.5 0 0 1 0 5"/></symbol>
+  <symbol id="i-image" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="m2 11 3.5-3.5L9 11l2-2 3 3"/><circle cx="10.5" cy="6.5" r="1"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 16 16"><path d="M8 1.5 9.4 6.6 14.5 8l-5.1 1.4L8 14.5 6.6 9.4 1.5 8l5.1-1.4z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3.5 3.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="i-more" viewBox="0 0 16 16"><circle cx="3.5" cy="8" r=".9"/><circle cx="8" cy="8" r=".9"/><circle cx="12.5" cy="8" r=".9"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 16 16"><path d="M5 4 2.5 6.5 5 9M2.5 6.5H10a3.5 3.5 0 0 1 0 7H7"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 16 16"><path d="m11 4 2.5 2.5L11 9M13.5 6.5H6a3.5 3.5 0 0 0 0 7h3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 16 16"><path d="M4 3v10l9-5z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 16 16"><path d="M8 2.5 14.5 13.5H1.5zM8 6.5V9.5M8 11.5h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8.5 3 3 7-7"/></symbol>
+  <symbol id="i-drag" viewBox="0 0 16 16"><circle cx="6" cy="4" r=".9"/><circle cx="10" cy="4" r=".9"/><circle cx="6" cy="8" r=".9"/><circle cx="10" cy="8" r=".9"/><circle cx="6" cy="12" r=".9"/><circle cx="10" cy="12" r=".9"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 16 16"><path d="M8 14.5s-4.5-4.2-4.5-7.5a4.5 4.5 0 0 1 9 0c0 3.3-4.5 7.5-4.5 7.5z"/><circle cx="8" cy="7" r="1.5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></symbol>
+  <symbol id="i-person" viewBox="0 0 16 16"><circle cx="8" cy="5" r="2.5"/><path d="M3 14c.5-3 2.5-4.5 5-4.5s4.5 1.5 5 4.5"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 16 16"><path d="M3.5 14V2.5h8l-1.5 3 1.5 3h-8"/></symbol>
+  <symbol id="i-move" viewBox="0 0 16 16"><path d="M8 1.5v13M1.5 8h13M8 1.5 6 3.5M8 1.5l2 2M8 14.5l-2-2M8 14.5l2-2M1.5 8l2-2M1.5 8l2 2M14.5 8l-2-2M14.5 8l-2 2"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 16 16"><path d="m8 2 6 3-6 3-6-3zM2 8l6 3 6-3M2 11l6 3 6-3"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></symbol>
+  <symbol id="i-comment" viewBox="0 0 16 16"><path d="M3 3h10v7H7l-2.5 2.5V10H3z"/><path d="M5.5 6.5h5"/></symbol>
+</svg>
+<div class="wrap">
+<header class="doc">
+  <p class="doc-kicker">OPRN Studio · 이벤트 편집기 · UX 개선 제안 · 2026-09-03</p>
+  <h1>이벤트 편집기 — 네 화면을 한 문법으로</h1>
+  <p class="lede">같은 명령 목록을 네 가지 보기로 그리고, 같은 명령을 두 곳에서 고치고, 한 화면에 버튼 모양 26종과 글자 크기 8종을 섞어 쓴다. 실행 중인 편집기에서 스크린샷 45장과 DOM 계측으로 확인한 현재 상태와, 기능을 더하지 않고 <strong>표면을 줄이는</strong> 쪽으로 다시 그린 개선안이다.</p>
+  <div class="meta">
+    <span><b>측정일</b> 2026-09-03</span>
+    <span><b>기준 커밋</b> main <code>dd11c568</code> (워크트리 witty-mayfly, 브랜치 pending-task)</span>
+    <span><b>서버</b> 이 워크트리의 vite dev 127.0.0.1:9631</span>
+    <span><b>뷰포트</b> 1440×900 기준 · 1024·1280·1680·1920 보조</span>
+    <span><b>대상</b> 샘플 어드벤처(<code>?freshProject=1</code>) + 주입한 3페이지·14명령 이벤트 「대장장이 하몬」</span>
+    <span><b>도구</b> Playwright headless Chromium · getComputedStyle · jimp 픽셀 계측</span>
+  </div>
+  <div class="verdict">
+    <p>이 편집기가 불편한 이유는 기능이 모자라서가 아니다. <strong>같은 일을 하는 표면이 너무 많고, 그 표면들이 서로 다른 시각 언어를 쓴다.</strong></p>
+    <p>명령 목록 보기 4종 · 명령 편집면 2종 · 조건 추가 경로 2종 · CSS 세대 6개(56시트, 21,329줄, <code>!important</code> 89개). 개선안은 표면을 「대본 하나 · 인스펙터 하나 · 깊이 하나」로 줄이고, 행 문법과 토큰을 하나로 고정하는 것이다.</p>
+  </div>
+</header>
+
+<section id="s0">
+  <h2><span class="no">0</span>숫자로 보는 현재</h2>
+  <p class="h2sub">전부 브라우저에서 DOM·픽셀로 잰 값이다. 추정치는 없다. 측정 방법은 부록에 있다.</p>
+  <table>
+    <thead><tr><th>항목</th><th class="num">값</th><th>근거</th></tr></thead>
+    <tbody>
+      <tr><td>같은 명령 목록을 그리는 보기 방식</td><td class="num bad">4</td><td>목록 · 스토리 · 미리보기 · 플로우 (<code>event-view-toggle-*</code>)</td></tr>
+      <tr><td>같은 명령을 고치는 편집면</td><td class="num bad">2</td><td>단일 클릭 = 우측 인스펙터(340px), 더블 클릭 = 모달(940×680). 폼 내용 동일</td></tr>
+      <tr><td>페이지 조건을 추가하는 경로</td><td class="num bad">2</td><td>칩 13개 + 「고급 조건」 드롭다운·조건 추가 버튼</td></tr>
+      <tr><td>한 화면의 버튼 스타일 종류 (배경·글자색·테두리·라운딩·글자 크기·굵기·높이)</td><td class="num bad">26</td><td>목록 보기 1440. 스토리 24, 1024·1280·1920 에서 31~32</td></tr>
+      <tr><td>글자 크기 종류</td><td class="num bad">8</td><td>10 · 10.5 · 11 · 11.5 · 12 · 13 · 14 · 18px (1280 이상에서 15px 추가로 9)</td></tr>
+      <tr><td>11px 이하 텍스트 비율</td><td class="num bad">41% · 70%</td><td>목록 67/165, 스토리 121/174 텍스트 노드</td></tr>
+      <tr><td>라운딩(border-radius) 종류</td><td class="num bad">10</td><td>2 · 3 · 4 · 5 · 6 · 7 · 8 · 10px · 50% · 999px</td></tr>
+      <tr><td>SVG 아이콘 / 이모지·글리프 아이콘 버튼</td><td class="num bad">0 / 43</td><td>스토리 보기. 카드마다 ↑ ↓ ✎ ✕ 4개가 DOM 에 상주</td></tr>
+      <tr><td>대비 4.5:1 미만 텍스트 노드</td><td class="num bad">37</td><td>목록 보기. 레일 요약 4.14 · 되돌리기 4.2 · 선택지 토큰 3.67</td></tr>
+      <tr><td>명령 영역 빈 화소 비율</td><td class="num bad">91.2%</td><td>목록 1440. 스토리 96.3 · 플로우 92.4 · 미리보기 88.4 · 빈 페이지 98.9</td></tr>
+      <tr><td>14개 명령 중 한 화면에 보이는 수</td><td class="num bad">12 · 10 · 8</td><td>1440 · 1280 · 1024. 행 높이 38px, 행 폭 1171px, 평균 글자 28자</td></tr>
+      <tr><td>겹치는 층(편집기 → 명령 대화상자 → 레코드 선택 → 확인)</td><td class="num bad">4</td><td>편집기 창은 어느 뷰포트에서도 화면 전체(1440×900 = 창 크기). 맵은 보이지 않는다</td></tr>
+      <tr><td>명령 피커</td><td class="num bad">127개 · 13개</td><td>4탭 127개 명령, 42px 전폭 행이라 한 화면 13개. 아이콘 0</td></tr>
+      <tr><td>이벤트 편집기 CSS</td><td class="num bad">56시트 · 21,329줄</td><td><code>!important</code> 89개 · font-size 선언값 19종 · radius 선언값 12종</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s1">
+  <h2><span class="no">1</span>진단 — 같은 것을 네 번 그린다</h2>
+  <p class="h2sub">「이 페이지가 하는 일」 하나를 네 가지 보기가 각자의 문법으로 그린다. 보기는 3주 사이에 하나씩 늘었고, 지워진 것은 없다.</p>
+  <div class="grid2">
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-01-view-story-1440.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-01-view-story-1440.png" alt="스토리 보기: 번호 원, 카테고리 칩, 회색 종류 라벨, 요약 문장이 한 줄에 놓인 카드 목록"></a><figcaption><b>스토리 보기 (기본값, 2026-08-07).</b> 번호 원 + 칩(대화·흐름) + 회색 종류 라벨 + 요약. 카드마다 ↑ ↓ ✎ ✕ 버튼이 붙어 버튼 105개. 번호는 분기마다 1부터 다시 시작한다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-02-view-list-1440.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-02-view-list-1440.png" alt="목록 보기: 색 레일, 칩, 파란 라벨과 요약이 있는 38px 행 목록"></a><figcaption><b>목록 보기 (2026-08-04).</b> 색 레일 + 칩(대화·보상·흐름·지도) + 파란 라벨 + 요약. 분기 머리는 「철광석을 판다」「선택 끝」「분기 끝」 텍스트 행. 같은 데이터인데 스토리와 칩 색·라벨 어휘·번호 위치가 다르다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-03-view-preview-1440.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-03-view-preview-1440.png" alt="미리보기 보기: 회색 무대 하나가 명령 영역을 채우고 아래에 대화창 목업이 걸려 있다"></a><figcaption><b>미리보기 보기 (2026-08-29).</b> 320×240 게임 화면을 700px 로 키운 회색 무대. 명령 영역의 88.4% 가 빈 화소다. 이름표 「대장장이 하몬」이 창 위 테두리에 걸려 잘린다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-04-view-flow-1440.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-04-view-flow-1440.png" alt="플로우 보기: 원형 아이콘과 상자로 분기를 그린 흐름도"></a><figcaption><b>플로우 보기 (2026-08-30).</b> 원형 아이콘 + 상자. 분기 구조는 이 보기가 가장 잘 보여 주지만, 편집은 못 하고 아이콘 어휘는 또 다르다.</figcaption></figure>
+  </div>
+
+  <h3>같은 명령을 두 곳에서 고친다</h3>
+  <div class="grid2">
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-05-inspector-text.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-05-inspector-text.png" alt="명령을 한 번 클릭하면 우측 340px 인스펙터에 미리보기와 폼이 열린다"></a><figcaption><b>단일 클릭 → 인스펙터(340px).</b> 미리보기 + 말하는 사람 + 대화 내용 + 말투 + 문장 도구. 인스펙터가 열리면 명령 열이 1172 → 672px 로 줄고, 1280 이하에서는 툴바가 두 줄(34 → 72px)로 접힌다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-06-dialog-text.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-06-dialog-text.png" alt="명령을 더블 클릭하면 같은 폼이 940×680 모달로 다시 열린다"></a><figcaption><b>더블 클릭 → 모달(940×680).</b> 인스펙터와 같은 폼을 더 넓게 그린 것. 대화상자 면적의 91.3% 가 빈 화소고, 왼쪽 미리보기 우물은 69.4% 가 빈 화소다. 열리는 동안 목록은 가려진다.</figcaption></figure>
+  </div>
+
+  <h3>조건을 붙이는 길도 둘이다</h3>
+  <div class="compare">
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/x-rail-when-2x.png"><img src="2026-09-03-event-editor-ux-redesign-assets/x-rail-when-2x.png" alt="언제 보이나요 그룹: 문장 요약, 칩 13개, 고급 조건 드롭다운과 조건 추가 버튼, 시작 방식 셀렉트가 268px 레일 안에 쌓여 있다"></a><figcaption><b>「언제 보이나요」 그룹 (2배).</b> 문장 요약 → 칩 13개 → 「고급 조건 (0)」 드롭다운 + 조건 추가 버튼 → 「시작 방식」. 칩과 드롭다운은 같은 일(조건 하나 추가)을 하는 두 번째 컨트롤이고, 발동 조건인 「시작 방식」은 조건 그룹의 맨 밑에 숨어 있다. 그룹을 펴면 레일이 513px 가 되어 아래 그룹이 스크롤 밖으로 밀린다.</figcaption></figure>
+    <div>
+      <p><strong>왜 문제인가.</strong> 보기·편집면·경로가 늘어날 때마다 사용자는 「어느 것이 진짜인가」를 한 번씩 더 판단해야 한다. 네 보기의 결과가 같다는 사실은 써 보기 전에는 알 수 없고, 인스펙터에서 고친 값이 모달에도 반영되는지도 확인해야 안심이 된다.</p>
+      <p>더 큰 비용은 시각 언어다. 보기마다 칩 색·아이콘 모양·라벨 어휘·번호 위치가 다르므로, 한 보기에서 익힌 눈이 다른 보기에서는 쓸모가 없다. 다음 절이 그 차이를 잰다.</p>
+      <p class="note">보기 4종의 도입 시점은 <code>git log -S</code> 로 확인했다: 스토리 1bb59708(08-07), 미리보기 a4a23ca9(08-29), 플로우 cf2471cf(08-30). 인스펙터는 ae6a3ee0(08-04), 모달은 552b440e(07-03).</p>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <h2><span class="no">2</span>진단 — 문법이 없다</h2>
+  <p class="h2sub">한 화면 안의 버튼·글자·모서리를 전수 계측했다. 숫자는 디자인 결정이 아니라 CSS 세대 수의 함수다.</p>
+  <div class="grid2">
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/x-toolbar-2x.png"><img src="2026-09-03-event-editor-ux-redesign-assets/x-toolbar-2x.png" alt="툴바 2배 확대: 채움 버튼, 검색 입력, 흐린 되돌리기, 드롭다운 두 개, 세그먼트 4개, AI 명령 버튼이 각각 다른 모양이다"></a><figcaption><b>툴바 (2배).</b> 「+ 명령」(채움, 7px 라운딩) · 검색(8px) · 「↶ 되돌리기」(3px, 11.5px 글자, 대비 4.2) · 「편집 ▾」「도구 ▾」(테두리) · 보기 세그먼트 · 「✧ AI 명령」(회색 채움). 한 줄에 여섯 가지 버튼 모양.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/x-header-strip-2x.png"><img src="2026-09-03-event-editor-ux-redesign-assets/x-header-strip-2x.png" alt="헤더와 페이지 줄 2배 확대"></a><figcaption><b>헤더 + 페이지 줄 (2배).</b> 페이지 탭(6px) · 「+」(6px) · 페이지 관리 버튼 6개(6px, 붙여넣기는 비활성) · 「삭제」(빨간 글자). 「이벤트: 밤」「NPC 없음」「페이지 1/3」은 3절에서 다룬다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/x-list-rows-2x.png"><img src="2026-09-03-event-editor-ux-redesign-assets/x-list-rows-2x.png" alt="목록 행 2배 확대: 번호, 색 막대, 테두리 칩, 파란 라벨, 검은 요약, 갈색 선택지 토큰"></a><figcaption><b>목록 행 (2배).</b> 번호(10px, 대비 4.2) · 색 막대 · 칩 「대화」(테두리+글리프) · 파란 라벨 「문장 표시:」 · 검은 요약 · 선택지 토큰(갈색, 대비 3.67). 행 하나에 글자 크기 3종, 색 4종.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/x-story-cards-2x.png"><img src="2026-09-03-event-editor-ux-redesign-assets/x-story-cards-2x.png" alt="스토리 카드 2배 확대: 회색 번호 원, 칩, 회색 종류 라벨, 요약. 분기는 화살표 문자와 작은 번호 원으로 들여쓴다"></a><figcaption><b>스토리 카드 (2배).</b> 같은 데이터의 다른 문법 — 번호는 원 안에, 종류는 칩 옆 회색 11px 라벨(「대사」「골드」, 대비 4.47)로, 분기 머리는 「↳」 문자로. 목록 보기와 공유하는 규칙이 없다.</figcaption></figure>
+  </div>
+
+  <h3>계측표</h3>
+  <table>
+    <thead><tr><th>항목 (모달 안 보이는 요소 전수)</th><th class="num">목록 보기</th><th class="num">스토리 보기</th><th class="num">1024 · 1280 · 1920</th><th class="num">제안 기준</th></tr></thead>
+    <tbody>
+      <tr><td>버튼 스타일 시그니처 종류</td><td class="num bad">26</td><td class="num bad">24</td><td class="num bad">32 · 31 · 31</td><td class="num good">≤ 6</td></tr>
+      <tr><td>글자 크기 종류</td><td class="num bad">8</td><td class="num bad">8</td><td class="num bad">9 · 9 · 9</td><td class="num good">4</td></tr>
+      <tr><td>11px 이하 텍스트 노드 비율</td><td class="num bad">41%</td><td class="num bad">70%</td><td class="num">—</td><td class="num good">0% (최소 12px)</td></tr>
+      <tr><td>라운딩 종류</td><td class="num bad">10</td><td class="num bad">8</td><td class="num bad">10 · 10 · 10</td><td class="num good">2 (6 · 4px)</td></tr>
+      <tr><td>텍스트 색 종류</td><td class="num bad">8</td><td class="num bad">7</td><td class="num bad">9 · 9 · 9</td><td class="num good">3 + 분류색 6</td></tr>
+      <tr><td>SVG 아이콘</td><td class="num bad">0</td><td class="num bad">0</td><td class="num bad">1 · 1 · 1</td><td class="num good">한 세트</td></tr>
+      <tr><td>이모지·글리프 아이콘 버튼</td><td class="num">1</td><td class="num bad">43</td><td class="num">1 · 1 · 1</td><td class="num good">0</td></tr>
+      <tr><td>대비 4.5:1 미만 텍스트 노드</td><td class="num bad">37</td><td class="num bad">25</td><td class="num bad">37 · 37 · 33</td><td class="num good">0</td></tr>
+      <tr><td>보이는 버튼 수 (선택 없음)</td><td class="num">63</td><td class="num bad">105</td><td class="num">73 · 73 · 73</td><td class="num good">≤ 40</td></tr>
+    </tbody>
+  </table>
+  <p class="note">시그니처 = 배경색 | 글자색 | 테두리 | 라운딩 | 글자 크기 | 굵기 | 높이(px). 같은 「보조 버튼」이라도 세대마다 값이 달라 26종이 된다. 대비는 텍스트 노드의 색과 가장 가까운 불투명 배경으로 WCAG 비율을 계산했다.</p>
+
+  <h3>대비가 모자란 곳</h3>
+  <table>
+    <thead><tr><th>요소</th><th>글자색 / 배경</th><th class="num">비율</th><th class="num">글자 크기</th><th>있는 곳</th></tr></thead>
+    <tbody>
+      <tr><td>레일 요약 「조건 없음」「정지」「겹침 금지」「연결 안 됨」</td><td class="mono">#64748B / #EFEFEF</td><td class="num bad">4.14</td><td class="num">11px</td><td><code>.event-editor-settings-accordion-meta</code></td></tr>
+      <tr><td>「↶ 되돌리기」「↷ 다시 실행」</td><td class="mono">#64748B / #EEF1F4</td><td class="num bad">4.20</td><td class="num">11.5px</td><td><code>.event-editor-command-tool</code></td></tr>
+      <tr><td>행 번호·드래그 핸들 「::」</td><td class="mono">#64748B / #EEF1F4</td><td class="num bad">4.20</td><td class="num">10px</td><td><code>.cmd-step</code> <code>.cmd-drag-handle</code></td></tr>
+      <tr><td>스토리 종류 라벨 「대사」「선택지」, 분기 머리</td><td class="mono">#64748B / #F7F8F8</td><td class="num bad">4.47</td><td class="num">11px</td><td><code>.event-storyboard-card-title .kind</code></td></tr>
+      <tr><td>선택지 토큰 「1.철광석을 판다」</td><td class="mono">#8A5E00 / 갈색 14% 틴트</td><td class="num bad">3.67</td><td class="num">12px</td><td><code>.cmd-summary-token.choice-option</code></td></tr>
+    </tbody>
+  </table>
+  <p>모두 <code>--text-3</code>(#626E89 → 렌더 #64748B) 를 틴트 배경 위에 11px 로 쓴 결과다. 토큰 자체는 순백 위에서 4.75:1 이지만, 이 편집기는 텍스트를 거의 항상 틴트 위에 놓는다.</p>
+
+  <h3>CSS 가 말해 주는 것</h3>
+  <div class="grid2">
+    <div>
+      <table>
+        <thead><tr><th>세대</th><th>첫 커밋</th><th class="num">줄</th></tr></thead>
+        <tbody>
+          <tr><td><code>event-editor-legacy*.css</code></td><td>2026-06-29 f20d0ed9</td><td class="num">932</td></tr>
+          <tr><td><code>event-editor.part-1~4*.css</code> + <code>modern/*</code></td><td>2026-07-03 552b440e</td><td class="num">6,868</td></tr>
+          <tr><td><code>event-editor.modernize.css</code></td><td>2026-07-07 021012fd</td><td class="num">1,518</td></tr>
+          <tr><td><code>event-editor.mockup.css</code> + <code>blocks.css</code></td><td>2026-08-04 5e72f34f</td><td class="num">1,961</td></tr>
+          <tr><td><code>event-editor.windowing.css</code></td><td>2026-08-24 3986f6af</td><td class="num">142</td></tr>
+          <tr><td><code>event-editor.balanced.css</code> (캐스케이드 최종 승자)</td><td>2026-08-25 e35dfcbf</td><td class="num">2,372</td></tr>
+          <tr><td>부속: rich-forms · command-preview · p1-* · commerce · ai · custom-select 외</td><td>—</td><td class="num">7,536</td></tr>
+          <tr><td><strong>합계 56 시트</strong></td><td></td><td class="num"><strong>21,329</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>선언 계측 (이벤트 편집기 시트 전수)</th><th class="num">값</th></tr></thead>
+        <tbody>
+          <tr><td><code>font-size</code> 로 선언된 서로 다른 px 값</td><td class="num bad">19종 (9 ~ 24px)</td></tr>
+          <tr><td><code>border-radius</code> 로 선언된 서로 다른 px 값</td><td class="num bad">12종</td></tr>
+          <tr><td><code>!important</code></td><td class="num bad">89</td></tr>
+          <tr><td>명령 행 머리 하나에 매칭되는 규칙 수</td><td class="num">11</td></tr>
+          <tr><td>레이어(<code>@layer</code>) 안에 있는 이벤트 편집기 시트</td><td class="num">0 (전부 unlayered)</td></tr>
+        </tbody>
+      </table>
+      <p class="note">2026-09-02 실측(PR #438 메모)대로 승자는 이름이 아니라 순서다. 새 규칙을 어느 시트에 써야 먹는지 알려면 브라우저에서 <code>getComputedStyle</code> 을 읽어야 한다. 이 상태에서는 「토큰을 고치면 전체가 바뀐다」가 성립하지 않는다.</p>
+    </div>
+  </div>
+</section>
+<section id="s3">
+  <h2><span class="no">3</span>진단 — 공간은 남고 정보는 모자란다</h2>
+  <p class="h2sub">명령 영역의 91% 가 빈 화소인데 14개 명령은 한 화면에 들어오지 않는다. 폭이 넓어질수록 빈 곳만 넓어진다.</p>
+  <div class="grid2">
+    <figure><span class="tag now">현재 · 1440×900</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-02-view-list-1440.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-02-view-list-1440.png" alt="1440 목록 보기 전체"></a><figcaption><b>1440.</b> 행 높이 38px · 행 폭 1171px · 평균 28자. 14개 중 12개가 보인다(대기·장소 이동은 스크롤 아래). 명령 영역 빈 화소 91.2%, 설정 열 84.7%.</figcaption></figure>
+    <figure><span class="tag now">현재 · 1920×1080</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-24-vp1920.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-24-vp1920.png" alt="1920 목록 보기: 설정 열이 660px 로 넓어졌지만 왼쪽 레일과 작은 카드 하나뿐이다"></a><figcaption><b>1920.</b> 설정 열이 660px 로 넓어지고(2026-08-28 개선안의 「좌측 요약 · 우측 넓은 면」) 그 95.6% 가 빈 화소다. 명령 행은 1259px 폭에 28자 문장. 명령 열 빈 화소 92.3%.</figcaption></figure>
+    <figure><span class="tag now">현재 · 1024×768</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-23-vp1024.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-23-vp1024.png" alt="1024 목록 보기: 툴바가 두 줄로 접히고 8개 명령만 보인다"></a><figcaption><b>1024.</b> 툴바 두 줄(72px), 「이미지 선택」 두 줄, 설정 열 힌트 잘림(<code>scrollWidth</code> 129 &gt; 116). 14개 중 8개.</figcaption></figure>
+    <figure><span class="tag now">현재 · 빈 페이지</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-25-page2-empty.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-25-page2-empty.png" alt="명령이 하나뿐인 페이지 2: 행 하나와 여기에 명령 추가 링크 외에 비어 있다"></a><figcaption><b>페이지 2 (명령 1개).</b> 빈 화소 98.9%. 「+ 여기에 명령 추가」 링크 하나. 스토리 보기의 빈 상태 CTA(말하기·장소 옮기기·상점)는 목록 보기에는 없다.</figcaption></figure>
+  </div>
+  <table>
+    <thead><tr><th>영역 (뷰포트)</th><th class="num">빈 화소 비율</th><th>비고</th></tr></thead>
+    <tbody>
+      <tr><td>명령 영역 · 목록 보기 (1440)</td><td class="num bad">91.2%</td><td>14명령 중 12 보임</td></tr>
+      <tr><td>명령 영역 · 스토리 보기 (1440)</td><td class="num bad">96.3%</td><td>카드 여백이 크다</td></tr>
+      <tr><td>명령 영역 · 플로우 보기 (1440)</td><td class="num bad">92.4%</td><td></td></tr>
+      <tr><td>명령 영역 · 미리보기 보기 (1440)</td><td class="num bad">88.4%</td><td>회색 무대 자체가 빈 면</td></tr>
+      <tr><td>명령 영역 · 빈 페이지 (1440)</td><td class="num bad">98.9%</td><td></td></tr>
+      <tr><td>설정 열 (1920) · 명령 열 (1920)</td><td class="num bad">95.6% · 92.3%</td><td>폭이 늘어도 채울 내용이 없다</td></tr>
+      <tr><td>명령 피커 (1440)</td><td class="num bad">96.4%</td><td>42px 전폭 행 13개</td></tr>
+      <tr><td>문장 표시 대화상자 · 그 미리보기 우물</td><td class="num bad">91.3% · 69.4%</td><td>940×680 모달</td></tr>
+      <tr><td>이동 경로 대화상자</td><td class="num">82.6%</td><td>1120×720, 하단이 잘려 스크롤</td></tr>
+      <tr><td>AI 도크 펼침 (1440)</td><td class="num">—</td><td>명령 열 높이의 31% (237 / 772px) 를 차지</td></tr>
+    </tbody>
+  </table>
+  <p class="note">빈 화소 = 휘도 232 이상·채도 14 미만 픽셀. 배경·카드 바탕·테두리 안쪽을 모두 포함하므로 「정보가 없는 면적」의 근사치다.</p>
+</section>
+
+<section id="s4">
+  <h2><span class="no">4</span>진단 — 깊이와 탈출</h2>
+  <p class="h2sub">편집기는 어느 뷰포트에서도 화면 전체를 덮는 모달이고, 그 위에 모달이 두 층 더 쌓인다. Escape 는 어디서 눌러도 편집기 전체를 닫으려 든다.</p>
+  <div class="grid2">
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-21-escape-confirm.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-21-escape-confirm.png" alt="적용하지 않은 변경 확인 대화상자: 계속 편집(회색)과 버리고 닫기(빨강)"></a><figcaption><b>인스펙터에서 글자 하나 고친 뒤 Escape.</b> 편집기 전체 닫기가 시도되고 「적용하지 않은 변경」이 뜬다. 문구는 [반영하고 계속] [반영하고 닫기] 를 누르라고 하는데, 실제 푸터 버튼은 「적용」「저장하고 닫기」다. 유일하게 채색된 버튼이 파괴 동작 「버리고 닫기」다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-20-two-menus.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-20-two-menus.png" alt="편집 팝오버와 우클릭 컨텍스트 메뉴가 동시에 열려 있다"></a><figcaption><b>메뉴 두 개가 동시에 열린다.</b> 「편집 ▾」 팝오버는 바깥을 클릭해도 닫히지 않고(실측 <code>details.open</code> 유지) 그 위에 우클릭 메뉴가 겹친다. 두 메뉴는 같은 8개 항목의 두 판이다. 팝오버는 선택이 없을 때 버튼을 비활성화하는 대신 「고른 명령이 없습니다」 문장을 띄운다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-17-record-picker.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-17-record-picker.png" alt="스위치 선택 모달이 편집기 모달 위에 떠 있다"></a><figcaption><b>레코드 선택 (2026-08-28 개선분).</b> 검색·「이 맵에서 쓰는 중」·「쓰는 곳 16곳」·이름 바꾸기가 붙어 이 편집기에서 가장 잘 만든 화면이다. 그러나 여전히 모달 위 모달이고, 명령 대화상자에서 열면 4층째가 된다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-09-dialog-moveroute.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-09-dialog-moveroute.png" alt="이동 경로 설정 대화상자: 특정 이벤트 아래 원시 ID 입력, 40개 명령 버튼 격자, 하단이 잘린다"></a><figcaption><b>이동 경로 대화상자 (1120×720).</b> 「누구에게 → 특정 이벤트」 아래 원시 ID <code>ev_ux_stress</code> 입력이 그대로 노출된다. 명령 버튼 40개가 같은 크기 격자로 놓이고 하단 행은 900px 높이에서 잘린다.</figcaption></figure>
+  </div>
+  <table>
+    <thead><tr><th>층</th><th>무엇</th><th>크기 (1440×900)</th><th>Escape 가 하는 일</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td>이벤트 편집기 모달</td><td>1440×900 = 창 전체. 1024·1920 에서도 창 = 뷰포트</td><td>편집기 닫기 시도 → 변경이 있으면 확인창</td></tr>
+      <tr><td class="num">2</td><td>명령 대화상자 (문장·선택지·분기·이동 경로·장소 이동·상점 …)</td><td>780×520 ~ 1390×850, 종류마다 다름</td><td>대화상자 닫기</td></tr>
+      <tr><td class="num">3</td><td>레코드 선택 · 그래픽 · 조건 종류 드롭다운</td><td>460×580 (스위치) · 700×571 (Graphic)</td><td>선택 닫기</td></tr>
+      <tr><td class="num">4</td><td>확인 대화상자</td><td>440×160</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p>편집기가 화면 전체를 덮으므로 <strong>이벤트를 고치는 동안 맵이 보이지 않는다.</strong> 「장소 이동」의 목적지, 「이동 경로」의 궤적, NPC 의 위치 — 전부 지도 위의 사실인데 지도는 편집기 뒤에 있다. 대화상자마다 미니맵을 다시 그리는 이유가 이것이다.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="no">5</span>진단 — 피커</h2>
+  <p class="h2sub">2026-07-07 리뷰 이후 탭 이름·검색·즐겨찾기·그리드가 붙었다. 그래도 127개 명령을 42px 전폭 행으로 나열하니 한 화면에 13개다.</p>
+  <div class="grid2">
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/x-picker-2x.png"><img src="2026-09-03-event-editor-ux-redesign-assets/x-picker-2x.png" alt="명령 추가 피커 2배: 4탭, 검색, 그룹 머리 아래 42px 전폭 행이 라벨과 별 버튼만 갖고 있다"></a><figcaption><b>「빠른 저작」 탭 (2배).</b> 그룹 머리에 8px 색 글리프, 행에는 라벨과 즐겨찾기 별. 아이콘 0. 라벨 뒤 「...」은 RM2003 관례이지만 여기서는 「추가 입력이 있다」는 뜻이 설명되지 않는다.</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-15-picker-search.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-15-picker-search.png" alt="화면 검색 결과 17개: 애니메이션 표시가 두 번 나온다"></a><figcaption><b>「화면」 검색 결과 17개.</b> 「애니메이션 표시」가 두 번(원본 명령과 m2 명령)이다. △ 배지는 「일부만 실행」, ! 는 「에디터에서만 미리 봅니다」 — 범례는 하단 별도 줄에 있다.</figcaption></figure>
+  </div>
+  <table>
+    <thead><tr><th>탭</th><th>그룹</th><th class="num">명령</th><th class="num">배지 달린 명령</th></tr></thead>
+    <tbody>
+      <tr><td>빠른 저작</td><td>말하기 · 고르기 · 옮기기 · 거래 · 흐름 · 소리</td><td class="num">37</td><td class="num">7</td></tr>
+      <tr><td>동료 · 전투</td><td>전투 · 파티 · 능력·성장 · 모습·이름</td><td class="num">21</td><td class="num">3</td></tr>
+      <tr><td>지도 · 화면 효과</td><td>조명·날씨 · 화면 연출 · 그림 · 지도 · 값 읽기</td><td class="num">43</td><td class="num">22</td></tr>
+      <tr><td>시스템 · 도구</td><td>시스템 · 도구</td><td class="num">26</td><td class="num">21</td></tr>
+      <tr><td><strong>합계</strong></td><td></td><td class="num"><strong>127</strong></td><td class="num"><strong>53 (42%)</strong></td></tr>
+    </tbody>
+  </table>
+  <p>세 번째·네 번째 탭은 절반 이상이 「일부만 실행」 또는 「에디터 전용」이다. 그런 명령을 실행 가능한 것과 같은 크기·같은 위치에 두면, 초심자는 넣고 나서 플레이에서야 안 된다는 걸 안다. 그리드 보기(<code>cur-14</code>)는 아이콘 자리에 같은 글리프를 반복하고 즐겨찾기 별을 별도 칸으로 떼어 놓아 밀도가 리스트보다 낮다.</p>
+</section>
+
+<section id="s6">
+  <h2><span class="no">6</span>진단 — 이름과 정체성</h2>
+  <p class="h2sub">헤더 한 줄에서 이 창이 「무엇」을 편집하는지 읽어 낼 수 없다.</p>
+  <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/x-header-strip-2x.png"><img src="2026-09-03-event-editor-ux-redesign-assets/x-header-strip-2x.png" alt="헤더: 첫 만남 입력, 이벤트: 밤, 61, 23, NPC 없음, 페이지 1/3, 테스트, 닫기. 아래 줄에 페이지 탭 3개와 페이지 관리 버튼 6개"></a><figcaption><b>헤더 + 페이지 줄 (2배).</b></figcaption></figure>
+  <ol>
+    <li><strong>큰 제목 입력 「첫 만남」은 페이지 이름이다.</strong> 이벤트 이름이 아니다. 페이지를 바꾸면 제목이 바뀐다.</li>
+    <li><strong>「이벤트: 밤」</strong> — 이벤트 표시명이 <em>마지막</em> 페이지 이름(「밤」)에서 파생된다. 사용자는 이 이벤트를 「밤」이라 부른 적이 없다.</li>
+    <li><strong>「61, 23」</strong> — 좌표만 있고 맵 이름이 없다. 「이슬 장터 마을」인지 집 안인지는 편집기를 닫아야 안다.</li>
+    <li><strong>「NPC 없음」</strong> 칩 — 연결 안 된 상태를 헤더에서 계속 말한다. 연결은 좌측 「NPC와 일정」 그룹에서도 「연결 안 됨」으로 반복된다.</li>
+    <li><strong>「페이지 1/3」</strong> — 바로 아래 탭 줄이 같은 정보를 보여 준다.</li>
+    <li><strong>페이지 관리 줄</strong> — 「페이지」 라벨 + 복제 · 복사 · 붙여넣기 · ← · → · 삭제 여섯 버튼. 복제와 복사의 아이콘이 거의 같다. 탭 우클릭과 드래그(이미 구현됨, 089038c3)로 대체 가능한 것들이 상시 노출되어 있다.</li>
+    <li><strong>원시 ID 노출</strong> — 목록 행 「이동 경로 설정: <code>ev_ux_stress</code> (4개)」, 이동 경로 대화상자의 「특정 이벤트 [<code>ev_ux_stress</code>]」 입력. 2026-07-07 리뷰의 「높음-2」가 그대로 남아 있다.</li>
+    <li><strong>영어 제목 「Graphic」</strong> — 그래픽 선택 대화상자만 영어다(<code>cur-18</code>).</li>
+    <li><strong>「선택 끝」「분기 끝」</strong> — 목록 보기에서 분기 닫힘을 텍스트 행으로 표시한다. 들여쓰기가 이미 구조를 말해 주므로 이 행들은 정보 없이 세로 공간만 쓴다.</li>
+  </ol>
+  <div class="grid2">
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-18-graphic-dialog.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-18-graphic-dialog.png" alt="Graphic 대화상자: 왼쪽 차셋 목록, 오른쪽 8칸 격자, 방향과 패턴 라디오"></a><figcaption><b>「Graphic」 대화상자.</b> 썸네일 목록·격자·방향·패턴은 잘 되어 있다. 제목만 영어고, 걷기 미리보기가 없어 「패턴 왼쪽·가운데·오른쪽」의 뜻을 초심자가 알 수 없다(2026-07-07 「높음-4」).</figcaption></figure>
+    <figure><span class="tag now">현재</span><a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/cur-27-menu-tools.png"><img src="2026-09-03-event-editor-ux-redesign-assets/cur-27-menu-tools.png" alt="도구 드롭다운: 따라오기 프리셋, 필드 몬스터 템플릿 두 항목"></a><figcaption><b>「도구 ▾」.</b> 항목 두 개(따라오기 프리셋, 필드 몬스터 템플릿)를 위해 툴바 자리 하나를 상시 쓴다. 「편집 ▾」는 우클릭 메뉴의 복제다.</figcaption></figure>
+  </div>
+</section>
+
+<section id="s7">
+  <h2><span class="no">7</span>원인 — 지우지 않고 얹었다</h2>
+  <p class="h2sub">증상은 여러 개지만 뿌리는 하나다. 문제를 만날 때마다 보기·편집면·시트를 하나 더 얹었고, 앞 세대는 그대로 두었다.</p>
+  <table>
+    <thead><tr><th>날짜</th><th>얹은 것</th><th>커밋</th><th>남은 것</th></tr></thead>
+    <tbody>
+      <tr><td>2026-06-29</td><td>legacy CSS</td><td class="mono">f20d0ed9</td><td>legacy 시트 932줄</td></tr>
+      <tr><td>2026-07-03</td><td>명령 편집 모달 + part-1~4 · modern 시트</td><td class="mono">552b440e</td><td>모달, 시트 6,868줄</td></tr>
+      <tr><td>2026-07-07</td><td>modernize 시트 (이미지 리치 리뷰 후속)</td><td class="mono">021012fd</td><td>1,518줄</td></tr>
+      <tr><td>2026-08-04</td><td>인라인 인스펙터 (모달 없이 우측에서 편집) + mockup · blocks 시트</td><td class="mono">ae6a3ee0 · 5e72f34f</td><td>인스펙터와 모달이 공존, 1,961줄</td></tr>
+      <tr><td>2026-08-07</td><td>스토리 보기 (기본값)</td><td class="mono">1bb59708</td><td>목록 + 스토리</td></tr>
+      <tr><td>2026-08-24 · 25</td><td>windowing · balanced 시트 (캐스케이드 최종 승자)</td><td class="mono">3986f6af · e35dfcbf</td><td>2,514줄</td></tr>
+      <tr><td>2026-08-28</td><td>좌측 요약 레일 + 넓은 면 편집 + 레코드 픽커 통합</td><td class="mono">(제안서 구현분)</td><td>1320px 이상에서만 넓은 면, 1440 에서는 268px 레일</td></tr>
+      <tr><td>2026-08-29 · 30</td><td>미리보기 보기 · 플로우 보기</td><td class="mono">a4a23ca9 · cf2471cf</td><td>보기 4종</td></tr>
+    </tbody>
+  </table>
+  <p>2026-07-07 리뷰의 P0 여섯 항목은 대부분 반영됐다(피커 탭 이름·검색, 레코드 픽커 검색, 카테고리 색 레일, 선택지·스위치 다이얼로그, 배지 범례). 2026-08-28 제안도 구현됐다. <strong>개별 수정은 다 들어갔는데 전체는 더 복잡해졌다</strong> — 각 수정이 자기 시트와 자기 문법을 들고 왔고, 아무도 앞 세대를 지우지 않았기 때문이다. 버튼 26종·글자 크기 8종·라운딩 10종은 그 세대 수를 그대로 반영한다.</p>
+  <p>그래서 이번 제안은 <strong>추가가 아니라 삭제 목록</strong>이다. 보기 4 → 1, 편집면 2 → 1, 조건 경로 2 → 1, 메뉴 2 → 1, CSS 세대 6 → 1. 남는 하나를 어떻게 그릴지가 다음 절이다.</p>
+</section>
+<section id="s8">
+  <h2><span class="no">8</span>개선안 — 원칙 세 개와 삭제 목록</h2>
+  <p class="h2sub">새 기능은 하나(인라인 명령 팔레트)뿐이다. 나머지는 있는 것을 하나로 합치고, 남는 것을 지운다.</p>
+  <div class="grid3">
+    <div class="kv" style="grid-template-columns:1fr;margin:0"><div><div class="k">원칙 1 · 문법 하나</div><div class="v" style="font-size:16px;margin-top:6px">명령은 어디서나 같은 행이다</div><p class="note" style="margin-top:8px">번호 · 분류 막대 · 아이콘 · 종류 · 사람 문장. 보기 전환을 없애고, 스토리·플로우가 잘 보여 주던 분기 구조는 들여쓰기·연결선·분기 머리 행으로 목록에 흡수한다. 미리보기는 보기가 아니라 인스펙터 위의 「무대」로 상주한다.</p></div></div>
+    <div class="kv" style="grid-template-columns:1fr;margin:0"><div><div class="k">원칙 2 · 편집면 하나</div><div class="v" style="font-size:16px;margin-top:6px">인스펙터가 곧 편집기다</div><p class="note" style="margin-top:8px">더블 클릭은 모달을 열지 않고 인스펙터의 첫 필드에 포커스를 준다. 지도·카탈로그처럼 넓이가 필요한 편집은 인스펙터 자리 위로 미는 <strong>사이드 시트</strong>다. 목록은 계속 보인다. 가운데 모달은 확인 질문 하나만 쓴다.</p></div></div>
+    <div class="kv" style="grid-template-columns:1fr;margin:0"><div><div class="k">원칙 3 · 깊이 하나</div><div class="v" style="font-size:16px;margin-top:6px">Escape 는 맨 위 층만 닫는다</div><p class="note" style="margin-top:8px">팔레트·시트·메뉴가 열려 있으면 그것만 닫힌다. 편집기는 버튼으로만 닫힌다. 바깥 클릭은 팝오버를 닫는다. 확인 문구에 나오는 버튼 이름은 실제 버튼과 같다.</p></div></div>
+  </div>
+  <h3>삭제 목록</h3>
+  <table>
+    <thead><tr><th>지우는 것</th><th>대신</th><th>이유</th></tr></thead>
+    <tbody>
+      <tr><td>보기 전환 (목록 · 스토리 · 미리보기 · 플로우)</td><td>대본 하나 + 인스펙터 무대</td><td>같은 데이터의 네 문법. 분기 구조는 행 들여쓰기·연결선으로 충분히 보인다</td></tr>
+      <tr><td>명령 편집 모달 (<code>event-command-edit-dialog</code>)</td><td>인스펙터 · 사이드 시트</td><td>인스펙터와 같은 폼을 두 번 그린다. 열리는 동안 목록이 가려진다</td></tr>
+      <tr><td>「편집 ▾」 팝오버 · 「도구 ▾」 드롭다운</td><td>우클릭 메뉴 · 「⋯」 하나</td><td>우클릭 메뉴의 복제. 바깥 클릭에 닫히지 않는다</td></tr>
+      <tr><td>페이지 관리 줄 (복제 · 복사 · 붙여넣기 · ← · → · 삭제)</td><td>탭 우클릭 · 탭 드래그(이미 구현) · 「⋯ 페이지」</td><td>상시 노출할 빈도가 아니다. 복제/복사 아이콘이 구분되지 않는다</td></tr>
+      <tr><td>좌측 레일의 폼 (조건 칩 13개 · 고급 조건 · 시작 방식 …)</td><td>「이 페이지」 카드 = 문장 요약. 편집은 인스펙터</td><td>268px 안에 폼을 넣으면 넘치고, 넓은 면을 주면 빈다. 편집면은 하나면 된다</td></tr>
+      <tr><td>「고급 조건」 드롭다운 + 조건 추가 버튼</td><td>조건 추가 버튼 하나 (인스펙터)</td><td>칩과 같은 일을 하는 두 번째 경로</td></tr>
+      <tr><td>「선택 끝」「분기 끝」 행 · 카드마다 붙은 ↑↓✎✕</td><td>들여쓰기 · 선택 행의 우클릭·단축키</td><td>정보 없이 세로 공간과 버튼 수만 늘린다</td></tr>
+      <tr><td>헤더의 「이벤트: 밤」 「NPC 없음」 「페이지 1/3」</td><td>이벤트 이름(편집 가능) · 맵 이름 · 좌표</td><td>파생값·중복·부정 상태를 제목 줄에서 뺀다</td></tr>
+      <tr><td>편집기 닫기 확인창 (「적용하지 않은 변경」)</td><td>라이브 적용 + 되돌리기(Ctrl+Z) · 닫기</td><td>인스펙터는 이미 즉시 반영이다. 닫기 질문은 존재하지 않는 버튼을 가리킨다</td></tr>
+      <tr><td>CSS 세대 5개 (legacy · part · modernize · mockup · balanced)</td><td>시트 1개, 토큰 1세트</td><td>21,329줄 중 문법이 하나면 3,000줄이면 된다</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s9">
+  <h2><span class="no">9</span>목업 A — 새 편집기 한 장</h2>
+  <p class="h2sub">1180px 폭으로 그린 CSS 목업이다(1280 뷰포트에 해당). 스크린샷이 아니라 실제 HTML 이므로 확대해서 볼 수 있다. 아이콘은 단일 SVG 세트, 글자 크기는 12 · 13 · 15 · 18 넷, 라운딩은 6 · 4 둘이다.</p>
+  <span class="tag next">개선 · 목업</span>
+  <div class="mk" aria-label="개선안 목업: 새 이벤트 편집기 전체">
+    <div class="mk-head">
+      <img class="mk-sprite" src="2026-09-03-event-editor-ux-redesign-assets/sprite-door.png" alt="">
+      <span class="mk-name edit">대장장이 하몬</span>
+      <span class="mk-where"><b>이슬 장터 마을</b> · 61, 23 · 3 페이지</span>
+      <span class="mk-spacer"></span>
+      <span class="mk-btn"><svg class="i"><use href="#i-play"/></svg>테스트</span>
+      <span class="mk-btn icon" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></span>
+    </div>
+    <div class="mk-pages">
+      <span class="mk-tab on"><span class="n">1</span><b>첫 만남</b>항상</span>
+      <span class="mk-tab"><span class="n">2</span><b>축제 이후</b>Q1 약초 의뢰 수락 켜짐</span>
+      <span class="mk-tab"><span class="n">3</span><b>밤</b>시간대 밤</span>
+      <span class="mk-btn icon" aria-label="페이지 추가"><svg class="i"><use href="#i-plus"/></svg></span>
+      <span class="mk-spacer"></span>
+      <span class="mk-btn ghost"><svg class="i"><use href="#i-more"/></svg>페이지</span>
+    </div>
+    <div class="mk-body a">
+      <div class="mk-col">
+        <div class="mk-colhead"><b>이 페이지</b><span>누르면 오른쪽에서 고칩니다</span></div>
+        <div class="mk-card">
+          <div class="top"><img src="2026-09-03-event-editor-ux-redesign-assets/sprite-door.png" alt=""><div><div class="t">물건 1 · 문</div><div class="s">아래 향함 · 가운데 패턴</div></div></div>
+          <div class="mk-row"><span class="k">언제</span><span class="v muted">항상</span><svg class="i"><use href="#i-chev-r"/></svg></div>
+          <div class="mk-row"><span class="k">시작</span><span class="v">말을 걸면</span><svg class="i"><use href="#i-chev-r"/></svg></div>
+          <div class="mk-row"><span class="k">움직임</span><span class="v">정지 · 보통 속도</span><svg class="i"><use href="#i-chev-r"/></svg></div>
+          <div class="mk-row"><span class="k">통행</span><span class="v">겹침 금지 · 같은 층</span><svg class="i"><use href="#i-chev-r"/></svg></div>
+          <div class="mk-row"><span class="k">NPC</span><span class="v muted">연결 안 됨</span><svg class="i"><use href="#i-chev-r"/></svg></div>
+        </div>
+      </div>
+      <div class="mk-col">
+        <div class="mk-tools">
+          <span class="mk-btn primary"><svg class="i"><use href="#i-plus"/></svg>명령 <kbd>↵</kbd></span>
+          <span class="mk-search"><svg class="i"><use href="#i-search"/></svg>대본에서 찾기</span>
+          <span class="mk-spacer"></span>
+          <span class="mk-btn icon" aria-label="되돌리기"><svg class="i"><use href="#i-undo"/></svg></span>
+          <span class="mk-btn icon" aria-label="다시 실행"><svg class="i"><use href="#i-redo"/></svg></span>
+          <span class="mk-btn icon" aria-label="더 보기"><svg class="i"><use href="#i-more"/></svg></span>
+          <span class="mk-count">14개 명령</span>
+        </div>
+        <div class="mk-script">
+          <div class="mk-line" style="--cat:var(--cat-talk)"><span class="no">1</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-chat"/></svg></span><span class="kind">대사</span><span class="sum"><q>어서 오게. 철광석이 있다면 내가 사 주지.</q> <span class="pill">대장장이 하몬</span></span></div>
+          <div class="mk-line sel" style="--cat:var(--cat-talk)"><span class="no">2</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-choice"/></svg></span><span class="kind">선택지</span><span class="sum"><q>무엇을 하겠나?</q> <span class="pill">3갈래</span></span></div>
+          <div class="mk-guide">
+            <div class="mk-branch"><b>철광석을 판다</b><span class="cnt">2개</span></div>
+            <div class="mk-line d1" style="--cat:var(--cat-trade)"><span class="no">2.1</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-coin"/></svg></span><span class="kind">소지금</span><span class="sum"><em>+120</em> G</span></div>
+            <div class="mk-line d1" style="--cat:var(--cat-talk)"><span class="no">2.2</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-chat"/></svg></span><span class="kind">대사</span><span class="sum"><q>좋은 물건이군. 120G 를 주지.</q> <span class="pill">대장장이 하몬</span></span></div>
+            <div class="mk-branch"><b>무기를 산다</b><span class="cnt">1개</span></div>
+            <div class="mk-line d1" style="--cat:var(--cat-trade)"><span class="no">2.3</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-cart"/></svg></span><span class="kind">상점</span><span class="sum">회복약 · 마력약 · 해독초 <span class="pill">판매 허용</span></span></div>
+            <div class="mk-branch"><b>그냥 구경한다</b><span class="cnt">1개</span></div>
+            <div class="mk-line d1" style="--cat:var(--cat-talk)"><span class="no">2.4</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-chat"/></svg></span><span class="kind">대사</span><span class="sum"><q>하몬은 다시 망치를 들었다.</q></span></div>
+          </div>
+          <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">3</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-branch"/></svg></span><span class="kind">분기</span><span class="sum"><em>Q1 약초 의뢰 수락</em>이 켜져 있으면</span></div>
+          <div class="mk-guide">
+            <div class="mk-branch"><b>맞을 때</b><span class="cnt">1개</span></div>
+            <div class="mk-line d1" style="--cat:var(--cat-talk)"><span class="no">3.1</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-chat"/></svg></span><span class="kind">대사</span><span class="sum"><q>축제 준비는 잘 되고 있나?</q> <span class="pill">대장장이 하몬</span></span></div>
+            <div class="mk-branch"><b>아닐 때</b><span class="cnt">2개</span></div>
+            <div class="mk-line d1" style="--cat:var(--cat-flow)"><span class="no">3.2</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-switch"/></svg></span><span class="kind">스위치</span><span class="sum"><em>Q1 약초 의뢰 수락</em> → 켜짐</span></div>
+            <div class="mk-line d1" style="--cat:var(--cat-talk)"><span class="no">3.3</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-chat"/></svg></span><span class="kind">대사</span><span class="sum"><q>다음에 오면 축제 이야기를 해 주지.</q> <span class="pill">대장장이 하몬</span></span></div>
+          </div>
+          <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">4</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-var"/></svg></span><span class="kind">변수</span><span class="sum"><em>회수한 달빛 약초</em> += 1</span></div>
+          <div class="mk-line" style="--cat:var(--cat-move)"><span class="no">5</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-route"/></svg></span><span class="kind">이동 경로</span><span class="sum">이 이벤트 · 왼쪽 2칸 · 아래 향함 <span class="pill">완료까지 대기</span></span></div>
+          <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">6</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><span class="kind">대기</span><span class="sum">0.6초</span></div>
+          <div class="mk-line" style="--cat:var(--cat-move)"><span class="no">7</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-door"/></svg></span><span class="kind">장소 이동</span><span class="sum"><em>민재의 집 내부</em> (4, 6) <span class="pill">검정 페이드</span></span></div>
+          <div class="mk-add"><svg class="i"><use href="#i-plus"/></svg>명령 추가 <span class="k">↵</span></div>
+        </div>
+      </div>
+      <div class="mk-col">
+        <div class="mk-insp-head"><span class="no">2</span><b>선택지 표시</b><span class="mk-spacer"></span><svg class="i" style="color:var(--text-3)"><use href="#i-x"/></svg></div>
+        <div class="mk-stage" aria-label="320×240 무대 미리보기">
+          <div class="scene"></div>
+          <span class="label">320 × 240</span>
+          <div class="choice"><div>무엇을 하겠나?</div><div class="on">▶ 철광석을 판다</div><div>무기를 산다</div><div>그냥 구경한다</div></div>
+          <div class="win face-on"><img class="face" src="2026-09-03-event-editor-ux-redesign-assets/face-hero.png" alt=""><span class="plate">대장장이 하몬</span>어서 오게. 광산에서 캐 온 철광석이 있다면 내가 사 주지.</div>
+        </div>
+        <div class="mk-form">
+          <div class="mk-f"><label>질문</label><div class="mk-in">무엇을 하겠나?</div></div>
+          <div class="mk-f"><label>선택지 <small>3 / 5</small></label>
+            <div class="mk-in"><svg class="i" style="color:var(--text-3)"><use href="#i-drag"/></svg>철광석을 판다</div>
+            <div class="mk-in"><svg class="i" style="color:var(--text-3)"><use href="#i-drag"/></svg>무기를 산다</div>
+            <div class="mk-in"><svg class="i" style="color:var(--text-3)"><use href="#i-drag"/></svg>그냥 구경한다</div>
+            <div class="mk-add" style="margin-left:0"><svg class="i"><use href="#i-plus"/></svg>선택지 추가</div>
+          </div>
+          <div class="mk-f"><label>취소하면</label><div class="mk-in">선택 없이 넘어감<svg class="i caret"><use href="#i-chev"/></svg></div></div>
+          <div class="mk-hint">가지 안의 명령은 대본에서 바로 고칩니다. 고친 값은 즉시 반영되고 Ctrl+Z 로 되돌립니다.</div>
+        </div>
+      </div>
+    </div>
+    <div class="mk-foot">
+      <span class="mk-btn ghost" style="color:var(--danger)">이벤트 삭제</span>
+      <span class="mk-spacer"></span>
+      <span class="status"><svg class="i"><use href="#i-check"/></svg>저장됨 · 방금</span>
+      <span class="mk-btn">닫기</span>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">칸 배분 240 · 가변 · 360. 이 목업은 220 · 가변 · 340 으로 그렸다. 1440 에서 대본 폭은 약 810px, 32px 행 17개가 스크롤 없이 들어간다(현재 38px 행 12개). 왼쪽 「이 페이지」 카드의 줄을 누르면 오른쪽 인스펙터가 그 설정(모습·조건·시작·움직임·통행·NPC)으로 바뀐다 — 명령과 페이지 설정이 같은 자리에서 같은 폼 문법으로 편집된다.</p>
+
+  <h3>행 하나의 문법</h3>
+  <div class="anat">
+    <div class="box"><h4><span class="tag now">현재</span>목록 보기의 행</h4>
+      <a class="shot" href="2026-09-03-event-editor-ux-redesign-assets/x-list-rows-2x.png"><img src="2026-09-03-event-editor-ux-redesign-assets/x-list-rows-2x.png" alt="현재 목록 행 확대"></a>
+      <div class="lbl"><span><b>번호</b> 10px, 분기마다 1부터</span><span><b>색 막대</b> 3px</span><span><b>칩</b> 테두리 + 글리프 + 「대화」</span><span><b>라벨</b> 파란 12px 「문장 표시:」</span><span><b>요약</b> 검정 12px</span><span><b>토큰</b> 갈색 틴트 3.67:1</span><span><b>분기 머리·끝</b> 별도 텍스트 행</span></div>
+    </div>
+    <div class="box"><h4><span class="tag next">제안</span>대본의 행 (32px, 어디서나 동일)</h4>
+      <div style="zoom:1.18">
+        <div class="mk-line" style="--cat:var(--cat-talk)"><span class="no">2.2</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-chat"/></svg></span><span class="kind">대사</span><span class="sum"><q>좋은 물건이군. 120G 를 주지.</q> <span class="pill">대장장이 하몬</span></span></div>
+        <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">3</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-branch"/></svg></span><span class="kind">분기</span><span class="sum"><em>Q1 약초 의뢰 수락</em>이 켜져 있으면</span></div>
+        <div class="mk-line" style="--cat:var(--cat-move)"><span class="no">7</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-door"/></svg></span><span class="kind">장소 이동</span><span class="sum"><em>민재의 집 내부</em> (4, 6) <span class="pill">검정 페이드</span></span></div>
+      </div>
+      <div class="lbl"><span><b>번호</b> 12px, 계층형(2.2) — 분기 안에서도 유일</span><span><b>분류 막대 + 아이콘</b> 분류색 6종 중 하나, SVG 16px</span><span><b>종류</b> 12px <code>--text-2</code></span><span><b>요약</b> 13px <code>--text-1</code>, 사람 문장 — 원시 ID 없음, 강조는 분류색 굵게</span><span><b>보조 정보</b> 회색 알약 하나</span><span><b>분기</b> 들여쓰기 24px + 점선 안내선 + 머리 행 26px, 끝 행 없음</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="s10">
+  <h2><span class="no">10</span>목업 B — 인스펙터가 곧 편집기, 넓은 편집은 시트</h2>
+  <p class="h2sub">문장 표시처럼 폼이 작은 명령은 인스펙터에서 끝난다. 장소 이동처럼 지도가 필요한 명령은 인스펙터 자리 위로 시트가 밀려 나온다. 두 경우 모두 대본은 왼쪽에 남아 있다.</p>
+  <div class="grid2">
+    <div>
+      <span class="tag next">개선 · 목업</span>
+      <div class="mk" aria-label="목업: 문장 표시 인스펙터">
+        <div class="mk-body" style="grid-template-columns:minmax(0,1fr) 300px;min-height:0">
+          <div class="mk-col">
+            <div class="mk-tools" style="height:36px"><span class="mk-count" style="margin-left:0">대본 · 1 선택됨</span></div>
+            <div class="mk-script">
+              <div class="mk-line sel" style="--cat:var(--cat-talk)"><span class="no">1</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-chat"/></svg></span><span class="kind">대사</span><span class="sum"><q>어서 오게. 광산에서 캐 온 철광석이…</q></span></div>
+              <div class="mk-line" style="--cat:var(--cat-talk)"><span class="no">2</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-choice"/></svg></span><span class="kind">선택지</span><span class="sum"><q>무엇을 하겠나?</q></span></div>
+              <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">3</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-branch"/></svg></span><span class="kind">분기</span><span class="sum"><em>Q1 약초 의뢰 수락</em>이 켜져 있으면</span></div>
+              <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">4</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-var"/></svg></span><span class="kind">변수</span><span class="sum"><em>회수한 달빛 약초</em> += 1</span></div>
+            </div>
+          </div>
+          <div class="mk-col">
+            <div class="mk-insp-head"><span class="no">1</span><b>문장 표시</b><span class="mk-spacer"></span><svg class="i" style="color:var(--text-3)"><use href="#i-x"/></svg></div>
+            <div class="mk-stage"><div class="scene"></div><span class="label">320 × 240</span><div class="win face-on"><img class="face" src="2026-09-03-event-editor-ux-redesign-assets/face-hero.png" alt=""><span class="plate">대장장이 하몬</span>어서 오게. 광산에서 캐 온 철광석이 있다면 내가 사 주지.</div></div>
+            <div class="mk-form">
+              <div class="mk-f"><label>말하는 사람</label><div class="mk-in"><img src="2026-09-03-event-editor-ux-redesign-assets/face-hero.png" alt="" style="width:18px;height:18px;image-rendering:pixelated;border-radius:3px">대장장이 하몬<svg class="i caret"><use href="#i-chev"/></svg></div></div>
+              <div class="mk-f"><label>내용 <small>2줄 · 50자 권장</small></label><div class="mk-in area">어서 오게. 광산에서 캐 온 철광석이 있다면 내가 사 주지.</div></div>
+              <div class="mk-f"><label>말투</label><div class="mk-seg"><span class="on">기본</span><span>기쁨</span><span>슬픔</span><span>분노</span><span>놀람</span></div></div>
+              <div class="mk-f"><label>넣기</label><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="mk-btn" style="height:26px;font-size:12px">줄 바꿈</span><span class="mk-btn" style="height:26px;font-size:12px">주인공 이름</span><span class="mk-btn" style="height:26px;font-size:12px">변수 값</span><span class="mk-btn" style="height:26px;font-size:12px">강조</span><span class="mk-btn" style="height:26px;font-size:12px">잠시 멈춤</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="note">현재 인스펙터가 가진 것(무대 · 말하는 사람 · 내용 · 말투 · 문장 도구)을 그대로 쓴다. 달라지는 것은 「이 폼이 유일한 편집면」이라는 점과, 무대가 실제 320×240 비율의 게임 화면이라는 점이다.</p>
+    </div>
+    <div>
+      <span class="tag next">개선 · 목업</span>
+      <div class="mk" aria-label="목업: 장소 이동 사이드 시트">
+        <div class="mk-body mk-sheet" style="grid-template-columns:minmax(0,1fr) 340px;min-height:0">
+          <div class="mk-col">
+            <div class="mk-tools" style="height:36px"><span class="mk-count" style="margin-left:0">대본 · 7 선택됨</span></div>
+            <div class="mk-script">
+              <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">4</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-var"/></svg></span><span class="kind">변수</span><span class="sum"><em>회수한 달빛 약초</em> += 1</span></div>
+              <div class="mk-line" style="--cat:var(--cat-move)"><span class="no">5</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-route"/></svg></span><span class="kind">이동 경로</span><span class="sum">이 이벤트 · 왼쪽 2칸</span></div>
+              <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">6</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><span class="kind">대기</span><span class="sum">0.6초</span></div>
+              <div class="mk-line sel" style="--cat:var(--cat-move)"><span class="no">7</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-door"/></svg></span><span class="kind">장소 이동</span><span class="sum"><em>민재의 집 내부</em> (4, 6)</span></div>
+            </div>
+          </div>
+          <div class="mk-col" style="position:relative;min-height:520px">
+            <div class="over">
+              <div class="mk-insp-head"><span class="no">7</span><b>장소 이동 · 목적지</b><span class="mk-spacer"></span><span class="mk-hint">Esc 로 시트만 닫힘</span></div>
+              <div class="mk-in" style="margin:10px 12px 0"><svg class="i" style="color:var(--text-3)"><use href="#i-search"/></svg><span style="color:var(--text-3)">맵 이름으로 찾기</span></div>
+              <div class="mk-maplist">
+                <div><svg class="i"><use href="#i-layers"/></svg>이슬 장터 마을 <span class="mk-hint">100×100</span></div>
+                <div class="sub on"><svg class="i"><use href="#i-door"/></svg>민재의 집 내부</div>
+                <div class="sub"><svg class="i"><use href="#i-door"/></svg>소라의 집 내부</div>
+                <div class="sub"><svg class="i"><use href="#i-door"/></svg>대길의 집 내부</div>
+              </div>
+              <div class="mk-minimap"><img src="2026-09-03-event-editor-ux-redesign-assets/minimap-house.png" alt="민재의 집 내부 미니맵"><span class="dst" style="left:47%;top:71%"></span></div>
+              <div class="mk-form" style="padding-top:0">
+                <div class="mk-f"><label>도착 칸</label><div class="mk-in">4, 6 <span class="mk-hint">지도를 누르거나 좌표 입력</span></div></div>
+                <div class="mk-f"><label>도착 방향</label><div class="mk-seg"><span class="on">유지</span><span>위</span><span>아래</span><span>왼쪽</span><span>오른쪽</span></div></div>
+                <div class="mk-f"><label>페이드</label><div class="mk-seg"><span class="on">검정</span><span>흰색</span><span>없음</span></div></div>
+              </div>
+              <div class="mk-foot" style="margin-top:auto"><span class="mk-spacer"></span><span class="mk-btn">취소</span><span class="mk-btn primary">확인</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="note">시트는 인스펙터와 같은 폭·같은 문법이고 오른쪽에서 밀려 나온다. 대본 행 7 이 선택된 채 보이므로 「무엇의 목적지를 고르는 중인지」를 잃지 않는다. 상점 카탈로그 · 이동 경로 작곡 · 그래픽 선택도 같은 시트다. 현재의 「선택 완료」와 「확인」 두 단계는 하나로 준다.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s11">
+  <h2><span class="no">11</span>목업 C — 명령 추가는 그 자리에서</h2>
+  <p class="h2sub">「+ 명령」이나 ↵ 를 누르면 삽입 위치 바로 아래에 팔레트가 열린다. 검색이 먼저고, 28px 두 줄 배치라 한눈에 16개가 보인다. RM2003 4탭 전체 보기는 팔레트 안의 링크로 남긴다.</p>
+  <span class="tag next">개선 · 목업</span>
+  <div class="mk" aria-label="목업: 인라인 명령 팔레트">
+    <div class="mk-body wide" style="grid-template-columns:minmax(0,1fr);min-height:0">
+      <div class="mk-col">
+        <div class="mk-script" style="padding-top:12px">
+          <div class="mk-line" style="--cat:var(--cat-talk)"><span class="no">1</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-chat"/></svg></span><span class="kind">대사</span><span class="sum"><q>어서 오게. 광산에서 캐 온 철광석이 있다면 내가 사 주지.</q> <span class="pill">대장장이 하몬</span></span></div>
+          <div class="mk-line sel" style="--cat:var(--cat-talk)"><span class="no">2</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-choice"/></svg></span><span class="kind">선택지</span><span class="sum"><q>무엇을 하겠나?</q> <span class="pill">3갈래</span></span></div>
+          <div class="mk-pal" role="dialog" aria-label="명령 팔레트">
+            <div class="q"><svg class="i" style="color:var(--text-3)"><use href="#i-search"/></svg><span class="cur"></span><span class="ph">명령 이름이나 하는 일로 찾기 — 예: 문장, 상점, 흔들기</span><span class="mk-spacer"></span><span class="mk-hint">2 아래에 삽입</span></div>
+            <div class="chips"><span class="mk-chip on">최근 · 자주</span><span class="mk-chip" style="--cat:var(--cat-talk)"><i></i>대화</span><span class="mk-chip" style="--cat:var(--cat-flow)"><i></i>흐름</span><span class="mk-chip" style="--cat:var(--cat-move)"><i></i>이동 · 지도</span><span class="mk-chip" style="--cat:var(--cat-trade)"><i></i>거래 · 아이템</span><span class="mk-chip" style="--cat:var(--cat-screen)"><i></i>화면 · 소리</span><span class="mk-chip" style="--cat:var(--cat-system)"><i></i>동료 · 전투 · 시스템</span></div>
+            <div class="cols">
+              <div class="it on" style="--cat:var(--cat-talk)"><svg class="i"><use href="#i-chat"/></svg>문장 표시<span class="s">최근</span></div>
+              <div class="it" style="--cat:var(--cat-move)"><svg class="i"><use href="#i-door"/></svg>장소 이동<span class="s">자주</span></div>
+              <div class="it" style="--cat:var(--cat-talk)"><svg class="i"><use href="#i-choice"/></svg>선택지 표시<span class="s">최근</span></div>
+              <div class="it" style="--cat:var(--cat-trade)"><svg class="i"><use href="#i-cart"/></svg>상점<span class="s">자주</span></div>
+              <div class="it" style="--cat:var(--cat-flow)"><svg class="i"><use href="#i-branch"/></svg>조건 분기<span class="s">최근</span></div>
+              <div class="it" style="--cat:var(--cat-trade)"><svg class="i"><use href="#i-coin"/></svg>소지금 변경</div>
+              <div class="it" style="--cat:var(--cat-flow)"><svg class="i"><use href="#i-switch"/></svg>스위치 조작<span class="s">최근</span></div>
+              <div class="it" style="--cat:var(--cat-move)"><svg class="i"><use href="#i-route"/></svg>이동 경로 설정</div>
+              <div class="it" style="--cat:var(--cat-flow)"><svg class="i"><use href="#i-var"/></svg>변수 조작</div>
+              <div class="it" style="--cat:var(--cat-flow)"><svg class="i"><use href="#i-clock"/></svg>대기</div>
+              <div class="it" style="--cat:var(--cat-talk)"><svg class="i"><use href="#i-person"/></svg>얼굴 바꾸기</div>
+              <div class="it" style="--cat:var(--cat-screen)"><svg class="i"><use href="#i-sound"/></svg>효과음 재생</div>
+              <div class="it" style="--cat:var(--cat-trade)"><svg class="i"><use href="#i-bed"/></svg>여관</div>
+              <div class="it" style="--cat:var(--cat-screen)"><svg class="i"><use href="#i-image"/></svg>그림 표시</div>
+              <div class="it" style="--cat:var(--cat-trade)"><svg class="i"><use href="#i-layers"/></svg>아이템 변경</div>
+              <div class="it" style="--cat:var(--cat-screen)"><svg class="i"><use href="#i-move"/></svg>화면 흔들기<span class="s"><svg class="i" style="width:12px;height:12px;color:var(--warning)"><use href="#i-warn"/></svg> 일부만 실행</span></div>
+            </div>
+            <div class="fo"><span><b>↑↓</b> 이동</span><span><b>↵</b> 삽입</span><span><b>Tab</b> 분류</span><span><b>Esc</b> 닫기</span><a href="#">전체 127개 · 4탭으로 보기</a></div>
+          </div>
+          <div class="mk-line" style="--cat:var(--cat-flow)"><span class="no">3</span><span class="rail"></span><span class="ic"><svg class="i"><use href="#i-branch"/></svg></span><span class="kind">분기</span><span class="sum"><em>Q1 약초 의뢰 수락</em>이 켜져 있으면</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <table style="margin-top:16px">
+    <thead><tr><th>항목</th><th>현재 피커</th><th>팔레트</th></tr></thead>
+    <tbody>
+      <tr><td>여는 위치</td><td>화면 가운데 모달 860×840</td><td>삽입 행 바로 아래, 640×~340</td></tr>
+      <tr><td>첫 화면에 보이는 명령</td><td class="num">13</td><td class="num">16 (최근 · 자주)</td></tr>
+      <tr><td>행</td><td>42px 전폭, 라벨 + 별</td><td>28px 두 줄, 아이콘 + 라벨 + 출처</td></tr>
+      <tr><td>분류</td><td>4탭 + 그룹 머리 17개</td><td>칩 6개 (분류색과 같은 색)</td></tr>
+      <tr><td>「일부만 실행」 명령</td><td>같은 크기, △ 배지, 범례는 하단</td><td>행 안에 「일부만 실행」 글자로 표시. 기본 정렬에서 뒤로</td></tr>
+      <tr><td>중복 라벨 (「애니메이션 표시」 2건)</td><td>그대로</td><td>하나로 합치거나 「(구형)」 접미 — 카탈로그 정리 필요</td></tr>
+      <tr><td>RM2003 4탭</td><td>기본 화면</td><td>「전체 127개 · 4탭으로 보기」 링크 → 시트</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s12">
+  <h2><span class="no">12</span>목업 D — 페이지 줄과 빈 페이지</h2>
+  <p class="h2sub">페이지 탭이 조건을 문장으로 말하고, 뒤 페이지가 앞 페이지를 가릴 때 탭에서 경고한다(<code>eventPageShadow.ts</code> 판정을 화면으로). 빈 페이지는 무엇을 할 수 있는지 세 갈래로 말한다.</p>
+  <span class="tag next">개선 · 목업</span>
+  <div class="mk" aria-label="목업: 페이지 줄과 빈 페이지 상태">
+    <div class="mk-head">
+      <img class="mk-sprite" src="2026-09-03-event-editor-ux-redesign-assets/sprite-door.png" alt="">
+      <span class="mk-name">대장장이 하몬</span>
+      <span class="mk-where"><b>이슬 장터 마을</b> · 61, 23 · 3 페이지</span>
+      <span class="mk-spacer"></span>
+      <span class="mk-btn"><svg class="i"><use href="#i-play"/></svg>테스트</span>
+      <span class="mk-btn icon" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></span>
+    </div>
+    <div class="mk-pages">
+      <span class="mk-tab"><span class="n">1</span><b>첫 만남</b>항상</span>
+      <span class="mk-tab"><span class="n">2</span><b>축제 이후</b>Q1 약초 의뢰 수락 켜짐</span>
+      <span class="mk-tab on warn"><span class="n">3</span><b>밤</b>조건 없음<span class="w"><svg class="i"><use href="#i-warn"/></svg>1 · 2 를 가림</span></span>
+      <span class="mk-btn icon" aria-label="페이지 추가"><svg class="i"><use href="#i-plus"/></svg></span>
+      <span class="mk-spacer"></span>
+      <span class="mk-btn ghost"><svg class="i"><use href="#i-more"/></svg>페이지</span>
+    </div>
+    <div class="mk-body wide" style="min-height:0">
+      <div class="mk-col">
+        <div class="mk-colhead"><b>이 페이지</b></div>
+        <div class="mk-card">
+          <div class="top"><img src="2026-09-03-event-editor-ux-redesign-assets/sprite-door.png" alt=""><div><div class="t">물건 1 · 문</div><div class="s">아래 향함</div></div></div>
+          <div class="mk-row sel"><span class="k">언제</span><span class="v" style="color:var(--warning)">조건 없음 — 뒤 페이지가 이기므로 1 · 2 는 켜지지 않음</span><svg class="i"><use href="#i-chev-r"/></svg></div>
+          <div class="mk-row"><span class="k">시작</span><span class="v">말을 걸면</span><svg class="i"><use href="#i-chev-r"/></svg></div>
+          <div class="mk-row"><span class="k">움직임</span><span class="v">정지 · 보통 속도</span><svg class="i"><use href="#i-chev-r"/></svg></div>
+        </div>
+      </div>
+      <div class="mk-col">
+        <div class="mk-tools"><span class="mk-btn primary"><svg class="i"><use href="#i-plus"/></svg>명령 <kbd>↵</kbd></span><span class="mk-search"><svg class="i"><use href="#i-search"/></svg>대본에서 찾기</span><span class="mk-spacer"></span><span class="mk-count">0개 명령</span></div>
+        <div class="mk-empty">
+          <div class="t">이 페이지는 아직 아무 일도 하지 않습니다</div>
+          <div class="s">조건이 없으므로 이 이벤트에 말을 걸면 항상 이 페이지가 켜집니다. 먼저 조건을 정하거나, 하는 일을 넣으세요.</div>
+          <div class="qs"><span class="mk-btn"><svg class="i" style="color:var(--cat-talk)"><use href="#i-chat"/></svg>말하기</span><span class="mk-btn"><svg class="i" style="color:var(--cat-move)"><use href="#i-door"/></svg>장소 이동</span><span class="mk-btn"><svg class="i" style="color:var(--cat-trade)"><use href="#i-cart"/></svg>상점 열기</span><span class="mk-btn ghost"><svg class="i"><use href="#i-spark"/></svg>AI 로 초안</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">「가림」 판정은 이미 엔진에 있다(<code>src/project/eventPageShadow.ts</code>, 린트 <code>event-page-shadowed</code>). 지금은 AI 도구와 린트만 그것을 보고, 편집기 화면은 보지 않는다. AI 도크는 「AI 로 초안」 버튼과 「⋯」 안으로 들어가고, 열리면 인스펙터 자리(시트)에서 초안을 보여 준다 — 대본 높이의 31% 를 상시 점유하지 않는다.</p>
+</section>
+<section id="s13">
+  <h2><span class="no">13</span>시각 규격 — 토큰 하나로 고정</h2>
+  <p class="h2sub">전부 <code>src/styles/tokens.css</code> 에 이미 있는 값이거나, 그 값에서 파생한다. 새 색은 분류색 6종만이다.</p>
+  <div class="grid2">
+    <div>
+      <table>
+        <thead><tr><th>규격</th><th>값</th><th>지금</th></tr></thead>
+        <tbody>
+          <tr><td>글자 크기</td><td class="type-demo"><span style="font-size:12px">12 보조 (종류 · 힌트 · 번호)</span><span style="font-size:13px">13 본문 (요약 · 폼 값)</span><span style="font-size:15px;font-weight:600">15 제목 (인스펙터 · 카드)</span><span style="font-size:18px;font-weight:650">18 이벤트 이름</span></td><td class="bad">8~9종, 11px 이하 41~70%</td></tr>
+          <tr><td>행 높이</td><td>명령 32 · 분기 머리 26 · 폼 입력 32 · 툴바 버튼 30</td><td class="bad">38 · 40 · 42 · 46 · 48 · 52 · 54 혼재</td></tr>
+          <tr><td>라운딩</td><td>바깥(카드 · 입력 · 버튼) 6 · 안쪽(알약 · 칩) 4. 원형은 아바타에만</td><td class="bad">10종</td></tr>
+          <tr><td>칸 배분</td><td>240 · 가변 · 360 (1280 이상) / 1280 미만: 인스펙터 320, 카드 200 / 1024 미만: 카드 접힘</td><td class="bad">268 · 가변 · 340, 1320↑ 에서 660</td></tr>
+          <tr><td>버튼</td><td>채움 1 (한 화면에 하나) · 테두리 · 유령 · 아이콘 32×30 · 위험 텍스트 · 알약 칩 = 6종</td><td class="bad">24~32종</td></tr>
+          <tr><td>아이콘</td><td>SVG 16px, 1.5px 획, 한 세트(Phosphor 또는 자체 제작 32종). 이모지 · 글리프 문자 금지</td><td class="bad">SVG 0, 이모지·글리프 43</td></tr>
+          <tr><td>텍스트 색</td><td><code>--text-1</code> 요약·값 / <code>--text-2</code> 종류·라벨 / <code>--text-3</code> 는 <strong>순백 위 12px 이상</strong>에서만</td><td class="bad">틴트 위 <code>--text-3</code> 11px 가 대비 실패 37건의 원인</td></tr>
+          <tr><td>액센트</td><td>인디고 하나 (<code>--accent</code>). 선택 행 · 채움 버튼 · 포커스 링</td><td class="good">2026-08-27 에 이미 통일됨</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>분류색 6종 (막대 · 아이콘 · 팔레트 칩에만)</th><th>토큰</th><th>포함 명령</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sw" style="background:var(--cat-talk)"></span>대화</td><td class="mono">--cat-talk #4A57D6</td><td>문장 · 선택지 · 숫자·이름 입력 · 얼굴 · 문장 설정</td></tr>
+          <tr><td><span class="sw" style="background:var(--cat-flow)"></span>흐름</td><td class="mono">--cat-flow #8A5E00</td><td>분기 · 스위치 · 변수 · 대기 · 라벨 · 반복 · 타이머</td></tr>
+          <tr><td><span class="sw" style="background:var(--cat-move)"></span>이동 · 지도</td><td class="mono">--cat-move #0F7490</td><td>장소 이동 · 이동 경로 · 이벤트 이동·삭제 · 타일</td></tr>
+          <tr><td><span class="sw" style="background:var(--cat-trade)"></span>거래 · 아이템</td><td class="mono">--cat-trade #18764F</td><td>소지금 · 아이템 · 상점 · 여관 · 보관 상자 · 제작</td></tr>
+          <tr><td><span class="sw" style="background:var(--cat-screen)"></span>화면 · 소리</td><td class="mono">--cat-screen #7A3E9D</td><td>그림 · 화면 효과 · 날씨 · 조명 · BGM · 효과음</td></tr>
+          <tr><td><span class="sw" style="background:var(--cat-system)"></span>동료 · 전투 · 시스템</td><td class="mono">--cat-system #64748B</td><td>전투 · 파티 · 능력 · 시스템 · 도구</td></tr>
+        </tbody>
+      </table>
+      <p class="note">분류색은 텍스트에 쓰지 않는다(대비). 요약 안 강조(<em>굵은 분류색</em>)만 예외이며 13px 굵게 · 순백 위로 제한한다 — 위 여섯 색은 모두 순백 위 4.5:1 이상이다(#8A5E00 5.9, #0F7490 5.5, #18764F 6.2, #7A3E9D 6.9, #64748B 4.8, #4A57D6 6.0). DESIGN.md 의 <code>--cmdcat-*</code> 통합 방향과 같다. 이 문서 목업의 SVG 아이콘은 형태와 크기를 보이기 위한 임시 그림이며, 구현 때는 라이선스를 확인한 단일 세트로 바꾼다.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s14">
+  <h2><span class="no">14</span>지표 — 전과 후를 같은 자로 잰다</h2>
+  <p class="h2sub">아래 값은 <code>scripts/qa-event-editor-ux.mjs</code> 에 기준(C7~C14)으로 추가할 수 있다. 이 문서의 측정 스크립트가 부록에 있다.</p>
+  <table>
+    <thead><tr><th>지표 (1440×900, 목록/대본 보기, 14명령 이벤트)</th><th class="num">현재</th><th class="num">목표</th><th>게이트</th></tr></thead>
+    <tbody>
+      <tr><td>같은 데이터의 보기 방식</td><td class="num bad">4</td><td class="num good">1</td><td><code>event-view-toggle</code> 부재</td></tr>
+      <tr><td>같은 명령의 편집면</td><td class="num bad">2</td><td class="num good">1</td><td>더블 클릭 후 <code>event-command-edit-dialog</code> 부재</td></tr>
+      <tr><td>버튼 스타일 시그니처</td><td class="num bad">26</td><td class="num good">≤ 6</td><td>C7</td></tr>
+      <tr><td>글자 크기 종류 / 11px 이하 비율</td><td class="num bad">8 / 41%</td><td class="num good">4 / 0%</td><td>C8</td></tr>
+      <tr><td>라운딩 종류</td><td class="num bad">10</td><td class="num good">2</td><td>C9</td></tr>
+      <tr><td>이모지·글리프 아이콘 / SVG</td><td class="num bad">43 / 0</td><td class="num good">0 / 1세트</td><td>C10</td></tr>
+      <tr><td>대비 4.5:1 미만 텍스트</td><td class="num bad">37</td><td class="num good">0</td><td>C11</td></tr>
+      <tr><td>명령 영역 빈 화소</td><td class="num bad">91.2%</td><td class="num good">≤ 65%</td><td>C12 (jimp)</td></tr>
+      <tr><td>14명령 중 한 화면에 보이는 수</td><td class="num bad">12</td><td class="num good">14 (17행분)</td><td>C13</td></tr>
+      <tr><td>겹치는 층 (편집기 → … → 확인)</td><td class="num bad">4</td><td class="num good">2</td><td>고정 레이어 수 ≤ 2</td></tr>
+      <tr><td>바깥 클릭 후 열린 팝오버</td><td class="num bad">유지</td><td class="num good">닫힘</td><td>C14</td></tr>
+      <tr><td>Escape 가 편집기 전체를 닫으려 하는 경우</td><td class="num bad">항상</td><td class="num good">0 (맨 위 층만)</td><td>키 시나리오</td></tr>
+      <tr><td>확인 문구의 버튼 이름 ≠ 실제 버튼</td><td class="num bad">2건</td><td class="num good">0</td><td>문자열 비교</td></tr>
+      <tr><td>원시 ID 노출 (<code>ev_</code> <code>sw_</code> <code>var_</code> <code>tex_</code>)</td><td class="num bad">2곳</td><td class="num good">0</td><td>innerText 정규식</td></tr>
+      <tr><td>이벤트 편집기 CSS</td><td class="num bad">56시트 · 21,329줄 · <code>!important</code> 89</td><td class="num good">≤ 3시트 · ≤ 3,000줄 · 0</td><td><code>check-css-budget</code> 래칫 하향</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s15">
+  <h2><span class="no">15</span>적용 순서 — 지우는 순서가 곧 일정</h2>
+  <p class="h2sub">P0 는 코드 구조를 바꾸지 않고 문법만 고정한다. P1 이 표면을 합친다. P2 가 세대를 지운다. 각 단계는 그 자체로 출하 가능하다.</p>
+  <table>
+    <thead><tr><th>단계</th><th>하는 일</th><th>건드리는 곳</th><th>위험 · 계약</th></tr></thead>
+    <tbody>
+      <tr><td><strong>P0 · 문법</strong><br><span class="dim">1주</span></td>
+        <td>토큰 4·2·6 고정(글자 · 라운딩 · 버튼) · 이모지→SVG 세트 · <code>--text-3</code> 틴트 사용 금지 · 팝오버 바깥 클릭 닫힘 · Escape 층 규칙 · 확인 문구를 실제 버튼 이름으로 · 「편집 ▾」「도구 ▾」 제거(우클릭 · ⋯) · 헤더를 이벤트 이름 · 맵 이름 · 좌표로 · 원시 ID 를 이름으로 해석 · 「선택 끝」「분기 끝」 행 제거</td>
+        <td><code>event-editor.balanced.css</code> (승자 시트에서 시작해 새 <code>event-editor.grammar.css</code> 로 옮김) · <code>modal.ts</code> (헤더 · Escape) · <code>content.ts</code> (툴바) · <code>commandList.ts</code> (행) · <code>commandSummary.ts</code> (ID 해석) · <code>commandCategoryIcons.ts</code></td>
+        <td>낮음. testid 유지. <code>qa-event-editor-ux.mjs</code> C1~C6 통과 유지 + C7~C14 추가. 우클릭 메뉴 e2e 계약 유지</td></tr>
+      <tr><td><strong>P1 · 표면 합치기</strong><br><span class="dim">2~3주</span></td>
+        <td>보기 4→1: 목록에 분기 연결선·머리 행·계층 번호 흡수, 스토리 · 플로우 · 미리보기 보기 삭제, 무대를 인스펙터 상단에 상주 · 인스펙터 단일화(더블 클릭 = 포커스, 모달 폐지) · 인라인 팔레트 · 좌측 「이 페이지」 카드 + 인스펙터 편집 · 빈 페이지 상태 · AI 도크를 「⋯」와 시트로</td>
+        <td><code>storyboardView.ts</code>(493줄) · <code>eventScriptModernViews.ts</code>(322줄, 플로우·미리보기) · <code>content.ts</code> (열 구성 · 보기 토글 제거) · <code>commandInspector.ts</code> · <code>commandEditDialog.ts</code> · <code>commandPicker.ts</code> → 팔레트 · <code>pageProps.ts</code> · <code>aiAssist.ts</code></td>
+        <td><strong>높음.</strong> e2e 369개 중 <code>event-view-toggle</code> 29 · <code>event-storyboard</code> 18 · <code>event-command-edit-dialog</code> 42 · <code>event-command-picker</code> 46 · <code>evt-rail-group</code> 5 파일이 testid 를 잡는다. 삭제 전에 대체 testid 매핑과 스펙 이관을 먼저 커밋한다</td></tr>
+      <tr><td><strong>P2 · 깊이와 세대</strong><br><span class="dim">3~4주</span></td>
+        <td>사이드 시트(장소 이동 · 이동 경로 · 상점 · 그래픽 · 레코드 선택) · 페이지 줄 가림 경고 · 라이브 적용 + 닫기 확인 제거 · CSS 세대 5개 삭제(21,329 → ≤ 3,000) · <code>check-css-budget</code> 기준선 하향</td>
+        <td><code>subdialog.ts</code> → 시트 · <code>transferPlayerDialog.ts</code> · <code>moveRouteDialog.ts</code> · <code>commandBodyCommerce.ts</code> · <code>graphicDialog.ts</code> · <code>recordPickerDialog.ts</code> · <code>src/styles/editor/event-editor*</code></td>
+        <td>중간. 대화상자 testid(<code>event-record-picker-*</code>, <code>shop-*</code>)는 시트 안에서 유지 가능. 라이브 적용은 <code>eventEditorTrustLoop.test.ts</code> 의 초안 계약과 맞춰야 함</td></tr>
+    </tbody>
+  </table>
+  <p><strong>순서를 이렇게 두는 이유.</strong> P0 만으로 버튼 26 → 6, 글자 8 → 4, 대비 37 → 0, 이모지 43 → 0 이 나온다 — 코드 구조를 안 바꾸고 절반의 「별로임」이 사라진다. P1 은 e2e 계약이 가장 많이 걸린 곳이므로 testid 매핑을 선행 커밋으로 떼어 낸다. P2 의 CSS 삭제는 P1 이 끝나 표면이 하나가 된 뒤에만 안전하다.</p>
+</section>
+
+<section id="s16">
+  <h2><span class="no">16</span>검토한 대안</h2>
+  <table>
+    <thead><tr><th>안</th><th>내용</th><th>판단</th></tr></thead>
+    <tbody>
+      <tr><td>네 보기 유지 + 스타일만 통일</td><td>보기 토글은 두고 칩 · 아이콘 · 글자만 맞춘다</td><td><strong>기각.</strong> 표면 수가 그대로다. 보기마다 렌더러가 따로 있어 통일이 유지되지 않는다(이번에 잰 결과가 그 증거)</td></tr>
+      <tr><td>RM2003 원본 재현</td><td>회색 2열 창, 텍스트 명령 목록, 대화상자 폼</td><td><strong>기각.</strong> DESIGN.md 가 「no RM2K3 retro command-list presentation」을 명시한다. 이미 만든 미리보기 렌더러 13종을 버리게 된다</td></tr>
+      <tr><td>모달 대신 맵 옆 도킹</td><td>편집기를 맵 캔버스 옆 패널로 붙여 지도를 계속 보이게 한다</td><td><strong>보류.</strong> 1440 에서 편집기 폭이 700px 이하로 떨어져 대본과 인스펙터가 공존하지 못한다. 지도 가시성은 시트 안 미니맵으로 대신한다. 1920 이상 전용 배치로 후속 검토</td></tr>
+      <tr><td>인스펙터 폐지, 모달만</td><td>단일 클릭은 선택만, 편집은 항상 모달</td><td><strong>기각.</strong> 편집 중 목록이 가려지는 현재 문제를 고정한다</td></tr>
+      <tr><td>취소 · 적용 · 저장하고 닫기 유지</td><td>라이브 적용 대신 RM2003 식 트랜잭션을 유지하고 확인 문구만 고친다</td><td><strong>대안으로 남김.</strong> P0 에서 문구는 고친다. 라이브 적용 전환은 P2 에서 <code>eventEditorTrustLoop</code> 계약을 보고 결정한다</td></tr>
+      <tr><td>Ctrl+K 전역 팔레트에 명령 추가를 합침</td><td>기존 명령 팔레트(<code>commandPalette.ts</code>)를 재사용</td><td><strong>기각.</strong> 삽입 위치와 떨어진다. 검색 · 키보드 조작 방식만 차용한다</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s17">
+  <h2><span class="no">17</span>부록 — 측정 방법 · 한계 · 스크린샷</h2>
+  <h3>측정 방법</h3>
+  <ul>
+    <li>이 워크트리에서 vite dev 를 127.0.0.1:9631 로 띄우고 <code>/proc/&lt;pid&gt;/cwd</code> 로 서빙 트리를 확인했다(다른 워크트리 서버를 잰 2026-08-28 사고 재발 방지).</li>
+    <li><code>?freshProject=1</code> 샘플 어드벤처에 <code>window.__oprnEditorStore.update()</code> 로 3페이지 · 14명령 이벤트를 주입했다. 문장 · 선택지 3갈래 · 소지금 · 상점 · 분기(스위치) · 스위치 · 변수 · 이동 경로 · 대기 · 장소 이동을 모두 포함해 행 문법을 한 화면에서 비교할 수 있게 했다.</li>
+    <li>스타일 계측은 모달 안 보이는 요소 전수에 <code>getComputedStyle</code> 을 읽어 시그니처 · 글자 크기 · 라운딩 · 색을 집계했다. 대비는 텍스트 노드 색과 가장 가까운 불투명 조상 배경으로 WCAG 비율을 계산했다.</li>
+    <li>빈 화소는 스크린샷을 jimp 로 읽어 휘도 232 이상 · 채도 14 미만 픽셀 비율로 잰다.</li>
+    <li>CSS 통계는 <code>src/styles/editor/event-editor*</code> 56개 파일을 grep 으로 집계했다.</li>
+    <li>재현 스크립트: <code>2026-09-03-event-editor-ux-redesign-assets/measure-capture.mjs</code>(주입 · 스크린샷 · DOM 계측), <code>measure-capture-2.mjs</code>(보정 · 2배 크롭), <code>measure-blank.mjs</code>(빈 화소). <code>BASE</code> 환경변수로 서버를 지정한다.</li>
+  </ul>
+  <h3>한계</h3>
+  <ul>
+    <li>헤드리스 Chromium(swiftshader) 이라 폰트 렌더가 실제 사용자 환경과 다를 수 있다. 픽셀 계측은 비율만 쓴다.</li>
+    <li>주입한 이벤트는 스트레스 시나리오다. 실제 프로젝트의 평균 명령 수는 이보다 적을 수 있고, 그 경우 빈 화소 비율은 더 높다.</li>
+    <li>목업은 CSS 로 그린 정적 화면이다. 드래그 · 키보드 · 포커스 이동은 구현 단계에서 검증해야 한다. 목업의 무대(320×240)는 실제 런타임 렌더가 아니라 비율만 맞춘 것이다.</li>
+    <li>이 세션은 원격 저장이 꺼진 임시 세션이었다(<code>이 세션은 저장되지 않습니다</code>). 저장 상태 표시의 실제 동작은 측정하지 않았다.</li>
+    <li>3페이지 중 페이지 1 을 주로 측정했다. 페이지 2 · 3 은 빈 상태 확인에만 썼다.</li>
+  </ul>
+  <h3>이전 문서와의 관계</h3>
+  <table>
+    <thead><tr><th>문서</th><th>무엇을 했나</th><th>지금 상태</th></tr></thead>
+    <tbody>
+      <tr><td><code>docs/2026-07-07-event-editor-uiux-review.md</code></td><td>P0 여섯 항목 (피커 검색 · 레코드 검색 · 색 레일 · 선택지 다이얼로그 · 스위치 폼 · 배지 범례)</td><td>대부분 반영됨. 피커 아이콘 · 이동 경로 원시 ID · 그래픽 걷기 미리보기는 남음</td></tr>
+      <tr><td><code>docs/2026-07-30-event-editor-ui-ux-critique.html</code> · <code>2026-08-07-*-hostile-review.html</code></td><td>껍데기 · 모달 · 레이아웃 적대적 리뷰</td><td>리사이저 · 포커스 트랩 등 반영. 모달 깊이는 그대로</td></tr>
+      <tr><td><code>docs/proposals/2026-08-28-event-editor-ui-improvement.html</code></td><td>좌측 요약 레일 + 넓은 면 편집, 레코드 픽커 통합</td><td>구현됨. 1320px 이상에서만 넓은 면이 나오고, 1920 에서는 그 면의 95.6% 가 빈다 — 이 문서는 그 면 자체를 인스펙터로 합치자는 것</td></tr>
+      <tr><td><code>docs/2026-08-30-event-ai-dock-diff-redesign.html</code></td><td>AI 도크를 「끼워 넣기」에서 「목록 고치기」로</td><td>유지. 위치만 시트로 옮긴다</td></tr>
+    </tbody>
+  </table>
+  <h3>스크린샷 목록 (<code>2026-09-03-event-editor-ux-redesign-assets/</code>)</h3>
+  <p class="note">cur-01~04 보기 4종 · cur-05~11 인스펙터와 대화상자 7종 · cur-12~15 피커 · cur-16~19 레일 · 레코드 선택 · 그래픽 · AI 도크 · cur-20~22 메뉴 겹침 · Escape 확인 · 팝오버 · cur-23~25 뷰포트 1024 · 1920 · 빈 페이지 · cur-26 편집기 밖 셸 · cur-27~29 도구 메뉴 · 레일 그룹 · x-* 2배 크롭 12장 · sprite-* face-* minimap-* 목업용 실제 에셋 크롭.</p>
+</section>
+
+<div class="foot">
+  <p>생성일 2026-09-03 · 작성 Claude Fable 5.1 (자율 세션) · 기준 커밋 main <code>dd11c568</code> · 측정 서버 127.0.0.1:9631 (워크트리 witty-mayfly) · 뷰포트 1440×900 · 이 문서는 시점 기록이며 코드 변경을 포함하지 않는다.</p>
+</div>
+</div>
+</body>
+</html>

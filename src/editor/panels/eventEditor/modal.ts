@@ -18,6 +18,7 @@ import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
 import { store, type AutoSaveState } from "@/project/store";
 import type { EventPage, MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { clearEventAiLiveDock } from "./aiAssist";
 import {
@@ -151,7 +152,9 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       title: "적용하지 않은 변경",
       message: isNew
         ? "만들던 새 이벤트가 아직 프로젝트에 반영되지 않았어요.\n버리고 닫을까요?"
-        : "적용하지 않은 변경이 있어요. 버리고 닫을까요?\n반영하려면 [계속 편집]을 누른 뒤 [반영하고 계속] 또는 [반영하고 닫기]를 누르세요.",
+        // 문구가 가리키는 버튼은 실제 푸터 버튼 이름과 같아야 한다 — 예전 문구는 존재하지 않는
+        // [반영하고 계속]·[반영하고 닫기] 를 가리켰다(2026-09-03 실측, 제안서 §4).
+        : "적용하지 않은 변경이 있어요. 버리고 닫을까요?\n반영하려면 [계속 편집]을 누른 뒤 아래 [적용] 또는 [저장하고 닫기]를 누르세요.",
       confirmLabel: "버리고 닫기",
       cancelLabel: "계속 편집",
       danger: true,
@@ -321,7 +324,8 @@ function renderModalHeader(
   const characterId = ev?.characterId?.trim();
   const profileName = characterId
     ? store.getCurrent().characters?.[characterId]?.displayName?.trim() || characterId
-    : "NPC 없음";
+    : null;
+  const mapName = map?.name?.trim() || "";
 
   const pages = ev?.pages ?? [];
   const selectedPageId = editorState.get().selectedEventPageId;
@@ -391,16 +395,25 @@ function renderModalHeader(
                 el("span", { class: "dot-sep" }),
               ]
             : []),
+          // 좌표만으로는 어느 맵인지 알 수 없다 — 맵 이름을 좌표 앞에 둔다(2026-09-03 제안서 §6).
+          ...(mapName
+            ? [el("span", { class: "event-editor-map-name", text: mapName, dataset: { testid: "event-editor-map-name" } }), el("span", { class: "dot-sep" })]
+            : []),
           el("span", { text: coordStr, dataset: { testid: "event-editor-coords" } }),
-          el("span", { class: "dot-sep" }),
-          el("span", {
-            class: "npc",
-            dataset: { testid: "event-editor-npc-chip" },
-            children: [
-              el("span", { class: "face" }),
-              el("span", { text: profileName, dataset: { testid: "event-editor-npc-name" } }),
-            ],
-          }),
+          // NPC 칩은 연결됐을 때만 — 「NPC 없음」이라는 부정 상태를 제목 줄에서 반복하지 않는다.
+          ...(profileName
+            ? [
+                el("span", { class: "dot-sep" }),
+                el("span", {
+                  class: "npc",
+                  dataset: { testid: "event-editor-npc-chip" },
+                  children: [
+                    el("span", { class: "face" }),
+                    el("span", { text: profileName, dataset: { testid: "event-editor-npc-name" } }),
+                  ],
+                }),
+              ]
+            : []),
         ],
       }),
       el("div", {
@@ -408,13 +421,6 @@ function renderModalHeader(
         attrs: { style: "display: none;" },
         dataset: { testid: "event-editor-header-save-state" },
       }),
-      pages.length > 0 && activePage
-        ? el("span", {
-            class: "event-editor-header-page-count",
-            text: `페이지 ${pages.indexOf(activePage) + 1}/${pages.length}`,
-            dataset: { testid: "event-editor-header-page-count" },
-          })
-        : el("span", { attrs: { style: "display: none;" } }),
       el("div", {
         class: "header-actions",
         children: [
@@ -432,7 +438,7 @@ function renderModalHeader(
           }),
           el("button", {
             class: "icon-btn event-editor-modal-close",
-            text: "×",
+            children: [renderEditorIcon("close")],
             attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
             dataset: { testid: "event-editor-modal-close" },
             on: { click: () => requestClose() },
@@ -444,7 +450,7 @@ function renderModalHeader(
           }),
           el("button", {
             class: "event-editor-window-control event-editor-window-fullscreen",
-            text: "⛶",
+            children: [renderEditorIcon("expand")],
             attrs: {
               type: "button",
               title: "전체 보기 (Alt+Enter)",
@@ -620,9 +626,9 @@ function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditor
   const pages = ev?.pages ?? [];
   const selectedPageId = editorState.get().selectedEventPageId;
   const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[0];
-  const counter = header.querySelector<HTMLElement>('[data-testid="event-editor-header-page-count"]');
-  if (!activePage || !counter) return;
-  counter.textContent = `페이지 ${pages.indexOf(activePage) + 1}/${pages.length}`;
+  // 「페이지 N/M」 카운터는 바로 아래 탭 줄과 같은 정보라 없앴다(2026-09-03). 페이지 순번은
+  // 이름 상자의 aria-label 이 말한다.
+  if (!activePage) return;
   const nameInput = header.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
   if (!nameInput) return;
   // 같은 페이지를 보고 있으면 사용자가 타이핑 중인 값을 뺏지 않는다. 페이지가 바뀌었으면 상자에
