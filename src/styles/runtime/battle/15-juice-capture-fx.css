@@ -41,13 +41,22 @@
   letter-spacing: 0.08em;
 }
 
-/* 적 사망: 필터 잔상 대신 쓰러지며 사라진다 */
+/* 적 사망: 필터 잔상 대신 쓰러지며 사라진다.
+   연출은 **노드가 아니라 이미지에** 건다. 노드의 `animation` 슬롯은 스킨 피격 juice
+   (`.battle-juice-hit` → `rm2003-juice-hit` 등)가 이미 쓰고 있어서, 노드에 걸면 막타에
+   juice 가 death-fade 를 밀어내 페이드가 멈췄다가 juice 가 끝나면 **처음부터 다시**
+   시작한다 — 몬스터가 옅어졌다 다시 진해졌다 사라진다(실측: 0.9 → 400ms 정지 → 0.898
+   복귀 → 0). pokemon 스킨은 이미 이미지에 거는 방식이다(19-adversarial-review-3.css). */
 .battle-enemy.defeated {
-  animation: battle-death-fade 620ms ease-in forwards;
   pointer-events: none;
 }
+.battle-enemy.defeated .battle-enemy-image {
+  animation: battle-death-fade 620ms ease-in forwards;
+}
 @keyframes battle-death-fade {
-  0% { opacity: 0.9; filter: none; }
+  /* 1 에서 시작한다. 0.9 로 시작하면 페이드 첫 프레임에 10% 가 한 번에 빠져
+     "왜 갑자기 반투명이지" 로 읽힌다. */
+  0% { opacity: 1; filter: none; }
   35% { opacity: 0.75; filter: brightness(1.6); }
   100% { opacity: 0; filter: grayscale(1); translate: 0 14px; }
 }
@@ -115,6 +124,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .battle-capture-orb, .battle-orb-shake, .battle-orb-caught, .battle-orb-burst,
-  .battle-enemy.defeated { animation-duration: 1ms; }
+  .battle-enemy.defeated .battle-enemy-image { animation-duration: 1ms; }
 }
 

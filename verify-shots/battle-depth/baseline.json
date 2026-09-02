@@ -1,0 +1,917 @@
+{
+  "meta": {
+    "generatedFrom": "scripts/qa/battle-depth-baseline.mts",
+    "heroLevel": 5,
+    "samples": 50,
+    "seed": 12345,
+    "simBattleFlow": "gauge",
+    "logBattleFlow": "strict",
+    "simSubstrate": "createEmberQuestProject()",
+    "censusSurface": "defaultDatabase()",
+    "note": "sims 는 emberQuest 프로젝트(트룹 5개, 재조정된 적 스탯)에서 돌린다. archetypeSims 는 generatedEnemyRecords 의 계열 9종 대표를 임시 인메모리 트룹으로 만들어 잰다(DB 미커밋). fullDatabaseCensus 는 저작 표면인 defaultDatabase() 전체(적 106, 트룹 7)를 센다. emberQuest 는 defaultDatabase 를 걸러 만들되 적의 actions 는 그대로 물려받으므로 행동 레퍼토리 변경은 양쪽에 함께 나타난다.",
+    "deadMetrics": {
+      "avgPotionsUsed": "항상 0 이다. simulateBattle 은 potionItemId 가 없으면 회복 아이템을 쓰지 않는데(simulate.ts:163) 이 스크립트는 inventory/potionItemId 를 주지 않는다. 'AI 가 포션을 안 썼다(=쉬웠다)' 가 아니라 '쓸 수 없다' 이다. 전/후 비교에서 읽지 말 것."
+    },
+    "caveats": {
+      "승패혼합통계": "winRate 가 1 미만인 항목의 avgTurns / avgHpRemaining 은 **승리 판과 패배 판을 섞은 평균**이다. simulateBattle 은 승패를 가리지 않고 totalTurns/totalHp 를 누적하고(simulate.ts:257-260), 파티가 전멸하면 hpRemaining 이 0 으로 들어간다(simulate.ts:186). 따라서 이 두 지표는 winRate 와 **반드시 함께** 읽어야 한다. ★방향 함정★: 적이 강해지면 winRate 가 내려가고 → 전멸 판이 늘어 avgHpRemaining 이 내려가며 → 더 일찍 전멸해 avgTurns 도 **내려간다**. 즉 '전투가 깊어졌다' 와 '전투가 짧아졌다' 가 같은 방향으로 움직인다. avgTurns 증가를 성공 신호로 쓰면 정반대로 읽힌다. 승률이 크게 달라진 항목은 avgTurns/avgHpRemaining 을 직접 비교하지 말고, winRate 를 먼저 보고 승률이 비슷한 항목끼리만 비교하라. 실례(이 기준선): archetypeSims['드래곤·보스'] 의 perBattleTurns 는 {mean:15, stddev:0, min:15, max:15} 다. stddev 0, min=max=15 — 이는 그 표본 패스 50판이 **승패와 무관하게 전부 15턴** 에 끝났다는 뜻이다 — 같은 패스의 승률인 perBattleWinRate.mean 값 0.02 기준으로 보면 1승 49패인데, **유일한 1승도 15턴**이었다. 같은 항목의 perBattleHpRemaining 은 {mean:1.86, stddev:13.02, min:0, max:93} 로 승패에 따라 0 / 93 두 값으로 갈리는데, 턴수만 승패에 전혀 반응하지 않는다. 즉 이 값(15)은 '전투 깊이' 가 아니라 '지금 이 전투에는 턴수를 바꿀 변수가 없다' 는 증거이고, 그래서 깊이 지표로 쓸 수 없다. (이 예시의 승패 수는 perBattleTurns 와 **같은 표본 패스**에서 읽었다. 집계 패스의 winRate 값 0.1 기준으로 '45패' 를 계산하면 아래 두패스승률차이 가 금지한 교차 계산이 된다.) sims(기본 트룹 5개)는 전부 winRate 1.00 이라 이 함정이 걸리지 않는다. archetypeSims 9개 중 7개(이번 실측 winRate<1)가 해당된다.",
+      "두패스승률차이": "같은 항목의 winRate(집계 패스)와 perBattleWinRate.mean(표본 패스)이 눈에 띄게 다를 수 있다. 실측(이 기준선): 골렘·구조물 0.58 vs 0.42, 드래곤·보스 0.1 vs 0.02. 모순이 아니라 표본 잡음이다 — mulberry32 는 n판 전체가 rng 스트림 하나를 공유하므로(simulate.ts:240) 'n=50 한 번' 과 'n=1 을 seed 옮겨 50번' 은 롤 소비 순서가 달라 서로 다른 50판을 뽑는다. n=50 에서는 이 정도 편차가 정상이다. 전/후 비교는 **같은 패스끼리만** 하라(winRate↔winRate, perBattleWinRate.mean↔perBattleWinRate.mean). 둘을 교차 비교하면 없는 변화를 만든다."
+    }
+  },
+  "fullDatabaseCensus": {
+    "enemyCount": 106,
+    "troopCount": 7,
+    "skillCount": 27,
+    "enemiesWithOneAction": 106,
+    "enemyActionCounts": {
+      "enemy_slime": 1,
+      "enemy_meadow_slime": 1,
+      "enemy_cave_bat": 1,
+      "enemy_stone_golem": 1,
+      "enemy_dragon": 1,
+      "enemy_mine_skel_archer": 1,
+      "enemy_slime_blue": 1,
+      "enemy_slime_red": 1,
+      "enemy_slime_green": 1,
+      "enemy_slime_metal": 1,
+      "enemy_slime_king": 1,
+      "enemy_slime_cube": 1,
+      "enemy_ooze_black": 1,
+      "enemy_ooze_acid": 1,
+      "enemy_bat_cave": 1,
+      "enemy_bat_vampire": 1,
+      "enemy_bee_giant": 1,
+      "enemy_spider_cave": 1,
+      "enemy_spider_widow": 1,
+      "enemy_scorpion_sand": 1,
+      "enemy_beetle_horn": 1,
+      "enemy_mantis_blade": 1,
+      "enemy_centipede_fire": 1,
+      "enemy_moth_dust": 1,
+      "enemy_worm_sand": 1,
+      "enemy_ant_soldier": 1,
+      "enemy_wolf_grey": 1,
+      "enemy_wolf_dire": 1,
+      "enemy_boar_tusk": 1,
+      "enemy_bear_brown": 1,
+      "enemy_tiger_saber": 1,
+      "enemy_rat_giant": 1,
+      "enemy_bird_hawk": 1,
+      "enemy_snake_viper": 1,
+      "enemy_cat_shadow": 1,
+      "enemy_goat_mountain": 1,
+      "enemy_crab_rock": 1,
+      "enemy_hound_hell": 1,
+      "enemy_ape_stone": 1,
+      "enemy_deer_forest": 1,
+      "enemy_skeleton_bone": 1,
+      "enemy_skeleton_archer": 1,
+      "enemy_skeleton_knight": 1,
+      "enemy_zombie_rot": 1,
+      "enemy_ghoul_grave": 1,
+      "enemy_ghost_pale": 1,
+      "enemy_wraith_dark": 1,
+      "enemy_lich_frost": 1,
+      "enemy_mummy_bandage": 1,
+      "enemy_banshee_wail": 1,
+      "enemy_revenant_vengeful": 1,
+      "enemy_bonepile_crawler": 1,
+      "enemy_spirit_fire": 1,
+      "enemy_spirit_water": 1,
+      "enemy_spirit_earth": 1,
+      "enemy_spirit_wind": 1,
+      "enemy_spirit_light": 1,
+      "enemy_spirit_dark": 1,
+      "enemy_wisp_blue": 1,
+      "enemy_sylph_air": 1,
+      "enemy_undine_sea": 1,
+      "enemy_salamander_flame": 1,
+      "enemy_golem_stone": 1,
+      "enemy_golem_iron": 1,
+      "enemy_golem_clay": 1,
+      "enemy_golem_crystal": 1,
+      "enemy_armor_living": 1,
+      "enemy_sword_flying": 1,
+      "enemy_mimic_chest": 1,
+      "enemy_scarecrow_field": 1,
+      "enemy_puppet_string": 1,
+      "enemy_totem_cursed": 1,
+      "enemy_goblin_scout": 1,
+      "enemy_goblin_brute": 1,
+      "enemy_orc_warrior": 1,
+      "enemy_orc_shaman": 1,
+      "enemy_kobold_digger": 1,
+      "enemy_bandit_mask": 1,
+      "enemy_mage_rogue": 1,
+      "enemy_knight_fallen": 1,
+      "enemy_lizardman_spear": 1,
+      "enemy_harpy_cliff": 1,
+      "enemy_minotaur_maze": 1,
+      "enemy_centaur_plains": 1,
+      "enemy_troll_cave": 1,
+      "enemy_ogre_club": 1,
+      "enemy_imp_mischief": 1,
+      "enemy_fish_piranha": 1,
+      "enemy_squid_deep": 1,
+      "enemy_shark_land": 1,
+      "enemy_eel_electric": 1,
+      "enemy_griffin_sky": 1,
+      "enemy_wyvern_cliff": 1,
+      "enemy_roc_giant": 1,
+      "enemy_gargoyle_stone": 1,
+      "enemy_phoenix_rebirth": 1,
+      "enemy_dragon_whelp": 1,
+      "enemy_dragon_red": 1,
+      "enemy_dragon_blue": 1,
+      "enemy_dragon_bone": 1,
+      "enemy_hydra_three": 1,
+      "enemy_behemoth_horn": 1,
+      "enemy_demon_lord": 1,
+      "enemy_angel_fallen": 1,
+      "enemy_eye_floating": 1,
+      "enemy_plant_carnivore": 1
+    },
+    "enemyMaxMp": {
+      "enemy_slime": 10,
+      "enemy_meadow_slime": 10,
+      "enemy_cave_bat": 10,
+      "enemy_stone_golem": 10,
+      "enemy_dragon": 10,
+      "enemy_mine_skel_archer": 10,
+      "enemy_slime_blue": 10,
+      "enemy_slime_red": 10,
+      "enemy_slime_green": 10,
+      "enemy_slime_metal": 10,
+      "enemy_slime_king": 10,
+      "enemy_slime_cube": 10,
+      "enemy_ooze_black": 10,
+      "enemy_ooze_acid": 10,
+      "enemy_bat_cave": 10,
+      "enemy_bat_vampire": 10,
+      "enemy_bee_giant": 10,
+      "enemy_spider_cave": 10,
+      "enemy_spider_widow": 10,
+      "enemy_scorpion_sand": 10,
+      "enemy_beetle_horn": 10,
+      "enemy_mantis_blade": 10,
+      "enemy_centipede_fire": 10,
+      "enemy_moth_dust": 10,
+      "enemy_worm_sand": 10,
+      "enemy_ant_soldier": 10,
+      "enemy_wolf_grey": 10,
+      "enemy_wolf_dire": 10,
+      "enemy_boar_tusk": 10,
+      "enemy_bear_brown": 10,
+      "enemy_tiger_saber": 10,
+      "enemy_rat_giant": 10,
+      "enemy_bird_hawk": 10,
+      "enemy_snake_viper": 10,
+      "enemy_cat_shadow": 10,
+      "enemy_goat_mountain": 10,
+      "enemy_crab_rock": 10,
+      "enemy_hound_hell": 10,
+      "enemy_ape_stone": 10,
+      "enemy_deer_forest": 10,
+      "enemy_skeleton_bone": 10,
+      "enemy_skeleton_archer": 10,
+      "enemy_skeleton_knight": 10,
+      "enemy_zombie_rot": 10,
+      "enemy_ghoul_grave": 10,
+      "enemy_ghost_pale": 10,
+      "enemy_wraith_dark": 10,
+      "enemy_lich_frost": 10,
+      "enemy_mummy_bandage": 10,
+      "enemy_banshee_wail": 10,
+      "enemy_revenant_vengeful": 10,
+      "enemy_bonepile_crawler": 10,
+      "enemy_spirit_fire": 10,
+      "enemy_spirit_water": 10,
+      "enemy_spirit_earth": 10,
+      "enemy_spirit_wind": 10,
+      "enemy_spirit_light": 10,
+      "enemy_spirit_dark": 10,
+      "enemy_wisp_blue": 10,
+      "enemy_sylph_air": 10,
+      "enemy_undine_sea": 10,
+      "enemy_salamander_flame": 10,
+      "enemy_golem_stone": 10,
+      "enemy_golem_iron": 10,
+      "enemy_golem_clay": 10,
+      "enemy_golem_crystal": 10,
+      "enemy_armor_living": 10,
+      "enemy_sword_flying": 10,
+      "enemy_mimic_chest": 10,
+      "enemy_scarecrow_field": 10,
+      "enemy_puppet_string": 10,
+      "enemy_totem_cursed": 10,
+      "enemy_goblin_scout": 10,
+      "enemy_goblin_brute": 10,
+      "enemy_orc_warrior": 10,
+      "enemy_orc_shaman": 10,
+      "enemy_kobold_digger": 10,
+      "enemy_bandit_mask": 10,
+      "enemy_mage_rogue": 10,
+      "enemy_knight_fallen": 10,
+      "enemy_lizardman_spear": 10,
+      "enemy_harpy_cliff": 10,
+      "enemy_minotaur_maze": 10,
+      "enemy_centaur_plains": 10,
+      "enemy_troll_cave": 10,
+      "enemy_ogre_club": 10,
+      "enemy_imp_mischief": 10,
+      "enemy_fish_piranha": 10,
+      "enemy_squid_deep": 10,
+      "enemy_shark_land": 10,
+      "enemy_eel_electric": 10,
+      "enemy_griffin_sky": 10,
+      "enemy_wyvern_cliff": 10,
+      "enemy_roc_giant": 10,
+      "enemy_gargoyle_stone": 10,
+      "enemy_phoenix_rebirth": 10,
+      "enemy_dragon_whelp": 10,
+      "enemy_dragon_red": 10,
+      "enemy_dragon_blue": 10,
+      "enemy_dragon_bone": 10,
+      "enemy_hydra_three": 10,
+      "enemy_behemoth_horn": 10,
+      "enemy_demon_lord": 10,
+      "enemy_angel_fallen": 10,
+      "enemy_eye_floating": 10,
+      "enemy_plant_carnivore": 10
+    },
+    "authoredEnemySkillCounts": {
+      "skill_attack": 106
+    },
+    "authoredCoverage": {
+      "byElement": {
+        "(무속성)": 106
+      },
+      "distinctElements": 0,
+      "byAddedState": {},
+      "distinctAddedStates": 0,
+      "enemiesWithElementalAction": 0,
+      "enemiesWithStateAction": 0
+    },
+    "troopIds": [
+      "troop_slime",
+      "troop_slime_pair",
+      "troop_bat_swarm",
+      "troop_forest_hornets",
+      "troop_golem_guard",
+      "troop_mine_archers",
+      "troop_dragon"
+    ]
+  },
+  "simulatedCensus": {
+    "enemyCount": 5,
+    "troopCount": 5,
+    "skillCount": 27,
+    "enemiesWithOneAction": 5,
+    "enemyActionCounts": {
+      "enemy_slime": 1,
+      "enemy_meadow_slime": 1,
+      "enemy_cave_bat": 1,
+      "enemy_stone_golem": 1,
+      "enemy_dragon": 1
+    },
+    "enemyMaxMp": {
+      "enemy_slime": 10,
+      "enemy_meadow_slime": 10,
+      "enemy_cave_bat": 10,
+      "enemy_stone_golem": 10,
+      "enemy_dragon": 60
+    },
+    "authoredEnemySkillCounts": {
+      "skill_attack": 5
+    },
+    "authoredCoverage": {
+      "byElement": {
+        "(무속성)": 5
+      },
+      "distinctElements": 0,
+      "byAddedState": {},
+      "distinctAddedStates": 0,
+      "enemiesWithElementalAction": 0,
+      "enemiesWithStateAction": 0
+    },
+    "troopIds": [
+      "troop_slime_pair",
+      "troop_bat_swarm",
+      "troop_forest_hornets",
+      "troop_golem_guard",
+      "troop_dragon"
+    ]
+  },
+  "skillCosts": {
+    "skill_attack": {
+      "name": "공격",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_sword_slash": {
+      "name": "검격",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_arcane_bolt": {
+      "name": "마법탄",
+      "mpFlat": 4,
+      "mpPercentMax": 0
+    },
+    "skill_fire": {
+      "name": "화염",
+      "mpFlat": 4,
+      "mpPercentMax": 0
+    },
+    "skill_water": {
+      "name": "물대포",
+      "mpFlat": 4,
+      "mpPercentMax": 0
+    },
+    "skill_item_holy_water": {
+      "name": "성수 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_thunder_stone": {
+      "name": "뇌전석 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_frost_vial": {
+      "name": "서리병 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_quake_stone": {
+      "name": "지진석 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_gale_fan": {
+      "name": "질풍 부채 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_shadow_dust": {
+      "name": "그림자 가루 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_leaf": {
+      "name": "잎날",
+      "mpFlat": 3,
+      "mpPercentMax": 0
+    },
+    "skill_heal": {
+      "name": "치유",
+      "mpFlat": 3,
+      "mpPercentMax": 0
+    },
+    "skill_poison_sting": {
+      "name": "독침",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_sleep_mist": {
+      "name": "수면 안개",
+      "mpFlat": 5,
+      "mpPercentMax": 0
+    },
+    "skill_focus": {
+      "name": "집중",
+      "mpFlat": 2,
+      "mpPercentMax": 0
+    },
+    "skill_weaken": {
+      "name": "약화",
+      "mpFlat": 3,
+      "mpPercentMax": 0
+    },
+    "skill_item_potion": {
+      "name": "회복약 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_hi_potion": {
+      "name": "상급 회복약 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_ether": {
+      "name": "마력약 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_elixir": {
+      "name": "엘릭서 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_throwing_knife": {
+      "name": "투척 단검",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_poison_vial": {
+      "name": "독병 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_antidote": {
+      "name": "해독 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_wake": {
+      "name": "각성 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_panacea": {
+      "name": "만능 치료 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    },
+    "skill_item_guard": {
+      "name": "수호 효과",
+      "mpFlat": 0,
+      "mpPercentMax": 0
+    }
+  },
+  "sims": {
+    "troop_slime_pair": {
+      "heroLevel": 5,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 1,
+      "avgTurns": 2,
+      "avgHpRemaining": 634,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 2,
+        "stddev": 0,
+        "min": 2,
+        "max": 2
+      },
+      "perBattleHpRemaining": {
+        "mean": 634,
+        "stddev": 0,
+        "min": 634,
+        "max": 634
+      },
+      "perBattleWinRate": {
+        "mean": 1,
+        "stddev": 0,
+        "min": 1,
+        "max": 1
+      }
+    },
+    "troop_bat_swarm": {
+      "heroLevel": 5,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 1,
+      "avgTurns": 3,
+      "avgHpRemaining": 400.34,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 3,
+        "stddev": 0,
+        "min": 3,
+        "max": 3
+      },
+      "perBattleHpRemaining": {
+        "mean": 400.12,
+        "stddev": 20.8362,
+        "min": 350,
+        "max": 442
+      },
+      "perBattleWinRate": {
+        "mean": 1,
+        "stddev": 0,
+        "min": 1,
+        "max": 1
+      }
+    },
+    "troop_forest_hornets": {
+      "heroLevel": 5,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 1,
+      "avgTurns": 3,
+      "avgHpRemaining": 556.46,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 3,
+        "stddev": 0,
+        "min": 3,
+        "max": 3
+      },
+      "perBattleHpRemaining": {
+        "mean": 554.94,
+        "stddev": 14.3407,
+        "min": 533,
+        "max": 580
+      },
+      "perBattleWinRate": {
+        "mean": 1,
+        "stddev": 0,
+        "min": 1,
+        "max": 1
+      }
+    },
+    "troop_golem_guard": {
+      "heroLevel": 5,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 1,
+      "avgTurns": 3.48,
+      "avgHpRemaining": 437.46,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 3.64,
+        "stddev": 0.48,
+        "min": 3,
+        "max": 4
+      },
+      "perBattleHpRemaining": {
+        "mean": 425.96,
+        "stddev": 46.4792,
+        "min": 346,
+        "max": 510
+      },
+      "perBattleWinRate": {
+        "mean": 1,
+        "stddev": 0,
+        "min": 1,
+        "max": 1
+      }
+    },
+    "troop_dragon": {
+      "heroLevel": 5,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 1,
+      "avgTurns": 2.4,
+      "avgHpRemaining": 335.7,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 2.52,
+        "stddev": 0.4996,
+        "min": 2,
+        "max": 3
+      },
+      "perBattleHpRemaining": {
+        "mean": 306.56,
+        "stddev": 113.0584,
+        "min": 119,
+        "max": 472
+      },
+      "perBattleWinRate": {
+        "mean": 1,
+        "stddev": 0,
+        "min": 1,
+        "max": 1
+      }
+    }
+  },
+  "archetypeSims": {
+    "슬라임·젤리": {
+      "enemyId": "enemy_slime_king",
+      "enemyCountInTroop": 24,
+      "contested": false,
+      "heroLevel": 1,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 1,
+      "avgTurns": 24,
+      "avgHpRemaining": 395,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 24,
+        "stddev": 0,
+        "min": 24,
+        "max": 24
+      },
+      "perBattleHpRemaining": {
+        "mean": 394.86,
+        "stddev": 3.0529,
+        "min": 389,
+        "max": 401
+      },
+      "perBattleWinRate": {
+        "mean": 1,
+        "stddev": 0,
+        "min": 1,
+        "max": 1
+      }
+    },
+    "곤충·절지": {
+      "enemyId": "enemy_beetle_horn",
+      "enemyCountInTroop": 24,
+      "contested": false,
+      "heroLevel": 1,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 1,
+      "avgTurns": 24,
+      "avgHpRemaining": 356.78,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 24,
+        "stddev": 0,
+        "min": 24,
+        "max": 24
+      },
+      "perBattleHpRemaining": {
+        "mean": 356.36,
+        "stddev": 3.4685,
+        "min": 350,
+        "max": 363
+      },
+      "perBattleWinRate": {
+        "mean": 1,
+        "stddev": 0,
+        "min": 1,
+        "max": 1
+      }
+    },
+    "야수": {
+      "enemyId": "enemy_snake_viper",
+      "enemyCountInTroop": 24,
+      "contested": true,
+      "heroLevel": 1,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 0.7,
+      "avgTurns": 34.5,
+      "avgHpRemaining": 29.76,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 34.58,
+        "stddev": 2.8642,
+        "min": 27,
+        "max": 39
+      },
+      "perBattleHpRemaining": {
+        "mean": 37.66,
+        "stddev": 33.7192,
+        "min": 0,
+        "max": 103
+      },
+      "perBattleWinRate": {
+        "mean": 0.74,
+        "stddev": 0.4386,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "언데드": {
+      "enemyId": "enemy_wraith_dark",
+      "enemyCountInTroop": 20,
+      "contested": true,
+      "heroLevel": 4,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 0.52,
+      "avgTurns": 29.4,
+      "avgHpRemaining": 18.58,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 28.7,
+        "stddev": 3.5735,
+        "min": 20,
+        "max": 33
+      },
+      "perBattleHpRemaining": {
+        "mean": 37.74,
+        "stddev": 45.6749,
+        "min": 0,
+        "max": 139
+      },
+      "perBattleWinRate": {
+        "mean": 0.54,
+        "stddev": 0.4984,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "정령·원소": {
+      "enemyId": "enemy_spirit_dark",
+      "enemyCountInTroop": 12,
+      "contested": true,
+      "heroLevel": 3,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 0.28,
+      "avgTurns": 19.92,
+      "avgHpRemaining": 4.1,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 19.52,
+        "stddev": 3.0016,
+        "min": 14,
+        "max": 24
+      },
+      "perBattleHpRemaining": {
+        "mean": 4.64,
+        "stddev": 10.6222,
+        "min": 0,
+        "max": 51
+      },
+      "perBattleWinRate": {
+        "mean": 0.24,
+        "stddev": 0.4271,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "골렘·구조물": {
+      "enemyId": "enemy_sword_flying",
+      "enemyCountInTroop": 10,
+      "contested": true,
+      "heroLevel": 5,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 0.58,
+      "avgTurns": 18.38,
+      "avgHpRemaining": 22,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 17.64,
+        "stddev": 2.8897,
+        "min": 15,
+        "max": 22
+      },
+      "perBattleHpRemaining": {
+        "mean": 13.62,
+        "stddev": 21.1158,
+        "min": 0,
+        "max": 62
+      },
+      "perBattleWinRate": {
+        "mean": 0.42,
+        "stddev": 0.4936,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "인간형": {
+      "enemyId": "enemy_knight_fallen",
+      "enemyCountInTroop": 7,
+      "contested": true,
+      "heroLevel": 5,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 0.46,
+      "avgTurns": 17.24,
+      "avgHpRemaining": 26.92,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 17.54,
+        "stddev": 2.4675,
+        "min": 15,
+        "max": 21
+      },
+      "perBattleHpRemaining": {
+        "mean": 17.08,
+        "stddev": 27.0347,
+        "min": 0,
+        "max": 127
+      },
+      "perBattleWinRate": {
+        "mean": 0.54,
+        "stddev": 0.4984,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "수생·비행": {
+      "enemyId": "enemy_griffin_sky",
+      "enemyCountInTroop": 4,
+      "contested": true,
+      "heroLevel": 2,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 0.4,
+      "avgTurns": 14.5,
+      "avgHpRemaining": 29.48,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 14.66,
+        "stddev": 3.4153,
+        "min": 9,
+        "max": 19
+      },
+      "perBattleHpRemaining": {
+        "mean": 23.76,
+        "stddev": 36.8443,
+        "min": 0,
+        "max": 132
+      },
+      "perBattleWinRate": {
+        "mean": 0.38,
+        "stddev": 0.4854,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "드래곤·보스": {
+      "enemyId": "enemy_behemoth_horn",
+      "enemyCountInTroop": 1,
+      "contested": true,
+      "heroLevel": 5,
+      "samples": 50,
+      "battleFlow": "gauge",
+      "winRate": 0.1,
+      "avgTurns": 14.98,
+      "avgHpRemaining": 8.14,
+      "avgPotionsUsed": 0,
+      "perBattleTurns": {
+        "mean": 15,
+        "stddev": 0,
+        "min": 15,
+        "max": 15
+      },
+      "perBattleHpRemaining": {
+        "mean": 1.86,
+        "stddev": 13.02,
+        "min": 0,
+        "max": 93
+      },
+      "perBattleWinRate": {
+        "mean": 0.02,
+        "stddev": 0.14,
+        "min": 0,
+        "max": 1
+      }
+    }
+  },
+  "enemySkillUsage": {
+    "note": "battleFlow:'strict' 전용 측정. roundLogs 는 strict 플로우에서만 기록되고, simulateBattle 은 첫 판의 roundLogs 만 보관하므로 seed 를 옮겨 n=1 로 50회씩 돌려 합산했다. sims 의 스칼라(gauge 플로우)와는 별개 측정이다. distinctSkills 는 스킬 id 로 해소된 것만 센다 — MP 부족/상태이상으로 불발된 행동은 unresolved 로 빠지므로, unresolvedTotal 이 0 이 아니면 그쪽을 먼저 봐야 한다. ★distinctSkills 만으로 판정하지 말 것★: 순수 데미지 스킬끼리는 교대하지 않고 승자만 바뀌므로 무속성→속성 같은 변화가 1→1 로 보인다. distinctElements 와 actorStateGainsTotal 을 함께 읽어야 한다. 앞의 둘은 같은 roundLogs 를 다르게 접은 값이라 추가 rng 소비가 없다(전/후 비교 성립).",
+    "runsPerTroop": 50,
+    "defaultTroops": {
+      "strictRoundsObserved": 705,
+      "byCommandKind": {
+        "enemySkill": 634
+      },
+      "bySkillId": {
+        "skill_attack": 634
+      },
+      "distinctSkills": 1,
+      "byElement": {
+        "(무속성)": 634
+      },
+      "distinctElements": 0,
+      "actorStateGains": {},
+      "actorStateGainsTotal": 0,
+      "enemyStateGains": {},
+      "enemyStateGainsTotal": 0,
+      "unresolved": {},
+      "unresolvedTotal": 0
+    },
+    "archetypeTroops": {
+      "strictRoundsObserved": 2252,
+      "byCommandKind": {
+        "enemySkill": 31411
+      },
+      "bySkillId": {
+        "skill_attack": 31411
+      },
+      "distinctSkills": 1,
+      "byElement": {
+        "(무속성)": 31411
+      },
+      "distinctElements": 0,
+      "actorStateGains": {},
+      "actorStateGainsTotal": 0,
+      "enemyStateGains": {},
+      "enemyStateGainsTotal": 0,
+      "unresolved": {},
+      "unresolvedTotal": 0
+    }
+  },
+  "archetypeContestedDivergence": {
+    "note": "authored 는 ARCHETYPES 표의 contested 기대치, measured 는 이번 실측의 winRate<1 집합이다. 둘이 갈리면 적의 위협도가 달라졌다는 뜻이다 — onlyAuthored 는 '기대보다 약해져 승률이 1.00 으로 포화한' 계열, onlyMeasured 는 '기대와 달리 승률을 끌어내린' 계열이다.",
+    "authored": [
+      "골렘·구조물",
+      "드래곤·보스",
+      "수생·비행",
+      "야수",
+      "언데드",
+      "인간형",
+      "정령·원소"
+    ],
+    "measured": [
+      "골렘·구조물",
+      "드래곤·보스",
+      "수생·비행",
+      "야수",
+      "언데드",
+      "인간형",
+      "정령·원소"
+    ],
+    "onlyAuthored": [],
+    "onlyMeasured": []
+  }
+}

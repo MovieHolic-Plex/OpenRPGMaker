@@ -137,11 +137,16 @@
   cursor: default;
 }
 
+/* 커서는 노드 **안쪽** 왼쪽 가장자리에 붙인다. 밖으로 내밀면(예전 `left: -24px`)
+   이웃 적 위에 얹힌다 — 적 노드는 240px 폭으로 서로 겹치도록 배치되기 때문이다
+   (실측: 슬라임 둘의 노드가 x 287–527 / 497–737 로 30px 겹침 → 오른쪽 적의 커서가
+   왼쪽 적 몸통 위에 그려졌다). 노드는 스프라이트보다 훨씬 넓어서 안쪽에 붙여도
+   그림에는 닿지 않는다. */
 .battle-target-candidate::after {
   content: ">";
   color: #fff;
   font-size: 28px;
-  left: -24px;
+  left: 2px;
   line-height: 1;
   position: absolute;
   text-shadow: 2px 2px 0 #00134c;
@@ -200,9 +205,17 @@
   content: none;
 }
 
-.battle-enemy.defeated,
+/* 목록의 **텍스트 행**은 흐리게 죽인 표시가 맞다. 필드 **스프라이트**는 아니다 —
+   그쪽 불투명도는 퇴장 연출(`15-juice-capture-fx.css` 의 battle-death-fade)이 소유한다.
+   여기에 정적 opacity 를 두면, 막타 프레임에 스킨 피격 juice(rm2003-juice-hit 등)가
+   `animation` 숏핸드를 가져가 death-fade 가 돌지 못하는 사이 그 값이 그대로 드러나
+   몬스터 몸통으로 배경이 비쳤다(실측: 임팩트 시 computed opacity 0.42). */
 .battle-enemy-list-row.defeated {
   opacity: 0.42;
+}
+
+.battle-enemy.defeated,
+.battle-enemy-list-row.defeated {
   text-decoration: line-through;
 }
 

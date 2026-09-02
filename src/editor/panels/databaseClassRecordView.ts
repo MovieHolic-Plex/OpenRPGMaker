@@ -38,6 +38,10 @@ const ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name: string
   { id: "earth", name: "대지" },
   { id: "wind", name: "바람" },
   { id: "holy", name: "성" },
+  // DEFAULT_ELEMENT_RATE_LABELS(actorModel.ts)의 한국어 사본이다. 그쪽에 dark 를 넣었으므로
+  // 여기도 같이 넣는다 — 데이터에 dark 등급이 생겨도 이 목록에 없으면 행이 안 그려져
+  // 직업의 어둠 저항을 저작할 수 없다.
+  { id: "dark", name: "암" },
 ];
 
 const GRADE_KO: Record<ActorRateGrade, string> = {

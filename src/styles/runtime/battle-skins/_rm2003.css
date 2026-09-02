@@ -942,6 +942,17 @@
   display: none;
 }
 
+/* 명령 창이 숨는 단계에서는 파티 밴드가 두 열을 다 쓴다.
+   씬 그리드 1열은 `176px` **고정**이라 `.battle-command-host` 를 `display: none` 해도
+   그 폭이 그대로 남는다. 그래서 행동 해결 중에는 밴드 왼쪽에 폭 ~270px 의 검은 띠가
+   생겼다(실측: command-host display:none / rect 0×0 인데 .battle-party 는 x=304 그대로). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-party,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="acting"] .battle-party,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="impact"] .battle-party,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="result"] .battle-party {
+  grid-column: 1 / -1;
+}
+
 @keyframes rm2003-backdrop-in {
   from { transform: scale(1.12); }
   to   { transform: scale(1); }
