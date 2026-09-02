@@ -101,6 +101,25 @@ if (existsSync(beforeDir) && existsSync(afterDir)) {
 }
 console.log(`compare sheets: ${compared}`);
 
+// 1b) 영웅 배틀러 before/after — sideview 스킨에서 찍은 party-zoom.png(3배)을 위아래로.
+for (const [beforeLabel, afterLabel, out] of [["hero-before", "hero-after", "hero-party-zoom.png"]]) {
+  const findZoom = (label) => {
+    const dir = join(ROOT, label);
+    if (!existsSync(dir)) return null;
+    for (const anim of readdirSync(dir)) {
+      const file = join(dir, anim, "party-zoom.png");
+      if (existsSync(file)) return file;
+    }
+    return null;
+  };
+  const before = findZoom(beforeLabel);
+  const after = findZoom(afterLabel);
+  if (before && after) {
+    writeFileSync(join(compareDir, out), PNG.sync.write(stackVertical([read(before), read(after)])));
+    console.log(`hero compare: ${out}`);
+  }
+}
+
 // 2) 34종 카탈로그 시트(12종씩 3장)
 const catalog = JSON.parse(readFileSync(join(REPO_ROOT, "src/assets/generatedEffectSheets.json"), "utf8"));
 const rows = catalog.effects.map((effect) => halfOverBackdrop(read(join(REPO_ROOT, "public/assets/generated/effects", `effect-${effect.slug}.png`))));

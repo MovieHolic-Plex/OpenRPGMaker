@@ -112,3 +112,19 @@ interface BattleAnimationSheet {
   맞아도 질감이 어긋난다. 픽셀아트 배틀러(48px 영웅 시트)는 기본 스킨에서 필드에 서지 않는다.
 - 스키마 필드 vs resourceId 특례: 프레임 간격은 이미 resourceId 특례로 처리돼 있지만, 해상도는
   저작 시트에도 필요한 정보라 스키마에 둔다. 기본값이 있어 기존 저장물은 그대로 읽힌다.
+
+## 후속 — 48px 영웅 배틀러 손질 (같은 날, 사용자 요청)
+
+"저 48px 픽셀아트 영웅 배틀러도 손질 미리해둬라." 영웅 시트는 48px 셀을 2배로 그려 밀도 0.5 였다.
+모델 재작화는 캐릭터를 바꾸므로(`gen-battler-idle-strips.mjs` 의 결론) **결정적 xBR 업스케일**로 형태·색을
+그대로 두고 계단만 잇는다.
+
+- `scripts/lib/pixelUpscale.mjs`: 2xBR 커널(RGBA, YUV+알파 거리, 프리멀티 50% 혼합). 이미지 밖은 가장자리 복제.
+- `scripts/asset-gen/gen-battler-hires-sheets.mjs`: hero-01~06 시트(576×1536)·idle 스트립(768×192)을
+  `starter/hires/` 아래 같은 파일명으로. 셀 단위 업스케일 → idle 프레임 0 == 시트 idle 칸 계약 유지.
+- `src/assets/battlerHiresSheets.ts` 옵트인 카탈로그; `battleFieldDom.actorBattleImage` 가 URL 을 바꾸고
+  `data-rendering="smooth"`; idle 카탈로그의 액터 항목은 192px 스트립. 화면 크기는 background-size 가
+  논리 px 고정이라 변하지 않는다.
+- 내보내기: 경로 참조 자산이라 `runtimeAssets.json` + 조건부 그룹(`usesGeneratedHeroBattlers`)으로 싣는다.
+  이 과정에서 48px idle 스트립이 애초에 내보내기에 실리지 않던 결함도 같은 그룹으로 고쳤다.
+- 증거: `verify-shots/battle-anim-overhaul/compare/hero-party-zoom.png` (ff 스킨, 3배 확대, 위 before / 아래 after).

@@ -219,3 +219,5 @@ verify-shots/item-catalog-report-render/
 verify-shots/battle-anim-overhaul/before/
 verify-shots/battle-anim-overhaul/after/
 verify-shots/battle-anim-overhaul/summary.json
+verify-shots/battle-anim-overhaul/hero-before/
+verify-shots/battle-anim-overhaul/hero-after/

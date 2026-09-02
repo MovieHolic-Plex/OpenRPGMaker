@@ -1,7 +1,9 @@
 // 전투 이펙트 프레임 캡처 프로브 — 실제 전투 화면(DOM+CSS)에서 애니메이션을 한 프레임씩 찍는다.
 //
 //   node scripts/qa/probe-battle-anim-frames.mjs --anims=anim_gen_fire_burst,anim_gen_slash_steel \
-//        --label=before [--troop=troop_slime_pair] [--out=verify-shots/battle-anim-overhaul]
+//        --label=before [--troop=troop_slime_pair] [--out=verify-shots/battle-anim-overhaul] [--skin=ff]
+//   --skin 은 system.battleUiStyle 을 덮는다. 아군 48px 시트 스프라이트는 sideview 스킨(ff·octopath·bravely·
+//   goldensun)에서만 필드에 서므로, 영웅 배틀러를 보려면 --skin=ff 로 찍고 party-zoom.png(3배 확대)을 본다.
 //
 // 왜 가짜 시계인가: 이펙트는 75ms 간격 setInterval 로 프레임을 넘기고 스크린샷 한 장은 그보다
 // 오래 걸린다. 실시간으로 찍으면 프레임을 건너뛰고, 배속 노브는 1.0 아래로 내려가지 않는다.
@@ -29,6 +31,8 @@ function arg(name, fallback) {
 const ANIMS = arg("anims", "anim_gen_fire_burst").split(",").map((s) => s.trim()).filter(Boolean);
 const LABEL = arg("label", "probe");
 const TROOP = arg("troop", "troop_slime_pair");
+/** 전투 스킨 id(system.battleUiStyle). 비우면 픽스처 기본(rm2003). 아군 스프라이트를 보려면 sideview 스킨(ff 등). */
+const SKIN = arg("skin", "");
 const OUT_ROOT = join(REPO_ROOT, arg("out", "verify-shots/battle-anim-overhaul"), LABEL);
 const VIEWPORT = { width: 1280, height: 960 };
 const STEP_MS = 25;
@@ -134,6 +138,30 @@ async function contactSheet(paths, outPath) {
   await writeFile(outPath, PNG.sync.write(sheet));
 }
 
+/** 아군 스프라이트 무리를 3배로 확대해 찍는다 — 시트 해상도 차이는 무대 배율 1.5 에서 눈으로 안 보인다. */
+async function shootParty(page, path) {
+  const rect = await page.evaluate(() => {
+    const group = document.querySelector(".battle-actor-group");
+    if (!group) return null;
+    const boxes = [...group.querySelectorAll(".battle-actor-sprite, .battle-actor-image")].map((n) => n.getBoundingClientRect());
+    if (boxes.length === 0) return null;
+    const left = Math.min(...boxes.map((b) => b.left));
+    const top = Math.min(...boxes.map((b) => b.top));
+    const right = Math.max(...boxes.map((b) => b.right));
+    const bottom = Math.max(...boxes.map((b) => b.bottom));
+    return { x: left - 8, y: top - 8, width: right - left + 16, height: bottom - top + 16 };
+  });
+  if (!rect) return false;
+  const cdp = page.__cdp ?? (page.__cdp = await page.context().newCDPSession(page));
+  const { data } = await cdp.send("Page.captureScreenshot", {
+    format: "png",
+    fromSurface: true,
+    clip: { x: Math.max(0, rect.x), y: Math.max(0, rect.y), width: rect.width, height: rect.height, scale: 3 },
+  });
+  await writeFile(path, Buffer.from(data, "base64"));
+  return true;
+}
+
 async function captureAnimation(page, projectJson, animationId) {
   const outDir = join(OUT_ROOT, animationId);
   await mkdir(outDir, { recursive: true });
@@ -159,6 +187,7 @@ async function captureAnimation(page, projectJson, animationId) {
     { timeout: 30_000, polling: 100 },
   );
   await shoot(page, join(outDir, "00-command.png"));
+  if (await shootParty(page, join(outDir, "party-zoom.png"))) log(`${animationId} party-zoom.png (아군 스프라이트 3배)`);
 
   // 클릭은 명령 그리드의 히트테스트에 가로막힌다(실측). 커서가 「공격」에 있으니 확인키로 고른다.
   await page.keyboard.press("Enter");
@@ -222,7 +251,9 @@ async function captureAnimation(page, projectJson, animationId) {
   return metrics;
 }
 
-const projectJson = await readFile(FIXTURE, "utf8");
+const fixture = JSON.parse(await readFile(FIXTURE, "utf8"));
+if (SKIN) fixture.system.battleUiStyle = SKIN;
+const projectJson = JSON.stringify(fixture);
 const server = await startPlayerQaServer();
 const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
 const page = await browser.newPage({ viewport: VIEWPORT });
