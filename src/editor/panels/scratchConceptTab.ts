@@ -3,18 +3,25 @@
 // 시공 파이프는 아직 읽지 않는다 — 저작 면만.
 
 import { editorState } from "@/editor/editorState";
-import {
-  INTERIOR_OBJECT_CATALOG,
-  interiorObjectById,
-  type InteriorObjectDef,
-} from "@/editor/interiorObjectCatalog";
+import { interiorObjectById, type InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { interiorFurnitureKits, interiorObjectFromKit } from "@/editor/interiorRoomVocab";
+import {
+  claimThingPicture,
+  conceptObjectsForTileset,
+  isOwnedPicture,
+  registerStampOnTileset,
+  resolveConceptObject,
+} from "@/editor/panels/conceptStudioModel";
 import { field } from "@/editor/panels/databaseControls";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { emptyState } from "@/editor/panels/databaseWorkspace";
+import { openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
 import { interiorObjectCanvas } from "@/editor/panels/structureKitInspector";
+import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE } from "@/editor/panels/structureKitDbSources";
 import { getSelectedTilesetId, setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
+import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { TILE } from "@/project/defaults/constants";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
 import { store } from "@/project/store";
 import type {
@@ -35,6 +42,7 @@ interface ScratchSession {
   placeId: string | null;
   thingId: string | null;
   pickerOpen: boolean;
+  selectedTiles: number[];
 }
 
 const session: ScratchSession = {
@@ -44,6 +52,7 @@ const session: ScratchSession = {
   placeId: null,
   thingId: null,
   pickerOpen: false,
+  selectedTiles: [],
 };
 
 export function resetScratchConceptTabSession(): void {
@@ -53,6 +62,7 @@ export function resetScratchConceptTabSession(): void {
   session.placeId = null;
   session.thingId = null;
   session.pickerOpen = false;
+  session.selectedTiles = [];
 }
 
 export function renderScratchConceptTab(host: HTMLElement, rerender: () => void): void {
@@ -99,8 +109,8 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
         el("h3", { text: "개념 꾸러미", dataset: { testid: "scratch-concept-heading" } }),
         el("span", {
           class: "db-tab-note-chip",
-          children: [makeDatabaseTabIcon("scratchConcepts"), el("span", { text: "임시 · 타일셋별로 분리됨" })],
-          attrs: { title: "시공 파이프는 아직 이 나무를 읽지 않습니다." },
+          children: [makeDatabaseTabIcon("scratchConcepts"), el("span", { text: "임시 · 그림으로 고침" })],
+          attrs: { title: "타일셋 그림판에서 물건을 그리고, 카탈로그는 고치는 순간 내 것이 됩니다." },
         }),
       ],
     }),
@@ -115,6 +125,7 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
 
   const tableCol = el("div", { class: "scratch-concept-main" });
   workspace.append(tableCol);
+  if (activeTileset) tableCol.append(renderSheet(activeTileset, host, rerender));
 
   if (!activeTileset) {
     tableCol.append(emptyState({
@@ -171,6 +182,7 @@ function renderTilesetRail(
             session.placeId = null;
             session.thingId = null;
             session.pickerOpen = false;
+            session.selectedTiles = [];
             setSelectedTileset(tileset.id);
             refresh(host, rerender);
           },
@@ -276,6 +288,32 @@ function renderToolbar(
       }),
       field("시설 이름", name),
       el("button", {
+        class: "db-mini-btn primary",
+        attrs: { type: "button" },
+        dataset: { testid: "scratch-concept-thing-from-sheet" },
+        text: session.selectedTiles.length > 0
+          ? `고른 ${session.selectedTiles.length}칸으로 물건`
+          : "고른 칸으로 물건",
+        on: {
+          click: () => {
+            if (session.selectedTiles.length === 0) return;
+            const placeId = session.placeId ?? facility.placeIds[0];
+            if (!placeId) return;
+            const kit = registerStampOnTileset(
+              tileset.id,
+              session.selectedTiles,
+              session.selectedTiles.length === 1 ? "새 물건" : `새 물건 ${session.selectedTiles.length}칸`,
+            );
+            const created = addThingFromObject(tileset.id, bundle.id, placeId, interiorObjectFromKit(kit));
+            session.thingId = created.id;
+            session.placeId = placeId;
+            session.pickerOpen = false;
+            session.selectedTiles = [];
+            refresh(host, rerender);
+          },
+        },
+      }),
+      el("button", {
         class: "db-mini-btn",
         attrs: { type: "button" },
         dataset: { testid: "scratch-concept-place-add" },
@@ -351,10 +389,23 @@ function renderPlaceCard(
     }),
   );
 
+  const stage = el("div", {
+    class: "scratch-concept-stage",
+    dataset: { testid: `scratch-concept-stage-${place.id}` },
+    attrs: {
+      style: tilesetTileBackgroundStyle(
+        tileset,
+        tileset.id === INTERIOR_ROOM_TILESET_ID ? INTERIOR_OBJECT_THUMB_BACKGROUND_TILE : TILE.GRASS,
+        24,
+      ),
+    },
+  });
   const row = el("div", { class: "scratch-concept-things", dataset: { testid: `scratch-concept-things-${place.id}` } });
   for (const entry of things) {
     row.append(renderThingChip(tileset, entry, selectedThing?.id === entry.id, host, rerender));
   }
+  stage.append(row);
+  card.append(stage);
   row.append(
     el("button", {
       class: "scratch-concept-add-thing",
@@ -371,7 +422,6 @@ function renderPlaceCard(
       },
     }),
   );
-  card.append(row);
   return card;
 }
 
@@ -461,6 +511,7 @@ function renderThingInspector(
   rerender: () => void,
 ): HTMLElement {
   const object = resolveThingObject(tileset, thing.objectId);
+  const owned = isOwnedPicture(tileset, thing.objectId);
   const preview = object
     ? decorateThumb(interiorObjectCanvas(tileset, object, 5), "scratch-concept-preview")
     : el("span", { class: "scratch-concept-missing", text: "그림 없음" });
@@ -521,6 +572,27 @@ function renderThingInspector(
     children: [
       el("div", { class: "scratch-concept-inspector-title", text: thing.label }),
       el("div", { class: "scratch-concept-raster", children: [preview] }),
+      el("button", {
+        class: "db-mini-btn primary",
+        attrs: { type: "button" },
+        dataset: { testid: "scratch-concept-claim-art" },
+        text: owned ? "그림 고치기" : "이 그림으로 내 것 만들어 고치기",
+        on: {
+          click: () => {
+            const kitId = claimThingPicture(tileset.id, bundle.id, thing.id);
+            if (!kitId) return;
+            session.thingId = thing.id;
+            refresh(host, rerender);
+            openOwnedEditor(tileset.id, kitId, () => refresh(host, rerender));
+          },
+        },
+      }),
+      el("p", {
+        class: "scratch-concept-quiet",
+        text: owned
+          ? "이 타일셋에 저장된 그림입니다. 고치면 구조물 편집기가 열립니다."
+          : "카탈로그·내장 그림입니다. 고치는 순간 이 타일셋의 내 구조물이 됩니다.",
+      }),
       field("이름", name),
       el("p", {
         class: "scratch-concept-line",
@@ -579,16 +651,73 @@ function oneLine(bundle: ConceptBundleRecord, thing: ConceptThingRecord): string
 }
 
 export function resolveThingObject(tileset: TilesetDef, objectId: string): InteriorObjectDef | undefined {
-  const kit = interiorFurnitureKits(tileset).find((entry) => entry.id === objectId);
+  const kit = (tileset.structureKits ?? []).find((entry) => entry.id === objectId)
+    ?? interiorFurnitureKits(tileset).find((entry) => entry.id === objectId);
   if (kit) return interiorObjectFromKit(kit);
-  return interiorObjectById(objectId);
+  return resolveConceptObject(tileset, objectId) ?? interiorObjectById(objectId);
 }
 
 export function objectsForTileset(tileset: TilesetDef): readonly InteriorObjectDef[] {
-  const kits = interiorFurnitureKits(tileset).map(interiorObjectFromKit);
-  if (kits.length > 0) return kits;
-  if (tileset.id === INTERIOR_ROOM_TILESET_ID) return INTERIOR_OBJECT_CATALOG;
-  return [];
+  return conceptObjectsForTileset(tileset);
+}
+
+function renderSheet(tileset: TilesetDef, host: HTMLElement, rerender: () => void): HTMLElement {
+  const selected = new Set(session.selectedTiles);
+  const sheet = el("section", {
+    class: "scratch-concept-sheet",
+    dataset: { testid: "scratch-concept-sheet" },
+  });
+  sheet.append(
+    el("header", {
+      class: "scratch-concept-sheet-head",
+      children: [
+        el("strong", { text: "타일셋 그림판" }),
+        el("span", {
+          class: "scratch-concept-quiet",
+          text: selected.size > 0
+            ? `${selected.size}칸 고름 · 장소의 「고른 칸으로 물건」`
+            : "칸을 눌러 고르고, 그 그림으로 물건을 만듭니다.",
+        }),
+      ],
+    }),
+  );
+  const grid = el("div", {
+    class: "scratch-concept-sheet-grid",
+    attrs: { style: `--sheet-cols:${tileset.tilesPerRow}` },
+  });
+  const count = Math.max(0, tileset.count);
+  for (let tile = 0; tile < count; tile += 1) {
+    const on = selected.has(tile);
+    grid.append(
+      el("button", {
+        class: `scratch-concept-sheet-tile${on ? " on" : ""}`,
+        attrs: {
+          type: "button",
+          title: `#${tile}`,
+          style: tilesetTileBackgroundStyle(tileset, tile, 24),
+        },
+        dataset: { testid: `scratch-concept-sheet-tile-${tile}` },
+        on: {
+          click: () => {
+            session.selectedTiles = on
+              ? session.selectedTiles.filter((entry) => entry !== tile)
+              : [...session.selectedTiles, tile];
+            refresh(host, rerender);
+          },
+        },
+      }),
+    );
+  }
+  sheet.append(grid);
+  return sheet;
+}
+
+function openOwnedEditor(tilesetId: string, kitId: string, onClosed: () => void): void {
+  try {
+    openStructureKitEditor(tilesetId, kitId, onClosed);
+  } catch {
+    onClosed();
+  }
 }
 
 function ensureScratchBundles(tileset: TilesetDef): TilesetDef {

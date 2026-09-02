@@ -10,6 +10,13 @@
   white-space: nowrap;
 }
 
+.scratch-concept-workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .scratch-concept-main {
   flex: 1;
   min-width: 0;
@@ -18,6 +25,62 @@
   flex-direction: column;
   gap: 12px;
   padding: 12px;
+}
+
+.scratch-concept-sheet {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 12px;
+  background: var(--db-studio-inset);
+}
+
+.scratch-concept-sheet-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+}
+
+.scratch-concept-sheet-head strong {
+  font-size: 13px;
+}
+
+.scratch-concept-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--sheet-cols, 30), 24px);
+  gap: 0;
+  max-height: 216px;
+  overflow: auto;
+  image-rendering: pixelated;
+  background: #1a1814;
+}
+
+.scratch-concept-sheet-tile {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  cursor: pointer;
+}
+
+.scratch-concept-sheet-tile.on {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.scratch-concept-stage {
+  background-repeat: repeat;
+  image-rendering: pixelated;
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 88px;
 }
 
 .scratch-concept-board {
@@ -145,8 +208,14 @@
   color: var(--db-studio-text-3);
 }
 
+.db-mini-btn.primary {
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-text-1);
+  background: color-mix(in srgb, var(--db-studio-accent) 16%, transparent);
+}
+
 .scratch-concept-inspector {
-  width: 280px;
+  width: 300px;
   flex: none;
   min-width: 0;
   overflow: auto;

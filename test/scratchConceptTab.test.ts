@@ -115,6 +115,55 @@ describe("scratchConceptTab 편집", () => {
   });
 });
 
+describe("scratchConceptTab 스튜디오", () => {
+  it("타일셋 그림판이 보이고 칸을 고를 수 있다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    expect(host.querySelector("[data-testid='scratch-concept-sheet']")).not.toBeNull();
+    const cell = host.querySelector("[data-testid='scratch-concept-sheet-tile-222']");
+    expect(cell).not.toBeNull();
+    cell!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-sheet-tile-222']")?.className).toContain("on");
+  });
+
+  it("장소 카드에 그림 무대가 있다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    expect(host.querySelector("[data-testid='scratch-concept-stage-bedroom']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='scratch-concept-stage-bedroom'] canvas, [data-testid='scratch-concept-stage-bedroom'] .scratch-concept-thumb")).not.toBeNull();
+  });
+
+  it("고른 칸으로 물건을 만들면 그 타일셋에 내 그림이 생긴다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-sheet-tile-222']")!.click();
+    host.querySelector("[data-testid='scratch-concept-thing-from-sheet']")!.click();
+    const tileset = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!;
+    const stamp = tileset.scratchConceptBundles![0]!.things.find((thing) => thing.objectId.startsWith("kit_"));
+    expect(stamp).toBeTruthy();
+    expect(tileset.structureKits?.some((kit) => kit.id === stamp?.objectId)).toBe(true);
+  });
+
+  it("그림 고치기는 카탈로그 침대를 내 킷으로 옮긴다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-bed_h']")!.click();
+    host.querySelector("[data-testid='scratch-concept-claim-art']")!.click();
+    const tileset = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!;
+    const thing = tileset.scratchConceptBundles![0]!.things.find((entry) => entry.id === "bed_h");
+    expect(thing?.objectId).toMatch(/^kit_/);
+    expect(tileset.structureKits?.some((kit) => kit.id === thing?.objectId)).toBe(true);
+  });
+
+  it("마을 칩셋 피커에 내장 집 그림이 있다", () => {
+    store.update((project) => {
+      const tileset = project.tilesets[DEFAULT_TILESET_ID];
+      if (tileset) tileset.scratchConceptBundles = [];
+    });
+    const host = renderOnTileset(DEFAULT_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-empty-add']")!.click();
+    const placeId = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.scratchConceptBundles![0]!.places[0]!.id;
+    host.querySelector(`[data-testid='scratch-concept-thing-add-${placeId}']`)!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-picker']")?.textContent).toMatch(/집|오두막|통나무/);
+  });
+});
+
 describe("scratchConceptBundles 스키마", () => {
   it("여관 초안은 타일셋 검증을 통과하고 모르는 칩은 거절한다", () => {
     const tileset = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!;
