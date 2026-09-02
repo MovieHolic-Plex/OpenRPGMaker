@@ -875,7 +875,7 @@ export function applyInteriorRoomLayer(
       warnings.push(...enforceWalkability(next, floor, plan.door));
       if (plan.concept) {
         // 칩 집행: 물건이 놓인 자리에 이벤트(수면·조사·노획·연결). 통행 확보로 치워진 물건은 받지 않는다.
-        warnings.push(...attachConceptEvents(next, placements, { door: plan.door }).warnings);
+        warnings.push(...attachConceptEvents(next, placements, { door: plan.door, facilityLabel: plan.concept.facilityLabel }).warnings);
       } else {
         // 사분면 공백 보정 — 통행이 확보된 상태에서 공백 사분면에 벽 스냅 소품(놓고-검증-되돌리기).
         // 개념 시설은 나무에 없는 가구를 보태지 않는다.
@@ -1116,6 +1116,7 @@ function paintRoomSpace(
         things: conceptRoom.things,
         resolveObject: (objectId) => currentInteriorVocab().objectsById.get(objectId) ?? interiorObjectById(objectId),
         isFloorTile: (tile) => FLOOR_MATERIAL_TILES.has(tile),
+        entrySentinel: ENTRY_SENTINEL,
       });
       sink?.push(...composed.placements);
       conceptWarnings = [...composed.warnings];

@@ -4,17 +4,19 @@
 // 도면(layoutConceptFacility)은 장소의 역할(entrance·walkway·room)·크기·개수만 읽는다.
 // 남→북으로 홀(정문) → 복도 → 방들이 서고, 파티션은 파이프라인 벽 문법(가로 인접 1열·세로 인접 3행)을 따른다.
 // 이 모듈은 interiorRoomPipeline 을 import 하지 않는다(순환). 실내 칩셋 id 는 문자열로 둔다.
+import { CONCEPT_FACILITY_TEMPLATES, cloneConceptFacilityTemplates } from "@/project/defaults/conceptFacilityTemplates";
 import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
-import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
 import {
   CONCEPT_PLACE_COUNT_MAX,
   type ConceptBundleRecord,
   type ConceptChipId,
   type ConceptFacilityRecord,
+  type ConceptFloorMaterial,
   type ConceptPlaceRecord,
   type ConceptPlaceRole,
   type ConceptPlaceSize,
   type ConceptThingRecord,
+  type ConceptWallMaterial,
 } from "@/project/types/conceptBundle";
 import type { Project } from "@/project/types";
 
@@ -40,6 +42,8 @@ export type ConceptLayoutRoom = {
   readonly w: number;
   readonly h: number;
   readonly theme: string;
+  /** 장소 바닥 재질의 하부 타일. 나무(기본)면 생략 — 파이프라인이 72 로 채운다. */
+  readonly floorTile?: number;
 };
 
 export type ConceptRoomLayout = {
@@ -48,6 +52,8 @@ export type ConceptRoomLayout = {
   readonly door: { readonly x: number; readonly y: number };
   readonly rooms: readonly ConceptLayoutRoom[];
   readonly innerDoors: readonly { readonly x: number; readonly y: number }[];
+  /** 시설 벽면 재질. 크림(기본)이면 생략. */
+  readonly wallMaterial?: ConceptWallMaterial;
 };
 
 export type ConceptOverlayThing = {
@@ -73,13 +79,13 @@ export type ConceptOverlay = {
   readonly rooms: Readonly<Record<string, ConceptOverlayRoom>>;
 };
 
-/** 실내 칩셋에 꾸러미가 아직 없으면 여관 초안을 얹는다. 빈 배열은 건드리지 않는다. */
+/** 실내 칩셋에 꾸러미가 아직 없으면 시설 초안 묶음(여관·민가·상점…)을 얹는다. 빈 배열은 건드리지 않는다. */
 export function ensureConceptBundles(project: Project, tilesetId = INTERIOR_TILESET_ID): void {
   const tileset = project.tilesets[tilesetId];
   if (!tileset) return;
   if (tileset.scratchConceptBundles !== undefined) return;
   if (tilesetId !== INTERIOR_TILESET_ID) return;
-  tileset.scratchConceptBundles = [cloneConceptBundle(SCRATCH_INN_BUNDLE)];
+  tileset.scratchConceptBundles = cloneConceptFacilityTemplates();
 }
 
 export function listLiveConceptBundles(project: Project): readonly {
@@ -100,8 +106,22 @@ export function liveBundlesForTileset(project: Project, tilesetId: string): read
   const tileset = project.tilesets[tilesetId];
   if (!tileset) return [];
   if (tileset.scratchConceptBundles !== undefined) return tileset.scratchConceptBundles;
-  if (tilesetId === INTERIOR_TILESET_ID) return [SCRATCH_INN_BUNDLE];
+  if (tilesetId === INTERIOR_TILESET_ID) return CONCEPT_FACILITY_TEMPLATES;
   return [];
+}
+
+/** 지금 프로젝트에서 부를 수 있는 시설명 — 툴 오류 문구·프롬프트용. */
+export function listLiveConceptFacilityLabels(project: Project, tilesetId?: string): readonly string[] {
+  const entries = tilesetId
+    ? [{ bundles: liveBundlesForTileset(project, tilesetId) }]
+    : listLiveConceptBundles(project);
+  const labels: string[] = [];
+  for (const entry of entries) {
+    for (const bundle of entry.bundles) {
+      for (const facility of bundle.facilities) if (!labels.includes(facility.label)) labels.push(facility.label);
+    }
+  }
+  return labels;
 }
 
 export function resolveConceptFacility(
@@ -148,6 +168,31 @@ export function conceptPlaceCount(place: ConceptPlaceRecord): number {
   return Math.min(CONCEPT_PLACE_COUNT_MAX, Math.max(1, Math.floor(raw)));
 }
 
+export function conceptPlaceFloor(place: ConceptPlaceRecord): ConceptFloorMaterial {
+  return place.floor ?? "wood";
+}
+
+export function conceptFacilityWall(facility: ConceptFacilityRecord): ConceptWallMaterial {
+  return facility.wall ?? "cream";
+}
+
+/**
+ * 바닥 재질 → 실내 칩셋 하부 타일. 파이프라인 FLOOR_MATERIAL_TILES(돌 12 · 나무 72 · 널 102 · 짚 돗자리 139)와 같은 값.
+ * 이 모듈은 파이프라인을 import 하지 않으므로 번호를 여기 둔다.
+ */
+export const CONCEPT_FLOOR_TILES: Readonly<Record<ConceptFloorMaterial, number>> = {
+  wood: 72,
+  stone: 12,
+  plank: 102,
+  mat: 139,
+};
+
+/** 장소의 바닥 타일. 나무(기본)는 undefined — 파이프라인 기본값과 같아 리틴트가 없다. */
+export function conceptPlaceFloorTile(place: ConceptPlaceRecord): number | undefined {
+  const material = conceptPlaceFloor(place);
+  return material === "wood" ? undefined : CONCEPT_FLOOR_TILES[material];
+}
+
 export function conceptOverlayFor(
   bundle: ConceptBundleRecord,
   facility: ConceptFacilityRecord,
@@ -189,6 +234,8 @@ const V_GAP = 3;
 /** 가로 인접 방 사이 파티션(천장 1열). */
 const H_GAP = 1;
 const MIN_BAND_W = 8;
+/** 방 줄이 홀 바로 위일 때 홀을 좌우로 넓히는 열 수. */
+const BAND_SPREAD = 1;
 
 type PlaceInstance = { readonly place: ConceptPlaceRecord; readonly role: ConceptPlaceRole; readonly id: string };
 
@@ -222,7 +269,10 @@ export function layoutConceptFacility(
   const rowH = rowBoxes.length > 0 ? Math.max(...rowBoxes.map((box) => box.h)) : 0;
   const rowW = rowBoxes.reduce((sum, box) => sum + box.w, 0) + Math.max(0, rowBoxes.length - 1) * H_GAP;
   const bandOwnW = doorBand ? ROOM_FOOTPRINT[conceptPlaceSize(doorBand.place)].w : 0;
-  const bandW = Math.max(rowW, bandOwnW, rowBoxes.length > 0 || host ? MIN_BAND_W : 0);
+  // 복도 없이 방 둘 이상이 홀 바로 위에 서면 홀을 양쪽 1열씩 넓힌다 — 방문 착지 열이 홀 북벽을 2칸 조각으로 쪼개
+  // 카운터·피아노 같은 3칸 가구가 설 자리가 없어진다(2026-09-02 술집·민가 초안 실측).
+  const spread = !walkway && doorBand && rowInstances.length >= 2 ? BAND_SPREAD : 0;
+  const bandW = Math.max(rowW + spread * 2, bandOwnW, rowBoxes.length > 0 || host ? MIN_BAND_W : 0);
 
   const rooms: ConceptLayoutRoom[] = [];
   const innerDoors: { x: number; y: number }[] = [];
@@ -233,6 +283,7 @@ export function layoutConceptFacility(
     let x = MARGIN_X + Math.floor((bandW - rowW) / 2);
     rowInstances.forEach((entry, index) => {
       const box = rowBoxes[index]!;
+      const floorTile = conceptPlaceFloorTile(entry.place);
       rooms.push({
         id: entry.id,
         placeId: entry.place.id,
@@ -242,6 +293,7 @@ export function layoutConceptFacility(
         w: box.w,
         h: rowH,
         theme: roomTheme(entry.place.id, entry.role),
+        ...(floorTile !== undefined ? { floorTile } : {}),
       });
       x += box.w + H_GAP;
     });
@@ -256,6 +308,7 @@ export function layoutConceptFacility(
       for (const room of above) innerDoors.push({ x: room.x + Math.floor(room.w / 2), y: cursorY });
       cursorY += V_GAP;
     }
+    const floorTile = conceptPlaceFloorTile(entry.place);
     const band: ConceptLayoutRoom = {
       id: entry.id,
       placeId: entry.place.id,
@@ -265,6 +318,7 @@ export function layoutConceptFacility(
       w: bandW,
       h,
       theme: roomTheme(entry.place.id, entry.role),
+      ...(floorTile !== undefined ? { floorTile } : {}),
     };
     rooms.push(band);
     cursorY += h;
@@ -287,7 +341,15 @@ export function layoutConceptFacility(
   const right = Math.max(...rooms.map((room) => room.x + room.w));
   const width = right + MARGIN_X;
   const height = door.y + 4;
-  return { width, height, door, rooms, innerDoors };
+  const wallMaterial = conceptFacilityWall(facility);
+  return {
+    width,
+    height,
+    door,
+    rooms,
+    innerDoors,
+    ...(wallMaterial !== "cream" ? { wallMaterial } : {}),
+  };
 }
 
 function isWalkway(place: ConceptPlaceRecord): boolean {

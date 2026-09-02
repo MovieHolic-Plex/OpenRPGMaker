@@ -90,6 +90,18 @@ const RUG_TEAL_ROWS: readonly (readonly number[])[] = [
   [309, 310, 311],
   [339, 340, 341],
 ];
+// 3×3 붉은 카펫(파이프라인 RUG_RED) — 귀족 저택·예배당용.
+const RUG_RED_ROWS: readonly (readonly number[])[] = [
+  [375, 376, 377],
+  [405, 406, 407],
+  [435, 436, 437],
+];
+// 3×3 짚 돗자리(파이프라인 RUG_MAT) — 서민 식당·침상용.
+const RUG_MAT_ROWS: readonly (readonly number[])[] = [
+  [108, 109, 110],
+  [138, 139, 140],
+  [168, 169, 170],
+];
 
 export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
   def("bed_h", "침대(가로)", [[VR.BED_L, VR.BED_R]], "upper", ["bedroom"], "wall-north", "bed"),
@@ -154,6 +166,18 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
   def("stairs", "가로 계단", [[VR.STAIRS_L, VR.STAIRS_M, VR.STAIRS_R]], "lower", ["corridor", "tavern"], "free"),
   def("tavern_sign", "선술집 간판", [[VR.TAVERN_SIGN]], "lower", ["tavern"], "wall-any"),
   def("ladder", "사다리", [[VR.LADDER]], "lower", ["storage"], "wall-any"),
+  // 2026-09-02 개념 꾸러미 시설 다양화 — 파이프라인 어휘(wallFace·corner·openFloor)에 이미 있던 소품을 오브젝트로 올린다.
+  // 벽걸이는 벽면 윗줄에 상위 레이어로 얹히고(placeWallMount 정본), 1×1 바닥 소품은 구석·둘레에 선다.
+  def("religious", "성상", [[VR.RELIGIOUS]], "upper", ["study", "dining", "bedroom", "corridor"], "wall-any"),
+  def("fruit_shelf", "과일 선반", [[VR.FRUIT_SHELF]], "upper", ["kitchen", "dining", "tavern"], "wall-any"),
+  def("shelf_jars", "항아리 선반", [[VR.SHELF_JARS]], "upper", ["kitchen", "storage", "tavern"], "wall-any"),
+  def("grain", "곡물 자루", [[VR.GRAIN]], "upper", ["storage", "kitchen"], "floor"),
+  def("box", "잡화 상자", [[VR.BOX]], "upper", ["storage", "bedroom", "study", "dining"], "floor"),
+  def("bucket", "물통", [[VR.BUCKET]], "upper", ["kitchen", "storage"], "floor"),
+  def("kettle", "주전자", [[VR.KETTLE]], "upper", ["kitchen", "tavern"], "floor"),
+  def("stool", "스툴", [[VR.STOOL]], "upper", ["tavern", "kitchen", "dining"], "floor"),
+  def("rug_red", "붉은 카펫", RUG_RED_ROWS, "lower", ["dining", "tavern", "study", "corridor"], "floor"),
+  def("rug_mat", "짚 돗자리", RUG_MAT_ROWS, "lower", ["bedroom", "kitchen", "storage", "dining"], "floor"),
 ] as const;
 
 const BY_ID = new Map<string, InteriorObjectDef>(INTERIOR_OBJECT_CATALOG.map((entry) => [entry.id, entry]));
