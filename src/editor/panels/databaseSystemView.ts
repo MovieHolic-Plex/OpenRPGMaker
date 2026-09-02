@@ -86,7 +86,39 @@ const PLAY_RESOLUTION_PRESETS = ["320x240", "426x240", "640x360", "640x480", "cu
 type PlayResolutionPreset = (typeof PLAY_RESOLUTION_PRESETS)[number];
 
 /** 시스템 탭 좌측 섹션 내비 슬러그 — SYSTEM_SECTION_ORDER 순서가 곧 내비 순서. */
-type SystemSectionSlug = "overview" | "party" | "display" | "font" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+export type SystemSectionSlug =
+  | "overview"
+  | "party"
+  | "display"
+  | "font"
+  | "resources"
+  | "startup"
+  | "optin"
+  | "time"
+  | "typechart"
+  | "title";
+
+type RequestedSystemSection = {
+  readonly slug: SystemSectionSlug;
+  readonly focusTestId?: string;
+};
+
+let requestedSystemSection: RequestedSystemSection | undefined;
+
+/** 다른 탭의 준비 칩이 시스템 탭을 열 때, 개요가 아니라 해당 섹션으로 착지시킨다. */
+export function requestSystemSection(slug: SystemSectionSlug, focusTestId?: string): void {
+  requestedSystemSection = { slug, focusTestId };
+}
+
+export function resetRequestedSystemSection(): void {
+  requestedSystemSection = undefined;
+}
+
+function consumeRequestedSystemSection(): RequestedSystemSection | undefined {
+  const requested = requestedSystemSection;
+  requestedSystemSection = undefined;
+  return requested;
+}
 
 const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonly label: string }[] = [
   { slug: "overview", label: "개요" },
@@ -110,7 +142,9 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
   // 섹션 전환은 로컬 상태(host.dataset)만 갱신한다 — store.update/스냅샷을 건드리지 않아
   // undo 이력이 오염되지 않는다. 전체 재렌더(updateSystem 경로)에서도 host 는 유지되므로
   // 활성 섹션이 초기 파티로 되돌아가지 않는다.
-  const activeSlug = readActiveSystemSection(host);
+  const requested = consumeRequestedSystemSection();
+  if (requested) host.dataset.dbSystemSection = requested.slug;
+  const activeSlug = requested?.slug ?? readActiveSystemSection(host);
   const sections = systemSectionNodes(project, titleScreen, titleBackgroundResourceId, rerender, activeSlug);
   const sectionHost = el("div", { class: "db-system-sections", dataset: { testid: "db-system-sections" } });
   for (const { slug } of SYSTEM_SECTION_ORDER) sectionHost.append(sections[slug]);
@@ -119,11 +153,19 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
   form.append(nav, sectionHost);
   wireSystemStudioOverview(form);
   host.append(el("h3", { text: "시스템" }), form);
+  if (requested?.focusTestId) focusSystemField(form, requested.focusTestId);
 }
 
 function readActiveSystemSection(host: HTMLElement): SystemSectionSlug {
   const stored = host.dataset.dbSystemSection;
   return SYSTEM_SECTION_ORDER.some((section) => section.slug === stored) ? (stored as SystemSectionSlug) : "overview";
+}
+
+function focusSystemField(root: HTMLElement, testid: string): void {
+  const field = root.querySelector(`[data-testid="${testid}"]`);
+  if (!(field instanceof HTMLElement)) return;
+  if (typeof field.focus === "function") field.focus();
+  if (typeof field.scrollIntoView === "function") field.scrollIntoView({ block: "nearest" });
 }
 
 function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sectionHost: HTMLElement): HTMLElement {

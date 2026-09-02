@@ -1,3 +1,4 @@
+import { requestSystemSection, type SystemSectionSlug } from "@/editor/panels/databaseSystemView";
 import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 import { el } from "@/util/dom";
 
@@ -128,26 +129,40 @@ function actionIcon(): SVGSVGElement {
 
 function renderLifeCard(card: LifeCard): HTMLElement {
   const state = card.state ?? "info";
+  // action 만 있고 onClick 이 없으면 칩 전체가 그 이동을 담당한다.
+  // 화살표를 버튼으로 남기면 button 안에 button 이 되어, 본문 클릭이 죽은 것처럼 보인다.
+  const clickHandler = card.onClick ?? card.action?.onClick;
   const children = [
     lifeCardIcon(card.icon),
     el("span", { class: "db-life-card-label", text: card.label }),
     el("strong", { class: "db-life-card-value", text: card.value }),
-    ...(card.action ? [el("button", {
+    ...(card.action ? [el("span", {
       class: "db-life-card-action",
-      attrs: { type: "button", title: card.action.label, "aria-label": card.action.label },
+      attrs: {
+        title: card.action.label,
+        "aria-hidden": "true",
+      },
       dataset: { testid: card.action.testid },
-      on: { click: card.action.onClick },
+      // fakeDom 의 element.click() 은 bubble 하지 않는다. e2e/유닛이 action testid 를
+      // 눌러도 같은 이동이 일어나게 화살표에도 핸들러를 둔다.
+      ...(clickHandler ? { on: { click: (event: Event) => {
+        event.stopPropagation();
+        clickHandler(event);
+      } } } : {}),
       children: [actionIcon()],
     })] : []),
   ];
   const common = {
-    class: `db-life-card is-${state}${card.onClick ? " is-clickable" : ""}`,
-    attrs: { title: card.detail, ...(card.onClick ? { type: "button" } : {}) },
+    class: `db-life-card is-${state}${clickHandler ? " is-clickable" : ""}`,
+    attrs: {
+      title: card.detail,
+      ...(clickHandler ? { type: "button", "aria-label": card.action?.label ?? card.detail } : {}),
+    },
     dataset: { testid: card.testid, state, ...(card.data ?? {}) },
-    ...(card.onClick ? { on: { click: card.onClick } } : {}),
+    ...(clickHandler ? { on: { click: clickHandler } } : {}),
     children,
   };
-  return card.onClick ? el("button", common) : el("article", common);
+  return clickHandler ? el("button", common) : el("article", common);
 }
 
 export function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
@@ -162,10 +177,15 @@ export function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | n
   return null;
 }
 
-export function clickDatabaseTabFrom(node: HTMLElement | null, testid: string): boolean {
+export function clickDatabaseTabFrom(
+  node: HTMLElement | null,
+  testid: string,
+  options?: { readonly systemSection?: SystemSectionSlug; readonly focusTestId?: string },
+): boolean {
   const panelRoot = databasePanelRootFrom(node);
   const tab = panelRoot?.querySelector(`[data-testid="${testid}"]`);
   if (!(tab instanceof HTMLElement)) return false;
+  if (options?.systemSection) requestSystemSection(options.systemSection, options.focusTestId);
   tab.click();
   return true;
 }

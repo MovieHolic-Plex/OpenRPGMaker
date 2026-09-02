@@ -154,8 +154,11 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
   const orphans = entries.filter((entry) => !entry.hasProfile && entry.usageCount > 0);
   const unused = entries.filter((entry) => entry.hasProfile && entry.usageCount === 0);
   const issueCount = orphans.length + unused.length;
-  const openSystem = (event: Event): void => {
-    if (!clickDatabaseTabFrom(event.currentTarget as HTMLElement | null, "db-tab-system")) {
+  const openSystem = (event: Event, section: "startup" | "time", focusTestId: string): void => {
+    if (!clickDatabaseTabFrom(event.currentTarget as HTMLElement | null, "db-tab-system", {
+      systemSection: section,
+      focusTestId,
+    })) {
       toast("데이터베이스의 시스템 탭을 열어 주세요.", "info");
     }
   };
@@ -178,7 +181,7 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
             action: {
               label: "시스템 열기",
               testid: "db-character-readiness-gifts-action",
-              onClick: openSystem,
+              onClick: (event) => openSystem(event, "startup", "db-field-system-gift-system"),
             },
           },
           {
@@ -191,7 +194,7 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
             action: {
               label: "시간 설정 열기",
               testid: "db-character-readiness-calendar-action",
-              onClick: openSystem,
+              onClick: (event) => openSystem(event, "time", "db-field-system-time-enabled"),
             },
           },
           {
@@ -202,6 +205,18 @@ function characterLifeHeader(project: Project, entries: readonly CharacterIdInde
             detail: `${linkedCount}명이 맵 이벤트에 연결됨`,
             state: profileCount > 0 ? "ready" : "needs-setup",
             data: { profiles: String(profileCount), linked: String(linkedCount) },
+            action: {
+              label: profileCount > 0 ? "첫 프로필 열기" : "프로필 추가",
+              testid: "db-character-readiness-profiles-action",
+              onClick: () => {
+                if (profileCount === 0) {
+                  addProfile(rerender);
+                  return;
+                }
+                selectedCharacterId = entries.find((entry) => entry.hasProfile)?.characterId ?? entries[0]?.characterId;
+                rerender();
+              },
+            },
           },
           {
             testid: "db-character-readiness-issues",
@@ -442,6 +457,15 @@ function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
         value: profile.birthday ? `${profile.birthday.season} ${profile.birthday.day}일` : "미설정",
         detail: profile.birthday ? "생일 선물 보너스에 사용" : "원하면 계절과 날짜를 지정하세요.",
         data: { enabled: String(profile.birthday !== undefined) },
+        ...(profile.birthday ? {} : {
+          onClick: (event: Event) => {
+            const root = (event.currentTarget as HTMLElement | null)?.closest("[data-testid='db-characters-workspace']");
+            const birthday = root?.querySelector("[data-testid='db-character-birthday']");
+            if (birthday instanceof HTMLElement && typeof birthday.scrollIntoView === "function") {
+              birthday.scrollIntoView({ block: "nearest" });
+            }
+          },
+        }),
       },
       {
         testid: "db-character-overview-responses",
