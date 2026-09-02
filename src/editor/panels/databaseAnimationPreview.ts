@@ -1,6 +1,7 @@
 import { batchApplyCells, interpolateCells, type AnimationCellBatchPatch } from "@/editor/databaseAnimationCellOps";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import type { BattleAnimationCell, BattleAnimationFrame, BattleAnimationRecord, BattleAnimationSheet, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -143,7 +144,10 @@ function openCellBatchDialog(cells: readonly BattleAnimationCell[], onApply: (pa
   const x = el("input", { attrs: { type: "number", min: "-999", max: "999" }, value: sample.x, dataset: { testid: "db-animation-batch-x" } }) as HTMLInputElement;
   const y = el("input", { attrs: { type: "number", min: "-999", max: "999" }, value: sample.y, dataset: { testid: "db-animation-batch-y" } }) as HTMLInputElement;
   const backdrop = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid: "db-animation-cell-batch-dialog" } });
-  const close = (): void => backdrop.remove();
+  const close = (): void => {
+    unregisterModal(backdrop);
+    backdrop.remove();
+  };
   backdrop.append(
     el("div", {
       class: "db-enemy-dialog",
@@ -192,6 +196,7 @@ function openCellBatchDialog(cells: readonly BattleAnimationCell[], onApply: (pa
     }),
   );
   document.body.append(backdrop);
+  registerModal(backdrop, close);
 }
 
 function fieldRow(label: string, input: HTMLElement): HTMLElement {

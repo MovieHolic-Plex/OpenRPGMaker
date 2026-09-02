@@ -276,6 +276,11 @@ export class FakeElement extends FakeNode {
     this.selectionEnd = end;
   }
 
+  /** <input>.select() — 값 전체 선택. 텍스트 렌더가 없으니 범위만 남긴다. */
+  select(): void {
+    this.setSelectionRange(0, this.value.length);
+  }
+
   closest(selector: string): FakeElement | null {
     let current: FakeElement | null = this;
     while (current) {

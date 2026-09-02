@@ -2,6 +2,7 @@
 // 조수 스킬 섹션은 스킬 기능 제거와 함께 사라졌다. 셸 클래스는 command-palette-* 로 자립한다
 // (구 스킬 팔레트 클래스 ai-skill-palette-* 는 스타일 파일과 함께 삭제됨).
 import { listEditorCommands, listMapCommands, matchEditorCommands, type EditorCommand } from "@/editor/commandRegistry";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
@@ -76,7 +77,10 @@ export function openCommandPalette(): HTMLElement {
 
   let entries: readonly PaletteEntry[] = [];
   let activeIndex = 0;
-  const close = (): void => backdrop.remove();
+  const close = (): void => {
+    unregisterModal(backdrop);
+    backdrop.remove();
+  };
   const runEntry = (entry: PaletteEntry): void => {
     close();
     entry.run();
@@ -115,7 +119,7 @@ export function openCommandPalette(): HTMLElement {
 
   search.addEventListener("input", () => { activeIndex = 0; refresh(); });
   search.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") { close(); return; }
+    // Escape 는 공용 모달 스택이 라우팅한다(아래 registerModal).
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       activeIndex = movePaletteIndex(entries.length, activeIndex, event.key === "ArrowDown" ? 1 : -1);
@@ -133,6 +137,7 @@ export function openCommandPalette(): HTMLElement {
 
   refresh();
   document.body.append(backdrop);
+  registerModal(backdrop, close);
   search.focus();
   return backdrop;
 }

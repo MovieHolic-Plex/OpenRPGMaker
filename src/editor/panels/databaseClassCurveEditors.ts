@@ -1,5 +1,6 @@
 import { ACTOR_PARAMETER_KEYS, parameterValueAtLevel } from "@/project/actorModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { ActorParameterKey, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -39,7 +40,10 @@ function openClassParameterDialog(record: ClassRecord, initialKey: ActorParamete
   // 다이얼로그 안의 편집은 store 가 아니라 draft(사본)에 쌓는다 — "취소"가 진짜 취소가
   // 되도록(P7). OK/적용을 눌러야만 store 에 커밋된다.
   let draft = cloneParameterCurves(currentClassParameterCurves(record));
-  const close = (): void => backdrop.remove();
+  const close = (): void => {
+    unregisterModal(backdrop);
+    backdrop.remove();
+  };
   const levelInput = dialogNumberInput("db-class-parameter-level", activeLevel, 1, 99);
   const valueInput = dialogNumberInput("db-class-parameter-value", parameterValueAtLevel(draft[activeKey], activeLevel), 1, 99999);
   const valueLabel = el("span", { text: PARAMETER_LABELS[activeKey] });
@@ -138,6 +142,7 @@ function openClassParameterDialog(record: ClassRecord, initialKey: ActorParamete
   renderTabs();
   renderGraph();
   document.body.append(backdrop);
+  registerModal(backdrop, close);
 }
 
 type ClassCurvePreset = "genius" | "superior" | "standard" | "inferior";

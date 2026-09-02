@@ -1,3 +1,4 @@
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { totalExpForLevel } from "@/project/actorModel";
 import type { ActorExperienceCurve } from "@/project/types";
 import { el } from "@/util/dom";
@@ -36,7 +37,10 @@ export function renderExperienceCurvePanel(options: ExperienceCurvePanelOptions,
 }
 
 function openExperienceCurveDialog(options: ExperienceCurvePanelOptions): void {
-  const close = (): void => backdrop.remove();
+  const close = (): void => {
+    unregisterModal(backdrop);
+    backdrop.remove();
+  };
   const prefix = options.testidPrefix;
   // 다이얼로그 안의 편집은 draft 에만 쌓는다 — "취소"가 진짜 취소가 되도록(P7).
   let draft: ActorExperienceCurve = { ...options.readCurve() };
@@ -124,6 +128,7 @@ function openExperienceCurveDialog(options: ExperienceCurvePanelOptions): void {
   }));
   renderExp();
   document.body.append(backdrop);
+  registerModal(backdrop, close);
 }
 
 function curveHeight(value: number, values: readonly number[]): number {

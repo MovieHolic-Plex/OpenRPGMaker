@@ -3,6 +3,7 @@
 // 에디터 전체를 설명하는 인앱 위키: 개요, 화면 구성, 지도/이벤트/데이터베이스/소재/오디오/
 // 시연 실행/저장 공유, 마지막에 단축키 요약. 왼쪽 목차에서 섹션으로 바로 이동한다.
 import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 
 type ShortcutEntry = {
@@ -366,20 +367,18 @@ export function openHelpModal(): void {
 
   function close(): void {
     observer.disconnect();
+    unregisterModal(backdrop);
     backdrop.remove();
-    document.removeEventListener("keydown", onKeyDown);
-  }
-
-  function onKeyDown(event: KeyboardEvent): void {
-    if (event.key === "Escape") close();
   }
 
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
-  document.addEventListener("keydown", onKeyDown);
   document.body.append(backdrop);
+  // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
+  // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
+  registerModal(backdrop, close);
   closeAction.focus();
 }
 

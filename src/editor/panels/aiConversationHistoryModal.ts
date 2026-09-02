@@ -21,6 +21,7 @@ import {
 } from "@/ai/conversationStore";
 import { recordAiUiEvent } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 
 let openBackdrop: HTMLElement | null = null;
@@ -218,21 +219,20 @@ export function openAiConversationHistoryModal(options: {
   });
 
   const close = (): void => {
+    unregisterModal(backdrop);
     backdrop.remove();
     openBackdrop = null;
-    document.removeEventListener?.("keydown", onKeyDown);
-  };
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") close();
   };
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
-  document.addEventListener?.("keydown", onKeyDown);
 
   renderList();
   document.body.append(backdrop);
+  // Escape 는 공용 모달 스택이 라우팅한다 — 자체 document 리스너는 데이터베이스 모달의
+  // Escape 핸들러와 같은 버블 단계라 등록 순서에 따라 바깥이 먼저 닫혔다.
+  registerModal(backdrop, close);
   openBackdrop = backdrop;
   search.focus?.();
   return backdrop;
