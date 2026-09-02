@@ -10,6 +10,8 @@ import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
 import { store } from "@/project/store";
+import { editorState } from "@/editor/editorState";
+import { eventDisplayName } from "@/project/eventDisplayName";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, SwitchValue, VariableOperand } from "@/project/types";
 
@@ -169,14 +171,14 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   moveEvent: (cmd) => commandLine(
     "이동 경로 설정",
     ...moveRouteSpriteParts(cmd),
-    valuePart(cmd.eventId === PLAYER_MOVE_TARGET ? "주인공" : (cmd.eventId || "이 이벤트")),
+    valuePart(cmd.eventId === PLAYER_MOVE_TARGET ? "주인공" : eventNameForSummary(cmd.eventId)),
     plainPart(" ("),
     valuePart(String(cmd.route.moves.length)),
     plainPart("개)")
   ),
   setEventGraphicPattern: (cmd) => commandLine(
     "모습 바꾸기",
-    valuePart(!cmd.eventId || cmd.eventId === "this" ? "이 이벤트" : cmd.eventId),
+    valuePart(!cmd.eventId || cmd.eventId === "this" ? "이 이벤트" : eventNameForSummary(cmd.eventId)),
     plainPart(" · "),
     valuePart(`모습 ${Number(cmd.pattern) + 1}`)
   ),
@@ -418,6 +420,25 @@ function faceVisualPart(resourceId: string): CommandSummaryVisualPart {
 function mapThumbParts(mapId: string): readonly CommandSummaryVisualPart[] {
   if (!mapId) return [];
   return [{ kind: "visual", visual: { type: "mapThumb", mapId }, text: "", tone: "plain" }];
+}
+
+/**
+ * 명령이 가리키는 이벤트의 표시 이름. 요약 줄에 `ev_ux_stress` 같은 원시 ID 가 그대로 뜨던 것을
+ * 이름으로 바꾼다(2026-09-03 제안서 §6). 빈 ID 는 이 이벤트, 현재 맵에 없으면 다른 맵까지 찾고,
+ * 어디에도 없으면 ID 뒤에 «(없음)» 을 붙여 끊어진 참조임을 드러낸다.
+ */
+export function eventNameForSummary(eventId: string): string {
+  if (!eventId) return "이 이벤트";
+  const project = store.getCurrent();
+  const currentMapId = editorState.get().currentMapId;
+  const currentMap = currentMapId ? project.maps[currentMapId] : undefined;
+  const local = currentMap?.events.find((event) => event.id === eventId);
+  if (local) return eventDisplayName(local);
+  for (const map of Object.values(project.maps)) {
+    const found = map.events.find((event) => event.id === eventId);
+    if (found) return eventDisplayName(found);
+  }
+  return `${eventId} (없음)`;
 }
 
 // [P1] 이동 경로에 그래픽 변경이 포함되면 해당 캐릭터 스프라이트 썸네일 토큰.
