@@ -5,6 +5,7 @@
 // 쿼터 이후에는 활성 도메인마다 최소 ⌊room/도메인 수⌋개가 보장되고,
 // 핀 비용은 전 도메인에 분산된다.
 
+import { declaredIntent } from "./intentFixture";
 import { describe, expect, it } from "vitest";
 import { computeActiveToolDomains, resetAssistantToolDomainMemory } from "@/editor/assistantToolMode";
 import { toOpenAiTools, type ToolDefinition, type ToolDomain } from "@/editor/tools";
@@ -41,8 +42,8 @@ function exposedByDomainPrefix(names: readonly string[], prefix: string): number
 
 function activeDomains(): ReadonlySet<ToolDomain> {
   resetAssistantToolDomainMemory();
-  // 아이템(database)·벽(tile)·퀘스트(quest)·월드 그래프(world) — 전부 강한 의도.
-  return computeActiveToolDomains("아이템 벽 퀘스트 월드");
+  // 아이템(database)·벽(tile)·퀘스트(quest)·월드 그래프(world) — 선언한 툴의 도메인이 전부 열린다.
+  return computeActiveToolDomains(declaredIntent({ tools: ["upsert_item", "build_wall", "define_quest", "plan_world"] }));
 }
 
 describe("노출 상한 도메인 쿼터", () => {
@@ -104,7 +105,9 @@ describe("노출 상한 도메인 쿼터", () => {
   it("canonical house/village routes survive real multi-domain quota trimming", () => {
     // Given: a village request that opens map+tile plus several crowded domains.
     resetAssistantToolDomainMemory();
-    const domains = computeActiveToolDomains("마을에 집과 NPC, 아이템, 퀘스트, 월드 지도를 만들어줘");
+    const domains = computeActiveToolDomains(
+      declaredIntent({ space: "outdoor", needsPlan: true, tools: ["author_village", "author_house", "place_npc", "upsert_item", "define_quest", "plan_world"] }),
+    );
 
     // When: the real registry is trimmed to the 40-tool provider limit.
     const names = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);

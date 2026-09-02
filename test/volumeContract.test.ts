@@ -1,17 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { buildTurnGuide } from "@/ai/turnGuide";
 import {
   MAX_VOLUME_CONTINUES_PER_TURN,
-  buildVolumeWorkPlan,
   formatVolumeContinueMessage,
   measureVolume,
   placedNpcIdFrom,
-  requestNeedsVolumePlan,
   verifyPlacedNpcsHaveStatePages,
-  volumeBarForRequest,
   volumeGaps,
   volumeUnmet,
 } from "@/ai/volumeContract";
+import { parsePlannerVolume } from "@/ai/workPlan";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 
@@ -41,75 +38,19 @@ function npc(id: string, pages: Array<{ conditions: unknown[]; commands?: Comman
   } as GameEvent;
 }
 
-describe("volume contract — 어떤 요청이 막을 세우나", () => {
-  it("마을/RPG 신규 요청은 계획을 강제하고 그린필드 막대를 쓴다", () => {
-    expect(requestNeedsVolumePlan("빈 프로젝트에 강이 있는 마을을 하나 만들어줘")).toBe(true);
-    expect(volumeBarForRequest("빈 프로젝트에 강이 있는 마을을 하나 만들어줘")).toEqual({
-      authoredMaps: 1,
-      multiPageNpcs: 3,
-      shops: 1,
-      quests: 0,
+describe("volume contract — 막대는 플래너가 선언한다", () => {
+  // 2026-09-03 실측: 「마을|RPG」 정규식 막대가 「이 마을에 상인 하나 추가해줘」를 맵 3장·NPC 6명으로 키우고,
+  // 「마을은 만들지 말고 여관만」의 부정을 읽지 못했다. 문장에서 막대를 만드는 함수는 이제 없다.
+  it("플래너 volume 은 0 이상 정수만 받고 전부 0 이면 없는 것이다", () => {
+    expect(parsePlannerVolume({ authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: 0 })).toEqual({
+      authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: 0,
     });
-    expect(requestNeedsVolumePlan("중형 RPG를 만들어줘")).toBe(true);
-    expect(volumeBarForRequest("중형 알피지 캠페인을 만들어줘")).toEqual({
-      authoredMaps: 3,
-      multiPageNpcs: 6,
-      shops: 1,
-      quests: 1,
+    expect(parsePlannerVolume({ authoredMaps: -2, multiPageNpcs: 2.9, shops: "1", quests: 999 })).toEqual({
+      authoredMaps: 0, multiPageNpcs: 2, shops: 0, quests: 50,
     });
-  });
-
-  it("기존 마을 수정은 그린필드 막대를 씌우지 않는다", () => {
-    expect(requestNeedsVolumePlan("이 마을 담장 좀 고쳐줘")).toBe(false);
-    expect(volumeBarForRequest("이 마을 담장 좀 고쳐줘")).toBeNull();
-  });
-
-  it("기존 NPC 수정은 얇은 막대만 쓰고 그린필드 계획은 강제하지 않는다", () => {
-    expect(requestNeedsVolumePlan("이 촌장 대사를 고쳐줘")).toBe(false);
-    expect(volumeBarForRequest("이 촌장 대사를 고쳐줘")).toEqual({
-      authoredMaps: 0,
-      multiPageNpcs: 1,
-      shops: 0,
-      quests: 0,
-    });
-  });
-
-  it("NPC만 만드는 요청은 계획 강제 없이 다중 페이지 1명만 요구한다", () => {
-    expect(requestNeedsVolumePlan("촌장 NPC 만들어줘")).toBe(false);
-    expect(volumeBarForRequest("촌장 NPC 만들어줘")).toEqual({
-      authoredMaps: 0,
-      multiPageNpcs: 1,
-      shops: 0,
-      quests: 0,
-    });
-  });
-});
-
-describe("volume contract — 패널 가이드 문구는 막대를 세우지 않는다", () => {
-  // 2026-09-03 실측(「여관 지어줘」 감사 로그): 패널이 붙인 「도구 규칙」 가이드의 마을·상점·NPC 낱말이
-  // 의도 스캔에 섞여 volume-contract:forced-plan 이 찍히고, 여관 완성 뒤 「상점 +0」 재주입으로
-  // 시작 맵에 마을·NPC 3명·상점을 덤으로 지었다.
-  it("「여관 지어줘」 + 도구 규칙 가이드 + footer 는 계획 강제도 막대도 없다", () => {
-    const guide = buildTurnGuide({ instruction: "여관 지어줘" });
-    expect(guide).toMatch(/마을|상점/u);
-    const payload = ["여관 지어줘", guide, "[컨텍스트] 현재 맵: 빈 맵 (map_blank_start)"].join("\n\n");
-    expect(requestNeedsVolumePlan(payload)).toBe(false);
-    expect(volumeBarForRequest(payload)).toBeNull();
-  });
-
-  it("마을 요청은 가이드가 붙어도 종전 막대 그대로다", () => {
-    const guide = buildTurnGuide({ instruction: "강이 있는 마을을 만들어줘" });
-    const payload = ["강이 있는 마을을 만들어줘", guide].join("\n\n");
-    expect(requestNeedsVolumePlan(payload)).toBe(true);
-    expect(volumeBarForRequest(payload)).toEqual({ authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: 0 });
-  });
-
-  it("강제 계획의 항목은 막대가 요구하는 축만 — 상점만 부족한 막대에 허브 맵·NPC 항목이 붙지 않는다", () => {
-    const shopOnly = buildVolumeWorkPlan("상점 하나 만들어줘");
-    const titles = shopOnly.layers.flatMap((layer) => layer.items.map((item) => item.title));
-    expect(titles).toEqual(["상점"]);
-    const village = buildVolumeWorkPlan("마을을 만들어줘");
-    expect(village.layers.flatMap((layer) => layer.items.map((item) => item.title))).toEqual(["허브 맵", "상태별 NPC", "상점"]);
+    expect(parsePlannerVolume({ authoredMaps: 0, multiPageNpcs: 0, shops: 0, quests: 0 })).toBeNull();
+    expect(parsePlannerVolume(undefined)).toBeNull();
+    expect(parsePlannerVolume("many")).toBeNull();
   });
 });
 
@@ -147,15 +88,6 @@ describe("volume contract — 델타 측정", () => {
     expect(volumeUnmet(before, after, bar)).toBe(true);
     expect(formatVolumeContinueMessage(gaps)).toContain("HARNESS CONTINUE");
     expect(formatVolumeContinueMessage(gaps)).toContain("Do not ask the user to continue");
-  });
-
-  it("볼륨 계획은 place_npc / set_shop_stock 항목을 강제한다", () => {
-    const plan = buildVolumeWorkPlan("마을을 만들어줘", new Date("2026-09-01T00:00:00.000Z"));
-    const titles = plan.layers.flatMap((layer) => layer.items.map((item) => item.title));
-    expect(titles).toContain("허브 맵");
-    expect(titles).toContain("상태별 NPC");
-    expect(titles).toContain("상점");
-    expect(plan.plannerNote).toContain("volume-contract");
   });
 
   it("재주입 상한은 사용자 상한이 아니라 안전핀이다", () => {

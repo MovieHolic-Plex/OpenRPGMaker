@@ -1,14 +1,14 @@
 // ai/volumeContract.ts
 //
-// 중형 RPG / 마을 / 상태별 NPC 요청을 **코드가** 끝낼지 정한다.
-// 모델이 "됐습니다" 하고 나가거나 planner:direct 로 하네스를 건너뛰면, 산출물 볼륨이
-// 요청 최소치를 채울 때까지 Ralph 와 같은 재주입을 한다. 사용자 「계속」에 맡기지 않는다.
+// 볼륨 계약 — 플래너가 계획과 함께 선언한 최소 산출량(맵·상태별 NPC·상점·퀘스트)을 **코드가 측정**한다.
+// 모델이 "됐습니다" 하고 나가면 막대가 찰 때까지 Ralph 와 같은 재주입을 한다. 사용자 「계속」에 맡기지 않는다.
 //
+// 막대를 세우는 쪽은 플래너다(workPlan.PlannerVolumeBar). 예전에는 「마을|RPG」 정규식이 문장에서 막대를
+// 만들고 플래너의 direct 판정까지 거부했다 — 「이 마을에 상인 하나 추가해줘」가 맵 3장·NPC 6명이 됐고,
+// 「마을은 만들지 말고 여관만」의 부정을 읽지 못했다(2026-09-03 실측). 그 경로는 없다.
 // 자연어 doneWhen 을 파싱하지 않는다 — 턴 시작 스냅샷 대비 프로젝트 델타만 본다.
 
-import { requestLikelyModifiesExisting, stripContextFooter } from "./modifyIntent";
 import { isUnauthoredMap } from "./workItemOutcome";
-import { workPlanFromOrchestratorDecision, type WorkPlan } from "./workPlan";
 import type { Command, GameEvent, Project } from "@/project/types";
 
 export interface VolumeSnapshot {
@@ -26,52 +26,6 @@ export interface VolumeBar {
 }
 
 export const MAX_VOLUME_CONTINUES_PER_TURN = 8;
-
-const RPG_RE = /RPG|알피지|캠페인|시나리오|중형|어드벤처|\badventure\b|게임\s*을?\s*만들|게임을\s*만들|여러\s*맵|맵을\s*\d/iu;
-const SETTLEMENT_RE = /마을|정착지|도시|\bvillage\b|\btown\b|\bcity\b|\bsettlement\b/iu;
-const NPC_RE = /npc|주민|상인|촌장|퀘스트\s*주는/iu;
-const SHOP_RE = /상점|가게|재고|\bshop\b|\bmerchant\b/iu;
-const QUEST_RE = /퀘스트|의뢰|\bquest\b/iu;
-
-export function requestNeedsVolumePlan(rawText: string): boolean {
-  const text = stripContextFooter(rawText).trim();
-  if (!text) return false;
-  if (requestLikelyModifiesExisting(text) && !RPG_RE.test(text)) return false;
-  return RPG_RE.test(text) || SETTLEMENT_RE.test(text);
-}
-
-export function volumeBarForRequest(rawText: string): VolumeBar | null {
-  const text = stripContextFooter(rawText).trim();
-  if (!text) return null;
-  // 기존 산출물 수정은 그린필드 마을/RPG 막대를 씌우지 않는다 — "이 마을에 상인 추가"가
-  // 맵 3장·NPC 6명을 요구하면 보수 요청이 신축 런이 된다. RPG 캠페인 요청만 예외.
-  if (requestLikelyModifiesExisting(text) && !RPG_RE.test(text)) {
-    if (NPC_RE.test(text) || SHOP_RE.test(text) || QUEST_RE.test(text)) {
-      return {
-        authoredMaps: 0,
-        multiPageNpcs: NPC_RE.test(text) ? 1 : 0,
-        shops: SHOP_RE.test(text) ? 1 : 0,
-        quests: QUEST_RE.test(text) ? 1 : 0,
-      };
-    }
-    return null;
-  }
-  if (RPG_RE.test(text)) {
-    return { authoredMaps: 3, multiPageNpcs: 6, shops: 1, quests: 1 };
-  }
-  if (SETTLEMENT_RE.test(text)) {
-    return { authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: QUEST_RE.test(text) ? 1 : 0 };
-  }
-  if (NPC_RE.test(text) || SHOP_RE.test(text) || QUEST_RE.test(text)) {
-    return {
-      authoredMaps: 0,
-      multiPageNpcs: NPC_RE.test(text) ? 1 : 0,
-      shops: SHOP_RE.test(text) ? 1 : 0,
-      quests: QUEST_RE.test(text) ? 1 : 0,
-    };
-  }
-  return null;
-}
 
 export function measureVolume(project: Project): VolumeSnapshot {
   let authoredMaps = 0;
@@ -123,71 +77,6 @@ export function formatVolumeContinueMessage(gaps: readonly string[]): string {
     "Shops need set_shop_stock (or make_villager shop) on every live page.",
     "Quests need define_quest then verify_quest.",
   ].join("\n");
-}
-
-export function buildVolumeWorkPlan(goal: string, now = new Date()): WorkPlan {
-  const bar = volumeBarForRequest(goal) ?? { authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: 0 };
-  const items: Array<{
-    title: string;
-    instruction: string;
-    doneWhen: string;
-    successTools: readonly string[];
-  }> = [];
-  // 항목은 막대가 요구하는 것만 — 막대가 0인 축의 항목을 넣으면 요청과 무관한 산출물(허브 맵·NPC)이
-  // 「완료 조건」이 되어 코드가 그것을 짓게 몰아간다(2026-09-01 20프롬프트 실사의 폭주 경로).
-  if (bar.authoredMaps > 0) {
-    items.push({
-      title: "허브 맵",
-      instruction:
-        "author_village 또는 fill_region+author_house+paint_road 로 허브 맵을 채운다. 빈 create_map 만 하고 끝내지 말 것.",
-      doneWhen: "허브 맵에 지형·길이 있고 빈 잔디가 아니다",
-      successTools: ["author_village"],
-    });
-  }
-  if (bar.multiPageNpcs > 0) {
-    items.push({
-      title: "상태별 NPC",
-      instruction:
-        `find_events/get_event/get_story_state 로 기존 플래그를 본 뒤 place_npc 로 상태별 페이지 NPC를 최소 ${bar.multiPageNpcs}명 만든다. 한 줄 인사 금지.`,
-      doneWhen: `조건이 다른 페이지를 가진 NPC ${bar.multiPageNpcs}명`,
-      successTools: ["place_npc"],
-    });
-  }
-  if (bar.shops > 0) {
-    items.push({
-      title: "상점",
-      instruction: "get_database_records 로 아이템 id 를 확인한 뒤 make_villager({shop}) 또는 set_shop_stock. 모든 활성 페이지에 shop 명령.",
-      doneWhen: "플레이에서 열리는 상점 1곳",
-      successTools: ["set_shop_stock"],
-    });
-  }
-  if (bar.quests > 0) {
-    items.push({
-      title: "퀘스트",
-      instruction: "define_quest 로 등록하고 verify_quest 로 완주 가능한지 확인한다. upsert_event 로 퀘스트를 손으로 조립하지 말 것.",
-      doneWhen: "verify_quest 통과 퀘스트 1개",
-      successTools: ["define_quest", "verify_quest"],
-    });
-  }
-  if (items.length === 0) {
-    // 막대가 전부 0인데 여기까지 왔다면 호출자 규칙(requestNeedsVolumePlan)이 어긋난 것 — 빈 계획으로 조수를
-    // 묶지 않고 요청 그대로를 한 항목으로 둔다.
-    items.push({
-      title: "요청 수행",
-      instruction: goal.slice(0, 400),
-      doneWhen: "요청한 산출물이 프로젝트에 있다",
-      successTools: [],
-    });
-  }
-  return workPlanFromOrchestratorDecision(
-    {
-      action: "new_plan",
-      goal: goal.slice(0, 400),
-      plannerNote: "volume-contract (code-forced; planner direct rejected)",
-      layers: [{ title: "볼륨", items }],
-    },
-    now,
-  );
 }
 
 export const NPC_PLACING_TOOLS: ReadonlySet<string> = new Set(["place_npc", "make_villager"]);

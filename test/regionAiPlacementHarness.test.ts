@@ -1,3 +1,5 @@
+import { declaredIntent } from "./intentFixture";
+import { getTool } from "@/editor/tools/toolRegistry";
 import { describe, expect, it } from "vitest";
 import {
   buildRegionTaskMessage,
@@ -26,19 +28,21 @@ function makeMapProject() {
 }
 
 describe("region AI placement harness", () => {
-  it("multi-domain region message keeps place_props/place_npc/build_house_kit exposed", () => {
+  it("multi-domain region declaration keeps place_props/place_npc/author_house exposed", () => {
     const project = makeMapProject().project;
     const tileset = project.tilesets[project.maps[MAP_ID].tilesetId];
     ensureRegionPlacementHarness(tileset);
     const msg = buildRegionTaskMessage("집과 나무 1개, npc 배치", "하네스", MAP_ID, REGION, tileset);
-    beginAssistantToolDomainTurn(msg);
-    const domains = computeActiveToolDomains(msg);
+    const intent = declaredIntent({ space: "outdoor", useSelection: true, tools: ["author_house", "place_props", "place_npc"] });
+    beginAssistantToolDomainTurn(intent);
+    const domains = computeActiveToolDomains(intent);
     const tools = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
     expect(domains.has("tile")).toBe(true);
     expect(domains.has("event")).toBe(true);
     expect(tools).toContain("place_props");
     expect(tools).toContain("place_npc");
-    expect(tools).toContain("build_house_kit");
+    expect(tools).toContain("author_house");
+    // 재료 라벨 예시(사실)는 footer 에 남는다 — 그룹 id 는 노출하지 않는다.
     expect(msg).toMatch(/침엽수|나무/);
     expect(msg).not.toContain(BUILD_PALETTE_GROUP_IDS.tree);
   });
@@ -88,18 +92,18 @@ describe("region AI placement harness", () => {
     expect(woodTiles).toBeLessThanOrEqual(2);
   });
 
-  it("박스 지시 메시지에 나무 상자 라벨이 가방 경고보다 앞에 노출된다", () => {
+  it("박스 지시: 재료 라벨은 footer 에, 장식 박스↔보물상자 규칙은 툴 설명에 있다", () => {
     const project = makeMapProject().project;
     const tileset = project.tilesets[project.maps[MAP_ID].tilesetId];
     ensureRegionPlacementHarness(tileset);
     const msg = buildRegionTaskMessage("박스 2개 설치해줘", "하네스", MAP_ID, REGION, tileset);
-    const woodIdx = msg.indexOf("나무 상자");
-    const bagIdx = msg.indexOf("small-props");
-    expect(woodIdx).toBeGreaterThanOrEqual(0);
-    expect(msg).toMatch(/장식 박스.*나무 상자/);
+    expect(msg).toContain("나무 상자");
     expect(msg).not.toContain(REGION_PROP_VOCAB.woodBox);
     expect(msg).not.toContain("마을 소품(");
-    if (bagIdx >= 0) expect(woodIdx).toBeLessThan(bagIdx);
+    const props = getTool("place_props")?.description ?? "";
+    expect(props).toMatch(/장식 박스.*나무 상자/);
+    expect(props).toContain("place_chest 로 대체 금지");
+    expect(getTool("place_chest")?.description ?? "").toContain("place_props");
   });
 
   it("place_npc without graphic uses villager charset, not transparent", () => {

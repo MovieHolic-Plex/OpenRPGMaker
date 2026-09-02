@@ -8,7 +8,7 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { loadAiConfig } from "@/ai/llmClient";
-import { stripContextFooter } from "@/ai/modifyIntent";
+import { stripContextFooter } from "@/ai/contextFooter";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { summarizeChanges } from "@/editor/tools";

@@ -371,9 +371,8 @@ function domainPriority(domain: ToolDomain, domains: ReadonlySet<ToolDomain>): n
   const info = getActiveToolDomainInfo(domains);
   if (!info) return 4;
   if (domain === info.uiDomain) return 1;
-  if (info.strongIntentDomains.has(domain)) return 2;
+  if (info.intentDomains.has(domain)) return 2;
   if (info.recentDomains.has(domain)) return 3;
-  if (info.weakIntentDomains.has(domain)) return 5;
   return 4;
 }
 

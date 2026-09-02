@@ -16,7 +16,19 @@ import {
 } from "@/ai/toolReason";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { isDestructiveOutcome } from "@/ai/approvalPolicy";
-import { contextFooterMapId, requestLikelyExpectsExistingChange, stripContextFooter } from "@/ai/modifyIntent";
+import { contextFooterMapId, stripContextFooter } from "@/ai/contextFooter";
+import {
+  continuationIntentDeclaration,
+  emptyIntentDeclaration,
+  fallbackIntentDeclaration,
+  formatIntentAudit,
+  formatIntentClarifyMessage,
+  formatIntentNote,
+  formatScopeNote,
+  isContinuationText,
+  type IntentDeclaration,
+} from "@/ai/intentDeclaration";
+import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import { store } from "@/project/store";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import {
@@ -109,11 +121,6 @@ import {
   proposalScopeCarryoverWarning,
   requestLikelyExpectsChange,
 } from "./proposalCompleteness";
-import {
-  formatIntentClarifyMessage,
-  resolveIntentClarification,
-} from "./intentClarify";
-import { plannerSkipReason } from "./plannerSkip";
 import { defaultYieldToUi, type YieldToUi } from "./yieldToUi";
 import {
   MAX_WORK_PLAN_AUTO_STEPS_PER_TURN,
@@ -151,13 +158,10 @@ import {
 } from "./workItemOutcome";
 import {
   MAX_VOLUME_CONTINUES_PER_TURN,
-  buildVolumeWorkPlan,
   formatVolumeContinueMessage,
   measureVolume,
   placedNpcIdFrom,
-  requestNeedsVolumePlan,
   verifyPlacedNpcsHaveStatePages,
-  volumeBarForRequest,
   volumeGaps,
   volumeUnmet,
   type VolumeBar,
@@ -681,11 +685,30 @@ interface SpecGatePass {
   warnings: LintIssue[];
 }
 
+/** 이번 턴이 손댈 범위 — 현재 맵의 선택 사각형. 사실이지 의도가 아니다. */
+export interface SessionTurnScope {
+  readonly mapId: string;
+  readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+}
+
+export interface SessionTurnOptions {
+  readonly autonomous?: boolean;
+  /** 사용자 발화 원문. text 에 footer 가 붙어 올 때 의도 선언·툴 언급 스캔은 이것만 본다. */
+  readonly instruction?: string;
+  readonly scope?: SessionTurnScope | null;
+}
+
 export interface AssistantSessionOptions {
   config?: AiConfig;
   contextOptions?: ContextOptions;
   // 테스트/대체용 chat 구현. 기본은 설정 baseUrl의 OpenAI 호환 chatCompletion.
   chat?: ChatFn;
+  /**
+   * 턴 시작에 사용자 발화를 구조화 의도로 선언하는 함수(한 번, JSON). 패널·영역 작업은 실제 모델
+   * 선언자(createLlmIntentDeclarer)를 넣는다. 없으면 중립 폴백 선언으로 진행한다 — 되묻기·계획·툴
+   * 도메인을 문장 키워드로 추측하는 경로는 없다(2026-09-03 의도 라우터 감사).
+   */
+  declareIntent?: IntentDeclarer;
   /**
    * 자율 실행 드라이버용 사용자-대기 조회 훅(peek-only). 패널의 pendingSends 큐에
    * 메시지가 있는지 "만" 보고한다 — 드라이버는 절대 dequeue 하지 않는다(패널의 기존
@@ -760,6 +783,12 @@ export class AssistantSession {
   private eventBaseProposalKeys = new Map<string, string>();
   private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
   private currentTurnRequestText = "";
+  /** 이번 턴의 사용자 발화만(가이드·footer 없음) — 툴 이름 언급·능력 승격·의도 선언의 입력. */
+  private currentTurnInstruction = "";
+  /** 이번 턴의 의도 선언. 턴 시작에 한 번 정해지고 라우팅(되묻기·플래너·툴 노출·대상 맵)이 이것만 읽는다. */
+  private turnIntent: IntentDeclaration | null = null;
+  /** 이번 턴이 손댈 선택 사각형(있으면). 패널·영역 작업이 사실로 넘긴다. */
+  private turnScope: SessionTurnScope | null = null;
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
   private lastTurnFailed = false;
   // ── 자율 실행 드라이버(todo 2) ────────────────────────────────────────
@@ -848,7 +877,6 @@ export class AssistantSession {
    */
   private runVolumeBaseline: VolumeSnapshot | null = null;
   private runVolumeBar: VolumeBar | null = null;
-  private runVolumeGoal: string | null = null;
   /** 이번 사용자 턴 안에서 볼륨 미달로 재주입한 횟수(턴마다 0으로 리셋). */
   private volumeContinueUsed = 0;
   /**
@@ -860,6 +888,7 @@ export class AssistantSession {
   /** 직전 사용자 턴의 상황 — 맵 이동 경계 판정용. */
   private lastTurnContext: ConversationTurnContext | null = null;
   private readonly getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
+  private readonly declareIntent: IntentDeclarer | null;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -876,6 +905,7 @@ export class AssistantSession {
     this.renderImages = options.renderImages;
     this.yieldToUi = options.yieldToUi ?? defaultYieldToUi;
     this.getTurnSelection = options.getTurnSelection;
+    this.declareIntent = options.declareIntent ?? null;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
@@ -1206,7 +1236,7 @@ export class AssistantSession {
     text: string,
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
-    opts?: { readonly autonomous?: boolean },
+    opts?: SessionTurnOptions,
   ): Promise<TurnResult> {
     // 자율 드라이버: opts.autonomous === true 일 때만 진입한다(명시 플래그 — 플래그 없는 기존
     // 호출처(영역 작업·클러스터 모달·평가 러너)는 종전대로 턴 1개로 끝난다). 패널·MCP 브리지는
@@ -1225,11 +1255,15 @@ export class AssistantSession {
     const startedAt = Date.now();
     const usageBefore = this.usageTotals;
     const auditFrom = this.audit.length;
+    const turnOptions: SessionTurnOptions = {
+      ...(opts?.instruction !== undefined ? { instruction: opts.instruction } : {}),
+      scope: opts?.scope ?? null,
+    };
     if (opts?.autonomous !== true) {
-      const result = await this.executeUserTurn(text, onEvent, signal);
+      const result = await this.executeUserTurn(text, onEvent, signal, turnOptions);
       return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, onEvent);
     }
-    const first = await this.executeUserTurn(text, onEvent, signal);
+    const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
     const last = await this.runAutonomousDriver(first, onEvent, signal);
     return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, onEvent);
   }
@@ -1312,6 +1346,7 @@ export class AssistantSession {
     text: string,
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
+    options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
     this.refreshSystemPromptBudget();
@@ -1330,20 +1365,25 @@ export class AssistantSession {
     const userContent = await this.buildUserTurnContent(text);
     this.messages.push({ role: "user", content: userContent });
     this.pushAudit({ kind: "user", text, context: turnContext });
-    // 의도 스캔 입력은 **사용자 발화로 한정한다.** `[컨텍스트]` footer 는 패널이 붙이는 기계 생성
-    // 텍스트인데 같은 문자열 채널에 실려 와, 맵 이름이 도메인 키워드로 오인됐다 — 실측 A/B:
-    // 같은 "여기 좀 고쳐줘" 가 맵 이름 "언덕" 일 때 35종, "호숫가 마을" 일 때 40종에
-    // start_interior_room_session·author_village 까지 열렸다(진단 근본원인 12).
-    // LLM 에 보내는 messages 와 implicitSpecFromContext 는 footer 를 포함한 원문을 그대로 쓴다.
-    const intentText = stripContextFooter(text);
-    beginAssistantToolDomainTurn(intentText);
-    this.currentTurnToolDomains = computeActiveToolDomains(intentText);
+    // 사용자 발화만 따로 든다. `[컨텍스트]` footer 는 코드가 아는 사실이라 모델에는 그대로 가지만,
+    // 의도 선언·툴 이름 언급·능력 승격의 입력은 사용자 말이어야 한다 — 기계 텍스트가 이 자리에
+    // 섞여 들어 라우팅이 어긋났던 것이 2026-09-03 감사의 근인이었다.
+    const instruction = (options.instruction ?? stripContextFooter(text)).trim();
+    this.currentTurnInstruction = instruction;
     this.currentTurnRequestText = text;
+    this.turnScope = options.scope ?? null;
+
+    // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
+    // 소비한다. 선언자가 없거나 실패하면 중립 폴백 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·승격만.
+    const intent = await this.declareTurnIntent(instruction, onEvent, signal);
+    this.turnIntent = intent;
+    beginAssistantToolDomainTurn(intent);
+    this.currentTurnToolDomains = computeActiveToolDomains(intent);
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
     this.turnImplicitSpec = implicitSpecFromContext(text)
-      ?? this.implicitSpecFromViewPhrase(intentText);
+      ?? this.implicitSpecFromViewPhrase(instruction);
     this.carryoverSpecForTurn = this.activeSpec && this.activeSpecTurnIndex < this.currentTurnIndex
       ? structuredClone(this.activeSpec)
       : null;
@@ -1362,38 +1402,43 @@ export class AssistantSession {
     this.turnItemQuestIds = new Set();
     this.turnItemPlacedNpcIds = new Set();
     this.lastOutcomeBlockedKey = null;
-    this.armVolumeContract(intentText);
+    // 볼륨 막대는 플래너가 계획과 함께 선언한 것만 남는다. 이어가기(계속)는 유지, 새 요청은 풀어 준다.
+    this.releaseVolumeContractForNewRequest(intent);
     this.volumeContinueUsed = 0;
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
     this.skipPlannerThisTurn = false;
 
-    // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
-    // F-05: auto/orchestrated 모드에서는 bare 집이라도 clarify로 멈추지 않고 planner/LLM으로 넘긴다.
-    // agentMode==="chat"에서만 되묻기를 유지한다. PROTOCOL_LOCKED_RE는 intentClarify 내부에서 이미 bypass.
-    const clarify = resolveIntentClarification(text);
-    if (clarify) {
+    // 되묻기: 선언이 질문을 냈을 때만, chat 모드에서만 멈춘다.
+    // F-05: auto/orchestrated 모드에서는 멈추지 않고 진행한다 — 의도 노트가 「되묻지 말고 택하라」고 알린다.
+    let clarifyBypassed = false;
+    if (intent.clarify) {
       const shouldBypassClarify = this.config.agentMode === "auto" || this.orchestrationEnabled();
       if (shouldBypassClarify) {
-        this.pushAudit({ kind: "status", text: `의도 확인 건너뜀(${clarify.kind}): ${clarify.reason} — auto/orchestrated` });
+        clarifyBypassed = true;
+        this.pushAudit({ kind: "status", text: `의도 확인 건너뜀: ${intent.clarify} — auto/orchestrated` });
       } else {
-        const assistantText = formatIntentClarifyMessage(clarify);
+        const assistantText = formatIntentClarifyMessage(intent);
         this.messages.push({ role: "assistant", content: assistantText });
         onEvent({ type: "assistant_message", content: assistantText });
-        this.pushAudit({ kind: "status", text: `의도 확인(${clarify.kind}): ${clarify.reason}` });
+        this.pushAudit({ kind: "status", text: `의도 확인: ${intent.clarify}` });
         this.pushAudit({ kind: "assistant", text: assistantText });
         this.pushAudit({ kind: "status", text: "턴 종료(final) — 의도 확인 · 제안 0건" });
         return { assistantText, proposedCalls: [], stoppedReason: "final" };
       }
     }
 
+    // 선언이 확정한 것은 본문 모델도 봐야 한다 — 안 그러면 모델이 같은 것을 되묻는다(2026-09-03 실측: 대장간).
+    const intentNote = formatIntentNote(intent, { clarifyBypassed });
+    if (intentNote) this.pushOrchestrationMessage(intentNote);
+    // 선택 사각형은 사실이다 — 선언이 그 안에서 작업한다고 했으면 경계를, 새 맵/실내 시공이면 참고용임을 알린다.
+    if (this.turnScope) this.pushOrchestrationMessage(formatScopeNote(this.turnScope, intent));
+
     // Orchestrator (main LLM): multi-step plan decision — harness does not regex-plan.
-    // 영역 작업 합성 문장은 이미 시공 경로가 잠겨 있다. 플래너 왕복은 같은 공급자
-    // 크래시를 두 번 연속으로 만들 뿐이라 본문 툴 루프로 바로 간다.
     this.workPlanAutoStepsThisUserMessage = 0;
-    // 짧은/질문/선택 턴은 플래너 왕복을 건너뛴다. 진행 중인 계획은 resume/replan 이
-    // 필요하므로 스킵하지 않는다. 영역 작업 protocol-lock 도 같은 함수가 잡는다.
-    const skipReason = this.workPlan ? null : plannerSkipReason(text);
+    // 진행 중인 계획은 resume/replan 이 필요하므로 건너뛰지 않는다. 그 외에는 선언이 정한다 —
+    // 질문·단일 단계는 플래너 왕복을 내지 않고, 선택 영역 작업은 정의상 한 스프린트다.
+    const skipReason = this.plannerSkipReasonFor(intent);
     this.skipPlannerThisTurn = skipReason !== null;
     if (skipReason) {
       this.pushAudit({ kind: "status", text: `planner:skip ${skipReason}` });
@@ -1413,14 +1458,70 @@ export class AssistantSession {
       }
     }
 
-    this.forceVolumeWorkPlanIfNeeded(intentText, onEvent);
-
     try {
       const result = await this.runTurnLoop(onEvent, signal);
       return this.withWorkPlanResult(result);
     } finally {
       this.removeOrchestrationMessages();
     }
+  }
+
+  /**
+   * 이번 턴의 의도 선언. 빈 문장은 빈 선언, 진행 중 계획/볼륨을 이어가는 한 마디(계속·이어서)는 모델을
+   * 부르지 않고 continuation, 선언자가 없으면 중립 폴백. 그 외에는 모델이 한 번 읽는다(짧은 캐시).
+   */
+  private async declareTurnIntent(
+    instruction: string,
+    onEvent: (event: SessionEvent) => void,
+    signal?: AbortSignal,
+  ): Promise<IntentDeclaration> {
+    if (!instruction) return emptyIntentDeclaration();
+    const hasActivePlan = Boolean(this.workPlan && !isWorkPlanComplete(this.workPlan));
+    const scope = this.turnScope;
+    const selection = scope
+      ? { mapId: scope.mapId, x: scope.region.x, y: scope.region.y, width: scope.region.width, height: scope.region.height }
+      : this.getTurnSelection?.() ?? null;
+    const facts = buildIntentFacts({
+      project: this.ctx.project,
+      userText: instruction,
+      currentMapId: resolveContextMapId(this.contextOptions) ?? null,
+      selection,
+      hasActivePlan,
+    });
+    if (isContinuationText(instruction) && (hasActivePlan || this.runVolumeBar)) {
+      const intent = continuationIntentDeclaration(facts);
+      this.pushAudit({ kind: "status", text: formatIntentAudit(intent, 0) });
+      return intent;
+    }
+    if (!this.declareIntent) {
+      const intent = fallbackIntentDeclaration(facts);
+      this.pushAudit({ kind: "status", text: `${formatIntentAudit(intent, 0)} (선언자 없음)` });
+      return intent;
+    }
+    onEvent({ type: "status", text: "요청을 읽는 중…" });
+    const outcome = await declareIntentCached(this.declareIntent, facts, signal);
+    this.pushAudit({
+      kind: "status",
+      text: `${formatIntentAudit(outcome.intent, outcome.elapsedMs)}${outcome.error ? ` — 폴백 사유: ${outcome.error}` : ""}`,
+    });
+    return outcome.intent;
+  }
+
+  /** 이 턴이 쓰기 툴을 돌려야 하는 요청인가 — 선언(생성/수정)이 정본, 선언이 없을 때만 문장 휴리스틱. */
+  private turnExpectsChange(): boolean {
+    const intent = this.turnIntent;
+    if (intent && intent.source === "llm") return intent.mode === "create" || intent.mode === "modify";
+    return requestLikelyExpectsChange(this.currentTurnInstruction);
+  }
+
+  /** 플래너 왕복을 건너뛸 이유. null 이면 플래너가 돈다(오케스트레이션이 켜져 있을 때). */
+  private plannerSkipReasonFor(intent: IntentDeclaration): string | null {
+    if (this.workPlan) return null;
+    if (this.turnScope) return "selection";
+    if (intent.source === "empty") return "empty";
+    if (intent.mode === "question") return "question";
+    if (!intent.needsPlan) return "single-step";
+    return null;
   }
 
   /**
@@ -1482,10 +1583,8 @@ export class AssistantSession {
       if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
         this.injectWorkPlanOrchestration();
         this.emitWorkPlan(onEvent);
-      } else if (this.forceVolumeWorkPlanIfNeeded(text, onEvent, "planner:error volume-contract")) {
-        onEvent({ type: "status", text: "플래너 실패 — 볼륨 계약 계획으로 진행" });
       } else if (text.trim().length >= 60) {
-        this.workPlan = buildDefaultWorkPlan(text);
+        this.workPlan = buildDefaultWorkPlan(text, new Date(), { modifies: this.turnIntent?.mode === "modify" });
         this.emitWorkPlan(onEvent);
         this.injectWorkPlanOrchestration();
         onEvent({ type: "status", text: "플래너 실패 — 최소 폴백 계획으로 진행" });
@@ -1500,10 +1599,8 @@ export class AssistantSession {
       if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
         this.injectWorkPlanOrchestration();
         this.emitWorkPlan(onEvent);
-      } else if (this.forceVolumeWorkPlanIfNeeded(text, onEvent, "planner:parse-fail volume-contract")) {
-        onEvent({ type: "status", text: `플래너 응답을 해석하지 못해 볼륨 계약 계획으로 진행합니다 (${parsed.error})` });
       } else if (text.trim().length >= 60) {
-        this.workPlan = buildDefaultWorkPlan(text);
+        this.workPlan = buildDefaultWorkPlan(text, new Date(), { modifies: this.turnIntent?.mode === "modify" });
         this.emitWorkPlan(onEvent);
         this.injectWorkPlanOrchestration();
         // 폴백 계획은 사용자 요청을 그대로 담지 못한다 — 조용히 진행하면 축소된 결과를 성공으로 보고하게 된다.
@@ -1514,9 +1611,8 @@ export class AssistantSession {
     const decision = parsed.decision;
 
     if (decision.action === "direct") {
-      if (this.forceVolumeWorkPlanIfNeeded(text, onEvent, `planner:direct-rejected ${decision.reason ?? ""}`.trim())) {
-        return;
-      }
+      // 플래너의 direct 는 존중한다. 예전에는 「마을」 정규식이 이 판정을 거부하고 코드가 3항목 계획을
+      // 강제해 「이 마을에 상인 하나 추가해줘」가 마을 통째를 지었다(2026-09-03 실측 93초·맵 3장).
       this.pushAudit({ kind: "status", text: `planner:direct ${decision.reason ?? ""}` });
       return;
     }
@@ -1535,6 +1631,8 @@ export class AssistantSession {
     // 수정 요청이면 대상 맵 id 를 계획에 박아 매 스프린트 재주입한다 — footer 가 없는
     // 자율 계속 턴에도 대상이 남아야 한다(진단 근본원인 14).
     this.workPlan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
+    // 볼륨 막대는 플래너가 계획과 함께 선언한 값만 쓴다 — 문장 정규식으로 막대를 씌우지 않는다.
+    this.armVolumeContractFromPlanner(decision.volume ?? null);
     const progress = summarizeWorkPlan(this.workPlan);
     this.pushAudit({
       kind: "status",
@@ -1553,9 +1651,9 @@ export class AssistantSession {
    * 우선순위: 요청문 footer 의 현재 맵 → 컨텍스트 옵션의 currentMapId.
    */
   private planTargetMapId(text: string): string | undefined {
-    if (!requestLikelyExpectsExistingChange(text)) return undefined;
-    const footerMapId = contextFooterMapId(text);
-    const candidate = footerMapId ?? this.contextOptions?.currentMapId;
+    const intent = this.turnIntent;
+    if (!intent || intent.mode !== "modify") return undefined;
+    const candidate = intent.targetMapId ?? contextFooterMapId(text) ?? this.contextOptions?.currentMapId;
     return candidate && this.ctx.project.maps[candidate] ? candidate : undefined;
   }
 
@@ -1585,21 +1683,24 @@ export class AssistantSession {
   }
 
   /**
-   * 볼륨 막대는 사용자 목표 런에 고정한다. 「계속」/빈 문장은 직전 막대를 유지하고,
-   * 볼륨과 무관한 새 요청은 풀어 준다.
+   * 새 요청은 이전 런의 볼륨 막대를 풀어 준다. 이어가기(계속/이어서 — continuation 선언)는 막대를 유지해
+   * 미달 재주입이 다음 턴까지 이어진다. 막대를 새로 세우는 것은 플래너다(armVolumeContractFromPlanner).
    */
-  private armVolumeContract(intentText: string): void {
-    const bar = volumeBarForRequest(intentText);
-    if (bar) {
-      this.runVolumeBaseline = measureVolume(this.ctx.project);
-      this.runVolumeBar = bar;
-      this.runVolumeGoal = intentText;
-      return;
-    }
-    if (intentText.trim() === "계속" && this.runVolumeBar) return;
+  private releaseVolumeContractForNewRequest(intent: IntentDeclaration): void {
+    if (intent.source === "continuation" && this.runVolumeBar) return;
     this.runVolumeBaseline = null;
     this.runVolumeBar = null;
-    this.runVolumeGoal = null;
+  }
+
+  /** 플래너가 계획과 함께 선언한 최소 산출량. null 이면 이 런에는 볼륨 계약이 없다. */
+  private armVolumeContractFromPlanner(bar: VolumeBar | null): void {
+    if (!bar || (bar.authoredMaps <= 0 && bar.multiPageNpcs <= 0 && bar.shops <= 0 && bar.quests <= 0)) return;
+    this.runVolumeBaseline = measureVolume(this.ctx.project);
+    this.runVolumeBar = bar;
+    this.pushAudit({
+      kind: "status",
+      text: `volume-contract:armed maps+${bar.authoredMaps} npcs+${bar.multiPageNpcs} shops+${bar.shops} quests+${bar.quests} (플래너 선언)`,
+    });
   }
 
   private volumeGapsNow(): string[] {
@@ -1612,33 +1713,6 @@ export class AssistantSession {
     return volumeUnmet(this.runVolumeBaseline, measureVolume(this.getProposedProject()), this.runVolumeBar);
   }
 
-  /**
-   * 마을/RPG 요청에서 플래너 direct·스킵·없음 을 코드가 거부하고 WorkPlan 을 강제한다.
-   * 이미 미완료 계획이 있으면 덮지 않는다 — 생성기 계획을 존중하고 볼륨 재주입이 얕은 완료를 잡는다.
-   */
-  private forceVolumeWorkPlanIfNeeded(
-    goal: string,
-    onEvent: (event: SessionEvent) => void,
-    audit = "volume-contract:forced-plan",
-  ): boolean {
-    const source = this.runVolumeGoal ?? goal;
-    if (!requestNeedsVolumePlan(source) && !requestNeedsVolumePlan(goal)) return false;
-    if (this.workPlan && !isWorkPlanComplete(this.workPlan)) return false;
-    this.workPlan = buildVolumeWorkPlan(source);
-    this.skipPlannerThisTurn = false;
-    this.lastMilestoneCompletionItemId = null;
-    this.turnSuccessfulTools.clear();
-    this.successfulToolsWorkItemId = this.workPlan.currentItemId;
-    this.pushAudit({ kind: "status", text: audit });
-    onEvent({
-      type: "status",
-      text: "볼륨 계약: 코드가 다단계 계획을 강제합니다. 사용자 「계속」을 기다리지 않습니다.",
-    });
-    this.emitWorkPlan(onEvent);
-    this.injectWorkPlanOrchestration();
-    return true;
-  }
-
   /** 모델이 볼륨 미달인 채 퇴장하면 Ralph 다음으로 재주입한다. 사용자 「계속」이 아니다. */
   private injectVolumeContinue(onEvent: (event: SessionEvent) => void, finalText: string): boolean {
     if (this.milestoneApplyFailed) return false;
@@ -1647,12 +1721,6 @@ export class AssistantSession {
     const gaps = this.volumeGapsNow();
     if (gaps.length === 0) return false;
     this.volumeContinueUsed += 1;
-    if (
-      requestNeedsVolumePlan(this.runVolumeGoal ?? "") &&
-      (!this.workPlan || isWorkPlanComplete(this.workPlan))
-    ) {
-      this.forceVolumeWorkPlanIfNeeded(this.runVolumeGoal ?? "", onEvent, "volume-contract:replan");
-    }
     this.pushOrchestrationMessage(formatVolumeContinueMessage(gaps));
     this.pushAudit({
       kind: "status",
@@ -1828,7 +1896,8 @@ export class AssistantSession {
       const calls = this.finalizeProposals(this.turnProposals);
       if (calls.length === 0) return { ok: true };
       const warnings = proposalCompletenessWarnings({
-        requestText: this.currentTurnRequestText,
+        requestText: this.currentTurnInstruction,
+        intent: this.turnIntent,
         buildSpec: this.reviewBuildSpecForProposal(calls),
         calls,
       });
@@ -2530,7 +2599,7 @@ export class AssistantSession {
     if (this.carryoverSpecForTurn && proposalHasChangedMap(calls, this.carryoverSpecForTurn.mapId)) return this.carryoverSpecForTurn;
     if (
       this.activeSpec &&
-      requestLikelyExpectsChange(this.currentTurnRequestText) &&
+      this.turnExpectsChange() &&
       proposalHasChangedMap(calls, this.activeSpec.mapId)
     ) {
       return this.activeSpec;
@@ -2540,7 +2609,8 @@ export class AssistantSession {
 
   private buildReviewPrompt(calls: readonly ProposedCall[], repairAlreadyUsed: boolean): { prompt: string; missingWarnings: string[] } {
     const lintWarnings = proposalCompletenessWarnings({
-      requestText: this.currentTurnRequestText,
+      requestText: this.currentTurnInstruction,
+      intent: this.turnIntent,
       buildSpec: this.reviewBuildSpecForProposal(calls),
       calls,
     });
@@ -2636,7 +2706,7 @@ export class AssistantSession {
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
     // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온을 기본 작업 세트로 쓴다.
-    const domains = this.currentTurnToolDomains ?? computeActiveToolDomains("");
+    const domains = this.currentTurnToolDomains ?? computeActiveToolDomains(this.turnIntent);
     // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
     // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
@@ -2667,7 +2737,9 @@ export class AssistantSession {
       }
       let result: ChatResult;
       const baseTools = toOpenAiTools(undefined, { domains });
-      const mentioned = mentionedToolSchemas(this.currentTurnRequestText ?? "");
+      // 이름 언급·선언 툴은 사용자 발화와 의도 선언에서만 온다. footer/가이드 같은 기계 텍스트는 보지 않는다.
+      const mentioned = mentionedToolSchemas(this.currentTurnInstruction);
+      const declared = toolSchemasForNames(this.turnIntent?.tools ?? []);
       const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
       const questPersist = this.currentTurnToolDomains?.has("quest")
         ? toolSchemasForNames(["author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"])
@@ -2676,6 +2748,7 @@ export class AssistantSession {
       const requiredByName = new Map(
         [
           ...mentioned,
+          ...declared,
           ...planRequired,
           ...questPersist,
           ...discoveryEscalated,
@@ -2694,7 +2767,7 @@ export class AssistantSession {
       // (도메인 쿼터가 마지막에 채운, 요청과 가장 관련 없는 항목)를 그만큼 내준다 — 라운드당
       // 예약 없는 작업 툴 수는 40으로 유지된다.
       const capability = capabilityEscalationSchemas(
-        this.currentTurnRequestText ?? "",
+        this.currentTurnInstruction,
         new Set([...baseCandidates.map((tool) => tool.function.name), ...requiredNames, "find_tools"]),
       );
       const capabilityNames = new Set(capability.map((tool) => tool.function.name));
@@ -2824,7 +2897,7 @@ export class AssistantSession {
           !zeroChangeRekickUsed &&
           writeToolAttempts === 0 &&
           this.hasUnbuiltSpecThisTurn() &&
-          requestLikelyExpectsChange(this.currentTurnRequestText) &&
+          this.turnExpectsChange() &&
           !assistantTextLooksLikeQuestion(finalText)
         ) {
           zeroChangeRekickUsed = true;
@@ -2846,7 +2919,7 @@ export class AssistantSession {
           orchestrated &&
           !zeroChangeRekickUsed &&
           writeToolAttempts === 0 &&
-          requestLikelyExpectsChange(this.currentTurnRequestText) &&
+          this.turnExpectsChange() &&
           !assistantTextLooksLikeQuestion(finalText)
         ) {
           zeroChangeRekickUsed = true;

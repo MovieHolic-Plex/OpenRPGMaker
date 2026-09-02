@@ -25,7 +25,7 @@ const STORY_FLAG_KINDS = ["switch", "variable"] as const;
 
 const declareStoryFlag: ToolDefinition = {
   name: "declare_story_flag",
-  description: "스위치/변수 번호에 서사 의미를 등록한다. action=declare/rename/retire 지원. targetId 생략 시 미사용 슬롯을 자동 할당한다.",
+  description: "스위치/변수 번호에 서사 의미를 등록한다. action=declare/rename/retire 지원. targetId 생략 시 미사용 슬롯을 자동 할당한다. 퀘스트·이야기 진행 플래그·스위치 의미 등록. 퀘스트 자체는 create_quest.",
   mode: "write",
   domains: ["event", "quest", "system"],
   invalidArgsExample: { id: "met-mayor", kind: "switch", description: "시장과 처음 만남" },

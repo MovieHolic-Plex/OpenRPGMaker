@@ -169,7 +169,7 @@ function commandsForHotspot(project: Project, map: GameMap, hotspot: RecordValue
 const placeExamineHotspots: ToolDefinition = {
   name: "place_examine_hotspots",
   description:
-    "조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}. " +
+    "조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}.  「조사」「살펴보기」 지점 요청의 정본. 이브식 갤러리 방 전체는 make_gallery_room." +
     "좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다.",
   mode: "write",
   parameters: {

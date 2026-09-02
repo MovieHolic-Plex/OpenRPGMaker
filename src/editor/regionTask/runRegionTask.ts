@@ -11,6 +11,7 @@ import {
   type HarnessSnapshot,
   type SessionEvent,
   type TurnResult,
+  type SessionTurnOptions,
 } from "@/ai/assistantSession";
 import { recordAiActivityFromRegionLog } from "@/ai/activityLog";
 import { conversationScopeKey } from "@/ai/conversationStore";
@@ -50,11 +51,10 @@ import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion"
 import { analyzeRegionBlend, describeBlendBreak, describeBlockedEntrance, expandRegion, polishRegionSeams } from "./regionBlend";
 import { buildRegionPolishMessage } from "./regionPolish";
 import { analyzeRegionSurroundings } from "./regionSurroundings";
-import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
-// 도구 규칙과 그 부품(재료 라벨 힌트·시공 facade 시그니처)의 정본은 turnGuide 다 — 영역 작업과
-// 조수가 같은 문구를 쓰려면 한 곳에만 있어야 한다. 기존 수입자(test/materialPolicy.test.ts,
-// regionPolish)를 깨지 않도록 여기서 재수출한다.
-import { buildTurnGuide, formatMaterialLabelHint } from "@/ai/turnGuide";
+// 재료 라벨 힌트(현재 맵 타일셋의 사실)의 정본은 turnGuide 다. 기존 수입자(test/materialPolicy.test.ts,
+// regionPolish)를 깨지 않도록 여기서 재수출한다. 도구 규칙 가이드는 없다 — 규칙은 툴 설명에 있다.
+import { formatMaterialLabelHint } from "@/ai/turnGuide";
+import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
 
 export { formatMaterialLabelHint };
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
@@ -70,6 +70,7 @@ export interface RegionTaskSessionLike {
     text: string,
     onEvent?: (event: SessionEvent) => void,
     signal?: AbortSignal,
+    opts?: SessionTurnOptions,
   ): Promise<TurnResult>;
   getProposedProject(): Project;
   getAuditEntries?(): readonly AuditEntry[];
@@ -276,6 +277,7 @@ const defaultDeps: RegionTaskDeps = {
   createSession: (project, mapId) => {
     return new AssistantSession(project, {
       config: resolveSurfaceAiConfig("region"),
+      declareIntent: createLlmIntentDeclarer(),
       contextOptions: {
         currentMapId: mapId,
         // 프로젝트 한정 성향 조회 키. 전역 성향은 이 값과 무관하게 항상 붙는다.
@@ -412,7 +414,8 @@ export function formatApprovedPropVocabHint(tileset: TilesetDef | undefined): st
 
 // aiChatPanel.contextFooter와 동일한 [컨텍스트] 라인 포맷(buildSpec.ts의 정규식이 파싱).
 // 이 라인이 있어야 세션이 선택 영역을 이번 턴의 암묵적 명세로 인식한다.
-// 도메인 키워드(타일/npc)를 넣어 place_props·author_house·place_npc 가 노출되게 한다.
+// 사용자 발화 + 사실(현재 맵·선택 영역·재료 라벨 예)만 싣는다. 도구 규칙은 툴 설명에, 영역 경계는 세션이
+// 스코프 인자(sendUserMessage opts.scope)로 받아 의도 선언에 맞춰 붙인다.
 export function buildRegionTaskMessage(
   instruction: string,
   mapName: string,
@@ -420,21 +423,9 @@ export function buildRegionTaskMessage(
   region: RegionRect,
   tileset?: TilesetDef,
 ): string {
-  const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
-  // 도구 규칙은 **조수와 공유**한다(#378 의 의견). 예전에는 이 배열이 영역 작업 전용이어서,
-  // 선택 영역 없이 조수에게 같은 말을 하면 다른 규칙을 받았다 — 가방 그룹을 재료로 쓰거나,
-  // 장식 나무상자를 place_chest 로 놓거나, 원형 호수를 네모로 채우는 실수가 조수 쪽에서만
-  // 반복됐다. 이제 buildTurnGuide 한 곳에서 만들고 스코프(선택 사각형)만 인자로 넘긴다.
-  // 위임 전후 규칙 줄이 완전히 같음을 확인하고 바꿨다(6개 요청 유형 대조).
-  const toolGuide = buildTurnGuide({
-    instruction,
-    ...(tileset ? { tileset } : {}),
-    scope: { mapId, region },
-  });
-  // domainSeed·scopeLine 은 buildTurnGuide(scope 있음) 가 이미 붙인다. 여기서 또 붙이면 같은
-  // 문구가 두 번 들어가고, 늘어난 키워드가 도구 노출 상한(40)을 잠식해 build_house_kit 같은
-  // 핵심 도구가 밀려난다(실측: 이 중복으로 regionAiPlacementHarness 가 실패했다).
-  return `${instruction.trim()}\n\n${toolGuide}\n${footer}`;
+  const material = tileset ? ` · ${formatMaterialLabelHint(tileset).replace(/^- /, "")}` : "";
+  const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}${material}`;
+  return `${instruction.trim()}\n\n${footer}`;
 }
 
 // 영역 안에서 base 대비 lower/upper가 바뀐 셀 수(적용 여부 판단·요약용).
@@ -623,11 +614,8 @@ export async function runRegionTask(
           region: opts.region,
           surroundings: analyzeRegionSurroundings(base, opts.mapId, opts.region),
           materialHint: formatMaterialLabelHint(workingTileset),
-          // 신축 가이드(실내·야외 구조물)는 뺀다 — 다듬기는 정의상 기존 것을 주변에 맞추는 작업이라
-          // "새로 지어라" 문장이 섞이면 모델이 두 개의 상반된 지시를 받는다.
-          extraGuides: regionIntentGuideLines(
-            routeRegionIntent(instruction).filter((category) => category !== "interior" && category !== "structure"),
-          ),
+          // 카테고리 가이드는 없다 — 도구 사용 규칙은 툴 설명에 있다.
+          extraGuides: [],
         })
       : buildRegionTaskMessage(instruction, map.name, opts.mapId, opts.region, workingTileset);
     const uiEvents: RegionTaskUiEvent[] = [];
@@ -686,7 +674,10 @@ export async function runRegionTask(
 
     let turn: TurnResult;
     try {
-      turn = await session.sendUserMessage(message, onEvent, signal);
+      turn = await session.sendUserMessage(message, onEvent, signal, {
+        instruction,
+        scope: { mapId: opts.mapId, region: opts.region },
+      });
     } catch (cause) {
       ghostPreviewUpdater.cancel();
       if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };

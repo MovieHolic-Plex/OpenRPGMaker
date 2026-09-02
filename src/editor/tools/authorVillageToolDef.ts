@@ -63,7 +63,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
   return {
     name: "author_village",
     description:
-      "Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target.",
+      "Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 마을 숲은 forestDensity 를 반드시 넣는다(테마 문장만 쓰고 density 를 빼지 말 것). 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
     mode: "write",
     domains: ["tile", "map"],
     parameters: {
