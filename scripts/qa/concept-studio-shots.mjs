@@ -110,6 +110,12 @@ try {
   await workspace.screenshot({ path: join(OUT, "08-town-picker-closeup.png") });
 
   console.log(`shots -> ${OUT}`);
+  const { spawnSync } = await import("node:child_process");
+  const inline = spawnSync(process.execPath, [join(HERE, "inline-report-images.mjs")], {
+    cwd: ROOT,
+    stdio: "inherit",
+  });
+  if (inline.status !== 0) process.exit(inline.status ?? 1);
 } finally {
   await browser.close();
 }
