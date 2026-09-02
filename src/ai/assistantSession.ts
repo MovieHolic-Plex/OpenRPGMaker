@@ -1725,6 +1725,17 @@ export class AssistantSession {
       }
       const done = result.item;
       const next = getCurrentWorkItem(this.workPlan);
+      if (result.alreadyDone) {
+        // 자동 완료된 항목의 재완료 — 다시 짓지 말라고 분명히 말한다. 마일스톤 적용은 첫 완료가 이미 트리거했다.
+        return {
+          ok: true,
+          summary: next
+            ? `이미 완료된 항목: ${done.title} (다시 시공하지 마세요) → 현재: ${next.title}`
+            : `이미 완료된 항목: ${done.title} (다시 시공하지 마세요). 작업 계획이 모두 끝났습니다.`,
+          // `completed` 를 비워 둔다 — 실행 루프가 이 키로 마일스톤 적용·레이어 검증을 다시 트리거한다.
+          data: { alreadyDone: done.id, next: next?.id ?? null, progress: summarizeWorkPlan(this.workPlan) },
+        };
+      }
       return {
         ok: true,
         summary: next
