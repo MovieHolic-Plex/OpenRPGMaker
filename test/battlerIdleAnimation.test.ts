@@ -136,18 +136,25 @@ describe("배틀러 idle 애니메이션 — 카탈로그", () => {
       // 등록이 없는 셀 크기(48)면 원본 시트와 비교한다.
       const hires = battlerHiresSheet(entry.resourceId);
       const sheet = readPng(hires && hires.cellWidth === entry.cellWidth ? hires.path : `assets/generated/starter/${sourceName}.png`);
-      for (let y = 0; y < entry.cellHeight; y += 1) {
+      // 192px 셀은 채널당 expect 를 걸면 스트립 하나에 15만 번(6종 88만 번)이라 전체 스위트 부하에서 타임아웃했다
+      // (실측: 단독 12.9초, gates 안에서 실패). 어긋난 첫 좌표만 모아 한 번 단정한다.
+      const mismatches: string[] = [];
+      for (let y = 0; y < entry.cellHeight && mismatches.length < 5; y += 1) {
         for (let x = 0; x < entry.cellWidth; x += 1) {
           const fromStrip = (y * strip.width + x) * 4;
           const fromSheet = (y * sheet.width + x) * 4;
-          for (let channel = 0; channel < 4; channel += 1) {
-            expect(
-              strip.data[fromStrip + channel],
-              `${entry.resourceId}: 프레임 0 이 원본 idle 칸과 다르다 (${x},${y})`
-            ).toBe(sheet.data[fromSheet + channel]);
+          if (
+            strip.data[fromStrip] !== sheet.data[fromSheet] ||
+            strip.data[fromStrip + 1] !== sheet.data[fromSheet + 1] ||
+            strip.data[fromStrip + 2] !== sheet.data[fromSheet + 2] ||
+            strip.data[fromStrip + 3] !== sheet.data[fromSheet + 3]
+          ) {
+            mismatches.push(`(${x},${y})`);
+            if (mismatches.length >= 5) break;
           }
         }
       }
+      expect(mismatches, `${entry.resourceId}: 프레임 0 이 원본 idle 칸과 다르다 ${mismatches.join(" ")}`).toEqual([]);
     }
   });
 
