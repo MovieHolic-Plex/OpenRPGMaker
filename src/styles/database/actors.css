@@ -969,9 +969,11 @@
   }
 
   .database-modal-body .oprn-record-actors .actor-graphic.actor-panel > .db-field > span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    /* v2(2026-09-03): 라벨 말줄임 금지 — 어절로 줄바꿈한다. */
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: keep-all;
   }
 
   .database-modal-body .oprn-record-actors .actor-graphic.actor-panel > .actor-graphic-preview > span {

@@ -9,6 +9,7 @@
 //   canon     : 정규 워크스페이스 클래스(.db-record-workspace 등)를 쓰는가 (축 A)
 //   search    : 목록 창에 검색이 있는가 (축 B)
 //   emptyState: 레코드 0 일 때 제대로 된 빈 상태가 있는가 (축 D)
+//   textClip  : 글자가 말줄임되거나 overflow:hidden 조상 밖으로 나가 안 보이는가 (2026-09-03)
 //
 //   node scripts/audit-db-conformance.mjs                       # 전체
 //   AUDIT_ONLY=switches,variables node scripts/audit-db-conformance.mjs
@@ -66,6 +67,10 @@ function measureInPage() {
   const clipped = [];
   for (const node of all) {
     if (!visible(node)) continue;
+    // 시각적으로 숨긴 라벨(sr-only: 1×1 + clip:rect) 은 화면 독자용이라 "잘라먹는" 상자가 아니다.
+    // v2 가 이름 입력을 제목으로 쓰면서 라벨을 이렇게 숨긴다(actors/items/states/animations 실측).
+    const box = node.getBoundingClientRect();
+    if (box.width <= 1 && box.height <= 1) continue;
     const style = getComputedStyle(node);
     const hiddenY = style.overflowY === "hidden" || style.overflowY === "clip";
     const hiddenX = style.overflowX === "hidden" || style.overflowX === "clip";
@@ -113,6 +118,67 @@ function measureInPage() {
     if (pr.width < 240) continue;              // 좁은 툴바에서 꽉 차는 건 정상
     if (br.width >= pr.width * 0.9 && br.width > 420) {
       fullBleed.push({ node: describe(btn), text: (btn.textContent || "").trim().slice(0, 24), w: Math.round(br.width) });
+    }
+  }
+
+  // ---- textClip: 글자가 잘리는 요소 --------------------------------------
+  // 위 clipped 는 "overflow:hidden 상자가 자기 내용을 잘라먹는가" 만 본다. 사용자가 실제로
+  // 겪는 "글자가 잘린다" 는 두 갈래가 더 있다(2026-09-03 실측: 몬스터 «이동 간격(…», 전투
+  // 애니메이션 타이밍 표 «사운드…», 상태 «해제 조건» 셀렉트가 행 아래로 잘림):
+  //   (a) ellipsis — text-overflow 로 말줄임된 텍스트 요소. 라벨·표 헤더가 여기서 잘린다.
+  //   (b) ancestorClip — 요소 상자가 가장 가까운 overflow:hidden|clip 조상 밖으로 나가
+  //       그만큼 안 보인다. 셀렉트·입력 같은 폼 컨트롤도 여기서 잡는다.
+  // 스크롤 컨테이너(overflow:auto|scroll)는 잘림이 아니라 스크롤이므로 세지 않는다.
+  const textClip = [];
+  const hasOwnText = (node) =>
+    Array.from(node.childNodes).some((child) => child.nodeType === 3 && (child.textContent || "").trim().length > 0);
+  const clipAncestor = (node) => {
+    let cursor = node.parentElement;
+    while (cursor && cursor !== body) {
+      const style = getComputedStyle(cursor);
+      // 스크롤 컨테이너를 먼저 만나면 그 안의 내용은 스크롤로 닿는다 — 잘림이 아니다.
+      // (상세 창은 overflow:hidden 인데 그 자식 폼이 실제 스크롤러인 구조가 많다.)
+      if (/(auto|scroll)/.test(style.overflowX) || /(auto|scroll)/.test(style.overflowY)) return null;
+      const clipsX = style.overflowX === "hidden" || style.overflowX === "clip";
+      const clipsY = style.overflowY === "hidden" || style.overflowY === "clip";
+      if (clipsX || clipsY) return { node: cursor, clipsX, clipsY };
+      cursor = cursor.parentElement;
+    }
+    return null;
+  };
+  for (const node of all) {
+    if (!visible(node)) continue;
+    const tag = node.tagName;
+    const isControl = tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
+    const style = getComputedStyle(node);
+    // (a) 말줄임 — 폼 컨트롤은 제 값을 스크롤하므로 제외.
+    if (!isControl && hasOwnText(node) && style.textOverflow === "ellipsis" && style.whiteSpace === "nowrap") {
+      const over = node.scrollWidth - node.clientWidth;
+      if (over > 1) {
+        textClip.push({ kind: "ellipsis", node: describe(node), text: (node.textContent || "").trim().slice(0, 24), over: Math.round(over) });
+        continue;
+      }
+    }
+    // (b) 조상 클립 — 글자를 가진 요소와 폼 컨트롤만 본다(장식 상자는 제외).
+    if (!isControl && !hasOwnText(node)) continue;
+    if (style.position === "absolute" || style.position === "fixed") continue;
+    const clip = clipAncestor(node);
+    if (!clip) continue;
+    const r = node.getBoundingClientRect();
+    const c = clip.node.getBoundingClientRect();
+    const overRight = clip.clipsX ? r.right - c.right : 0;
+    const overBottom = clip.clipsY ? r.bottom - c.bottom : 0;
+    const overLeft = clip.clipsX ? c.left - r.left : 0;
+    const overTop = clip.clipsY ? c.top - r.top : 0;
+    const worst = Math.max(overRight, overBottom, overLeft, overTop);
+    if (worst > 2) {
+      textClip.push({
+        kind: "ancestor",
+        node: describe(node),
+        by: describe(clip.node),
+        text: isControl ? `<${tag.toLowerCase()}>` : (node.textContent || "").trim().slice(0, 24),
+        over: Math.round(worst),
+      });
     }
   }
 
@@ -172,6 +238,8 @@ function measureInPage() {
     overlapCount: overlaps.length,
     fullBleed: fullBleed.slice(0, 8),
     fullBleedCount: fullBleed.length,
+    textClip: textClip.slice(0, 16),
+    textClipCount: textClip.length,
     nodeCount: all.length,
   };
 }
@@ -183,6 +251,7 @@ function violationsFor(m) {
   if (m.clippedCount > 0) out.push(`clipped:${m.clippedCount}`);
   if (m.overlapCount > 0) out.push(`overlap:${m.overlapCount}`);
   if (m.fullBleedCount > 0) out.push(`fullBleed:${m.fullBleedCount}`);
+  if (m.textClipCount > 0) out.push(`textClip:${m.textClipCount}`);
   // 위반 판정은 인스펙터 여백으로 한다 — 목록 아래 여백은 레코드 수 문제라 결함이 아니다.
   if (m.detailDead > 0.55) out.push(`detailDead:${(m.detailDead * 100).toFixed(0)}%`);
   if (m.hasListPane && !m.search) out.push("listWithoutSearch");
@@ -240,8 +309,8 @@ async function main() {
   const base = BASELINE && existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")) : null;
   let total = 0;
   let clean = 0;
-  console.log(`\n${"tab".padEnd(18)} ${"body".padEnd(5)} ${"insp".padEnd(5)} clip ovl bleed  violations${base ? "   (vs baseline)" : ""}`);
-  console.log("-".repeat(base ? 92 : 74));
+  console.log(`\n${"tab".padEnd(18)} ${"body".padEnd(5)} ${"insp".padEnd(5)} clip ovl bleed text  violations${base ? "   (vs baseline)" : ""}`);
+  console.log("-".repeat(base ? 98 : 80));
   for (const [slug, m] of Object.entries(results)) {
     total += 1;
     const v = m.violations ?? ["error"];
@@ -255,10 +324,10 @@ async function main() {
     console.log(
       `${slug.padEnd(18)} ${String(((m.deadSpace ?? 0) * 100).toFixed(0) + "%").padEnd(5)} ${String(((m.detailDead ?? 0) * 100).toFixed(0) + "%").padEnd(5)} ` +
       `${String(m.clippedCount ?? "-").padStart(4)} ${String(m.overlapCount ?? "-").padStart(3)} ` +
-      `${String(m.fullBleedCount ?? "-").padStart(5)}  ${v.join(" ") || "clean"}${delta}`,
+      `${String(m.fullBleedCount ?? "-").padStart(5)} ${String(m.textClipCount ?? "-").padStart(4)}  ${v.join(" ") || "clean"}${delta}`,
     );
   }
-  console.log("-".repeat(base ? 92 : 74));
+  console.log("-".repeat(base ? 98 : 80));
   console.log(`clean ${clean}/${total} -> ${OUT}`);
 }
 

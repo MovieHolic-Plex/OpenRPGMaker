@@ -102,7 +102,7 @@ function unconfiguredWorkspace(rerender: () => void): HTMLElement {
     testid: "db-weather-workspace",
     detail: detailPane({
       hero: detailHero({
-        eyebrow: "WEATHER",
+        eyebrow: "계절·날씨",
         title: "계절·날씨",
         subtitle: "계절별 확률표에서 오늘 날씨와 예보를 결정합니다.",
         tags: ["규칙 0개", "날씨 사용 안 함"],
@@ -221,7 +221,7 @@ function configuredWorkspace(weather: DailyWeatherConfig, rerender: () => void):
   const rules = weather.seasons[selectedSeason] ?? [];
   const detail = detailPane({
     hero: detailHero({
-      eyebrow: "SEASON",
+      eyebrow: "계절",
       title: `${SEASON_LABEL[selectedSeason]} 확률표`,
       subtitle: "가중치는 서로의 비율로만 의미가 있습니다 — 오른쪽 비율 칩이 실제 확률입니다.",
       tags: [

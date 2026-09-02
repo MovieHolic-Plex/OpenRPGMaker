@@ -182,7 +182,7 @@ function terrainDetailPane(
   }
   return detailPane({
     hero: detailHero({
-      eyebrow: "TERRAIN",
+      eyebrow: "지형",
       title: selected.name,
       subtitle: `태그 ${selectedIndex + 1} · ${selected.id}`,
       tags: [
@@ -381,7 +381,7 @@ function terrainPreviewStage(terrain: DatabaseTerrainRecord): HTMLElement {
       el("div", {
         class: "db-terrain-stage-overlay",
         children: [
-          el("span", { class: "db-studio-live-chip", text: "LIVE PREVIEW" }),
+          el("span", { class: "db-studio-live-chip", text: "실시간 미리보기" }),
           el("strong", { text: terrain.name }),
           el("small", { text: `조우 ${terrain.encounterRatePercent}% · 지형 피해 ${terrain.damage}` }),
         ],
@@ -513,7 +513,7 @@ function battleScreenDetailPane(troop: TroopRecord | undefined, rerender: () => 
   const memberCount = troop?.members?.length ?? troop?.enemyIds.length ?? 0;
   return detailPane({
     hero: detailHero({
-      eyebrow: "BATTLE SCREEN",
+      eyebrow: "전투 화면",
       title: troop?.name ?? "적 그룹 없음",
       subtitle: troop ? `미리보기 대상 · ${troop.id}` : "미리볼 적 그룹이 없습니다",
       tags: [
@@ -635,7 +635,7 @@ function battleScreenPreviewStage(troop: TroopRecord): HTMLElement {
     el("div", {
       class: "db-battle-screen-stage-meta",
       children: [
-        el("span", { class: "db-studio-live-chip", text: project.system.battleFlow === "strict" ? "TURN" : "GAUGE" }),
+        el("span", { class: "db-studio-live-chip", text: project.system.battleFlow === "strict" ? "턴 방식" : "게이지 방식" }),
         el("strong", { text: troop.name }),
         el("small", { text: `${troop.members?.length ?? troop.enemyIds.length} enemies · ${resourceDisplayName(backdropId)}` }),
       ],
@@ -685,7 +685,7 @@ export function renderBattleCommandsTab(host: HTMLElement): void {
     workspaceShell({
       detail: detailPane({
         hero: detailHero({
-          eyebrow: "BATTLE COMMANDS",
+          eyebrow: "전투 명령",
           title: "전투 명령",
           subtitle: "목록 순서가 곧 전투 중 메뉴 순서입니다.",
           tags: [`${commands.length}개`, `직업 ${project.database.classes.length}개가 참조`],
@@ -1023,7 +1023,7 @@ function battleCommandPreview(commands: readonly DatabaseBattleCommandRecord[]):
       el("div", { class: "db-studio-stage-grid", attrs: { "aria-hidden": "true" } }),
       el("div", {
         class: "db-command-preview-copy",
-        children: [el("span", { class: "db-studio-live-chip", text: "BATTLE MENU" }), el("strong", { text: "행동 선택" })],
+        children: [el("span", { class: "db-studio-live-chip", text: "전투 메뉴" }), el("strong", { text: "행동 선택" })],
       }),
       el("div", {
         class: "db-command-preview-menu",

@@ -687,3 +687,69 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 
 Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`,
 `test/imageGenerationClient.test.ts`.
+
+## Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+
+`src/styles/database/studio-v2.css` 한 층이 30탭이 이미 발행하는 클래스(`.db-field` · `fieldset/legend` ·
+`.db-ws-*` · `.oprn-record-*` · `.db-list-row` …)에 같은 규칙을 걸어 세대 차이를 접는다. index.css 에서
+`database/modern/*` 뒤(가장 늦게) 읽히고, `!important` · hex · 글꼴 스택 리터럴이 없다
+(`test/databaseStudioV2.test.ts`). 앞선 층의 `!important` 는 그 층(`studio-theme.css` · `sidebar.css`)에서
+**값만** 고쳤다 — 예산 래칫(important 988 · hex 1677 · 파일 266)은 main 과 같거나 낮다.
+`form-hierarchy-modern.css` 는 여기로 흡수해 삭제했다(파일 수 +1 −1).
+
+**셸.** 헤더는 `데이터베이스 | 그룹 › 탭`(`database-modal-crumb`). 활성 탭은 `database.ts` 의
+`subscribeDatabaseActiveTab` 으로 따라간다 — 레일 클릭·G006 점프·Ctrl+T 가 전부 `setDatabaseActiveTab`
+한 곳을 지나므로 DOM 이벤트가 필요 없고 fake DOM 에서도 돈다. 창 컨트롤은 `⇥ □ x` 글리프가 아니라
+SVG(`database-modal-icon`, `tileToolbarIcons` 규격). 푸터 상태는 전폭 초록 띠가 아니라 점 하나 붙은
+28px 필(`databaseFooterStatusText` 는 체크 글리프 없이 "자동 저장됨"). 「도움말」은 `tertiary` 클래스.
+레일 그룹 헤더 12px/600, 부제 11px(10px 은 모달 안 유일한 11px 미달 글자였다 — `databaseGroupPeek` 갱신).
+
+**워크스페이스.** 회색 바탕 위 테두리 카드 세 겹 → 창 전체가 흰 면, 레일 | 목록 | 상세는 세로 헤어라인.
+묶음 카드는 `--db-studio-canvas` 회색 면에 테두리 없음, 제목 13/600 + 힌트 12 text-3. 카드 속 입력은 다시
+흰 면. 구형 목록 창은 `databaseRecordViews.ts` 가 제목+개수를 `.db-ws-list-head` 로 묶어 `listPane()` 과
+같은 모양이 된다(`oprn-record-count` 는 그대로, `db-ws-count` 를 함께 단다). 툴바는 한 줄, 뷰 토글은 우측
+세그먼트.
+
+**폼 문법.** `.db-field` = 라벨(좌, `minmax(min(96px, 38%), max-content)`) | 값(우). 라벨은 **말줄임 금지**
+— 어절로 줄바꿈. `modern/enemies.css:144` · `actors.css:971` 의 ellipsis 를 소스에서 걷었다. 좁은 수치
+격자(`.db-enemy-stat-grid` · `.db-enemy-reward-grid` · `.db-item-grid` · `.db-state-runtime-panel`)만 라벨
+위. 입력 크롬 한 종류(32px · 8px · `--db-studio-border-default` · 포커스 액센트 링). `select` 는 chevron
+밴드 때문에 `padding` 단축을 쓰지 않는다(`databaseSelectChevronGuard`). 스테퍼는 `28px | 1fr | 28px`
+한 상자 — **격자가 아니라 flex** 다. 좁은 칸(≤120px)에서 `modern-controls.css` 의 `@container` 가 단추를
+접는데, 격자면 접힌 단추의 빈 28px 두 칸이 남아 입력이 0 폭이 됐다(지형 「다른 프리셋 빠른 편집」 실측:
+52px 스테퍼에 단추가 남고 입력이 + 밑으로 들어갔다). **`@container` 는 특이성을 올려주지 않는다** — v2 의
+`display:inline-flex`(0,4,0) 가 modern-controls 의 접기 규칙(0,3,0) 을 이겨 버리므로, v2 가 같은 깊이로
+접기 규칙을 다시 적는다(`test/databaseStudioV2.test.ts` 가 선택자 깊이를 고정). 라벨-위 격자 목록에
+`.db-terrain-quick-row` 도 들어간다. 히어로(`.db-ws-hero` · `.db-record-hero` · 아이템/장비 인스펙터 헤더)는
+52px 매체 + 18/700 제목 + 11.5 한글 아이브로우 + 알약, 히어로 안 이름 입력은 제목처럼(테두리는 hover/focus
+에만).
+
+**상태 탭은 격자를 바꿨다.** 8열/16열 고정 영역 격자가 한 행 높이를 가장 낮은 카드에 맞춰 139px 로 눌러
+「기본 설정」 다섯 필드 중 셋이 카드 안 스크롤 뒤에 숨어 있었다. 이제 `repeat(auto-fit, minmax(300px,1fr))`
+카드 흐름이고 `grid-area` 는 `> *` 로 전부 auto. **함정(CDP 실측):** 폼이 flex column 이라 워크벤치에
+`flex: 0 0 auto` 가 없으면 flex-shrink 가 워크벤치를 폼 높이로 눌러 auto 행이 전부 같은 높이(120px)로
+배분되고 카드 내용이 밖으로 새어 겹친다. 규칙은 다 맞는데 겹치면 먼저 이걸 의심하라.
+같은 함정의 두 번째 얼굴: `.db-ws-detail-body` 도 세로 flex 열이라 `overflow:hidden` 을 가진 자식(요약 띠
+`.db-ws-stats`)은 자동 최소 높이가 0 이 되어 본문이 넘칠 때 **2px 로 짜부라진다**(지형 요약 띠, 전투 배경·
+발소리·탈것 셀이 통째로 사라졌다). v2 는 `.db-ws-detail-body > * { flex-shrink: 0 }` 으로 막고, 남는 세로를
+받아야 하는 타일셋 그림판만 `modern/tilesets.css` 가 더 높은 특이도로 `flex:1` 을 다시 연다.
+
+**목록 행의 보조 칩.** 이름은 `flex:1 1 auto; min-width:0` 이고 칩은 `flex:0 0 auto` 였으니 좁으면 이름이
+먼저 잘렸다(「킹슬…」). 칩에 min-width 를 주고 이름에 5em 바닥을 깔아 보면 짧은 이름이 26px 을 헛되이
+차지해 이번엔 칩이 잘렸다(주민 「연결만 있음 · 이벤…」). 답은 자르지 않는 것: 칩이 있는 행만
+`flex-wrap: wrap; justify-content: flex-end` 로 두고 한 줄에 못 들어가면 칩이 둘째 줄 오른쪽으로 내려간다
+(타일셋 목록이 먼저 쓰던 방식). `04-modern-records` 의 번호 칸 `min-width: 48px` 도 「#5」에 28px 을
+낭비해 줄바꿈을 앞당기던 원인이라 v2 가 0 으로 푼다. `listRow` 는 칩에 `title` 을 단다.
+
+**영문 잔재 한글화.** `ELEMENT/TERRAIN/BATTLE SCREEN/BATTLE COMMANDS/WEATHER/SEASON/CROP/SWITCH/VARIABLE/
+BATTLE/SHOP/INN/COMMON/RESIDENT/FARM/SPECIES/COMMON EVENT/GAME OVERVIEW` 아이브로우와 `LIVE PREVIEW/GAUGE/
+TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...` 는 리터럴 텍스트였다 → `사운드`.
+
+**계측.** `scripts/audit-db-conformance.mjs` 에 `textClip` 술어(말줄임된 텍스트 · overflow:hidden 조상 밖으로
+나간 텍스트/컨트롤; 스크롤 컨테이너 안은 제외)를 추가했다. 기준선(main, 1680×1050): textClip 2건(몬스터
+「이동 간격(ms)」 · 종족 목록 「킹슬라임」). `clipped` 술어는 1×1 로 숨긴 sr-only 라벨을 건너뛴다(v2 가
+이름 입력을 제목으로 쓰면서 라벨을 이렇게 숨기자 actors/items/states/animations 가 전부 clipped:1 로 잡혔다
+— 화면 독자용이지 잘라먹는 상자가 아니다). `detailDead`(상세 창 빈 면적 55% 초과) 는 흰 면 + 카드 흐름에서
+몇 탭이 문턱을 넘나든다(troops 53→57 · life-collections 46→60 등) — 필드가 적은 폼의 여백이라 위반이
+아니라 밀도 축의 관찰값으로 읽는다. 증거는 `docs/2026-09-03-db-studio-v2-assets/`.
+

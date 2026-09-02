@@ -263,7 +263,7 @@ function commonEventListRow(
 
 function commonEventHero(commonEvent: CommonEvent, index: number): HTMLElement {
   return detailHero({
-    eyebrow: "COMMON EVENT",
+    eyebrow: "공용 이벤트",
     title: commonEvent.name || "(이름 없음)",
     // 레코드 id 를 상세 창 텍스트로 노출한다 — 예전에는 목록 행의 title 속성에만 있었다.
     subtitle: commonEvent.id,
