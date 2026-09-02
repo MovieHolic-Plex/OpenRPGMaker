@@ -4,6 +4,7 @@
 // 15fps setInterval, record.sheet 좌표로 패턴을 잘라낸 셀 스프라이트, 1회 재생 후 첫 프레임 복귀.
 // 셀 배치 프리미티브(db-animation-stage-cells / -cell-sprite)도 그 스테이지와 공유한다 —
 // 같은 애니메이션이 편집기 안에서 두 얼굴을 가지면 안 된다.
+import { battleAnimationSheetRmScale } from "@/player/battleAnimationPlayback";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
 import type {
@@ -217,15 +218,19 @@ function frameCell(
     dataset: { testid: "show-animation-frame-cell", pattern: String(cell.pattern), cellIndex: String(cellIndex) },
     attrs: { "aria-hidden": "true" },
   });
-  sprite.style.setProperty("--animation-frame-width", `${source.sheet.frameWidth}px`);
-  sprite.style.setProperty("--animation-frame-height", `${source.sheet.frameHeight}px`);
+  // 미리보기는 RM px 좌표계다 — 시트 배율(레거시 1, 384px 고해상도 0.25)을 곱해 96px 로 맞춘다.
+  const rmScale = battleAnimationSheetRmScale(source.sheet);
+  const frameWidth = source.sheet.frameWidth * rmScale;
+  const frameHeight = source.sheet.frameHeight * rmScale;
+  sprite.style.setProperty("--animation-frame-width", `${frameWidth}px`);
+  sprite.style.setProperty("--animation-frame-height", `${frameHeight}px`);
   const columns = Math.max(1, source.sheet.columns);
   const column = cell.pattern % columns;
   const row = Math.floor(cell.pattern / columns);
-  sprite.style.backgroundPosition = `-${column * source.sheet.frameWidth}px -${row * source.sheet.frameHeight}px`;
+  sprite.style.backgroundPosition = `-${column * frameWidth}px -${row * frameHeight}px`;
   if (source.url) {
     sprite.style.backgroundImage = `url("${source.url}")`;
-    sprite.style.backgroundSize = `${columns * source.sheet.frameWidth}px auto`;
+    sprite.style.backgroundSize = `${columns * frameWidth}px auto`;
     // 단색 배경 시트(마젠타/녹색 등) 자동 키아웃. 투명 PNG 면 no-op.
     applyAutoChromaKeyToBackground(sprite, source.url);
   }
