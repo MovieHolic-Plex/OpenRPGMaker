@@ -6,6 +6,7 @@ import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/s
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
+import { bumpPerfCounter } from "@/player/runtimePerfCounters";
 
 export type ScrollMapDirection = "down" | "left" | "right" | "up";
 
@@ -158,12 +159,31 @@ function cameraState(mode: RuntimeCameraSessionState["mode"], step: CameraContro
 function followCameraTarget(scene: PlaySceneContext, target: RuntimeCameraTarget): void {
   const followTarget = followObjectForTarget(scene, target);
   if (followTarget) {
-    scene.cameras.main.startFollow(followTarget, true, 0.2, 0.2);
+    const camera = scene.cameras.main;
+    // Phaser 의 startFollow 는 scrollX/Y 를 대상 좌표로 **하드 설정**한다(Camera.js §startFollow).
+    // 이미 같은 대상을 따르는 중에 다시 부르면 0.2 러프가 죽고 화면이 대상 위치로 튄다. 이 함수는
+    // refreshRuntimeSurfaces 를 거쳐 인터프리터 스텝마다 불리므로(실측: 대화 1회에 6번, 100ms
+    // 병렬 이벤트면 초당 8번) 같은 대상이면 아무것도 하지 않는다.
+    if (isFollowing(camera, followTarget)) {
+      bumpPerfCounter(scene, "cameraRefollowsSkipped");
+      return;
+    }
+    bumpPerfCounter(scene, "cameraRefollows");
+    camera.startFollow(followTarget, true, 0.2, 0.2);
     return;
   }
   const resolved = resolveCameraTarget(scene, target);
   scene.cameras.main.stopFollow();
   scene.cameras.main.centerOn(resolved.x, resolved.y);
+}
+
+/**
+ * 카메라가 지금 이 객체를 따르는가. Phaser 는 추적 대상을 `_follow` 에만 둔다(공개 getter 없음);
+ * 없는 환경(테스트 스텁)에서는 모른다고 보고 startFollow 를 그대로 부른다.
+ */
+function isFollowing(camera: Phaser.Cameras.Scene2D.Camera, target: Phaser.GameObjects.Sprite): boolean {
+  const current = (camera as unknown as { _follow?: unknown })._follow;
+  return current !== undefined && current === target;
 }
 
 function followObjectForTarget(

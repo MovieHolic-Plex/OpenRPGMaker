@@ -57,11 +57,15 @@ type ActionEventSceneContext = Pick<
 export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void {
   if (isRuntimeMenuOpen(scene)) {
     scene.input_.resetEdges();
+    // 메뉴가 열린 동안 누른 방향키가 닫히는 순간 유령 걸음이 되지 않게 탭 래치를 비운다.
+    scene.input_.clearDirectionTaps();
     scene.syncRuntimeState();
     return;
   }
   scene.session.playTimeSeconds += deltaMs / 1000;
-  const input = scene.input_.update();
+  // 걷는 중·체공 중에는 이번 프레임에 걸음을 시작할 수 없다 — 방향 탭 래치를 소비하지 않고
+  // 다음 정지 프레임으로 넘긴다(걷는 중에 한 번 누른 키 = 정확히 한 걸음).
+  const input = scene.input_.update({ deferTaps: scene.moving || scene.playerHop !== null });
   const cutsceneInputLocked = isCutsceneInputLocked(scene.session);
   // 체공 중에는 새 이동을 시작하지 않는다 — 공중에서 입력을 받으면 낙하가 취소된다.
   if (!scene.moving && !scene.playerHop) {
@@ -70,11 +74,15 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     else if (!cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) tryStartMove(scene, input);
   }
   if (scene.moving) {
-    updatePlayerMovement(scene, deltaMs);
+    updatePlayerMovement(scene, deltaMs, { input, cutsceneInputLocked });
   } else if (scene.playerHop) {
     updatePlayerStationaryHop(scene, deltaMs);
   } else {
     scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
+    // 걷기 주기는 **멈출 때** 처음으로 돌아간다. 걸음마다 되돌리면 160ms 걸음에서 패턴 0·1 만 반복돼
+    // 세 번째 패턴(다른 발)이 한 번도 나오지 않는다 — RM2K3 은 걷는 동안 주기를 이어 간다.
+    scene.walkFrame = 0;
+    scene.walkTimer = 0;
   }
   // 액션 전투 맵에서는 확인 키 하나가 조사와 공격을 겸한다 — 정면에 조사 대상이
   // 있으면 대화가 우선하고, 없을 때만 스윙한다(적대 리뷰 10: Space 만 공격이고
@@ -115,7 +123,13 @@ const WALK_FRAME_MS = 90;
 /** dx/dy 를 안 준 점프의 거리. NPC 의 DEFAULT_JUMP_DISTANCE 와 같은 2 칸이다. */
 const PLAYER_JUMP_DISTANCE = 2;
 
-function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
+/** 걸음이 끝난 프레임에 남은 시간으로 다음 걸음을 이어 붙일 때 필요한 이번 프레임 입력. */
+type StepChainContext = {
+  readonly input: InputState;
+  readonly cutsceneInputLocked: boolean;
+};
+
+function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number, chain?: StepChainContext): void {
   const hopState = scene.playerHop;
   const dashFactor = scene.dashing ? DASH_SPEED_FACTOR : 1;
   // 점프는 자기 지속 시간으로 난다 — 대시 배속이나 이동 속도에 끌려가지 않는다.
@@ -129,6 +143,9 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     scene.moveProgress += deltaMs / moveDurationMs;
   }
   if (scene.moveProgress >= 1) {
+    // 이번 프레임에서 걸음을 넘긴 만큼의 시간. 버리면 칸마다 유휴 프레임이 끼어 60fps 에서 160ms
+    // 걸음이 실제로는 176.7ms 가 되고(6 칸 걷는 데 6.6 칸 시간), 걸음 경계마다 한 프레임 멈칫한다.
+    const overshootMs = hopState ? 0 : (scene.moveProgress - 1) * moveDurationMs;
     scene.moveProgress = 1;
     scene.tileX = scene.movingTo.x;
     scene.tileY = scene.movingTo.y;
@@ -150,6 +167,13 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     syncFollowerSprites(scene);
     fireTouchTriggers(scene);
     maybeTriggerRandomEncounter(scene);
+    // 키를 계속 누르고 있고 이번 걸음이 이벤트·전투를 깨우지 않았으면 남은 시간으로 다음 걸음을
+    // 바로 시작한다 — 걸음 사이에 프레임이 비지 않아 속도가 정확하고 애니메이션이 이어진다.
+    // 한 프레임에 한 번만 이어 붙인다(재귀 호출에는 chain 을 넘기지 않는다).
+    if (chain && overshootMs > 0 && canChainStep(scene, chain)) {
+      tryStartMove(scene, chain.input);
+      if (scene.moving) updatePlayerMovement(scene, overshootMs);
+    }
     return;
   }
   const px = linear(scene.movingFrom.x, scene.movingTo.x, scene.moveProgress);
@@ -172,11 +196,26 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     return;
   }
   scene.walkTimer += deltaMs;
-  if (scene.walkTimer > WALK_FRAME_MS / dashFactor) {
-    scene.walkTimer = 0;
+  const walkFrameMs = WALK_FRAME_MS / dashFactor;
+  while (scene.walkTimer >= walkFrameMs) {
+    // 남은 시간을 버리지 않고 이월한다 — 프레임 길이와 무관하게 패턴 주기가 일정하다.
+    scene.walkTimer -= walkFrameMs;
     scene.walkFrame = (scene.walkFrame + 1) % scene.playerSprite.walkFrameCount;
   }
   scene.player.setFrame(scene.playerSprite.walkFrameFor(scene.facing, scene.walkFrame));
+}
+
+/**
+ * 걸음 완료 직후 같은 프레임에 다음 걸음을 이어도 되는가.
+ * 접촉 이벤트·인카운터가 방금 시작됐으면(running/입력 닫힘) 이어 붙이지 않는다 — RM2K3 도 접촉
+ * 이벤트가 뜨면 주인공이 그 자리에 선다.
+ */
+function canChainStep(scene: PlaySceneContext, chain: StepChainContext): boolean {
+  if (chain.cutsceneInputLocked) return false;
+  if (chain.input.x === 0 && chain.input.y === 0) return false;
+  if (scene.running || !scene.inputEnabled) return false;
+  if (scene.playerRoute || scene.playerHop || scene.moving) return false;
+  return true;
 }
 
 /** 낙하(dropIn) 는 타일 이동이 없다 — `moving` 을 쓰지 않고 리프트만 내려온다. */
@@ -231,8 +270,6 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   scene.movingTo = { x: nx, y: ny };
   scene.moving = true;
   scene.moveProgress = 0;
-  scene.walkFrame = 0;
-  scene.walkTimer = 0;
   scene.lastActionTargetKey = "";
 }
 
@@ -312,8 +349,6 @@ function startPlayerJump(scene: PlaySceneContext, command: Extract<MoveCommand, 
   scene.movingTo = { x: nx, y: ny };
   scene.moving = true;
   scene.moveProgress = 0;
-  scene.walkFrame = 0;
-  scene.walkTimer = 0;
   scene.playerHop = { hop: jumpHop(command), elapsedMs: 0, countsAsStep: true };
   return true;
 }
@@ -347,8 +382,6 @@ function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {
   scene.movingTo = { x: nx, y: ny };
   scene.moving = true;
   scene.moveProgress = 0;
-  scene.walkFrame = 0;
-  scene.walkTimer = 0;
   return true;
 }
 
