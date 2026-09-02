@@ -17,6 +17,7 @@ import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { syncProjectFontTheme } from "@/app/fontTheme";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
+import { configureEditorGameAccessor } from "@/editor/panels/editorGameSuspension";
 import { importWithRetry } from "@/util/dynamicImport";
 import {
   markInitialEditRender,
@@ -525,6 +526,9 @@ export async function startPlayGame(
 export function getGame(): Phaser.Game | null {
   return game;
 }
+
+// 테스트 플레이 창이 뒤의 편집기 게임을 잠재울 수 있게 접근자를 준다(editorGameSuspension 주석).
+configureEditorGameAccessor(() => game);
 
 export function destroyGame(): void {
   if (game) {
