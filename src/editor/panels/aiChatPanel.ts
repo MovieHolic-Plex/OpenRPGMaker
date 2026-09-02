@@ -1394,6 +1394,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     closeToolActivity();
     if (!opts?.replay) attachRewindAffordance(appendBubble("user", displayAs ?? trimmed), trimmed);
     const session = ensureSession();
+    // 두 턴 사이에 사용자가 데이터베이스(개념 꾸러미 등)를 고쳤을 수 있다 — 승인 대기 제안이 없으면
+    // 세션 기준을 저장소 최신으로 맞춘다. 안 그러면 조수는 옛 나무를 읽는다(2026-09-02 실측).
+    if (!opts?.replay && proposalApi.pendingProposalMessage === null) {
+      session.syncBaselineFromStoreIfClean(store.getCurrent());
+    }
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
     const autonomous = loadAiConfig().agentMode === "auto";
@@ -1612,14 +1617,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshSendEnabled();
   });
   // 입력창 포커스 시 휘발 존(웰컴/대화)을 펼치고, 빈 대화 상태로 포커스를 잃으면 접어 맵을 비운다.
+  input.addEventListener("mousedown", () => {
+    // 포커스 이벤트보다 한 박자 먼저 연다. 첫 클릭이 focus 를 건너뛰면 칩이
+    // DOM 에만 있고 화면에 안 뜨는 상태가 된다(실측 2026-09-02).
+    syncSuggestPopover({ assumeFocused: true });
+  });
   input.addEventListener("focus", () => {
     syncSuggestPopover();
   });
-  input.addEventListener("blur", () => {
+  input.addEventListener("blur", (event) => {
     if (typeof window === "undefined" || typeof window.setTimeout !== "function") return;
-    // 오버레이 안(스킬 카드 등) 클릭이 blur보다 먼저 처리되도록 잠깐 늦춘 뒤 접는다.
+    const stayedInComposer = (node: EventTarget | null): boolean =>
+      node instanceof Element && Boolean(node.closest(".ai-command-bar"));
+    // 추천 칩·예제 칩으로 포커스가 옮겨간 blur 는 접지 않는다. 접으면 160ms 뒤에
+    // display:none 이 되어 실제 마우스의 click 이 유실된다.
+    if (stayedInComposer((event as FocusEvent).relatedTarget)) return;
     window.setTimeout(() => {
       if (typeof document !== "undefined" && document.activeElement === input) return;
+      if (stayedInComposer(document.activeElement)) return;
       if (composerPopoverKind() === "suggest") openComposerPopover(null);
       hideVolatileIfIdle();
     }, 160);
@@ -1659,10 +1674,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     const pickExample = (instruction: string): void => {
-      input.value = instruction;
-      input.focus();
-      syncInputHeight();
-      refreshComposerChips();
+      applySuggestInstruction(instruction);
     };
     nextSteps.replaceChildren(
       el("p", {
@@ -1675,9 +1687,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   // 추천 칩 팝오버는 입력창이 비어 있고 포커스가 있을 때만 뜬다. 흐름 밖이라 열림/닫힘이
   // 바 높이를 건드리지 않는다.
-  const syncSuggestPopover = (): void => {
+  const applySuggestInstruction = (instruction: string): void => {
+    input.value = instruction;
+    input.focus();
+    syncInputHeight();
+    refreshComposerChips();
+  };
+  const syncSuggestPopover = (opts?: { readonly assumeFocused?: boolean }): void => {
     if (typeof document === "undefined") return;
-    const focused = document.activeElement === input;
+    const focused = Boolean(opts?.assumeFocused) || document.activeElement === input;
     // 팝오버 안에는 감독 프롬프트 칩과 「다음에 뭘 하지」 블록 둘이 산다 — 어느 한쪽에
     // 내용이 있으면 열 이유가 있다. (칩만 보던 시절에는 프롬프트가 0개인 맵에서 안내와
     // 예제 칩이 함께 묻혔다.)
@@ -1709,12 +1727,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
             attrs: { type: "button", title: prompt.instruction },
             dataset: { testid: `ai-composer-chip-${prompt.id}` },
             on: {
-              click: () => {
-                input.value = prompt.instruction;
-                input.focus();
-                syncInputHeight();
-                refreshComposerChips();
+              // mousedown: 입력 blur 보다 먼저 채운다. click 만 기다리면
+              // 팝오버가 접혀 실제 마우스 클릭이 유실된다(실측 2026-09-02).
+              mousedown: (event) => {
+                event.preventDefault();
+                applySuggestInstruction(prompt.instruction);
               },
+              click: () => applySuggestInstruction(prompt.instruction),
             },
           }),
         ),

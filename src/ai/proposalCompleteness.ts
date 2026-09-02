@@ -116,6 +116,7 @@ function heuristicCompletenessWarnings(requestText: string, calls: readonly Prop
 }
 
 const INTERIOR_ROOM_TOOL_NAMES = new Set([
+  "place_concept",
   "start_interior_room_session",
   "run_interior_room_pipeline",
   "advance_interior_room_build",
@@ -126,7 +127,7 @@ const INTERIOR_ROOM_TOOL_NAMES = new Set([
 function requestLikelyWantsInterior(text: string): boolean {
   const normalized = text.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
   if (!normalized) return false;
-  return /실내|인테리어|실내맵|방 맵|침실|서재|주방|선술집|\binterior\b/u.test(normalized);
+  return /실내|인테리어|실내맵|방 맵|침실|서재|주방|선술집|여관|\binterior\b/u.test(normalized);
 }
 
 /**

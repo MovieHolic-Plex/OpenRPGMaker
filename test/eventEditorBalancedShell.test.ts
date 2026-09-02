@@ -23,6 +23,9 @@ describe("hierarchy event editor presentation layer", () => {
     expect(css).toMatch(/--(?:hierarchy|balanced)-pages-height:\s*40px/);
     expect(css).toMatch(/--(?:hierarchy|balanced)-footer-height:\s*40px/);
     expect(css).toMatch(/\.event-editor-modal-dynamic \.event-editor\s*\{[^}]*display:\s*grid/s);
+    expect(css).toMatch(/\.event-editor-modal-body\s*\{[^}]*display:\s*flex/s);
+    expect(css).toMatch(/grid-template-rows:\s*var\(--hierarchy-pages-height\)\s+minmax\(0,\s*1fr\)\s+!important/);
+    expect(css).toContain(".event-editor-render-error");
     expect(css).toMatch(/grid-template-columns: 228px minmax\(0, 1fr\) 340px !important/);
     expect(css).toContain("overflow-y: auto");
   });

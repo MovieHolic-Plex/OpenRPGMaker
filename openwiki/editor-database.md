@@ -250,14 +250,17 @@ The Database modal was modernized in six waves while keeping every hard contract
 
 데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.
 세계·공간 종류·구조물과 아직 합치지 않는다 — 시설→장소→물건→칩 나무를 그림으로
-저작하는 실험 면이다. 시공 파이프(`author_village` / 실내 방)는 이 필드를 읽지 않는다.
+저작하는 실험 면이다. `place_concept(query)` 가 이 필드를 읽어 시공한다. 사용자가 고친 나무가 정본이다.
 
 - 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
 - 실내 칩셋만 여관 초안을 시드한다(`SCRATCH_INN_BUNDLE`). 마을 칩셋에는 얹지 않는다.
 - 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
 - 칩은 닫힌 집합(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`). 산문 배치 규칙이 아니다.
 - 화면: 타일셋 레일 + 장소 카드(가구 썸네일) + 인스펙터(큰 미리보기·칩 토글·장소 소속).
-- 진입: `src/editor/panels/scratchConceptTab.ts`. 계약: `test/scratchConceptTab.test.ts`.
+- 사용자가 고친다: 시설명, 장소 추가/삭제/이름, 물건 추가/삭제/이름, 칩 토글, 장소 소속, 필수 여부. 모두 `store.update` 로 `scratchConceptBundles` 에 남고, 다음 `place_concept` 가 그 나무를 읽는다.
+- **장소 도면 필드 (2026-09-02 시공 개편):** 장소 레코드에 선택 필드 `role`(`entrance` 홀·정문 / `walkway` 복도 / `room` 방), `size`(`s` 5×3 · `m` 7×4 · `l` 9×5), `count`(1..4, 같은 장소 여러 개) 가 붙었다. 장소 카드의 도면 열(`scratch-concept-place-role-<id>` / `-size-<id>` / `-count-<id>`)에서 고친다. 필드가 없는 옛 나무는 기본값(방·보통·1)으로 읽고, 복도는 라벨(복도·통로) 폴백으로 알아본다. 검증기(`shapeResourceFields`)가 모르는 role/size 와 범위 밖 count 를 거절한다.
+- 여관 초안 시드: 침실 `room·m·count 2`, 복도 `walkway`, 식당/홀 `entrance·l`. 도면은 남→북으로 홀(정문) → 복도 → 객실 ×2.
+- 진입: `src/editor/panels/scratchConceptTab.ts`. 계약: `test/scratchConceptTab.test.ts`, `test/placeConceptTool.test.ts`. 시공 쪽 설명은 `openwiki/editor-interior-room-harness.md` 「개념 시설 시공」.
 
 ## '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
 

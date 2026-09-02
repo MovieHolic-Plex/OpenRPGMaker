@@ -611,4 +611,17 @@ describe("always-true / always-false condition traps", () => {
     expect(issue.field).toEqual({ testId: "event-page-season-condition-input" });
     expect(result.canCommit).toBe(true);
   });
+
+  it("does not throw when a page is missing graphic, movement, trigger, or commands", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = gameEvent({ id: "page-1", name: "첫 방문" } as EventPage);
+    project.maps[mapId].events = [event];
+
+    expect(() => validateEventDraftBody(project, mapId, event)).not.toThrow();
+    const result = validateEventDraftBody(project, mapId, event);
+    expect(result.issues.some((issue) => issue.code === "page.empty")).toBe(true);
+    expect(result.canCommit).toBe(true);
+  });
 });
+

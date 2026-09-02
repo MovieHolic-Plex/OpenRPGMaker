@@ -1,4 +1,4 @@
-import { isConceptChipId } from "../types/conceptBundle";
+import { CONCEPT_PLACE_COUNT_MAX, isConceptChipId, isConceptPlaceRole, isConceptPlaceSize } from "../types/conceptBundle";
 import { isPaletteSlotRole } from "../tilesetPalette";
 import { TERM_KEYS } from "../terms";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
@@ -329,8 +329,23 @@ export function validateTileset(id: string, value: unknown): void {
         record.places,
       ).entries()) {
         const entry = requireRecord(`tileset ${id}.scratchConceptBundles[${index}].places[${placeIndex}]`, place);
-        requireString(`tileset ${id}.scratchConceptBundles[${index}].places[${placeIndex}].id`, entry.id);
-        requireString(`tileset ${id}.scratchConceptBundles[${index}].places[${placeIndex}].label`, entry.label);
+        const placePath = `tileset ${id}.scratchConceptBundles[${index}].places[${placeIndex}]`;
+        requireString(`${placePath}.id`, entry.id);
+        requireString(`${placePath}.label`, entry.label);
+        if (entry.role !== undefined) {
+          const role = requireString(`${placePath}.role`, entry.role);
+          assert(isConceptPlaceRole(role), `${placePath}.role unknown role: ${role}`);
+        }
+        if (entry.size !== undefined) {
+          const size = requireString(`${placePath}.size`, entry.size);
+          assert(isConceptPlaceSize(size), `${placePath}.size unknown size: ${size}`);
+        }
+        if (entry.count !== undefined) {
+          assert(
+            typeof entry.count === "number" && Number.isInteger(entry.count) && entry.count >= 1 && entry.count <= CONCEPT_PLACE_COUNT_MAX,
+            `${placePath}.count must be an integer 1..${CONCEPT_PLACE_COUNT_MAX}`,
+          );
+        }
       }
       for (const [thingIndex, thing] of requireArray(
         `tileset ${id}.scratchConceptBundles[${index}].things`,

@@ -10,10 +10,11 @@ export const SCRATCH_INN_BUNDLE: ConceptBundleRecord = {
   facilities: [
     { id: "inn", label: "여관", placeIds: ["bedroom", "corridor", "dining"] },
   ],
+  // 도면: 객실 ×2(보통) → 복도 → 식당/홀(크게, 정문). 남쪽에서 들어와 홀 → 복도 → 객실.
   places: [
-    { id: "bedroom", label: "침실" },
-    { id: "corridor", label: "복도" },
-    { id: "dining", label: "식당/홀" },
+    { id: "bedroom", label: "침실", role: "room", size: "m", count: 2 },
+    { id: "corridor", label: "복도", role: "walkway" },
+    { id: "dining", label: "식당/홀", role: "entrance", size: "l" },
   ],
   things: [
     { id: "bed_h", label: "침대(가로)", objectId: "bed_h", placeIds: ["bedroom"], chips: ["block", "event", "sleep"], required: true },
@@ -29,7 +30,7 @@ export const SCRATCH_INN_BUNDLE: ConceptBundleRecord = {
     { id: "table_long", label: "긴 탁자", objectId: "table_long", placeIds: ["dining"], chips: ["block"], required: true },
     { id: "table_chairs", label: "사각 탁자+의자 짝", objectId: "table_chairs", placeIds: ["dining"], chips: ["block"] },
     { id: "counter", label: "카운터 런", objectId: "counter", placeIds: ["dining"], chips: ["block", "event"] },
-    { id: "piano", label: "피아노", objectId: "piano", placeIds: ["dining"], chips: ["block", "event"] },
+    { id: "piano", label: "피아노", objectId: "piano", placeIds: ["dining"], chips: ["block", "event"], required: true },
     { id: "display", label: "진열대", objectId: "display", placeIds: ["dining"], chips: ["block", "loot"] },
   ],
 };
@@ -43,7 +44,13 @@ export function cloneConceptBundle(bundle: ConceptBundleRecord): ConceptBundleRe
       label: facility.label,
       placeIds: [...facility.placeIds],
     })),
-    places: bundle.places.map((place) => ({ id: place.id, label: place.label })),
+    places: bundle.places.map((place) => ({
+      id: place.id,
+      label: place.label,
+      ...(place.role ? { role: place.role } : {}),
+      ...(place.size ? { size: place.size } : {}),
+      ...(place.count !== undefined ? { count: place.count } : {}),
+    })),
     things: bundle.things.map((thing) => ({
       id: thing.id,
       label: thing.label,

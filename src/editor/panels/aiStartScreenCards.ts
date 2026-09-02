@@ -81,7 +81,15 @@ export function buildAiAuthoringExamples(opts: {
             text: example.label,
             attrs: { type: "button", title: example.instruction },
             dataset: { testid: `ai-authoring-example-${example.id}` },
-            on: { click: () => opts.onPick(example.instruction, example.id) },
+            on: {
+              // mousedown 에서 먼저 채운다. click 만 기다리면 입력 blur 가 팝오버를
+              // display:none 으로 접어 실제 마우스 클릭이 유실된다(실측 2026-09-02).
+              mousedown: (event) => {
+                event.preventDefault();
+                opts.onPick(example.instruction, example.id);
+              },
+              click: () => opts.onPick(example.instruction, example.id),
+            },
           }),
         ),
       }),

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1303KB / 약 366,813 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1311KB / 약 369,158 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,10 +15,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 209KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 367 | ~60,297 |
-| `openwiki/editor-ai-tools.md` | 55KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 125 | ~15,356 |
-| `openwiki/editor-database.md` | 152KB | 48KB | 685 | ~43,380 |
-| `openwiki/editor-event-authoring.md` | 107KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 516 | ~31,043 |
+| `openwiki/editor-ai-panel.md` | 209KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 368 | ~60,466 |
+| `openwiki/editor-ai-tools.md` | 57KB | 53KB ⚠상한 초과 — 절을 더 쪼개라 | 127 | ~16,151 |
+| `openwiki/editor-database.md` | 154KB | 48KB | 688 | ~43,711 |
+| `openwiki/editor-event-authoring.md` | 108KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 517 | ~31,302 |
 | `openwiki/editor-pre-edit-routing.md` | 60KB | 46KB | 166 | ~16,917 |
 | `openwiki/runtime-battle.md` | 97KB | 22KB | 313 | ~27,791 |
 | `openwiki/runtime-project-schema.md` | 53KB | 42KB | 174 | ~14,244 |
@@ -31,8 +31,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 24 | 165, 166, 167, 168, 169, 170, 182, 236 |
-| `openwiki/editor-ai-tools.md` | 5 | 66, 67, 71, 73, 75 |
+| `openwiki/editor-ai-panel.md` | 24 | 165, 166, 167, 168, 169, 170, 182, 237 |
+| `openwiki/editor-ai-tools.md` | 5 | 68, 69, 73, 75, 77 |
 | `openwiki/editor-database.md` | 7 | 101, 105, 106, 107, 115, 139, 142 |
 | `openwiki/editor-event-authoring.md` | 16 | 125, 126, 129, 134, 135, 136, 137, 138 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -219,25 +219,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 209KB · 367줄 · ~60,297 토큰 · 통째읽기 잘림 · 깨진 줄 24
+### `openwiki/editor-ai-panel.md` — 209KB · 368줄 · ~60,466 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
 - `L9` 패널 셸 · 도크 · 접기 · 컴포저
 - `L101` 세션 수명 · 대화 컨텍스트
 - `L111` 제안 적용 · 복구 · 완성도 린트
 - `L192` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L252` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L276` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L290` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L316` 저장 · 내보내기 · 프로젝트 생성
-- `L324` 제공자 · OAuth · 동반 서비스
-- `L348` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L253` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L277` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L291` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L317` 저장 · 내보내기 · 프로젝트 생성
+- `L325` 제공자 · OAuth · 동반 서비스
+- `L349` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
-### `openwiki/editor-ai-tools.md` — 55KB · 125줄 · ~15,356 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 57KB · 127줄 · ~16,151 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L88` Project-wide quality evaluation
-- `L94` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L90` Project-wide quality evaluation
+- `L96` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
 
-### `openwiki/editor-database.md` — 152KB · 685줄 · ~43,380 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 154KB · 688줄 · ~43,711 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` Database Studio chrome (2026-08-24)
   - `L15` Actor data-table slice (2026-08-25)
@@ -253,26 +253,26 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L209` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
 - `L230` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
 - `L249` 임시 → 개념 꾸러미 (2026-09-02)
-- `L262` '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
-- `L274` '구조물' 편집기와 파일 입출력 (2026-08-29)
-- `L293` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
-- `L313` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
-  - `L327` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
-  - `L335` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
-  - `L347` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
-  - `L398` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
-- `L420` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
-- `L431` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
-  - `L446` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
-  - `L524` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
-  - `L538` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
-  - `L581` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
-- `L590` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
-  - `L606` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
-- `L649` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
-  - `L665` AI로 몬스터·아이템 생성 (2026-08-30)
+- `L265` '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
+- `L277` '구조물' 편집기와 파일 입출력 (2026-08-29)
+- `L296` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
+- `L316` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
+  - `L330` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
+  - `L338` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
+  - `L350` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
+  - `L401` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
+- `L423` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
+- `L434` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
+  - `L449` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
+  - `L527` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
+  - `L541` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
+  - `L584` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
+- `L593` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
+  - `L609` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+- `L652` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+  - `L668` AI로 몬스터·아이템 생성 (2026-08-30)
 
-### `openwiki/editor-event-authoring.md` — 107KB · 516줄 · ~31,043 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 108KB · 517줄 · ~31,302 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` NPC 일정 구조화 편집 (2026-08-24)
 - `L15` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
@@ -285,20 +285,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L116` Event Authoring
 - `L324` Condition / Loop / Variable command trust fixes (2026-08-07)
 - `L334` Event draft trust loop (2026-07-30)
-- `L341` Guided story arc facade
-- `L345` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L350` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L358` Companion roster in the command picker (2026-08-27)
-- `L364` Presentation and system M2 command bodies
-- `L371` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L389` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L399` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L434` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L468` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L479` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L487` 참조를 비워도 조건을 삭제하지 않는다
-  - `L494` 조건 미리보기는 모르면 모른다고 말한다
-  - `L503` 조건 문구에 내부 토큰을 넣지 마라
+- `L342` Guided story arc facade
+- `L346` 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- `L351` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L359` Companion roster in the command picker (2026-08-27)
+- `L365` Presentation and system M2 command bodies
+- `L372` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L390` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L400` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L435` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L469` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L480` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L488` 참조를 비워도 조건을 삭제하지 않는다
+  - `L495` 조건 미리보기는 모르면 모른다고 말한다
+  - `L504` 조건 문구에 내부 토큰을 넣지 마라
 
 ### `openwiki/editor-event-command-fixes.md` — 12KB · 33줄 · ~3,122 토큰 · 깨진 줄 11
 
@@ -319,13 +319,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L21` Vocabulary and readiness
 - `L32` Validation
 
-### `openwiki/editor-interior-room-harness.md` — 10KB · 56줄 · ~2,785 토큰
+### `openwiki/editor-interior-room-harness.md` — 13KB · 67줄 · ~3,576 토큰
 
 - `L5` Tileset-specific map generation contract
 - `L15` Interior Room Session Harness (villager-room-v1)
 - `L28` Safe detached draft and approval harness
 - `L36` Interior object catalog is the shape source of truth (2026-08-28)
 - `L45` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
+- `L58` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
 
 ### `openwiki/editor-observability.md` — 22KB · 238줄 · ~6,487 토큰 · 깨진 줄 1
 

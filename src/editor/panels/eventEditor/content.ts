@@ -17,6 +17,7 @@ import {
   moveEventPageCommandAcross,
   moveEventPageCommandAt,
   moveEventPageCommandToIndex,
+  normalizeEventPage,
   replaceEventPageCommands,
   replaceEventPageCommandAt,
 } from "@/editor/eventPages";
@@ -118,8 +119,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   if (!ev.pages?.length) {
     ensureEventPages(mapId, ev.id);
+    ev = store.getCurrent().maps[mapId]?.events.find((event) => event.id === eventId) ?? ev;
   }
-  const pages = ev.pages ?? [];
+  const pages = (ev.pages ?? []).map((page) => normalizeEventPage(page));
   const selectedPageId = editorState.get().selectedEventPageId;
   const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[0];
   if (!activePage) {
@@ -128,7 +130,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     return;
   }
 
-  const validation = validateEventDraftBody(store.getCurrent(), mapId, ev);
+  const evForRender = { ...ev, pages };
+  const validation = validateEventDraftBody(store.getCurrent(), mapId, evForRender);
   const activePageIssues = eventDraftIssuesForPage(validation, activePage.id);
   const commandHistory = createCommandToolbarHistory({
     key: `${mapId}:${ev.id}:${activePage.id}`,
@@ -307,10 +310,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   // NPC 연결 컨트롤은 삭제된 `display: none` identity 카드 안에 살았다 — 이제 그 주제가 속한
   // 「NPC와 일정」 그룹에서 사용자가 실제로 보고 누를 수 있다.
-  const characterLink = renderEventCharacterIdField(mapId, ev);
-  const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
-  const scheduleEditor = renderEventScheduleEditor(mapId, ev);
-  const pageSettings = renderEventPageProps(mapId, ev.id, activePage, ev);
+  const characterLink = renderEventCharacterIdField(mapId, evForRender);
+  const socialExtras = renderEventCharacterSocialExtras(mapId, evForRender);
+  const scheduleEditor = renderEventScheduleEditor(mapId, evForRender);
+  const pageSettings = renderEventPageProps(mapId, evForRender.id, activePage, evForRender);
   const npcName = ev.characterId
     ? store.getCurrent().characters?.[ev.characterId]?.displayName?.trim() || ev.characterId
     : "연결 안 됨";
@@ -401,7 +404,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   section.append(
     el("div", {
       class: "event-editor-pagebar",
-      children: [renderClassicPageTabStrip(mapId, ev, activePage), renderPageActions(mapId, ev, activePage)],
+      children: [renderClassicPageTabStrip(mapId, evForRender, activePage), renderPageActions(mapId, evForRender, activePage)],
     }),
     workbench,
   );

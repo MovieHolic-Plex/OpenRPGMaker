@@ -287,16 +287,30 @@
   font-weight: 600;
 }
 
-/* Modal Body & Dynamic Shell */
+/* Modal Body & Dynamic Shell
+ *
+ * 본문이 헤더/푸터만 남고 하얗게 비는 실패는 두 갈래다.
+ * (1) JS 가 clearChildren 뒤에 던짐 — modal.ts 가 오류 면으로 잡는다.
+ * (2) 높이 사슬이 끊기거나 옛 3행 그리드(`auto auto 1fr`)가 이기면 워크벤치가
+ *     0 높이 auto 행에 앉고 1fr 이 빈 흰 칸이 된다. 바디를 flex 로 고정하고
+ *     에디터는 페이지바+워크벤치 두 행만 인정한다. */
 .event-editor-modal-body {
   background: var(--bg-base);
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   overflow: hidden;
   padding: 0;
 }
 
-.event-editor-modal-dynamic,
-.event-editor-modal-dynamic .event-editor {
+.event-editor-modal-stable {
+  display: none;
+}
+
+.event-editor-modal-dynamic {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   height: 100%;
   min-height: 0;
 }
@@ -304,9 +318,36 @@
 .event-editor-modal-dynamic .event-editor {
   background: var(--bg-base);
   display: grid;
+  flex: 1 1 auto;
   gap: 0;
-  grid-template-rows: var(--hierarchy-pages-height) minmax(0, 1fr);
+  grid-template-rows: var(--hierarchy-pages-height) minmax(0, 1fr) !important;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
+}
+
+.event-editor-render-error {
+  align-items: flex-start;
+  color: var(--text-1);
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  min-height: 160px;
+  padding: 24px 28px;
+}
+
+.event-editor-render-error-title {
+  font-size: 15px;
+  font-weight: 650;
+  margin: 0;
+}
+
+.event-editor-render-error-detail {
+  color: var(--text-2);
+  font-size: 13px;
+  margin: 0;
 }
 
 /* Workbench */

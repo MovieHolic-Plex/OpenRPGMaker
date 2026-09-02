@@ -100,7 +100,7 @@ addFamily(ACTIONS.fill, "fill_region arrange_rows mirror_region copy_map_region"
 addFamily(ACTIONS.erase, "tile_erase clear_region");
 addFamily(ACTIONS.scatter, "scatter_object plant_tree_clusters place_props");
 addFamily(ACTIONS.structure, "stamp_structure stamp_structure_kit build_wall build_roof place_door place_window build_castle register_structure_kit");
-addFamily(ACTIONS.house, "author_house build_house build_house_kit build_house_lots preview_house furnish_interior_space make_gallery_room");
+addFamily(ACTIONS.house, "author_house build_house build_house_kit build_house_lots preview_house furnish_interior_space make_gallery_room place_concept");
 addFamily(ACTIONS.village, "author_village build_village plan_village materialize_village_spec revise_village_plan run_village_pipeline start_village_session advance_village_build run_village_session");
 addFamily(ACTIONS.person, "place_npc make_villager upsert_actor upsert_character_profile add_companion set_npc_schedule configure_companion_rules");
 addFamily(ACTIONS.event, "upsert_event duplicate_event move_event create_transfer_pair place_battle_blocker place_trap place_chest place_storage_chest place_savepoint place_examine_hotspots compile_puzzle make_chase_scene script_cutscene script_cutscene_preset upsert_common_event upsert_troop_battle_page author_boss_phases");
