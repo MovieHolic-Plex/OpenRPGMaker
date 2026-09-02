@@ -214,3 +214,8 @@ verify-shots/ai-assistant-ux/probe-model/
 verify-shots/map-modernize/scratch/
 reports/item-catalog-report.html
 verify-shots/item-catalog-report-render/
+
+# 전투 이펙트 개편 프레임 캡처 원본(수십 MB). 병치·카탈로그 시트(compare/, catalog/)만 추적한다.
+verify-shots/battle-anim-overhaul/before/
+verify-shots/battle-anim-overhaul/after/
+verify-shots/battle-anim-overhaul/summary.json

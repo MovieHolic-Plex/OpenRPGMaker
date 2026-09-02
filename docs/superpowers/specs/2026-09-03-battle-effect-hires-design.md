@@ -86,6 +86,10 @@ interface BattleAnimationSheet {
 - 카탈로그: `sheet: { frameWidth: 384, frameHeight: 384, frameDurationMs: 75, assetScale: 0.5 }`.
 - `generatedEffectSheet(seed)` 가 `assetScale` 을 레코드 시트에 싣는다.
 - 예산: 34종 렌더 30초 이내, PNG 총량 6MB 이내(현재 0.2MB). 넘으면 프레임 크기를 288 로 내린다.
+  - **실측(구현 후)**: 렌더 29초, PNG 합계 6.9MB(최대 summon-portal 486KB, 최소 projectile-shot 61KB).
+    6MB 를 15% 넘지만 몬스터 idle 스트립 한 장(117~346KB)과 같은 급이고 웹 내보내기는 참조된 시트만
+    복사하므로 384 를 유지했다. 8비트·무필터였다면 34종 약 20MB 였다(적응 행 필터 + 6비트 양자화로 1/3).
+  - 프레임 진행도는 구간 가운데 `(i+0.5)/n` 으로 뽑는다. 끝점 포함이면 p=0 첫 컷이 14종에서 빈 화면이었다.
 
 ### 4. 검증
 
@@ -93,8 +97,11 @@ interface BattleAnimationSheet {
   바이트 재현성 유지. 추가: 프레임 경계 4px 안쪽은 투명(잘림 없음).
 - 새 단위 테스트: 정규화 기본값/범위, 파생 함수 3개, `animationCell` 크기·`data-rendering`,
   미리보기·맵 배율(레거시 1 / 신규 0.25).
-- 시각 증거: `probe-battle-anim-frames.mjs --label=after` 로 같은 6종을 같은 장면에서 찍고
-  `verify-shots/battle-anim-overhaul/` 에 before/after 병치 + 34종 카탈로그 시트.
+- 시각 증거: `probe-battle-anim-frames.mjs --label=after` 로 같은 장면에서 찍고
+  `verify-shots/battle-anim-overhaul/` 에 before/after 병치(`compare/`) + 34종 카탈로그 시트(`catalog/`).
+  실측 밀도: 이펙트 0.33(실효 0.17) → **1.33**, 몬스터 1.60(무대 배율 1.5 기준).
+- 가장자리 잘림 검사(바깥 2px 알파 < 8)를 계약 테스트에 넣었다. 밖에서 들어오거나 나가도록 의도한
+  9종(번개·빛기둥·투사체·잎·운석·칼바람·음파·돌진 잔상·흡수 구슬)만 이유와 함께 예외다.
 - 게이트: `npm run typecheck:app`, 관련 vitest, `npm run gates`(새 실패 0).
 
 ## 결정 기록
