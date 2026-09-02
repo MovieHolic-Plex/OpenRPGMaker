@@ -2370,3 +2370,51 @@ footer {
   flex: 0 1 auto;
   margin-right: 4px;
 }
+
+/* ── 문법 고정 · 아이콘 (2026-09-03, 제안서 §13) ─────────────────────────────
+ * 글리프 문자(↑ ✎ ✕ ⛶ ❝ ◇ ➤ ¤ ★ △ …)를 editorIcons.ts 의 SVG 세트로 바꿨다. 옛 글리프를
+ * ::before(attr(data-glyph)) 로 그리던 규칙은 데이터 속성이 남아 있어도 더 이상 그리지 않는다
+ * — 두 번 그려지지 않게 여기서 끈다(이 시트가 캐스케이드 최종 승자다). */
+.event-editor-modal-window .ee-icon,
+.event-command-picker .ee-icon,
+.event-subdialog-backdrop .ee-icon {
+  display: inline-block;
+  flex: 0 0 16px;
+  height: 16px;
+  vertical-align: -3px;
+  width: 16px;
+}
+
+.event-editor-modal-window .cmd-cat-icon::before,
+.event-editor .event-storyboard-card-cat::before,
+.event-command-picker-tab::before,
+.event-command-picker-group-heading::before,
+.event-command-picker-command-icon::before {
+  content: none;
+}
+
+.event-editor-modal-window .cmd-cat-icon,
+.event-editor .event-storyboard-card-cat,
+.event-command-picker-command-icon,
+.event-command-picker-group-heading {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.event-editor-modal-window .cmd-cat-icon .ee-icon,
+.event-editor .event-storyboard-card-cat .ee-icon,
+.event-command-picker-command-icon .ee-icon,
+.event-command-picker-group-heading .ee-icon {
+  color: var(--cmdcat, currentColor);
+}
+
+.event-editor-modal-window .event-editor-command-tool,
+.event-editor-modal-window .event-storyboard-row-action,
+.event-editor-modal-window .event-inspector-preview-restart,
+.event-command-picker-tab {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+}

@@ -25,6 +25,7 @@ import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { toast } from "@/util/toast";
 import { eventAiStagedCommands, hasEventAiStagedDraft, renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
@@ -581,10 +582,10 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     }
     run(path);
   };
-  const moveUp = toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1)));
-  const moveDown = toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)));
-  const copyButton = toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path)));
-  const cutButton = toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)));
+  const moveUp = toolbarButton("arrowUp", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1)));
+  const moveDown = toolbarButton("arrowDown", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)));
+  const copyButton = toolbarButton("copy", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path)));
+  const cutButton = toolbarButton("cut", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)));
   // 무엇에 적용되는지 팝오버가 직접 말한다 — 눌러 보고 나서야 아무 일도 없음을 알게 되지 않도록.
   const editTarget = el("p", {
     class: "event-editor-command-edit-target",
@@ -652,7 +653,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   commandSearch.value = currentCommandQuery();
   const searchClear = el("button", {
     class: "event-editor-command-search-clear",
-    text: "×",
+    children: [renderEditorIcon("close")],
     attrs: { type: "button", title: "검색 지우기", "aria-label": "검색 지우기" },
     dataset: { testid: "event-command-search-clear" },
     on: {
@@ -692,15 +693,15 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     class: "toolbar event-editor-command-toolbar",
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
     children: [
-      toolbarButton("+", "명령", "event-command-toolbar-add", () => {
+      toolbarButton("plus", "명령", "event-command-toolbar-add", () => {
         openCommandPickerForActions(actions);
       }, false, true),
       el("div", {
         class: "event-editor-command-search-field",
         children: [commandSearch, searchClear, searchCount],
       }),
-      toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
-      toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
+      toolbarButton("undo", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
+      toolbarButton("redo", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
@@ -719,7 +720,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
 function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
   // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
-  const aiButton = aiDock ? toolbarButton("✧", "AI 명령", "event-command-quick-ai") : null;
+  const aiButton = aiDock ? toolbarButton("spark", "AI 명령", "event-command-quick-ai") : null;
   if (aiDock && aiButton) {
     const syncAiExpanded = (): void => aiButton.setAttribute("aria-expanded", String(aiDock.open));
     syncAiExpanded();
@@ -795,7 +796,7 @@ function toolGroup(...buttons: HTMLButtonElement[]): HTMLElement {
  * 더 긴 설명이 필요하면 `title` 을 따로 넘긴다.
  */
 function toolbarButton(
-  icon: string,
+  icon: EditorIconName,
   label: string,
   testId: string,
   onClick?: () => void,
@@ -805,7 +806,7 @@ function toolbarButton(
 ): HTMLButtonElement {
   return el("button", {
     class: "event-editor-command-tool" + (primary ? " primary" : ""),
-    text: `${icon} ${label}`,
+    children: [renderEditorIcon(icon), el("span", { class: "event-editor-command-tool-label", text: label })],
     attrs: disabled ? { type: "button", title, disabled: "" } : { type: "button", title },
     dataset: { testid: testId },
     on: onClick ? { click: onClick } : undefined,

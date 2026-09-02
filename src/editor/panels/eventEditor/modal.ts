@@ -18,6 +18,7 @@ import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
 import { store, type AutoSaveState } from "@/project/store";
 import type { EventPage, MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { clearEventAiLiveDock } from "./aiAssist";
 import {
@@ -432,7 +433,7 @@ function renderModalHeader(
           }),
           el("button", {
             class: "icon-btn event-editor-modal-close",
-            text: "×",
+            children: [renderEditorIcon("close")],
             attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
             dataset: { testid: "event-editor-modal-close" },
             on: { click: () => requestClose() },
@@ -444,7 +445,7 @@ function renderModalHeader(
           }),
           el("button", {
             class: "event-editor-window-control event-editor-window-fullscreen",
-            text: "⛶",
+            children: [renderEditorIcon("expand")],
             attrs: {
               type: "button",
               title: "전체 보기 (Alt+Enter)",

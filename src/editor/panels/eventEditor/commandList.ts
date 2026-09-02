@@ -4,7 +4,8 @@ import { branchEmptyActionLabel, branchGroupEndLabel, eventCommandBranches } fro
 import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import { attachItemDropHandlers, enableItemDrag, ensureListDropHandlers } from "./commandListDragDrop";
-import { commandCategoryVisual } from "./commandCategoryIcons";
+import { commandCategoryVisual, renderCategoryIcon } from "./commandCategoryIcons";
+import { renderEditorIcon } from "./editorIcons";
 import { commandSummaryParts, isSummaryIconPart, isSummaryVisualPart, type CommandSummaryVisual } from "./commandSummary";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
@@ -125,7 +126,7 @@ function renderCommandItem(
     class: "cmd-drag-handle",
     dataset: { testid: "event-command-drag-handle" },
     attrs: { role: "button", tabindex: "0", title: "드래그로 순서 변경", "aria-label": `명령 ${path.join(".")} 순서 변경 핸들` },
-    text: "::",
+    children: [renderEditorIcon("drag")],
   });
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
   enableItemDrag(handle, item, path);
@@ -156,6 +157,7 @@ function renderCommandItem(
       class: "cmd-cat-icon",
       attrs: { "aria-hidden": "true", title: `${categoryVisual.label} 명령` },
       dataset: { category: categoryVisual.key, glyph: categoryVisual.glyph, label: categoryVisual.label },
+      children: [renderCategoryIcon(categoryVisual)],
     }),
     summary,
     ...(supportBadge ? [supportBadge] : []),
@@ -222,7 +224,7 @@ function renderCommandIssueBadge(path: readonly number[], issues: readonly Event
       : "info";
   return el("span", {
     class: `event-command-issue-badge ${severity}`,
-    text: `${severity === "error" ? "!" : severity === "warning" ? "△" : "i"}${matches.length}`,
+    children: [renderEditorIcon(severity === "info" ? "info" : "warning"), el("span", { text: String(matches.length) })],
     attrs: { title: matches.map((issue) => issue.message).join("\n"), "aria-label": `검사 문제 ${matches.length}개` },
     dataset: { testid: `event-command-issue-badge-${path.join("-")}`, severity },
   });
@@ -445,18 +447,18 @@ function commandActions(path: number[], actions: CommandListActions): HTMLElemen
   const wrap = el("div", { class: "cmd-actions" });
   wrap.append(
     el("button", {
-      text: "↑",
-      attrs: { title: "위로", type: "button" },
+      children: [renderEditorIcon("arrowUp")],
+      attrs: { title: "위로", "aria-label": "위로", type: "button" },
       on: { click: () => actions.moveCommand(path, -1) },
     }),
     el("button", {
-      text: "↓",
-      attrs: { title: "아래로", type: "button" },
+      children: [renderEditorIcon("arrowDown")],
+      attrs: { title: "아래로", "aria-label": "아래로", type: "button" },
       on: { click: () => actions.moveCommand(path, 1) },
     }),
     el("button", {
-      text: "x",
-      attrs: { title: "삭제", type: "button" },
+      children: [renderEditorIcon("trash")],
+      attrs: { title: "삭제", "aria-label": "삭제", type: "button" },
       on: {
         click: (event) => {
           event.stopPropagation();
