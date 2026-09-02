@@ -343,6 +343,32 @@ describe("AI 패널 크롬", () => {
     expect(findByTestId(panel, "ai-settings-modal")).toBeNull();
   });
 
+  it("감독 칩 mousedown 은 입력을 채우고 기본 포커스 이동을 막는다", () => {
+    // Break: chip waits for click. 입력 blur 가 160ms 뒤 팝오버를 display:none 으로
+    // 접으면 실제 마우스의 click 이 유실되어 버튼이 죽은 것처럼 보인다.
+    storage.set(
+      AI_CONFIG_STORAGE_KEY,
+      JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "" }),
+    );
+    const panel = renderPanel();
+    expandPanel(panel);
+    const expected = directorStartPrompts(readAgentBrief());
+    const first = expected[0];
+    if (!first) throw new Error("directorStartPrompts returned no chips");
+    const chips = findByTestId(panel, "ai-composer-chips");
+    const chip = chips?.querySelectorAll("button")[0];
+    const input = findByTestId(panel, "ai-input") as unknown as { value: string } | null;
+    if (!chip || !input) throw new Error("composer chip or input missing");
+
+    const down = new Event("mousedown", { bubbles: true, cancelable: true });
+    chip.dispatchEvent(down);
+
+    expect(down.defaultPrevented).toBe(true);
+    expect(input.value).toBe(first.instruction);
+    expect(document.activeElement).toBe(input);
+    expect(findByTestId(panel, "ai-command-row-user")).toBeNull();
+  });
+
   it("복귀 타깃으로 펼치면 저장값이 0이 된다", () => {
     storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();

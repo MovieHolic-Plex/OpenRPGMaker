@@ -117,6 +117,23 @@ describe("buildAiAuthoringExamples", () => {
       },
     ]);
   });
+
+  it("예제 칩 mousedown 은 기본 포커스 이동을 막고 같은 문장을 넘긴다", () => {
+    const picked: string[] = [];
+    const examples = renderWithFakeDom(() =>
+      buildAiAuthoringExamples({
+        onPick: (instruction) => picked.push(instruction),
+      }),
+    );
+    const shop = findByTestId(examples, "ai-authoring-example-shop");
+    if (!shop) throw new Error("shop example chip missing");
+    const down = new Event("mousedown", { bubbles: true, cancelable: true });
+    shop.dispatchEvent(down);
+    expect(down.defaultPrevented).toBe(true);
+    expect(picked).toEqual([
+      AI_AUTHORING_EXAMPLES.find((example) => example.id === "shop")!.instruction,
+    ]);
+  });
 });
 
 describe("buildRecentAiWorkCard", () => {
