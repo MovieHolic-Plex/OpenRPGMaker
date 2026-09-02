@@ -20,6 +20,7 @@ await context.addInitScript(() => {
   window.localStorage.clear();
   window.sessionStorage.clear();
   window.localStorage.setItem("oprn:editor-ui-mode", "expert");
+  window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
 });
 const page = await context.newPage();
 
@@ -49,6 +50,8 @@ async function openDatabase() {
     await page.getByTestId("menu-tools-database").click();
   }
   await modal.waitFor({ state: "visible", timeout: 30_000 });
+  const maximize = page.getByTestId("database-modal-maximize");
+  if (await maximize.isVisible().catch(() => false)) await maximize.click();
 }
 
 async function openScratchTab() {
@@ -60,19 +63,24 @@ async function openScratchTab() {
 
 try {
   await page.goto(`${BASE}/?freshProject=1`, { waitUntil: "domcontentloaded", timeout: 120_000 });
-  await page.waitForSelector('[data-testid="edit-canvas"]', { state: "visible", timeout: 60_000 });
-  await page.waitForTimeout(2500);
+  await page.waitForTimeout(1200);
   await dismissWelcome();
+  await page.waitForSelector('[data-testid="toolbar-database"], [data-testid="edit-canvas"]', { timeout: 60_000 });
+  await page.waitForTimeout(1500);
   await openDatabase();
   await openScratchTab();
   await page.waitForTimeout(800);
   await page.screenshot({ path: join(OUT, "01-town-empty.png"), fullPage: false });
+  await page.getByTestId("scratch-concept-workspace").screenshot({ path: join(OUT, "01b-town-workspace.png") });
 
   const interior = page.getByTestId("scratch-concept-tileset-easyrpg_chipset_interior");
   await interior.click();
   await page.waitForSelector("[data-testid='scratch-concept-sheet']", { timeout: 10_000 });
   await page.waitForTimeout(600);
   await page.screenshot({ path: join(OUT, "02-interior-studio.png"), fullPage: false });
+  await page.getByTestId("scratch-concept-workspace").screenshot({ path: join(OUT, "02b-interior-workspace.png") });
+  const bedroom = page.getByTestId("scratch-concept-place-bedroom");
+  if (await bedroom.count()) await bedroom.screenshot({ path: join(OUT, "02d-bedroom.png") });
 
   await page.getByTestId("scratch-concept-thing-bed_h").click();
   await page.waitForTimeout(400);
@@ -82,6 +90,7 @@ try {
   await page.getByTestId("scratch-concept-sheet-tile-223").click();
   await page.waitForTimeout(300);
   await page.screenshot({ path: join(OUT, "04-sheet-selected.png"), fullPage: false });
+  await page.getByTestId("scratch-concept-workspace").screenshot({ path: join(OUT, "04b-selected-workspace.png") });
 
   await page.getByTestId("scratch-concept-thing-from-sheet").click();
   await page.waitForTimeout(500);

@@ -261,7 +261,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 - 마을 칩셋 피커는 내장 집(`kit_house_*`)을 보여 준다. 가구가 없어서 나무를 시작 못 하던
   상태를 없앤다.
 - 칩은 닫힌 집합(`pass`/`block`/`event`/`transfer`/`loot`/`sleep`/`floor`/`wall`).
-- 화면: 타일셋 레일 + **칩셋 그림판** + 장소 무대(바닥 타일 위 썸네일) + 인스펙터(큰 미리보기·그림 고치기·칩).
+- 화면: 타일셋 레일 + **칩셋 아틀라스(32px 칸, 테두리가 시트에 붙고 뷰포트만 스크롤)** + 활성 장소 무대(64px 스탬프 격자) + 비활성 장소(접힌 스트립, 물건 DOM은 유지) + 인스펙터. 피커는 가로 나열이 아니라 같은 스탬프 격자다.
 - 통행·오토타일·미분류는 세계 탭에 남긴다. 칩셋 PNG 픽셀 편집은 「그림 고르기」 경로다.
 - 진입: `src/editor/panels/scratchConceptTab.ts` + `conceptStudioModel.ts`.
   계약: `test/scratchConceptTab.test.ts` + `test/conceptStudioModel.test.ts`.
