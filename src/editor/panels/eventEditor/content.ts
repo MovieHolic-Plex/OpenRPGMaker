@@ -533,10 +533,26 @@ function parseCommandPath(raw: string | undefined): number[] | null {
 }
 
 /** `<details>` 팝오버를 Escape 층에 올린다 — Escape 가 에디터 전체를 닫지 않게. */
+/**
+ * 툴바 팝오버(`<details>`)의 두 가지 탈출 경로.
+ *  - Escape: 모달 스택에 한 층으로 등록해 팝오버만 닫힌다(에디터는 닫히지 않는다).
+ *  - 바깥 pointerdown: 팝오버 밖을 누르면 닫힌다. 실측 2026-09-03 — 이 경로가 없어서 팝오버가
+ *    열린 채 우클릭 메뉴와 겹쳤다(제안서 §4). 리스너는 열려 있는 동안만 document 에 산다.
+ */
 function makePopoverEscapable(details: HTMLDetailsElement): void {
+  const onOutsidePointerDown = (event: Event): void => {
+    const target = event.target;
+    if (target instanceof Node && details.contains(target)) return;
+    details.open = false;
+  };
   details.addEventListener("toggle", () => {
-    if (details.open) registerModal(details, () => { details.open = false; });
-    else unregisterModal(details);
+    if (details.open) {
+      registerModal(details, () => { details.open = false; });
+      document.addEventListener("pointerdown", onOutsidePointerDown, true);
+    } else {
+      unregisterModal(details);
+      document.removeEventListener("pointerdown", onOutsidePointerDown, true);
+    }
   });
 }
 
