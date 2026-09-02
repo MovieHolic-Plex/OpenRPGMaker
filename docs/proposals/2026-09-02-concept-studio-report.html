@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>빌드 리포트 — 개념 꾸러미 그림판</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css">
+<style>
+  :root {
+    --paper: #f4f2ec; --paper2: #ebe8df;
+    --ink: #1c211c; --ink2: #4a534a;
+    --line: #d3cec1; --line2: #bdb7a7;
+    --grass: #3f7a2e; --roof: #b9622a; --water: #3f7590; --brick: #8c4a3a;
+    --disp: "Galmuri11", ui-monospace, monospace;
+    --body: "Pretendard Variable", Pretendard, -apple-system, "Noto Sans KR", sans-serif;
+    --mono: ui-monospace, "JetBrains Mono", "D2Coding", monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.72; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px 120px; }
+  code { font-family: var(--mono); font-size: .87em; background: #e5e1d6; padding: 1px 5px; border-radius: 3px; }
+  strong { color: #000; }
+
+  header { border-bottom: 3px solid var(--ink); padding: 56px 0 0; }
+  .stamp { display: inline-block; font-family: var(--disp); font-size: 11px; letter-spacing: .06em; border: 2px solid var(--brick); color: var(--brick); padding: 4px 10px; margin-bottom: 20px; }
+  h1 { font-family: var(--disp); font-weight: 400; font-size: clamp(28px, 4.6vw, 42px); line-height: 1.3; margin: 0 0 10px; }
+  .sub { color: var(--ink2); font-size: 17px; max-width: 720px; margin: 0 0 26px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); border-top: 1px solid var(--line); }
+  .meta-cell { padding: 12px 14px 14px 0; }
+  .meta-cell .k { font-family: var(--disp); font-size: 10.5px; color: var(--ink2); display: block; margin-bottom: 3px; }
+  .meta-cell .v { font-family: var(--disp); font-size: 17px; }
+  .meta-cell .v small { font-family: var(--body); font-size: 12px; color: var(--ink2); }
+
+  section { margin-top: 72px; }
+  .sec-no { font-family: var(--disp); font-size: 11px; color: var(--roof); letter-spacing: .1em; }
+  h2 { font-family: var(--disp); font-weight: 400; font-size: 25px; line-height: 1.4; margin: 6px 0 4px; }
+  .lead { color: var(--ink2); font-size: 16.5px; margin: 10px 0 26px; }
+  h3 { font-size: 17px; margin: 34px 0 8px; }
+  p { margin: 13px 0; } ul { padding-left: 20px; } li { margin: 5px 0; }
+
+  figure { margin: 26px 0; }
+  .shot { display: block; width: 100%; height: auto; image-rendering: pixelated; border: 1px solid var(--line2); background: #fff; }
+  figcaption { font-size: 13.5px; color: var(--ink2); margin-top: 10px; line-height: 1.7; }
+  figcaption b { color: var(--ink); }
+  .row { display: flex; gap: 18px; flex-wrap: wrap; }
+  .col { flex: 1 1 300px; min-width: 0; }
+  .lbl { font-family: var(--disp); font-size: 11.5px; margin-bottom: 8px; display: block; }
+  .lbl.bad { color: var(--roof); } .lbl.good { color: var(--grass); } .lbl.n { color: var(--ink2); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 18px 0; }
+  th { font-family: var(--disp); font-weight: 400; font-size: 11px; color: var(--ink2); text-align: left; padding: 7px 10px; border-bottom: 2px solid var(--ink); }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.k { font-family: var(--mono); font-size: 13px; color: var(--water); white-space: nowrap; }
+  .ok { color: var(--grass); font-weight: 600; } .no { color: var(--roof); font-weight: 600; }
+
+  pre.code { background: #fff; border: 1px solid var(--line2); border-left: 3px solid var(--grass); padding: 15px 18px; font-family: var(--mono); font-size: 13px; line-height: 1.65; overflow-x: auto; margin: 16px 0; }
+  pre.code .c1 { color: #7c8a7c; } pre.code .s { color: var(--grass); } pre.code .n { color: var(--roof); } pre.code .k { color: var(--water); }
+
+  .callout { border-left: 3px solid var(--roof); background: #fbf3ec; padding: 13px 16px; margin: 18px 0; font-size: 15px; }
+  .callout.g { border-left-color: var(--grass); background: #eef6e9; }
+  .callout .src { display: block; font-family: var(--disp); font-size: 10.5px; color: var(--ink2); margin-top: 7px; }
+
+  nav.toc { border: 1px solid var(--line2); background: #fff; padding: 16px 20px; margin-top: 30px; columns: 2; column-gap: 30px; font-size: 14px; }
+  nav.toc a { display: block; color: var(--ink2); text-decoration: none; padding: 2px 0; }
+  nav.toc a:hover { color: var(--grass); }
+  nav.toc .n { font-family: var(--disp); font-size: 10.5px; color: var(--roof); margin-right: 7px; }
+
+  footer { margin-top: 76px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink2); }
+  @media (max-width: 720px) { nav.toc { columns: 1; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="stamp">BUILD REPORT · 개념 꾸러미</div>
+  <h1>나무와 그림판이 한 화면이다</h1>
+  <p class="sub">
+    개념 꾸러미는 시설→장소→물건 나무였다. 그림은 다른 탭에 있었다.
+    이제는 <b>칩셋 그림판</b>과 <b>장소 무대</b>가 같은 자리에서 만난다.
+    카탈로그·내장 집은 피커 시드일 뿐이고, 고치는 순간 타일셋 킷으로 구워진다.
+    모든 화면은 이 리포의 실제 에디터 스크린샷이다.
+  </p>
+  <div class="meta-grid">
+    <div class="meta-cell"><span class="k">면</span><span class="v">임시 <small>개념 꾸러미</small></span></div>
+    <div class="meta-cell"><span class="k">레이아웃</span><span class="v">3칸 <small>레일·그림판·인스펙터</small></span></div>
+    <div class="meta-cell"><span class="k">소유</span><span class="v">db-authored</span></div>
+    <div class="meta-cell"><span class="k">굽기</span><span class="v">duplicateIntoTileset</span></div>
+    <div class="meta-cell"><span class="k">관련 테스트</span><span class="v">21 <small>통과 · 신규 12</small></span></div>
+    <div class="meta-cell"><span class="k">시공 파이프</span><span class="v" style="color:var(--roof)">아직 안 읽음</span></div>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#s1"><span class="n">01</span>핵심 — 그림이 정본이다</a>
+  <a href="#s2"><span class="n">02</span>실내 스튜디오</a>
+  <a href="#s3"><span class="n">03</span>시트에서 물건</a>
+  <a href="#s4"><span class="n">04</span>카탈로그를 내 그림으로</a>
+  <a href="#s5"><span class="n">05</span>마을은 집으로 시작한다</a>
+  <a href="#s6"><span class="n">06</span>불변식</a>
+  <a href="#s7"><span class="n">07</span>한계 · 다음</a>
+</nav>
+
+<section id="s1">
+  <div class="sec-no">01 · 핵심</div>
+  <h2>칩셋 그림판이 물건의 입구다</h2>
+  <p class="lead">
+    통행·오토타일·미분류는 <b>세계</b>에 남겼다. 칩셋 PNG 픽셀도 여기서 안 고친다.
+    이 탭이 하는 일은 하나다 — <b>이 칩셋에서 꺼낼 시설을 그림으로 고른다.</b>
+  </p>
+  <figure>
+    <span class="lbl n">마을 칩셋 · 꾸러미가 아직 없을 때</span>
+    <img class="shot" src="assets/concept-studio/01-town-empty.png" alt="합본 마을 칩셋 그림판과 빈 시설 자리">
+    <figcaption>
+      데이터베이스 → 임시 → 개념 꾸러미. 왼쪽은 타일셋 레일, 위는
+      <b>타일셋 그림판</b>(칸을 눌러 고른다), 아래는 아직 비어 있는 시설 자리.
+      「+ 시설」로 나무를 시작한다. 물건은 구조물 탭과 같은 그림을 가리킨다.
+    </figcaption>
+  </figure>
+  <div class="callout g">
+    그림의 정본은 타일셋이다. 카탈로그 id 가 앨범에 있다고 내 그림이 되지 않는다.
+    소유 판정은 <code>learnedFrom === "db-authored"</code> 한 줄이다.
+    <span class="src">conceptStudioModel.ts · isOwnedPicture</span>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="sec-no">02 · 실내</div>
+  <h2>여관 침실이 바닥 위에 놓인다</h2>
+  <p class="lead">
+    실내 칩셋을 고르면 여관 초안이 시드된다. 장소 카드는 글자 목록이 아니라
+    <b>바닥 타일 위 썸네일 무대</b>다. 침실 바닥은 실내 마룻바닥이 반복된다.
+  </p>
+  <figure>
+    <span class="lbl good">실내 칩셋 · 여관 침실 무대</span>
+    <img class="shot" src="assets/concept-studio/02-interior-studio.png" alt="실내 그림판과 침실 물건 카드">
+    <figcaption>
+      위: 실내 칩셋 전 칸. 아래: <b>침실</b> 무대 — 가로 침대·세로 침대·러그·괘종시계·캐비닛·창문·그림.
+      오른쪽 인스펙터는 고른 물건의 큰 미리보기와 「이 그림으로 내 것 만들어 고치기」.
+    </figcaption>
+  </figure>
+  <figure>
+    <div class="row">
+      <div class="col">
+        <span class="lbl n">카탈로그 침대 — 아직 내 그림이 아니다</span>
+        <img class="shot" src="assets/concept-studio/03-thing-inspector.png" alt="침대 인스펙터와 굽기 단추">
+      </div>
+      <div class="col">
+        <span class="lbl n">시트에서 두 칸을 고른 뒤</span>
+        <img class="shot" src="assets/concept-studio/04-sheet-selected.png" alt="그림판에서 칸 두 개를 고른 상태">
+      </div>
+    </div>
+    <figcaption>
+      왼쪽: <code>bed_h</code> 는 카탈로그 시드다. 단추 문구가 「내 것 만들어 고치기」인 이유가 여기 있다.
+      오른쪽: 그림판 칸을 누르면 파란 테두리가 붙고, 도구 줄에
+      <b>고른 칸으로 물건</b>이 켜진다.
+    </figcaption>
+  </figure>
+</section>
+
+<section id="s3">
+  <div class="sec-no">03 · 스탬프</div>
+  <h2>고른 칸이 한 줄 물건이 된다</h2>
+  <p class="lead">
+    새 칩 종류를 만들지 않는다. 고른 타일 id 가 한 줄 <code>section</code> 킷이 되고,
+    그 id 를 물건이 가리킨다. 바닥 스냅은 <code>ai.snap: "floor"</code>.
+  </p>
+  <figure>
+    <span class="lbl good">시트 두 칸 → 「새 물건 2칸」 · 이미 내 그림</span>
+    <img class="shot" src="assets/concept-studio/05-stamp-from-sheet.png" alt="시트에서 만든 새 물건과 그림 고치기">
+    <figcaption>
+      침실 무대 맨 앞에 <b>새 물건 2칸</b>이 생겼다. 인스펙터 단추가 「그림 고치기」로 바뀐다 —
+      이미 <code>db-authored</code> 킷이라 한 번 더 굽지 않는다.
+      빈 칸 목록은 거절한다.
+    </figcaption>
+  </figure>
+  <pre class="code"><span class="c1">// stampKitFromTiles([222, 223], "새 물건 2칸", id)</span>
+{ <span class="k">kind</span>: <span class="s">"section"</span>, <span class="k">width</span>: <span class="n">2</span>, <span class="k">height</span>: <span class="n">1</span>,
+  <span class="k">learnedFrom</span>: <span class="s">"db-authored"</span>,
+  <span class="k">rows</span>: [{ <span class="k">tiles</span>: [<span class="n">222</span>, <span class="n">223</span>] }],
+  <span class="k">ai</span>: { <span class="k">snap</span>: <span class="s">"floor"</span> } }</pre>
+</section>
+
+<section id="s4">
+  <div class="sec-no">04 · 굽기</div>
+  <h2>카탈로그를 고치면 사본이 생긴다</h2>
+  <p class="lead">
+    「이 그림으로 내 것 만들어 고치기」는 구조물 탭과 <b>같은</b>
+    <code>duplicateIntoTileset</code> 을 탄다. 물건의 <code>objectId</code> 는
+    <code>bed_h</code> 에서 <code>kit_…</code> 로 옮겨진다. 원본 카탈로그는 그대로다.
+  </p>
+  <figure>
+    <span class="lbl good">침대(가로) 사본 — 구조물 편집기</span>
+    <img class="shot" src="assets/concept-studio/06-claim-art.png" alt="구운 침대 사본을 구조물 편집기에서 고치는 화면">
+    <figcaption>
+      제목 <b>침대(가로) 사본 편집</b>. 폭 2 · 높이 1, 「사용 중 2칸」.
+      칩셋 PNG 를 여기서 픽셀 편집하지 않는다. 칸을 고르고 배치하는 기존 「그림 고르기」 경로다.
+    </figcaption>
+  </figure>
+  <div class="callout">
+    실내 피커는 카탈로그를 <b>항상 합친다</b>. 바닥 스냅 스탬프가 하나 생겼다고
+    가구 목록이 사라지면, 침대 claim 이 빈 손으로 끝난다 — 그 회귀를 테스트가 잠갔다.
+    <span class="src">conceptObjectsForTileset · 실내 칩셋은 INTERIOR_OBJECT_CATALOG 를 union</span>
+  </div>
+</section>
+
+<section id="s5">
+  <div class="sec-no">05 · 마을</div>
+  <h2>빈 피커가 아니라 집 그림으로 시작한다</h2>
+  <p class="lead">
+    마을 칩셋에는 여관 가구가 없다. 예전에는 「+ 물건」이 빈 목록이었다.
+    지금은 내장 집(<code>kit_house_*</code>)이 피커 시드로 나온다.
+    고르기 전에는 시드, 고치면 역시 타일셋으로 굽는다.
+  </p>
+  <figure>
+    <span class="lbl good">합본 마을 · 시설을 연 뒤</span>
+    <img class="shot" src="assets/concept-studio/07-town-house-picker.png" alt="마을 그림판과 새 장소 무대">
+    <figcaption>
+      그림판은 합본 마을 칩셋 전 칸. 새 장소 무대 바닥은 <b>잔디</b>가 반복된다
+      (실내 마룻바닥과 다른 자리 타일). 빵가루는 새 시설 → 장소 → 물건 → 집.
+    </figcaption>
+  </figure>
+  <figure>
+    <span class="lbl good">「새 장소에 넣을 물건」 — 집 미리보기</span>
+    <img class="shot" src="assets/concept-studio/08-town-picker-closeup.png" alt="마을 칩셋의 집 피커 클로즈업">
+    <figcaption>
+      피커가 지붕·벽·박공 집을 그림으로 보여 준다. 텍스트 id 목록이 아니다.
+      이 집들도 카탈로그와 같은 법 — 고치는 순간에만 <code>structureKits</code> 로 들어간다.
+    </figcaption>
+  </figure>
+</section>
+
+<section id="s6">
+  <div class="sec-no">06 · 불변식</div>
+  <h2>화면이 약속하는 것</h2>
+  <table>
+    <tr><th style="width:280px">불변식</th><th>어떻게 확인하나</th></tr>
+    <tr><td>마을 피커에 내장 집이 있다</td><td><code>conceptObjectsForTileset</code> 가 <code>kit_house_*</code> 를 반환</td></tr>
+    <tr><td>실내 피커에 여관 가구가 있다</td><td>스탬프가 있어도 <code>bed_h</code> 가 남는다</td></tr>
+    <tr><td>빈 칸으로는 물건을 못 만든다</td><td><code>stampKitFromTiles([])</code> throw</td></tr>
+    <tr><td>카탈로그는 아직 내 그림이 아니다</td><td><code>isOwnedPicture(tileset, "bed_h") === false</code></td></tr>
+    <tr><td>그림 고치기는 id 를 <code>kit_</code> 로 옮긴다</td><td><code>claimThingPicture</code> 후 <code>thing.objectId</code></td></tr>
+    <tr><td>시트 스탬프는 즉시 소유</td><td><code>registerStampOnTileset</code> → <code>db-authored</code></td></tr>
+    <tr><td>그림판이 칸 수만큼 버튼을 그린다</td><td><code>scratch-concept-sheet-tile-N</code></td></tr>
+    <tr><td>고른 칸으로 물건이 무대에 생긴다</td><td>UI 테스트 · <code>scratch-concept-thing-from-sheet</code></td></tr>
+    <tr><td>claim 단추 뒤에 구조물 편집기가 열린다</td><td>실사 캡처 06 · <code>structure-kit-editor</code></td></tr>
+  </table>
+  <p>
+    모델 7 + 탭 UI 14(이 중 스튜디오 5). 방금 실행 <b>21/21 통과</b>.
+    캡처는 expert 모드 · <code>?freshProject=1</code> ·
+    Vite <code>127.0.0.1:9867</code> 에서 <code>scripts/qa/concept-studio-shots.mjs</code> 가 찍었다.
+  </p>
+</section>
+
+<section id="s7">
+  <div class="sec-no">07 · 한계</div>
+  <h2>이번에 안 한 것</h2>
+  <table>
+    <tr><th style="width:240px">한계</th><th>왜 지금은 이런가</th><th style="width:160px">다음</th></tr>
+    <tr>
+      <td>시공 파이프가 안 읽는다</td>
+      <td>나무는 실험 면이다. 생성기가 이 필드를 믿게 하면 빈 시드와 사용자 삭제를 구분해야 한다</td>
+      <td>명시적 연결 설계</td>
+    </tr>
+    <tr>
+      <td>칩셋 PNG 픽셀 편집 없음</td>
+      <td>기존 「그림 고르기」가 칸을 고른다. 새 페인트 면을 열지 않았다</td>
+      <td>필요하면 구조물 편집기</td>
+    </tr>
+    <tr>
+      <td>새 칩 종류 없음</td>
+      <td>닫힌 집합 <code>pass / block / event / transfer / loot / sleep / floor / wall</code></td>
+      <td>칩을 늘리려면 세계와 같이</td>
+    </tr>
+    <tr>
+      <td>통행·오토타일·미분류는 여기 없음</td>
+      <td>세계 탭 소유. 이 탭으로 옮기지 않는다</td>
+      <td>그대로</td>
+    </tr>
+    <tr>
+      <td>마을에 여관 초안 없음</td>
+      <td>실내 칩셋만 <code>SCRATCH_INN_BUNDLE</code> 을 시드한다</td>
+      <td>마을용 시설 초안은 별도</td>
+    </tr>
+  </table>
+  <div class="callout g">
+    <b>구조물 탭과 그림 법을 나눴다.</b> 앨범·굽기·편집기는 이미 있던 길이다.
+    개념 꾸러미는 그 그림을 <b>시설 나무에 붙이는 면</b>만 새로 열었다.
+  </div>
+</section>
+
+<footer>
+  근거: 브랜치 <code>feat/concept-studio-image-rich</code>.
+  모델 <code>src/editor/panels/conceptStudioModel.ts</code>,
+  화면 <code>src/editor/panels/scratchConceptTab.ts</code>,
+  스타일 <code>src/styles/database/scratch-concept.css</code>,
+  계약 <code>test/conceptStudioModel.test.ts</code> · <code>test/scratchConceptTab.test.ts</code>,
+  위키 <code>openwiki/editor-database.md</code> § 임시 → 개념 꾸러미.
+  화면은 expert 모드 실제 에디터에서 캡처했다.
+  앞선 면: 데이터베이스 임시 그룹 여관 개념 꾸러미 (PR #437).
+</footer>
+
+</div>
+</body>
+</html>
