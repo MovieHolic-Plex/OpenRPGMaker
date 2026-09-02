@@ -34,7 +34,9 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     + "query 는 시설명(여관·상점·대장간…) 또는 꾸러미 id. 장소·물건·칩·바닥·벽 재질·층은 그 나무를 따른다. "
     + "장소에 2층 이상이 있으면 층마다 맵(<mapId>_2f)을 짓고 계단으로 잇는다(data.floors). "
     + "방 종류 requiredRoles 로 시설을 합성하지 마라. 새 mapId 가 필요하다. "
-    + "기존 실내 맵을 고치는 요청에는 쓰지 마라.",
+    + "기존 실내 맵을 고치는 요청에는 쓰지 마라. "
+    + "개념 꾸러미 시설을 요청받으면 야외 집(author_house)을 짓지 말고 이 툴로 새 mapId 실내를 시공한다 — "
+    + "create_map 만 하고 멈추지 말 것.",
   mode: "write",
   parameters: {
     type: "object",

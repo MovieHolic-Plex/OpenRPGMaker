@@ -5,6 +5,7 @@
 // (scriptedChat 패턴, test/aiAssistantSession.test.ts 와 동일)으로 한 번에 돌려
 // plan → build → verify → apply → save-audit 전체 생명주기가 발화함을 증명한다.
 // 라이브 LLM/API 키는 사용하지 않는다(결정적, CI-safe, 타이밍 대기 없음).
+import { fixedDeclarer } from "./intentFixture";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
@@ -156,7 +157,11 @@ describe("자율 런 통합 스모크 (todo 7)", () => {
       calls += 1;
       return finalResult("야외 집(외장)으로 진행합니다.");
     };
-    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(project, {
+      config: ORCH_CONFIG,
+      chat,
+      declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내 맵인가요, 야외 외장인가요?", needsPlan: false }),
+    });
 
     const result = await session.sendUserMessage(HOUSE_GOAL_AMBIGUOUS, () => {}, undefined, { autonomous: true });
 

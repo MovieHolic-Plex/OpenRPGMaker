@@ -1,3 +1,4 @@
+import { declaredIntent } from "./intentFixture";
 import { beforeEach, describe, expect, it } from "vitest";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { computeActiveToolDomains, resetAssistantToolDomainMemory } from "@/editor/assistantToolMode";
@@ -105,10 +106,10 @@ describe("evaluate_game_quality", () => {
 describe("routing and policy", () => {
   beforeEach(() => resetAssistantToolDomainMemory());
   it("exposes both tools for their wording", () => {
-    const narrative = computeActiveToolDomains("tutorial story branch twist");
+    const narrative = computeActiveToolDomains(declaredIntent({ tools: ["author_story_arc", "define_quest"] }));
     expect(narrative.has("event") && narrative.has("quest")).toBe(true);
     expect(toOpenAiTools(undefined, { domains: narrative }).map((tool) => tool.function.name)).toContain("author_story_arc");
-    const quality = computeActiveToolDomains("evaluate game quality");
+    const quality = computeActiveToolDomains(declaredIntent({ mode: "question", tools: ["evaluate_game_quality"] }));
     expect(quality.has("system")).toBe(true);
     expect(toOpenAiTools(undefined, { domains: quality }).map((tool) => tool.function.name)).toContain("evaluate_game_quality");
   });

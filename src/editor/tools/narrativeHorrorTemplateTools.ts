@@ -87,7 +87,7 @@ function memoryBeats(speaker: string, lines: readonly string[]): RecordValue[] {
 export const scriptCutscenePreset: ToolDefinition = {
   name: "script_cutscene_preset",
   description:
-    "투더문식 연출 프리셋 컷신을 한 번에 배치한다. preset=memory_opening|bedside_monologue|ending_fade. " +
+    "투더문식 연출 프리셋 컷신을 한 번에 배치한다. preset=memory_opening|bedside_monologue|ending_fade.  회상·오프닝·엔딩 페이드 프리셋. 자유 장면은 script_cutscene." +
     "lines/speaker/endingId를 받아 script_cutscene(+define_ending)으로 컴파일하고 호흡 lint warning을 반환한다.",
   mode: "write",
   domains: ["event"],
@@ -190,7 +190,7 @@ export const scriptCutscenePreset: ToolDefinition = {
 const makeHorrorLoop: ToolDefinition = {
   name: "make_horror_loop",
   description:
-    "마녀의집식 트랩·체크포인트·(선택)추격 루프를 한 번에 배치한다. " +
+    "마녀의집식 트랩·체크포인트·(선택)추격 루프를 한 번에 배치한다.  마녀의집·저택 호러 슬라이스(트랩+체크포인트+추격)를 원큐로. 분위기는 set_scene_mood 와 함께." +
     "trapCells 또는 trapCount+origin으로 트랩을 깔고 respawnCheckpoint를 강제하며, includeChase면 make_chase_scene을 붙인다.",
   mode: "write",
   domains: ["event"],
@@ -304,7 +304,7 @@ const makeHorrorLoop: ToolDefinition = {
 const makeGalleryRoom: ToolDefinition = {
   name: "make_gallery_room",
   description:
-    "이브식 갤러리/조사 방을 한 번에 조립한다. 조사 핫스팟 N개 + (기본) item-gate 또는 switch-sequence 퍼즐 + 선택 엔딩 스위치. " +
+    "이브식 갤러리/조사 방을 한 번에 조립한다. 조사 핫스팟 N개 + (기본) item-gate 또는 switch-sequence 퍼즐 + 선택 엔딩 스위치.  갤러리·미술관·조사 방 원큐. 개별 조사 지점은 place_examine_hotspots." +
     "원큐 오케스트레이션용 — place_examine_hotspots/compile_puzzle을 내부 호출한다.",
   mode: "write",
   domains: ["event"],

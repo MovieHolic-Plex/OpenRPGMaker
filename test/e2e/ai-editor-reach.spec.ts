@@ -70,14 +70,15 @@ test("AI reaches every editor area from the running editor", async ({ page }) =>
       text: string,
       exposed: ReadonlySet<string>,
     ) => readonly string[];
-    const computeActiveToolDomains = toolModeModule.computeActiveToolDomains as (text: string) => ReadonlySet<string>;
+    // 의도 선언 없는(폴백) 도메인 슬라이스 — 코어 + UI. 문장은 모델이 읽으므로 여기서는 넣지 않는다.
+    const computeActiveToolDomains = toolModeModule.computeActiveToolDomains as (intent: null) => ReadonlySet<string>;
     const store = storeModule.store as { getCurrent: () => { readonly name: string } };
 
     const project = store.getCurrent();
     const prompt = buildSystemPrompt(project, {});
     const capabilityIndex = buildToolCapabilityIndex();
     const active = activeTools();
-    const domains = computeActiveToolDomains(request);
+    const domains = computeActiveToolDomains(null);
     const domainExposed = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
     const escalated = capabilityEscalatedToolNames(request, new Set(domainExposed));
 

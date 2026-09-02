@@ -40,8 +40,9 @@ import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
-import { buildTurnGuide, type TurnScope } from "@/ai/turnGuide";
-import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
+import { formatMaterialLabelHint } from "@/ai/turnGuide";
+import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
+import type { SessionTurnScope } from "@/ai/assistantSession";
 import { store } from "@/project/store";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
@@ -646,6 +647,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       pendingPriorTranscript = null;
       controller.session = new AssistantSession(store.getCurrent(), {
         config: resolveSurfaceAiConfig("chat"),
+        // 턴 시작에 사용자 발화를 모델이 한 번 읽어 의도(수정/생성·실내/야외·시설·되묻기·계획·툴)를 선언한다.
+        // 되묻기·플래너·툴 노출은 그 선언만 소비한다 — 문장 키워드 스캔은 없다(2026-09-03 의도 라우터 감사).
+        declareIntent: createLlmIntentDeclarer(),
         ...(priorTranscript ? { priorTranscript } : {}),
         contextOptions: {
           currentMapId: editorState.get().currentMapId ?? undefined,
@@ -1127,9 +1131,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 사용자 메시지에 현재 맵/선택 영역을 자동 첨부한다 — "여기에 지어줘"의 '여기'를
   // 모델이 좌표로 받는다(공간 산파법의 짝: 사용자가 영역을 지정하면 그게 곧 답).
-  const contextFooter = (): string => {
+  const contextFooter = (scopeMapId?: string): string => {
     const ctx = mapContext();
     const parts = [`현재 맵: ${ctx.mapName ?? "없음"}${ctx.mapId ? ` (${ctx.mapId})` : ""}`];
+    // 재료 라벨 예시는 현재 맵 타일셋의 사실이다 — 빠지면 모델이 그룹 id 를 재료로 쓰는 실수로 돌아간다.
+    const tileset = tilesetForTurn(scopeMapId);
+    if (tileset) parts.push(formatMaterialLabelHint(tileset).replace(/^- /, ""));
     // 선택 영역은 '현재 맵의 것'이고 맵 범위 안에 있을 때만 첨부한다.
     // 맵을 전환해도 남아 있던 이전 맵의 선택(예: 10×10 맵에 (11,9))이 모델에 새 좌표로 오인되던 문제(BUG F) 방지.
     const sel = ctx.selection;
@@ -1348,13 +1355,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.turnAbort, detail: { toolsSoFar, droppedQueue } });
   };
 
-  // 이 턴이 손댈 범위. 선택 사각형이 현재 맵의 것이고, 요청이 «영역을 벗어나는 의도»(예: 새 맵
-  // 시공)가 아닐 때만 스코프로 쓴다. 없으면 null — 재료·도구 규칙만 붙고 사각형 제약은 빠진다.
-  const resolveTurnScope = (instruction: string): TurnScope | null => {
+  // 이 턴이 손댈 범위 — 현재 맵의 선택 사각형(사실). 그 안에서 작업할지, 새 맵 시공이라 참고용인지는
+  // 세션의 의도 선언(useSelection)이 정한다. 예전에는 실내 낱말 정규식으로 스코프를 버렸다.
+  const resolveTurnScope = (): SessionTurnScope | null => {
     const state = editorState.get();
     const selection = state.selection;
     if (!selection) return null;
-    if (isRegionEscapingIntent(instruction)) return null;
     const project = store.getCurrent();
     const mapId = state.currentMapId ?? project.startMapId ?? null;
     if (!mapId || selection.mapId !== mapId || !project.maps[selection.mapId]) return null;
@@ -1404,22 +1410,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const autonomous = loadAiConfig().agentMode === "auto";
     // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
     if (autonomous) beginAutonomousRun();
-    // 도구 규칙(재료 라벨·소품/보물상자 구분·shape=circle·길/도로 등)은 **선택 여부와 무관하게**
-    // 붙인다. 예전에는 이 규칙이 영역 작업 전용 경로에만 있어서, 선택 영역 없이 조수에게 같은
-    // 말을 하면 다른 규칙을 받았다 — 가방 그룹을 재료로 쓰거나, 장식 나무상자를 place_chest 로
-    // 놓거나, 원형 호수를 네모로 채우는 실수가 조수 쪽에서만 반복됐다(PR #378 의 관찰).
-    // 사각형 제약 문구는 스코프가 있을 때만 더 붙는다.
-    const turnScope = resolveTurnScope(trimmed);
-    const guide = buildTurnGuide({
-      instruction: trimmed,
-      ...(tilesetForTurn(turnScope?.mapId) ? { tileset: tilesetForTurn(turnScope?.mapId) } : {}),
-      scope: turnScope,
-    });
-    const payload = [trimmed, guide, contextFooter()].filter((part) => part.length > 0).join("\n\n");
+    // 사용자 발화 + 사실(footer: 현재 맵·선택 영역·재료 라벨 예)만 보낸다. 예전에 여기 붙던 「도구 규칙」
+    // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
+    // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
+    const turnScope = resolveTurnScope();
+    const payload = [trimmed, contextFooter(turnScope?.mapId)].filter((part) => part.length > 0).join("\n\n");
     await executeTurn(session, trimmed, (onEvent, signal) =>
-      // instruction: 되묻기 판정용 원문. payload 에는 도구 가이드가 섞여 있어 그걸로 판정하면
-      // 가이드 문구의 실내·야외 표지가 매 턴 「집을 어떻게 만들까요?」 되묻기를 유발한다.
-      session.sendUserMessage(payload, onEvent, signal, { autonomous }),
+      // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
+      session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope }),
       { autonomous }
     );
   };

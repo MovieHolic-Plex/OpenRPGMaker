@@ -1,4 +1,5 @@
-﻿import { describe, expect, it } from "vitest";
+﻿import { declaredIntent } from "./intentFixture";
+import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
 import { TILE } from "@/project/defaults/constants";
@@ -88,8 +89,10 @@ describe("region AI house/tree/npc probe", () => {
 
     // domain exposure for region message
     const msg = buildRegionTaskMessage("집과 나무 1개, npc 배치", "프로브", MAP_ID, REGION, tileset);
-    beginAssistantToolDomainTurn(msg);
-    const domains = computeActiveToolDomains(msg);
+    const intent = declaredIntent({ space: "outdoor", useSelection: true, tools: ["author_house", "place_props", "place_npc"] });
+    beginAssistantToolDomainTurn(intent);
+    const domains = computeActiveToolDomains(intent);
+    console.log("MSG_HEAD", msg.slice(0, 80));
     const tools = toOpenAiTools(undefined, { domains }).map((t) => t.function.name);
     console.log("DOMAINS", [...domains]);
     console.log("HAS_TOOLS", {

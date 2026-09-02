@@ -355,20 +355,6 @@ describe("canonical construction routing in work plans", () => {
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("정확한 수량");
     expect(ORCHESTRATOR_SYSTEM_PROMPT).not.toMatch(/build_house_kit|build_house_lots|build_village|run_village_session|run_village_pipeline/);
   });
-
-  it("폴백 계획의 야외 집과 마을 successTools는 각각 공식 facade만 쓴다", () => {
-    const house = buildDefaultWorkPlan("현재 맵에 야외 집 2채를 지어줘", new Date("2026-07-18T00:00:00.000Z"));
-    expect(house.layers[0]?.items[0]?.successTools).toEqual(["author_house"]);
-    const village = buildDefaultWorkPlan("현재 맵에 집 6채 마을을 만들어줘", new Date("2026-07-18T00:00:00.000Z"));
-    expect(village.layers[0]?.items[0]?.successTools).toEqual(["author_village"]);
-  });
-  it.each(["100x100 city", "winter town", "snow settlement", "대도시", "겨울 도시", "눈 정착지"])(
-    "routes %s through author_village",
-    (goal) => {
-      const plan = buildDefaultWorkPlan(goal, new Date("2026-07-18T00:00:00.000Z"));
-      expect(plan.layers[0]?.items[0]?.successTools).toEqual(["author_village"]);
-    },
-  );
 });
 
 describe("수정 요청 — 계획 단계에서 신축으로 새지 않는다", () => {
@@ -387,7 +373,8 @@ describe("수정 요청 — 계획 단계에서 신축으로 새지 않는다", 
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("Repair/adjust");
     // 금지·보존 제약은 축약 예외.
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("금지·보존 제약");
-    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("NEVER use direct for village");
+    // 부정은 문자 그대로 존중한다 — 「마을은 만들지 말고 여관만」은 마을이 아니다.
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("Respect negations literally");
   });
 
   it("플래너 페이로드에 대상 선택 규칙이 매 턴 실린다", () => {
@@ -433,6 +420,7 @@ describe("수정 요청 — 계획 단계에서 신축으로 새지 않는다", 
     const plan = buildDefaultWorkPlan(
       "이 마을 담장이 엉망으로 깔렸어. 새로 만들지는 말고 지금 있는 것만 손봐줘.",
       NOW,
+      { modifies: true },
     );
     const item = plan.layers[0]?.items[0];
     expect(item?.successTools).toBeUndefined();
@@ -453,10 +441,36 @@ describe("수정 요청 — 계획 단계에서 신축으로 새지 않는다", 
     expect(item?.successTools).toBeUndefined();
     expect(item?.requiresAnyWrite).toBe(true);
   });
+});
 
-  it("신축 요청 폴백은 종전대로 공식 facade 를 강제한다", () => {
-    const village = buildDefaultWorkPlan("현재 맵에 집 6채 마을을 만들어줘", NOW);
-    expect(village.layers[0]?.items[0]?.successTools).toEqual(["author_village"]);
-    expect(village.layers[0]?.items[0]?.instruction).not.toContain("[대상 규칙]");
+describe("플래너 volume 선언과 폴백 계획", () => {
+  it("new_plan 의 volume 은 정수로 읽히고 direct 에는 없다", () => {
+    const raw = JSON.stringify({
+      action: "new_plan",
+      goal: "마을",
+      volume: { authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: 0 },
+      layers: [{ title: "L", items: [{ title: "허브", instruction: "author_village", doneWhen: "채움", successTools: ["author_village"] }] }],
+    });
+    const parsed = parseOrchestratorDecision(raw);
+    expect(parsed.decision && parsed.decision.action === "new_plan" ? parsed.decision.volume : null).toEqual({
+      authoredMaps: 1, multiPageNpcs: 3, shops: 1, quests: 0,
+    });
+    const direct = parseOrchestratorDecision(JSON.stringify({ action: "direct", reason: "x" }));
+    expect(direct.decision).toEqual({ action: "direct", reason: "x" });
+  });
+
+  it("플래너 프롬프트는 direct 존중·부정 존중·volume 선언을 요구하고, 코드 강제 계획을 약속하지 않는다", () => {
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("\"volume\"");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("Respect negations");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).not.toContain("code-forced plan");
+  });
+
+  it("폴백 계획은 문장 정규식으로 시공 생성기를 강제하지 않고, 수정이면 신축 금지 지침을 동봉한다", () => {
+    const village = buildDefaultWorkPlan("빈 프로젝트에 강이 있는 마을을 하나 만들고 집 8채를 지어줘. 광장과 시장도 함께 배치해줘.");
+    expect(village.layers[0]!.items[0]!.successTools).toBeUndefined();
+    expect(village.layers[0]!.items[0]!.requiresAnyWrite).toBe(true);
+    const repair = buildDefaultWorkPlan("이 마을 담장이 엉망으로 깔렸어. 새로 만들지는 말고 지금 있는 것만 손봐줘.", new Date(), { modifies: true });
+    expect(repair.layers[0]!.items[0]!.instruction).toContain("[대상 규칙]");
+    expect(repair.layers[0]!.items[0]!.successTools).toBeUndefined();
   });
 });

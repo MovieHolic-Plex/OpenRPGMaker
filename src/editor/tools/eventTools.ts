@@ -489,7 +489,7 @@ function findNearbySimilarNpc(
 const placeNpc: ToolDefinition = {
   name: "place_npc",
   description:
-    `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. 쓰기 전 find_events/get_event/get_story_state 로 기존 NPC·플래그를 읽고, 상태별 페이지(기본 + 조건이 다른 뒤 페이지)로 구성하라. `
+    `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. 쓰기 전 find_events/get_event/get_story_state 로 기존 NPC·플래그를 읽고, 상태별 페이지(기본 + 조건이 다른 뒤 페이지)로 구성하라.  페이지는 조건이 서로 다른 상태 변형이어야 한다 — 한 줄 인사 한 페이지만 놓고 끝내지 말 것. graphic 은 query 로 외형을 고르고 생략하면 villager 기본. 물 위·통행 불가 칸 금지. 상점 NPC 는 make_villager({shop}) 1회 또는 이 툴 1회 — 같은 역할을 중복 배치하지 말 것. 순찰·시간표는 set_npc_schedule, 재고는 set_shop_stock.`
     + "한 줄 인사만 놓고 끝내지 마라. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. "
     + "pages는 SimplePage로 EventPage로 컴파일된다. 페이지마다 name/graphic/conditions 를 줄 수 있다. 호감/선물은 characterId 를 명시. "
     + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다.",
@@ -619,7 +619,7 @@ function timeSystemOffWarnings(project: Project, scheduleCount: number): string[
 const setNpcSchedule: ToolDefinition = {
   name: "set_npc_schedule",
   description:
-    "기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 요일은 GameTime에 없으므로 dayRange를 사용한다.",
+    "기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 요일은 GameTime에 없으므로 dayRange를 사용한다. 순찰·출근·귀가 같은 이동 시간표는 이 툴(NPC 를 여러 개 복제하지 말 것).",
   mode: "write",
   parameters: {
     type: "object",
@@ -654,7 +654,7 @@ const setNpcSchedule: ToolDefinition = {
 const makeVillager: ToolDefinition = {
   name: "make_villager",
   description:
-    "home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue/pages를 함께 설정한다. 복잡한 상태별 페이지(선택지·selfSwitch·퀘스트 스위치)는 pages 를 쓰고, 간단한 조건 대사는 dialogue.when 을 쓴다. 같은 맵에 동일 event id 또는 characterId가 이미 있으면 새 주민을 복제하지 않고 기존 위치·생략한 대사 페이지를 보존하며 갱신한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다.",
+    "home 좌표에 주민 NPC를 만들고 선택적으로 schedule/dailyRoutine/dialogue/pages를 함께 설정한다. 복잡한 상태별 페이지(선택지·selfSwitch·퀘스트 스위치)는 pages 를 쓰고, 간단한 조건 대사는 dialogue.when 을 쓴다. 같은 맵에 동일 event id 또는 characterId가 이미 있으면 새 주민을 복제하지 않고 기존 위치·생략한 대사 페이지를 보존하며 갱신한다. dailyRoutine은 {workAt,workHours:[start,end]}로 집→일터→귀가 스케줄을 생성한다. 상점 주민은 shop 을 넣어 1회만 만든다(place_npc 와 중복 금지). 한 줄 인사만 두지 말고 조건이 다른 페이지를 둘 것.",
   mode: "write",
   parameters: {
     type: "object",
@@ -885,7 +885,7 @@ const makeVillager: ToolDefinition = {
 const setShopStock: ToolDefinition = {
   name: "set_shop_stock",
   description:
-    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다.",
+    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본 — 아이템 id 는 get_database_records 로 먼저 확인.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1488,7 +1488,7 @@ function cleanOptionalString(raw: unknown): string | undefined {
 const createTransferPair: ToolDefinition = {
   name: "create_transfer_pair",
   description:
-    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다"
+    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
     + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
     + " 착지점은 상대 출입구에 인접한 통행 가능 칸으로 자동 선정(즉시 재전이 방지).",
   mode: "write",
@@ -1571,7 +1571,7 @@ const createTransferPair: ToolDefinition = {
 
 const placeBattleBlocker: ToolDefinition = {
   name: "place_battle_blocker",
-  description: `필드 몬스터/전투 블로커를 배치한다(전투→승리 시 스위치+이벤트 소거→투명 페이지). clearSwitchId로 재전투를 막는다. 몬스터는 캐릭터형이므로 반드시 통행 가능 칸에 서야 한다 — ${PLACEMENT_AUTOLAND_HINT}`,
+  description: `필드 몬스터/전투 블로커를 배치한다(전투→승리 시 스위치+이벤트 소거→투명 페이지). clearSwitchId로 재전투를 막는다. 몬스터는 캐릭터형이므로 반드시 통행 가능 칸에 서야 한다 — ${PLACEMENT_AUTOLAND_HINT} 길을 지키는 몬스터 요청의 정본. 무리 인카운터는 set_encounter_table.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -1641,7 +1641,7 @@ const placeBattleBlocker: ToolDefinition = {
 const placeTrap: ToolDefinition = {
   name: "place_trap",
   description:
-    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다. "
+    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다.  함정·즉사 트랩 요청의 정본. 트랩+체크포인트+추격을 한 번에 원하면 make_horror_loop."
     + "touch 트랩은 밟을 수 있어야 하므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
@@ -1702,7 +1702,7 @@ const placeTrap: ToolDefinition = {
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
-    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
+    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 추격전·「쫓아오는」 요청의 정본.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1806,7 +1806,7 @@ const makeChaseScene: ToolDefinition = {
 const placeChest: ToolDefinition = {
   name: "place_chest",
   description:
-    "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지). " +
+    "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지).  보물상자(열면 아이템/골드 지급, 개봉 기억)는 반드시 이 툴 — place_npc/upsert_event 로 흉내내지 말 것. 장식용 박스·나무상자는 이 툴이 아니라 place_props(material:\"나무 상자\"). 넣고 빼는 보관 상자는 place_storage_chest." +
     "'보물상자'·'상자를 열면 ~을 주는' 요청만 이 툴. " +
     "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지. " +
     "벽 위(문·벽감)여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
@@ -1913,7 +1913,7 @@ const placeChest: ToolDefinition = {
 const placeStorageChest: ToolDefinition = {
   name: "place_storage_chest",
   description:
-    "보관 상자 이벤트를 배치한다. 조사하면 openChest로 소지품↔상자 입출고 UI를 연다(session.chests). " +
+    "보관 상자 이벤트를 배치한다. 조사하면 openChest로 소지품↔상자 입출고 UI를 연다(session.chests).  보관·창고 상자(소지품 입출고)는 이 툴, 보상 상자는 place_chest, 장식 박스는 place_props." +
     "농장 창고·인벤 확장용. 보물상자(1회 보상)는 place_chest. 장식 박스는 place_props. " +
     "벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
@@ -1982,7 +1982,7 @@ const placeStorageChest: ToolDefinition = {
 
 const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
-  description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형). 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
+  description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형). 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2175,7 +2175,7 @@ function ensureMapCheckpointEvent(project: Project, map: GameMap): string {
 
 const duplicateEvent: ToolDefinition = {
   name: "duplicate_event",
-  description: "이벤트를 다른 맵/좌표로 복제한다. 원본 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트·캐릭터형은 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요).",
+  description: "이벤트를 다른 맵/좌표로 복제한다. 원본 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트·캐릭터형은 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요). 같은 NPC/이벤트를 다른 자리에 하나 더 두라는 요청의 정본.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2237,7 +2237,7 @@ const removeEvent: ToolDefinition = {
 
 const moveEvent: ToolDefinition = {
   name: "move_event",
-  description: "이벤트를 같은 맵 내 다른 좌표로 옮긴다. 이벤트 자신의 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트는 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요).",
+  description: "이벤트를 같은 맵 내 다른 좌표로 옮긴다. 이벤트 자신의 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트는 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요). 배치를 옮기라는 요청은 이벤트를 지우고 새로 만들지 말고 이 툴로 옮긴다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2365,7 +2365,7 @@ function resolveCutsceneMusicResources(project: Project, beats: readonly Cutscen
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
-    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. " +
+    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다.  컷신·연출·대화 장면·회상 요청의 정본. 투더문식 회상/엔딩 프리셋은 script_cutscene_preset." +
     "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +

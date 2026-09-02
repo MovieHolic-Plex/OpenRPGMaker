@@ -538,7 +538,7 @@ const checkReachabilityTool: ToolDefinition = {
 const findLayoutRegionsTool: ToolDefinition = {
   name: "find_layout_regions",
   description:
-    "맵의 설계 bbox 영역(layoutPlan.regions)을 질의로 검색한다. 한국어/영문 부분일치(상점·시장·장터→market, 집→house, 파란→blue, 가운데/중앙→중심 영역). " +
+    "맵의 설계 bbox 영역(layoutPlan.regions)을 질의로 검색한다. 한국어/영문 부분일치(상점·시장·장터→market, 집→house, 파란→blue, 가운데/중앙→중심 영역).  상점/가게/집 철거·수정 전에 이 툴로 영역 rect 를 얻는다 — 비전으로 좌표를 추측하지 말 것." +
     "query에 '가운데'/'중앙'이 있으면 맵 중앙에 가까운 순으로 정렬한다. 영역 bbox를 특정하거나 시공 좌표를 추론할 때 쓴다. " +
     "주의: 이 도구는 마을 빌더의 설계 기록(layoutPlan.regions)만 본다 — stamp_structure_kit/팔레트로 찍은 구조물 배치(map.structurePlacements)는 보이지 않는다.",
   mode: "read",

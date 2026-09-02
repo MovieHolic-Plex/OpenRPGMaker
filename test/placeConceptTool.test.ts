@@ -5,7 +5,6 @@ import { layoutConceptFacility } from "@/editor/conceptBundleResolve";
 import { OUTSIDE_VOID_TILE } from "@/editor/interiorConceptCompose";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { interiorObjectById } from "@/editor/interiorObjectCatalog";
-import { routeRegionIntent } from "@/editor/regionTask/regionIntentRouter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -35,10 +34,11 @@ describe("place_concept", () => {
     expect(capabilityEscalatedToolNames("주막 만들어줘", new Set())).toContain("place_concept");
   });
 
-  it("여관 요청은 실내 시설로 라우팅한다", () => {
-    expect(routeRegionIntent("여관 하나 지어줘")).toContain("interior");
-    expect(routeRegionIntent("여관 하나 지어줘")).not.toContain("structure");
-    expect(routeRegionIntent("여관 주인 NPC를 배치해줘")).not.toContain("interior");
+  it("툴 설명이 시설 요청의 경로(야외 집 금지·새 mapId·create_map 만 하고 멈추지 말 것)를 스스로 말한다", () => {
+    const description = getTool("place_concept")?.description ?? "";
+    expect(description).toContain("author_house");
+    expect(description).toContain("create_map");
+    expect(description).toContain("기존 실내 맵을 고치는 요청에는 쓰지 마라");
   });
 
   it("여관 초안으로 침실·복도·식당을 짓고 침대를 놓는다", () => {

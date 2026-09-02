@@ -57,7 +57,7 @@ const createQuestFlags: ToolDefinition = {
 
 const createQuest: ToolDefinition = {
   name: "create_quest",
-  description: "선언적 QuestDef를 컴파일한다 — 스위치/변수 + 기버 다중 페이지 + 수집물/블로커/게이트 이벤트 생성 + project.quests 메타 보존.",
+  description: "선언적 QuestDef를 컴파일한다 — 스위치/변수 + 기버 다중 페이지 + 수집물/블로커/게이트 이벤트 생성 + project.quests 메타 보존. 퀘스트·의뢰 요청은 create_quest/define_quest 로 등록하고 verify_quest 로 완주를 확인한다 — upsert_event 로 손으로 조립하지 말 것. 플래그는 declare_story_flag.",
   mode: "write",
   parameters: {
     type: "object",

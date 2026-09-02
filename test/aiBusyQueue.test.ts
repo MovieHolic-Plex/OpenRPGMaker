@@ -105,16 +105,12 @@ describe("AI busy 입력 큐", () => {
     expect(queue.hidden).toBe(false);
     expect(queue.textContent).toContain("기다리는 메시지 1개");
 
-    // 기본 agentMode=auto 이므로 첫 턴은 플래너 라운드(응답 1)와 본문 라운드(응답 2)를 갖는다.
-    // 두 번째 턴도 동일하게 2라운드. 순서대로 방출한다.
-    pendingResponses.shift()?.();
-    await flushAsync();
-    pendingResponses.shift()?.();
-    await flushAsync();
-    pendingResponses.shift()?.();
-    await flushAsync();
-    pendingResponses.shift()?.();
-    await flushAsync();
+    // 기본 agentMode=auto 이므로 턴마다 의도 선언(응답 1, 여기서는 JSON 이 아니라 폴백) → 플래너(응답 2) →
+    // 본문(응답 3) 라운드를 갖는다. 두 번째 턴도 같다. 큐가 빌 때까지 순서대로 방출한다.
+    for (let round = 0; round < 12 && (pendingResponses.length > 0 || !queue.hidden); round += 1) {
+      pendingResponses.shift()?.();
+      await flushAsync();
+    }
 
     // 첫 턴 종료 후 큐가 비고, 두 번째 메시지가 사용자 버블로 전송됐다.
     expect(queue.hidden).toBe(true);

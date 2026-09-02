@@ -353,7 +353,7 @@ function isWallCell(map: GameMap, tileset: TilesetDef, x: number, y: number): bo
 const buildWall: ToolDefinition = {
   name: "build_wall",
   description:
-    "material(타일 라벨/설명)로 벽을 시공한다(v3). rect에 9분할/기둥 패턴 전개. 그룹 id 금지. 시공 후 place_door/place_window → build_roof.",
+    "material(타일 라벨/설명)로 벽을 시공한다(v3). rect에 9분할/기둥 패턴 전개. 그룹 id 금지. 시공 후 place_door/place_window → build_roof. 울타리·안뜰·광장 바닥·탑 같은 야외 구조물은 build_wall + fill_region 으로 세운다. 실내/방 맵 요청에는 쓰지 말 것(실내 세션 툴). 집 외장은 author_house.",
   mode: "write",
   version: 3,
   parameters: {
@@ -462,7 +462,7 @@ function doorLikeEdits(tileset: TilesetDef, group: TileGroupMetadata, at: Point,
 const placeDoor: ToolDefinition = {
   name: "place_door",
   description:
-    "문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
+    "문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 문 시각 배치의 정본 툴. 실제 맵 이동은 create_transfer_pair.",
   mode: "write",
   version: 3,
   parameters: {
@@ -595,7 +595,7 @@ const layPath: ToolDefinition = {
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
-    "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region. "
+    "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region.  밀도는 enum 으로 직접: 숲=density:\"dense\", 울창·빽빽·통행 불가=\"impassable\", 드문드문·가로수=\"sparse\"(코드가 문장을 읽지 않는다). 같은 area 에 place_props 는 1회. 물·호수 칸 위 금지 — area 는 호수 바깥 육지만, 호수를 채운 뒤 둘레에 깔 것. 장식 박스·나무상자·나무박스는 material:\"나무 상자\"(count:N), 과일박스는 material:\"과일박스\" — small-props 가방이나 place_chest 로 대체 금지. 마을 규모 숲은 author_village({forestDensity}). 등불·장식 소품도 이 툴."
     + "숲은 모델이 density:sparse|normal|dense|impassable 을 넣으면 count·packing을 면적에서 자동 계산한다"
     + "(sparse=15%, normal=40%, 숲=dense 80%, 울창/빽빽/통행 불가=impassable 100%). "
     + "사용자 문장을 코드가 읽지 않는다 — 밀도 enum을 생략하면 일반 산포(count 필수). "
@@ -743,7 +743,7 @@ function assertFillRegionGroup(group: TileGroupMetadata, autotile: AutotileGroup
 const fillRegion: ToolDefinition = {
   name: "fill_region",
   description:
-    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용. 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
+    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용. 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road.",
   mode: "write",
   version: 3,
   invalidArgsExample: FILL_CIRCLE_EXAMPLE,
@@ -928,7 +928,7 @@ function mostFrequentTile(counts: ReadonlyMap<number, number>): number | null {
 const tileErase: ToolDefinition = {
   name: "tile_erase",
   description:
-    "지정 사각형을 정리한다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 상위는 빈 칸이 되고, 하위는 맵의 기본 바닥(rect 밖에서 가장 흔한 하위 타일 — 실내는 실내 바닥, 야외는 잔디)으로 되돌아가 바닥에 구멍을 남기지 않는다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다. " +
+    "지정 사각형을 정리한다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 상위는 빈 칸이 되고, 하위는 맵의 기본 바닥(rect 밖에서 가장 흔한 하위 타일 — 실내는 실내 바닥, 야외는 잔디)으로 되돌아가 바닥에 구멍을 남기지 않는다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.  상점·가게 철거는 find_layout_regions({mapId, query})로 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market 은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region 으로 결과 확인. 영역 상자는 find_layout_regions 가 준 rect 를 쓰고 비전으로 추측하지 말 것. 기존 것을 고칠 때는 get_map_region/find_layout_regions 로 현재 상태를 먼저 확인하고 이 툴로 정리한 뒤 다시 깐다." +
     "kind: all(기본, rect 전체를 통째로 비움)/market(시장·상점 데크 철거 전용 — 나무 마루·좌판 난간·진열대·과일·나무 상자·돌 단만 지우고, " +
     "겹친 집(벽·창문·지붕)·흙길(360)·잔디처럼 시장 타일이 아닌 것은 그대로 보존한다. 시장 lower를 지운 칸은 잔디로 되돌린다). " +
     "집과 시장이 한 bbox에 섞여 있으면 kind=market 을 쓸 것 — kind 생략(all)은 집까지 다 지운다.",

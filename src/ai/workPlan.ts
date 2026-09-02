@@ -26,7 +26,6 @@ import {
   templateToolInstruction,
 } from "./narrativeHorrorWorkPlan";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
-import { requestLikelyModifiesExisting } from "@/ai/modifyIntent";
 import { getTool } from "@/editor/tools/toolRegistry";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
@@ -89,6 +88,13 @@ export interface WorkPlanProgressSummary {
 }
 
 /** Planner (main LLM) JSON decision — no tools. */
+export interface PlannerVolumeBar {
+  readonly authoredMaps: number;
+  readonly multiPageNpcs: number;
+  readonly shops: number;
+  readonly quests: number;
+}
+
 export type OrchestratorDecision =
   | { readonly action: "direct"; readonly reason?: string }
   | { readonly action: "resume"; readonly reason?: string }
@@ -96,6 +102,11 @@ export type OrchestratorDecision =
       readonly action: "new_plan" | "replan";
       readonly goal: string;
       readonly plannerNote?: string;
+      /**
+       * 플래너가 이 계획에 약속하는 최소 산출량(볼륨 계약). 코드는 이 값만 측정한다 — 문장 정규식으로
+       * 「마을=맵 1·NPC 3·상점 1」 막대를 씌우던 경로는 없다(2026-09-03 감사: 「이 마을에 상인 하나 추가」 폭주).
+       */
+      readonly volume?: PlannerVolumeBar;
       readonly layers: readonly {
         readonly id?: string;
         readonly title: string;
@@ -116,7 +127,7 @@ You do NOT edit maps. You only decide how work is decomposed.
 
 Harness contract:
 1. Output **JSON only** (no markdown fences, no prose outside JSON).
-2. action=direct — single tool turn is enough (one NPC line, small paint, simple Q&A). NEVER use direct for village / town / RPG / campaign / multi-map requests — those must be new_plan. The harness rejects direct on volume requests and injects a code-forced plan; do not ask the user to continue.
+2. action=direct — a single tool turn is enough (one NPC, one facility via place_concept, a small paint, adding one merchant to an existing map, simple Q&A). Use new_plan for village / town / RPG / campaign / multi-map / quest-chain requests. Respect negations literally: "마을은 만들지 말고 여관만" is one facility, not a village; "퀘스트 말고 상점만" has no quest.
 3. action=resume — incomplete WorkPlan already matches the user goal; keep it.
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
@@ -132,7 +143,8 @@ Harness contract:
 10. **Be terse — a truncated response is worse than a small plan.** 2026-08-23 실측: 장문 goal + 큰 layers 로 응답이 출력 한도에서 잘려 JSON 이 깨졌고, 하니스가 무관한 폴백 템플릿으로 갈아타 사용자 요청의 5/6 이 조용히 누락됐다. reason ≤ 1 short sentence, goal ≤ 200 chars, each instruction ≤ 200 chars, no restating the user request verbatim.
    단, 사용자의 **금지·보존 제약**("새로 만들지 마", "기존 것 유지", "이 맵만")은 축약 예외다 — instruction 에 그대로 남겨라. 축약해서 날리면 생성기가 신축으로 되돌아간다.
 11. A multi-deliverable request MUST have every deliverable represented by at least one item. Dropping one because the plan is getting long is a contract violation — merge related deliverables into one item instead.
-12. Quest / boss items carry a **verification tool** in successTools — the harness re-checks the artifact and blocks completion without it:
+12. "volume" (optional, only with new_plan/replan): the minimum outputs you commit to for greenfield content — {"authoredMaps","multiPageNpcs","shops","quests"} as integers. The harness measures the project delta against it and re-injects work until it is met, so declare only what the user actually asked for (village ≈ maps 1 / npcs 3 / shops 1; RPG campaign ≈ maps 3 / npcs 6 / shops 1 / quests 1). Omit it for repairs, single facilities, and anything the user excluded.
+13. Quest / boss items carry a **verification tool** in successTools — the harness re-checks the artifact and blocks completion without it:
    - 퀘스트/의뢰/스토리 체인 → successTools MUST include ["create_quest","define_quest","verify_quest"]. upsert_event 로 퀘스트를 손으로 조립하지 말 것 — 완주 검증이 불가능해 항목이 완료되지 않는다.
    - 보스 전투 페이즈/광폭화/HP 임계 연출 → successTools MUST include ["author_boss_phases","simulate_battle"]. 페이즈가 실제로 발동했는지(phaseCoverage)를 시뮬로 확인해야 완료된다.
 ${NARRATIVE_HORROR_PLANNER_RULE}
@@ -143,6 +155,7 @@ JSON schema:
   "reason": "short why",
   "goal": "required for new_plan/replan",
   "plannerNote": "optional strategy",
+  "volume": {"authoredMaps": 1, "multiPageNpcs": 3, "shops": 1, "quests": 0},
   "layers": [
     {
       "id": "L1",
@@ -255,14 +268,34 @@ export function parseOrchestratorDecision(raw: string): OrchestratorParseResult 
   if (layers.length === 0) {
     return { decision: null, error: `모든 layer 가 형식 오류입니다(${rejected.join(", ")}). 필요한 형식: {title, items:[{title, instruction}]}` };
   }
+  const volume = parsePlannerVolume(parsed.volume);
   return {
     decision: {
       action,
       goal,
       ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
+      ...(volume ? { volume } : {}),
       layers,
     },
   };
+}
+
+/** 플래너가 선언한 볼륨 막대. 정수 0 이상만 받고, 전부 0 이면 없는 것으로 본다. */
+export function parsePlannerVolume(value: unknown): PlannerVolumeBar | null {
+  if (!isRecord(value)) return null;
+  const read = (key: string): number => {
+    const raw = value[key];
+    if (typeof raw !== "number" || !Number.isFinite(raw)) return 0;
+    return Math.max(0, Math.min(50, Math.floor(raw)));
+  };
+  const bar = {
+    authoredMaps: read("authoredMaps"),
+    multiPageNpcs: read("multiPageNpcs"),
+    shops: read("shops"),
+    quests: read("quests"),
+  };
+  if (bar.authoredMaps === 0 && bar.multiPageNpcs === 0 && bar.shops === 0 && bar.quests === 0) return null;
+  return bar;
 }
 
 /**
@@ -770,36 +803,19 @@ export function isWorkPlanComplete(plan: WorkPlan): boolean {
   return plan.layers.every((l) => l.items.every((i) => i.status === "done" || i.status === "skipped"));
 }
 
-/**
- * 건설 의도 감지: 마을 → author_village, 집/건물 → author_house.
- *
- * **수정 요청이면 아무것도 강제하지 않는다.** 이 함수는 2026-08-23 출력 잘림 사고(플래너 응답이
- * 잘려 요청 5/6 이 조용히 누락)의 안전망으로 들어왔고, 그때 유실 사례가 전부 신축이었기 때문에
- * 폴백도 신축으로 고정됐다. 그 결과 실측 사례 — goal = "이 마을 담장이 엉망으로 깔렸어.
- * **새로 만들지는 말고** 지금 있는 것만 손봐줘."(77자) → `successTools=["author_village"]`,
- * 그리고 `author_village` 는 houseCount minimum 1 이라 "담장 수정" 항목이 "집 최소 1채 신축"을
- * 완료 조건으로 갖게 됐다. null 을 돌려주면 `requiresAnyWrite` 경로로 떨어져 "쓰기 툴 하나"로
- * 완료되므로 특정 생성기 강제가 사라진다.
- */
-function detectConstructionIntent(goal: string): readonly string[] | null {
-  if (requestLikelyModifiesExisting(goal)) return null;
-  if (/마을|도시|정착지|city|town|settlement/i.test(goal)) return ["author_village"];
-  if (/집|건물|house/i.test(goal)) return ["author_house"];
-  return null;
-}
 
-/** Emergency fallback only when planner API/parse fails — single sprint wrapping the raw goal. */
-export function buildDefaultWorkPlan(goal: string, now = new Date()): WorkPlan {
+/**
+ * Emergency fallback only when planner API/parse fails — single sprint wrapping the raw goal.
+ * 시공 생성기(author_village/author_house)를 문장 정규식으로 강제하지 않는다 — 「담장만 손봐줘」 폴백이
+ * 「집 최소 1채 신축」을 완료 조건으로 갖던 경로다. 수정 여부는 의도 선언이 알려 준다(opts.modifies).
+ */
+export function buildDefaultWorkPlan(goal: string, now = new Date(), opts: { readonly modifies?: boolean } = {}): WorkPlan {
   const genre = detectNarrativeHorrorGenre(goal);
   const genreTools = requiredSuccessToolsForUserText(goal);
-  const constructionTools = detectConstructionIntent(goal);
-  const successTools =
-    genreTools.length > 0
-      ? [...genreTools]
-      : constructionTools ?? undefined;
+  const successTools = genreTools.length > 0 ? [...genreTools] : undefined;
   // 수정 요청이면 폴백 지시문에 신축 금지를 동봉한다 — 폴백은 계획 문장이 goal 그대로라
   // 대상 규칙이 붙을 자리가 여기밖에 없다.
-  const modifyGuard = requestLikelyModifiesExisting(goal)
+  const modifyGuard = opts.modifies === true
     ? "\n\n[대상 규칙] 기존 맵 수정 요청이다. 컨텍스트의 현재 맵을 대상으로 편집하고 "
       + "create_map / author_house / author_village(kind:\"new\") / 방 세션 시작을 쓰지 말 것."
     : "";

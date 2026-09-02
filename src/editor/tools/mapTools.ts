@@ -94,7 +94,7 @@ function assertToolMapSize(width: number, height: number): void {
 
 const createMap: ToolDefinition = {
   name: "create_map",
-  description: "새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 256×256). 돌벽 테두리가 필요할 때만 border:\"wall\"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다.",
+  description: "새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 256×256). 돌벽 테두리가 필요할 때만 border:\"wall\"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -383,7 +383,7 @@ function coordKey(x: number, y: number): string {
 
 const paintRoad: ToolDefinition = {
   name: "paint_road",
-  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. 경로가 집·벽 같은 건물을 가로지르면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). 나무·울타리는 치우고, 물은 우회를 먼저 시도한 뒤 마른 길이 없으면 건넌다. 우회로가 없어 길이 끊기면 실패하며 막힌 좌표를 알려주니 경유점을 그 좌표 밖으로 옮겨 다시 부르라. ${NATURALNESS_GUIDANCE}`,
+  description: `폴리라인을 따라 도로를 깐다. style: dirt(흙길)/sand(모래). 프리셋이 있으면 개별 타일 id/style보다 presetId+paletteRole을 우선 사용하라. 오토타일로 가장자리를 자동 성형한다. 경로가 집·벽 같은 건물을 가로지르면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). 나무·울타리는 치우고, 물은 우회를 먼저 시도한 뒤 마른 길이 없으면 건넌다. 우회로가 없어 길이 끊기면 실패하며 막힌 좌표를 알려주니 경유점을 그 좌표 밖으로 옮겨 다시 부르라. ${NATURALNESS_GUIDANCE} 인자 {mapId, style, points:[{x,y},...]}. 마을 동선·호수 둘레 산책로·집 앞 길에 쓴다(lay_path 보다 우선).`,
   mode: "write",
   parameters: {
     type: "object",
@@ -828,7 +828,7 @@ const clearRegion: ToolDefinition = {
 const mirrorRegion: ToolDefinition = {
   name: "mirror_region",
   description:
-    "사각 영역의 타일(하위/상위/스택)과 영역 안 이벤트 좌표를 좌우(horizontal) 또는 상하(vertical)로 대칭 변환한다. 결정적 변환 — 오토타일 경계는 보정하지 않으므로 필요하면 이후 다듬기 지시를 권한다.",
+    "사각 영역의 타일(하위/상위/스택)과 영역 안 이벤트 좌표를 좌우(horizontal) 또는 상하(vertical)로 대칭 변환한다. 결정적 변환 — 오토타일 경계는 보정하지 않으므로 필요하면 이후 다듬기 지시를 권한다. 인자 {mapId,x,y,w,h,axis:\"horizontal\"|\"vertical\"}. 대칭·반복·복제 요청의 정본.",
   mode: "write",
   invalidArgsExample: { mapId: "map_1", x: 2, y: 2, w: 8, h: 6, axis: "horizontal" },
   parameters: {
@@ -1433,7 +1433,7 @@ const setMapProperties: ToolDefinition = {
 
 const setEncounterTable: ToolDefinition = {
   name: "set_encounter_table",
-  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. 맵 encounterRate가 0이면 기본 발생률로 자동 보정한다(0이면 런타임에서 인카운터가 아예 발생하지 않는다).",
+  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. 맵 encounterRate가 0이면 기본 발생률로 자동 보정한다(0이면 런타임에서 인카운터가 아예 발생하지 않는다). 인카운터 구역 요청은 이 툴 또는 make_hunting_ground. 지키는 몬스터는 place_battle_blocker, 함정은 place_trap, 추격전은 make_chase_scene.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1459,7 +1459,7 @@ const setEncounterTable: ToolDefinition = {
 
 const makeHuntingGround: ToolDefinition = {
   name: "make_hunting_ground",
-  description: "사냥터 구획을 만든다. fieldSpawns 항목을 추가하고, encounterEntries가 있으면 encounterTable로 설정한다(없으면 area region의 단일 인카운터를 설정).",
+  description: "사냥터 구획을 만든다. fieldSpawns 항목을 추가하고, encounterEntries가 있으면 encounterTable로 설정한다(없으면 area region의 단일 인카운터를 설정). 「사냥터」「몬스터 나오는 숲」의 정본. 지키는 몬스터 한 마리는 place_battle_blocker.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1546,7 +1546,7 @@ const configureRoguelikeRoom: ToolDefinition = {
 
 const createFarmPlot: ToolDefinition = {
   name: "create_farm_plot",
-  description: "맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다.",
+  description: "맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다. 밭·농장 요청의 정본 툴.",
   mode: "write",
   domains: ["database", "map"],
   parameters: {

@@ -10,7 +10,8 @@ import type { AuditEntry, SessionEvent } from "@/ai/assistantSession";
 import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { setAgentGhostRunningTool } from "@/editor/agentGhostPreview";
-import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
+import { intentEscapesRegion } from "@/ai/intentDeclaration";
+import { buildIntentFacts, createLlmIntentDeclarer, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import {
   describeRegionTaskResult,
   type RegionTaskOptions,
@@ -36,10 +37,18 @@ export interface AiRegionTaskRunnerDeps {
     | null;
   readonly refreshContextChips: () => void;
   readonly runRegion: (options: RegionTaskOptions) => Promise<RegionTaskResult>;
+  /** 의도 선언자(테스트 주입용). 없으면 실제 모델 선언자. */
+  readonly declareIntent?: IntentDeclarer;
 }
 
 export interface AiRegionTaskRunner {
   readonly sendSelectionRegionTask: (text: string) => Promise<void>;
+}
+
+let sharedDeclarer: IntentDeclarer | null = null;
+function defaultDeclarer(): IntentDeclarer {
+  sharedDeclarer ??= createLlmIntentDeclarer();
+  return sharedDeclarer;
 }
 
 export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegionTaskRunner {
@@ -52,8 +61,19 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
       return;
     }
     // 실내/새 맵은 선택 영역 하드 클립에 담기지 않는다(audit 18: create_map 후 0칸 폐기).
-    // 일반 채팅 전량 경로로 우회해 start_interior_room_session 등이 제안으로 남게 한다.
-    if (isRegionEscapingIntent(text)) {
+    // 일반 채팅 전량 경로로 우회해 place_concept/start_interior_room_session 등이 제안으로 남게 한다.
+    // 판정은 의도 선언(모델)이 한다 — 같은 문장을 세션이 다시 읽을 때는 캐시가 맞는다.
+    const escape = await declareIntentCached(
+      deps.declareIntent ?? defaultDeclarer(),
+      buildIntentFacts({
+        project: store.getCurrent(),
+        userText: text,
+        currentMapId: selection.mapId,
+        selection: { mapId: selection.mapId, ...selection.region },
+        hasActivePlan: false,
+      }),
+    ).then((outcome) => intentEscapesRegion(outcome.intent));
+    if (escape) {
       deps.selectionTaskActive = false;
       deps.refreshContextChips();
       toast("실내·새 맵 요청은 선택 영역 밖 작업이라 일반 채팅으로 진행합니다", "info");
