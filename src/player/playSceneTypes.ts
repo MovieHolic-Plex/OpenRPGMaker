@@ -11,6 +11,7 @@ import type { LightingAmbientTransition } from "@/project/lightingRules";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import type { TimePhase } from "@/project/gameTime";
+import type { RuntimePerfCounters } from "@/player/runtimePerfCounters";
 
 export const DIRECTION_ROW: Record<Dir, number> = {
   down: 0,
@@ -203,6 +204,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   characterHopScales?: Map<string, import("@/player/characterHop").HopScale>;
   /** 주인공의 진행 중인 체공. null 이면 접지 상태다. */
   playerHop: PlayerHopState | null;
+  /** 재생성·카메라 스냅 계수기. QA 훅 `__oprnPerf` 가 읽는다. */
+  perfCounters?: RuntimePerfCounters;
   getMapId(): MapId;
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void;
   renderTiles(): void;

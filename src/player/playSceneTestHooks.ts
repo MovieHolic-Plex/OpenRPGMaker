@@ -6,6 +6,7 @@ import { startPlayerRoute } from "@/player/playerRouteState";
 import type { MoveCommand } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
+import type { RuntimePerfCounters } from "@/player/runtimePerfCounters";
 
 // 런타임 디버그 쓰기 훅. 플레이 중 스위치/변수/아이템/골드/회복/텔레포트를 조작한다.
 export type RuntimeDebugHook = {
@@ -51,6 +52,8 @@ type TestHookWindow = Window & {
   __oprnPlayerSprite?: () => PlayerSpriteDebug | null;
   __oprnCharacterSprites?: () => CharacterSpriteDebug | null;
   __oprnCamera?: () => CameraDebug;
+  /** 재생성·카메라 스냅 계수기 스냅숏. 값이 없으면(계측 없는 씬) null. */
+  __oprnPerf?: () => RuntimePerfCounters | null;
   __oprnSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
   __oprnSetMediaState?: (state: MediaStateDebug) => void;
   __oprnDebug?: RuntimeDebugHook;
@@ -201,6 +204,7 @@ export function installPlaySceneTestHooks(
   w.__oprnPlayerSprite = () => playerSpriteDebug(scene);
   w.__oprnCharacterSprites = () => characterSpritesDebug(scene);
   w.__oprnCamera = () => cameraDebug(scene);
+  w.__oprnPerf = () => perfCountersDebug(scene);
   w.__oprnActionCombat = () => actionCombatDebug(scene);
   // 런타임 디버그 쓰기 훅(항상 활성). 조작 후 syncRuntimeState로 화면/상태 JSON을 갱신한다.
   const applyAndSync = (op: DebugOp): void => {
@@ -271,6 +275,7 @@ export function installPlaySceneTestHooks(
     delete w.__oprnPlayerSprite;
     delete w.__oprnCharacterSprites;
     delete w.__oprnCamera;
+    delete w.__oprnPerf;
     delete w.__oprnSetActorVitals;
     delete w.__oprnSetMediaState;
     delete w.__oprnDebug;
@@ -323,6 +328,11 @@ function cameraDebug(scene: Phaser.Scene): CameraDebug {
     width: camera.width,
     zoom: camera.zoom,
   };
+}
+
+function perfCountersDebug(scene: Phaser.Scene): RuntimePerfCounters | null {
+  const counters = (scene as unknown as { perfCounters?: RuntimePerfCounters }).perfCounters;
+  return counters ? { ...counters } : null;
 }
 
 function hasRuntimeOverlay(scene: Phaser.Scene): scene is RuntimeOverlayScene {
