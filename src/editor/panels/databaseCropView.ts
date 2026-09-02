@@ -148,8 +148,12 @@ function cropLifeHeader(project: Project, rerender: () => void): HTMLElement {
   const itemIds = new Set(project.database.items.map((item) => item.id));
   const crops = project.database.crops ?? [];
   const invalidCrops = crops.filter((crop) => !itemIds.has(crop.seedItemId) || !itemIds.has(crop.harvestItemId));
-  const openTab = (event: Event, testid: string): void => {
-    if (!clickDatabaseTabFrom(event.currentTarget as HTMLElement | null, testid)) {
+  const openTab = (
+    event: Event,
+    testid: string,
+    options?: { readonly systemSection?: "time"; readonly focusTestId?: string },
+  ): void => {
+    if (!clickDatabaseTabFrom(event.currentTarget as HTMLElement | null, testid, options)) {
       toast("데이터베이스 창에서 해당 탭을 열어 주세요.", "info");
     }
   };
@@ -172,7 +176,10 @@ function cropLifeHeader(project: Project, rerender: () => void): HTMLElement {
             action: {
               label: "시스템 열기",
               testid: "db-crop-readiness-time-action",
-              onClick: (event) => openTab(event, "db-tab-system"),
+              onClick: (event) => openTab(event, "db-tab-system", {
+                systemSection: "time",
+                focusTestId: "db-field-system-time-enabled",
+              }),
             },
           },
           {

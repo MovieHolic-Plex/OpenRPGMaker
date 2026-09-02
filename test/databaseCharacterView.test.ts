@@ -272,8 +272,10 @@ describe("database character catalog", () => {
     expect(issues?.dataset.orphans).toBe("1");
     expect(issues?.dataset.unused).toBe("1");
     expect(issues?.dataset.state).toBe("needs-setup");
+    expect(findByTestId(host, "db-character-readiness-gifts")?.tagName).toBe("BUTTON");
     expect(findByTestId(host, "db-character-readiness-gifts-action")).toBeTruthy();
     expect(findByTestId(host, "db-character-readiness-calendar-action")).toBeTruthy();
+    expect(findByTestId(host, "db-character-readiness-profiles-action")).toBeTruthy();
     expect(findByTestId(host, "db-character-readiness-issues-action")).toBeTruthy();
   });
 });

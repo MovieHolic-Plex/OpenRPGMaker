@@ -239,8 +239,12 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
   const spawnCount = spawnMaps.reduce((count, map) => count + (map.fieldSpawns?.length ?? 0), 0);
   const itemIds = new Set(project.database.items.map((item) => item.id));
   const dropEnemies = project.database.enemies.filter((enemy) => enemy.rewards.dropItemId && itemIds.has(enemy.rewards.dropItemId));
-  const openTab = (event: Event, testid: string): void => {
-    if (!clickDatabaseTabFrom(event.currentTarget as HTMLElement | null, testid)) {
+  const openTab = (
+    event: Event,
+    testid: string,
+    options?: { readonly systemSection?: "startup"; readonly focusTestId?: string },
+  ): void => {
+    if (!clickDatabaseTabFrom(event.currentTarget as HTMLElement | null, testid, options)) {
       toast("데이터베이스 창에서 해당 탭을 열어 주세요.", "info");
     }
   };
@@ -314,7 +318,10 @@ function monsterPipelineHeader(project: ReturnType<typeof store.getCurrent>): HT
             action: {
               label: "시스템 열기",
               testid: "db-monster-pipeline-mode-action",
-              onClick: (event) => openTab(event, "db-tab-system"),
+              onClick: (event) => openTab(event, "db-tab-system", {
+                systemSection: "startup",
+                focusTestId: "db-field-system-monster-collection",
+              }),
             },
           },
         ],
