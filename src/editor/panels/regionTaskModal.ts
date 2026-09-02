@@ -56,6 +56,26 @@ import {
   INTERIOR_THEME_MODIFIERS,
   type InteriorThemeModifier,
 } from "@/editor/interiorRoomPipeline";
+import {
+  readGenerationMode,
+  writeGenerationMode,
+  type GenerationMode,
+} from "@/editor/regionTask/generationMode";
+import { getOperator, listOperators } from "@/editor/operators/operatorRegistry";
+import { defaultOperatorParams } from "@/editor/operators/operatorTypes";
+import {
+  isOperatorIntentFailure,
+  resolveOperatorIntent,
+  type OperatorIntentResult,
+} from "@/editor/operators/operatorIntent";
+import { completeOperatorIntent } from "@/editor/operators/operatorIntentClient";
+import { renderMaterialSlotBoard } from "@/editor/panels/materialSlotBoard";
+import {
+  randomOperatorSeed,
+  runOperatorTask,
+  type OperatorTaskOptions,
+  type OperatorTaskResult,
+} from "@/editor/regionTask/runOperatorTask";
 import { renderRegionSnapshot } from "@/editor/regionSnapshot";
 import { store } from "@/project/store";
 import type { GameMap, MapId, Project } from "@/project/types";
@@ -103,6 +123,12 @@ export interface RegionTaskModalOptions {
   readonly run?: RegionTaskRunner;
   /** 테스트 주입: AI/도구 쿼터를 쓰지 않는 직접 실내 초안 경로. */
   readonly runDirectRoomDraft?: DirectInteriorRoomDraftRunner;
+  /** 테스트 주입: 생성기 모드(LLM 없는 오퍼레이터) 실행 경로. */
+  readonly runOperator?: (options: OperatorTaskOptions) => OperatorTaskResult | Promise<OperatorTaskResult>;
+  /** 테스트 주입: 문장 → 생성기 의도 해석. 기본은 LLM 1콜 + 키워드 폴백. */
+  readonly resolveIntent?: (instruction: string) => Promise<OperatorIntentResult>;
+  /** 모달을 열 때의 생성 모드. 생략하면 사용자가 마지막에 쓴 모드(기본 조수). */
+  readonly generationMode?: GenerationMode;
   /** 테스트 주입: 썸네일 렌더러(기본 renderRegionSnapshot 캔버스). */
   readonly renderSnapshot?: (project: Project, map: GameMap, region: RegionRect) => Promise<HTMLElement>;
   /** 테스트 주입: 동적 추천/통계 칩용 project 조회(기본 store.getCurrent). */
@@ -188,6 +214,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   closeRegionTaskModal();
   const run: RegionTaskRunner = options.run ?? runRegionTask;
   const runDirectRoom = options.runDirectRoomDraft ?? runDirectInteriorRoomDraft;
+  const runOperator = options.runOperator ?? runOperatorTask;
+  const resolveIntent = options.resolveIntent
+    ?? ((instruction: string) => resolveOperatorIntent(instruction, { complete: completeOperatorIntent }));
   const { region } = options;
 
   const chip = el("span", {
@@ -418,6 +447,243 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     dataset: { testid: "region-task-direct-room" },
   }) as HTMLButtonElement;
 
+  // ── 생성 모드 ──
+  // 조수(LLM) 와 생성기(오퍼레이터)는 "무엇을 입력하는가" 가 다르다 — 문장이냐, 파라미터냐.
+  // 한 화면에 둘을 겹쳐 놓으면 사용자가 지금 어느 쪽에 말하는지 잃어버린다. 그래서 스위치로
+  // 갈라 놓되, **조수 쪽 화면은 한 픽셀도 바꾸지 않는다**(기본값도 조수).
+  let generationMode: GenerationMode = options.generationMode ?? readGenerationMode();
+  const operators = listOperators();
+  let operatorId = operators[0]?.id ?? "forest";
+  let operatorParams: Record<string, number | boolean | string> = operators[0] ? defaultOperatorParams(operators[0]) : {};
+  let operatorSeed = randomOperatorSeed();
+
+  const modeAssistantButton = el("button", {
+    class: "region-task-mode-button",
+    text: "조수",
+    attrs: { type: "button", title: "문장으로 지시합니다 (AI 호출)" },
+    dataset: { testid: "region-task-mode-assistant" },
+  }) as HTMLButtonElement;
+  const modeOperatorButton = el("button", {
+    class: "region-task-mode-button",
+    text: "생성기",
+    attrs: { type: "button", title: "파라미터와 시드로 만듭니다 (AI 호출 없음)" },
+    dataset: { testid: "region-task-mode-operator" },
+  }) as HTMLButtonElement;
+  const modeSwitch = el("div", {
+    class: "region-task-mode-switch",
+    attrs: { role: "group", "aria-label": "생성 모드" },
+    dataset: { testid: "region-task-mode-switch" },
+    children: [modeAssistantButton, modeOperatorButton],
+  });
+
+  const operatorSelect = el("select", {
+    class: "region-task-direct-select",
+    attrs: { "aria-label": "생성기 종류" },
+    dataset: { testid: "region-task-operator-select" },
+    children: operators.map((operator) => el("option", {
+      text: operator.label,
+      attrs: { value: operator.id, title: operator.hint },
+    })),
+  }) as HTMLSelectElement;
+  operatorSelect.value = operatorId;
+  const operatorHint = el("div", {
+    class: "region-task-operator-hint",
+    text: operators[0]?.hint ?? "",
+    dataset: { testid: "region-task-operator-hint" },
+  });
+  const operatorParamHost = el("div", {
+    class: "region-task-operator-params",
+    dataset: { testid: "region-task-operator-params" },
+  });
+  const operatorSeedValue = el("span", {
+    class: "region-task-operator-seed-value",
+    text: String(operatorSeed),
+    dataset: { testid: "region-task-operator-seed" },
+  });
+  const operatorReseedButton = el("button", {
+    class: "region-task-operator-reseed",
+    text: "새 시드",
+    attrs: { type: "button", title: "같은 설정으로 다른 변형을 뽑습니다" },
+    dataset: { testid: "region-task-operator-reseed" },
+  }) as HTMLButtonElement;
+  const operatorRunButton = el("button", {
+    class: "region-task-operator-run",
+    text: "만들기",
+    attrs: { type: "button", title: "AI 호출 없이 이 영역을 생성합니다" },
+    dataset: { testid: "region-task-operator-run" },
+  }) as HTMLButtonElement;
+  // 문장 입력 — 모델은 이 한 줄을 (생성기 + 파라미터) 로 옮기기만 한다. 타일은 만지지 않는다.
+  const intentInput = el("input", {
+    class: "region-task-operator-intent-input",
+    attrs: {
+      type: "text",
+      placeholder: "문장으로: 예) 울창한 숲에 오솔길 하나",
+      "aria-label": "문장으로 생성기 설정",
+    },
+    dataset: { testid: "region-task-operator-intent-input" },
+  }) as HTMLInputElement;
+  const intentButton = el("button", {
+    class: "region-task-operator-intent-run",
+    text: "해석",
+    attrs: { type: "button", title: "문장을 읽어 아래 설정을 채웁니다" },
+    dataset: { testid: "region-task-operator-intent-run" },
+  }) as HTMLButtonElement;
+  const intentNote = el("div", {
+    class: "region-task-operator-intent-note hidden",
+    dataset: { testid: "region-task-operator-intent-note" },
+  });
+
+  // 재료 보드 — 접어 둔다. 번들 칩셋은 자동으로 채워지므로 평소엔 열 일이 없고,
+  // 결과가 이상할 때 "무엇으로 깔리는지" 를 확인·교정하는 자리다.
+  const slotBoardHost = el("div", { class: "region-task-slot-board-host" });
+  const slotBoardDisclosure = el("details", {
+    class: "region-task-slot-disclosure",
+    dataset: { testid: "region-task-slot-disclosure" },
+    children: [
+      el("summary", {
+        class: "region-task-slot-summary",
+        children: [
+          el("span", { class: "region-task-direct-chevron" }),
+          el("span", { text: "이 칩셋의 재료 확인·교정" }),
+        ],
+      }),
+      slotBoardHost,
+    ],
+  }) as HTMLDetailsElement;
+
+  const operatorPanel = el("div", {
+    class: "region-task-operator-panel hidden",
+    dataset: { testid: "region-task-operator-panel" },
+    children: [
+      el("div", {
+        class: "region-task-operator-intent",
+        children: [intentInput, intentButton],
+      }),
+      intentNote,
+      el("div", {
+        class: "region-task-operator-head",
+        children: [operatorSelect, operatorHint],
+      }),
+      operatorParamHost,
+      el("div", {
+        class: "region-task-operator-foot",
+        children: [
+          el("span", { class: "region-task-operator-seed-label", text: "시드" }),
+          operatorSeedValue,
+          operatorReseedButton,
+          operatorRunButton,
+        ],
+      }),
+      slotBoardDisclosure,
+    ],
+  });
+
+  /** 보드는 열 때 한 번만 그린다 — 타일 칩이 많아 모달을 열 때마다 그리면 낭비다. */
+  let slotBoardRendered = false;
+  const renderSlotBoardOnce = (): void => {
+    if (slotBoardRendered) return;
+    const project = options.projectForContext?.() ?? store.getCurrent();
+    const map = project.maps[options.mapId];
+    const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+    if (!tileset) {
+      slotBoardHost.append(el("div", { class: "region-task-operator-hint", text: "이 맵의 그림 세트를 찾을 수 없습니다." }));
+      slotBoardRendered = true;
+      return;
+    }
+    slotBoardHost.append(renderMaterialSlotBoard({
+      tileset,
+      onChange: () => {
+        // 보드는 타일셋 객체를 직접 고친다. 그대로 두면 store 리스너·자동저장이 돌지 않아
+        // 화면에는 반영됐는데 저장은 안 되는 상태가 된다 — 바뀐 프로젝트를 다시 실어 알린다.
+        // (슬롯을 고치면 다음 생성부터 바로 반영된다. 재료는 저장이 아니라 매번 유도되기 때문이다.)
+        if (!options.projectForContext) {
+          store.replace(structuredClone(store.getCurrent()), {
+            change: { label: "재료 슬롯 변경", origin: "human" },
+          });
+        }
+        setSummary("재료를 바꿨습니다 — [만들기]를 누르면 새 재료로 생성합니다.");
+      },
+    }));
+    slotBoardRendered = true;
+  };
+  slotBoardDisclosure.addEventListener("toggle", () => {
+    if (slotBoardDisclosure.open) renderSlotBoardOnce();
+  });
+
+  /** 파라미터 위젯은 스펙에서 만든다 — 오퍼레이터를 늘려도 이 함수만 그대로 돈다. */
+  const renderOperatorParams = (): void => {
+    const def = getOperator(operatorId);
+    operatorParamHost.replaceChildren();
+    if (!def) return;
+    operatorHint.textContent = def.hint;
+    for (const spec of def.params) {
+      if (spec.kind === "choice") {
+        const select = el("select", {
+          class: "region-task-direct-select",
+          attrs: { id: `region-task-op-${spec.id}`, ...(spec.hint ? { title: spec.hint } : {}) },
+          dataset: { testid: `region-task-operator-param-${spec.id}` },
+          children: spec.options.map((option) => el("option", {
+            text: option.label,
+            attrs: { value: option.value },
+          })),
+        }) as HTMLSelectElement;
+        select.value = String(operatorParams[spec.id] ?? spec.defaultValue);
+        select.addEventListener("change", () => {
+          operatorParams = { ...operatorParams, [spec.id]: select.value };
+        });
+        operatorParamHost.append(el("label", {
+          class: "region-task-operator-slider",
+          attrs: { for: `region-task-op-${spec.id}` },
+          children: [el("span", { class: "region-task-operator-name", text: spec.label }), select],
+        }));
+        continue;
+      }
+      if (spec.kind === "toggle") {
+        const input = el("input", {
+          attrs: { type: "checkbox", id: `region-task-op-${spec.id}` },
+          dataset: { testid: `region-task-operator-param-${spec.id}` },
+        }) as HTMLInputElement;
+        input.checked = Boolean(operatorParams[spec.id]);
+        input.addEventListener("change", () => {
+          operatorParams = { ...operatorParams, [spec.id]: input.checked };
+        });
+        operatorParamHost.append(el("label", {
+          class: "region-task-operator-toggle",
+          attrs: { for: `region-task-op-${spec.id}`, ...(spec.hint ? { title: spec.hint } : {}) },
+          children: [input, el("span", { text: spec.label })],
+        }));
+        continue;
+      }
+      const input = el("input", {
+        class: "region-task-operator-range",
+        attrs: {
+          type: "range",
+          id: `region-task-op-${spec.id}`,
+          min: String(spec.min),
+          max: String(spec.max),
+          step: String(spec.step),
+        },
+        dataset: { testid: `region-task-operator-param-${spec.id}` },
+      }) as HTMLInputElement;
+      input.value = String(operatorParams[spec.id] ?? spec.defaultValue);
+      const readout = el("span", { class: "region-task-operator-readout", text: input.value });
+      input.addEventListener("input", () => {
+        const next = Number(input.value);
+        operatorParams = { ...operatorParams, [spec.id]: next };
+        readout.textContent = input.value;
+      });
+      operatorParamHost.append(el("label", {
+        class: "region-task-operator-slider",
+        attrs: { for: `region-task-op-${spec.id}`, ...(spec.hint ? { title: spec.hint } : {}) },
+        children: [
+          el("span", { class: "region-task-operator-name", text: spec.label }),
+          input,
+          readout,
+        ],
+      }));
+    }
+  };
+
   const renderSnapshot = options.renderSnapshot
     // targetWidth 를 기본 140 → 240 으로 키운다. 단일 A/B 미리보기가 결정의 근거이므로 충분한 해상도로 보여 준다.
     ?? ((project: Project, map: GameMap, rect: RegionRect) =>
@@ -574,6 +840,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     directPresetSelect.disabled = false;
     directModifierSelect.disabled = false;
     textarea.disabled = false;
+    // 생성기 컨트롤도 같은 자리에서 되살린다 — 적용/버리기 뒤에 파라미터가 잠겨 있으면
+    // "다시 만들기" 를 못 해 모드가 한 번 쓰고 죽은 것처럼 보인다.
+    setOperatorControlsDisabled(false);
     schedulePopoverReposition();
   };
 
@@ -1689,6 +1958,131 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
   };
 
+  const setOperatorControlsDisabled = (disabled: boolean): void => {
+    operatorRunButton.disabled = disabled;
+    operatorReseedButton.disabled = disabled;
+    operatorSelect.disabled = disabled;
+    intentInput.disabled = disabled;
+    intentButton.disabled = disabled;
+    for (const input of operatorParamHost.querySelectorAll("input")) {
+      (input as HTMLInputElement).disabled = disabled;
+    }
+  };
+
+  /**
+   * 문장 → 설정. 해석 결과를 **슬라이더에 채워 보여 준 뒤** 사용자가 만들기를 누른다.
+   * 곧바로 생성하지 않는 이유: 모델이 무엇으로 읽었는지가 화면에 남아야 사용자가 고칠 수 있다.
+   * (조수 경로의 실패 모드가 정확히 "무엇을 하려는지 모른 채 결과만 받는 것" 이었다.)
+   */
+  const interpretIntent = async (): Promise<void> => {
+    if (running) return;
+    const text = intentInput.value.trim();
+    if (!text) {
+      intentInput.focus();
+      return;
+    }
+    intentButton.disabled = true;
+    intentInput.disabled = true;
+    intentNote.classList.remove("hidden", "is-error");
+    intentNote.textContent = "해석 중…";
+    try {
+      const intent = await resolveIntent(text);
+      if (isOperatorIntentFailure(intent)) {
+        intentNote.classList.add("is-error");
+        intentNote.textContent = intent.error;
+        return;
+      }
+      const def = getOperator(intent.operatorId);
+      if (!def) {
+        intentNote.classList.add("is-error");
+        intentNote.textContent = `모르는 생성기입니다: ${intent.operatorId}`;
+        return;
+      }
+      operatorId = def.id;
+      operatorSelect.value = def.id;
+      operatorParams = { ...intent.params };
+      renderOperatorParams();
+      // 어떻게 읽었는지 + 누가 읽었는지를 함께 밝힌다. 키워드 폴백을 AI 해석으로 오해하면 안 된다.
+      const via = intent.source === "llm" ? "AI 해석" : "키워드 해석 (AI 미사용)";
+      intentNote.textContent = `${via} → ${intent.note} · [만들기]를 누르세요`;
+    } catch (cause) {
+      intentNote.classList.add("is-error");
+      intentNote.textContent = cause instanceof Error ? cause.message : String(cause);
+    } finally {
+      if (!running) {
+        intentButton.disabled = false;
+        intentInput.disabled = false;
+      }
+    }
+  };
+
+  /**
+   * 생성기 실행. 조수 경로(execute)와 공유하는 것은 **결과 처리부뿐**이다 —
+   * 같은 승인 카드·같은 before/after·같은 undo 로 끝나야 사용자가 두 모드를 하나의 도구로 쓴다.
+   */
+  const executeOperator = async (reseed: boolean): Promise<void> => {
+    if (running) return;
+    const def = getOperator(operatorId);
+    if (!def) return;
+    running = true;
+    lastRunMode = "direct";
+    let hadError = false;
+    if (reseed) {
+      operatorSeed = randomOperatorSeed();
+      operatorSeedValue.textContent = String(operatorSeed);
+    }
+    const instruction = `생성기 · ${def.label} (시드 ${operatorSeed})`;
+    setStage("running");
+    dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true });
+    runButton.disabled = true;
+    polishButton.disabled = true;
+    directRoomButton.disabled = true;
+    textarea.disabled = true;
+    setOperatorControlsDisabled(true);
+    setCopyEnabled(false);
+    lastLog = undefined;
+    recapText.textContent = instruction;
+    log.replaceChildren();
+    progressTimeline.replaceChildren(el("span", { class: "is-active", text: "1. 생성" }));
+    setSummary("AI 호출 없이 생성 중…");
+    appendLog(instruction);
+    try {
+      const result = await runOperator({
+        mapId: options.mapId,
+        region,
+        operatorId,
+        params: operatorParams,
+        seed: operatorSeed,
+      });
+      setSummary(describeRegionTaskResult(result));
+      if (result.assistantText) appendLog(result.assistantText);
+      if (result.pending && !result.pending.settled) {
+        progressTimeline.append(el("span", { class: "is-done", text: "2. 검사 완료" }));
+        await renderPendingCompare(result.pending);
+      }
+      if (result.error) {
+        hadError = true;
+        appendLog(`오류: ${result.error}`, "region-task-log-line is-error");
+      }
+    } catch (cause) {
+      hadError = true;
+      setSummary(`오류: ${cause instanceof Error ? cause.message : String(cause)}`);
+      appendLog(String(cause), "region-task-log-line is-error");
+    } finally {
+      running = false;
+      if (!activePending) {
+        setStage("compose");
+        runButton.disabled = false;
+        polishButton.disabled = false;
+        directRoomButton.disabled = false;
+        textarea.disabled = false;
+        setOperatorControlsDisabled(false);
+      }
+      if (hadError) setAdvancedOpen(true);
+      schedulePopoverReposition();
+    }
+  };
+
   // 실제 discard + 구독 해제는 activeModalCleanup(closeRegionTaskModal이 호출)이 담당 —
   // 여기서 중복 처리하지 않는다(이중 discard 자체는 settled 가드로 무해하지만, 정리 로직을
   // 한 곳에 모아 모달 교체 경로와 완전히 동일하게 유지한다).
@@ -1700,6 +2094,23 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   polishButton.addEventListener("click", () => void execute({ instruction: POLISH_INSTRUCTION, mode: "polish" }));
   cancelButton.addEventListener("click", cancelCurrentExecution);
   directRoomButton.addEventListener("click", () => void executeDirectRoom());
+  operatorRunButton.addEventListener("click", () => void executeOperator(false));
+  operatorReseedButton.addEventListener("click", () => void executeOperator(true));
+  intentButton.addEventListener("click", () => void interpretIntent());
+  intentInput.addEventListener("keydown", (event) => {
+    const key = (event as KeyboardEvent).key;
+    // IME 조합 중 Enter 는 한글 확정이다 — 여기서 해석을 걸면 글자가 잘린다.
+    if (key !== "Enter" || (event as KeyboardEvent).isComposing) return;
+    event.preventDefault();
+    void interpretIntent();
+  });
+  operatorSelect.addEventListener("change", () => {
+    const next = getOperator(operatorSelect.value);
+    if (!next) return;
+    operatorId = next.id;
+    operatorParams = defaultOperatorParams(next);
+    renderOperatorParams();
+  });
   copyLogButton.addEventListener("click", () => void copyLastLog());
   textarea.addEventListener("keydown", (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
@@ -1889,8 +2300,30 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     class: "region-task-prompt",
     dataset: { testid: "region-task-prompt" },
     // 시트는 추천 줄 **아래**에 온다 — 「모두 보기」를 누른 자리 바로 밑에서 열려야 한다.
-    children: [suggestionRow, categorySheet, textarea, autocompleteHost, actions],
+    // 모드 스위치는 맨 위 — 지금 무엇에게 말하는지가 입력 전에 보여야 한다.
+    children: [modeSwitch, suggestionRow, categorySheet, textarea, autocompleteHost, operatorPanel, actions],
   });
+
+  /**
+   * 모드 적용. 조수 쪽 요소는 **각자의 hidden 상태를 건드리지 않고** 부모 클래스로만 가린다 —
+   * 카테고리 시트·자동완성은 자기 열림 상태를 hidden 으로 관리하므로, 여기서 remove 하면
+   * 모드를 되돌릴 때 닫혀 있어야 할 것이 열린 채로 나타난다.
+   */
+  const applyGenerationMode = (mode: GenerationMode, persist: boolean): void => {
+    generationMode = mode;
+    const operatorMode = mode === "operator" && operators.length > 0;
+    promptSection.classList.toggle("is-operator-mode", operatorMode);
+    operatorPanel.classList.toggle("hidden", !operatorMode);
+    modeAssistantButton.classList.toggle("is-active", !operatorMode);
+    modeOperatorButton.classList.toggle("is-active", operatorMode);
+    modeAssistantButton.setAttribute("aria-pressed", String(!operatorMode));
+    modeOperatorButton.setAttribute("aria-pressed", String(operatorMode));
+    if (persist) writeGenerationMode(mode);
+  };
+  modeAssistantButton.addEventListener("click", () => applyGenerationMode("assistant", true));
+  modeOperatorButton.addEventListener("click", () => applyGenerationMode("operator", true));
+  renderOperatorParams();
+  applyGenerationMode(operators.length > 0 ? generationMode : "assistant", false);
 
   // 부분 적용은 compareHost(검토 본문)로 옮겼다 — 여기 남는 것은 개발자용 로그뿐이다.
   advancedBody.replaceChildren(
