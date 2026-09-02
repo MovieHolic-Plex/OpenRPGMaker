@@ -79,8 +79,11 @@
   /* 게이지 잉크 — HP 는 스킨 테마의 고체력 색(민트), MP 는 하늘색, ATB 는 보라. */
   --rm-hp-ink: var(--battle-hp-high);
   --rm-mp: rgb(96, 186, 255);
-  --rm-tp-ink: rgb(200, 128, 232);
+  /* ATB 는 "차면 행동한다" 는 뜻이라 강조색(호박)을 그대로 쓴다 — 보라 게이지 하나가 팔레트를 넷으로 늘렸다. */
+  --rm-tp-ink: var(--battle-accent);
   --rm-track: rgba(255, 255, 255, 0.1);
+  /* 강조색 위에 놓이는 글자(턴 칩 · 확인 버튼)는 바닥색으로 — 호박 위 흰 글자는 대비가 모자란다. */
+  --rm-accent-ink: var(--rm-floor);
   /* 씬 바닥. 루트는 맵 캔버스를 가리는 유일한 막이라 **불투명**이어야 한다(알파 금지). */
   --rm-floor: rgb(7, 9, 20);
 
@@ -99,6 +102,29 @@
   display: none;
 }
 
+/* HUD 띠 뒤로 전투 배경을 흐리게 이어 그린다 — 카드가 검은 띠 위가 아니라 전장 위에 뜬 것처럼
+   읽히게. 그림은 battleDom/battleFieldDom 이 루트에 심는 `--battle-backdrop-url`(필드와 같은 url).
+   배틀러 기하는 필드(1행) 안에 그대로 있으므로 이 겹은 순수 장식이다. 루트가 stacking context
+   (transform) 이고 이 겹은 z 0, 필드는 뒤 형제라 필드·카드가 항상 위에 그려진다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"]::before {
+  background-color: var(--rm-floor);
+  /* 스크림을 그림 위에 같은 배경으로 겹친다(둘 다 blur 를 받는다). 밝기를 filter 로만 깎으면
+     밤 배경이 바닥색과 구분되지 않을 만큼 어두워진다(실측 brightness .38: 띠 밝기 4/7/10 ≈ 바닥). */
+  background-image: linear-gradient(180deg, rgba(7, 9, 20, 0.42), rgba(7, 9, 20, 0.66)), var(--battle-backdrop-url, none);
+  background-position: center 100%, center 100%;
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, cover;
+  bottom: -24px;
+  content: "";
+  filter: blur(12px) saturate(1.1);
+  height: calc(var(--battle-hud-height) + 48px);
+  left: -24px;
+  pointer-events: none;
+  position: absolute;
+  right: -24px;
+  z-index: 0;
+}
+
 /* 필드는 1행만 차지하고(배틀러 기하 유지) HUD 띠는 그 아래 바닥 위에 놓인다.
    `::before` 는 필드의 첫 자식으로 취급되므로 배틀러 그룹이 항상 그 위에 그려진다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-field {
@@ -108,14 +134,23 @@
   grid-row: 1;
 }
 
+/* 필드 바닥이 HUD 띠로 녹아들게 — 하단 3분의 1 을 어둡게 페이드. z-index 0 이라 배틀러(z 1/3)
+   밑에 깔린다. `::before` 에 그리는 이유: `::after` 는 15-juice-capture-fx.css 가 히트·크리티컬·
+   승리·패배 플래시를 칠하는 자리다. 옛 판이 거기에 `background: transparent` 를 같은 특정도로
+   덧써서 네 플래시가 전부 죽어 있었다(실측 — 막타에 화면이 번쩍이지 않았다). */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-field::before {
-  content: none;
+  background: linear-gradient(180deg, rgba(7, 9, 20, 0) 58%, rgba(7, 9, 20, 0.5) 84%, rgba(7, 9, 20, 0.92) 100%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
 }
 
-/* 필드 바닥이 HUD 바닥색으로 녹아들게 — 하단 3분의 1 을 어둡게 페이드. z-index 0 이라
-   배틀러(z 1/3) 밑에 깔린다. 스프라이트 알파에는 닿지 않는다. */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-field::after {
-  background: linear-gradient(180deg, rgba(7, 9, 20, 0) 58%, rgba(7, 9, 20, 0.5) 84%, rgba(7, 9, 20, 0.92) 100%);
+/* 평시에는 기본 스크림(01-scene-base 의 방사형 어둡기)을 끈다 — 몬스터 PNG 알파를 반투명처럼
+   보이게 했다. 플래시 클래스가 붙은 순간에는 이 규칙이 맞지 않아 공용 플래시가 그대로 그려진다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"]:not(.battle-flash-hit):not(.battle-flash-critical):not(.battle-flash-victory):not(.battle-flash-defeat) .battle-field::after {
+  background: transparent;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-backdrop {
@@ -385,14 +420,45 @@
   grid-template-rows: calc(4 * var(--battle-command-row-height));
   height: 100%;
   min-height: 0;
-  overflow: hidden;
+  /* 턴 칩이 카드 윗변을 넘어 앉으므로 패널은 자르지 않는다. 스크롤 클립은 메뉴(.battle-command-menu)
+     자신이 max-height + overflow-y 로 맡고, 그 밖의 자식(키 안내·상태)은 접혀 있거나 절대 배치다. */
+  overflow: visible;
   padding: 4px;
   position: relative;
   row-gap: 0;
   z-index: 9;
 }
 
+/* 턴 칩 — 지금 명령을 고르는 액터의 이름. battleCommandDom 이 `data-actor-name` 을 심는다.
+   카드 윗변에 걸쳐 앉아(위로 10px) 필드와 카드를 잇는 시각적 못 역할도 한다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-command-panel::before {
+  background: var(--battle-accent);
+  border-radius: 10px;
+  bottom: auto;
+  box-shadow: 0 4px 12px rgba(3, 5, 14, 0.45);
+  color: var(--rm-accent-ink);
+  content: attr(data-actor-name);
+  font-family: var(--runtime-ui-font);
+  font-size: 12px;
+  font-weight: 600;
+  height: auto;
+  left: 10px;
+  letter-spacing: 0.02em;
+  line-height: 20px;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  padding: 0 10px;
+  position: absolute;
+  right: auto;
+  text-overflow: ellipsis;
+  top: -10px;
+  white-space: nowrap;
+  width: auto;
+  z-index: 2;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-command-panel:not([data-actor-name])::before,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-command-panel[data-actor-name=""]::before {
   content: none;
 }
 
@@ -537,7 +603,7 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-command:not(:disabled):focus-visible,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-command:not(:disabled).battle-target-selected {
-  background: linear-gradient(90deg, var(--battle-accent-soft), rgba(124, 140, 255, 0.04));
+  background: linear-gradient(90deg, var(--battle-accent-soft), rgba(242, 192, 99, 0.04));
   /* 공용 포커스 크롬(17-sprint-a-polish.css: 남색 그라데이션 + 베벨 border-color + 안쪽 흰 링)을
      전부 끈다 — 유리 카드 위에서는 은은한 바탕 + 왼쪽 강조 바만 남긴다. */
   border-color: transparent;
@@ -578,9 +644,32 @@
   grid-column: 1;
 }
 
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-key-prompts,
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-flow-status {
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-key-prompts {
   display: none;
+}
+
+/* 엄격 턴제의 진행 표시("명령 2/4")는 행을 먹지 않고 카드 윗변 오른쪽의 유리 칩이 된다 —
+   옛 판은 이 노드가 1행을 차지하도록 배치해 두고 display:none 으로 접어, 메뉴가 2행으로 밀려
+   4행 스크롤포트 밖으로 나가는 잠재 결함이 있었다(display:none 인 아이템은 트랙을 차지하지 않는다). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-flow-status {
+  backdrop-filter: blur(6px);
+  background: var(--rm-glass);
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px var(--rm-hairline);
+  color: var(--battle-text-muted);
+  display: block;
+  font-family: var(--runtime-ui-font);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 20px;
+  padding: 0 8px;
+  position: absolute;
+  right: 10px;
+  top: -10px;
+  white-space: nowrap;
+  z-index: 2;
 }
 
 /* ---- Party card (right of the HUD band) ---------------------------------- */
@@ -716,6 +805,17 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-hp {
   color: var(--rm-hp-ink);
   grid-area: hpnum;
+  transition: color 240ms ease-out;
+}
+
+/* 수치 색이 게이지 색을 따른다 — 위험한 액터를 숫자만 훑어도 잡아낼 수 있게. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status:has(> .battle-stat-bar-hp[data-hp-state="mid"]) .battle-actor-hp {
+  color: var(--battle-hp-mid);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status:has(> .battle-stat-bar-hp[data-hp-state="low"]) .battle-actor-hp {
+  animation: rm-gauge-alarm 1.1s ease-in-out infinite;
+  color: var(--battle-hp-low);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-mp {
@@ -829,7 +929,7 @@
 /* 행 상태: 차례인 액터는 강조색 이름 + 은은한 바탕, 행동 중인 액터는 바탕만, 쓰러지면 흐려진다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status.is-active-actor,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status.battle-acting {
-  background: linear-gradient(90deg, var(--battle-accent-soft), rgba(124, 140, 255, 0.02));
+  background: linear-gradient(90deg, var(--battle-accent-soft), rgba(242, 192, 99, 0.02));
   box-shadow: none;
 }
 
@@ -840,6 +940,51 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status.is-defeated,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status.defeated {
   opacity: 0.44;
+}
+
+/* 아군이 맞으면 행이 흔들리고 붉게 번쩍인다(battleFieldDom.showPartyRowDamage 가 `is-hit` 를 480ms 붙인다).
+   정면 스킨은 아군 스프라이트가 없어 이 행이 곧 아군의 몸이다 — 예전에는 적 턴에 화면 어디에도
+   맞았다는 신호가 없었다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status {
+  position: relative;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status::after {
+  background: var(--battle-hp-low);
+  border-radius: 8px;
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status.is-hit {
+  animation: rm2000-row-hit 420ms ease-out;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-status.is-hit::after {
+  animation: rm2000-row-hit-tint 420ms ease-out;
+}
+
+@keyframes rm2000-row-hit {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  80% { transform: translateX(-2px); }
+}
+
+@keyframes rm2000-row-hit-tint {
+  0% { opacity: 0.32; }
+  100% { opacity: 0; }
+}
+
+/* 파티 카드 안에 뜨는 아군 피해 팝업 — 카드가 containing block 이고 좌표는 JS 가 HP 수치 위로 준다.
+   행이 24px 이라 필드용 26px 대신 20px. 카드는 overflow:hidden 이므로 위로 떠오르다 윗변에서 잘린다(의도). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-party .battle-damage-popup {
+  font-size: 20px;
+  position: absolute;
+  z-index: 3;
 }
 
 /* ---- Message banner (floats over the field) ------------------------------ */
@@ -872,6 +1017,20 @@
   display: none;
 }
 
+/* 배너는 접혔다 펼쳐질 때 위에서 내려온다(display 토글이 애니메이션을 처음부터 다시 돈다).
+   intro/acting/impact 를 한 선택자 목록에 두어 단계가 바뀌어도 계산값이 같아 재시작하지 않는다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-director-step="intro"] .battle-message-window,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-director-step="acting"] .battle-message-window,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-director-step="impact"] .battle-message-window,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-phase="targetSelect"] .battle-message-window {
+  animation: rm2000-banner-in 200ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes rm2000-banner-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-message-lines {
   gap: 0;
   grid-column: 1;
@@ -889,11 +1048,17 @@
 
 /* 진행 캐럿: 글리프(">")를 그대로 두지만 깜빡임으로 "계속"을 알린다. */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-message-cursor {
+  align-self: end;
   animation: rm-caret 1s steps(2, jump-none) infinite;
   color: var(--battle-accent);
+  display: inline-block;
   font-size: 16px;
+  font-weight: 700;
   grid-column: 2;
   justify-self: end;
+  line-height: 16px;
+  /* ">" 글리프를 90° 돌려 아래 화살표로 쓴다 — 글자는 그대로라 감사·접근성 트리가 읽는다. */
+  transform: rotate(90deg);
 }
 
 @keyframes rm-caret {
@@ -1003,6 +1168,7 @@
 /* ---- Result card --------------------------------------------------------- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-result-panel {
+  animation: rm2000-result-in 260ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
   border-radius: 16px;
   box-shadow: var(--rm-frame-strong), var(--rm-shadow-lift);
   box-sizing: border-box;
@@ -1124,14 +1290,14 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-result-confirm {
-  background: linear-gradient(180deg, var(--battle-accent), rgba(124, 140, 255, 0.8));
+  background: linear-gradient(180deg, var(--battle-accent), rgba(242, 192, 99, 0.82));
   border: 0;
   border-radius: 12px;
-  box-shadow: 0 6px 16px var(--battle-accent-soft), inset 0 2px 0 rgba(255, 255, 255, 0.22);
-  color: var(--battle-text);
+  box-shadow: 0 6px 16px var(--battle-accent-soft), inset 0 2px 0 rgba(255, 255, 255, 0.28);
+  color: var(--rm-accent-ink);
   font-family: inherit;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   grid-area: confirm;
   justify-self: center;
   line-height: 1.2;
@@ -1149,6 +1315,11 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-result-next-prompt {
   display: none;
+}
+
+@keyframes rm2000-result-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
 /* ---- Intro choreography -------------------------------------------------- */
@@ -1169,6 +1340,16 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-director-step="intro"] .battle-party {
   animation: rm2000-hud-in 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* 명령 카드는 차례가 올 때마다 아래에서 올라온다(연출 중 display:none 이었다가 다시 보이면 재시작). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-director-step="command"] .battle-command-host {
+  animation: rm2000-card-in 220ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes rm2000-card-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-director-step="intro"] .battle-command-host,
@@ -1215,24 +1396,8 @@
   row-gap: 0;
 }
 
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-flow-status {
-  align-self: center;
-  color: var(--battle-text-muted);
-  font-size: 12px;
-  grid-row: 1;
-  letter-spacing: 0.04em;
-  line-height: 1.4;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  padding: 0 14px;
-}
-
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-command-menu {
-  grid-row: 2;
-}
-
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-key-prompts {
-  grid-row: 3;
+  grid-row: 1;
 }
 
 /* ---- Hit / skill juice --------------------------------------------------- */
@@ -1254,11 +1419,32 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-damage-popup {
+  color: rgb(255, 255, 255);
   font-family: var(--runtime-ui-font);
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.02em;
   text-shadow: 0 2px 0 rgba(3, 5, 14, 0.9), 0 0 12px rgba(3, 5, 14, 0.6);
+}
+
+/* 크리티컬은 강조색 + 번짐, 회복은 HP 잉크, 빗나감은 뮤트 이탤릭. 글자 크기는 4단계 안에서만. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-damage-popup-critical {
+  color: var(--battle-accent);
+  font-size: 26px;
+  letter-spacing: 0;
+  text-shadow: 0 2px 0 rgba(3, 5, 14, 0.9), 0 0 16px var(--battle-accent-soft), 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-damage-popup-heal {
+  color: var(--battle-hp-high);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-damage-popup-miss {
+  color: var(--battle-text-muted);
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
 @keyframes rm2000-juice-hit {
@@ -1298,7 +1484,11 @@
   .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-juice-critical,
   .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-juice-swing,
   .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"].battle-flash-hit .battle-field,
-  .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-enemy .battle-enemy-image {
+  .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-enemy .battle-enemy-image,
+  .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-message-window,
+  .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-command-host,
+  .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-result-panel,
+  .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2000"] .battle-actor-hp {
     animation: none;
     transition: none;
   }

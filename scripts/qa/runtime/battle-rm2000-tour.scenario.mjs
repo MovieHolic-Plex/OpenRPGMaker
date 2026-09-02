@@ -5,6 +5,8 @@
 // 실제 키 입력으로 걸어가며 PR 증거 사진을 찍는다. 픽스처는 게이트와 같은 battle-v3.json
 // (1인 파티 · 슬라임 1마리). 이 액터는 배운 스킬·아이템이 없어 서브메뉴가 열리지 않는다 —
 // 스킬 서브메뉴와 4인 파티 사진은 scripts/qa/battle-text-audit.mjs(editor-authored-demo-v3) 가 맡는다.
+// 아군이 맞는 장면은 battle-rm2000-tour-strict.scenario.mjs 가 맡는다 — ATB(gauge) 에서는 주인공이
+// 슬라임보다 빨라 슬라임이 한 번도 행동하기 전에 이긴다(실측: z 60회 → 승리, 아군 피해 팝업 0).
 //
 //   node scripts/runtime-qa.mjs --scenario battle-rm2000-tour --out verify-shots/rm2000-tour
 //
@@ -47,7 +49,12 @@ export const battleRm2000TourScenario = {
     {
       id: "command",
       note: "액터 커맨드 카드(아이콘 + 알약 커서) · 파티 카드(1인 두 줄 행)",
-      ops: [{ kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 20000 }],
+      ops: [
+        { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 20000 },
+        // 버튼은 인트로 배너가 걸려 있는 동안에도 DOM 에 먼저 생긴다(엄격 턴제에서 실측) — 명령 카드가
+        // 실제로 보이는 단계까지 기다려야 사진에 카드가 찍힌다.
+        { kind: "waitForAttr", testid: "battle-scene", attr: "data-battle-director-step", value: "command", timeoutMs: 20000 },
+      ],
       expect: { testidPresent: ["battle-scene", "actor-command-attack", "battle-party"] },
       shot: true,
     },

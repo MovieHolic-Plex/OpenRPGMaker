@@ -41,6 +41,11 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
   const panel = document.createElement("div");
   panel.className = "battle-command-panel";
   const terms = resolveTerms(store.getCurrent());
+  // 누구의 차례인지 — 스킨이 `attr(data-actor-name)` 으로 카드 위 턴 칩을 그린다(rm2000).
+  // 4인 파티에서 파티 카드의 강조 행만으로는 명령 카드와 시선이 멀어 "지금 누가 고르는지" 가
+  // 한눈에 안 들어왔다. 데이터 속성이라 다른 스킨·테스트에는 영향이 없다.
+  const activeActor = snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId);
+  if (activeActor) panel.dataset.actorName = activeActor.name;
 
   if (snapshot.phase === "targetSelect") {
     panel.setAttribute("aria-label", terms.target);

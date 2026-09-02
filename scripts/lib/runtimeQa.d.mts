@@ -73,6 +73,9 @@ export type RuntimeQaOp =
       readonly key: string;
       readonly testid: string;
       readonly state: "present" | "absent";
+      /** 같은 testid 가 여럿일 때 이 속성값을 가진 것만 센다(예: 피해 팝업의 data-target-id). */
+      readonly attr?: string;
+      readonly value?: string;
       readonly maxPresses?: number;
       readonly timeoutMs?: number;
     };

@@ -46,6 +46,9 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   },
   // 정면 전투(아군 스프라이트 없음, 하단 유리 카드 HUD). 배경 리소스 id 는 저장 데이터가
   // 참조하는 식별자라 개명하지 않는다(그림 파일도 rm2003-backdrop.png 그대로).
+  // 강조색은 따뜻한 호박색 하나다 — 커서 · 차례 액터 · ATB · 확인 버튼이 전부 이 색을 쓴다.
+  // 남색 유리 표면(런타임 공용 토큰) 위에서 남보라 강조는 "AI 보라 그라데이션" 으로 읽혔고(디자인
+  // 감사), 밤 숲·초록 몬스터 위에서도 대비가 약했다. HP(민트)·MP(하늘)는 의미색이라 별개다.
   rm2000: {
     id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 정면 필드", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "wipe-blue",
@@ -55,13 +58,13 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
       "--battle-window-inner": "rgba(4,6,16,.66)",
       "--battle-text": "#eef1fb",
       "--battle-text-muted": "#9aa4c4",
-      "--battle-accent": "#7c8cff",
-      "--battle-accent-soft": "rgba(124,140,255,.20)",
+      "--battle-accent": "#f2c063",
+      "--battle-accent-soft": "rgba(242,192,99,.22)",
       "--battle-hp-high": "#3ddc97",
       "--battle-hp-mid": "#ffc857",
       "--battle-hp-low": "#ff5f6d",
       "--battle-shadow": "0 8px 24px rgba(3,5,14,.55)",
-      "--battle-cursor": "#7c8cff",
+      "--battle-cursor": "#f2c063",
       "--battle-backdrop-filter": "saturate(1.04) contrast(1.06)",
     },
   },
