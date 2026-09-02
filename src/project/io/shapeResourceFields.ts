@@ -1,6 +1,8 @@
 import {
   CONCEPT_PLACE_COUNT_MAX,
+  CONCEPT_PLACE_LEVEL_MAX,
   isConceptChipId,
+  isConceptPlaceLevel,
   isConceptFloorMaterial,
   isConceptPlaceRole,
   isConceptPlaceSize,
@@ -360,6 +362,10 @@ export function validateTileset(id: string, value: unknown): void {
         if (entry.floor !== undefined) {
           const floor = requireString(`${placePath}.floor`, entry.floor);
           assert(isConceptFloorMaterial(floor), `${placePath}.floor unknown floor: ${floor}`);
+        }
+        if (entry.level !== undefined) {
+          const level = requireNumber(`${placePath}.level`, entry.level);
+          assert(isConceptPlaceLevel(level), `${placePath}.level must be an integer 1..${CONCEPT_PLACE_LEVEL_MAX}`);
         }
       }
       for (const [thingIndex, thing] of requireArray(

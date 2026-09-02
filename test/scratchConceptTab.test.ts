@@ -8,6 +8,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
 import { validateTileset } from "@/project/io/shapeResourceFields";
 import { store } from "@/project/store";
+import type { ConceptBundleRecord } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | undefined;
@@ -124,6 +125,21 @@ describe("scratchConceptTab 시설 띠", () => {
     floorAgain.value = "wood";
     floorAgain.dispatchEvent(new Event("change"));
     expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.find((bundle) => bundle.id === "smithy")!.places.find((place) => place.id === "workshop")?.floor).toBeUndefined();
+  });
+
+  it("장소 카드의 「층」을 바꾸면 level 이 저장되고 1층은 필드를 비운다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    const level = select(host, "scratch-concept-place-level-bedroom");
+    expect(level.value).toBe("1");
+    level.value = "2";
+    level.dispatchEvent(new Event("change"));
+    const inn = (): ConceptBundleRecord => store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.find((bundle) => bundle.id === "inn")!;
+    expect(inn().places.find((place) => place.id === "bedroom")?.level).toBe(2);
+    const again = select(host, "scratch-concept-place-level-bedroom");
+    expect(again.value).toBe("2");
+    again.value = "1";
+    again.dispatchEvent(new Event("change"));
+    expect(inn().places.find((place) => place.id === "bedroom")?.level).toBeUndefined();
   });
 
   it("시설을 지우면 띠에서 빠지고 「초안 넣기」로 되돌릴 수 있다", () => {

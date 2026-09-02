@@ -17,6 +17,7 @@ import {
   type ConceptPlaceSize,
   type ConceptThingRecord,
   type ConceptWallMaterial,
+  isConceptPlaceLevel,
 } from "@/project/types/conceptBundle";
 import type { Project } from "@/project/types";
 
@@ -54,6 +55,8 @@ export type ConceptRoomLayout = {
   readonly innerDoors: readonly { readonly x: number; readonly y: number }[];
   /** 시설 벽면 재질. 크림(기본)이면 생략. */
   readonly wallMaterial?: ConceptWallMaterial;
+  /** 이 도면의 층. 1층(기본)이면 생략. 2층 이상은 정문 자리가 「내려가는 계단」 착지가 된다. */
+  readonly level?: number;
 };
 
 export type ConceptOverlayThing = {
@@ -172,6 +175,22 @@ export function conceptPlaceFloor(place: ConceptPlaceRecord): ConceptFloorMateri
   return place.floor ?? "wood";
 }
 
+export function conceptPlaceLevel(place: ConceptPlaceRecord): number {
+  const raw = place.level ?? 1;
+  return isConceptPlaceLevel(raw) ? raw : 1;
+}
+
+/** 시설의 장소가 서는 층 목록(오름차순, 중복 없음). 장소가 없으면 [1]. */
+export function conceptFacilityLevels(bundle: ConceptBundleRecord, facility: ConceptFacilityRecord): number[] {
+  const levels = new Set<number>();
+  for (const placeId of facility.placeIds) {
+    const place = bundle.places.find((entry) => entry.id === placeId);
+    if (place) levels.add(conceptPlaceLevel(place));
+  }
+  if (levels.size === 0) levels.add(1);
+  return [...levels].sort((a, b) => a - b);
+}
+
 export function conceptFacilityWall(facility: ConceptFacilityRecord): ConceptWallMaterial {
   return facility.wall ?? "cream";
 }
@@ -242,10 +261,16 @@ type PlaceInstance = { readonly place: ConceptPlaceRecord; readonly role: Concep
 export function layoutConceptFacility(
   bundle: ConceptBundleRecord,
   facility: ConceptFacilityRecord,
+  options: { readonly level?: number; readonly minBandWidth?: number } = {},
 ): ConceptRoomLayout {
+  // 층을 지정하면 그 층의 장소만 도면에 든다. 지정이 없으면 전부(한 층 시설의 종전 동작).
+  // 위층엔 보통 정문 역할이 없다 — 그러면 마지막 방이 문 밴드로 승격되고(아래 promoted), 그 문 자리가
+  // 「내려가는 계단」 착지가 된다(placeConceptTool 이 정문 이벤트를 바꾼다).
+  const level = options.level;
   const places = facility.placeIds
     .map((id) => bundle.places.find((place) => place.id === id))
-    .filter((place): place is ConceptPlaceRecord => Boolean(place));
+    .filter((place): place is ConceptPlaceRecord => Boolean(place))
+    .filter((place) => level === undefined || conceptPlaceLevel(place) === level);
 
   const instances: PlaceInstance[] = [];
   for (const place of places) {
@@ -272,7 +297,9 @@ export function layoutConceptFacility(
   // 복도 없이 방 둘 이상이 홀 바로 위에 서면 홀을 양쪽 1열씩 넓힌다 — 방문 착지 열이 홀 북벽을 2칸 조각으로 쪼개
   // 카운터·피아노 같은 3칸 가구가 설 자리가 없어진다(2026-09-02 술집·민가 초안 실측).
   const spread = !walkway && doorBand && rowInstances.length >= 2 ? BAND_SPREAD : 0;
-  const bandW = Math.max(rowW + spread * 2, bandOwnW, rowBoxes.length > 0 || host ? MIN_BAND_W : 0);
+  // 층이 둘 이상인 시설은 층마다 건물 외곽(밴드 폭)을 맞춘다 — 홀만 남은 1층이 자기 발자국 폭으로 좁아지면
+  // 계단·카운터·피아노가 북벽 한 줄을 나눠 쓸 자리가 없다(2026-09-03 2층 여관 실측: 「카운터 런 자리 없음」).
+  const bandW = Math.max(rowW + spread * 2, bandOwnW, rowBoxes.length > 0 || host ? MIN_BAND_W : 0, options.minBandWidth ?? 0);
 
   const rooms: ConceptLayoutRoom[] = [];
   const innerDoors: { x: number; y: number }[] = [];
@@ -349,6 +376,7 @@ export function layoutConceptFacility(
     rooms,
     innerDoors,
     ...(wallMaterial !== "cream" ? { wallMaterial } : {}),
+    ...(level !== undefined && level > 1 ? { level } : {}),
   };
 }
 

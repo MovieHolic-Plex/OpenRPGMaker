@@ -68,6 +68,12 @@ export function isConceptPlaceSize(value: string): value is ConceptPlaceSize {
 /** 같은 장소를 몇 개 짓나(객실 ×2). 1..4. */
 export const CONCEPT_PLACE_COUNT_MAX = 4;
 
+/** 장소가 서는 층. 1..3. 2층 이상은 별도 맵(`<mapId>_<n>f`)으로 서고 계단(transfer 칩)이 층을 잇는다. */
+export const CONCEPT_PLACE_LEVEL_MAX = 3;
+export function isConceptPlaceLevel(value: number): boolean {
+  return Number.isInteger(value) && value >= 1 && value <= CONCEPT_PLACE_LEVEL_MAX;
+}
+
 /** 장소 바닥 재질. 생략 시 나무. 타일 번호는 시공기(conceptBundleResolve)가 칩셋에 맞춰 푼다. */
 export const CONCEPT_FLOOR_MATERIALS = ["wood", "stone", "plank", "mat"] as const;
 export type ConceptFloorMaterial = (typeof CONCEPT_FLOOR_MATERIALS)[number];
@@ -105,6 +111,8 @@ export interface ConceptPlaceRecord {
   count?: number;
   /** 바닥 재질. 생략 시 나무. */
   floor?: ConceptFloorMaterial;
+  /** 층. 생략 시 1. 2층 이상 장소는 별도 맵으로 선다. */
+  level?: number;
 }
 
 /** 시설 — 여관처럼 꺼내는 꾸러미의 뿌리. */
