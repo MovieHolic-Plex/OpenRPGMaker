@@ -987,6 +987,26 @@ export class AssistantSession {
     this.ctx = { project: cloneDetachedDraft(project) };
     // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패 상태를 버린다.
     this.milestoneApplyFailed = false;
+    // 기준이 바뀌면 이전 제안은 전부 적용됐거나 버려진 것이다. 제자리 clear — runTurnLoop 가 잡아 둔
+    // 참조(proposedByKey)를 보존한다(마일스톤 경로와 같은 이유).
+    this.turnProposals.clear();
+  }
+
+  /**
+   * 새 사용자 턴 직전, 승인 대기 제안이 없으면 세션 기준을 편집기 저장소 최신으로 맞춘다.
+   *
+   * 세션 draft 는 마지막 적용/수락 시점의 사본이다. 사용자가 두 턴 사이에 데이터베이스를 고치면
+   * (2026-09-02 실측: 「임시 → 개념 꾸러미」에서 여관→주막으로 개명한 뒤 「주막을 새 맵으로 지어줘」)
+   * 세션은 그 변경을 모른 채 옛 나무로 시스템 프롬프트를 짜고 `place_concept("주막")` 이
+   * 「찾지 못했다」로 실패했다. 제안이 남아 있으면(아직 수락·거부되지 않은 쓰기) 그 쓰기를 잃으므로
+   * 건드리지 않는다. 호출자(패널)가 저장소 프로젝트를 넘긴다 — 세션은 전역 저장소를 직접 읽지 않는다.
+   */
+  syncBaselineFromStoreIfClean(project: Project): boolean {
+    if (this.turnProposals.size > 0) return false;
+    this.rebaseProject(project);
+    // 시스템 프롬프트(개념 꾸러미 절·맵 요약·구조물 목록)도 새 기준으로 — 안 그러면 모델은 옛 나무를 읽는다.
+    this.rebuildSystemPrompt();
+    return true;
   }
 
   // 현재 확정된 밑그림(없으면 null). 패널이 상태 표시/카드 렌더에 쓴다.

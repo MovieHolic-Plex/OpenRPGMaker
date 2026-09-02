@@ -1394,6 +1394,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     closeToolActivity();
     if (!opts?.replay) attachRewindAffordance(appendBubble("user", displayAs ?? trimmed), trimmed);
     const session = ensureSession();
+    // 두 턴 사이에 사용자가 데이터베이스(개념 꾸러미 등)를 고쳤을 수 있다 — 승인 대기 제안이 없으면
+    // 세션 기준을 저장소 최신으로 맞춘다. 안 그러면 조수는 옛 나무를 읽는다(2026-09-02 실측).
+    if (!opts?.replay && proposalApi.pendingProposalMessage === null) {
+      session.syncBaselineFromStoreIfClean(store.getCurrent());
+    }
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
     const autonomous = loadAiConfig().agentMode === "auto";
