@@ -3,16 +3,19 @@
 :root {
   /* Six coordinated families keep related commands together while category badges
      provide the second, non-color cue. Values stay dark enough on the cream UI. */
-  --cmdcat-dialogue: #2f70c8;
-  --cmdcat-flow: #bd4d24;
-  --cmdcat-map: #6657c2;
-  --cmdcat-reward: #17805d;
-  --cmdcat-sound: #b63f70;
-  --cmdcat-actor: #6657c2;
-  --cmdcat-screen: #b63f70;
-  --cmdcat-system: #956600;
-  --cmdcat-battle: #956600;
-  --cmdcat-modern: #956600;
+  /* 분류색 6종(2026-09-03 제안서 §13). 대화·흐름·보상·시스템은 토큰을 그대로 쓰고, 지도·화면만
+     고유색이다. 소리는 화면과, 전투·동료·도구는 시스템과 같은 색 — 막대·아이콘·팔레트 칩에만 쓰고
+     텍스트에는 쓰지 않는다(대비). 여섯 색 모두 순백 위 4.5:1 이상. */
+  --cmdcat-dialogue: var(--accent);
+  --cmdcat-flow: var(--warning);
+  --cmdcat-map: #0F7490;
+  --cmdcat-reward: var(--success);
+  --cmdcat-sound: var(--cmdcat-screen);
+  --cmdcat-actor: var(--cmdcat-system);
+  --cmdcat-screen: #7A3E9D;
+  --cmdcat-system: var(--text-3);
+  --cmdcat-battle: var(--cmdcat-system);
+  --cmdcat-modern: var(--cmdcat-system);
 }
 
 /* ---- [중간-1] 커맨드 리스트: 카테고리 색 레일 + kind 아이콘 ---- */

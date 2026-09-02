@@ -359,6 +359,8 @@ try {
       signatures.set(key, [...(signatures.get(key) ?? []), String(b.className).slice(0, 48)]);
     }
     const fontSizes = new Map();
+    const offSizeSamples = [];
+    const offRadiusSamples = [];
     const textColorsBelow = [];
     const lum = (rgb) => {
       const m = rgb.match(/[\d.]+/g);
@@ -389,13 +391,17 @@ try {
       if (!parent || !vis(parent)) continue;
       const cs = getComputedStyle(parent);
       fontSizes.set(cs.fontSize, (fontSizes.get(cs.fontSize) ?? 0) + 1);
+      if (!["12px", "13px", "15px", "18px"].includes(cs.fontSize)) offSizeSamples.push(`${cs.fontSize} ${parent.tagName.toLowerCase()}.${String(parent.className).split(" ").slice(0, 2).join(".")}`);
       const r = ratio(cs.color, opaqueBg(parent));
       if (r != null && r < 4.5) textColorsBelow.push({ text: node.textContent.trim().slice(0, 24), cls: String(parent.className).slice(0, 40), ratio: Math.round(r * 100) / 100, fontSize: cs.fontSize });
     }
     const radii = new Map();
     for (const e of all) {
       const r = getComputedStyle(e).borderRadius;
-      if (r && r !== "0px") radii.set(r, (radii.get(r) ?? 0) + 1);
+      if (r && r !== "0px") {
+        radii.set(r, (radii.get(r) ?? 0) + 1);
+        if (!["6px", "4px", "50%"].includes(r)) offRadiusSamples.push(`${r} ${e.tagName.toLowerCase()}.${String(e.className).split(" ").slice(0, 2).join(".")}`);
+      }
     }
     // 이모지·글리프 아이콘: 버튼 텍스트에 기호 블록 문자가 있고 SVG 자식이 없다.
     const glyphRe = /[←-⇿⌀-⏿■-➿⬀-⯿\u{1F000}-\u{1FAFF}]/u;
@@ -406,7 +412,9 @@ try {
       signatureCount: signatures.size,
       signatures: [...signatures.entries()].map(([k, v]) => ({ sig: k, count: v.length, sample: v[0] })),
       fontSizes: [...fontSizes.entries()],
+      offSizeSamples: [...new Set(offSizeSamples)].slice(0, 20),
       radii: [...radii.entries()],
+      offRadiusSamples: [...new Set(offRadiusSamples)].slice(0, 30),
       lowContrast: textColorsBelow,
       glyphButtons,
       svgIcons: root.querySelectorAll("svg").length,
@@ -417,8 +425,8 @@ try {
   const allowedRadii = new Set(["6px", "4px", "50%"]);
   const offRadii = grammar.radii.filter(([radius]) => !allowedRadii.has(radius));
   record("C7", "버튼 스타일 시그니처 ≤ 12", grammar.signatureCount <= 12, { count: grammar.signatureCount, signatures: grammar.signatures.slice(0, 30) });
-  record("C8", "글자 크기는 12·13·15·18 만", offSizes.length === 0, { offSizes, all: grammar.fontSizes });
-  record("C9", "라운딩은 6·4px 과 50% 만", offRadii.length === 0, { offRadii, all: grammar.radii });
+  record("C8", "글자 크기는 12·13·15·18 만", offSizes.length === 0, { offSizes, samples: grammar.offSizeSamples, all: grammar.fontSizes });
+  record("C9", "라운딩은 6·4px 과 50% 만", offRadii.length === 0, { offRadii, samples: grammar.offRadiusSamples, all: grammar.radii });
   record("C10", "이모지·글리프 아이콘 버튼 없음", grammar.glyphButtons.length === 0, { glyphButtons: grammar.glyphButtons.slice(0, 12), svgIcons: grammar.svgIcons });
   record("C11", "대비 4.5:1 미만 텍스트 없음", grammar.lowContrast.length === 0, { count: grammar.lowContrast.length, sample: grammar.lowContrast.slice(0, 12) });
 
