@@ -145,6 +145,28 @@ for (const closeAttempt of ["cancel", "escape", "backdrop"] as const) {
   });
 }
 
+it("닫기 확인창은 실제 푸터 버튼 이름(적용 · 저장하고 닫기)을 가리킨다", async () => {
+  // 2026-09-03 실측(제안서 §4): 문구가 존재하지 않는 [반영하고 계속]·[반영하고 닫기] 를 가리켰다.
+  const page = seedOpenEventEditor();
+  updateEventPage(store.getCurrent().startMapId, "event-1", page.id, { name: "Draft" });
+  document.querySelector<HTMLElement>('[data-testid="event-editor-cancel"]')?.click();
+  await Promise.resolve();
+
+  const dialog = document.querySelector<HTMLElement>('[data-testid="app-confirm-modal"]');
+  expect(dialog).toBeTruthy();
+  const text = dialog?.textContent ?? "";
+  expect(text).toContain("[계속 편집]");
+  expect(text).toContain("[적용]");
+  expect(text).toContain("[저장하고 닫기]");
+  expect(text).not.toContain("[반영하고");
+  const footerLabels = Array.from(document.querySelectorAll<HTMLElement>(".event-editor-modal-footer button")).map((b) => b.textContent?.trim());
+  expect(footerLabels).toContain("적용");
+  expect(footerLabels).toContain("저장하고 닫기");
+
+  document.querySelector<HTMLElement>('[data-testid="app-modal-cancel"]')?.click();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+});
+
 it("closes silently on cancel when nothing changed", () => {
   seedOpenEventEditor();
   document.querySelector<HTMLElement>('[data-testid="event-editor-cancel"]')?.click();
