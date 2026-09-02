@@ -8,6 +8,7 @@ import {
   battlerIdleAnimation,
   battlerIdleAnimationUrl,
 } from "@/assets/battlerIdleAnimations";
+import { battlerHiresSheet } from "@/assets/battlerHiresSheets";
 import { POSE_FRAME } from "@/battle/battlePose";
 import { createBattleRuntime } from "@/battle/runtime";
 import { applyBattlerPoseForTest, battleField } from "@/player/battleFieldDom";
@@ -131,7 +132,10 @@ describe("배틀러 idle 애니메이션 — 카탈로그", () => {
     for (const entry of sheetCell) {
       const strip = readPng(entry.path);
       const sourceName = entry.resourceId === "hero" ? "hero-01-battle" : entry.resourceId.replace("generated-actor-", "");
-      const sheet = readPng(`assets/generated/starter/${sourceName}.png`);
+      // 2026-09-03 부터 스트립과 정적 시트가 둘 다 고해상도 짝(192px 셀)이다 — 비교 대상도 그 시트다.
+      // 등록이 없는 셀 크기(48)면 원본 시트와 비교한다.
+      const hires = battlerHiresSheet(entry.resourceId);
+      const sheet = readPng(hires && hires.cellWidth === entry.cellWidth ? hires.path : `assets/generated/starter/${sourceName}.png`);
       for (let y = 0; y < entry.cellHeight; y += 1) {
         for (let x = 0; x < entry.cellWidth; x += 1) {
           const fromStrip = (y * strip.width + x) * 4;

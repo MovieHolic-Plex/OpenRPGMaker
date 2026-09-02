@@ -255,6 +255,12 @@
   width: var(--battle-sprite-frame-width, 144px);
 }
 
+/* 고해상도 짝 시트(192px 셀, battlerHiresSheets.ts)는 축소해 그린다 — pixelated 로 4배 시트를 96px 에
+   넣으면 계단이 다시 생긴다. 런타임이 data-rendering 으로 표시한다. */
+.battle-actor-sprite[data-rendering="smooth"] {
+  image-rendering: auto;
+}
+
 /* HUD 파티 행 사이의 구분선을 노리고 쓴 규칙이 여기 있었다:
      `.battle-actor + .battle-actor { border-top: 2px solid rgba(216,228,255,.35) }`
    그런데 HUD 행의 클래스는 `.battle-actor-status` 라 그 선택자는 HUD 에 **한 번도 맞지 않았고**,

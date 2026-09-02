@@ -52,13 +52,19 @@ const MONSTER_IDLE: readonly BattlerIdleAnimation[] = [
   monster("generated-enemy-golem-01", "monster-golem-01.png", 8, 62),
 ];
 
-/** 절차 생성한 액터 숨쉬기. 셀 48px = 전투 캐릭터셋 셀과 같다. */
+/**
+ * 절차 생성한 액터 숨쉬기. 2026-09-03 부터 **고해상도 짝**(`starter/hires/idle/`, 셀 192px = 48px 스트립을
+ * xBR 로 4배)을 쓴다 — 정적 시트가 `battlerHiresSheets.ts` 의 192px 시트로 바뀌었으니 idle 로 넘어갈 때
+ * 48px 로 떨어지면 숨 쉴 때마다 화질이 튄다. 화면 크기는 `frameW / cellWidth` 배율로 같게 유지된다
+ * (`battleFieldDom.applyIdleAnimationToSheetSprite`). 프레임 0 == 시트 idle 칸 계약은 셀 단위 업스케일이라
+ * 4배에서도 성립한다(`test/battlerIdleAnimation.test.ts`).
+ */
 const ACTOR_IDLE: readonly BattlerIdleAnimation[] = [1, 2, 3, 4, 5, 6].map((index) => ({
   resourceId: `generated-actor-hero-0${index}-battle`,
-  path: `assets/generated/starter/idle/hero-0${index}-battle.png`,
+  path: `assets/generated/starter/hires/idle/hero-0${index}-battle.png`,
   frameCount: 4,
-  cellWidth: 48,
-  cellHeight: 48,
+  cellWidth: 192,
+  cellHeight: 192,
   frameDurationMs: BATTLE_ANIMATION_FRAME_MS,
   tier: "sheet-cell",
 }));
