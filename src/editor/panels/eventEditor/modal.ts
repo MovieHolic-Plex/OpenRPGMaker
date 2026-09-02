@@ -324,7 +324,8 @@ function renderModalHeader(
   const characterId = ev?.characterId?.trim();
   const profileName = characterId
     ? store.getCurrent().characters?.[characterId]?.displayName?.trim() || characterId
-    : "NPC 없음";
+    : null;
+  const mapName = map?.name?.trim() || "";
 
   const pages = ev?.pages ?? [];
   const selectedPageId = editorState.get().selectedEventPageId;
@@ -394,16 +395,25 @@ function renderModalHeader(
                 el("span", { class: "dot-sep" }),
               ]
             : []),
+          // 좌표만으로는 어느 맵인지 알 수 없다 — 맵 이름을 좌표 앞에 둔다(2026-09-03 제안서 §6).
+          ...(mapName
+            ? [el("span", { class: "event-editor-map-name", text: mapName, dataset: { testid: "event-editor-map-name" } }), el("span", { class: "dot-sep" })]
+            : []),
           el("span", { text: coordStr, dataset: { testid: "event-editor-coords" } }),
-          el("span", { class: "dot-sep" }),
-          el("span", {
-            class: "npc",
-            dataset: { testid: "event-editor-npc-chip" },
-            children: [
-              el("span", { class: "face" }),
-              el("span", { text: profileName, dataset: { testid: "event-editor-npc-name" } }),
-            ],
-          }),
+          // NPC 칩은 연결됐을 때만 — 「NPC 없음」이라는 부정 상태를 제목 줄에서 반복하지 않는다.
+          ...(profileName
+            ? [
+                el("span", { class: "dot-sep" }),
+                el("span", {
+                  class: "npc",
+                  dataset: { testid: "event-editor-npc-chip" },
+                  children: [
+                    el("span", { class: "face" }),
+                    el("span", { text: profileName, dataset: { testid: "event-editor-npc-name" } }),
+                  ],
+                }),
+              ]
+            : []),
         ],
       }),
       el("div", {
@@ -411,13 +421,6 @@ function renderModalHeader(
         attrs: { style: "display: none;" },
         dataset: { testid: "event-editor-header-save-state" },
       }),
-      pages.length > 0 && activePage
-        ? el("span", {
-            class: "event-editor-header-page-count",
-            text: `페이지 ${pages.indexOf(activePage) + 1}/${pages.length}`,
-            dataset: { testid: "event-editor-header-page-count" },
-          })
-        : el("span", { attrs: { style: "display: none;" } }),
       el("div", {
         class: "header-actions",
         children: [
@@ -623,9 +626,9 @@ function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditor
   const pages = ev?.pages ?? [];
   const selectedPageId = editorState.get().selectedEventPageId;
   const activePage = pages.find((page) => page.id === selectedPageId) ?? pages[0];
-  const counter = header.querySelector<HTMLElement>('[data-testid="event-editor-header-page-count"]');
-  if (!activePage || !counter) return;
-  counter.textContent = `페이지 ${pages.indexOf(activePage) + 1}/${pages.length}`;
+  // 「페이지 N/M」 카운터는 바로 아래 탭 줄과 같은 정보라 없앴다(2026-09-03). 페이지 순번은
+  // 이름 상자의 aria-label 이 말한다.
+  if (!activePage) return;
   const nameInput = header.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]');
   if (!nameInput) return;
   // 같은 페이지를 보고 있으면 사용자가 타이핑 중인 값을 뺏지 않는다. 페이지가 바뀌었으면 상자에
