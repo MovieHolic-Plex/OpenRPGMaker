@@ -17,6 +17,7 @@ import { BUILD_PALETTE_GROUP_IDS } from "@/editor/panels/buildPaletteCore";
 import { isBagGroupId, isBagMaterialQuery } from "@/project/materialPolicy";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, TilesetDef } from "@/project/types";
+import { stripBuildingRolePhrases } from "./intentClarify";
 import { requestLikelyModifiesExisting } from "./modifyIntent";
 
 /** 이 턴이 손댈 수 있는 범위. null 이면 제약 없음(맵 전체·프로젝트 전체). */
@@ -118,7 +119,7 @@ export function constructionFacadeLine(instruction: string, mapId: MapId, region
 }
 
 function mentionsInterior(instruction: string): boolean {
-  const normalized = instruction.toLowerCase().replace(/\s+/g, " ");
+  const normalized = stripBuildingRolePhrases(instruction.toLowerCase().replace(/\s+/g, " "));
   return REGION_INTENT_KEYWORDS.interior.some((keyword) => normalized.includes(keyword));
 }
 
@@ -191,7 +192,7 @@ export function buildTurnGuide(input: TurnGuideInput): string {
       ? ["- 집 요청(영역 선택): 선택 영역이 현재 맵 위이므로 야외 집으로 시공. 되묻지 말고 author_house(kind:\"single\")로 바로 시공하라."]
       : []),
     wantsNewInterior
-      ? "- 실내/방: start_interior_room_session (새 mapId). 야외 시공 facade 금지. create_map만 하고 끝내지 말 것"
+      ? "- 실내/방: 개념 꾸러미 시설은 place_concept(query). 그 외는 start_interior_room_session (새 mapId). 야외 시공 facade 금지. create_map만 하고 끝내지 말 것"
       : wantsInteriorEdit
         ? "- 실내 수정: 지금 열린 이 맵을 직접 편집한다(furnish_interior_space({mapId, roomId}) / fill_region / tile_erase / place_props). start_interior_room_session·run_interior_room_pipeline 금지 — 기존 맵의 타일·이벤트가 전부 삭제된다"
         : "- 집/건물(야외 외장): 공식 시공 facade 사용 (벽 타일로 직사각 채우기 금지). 실내·방 맵 요청에는 야외 시공 facade 금지 → 실내 세션 툴",

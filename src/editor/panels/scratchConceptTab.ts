@@ -1,6 +1,6 @@
 // 데이터베이스 「임시 → 개념 꾸러미」.
 // 타일셋에 동봉된 시설→장소→물건→칩 나무를 그림으로 고친다.
-// 시공 파이프는 아직 읽지 않는다 — 저작 면만.
+// 사용자가 고친 나무는 place_concept 이 그대로 읽는다.
 
 import { editorState } from "@/editor/editorState";
 import {
@@ -25,7 +25,18 @@ import type {
   ConceptThingRecord,
   TilesetDef,
 } from "@/project/types";
-import { CONCEPT_CHIP_IDS, CONCEPT_CHIP_LABELS } from "@/project/types/conceptBundle";
+import { conceptPlaceCount, conceptPlaceRole, conceptPlaceSize } from "@/editor/conceptBundleResolve";
+import {
+  CONCEPT_CHIP_IDS,
+  CONCEPT_CHIP_LABELS,
+  CONCEPT_PLACE_COUNT_MAX,
+  CONCEPT_PLACE_ROLE_LABELS,
+  CONCEPT_PLACE_ROLES,
+  CONCEPT_PLACE_SIZE_LABELS,
+  CONCEPT_PLACE_SIZES,
+  isConceptPlaceRole,
+  isConceptPlaceSize,
+} from "@/project/types/conceptBundle";
 import { el } from "@/util/dom";
 
 interface ScratchSession {
@@ -100,7 +111,7 @@ export function renderScratchConceptTab(host: HTMLElement, rerender: () => void)
         el("span", {
           class: "db-tab-note-chip",
           children: [makeDatabaseTabIcon("scratchConcepts"), el("span", { text: "임시 · 타일셋별로 분리됨" })],
-          attrs: { title: "시공 파이프는 아직 이 나무를 읽지 않습니다." },
+          attrs: { title: "place_concept 가 이 나무를 읽어 시공합니다. 고친 내용이 다음 여관에 그대로 쓰입니다." },
         }),
       ],
     }),
@@ -351,6 +362,8 @@ function renderPlaceCard(
     }),
   );
 
+  card.append(renderPlacePlanRow(tileset, bundle, place, host, rerender));
+
   const row = el("div", { class: "scratch-concept-things", dataset: { testid: `scratch-concept-things-${place.id}` } });
   for (const entry of things) {
     row.append(renderThingChip(tileset, entry, selectedThing?.id === entry.id, host, rerender));
@@ -373,6 +386,80 @@ function renderPlaceCard(
   );
   card.append(row);
   return card;
+}
+
+/** 도면 열: 역할(홀·복도·방) · 크기 · 개수. place_concept 이 이 셋으로 방을 앉힌다. */
+function renderPlacePlanRow(
+  tileset: TilesetDef,
+  bundle: ConceptBundleRecord,
+  place: ConceptPlaceRecord,
+  host: HTMLElement,
+  rerender: () => void,
+): HTMLElement {
+  const stop = (event: Event): void => event.stopPropagation();
+  const role = el("select", {
+    class: "scratch-concept-plan-select",
+    attrs: { title: "도면 역할 — 홀은 정문을 품고, 복도는 방을 잇고, 방은 그 위에 선다" },
+    dataset: { testid: `scratch-concept-place-role-${place.id}` },
+    on: {
+      click: stop,
+      change: (event) => {
+        const next = (event.target as HTMLSelectElement).value;
+        if (isConceptPlaceRole(next)) patchPlace(tileset.id, bundle.id, place.id, { role: next });
+        refresh(host, rerender);
+      },
+    },
+  });
+  const currentRole = conceptPlaceRole(place);
+  for (const value of CONCEPT_PLACE_ROLES) {
+    role.append(el("option", { attrs: { value, ...(value === currentRole ? { selected: "" } : {}) }, text: CONCEPT_PLACE_ROLE_LABELS[value] }));
+  }
+  role.value = currentRole;
+
+  const size = el("select", {
+    class: "scratch-concept-plan-select",
+    attrs: { title: "바닥 크기 — 작게 5×3 · 보통 7×4 · 크게 9×5" },
+    dataset: { testid: `scratch-concept-place-size-${place.id}` },
+    on: {
+      click: stop,
+      change: (event) => {
+        const next = (event.target as HTMLSelectElement).value;
+        if (isConceptPlaceSize(next)) patchPlace(tileset.id, bundle.id, place.id, { size: next });
+        refresh(host, rerender);
+      },
+    },
+  });
+  const currentSize = conceptPlaceSize(place);
+  for (const value of CONCEPT_PLACE_SIZES) {
+    size.append(el("option", { attrs: { value, ...(value === currentSize ? { selected: "" } : {}) }, text: CONCEPT_PLACE_SIZE_LABELS[value] }));
+  }
+  size.value = currentSize;
+
+  const count = el("input", {
+    class: "scratch-concept-plan-count",
+    attrs: { type: "number", min: "1", max: String(CONCEPT_PLACE_COUNT_MAX), step: "1", title: "같은 장소를 몇 개 짓나(객실 ×2)" },
+    dataset: { testid: `scratch-concept-place-count-${place.id}` },
+    on: {
+      click: stop,
+      change: (event) => {
+        const raw = Math.floor(Number((event.target as HTMLInputElement).value));
+        const next = Number.isFinite(raw) ? Math.min(CONCEPT_PLACE_COUNT_MAX, Math.max(1, raw)) : 1;
+        patchPlace(tileset.id, bundle.id, place.id, { count: next === 1 ? undefined : next });
+        refresh(host, rerender);
+      },
+    },
+  }) as HTMLInputElement;
+  count.value = String(conceptPlaceCount(place));
+
+  return el("div", {
+    class: "scratch-concept-place-plan",
+    dataset: { testid: `scratch-concept-place-plan-${place.id}` },
+    children: [
+      el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "역할" }), role] }),
+      el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "크기" }), size] }),
+      el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "개수" }), count] }),
+    ],
+  });
 }
 
 function renderThingChip(
@@ -702,8 +789,21 @@ function patchPlace(
 ): void {
   mutateBundle(tilesetId, bundleId, (bundle) => {
     const place = bundle.places.find((entry) => entry.id === placeId);
-    if (place && patch.label !== undefined) place.label = patch.label;
-  }, "장소 이름");
+    if (!place) return;
+    if (patch.label !== undefined) place.label = patch.label;
+    if ("role" in patch) {
+      if (patch.role) place.role = patch.role;
+      else delete place.role;
+    }
+    if ("size" in patch) {
+      if (patch.size) place.size = patch.size;
+      else delete place.size;
+    }
+    if ("count" in patch) {
+      if (patch.count !== undefined && patch.count > 1) place.count = patch.count;
+      else delete place.count;
+    }
+  }, "장소 도면");
 }
 
 function patchThing(

@@ -5,6 +5,7 @@
 // 열리고, 상한(40) 슬라이스에 밀리는 핵심 도구는 toolRegistry.PINNED_TOOLS_BY_DOMAIN이
 // 보장한다(2026-07-10 라이브 실측 수정 — 카테고리별 "도메인 시드" 병합은 A/B 실측상 아무
 // 효과가 없는 죽은 복잡도로 판정돼 제거했다).
+import { stripBuildingRolePhrases } from "@/ai/intentClarify";
 import { MODIFY_KEYWORDS, requestLikelyModifiesExisting } from "@/ai/modifyIntent";
 
 export type RegionIntentCategory =
@@ -27,10 +28,10 @@ export const REGION_INTENT_KEYWORDS: Readonly<Record<RegionIntentCategory, reado
   // 실내/방 맵 — 야외 build_house_kit 과 충돌하므로 structure보다 우선·배타.
   interior: [
     "실내", "인테리어", "실내맵", "실내 맵", "방 맵", "방맵",
-    "침실", "서재", "주방", "창고", "선술집", "interior",
+    "침실", "서재", "주방", "창고", "선술집", "여관", "interior",
   ],
   structure: [
-    "집을", "집이", "집에", "집은", "집 ", "건물", "오두막", "여관", "성벽",
+    "집을", "집이", "집에", "집은", "집 ", "건물", "오두막", "성벽",
     "탑을", "탑이", "탑에", "탑은", "탑 ", "대장간", "광장", "울타리", "목장",
     "정원", "분수", "안뜰", "폐허", "폐가", "농장", "밭을", "밭이", "밭에", "밭은", "밭 ",
     "매점", "다리", "시설",
@@ -61,13 +62,14 @@ const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
     + "그 맵을 대상으로 furnish_interior_space({mapId, roomId})를 쓰세요.",
   interior:
     "- 실내: 현재 맵/선택 영역에 야외 집을 짓지 마세요. "
-    + "start_interior_room_session으로 **새 mapId·요청 이름** 실내 맵을 시공 "
+    + "개념 꾸러미 시설은 place_concept(query)로 **새 mapId**를 시공(사용자가 고친 나무가 정본). "
+    + "그 외는 start_interior_room_session으로 **새 mapId·요청 이름** 실내 맵을 시공 "
     + "(rooms[] 역할 테마 bedroom|study|dining|kitchen|storage|tavern|corridor, door, wallMaterial) → "
     + "advance_interior_room_build 반복 → evaluate_interior_room. create_map만 하고 멈추지 마세요.",
   structure:
     // stamp_structure는 v1→v2(tile_structure)→v3(build_wall) 폐기 체인이라 LLM에 노출되지 않는다
     // (2026-07-10 라이브 실측 수정) — 탑 등 구조물도 build_wall로 안내한다.
-    "- 구조물(야외): author_house(집·여관·대장간 외장), build_wall+fill_region(울타리·안뜰·광장 바닥, 탑 등 구조물), create_farm_plot(밭). 실내/방 맵 요청에는 쓰지 말 것",
+    "- 구조물(야외): author_house(집·대장간 외장), build_wall+fill_region(울타리·안뜰·광장 바닥, 탑 등 구조물), create_farm_plot(밭). 실내/방 맵 요청에는 쓰지 말 것",
   "npc-shop":
     "- NPC: place_npc/make_villager(주민·경비·상인 — graphic은 query로 외형 지정, 상태별 다중 페이지). 한 줄 인사만 놓고 끝내지 말 것. set_npc_schedule(순찰·시간표), set_shop_stock(상인 재고 연결). 상점/가게를 지울 때는 find_layout_regions({mapId, query})로 상점 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})로 지운다(kind market은 상점 타일만 지우므로 이웃 집·흙길은 유지). show_map_region은 지운 뒤 결과 확인용.",
   "door-transfer":
@@ -91,7 +93,7 @@ const CATEGORY_ORDER: readonly RegionIntentCategory[] = [
 ];
 
 function normalize(text: string): string {
-  return text.toLowerCase().replace(/\s+/g, " ");
+  return stripBuildingRolePhrases(text.toLowerCase().replace(/\s+/g, " "));
 }
 
 /**
@@ -130,11 +132,20 @@ export function routeRegionIntent(instruction: string): RegionIntentCategory[] {
     return withoutNewBuild.includes("modify") ? withoutNewBuild : ["modify", ...withoutNewBuild];
   }
   // 실내 요청에 "집"이 들어 있어도 야외 build_house_kit 가이드를 붙이지 않는다.
+  // 단, 야외 자리 단서(공터·부지·마당…)가 있으면 그 자리에 건물을 세우는 일이므로 야외 구조물 가이드를 남긴다 —
+  // "이 공터에 여관을 짓고 손님 NPC…"(코퍼스 inn-with-guests)는 여관 실내와 야외 건물 둘 다다.
   if (routed.includes("interior")) {
-    return routed.filter((category) => category !== "structure");
+    const outdoorLot = OUTDOOR_LOT_CUES.some((cue) => normalized.includes(cue));
+    if (!outdoorLot) return routed.filter((category) => category !== "structure");
+    return routed.includes("structure")
+      ? routed
+      : CATEGORY_ORDER.filter((category) => category === "structure" || routed.includes(category));
   }
   return routed;
 }
+
+/** 야외 자리 단서 — 실내 시설 낱말과 함께 오면 그 자리에 건물을 세우라는 뜻이다. */
+const OUTDOOR_LOT_CUES = ["공터", "부지", "빈터", "빈 터", "마당", "들판", "야외"];
 
 export function regionIntentGuideLines(categories: readonly RegionIntentCategory[]): string[] {
   return CATEGORY_ORDER.filter((category) => categories.includes(category)).map((category) => GUIDE_LINES[category]);

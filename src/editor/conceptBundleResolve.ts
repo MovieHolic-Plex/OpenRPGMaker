@@ -1,0 +1,314 @@
+// 타일셋에 붙은 개념 꾸러미를 시공 입력으로 푼다.
+// 정본은 프로젝트가 들고 있는 값이다. 사용자가 데이터베이스에서 고친 나무가 그대로 쓰인다.
+//
+// 도면(layoutConceptFacility)은 장소의 역할(entrance·walkway·room)·크기·개수만 읽는다.
+// 남→북으로 홀(정문) → 복도 → 방들이 서고, 파티션은 파이프라인 벽 문법(가로 인접 1열·세로 인접 3행)을 따른다.
+// 이 모듈은 interiorRoomPipeline 을 import 하지 않는다(순환). 실내 칩셋 id 는 문자열로 둔다.
+import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
+import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
+import {
+  CONCEPT_PLACE_COUNT_MAX,
+  type ConceptBundleRecord,
+  type ConceptChipId,
+  type ConceptFacilityRecord,
+  type ConceptPlaceRecord,
+  type ConceptPlaceRole,
+  type ConceptPlaceSize,
+  type ConceptThingRecord,
+} from "@/project/types/conceptBundle";
+import type { Project } from "@/project/types";
+
+const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
+
+const WALKWAY_IDS = new Set(
+  BUILTIN_INTERIOR_ROOM_KINDS.filter((kind) => kind.walkway).map((kind) => kind.id),
+);
+
+export type ResolvedConceptFacility = {
+  readonly tilesetId: string;
+  readonly bundle: ConceptBundleRecord;
+  readonly facility: ConceptFacilityRecord;
+};
+
+/** 도면의 방 한 칸(장소 인스턴스). 같은 장소가 여러 개면 id 에 번호가 붙는다. */
+export type ConceptLayoutRoom = {
+  readonly id: string;
+  readonly placeId: string;
+  readonly role: ConceptPlaceRole;
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+  readonly theme: string;
+};
+
+export type ConceptRoomLayout = {
+  readonly width: number;
+  readonly height: number;
+  readonly door: { readonly x: number; readonly y: number };
+  readonly rooms: readonly ConceptLayoutRoom[];
+  readonly innerDoors: readonly { readonly x: number; readonly y: number }[];
+};
+
+export type ConceptOverlayThing = {
+  readonly thingId: string;
+  readonly objectId: string;
+  readonly label: string;
+  readonly chips: readonly ConceptChipId[];
+  readonly required: boolean;
+};
+
+export type ConceptOverlayRoom = {
+  readonly placeId: string;
+  readonly placeLabel: string;
+  readonly role: ConceptPlaceRole;
+  readonly things: readonly ConceptOverlayThing[];
+};
+
+/** 파이프라인에 넘기는 오버레이 — 도면의 방 id 마다 그 장소의 물건과 칩. */
+export type ConceptOverlay = {
+  readonly bundleId: string;
+  readonly facilityId: string;
+  readonly facilityLabel: string;
+  readonly rooms: Readonly<Record<string, ConceptOverlayRoom>>;
+};
+
+/** 실내 칩셋에 꾸러미가 아직 없으면 여관 초안을 얹는다. 빈 배열은 건드리지 않는다. */
+export function ensureConceptBundles(project: Project, tilesetId = INTERIOR_TILESET_ID): void {
+  const tileset = project.tilesets[tilesetId];
+  if (!tileset) return;
+  if (tileset.scratchConceptBundles !== undefined) return;
+  if (tilesetId !== INTERIOR_TILESET_ID) return;
+  tileset.scratchConceptBundles = [cloneConceptBundle(SCRATCH_INN_BUNDLE)];
+}
+
+export function listLiveConceptBundles(project: Project): readonly {
+  tilesetId: string;
+  tilesetName: string;
+  bundles: readonly ConceptBundleRecord[];
+}[] {
+  return Object.values(project.tilesets)
+    .map((tileset) => ({
+      tilesetId: tileset.id,
+      tilesetName: tileset.name,
+      bundles: liveBundlesForTileset(project, tileset.id),
+    }))
+    .filter((entry) => entry.bundles.length > 0);
+}
+
+export function liveBundlesForTileset(project: Project, tilesetId: string): readonly ConceptBundleRecord[] {
+  const tileset = project.tilesets[tilesetId];
+  if (!tileset) return [];
+  if (tileset.scratchConceptBundles !== undefined) return tileset.scratchConceptBundles;
+  if (tilesetId === INTERIOR_TILESET_ID) return [SCRATCH_INN_BUNDLE];
+  return [];
+}
+
+export function resolveConceptFacility(
+  project: Project,
+  query: string,
+  tilesetId?: string,
+): ResolvedConceptFacility | undefined {
+  const normalized = foldQuery(query);
+  if (!normalized) return undefined;
+  const tilesetIds = tilesetId
+    ? [tilesetId]
+    : [INTERIOR_TILESET_ID, ...Object.keys(project.tilesets).filter((id) => id !== INTERIOR_TILESET_ID)];
+  for (const id of tilesetIds) {
+    const tileset = project.tilesets[id];
+    if (!tileset) continue;
+    const bundles = liveBundlesForTileset(project, id);
+    for (const bundle of bundles) {
+      const facility = bundle.facilities.find((entry) => matchesQuery(entry.id, entry.label, normalized))
+        ?? (matchesQuery(bundle.id, bundle.label, normalized) ? bundle.facilities[0] : undefined);
+      if (facility) return { tilesetId: id, bundle, facility };
+    }
+  }
+  return undefined;
+}
+
+export function thingsForPlace(bundle: ConceptBundleRecord, placeId: string): ConceptThingRecord[] {
+  const listed = bundle.things.filter((thing) => thing.placeIds.includes(placeId));
+  return [...listed].sort((a, b) => Number(Boolean(b.required)) - Number(Boolean(a.required)));
+}
+
+/** 장소 역할. 필드가 없으면 라벨(복도·통로·hall)로 복도를 알아보고 나머지는 방이다. */
+export function conceptPlaceRole(place: ConceptPlaceRecord): ConceptPlaceRole {
+  if (place.role) return place.role;
+  return isWalkway(place) ? "walkway" : "room";
+}
+
+export function conceptPlaceSize(place: ConceptPlaceRecord): ConceptPlaceSize {
+  return place.size ?? "m";
+}
+
+export function conceptPlaceCount(place: ConceptPlaceRecord): number {
+  const raw = place.count ?? 1;
+  if (!Number.isFinite(raw)) return 1;
+  return Math.min(CONCEPT_PLACE_COUNT_MAX, Math.max(1, Math.floor(raw)));
+}
+
+export function conceptOverlayFor(
+  bundle: ConceptBundleRecord,
+  facility: ConceptFacilityRecord,
+  layout: ConceptRoomLayout,
+): ConceptOverlay {
+  const rooms: Record<string, ConceptOverlayRoom> = {};
+  for (const room of layout.rooms) {
+    const place = bundle.places.find((entry) => entry.id === room.placeId);
+    rooms[room.id] = {
+      placeId: room.placeId,
+      placeLabel: place?.label ?? room.placeId,
+      role: room.role,
+      things: thingsForPlace(bundle, room.placeId).map((thing) => ({
+        thingId: thing.id,
+        objectId: thing.objectId,
+        label: thing.label,
+        chips: [...thing.chips],
+        required: Boolean(thing.required),
+      })),
+    };
+  }
+  return { bundleId: bundle.id, facilityId: facility.id, facilityLabel: facility.label, rooms };
+}
+
+// ── 도면 ─────────────────────────────────────────────────────────────────────
+
+/** 바닥 크기(폭×높이). s 는 객실 한 칸, l 은 홀. */
+const ROOM_FOOTPRINT: Readonly<Record<ConceptPlaceSize, { readonly w: number; readonly h: number }>> = {
+  s: { w: 5, h: 3 },
+  m: { w: 7, h: 4 },
+  l: { w: 9, h: 5 },
+};
+const WALKWAY_H = 3;
+/** 위로 천장 1행 + 벽면 2행 + 여백 1행. 데모 「여관 1층」과 같은 y=4 시작. */
+const ORIGIN_Y = 4;
+const MARGIN_X = 3;
+/** 세로 인접 방 사이 파티션(트림 + 벽면 2행). */
+const V_GAP = 3;
+/** 가로 인접 방 사이 파티션(천장 1열). */
+const H_GAP = 1;
+const MIN_BAND_W = 8;
+
+type PlaceInstance = { readonly place: ConceptPlaceRecord; readonly role: ConceptPlaceRole; readonly id: string };
+
+export function layoutConceptFacility(
+  bundle: ConceptBundleRecord,
+  facility: ConceptFacilityRecord,
+): ConceptRoomLayout {
+  const places = facility.placeIds
+    .map((id) => bundle.places.find((place) => place.id === id))
+    .filter((place): place is ConceptPlaceRecord => Boolean(place));
+
+  const instances: PlaceInstance[] = [];
+  for (const place of places) {
+    const count = conceptPlaceCount(place);
+    const role = conceptPlaceRole(place);
+    for (let n = 0; n < count; n += 1) {
+      instances.push({ place, role, id: count === 1 ? place.id : `${place.id}_${n + 1}` });
+    }
+  }
+
+  // 정문을 품는 밴드 하나, 복도 밴드 하나. 나머지는 전부 방 줄이다(역할이 겹쳐도 첫 하나만 밴드).
+  const entrance = instances.find((entry) => entry.role === "entrance") ?? null;
+  const walkway = instances.find((entry) => entry.role === "walkway") ?? null;
+  const rowInstances = instances.filter((entry) => entry !== entrance && entry !== walkway);
+  // 정문·복도가 모두 없으면 마지막 방을 정문 밴드로 쓴다(방 하나짜리 시설 = 문 달린 방).
+  const promoted = !entrance && !walkway && rowInstances.length > 0 ? rowInstances.pop() ?? null : null;
+  const host = entrance ?? walkway ?? promoted;
+  const doorBand = entrance ?? promoted;
+
+  const rowBoxes = rowInstances.map((entry) => ROOM_FOOTPRINT[conceptPlaceSize(entry.place)]);
+  const rowH = rowBoxes.length > 0 ? Math.max(...rowBoxes.map((box) => box.h)) : 0;
+  const rowW = rowBoxes.reduce((sum, box) => sum + box.w, 0) + Math.max(0, rowBoxes.length - 1) * H_GAP;
+  const bandOwnW = doorBand ? ROOM_FOOTPRINT[conceptPlaceSize(doorBand.place)].w : 0;
+  const bandW = Math.max(rowW, bandOwnW, rowBoxes.length > 0 || host ? MIN_BAND_W : 0);
+
+  const rooms: ConceptLayoutRoom[] = [];
+  const innerDoors: { x: number; y: number }[] = [];
+  let cursorY = ORIGIN_Y;
+
+  if (rowInstances.length > 0) {
+    // 방 줄: 폭이 밴드보다 좁으면 가운데 정렬.
+    let x = MARGIN_X + Math.floor((bandW - rowW) / 2);
+    rowInstances.forEach((entry, index) => {
+      const box = rowBoxes[index]!;
+      rooms.push({
+        id: entry.id,
+        placeId: entry.place.id,
+        role: entry.role,
+        x,
+        y: cursorY,
+        w: box.w,
+        h: rowH,
+        theme: roomTheme(entry.place.id, entry.role),
+      });
+      x += box.w + H_GAP;
+    });
+    cursorY += rowH;
+  }
+
+  const pushBand = (entry: PlaceInstance, h: number): ConceptLayoutRoom => {
+    const previous = rooms.length > 0;
+    if (previous) {
+      // 위 줄의 방마다 아래 밴드로 내려가는 문 하나(파티션 트림 행).
+      const above = rooms.filter((room) => room.y + room.h === cursorY);
+      for (const room of above) innerDoors.push({ x: room.x + Math.floor(room.w / 2), y: cursorY });
+      cursorY += V_GAP;
+    }
+    const band: ConceptLayoutRoom = {
+      id: entry.id,
+      placeId: entry.place.id,
+      role: entry.role,
+      x: MARGIN_X,
+      y: cursorY,
+      w: bandW,
+      h,
+      theme: roomTheme(entry.place.id, entry.role),
+    };
+    rooms.push(band);
+    cursorY += h;
+    return band;
+  };
+
+  if (walkway) pushBand(walkway, WALKWAY_H);
+  let doorRoom: ConceptLayoutRoom | null = null;
+  if (doorBand) doorRoom = pushBand(doorBand, ROOM_FOOTPRINT[conceptPlaceSize(doorBand.place)].h);
+  if (!doorRoom) doorRoom = rooms.find((room) => room.id === host?.id) ?? rooms[rooms.length - 1] ?? null;
+
+  if (!doorRoom) {
+    // 장소가 하나도 없는 시설 — 빈 방 하나로 세운다. 시공은 되되 물건이 없다.
+    const box = ROOM_FOOTPRINT.m;
+    doorRoom = { id: facility.id, placeId: facility.id, role: "room", x: MARGIN_X, y: ORIGIN_Y, w: box.w, h: box.h, theme: "storage" };
+    rooms.push(doorRoom);
+  }
+
+  const door = { x: doorRoom.x + Math.floor(doorRoom.w / 2), y: doorRoom.y + doorRoom.h - 1 };
+  const right = Math.max(...rooms.map((room) => room.x + room.w));
+  const width = right + MARGIN_X;
+  const height = door.y + 4;
+  return { width, height, door, rooms, innerDoors };
+}
+
+function isWalkway(place: ConceptPlaceRecord): boolean {
+  if (WALKWAY_IDS.has(place.id)) return true;
+  return /복도|통로|corridor|hall/i.test(place.label);
+}
+
+function roomTheme(placeId: string, role: ConceptPlaceRole): string {
+  if (role === "walkway") return "corridor";
+  return BUILTIN_INTERIOR_ROOM_KINDS.some((kind) => kind.id === placeId) ? placeId : "storage";
+}
+
+function foldQuery(query: string): string {
+  return query.normalize("NFKC").trim().toLowerCase().replace(/\s+/g, "");
+}
+
+function matchesQuery(id: string, label: string, normalized: string): boolean {
+  const idFold = foldQuery(id);
+  const labelFold = foldQuery(label);
+  return idFold === normalized
+    || labelFold === normalized
+    || labelFold.includes(normalized)
+    || normalized.includes(labelFold);
+}
