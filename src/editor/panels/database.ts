@@ -31,7 +31,7 @@ import {
 import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
-import { applyTilesetFolderFacet } from "@/editor/panels/tilesetMetadataEditor";
+import { applyTilesetFolderFacet, setTilesetFolderTabRequestHandler } from "@/editor/panels/tilesetMetadataEditor";
 import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
@@ -311,6 +311,15 @@ export function databaseTabLabel(tab: DatabaseTab): string {
 export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
   tabRenderCaches.delete(container);
+  // 타일셋 섹션 탭(타일 규칙·타일 지식·구성)과 좌측 폴더 자식(통행·미분류·오토타일)은 같은 것을
+  // 가리키는 두 내비게이션이다. 섹션 탭을 누르면 좌측 선택도 따라오게 연결한다.
+  setTilesetFolderTabRequestHandler((tab) => {
+    if (!isDatabaseTab(tab)) return false;
+    // 이전 패널이 남긴 핸들러가 떨어져 나간 컨테이너를 가리킬 수 있다 — 붙어 있을 때만 옮긴다.
+    if (typeof document !== "undefined" && typeof document.contains === "function" && !document.contains(container)) return false;
+    switchDatabaseActiveTab(tab, container);
+    return true;
+  });
   const header = el("div", { class: "db-tabs" });
   const body = el("div", {
     class: "db-body db-shared-workspace",

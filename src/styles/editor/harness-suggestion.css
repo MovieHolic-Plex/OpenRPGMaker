@@ -337,9 +337,12 @@
   color: #5b6373;
 }
 
+/* 「부위 없음」은 오류가 아니라 아직 나누지 않은 정상 상태다. 목록 전체가 이 상태인데
+   빨강으로 칠하면 모든 줄이 경고처럼 보이고, 정작 진짜 문제를 표시할 색이 남지 않는다. */
 .structure-kit-part-badge.none {
-  color: #b02a37;
-  background: #fdeaec;
+  color: var(--text-2, #5b6373);
+  background: var(--bg-inset, #f1f2f6);
+  font-weight: 600;
 }
 
 .structure-kit-footer {

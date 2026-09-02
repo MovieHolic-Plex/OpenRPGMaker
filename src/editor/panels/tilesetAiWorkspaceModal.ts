@@ -17,6 +17,7 @@ import {
 } from "@/editor/tilesetAiConversationSession";
 import { runTilesetAiReview, tilesetAiReviewState } from "@/editor/tilesetAiNativeReviewSession";
 import { proposalsForAiReview, type TilesetAiReviewState } from "@/editor/tilesetAiNativeReviewModel";
+import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -305,9 +306,20 @@ function renderAnalyzeStatus(status: string): HTMLElement {
     });
   }
   if (status === "offline") {
+    // 예전에는 "AI 설정에서 확인하세요"라고 글로만 안내하고 정작 AI 설정을 여는 길이
+    // 이 창 어디에도 없었다 — 모달 두 겹 뒤에 있어서 막다른 골목이었다.
     return el("div", {
       class: "tileset-ai-analyze-progress offline",
-      children: [el("span", { text: "AI 설정에서 연결을 확인한 뒤 아래 ‘다시 전체 분석’을 눌러 주세요." })],
+      children: [
+        el("span", { text: "AI 연결을 마치면 바로 분석할 수 있습니다." }),
+        el("button", {
+          class: "tileset-ai-open-settings",
+          text: "AI 설정 열기",
+          attrs: { type: "button" },
+          dataset: { testid: "tileset-ai-open-settings" },
+          on: { click: () => { openAiSettingsModal(); } },
+        }),
+      ],
     });
   }
   if (status === "error") {

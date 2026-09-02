@@ -15,7 +15,7 @@ import {
 } from "@/editor/panels/tilesetGroupEditor";
 import { cellTitle, hasAiMetadata, isUnlabeledTile } from "@/editor/panels/tilesetMetadataControls";
 import { openTilesetTileContextMenu } from "@/editor/panels/tilesetTileContextMenu";
-import { autotileComposerHint, autotileHoverTileIds } from "@/editor/panels/tilesetAutotileEditor";
+import { autotileHoverTileIds } from "@/editor/panels/tilesetAutotileEditor";
 import { modeHelpText, type TilesetEditMode } from "@/editor/panels/tilesetUsageGuide";
 import { tileLayerHome, type TileLayerHome } from "@/editor/tileLayerClassification";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
@@ -79,9 +79,11 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
       el("div", {
         class: "tileset-db-preview-title-row",
         children: [
+          // 예전에는 오토타일일 때 여기에 autotileComposerHint() 를 그대로 넣어서
+          // 바로 위 도구 상자의 안내문과 똑같은 문장이 40px 간격으로 두 번 보였다.
           ...(passageChrome ? [] : [el("div", {
             class: "tileset-db-preview-title",
-            text: model.mode === "autotile" ? autotileComposerHint() : "타일 그림판",
+            text: "타일 그림판",
           })]),
           el("div", {
             class: "tileset-db-layer-filter",
@@ -240,7 +242,20 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
       }),
       el("div", {
         class: "tileset-db-click-grid",
+        // 격자 시맨틱 + roving tabindex. 예전에는 480 칸이 전부 tabindex 0 이라
+        // 시트를 지나 아래 이름 필드로 가려면 Tab 을 480 번 눌러야 했다.
+        attrs: {
+          role: "grid",
+          "aria-label": `${model.tileset.name} 타일 격자 — 방향키로 이동, Enter 로 적용`,
+          "aria-colcount": String(model.tileset.tilesPerRow),
+          "aria-rowcount": String(rows),
+        },
         children: Array.from({ length: model.tileset.count }, (_, index) => renderTileCell(model, index)),
+        on: {
+          keydown: (event) => {
+            if (event instanceof KeyboardEvent) handleGridKeyDown(model, event);
+          },
+        },
       }),
       ...(model.mode === "passage"
         ? []
@@ -248,6 +263,7 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
             el("div", {
               class: "tileset-db-preview-meta",
               dataset: { testid: "tileset-db-preview-meta" },
+              attrs: { title: PREVIEW_SCROLL_HELP },
               text: previewMetaText(model, rows),
             }),
           ]),
@@ -261,11 +277,66 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
   });
 }
 
+/**
+ * 시트 아래 상태줄.
+ *
+ * 예전에는 조작법까지 한 줄에 이어 붙여 964px 이 됐고 502px 만 보였다(48% 가 잘림,
+ * 스크롤바도 없음). 상태(무엇이 보이는지)만 남기고 조작법은 title 로 뺀다.
+ * 단위도 「칩」이 아니라 다른 곳과 같은 「칸」으로 맞춘다.
+ */
 function previewMetaText(model: ChipsetPreviewModel, rows: number): string {
   const filterLabel = layerFilter === "all" ? "전체 레이어" : layerFilter === "lower" ? "하위만" : "상위만";
   const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
   const unlabeledLabel = unlabeledOn ? " · 미분류 강조" : "";
-  return `${model.tileset.count}칩 · ${model.tileset.tilesPerRow}열×${rows}행 · ${previewScale}x · ${filterLabel}${unlabeledLabel} · ${modeHelpText(model.mode)} · 스크롤: 휠·←→↑↓·중클릭 드래그 (전체 시트)`;
+  return `${model.tileset.count}칸 · ${model.tileset.tilesPerRow}열×${rows}행 · ${previewScale}x · ${filterLabel}${unlabeledLabel} · ${modeHelpText(model.mode)}`;
+}
+
+const PREVIEW_SCROLL_HELP = "스크롤: 휠 · 방향키 · 가운데 버튼 드래그 (전체 시트)";
+
+const PASSAGE_SPOKEN: Record<PassageMark, string> = { o: "통과", x: "막힘", star: "위 지나감" };
+
+/** 격자 안 방향키 이동. 선택을 옮기고 포커스를 새 칸으로 넘긴다. */
+function handleGridKeyDown(model: ChipsetPreviewModel, event: KeyboardEvent): void {
+  const cols = model.tileset.tilesPerRow;
+  const last = model.tileset.count - 1;
+  const step =
+    event.key === "ArrowRight" ? 1
+    : event.key === "ArrowLeft" ? -1
+    : event.key === "ArrowDown" ? cols
+    : event.key === "ArrowUp" ? -cols
+    : 0;
+  let next = step === 0 ? -1 : model.selectedTile + step;
+  if (event.key === "Home") next = 0;
+  if (event.key === "End") next = last;
+  if (event.key === "PageDown") next = Math.min(last, model.selectedTile + cols * 8);
+  if (event.key === "PageUp") next = Math.max(0, model.selectedTile - cols * 8);
+  if (next < 0 || next > last) return;
+  event.preventDefault();
+  model.onSelectTile?.(next, { quiet: true });
+  paintSelectedCell(next);
+  const cell = document.querySelector<HTMLElement>(`.tileset-db-click-grid [data-tile="${next}"]`);
+  if (!cell) return;
+  for (const node of document.querySelectorAll<HTMLElement>(".tileset-db-click-grid .tileset-db-cell")) {
+    node.tabIndex = -1;
+  }
+  cell.tabIndex = 0;
+  cell.focus();
+  cell.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
+function tileCellAriaLabel(
+  model: ChipsetPreviewModel,
+  index: number,
+  mark: PassageMark,
+  home: TileLayerHome,
+  unlabeled: boolean,
+): string {
+  const parts = [`타일 ${index}`];
+  if (model.mode === "terrain") parts.push(`지형 ${model.tileset.terrain[index] ?? 0}`);
+  else if (model.mode !== "autotile" && model.mode !== "group") parts.push(PASSAGE_SPOKEN[mark]);
+  parts.push(layerHomeLabel(home));
+  if (unlabeled) parts.push("미분류");
+  return `${parts.join(", ")}. 우클릭 또는 컨텍스트 메뉴 키로 의미 편집`;
 }
 
 function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonElement {
@@ -285,8 +356,13 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
     text: cellText(model, index),
     attrs: {
       type: "button",
+      role: "gridcell",
+      // 선택된 칸 하나만 Tab 순서에 남기고 나머지는 방향키로 옮긴다.
+      tabindex: index === model.selectedTile ? "0" : "-1",
       title: `${cellTitle(model.tileset, index)} · ${layerHomeLabel(home)}${unlabeled ? " · 미분류" : ""} · 우클릭: 의미/통행/레이어`,
-      "aria-label": `타일 ${index} ${layerHomeLabel(home)}${unlabeled ? " 미분류" : ""}. 우클릭으로 의미 편집`,
+      // 통행 상태를 접근 가능한 이름에 넣는다. 예전에는 칠하기로 통행을 바꿔도 이 이름이
+      // 그대로여서 보조기술 사용자에게는 이 화면의 본래 데이터가 아예 보이지 않았다.
+      "aria-label": tileCellAriaLabel(model, index, mark, home, unlabeled),
     },
     dataset: {
       testid: `tileset-db-cell-${index}`,
@@ -467,12 +543,28 @@ function stopPassageDrag(): void {
   if (model) stableRerender(model.rerender);
 }
 
+/**
+ * 통행 표시는 세 상태 모두 글리프를 가진다.
+ *
+ * 예전에는 통과가 "글자 없음"이었다. 그러면 「통과」와 「칩이 어두워서 표시가 안 보임」이
+ * 구별되지 않는다 — 실제로 던전 계열 어두운 칩 위에서 검은 X 가 사라져 어느 쪽인지 알 수
+ * 없었다. 세 상태 모두 글리프를 두고, 대비는 CSS 의 흰 글자 + 어두운 외곽선이 책임진다.
+ */
+export function passageGlyph(mark: PassageMark): string {
+  if (mark === "star") return "★";
+  return mark === "o" ? "·" : "✕";
+}
+
 function paintPassageCell(tile: number, mark: PassageMark): void {
   const cell = document.querySelector(`[data-tile="${tile}"]`);
   if (!(cell instanceof HTMLElement)) return;
   cell.classList.remove("mark-o", "mark-x", "mark-star");
   cell.classList.add(`mark-${mark}`);
-  cell.textContent = mark === "o" ? "" : mark === "star" ? "★" : "X";
+  cell.textContent = passageGlyph(mark);
+  // 칠하는 즉시 접근 가능한 이름도 새 통행 상태로 바꾼다.
+  const previous = cell.getAttribute("aria-label") ?? "";
+  const next = previous.replace(/(^타일 \d+, )(통과|막힘|위 지나감)/, `$1${PASSAGE_SPOKEN[mark]}`);
+  if (next !== previous) cell.setAttribute("aria-label", next);
 }
 
 function cellText(model: ChipsetPreviewModel, tile: number): string {
@@ -480,9 +572,7 @@ function cellText(model: ChipsetPreviewModel, tile: number): string {
   if (model.mode === "ai") return hasAiMetadata(model.tileset, tile) ? "AI" : "";
   if (model.mode === "group") return groupCellText(model.tileset, tile);
   if (model.mode === "autotile") return "";
-  const mark = passageMarkForTile(model.tileset, tile);
-  if (mark === "o") return "";
-  return mark === "star" ? "★" : "X";
+  return passageGlyph(passageMarkForTile(model.tileset, tile));
 }
 
 /** 테스트/디버그용: 현재 프리뷰 배율 */

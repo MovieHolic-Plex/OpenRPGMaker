@@ -242,7 +242,13 @@ export function renderStructureKitsTab(host: HTMLElement, rerender: () => void):
     class: "structure-kit-album-rail",
     dataset: { testid: "structure-kit-album-rail" },
     children: [
-      el("div", { class: "structure-kit-album-rail-title", text: "원본" }),
+      // 원본 개수는 「지금 고른 칩셋 안에서」의 수이고, 아래 타일셋 개수는 칩셋별 총계다.
+      // 그냥 "원본" 이라고만 두면 전체 6 < 실내 28 처럼 서로 모순돼 보였다.
+      el("div", {
+        class: "structure-kit-album-rail-title",
+        text: activeTileset ? `원본 — ${activeTileset.name} 안에서` : "원본",
+        attrs: { title: "아래 「타일셋」 개수는 칩셋별 총계입니다." },
+      }),
     ],
   });
 

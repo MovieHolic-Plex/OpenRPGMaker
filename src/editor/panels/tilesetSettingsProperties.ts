@@ -6,6 +6,7 @@ import { textControl } from "@/editor/panels/databaseControls";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { getTilesetSectionTab, setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
 import { TILESET_SECTION_TABS } from "@/editor/panels/tilesetUsageGuide";
+import { tilesetImageSourceUrl } from "@/editor/tilesetImage";
 import { unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
@@ -160,18 +161,31 @@ function openTilesetGraphicPicker(tileset: TilesetDef, rerender: () => void): vo
     rerender();
   };
   const bundled = BUNDLED_EASYRPG_CHIPSET_ASSETS.map((asset) =>
-    graphicChoiceButton(chipsetDisplayName(asset.textureKey), asset.textureKey, tileset.image.id, () =>
+    graphicChoiceButton(chipsetDisplayName(asset.textureKey), { type: "bundled", id: asset.textureKey }, tileset.image.id, () =>
       applyImage({ type: "bundled", id: asset.textureKey }),
     ),
   );
   const uploaded = Object.entries(store.getCurrent().assets.uploaded ?? {})
     .filter(([, asset]) => asset.kind === "chipset" || asset.kind === "tileset")
     .map(([id, asset]) =>
-      graphicChoiceButton(asset.name || id, id, tileset.image.id, () => applyImage({ type: "uploaded", id })),
+      graphicChoiceButton(asset.name || id, { type: "uploaded", id }, tileset.image.id, () => applyImage({ type: "uploaded", id })),
     );
-  openDialog("tileset-graphic-picker", "타일셋 그래픽", [el("div", { class: "tileset-graphic-picker-list", children: [...bundled, ...uploaded] })], [
-    { label: "닫기", testid: "tileset-graphic-picker-close" },
-  ]);
+  openDialog(
+    "tileset-graphic-picker",
+    "타일셋 그래픽 고르기",
+    [
+      el("p", {
+        class: "tileset-graphic-picker-lead",
+        text: "고르면 이 타일셋의 그림이 바뀝니다. 칸 수와 통행 규칙은 그대로 남습니다.",
+      }),
+      el("div", {
+        class: "tileset-graphic-picker-list",
+        attrs: { role: "listbox", "aria-label": "타일셋 그래픽" },
+        children: [...bundled, ...uploaded],
+      }),
+    ],
+    [{ label: "닫기", testid: "tileset-graphic-picker-close" }],
+  );
 }
 
 function closeTilesetGraphicPicker(): void {
@@ -220,13 +234,31 @@ function resizeTilesetSlotArrays(tileset: TilesetDef, newCount: number): void {
   tileset.count = newCount;
 }
 
-function graphicChoiceButton(label: string, id: string, selectedId: string, onPick: () => void): HTMLElement {
+/**
+ * 그래픽 고르기 항목.
+ *
+ * 예전에는 10px 글자 알약 13 개뿐이라 「그림 고르기」인데 그림이 하나도 없었다.
+ * 실제 시트를 축소해 보여준다 — 이름만 보고 고르는 것보다 훨씬 빠르다.
+ */
+function graphicChoiceButton(
+  label: string,
+  image: TilesetDef["image"],
+  selectedId: string,
+  onPick: () => void,
+): HTMLElement {
+  const selected = image.id === selectedId;
   return el("button", {
-    class: `btn small${id === selectedId ? " active" : ""}`,
-    text: label,
-    attrs: { type: "button", title: id },
-    dataset: { testid: `tileset-graphic-option-${id}` },
+    class: `tileset-graphic-option${selected ? " is-selected" : ""}`,
+    attrs: { type: "button", role: "option", "aria-selected": String(selected), title: `${label}\n${image.id}` },
+    dataset: { testid: `tileset-graphic-option-${image.id}` },
     on: { click: onPick },
+    children: [
+      el("span", {
+        class: "tileset-graphic-option-thumb",
+        attrs: { style: `background-image:url("${tilesetImageSourceUrl(image)}")`, "aria-hidden": "true" },
+      }),
+      el("span", { class: "tileset-graphic-option-name", text: label }),
+    ],
   });
 }
 
