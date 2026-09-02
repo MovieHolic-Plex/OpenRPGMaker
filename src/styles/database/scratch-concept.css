@@ -243,3 +243,29 @@
 .scratch-concept-plan-count {
   width: 3.2em;
 }
+
+/* 시설 띠 — 꾸러미 전환 · 초안 넣기 · 빈 시설 (2026-09-02 시설 다양화). */
+.scratch-concept-facilities {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--db-studio-border-default);
+}
+
+.scratch-concept-facility {
+  font: 600 12px/1.6 inherit;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--db-studio-border-default);
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+}
+
+.scratch-concept-facility.active {
+  color: var(--db-studio-text-1);
+  border-color: var(--db-studio-accent);
+  background: color-mix(in srgb, var(--db-studio-accent) 16%, transparent);
+}
