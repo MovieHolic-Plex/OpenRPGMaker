@@ -79,6 +79,8 @@
 @import "./editor/map-history.css";
 @import "./editor/map-props.css";
 @import "./editor/map-panel.modern.css";
+/* 좌측 사이드바(타일·맵 도크) 크롬의 마지막 발언자 — 맵 패널 행 규칙 뒤에 와야 한다. */
+@import "./editor/left-sidebar.modern.css";
 @import "./editor/rule-audit.css";
 @import "./editor/region-task.css";
 @import "./editor/build-palette.css";

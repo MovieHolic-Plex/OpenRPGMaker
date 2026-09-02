@@ -1,0 +1,821 @@
+/* ============================================================================
+   좌측 사이드바 모던 레이어 (2026-09-03) — 타일 도크 + 맵 도크 크롬의 마지막 발언자.
+
+   왜 이 파일이 생겼나. 표준·전문가 좌패널의 겉모습은 네 세대 시트가 겹쳐 그리고 있었다
+   (figma-editor/03·08·09, shell-density.part-1, editor-ui-modes). 실측(1440×900, 표준):
+     · 타일 칸이 32px 로 고정돼 6열이 시트 폭 263px 중 202px 만 쓰고 오른쪽 ~60px 이 비었다.
+     · 시트 275px 에 191칸 중 8행만 보였다 — 나머지는 접힘선 아래.
+     · 맵 도크는 맵이 1개여도 300px 을 차지해 3분의 2가 빈 칸이었다.
+     · 패널 테두리·시트 테두리·도구막대 테두리가 3중으로 겹치고 라운드·높이가 제각각이었다.
+   높이 문제는 editor.ts 의 자동 맞춤(mapTreeAuto)과 접힘(mapPanelSection.ts)이 풀고,
+   이 시트는 폭·밀도·톤을 하나의 언어로 정리한다: 쿨 화이트 면, 인디고 액센트 하나,
+   28px 컨트롤, 6/10px 라운드, 테두리 대신 톤 차이로 면을 나눈다.
+
+   규칙
+   · 토큰만 쓴다(src/styles/tokens.css). hex 리터럴·!important 를 새로 들이지 않는다 —
+     scripts/check-css-budget.mjs 래칫. 옛 `!important` 는 `--chipset-cell` 같은 커스텀
+     프로퍼티를 덮는 방식으로 우회한다(그 값들은 !important 가 아니다).
+   · 선택자는 이기려는 옛 규칙과 같은 모양에 `.editor-layout` 을 앞에 붙인다. 로드 순서가
+     뒤라 같은 명시도면 이기고, 한 단계 높으니 `:hover:not(:disabled)` 류도 이긴다.
+   · 맵 패널의 **행** 모양은 map-panel.modern.css 가 소유한다(두 렌더 컨텍스트 공용).
+     여기서는 도크에만 있는 것 — 섹션 접기 토글, 호스트 패딩, 목록 스크롤, 헤더 액션 톤 —
+     만 만진다. `[data-testid="left-map-root"]` 스코프는 그래서 의도적이다(초보 플라이아웃은
+     자기 헤더·2단을 따로 갖는다).
+   · figma-editor/10-map-tree.css 의 살아 있던 팔레트 규칙(컨테이너 쿼리·브러시 컨트롤)은
+     이 파일 끝 §7 로 그대로 이관했다. 캔버스 셸 규칙은 11-canvas-toolbar-uxc.css 로 갔다.
+
+   로드 순서: index.css 에서 map-panel.modern.css 바로 뒤.
+   ========================================================================= */
+
+/* ── 1. 패널 크롬 · 리사이저 ──────────────────────────────────────────────── */
+
+.editor-layout .left-panel {
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.editor-layout .left-panel .left-panel-stack {
+  border-bottom: 0;
+  padding: 8px 10px;
+}
+
+.editor-layout .left-panel .left-panel-stack[data-testid="left-palette-root"] {
+  padding: 8px 10px 6px;
+}
+
+.editor-layout .left-panel .left-panel-stack[data-testid="left-map-root"] {
+  padding: 2px 10px 8px;
+}
+
+/* 폭 리사이저 — 선 하나. 잡을 수 있다는 신호는 hover 때 액센트 선으로 낸다.
+   ::after 의 확장 히트 영역(inset 0 -6px)은 03-layout 것이 그대로 남는다. */
+.editor-layout .resizer-left {
+  background: transparent;
+  border-left: 0;
+  border-right: 1px solid var(--border-subtle);
+  transition: background var(--transition-fast);
+}
+
+.editor-layout .resizer-left:hover,
+.editor-layout .resizer-left:active,
+.editor-layout .resizer-left:focus-visible {
+  background: var(--accent-muted);
+  border-right-color: var(--accent-border);
+  outline: none;
+}
+
+/* 높이 리사이저 — 가운데 짧은 손잡이. 평소엔 경계선만 보이고 hover/focus 에 손잡이가 뜬다. */
+.editor-layout .resizer-map-tree {
+  background: transparent;
+  border-bottom: 0;
+  border-top: 1px solid var(--border-subtle);
+  position: relative;
+  transition: background var(--transition-fast);
+}
+
+.editor-layout .resizer-map-tree::after {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+  content: "";
+  height: 3px;
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: 1px;
+  transform: translateX(-50%);
+  transition: opacity var(--transition-fast);
+  width: 36px;
+}
+
+.editor-layout .resizer-map-tree:hover,
+.editor-layout .resizer-map-tree:active,
+.editor-layout .resizer-map-tree:focus-visible {
+  background: var(--accent-muted);
+  outline: none;
+}
+
+.editor-layout .resizer-map-tree:hover::after,
+.editor-layout .resizer-map-tree:active::after,
+.editor-layout .resizer-map-tree:focus-visible::after {
+  background: var(--accent);
+  opacity: 1;
+}
+
+/* 맵 섹션이 접혀 있으면 높이를 끌 수 없다 — 잡을 수 없는 손잡이를 보여주지 않는다. */
+.editor-layout .resizer-map-tree.is-disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.editor-layout .resizer-map-tree.is-disabled::after {
+  display: none;
+}
+
+/* ── 2. 타일 도크: 선택 칩 ────────────────────────────────────────────────── */
+
+.editor-layout .left-panel-stack .selected-tile-status {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  gap: 8px;
+  margin: 0 0 6px;
+  min-height: 34px;
+  padding: 4px 6px 4px 5px;
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-thumb {
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 5px;
+  height: 24px;
+  width: 24px;
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-label {
+  color: var(--text-1);
+  font: 700 12px/1.2 var(--font-ui);
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset {
+  color: var(--text-2);
+  font: 500 11px/1.2 var(--font-ui);
+  margin-left: auto;
+  max-width: 40%;
+}
+
+.editor-layout .left-panel-stack .selected-tile-props-button {
+  align-items: center;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  display: inline-flex;
+  font-size: 13px;
+  height: 24px;
+  justify-content: center;
+  padding: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 24px;
+}
+
+.editor-layout .left-panel-stack .selected-tile-props-button:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack .selected-tile-props-button:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+/* ── 3. 타일 도크: 도구막대 · 레이어 ──────────────────────────────────────── */
+
+/* 상자 없는 도구 줄. 고른 도구만 인디고 틴트로 뜬다 — 채운 파란 사각형은 사이드바에서
+   가장 시끄러운 요소였고, 그 옆의 빨간 배지와 경쟁했다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  gap: 2px;
+  margin: 0 0 4px;
+  min-height: 30px;
+  padding: 0;
+}
+
+/* 도구 11개(그리기 7 + 맵 모드 4)는 300px 패널 한 줄에 들어가지 않는다. 옛 답은 가로 스크롤
+   (스크롤바를 숨겨 잘린 도구는 있는지도 몰랐다). 이제 줄바꿈한다 — 좁으면 맵 모드 4개가
+   둘째 줄로 내려오고, 패널을 넓히면 한 줄로 합쳐진다. ⋯ 트리거는 형제라 첫 줄 오른쪽에 남는다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+  align-items: flex-start;
+  /* 세로 flex 열에서 줄어들지 않게 한다. 옛 규칙의 명시적 min-height:30px 가 flex 항목의
+     자동 최소 높이(내용 크기)를 대체해, 시트가 공간을 요구하면 도구막대가 30px 로 눌리고
+     줄바꿈한 둘째 줄이 레이어 전환 위로 겹쳐 그려졌다(실측 computed height 30px, 내용 58px). */
+  flex: 0 0 auto;
+  height: auto;
+}
+
+/* 시트 이외의 모든 줄은 내용 높이를 지킨다 — 남는 세로는 시트 하나만 가져간다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .selected-tile-status,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .left-layer-switcher,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-filter-bar,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-inline-section,
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .structure-kit-shelf {
+  flex: 0 0 auto;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-scroll {
+  flex-wrap: wrap;
+  gap: 2px;
+  overflow: visible;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-menu {
+  align-self: flex-start;
+}
+
+/* 맵 모드 그룹은 오른쪽으로 붙인다 — 한 줄이면 그리기(왼쪽)·모드(오른쪽)로 갈리고,
+   줄바꿈하면 둘째 줄 오른쪽 끝에 정렬돼 왼쫽에 매달린 고아처럼 보이지 않는다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-modes {
+  margin-left: auto;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool {
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  height: 28px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 28px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active:hover:not(:disabled) {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+  filter: none;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-separator {
+  background: var(--border-default);
+  margin: 6px 3px;
+}
+
+/* 규칙 감사 개수 배지 — 알림이 아니라 상태다. 빨간 채움 대신 옅은 톤으로 낮춘다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .toolbar-badge {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-2);
+  font: 700 9px/1 var(--font-ui);
+  height: 14px;
+  min-width: 14px;
+  padding: 0 3px;
+  right: -4px;
+  top: -4px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .toolbar-badge.danger {
+  background: var(--danger-muted);
+  border-color: transparent;
+  color: var(--danger);
+}
+
+/* 레이어 전환 — 세그먼트 컨트롤. 트랙 하나 위에 고른 것만 흰 카드로 떠 있다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-switcher {
+  background: var(--control-bg);
+  border-radius: var(--radius-m);
+  gap: 2px;
+  margin: 0 0 6px;
+  padding: 2px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-2);
+  font: 600 12px/1 var(--font-ui);
+  gap: 5px;
+  min-height: 26px;
+  padding: 0 6px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn:hover {
+  background: var(--control-bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn.is-active {
+  background: var(--bg-raised);
+  border-color: var(--border-subtle);
+  color: var(--text-1);
+  font-weight: 700;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn.is-active svg {
+  color: var(--accent);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+/* ── 4. 타일 도크: 검색 · 분류 칩 ─────────────────────────────────────────── */
+
+.editor-layout .left-panel-stack .palette-filter-bar {
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.editor-layout .left-panel-stack .palette-filter-search-row {
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 30px;
+}
+
+.editor-layout .left-panel-stack .tile-search-input {
+  background: var(--bg-inset);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-1);
+  font: 500 12px/1.2 var(--font-ui);
+  height: 30px;
+  padding: 0 10px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack .tile-search-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.editor-layout .left-panel-stack .tile-search-input:hover {
+  border-color: var(--border-default);
+}
+
+.editor-layout .left-panel-stack .tile-search-input:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.editor-layout .left-panel-stack .tile-number-toggle {
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font: 700 12px/1 var(--font-ui);
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+  width: 30px;
+}
+
+.editor-layout .left-panel-stack .tile-number-toggle:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack .tile-number-toggle.active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+/* 분류 칩은 잘리지 않는다 — 옛 규칙은 한 줄 가로 스크롤에 스크롤바를 숨겨 마지막 칩(장식)이
+   있는지 보이지 않았다. 300px 에서는 한 줄에 다 들어가고, 더 좁으면 둘째 줄로 내려간다. */
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tabs {
+  flex-wrap: wrap;
+  gap: 3px;
+  overflow: visible;
+  padding: 0;
+}
+
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tab {
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  height: 24px;
+  padding: 0 6px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tab:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tab.active,
+.editor-layout .left-panel-stack .palette-filter-bar .tile-category-tab[aria-selected="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.editor-layout .left-panel-stack .palette-filter-status {
+  color: var(--text-2);
+  font: 600 11px/1.2 var(--font-ui);
+  padding: 0 2px;
+}
+
+/* ── 5. 타일 도크: 시트 · 그리드 ──────────────────────────────────────────── */
+
+/* 시트는 우묵한 면이다 — 테두리 없이 톤으로 내려앉는다. 남는 세로는 전부 여기로. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
+  background: var(--bg-inset);
+  border: 0;
+  border-radius: var(--radius-m);
+  min-height: min(240px, 32vh);
+  scrollbar-gutter: stable;
+}
+
+/* 핵심 — 칸이 폭을 결정하는 게 아니라 폭이 칸을 결정한다.
+   6열 계약(oprn-editor-layout.spec / palette 테스트)은 그대로 두고 칸 크기만
+   컨테이너 폭에서 계산한다: (폭 − 안쪽 여백 6px − 틈 5×2px) / 6. 상한 56px 은
+   좌패널을 640px 까지 넓혔을 때 칸이 그림 해상도를 넘어 뭉개지지 않게 하는 선이다.
+   `--chipset-cell` 을 읽는 옛 규칙들(width/height/background-size)이 자동으로 따라온다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid {
+  --chipset-cell: min(56px, calc((100cqi - 16px) / 6));
+  gap: 2px;
+  padding: 3px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid {
+  gap: 2px;
+  padding: 3px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile:hover:not(:disabled),
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile:focus-visible:not(:disabled) {
+  border-color: var(--accent-border);
+  box-shadow: inset 0 0 0 1px var(--bg-raised);
+  outline: none;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), inset 0 0 0 1px var(--bg-raised);
+  position: relative;
+  z-index: var(--z-base);
+}
+
+/* 오토타일 표시 — 칸이 커졌으니 배지도 읽히는 크기로. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-autotile-badge {
+  background: var(--accent);
+  border: 0;
+  border-radius: 3px;
+  color: var(--on-accent);
+  font-size: 8px;
+  height: 12px;
+  left: 2px;
+  top: 2px;
+  width: 12px;
+}
+
+/* ── 6. 타일 도크: 접이식 행(붓 보조 · 구조물 킷) ──────────────────────────── */
+
+/* 상자 대신 헤어라인 하나로 구획한다. 두 행이 같은 30px 리듬을 탄다. */
+.editor-layout .left-panel-stack .palette-inline-section {
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-header {
+  min-height: 30px;
+  padding: 2px 2px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-toggle {
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font: 600 12px/1 var(--font-ui);
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 6px 0 4px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-toggle:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.editor-layout .left-panel-stack .palette-inline-toggle:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-caret {
+  color: var(--text-3);
+  font-size: 10px;
+  width: 10px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-header .tile-brush-label {
+  color: var(--text-2);
+  font: 500 11px/1 var(--font-ui);
+}
+
+.editor-layout .left-panel-stack .palette-inline-header .tile-brush-chip {
+  background: var(--control-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  height: 22px;
+  padding: 0 9px;
+}
+
+.editor-layout .left-panel-stack .palette-inline-header .tile-brush-chip.active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.editor-layout .left-panel-stack .palette-inline-section > .tile-brush-assist {
+  background: transparent;
+  border: 0;
+  padding: 0 2px 6px;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf {
+  border-top: 1px solid var(--border-subtle);
+  margin: 2px 0 0;
+  padding: 2px 2px 4px;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold > summary.structure-kit-shelf-title {
+  align-items: center;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  display: flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 6px;
+  letter-spacing: 0;
+  list-style: none;
+  min-height: 26px;
+  padding: 0 6px 0 4px;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold > summary.structure-kit-shelf-title::-webkit-details-marker {
+  display: none;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold > summary.structure-kit-shelf-title::before {
+  color: var(--text-3);
+  content: "▸";
+  display: inline-block;
+  font-size: 10px;
+  width: 10px;
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold[open] > summary.structure-kit-shelf-title::before {
+  content: "▾";
+}
+
+.editor-layout .left-panel-stack .structure-kit-shelf-fold > summary.structure-kit-shelf-title:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+/* ── 7. 맵 도크(표준·전문가 좌패널 전용) ───────────────────────────────────── */
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-panel {
+  height: 100%;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-header {
+  gap: 4px;
+  margin: 0 0 4px;
+  min-height: 32px;
+}
+
+/* 제목이 곧 접기 토글이다 — 갈매기 + 「맵」 + 개수. h3 안의 button 이라 heading 시맨틱은 남는다. */
+.map-tree-panel .map-tree-section-toggle {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: 800 13px/1 var(--font-ui);
+  gap: 6px;
+  height: 28px;
+  min-width: 0;
+  padding: 0 6px 0 4px;
+  transition: background var(--transition-fast);
+}
+
+.map-tree-panel .map-tree-section-toggle:hover {
+  background: var(--control-bg-hover);
+}
+
+.map-tree-panel .map-tree-section-toggle:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.map-tree-panel .map-tree-section-toggle .rm-tool-icon {
+  color: var(--text-3);
+  flex: 0 0 auto;
+}
+
+.map-tree-panel .map-tree-section-toggle .map-tree-count {
+  background: var(--control-bg);
+  color: var(--text-2);
+}
+
+/* 헤더 액션 — 도구막대와 같은 28px 고스트 버튼. 주 동작(새 맵)만 인디고 틴트 + 글자. */
+.map-tree-panel .map-tree-header-actions {
+  gap: 2px;
+}
+
+.map-tree-panel .map-tree-header-actions .map-tree-action {
+  background: transparent;
+  border-color: transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+}
+
+.map-tree-panel .map-tree-header-actions .map-tree-action:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.map-tree-panel .map-tree-header-actions .map-tree-action.has-text {
+  gap: 4px;
+  padding: 0 9px 0 6px;
+  width: auto;
+}
+
+.map-tree-panel .map-tree-header-actions .map-tree-action-text {
+  font: 700 11px/1 var(--font-ui);
+  white-space: nowrap;
+}
+
+.map-tree-panel .map-tree-header-actions .map-tree-action.is-primary {
+  background: var(--accent-muted);
+  border-color: transparent;
+  color: var(--accent);
+}
+
+.map-tree-panel .map-tree-header-actions .map-tree-action.is-primary:hover {
+  background: color-mix(in srgb, var(--accent) 22%, var(--mix-base));
+  color: var(--accent-hover);
+}
+
+.map-tree-panel .map-tree-header-actions .map-tree-action.is-primary .oprn-icon-map-child::before {
+  background: color-mix(in srgb, currentColor 45%, transparent);
+}
+
+/* 필터 입력 — 검색 입력과 같은 30px·우묵한 면. */
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-filter {
+  margin: 0 0 6px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-filter-input {
+  background: var(--bg-inset);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  font: 500 12px/1.2 var(--font-ui);
+  height: 30px;
+  padding: 0 10px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-filter-input:hover {
+  border-color: var(--border-default);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-filter-input:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-facet {
+  border-color: transparent;
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  height: 24px;
+  padding: 0 10px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-facet.is-active {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+/* 목록이 스크롤 컨테이너다. 예전에는 호스트가 overflow:hidden 이고 목록에 규칙이 없어
+   맵이 늘면 아래가 잘렸다 — 도크 행 높이가 고정이라 헤더 밑으로 밀린 행은 닿을 수 없었다. */
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 0 4px;
+  scrollbar-gutter: stable;
+}
+
+/* 행 — 둥근 모서리와 조금 넉넉한 높이. 선택 레일(box-shadow inset)은 map-panel.modern 것이 그대로다. */
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-item {
+  border-radius: var(--radius-s);
+  gap: 6px;
+  min-height: 36px;
+  padding: 2px 6px 2px 2px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-name {
+  font: 600 12px/1.25 var(--font-ui);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-meta {
+  color: var(--text-2);
+  font: 500 10.5px/1.2 var(--font-ui);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-item.active .map-tree-meta {
+  color: var(--text-2);
+}
+
+/* 접힌 섹션 — 헤더 한 줄만. 높이는 editor.ts 가 `--map-tree-height` 로 줄이고, 여기서는 내용을
+   숨겨 스크롤바·클리핑 잔상이 남지 않게 한다. 호스트 클래스(editor.ts)와 패널 클래스(mapList.ts)
+   둘 다 받는다 — 어느 쪽이 먼저 그려져도 같은 결과여야 한다. */
+.editor-layout .left-panel-stack[data-testid="left-map-root"].is-collapsed .map-tree-filter,
+.editor-layout .left-panel-stack[data-testid="left-map-root"].is-collapsed .map-tree-list,
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-panel.is-section-collapsed .map-tree-filter,
+.editor-layout .left-panel-stack[data-testid="left-map-root"] .map-tree-panel.is-section-collapsed .map-tree-list {
+  display: none;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-map-root"].is-collapsed .map-tree-header {
+  margin-bottom: 0;
+}
+
+/* 짧은 뷰포트의 옛 상한(editor-ui-modes.css: max-height 140px)은 도크 행이 300px 고정이던 시절의
+   완충이다. 행 높이가 내용을 따라가는 지금은 호스트만 짧아져 행 바닥에 빈 띠를 남긴다(실측
+   1024×720: 행 150 · 호스트 140). 자동 맞춤이 좌패널 40% 상한으로 같은 일을 하므로 푼다. */
+@media (max-height: 720px) {
+  .editor-layout .left-panel .left-panel-stack[data-testid="left-map-root"] {
+    max-height: none;
+    min-height: 0;
+  }
+}
+
+/* ── 8. figma-editor/10-map-tree.css 에서 이관(순수 이동, 값 불변) ─────────── */
+
+@container (max-width: 220px) {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+    min-height: 30px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .selected-tile-status .selected-tile-tileset {
+    display: none;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .palette-work-tab {
+    font-size: 10px;
+    height: 26px;
+  }
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .tile-inspector-action-icon {
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .tile-inspector-action-label {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .brush-control {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 8px 0 0;
+  max-width: 232px;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .brush-control-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .brush-size-btn {
+  font-size: 13px;
+  height: 32px;
+}

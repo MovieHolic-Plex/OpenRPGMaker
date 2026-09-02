@@ -143,7 +143,8 @@ function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTML
     chip.append(
       el("span", {
         class: "selected-tile-thumb",
-        attrs: { "aria-hidden": "true", style: tilesetTileBackgroundStyle(tileset, selectedTile, 16) },
+        // 24px — 칩 높이(34px)에 맞춘 미리보기. CSS 의 .selected-tile-thumb 치수와 같아야 한다.
+        attrs: { "aria-hidden": "true", style: tilesetTileBackgroundStyle(tileset, selectedTile, 24) },
       })
     );
   }
