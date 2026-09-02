@@ -34,6 +34,7 @@ import {
   conceptFacilityWall,
   conceptPlaceCount,
   conceptPlaceFloor,
+  conceptPlaceLevel,
   conceptPlaceRole,
   conceptPlaceSize,
 } from "@/editor/conceptBundleResolve";
@@ -43,6 +44,7 @@ import {
   CONCEPT_FLOOR_MATERIAL_LABELS,
   CONCEPT_FLOOR_MATERIALS,
   CONCEPT_PLACE_COUNT_MAX,
+  CONCEPT_PLACE_LEVEL_MAX,
   CONCEPT_PLACE_ROLE_LABELS,
   CONCEPT_PLACE_ROLES,
   CONCEPT_PLACE_SIZE_LABELS,
@@ -611,6 +613,26 @@ function renderPlacePlanRow(
   }
   floor.value = currentFloor;
 
+  const level = el("select", {
+    class: "scratch-concept-plan-select",
+    attrs: { title: "층 — 2층 이상 장소는 별도 맵(<mapId>_2f)으로 서고, 계단(맵 연결 칩) 물건이 층을 잇는다" },
+    dataset: { testid: `scratch-concept-place-level-${place.id}` },
+    on: {
+      click: stop,
+      change: (event) => {
+        const next = Math.floor(Number((event.target as HTMLSelectElement).value));
+        const clamped = Number.isFinite(next) ? Math.min(CONCEPT_PLACE_LEVEL_MAX, Math.max(1, next)) : 1;
+        patchPlace(tileset.id, bundle.id, place.id, { level: clamped === 1 ? undefined : clamped });
+        refresh(host, rerender);
+      },
+    },
+  });
+  const currentLevel = conceptPlaceLevel(place);
+  for (let value = 1; value <= CONCEPT_PLACE_LEVEL_MAX; value += 1) {
+    level.append(el("option", { attrs: { value: String(value), ...(value === currentLevel ? { selected: "" } : {}) }, text: `${value}층` }));
+  }
+  level.value = String(currentLevel);
+
   return el("div", {
     class: "scratch-concept-place-plan",
     dataset: { testid: `scratch-concept-place-plan-${place.id}` },
@@ -619,6 +641,7 @@ function renderPlacePlanRow(
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "크기" }), size] }),
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "개수" }), count] }),
       el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "바닥" }), floor] }),
+      el("label", { class: "scratch-concept-plan-field", children: [el("span", { text: "층" }), level] }),
     ],
   });
 }
@@ -974,6 +997,10 @@ function patchPlace(
     if ("floor" in patch) {
       if (patch.floor) place.floor = patch.floor;
       else delete place.floor;
+    }
+    if ("level" in patch) {
+      if (patch.level !== undefined && patch.level > 1) place.level = patch.level;
+      else delete place.level;
     }
   }, "장소 도면");
 }

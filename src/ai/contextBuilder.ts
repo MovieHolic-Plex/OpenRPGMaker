@@ -11,6 +11,7 @@ import {
   conceptFacilityWall,
   conceptPlaceCount,
   conceptPlaceFloor,
+  conceptPlaceLevel,
   conceptPlaceRole,
   conceptPlaceSize,
   listLiveConceptBundles,
@@ -432,11 +433,13 @@ function conceptBundleSection(project: Project): string {
             });
             const count = conceptPlaceCount(place);
             const floor = conceptPlaceFloor(place);
+            const level = conceptPlaceLevel(place);
             const plan = [
               CONCEPT_PLACE_ROLE_LABELS[conceptPlaceRole(place)],
               CONCEPT_PLACE_SIZE_LABELS[conceptPlaceSize(place)],
               ...(count > 1 ? [`×${count}`] : []),
               ...(floor === "wood" ? [] : [CONCEPT_FLOOR_MATERIAL_LABELS[floor]]),
+              ...(level > 1 ? [`${level}층`] : []),
             ].join("·");
             return `${place.label}[${plan}](${things.length > 0 ? things.join(", ") : "물건 없음"})`;
           });
@@ -445,7 +448,7 @@ function conceptBundleSection(project: Project): string {
     }
   }
   if (detailed) {
-    lines.splice(2, 0, "장소의 [역할·크기 ×개수·바닥] 과 시설의 벽 재질도 그 나무 값이다(바꾸려면 데이터베이스에서). 물건 표기: *필수 · ⌂수면 · $노획 · ↔맵 연결.");
+    lines.splice(2, 0, "장소의 [역할·크기 ×개수·바닥·층] 과 시설의 벽 재질도 그 나무 값이다(바꾸려면 데이터베이스에서). 2층 이상 장소는 <mapId>_2f 같은 별도 맵으로 서고 계단이 이어진다. 물건 표기: *필수 · ⌂수면 · $노획 · ↔맵 연결.");
   }
   return lines.join("\n");
 }

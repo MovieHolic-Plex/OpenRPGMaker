@@ -233,6 +233,62 @@ export function attachConceptEvents(
   return result;
 }
 
+const UNLINKED_SUFFIX = " 아직 이어진 곳이 없어 정문으로 돌아간다.";
+
+/**
+ * 이 맵의 **미연결** 계단(transfer 대상이 자기 맵 정문)을 `target` 으로 잇는다. 이은 이벤트 수를 돌려준다.
+ * 층이 둘 이상인 시설에서 placeConceptTool 이 위층 착지로 잇는 데 쓴다.
+ */
+export function linkConceptTransfers(
+  map: GameMap,
+  door: { readonly x: number; readonly y: number },
+  target: ConceptTransferTarget,
+): number {
+  let linked = 0;
+  for (const event of map.events ?? []) {
+    if (!event.id.startsWith(`ev_concept_${map.id}_`)) continue;
+    for (const holder of [event, ...(event.pages ?? [])]) {
+      const commands = holder.commands as Command[];
+      const index = commands.findIndex(
+        (command) => command.kind === "transfer" && command.mapId === map.id && command.x === door.x && command.y === door.y,
+      );
+      if (index < 0) continue;
+      commands[index] = { kind: "transfer", mapId: target.mapId, x: target.x, y: target.y, fade: "black" };
+      for (let i = 0; i < commands.length; i += 1) {
+        const command = commands[i]!;
+        if (command.kind === "text" && command.body.endsWith(UNLINKED_SUFFIX)) {
+          commands[i] = { ...command, body: command.body.slice(0, -UNLINKED_SUFFIX.length) };
+        }
+      }
+      linked += 1;
+    }
+  }
+  return linked;
+}
+
+/**
+ * 위층 맵의 정문 이벤트(`ev_entrance_<mapId>`)를 「계단 내려가기」로 바꾼다 — 위층엔 밖으로 나가는 문이 없고,
+ * 그 자리가 아래층에서 올라온 착지 바로 남쪽이다. 정문 이벤트가 없으면 false.
+ */
+export function convertEntranceToDescent(map: GameMap, target: ConceptTransferTarget, facilityLabel?: string): boolean {
+  const event = (map.events ?? []).find((entry) => entry.id === `ev_entrance_${map.id}`);
+  if (!event) return false;
+  const facility = facilityLabel?.trim() || "시설";
+  const commands: Command[] = [
+    { kind: "text", body: `[계단] ${facility} 아래층으로 내려간다.` },
+    { kind: "transfer", mapId: target.mapId, x: target.x, y: target.y, fade: "black" },
+  ];
+  event.commands = [];
+  const first = event.pages?.[0];
+  if (first) {
+    first.name = "계단(아래)";
+    first.commands = commands;
+  } else {
+    event.pages = [page(`${event.id}_page`, "계단(아래)", commands)];
+  }
+  return true;
+}
+
 /** 맵의 개념 이벤트 중 맵 연결(transfer) 지점. 툴 결과 data.connections 가 이것을 싣는다. */
 export function listConceptConnections(map: GameMap): readonly { id: string; x: number; y: number; name: string; target: ConceptTransferTarget | null }[] {
   const out: { id: string; x: number; y: number; name: string; target: ConceptTransferTarget | null }[] = [];

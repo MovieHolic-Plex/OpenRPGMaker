@@ -117,3 +117,38 @@ y=16..20 [========= 홀 5행 ==========]            entrance, 정문은 남쪽 �
 - `test/conceptFacilityTemplates.test.ts`(20): 초안마다 plan/walkability 경고 0·자리 없음 0·필수 물건 존재, 도면 다양성, 재질 리틴트, 승격, 프롬프트, 시드 규칙.
 - `test/scratchConceptTab.test.ts`(17): 시설 띠·초안 넣기·삭제·재질 저장·피커 소품.
 - 갤러리 보고서 `reports/concept-facilities/index.html`(`scripts/gen-concept-facility-gallery.mts`, 9/9) + 실제 에디터 사진(`test/e2e/_concept-facility-gallery.spec.ts`, 모델 호출 없음).
+
+## 7. 층 — 계단이 실제로 위층에 닿는다 (2026-09-03)
+
+3장의 미결(「transfer 칩은 연결 지점만 선다」)을 닫는다. 결정: **장소에 `level` 필드(1~3, 기본 1)**. 시설 안 2층 도면을 따로 두는 대안은 장소·물건·칩 나무를 층마다 복제하게 되어 버렸다 — 장소 하나에 층 숫자를 붙이는 쪽이 role·size·count·floor 와 같은 결을 탄다.
+
+### 7.1 도면
+
+- `conceptFacilityLevels(bundle, facility)` → 장소들이 서는 층(오름차순). `layoutConceptFacility(bundle, facility, { level, minBandWidth })` 는 그 층의 장소만 편다. 위층엔 보통 정문 역할이 없으므로 마지막 방이 문 밴드로 승격되고(종전 promoted 규칙), 그 문 자리가 **내려가는 계단 착지**가 된다.
+- `minBandWidth`: 층마다 건물 외곽(밴드 폭)을 가장 넓은 층에 맞춘다. 홀만 남은 1층이 자기 발자국 폭(9)으로 좁아지면 계단·카운터·피아노가 북벽 한 줄을 나눠 설 자리가 없었다(실측 「카운터 런 자리 없음」).
+
+### 7.2 시공·연결 (`placeConceptTool`)
+
+층마다 `runRoomPipeline` 한 번. 1층 = `mapId`, 위층 = `<mapId>_<n>f`, 이름 `<시설명> n층`. 그 뒤 코드가 잇는다:
+
+| 어디 | 무엇 | 대상 |
+|---|---|---|
+| n층 계단(transfer 칩, 미연결) | `linkConceptTransfers` | n+1층 착지 = 위층 문 자리 바로 북쪽 바닥 `(door.x, door.y-1)` |
+| n+1층 정문 이벤트 `ev_entrance_<mapId>` | `convertEntranceToDescent` → 「계단(아래)」 | n층 첫 계단 앞 = 계단 이벤트 남쪽 한 칸(같은 방 안이면), 아니면 계단 칸 |
+| 맨 위층 계단 | `linkConceptTransfers` | 아래층 계단 앞(같은 대상) |
+
+n층에 계단이 없으면 위층은 서되 내려오는 자리가 n층 정문 앞이고 경고 `concept: n층에 계단(transfer 칩) 물건이 없다` 를 남긴다. 층이 둘 이상이면 시공 중 나온 「연결 대상이 없다」 경고는 이었으므로 뺀다. 결과 `data.floors[{level,mapId,name}]`, `data.connections[]` 에 `mapId·level`, 요약 끝에 「2층 map_inn_2f」.
+
+### 7.3 면
+
+- DB 장소 카드 「층」 셀렉트(`scratch-concept-place-level-<id>`), 1층은 필드 삭제. 검증기 정수 1..3. 프롬프트 상세 줄에 `·2층`. 툴 설명에 층 문장.
+- 초안 아홉 종은 그대로 한 층. 2층은 사용자가 켠다 — 기본 여관을 두 층으로 바꾸면 기존 증거 스펙(침대 앞 여관 창)과 갤러리가 흔들리고, 무엇보다 사용자 나무가 정본이라는 원칙에 맞다.
+
+### 7.4 증거
+
+`test/conceptFacilityLevels.test.ts`(5): 한 층 도면 불변, 검증·복제, 층별 도면, 맵 두 장 + 계단 양방향, 계단 없는 1층 경고. 갤러리 보고서 「층 — 여관을 두 층으로」 절(판정 10/10, `png/map_inn2f*.png`).
+
+## 8. 조수 코어 두 건 (2026-09-03)
+
+- **중복 시공**: 라운드 끝 successTools 자동 완료가 성공 툴 집합을 비운 뒤 모델이 같은 항목을 명시 `complete_work_item` → 「기록 없음」 거부 → 재시공. done/skipped 항목은 `completeWorkItemById` 가 `alreadyDone` 으로 받는다.
+- **볼륨 계약 폭주**: 패널이 매 턴 붙이는 「도구 규칙」 가이드의 마을·상점·NPC 낱말이 의도 스캔에 섞여 `requestNeedsVolumePlan` 이 참이 됐다(모든 공간 요청). `stripContextFooter` 가 가이드 첫 줄부터 뗀다. `buildVolumeWorkPlan` 은 막대가 요구하는 축만 항목으로 둔다. 실측(`test/e2e/_concept-inn-audit.spec.ts`): 「여관 지어줘」 66초·툴 19회·시작 맵 오염 → 10초·툴 3회·시작 맵 무변경.

@@ -52,6 +52,7 @@ export function cloneConceptBundle(bundle: ConceptBundleRecord): ConceptBundleRe
       ...(place.size ? { size: place.size } : {}),
       ...(place.count !== undefined ? { count: place.count } : {}),
       ...(place.floor ? { floor: place.floor } : {}),
+      ...(place.level !== undefined ? { level: place.level } : {}),
     })),
     things: bundle.things.map((thing) => ({
       id: thing.id,

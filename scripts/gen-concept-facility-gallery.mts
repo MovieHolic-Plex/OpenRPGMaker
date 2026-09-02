@@ -12,6 +12,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { RESOURCE_SLICING } from "../src/assets/resourceSlicing.ts";
 import {
+  ensureConceptBundles,
+  conceptFacilityLevels,
   CONCEPT_FLOOR_TILES,
   conceptFacilityWall,
   conceptPlaceFloor,
@@ -26,6 +28,7 @@ import { capabilityEscalatedToolNames } from "../src/ai/capabilityEscalation.ts"
 import { buildSystemPrompt } from "../src/ai/contextBuilder.ts";
 import { CONCEPT_FACILITY_TEMPLATES } from "../src/project/defaults/conceptFacilityTemplates.ts";
 import { createBlankProject } from "../src/project/defaults.ts";
+import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "../src/project/defaults/scratchInnBundle.ts";
 import {
   CONCEPT_CHIP_LABELS,
   CONCEPT_FLOOR_MATERIAL_LABELS,
@@ -271,9 +274,53 @@ const walls = new Set(builts.map((built) => built.wallMaterial));
 const floors = new Set(builts.flatMap((built) => built.rooms.map((room) => room.floorTile ?? 72)));
 const escalation = CONCEPT_FACILITY_TEMPLATES.map((bundle) => bundle.facilities[0]!.label)
   .map((label) => ({ label, ok: capabilityEscalatedToolNames(`${label} 지어줘`, new Set()).includes("place_concept") }));
-const prompt = buildSystemPrompt(createBlankProject(), { currentMapId: createBlankProject().startMapId, budgetChars: 50_000 });
-const promptLists = CONCEPT_FACILITY_TEMPLATES.every((bundle) => prompt.includes(`query="${bundle.facilities[0]!.label}"`));
+// 프롬프트 절은 두 단계다(2026-09-03): 초안 그대로면 시설명 한 줄, 사용자가 고친 나무(칩셋에 배열이 있음)면 시설별 줄.
+const blankProject = createBlankProject();
+const blankPrompt = buildSystemPrompt(blankProject, { currentMapId: blankProject.startMapId, budgetChars: 50_000 });
+const compactSection = blankPrompt.slice(blankPrompt.indexOf("## 개념 꾸러미"), blankPrompt.indexOf("## 타일셋 실내 문법"));
+const editedProject = createBlankProject();
+ensureConceptBundles(editedProject, INTERIOR_ROOM_TILESET_ID);
+const prompt = buildSystemPrompt(editedProject, { currentMapId: editedProject.startMapId, budgetChars: 50_000 });
+const promptLists = CONCEPT_FACILITY_TEMPLATES.every((bundle) => prompt.includes(`query="${bundle.facilities[0]!.label}"`))
+  && CONCEPT_FACILITY_TEMPLATES.every((bundle) => compactSection.includes(bundle.facilities[0]!.label))
+  && compactSection.length < 600;
 const conceptSection = prompt.slice(prompt.indexOf("## 개념 꾸러미"), prompt.indexOf("## 타일셋 실내 문법"));
+
+// 층 — 여관을 두 층으로 갈라 짓는 변형. 홀은 1층, 복도·침실은 2층. 계단은 홀과 복도 양쪽.
+function twoStoryInn(): ConceptBundleRecord {
+  const bundle = cloneConceptBundle(SCRATCH_INN_BUNDLE);
+  bundle.id = "inn2f";
+  bundle.label = "여관(2층)";
+  bundle.facilities[0]!.id = "inn2f";
+  bundle.facilities[0]!.label = "여관(2층)";
+  for (const place of bundle.places) if (place.id === "corridor" || place.id === "bedroom") place.level = 2;
+  bundle.things.find((thing) => thing.id === "stairs")!.placeIds = ["dining", "corridor"];
+  return bundle;
+}
+const twoStory = (() => {
+  const bundle = twoStoryInn();
+  const project: Project = createBlankProject();
+  project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = [bundle];
+  const ctx = { project };
+  const result = runTool(ctx, "place_concept", { query: bundle.facilities[0]!.label, mapId: "map_inn2f", seed: 7 }, { dryRun: false });
+  if (!result.ok) throw new Error(`2층 여관 build failed: ${result.summary}`);
+  const data = result.data as { floors: { level: number; mapId: string; name: string }[]; connections: { mapId: string; level: number; name: string; target: { mapId: string; x: number; y: number } | null }[] };
+  const tileset = ctx.project.tilesets[INTERIOR_ROOM_TILESET_ID]!;
+  const pngs = data.floors.map((floor) => {
+    const map = ctx.project.maps[floor.mapId]!;
+    const png = renderInteriorMapPng(map, tileset, { scale: SCALE, markers: markersFor(map) });
+    writePng(png, path.join(PNG_DIR, `${floor.mapId}.png`));
+    return { ...floor, map, url: pngToDataUrl(png) };
+  });
+  const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
+  return { bundle, levels: conceptFacilityLevels(bundle, bundle.facilities[0]!), floors: pngs, connections: data.connections, warnings, summary: result.summary };
+})();
+const twoStoryLinked = twoStory.floors.length === 2
+  && twoStory.connections.length >= 2
+  && twoStory.connections.filter((entry) => entry.level === 1).every((entry) => entry.target?.mapId === "map_inn2f_2f")
+  && twoStory.connections.filter((entry) => entry.level === 2).every((entry) => entry.target?.mapId === "map_inn2f")
+  && twoStory.floors[1]!.map.events.some((event) => event.pages?.[0]?.name === "계단(아래)")
+  && !twoStory.warnings.some((line) => line.includes("연결 대상이 없다") || line.includes("자리 없음"));
 
 const receiptPath = path.join(E2E_DIR, "receipt.json");
 const receipt: E2eReceipt | null = fs.existsSync(receiptPath) ? (JSON.parse(fs.readFileSync(receiptPath, "utf8")) as E2eReceipt) : null;
@@ -296,7 +343,8 @@ const checks = [
   check(shapes.size >= 5, `도면이 시설마다 다르다 (방 수·크기 조합 ${shapes.size}가지)`),
   check(walls.size === 3 && floors.size >= 3, `재질이 달라진다 — 벽 ${[...walls].join("·")} · 바닥 타일 ${[...floors].join("·")}`),
   check(escalation.every((entry) => entry.ok), `「시설명 지어줘」마다 place_concept 이 승격된다 (${escalation.filter((entry) => entry.ok).length}/${escalation.length})`),
-  check(promptLists, "시스템 프롬프트 개념 꾸러미 절에 아홉 시설이 query 와 함께 실린다"),
+  check(promptLists, "시스템 프롬프트 개념 꾸러미 절 — 초안이면 시설명 한 줄(600자 미만), 고친 나무면 아홉 시설이 query 와 함께 실린다"),
+  check(twoStoryLinked, `층: 여관을 1층 홀 + 2층 복도·침실로 가르면 맵 두 장이 서고 계단이 양방향으로 이어진다 (${twoStory.summary})`),
   check(Boolean(receipt?.built && receipt.built.length >= 4 && e2eShots.every((shot) => shot.url)), receipt ? `실제 에디터에서 시설 띠가 그려지고 place_concept 이 ${receipt.built?.length ?? 0}개 시설을 캔버스에 세웠다(e2e)` : "실제 에디터 증거 없음 (e2e 미실행)"),
 ];
 
@@ -422,11 +470,18 @@ const html = `<!doctype html>
   <div class="toc">${pictures.map(({ built }) => `<a href="#${esc(built.bundle.id)}">${esc(built.bundle.label)}</a>`).join("")}</div>
 
   <h2>조수가 보는 것 — 시스템 프롬프트 개념 꾸러미 절</h2>
-  <p class="lede">시설마다 한 줄. 물건은 라벨과 표식(*필수 · ⌂수면 · $노획 · ↔맵 연결)만, 바닥·벽은 기본값이 아닐 때만 쓴다 — 아홉 시설이 약 1,500자다. 승격: ${escalation.map((entry) => `${esc(entry.label)} ${entry.ok ? "✓" : "✗"}`).join(" · ")}</p>
+  <p class="lede">두 단계다. 초안 그대로(칩셋에 <code>scratchConceptBundles</code> 없음)면 시설명 한 줄 — 빈 프로젝트 프롬프트가 20,000자 예산 중 약 19,250자를 이미 써서 시설별 줄을 싣으면 뒤의 스타일 문서 발췌가 밀려난다. 사용자가 고친 나무면 시설마다 한 줄: 물건은 라벨과 표식(*필수 · ⌂수면 · $노획 · ↔맵 연결)만, 바닥·벽·층은 기본값이 아닐 때만. 승격: ${escalation.map((entry) => `${esc(entry.label)} ${entry.ok ? "✓" : "✗"}`).join(" · ")}</p>
+  <pre>${esc(compactSection.trim())}</pre>
   <pre>${esc(conceptSection.trim())}</pre>
   <div class="note">툴 설명(<code>PLACE_CONCEPT_TOOL.description</code>)의 시설 단어가 자연어 승격의 열쇠다 — 「${esc(PLACE_CONCEPT_TOOL.description.slice(0, 120))}…」</div>
 
   ${sections.join("\n")}
+
+  <h2 id="levels">층 — 여관을 두 층으로 <span class="dim">장소 level · ${esc(twoStory.summary)}</span></h2>
+  <p class="lede">장소에 <b>층</b>(1~3)을 주면 2층 이상 장소는 <code>&lt;mapId&gt;_2f</code> 별도 맵으로 선다. 아래층 계단(맵 연결 칩) → 위층 착지(위층 문 자리 바로 북쪽), 위층 문 자리 → 「계단 내려가기」 → 아래층 계단 앞. 층마다 건물 외곽(밴드 폭)을 가장 넓은 층에 맞춘다 — 홀만 남은 1층이 좁아지면 계단·카운터·피아노가 북벽에 나눠 설 자리가 없다. 여기서는 여관의 복도·침실을 2층으로 올리고 계단을 홀과 복도 양쪽에 두었다.</p>
+  <div class="grid2">
+    ${twoStory.floors.map((floor) => `<figure><img src="${floor.url}" alt="${esc(floor.name)}"><figcaption><b>${esc(floor.name)}</b> <code>${esc(floor.mapId)}</code> — ${floor.map.width}×${floor.map.height} · 이벤트 ${floor.map.events.length}개. ${esc(twoStory.connections.filter((entry) => entry.mapId === floor.mapId).map((entry) => `${entry.name} → ${entry.target?.mapId ?? "미연결"} (${entry.target?.x},${entry.target?.y})`).join(" · "))}</figcaption></figure>`).join("")}
+  </div>
 
   <h2>실제 에디터에서 — 데이터베이스 시설 띠와 캔버스</h2>
   ${receipt ? `
@@ -450,13 +505,15 @@ const html = `<!doctype html>
       <li><b>구성 순서.</b> 벽 가구(필수 먼저) → 러그 → 바닥·구석 소품(필수 먼저). 러그는 상위 레이어 가구 밑으로 들어가고, 1×1 소품은 네 구석 → 둘레 → 안쪽 순으로 앉는다(창고의 상자·술통 7개).</li>
       <li><b>재질은 리틴트.</b> 바닥은 방별 <code>floorTile</code>(돌 12·널 102·돗자리 139), 벽은 시설 <code>wallMaterial</code> — 파이프라인이 가구 배치 뒤 크림 벽면·나무 바닥을 통타일로 갈아 끼운다. 벽걸이는 상위 레이어라 벽 재질이 바뀌어도 남는다.</li>
       <li><b>카탈로그 10종 추가.</b> 성상·과일 선반·항아리 선반·곡물 자루·잡화 상자·물통·주전자·스툴·붉은 카펫·짚 돗자리 — 파이프라인 어휘에 있던 소품을 오브젝트로 올렸다(역할 null, 테마 가구 선택에 영향 없음). 옛 프로젝트의 킷에 없어도 피커·시공이 카탈로그로 푼다.</li>
-      <li><b>바꾸지 않은 것.</b> 의도 라우터·되묻기의 실내 표지에 여관 외 시설명을 넣지 않았다. 「대장간 지어줘」는 야외 건물일 수도 있어 기존대로 실내/야외를 되묻고, 실내로 답하면 place_concept 이 짓는다. 계단 위층·조수 코어(WorkPlan 중복 시공·볼륨 계약 덤)는 여전히 별도 이슈.</li>
+      <li><b>층(2026-09-03).</b> 장소 <code>level</code>(1~3). 층마다 <code>layoutConceptFacility({level, minBandWidth})</code> 로 도면을 내고 <code>place_concept</code> 이 맵을 층 수만큼 짓는다. 1층 계단은 위층 착지로, 위층 정문 이벤트는 「계단(아래)」로 바뀌어 1층 계단 앞에 내린다. 초안 아홉 종은 그대로 한 층이다 — 2층은 데이터베이스 장소 카드의 「층」에서 켠다.</li>
+      <li><b>조수 코어(2026-09-03).</b> 이미 완료된 항목의 complete_work_item 은 idempotent(같은 맵 두 번 시공 방지). 패널 「도구 규칙」 가이드 문구가 의도 스캔에 섞여 볼륨 계약을 무장시키던 폭주는 <code>stripContextFooter</code> 가 가이드 블록을 떼어 막았다 — 실제 모델 「여관 지어줘」가 66초·툴 19회·시작 맵 오염에서 10초·툴 3회·시작 맵 무변경이 됐다(<code>test/e2e/_concept-inn-audit.spec.ts</code>).</li>
+      <li><b>바꾸지 않은 것.</b> 의도 라우터·되묻기의 실내 표지에 여관 외 시설명을 넣지 않았다. 「대장간 지어줘」는 야외 건물일 수도 있어 기존대로 실내/야외를 되묻고, 실내로 답하면 place_concept 이 짓는다.</li>
     </ul>
   </div>
 
   <h2>재현</h2>
   <pre>npm run typecheck:app
-npx vitest run test/conceptFacilityTemplates.test.ts test/placeConceptTool.test.ts test/scratchConceptTab.test.ts test/placeConceptAssistant.test.ts test/interiorObjectCatalog.test.ts
+npx vitest run test/conceptFacilityTemplates.test.ts test/conceptFacilityLevels.test.ts test/placeConceptTool.test.ts test/scratchConceptTab.test.ts test/placeConceptAssistant.test.ts test/interiorObjectCatalog.test.ts
 npx tsx scripts/gen-concept-facility-gallery.mts
 DEV_SERVER_PORT=9877 E2E_RETRIES=0 npx playwright test test/e2e/_concept-facility-gallery.spec.ts --project=chromium --workers=1   # 사진은 /tmp/concept-facility-shots → reports/concept-facilities/e2e/</pre>
 </div>
