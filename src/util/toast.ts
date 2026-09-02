@@ -41,6 +41,14 @@ function ensureStack(): HTMLElement {
     stackEl = document.createElement("div");
     stackEl.className = "toast-stack";
     stackEl.dataset.testid = "toast-stack";
+    // 라이브 리전으로 선언한다 — 이게 없으면 스크린리더에 알림이 **한 건도** 전달되지 않는다.
+    // 데이터베이스에서 참조 무결성으로 삭제가 거부될 때("시스템 시작 파티가 이 주인공을
+    // 사용 중입니다.")도 보조기술 사용자에게 전혀 통보되지 않았고, 토스트는 모달 바깥
+    // 화면 하단에 떠서 시각적으로도 놓치기 쉬웠다(실측: 누른 버튼에서 120px, 모달 밖 6px).
+    // 여기 한 곳만 고치면 호출지점 전체가 함께 해결된다.
+    stackEl.setAttribute("role", "status");
+    stackEl.setAttribute("aria-live", "polite");
+    stackEl.setAttribute("aria-atomic", "true");
     document.body.append(stackEl);
     entries = [];
   }
@@ -73,6 +81,9 @@ function expireEntry(entry: ToastEntry): void {
 function buildElement(message: string, kind: ToastKind, action: ToastAction | undefined, entry: ToastEntry): HTMLElement {
   const element = document.createElement("div");
   element.className = `toast ${kind} show${action ? " has-action" : ""}`;
+  // 오류는 진행 중인 낭독을 끊고 즉시 알려야 한다 — 파괴적 액션이 거부된 사실이 조용히
+  // 지나가면 사용자는 같은 클릭을 반복한다.
+  if (kind === "error") element.setAttribute("role", "alert");
 
   const messageEl = document.createElement("span");
   messageEl.className = "toast-message";

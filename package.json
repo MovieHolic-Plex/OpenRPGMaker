@@ -15,6 +15,8 @@
     "gates:css:live": "node scripts/check-css-live-classes.mjs",
     "gates:surface": "node scripts/check-surface-gates.mjs",
     "gates:surface:audit": "node scripts/audit-gate-mutations.mjs",
+    "gates:dead-css": "node scripts/check-dead-css-classes.mjs",
+    "gates:dead-css:report": "node scripts/check-dead-css-classes.mjs --report",
     "measure:css-deletable": "node scripts/measure-css-deletable.mjs",
     "audit:combined-town-autotiles": "vite-node scripts/audit-combined-town-autotiles.mts",
     "dev:keep": "node scripts/dev-keepalive.mjs",

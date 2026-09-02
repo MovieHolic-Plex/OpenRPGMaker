@@ -384,28 +384,46 @@
   font-family: var(--font-mono);
   font-size: 10px;
 }
+/* 열 개수를 `--curve-samples` 로 받는다 — 예전에는 `repeat(9, 1fr)` 로 하드코딩돼 있었고
+   렌더러는 막대 33개를 발행해서, 33개가 9열에 4행으로 접히며 막대 높이가 4~7px 로 뭉개졌다.
+   CSS 는 TS 상수를 읽을 수 없으므로 렌더러(`databaseCurvePreview.ts`)가 인라인 스타일로
+   샘플 수를 내려보내고 여기서 받는다. 폴백 9는 옛 마크업 안전망이다. */
 .actor-curve-graph {
   align-items: end;
   background: var(--surface-recessed);
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(9, 1fr);
-  height: 36px;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(var(--curve-samples, 9), minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  height: 40px;
   overflow: hidden;
   padding: 2px;
 }
+/* `min-height: 4px` 는 40px 안에서 하위 10% 값을 전부 같은 높이로 뭉갰다 — 1px 로 낮춰
+   곡선의 동적 범위를 살린다(막대 최소 비율은 렌더러가 6% 로 이미 보장한다). */
 .actor-curve-graph i {
   background: var(--accent-primary);
+  border-radius: 1px 1px 0 0;
   display: block;
-  min-height: 4px;
+  min-height: 1px;
 }
-.actor-curve-maxMp .actor-curve-graph i,
-.actor-curve-agility .actor-curve-graph i {
+/* 6개 스탯이 3색을 돌려써서 색이 스탯을 식별하지 못했다(최대HP=방어력, 최대MP=민첩성,
+   공격력=정신력). 스탯별로 갈라 카드를 색으로도 구분할 수 있게 한다. */
+.actor-curve-maxMp .actor-curve-graph i {
   background: var(--accent-secondary);
 }
-.actor-curve-attack .actor-curve-graph i,
-.actor-curve-mind .actor-curve-graph i {
+.actor-curve-attack .actor-curve-graph i {
   background: var(--accent-editor);
+}
+.actor-curve-defense .actor-curve-graph i {
+  background: #2b8ca8;
+}
+.actor-curve-mind .actor-curve-graph i {
+  background: #7c5cd6;
+}
+.actor-curve-agility .actor-curve-graph i {
+  background: #b8791f;
 }
 .actor-exp-row {
   align-items: center;

@@ -1,6 +1,7 @@
 import { totalExpForLevel } from "@/project/actorModel";
 import type { ActorExperienceCurve } from "@/project/types";
 import { el } from "@/util/dom";
+import { CURVE_PREVIEW_SAMPLES } from "@/editor/panels/databaseCurvePreview";
 
 /**
  * 경험치 곡선 패널. 직업(`expCurve`)과 몬스터 종족(`expCurve`)이 같은 편집기를 공유한다 —
@@ -26,7 +27,8 @@ export function renderExperienceCurvePanel(options: ExperienceCurvePanelOptions,
     el("button", {
       class: "db-class-exp-graph",
       dataset: { testid: `${options.testidPrefix}-edit` },
-      attrs: { type: "button", title: "경험치 곡선 설정" },
+      // 열 개수를 CSS 에 내려준다 — 막대 수와 그리드 열 수가 어긋나면 접혀서 뭉개진다.
+      attrs: { type: "button", title: "경험치 곡선 설정", style: `--curve-samples:${samples.length}` },
       on: { click: () => openExperienceCurveDialog(options) },
       children: curveBars(samples),
     })
@@ -142,10 +144,14 @@ function curveBars(curve: readonly number[]): HTMLElement[] {
   );
 }
 
+// 인라인 스파크라인의 표본 수는 능력치 곡선과 같은 상수를 쓴다 — 예전에는 여기(33),
+// actorRecordCurveEditors(33), databaseClassCurveEditors(33) 세 곳에 같은 숫자가 따로
+// 박혀 있었고 CSS 열 개수(9)와도 어긋나 그래프가 뭉개졌다.
 function previewSampleLevels(): number[] {
   const levels = new Set<number>();
-  for (let step = 0; step < 33; step += 1) {
-    levels.add(1 + Math.round((step / 32) * 98));
+  const steps = CURVE_PREVIEW_SAMPLES;
+  for (let step = 0; step < steps; step += 1) {
+    levels.add(1 + Math.round((step / (steps - 1)) * 98));
   }
   return [...levels].sort((left, right) => left - right);
 }

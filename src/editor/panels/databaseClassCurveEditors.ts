@@ -3,6 +3,7 @@ import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import type { ActorParameterKey, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { curvePreviewGraph } from "@/editor/panels/databaseCurvePreview";
 
 const PARAMETER_LABELS: Record<ActorParameterKey, string> = {
   maxHp: "최대 HP",
@@ -26,7 +27,7 @@ export function classCurveCards(record: ClassRecord, refresh: () => void = () =>
       children: [
         el("strong", { text: PARAMETER_LABELS[key] }),
         el("span", { text: `Lv${currentLevel}:${parameterValueAtLevel(curve, currentLevel)}` }),
-        el("div", { class: "db-class-curve-graph", children: curveBars(curve, currentLevel) }),
+        curvePreviewGraph("db-class-curve-graph", curve, currentLevel),
       ],
     });
   });
@@ -191,33 +192,6 @@ function presetCurve(curve: readonly number[], preset: ClassCurvePreset): number
 function curveHeight(value: number, values: readonly number[]): number {
   const max = Math.max(...values, 1);
   return Math.max(2, Math.round((value / max) * 100));
-}
-
-function curveBars(curve: readonly number[], activeLevel: number): HTMLElement[] {
-  const max = Math.max(...curve, 1);
-  return previewSampleIndexes(curve.length, activeLevel).map((index) => {
-    const value = curve[index] ?? curve[curve.length - 1] ?? 1;
-    const level = index + 1;
-    return el("i", {
-      class: level === activeLevel ? "active" : "",
-      attrs: {
-        "aria-label": `Lv${level}: ${value}`,
-        "data-level": String(level),
-        "data-value": String(value),
-        style: `height:${Math.max(5, Math.round((value / max) * 100))}%`,
-      },
-    });
-  });
-}
-
-function previewSampleIndexes(length: number, activeLevel: number): number[] {
-  const lastIndex = Math.max(0, length - 1);
-  const indexes = new Set<number>();
-  for (let step = 0; step < 33; step += 1) {
-    indexes.add(Math.round((step / 32) * lastIndex));
-  }
-  indexes.add(Math.min(lastIndex, Math.max(0, activeLevel - 1)));
-  return [...indexes].sort((left, right) => left - right);
 }
 
 function dialogNumberInput(testid: string, value: number, min: number, max: number): HTMLInputElement {

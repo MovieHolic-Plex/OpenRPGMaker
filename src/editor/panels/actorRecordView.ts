@@ -99,24 +99,55 @@ function actorSection(key: ActorSectionKey, content: HTMLElement[]): HTMLElement
   return section;
 }
 
+// `role="tablist"` 는 화살표 이동과 단일 탭 스톱을 **약속하는** 역할이다. 예전에는 역할만
+// 붙고 구현이 없어서 ArrowRight 가 무반응이고 `tabindex` 관리도 `aria-controls` 도 없었다
+// (실측). 역할을 지우는 대신 약속한 패턴을 구현한다 — 이 탭 줄은 주인공 편집의 주 내비다.
 function actorSectionTabs(sections: HTMLElement[]): HTMLElement {
   const tabs: HTMLElement[] = [];
-  const activate = (index: number): void => {
+  const activate = (index: number, moveFocus = false): void => {
     tabs.forEach((tab, candidate) => {
       const selected = candidate === index;
       tab.setAttribute("aria-selected", String(selected));
+      // 탭 줄 전체가 하나의 탭 스톱이다 — 비활성 탭은 Tab 순회에서 빠지고 화살표로만 이동한다.
+      tab.setAttribute("tabindex", selected ? "0" : "-1");
       tab.classList.toggle("active", selected);
       sections[candidate]!.hidden = !selected;
     });
+    if (moveFocus) tabs[index]?.focus();
     sections[index]?.parentElement?.scrollTo?.({ top: 0 });
   };
-  tabs.push(...ACTOR_SECTIONS.map((section, index) => el("button", {
-    class: `actor-section-tab${index === 0 ? " active" : ""}`,
-    text: section.label,
-    attrs: { "aria-selected": String(index === 0), role: "tab", type: "button" },
-    dataset: { testid: `db-actor-tab-${section.key}` },
-    on: { click: () => activate(index) },
-  })));
+  const step = (from: number, delta: number): void => {
+    const next = (from + delta + tabs.length) % tabs.length;
+    activate(next, true);
+  };
+  tabs.push(...ACTOR_SECTIONS.map((section, index) => {
+    const panelId = `db-actor-panel-${section.key}`;
+    sections[index]?.setAttribute("id", panelId);
+    return el("button", {
+      class: `actor-section-tab${index === 0 ? " active" : ""}`,
+      text: section.label,
+      attrs: {
+        "aria-controls": panelId,
+        "aria-selected": String(index === 0),
+        role: "tab",
+        tabindex: index === 0 ? "0" : "-1",
+        type: "button",
+      },
+      dataset: { testid: `db-actor-tab-${section.key}` },
+      on: {
+        click: () => activate(index),
+        keydown: (event: Event) => {
+          const key = (event as KeyboardEvent).key;
+          if (key === "ArrowRight" || key === "ArrowDown") step(index, 1);
+          else if (key === "ArrowLeft" || key === "ArrowUp") step(index, -1);
+          else if (key === "Home") activate(0, true);
+          else if (key === "End") activate(tabs.length - 1, true);
+          else return;
+          event.preventDefault();
+        },
+      },
+    });
+  }));
   return el("nav", {
     class: "actor-section-tabs",
     attrs: { "aria-label": "캐릭터 편집 영역", role: "tablist" },
