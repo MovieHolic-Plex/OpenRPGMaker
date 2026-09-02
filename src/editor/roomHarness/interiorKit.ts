@@ -17,6 +17,8 @@ import {
   type InteriorThemeModifier,
   type Wing,
 } from "@/editor/interiorRoomPipeline";
+import type { ConceptOverlayRoom, ConceptOverlayThing } from "@/editor/conceptBundleResolve";
+import { isConceptChipId, isConceptPlaceRole } from "@/project/types/conceptBundle";
 import type { Project } from "@/project/types";
 import { ToolError } from "@/editor/tools/types";
 import type { RoomHarnessKit } from "./types";
@@ -105,6 +107,52 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
     floorTile: args.floorTile !== undefined ? Math.floor(Number(args.floorTile)) : undefined,
     wallMaterial: wallMaterial as InteriorRoomPlan["wallMaterial"],
     ...(tilesetId ? { tilesetId } : {}),
+    ...parseConceptOverlay(args.concept),
+  };
+}
+
+function parseConceptOverlay(value: unknown): Pick<InteriorRoomPlan, "concept"> {
+  if (value === undefined || value === null) return {};
+  if (typeof value !== "object") throw new ToolError("concept must be an object", { code: "invalid-args" });
+  const record = value as Record<string, unknown>;
+  const rooms: Record<string, ConceptOverlayRoom> = {};
+  const roomsRaw = record.rooms;
+  if (roomsRaw && typeof roomsRaw === "object") {
+    for (const [roomId, raw] of Object.entries(roomsRaw as Record<string, unknown>)) {
+      if (!raw || typeof raw !== "object") continue;
+      const entry = raw as Record<string, unknown>;
+      const role = String(entry.role ?? "room");
+      const thingsRaw = Array.isArray(entry.things) ? entry.things : [];
+      const things: ConceptOverlayThing[] = [];
+      for (const item of thingsRaw) {
+        if (!item || typeof item !== "object") continue;
+        const rec = item as Record<string, unknown>;
+        const objectId = String(rec.objectId ?? "").trim();
+        if (!objectId) continue;
+        const chips = Array.isArray(rec.chips) ? rec.chips.map((chip) => String(chip)).filter(isConceptChipId) : [];
+        things.push({
+          thingId: String(rec.thingId ?? objectId),
+          objectId,
+          label: String(rec.label ?? objectId),
+          chips,
+          required: rec.required === true,
+        });
+      }
+      rooms[roomId] = {
+        placeId: String(entry.placeId ?? roomId),
+        placeLabel: String(entry.placeLabel ?? entry.placeId ?? roomId),
+        role: isConceptPlaceRole(role) ? role : "room",
+        things,
+      };
+    }
+  }
+  return {
+    concept: {
+      bundleId: String(record.bundleId ?? ""),
+      facilityId: String(record.facilityId ?? ""),
+      facilityLabel: String(record.facilityLabel ?? ""),
+      rooms,
+    },
   };
 }
 

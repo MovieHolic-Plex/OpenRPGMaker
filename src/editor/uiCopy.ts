@@ -100,6 +100,7 @@ const USER_FACING_TOOL_NAMES: Readonly<Record<string, string>> = {
   paint_road: "길 그리기",
   build_house: "마을 짓기",
   author_village: "마을 짓기",
+  place_concept: "시설 짓기",
   make_villager: "사람 만들기",
   run_lint: "검사",
   plan_world: "세계 계획",

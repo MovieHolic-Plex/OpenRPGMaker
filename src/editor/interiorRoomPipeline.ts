@@ -30,6 +30,9 @@ import {
 import { DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 // 순환 의존(카탈로그 → 이 모듈의 interiorVocabTiles)이므로 import 순서상 마지막에 둔다:
 // 카탈로그 본문이 실행될 때 DARK_WALL_TILE 등 상위 상수가 이미 초기화되어 있어야 한다.
+import type { ConceptOverlay } from "@/editor/conceptBundleResolve";
+import { carveOutsideVoid, composeConceptRoom, type ConceptPlacement } from "@/editor/interiorConceptCompose";
+import { attachConceptEvents, objectPresentInBox } from "@/editor/interiorConceptEvents";
 import { INTERIOR_OBJECT_CATALOG, interiorObjectById, type InteriorObjectCell } from "@/editor/interiorObjectCatalog";
 import {
   resolveInteriorRoomVocab,
@@ -423,6 +426,8 @@ export type InteriorRoomPlan = {
   readonly floorTile?: number;
   // 벽면 재질 — 크림 면(104|105|106)을 완성 후 리틴트. "gold-brick"은 귀족 저택(식당 러그도 붉은 카펫).
   readonly wallMaterial?: InteriorWallMaterial;
+  /** 개념 꾸러미 오버레이. 있으면 테마 하드코딩 가구 대신 이 물건만 놓는다. */
+  readonly concept?: ConceptOverlay;
 };
 
 export type InteriorRoomSession = {
@@ -857,16 +862,25 @@ export function applyInteriorRoomLayer(
       paintInteriorHouseWalls(next, placements);
       // 천장 정본 v2: 천장(430 계열)을 저장 시점에 오토타일 성형 — 회암 테두리.
       shapeInteriorCeiling(next);
+      // 개념 시설: 건물 밖은 공허로 비워 천장 테두리가 건물 윤곽으로 드러난다(2026-09-02 「벽 위에 천장이 없다」).
+      if (plan.concept) carveOutsideVoid(next, floor);
       return { map: next, layer, summary: "walls raised (house whole-tile grammar)", warnings, ok: true };
     }
     case "furniture": {
       const next = cloneMap(map);
       const floor = floorMaskFromPlan(plan);
-      warnings.push(...paintFurniture(next, floor, plan));
+      const placements: ConceptPlacement[] = [];
+      warnings.push(...paintFurniture(next, floor, plan, placements));
       // 통행 연결성 강제 — 리틴트 전(바닥이 아직 72/러그일 때) 문 기준 BFS로 막힌 길을 뚫는다.
       warnings.push(...enforceWalkability(next, floor, plan.door));
-      // 사분면 공백 보정 — 통행이 확보된 상태에서 공백 사분면에 벽 스냅 소품(놓고-검증-되돌리기).
-      fillSparseQuadrants(next, floor, plan);
+      if (plan.concept) {
+        // 칩 집행: 물건이 놓인 자리에 이벤트(수면·조사·노획·연결). 통행 확보로 치워진 물건은 받지 않는다.
+        warnings.push(...attachConceptEvents(next, placements, { door: plan.door }).warnings);
+      } else {
+        // 사분면 공백 보정 — 통행이 확보된 상태에서 공백 사분면에 벽 스냅 소품(놓고-검증-되돌리기).
+        // 개념 시설은 나무에 없는 가구를 보태지 않는다.
+        fillSparseQuadrants(next, floor, plan);
+      }
       // 배치가 끝난 뒤 바닥/벽 재질 교체 — 벽 문법·성형·러그·벽걸이는 72/크림 기준으로 이미 완료된 상태.
       retintFloorMaterials(next, plan);
       retintHouseWallFace(next, plan.wallMaterial);
@@ -877,6 +891,8 @@ export function applyInteriorRoomLayer(
     case "entrance": {
       const next = cloneMap(map);
       placeEntranceEvent(next, plan.door);
+      // 가구 조사 이벤트는 테마 시공 전용 — 개념 시설은 칩(event/loot/sleep/transfer)이 이벤트를 소유한다.
+      if (!plan.concept) attachPropInspectEvents(next);
       return {
         map: next,
         layer,
@@ -1063,6 +1079,7 @@ function paintRoomSpace(
   theme: string,
   plan: InteriorRoomPlan,
   room?: RoomSpec,
+  sink?: ConceptPlacement[],
 ): string[] {
   const modifiers = room?.modifiers ?? plan.themeModifiers ?? [];
   const luxury = plan.wallMaterial === "gold-brick" || modifiers.includes("luxury");
@@ -1082,27 +1099,53 @@ function paintRoomSpace(
       }
     }
   }
-  paintThemeFurniture(map, mask, theme, plan.door, room, luxury);
-  if (isBuiltinInteriorTheme(theme)) {
-    applyThemeModifiers(map, mask, modifiers, plan.door);
-    placeSouthFiller(map, mask, theme, plan.door, mask.filter(Boolean).length);
+  let conceptWarnings: string[] | null = null;
+  if (plan.concept) {
+    // 개념 시설: 나무의 물건만 슬롯에 앉힌다. 테마 가구·수정자·필러는 끈다.
+    const conceptRoom = room ? plan.concept.rooms[room.id] : undefined;
+    if (conceptRoom && room) {
+      const composed = composeConceptRoom({
+        map,
+        floor: mask,
+        fullFloor: floor,
+        roomId: room.id,
+        room,
+        role: conceptRoom.role,
+        door: plan.door,
+        placeLabel: conceptRoom.placeLabel,
+        things: conceptRoom.things,
+        resolveObject: (objectId) => currentInteriorVocab().objectsById.get(objectId) ?? interiorObjectById(objectId),
+        isFloorTile: (tile) => FLOOR_MATERIAL_TILES.has(tile),
+      });
+      sink?.push(...composed.placements);
+      conceptWarnings = [...composed.warnings];
+    } else {
+      conceptWarnings = [];
+    }
+  } else {
+    paintThemeFurniture(map, mask, theme, plan.door, room, luxury);
+    if (isBuiltinInteriorTheme(theme)) {
+      applyThemeModifiers(map, mask, modifiers, plan.door);
+      placeSouthFiller(map, mask, theme, plan.door, mask.filter(Boolean).length);
+    }
+    ensureRequiredRoles(map, mask, theme, plan.door, room);
   }
-  ensureRequiredRoles(map, mask, theme, plan.door, room);
   for (const c of sentinels) {
     if (getU(map, c.x, c.y) === ENTRY_SENTINEL) setU(map, c.x, c.y, TILE.EMPTY);
   }
-  return themeManifestWarnings(map, mask, theme, room?.id);
+  return conceptWarnings ?? themeManifestWarnings(map, mask, theme, room?.id);
 }
 
-function paintFurniture(map: GameMap, floor: boolean[], plan: InteriorRoomPlan): string[] {
+function paintFurniture(map: GameMap, floor: boolean[], plan: InteriorRoomPlan, sink?: ConceptPlacement[]): string[] {
   const warnings: string[] = [];
   RNG = mulberry32((plan.seed ?? 1) * 0x9e3779b1 + 1);
   // 복도 카펫 먼저 — 복도 테마 방은 붉은 카펫 러너로 잇는다(2026-07-20 사용자 교정).
-  paintCorridorCarpets(map, plan);
+  // 개념 꾸러미가 정본이면 파이프가 가구를 보태지 않는다.
+  if (!plan.concept) paintCorridorCarpets(map, plan);
   // 방 구조(bbox): 방마다 자기 바닥 마스크 + 자기 테마로 배치한다.
   if (plan.rooms && plan.rooms.length > 0) {
     for (const room of plan.rooms) {
-      warnings.push(...paintRoomSpace(map, floor, roomFloorMask(plan, room, floor), room.theme ?? plan.theme, plan, room));
+      warnings.push(...paintRoomSpace(map, floor, roomFloorMask(plan, room, floor), room.theme ?? plan.theme, plan, room, sink));
     }
     return warnings;
   }
@@ -1347,9 +1390,11 @@ export function evaluateInteriorRoom(
   // 1) 테마 필수 가구
   if (plan.rooms && plan.rooms.length > 0) {
     for (const room of plan.rooms) {
-      issues.push(...themeManifestWarnings(map, roomFloorMask(plan, room, floor), room.theme ?? plan.theme, room.id));
+      issues.push(...(plan.concept
+        ? conceptManifestWarnings(map, plan, room)
+        : themeManifestWarnings(map, roomFloorMask(plan, room, floor), room.theme ?? plan.theme, room.id)));
     }
-  } else {
+  } else if (!plan.concept) {
     issues.push(...themeManifestWarnings(map, floor, plan.theme));
   }
 
@@ -1639,6 +1684,23 @@ function canPaintObject(
     }
   }
   return true;
+}
+
+/** 개념 시설 필수 물건 검사 — 방 상자 안에 형상이 온전히 있는가(evaluate_interior_room 용). */
+function conceptManifestWarnings(map: GameMap, plan: InteriorRoomPlan, room: RoomSpec): string[] {
+  const conceptRoom = plan.concept?.rooms[room.id];
+  if (!conceptRoom) return [];
+  const out: string[] = [];
+  for (const thing of conceptRoom.things) {
+    if (!thing.required) continue;
+    const object = currentInteriorVocab().objectsById.get(thing.objectId) ?? interiorObjectById(thing.objectId);
+    if (!object) {
+      out.push(`manifest: 물건 ${thing.objectId} 정의를 찾지 못함 (room=${room.id})`);
+      continue;
+    }
+    if (!objectPresentInBox(map, object, room)) out.push(`manifest: ${thing.label} 없는 개념 장소 (room=${room.id})`);
+  }
+  return out;
 }
 
 function paintThemeFurniture(
@@ -2574,8 +2636,6 @@ function placeEntranceEvent(map: GameMap, door: DoorSpec): void {
     ],
   };
   map.events = [...(map.events ?? []).filter((e) => e.id !== event.id && !(e.x === door.x && e.y === door.y)), event];
-  // 가구·소품 조사 이벤트 — 책장/상자/통/캐비닛 등 (병 스팸 셀은 제외).
-  attachPropInspectEvents(map);
 }
 
 /** 맵에 놓인 가구 타일을 훑어 action 조사 이벤트를 붙인다. 방마다 수동 이벤트를 안 달아도 된다. */
