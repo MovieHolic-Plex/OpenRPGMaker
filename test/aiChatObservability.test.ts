@@ -204,9 +204,15 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
       sse([reasoningLine("첫 번째 추론 원문입니다."), toolCallLine("c2", "get_project_summary")]),
       sse([reasoningLine("두 번째 추론 원문입니다."), JSON.stringify({ choices: [{ delta: { content: "완료했습니다" } }] })]),
     ];
+    // SSE 본문은 **LLM 호출(chat/completions)에만** 내준다. 다른 fetch(예: `.env.local` 에 Supabase 키가
+    // 있을 때 패널 부팅이 보내는 요청)가 본문 하나를 가져가면 추론이 2회 → 1회로 조용히 밀렸다
+    // (2026-09-03 실측: `.env.local` 있는 워크트리에서만 실패, 키를 지우면 통과).
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(bodies.shift() ?? sse([]), { status: 200, headers: { "Content-Type": "text/event-stream" } }))
+      vi.fn(async (url: unknown) => {
+        if (!String(url).includes("chat/completions")) return new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } });
+        return new Response(bodies.shift() ?? sse([]), { status: 200, headers: { "Content-Type": "text/event-stream" } });
+      })
     );
 
     const panel = renderPanel();
