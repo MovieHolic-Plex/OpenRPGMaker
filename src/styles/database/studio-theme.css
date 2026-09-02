@@ -262,7 +262,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-header h2 {
   color: var(--db-studio-text-1) !important;
-  font: 600 14px/1.2 "Malgun Gothic", system-ui, sans-serif !important;
+  font: 600 14px/1.2 var(--font-ui) !important;
   letter-spacing: -0.01em;
   text-shadow: none !important;
 }
@@ -293,14 +293,15 @@
 /* autosave sentence — never clipped */
 .database-modal-backdrop .database-modal-window .database-footer-status {
   background: var(--db-studio-success-muted) !important;
-  border-color: rgba(15, 122, 74, 0.16) !important;
+  border-color: transparent !important;
   color: var(--db-studio-success) !important;
-  max-width: none !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  white-space: normal !important;
+  /* v2: 전폭 띠가 아니라 내용 폭 필. 폭은 studio-v2.css 가 inline-flex + flex: 0 1 auto 로 준다. */
+  max-width: 60% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
   word-break: keep-all;
-  line-height: 1.4 !important;
+  line-height: 1.3 !important;
 }
 
 /* Primary = 지금 저장 (apply), ghost = 닫기 (ok) — wins regardless of .primary class */
@@ -338,12 +339,10 @@
 
 /* ---- wells / fieldsets -> hairline sections --------------------------- */
 
+/* v2(2026-09-03): 창(목록·상세)과 묶음 상자를 갈라 놓는다. 예전엔 둘 다 "테두리 친 흰 카드"
+   여서 카드 속 카드 속 카드가 됐다. 창은 흰 면에 헤어라인 구분만, 묶음 상자는 옅은 회색 면에
+   테두리 없음. 값만 바꿨고 !important 개수는 그대로다(예산 래칫). */
 .database-modal-backdrop .database-modal-window :is(
-  fieldset,
-  .oprn-db-fieldset,
-  .db-panel,
-  .db-class-panel,
-  .db-advanced-panel,
   .db-system-form,
   .db-terms-form,
   .db-utility-form,
@@ -354,9 +353,22 @@
   .db-common-event-detail-pane
 ) {
   background: var(--db-studio-surface) !important;
-  border: 1px solid var(--db-studio-border-subtle) !important;
-  border-radius: 8px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
+}
+
+.database-modal-backdrop .database-modal-window :is(
+  fieldset,
+  .oprn-db-fieldset,
+  .db-panel,
+  .db-class-panel,
+  .db-advanced-panel
+) {
+  background: var(--db-studio-canvas);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: none;
 }
 
 /* spec strip under identity header */
@@ -389,9 +401,9 @@
   text-overflow: ellipsis;
 }
 .database-modal-backdrop .database-modal-window fieldset {
-  background: var(--db-studio-surface) !important;
-  border: 1px solid var(--db-studio-border-subtle) !important;
-  border-radius: 8px !important;
+  background: var(--db-studio-canvas) !important;
+  border: 0 !important;
+  border-radius: 10px !important;
   box-shadow: none !important;
 }
 /* 섹션 제목은 `--db-studio-text-3`(#94A3B8) 이었다 — 흰 패널 위 **2.56:1** 로 AA(4.5:1)에
@@ -399,9 +411,9 @@
    legend 12종 전부 미달). 섹션 제목은 보조 텍스트가 아니라 폼의 구조를 알려주는 정보다.
    `--db-studio-text-2`(#475569, 약 7:1)로 올린다. */
 .database-modal-backdrop .database-modal-window fieldset > legend {
-  color: var(--db-studio-text-2, #475569) !important;
-  font: 600 11px/1.3 "Malgun Gothic", system-ui, sans-serif !important;
-  padding: 0 4px;
+  color: var(--db-studio-text-1) !important;
+  font: 600 13px/1.35 var(--font-ui) !important;
+  padding: 0;
   /* 한글에 `uppercase` 는 무효라 Latin 전제 토큰의 흔적이다 — 섞여 있는 영문·숫자만
      들쭉날쭉 대문자가 되므로 떼어낸다. */
   text-transform: none !important;
@@ -432,10 +444,10 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
   overflow: visible !important;
   text-transform: none !important;
-  letter-spacing: 0.02em !important;
+  letter-spacing: 0 !important;
   color: var(--db-studio-text-3) !important;
-  font: 600 11px/1.3 "Malgun Gothic", system-ui, sans-serif !important;
-  padding: 10px 8px 4px !important;
+  font: 600 12px/1.3 var(--font-ui) !important;
+  padding: 12px 8px 4px !important;
 }
 
 /* hairline dividers inside inspector */
@@ -556,13 +568,14 @@
 /* Flatten leftover RM fieldsets on enemy/state */
 .database-modal-backdrop .database-modal-window .oprn-detail-enemies fieldset,
 .database-modal-backdrop .database-modal-window .oprn-detail-states fieldset {
-  background: transparent !important;
+  /* v2: 몬스터·상태도 다른 탭과 같은 묶음 카드다. 값만 카드 문법으로 맞췄다. */
+  background: var(--db-studio-canvas) !important;
   border: 0 !important;
-  border-top: 1px solid var(--db-studio-border-subtle) !important;
-  border-radius: 0 !important;
+  border-top: 0 !important;
+  border-radius: 10px !important;
   box-shadow: none !important;
   margin: 0 !important;
-  padding: 10px 0 8px !important;
+  padding: 12px 14px 14px !important;
 }
 .database-modal-backdrop .database-modal-window .db-enemy-panel-graphic {
   min-width: 0;

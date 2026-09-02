@@ -46,6 +46,7 @@ describe("접힌 그룹 헤더 부제", () => {
 
   it("부제는 그룹 라벨과 다른 글자 크기다 — 같으면 탭 이름으로 오인한다", () => {
     const peek = /\.db-tab-group-peek \{[^}]*\}/.exec(CSS)?.[0] ?? "";
-    expect(peek).toMatch(/font:\s*400 10px/);
+    // v2(2026-09-03): 11px. 10px 은 모달 안 유일한 11px 미달 글자였다. 그룹 라벨은 12px/600.
+    expect(peek).toMatch(/font:\s*400 11px/);
   });
 });
