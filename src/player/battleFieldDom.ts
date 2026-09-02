@@ -397,7 +397,21 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
     backdrop.dataset.backdropResourceId = effectiveId;
     const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
     backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
+    syncSceneBackdropVar(field);
   }
+}
+
+/** 필드의 배경 그림을 씬 루트(.battle-scene)에 `--battle-backdrop-url` 로 비춘다.
+ *  스킨 CSS 가 HUD 띠 뒤에 같은 그림을 흐리게 이어 그릴 수 있게(rm2000: `.battle-scene::before`).
+ *  필드는 1행만 차지하고 overflow:hidden 이라 필드 안의 요소로는 HUD 띠까지 닿을 수 없고,
+ *  형제(카드)들은 필드의 인라인 스타일을 읽을 수 없다 — 루트 변수가 유일한 통로다.
+ *  아직 루트에 붙지 않은 필드(생성 직후)면 아무것도 하지 않으므로 마운트 뒤 한 번 더 부른다. */
+export function syncSceneBackdropVar(field: HTMLElement): void {
+  const scene = field.parentElement;
+  if (!scene || !scene.classList.contains("battle-scene")) return;
+  const image = field.querySelector<HTMLElement>("[data-testid='battle-backdrop']")?.style.backgroundImage ?? "";
+  if (image && image !== "none") scene.style.setProperty("--battle-backdrop-url", image);
+  else scene.style.removeProperty("--battle-backdrop-url");
 }
 
 function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
@@ -581,9 +595,38 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
     // 사망 대상의 팝업은 페이드와 함께 끝낸다(9차 리뷰).
     if (anchor.classList.contains("defeated")) popup.classList.add("battle-damage-popup-final");
+    layer.append(popup);
+  } else if (!showPartyRowDamage(field, feedback, popup)) {
+    layer.append(popup);
   }
-  layer.append(popup);
   window.setTimeout(() => popup.remove(), 900);
+}
+
+/** 아군 스프라이트를 그리지 않는 정면 스킨(rm2000 등)에는 필드에 아군 노드가 없어 팝업이 앵커를
+ *  잃는다 — 그러면 `--battle-node-x/y` 없이 효과 레이어 원점(필드 좌상단)에 떠서 누가 얼마나 맞았는지
+ *  읽을 수 없었다(실측: 적 턴의 피해가 화면 왼쪽 위에 "-31" 로만 떴다). 파티 카드의 해당 행,
+ *  HP 수치 자리에 띄우고 행에 `is-hit` 를 잠깐 붙여 스킨이 흔들림·붉은 기운을 그릴 수 있게 한다.
+ *  카드나 행을 못 찾으면 false — 호출자가 예전처럼 효과 레이어에 붙인다. */
+function showPartyRowDamage(field: HTMLElement, feedback: DamageFeedback, popup: HTMLElement): boolean {
+  const party = field.parentElement?.querySelector<HTMLElement>(".battle-party");
+  const row = party?.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${feedback.targetId}"]`);
+  if (!party || !row || typeof party.getBoundingClientRect !== "function") return false;
+  const target = row.querySelector<HTMLElement>(".battle-actor-hp") ?? row;
+  const partyRect = party.getBoundingClientRect();
+  const rect = target.getBoundingClientRect();
+  if (!(partyRect.width > 0) || !(partyRect.height > 0) || !(rect.width > 0)) return false;
+  // 카드가 팝업의 containing block 이어야 백분율 좌표가 맞다. rm2000 CSS 는 카드를 relative 로 두지만
+  // 다른 정면 스킨은 그렇지 않을 수 있으니 여기서 보장한다.
+  if (typeof getComputedStyle === "function" && getComputedStyle(party).position === "static") party.style.position = "relative";
+  popup.classList.add("battle-damage-popup-party");
+  popup.style.left = `${((rect.left + rect.width / 2 - partyRect.left) / partyRect.width) * 100}%`;
+  popup.style.top = `${((rect.top - partyRect.top) / partyRect.height) * 100}%`;
+  party.append(popup);
+  row.classList.remove("is-hit");
+  void row.offsetWidth; // 같은 프레임에 떼고 다시 붙이면 애니메이션이 재시작하지 않는다 — 리플로우로 끊는다.
+  row.classList.add("is-hit");
+  window.setTimeout(() => row.classList.remove("is-hit"), 480);
+  return true;
 }
 
 function appendEffectsLayer(field: HTMLElement): HTMLElement {

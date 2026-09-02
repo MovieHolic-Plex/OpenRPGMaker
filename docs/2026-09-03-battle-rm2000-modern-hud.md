@@ -116,3 +116,58 @@ HUD 로 바꿨다.
 미실행: `test/e2e/battle-rm2000-pixel-qa.spec.ts`(편집기 셸 경로 e2e). 이 스펙의 기하 상수(168/192)는
 이미 main 의 CSS(176/112)와 어긋나 있었고 편집기 test-play 경로 자체가 main 에서 실패한다는 기록이 있다
 (`scripts/qa/runtime/battle-rm2000.scenario.mjs` 머리 주석). 새 HUD 기하(184/120)로 상수를 갱신해 두었다.
+
+## 6. 2차 개선 — "아직 아쉽다" 에 답한 것 (같은 PR, 2026-09-03)
+
+1차 사진을 기준으로 다시 감사했다. 카드는 좋아졌지만 **전투가 일어나는 느낌**이 약했다 — 막타에
+화면이 번쩍이지 않고, 아군이 맞아도 화면 어디에도 신호가 없고, 4인 파티에서 누가 명령을 고르는지
+시선이 멀고, 카드 아래는 그냥 검은 띠였다. 그리고 남색 유리 위 남보라 강조는 전형적인 "AI 보라
+그라데이션" 으로 읽혔다.
+
+| 1차 (PR 첫 커밋) | 2차 |
+|---|---|
+| ![r1 command](2026-09-03-battle-rm2000-modern-hud-assets/after-1p-command.png) | ![r2 command](2026-09-03-battle-rm2000-modern-hud-assets/r2-1p-command.png) |
+| ![r1 impact](2026-09-03-battle-rm2000-modern-hud-assets/after-1p-impact.png) | ![r2 impact](2026-09-03-battle-rm2000-modern-hud-assets/r2-1p-impact.png) |
+| ![r1 4p root](2026-09-03-battle-rm2000-modern-hud-assets/after-4p-root.png) | ![r2 4p root](2026-09-03-battle-rm2000-modern-hud-assets/r2-4p-root.png) |
+| ![r1 4p target](2026-09-03-battle-rm2000-modern-hud-assets/after-4p-target.png) | ![r2 4p target](2026-09-03-battle-rm2000-modern-hud-assets/r2-4p-target.png) |
+| ![r1 result](2026-09-03-battle-rm2000-modern-hud-assets/after-1p-result.png) | ![r2 result](2026-09-03-battle-rm2000-modern-hud-assets/r2-1p-result.png) |
+
+| 2차 · 엄격 턴제 명령(진행 칩) | 2차 · 아군이 맞는 순간 |
+|---|---|
+| ![r2 strict](2026-09-03-battle-rm2000-modern-hud-assets/r2-1p-command-strict.png) | ![r2 actor hit](2026-09-03-battle-rm2000-modern-hud-assets/r2-1p-actor-hit.png) |
+
+### 바뀐 것
+
+- **히트·크리티컬·승리·패배 플래시 복구.** 공용 플래시는 `.battle-field::after` 를 칠하는데(15-juice-capture-fx.css),
+  옛 판부터 스킨이 같은 특정도로 `::after` 배경을 덧써 네 플래시가 전부 죽어 있었다. 스킨의 바닥 페이드를
+  `::before` 로 옮기고 `::after` 재정의는 `:not(.battle-flash-*)` 일 때만 걸어 막타에 화면이 번쩍인다(위 "2차 임팩트").
+- **아군 피해가 파티 카드 행에 뜬다.** 정면 스킨은 필드에 아군 노드가 없어 피해 팝업이 앵커를 잃고 필드 좌상단에
+  떠 있었다(누가 맞았는지 읽을 수 없음). `battleFieldDom.showPartyRowDamage` 가 파티 카드의 해당 행 HP 수치 위에
+  팝업을 앉히고 행에 `is-hit` 를 480ms 붙인다 — 행이 흔들리고 붉게 번쩍인다.
+- **턴 칩.** 명령 카드 윗변에 지금 고르는 액터의 이름(호박색 칩). `battleCommandDom` 이 패널에 `data-actor-name` 을
+  심고 스킨이 `attr()` 로 그린다. 엄격 턴제의 「명령 n/N」은 오른쪽 유리 칩 — 옛 판은 이 노드가 1행을 차지하도록
+  배치하고 display:none 으로 접어, 메뉴가 2행으로 밀려 스크롤포트 밖으로 나가는 잠재 결함이 있었다.
+- **HUD 띠 뒤로 전장이 이어진다.** 루트 `::before` 가 같은 배경 그림을 흐리게(blur 12px) 깔고 스크림으로 눌러,
+  카드가 검은 띠가 아니라 전장 위에 뜬 것처럼 읽힌다. 그림 url 은 battleDom/battleFieldDom 이 루트에
+  `--battle-backdrop-url` 로 비춘다(배틀러 기하는 필드 안 그대로).
+- **강조색을 호박색 하나로.** 커서·차례 액터·ATB·확인 버튼·크리티컬 팝업이 전부 `#f2c063`. 남보라(#7c8cff) 는
+  남색 유리와 붙어 "AI 보라 그라데이션" 으로 읽혔고 초록 몬스터 위 리티클 대비도 약했다. HP 민트·MP 하늘은
+  의미색이라 그대로. 확인 버튼 글자는 바닥색(호박 위 흰 글자는 대비 미달).
+- **모션.** 명령 카드가 차례마다 아래에서 올라오고(220ms), 메시지 배너는 위에서 내려오고(200ms), 결과 카드는
+  살짝 커지며 나타난다(260ms). 전부 transform/opacity. `prefers-reduced-motion` 에서 꺼진다.
+- **수치 색이 게이지 상태를 따른다**(HP 51% 이상 민트 → 21~50% 노랑 → 20% 이하 빨강 + 깜빡임).
+  피해 팝업은 보통 흰색 · 크리티컬 호박 · 회복 민트 · 빗나감 뮤트 이탤릭. 메시지 캐럿 `>` 는 90° 돌려 아래 화살표.
+
+### 검증 (2차)
+
+| 검사 | 결과 |
+|---|---|
+| `tsc --noEmit -p tsconfig.app.json` | 통과 |
+| vitest 전투·스킨·QA 하네스 56파일 | 실패 4건 = HEAD 기준선과 집합 동일(회귀 0) |
+| `battle-text-audit --skins rm2000` | 위반 0 |
+| `runtime-qa --scenario battle-rm2000`(게이트) · `battle-rm2000-tour` · `battle-rm2000-tour-strict` | 통과 |
+| 픽셀 격자 감사(`battleRm2000PixelGrid`) | 통과 — `!important` 0 · 짝수 px · 폰트 4단계 |
+
+하네스 보강: `pressUntil` 이 `attr`/`value` 로 같은 testid 중 특정 요소(피해 팝업의 `data-target-id`)를 기다릴 수 있다.
+엄격 턴제 픽스처 `test/fixtures/projects/battle-v3-strict.json` 을 추가했다(ATB 에서는 주인공이 슬라임보다 빨라
+슬라임이 행동하기 전에 이겨 아군 피격 장면을 찍을 수 없다 — 실측 z 60회).
