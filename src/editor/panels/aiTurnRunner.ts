@@ -13,7 +13,8 @@ import { editorState } from "@/editor/editorState";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { loadAiConfig } from "@/ai/llmClient";
-import { recordAiActivity } from "@/ai/activityLog";
+import { recordAiActivity, type AiActivityToolCall } from "@/ai/activityLog";
+import { isUsableToolReason, toolCallsFromAudit } from "@/ai/toolReason";
 import { resolveProposalApplyMode } from "@/ai/approvalPolicy";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import type { AssistantSession, ProposedCall, SessionEvent, TurnResult } from "@/ai/assistantSession";
@@ -196,6 +197,29 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       assistantBubble = null;
       reasoningBox = null;
     };
+    const liveToolCalls: AiActivityToolCall[] = [];
+    const persistTurnSnapshot = (pending: boolean): void => {
+      const startCfg = loadAiConfig();
+      const turnAudit =
+        session.getAuditEntries().length >= sessionAuditCountAtTurnStart
+          ? session.getAuditEntries().slice(sessionAuditCountAtTurnStart)
+          : session.getAuditEntries();
+      void recordAiActivity({
+        id: turnLogId,
+        channel: "chat",
+        instruction: requestText,
+        projectContextKey: turnConversationScope,
+        model: startCfg.model,
+        liteModel: startCfg.liteModel,
+        mapId: editorState.get().currentMapId ?? undefined,
+        result: { ok: false, pending },
+        toolCalls: liveToolCalls.length > 0 ? liveToolCalls : toolCallsFromAudit(turnAudit),
+        audit: turnAudit,
+        uiActions: takeAiUiEventsSince(uiEventMarkerAtTurnStart),
+      }).catch(() => {
+        /* 기록 실패가 턴을 막지 않는다 */
+      });
+    };
     const onEvent = (event: SessionEvent): void => {
       if (!ownsTurn()) return;
       if (event.type === "phase") {
@@ -240,6 +264,19 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         setAgentGhostRunningTool(event.name);
         deps.surface.startLiveActivity(event.name, event.index);
       } else if (event.type === "tool_call") {
+        liveToolCalls.push({
+          name: event.name,
+          args: event.args,
+          ok: event.result.ok,
+          summary: event.result.summary,
+          ...(isUsableToolReason(event.reason) ? { reason: event.reason } : {}),
+        });
+        persistTurnSnapshot(true);
+        deps.surface.persistConversation({
+          id: turnConversationId,
+          scope: turnConversationScope,
+          entries: [...auditHistoryAtTurnStart, ...session.getAuditEntries()],
+        });
         deps.surface.completeLiveActivity(event.name, event.result, event.args);
         ghostPreviewUpdater.handleToolCall(event);
         // 청사진 진행 — 이번 호출이 어느 칸을 짓고 있는지로 planned/building/done 을 옮긴다.
@@ -546,6 +583,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
             proposedCalls: turnResult?.proposedCalls.length,
             assistantText: turnResult?.assistantText,
           },
+          toolCalls: liveToolCalls.length > 0 ? liveToolCalls : toolCallsFromAudit(turnAudit),
           audit: turnAudit,
           uiActions: turnUiActions,
         }).catch(() => {
@@ -572,19 +610,13 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       // 채팅 턴마다 활동 로그(로컬 + Supabase best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
       const cfg = loadAiConfig();
       const audit = turnAudit;
-      const toolFromAudit = audit
-        .filter((entry): entry is Extract<typeof entry, { kind: "tool" }> => entry.kind === "tool")
-        .map((entry) => ({
-          name: entry.name,
-          args: entry.args,
-          ok: entry.ok,
-          summary: entry.summary,
-        }));
+      const toolFromAudit = toolCallsFromAudit(audit);
       const toolFromProposed = (turnResult?.proposedCalls ?? []).map((call) => ({
         name: call.name,
         args: call.args,
         ok: call.result.ok,
         summary: call.summary,
+        ...(isUsableToolReason(call.reason) ? { reason: call.reason } : {}),
       }));
       void recordAiActivity({
         id: turnLogId, // 시작 시점 pending 행과 같은 id — upsert 로 «완료» 로 덮인다.

@@ -39,7 +39,8 @@ function isAuditEntry(value: unknown): value is AuditEntry {
         isObject(value.args) &&
         typeof value.ok === "boolean" &&
         typeof value.summary === "string" &&
-        (value.issues === undefined || isStringArray(value.issues))
+        (value.issues === undefined || isStringArray(value.issues)) &&
+        (value.reason === undefined || typeof value.reason === "string")
       );
     default:
       return false;

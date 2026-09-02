@@ -14,6 +14,7 @@ import { randomUuid } from "@/util/id";
 import { AI_ACTIVITY_DISK_ENDPOINT } from "./activityLogEndpoint";
 import { aiActivityRunId } from "./activityRunId";
 import type { AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityIndex, AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
+import { isUsableToolReason, preferRicherActivityRecord } from "./toolReason";
 import type { AiUiEvent } from "./uiEventTypes";
 export type { AiActivityChannel, AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityIndex, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 
@@ -119,6 +120,7 @@ function sanitizeAuditEntry(entry: AuditEntry): AuditEntry {
     summary: clipText(entry.summary),
     args: clipArgs(entry.args),
     issues: entry.issues?.slice(0, 20).map((issue) => clipText(issue, 500)),
+    ...(isUsableToolReason(entry.reason) ? { reason: clipText(entry.reason, 500) } : {}),
   };
 }
 
@@ -132,6 +134,7 @@ function sanitizeToolCalls(calls: readonly AiActivityToolCall[]): { kept: AiActi
     args: clipArgs(call.args ?? {}),
     ...(call.ok === undefined ? {} : { ok: call.ok }),
     ...(call.summary === undefined ? {} : { summary: clipText(call.summary) }),
+    ...(isUsableToolReason(call.reason) ? { reason: clipText(call.reason, 500) } : {}),
     ...(call.softConfirm === undefined ? {} : { softConfirm: call.softConfirm }),
     ...(call.construction === undefined ? {} : { construction: call.construction }),
   }));
@@ -177,12 +180,20 @@ function buildActivityIndex(input: {
     if (call.ok === false) failedToolNames.add(call.name);
   }
   const userTexts: string[] = [];
+  const reasons: string[] = [];
   const mapIds = new Set<string>();
   if (input.mapId) mapIds.add(input.mapId);
+  for (const call of input.toolCalls) {
+    if (isUsableToolReason(call.reason)) reasons.push(clipText(call.reason, 200));
+  }
+  for (const event of input.uiActions) {
+    if (isUsableToolReason(event.reason)) reasons.push(clipText(event.reason, 200));
+  }
   for (const entry of input.audit) {
     if (entry.kind === "tool") {
       toolNames.add(entry.name);
       if (entry.ok === false) failedToolNames.add(entry.name);
+      if (isUsableToolReason(entry.reason)) reasons.push(clipText(entry.reason, 200));
       const mapId = entry.args?.mapId;
       if (typeof mapId === "string" && mapId) mapIds.add(mapId);
       continue;
@@ -197,6 +208,7 @@ function buildActivityIndex(input: {
     commitIds: [...input.commitIds],
     mapIds: [...mapIds],
     userTexts: userTexts.slice(-20),
+    reasons: [...new Set(reasons)].slice(-40),
   };
 }
 
@@ -464,9 +476,23 @@ registerRemoteOutboxSender("ai-activity", async (payload) => {
  * - 항상 로컬 localStorage 링버퍼에 저장 (표시용 캐시)
  * - Supabase 설정이 있으면 원격에 저장하고, 실패하면 outbox 에 남겨 나중에 재전송
  * - Vite 미러 엔드포인트로 디스크 기록 (output/ai-activity/) — 미들웨어가 있을 때만
+ * - 같은 id 의 시작/중간/종료 기록은 직렬화한다. 빈 pending 시작 행이 풍부한 행을
+ *   덮어쓰지 않는다(2026-09-02: 검토 턴이 tile_erase 를 남기고도 로그는 빈 pending 만).
  */
+let persistTail: Promise<void> = Promise.resolve();
+
 export async function recordAiActivity(input: AiActivityLogInput): Promise<AiActivityLogRecord> {
-  const base = buildAiActivityLogRecord(input);
+  const run = persistTail.then(() => persistAiActivityNow(input));
+  persistTail = run.then(() => undefined, () => undefined);
+  return run;
+}
+
+export { preferRicherActivityRecord };
+
+async function persistAiActivityNow(input: AiActivityLogInput): Promise<AiActivityLogRecord> {
+  const incoming = buildAiActivityLogRecord(input);
+  const existingRow = readLocal().find((row) => row.id === incoming.id);
+  const base = preferRicherActivityRecord(existingRow, incoming);
   const existing = readLocal().filter((row) => row.id !== base.id);
   writeLocal([base, ...existing]);
   publishActivityLogApi(base);
@@ -627,6 +653,7 @@ export async function recordAiActivityFromRegionLog(
       args: call.args,
       ok: call.ok,
       summary: call.summary,
+      ...(isUsableToolReason(call.reason) ? { reason: call.reason } : {}),
       ...(call.softConfirm === undefined ? {} : { softConfirm: call.softConfirm }),
       ...(call.construction === undefined ? {} : { construction: call.construction }),
     })),

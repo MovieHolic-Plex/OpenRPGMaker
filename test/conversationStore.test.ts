@@ -104,6 +104,22 @@ describe("conversationStore", () => {
     expect(loadConversation("roundtrip")).toEqual(saved);
   });
 
+  it("Given a tool audit with reason When saved Then local load and remote payload keep the reason", async () => {
+    const withReason: AuditEntry = {
+      kind: "tool",
+      name: "tile_erase",
+      args: { mapId: "map_hub" },
+      ok: true,
+      summary: "754칸",
+      reason: "다음에 author_village 를 찍을 자리를 비운다",
+    };
+    saveConversation(record("reason", 400, [user("검토해줘"), withReason]));
+    expect(loadConversation("reason")?.entries).toEqual([user("검토해줘"), withReason]);
+    await Promise.resolve();
+    const remote = recordSupabaseConversationMock.mock.calls.at(-1)?.[0] as { entries?: AuditEntry[] } | undefined;
+    expect(remote?.entries).toEqual([user("검토해줘"), withReason]);
+  });
+
   it("Given saved conversations When one is deleted Then only the other remains", () => {
     saveConversation(record("keep", 200));
     saveConversation(record("delete", 300));

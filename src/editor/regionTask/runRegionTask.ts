@@ -136,6 +136,7 @@ export interface RegionTaskLogExport {
     readonly args: Record<string, unknown>;
     readonly ok: boolean;
     readonly summary: string;
+    readonly reason?: string;
     readonly softConfirm?: unknown;
     readonly construction?: ConstructionAuditRecord;
   }[];
@@ -318,11 +319,12 @@ export function buildRegionTaskLogExport(input: {
           ...(softConfirm === null ? {} : { softConfirm }),
         };
       })
-    : proposedCalls.map((call) => ({
+      : proposedCalls.map((call) => ({
         name: call.name,
         args: call.args,
         ok: call.result.ok,
         summary: call.summary,
+        ...(call.reason ? { reason: call.reason } : {}),
         ...(extractVocabSoftConfirm(call.result.data) === null
           ? {}
           : { softConfirm: extractVocabSoftConfirm(call.result.data) }),

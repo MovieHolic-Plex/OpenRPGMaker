@@ -2,6 +2,7 @@
 // 브라우저 배선 어댑터. 순수 툴 실행 결과를 에디터 스토어에 반영한다.
 // **이 파일만 브라우저/에디터(store, mapEditHistory)에 의존한다.** 나머지 툴 레이어는 전부 순수.
 
+import { harnessToolReason, isUsableToolReason, splitToolCallReason } from "@/ai/toolReason";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { loadAiConfig } from "@/ai/llmClient";
@@ -31,6 +32,7 @@ function applyAnnotation(
   label: string,
   diff: ChangeSummary | undefined,
   toolNames: readonly string[],
+  reason?: string,
 ): ProjectChangeAnnotation {
   const fields: EditActivityField[] = [];
   // 변경 없는 축은 싣지 않는다 — 0 이 스무 줄 늘어서면 정작 바뀐 축을 못 찾는다.
@@ -41,7 +43,7 @@ function applyAnnotation(
     }
   }
   if (toolNames.length > 0) fields.push({ path: "tools", after: toolNames.join(", ") });
-  return { label, origin, ...(fields.length > 0 ? { fields } : {}) };
+  return { label, origin, ...(fields.length > 0 ? { fields } : {}), ...(reason ? { reason } : {}) };
 }
 
 const MAP_ONLY_WRITE_TOOLS = new Set([
@@ -102,14 +104,23 @@ export function previewTool(name: string, args: Record<string, unknown>): ToolRe
 
 // 실제 적용: 커밋 게이트를 통과하면 undo 체크포인트를 남기고 store.replace로 반영한다.
 export function applyToolToStore(name: string, args: Record<string, unknown>): ToolResult {
+  const split = splitToolCallReason(args);
   const ctx: ToolContext = { project: store.getCurrent() };
-  const result = runTool(ctx, name, args, { dryRun: false });
+  const result = runTool(ctx, name, split.args, { dryRun: false });
   // 쓰기 툴이 성공적으로 새 프로젝트를 만든 경우에만 반영(읽기 툴/거부는 무시).
   if (result.ok && ctx.project !== store.getCurrent()) {
-    recordToolSnapshot(name, args); // 변경 이전 상태를 undo 스냅샷으로 저장.
+    recordToolSnapshot(name, split.args); // 변경 이전 상태를 undo 스냅샷으로 저장.
     const summary = result.summary || summaryForDiff(result.diff ?? combineDiffs([]));
     // origin 은 "tool" — 사람이 에디터에서 툴을 직접 실행한 경로다(채팅 에이전트가 아니다).
-    store.replace(ctx.project, { change: applyAnnotation("tool", `툴 ${name}: ${summary}`, result.diff, [name]) });
+    store.replace(ctx.project, {
+      change: applyAnnotation(
+        "tool",
+        `툴 ${name}: ${summary}`,
+        result.diff,
+        [name],
+        isUsableToolReason(split.reason) ? split.reason : harnessToolReason("tool-direct", name),
+      ),
+    });
     recordProjectCommitFireAndForget({
       project: ctx.project,
       identity: currentHumanEditorIdentity(),
@@ -131,15 +142,19 @@ export type ApplyToolSequenceOptions = {
 
 // 여러 툴 호출을 하나의 undo 체크포인트로 묶어 순차 적용한다(어시스턴트 changeset 수락용).
 export function applyToolSequenceToStore(
-  calls: readonly { name: string; args: Record<string, unknown> }[],
+  calls: readonly { name: string; args: Record<string, unknown>; reason?: string }[],
   options: ApplyToolSequenceOptions = {}
 ): ToolResult[] {
   const before = store.getCurrent();
   const ctx: ToolContext = { project: before };
   const results: ToolResult[] = [];
   let mutated = false;
+  const reasons: string[] = [];
   for (const call of calls) {
-    const result = runTool(ctx, call.name, call.args, { dryRun: false });
+    const split = splitToolCallReason(call.args);
+    const reason = isUsableToolReason(call.reason) ? call.reason : split.reason;
+    if (isUsableToolReason(reason)) reasons.push(reason);
+    const result = runTool(ctx, call.name, split.args, { dryRun: false });
     if (result.ok && result.diff) mutated = true;
     results.push(result);
     if (!result.ok) break; // 실패 시 중단(부분 적용 방지).
@@ -157,6 +172,7 @@ export function applyToolSequenceToStore(
         `${byAgent ? `AI 적용${options.agentName ? ` (${options.agentName})` : ""}` : "툴 묶음"}: ${summary}`,
         diff,
         toolNames,
+        reasons.join(" · ") || (byAgent ? "AI 적용" : harnessToolReason("tool-direct", "툴 묶음")),
       ),
     });
     if (byAgent) focusAcceptedAgentChanges(before, ctx.project);
@@ -193,6 +209,7 @@ export interface ApplyProposedProjectOptions {
   /** reset_project 포함 수락 시 전체 프로젝트 교체(카드 경로 전용). */
   readonly resetProject?: boolean;
   readonly reviewStatus?: CommitLogInput["reviewStatus"];
+  readonly reason?: string;
 }
 
 export type ApplyProposedProjectResult =
@@ -242,6 +259,7 @@ export async function applyProposedProject(
     `${options.source === "agent-milestone" ? "AI 마일스톤" : "AI 제안"} 적용: ${options.summary}`,
     diff,
     options.toolNames,
+    options.reason ?? `AI 적용: ${options.summary}`,
   );
   if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false });
   else store.replace(proposed, { change });
