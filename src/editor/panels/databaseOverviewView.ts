@@ -79,7 +79,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
           el("div", {
             class: "db-overview-identity",
             children: [
-              el("span", { class: "db-overview-eyebrow", text: "GAME OVERVIEW" }),
+              el("span", { class: "db-overview-eyebrow", text: "게임 개요" }),
               el("div", {
                 class: "db-overview-title-row",
                 children: [

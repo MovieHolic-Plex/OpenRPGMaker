@@ -458,7 +458,7 @@ function cropDetail(record: CropRecord, project: Project, rerender: () => void):
 
   return makeDetailPane({
     hero: detailHero({
-      eyebrow: "CROP",
+      eyebrow: "작물",
       title: record.name || "이름 없는 작물",
       subtitle: `${itemLabel(project, record.seedItemId)} 을(를) 심으면 ${growthDays}일 뒤 ${itemLabel(project, record.harvestItemId)} ${record.harvestCount}개를 수확합니다.`,
       tags: [

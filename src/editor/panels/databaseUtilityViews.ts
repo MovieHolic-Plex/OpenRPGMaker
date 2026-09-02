@@ -121,7 +121,7 @@ type FlagKind = {
 const SWITCH_KIND: FlagKind = {
   kind: "switch",
   label: "스위치",
-  eyebrow: "SWITCH",
+  eyebrow: "스위치",
   icon: "⏻",
   addTestId: "db-add-switch",
   searchPlaceholder: "스위치 검색",
@@ -134,7 +134,7 @@ const SWITCH_KIND: FlagKind = {
 const VARIABLE_KIND: FlagKind = {
   kind: "variable",
   label: "변수",
-  eyebrow: "VARIABLE",
+  eyebrow: "변수",
   icon: "＃",
   addTestId: "db-add-variable",
   searchPlaceholder: "변수 검색",
@@ -461,7 +461,7 @@ const TERM_GROUPS: readonly TermGroup[] = [
   {
     id: "battle",
     label: "전투",
-    eyebrow: "BATTLE",
+    eyebrow: "전투",
     hint: "전투 중 명령 메뉴와 대상 선택에 쓰이는 말입니다.",
     entries: [
       { key: "attack", label: "공격" },
@@ -475,7 +475,7 @@ const TERM_GROUPS: readonly TermGroup[] = [
   {
     id: "shop",
     label: "상점",
-    eyebrow: "SHOP",
+    eyebrow: "상점",
     hint: "상점 창의 인사말과 버튼 문구입니다.",
     entries: [
       { key: "shopGreeting", label: "인사" },
@@ -488,7 +488,7 @@ const TERM_GROUPS: readonly TermGroup[] = [
   {
     id: "inn",
     label: "여관",
-    eyebrow: "INN",
+    eyebrow: "여관",
     hint: "여관 숙박 확인 창의 문구입니다.",
     entries: [
       { key: "innTitle", label: "제목" },
@@ -500,7 +500,7 @@ const TERM_GROUPS: readonly TermGroup[] = [
   {
     id: "common",
     label: "공통",
-    eyebrow: "COMMON",
+    eyebrow: "공통",
     hint: "상태 창과 금액 표시에 두루 쓰이는 라벨입니다.",
     entries: [
       { key: "gold", label: "돈 단위", testid: "db-field-gold" },
