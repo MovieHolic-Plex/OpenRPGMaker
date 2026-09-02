@@ -104,6 +104,8 @@ test("미리보기는 편집을 견디고, 검색은 못 하는 척하지 않는
     p.addEventPageCommand(mapId, ev.id, pageId, { kind: "text", body: "미리보기 유지 확인" });
   });
 
-  await expect(editor.getByTestId("event-view-toggle-preview")).toHaveAttribute("aria-pressed", "true");
+  // 보기 세그먼트는 tablist 다 — 「여럿 중 하나」라 선택 상태는 aria-selected 로 말한다.
+  // (예전엔 aria-pressed 였는데 그건 각자 켜지고 꺼지는 토글 버튼의 속성이다.)
+  await expect(editor.getByTestId("event-view-toggle-preview")).toHaveAttribute("aria-selected", "true");
   await expect(editor.getByTestId("event-page-preview")).toBeVisible();
 });

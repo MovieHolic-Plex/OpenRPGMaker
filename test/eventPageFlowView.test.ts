@@ -71,8 +71,8 @@ describe("플로우 보기 승격", () => {
     expect(labels).toEqual(["목록", "스토리", "미리보기", "플로우"]);
     const flowBtn = bar.querySelector("[data-testid='event-view-toggle-flow']");
     const previewBtn = bar.querySelector("[data-testid='event-view-toggle-preview']");
-    expect(flowBtn?.getAttribute("aria-pressed")).toBe("true");
-    expect(previewBtn?.getAttribute("aria-pressed")).toBe("false");
+    expect(flowBtn?.getAttribute("aria-selected")).toBe("true");
+    expect(previewBtn?.getAttribute("aria-selected")).toBe("false");
   });
 
   it("미리보기를 한 번도 열지 않았으면 강조하지 않고, 안내만 보여준다", () => {

@@ -561,8 +561,11 @@
   padding: 0 10px;
 }
 
+/* 보기 세그먼트의 선택 상태는 `aria-selected` 하나가 출처다. 예전엔 TS 가 `on` 과
+ * `is-active` 두 클래스를 같이 달아 두 CSS 세대(여기 + storyboard.css)를 동시에 먹였다.
+ * 상태를 ARIA 에서 읽으면 접근성 트리와 화면이 어긋날 수 없다. */
 .event-editor .seg button.on,
-.event-editor .event-view-toggle-btn.is-active {
+.event-editor .event-view-toggle-btn[aria-selected="true"] {
   background: var(--accent-muted);
   color: var(--accent);
   font-weight: 650;
@@ -1383,12 +1386,20 @@ footer {
 
   /* 시트는 그리드 흐름에서 빼낸다. 행을 가로질러 span 시키면 그 높이가 레일 헤더 행들에
      분배돼 헤더가 세로로 부푼다(실측: 첫 헤더가 640px 가 됐다). */
+  /* 높이는 «내용만큼», 상한은 컬럼 높이.
+     예전엔 `bottom: 0` 으로 시트를 세로로 꽉 채웠다. 조건 12행처럼 내용이 많은 그룹에는
+     맞지만, 「모습과 대화」처럼 스프라이트 한 칸과 체크박스 하나뿐인 그룹에서는 2560px
+     창 기준 **590px 짜리 빈 테두리 상자**가 됐다(실측). 빈 상자는 «여기 뭔가 더 있어야
+     하는데 없다»고 말한다 — 내용에 맞춰 줄이고, 넘칠 때만 컬럼 높이에서 스크롤한다.
+     `position: absolute` 는 그대로 둔다: 그리드 흐름에 넣고 행을 span 시키면 그 높이가
+     레일 헤더 행들에 분배돼 헤더가 부푼다(실측: 첫 헤더 640px). */
   .event-editor .event-editor-settings-accordion-body {
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: 8px;
-    bottom: 0;
+    bottom: auto;
     left: calc(var(--balanced-rail-width) + 12px);
+    max-height: 100%;
     min-width: 0;
     overflow-y: auto;
     padding: 12px 14px 14px;
@@ -2268,4 +2279,53 @@ footer {
 .event-editor .event-contents-fieldset > .event-editor-command-toolbar,
 .event-editor .event-editor-command-toolbar {
   z-index: auto;
+}
+
+/* ── 헤더·푸터 배치 교정 (2026-09-02 적대적 리뷰) ──────────────────────────
+ * 이 시트는 index.css 에서 이벤트 에디터 시트 중 **마지막**(91행)이고 레이어 밖이라,
+ * 레이어 안(storyboard.css 의 `@layer editor`)과 앞선 세대(part-*, modern/*, mockup)를
+ * 모두 이긴다. 배치 교정은 여기서 한다. */
+
+/* ⚠️ 셀렉터에 `.event-editor` 를 앞에 붙이지 말 것.
+ * `.event-editor` 는 모달 **본문**을 감싸는 요소이지 창 전체가 아니다. 실측한 조상 사슬은
+ * `.event-editor-modal-backdrop > .event-editor-modal-window > .event-editor-modal-header`
+ * 라서, 헤더·푸터를 `.event-editor …` 로 겨누면 한 번도 매칭되지 않는 죽은 규칙이 된다
+ * (이 교정을 처음 그렇게 썼다가 두 번의 실측으로 잡았다). */
+
+/* 닫기 «×» 가 타이틀바 한가운데 떠 있었다. 이 파일 137행에 이미
+ * `.header-actions { margin-left: auto }` 가 있는데도 그랬다 — auto 는 **남은 자유 공간**을
+ * 가져가는 값인데, part-1.css 의 `.event-editor-modal-header > div { flex: 1 }` 때문에
+ * .meta 가 그 공간을 먼저 다 먹어치워 auto 가 0 으로 해소됐다(그래서 computed margin-left
+ * 는 `0px` 로 보였다 — 규칙이 없어서가 아니다).
+ * 실측(2560px 창, 교정 전): 창 오른쪽 끝과 닫기 버튼 사이 850px.
+ * .meta 를 내용 폭으로 되돌려 자유 공간을 되살린다. */
+.event-editor-modal-header .meta {
+  flex: 0 1 auto;
+}
+
+.event-editor-modal-header .event-editor-header-page-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+/* 카운터가 자유 공간을 가져갔으면 액션 묶음은 그 옆에 붙는다(카운터가 없으면 137행의
+ * `margin-left:auto` 가 그대로 작동한다). */
+.event-editor-modal-header .event-editor-header-page-count ~ .header-actions {
+  flex: 0 0 auto;
+  margin-left: 8px;
+}
+
+/* 「변경 있음/없음」은 판단이고 「적용」은 실행이다. 예전엔 상태가 푸터 왼쪽 끝, 저장 군이
+ * 오른쪽 끝이라 넓은 창에서 2,000px 넘게 떨어져 사실상 안 읽혔다. 이제 상태는 실행 버튼
+ * 바로 왼쪽에 서고, 푸터 왼쪽 칸은 파괴 동작(이벤트 삭제) 전용이다. */
+.event-editor-modal-footer .event-editor-footer-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.event-editor-modal-footer .event-editor-footer-actions .event-editor-draft-status {
+  flex: 0 1 auto;
+  margin-right: 4px;
 }

@@ -1,6 +1,7 @@
 import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState } from "@/editor/editorState";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
+import { eventDisplayName } from "@/editor/eventMarkerUx";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
 import {
   beginExistingEventDraft,
@@ -224,7 +225,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     const diff = eventDraftDiffById(store.getCurrent(), request.mapId, request.eventId);
     if (diff && diff.changes.length > 0) checkpointEventDraft(request.mapId, request.eventId);
   }, EVENT_EDITOR_CHECKPOINT_MS);
-  backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, closeHandler));
+  backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request));
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
     disposeWindowFullscreen();
@@ -279,8 +280,6 @@ function renderModalHeader(
 ): HTMLElement {
   const map = store.getCurrent().maps[mapId];
   const ev = map?.events.find((entry) => entry.id === eventId);
-  const eventOrdinal = Math.max(0, map?.events.findIndex((candidate) => candidate.id === eventId) ?? 0) + 1;
-  const idStr = String(eventOrdinal).padStart(4, "0");
   const coordStr = `${ev?.x ?? 0}, ${ev?.y ?? 0}`;
   const characterId = ev?.characterId?.trim();
   const profileName = characterId
@@ -290,12 +289,26 @@ function renderModalHeader(
   const pages = ev?.pages ?? [];
   const selectedPageId = editorState.get().selectedEventPageId;
   const activePage = pages.find((p) => p.id === selectedPageId) ?? pages[0];
-  const eventName = activePage?.name?.trim() || (ev?.draft?.kind === "new" ? "새 이벤트 (저장 전)" : "이벤트");
+  // 이 상자는 **활성 페이지**의 이름을 고친다. `GameEvent` 에는 `name` 필드가 아예 없고
+  // (`src/project/types/events.ts`), 이벤트의 표시 이름은 `eventDisplayName()` 이 **마지막으로
+  // 이름이 붙은 페이지**에서 뽑는다. 그런데 이 상자는 「이벤트 이름」이라고 라벨링돼 있었다.
+  // 그래서 페이지 2 를 고르고 이름을 고친 사용자는 이벤트를 고쳤다고 믿지만 실제로는 페이지
+  // 하나만 바뀌었고, 맵 마커(=eventDisplayName)와 모달 제목이 서로 다른 이름을 보였다.
+  // 라벨을 페이지 범위로 되돌리고, 이벤트 이름이 어떻게 정해지는지는 title 로 말한다.
+  const pageName = activePage?.name?.trim() || (ev?.draft?.kind === "new" ? "새 이벤트 (저장 전)" : "이벤트");
+  const pageOrdinal = activePage ? pages.indexOf(activePage) + 1 : 0;
+  const nameFieldLabel = pageOrdinal > 0 ? `페이지 ${pageOrdinal} 이름` : "페이지 이름";
+  const eventIdentity = ev ? eventDisplayName(ev) : "";
 
   const nameInput = el("input", {
     class: "event-name",
-    value: eventName,
-    attrs: { type: "text", placeholder: "이벤트 이름", "aria-label": "이벤트 이름" },
+    value: pageName,
+    attrs: {
+      type: "text",
+      placeholder: "페이지 이름",
+      "aria-label": nameFieldLabel,
+      title: `${nameFieldLabel}입니다. 이벤트 이름은 마지막으로 이름 붙인 페이지를 따릅니다 — 지금은 "${eventIdentity}".`,
+    },
     dataset: { testid: "event-editor-name", pageId: activePage?.id ?? "" },
     on: {
       // 활성 페이지를 **입력 시점에** 다시 읽는다.
@@ -325,8 +338,22 @@ function renderModalHeader(
       el("div", {
         class: "meta",
         children: [
-          el("span", { text: idStr, dataset: { testid: "event-editor-event-id" } }),
-          el("span", { class: "dot-sep" }),
+          // 이벤트 정체성은 «이름 + 좌표» 다(DESIGN.md §5). 예전엔 여기에 `0007` 이 있었는데
+          // 그건 ID 가 아니라 **맵 events 배열의 순번**(findIndex+1)이었다 — 앞 이벤트를 지우면
+          // 번호가 밀린다. 4자리 제로패딩이 "안정적인 식별자"라고 약속하고 지키지 않았다.
+          //
+          // 이름 상자는 활성 페이지 이름이라, 이벤트 이름이 그와 다를 때만(=페이지 2 를 보는
+          // 중일 때) 이벤트 쪽 이름을 덧붙인다. 같을 땐 같은 문자열을 두 번 보여주지 않는다.
+          ...(eventIdentity && eventIdentity !== pageName
+            ? [
+                el("span", {
+                  class: "event-editor-identity",
+                  text: `이벤트: ${eventIdentity}`,
+                  dataset: { testid: "event-editor-identity" },
+                }),
+                el("span", { class: "dot-sep" }),
+              ]
+            : []),
           el("span", { text: coordStr, dataset: { testid: "event-editor-coords" } }),
           el("span", { class: "dot-sep" }),
           el("span", {
@@ -416,13 +443,18 @@ function renderModalFooter(
   const footer = el("footer", {
     class: "event-editor-modal-footer",
     children: [
+      // 파괴적 동작은 저장 버튼 군에서 **물리적으로 떼어 놓는다**.
+      //
+      // 예전 배치: `삭제 · 취소 · 적용 · 저장하고 닫기` 가 오른쪽에 한 덩어리였다. 이벤트를
+      // 통째로 지우는 버튼이 «저장하고 닫기» 에서 두 칸 거리였고, 라벨이 그냥 `삭제` 라
+      // 우상단 페이지 툴바의 `삭제`(=페이지 1개)와 글자까지 같았다. 둘은 폭발 반경이 다르다.
+      // 이제 이벤트 삭제는 푸터 왼쪽 끝, 저장 군은 오른쪽 끝이고 라벨이 대상을 말한다.
       el("div", {
         class: "event-editor-footer-leading",
         children: [
-          el("span", {
-            class: "issue event-editor-draft-status",
-            dataset: { testid: "event-editor-draft-status" },
-          }),
+          footerButton("이벤트 삭제", "event-delete", () => {
+            if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
+          }, false, "ghost"),
           el("span", {
             class: "event-editor-remote-status",
             attrs: { style: "display: none;" },
@@ -433,9 +465,12 @@ function renderModalFooter(
       el("div", {
         class: "actions event-editor-footer-actions",
         children: [
-          footerButton("삭제", "event-delete", () => {
-            if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
-          }, false, "ghost"),
+          // 「변경 있음/없음」은 판단이고 「적용」은 실행이다. 예전엔 이 둘이 푸터 양 끝으로
+          // 갈라져 넓은 화면에서 2,000px 넘게 떨어졌다 — 상태 표시가 사실상 안 읽혔다.
+          el("span", {
+            class: "issue event-editor-draft-status",
+            dataset: { testid: "event-editor-draft-status" },
+          }),
           footerButton("취소", "event-editor-cancel", () => requestClose(), false, "ghost"),
           footerButton("적용", "event-editor-apply", () => {
             if (!commitValidatedEventDraft(request, "적용")) return;
@@ -592,11 +627,7 @@ function footerButton(text: string, testId: string, onClick?: () => void, primar
   return el("button", props) as HTMLButtonElement;
 }
 
-function handleModalKeyDown(
-  event: KeyboardEvent,
-  request: OpenEventEditorRequest,
-  close: (saved?: boolean) => void
-): void {
+function handleModalKeyDown(event: KeyboardEvent, request: OpenEventEditorRequest): void {
   if (event.key === "Escape") return;
   if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "k") {
     event.preventDefault();
@@ -608,14 +639,18 @@ function handleModalKeyDown(
   if (event.key !== "Delete" || event.ctrlKey || event.metaKey || event.altKey) return;
   if (isTextEditingTarget(event.target)) return;
 
-  if (isCommandListSurface(event.target)) {
-    event.preventDefault();
-    event.stopPropagation();
-    return;
-  }
-
+  // 맨 Delete 로는 이벤트를 지우지 않는다.
+  //
+  // 예전엔 가드가 «텍스트 입력»과 «명령 리스트» 둘뿐이고 **나머지 모달 전체**에서 Delete 가
+  // 이벤트를 통째로 지웠다 — 설정 레일, 그래픽 패널, 페이지 탭, 빈 여백까지 전부 그 영역이다.
+  // 페이지 탭을 클릭해 포커스가 거기 있는 상태에서 「명령 하나 지우려고」 Delete 를 누르면
+  // 이벤트가 사라졌다. 파괴 반경이 큰 동작일수록 우연히 닿는 표면이 넓으면 안 된다.
+  //
+  // 이벤트 삭제의 입구는 라벨이 붙은 푸터 버튼 하나다. 명령 삭제는 명령 줄이 자기 키다운에서
+  // 처리하고 stopPropagation 하므로(commandListContextMenu.ts) 여기까지 오지 않는다.
+  // 여기 닿은 Delete 는 삼킨다 — 흘려보내면 브라우저 기본 동작이나 상위 리스너에 닿는다.
   event.preventDefault();
-  if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
+  event.stopPropagation();
 }
 
 function isTextEditingTarget(target: EventTarget | null): boolean {
@@ -624,28 +659,25 @@ function isTextEditingTarget(target: EventTarget | null): boolean {
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
 }
 
-function isCommandListSurface(target: EventTarget | null): boolean {
-  if (!target || typeof (target as Element).closest !== "function") return false;
-  const el = target as Element;
-  return Boolean(
-    el.closest(".cmd-list")
-    || el.closest(".event-editor-command-toolbar")
-    || el.closest(".event-editor-commands-column")
-    || el.closest(".event-contents")
-    || el.closest("[data-testid='event-command-context-menu']")
-  );
-}
 
+/**
+ * 푸터 버튼의 접근성 이름.
+ *
+ * 예전 이 스위치는 `반영하고 닫기` / `닫기` / `반영하고 계속` 세 라벨만 알고 있었다. 그런데
+ * 출하 라벨은 `삭제` / `취소` / `적용` / `저장하고 닫기` 라 **모든 호출이 default 로 떨어지는
+ * 죽은 스위치**였다 — DESIGN.md 의 푸터 계약이 코드에서 되돌려졌는데 이 함수만 남은 흔적이다.
+ * 이제 실제 라벨을 받아, 특히 파괴적 동작은 «무엇을» 지우는지까지 읽어준다.
+ */
 function footerButtonAccessibleName(text: string): string {
   switch (text) {
-    case "반영하고 닫기":
-      return "반영하고 닫기";
-    case "닫기":
-      return "닫기";
-    case "반영하고 계속":
-      return "반영하고 계속";
-    case "도움말":
-      return "도움말 Help";
+    case "이벤트 삭제":
+      return "이벤트 삭제: 이 이벤트와 모든 페이지를 지웁니다";
+    case "취소":
+      return "취소: 변경을 버리고 닫기";
+    case "적용":
+      return "적용: 프로젝트에 반영하고 계속 편집";
+    case "저장하고 닫기":
+      return "저장하고 닫기: 반영하고 편집기를 닫습니다";
     case "테스트":
       return "이 이벤트 테스트";
     default:

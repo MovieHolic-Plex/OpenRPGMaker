@@ -27,6 +27,16 @@ type BellSeverity = EventDraftIssue["severity"] | "none";
 
 /** 헤더에 한 번 세우는 종 껍데기. 내용은 refreshEventValidationBell 이 채운다. */
 export function renderEventValidationBell(): HTMLDetailsElement {
+  // 심각도 단어(`오류 1 · 경고 2`)는 **접기 전에** 보여야 한다.
+  //
+  // 예전엔 tally 가 팝오버 안에 있어서 헤더에는 빨간 숫자 하나만 떴다. 오류(저장 차단)와
+  // 안내(무시 가능)는 비용이 전혀 다른데 배지가 둘을 구분하지 않았고, 구분하려면 종을
+  // 눌러야 했다. 색으로만 구분한 셈이라 WCAG 1.4.1(색만으로 정보 전달 금지)에도 걸린다.
+  // DESIGN.md §5 의 계약도 `오류 N · 경고 N · 안내 N` 이다.
+  const tally = el("span", {
+    class: "event-draft-validation-tally",
+    dataset: { testid: "event-draft-validation-tally" },
+  });
   const summary = el("summary", {
     class: "event-draft-validation-summary",
     dataset: { testid: "event-draft-validation-summary" },
@@ -36,11 +46,8 @@ export function renderEventValidationBell(): HTMLDetailsElement {
         class: "event-draft-validation-count",
         dataset: { testid: "event-draft-validation-count" },
       }),
+      tally,
     ],
-  });
-  const tally = el("span", {
-    class: "event-draft-validation-tally",
-    dataset: { testid: "event-draft-validation-tally" },
   });
   const issues = el("div", { class: "event-draft-validation-issues" });
   const details = el("details", {
@@ -55,7 +62,6 @@ export function renderEventValidationBell(): HTMLDetailsElement {
             class: "event-draft-validation-head",
             children: [
               el("span", { class: "event-draft-validation-title", text: "검토할 항목" }),
-              tally,
             ],
           }),
           issues,

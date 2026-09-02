@@ -348,7 +348,12 @@ describe("RPG Maker style event editor entry points", () => {
     expect(saved.map((page) => page.name)).toEqual(["첫 페이지", "이름 바꿈"]);
   });
 
-  it("confirms before deleting the open event with the Delete key", () => {
+  // 예전 계약: 모달 안에서 맨 Delete 를 누르면 확인 후 **이벤트가 통째로** 지워졌다.
+  // 가드는 텍스트 입력과 명령 리스트뿐이라 설정 레일·그래픽 패널·페이지 탭·빈 여백 —
+  // 모달 면적의 대부분이 «누르면 이벤트가 사라지는» 표면이었다. 페이지 탭을 눌러 포커스가
+  // 거기 있는 채로 명령 하나 지우려고 Delete 를 누르면 이벤트가 날아갔다.
+  // 지금 계약: 맨 Delete 로는 이벤트를 지우지 않는다. 입구는 라벨 붙은 푸터 버튼 하나뿐이다.
+  it("never deletes the open event with a bare Delete key", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
     const page = eventPage();
@@ -364,9 +369,28 @@ describe("RPG Maker style event editor entry points", () => {
 
     modal.dispatchEvent(deleteKeyEvent());
 
-    expect(confirmDeletion).toHaveBeenCalledWith(expect.stringContaining("이벤트"));
-    expect(store.getCurrent().maps[project.startMapId].events).toEqual([]);
-    expect(document.querySelector('[data-testid="event-editor-modal"]')).toBeNull();
+    expect(confirmDeletion).not.toHaveBeenCalled();
+    expect(store.getCurrent().maps[project.startMapId].events).toHaveLength(1);
+    expect(document.querySelector('[data-testid="event-editor-modal"]')).not.toBeNull();
+  });
+
+  it("names its target on the footer delete button and keeps it out of the save cluster", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const page = eventPage();
+    map.events = [gameEvent(page)];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId, selectedEventId: "event-1", selectedEventPageId: page.id });
+
+    openEventEditorModal(project.startMapId, "event-1");
+    const del = document.querySelector<HTMLElement>('[data-testid="event-delete"]');
+    if (!del) throw new Error("Expected the footer event-delete button");
+
+    // 우상단 페이지 툴바의 `삭제`(=페이지 1개)와 글자가 같으면 안 된다 — 폭발 반경이 다르다.
+    expect(del.textContent).toBe("이벤트 삭제");
+    expect(del.getAttribute("aria-label")).toContain("모든 페이지");
+    expect(del.closest(".event-editor-footer-actions")).toBeNull();
+    expect(del.closest(".event-editor-footer-leading")).not.toBeNull();
   });
 
   it("keeps the event and active draft when delete confirmation is canceled", () => {
