@@ -198,22 +198,34 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const refresh = () => {
     const scrollSnapshots = captureEventEditorScroll(dynamicBody);
     const interactionSnapshot = captureEventEditorInteraction(dynamicBody);
-    const live = store.getCurrent().maps[request.mapId]?.events.some((event) => event.id === request.eventId);
-    if (!live) store.restoreEventDraftFromVault(request.mapId, request.eventId);
-    if (!stableRendered) {
-      clearChildren(stableBody);
-      renderEventEditorStable(stableBody, request.mapId, request.eventId);
-      stableRendered = true;
+    try {
+      const live = store.getCurrent().maps[request.mapId]?.events.some((event) => event.id === request.eventId);
+      if (!live) store.restoreEventDraftFromVault(request.mapId, request.eventId);
+      if (!stableRendered) {
+        clearChildren(stableBody);
+        renderEventEditorStable(stableBody, request.mapId, request.eventId);
+        stableRendered = true;
+      }
+      clearChildren(dynamicBody);
+      renderEventEditorDynamic(dynamicBody, request.mapId, request.eventId);
+    } catch (error) {
+      // clearChildren 뒤에 던지면 헤더/푸터만 남은 흰 본문이 된다. 원인을 본문에 남긴다.
+      console.error("[event-editor] failed to render body", error);
+      clearChildren(dynamicBody);
+      dynamicBody.append(renderEventEditorCrash(error, refresh));
+      return;
     }
-    clearChildren(dynamicBody);
-    renderEventEditorDynamic(dynamicBody, request.mapId, request.eventId);
-    customSelects.refresh();
-    restoreEventEditorScroll(dynamicBody, scrollSnapshots);
-    restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
-    refreshHeaderPageSegments(header, request);
-    refreshEventValidationBell(header, validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
-    refreshModalFooterStatus(footer, request);
-    refreshModalHeaderSaveState(header, footer);
+    try {
+      customSelects.refresh();
+      restoreEventEditorScroll(dynamicBody, scrollSnapshots);
+      restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
+      refreshHeaderPageSegments(header, request);
+      refreshEventValidationBell(header, validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
+      refreshModalFooterStatus(footer, request);
+      refreshModalHeaderSaveState(header, footer);
+    } catch (error) {
+      console.error("[event-editor] failed to restore editor chrome", error);
+    }
   };
   const unsubscribeStore = store.subscribe(refresh);
   const unsubscribeEditor = editorState.subscribe(refresh);
@@ -261,6 +273,31 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
 export function isEventEditorModalOpenFor(mapId: MapId, eventId: string): boolean {
   const modal = document.querySelector(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`);
   return modal instanceof HTMLElement && modal.dataset.mapId === mapId && modal.dataset.eventId === eventId;
+}
+
+function renderEventEditorCrash(error: unknown, retry: () => void): HTMLElement {
+  const detail = error instanceof Error ? error.message : String(error);
+  return el("div", {
+    class: "event-editor-render-error",
+    dataset: { testid: "event-editor-render-error" },
+    children: [
+      el("p", {
+        class: "event-editor-render-error-title",
+        text: "이벤트 편집 화면을 그리지 못했습니다.",
+      }),
+      el("p", {
+        class: "event-editor-render-error-detail",
+        text: detail.trim() || "알 수 없는 오류",
+      }),
+      el("button", {
+        class: "btn",
+        text: "다시 그리기",
+        attrs: { type: "button" },
+        dataset: { testid: "event-editor-render-retry" },
+        on: { click: () => retry() },
+      }),
+    ],
+  });
 }
 
 function closeExistingEventEditorModal(): void {

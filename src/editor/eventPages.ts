@@ -40,6 +40,37 @@ export function createDefaultEventPage(
   };
 }
 
+/**
+ * 렌더·검증이 `page.graphic.sprite` / `page.movement.type` / `page.trigger.kind` 를
+ * 바로 읽는다. AI·구 저장본 페이지에 이 칸이 없으면 헤더/푸터만 남고 본문이 흰 칸이 된다
+ * (`refresh` 가 `clearChildren` 뒤에 던지기 때문). 화면용으로만 기본값을 채운다 —
+ * 스토어에 쓰지 않는다(열기만으로 「변경 있음」이 되면 안 된다).
+ */
+export function normalizeEventPage(page: Pick<EventPage, "id"> & Partial<EventPage>): EventPage {
+  const movement = page.movement;
+  return {
+    ...page,
+    id: page.id,
+    name: typeof page.name === "string" ? page.name : "",
+    conditions: Array.isArray(page.conditions) ? page.conditions : [],
+    graphic: page.graphic ?? {},
+    trigger: page.trigger ?? { kind: "action" },
+    priority: page.priority ?? "same",
+    movement: {
+      type: movement?.type ?? "fixed",
+      speed: typeof movement?.speed === "number" ? movement.speed : 3,
+      frequency: typeof movement?.frequency === "number" ? movement.frequency : 3,
+      ...(movement?.route ? { route: movement.route } : {}),
+      ...(movement?.living ? { living: movement.living } : {}),
+      ...(movement?.sightRange !== undefined ? { sightRange: movement.sightRange } : {}),
+      ...(movement?.giveUpRange !== undefined ? { giveUpRange: movement.giveUpRange } : {}),
+      ...(movement?.pathfind !== undefined ? { pathfind: movement.pathfind } : {}),
+      ...(movement?.moveIntervalMs !== undefined ? { moveIntervalMs: movement.moveIntervalMs } : {}),
+    },
+    commands: Array.isArray(page.commands) ? page.commands : [],
+  };
+}
+
 export function ensureEventPages(mapId: MapId, eventId: string): void {
   store.update((project) => {
     const event = project.maps[mapId]?.events.find((item) => item.id === eventId);

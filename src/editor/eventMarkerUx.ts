@@ -66,7 +66,7 @@ export type EventListTooltipModel = {
 export function eventDisplayName(event: Pick<GameEvent, "id" | "pages">): string {
   const pages = event.pages ?? [];
   for (let index = pages.length - 1; index >= 0; index -= 1) {
-    const name = pages[index]?.name.trim();
+    const name = pages[index]?.name?.trim();
     if (name) return name;
   }
   return event.id;
