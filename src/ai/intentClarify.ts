@@ -34,7 +34,7 @@ const PROTOCOL_LOCKED_RE =
 
 const INTERIOR_MARKERS = [
   "실내", "인테리어", "실내맵", "실내 맵", "방 맵", "방맵",
-  "interior", "침실", "서재", "주방", "선술집", "객실",
+  "interior", "침실", "서재", "주방", "선술집", "객실", "여관",
 ] as const;
 
 const OUTDOOR_MARKERS = [
@@ -84,8 +84,13 @@ export function requestMentionsHouseLike(text: string): boolean {
   );
 }
 
+/** "여관 주인"처럼 직업 이름에 붙은 건물 명사는 시공 표지에서 뺀다. */
+export function stripBuildingRolePhrases(text: string): string {
+  return text.replace(BUILDING_AS_ROLE_RE, " ");
+}
+
 export function requestMentionsInterior(text: string): boolean {
-  return includesAny(normalize(text), INTERIOR_MARKERS);
+  return includesAny(stripBuildingRolePhrases(normalize(text)), INTERIOR_MARKERS);
 }
 
 export function requestMentionsOutdoorHouse(text: string): boolean {

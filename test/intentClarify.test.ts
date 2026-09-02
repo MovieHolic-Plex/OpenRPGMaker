@@ -62,8 +62,9 @@ describe("resolveIntentClarification — 집 vs 실내", () => {
     expect(requestMentionsHouseLike("15G에 숙박시키는 여관 주인 NPC를 배치해줘")).toBe(false);
     expect(resolveIntentClarification("빈 프로젝트에 마을 맵을 하나 만들고, 15G에 숙박시키는 여관 주인 NPC를 배치해줘.")).toBeNull();
     expect(resolveIntentClarification("대장간 주인이랑 상점 점원 배치해줘")).toBeNull();
-    // 진짜 건물 요청은 그대로 되묻는다.
-    expect(resolveIntentClarification("여관 하나 지어줘")).not.toBeNull();
+    // 여관은 개념 꾸러미 실내 시설이라 되묻지 않는다. 오두막처럼 표지 없는 건물만 묻는다.
+    expect(resolveIntentClarification("여관 하나 지어줘")).toBeNull();
+    expect(resolveIntentClarification("오두막 하나 지어줘")).not.toBeNull();
   });
 
   // 수정 요청은 "새로 무엇을 만들까" 질문 자체가 성립하지 않는다.

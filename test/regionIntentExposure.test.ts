@@ -38,7 +38,7 @@ const ALL_CATEGORIES: readonly RegionIntentCategory[] = [
 // 대표 지시문 — 각각 정확히 해당 카테고리를 라우팅하는 문장.
 const REPRESENTATIVE_INSTRUCTIONS: Readonly<Record<RegionIntentCategory, string>> = {
   interior: "연금술사의 집 이라는 실내 를 하나 만드렁줘",
-  structure: "여기에 여관을 짓고 밭도 만들어줘",
+  structure: "여기에 집을 짓고 밭도 만들어줘",
   "npc-shop": "여기에 상인 NPC를 배치해줘",
   "door-transfer": "다음 맵으로 이어지는 텔레포트를 놔줘",
   "quest-trigger": "보물상자를 숨겨줘",
