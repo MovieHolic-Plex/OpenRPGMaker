@@ -8,9 +8,9 @@ const CATALOG_PATH = "src/assets/generatedEffectSheets.json";
 const SOUND_MANIFEST_PATH = "public/assets/easyrpg/rtp-manifest.json";
 const ASSET_DIR = "public/assets/generated/effects";
 const OUTPUT_PATH = "reports/generated-effect-showcase-2026-08-24.html";
-const DISPLAY_SCALE = 2;
-
 const catalog = JSON.parse(readFileSync(CATALOG_PATH, "utf8"));
+// 시트 px → 무대 논리 px. 96px 시대엔 2, 384px 고해상도 시트는 0.5 — 어느 쪽이든 화면 192px 로 보인다.
+const DISPLAY_SCALE = catalog.sheet.assetScale ?? 2;
 const soundManifest = JSON.parse(readFileSync(SOUND_MANIFEST_PATH, "utf8"));
 const soundAssetsById = new Map(
   soundManifest.assets.filter((asset) => asset.category === "sound").map((asset) => [asset.id, asset])
@@ -144,7 +144,7 @@ const html = `<!doctype html>
     code { color:#92a6d3; font-family:"Cascadia Code",monospace; font-size:12px; overflow-wrap:anywhere; }
     .effect-card header b { color:var(--accent); font:700 11px/1 "Cascadia Code",monospace; letter-spacing:.12em; }
     .stage { display:grid; place-items:center; min-height:232px; border-block:1px solid var(--line); background-color:#0b101b; background-image:linear-gradient(45deg,#111827 25%,transparent 25%),linear-gradient(-45deg,#111827 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#111827 75%),linear-gradient(-45deg,transparent 75%,#111827 75%); background-size:24px 24px; background-position:0 0,0 12px,12px -12px,-12px 0; }
-    .sprite { width:${frameWidth * DISPLAY_SCALE}px; height:${frameHeight * DISPLAY_SCALE}px; background-repeat:no-repeat; image-rendering:pixelated; animation-name:effect-film; animation-duration:calc(var(--film-duration) * var(--speed)); animation-iteration-count:infinite; }
+    .sprite { width:${frameWidth * DISPLAY_SCALE}px; height:${frameHeight * DISPLAY_SCALE}px; background-repeat:no-repeat; image-rendering:${DISPLAY_SCALE >= 1 ? "pixelated" : "auto"}; animation-name:effect-film; animation-duration:calc(var(--film-duration) * var(--speed)); animation-iteration-count:infinite; }
     @keyframes effect-film { to { background-position-x:calc(-1 * var(--film-width)); } }
     .timeline { padding:14px 18px 8px; }
     .timeline img { display:block; width:100%; height:auto; image-rendering:pixelated; border-radius:6px; background:#0b101b; }

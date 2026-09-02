@@ -22,14 +22,31 @@ import { defaultBattleAnimationRecords } from "@/project/defaults/defaultDatabas
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
 import {
   effectSheetOutputPath,
+  encodeEffectStrip,
   loadEffectCatalog,
   paintedEffectSlugs,
-  renderEffectSheetPng,
   renderEffectStrip,
   REPO_ROOT,
+  type EffectStrip,
 } from "../scripts/lib/effectSheet/render.mjs";
 
 const catalog = loadEffectCatalog();
+
+/**
+ * 384px 시트 한 장 렌더는 0.5~3초다(34종 약 35초). 예전 96px 시절처럼 단정마다 다시 그리면
+ * 파일 하나가 몇 분이 되므로, slug 당 **한 번** 그려서 모든 단정이 같은 스트립을 본다.
+ * 재현성은 "커밋된 바이트 == 이 프로세스의 렌더" 로 이미 증명된다(커밋은 다른 프로세스가 만들었다).
+ */
+const stripCache = new Map<string, EffectStrip>();
+function stripOf(slug: string): EffectStrip {
+  let strip = stripCache.get(slug);
+  if (!strip) {
+    strip = renderEffectStrip(slug, catalog);
+    stripCache.set(slug, strip);
+  }
+  return strip;
+}
+const RENDER_TIMEOUT_MS = 60_000;
 
 const EXPECTED_FRAME_COUNTS = {
   "slash-steel": 8,
@@ -105,6 +122,22 @@ const EXPECTED_SOUND_TIMINGS = {
   "meteor-fall": { frameIndex: 7, resourceId: "easyrpg-sound-fall2" },
 } as const;
 
+/**
+ * 프레임 밖에서 들어오거나 밖으로 나가도록 **의도한** 이펙트. 가장자리 잘림 검사에서 제외한다.
+ * 이유를 적어 두어야 새 이펙트를 무심코 여기 넣지 않는다 — 나머지 25종은 잘림이 결함이다(실측 7종 수정).
+ */
+const EDGE_ENTRY_EFFECTS: Readonly<Record<string, string>> = {
+  "thunder-strike": "번개가 프레임 위에서 떨어져 들어온다",
+  "holy-beam": "빛기둥이 프레임 위에서 내려온다",
+  "projectile-shot": "투사체가 왼쪽 밖에서 날아온다",
+  "leaf-volley": "잎이 좌상단 밖에서 날아온다",
+  "meteor-fall": "운석이 우상단 밖에서 떨어진다",
+  "wind-slice": "칼바람이 왼쪽에서 들어와 오른쪽으로 빠져나간다",
+  "sonic-wave": "음파가 오른쪽으로 퍼져 나간다",
+  "tackle-impact": "돌진 잔상(속도선)이 왼쪽에서 들어온다",
+  "drain-orbs": "흡수한 구슬이 시전자 쪽(좌상단)으로 빠져나간다",
+};
+
 function expectedFrameCount(slug: string): number {
   const count = EXPECTED_FRAME_COUNTS[slug as keyof typeof EXPECTED_FRAME_COUNTS];
   if (count === undefined) throw new Error(`예상 프레임 수가 없다: ${slug}`);
@@ -149,9 +182,12 @@ describe("생성 이펙트 카탈로그", () => {
     expect(paintedEffectSlugs().sort()).toEqual(catalogSlugs);
   });
 
-  it("시트는 96x96 셀과 75ms 재생 간격을 공유하고 종류별로 8~12장을 쓴다", () => {
-    expect(GENERATED_EFFECT_SHEET.frameWidth).toBe(96);
-    expect(GENERATED_EFFECT_SHEET.frameHeight).toBe(96);
+  it("시트는 384x384 셀·assetScale 0.5(무대 192 논리 px)·75ms 재생 간격을 공유하고 종류별로 8~12장을 쓴다", () => {
+    // 몬스터 배틀러 원본(384px)과 같은 해상도. 예전 96px 은 48 격자 2배 복제라 밀도가 몬스터의 1/10 이었다.
+    expect(GENERATED_EFFECT_SHEET.frameWidth).toBe(384);
+    expect(GENERATED_EFFECT_SHEET.frameHeight).toBe(384);
+    expect(GENERATED_EFFECT_SHEET.assetScale).toBe(0.5);
+    expect(GENERATED_EFFECT_SHEET.frameWidth * GENERATED_EFFECT_SHEET.assetScale).toBe(192);
     expect((catalog.sheet as unknown as { frameDurationMs?: number }).frameDurationMs).toBe(75);
     expect(
       Object.fromEntries(GENERATED_EFFECT_SHEETS.map((effect) => [
@@ -183,22 +219,16 @@ describe.each(GENERATED_EFFECT_SHEETS.map((effect) => effect.slug))("이펙트 �
     });
   });
 
-  it("커밋된 PNG 가 있고 렌더 결과와 바이트가 같다", () => {
+  it("커밋된 PNG 가 있고 렌더 결과와 바이트가 같다", { timeout: RENDER_TIMEOUT_MS }, () => {
     const outputPath = effectSheetOutputPath(slug);
     expect(existsSync(outputPath)).toBe(true);
     const committed = readFileSync(outputPath);
-    const rendered = Buffer.from(renderEffectSheetPng(slug, catalog));
+    const rendered = Buffer.from(encodeEffectStrip(stripOf(slug)));
     expect(rendered.equals(committed)).toBe(true);
   });
 
-  it("두 번 렌더해도 같은 바이트가 나온다", () => {
-    const first = Buffer.from(renderEffectSheetPng(slug, catalog));
-    const second = Buffer.from(renderEffectSheetPng(slug, catalog));
-    expect(first.equals(second)).toBe(true);
-  });
-
-  it("용도별 프레임이 모두 그려지고 서로 다르다", () => {
-    const strip = renderEffectStrip(slug, catalog);
+  it("용도별 프레임이 모두 그려지고 서로 다르다", { timeout: RENDER_TIMEOUT_MS }, () => {
+    const strip = stripOf(slug);
     expect(strip.width).toBe(GENERATED_EFFECT_SHEET.frameWidth * frameCount);
     expect(strip.height).toBe(GENERATED_EFFECT_SHEET.frameHeight);
     const signatures: string[] = [];
@@ -207,6 +237,25 @@ describe.each(GENERATED_EFFECT_SHEETS.map((effect) => effect.slug))("이펙트 �
       signatures.push(frameSignature(strip, index));
     }
     expect(new Set(signatures).size).toBe(frameCount);
+  });
+
+  it.skipIf(slug in EDGE_ENTRY_EFFECTS)("그림이 프레임 가장자리에 잘리지 않는다 — 바깥 2px 띠는 거의 투명하다", { timeout: RENDER_TIMEOUT_MS }, () => {
+    // 무대에서 셀은 192 논리 px 상자 안에 그대로 놓이므로, 가장자리까지 그린 그림은 그 자리에서 뚝 잘린다.
+    // 넓은 글로우의 미미한 꼬리는 허용한다(알파 < 8/255).
+    const strip = stripOf(slug);
+    const { frameWidth, frameHeight } = GENERATED_EFFECT_SHEET;
+    for (let index = 0; index < frameCount; index += 1) {
+      const originX = index * frameWidth;
+      let worst = 0;
+      for (let y = 0; y < frameHeight; y += 1) {
+        for (let x = originX; x < originX + frameWidth; x += 1) {
+          const edge = x - originX < 2 || x - originX >= frameWidth - 2 || y < 2 || y >= frameHeight - 2;
+          if (!edge) continue;
+          worst = Math.max(worst, strip.data[(y * strip.width + x) * 4 + 3]!);
+        }
+      }
+      expect(worst, `프레임 ${index} 가장자리 알파 ${worst}`).toBeLessThan(8);
+    }
   });
 
   it("자를 프레임 사각이 시트 밖을 넘지 않는다", () => {
@@ -236,6 +285,16 @@ describe.each(GENERATED_EFFECT_SHEETS.map((effect) => effect.slug))("이펙트 �
   });
 });
 
+describe("렌더 결정성", () => {
+  // 전종을 두 번 그리면 분 단위가 된다. 두 종만 골라 같은 프로세스 안에서 두 번 그려 비교한다 —
+  // 커밋 바이트 비교가 프로세스 간 결정성을, 이 테스트가 프로세스 안 결정성을 맡는다.
+  it.each(["slash-steel", "sleep-dust"])("%s 를 두 번 렌더해도 같은 바이트", { timeout: RENDER_TIMEOUT_MS }, (slug) => {
+    const first = Buffer.from(encodeEffectStrip(renderEffectStrip(slug, catalog)));
+    const second = Buffer.from(encodeEffectStrip(renderEffectStrip(slug, catalog)));
+    expect(first.equals(second)).toBe(true);
+  });
+});
+
 describe("기본 데이터베이스 배선", () => {
   const records = defaultBattleAnimationRecords();
 
@@ -243,6 +302,22 @@ describe("기본 데이터베이스 배선", () => {
     for (const id of GENERATED_EFFECT_RESOURCE_IDS) {
       expect(records.some((record) => record.resourceId === id)).toBe(true);
     }
+  });
+
+  it("생성 레코드의 시트는 assetScale 0.5 를 실어 384px 프레임이 192 논리 px 로 그려진다", () => {
+    for (const record of records.filter((entry) => GENERATED_EFFECT_RESOURCE_IDS.includes(entry.resourceId ?? ""))) {
+      expect(record.sheet?.assetScale, record.id).toBe(0.5);
+      expect(record.sheet?.frameWidth, record.id).toBe(384);
+    }
+  });
+
+  it("전체화면 이펙트 셀만 zoom 200 으로 무대 384 논리 px 를 덮고, 나머지는 100 이다", () => {
+    const zoomOf = (slug: string): number[] => {
+      const record = records.find((entry) => entry.resourceId === generatedEffectResourceId(slug));
+      return [...new Set((record?.frames ?? []).flatMap((frame) => frame.cells.map((cell) => cell.zoom)))];
+    };
+    for (const slug of ["arcane-nova", "summon-portal", "meteor-fall"]) expect(zoomOf(slug), slug).toEqual([200]);
+    for (const slug of ["fire-burst", "slash-steel", "heal-bloom", "sonic-wave"]) expect(zoomOf(slug), slug).toEqual([100]);
   });
 
   it("생성 레코드는 용도별 8~12프레임 전부를 순서대로 재생한다", () => {

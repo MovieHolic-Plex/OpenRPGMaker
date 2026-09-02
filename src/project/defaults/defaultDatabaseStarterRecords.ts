@@ -12,6 +12,7 @@ import type {
 import { SCARLOXY_BATTLE_ANIMATION_SHEET } from "@/assets/scarloxyPack";
 import {
   GENERATED_EFFECT_SHEETS,
+  generatedEffectCellZoom,
   generatedEffectDatabaseAnimationId,
   generatedEffectResourceId,
   generatedEffectSheet,
@@ -221,7 +222,8 @@ function generatedEffectAnimation(seed: GeneratedEffectSheetSeed): BattleAnimati
     large: seed.scope === "screen" || seed.position === "screen",
     // 시트의 모든 프레임을 순서대로 재생한다. 끝부분 감쇠·소멸 컷을 자르면 뚝 끊긴다.
     frames: Array.from({ length: seed.frameCount }, (_unused, pattern) => ({
-      cells: [{ pattern, x: 0, y: -8, zoom: 100, opacity: 255, visible: true }],
+      // zoom 은 카탈로그가 정한다 — 전체화면 이펙트만 200 으로 무대 384 논리 px 를 덮는다.
+      cells: [{ pattern, x: 0, y: -8, zoom: generatedEffectCellZoom(seed), opacity: 255, visible: true }],
     })),
     timings: generatedEffectTimings(seed),
   });

@@ -1,12 +1,16 @@
 // 이펙트 시트 렌더러. 카탈로그(src/assets/generatedEffectSheets.json)가 정본이고
 // slug → 페인터 매핑이 여기 있다. 카탈로그에 slug 를 넣고 페인터를 안 붙이면 즉시 던진다.
+//
+// 2026-09-03 고해상도 개편: 48 격자 2배 복제(canvas.mjs) 를 버리고 raster.mjs 의 SDF 래스터로
+// 카탈로그 프레임 크기(384px)에 직접 그린다. 페인터 좌표계는 전투 논리 px(192 단위)라 해상도와
+// 무관하고, 래스터 배율은 `frameWidth / DESIGN_SIZE` 로 카탈로그가 정한다.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { writePng } from "../pixelPng.mjs";
-import { createFrame, mulberry32, slugSeed, toStrip } from "./canvas.mjs";
-import { fireBurst, iceShatter, slashSteel, thunderStrike, waterColumn } from "./paintersImpact.mjs";
-import { arcaneNova, earthSpike, healBloom, poisonMist, windSlice } from "./paintersArcane.mjs";
+import { createRaster, DESIGN_SIZE, mulberry32, slugSeed, toStrip } from "./raster.mjs";
+import { fireBurst, iceShatter, slashSteel, thunderStrike, waterColumn } from "./effects/impact.mjs";
+import { arcaneNova, earthSpike, healBloom, poisonMist, windSlice } from "./effects/arcane.mjs";
 import {
   biteCrunch,
   captureSeal,
@@ -20,7 +24,7 @@ import {
   shadowPulse,
   sleepDust,
   tackleImpact,
-} from "./paintersMonster.mjs";
+} from "./effects/monster.mjs";
 import {
   blindVeil,
   cleanseSparkle,
@@ -34,7 +38,7 @@ import {
   smokeVanish,
   sonicWave,
   summonPortal,
-} from "./paintersUtility.mjs";
+} from "./effects/utility.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(HERE, "..", "..", "..");
@@ -99,12 +103,16 @@ export function renderEffectStrip(slug, catalog = loadEffectCatalog()) {
   const effect = catalog.effects.find((entry) => entry.slug === slug);
   if (effect === undefined) throw new Error(`이펙트 카탈로그 항목이 없다: ${slug}`);
   const { frameWidth, frameHeight } = catalog.sheet;
+  if (frameWidth !== frameHeight) throw new Error(`시트 프레임은 정사각이어야 한다: ${frameWidth}x${frameHeight}`);
+  const pixelsPerUnit = frameWidth / DESIGN_SIZE;
   const columns = effect.frameCount;
   const seed = slugSeed(slug);
   const frames = [];
   for (let index = 0; index < columns; index += 1) {
-    const frame = createFrame();
-    painter(frame, columns === 1 ? 0 : index / (columns - 1), mulberry32(seed));
+    const frame = createRaster(pixelsPerUnit);
+    // 프레임 i 는 [i, i+1)×75ms 동안 화면에 있으므로 그 구간의 **가운데** 진행도를 그린다.
+    // 끝점 포함(i/(n-1))으로 뽑으면 p=0 인 첫 컷이 대개 빈 화면이라 한 프레임을 통째로 버린다(실측 14종).
+    painter(frame, (index + 0.5) / columns, mulberry32(seed));
     frames.push(frame);
   }
   const strip = toStrip(frames);
@@ -116,10 +124,14 @@ export function renderEffectStrip(slug, catalog = loadEffectCatalog()) {
   return strip;
 }
 
-/** 같은 스트립을 PNG 바이트로. */
+/** 같은 스트립을 PNG 바이트로. 글로우 그라디언트라 적응 행 필터가 필수다(pixelPng.mjs 주석 참고). */
 export function renderEffectSheetPng(slug, catalog = loadEffectCatalog()) {
-  const strip = renderEffectStrip(slug, catalog);
-  return writePng(strip.width, strip.height, strip.data);
+  return encodeEffectStrip(renderEffectStrip(slug, catalog));
+}
+
+/** 이미 렌더한 스트립을 PNG 로 — 테스트가 한 번 렌더한 스트립을 여러 단정에 재사용할 때 쓴다. */
+export function encodeEffectStrip(strip) {
+  return writePng(strip.width, strip.height, strip.data, { filter: "adaptive" });
 }
 
 export function paintedEffectSlugs() {
