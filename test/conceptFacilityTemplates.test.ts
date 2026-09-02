@@ -139,12 +139,23 @@ describe("개념 꾸러미 초안 묶음 — 시드와 호출", () => {
     }
   });
 
-  it("시스템 프롬프트가 아홉 시설을 바닥·벽 재질과 함께 싣는다", () => {
-    const project = createBlankProject();
-    const prompt = buildSystemPrompt(project, { currentMapId: project.startMapId, budgetChars: 50_000 });
-    for (const label of conceptFacilityTemplateLabels()) expect(prompt, label).toContain(`query="${label}"`);
-    expect(prompt).toContain("석재 벽돌");
-    expect(prompt).toContain("돌 바닥");
+  it("시스템 프롬프트: 초안 그대로면 시설명 한 줄, 사용자가 고친 나무면 시설별 줄에 바닥·벽 재질", () => {
+    // 빈 프로젝트의 프롬프트는 20,000자 예산 중 약 19,250자를 이미 쓴다 — 초안 9종을 시설별로 싣으면
+    // 뒤의 스타일 문서 발췌가 밀려난다(test/worldAiExclusion). 초안일 때는 한 줄, 고친 나무일 때만 상세.
+    const blank = createBlankProject();
+    const compact = buildSystemPrompt(blank, { currentMapId: blank.startMapId, budgetChars: 50_000 });
+    const section = compact.slice(compact.indexOf("## 개념 꾸러미"), compact.indexOf("## 타일셋 실내 문법"));
+    expect(section.length).toBeLessThan(600);
+    expect(section).toContain("query=시설명");
+    for (const label of conceptFacilityTemplateLabels()) expect(section, label).toContain(label);
+    expect(section).not.toContain("석재 벽돌");
+
+    const edited = createBlankProject();
+    ensureConceptBundles(edited, INTERIOR_ROOM_TILESET_ID);
+    const detailed = buildSystemPrompt(edited, { currentMapId: edited.startMapId, budgetChars: 50_000 });
+    for (const label of conceptFacilityTemplateLabels()) expect(detailed, label).toContain(`query="${label}"`);
+    expect(detailed).toContain("석재 벽돌");
+    expect(detailed).toContain("돌 바닥");
   });
 });
 

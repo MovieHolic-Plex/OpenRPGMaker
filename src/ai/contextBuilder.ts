@@ -390,16 +390,28 @@ function conceptBundleSection(project: Project): string {
   const listed = listLiveConceptBundles(project);
   const lines = [
     "## 개념 꾸러미 (place_concept 이 읽음)",
-    "사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 나무가 정본이다. 아래 시설을 지을 때 방 종류 필수 역할로 합성하지 말고 place_concept(query)를 호출하라. "
-    + "장소의 [역할·크기 ×개수·바닥] 과 시설의 벽 재질도 그 나무 값이다(바꾸려면 데이터베이스에서). 물건 표기: *필수 · ⌂수면 · $노획 · ↔맵 연결.",
+    "사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 나무가 정본이다. 아래 시설을 지을 때 방 종류 필수 역할로 합성하지 말고 place_concept(query)를 호출하라.",
   ];
   if (listed.length === 0) {
     lines.push("- 지금 프로젝트에는 개념 꾸러미가 없다. 실내 칩셋이면 place_concept 첫 호출이 시설 초안(여관·민가·상점·술집·서재·대장간·교회·창고·길드)을 시드한다.");
     return lines.join("\n");
   }
-  // 시설마다 한 줄 — 프롬프트 예산(tokenBudget 보정 시 6,000자까지 줄어든다)을 개념 절이 잠식하면
-  // 뒤에 오는 스타일 문서·마을 저작 절이 잘린다. 물건은 라벨과 특수 칩 표시만 싣는다.
+  // 예산 규율(2026-09-03 실측): 빈 프로젝트의 시스템 프롬프트는 20,000자 예산 중 약 19,250자를 이미 쓴다.
+  // 시설마다 한 줄(9시설 ≈ 1,500자)을 기본 초안에도 싣자 뒤의 「게임 스타일 문서(발췌)」가 통째로 밀려났다
+  // (`test/worldAiExclusion.test.ts`). 그래서 두 단계다 —
+  //   · 초안 그대로(칩셋에 `scratchConceptBundles` 가 없음): 시설명 한 줄. 장소·재질은 코드 초안 값이라
+  //     모델이 미리 알 필요가 없다. place_concept 결과와 데이터베이스가 보여 준다.
+  //   · 사용자가 고친 나무(칩셋에 배열이 있음): 시설마다 한 줄 — 장소[역할·크기·×개수·바닥]·벽·물건 표시.
+  //     사용자 데이터는 마을 저작 절과 같은 이유로 코드 상수 요약보다 앞에 온다.
+  let detailed = false;
   for (const entry of listed) {
+    const materialized = project.tilesets[entry.tilesetId]?.scratchConceptBundles !== undefined;
+    if (!materialized) {
+      const labels = entry.bundles.flatMap((bundle) => bundle.facilities.map((facility) => facility.label));
+      lines.push(`- ${entry.tilesetName} 기본 초안 ${labels.length}종: ${labels.join("·")} (query=시설명). 장소·바닥·벽은 초안 값 — 데이터베이스에서 고치면 여기에 시설별로 실린다.`);
+      continue;
+    }
+    detailed = true;
     lines.push(`### ${entry.tilesetName} (${entry.tilesetId})`);
     for (const bundle of entry.bundles) {
       for (const facility of bundle.facilities) {
@@ -431,6 +443,9 @@ function conceptBundleSection(project: Project): string {
         lines.push(`- 시설 ${facility.label} (query="${facility.label}")${wallNote}: ${places.join(" → ") || "장소 없음"}`);
       }
     }
+  }
+  if (detailed) {
+    lines.splice(2, 0, "장소의 [역할·크기 ×개수·바닥] 과 시설의 벽 재질도 그 나무 값이다(바꾸려면 데이터베이스에서). 물건 표기: *필수 · ⌂수면 · $노획 · ↔맵 연결.");
   }
   return lines.join("\n");
 }
