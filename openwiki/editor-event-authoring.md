@@ -1,5 +1,18 @@
 # Editor Event Authoring
 
+## 이벤트 편집기 문법 고정 — P0 (2026-09-03)
+
+제안서 `docs/proposals/2026-09-03-event-editor-ux-redesign.html`(실측 45장 · DOM 계측) 의 P0 를 구현했다. 표면 구조(보기 4종 · 인스펙터/모달 · 도구 ▾)는 건드리지 않고 문법과 탈출 규칙만 고정한다. P1(보기 통합 · 모달 폐지 · 인라인 팔레트) · P2(사이드 시트 · CSS 세대 삭제)는 e2e 계약 이관이 선행돼야 한다 — 같은 제안서 §15.
+
+- **스타일은 `src/styles/editor/event-editor.balanced.css` 끝 「문법 고정」 절에서만 고친다.** 캐스케이드 최종 승자다([[rpg-zzu-event-editor-css-cascade]] 실측). 새 시트 · `important` 선언 · 새 hex 는 CSS 예산 래칫(`npm run gates -- --only css`)이 막는다. 앞 세대(blocks.css 등)가 5중 클래스 선택자를 쓰는 곳은 DOM 사슬을 따라 특이도를 맞춘다.
+- **규격**: 글자 12 · 13 · 15 · 18px, 라운딩 6 · 4px · 50%(점), `--text-3` 는 순백 위 12px 이상에서만, 버튼 여섯 묶음(채움 · 테두리 · 유령 · 아이콘 · 위험 · 칩). 값과 근거는 `DESIGN.md` 「One grammar, measured (2026-09-03)」.
+- **아이콘**: `src/editor/panels/eventEditor/editorIcons.ts` 의 `renderEditorIcon(name)` 하나만 쓴다(빌더는 저장소 공용 `buildSvgIcon`). 글리프 문자(↑ ✎ ✕ ⛶ ❝ ◇ …)를 버튼 텍스트로 넣지 말 것 — 게이트 C10 이 잡는다. 분류 아이콘은 `CategoryVisual.icon` + `renderCategoryIcon()`; `data-glyph` 는 호환용 속성으로만 남고 `::before` 는 꺼져 있다.
+- **탈출 규칙**: 툴바 팝오버(`<details>`)는 `makePopoverEscapable` 이 Escape 층 등록과 바깥 pointerdown 닫힘을 함께 건다. 닫기 확인창 문구는 실제 푸터 버튼(「적용」 「저장하고 닫기」)만 가리킨다 — 테스트 `test/eventEditorModalClose.test.ts`.
+- **헤더**: 맵 이름(`event-editor-map-name`) · 좌표 · 이벤트 표시명(페이지 이름과 다를 때만) · NPC 칩(연결됐을 때만). 「페이지 N/M」 카운터는 없고 순번은 이름 상자의 aria-label 이 말한다.
+- **원시 ID**: 명령 요약과 이동 경로 대상은 `eventNameForSummary()`(commandSummary.ts) 로 이름을 보인다. `eventDisplayName` 정의는 `@/project/eventDisplayName` 로 옮겼다(eventMarkerUx ↔ commandSummary 순환 방지, 기존 import 경로는 재export).
+- **끝 행**: 명령 목록은 「선택 끝」「분기 끝」 마커 행을 두지 않는다(`branchGroupEndLabel` 삭제). 분기 머리 · 들여쓰기 · 빈 분기 행은 그대로.
+- **측정**: `QA_BASE_URL=http://127.0.0.1:<port> node scripts/qa-event-editor-ux.mjs --label <name>` — C7~C12 가 문법 게이트다. main 기준 RED(`.omo/evidence/event-editor-ux/p0-red/`) 와 구현 뒤 GREEN(`p0-green/`) 결과를 남겼다. 표면 스냅샷(글리프 → SVG, 끝 행 제거)은 의도한 변경이라 기준선을 다시 떴다.
+
 ## NPC 일정 구조화 편집 (2026-08-24)
 
 - `src/editor/panels/eventEditor/eventScheduleEditor.ts`는 `event.schedule`이 비어 있어도 항상 `event-schedule-editor`를 렌더한다. `event-schedule-add`로 현재 이벤트 위치를 기본 목적지로 한 행을 만들고, 각 행은 삭제할 수 있다.
