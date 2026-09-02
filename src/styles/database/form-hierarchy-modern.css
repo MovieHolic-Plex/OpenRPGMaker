@@ -55,7 +55,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-record-hero-title .db-field > span {
-  color: var(--db-studio-text-3, #94A3B8);
+  color: var(--db-studio-text-3, #5C6B7F);
   font-size: 11px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -99,7 +99,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-record-hero-tag.muted {
   background: transparent;
   border-color: var(--db-studio-border-subtle, rgba(15,23,42,.08));
-  color: var(--db-studio-text-3, #94A3B8);
+  color: var(--db-studio-text-3, #5C6B7F);
 }
 
 /* ---- 필드 적용 범위 안내 — 접힌 details (databaseFieldSupportNotice) -------- */
@@ -109,7 +109,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-field-support-notice > summary {
-  color: var(--db-studio-text-3, #94A3B8);
+  color: var(--db-studio-text-3, #5C6B7F);
   cursor: pointer;
   font: 600 12px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   user-select: none;

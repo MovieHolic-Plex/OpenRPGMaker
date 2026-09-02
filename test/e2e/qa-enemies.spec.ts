@@ -203,6 +203,10 @@ test.describe("QA — enemies tab", () => {
     await page.getByTestId("db-field-enemy-attack").fill("99999");
     await page.getByTestId("db-field-enemy-exp").fill("-3");
     await page.getByTestId("db-field-enemy-drop-rate").fill("999");
+    // 치명타 확률은 「사용」에 종속된다 — 꺼진 상태에서는 잠긴다(꺼져 있으면 전투가 이 값을
+    // 읽지 않으므로, 편집을 받아 주면 저장은 되고 효과는 없는 죽은 입력이 된다).
+    // 새 레코드의 기본값은 enabled:false 이므로 클램프를 확인하려면 먼저 켠다.
+    await page.getByTestId("db-field-enemy-critical-enabled").check();
     await page.getByTestId("db-field-enemy-critical-one-in").fill("0");
     await switchDatabaseTab(page, ITEMS_TAB);
     await switchDatabaseTab(page, ENEMIES_TAB);

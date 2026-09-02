@@ -192,8 +192,8 @@
 
 .database-modal-backdrop .db-system-party-face::before {
   background:
-    linear-gradient(135deg, transparent 45%, var(--db-studio-text-3) 47%, var(--db-studio-text-3) 53%, transparent 55%),
-    linear-gradient(45deg, transparent 45%, var(--db-studio-text-3) 47%, var(--db-studio-text-3) 53%, transparent 55%);
+    linear-gradient(135deg, transparent 45%, var(--db-studio-muted-paint) 47%, var(--db-studio-muted-paint) 53%, transparent 55%),
+    linear-gradient(45deg, transparent 45%, var(--db-studio-muted-paint) 47%, var(--db-studio-muted-paint) 53%, transparent 55%);
   content: "";
   inset: 6px;
   opacity: 0.55;

@@ -29,7 +29,7 @@ try {
   for (const [name, collection, recordName, tabTestId] of TARGETS) {
     await page.getByTestId(tabTestId).click();
     await page.waitForTimeout(500);
-    const search = page.getByPlaceholder("레코드 검색");
+    const search = page.getByPlaceholder("이름 또는 ID 검색");
     await search.fill(recordName, { timeout: 60_000 });
     const row = page.locator(`[data-testid^='db-record-row-'][data-record-name='${recordName}']`).first();
     await row.waitFor({ state: "visible", timeout: 60_000 });

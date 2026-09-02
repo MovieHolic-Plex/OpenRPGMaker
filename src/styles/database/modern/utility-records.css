@@ -105,7 +105,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-bad .db-el-bar-fill { background: var(--db-studio-danger); }
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-neutral .db-el-bar-fill { background: var(--db-studio-accent); }
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-good .db-el-bar-fill { background: var(--db-studio-success); }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-none .db-el-bar-fill { background: var(--db-studio-text-3); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-bar-none .db-el-bar-fill { background: var(--db-studio-muted-paint); }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-el-result {
   color: var(--db-studio-text-2);

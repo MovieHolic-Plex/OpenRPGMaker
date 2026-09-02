@@ -15,6 +15,7 @@ import {
   listSearch,
   listToolbar,
   noticeBar,
+  restoreFocusAfterRerender,
   sectionCard,
   statStrip,
   workspaceShell,
@@ -88,7 +89,7 @@ export function renderFactionsTab(host: HTMLElement, rerender: () => void): void
 
   const list = listPane({
     title: "진영",
-    count: table.size,
+    count: query && rows.length !== table.size ? `${rows.length}/${table.size}개` : table.size,
     search: listSearch({
       placeholder: "이름 또는 ID 검색",
       value: factionSearch,
@@ -301,19 +302,35 @@ function matrixCard(factions: ProjectFactions | undefined, rerender: () => void)
     dataset: { testid: "db-faction-matrix" },
   });
   matrix.style.setProperty("--db-faction-count", String(table.size));
-  matrix.append(el("span", { class: "db-faction-matrix-corner", text: "행 ↔ 열" }));
+
+  // `role="grid"` 는 자식이 `role="row"` 여야 유효하다. 이 표는 CSS grid 라 셀이 전부
+  // 격자의 직접 자식이어야 하므로, 행 래퍼를 `display:contents`(matrixRow 클래스)로 둬서
+  // 배치는 그대로 두고 접근성 트리만 바로잡는다. 래퍼가 없던 동안 role=row 가 0 개였다.
+  const matrixRow = (children: readonly HTMLElement[]): HTMLElement =>
+    el("div", { class: "db-faction-matrix-rowgroup", attrs: { role: "row" }, children: [...children] });
+
+  const headerCells: HTMLElement[] = [el("span", {
+    class: "db-faction-matrix-corner",
+    attrs: { role: "columnheader" },
+    text: "행 ↔ 열",
+  })];
   for (let column = 0; column < table.size; column += 1) {
-    matrix.append(matrixHeader(table.names[column] ?? table.ids[column]!, table.ids[column]!, "columnheader"));
+    headerCells.push(matrixHeader(table.names[column] ?? table.ids[column]!, table.ids[column]!, "columnheader"));
   }
+  matrix.append(matrixRow(headerCells));
+
   for (let row = 0; row < table.size; row += 1) {
     const rowId = table.ids[row]!;
-    matrix.append(matrixHeader(table.names[row] ?? rowId, rowId, "rowheader"));
+    const rowCells: HTMLElement[] = [matrixHeader(table.names[row] ?? rowId, rowId, "rowheader")];
     for (let column = 0; column < table.size; column += 1) {
       const columnId = table.ids[column]!;
       const cell = factionMatrixCell(table, factions, rowId, columnId);
-      matrix.append(stanceCell(rowId, columnId, cell.stance, cell.authored, rerender));
+      rowCells.push(stanceCell(rowId, columnId, cell.stance, cell.authored, rerender));
     }
+    matrix.append(matrixRow(rowCells));
   }
+
+  attachMatrixKeyboardNavigation(matrix, table.size);
 
   return sectionCard({
     title: "태도 행렬",
@@ -342,6 +359,50 @@ function matrixCard(factions: ProjectFactions | undefined, rerender: () => void)
   });
 }
 
+/**
+ * ARIA grid 키보드 패턴: **roving tabindex + 화살표 이동**.
+ *
+ * 화살표만 붙이는 것으로는 부족하다 — 셀이 전부 native `<button>` 이라 Tab 이 N² 번
+ * 멈춘다(진영 6 개면 36 번). 그래서 활성 셀 하나만 `tabindex=0` 으로 두고 나머지는 `-1` 로
+ * 내려, 격자 전체가 Tab 순회에서 **한 정거장**이 되게 한다.
+ */
+function attachMatrixKeyboardNavigation(matrix: HTMLElement, size: number): void {
+  const cells = (): HTMLElement[] => Array.from(matrix.querySelectorAll<HTMLElement>(".db-faction-stance-cell"));
+
+  const setRovingFocus = (index: number, moveFocus: boolean): void => {
+    const list = cells();
+    for (const [i, cell] of list.entries()) cell.tabIndex = i === index ? 0 : -1;
+    if (moveFocus && typeof list[index]?.focus === "function") list[index]!.focus();
+  };
+
+  // 초기에는 첫 셀만 Tab 으로 닿는다.
+  setRovingFocus(0, false);
+
+  // 마우스/포커스로 다른 셀에 들어가면 그 셀이 새 Tab 정거장이 된다.
+  matrix.addEventListener("focusin", (event) => {
+    const index = cells().indexOf(event.target as HTMLElement);
+    if (index >= 0) setRovingFocus(index, false);
+  });
+
+  matrix.addEventListener("keydown", (event) => {
+    const deltas: Readonly<Record<string, readonly [number, number]>> = {
+      ArrowRight: [0, 1],
+      ArrowLeft: [0, -1],
+      ArrowDown: [1, 0],
+      ArrowUp: [-1, 0],
+    };
+    const delta = deltas[event.key];
+    if (!delta) return;
+    const index = cells().indexOf(document.activeElement as HTMLElement);
+    if (index < 0) return;
+    const nextRow = Math.floor(index / size) + delta[0];
+    const nextColumn = (index % size) + delta[1];
+    if (nextRow < 0 || nextRow >= size || nextColumn < 0 || nextColumn >= size) return;
+    event.preventDefault();
+    setRovingFocus(nextRow * size + nextColumn, true);
+  });
+}
+
 function stanceCell(
   rowId: string,
   columnId: string,
@@ -350,15 +411,23 @@ function stanceCell(
   rerender: () => void,
 ): HTMLElement {
   const label = STANCE_LABEL[stance];
+  const testid = `db-faction-stance-${rowId}-${columnId}`;
+  // 대각선은 "같은 진영끼리"다. 런타임이 실제로 읽는 값이라(같은 진영 NPC 끼리 마주칠 때
+  // effectiveFactionStance 가 이 쌍을 조회한다) 잠그지 않는다 — 내전을 저작하는 노브다.
+  // 대신 무엇을 편집하는지 이름으로 밝힌다.
+  const selfPair = rowId === columnId;
+  const pairName = selfPair ? `${rowId} 내부(같은 진영끼리)` : `${rowId}와 ${columnId}`;
   const button = el("button", {
-    class: `db-faction-stance-cell${authored ? " is-authored" : " is-default"}`,
+    class: `db-faction-stance-cell${authored ? " is-authored" : " is-default"}${selfPair ? " is-self-pair" : ""}`,
     attrs: {
       type: "button",
       role: "gridcell",
-      "aria-label": `${rowId}와 ${columnId}: ${stance} ${label}, ${authored ? "저작됨" : "기본값"}`,
-      title: `${label} (${stance}) · ${authored ? "프로젝트에 저작됨" : "런타임 기본값"}`,
+      "aria-label": `${pairName}: ${stance} ${label}, ${authored ? "저작됨" : "기본값"}`,
+      title: selfPair
+        ? `${label} (${stance}) · 같은 진영끼리의 태도 — 적대로 두면 내전이 일어납니다`
+        : `${label} (${stance}) · ${authored ? "프로젝트에 저작됨" : "런타임 기본값"}`,
     },
-    dataset: { testid: `db-faction-stance-${rowId}-${columnId}`, authored: authored ? "true" : "false" },
+    dataset: { testid, authored: authored ? "true" : "false" },
     children: [
       el("strong", { text: String(stance) }),
       el("span", { text: label }),
@@ -370,6 +439,9 @@ function stanceCell(
         recordProjectSnapshot("진영 태도 변경");
         replaceFactions(setSparseFactionStance(store.getCurrent().factions, rowId, columnId, next));
         rerender();
+        // rerender 는 셀 노드를 교체하므로 포커스가 body 로 떨어진다(실측). 값을 순환시키려면
+        // 키보드 사용자가 매번 격자를 다시 훑어야 했다. 같은 좌표의 새 노드로 포커스를 옮긴다.
+        restoreFocusAfterRerender(testid);
       },
     },
   });
@@ -396,6 +468,25 @@ function matrixHeader(name: string, id: string, role: "columnheader" | "rowheade
   });
 }
 
+/**
+ * 식별 색 위의 이니셜 글자색을 배경 휘도에서 고른다.
+ *
+ * 흰색으로 고정해 두면 밝은 식별 색에서 글자가 사라진다 — 기본 플레이어 색(#7EC8F0)에서
+ * 1.84:1 로 실측됐다(2026-09-01). 색은 사용자가 정하므로 고정색으로는 절대 보장할 수 없다.
+ */
+function readableTextOn(color: string): "#FFFFFF" | "#0F172A" {
+  const hex = color.trim().replace("#", "");
+  const full = hex.length === 3 ? hex.split("").map((c) => c + c).join("") : hex;
+  if (full.length !== 6 || !/^[0-9a-fA-F]{6}$/.test(full)) return "#FFFFFF";
+  const channel = (offset: number): number => {
+    const value = Number.parseInt(full.slice(offset, offset + 2), 16) / 255;
+    return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+  };
+  const luminance = 0.2126 * channel(0) + 0.7152 * channel(2) + 0.0722 * channel(4);
+  // 흰 글자 대비 = 1.05/(L+0.05), 검은 글자 대비 = (L+0.05)/0.05. 둘이 같아지는 지점이 L≈0.179.
+  return luminance > 0.179 ? "#0F172A" : "#FFFFFF";
+}
+
 function factionSwatch(color: string, name: string): HTMLElement {
   const swatch = el("span", {
     class: "db-faction-hero-swatch",
@@ -404,6 +495,7 @@ function factionSwatch(color: string, name: string): HTMLElement {
     text: name.slice(0, 1) || "F",
   });
   swatch.style.setProperty("--db-faction-color", color);
+  swatch.style.setProperty("--db-faction-on-color", readableTextOn(color));
   return swatch;
 }
 

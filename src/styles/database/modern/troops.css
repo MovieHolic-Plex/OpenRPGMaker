@@ -306,7 +306,9 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-party-marker {
   align-items: center;
-  background: rgba(71, 62, 142, 0.55);
+  /* 알파 0.55 로는 밝은 전투 배경이 그대로 올라와 흰 숫자가 2.83:1 까지 떨어졌다(실측).
+     마커는 임의의 그림 위에 얹히므로 뒤 배경에 의존하지 않을 만큼 불투명하게 둔다. */
+  background: rgba(47, 41, 100, 0.92);
   border: 1px dashed rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   color: var(--db-studio-on-accent);
@@ -489,6 +491,12 @@
   color: var(--db-studio-text-3, var(--db-studio-text-3));
   font: 500 10.5px/1 ui-monospace, Consolas, monospace;
   white-space: nowrap;
+}
+
+/* 선택된 행은 배경 틴트가 더 짙어 text-3 이 4.45:1 로 아슬하게 미달한다(실측).
+   그 행에서만 한 단계 진한 text-2 로 올린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row.active :is(.db-troop-member-index, .db-troop-member-coords) {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
 }
 
 /* `.db-troop-member-row.empty` 는 e2e 계약(qa-troops.spec.ts:193)이라 클래스를 유지하되,

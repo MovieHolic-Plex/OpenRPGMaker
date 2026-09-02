@@ -150,7 +150,19 @@ export function databaseFieldSupportNotice(...fields: readonly string[]): HTMLEl
   host.className = "db-field-support-notice";
   host.dataset.testid = "db-field-support-notice";
   const summary = document.createElement("summary");
-  summary.textContent = `필드 적용 범위 안내 (${descriptors.length}개 필드)`;
+  // 요약 줄이 결론을 말해야 한다. "필드 적용 범위 안내 (3개 필드)" 는 접힌 상태에서
+  // 아무 정보도 주지 않아, 런타임이 읽지 않는 필드가 평범한 컨트롤로 보였다(2026-09-01 실측).
+  //
+  // 문구는 행 배지와 같은 어휘("런타임 적용" 여부)로만 말한다. "게임에 아무 영향 없음"
+  // 까지 단정하면 과하다 — 예: imageResourceId 는 authoringOnly 이지만 자기 help 에서
+  // 상점·피커·요약에 쓰인다고 밝힌다. 정확한 범위는 펼친 행이 필드별로 말한다.
+  const inert = descriptors.filter((descriptor) => descriptor.support !== "runtime");
+  host.dataset.inertFields = String(inert.length);
+  summary.textContent = inert.length === 0
+    ? `필드 적용 범위 안내 (${descriptors.length}개 필드)`
+    : inert.length === descriptors.length
+      ? `아래 ${inert.length}개 필드는 런타임 적용 대상이 아닙니다 — 자세히`
+      : `${descriptors.length}개 필드 중 ${inert.length}개는 런타임 적용 대상이 아닙니다 — 자세히`;
   host.append(summary);
   for (const descriptor of descriptors) {
     const row = document.createElement("p");

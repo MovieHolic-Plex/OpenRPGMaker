@@ -26,9 +26,13 @@ const BASELINE = process.env.AUDIT_BASELINE ?? null;
 const WIDTH = Number(process.env.AUDIT_W ?? 1680);
 const HEIGHT = Number(process.env.AUDIT_H ?? 1050);
 
+// 정본은 src/editor/panels/database.ts 의 DatabaseTab 유니온 + TABS 등록 목록이다.
+// `factions`(진영)는 등록된 탭인데 이 목록에서 빠져 있었다 — 그래서 게이트를 한 번도
+// 통과한 적이 없고, ARIA·대비 결함이 회귀 감시 밖에 있었다(2026-09-01 발견).
+// shoot-db-tabs.mjs 는 같은 누락을 2026-08-30 에 자기 목록에서만 고쳤다.
 export const DB_TAB_SLUGS = [
   "overview", "actors", "classes", "skills", "items", "equipment", "enemies",
-  "monster-species", "troops", "elements", "states", "animations", "battle-screen",
+  "monster-species", "troops", "factions", "elements", "states", "animations", "battle-screen",
   "battle-commands", "terrain", "crops", "characters", "life-crafting", "daily-weather",
   "farm-animals", "farm-spatial", "life-collections", "tilesets", "structure-kits",
   "common-events", "system", "terms", "switches", "variables",

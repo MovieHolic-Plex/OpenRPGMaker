@@ -22,6 +22,15 @@
   flex: 1 1 auto;
 }
 
+/* ── 최소 조작 크기 ────────────────────────────────────────────────────────
+   WCAG 2.5.8(대상 크기 최소, AA)은 24×24 CSS 픽셀을 요구한다. 실측(2026-09-01)에서
+   `.btn.small`(23.52px)과 뷰 토글(23.98px)이 미달이었다 — 눈에 안 띄는 0.5px 차이라
+   개별 규칙으로는 계속 새어 나온다. 모달 안 작은 버튼의 하한을 한자리에서 박는다. */
+.database-modal-backdrop .database-modal-window .btn.small,
+.database-modal-backdrop .database-modal-window .db-view-toggle {
+  min-height: 24px;
+}
+
 /* 사이드바 그룹 접기는 main 의 아코디언 구현(database.ts 의 collapsedGroupSlugs /
    openOnlyGroup / expandGroupFor + sidebar.css)이 담당한다. 이 브랜치가 들고 있던
    경쟁 구현(.db-tab-collapsed 클래스 + 그룹 안 토글 버튼)은 통합하며 걷어냈다 —

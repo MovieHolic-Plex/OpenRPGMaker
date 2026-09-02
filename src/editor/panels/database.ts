@@ -557,6 +557,7 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
   if (query === "") {
     for (const child of railChildren(header)) child.hidden = false;
     applyGroupCollapse(header);
+    syncTabSearchEmptyNotice(header, rawQuery);
     return;
   }
   let currentGroup: HTMLElement | null = null;
@@ -598,6 +599,36 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
     }
   }
   closeGroup();
+  syncTabSearchEmptyNotice(header, rawQuery);
+}
+
+/**
+ * 탭 검색이 아무것도 못 맞히면 사이드바가 검색 상자만 남은 빈 공백이 된다 — 안내가
+ * 없으면 탭이 사라진 줄 안다(2026-09-01 실측: 그룹 라벨까지 전부 숨어 200px 공백).
+ */
+function syncTabSearchEmptyNotice(header: HTMLElement, rawQuery: string): void {
+  const query = rawQuery.trim();
+  const existing = header.querySelector<HTMLElement>("[data-testid='db-tab-search-empty']");
+  // 검색 상자 자신과 이 안내는 세지 않는다 — 전부 세면 판정이 늘 "보이는 게 있다"가 된다.
+  const anyVisible = railChildren(header).some((child) => {
+    if (child.hidden) return false;
+    const classes = child.classList;
+    if (!classes) return false;
+    return classes.contains("db-tab") || classes.contains("db-tab-group") || classes.contains("db-tab-folder");
+  });
+  if (query === "" || anyVisible) {
+    existing?.remove();
+    return;
+  }
+  if (existing) {
+    existing.textContent = `“${query}”와 일치하는 탭이 없습니다.`;
+    return;
+  }
+  header.append(el("p", {
+    class: "db-tab-search-empty",
+    dataset: { testid: "db-tab-search-empty" },
+    text: `“${query}”와 일치하는 탭이 없습니다.`,
+  }));
 }
 
 function appendTilesetFolder(

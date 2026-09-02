@@ -1,0 +1,106 @@
+{
+  "enemies": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 29,
+    "emptyState": false,
+    "deadSpace": 0.344,
+    "detailDead": 0.408,
+    "clipped": [
+      {
+        "node": "span",
+        "overY": 0,
+        "overX": 12
+      }
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 937,
+    "violations": [
+      "clipped:1"
+    ]
+  },
+  "monster-species": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 9,
+    "emptyState": false,
+    "deadSpace": 0.441,
+    "detailDead": 0.424,
+    "clipped": [
+      {
+        "node": "span.db-list-name",
+        "overY": 0,
+        "overX": 10
+      }
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 327,
+    "violations": [
+      "clipped:1"
+    ]
+  },
+  "troops": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 44,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 6,
+    "emptyState": true,
+    "deadSpace": 0.526,
+    "detailDead": 0.52,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 292,
+    "violations": []
+  },
+  "factions": {
+    "bodySize": [
+      1406,
+      796
+    ],
+    "scrollOverflow": 0,
+    "canon": true,
+    "hasListPane": true,
+    "search": true,
+    "rowCount": 2,
+    "emptyState": false,
+    "deadSpace": 0.506,
+    "detailDead": 0.439,
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "overlapCount": 0,
+    "fullBleed": [],
+    "fullBleedCount": 0,
+    "nodeCount": 141,
+    "violations": []
+  }
+}

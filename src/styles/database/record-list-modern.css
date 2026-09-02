@@ -57,15 +57,16 @@
 
 /* trailing #n — muted */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row .db-list-number {
-  color: var(--db-studio-text-3, #94A3B8);
+  color: var(--db-studio-text-3, #5C6B7F);
   flex: 0 0 auto;
   font: 500 11px/1.4 "Cascadia Mono", Consolas, monospace;
   order: 2;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-list-row.active .db-list-number {
+  /* opacity 0.7 이 액센트색을 선택 행 틴트 위에서 2.76:1 까지 깎아 유일하게 남은 AA
+     미달이었다. 색 자체는 5.20:1 로 통과하므로 투명도만 뺀다. */
   color: var(--db-studio-accent, #4A57D6);
-  opacity: 0.7;
 }
 
 /* thumb 24px */
@@ -82,7 +83,7 @@
   background: var(--db-studio-inset, #F1F5F9);
   border: 1px solid var(--db-studio-border-subtle, rgba(15,23,42,.08));
   border-radius: 999px;
-  color: var(--db-studio-text-3, #94A3B8);
+  color: var(--db-studio-text-3, #5C6B7F);
   flex: 0 0 auto;
   font: 600 10.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   order: 3;
