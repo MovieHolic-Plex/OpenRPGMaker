@@ -436,6 +436,7 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
       ),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
+      audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
   }, { eventIds: watchedEventIds, testids: watchedTestids });

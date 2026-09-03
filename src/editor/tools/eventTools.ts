@@ -9,6 +9,7 @@ import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
+import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
@@ -1852,18 +1853,20 @@ const placeChest: ToolDefinition = {
     }
     const warnings: string[] = [];
     if (adjusted) warnings.push(placementAdjustedWarning("보물상자", { x: requestedX, y: requestedY }, placement));
-    if (itemId && !draft.database.items.some((item) => item.id === itemId)) {
+    const itemRecord = itemId ? draft.database.items.find((item) => item.id === itemId) : undefined;
+    if (itemId && !itemRecord) {
       warnings.push(`아이템 '${itemId}'가 데이터베이스에 없습니다 — upsert_item으로 먼저 만들거나 기존 id를 쓰세요`);
     }
     const graphic = resolveGraphic({ query: "보물상자" });
     const id = (args.id as string | undefined) ?? genId("ev_chest");
     const name = (args.name as string | undefined) ?? "보물상자";
-    const rewardText = [itemId ?? null, gold ? `${gold}G` : null].filter(Boolean).join(" · ");
+    const itemLabel = itemRecord?.name.trim() || itemId;
+    const rewardText = [itemLabel ?? null, gold ? `${gold}G` : null].filter(Boolean).join(" · ");
     const trigger: Trigger = { kind: "action" };
     const openCommands: Command[] = [
-      ...(itemId ? [{ kind: "changeItem", itemId, op: "+=", amount: 1 } as Command] : []),
-      ...(gold ? [{ kind: "changeGold", op: "+=", amount: gold } as Command] : []),
-      { kind: "text", body: `보물상자를 열었다! (${rewardText})` },
+      ...chestOpenCommands(id, graphic),
+      ...lootGrantCommands({ itemId, gold }),
+      { kind: "text", body: `보물상자를 열었다! ${rewardText} 를 손에 넣었다.` },
       { kind: "setSelfSwitch", key: "A", value: true } as Command,
     ];
     const event: GameEvent = {
@@ -1889,7 +1892,7 @@ const placeChest: ToolDefinition = {
           id: `${id}_opened`,
           name: `${name}(열림)`,
           conditions: [{ kind: "selfSwitch", key: "A", value: true }],
-          graphic,
+          graphic: chestOpenedGraphic(graphic),
           trigger,
           priority: "same",
           overlapForbidden: true,

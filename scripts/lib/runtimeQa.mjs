@@ -394,6 +394,17 @@ export function evaluateExpect(expected, observed) {
     }
   }
 
+  // 오디오는 스크린샷에 안 잡힌다. 엔진이 재생 지시를 받은 리소스 id 를 기록하는 훅
+  // (src/player/audio/audioEngine.ts 의 window.__oprnAudioObserved)이 유일한 관측 지점이다.
+  // 배열이 없으므로 실패 — 훅이 설치되기 전을 「통과」 로 읽으면 게이트가 거짓말을 한다.
+  if (expected.audioObservedIncludes) {
+    const seen = Array.isArray(observed.audioObserved) ? observed.audioObserved : null;
+    for (const resourceId of expected.audioObservedIncludes) {
+      if (seen?.includes(resourceId)) continue;
+      failures.push(`audio 미재생: ${resourceId} (관측: ${seen && seen.length > 0 ? seen.join(", ") : "없음"})`);
+    }
+  }
+
   if (expected.playerSpriteResourceNonEmpty && !playerSpriteResourceId) {
     failures.push("playerSprite: 리소스 ID 가 비어 있다(스프라이트 누락)");
   }

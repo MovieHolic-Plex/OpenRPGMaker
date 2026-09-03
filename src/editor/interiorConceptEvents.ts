@@ -4,7 +4,7 @@
  * 칩은 표 라벨이 아니라 동작이다(2026-09-02 리드 판정: 「칩이 뭔가를 해야 한다」).
  *  - transfer → action 이벤트 + `transfer`. 대상이 없으면 같은 맵 정문으로 두고 미연결로 보고한다.
  *  - sleep    → action 이벤트 + `inn`(숙박 요금·HP/MP 회복). 여관의 본업.
- *  - loot     → selfSwitch A 로 한 번만 금화. 이후 「비어 있다」.
+ *  - loot     → selfSwitch A 로 한 번만 금화. 뒤지는 소리·동전 소리가 보상에 앞서고(lootFeedback), 이후 「비어 있다」.
  *  - event    → 조사 문장 하나.
  *  - block/pass 는 타일셋 통행표와 걷기 BFS 가 이미 집행한다(카탈로그 가구는 solid, 계단·러그는 passable).
  *
@@ -13,6 +13,7 @@
  */
 import type { ConceptPlacement } from "@/editor/interiorConceptCompose";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
+import { lootGrantCommands, lootRummageCommands } from "@/editor/lootFeedback";
 import type { Command, EventPage, EventPageCondition, GameEvent, GameMap } from "@/project/types";
 
 export type ConceptTransferTarget = { readonly mapId: string; readonly x: number; readonly y: number };
@@ -202,8 +203,9 @@ export function buildConceptEvents(
         const gold = lootGoldFor(placement, ordinal);
         base.pages = [
           page(`${id}_p1`, placement.label, [
+            ...lootRummageCommands(),
+            ...lootGrantCommands({ gold }),
             { kind: "text", body: `${placement.label}을(를) 뒤졌다. ${gold}G 를 찾았다.` },
-            { kind: "changeGold", op: "+=", amount: gold },
             { kind: "setSelfSwitch", key: "A", value: true },
           ], [{ kind: "selfSwitch", key: "A", value: false }]),
           page(`${id}_p2`, placement.label, [
