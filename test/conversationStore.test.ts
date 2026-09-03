@@ -2,6 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AuditEntry } from "@/ai/assistantSession";
 import { recordSupabaseConversation } from "@/project/supabaseProjectSync";
 import {
+  CONVERSATION_ARGS_MAX_CHARS,
+  CONVERSATION_RECORD_MAX_CHARS,
+  CONVERSATION_STORE_MAX_CHARS,
+  CONVERSATION_TRIM_MARKER,
   clearConversations,
   deleteConversation,
   deriveTitle,
@@ -21,8 +25,17 @@ const recordSupabaseConversationMock = vi.mocked(recordSupabaseConversation);
 
 const originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
 
-function createMemoryStorage(): Storage {
+/** 브라우저처럼 오리진 총량(글자 수)을 넘는 setItem 을 QuotaExceededError 로 거절하는 메모리 Storage. */
+function createMemoryStorage(options: { readonly maxChars?: number; readonly rejectAll?: boolean } = {}): Storage {
   const values = new Map<string, string>();
+  const usedChars = (): number => Array.from(values.entries()).reduce((sum, [key, value]) => sum + key.length + value.length, 0);
+  const quotaError = (key: string): Error => {
+    const message = `Failed to execute 'setItem' on 'Storage': Setting the value of '${key}' exceeded the quota.`;
+    if (typeof DOMException !== "undefined") return new DOMException(message, "QuotaExceededError");
+    const error = new Error(message);
+    error.name = "QuotaExceededError";
+    return error;
+  };
   return {
     get length() {
       return values.size;
@@ -31,8 +44,39 @@ function createMemoryStorage(): Storage {
     getItem: (key: string) => values.get(key) ?? null,
     key: (index: number) => Array.from(values.keys())[index] ?? null,
     removeItem: (key: string) => void values.delete(key),
-    setItem: (key: string, value: string) => void values.set(key, value),
+    setItem: (key: string, value: string) => {
+      if (options.rejectAll) throw quotaError(key);
+      if (options.maxChars !== undefined) {
+        const next = usedChars() - (values.get(key)?.length ?? 0) - (values.has(key) ? key.length : 0) + key.length + value.length;
+        if (next > options.maxChars) throw quotaError(key);
+      }
+      values.set(key, value);
+    },
   };
+}
+
+/** 한도 있는 저장소에 옛 코드가 남긴(한도를 넘는) 값을 미리 심는다 — 브라우저에 이미 쌓인 레거시를 흉내낸다. */
+function createMemoryStorageWithSeed(options: { readonly maxChars: number }, seed: Readonly<Record<string, string>>): Storage {
+  const storage = createMemoryStorage();
+  for (const [key, value] of Object.entries(seed)) storage.setItem(key, value);
+  const constrained = createMemoryStorage(options);
+  return {
+    get length() {
+      return storage.length;
+    },
+    clear: () => storage.clear(),
+    getItem: (key: string) => storage.getItem(key),
+    key: (index: number) => storage.key(index),
+    removeItem: (key: string) => storage.removeItem(key),
+    setItem: (key: string, value: string) => {
+      constrained.setItem(key, value); // 한도 검사만 빌린다.
+      storage.setItem(key, value);
+    },
+  };
+}
+
+function installStorage(storage: Storage): void {
+  Object.defineProperty(globalThis, "localStorage", { configurable: true, writable: true, value: storage });
 }
 
 function user(text: string): AuditEntry {
@@ -129,6 +173,16 @@ describe("conversationStore", () => {
     expect(listConversations()).toEqual([
       { id: "keep", title: "대화 keep", model: "stub-model", savedAt: 200, turnCount: 1 },
     ]);
+  });
+
+  it("Given the only saved conversation When deleted Then storage holds an empty list, not the stale record", () => {
+    // 회귀 방어(2026-09-03): 예산 재시도 루프가 «쓸 레코드가 없으면 쓰지 않는» 형태였다면 마지막 삭제가 되돌아온다.
+    saveConversation(record("only", 100));
+
+    deleteConversation("only");
+
+    expect(listConversations()).toEqual([]);
+    expect(localStorage.getItem("oprn:ai-conversations")).toBe("[]");
   });
 
   it("Given saved conversations When cleared Then the list is empty", () => {
@@ -232,5 +286,159 @@ describe("loadLatestConversationForScope", () => {
     saveConversation({ ...record("conv_new", 500), projectContextKey: "remote:mine" });
     saveConversation({ ...record("conv_old", 100), projectContextKey: "remote:mine" });
     expect(loadLatestConversationForScope("remote:mine")?.id).toBe("conv_new");
+  });
+});
+
+// ── 저장 용량 ────────────────────────────────────────────────────────────────────────────
+// 실측 결함(2026-09-03): 조수를 쓰다 「오류: Failed to execute 'setItem' on 'Storage': Setting the
+// value of 'oprn:ai-conversations' exceeded the quota.」 가 말풍선으로 떴다. 대화 50건을 통째로
+// localStorage 에 쓰는데 툴콜 인자(맵 셀 배열 등)가 assistant 항목(문자열)과 tool 항목(객체)에
+// 두 번 들어가 오리진 한도(약 5MB)를 넘겼고, 저장이 툴콜 스트리밍 도중에 던져 턴 자체가 끊겼다.
+describe("conversationStore — 저장 용량", () => {
+  const bulkyArgs = (chars: number): Record<string, unknown> => ({
+    mapId: "map_village",
+    cells: Array.from({ length: Math.ceil(chars / 12) }, (_, index) => ({ x: index % 100, y: Math.floor(index / 100), t: 342 })),
+  });
+  const bulkyTool = (name: string, chars: number): AuditEntry => ({ kind: "tool", name, args: bulkyArgs(chars), ok: true, summary: `${name} 적용` });
+  const bulkyRecord = (id: string, savedAt: number, toolCalls: number, charsPerCall: number): ConversationRecord =>
+    record(id, savedAt, [user(`대화 ${id}`), ...Array.from({ length: toolCalls }, (_, index) => bulkyTool(`place_${index}`, charsPerCall))]);
+  const storedJson = (): string => localStorage.getItem("oprn:ai-conversations") ?? "";
+
+  it("Given 저장 공간이 이미 부풀린 레코드로 가득 찼다 When 새 턴이 대화를 저장한다 Then 던지지 않고 기존 레코드까지 압축해 전부 살린다", () => {
+    // 옛 코드가 남긴 원본: 레거시 3건 × 10 툴콜 × 20K 인자 ≈ 600K 글자. 브라우저 한도는 300K.
+    // 고치기 전 코드는 (레거시 + 새 레코드) 를 통째로 쓰다 여기서 QuotaExceededError 를 던졌다.
+    // 저장 배열은 최신이 앞이다(saveConversation 이 prepend) — 실제 브라우저에 남은 모양대로 심는다.
+    const legacy = [bulkyRecord("legacy_c", 3, 10, 20_000), bulkyRecord("legacy_b", 2, 10, 20_000), bulkyRecord("legacy_a", 1, 10, 20_000)];
+    const seeded = JSON.stringify(legacy);
+    expect(seeded.length).toBeGreaterThan(300_000);
+    installStorage(createMemoryStorageWithSeed({ maxChars: 300_000 }, { "oprn:ai-conversations": seeded }));
+
+    const outcome = saveConversation(record("fresh", 10, [user("새 요청"), bulkyTool("place_fresh", 20_000)]));
+
+    expect(outcome.ok).toBe(true);
+    expect(outcome.evicted).toBe(0);
+    expect(loadConversation("fresh")?.entries[0]).toEqual(user("새 요청"));
+    expect(listConversations().map((conversation) => conversation.id)).toEqual(["fresh", "legacy_c", "legacy_b", "legacy_a"]);
+    expect(storedJson().length).toBeLessThanOrEqual(300_000);
+  });
+
+  it("Given 인자가 큰 툴콜 When 저장한다 Then 인자는 미리보기로 잘리고 작은 인자와 요약·이유는 그대로다", () => {
+    const small: AuditEntry = { kind: "tool", name: "place_npc", args: { mapId: "map_hub", x: 3, y: 4, name: "상인" }, ok: true, summary: "NPC 1명", reason: "시장 입구" };
+    const big = bulkyTool("paint_cells", CONVERSATION_ARGS_MAX_CHARS * 4);
+    const assistantWithCalls: AuditEntry = {
+      kind: "assistant",
+      text: "칸을 채웁니다.",
+      toolCalls: [
+        { name: "place_npc", args: JSON.stringify(small.kind === "tool" ? small.args : {}) },
+        { name: "paint_cells", args: "x".repeat(CONVERSATION_ARGS_MAX_CHARS * 3) },
+      ],
+    };
+
+    saveConversation(record("clip", 5, [user("채워줘"), assistantWithCalls, small, big]));
+
+    const stored = loadConversation("clip")!;
+    expect(stored.entries[2]).toEqual(small);
+    const storedBig = stored.entries[3];
+    expect(storedBig.kind).toBe("tool");
+    if (storedBig.kind !== "tool") return;
+    expect(storedBig.name).toBe("paint_cells");
+    expect(storedBig.summary).toBe("paint_cells 적용");
+    expect(storedBig.args._truncated).toBe(true);
+    expect(typeof storedBig.args.preview).toBe("string");
+    expect(JSON.stringify(storedBig.args).length).toBeLessThanOrEqual(CONVERSATION_ARGS_MAX_CHARS + 64);
+    const storedAssistant = stored.entries[1];
+    expect(storedAssistant.kind).toBe("assistant");
+    if (storedAssistant.kind !== "assistant") return;
+    expect(storedAssistant.text).toBe("칸을 채웁니다.");
+    expect(storedAssistant.toolCalls?.[0]).toEqual(assistantWithCalls.kind === "assistant" ? assistantWithCalls.toolCalls?.[0] : undefined);
+    expect(storedAssistant.toolCalls?.[1]?.args.length).toBeLessThanOrEqual(CONVERSATION_ARGS_MAX_CHARS + 1);
+  });
+
+  it("Given 레코드 하나가 예산을 넘는 긴 대화 When 저장한다 Then 머리와 꼬리를 남기고 가운데를 표식 하나로 접는다", () => {
+    const line = (index: number): AuditEntry => user(`${index}번째 요청 ${"가".repeat(1_000)}`);
+    const entries = Array.from({ length: Math.ceil((CONVERSATION_RECORD_MAX_CHARS * 2) / 1_000) }, (_, index) => line(index));
+    const last = entries.length - 1;
+
+    const outcome = saveConversation(record("long", 7, entries));
+
+    expect(outcome.ok).toBe(true);
+    const stored = loadConversation("long")!;
+    expect(JSON.stringify(stored.entries).length).toBeLessThanOrEqual(CONVERSATION_RECORD_MAX_CHARS + 1_200);
+    expect(stored.entries[0]).toEqual(line(0)); // 머리(첫 발화)는 남는다.
+    expect(stored.entries.at(-1)).toEqual(line(last)); // 꼬리(최근)는 남는다.
+    const markers = stored.entries.filter((entry) => entry.kind === "status" && entry.text.startsWith(CONVERSATION_TRIM_MARKER));
+    expect(markers).toHaveLength(1);
+    const dropped = entries.length - (stored.entries.length - 1);
+    expect(markers[0]!.kind === "status" ? markers[0]!.text : "").toContain(String(dropped));
+
+    // 다시 저장하면(복원된 기록 + 새 턴) 표식이 쌓이지 않고 하나로 누적된다.
+    saveConversation(record("long", 8, [...stored.entries, line(last + 1), line(last + 2)]));
+    const again = loadConversation("long")!;
+    const markersAgain = again.entries.filter((entry) => entry.kind === "status" && entry.text.startsWith(CONVERSATION_TRIM_MARKER));
+    expect(markersAgain).toHaveLength(1);
+    expect(again.entries.at(-1)).toEqual(line(last + 2));
+    expect(again.entries[0]).toEqual(line(0));
+  });
+
+  it("Given 대화들이 저장소 예산을 넘는다 When 저장한다 Then 최신부터 예산 안에 담고 나머지는 밀어내며 그 수를 돌려준다", () => {
+    // 레코드당 약 150K → 10건이면 1.5M 로 예산(1M)을 넘는다. 툴콜 인자는 작게 여러 개(잘리지 않게).
+    const perRecord = Math.floor(CONVERSATION_STORE_MAX_CHARS * 0.15);
+    const smallArgsCalls = Math.ceil(perRecord / 600);
+    const heavy = (id: string, savedAt: number): ConversationRecord =>
+      record(id, savedAt, [user(`대화 ${id}`), ...Array.from({ length: smallArgsCalls }, (_, index) => bulkyTool(`t${index}`, 500))]);
+    let lastOutcome = saveConversation(heavy("r1", 1));
+    for (let index = 2; index <= 10; index += 1) lastOutcome = saveConversation(heavy(`r${index}`, index));
+
+    const ids = listConversations().map((conversation) => conversation.id);
+    expect(ids[0]).toBe("r10");
+    expect(ids.length).toBeLessThan(10);
+    expect(ids.length).toBeGreaterThanOrEqual(3);
+    expect(storedJson().length).toBeLessThanOrEqual(CONVERSATION_STORE_MAX_CHARS);
+    expect(lastOutcome.ok).toBe(true);
+    expect(lastOutcome.evicted).toBeGreaterThanOrEqual(1);
+    expect(loadConversation("r1")).toBeNull();
+  });
+
+  it("Given 브라우저 한도가 우리 예산보다 낮다(다른 키가 공간을 먹었다) When 저장이 거절된다 Then 절반씩 줄여 재시도하고 최신 대화는 살린다", () => {
+    // 인자 4K 는 2K 미리보기로 잘려 레코드 한 건이 약 8.5K. 여덟 건(약 68K)을 넉넉한 저장소에 만든 뒤
+    // 그 값을 한도 40K 저장소에 그대로 심는다 — 다른 키가 공간을 먹어 우리 예산(1M)보다 먼저 막히는 상황.
+    for (let index = 1; index <= 8; index += 1) saveConversation(bulkyRecord(`q${index}`, index, 4, 4_000));
+    const seeded = storedJson();
+    expect(seeded.length).toBeGreaterThan(40_000);
+    installStorage(createMemoryStorageWithSeed({ maxChars: 40_000 }, { "oprn:ai-conversations": seeded }));
+
+    const outcome = saveConversation(bulkyRecord("q9", 9, 4, 4_000));
+
+    // 9건(약 76K) 거절 → 절반 4건(약 34K) 성공. 밀어낸 5건이 결과에 드러난다.
+    expect(outcome.ok).toBe(true);
+    expect(outcome.evicted).toBe(5);
+    expect(listConversations().map((conversation) => conversation.id)).toEqual(["q9", "q8", "q7", "q6"]);
+    expect(loadConversation("q9")).not.toBeNull();
+    expect(storedJson().length).toBeLessThanOrEqual(40_000);
+  });
+
+  it("Given 저장소가 모든 쓰기를 거절한다 When 저장한다 Then 던지지 않고 ok:false 를 돌려주며 경고는 한 번만 찍는다", () => {
+    installStorage(createMemoryStorage({ rejectAll: true }));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    expect(() => saveConversation(record("dead_1", 1))).not.toThrow();
+    const outcome = saveConversation(record("dead_2", 2));
+
+    expect(outcome.ok).toBe(false);
+    expect(loadConversation("dead_2")).toBeNull();
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(String(warn.mock.calls[0]?.[0])).toContain("[ai-conversation]");
+  });
+
+  it("Given 인자가 큰 툴콜 When 저장한다 Then 원격 미러도 로컬과 같은 압축본을 받는다", async () => {
+    saveConversation(record("mirror", 3, [user("미러"), bulkyTool("paint_cells", CONVERSATION_ARGS_MAX_CHARS * 4)]));
+    await Promise.resolve();
+
+    const remote = recordSupabaseConversationMock.mock.calls.at(-1)?.[0] as { entries?: AuditEntry[] } | undefined;
+    const remoteTool = remote?.entries?.[1];
+    expect(remoteTool?.kind).toBe("tool");
+    if (remoteTool?.kind !== "tool") return;
+    expect(remoteTool.args._truncated).toBe(true);
+    expect(remote?.entries).toEqual(loadConversation("mirror")?.entries);
   });
 });

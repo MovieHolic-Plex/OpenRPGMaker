@@ -317,12 +317,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   type ConversationPersistTarget = ConversationPersistTargetContract;
   // 현재까지의 전체 대화(폐기된 세션 + 현재 세션)를 대화 기록 저장소에 저장한다.
   // 캡처한 id/scope를 지정할 때는 같은 시점의 entries도 반드시 함께 넘겨 대화 간 오염을 막는다.
+  // 저장 공간 고갈 안내는 패널 수명 동안 한 번 — 매 툴콜마다 저장하므로 그대로 두면 토스트가 쏟아진다.
+  let storageFailureToasted = false;
   const persistConversation = (target?: ConversationPersistTarget): void => {
     const entries = target
       ? [...target.entries]
       : [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
     if (entries.length === 0) return;
-    saveConversation({
+    // saveConversation 은 던지지 않는다(실측 2026-09-03: localStorage quota 예외가 툴콜 스트리밍 도중
+    // 여기서 터져 「오류: Failed to execute 'setItem' …」 말풍선과 함께 턴이 끊겼다). 최신 1건도 못
+    // 남긴 완전 실패만 사용자에게 알린다 — 조용히 메모리에만 남으면 새로 고친 뒤 대화가 사라진 이유를 모른다.
+    const outcome = saveConversation({
       id: target?.id ?? conversationId,
       title: deriveTitle(entries),
       model: loadAiConfig().model,
@@ -330,6 +335,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       entries: [...entries],
       projectContextKey: target?.scope ?? conversationScope,
     });
+    if (!outcome.ok && !storageFailureToasted) {
+      storageFailureToasted = true;
+      toast("대화 기록을 이 브라우저에 저장할 수 없습니다(저장 공간 부족). 이번 대화는 화면에만 남고 새로 고치면 사라집니다.", "error");
+    }
     refreshExportButton();
   };
 
