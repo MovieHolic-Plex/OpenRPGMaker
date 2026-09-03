@@ -9,6 +9,10 @@ import {
   isWorkPlanComplete,
   parseOrchestratorDecision,
   shouldRalphContinue,
+  blockWorkItemById,
+  reactivateBlockedWorkItems,
+  canCompleteWorkItem,
+  MAX_RALPH_ATTEMPTS_PER_ITEM,
   workPlanFromOrchestratorDecision,
   workPlanFromSetToolArgs,
   buildOrchestratorUserPayload,
@@ -335,7 +339,81 @@ describe("workPlan progress harness", () => {
     expect(ok.ok).toBe(true);
     expect(isWorkPlanComplete(plan)).toBe(true);
   });
-  it("requires write evidence before completing a generic planner-failure fallback", () => {
+  it("Ralph 는 막힌 항목에서 멈춘다 — 사용자 메시지가 되살리면 다시 돈다", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [{ title: "L", items: [{ title: "A", instruction: "do A" }, { title: "B", instruction: "do B" }] }],
+    });
+    const id = plan.currentItemId!;
+    expect(shouldRalphContinue(plan, { autoStepsUsed: 0 })).toBe(true);
+
+    const blocked = blockWorkItemById(plan, id, "스펙 게이트에 막힘");
+    expect(blocked?.status).toBe("blocked");
+    expect(blocked?.note).toBe("스펙 게이트에 막힘");
+    // 막힌 항목은 현재 항목으로 남는다(다음 항목으로 조용히 넘어가지 않는다).
+    expect(plan.currentItemId).toBe(id);
+    expect(shouldRalphContinue(plan, { autoStepsUsed: 0 })).toBe(false);
+    // 계획은 아직 미완료다 — 막힘은 완료가 아니다.
+    expect(isWorkPlanComplete(plan)).toBe(false);
+
+    expect(reactivateBlockedWorkItems(plan)).toBe(1);
+    expect(plan.layers[0]!.items[0]!.status).toBe("in_progress");
+    expect(shouldRalphContinue(plan, { autoStepsUsed: 0 })).toBe(true);
+    // 되살릴 것이 없으면 0.
+    expect(reactivateBlockedWorkItems(plan)).toBe(0);
+  });
+
+  it("이미 끝난 항목은 막히지 않는다", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [{ title: "L", items: [{ id: "a", title: "A", instruction: "a" }] }],
+    });
+    expect(completeWorkItemById(plan, "a").ok).toBe(true);
+    expect(blockWorkItemById(plan, "a", "늦은 차단")).toBeNull();
+    expect(plan.layers[0]!.items[0]!.status).toBe("done");
+  });
+
+  it("항목별 Ralph 상한은 턴 상한보다 훨씬 작다 — 교착을 사람에게 넘기는 문턱", () => {
+    expect(MAX_RALPH_ATTEMPTS_PER_ITEM).toBe(3);
+    expect(MAX_RALPH_ATTEMPTS_PER_ITEM).toBeLessThan(MAX_WORK_PLAN_AUTO_STEPS_PER_TURN);
+  });
+
+  it("명시 완료는 이름이 어긋난 successTools 대신 성공한 쓰기를 근거로 인정할 수 있다", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [{ title: "L", items: [{ title: "연못", instruction: "fill_region 으로 연못", successTools: ["fill_region"] }] }],
+    });
+    const id = plan.currentItemId!;
+    const item = plan.layers[0]!.items[0]!;
+
+    // 기본(자동 완료 경로와 같은 엄격 규칙): 이름이 다르면 거부하고 누락 툴을 알려준다.
+    const strict = canCompleteWorkItem(item, ["paint_tiles"]);
+    expect(strict.ok).toBe(false);
+    if (strict.ok) throw new Error("expected strict fail");
+    expect(strict.missingTools).toEqual(["fill_region"]);
+
+    // 읽기 툴만 성공한 경우는 우회로도 거부된다 — 근거가 쓰기여야 한다.
+    expect(canCompleteWorkItem(item, ["get_project_summary"], undefined, { allowWriteEvidenceFallback: true }).ok).toBe(false);
+
+    // 다른 이름의 쓰기 툴이 성공했으면 명시 완료를 인정한다.
+    expect(canCompleteWorkItem(item, ["paint_tiles"], undefined, { allowWriteEvidenceFallback: true }).ok).toBe(true);
+    // 산출물 게이트는 그대로 최종 판정이다.
+    expect(
+      canCompleteWorkItem(item, ["paint_tiles"], () => ({ ok: false, reason: "맵이 비었다" }), { allowWriteEvidenceFallback: true }).ok
+    ).toBe(false);
+
+    const ok = completeWorkItemById(plan, id, "다른 툴로 함", {
+      successfulTools: ["paint_tiles"],
+      allowWriteEvidenceFallback: true,
+    });
+    expect(ok.ok).toBe(true);
+    expect(isWorkPlanComplete(plan)).toBe(true);
+  });
+
+    it("requires write evidence before completing a generic planner-failure fallback", () => {
     const plan = buildDefaultWorkPlan("세 단계 퀘스트와 보상을 구성해줘", new Date("2026-08-23T00:00:00.000Z"));
     const item = plan.layers[0]!.items[0]!;
 

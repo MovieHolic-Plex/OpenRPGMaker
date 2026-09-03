@@ -91,7 +91,7 @@ describe("volume contract — 델타 측정", () => {
   });
 
   it("재주입 상한은 사용자 상한이 아니라 안전핀이다", () => {
-    expect(MAX_VOLUME_CONTINUES_PER_TURN).toBe(8);
+    expect(MAX_VOLUME_CONTINUES_PER_TURN).toBe(3);
   });
 });
 
