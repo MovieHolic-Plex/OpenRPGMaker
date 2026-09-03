@@ -33,6 +33,17 @@ const LABEL = arg("label", "probe");
 const TROOP = arg("troop", "troop_slime_pair");
 /** 전투 스킨 id(system.battleUiStyle). 비우면 픽스처 기본(rm2003). 아군 스프라이트를 보려면 sideview 스킨(ff 등). */
 const SKIN = arg("skin", "");
+/** 이펙트가 끝난 뒤에도 시계를 밀며 연출 표식이 바뀔 때마다 한 장씩 찍는다(넉백·펀치·격파 조각·적 예고·전진).
+ *  라운드는 파티 전원이 명령을 넣은 뒤 풀리므로 프롬프트가 보이면 확인키로 「공격」→첫 대상을 고른다. --beats=1 로 켠다. */
+const BEATS = arg("beats", "") === "1";
+/** --beats 가 관찰하는 시계 시간 상한(ms). 4인 공격 + 적 턴까지 담으려면 12초쯤 필요하다. */
+const BEATS_CLOCK_MS = Number(arg("beats-ms", "12000")) || 12000;
+/** --beats 한 번에 찍는 최대 장수. 4인 공격 + 적 턴은 60장 안쪽이다. */
+const BEATS_MAX_SHOTS = Number(arg("beats-shots", "60")) || 60;
+/** --beats 동안 자동으로 넣는 「공격」 명령 횟수. 기본 4 = 파티 전원 한 번씩. 그 뒤엔 손을 놓아야 게이지 흐름에서 적의 턴이 온다. */
+const BEATS_CONFIRMS = Number(arg("beats-confirms", "4")) || 4;
+/** 적 최대 HP 를 이 배수로 키워 막타 대신 여러 세기의 타격·적의 턴을 본다(예: --enemy-hp=6). */
+const ENEMY_HP_SCALE = Number(arg("enemy-hp", "1")) || 1;
 const OUT_ROOT = join(REPO_ROOT, arg("out", "verify-shots/battle-anim-overhaul"), LABEL);
 const VIEWPORT = { width: 1280, height: 960 };
 const STEP_MS = 25;
@@ -89,6 +100,27 @@ function readAnimationState() {
     spriteNatural: sprite instanceof HTMLImageElement ? { width: sprite.naturalWidth, height: sprite.naturalHeight } : null,
     stageScale: scene?.dataset.battleStageScale ?? null,
     resourceId: anim.dataset.animationResourceId ?? null,
+  };
+}
+
+/** 지금 화면에 켜진 연출 표식 — 바뀔 때만 찍어 라운드 전체를 수십 장 안쪽으로 담는다. */
+function readBeatMarkers() {
+  const scene = document.querySelector("[data-testid='battle-scene']");
+  const root = scene ? [...scene.classList].filter((c) => /battle-(field-punch|screen-shake|hit-stop|flash-)/.test(c)) : [];
+  const nodes = [...document.querySelectorAll(".battle-enemy, .battle-actor")];
+  // 적 testid 에 ':' 가 들어가므로(enemy_x:0) 구분자는 '#'.
+  const motion = nodes.flatMap((n) => [...n.classList].filter((c) => /battle-motion-(windup|lunge|knockback|return)|^defeated$/.test(c)).map((c) => `${n.dataset.testid ?? n.dataset.recordId}#${c}`));
+  const shards = document.querySelector(".battle-death-shards") ? ["shards"] : [];
+  const popup = document.querySelector(".battle-damage-popup") ? ["popup"] : [];
+  const followUp = document.querySelector(".battle-animation-followup:not([data-playback-finished='true'])") ? ["followup"] : [];
+  const anim = document.querySelector("[data-testid='battle-animation']:not([data-playback-finished='true'])") ? ["fx"] : [];
+  const step = scene?.dataset.battleDirectorStep ?? "";
+  const intensity = scene?.dataset.hitIntensity ?? "";
+  return {
+    key: [step, intensity, ...root, ...motion, ...shards, ...popup, ...followUp, ...anim].join("|"),
+    label: [step, intensity, ...root.map((c) => c.replace("battle-", "")), ...motion.map((m) => m.slice(m.indexOf("#") + 1).replace("battle-motion-", "")), ...shards, ...popup, ...followUp, ...anim].filter(Boolean).join("+"),
+    classes: nodes.map((n) => `${n.dataset.testid ?? n.dataset.recordId}: ${[...n.classList].join(" ")}`),
+    done: document.querySelector(".battle-result-panel") !== null,
   };
 }
 
@@ -227,6 +259,36 @@ async function captureAnimation(page, projectJson, animationId) {
   }
   if (clips.length > 0) await contactSheet(clips, join(outDir, "frames.png"));
 
+  if (BEATS) {
+    let lastKey = "";
+    let shots = 0;
+    let confirmsLeft = BEATS_CONFIRMS;
+    const beatDir = join(outDir, "beats");
+    const beatLog = [];
+    await mkdir(beatDir, { recursive: true });
+    for (let step = 0; step < BEATS_CLOCK_MS / STEP_MS && shots < BEATS_MAX_SHOTS; step += 1) {
+      // 프롬프트가 돌아오면 다음 아군의 명령을 넣어 라운드를 굴린다. 횟수를 다 쓰면 손을 놓고 적의 턴을 기다린다.
+      if (confirmsLeft > 0 && (await page.evaluate(HAS_ATTACK))) {
+        await page.keyboard.press("Enter");
+        await advanceUntil(page, HAS_TARGETABLE, "대상 선택(라운드 계속)", 80).catch(() => undefined);
+        await page.keyboard.press("Enter");
+        confirmsLeft -= 1;
+      }
+      const markers = await page.evaluate(readBeatMarkers);
+      if (markers.key !== lastKey) {
+        lastKey = markers.key;
+        const stamp = String(step * STEP_MS).padStart(5, "0");
+        await shoot(page, join(beatDir, `${String(shots).padStart(2, "0")}-${stamp}ms-${markers.label.replace(/[^a-zA-Z0-9+_-]/g, "").slice(0, 70) || "idle"}.png`));
+        shots += 1;
+        beatLog.push({ ms: step * STEP_MS, label: markers.label, classes: markers.classes });
+        log(`${animationId} beat ${stamp}ms ${markers.label || "(none)"}`);
+      }
+      if (markers.done && step > 8) break;
+      await page.clock.runFor(STEP_MS);
+    }
+    await writeFile(join(beatDir, "beats.json"), JSON.stringify(beatLog, null, 2));
+  }
+
   const first = frames[0];
   const metrics = first
     ? {
@@ -253,6 +315,9 @@ async function captureAnimation(page, projectJson, animationId) {
 
 const fixture = JSON.parse(await readFile(FIXTURE, "utf8"));
 if (SKIN) fixture.system.battleUiStyle = SKIN;
+if (ENEMY_HP_SCALE !== 1) {
+  for (const enemy of fixture.database.enemies) enemy.stats.maxHp = Math.round(enemy.stats.maxHp * ENEMY_HP_SCALE);
+}
 const projectJson = JSON.stringify(fixture);
 const server = await startPlayerQaServer();
 const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
