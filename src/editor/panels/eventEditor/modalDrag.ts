@@ -18,7 +18,10 @@ export function attachWindowDrag(handle: HTMLElement, windowEl: HTMLElement): vo
     const target = event.target;
     // summary 도 제외한다: 여기서 setPointerCapture + preventDefault 를 하면 크롬이 뒤따르는
     // mousedown/click 을 삼켜 헤더 안 `<details>` 팝오버(검토 알림 종)가 열리지 않는다.
-    if (target instanceof HTMLElement && target.closest("button, input, select, textarea, a, summary")) return;
+    // `Element` 로 본다 — 헤더의 닫기·전체 보기 단추는 SVG 아이콘이라 실제 포인터 대상은
+    // `<path>`(SVGElement) 다. HTMLElement 만 걸러내던 동안은 그 단추들이 마우스로 눌리지
+    // 않았다(2026-09-03 실측: e2e 「닫기」 클릭 뒤 편집기가 남음, 스크립트 click() 만 통과).
+    if (target instanceof Element && target.closest("button, input, select, textarea, a, summary")) return;
     const rect = windowEl.getBoundingClientRect();
     drag = {
       pointerId: event.pointerId,
