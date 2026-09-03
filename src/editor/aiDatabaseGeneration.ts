@@ -25,7 +25,11 @@ export interface AiDatabaseGenerationOutcome {
   readonly summary: string;
 }
 
+export type AiDatabaseGenerationPhase = "text" | "artwork" | "apply";
+
 export interface AiDatabaseGenerationDeps {
+  /** 단계 전환 알림 — 대화상자가 「정보 → 그림 → 등록」 을 보여 줄 수 있게. 실패해도 생성은 계속된다. */
+  readonly onPhase?: (phase: AiDatabaseGenerationPhase) => void;
   readonly complete?: (
     config: AiConfig,
     request: { messages: readonly ChatMessage[]; signal?: AbortSignal },
@@ -210,7 +214,16 @@ export async function generateDatabaseRecordWithAi(
   const currentProject = deps.currentProject ?? (() => store.getCurrent());
   const applyCalls = deps.applyCalls ?? applyToolSequenceToStore;
 
+  const notify = (phase: AiDatabaseGenerationPhase): void => {
+    try {
+      deps.onPhase?.(phase);
+    } catch {
+      // 진행 표시 실패가 생성 자체를 막으면 안 된다.
+    }
+  };
+
   const project = currentProject();
+  notify("text");
   const result = await complete(input.config, {
     messages: buildRecordPrompt(input.kind, brief, existingNamesOf(project, input.kind)),
     signal: input.signal,
@@ -227,6 +240,7 @@ export async function generateDatabaseRecordWithAi(
   let artwork: { resourceId: string; dataUrl: string } | undefined;
   let artworkModel: string | undefined;
   if (input.withArtwork) {
+    notify("artwork");
     const generateImage = deps.generateImage ?? ((request) => generateAiImage(request));
     const image = await generateImage({ prompt: artworkPromptFor(input.kind, name, brief), signal: input.signal });
     const flattened = deps.flattenArtwork ? await deps.flattenArtwork(image.dataUrl) : image.dataUrl;
@@ -238,6 +252,7 @@ export async function generateDatabaseRecordWithAi(
     throw new AiDatabaseGenerationError("생성을 취소했습니다. 프로젝트에는 아무것도 쓰지 않았습니다.");
   }
 
+  notify("apply");
   const calls = toolCallsForGeneration({ kind: input.kind, recordId, patch, artwork });
   const summary = `AI ${input.kind === "item" ? "아이템" : "몬스터"} 생성: ${name}`;
   const results = applyCalls(calls, { summary, source: "agent" });
