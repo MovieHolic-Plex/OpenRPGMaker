@@ -9,6 +9,7 @@ import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
 import { EVENT_TOOLS } from "./eventTools";
+import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
 import { GROUP_LAYOUT_TOOLS } from "./groupLayoutTools";
@@ -169,6 +170,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(ACTION_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...withDomain(NPC_CAST_TOOLS, "event"),
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
