@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1374KB / 약 387,869 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1382KB / 약 390,107 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -19,8 +19,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-tools.md` | 64KB | 60KB ⚠상한 초과 — 절을 더 쪼개라 | 129 | ~18,177 |
 | `openwiki/editor-database.md` | 168KB | 49KB | 806 | ~47,926 |
 | `openwiki/editor-event-authoring.md` | 116KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 550 | ~33,750 |
-| `openwiki/editor-pre-edit-routing.md` | 62KB | 49KB | 168 | ~17,730 |
-| `openwiki/runtime-battle.md` | 111KB | 29KB | 336 | ~31,628 |
+| `openwiki/editor-pre-edit-routing.md` | 68KB | 50KB | 196 | ~19,334 |
+| `openwiki/runtime-battle.md` | 113KB | 31KB | 339 | ~32,262 |
 | `openwiki/runtime-project-schema.md` | 53KB | 42KB | 174 | ~14,276 |
 | `openwiki/runtime-sessions.md` | 54KB | 45KB | 119 | ~14,335 |
 | `openwiki/testing.md` | 99KB | 45KB | 649 | ~27,907 |
@@ -38,7 +38,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 15, 28, 29, 31, 34, 35 |
 | `openwiki/editor-observability.md` | 1 | 120 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 27, 36, 41, 43, 56 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 29, 38, 43, 45, 58 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -57,11 +57,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-database.md` | 7 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
 | `openwiki/editor-event-authoring.md` | 5 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png` |
 | `openwiki/editor-event-commands.md` | 7 | `07-identifiable-previews.css`, `choicesDialog.ts`, `command-preview.css`, `event-editor.part-2/3.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `textCommandDialog.ts` |
-| `openwiki/editor-pre-edit-routing.md` | 7 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `src/editor/tools/worldTools.ts`, `surface.json`, `worldTools.ts` |
+| `openwiki/editor-pre-edit-routing.md` | 8 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `surface.json`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 1 | `src/editor/authoringTestGate.ts` |
 | `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
-| `openwiki/runtime-battle.md` | 6 | `_rm2003.css`, `battle-skins/_rm2003.css`, `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
+| `openwiki/runtime-battle.md` | 4 | `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-project-schema.md` | 2 | `.json`, `project.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
@@ -346,13 +346,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L232` AI 툴·액션 이유 (2026-09-02)
 - `L242` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 62KB · 168줄 · ~17,730 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 68KB · 196줄 · ~19,334 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Pre-edit routing
-- `L67` Agent cautions
-- `L77` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L108` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L140` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+- `L69` Agent cautions
+- `L79` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L110` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L142` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L171` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -462,7 +463,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 111KB · 336줄 · ~31,628 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 113KB · 339줄 · ~32,262 토큰 · 통째읽기 잘림
 
   - `L7` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
 - `L25` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
