@@ -110,6 +110,9 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   let toolLines: readonly string[] = [];
   let sceneQuery = "";
   let toolQuery = "";
+  let scenesCollapsed = false;
+  let chatCollapsed = false;
+  const expandedScenes = new Set<string>();
   let parked: ParkedNode[] = [];
   let fitObserver: ResizeObserver | null = null;
   let logObserver: MutationObserver | null = null;
@@ -141,6 +144,13 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     children: [renderEditorIcon("plus")],
     on: { click: () => createScene() },
   });
+  const scenesCollapseButton = el("button", {
+    class: "ai-studio-icon-btn",
+    attrs: { type: "button", title: "장면 목록 접기", "aria-label": "장면 목록 접기", "aria-expanded": "true" },
+    dataset: { testid: "ai-studio-scenes-collapse" },
+    children: [renderEditorIcon("arrowLeft")],
+    on: { click: () => setScenesCollapsed(!scenesCollapsed) },
+  });
   const scenesPane = el("aside", {
     class: "ai-studio-scenes",
     attrs: { "aria-label": "장면" },
@@ -149,7 +159,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
         class: "ai-studio-pane-head",
         children: [
           el("h3", { class: "ai-studio-pane-title", children: ["장면", sceneCount] }),
-          addSceneButton,
+          el("div", { class: "ai-studio-pane-actions", children: [addSceneButton, scenesCollapseButton] }),
         ],
       }),
       el("label", {
@@ -220,6 +230,13 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     class: "ai-studio-composer",
     dataset: { testid: "ai-studio-composer" },
   });
+  const chatCollapseButton = el("button", {
+    class: "ai-studio-icon-btn",
+    attrs: { type: "button", title: "조수 접기", "aria-label": "조수 접기", "aria-expanded": "true" },
+    dataset: { testid: "ai-studio-chat-collapse" },
+    children: [renderEditorIcon("arrowRight")],
+    on: { click: () => setChatCollapsed(!chatCollapsed) },
+  });
   const chatPane = el("aside", {
     class: "ai-studio-chat",
     dataset: { testid: "ai-studio-chat" },
@@ -236,6 +253,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
               statusLine,
             ],
           }),
+          chatCollapseButton,
         ],
       }),
       el("div", { class: "ai-studio-chat-body", children: [briefing, chatLogSlot] }),
@@ -357,6 +375,26 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     requestCanvasFit();
   };
 
+  const setScenesCollapsed = (next: boolean): void => {
+    scenesCollapsed = next;
+    root.classList.toggle("is-scenes-collapsed", next);
+    scenesCollapseButton.setAttribute("aria-expanded", String(!next));
+    scenesCollapseButton.setAttribute("aria-label", next ? "장면 목록 펼치기" : "장면 목록 접기");
+    scenesCollapseButton.setAttribute("title", next ? "장면 목록 펼치기" : "장면 목록 접기");
+    scenesCollapseButton.replaceChildren(renderEditorIcon(next ? "arrowRight" : "arrowLeft"));
+    requestCanvasFit();
+  };
+
+  const setChatCollapsed = (next: boolean): void => {
+    chatCollapsed = next;
+    root.classList.toggle("is-chat-collapsed", next);
+    chatCollapseButton.setAttribute("aria-expanded", String(!next));
+    chatCollapseButton.setAttribute("aria-label", next ? "조수 펼치기" : "조수 접기");
+    chatCollapseButton.setAttribute("title", next ? "조수 펼치기" : "조수 접기");
+    chatCollapseButton.replaceChildren(renderEditorIcon(next ? "arrowLeft" : "arrowRight"));
+    requestCanvasFit();
+  };
+
   const renderDeck = (): void => {
     if (deckTab === "tools") {
       deckPane.replaceChildren(renderToolsPane(toolQuery, options.onUseTool));
@@ -383,7 +421,12 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     const currentId = editorState.get().currentMapId ?? project.startMapId;
     const rows: HTMLElement[] = [];
     const query = sceneQuery.toLocaleLowerCase();
-    walkScenes(project.mapTree, null, 0, project, currentId, query, rows);
+    expandAncestors(project.mapTree, currentId, expandedScenes);
+    walkScenes(project.mapTree, null, 0, project, currentId, query, rows, expandedScenes, (mapId) => {
+      if (expandedScenes.has(mapId)) expandedScenes.delete(mapId);
+      else expandedScenes.add(mapId);
+      refreshScenes();
+    });
     sceneCount.textContent = String(Object.keys(project.maps).length);
     if (rows.length === 0) {
       rows.push(el("p", {
@@ -654,6 +697,16 @@ function requestCanvasFit(): void {
   }
 }
 
+function expandAncestors(tree: MapTreeNode, currentId: MapId | null, expanded: Set<string>): void {
+  let id: MapId | null = currentId;
+  while (id) {
+    const parent = findParentMapId(tree, id);
+    if (!parent) break;
+    expanded.add(parent);
+    id = parent;
+  }
+}
+
 function walkScenes(
   node: MapTreeNode,
   parentMapId: MapId | null,
@@ -662,6 +715,8 @@ function walkScenes(
   currentId: MapId | null,
   query: string,
   rows: HTMLElement[],
+  expanded: ReadonlySet<string>,
+  onToggleFold: (mapId: MapId) => void,
 ): void {
   const filtering = query.length > 0;
   if (isMapTreeFolder(node)) {
@@ -674,10 +729,13 @@ function walkScenes(
         ],
       }));
     }
-    for (const child of node.children) walkScenes(child, parentMapId, depth, project, currentId, query, rows);
+    for (const child of node.children) {
+      walkScenes(child, parentMapId, depth, project, currentId, query, rows, expanded, onToggleFold);
+    }
     return;
   }
   const map = project.maps[node.mapId];
+  const mapChildCount = node.children.filter((child) => !isMapTreeFolder(child)).length;
   if (map) {
     const name = map.name || node.mapId;
     const matches = !filtering || name.toLocaleLowerCase().includes(query);
@@ -685,15 +743,17 @@ function walkScenes(
       const interior = Boolean(parentMapId ?? findParentMapId(project.mapTree, node.mapId));
       const on = node.mapId === currentId;
       const isStart = node.mapId === project.startMapId;
+      const canFold = !filtering && mapChildCount > 0;
+      const open = expanded.has(node.mapId);
       // 실내는 배지가 아니라 들여쓰기(--scene-depth)와 data-kind 로만 말한다 — 15행에 같은
-      // 배지가 반복되면 정보가 아니라 소음이다(실측 2026-09-03).
-      rows.push(el("button", {
+      // 배지가 반복되면 정보가 아니라 소음이다(실측 2026-09-03). 기본은 부모 아래 접기.
+      const sceneBtn = el("button", {
         class: on ? "ai-studio-scene is-on" : "ai-studio-scene",
         attrs: {
           type: "button",
           "aria-current": on ? "true" : "false",
           title: name,
-          style: `--scene-depth:${filtering ? 0 : depth}`,
+          style: `--scene-depth:${filtering || canFold ? 0 : depth}`,
         },
         dataset: { testid: "ai-studio-scene", mapId: node.mapId, kind: interior ? "interior" : "map" },
         on: {
@@ -725,11 +785,47 @@ function walkScenes(
             ],
           }),
         ],
-      }));
+      });
+      if (!canFold) {
+        rows.push(sceneBtn);
+      } else {
+        const foldLabel = open ? "하위 장면 접기" : `하위 장면 ${mapChildCount}개 펼치기`;
+        rows.push(el("div", {
+          class: open ? "ai-studio-scene-row is-open" : "ai-studio-scene-row",
+          attrs: { style: `--scene-depth:${depth}` },
+          children: [
+            el("button", {
+              class: open ? "ai-studio-scene-fold is-open" : "ai-studio-scene-fold",
+              attrs: {
+                type: "button",
+                title: foldLabel,
+                "aria-label": foldLabel,
+                "aria-expanded": String(open),
+              },
+              dataset: { testid: "ai-studio-scene-fold", mapId: node.mapId },
+              children: [renderEditorIcon("caret")],
+              on: {
+                click: (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onToggleFold(node.mapId);
+                },
+              },
+            }),
+            sceneBtn,
+          ],
+        }));
+      }
     }
   }
+  const showMapChildren = filtering || expanded.has(node.mapId);
   for (const child of node.children) {
-    walkScenes(child, node.mapId, depth + 1, project, currentId, query, rows);
+    if (isMapTreeFolder(child)) {
+      walkScenes(child, node.mapId, depth, project, currentId, query, rows, expanded, onToggleFold);
+      continue;
+    }
+    if (!showMapChildren) continue;
+    walkScenes(child, node.mapId, depth + 1, project, currentId, query, rows, expanded, onToggleFold);
   }
 }
 

@@ -22,7 +22,9 @@
 /* ── 스튜디오 「장면 콘솔」(2026-09-03). 톱바 아래 전면 오버레이. 호스트는 캔버스 안이라
    absolute 로는 좌측 타일 레일을 못 가린다. fixed + 톱바 48px 아래부터.
    구성은 바닥(--bg-inset) 위에 네 섬(--bg-raised, 12px): 장면 레일 | 모니터 | 조수, 아래 덱.
-   설계: docs/superpowers/specs/2026-09-03-ai-studio-console-design.md */
+   설계: docs/superpowers/specs/2026-09-03-ai-studio-console-design.md
+   스태킹: 호스트 z-index 40 < 초보 레일 --z-rail 50 이라 장면 레일이
+   타일 사이드바에 가렸다. 열리면 도크를 숨기고 호스트를 --z-flyout 으로 올린다. */
 .ai-chat-panel.chat-dock-float.is-studio {
   background: var(--bg-inset);
   border: 0;
@@ -46,9 +48,21 @@
   display: none;
 }
 
+body.ai-studio-open .ai-chat-float-host {
+  z-index: var(--z-flyout);
+}
+
 body.ai-studio-open .topbar {
   position: relative;
-  z-index: 50;
+  z-index: var(--z-status);
+}
+
+body.ai-studio-open .left-panel,
+body.ai-studio-open .right-panel,
+body.ai-studio-open .resizer-left,
+body.ai-studio-open .authoring-journey-host {
+  pointer-events: none;
+  visibility: hidden;
 }
 
 .ai-chat-panel.is-studio .ai-chat-collapse,
@@ -57,18 +71,34 @@ body.ai-studio-open .topbar {
 }
 
 .ai-studio-shell {
+  --studio-scenes-col: 252px;
+  --studio-chat-col: 400px;
   background: var(--bg-inset);
   color: var(--text-1);
   display: grid;
   flex: 1 1 auto;
   font-variant-numeric: tabular-nums;
   gap: 10px;
-  grid-template-columns: 232px minmax(0, 1fr) 400px;
+  grid-template-columns: var(--studio-scenes-col) minmax(0, 1fr) var(--studio-chat-col);
   grid-template-rows: minmax(0, 1fr) auto;
   min-height: 0;
   min-width: 0;
   padding: 10px;
   pointer-events: auto;
+  transition: grid-template-columns var(--transition-med);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-studio-shell {
+    transition: none;
+  }
+}
+
+.ai-studio-pane-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
 }
 
 /* 아이콘은 이벤트 편집기 빌더(renderEditorIcon)를 그대로 쓴다. 크기 규칙은 그쪽 시트가
@@ -229,6 +259,53 @@ body.ai-studio-open .topbar {
   padding: 12px 8px 4px;
 }
 
+.ai-studio-scene-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  min-width: 0;
+  padding-left: calc(var(--scene-depth, 0) * 10px);
+}
+
+.ai-studio-scene-fold {
+  align-items: center;
+  align-self: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-3);
+  cursor: pointer;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  padding: 0;
+  width: 22px;
+}
+
+.ai-studio-scene-fold:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.ai-studio-scene-fold:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.ai-studio-scene-fold .ee-icon {
+  transform: rotate(-90deg);
+  transition: transform var(--transition-med);
+}
+
+.ai-studio-scene-fold.is-open .ee-icon {
+  transform: rotate(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-studio-scene-fold .ee-icon {
+    transition: none;
+  }
+}
+
 .ai-studio-scene {
   align-items: center;
   background: transparent;
@@ -246,6 +323,10 @@ body.ai-studio-open .topbar {
   text-align: left;
   transition: background var(--transition-fast);
   width: 100%;
+}
+
+.ai-studio-scene-row > .ai-studio-scene {
+  padding-left: 8px;
 }
 
 .ai-studio-scene:hover {
@@ -537,6 +618,10 @@ body.ai-studio-open .coach-mark-card {
   padding: 12px 14px;
 }
 
+.ai-studio-chat-head .ai-studio-icon-btn {
+  margin-left: auto;
+}
+
 .ai-studio-status-dot {
   background: var(--text-disabled);
   border-radius: 999px;
@@ -675,8 +760,12 @@ body.ai-studio-open .coach-mark-card {
 
 .ai-studio-suggest span {
   color: var(--text-2);
+  display: -webkit-box;
   font-size: 12px;
   line-height: 1.4;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .ai-studio-chat-log,
@@ -1207,7 +1296,8 @@ body.ai-studio-open .coach-mark-card {
 
 @media (max-width: 1280px) {
   .ai-studio-shell {
-    grid-template-columns: 208px minmax(0, 1fr) 360px;
+    --studio-scenes-col: 228px;
+    --studio-chat-col: 360px;
   }
 
   .ai-studio-deck-pane {
@@ -1226,8 +1316,9 @@ body.ai-studio-open .coach-mark-card {
 
 @media (max-width: 1024px) {
   .ai-studio-shell {
+    --studio-scenes-col: 196px;
+    --studio-chat-col: 320px;
     gap: 8px;
-    grid-template-columns: 176px minmax(0, 1fr) 320px;
     padding: 8px;
   }
 
@@ -1239,6 +1330,86 @@ body.ai-studio-open .coach-mark-card {
   .ai-studio-search.is-deck {
     display: none;
   }
+}
+
+/* 장면·조수 열 접기 — 모니터가 사이드바에 먹히지 않게. 변수 덮어쓰기는
+   한 클래스라 미디어쿼리(한 클래스)보다 특이성이 높다. */
+.ai-studio-shell.is-scenes-collapsed {
+  --studio-scenes-col: 52px;
+}
+
+.ai-studio-shell.is-chat-collapsed {
+  --studio-chat-col: 52px;
+}
+
+.ai-studio-shell.is-scenes-collapsed .ai-studio-pane-title,
+.ai-studio-shell.is-scenes-collapsed .ai-studio-search,
+.ai-studio-shell.is-scenes-collapsed .ai-studio-scene-body,
+.ai-studio-shell.is-scenes-collapsed .ai-studio-scene-group,
+.ai-studio-shell.is-scenes-collapsed .ai-studio-scene-fold {
+  display: none;
+}
+
+.ai-studio-shell.is-scenes-collapsed .ai-studio-pane-head {
+  flex-direction: column;
+  padding: 8px 6px 6px;
+}
+
+.ai-studio-shell.is-scenes-collapsed .ai-studio-pane-actions {
+  flex-direction: column;
+}
+
+.ai-studio-shell.is-scenes-collapsed .ai-studio-scene-row {
+  grid-template-columns: minmax(0, 1fr);
+  padding-left: 0;
+}
+
+.ai-studio-shell.is-scenes-collapsed .ai-studio-scene,
+.ai-studio-shell.is-scenes-collapsed .ai-studio-scene-row > .ai-studio-scene {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding: 6px 4px;
+}
+
+.ai-studio-shell.is-scenes-collapsed .ai-studio-scene-list {
+  padding: 0 4px 8px;
+}
+
+.ai-studio-shell.is-scenes-collapsed [data-kind="interior"] {
+  display: none;
+}
+
+.ai-studio-shell.is-scenes-collapsed .ai-studio-scene-thumb {
+  height: 28px;
+  width: 36px;
+}
+
+.ai-studio-shell.is-chat-collapsed .ai-studio-chat-body,
+.ai-studio-shell.is-chat-collapsed .ai-studio-composer,
+.ai-studio-shell.is-chat-collapsed .ai-studio-who-line {
+  display: none;
+}
+
+.ai-studio-shell.is-chat-collapsed .ai-studio-chat {
+  grid-template-rows: auto;
+}
+
+.ai-studio-shell.is-chat-collapsed .ai-studio-chat-head {
+  align-items: center;
+  border-bottom: 0;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+  padding: 10px 6px;
+}
+
+.ai-studio-shell.is-chat-collapsed .ai-studio-chat-head .ai-studio-icon-btn {
+  margin-left: 0;
+}
+
+.ai-studio-shell.is-chat-collapsed .ai-studio-who-title {
+  letter-spacing: 0.08em;
+  writing-mode: vertical-rl;
 }
 
 /* 시작 화면 — 최소 힌트만 (비주얼 카드는 추후) */
