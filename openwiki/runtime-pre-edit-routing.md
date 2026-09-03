@@ -102,16 +102,21 @@
   필드 스폰 몬스터와 `spawnEvent` 산출물이 한 칸도 움직이지 않는다(회귀: `test/runtimeSpawnedEventMovement.test.ts`).
   (3) 시간 시스템이 켜져 있고 `event.schedule` 이 있으면 페이지 이동 등록을 **건너뛴다** —
   일정이 있는 NPC 에게 이동 유형을 줘도 무시된다. 의도된 우선순위지만 저작자에게 보이지 않는다.
-- **주인공 방향키 탭 래치와 걸음 이어 붙이기는 한 쌍이다 (2026-09-03 실측 수정).** `src/player/input.ts` 의
-  `tappedDirections` 는 「눌렀다 뗀 방향도 한 번은 눌림」 래치고, 걷는 중에는 `update({ deferTaps: true })` 가
-  **peek 만** 한다. `playSceneMovement.ts` 는 걸음이 끝난 프레임의 남은 시간으로 다음 걸음을 이어 붙이므로
-  키를 누른 채 걷는 동안 `moving` 이 한 프레임도 false 가 되지 않는다 — 즉 이어 붙인 걸음이 래치를
-  소비하지 않으면 래치는 **영영 take 되지 않고**, 걷는 중 한 번 누른(또는 방향을 바꾼) 키가 전부 뗀 뒤에도
-  벽에 닿을 때까지 주인공을 걷게 한다(출하 경로 실측: 아래 유지 중 위로 바꾼 뒤 전부 뗌 → y 18→7 계속 이동).
-  `updatePlayerMovement` 의 chain 분기가 `tryStartMove` 직후 `input_.clearDirectionTaps()` 를 부르는 이유다.
-  래치를 소비하는 자리(정지 프레임의 take, chain 분기의 clear, 메뉴/입력 닫힘의 clear)를 하나라도 빼면 같은
-  결함이 돌아온다(회귀: `test/runtimeMovementStability.test.ts` 「걷는 중 들어온 방향 탭…」,
-  브라우저 프로브: `scripts/qa/probe-runtime-hold-release.mjs`).
+- **주인공 이동은 RPG Maker 식 프레임 정량화다 (2026-09-03).** `src/player/playSceneMovement.ts` 는 deltaMs 를
+  60Hz 논리 틱으로 바꾸고(`takeLogicTicks`, 반올림 이월 누적기 → 어느 주사율에서도 1초 = 60틱) 틱마다 RM 의
+  `Game_Player.update` 한 프레임을 돌린다: 안 걷고 있으면 그 프레임 입력(또는 강제 루트)으로 걸음을 시작, 그 다음
+  이번 프레임 이동을 진행. 걸음은 `round(moveDurationMs / 틱)` 프레임(160ms → 10, 대시 1.8배 → 5)에 **정수
+  프레임 카운터**(`moveElapsedFrames`)로 정확히 끝나고, 다음 걸음은 다음 틱에 시작한다. 점프·낙하도 같은 틱으로
+  간다(`PlayerHopState.elapsedFrames`). 시간 보간·「남은 시간 이월」·「걸음 이어 붙이기(chain)」는 **없다** —
+  이전 시간 기반 구현은 이어 붙이기가 걷는 동안 `moving` 을 한 프레임도 내리지 않아 방향키 탭 래치(peek/deferTaps)와
+  겹쳐 키를 전부 뗀 뒤에도 벽까지 걷는 결함을 냈다(출하 경로 실측 y 18→7). 입력(`src/player/input.ts`)도 RM 처럼
+  프레임당 한 번 `update()` 로 「지금 눌림」을 읽고, 프레임 사이에 시작·종료한 탭만 1회 엣지로 보충한다. **걷는 중 입력은
+  보관하지 않는다** — 한 칸 안에서 눌렀다 뗀 키는 RM 처럼 버려지고, 칸 경계 프레임에 눌려 있는 키만 다음 걸음이 된다.
+  틱이 0인 프레임(120Hz 의 절반)에서는 입력을 읽지 않아 엣지가 다음 틱 프레임으로 살아 간다. 테스트 하네스는
+  `logicTickAccumulatorMs: 0` 을 줘야 하고, `updatePlayScene(scene, 0)` 은 아무 일도 하지 않는다(프레임이 없다) —
+  한 프레임은 `1000/60` ms 다. 회귀: `test/runtimeMovementStability.test.ts`(정량화·RM 입력 계약),
+  `test/runtimePlayerHop.test.ts`(프레임 단위 점프·낙하); 출하 경로 프로브 `scripts/qa/probe-runtime-hold-release.mjs`
+  ([speed] 1초 유지 = 6칸 + 뗀 뒤 정지 5 시나리오).
 - **이벤트 접촉 트리거는 양방향이다.** 충돌 발동 규칙은 `src/project/eventTouchRules.ts` 한 곳에만 둔다
   (`firesOnPlayerCollision`). 이전에는 `playSceneMovement.ts` 와 `src/testing/sceneTestRunner.ts` 가
   규칙을 각자 복사해 두고 어긋나 있었고, `eventTouch` 는 NPC 가 플레이어에게 걸어오는 쪽만 발동했다.
