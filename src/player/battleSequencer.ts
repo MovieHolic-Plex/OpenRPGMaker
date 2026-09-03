@@ -7,6 +7,7 @@ import {
   planEnemyActionBeats,
   weightForFeedback,
   type BattleActionBeat,
+  recoverMsForAnimation,
 } from "@/player/battleActionBeats";
 import { store } from "@/project/store";
 import {
@@ -27,6 +28,8 @@ export const BATTLE_INTRO_MS = 1_200;
 export const BATTLE_ACTING_MS = 470;
 /** Brief freeze on a damaging connect before impact UI continues. */
 export const BATTLE_HITSTOP_MS = 110;
+/** 적 행동 예고(움츠림) — planEnemyActionBeats 의 windup 비트. weight 로 0.72~1.28배 늘어난다. */
+export const BATTLE_ENEMY_WINDUP_MS = 300;
 /**
  * 임팩트 여운. 750 → 430.
  *
@@ -316,8 +319,9 @@ export function createBattleSequencer(
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
           feedback,
           hitStopMs: BATTLE_HITSTOP_MS,
-          impactMs: BATTLE_IMPACT_MS,
+          impactMs: recoverMsForAnimation(entry.animation?.durationMs, BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
+          windupMs: BATTLE_ENEMY_WINDUP_MS,
         })
       : planActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "actor",
@@ -325,7 +329,8 @@ export function createBattleSequencer(
           feedback,
           actingMs: Math.max(BATTLE_ACTING_MS, cinematicMs),
           hitStopMs: BATTLE_HITSTOP_MS,
-          impactMs: BATTLE_IMPACT_MS,
+          // 후속 애니메이션(연기·잔광)이 비트보다 길면 recover 를 늘려 잘리지 않게 한다.
+          impactMs: recoverMsForAnimation(entry.animation?.durationMs, Math.max(BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
         });
     const afterBeats = killLine

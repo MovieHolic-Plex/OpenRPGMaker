@@ -227,6 +227,8 @@ export interface BattleAnimationSnapshot {
   readonly flashTargets: readonly ("target" | "screen")[];
   readonly screenShake: boolean;
   readonly frameCount: number;
+  /** 후속(followUps)까지 포함한 전체 재생 길이(ms). 시퀀서가 recover 비트를 이만큼 보장한다. */
+  readonly durationMs?: number;
 }
 
 // 직전 행동의 적용 결과. applySkillLike 가 돌려주는 {hit, amount, critical} 을

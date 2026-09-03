@@ -3,7 +3,7 @@ import type { DamageFeedback } from "@/player/battleSequencer";
 /** One timed presentation beat for a resolved battle action. */
 export type BattleActionBeatKind = "approach" | "impact" | "recover";
 
-export type BattleUserMotion = "lunge" | "return" | "idle";
+export type BattleUserMotion = "windup" | "lunge" | "return" | "idle";
 export type BattleTargetMotion = "knockback" | "idle";
 
 export interface BattleActionBeat {
@@ -113,22 +113,47 @@ export function planActionBeats(input: PlanActionBeatsInput): readonly BattleAct
   return [approach, impact, recover];
 }
 
-/** Enemy multi-action beats skip a long approach (already mid-field). */
+/** 적 행동의 예고(움츠림) 길이. 짧은 잽(light)은 0.72배, 필살(heavy)은 1.28배로 늘어난다. */
+export const ENEMY_WINDUP_MS = 300;
+
+/**
+ * 적 행동: windup(움츠림·예고) → impact(전진 + 착탄) → recover.
+ *
+ * 2026-09-03 전에는 approach 비트가 없어 적 턴이 대사 한 줄 뒤 곧바로 착탄이었다 — 누가 때렸는지
+ * 화면에서 읽을 수 없어 "적 턴이 텍스트로만 진행된다" 로 느껴졌다. 움츠림은 `battle-motion-windup`
+ * 으로 스프라이트를 살짝 키우고 어둡게 한 뒤(05-poses-motion.css), 착탄 비트의 lunge 로 파티 쪽에
+ * 내리찍는다.
+ */
 export function planEnemyActionBeats(input: {
   readonly userId: string;
+  readonly targetId?: string;
   readonly feedback?: DamageFeedback;
   readonly hitStopMs: number;
   readonly impactMs: number;
   readonly weight?: BattleActionWeight;
+  /** 미지정이면 ENEMY_WINDUP_MS. 0 이면 예고 비트를 만들지 않는다(옛 2비트 케이던스). */
+  readonly windupMs?: number;
 }): readonly BattleActionBeat[] {
-  const targetId = input.feedback?.targetId;
+  const targetId = input.targetId ?? input.feedback?.targetId;
   const damaging =
     Boolean(input.feedback)
     && !input.feedback?.healing
     && !input.feedback?.miss
     && (input.feedback?.amount ?? 0) > 0;
   const weight = input.weight ?? weightForFeedback(input.feedback);
-
+  const windupMs = scaled(input.windupMs ?? ENEMY_WINDUP_MS, APPROACH_SCALE[weight]);
+  const windup: BattleActionBeat | undefined = windupMs > 0
+    ? {
+        kind: "approach",
+        directorStep: "acting",
+        durationMs: windupMs,
+        userId: input.userId,
+        targetId,
+        userMotion: "windup",
+        targetMotion: "idle",
+        hitStop: false,
+      }
+    : undefined;
   const impact: BattleActionBeat = {
     kind: "impact",
     directorStep: "impact",
@@ -140,7 +165,6 @@ export function planEnemyActionBeats(input: {
     feedback: input.feedback,
     hitStop: damaging,
   };
-
   const recover: BattleActionBeat = {
     kind: "recover",
     directorStep: "impact",
@@ -151,6 +175,20 @@ export function planEnemyActionBeats(input: {
     targetMotion: "idle",
     hitStop: false,
   };
+  return windup ? [windup, impact, recover] : [impact, recover];
+}
 
-  return [impact, recover];
+/**
+ * 애니메이션(후속 포함)이 비트 총합보다 길면 recover 를 늘린다. 시퀀서는 애니메이션을 기다리지 않고
+ * 비트 길이로만 시간을 재므로, 이 보정이 없으면 연기·잔광 같은 후속이 다음 엔트리에 잘려 나간다.
+ * 반환값은 impactMs 이상이다(짧은 애니메이션이 비트를 줄이지는 않는다).
+ */
+export function recoverMsForAnimation(
+  animationMs: number | undefined,
+  actingMs: number,
+  hitStopMs: number,
+  impactMs: number
+): number {
+  if (!animationMs || !Number.isFinite(animationMs)) return impactMs;
+  return Math.max(impactMs, Math.round(animationMs - actingMs - hitStopMs));
 }

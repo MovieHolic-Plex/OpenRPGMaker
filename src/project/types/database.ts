@@ -634,6 +634,18 @@ export interface BattleAnimationRecord {
   large?: boolean;
   frames?: BattleAnimationFrame[];
   timings?: BattleAnimationTiming[];
+  /**
+   * 이어서 재생할 애니메이션(연출 합성, 2026-09-03). 본 애니메이션이 `startFrame` 에 닿으면 같은 앵커에
+   * 겹쳐 시작한다 — 착탄 뒤의 연기·불티·잔광처럼 "한 컷" 에 담기지 않는 잔향을 둘째 레코드가 맡는다.
+   * 전체 길이는 본체와 후속의 끝 중 늦은 쪽이고, 시퀀서가 그만큼 recover 비트를 늘린다.
+   */
+  followUps?: BattleAnimationFollowUp[];
+}
+
+export interface BattleAnimationFollowUp {
+  animationId: BattleAnimationId;
+  /** 본 애니메이션의 몇 번째 프레임(0 기준)에서 시작하는가. */
+  startFrame: number;
 }
 
 export type BattleAnimationScope = "singleTarget" | "allTargets" | "screen";

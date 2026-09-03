@@ -11,6 +11,7 @@
 import "@/styles/runtime/playerRuntime.css";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene, destroyBattleSceneOnHost } from "@/player/battleDom";
+import { spawnDeathShards } from "@/player/battleFieldDom";
 import { deserialize } from "@/project/io";
 import { ensureBundledBattleAnimations } from "@/project/defaults/defaultDatabase";
 // 출하 플레이어 빌드는 `@/project/store` 를 `exportProjectStoreShim.ts` 로 별칭 처리한다
@@ -42,6 +43,8 @@ declare global {
   interface Window {
     __qaBattle: {
       mount: (request: QaMountRequest) => { ok: true } | { ok: false; error: string };
+      /** 격파 조각을 index 번째 적에 강제로 뿌린다 — 조각 CSS 를 격파 없이 검사하기 위한 디버그 훅. */
+      spawnShards: (enemyIndex: number) => boolean;
       ready: boolean;
     };
   }
@@ -62,6 +65,12 @@ function forceAttackAnimation(project: Project, animationId: string): void {
 
 window.__qaBattle = {
   ready: true,
+  spawnShards: (enemyIndex) => {
+    const node = host.querySelectorAll<HTMLElement>(".battle-enemy")[enemyIndex];
+    if (!node) return false;
+    spawnDeathShards(node);
+    return true;
+  },
   mount: ({ projectJson, troopId, ensureBundledAnimations, attackAnimationId }) => {
     try {
       destroyBattleSceneOnHost(host);

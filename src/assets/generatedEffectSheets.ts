@@ -44,6 +44,8 @@ export type GeneratedEffectSheetSeed = {
   readonly position: BattleAnimationPosition;
   /** 기본 레코드 셀의 zoom(%). 전체화면(screen) 이펙트는 200 으로 무대 384 논리 px 를 덮는다. 없으면 100. */
   readonly cellZoom?: number;
+  /** 착탄 뒤 같은 앵커에 겹쳐 재생할 후속(연기·잔광). slug 는 이 카탈로그의 다른 항목이어야 한다. */
+  readonly followUps?: readonly { readonly slug: string; readonly startFrame: number }[];
   readonly sound: GeneratedEffectSoundSeed;
   readonly flash?: GeneratedEffectFlashSeed;
   readonly shake?: GeneratedEffectShakeSeed;
@@ -80,6 +82,13 @@ export function generatedEffectSheet(seed: GeneratedEffectSheetSeed): BattleAnim
     columns: seed.frameCount,
     assetScale: GENERATED_EFFECT_SHEET.assetScale,
   };
+}
+
+/** 후속 slug → DB 애니메이션 id. 카탈로그에 없는 slug 는 버린다(정본이 하나라 여기서 걸러진다). */
+export function generatedEffectFollowUps(seed: GeneratedEffectSheetSeed): readonly { readonly animationId: string; readonly startFrame: number }[] {
+  return (seed.followUps ?? [])
+    .filter((entry) => GENERATED_EFFECT_SHEETS.some((effect) => effect.slug === entry.slug))
+    .map((entry) => ({ animationId: generatedEffectDatabaseAnimationId(entry.slug), startFrame: entry.startFrame }));
 }
 
 /** 기본 레코드 셀 zoom(%). 카탈로그가 정하고, 없으면 RM 기본 100. */

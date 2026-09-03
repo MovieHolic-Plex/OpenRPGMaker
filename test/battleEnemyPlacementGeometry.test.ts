@@ -40,7 +40,12 @@ describe("적 세로 배치 기하", () => {
     });
   }
 
-  it("rm2000 전면 구도는 아군 스프라이트를 숨긴다", () => {
-    expect(BATTLER_PLACEMENTS.rm2000.partyFacing).toBe("hidden");
+  it("rm2000 정면 구도는 아군을 뒷모습으로 세운다(2026-09-03 전까지는 숨겼다)", () => {
+    expect(BATTLER_PLACEMENTS.rm2000.partyFacing).toBe("back");
+    // 4인: 가운데(적 자리)를 비우고 좌우 두 쌍, 발끝은 필드 바닥.
+    const slots = [0, 1, 2, 3].map((i) => BATTLER_PLACEMENTS.rm2000.party(i, 4));
+    expect(slots.map((s) => s.y)).toEqual([160, 160, 160, 160]);
+    expect(slots.map((s) => s.x)).toEqual([44, 116, 204, 276]);
+    expect(slots.every((s) => Math.abs(s.x - 160) >= 44)).toBe(true);
   });
 });

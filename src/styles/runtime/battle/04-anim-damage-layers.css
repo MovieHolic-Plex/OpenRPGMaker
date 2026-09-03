@@ -116,6 +116,13 @@
   position: absolute;
 }
 
+/* 후속 애니메이션(followUps)은 본체 엘리먼트 안에 중첩된다. 흐름에 두면 본체 시트(240px) **아래**로
+   밀려 연기가 대상 발밑 240px 지점에 떴다(실측). 본체 시트와 같은 자리에 겹친다. */
+.battle-animation-followup {
+  inset: 0;
+  position: absolute;
+}
+
 .battle-animation-cell {
   image-rendering: pixelated;
   position: absolute;
@@ -125,6 +132,19 @@
    pixelated 로 384px 를 192px 에 넣으면 가장자리가 계단으로 깨진다 — 보간을 켠다. */
 .battle-animation-cell[data-rendering="smooth"] {
   image-rendering: auto;
+}
+
+/* 무대 펀치 — heavy/crushing 타격 순간 필드를 살짝 확대했다 놓는다(battleHitIntensityDom.punchStage).
+   `.battle-field` 의 animation 슬롯은 아래 흔들림이 쓰므로 별도 속성 `scale` 을 transition 으로 움직인다.
+   두 효과가 같은 타격에 겹쳐도 서로를 지우지 않는다. */
+.battle-scene .battle-field {
+  scale: 1;
+  transform-origin: 50% 60%;
+  transition: scale 220ms ease-out;
+}
+.battle-scene.battle-field-punch .battle-field {
+  scale: var(--hit-punch, 1.03);
+  transition-duration: 70ms;
 }
 
 /* 주기와 반복 횟수는 screenShake.speed / durationFrames 에서 온다.

@@ -56,15 +56,79 @@
   transform: var(--battle-juice-base, translate(-50%, -100%));
   transition: transform 160ms ease-out;
 }
+/* 넉백 거리·찌그러짐은 타격 세기(battleHitIntensity.ts → data-hit-intensity + --hit-knockback/--hit-squash)가
+   정한다. 예전 고정값(아군 28px · 적 32px)은 세기 변수가 없을 때의 폴백으로 남긴다.
+   찌그러짐은 발끝(50% 100%)을 축으로 가로가 늘고 세로가 눌려 "맞은 느낌" 을 준다. */
 .battle-actor-group .battle-actor.battle-motion-knockback {
   filter: brightness(1.4) saturate(0.75);
-  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(28px);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(var(--hit-knockback, 28px))
+    scale(calc(1 + var(--hit-squash, 0.06)), calc(1 - var(--hit-squash, 0.06)));
+  transform-origin: 50% 100%;
   transition: transform 100ms ease-out, filter 100ms ease-out;
 }
 .battle-enemy-group .battle-enemy.battle-motion-knockback {
   filter: brightness(1.45) saturate(0.7);
-  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-32px);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(calc(-1 * var(--hit-knockback, 32px)))
+    scale(calc(1 + var(--hit-squash, 0.06)), calc(1 - var(--hit-squash, 0.06)));
+  transform-origin: 50% 100%;
   transition: transform 100ms ease-out, filter 100ms ease-out;
+}
+/* 정면 구도(rm2000)의 뒷모습 파티는 옆이 아니라 **카메라 쪽(아래)** 으로 밀린다. */
+.battle-scene[data-battle-skin="rm2000"] .battle-actor-group .battle-actor[data-party-facing="back"].battle-motion-knockback {
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateY(calc(var(--hit-knockback, 28px) * 0.45))
+    scale(calc(1 + var(--hit-squash, 0.06)), calc(1 - var(--hit-squash, 0.06)));
+}
+
+/* 적 예고(windup): 착탄 직전에 살짝 커지고 어두워지며 뒤로 젖힌다 — "지금 때린다" 를 읽게 한다.
+   2026-09-03. 이어지는 impact 비트의 lunge 가 파티 쪽으로 내리찍는다. */
+.battle-enemy-group .battle-enemy.battle-motion-windup {
+  filter: brightness(0.82) saturate(1.15);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateY(-6px) scale(1.06);
+  transform-origin: 50% 100%;
+  transition: transform 240ms ease-in, filter 240ms ease-in;
+  z-index: 4;
+}
+.battle-actor-group .battle-actor.battle-motion-windup {
+  transform: var(--battle-juice-base, translate(-50%, -100%)) scale(1.04);
+  transform-origin: 50% 100%;
+  transition: transform 240ms ease-in;
+}
+/* 스킨 CSS 는 `.battle-scene[ui][skin] .battle-enemy { transform }` (0,4,0) 로 기본 자세를 잡는다. 위 (0,3,0) 모션
+   규칙은 거기에 진다. 그래서 [data-battle-skin] 을 붙여 (0,5,0) 으로 같은 모션을 다시 선언한다 — 포켓몬 전용
+   규칙(아래, 같은 특정도·뒤 순서)은 여전히 이긴다. */
+.battle-scene[data-battle-skin] .battle-enemy-group .battle-enemy.battle-motion-windup {
+  filter: brightness(0.82) saturate(1.15);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateY(-6px) scale(1.06);
+  transform-origin: 50% 100%;
+  transition: transform 240ms ease-in, filter 240ms ease-in;
+}
+.battle-scene[data-battle-skin] .battle-enemy-group .battle-enemy.battle-motion-lunge {
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(44px);
+  transition: transform 130ms ease-out;
+}
+.battle-scene[data-battle-skin] .battle-enemy-group .battle-enemy.battle-motion-return {
+  transform: var(--battle-juice-base, translate(-50%, -100%));
+  transition: transform 160ms ease-out;
+}
+.battle-scene[data-battle-skin] .battle-actor-group .battle-actor.battle-motion-lunge {
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-56px);
+  transition: transform 130ms ease-out;
+}
+.battle-scene[data-battle-skin] .battle-actor-group .battle-actor.battle-motion-return {
+  transform: var(--battle-juice-base, translate(-50%, -100%));
+  transition: transform 160ms ease-out;
+}
+
+/* 정면 구도(rm2000): 적은 카메라(파티) 쪽으로 **아래·앞으로** 내리찍고, 뒷모습 파티는 적 쪽으로 **위로** 뛰어든다. */
+.battle-scene[data-battle-skin="rm2000"] .battle-enemy-group .battle-enemy.battle-motion-lunge {
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateY(28px) scale(1.1);
+  transform-origin: 50% 100%;
+  transition: transform 110ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.battle-scene[data-battle-skin="rm2000"] .battle-actor-group .battle-actor[data-party-facing="back"].battle-motion-lunge {
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateY(-30px) scale(0.94);
+  transform-origin: 50% 100%;
+  transition: transform 130ms ease-out;
 }
 
 /* Pokemon skin: larger lunge / knockback.
@@ -130,17 +194,46 @@
 .battle-juice-swing {
   animation: battle-juice-swing 0.25s ease-out;
 }
+/* 피격 juice 는 node 의 animation 슬롯을 쓰므로 정적 `.battle-motion-knockback` transform 을 이긴다.
+   그래서 넉백·찌그러짐(타격 세기, battleHitIntensity.ts 의 --hit-knockback/--hit-squash)은 **여기 키프레임에**
+   싣는다. 방향은 --hit-dir-x/y(진영·스킨별, 기본: 적은 왼쪽(-1,0) · 아군은 오른쫽(1,0)) 이 정한다. */
+.battle-enemy { --hit-dir-x: -1; --hit-dir-y: 0; }
+.battle-actor { --hit-dir-x: 1; --hit-dir-y: 0; }
 @keyframes battle-juice-hit {
   0% { filter: brightness(1); transform: var(--battle-juice-base, translate(-50%, -100%)); }
-  15% { filter: brightness(1.8); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(7px); }
-  35% { filter: brightness(1.5); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-6px); }
-  55% { filter: brightness(1.3); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(4px); }
-  75% { filter: brightness(1.1); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-2px); }
+  18% {
+    filter: brightness(1.9);
+    transform: var(--battle-juice-base, translate(-50%, -100%))
+      translate(calc(var(--hit-dir-x, -1) * var(--hit-knockback, 12px)), calc(var(--hit-dir-y, 0) * var(--hit-knockback, 12px)))
+      scale(calc(1 + var(--hit-squash, 0.06)), calc(1 - var(--hit-squash, 0.06)));
+  }
+  46% {
+    filter: brightness(1.4);
+    transform: var(--battle-juice-base, translate(-50%, -100%))
+      translate(calc(var(--hit-dir-x, -1) * var(--hit-knockback, 12px) * 0.55), calc(var(--hit-dir-y, 0) * var(--hit-knockback, 12px) * 0.55))
+      scale(calc(1 - var(--hit-squash, 0.06) * 0.5), calc(1 + var(--hit-squash, 0.06) * 0.5));
+  }
+  75% {
+    filter: brightness(1.12);
+    transform: var(--battle-juice-base, translate(-50%, -100%))
+      translate(calc(var(--hit-dir-x, -1) * var(--hit-knockback, 12px) * 0.15), calc(var(--hit-dir-y, 0) * var(--hit-knockback, 12px) * 0.15));
+  }
   100% { filter: brightness(1); transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 @keyframes battle-juice-critical {
   0% { filter: brightness(1) hue-rotate(0deg); transform: var(--battle-juice-base, translate(-50%, -100%)); }
-  30% { filter: brightness(2) hue-rotate(-20deg); transform: var(--battle-juice-base, translate(-50%, -100%)) scale(1.04); }
+  22% {
+    filter: brightness(2.2) hue-rotate(-20deg);
+    transform: var(--battle-juice-base, translate(-50%, -100%))
+      translate(calc(var(--hit-dir-x, -1) * var(--hit-knockback, 30px)), calc(var(--hit-dir-y, 0) * var(--hit-knockback, 30px)))
+      scale(calc(1 + var(--hit-squash, 0.1)), calc(1 - var(--hit-squash, 0.1)));
+  }
+  55% {
+    filter: brightness(1.5) hue-rotate(-8deg);
+    transform: var(--battle-juice-base, translate(-50%, -100%))
+      translate(calc(var(--hit-dir-x, -1) * var(--hit-knockback, 30px) * 0.5), calc(var(--hit-dir-y, 0) * var(--hit-knockback, 30px) * 0.5))
+      scale(calc(1 - var(--hit-squash, 0.1) * 0.4), calc(1 + var(--hit-squash, 0.1) * 0.4));
+  }
   100% { filter: brightness(1) hue-rotate(0deg); transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 @keyframes battle-juice-miss {
@@ -153,30 +246,30 @@
   100% { transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 
-/* flash.target === "target" 인 플래시. 씬 전체가 아니라 맞은 배틀러만 물든다.
-   예전에는 대상 지정을 무시하고 화면 전체를 번쩍여서, 한 명만 회복해도 화면이 통째로 밝아졌다.
-   배틀러 노드는 위치를 transform 으로 잡으므로 ::after 오버레이를 얹어 스프라이트만 덮는다. */
-.battle-animation-target-flash {
-  position: relative;
+/* flash.target === "target" 인 플래시. 씬 전체가 아니라 맞은 배틀러의 **실루엣**만 물든다.
+   예전에는 대상 지정을 무시하고 화면 전체를 번쩍여서, 한 명만 회복해도 화면이 통째로 밝아졌고,
+   그 다음 판의 `::after` 상자 오버레이는 노드 상자(스프라이트가 아닌 투명 상자)를 통째로 밝혀
+   슬라임 둘레에 희끄무레한 사각형이 떴다(실측 2026-09-03). 지금은 battleFlashFilter.ts 가 루트에
+   심는 SVG 필터(`SourceAlpha` 로 오려낸 색을 원본 위에 얹기)를 그려진 이미지에 건다 — 정적 원본·
+   idle 스트립·48px 시트 어느 티어든 그려진 알파를 따른다. 색·세기는 `--battle-flash-color`
+   (battleAnimationEffectStyle.flashCssVariables), 길이는 durationFrames 창(animationTiming) 이 정한다.
+   특정도 (0,6,0): 스킨의 `.battle-scene[ui-style][skin] .battle-enemy .battle-enemy-image { filter: none }`
+   (0,5,0) 을 이겨야 한다. */
+.battle-scene[data-battle-ui-style][data-battle-skin] .battle-enemy.battle-animation-target-flash .battle-enemy-image,
+.battle-scene[data-battle-ui-style][data-battle-skin] .battle-actor.battle-animation-target-flash .battle-actor-image,
+.battle-scene[data-battle-ui-style][data-battle-skin] .battle-actor.battle-animation-target-flash .battle-actor-sprite {
+  filter: url("#battle-flash-tint");
 }
 
-.battle-animation-target-flash::after {
-  animation: battle-screen-flash var(--battle-flash-duration, 0.2s) ease-out 2;
-  background: var(--battle-flash-color, rgba(255, 255, 255, 0.45));
-  border-radius: inherit;
-  content: "";
-  inset: 0;
-  mix-blend-mode: screen;
+/* 필터 정의만 담는 빈 SVG(battleFlashFilter.ts). 레이아웃에 끼어들지 않게 0×0 으로 접는다. */
+.battle-scene .battle-fx-defs {
+  height: 0;
+  left: 0;
+  overflow: hidden;
   pointer-events: none;
   position: absolute;
-  z-index: 3;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .battle-animation-target-flash::after {
-    animation: none;
-    opacity: 0.5;
-  }
+  top: 0;
+  width: 0;
 }
 
 /* 색과 지속은 애니메이션 타이밍의 flash.color / flash.durationFrames 에서 온다
