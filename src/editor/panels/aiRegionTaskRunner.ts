@@ -13,6 +13,7 @@ import { setAgentGhostRunningTool } from "@/editor/agentGhostPreview";
 import { intentEscapesRegion } from "@/ai/intentDeclaration";
 import { buildIntentFacts, createLlmIntentDeclarer, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import {
+  clippedNoticeText,
   describeRegionTaskResult,
   type RegionTaskOptions,
   type RegionTaskResult,
@@ -145,11 +146,12 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
       assistantBubble = null;
       reasoningBox = null;
     };
+    let lastAssistantBubble: HTMLElement | null = null;
     const appendAssistantText = (content: string): void => {
       if (!content.trim()) return;
       assistantMessageDisplayed = true;
       deps.surface.closeToolActivity();
-      deps.surface.appendBubble("assistant", content);
+      lastAssistantBubble = deps.surface.appendBubble("assistant", content);
       recordRegionAudit({ kind: "assistant", text: content, at: new Date().toISOString() });
     };
     const onEvent = (event: SessionEvent): void => {
@@ -238,7 +240,19 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
         return;
       }
       streamedBubbles.forEach(renderStreamedMarkdown);
-      if (result.assistantText && !assistantMessageDisplayed) appendAssistantText(result.assistantText);
+      if (result.assistantText && !assistantMessageDisplayed) appendAssistantText(clippedNoticeText(result.assistantText, result));
+      else if (assistantMessageDisplayed) {
+        // 이미 보인 「채웠습니다」 위에 사실을 얹는다 — 클립이 전부 버린 턴에서만 문장이 나온다.
+        const notice = clippedNoticeText("", result);
+        const target = streamedBubbles[streamedBubbles.length - 1] ?? lastAssistantBubble;
+        if (notice && target) {
+          const line = document.createElement("p");
+          line.className = "ai-clip-notice";
+          line.dataset.testid = "ai-clip-notice";
+          line.textContent = notice;
+          target.prepend(line);
+        }
+      }
       const summary = describeRegionTaskResult(result);
       deps.surface.appendBubble("system", summary);
       recordRegionAudit({ kind: "status", text: summary, at: new Date().toISOString() });
