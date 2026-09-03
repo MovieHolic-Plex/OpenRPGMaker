@@ -129,7 +129,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   movingTo = { x: 0, y: 0 };
   moving = false;
   moveProgress = 0;
+  moveElapsedFrames = 0;
   moveDurationMs = 160;
+  logicTickAccumulatorMs = 0;
   dashing = false;
   facing: "down" | "left" | "right" | "up" = "down";
   walkFrame = 0;

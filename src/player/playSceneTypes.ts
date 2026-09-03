@@ -130,7 +130,8 @@ export interface PlayerRouteState {
  */
 export interface PlayerHopState {
   readonly hop: import("@/player/characterHop").CharacterHop;
-  elapsedMs: number;
+  /** 지나간 논리 프레임. 체공도 걸음과 같은 60Hz 틱으로 간다(hopFrames = round(durationMs / 틱). */
+  elapsedFrames: number;
   /** 이 체공이 끝나면 걸음 이동 부수효과(발소리·인카운터·독)를 한 걸음으로 셀지. */
   readonly countsAsStep: boolean;
 }
@@ -164,7 +165,11 @@ export interface PlaySceneContext extends Phaser.Scene {
   movingTo: { x: number; y: number };
   moving: boolean;
   moveProgress: number;
+  /** 이번 걸음에서 지나간 논리 프레임. 걸음은 round(moveDurationMs / 틱) 프레임에 정확히 끝난다(RPG Maker 식). */
+  moveElapsedFrames: number;
   moveDurationMs: number;
+  /** deltaMs → 60Hz 논리 틱 변환의 잔여(ms). 주사율과 무관하게 1초 = 60틱이 되게 한다. */
+  logicTickAccumulatorMs: number;
   dashing: boolean;
   facing: Dir;
   walkFrame: number;

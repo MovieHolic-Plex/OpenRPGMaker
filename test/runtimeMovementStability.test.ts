@@ -53,11 +53,11 @@ describe("방향키 탭 래치", () => {
     expect(input.update()).toMatchObject({ dir: null, x: 0, y: 0 });
   });
 
-  it("걷는 중(deferTaps) 에 들어온 탭은 버리지 않고 정지한 프레임에서 소비한다", () => {
+  it("탭 엣지는 항상 다음 update 한 번에 소비된다 — update 에 미루기 옵션이 없다(RPG Maker 처럼 걷는 중 입력은 보관하지 않는다)", () => {
     const input = new Input(keyboardStubScene());
     pressAndRelease("ArrowDown");
+    // @ts-expect-error deferTaps 가 사라진 것이 계약이다 — 옵션이 부활하면 이 줄이 타입 오류로 잡는다.
     expect(input.update({ deferTaps: true })).toMatchObject({ y: 1 });
-    expect(input.update()).toMatchObject({ y: 1 });
     expect(input.update()).toMatchObject({ y: 0 });
   });
 
@@ -142,6 +142,7 @@ function movementHarness(): MovementHarness {
     moving: false,
     moveProgress: 0,
     moveDurationMs: 160,
+    logicTickAccumulatorMs: 0,
     dashing: false,
     facing: "down",
     walkFrame: 0,
@@ -187,7 +188,42 @@ function walkPatternsSeen(frames: ReadonlyArray<string | number>, direction: "ri
   return patterns;
 }
 
-describe("주인공 걷기 연속성", () => {
+describe("주인공 걷기 — RPG Maker 식 프레임 정량화", () => {
+  // RPG Maker 는 걸음을 시간이 아니라 프레임으로 가른다(MV: 2^speed/256 타일/프레임 → 보통 속도 16프레임/칸).
+  // 걸음은 항상 프레임 경계에서 끝나고, 안 걷고 있을 때만 그 프레임의 입력으로 다음 걸음을 시작한다.
+  // 「남은 시간 이월」·「걸음 이어 붙이기」는 존재하지 않는다. 이 프로젝트는 160ms 걸음 = 10 논리 프레임(60Hz).
+  it("10 논리 프레임이면 정확히 한 칸을 마치고 칸 경계에 서 있다 — 다음 걸음은 다음 프레임에 시작한다", () => {
+    const harness = movementHarness();
+    harness.hold({ dir: "right", x: 1 });
+    harness.tick(10);
+    expect(harness.scene.tileX).toBe(6);
+    expect(harness.scene.moving).toBe(false);
+    expect(harness.scene.player.x).toBe(footprintSpriteX(6, { width: 1, height: 1 }));
+    harness.tick(1);
+    expect(harness.scene.moving).toBe(true);
+    expect(harness.scene.movingTo).toEqual({ x: 7, y: 5 });
+  });
+
+  it("프레임 시간이 16.2/17.1ms 로 흔들려도 프레임당 이동은 언제나 1/10 칸(1.6px)이다 — 시간 보간이 아니라 프레임 이동", () => {
+    const harness = movementHarness();
+    harness.hold({ dir: "right", x: 1 });
+    const deltas: number[] = [];
+    let previousX = footprintSpriteX(5, { width: 1, height: 1 });
+    for (let frame = 0; frame < 30; frame += 1) {
+      harness.tick(1, frame % 2 === 0 ? 16.2 : 17.1);
+      deltas.push(Number((harness.scene.player.x - previousX).toFixed(3)));
+      previousX = harness.scene.player.x;
+    }
+    expect(new Set(deltas)).toEqual(new Set([1.6]));
+  });
+
+  it("120Hz(8.3ms) 에서는 두 프레임에 한 논리 프레임 — 1초에 여전히 6 칸", () => {
+    const harness = movementHarness();
+    harness.hold({ dir: "right", x: 1 });
+    harness.tick(120, 1000 / 120);
+    expect(harness.scene.tileX).toBe(11);
+  });
+
   it("키를 누른 채 걸으면 걷기 패턴 0·1·2 가 모두 나온다(칸마다 애니메이션이 처음으로 돌아가지 않는다)", () => {
     const harness = movementHarness();
     harness.hold({ dir: "right", x: 1 });
@@ -195,13 +231,12 @@ describe("주인공 걷기 연속성", () => {
     expect([...walkPatternsSeen(harness.frames, "right")].sort()).toEqual([0, 1, 2]);
   });
 
-  it("60 프레임(1초) 동안 160ms 걸음은 6 칸을 마친다 — 칸 사이에 유휴 프레임이 끼지 않는다", () => {
+  it("60 프레임(1초) 동안 160ms 걸음은 정확히 6 칸이다 — 칸 사이에 유휴 프레임도, 남은 시간 이월도 없다", () => {
     const harness = movementHarness();
     harness.hold({ dir: "right", x: 1 });
     harness.tick(60);
-    // 정확히 1000.2ms → 6 칸 완료 + 7 번째 칸 진행 중. 유휴 프레임이 칸마다 끼면 5 칸에 그친다.
     expect(harness.scene.tileX).toBe(11);
-    expect(harness.scene.moving).toBe(true);
+    expect(harness.scene.moving).toBe(false);
   });
 
   it("키를 떼면 진행 중인 걸음은 마치고 다음 칸으로 넘어가지 않는다", () => {
@@ -216,9 +251,10 @@ describe("주인공 걷기 연속성", () => {
   });
 });
 
-describe("걷는 중 들어온 방향 탭이 걸음을 이어 붙인 뒤에는 소비된다", () => {
-  // 회귀: 이어 붙인 걸음이 매 프레임 moving 을 유지해 래치가 peek 만 되고 take 되지 않아, 키를 전부 뗀 뒤에도
+describe("걷는 중 입력은 RPG Maker 처럼 걸음이 끝나는 프레임의 눌림만 본다", () => {
+  // 회귀: 예전 탭 래치는 걷는 중 눌린 키를 보관해 다음 걸음으로 내보냈고, 걸음 이어 붙이기와 겹쳐 키를 전부 뗀 뒤에도
   // 벽에 닿을 때까지 걸었다(브라우저 실측: 아래 유지 중 위로 바꾼 뒤 전부 뗌 → y 18→7 계속 이동).
+  // RPG Maker 는 걷는 중 입력을 보관하지 않는다 — 걸음이 끝나는 프레임에 눌려 있는 키만 다음 걸음이 된다.
   function realInputHarness(): MovementHarness & { down(key: string): void; up(key: string): void } {
     const harness = movementHarness();
     (harness.scene as { input_: Input }).input_ = new Input(keyboardStubScene());
@@ -243,11 +279,27 @@ describe("걷는 중 들어온 방향 탭이 걸음을 이어 붙인 뒤에는 �
     expect(harness.scene.tileX).toBeLessThanOrEqual(9);
   });
 
-  it("오른쪽 유지 중 아래 탭 한 번은 정확히 한 칸이다", () => {
+  it("오른쪽 유지 중 한 칸 안에서 시작하고 끝난 아래 탭은 버려진다(RPG Maker 계약) — 오른쪽으로만 계속 걷는다", () => {
     const harness = realInputHarness();
     harness.down("ArrowRight");
     harness.tick(15);
     harness.down("ArrowDown");
+    harness.tick(2);
+    harness.up("ArrowDown");
+    harness.tick(60);
+    expect(harness.scene.tileY).toBe(5);
+    expect(harness.scene.tileX).toBeGreaterThanOrEqual(11);
+    harness.up("ArrowRight");
+    harness.tick(30);
+    expect(harness.scene.moving).toBe(false);
+  });
+
+  it("오른쪽 유지 중 아래를 칸 경계를 넘기도록 누르면 그 경계에서 대각선 걸음이 시작된다", () => {
+    const harness = realInputHarness();
+    harness.down("ArrowRight");
+    harness.tick(15);
+    harness.down("ArrowDown");
+    harness.tick(10);
     harness.up("ArrowDown");
     harness.tick(60);
     expect(harness.scene.tileY).toBe(6);
