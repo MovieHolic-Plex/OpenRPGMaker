@@ -80,14 +80,21 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
     );
   }
 
+  const toolbar = el("div", { class: "world-panel-controls", children: controls });
+  if (options.embedded) {
+    return el("header", {
+      class: "world-panel-header world-panel-header-embedded",
+      children: [toolbar],
+    });
+  }
   return el("header", {
     class: "world-panel-header",
     children: [
       el("div", {
         class: "world-panel-title",
-        children: [el("h2", { text: "세계관" })],
+        children: [el("h2", { text: "설정집" })],
       }),
-      el("div", { class: "world-panel-controls", children: controls }),
+      toolbar,
     ],
   });
 }

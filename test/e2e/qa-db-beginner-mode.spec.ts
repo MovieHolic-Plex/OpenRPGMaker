@@ -14,7 +14,7 @@ const HELP_TOAST = "데이터베이스에서 레코드와 시스템 설정을 �
 // Observed beginner common-nav labels (database.ts COMMON_TAB_IDS + uiLabel).
 // uiLabel("databaseShort", "plain") — the only jargon-switched string in database.ts.
 // Expert grouped chrome (TAB_GROUPS) — jargonStyle is "technical" but tab ids stay hardcoded.
-const EXPERT_GROUP_LABELS = ["파티", "몬스터", "전투 규칙", "생활", "세계", "시스템"] as const;
+const EXPERT_GROUP_LABELS = ["세계관", "파티", "몬스터", "전투 규칙", "생활", "맵", "시스템"] as const;
 
 test.describe("QA — beginner Database mode", () => {
   test.describe.configure({ timeout: 60_000 });

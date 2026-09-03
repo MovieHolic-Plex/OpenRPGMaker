@@ -35,6 +35,8 @@ export type WorldTabKey = "overview" | "character" | "place-faction" | "event" |
 export type WorldPanelOptions = {
   readonly initialEntityId?: string;
   readonly onClose?: () => void;
+  /** 자료집 탭 안에 심을 때. 제목/닫기를 빼고 셸 크기를 따른다. */
+  readonly embedded?: boolean;
 };
 
 export type WorldPanelState = {

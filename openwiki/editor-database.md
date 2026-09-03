@@ -22,9 +22,16 @@
 - The hero owns selected-actor identity, class, level range, and start-party membership. The table owns selection and comparison only; do not restore duplicate current-selection/party summary metrics or analytics. System remains the authority for `startActorIds`.
 - Scroll ownership is explicit: list rows scroll inside `.db-actor-studio-table`; the actor hero and section tabs remain fixed; only `.actor-section-body` scrolls. Do not return to one long inspector document where category navigation depends on scrolling.
 
+## 세계관 그룹 — 이 세계 · 설정집 (2026-09-03)
+
+- 자료집 레일 **첫 그룹** `세계관` (`slug: lore`). 탭 `이 세계` (`worldCanon`, `db-tab-world-canon`) 와 `설정집` (`worldCodex`, `db-tab-world-codex`). 예전에 「세계」이던 타일셋·생성 규칙 그룹은 **「맵」** 으로 개명했다 (`slug` 는 `world` 유지 — 접힌 타일셋 폴더 부제 계약).
+- `이 세계` 는 싱글톤 `project.worldCanon` 이다. 이름·한 줄 전제·톤 칩·시대·기술 천장·없는 것 태그·힘/신/죽음/돈 법칙·마크다운 본문. 비어 있으면 키를 저장하지 않는다 (`normalizeWorldCanon` / `compactWorldCanon`). 스키마는 `src/project/world/canon.ts`.
+- 텍스트는 `recordCoalescedSnapshot`, 칩·태그·법칙 토글은 `recordProjectSnapshot`. UI 는 `databaseWorldCanonView.ts`, 계약 `test/worldCanon.test.ts` + `test/databaseWorldCanonView.test.ts`.
+- `설정집` 은 기존 세계관 카드 위키를 자료집 셸에 심은 것이다 (`world-panel-embedded`). 톱바 세계관 버튼은 이 그룹의 `이 세계` 탭으로 점프한다.
+
 ## '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
 
-- `세계` 그룹 첫 탭 `생성 규칙` (`worldGen`, testid `db-tab-world-gen`) 은 `project.system.worldGen` 을 저작한다. 강 띠 두께·호수 지름·수면 모양·숲 깊이·나무 밀도·간격·길 재료·광장 자리, 그리고 "이 말이 나오면 이 지형" 낱말 규칙이 전부 이 한 탭에 있다.
+- `맵` 그룹 첫 탭 `생성 규칙` (`worldGen`, testid `db-tab-world-gen`) 은 `project.system.worldGen` 을 저작한다. 강 띠 두께·호수 지름·수면 모양·숲 깊이·나무 밀도·간격·길 재료·광장 자리, 그리고 "이 말이 나오면 이 지형" 낱말 규칙이 전부 이 한 탭에 있다.
 - 값을 만지면 실제 칩셋 타일로 그린 미리보기가 즉시 갱신된다. 미리보기는 시공기와 **같은 함수**(`buildTerrainConstraintMasks` / `cellsInFillShape` / 나무 수 헬퍼)를 쓴다 — 미리보기 전용 근사식을 넣지 마라. 예시 프리셋 카드도 같은 렌더러로 그린 썸네일이다.
 - 낱말 규칙은 낱말 목록 + 제외 낱말 + 지형 칩이다. **정규식·코드 입력을 넣지 마라** — 초보 저자가 대상이고 자연어까지만 허용하는 것이 설계 전제다.
 - 구조 변경은 `recordProjectSnapshot`, 슬라이더/텍스트는 `recordCoalescedSnapshot` 이라 modal dirty/undo 계약을 따른다. 탭 count 는 저자가 만든 낱말 규칙 수다.

@@ -36,7 +36,10 @@ import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tileset
 import { renderScratchConceptTab } from "@/editor/panels/scratchConceptTab";
 import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
+import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
+import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
 import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
+import { worldCanonHasContent } from "@/project/world/canon";
 import {} from "@/editor/uiCopy";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { store } from "@/project/store";
@@ -72,6 +75,8 @@ export type DatabaseTab =
   | "switches"
   | "tilesets"
   | "variables"
+  | "worldCanon"
+  | "worldCodex"
   | "worldGen";
 
 const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = [
@@ -101,6 +106,8 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "tilesets", label: "통행", testid: "db-tab-tilesets" },
   { id: "tilesetAutotile", label: "오토타일 설정", testid: "db-tab-tileset-autotile" },
   { id: "tilesetUnlabeled", label: "미분류 모아보기", testid: "db-tab-tileset-unlabeled" },
+  { id: "worldCanon", label: "이 세계", testid: "db-tab-world-canon" },
+  { id: "worldCodex", label: "설정집", testid: "db-tab-world-codex" },
   { id: "worldGen", label: "생성 규칙", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "구조물", testid: "db-tab-structure-kits" },
   { id: "tilesetSpaces", label: "공간 종류", testid: "db-tab-tileset-spaces" },
@@ -126,6 +133,7 @@ export type DatabaseTabGroup = {
 // 둘이 이미 어긋나 있었다(`terrain` 이 tabOrder 에선 battleCommands 뒤, TAB_GROUPS 에선
 // 전투 그룹 끝). 한쪽만 고치면 조용히 다시 갈라지므로 파생으로 묶는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
+  { label: "세계관", slug: "lore", tabs: ["worldCanon", "worldCodex"] },
   { label: "파티", slug: "party", tabs: ["actors", "classes", "skills", "items", "equipment"] },
   { label: "몬스터", slug: "monster", tabs: ["enemies", "monsterSpecies", "troops", "factions"] },
   {
@@ -135,7 +143,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   // 지형은 전투 데이터가 아니라 맵 데이터다 — 타일셋·구조물과 같은 그룹에 둔다.
-  { label: "세계", slug: "world", tabs: ["worldGen", "tilesets", "tilesetAutotile", "tilesetUnlabeled", "structureKits", "tilesetSpaces", "villages", "terrain", "commonEvents"] },
+  { label: "맵", slug: "world", tabs: ["worldGen", "tilesets", "tilesetAutotile", "tilesetUnlabeled", "structureKits", "tilesetSpaces", "villages", "terrain", "commonEvents"] },
   { label: "임시", slug: "scratch", tabs: ["scratchConcepts"] },
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
@@ -501,6 +509,10 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       const tileset = project.tilesets[getSelectedTilesetId() ?? ""];
       return tileset?.scratchConceptBundles?.length ?? 0;
     }
+    case "worldCanon":
+      return worldCanonHasContent(project.worldCanon) ? 1 : 0;
+    case "worldCodex":
+      return project.world?.entities.length ?? 0;
     case "worldGen":
       return project.system.worldGen?.keywords?.length ?? 0;
     case "structureKits":
@@ -856,6 +868,12 @@ function renderActiveTab(
       break;
     case "villages":
       renderVillageTab(body, rerender);
+      break;
+    case "worldCanon":
+      renderWorldCanonTab(body, rerender);
+      break;
+    case "worldCodex":
+      renderWorldCodexTab(body);
       break;
     case "worldGen":
       renderWorldGenTab(body, rerender);

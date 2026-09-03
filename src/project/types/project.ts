@@ -18,6 +18,7 @@ import type {
 import type { ProjectDatabaseRecords, SystemRecords } from "./database";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord } from "./village";
 import type { AnyQuestDef } from "../quest/questDef";
+import type { WorldCanon } from "../world/canon";
 import type { ProjectWorld } from "../world/types";
 import type { WorldGraph } from "../worldGraph/types";
 import type {
@@ -495,6 +496,8 @@ export interface Project {
   // 조수에게 항상 주는 사용자 고정 지침(ai/projectInstructions.ts). 시스템 프롬프트의 예산 밖
   // 고정분으로 들어가 압축·새 대화·복원에도 살아남는다. optional이라 마이그레이션 불필요.
   aiInstructions?: string;
+  /** 세계 허리 — 이름·전제·톤·없는 것·법칙·설정집 본문. 목록이 아니라 싱글톤. */
+  worldCanon?: WorldCanon;
   world?: ProjectWorld;
   worldGraph?: WorldGraph;
   // 런타임 진영 레지스트리 + 태도 행렬. world(세계관 lore 그래프)와 달리 전투 런타임이 직접 읽는다.
