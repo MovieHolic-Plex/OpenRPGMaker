@@ -44,6 +44,10 @@ const BEATS_MAX_SHOTS = Number(arg("beats-shots", "60")) || 60;
 const BEATS_CONFIRMS = Number(arg("beats-confirms", "4")) || 4;
 /** 적 최대 HP 를 이 배수로 키워 막타 대신 여러 세기의 타격·적의 턴을 본다(예: --enemy-hp=6). */
 const ENEMY_HP_SCALE = Number(arg("enemy-hp", "1")) || 1;
+/** 적 민첩을 이 배수로 키워 게이지 흐름에서 적의 턴이 먼저/자주 오게 한다(예: --enemy-agi=8). */
+const ENEMY_AGI_SCALE = Number(arg("enemy-agi", "1")) || 1;
+/** 전투 흐름 강제(system.battleFlow: gauge | strict). strict 는 파티 전원 명령 뒤 라운드가 한 번에 풀려 적의 턴이 바로 온다. */
+const FLOW = arg("flow", "");
 const OUT_ROOT = join(REPO_ROOT, arg("out", "verify-shots/battle-anim-overhaul"), LABEL);
 const VIEWPORT = { width: 1280, height: 960 };
 const STEP_MS = 25;
@@ -64,6 +68,21 @@ async function advanceUntil(page, predicate, what, maxSteps = MAX_STEPS) {
 const HAS_ATTACK = () => document.querySelector("[data-testid='actor-command-attack']") !== null;
 const HAS_TARGETABLE = () => document.querySelector(".battle-enemy[data-battle-targetable='true']") !== null;
 const HAS_ANIMATION = () => document.querySelector("[data-testid='battle-animation']") !== null;
+// page.evaluate 로 넘어가는 함수는 브라우저에서 홀로 실행된다 — 다른 상수를 참조하면 ReferenceError(실측).
+const IN_TARGET_STEP = () => (document.querySelector("[data-testid='battle-scene']")?.dataset.battleDirectorStep ?? "") === "target";
+const NOT_IN_TARGET_STEP = () => (document.querySelector("[data-testid='battle-scene']")?.dataset.battleDirectorStep ?? "") !== "target";
+
+/**
+ * 「공격」→ 첫 대상 확정. targetable 속성은 이전 명령의 잔재가 남을 수 있어(실측: 확인키가 대상 메뉴가
+ * 붙기 전에 떨어져 라운드가 target 단계에 멈췄다) 디렉터 단계(target 진입 → 이탈)로 기다린다.
+ */
+async function confirmAttackOnFirstTarget(page) {
+  await page.keyboard.press("Enter");
+  await advanceUntil(page, IN_TARGET_STEP, "대상 선택 단계", 120);
+  await page.clock.runFor(STEP_MS);
+  await page.keyboard.press("Enter");
+  await advanceUntil(page, NOT_IN_TARGET_STEP, "대상 확정", 120);
+}
 
 function readAnimationState() {
   const anim = document.querySelector("[data-testid='battle-animation']");
@@ -223,9 +242,26 @@ async function captureAnimation(page, projectJson, animationId) {
 
   // 클릭은 명령 그리드의 히트테스트에 가로막힌다(실측). 커서가 「공격」에 있으니 확인키로 고른다.
   await page.keyboard.press("Enter");
-  await advanceUntil(page, HAS_TARGETABLE, "대상 선택");
+  await advanceUntil(page, IN_TARGET_STEP, "대상 선택");
   await shoot(page, join(outDir, "01-target.png"));
+  await page.clock.runFor(STEP_MS);
   await page.keyboard.press("Enter");
+  await advanceUntil(page, NOT_IN_TARGET_STEP, "대상 확정", 120);
+  // strict 흐름은 파티 전원의 명령이 모여야 라운드가 풀린다 — 프롬프트가 곧바로 돌아오면 남은 아군의
+  // 명령도 넣는다. gauge 흐름은 첫 명령이 즉시 애니메이션으로 이어져 이 루프에 들어오지 않는다.
+  for (let extra = 0; extra < 3; extra += 1) {
+    let prompted = false;
+    for (let step = 0; step < 12; step += 1) {
+      if (await page.evaluate(HAS_ANIMATION)) break;
+      if (await page.evaluate(HAS_ATTACK)) {
+        prompted = true;
+        break;
+      }
+      await page.clock.runFor(STEP_MS);
+    }
+    if (!prompted) break;
+    await confirmAttackOnFirstTarget(page);
+  }
   await advanceUntil(page, HAS_ANIMATION, "애니메이션 엘리먼트");
 
   // 시트 이미지 디코드는 실시간이다. 셀 캔버스가 전부 그려질 때까지 실시간으로 기다린다.
@@ -269,9 +305,7 @@ async function captureAnimation(page, projectJson, animationId) {
     for (let step = 0; step < BEATS_CLOCK_MS / STEP_MS && shots < BEATS_MAX_SHOTS; step += 1) {
       // 프롬프트가 돌아오면 다음 아군의 명령을 넣어 라운드를 굴린다. 횟수를 다 쓰면 손을 놓고 적의 턴을 기다린다.
       if (confirmsLeft > 0 && (await page.evaluate(HAS_ATTACK))) {
-        await page.keyboard.press("Enter");
-        await advanceUntil(page, HAS_TARGETABLE, "대상 선택(라운드 계속)", 80).catch(() => undefined);
-        await page.keyboard.press("Enter");
+        await confirmAttackOnFirstTarget(page).catch((error) => log(`자동 명령 실패: ${error.message}`));
         confirmsLeft -= 1;
       }
       const markers = await page.evaluate(readBeatMarkers);
@@ -315,8 +349,12 @@ async function captureAnimation(page, projectJson, animationId) {
 
 const fixture = JSON.parse(await readFile(FIXTURE, "utf8"));
 if (SKIN) fixture.system.battleUiStyle = SKIN;
-if (ENEMY_HP_SCALE !== 1) {
-  for (const enemy of fixture.database.enemies) enemy.stats.maxHp = Math.round(enemy.stats.maxHp * ENEMY_HP_SCALE);
+if (FLOW) fixture.system.battleFlow = FLOW;
+if (ENEMY_HP_SCALE !== 1 || ENEMY_AGI_SCALE !== 1) {
+  for (const enemy of fixture.database.enemies) {
+    enemy.stats.maxHp = Math.round(enemy.stats.maxHp * ENEMY_HP_SCALE);
+    enemy.stats.agility = Math.round(enemy.stats.agility * ENEMY_AGI_SCALE);
+  }
 }
 const projectJson = JSON.stringify(fixture);
 const server = await startPlayerQaServer();

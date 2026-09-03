@@ -128,3 +128,24 @@ interface BattleAnimationSheet {
 - 내보내기: 경로 참조 자산이라 `runtimeAssets.json` + 조건부 그룹(`usesGeneratedHeroBattlers`)으로 싣는다.
   이 과정에서 48px idle 스트립이 애초에 내보내기에 실리지 않던 결함도 같은 그룹으로 고쳤다.
 - 증거: `verify-shots/battle-anim-overhaul/compare/hero-party-zoom.png` (ff 스킨, 3배 확대, 위 before / 아래 after).
+
+## 후속 — 연출 (같은 날, "전투가 너무 심플하다")
+
+증상은 화질이 아니라 **연출 어휘**였다. 한 타격 = 대사 470ms + 이펙트 1장 + 숫자 + ±7px 흔들림. 다섯 층을 더했다.
+
+| 층 | 무엇 | 어디 |
+|---|---|---|
+| 파티 표시 | rm2000 정면 스킨에 뒷모습 배틀러(액터별 290×280)를 하단에 세움. 가운데는 적 자리 | `battleFieldDom` 배치표, `_rm2000.css` |
+| 타격 세기 | 피해/최대HP → graze·normal·heavy·crushing. 넉백·찌그러짐(juice 키프레임)·무대 펀치·흔들림 진폭 차등 | `battleHitIntensity(.Dom).ts`, `battleJuice.ts`, `05-poses-motion.css`, `04-anim-damage-layers.css` |
+| 격파 | 페이드 → 분해(dissolve) + 조각 12개 | `15-juice-capture-fx.css`, `battleFieldDom.spawnDeathShards` |
+| 적 예고 | windup 비트(300ms×weight) → 전진 → 복귀 | `battleActionBeats.ts`, `battleSequencer.ts` |
+| 앰비언트 | 적 숨쉬기(`scale`), 배경 드리프트 | `_battlers.css`, `01-scene-base.css` |
+| 연출 합성 | `followUps: {animationId, startFrame}[]`, 시퀀서가 recover 를 늘림, 카탈로그 8종 | `types/database.ts`, `animationTiming.ts`, `battleAnimationDom.ts` |
+
+**결정과 함정(실측):**
+- 넉백을 정적 클래스로 걸면 두 번 진다 — 스킨의 `.battle-enemy { transform }` 특정도(0,4,0)와 juice `animation`. 그래서 넉백·찌그러짐을 juice 키프레임에 넣고 방향만 `--hit-dir-x/y` 로 바꾼다.
+- 격파 조각 출발점은 `offsetHeight` 로 — `getBoundingClientRect` 는 무대 배율이 곱해진다.
+- 후속 애니메이션 노드는 `position: absolute; inset: 0` — 없으면 본체 시트(240px) 아래로 밀린다.
+- 숨쉬기 일시정지(히트스톱·넉백)는 `.defeated` 를 제외 — 같은 animation 슬롯의 dissolve 까지 멎는다.
+- 라운드는 파티 전원이 명령을 넣은 뒤 풀리고, 게이지 흐름의 적 턴은 자동 명령을 멈춘 뒤 온다 — 프로브 `--beats-confirms`.
+- 증거: `verify-shots/battle-anim-overhaul/choreo-*/…/beats/` (표식 변화마다 한 장), `compare/choreo-*.png`.

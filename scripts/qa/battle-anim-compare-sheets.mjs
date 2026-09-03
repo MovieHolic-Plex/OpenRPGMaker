@@ -3,7 +3,7 @@
 //
 //   node scripts/qa/battle-anim-compare-sheets.mjs [--root=verify-shots/battle-anim-overhaul]
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PNG } from "pngjs";
 
@@ -72,6 +72,34 @@ function halfOverBackdrop(strip) {
     }
   }
   return out;
+}
+
+// 0) 임의 프레임 세로 스택 — 연출 라운드 증거(--stack=<out.png>:<file1>,<file2>,...). 각 장은 절반 크기.
+const stackArg = process.argv.find((v) => v.startsWith("--stack="));
+if (stackArg) {
+  const [out, list] = stackArg.slice("--stack=".length).split(":");
+  const files = list.split(",").map((f) => f.trim()).filter(Boolean);
+  const halves = files.map((file) => {
+    const img = read(join(REPO_ROOT, file));
+    const w = img.width >> 1;
+    const h = img.height >> 1;
+    const half = new PNG({ width: w, height: h });
+    for (let y = 0; y < h; y += 1) {
+      for (let x = 0; x < w; x += 1) {
+        const o = (y * w + x) * 4;
+        for (let c = 0; c < 4; c += 1) {
+          let sum = 0;
+          for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) sum += img.data[((y * 2 + dy) * img.width + x * 2 + dx) * 4 + c];
+          half.data[o + c] = Math.round(sum / 4);
+        }
+      }
+    }
+    return half;
+  });
+  mkdirSync(dirname(join(REPO_ROOT, out)), { recursive: true });
+  writeFileSync(join(REPO_ROOT, out), PNG.sync.write(stackVertical(halves)));
+  console.log(`stacked ${files.length} → ${out}`);
+  process.exit(0);
 }
 
 // 1) before/after 프레임 비교
