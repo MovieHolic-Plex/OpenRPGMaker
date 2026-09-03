@@ -292,3 +292,22 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* 다른 화면에서 이 컨트롤로 **보내진** 초점(예: 팔레트 칩의 타일셋 이름 → 맵 설정의 타일 그림판).
+   프로그램 focus() 는 :focus-visible 링을 안 그리는 일이 많아 1.6초 동안 링을 깜박여 위치를 알린다.
+   mapPropertiesDialog.ts 가 클래스를 붙이고 같은 시간 뒤 떼어 낸다. */
+.event-subdialog-body .event-custom-select-trigger.is-attention {
+  animation: event-custom-select-attention 1.6s ease-out 1;
+}
+
+@keyframes event-custom-select-attention {
+  0%,
+  70% {
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring);
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}

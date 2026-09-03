@@ -25,6 +25,7 @@
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { getEditorUiMode, setEditorUiMode, getEditorChrome, type EditorUiMode } from "@/editor/editorUiMode";
+import { uiLabel } from "@/editor/uiCopy";
 import { allPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
 import { dockZoneHasHost } from "@/editor/workspace/leftDockPanels";
 import {
@@ -114,9 +115,11 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     dataset: { testid: "workspace-panels-menu" },
   });
   menu.hidden = true;
+  // 글리프 + 글자 라벨. 「▤」 하나만 있던 2026-08-26~09-03 사이에는 편집 모드(초보/표준/전문가)의
+  // 유일한 진입점이 장식으로 읽혔다 — 실제로 사용자가 "진입점이 없다"고 했다. aria-label·title 은
+  // 그대로(도크 토글 테스트가 이름으로 잡는다), 화면 글자만 uiCopy 정본에서 가져온다.
   const button = el("button", {
     class: "oprn-menu-item workspace-panels-button",
-    text: "▤",
     attrs: {
       type: "button",
       title: menuName,
@@ -125,6 +128,10 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
       "aria-haspopup": "menu",
     },
     dataset: { testid: "workspace-panels-button" },
+    children: [
+      el("span", { class: "workspace-panels-glyph", text: "▤", attrs: { "aria-hidden": "true" } }),
+      el("span", { class: "workspace-panels-label", text: uiLabel("viewMenu", getEditorChrome().jargonStyle) }),
+    ],
   });
   // `.oprn-menu-popup` 은 `position: fixed` + `display: none` 이고 `.open` 이 붙어야 보인다.
   // hidden 만 바꾸면 열리지 않는다(같은 파일의 standard-more-tools 가 그 상태다).

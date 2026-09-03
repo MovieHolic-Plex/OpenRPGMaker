@@ -257,6 +257,9 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     const bodyRoot = fake(document.body as unknown as HTMLElement);
     const tilesToggle = findByTestId(bodyRoot, "workspace-panel-toggle-tiles");
     expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("패널 배치와 밀도");
+    // 글리프만 있던 버튼은 편집 모드(초보/표준/전문가)의 유일한 진입점이면서 장식으로 읽혔다 —
+    // 화면 글자 「보기」가 반드시 함께 있어야 한다.
+    expect(findByTestId(bodyRoot, "workspace-panels-button")?.textContent).toContain("보기");
     expect(tilesToggle).not.toBeNull();
     expect(tilesToggle?.getAttribute("aria-disabled")).toBeNull();
     // 그리고 진짜로 된다 — 레일이 없는 모드에서는 이 토글이 지속 구성을 바꿔야 한다.

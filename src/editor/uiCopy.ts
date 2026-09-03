@@ -22,7 +22,8 @@ export type UiCopyKey =
   | "testPlay"
   | "testPlayShort"
   | "battleTest"
-  | "battleTestShort";
+  | "battleTestShort"
+  | "viewMenu";
 
 // 2026-08-21 용어 정리 라운드: technical 쪽 값이 곧 RM 유래 용어였다 — 하위/상위는 下層/上層의
 // 직역이다. **레이어 이름은 두 스타일을 하나로 통일**한다(감독 지시: 초보 용어를 전 모드
@@ -67,6 +68,10 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   testPlayShort: { plain: "테스트", technical: "테스트" },
   battleTest: { plain: "랜덤 전투 테스트", technical: "랜덤 전투 테스트" },
   battleTestShort: { plain: "전투", technical: "전투" },
+  // 톱바 ▤ 메뉴(패널·밀도·편집 모드)의 글자 라벨. 2026-09-03 까지는 글리프 「▤」 하나뿐이어서
+  // 초보/표준/전문가 전환의 유일한 진입점이 장식처럼 보였고, 사용자가 "진입점이 없다"고 했다.
+  // 「보기」는 배치·밀도·모드 같은 화면 설정을 담는 메뉴의 관용 이름이다.
+  viewMenu: { plain: "보기", technical: "보기" },
 };
 
 export function uiLabel(key: UiCopyKey, style: UiCopyStyle = "plain"): string {

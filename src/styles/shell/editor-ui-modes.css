@@ -789,7 +789,16 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   text-decoration: none;
 }
 
+/* 「▤ 보기」 — 글리프 + 글자. 글리프만 있던 때(2026-08-26~09-03)는 편집 모드의 유일한 진입점이
+   장식으로 읽혔다. 글자는 다른 메뉴 항목(프로젝트·도구…)과 같은 14px 을 상속하고 글리프만 작게. */
 .workspace-panels-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  line-height: 1;
+}
+
+.workspace-panels-glyph {
   font-size: 13px;
   line-height: 1;
 }
