@@ -1,4 +1,13 @@
 import type { AuditEntry } from "@/ai/assistantSession";
+import {
+  AI_RECORD_STORES,
+  clearAiRecords,
+  deleteAiRecords,
+  readAiRecord,
+  readAllAiRecords,
+  registerAiRecordDbResetHook,
+  writeAiRecords,
+} from "@/ai/aiRecordDb";
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
@@ -8,41 +17,46 @@ import type { Project } from "@/project/types";
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
 export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; }
 /**
- * 저장 결과 — `saveConversation` 은 **던지지 않는다.** `ok:false` 는 최신 1건으로 줄여도 이 브라우저에
- * 한 글자도 못 남겼다는 뜻이고(저장 공간 고갈·프라이빗 모드), `evicted` 는 자리를 내주려 밀어낸
- * 이전 대화 수다. 저장소가 없는 환경(Node)은 남길 곳이 없을 뿐 실패가 아니므로 `ok:true`.
+ * 저장 결과 — `saveConversation` 은 **던지지 않는다.**
+ * - `ok`: 이 세션에서 다시 읽을 수 있게 저장됐다(메모리 폴백 포함). false 면 IndexedDB 쓰기가 실패해 어디에도 없다.
+ * - `durable`: IndexedDB 에 남았다 — 새로 고침 뒤에도 있다. IndexedDB 가 없거나 열기에 실패한 세션은 false.
+ * - `evicted`: 상한(`CONVERSATION_MAX_RECORDS`)을 지키려 밀어낸 오래된 대화 수.
  */
-export interface ConversationSaveOutcome { readonly ok: boolean; readonly evicted: number; }
+export interface ConversationSaveOutcome { readonly ok: boolean; readonly durable: boolean; readonly evicted: number; }
 
-const STORAGE_KEY = "oprn:ai-conversations";
-const MAX_CONVERSATIONS = 50;
+/**
+ * 예전 정본이던 localStorage 키. 지금은 **읽어서 IndexedDB 로 옮기고 지우는** 이관 전용이다.
+ * e2e 시드·QA 스크립트가 이 키로 대화를 심어도 첫 접근에 이관되어 그대로 복원된다.
+ */
+export const LEGACY_CONVERSATION_STORAGE_KEY = "oprn:ai-conversations";
+const STORE = AI_RECORD_STORES.conversations;
+/** 보관 상한(건). 예전 localStorage 링버퍼와 같은 50 — 목록·복원 소비자가 그 규모를 전제한다. */
+export const CONVERSATION_MAX_RECORDS = 50;
 const TITLE_LIMIT = 40;
 
 // ── 저장 예산(글자 수) ─────────────────────────────────────────────────────────────
 // 실측 결함(2026-09-03): 조수를 쓰다 「오류: Failed to execute 'setItem' on 'Storage': Setting the
 // value of 'oprn:ai-conversations' exceeded the quota.」 가 말풍선으로 떴고 그 턴이 끊겼다. 원인은
-// 세 겹이다. (1) 툴콜 인자(맵 셀 배열·이벤트 본문)를 상한 없이 저장했고, (2) 같은 인자가 assistant
+// 세 겹이었다. (1) 툴콜 인자(맵 셀 배열·이벤트 본문)를 상한 없이 저장했고, (2) 같은 인자가 assistant
 // 항목(`toolCalls[].args` 문자열)과 tool 항목(`args` 객체)에 **두 번** 들어가며, (3) 대화 50건을
-// 매 툴콜마다 통째로 다시 써서 오리진 한도를 넘는 순간 예외가 툴콜 스트리밍 핸들러
-// (aiTurnRunner 의 tool_call 분기)와 finally 양쪽에서 터졌다.
-//
-// localStorage 는 오리진당 약 5MB 이고 Firefox/Safari 는 UTF-16 기준으로 약 260만 글자다. 이 키는
-// 활동 로그(`oprn:ai-activity-logs`, 스스로 절반씩 줄임)·원격 outbox(150만 글자 예산)와 그 공간을
-// 나눠 쓰므로 여기 예산은 그보다 작게 잡는다. 인자 미리보기는 활동 로그(12,000)보다 짧다 — 대화
-// 기록의 소비자는 복원 화면(툴 상세 <pre>)과 export 뿐이고, 진단 원문은 활동 로그가 든다.
+// 매 툴콜마다 localStorage 한 키에 통째로 다시 썼다. (3) 은 IndexedDB 로 옮겨 없앴다(aiRecordDb).
+// (1)(2) 의 압축은 남긴다 — 원격 미러(Supabase)와 복원 렌더가 매 툴콜마다 수 MB 를 다룰 이유가 없고,
+// 대화 기록의 소비자는 복원 화면(툴 상세 <pre>)과 export 뿐이며 진단 원문은 활동 로그(12,000)가 든다.
 /** 툴콜 인자 한 건이 저장될 때의 상한(직렬화 글자 수). 넘으면 `{ _truncated, preview }` 로 바꾼다. */
 export const CONVERSATION_ARGS_MAX_CHARS = 2_000;
 /** 대화 한 건의 entries 직렬화 상한. 넘으면 머리(첫 발화·계획)와 꼬리(최근)를 남기고 가운데를 접는다. */
 export const CONVERSATION_RECORD_MAX_CHARS = 200_000;
-/** 이 키 전체의 직렬화 상한. 최신부터 담고 넘치는 오래된 대화는 밀어낸다(50건 상한과 별개). */
-export const CONVERSATION_STORE_MAX_CHARS = 1_000_000;
 /** 가운데를 접었음을 남기는 status 항목의 구조 토큰(복원 화면·모델 주입은 status 를 무시한다). */
 export const CONVERSATION_TRIM_MARKER = "[conversation-trimmed]";
 /** 접을 때 머리에 남겨 두는 몫 — 활동 로그의 HEAD_RESERVE_RATIO 와 같은 이유(첫 발화가 사라지면 맥락이 없다). */
 const TRIM_HEAD_RESERVE_RATIO = 0.25;
 
-function getStorage(): Storage | null {
-  return typeof localStorage === "undefined" ? null : localStorage;
+function getLegacyStorage(): Storage | null {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch {
+    return null;
+  }
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -76,7 +90,7 @@ function isAuditEntry(value: unknown): value is AuditEntry {
   }
 }
 
-function isConversationRecord(value: unknown): value is ConversationRecord {
+export function isConversationRecord(value: unknown): value is ConversationRecord {
   return (
     isObject(value) &&
     typeof value.id === "string" &&
@@ -89,18 +103,7 @@ function isConversationRecord(value: unknown): value is ConversationRecord {
   );
 }
 
-function readConversations(): ConversationRecord[] {
-  const storage = getStorage();
-  if (!storage) return [];
-  const raw = storage.getItem(STORAGE_KEY);
-  if (!raw) return [];
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter(isConversationRecord) : [];
-  } catch {
-    return [];
-  }
-}
+// ── 압축 ──────────────────────────────────────────────────────────────────────────
 
 function jsonLength(value: unknown): number {
   try {
@@ -171,7 +174,7 @@ function fitEntriesToBudget(entries: readonly AuditEntry[]): AuditEntry[] {
     rows.push(compactEntry(entry));
   }
   const budget = CONVERSATION_RECORD_MAX_CHARS - (previouslyDropped > 0 ? jsonLength(trimMarkerEntry(previouslyDropped)) + 1 : 0);
-  // 빠른 길: 매 툴콜마다 50건을 다시 쓰므로, 예산 안이면 항목별 크기를 재지 않는다(직렬화 1회).
+  // 빠른 길: 매 툴콜마다 저장하므로, 예산 안이면 항목별 크기를 재지 않는다(직렬화 1회).
   if (jsonLength(rows) <= budget) {
     if (previouslyDropped === 0) return rows;
     const seam = Math.min(Math.max(markerIndex, 0), rows.length);
@@ -204,111 +207,145 @@ function compactRecord(record: ConversationRecord): ConversationRecord {
   return { ...record, entries: fitEntriesToBudget(record.entries) };
 }
 
-/** 최신부터 저장소 예산 안에 담는다. 첫 레코드(지금 저장하는 대화)는 홀로 넘어도 남긴다. */
-function fitRecordsToBudget(records: readonly ConversationRecord[]): { kept: ConversationRecord[]; evicted: number } {
-  const kept: ConversationRecord[] = [];
-  let used = 2; // 배열 괄호
-  for (const record of records) {
-    const size = jsonLength(record) + 1;
-    if (kept.length > 0 && used + size > CONVERSATION_STORE_MAX_CHARS) break;
-    kept.push(record);
-    used += size;
-  }
-  return { kept, evicted: records.length - kept.length };
-}
+// ── 레거시 이관 ──────────────────────────────────────────────────────────────────
 
-// 완전 실패 경고는 실패가 이어지는 동안 한 번만 — 매 툴콜마다 저장하므로 그대로 두면 콘솔이 같은 줄로 덮인다.
-let storageFailureWarned = false;
-
-interface WriteOutcome extends ConversationSaveOutcome { readonly stored: readonly ConversationRecord[]; }
+let legacyMigration: Promise<void> | null = null;
+registerAiRecordDbResetHook(() => {
+  legacyMigration = null;
+  writeFailureWarned = false;
+});
 
 /**
- * 모든 레코드를 압축해(레거시로 부풀린 것 포함) 예산 안에 담고 쓴다. 브라우저가 그래도 거절하면
- * (다른 키가 공간을 먹었을 때) 절반씩 줄여 재시도하고, 최신 1건도 못 쓰면 경고만 남긴다. **던지지 않는다.**
+ * 옛 localStorage 키의 대화를 IndexedDB 로 옮기고 키를 지운다. 세션당 한 번이지만, 쓰기가 실패하면
+ * 키를 남겨 두고 다음 접근에서 다시 시도한다 — 이관 실패로 대화를 잃지 않는다.
+ * 같은 id 가 이미 있으면 savedAt 이 더 큰 쪽을 남긴다(e2e 시드가 매 부팅 같은 레코드를 다시 심는다).
  */
-function writeConversations(records: readonly ConversationRecord[]): WriteOutcome {
-  const compacted = records.slice(0, MAX_CONVERSATIONS).map(compactRecord);
-  const storage = getStorage();
-  if (!storage) return { ok: true, evicted: 0, stored: compacted };
-  const fitted = fitRecordsToBudget(compacted);
-  let attempt = fitted.kept;
-  let evicted = fitted.evicted;
-  let lastError: unknown = null;
-  for (;;) {
+function ensureLegacyMigrated(): Promise<void> {
+  if (legacyMigration) return legacyMigration;
+  legacyMigration = (async () => {
+    const storage = getLegacyStorage();
+    const raw = storage?.getItem(LEGACY_CONVERSATION_STORAGE_KEY);
+    if (!storage || !raw) return;
+    let legacy: ConversationRecord[] = [];
     try {
-      // 빈 배열도 써야 한다 — 마지막 대화를 지운 뒤 저장소에 옛 값이 남으면 삭제가 되돌아온다.
-      storage.setItem(STORAGE_KEY, JSON.stringify(attempt));
-      storageFailureWarned = false;
-      return { ok: true, evicted, stored: attempt };
-    } catch (error) {
-      lastError = error;
-      if (attempt.length <= 1) break;
-      const next = attempt.slice(0, Math.max(1, Math.floor(attempt.length / 2)));
-      evicted += attempt.length - next.length;
-      attempt = next;
+      const parsed: unknown = JSON.parse(raw);
+      legacy = Array.isArray(parsed) ? parsed.filter(isConversationRecord) : [];
+    } catch {
+      legacy = [];
     }
-  }
-  if (!storageFailureWarned) {
-    storageFailureWarned = true;
-    console.warn(
-      "[ai-conversation] 이 브라우저의 저장 공간이 가득 차 대화 기록을 저장하지 못했습니다(최신 1건으로 줄여도 실패). 이번 대화는 메모리에만 남습니다.",
-      lastError,
-    );
-  }
-  return { ok: false, evicted, stored: compacted };
+    if (legacy.length > 0) {
+      const existing = new Map((await readAllAiRecords<ConversationRecord>(STORE)).map((record) => [record.id, record]));
+      const incoming = legacy.map(compactRecord).filter((record) => {
+        const current = existing.get(record.id);
+        return !current || current.savedAt < record.savedAt;
+      });
+      await writeAiRecords(STORE, incoming);
+    }
+    storage.removeItem(LEGACY_CONVERSATION_STORAGE_KEY);
+  })().catch((error: unknown) => {
+    legacyMigration = null;
+    throw error;
+  });
+  return legacyMigration;
 }
+
+async function readAll(): Promise<ConversationRecord[]> {
+  await ensureLegacyMigrated();
+  const records = await readAllAiRecords<ConversationRecord>(STORE);
+  return records.sort((left, right) => right.savedAt - left.savedAt);
+}
+
+let writeFailureWarned = false;
 
 registerRemoteOutboxSender("ai-conversation", async (payload) => {
   const result = await recordSupabaseConversation(payload as SupabaseConversationInput);
   if (result.kind === "not-configured") throw new Error("supabase not configured");
 });
 
-export function saveConversation(record: ConversationRecord): ConversationSaveOutcome {
-  const written = writeConversations([record, ...readConversations().filter((conversation) => conversation.id !== record.id)]);
+// ── 공개 API (모두 비동기, 던지지 않는다) ──────────────────────────────────────────────
+
+export async function saveConversation(record: ConversationRecord): Promise<ConversationSaveOutcome> {
+  const compacted = compactRecord(record);
+  let outcome: ConversationSaveOutcome;
+  try {
+    await ensureLegacyMigrated();
+    const backend = await writeAiRecords(STORE, [compacted]);
+    // 상한 유지 — 최신 순으로 상한 밖의 오래된 대화를 지운다. 동시 저장이 겹쳐도 없는 키 삭제는 무해하다.
+    const all = (await readAllAiRecords<ConversationRecord>(STORE)).sort((left, right) => right.savedAt - left.savedAt);
+    const surplus = all.slice(CONVERSATION_MAX_RECORDS).map((row) => row.id);
+    await deleteAiRecords(STORE, surplus);
+    writeFailureWarned = false;
+    outcome = { ok: true, durable: backend === "indexeddb", evicted: surplus.length };
+  } catch (error) {
+    if (!writeFailureWarned) {
+      writeFailureWarned = true;
+      console.warn("[ai-conversation] 대화 기록을 이 브라우저에 저장하지 못했습니다. 이번 대화는 메모리에만 남습니다:", error);
+    }
+    outcome = { ok: false, durable: false, evicted: 0 };
+  }
   // 원격 미러도 로컬과 **같은 압축본**을 받는다 — 정본이 하나여야 하고, 매 툴콜마다 수 MB 를 보내지 않는다.
-  const stored = written.stored[0] ?? compactRecord(record);
   const remoteInput: SupabaseConversationInput = {
-    conversationId: stored.id,
-    title: stored.title,
-    model: stored.model,
-    ...(stored.projectContextKey ? { projectContextKey: stored.projectContextKey } : {}),
-    entries: stored.entries,
-    savedAt: stored.savedAt,
+    conversationId: compacted.id,
+    title: compacted.title,
+    model: compacted.model,
+    ...(compacted.projectContextKey ? { projectContextKey: compacted.projectContextKey } : {}),
+    entries: compacted.entries,
+    savedAt: compacted.savedAt,
   };
   // 로컬은 50건 링버퍼라 전송 성공/실패와 무관하게 자리를 밀어낸다. 실패를 조용히 무시하면
   // 원격이 죽은 동안의 대화가 근거 없이 사라지므로, 실패분은 outbox 에 보존하고 나중에 재전송한다.
   void recordSupabaseConversation(remoteInput).catch((error: unknown) => {
     console.error("[ai-conversation] Supabase mirror failed:", error);
-    enqueueRemoteWrite({ id: stored.id, kind: "ai-conversation", payload: remoteInput, error });
+    enqueueRemoteWrite({ id: compacted.id, kind: "ai-conversation", payload: remoteInput, error });
   });
-  return { ok: written.ok, evicted: written.evicted };
+  return outcome;
 }
 
-/** 제목 부분일치 검색(대소문자 무시) — 시작 화면 대화 목록용. */
-export function searchConversations(query: string): ConversationSummary[] {
-  const needle = query.trim().toLowerCase();
-  const all = listConversations();
-  if (!needle) return all;
-  return all.filter((conversation) => conversation.title.toLowerCase().includes(needle));
-}
-
-export function listConversations(): ConversationSummary[] {
-  return readConversations().map((conversation) => ({
+function toSummary(conversation: ConversationRecord): ConversationSummary {
+  return {
     id: conversation.id,
     title: conversation.title,
     model: conversation.model,
     savedAt: conversation.savedAt,
     turnCount: conversation.entries.filter((entry) => entry.kind === "user").length,
     ...(conversation.projectContextKey ? { projectContextKey: conversation.projectContextKey } : {}),
-  }));
+  };
 }
 
-export function loadConversation(id: string): ConversationRecord | null {
-  return readConversations().find((conversation) => conversation.id === id) ?? null;
+/** 최근 저장 순 요약 목록. 저장소 오류는 빈 목록으로 삼킨다(호출자는 UI 라 던져서 얻을 것이 없다). */
+export async function listConversations(): Promise<ConversationSummary[]> {
+  try {
+    return (await readAll()).map(toSummary);
+  } catch (error) {
+    console.warn("[ai-conversation] 대화 목록을 읽지 못했습니다:", error);
+    return [];
+  }
 }
 
-export function loadLatestConversation(): ConversationRecord | null {
-  return readConversations()[0] ?? null;
+/** 제목 부분일치 검색(대소문자 무시) — 대화 기록 모달용. */
+export async function searchConversations(query: string): Promise<ConversationSummary[]> {
+  const needle = query.trim().toLowerCase();
+  const all = await listConversations();
+  if (!needle) return all;
+  return all.filter((conversation) => conversation.title.toLowerCase().includes(needle));
+}
+
+export async function loadConversation(id: string): Promise<ConversationRecord | null> {
+  try {
+    await ensureLegacyMigrated();
+    return await readAiRecord<ConversationRecord>(STORE, id);
+  } catch (error) {
+    console.warn("[ai-conversation] 대화를 읽지 못했습니다:", error);
+    return null;
+  }
+}
+
+export async function loadLatestConversation(): Promise<ConversationRecord | null> {
+  try {
+    return (await readAll())[0] ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -317,16 +354,19 @@ export function loadLatestConversation(): ConversationRecord | null {
  * 왜 따로 있는가 (실측): 부팅 자동 복원이 `loadLatestConversation()`(전역 최신) 하나를 집어
  * 스코프가 다르면 복원을 포기했다. 두 프로젝트를 번갈아 열면 다른 프로젝트의 대화가 더 최근이라
  * **내 프로젝트의 대화가 그대로 있는데도 매번 빈 새 대화로 시작**했다 — 사용자가 ＋를 누르지도
- * 않았는데 새 세션이 강요되는 것으로 보인다. 저장 배열은 최신이 앞이지만(saveConversation 이
- * prepend) 원격 미러/수동 병합으로 순서가 흐트러질 수 있어 savedAt 으로 최댓값을 고른다.
+ * 않았는데 새 세션이 강요되는 것으로 보인다. savedAt 최댓값을 고른다.
  */
-export function loadLatestConversationForScope(scopeKey: string): ConversationRecord | null {
-  let latest: ConversationRecord | null = null;
-  for (const conversation of readConversations()) {
-    if (conversation.projectContextKey !== scopeKey) continue;
-    if (!latest || conversation.savedAt > latest.savedAt) latest = conversation;
+export async function loadLatestConversationForScope(scopeKey: string): Promise<ConversationRecord | null> {
+  try {
+    let latest: ConversationRecord | null = null;
+    for (const conversation of await readAll()) {
+      if (conversation.projectContextKey !== scopeKey) continue;
+      if (!latest || conversation.savedAt > latest.savedAt) latest = conversation;
+    }
+    return latest;
+  } catch {
+    return null;
   }
-  return latest;
 }
 
 /**
@@ -340,12 +380,23 @@ export function conversationScopeKey(identity: ProjectIdentity, project: Pick<Pr
   return `local:${title}::${project.startMapId}`;
 }
 
-export function deleteConversation(id: string): void {
-  writeConversations(readConversations().filter((conversation) => conversation.id !== id));
+export async function deleteConversation(id: string): Promise<void> {
+  try {
+    await ensureLegacyMigrated();
+    await deleteAiRecords(STORE, [id]);
+  } catch (error) {
+    console.warn("[ai-conversation] 대화를 지우지 못했습니다:", error);
+  }
 }
 
-export function clearConversations(): void {
-  getStorage()?.removeItem(STORAGE_KEY);
+export async function clearConversations(): Promise<void> {
+  try {
+    getLegacyStorage()?.removeItem(LEGACY_CONVERSATION_STORAGE_KEY);
+    legacyMigration = Promise.resolve();
+    await clearAiRecords(STORE);
+  } catch (error) {
+    console.warn("[ai-conversation] 대화 기록을 비우지 못했습니다:", error);
+  }
 }
 
 export function deriveTitle(entries: readonly AuditEntry[]): string {

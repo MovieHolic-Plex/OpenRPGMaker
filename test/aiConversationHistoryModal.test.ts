@@ -15,11 +15,13 @@ import {
   type ConversationRecord,
   type ConversationSummary,
 } from "@/ai/conversationStore";
+import { resetAiRecordDbForTest } from "@/ai/aiRecordDb";
 import {
   closeAiConversationHistoryModal,
   filterConversationsByTitle,
   openAiConversationHistoryModal,
   sortConversationsForScope,
+  whenAiConversationHistoryModalSettled,
 } from "@/editor/panels/aiConversationHistoryModal";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -71,9 +73,10 @@ function record(id: string, savedAt: number, scope?: string, text = `지시 ${id
   };
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   installMemoryStorage();
-  clearConversations();
+  resetAiRecordDbForTest(); // Node 에는 IndexedDB 가 없다 — 저장소는 메모리 폴백으로 돌고, 테스트마다 비운다.
+  await clearConversations();
   restoreDom = installFakeDom();
 });
 
@@ -120,15 +123,16 @@ describe("filterConversationsByTitle", () => {
 });
 
 describe("모달 렌더", () => {
-  it("Given 저장된 대화 2건 When 열기 Then 행 2개가 최근 순으로 렌더된다", () => {
-    saveConversation(record("old", 1_000, "mine", "오래된 지시"));
-    saveConversation(record("new", 2_000, "mine", "최근 지시"));
+  it("Given 저장된 대화 2건 When 열기 Then 행 2개가 최근 순으로 렌더된다", async () => {
+    await saveConversation(record("old", 1_000, "mine", "오래된 지시"));
+    await saveConversation(record("new", 2_000, "mine", "최근 지시"));
 
     const backdrop = openAiConversationHistoryModal({
       scopeKey: "mine",
       currentConversationId: "none",
       onOpen: () => undefined,
     }) as unknown as FakeElement;
+    await whenAiConversationHistoryModalSettled();
 
     const list = findByTestId(backdrop, "ai-history-list")!;
     const rows = list.querySelectorAll("[data-testid=ai-history-row]");
@@ -136,26 +140,29 @@ describe("모달 렌더", () => {
     expect(rows[0]!.textContent).toContain("최근 지시");
   });
 
-  it("Given 저장된 대화 없음 When 열기 Then 빈 상태 문장이 온다", () => {
+  it("Given 저장된 대화 없음 When 열기 Then 빈 상태 문장이 온다", async () => {
     const backdrop = openAiConversationHistoryModal({
       scopeKey: "mine",
       currentConversationId: "none",
       onOpen: () => undefined,
     }) as unknown as FakeElement;
+    await whenAiConversationHistoryModalSettled();
 
     expect(findByTestId(backdrop, "ai-history-empty")!.textContent).toBe("저장된 대화가 없습니다.");
   });
 
-  it("Given 행 클릭 When 열기 Then 기록 전체(record)가 호출자에게 전달되고 모달이 닫힌다", () => {
-    saveConversation(record("target", 1_000, "mine", "우물을 놔줘"));
+  it("Given 행 클릭 When 열기 Then 기록 전체(record)가 호출자에게 전달되고 모달이 닫힌다", async () => {
+    await saveConversation(record("target", 1_000, "mine", "우물을 놔줘"));
     const opened: ConversationRecord[] = [];
     const backdrop = openAiConversationHistoryModal({
       scopeKey: "mine",
       currentConversationId: "none",
       onOpen: (row) => opened.push(row),
     }) as unknown as FakeElement;
+    await whenAiConversationHistoryModalSettled();
 
     (findByTestId(backdrop, "ai-history-open") as unknown as HTMLElement).click();
+    await whenAiConversationHistoryModalSettled();
 
     expect(opened).toHaveLength(1);
     expect(opened[0]!.id).toBe("target");
@@ -163,61 +170,68 @@ describe("모달 렌더", () => {
     expect(backdrop.parentElement).toBeNull();
   });
 
-  it("Given 지금 열려 있는 대화 When 렌더 Then 「현재」로 표시하고 클릭을 무시한다", () => {
-    saveConversation(record("current", 1_000, "mine"));
+  it("Given 지금 열려 있는 대화 When 렌더 Then 「현재」로 표시하고 클릭을 무시한다", async () => {
+    await saveConversation(record("current", 1_000, "mine"));
     const opened: ConversationRecord[] = [];
     const backdrop = openAiConversationHistoryModal({
       scopeKey: "mine",
       currentConversationId: "current",
       onOpen: (row) => opened.push(row),
     }) as unknown as FakeElement;
+    await whenAiConversationHistoryModalSettled();
 
     const open = findByTestId(backdrop, "ai-history-open")!;
     expect(open.getAttribute("aria-disabled")).toBe("true");
     expect(open.textContent).toContain("현재");
     (open as unknown as HTMLElement).click();
+    await whenAiConversationHistoryModalSettled();
     expect(opened).toHaveLength(0);
   });
 
-  it("Given 다른 프로젝트의 대화 When 렌더 Then 꼬리표를 달지만 열기를 막지는 않는다", () => {
-    saveConversation(record("foreign", 1_000, "other"));
+  it("Given 다른 프로젝트의 대화 When 렌더 Then 꼬리표를 달지만 열기를 막지는 않는다", async () => {
+    await saveConversation(record("foreign", 1_000, "other"));
     const backdrop = openAiConversationHistoryModal({
       scopeKey: "mine",
       currentConversationId: "none",
       onOpen: () => undefined,
     }) as unknown as FakeElement;
+    await whenAiConversationHistoryModalSettled();
 
     const open = findByTestId(backdrop, "ai-history-open")!;
     expect(open.textContent).toContain("다른 프로젝트");
     expect(open.getAttribute("aria-disabled")).toBeNull();
   });
 
-  it("Given 삭제 클릭 When 목록 갱신 Then 저장소에서도 지워진다", () => {
-    saveConversation(record("doomed", 1_000, "mine"));
+  it("Given 삭제 클릭 When 목록 갱신 Then 저장소에서도 지워진다", async () => {
+    await saveConversation(record("doomed", 1_000, "mine"));
     const backdrop = openAiConversationHistoryModal({
       scopeKey: "mine",
       currentConversationId: "none",
       onOpen: () => undefined,
     }) as unknown as FakeElement;
+    await whenAiConversationHistoryModalSettled();
 
     (findByTestId(backdrop, "ai-history-delete") as unknown as HTMLElement).click();
+    await whenAiConversationHistoryModalSettled();
 
-    expect(listConversations()).toHaveLength(0);
+    expect(await listConversations()).toHaveLength(0);
     expect(findByTestId(backdrop, "ai-history-empty")).not.toBeNull();
   });
 
-  it("Given 검색어 입력 When 목록 갱신 Then 제목이 맞는 행만 남는다", () => {
-    saveConversation(record("a", 1_000, "mine", "우물 배치"));
-    saveConversation(record("b", 2_000, "mine", "상점 배치"));
+  it("Given 검색어 입력 When 목록 갱신 Then 제목이 맞는 행만 남는다", async () => {
+    await saveConversation(record("a", 1_000, "mine", "우물 배치"));
+    await saveConversation(record("b", 2_000, "mine", "상점 배치"));
     const backdrop = openAiConversationHistoryModal({
       scopeKey: "mine",
       currentConversationId: "none",
       onOpen: () => undefined,
     }) as unknown as FakeElement;
+    await whenAiConversationHistoryModalSettled();
     const search = findByTestId(backdrop, "ai-history-search") as unknown as HTMLInputElement & FakeElement;
 
     search.value = "우물";
     search.dispatchEvent(new Event("input"));
+    await whenAiConversationHistoryModalSettled();
 
     const rows = findByTestId(backdrop, "ai-history-list")!.querySelectorAll("[data-testid=ai-history-row]");
     expect(rows).toHaveLength(1);

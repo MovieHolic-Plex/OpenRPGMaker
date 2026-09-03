@@ -9,7 +9,7 @@ import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { conversationScopeKey, clearConversations, listConversations, loadConversation, saveConversation } from "@/ai/conversationStore";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { getAgentBlueprintState, setAgentBlueprintFromSpec } from "@/editor/agentBlueprint";
-import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { clearAiUiEvents, listAiUiEvents } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { editorState } from "@/editor/editorState";
@@ -110,14 +110,14 @@ function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (con
   };
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
-  clearConversations();
+  await clearConversations();
 });
 
 afterEach(async () => {
@@ -133,7 +133,7 @@ afterEach(async () => {
 });
 
 describe("대화 저장 범위", () => {
-  it("Given local sessions across reloads When the project shape is unchanged Then the scope is stable", () => {
+  it("Given local sessions across reloads When the project shape is unchanged Then the scope is stable", async () => {
     const project = createBlankProject();
 
     expect(conversationScopeKey({ kind: "local-session", id: "boot-a" }, project)).toBe(
@@ -144,7 +144,7 @@ describe("대화 저장 범위", () => {
     );
   });
 
-  it("Given remote projects with identical shapes When scoped Then each durable row id stays distinct", () => {
+  it("Given remote projects with identical shapes When scoped Then each durable row id stays distinct", async () => {
     const project = createBlankProject();
 
     expect(conversationScopeKey({ kind: "remote", id: "project-a" }, project)).toBe("remote:project-a");
@@ -153,7 +153,7 @@ describe("대화 저장 범위", () => {
 });
 
 describe("새 대화 진입점", () => {
-  it("Given any dock When the action menus render Then 새 대화는 ☰ 가 아니라 ＋ 에 있다", () => {
+  it("Given any dock When the action menus render Then 새 대화는 ☰ 가 아니라 ＋ 에 있다", async () => {
     const side = renderPanel("side");
     expect(findByTestId(side, "ai-new-session")).toBeTruthy();
     expect(findByTestId(side, "ai-more-new-chat")).toBeNull();
@@ -164,9 +164,10 @@ describe("새 대화 진입점", () => {
     expect(findByTestId(float, "ai-new-chat")?.textContent).toBe("+");
   });
 
-  it("Given any dock When the composer renders Then its fixed action row owns the visible new-chat control", () => {
+  it("Given any dock When the composer renders Then its fixed action row owns the visible new-chat control", async () => {
     for (const dock of ["glass", "side", "float"] as const) {
       const panel = renderPanel(dock);
+      await whenAiChatPanelSettled();
       const composer = findByTestId(panel, "ai-composer");
       const newChat = findByTestId(panel, "ai-new-chat");
 
@@ -183,6 +184,7 @@ describe("새 대화 진입점", () => {
     const llm = stubLlmFetch();
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send");
     const queue = findByTestId(panel, "ai-pending-queue");
@@ -222,7 +224,8 @@ describe("새 대화 진입점", () => {
     expect(logText).not.toContain("이전 대화 늦은 응답");
     expect(logText).not.toContain("이전 대화 대기 메시지");
 
-    const records = listConversations().map((summary) => loadConversation(summary.id)!);
+    await whenAiChatPanelSettled();
+    const records = (await Promise.all((await listConversations()).map((summary) => loadConversation(summary.id)))).filter((record): record is NonNullable<typeof record> => record !== null);
     const oldRecord = records.find((record) => record.entries.some((entry) => entry.kind === "user" && entry.text.includes("이전 대화 요청")));
     const newRecord = records.find((record) => record.entries.some((entry) => entry.kind === "user" && entry.text.includes("새 대화 요청")));
     expect(oldRecord?.id).toBeTruthy();
@@ -233,11 +236,12 @@ describe("새 대화 진입점", () => {
     expect(newRecord?.entries.some((entry) => "text" in entry && entry.text.includes("이전 대화"))).toBe(false);
   });
 
-  it("Given a live blueprint When 새 대화 is clicked Then the plan overlay is dropped with the session", () => {
+  it("Given a live blueprint When 새 대화 is clicked Then the plan overlay is dropped with the session", async () => {
     // 청사진(맵 위 계획 사각형)의 수명은 세션의 BuildSpec 이다 — 고스트 정리에 얹혀 있지 않으므로
     // 세션을 버리는 경로(새 대화·대화 복원·프로젝트 전환은 모두 dropSession 을 지난다)가
     // 직접 지워야 한다. 지우지 않으면 다음 대화 내내 남의 계획이 맵에 떠 있다.
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     setAgentBlueprintFromSpec({
       mapId: store.getCurrent().startMapId,
       assets: [{ id: "site", kind: "clear", x: 0, y: 0, w: 4, h: 4 }],
@@ -250,8 +254,8 @@ describe("새 대화 진입점", () => {
     expect(getAgentBlueprintState().mapId).toBeNull();
   });
 
-  it("Given a restored conversation When 새 대화 is clicked Then the log empties and the panel reports empty", () => {
-    saveConversation({
+  it("Given a restored conversation When 새 대화 is clicked Then the log empties and the panel reports empty", async () => {
+    await saveConversation({
       id: "conv_scope_a",
       title: "마을",
       model: "m",
@@ -264,6 +268,7 @@ describe("새 대화 진입점", () => {
     });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("마을 만들어줘");
 
     findByTestId(panel, "ai-new-session")?.click();
@@ -280,9 +285,10 @@ describe("이전 대화 진입점", () => {
    * 두 단계라, 그 배치 자체가 "새 세션" 을 기본값으로 만든다("ui 에서 기존 세션 불러오기가 매우
    * 힘든거같은데" — 감독 2026-08-30).
    */
-  it("Given any dock When the composer renders Then 이전 대화 sits next to 새 대화 in the fixed action row", () => {
+  it("Given any dock When the composer renders Then 이전 대화 sits next to 새 대화 in the fixed action row", async () => {
     for (const dock of ["glass", "side", "float"] as const) {
       const panel = renderPanel(dock);
+      await whenAiChatPanelSettled();
       const composer = findByTestId(panel, "ai-composer");
       const open = findByTestId(panel, "ai-open-conversations");
 
@@ -294,10 +300,10 @@ describe("이전 대화 진입점", () => {
 });
 
 describe("프로젝트 전환", () => {
-  it("Given an open conversation When the project identity changes Then the chat resets and the old chat keeps its own scope", () => {
-    clearConversations();
+  it("Given an open conversation When the project identity changes Then the chat resets and the old chat keeps its own scope", async () => {
+    await clearConversations();
     const firstScope = conversationScopeKey(store.getProjectIdentity(), store.getCurrent());
-    saveConversation({
+    await saveConversation({
       id: "conv_project_one",
       title: "이전 프로젝트 대화",
       model: "m",
@@ -307,18 +313,21 @@ describe("프로젝트 전환", () => {
     });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("이전 프로젝트 요청");
 
     // 새 프로젝트 발급 = store 신원 교체 + 구독 통지. 신원만 진짜 경계다 —
     // 제목·시작맵은 새 blank 프로젝트마다 같은 값이라 대화가 새 프로젝트로 새어 들어왔다.
     vi.spyOn(store, "getProjectIdentity").mockReturnValue({ kind: "remote", id: "project-two" });
     store.replace(createBlankProject());
+    await whenAiChatPanelSettled();
 
     expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").not.toContain("이전 프로젝트 요청");
     expect(panel.dataset.aiConversation).toBe("empty");
     expect(findByTestId(panel, "ai-status")?.textContent).toBe("새 프로젝트 — 새 대화");
 
-    const stored = listConversations();
+    await whenAiChatPanelSettled();
+    const stored = await listConversations();
     expect(stored.find((conversation) => conversation.id === "conv_project_one")?.projectContextKey).toBe(firstScope);
   });
 
@@ -332,6 +341,7 @@ describe("프로젝트 전환", () => {
 
     const llm = stubLlmFetch();
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "첫 프로젝트에서 시작한 요청";
     findByTestId(panel, "ai-send")?.click();
@@ -340,12 +350,14 @@ describe("프로젝트 전환", () => {
 
     identity.mockReturnValue({ kind: "remote", id: "project-two" });
     store.replace(createBlankProject());
+    await whenAiChatPanelSettled();
     expect(panel.dataset.aiConversation).toBe("empty");
 
     llm.settleNext("늦게 도착한 응답");
     await flushAsync();
 
-    const stored = listConversations().filter((conversation) => conversation.turnCount > 0);
+    await whenAiChatPanelSettled();
+    const stored = (await listConversations()).filter((conversation) => conversation.turnCount > 0);
     expect(stored.length).toBeGreaterThan(0);
     expect(stored.every((conversation) => conversation.projectContextKey === "remote:project-one")).toBe(true);
     expect(stored.some((conversation) => conversation.projectContextKey === "remote:project-two")).toBe(false);
@@ -358,11 +370,11 @@ describe("프로젝트 전환", () => {
    * 옛 결함: 부팅 복원이 **전역 최신 대화 하나**만 보고 스코프가 다르면 포기했다. 두 프로젝트를
    * 번갈아 열면 내 대화가 그대로 있는데도 매번 빈 대화로 시작했다.
    */
-  it("Given another project's newer conversation When the panel mounts Then this project's own latest is still resumed", () => {
-    clearConversations();
+  it("Given another project's newer conversation When the panel mounts Then this project's own latest is still resumed", async () => {
+    await clearConversations();
     const identity = vi.spyOn(store, "getProjectIdentity");
     identity.mockReturnValue({ kind: "remote", id: "project-mine" });
-    saveConversation({
+    await saveConversation({
       id: "conv_mine",
       title: "내 프로젝트",
       model: "m",
@@ -371,7 +383,7 @@ describe("프로젝트 전환", () => {
       entries: [{ kind: "user", text: "내 프로젝트 요청" }, { kind: "assistant", text: "네." }],
     });
     // 남의 프로젝트 대화가 더 최근이다 — 예전엔 이것 때문에 복원이 통째로 포기됐다.
-    saveConversation({
+    await saveConversation({
       id: "conv_other",
       title: "다른 프로젝트",
       model: "m",
@@ -381,6 +393,7 @@ describe("프로젝트 전환", () => {
     });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
 
     expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").toContain("내 프로젝트 요청");
     expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").not.toContain("남의 프로젝트 요청");
@@ -390,12 +403,12 @@ describe("프로젝트 전환", () => {
    * 계측 계약: 이어받은 전환이 "새 대화" 로 기록되면 「대화가 사라졌다」 신고를 가를 증거가 거짓이 된다
    * (openwiki/editor-observability.md). 기록되는 값은 사람이 읽는 산문이 아니라 기계가 먹는 detail 이다.
    */
-  it("Given the switch resumes a saved conversation When it is recorded Then the UI event says resumed", () => {
-    clearConversations();
+  it("Given the switch resumes a saved conversation When it is recorded Then the UI event says resumed", async () => {
+    await clearConversations();
     clearAiUiEvents();
     const identity = vi.spyOn(store, "getProjectIdentity");
     identity.mockReturnValue({ kind: "remote", id: "project-one" });
-    saveConversation({
+    await saveConversation({
       id: "conv_two_resumed",
       title: "둘째",
       model: "m",
@@ -405,19 +418,21 @@ describe("프로젝트 전환", () => {
     });
 
     renderPanel();
+    await whenAiChatPanelSettled();
     identity.mockReturnValue({ kind: "remote", id: "project-two" });
     store.replace(createBlankProject());
+    await whenAiChatPanelSettled();
 
     const events = listAiUiEvents().filter((event) => event.action === AI_UI_ACTIONS.newConversation);
     expect(events.length).toBeGreaterThan(0);
     const last = events[events.length - 1]!;
     expect(last.detail).toMatchObject({ reason: "project-switch", resumed: true });
   });
-  it("Given the new project has its own saved conversation When the identity changes Then it is resumed instead of blanked", () => {
-    clearConversations();
+  it("Given the new project has its own saved conversation When the identity changes Then it is resumed instead of blanked", async () => {
+    await clearConversations();
     const identity = vi.spyOn(store, "getProjectIdentity");
     identity.mockReturnValue({ kind: "remote", id: "project-one" });
-    saveConversation({
+    await saveConversation({
       id: "conv_one",
       title: "첫 프로젝트",
       model: "m",
@@ -425,7 +440,7 @@ describe("프로젝트 전환", () => {
       projectContextKey: "remote:project-one",
       entries: [{ kind: "user", text: "첫 프로젝트 요청" }],
     });
-    saveConversation({
+    await saveConversation({
       id: "conv_two",
       title: "둘째 프로젝트",
       model: "m",
@@ -435,10 +450,12 @@ describe("프로젝트 전환", () => {
     });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").toContain("첫 프로젝트 요청");
 
     identity.mockReturnValue({ kind: "remote", id: "project-two" });
     store.replace(createBlankProject());
+    await whenAiChatPanelSettled();
 
     const log = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(log).toContain("둘째 프로젝트 요청");
@@ -446,9 +463,9 @@ describe("프로젝트 전환", () => {
     expect(panel.dataset.aiConversation).not.toBe("empty");
   });
 
-  it("Given a conversation saved for another project When the panel mounts Then it is not restored", () => {
-    clearConversations();
-    saveConversation({
+  it("Given a conversation saved for another project When the panel mounts Then it is not restored", async () => {
+    await clearConversations();
+    await saveConversation({
       id: "conv_other_project",
       title: "다른 프로젝트",
       model: "m",
@@ -458,6 +475,7 @@ describe("프로젝트 전환", () => {
     });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
 
     expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").not.toContain("다른 프로젝트 요청");
     expect(panel.dataset.aiConversation).toBe("empty");

@@ -23,8 +23,16 @@ import { recordAiUiEvent } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
+import { createPendingWorkTracker } from "@/util/pendingWork";
 
 let openBackdrop: HTMLElement | null = null;
+// 목록 갱신·열기·삭제는 IndexedDB 를 기다린다. 테스트·하네스는 이걸로 «목록이 그려졌다» 를 기다린다.
+const modalPendingWork = createPendingWorkTracker();
+
+/** 모달의 비동기 목록 갱신·열기·삭제가 모두 끝날 때까지 기다린다. */
+export function whenAiConversationHistoryModalSettled(): Promise<void> {
+  return modalPendingWork.settled();
+}
 
 export function closeAiConversationHistoryModal(): void {
   openBackdrop?.remove();
@@ -76,8 +84,12 @@ export function openAiConversationHistoryModal(options: {
     dataset: { testid: "ai-history-search" },
   }) as HTMLInputElement;
 
-  const renderList = (): void => {
-    const all = sortConversationsForScope(listConversations(), options.scopeKey);
+  // 갱신은 비동기다 — 검색 입력이 연타되면 늦게 도착한 옛 결과가 새 결과를 덮지 않게 세대를 센다.
+  let renderGeneration = 0;
+  const renderList = async (): Promise<void> => {
+    const generation = ++renderGeneration;
+    const all = sortConversationsForScope(await listConversations(), options.scopeKey);
+    if (generation !== renderGeneration || openBackdrop !== backdrop) return;
     const rows = filterConversationsByTitle(all, search.value);
     if (rows.length === 0) {
       list.replaceChildren(
@@ -115,9 +127,9 @@ export function openAiConversationHistoryModal(options: {
             }),
           ],
           on: {
-            click: () => {
+            click: () => void modalPendingWork.track((async () => {
               if (isCurrent) return;
-              const record = loadConversation(row.id);
+              const record = await loadConversation(row.id);
               if (!record) {
                 // 목록에는 있는데 본문이 없다 — 조용히 새로 그리면 사라진 이유가 남지 않는다.
                 recordAiUiEvent({
@@ -126,7 +138,7 @@ export function openAiConversationHistoryModal(options: {
                   testid: "ai-history-open",
                   detail: { conversationId: row.id, kind: "missing" },
                 });
-                renderList();
+                await renderList();
                 return;
               }
               // 복원한 칸 수가 곧 «어디까지 이어졌는가» 다. 클릭만으로는 알 수 없다.
@@ -143,7 +155,7 @@ export function openAiConversationHistoryModal(options: {
               });
               close();
               options.onOpen(record);
-            },
+            })()),
           },
         });
         const deleteButton = el("button", {
@@ -152,7 +164,7 @@ export function openAiConversationHistoryModal(options: {
           attrs: { type: "button", title: "이 기록을 지웁니다", "aria-label": `${row.title} 기록 삭제` },
           dataset: { testid: "ai-history-delete" },
           on: {
-            click: () => {
+            click: () => void modalPendingWork.track((async () => {
               // 삭제는 되돌릴 수 없다 — 무엇을 지웠는지가 남아야 «없어졌다» 를 설명할 수 있다.
               recordAiUiEvent({
                 surface: "history-modal",
@@ -161,9 +173,9 @@ export function openAiConversationHistoryModal(options: {
                 label: row.title,
                 detail: { conversationId: row.id, turnCount: row.turnCount, wasCurrent: isCurrent },
               });
-              deleteConversation(row.id);
-              renderList();
-            },
+              await deleteConversation(row.id);
+              await renderList();
+            })()),
           },
         });
         return el("div", {
@@ -175,7 +187,7 @@ export function openAiConversationHistoryModal(options: {
     );
   };
 
-  search.addEventListener("input", renderList);
+  search.addEventListener("input", () => void modalPendingWork.track(renderList()));
 
   const closeButton = el("button", {
     class: "database-modal-close",
@@ -228,12 +240,13 @@ export function openAiConversationHistoryModal(options: {
     if (event.target === backdrop) close();
   });
 
-  renderList();
   document.body.append(backdrop);
   // Escape 는 공용 모달 스택이 라우팅한다 — 자체 document 리스너는 데이터베이스 모달의
   // Escape 핸들러와 같은 버블 단계라 등록 순서에 따라 바깥이 먼저 닫혔다.
   registerModal(backdrop, close);
   openBackdrop = backdrop;
+  // 목록은 등록 뒤에 그린다 — renderList 는 «아직 이 모달이 열려 있나» 를 openBackdrop 으로 판정한다.
+  void modalPendingWork.track(renderList());
   search.focus?.();
   return backdrop;
 }

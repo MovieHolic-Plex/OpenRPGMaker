@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { conversationScopeKey, saveConversation } from "@/ai/conversationStore";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
@@ -102,9 +102,9 @@ describe("컴포저 입력과 시작 화면 배타", () => {
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
 
-  it("대화 기록이 있어도 입력을 지우면 시작 화면을 붙이지 않는다", () => {
+  it("대화 기록이 있어도 입력을 지우면 시작 화면을 붙이지 않는다", async () => {
     // Break: ensureStartScreen remounts whenever the input clears, even with conversation entries.
-    saveConversation({
+    await saveConversation({
       id: "conv_slash_exclusive",
       title: "마을",
       model: "m",
@@ -116,6 +116,7 @@ describe("컴포저 입력과 시작 화면 배타", () => {
       ],
     });
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     expandPanel(panel);
     const input = findByTestId(panel, "ai-input");
     if (!input) throw new Error("input missing");
