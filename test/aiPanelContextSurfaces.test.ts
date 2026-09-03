@@ -108,8 +108,9 @@ describe("☰ 메뉴의 새 항목 3개", () => {
 
     const menu = findByTestId(panel, "ai-command-menu")!;
     expect(findByTestId(menu, "ai-command-menu-conversations")).toBeNull();
-    expect(findByTestId(menu, "ai-command-menu-compact")!.textContent).toBe("맥락 압축");
-    expect(findByTestId(menu, "ai-command-menu-instructions")!.textContent).toBe("감독 지침");
+    // 데크(2026-09-03): 항목은 아이콘 + 라벨 + 메타 세 조각이다 — 라벨만 본다.
+    expect(findByTestId(menu, "ai-command-menu-compact")!.querySelector(".ai-command-menu-label")?.textContent).toBe("맥락 압축");
+    expect(findByTestId(menu, "ai-command-menu-instructions")!.querySelector(".ai-command-menu-label")?.textContent).toBe("감독 지침");
     expect(findByTestId(panel, "ai-open-conversations")).toBeTruthy();
   });
 

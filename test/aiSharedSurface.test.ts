@@ -89,7 +89,7 @@ describe("AI shared surface", () => {
     expect(panel.dataset.chatDock).toBe("float");
   });
 
-  it("대기 화면 선택은 두 조수 메뉴 모두에서 닿는다", () => {
+  it("대기 화면 선택은 숨은 헤더 메뉴에 남고, 컴포저 ☰ 에서는 설정으로 갔다", () => {
     editorState.set({ assistantTemperature: "quiet-gold" });
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
 
@@ -100,7 +100,8 @@ describe("AI shared surface", () => {
     expect(menu?.hidden).toBe(false);
     expect(menu?.classList.contains("is-viewport-anchored")).toBe(true);
     expect(findByTestId(panel, "ai-temperature-quiet-gold")).toBeTruthy();
-    expect(findByTestId(panel, "ai-command-temperature-quiet-gold")).toBeTruthy();
+    // 데크(2026-09-03, D6): 컴포저 ☰ 메뉴의 3분기는 설정 모달의 절로 갔다 — 패널 DOM 에는 없다.
+    expect(findByTestId(panel, "ai-command-temperature-quiet-gold")).toBeNull();
 
     findByTestId(panel, "ai-temperature-ink-only")?.click();
     expect(editorState.get().assistantTemperature).toBe("ink-only");

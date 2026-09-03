@@ -322,7 +322,7 @@ describe("AI 패널 크롬", () => {
     expect(input?.getAttribute("placeholder")).toBe(formatComposerPlaceholder(readAgentBrief()));
   });
 
-  it("「다음에 뭘 하지」 블록은 추천 팝오버 안에 있고 안내 한 줄 + 예제 6개를 담는다", () => {
+  it("「다음에 뭘 하지」 블록은 추천 팝오버 안에 있고 안내 한 줄 + 실행 문장 행 3개를 담는다", () => {
     // Break: 이 블록이 다시 카드 본문(`.ai-chat-main`)으로 새어 컴포저 팝오버와 두 벌로 뜬다.
     // 또는 도크 삭제 때처럼 마운트 지점을 잃고 영구히 비어 예제 칩에 닿을 길이 없어진다.
     const panel = renderPanel();
@@ -343,7 +343,12 @@ describe("AI 패널 크롬", () => {
     expect(steps?.hidden).toBe(false);
     expect(findByTestId(panel, "ai-next-steps-hint")?.textContent ?? "").not.toBe("");
     expect(findByTestId(panel, "ai-authoring-examples")).toBeTruthy();
-    expect(steps?.querySelectorAll(".ai-authoring-example-chip").length).toBe(6);
+    // 데크(2026-09-03, D5): 단어 칩 6개 대신 맵 진단 순서의 실행 문장 3행. 각 행은 문장 + 종류.
+    expect(steps?.querySelectorAll(".ai-authoring-example-chip").length).toBe(0);
+    const rows = steps?.querySelectorAll(".ai-suggest-row") ?? [];
+    expect(rows.length).toBe(3);
+    expect(rows[0]?.querySelector(".ai-suggest-row-text")?.textContent ?? "").not.toBe("");
+    expect(rows[0]?.querySelector(".ai-suggest-row-why")?.textContent ?? "").not.toBe("");
     // 감독 칩도 같은 팝오버에 있다 — 추천이 갈 곳은 한 군데다.
     expect(chips.length).toBe(expected.length);
   });

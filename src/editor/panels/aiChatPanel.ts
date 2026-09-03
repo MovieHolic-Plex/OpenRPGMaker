@@ -38,7 +38,7 @@ import {
 } from "@/editor/agentBlueprint";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
-import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
+import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
@@ -93,14 +93,14 @@ import { toolIconKey } from "./aiToolLabels";
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { getEditorUiMode } from "@/editor/editorUiMode";
-import { openAiSettingsModal } from "./aiSettingsModal";
+import { openAiSettingsModal, type AiSettingsExtraSection } from "./aiSettingsModal";
 import {
   directorStartPrompts,
   formatComposerPlaceholder,
   nextStepHint,
   readAgentBrief,
 } from "./aiAgentBrief";
-import { AI_AUTHORING_EXAMPLES, buildAiAuthoringExamples } from "./aiStartScreenCards";
+import { AI_AUTHORING_EXAMPLES, buildSuggestionRows, rankAuthoringExamples } from "./aiStartScreenCards";
 import {
   isAiAssistantBridgeConnected,
   registerAiAssistantBridge,
@@ -455,14 +455,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 설정은 전용 모달로 연다(채팅 본문 인라인 폼 제거 — UX P0/P1).
   // 저장 시 진행 중 세션 config도 즉시 갱신한다.
+  // 설정 모달에 실리는 패널 소유 절(대기 화면 3분기 — 제안서 D6). 데크 조립 뒤 채운다.
+  let settingsExtraSections: readonly AiSettingsExtraSection[] = [];
   const openAiSettings = (focusTarget: "first" | "apiKey" = "first"): void => {
     openAiSettingsModal({
       focusTarget,
       fontRoot: panel,
       onSaved: (config) => {
         controller.session?.updateConfig(config);
+        composerShell.setModelLabel(modelChipLabel());
       },
       onFontSizeChange: (size) => applyPanelFontSize(size),
+      extraSections: settingsExtraSections,
     });
   };
 
@@ -1711,7 +1715,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         dataset: { testid: "ai-next-steps-hint" },
         text: nextStepHint(brief),
       }),
-      buildAiAuthoringExamples({ examples: AI_AUTHORING_EXAMPLES, onPick: pickExample }),
+      // 단어 칩 6개 → 맵 진단 순서의 실행 문장 3행(제안서 D5). 힌트(맵 진단)가 그 위에 선다.
+      buildSuggestionRows({ examples: rankAuthoringExamples(brief, AI_AUTHORING_EXAMPLES), onPick: pickExample }),
     );
   };
   // 추천 칩 팝오버는 입력창이 비어 있고 포커스가 있을 때만 뜬다. 흐름 밖이라 열림/닫힘이
@@ -2674,16 +2679,29 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (composerPopoverKind() === "menu") openComposerPopover(null);
   };
   const composerMenu = createAiActionMenuItems({
+    meta: {
+      compact: () => contextMeter.button.textContent?.trim() || null,
+      tools: () => String(filterToolCategories("").reduce((count, category) => count + category.tools.length, 0)),
+      settings: () => modelChipLabel(),
+    },
     variant: "composer",
     close: closeCommandMenu,
     actions: sharedMenuActions,
   });
+  // 대기 화면 3분기(추천 함께 / 조수만 / 입력창만)는 취향 설정이다 — ☰ 메뉴 최상단이 아니라 설정 모달의
+  // 한 절로 옮겼다(제안서 D6). testid(ai-command-temperature-*)와 동작은 그대로다.
   const composerTemperatureSection = createAssistantTemperatureMenuSection({
     variant: "composer",
     current: readTemperature,
-    close: closeCommandMenu,
+    close: () => {},
     onChange: applyTemperature,
   });
+  settingsExtraSections = [{
+    id: "temperature",
+    title: "대기 화면",
+    description: "조수가 쉬는 동안 무엇을 보일지 정합니다.",
+    content: composerTemperatureSection,
+  }];
   // 구 이름은 `refreshDockLabels` 였다 — 도크별 버튼 라벨을 다시 계산하는 일이 본업이었고,
   // 그 일이 없어진 지금 남은 것은 "패널 표면을 현재 상태에 맞춰 다시 그린다" 하나다.
   applyAssistantViewPolicy = (): void => {
@@ -2695,7 +2713,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     mountResizeHandle();
   };
   applyAssistantViewPolicy();
-  commandMenu.replaceChildren(composerTemperatureSection, ...composerMenu.items);
+  commandMenu.replaceChildren(...composerMenu.items);
   refreshTemperatureChrome();
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.

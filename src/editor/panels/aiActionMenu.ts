@@ -15,6 +15,7 @@
 //   컴포저 ai-command-menu-export / (전체 기록은 testid 없음) / ai-command-menu-tools
 
 import { el } from "@/util/dom";
+import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 
 export type AiActionMenuVariant = "header" | "composer";
 
@@ -32,8 +33,13 @@ export interface AiActionMenuItems {
   readonly items: readonly HTMLButtonElement[];
 }
 
+/** 항목 오른쪽 메타(맥락 사용률·지침 줄 수·도구 수·현재 모델). 값이 null 이면 비운다. */
+export type AiActionMenuMeta = Partial<Record<"compact" | "instructions" | "tools" | "settings", () => string | null>>;
+
 interface ItemSpec {
+  readonly key: keyof AiActionMenuMeta | "export" | "history";
   readonly label: string;
+  readonly icon: DeckIconName;
   readonly testid: string | null;
   readonly title?: string;
   readonly ariaLabel?: string;
@@ -44,13 +50,15 @@ export function createAiActionMenuItems(options: {
   readonly variant: AiActionMenuVariant;
   readonly close: () => void;
   readonly actions: AiActionMenuActions;
+  readonly meta?: AiActionMenuMeta;
 }): AiActionMenuItems {
   const header = options.variant === "header";
   const itemClass = header ? "ai-more-menu-item" : "ai-command-menu-item";
-  const build = (spec: ItemSpec): HTMLButtonElement =>
-    el("button", {
+  // 데크(2026-09-03): 아이콘 + 라벨 + 오른쪽 메타. 텍스트만 있던 6줄 목록이 640px 팝오버의 절반을 비웠다.
+  const build = (spec: ItemSpec): HTMLButtonElement => {
+    const metaText = spec.key === "export" || spec.key === "history" ? null : options.meta?.[spec.key]?.() ?? null;
+    return el("button", {
       class: itemClass,
-      text: spec.label,
       attrs: {
         type: "button",
         role: "menuitem",
@@ -58,6 +66,11 @@ export function createAiActionMenuItems(options: {
         ...(spec.ariaLabel === undefined ? {} : { "aria-label": spec.ariaLabel }),
       },
       ...(spec.testid === null ? {} : { dataset: { testid: spec.testid } }),
+      children: [
+        deckIcon(spec.icon),
+        el("span", { class: "ai-command-menu-label", text: spec.label }),
+        ...(metaText ? [el("span", { class: "ai-command-menu-meta", text: metaText })] : []),
+      ],
       on: {
         click: () => {
           options.close();
@@ -65,37 +78,50 @@ export function createAiActionMenuItems(options: {
         },
       },
     }) as HTMLButtonElement;
+  };
 
   const compact = build({
+    key: "compact",
+    icon: "compress",
     label: "맥락 압축",
     testid: header ? "ai-more-compact" : "ai-command-menu-compact",
     title: "이전 맥락을 요약 1건으로 접어 자리를 비운다",
     run: options.actions.compactContext,
   });
   const instructions = build({
+    key: "instructions",
+    icon: "book",
     label: "감독 지침",
     testid: header ? "ai-more-instructions" : "ai-command-menu-instructions",
     title: "이 프로젝트의 조수에게 항상 주는 고정 규칙을 적는다",
     run: options.actions.openInstructions,
   });
   const exportItem = build({
-    label: "내보내기",
+    key: "export",
+    icon: "export",
+    label: "대화 내보내기",
     testid: header ? "ai-more-export" : "ai-command-menu-export",
     title: "대화 로그 내보내기",
     run: options.actions.exportAudit,
   });
   const history = build({
+    key: "history",
+    icon: "scroll",
     label: "전체 기록",
     testid: header ? "ai-more-history" : null,
     run: options.actions.openHistory,
   });
   const tools = build({
-    label: "툴 브라우저",
+    key: "tools",
+    icon: "wrench",
+    label: "도구 목록",
     testid: header ? "ai-more-tools" : "ai-command-menu-tools",
     run: options.actions.openTools,
   });
   const settings = build({
-    label: "⚙ 설정",
+    key: "settings",
+    icon: "gear",
+    label: "설정",
     testid: header ? "ai-more-settings" : "ai-command-menu-settings",
     title: "AI 설정 — 연결·모델·글자 크기",
     ariaLabel: "AI 설정 열기",

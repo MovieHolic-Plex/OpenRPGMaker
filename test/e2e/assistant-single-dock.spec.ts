@@ -139,31 +139,38 @@ test.describe("조수 단일 도크", () => {
     expect(await page.locator(".ai-chat-log").count()).toBe(1);
   });
 
-  test("대기 화면 선택은 아이콘 우선이고 라벨로 읽히며 닫힌다", async ({ page }) => {
+  test("대기 화면 선택은 설정 모달의 한 절이고, ☰ 메뉴에는 없다 (데크 D6)", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await openEditor(page);
 
+    // ☰ 메뉴에는 대기 화면 3분기가 없다 — 취향 설정은 설정 모달로 갔다(2026-09-03).
     await page.getByTestId("ai-command-menu-toggle").click();
+    await expect(page.getByTestId("ai-command-menu")).toBeVisible();
+    expect(await page.getByTestId("ai-command-temperature-map-first").count()).toBe(0);
+    await page.getByTestId("ai-command-menu-settings").click();
+    await expect(page.getByTestId("ai-command-menu")).toBeHidden();
+
+    const modal = page.getByTestId("ai-settings-modal");
+    await expect(modal).toBeVisible();
+    await expect(modal.getByTestId("ai-settings-section-temperature")).toBeVisible();
     const choices = [
       ["quiet-gold", "✦", "추천 함께 보기"],
       ["ink-only", "◫", "조수만 보기"],
       ["map-first", "⌨", "입력창만 보기"],
     ] as const;
     for (const [id, icon, label] of choices) {
-      const choice = page.getByTestId(`ai-command-temperature-${id}`);
+      const choice = modal.getByTestId(`ai-command-temperature-${id}`);
       await expect(choice).toHaveText(`${icon} ${label}`);
       await expect(choice).toHaveAttribute("aria-label", label);
     }
 
-    await page.getByTestId("ai-command-temperature-map-first").click();
-    await expect(page.getByTestId("ai-command-menu")).toBeHidden();
+    await modal.getByTestId("ai-command-temperature-map-first").click();
     await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-temperature", "map-first");
-
-    await page.getByTestId("ai-command-menu-toggle").click();
-    await page.getByTestId("ai-command-temperature-quiet-gold").click();
-    await expect(page.getByTestId("ai-command-menu")).toBeHidden();
+    await modal.getByTestId("ai-command-temperature-quiet-gold").click();
     await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-temperature", "quiet-gold");
+    await page.getByTestId("ai-settings-close").click();
+    await expect(modal).toBeHidden();
   });
 
   test("접기와 복원이 왕복하고 재부팅을 넘어 살아남는다", async ({ page }) => {
