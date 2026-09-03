@@ -1,5 +1,6 @@
 import type { BattleAnimationSnapshot } from "@/battle/types";
 import type { BattleAnimationId, BattleAnimationRecord } from "@/project/types";
+import { battleAnimationChainDurationMs } from "@/battle/animationTiming";
 
 export function createBattleAnimationSnapshot(
   records: readonly BattleAnimationRecord[],
@@ -19,5 +20,6 @@ export function createBattleAnimationSnapshot(
     flashTargets: timings.flatMap((timing) => timing.flash ? [timing.flash.target] : []),
     screenShake: timings.some((timing) => Boolean(timing.screenShake)),
     frameCount: record?.frames?.length ?? 0,
+    durationMs: battleAnimationChainDurationMs(record, records),
   };
 }

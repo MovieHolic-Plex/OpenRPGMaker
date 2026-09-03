@@ -67295,7 +67295,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_sword",
@@ -67362,7 +67363,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_arrow",
@@ -67424,7 +67426,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_explosion",
@@ -67511,7 +67514,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_fire",
@@ -67590,7 +67594,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_green",
@@ -67669,7 +67674,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_ice",
@@ -67748,7 +67754,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_scratch",
@@ -67827,7 +67834,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_scarloxy_splash",
@@ -67906,7 +67914,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_slash_steel",
@@ -68039,7 +68048,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_fire_burst",
@@ -68199,6 +68209,12 @@
               "durationFrames": 6
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -68350,6 +68366,12 @@
               },
               "durationFrames": 5
             }
+          }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_cleanse_sparkle",
+            "startFrame": 6
           }
         ]
       },
@@ -68511,7 +68533,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_water_column",
@@ -68663,7 +68686,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_wind_slice",
@@ -68815,7 +68839,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_earth_spike",
@@ -68961,6 +68986,12 @@
               "speed": 4,
               "durationFrames": 7
             }
+          }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 5
           }
         ]
       },
@@ -69114,7 +69145,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_poison",
@@ -69266,7 +69298,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_magic",
@@ -69450,6 +69483,12 @@
               "durationFrames": 8
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_cleanse_sparkle",
+            "startFrame": 7
+          }
         ]
       },
       {
@@ -69583,7 +69622,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_claw_rake",
@@ -69711,7 +69751,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_bite_crunch",
@@ -69844,7 +69885,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_projectile_shot",
@@ -69972,7 +70014,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_leaf_volley",
@@ -70124,7 +70167,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_psychic_wave",
@@ -70276,7 +70320,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_shadow_pulse",
@@ -70427,6 +70472,12 @@
               },
               "durationFrames": 6
             }
+          }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 6
           }
         ]
       },
@@ -70580,6 +70631,12 @@
               "durationFrames": 6
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_cleanse_sparkle",
+            "startFrame": 6
+          }
         ]
       },
       {
@@ -70732,7 +70789,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_power_aura",
@@ -70884,7 +70942,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_guard_barrier",
@@ -71036,7 +71095,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_capture_seal",
@@ -71217,7 +71277,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_critical_burst",
@@ -71350,6 +71411,12 @@
               "durationFrames": 5
             }
           }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 4
+          }
         ]
       },
       {
@@ -71478,7 +71545,8 @@
               "durationFrames": 4
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_drain_orbs",
@@ -71630,7 +71698,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_revive_rise",
@@ -71782,7 +71851,8 @@
               "durationFrames": 7
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_cleanse_sparkle",
@@ -71934,7 +72004,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_paralysis_bind",
@@ -72086,7 +72157,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_blind_veil",
@@ -72238,7 +72310,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_confusion_spiral",
@@ -72390,7 +72463,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_silence_lock",
@@ -72542,7 +72616,8 @@
               "durationFrames": 5
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_summon_portal",
@@ -72723,7 +72798,8 @@
               "durationFrames": 6
             }
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_smoke_vanish",
@@ -72841,7 +72917,8 @@
             "frameIndex": 3,
             "soundResourceId": "easyrpg-sound-fog1"
           }
-        ]
+        ],
+        "followUps": []
       },
       {
         "id": "anim_gen_meteor_fall",
@@ -73021,6 +73098,12 @@
               "speed": 6,
               "durationFrames": 9
             }
+          }
+        ],
+        "followUps": [
+          {
+            "animationId": "anim_gen_smoke_vanish",
+            "startFrame": 8
           }
         ]
       }

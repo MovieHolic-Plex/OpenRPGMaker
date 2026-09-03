@@ -124,6 +124,20 @@
   font-size: 16px;
 }
 
+/* 배경 드리프트(2026-09-03): 38초 주기로 4% 까지 아주 느리게 다가온다. 정지한 배경은 이펙트가 끝나면
+   화면이 "멈춘 그림" 으로 읽히게 하는 세 번째 원인이었다. `scale` 이라 배경의 다른 속성과 겹치지 않는다. */
+.battle-backdrop {
+  animation: battle-backdrop-drift 38s ease-in-out infinite alternate;
+  transform-origin: 50% 40%;
+}
+@keyframes battle-backdrop-drift {
+  from { scale: 1; }
+  to { scale: 1.04; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-backdrop { animation: none; }
+}
+
 .battle-backdrop::after {
   display: none;
 }

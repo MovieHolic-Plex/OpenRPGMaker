@@ -2,6 +2,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { store } from "@/project/store";
 import { beginBattleResultAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
 import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/battleSfx";
+import { HIT_INTENSITY_STYLE, hitIntensityStageVariables, type BattleHitIntensity } from "@/player/battleHitIntensity";
 
 export type BattleJuiceEvent =
   | "command-select"
@@ -127,7 +128,16 @@ function tryPlay(soundResourceId: string): boolean {
   return true;
 }
 
-export function flashBattleField(root: HTMLElement, kind: "hit" | "critical" | "victory" | "defeat"): void {
+/**
+ * 무대 플래시(+흔들림). `intensity` 가 heavy/crushing 이면 급소가 아니어도 흔든다 — 진폭은
+ * `hitIntensityStageVariables` 가 `--battle-shake-x/y` 로 정한다(battleHitIntensity.ts). 급소는
+ * 예전처럼 항상 흔들되 세기 변수가 있으면 그 진폭을 따른다.
+ */
+export function flashBattleField(
+  root: HTMLElement,
+  kind: "hit" | "critical" | "victory" | "defeat",
+  intensity?: BattleHitIntensity
+): void {
   root.classList.remove("battle-flash-hit", "battle-flash-critical", "battle-flash-victory", "battle-flash-defeat", "battle-screen-shake");
   const className =
     kind === "critical"
@@ -137,13 +147,24 @@ export function flashBattleField(root: HTMLElement, kind: "hit" | "critical" | "
         : kind === "defeat"
           ? "battle-flash-defeat"
           : "battle-flash-hit";
+  const shake = kind === "critical" || intensity === "heavy" || intensity === "crushing";
+  const shakeVariables = intensity && HIT_INTENSITY_STYLE[intensity].shakePx > 0 ? hitIntensityStageVariables(intensity) : undefined;
+  for (const name of ["--battle-shake-x", "--battle-shake-y", "--battle-shake-period", "--battle-shake-iterations"]) {
+    root.style.removeProperty(name);
+  }
+  if (shake && shakeVariables) {
+    root.style.setProperty("--battle-shake-x", shakeVariables["--battle-shake-x"]!);
+    root.style.setProperty("--battle-shake-y", shakeVariables["--battle-shake-y"]!);
+    root.style.setProperty("--battle-shake-period", intensity === "crushing" ? "90ms" : "110ms");
+    root.style.setProperty("--battle-shake-iterations", intensity === "crushing" ? "4" : "3");
+  }
   window.requestAnimationFrame(() => {
     root.classList.add(className);
-    if (kind === "critical") {
+    if (shake) {
       root.classList.add("battle-screen-shake");
     }
     window.setTimeout(() => {
       root.classList.remove(className, "battle-screen-shake");
-    }, kind === "victory" || kind === "defeat" ? 700 : kind === "critical" ? 400 : 280);
+    }, kind === "victory" || kind === "defeat" ? 700 : kind === "critical" || intensity === "crushing" ? 400 : 280);
   });
 }

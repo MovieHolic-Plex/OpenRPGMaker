@@ -104,9 +104,12 @@ export function mountBattleAnimationPlayback(
   const url = resolveAssetResourceUrl(record?.resourceId, { project: store.getCurrent() });
   if (url && record?.sheet && record.frames && record.frames.length > 0) {
     element.dataset.renderedFrameCount = String(record.frames.length);
-    element.append(animationSheet(record, url));
-    setActiveAnimationFrame(element, record, 0, context);
-    startPlayback(element, record, timers, context);
+    const sheet = animationSheet(record, url);
+    element.append(sheet);
+    const primary: PlaybackHost = { element, frames: frameNodes(sheet), pending: 0 };
+    scheduleFollowUps(primary, record, timers, context);
+    setActiveAnimationFrame(primary, record, 0, context);
+    startPlayback(primary, record, timers, context);
   }
 
   return {
@@ -271,24 +274,108 @@ export function battleAnimationFrameMs(
   return Math.max(10, Math.round(battleAnimationFrameDurationMs(record) / speed));
 }
 
+/**
+ * 재생 단위. 본체와 후속(followUps)이 각자 하나씩 가진다.
+ * `frames` 는 **자기 시트의** 프레임 노드만이다 — 후속이 본체 엘리먼트 안에 중첩되므로 `querySelectorAll`
+ * 로 훑으면 본체가 후속의 프레임까지 숨기고 켠다(같은 클래스). 마운트 때 잡아 둔 목록만 만진다.
+ * `pending` 은 아직 끝나지 않은 후속 수 — 본체는 후속까지 끝난 뒤에야 `data-playback-finished` 를 단다.
+ */
+type PlaybackHost = {
+  readonly element: HTMLElement;
+  readonly frames: readonly HTMLElement[];
+  pending: number;
+  onFinished?: () => void;
+};
+
+function frameNodes(sheet: HTMLElement): HTMLElement[] {
+  return [...sheet.children].filter((node): node is HTMLElement => node instanceof HTMLElement && node.classList.contains("battle-animation-frame"));
+}
+
+/**
+ * 후속 애니메이션(연출 합성)을 본체의 `startFrame` 에 맞춰 같은 앵커에 겹쳐 시작한다.
+ * 본체 엘리먼트의 자식으로 붙이므로 위치 계산(positionAnimation)을 다시 하지 않는다. 후속의 효과음·
+ * 플래시·흔들림은 자기 타이밍대로 같은 대상에 건다. 깊이 1 — 후속의 후속은 재생하지 않는다.
+ */
+function scheduleFollowUps(
+  primary: PlaybackHost,
+  record: BattleAnimationRecord,
+  timers: Set<number>,
+  context: AnimationRenderContext
+): void {
+  const followUps = record.followUps ?? [];
+  if (followUps.length === 0) return;
+  const records = store.getCurrent().database.battleAnimations;
+  const project = store.getCurrent();
+  const frameMs = battleAnimationFrameMs(context.sceneRoot, record);
+  for (const followUp of followUps) {
+    const follow = records.find((entry) => entry.id === followUp.animationId);
+    const url = resolveAssetResourceUrl(follow?.resourceId, { project });
+    if (!follow || !url || !follow.sheet || !follow.frames || follow.frames.length === 0) continue;
+    primary.pending += 1;
+    const start = (): void => {
+      if (!primary.element.isConnected) return;
+      const node = document.createElement("div");
+      node.className = "battle-animation-followup";
+      node.dataset.testid = "battle-animation-followup";
+      node.dataset.animationId = follow.id;
+      node.dataset.startFrame = String(followUp.startFrame);
+      const sheet = animationSheet(follow, url);
+      node.append(sheet);
+      primary.element.append(node);
+      const host: PlaybackHost = {
+        element: node,
+        frames: frameNodes(sheet),
+        pending: 0,
+        onFinished: () => {
+          primary.pending -= 1;
+          if (primary.pending <= 0 && primary.element.dataset.playbackFinished !== "true" && primary.frames.every((frame) => frame.hidden)) {
+            primary.element.dataset.playbackFinished = "true";
+          }
+        },
+      };
+      setActiveAnimationFrame(host, follow, 0, context);
+      startPlayback(host, follow, timers, context);
+    };
+    if (followUp.startFrame <= 0) {
+      start();
+      continue;
+    }
+    const timer = window.setTimeout(() => {
+      timers.delete(timer);
+      start();
+    }, followUp.startFrame * frameMs);
+    timers.add(timer);
+  }
+}
+
 function startPlayback(
-  element: HTMLElement,
+  host: PlaybackHost,
   record: BattleAnimationRecord,
   timers: Set<number>,
   context: AnimationRenderContext
 ): void {
   const frames = record.frames ?? [];
-  if (frames.length <= 1) return;
+  if (frames.length <= 1) {
+    if (frames.length === 1) {
+      // 한 장짜리도 프레임 간격만큼 보이고 걷는다 — 후속(연기 한 컷 등)이 영구히 남지 않게.
+      const timer = window.setTimeout(() => {
+        timers.delete(timer);
+        finishPlayback(host, context);
+      }, battleAnimationFrameMs(context.sceneRoot, record));
+      timers.add(timer);
+    }
+    return;
+  }
   let index = 0;
   const timer = window.setInterval(() => {
     index += 1;
     if (index >= frames.length) {
       window.clearInterval(timer);
       timers.delete(timer);
-      finishPlayback(element, context);
+      finishPlayback(host, context);
       return;
     }
-    setActiveAnimationFrame(element, record, index, context);
+    setActiveAnimationFrame(host, record, index, context);
   }, battleAnimationFrameMs(context.sceneRoot, record));
   timers.add(timer);
 }
@@ -299,12 +386,18 @@ function startPlayback(
  * 예전에는 `clearInterval` 만 하고 마지막 프레임을 그대로 뒀다. 엘리먼트 제거는 다음
  * 엔트리이거나 시퀀스 종료 시점이라, 그 사이 약 1초 동안 **마지막 컷이 화면에 얼어붙어**
  * 있었다. 감독 눈에는 "이펙트가 안 사라진다" 로 보인다.
+ *
+ * 본체는 후속(followUps)이 모두 끝난 뒤에야 `data-playback-finished` 를 단다 — 시퀀서·프로브가
+ * 이 표식을 "연출 끝" 으로 읽기 때문이다.
  */
-function finishPlayback(element: HTMLElement, context: AnimationRenderContext): void {
-  for (const frame of element.querySelectorAll<HTMLElement>(".battle-animation-frame")) {
-    frame.hidden = true;
+function finishPlayback(host: PlaybackHost, context: AnimationRenderContext): void {
+  for (const frame of host.frames) frame.hidden = true;
+  if (host.onFinished) {
+    host.element.dataset.playbackFinished = "true";
+    host.onFinished();
+  } else if (host.pending <= 0) {
+    host.element.dataset.playbackFinished = "true";
   }
-  element.dataset.playbackFinished = "true";
   clearEffectClasses(context);
 }
 
@@ -387,14 +480,14 @@ type AnimationRenderContext = {
 };
 
 function setActiveAnimationFrame(
-  element: HTMLElement,
+  host: PlaybackHost,
   record: BattleAnimationRecord,
   frameIndex: number,
   context: AnimationRenderContext
 ): void {
+  const { element } = host;
   element.dataset.currentFrame = String(frameIndex);
-  const frames = element.querySelectorAll<HTMLElement>(".battle-animation-frame");
-  for (const frame of frames) {
+  for (const frame of host.frames) {
     frame.hidden = frame.dataset.frameIndex !== String(frameIndex);
   }
   const timing = record.timings?.find((entry) => entry.frameIndex === frameIndex);

@@ -1,6 +1,7 @@
 import type {
   BattleAnimationCell,
   BattleAnimationFlash,
+  BattleAnimationFollowUp,
   BattleAnimationFrame,
   BattleAnimationPosition,
   BattleAnimationRecord,
@@ -28,7 +29,17 @@ export function normalizeBattleAnimationRecord(record: Partial<BattleAnimationRe
     large: record.large ?? false,
     frames: normalizeAnimationFrames(record.frames),
     timings: normalizeAnimationTimings(record.timings),
+    followUps: normalizeFollowUps(record.id, record.followUps),
   };
+}
+
+/** 자기 자신·빈 id 는 버린다(자기 참조는 무한 사슬). startFrame 은 0 이상 정수. */
+function normalizeFollowUps(selfId: string, followUps: readonly Partial<BattleAnimationFollowUp>[] | undefined): BattleAnimationFollowUp[] {
+  return (followUps ?? []).flatMap((entry) => {
+    const animationId = cleanOptionalId(entry.animationId);
+    if (!animationId || animationId === selfId) return [];
+    return [{ animationId, startFrame: clampInteger(entry.startFrame ?? 0, 0, 999) }];
+  });
 }
 
 function normalizeAnimationSheet(sheet: Partial<BattleAnimationSheet> | undefined): BattleAnimationSheet {

@@ -1,20 +1,13 @@
-import type { BattleAnimationRecord, BattleAnimationSheet } from "@/project/types";
-import { generatedEffectFrameDurationMs } from "@/assets/generatedEffectSheets";
+import type { BattleAnimationSheet } from "@/project/types";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 
-export const BATTLE_ANIMATION_FRAME_MS = 120;
-export const DEFAULT_BATTLE_ANIMATION_DURATION_MS = 360;
-
-export function battleAnimationFrameDurationMs(record: BattleAnimationRecord | undefined): number {
-  return generatedEffectFrameDurationMs(record?.resourceId) ?? BATTLE_ANIMATION_FRAME_MS;
-}
-
-export function battleAnimationDurationMs(record: BattleAnimationRecord | undefined): number {
-  const frameCount = Math.max(0, record?.frames?.length ?? 0);
-  if (frameCount === 0) return DEFAULT_BATTLE_ANIMATION_DURATION_MS;
-  const frameDurationMs = battleAnimationFrameDurationMs(record);
-  return Math.max(frameDurationMs, frameCount * frameDurationMs);
-}
+export {
+  BATTLE_ANIMATION_FRAME_MS,
+  DEFAULT_BATTLE_ANIMATION_DURATION_MS,
+  battleAnimationChainDurationMs,
+  battleAnimationDurationMs,
+  battleAnimationFrameDurationMs,
+} from "@/battle/animationTiming";
 
 /**
  * 시트 1px → 전투 논리 px. 레코드가 값을 안 들고 있으면 320 시대 자산(2)이다.

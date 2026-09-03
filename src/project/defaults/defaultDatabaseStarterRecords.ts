@@ -14,6 +14,7 @@ import {
   GENERATED_EFFECT_SHEETS,
   generatedEffectCellZoom,
   generatedEffectDatabaseAnimationId,
+  generatedEffectFollowUps,
   generatedEffectResourceId,
   generatedEffectSheet,
   type GeneratedEffectSheetSeed,
@@ -226,6 +227,8 @@ function generatedEffectAnimation(seed: GeneratedEffectSheetSeed): BattleAnimati
       cells: [{ pattern, x: 0, y: -8, zoom: generatedEffectCellZoom(seed), opacity: 255, visible: true }],
     })),
     timings: generatedEffectTimings(seed),
+    // 연출 합성: 착탄 뒤 연기·잔광을 둘째 레코드가 같은 자리에 겹쳐 잇는다(카탈로그 followUps).
+    followUps: [...generatedEffectFollowUps(seed)],
   });
 }
 

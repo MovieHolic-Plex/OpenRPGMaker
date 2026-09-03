@@ -106,15 +106,22 @@ describe("아군 배틀러 스프라이트 선택", () => {
     expect(node?.dataset.actorBackBattler).toBeUndefined();
   });
 
-  it("rm2000 전면 구도는 아군 스프라이트 노드를 만들지 않는다", () => {
+  it("rm2000 정면 구도는 파티를 뒷모습(액터별 back 배틀러)으로 하단에 세운다 — 2026-09-03 전까지는 그리지 않았다", () => {
     const field = renderField({
       skin: "rm2000",
-      battleCharacterResourceId: "generated-actor-hero-03-battle",
+      battleCharacterResourceId: "generated-actor-hero-02-battle",
     });
-
     const group = field.querySelector<HTMLElement>(".battle-actor-group");
-    expect(group?.dataset.partyFacing).toBe("hidden");
-    expect(group?.dataset.hidden).toBe("true");
-    expect(field.querySelector(".battle-actor-group .battle-actor")).toBeNull();
+    expect(group?.dataset.partyFacing).toBe("back");
+    expect(group?.dataset.hidden).not.toBe("true");
+    const nodes = field.querySelectorAll<HTMLElement>(".battle-actor-group .battle-actor");
+    expect(nodes.length).toBeGreaterThan(0);
+    const first = nodes[0]!;
+    expect(first.dataset.partyFacing).toBe("back");
+    expect(first.dataset.actorBackBattler).toBe("true");
+    expect(allyImage(field)?.getAttribute("src")).toBe("/assets/generated/battle-skins/sprites/hero-02-back.png");
+    // 발끝은 필드 바닥, 가운데(적 자리)는 비운다 — 첫 슬롯은 왼쪽이다.
+    expect(first.style.getPropertyValue("--battle-node-y")).toBe("100%");
+    expect(Number.parseFloat(first.style.getPropertyValue("--battle-node-x"))).toBeLessThan(50);
   });
 });

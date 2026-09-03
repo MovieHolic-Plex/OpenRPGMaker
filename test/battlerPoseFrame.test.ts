@@ -75,6 +75,9 @@ describe("applyBattlerPose background position", () => {
     ["dead", `-${FRAME}px -${FRAME}px`],
   ] as const)("전투 필드 렌더에서 %s 포즈가 행 1 을 가리킨다", (pose, expected) => {
     const project = deserialize(JSON.stringify(battleFixture));
+    // 48px 전투 시트(.battle-actor-sprite)는 **정면(front) 파티 스킨**에서만 필드에 선다. 픽스처 기본
+    // 스킨(rm2000)은 뒷모습 <img> 를 쓰므로 여기서는 사이드뷰 스킨을 명시한다.
+    (project.system as { battleUiStyle?: string }).battleUiStyle = "ff";
     store.replace(project);
     const runtime = createBattleRuntime({
       project,

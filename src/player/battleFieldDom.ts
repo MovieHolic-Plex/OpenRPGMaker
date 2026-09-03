@@ -100,16 +100,20 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 1:1 대치 — 선두 1명만, 적 크고 중앙 상단, 아군 좌하 대형.
   // 다마리 분기 y +10: 148px 스프라이트가 y=76 줄에서 필드 위로 11px 잘렸다(실측).
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
-  // 정면 전투(rm2000): 적만 필드에 선다. 아군은 하단 상태 카드 숫자로만 보인다.
+  // 정면 전투(rm2000): 적은 필드 가운데에, 아군은 **뒷모습**으로 필드 하단에 선다(2026-09-03).
+  // 예전에는 아군을 그리지 않아(partyFacing hidden) 화면에서 움직이는 것이 적과 이펙트뿐이었다 —
+  // "전투가 너무 심플하다" 의 첫 번째 원인. 뒷모습 배틀러(액터별 290×280, 영상 추출)는 정면 적과
+  // 시선이 맞고 몬스터와 같은 급의 해상도라 정면 구도를 깨지 않는다.
   // 3마리 적의 y 는 픽스처 battleEnemyFeetRatios.json 이 잠근 값(104/112/104).
   // (2026-09-03 개명 전 id 는 rm2003. 같은 구도의 옛 deprecated `rm2000` 항목은 여기로 흡수됐다.)
   rm2000: {
-    partyFacing: "hidden",
+    partyFacing: "back",
     enemy: (i, n) => ({
       x: Math.round(160 + (i - (n - 1) / 2) * 70),
       y: n <= 1 ? 124 : 104 + (i % 2) * 8,
     }),
-    party: () => ({ x: 160, y: 150 }),
+    // 가운데(적 자리)를 비우고 좌·우로 갈라 세운다. 발끝은 필드 바닥(160).
+    party: (i, n) => ({ x: RM2000_PARTY_SLOTS[Math.min(4, Math.max(1, n))]![i] ?? 160, y: 160 }),
   },
   // 옥토패스 HD-2D: 오버숄더 — 적 상단 얕게, 아군 하단 깊게, HD 간격.
   octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
@@ -479,6 +483,8 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   const selected = snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id;
   node.classList.toggle("battle-target-candidate", targetable);
   node.classList.toggle("battle-target-selected", selected);
+  // 쓰러지는 순간(살아 있음 → 격파) 조각을 한 번 뿌린다. 이후 동기화에서는 다시 뿌리지 않는다.
+  if (presented.defeated && !node.classList.contains("defeated")) spawnDeathShards(node);
   node.classList.toggle("defeated", presented.defeated);
   applyBattlerPose(node, presented.pose);
   node.dataset.battleTargetable = targetable ? "true" : "false";
@@ -714,6 +720,8 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
     // 반투명해 보였다(실측: 정적 원본 mid-alpha 0%, idle 스트립 골렘 1.23%).
     image.alt = `${enemy.name} 몬스터`;
     image.src = url;
+    // CSS 숨쉬기(_battlers.css battler-breathe)의 위상을 적마다 어긋나게 — 같이 부풀면 한 덩이로 보인다.
+    image.style.setProperty("--breathe-delay", `-${index * 730}ms`);
     enemyNode.append(image);
   }
   applyBattlerPose(enemyNode, enemy.pose);
@@ -800,7 +808,7 @@ function actorSpriteGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement
   // 포켓몬은 선두 1마리(몬스터 뒷모습)만 필드에 세운다.
   const shown = place.partyMax ? actors.slice(0, place.partyMax) : actors;
   for (const [index, actor] of shown.entries()) {
-    group.append(actorNode(actor, index));
+    group.append(actorNode(actor, index, shown.length));
   }
   return group;
 }
@@ -815,11 +823,11 @@ function partyStatusGroup(actors: readonly BattleBattlerSnapshot[], battleFlow: 
   return group;
 }
 
-function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
+function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElement {
   const node = document.createElement("div");
   node.className = "battle-actor";
   const place = skinPlacement();
-  const ap = place.party(index, 4);
+  const ap = place.party(index, count);
   positionBattleNode(node, ap.x, ap.y);
   if (place.partyScale) node.style.setProperty("--battle-actor-scale", String(place.partyScale));
   node.dataset.partyFacing = place.partyFacing;
@@ -898,15 +906,58 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
 
 /** 배틀러 위치. 입력 x/y 는 **0..320 × 0..160 저작 좌표계**이고 백분율로 환산해 심는다.
  *  이 320/160 은 논리 해상도(640×480)와 무관한 고정 저작 단위다 — 해상도를 바꿔도 손대지 않는다. */
+/** rm2000 뒷모습 파티의 x 슬롯(인원수별). 1인은 포켓몬처럼 왼쪽, 짝수는 좌우 대칭, 3인은 가운데를 끼운다. */
+const RM2000_PARTY_SLOTS: Readonly<Record<number, readonly number[]>> = {
+  1: [72],
+  2: [72, 248],
+  3: [56, 160, 264],
+  4: [44, 116, 204, 276],
+};
+
 function positionBattleNode(node: HTMLElement, x: number | undefined, y: number | undefined): void {
   node.style.setProperty("--battle-node-x", `${clampBattleCoordinate(x ?? 160, 0, 320) / 320 * 100}%`);
   node.style.setProperty("--battle-node-y", `${clampBattleCoordinate(y ?? 96, 0, 160) / 160 * 100}%`);
+}
+
+/** 격파 조각 수. 12개면 사방으로 흩어지는 인상이 나고 DOM 부담은 없다. */
+const DEATH_SHARD_COUNT = 12;
+
+/**
+ * 격파 조각을 배틀러 노드에 뿌린다(CSS: 15-juice-capture-fx.css `.battle-death-shard`).
+ * 방향·거리·지연·크기는 인덱스로 결정해 같은 격파는 항상 같은 모양이다(스크린샷 비교 가능).
+ * 조각은 노드 발끝 중심 위 `--shard-rise`(몸통 높이의 절반쯤)에서 출발한다.
+ */
+export function spawnDeathShards(node: HTMLElement): void {
+  node.querySelector(".battle-death-shards")?.remove();
+  const container = document.createElement("span");
+  container.className = "battle-death-shards";
+  container.dataset.testid = "battle-death-shards";
+  container.setAttribute("aria-hidden", "true");
+  const sprite = battlerSpriteNode(node);
+  // 레이아웃 px(offsetHeight)로 잰다 — getBoundingClientRect 는 무대 배율이 곱해진 CSS px 라 배율 1.5 에서
+  // 출발점이 몸통 중심이 아니라 머리 위로 올라갔다(실측).
+  const spriteHeight = sprite.offsetHeight > 0 ? sprite.offsetHeight : 120;
+  container.style.setProperty("--shard-rise", `${Math.round(spriteHeight * 0.5)}px`);
+  for (let index = 0; index < DEATH_SHARD_COUNT; index += 1) {
+    const shard = document.createElement("i");
+    shard.className = "battle-death-shard";
+    const angle = (index / DEATH_SHARD_COUNT) * Math.PI * 2 + ((index * 7) % 5) * 0.11;
+    const distance = 52 + ((index * 13) % 7) * 8;
+    shard.style.setProperty("--sx", `${Math.round(Math.cos(angle) * distance)}px`);
+    shard.style.setProperty("--sy", `${Math.round(Math.sin(angle) * distance * 0.8 - 18)}px`);
+    shard.style.setProperty("--sd", `${(index * 37) % 120}ms`);
+    shard.style.setProperty("--ss", `${10 + ((index * 5) % 3) * 4}px`);
+    container.append(shard);
+  }
+  node.append(container);
+  window.setTimeout(() => container.remove(), 900);
 }
 
 /** Side-view approach / knockback classes for the current resolve beat. */
 export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined): void {
   for (const node of field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")) {
     node.classList.remove(
+      "battle-motion-windup",
       "battle-motion-lunge",
       "battle-motion-return",
       "battle-motion-knockback",
@@ -918,7 +969,8 @@ export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | u
   const user = beat.userId ? findBattlerNode(field, beat.userId) : null;
   if (user) {
     user.classList.add("battle-motion-user");
-    if (beat.userMotion === "lunge") user.classList.add("battle-motion-lunge");
+    if (beat.userMotion === "windup") user.classList.add("battle-motion-windup");
+    else if (beat.userMotion === "lunge") user.classList.add("battle-motion-lunge");
     else if (beat.userMotion === "return") user.classList.add("battle-motion-return");
   }
   if (beat.targetId) {

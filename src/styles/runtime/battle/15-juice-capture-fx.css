@@ -51,14 +51,47 @@
   pointer-events: none;
 }
 .battle-enemy.defeated .battle-enemy-image {
-  animation: battle-death-fade 620ms ease-in forwards;
+  /* 페이드가 아니라 **분해**: 하얗게 타오르다 위로 떠오르며 흐려져 사라진다. 조각(.battle-death-shard)이
+     같은 순간 사방으로 튄다(battleFieldDom.spawnDeathShards). 620ms 는 시퀀서 격파 대사(660ms) 안이다. */
+  animation: battle-death-dissolve 620ms ease-in forwards;
 }
-@keyframes battle-death-fade {
-  /* 1 에서 시작한다. 0.9 로 시작하면 페이드 첫 프레임에 10% 가 한 번에 빠져
-     "왜 갑자기 반투명이지" 로 읽힌다. */
-  0% { opacity: 1; filter: none; }
-  35% { opacity: 0.75; filter: brightness(1.6); }
-  100% { opacity: 0; filter: grayscale(1); translate: 0 14px; }
+@keyframes battle-death-dissolve {
+  /* 1 에서 시작한다. 0.9 로 시작하면 첫 프레임에 10% 가 한 번에 빠져 "왜 갑자기 반투명이지" 로 읽힌다. */
+  0% { opacity: 1; filter: none; translate: 0 0; scale: 1 1; }
+  22% { opacity: 1; filter: brightness(2.2) saturate(0.35); }
+  60% { opacity: 0.55; filter: brightness(2.4) saturate(0) blur(1.5px); translate: 0 -10px; scale: 1.04 0.96; }
+  100% { opacity: 0; filter: brightness(2.6) saturate(0) blur(5px); translate: 0 -26px; scale: 1.1 0.86; }
+}
+
+/* 격파 조각. 컨테이너는 배틀러 노드의 발끝 중심에 놓이고, 조각마다 --sx/--sy(도착 오프셋)·--sd(지연)·--ss(크기)를
+   런타임이 인라인으로 심는다. 700ms 뒤 컨테이너를 걷는다. */
+.battle-death-shards {
+  inset: auto 0 0 0;
+  height: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+}
+.battle-death-shard {
+  animation: battle-death-shard-fly 700ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+  animation-delay: var(--sd, 0ms);
+  background: radial-gradient(circle at 40% 40%, white, var(--battle-accent) 55%, transparent 74%);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--battle-accent);
+  display: block;
+  height: var(--ss, 6px);
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: calc(-1 * var(--shard-rise, 60px));
+  width: var(--ss, 6px);
+}
+@keyframes battle-death-shard-fly {
+  0% { opacity: 1; translate: 0 0; scale: 1; }
+  100% { opacity: 0; translate: var(--sx, 0px) var(--sy, -40px); scale: 0.3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-death-shard { animation: none; opacity: 0; }
 }
 
 /* ---- 포획 구슬 시네마틱 ---- */
@@ -125,5 +158,6 @@
 @media (prefers-reduced-motion: reduce) {
   .battle-capture-orb, .battle-orb-shake, .battle-orb-caught, .battle-orb-burst,
   .battle-enemy.defeated .battle-enemy-image { animation-duration: 1ms; }
+  .battle-scene .battle-field { transition: none; }
 }
 

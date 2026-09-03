@@ -27,6 +27,8 @@ import {
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField, playBattleCue } from "@/player/battleJuice";
+import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
+import { hitIntensity } from "@/player/battleHitIntensity";
 import { directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
 import {
@@ -231,12 +233,18 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     onDamageFeedback(feedback) {
       lastDamageFeedback = feedback;
       if (feedback) {
-        const wasAlive = !presentation?.vitalsFor(feedback.targetId)?.defeated;
+        const vitalsBefore = presentation?.vitalsFor(feedback.targetId);
+        const wasAlive = !vitalsBefore?.defeated;
         presentation?.applyFeedback(feedback);
         const targetNode =
           field.querySelector<HTMLElement>(`[data-testid="${feedback.targetId}"]`)
           ?? field.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${feedback.targetId}"]`)
           ?? field.querySelector<HTMLElement>(`[data-testid="battle-actor-${feedback.targetId}"]`);
+        // 타격 세기 — 대상 최대 HP 대비 피해 비율(+급소·막타)로 넉백·찌그러짐·무대 펀치·흔들림을 차등한다.
+        const lethal = wasAlive && Boolean(presentation?.vitalsFor(feedback.targetId)?.defeated);
+        const maxHp = vitalsBefore?.maxHp ?? battlerMaxHp(options.runtime.snapshot(), feedback.targetId);
+        const intensity = hitIntensity(feedback, maxHp, lethal);
+        applyHitIntensity(root, targetNode, intensity);
         // 타격/급소/회복/빗나감 효과음 — 사건 1개에 소리 1개. emitBattleJuice 안의
         // playBattleCue 가 샘플→합성 폴백을 단일 경로로 처리한다. 여기서 합성 보이스를
         // 따로 부르면 한 타격에 소리가 겹친다(예전 결함).
@@ -254,7 +262,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         if (wasAlive && presentation?.vitalsFor(feedback.targetId)?.defeated) {
           window.setTimeout(() => playBattleCue("faint"), 260);
         }
-        if (!feedback.healing && !feedback.miss) flashBattleField(root, feedback.critical ? "critical" : "hit");
+        if (!feedback.healing && !feedback.miss) flashBattleField(root, feedback.critical ? "critical" : "hit", intensity);
       }
     },
     onHitFeel(active, feedback) {
