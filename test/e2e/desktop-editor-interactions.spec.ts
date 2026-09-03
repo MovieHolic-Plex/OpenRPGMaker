@@ -10,11 +10,10 @@ const VIEWPORTS = [
   { width: 1440, height: 900 },
 ] as const;
 const MODES = ["basic", "expert"] as const;
+// 맵 메뉴(2026-08-26)·게임 메뉴(2026-09-03)는 사라졌다. 도구 메뉴는 표준·초보에만 있고 전문가는
+// 인라인 버튼이라 모드별 필수 목록이 다르다.
 const REQUIRED_FOCUS_TARGETS = [
   "menu-project",
-  "menu-map",
-  "menu-tools",
-  "menu-game",
   "menu-help",
   "layer-event",
 ] as const;
@@ -171,7 +170,6 @@ async function runDesktopScenario(
       "button[data-testid^='menu-']:visible",
       "button[data-testid^='layer-']:visible",
       "button[data-testid^='event-list-row-']:visible",
-      ".toolbar-overflow-toggle:visible",
     ].join(", ")).evaluateAll((buttons) => buttons.map((button) => {
       const box = button.getBoundingClientRect();
       return { height: box.height, testId: button.getAttribute("data-testid"), width: box.width };

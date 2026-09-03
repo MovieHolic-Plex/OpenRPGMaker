@@ -100,7 +100,7 @@ function headerStrings(topbar: HTMLElement): Finding[] {
     }
     for (const child of node.children) walk(child, owner);
   };
-  for (const menuId of ["menu-tools", "menu-game"]) {
+  for (const menuId of ["menu-project", "menu-tools", "menu-help"]) {
     openMenu(topbar, menuId);
     walk(fake(topbar), "editor-topbar");
     // 메뉴 팝업은 document.body 로 붙는다.
@@ -123,7 +123,6 @@ function namesOf(topbar: HTMLElement, testIds: readonly string[]): Set<string> {
   for (const testId of testIds) {
     // 팝업 항목은 그 메뉴가 열려 있을 때만 DOM 에 있다.
     if (testId.startsWith("menu-tools-")) openMenu(topbar, "menu-tools");
-    else if (testId.startsWith("menu-game-")) openMenu(topbar, "menu-game");
     const node = findByTestId(fake(topbar), testId) ?? findByTestId(fake(document.body as unknown as HTMLElement), testId);
     expect(node, `${testId} 가 헤더에 있어야 한다`).not.toBeNull();
     if (!node) continue;
@@ -153,24 +152,27 @@ const RETIRED_PATTERNS: readonly { readonly pattern: RegExp; readonly why: strin
   { pattern: /상위/u, why: "레이어 이름은 덧그림이다" },
 ];
 
+type HeaderMode = "standard" | "expert";
+
 type ConceptCase = {
   readonly concept: string;
   readonly canonical: UiCopyKey;
   readonly short?: UiCopyKey;
-  readonly testIds: readonly string[];
+  /** 모드별 집. 표준은 세계관·음악·찾기가 「도구 ▾」 메뉴 항목이고, 전문가는 인라인 아이콘 버튼이다. */
+  readonly homes: Readonly<Record<HeaderMode, readonly string[]>>;
 };
 
 const CONCEPTS: readonly ConceptCase[] = [
-  { concept: "DB 편집기", canonical: "database", short: "databaseShort", testIds: ["menu-tools-database", "toolbar-database"] },
-  { concept: "보관함", canonical: "resourceLibrary", short: "resources", testIds: ["menu-tools-resources", "toolbar-resource-manager"] },
-  { concept: "세계관", canonical: "world", testIds: ["menu-tools-world", "toolbar-world"] },
-  { concept: "음악·효과음", canonical: "audio", short: "audioShort", testIds: ["menu-tools-audio", "toolbar-sound-test"] },
-  { concept: "맵·이벤트 찾기", canonical: "mapEventSearch", short: "mapEventSearchShort", testIds: ["menu-tools-search", "toolbar-search"] },
-  { concept: "테스트 실행", canonical: "testPlay", short: "testPlayShort", testIds: ["menu-game-play", "mode-play"] },
-  { concept: "랜덤 전투 테스트", canonical: "battleTest", short: "battleTestShort", testIds: ["menu-game-battle-test", "toolbar-battle-test", "topbar-battle-test"] },
+  { concept: "DB 편집기", canonical: "database", short: "databaseShort", homes: { standard: ["toolbar-database"], expert: ["toolbar-database"] } },
+  { concept: "보관함", canonical: "resourceLibrary", short: "resources", homes: { standard: ["toolbar-resource-manager"], expert: ["toolbar-resource-manager"] } },
+  { concept: "세계관", canonical: "world", homes: { standard: ["menu-tools-world"], expert: ["toolbar-world"] } },
+  { concept: "음악·효과음", canonical: "audio", short: "audioShort", homes: { standard: ["menu-tools-audio"], expert: ["toolbar-sound-test"] } },
+  { concept: "맵·이벤트 찾기", canonical: "mapEventSearch", short: "mapEventSearchShort", homes: { standard: ["menu-tools-search"], expert: ["toolbar-search"] } },
+  { concept: "테스트 실행", canonical: "testPlay", short: "testPlayShort", homes: { standard: ["mode-play"], expert: ["mode-play"] } },
+  { concept: "랜덤 전투 테스트", canonical: "battleTest", short: "battleTestShort", homes: { standard: ["topbar-battle-test"], expert: ["topbar-battle-test"] } },
 ];
 
-/** title 이 정확히 정본이어야 하는 클래식 툴바 버튼. */
+/** title 이 정확히 정본이어야 하는 톱바 도구 버튼(전문가는 다섯 개가 모두 버튼이다). */
 const TITLE_IS_CANONICAL: readonly { readonly testId: string; readonly key: UiCopyKey }[] = [
   { testId: "toolbar-database", key: "database" },
   { testId: "toolbar-resource-manager", key: "resourceLibrary" },
@@ -180,7 +182,11 @@ const TITLE_IS_CANONICAL: readonly { readonly testId: string; readonly key: UiCo
 ];
 
 function renderExpertTopbar(): HTMLElement {
-  resetEditorUiModeForTests("expert");
+  return renderTopbarFor("expert");
+}
+
+function renderTopbarFor(mode: HeaderMode): HTMLElement {
+  resetEditorUiModeForTests(mode);
   const topbar = document.createElement("div");
   renderTopbar(topbar);
   return topbar;
@@ -226,22 +232,24 @@ describe("에디터 헤더 용어", () => {
     expect(violations, `폐기 용어가 헤더에 남아 있다:\n${violations.join("\n")}`).toEqual([]);
   });
 
-  for (const { concept, canonical, short, testIds } of CONCEPTS) {
-    it(`${concept} 은 정본${short ? "(+축약)" : ""} 이름만 화면에 낸다`, () => {
-      // Break: 같은 동작이 표면마다 다른 이름으로 불린다.
-      const topbar = renderExpertTopbar();
-      const style = getEditorChrome().jargonStyle;
-      const allowed = new Set<string>([uiLabel(canonical, style), ...(short ? [uiLabel(short, style)] : [])]);
+  for (const mode of ["standard", "expert"] as const) {
+    for (const { concept, canonical, short, homes } of CONCEPTS) {
+      it(`${mode}: ${concept} 은 정본${short ? "(+축약)" : ""} 이름만 화면에 낸다`, () => {
+        // Break: 같은 동작이 표면마다 다른 이름으로 불린다.
+        const topbar = renderTopbarFor(mode);
+        const style = getEditorChrome().jargonStyle;
+        const allowed = new Set<string>([uiLabel(canonical, style), ...(short ? [uiLabel(short, style)] : [])]);
 
-      const names = namesOf(topbar, testIds);
+        const names = namesOf(topbar, homes[mode]);
 
-      expect(names.has(uiLabel(canonical, style)), `${concept} 정본이 헤더에 없다: ${[...names].join(" / ")}`).toBe(true);
-      const extra = [...names].filter((name) => !allowed.has(name));
-      expect(extra, `${concept} 에 정본/축약 밖의 이름이 있다: ${extra.join(" / ")}`).toEqual([]);
-    });
+        expect(names.has(uiLabel(canonical, style)), `${concept} 정본이 헤더에 없다: ${[...names].join(" / ")}`).toBe(true);
+        const extra = [...names].filter((name) => !allowed.has(name));
+        expect(extra, `${concept} 에 정본/축약 밖의 이름이 있다: ${extra.join(" / ")}`).toEqual([]);
+      });
+    }
   }
 
-  it("클래식 툴바 title 은 정확히 uiCopy 정본이다", () => {
+  it("톱바 도구 버튼 title 은 정확히 uiCopy 정본이다", () => {
     // Break: 툴바 title 을 손으로 적어 정본과 어긋난다.
     const topbar = renderExpertTopbar();
     const style = getEditorChrome().jargonStyle;
@@ -282,15 +290,5 @@ describe("에디터 헤더 용어", () => {
     );
     const strays = [...findingSurfaces].filter((name) => !allowed.has(name));
     expect(strays, `찾기 표면이 둘 이상이다: ${strays.join(" / ")}`).toEqual([]);
-  });
-
-  it("layer-selector 는 uiCopy 레이어 이름을 읽어 준다", () => {
-    // Break: menu.ts 가 다시 자기만의 layerShortLabel 사본으로 "하위"/"상위" 를 만든다.
-    const topbar = renderExpertTopbar();
-
-    const selector = findByTestId(fake(topbar), "layer-selector");
-    expect(selector).not.toBeNull();
-    expect(selector?.textContent).toContain(uiLabel("layerLower", getEditorChrome().jargonStyle));
-    expect(selector?.textContent).not.toMatch(/하위|상위/u);
   });
 });

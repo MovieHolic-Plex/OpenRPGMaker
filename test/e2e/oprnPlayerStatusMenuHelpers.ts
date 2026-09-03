@@ -299,18 +299,8 @@ export async function screenshotMenu(page: Page, path: string): Promise<void> {
 
 export async function openTestPlayWindow(page: Page): Promise<void> {
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15000 });
-  // 실행 버튼(mode-play)이 있는 클래식 툴바는 **전문가 모드에서만** 렌더된다
-  // (menu.ts: showClassic = mode !== "edit" || chrome.classicToolbar).
-  // UI 모드를 지정하지 않은 스펙은 기본 모드로 떠서 이 버튼이 아예 없었고,
-  // click() 이 보이지 않는 요소를 기다리다 타임아웃했다. 두 모드 모두에서 동작하게 한다.
-  const modeButton = page.getByTestId("mode-play");
-  if (await modeButton.count() > 0 && await modeButton.isVisible()) {
-    await modeButton.click();
-  } else {
-    // 기본 모드 경로: 메뉴 바 게임 → 테스트 플레이 창.
-    await page.getByTestId("menu-game").click();
-    await page.getByTestId("menu-game-play").click();
-  }
+  // ▶ 테스트(mode-play)는 스튜디오 바 오른쪽에 모든 편집 모드에서 있다(2026-09-03 게임 메뉴 삭제).
+  await page.getByTestId("mode-play").click();
   const modal = page.getByTestId("test-play-window");
   await page.waitForTimeout(250);
   if (!(await modal.isVisible())) await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));

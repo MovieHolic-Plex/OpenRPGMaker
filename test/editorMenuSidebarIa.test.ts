@@ -186,9 +186,9 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     });
   }
 
-  for (const mode of ["beginner", "standard", "expert"] as const) {
+  for (const mode of ["beginner", "standard"] as const) {
     it(`${mode}: 음악·찾기를 도구 메뉴에서 연다`, () => {
-      // Break: 음악/찾기가 전문가 클래식 툴바 전용으로 되돌아가 초보·표준에서 사라진다.
+      // Break: 음악/찾기가 전문가 전용 버튼으로 되돌아가 초보·표준에서 도달 경로가 사라진다.
       resetEditorUiModeForTests(mode);
       const topbar = document.createElement("div");
       renderTopbar(topbar);
@@ -196,8 +196,55 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
       const ids = commandIds(openMenu(topbar, "menu-tools"));
       expect(ids, `${mode} 도구 메뉴`).toContain("menu-tools-audio");
       expect(ids, `${mode} 도구 메뉴`).toContain("menu-tools-search");
+      // 같은 모드에 두 표면을 두지 않는다 — 메뉴가 있으면 인라인 버튼은 없다.
+      expect(findByTestId(fake(topbar), "toolbar-sound-test")).toBeNull();
+      expect(findByTestId(fake(topbar), "toolbar-search")).toBeNull();
     });
   }
+
+  it("expert: 세계관·음악·찾기는 인라인 아이콘 버튼이고 도구 메뉴는 없다", () => {
+    // Break: 전문가에 「도구 ▾」 메뉴와 인라인 버튼이 함께 남아 같은 동작이 두 자리에 놓인다.
+    resetEditorUiModeForTests("expert");
+    const topbar = document.createElement("div");
+    renderTopbar(topbar);
+
+    for (const id of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
+      expect(findByTestId(fake(topbar), id), id).not.toBeNull();
+    }
+    expect(findByTestId(fake(topbar), "menu-tools")).toBeNull();
+  });
+
+  for (const mode of ["standard", "expert"] as const) {
+    it(`${mode}: 자료집·소재는 톱바 버튼이 집이고 도구 메뉴에는 없다`, () => {
+      // Break: 자료집이 다시 버튼과 메뉴 항목 두 자리에 놓인다(2026-09-03 이전의 3중 진입점).
+      resetEditorUiModeForTests(mode);
+      const topbar = document.createElement("div");
+      renderTopbar(topbar);
+
+      expect(findByTestId(fake(topbar), "toolbar-database")).not.toBeNull();
+      expect(findByTestId(fake(topbar), "toolbar-resource-manager")).not.toBeNull();
+      const toolsIds = commandIds(openMenu(topbar, "menu-tools"));
+      expect(toolsIds).not.toContain("menu-tools-database");
+      expect(toolsIds).not.toContain("menu-tools-resources");
+      // 클래식 툴바 행과 작업 칩은 없다 — 복제 표면이었다.
+      for (const gone of ["oprn-toolbar", "toolbar-new", "toolbar-map-copy", "authoring-task-launcher", "authoring-task-data", "window-toolbar-collapse"]) {
+        expect(findByTestId(fake(topbar), gone), gone).toBeNull();
+      }
+    });
+  }
+
+  it("beginner: 자료집·소재는 도구 메뉴가 담고 톱바 버튼은 없다", () => {
+    // Break: 초보 레일 옆에 자료집 버튼이 또 생기거나, 초보의 유일한 자료집 경로(도구 메뉴)가 사라진다.
+    resetEditorUiModeForTests("beginner");
+    const topbar = document.createElement("div");
+    renderTopbar(topbar);
+
+    expect(findByTestId(fake(topbar), "toolbar-database")).toBeNull();
+    expect(findByTestId(fake(topbar), "toolbar-resource-manager")).toBeNull();
+    const toolsIds = commandIds(openMenu(topbar, "menu-tools"));
+    expect(toolsIds).toContain("menu-tools-database");
+    expect(toolsIds).toContain("menu-tools-resources");
+  });
 
   it("프로젝트 메뉴는 예제 프로젝트를 하위 메뉴로 접고 내보내기 두 종류를 함께 둔다", () => {
     // Break: 데모 로더 9개가 다시 최상위로 펼쳐져 프로젝트 메뉴를 14줄로 만든다.
@@ -223,16 +270,19 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     }
   });
 
-  it("게임 메뉴에서 같은 동작을 하던 시연 실행 항목 중복을 없앤다", () => {
-    // Break: menu-game-play 와 menu-game-test-window 가 다시 같은 창을 두 줄로 연다.
+  it("게임 메뉴는 없다 — 테스트 실행·전투 테스트는 오른쪽 버튼이 유일한 집이다", () => {
+    // Break: 게임 메뉴가 되살아나 ▶ 테스트·⚔ 와 같은 창을 두 번째 자리에서 연다
+    // (2026-09-03 이전에는 테스트 실행의 집이 작업 칩·▶ 버튼·게임 메뉴·클래식 툴바 넷이었다).
     resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
-    const ids = commandIds(openMenu(topbar, "menu-game"));
-    expect(ids).toContain("menu-game-play");
-    expect(ids).not.toContain("menu-game-test-window");
-    expect(ids).not.toContain("menu-game-export");
+    expect(findByTestId(fake(topbar), "menu-game")).toBeNull();
+    expect(findByTestId(fake(topbar), "mode-play")).not.toBeNull();
+    expect(findByTestId(fake(topbar), "topbar-battle-test")).not.toBeNull();
+    const ids = topRegionTestIds(topbar);
+    expect(ids.filter((id) => id === "mode-play")).toHaveLength(1);
+    expect(ids.filter((id) => id === "topbar-battle-test")).toHaveLength(1);
   });
 
   it("예제 하위 메뉴도 Escape 로 닫힌다", () => {

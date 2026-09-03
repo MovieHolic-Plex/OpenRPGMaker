@@ -118,7 +118,26 @@ export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget):
       separatorBefore: true,
       testId: "event-layer-test-here",
     },
+    // 2026-09-03 까지 전문가 클래식 툴바의 「이벤트 테스트」 버튼(선택 이벤트를 즉시 실행)이었다.
+    // 그 행을 걷으면서 이 동작의 집은 이벤트를 우클릭한 자리가 됐다 — 이벤트 편집기 안의 「테스트」
+    // 버튼과 같은 창(kind: selected-event)을 연다.
+    {
+      action: () => testEventAt(target),
+      disabled: existing === undefined,
+      icon: "play",
+      id: "test-event",
+      label: "이 이벤트 테스트",
+      testId: "event-layer-test-event",
+    },
   ];
+}
+
+function testEventAt(target: EventLayerContextMenuTarget): void {
+  const event = eventAtTarget(target);
+  if (!event || typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("oprn:test-play-window", {
+    detail: { kind: "selected-event", mapId: target.mapId, eventId: event.id },
+  }));
 }
 
 export function clearEventLayerClipboard(): void {

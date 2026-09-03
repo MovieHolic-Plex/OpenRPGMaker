@@ -19,7 +19,6 @@
 @import "./components/empty-state.css";
 @import "./components/grid-4.css";
 @import "./shell/shell-density.css";
-@import "./shell/editor-responsive-expert.css";
 @import "./shell/editor-welcome.css";
 @import "./editor/responsive-a.css";
 @import "./editor/inline-assist.css";
@@ -76,6 +75,8 @@
 @import "./shell/figma-editor.css";
 /* Basic/expert density after figma shell so icon-rail overflow/padding wins the cascade. */
 @import "./shell/editor-ui-modes.css";
+/* 스튜디오 바(톱바 한 줄·메뉴 팝업·보기 메뉴·캔버스 툴바)의 마지막 발언자 — 2026-09-03. */
+@import "./shell/studio-bar.modern.css";
 @import "./editor/village-info.css";
 @import "./editor/world-panel.css";
 @import "./editor/cluster-ai-modal.css";

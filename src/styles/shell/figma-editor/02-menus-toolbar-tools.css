@@ -5,10 +5,6 @@
     outline: none;
   }
 
-  .toolbar-collapsed .oprn-toolbar {
-    display: none;
-  }
-
   .oprn-menu-item {
     border-radius: var(--radius-s);
     color: var(--editor-text);
@@ -19,7 +15,6 @@
     transition: background var(--transition-fast), color var(--transition-fast);
   }
 
-  .editor-ui-mode-btn,
   .oprn-window-control {
     min-height: 32px;
   }

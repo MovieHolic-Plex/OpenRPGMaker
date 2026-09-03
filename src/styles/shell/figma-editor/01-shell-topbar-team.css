@@ -47,13 +47,6 @@
     margin-left: auto;
   }
 
-  .oprn-window-controls {
-    align-items: center;
-    display: inline-flex;
-    gap: 4px;
-    margin-left: 2px;
-  }
-
   .team-history-button,
   .team-identity-button,
   .quick-battle-test-button,
@@ -127,21 +120,10 @@
     color: var(--text-1);
   }
 
-  .quick-battle-test-glyph {
-    display: block;
-    font-size: 15px;
-    line-height: 1;
-  }
-
   .topbar-ai-settings-button {
     background: var(--accent-muted);
     border-color: var(--accent-border);
     color: var(--text-1);
-  }
-
-  .topbar-ai-settings-glyph {
-    font-size: 14px;
-    line-height: 1;
   }
 
   .team-topbar-icon {

@@ -264,11 +264,10 @@ describe("톱바 저장 상태 칩", () => {
     // Break: 칩을 끼우면서 트레일링 클러스터나 클래식 툴바 버튼이 밀려 사라진다.
     const topbar = fake(renderFreshTopbar());
 
+    // 열기·가져오기·저장본 다시 불러오기는 프로젝트 메뉴 항목이다(2026-09-03, 클래식 툴바 행 삭제).
     for (const testId of [
       "toolbar-save",
-      "toolbar-reload-db",
-      "toolbar-load",
-      "toolbar-import",
+      "menu-project",
       "topbar-test-play",
       "topbar-ai-settings",
       "editor-topbar-trailing",

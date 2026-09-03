@@ -8,8 +8,8 @@ test("tileset review confirmation persists canonical user metadata", async ({ pa
 
   const coachSkip = page.getByTestId("coach-mark-skip");
   if (await coachSkip.isVisible()) await coachSkip.click();
-  await page.getByTestId("menu-tools").click();
-  await page.getByTestId("menu-tools-database").click();
+  // 표준·전문가의 자료집 진입점은 톱바 버튼이다(2026-09-03). 초보만 도구 메뉴에 남는다.
+  await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-tab-tilesets").click();
   await page.getByTestId("tileset-section-tab-knowledge").click();
   await page.getByTestId("tileset-reaudit").click();

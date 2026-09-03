@@ -8,16 +8,16 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId("topbar-ai-settings")).toBeVisible();
 
+  // 맵 메뉴(2026-08-26)·게임 메뉴·클래식 툴바 행·작업 칩(2026-09-03)은 없다. 전문가의 도구 창은 인라인 버튼.
   for (const testId of [
     "menu-project",
-    "menu-map",
-    "menu-tools",
-    "menu-game",
+    "toolbar-save",
+    "toolbar-database",
+    "toolbar-resource-manager",
+    "toolbar-world",
     "menu-help",
-    "workspace-preset-toggle",
     "workspace-panels-button",
     "workspace-command-palette-button",
-    "oprn-toolbar",
     "topbar-test-play",
     "topbar-battle-test",
   ]) {

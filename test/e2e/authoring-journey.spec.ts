@@ -25,9 +25,9 @@ test("1024px launcher reaches real surfaces and journey stays a corner chip", as
   test.setTimeout(60_000);
   await boot(page);
 
-  for (const task of ["map", "event", "data", "test"]) {
-    await expect(page.getByTestId(`authoring-task-${task}`)).toBeVisible();
-  }
+  // 작업 칩은 2026-09-03 에 걷었다 — 자료집은 초보에서 도구 메뉴, ▶ 테스트는 톱바 오른쪽이 집이다.
+  await expect(page.getByTestId("authoring-task-launcher")).toHaveCount(0);
+  await expect(page.getByTestId("mode-play")).toBeVisible();
 
   const toggle = page.getByTestId("authoring-journey-toggle");
   await expect(toggle).toBeVisible();
@@ -38,11 +38,9 @@ test("1024px launcher reaches real surfaces and journey stays a corner chip", as
   expect(closedBox!.height).toBeLessThanOrEqual(48);
   expect(closedBox!.x + closedBox!.width).toBeLessThanOrEqual(1024);
 
-  await page.getByTestId("authoring-task-event").click();
+  await page.getByTestId("menu-tools").click();
+  await page.getByTestId("menu-tools-database").click();
   await expect(page.locator("body")).toHaveClass(/editor-ui-beginner/);
-  await page.getByTestId("authoring-task-map").click();
-  await expect(page.locator("body")).toHaveClass(/editor-ui-beginner/);
-  await page.getByTestId("authoring-task-data").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
   await page.getByTestId("database-modal-close").click();
 

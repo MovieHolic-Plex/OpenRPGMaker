@@ -6,14 +6,19 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/");
 
+  // 2026-09-03 스튜디오 바: 프로젝트 메뉴의 얼굴은 프로젝트 이름, 맵·게임 메뉴와 클래식 툴바 행은 없다.
+  // 전문가는 세계관·음악·찾기가 「도구 ▾」 메뉴 대신 인라인 아이콘 버튼이다.
   await expect(page.getByTestId("oprn-menu-bar")).toBeVisible();
-  await expect(page.getByTestId("menu-project")).toContainText("프로젝트");
-  await expect(page.getByTestId("menu-map")).toContainText("맵");
-  await expect(page.getByTestId("menu-tools")).toContainText("도구");
-  await expect(page.getByTestId("menu-game")).toContainText("게임");
+  await expect(page.getByTestId("menu-project")).toBeVisible();
+  await expect(page.getByTestId("menu-project")).toHaveAttribute("title", /^프로젝트 — /);
   await expect(page.getByTestId("menu-help")).toContainText("도움말");
+  for (const gone of ["menu-map", "menu-game", "menu-tools", "oprn-toolbar", "authoring-task-launcher"]) {
+    await expect(page.getByTestId(gone)).toHaveCount(0);
+  }
+  for (const inline of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
+    await expect(page.getByTestId(inline)).toBeVisible();
+  }
 
-  await expect(page.getByTestId("oprn-toolbar")).toBeVisible();
   await expect(page.getByTestId("toolbar-save")).toHaveAttribute("title", "프로젝트 저장 (Ctrl+S)");
   // 2026-08-30 헤더 용어 통일: title 은 언제나 uiCopy 정본이다(expert = technical 스타일).
   // 구 기대값 "자료 보관함"·"시연 실행" 은 하드코딩된 폐기 문구였다.

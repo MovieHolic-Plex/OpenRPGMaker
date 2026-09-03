@@ -19,44 +19,9 @@
   white-space: nowrap;
 }
 
-.editor-ui-mode-toggle {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  display: inline-flex;
-  flex: 0 0 auto;
-  gap: 2px;
-  margin-left: 12px;
-  padding: 0;
-}
 
-.editor-ui-mode-btn {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  color: var(--editor-text-muted, #5C5348);
-  cursor: pointer;
-  font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
-  height: 28px;
-  padding: 0 8px;
-  white-space: nowrap;
-}
 
-.editor-ui-mode-btn:hover,
-.editor-ui-mode-btn:focus-visible {
-  color: var(--editor-text, var(--text-1));
-  outline: none;
-}
 
-.editor-ui-mode-btn.is-active {
-  background: transparent;
-  box-shadow: none;
-  color: var(--editor-text, var(--text-1));
-  font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
 
 body.editor-ui-beginner .topbar-test-play,
 body.editor-ui-standard .topbar-test-play,
@@ -91,17 +56,7 @@ body.editor-ui-expert .topbar-test-play:focus-visible {
   font-size: 11px;
 }
 
-/* Classic RM toolbar is a legacy surface — expert only. */
-.classic-toolbar.is-legacy-surface {
-  opacity: 0.96;
-  border-top: 1px solid color-mix(in srgb, var(--editor-line, var(--border-subtle)) 70%, transparent);
-}
 
-/* Basic이 숨기는 건 expert 편집 툴바뿐 — play 복귀 툴바(uiDensity="play", menu.ts)는 양쪽 모드 표시. */
-body.editor-ui-beginner .classic-toolbar.is-legacy-surface[data-ui-density="expert"],
-body.editor-ui-standard .classic-toolbar.is-legacy-surface[data-ui-density="expert"] {
-  display: none !important;
-}
 
 /* ── Basic statusbar: keep layer / map / tool / tile / zoom / DB; hide expert-only detail ── */
 /* 타일(무엇을 칠하는지)·줌은 basic에서도 보여준다 — 편집에 필수정보. */
@@ -343,10 +298,6 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 
   body.editor-ui-beginner .editor-product-brand {
     margin-right: 6px;
-  }
-
-  body.editor-ui-beginner .editor-ui-mode-toggle {
-    margin-left: 4px;
   }
 
   body.editor-ui-beginner .topbar-test-play {
@@ -774,20 +725,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 /* ── 실제 저작 작업 · 패널 도킹 · 레이아웃 · 밀도 · ⌘K ─────────────────────── */
 
-.authoring-task-btn:hover,
-.authoring-task-btn:focus-visible {
-  background: color-mix(in srgb, var(--brand-blue) 9%, transparent);
-  box-shadow: inset 0 -2px 0 var(--brand-blue);
-}
 
-/* 작업 칩은 밑줄 탭이 아니라 하단 상태 바를 쓴다 — hover와 같은 시각 어휘를 유지한다. */
-.authoring-task-btn.is-active {
-  background: color-mix(in srgb, var(--brand-blue) 12%, transparent);
-  box-shadow: inset 0 -2px 0 var(--brand-blue);
-  color: var(--editor-text, var(--text-1));
-  font-weight: 700;
-  text-decoration: none;
-}
 
 /* 「▤ 보기」 — 글리프 + 글자. 글리프만 있던 때(2026-08-26~09-03)는 편집 모드의 유일한 진입점이
    장식으로 읽혔다. 글자는 다른 메뉴 항목(프로젝트·도구…)과 같은 14px 을 상속하고 글리프만 작게. */
@@ -798,10 +736,6 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   line-height: 1;
 }
 
-.workspace-panels-glyph {
-  font-size: 13px;
-  line-height: 1;
-}
 
 .workspace-panels-menu {
   gap: 1px;
@@ -846,9 +780,6 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   outline: none;
 }
 
-.workspace-density-item.is-active {
-  font-weight: 700;
-}
 
 /* ⌘K 칩 — 단축키를 모르면 커맨드 팔레트는 존재하지 않는 것과 같다. 키캡을 함께 보여준다. */
 .workspace-command-chip {
@@ -872,7 +803,6 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 @media (max-width: 1180px) {
   /* 좁은 화면에서는 키캡만 접는다 — 아이콘은 남겨 클릭 경로를 유지한다. */
   .workspace-command-chip-key { display: none; }
-  .authoring-task-btn { font-size: 11px; padding-inline: 6px; }
 }
 
 /* 저작 여정: 하단 풀폭 스트립 대신 캔버스 왼쪽 아래 아이콘. */
@@ -1048,4 +978,18 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 .authoring-journey-reference-repair {
   min-height: 24px;
   min-width: 24px;
+}
+
+/* ── 이관(2026-09-03, 구 shell/editor-responsive-expert.css) — AI 패널: 입력 행이 절대 잘리지 않게 ── */
+.ai-composer,
+.ai-composer-actions {
+  min-width: 0;
+}
+
+.ai-composer > textarea {
+  min-width: 0;
+}
+
+.ai-chat-send {
+  flex: 0 0 auto;
 }

@@ -239,8 +239,8 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     expect(commandIds).not.toContain("workspace-panel-maps");
     expect(commandIds).not.toContain("workspace-panel-maps-left");
     expect(commandIds).not.toContain("workspace-panel-maps-right");
-    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("화면 배치와 밀도");
-    expect(findByTestId(bodyRoot, "workspace-panels-menu")?.getAttribute("aria-label")).toBe("화면 배치와 밀도");
+    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("보기 — 편집 모드");
+    expect(findByTestId(bodyRoot, "workspace-panels-menu")?.getAttribute("aria-label")).toBe("보기 — 편집 모드");
     expect(findByTestId(bodyRoot, "workspace-panel-toggle-tiles")).toBeNull();
     expect(findByTestId(bodyRoot, "workspace-panel-toggle-maps")).toBeNull();
     expect(findByTestId(bodyRoot, "workspace-panel-row-tiles")).toBeNull();
@@ -256,7 +256,7 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
 
     const bodyRoot = fake(document.body as unknown as HTMLElement);
     const tilesToggle = findByTestId(bodyRoot, "workspace-panel-toggle-tiles");
-    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("패널 배치와 밀도");
+    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("보기 — 패널과 편집 모드");
     // 글리프만 있던 버튼은 편집 모드(초보/표준/전문가)의 유일한 진입점이면서 장식으로 읽혔다 —
     // 화면 글자 「보기」가 반드시 함께 있어야 한다.
     expect(findByTestId(bodyRoot, "workspace-panels-button")?.textContent).toContain("보기");

@@ -79,10 +79,9 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   expect(savedPage?.overlapForbidden).toBe(false);
   expect(savedPage?.movement.route?.skippable).toBe(true);
 
-  await editor.getByTestId("event-editor-ok").click();
-  await expect(editor).toBeHidden();
-  await expect(page.getByTestId("toolbar-event-test")).toBeEnabled();
-  await page.getByTestId("toolbar-event-test").click();
+  // 2026-09-03: 클래식 툴바의 「이벤트 테스트」 버튼은 사라졌다. 이 이벤트만 실행하는 집은 편집기 머리의
+  // 「테스트」(event-editor-test)와 이벤트 우클릭 메뉴의 「이 이벤트 테스트」다.
+  await editor.getByTestId("event-editor-test").click();
   const testWindow = page.getByTestId("test-play-window");
   await expect(testWindow).toBeVisible();
   await expect(page.getByTestId("test-play-window-title")).toContainText("이벤트 테스트");
@@ -90,11 +89,13 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await page.screenshot({ path: `${EVIDENCE_DIR}/control-2-selected-event-test-proof.png`, fullPage: true });
   await page.getByTestId("test-play-window-close").click();
   await expect(testWindow).toBeHidden();
+  await editor.getByTestId("event-editor-ok").click();
+  await expect(editor).toBeHidden();
 
   const report = {
     controls: {
       "1": "command toolbar copy, cut, undo, and redo worked on a selected command",
-      "2": "selected-event toolbar test opened an isolated test-play window and ran the selected event",
+      "2": "the editor's own 테스트 button opened an isolated test-play window and ran the selected event",
       "3": "overlapForbidden checkbox was enabled and persisted false",
       "5": "move-route skippable checkbox was enabled and persisted true",
       "6": "move-route Help opened an in-dialog help panel without closing the route editor",

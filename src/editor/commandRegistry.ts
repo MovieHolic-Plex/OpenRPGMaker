@@ -4,21 +4,18 @@ import { applyLayer } from "@/editor/hotkeys";
 import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
-import { getEditorChrome } from "@/editor/editorUiMode";
+import { getEditorChrome, setEditorUiMode, type EditorUiMode } from "@/editor/editorUiMode";
 import { dockZoneHasHost, isLeftDockPanelOffered } from "@/editor/workspace/leftDockPanels";
 import { allPanels } from "@/editor/workspace/panelRegistry";
-import { WORKSPACE_PRESETS, type WorkspaceDensity } from "@/editor/workspace/workspaceLayout";
-import {
-  moveWorkspacePanel,
-  setWorkspaceDensity,
-  setWorkspacePreset,
-  toggleWorkspacePanel,
-} from "@/editor/workspace/workspaceStore";
+import { moveWorkspacePanel, toggleWorkspacePanel } from "@/editor/workspace/workspaceStore";
 import { selectEditorMap } from "@/editor/mapSelection";
+import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { isBuildPaletteEnabled, setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
 import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar";
+import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
+import { saveProjectNow } from "@/editor/saveActions";
 import { uiLabel } from "@/editor/uiCopy";
 import type { MapId, Project } from "@/project/types";
 
@@ -33,15 +30,19 @@ export interface EditorCommand {
 
 // 라벨은 uiCopy 의 toolLabel 단일 원천. keywords 에는 **구 용어도 남긴다** —
 // 예전 이름(브러시·펜·지우개·스포이트)으로 검색하는 사용자를 막지 않는다.
-/** 밀도 3단 — 예전 모드 이름을 keywords 로 남겨 「초보/전문가」 검색이 계속 닿게 한다. */
-const DENSITY_COMMANDS: readonly {
-  readonly density: WorkspaceDensity;
+/**
+ * 편집 모드 3단. 2026-09-03 까지는 「화면: 밀도 — 안내/보통/촘촘」이었다 — 「보기」 메뉴가
+ * 같은 축을 「밀도」와 「편집 모드」 두 그룹으로 두 번 내놓던 때의 이름이다. 메뉴가 편집 모드
+ * 하나로 합쳐졌으니 팔레트도 같은 말을 쓴다. 옛 밀도 낱말은 keywords 로 남겨 검색은 계속 닿는다.
+ */
+const UI_MODE_COMMANDS: readonly {
+  readonly mode: EditorUiMode;
   readonly label: string;
   readonly keywords: readonly string[];
 }[] = [
-  { density: "guided", label: "안내", keywords: ["guided", "beginner", "초보", "안내"] },
-  { density: "comfortable", label: "보통", keywords: ["standard", "표준", "보통"] },
-  { density: "dense", label: "촘촘", keywords: ["expert", "dense", "전문가", "촘촘", "고밀도"] },
+  { mode: "beginner", label: "초보", keywords: ["guided", "beginner", "초보", "안내"] },
+  { mode: "standard", label: "표준", keywords: ["standard", "comfortable", "표준", "보통"] },
+  { mode: "expert", label: "전문가", keywords: ["expert", "dense", "전문가", "촘촘", "고밀도"] },
 ];
 
 const TOOL_COMMANDS: readonly { id: Tool; keywords: readonly string[]; hotkey: string }[] = [
@@ -86,22 +87,14 @@ export function listEditorCommands(): readonly EditorCommand[] {
     { id: "layer-lower", label: "레이어: 바닥", category: "레이어", keywords: ["lower", "타일", "바닥", "하위"], hotkey: "F5", run: () => applyLayer("lower") },
     { id: "layer-upper", label: "레이어: 덧그림", category: "레이어", keywords: ["upper", "오브젝트", "덧그림", "장식", "상위"], hotkey: "F6", run: () => applyLayer("upper") },
     { id: "layer-event", label: "레이어: 이벤트", category: "레이어", keywords: ["event", "이벤트"], hotkey: "F7", run: () => applyLayer("event") },
-    // 작업 프리셋 — 예전 「초보/표준/전문가」 모드 명령을 대체한다. 이 표면은 이름대로
-    // 도크 배치만 바꾼다. 작업 칩의 선택 표기도 「현재 레이아웃 프리셋」이라고 명시하므로,
-    // 데이터 모달이나 레이어 전환까지 몰래 실행하지 않는다. keywords 에 구 모드 이름을 남긴다.
-    ...WORKSPACE_PRESETS.map((preset): EditorCommand => ({
-      id: `workspace-preset-${preset.id}`,
-      label: `화면: 프리셋 — ${preset.label}`,
+    // 도크 프리셋 명령(「화면: 프리셋 — 맵 중심/이벤트 중심/데이터 중심」)은 2026-09-03 에 걷었다.
+    // 톱바 작업 칩과 함께 사라진 개념이고, 패널 표시는 아래 「패널 — 열기/닫기」 명령이 이미 다룬다.
+    ...UI_MODE_COMMANDS.map(({ mode, label, keywords }): EditorCommand => ({
+      id: `editor-ui-mode-${mode}`,
+      label: `화면: 편집 모드 — ${label}`,
       category: "화면",
-      keywords: ["preset", "workspace", "프리셋", "레이아웃", preset.label, "모드", "초보", "표준", "전문가"],
-      run: () => setWorkspacePreset(preset.id),
-    })),
-    ...DENSITY_COMMANDS.map(({ density, label, keywords }): EditorCommand => ({
-      id: `workspace-density-${density}`,
-      label: `화면: 밀도 — ${label}`,
-      category: "화면",
-      keywords: ["density", "밀도", label, ...keywords],
-      run: () => setWorkspaceDensity(density),
+      keywords: ["mode", "density", "모드", "밀도", "편집 모드", label, ...keywords],
+      run: () => setEditorUiMode(mode),
     })),
     // 패널 도킹 — ⌘K 에서 좌/우 도크로 바로 보낸다. 고정 패널, 현재 크롬에서 렌더되지
     // 않는 패널, 호스트 없는 도크는 명령 자체를 내놓지 않고 열린 팔레트가 낡아도 다시 막는다.
@@ -132,17 +125,41 @@ export function listEditorCommands(): readonly EditorCommand[] {
     }),
     {
       id: "test-play",
-      label: "화면: 시연 실행 실행",
+      label: `화면: ${uiLabel("testPlay")}`,
       category: "화면",
-      keywords: ["play", "run", "실행", "테스트"],
+      keywords: ["play", "run", "실행", "테스트", "시연"],
       run: () => runAuthoringTask("test"),
     },
     {
-      id: "open-database",
-      label: "화면: 데이터베이스 열기",
+      id: "save-project",
+      label: "화면: 프로젝트 저장",
       category: "화면",
-      keywords: ["database", "db", "데이터베이스", "액터", "스킬"],
+      keywords: ["save", "저장", "ctrl+s"],
+      hotkey: "Ctrl+S",
+      run: () => { void saveProjectNow(); },
+    },
+    {
+      id: "open-database",
+      label: `화면: ${uiLabel("database", getEditorChrome().jargonStyle)} 열기`,
+      category: "화면",
+      keywords: ["database", "db", "데이터베이스", "자료집", "액터", "스킬"],
       run: () => runAuthoringTask("data"),
+    },
+    // 음악·효과음과 맵·이벤트 찾기는 2026-09-03 까지 팔레트에 없었다 — 표준 모드에서는 「도구 ▾」
+    // 메뉴 두 번 클릭이 유일한 길이었다. 팔레트는 한 집 규칙의 예외(전체 검색)라 여기 둔다.
+    {
+      id: "open-audio",
+      label: `화면: ${uiLabel("audio")} 열기`,
+      category: "화면",
+      keywords: ["audio", "bgm", "se", "sound", "music", "음악", "효과음", "소리"],
+      run: () => openAudioTestDialog(),
+    },
+    {
+      id: "open-map-event-search",
+      label: `화면: ${uiLabel("mapEventSearch")}`,
+      category: "화면",
+      keywords: ["search", "find", "event", "찾기", "검색", "이벤트"],
+      run: () => openMapEventSearchModal(),
     },
     {
       id: "open-world",

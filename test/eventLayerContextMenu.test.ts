@@ -41,12 +41,47 @@ describe("event layer context menu", () => {
       "주인공 시작 위치 설정",
       "탈것 시작 위치 설정...",
       "여기서 테스트",
+      "이 이벤트 테스트",
     ]);
     expect(items.find((item) => item.id === "test-here")?.testId).toBe("event-layer-test-here");
+    expect(items.find((item) => item.id === "test-event")?.testId).toBe("event-layer-test-event");
     expect(items.find((item) => item.id === "create-event")?.testId).toBe("event-layer-create-event");
     expect(items.find((item) => item.id === "cut")?.disabled).toBe(true);
     expect(items.find((item) => item.id === "paste")?.disabled).toBe(true);
+    // 빈 칸에는 테스트할 이벤트가 없다 — 항목은 보이되 눌리지 않는다(2026-09-03 톱바 「이벤트 테스트」 후계).
+    expect(items.find((item) => item.id === "test-event")?.disabled).toBe(true);
     expect(items.find((item) => item.id === "vehicle-start")?.disabled).toBeUndefined();
+  });
+
+  it("「이 이벤트 테스트」는 이벤트 칸에서만 살고 선택 이벤트 테스트 창을 요청한다", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const event: GameEvent = {
+      id: "event-under-cursor",
+      x: target.x,
+      y: target.y,
+      trigger: { kind: "action" },
+      commands: [{ kind: "text", body: "hi" }],
+      pages: [],
+    };
+    store.update((draft) => {
+      draft.maps[mapId]!.events.push(event);
+    });
+    // node 환경에는 window 가 없다 — 테스트 창 요청은 window 이벤트라 EventTarget 하나를 세워 받는다.
+    const requests: unknown[] = [];
+    const fakeWindow = new EventTarget();
+    fakeWindow.addEventListener("oprn:test-play-window", (raw) => {
+      requests.push((raw as CustomEvent).detail);
+    });
+    vi.stubGlobal("window", fakeWindow);
+    try {
+      const item = eventLayerContextMenuItems(target).find((candidate) => candidate.id === "test-event");
+      expect(item?.disabled).toBe(false);
+      item?.action();
+      expect(requests).toEqual([{ kind: "selected-event", mapId, eventId: "event-under-cursor" }]);
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("sets the current tile as the player starting position", () => {

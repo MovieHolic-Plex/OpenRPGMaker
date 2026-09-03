@@ -87,12 +87,8 @@ test("battle scene fills its host without clipping on the battle-test route", as
   test.setTimeout(120_000);
   await page.goto("/?project=rpg-zzu-quest-demo");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
-  const toolbar = page.getByTestId("toolbar-battle-test");
-  if ((await toolbar.count()) > 0 && (await toolbar.isVisible())) await toolbar.click({ force: true });
-  else {
-    await page.getByTestId("menu-game").click({ force: true });
-    await page.getByTestId("menu-game-battle-test").click({ force: true });
-  }
+  // 2026-09-03: 게임 메뉴·클래식 툴바 행이 사라졌다 — 전투 테스트의 집은 톱바 ⚔(topbar-battle-test) 하나다.
+  await page.getByTestId("topbar-battle-test").click({ force: true });
   await expect(page.getByTestId("battle-scene")).toBeVisible({ timeout: 25_000 });
   await page.waitForTimeout(800);
 

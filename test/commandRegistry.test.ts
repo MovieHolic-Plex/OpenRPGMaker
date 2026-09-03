@@ -3,8 +3,8 @@ import { listEditorCommands, listMapCommands, matchEditorCommands } from "@/edit
 import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests, getEditorUiMode } from "@/editor/editorUiMode";
 import { allPanels } from "@/editor/workspace/panelRegistry";
-import { WORKSPACE_PRESETS } from "@/editor/workspace/workspaceLayout";
-import { getWorkspaceLayout, resetWorkspaceForTests } from "@/editor/workspace/workspaceStore";
+import { getWorkspaceLayout, resetWorkspaceForTests, updateWorkspaceLayout } from "@/editor/workspace/workspaceStore";
+import { layoutFromPreset } from "@/editor/workspace/workspaceLayout";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
@@ -61,33 +61,27 @@ describe("commandRegistry", () => {
     expect(editorState.get().layer).toBe("lower");
   });
 
-  it("레이아웃 프리셋은 도크만 바꾸고 현재 밀도를 보존한다", () => {
+  it("편집 모드 명령이 모드를 바꾸고 도크 구성은 건드리지 않는다", () => {
+    // 2026-09-03: 「화면: 밀도 — 안내/보통/촘촘」과 「화면: 프리셋 — …」 명령을 걷었다. 밀도는 편집 모드와
+    // 같은 축의 두 번째 이름이었고, 프리셋은 톱바 작업 칩과 함께 사라진 개념이다.
     const commands = listEditorCommands();
-    commands.find((c) => c.id === "workspace-preset-data")!.run();
-    expect(getWorkspaceLayout().presetId).toBe("data");
-    expect(getWorkspaceLayout().docks.left).toEqual([]);
-    expect(getEditorUiMode()).toBe("beginner");
-
-    commands.find((c) => c.id === "workspace-preset-map")!.run();
-    expect(getWorkspaceLayout().docks.left).toEqual(["tiles", "maps"]);
-    expect(getEditorUiMode()).toBe("beginner");
-  });
-
-  it("밀도 명령이 프리셋 구성을 건드리지 않고 밀도만 바꾼다", () => {
-    const commands = listEditorCommands();
-    commands.find((c) => c.id === "workspace-preset-map")!.run();
     const before = getWorkspaceLayout().docks;
-    commands.find((c) => c.id === "workspace-density-guided")!.run();
+    commands.find((c) => c.id === "editor-ui-mode-expert")!.run();
+    expect(getEditorUiMode()).toBe("expert");
+    expect(getWorkspaceLayout().density).toBe("dense");
+    expect(getWorkspaceLayout().docks).toEqual(before);
+    commands.find((c) => c.id === "editor-ui-mode-beginner")!.run();
     expect(getEditorUiMode()).toBe("beginner");
     expect(getWorkspaceLayout().density).toBe("guided");
-    expect(getWorkspaceLayout().docks).toEqual(before);
+    expect(commands.some((c) => c.id.startsWith("workspace-preset-"))).toBe(false);
+    expect(commands.some((c) => c.id.startsWith("workspace-density-"))).toBe(false);
   });
 
   it("패널 명령이 도크를 옮기고 닫는다", () => {
     resetEditorUiModeForTests("standard");
     installDockHosts();
     const commands = listEditorCommands();
-    commands.find((c) => c.id === "workspace-preset-map")!.run();
+    updateWorkspaceLayout(layoutFromPreset("map"));
     commands.find((c) => c.id === "workspace-panel-tiles-right")!.run();
     expect(getWorkspaceLayout().docks.left).toEqual(["maps"]);
     expect(getWorkspaceLayout().docks.right).toContain("tiles");
@@ -116,12 +110,14 @@ describe("commandRegistry", () => {
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toEqual(["tiles", "maps"]);
   });
 
-  // 예전 이름으로 검색하던 손을 막지 않는다.
-  it("구 모드 이름으로도 프리셋·밀도 명령이 검색된다", () => {
+  // 예전 이름(밀도 낱말)으로 검색하던 손을 막지 않는다.
+  it("구 밀도 이름으로도 편집 모드 명령이 검색된다", () => {
     const commands = listEditorCommands();
-    expect(matchEditorCommands("전문가", commands).some((c) => c.id === "workspace-density-dense")).toBe(true);
-    expect(matchEditorCommands("초보", commands).some((c) => c.id === "workspace-density-guided")).toBe(true);
-    expect(matchEditorCommands("모드", commands).some((c) => c.id.startsWith("workspace-preset-"))).toBe(true);
+    expect(matchEditorCommands("전문가", commands).some((c) => c.id === "editor-ui-mode-expert")).toBe(true);
+    expect(matchEditorCommands("촘촘", commands).some((c) => c.id === "editor-ui-mode-expert")).toBe(true);
+    expect(matchEditorCommands("초보", commands).some((c) => c.id === "editor-ui-mode-beginner")).toBe(true);
+    expect(matchEditorCommands("안내", commands).some((c) => c.id === "editor-ui-mode-beginner")).toBe(true);
+    expect(matchEditorCommands("모드", commands).filter((c) => c.id.startsWith("editor-ui-mode-"))).toHaveLength(3);
   });
 
   it("맵 명령은 주입된 select를 호출한다", () => {
@@ -138,6 +134,10 @@ describe("commandRegistry", () => {
     const requiredIds = [
       "open-world",
       "open-resources",
+      // 2026-09-03: 표준 모드에서 도구 메뉴 두 번 클릭이 유일한 길이던 셋에 팔레트 길을 낸다.
+      "open-audio",
+      "open-map-event-search",
+      "save-project",
       "map-screenshot",
       "build-palette",
       // 구 `drawer-map` / `drawer-tile` / `drawer-event` 는 2026-08-26 에 삭제됐다.
@@ -153,16 +153,13 @@ describe("commandRegistry", () => {
     expect(commands.filter((command) => requiredIds.includes(command.id)).map((command) => command.id).sort()).toEqual([...requiredIds].sort());
   });
 
-  it("워크스페이스 명령이 프리셋 3개 · 밀도 3개 · 패널마다 3개씩 정확히 한 번 등록된다", () => {
+  it("워크스페이스 명령이 편집 모드 3개 · 패널마다 3개씩 정확히 한 번 등록된다", () => {
     resetEditorUiModeForTests("standard");
     installDockHosts();
     const ids = listEditorCommands().map((command) => command.id);
     expect(new Set(ids).size).toBe(ids.length);
-    for (const preset of WORKSPACE_PRESETS) {
-      expect(ids.filter((id) => id === `workspace-preset-${preset.id}`)).toHaveLength(1);
-    }
-    for (const density of ["guided", "comfortable", "dense"]) {
-      expect(ids.filter((id) => id === `workspace-density-${density}`)).toHaveLength(1);
+    for (const mode of ["beginner", "standard", "expert"]) {
+      expect(ids.filter((id) => id === `editor-ui-mode-${mode}`)).toHaveLength(1);
     }
     for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
       expect(ids).toContain(`workspace-panel-${panel.id}`);

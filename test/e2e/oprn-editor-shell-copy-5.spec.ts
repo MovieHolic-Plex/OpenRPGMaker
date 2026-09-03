@@ -5,11 +5,12 @@ test("editor copies the first five RM2000 workbench shell affordances", async ({
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&rm2kShell=1");
 
+  // 2026-09-03 스튜디오 바 — 한 줄. 프로젝트 이름(메뉴)·저장·자료집이 왼쪽, ▶ 테스트가 오른쪽에 있다.
   await expect(page.getByTestId("oprn-menu-bar")).toBeVisible();
-  await expect(page.getByTestId("oprn-menu-bar")).toContainText("프로젝트");
-  await expect(page.getByTestId("oprn-menu-bar")).toContainText("맵");
-  await expect(page.getByTestId("oprn-toolbar-row-edit")).toBeVisible();
+  await expect(page.getByTestId("menu-project")).toBeVisible();
+  await expect(page.getByTestId("oprn-toolbar")).toHaveCount(0);
   await expect(page.getByTestId("toolbar-save")).toBeVisible();
+  await expect(page.getByTestId("toolbar-database")).toBeVisible();
   await expect(page.getByTestId("mode-play")).toBeVisible();
 
   await expect(page.getByTestId("left-palette-root")).toBeVisible();

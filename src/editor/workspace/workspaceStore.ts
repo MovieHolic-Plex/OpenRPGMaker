@@ -2,25 +2,21 @@
 // 워크스페이스 레이아웃의 살아 있는 상태 + `oprn:workspace:v1` 저장.
 //
 // 밀도(density)는 여기서 **소유하지 않는다** — `editorUiMode` 가 원천이고 이 모듈은 읽기만
-// 한다. 밀도를 바꾸는 요청은 `setEditorUiMode` 로 넘긴다. 그래야 커맨드 팔레트의
-// 「전문가 모드」 명령이나 코치마크가 모드를 직접 바꿔도 두 값이 갈라지지 않는다.
+// 한다. 편집 모드를 바꾸는 표면(「보기」 메뉴·Ctrl+K)은 `setEditorUiMode` 를 직접 부른다.
+// 2026-09-03 까지 있던 `setWorkspaceDensity`(밀도 이름으로 같은 일을 하던 두 번째 함수)와
+// `setWorkspacePreset`(톱바 작업 칩이 부르던 도크 프리셋)은 그 표면들과 함께 걷었다.
 
-import { getEditorUiMode, setEditorUiMode } from "@/editor/editorUiMode";
+import { getEditorUiMode } from "@/editor/editorUiMode";
 import type { DockZone, PanelId } from "@/editor/workspace/panelRegistry";
 import {
   closePanel,
   densityForUiMode,
-  layoutFromPreset,
   movePanel,
   parseWorkspaceLayout,
-  presetById,
   reopenPanel,
   serializeWorkspaceLayout,
-  uiModeForDensity,
   WORKSPACE_STORAGE_KEY,
-  type WorkspaceDensity,
   type WorkspaceLayout,
-  type WorkspacePresetId,
 } from "@/editor/workspace/workspaceLayout";
 
 type Listener = () => void;
@@ -78,23 +74,6 @@ export function updateWorkspaceLayout(next: WorkspaceLayout): void {
   current = withLiveDensity(next);
   persist(current);
   notify();
-}
-
-/**
- * 프리셋은 도크 구성만 바꾼다. 현재 밀도/EditorUiMode는 사용자의 별도 선택이므로 보존한다.
- */
-export function setWorkspacePreset(id: WorkspacePresetId): void {
-  const preset = presetById(id);
-  current = { ...layoutFromPreset(preset.id), density: densityForUiMode(getEditorUiMode()) };
-  persist(current);
-  notify();
-}
-
-/** 밀도만 바꾼다. 프리셋 구성은 건드리지 않는다 — 두 축은 독립이다. */
-export function setWorkspaceDensity(density: WorkspaceDensity): void {
-  const targetMode = uiModeForDensity(density);
-  if (targetMode === getEditorUiMode()) return;
-  setEditorUiMode(targetMode);
 }
 
 export function moveWorkspacePanel(panelId: PanelId, zone: DockZone): void {

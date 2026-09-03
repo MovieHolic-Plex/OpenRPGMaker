@@ -4,7 +4,6 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const TOOLBAR_COLLAPSED_KEY = "oprn:toolbar-collapsed";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -88,34 +87,14 @@ afterEach(() => {
 });
 
 describe("상단 창 컨트롤", () => {
-  it("툴바 접기 버튼이 body 클래스와 localStorage를 토글한다", () => {
+  it("툴바 접기 버튼은 없다 — 접을 두 번째 툴바 행이 사라졌다(2026-09-03)", () => {
+    // Break: 편집 모드 클래식 툴바 행이 되살아나 「─」 접기 버튼과 함께 돌아온다.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
-    const collapse = findByTestId(fakeElement(topbar), "window-toolbar-collapse");
-    if (!collapse) throw new Error("window-toolbar-collapse button missing");
 
-    collapse.click();
-
-    expect(document.body.classList.contains("toolbar-collapsed")).toBe(true);
-    expect(storage.getItem(TOOLBAR_COLLAPSED_KEY)).toBe("1");
-    expect(collapse.textContent).toBe("▾");
-
-    collapse.click();
-
+    expect(findByTestId(fakeElement(topbar), "window-toolbar-collapse")).toBeNull();
+    expect(findByTestId(fakeElement(topbar), "oprn-toolbar")).toBeNull();
     expect(document.body.classList.contains("toolbar-collapsed")).toBe(false);
-    expect(storage.getItem(TOOLBAR_COLLAPSED_KEY)).toBe("0");
-    expect(collapse.textContent).toBe("─");
-  });
-
-  it("저장된 툴바 접기 상태를 renderTopbar에서 복원한다", () => {
-    storage.setItem(TOOLBAR_COLLAPSED_KEY, "1");
-    const topbar = document.createElement("div");
-
-    renderTopbar(topbar);
-
-    const collapse = findByTestId(fakeElement(topbar), "window-toolbar-collapse");
-    expect(document.body.classList.contains("toolbar-collapsed")).toBe(true);
-    expect(collapse?.textContent).toBe("▾");
   });
 
   it("전체화면 버튼이 requestFullscreen을 호출한다", () => {

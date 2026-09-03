@@ -16,7 +16,8 @@ async function openSearch(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  // toolbar-search 는 전문가 인라인 버튼이다(표준은 도구 ▾ 메뉴). 저장 키는 oprn: 접두다.
+  await page.addInitScript(() => window.localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("맵·이벤트 찾기는 단일 입력, 범위 세그먼트, 종류별 결과를 제공한다", async ({ page }, testInfo) => {

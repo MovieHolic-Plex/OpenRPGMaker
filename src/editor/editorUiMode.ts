@@ -16,10 +16,11 @@ export const DEFAULT_EDITOR_UI_MODE: EditorUiMode = "standard";
 // return(아이콘 레일)으로 갈라진다.
 export type EditorChromeVisibility = {
   readonly mapTree: boolean;
-  readonly classicToolbar: boolean;
+  // 톱바 도구 자리 — true 면 세계관·음악·찾기가 인라인 아이콘 버튼(1클릭), false 면 「도구 ▾」 메뉴.
+  // 2026-09-03 까지는 `classicToolbar`(전문가 전용 두 번째 툴바 행, 15개 중 14개가 메뉴 복제)였다.
+  readonly toolStrip: boolean;
   readonly canvasChromeDense: boolean;
   readonly helpMenu: boolean;
-  readonly gameMenuLabel: string;
   // 48px 아이콘 레일 좌패널(basicLeftRail) — 아니면 일반 팔레트/맵트리 컬럼.
   readonly paletteRail: boolean;
   // 좌패널 폭 상한(px). null이면 상한 없음(사용자 저장값 그대로).
@@ -46,11 +47,10 @@ export type EditorChromeVisibility = {
 const BEGINNER_CHROME: EditorChromeVisibility = {
   // 맵 전환은 아이콘 레일의 맵 플라이아웃(renderBasicLeftRail)에서 제공 — 좌측 맵트리 컬럼은 숨긴다.
   mapTree: false,
-  classicToolbar: false,
+  toolStrip: false,
   canvasChromeDense: false,
   // 도움말(단축키 표)은 초보용 모드에서 더 필요하다 — 기본 모드에서도 노출.
   helpMenu: true,
-  gameMenuLabel: "실행",
   paletteRail: true,
   leftPanelMaxWidthPx: null,
   layerTermStyle: "plain",
@@ -65,10 +65,9 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
 
 const STANDARD_CHROME: EditorChromeVisibility = {
   mapTree: true,
-  classicToolbar: false,
+  toolStrip: false,
   canvasChromeDense: true,
   helpMenu: true,
-  gameMenuLabel: "게임",
   paletteRail: false,
   leftPanelMaxWidthPx: 300,
   layerTermStyle: "technical",
@@ -83,10 +82,9 @@ const STANDARD_CHROME: EditorChromeVisibility = {
 
 const EXPERT_CHROME: EditorChromeVisibility = {
   mapTree: true,
-  classicToolbar: true,
+  toolStrip: true,
   canvasChromeDense: true,
   helpMenu: true,
-  gameMenuLabel: "게임",
   paletteRail: false,
   leftPanelMaxWidthPx: 320,
   layerTermStyle: "technical",
