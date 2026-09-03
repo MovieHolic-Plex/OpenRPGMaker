@@ -11,7 +11,10 @@ import type {
   BattleAnimationTone,
 } from "@/project/types";
 
-const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
+const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5, assetScale: 2 };
+/** 시트 배율 허용 범위. 0.125 = 1536px 시트가 192 논리 px, 8 = 24px 시트가 192 논리 px. */
+const MIN_ASSET_SCALE = 0.125;
+const MAX_ASSET_SCALE = 8;
 const DEFAULT_ANIMATION_TONE: BattleAnimationTone = { red: 255, green: 255, blue: 255, gray: 0 };
 
 export function normalizeBattleAnimationRecord(record: Partial<BattleAnimationRecord> & Pick<BattleAnimationRecord, "id" | "name">): BattleAnimationRecord {
@@ -33,7 +36,14 @@ function normalizeAnimationSheet(sheet: Partial<BattleAnimationSheet> | undefine
     frameWidth: clampInteger(sheet?.frameWidth ?? DEFAULT_ANIMATION_SHEET.frameWidth, 1, 640),
     frameHeight: clampInteger(sheet?.frameHeight ?? DEFAULT_ANIMATION_SHEET.frameHeight, 1, 640),
     columns: clampInteger(sheet?.columns ?? DEFAULT_ANIMATION_SHEET.columns, 1, 20),
+    assetScale: normalizeAssetScale(sheet?.assetScale),
   };
+}
+
+/** 없거나 수가 아니면 320 시대 기본값(2). 있으면 범위 안으로 접는다 — 소수를 보존해야 하므로 정수 clamp 를 쓰지 않는다. */
+function normalizeAssetScale(value: number | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return DEFAULT_ANIMATION_SHEET.assetScale!;
+  return Math.min(MAX_ASSET_SCALE, Math.max(MIN_ASSET_SCALE, value));
 }
 
 function normalizeAnimationFrames(frames: readonly Partial<BattleAnimationFrame>[] | undefined): BattleAnimationFrame[] {

@@ -11,6 +11,7 @@
 // 타이머 수명은 하드룰이다(커밋 2ed96476 회귀). 각 스테이지 루트의 컨트롤러를
 // WeakMap 에 등록하고, DOM 을 교체·제거하는 소유자가 범위 기반 stop/resume 헬퍼를 호출한다.
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { battleAnimationSheetRmScale } from "@/player/battleAnimationPlayback";
 import {
   SHOW_ANIMATION_FRAME_MS,
   playShowAnimation,
@@ -54,8 +55,10 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
   }
 
   const sheet = animation.sheet ?? DEFAULT_ANIMATION_SHEET;
-  const frameWidth = positiveNumber(sheet.frameWidth, DEFAULT_ANIMATION_SHEET.frameWidth);
-  const frameHeight = positiveNumber(sheet.frameHeight, DEFAULT_ANIMATION_SHEET.frameHeight);
+  // 스테이지는 RM px 좌표계 — 시트 배율(레거시 1, 384px 고해상도 0.25)로 96px 셀에 맞춘다.
+  const rmScale = battleAnimationSheetRmScale(sheet);
+  const frameWidth = positiveNumber(sheet.frameWidth, DEFAULT_ANIMATION_SHEET.frameWidth) * rmScale;
+  const frameHeight = positiveNumber(sheet.frameHeight, DEFAULT_ANIMATION_SHEET.frameHeight) * rmScale;
   const columns = Math.max(1, Math.floor(positiveNumber(sheet.columns, DEFAULT_ANIMATION_SHEET.columns)));
 
   const cells = el("div", {

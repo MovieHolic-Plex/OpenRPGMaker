@@ -5,6 +5,7 @@ import { playAudioCommand } from "@/player/audio";
 import {
   battleAnimationDurationMs,
   battleAnimationFrameDurationMs,
+  battleAnimationSheetRmScale,
 } from "@/player/battleAnimationPlayback";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import type { StepResult } from "@/player/interpreter";
@@ -131,7 +132,9 @@ function renderFrame(
     const sprite = scene.add.sprite(cell.x, cell.y, textureKey, frameName(cell.pattern));
     sprite.setOrigin(0.5, 0.5);
     sprite.setAlpha(Math.max(0, Math.min(255, cell.opacity ?? 255)) / 255);
-    sprite.setScale(Math.max(1, cell.zoom ?? 100) / 100);
+    // 맵은 320×240 RM px 좌표계다. 96px 레거시 시트는 그대로(1), 384px 고해상도 시트는 0.25 로
+    // 같은 96 맵 px 를 차지한다. 셀 zoom 은 그 위에 곱한다.
+    sprite.setScale((Math.max(1, cell.zoom ?? 100) / 100) * battleAnimationSheetRmScale(record.sheet));
     container.add(sprite);
   }
 }

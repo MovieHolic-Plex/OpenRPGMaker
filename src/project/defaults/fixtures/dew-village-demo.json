@@ -67237,7 +67237,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 5
+          "columns": 5,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67303,7 +67304,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 5
+          "columns": 5,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67369,7 +67371,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 5
+          "columns": 5,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67430,7 +67433,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67516,7 +67520,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67594,7 +67599,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67672,7 +67678,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67750,7 +67757,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67828,7 +67836,8 @@
         "sheet": {
           "frameWidth": 96,
           "frameHeight": 96,
-          "columns": 4
+          "columns": 4,
+          "assetScale": 2
         },
         "scope": "singleTarget",
         "position": "center",
@@ -67904,9 +67913,10 @@
         "name": "강철 베기",
         "resourceId": "generated-battle-anim-slash-steel",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -68036,9 +68046,10 @@
         "name": "화염 폭발",
         "resourceId": "generated-battle-anim-fire-burst",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -68195,9 +68206,10 @@
         "name": "얼음 파쇄",
         "resourceId": "generated-battle-anim-ice-shatter",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -68346,9 +68358,10 @@
         "name": "번개 강타",
         "resourceId": "generated-battle-anim-thunder-strike",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -68505,9 +68518,10 @@
         "name": "물기둥",
         "resourceId": "generated-battle-anim-water-column",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -68656,9 +68670,10 @@
         "name": "바람 칼날",
         "resourceId": "generated-battle-anim-wind-slice",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -68807,9 +68822,10 @@
         "name": "대지 창",
         "resourceId": "generated-battle-anim-earth-spike",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -68953,9 +68969,10 @@
         "name": "회복 빛",
         "resourceId": "generated-battle-anim-heal-bloom",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -69104,9 +69121,10 @@
         "name": "독침",
         "resourceId": "generated-battle-anim-poison-mist",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -69255,9 +69273,10 @@
         "name": "마법 충격",
         "resourceId": "generated-battle-anim-arcane-nova",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "screen",
@@ -69269,7 +69288,7 @@
                 "pattern": 0,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69281,7 +69300,7 @@
                 "pattern": 1,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69293,7 +69312,7 @@
                 "pattern": 2,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69305,7 +69324,7 @@
                 "pattern": 3,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69317,7 +69336,7 @@
                 "pattern": 4,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69329,7 +69348,7 @@
                 "pattern": 5,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69341,7 +69360,7 @@
                 "pattern": 6,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69353,7 +69372,7 @@
                 "pattern": 7,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69365,7 +69384,7 @@
                 "pattern": 8,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69377,7 +69396,7 @@
                 "pattern": 9,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69389,7 +69408,7 @@
                 "pattern": 10,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69401,7 +69420,7 @@
                 "pattern": 11,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -69438,9 +69457,10 @@
         "name": "몸통박치기 충격",
         "resourceId": "generated-battle-anim-tackle-impact",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -69570,9 +69590,10 @@
         "name": "발톱 할퀴기",
         "resourceId": "generated-battle-anim-claw-rake",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -69697,9 +69718,10 @@
         "name": "물어뜯기",
         "resourceId": "generated-battle-anim-bite-crunch",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -69829,9 +69851,10 @@
         "name": "에너지 투사체",
         "resourceId": "generated-battle-anim-projectile-shot",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -69956,9 +69979,10 @@
         "name": "잎날 난사",
         "resourceId": "generated-battle-anim-leaf-volley",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -70107,9 +70131,10 @@
         "name": "염동 파동",
         "resourceId": "generated-battle-anim-psychic-wave",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -70258,9 +70283,10 @@
         "name": "암흑 파동",
         "resourceId": "generated-battle-anim-shadow-pulse",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -70409,9 +70435,10 @@
         "name": "성광",
         "resourceId": "generated-battle-anim-holy-beam",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -70560,9 +70587,10 @@
         "name": "수면 가루",
         "resourceId": "generated-battle-anim-sleep-dust",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -70711,9 +70739,10 @@
         "name": "강화 오라",
         "resourceId": "generated-battle-anim-power-aura",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -70862,9 +70891,10 @@
         "name": "방어 장벽",
         "resourceId": "generated-battle-anim-guard-barrier",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -71013,9 +71043,10 @@
         "name": "포획 봉인",
         "resourceId": "generated-battle-anim-capture-seal",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -71193,9 +71224,10 @@
         "name": "치명타 폭발",
         "resourceId": "generated-battle-anim-critical-burst",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -71325,9 +71357,10 @@
         "name": "음파 충격",
         "resourceId": "generated-battle-anim-sonic-wave",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "center",
@@ -71452,9 +71485,10 @@
         "name": "생명력 흡수",
         "resourceId": "generated-battle-anim-drain-orbs",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -71603,9 +71637,10 @@
         "name": "부활의 빛",
         "resourceId": "generated-battle-anim-revive-rise",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "feet",
@@ -71754,9 +71789,10 @@
         "name": "정화의 반짝임",
         "resourceId": "generated-battle-anim-cleanse-sparkle",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -71905,9 +71941,10 @@
         "name": "마비 속박",
         "resourceId": "generated-battle-anim-paralysis-bind",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -72056,9 +72093,10 @@
         "name": "암흑 장막",
         "resourceId": "generated-battle-anim-blind-veil",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -72207,9 +72245,10 @@
         "name": "혼란 나선",
         "resourceId": "generated-battle-anim-confusion-spiral",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "head",
@@ -72358,9 +72397,10 @@
         "name": "침묵 봉인",
         "resourceId": "generated-battle-anim-silence-lock",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 10
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 10,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -72509,9 +72549,10 @@
         "name": "소환 차원문",
         "resourceId": "generated-battle-anim-summon-portal",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "screen",
@@ -72523,7 +72564,7 @@
                 "pattern": 0,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72535,7 +72576,7 @@
                 "pattern": 1,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72547,7 +72588,7 @@
                 "pattern": 2,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72559,7 +72600,7 @@
                 "pattern": 3,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72571,7 +72612,7 @@
                 "pattern": 4,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72583,7 +72624,7 @@
                 "pattern": 5,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72595,7 +72636,7 @@
                 "pattern": 6,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72607,7 +72648,7 @@
                 "pattern": 7,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72619,7 +72660,7 @@
                 "pattern": 8,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72631,7 +72672,7 @@
                 "pattern": 9,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72643,7 +72684,7 @@
                 "pattern": 10,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72655,7 +72696,7 @@
                 "pattern": 11,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72689,9 +72730,10 @@
         "name": "연막 소멸",
         "resourceId": "generated-battle-anim-smoke-vanish",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 8
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 8,
+          "assetScale": 0.5
         },
         "scope": "singleTarget",
         "position": "center",
@@ -72806,9 +72848,10 @@
         "name": "운석 낙하",
         "resourceId": "generated-battle-anim-meteor-fall",
         "sheet": {
-          "frameWidth": 96,
-          "frameHeight": 96,
-          "columns": 12
+          "frameWidth": 384,
+          "frameHeight": 384,
+          "columns": 12,
+          "assetScale": 0.5
         },
         "scope": "allTargets",
         "position": "screen",
@@ -72820,7 +72863,7 @@
                 "pattern": 0,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72832,7 +72875,7 @@
                 "pattern": 1,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72844,7 +72887,7 @@
                 "pattern": 2,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72856,7 +72899,7 @@
                 "pattern": 3,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72868,7 +72911,7 @@
                 "pattern": 4,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72880,7 +72923,7 @@
                 "pattern": 5,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72892,7 +72935,7 @@
                 "pattern": 6,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72904,7 +72947,7 @@
                 "pattern": 7,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72916,7 +72959,7 @@
                 "pattern": 8,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72928,7 +72971,7 @@
                 "pattern": 9,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72940,7 +72983,7 @@
                 "pattern": 10,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }
@@ -72952,7 +72995,7 @@
                 "pattern": 11,
                 "x": 0,
                 "y": -8,
-                "zoom": 100,
+                "zoom": 200,
                 "opacity": 255,
                 "visible": true
               }

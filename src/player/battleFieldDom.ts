@@ -13,6 +13,7 @@ import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 import type { DamageFeedback } from "@/player/battleSequencer";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
+import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSheets";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
 
@@ -1195,10 +1196,19 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     const sprite = document.createElement("span");
     sprite.className = "battle-actor-sprite";
     sprite.dataset.testid = `battle-actor-sprite-${resourceId}`;
+    // 고해상도 짝(xBR 4배, 192px 셀)이 등록된 시트는 그걸 그린다. background-size 는 아래에서 논리 px 로
+    // 고정되므로 화면 크기는 같고 밀도만 4배가 된다 — 몬스터(384px 원본)와 같은 급. 축소해 그리므로
+    // pixelated 를 걷어야 가장자리가 계단으로 깨지지 않는다(`01-scene-base.css` 의 data-rendering 규칙).
+    const hires = battlerHiresSheet(resourceId);
+    const sheetUrl = hires ? battlerHiresSheetUrl(hires) : url;
+    if (hires) {
+      sprite.dataset.rendering = "smooth";
+      sprite.dataset.battlerSheetCell = String(hires.cellWidth);
+    }
     // idle 애니메이션 조회와 정적 시트 복원에 필요한 것을 노드에 적어 둔다 — 포즈 전환은
     // 프로젝트 상태를 다시 조회하지 않고 이 값만 보아도 결정적이어야 하기 때문이다.
     sprite.dataset.battlerResourceId = resourceId;
-    sprite.dataset.battlerSheetUrl = url;
+    sprite.dataset.battlerSheetUrl = sheetUrl;
     sprite.setAttribute("role", "img");
     sprite.setAttribute("aria-label", `${name} 전투 캐릭터`);
     sprite.style.setProperty("--battle-sprite-frame-width", `${frameW}px`);
@@ -1206,7 +1216,7 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     sprite.style.backgroundPosition = "0 0";
     sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * BATTLE_SHEET_ROWS}px`;
     sprite.dataset.battlerSheetSize = sprite.style.backgroundSize;
-    sprite.style.backgroundImage = `url("${url}")`;
+    sprite.style.backgroundImage = `url("${sheetUrl}")`;
     return sprite;
   }
   const image = document.createElement("img");

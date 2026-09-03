@@ -121,6 +121,12 @@
   position: absolute;
 }
 
+/* 축소해 그리는 고해상도 시트(assetScale < 1, battleAnimationDom 이 data-rendering 으로 표시).
+   pixelated 로 384px 를 192px 에 넣으면 가장자리가 계단으로 깨진다 — 보간을 켠다. */
+.battle-animation-cell[data-rendering="smooth"] {
+  image-rendering: auto;
+}
+
 /* 주기와 반복 횟수는 screenShake.speed / durationFrames 에서 온다.
    불투명 배경인 씬 루트를 움직이면 가장자리로 맵이 새므로 필드만 흔든다. */
 .battle-scene.battle-screen-shake .battle-field {

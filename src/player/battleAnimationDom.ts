@@ -3,7 +3,11 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
 import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
-import { battleAnimationFrameDurationMs } from "@/player/battleAnimationPlayback";
+import {
+  battleAnimationFrameDurationMs,
+  battleAnimationSheetAssetScale,
+  battleAnimationSheetRendering,
+} from "@/player/battleAnimationPlayback";
 import {
   BATTLE_EFFECT_CSS_VARIABLES,
   flashCssVariables,
@@ -346,11 +350,15 @@ function animationCell(
   canvas.dataset.pattern = String(cell.pattern);
   canvas.width = record.sheet.frameWidth;
   canvas.height = record.sheet.frameHeight;
-  // 시트 프레임 크기와 셀 좌표는 **자산 px**(320×240 화면 기준으로 저작된 RM 애니메이션 데이터)다.
-  // 전투 씬의 논리 해상도는 640×480 이라 그대로 쓰면 화면에서 절반으로 보인다.
+  // 프레임 비트맵은 **시트 배율**로 논리 px 에 옮긴다 — 320 시대 RM 시트는 2(96px → 192),
+  // 번들 고해상도 시트는 0.5(384px → 같은 192). 축소되는 시트는 보간을 켜야 가장자리가 안 깨진다.
+  const sheetScale = battleAnimationSheetAssetScale(record.sheet);
+  canvas.dataset.rendering = battleAnimationSheetRendering(record.sheet);
+  canvas.style.width = `${record.sheet.frameWidth * sheetScale}px`;
+  canvas.style.height = `${record.sheet.frameHeight * sheetScale}px`;
+  // 셀 좌표는 시트 해상도와 무관하게 **RM px**(320×240 기준 저작 데이터)다. 전투 씬의 논리
+  // 해상도는 640×480 이라 항상 2를 곱한다 — 시트 배율을 여기에 곱하면 고해상도 시트의 오프셋이 1/4 로 준다.
   const assetScale = BATTLE_ASSET_PIXEL_SCALE;
-  canvas.style.width = `${record.sheet.frameWidth * assetScale}px`;
-  canvas.style.height = `${record.sheet.frameHeight * assetScale}px`;
   canvas.style.left = `calc(50% + ${cell.x * assetScale}px)`;
   canvas.style.top = `calc(50% + ${cell.y * assetScale}px)`;
   canvas.style.opacity = String(Math.max(0, Math.min(255, cell.opacity)) / 255);

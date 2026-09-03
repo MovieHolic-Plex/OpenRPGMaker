@@ -12,6 +12,7 @@ import { collectWebExportAssets } from "@/project/webExportAssets";
 import {
   conditionalRuntimeAssetPaths,
   requiredRuntimeAssetPaths,
+  usesGeneratedHeroBattlers,
 } from "@/project/webExportRuntimeAssets";
 import type { Project } from "@/project/types";
 import { describe, expect, it } from "vitest";
@@ -24,6 +25,41 @@ function withLifeLedgerData(project: Project): Project {
     system: { ...project.system, shipping: { ...project.system.shipping, enabled: true } },
   } as Project;
 }
+
+const heroBattlerPaths = [
+  "assets/generated/starter/hires/hero-01-battle.png",
+  "assets/generated/starter/hires/idle/hero-01-battle.png",
+  "assets/generated/starter/idle/hero-01-battle.png",
+];
+
+function withoutGeneratedHeroes(project: Project): Project {
+  return {
+    ...project,
+    database: {
+      ...project.database,
+      actors: project.database.actors.map((actor) => ({ ...actor, battleCharacterResourceId: "uploaded-custom-battler" })),
+    },
+  } as Project;
+}
+
+describe("web export runtime assets — 영웅 전투 시트 고해상도 짝", () => {
+  it("기본 프로젝트(액터가 생성 영웅 시트를 쓴다)는 시트·idle 스트립을 싣는다", () => {
+    const project = createBlankProject();
+    expect(usesGeneratedHeroBattlers(project)).toBe(true);
+    const required = requiredRuntimeAssetPaths(project);
+    for (const path of heroBattlerPaths) expect(required.has(path), path).toBe(true);
+    // 내보내기 계획에도 들어간다 — 리소스 id 스캔이 아니라 이 그룹이 싣는 경로다.
+    const planned = new Set(collectWebExportAssets(project).map((asset) => asset.zipPath));
+    for (const path of heroBattlerPaths) expect(planned.has(path), path).toBe(true);
+  });
+
+  it("생성 영웅 시트를 쓰는 액터가 없으면 그 경로를 뺀다", () => {
+    const project = withoutGeneratedHeroes(createBlankProject());
+    expect(usesGeneratedHeroBattlers(project)).toBe(false);
+    const required = requiredRuntimeAssetPaths(project);
+    for (const path of heroBattlerPaths) expect(required.has(path), path).toBe(false);
+  });
+});
 
 describe("web export runtime assets", () => {
   it("drops life-ledger art from a project that has no life-ledger data", () => {

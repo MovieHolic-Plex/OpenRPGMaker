@@ -644,6 +644,13 @@ export interface BattleAnimationSheet {
   frameWidth: number;
   frameHeight: number;
   columns: number;
+  /**
+   * 시트 1px 이 전투 무대(640×480 논리 해상도)에서 차지하는 논리 px.
+   * 없으면 2 — 320×240 시대 RM 자산(EasyRPG RTP·Scarloxy 96px 시트)의 값이다.
+   * 번들 고해상도 이펙트(384px 프레임)는 0.5 로 같은 192 논리 px 를 차지한다.
+   * 셀 오프셋(`BattleAnimationCell.x/y`)은 이 값과 무관하게 항상 RM px 다.
+   */
+  assetScale?: number;
 }
 
 export interface BattleAnimationFrame {

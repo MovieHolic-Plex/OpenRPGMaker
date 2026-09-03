@@ -1,6 +1,7 @@
 import { batchApplyCells, interpolateCells, type AnimationCellBatchPatch } from "@/editor/databaseAnimationCellOps";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
+import { battleAnimationSheetRmScale } from "@/player/battleAnimationPlayback";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import type { BattleAnimationCell, BattleAnimationFrame, BattleAnimationRecord, BattleAnimationSheet, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -33,8 +34,10 @@ export function renderAnimationStagePanel(context: AnimationPreviewContext): HTM
     class: "db-animation-sheet-preview db-animation-stage db-animation-stage-surface",
     dataset: { testid: "db-animation-sheet-preview-surface" },
   });
-  preview.style.setProperty("--animation-frame-width", `${context.sheet.frameWidth}px`);
-  preview.style.setProperty("--animation-frame-height", `${context.sheet.frameHeight}px`);
+  // 스테이지는 RM px 좌표계다 — 시트 배율(레거시 1, 384px 고해상도 0.25)을 곱해 96px 셀로 맞춘다.
+  const rmScale = battleAnimationSheetRmScale(context.sheet);
+  preview.style.setProperty("--animation-frame-width", `${context.sheet.frameWidth * rmScale}px`);
+  preview.style.setProperty("--animation-frame-height", `${context.sheet.frameHeight * rmScale}px`);
   preview.style.setProperty("--animation-sheet-columns", String(Math.max(1, context.sheet.columns)));
   const cellLayer = el("div", { class: "db-animation-stage-cells" });
   renderStageCells(cellLayer, context, context.selectedFrame, url);
@@ -295,9 +298,13 @@ function applySpriteBackground(element: HTMLElement, sheet: BattleAnimationSheet
   const columns = Math.max(1, sheet.columns);
   const column = pattern % columns;
   const row = Math.floor(pattern / columns);
+  // 배경 좌표도 스테이지와 같은 RM px 배율로 옮긴다 — 안 그러면 고해상도 시트가 4배로 잘린다.
+  const rmScale = battleAnimationSheetRmScale(sheet);
+  const frameWidth = sheet.frameWidth * rmScale;
+  const frameHeight = sheet.frameHeight * rmScale;
   element.style.backgroundImage = `url("${url}")`;
-  element.style.backgroundPosition = `-${column * sheet.frameWidth}px -${row * sheet.frameHeight}px`;
-  element.style.backgroundSize = `${columns * sheet.frameWidth}px auto`;
+  element.style.backgroundPosition = `-${column * frameWidth}px -${row * frameHeight}px`;
+  element.style.backgroundSize = `${columns * frameWidth}px auto`;
   // 단색 배경 시트(마젠타/녹성/검은 등) 자동 키아웃. 투명 PNG 면 no-op.
   applyAutoChromaKeyToBackground(element, url);
 }
