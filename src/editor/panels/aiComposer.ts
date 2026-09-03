@@ -1,34 +1,46 @@
 // editor/panels/aiComposer.ts
-// 컴포저 셸 — 텍스트 영역 + 고정 액션 행 한 줄 + 팝오버 3종. 세로 버튼 열은 없다.
+// 컴포저 셸 — 텍스트 영역 + 고정 액션 행 한 줄 + 팝오버 4종. 세로 버튼 열은 없다.
 //
 // 왜 이 구조인가 (실측 근거):
 //  - 구 `.ai-command-input-stack` 은 슬래시 목록·컨텍스트 칩·감독 칩·대기 큐를 **흐름 안에서**
 //    입력창 위에 쌓았다. 칩이 나타났다 사라질 때마다 바 높이가 바뀌고, ResizeObserver 가
 //    `--ai-command-bar-clearance` 를 다시 재서 rising overlay 하단·맵 여백까지 같이 흔들렸다.
 //    실측: 슬래시 목록을 열면 유리 93→377(+284), 사이드 156→401(+245).
-//  - 그래서 규칙 하나: **바 높이 = f(textarea 줄 수)뿐.** 슬래시 목록·액션 메뉴·추천 칩은
-//    전부 absolute 팝오버로 흐름에서 빼고, 컨텍스트·대기 큐·상태는 **항상 존재하는**
-//    고정 높이 액션 행에 한 줄로 넣는다(나타남/사라짐 자체를 없앤다).
+//  - 그래서 규칙 하나: **바 높이 = f(textarea 줄 수)뿐.** 액션 메뉴·성향·맥락은 absolute 팝오버로
+//    흐름에서 빼고, 컨텍스트·대기 큐·상태는 **항상 존재하는** 고정 높이 액션 행에 한 줄로 넣는다.
+//    추천(`suggest`)만은 데크 안에서 입력창 위에 흐름으로 선다(2026-09-03) — 데크 전체의 위치를
+//    패널이 ResizeObserver 로 재므로 바 높이 불변식은 데크 높이 불변식으로 승격됐다.
 //  - 팝오버는 `.ai-command-bar` 의 직접 자식이고 닫히면 `hidden`(display:none) 이다.
 //    투명한 전면 레이어는 두지 않는다 — 보이지 않는 레이어가 맵 클릭을 삼킨 P0 사고가 있었다
 //    (2026-08-19, 회귀 스펙 `test/e2e/_ai-assistant-hostile-eval.spec.ts` H 히트테스트).
 //
-// 좌측 메타 레일은 폐기했다(2026-08-21, 감독 지시): 유리·사이드에서 레일 한 열이 버튼
-// **하나**만 담아, 열 자체가 그 버튼 하나를 위한 장식이 되고 하단을 어지럽혔다. 이제 메타
-// 진입점은 액션 행 좌측의 `☰` 와 `⌾`(성향) 둘이고, 나머지 설정은 ☰ 메뉴 안의 항목이다.
-// 조수 스킬 기능이 제거되면서 슬래시 팝오버(`/` 목록)와 그 앵커 버튼도 함께 사라졌다.
+// 데크(2026-09-03, 제안서 D1): 새 대화·이전 대화·더보기·성향·맥락 게이지·접기 버튼은 **여기서 만들되
+// 행에 넣지 않는다.** 패널이 데크 상태 레일(`aiDeckRail`)의 슬롯으로 옮긴다. 컴포저가 계속 만드는
+// 이유는 클릭 배선(onNewChat·팝오버 열기)과 testid 계약이 여기 있기 때문이다 — 두 벌로 만들면
+// 진입점이 갈라진다. 행에는 모드 세그먼트(지시/질문/계획)·되돌리기·컨텍스트 칩·대기 큐 | 상태·
+// 모델 칩·보내기/멈추기 만 남는다. 글리프(+ 🕒 ☰ ⌾)는 SVG 아이콘으로 바꿨다.
 //
 // `⌾` 성향(2026-08-30 감독 지시): AI 가 대화에서 배운 취향 목록. 배웠다는 알림이 채팅 버블로
-// 뜨므로 확인·삭제도 같은 패널에 있어야 한다(AI 설정 모달에 두면 배운 자리와 고치는 자리가
-// 갈라진다). 같은 팝오버 기계에 세 번째 종류로 넣었다 — 배타적 열림·바깥 클릭·Escape 를
-// 공짜로 얻고, 흐름 밖이라 "바 높이 = f(textarea 줄 수)" 불변식도 그대로다.
+// 뜨므로 확인·삭제도 같은 표면에 있어야 한다. 팝오버 기계의 한 종류로 들어 배타적 열림·바깥 클릭·
+// Escape 를 공짜로 얻는다.
 
 import { el } from "@/util/dom";
+import { deckIcon } from "./aiDeckIcons";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
 export type ComposerPopover = "suggest" | "menu" | "preference" | "context";
 
 const POPOVER_KINDS = ["suggest", "menu", "preference", "context"] as const;
+
+/** 컴포저 모드 — 지시(편집)·질문(조회만)·계획(실행 전 계획 카드). */
+export const COMPOSER_MODES = ["do", "ask", "plan"] as const;
+export type ComposerMode = (typeof COMPOSER_MODES)[number];
+
+export const COMPOSER_MODE_LABEL: Readonly<Record<ComposerMode, string>> = {
+  do: "지시",
+  ask: "질문",
+  plan: "계획",
+};
 
 export interface ComposerElements {
   /** 패널에 마운트되는 바 루트(기존 `.ai-command-bar` testid 유지). */
@@ -36,10 +48,16 @@ export interface ComposerElements {
   readonly composer: HTMLElement;
   readonly actions: HTMLElement;
   readonly commandMenu: HTMLElement;
+  /** 레일용 버튼들 — 행에는 없다. 패널이 레일 슬롯에 넣는다. */
   readonly newChatButton: HTMLButtonElement;
+  readonly conversationsButton: HTMLButtonElement | null;
+  readonly menuToggle: HTMLButtonElement;
   /** 성향 팝오버 토글. `preferenceContent` 를 주지 않았으면 null. */
   readonly preferenceToggle: HTMLButtonElement | null;
-  readonly hint: HTMLElement;
+  /** 모드 세그먼트. `modeChips` 를 주지 않았으면 null. */
+  readonly modeSegment: HTMLElement | null;
+  readonly setMode: (mode: ComposerMode) => void;
+  readonly setModelLabel: (label: string | null) => void;
   readonly openPopover: (kind: ComposerPopover | null) => void;
   readonly openKind: () => ComposerPopover | null;
   /** 바 + 열려 있는 팝오버를 합친 최상단 y — clearance 계산의 단일 소스. */
@@ -60,16 +78,11 @@ export interface ComposerOptions {
   readonly nextSteps: HTMLElement;
   readonly queueIndicator: HTMLElement;
   readonly statusGroup: HTMLElement;
-  /** 맥락 게이지 버튼 + 그 팝오버(aiContextMeter). 둘 다 있어야 슬롯이 붙는다. */
+  /** 맥락 게이지 버튼 + 그 팝오버(aiContextMeter). 둘 다 있어야 종류가 생긴다. */
   readonly contextMeterButton?: HTMLButtonElement;
   readonly contextMeterPopover?: HTMLElement;
   readonly onNewChat: () => void;
-  /**
-   * 이전 대화 목록 열기. 주지 않으면 버튼을 만들지 않는다(preferenceContent 와 같은 주입 귀칙).
-   *
-   * 왜 고정 행에 사는가: 이전 대화를 여는 길은 ☰ 메뉴 안에만 있었다. 생성(＋)은 한 번에
-   * 닿는데 이어가기는 단계가 더 깊은 배치는, 그 자신이 "새 세션" 을 기본동작으로 만들어 버린다.
-   */
+  /** 이전 대화 목록 열기. 주지 않으면 버튼을 만들지 않는다(preferenceContent 와 같은 주입 규칙). */
   readonly onOpenConversations?: () => void;
   readonly onPopoverChange?: (kind: ComposerPopover | null) => void;
   /**
@@ -80,40 +93,69 @@ export interface ComposerOptions {
   readonly preferenceContent?: HTMLElement;
   /** 성향 팝오버가 열릴 때. 목록을 다시 읽는 자리다(대화 중 증류로 내용이 바뀐다). */
   readonly onPreferenceOpen?: () => void;
+  /**
+   * 바깥 클릭 판정. 기본은 `commandBar.contains`. 데크에서는 레일의 토글이 바 밖에 있으므로
+   * 패널이 `deck.contains` 를 넘긴다 — 안 그러면 ⋯ 를 다시 누를 때 pointerdown 이 먼저 닫고
+   * click 이 다시 열어 메뉴가 닫히지 않는다.
+   */
+  readonly isInside?: (target: Node) => boolean;
+  /** 모드 세그먼트(지시/질문/계획). 주지 않으면 만들지 않는다. */
+  readonly modeChips?: { readonly initial: ComposerMode; readonly onChange: (mode: ComposerMode) => void };
+  /** 모델 칩 초기 라벨. null/미지정이면 숨긴 채 만든다(표준 이상 모드에서 패널이 채운다). */
+  readonly modelLabel?: string | null;
+}
+
+function iconButton(options: {
+  readonly class: string;
+  readonly icon: Parameters<typeof deckIcon>[0];
+  readonly label: string;
+  readonly title: string;
+  readonly testid: string;
+  readonly attrs?: Record<string, string>;
+  readonly onClick: () => void;
+}): HTMLButtonElement {
+  return el("button", {
+    class: `ai-composer-menu-btn ${options.class}`,
+    attrs: { type: "button", title: options.title, "aria-label": options.label, ...(options.attrs ?? {}) },
+    dataset: { testid: options.testid },
+    children: [deckIcon(options.icon)],
+    on: { click: options.onClick },
+  }) as HTMLButtonElement;
 }
 
 export function createComposerElements(options: ComposerOptions): ComposerElements {
   let openState: ComposerPopover | null = null;
 
-  const commandMenuToggle = el("button", {
-    class: "ai-composer-menu-btn ai-command-menu-toggle",
-    text: "☰",
-    attrs: { type: "button", title: "더보기", "aria-label": "더보기 메뉴", "aria-expanded": "false", "aria-haspopup": "menu" },
-    dataset: { testid: "ai-command-menu-toggle" },
-    on: { click: () => openPopover(openState === "menu" ? null : "menu") },
-  }) as HTMLButtonElement;
+  const menuToggle = iconButton({
+    class: "ai-command-menu-toggle",
+    icon: "more",
+    label: "더보기 메뉴",
+    title: "더보기",
+    testid: "ai-command-menu-toggle",
+    attrs: { "aria-expanded": "false", "aria-haspopup": "menu" },
+    onClick: () => openPopover(openState === "menu" ? null : "menu"),
+  });
 
-  const newChatButton = el("button", {
-    class: "ai-composer-menu-btn ai-new-chat",
-    text: "+",
-    attrs: { type: "button", title: "새 대화", "aria-label": "새 대화 시작" },
-    dataset: { testid: "ai-new-chat" },
-    on: { click: options.onNewChat },
-  }) as HTMLButtonElement;
+  const newChatButton = iconButton({
+    class: "ai-new-chat",
+    icon: "plus",
+    label: "새 대화 시작",
+    title: "새 대화",
+    testid: "ai-new-chat",
+    onClick: options.onNewChat,
+  });
 
-  const conversationsButton = options.onOpenConversations
-    ? (el("button", {
-      class: "ai-composer-menu-btn ai-open-conversations",
-      text: "🕒",
-      attrs: {
-        type: "button",
-        title: "이전 대화 — 지금 대화는 기록에 저장되고, 골라 이어서 엽니다",
-        "aria-label": "이전 대화 열기",
-        "aria-haspopup": "dialog",
-      },
-      dataset: { testid: "ai-open-conversations" },
-      on: { click: options.onOpenConversations },
-    }) as HTMLButtonElement)
+  const onOpenConversations = options.onOpenConversations;
+  const conversationsButton = onOpenConversations
+    ? iconButton({
+      class: "ai-open-conversations",
+      icon: "clock",
+      label: "이전 대화 열기",
+      title: "이전 대화 — 지금 대화는 기록에 저장되고, 골라 이어서 엽니다",
+      testid: "ai-open-conversations",
+      attrs: { "aria-haspopup": "dialog" },
+      onClick: onOpenConversations,
+    })
     : null;
 
   const commandMenu = el("div", {
@@ -123,22 +165,16 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   commandMenu.hidden = true;
 
-  // 성향 버튼 — ☰ 옆 작은 토글. 아이콘은 ⌾("기억해 둔 점") 하나로 두고 라벨은 title/aria 에 둔다.
-  // 액션 행은 고정 높이 한 줄이라 글자 라벨을 넣으면 컨텍스트 칩 자리를 먹는다.
   const preferenceToggle = options.preferenceContent
-    ? (el("button", {
-      class: "ai-composer-menu-btn ai-preference-toggle",
-      text: "⌾",
-      attrs: {
-        type: "button",
-        title: "AI 가 기억한 내 성향 — 확인·고정·삭제",
-        "aria-label": "AI 가 기억한 내 성향",
-        "aria-expanded": "false",
-        "aria-haspopup": "dialog",
-      },
-      dataset: { testid: "ai-preference-toggle" },
-      on: { click: () => openPopover(openState === "preference" ? null : "preference") },
-    }) as HTMLButtonElement)
+    ? iconButton({
+      class: "ai-preference-toggle",
+      icon: "memory",
+      label: "AI 가 기억한 내 성향",
+      title: "AI 가 기억한 내 성향 — 확인·고정·삭제",
+      testid: "ai-preference-toggle",
+      attrs: { "aria-expanded": "false", "aria-haspopup": "dialog" },
+      onClick: () => openPopover(openState === "preference" ? null : "preference"),
+    })
     : null;
 
   const preferencePopover = el("div", {
@@ -149,12 +185,8 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   preferencePopover.hidden = true;
 
-  // 추천 칩 팝오버 — 입력창 포커스 + 빈 값일 때 자동으로 뜬다(전용 토글 버튼 없음).
-  // 흐름 밖이라 열림/닫힘이 바 높이를 건드리지 않는다(구 구조의 점프 원인).
-  //
-  // `nextSteps`(한 줄 안내 + 저작 예제 칩)는 2026-08-31 에 여기로 이사했다. 원래는 유리/사이드
-  // 카드 본문에 있었고 도크 축이 삭제되면서 마운트 지점을 잃었다 — 열림 조건이 이 팝오버와
-  // 같으므로(빈 입력 + 포커스) 같은 자리에 둔다. 순서: 감독 프롬프트 칩 → 안내 → 예제.
+  // 추천 — 입력창 포커스 + 빈 값일 때 자동으로 뜬다(전용 토글 없음). 데크 안에서 입력창 위에
+  // 흐름으로 선다. `nextSteps`(맵 진단 힌트 + 실행 문장 행)는 감독 프롬프트 칩 다음에 온다.
   const suggestPopover = el("div", {
     class: "ai-composer-popover ai-composer-suggest",
     attrs: { role: "group", "aria-label": "추천 지시" },
@@ -163,34 +195,69 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   suggestPopover.hidden = true;
 
-  // 액션 행: 항상 존재하는 고정 높이 한 줄. 좌측 컨텍스트/대기 큐는 nowrap + 가로 스크롤이라
-  // 내용이 길어져도 줄이 늘지 않는다(줄바꿈이 곧 바 높이 변화였다).
-  const hint = el("span", {
-    class: "ai-composer-hint",
-    text: "Enter 전송 · Shift+Enter 줄바꿈",
-    dataset: { testid: "ai-composer-hint" },
-  });
+  // ── 모드 세그먼트 ──
+  let mode: ComposerMode = options.modeChips?.initial ?? "do";
+  const modeOptions = new Map<ComposerMode, HTMLButtonElement>();
+  const modeSegment = options.modeChips
+    ? el("div", {
+      class: "ai-composer-mode",
+      attrs: { role: "radiogroup", "aria-label": "조수 모드" },
+      dataset: { testid: "ai-composer-mode", mode },
+    })
+    : null;
+  const paintMode = (): void => {
+    if (!modeSegment) return;
+    modeSegment.dataset.mode = mode;
+    for (const [key, node] of modeOptions) {
+      const on = key === mode;
+      node.setAttribute("aria-checked", String(on));
+      node.classList.toggle("is-on", on);
+    }
+  };
+  const setMode = (next: ComposerMode): void => {
+    mode = next;
+    paintMode();
+  };
+  if (modeSegment) {
+    const onChange = options.modeChips?.onChange;
+    for (const key of COMPOSER_MODES) {
+      const node = el("button", {
+        class: "ai-composer-mode-option",
+        text: COMPOSER_MODE_LABEL[key],
+        attrs: { type: "button", role: "radio", "aria-checked": "false" },
+        dataset: { testid: `ai-composer-mode-${key}`, mode: key },
+        on: {
+          click: () => {
+            if (mode === key) return;
+            setMode(key);
+            onChange?.(key);
+          },
+        },
+      }) as HTMLButtonElement;
+      modeOptions.set(key, node);
+      modeSegment.append(node);
+    }
+    paintMode();
+  }
+
+  // ── 모델 칩 ──
+  const modelChip = el("span", { class: "ai-composer-model", dataset: { testid: "ai-composer-model" } });
+  const setModelLabel = (label: string | null): void => {
+    modelChip.textContent = label ?? "";
+    modelChip.hidden = label === null || label === "";
+  };
+  setModelLabel(options.modelLabel ?? null);
+
+  // 액션 행: 항상 존재하는 고정 높이 한 줄. 좌측은 nowrap + 가로 스크롤이라 내용이 길어져도
+  // 줄이 늘지 않는다(줄바꿈이 곧 바 높이 변화였다).
   const actions = el("div", {
     class: "ai-composer-actions",
     dataset: { testid: "ai-composer-actions" },
     children: [
       el("div", {
         class: "ai-composer-actions-lead",
-        // 접기(#5efa6611) 와 새 대화(#198) 는 둘 다 이 고정 행의 왼쪽에 산다 — 한쪽이 다른 쪽을
-        // 밀어내면 도크별 접기나 새 대화 진입점이 사라진다.
-        // 맥락 게이지는 ☰ 바로 뒤 = 스크롤되는 칩들 **앞**이다. 칩 뒤에 두면 컨텍스트 꼬리표가
-        // 길어진 좁은 도크에서 가로 스크롤 밖으로 밀려 사실상 사라진다(lead 는 overflow-x:auto).
-        // 되돌리기는 ☰ 다음 자리다 — 예전엔 맵 위에 뜨는 `ai-completion-strip` 밴드가
-        // 이 일을 했지만(요약 + 되돌리기), 도크와 무관한 fixed 밴드라 팔레트도 어긋나고
-        // 변경 카드 제목과 요약이 그대로 겹쳤다(2026-08-30 감독 지시로 밴드 제거).
-        // 이 행은 고정 높이라 버튼이 켜져도 바 높이가 변하지 않는다 — clearance 재측정 없음.
         children: [
-          options.collapseButton,
-          newChatButton,
-          ...(conversationsButton ? [conversationsButton] : []),
-          commandMenuToggle,
-          ...(options.contextMeterButton ? [options.contextMeterButton] : []),
-          ...(preferenceToggle ? [preferenceToggle] : []),
+          ...(modeSegment ? [modeSegment] : []),
           options.undoAppliedButton,
           options.contextChips,
           options.queueIndicator,
@@ -198,10 +265,13 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       }),
       el("div", {
         class: "ai-composer-actions-trail",
-        children: [options.statusGroup, hint, options.sendButton, options.abortButton],
+        children: [options.statusGroup, modelChip, options.sendButton, options.abortButton],
       }),
     ],
   });
+
+  // 키 힌트는 행에 두지 않는다(실측 160×15 상시 점유). 입력창 title 로 옮겼다.
+  options.input.setAttribute("title", "Enter 보내기 · Shift+Enter 줄바꿈");
 
   const composer = el("div", {
     class: "ai-composer",
@@ -212,7 +282,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   const commandBar = el("div", {
     class: "ai-command-bar",
     dataset: { testid: "ai-command-bar" },
-    // 팝오버는 셸의 형제로 두고 absolute 로 띄운다 — 흐름 밖.
+    // 팝오버는 셸의 형제로 두고(추천은 흐름, 나머지는 absolute) — 흐름 밖.
     children: [
       suggestPopover,
       commandMenu,
@@ -222,9 +292,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     ],
   });
 
-  // 키 힌트는 입력 중에만 필요한 안내다. 상시 노출은 액션 행을 영구 점유했다(실측 160x15).
-  // 숨김은 visibility 로 한다 — display 로 빼면 행 높이가 바뀌어 "바 높이 = f(textarea 줄 수)"
-  // 불변식이 깨지고 clearance 재측정이 오버레이까지 흔든다.
   const onInputFocus = (): void => actions.classList.add("is-input-focused");
   const onInputBlur = (): void => actions.classList.remove("is-input-focused");
   options.input.addEventListener("focus", onInputFocus);
@@ -238,7 +305,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     return options.contextMeterPopover ?? null;
   };
   const toggleOf = (kind: ComposerPopover): HTMLElement | null => {
-    if (kind === "menu") return commandMenuToggle;
+    if (kind === "menu") return menuToggle;
     if (kind === "preference") return preferenceToggle;
     if (kind === "context") return options.contextMeterButton ?? null;
     return null;
@@ -265,11 +332,12 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
 
   // 바깥 클릭·Escape 로 닫힌다 — 이전엔 토글 재클릭만이 유일한 닫기 경로여서
   // 절대배치 메뉴가 좌측 맵트리를 덮은 채 클릭을 가로챘다.
+  const isInside = options.isInside ?? ((target: Node): boolean => commandBar.contains(target));
   const onDocumentPointerDown = (event: PointerEvent): void => {
     if (openState === null) return;
     const target = event.target;
     if (!(target instanceof Node)) return;
-    if (commandBar.contains(target)) return;
+    if (isInside(target)) return;
     openPopover(null);
   };
   const onDocumentKeyDown = (event: KeyboardEvent): void => {
@@ -296,8 +364,12 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     actions,
     commandMenu,
     newChatButton,
+    conversationsButton,
+    menuToggle,
     preferenceToggle,
-    hint,
+    modeSegment,
+    setMode,
+    setModelLabel,
     openPopover,
     openKind: () => openState,
     measuredTop,
