@@ -528,3 +528,24 @@ REQ-FAILED [J] net::ERR_ABORTED http://dbserver:8100/rest/v1/ai_analysis_runs?on
 REQ-FAILED [J] net::ERR_ABORTED http://127.0.0.1:9433/__rpgzzu/ai-activity
 SHOT J01-complex-turn-final
 COMPLEX-SUCCESS-TOOLS: get_work_plan,get_project_summary,get_map_region,resize_map,set_build_spec,author_village,get_map_region,get_map_region,place_npc,create_map,tile_query,set_build_spec,tile_query,fill_region,set_build_spec,create_transfer_pair,run_lint,evaluate_game_quality,set_type_chart,upsert_enemy,upsert_enemy,upsert_enemy,upsert_enemy,get_project_summary,complete_work_item,get_map_region,script_cutscene,define_ending,run_lint,evaluate_game_quality,get_project_summary,get_map_region,get_map_region,get_map_region,find_events,find_events,find_events,find_events,list_endings,run_lint,complete_work_item,set_work_plan,get_map_region,set_build_spec,place_npc,start_interior_room_session,advance_interior_room_build,advance_interior_room_build,advance_interior_room_build,advance_interior_room_build,advance_interior_room_build,evaluate_interior_room,run_lint,evaluate_game_quality,set_build_spec,place_npc,find_events,run_lint,evaluate_game_quality,get_project_summary,get_map_region,get_map_region,get_map_region,find_events,find_events,find_events,list_endings,run_lint,find_events,find_events,get_project_summary,get_map_region,list_endings,complete_work_item | RECOVERED: fill_region,complete_work_item
+REQ-FAILED [H] net::ERR_ABORTED http://127.0.0.1:9861/__oprn/edit-activity
+REQ-FAILED [H] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [H] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [H] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [H] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT H01-input-focused-overlay-up
+HITTEST(focused) send-center@(1557,956) -> [object SVGAnimatedString]
+HITTEST(focused) canvas-30%-85%@(530,865) -> CANVAS
+HITTEST(focused) canvas-50%-80%@(836,819) -> CANVAS
+HITTEST(focused) canvas-90%-85%@(1447,865) -> ai-new-chat
+HITTEST(focused) canvas-50%-40%@(836,458) -> CANVAS
+REQ-FAILED [H] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [H] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT H02-after-idle-fade
+REQ-FAILED [H] net::ERR_ABORTED http://127.0.0.1:9861/__oprn/ai-activity
+CONSOLE-ERROR [H] Failed to load resource: the server responded with a status of 400 (Bad Request)
+HITTEST(idle-faded) send-center -> [object SVGAnimatedString]
+HITTEST(idle-faded) canvas-50%-80% -> 
+REQ-FAILED [H] net::ERR_ABORTED http://dbserver:8100/rest/v1/ai_activity_logs?on_conflict=log_id
+PANEL-CLASS: ai-chat-panel is-assistant-idle chat-dock-float is-composer-focused
+REQ-FAILED [H] net::ERR_ABORTED http://127.0.0.1:9861/__oprn/ai-activity

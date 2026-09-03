@@ -76,7 +76,7 @@ describe("조수 데크 CSS 계약", () => {
     expect(css).toContain("color-mix(in srgb, var(--bg-raised) 90%, transparent)");
     expect(css.match(/saturate\(([\d.]+)\)/gu)?.every((m) => Number(m.slice(9, -1)) <= 1.08)).toBe(true);
     // @> 글리프는 화면에서 걷는다(DOM 계약은 aiConversationLog 테스트가 지킨다).
-    expect(css).toMatch(/\.ai-deck \.ai-command-prefix\s*\{\s*display:\s*none;/u);
+    expect(css).toMatch(/\.ai-chat-log \.ai-command-prefix\s*\{\s*display:\s*none;/u);
   });
 
   it("영수증 카드는 지금/적용 후 쌍과 되돌리기 버튼 규칙을 갖고 넓은 뷰어 z 계산식을 지킨다", () => {

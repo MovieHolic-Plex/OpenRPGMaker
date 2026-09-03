@@ -354,8 +354,10 @@
 
 /* ── 4. 대화 행 — 사용자 우측 말풍선, 조수 좌측 산문, 시스템은 메타 ──
    .ai-command-row 의 두 칸 그리드(auto minmax(0,1fr))는 04 가 소유한다(선택지 칩 배치 계약,
-   test/aiQuickReplyPlacement.test.ts). 여기서는 1열의 @> 글리프만 걷고 서체·색·정렬을 정한다. */
-.ai-deck .ai-command-row {
+   test/aiQuickReplyPlacement.test.ts). 여기서는 1열의 @> 글리프만 걷고 서체·색·정렬을 정한다.
+   스코프는 `.ai-chat-log`(데크가 아니라) — 스튜디오는 로그를 데크 밖(.ai-studio-chat-log)으로 옮기므로
+   데크 스코프면 스튜디오 대화가 옛 모노 글리프로 남는다(실측 2026-09-03). 타임라인·라이브 행도 같다. */
+.ai-chat-log .ai-command-row {
   border: 0;
   column-gap: 0;
   font-family: var(--font-ui);
@@ -365,17 +367,17 @@
   row-gap: 8px;
 }
 
-.ai-deck .ai-command-prefix {
+.ai-chat-log .ai-command-prefix {
   display: none;
 }
 
-.ai-deck .ai-command-row-body {
+.ai-chat-log .ai-command-row-body {
   color: var(--text-1);
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
 
-.ai-deck .ai-command-row[data-role="user"] > .ai-command-row-body {
+.ai-chat-log .ai-command-row[data-role="user"] > .ai-command-row-body {
   background: var(--accent-muted);
   border-radius: 16px 16px 6px 16px;
   color: var(--text-1);
@@ -384,18 +386,18 @@
   padding: 9px 14px;
 }
 
-.ai-deck .ai-command-row[data-role="assistant"] > .ai-command-row-body {
+.ai-chat-log .ai-command-row[data-role="assistant"] > .ai-command-row-body {
   padding-right: 8px;
 }
 
-.ai-deck .ai-command-row[data-role="system"],
-.ai-deck .ai-command-row[data-role="tool"] {
+.ai-chat-log .ai-command-row[data-role="system"],
+.ai-chat-log .ai-command-row[data-role="tool"] {
   color: var(--text-2);
   font-size: calc(12px * var(--ai-font-scale, 1));
 }
 
-.ai-deck .ai-command-row-body.is-discarded,
-.ai-deck .ai-command-row-body.is-reverted {
+.ai-chat-log .ai-command-row-body.is-discarded,
+.ai-chat-log .ai-command-row-body.is-reverted {
   opacity: 0.62;
 }
 
@@ -502,7 +504,7 @@
 }
 
 /* ── 5. 작업 타임라인 — 툴 호출은 각주가 아니라 「무엇을 했는가」 의 행이다 ── */
-.ai-deck .ai-tool-activity {
+.ai-chat-log .ai-tool-activity {
   background: color-mix(in srgb, var(--bg-raised) 55%, transparent);
   border: 1px solid var(--ai-deck-line);
   border-radius: 14px;
@@ -511,7 +513,7 @@
   padding: 0;
 }
 
-.ai-deck .ai-tool-activity-toggle {
+.ai-chat-log .ai-tool-activity-toggle {
   align-items: center;
   background: transparent;
   border: 0;
@@ -531,17 +533,17 @@
   width: 100%;
 }
 
-.ai-deck .ai-tool-activity-toggle:hover {
+.ai-chat-log .ai-tool-activity-toggle:hover {
   background: var(--bg-hover);
   color: var(--text-1);
 }
 
-.ai-deck .ai-tool-activity-toggle:focus-visible {
+.ai-chat-log .ai-tool-activity-toggle:focus-visible {
   outline: var(--focus-outline);
   outline-offset: -2px;
 }
 
-.ai-deck .ai-tool-activity-list {
+.ai-chat-log .ai-tool-activity-list {
   border: 0;
   border-top: 1px solid var(--ai-deck-line);
   display: grid;
@@ -549,11 +551,11 @@
   padding: 0;
 }
 
-.ai-deck .ai-tool-activity-list[hidden] {
+.ai-chat-log .ai-tool-activity-list[hidden] {
   display: none;
 }
 
-.ai-deck .ai-tool-activity-line {
+.ai-chat-log .ai-tool-activity-line {
   background: transparent;
   border: 0;
   color: var(--text-1);
@@ -562,12 +564,12 @@
   padding: 7px 12px;
 }
 
-.ai-deck .ai-tool-activity-line + .ai-tool-activity-line {
+.ai-chat-log .ai-tool-activity-line + .ai-tool-activity-line {
   border-top: 1px solid var(--ai-deck-line);
 }
 
 /* 행 구조(aiChatRenderers.renderToolActivityEntry): 칩 46×32 · 라벨/요약 · 상태. */
-.ai-deck .ai-tool-activity-line.ai-act {
+.ai-chat-log .ai-tool-activity-line.ai-act {
   align-items: center;
   display: grid;
   gap: 10px;
@@ -673,7 +675,7 @@
 
 /* 진행 중 활동 행(aiChatPanel startLiveActivity) — 스피너 + 「상인 배치 중 — 두리」. 완료되면 같은
    요소가 완료 행의 모양을 이어받는다(finalize 가 자식을 통째로 옮긴다). */
-.ai-deck .ai-activity-live {
+.ai-chat-log .ai-activity-live {
   align-items: center;
   color: var(--accent-active);
   display: flex;
@@ -683,7 +685,7 @@
   padding: 8px 12px;
 }
 
-.ai-deck .ai-activity-live-line {
+.ai-chat-log .ai-activity-live-line {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -691,7 +693,7 @@
   white-space: nowrap;
 }
 
-.ai-deck .ai-tool-activity-toggle-text {
+.ai-chat-log .ai-tool-activity-toggle-text {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -700,13 +702,13 @@
 }
 
 /* 지난 턴 요약 그룹(09 소유의 flex 규칙은 그대로) — 데크에서는 조용한 행. */
-.ai-deck .ai-turn-group {
+.ai-chat-log .ai-turn-group {
   background: transparent;
   border: 0;
   border-radius: 10px;
 }
 
-.ai-deck .ai-turn-group-toggle {
+.ai-chat-log .ai-turn-group-toggle {
   background: var(--bg-inset);
   border: 0;
   border-radius: 10px;
@@ -717,12 +719,12 @@
   text-align: left;
 }
 
-.ai-deck .ai-turn-group-toggle:hover {
+.ai-chat-log .ai-turn-group-toggle:hover {
   color: var(--text-1);
 }
 
 /* 날짜 구분선 */
-.ai-deck .ai-day-divider-label {
+.ai-chat-log .ai-day-divider-label {
   color: var(--text-2);
   font-size: 11.5px;
   font-weight: 600;

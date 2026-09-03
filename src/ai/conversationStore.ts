@@ -299,7 +299,10 @@ export function conversationPreview(entries: readonly AuditEntry[]): string | nu
   const pick = (kind: "assistant" | "user"): string | null => {
     for (let index = entries.length - 1; index >= 0; index -= 1) {
       const entry = entries[index];
-      if (entry && entry.kind === kind && entry.text.trim().length > 0) return entry.text.replace(/\s+/gu, " ").trim();
+      if (entry && entry.kind === kind && entry.text.trim().length > 0) {
+        // 마크다운 강조 표식(** * `)은 미리보기 한 줄에서는 소음이다.
+        return entry.text.replace(/[*`_]{1,2}/gu, "").replace(/\s+/gu, " ").trim();
+      }
     }
     return null;
   };

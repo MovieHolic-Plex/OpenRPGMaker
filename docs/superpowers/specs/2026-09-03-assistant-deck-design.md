@@ -11,7 +11,7 @@
 | D1 | 38px 상태 레일을 둔다(유휴 포함 항상). 상태 점·이름·맵·상태 문장·진행 헤어라인 + 아이콘 5(맥락 % · 새 대화 · 이전 대화 · 성향 · 더보기 · 접기) | `aiDeckRail.ts` |
 | D2 | 사용자 발화는 오른쪽 인디고 말풍선, 조수는 왼쪽 산문 | `18-assistant-deck.css` 의 `.ai-command-row[data-role]` |
 | D3 | 완료된 작업 그룹은 자동 접힘(요약 = 라벨 → 라벨), 진행 중은 펼침 | `aiConversationLog.ts` |
-| D4 | 모델 이름 칩은 표준·전문가 모드에서 컴포저 행 오른쓱에 노출 | `aiComposer.ts` `modelChip` |
+| D4 | 모델 이름 칩은 표준·전문가 모드에서 컴포저 행 오른쪽에 노출 | `aiComposer.ts` `modelChip` |
 | D5 | 추천은 맵 진단 힌트 + 실행 문장 행 3개. 단어 칩 6개 폐기 | `aiChatPanel.ts` `refreshNextSteps` |
 | D6 | 「대기 화면」 3분기는 ☰ 메뉴에서 설정 모달로 이동 | `aiSettingsModal.ts` + e2e 갱신 |
 
