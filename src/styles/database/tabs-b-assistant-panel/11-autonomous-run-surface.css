@@ -217,6 +217,20 @@
   color: var(--text-3);
 }
 
+.ai-autonomous-checklist[data-blocked="true"] .ai-run-status {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.ai-autonomous-item-note.is-blocked {
+  color: var(--danger);
+}
+
+.ai-autonomous-item.is-blocked .ai-autonomous-item-mark {
+  color: var(--danger);
+  font-weight: 700;
+}
+
 @keyframes ai-work-item-pulse {
   0%,
   100% {

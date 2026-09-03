@@ -139,8 +139,15 @@ function isPlanComplete(items: readonly WorkItem[]): boolean {
   return items.length > 0 && items.every(isItemFinished);
 }
 
-/** 앞줄 한 문장 — 진행 중이면 「항목 중」, 다 끝났으면 「모두 완료」, 멈춰 있으면 「항목 — 대기 중」. */
+/** 막힌 항목(사람 판단 대기) — 있으면 앞줄이 그것을 먼저 말한다. */
+function blockedItem(items: readonly WorkItem[]): WorkItem | null {
+  return items.find((item) => item.status === "blocked") ?? null;
+}
+
+/** 앞줄 한 문장 — 막힘 > 모두 완료 > 진행 중 > 대기 중 순으로 사용자에게 중요한 것을 말한다. */
 function workPlanStatusLine(plan: WorkPlan, items: readonly WorkItem[], active: boolean): string {
+  const blocked = blockedItem(items);
+  if (blocked) return `막힘 — ${blocked.title ?? "항목"}`;
   if (isPlanComplete(items)) return "모두 완료";
   const current = currentRunItemTitle(plan);
   return active ? `${current} 중` : `${current} — 대기 중`;
@@ -227,6 +234,10 @@ export function renderWorkPlanChecklist(
           children: layerItems(layer).map((item) => {
             const status = item.status ?? "pending";
             const running = active && status === "in_progress";
+            // 막힌 항목은 왜 막혔는지가 사용자가 읽어야 할 전부다 — 활동 줄 자리에 사유를 쓴다.
+            const blockedNote = status === "blocked" && typeof item.note === "string" && item.note.trim().length > 0
+              ? item.note.trim()
+              : null;
             return el("li", {
               class: `ai-autonomous-item is-${status}`,
               dataset: { testid: "ai-autonomous-item", itemId: item.id ?? "", status },
@@ -238,6 +249,9 @@ export function renderWorkPlanChecklist(
                   children: [
                     el("span", { class: "ai-autonomous-item-title", text: item.title ?? "(제목 없음)" }),
                     ...(running ? [workItemActivityNode(opts.activity)] : []),
+                    ...(blockedNote
+                      ? [el("span", { class: "ai-autonomous-item-note is-blocked", dataset: { testid: "ai-work-item-blocked-note" }, text: blockedNote })]
+                      : []),
                   ],
                 }),
               ],
@@ -258,7 +272,12 @@ export function renderWorkPlanChecklist(
     : null;
   return el("div", {
     class: "ai-autonomous-checklist",
-    dataset: { testid: "ai-work-plan-checklist", active: String(active), complete: String(complete) },
+    dataset: {
+      testid: "ai-work-plan-checklist",
+      active: String(active),
+      complete: String(complete),
+      blocked: String(blockedItem(items) !== null),
+    },
     attrs: { role: "group", "aria-label": "할 일 목록" },
     children: [
       el("div", {
