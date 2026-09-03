@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1369KB / 약 386,450 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1374KB / 약 387,869 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,13 +15,13 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 221KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 374 | ~63,920 |
-| `openwiki/editor-ai-tools.md` | 62KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 128 | ~17,678 |
-| `openwiki/editor-database.md` | 167KB | 49KB | 804 | ~47,847 |
+| `openwiki/editor-ai-panel.md` | 224KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 376 | ~64,729 |
+| `openwiki/editor-ai-tools.md` | 64KB | 60KB ⚠상한 초과 — 절을 더 쪼개라 | 129 | ~18,177 |
+| `openwiki/editor-database.md` | 168KB | 49KB | 806 | ~47,926 |
 | `openwiki/editor-event-authoring.md` | 116KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 550 | ~33,750 |
 | `openwiki/editor-pre-edit-routing.md` | 62KB | 49KB | 168 | ~17,730 |
 | `openwiki/runtime-battle.md` | 111KB | 29KB | 336 | ~31,628 |
-| `openwiki/runtime-project-schema.md` | 53KB | 42KB | 174 | ~14,244 |
+| `openwiki/runtime-project-schema.md` | 53KB | 42KB | 174 | ~14,276 |
 | `openwiki/runtime-sessions.md` | 54KB | 45KB | 119 | ~14,335 |
 | `openwiki/testing.md` | 99KB | 45KB | 649 | ~27,907 |
 
@@ -31,8 +31,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 170, 171, 172, 173, 174, 175, 187, 196 |
-| `openwiki/editor-ai-tools.md` | 5 | 69, 70, 74, 76, 78 |
+| `openwiki/editor-ai-panel.md` | 25 | 172, 173, 174, 175, 176, 177, 189, 198 |
+| `openwiki/editor-ai-tools.md` | 5 | 70, 71, 75, 77, 79 |
 | `openwiki/editor-database.md` | 7 | 101, 105, 106, 107, 115, 139, 142 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -219,25 +219,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 221KB · 374줄 · ~63,920 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 224KB · 376줄 · ~64,729 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L9` 패널 셸 · 도크 · 접기 · 컴포저
 - `L103` 세션 수명 · 대화 컨텍스트
-- `L116` 제안 적용 · 복구 · 완성도 린트
-- `L198` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L259` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L283` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L297` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L323` 저장 · 내보내기 · 프로젝트 생성
-- `L331` 제공자 · OAuth · 동반 서비스
-- `L355` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L118` 제안 적용 · 복구 · 완성도 린트
+- `L200` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L261` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L285` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L299` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L325` 저장 · 내보내기 · 프로젝트 생성
+- `L333` 제공자 · OAuth · 동반 서비스
+- `L357` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
-### `openwiki/editor-ai-tools.md` — 62KB · 128줄 · ~17,678 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 64KB · 129줄 · ~18,177 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L91` Project-wide quality evaluation
-- `L97` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L92` Project-wide quality evaluation
+- `L98` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
 
-### `openwiki/editor-database.md` — 167KB · 804줄 · ~47,847 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 168KB · 806줄 · ~47,926 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` Database Studio chrome (2026-08-24)
   - `L15` Actor data-table slice (2026-08-25)
@@ -272,8 +272,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L654` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
   - `L670` AI로 몬스터·아이템 생성 (2026-08-30)
   - `L691` AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
-  - `L723` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L739` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+  - `L725` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L741` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
 
 ### `openwiki/editor-event-authoring.md` — 116KB · 550줄 · ~33,750 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -489,7 +489,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/runtime-project-schema.md` — 53KB · 174줄 · ~14,244 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 53KB · 174줄 · ~14,276 토큰 · 통째읽기 잘림
 
 - `L5` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
 - `L13` Project schema & persistence

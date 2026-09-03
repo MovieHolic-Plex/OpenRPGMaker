@@ -237,7 +237,9 @@ export function deriveAiActivityDiagnostics(
   }
   const toolFailureMessage = (name: string, summary: string): string => {
     const base = clipText(`${name}: ${summary}`, 500);
-    const issues = issuesByTool.get(name);
+    // 커밋 거부 요약이 첫 위반 사유를 싣게 된 뒤(toolRunner.commitRejectionSummary)로는 같은 문장을
+    // 두 번 적지 않는다 — 요약에 이미 들어간 이슈는 뺀다.
+    const issues = issuesByTool.get(name)?.filter((issue) => !summary.includes(issue.split("\n")[0] ?? issue));
     if (!issues || issues.length === 0) return base;
     // summary 와 별도로 클립한다 — 한 예산으로 합치면 긴 summary 가 issue 를 밀어낸다.
     const head = issues.slice(0, DIAGNOSTIC_ISSUE_LIMIT);

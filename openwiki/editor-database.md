@@ -704,6 +704,8 @@ Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`
   실어 준다(`aiChatPanel.ts collectAudit`).
 - **되돌리기는 `undoMapEdit`** 이고 라벨에 되돌릴 항목 이름을 적는다(승인 게이트가 없으므로 복구 경로가
   이것이다 — `approvalPolicy.ts`).
+- 바에 「실패 — 'upsert_enemy' 커밋 거부(무결성 오류)」가 찍히던 원인은 모델의 자리표시 id(`skill_0001`)였고,
+  지금은 `upsert_enemy` 가 사유를 돌려주고 요약이 첫 위반을 싣는다(`openwiki/editor-ai-tools.md` 2026-09-03).
 - **컨텍스트 풋터는 그대로다:** `[컨텍스트] 에디터 전체 요청 · 현재 화면: 데이터베이스 DB 탭 <라벨>,
   선택 레코드: <이름>(<id>)` (`databaseAiContextFooter`). buildSpec 정규식과 도구 노출 키워드가 이 형식을
   읽는다. `window.__oprnDbAiLastRequest` 훅도 유지.
