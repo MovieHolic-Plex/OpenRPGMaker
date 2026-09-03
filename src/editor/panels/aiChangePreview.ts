@@ -122,7 +122,8 @@ function shotFigure(
     class: "ai-change-shot",
     dataset: { kind },
     children: [
-      el("figcaption", { class: "ai-change-shot-label", text: kind === "before" ? "이전" : "이후" }),
+      // DESIGN.md: 타일을 바꾸는 카드는 항상 「지금 / 적용 후」 쌍이다(승인 카드 시절 어휘를 그대로 쓴다).
+      el("figcaption", { class: "ai-change-shot-label", text: kind === "before" ? "지금" : "적용 후" }),
       canvasHost,
     ],
   });
@@ -153,7 +154,8 @@ export function renderChangePreviewCard(input: ChangePreviewInput): HTMLElement 
     el("header", {
       class: "ai-change-card-head",
       children: [
-        el("span", { class: "ai-change-badge", text: "변경" }),
+        // 카드가 붙는 시점에 변경은 이미 적용돼 있다 — 배지가 사실을 말한다(「변경」 은 상태가 아니었다).
+        el("span", { class: "ai-change-badge", text: "적용됨" }),
         el("h4", { class: "ai-change-title", text: input.title }),
         expand,
       ],

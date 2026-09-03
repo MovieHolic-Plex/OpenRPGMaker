@@ -88,6 +88,8 @@ import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover } from "./aiComposer";
 import { deckIcon } from "./aiDeckIcons";
 import { createDeckRail, deckStateOfTone, type DeckState } from "./aiDeckRail";
+import { regionFromToolCall, renderMapChip } from "./aiMapChip";
+import { toolIconKey } from "./aiToolLabels";
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { getEditorUiMode } from "@/editor/editorUiMode";
@@ -476,6 +478,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const conversationLog = createConversationLogHost({
     log,
     removeStartScreen,
+    // 행 앞 맵 칩 — 툴 인자/결과의 좌표를 현재 프로젝트에서 잘라 그린다(제안서 「show the work」).
+    renderChip: (name, args, result) => {
+      const region = regionFromToolCall(args, result);
+      if (!region) return null;
+      const project = store.getCurrent();
+      const argMapId = typeof args?.mapId === "string" ? args.mapId : null;
+      const mapId = argMapId && project.maps[argMapId] ? argMapId : (mapContext().mapId ?? project.startMapId);
+      if (!mapId || !project.maps[mapId]) return null;
+      return renderMapChip({ project, mapId, region, icon: toolIconKey(name) });
+    },
   });
   const {
     appendBubble,
@@ -518,9 +530,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const row = el("div", {
       class: "ai-activity-live",
       attrs: { role: "status", "aria-live": "polite" },
-      dataset: { testid: "ai-activity-live" },
+      dataset: { testid: "ai-activity-live", tool: toolName },
       children: [
-        el("span", { class: "ai-activity-live-spinner", attrs: { "aria-hidden": "true" } }),
+        el("span", { class: "ai-activity-live-spinner ai-deck-spin", attrs: { "aria-hidden": "true" } }),
         line,
       ],
     });
@@ -537,12 +549,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   ): void => {
     const matchedLiveActivity = runningActivity?.toolName === toolName;
     if (!matchedLiveActivity) bumpToolProgress();
-    const before = new Set(log.querySelectorAll(".ai-tool-activity-line"));
+    const before = new Set<Element>(log.querySelectorAll(".ai-tool-activity-line"));
     studioToolLines.unshift(formatToolActivityLine(toolName, result));
     if (studioToolLines.length > 40) studioToolLines.length = 40;
     studioShell?.setToolLines(studioToolLines);
-    appendToolLine(toolName, result, args);
-    const rendered = [...log.querySelectorAll(".ai-tool-activity-line")].find((entry) => !before.has(entry))
+    appendToolLine(toolName, result, args, { live: true });
+    const rendered = [...log.querySelectorAll<HTMLElement>(".ai-tool-activity-line")].find((entry) => !before.has(entry))
       ?? renderToolActivityEntry(toolName, result);
     if (!runningActivity || runningActivity.toolName !== toolName) return;
 
@@ -559,11 +571,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     rendered.remove();
     const finalize = (): void => {
       if (result.ok) {
+        // 라이브 행이 완료 행의 모양(칩 · 라벨/요약 · 상태)을 그대로 이어받는다 — textContent 로 평탄화하면
+        // 데크 타임라인 행의 세 칸 구조가 사라진다.
         liveRow.className = rendered.className;
         liveRow.dataset.testid = "ai-tool-entry";
+        if (rendered.dataset.tool) liveRow.dataset.tool = rendered.dataset.tool;
+        if (rendered.title) liveRow.title = rendered.title;
         liveRow.removeAttribute("role");
         liveRow.removeAttribute("aria-live");
-        liveRow.textContent = rendered.textContent ?? "";
+        liveRow.replaceChildren(...Array.from(rendered.childNodes));
       } else {
         liveRow.className = "ai-activity-completed";
         liveRow.dataset.testid = "ai-tool-entry";

@@ -172,7 +172,8 @@ describe("renderChangePreviewCard", () => {
     const kinds = pair.querySelectorAll(".ai-change-shot").map((shot) => shot.dataset.kind);
     expect(kinds).toEqual(["before", "after"]);
     const labels = pair.querySelectorAll(".ai-change-shot-label").map((node) => node.textContent);
-    expect(labels).toEqual(["이전", "이후"]);
+    // 데크(2026-09-03): DESIGN.md 의 「지금 / 적용 후」 어휘로 통일.
+    expect(labels).toEqual(["지금", "적용 후"]);
     expect(findByTestId(root, "ai-change-shot-before")).not.toBeNull();
     expect(findByTestId(root, "ai-change-shot-after")).not.toBeNull();
     expect(pair.querySelector(".ai-change-arrow")).not.toBeNull();

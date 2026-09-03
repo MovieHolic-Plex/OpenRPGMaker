@@ -18,6 +18,8 @@ import {
   reasoningToggleText,
   renderToolActivityEntry,
 } from "./aiChatRenderers";
+import { deckIcon } from "./aiDeckIcons";
+import { toolLabelSummary } from "./aiToolLabels";
 import {
   aiDayKey,
   displayUserAuditText,
@@ -198,7 +200,11 @@ export interface ConversationLogHost {
   appendBubble: (role: AiBubbleRole, text: string) => HTMLElement;
   appendReasoning: () => { box: HTMLElement; body: HTMLElement };
   closeToolActivity: () => void;
-  appendToolLine: (name: string, result: ToolResult, args?: Record<string, unknown>) => void;
+  /**
+   * 툴 행 추가. `live` 는 지금 도는 턴의 행 — 그룹을 펼친 채 둔다. 복원(기록 재생) 경로는 live 가
+   * 아니어서 접힌 채 붙는다(e2e assistant-change-preview: 복원된 툴 호출은 접힌 한 줄 요약).
+   */
+  appendToolLine: (name: string, result: ToolResult, args?: Record<string, unknown>, options?: { readonly live?: boolean }) => void;
   appendTileThumbs: (tilesetId: string, tiles: readonly number[]) => void;
   appendTileGrid: (data: TileGridData) => void;
   appendAiDocument: (documentData: AiDocument) => void;
@@ -208,9 +214,17 @@ export interface ConversationLogHost {
   isLastReasoningBox: (node: HTMLElement) => boolean;
 }
 
+export type ToolChipRenderer = (
+  name: string,
+  args: Record<string, unknown> | undefined,
+  result: ToolResult,
+) => HTMLElement | null;
+
 export function createConversationLogHost(options: {
   readonly log: HTMLElement;
   readonly removeStartScreen: () => void;
+  /** 행 앞 맵 칩. 패널이 프로젝트·현재 맵을 알고 있어 여기서 주입한다(aiMapChip). */
+  readonly renderChip?: ToolChipRenderer;
 }): ConversationLogHost {
   const { log, removeStartScreen } = options;
 
@@ -264,31 +278,53 @@ export function createConversationLogHost(options: {
     count: number;
     writeOrFailCount: number;
     readOkCount: number;
+    /** 쓰기·실패 행의 툴 이름(접힌 헤더 요약용). */
+    names: string[];
   } | null = null;
   let toolDetailSeq = 0;
+  /**
+   * 그룹 헤더(데크 2026-09-03). 펼침: 「작업 N단계」. 접힘: 「작업 N단계 · 라벨 → 라벨 → …」 —
+   * 접힌 한 줄이 무엇을 했는지 말해야 한다(「작업 1 ▸」 는 말하지 않았다). 조회만 있으면 「조회 N건」.
+   */
   const refreshToolActivityToggle = (): void => {
     if (!toolActivity) return;
-    const { count, writeOrFailCount, readOkCount, list, toggle } = toolActivity;
-    const parts: string[] = [];
-    if (writeOrFailCount > 0) parts.push(`작업 ${writeOrFailCount}`);
-    if (readOkCount > 0) parts.push(`조회 ${readOkCount}`);
-    if (parts.length === 0) parts.push(`작업 ${count}`);
-    toggle.textContent = `${parts.join(" · ")} ${list.hidden ? "▸" : "▾"}`;
+    const { count, writeOrFailCount, readOkCount, list, toggle, names } = toolActivity;
+    let text: string;
+    if (writeOrFailCount > 0) text = `작업 ${writeOrFailCount}단계`;
+    else if (readOkCount > 0) text = `조회 ${readOkCount}건`;
+    else text = `작업 ${count}단계`;
+    if (list.hidden && names.length > 0) text += ` · ${toolLabelSummary(names)}`;
+    toggle.replaceChildren(
+      deckIcon(list.hidden ? "chevron-right" : "chevron-down", { size: 15 }),
+      el("span", { class: "ai-tool-activity-toggle-text", text }),
+    );
+    toggle.setAttribute("aria-expanded", String(!list.hidden));
   };
+  /** 턴이 끝났다(또는 다음 발화가 왔다) — 완료된 그룹은 요약 한 줄로 접는다(제안서 D3). */
   const closeToolActivity = (): void => {
+    if (toolActivity) {
+      toolActivity.list.hidden = true;
+      refreshToolActivityToggle();
+    }
     toolActivity = null;
   };
-  const appendToolLine = (name: string, result: ToolResult, args?: Record<string, unknown>): void => {
+  const appendToolLine = (
+    name: string,
+    result: ToolResult,
+    args?: Record<string, unknown>,
+    lineOptions: { readonly live?: boolean } = {},
+  ): void => {
     if (!toolActivity) {
       const list = el("div", { class: "ai-tool-activity-list" });
-      list.hidden = true;
+      // 진행 중 턴의 그룹은 펼친 채 자란다. 복원 경로는 접힌 채 붙는다.
+      list.hidden = !lineOptions.live;
       const toggle = el("button", {
         class: "ai-tool-activity-toggle",
-        attrs: { type: "button", title: "툴 실행 내역 펼치기/접기", "aria-label": "도구 실행 내역 펼치기/접기" },
+        attrs: { type: "button", title: "작업 단계 펼치기/접기", "aria-label": "작업 단계 펼치기/접기" },
         dataset: { testid: "ai-tool-activity-toggle" },
       });
       const group = el("div", { class: "ai-command-attachment ai-tool-activity", dataset: { testid: "ai-tool-activity" }, children: [toggle, list] });
-      const current = { list, toggle, count: 0, writeOrFailCount: 0, readOkCount: 0 };
+      const current = { list, toggle, count: 0, writeOrFailCount: 0, readOkCount: 0, names: [] as string[] };
       toggle.addEventListener("click", () => {
         list.hidden = !list.hidden;
         refreshToolActivityToggle();
@@ -305,16 +341,16 @@ export function createConversationLogHost(options: {
       return;
     }
     toolActivity.writeOrFailCount += 1;
+    toolActivity.names.push(name);
     toolDetailSeq += 1;
     const plainToolNames = getEditorChrome().jargonStyle === "plain";
     const visibleResult = plainToolNames
       ? { ...result, summary: sanitizeUserFacingToolId(result.summary) }
       : result;
-    const entry = renderToolActivityEntry(name, visibleResult, { args, index: toolDetailSeq });
-    if (plainToolNames) {
-      const title = result.ok
-        ? entry
-        : entry.querySelector(".ai-tool-failure-summary");
+    const chip = options.renderChip?.(name, args, result) ?? null;
+    const entry = renderToolActivityEntry(name, visibleResult, { args, index: toolDetailSeq }, { chip });
+    if (plainToolNames && !result.ok) {
+      const title = entry.querySelector(".ai-tool-failure-summary");
       if (title?.textContent) {
         title.textContent = title.textContent.replace(name, sanitizeUserFacingToolId(name));
       }
