@@ -54,6 +54,8 @@ export interface ComposerElements {
   readonly menuToggle: HTMLButtonElement;
   /** 성향 팝오버 토글. `preferenceContent` 를 주지 않았으면 null. */
   readonly preferenceToggle: HTMLButtonElement | null;
+  /** 성향 팝오버 껍데기 — 패널이 레일 아래로 옮겨 붙인다(토글이 레일에 있다). */
+  readonly preferencePopover: HTMLElement;
   /** 모드 세그먼트. `modeChips` 를 주지 않았으면 null. */
   readonly modeSegment: HTMLElement | null;
   readonly setMode: (mode: ComposerMode) => void;
@@ -367,6 +369,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     conversationsButton,
     menuToggle,
     preferenceToggle,
+    preferencePopover,
     modeSegment,
     setMode,
     setModelLabel,

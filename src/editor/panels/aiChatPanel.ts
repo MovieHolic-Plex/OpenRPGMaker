@@ -2326,8 +2326,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   );
   // 상태 문장은 레일이 든다 — 컴포저 행의 상태 그룹은 멈추기 버튼 자리만 남는다.
   rail.statusSlot.append(status);
-  // ⋯ 메뉴는 레일 아래 오른쪽에 붙는다 — 팝오버 열림/닫힘 기계는 컴포저 것 그대로.
-  rail.root.append(commandMenu);
+  // ⋯ 메뉴·성향·맥락 팝오버는 토글이 있는 레일 아래 오른쪽에 붙는다 — 열림/닫힘 기계는 컴포저 것 그대로.
+  // 컴포저 위로 띄우면 기록과 레일을 덮어 토글 자신이 가려진다(실측 2026-09-03).
+  rail.root.append(commandMenu, composerShell.preferencePopover, contextMeter.popover);
   const deck = el("div", {
     class: "ai-deck",
     dataset: { testid: "ai-deck" },

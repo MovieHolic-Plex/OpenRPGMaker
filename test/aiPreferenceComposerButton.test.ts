@@ -77,7 +77,7 @@ afterEach(() => {
 });
 
 describe("성향 진입점은 컴포저의 ⌾ 버튼", () => {
-  it("액션 행에 토글이 있고, 닫힌 팝오버가 컴포저 바의 자식으로 함께 있다", () => {
+  it("레일에 토글이 있고, 닫힌 팝오버가 같은 레일의 자식으로 함께 있다", () => {
     const panel = renderPanel();
     const toggle = findByTestId(panel, "ai-preference-toggle");
     const popover = findByTestId(panel, "ai-preference-popover");
@@ -86,8 +86,12 @@ describe("성향 진입점은 컴포저의 ⌾ 버튼", () => {
     expect(popover).not.toBeNull();
     expect(popover?.hidden).toBe(true);
     expect(toggle?.getAttribute("aria-expanded")).toBe("false");
-    // 상시 노출 버튼 줄 안에 있어야 한다 — 걷힌 헤더나 inert 툴바에 있으면 손이 닿지 않는다.
-    expect(findByTestId(panel, "ai-composer-actions")?.contains(toggle!)).toBe(true);
+    // 데크(2026-09-03): 상시 노출 상태 레일 안에 있어야 한다 — 걷힌 헤더나 inert 툴바에 있으면 손이 닿지 않는다.
+    // 팝오버도 토글 곁(레일)에 붙는다 — 컴포저 위로 띄우면 레일을 덮어 토글 자신이 가려졌다.
+    const rail = findByTestId(panel, "ai-deck-rail");
+    expect(rail?.contains(toggle!)).toBe(true);
+    expect(rail?.contains(popover!)).toBe(true);
+    expect(findByTestId(panel, "ai-composer-actions")?.contains(toggle!)).toBe(false);
   });
 
   it("스크린리더에 목적을 말한다 — ⌾ 글리프만으로는 읽히지 않는다", () => {

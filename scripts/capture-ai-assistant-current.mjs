@@ -1,6 +1,6 @@
 /**
  * AI 조수 현재 UI 실측 캡처 — 개편 제안서(docs/2026-09-03-ai-assistant-modern-ui-proposal.html) 의 「지금」 증거.
- * 사용: BASE=http://127.0.0.1:<내 포트> node scripts/capture-ai-assistant-current.mjs
+ * 사용: BASE=http://127.0.0.1:<내 포트> [OUT_DIR=after] node scripts/capture-ai-assistant-current.mjs
  * 출력: docs/2026-09-03-ai-assistant-modern-ui-assets/current/*.png + manifest.json
  */
 import { chromium } from "@playwright/test";
@@ -8,7 +8,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const BASE = process.env.BASE ?? process.env.RPG_ZZU_URL ?? "http://127.0.0.1:9861";
-const OUT = join(process.cwd(), "docs", "2026-09-03-ai-assistant-modern-ui-assets", "current");
+const OUT = join(process.cwd(), "docs", "2026-09-03-ai-assistant-modern-ui-assets", process.env.OUT_DIR ?? "current");
 mkdirSync(OUT, { recursive: true });
 const manifest = [];
 

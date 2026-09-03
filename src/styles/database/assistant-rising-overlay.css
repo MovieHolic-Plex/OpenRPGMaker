@@ -78,7 +78,8 @@
 /* float 만 컴포저가 절대 위치라 흐름 위치가 캔버스 최상단으로 튄다 — 이 도크에서만 바 위
    고정 밴드로 띄운다. 컨테이너는 클릭을 삼키지 않고 인터랙티브 자식만 되살린다. */
 .ai-chat-panel.chat-dock-float .ai-rising-sticky-zone {
-  bottom: calc(var(--ai-command-bar-clearance, 76px) + var(--ai-float-log-offset, 0px) + 8px);
+  /* clearance 는 데크(레일+기록+컴포저) 사각형 기준이라 기록 높이 보정 변수가 따로 없다(2026-09-03). */
+  bottom: calc(var(--ai-command-bar-clearance, 76px) + 8px);
   left: auto;
   margin: 0;
   max-width: none;

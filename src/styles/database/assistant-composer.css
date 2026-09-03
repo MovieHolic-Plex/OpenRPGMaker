@@ -191,14 +191,7 @@
   margin: 0;
 }
 
-.ai-composer-hint {
-  color: var(--text-3);
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* 좁은 폭에서는 힌트를 먼저 버린다(전송 버튼·컨텍스트가 우선). */
+/* 키 힌트(.ai-composer-hint)는 2026-09-03 에 걷었다 — 입력창 title 로 옮겼다. */
 
 /* 전송 / 중단 — 턴 중에는 서로 자리를 바꾼다(둘 다 상주, 한쪽만 표시). */
 .ai-composer-actions .ai-chat-send,
@@ -472,8 +465,3 @@
 
 /* 좁은 카드에서는 팝오버가 카드를 넘지 않게 폭을 맞춘다. */
 
-@media (max-width: 720px) {
-  .ai-composer-hint {
-    display: none;
-  }
-}

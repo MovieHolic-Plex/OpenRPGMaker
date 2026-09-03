@@ -148,7 +148,8 @@ describe("패널 스튜디오 모드", () => {
     expect(panel.dataset.logSlot).toBe("glass");
     const logParent = findByTestId(panel, "ai-chat-log")?.parentNode;
     expect(logParent instanceof FakeElement ? logParent.className : "").toContain("ai-glass-log");
-    expect(findByTestId(panel, "ai-command-bar")?.parentElement).toBe(panel);
+    // 데크(2026-09-03): 입력줄은 패널 직속이 아니라 데크(레일·기록·컴포저 한 표면) 안으로 돌아온다.
+    expect(findByTestId(panel, "ai-command-bar")?.parentElement).toBe(findByTestId(panel, "ai-deck"));
     expect(storage.get("oprn:ai-studio")).toBe("0");
   });
 

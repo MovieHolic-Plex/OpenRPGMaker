@@ -4,24 +4,13 @@
 /* Side: cream column, 1px line. No indigo stripe. */
 
 /* Float: capsule over the map (not a side column) */
-.ai-chat-panel.chat-dock-float .ai-command-bar {
-  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
-  border: 1px solid var(--border-default);
-  border-radius: 16px;
-  box-shadow: var(--shadow-modal);
-  padding: 10px 12px;
-}
+/* float 캡슐 크롬(배경·테두리·그림자)은 데크(18-assistant-deck.css)가 갖는다 — 2026-09-03 삭제. */
 /* "플로팅 바 · 맵 위 입력" ::before 워터마크 제거(2026-08-18 초보자 UX 리뷰 P1-4) —
    좁은 플렉스 칸에서 한 글자씩 세로로 줄바꿈되어 깨진 글자처럼 보였고,
    초보자에게는 의미 없는 개발자 표시였다. 도크 상태는 헤더 배지가 이미 표시한다. */
 
 /* 플로팅 바가 화면 전폭을 덮어 상태바 버튼(저장 칩 등)의 포인터를 차단하던 결함 수정:
    오른쪽 캐프슐로 좁히고 상태바(약 28px) 위로 띄운다(2026-08-18 UX 리뷔 P1-4). */
-.ai-chat-panel.chat-dock-float .ai-command-bar {
-  margin-bottom: 34px;
-  margin-left: auto;
-  width: min(var(--ai-float-bar-width, 640px), calc(100vw - 24px));
-}
 
 /* ── AI 리치 문서 (present_doc) ─────────────────────────────────────────── */
 .ai-chat-bubble.ai-chat-doc,

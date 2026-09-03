@@ -1,6 +1,6 @@
 /* 스튜디오 모드 셸 + 시작 화면 + 기록 마운트.
    스튜디오만 타일 에디터를 덮는 연출 워크스페이스다. 기본 조수(입력줄 캡슐)는
-   17-assistant-modern-shell.css 가 소유하고, 이 파일의 .is-studio 규칙은 그 기하에서 뺀다. */
+   18-assistant-deck.css 가 소유하고, 이 파일의 .is-studio 규칙은 그 기하에서 뺀다. */
 
 .ai-chat-body {
   display: flex;

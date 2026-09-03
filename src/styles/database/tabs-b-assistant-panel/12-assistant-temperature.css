@@ -4,11 +4,7 @@
   color: var(--gold);
 }
 
-.ai-chat-panel.chat-dock-float .ai-command-bar {
-  border-color: var(--border-default);
-}
-
-.ai-chat-panel.is-assistant-idle .ai-context-chips,
+/* 유휴에서도 컨텍스트 핀(현재 맵)은 보인다 — 데크(2026-09-03). 상태 그룹은 레일이 대신한다. */
 .ai-chat-panel.is-assistant-idle .ai-status-group {
   display: none;
 }
