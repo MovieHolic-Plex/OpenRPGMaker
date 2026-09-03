@@ -126,3 +126,35 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   **함정 둘:** (1) pi-ai 의 Google 응답 파서는 `inlineData` 를 버린다(`type:"image"` 파트를
   만들지 않는다) — 그래서 이미지 바이트는 전송 계층에서 직접 줍는다. (2) 그때 재생하는
   `Response` 에 `url` 을 다시 심어야 한다. 없으면 pi-ai 가 `Missing request URL` 로 끊는다.
+
+
+## NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+
+사용자 보고: "npc 대사가 생성할 때마다 비슷하다. 하드코딩이냐?" — 맞았다. `author_village` 는 인자에 대사 자리가 없어
+(`npcCount` 만) 항상 `village/constants.ts DEFAULT_NPCS`(민재·소라·대길… 10명 고정 대사)를 돌려썼고, `make_villager`/`place_npc`
+는 대사를 빼면 `"안녕하세요."`·`"일하는 중이야."`·호감 페이지 `"고마워…"` 를, 밑그림 npc 자동 배치는 `"${name}입니다."` 를,
+`build_castle` 은 문지기·성주 고정 대사를 박았다. 그리고 `project.world`(세계관)는 AI 어디에도 실리지 않았다
+(`buildWorldDigest` 호출자 0). 전부 제거했고 계약을 이렇게 바꿨다.
+
+**계약**
+- NPC 를 만드는 툴은 대사가 없으면 **text 커맨드 0 인 '대기' 페이지**를 만든다. 대체 문구 없음. `author_village`/`build_village`
+  는 `대사 없는 NPC: N명` 경고를 그대로 낸다. 임시 이름은 `주민 N` 이며 캐스트 라이터가 이름까지 바꾼다(내부 맵 이름
+  `주민 N의 집 내부` 도 함께 바뀐다). `make_villager` 의 활동 페이지·`friendshipUnlock` 페이지도 대사 없이 만들어지고
+  `friendshipLines:{unlock, after}` 인자로만 채워진다.
+- `author_village` 는 `residents:[{name, role?, lines?}]` 를 받는다(스키마·`parseAuthorVillageRequest`·`villageDomainArgs → npcs`).
+  모델이 직접 쓰면 그대로 들어간다.
+- 세션 훅 `AssistantSession.authorPendingNpcCast` — **턴 끝**(최종 응답·검수 종료·예산 종료 직전)에 기준선에 없던 대사 없는
+  NPC 를 맵별로 모아 lite 모델(`configForLiteModel`, `response_format: json_object`)에게 **한 장의 캐스트 시트**를 받는다.
+  프롬프트(`ai/npcCast.buildCastWriterMessages`)에는 테마(툴콜 `theme` 또는 밑그림 title)·요청문·세계관 다이제스트
+  (`buildWorldDigest`, 600토큰)·같은 맵의 이미 대사 있는 주민·대기 페이지(pageId + 조건 라벨: 활동/시간대/호감도…)가 실린다.
+- 검증은 코드가 한다(`parseCastSheet`): 대기 페이지 전원 ≥1줄, 주민 ≥2 이면 절반 이상이 **다른 주민 이름**을 언급, 세계관
+  개체가 있으면 ≥1줄이 그 **이름**을 언급, placeholder 이름 금지, 모르는 eventId 거부. 실패 사유를 붙여 1회 재요청.
+- 적용은 새 쓰기 툴 `author_npc_cast`(`tools/npcCastTools.ts`) — 페이지에 changeFace+text 를 앞에 넣고 **상점 등 비텍스트 커맨드는
+  보존**, 페이지/이벤트 이름 변경, 주민을 `world` 의 `character` 개체(`w_npc_<eventId>`, refs event+map, origin ai) + 맵 `place`
+  개체(`w_place_<mapId>`) + `locatedIn`/`knows` 관계로 등록(`castSheetToWorldPatch`, `normalizeWorld` 통과). 사용자(origin user)·
+  잠긴 개체는 덮지 않는다. diff 에 `eventsModified`·`worldEntitiesAdded` 가 잡혀 제안·감사·되돌리기가 다른 쓰기와 같다.
+- 실패(JSON 깨짐·검증 2회 실패·툴 거부)는 **재킥**: 감사 `npc-cast:failed`, 오케스트레이션 메시지 "HARNESS: 대사 없는 NPC N명…
+  place_npc {id, dialogue} 로 직접 쓰라" 를 넣고 최종 응답 분기에서 라운드를 한 번 더 돈다(턴당 1회). 성공은 `npc-cast:applied`.
+- 데모/샘플 콘텐츠(`src/editor/content/*`, `src/project/defaults/dewVillageDialogue.ts`)는 저작된 게임 데이터라 건드리지 않았다.
+- 테스트: `test/npcCast.test.ts`(순수 검증·세계관 패치), `test/npcCastTools.test.ts`(대기 페이지·residents·friendshipLines·castle·
+  author_npc_cast), `test/npcCastSession.test.ts`(훅 성공/재킥). `aiEventPageSemantics` 의 "still greets" 케이스는 새 계약으로 바꿨다.
