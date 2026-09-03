@@ -91,6 +91,8 @@ import {
   type MinimapRuntimeState,
 } from "@/player/minimap";
 import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
+import { createRuntimePerfCounters, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
+import { onRegistryValue } from "@/player/registryReady";
 
 const PhaserRuntime = getLoadedPhaser();
 const MAX_FAILED_ASSETS = 20;
@@ -166,6 +168,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   timeTintTransition: import("@/player/playSceneTypes").TimeTintTransition | null = null;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container> = new Set();
+  perfCounters: RuntimePerfCounters = createRuntimePerfCounters();
   private readonly failedAssetLoads: FailedPlayAsset[] = [];
 
   get failedAssets(): readonly FailedPlayAsset[] {
@@ -338,6 +341,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   update(_time: number, deltaMs: number): void {
+    this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
     updateGameTime(this, deltaMs);
     tickNpcSchedules(this, isGameTimePausedForRuntime(this), deltaMs);
@@ -581,17 +585,19 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   // player.ts가 게임 생성 후 비동기로 dialogue를 registry에 넣기 때문에,
   // create 시점에는 아직 없을 수 있다. 준비되면 fireAutoTriggers를 호출한다.
   private async fireAutoTriggersWhenReady(): Promise<void> {
-    if (this.game.registry.get("dialogue")) {
-      await this.fireAutoTriggers();
-      return;
-    }
-    this.game.registry.events.once("changedata", this.onRegistryDialogueReady);
+    this.whenDialogueReady(() => void this.fireAutoTriggers());
   }
 
-  private readonly onRegistryDialogueReady = (_parent: unknown, key: string): void => {
-    if (key !== "dialogue") return;
-    void this.fireAutoTriggers();
-  };
+  /**
+   * dialogue 는 게임 생성 뒤 처음 넣는 registry 키다 — DataManager 는 그때 `changedata` 가 아니라
+   * `setdata` 를 낸다. changedata 하나만 기다리던 옛 코드는 create() 가 registry 쓰기보다 앞서면
+   * 자동 실행 이벤트가 영원히 발화하지 않았다. 씬이 내려가면 대기도 푼다.
+   */
+  private whenDialogueReady(callback: () => void): void {
+    const detach = onRegistryValue(this.game.registry, "dialogue", () => callback());
+    this.events.once("shutdown", detach);
+    this.events.once("destroy", detach);
+  }
 
   private async syncMinimap(): Promise<void> {
     const host = this.game.registry.get("dialogueHost") as HTMLElement | undefined;
@@ -615,13 +621,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   private async runInitialEventTestWhenReady(eventId: string): Promise<void> {
-    if (this.game.registry.get("dialogue")) {
-      await this.runEvent(eventId);
-      return;
-    }
-    this.game.registry.events.once("changedata", (_parent: unknown, key: string) => {
-      if (key === "dialogue") void this.runEvent(eventId);
-    });
+    this.whenDialogueReady(() => void this.runEvent(eventId));
   }
 
   private initialSession(project: ReturnType<typeof store.getCurrent>): PlaySession {

@@ -21,6 +21,7 @@ import {
   authoringProjectFingerprint,
 } from "@/editor/authoringJourney";
 import { STORAGE_PREFIX } from "@/util/appStorage";
+import { isEditorGameSuspended, resumeEditorGame, suspendEditorGame } from "@/editor/panels/editorGameSuspension";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
@@ -275,6 +276,8 @@ export function closeTestPlayModal(): void {
   releaseEventTestSnapshot = null;
   modalRoot?.remove();
   modalRoot = null;
+  // 창이 닫혔으니 편집기 게임을 다시 깨운다(열 때 잠재운 것과 짝).
+  resumeEditorGame();
 }
 
 // 런 조작 버튼은 전체 테스트 플레이 창에만 단다. 전투·이벤트 테스트 셸은 런 손잡이가 없어
@@ -372,6 +375,9 @@ function openTestPlayShell(
   backdrop.append(windowNode);
   document.body.append(backdrop);
   modalRoot = backdrop;
+  // 모달 뒤의 편집기 게임은 그릴 필요도, 키를 받을 이유도 없다 — 플레이 프레임에 양보한다.
+  suspendEditorGame();
+  windowNode.dataset.editorGameSuspended = String(isEditorGameSuspended());
   if (shellOptions.runControls) skipTitleCheckbox = skipTitleInput;
   restoreButton.addEventListener("click", () => setTestPlayWindowMode(windowNode, "windowed"));
   maximizeButton.addEventListener("click", () => setTestPlayWindowMode(windowNode, "fullscreen"));

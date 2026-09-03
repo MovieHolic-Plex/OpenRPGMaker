@@ -7,13 +7,17 @@
 // (창 색 · 레이아웃 · HUD 형태). 금지 표현의 권위 있는 목록은 한 곳에만 둔다 —
 // `test/detsukuruBrandStrings.test.ts` 가 이 파일의 라벨을 검사한다.
 //
-// `id` 는 프로젝트 파일에 저장되므로 **바꾸지 않는다** — 바꾸면 사용자가 저장해둔
-// 전투 설정이 깨진다. 그래서 일부 id 에는 옛 계보 이름이 남아 있고, 식별자 개명은
-// 저장 데이터 마이그레이션과 함께 별도 라운드에서 다룬다.
+// `id` 는 프로젝트 파일에 저장되므로 함부로 바꾸지 않는다 — 바꿀 때는 `resolveSkinId`
+// 에 옛 id 의 매핑을 남겨 저장된 전투 설정이 깨지지 않게 한다.
 //
-// 2026-08-21: 12개 라벨 전부 교체 완료. 예전에는 타사 프랜차이즈 이름을 그대로 썼다.
-// 라벨은 이제 **창 색 + 레이아웃/HUD 특징**을 말하고 12개가 서로 구분된다:
-//   흰 창·박스 HUD / 유리 창·사이드뷰 / 감청 창·정면 / 먹빛 창·최소 HUD /
+// 2026-09-03: 정면 전투 스킨 id `rm2003` → `rm2000` 개명. 옛 id 는 이름만 2003 이었고
+// 실제 구도는 아군이 필드에 서지 않는 **정면(2000식) 전투**였다. 같은 구도의 deprecated
+// 스킨 `rm2000`(감청 창)은 이 하나로 흡수했다 — 저장된 `"rm2003"`·`"rm2000"`·`"classic"`
+// 은 전부 이 스킨으로 풀린다. 그래서 등록 스킨은 12 → 11 종이다.
+//
+// 2026-08-21: 라벨 전부 교체 완료. 예전에는 타사 프랜차이즈 이름을 그대로 썼다.
+// 라벨은 이제 **창 색 + 레이아웃/HUD 특징**을 말하고 서로 구분된다:
+//   흰 창·박스 HUD / 유리 창·정면 필드 / 먹빛 창·최소 HUD /
 //   청람 창·링 게이지 / 세피아 창·주황 강조 / 검은 창·1인칭 시점 /
 //   코발트 창·청록 강조 / 암전 창·형광 분홍 / 금갈색 창·박스 HUD /
 //   밝은 창·정면 / 심야 창·박스 HUD
@@ -40,8 +44,13 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
       "--battle-backdrop-filter": "saturate(1.08) contrast(1.04)",
     },
   },
-  rm2003: {
-    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "파란 창 · 전면 필드", layout: "frontview", showAllySprites: false,
+  // 정면 전투(아군 스프라이트 없음, 하단 유리 카드 HUD). 배경 리소스 id 는 저장 데이터가
+  // 참조하는 식별자라 개명하지 않는다(그림 파일도 rm2003-backdrop.png 그대로).
+  // 강조색은 따뜻한 호박색 하나다 — 커서 · 차례 액터 · ATB · 확인 버튼이 전부 이 색을 쓴다.
+  // 남색 유리 표면(런타임 공용 토큰) 위에서 남보라 강조는 "AI 보라 그라데이션" 으로 읽혔고(디자인
+  // 감사), 밤 숲·초록 몬스터 위에서도 대비가 약했다. HP(민트)·MP(하늘)는 의미색이라 별개다.
+  rm2000: {
+    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 정면 필드", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "wipe-blue",
     themeVars: {
       "--battle-window-bg": "rgba(14,18,34,.96)",
@@ -49,34 +58,14 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
       "--battle-window-inner": "rgba(4,6,16,.66)",
       "--battle-text": "#eef1fb",
       "--battle-text-muted": "#9aa4c4",
-      "--battle-accent": "#7c8cff",
-      "--battle-accent-soft": "rgba(124,140,255,.20)",
+      "--battle-accent": "#f2c063",
+      "--battle-accent-soft": "rgba(242,192,99,.22)",
       "--battle-hp-high": "#3ddc97",
       "--battle-hp-mid": "#ffc857",
       "--battle-hp-low": "#ff5f6d",
       "--battle-shadow": "0 8px 24px rgba(3,5,14,.55)",
-      "--battle-cursor": "#7c8cff",
+      "--battle-cursor": "#f2c063",
       "--battle-backdrop-filter": "saturate(1.04) contrast(1.06)",
-    },
-  },
-  rm2000: {
-    deprecated: true,
-    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2000-backdrop", label: "감청 창 · 정면", layout: "frontview", showAllySprites: false,
-    hudTemplate: "rows", transition: "wipe-black",
-    themeVars: {
-      "--battle-window-bg": "#0d1a3a",
-      "--battle-window-edge": "#2a4a8a",
-      "--battle-window-inner": "#132a5a",
-      "--battle-text": "#e6efff",
-      "--battle-text-muted": "#8aa0cc",
-      "--battle-accent": "#ffb74d",
-      "--battle-accent-soft": "rgba(255,183,77,.15)",
-      "--battle-hp-high": "#66bb6a",
-      "--battle-hp-mid": "#ffa726",
-      "--battle-hp-low": "#ef5350",
-      "--battle-shadow": "0 8px 24px rgba(0,0,0,.45)",
-      "--battle-cursor": "#ffb74d",
-      "--battle-backdrop-filter": "brightness(.92) contrast(1.08) saturate(.95)",
     },
   },
   octopath: {
@@ -272,7 +261,7 @@ export function listBattleSkinIds(): BattleSkinId[] {
 }
 
 /** 지원이 이어지는 스킨 2종 — 새 저작 UI가 노출하는 집합. */
-export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = ["pokemon", "rm2003"];
+export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = ["pokemon", "rm2000"];
 
 /** BATTLE_SKINS 에서 deprecated 표식이 없는 id 만 추린다(ACTIVE_BATTLE_SKIN_IDS 와 동일해야 함). */
 export function listActiveBattleSkinIds(): BattleSkinId[] {
@@ -284,13 +273,20 @@ export function isDeprecatedBattleSkin(id: BattleSkinId): boolean {
 }
 
 /** 미설정/미지의 값이 떨어지는 기본 스킨. */
-export const DEFAULT_BATTLE_SKIN_ID: BattleSkinId = "rm2003";
+export const DEFAULT_BATTLE_SKIN_ID: BattleSkinId = "rm2000";
 
-/** legacy(`classic`/`pokemon`/undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다.
- *  미설정(undefined)은 기본 스킨(rm2003)으로, legacy `classic` 은 rm2003 으로 남긴다. */
+/** 저장 데이터에 남아 있을 수 있는 옛 정면 전투 스킨 id → 현재 id. */
+const LEGACY_SKIN_ALIASES: Readonly<Record<string, BattleSkinId>> = {
+  classic: "rm2000", // 2026-08 이전 별칭
+  rm2003: "rm2000", // 2026-09-03 개명 전 id
+};
+
+/** legacy(`classic`/`rm2003`/`pokemon`/undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다.
+ *  미설정(undefined)은 기본 스킨(rm2000)으로, legacy `classic`·`rm2003` 은 rm2000 으로 푼다. */
 export function resolveSkinId(legacy: string | undefined): BattleSkinId {
   if (legacy === "pokemon") return "pokemon";
-  if (legacy === "classic") return "rm2003";
   if (!legacy) return DEFAULT_BATTLE_SKIN_ID;
+  const alias = LEGACY_SKIN_ALIASES[legacy];
+  if (alias) return alias;
   return VALID_IDS.has(legacy as BattleSkinId) ? (legacy as BattleSkinId) : DEFAULT_BATTLE_SKIN_ID;
 }

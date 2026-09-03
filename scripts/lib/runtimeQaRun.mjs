@@ -79,11 +79,16 @@ async function requireHooks(page) {
   );
 }
 
+/** testid 존재 판정. `attr`/`value` 를 주면 "그 속성값을 가진 요소가 있다" 로 좁힌다 —
+ *  같은 testid 가 여럿인 노드(피해 팝업)에서 특정 대상(data-target-id) 것만 기다릴 때 쓴다. */
+function testidPresentInPage([testid, attr, value]) {
+  const nodes = document.querySelectorAll(`[data-testid='${testid}']`);
+  if (attr === null) return nodes.length > 0;
+  return Array.from(nodes).some((node) => node.getAttribute(attr) === value);
+}
+
 async function testidMatches(page, op) {
-  const present = await page.evaluate(
-    (testid) => document.querySelector(`[data-testid='${testid}']`) !== null,
-    op.testid,
-  );
+  const present = await page.evaluate(testidPresentInPage, [op.testid, op.attr ?? null, op.value ?? null]);
   return op.state === "absent" ? !present : present;
 }
 
@@ -242,6 +247,17 @@ async function applyOp(page, op, runState) {
     case "waitForVisible":
       await waitForVisibleTestid(page, op);
       return;
+    case "waitForAttr":
+      await page.waitForFunction(
+        ([testid, attr, value]) => {
+          const node = document.querySelector(`[data-testid="${testid}"]`);
+          if (!node) return false;
+          return node.getAttribute(attr) === value;
+        },
+        [op.testid, op.attr, op.value],
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
     case "pressUntil": {
       // 매 입력 후 조건을 확인하므로 초과 입력이 구조적으로 불가능하다.
       // 정해진 횟수만 누르면 대사가 닫힌 뒤 남은 입력이 이벤트를 재발동시킨다.
@@ -250,11 +266,14 @@ async function applyOp(page, op, runState) {
         if (await testidMatches(page, op)) return;
         await page.keyboard.press(op.key);
         await page.waitForFunction(
-          ([testid, state]) => {
-            const present = document.querySelector(`[data-testid='${testid}']`) !== null;
+          ([testid, state, attr, value]) => {
+            const nodes = document.querySelectorAll(`[data-testid='${testid}']`);
+            const present = attr === null
+              ? nodes.length > 0
+              : Array.from(nodes).some((node) => node.getAttribute(attr) === value);
             return state === "absent" ? !present : present;
           },
-          [op.testid, op.state],
+          [op.testid, op.state, op.attr ?? null, op.value ?? null],
           { timeout: op.timeoutMs ?? 30_000 },
         ).catch(() => undefined);
       }

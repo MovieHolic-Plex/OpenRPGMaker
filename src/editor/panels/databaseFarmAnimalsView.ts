@@ -56,7 +56,7 @@ import { toast } from "@/util/toast";
 type FarmKind = "species" | "building" | "animal";
 
 const KIND_LABEL: Record<FarmKind, string> = { species: "동물 종", building: "축사", animal: "시작 개체" };
-const KIND_EYEBROW: Record<FarmKind, string> = { species: "SPECIES", building: "BUILDING", animal: "ANIMAL" };
+const KIND_EYEBROW: Record<FarmKind, string> = { species: "동물 종", building: "축사", animal: "개체" };
 const KIND_ICON: Record<FarmKind, string> = { species: "🐓", building: "🏚", animal: "🐄" };
 const DELETE_IDLE_LABEL = "삭제";
 const DELETE_CONFIRM_LABEL = "정말 삭제?";
@@ -103,7 +103,7 @@ function unconfiguredWorkspace(rerender: () => void): HTMLElement {
     testid: "db-farm-animals-workspace",
     detail: detailPane({
       hero: detailHero({
-        eyebrow: "FARM",
+        eyebrow: "동물·축사",
         title: "동물·축사",
         subtitle: "동물 종, 먹이와 생산물, 축사 수용량, 게임 시작 개체를 한 화면에서 연결합니다.",
         tags: ["동물 종 0", "축사 0", "시작 개체 0"],

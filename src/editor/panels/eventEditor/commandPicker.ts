@@ -14,7 +14,8 @@ import { M2_COMMAND_PICKER_GROUP_ORDER, mapScreenNativeSurfaceGroup } from "@/pr
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";
-import { groupHeadingText, groupVisual, pickerPageGlyph } from "./commandCategoryIcons";
+import { groupHeadingText, groupVisual, pickerPageGlyph, pickerPageIcon, renderCategoryIcon } from "./commandCategoryIcons";
+import { renderEditorIcon } from "./editorIcons";
 import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
 import { nativeCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import {
@@ -387,7 +388,7 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
         tabs.append(
           el("button", {
             class: "event-command-picker-tab",
-            text: pickerPageTitle(page.page),
+            children: [renderEditorIcon(pickerPageIcon(page.page)), el("span", { text: pickerPageTitle(page.page) })],
             attrs: {
               type: "button",
               role: "tab",
@@ -589,7 +590,7 @@ function renderCommandGrid(
       grid.append(
         el("div", {
           class: "event-command-picker-group-heading",
-          text: groupHeadingText(entry.group),
+          children: [renderCategoryIcon(visual), el("span", { text: groupHeadingText(entry.group) })],
           dataset: { category: visual.key, glyph: visual.glyph },
         })
       );
@@ -627,6 +628,7 @@ function renderCommandButton(
       class: "event-command-picker-command-icon",
       attrs: { "aria-hidden": "true" },
       dataset: { glyph: visual.glyph },
+      children: [renderCategoryIcon(visual)],
     }),
     el("span", { class: "event-command-picker-command-label", text: entry.label }),
   ];
@@ -677,7 +679,7 @@ function renderCommandButton(
   const favorite = readEventCommandPickerPreferences().favorites.includes(entry.commandId);
   const favoriteButton = el("button", {
     class: `event-command-picker-favorite${favorite ? " is-favorite" : ""}`,
-    text: favorite ? "★" : "☆",
+    children: [renderEditorIcon(favorite ? "starFilled" : "star")],
     attrs: {
       type: "button",
       title: favorite ? `${entry.label} 즐겨찾기 해제` : `${entry.label} 즐겨찾기 추가`,
@@ -762,9 +764,9 @@ function renderFooter(close: () => void): HTMLElement {
         class: "event-command-picker-legend",
         dataset: { testid: "event-command-picker-legend" },
         children: [
-          el("span", { class: "command-runtime-badge runtime-partial", text: "△", attrs: { "aria-hidden": "true" } }),
+          el("span", { class: "command-runtime-badge runtime-partial", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("warning")] }),
           el("span", { text: "일부만 실행" }),
-          el("span", { class: "command-runtime-badge editor-only", text: "!", attrs: { "aria-hidden": "true" } }),
+          el("span", { class: "command-runtime-badge editor-only", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("info")] }),
           el("span", { text: "에디터에서만 미리 봅니다" }),
         ],
       }),

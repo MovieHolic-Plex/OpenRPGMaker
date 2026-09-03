@@ -17,6 +17,7 @@ Status guide for documentation files. Agents should check this index before trus
 | `2026-07-16-village-harness-adversarial-review.md` | 마을 건설 하네스 적대적 리뷰 (2026-07-16) | historical (mid-development review; may have stale references) |
 | `2026-07-18-handoff-canonical-construction-facades.md` | Canonical Construction Facades Handoff | historical (mid-development review; may have stale references) |
 | `2026-07-21-database-tabs-audit.md` | 데이터베이스 전 탭 감사 (2026-07-21) | recent (verify against current source) |
+| `2026-09-03-battle-rm2000-modern-hud.md` | 정면 전투 스킨 개명(rm2003 → rm2000) · 모던 유리 HUD 전/후 사진 | current (reference doc) |
 | `default-adventure-issues.md` | 기본 게임/에셋 정리 중 발견한 문제점 | current (reference doc) |
 | `editor-authored-demo-critique.md` | 에디터 작성 데모 비판안 | current (reference doc) |
 | `goal-battle-adversarial-fixes.md` | Ultrawork Goal — Battle-area adversarial review fixes | current (reference doc) |

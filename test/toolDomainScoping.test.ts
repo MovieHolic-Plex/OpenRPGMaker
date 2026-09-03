@@ -6,10 +6,8 @@
 
 import { afterEach, describe, expect, it } from "vitest";
 import {
-  beginAssistantToolDomainTurn,
   computeActiveToolDomains,
   computeAssistantToolMode,
-  recordAssistantToolDomainUse,
   resetAssistantToolDomainMemory,
 } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
@@ -18,6 +16,7 @@ import { CONSTRUCTION_WRITE_ROUTE_MANIFEST, PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { el } from "@/util/dom";
 import { installFakeDom } from "./fakeDom";
+import { declaredIntent } from "./intentFixture";
 
 const OLD_TILE_TOOLS = [...LEGACY_TILE_KNOWLEDGE_SUPERSEDED.keys()];
 const V3_PRIMITIVES = ["build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase"];
@@ -111,7 +110,7 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
   it("다도메인 유니온은 노출 상한(40)을 지키고 weak-only 도메인부터 제거하며 database 활성 시 DB 툴 전량을 유지한다", () => {
     const tools = makeExposureTestTools();
     resetAssistantToolDomainMemory();
-    const domains = computeActiveToolDomains("아이템 스킬 벽 퀘스트 월드");
+    const domains = computeActiveToolDomains(declaredIntent({ tools: ["upsert_item", "build_wall", "define_quest", "plan_world"] }));
     const exposed = toOpenAiTools(tools, { domains });
     const names = new Set(exposed.map((tool) => tool.function.name));
 
@@ -153,110 +152,48 @@ describe("T4 — computeAssistantToolMode (UI 상태 결정론)", () => {
   });
 });
 
-describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
+describe("T4 — computeActiveToolDomains (선언 유니온 + TTL)", () => {
   afterEach(() => {
     resetAssistantToolDomainMemory();
     editorState.set({ layer: "lower", tool: "paint" });
   });
 
-  it("의도 키워드로 battle/database/tile 도메인을 결정론적으로 연다", () => {
-    const enemy = computeActiveToolDomains("고블린 적 만들어줘");
+  it("선언한 툴의 도메인이 결정론으로 열린다 — 문장은 보지 않는다", () => {
+    const enemy = computeActiveToolDomains(declaredIntent({ tools: ["simulate_battle", "upsert_enemy"] }));
     for (const domain of ["core", "map", "battle", "database"] as const) expect(enemy.has(domain)).toBe(true);
-    const wall = computeActiveToolDomains("벽 깔아줘");
+    const wall = computeActiveToolDomains(declaredIntent({ tools: ["build_wall"] }));
     for (const domain of ["core", "map", "tile"] as const) expect(wall.has(domain)).toBe(true);
+    expect(computeActiveToolDomains(null).size).toBe(2);
   });
 
-  it.each(["100x100 city", "winter town", "snow settlement", "겨울 도시", "눈 정착지"])(
-    "%s exposes canonical village construction",
-    (request) => {
-      const domains = computeActiveToolDomains(request);
-      expect(domains.has("map")).toBe(true);
-      expect(domains.has("tile")).toBe(true);
-      const names = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
-      expect(names.has("author_village")).toBe(true);
-    },
-  );
-
-  it("호수/수역 요청은 tile 도메인을 열어 fill_region을 노출한다", () => {
-    const domains = computeActiveToolDomains("오른쪽 아래에 호수 만들어줘");
+  it("야외 시공 선언은 tile 을 열어 canonical 마을 시공이 노출된다", () => {
+    const domains = computeActiveToolDomains(declaredIntent({ space: "outdoor", tools: ["author_village"] }));
+    expect(domains.has("map")).toBe(true);
     expect(domains.has("tile")).toBe(true);
-    const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
-    expect(exposed.has("fill_region")).toBe(true);
+    const names = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
+    expect(names.has("author_village")).toBe(true);
   });
 
-  it("길/도로 요청 시 tile 도메인에서 paint_road 가 핀되어 노출된다", () => {
-    const domains = computeActiveToolDomains("흙길 깔아줘 산책로");
-    expect(domains.has("tile")).toBe(true);
-    const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
-    expect(exposed.has("paint_road")).toBe(true);
+  it("수정 선언은 편집 3도메인을 열고 상한(40) 안에서 채우기 툴이 노출된다", () => {
+    const domains = computeActiveToolDomains(declaredIntent({ mode: "modify" }));
+    for (const domain of ["tile", "map", "event"] as const) expect(domains.has(domain)).toBe(true);
+    const list = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
+    expect(list.length).toBeLessThanOrEqual(40);
+    expect(list).toContain("fill_region");
   });
 
-  it("상점 재고 수정 의도는 event 도메인을 열고 조회·재고 툴을 함께 노출한다", () => {
-    const domains = computeActiveToolDomains("상점 재고를 읽고 수정해");
-    expect(domains.has("event")).toBe(true);
-
-    const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
-    expect(exposed.has("get_event")).toBe(true);
-    expect(exposed.has("set_shop_stock")).toBe(true);
-  });
-
-  it("새 프로젝트와 밤 분위기 요청은 system 도메인의 canonical 툴을 cap 안에서 노출한다", () => {
-    const resetDomains = computeActiveToolDomains("Start a new project from scratch");
+  it("system 툴을 선언하면 canonical 툴이 cap 안에서 노출된다", () => {
+    const resetDomains = computeActiveToolDomains(declaredIntent({ tools: ["reset_project"], resetsContext: true }));
     const resetExposed = toOpenAiTools(undefined, { domains: resetDomains });
     expect(resetDomains.has("system")).toBe(true);
     expect(resetExposed.length).toBeLessThanOrEqual(40);
     expect(resetExposed.some((tool) => tool.function.name === "reset_project")).toBe(true);
 
-    const nightDomains = computeActiveToolDomains("밤이 되면 분위기가 바뀌게 해줘");
+    const nightDomains = computeActiveToolDomains(declaredIntent({ tools: ["configure_time_system"] }));
     const nightExposed = toOpenAiTools(undefined, { domains: nightDomains });
     expect(nightDomains.has("system")).toBe(true);
     expect(nightExposed.length).toBeLessThanOrEqual(40);
     expect(nightExposed.some((tool) => tool.function.name === "configure_time_system")).toBe(true);
-  });
-
-  it("길·NPC·상자 복합 요청도 configure_time_system을 노출 상한 밖으로 밀어내지 않는다", () => {
-    // Regression: PINNED_TOOLS_BY_DOMAIN에 system 키가 두 번 선언되어 뒤의
-    // evaluate_game_quality 세트가 configure_time_system 핀을 덮어썼다.
-    const domains = computeActiveToolDomains(
-      "흙길과 NPC 주민 이벤트를 만들고 50G 보상 상자를 둔 뒤 시간 시스템을 활성화해줘",
-    );
-    const exposed = toOpenAiTools(undefined, { domains });
-
-    expect(domains.has("tile")).toBe(true);
-    expect(domains.has("event")).toBe(true);
-    expect(domains.has("system")).toBe(true);
-    expect(exposed.length).toBeLessThanOrEqual(40);
-    expect(exposed.some((tool) => tool.function.name === "configure_time_system")).toBe(true);
-  });
-
-  it("부정 필터는 제외된 도메인 키워드를 활성화하지 않는다", () => {
-    const domains = computeActiveToolDomains("전투 말고 타일만");
-    expect(domains.has("battle")).toBe(false);
-    expect(domains.has("tile")).toBe(true);
-    expect(computeActiveToolDomains("말고 전투").has("battle")).toBe(false);
-  });
-
-  it("중의어 스킬은 database/battle weak 후보를 모두 올린다", () => {
-    const domains = computeActiveToolDomains("스킬 추가");
-    expect(domains.has("database")).toBe(true);
-    expect(domains.has("battle")).toBe(true);
-  });
-
-  it("성공 툴 도메인은 2턴 유지되고 3턴째 사라지며 리셋어는 즉시 비운다", () => {
-    recordAssistantToolDomainUse(["battle"]);
-
-    beginAssistantToolDomainTurn("계속");
-    expect(computeActiveToolDomains("이어 해줘").has("battle")).toBe(true);
-
-    beginAssistantToolDomainTurn("계속");
-    expect(computeActiveToolDomains("한 번 더").has("battle")).toBe(true);
-
-    beginAssistantToolDomainTurn("계속");
-    expect(computeActiveToolDomains("이제는?").has("battle")).toBe(false);
-
-    recordAssistantToolDomainUse(["quest"]);
-    beginAssistantToolDomainTurn("다른 작업");
-    expect(computeActiveToolDomains("이어 해줘").has("quest")).toBe(false);
   });
 });
 

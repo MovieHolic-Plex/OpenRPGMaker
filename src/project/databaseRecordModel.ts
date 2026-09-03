@@ -177,8 +177,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     battleEscapeSeResourceId: cleanOptionalId(system.battleEscapeSeResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
-    // 기본 스킨(vxace)만 저장하지 않는다. 명시적 rm2003/classic 선택은 반드시 보존해야 한다 —
-    // 기본이 vxace 로 바뀐 뒤에는 rm2003 을 생략하면 왕복 후 vxace 로 바뀌어버린다.
+    // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
+    // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
+    // (기본이 vxace 였던 시절 실제로 그랬다). 옛 id(rm2003·classic)도 여기서는 손대지 않고
+    // 렌더 시점의 resolveSkinId 가 rm2000 으로 푼다.
     ...(system.battleUiStyle && system.battleUiStyle !== DEFAULT_BATTLE_SKIN_ID
       ? { battleUiStyle: system.battleUiStyle }
       : {}),

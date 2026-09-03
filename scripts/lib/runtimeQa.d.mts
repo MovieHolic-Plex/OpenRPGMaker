@@ -50,6 +50,14 @@ export type RuntimeQaOp =
       readonly minAlpha?: number;
       readonly timeoutMs?: number;
     }
+  /** testid 요소의 속성이 정확히 `value` 가 될 때까지 기다린다(예: 전투 씬의 sequence-busy 해제). */
+  | {
+      readonly kind: "waitForAttr";
+      readonly testid: string;
+      readonly attr: string;
+      readonly value: string;
+      readonly timeoutMs?: number;
+    }
   | { readonly kind: "playerRoute"; readonly moves: readonly unknown[] }
   | {
       readonly kind: "waitForLift";
@@ -65,6 +73,9 @@ export type RuntimeQaOp =
       readonly key: string;
       readonly testid: string;
       readonly state: "present" | "absent";
+      /** 같은 testid 가 여럿일 때 이 속성값을 가진 것만 센다(예: 피해 팝업의 data-target-id). */
+      readonly attr?: string;
+      readonly value?: string;
       readonly maxPresses?: number;
       readonly timeoutMs?: number;
     };

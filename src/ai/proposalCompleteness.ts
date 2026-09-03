@@ -3,7 +3,8 @@
 // coverage first, then only low-risk request/count heuristics when there is no spec.
 
 import { affectedRegions, type AffectedRegion, type BuildSpec, type SpecAsset } from "./buildSpec";
-import { requestLikelyModifiesExisting } from "./modifyIntent";
+import type { IntentDeclaration } from "./intentDeclaration";
+import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 import type { ChangeSummary } from "@/editor/tools/types";
 
 export const PROPOSAL_COMPLETENESS_WARNING_PREFIX = "⚠ 미이행:";
@@ -23,16 +24,22 @@ export interface ProposalCompletenessInput {
   readonly requestText?: string;
   readonly assistantText?: string;
   readonly buildSpec?: BuildSpec | null;
+  /**
+   * 이번 턴의 의도 선언(모델이 읽은 것). 있으면 「변경을 기대하는 요청인가」「실내 신축인가」「수정인가」를
+   * 선언 필드로 판정한다. 없을 때만(선언자 없는 세션·단독 테스트) 문장 휴리스틱으로 떨어진다.
+   */
+  readonly intent?: IntentDeclaration | null;
   readonly calls: readonly ProposalCompletenessCall[];
 }
 
 export function proposalCompletenessWarnings(input: ProposalCompletenessInput): string[] {
+  const intent = input.intent && input.intent.source === "llm" ? input.intent : null;
   const base = input.buildSpec
     ? buildSpecCompletenessWarnings(input.buildSpec, input.calls)
-    : heuristicCompletenessWarnings(input.requestText ?? "", input.calls, input.assistantText ?? "");
+    : heuristicCompletenessWarnings(input.requestText ?? "", input.calls, input.assistantText ?? "", intent);
   return dedupe([
     ...base,
-    ...interiorCompletenessWarnings(input.requestText ?? "", input.calls),
+    ...interiorCompletenessWarnings(input.requestText ?? "", input.calls, intent),
     ...questGraphCompletenessWarnings(input.calls),
   ]);
 }
@@ -93,7 +100,12 @@ function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: readonly Pro
   return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} ${formatMissingSpecAssets(missing)}`];
 }
 
-function heuristicCompletenessWarnings(requestText: string, calls: readonly ProposalCompletenessCall[], assistantText: string): string[] {
+function heuristicCompletenessWarnings(
+  requestText: string,
+  calls: readonly ProposalCompletenessCall[],
+  assistantText: string,
+  intent: IntentDeclaration | null,
+): string[] {
   const changedCalls = calls.filter((call) => call.result.ok && hasMeaningfulDiff(call.result.diff));
   const requestedCount = requestedPlacementCount(requestText);
   if (changedCalls.length === 0) {
@@ -104,7 +116,8 @@ function heuristicCompletenessWarnings(requestText: string, calls: readonly Prop
       return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 진행을 약속했지만 실제 변경이 없습니다(체인지셋 0건). 질문 대신 실행했어야 합니다.`];
     }
     const proceedInstruction = isProceedInstruction(requestText);
-    if (!proceedInstruction && !requestLikelyExpectsChange(requestText) && requestedCount === null) return [];
+    const expectsChange = intent ? intent.mode === "create" || intent.mode === "modify" : requestLikelyExpectsChange(requestText);
+    if (!proceedInstruction && !expectsChange && requestedCount === null) return [];
     const hint = proceedInstruction ? " 진행 지시였으므로 질문 대신 실행했어야 합니다." : "";
     return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실제 변경이 없습니다(체인지셋 0건).${hint}`];
   }
@@ -124,22 +137,14 @@ const INTERIOR_ROOM_TOOL_NAMES = new Set([
   "furnish_interior_space",
 ]);
 
-function requestLikelyWantsInterior(text: string): boolean {
-  const normalized = text.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
-  if (!normalized) return false;
-  return /실내|인테리어|실내맵|방 맵|침실|서재|주방|선술집|여관|\binterior\b/u.test(normalized);
-}
-
-/**
- * 실내 **신규** 요청인데 야외 집 키트만 쓰거나 create_map만 한 턴을 잡아낸다(audit 18).
- *
- * 수정 요청은 대상에서 뺀다(2026-08-29 modify 진단 근본원인 15). "이 침실 가구 배치를 개선해줘"
- * 에도 이 경고가 붙어 "새 실내 맵을 시공하세요"라고 지시했고, 그 경고는 자동 완료 게이트를 막아
- * 모델이 결국 새 맵을 만들도록 밀어붙였다 — 사용자가 본 증상 그 자체다.
- */
-function interiorCompletenessWarnings(requestText: string, calls: readonly ProposalCompletenessCall[]): string[] {
-  if (!requestLikelyWantsInterior(requestText)) return [];
-  if (requestLikelyModifiesExisting(requestText)) return [];
+function interiorCompletenessWarnings(
+  _requestText: string,
+  calls: readonly ProposalCompletenessCall[],
+  intent: IntentDeclaration | null,
+): string[] {
+  // 실내 신축 여부는 선언이 정한다. 선언이 없으면 이 경고를 내지 않는다 — 「여관」「침실」 낱말 정규식으로
+  // 실내를 추측하던 경로가 수정 요청에 「새 실내 맵을 시공하세요」를 붙여 신축을 밀어붙였다(2026-08-29).
+  if (!intent || intent.space !== "interior" || intent.mode !== "create") return [];
   const okCalls = calls.filter((call) => call.result.ok);
   if (okCalls.some((call) => INTERIOR_ROOM_TOOL_NAMES.has(call.name))) return [];
   const usedOutdoorHouse = okCalls.some((call) =>
@@ -440,9 +445,8 @@ function endsWithProgressPromise(text: string): boolean {
 function assistantTextLooksLikeIntentClarify(text: string): boolean {
   const trimmed = text.trim();
   if (!trimmed) return false;
-  if (/\[선택지\]/.test(trimmed) && /실내 맵으로|야외 집|외장/.test(trimmed)) return true;
-  if (/야외 외장|실내 맵인지|어떻게 만들까요/.test(trimmed) && /[?？]/.test(trimmed)) return true;
-  return false;
+  // 원탭 선택지를 붙인 되묻기(의도 선언의 clarify)는 변경 0건이 정상이다.
+  return trimmed.includes(QUICK_REPLY_MARKER);
 }
 
 function isClearlyShort(expected: number, actual: number): boolean {

@@ -77,14 +77,14 @@ interface SkinBattlerPlacement {
 //  · 저작 y 는 **스프라이트의 발**이다. 노드는 `translate(-50%, -100%)` 로 아래쪽을 앵커로
 //    쓰고, 이름표·HUD 는 `.battle-enemy-chrome` 이 흐름에서 빼내 겹쳐 놓으므로
 //    노드 높이 = 스프라이트 높이다. 즉 앵커가 곧 발이고 보정이 필요 없다.
-//    (옛 실측 보정 시절 스택 높이: rm2003 33px · vxace 60 · rm2000·dragonquest 97
+//    (옛 실측 보정 시절 스택 높이: 정면 스킨 33px · vxace 60 · dragonquest 97
 //     · octopath·bravely 109 · mv 115 · chrono·ff·mother·goldensun 133. HUD 를 펼칠 때마다
 //     이 값이 변해 몬스터가 튀었다 — 그래서 구조로 없앴다.)
 //  · y 의 상한은 이제 "발이 필드 안" 이다 — chrome 은 필드 밖으로 넘쳐도 레이아웃을 안 민다.
 //    ff·goldensun 은 접지 띠(발 ≥ 60%)와 그 상한 사이가 36px 뿐이라 두 줄을 세우면 줄 간격이
 //    이름표 높이(38px)보다 좁아 이름이 겹쳤다(실측 교차 109×4px) → 1열로 바꿨다.
 //  · 좌표계는 필드에서 `--battle-stage-inset-top` 만큼 들어간 배틀러 그룹 박스다
-//    (rm2003 8px, 나머지 11종 48px — `01-scene-base.css` 의 단일 선언).
+//    (rm2000 8px, 나머지 10종 48px — `01-scene-base.css` 의 단일 선언).
 //  · 그래서 스프라이트 상자가 큰 스킨은 y 가 작을 때 **위로 잘린다**(필드는 overflow:hidden).
 //  · 백드롭 그라디언트는 필드 높이 33% 에 지평선을 둔다 → 발(이미지 bottom)이 그보다
 //    위면 몬스터가 하늘에 떠 보인다.
@@ -100,9 +100,10 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 1:1 대치 — 선두 1명만, 적 크고 중앙 상단, 아군 좌하 대형.
   // 다마리 분기 y +10: 148px 스프라이트가 y=76 줄에서 필드 위로 11px 잘렸다(실측).
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
-  // RM2003 전면: 적만 필드에 선다. 아군은 하단 상태 창 숫자로만 보인다.
-  // 3마리 적의 y 는 한 줄(90) — 픽스처 battleEnemyFeetRatios.json 이 잠근 값.
-  rm2003: {
+  // 정면 전투(rm2000): 적만 필드에 선다. 아군은 하단 상태 카드 숫자로만 보인다.
+  // 3마리 적의 y 는 픽스처 battleEnemyFeetRatios.json 이 잠근 값(104/112/104).
+  // (2026-09-03 개명 전 id 는 rm2003. 같은 구도의 옛 deprecated `rm2000` 항목은 여기로 흡수됐다.)
+  rm2000: {
     partyFacing: "hidden",
     enemy: (i, n) => ({
       x: Math.round(160 + (i - (n - 1) / 2) * 70),
@@ -110,8 +111,6 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
     }),
     party: () => ({ x: 160, y: 150 }),
   },
-  // RM2000 프론트뷰: 숨김 파티, 적 중앙 수평.
-  rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 76 }), party: () => ({ x: 160, y: 150 }) },
   // 옥토패스 HD-2D: 오버숄더 — 적 상단 얕게, 아군 하단 깊게, HD 간격.
   octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
   // 크로노 액티브: 대각 액티브 — 적 우상 일렬, 아군 좌하 클러스터.
@@ -399,7 +398,21 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
     backdrop.dataset.backdropResourceId = effectiveId;
     const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
     backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
+    syncSceneBackdropVar(field);
   }
+}
+
+/** 필드의 배경 그림을 씬 루트(.battle-scene)에 `--battle-backdrop-url` 로 비춘다.
+ *  스킨 CSS 가 HUD 띠 뒤에 같은 그림을 흐리게 이어 그릴 수 있게(rm2000: `.battle-scene::before`).
+ *  필드는 1행만 차지하고 overflow:hidden 이라 필드 안의 요소로는 HUD 띠까지 닿을 수 없고,
+ *  형제(카드)들은 필드의 인라인 스타일을 읽을 수 없다 — 루트 변수가 유일한 통로다.
+ *  아직 루트에 붙지 않은 필드(생성 직후)면 아무것도 하지 않으므로 마운트 뒤 한 번 더 부른다. */
+export function syncSceneBackdropVar(field: HTMLElement): void {
+  const scene = field.parentElement;
+  if (!scene || !scene.classList.contains("battle-scene")) return;
+  const image = field.querySelector<HTMLElement>("[data-testid='battle-backdrop']")?.style.backgroundImage ?? "";
+  if (image && image !== "none") scene.style.setProperty("--battle-backdrop-url", image);
+  else scene.style.removeProperty("--battle-backdrop-url");
 }
 
 function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
@@ -490,7 +503,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   }
   // 한 번이라도 피해를 입은 적은 HP 를 계속 보여준다.
   //
-  // rm2003 스킨은 원작 고증을 이유로 적 HUD 를 targetSelect 중 선택된 적에게만 펼쳤다.
+  // rm2000 스킨은 원작 고증을 이유로 적 HUD 를 targetSelect 중 선택된 적에게만 펼쳤다.
   // 그 결과 "한 방 더면 죽는다" 는 판단이 구조적으로 불가능해 모든 턴이 같은 무게가
   // 됐다. 아직 안 때린 적은 그대로 감추고(정보 수집도 플레이다), 때린 순간부터 남은
   // 체력을 노출한다. CSS 가 [data-battle-hp-revealed="true"] 로 HUD 를 펼친다.
@@ -583,9 +596,38 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
     // 사망 대상의 팝업은 페이드와 함께 끝낸다(9차 리뷰).
     if (anchor.classList.contains("defeated")) popup.classList.add("battle-damage-popup-final");
+    layer.append(popup);
+  } else if (!showPartyRowDamage(field, feedback, popup)) {
+    layer.append(popup);
   }
-  layer.append(popup);
   window.setTimeout(() => popup.remove(), 900);
+}
+
+/** 아군 스프라이트를 그리지 않는 정면 스킨(rm2000 등)에는 필드에 아군 노드가 없어 팝업이 앵커를
+ *  잃는다 — 그러면 `--battle-node-x/y` 없이 효과 레이어 원점(필드 좌상단)에 떠서 누가 얼마나 맞았는지
+ *  읽을 수 없었다(실측: 적 턴의 피해가 화면 왼쪽 위에 "-31" 로만 떴다). 파티 카드의 해당 행,
+ *  HP 수치 자리에 띄우고 행에 `is-hit` 를 잠깐 붙여 스킨이 흔들림·붉은 기운을 그릴 수 있게 한다.
+ *  카드나 행을 못 찾으면 false — 호출자가 예전처럼 효과 레이어에 붙인다. */
+function showPartyRowDamage(field: HTMLElement, feedback: DamageFeedback, popup: HTMLElement): boolean {
+  const party = field.parentElement?.querySelector<HTMLElement>(".battle-party");
+  const row = party?.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${feedback.targetId}"]`);
+  if (!party || !row || typeof party.getBoundingClientRect !== "function") return false;
+  const target = row.querySelector<HTMLElement>(".battle-actor-hp") ?? row;
+  const partyRect = party.getBoundingClientRect();
+  const rect = target.getBoundingClientRect();
+  if (!(partyRect.width > 0) || !(partyRect.height > 0) || !(rect.width > 0)) return false;
+  // 카드가 팝업의 containing block 이어야 백분율 좌표가 맞다. rm2000 CSS 는 카드를 relative 로 두지만
+  // 다른 정면 스킨은 그렇지 않을 수 있으니 여기서 보장한다.
+  if (typeof getComputedStyle === "function" && getComputedStyle(party).position === "static") party.style.position = "relative";
+  popup.classList.add("battle-damage-popup-party");
+  popup.style.left = `${((rect.left + rect.width / 2 - partyRect.left) / partyRect.width) * 100}%`;
+  popup.style.top = `${((rect.top - partyRect.top) / partyRect.height) * 100}%`;
+  party.append(popup);
+  row.classList.remove("is-hit");
+  void row.offsetWidth; // 같은 프레임에 떼고 다시 붙이면 애니메이션이 재시작하지 않는다 — 리플로우로 끊는다.
+  row.classList.add("is-hit");
+  window.setTimeout(() => row.classList.remove("is-hit"), 480);
+  return true;
 }
 
 function appendEffectsLayer(field: HTMLElement): HTMLElement {
@@ -596,10 +638,10 @@ function appendEffectsLayer(field: HTMLElement): HTMLElement {
   return layer;
 }
 
-/** rm2003 은 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터 PNG 알파를
+/** rm2000 은 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터 PNG 알파를
  *  반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
 function battleBackdropImage(url: string): string {
-  if (activeSkin().id === "rm2003") return `url("${url}")`;
+  if (activeSkin().id === "rm2000") return `url("${url}")`;
   return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
 }
 
@@ -1014,7 +1056,7 @@ function actorFaceNode(actor: BattleBattlerSnapshot): HTMLElement | null {
   node.setAttribute("role", "img");
   node.setAttribute("aria-label", `${actor.name} 얼굴`);
   node.style.setProperty("--battle-face-url", `url("${url}")`);
-  // 스킨 CSS(_vxace/_rm2003)는 아직 셀 크기 × 격자로 background 를 계산한다. 격자 1 · 열/행 0 이
+  // 스킨 CSS(_vxace/_rm2000)는 아직 셀 크기 × 격자로 background 를 계산한다. 격자 1 · 열/행 0 이
   // "이미지 한 장을 셀 폭에 맞춰 통째로" 그리는 값이라, 스킨 CSS 를 건드리지 않고 낱장 얼굴을 그린다.
   node.style.setProperty("--battle-face-grid", "1");
   node.style.setProperty("--battle-face-col", "0");

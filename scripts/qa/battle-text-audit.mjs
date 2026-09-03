@@ -1,4 +1,4 @@
-// 전투 글자 가시성 전수 감사 — 12개 스킨 × 전투 국면 × 텍스트 노드.
+// 전투 글자 가시성 전수 감사 — 등록 스킨 전부 × 전투 국면 × 텍스트 노드.
 //
 // 왜 별도 스크립트인가: 기존 런타임 QA 하네스(scripts/runtime-qa.mjs)는 "맵을 걸어
 // 무엇이 보이는지"를 보는 시나리오 러너다. 이 감사는 **같은 출하 경로(player.html)** 를
@@ -7,8 +7,8 @@
 // op 이 전투 전용으로 오염된다. 판정 로직은 scripts/lib/battleTextAudit.mjs 가 소유한다.
 //
 // 사용:
-//   node scripts/qa/battle-text-audit.mjs                     # 12스킨 전부, 기본 뷰포트
-//   node scripts/qa/battle-text-audit.mjs --skins rm2003
+//   node scripts/qa/battle-text-audit.mjs                     # 등록 스킨 전부, 기본 뷰포트
+//   node scripts/qa/battle-text-audit.mjs --skins rm2000
 //   node scripts/qa/battle-text-audit.mjs --long-labels       # 최장 한글 라벨 스트레스
 //   node scripts/qa/battle-text-audit.mjs --viewport 800x600 --headed
 //   node scripts/qa/battle-text-audit.mjs --out verify-shots/battle-text/red
@@ -34,9 +34,9 @@ const FIXTURE = "test/fixtures/projects/editor-authored-demo-v3.json";
 const PROJECT_URL = "/__runtime-qa/project.json";
 const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 
-/** 프로젝트에 저장되는 스킨 id 12종 (src/battle/skins/registry.ts). */
+/** 프로젝트에 저장되는 스킨 id 11종 (src/battle/skins/registry.ts). */
 const ALL_SKINS = [
-  "rm2003", "rm2000", "pokemon", "mother", "ff", "chrono",
+  "rm2000", "pokemon", "mother", "ff", "chrono",
   "dragonquest", "goldensun", "octopath", "bravely", "mv", "vxace",
 ];
 

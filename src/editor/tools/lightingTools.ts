@@ -11,7 +11,7 @@ const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 }
 const setLightingVolume: ToolDefinition = {
   name: "set_lighting_volume",
   description:
-    "맵 또는 지정 영역에 암전/광원 설정을 한 번에 적용한다. applyMode='map'은 map.defaultLighting을 설정하고, applyMode='event'는 area 내부의 통행 불가 칸을 건너뛰고 나머지 칸마다 투명 playerTouch 이벤트를 생성한다.",
+    "맵 또는 지정 영역에 암전/광원 설정을 한 번에 적용한다. applyMode='map'은 map.defaultLighting을 설정하고, applyMode='event'는 area 내부의 통행 불가 칸을 건너뛰고 나머지 칸마다 투명 playerTouch 이벤트를 생성한다. 영역 조명·암전은 이 툴, 맵 전체 분위기 프리셋은 set_scene_mood.",
   mode: "write",
   parameters: {
     type: "object",
@@ -80,7 +80,7 @@ const setLightingVolume: ToolDefinition = {
 const setSceneMood: ToolDefinition = {
   name: "set_scene_mood",
   description:
-    "맵 분위기 프리셋처럼 날씨와 Phase 6a 조명 인자를 한 번에 적용한다. applyMode='map'은 map.defaultLighting과 맵 진입 날씨 이벤트를 설정하고, applyMode='event'는 lighting.area 내부의 통행 불가 칸을 건너뛰고 playerTouch 분위기 이벤트를 만든다.",
+    "맵 분위기 프리셋처럼 날씨와 Phase 6a 조명 인자를 한 번에 적용한다. applyMode='map'은 map.defaultLighting과 맵 진입 날씨 이벤트를 설정하고, applyMode='event'는 lighting.area 내부의 통행 불가 칸을 건너뛰고 playerTouch 분위기 이벤트를 만든다. 「어둡게」「축제」「음산하게」 같은 분위기 요청의 정본. 등불·장식 소품은 place_props, 호러 슬라이스는 make_horror_loop/make_gallery_room 과 함께.",
   mode: "write",
   parameters: {
     type: "object",

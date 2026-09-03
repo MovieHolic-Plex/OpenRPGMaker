@@ -105,7 +105,7 @@ async function seedGeneratedBattleProject(page: Page): Promise<void> {
     .replaceAll('"battleCharacterResourceId": "hero"', '"battleCharacterResourceId": "generated-actor-hero-01-battle"')
     .replaceAll('"monsterResourceId": "slime"', '"monsterResourceId": "generated-enemy-slime-01"');
   const project = deserialize(generatedFixture);
-  project.system.battleUiStyle = "rm2003";
+  project.system.battleUiStyle = "rm2000";
   const troop = project.database.troops.find((record) => record.id === "troop_slime");
   if (!troop) throw new Error("missing troop_slime fixture");
   troop.previewBackgroundResourceId = "easyrpg-backdrop-sky1";

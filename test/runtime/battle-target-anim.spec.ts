@@ -180,7 +180,7 @@ test("skill animation lands on the authored anchor of the target sprite", async 
     expect(probe.authoredPosition).toBe("center");
     // 실측 경로가 살아 있어야 한다. "fallback" 이면 좌표가 예전 발 앵커로 돌아간 것이고,
     // 그러면 아래 오차 단정이 조용히 뒤집힌다.
-    // 백분율이 풀리는 컨테이닝 블록이 접히지 않았는가. 이 축을 따로 두는 이유: rm2003 이
+    // 백분율이 풀리는 컨테이닝 블록이 접히지 않았는가. 이 축을 따로 두는 이유: rm2000 이
     // `--battle-field-border-width: 0`(단위 없음)을 선언해 `.battle-animation-layer` 의
     // `calc()` inset 이 invalid 로 버려지고 레이어가 0×0 으로 수축한 적이 있다. 그러면
     // 백분율 앵커가 전부 0 이 되어 이펙트가 무대 좌상단에 쌓인다 — 실패 메시지가 그 원인을

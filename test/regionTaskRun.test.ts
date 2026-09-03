@@ -9,7 +9,6 @@ import {
   type RegionTaskDeps,
   type RegionTaskSessionLike,
 } from "@/editor/regionTask/runRegionTask";
-import { isRegionEscapingIntent, routeRegionIntent } from "@/editor/regionTask/regionIntentRouter";
 import { __clearPendingRegionApplyForTest, getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { clearAgentGhostPreview, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail, type RegionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
@@ -100,57 +99,14 @@ describe("buildRegionTaskMessage", () => {
     expect(asset).toMatchObject({ x: 1, y: 1, w: 3, h: 3 });
   });
 
-  it("실내 요청은 독립 실내 세션만 안내하고 야외 facade를 배제한다", () => {
+  it("메시지는 사용자 발화와 사실(footer)만 싣는다 — 도구 규칙 가이드는 툴 설명으로 옮겼다", () => {
     const message = buildRegionTaskMessage("연금술사의 집 이라는 실내 를 하나 만드렁줘", "외곽", MAP_ID, REGION);
-    expect(message).toContain("start_interior_room_session");
-    expect(message).not.toContain("run_interior_room_pipeline");
+    expect(message.startsWith("연금술사의 집 이라는 실내 를 하나 만드렁줘")).toBe(true);
+    expect(message).toContain("[컨텍스트] 현재 맵: 외곽");
+    expect(message).not.toContain("도구 규칙");
     expect(message).not.toContain("author_house");
-    expect(message).not.toContain("author_village");
-    expect(message).not.toContain("이 작업은 아래 선택 영역 안에서만 수행하라");
-    expect(message).toContain("새 맵 전체를 시공하라");
-  });
-
-  it("영역 작업의 bare 집 요청은 야외 집으로 바로 시공한다 (되묻지 않음)", () => {
-    const message = buildRegionTaskMessage("이 영역에 집 만들어줘", "외곽", MAP_ID, REGION);
-    // 영역 선택이 현재 맵 위이므로 야외 집 의도 — 되묻지 않고 author_house 시공.
-    expect(message).not.toContain("야외 집(외장) / 실내 맵 / 둘 다");
-    expect(message).toContain("author_house");
-    expect(message).toContain("되묻지 말고");
-  });
-
-  it("'건물' 단어는 author_house facade 시그니처를 강제하지 않는다 (탑/성벽 오경로 방지)", () => {
-    // 탑/성벽 등은 structure 가이드가 build_wall/create_farm_plot 로 안내한다.
-    // bare fallback 이 /건물/ 을 잡아 author_house 시그니처를 내면 가이드와 충돌한다.
-    const tower = buildRegionTaskMessage("탑 건물 지어줘", "외곽", MAP_ID, REGION);
-    expect(tower).not.toContain("야외 집 시공: author_house");
-    const wall = buildRegionTaskMessage("성벽 건물 지어", "외곽", MAP_ID, REGION);
-    expect(wall).not.toContain("야외 집 시공: author_house");
-    // bare '건물' 단독도 facade 시그니처 강제 없음 — 가이드가 LLM 에게 맨긴다.
-    const bare = buildRegionTaskMessage("건물 지어", "외곽", MAP_ID, REGION);
-    expect(bare).not.toContain("야외 집 시공: author_house");
-    expect(bare).not.toContain("되묻지 말고");
-  });
-});
-
-describe("isRegionEscapingIntent / routeRegionIntent — 실내·새 맵", () => {
-  it("실내·새 맵 요청은 영역 우회 대상이다", () => {
-    expect(isRegionEscapingIntent("연금술사의 집 이라는 실내 를 하나 만드렁줘")).toBe(true);
-    expect(isRegionEscapingIntent("아니 새로운 맵을 만들어서 진행해달라니까")).toBe(true);
-    expect(isRegionEscapingIntent("여기 나무 3그루 심어줘")).toBe(false);
-  });
-
-  it("실내+집 문구는 interior만 잡고 structure(야외 집)는 뺀다", () => {
-    const routed = routeRegionIntent("연금술사의 집 이라는 실내 를 하나 만드렁줘");
-    expect(routed).toContain("interior");
-    expect(routed).not.toContain("structure");
-  });
-
-  // 실내 명사 부분일치만으로 우회시키면 선택 영역과 하드클립이 함께 버려진다 —
-  // "실내 시공은 영역 밖 작업"이라는 전제는 새로 만들 때만 맞다.
-  it("실내 수정 요청은 영역 경로에 남는다", () => {
-    for (const text of ["이 침실 좀 수정해줘", "침실 가구 배치를 개선해줘", "실내 조명 좀 어둡게 바꿔줘"]) {
-      expect(isRegionEscapingIntent(text), text).toBe(false);
-    }
+    expect(message).not.toContain("start_interior_room_session");
+    expect(message).not.toContain("되묻지 말고");
   });
 });
 

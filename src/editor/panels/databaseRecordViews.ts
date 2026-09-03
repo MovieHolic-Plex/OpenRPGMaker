@@ -158,12 +158,20 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     listEl = recordList(collection, records, visible, onSelect, rerender);
     listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
     const chips = categoryFilterChips(collection, rerender);
+    // 제목과 개수를 한 줄(.db-ws-list-head)로 묶는다 — databaseWorkspace.listPane() 과 같은
+    // 모양이라 두 세대 목록 창이 같은 CSS 를 받는다. 개수가 목록 아래 별도 행이던 시절엔
+    // 툴바까지 세 줄이 목록 밑에 쌓였다(2026-09-03 30탭 실측).
     listPane.append(
-      el("h3", { text: COLLECTION_LABELS[collection] }),
+      el("div", {
+        class: "db-ws-list-head",
+        children: [
+          el("h3", { class: "db-ws-list-title", text: COLLECTION_LABELS[collection] }),
+          recordListFooter(visible.length, records.length),
+        ],
+      }),
       recordSearch(collection, rerender),
       ...(chips ? [chips] : []),
       listEl,
-      recordListFooter(visible.length, records.length),
       toolbar(collection, rerender),
     );
   }
@@ -852,7 +860,7 @@ function recordListFooter(visibleCount: number, totalCount: number): HTMLElement
   return el("div", {
     class: "oprn-record-list-footer",
     children: [el("span", {
-      class: "oprn-record-count",
+      class: "oprn-record-count db-ws-count",
       text: filtered ? `${visibleCount}/${totalCount}개` : `${totalCount}개`,
       ...(filtered ? { attrs: { title: `필터로 ${totalCount}개 중 ${visibleCount}개만 보입니다` } } : {}),
     })],

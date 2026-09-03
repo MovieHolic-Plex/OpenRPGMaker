@@ -28,6 +28,7 @@ import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { isMapPanelCollapsed, toggleMapPanelCollapsed } from "@/editor/workspace/mapPanelSection";
 
 type RenderNodeContext = {
   readonly activeId: string;
@@ -41,6 +42,8 @@ type TreeActionSpec = {
   readonly disabled?: boolean;
   readonly icon: string;
   readonly label: string;
+  /** 헤더의 주 동작 — 글자 라벨과 강조 톤을 받는 버튼 하나. */
+  readonly primary?: boolean;
   readonly text?: string;
   readonly testId: string;
 };
@@ -100,14 +103,40 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     dataset: { testid: "map-tree", mapListVariant: currentMapListVariant },
   });
 
+  // 도크 섹션 접힘은 편집기 셸(editor.ts)이 높이를 줄이고, 여기서는 그 상태를 헤더에 그린다 —
+  // 제목 자체가 토글이다(갈매기 + 「맵」 + 개수). 초보 플라이아웃은 접을 도크가 없으므로 해당 없음.
+  const sectionCollapsed = !isBasic && isMapPanelCollapsed();
+  if (sectionCollapsed) section.classList.add("is-section-collapsed");
   const header = isBasic
     ? makeBasicHeader(mapCount)
     : (() => {
       const node = el("div", { class: "map-tree-header" });
       node.append(el("h3", {
         children: [
-          el("span", { class: "map-tree-title", text: "맵" }),
-          el("span", { class: "map-tree-count", text: String(mapCount) }),
+          el("button", {
+            class: "map-tree-section-toggle",
+            attrs: {
+              type: "button",
+              "aria-expanded": String(!sectionCollapsed),
+              title: sectionCollapsed ? "맵 패널 펼치기" : "맵 패널 접기",
+            },
+            dataset: { testid: "map-tree-section-toggle" },
+            children: [
+              el("span", {
+                class: `rm-tool-icon oprn-icon-tree-${sectionCollapsed ? "closed" : "open"}`,
+                attrs: { "aria-hidden": "true" },
+              }),
+              el("span", { class: "map-tree-title", text: "맵" }),
+              el("span", { class: "map-tree-count", text: String(mapCount) }),
+            ],
+            on: {
+              click: (event) => {
+                event.stopPropagation();
+                toggleMapPanelCollapsed();
+                rerenderMapList();
+              },
+            },
+          }),
         ],
       }));
       node.append(makeMapTreeHeaderActions(project.mapTree, mapCount));
@@ -740,12 +769,6 @@ function makeMapTreeHeaderActions(root: MapTreeNode, mapCount: number): HTMLElem
         testId: "map-tree-filter-toggle",
       })] : []),
       treeAction({
-        action: () => openMapCreateDialog({ preset: "blank" }),
-        icon: "map-child",
-        label: "루트에 맵 추가",
-        testId: "map-add",
-      }),
-      treeAction({
         action: () => {
           const id = addMapFolder("", "새 분류");
           selectedMapIds.clear();
@@ -785,6 +808,17 @@ function makeMapTreeHeaderActions(root: MapTreeNode, mapCount: number): HTMLElem
         icon: allCollapsed ? "tree-open" : "tree-closed",
         label: allCollapsed ? "전체 펼치기" : "전체 접기",
         testId: "map-toggle-all",
+      }),
+      // 헤더의 주 동작 하나만 글자를 달고 맨 오른쪽에 둔다 — 아이콘 다섯 개가 같은 무게로
+      // 늘어서면 무엇을 눌러 맵을 만드는지 읽어내야 했다. 좁은 패널(컨테이너 쿼리 220px 이하)
+      // 에서는 글자만 숨고 아이콘은 남는다.
+      treeAction({
+        action: () => openMapCreateDialog({ preset: "blank" }),
+        icon: "map-child",
+        label: "루트에 맵 추가",
+        primary: true,
+        testId: "map-add",
+        text: "새 맵",
       }),
     ],
   });
@@ -1152,7 +1186,7 @@ function clearDropTargets(): void {
 
 function treeAction(spec: TreeActionSpec): HTMLButtonElement {
   const button = el("button", {
-    class: "map-tree-action",
+    class: "map-tree-action" + (spec.primary ? " is-primary" : "") + (spec.text ? " has-text" : ""),
     attrs: {
       title: spec.label,
       "aria-label": spec.label,

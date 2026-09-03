@@ -1,4 +1,5 @@
 import { clearChildren, el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import type { Command } from "@/project/types";
 import { commandKindLabel } from "./options";
 
@@ -45,7 +46,8 @@ function renderInlineItem(
     el("span", { class: "cmd-kind", text: commandKindLabel(cmd.kind) }),
     el("button", {
       class: "btn danger",
-      text: "✕",
+      children: [renderEditorIcon("trash")],
+      attrs: { type: "button", title: "삭제", "aria-label": "삭제" },
       on: {
         click: () => {
           working.splice(index, 1);

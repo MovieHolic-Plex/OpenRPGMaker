@@ -4,6 +4,8 @@
 // name the missing contracts first (RED), then stay as the lock after implementation.
 import { describe, expect, it } from "vitest";
 import { computeActiveToolDomains } from "@/editor/assistantToolMode";
+import type { IntentDeclaration } from "@/ai/intentDeclaration";
+import { declaredIntent } from "./intentFixture";
 import { getTool, runTool, toOpenAiTools } from "@/editor/tools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import type { ToolContext } from "@/editor/tools/types";
@@ -12,8 +14,8 @@ function context(): ToolContext {
   return { project: createEmptyToolProject("능력 패리티") };
 }
 
-function exposedNames(userText: string): string[] {
-  const domains = computeActiveToolDomains(userText);
+function exposedNames(intent: IntentDeclaration): string[] {
+  const domains = computeActiveToolDomains(intent);
   return toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
 }
 
@@ -129,15 +131,16 @@ describe("AI editor capability parity", () => {
     }
   });
 
-  it("routes life and monster requests onto the domains that own the write tools", () => {
+  it("routes life and monster declarations onto the domains that own the write tools", () => {
     const ctx = context();
-    expect(computeActiveToolDomains("생활 스킬이랑 레시피 추가해").has("database")).toBe(true);
+    expect(computeActiveToolDomains(declaredIntent({ tools: ["upsert_life_skill"] })).has("database")).toBe(true);
     expect(JSON.stringify(runTool(ctx, "find_tools", { query: "생활 스킬" }).data)).toContain("upsert_life_skill");
 
-    const monsterDomains = computeActiveToolDomains("몬스터 포획 시스템을 켜고 사냥터를 만들어");
+    const monster = declaredIntent({ tools: ["configure_monster_system", "make_hunting_ground"] });
+    const monsterDomains = computeActiveToolDomains(monster);
     expect(monsterDomains.has("system")).toBe(true);
     expect(monsterDomains.has("map")).toBe(true);
-    expect(exposedNames("몬스터 포획 시스템을 켜고 사냥터를 만들어")).toContain("make_hunting_ground");
+    expect(exposedNames(monster)).toContain("make_hunting_ground");
     expect(JSON.stringify(runTool(ctx, "find_tools", { query: "몬스터 시스템" }).data)).toContain("configure_monster_system");
   });
 });

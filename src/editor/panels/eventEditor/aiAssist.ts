@@ -30,6 +30,7 @@ import { modalStackDepthForTest, modalStackEntryCountForTest, registerModal, unr
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import { auxCompositeKey } from "./auxOpenController";
 import { commandSummaryParts } from "./commandSummary";
 import {
@@ -499,10 +500,10 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     el("summary", {
       class: "ai-event-assist-summary event-aux-chip-summary",
       children: [
-        el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, text: "✧" }),
+        el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("spark")] }),
         el("span", { class: "event-aux-chip-label", text: "AI로 명령 만들기" }),
         chipStatus,
-        el("span", { class: "ai-event-caret", attrs: { "aria-hidden": "true" }, text: "▾" }),
+        el("span", { class: "ai-event-caret", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("caret")] }),
       ],
     }),
     el("div", {

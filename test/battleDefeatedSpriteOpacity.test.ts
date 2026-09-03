@@ -1,10 +1,10 @@
 // 쓰러진 적 **필드 스프라이트**의 불투명도는 퇴장 연출(`battle-death-fade`)만 소유한다.
 //
 // 왜 정적 선언을 금지하는가: 막타가 들어가는 프레임에는 스킨의 피격 juice
-// (`rm2003-juice-hit` 등)가 `animation` 숏핸드를 가져가 `battle-death-fade` 가 돌지
+// (`rm2000-juice-hit` 등)가 `animation` 숏핸드를 가져가 `battle-death-fade` 가 돌지
 // 못한다. 그때 남는 것은 정적 `opacity` 뿐이라 그 값이 그대로 화면에 드러난다.
 // 실측(2026-09-01, troop_slime_pair): 임팩트 시점 `.battle-enemy` computed opacity
-// = 0.42, animation = rm2003-juice-hit → 슬라임 몸통으로 배경 구름이 비쳤다.
+// = 0.42, animation = rm2000-juice-hit → 슬라임 몸통으로 배경 구름이 비쳤다.
 //
 // `.battle-enemy-list-row.defeated`(하단 목록의 **텍스트 행**)는 대상이 아니다.
 // 거기서는 흐리게 죽인 표시가 올바른 표현이다.

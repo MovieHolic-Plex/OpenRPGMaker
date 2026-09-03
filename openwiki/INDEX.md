@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1323KB / 약 372,876 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1343KB / 약 378,602 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,12 +15,12 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 209KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 368 | ~60,466 |
-| `openwiki/editor-ai-tools.md` | 60KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 127 | ~17,081 |
-| `openwiki/editor-database.md` | 156KB | 49KB | 690 | ~44,494 |
-| `openwiki/editor-event-authoring.md` | 108KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 517 | ~31,302 |
-| `openwiki/editor-pre-edit-routing.md` | 60KB | 46KB | 166 | ~16,917 |
-| `openwiki/runtime-battle.md` | 101KB | 22KB | 323 | ~28,931 |
+| `openwiki/editor-ai-panel.md` | 210KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 369 | ~60,752 |
+| `openwiki/editor-ai-tools.md` | 62KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 128 | ~17,649 |
+| `openwiki/editor-database.md` | 163KB | 49KB | 756 | ~46,472 |
+| `openwiki/editor-event-authoring.md` | 111KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 530 | ~32,151 |
+| `openwiki/editor-pre-edit-routing.md` | 62KB | 49KB | 168 | ~17,730 |
+| `openwiki/runtime-battle.md` | 105KB | 24KB | 325 | ~29,975 |
 | `openwiki/runtime-project-schema.md` | 53KB | 42KB | 174 | ~14,244 |
 | `openwiki/runtime-sessions.md` | 54KB | 45KB | 119 | ~14,335 |
 | `openwiki/testing.md` | 99KB | 45KB | 649 | ~27,907 |
@@ -31,14 +31,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 24 | 165, 166, 167, 168, 169, 170, 182, 237 |
-| `openwiki/editor-ai-tools.md` | 5 | 68, 69, 73, 75, 77 |
+| `openwiki/editor-ai-panel.md` | 24 | 166, 167, 168, 169, 170, 171, 183, 238 |
+| `openwiki/editor-ai-tools.md` | 5 | 69, 70, 74, 76, 78 |
 | `openwiki/editor-database.md` | 7 | 101, 105, 106, 107, 115, 139, 142 |
-| `openwiki/editor-event-authoring.md` | 16 | 125, 126, 129, 134, 135, 136, 137, 138 |
+| `openwiki/editor-event-authoring.md` | 16 | 138, 139, 142, 147, 148, 149, 150, 151 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 15, 28, 29, 31, 34, 35 |
 | `openwiki/editor-observability.md` | 1 | 120 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 25, 34, 39, 41, 54 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 27, 36, 41, 43, 56 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
 
 ## 없는 파일을 가리키는 참조
@@ -48,20 +48,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 건수 | 참조 |
 |---|---|---|
 | `openwiki/agent-worktrees.md` | 3 | `result.md`, `status.json`, `task.json` |
-| `openwiki/ai-workflow.md` | 2 | `index.json`, `latest.json` |
+| `openwiki/ai-workflow.md` | 4 | `index.json`, `latest.json`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 1 | `project.json` |
 | `openwiki/bgm-catalog.md` | 1 | `catalog.raw.json` |
 | `openwiki/community-site.md` | 1 | `project.json` |
-| `openwiki/editor-ai-panel.md` | 23 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/workspaceBarAssistantDock.test.ts` |
-| `openwiki/editor-ai-tools.md` | 2 | `aiCommandBar.ts`, `aiProposalModal.ts` |
-| `openwiki/editor-database.md` | 6 | `enemy-art-NNN.png`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
+| `openwiki/editor-ai-panel.md` | 31 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `project.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
+| `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
+| `openwiki/editor-database.md` | 7 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
 | `openwiki/editor-event-authoring.md` | 5 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png` |
 | `openwiki/editor-event-commands.md` | 7 | `07-identifiable-previews.css`, `choicesDialog.ts`, `command-preview.css`, `event-editor.part-2/3.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `textCommandDialog.ts` |
-| `openwiki/editor-pre-edit-routing.md` | 6 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `rm2k3.part-1.css`, `src/editor/tools/worldTools.ts`, `surface.json`, `worldTools.ts` |
+| `openwiki/editor-pre-edit-routing.md` | 7 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `src/editor/tools/worldTools.ts`, `surface.json`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 1 | `src/editor/authoringTestGate.ts` |
 | `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
-| `openwiki/runtime-battle.md` | 5 | `battle-anim-compare-sheets.mjs`, `hero-03-battle-idle.png`, `raw.png`, `recipes.mjs`, `reference.png` |
+| `openwiki/runtime-battle.md` | 6 | `_rm2003.css`, `battle-skins/_rm2003.css`, `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-project-schema.md` | 2 | `.json`, `project.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
@@ -143,15 +143,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L37` 3단계 — 이름 삭제 (메이저 정리)
 - `L42` 개별 판단 메모
 
-### `openwiki/ai-workflow.md` — 19KB · 107줄 · ~5,118 토큰
+### `openwiki/ai-workflow.md` — 19KB · 108줄 · ~5,306 토큰
 
 - `L5` Before changing files
 - `L13` While changing files
-- `L57` After changing files
-- `L64` Tool-calling architecture (human review map)
-- `L74` Headless Tool and MCP Access
-- `L83` Live editor AI assistant MCP (same UI session)
-- `L102` Refreshing the wiki
+- `L58` After changing files
+- `L65` Tool-calling architecture (human review map)
+- `L75` Headless Tool and MCP Access
+- `L84` Live editor AI assistant MCP (same UI session)
+- `L103` Refreshing the wiki
 
 ### `openwiki/architecture.md` — 10KB · 67줄 · ~2,449 토큰
 
@@ -219,25 +219,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 209KB · 368줄 · ~60,466 토큰 · 통째읽기 잘림 · 깨진 줄 24
+### `openwiki/editor-ai-panel.md` — 210KB · 369줄 · ~60,752 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
 - `L9` 패널 셸 · 도크 · 접기 · 컴포저
-- `L101` 세션 수명 · 대화 컨텍스트
-- `L111` 제안 적용 · 복구 · 완성도 린트
-- `L192` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L253` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L277` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L291` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L317` 저장 · 내보내기 · 프로젝트 생성
-- `L325` 제공자 · OAuth · 동반 서비스
-- `L349` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L102` 세션 수명 · 대화 컨텍스트
+- `L112` 제안 적용 · 복구 · 완성도 린트
+- `L193` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L254` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L278` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L292` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L318` 저장 · 내보내기 · 프로젝트 생성
+- `L326` 제공자 · OAuth · 동반 서비스
+- `L350` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
-### `openwiki/editor-ai-tools.md` — 60KB · 127줄 · ~17,081 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 62KB · 128줄 · ~17,649 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L90` Project-wide quality evaluation
-- `L96` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L91` Project-wide quality evaluation
+- `L97` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
 
-### `openwiki/editor-database.md` — 156KB · 690줄 · ~44,494 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 163KB · 756줄 · ~46,472 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` Database Studio chrome (2026-08-24)
   - `L15` Actor data-table slice (2026-08-25)
@@ -271,34 +271,36 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L611` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
 - `L654` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
   - `L670` AI로 몬스터·아이템 생성 (2026-08-30)
+- `L691` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
 
-### `openwiki/editor-event-authoring.md` — 108KB · 517줄 · ~31,302 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 111KB · 530줄 · ~32,151 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
-- `L3` NPC 일정 구조화 편집 (2026-08-24)
-- `L15` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
-  - `L37` 우선순위는 1페이지가 아니다 (바꾸지 않았다)
-  - `L45` 랜덤 대사는 페이지가 아니다
-  - `L52` 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
-  - `L62` 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
-- `L79` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
-- `L109` Roguelike run authoring (2026-08-24)
-- `L116` Event Authoring
-- `L324` Condition / Loop / Variable command trust fixes (2026-08-07)
-- `L334` Event draft trust loop (2026-07-30)
-- `L342` Guided story arc facade
-- `L346` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L351` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L359` Companion roster in the command picker (2026-08-27)
-- `L365` Presentation and system M2 command bodies
-- `L372` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L390` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L400` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L435` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L469` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L480` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L488` 참조를 비워도 조건을 삭제하지 않는다
-  - `L495` 조건 미리보기는 모르면 모른다고 말한다
-  - `L504` 조건 문구에 내부 토큰을 넣지 마라
+- `L3` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
+- `L16` NPC 일정 구조화 편집 (2026-08-24)
+- `L28` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
+  - `L50` 우선순위는 1페이지가 아니다 (바꾸지 않았다)
+  - `L58` 랜덤 대사는 페이지가 아니다
+  - `L65` 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
+  - `L75` 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
+- `L92` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
+- `L122` Roguelike run authoring (2026-08-24)
+- `L129` Event Authoring
+- `L337` Condition / Loop / Variable command trust fixes (2026-08-07)
+- `L347` Event draft trust loop (2026-07-30)
+- `L355` Guided story arc facade
+- `L359` 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- `L364` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L372` Companion roster in the command picker (2026-08-27)
+- `L378` Presentation and system M2 command bodies
+- `L385` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L403` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L413` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L448` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L482` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L493` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L501` 참조를 비워도 조건을 삭제하지 않는다
+  - `L508` 조건 미리보기는 모르면 모른다고 말한다
+  - `L517` 조건 문구에 내부 토큰을 넣지 마라
 
 ### `openwiki/editor-event-command-fixes.md` — 12KB · 33줄 · ~3,122 토큰 · 깨진 줄 11
 
@@ -341,13 +343,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L232` AI 툴·액션 이유 (2026-09-02)
 - `L242` 검증
 
-### `openwiki/editor-pre-edit-routing.md` — 60KB · 166줄 · ~16,917 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 62KB · 168줄 · ~17,730 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L7` Pre-edit routing
-- `L65` Agent cautions
-- `L75` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L106` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L138` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+- `L67` Agent cautions
+- `L77` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L108` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L140` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
 
 ### `openwiki/editor-storage-chest.md` — 1KB · 15줄 · ~333 토큰
 
@@ -457,22 +459,22 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 101KB · 323줄 · ~28,931 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 105KB · 325줄 · ~29,975 토큰 · 통째읽기 잘림
 
   - `L7` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
 - `L25` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L36` Roguelike run boundary (2026-08-24)
-- `L41` Battle rules & runtime
-  - `L56` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L81` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L97` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L101` Gen 1(포켓몬식) 규칙 모델
-  - `L109` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L128` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L163` Starter hero battle sheets (2026-08-29)
-- `L184` Per-actor back battlers (2026-08-29)
-- `L202` Battle input and visibility P0 contract (2026-07-30)
-- `L213` 배틀러 idle 애니메이션 (2026-08-30)
+- `L37` Roguelike run boundary (2026-08-24)
+- `L42` Battle rules & runtime
+  - `L57` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L82` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L98` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L102` Gen 1(포켓몬식) 규칙 모델
+  - `L110` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L129` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L164` Starter hero battle sheets (2026-08-29)
+- `L185` Per-actor back battlers (2026-08-29)
+- `L203` Battle input and visibility P0 contract (2026-07-30)
+- `L214` 배틀러 idle 애니메이션 (2026-08-30)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 12KB · 44줄 · ~3,162 토큰
 

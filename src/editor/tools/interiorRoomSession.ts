@@ -55,7 +55,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
   {
     name: "start_interior_room_session",
     description:
-      "**새** 주민 집 실내(villager-room-v1)를 새 mapId 로 시공하는 멀티턴 세션을 시작한다. " +
+      "**새** 주민 집 실내(villager-room-v1)를 새 mapId 로 시공하는 멀티턴 세션을 시작한다.  개념 꾸러미에 없는 실내(rooms[] 역할 테마 bedroom|study|dining|kitchen|storage|tavern|corridor, door, wallMaterial)에 쓴다 → advance_interior_room_build 반복 → evaluate_interior_room. create_map 만 하고 멈추지 말 것. **기존 실내 맵을 고치는 요청에는 금지** — 그 맵의 타일·이벤트가 전부 삭제된다. 기존 실내는 furnish_interior_space({mapId, roomId})." +
       "절차: plan → floor(bbox 바닥) → walls → furniture → entrance(입구 이벤트) → critique. " +
       "wings는 통행 바닥 bbox 합집합. 벽은 floor 이후 세운다. 침대 355|356은 hard 좌우 쌍. " +
       "이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷. " +
@@ -157,7 +157,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
   {
     name: "run_interior_room_pipeline",
     description:
-      "**새** 실내 방을 새 mapId 로 원샷 절차 생성한다(floor bbox→walls→furniture→entrance→critique). " +
+      "**새** 실내 방을 새 mapId 로 원샷 절차 생성한다(floor bbox→walls→furniture→entrance→critique).  기존 실내 맵을 고치는 요청에는 금지(타일·이벤트 전부 삭제) — furnish_interior_space 를 쓸 것. 개념 꾸러미 시설은 place_concept." +
       "멀티턴 품질 경로가 기본이면 start_interior_room_session을 써라. " +
       "침대는 355|356 hard 쌍, 벽면 장식과 바닥 잔해(깨진 유리 등)를 구분한다. " +
       "**기존 실내 맵 수정에는 쓰지 마라** — 이미 있는 mapId 는 map-exists 로 거부되고, " +
@@ -206,7 +206,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
   {
     name: "furnish_interior_space",
     description:
-      "실내 세션의 공간(방) 하나만 철거하고 지정 테마로 다시 시공한다 — 공간 단위 하네싱의 실행 도구. "
+      "실내 세션의 공간(방) 하나만 철거하고 지정 테마로 다시 시공한다 — 공간 단위 하네싱의 실행 도구.  기존 실내 맵을 그 자리에서 고치는 유일한 경로다 — {mapId, roomId} 로 방 하나만 다시 꾸민다. 새 세션(start_interior_room_session)이나 create_map 을 쓰지 말 것."
       + "furniture 레이어 전체 재실행 없이 방별로 배치를 다듬을 때 쓴다(테마 교체·재추첨). "
       + "방 범위의 가구·벽 장식·러그를 걷어내고 역할 테마 문법으로 재배치한 뒤 전체 통행 보정을 다시 돌린다. "
       + "시공 후 evaluate_interior_room으로 재평가하라.",

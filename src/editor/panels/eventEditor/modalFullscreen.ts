@@ -1,3 +1,5 @@
+import { renderEditorIcon } from "./editorIcons";
+
 type WindowStyleSnapshot = {
   readonly width: string;
   readonly height: string;
@@ -21,7 +23,7 @@ export function attachWindowFullscreen(
 
   const updateButton = (): void => {
     const label = fullscreen ? "창 보기로 복원" : "전체 보기";
-    button.textContent = fullscreen ? "❐" : "⛶";
+    button.replaceChildren(renderEditorIcon(fullscreen ? "collapse" : "expand"));
     button.title = `${label} (Alt+Enter)`;
     button.setAttribute("aria-label", label);
     button.setAttribute("aria-pressed", fullscreen ? "true" : "false");

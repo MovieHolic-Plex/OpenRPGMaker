@@ -1,5 +1,6 @@
 ﻿import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import type { Layer } from "@/editor/editorState";
+import { eventDisplayName } from "@/project/eventDisplayName";
 import { store } from "@/project/store";
 import { relationshipStateName } from "@/project/relationshipState";
 import type {
@@ -63,14 +64,8 @@ export type EventListTooltipModel = {
   readonly plainText: string;
 };
 
-export function eventDisplayName(event: Pick<GameEvent, "id" | "pages">): string {
-  const pages = event.pages ?? [];
-  for (let index = pages.length - 1; index >= 0; index -= 1) {
-    const name = pages[index]?.name?.trim();
-    if (name) return name;
-  }
-  return event.id;
-}
+// 정의는 @/project/eventDisplayName 으로 옮겼다(명령 요약과의 import 순환 방지). 기존 import 경로는 유지한다.
+export { eventDisplayName };
 
 /** 맵 위 이벤트 호버 요약. 이름·트리거·실행 명령 몇 줄을 plain text로 반환. */
 export function eventMarkerTooltip(

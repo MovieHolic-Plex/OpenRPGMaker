@@ -1,0 +1,36 @@
+
+tab                body  insp  clip ovl bleed text  violations   (vs baseline)
+--------------------------------------------------------------------------------------------------
+overview           56%   56%      0   0     0    0  detailDead:56%  =1
+actors             58%   63%      0   0     0    0  detailDead:63%  0->1 WORSE
+classes            45%   42%      0   0     0    0  clean  =0
+skills             38%   44%      0   0     0    0  clean  =0
+items              41%   50%      0   0     0    0  clean  =0
+equipment          37%   44%      1   0     0    0  clipped:1  =1
+enemies            33%   36%      0   0     0    0  clean  2->0 BETTER
+monster-species    52%   54%      0   0     0    0  clean  2->0 BETTER
+troops             52%   57%      0   0     0    0  detailDead:57%  0->1 WORSE
+factions           58%   53%      0   0     0    0  clean  =0
+elements           54%   59%      0   0     0    0  detailDead:59%  =1
+states             39%   44%      0   0     0    0  clean  =0
+animations         44%   52%      0   0     0    0  clean  =0
+battle-screen      44%   42%      0   0     0    0  clean  =0
+battle-commands    29%   36%      0   0     0    0  clean  =0
+terrain            37%   36%      0   0     0    0  clean  =0
+crops              39%   29%      0   0     0    0  clean  =0
+characters         75%   83%      0   0     0    0  detailDead:83%  =1
+life-crafting      88%   94%      0   0     0    0  detailDead:94%  =1
+daily-weather      56%   56%      0   0     0    0  detailDead:56%  0->1 WORSE
+farm-animals       59%   59%      0   0     0    0  detailDead:59%  =1
+farm-spatial       62%   63%      0   0     0    0  detailDead:63%  0->1 WORSE
+life-collections   59%   60%      0   0     0    0  detailDead:60%  0->1 WORSE
+tilesets           23%   26%      0   0     0    0  clean  1->0 BETTER
+structure-kits     50%   50%      0   0     0    0  clean  =0
+common-events      62%   59%      0   0     0    0  detailDead:59%  0->1 WORSE
+system             57%   57%      0   0     0    0  detailDead:57%  =1
+terms              69%   67%      0   0     0    0  detailDead:67%  =1
+switches           66%   68%      0   0     0    0  detailDead:68%  =1
+variables          72%   69%      0   0     0    0  detailDead:69%  =1
+--------------------------------------------------------------------------------------------------
+clean 14/30 -> /tmp/dbshots/conformance-after.json
+AUDIT EXIT=0

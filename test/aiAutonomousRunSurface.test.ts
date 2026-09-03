@@ -409,6 +409,7 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     await bridgeSend("안녕");
     await flushAsync();
     expect(findByTestId(panel, "ai-autonomous-run-surface")).toBeNull();
-    expect(assistantMock.getLastOpts()).toEqual({ autonomous: false });
+    // 패널은 autonomous 와 함께 사용자 원문(instruction)·선택 스코프를 사실로 넘긴다.
+    expect(assistantMock.getLastOpts()).toMatchObject({ autonomous: false, instruction: "안녕", scope: null });
   });
 });

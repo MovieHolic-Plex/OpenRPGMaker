@@ -25,7 +25,7 @@ import {
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
-import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
+import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField, playBattleCue } from "@/player/battleJuice";
 import { directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
@@ -86,7 +86,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.testid = "battle-scene";
   // 전투 UI 스킨 — CSS가 [data-battle-ui-style="pokemon"] 로 레이아웃을 갈아입힌다.
   root.dataset.battleUiStyle = store.getCurrent().system.battleUiStyle === "pokemon" ? "pokemon" : "classic";
-  // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 12종 스킨을 갈아입힌다.
+  // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 등록 스킨을 갈아입힌다.
   // B: 12 vars 테마 엔진 — 레지스트리의 themeVars를 루트에 직접 주입한다(CSS 변수).
   const skinId = resolveSkinId(store.getCurrent().system.battleUiStyle);
   const skin = getBattleSkin(skinId);
@@ -143,6 +143,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 크롬이었고 런타임은 키보드 전용이다. 자동전투(A)·배속(Shift) 토글은 키로만 받고,
   // 상태는 루트 data 속성으로 노출한다(스킨/테스트가 읽을 수 있게).
   root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost);
+  // 필드가 루트에 붙은 뒤에만 배경 변수를 비출 수 있다(battleField 생성 시점에는 부모가 없다).
+  syncSceneBackdropVar(field);
 
   function toggleAutoBattle(): void {
     autoBattle = !autoBattle;

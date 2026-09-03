@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderMapList, resetMapListUiStateForTests } from "@/editor/panels/mapList";
+import { isMapPanelCollapsed, resetMapPanelSectionForTests } from "@/editor/workspace/mapPanelSection";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
-import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 vi.mock("@/util/toast", () => ({ toast: vi.fn() }));
 
@@ -14,6 +15,7 @@ describe("map tree panel", () => {
   beforeEach(() => {
     restoreDom = installFakeDom();
     resetMapListUiStateForTests();
+    resetMapPanelSectionForTests();
     const project = createBlankProject();
     store.replace(project);
     editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
@@ -37,6 +39,60 @@ describe("map tree panel", () => {
     expect(findByTestId(panel, "map-tree-filter")).not.toBeNull();
     expect(findByTestId(panel, "map-add-category")).toBeNull();
     expect(findByTestId(panel, "map-add-folder")).not.toBeNull();
+  });
+
+  it("헤더의 주 동작 「새 맵」만 글자 라벨과 강조 톤을 달고 맨 오른쫽에 선다", () => {
+    const panel = renderWithFakeDom(() => {
+      const container = document.createElement("div");
+      renderMapList(container);
+      return container;
+    });
+    const add = findByTestId(panel, "map-add");
+    expect(add).not.toBeNull();
+    expect(add?.className).toContain("is-primary");
+    expect(add?.textContent).toContain("새 맵");
+    const actions = Array.from(panel.querySelector(".map-tree-header-actions")?.children ?? []);
+    expect(actions.length).toBeGreaterThan(1);
+    expect(actions[actions.length - 1]).toBe(add);
+    // 나머지 헤더 액션은 아이콘만 — 글자 라벨은 주 동작 하나에만 있다.
+    for (const other of actions.slice(0, -1)) {
+      expect(other.className).not.toContain("has-text");
+    }
+  });
+
+  it("제목 토글이 도크 섹션을 접고 펴며, 접힘은 aria-expanded 와 패널 클래스로 드러난다", () => {
+    const container = document.createElement("div");
+    renderWithFakeDom(() => {
+      renderMapList(container);
+      return container;
+    });
+    const toggle = findByTestId(container as unknown as FakeElement, "map-tree-section-toggle");
+    expect(toggle).not.toBeNull();
+    expect(toggle?.getAttribute("aria-expanded")).toBe("true");
+    expect(toggle?.querySelector(".map-tree-title")?.textContent).toBe("맵");
+    expect(container.querySelector(".map-tree-panel")?.className).not.toContain("is-section-collapsed");
+
+    toggle?.dispatchEvent(new Event("click"));
+
+    expect(isMapPanelCollapsed()).toBe(true);
+    const reToggle = findByTestId(container as unknown as FakeElement, "map-tree-section-toggle");
+    expect(reToggle?.getAttribute("aria-expanded")).toBe("false");
+    expect(container.querySelector(".map-tree-panel")?.className).toContain("is-section-collapsed");
+    // 접혀도 헤더 액션(새 맵 등)은 남는다 — 목록만 숨는 게 계약이다.
+    expect(findByTestId(container as unknown as FakeElement, "map-add")).not.toBeNull();
+
+    reToggle?.dispatchEvent(new Event("click"));
+    expect(isMapPanelCollapsed()).toBe(false);
+    expect(findByTestId(container as unknown as FakeElement, "map-tree-section-toggle")?.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("초보 플라이아웃 변종에는 도크 섹션 토글이 없다(접을 도크가 없다)", () => {
+    const panel = renderWithFakeDom(() => {
+      const container = document.createElement("div");
+      renderMapList(container, { variant: "basic" });
+      return container;
+    });
+    expect(findByTestId(panel, "map-tree-section-toggle")).toBeNull();
   });
 
   it("헤더 제목과 개수를 별도 span으로 렌더한다(맵 N 합침 회귀 방지)", () => {

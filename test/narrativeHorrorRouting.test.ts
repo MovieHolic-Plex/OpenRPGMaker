@@ -7,10 +7,6 @@ import {
   detectNarrativeHorrorGenre,
   requiredSuccessToolsForUserText,
 } from "@/ai/narrativeHorrorWorkPlan";
-import { REGION_INTENT_KEYWORDS } from "@/editor/regionTask/regionIntentRouter";
-
-// GUIDE_LINES is not exported — re-test via regionIntentRouter public API if needed.
-// We import REGION_INTENT_KEYWORDS and string-search the built guide through detectRegionIntentGuide if exported.
 
 describe("narrative/horror successTools routing", () => {
   it("detects moon / witch / ib genres", () => {
@@ -36,14 +32,5 @@ describe("narrative/horror successTools routing", () => {
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("script_cutscene_preset");
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("make_horror_loop");
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("make_gallery_room");
-  });
-
-  it("region intent keywords include gallery and trap horror cues", () => {
-    expect(REGION_INTENT_KEYWORDS["quest-trigger"]).toEqual(
-      expect.arrayContaining(["갤러리", "회상", "투더문"]),
-    );
-    expect(REGION_INTENT_KEYWORDS["battle-trap"]).toEqual(
-      expect.arrayContaining(["트랩", "마녀", "저택"]),
-    );
   });
 });

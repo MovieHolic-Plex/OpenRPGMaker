@@ -6,6 +6,7 @@ import {
   type ProposalCompletenessCall,
 } from "@/ai/proposalCompleteness";
 import type { BuildSpec } from "@/ai/buildSpec";
+import { declaredIntent } from "./intentFixture";
 import type { ChangeSummary } from "@/editor/tools/types";
 
 function changeSummary(overrides: Partial<ChangeSummary> = {}): ChangeSummary {
@@ -86,9 +87,10 @@ describe("proposal completeness lint", () => {
     expect(warnings).toEqual(["⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건)."]);
   });
 
-  it("실내 요청에 야외 집 키트만 쓰면 경고한다", () => {
+  it("실내 신축 선언에 야외 집 키트만 쓰면 경고한다", () => {
     const warnings = proposalCompletenessWarnings({
       requestText: "연금술사의 집 이라는 실내 를 하나 만드렁줘",
+      intent: declaredIntent({ mode: "create", space: "interior" }),
       calls: [
         call("build_house_kit", { mapId: "m1", kitId: "bright-plaster", wings: [{ x: 4, y: 5, w: 12, h: 10 }] }, { tilesChanged: 80 }),
       ],
@@ -108,9 +110,10 @@ describe("proposal completeness lint", () => {
     }
   });
 
-  it("실내 요청에 create_map만 하면 경고한다", () => {
+  it("실내 신축 선언에 create_map만 하면 경고한다", () => {
     const warnings = proposalCompletenessWarnings({
       requestText: "실내 맵 하나 만들어줘",
+      intent: declaredIntent({ mode: "create", space: "interior" }),
       calls: [call("create_map", { name: "새로운 시작의 터전", width: 30, height: 30 }, { mapsAdded: 1 })],
     });
     expect(warnings.some((line) => line.includes("빈 맵만"))).toBe(true);
@@ -232,5 +235,35 @@ describe("proposal completeness lint", () => {
     expect(proposalHasChangedMap(villageCalls, "m1")).toBe(true);
     expect(proposalCompletenessWarnings({ requestText: "집 6채 마을 만들어줘", calls: villageCalls }))
       .not.toContainEqual(expect.stringContaining("요청 수량"));
+  });
+});
+
+describe("완성도 린트 — 의도 선언이 있으면 선언 필드로 판정한다", () => {
+  const emptyCall = (name: string): ProposalCompletenessCall => ({ name, args: {}, result: { ok: true, diff: changeSummary() } });
+  const okHouse = (): ProposalCompletenessCall => ({ name: "author_house", args: {}, result: { ok: true, diff: changeSummary({ tilesChanged: 40 }) } });
+
+  it("질문 선언은 변경 0건이어도 미이행이 아니다", () => {
+    const warnings = proposalCompletenessWarnings({ requestText: "이 맵 이벤트 몇 개야?", intent: declaredIntent({ mode: "question" }), calls: [emptyCall("find_events")] });
+    expect(warnings).toEqual([]);
+  });
+
+  it("생성 선언인데 변경이 없으면 미이행이다 — 문장에 동사가 없어도", () => {
+    const warnings = proposalCompletenessWarnings({ requestText: "여관", intent: declaredIntent({ mode: "create" }), calls: [] , assistantText: "완료" });
+    expect(warnings.some((warning) => warning.includes("실제 변경이 없습니다"))).toBe(true);
+  });
+
+  it("실내 신축 선언에 야외 집만 지으면 경고하고, 실내 수정 선언·선언 없음에는 경고하지 않는다", () => {
+    const interiorCreate = proposalCompletenessWarnings({ requestText: "여관 지어줘", intent: declaredIntent({ mode: "create", space: "interior", facility: "여관" }), calls: [okHouse()] });
+    expect(interiorCreate.some((warning) => warning.includes("실내 요청인데 야외 집 외장"))).toBe(true);
+    const interiorModify = proposalCompletenessWarnings({ requestText: "이 여관 좀 고쳐줘", intent: declaredIntent({ mode: "modify", space: "interior" }), calls: [okHouse()] });
+    expect(interiorModify.some((warning) => warning.includes("실내 요청인데"))).toBe(false);
+    // 선언이 없으면 「여관」 낱말만으로 실내를 추측하지 않는다.
+    const none = proposalCompletenessWarnings({ requestText: "여관 지어줘", calls: [okHouse()] });
+    expect(none.some((warning) => warning.includes("실내 요청인데"))).toBe(false);
+  });
+
+  it("원탭 선택지가 붙은 되묻기 응답은 변경 0건이 정상이다", () => {
+    const warnings = proposalCompletenessWarnings({ requestText: "집 지어줘", intent: declaredIntent({ mode: "create", space: "unclear" }), calls: [], assistantText: "어디에 지을까요?\n[선택지] 실내 | 야외" });
+    expect(warnings).toEqual([]);
   });
 });

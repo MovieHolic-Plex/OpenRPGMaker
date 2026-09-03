@@ -91,6 +91,11 @@ export class RuntimeKeyHoldTracker {
   private readonly skillKeys = new Set<string>();
   private readonly guardKeys = new Set<string>();
   private readonly directions = new Set<Dir>();
+  // 마지막 소비 이후 **새로 눌린** 방향. 눌렀다 뗀 키도 남는다 — 방향 입력의 「엣지」다.
+  // 눌림(directions)만 보면 한 프레임 사이에 끝난 탭은 update 가 한 번도 못 본다. 브라우저 실측
+  // (2026-09-03): 즉시 탭 4회 → 1칸, 같은 태스크 안 dir(down)→dir(null) → 0칸. 프레임이 늘어지는
+  // 기계에서는 사람의 짧은 탭도 이렇게 사라져 「될 때도 안 될 때도 있다」가 된다.
+  private readonly tappedDirections = new Set<Dir>();
   private pendingActionEdge = false;
   private pendingAttackEdge = false;
   private pendingSkillEdge = false;
@@ -127,7 +132,18 @@ export class RuntimeKeyHoldTracker {
       this.actionKeys.add(normalized);
     }
     const dir = directionForKey(key);
-    if (dir) this.directions.add(dir);
+    if (dir) {
+      this.directions.add(dir);
+      this.noteDirectionTap(dir);
+    }
+  }
+
+  /**
+   * 방향 엣지만 남긴다(눌림 집합은 건드리지 않는다). 자동화 주입은 눌림을 `injectedDir` 로 따로
+   * 들고 있어서 여기서 눌림까지 더하면 놓을 길이 없어 영원히 걷는다(프로브 실측: 탭 4회 → 6칸).
+   */
+  noteDirectionTap(dir: Dir): void {
+    this.tappedDirections.add(dir);
   }
 
   keyUp(key: string): void {
@@ -147,6 +163,7 @@ export class RuntimeKeyHoldTracker {
     this.skillKeys.clear();
     this.guardKeys.clear();
     this.directions.clear();
+    this.tappedDirections.clear();
     this.dashHeld = false;
     this.pendingActionEdge = false;
     this.pendingAttackEdge = false;
@@ -202,6 +219,22 @@ export class RuntimeKeyHoldTracker {
 
   heldDirections(): readonly Dir[] {
     return [...this.directions];
+  }
+
+  /** 마지막 소비 이후 눌린 방향을 꺼내고 비운다. 뗀 키도 한 번은 나온다. */
+  takeTappedDirections(): readonly Dir[] {
+    const tapped = [...this.tappedDirections];
+    this.tappedDirections.clear();
+    return tapped;
+  }
+
+  /** 비우지 않고 본다 — 주인공이 걷는 중이라 이번 프레임에는 걸음을 시작할 수 없을 때. */
+  peekTappedDirections(): readonly Dir[] {
+    return [...this.tappedDirections];
+  }
+
+  clearTappedDirections(): void {
+    this.tappedDirections.clear();
   }
 }
 
@@ -283,9 +316,17 @@ export class Input {
   setEnabled(v: boolean): void {
     this.enabled = v;
     this.runtimeKeys.clearPendingActionEdge();
+    // 닫히는 순간과 열리는 순간 모두 비운다 — 이벤트·전투 중에 누른 방향이 끝난 뒤 한 걸음을
+    // 만들면 안 된다. 계속 누르고 있는 키는 눌림(directions)으로 남아 열린 뒤 그대로 걷는다.
+    this.runtimeKeys.clearTappedDirections();
     if (!v) {
       this.priority = [];
     }
+  }
+
+  /** 메뉴가 열린 동안 쌓인 방향 탭을 버린다 — 닫힌 순간 유령 걸음이 나가지 않게. */
+  clearDirectionTaps(): void {
+    this.runtimeKeys.clearTappedDirections();
   }
 
   // 액션 전투 활성 맵에서 Space를 조사(action) 대신 공격(attack) 엣지로 라우팅한다.
@@ -294,9 +335,13 @@ export class Input {
   }
 
   // 매 프레임 호출. 엣지 이벤트 갱신.
-  update(): InputState {
+  //
+  // deferTaps: 주인공이 걷는 중(이번 프레임에 걸음을 시작할 수 없음)이면 탭 래치를 소비하지 않고
+  // 남겨 둔다. 걸음이 끝난 프레임에서 소비되어 「걷는 중에 한 번 누른 키」가 정확히 한 걸음이 된다.
+  update(options: { readonly deferTaps?: boolean } = {}): InputState {
     if (!this.enabled) {
       this.runtimeKeys.clearPendingActionEdge();
+      this.runtimeKeys.clearTappedDirections();
       return { dir: null, x: 0, y: 0, dash: false, actionPressed: false, confirmPressed: false, attackPressed: false, skillPressed: false };
     }
 
@@ -309,6 +354,11 @@ export class Input {
     for (const dir of this.runtimeKeys.heldDirections()) {
       downSet.add(dir);
     }
+    // 눌렀다 뗀 방향도 한 번은 눌림으로 친다(래치). 걷는 중이면 소비하지 않고 다음 정지 프레임에 넘긴다.
+    const tapped = options.deferTaps === true
+      ? this.runtimeKeys.peekTappedDirections()
+      : this.runtimeKeys.takeTappedDirections();
+    for (const dir of tapped) downSet.add(dir);
     // 자동화 주입 방향 병합.
     if (this.injectedDir) downSet.add(this.injectedDir);
 
@@ -391,6 +441,8 @@ export class Input {
   // 주입된 방향은 실제 키보드 isDown과 병합되어 update에서 downSet에 포함된다.
   injectDirection(dir: Dir | null): void {
     this.injectedDir = dir;
+    // 키보드와 같은 계약: 주입도 눌림 엣지를 남겨 같은 태스크 안의 dir(d)→dir(null) 이 한 걸음이 된다.
+    if (dir) this.runtimeKeys.noteDirectionTap(dir);
   }
 
   private isDown(dir: Dir): boolean {

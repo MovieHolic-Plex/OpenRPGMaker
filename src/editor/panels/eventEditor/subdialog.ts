@@ -1,4 +1,5 @@
 import { clearChildren, el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import { registerModal } from "@/editor/ui/modalStack";
 import { installEventEditorCustomSelects } from "./customSelect";
 
@@ -99,7 +100,7 @@ function renderHeader(options: EventSubdialogOptions, close: () => void): HTMLEl
     copy,
     el("button", {
       class: "btn event-subdialog-close",
-      text: "×",
+      children: [renderEditorIcon("close")],
       attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
       on: { click: close },
     })

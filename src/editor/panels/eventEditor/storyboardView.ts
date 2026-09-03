@@ -2,6 +2,7 @@ import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventComm
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandCategoryVisual } from "./commandCategoryIcons";
+import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { commandSummary } from "./commandSummary";
 import { commandKindLabel } from "./options";
 
@@ -84,6 +85,7 @@ type CommandDigest = {
   readonly category: string;
   readonly categoryLabel: string;
   readonly glyph: string;
+  readonly icon: EditorIconName;
 };
 
 function summarizeCommand(cmd: Command): CommandDigest {
@@ -100,6 +102,7 @@ function summarizeCommand(cmd: Command): CommandDigest {
     category: visual.key,
     categoryLabel: visual.label,
     glyph: visual.glyph,
+    icon: visual.icon,
   };
 }
 
@@ -205,14 +208,14 @@ export function renderStoryboard(
     if (opts?.onMove) {
       buttons.push(el("button", {
         class: "event-storyboard-row-action",
-        text: "↑",
+        children: [renderEditorIcon("arrowUp")],
         attrs: { type: "button", title: "위로 이동", "aria-label": "위로 이동" },
         dataset: { testid: `event-storyboard-move-up-${path.join("-")}` },
         on: { click: stop(() => opts.onMove!(path, -1)) },
       }));
       buttons.push(el("button", {
         class: "event-storyboard-row-action",
-        text: "↓",
+        children: [renderEditorIcon("arrowDown")],
         attrs: { type: "button", title: "아래로 이동", "aria-label": "아래로 이동" },
         dataset: { testid: `event-storyboard-move-down-${path.join("-")}` },
         on: { click: stop(() => opts.onMove!(path, 1)) },
@@ -221,7 +224,7 @@ export function renderStoryboard(
     if (opts?.onOpenEditor) {
       buttons.push(el("button", {
         class: "event-storyboard-row-action",
-        text: "✎",
+        children: [renderEditorIcon("pencil")],
         attrs: { type: "button", title: "고치기", "aria-label": "고치기" },
         dataset: { testid: `event-storyboard-edit-${path.join("-")}` },
         on: { click: stop(() => opts.onOpenEditor!(path)) },
@@ -230,7 +233,7 @@ export function renderStoryboard(
     if (opts?.onDelete) {
       buttons.push(el("button", {
         class: "event-storyboard-row-action is-danger",
-        text: "✕",
+        children: [renderEditorIcon("trash")],
         attrs: { type: "button", title: "삭제", "aria-label": "삭제" },
         dataset: { testid: `event-storyboard-delete-${path.join("-")}` },
         on: { click: stop(() => opts.onDelete!(path)) },
@@ -354,6 +357,7 @@ export function renderStoryboard(
             class: "event-storyboard-card-cat",
             attrs: { "aria-hidden": "true", title: `${info.categoryLabel} 명령` },
             dataset: { glyph: info.glyph, label: info.categoryLabel },
+            children: [renderEditorIcon(info.icon)],
           }),
           el("span", { class: "kind event-storyboard-card-title", text: info.title }),
           el("span", { class: "line event-storyboard-card-detail", text: info.detail }),

@@ -2,29 +2,29 @@
  "page1": {
   "testidCount": 211,
   "controlCount": 122,
-  "classCount": 242,
-  "labelCount": 99,
+  "classCount": 263,
+  "labelCount": 90,
   "detailsConverted": 4
  },
  "page2": {
   "testidCount": 254,
   "controlCount": 165,
-  "classCount": 262,
-  "labelCount": 103,
+  "classCount": 285,
+  "labelCount": 94,
   "detailsConverted": 4
  },
  "bare": {
   "testidCount": 184,
   "controlCount": 105,
-  "classCount": 209,
-  "labelCount": 89,
+  "classCount": 230,
+  "labelCount": 80,
   "detailsConverted": 2
  },
  "flow": {
   "testidCount": 198,
   "controlCount": 109,
-  "classCount": 236,
-  "labelCount": 100,
+  "classCount": 256,
+  "labelCount": 93,
   "detailsConverted": 4
  }
 }

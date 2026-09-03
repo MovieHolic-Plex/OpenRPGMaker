@@ -146,10 +146,12 @@
   font: 500 12px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* v2(2026-09-03): 라벨은 말줄임하지 않는다 — 「이동 간격(…」 이 실측된 자리다. 어절로 줄바꿈. */
+  overflow: visible;
+  text-overflow: clip;
   text-transform: none;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(input, select) {
@@ -205,7 +207,10 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench :is(.db-enemy-stat-grid, .db-enemy-reward-grid) .db-field {
-  grid-template-columns: minmax(56px, 72px) minmax(0, 1fr);
+  /* v2(2026-09-03): 126px 열에서 라벨-좌 격자는 스테퍼를 0 폭으로 접었다 — 라벨을 위에 둔다. */
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 4px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-wide-field {
@@ -349,7 +354,8 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-critical-row .db-field {
-  grid-template-columns: 24px 84px;
+  /* v2: 1/N 스테퍼가 84px 에 접히지 않게 컨트롤 열을 내용 폭으로 연다. */
+  grid-template-columns: 24px minmax(120px, 1fr);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench .db-enemy-species-status {

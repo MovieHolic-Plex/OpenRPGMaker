@@ -808,7 +808,7 @@
  * 이제는 9-slice 스킨 대신 런타임 공용 글래스 토큰으로 표면을 직접 그린다: 루트는 계속
  * 투명(스테이지를 덮으므로)이고, 경계가 있는 내부 패널만 --runtime-glass-* 를 소비한다.
  * 자료집 윈도스킨 배관(--runtime-window-skin)과 저작 데이터는 그대로 살아 있고, 런타임
- * 패널에 칠하는 것만 멈췄다 — 전투 HUD(_rm2003.css)가 먼저 같은 결론에 도달했다.
+ * 패널에 칠하는 것만 멈췄다 — 전투 HUD(_rm2000.css)가 먼저 같은 결론에 도달했다.
  */
 .oprn-status-menu .status-menu-detail,
 .oprn-status-menu .status-menu-party-row,

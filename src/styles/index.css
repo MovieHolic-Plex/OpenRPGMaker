@@ -42,7 +42,6 @@
 @import "./database/light-theme.css";
 @import "./database/sidebar.css";
 @import "./database/record-list-modern.css";
-@import "./database/form-hierarchy-modern.css";
 @import "./database/modern-controls.css";
 @import "./database/overview-dashboard.css";
 @import "./database/title-workbench.css";
@@ -66,6 +65,10 @@
 @import "./database/modern/troops.css";
 @import "./database/modern/utility-records.css";
 @import "./database/modern/weather-animals.css";
+/* Database Studio v2 — 30탭 공용 셸·레일·목록·폼 문법. 탭별 정제 층(modern/*) 뒤에 와야
+   두 세대(.oprn-record-* / .db-ws-*)를 같은 규칙으로 덮는다. !important 없음 — 앞선 층의
+   !important 는 그 층(studio-theme.css · sidebar.css)에서 값을 고쳤다. */
+@import "./database/studio-v2.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";
 @import "./editor/event-editor-rich-forms.css";
@@ -79,6 +82,8 @@
 @import "./editor/map-history.css";
 @import "./editor/map-props.css";
 @import "./editor/map-panel.modern.css";
+/* 좌측 사이드바(타일·맵 도크) 크롬의 마지막 발언자 — 맵 패널 행 규칙 뒤에 와야 한다. */
+@import "./editor/left-sidebar.modern.css";
 @import "./editor/rule-audit.css";
 @import "./editor/region-task.css";
 @import "./editor/build-palette.css";

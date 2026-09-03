@@ -1,5 +1,5 @@
 // 파티 HUD 이름/수치가 왜 잘리는지 — **계산된 값**으로 확인한다.
-// _rm2003.css 에서 네 번이나 "나중에 나온 더 구체적인 규칙" 이 내가 고치려던 규칙을 덮었다.
+// _rm2000.css 에서 네 번이나 "나중에 나온 더 구체적인 규칙" 이 내가 고치려던 규칙을 덮었다.
 // 그래서 이제 선택자를 눈으로 고르지 않고, 실제로 이기는 선언을 브라우저에 물어본다.
 import { chromium } from "@playwright/test";
 import { readFile } from "node:fs/promises";
@@ -8,7 +8,7 @@ import { startPlayerQaServer } from "../lib/runtimeQaRun.mjs";
 
 const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const PROJECT_URL = "/__runtime-qa/project.json";
-const SKINS = process.argv.slice(2).length > 0 ? process.argv.slice(2) : ["rm2000", "mother", "ff", "rm2003"];
+const SKINS = process.argv.slice(2).length > 0 ? process.argv.slice(2) : ["rm2000", "mother", "ff"];
 
 const base = JSON.parse(await readFile(new URL("test/fixtures/projects/editor-authored-demo-v3.json", `file://${REPO_ROOT}`), "utf8"));
 
@@ -18,7 +18,7 @@ const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftsh
 for (const skin of SKINS) {
   const raw = JSON.parse(JSON.stringify(base));
   // 스킨은 system.battleUiStyle 하나로 정해진다(scripts/qa/battle-text-audit.mjs:76). 다른
-  // 필드에 쓰면 조용히 기본 스킨으로 부팅된다 — 실측으로 rm2000 요청이 rm2003 으로 떴다.
+  // 필드에 쓰면 조용히 기본 스킨으로 부팅된다 — 실측으로 스킨 요청이 기본 스킨으로 떴다.
   raw.system = { ...raw.system, battleUiStyle: skin };
   const startMap = raw.maps[raw.startMapId];
   const commands = [{ kind: "battleProcessing", troopId: "troop_slime_pair", canEscape: true, canLose: true }];

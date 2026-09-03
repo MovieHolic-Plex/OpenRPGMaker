@@ -40,7 +40,7 @@ import {
   placeCharacterSprite,
 } from "@/player/characterDepth";
 // ★ 수관은 upperTileLayer(고정 250k). 솔리드 가구(×)는 root display list + y-sort.
-import type { PlaySceneContext } from "@/player/playSceneTypes";
+import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
 import { lifeCalendarHudLines } from "@/player/lifeCalendarHud";
@@ -56,6 +56,7 @@ runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
 import type { RuntimeEventSnapshot } from "@/player/runtimeDom";
 import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
+import { bumpPerfCounter, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 
 interface RenderedTileImage {
   setOrigin(x: number, y: number): void;
@@ -68,6 +69,30 @@ interface RenderedTileImage {
 
 /** root display list 에 올린 솔리드 upper 가구 — container removeAll 대상이 아니라 직접 destroy. */
 const rootYSortTiles = new WeakMap<object, RenderedTileImage[]>();
+
+/**
+ * 마지막으로 타일 계층을 그린 입력의 서명. 같으면 renderTiles 는 타일을 다시 만들지 않고
+ * 이벤트 계층만 다시 그린다.
+ *
+ * 왜: refreshRuntimeSurfaces 가 인터프리터 스텝마다 renderTiles 를 부른다. 30×30 맵도 한 번에
+ * 타일 GameObject 1,824 개, 100×100 이면 1~2만 개를 파괴·재생성했다(실측 15.9~26ms/호출).
+ * 대화 한 번에 6번, 100ms 병렬 이벤트가 있으면 초당 8번이었다 — 프레임이 통째로 빠지고
+ * 화면이 멈칫한다. 타일이 실제로 바뀐 스텝(changeTile·맵 이동·밭 갈이)만 다시 그리면 된다.
+ *
+ * 서명은 renderTiles 가 읽는 **모든** 입력을 담는다: 맵 객체·타일셋·텍스처 키(정체성),
+ * 하/상층 타일 배열(내용 해시 — applyMapOverrides 가 제자리에서 바꾼다), 밭·설치물·공간
+ * 배치(JSON), 작물 자료(정체성). tileStackAt 은 현재 빈 스택만 돌려주므로 입력이 아니다.
+ */
+interface TileLayerSignature {
+  readonly map: object;
+  readonly tileset: object | undefined;
+  readonly textureKey: string;
+  readonly tilesHash: number;
+  readonly overlays: string;
+  readonly crops: unknown;
+}
+
+const tileLayerSignatures = new WeakMap<object, TileLayerSignature>();
 
 interface RenderedEventSprite extends RenderedTileImage {
   readonly y: number;
@@ -99,6 +124,8 @@ interface RenderTilesSceneContext<
   };
   /** optional host identity for WeakMap tracking of root y-sort tiles */
   readonly sceneHost?: object;
+  /** 재생성 계수기(선택). 최소 컨텍스트 테스트 스텁은 생략한다. */
+  readonly perfCounters?: RuntimePerfCounters;
   /** 체공 그림자 풀. 이벤트 스프라이트를 파괴할 때 같이 비워야 고아 그림자가 남지 않는다. */
   characterShadows?: Map<string, import("@/player/characterShadow").ShadowImage>;
   readonly eventSprites: {
@@ -107,6 +134,8 @@ interface RenderTilesSceneContext<
     set(eventId: string, marker: TSprite): unknown;
   };
   readonly eventGraphicPatternOverrides?: Map<string, number>;
+  /** 걷는 중인 NPC 의 보간 위치를 알기 위한 무버 풀(선택). */
+  readonly autonomousNPCs?: { get(eventId: string): AutonomousMover | undefined };
   readonly runtimeDom: Pick<
     PlaySceneContext["runtimeDom"],
     "clearEventMarkers" | "upsertEventMarker" | "syncMissingResourceError"
@@ -148,11 +177,22 @@ export function renderTiles<
   TImage extends RenderedTileImage,
   TSprite extends RenderedEventSprite,
 >(scene: RenderTilesSceneContext<TImage, TSprite>): void {
+  const host = rootYSortHost(scene);
+  const signature = tileLayerSignature(scene);
+  const previous = tileLayerSignatures.get(host);
+  if (previous && sameTileLayerSignature(previous, signature)) {
+    // 타일 입력이 그대로다 — 이벤트 계층만 다시 그린다(페이지 조건·위치·그래픽 변화는 여기 있다).
+    bumpPerfCounter(scene, "tileRebuildsSkipped");
+    renderEventLayer(scene);
+    return;
+  }
+  tileLayerSignatures.set(host, signature);
+  bumpPerfCounter(scene, "tileRebuilds");
   scene.tileLayer.removeAll(true);
   scene.upperTileLayer?.removeAll(true);
   clearRootYSortTiles(scene);
   clearEventSprites(scene);
-  resetCullableTiles(rootYSortHost(scene));
+  resetCullableTiles(host);
   const map = scene.map;
   const tileset = store.getCurrent().tilesets[map.tilesetId];
   if (!tileset) return;
@@ -168,6 +208,62 @@ export function renderTiles<
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
   renderPlaceableOverlays(scene);
   renderEvents(scene);
+}
+
+function tileLayerSignature<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+): TileLayerSignature {
+  const project = store.getCurrent();
+  const map = scene.map;
+  const tileset = project.tilesets[map.tilesetId];
+  const session = scene.session;
+  return {
+    map,
+    tileset,
+    textureKey: tileset ? scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset) : "",
+    tilesHash: hashTiles(map.width, map.height, map.lowerTiles, map.upperTiles),
+    overlays: JSON.stringify([
+      session.farmPlots?.[map.id] ?? null,
+      session.placeables ?? null,
+      session.farmBuildingPlacements ?? null,
+      session.homeDecorationPlacements ?? null,
+    ]),
+    crops: project.database.crops,
+  };
+}
+
+function sameTileLayerSignature(left: TileLayerSignature, right: TileLayerSignature): boolean {
+  return (
+    left.map === right.map
+    && left.tileset === right.tileset
+    && left.textureKey === right.textureKey
+    && left.tilesHash === right.tilesHash
+    && left.overlays === right.overlays
+    && left.crops === right.crops
+  );
+}
+
+/** FNV-1a 32비트. 타일 1~2만 개를 훑는 데 0.1ms 안쪽 — 재생성(15~26ms)의 1% 미만이다. */
+function hashTiles(width: number, height: number, ...layers: readonly (readonly number[])[]): number {
+  let hash = 0x811c9dc5;
+  const mix = (value: number): void => {
+    hash ^= value & 0xffff;
+    hash = Math.imul(hash, 0x01000193);
+    hash ^= value >>> 16;
+    hash = Math.imul(hash, 0x01000193);
+  };
+  mix(width);
+  mix(height);
+  for (const layer of layers) {
+    mix(layer.length);
+    for (let index = 0; index < layer.length; index += 1) mix(layer[index] ?? -1);
+  }
+  return hash >>> 0;
+}
+
+/** 테스트·맵 리셋용: 다음 renderTiles 가 반드시 타일을 다시 만들게 한다. */
+export function invalidateTileLayer(host: object): void {
+  tileLayerSignatures.delete(host);
 }
 
 function clearEventSprites<
@@ -193,6 +289,7 @@ export function renderEventLayer<
   TImage extends RenderedTileImage,
   TSprite extends RenderedEventSprite,
 >(scene: RenderTilesSceneContext<TImage, TSprite>): void {
+  bumpPerfCounter(scene, "eventLayerRebuilds");
   clearEventSprites(scene);
   renderEvents(scene);
 }
@@ -258,6 +355,7 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   layer: "lower" | "upper",
 ): void {
   const alwaysAbove = layer === "upper" && isAlwaysAboveCharacterUpperTile(tileset, tile);
+  bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);
   applyTileDepth(image, tileset, tile, y, layer);
   // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고).
@@ -384,9 +482,13 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
       overrideFrame !== undefined
         ? overrideFrame
         : eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
+    // 걷는 중인 NPC 는 논리 위치가 이미 목적지다(playSceneAutonomous §moveAutonomousRuntimePosition).
+    // 목적지에 새 스프라이트를 놓으면 이벤트가 열려 이동이 멎은 순간 NPC 가 한 칸 앞으로 튄다 —
+    // 진행 중인 걸음의 보간 위치에 놓는다.
+    const position = renderedEventPosition(view, scene.autonomousNPCs?.get(event.id));
     const marker = scene.add.sprite(
-      footprintSpriteX(view.x, view.footprint),
-      characterSpriteY(view.y),
+      footprintSpriteX(position.x, view.footprint),
+      characterSpriteY(position.y),
       spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
       frame
     );
@@ -398,7 +500,23 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
   scene.syncRuntimeState();
 }
 
+function renderedEventPosition(
+  view: RuntimeEventView,
+  mover: AutonomousMover | undefined,
+): { readonly x: number; readonly y: number } {
+  const move = mover?.activeMove;
+  if (!move) return { x: view.x, y: view.y };
+  const durationMs = Math.max(1, move.durationMs ?? mover.moveDurationMs);
+  const progress = Math.min(1, Math.max(0, move.elapsedMs / durationMs));
+  return {
+    x: move.fromX + (move.toX - move.fromX) * progress,
+    y: move.fromY + (move.toY - move.fromY) * progress,
+  };
+}
+
 export function resetMapRuntime(scene: PlaySceneContext): void {
+  // 맵이 바뀌면 타일 서명도 버린다 — 같은 맵 객체를 다시 로드하는 경로에서도 반드시 다시 그린다.
+  invalidateTileLayer(scene);
   scene.eventPositions = initialRuntimeEventPositions(scene.map.events);
   // destroy 없이 clear만 하면 이전 맵의 NPC 스프라이트가 표시 목록에 고아로 남아
   // 맵 전이 때마다 "NPC 복사" 현상이 생긴다 — 팔로워와 동일하게 파괴 후 비운다.

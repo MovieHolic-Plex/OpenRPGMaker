@@ -23,7 +23,8 @@ export function databaseWorkbenchStatusText(summary: DatabaseWorkbenchSummary): 
 // 푸터 상태줄. 설명을 길게 적으면 항상 보이는 1500px 배너가 되어 노이즈만 늘어난다.
 // 상태는 짧게, "지금 저장"과의 관계 설명은 버튼 title 로 넘긴다(DATABASE_APPLY_BUTTON_HINT).
 export function databaseFooterStatusText(): string {
-  return "✓ 자동 저장됨";
+  // v2(2026-09-03): 체크 글리프는 뺐다 — 푸터 필이 앞에 상태 점을 그린다.
+  return "자동 저장됨";
 }
 
 // "자동 저장됨"과 "지금 저장"이 모순처럼 보이는 것은 버튼 툴팁에서 풀어준다.

@@ -1,6 +1,6 @@
 // 전투 글자 가시성 계측의 **기하 판정** 단위 테스트.
 //
-// 왜 이 테스트가 있나: 이 판정의 초판은 세 갈래를 섞어서 rm2003 을 오진했다. 실측 기하로
+// 왜 이 테스트가 있나: 이 판정의 초판은 세 갈래를 섞어서 rm2000 을 오진했다. 실측 기하로
 //   · 스크롤 범위 안이라 커서가 데려오는 행 4건을 `clipped`(영구 절단)로 올렸고,
 //   · 스크린샷에 실제로 반쯤 잘려 보이던 행은 한 건도 올리지 못했다.
 // 위양성은 없는 버그를 고치게 만들고, 위음성은 있는 버그를 통과시킨다.
@@ -26,7 +26,7 @@ describe("classifyInkGeometry", () => {
   });
 
   it("스크롤포트 **경계에 걸친** 잉크는 sliced — 글리프가 세로로 반 잘려 그려진다", () => {
-    // rm2003 실측 재현: 포트 546..726, 마지막 행 잉크 716..740 → 24px 중 14px 이 경계 밖.
+    // rm2000 실측 재현: 포트 546..726, 마지막 행 잉크 716..740 → 24px 중 14px 이 경계 밖.
     const verdict = classifyInkGeometry(box(716, 740), box(516, 804), scrollPortY(546, 726));
     expect(verdict.slicedRatio).toBeCloseTo(14 / 24, 5);
     expect(verdict.scrollReachable).toBe(false);
@@ -35,7 +35,7 @@ describe("classifyInkGeometry", () => {
   });
 
   it("스크롤포트 **완전히 밖**인 잉크는 위반이 아니다 — 커서가 scrollIntoView 로 데려온다", () => {
-    // rm2003 실측 재현: 포트 546..726 인데 "검격" 행 잉크는 780..816(스크롤 범위 안).
+    // rm2000 실측 재현: 포트 546..726 인데 "검격" 행 잉크는 780..816(스크롤 범위 안).
     const verdict = classifyInkGeometry(box(780, 816), box(516, 804), scrollPortY(546, 726));
     expect(verdict.scrollReachable).toBe(true);
     expect(verdict.slicedRatio).toBe(0);

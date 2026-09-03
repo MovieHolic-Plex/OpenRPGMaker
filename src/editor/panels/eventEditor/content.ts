@@ -25,6 +25,7 @@ import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { toast } from "@/util/toast";
 import { eventAiStagedCommands, hasEventAiStagedDraft, renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
@@ -533,10 +534,26 @@ function parseCommandPath(raw: string | undefined): number[] | null {
 }
 
 /** `<details>` 팝오버를 Escape 층에 올린다 — Escape 가 에디터 전체를 닫지 않게. */
+/**
+ * 툴바 팝오버(`<details>`)의 두 가지 탈출 경로.
+ *  - Escape: 모달 스택에 한 층으로 등록해 팝오버만 닫힌다(에디터는 닫히지 않는다).
+ *  - 바깥 pointerdown: 팝오버 밖을 누르면 닫힌다. 실측 2026-09-03 — 이 경로가 없어서 팝오버가
+ *    열린 채 우클릭 메뉴와 겹쳤다(제안서 §4). 리스너는 열려 있는 동안만 document 에 산다.
+ */
 function makePopoverEscapable(details: HTMLDetailsElement): void {
+  const onOutsidePointerDown = (event: Event): void => {
+    const target = event.target;
+    if (target instanceof Node && details.contains(target)) return;
+    details.open = false;
+  };
   details.addEventListener("toggle", () => {
-    if (details.open) registerModal(details, () => { details.open = false; });
-    else unregisterModal(details);
+    if (details.open) {
+      registerModal(details, () => { details.open = false; });
+      document.addEventListener("pointerdown", onOutsidePointerDown, true);
+    } else {
+      unregisterModal(details);
+      document.removeEventListener("pointerdown", onOutsidePointerDown, true);
+    }
   });
 }
 
@@ -565,10 +582,10 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     }
     run(path);
   };
-  const moveUp = toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1)));
-  const moveDown = toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)));
-  const copyButton = toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path)));
-  const cutButton = toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)));
+  const moveUp = toolbarButton("arrowUp", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1)));
+  const moveDown = toolbarButton("arrowDown", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)));
+  const copyButton = toolbarButton("copy", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path)));
+  const cutButton = toolbarButton("cut", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)));
   // 무엇에 적용되는지 팝오버가 직접 말한다 — 눌러 보고 나서야 아무 일도 없음을 알게 되지 않도록.
   const editTarget = el("p", {
     class: "event-editor-command-edit-target",
@@ -636,7 +653,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   commandSearch.value = currentCommandQuery();
   const searchClear = el("button", {
     class: "event-editor-command-search-clear",
-    text: "×",
+    children: [renderEditorIcon("close")],
     attrs: { type: "button", title: "검색 지우기", "aria-label": "검색 지우기" },
     dataset: { testid: "event-command-search-clear" },
     on: {
@@ -676,15 +693,15 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     class: "toolbar event-editor-command-toolbar",
     attrs: { "aria-label": "이 페이지가 하는 일 도구" },
     children: [
-      toolbarButton("+", "명령", "event-command-toolbar-add", () => {
+      toolbarButton("plus", "명령", "event-command-toolbar-add", () => {
         openCommandPickerForActions(actions);
       }, false, true),
       el("div", {
         class: "event-editor-command-search-field",
         children: [commandSearch, searchClear, searchCount],
       }),
-      toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
-      toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
+      toolbarButton("undo", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
+      toolbarButton("redo", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo()),
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
@@ -703,7 +720,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
 function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
   // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
-  const aiButton = aiDock ? toolbarButton("✧", "AI 명령", "event-command-quick-ai") : null;
+  const aiButton = aiDock ? toolbarButton("spark", "AI 명령", "event-command-quick-ai") : null;
   if (aiDock && aiButton) {
     const syncAiExpanded = (): void => aiButton.setAttribute("aria-expanded", String(aiDock.open));
     syncAiExpanded();
@@ -779,7 +796,7 @@ function toolGroup(...buttons: HTMLButtonElement[]): HTMLElement {
  * 더 긴 설명이 필요하면 `title` 을 따로 넘긴다.
  */
 function toolbarButton(
-  icon: string,
+  icon: EditorIconName,
   label: string,
   testId: string,
   onClick?: () => void,
@@ -789,7 +806,7 @@ function toolbarButton(
 ): HTMLButtonElement {
   return el("button", {
     class: "event-editor-command-tool" + (primary ? " primary" : ""),
-    text: `${icon} ${label}`,
+    children: [renderEditorIcon(icon), el("span", { class: "event-editor-command-tool-label", text: label })],
     attrs: disabled ? { type: "button", title, disabled: "" } : { type: "button", title },
     dataset: { testid: testId },
     on: onClick ? { click: onClick } : undefined,

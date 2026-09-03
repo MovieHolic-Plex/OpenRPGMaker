@@ -1,6 +1,6 @@
 /* src/styles/runtime/battle-skins/_ff.css
    sideview — 아군 우측 '한 줄 세로 열', FF 흰 베벨 + 파랑 그라데 창.
-   QA r1: rm2003과 픽셀 동일하던 문제 — 아군 지그재그를 세로 1열로 정렬하고
+   QA r1: rm2000과 픽셀 동일하던 문제 — 아군 지그재그를 세로 1열로 정렬하고
    창을 FF 화이트-베벨-온-블루로 교체. acting 행 margin 시프트로 이름 첫 글자가
    잘리던 문제도 파티 행에서는 시프트 제거. */
 .battle-scene[data-battle-skin="ff"] {

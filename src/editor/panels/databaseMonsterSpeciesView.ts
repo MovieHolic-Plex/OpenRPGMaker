@@ -194,7 +194,7 @@ function speciesHero(
     `진화 ${evolutions}개`,
   ];
   return detailHero({
-    eyebrow: "SPECIES",
+    eyebrow: "몬스터 종족",
     title: record.name || "(이름 없음)",
     // 레코드 id 를 상세 창에 실제 텍스트로 노출한다 — 예전에는 목록 행의 title 속성에만
     // 있어서 "지금 편집 중인 게 어느 레코드인지" 를 화면에서 확인할 수 없었다.

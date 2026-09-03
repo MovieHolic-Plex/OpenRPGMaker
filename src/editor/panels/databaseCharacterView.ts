@@ -361,7 +361,7 @@ function deleteProfileButton(entries: readonly CharacterIdIndexEntry[], rerender
 function characterDetail(entry: CharacterIdIndexEntry, project: Project, rerender: () => void): HTMLElement {
   const displayName = entry.profile?.displayName?.trim() || "이름 없는 주민";
   const hero = detailHero({
-    eyebrow: "RESIDENT",
+    eyebrow: "주민",
     title: displayName,
     subtitle: entry.hasProfile
       ? "이 프로필의 호감도·선물 기록은 등장 맵과 무관하게 공유됩니다."

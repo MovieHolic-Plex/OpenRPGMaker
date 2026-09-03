@@ -141,7 +141,8 @@ export function listRow(options: ListRowOptions): HTMLElement {
     children.push(options.thumb);
   }
   children.push(el("span", { class: "db-list-name", text: options.name || "(이름 없음)" }));
-  if (options.sub) children.push(el("span", { class: "db-list-sub", text: options.sub }));
+  // 칩은 이름에 밀리면 줄임표를 달 수 있으므로(v2) 전체 문구를 title 로 남긴다.
+  if (options.sub) children.push(el("span", { class: "db-list-sub", text: options.sub, attrs: { title: options.sub } }));
   if (options.number !== undefined) {
     children.push(el("span", {
       class: "db-list-number",

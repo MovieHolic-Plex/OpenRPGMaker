@@ -18,8 +18,9 @@ import { mentionedToolSchemas } from "@/ai/planToolExposure";
 
 const TITLE_REQUEST = "타이틀 화면 바꿔줘";
 
-function domainExposedNames(text: string): Set<string> {
-  const domains = computeActiveToolDomains(text);
+// 선언 없는(폴백) 턴의 도메인 슬라이스 — 코어 + UI 도메인만. 승격은 이 슬라이스 밖의 능력을 되살린다.
+function domainExposedNames(_text: string): Set<string> {
+  const domains = computeActiveToolDomains(null);
   return new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
 }
 

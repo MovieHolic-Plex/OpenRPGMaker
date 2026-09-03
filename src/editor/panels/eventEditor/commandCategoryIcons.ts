@@ -17,6 +17,7 @@ import {
   type M2CommandPickerGroup,
 } from "@/project/eventCommands/m2PickerLayout";
 import type { Command } from "@/project/types";
+import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 
 export type CommandCategoryKey =
   | "dialogue"
@@ -30,43 +31,47 @@ export type CommandCategoryKey =
   | "battle"
   | "modern";
 
-type CategoryVisual = {
+export type CategoryVisual = {
   readonly key: CommandCategoryKey;
+  /** 옛 글리프. CSS ::before 는 더 이상 그리지 않고, 데이터 속성 호환용으로만 남는다. */
   readonly glyph: string;
   readonly label: string;
+  /** SVG 아이콘 이름(editorIcons.ts). 식별은 텍스트가 하고 아이콘은 스캔 보조다. */
+  readonly icon: EditorIconName;
 };
 
 const GROUP_VISUALS: Record<string, CategoryVisual> = {
   // 탭 1 저작면: 말을 건다 / 답을 받는다 / 장소를 옮긴다 / 물건을 판다 / 흐름을 잡는다.
-  "말하기": { key: "dialogue", glyph: "❝", label: "대화" },
-  "고르기": { key: "dialogue", glyph: "▽", label: "대화" },
-  "옮기기": { key: "map", glyph: "➤", label: "지도" },
-  "거래": { key: "reward", glyph: "¤", label: "보상" },
-  "흐름": { key: "flow", glyph: "◇", label: "흐름" },
+  "말하기": { key: "dialogue", glyph: "❝", label: "대화", icon: "chat" },
+  "고르기": { key: "dialogue", glyph: "▽", label: "대화", icon: "choice" },
+  "옮기기": { key: "map", glyph: "➤", label: "지도", icon: "route" },
+  "거래": { key: "reward", glyph: "¤", label: "보상", icon: "coin" },
+  "흐름": { key: "flow", glyph: "◇", label: "흐름", icon: "branch" },
   // 탭 3 저작면: 지도를 고친다 / 분위기를 깔다 / 그림을 띄운다 / 화면을 연출한다 / 값을 읽는다.
-  "지도": { key: "map", glyph: "➤", label: "지도" },
-  "조명·날씨": { key: "screen", glyph: "☀", label: "조명·날씨" },
-  "그림": { key: "screen", glyph: "◰", label: "그림" },
-  "화면 연출": { key: "screen", glyph: "✦", label: "화면 연출" },
-  "값 읽기": { key: "flow", glyph: "≡", label: "값 읽기" },
+  "지도": { key: "map", glyph: "➤", label: "지도", icon: "route" },
+  "조명·날씨": { key: "screen", glyph: "☀", label: "조명·날씨", icon: "sun" },
+  "그림": { key: "screen", glyph: "◰", label: "그림", icon: "image" },
+  "화면 연출": { key: "screen", glyph: "✦", label: "화면 연출", icon: "spark" },
+  "값 읽기": { key: "flow", glyph: "≡", label: "값 읽기", icon: "lines" },
   // 탭 4 카탈로그 분류명은 그대로 단는다.
-  "대화/입력": { key: "dialogue", glyph: "❝", label: "대화" },
-  "조건/흐름": { key: "flow", glyph: "◇", label: "흐름" },
-  "보상/상점": { key: "reward", glyph: "¤", label: "보상" },
-  "소리": { key: "sound", glyph: "♪", label: "소리" },
+  "대화/입력": { key: "dialogue", glyph: "❝", label: "대화", icon: "chat" },
+  "조건/흐름": { key: "flow", glyph: "◇", label: "흐름", icon: "branch" },
+  "보상/상점": { key: "reward", glyph: "¤", label: "보상", icon: "coin" },
+  "소리": { key: "sound", glyph: "♪", label: "소리", icon: "sound" },
   // 탭 2 저작면: 적을 세운다 / 파티를 바꾼다 / 수치를 움직인다 / 모습을 바꾼다.
-  "전투": { key: "battle", glyph: "⚔", label: "전투" },
-  "파티": { key: "actor", glyph: "☗", label: "파티" },
-  "능력·성장": { key: "actor", glyph: "▲", label: "능력·성장" },
-  "모습·이름": { key: "actor", glyph: "☺", label: "모습·이름" },
-  "시스템/고급": { key: "system", glyph: "⚙", label: "시스템" },
-  "모던 명령": { key: "modern", glyph: "◈", label: "도구" },
+  "전투": { key: "battle", glyph: "⚔", label: "전투", icon: "sword" },
+  "파티": { key: "actor", glyph: "☗", label: "파티", icon: "party" },
+  "능력·성장": { key: "actor", glyph: "▲", label: "능력·성장", icon: "growth" },
+  "모습·이름": { key: "actor", glyph: "☺", label: "모습·이름", icon: "person" },
+  "시스템/고급": { key: "system", glyph: "⚙", label: "시스템", icon: "gear" },
+  "모던 명령": { key: "modern", glyph: "◈", label: "도구", icon: "tool" },
 };
 
 const FALLBACK_VISUAL: CategoryVisual = GROUP_VISUALS["시스템/고급"] ?? {
   key: "system",
   glyph: "⚙",
   label: "시스템",
+  icon: "gear",
 };
 
 const CATEGORY_BY_KIND: ReadonlyMap<string, CategoryVisual> = buildKindIndex();
@@ -138,7 +143,26 @@ export function commandCategoryVisual(cmd: Command): CategoryVisual {
   return CATEGORY_BY_KIND.get(cmd.kind) ?? FALLBACK_VISUAL;
 }
 
+/** 분류 아이콘 노드. 글리프 문자 대신 SVG 로 그린다(장식, aria-hidden). */
+export function renderCategoryIcon(visual: CategoryVisual): Element {
+  return renderEditorIcon(visual.icon);
+}
+
 // 피커 탭(1~4) 대표 아이콘.
+export function pickerPageIcon(page: 1 | 2 | 3 | 4): EditorIconName {
+  switch (page) {
+    case 1:
+      return "chat";
+    case 2:
+      return "party";
+    case 3:
+      return "spark";
+    case 4:
+      return "gear";
+  }
+}
+
+// 피커 탭(1~4) 대표 글리프 — 데이터 속성 호환용. 화면은 pickerPageIcon 으로 그린다.
 export function pickerPageGlyph(page: 1 | 2 | 3 | 4): string {
   switch (page) {
     case 1:

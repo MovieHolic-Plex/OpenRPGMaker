@@ -156,7 +156,7 @@
 
 /* 대상 선택 표시 = 코너 리티클(.battle-target-brackets) + 스프라이트 펄스 두 겹.
    흰 사각형(outline: 4px solid var(--oprn-battle-window-light))을 없앤 이유:
-   - 기본 스킨 rm2003 은 같은 노드에 코너 리티클을 이미 그린다(battle-skins/_rm2003.css) —
+   - 기본 스킨 rm2000 은 같은 노드에 코너 리티클을 이미 그린다(battle-skins/_rm2000.css) —
      흰 사각형과 리티클이 동시에 보여 조준점이 두 개로 읽혔다.
    - 노드 박스는 스프라이트 실루엣과 무관하다. 아군 노드는 176×192 고정 그리드 박스라
      사각형이 그림에서 한참 떨어진 자리에 떴다.
@@ -207,7 +207,7 @@
 
 /* 목록의 **텍스트 행**은 흐리게 죽인 표시가 맞다. 필드 **스프라이트**는 아니다 —
    그쪽 불투명도는 퇴장 연출(`15-juice-capture-fx.css` 의 battle-death-fade)이 소유한다.
-   여기에 정적 opacity 를 두면, 막타 프레임에 스킨 피격 juice(rm2003-juice-hit 등)가
+   여기에 정적 opacity 를 두면, 막타 프레임에 스킨 피격 juice(rm2000-juice-hit 등)가
    `animation` 숏핸드를 가져가 death-fade 가 돌지 못하는 사이 그 값이 그대로 드러나
    몬스터 몸통으로 배경이 비쳤다(실측: 임팩트 시 computed opacity 0.42). */
 .battle-enemy-list-row.defeated {

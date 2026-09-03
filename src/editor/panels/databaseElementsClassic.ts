@@ -265,7 +265,7 @@ function elementDetailPane(
   }
   return detailPane({
     hero: detailHero({
-      eyebrow: "ELEMENT",
+      eyebrow: "속성",
       title: element.name?.trim() ? element.name : "(이름 없음)",
       subtitle: element.id,
       tags: [

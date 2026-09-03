@@ -167,7 +167,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const skinHasteMultiplier = (() => {
     try {
       const skinId = resolveSkinId((options.project as unknown as { system?: { battleUiStyle?: string } }).system?.battleUiStyle) as BattleSkinId;
-      const map: Record<string, number> = { chrono: 1.18, bravely: 1.08, octopath: 1.06, ff: 1.04, rm2003: 1.02, dragonquest: 0.92, mother: 0.88 };
+      const map: Record<string, number> = { chrono: 1.18, bravely: 1.08, octopath: 1.06, ff: 1.04, rm2000: 1.02, dragonquest: 0.92, mother: 0.88 };
       return map[skinId] ?? 1;
     } catch { return 1; }
   })();

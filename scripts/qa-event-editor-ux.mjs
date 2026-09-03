@@ -332,6 +332,122 @@ try {
     hit,
   );
 
+
+  // ── 문법 기준 C7~C12 (2026-09-03 제안서 §14). 1440 으로 돌아와 목록 보기·선택 없음 상태에서 잰다.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(700);
+  await page.getByTestId("event-inspector-close").click({ force: true }).catch(() => {});
+  await page.getByTestId("event-view-toggle-list").click().catch(() => {});
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${evidenceDir}/08-grammar-1440.png` });
+  const grammar = await editor.evaluate(() => {
+    const root = document.querySelector(".event-editor-modal-window") ?? document.querySelector("[data-testid=event-editor-modal]");
+    const vis = (el) => {
+      const r = el.getBoundingClientRect();
+      const cs = getComputedStyle(el);
+      return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none" && el.closest("[hidden]") === null;
+    };
+    const all = [...root.querySelectorAll("*")].filter(vis);
+    const buttons = all.filter((e) => e.matches("button"));
+    const sig = (b) => {
+      const cs = getComputedStyle(b);
+      return [cs.backgroundColor, cs.color, cs.borderTopWidth + " " + cs.borderTopColor, cs.borderRadius, cs.fontSize, cs.fontWeight, Math.round(b.getBoundingClientRect().height)].join("|");
+    };
+    const signatures = new Map();
+    for (const b of buttons) {
+      const key = sig(b);
+      signatures.set(key, [...(signatures.get(key) ?? []), String(b.className).slice(0, 48)]);
+    }
+    const fontSizes = new Map();
+    const offSizeSamples = [];
+    const offRadiusSamples = [];
+    const textColorsBelow = [];
+    const lum = (rgb) => {
+      const m = rgb.match(/[\d.]+/g);
+      if (!m) return null;
+      const [r, g, b] = m.slice(0, 3).map((v) => { const c = Number(v) / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const opaqueBg = (el) => {
+      let n = el;
+      while (n && n !== document.documentElement) {
+        const bg = getComputedStyle(n).backgroundColor;
+        if (bg && bg !== "transparent" && !/^rgba\(.*,\s*0(\.\d+)?\)$/.test(bg)) return bg;
+        n = n.parentElement;
+      }
+      return "rgb(255, 255, 255)";
+    };
+    const ratio = (fg, bg) => {
+      const a = lum(fg); const b = lum(bg);
+      if (a == null || b == null) return null;
+      const [hi, lo] = a > b ? [a, b] : [b, a];
+      return (hi + 0.05) / (lo + 0.05);
+    };
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (!node.textContent.trim()) continue;
+      const parent = node.parentElement;
+      if (!parent || !vis(parent)) continue;
+      const cs = getComputedStyle(parent);
+      fontSizes.set(cs.fontSize, (fontSizes.get(cs.fontSize) ?? 0) + 1);
+      if (!["12px", "13px", "15px", "18px"].includes(cs.fontSize)) offSizeSamples.push(`${cs.fontSize} ${parent.tagName.toLowerCase()}.${String(parent.className).split(" ").slice(0, 2).join(".")}`);
+      const r = ratio(cs.color, opaqueBg(parent));
+      if (r != null && r < 4.5) textColorsBelow.push({ text: node.textContent.trim().slice(0, 24), cls: String(parent.className).slice(0, 40), ratio: Math.round(r * 100) / 100, fontSize: cs.fontSize });
+    }
+    const radii = new Map();
+    for (const e of all) {
+      const r = getComputedStyle(e).borderRadius;
+      if (r && r !== "0px") {
+        radii.set(r, (radii.get(r) ?? 0) + 1);
+        if (!["6px", "4px", "50%"].includes(r)) offRadiusSamples.push(`${r} ${e.tagName.toLowerCase()}.${String(e.className).split(" ").slice(0, 2).join(".")}`);
+      }
+    }
+    // 이모지·글리프 아이콘: 버튼 텍스트에 기호 블록 문자가 있고 SVG 자식이 없다.
+    const glyphRe = /[←-⇿⌀-⏿■-➿⬀-⯿\u{1F000}-\u{1FAFF}]/u;
+    // kbd 안의 단축키 표기(↵ 등)는 아이콘이 아니라 글자다 — 제외한다.
+    const textOutsideKbd = (b) => [...b.querySelectorAll("*")].concat([b]).filter((e) => e.tagName !== "KBD" && !e.closest("kbd")).map((e) => [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("")).join("");
+    const glyphButtons = buttons.filter((b) => glyphRe.test(textOutsideKbd(b)) && !b.querySelector("svg")).map((b) => ({ text: (b.textContent ?? "").trim().slice(0, 16), cls: String(b.className).slice(0, 40) }));
+    return {
+      signatureCount: signatures.size,
+      signatures: [...signatures.entries()].map(([k, v]) => ({ sig: k, count: v.length, sample: v[0] })),
+      fontSizes: [...fontSizes.entries()],
+      offSizeSamples: [...new Set(offSizeSamples)].slice(0, 20),
+      radii: [...radii.entries()],
+      offRadiusSamples: [...new Set(offRadiusSamples)].slice(0, 30),
+      lowContrast: textColorsBelow,
+      glyphButtons,
+      svgIcons: root.querySelectorAll("svg").length,
+    };
+  });
+  const allowedSizes = new Set(["12px", "13px", "15px", "18px"]);
+  const offSizes = grammar.fontSizes.filter(([size]) => !allowedSizes.has(size));
+  const allowedRadii = new Set(["6px", "4px", "50%"]);
+  const offRadii = grammar.radii.filter(([radius]) => !allowedRadii.has(radius));
+  record("C7", "버튼 스타일 시그니처 ≤ 12", grammar.signatureCount <= 12, { count: grammar.signatureCount, signatures: grammar.signatures.slice(0, 30) });
+  record("C8", "글자 크기는 12·13·15·18 만", offSizes.length === 0, { offSizes, samples: grammar.offSizeSamples, all: grammar.fontSizes });
+  record("C9", "라운딩은 6·4px 과 50% 만", offRadii.length === 0, { offRadii, samples: grammar.offRadiusSamples, all: grammar.radii });
+  record("C10", "이모지·글리프 아이콘 버튼 없음", grammar.glyphButtons.length === 0, { glyphButtons: grammar.glyphButtons.slice(0, 12), svgIcons: grammar.svgIcons });
+  record("C11", "대비 4.5:1 미만 텍스트 없음", grammar.lowContrast.length === 0, { count: grammar.lowContrast.length, sample: grammar.lowContrast.slice(0, 12) });
+
+  // C12 — 툴바 팝오버는 바깥을 누르면 닫힌다.
+  const popoverSummary = editor.locator("[data-testid=event-command-edit-menu] > summary");
+  let popover = null;
+  if (await popoverSummary.count()) {
+    await popoverSummary.click();
+    await page.waitForTimeout(250);
+    const openAfterClick = await editor.evaluate(() => document.querySelector("[data-testid=event-command-edit-menu]")?.open ?? null);
+    const list = editor.locator(".cmd-list").first();
+    const box = await list.boundingBox();
+    if (box) await page.mouse.click(box.x + box.width / 2, box.y + box.height - 12);
+    await page.waitForTimeout(300);
+    const openAfterOutside = await editor.evaluate(() => document.querySelector("[data-testid=event-command-edit-menu]")?.open ?? null);
+    popover = { openAfterClick, openAfterOutside };
+    await page.keyboard.press("Escape").catch(() => {});
+    await page.waitForTimeout(200);
+  }
+  record("C12", "툴바 팝오버가 바깥 클릭에 닫힘", popover?.openAfterClick === true && popover?.openAfterOutside === false, popover);
+
   await writeFile(`${evidenceDir}/results.json`, `${JSON.stringify({ label, baseUrl, results }, null, 2)}\n`, "utf8");
 } finally {
   await context.close();

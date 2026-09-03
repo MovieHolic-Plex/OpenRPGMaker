@@ -1,3 +1,4 @@
+import { fixedDeclarer } from "./intentFixture";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
@@ -1088,23 +1089,28 @@ describe("AssistantSession 툴콜 루프", () => {
     const session = new AssistantSession(createBlankProject(), {
       config: { ...CONFIG, model: "main-session-model", liteModel: "lite-session-model" },
       chat,
+      declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }),
     });
 
     await session.sendUserMessage("안녕", () => {});
 
-    // 짧은 인사는 플래너를 건너뛴다 — 본문 한 번만 감독 모델.
+    // 인사(단일 단계 선언)는 플래너를 건너뛴다 — 본문 한 번만 감독 모델.
     expect(seenModels).toEqual(["main-session-model"]);
     expect(JSON.parse(session.exportAudit()).model).toBe("main-session-model");
   }, 30000);
 
-  it("집만 요청하면 LLM 전에 실내/야외 선택지를 되묻고 툴을 호출하지 않는다", async () => {
+  it("의도 선언이 되묻기를 냈으면 LLM 전에 그 질문을 돌려주고 툴을 호출하지 않는다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     let chatCalls = 0;
     const chat = async (): Promise<ChatResult> => {
       chatCalls += 1;
       return assistantFinal("이 응답은 나오면 안 됨");
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), {
+      config: CONFIG,
+      chat,
+      declareIntent: fixedDeclarer({ space: "unclear", clarify: "집을 실내 맵으로 만들까요, 야외 외장으로 만들까요?", clarifyOptions: ["실내 맵으로", "야외 집(외장)으로"] }),
+    });
     const result = await session.sendUserMessage("집 하나 만들어줘", () => {});
     expect(chatCalls).toBe(0);
     expect(result.proposedCalls).toEqual([]);
@@ -1114,14 +1120,18 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(audit.entries.some((entry) => entry.kind === "status" && entry.text?.includes("의도 확인"))).toBe(true);
   }, 30000);
 
-  it("agentMode auto 에서는 bare 집을 clarify로 멈추지 않고 LLM으로 진행한다", async () => {
+  it("agentMode auto 에서는 되묻기 선언에도 멈추지 않고 LLM으로 진행한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     let chatCalls = 0;
     const chat = async (): Promise<ChatResult> => {
       chatCalls += 1;
       return assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
     };
-    const session = new AssistantSession(createBlankProject(), { config: AUTO_SINGLE_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), {
+      config: AUTO_SINGLE_CONFIG,
+      chat,
+      declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내인가요 야외인가요?", needsPlan: true }),
+    });
     const result = await session.sendUserMessage("집 하나 만들어줘", () => {});
     expect(chatCalls).toBeGreaterThan(0);
     expect(result.assistantText).not.toContain("[선택지]");
@@ -1585,7 +1595,7 @@ describe("AssistantSession 툴콜 루프", () => {
       seenModels.push(config.model);
       return assistantFinal("안녕하세요.");
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage("안녕", (event) => {
@@ -1597,7 +1607,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.proposedCalls).toEqual([]);
     expect(seenModels).toEqual(["supervisor-model"]);
     expect(phases).toEqual([]);
-    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text === "planner:skip simple")).toBe(true);
+    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text === "planner:skip single-step")).toBe(true);
   }, 30000);
 });
 
@@ -1608,17 +1618,17 @@ describe("agentMode 오케스트레이션 게이트", () => {
     return audit.some((entry) => entry.kind === "status" && entry.text === PLANNER_START);
   }
 
-  it("기본 설정(agentMode auto)이라도 짧은 요청은 플래너를 건너뛴다", async () => {
+  it("기본 설정(agentMode auto)이라도 단일 단계 선언은 플래너를 건너뛴다", async () => {
     const { AssistantSession, createBlankProject, llm } = await load();
     const chat = scriptedChat([
       assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat });
+    const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
     expect(plannerStarted(session.getAuditEntries())).toBe(false);
-    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text === "planner:skip simple")).toBe(true);
+    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text === "planner:skip single-step")).toBe(true);
   }, 30000);
 
   it("기본 설정(agentMode auto)은 마을 같은 다단계 요청에서 플래너 라운드를 돈다", async () => {
@@ -1632,29 +1642,35 @@ describe("agentMode 오케스트레이션 게이트", () => {
     const session = new AssistantSession(createBlankProject(), {
       config: { ...llm.defaultAiConfig(), maxToolCalls: 4 },
       chat,
+      declareIntent: fixedDeclarer({ space: "outdoor", needsPlan: true }),
     });
 
     await session.sendUserMessage("빈 프로젝트에 강이 있는 마을을 하나 만들고 집 8채를 지어줘", () => {});
 
     expect(plannerStarted(session.getAuditEntries())).toBe(true);
+    // 플래너의 direct 는 존중된다 — 코드가 정규식으로 계획을 강제하지 않는다.
     expect(
-      session.getAuditEntries().some((entry) => entry.kind === "status" && String(entry.text).startsWith("planner:direct-rejected")),
+      session.getAuditEntries().some((entry) => entry.kind === "status" && String(entry.text).startsWith("planner:direct ")),
     ).toBe(true);
   }, 30000);
 
-  it("영역 작업 합성 문장은 agentMode auto여도 플래너를 건너뛴다", async () => {
+  it("선택 영역 작업(스코프)은 agentMode auto여도 플래너를 건너뛴다", async () => {
     const { AssistantSession, createBlankProject, llm } = await load();
     const chat = scriptedChat([
       assistantFinal("집을 시공합니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat });
+    const project = createBlankProject();
+    const session = new AssistantSession(project, { config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ space: "outdoor", useSelection: true, needsPlan: true }) });
 
     await session.sendUserMessage(
-      "선택 영역 안에 야외 집 한 채를 지어 주세요.\n\n영역 작업 도구 규칙:\n- 공식 시공 facade 사용",
+      "선택 영역 안에 야외 집 한 채를 지어 주세요.\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 사용자 선택 영역: (2,2) 8×6",
       () => {},
+      undefined,
+      { instruction: "선택 영역 안에 야외 집 한 채를 지어 주세요.", scope: { mapId: project.startMapId!, region: { x: 2, y: 2, width: 8, height: 6 } } },
     );
 
     expect(plannerStarted(session.getAuditEntries())).toBe(false);
+    expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text === "planner:skip selection")).toBe(true);
   }, 30000);
 
   it("agentMode chat + 단일 모델은 종래대로 플래너를 돌지 않는다", async () => {
@@ -1668,10 +1684,10 @@ describe("agentMode 오케스트레이션 게이트", () => {
     expect(plannerStarted(session.getAuditEntries())).toBe(false);
   }, 30000);
 
-  it("agentMode chat + 이원화 모델도 짧은 요청은 플래너를 건너뛴다", async () => {
+  it("agentMode chat + 이원화 모델도 단일 단계 선언은 플래너를 건너뛴다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([assistantFinal("완료했습니다.")]);
-    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat });
+    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat, declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }) });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
@@ -1686,13 +1702,17 @@ describe("agentMode 오케스트레이션 게이트", () => {
       assistantFinal("완료했습니다."),
       assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...ORCH_CONFIG, maxToolCalls: 4 },
+      chat,
+      declareIntent: fixedDeclarer({ space: "outdoor", needsPlan: true }),
+    });
 
     await session.sendUserMessage("빈 프로젝트에 강이 있는 마을을 하나 만들고 집 8채를 지어줘", () => {});
 
     expect(plannerStarted(session.getAuditEntries())).toBe(true);
     expect(
-      session.getAuditEntries().some((entry) => entry.kind === "status" && String(entry.text).startsWith("planner:direct-rejected")),
+      session.getAuditEntries().some((entry) => entry.kind === "status" && String(entry.text).startsWith("planner:direct ")),
     ).toBe(true);
   }, 30000);
 
@@ -1705,7 +1725,11 @@ describe("agentMode 오케스트레이션 게이트", () => {
         if (names.length === 0) return assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
         return assistantFinal("완료했습니다.");
       };
-      const session = new AssistantSession(createBlankProject(), { config: config as never, chat });
+      const session = new AssistantSession(createBlankProject(), {
+        config: config as never,
+        chat,
+        declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }),
+      });
       await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
       return [...new Set(names)];
     };
@@ -1717,7 +1741,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
     expect(chatNames).not.toContain("set_work_plan");
   }, 30000);
 
-  it("quest 도메인 턴은 workPlan 없이도 define_quest와 verify_quest를 노출한다", async () => {
+  it("quest 도메인을 여는 선언은 workPlan 없이도 define_quest와 verify_quest를 노출한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const names: string[] = [];
     const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
@@ -1727,6 +1751,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
     const session = new AssistantSession(createBlankProject(), {
       config: { ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const },
       chat,
+      declareIntent: fixedDeclarer({ tools: ["create_quest"] }),
     });
     await session.sendUserMessage("퀘스트 만들어줘. 촌장이 잃어버린 반지를 찾아와", () => {});
     expect(names).toContain("define_quest");
