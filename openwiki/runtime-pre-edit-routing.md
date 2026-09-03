@@ -102,6 +102,16 @@
   필드 스폰 몬스터와 `spawnEvent` 산출물이 한 칸도 움직이지 않는다(회귀: `test/runtimeSpawnedEventMovement.test.ts`).
   (3) 시간 시스템이 켜져 있고 `event.schedule` 이 있으면 페이지 이동 등록을 **건너뛴다** —
   일정이 있는 NPC 에게 이동 유형을 줘도 무시된다. 의도된 우선순위지만 저작자에게 보이지 않는다.
+- **주인공 방향키 탭 래치와 걸음 이어 붙이기는 한 쌍이다 (2026-09-03 실측 수정).** `src/player/input.ts` 의
+  `tappedDirections` 는 「눌렀다 뗀 방향도 한 번은 눌림」 래치고, 걷는 중에는 `update({ deferTaps: true })` 가
+  **peek 만** 한다. `playSceneMovement.ts` 는 걸음이 끝난 프레임의 남은 시간으로 다음 걸음을 이어 붙이므로
+  키를 누른 채 걷는 동안 `moving` 이 한 프레임도 false 가 되지 않는다 — 즉 이어 붙인 걸음이 래치를
+  소비하지 않으면 래치는 **영영 take 되지 않고**, 걷는 중 한 번 누른(또는 방향을 바꾼) 키가 전부 뗀 뒤에도
+  벽에 닿을 때까지 주인공을 걷게 한다(출하 경로 실측: 아래 유지 중 위로 바꾼 뒤 전부 뗌 → y 18→7 계속 이동).
+  `updatePlayerMovement` 의 chain 분기가 `tryStartMove` 직후 `input_.clearDirectionTaps()` 를 부르는 이유다.
+  래치를 소비하는 자리(정지 프레임의 take, chain 분기의 clear, 메뉴/입력 닫힘의 clear)를 하나라도 빼면 같은
+  결함이 돌아온다(회귀: `test/runtimeMovementStability.test.ts` 「걷는 중 들어온 방향 탭…」,
+  브라우저 프로브: `scripts/qa/probe-runtime-hold-release.mjs`).
 - **이벤트 접촉 트리거는 양방향이다.** 충돌 발동 규칙은 `src/project/eventTouchRules.ts` 한 곳에만 둔다
   (`firesOnPlayerCollision`). 이전에는 `playSceneMovement.ts` 와 `src/testing/sceneTestRunner.ts` 가
   규칙을 각자 복사해 두고 어긋나 있었고, `eventTouch` 는 NPC 가 플레이어에게 걸어오는 쪽만 발동했다.
