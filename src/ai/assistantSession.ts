@@ -29,6 +29,7 @@ import {
   type IntentDeclaration,
 } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
+import type { ComposerMode } from "@/ai/composerMode";
 import { store } from "@/project/store";
 import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 import {
@@ -588,6 +589,22 @@ export const AGENT_RUN_MAX_TOTAL_STEPS = 48;
  * Always available so the main model can plan/replan inside the ReAct loop;
  * the pre-turn planner also authors the first plan without tools.
  */
+/** 세션 전용 쓰기 툴(레지스트리 밖) — 질문 모드에서 함께 뺀다. */
+const SESSION_WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(["set_build_spec", "set_work_plan", "complete_work_item", "skip_work_item"]);
+
+/** 프로젝트를 바꾸는 툴인가 — 레지스트리 mode:"write" 또는 세션 전용 쓰기 툴. */
+export function isWriteToolName(name: string): boolean {
+  return getTool(name)?.mode === "write" || SESSION_WRITE_TOOL_NAMES.has(name);
+}
+
+function composerAskRefusal(name: string): ToolResult {
+  return {
+    ok: false,
+    summary: `질문 모드에서는 변경 도구(${name})를 실행하지 않습니다. 조회 도구로만 답하세요 — 변경이 필요하면 사용자가 지시 모드로 바꿔야 합니다.`,
+    issues: [{ severity: "error", code: "composer-mode-ask", message: `${name} 은(는) 프로젝트를 바꾸는 도구라 질문 모드에서 거부됐습니다.` }],
+  };
+}
+
 export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
   {
     type: "function",
@@ -700,6 +717,8 @@ export interface SessionTurnOptions {
   /** 사용자 발화 원문. text 에 footer 가 붙어 올 때 의도 선언·툴 언급 스캔은 이것만 본다. */
   readonly instruction?: string;
   readonly scope?: SessionTurnScope | null;
+  /** 컴포저 모드(지시/질문/계획). 없으면 지시. 세션이 강제한다 — 프롬프트 힌트가 아니다(`@/ai/composerMode`). */
+  readonly composerMode?: ComposerMode;
 }
 
 export interface AssistantSessionOptions {
@@ -755,6 +774,12 @@ export class AssistantSession {
   private readonly yieldToUi: YieldToUi;
   /** 이번 턴이 플래너 왕복을 건너뛰었는가 — 계획 툴·검수·Ralph 도 같이 끈다. */
   private skipPlannerThisTurn = false;
+  /** 이번 턴의 컴포저 모드. ask 는 쓰기 툴을 노출·실행하지 않고, plan 은 계획만 세우고 멈춘다. */
+  private turnComposerMode: ComposerMode = "do";
+  /** 이번 턴의 플래너가 계획을 새로 세웠는가(new_plan/replan/폴백). resume 은 아니다 — 계획 모드의 「계속」은 실행된다. */
+  private planAuthoredThisTurn = false;
+  /** 직전 턴이 계획만 세우고 멈춘 턴이었는가 — 자율 드라이버는 이 턴 다음에 자동 계속하지 않는다. */
+  private lastTurnPlanOnly = false;
   // 누적 draft를 담는 툴 컨텍스트(연쇄 툴콜이 이전 변경을 본다).
   private ctx: ToolContext;
   private readonly messages: ChatMessage[] = [];
@@ -1299,12 +1324,15 @@ export class AssistantSession {
     const turnOptions: SessionTurnOptions = {
       ...(opts?.instruction !== undefined ? { instruction: opts.instruction } : {}),
       scope: opts?.scope ?? null,
+      composerMode: opts?.composerMode ?? "do",
     };
     if (opts?.autonomous !== true) {
       const result = await this.executeUserTurn(text, onEvent, signal, turnOptions);
       return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, onEvent);
     }
     const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
+    // 계획 모드의 계획만 세운 턴은 사용자 확인을 기다린다 — 드라이버가 「계속」을 대신 보내버리면 멈춘 의미가 없다.
+    if (this.lastTurnPlanOnly) return this.finishRunRecap(first, startedAt, usageBefore, auditFrom, onEvent);
     const last = await this.runAutonomousDriver(first, onEvent, signal);
     return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, onEvent);
   }
@@ -1413,10 +1441,14 @@ export class AssistantSession {
     this.currentTurnInstruction = instruction;
     this.currentTurnRequestText = text;
     this.turnScope = options.scope ?? null;
+    this.turnComposerMode = options.composerMode ?? "do";
+    this.planAuthoredThisTurn = false;
+    this.lastTurnPlanOnly = false;
 
     // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
     // 소비한다. 선언자가 없거나 실패하면 중립 폴백 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·승격만.
-    const intent = await this.declareTurnIntent(instruction, onEvent, signal);
+    // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
+    const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
     beginAssistantToolDomainTurn(intent);
     this.currentTurnToolDomains = computeActiveToolDomains(intent);
@@ -1485,7 +1517,7 @@ export class AssistantSession {
     if (skipReason) {
       this.pushAudit({ kind: "status", text: `planner:skip ${skipReason}` });
     }
-    if ((this.orchestrationEnabled() || this.workPlan) && !this.skipPlannerThisTurn) {
+    if ((this.orchestrationEnabled() || this.workPlan || this.turnComposerMode === "plan") && !this.skipPlannerThisTurn) {
       try {
         await this.runOrchestratorPlanner(text, onEvent, signal);
       } catch (cause) {
@@ -1500,12 +1532,38 @@ export class AssistantSession {
       }
     }
 
+    if (this.turnComposerMode === "plan" && this.planAuthoredThisTurn && this.workPlan && !isWorkPlanComplete(this.workPlan)) {
+      this.removeOrchestrationMessages();
+      return this.finishPlanOnlyTurn(onEvent);
+    }
+
     try {
       const result = await this.runTurnLoop(onEvent, signal);
       return this.withWorkPlanResult(result);
     } finally {
       this.removeOrchestrationMessages();
     }
+  }
+
+  /** 질문 모드는 선언을 「질문·단일 단계」로 고정한다. 다른 모드는 선언 그대로. */
+  private applyComposerModeToIntent(intent: IntentDeclaration): IntentDeclaration {
+    if (this.turnComposerMode !== "ask") return intent;
+    if (intent.mode === "question" && !intent.needsPlan) return intent;
+    this.pushAudit({ kind: "status", text: `composer:ask 선언 mode=${intent.mode}→question needsPlan=${intent.needsPlan}→false` });
+    return { ...intent, mode: "question", needsPlan: false };
+  }
+
+  /** 계획 모드: 계획 카드를 내고 실행 없이 턴을 끝낸다. 「계속」이 다음 턴에서 resume 으로 실행한다. */
+  private finishPlanOnlyTurn(onEvent: (event: SessionEvent) => void): TurnResult {
+    const plan = this.workPlan;
+    if (!plan) throw new Error("finishPlanOnlyTurn: 계획이 없다");
+    const assistantText = `계획을 세워두었습니다. 이대로 실행하려면 **「계속」** 이라고 보내고, 고칠 게 있으면 그대로 말해 주세요.\n\n---\n${formatWorkPlanUserVisible(plan)}`;
+    this.messages.push({ role: "assistant", content: assistantText });
+    onEvent({ type: "assistant_message", content: assistantText });
+    this.pushAudit({ kind: "assistant", text: assistantText });
+    this.pushAudit({ kind: "status", text: "턴 종료(final) — composer:plan 계획만 수립 · 제안 0건" });
+    this.lastTurnPlanOnly = true;
+    return { assistantText, proposedCalls: [], stoppedReason: "final", workPlan: structuredClone(plan) };
   }
 
   /**
@@ -1558,9 +1616,11 @@ export class AssistantSession {
 
   /** 플래너 왕복을 건너뛸 이유. null 이면 플래너가 돈다(오케스트레이션이 켜져 있을 때). */
   private plannerSkipReasonFor(intent: IntentDeclaration): string | null {
+    if (this.turnComposerMode === "ask") return "composer:ask";
+    if (intent.source === "empty") return "empty";
+    if (this.turnComposerMode === "plan") return null;
     if (this.workPlan) return null;
     if (this.turnScope) return "selection";
-    if (intent.source === "empty") return "empty";
     if (intent.mode === "question") return "question";
     if (!intent.needsPlan) return "single-step";
     return null;
@@ -1625,11 +1685,8 @@ export class AssistantSession {
       if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
         this.injectWorkPlanOrchestration();
         this.emitWorkPlan(onEvent);
-      } else if (text.trim().length >= 60) {
-        this.workPlan = buildDefaultWorkPlan(text, new Date(), { modifies: this.turnIntent?.mode === "modify" });
-        this.emitWorkPlan(onEvent);
-        this.injectWorkPlanOrchestration();
-        onEvent({ type: "status", text: "플래너 실패 — 최소 폴백 계획으로 진행" });
+      } else if (text.trim().length >= 60 || this.turnComposerMode === "plan") {
+        this.adoptFallbackWorkPlan(text, onEvent, "플래너 실패 — 최소 폴백 계획으로 진행");
       }
       return;
     }
@@ -1641,12 +1698,9 @@ export class AssistantSession {
       if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
         this.injectWorkPlanOrchestration();
         this.emitWorkPlan(onEvent);
-      } else if (text.trim().length >= 60) {
-        this.workPlan = buildDefaultWorkPlan(text, new Date(), { modifies: this.turnIntent?.mode === "modify" });
-        this.emitWorkPlan(onEvent);
-        this.injectWorkPlanOrchestration();
+      } else if (text.trim().length >= 60 || this.turnComposerMode === "plan") {
         // 폴백 계획은 사용자 요청을 그대로 담지 못한다 — 조용히 진행하면 축소된 결과를 성공으로 보고하게 된다.
-        onEvent({ type: "status", text: `플래너 응답을 해석하지 못해 폴백 계획으로 진행합니다 (${parsed.error})` });
+        this.adoptFallbackWorkPlan(text, onEvent, `플래너 응답을 해석하지 못해 폴백 계획으로 진행합니다 (${parsed.error})`);
       }
       return;
     }
@@ -1656,6 +1710,10 @@ export class AssistantSession {
       // 플래너의 direct 는 존중한다. 예전에는 「마을」 정규식이 이 판정을 거부하고 코드가 3항목 계획을
       // 강제해 「이 마을에 상인 하나 추가해줘」가 마을 통째를 지었다(2026-09-03 실측 93초·맵 3장).
       this.pushAudit({ kind: "status", text: `planner:direct ${decision.reason ?? ""}` });
+      // 계획 모드는 사용자가 계획 카드를 요구한 것이다 — 단일 단계라도 1항목 계획으로 보여 주고 멈춘다.
+      if (this.turnComposerMode === "plan" && (!this.workPlan || isWorkPlanComplete(this.workPlan))) {
+        this.adoptFallbackWorkPlan(text, onEvent, "플래너가 한 단계로 판단했습니다 — 1항목 계획으로 정리합니다.");
+      }
       return;
     }
 
@@ -1673,6 +1731,7 @@ export class AssistantSession {
     // 수정 요청이면 대상 맵 id 를 계획에 박아 매 스프린트 재주입한다 — footer 가 없는
     // 자율 계속 턴에도 대상이 남아야 한다(진단 근본원인 14).
     this.workPlan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
+    this.planAuthoredThisTurn = true;
     // 볼륨 막대는 플래너가 계획과 함께 선언한 값만 쓴다 — 문장 정규식으로 막대를 씌우지 않는다.
     this.armVolumeContractFromPlanner(decision.volume ?? null);
     const progress = summarizeWorkPlan(this.workPlan);
@@ -1686,6 +1745,15 @@ export class AssistantSession {
     });
     this.emitWorkPlan(onEvent);
     this.injectWorkPlanOrchestration();
+  }
+
+  /** 플래너가 계획을 내지 못했을 때(오류·해석 실패·계획 모드의 direct) 코드가 최소 계획을 세운다. */
+  private adoptFallbackWorkPlan(text: string, onEvent: (event: SessionEvent) => void, statusText: string): void {
+    this.workPlan = buildDefaultWorkPlan(text, new Date(), { modifies: this.turnIntent?.mode === "modify" });
+    this.planAuthoredThisTurn = true;
+    this.emitWorkPlan(onEvent);
+    this.injectWorkPlanOrchestration();
+    onEvent({ type: "status", text: statusText });
   }
 
   /**
@@ -2817,7 +2885,10 @@ export class AssistantSession {
       const tools = clampTurnToolSchemas(
         [...baseExposed, ...requiredTools, ...capability, ...toolSchemasForNames(["find_tools"])],
         capabilityNames,
-      ).map((tool) => injectToolReasonIntoOpenAiTool(tool));
+      )
+        // 질문 모드: 쓰기 스키마는 모델에 보이지 않는다. 문장으로 "바꾸지 마라"고 부탁하는 대신 능력을 뺀다.
+        .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
+        .map((tool) => injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
       const exposedNames = new Set(tools.map((tool) => tool.function.name));
       const capabilityExposed = [...capabilityNames].filter((name) => exposedNames.has(name));
@@ -3037,6 +3108,10 @@ export class AssistantSession {
           if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
             this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
+          } else if (this.turnComposerMode === "ask" && isWriteToolName(name)) {
+            // 노출 목록은 감사용이고 실행은 이름으로 한다 — 모델이 외워 둔 쓰기 툴을 불러도 여기서 막는다.
+            toolResult = composerAskRefusal(name);
+            this.pushAudit({ kind: "status", text: `composer:ask 쓰기 툴 거부 ${name}` });
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
           } else if (

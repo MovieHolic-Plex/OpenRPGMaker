@@ -55,7 +55,7 @@ import {
   AGENT_RUN_MAX_TOTAL_STEPS,
   type ProposedCall,
 } from "@/ai/assistantSession";
-import type { WorkPlan } from "@/ai/workPlan";
+import { isWorkPlanComplete, type WorkPlan } from "@/ai/workPlan";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
@@ -1193,10 +1193,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const inBounds = !map || (sel.x >= 0 && sel.y >= 0 && sel.x < map.width && sel.y < map.height);
       if (inBounds) parts.push(`사용자 선택 영역: (${sel.x},${sel.y}) ${sel.width}×${sel.height}`);
     }
-    // 컴포저 모드(제안서 D4·§06). 지시(기본)는 아무 것도 덧붙이지 않는다 — 기계 텍스트가 사용자
-    // 채널에 실리던 「도구 규칙」 사고(2026-09-03 의도 라우터 감사)를 되풀이하지 않기 위해 한 절만.
-    if (composerMode === "ask") parts.push("모드: 질문 — 맵을 바꾸지 말고 조회 도구로만 답한다");
-    else if (composerMode === "plan") parts.push("모드: 계획 — 실행 전에 단계 계획을 먼저 보인다");
+    // 컴포저 모드(제안서 D4·§06). 강제는 세션이 한다(sendUserMessage 옵션 composerMode — 쓰기 툴 미노출·
+    // 거부, 계획만 수립). 여기 한 절은 모델이 상황을 알게 하는 안내일 뿐이다. 지시(기본)는 덧붙이지 않는다 —
+    // 기계 텍스트가 사용자 채널에 실리던 「도구 규칙」 사고(2026-09-03 의도 라우터 감사)를 되풀이하지 않기 위해.
+    if (composerMode === "ask") parts.push("모드: 질문 — 변경 도구는 제공되지 않는다. 조회 도구로만 답한다");
+    else if (composerMode === "plan") parts.push("모드: 계획 — 이 턴은 계획만 세운다. 사용자가 「계속」이라고 하면 실행한다");
     return `[컨텍스트] ${parts.join(" · ")}`;
   };
 
@@ -1221,7 +1222,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 마일스톤 피드(milestone_applied/proposal_paused) + 예산(used/48, status 이벤트).
   // 런이 끝나면 정리되고 다음 런이 시작되면 새로 그린다(스테일 상태 금지).
   // 런 진행 중에는 패널 자동 접기(AUTO_COLLAPSE_AFTER_AI_MS)를 비활성화한다.
-  let autonomousRunState: { active: boolean; plan: WorkPlan | null; budget: AutonomousRunBudget } | null = null;
+  let autonomousRunState: { active: boolean; plan: WorkPlan | null; budget: AutonomousRunBudget | null } | null = null;
   let autonomousRunSurface: HTMLElement | null = null;
   let autonomousFeedHost: HTMLElement | null = null;
   const clearAutonomousRunSurface = (): void => {
@@ -1237,6 +1238,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       plan: null,
       budget: { used: 0, total: AGENT_RUN_MAX_TOTAL_STEPS, exhausted: false },
     };
+    clearAutonomousRunSurface();
+  };
+  // 계획 모드(composerMode "plan"): 자율 런이 아니어도 계획 카드는 보여야 한다 — 같은 표면을 비활성·예산 없음으로 연다.
+  const beginPlanPreview = (): void => {
+    autonomousRunState = { active: false, plan: null, budget: null };
     clearAutonomousRunSurface();
   };
   const endAutonomousRun = (): void => {
@@ -1262,7 +1268,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const surface = ensureAutonomousRunSurface();
     const checklist = renderWorkPlanChecklist(autonomousRunState.plan, {
       active: autonomousRunState.active,
-      budget: autonomousRunState.budget,
+      budget: autonomousRunState.budget ?? undefined,
     });
     checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(autonomousFeedHost!);
     surface.replaceChildren(checklist);
@@ -1462,8 +1468,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
     const autonomous = loadAiConfig().agentMode === "auto";
+    // 계획 모드의 첫 턴은 계획만 세우고 멈춘다 — 계획 카드가 산출물이므로 턴이 끝나도 표면을 걷지 않는다
+    // (자율 런 표면은 턴 끝에 endAutonomousRun 으로 정리된다). 활성 계획이 있는 채 「계속」이면 실행 턴이다.
+    const activePlan = composerMode === "plan" ? session.getWorkPlan() : null;
+    const planPreview = composerMode === "plan" && (!activePlan || isWorkPlanComplete(activePlan));
     // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
-    if (autonomous) beginAutonomousRun();
+    if (planPreview) beginPlanPreview();
+    else if (autonomous) beginAutonomousRun();
     // 사용자 발화 + 사실(footer: 현재 맵·선택 영역·재료 라벨 예)만 보낸다. 예전에 여기 붙던 「도구 규칙」
     // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
     // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
@@ -1471,8 +1482,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const payload = [trimmed, contextFooter(turnScope?.mapId)].filter((part) => part.length > 0).join("\n\n");
     await executeTurn(session, trimmed, (onEvent, signal) =>
       // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
-      session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope }),
-      { autonomous }
+      session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope, composerMode }),
+      { autonomous: autonomous && !planPreview, composerMode }
     );
   };
 

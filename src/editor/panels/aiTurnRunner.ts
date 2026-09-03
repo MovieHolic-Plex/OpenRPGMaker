@@ -7,6 +7,7 @@
 // 되돌리기 주의: 아래 이벤트 분기 순서와 정산(settleBlueprintForTurnEnd) 호출 지점은 실측
 // 결함의 회귀 지점이다(주석 참조) — 순서를 바꾸지 말 것.
 import { turnErrorNotice } from "@/ai/aiGateNotice";
+import type { ComposerMode } from "@/ai/composerMode";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -69,7 +70,7 @@ export interface AiTurnRunnerDeps {
   readonly autonomousRunState: {
     active: boolean;
     plan: WorkPlan | null;
-    budget: AutonomousRunBudget;
+    budget: AutonomousRunBudget | null;
   } | null;
 
   // ── 제안 · 변경 카드 ─────────────────────────────────────
@@ -100,7 +101,7 @@ export interface AiTurnRunner {
     session: AssistantSession,
     requestText: string,
     exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>,
-    runOpts?: { readonly autonomous?: boolean },
+    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode },
   ) => Promise<void>;
   /** LLM 오류 버블 + [설정 열기]/[재시도] 행. */
   readonly appendErrorWithRetry: (message: string, session: AssistantSession, requestText: string) => void;
@@ -111,7 +112,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     session: AssistantSession,
     requestText: string,
     exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>,
-    runOpts?: { readonly autonomous?: boolean }
+    runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode }
   ): Promise<void> => {
     if (deps.surface.turnBusy) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
@@ -456,7 +457,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         ghostPreviewUpdater.flush();
       }
       // 정산은 아래 적용 분기가 끝난 뒤에 한다 — 오류로 끝난 턴도 제안이 남아 있으면 적용된다.
-      const completenessWarnings = result.stoppedReason === "error"
+      // 질문·계획 턴은 변경이 없는 것이 정상이다 — 「미이행」 린트는 지시 턴에만 의미가 있다.
+      const changeExpectedByMode = (runOpts?.composerMode ?? "do") === "do";
+      const completenessWarnings = result.stoppedReason === "error" || !changeExpectedByMode
         ? []
         : proposalCompletenessWarnings({
             requestText,
