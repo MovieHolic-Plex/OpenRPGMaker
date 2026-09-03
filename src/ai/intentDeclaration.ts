@@ -76,7 +76,7 @@ export const INTENT_SYSTEM_PROMPT = `You classify ONE user request addressed to 
 Fields:
 - "mode": "create" (새로 만든다) | "modify" (지금 있는 것을 고친다·지운다·옮긴다·추가로 얹는다) | "question" (질문·설명·조회, 변경 없음) | "other" (인사·진행 지시·판단 불가).
 - "space": 시설·집·방을 세울 때 어디에 — "interior" (들어가서 걷는 실내 맵을 새로 시공) | "outdoor" (지금 맵 위에 건물 외장) | "both" | "none" (공간 시공이 아닌 요청) | "unclear" (집·건물·방을 만들라는데 어느 쪽인지 표지가 없음).
-- "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 개념 꾸러미 시설은 place_concept 로 실내를 짓는 것이 기본이다 — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
+- "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 개념 꾸러미 시설은 get_concept_facility 로 템플릿을 읽고 place_concept(plan) 로 실내를 짓는 것이 기본이다 — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
 - "targetMapId": mode=modify 이고 대상 맵을 알 수 있으면 id. 「여기/이 맵/이 마을/이 방」은 현재 열린 맵. 모르면 null.
 - "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false.
 - "clarify": 도구가 실제로 갈릴 만큼 모호할 때만(예: 실내/야외 표지 없는 「집 지어줘」) 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다.
@@ -95,7 +95,7 @@ Rules:
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.
 
 JSON schema:
-{"mode":"create","space":"interior","facility":"여관","targetMapId":null,"useSelection":false,"clarify":null,"clarifyOptions":[],"needsPlan":false,"resetsContext":false,"tools":["place_concept"],"summary":"여관 실내 맵을 개념 꾸러미로 시공"}`;
+{"mode":"create","space":"interior","facility":"여관","targetMapId":null,"useSelection":false,"clarify":null,"clarifyOptions":[],"needsPlan":false,"resetsContext":false,"tools":["get_concept_facility","place_concept"],"summary":"여관 실내 맵을 설계해 시공"}`;
 
 export function buildIntentUserPayload(facts: IntentFacts): string {
   const lines: string[] = [`## 요청\n${facts.userText.trim()}`];
@@ -367,7 +367,7 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
   } else if (intent.mode === "create" && !intent.clarify) {
     if (intent.space === "interior" || intent.space === "both") {
       const how = intent.facility
-        ? `개념 꾸러미 시설 「${intent.facility}」는 place_concept(query:"${intent.facility}") 로 새 mapId 에 시공한다`
+        ? `개념 꾸러미 시설 「${intent.facility}」는 get_concept_facility(query:"${intent.facility}") 로 템플릿을 읽고, 요청에 맞게 고친 plan 을 place_concept(query:"${intent.facility}", plan) 로 새 mapId 에 시공한다`
         : "start_interior_room_session(새 mapId) 로 실내를 시공한다";
       lines.push(
         `[의도] ${intent.space === "both" ? "야외 외장과 실내 둘 다" : "실내 시공"}이다. ${how}. `
