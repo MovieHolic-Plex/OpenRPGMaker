@@ -87,3 +87,27 @@
   (편집기 부팅 타임아웃 4건, 부하 환경).
 - 런타임 QA 게이트(`npm run qa:runtime:gate`): 실패 3건(battle-flash-map ×2, battler-idle-animation)은
   전투 표현 계층으로 이 변경과 무관하며 기준선에서도 같은 항목이 실패한다.
+
+## 후속 탐색 (같은 날, PR #454 추가 커밋)
+
+출하 플레이어에서 접촉·문 전이, ESC 메뉴, 저장, 타이틀 복귀, 재시작 3회를 돌며 콘솔 에러·document
+키 리스너 수를 기록했다: 에러 0, 리스너 수 일정(누수 없음). 편집기 테스트 플레이 창에서는 **런타임 디버그
+패널 입력창**에서 결함을 재현했다.
+
+- 디버그 패널은 접힌 `<details>` 로 시작한다 — 접힌 채로는 안의 입력창에 포커스가 가지 않는다. 처음 프로브가
+  「숫자가 안 들어간다」로 본 것의 절반은 이것(포커스가 툴바 버튼에 남아 게임에 키가 갔다)이었다.
+- 패널을 열고 숫자 입력창에 치면: `player.ts` 의 손 슬롯 숫자키 핸들러가 `preventDefault` 로 글자를 삼키고,
+  `Input` 은 w/a/s/d·방향키를 걸음으로, Escape 는 게임 메뉴 토글로 받았다. Phaser 의 KeyboardManager 는
+  이벤트 대상을 보지 않아 커서 키 상태도 남는다.
+- 수정: 런타임 키 계약(`keyBindings.isTextEntryTarget`)에 「텍스트 입력 컨트롤(텍스트형 input·textarea·
+  select·contentEditable)이 대상이면 게임 키가 아니다」를 두고, `Input`(keydown 무시·포커스 중 Phaser 커서
+  상태 무시, keyup 은 어디서 와도 처리)·`player.ts onKeyDown`·대사창/선택지 `onKey` 가 따른다. 체크박스·
+  라디오·버튼은 글자를 받지 않으므로 게임 키로 둔다(「타이틀 건너뛰기」 체크박스를 누른 뒤 Space/Enter 가
+  씹히는 새 함정을 막는다). 편집기 쪽 같은 규칙은 `editor/hotkeys.ts §isTextEditingElement` — 출하 번들이
+  편집기 코드를 끌어오지 않도록 따로 둔다.
+- 검증: `test/runtimeInputEditableTargets.test.ts` 6건(대사창 케이스는 고치기 전 코드에서 빨강 확인),
+  e2e `test-play-runtime-stability.spec.ts` 두 번째 테스트(패널 열기 → 57 타이핑 → 값 확인, 포커스 중
+  방향키·w·Escape 무반응, 포커스 해제 뒤 걸음 복귀).
+- e2e 함정: Playwright 가 직접 띄운 콜드 dev 서버에서는 편집기 첫 적재가 60~120초 안에 끝나지 않고 백지가
+  남는 일이 반복됐다(같은 기계의 네트워크 인터페이스 요동, `ERR_NETWORK_CHANGED`). 미리 띄운 서버에
+  붙이면(`DEV_SERVER_PORT` 재사용) 같은 스펙이 33초에 통과한다 — 결함이 아니라 환경이다.
