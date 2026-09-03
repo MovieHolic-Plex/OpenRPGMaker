@@ -125,6 +125,14 @@ describe("작업 계획 체크리스트 렌더 (todo 6)", () => {
       expect(node.querySelector("[data-testid='ai-run-details-toggle']")?.textContent).toContain("자세히");
       expect(node.querySelector("[data-testid='ai-run-whisper']")?.textContent).not.toContain("예산");
       expect(node.querySelector("[data-testid='ai-run-details']")?.getAttribute("open")).toBeNull();
+      // 항목 체크리스트는 서랍 밖에 항상 보인다(할 일 목록). 서랍에는 칩·예산·목표만 남는다.
+      const list = node.querySelector("[data-testid='ai-work-list']");
+      expect(list).not.toBeNull();
+      expect(node.querySelector("[data-testid='ai-run-details']")?.contains(list)).toBe(false);
+      expect(list?.contains(items[0] ?? null)).toBe(true);
+      expect(node.dataset.active).toBe("true");
+      expect(node.dataset.complete).toBe("false");
+      expect(node.querySelector("[data-testid='ai-work-item-activity']")?.textContent).toBe("진행 중…");
     } finally {
       restore();
     }

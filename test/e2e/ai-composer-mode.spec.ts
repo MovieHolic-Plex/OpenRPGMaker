@@ -4,6 +4,7 @@
  * 무엇을 증명하나:
  *  - 질문 모드: 목업 LLM 이 쓰기 툴(fill_region)을 불러도 맵 셀이 바뀌지 않고, 요청 본문의 tools 에
  *    쓰기 스키마가 하나도 없다.
+ *  - 지시 모드(기본): 계획이 뜨고 툴이 성공할 때마다 항목에 체크가 붙으며, 턴이 끝나도 목록이 남는다.
  *  - 계획 모드: 플래너가 new_plan 을 내면 계획 체크리스트(`ai-work-plan-checklist`)만 뜨고 tools 가 실린
  *    LLM 호출(툴 루프)이 0회이며 맵 셀이 그대로다.
  *
@@ -26,8 +27,18 @@ interface LlmLog {
 
 const WRITE_TOOL_HINTS = ["fill_region", "paint_tiles", "paint_road", "place_npc", "place_props", "set_build_spec", "set_title_screen"];
 
-/** 어느 모드든 같은 대본: 플래너 콜(툴 없음)엔 new_plan, 툴 콜엔 fill_region, 그 뒤 마무리 문장. */
-async function installScriptedLlm(page: Page, target: () => { mapId: string; rect: { x: number; y: number; w: number; h: number } }): Promise<LlmLog> {
+/**
+ * 어느 모드든 같은 대본: 플래너 콜(툴 없음)엔 new_plan(2항목), 툴 콜엔 쓰기 툴을 `writeRounds` 번(기본 1), 그 뒤 마무리 문장.
+ * 쓰기 툴은 기본 `fill_region`(질문·계획 모드 — 스펙 게이트에 막혀도 상관없다). `writeTool: "set_map_properties"` 는
+ * 지시 모드 라이브 체크 검증용 — 밑그림 없는 빈 프로젝트에서도 실제로 성공하는 쓰기라 항목이 자동 완료된다.
+ */
+async function installScriptedLlm(
+  page: Page,
+  target: () => { mapId: string; rect: { x: number; y: number; w: number; h: number } },
+  opts: { readonly writeRounds?: number; readonly writeTool?: "fill_region" | "set_map_properties" } = {},
+): Promise<LlmLog> {
+  const writeRounds = opts.writeRounds ?? 1;
+  const writeTool = opts.writeTool ?? "fill_region";
   const log: LlmLog = { toolRounds: 0, writeToolNamesSeen: [], callsWithTools: 0, callsWithoutTools: 0 };
   await page.route("**/v1/chat/completions", async (route) => {
     const body = route.request().postDataJSON() as { tools?: readonly { function: { name: string } }[] } | null;
@@ -41,27 +52,27 @@ async function installScriptedLlm(page: Page, target: () => { mapId: string; rec
           action: "new_plan",
           goal: "광장 연못 2단계",
           layers: [{ title: "연못", items: [
-            { title: "연못 채우기", instruction: "fill_region 으로 광장에 연못", successTools: ["fill_region"] },
-            { title: "가장자리 정리", instruction: "paint_tiles 로 테두리", successTools: ["paint_tiles"] },
+            { title: "연못 채우기", instruction: `${writeTool} 으로 광장에 연못`, successTools: [writeTool] },
+            { title: "가장자리 정리", instruction: `${writeTool} 으로 테두리`, successTools: [writeTool] },
           ] }],
         }),
       };
     } else {
       log.callsWithTools += 1;
       for (const tool of tools) if (WRITE_TOOL_HINTS.includes(tool.function.name)) log.writeToolNamesSeen.push(tool.function.name);
-      if (log.toolRounds === 0) {
+      if (log.toolRounds < writeRounds) {
         log.toolRounds += 1;
         const { mapId, rect } = target();
+        const args = writeTool === "fill_region"
+          ? { mapId, rect, material: "물", shape: "circle", layer: "lower", reason: "연못" }
+          : { mapId, name: `연못 광장 ${log.toolRounds}단계`, reason: "단계 이름 반영" };
         message = {
           role: "assistant",
           content: "",
           tool_calls: [{
-            id: "call_fill",
+            id: `call_write_${log.toolRounds}`,
             type: "function",
-            function: {
-              name: "fill_region",
-              arguments: JSON.stringify({ mapId, rect, material: "물", shape: "circle", layer: "lower", reason: "연못" }),
-            },
+            function: { name: writeTool, arguments: JSON.stringify(args) },
           }],
         };
       } else {
@@ -166,5 +177,35 @@ test.describe("컴포저 모드가 실제로 세션을 바꾼다", () => {
     await expect(page.getByTestId("ai-chat-log")).toContainText("계속");
     await page.screenshot({ path: path.join(EVIDENCE, "plan-mode-card-only.png"), animations: "disabled" });
     writeFileSync(path.join(EVIDENCE, "plan-mode.json"), JSON.stringify({ before, log }, null, 2));
+  });
+  test("지시 모드: 할 일 목록이 뜨고 툴 성공마다 체크가 붙으며 턴이 끝나도 남는다", async ({ page }) => {
+    const target = { mapId: "", rect: { x: 2, y: 2, w: 6, h: 6 } };
+    // 두 항목 모두 set_map_properties 로 끝난다 — 라운드 1 → 항목 1 완료, 라운드 2 → 항목 2 완료, 그 뒤 마무리 문장.
+    // (fill_region 은 밑그림 없는 빈 맵에서 스펙 게이트에 막혀 항목이 영원히 in_progress 로 남는다 — 실측.)
+    const log = await installScriptedLlm(page, () => target, { writeRounds: 2, writeTool: "set_map_properties" });
+    target.mapId = await bootEditor(page);
+
+    await page.getByTestId("ai-input").fill("광장에 연못을 두 단계로 만들어줘");
+    await page.getByTestId("ai-send").click();
+
+    const checklist = page.getByTestId("ai-work-plan-checklist");
+    await expect(checklist).toBeVisible({ timeout: 60_000 });
+    // 항목은 서랍 밖에 바로 보인다.
+    const items = page.getByTestId("ai-autonomous-item");
+    await expect(items).toHaveCount(2, { timeout: 60_000 });
+    // 첫 툴이 성공하면 첫 항목에 체크가 붙는다(라이브).
+    await expect(items.nth(0)).toHaveAttribute("data-status", "done", { timeout: 60_000 });
+    await page.screenshot({ path: path.join(EVIDENCE, "do-mode-live-check.png"), animations: "disabled" });
+
+    await waitFinal(page, "광장 하나로");
+    // 턴이 끝나도 목록은 남고, 둘 다 체크된 채 「모두 완료」다. 활동(중지)만 꺼진다.
+    await expect(checklist).toHaveAttribute("data-active", "false", { timeout: 60_000 });
+    await expect(items.nth(1)).toHaveAttribute("data-status", "done");
+    await expect(checklist).toHaveAttribute("data-complete", "true");
+    await expect(page.getByTestId("ai-run-status")).toHaveText("모두 완료");
+    await expect(page.getByTestId("ai-run-stop")).toHaveCount(0);
+    expect(log.toolRounds).toBe(2);
+    await page.screenshot({ path: path.join(EVIDENCE, "do-mode-settled-list.png"), animations: "disabled" });
+    writeFileSync(path.join(EVIDENCE, "do-mode.json"), JSON.stringify({ log }, null, 2));
   });
 });

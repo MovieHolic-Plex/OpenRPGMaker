@@ -355,9 +355,24 @@
   color: var(--success);
 }
 
-.ai-deck .ai-autonomous-item[data-status="running"] .ai-autonomous-item-mark,
-.ai-deck .ai-autonomous-item[data-status="running"] .ai-autonomous-item-title {
+.ai-deck .ai-autonomous-item[data-status="in_progress"] .ai-autonomous-item-mark,
+.ai-deck .ai-autonomous-item[data-status="in_progress"] .ai-autonomous-item-title {
   color: var(--accent-active);
+}
+
+.ai-deck .ai-autonomous-item-note {
+  color: var(--text-3);
+  display: block;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  line-height: 1.4;
+  margin-top: 1px;
+}
+
+.ai-deck .ai-autonomous-progress {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
 }
 
 .ai-deck .ai-autonomous-item-title {

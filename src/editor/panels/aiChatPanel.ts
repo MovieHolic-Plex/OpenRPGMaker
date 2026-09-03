@@ -764,7 +764,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual"): void => {
     dropSession(controller);
-    endAutonomousRun(); // 대화 전환 — 진행 중이던 자율 런 표면을 정리한다(스테일 상태 방지).
+    clearWorkPlanSurface(); // 대화 전환 — 다른 대화의 할 일 목록이 남으면 안 된다(스테일 상태 방지).
     // 화면만 복원하면 사용자는 이어졌다고 믿고 모델은 아무것도 모른다 — 다음 세션에 기록 요약을
     // 함께 밀어 넣어 "이어가기"를 모델 쪽에서도 참으로 만든다.
     pendingPriorTranscript = serializeAuditTranscript(record.entries) || null;
@@ -837,7 +837,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshAbortButton();
     persistConversation();
     dropSession(controller);
-    endAutonomousRun(); // 새 대화 — 이전 자율 런의 계획/예산/피드를 버린다.
+    clearWorkPlanSurface(); // 새 대화 — 이전 대화의 할 일 목록/예산/피드를 버린다.
     // 새 대화는 정말로 빈 대화다 — 복원/되감기가 예약해 둔 기록 주입이 남아 있으면 버린다.
     pendingPriorTranscript = null;
     controller.auditHistory = [];
@@ -1074,7 +1074,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     });
     dropSession(controller);
-    endAutonomousRun();
+    clearWorkPlanSurface();
     // 잘린 대화도 모델에게는 이어져야 한다 — 남긴 앞부분을 다음 세션에 다시 주입한다.
     pendingPriorTranscript = serializeAuditTranscript(turn.entries) || null;
     controller.auditHistory = [...turn.entries];
@@ -1217,69 +1217,102 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (next) void sendText(next.text, next.displayAs);
   };
 
-  // ── 자율 실행 런 표면(todo 6) ───────────────────────────────────────────
-  // 활성 자율 런 동안만 사는 라이브 영역: 작업 계획 체크리스트(emitWorkPlan) +
-  // 마일스톤 피드(milestone_applied/proposal_paused) + 예산(used/48, status 이벤트).
-  // 런이 끝나면 정리되고 다음 런이 시작되면 새로 그린다(스테일 상태 금지).
-  // 런 진행 중에는 패널 자동 접기(AUTO_COLLAPSE_AFTER_AI_MS)를 비활성화한다.
-  let autonomousRunState: { active: boolean; plan: WorkPlan | null; budget: AutonomousRunBudget | null } | null = null;
-  let autonomousRunSurface: HTMLElement | null = null;
-  let autonomousFeedHost: HTMLElement | null = null;
-  const clearAutonomousRunSurface = (): void => {
-    autonomousRunSurface?.remove();
-    autonomousRunSurface = null;
-    autonomousFeedHost = null;
+  // ── 할 일 목록 표면(작업 계획 체크리스트) ─────────────────────────────────
+  // 수명은 **계획**에 묶인다 — 런이 아니다(2026-09-03). 예전에는 자율 런 동안만 살고 턴이 끝나면 걷혔는데,
+  // 그러면 사용자는 조수가 뭐를 했고 뭐가 남았는지 읽을 틈이 없고 chat 모드에서는 아예 보지 못했다.
+  // 지금은: 턴이 시작하면 세션의 미완료 계획을 이어받고(끝난 계획은 버린다), work_plan 이벤트마다 항목에 체크가 붙고,
+  // 턴이 끝나도 목록은 남아 있다(active=false — 「모두 완료」 또는 「… 대기 중」). 걷히는 것은 대화 경계만다
+  // (새 대화·대화 전환·되감기·패널 해제). 마일스톤 피드(milestone_applied/proposal_paused)와 예산(used/48)은
+  // 자율 런에만 있고 「자세히」 서랍에 든다. active 인 동안은 패널 자동 접기(AUTO_COLLAPSE_AFTER_AI_MS)를 막는다.
+  let workPlanSurfaceState: { active: boolean; plan: WorkPlan | null; budget: AutonomousRunBudget | null } | null = null;
+  let workPlanSurface: HTMLElement | null = null;
+  let workPlanFeedHost: HTMLElement | null = null;
+  // 진행 중 항목 아래 보이는 현재 툴 라벨 — tool_started 마다 그 줄만 갈아 끼운다(체크리스트 전체 재렌더 금지 — 툴콜은 수백 번 온다).
+  let workPlanActivity = "";
+  const removeWorkPlanSurfaceDom = (): void => {
+    workPlanSurface?.remove();
+    workPlanSurface = null;
+    workPlanFeedHost = null;
     panel.classList.remove("is-autonomous-run");
   };
-  const beginAutonomousRun = (): void => {
-    // 새 런: 이전 런의 계획/예산/피드를 전부 버리고 0부터 시작한다.
-    autonomousRunState = {
-      active: true,
-      plan: null,
-      budget: { used: 0, total: AGENT_RUN_MAX_TOTAL_STEPS, exhausted: false },
-    };
-    clearAutonomousRunSurface();
-  };
-  // 계획 모드(composerMode "plan"): 자율 런이 아니어도 계획 카드는 보여야 한다 — 같은 표면을 비활성·예산 없음으로 연다.
-  const beginPlanPreview = (): void => {
-    autonomousRunState = { active: false, plan: null, budget: null };
-    clearAutonomousRunSurface();
-  };
-  const endAutonomousRun = (): void => {
-    autonomousRunState = null;
-    clearAutonomousRunSurface();
+  /** 대화 경계 — 목록을 완전히 걷는다(새 대화·전환·되감기·해제). */
+  const clearWorkPlanSurface = (): void => {
+    workPlanSurfaceState = null;
+    workPlanActivity = "";
+    removeWorkPlanSurfaceDom();
     studioShell?.setWorkPlan(null, false);
   };
-  const ensureAutonomousRunSurface = (): HTMLElement => {
-    if (!autonomousRunSurface) {
-      autonomousFeedHost = el("div", { class: "ai-autonomous-feed", dataset: { testid: "ai-autonomous-feed" } });
-      autonomousRunSurface = el("div", {
+  /**
+   * 턴 시작 — 세션이 들고 있는 미완료 계획은 이어받고(사용자 「계속」·중간 지시), 끝난 계획은 버린다.
+   * 예산은 자율 진입에만 세운다(드라이버가 이어 보내는 턴 수). 새 계획은 work_plan 이벤트로 들어온다.
+   */
+  const beginWorkPlanTurn = (opts: { readonly autonomous: boolean; readonly carriedPlan: WorkPlan | null }): void => {
+    const carried = opts.carriedPlan && !isWorkPlanComplete(opts.carriedPlan) ? opts.carriedPlan : null;
+    workPlanSurfaceState = {
+      active: true,
+      plan: carried,
+      budget: opts.autonomous ? { used: 0, total: AGENT_RUN_MAX_TOTAL_STEPS, exhausted: false } : null,
+    };
+    workPlanActivity = "";
+    removeWorkPlanSurfaceDom();
+    if (carried) refreshWorkPlanSurface();
+    else studioShell?.setWorkPlan(null, false);
+  };
+  /** 턴 종료(완료·중단·오류 모두) — 목록은 남기고 활동만 끈다. 계획이 한 번도 안 왔으면 보일 것이 없다. */
+  const settleWorkPlanTurn = (): void => {
+    if (!workPlanSurfaceState) return;
+    if (!workPlanSurfaceState.plan) {
+      clearWorkPlanSurface();
+      return;
+    }
+    workPlanSurfaceState.active = false;
+    workPlanActivity = "";
+    refreshWorkPlanSurface();
+  };
+  const ensureWorkPlanSurface = (): HTMLElement => {
+    if (!workPlanSurface) {
+      workPlanFeedHost = el("div", { class: "ai-autonomous-feed", dataset: { testid: "ai-autonomous-feed" } });
+      workPlanSurface = el("div", {
         class: "ai-autonomous-run-surface",
         dataset: { testid: "ai-autonomous-run-surface" },
       });
-      mainColumn.prepend(autonomousRunSurface);
+      mainColumn.prepend(workPlanSurface);
     }
     panel.classList.add("is-autonomous-run");
-    return autonomousRunSurface;
+    return workPlanSurface;
   };
   // 계획 도착 시마다 체크리스트를 갱신한다(진행 요약/현재 레이어가 이벤트마다 재계산된다).
-  const refreshAutonomousRunSurface = (): void => {
-    if (!autonomousRunState || !autonomousRunState.plan) return;
-    const surface = ensureAutonomousRunSurface();
-    const checklist = renderWorkPlanChecklist(autonomousRunState.plan, {
-      active: autonomousRunState.active,
-      budget: autonomousRunState.budget ?? undefined,
+  const refreshWorkPlanSurface = (): void => {
+    if (!workPlanSurfaceState || !workPlanSurfaceState.plan) return;
+    const surface = ensureWorkPlanSurface();
+    const checklist = renderWorkPlanChecklist(workPlanSurfaceState.plan, {
+      active: workPlanSurfaceState.active,
+      budget: workPlanSurfaceState.budget ?? undefined,
+      activity: workPlanActivity,
+      onStop: () => abortActiveTurn(),
     });
-    checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(autonomousFeedHost!);
+    checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(workPlanFeedHost!);
     surface.replaceChildren(checklist);
-    studioShell?.setWorkPlan(autonomousRunState.plan, autonomousRunState.active);
+    studioShell?.setWorkPlan(workPlanSurfaceState.plan, workPlanSurfaceState.active);
   };
-  // 마일스톤 자동 적용/적용 실패 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
+  /** work_plan 이벤트 — 어느 모드의 턴이든 계획이 오면 보인다. 턴 밖에서 오면(소유권 없는 늦은 이벤트) 무시한다. */
+  const showWorkPlan = (plan: WorkPlan): void => {
+    if (!workPlanSurfaceState) return;
+    workPlanSurfaceState.plan = plan;
+    refreshWorkPlanSurface();
+  };
+  /** tool_started — 진행 중 항목의 활동 줄만 갱신. 목록이 아직 없으면 다음 렌더가 가져가게 기억만 해 둔다. */
+  const noteWorkPlanActivity = (label: string): void => {
+    workPlanActivity = label;
+    const note = workPlanSurface?.querySelector<HTMLElement>("[data-testid='ai-work-item-activity']");
+    if (note) note.textContent = label;
+  };
+  // 마일스톤 자동 적용/적용 실패 — 목록의 「자세히」 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
   const appendMilestoneFeedLine = (kind: "applied" | "apply-failed", title: string, detail: string): void => {
-    if (!autonomousRunState) return;
-    ensureAutonomousRunSurface();
-    refreshAutonomousRunSurface();
-    autonomousFeedHost!.append(
+    if (!workPlanSurfaceState) return;
+    ensureWorkPlanSurface();
+    refreshWorkPlanSurface();
+    workPlanFeedHost!.append(
       el("div", {
         class: `ai-autonomous-feed-line is-${kind}`,
         dataset: { testid: `ai-milestone-feed-${kind}` },
@@ -1468,13 +1501,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
     const autonomous = loadAiConfig().agentMode === "auto";
-    // 계획 모드의 첫 턴은 계획만 세우고 멈춘다 — 계획 카드가 산출물이므로 턴이 끝나도 표면을 걷지 않는다
-    // (자율 런 표면은 턴 끝에 endAutonomousRun 으로 정리된다). 활성 계획이 있는 채 「계속」이면 실행 턴이다.
-    const activePlan = composerMode === "plan" ? session.getWorkPlan() : null;
+    // 계획 모드의 첫 턴은 계획만 세우고 멈춘다(세션이 강제). 활성 계획이 있는 채 「계속」이면 실행 턴이다.
+    const activePlan = session.getWorkPlan();
     const planPreview = composerMode === "plan" && (!activePlan || isWorkPlanComplete(activePlan));
-    // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
-    if (planPreview) beginPlanPreview();
-    else if (autonomous) beginAutonomousRun();
+    // 할 일 목록: 세션의 미완료 계획은 이어받고, 예산은 실제 자율 진입에만 세운다. 새 계획은 work_plan 이벤트로 온다.
+    beginWorkPlanTurn({ autonomous: autonomous && !planPreview, carriedPlan: activePlan });
     // 사용자 발화 + 사실(footer: 현재 맵·선택 영역·재료 라벨 예)만 보낸다. 예전에 여기 붙던 「도구 규칙」
     // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
     // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
@@ -1541,11 +1572,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     set applyingProposal(value) { applyingProposal = value; },
     get projectIdentityId() { return projectIdentityId; },
     set projectIdentityId(value) { projectIdentityId = value; },
-    get autonomousRunState() { return autonomousRunState; },
+    get workPlanSurfaceState() { return workPlanSurfaceState; },
     applyProposal: (calls, assistantBubble) => applyProposal(calls, assistantBubble),
     noteNoChanges: (result, extraWarnings) => noteNoChanges(result, extraWarnings),
-    endAutonomousRun: () => endAutonomousRun(),
-    refreshAutonomousRunSurface: () => refreshAutonomousRunSurface(),
+    settleWorkPlanTurn: () => settleWorkPlanTurn(),
+    refreshWorkPlanSurface: () => refreshWorkPlanSurface(),
+    showWorkPlan: (plan) => showWorkPlan(plan),
+    noteWorkPlanActivity: (label) => noteWorkPlanActivity(label),
     appendMilestoneFeedLine: (kind, title, detail) => appendMilestoneFeedLine(kind, title, detail),
     appendTileThumbs: (tilesetId, tiles) => appendTileThumbs(tilesetId, tiles),
     appendTileGrid: (data) => appendTileGrid(data),
@@ -2480,7 +2513,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     || runningProgress !== null
     || panel.classList.contains("is-turn-running")
     || compacting
-    || autonomousRunState?.active === true
+    || workPlanSurfaceState?.active === true
     || pendingSends.length > 0
     || applyingProposal
     || proposalApi.pendingProposalMessage !== null
@@ -2669,7 +2702,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       studioShell?.attach(panel, { historyLogMount, commandBar });
       studioShell?.setStatus(status.textContent ?? "");
-      studioShell?.setWorkPlan(autonomousRunState?.plan ?? null, autonomousRunState?.active === true);
+      studioShell?.setWorkPlan(workPlanSurfaceState?.plan ?? null, workPlanSurfaceState?.active === true);
       studioShell?.setChangePreview(lastStudioChange);
       studioShell?.setToolLines(studioToolLines);
       studioButton.setAttribute("aria-label", "AI 스튜디오 되돌리기");
@@ -2990,7 +3023,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     activeSelectionRegionKey = null;
     turnBusy = false;
     pendingSends.length = 0;
-    endAutonomousRun(); // 진행 중이던 자율 런 표면 정리.
+    clearWorkPlanSurface(); // 패널 해제 — 할 일 목록 정리.
     endTurnProgress();
     clearAutoCollapseTimer();
     resizeChrome.dispose();

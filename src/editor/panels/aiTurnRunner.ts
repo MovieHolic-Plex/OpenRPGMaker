@@ -51,6 +51,7 @@ import {
   type TileGridData,
 } from "./aiChatPanelHelpers";
 import { parseAutonomousRunBudget, type AutonomousRunBudget } from "./aiChatRenderers";
+import { toolLabel } from "./aiToolLabels";
 import { formatRunRecapPlayerLine } from "@/ai/runRecap";
 import { renderStreamedMarkdown } from "./aiConversationLog";
 import { decorateAssistantMentions, foldWorkLogs } from "./aiBubbleDecorations";
@@ -68,7 +69,8 @@ export interface AiTurnRunnerDeps {
   // ── 턴 전용 가변 상태(소유자는 패널) ─────────────────────
   applyingProposal: boolean;
   projectIdentityId: string;
-  readonly autonomousRunState: {
+  /** 할 일 목록(작업 계획 체크리스트) 상태 — 소유자는 패널. 턴이 시작되면 존재하고, 대화 경계에서만 null 이 된다. */
+  readonly workPlanSurfaceState: {
     active: boolean;
     plan: WorkPlan | null;
     budget: AutonomousRunBudget | null;
@@ -78,9 +80,14 @@ export interface AiTurnRunnerDeps {
   readonly applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<boolean>;
   readonly noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
 
-  // ── 자율 런 표면 ─────────────────────────────────────────
-  readonly endAutonomousRun: () => void;
-  readonly refreshAutonomousRunSurface: () => void;
+  // ── 할 일 목록 표면 ──────────────────────────────────────
+  /** 턴 종료 — 목록은 남기고 활동만 끈다(완료·중단·오류 공통). */
+  readonly settleWorkPlanTurn: () => void;
+  readonly refreshWorkPlanSurface: () => void;
+  /** work_plan 이벤트 — 항목 체크가 바뀔 때마다 목록을 다시 그린다. */
+  readonly showWorkPlan: (plan: WorkPlan) => void;
+  /** tool_started — 진행 중 항목 아래 「지금 하는 일」 한 줄. */
+  readonly noteWorkPlanActivity: (label: string) => void;
   readonly appendMilestoneFeedLine: (kind: "applied" | "apply-failed", title: string, detail: string) => void;
 
   // ── 로그 첨부 ────────────────────────────────────────────
@@ -265,6 +272,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 채팅과 상태 배지 모두 실행 직전에 구체적인 현재 작업을 반영한다.
         setAgentGhostRunningTool(event.name);
         deps.surface.startLiveActivity(event.name, event.index);
+        deps.noteWorkPlanActivity(toolLabel(event.name));
       } else if (event.type === "tool_call") {
         liveToolCalls.push({
           name: event.name,
@@ -354,9 +362,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         deps.surface.setStatus(event.text);
         // 자율 런 예산(used/48) 표시 갱신 — 드라이버의 계속/소진 status 이벤트에서 파싱.
         const budget = parseAutonomousRunBudget(event.text);
-        if (budget && deps.autonomousRunState) {
-          deps.autonomousRunState.budget = budget;
-          deps.refreshAutonomousRunSurface();
+        if (budget && deps.workPlanSurfaceState) {
+          deps.workPlanSurfaceState.budget = budget;
+          deps.refreshWorkPlanSurface();
         }
         if (event.text.includes("예산 소진") || event.text.includes("agent_run_budget_exhausted")) {
           if (!deps.surface.log.querySelector("[data-testid=ai-continue-run]")) {
@@ -381,11 +389,8 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           : [];
         const done = items.filter((i) => i.status === "done" || i.status === "skipped").length;
         deps.surface.setStatus(`작업 계획 ${done}/${items.length}`);
-        // 자율 런 라이브 체크리스트: emitWorkPlan 이벤트마다 항목 진행/현재 레이어를 갱신한다.
-        if (deps.autonomousRunState) {
-          deps.autonomousRunState.plan = s;
-          deps.refreshAutonomousRunSurface();
-        }
+        // 할 일 목록: emitWorkPlan 이벤트마다 항목 체크/현재 레이어를 갱신한다 — 자율 런뿐 아니라 모든 턴.
+        deps.showWorkPlan(s);
       } else if (event.type === "milestone_applied") {
         deps.appendMilestoneFeedLine("applied", event.title, `도구 ${event.toolCount}건${event.commitId ? ` · 커밋 ${event.commitId}` : ""}`);
         // 자율 런은 턴 도중에 저장소로 커밋한다 — 여기까지의 진행은 실제로 들어갔으므로 확정한다.
@@ -608,9 +613,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       deps.surface.refreshAbortButton();
       // 턴이 끝나면 맥락/사용량이 움직였다 — 게이지는 여기서만 갱신하면 항상 최신이다.
       deps.refreshContextMeter();
-      // 자율 런 종료(정상 완료·중단·적용 실패 포함): 런 표면을 정리하고 자동 접기를 재개한다.
-      // 다음 사용자 턴이 autonomous 로 시작되면 beginAutonomousRun 이 새 표면을 만든다.
-      if (runOpts?.autonomous) deps.endAutonomousRun();
+      // 턴 종료(정상 완료·중단·적용 실패 포함): 할 일 목록은 남기고 활동만 끈다 — 사용자가 뭐가 됐고
+      // 뭐가 남았는지 읽어야 한다. 자동 접기는 active 가 꺼지면서 재개된다. 다음 턴은 beginWorkPlanTurn 이 이어받는다.
+      deps.settleWorkPlanTurn();
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (deps.surface.collapsed) deps.surface.panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
       deps.surface.persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries }); // 시작 당시 대화 범위로 저장한다.

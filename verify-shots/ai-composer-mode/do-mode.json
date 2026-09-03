@@ -1,0 +1,21 @@
+{
+  "log": {
+    "toolRounds": 2,
+    "writeToolNamesSeen": [
+      "place_props",
+      "fill_region",
+      "paint_road",
+      "set_build_spec",
+      "place_props",
+      "fill_region",
+      "paint_road",
+      "set_build_spec",
+      "place_props",
+      "fill_region",
+      "paint_road",
+      "set_build_spec"
+    ],
+    "callsWithTools": 3,
+    "callsWithoutTools": 2
+  }
+}
