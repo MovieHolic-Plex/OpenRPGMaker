@@ -23,6 +23,7 @@ import { TILE } from "@/project/defaults/constants";
 import { HOUSE_SHELL_TILE } from "@/project/defaults/interiorHouseWallTiles";
 import type { ConceptChipId, ConceptPlaceRole } from "@/project/types/conceptBundle";
 import type { GameMap } from "@/project/types";
+import { deterministicRng, type Rng } from "@/util/rng";
 
 /** 「암흑 공허」 — 건물 밖. 천장(430 계열)과 다른 타일이라 천장 테두리가 건물 윤곽으로 드러난다. */
 export const OUTSIDE_VOID_TILE = 116;
@@ -84,6 +85,12 @@ export type ConceptComposeInput = {
   readonly isFloorTile: (tile: number) => boolean;
   /** 파이프라인이 문 앞 입구 칸에 잠시 꽂는 상위 레이어 표지. 러그는 그 위에 깔려도 된다(걷는 바닥). */
   readonly entrySentinel?: number;
+  /**
+   * 배치 변주 시드. 같은 방·같은 물건이라도 시드가 다르면 첫 가구의 좌우, 동률 후보의 선택이 달라진다.
+   * 없으면 종전과 같은 결정적 배치(서쪽 첫 자리 · 가운데 · 동쪽).
+   * 2026-09-03: 개념 시설이 매번 픽셀 단위로 같은 맵을 냈다 — 이 파일에 난수가 한 곳도 없었다.
+   */
+  readonly seed?: number;
 };
 
 export type ConceptComposeResult = {
@@ -124,6 +131,17 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
   const warnings: string[] = [];
   const placements: ConceptPlacement[] = [];
   let bedCells: Point[] = [];
+  // 방마다 다른 난수열 — 같은 시드라도 객실 1·2 가 거울처럼 같지 않게.
+  const rng: Rng | null = input.seed === undefined ? null : deterministicRng(input.seed, "concept", input.roomId);
+  // 이 방의 좌우 뒤집기 — 「서쪽 첫 자리」 규약을 시드로 동쪽으로 바꾼다. 첫 가구가 가장자리에서 시작하는 건 그대로라
+  // 북벽 런이 조각나지 않는다(가운데 무작위 투하는 뒤 가구의 자리를 깨뜨린다).
+  const flip = rng ? rng() < 0.5 : false;
+  /** 동률 후보 사이의 선택 — 시드가 있으면 그중 하나를 뽑고, 없으면 첫 것. */
+  const pickAmong = <T>(ties: readonly T[]): T | null => {
+    if (ties.length === 0) return null;
+    if (!rng || ties.length === 1) return ties[0] ?? null;
+    return ties[Math.floor(rng() * ties.length)] ?? null;
+  };
 
   const laneFrom = (x: number, y: number, dx: number, dy: number): void => {
     let cx = x;
@@ -222,20 +240,23 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
     if (candidates.length === 0) return null;
     const anchors = anchorsFor(slot);
     if (anchors.length === 0) {
-      if (first === "west") return candidates[0] ?? null;
-      if (first === "east") return candidates[candidates.length - 1] ?? null;
+      const side = flip ? (first === "west" ? "east" : first === "east" ? "west" : first) : first;
+      if (side === "west") return candidates[0] ?? null;
+      if (side === "east") return candidates[candidates.length - 1] ?? null;
       return candidates[Math.floor(candidates.length / 2)] ?? null;
     }
-    let best: Point | null = null;
+    let ties: Point[] = [];
     let bestScore = -1;
     for (const candidate of candidates) {
       const score = Math.min(...anchors.map((anchor) => Math.abs(anchor.x - candidate.x) + Math.abs(anchor.y - candidate.y)));
       if (score > bestScore) {
         bestScore = score;
-        best = candidate;
+        ties = [candidate];
+      } else if (score === bestScore) {
+        ties.push(candidate);
       }
     }
-    return best;
+    return pickAmong(ties);
   };
 
   const paint = (job: Job, ox: number, oy: number, cells: readonly InteriorObjectCell[]): void => {
@@ -336,7 +357,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
           }
           return candidates;
         }, (candidates) => (job.slot === "north-end"
-          ? candidates[candidates.length - 1] ?? null
+          ? candidates[flip ? 0 : candidates.length - 1] ?? null
           : spreadPick(candidates, "north", "west")));
         if (pick) {
           paint(job, pick.x, pick.y, object.cells);
@@ -362,7 +383,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
           }
         }
         candidates.sort((a, b) => a.score - b.score || a.y - b.y || a.x - b.x);
-        const pick = candidates[0];
+        const pick = pickAmong(candidates.filter((entry) => entry.score === candidates[0]?.score));
         if (pick) {
           paint(job, pick.x, pick.y, object.cells);
           done = true;
@@ -380,7 +401,13 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
             })
           : perimeterCandidates(room);
         const cell = object.cells[0]!;
-        let pick = ends.find((point) => freeFor(cell, point.x, point.y)) ?? ends.find((point) => freeFor(cell, point.x, point.y, true)) ?? null;
+        // 시드가 있으면 네 구석(복도는 양 끝) 중 비어 있는 것을 하나 뽑고, 없으면 종전 순서의 첫 자리.
+        const cornerCount = input.role === "walkway" ? ends.length : 4;
+        const openCorners = ends.slice(0, cornerCount).filter((point) => freeFor(cell, point.x, point.y));
+        let pick = (rng ? pickAmong(openCorners) : null)
+          ?? ends.find((point) => freeFor(cell, point.x, point.y))
+          ?? ends.find((point) => freeFor(cell, point.x, point.y, true))
+          ?? null;
         if (!pick && input.role !== "walkway") {
           for (let y = interiorRows.from; y <= interiorRows.to && !pick; y += 1) {
             for (let x = room.x; x < room.x + room.w; x += 1) {
@@ -424,7 +451,7 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
           scored.sort((a, b) => a.score - b.score || a.y - b.y || a.x - b.x);
           for (const entry of scored) candidates.push({ x: entry.x, y: entry.y });
         }
-        const pick = candidates[0];
+        const pick = candidates.length > 1 && bed ? pickAmong(candidates) : candidates[0] ?? null;
         if (pick) {
           paint(job, pick.x, pick.y, object.cells);
           done = true;

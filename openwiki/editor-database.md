@@ -250,7 +250,9 @@ The Database modal was modernized in six waves while keeping every hard contract
 
 데이터베이스 레일에 **임시** 그룹을 두고, 그 안에 `개념 꾸러미`(`scratchConcepts`) 한 탭만 둔다.
 세계·공간 종류·구조물과 아직 합치지 않는다 — 시설→장소→물건→칩 나무를 그림으로
-저작하는 실험 면이다. `place_concept(query)` 가 이 필드를 읽어 시공한다. 사용자가 고친 나무가 정본이다.
+저작하는 실험 면이다. `place_concept(query)` 가 이 필드를 읽어 시공한다.
+
+**2026-09-03 — 이 탭은 템플릿 편집기다.** 「AI 는 소비만」을 철회했다. 여기서 고친 시설은 모델이 `get_concept_facility` 로 읽는 **출발점**이고, 모델은 요청에 맞게 장소·물건을 고친 `plan` 을 `place_concept` 에 넘겨 방 수·크기·내용물이 다른 시설을 짓는다(`openwiki/editor-ai-tools.md` 2026-09-03 항목). 사용자가 `required` 로 박은 물건을 모델이 빼면 경고가 남는다. plan 없이 부르면 종전대로 템플릿 그대로다.
 
 - 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
 - 실내 칩셋만 **시설 초안 묶음 아홉 종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 여관·민가·상점·술집·서재·대장간·교회·창고·길드, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).

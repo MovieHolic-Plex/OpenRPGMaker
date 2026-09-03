@@ -150,7 +150,7 @@ const INTRO = [
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
   "    구조물 스탬프(stamp_structure_kit / stamp_structure)는 사람 팔레트 전용이다. 타일 시공에 쓰지 마세요.",
   "    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house를 올리지 말고",
-  "    시설(여관 등)은 place_concept(query)로 **새 mapId**를 시공하세요. 그 외 실내는 start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**을 쓰세요",
+  "    시설(여관 등)은 get_concept_facility → plan 설계 → place_concept({query, mapId, plan})으로 **새 mapId**를 시공하세요. 그 외 실내는 start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**을 쓰세요",
   "    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.",
   "    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.",
   "12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.",
@@ -448,7 +448,7 @@ function conceptBundleSection(project: Project): string {
     }
   }
   if (detailed) {
-    lines.splice(2, 0, "장소의 [역할·크기 ×개수·바닥·층] 과 시설의 벽 재질도 그 나무 값이다(바꾸려면 데이터베이스에서). 2층 이상 장소는 <mapId>_2f 같은 별도 맵으로 서고 계단이 이어진다. 물건 표기: *필수 · ⌂수면 · $노획 · ↔맵 연결.");
+    lines.splice(2, 0, "장소의 [역할·크기 ×개수·바닥·층] 과 시설의 벽 재질은 템플릿 값 — plan 에서 고쳐 넘길 수 있다. 2층 이상 장소는 <mapId>_2f 같은 별도 맵으로 서고 계단이 이어진다. 물건 표기: *필수(빼면 경고) · ⌂수면 · $노획 · ↔맵 연결.");
   }
   return lines.join("\n");
 }

@@ -23,7 +23,7 @@ import {
   startRoomSession,
 } from "@/editor/roomHarness/engine";
 import { INTERIOR_ROOM_KIT } from "@/editor/roomHarness/interiorKit";
-import { PLACE_CONCEPT_TOOL } from "./placeConceptTool";
+import { GET_CONCEPT_FACILITY_TOOL, PLACE_CONCEPT_TOOL } from "./placeConceptTool";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA, RECT_SCHEMA, REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
 
@@ -392,5 +392,6 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       };
     },
   },
+  GET_CONCEPT_FACILITY_TOOL,
   PLACE_CONCEPT_TOOL,
 ];

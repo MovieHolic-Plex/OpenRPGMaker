@@ -1117,6 +1117,8 @@ function paintRoomSpace(
         resolveObject: (objectId) => currentInteriorVocab().objectsById.get(objectId) ?? interiorObjectById(objectId),
         isFloorTile: (tile) => FLOOR_MATERIAL_TILES.has(tile),
         entrySentinel: ENTRY_SENTINEL,
+        // 개념 경로는 테마 가구의 RNG 를 안 타서 seed 가 죽어 있었다(2026-09-03 실측). 구성기가 직접 소비한다.
+        seed: plan.seed,
       });
       sink?.push(...composed.placements);
       conceptWarnings = [...composed.warnings];

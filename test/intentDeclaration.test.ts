@@ -168,7 +168,8 @@ describe("모델에 주는 입력과 모델이 낸 것의 표현", () => {
 describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 알린다", () => {
   it("개념 시설 실내 선언은 place_concept 경로와 되묻기 금지를 말한다", () => {
     const note = formatIntentNote(declaredIntent({ mode: "create", space: "interior", facility: "대장간", tools: ["place_concept"] }));
-    expect(note).toContain('place_concept(query:"대장간")');
+    expect(note).toContain("get_concept_facility");
+    expect(note).toContain('place_concept(query:"대장간"');
     expect(note).toContain("다시 묻지 말고");
     expect(note).toContain("author_house");
   });

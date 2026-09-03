@@ -152,3 +152,22 @@ n층에 계단이 없으면 위층은 서되 내려오는 자리가 n층 정문 
 
 - **중복 시공**: 라운드 끝 successTools 자동 완료가 성공 툴 집합을 비운 뒤 모델이 같은 항목을 명시 `complete_work_item` → 「기록 없음」 거부 → 재시공. done/skipped 항목은 `completeWorkItemById` 가 `alreadyDone` 으로 받는다.
 - **볼륨 계약 폭주**: 패널이 매 턴 붙이는 「도구 규칙」 가이드의 마을·상점·NPC 낱말이 의도 스캔에 섞여 `requestNeedsVolumePlan` 이 참이 됐다(모든 공간 요청). `stripContextFooter` 가 가이드 첫 줄부터 뗀다. `buildVolumeWorkPlan` 은 막대가 요구하는 축만 항목으로 둔다. 실측(`test/e2e/_concept-inn-audit.spec.ts`): 「여관 지어줘」 66초·툴 19회·시작 맵 오염 → 10초·툴 3회·시작 맵 무변경.
+
+## 9. 「AI 는 소비만」 철회 — 모델이 설계하고 코드가 시공한다 (2026-09-03)
+
+핸드오프의 잠긴 설계 중 「AI 는 소비만」을 거둔다. 실측: 「여관 지어줘」를 seed 7·1·99 로 세 번 지어도 픽셀 차이 0 —
+도면·구성·그림·재질 어디에도 난수가 없고, `seed` 는 테마 가구 경로에서만 소비돼 개념 시설엔 죽어 있었으며, 모델은 시설명 외에
+넣을 인자가 없었다(`reports/concept-variety/index.html`). 신뢰성을 얻고 설계 자유를 통째로 버린 거래였다.
+
+- **역할 분담**: LLM = 설계자(장소·물건 목록, 개념 수준), 코드 = 시공자(좌표·벽·문·이벤트), DB = 어휘 + 템플릿. 모델이 bbox 를 찍던
+  옛 경로(`start_interior_room_session rooms[]`)의 실패는 되풀이하지 않는다.
+- **읽기 툴 `get_concept_facility(query?)`**: 템플릿 시설을 plan 모양(`wall·places·things`)으로, 물건 어휘를 `vocabulary[{id,label,width,height,snap,role,themes}]` 로 돌려준다.
+- **`place_concept.plan`**: `{wall?, places:[{id,label?,role?,size?,count?,floor?,level?}], things:[{id?,label?,objectId,placeIds,chips,required?}]}`.
+  `src/editor/conceptPlan.ts` `parseConceptPlan` 이 경계에서 한 번 검증해 합성 `ConceptBundleRecord` 로 바꾸고 §2·§3·§4 를 그대로 탄다.
+  어휘 밖 objectId·모르는 칩·없는 장소·범위 밖 count/level → `invalid-plan`(허용값을 문장에). 템플릿 `required` 누락 → 경고(거부 아님).
+  템플릿에 없는 시설도 plan 이 있으면 짓는다. plan 생략 = 종전 동작.
+- **seed**: `composeConceptRoom` 이 방마다 `deterministicRng(seed,"concept",roomId)` 로 첫 가구의 서↔동, 동률 후보, 구석·러그 자리를 고른다.
+  「가장자리 시작」 규약은 유지해 자리 채움이 깨지지 않는다(전 seed 자리 없음 0 — 테스트). 생략 시 mapId 해시.
+- **프롬프트·의도**: 「개념 꾸러미 — 시설 템플릿」 절과 수칙, 의도 선언 `tools:[get_concept_facility, place_concept]` 과 노트가 같은 순서를 말한다.
+- **남는 한계**: 도면 문법이 「홀 → 복도 → 방 한 줄」 하나다. 방 두 줄·ㄱ자 등 도면 다양화는 별개.
+- 증거: `test/placeConceptTool.test.ts` 「place_concept plan」 9건, `test/intentDeclaration.test.ts` 노트 라우팅.
