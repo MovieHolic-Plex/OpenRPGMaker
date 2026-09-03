@@ -115,6 +115,20 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
     // 가운데(적 자리)를 비우고 좌·우로 갈라 세운다. 발끝은 필드 바닥(160).
     party: (i, n) => ({ x: RM2000_PARTY_SLOTS[Math.min(4, Math.max(1, n))]![i] ?? 160, y: 160 }),
   },
+  // 측면 전투(rm2003, 2026-09-03 되살림): 적은 왼쪽 두 줄(뒷줄 y=112 · 앞줄 y=124, 간격 48 — 160px 적이
+  // 32 RM px 겹치되 깊이로 갈린다), 아군은 오른쪽 사선 열 — 뒤(위·왼쪽) 배우부터 앞(아래·오른쪽) 배우로
+  // x +22 · y +25 씩 내려앉는다. 전투 시트(48px 셀 → 96px × 1.25 = 120px = 40 RM px, 반폭 20)가 x=286 에서도
+  // 필드 오른쪽 가장자리(320) 안에 들고, 세로 간격 25 는 키 40 의 62% 라 앞 배우가 뒤 배우 머리만 가린다
+  // (첫 판 x/y +18 은 넷이 한 덩이로 겹쳤다 — 실측). 첫 배우 머리(y=84-40=44, 27%)는 상단 메시지 배너 아래다.
+  // 3마리 적의 y 는 픽스처 battleEnemyFeetRatios.json 이 잠근 값(112/124/112).
+  rm2003: {
+    partyFacing: "front",
+    enemy: (i, n) => ({
+      x: Math.round(108 + (i - (n - 1) / 2) * 48),
+      y: n <= 1 ? 124 : 112 + (i % 2) * 12,
+    }),
+    party: (i) => ({ x: 220 + i * 22, y: 84 + i * 25 }),
+  },
   // 옥토패스 HD-2D: 오버숄더 — 적 상단 얕게, 아군 하단 깊게, HD 간격.
   octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
   // 크로노 액티브: 대각 액티브 — 적 우상 일렬, 아군 좌하 클러스터.

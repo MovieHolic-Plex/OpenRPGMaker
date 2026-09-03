@@ -315,7 +315,7 @@ function systemSectionNodes(
         ),
         field("전투 UI 스타일", (() => {
           // literalLabel 스위치에는 스킨 라벨이 없으므로 레지스트리 라벨로 직접 빌드한다.
-          // 지원 스킨은 2종뿐이다. 저장된 프로젝트가 지원 종료 스킨을 쓰고 있으면 그 항목만 추가로 남겨
+          // 지원 스킨은 3종(정면 rm2000 · 측면 rm2003 · 몬스터 대치 pokemon)이다. 저장된 프로젝트가 지원 종료 스킨을 쓰고 있으면 그 항목만 추가로 남겨
           // 저작자가 자기 설정을 보고 유지할 수 있게 한다(암묵 remap 금지).
           const select = el("select", { dataset: { testid: "db-field-system-battle-ui-style" } });
           const savedId = resolveSkinId(project.system.battleUiStyle);

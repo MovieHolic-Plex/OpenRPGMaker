@@ -2,7 +2,7 @@
   "_note": "실측 잠금(measurement lock): 적 배치 y 를 바꾸면 이 픽스처가 어긋나 RED 가 된다. 갱신 방법: node scripts/runtime-qa.mjs --scenario battle --skin <id> 로 12종을 다시 재고 verify-shots/runtime-qa/*/manifest.json 의 battlers 값으로 이 파일을 다시 쓴다. (2026-09-03: 정면 스킨 id rm2003 → rm2000 개명. 옛 deprecated rm2000 항목은 그 스킨이 제거되며 함께 삭제.)",
   "_axes": {
     "groundBandRatio": 0.6,
-    "noTopClipRatio": 0.0
+    "noTopClipRatio": 0
   },
   "skins": {
     "pokemon": {
@@ -44,6 +44,27 @@
           0.136,
           0.136,
           0.41
+        ]
+      }
+    },
+    "rm2003": {
+      "authoredY": [
+        112,
+        124,
+        112
+      ],
+      "measured": {
+        "fieldTop": 0,
+        "fieldHeight": 540,
+        "feetRatio": [
+          0.74,
+          0.805,
+          0.74
+        ],
+        "topRatio": [
+          0.248,
+          0.312,
+          0.24
         ]
       }
     },

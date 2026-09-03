@@ -1,13 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, getBattleSkin, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, battleSkinFamily, getBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 
 describe("battle skin registry", () => {
-  it("정확히 11개 스킨을 노출한다(2026-09-03: rm2003 → rm2000 개명, deprecated 감청 rm2000 흡수)", () => {
-    expect(listBattleSkinIds()).toHaveLength(11);
-    expect(new Set(listBattleSkinIds()).size).toBe(11);
+  it("정확히 12개 스킨을 노출한다(2026-09-03: 정면 rm2000 개명 + 측면 rm2003 되살림, deprecated 감청 rm2000 흡수)", () => {
+    expect(listBattleSkinIds()).toHaveLength(12);
+    expect(new Set(listBattleSkinIds()).size).toBe(12);
+  });
+
+  it("활성 스킨은 셋 — 몬스터 대치(pokemon) · 정면(rm2000) · 측면(rm2003)", () => {
+    expect(listActiveBattleSkinIds()).toEqual(["pokemon", "rm2000", "rm2003"]);
+    expect(getBattleSkin("rm2000").layout).toBe("frontview");
+    expect(getBattleSkin("rm2003").layout).toBe("sideview");
+    expect(getBattleSkin("rm2003").showAllySprites).toBe(true);
+    // 두 턴제 스킨은 유리 HUD 한 파일(_rm2000.css)을 나눠 쓴다 — 루트 data-battle-skin-family 로 스코프.
+    expect(battleSkinFamily("rm2000")).toBe("glass");
+    expect(battleSkinFamily("rm2003")).toBe("glass");
+    expect(battleSkinFamily("pokemon")).toBe("pokemon");
   });
 
   it("mv 스킨이 등록되어 있고 기존 9종은 그대로 유지된다", () => {
@@ -26,9 +37,10 @@ describe("battle skin registry", () => {
     expect(resolveSkinId(undefined)).toBe("rm2000");
   });
 
-  it("옛 정면 스킨 id rm2003 은 rm2000 으로 풀린다(저장 프로젝트 마이그레이션)", () => {
-    expect(resolveSkinId("rm2003")).toBe("rm2000");
-    expect(listBattleSkinIds()).not.toContain("rm2003");
+  it("rm2003 은 측면 스킨 자기 자신으로 풀리고, 옛 별칭 classic 만 rm2000 으로 간다", () => {
+    expect(resolveSkinId("rm2003")).toBe("rm2003");
+    expect(resolveSkinId("classic")).toBe("rm2000");
+    expect(listBattleSkinIds()).toContain("rm2003");
   });
 
   it("vxace 스킨이 등록되어 있다", () => {
@@ -52,10 +64,10 @@ describe("battle skin registry", () => {
   });
 
   it("legacy 값을 매핑한다(back-compat)", () => {
-    // 미설정/미지의 값 → 기본 스킨(rm2000). legacy "classic"·"rm2003" 은 rm2000 으로 풀린다.
+    // 미설정/미지의 값 → 기본 스킨(rm2000). legacy "classic" 은 rm2000 으로 풀리고, rm2003 은 측면 스킨 자신이다.
     expect(resolveSkinId(undefined)).toBe("rm2000");
     expect(resolveSkinId("classic")).toBe("rm2000");
-    expect(resolveSkinId("rm2003")).toBe("rm2000");
+    expect(resolveSkinId("rm2003")).toBe("rm2003");
     expect(resolveSkinId("pokemon")).toBe("pokemon");
     expect(resolveSkinId("octopath")).toBe("octopath");
     expect(resolveSkinId("bogus")).toBe("rm2000");

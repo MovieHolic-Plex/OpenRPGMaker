@@ -12,12 +12,17 @@
 //
 // 2026-09-03: 정면 전투 스킨 id `rm2003` → `rm2000` 개명. 옛 id 는 이름만 2003 이었고
 // 실제 구도는 아군이 필드에 서지 않는 **정면(2000식) 전투**였다. 같은 구도의 deprecated
-// 스킨 `rm2000`(감청 창)은 이 하나로 흡수했다 — 저장된 `"rm2003"`·`"rm2000"`·`"classic"`
-// 은 전부 이 스킨으로 풀린다. 그래서 등록 스킨은 12 → 11 종이다.
+// 스킨 `rm2000`(감청 창)은 이 하나로 흡수했다 — 저장된 `"rm2000"`·`"classic"` 은 이 스킨으로 풀린다.
+//
+// 2026-09-03(같은 날, 감독 지시 "정면식·측면식·몬스터식 셋을 자료집에서 고를 수 있게"): `rm2003` 을
+// **측면 전투** 스킨으로 되살렸다 — 적은 왼쪽, 아군 전투 시트는 오른쪽 사선 열에 선다. 유리 HUD 는
+// rm2000 과 같은 파일(`_rm2000.css`)을 `family: "glass"` 로 나눠 쓰고, 배치·방향만 `_rm2003.css` 가 덮는다.
+// 그래서 저장된 `"rm2003"` 은 더 이상 rm2000 으로 풀리지 않는다(오늘 이전에 저장된 프로젝트의 "rm2003" 은
+// 측면 구도로 바뀐다 — 개명이 같은 날이라 감수한다). 활성 스킨 3종: pokemon · rm2000 · rm2003.
 //
 // 2026-08-21: 라벨 전부 교체 완료. 예전에는 타사 프랜차이즈 이름을 그대로 썼다.
 // 라벨은 이제 **창 색 + 레이아웃/HUD 특징**을 말하고 서로 구분된다:
-//   흰 창·박스 HUD / 유리 창·정면 필드 / 먹빛 창·최소 HUD /
+//   흰 창·박스 HUD / 유리 창·정면 필드 / 유리 창·측면 필드 / 먹빛 창·최소 HUD /
 //   청람 창·링 게이지 / 세피아 창·주황 강조 / 검은 창·1인칭 시점 /
 //   코발트 창·청록 강조 / 암전 창·형광 분홍 / 금갈색 창·박스 HUD /
 //   밝은 창·정면 / 심야 창·박스 HUD
@@ -51,7 +56,29 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   // 감사), 밤 숲·초록 몬스터 위에서도 대비가 약했다. HP(민트)·MP(하늘)는 의미색이라 별개다.
   rm2000: {
     id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 정면 필드", layout: "frontview", showAllySprites: true,
-    hudTemplate: "rows", transition: "wipe-blue",
+    hudTemplate: "rows", transition: "wipe-blue", family: "glass",
+    themeVars: {
+      "--battle-window-bg": "rgba(14,18,34,.96)",
+      "--battle-window-edge": "rgba(154,170,226,.32)",
+      "--battle-window-inner": "rgba(4,6,16,.66)",
+      "--battle-text": "#eef1fb",
+      "--battle-text-muted": "#9aa4c4",
+      "--battle-accent": "#f2c063",
+      "--battle-accent-soft": "rgba(242,192,99,.22)",
+      "--battle-hp-high": "#3ddc97",
+      "--battle-hp-mid": "#ffc857",
+      "--battle-hp-low": "#ff5f6d",
+      "--battle-shadow": "0 8px 24px rgba(3,5,14,.55)",
+      "--battle-cursor": "#f2c063",
+      "--battle-backdrop-filter": "saturate(1.04) contrast(1.06)",
+    },
+  },
+  // 측면 전투(rm2003): 적은 필드 왼쪽 두 줄, 아군은 오른쪽 사선 열에 전투 시트(48px 셀, 고해상도 짝)로
+  // 서서 서로 마주 본다. 창 크롬은 rm2000 과 같은 유리 카드(family: glass) — 구도만 다르고 HUD 는 같다.
+  // 배경은 정면과 같은 하늘 배경을 쓴다(측면 구도 전용 배경은 아직 없다).
+  rm2003: {
+    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 측면 필드", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "wipe-blue", family: "glass",
     themeVars: {
       "--battle-window-bg": "rgba(14,18,34,.96)",
       "--battle-window-edge": "rgba(154,170,226,.32)",
@@ -260,8 +287,8 @@ export function listBattleSkinIds(): BattleSkinId[] {
   return Object.keys(BATTLE_SKINS) as BattleSkinId[];
 }
 
-/** 지원이 이어지는 스킨 2종 — 새 저작 UI가 노출하는 집합. */
-export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = ["pokemon", "rm2000"];
+/** 지원이 이어지는 스킨 3종(몬스터 대치 · 정면 · 측면) — 새 저작 UI가 노출하는 집합. */
+export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = ["pokemon", "rm2000", "rm2003"];
 
 /** BATTLE_SKINS 에서 deprecated 표식이 없는 id 만 추린다(ACTIVE_BATTLE_SKIN_IDS 와 동일해야 함). */
 export function listActiveBattleSkinIds(): BattleSkinId[] {
@@ -272,17 +299,22 @@ export function isDeprecatedBattleSkin(id: BattleSkinId): boolean {
   return BATTLE_SKINS[id].deprecated === true;
 }
 
+/** 루트 `data-battle-skin-family` 값 — 묶음이 없는 스킨은 자기 id 다. */
+export function battleSkinFamily(id: BattleSkinId): string {
+  return BATTLE_SKINS[id].family ?? id;
+}
+
 /** 미설정/미지의 값이 떨어지는 기본 스킨. */
 export const DEFAULT_BATTLE_SKIN_ID: BattleSkinId = "rm2000";
 
-/** 저장 데이터에 남아 있을 수 있는 옛 정면 전투 스킨 id → 현재 id. */
+/** 저장 데이터에 남아 있을 수 있는 옛 정면 전투 스킨 id → 현재 id.
+ *  `rm2003` 은 2026-09-03 오전에 rm2000 으로 풀렸지만 같은 날 측면 스킨으로 되살아나 여기서 빠졌다. */
 const LEGACY_SKIN_ALIASES: Readonly<Record<string, BattleSkinId>> = {
   classic: "rm2000", // 2026-08 이전 별칭
-  rm2003: "rm2000", // 2026-09-03 개명 전 id
 };
 
-/** legacy(`classic`/`rm2003`/`pokemon`/undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다.
- *  미설정(undefined)은 기본 스킨(rm2000)으로, legacy `classic`·`rm2003` 은 rm2000 으로 푼다. */
+/** legacy(`classic`/`pokemon`/undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다.
+ *  미설정(undefined)은 기본 스킨(rm2000)으로, legacy `classic` 은 rm2000 으로 푼다. */
 export function resolveSkinId(legacy: string | undefined): BattleSkinId {
   if (legacy === "pokemon") return "pokemon";
   if (!legacy) return DEFAULT_BATTLE_SKIN_ID;

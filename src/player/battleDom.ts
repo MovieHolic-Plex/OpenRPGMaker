@@ -24,7 +24,7 @@ import {
   targetSelectDirectorState,
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
-import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField, playBattleCue } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
@@ -94,6 +94,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const skinId = resolveSkinId(store.getCurrent().system.battleUiStyle);
   const skin = getBattleSkin(skinId);
   root.dataset.battleSkin = skinId;
+  // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
+  root.dataset.battleSkinFamily = battleSkinFamily(skinId);
   root.dataset.battleTransition = skin.transition;
   root.dataset.battleHud = skin.hudTemplate;
   root.dataset.battleLayout = skin.layout;
