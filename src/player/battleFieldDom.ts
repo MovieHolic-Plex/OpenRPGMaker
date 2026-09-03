@@ -473,7 +473,8 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     const presented = presentedState(actor, presentation);
     node.classList.toggle("defeated", presented.defeated);
     applyBattlerPose(node, presented.pose);
-    syncStatusIcons(node, actor);
+    // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.
+    syncStatusIcons(node, { ...actor, defeated: presented.defeated });
   }
 }
 
@@ -522,7 +523,9 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   if (mpBar) mpBar.style.setProperty("--battle-stat", `${hpPercent(enemy.mp, enemy.maxMp)}%`);
   const atbBar = node.querySelector<HTMLElement>(".battle-enemy-atb-bar");
   if (atbBar) atbBar.style.setProperty("--battle-stat", `${clampGauge(enemy.gauge)}%`);
-  syncStatusIcons(node, enemy);
+  // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다
+  // (실측: 불꽃이 닿기 전 「KO 74/144」 가 떴다).
+  syncStatusIcons(node, { ...enemy, defeated: presented.defeated });
 }
 
 /**
