@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1386KB / 약 391,266 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1389KB / 약 392,282 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 228KB | 79KB ⚠상한 초과 — 절을 더 쪼개라 | 385 | ~65,888 |
+| `openwiki/editor-ai-panel.md` | 231KB | 82KB ⚠상한 초과 — 절을 더 쪼개라 | 392 | ~66,904 |
 | `openwiki/editor-ai-tools.md` | 64KB | 60KB ⚠상한 초과 — 절을 더 쪼개라 | 129 | ~18,177 |
 | `openwiki/editor-database.md` | 168KB | 49KB | 806 | ~47,926 |
 | `openwiki/editor-event-authoring.md` | 116KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 550 | ~33,750 |
@@ -31,7 +31,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 181, 182, 183, 184, 185, 186, 198, 207 |
+| `openwiki/editor-ai-panel.md` | 25 | 188, 189, 190, 191, 192, 193, 205, 214 |
 | `openwiki/editor-ai-tools.md` | 5 | 70, 71, 75, 77, 79 |
 | `openwiki/editor-database.md` | 7 | 101, 105, 106, 107, 115, 139, 142 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
@@ -219,18 +219,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 228KB · 385줄 · ~65,888 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 231KB · 392줄 · ~66,904 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L9` 패널 셸 · 도크 · 접기 · 컴포저
-- `L112` 세션 수명 · 대화 컨텍스트
-- `L127` 제안 적용 · 복구 · 완성도 린트
-- `L209` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L270` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L294` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L308` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L334` 저장 · 내보내기 · 프로젝트 생성
-- `L342` 제공자 · OAuth · 동반 서비스
-- `L366` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L119` 세션 수명 · 대화 컨텍스트
+- `L134` 제안 적용 · 복구 · 완성도 린트
+- `L216` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L277` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L301` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L315` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L341` 저장 · 내보내기 · 프로젝트 생성
+- `L349` 제공자 · OAuth · 동반 서비스
+- `L373` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
 ### `openwiki/editor-ai-tools.md` — 64KB · 129줄 · ~18,177 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
