@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1343KB / 약 378,602 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1350KB / 약 380,627 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,9 +18,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-panel.md` | 210KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 369 | ~60,752 |
 | `openwiki/editor-ai-tools.md` | 62KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 128 | ~17,649 |
 | `openwiki/editor-database.md` | 163KB | 49KB | 756 | ~46,472 |
-| `openwiki/editor-event-authoring.md` | 111KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 530 | ~32,151 |
+| `openwiki/editor-event-authoring.md` | 114KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 543 | ~33,081 |
 | `openwiki/editor-pre-edit-routing.md` | 62KB | 49KB | 168 | ~17,730 |
-| `openwiki/runtime-battle.md` | 105KB | 24KB | 325 | ~29,975 |
+| `openwiki/runtime-battle.md` | 109KB | 27KB | 333 | ~31,070 |
 | `openwiki/runtime-project-schema.md` | 53KB | 42KB | 174 | ~14,244 |
 | `openwiki/runtime-sessions.md` | 54KB | 45KB | 119 | ~14,335 |
 | `openwiki/testing.md` | 99KB | 45KB | 649 | ~27,907 |
@@ -34,7 +34,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-ai-panel.md` | 24 | 166, 167, 168, 169, 170, 171, 183, 238 |
 | `openwiki/editor-ai-tools.md` | 5 | 69, 70, 74, 76, 78 |
 | `openwiki/editor-database.md` | 7 | 101, 105, 106, 107, 115, 139, 142 |
-| `openwiki/editor-event-authoring.md` | 16 | 138, 139, 142, 147, 148, 149, 150, 151 |
+| `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 15, 28, 29, 31, 34, 35 |
 | `openwiki/editor-observability.md` | 1 | 120 |
@@ -273,34 +273,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L670` AI로 몬스터·아이템 생성 (2026-08-30)
 - `L691` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
 
-### `openwiki/editor-event-authoring.md` — 111KB · 530줄 · ~32,151 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 114KB · 543줄 · ~33,081 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
-- `L3` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
-- `L16` NPC 일정 구조화 편집 (2026-08-24)
-- `L28` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
-  - `L50` 우선순위는 1페이지가 아니다 (바꾸지 않았다)
-  - `L58` 랜덤 대사는 페이지가 아니다
-  - `L65` 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
-  - `L75` 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
-- `L92` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
-- `L122` Roguelike run authoring (2026-08-24)
-- `L129` Event Authoring
-- `L337` Condition / Loop / Variable command trust fixes (2026-08-07)
-- `L347` Event draft trust loop (2026-07-30)
-- `L355` Guided story arc facade
-- `L359` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L364` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L372` Companion roster in the command picker (2026-08-27)
-- `L378` Presentation and system M2 command bodies
-- `L385` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L403` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L413` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L448` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L482` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L493` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L501` 참조를 비워도 조건을 삭제하지 않는다
-  - `L508` 조건 미리보기는 모르면 모른다고 말한다
-  - `L517` 조건 문구에 내부 토큰을 넣지 마라
+- `L3` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
+- `L16` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
+- `L29` NPC 일정 구조화 편집 (2026-08-24)
+- `L41` AI 가 이벤트 페이지를 이해하지 못했다 (2026-08-30 실측 · 수정)
+  - `L63` 우선순위는 1페이지가 아니다 (바꾸지 않았다)
+  - `L71` 랜덤 대사는 페이지가 아니다
+  - `L78` 새 린트가 출하 콘텐츠에서 실제로 잡은 것 (skyStair autoEvent)
+  - `L88` 조건만 걸고 켜지 않으면 그것도 죽은 페이지다 (가려짐의 거울상)
+- `L105` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
+- `L135` Roguelike run authoring (2026-08-24)
+- `L142` Event Authoring
+- `L350` Condition / Loop / Variable command trust fixes (2026-08-07)
+- `L360` Event draft trust loop (2026-07-30)
+- `L368` Guided story arc facade
+- `L372` 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- `L377` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L385` Companion roster in the command picker (2026-08-27)
+- `L391` Presentation and system M2 command bodies
+- `L398` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L416` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L426` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L461` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L495` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L506` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L514` 참조를 비워도 조건을 삭제하지 않는다
+  - `L521` 조건 미리보기는 모르면 모른다고 말한다
+  - `L530` 조건 문구에 내부 토큰을 넣지 마라
 
 ### `openwiki/editor-event-command-fixes.md` — 12KB · 33줄 · ~3,122 토큰 · 깨진 줄 11
 
@@ -459,7 +460,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 105KB · 325줄 · ~29,975 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 109KB · 333줄 · ~31,070 토큰 · 통째읽기 잘림
 
   - `L7` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
 - `L25` 지원 전투 시스템은 둘뿐이다 (2026-08-28)

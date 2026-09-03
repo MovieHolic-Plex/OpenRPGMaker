@@ -1,7 +1,7 @@
-// 쓰러진 적 **필드 스프라이트**의 불투명도는 퇴장 연출(`battle-death-fade`)만 소유한다.
+// 쓰러진 적 **필드 스프라이트**의 불투명도는 퇴장 연출(`battle-death-dissolve`, 2026-09-03 전에는 battle-death-fade)만 소유한다.
 //
 // 왜 정적 선언을 금지하는가: 막타가 들어가는 프레임에는 스킨의 피격 juice
-// (`rm2000-juice-hit` 등)가 `animation` 숏핸드를 가져가 `battle-death-fade` 가 돌지
+// (`rm2000-juice-hit` 등)가 `animation` 숏핸드를 가져가 `battle-death-dissolve` 가 돌지
 // 못한다. 그때 남는 것은 정적 `opacity` 뿐이라 그 값이 그대로 화면에 드러난다.
 // 실측(2026-09-01, troop_slime_pair): 임팩트 시점 `.battle-enemy` computed opacity
 // = 0.42, animation = rm2000-juice-hit → 슬라임 몸통으로 배경 구름이 비쳤다.
@@ -84,9 +84,9 @@ describe("쓰러진 적 스프라이트 불투명도", () => {
     ).toEqual([]);
   });
 
-  it("퇴장 연출(battle-death-fade)은 여전히 존재한다", () => {
+  it("퇴장 연출(battle-death-dissolve)은 여전히 존재한다", () => {
     const css = readFileSync(join(RUNTIME_STYLES, "battle/15-juice-capture-fx.css"), "utf8");
-    expect(css).toContain("battle-death-fade");
-    expect(stripComments(css)).toMatch(/@keyframes\s+battle-death-fade/);
+    expect(css).toContain("battle-death-dissolve");
+    expect(stripComments(css)).toMatch(/@keyframes\s+battle-death-dissolve/);
   });
 });
