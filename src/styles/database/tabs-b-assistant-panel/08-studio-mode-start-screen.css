@@ -762,3 +762,73 @@ body.ai-studio-open .coach-mark-card {
   line-height: 1.4;
   opacity: 0.85;
 }
+
+
+/* ── 데크(2026-09-03) 도구 덱 — 묶음 헤더 + 아이콘 타일. 「편집/조회」 라벨 규칙은 DOM 과 함께 걷었다. ── */
+.ai-studio-tool-grid {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ai-studio-tool-group {
+  border-right: 1px solid var(--border-subtle);
+  min-width: 0;
+  padding: 0 10px;
+}
+
+.ai-studio-tool-group:first-child {
+  padding-left: 0;
+}
+
+.ai-studio-tool-group:last-child {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.ai-studio-tool-group-title {
+  color: var(--text-2);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0 0 8px;
+}
+
+.ai-studio-tool-tiles {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+}
+
+.ai-studio-tool-card {
+  align-items: flex-start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  font-size: 12.5px;
+  font-weight: 600;
+  gap: 6px;
+  justify-content: space-between;
+  min-height: 60px;
+  padding: 8px 10px 7px;
+  text-align: left;
+}
+
+.ai-studio-tool-card .ai-deck-icon {
+  color: var(--accent-active);
+}
+
+.ai-studio-tool-card.is-inspect .ai-deck-icon,
+.ai-studio-tool-card.is-system .ai-deck-icon {
+  color: var(--text-2);
+}
+
+.ai-studio-tool-card:hover,
+.ai-studio-tool-card:focus-visible {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  outline: none;
+}

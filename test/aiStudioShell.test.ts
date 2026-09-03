@@ -73,7 +73,9 @@ describe("스튜디오 셸 단독", () => {
       .toContain(bar);
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-tools")?.className).toContain("is-on");
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-grid")).toBeTruthy();
-    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-card")?.textContent).toContain("NPC 배치");
+    // 데크(2026-09-03): 타일은 묶음(짓기 / 사람·이야기 / 보기·검사)으로 나뉘어 첫 카드가 NPC 가 아닐 수 있다 — 전체에서 찾는다.
+    const toolCardTexts = (shell.root as unknown as FakeElement).querySelectorAll("[data-testid=ai-studio-tool-card]").map((card) => card.textContent);
+    expect(toolCardTexts).toContain("NPC 배치");
     expect(shell.root.textContent).not.toContain("Canonical");
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-monitor-thumb")).toBeNull();
 
@@ -177,5 +179,24 @@ describe("패널 스튜디오 모드", () => {
 
     findByTestId(panel, "ai-studio-toggle")?.click();
     expect(body.querySelector("[data-testid=edit-canvas]")).toBeTruthy();
+  });
+});
+
+describe("스튜디오 도구 덱 — 묶음 + 아이콘 (데크 P3)", () => {
+  it("타일은 짓기 / 사람·이야기 / 보기·검사 세 묶음이고 「편집/조회」 반복 라벨이 없다", () => {
+    // Break: 17장이 한 격자에 흰 카드로 늘어서고 카드마다 「편집」 이 붙어 정보가 0 이 된다.
+    const shell = renderPanel();
+    findByTestId(shell, "ai-studio-toggle")?.click();
+    const grid = findByTestId(shell, "ai-studio-tool-grid");
+    expect(grid).toBeTruthy();
+    const groups = grid?.querySelectorAll(".ai-studio-tool-group") ?? [];
+    expect(groups.map((group) => group.querySelector(".ai-studio-tool-group-title")?.textContent)).toEqual(["짓기", "사람·이야기", "보기·검사"]);
+    const cards = grid?.querySelectorAll("[data-testid=ai-studio-tool-card]") ?? [];
+    expect(cards.length).toBeGreaterThan(10);
+    for (const card of cards) {
+      expect(card.querySelector(".ai-studio-tool-mode")).toBeNull();
+      expect(card.childNodes.some((child) => (child as { tagName?: string }).tagName?.toLowerCase() === "svg")).toBe(true);
+    }
+    expect(cards.map((card) => card.textContent)).toContain("NPC 배치");
   });
 });

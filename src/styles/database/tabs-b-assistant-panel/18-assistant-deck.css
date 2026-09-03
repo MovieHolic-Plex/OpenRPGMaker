@@ -1152,7 +1152,8 @@
   background: var(--bg-raised);
   border: 1px solid var(--border-default);
   border-radius: 14px;
-  bottom: auto;
+  /* 레일 위로 연다 — 유휴 데크는 뷰포트 바닥에 붙은 110px 이라 아래로 열면 잘린다(실측 2026-09-03). */
+  bottom: calc(100% + 6px);
   box-shadow: var(--shadow-pop);
   display: grid;
   gap: 2px;
@@ -1161,7 +1162,7 @@
   padding: 6px;
   position: absolute;
   right: 8px;
-  top: calc(100% + 6px);
+  top: auto;
   width: 248px;
   z-index: 6;
 }
@@ -1212,12 +1213,12 @@
    기록과 레일을 덮어 토글 자신을 가렸다 — 실측 2026-09-03). */
 .ai-deck-rail > .ai-preference-popover,
 .ai-deck-rail > .ai-context-panel {
-  bottom: auto;
+  bottom: calc(100% + 6px);
   left: auto;
   max-height: min(420px, 50vh);
   position: absolute;
   right: 8px;
-  top: calc(100% + 6px);
+  top: auto;
   z-index: 6;
 }
 

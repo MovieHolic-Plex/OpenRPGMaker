@@ -125,7 +125,8 @@ describe("conversationStore", () => {
     saveConversation(record("old", 100, [user("첫 번째 요청"), assistant("응답")]));
     saveConversation(record("new", 200, [assistant("준비"), user("두 번째 요청"), tool("create_map"), user("수정 요청")]));
 
-    expect(listConversations()).toEqual([
+    // preview(마지막 조수/사용자 발화)는 데크(2026-09-03)에서 추가된 목록 필드다 — 여기서는 나머지 모양만 잠근다.
+    expect(listConversations().map(({ preview: _preview, ...rest }) => rest)).toEqual([
       { id: "new", title: "두 번째 요청", model: "stub-model", savedAt: 200, turnCount: 2 },
       { id: "old", title: "첫 번째 요청", model: "stub-model", savedAt: 100, turnCount: 1 },
     ]);
@@ -135,7 +136,7 @@ describe("conversationStore", () => {
     saveConversation(record("same", 100, [user("처음")]));
     saveConversation(record("same", 300, [user("교체됨"), assistant("응답")]));
 
-    expect(listConversations()).toEqual([
+    expect(listConversations().map(({ preview: _preview, ...rest }) => rest)).toEqual([
       { id: "same", title: "교체됨", model: "stub-model", savedAt: 300, turnCount: 1 },
     ]);
   });
@@ -170,7 +171,7 @@ describe("conversationStore", () => {
 
     deleteConversation("delete");
 
-    expect(listConversations()).toEqual([
+    expect(listConversations().map(({ preview: _preview, ...rest }) => rest)).toEqual([
       { id: "keep", title: "대화 keep", model: "stub-model", savedAt: 200, turnCount: 1 },
     ]);
   });
@@ -440,5 +441,37 @@ describe("conversationStore — 저장 용량", () => {
     if (remoteTool?.kind !== "tool") return;
     expect(remoteTool.args._truncated).toBe(true);
     expect(remote?.entries).toEqual(loadConversation("mirror")?.entries);
+  });
+});
+
+describe("listConversations 미리보기 (데크 2026-09-03)", () => {
+  it("마지막 조수 발화를 80자 안으로 잘라 preview 로 준다 — 없으면 마지막 사용자 발화", () => {
+    // Break: 이전 대화 목록이 제목·날짜·턴 수만 보여 어느 대화인지 고를 근거가 없다.
+    localStorage.clear();
+    saveConversation({
+      id: "conv_preview",
+      title: "광장",
+      model: "m",
+      savedAt: 10,
+      projectContextKey: "local:x::m1",
+      entries: [
+        { kind: "user", text: "우물 놓아줘" },
+        { kind: "assistant", text: "광장 북쪽 (24,11) 에 우물을 놓았습니다. " + "다음으로 상점 창을 붙일까요? ".repeat(6) },
+      ],
+    });
+    saveConversation({
+      id: "conv_preview_user_only",
+      title: "질문만",
+      model: "m",
+      savedAt: 20,
+      projectContextKey: "local:x::m1",
+      entries: [{ kind: "user", text: "이 맵에 상점이 몇 개야?" }],
+    });
+    const rows = listConversations();
+    const withAssistant = rows.find((row) => row.id === "conv_preview");
+    expect(withAssistant?.preview?.startsWith("광장 북쪽 (24,11) 에 우물을 놓았습니다.")).toBe(true);
+    expect((withAssistant?.preview ?? "").length).toBeLessThanOrEqual(81);
+    expect(withAssistant?.preview?.endsWith("…")).toBe(true);
+    expect(rows.find((row) => row.id === "conv_preview_user_only")?.preview).toBe("이 맵에 상점이 몇 개야?");
   });
 });

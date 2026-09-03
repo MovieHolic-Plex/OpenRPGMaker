@@ -6,7 +6,7 @@ import { recordSupabaseConversation, type SupabaseConversationInput } from "@/pr
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
-export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; }
+export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; /** 마지막 조수(없으면 사용자) 발화 80자 — 목록에서 고를 근거(데크 2026-09-03). */ readonly preview?: string; }
 /**
  * 저장 결과 — `saveConversation` 은 **던지지 않는다.** `ok:false` 는 최신 1건으로 줄여도 이 브라우저에
  * 한 글자도 못 남겼다는 뜻이고(저장 공간 고갈·프라이빗 모드), `evicted` 는 자리를 내주려 밀어낸
@@ -292,6 +292,22 @@ export function searchConversations(query: string): ConversationSummary[] {
   return all.filter((conversation) => conversation.title.toLowerCase().includes(needle));
 }
 
+const PREVIEW_LIMIT = 80;
+
+/** 마지막 조수 발화, 없으면 마지막 사용자 발화. 80자를 넘으면 잘라 … 를 붙인다. */
+export function conversationPreview(entries: readonly AuditEntry[]): string | null {
+  const pick = (kind: "assistant" | "user"): string | null => {
+    for (let index = entries.length - 1; index >= 0; index -= 1) {
+      const entry = entries[index];
+      if (entry && entry.kind === kind && entry.text.trim().length > 0) return entry.text.replace(/\s+/gu, " ").trim();
+    }
+    return null;
+  };
+  const text = pick("assistant") ?? pick("user");
+  if (text === null) return null;
+  return text.length > PREVIEW_LIMIT ? `${text.slice(0, PREVIEW_LIMIT)}…` : text;
+}
+
 export function listConversations(): ConversationSummary[] {
   return readConversations().map((conversation) => ({
     id: conversation.id,
@@ -299,6 +315,7 @@ export function listConversations(): ConversationSummary[] {
     model: conversation.model,
     savedAt: conversation.savedAt,
     turnCount: conversation.entries.filter((entry) => entry.kind === "user").length,
+    ...(conversationPreview(conversation.entries) === null ? {} : { preview: conversationPreview(conversation.entries) ?? "" }),
     ...(conversation.projectContextKey ? { projectContextKey: conversation.projectContextKey } : {}),
   }));
 }

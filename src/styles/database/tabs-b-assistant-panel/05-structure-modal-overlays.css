@@ -259,6 +259,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.ai-history-preview {
+  color: var(--text-2);
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ai-history-meta {
   color: var(--text-3);
   font-size: 10px;

@@ -103,6 +103,8 @@ export function openAiConversationHistoryModal(options: {
           dataset: { testid: "ai-history-open" },
           children: [
             el("span", { class: "ai-history-title", text: row.title }),
+            // 마지막 발화 미리보기 — 제목·날짜·턴 수만으로는 어느 대화인지 고를 근거가 없었다(데크 2026-09-03).
+            ...(row.preview ? [el("span", { class: "ai-history-preview", text: row.preview, dataset: { testid: "ai-history-preview" } })] : []),
             el("span", {
               class: "ai-history-meta",
               text: [

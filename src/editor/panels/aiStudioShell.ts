@@ -13,7 +13,8 @@ import {
 } from "@/editor/panels/aiChangePreview";
 import { filterToolCategories, FREQUENT_TOOL_NAMES } from "@/editor/panels/toolBrowserModal";
 import type { ToolDefinition } from "@/editor/tools/types";
-import { TOOL_LABELS, toolLabel } from "./aiToolLabels";
+import { TOOL_LABELS, toolGroup, toolIconKey, toolLabel, type ToolGroup } from "./aiToolLabels";
+import { deckIcon } from "./aiDeckIcons";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
@@ -448,8 +449,9 @@ function toolShortLabel(tool: ToolDefinition): string {
 }
 
 function renderToolCard(tool: ToolDefinition, onUseTool?: (tool: ToolDefinition) => void): HTMLElement {
+  // 데크(2026-09-03): 아이콘 타일. 「편집/조회」 반복 라벨은 정보가 0 이라 걷었다 — 묶음 헤더가 대신 말한다.
   return el("button", {
-    class: "ai-studio-tool-card",
+    class: `ai-studio-tool-card is-${toolGroup(tool.name)}`,
     attrs: {
       type: "button",
       title: tool.description,
@@ -459,14 +461,17 @@ function renderToolCard(tool: ToolDefinition, onUseTool?: (tool: ToolDefinition)
       click: () => onUseTool?.(tool),
     },
     children: [
+      deckIcon(toolIconKey(tool.name), { size: 22 }),
       el("b", { text: toolShortLabel(tool) }),
-      el("span", {
-        class: tool.mode === "write" ? "ai-studio-tool-mode is-write" : "ai-studio-tool-mode",
-        text: tool.mode === "write" ? "편집" : "조회",
-      }),
     ],
   });
 }
+
+const STUDIO_TOOL_GROUPS: readonly { readonly id: ToolGroup; readonly title: string; readonly includes: readonly ToolGroup[] }[] = [
+  { id: "build", title: "짓기", includes: ["build", "world"] },
+  { id: "people", title: "사람·이야기", includes: ["people"] },
+  { id: "inspect", title: "보기·검사", includes: ["inspect", "system"] },
+];
 
 function studioDeckTools(): ToolDefinition[] {
   const byName = new Map(
@@ -492,7 +497,17 @@ function renderToolsPane(onUseTool?: (tool: ToolDefinition) => void): HTMLElemen
   return el("div", {
     class: "ai-studio-tool-grid",
     dataset: { testid: "ai-studio-tool-grid" },
-    children: cards.map((tool) => renderToolCard(tool, onUseTool)),
+    children: STUDIO_TOOL_GROUPS.map((group) => {
+      const members = cards.filter((tool) => group.includes.includes(toolGroup(tool.name)));
+      return el("section", {
+        class: "ai-studio-tool-group",
+        dataset: { group: group.id },
+        children: [
+          el("h5", { class: "ai-studio-tool-group-title", text: group.title }),
+          el("div", { class: "ai-studio-tool-tiles", children: members.map((tool) => renderToolCard(tool, onUseTool)) }),
+        ],
+      });
+    }),
   });
 }
 
