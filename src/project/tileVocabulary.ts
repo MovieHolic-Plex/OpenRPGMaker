@@ -203,6 +203,8 @@ export type MaterialResolveResult =
       readonly status: "missing";
       readonly message: string;
       readonly suggestions: readonly MaterialSuggestion[];
+      /** "fillable": 라벨은 있지만 면 채우기 재료가 아니어서, 대신 채울 수 있는 재료를 제안한 경우. 기본 "similar". */
+      readonly suggestionKind?: "similar" | "fillable";
     };
 
 function normalizeMaterialQuery(query: string): string {
@@ -281,6 +283,25 @@ function findExactGroupByName(tileset: TilesetDef, query: string): TileGroupMeta
 }
 
 /** 타일 label/description 만으로 재료를 고른다. 그룹 id·vocabId 는 입력으로 쓰지 않는다. */
+/**
+ * fill_region 이 실제로 채울 수 있는 재료(오토타일·수역 지형 그룹)를 라벨로 나열한다.
+ * 실패 힌트가 실패한 라벨을 되돌려 주던 순환(「"돌바닥" 없음 → 비슷한 라벨: "돌바닥"」)의 대체 — 2026-09-03.
+ */
+export function fillableMaterialSuggestions(tileset: TilesetDef, limit = 8): MaterialSuggestion[] {
+  const out: MaterialSuggestion[] = [];
+  const seen = new Set<string>();
+  for (const group of tileset.tileGroups ?? []) {
+    // fill_region 이 받아 주는 조건과 같다(assertFillRegionGroup) — 여기서 더 좁히면 힌트가 툴과 어긋난다.
+    if (!isAutotileGroup(tileset, group)) continue;
+    const label = group.name.trim();
+    if (!label || seen.has(label)) continue;
+    seen.add(label);
+    out.push({ label, description: group.description ?? "", tileId: group.tileIds[0] ?? 0, role: group.role });
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
 export function resolveMaterialByLabel(
   tileset: TilesetDef,
   query: string,
@@ -384,6 +405,17 @@ export function resolveMaterialByLabel(
 
   // 그룹 필수였는데 실패 → 단일 타일 폴백(산포) 또는 missing
   if (options.requireAutotileGroup) {
+    // 라벨은 있는데(정확 그룹명 또는 강한 라벨 매칭) 면 채우기 그룹이 아니다 — 같은 라벨을 다시 추천하면
+    // 모델이 같은 실패를 반복한다. 이유와 채울 수 있는 재료를 준다.
+    if (exactGroup || strong.length > 0) {
+      const normalized = normalizeMaterialQuery(raw);
+      return {
+        status: "missing",
+        message: `"${raw}" 은(는) 있지만 면 채우기 재료가 아닙니다 — 벽·건물·단일 타일은 fill_region 으로 채울 수 없습니다.`,
+        suggestions: fillableMaterialSuggestions(tileset).filter((entry) => normalizeMaterialQuery(entry.label) !== normalized),
+        suggestionKind: "fillable",
+      };
+    }
     return {
       status: "missing",
       message: `"${raw}" 에 해당하는 오토타일/수역 재료(라벨·설명)를 찾지 못했습니다.`,
