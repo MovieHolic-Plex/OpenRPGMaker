@@ -24,9 +24,18 @@ import type { MapId } from "@/project/types";
 const BLUEPRINT_COLOR = 0x4dabf7;
 const BUILDING_COLOR = 0xffd43b;
 const DONE_COLOR = 0x868e96;
+/**
+ * 제도선 아래에 깔리는 어두운 테두리. 밝은 파랑 1px 만으로는 얼음·눈·모래 배경에서 계획이 보이지 않았다
+ * (2026-09-03 실측: 얼음 대평원에서 계획 선 대비 1.5~1.6:1). 라벨 상자와 같은 색이라 한 어휘로 읽힌다.
+ */
+const HALO_COLOR = 0x0b1b2b;
 
-/** 라벨을 그릴 최대 칸 수 — 에셋이 수십 개인 대형 계획에서 텍스처를 낭비하지 않는다. */
+/** 이 수를 넘으면 라벨을 순번만으로 줄인다 — 없애지 않는다(무엇이 어디에 몇 번째인지는 남아야 한다). */
 export const BLUEPRINT_MAX_LABELS = 40;
+/** 이보다 좁은 칸(1×1 주민 등)은 라벨을 순번만 찍는다 — 옆 칸 라벨과 한 덩이로 겹치지 않게. */
+export const LABEL_MIN_WIDTH_TILES = 3;
+/** 같은 자리에서 시작하는 라벨을 쌓을 때 한 줄의 높이(12px 글자 + 위아래 여백). */
+export const LABEL_ROW_PX = 16;
 
 interface StatusStyle {
   readonly color: number;
@@ -34,17 +43,19 @@ interface StatusStyle {
   readonly strokeAlpha: number;
   readonly strokeWidth: number;
   readonly labelAlpha: number;
+  readonly haloColor: number;
+  readonly haloAlpha: number;
 }
 
 /** 상태별 제도선 스타일 — 순수 매핑이라 렌더러 없이 테스트한다. */
 export function blueprintStatusStyle(status: BlueprintEntryStatus): StatusStyle {
   if (status === "building") {
-    return { color: BUILDING_COLOR, fillAlpha: 0.1, strokeAlpha: 0.95, strokeWidth: 2, labelAlpha: 1 };
+    return { color: BUILDING_COLOR, fillAlpha: 0.1, strokeAlpha: 0.95, strokeWidth: 2, labelAlpha: 1, haloColor: HALO_COLOR, haloAlpha: 0.6 };
   }
   if (status === "done") {
-    return { color: DONE_COLOR, fillAlpha: 0, strokeAlpha: 0.34, strokeWidth: 1, labelAlpha: 0.5 };
+    return { color: DONE_COLOR, fillAlpha: 0, strokeAlpha: 0.34, strokeWidth: 1, labelAlpha: 0.5, haloColor: HALO_COLOR, haloAlpha: 0.25 };
   }
-  return { color: BLUEPRINT_COLOR, fillAlpha: 0.045, strokeAlpha: 0.6, strokeWidth: 1, labelAlpha: 0.85 };
+  return { color: BLUEPRINT_COLOR, fillAlpha: 0.06, strokeAlpha: 0.9, strokeWidth: 1, labelAlpha: 0.85, haloColor: HALO_COLOR, haloAlpha: 0.55 };
 }
 
 /** 캔버스에 찍을 라벨 문장. 도구명·에셋 id 를 노출하지 않는다. */
@@ -52,6 +63,36 @@ export function blueprintEntryCaption(entry: BlueprintEntry, total: number): str
   const head = `${entry.order}/${total} ${entry.label}`;
   if (entry.status === "done") return `${head} ✓`;
   return head;
+}
+
+export interface BlueprintLabel {
+  readonly entry: BlueprintEntry;
+  readonly caption: string;
+  /** 같은 좌상단에서 시작하는 라벨 중 몇 번째 줄인가(0부터). 렌더러가 LABEL_ROW_PX 만큼 내린다. */
+  readonly row: number;
+}
+
+/**
+ * 라벨 배치 — 순수 함수라 렌더러 없이 테스트한다.
+ *
+ * 실측(2026-09-03 e1-01·e1-04): 모든 칸에 같은 위치·같은 길이의 캡션을 찍으니 (1) 인접한 1×1 주민 셋이
+ * 「8/ 9/ 10/12 주민」 한 덩이로 겹쳤고, (2) 집 모서리에 얹은 상위 장식(나무)의 라벨이 집 라벨을 완전히
+ * 가렸고, (3) 41개부터는 라벨이 전부 사라져 순번도 종류도 알 수 없었다. 좁은 칸과 대형 계획은 순번만,
+ * 같은 자리에서 시작하는 라벨은 줄을 내려 쌓는다.
+ */
+export function blueprintLabelLayout(entries: readonly BlueprintEntry[]): readonly BlueprintLabel[] {
+  const compact = entries.length > BLUEPRINT_MAX_LABELS;
+  const rowsByOrigin = new Map<string, number>();
+  return entries.map((entry) => {
+    const origin = `${entry.x},${entry.y}`;
+    const row = rowsByOrigin.get(origin) ?? 0;
+    rowsByOrigin.set(origin, row + 1);
+    const short = compact || entry.w < LABEL_MIN_WIDTH_TILES;
+    const caption = short
+      ? `${entry.order}${entry.status === "done" ? " ✓" : ""}`
+      : blueprintEntryCaption(entry, entries.length);
+    return { entry, caption, row };
+  });
 }
 
 type SceneWithPhaserObjects = Phaser.Scene & {
@@ -83,13 +124,10 @@ export class AgentBlueprintRenderer {
     group.setName("agent-blueprint");
     this.layer.add(group);
 
-    const withLabels = entries.length <= BLUEPRINT_MAX_LABELS;
-    for (const entry of entries) {
-      group.add(this.entryGraphic(entry));
-      if (withLabels) {
-        const label = this.entryLabel(entry, entries.length);
-        if (label) group.add(label);
-      }
+    for (const placed of blueprintLabelLayout(entries)) {
+      group.add(this.entryGraphic(placed.entry));
+      const label = this.entryLabel(placed);
+      if (label) group.add(label);
     }
   }
 
@@ -104,20 +142,35 @@ export class AgentBlueprintRenderer {
     const y = entry.y * TILE_SIZE;
     const width = entry.w * TILE_SIZE;
     const height = entry.h * TILE_SIZE;
+    // 원형·타원 힌트(fill_region.shape 와 같은 뜻): circle 은 사각형 안 내접 원, ellipse 는 사각형 안 타원.
+    const round = entry.shape === "circle" || entry.shape === "ellipse";
+    const diameter = entry.shape === "circle" ? Math.min(width, height) : 0;
+    const ellipseW = entry.shape === "circle" ? diameter : width;
+    const ellipseH = entry.shape === "circle" ? diameter : height;
+    const centerX = x + width / 2;
+    const centerY = y + height / 2;
     if (style.fillAlpha > 0) {
       graphics.fillStyle(style.color, style.fillAlpha);
-      graphics.fillRect(x, y, width, height);
+      if (round) graphics.fillEllipse(centerX, centerY, ellipseW, ellipseH);
+      else graphics.fillRect(x, y, width, height);
     }
+    // 어두운 테두리를 먼저 깔고 그 위에 제도선 — 밝은 배경에서도 선이 살아남는다.
+    graphics.lineStyle(style.strokeWidth + 2, style.haloColor, style.haloAlpha);
+    if (round) graphics.strokeEllipse(centerX, centerY, ellipseW, ellipseH);
+    else graphics.strokeRect(x, y, width, height);
     graphics.lineStyle(style.strokeWidth, style.color, style.strokeAlpha);
-    graphics.strokeRect(x, y, width, height);
+    if (round) graphics.strokeEllipse(centerX, centerY, ellipseW, ellipseH);
+    else graphics.strokeRect(x, y, width, height);
     return graphics;
   }
 
-  private entryLabel(entry: BlueprintEntry, total: number): Phaser.GameObjects.Text | null {
+  private entryLabel(placed: BlueprintLabel): Phaser.GameObjects.Text | null {
     if (typeof this.scene.add.text !== "function") return null;
+    const { entry } = placed;
     const style = blueprintStatusStyle(entry.status);
-    // 사각형 안쪽 위에 붙인다 — 맵 위쪽 경계(y=0)에서 화면 밖으로 나가지 않는다.
-    const label = this.scene.add.text(entry.x * TILE_SIZE + 2, entry.y * TILE_SIZE + 2, blueprintEntryCaption(entry, total), {
+    // 사각형 안쪽 위에 붙인다 — 맵 위쪽 경계(y=0)에서 화면 밖으로 나가지 않는다. 같은 자리에서
+    // 시작하는 라벨(집 모서리 위 장식 등)은 한 줄씩 내려 쌓아 서로 가리지 않는다.
+    const label = this.scene.add.text(entry.x * TILE_SIZE + 2, entry.y * TILE_SIZE + 2 + placed.row * LABEL_ROW_PX, placed.caption, {
       backgroundColor: "#0b1b2b",
       color: "#e7f5ff",
       fontFamily: eventLabelFontFamily(),

@@ -306,13 +306,15 @@ describe("markAgentBlueprintProgress — 좌표를 wrapper 키에 담는 쓰기 
     expect(getAgentBlueprintState().revision).toBe(before);
   });
 
-  it("스펙 게이트의 affectedRegions 는 그대로 면적 0 폴백을 낸다 — 게이트 판정은 건드리지 않았다", () => {
+  it("스펙 게이트의 affectedRegions 도 v3 wrapper 키(area·at·wallRect)를 읽는다 — bounds 없는 파사드만 면적 0 폴백", () => {
+    // 2026-09-03: 게이트가 이 키를 읽지 않으면 기존 내용 보호 검사를 건너뛴다(tile_erase 가 절벽을 지운 실측).
+    // 청사진 추출(blueprintRegionsForToolCall)은 게이트 결과를 먼저 쓰므로 진행 판정은 그대로다.
     expect(affectedRegions("place_props", { mapId: "m1", area: { x: 20, y: 2, w: 6, h: 6 }, material: "침엽수", count: 8 }))
-      .toEqual([{ mapId: "m1", x: 0, y: 0, w: 0, h: 0 }]);
+      .toEqual([{ mapId: "m1", x: 20, y: 2, w: 6, h: 6 }]);
     expect(affectedRegions("place_door", { mapId: "m1", at: { x: 6, y: 8 }, material: "문" }))
-      .toEqual([{ mapId: "m1", x: 0, y: 0, w: 0, h: 0 }]);
+      .toEqual([{ mapId: "m1", x: 6, y: 8, w: 1, h: 1 }]);
     expect(affectedRegions("build_roof", { mapId: "m1", material: "붉은 기와", wallRect: { x: 4, y: 4, w: 6, h: 5 } }))
-      .toEqual([{ mapId: "m1", x: 0, y: 0, w: 0, h: 0 }]);
+      .toEqual([{ mapId: "m1", x: 4, y: 4, w: 6, h: 5 }]);
     expect(affectedRegions("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }))
       .toEqual([{ mapId: "m1", x: 0, y: 0, w: 0, h: 0 }]);
   });
@@ -745,8 +747,8 @@ describe("appliedBlueprintRegions — 진행을 올린 근거는 정산도 볼 �
 
   it("린트가 영역을 못 뽑아도 실제 변경이 있으면 청사진 추출로 되읽는다", () => {
     for (const call of SETTLE_BLIND_CALLS) {
-      // 린트 추출은 여전히 면적 0 폴백이다 — 게이트 쪽은 한 글자도 바꾸지 않았다.
-      expect(affectedRegions(call.name, call.args)).toEqual([{ mapId: "m1", x: 0, y: 0, w: 0, h: 0 }]);
+      // 2026-09-03: 게이트의 affectedRegions 가 `area` 를 읽게 되어 앞의 둘·넷은 이제 린트 경로로도 영역이
+      // 나온다. hotspots[].at 같은 배열 wrapper 는 여전히 면적 0 폴백 — 어느 쪽이든 정산 영역은 나와야 한다.
       const applied = appliedBlueprintRegions([call]);
       expect(applied.regions.length).toBeGreaterThan(0);
       expect(applied.regions.every((region) => region.mapId === "m1")).toBe(true);

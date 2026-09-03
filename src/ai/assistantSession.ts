@@ -103,11 +103,15 @@ import {
 } from "./llmClient";
 import {
   SPATIAL_BUILD_TOOLS,
+  TILE_WRITE_TOOLS,
   affectedRegions,
   boundarySlackForTool,
   checkRegionsAgainstSpecBoundary,
-  builtCellsInRegions,
   implicitSpecFromContext,
+  implicitSpecFromScope,
+  normalizeBuildSpec,
+  protectedCellsInRegions,
+  toolWritesTiles,
   uncoveredRegionsBySpec,
   validateBuildSpec,
   type AffectedRegion,
@@ -1099,22 +1103,32 @@ export class AssistantSession {
         issues,
       };
     }
-    this.activeSpec = spec;
+    // 검증기는 "22" 같은 숫자 문자열을 받아주지만 게이트는 저장된 값을 그대로 더한다 — 경계에서 정수로 굳혀 저장한다.
+    const normalized = normalizeBuildSpec(spec);
+    this.activeSpec = normalized;
     this.activeSpecTurnIndex = this.currentTurnIndex;
     // carryoverSpecForTurn은 previous-turn 스펙을 다음 턴으로 넘기는 슬롯이라
     // 현재 턴에서 새로 확정된 스펙이 이전 계획을 덮으면 다음 턴 carryover가 끊긴다.
     // previous-turn carryover는 다음 sendUserMessage 초입에서 세팅되므로 여기서 null로 비우지 않는다.
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
-    const kinds = [...new Set(spec.assets.map((asset) => asset.kind))].join("·");
+    const kinds = [...new Set(normalized.assets.map((asset) => asset.kind))].join("·");
     return {
       ok: true,
-      summary: `밑그림 확정: ${spec.title ?? spec.mapId} — 에셋 ${spec.assets.length}개(${kinds})`,
-      data: spec,
+      summary: `밑그림 확정: ${normalized.title ?? normalized.mapId} — 에셋 ${normalized.assets.length}개(${kinds})`,
+      data: normalized,
     };
   }
 
   // 공간 쓰기 툴 게이트. 통과하면 warning 목록, 차단이면 사유가 담긴 ToolResult.
+  //
+  // 두 가지 다른 계약이 겹쳐 있다:
+  //  1. 스코프(밑그림 필수·자동 확장) — SPATIAL_BUILD_TOOLS 만. 명세 밖 빈 영역은 자동 확장 warning 으로 통과.
+  //  2. 기존 내용 보호 — 타일을 쓰는 모든 툴(SPATIAL 의 타일 쓰기 + TILE_WRITE_TOOLS 의 v3 프리미티브).
+  //     기준선(사용자 맵)에 이미 있던 지어진 칸은 밑그림 **안이라도** 에셋 선언(clear+confirmDestroy,
+  //     overExisting) 없이는 덮지 않는다. 이 세션이 초안에 그린 것은 기준선에 없으므로 다시 손댈 수 있다.
+  //     2026-09-03 적대적 리뷰: 보호가 제출 시점에만 돌아 밑그림 안에 지은 집을 같은 턴 clear 가 지웠고,
+  //     확정 뒤 사용자가 판 호수를 다음 턴 채우기가 덮었고, 게이트 밖 tile_erase 가 절벽을 지웠다.
   private specGate(name: string, args: Record<string, unknown>): ToolResult | SpecGatePass {
     if (
       name === "place_npc"
@@ -1126,19 +1140,20 @@ export class AssistantSession {
       const existing = this.ctx.project.maps[args.mapId]?.events.find((event) => event.id === args.id);
       if (existing?.x === args.x && existing.y === args.y) return { warnings: [] };
     }
-    const regions = affectedRegions(name, args);
+    const scoped = SPATIAL_BUILD_TOOLS.has(name);
+    const regions = this.gateRegions(name, args);
     if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
     const mapId = regions[0].mapId;
     const specs = [this.activeSpec, this.turnImplicitSpec]
       .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId);
-    if (specs.length === 0) {
+    if (scoped && specs.length === 0) {
       return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
         "공간 빌드는 set_build_spec으로 밑그림을 제출해 검증을 통과한 뒤에만 실행됩니다.",
         "체크리스트: 대상 맵, 에셋별 영역(x,y,w,h)·종류·스타일, 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
         "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
       ]);
     }
-    if (this.activeSpec?.mapId === mapId) {
+    if (scoped && this.activeSpec?.mapId === mapId) {
       const mismatch = plannedTargetMismatch(this.activeSpec, args);
       if (mismatch) {
         return specGateResult(`스펙 게이트: '${name}' 차단 — plannedMap 불일치`, [
@@ -1147,29 +1162,48 @@ export class AssistantSession {
         ]);
       }
     }
-    // 명시 스펙 + 암묵 선택 영역(같은 맵)의 합집합으로 커버리지를 판정한다.
+    // 명시 스펙 + 암묵 선택 영역(같은 맵)의 합집합으로 커버리지·허가를 판정한다.
     const assets = specs.flatMap((spec) => spec.assets);
+
+    // 기존 내용 보호 — 기준선 맵 기준. 밑그림 안팎을 가리지 않고, 새 맵(기준선에 없음)은 대상이 아니다.
+    if (toolWritesTiles(name)) {
+      const baseline = this.baselineProject.maps[mapId];
+      if (baseline) {
+        const tileset = this.baselineProject.tilesets[baseline.tilesetId];
+        const guarded = protectedCellsInRegions(baseline, regions, assets, tileset);
+        if (guarded.count > 0) {
+          const at = guarded.sample ? `, 예: (${guarded.sample.x},${guarded.sample.y})` : "";
+          return specGateResult(`스펙 게이트: '${name}' 차단 — 기존 구조물·지형 ${guarded.count}칸을 덮습니다${at}`, [
+            "명세 밖 빈 영역은 자동 확장하지만, 기존 구조물 파괴 위험은 자동 보정하지 않습니다.",
+            "사용자 맵에 이미 있는 구조물·물·절벽은 밑그림 안이라도 선언 없이 덮지 않습니다(이 세션이 방금 그린 것은 예외).",
+            "철거가 의도면 그 영역을 덮는 clear 에셋에 confirmDestroy:true 를, 그 위에 지을 거면 배치 에셋에 overExisting:\"clear\"|\"keep\" 을 넣은 set_build_spec 을 제출한 뒤 다시 호출하세요.",
+            "기존 것을 피하려면 영역을 좁히세요.",
+          ]);
+        }
+      }
+    }
+    if (!scoped) return { warnings: [] };
+
     const slackCells = boundarySlackForTool(name);
     const coverage = checkRegionsAgainstSpecBoundary(assets, regions, slackCells);
     if (coverage.covered) return { warnings: [] };
 
     const uncovered = uncoveredRegionsBySpec(assets, regions);
-    const map = this.ctx.project.maps[mapId];
-    const built = map ? builtCellsInRegions(map, uncovered) : { count: 0 };
-    if (built.count > 0) {
-      const at = built.sample ? `, 예: (${built.sample.x},${built.sample.y})` : "";
-      return specGateResult(`스펙 게이트: '${name}' 차단 — 자동 확장 대상에 기존 구조물 ${built.count}칸${at}`, [
-        "명세 밖 빈 영역은 자동 확장하지만, 기존 구조물 파괴 위험은 자동 보정하지 않습니다.",
-        "정리하려면 clear 에셋에 confirmDestroy:true를 명시하거나 배치 에셋에 overExisting을 스스로 판단해 지정한 새 명세를 제출하세요.",
-      ]);
-    }
-
     const warnings = this.expandSpecWithRegions(mapId, name, regions, uncovered);
     if (warnings.length > 0) return { warnings };
     if (slackCells > 0 && coverage.slackWarning) {
       return { warnings: [{ severity: "warning", code: "spec-gate-auto-expand", message: `명세를 자동 확장했습니다: ${coverage.slackWarning}` }] };
     }
     return { warnings: [] };
+  }
+
+  /** 게이트가 볼 영향 영역. 홍수 채우기(paint_tiles mode=fill)는 시작점이 아니라 맵 전체다 — 면적 0 폴백은 검사를 건너뛴다. */
+  private gateRegions(name: string, args: Record<string, unknown>): AffectedRegion[] {
+    if (name === "paint_tiles" && args.mode === "fill" && typeof args.mapId === "string") {
+      const map = this.ctx.project.maps[args.mapId];
+      if (map) return [{ mapId: args.mapId, x: 0, y: 0, w: map.width, h: map.height }];
+    }
+    return affectedRegions(name, args);
   }
 
   private expandSpecWithRegions(
@@ -1199,8 +1233,15 @@ export class AssistantSession {
       }));
     if (additions.length === 0) return [];
 
-    this.activeSpec = { ...target, assets: [...target.assets, ...additions] };
-    this.activeSpecTurnIndex = this.currentTurnIndex;
+    const expanded = { ...target, assets: [...target.assets, ...additions] };
+    if (target === this.activeSpec) {
+      this.activeSpec = expanded;
+      this.activeSpecTurnIndex = this.currentTurnIndex;
+    } else {
+      // 선택 영역 암묵 스펙은 이 턴의 것이다 — activeSpec 으로 승격하면 다음 턴부터 그 맵의 게이트가
+      // 밑그림 없이 열린다(2026-09-03 적대적 리뷰 P3). 확장도 그 턴 안에서만 유효하다.
+      this.turnImplicitSpec = expanded;
+    }
     const listed = additions.slice(0, 3).map((asset) => `(${asset.x},${asset.y}) ${asset.w}×${asset.h}`).join(", ");
     const extra = additions.length > 3 ? ` 외 ${additions.length - 3}개` : "";
     return [{
@@ -1383,6 +1424,7 @@ export class AssistantSession {
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
     this.turnImplicitSpec = implicitSpecFromContext(text)
+      ?? implicitSpecFromScope(options.scope)
       ?? this.implicitSpecFromViewPhrase(instruction);
     this.carryoverSpecForTurn = this.activeSpec && this.activeSpecTurnIndex < this.currentTurnIndex
       ? structuredClone(this.activeSpec)
@@ -2908,7 +2950,14 @@ export class AssistantSession {
         }
         // 재킥을 이미 썼는데도 쓰기가 0건이면 모델에게 더 기대지 않는다 — 코드가 직접 짓는다.
         // kind:"npc" 는 명세만으로 인자가 확정되므로 결정론적으로 실행할 수 있다.
-        if (writeToolAttempts === 0 && this.hasUnbuiltSpecThisTurn()) {
+        // 단, 변경을 기대하는 턴이고 모델이 되묻고 끝낸 것이 아닐 때만이다 — 「이 위치로 진행할까요?」 뒤에
+        // 코드가 NPC 를 놓으면 사용자는 묻는 말에 답하기도 전에 결과를 받는다(2026-09-03 적대적 리뷰 P9).
+        if (
+          writeToolAttempts === 0 &&
+          this.hasUnbuiltSpecThisTurn() &&
+          this.turnExpectsChange() &&
+          !assistantTextLooksLikeQuestion(finalText)
+        ) {
           const placed = this.buildSpecNpcAssetsDirectly(onEvent, proposedByKey);
           if (placed > 0) {
             onEvent({ type: "status", text: `밑그림의 NPC ${placed}명을 직접 배치했습니다.` });
@@ -3027,7 +3076,9 @@ export class AssistantSession {
                 ],
               };
             } else {
-              const gate = tool?.mode === "write" && SPATIAL_BUILD_TOOLS.has(name) ? this.specGate(name, args) : { warnings: [] };
+              const gate = tool?.mode === "write" && (SPATIAL_BUILD_TOOLS.has(name) || TILE_WRITE_TOOLS.has(name))
+                ? this.specGate(name, args)
+                : { warnings: [] };
               toolResult = isSpecGatePass(gate)
                 ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
                 : gate;

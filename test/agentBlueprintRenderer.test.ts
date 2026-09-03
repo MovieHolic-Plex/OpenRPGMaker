@@ -156,7 +156,8 @@ describe("AgentBlueprintRenderer", () => {
     expect(textCalls[1].alpha).toBe(blueprintStatusStyle("building").labelAlpha);
   });
 
-  it("칸이 너무 많으면 라벨을 생략한다 — 텍스처 낭비를 막는다", () => {
+  it("칸이 너무 많으면 라벨을 순번만으로 줄인다 — 없애지는 않는다", () => {
+    // 2026-09-03 실측(e1-04): 41개부터 라벨이 전부 사라져 무엇이 어디에 몇 번째인지 알 길이 없었다.
     setAgentBlueprintFromSpec({
       mapId: "m1",
       assets: Array.from({ length: BLUEPRINT_MAX_LABELS + 1 }, (_unused, index) => ({
@@ -171,7 +172,8 @@ describe("AgentBlueprintRenderer", () => {
     const renderer = new AgentBlueprintRenderer(mockScene, mockLayer, () => "m1");
     renderer.render();
     expect(graphicsCalls).toHaveLength(BLUEPRINT_MAX_LABELS + 1);
-    expect(textCalls).toHaveLength(0);
+    expect(textCalls).toHaveLength(BLUEPRINT_MAX_LABELS + 1);
+    expect(textCalls[0].content).toBe("1");
   });
 
   it("add.text 가 없는 씬(가짜 씬)에서도 터지지 않는다", () => {

@@ -156,8 +156,11 @@ describe("수정 요청에서 맵 보존", () => {
   it("정직한 수정(지우고 다시 놓기)은 그대로 통과한다", async () => {
     const project = projectWithBedroom();
 
+    // 지우는 사각형은 사용자 선택 영역 (2,2) 10×8 = y 2..9 **안**이어야 한다. 2026-09-03 부터 밑그림 게이트가
+    // 기준선 맵의 기존 내용(여기선 12 벽 타일)을 선택 영역 밖에서 선언 없이 덮는 쓰기를 막는다 — 종전 fixture
+    // (2,9) 4×2 는 y=10 한 줄이 선택 밖으로 새어 그 보호에 걸렸다. 이 테스트의 관심사는 맵 보존 가드지 경계가 아니다.
     const { session, events } = await runSession(project, [
-      toolCallMsg("tile_erase", { mapId: BEDROOM_ID, rect: { x: 2, y: 9, w: 4, h: 2 } }, "c1"),
+      toolCallMsg("tile_erase", { mapId: BEDROOM_ID, rect: { x: 2, y: 8, w: 4, h: 2 } }, "c1"),
       finalMsg("정리했습니다."),
     ]);
 
