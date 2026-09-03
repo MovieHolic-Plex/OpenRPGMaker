@@ -352,9 +352,15 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
     }
     const plan = facilityAsPlan(resolved.bundle, resolved.facility);
     return {
-      summary: `시설 「${resolved.facility.label}」 템플릿 — 장소 ${plan.places.length}·물건 ${plan.things.length} · 물건 어휘 ${vocabulary.length}종`,
+      summary: `시설 「${resolved.facility.label}」 템플릿 — 장소 ${plan.places.length}·물건 ${plan.things.length} · 물건 어휘 ${vocabulary.length}종. `
+        + "이건 출발점이다 — 그대로 넘기지 말고 사용자 문장과 배경(미을 규모·분위기)에 맞게 장소 수·크기·바닥·물건 구성을 고쳐 plan 으로 넘기라.",
       data: {
         query,
+        designHint: {
+          rule: "템플릿을 그대로 복사해 넘기지 마라. 요청에 수식어가 없어도 이 시설에 어울리는 설계를 직접 정해라 — 장소 개수/크기(count·size), 바닥(floor), 벽(wall), 물건 추가·제외 중 둘 이상은 바꾸고, 바꾼 이유를 마무리 말에 한 줄 적어라.",
+          keep: plan.things.filter((thing) => thing.required).map((thing) => thing.objectId),
+          levers: ["places[].count 1..4", "places[].size s|m|l", "places[].floor wood|stone|plank|mat", "wall cream|gold-brick|stone-brick", "things[] 에 vocabulary[].id 추가/제거", "places[].level 2 로 위층"],
+        },
         facilities,
         template: {
           facilityId: resolved.facility.id,
