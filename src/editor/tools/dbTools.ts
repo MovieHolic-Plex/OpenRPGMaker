@@ -802,6 +802,68 @@ function dropUnknownSpeciesId(
   );
 }
 
+/**
+ * 이 호출이 **새로 가리키는** 참조(스킬·드롭 아이템·스위치)를 먼저 검사한다.
+ *
+ * 실측(2026-09-03, DB AI 바 턴): 모델이 조회 없이 `skill_0001`·`item_0001` 같은 자리표시 id 를 넣었고,
+ * 일반 무결성 게이트가 쓰기 전체를 `'upsert_enemy' 커밋 거부(무결성 오류)` 한 줄로 반려했다 —
+ * 함께 보낸 스탯·보상 수정까지 버려지고 모델은 사유를 모른 채 재시도했다. upsert_troop(enemyIds)·
+ * define_monster_species(skillId) 처럼 여기서 정확한 사유와 허용 예시를 돌려준다.
+ *
+ * 기존 레코드에 이미 있던(이 호출이 넘기지 않은) 깨진 참조는 보지 않는다 — 그것은 커밋 게이트가
+ * 기준선으로 용인하는 선재 오류이고, 그것 때문에 스탯 한 줄 고치기가 막히면 안 된다.
+ */
+function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
+  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
+  const record = patch as Record<string, unknown>;
+  const problems: string[] = [];
+
+  const requestedSkillIds = new Set<string>();
+  if (Array.isArray(record.skillIds)) {
+    for (const skillId of record.skillIds) if (typeof skillId === "string" && skillId) requestedSkillIds.add(skillId);
+  }
+  const actions = Array.isArray(record.actions) ? record.actions : [];
+  const requestedSwitchIds = new Set<string>();
+  for (const action of actions) {
+    if (!action || typeof action !== "object") continue;
+    const entry = action as Record<string, unknown>;
+    if (typeof entry.skillId === "string" && entry.skillId) requestedSkillIds.add(entry.skillId);
+    for (const key of ["switchOnAfterAction", "switchOffAfterAction"] as const) {
+      const effect = entry[key];
+      if (!effect || typeof effect !== "object") continue;
+      const { enabled, switchId } = effect as { enabled?: unknown; switchId?: unknown };
+      if (enabled === true && typeof switchId === "string" && switchId) requestedSwitchIds.add(switchId);
+    }
+  }
+  const skillIds = new Set(draft.database.skills.map((skill) => skill.id));
+  const missingSkills = [...requestedSkillIds].filter((skillId) => !skillIds.has(skillId));
+  const hints: string[] = [];
+  if (missingSkills.length > 0) {
+    problems.push(`skillId: ${missingSkills.join(", ")}`);
+    hints.push(`skills: ${knownIds(draft.database.skills, 5)}`);
+  }
+  const rewards = record.rewards;
+  const dropItemId = rewards && typeof rewards === "object" ? (rewards as { dropItemId?: unknown }).dropItemId : undefined;
+  if (typeof dropItemId === "string" && dropItemId && !draft.database.items.some((item) => item.id === dropItemId)) {
+    problems.push(`rewards.dropItemId: ${dropItemId}`);
+    hints.push(`items: ${knownIds(draft.database.items, 5)} (드롭이 없으면 rewards.dropItemId 를 빼세요)`);
+  }
+  const switchIds = new Set(draft.switches.map((entry) => entry.id));
+  const missingSwitches = [...requestedSwitchIds].filter((switchId) => !switchIds.has(switchId));
+  if (missingSwitches.length > 0) {
+    problems.push(`action switchId: ${missingSwitches.join(", ")}`);
+    hints.push(`switches: ${knownIds(draft.switches, 5)}`);
+  }
+  // 위반 목록을 앞에 — toolRunner 가 요약을 200자에서 자르므로 사유가 먼저, 예시는 뒤에 온다(issues 에는 전문이 실린다).
+  if (problems.length > 0) {
+    throw new ToolError(
+      `존재하지 않는 참조 — ${problems.join(" · ")}. 허용 예시 — ${hints.join(" · ")}. ` +
+        "전체 목록은 get_database_records(collection: \"skills\" / \"items\")로 확인하세요.",
+      { code: "enemy-reference-not-found" },
+    );
+  }
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
   description:
@@ -812,6 +874,7 @@ const upsertEnemy: ToolDefinition = {
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }),
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
+    rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
     const warnings: string[] = [];
     dropUnknownElementRates(draft, record, "enemy", warnings);

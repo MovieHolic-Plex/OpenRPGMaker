@@ -18,6 +18,21 @@ export interface RunToolOptions {
   readonly dryRun?: boolean;
 }
 
+/**
+ * 커밋 거부 요약에 첫 위반 사유를 싣는다. 예전에는 어느 lint 가 터졌든 `'<tool>' 커밋 거부(무결성 오류)`
+ * 로 고정이라 DB AI 바·채팅 로그·모델 응답 어디에도 이유가 보이지 않았다(issues 에만 있었다 —
+ * 2026-09-03 실측: `skill does not exist: skill_0001` 을 알아내려면 하네스를 뒤져야 했다).
+ * 접두어는 그대로 둔다(기존 테스트·진단이 `커밋 거부` 로 잡는다).
+ */
+function commitRejectionSummary(name: string, blocking: readonly LintIssue[]): string {
+  const base = `'${name}' 커밋 거부(무결성 오류)`;
+  const head = blocking[0]?.message.split("\n")[0]?.trim();
+  if (!head) return base;
+  const clipped = head.length > 160 ? `${head.slice(0, 159)}…` : head;
+  const rest = blocking.length - 1;
+  return `${base} — ${clipped}${rest > 0 ? ` (+${rest}건)` : ""}`;
+}
+
 function issueFromError(cause: unknown): LintIssue {
   if (cause instanceof ToolError) {
     return { severity: "error", code: cause.code, mapId: cause.mapId, x: cause.x, y: cause.y, message: cause.message };
@@ -127,11 +142,12 @@ export function runToolDefinition(
     // baseline(before)을 넘겨 "이 변경이 새로 만든" 오류만 커밋을 막는다 — 선재 오류 프로젝트 편집 허용.
     const commit = commitChangeset(draft, before);
     if (!commit.ok) {
+      const blocking = commit.blocking.length > 0 ? commit.blocking : commit.issues;
       return {
         ok: false,
-        summary: `'${name}' 커밋 거부(무결성 오류)`,
+        summary: commitRejectionSummary(name, blocking),
         diff,
-        issues: [...(exec.issues ?? []), ...(commit.blocking.length > 0 ? commit.blocking : commit.issues)],
+        issues: [...(exec.issues ?? []), ...blocking],
       };
     }
 

@@ -163,4 +163,82 @@ describe("DB write tools", () => {
     expect(warnings).toContain(`item ${item.id}.attackElementIds=grass`);
     expect(warnings).toContain(`equipment ${equipment.id}.elementalDefenseIds=grass`);
   });
+
+  // 2026-09-03 실측(DB AI 바 턴): 모델이 조회 없이 skill_0001·item_0001 자리표시 id 를 넣자 일반 무결성
+  // 게이트가 쓰기 전체를 `'upsert_enemy' 커밋 거부(무결성 오류)` 한 줄로 반려했다 — 스탯·보상까지
+  // 함께 버려지고 사유는 issues 에만 있었다.
+  it("upsert_enemy 는 이 호출이 새로 가리키는 스킬·드롭 아이템·스위치가 없으면 사유와 허용 예시를 함께 거부한다", () => {
+    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const enemy = ctx.project.database.enemies[0]!;
+    const before = structuredClone(enemy);
+
+    const result = runTool(ctx, "upsert_enemy", {
+      enemy: {
+        id: enemy.id,
+        stats: { maxHp: 380 },
+        actions: [
+          { skillId: "skill_0001", priority: 50 },
+          { skillId: "skill_0002", priority: 10, switchOnAfterAction: { enabled: true, switchId: "sw_nope" } },
+        ],
+        rewards: { exp: 85, dropItemId: "item_0001" },
+      },
+    }, { dryRun: false });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("enemy-reference-not-found");
+    // 요약(200자 클립)에는 위반 목록이 먼저 온다 — 세 종류가 다 들어간다.
+    expect(result.summary).toContain("skillId: skill_0001, skill_0002");
+    expect(result.summary).toContain("rewards.dropItemId: item_0001");
+    expect(result.summary).toContain("action switchId: sw_nope");
+    expect(result.summary).not.toContain("무결성 오류");
+    // 모델이 받는 issues 전문에는 허용 예시와 조회 안내가 있다.
+    const message = result.issues?.[0]?.message ?? "";
+    expect(message).toContain("허용 예시");
+    expect(message).toContain("get_database_records");
+    // 원자성 — 스탯도 그대로다.
+    expect(ctx.project.database.enemies[0]).toEqual(before);
+  });
+
+  it("upsert_enemy 는 기존 레코드의 선재 깨진 참조를 이 호출이 넘기지 않으면 스탯 수정을 막지 않는다", () => {
+    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const enemy = ctx.project.database.enemies[0]!;
+    enemy.actions = [{
+      skillId: "skill_already_gone",
+      priority: 5,
+      condition: { kind: "always" },
+      switchOnAfterAction: { enabled: false },
+      switchOffAfterAction: { enabled: false },
+    }];
+
+    const result = runTool(ctx, "upsert_enemy", { enemy: { id: enemy.id, stats: { maxHp: 999 } } }, { dryRun: false });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.database.enemies[0]?.stats.maxHp).toBe(999);
+  });
+
+  it("upsert_enemy 는 실제로 있는 스킬·아이템 참조는 그대로 통과시킨다", () => {
+    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const enemy = ctx.project.database.enemies[0]!;
+    const skill = ctx.project.database.skills[0]!;
+    const item = ctx.project.database.items[0]!;
+
+    const result = runTool(ctx, "upsert_enemy", {
+      enemy: { id: enemy.id, actions: [{ skillId: skill.id, priority: 7 }], rewards: { dropItemId: item.id, dropRatePercent: 30 } },
+    }, { dryRun: false });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.database.enemies[0]?.actions[0]?.skillId).toBe(skill.id);
+    expect(ctx.project.database.enemies[0]?.rewards.dropItemId).toBe(item.id);
+  });
+
+  // 일반 무결성 게이트에 걸리는 다른 툴은 요약에 첫 위반 사유를 싣는다 — 예전엔 어느 lint 든 한 줄로 고정.
+  it("일반 커밋 거부 요약은 첫 위반 사유와 나머지 건수를 싣는다", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const result = runTool(ctx, "upsert_item", { item: { id: "item_test_ref", name: "시험", skillId: "skill_nope" } }, { dryRun: false });
+
+    expect(result.ok).toBe(false);
+    expect(result.summary).toMatch(/^'upsert_item' 커밋 거부\(무결성 오류\) — /u);
+    expect(result.summary).toContain("skillId does not exist");
+    expect(result.issues?.some((issue) => issue.code === "reference-validation")).toBe(true);
+  });
 });
