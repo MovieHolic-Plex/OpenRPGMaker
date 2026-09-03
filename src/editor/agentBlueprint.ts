@@ -37,6 +37,8 @@ export interface BlueprintEntry {
   /** buildOrder 기준 1-based 순번. */
   readonly order: number;
   readonly status: BlueprintEntryStatus;
+  /** 면 채우기 형태 힌트(SpecAsset.shape) — 렌더러가 원형 호수를 네모로 찍지 않게. */
+  readonly shape?: "rect" | "ellipse" | "circle";
 }
 
 export interface AgentBlueprintState {
@@ -66,6 +68,25 @@ let revision = 0;
  * 앞 턴에 확정된 done 은 여기 없으므로 정산이 건드리지 않는다.
  */
 let turnAdvanced = new Set<string>();
+
+/**
+ * 재제출된 밑그림이 진행을 물려받는 겹침 하한 — 새 칸 면적의 이 비율 이상을 같은 종류의 옛 칸이 덮어야 한다.
+ *
+ * 실측(2026-09-03 run1): 집을 짓는 도중 모델이 명세를 다시 냈고(`house_1 (5,10) 8×10` → `built_house_1
+ * (6,10) 7×7`), id·사각형이 모두 바뀌어 shape-key 상속이 끊겼다. 다 지은 집이 planned(파랑)로 되감기고
+ * 계획이 「미완료」라 완성된 맵 위에 영구히 남았다. 같은 종류가 새 칸을 절반 넘게 덮으면 같은 물건이다.
+ */
+const INHERIT_MIN_OVERLAP = 0.5;
+
+/**
+ * 진행 귀속의 덮인 비율 하한 — 이보다 적게 스치는 칸에는 호출을 귀속하지 않는다.
+ *
+ * 실측(2026-09-03 e1-03): `author_house` 한 호출은 몸통 사각형 + 문 앞 1칸을 낸다. 벗겨내기 첫 회에
+ * 집 칸이 몸통을 가져가면 남는 것은 문 칸 하나인데, 그 칸을 담는 유일한 후보가 맵 전체 `clear` 칸이라
+ * 1/4096 의 덮임으로 정리 칸이 building 이 됐다 — 맵 전체가 노란 테두리로 덮이고 다음 호출에서 done ✓
+ * 로 굳었다(정리는 한 칸도 안 했다). 맵 전체를 실제로 치우는 호출은 1.0 이라 이 하한에 걸리지 않는다.
+ */
+const MIN_ATTRIBUTION_COVERAGE = 0.02;
 
 // kind → 사람 말. BuildSpec.kind 는 모델이 자유롭게 쓰지만 villagePlan/village builder 가 내는
 // 어휘는 좁다(road·house·prop·terrain·clear·event 계열). 모르는 kind 는 그대로 보여준다 —
@@ -164,11 +185,11 @@ export function agentBlueprintForMap(state: AgentBlueprintState, currentMapId: M
  * `orderedAssets` 를 쓰므로 화면 순번이 모델이 선언한 시공 순서와 같다.
  */
 export function setAgentBlueprintFromSpec(spec: BuildSpec): void {
+  const previous = spec.mapId === mapId ? entries : [];
   const inherited = new Map<string, BlueprintEntryStatus>();
-  if (spec.mapId === mapId) {
-    for (const entry of entries) inherited.set(entryShapeKey(entry), entry.status);
-  }
+  for (const entry of previous) inherited.set(entryShapeKey(entry), entry.status);
   const next: BlueprintEntry[] = [];
+  const advancedKeys: string[] = [];
   for (const asset of orderedAssets(spec)) {
     const normalized = normalizeAsset(asset);
     if (!normalized) continue;
@@ -182,13 +203,44 @@ export function setAgentBlueprintFromSpec(spec: BuildSpec): void {
       h: normalized.h,
       order: next.length + 1,
       status: "planned",
+      ...(asset.shape === undefined ? {} : { shape: asset.shape }),
     };
-    next.push({ ...candidate, status: inherited.get(entryShapeKey(candidate)) ?? "planned" });
+    const key = entryShapeKey(candidate);
+    const exact = inherited.get(key);
+    if (exact !== undefined) {
+      next.push({ ...candidate, status: exact });
+      continue;
+    }
+    // id·사각형이 바뀐 재제출 — 같은 종류의 옛 칸이 새 칸을 절반 넘게 덮으면 그 진행을 물려받는다.
+    const ancestor = overlappingAncestor(previous, candidate);
+    if (ancestor === null) {
+      next.push(candidate);
+      continue;
+    }
+    next.push({ ...candidate, status: ancestor.status });
+    if (turnAdvanced.has(entryShapeKey(ancestor))) advancedKeys.push(key);
   }
   if (spec.mapId === mapId && sameEntries(entries, next)) return;
   mapId = spec.mapId;
   entries = next;
+  // 물려받은 칸은 이번 턴 정산 대상도 물려받는다 — 안 그러면 옛 키만 정산돼 새 칸이 building 에 영원히 머문다.
+  for (const key of advancedKeys) turnAdvanced.add(key);
   emit();
+}
+
+function overlappingAncestor(previous: readonly BlueprintEntry[], candidate: BlueprintEntry): BlueprintEntry | null {
+  const area = candidate.w * candidate.h;
+  if (area <= 0) return null;
+  let best: BlueprintEntry | null = null;
+  let bestOverlap = 0;
+  for (const entry of previous) {
+    if (entry.kind !== candidate.kind || entry.status === "planned") continue;
+    const overlap = overlapArea(candidate, entry);
+    if (overlap / area < INHERIT_MIN_OVERLAP || overlap <= bestOverlap) continue;
+    best = entry;
+    bestOverlap = overlap;
+  }
+  return best;
 }
 
 /**
@@ -439,6 +491,7 @@ function bestCoveredIndex(candidates: readonly BlueprintEntry[], regions: readon
     if (intersection <= 0) continue;
     const entryArea = entry.w * entry.h;
     const score = entryArea > 0 ? Math.min(1, intersection / entryArea) : 0;
+    if (score < MIN_ATTRIBUTION_COVERAGE) continue;
     if (score > bestScore || (score === bestScore && intersection > bestIntersection)) {
       bestScore = score;
       bestIntersection = intersection;
@@ -448,7 +501,7 @@ function bestCoveredIndex(candidates: readonly BlueprintEntry[], regions: readon
   return bestIndex;
 }
 
-function overlapArea(entry: BlueprintEntry, region: AffectedRegion): number {
+function overlapArea(entry: BlueprintEntry, region: { readonly x: number; readonly y: number; readonly w: number; readonly h: number }): number {
   if (region.w <= 0 || region.h <= 0) return 0;
   const x0 = Math.max(entry.x, region.x);
   const y0 = Math.max(entry.y, region.y);
@@ -470,7 +523,8 @@ function sameEntries(a: readonly BlueprintEntry[], b: readonly BlueprintEntry[])
     return entryShapeKey(entry) === entryShapeKey(other)
       && entry.status === other.status
       && entry.order === other.order
-      && entry.label === other.label;
+      && entry.label === other.label
+      && entry.shape === other.shape;
   });
 }
 
