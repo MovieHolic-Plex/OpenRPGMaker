@@ -47,7 +47,8 @@
   /* 게임 내 시스템(대화창·타이틀·전투)과 같은 글꼴을 쓴다 — 그 글꼴이 이제 전부
      --runtime-ui-font(모던 글래스) 다. 예전 주석은 반대로 픽셀 글꼴을 근거로 들었는데,
      실제로는 전투 HUD 만 --font-ui 로 앞서 옮겨가 ESC 화면이 혼자 낡아 보였다. */
-  font: 600 8px/1.25 var(--runtime-ui-font);
+  /* 7px: 스테이지가 3~4배로 확대되므로 화면에서 21~28px — 8px 은 메뉴 글자가 대화창보다 컸다는 피드백(2026-09-03). */
+  font: 600 7px/1.25 var(--runtime-ui-font);
   isolation: isolate;
   overflow: hidden;
   padding: 0;
@@ -130,7 +131,7 @@
   display: flex;
   flex: none;
   flex-direction: column;
-  font: 600 8px/1 var(--runtime-ui-font);
+  font: 600 7px/1 var(--runtime-ui-font);
   gap: 4px;
   height: auto;
   justify-content: center;
@@ -258,7 +259,8 @@
      이전 값(gap 4 / padding 3px 4px)에선 이름이 "주…" 로 쟘리고 "514/514" 가 붙들었다. */
   /* 2×2 카드(~120px)에서는 여백을 돌려준다 — 73px 시절의 gap 2 / padding 3px 1px 는 답답했다. */
   gap: 4px;
-  grid-template-columns: 22px minmax(0, 1fr);
+  /* 얼굴이 카드의 주인공이다 — 2×2 카드에서 30px(화면 90px+)로 키운다. */
+  grid-template-columns: 30px minmax(0, 1fr);
   /* 픽셀 글꼴 8px 기준: 이름줄 9px + 체력·마력 2줄 18px + 패딩 6px = 33px.
      32px 에선 마력 줄이 overflow: hidden 으로 쟘렸다.
      이름 8px + 체력·마력 9px×2 + 간간·패딩 = 36px 가 실제 필요한 높이다. */
@@ -278,11 +280,11 @@
   color: var(--status-edge-ivory);
   display: flex;
   font: 700 9px/1 var(--runtime-ui-font);
-  height: 22px;
+  height: 30px;
   image-rendering: pixelated;
   justify-content: center;
   overflow: hidden;
-  width: 22px;
+  width: 30px;
 }
 
 .oprn-status-menu .status-menu-party-info {
@@ -309,7 +311,7 @@
      "100/5" 로 잘렸다(실측). 폭이 고정된 이 카드만 8px 를 유지한다. */
 .oprn-status-menu .status-menu-actor-name {
   color: var(--status-edge-ivory);
-  font-size: 8px;
+  font-size: 7px;
   overflow: hidden;
   text-overflow: ellipsis;
   text-shadow: none;
@@ -319,7 +321,7 @@
   /* 카드 폭 73px 고정 — 크기를 올리면 잘린다(위 첫 규칙의 실측 주석 참조). */
 .oprn-status-menu .status-menu-actor-subline {
   color: var(--status-edge-amber);
-  font-size: 8px;
+  font-size: 7px;
   text-shadow: none;
 }
 
@@ -341,7 +343,7 @@
   /* 숫자가 채워진 게이지 위에 얹히므로 감광(0.72)과 그림자 제거를 되돌린다 —
      초록/파랑 채움 위의 흐린 상아색은 읽히지 않았다. */
   color: var(--status-edge-ivory);
-  font-size: 8px;
+  font-size: 7px;
   line-height: 9px;
   overflow: hidden;
   text-overflow: clip;
@@ -399,7 +401,7 @@
 
 .oprn-status-menu .status-menu-detail-title {
   color: var(--status-edge-ivory);
-  font: 750 10px/1.15 var(--runtime-ui-font);
+  font: 750 9px/1.15 var(--runtime-ui-font);
   letter-spacing: -0.025em;
   margin: 0;
   overflow: hidden;
@@ -433,7 +435,9 @@
 .oprn-status-menu
   .status-menu-detail:not([data-status-menu-presentation="context-tray"])
   .status-menu-detail-list:has(> .status-menu-detail-row-compact) {
-  --oprn-menu-row-step: 20px;
+  /* 행 22px(아이콘 14 + 패딩 6 + 테두리 2, border-box) + 간격 2. 실측로 맞춘 값 — 추정으로 22 를 넣었다가
+     마지막 행이 반으로 잘렸다. */
+  --oprn-menu-row-step: 24px;
   align-self: start;
   /* 밖은 min/max 가 안전장치다. 효용 높이가 한 행보다 짧은 작은 트레이에서는
      내림정수배가 0 이 되어 목록이 통짜로 사라진다(실측: 파티·기록·시스템에서 listH=0).
@@ -453,9 +457,10 @@
   box-sizing: border-box;
   color: var(--status-edge-ivory);
   display: grid;
-  font: 600 8px/1.2 var(--runtime-ui-font);
-  gap: 4px;
-  min-height: 18px;
+  font: 600 7px/1.2 var(--runtime-ui-font);
+  gap: 5px;
+  /* 14px 아이콘 + 패딩 6 + 테두리 2 = 22px 행(border-box). 스냅 단계(--oprn-menu-row-step)는 이 높이 + 간격 2 다. */
+  min-height: 22px;
   padding: 3px 5px;
   scroll-snap-align: start;
   text-shadow: none;
@@ -525,7 +530,113 @@
 .oprn-status-menu .status-menu-detail-hint,
 .oprn-status-menu .status-menu-detail-empty {
   color: var(--status-edge-muted);
-  font: 500 8px/1.35 var(--runtime-ui-font);
+  font: 500 6.5px/1.35 var(--runtime-ui-font);
+}
+
+/* 쇼케이스 — 목록 옆 세로 칸에 선택한 항목의 그림을 크게, 이름·수치·설명 전문을 그린다.
+   예전에는 설명이 푸터 한 줄에만 있고 그림은 10px 행 아이콘이 전부였다 — 글자만 가득한 화면이었다. */
+.oprn-status-menu .status-menu-detail.has-showcase {
+  column-gap: 6px;
+  grid-template-areas:
+    "title title"
+    "list showcase";
+  grid-template-columns: minmax(0, 1fr) 86px;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.oprn-status-menu .status-menu-detail.has-showcase > .status-menu-detail-title {
+  grid-area: title;
+}
+
+.oprn-status-menu .status-menu-detail.has-showcase > .status-menu-detail-list {
+  grid-area: list;
+}
+
+.oprn-status-menu .status-menu-detail-showcase {
+  align-content: start;
+  background: var(--status-edge-glass-soft);
+  border: 1px solid var(--status-edge-border);
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 2px;
+  grid-area: showcase;
+  /* 설명 행이 남는 높이를 전부 가지고 그 안에서 줄 수를 자른다 — 내용 높이에 맡기면 마지막 줄이
+     패널 가장자리에서 반으로 잘렸다(실측: descClipped). */
+  grid-template-rows: max-content max-content max-content minmax(0, 1fr);
+  justify-items: center;
+  min-height: 0;
+  overflow: hidden;
+  padding: 5px 5px 4px;
+}
+
+.oprn-status-menu .status-menu-showcase-frame {
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.1), transparent 70%),
+    rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--runtime-glass-hairline-strong);
+  border-radius: 7px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.oprn-status-menu .status-menu-showcase-frame .status-menu-showcase-art {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  height: 28px;
+  width: 28px;
+}
+
+.oprn-status-menu .status-menu-showcase-frame .status-menu-showcase-art.status-menu-detail-face {
+  /* 얼굴 낙장은 인라인 32px 상자 — 프레임 38px 안에 그대로 앞는다(인라인이 이긴다). */
+  height: 32px;
+  width: 32px;
+}
+
+.oprn-status-menu .status-menu-showcase-name {
+  color: var(--status-edge-ivory);
+  font: 700 7.5px/1.15 var(--runtime-ui-font);
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-showcase-value {
+  color: var(--status-edge-amber);
+  font: 600 6.5px/1.1 var(--runtime-ui-font);
+  letter-spacing: 0.04em;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oprn-status-menu .status-menu-showcase-description {
+  border-top: 1px solid var(--status-edge-border);
+  color: var(--status-edge-muted);
+  align-self: start;
+  display: -webkit-box;
+  font: 500 6.5px/1.35 var(--runtime-ui-font);
+  justify-self: stretch;
+  margin: 2px 0 0;
+  min-height: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  padding-top: 3px;
+  text-align: left;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .oprn-status-menu .status-menu-detail-row-compact {
@@ -585,7 +696,7 @@
 .oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-action {
   align-items: center;
   display: flex;
-  font-size: 8px;
+  font-size: 7px;
   justify-content: flex-start;
   min-height: 18px;
   padding: 3px 6px;
@@ -606,7 +717,7 @@
 .oprn-status-menu .status-menu-detail[data-status-menu-presentation="context-tray"] .status-menu-detail-action.destructive .status-menu-detail-description {
   color: #ffaaa3;
   display: block;
-  font-size: 8px;
+  font-size: 6.5px;
   line-height: 1.1;
   max-width: 100%;
   overflow: hidden;
@@ -668,14 +779,14 @@
 
 .oprn-status-menu .status-menu-stat-delta-title {
   color: var(--status-edge-amber);
-  font: 700 8px/1.2 var(--runtime-ui-font);
+  font: 700 7px/1.2 var(--runtime-ui-font);
   letter-spacing: 0.08em;
   padding: 0;
 }
 
 .oprn-status-menu .status-menu-stat-delta-row {
   display: grid;
-  font: 600 8px/1.2 var(--runtime-ui-font);
+  font: 600 7px/1.2 var(--runtime-ui-font);
   gap: 3px;
   grid-template-columns: max-content minmax(0, 1fr);
   min-width: 0;
@@ -707,7 +818,7 @@
   box-shadow: none;
   color: rgba(247, 239, 226, 0.72);
   display: grid;
-  font: 600 8px/1 var(--runtime-ui-font);
+  font: 600 7px/1 var(--runtime-ui-font);
   gap: 5px;
   grid-template-columns: max-content minmax(0, 1fr) max-content;
   left: 9px;
@@ -746,7 +857,7 @@
 
 .oprn-status-menu .status-menu-scene-hint {
   color: var(--status-edge-muted);
-  font-size: 8px;
+  font-size: 7px;
   overflow: hidden;
   text-align: right;
   text-overflow: ellipsis;
@@ -783,8 +894,10 @@
    10px 면 행이 설계값 15px 에 수렴된다(3배 스케이링 → 화면에서 30px). */
 .oprn-status-menu .status-menu-detail-list .status-menu-entry-icon,
 .oprn-status-menu .status-menu-detail-list .status-menu-detail-face {
-  height: 10px;
-  width: 10px;
+  /* 10px 은 그림이라기보단 점이었다. 14px(화면 42px+)로 키우고 행을 20px 로 맞춘다 —
+     상세 패널이 우측 영역 전높이(≈130px)를 가지므로 6행이 들어가 용량은 줄지 않는다. */
+  height: 14px;
+  width: 14px;
 }
 
 .oprn-status-menu .status-menu-entry-icon.actor-sheet-crop {
@@ -810,7 +923,7 @@
 .oprn-status-menu .status-menu-entry-performance {
   color: var(--status-edge-muted);
   display: block;
-  font-size: 8px;
+  font-size: 7px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

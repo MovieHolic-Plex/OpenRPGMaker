@@ -116,6 +116,57 @@ describe("player status menu edge dock", () => {
     }
   });
 
+  it("shows the selected item in a showcase pane beside the list (art + name + description)", () => {
+    // Break caught: dropping the showcase makes the item screen text-only again — the selected
+    // record's art and full description only lived in a one-line footer message.
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const session = startSession(project);
+      const item = project.database.items.find((record) => record.description.trim().length > 0);
+      if (!item) throw new Error("missing item fixture with a description");
+      session.inventory[item.id] = 2;
+      const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots: [],
+        selectedCommand: "items",
+        mode: "function",
+        selectedDetailActionIndex: 0,
+        actions: noopActions,
+      }));
+
+      const showcase = findByTestId(menu, "status-menu-detail-showcase");
+      expect(showcase).not.toBeNull();
+      expect(findByTestId(menu, "status-menu-detail")?.className).toContain("has-showcase");
+      expect(findByTestId(menu, "status-menu-showcase-name")?.textContent).toBe(item.name);
+      expect(findByTestId(menu, "status-menu-showcase-description")?.textContent).toBe(item.description);
+      expect(findByTestId(menu, "status-menu-showcase-art")).not.toBeNull();
+      // 쇼케이스는 목록 바깥에 있다 — 행 높이를 키우는 설명 노드를 행에 다시 넣지 않는다.
+      expect(menu.querySelector(".status-menu-detail-list .status-menu-detail-description")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("renders no showcase for a context tray", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session: startSession(project),
+        slots: [],
+        selectedCommand: "system-menu",
+        mode: "function",
+        actions: noopActions,
+      }));
+      expect(findByTestId(menu, "status-menu-detail-showcase")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("keeps informational detail screens focusable without claiming menu semantics", () => {
     // Break caught: status rows used role=menu despite containing no menuitems, while an
     // empty detail screen left the controller without any focus fallback after rerender.

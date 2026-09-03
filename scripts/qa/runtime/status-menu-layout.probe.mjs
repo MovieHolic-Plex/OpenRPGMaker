@@ -86,6 +86,39 @@ try {
     return rows.filter((r) => r.scrollWidth > r.clientWidth + 1).length;
   });
   check("no horizontally clipped item rows", clipped === 0, `clipped=${clipped}`);
+  // 쇼케이스: 선택 항목의 큰 그림이 실제 그려지고(배경 이미지 있음) 상세 패널 안에 들어 있어야 한다.
+  const showcase = await rectOf(page, "status-menu-detail-showcase");
+  check("showcase present beside item list", showcase !== null && inside(showcase, detail), JSON.stringify(showcase));
+  const showcaseInfo = await page.evaluate(() => {
+    const art = document.querySelector("[data-testid='status-menu-showcase-art']");
+    const desc = document.querySelector("[data-testid='status-menu-showcase-description']");
+    const artRect = art?.getBoundingClientRect();
+    return {
+      hasImage: art ? getComputedStyle(art).backgroundImage !== "none" : false,
+      artSize: artRect ? Math.round(artRect.width) : 0,
+      descLen: desc?.textContent?.length ?? 0,
+      descClipped: desc ? desc.scrollHeight > desc.clientHeight + 1 : false,
+    };
+  });
+  check("showcase art is an image >= 24px logical", showcaseInfo.hasImage && showcaseInfo.artSize >= 24 * 3 - 2, JSON.stringify(showcaseInfo));
+  check("showcase description present and not clipped", showcaseInfo.descLen > 0 && !showcaseInfo.descClipped, JSON.stringify(showcaseInfo));
+  const listGeom = await page.evaluate(() => {
+    const list = document.querySelector("[data-testid='status-menu-detail'] .status-menu-detail-list");
+    if (!list) return null;
+    const scale = list.getBoundingClientRect().height / list.clientHeight;
+    const rows = Array.from(list.children).map((r) => Math.round(r.getBoundingClientRect().height / scale));
+    const gap = parseFloat(getComputedStyle(list).rowGap) || 0;
+    return { clientH: list.clientHeight, scrollH: list.scrollHeight, rows, gap };
+  });
+  // 목록 높이가 행 높이의 정수배(행 h + 간격)에서 간격을 벀 값이어야 마지막 보이는 행이 온전하다.
+  const rowStepOk = listGeom !== null && listGeom.rows.length > 0
+    && (listGeom.clientH + listGeom.gap) % (listGeom.rows[0] + listGeom.gap) === 0;
+  check("item list height is a whole number of rows", rowStepOk, JSON.stringify(listGeom));
+  const fontPx = await page.evaluate(() => {
+    const row = document.querySelector("[data-testid^='status-menu-item-item_']");
+    return row ? parseFloat(getComputedStyle(row).fontSize) : 0;
+  });
+  check("list row type is 7px logical (was 8px)", Math.abs(fontPx - 7) < 0.01, `fontSize=${fontPx}`);
 
   // 파티 트레이
   // 뒤로 가도 상세 노드는 DOM 에 남아 미리보기로 보인다 — 포커스 복귀는 루트 클래스로 판정한다.
