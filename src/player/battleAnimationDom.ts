@@ -1,4 +1,5 @@
 import type { BattleSnapshot } from "@/battle/runtime";
+import { activeTimingEffects, type ActiveTimingEffects } from "@/battle/animationTiming";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
@@ -491,12 +492,14 @@ function setActiveAnimationFrame(
     frame.hidden = frame.dataset.frameIndex !== String(frameIndex);
   }
   const timing = record.timings?.find((entry) => entry.frameIndex === frameIndex);
+  // 플래시·흔들림은 시작 프레임이 아니라 durationFrames 창 동안 산다(animationTiming.activeTimingEffects).
+  const effects = activeTimingEffects(record.timings, frameIndex);
   element.dataset.activeSoundResourceId = timing?.soundResourceId ?? "";
-  element.dataset.activeFlashTarget = timing?.flash?.target ?? "";
-  element.dataset.activeScreenShake = String(Boolean(timing?.screenShake));
-  element.classList.toggle("battle-animation-flash-active", Boolean(timing?.flash));
-  element.classList.toggle("battle-animation-shake-active", Boolean(timing?.screenShake));
-  applyTimingEffects(context, timing);
+  element.dataset.activeFlashTarget = effects.flash?.target ?? "";
+  element.dataset.activeScreenShake = String(Boolean(effects.screenShake));
+  element.classList.toggle("battle-animation-flash-active", Boolean(effects.flash));
+  element.classList.toggle("battle-animation-shake-active", Boolean(effects.screenShake));
+  applyTimingEffects(context, effects);
   playTimingSound(timing?.soundResourceId);
 }
 
@@ -507,10 +510,9 @@ function setActiveAnimationFrame(
  * 예전에는 존재 여부만 보고 무조건 씬 전체를 번쩍여서, 한 명만 회복해도 화면이 통째로 밝아졌다.
  * 대상 노드를 못 찾으면(레이아웃/스킨 차이) 씬 플래시로 떨어뜨려 연출이 통째로 사라지지 않게 한다.
  */
-function applyTimingEffects(context: AnimationRenderContext, timing: BattleAnimationTiming | undefined): void {
+function applyTimingEffects(context: AnimationRenderContext, effects: ActiveTimingEffects): void {
   const { sceneRoot, targetNode } = context;
-  const flash = timing?.flash;
-  const screenShake = timing?.screenShake;
+  const { flash, screenShake } = effects;
   const flashOnTarget = Boolean(flash) && flash!.target === "target" && targetNode !== null;
 
   if (targetNode) {
@@ -518,7 +520,9 @@ function applyTimingEffects(context: AnimationRenderContext, timing: BattleAnima
     targetNode.classList.toggle("battle-animation-target-flash", flashOnTarget);
   }
   if (!sceneRoot) return;
-  setEffectVariables(sceneRoot, flashOnTarget ? undefined : flash, screenShake, context.frameDurationMs);
+  // 색 변수는 대상 플래시일 때도 루트에 둔다 — 대상 실루엣을 물들이는 SVG 필터(battleFlashFilter.ts)의
+  // feFlood 는 필터가 걸린 이미지가 아니라 **자기 조상**(씬 루트)에서 var() 를 읽는다.
+  setEffectVariables(sceneRoot, flash, screenShake, context.frameDurationMs);
   sceneRoot.classList.toggle("battle-screen-shake", Boolean(screenShake));
   sceneRoot.classList.toggle("battle-screen-flash", Boolean(flash) && !flashOnTarget);
 }

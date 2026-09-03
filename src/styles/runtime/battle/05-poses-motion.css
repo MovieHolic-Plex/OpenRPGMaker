@@ -246,30 +246,30 @@
   100% { transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 
-/* flash.target === "target" 인 플래시. 씬 전체가 아니라 맞은 배틀러만 물든다.
-   예전에는 대상 지정을 무시하고 화면 전체를 번쩍여서, 한 명만 회복해도 화면이 통째로 밝아졌다.
-   배틀러 노드는 위치를 transform 으로 잡으므로 ::after 오버레이를 얹어 스프라이트만 덮는다. */
-.battle-animation-target-flash {
-  position: relative;
+/* flash.target === "target" 인 플래시. 씬 전체가 아니라 맞은 배틀러의 **실루엣**만 물든다.
+   예전에는 대상 지정을 무시하고 화면 전체를 번쩍여서, 한 명만 회복해도 화면이 통째로 밝아졌고,
+   그 다음 판의 `::after` 상자 오버레이는 노드 상자(스프라이트가 아닌 투명 상자)를 통째로 밝혀
+   슬라임 둘레에 희끄무레한 사각형이 떴다(실측 2026-09-03). 지금은 battleFlashFilter.ts 가 루트에
+   심는 SVG 필터(`SourceAlpha` 로 오려낸 색을 원본 위에 얹기)를 그려진 이미지에 건다 — 정적 원본·
+   idle 스트립·48px 시트 어느 티어든 그려진 알파를 따른다. 색·세기는 `--battle-flash-color`
+   (battleAnimationEffectStyle.flashCssVariables), 길이는 durationFrames 창(animationTiming) 이 정한다.
+   특정도 (0,6,0): 스킨의 `.battle-scene[ui-style][skin] .battle-enemy .battle-enemy-image { filter: none }`
+   (0,5,0) 을 이겨야 한다. */
+.battle-scene[data-battle-ui-style][data-battle-skin] .battle-enemy.battle-animation-target-flash .battle-enemy-image,
+.battle-scene[data-battle-ui-style][data-battle-skin] .battle-actor.battle-animation-target-flash .battle-actor-image,
+.battle-scene[data-battle-ui-style][data-battle-skin] .battle-actor.battle-animation-target-flash .battle-actor-sprite {
+  filter: url("#battle-flash-tint");
 }
 
-.battle-animation-target-flash::after {
-  animation: battle-screen-flash var(--battle-flash-duration, 0.2s) ease-out 2;
-  background: var(--battle-flash-color, rgba(255, 255, 255, 0.45));
-  border-radius: inherit;
-  content: "";
-  inset: 0;
-  mix-blend-mode: screen;
+/* 필터 정의만 담는 빈 SVG(battleFlashFilter.ts). 레이아웃에 끼어들지 않게 0×0 으로 접는다. */
+.battle-scene .battle-fx-defs {
+  height: 0;
+  left: 0;
+  overflow: hidden;
   pointer-events: none;
   position: absolute;
-  z-index: 3;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .battle-animation-target-flash::after {
-    animation: none;
-    opacity: 0.5;
-  }
+  top: 0;
+  width: 0;
 }
 
 /* 색과 지속은 애니메이션 타이밍의 flash.color / flash.durationFrames 에서 온다

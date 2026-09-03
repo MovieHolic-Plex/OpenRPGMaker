@@ -27,6 +27,7 @@ import {
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField, playBattleCue } from "@/player/battleJuice";
+import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
 import { directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
@@ -96,6 +97,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.battleTransition = skin.transition;
   root.dataset.battleHud = skin.hudTemplate;
   root.dataset.battleLayout = skin.layout;
+  // 대상 플래시가 실루엣만 물들이도록 SVG 필터 정의를 루트에 심는다(05-poses-motion.css 가 url(#…) 로 참조).
+  ensureBattleFlashFilter(root);
   for (const [key, value] of Object.entries(skin.themeVars)) {
     root.style.setProperty(key, value as string);
   }

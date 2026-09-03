@@ -141,6 +141,8 @@ interface BattleAnimationSheet {
 | 적 예고 | windup 비트(300ms×weight) → 전진 → 복귀 | `battleActionBeats.ts`, `battleSequencer.ts` |
 | 앰비언트 | 적 숨쉬기(`scale`), 배경 드리프트 | `_battlers.css`, `01-scene-base.css` |
 | 연출 합성 | `followUps: {animationId, startFrame}[]`, 시퀀서가 recover 를 늘림, 카탈로그 8종 | `types/database.ts`, `animationTiming.ts`, `battleAnimationDom.ts` |
+| 대상 플래시 | `::after` 상자 오버레이 → SVG 필터(`SourceAlpha` 로 오려낸 색을 원본 위에). 플래시·흔들림은 `durationFrames` 창 동안 산다 | `battleFlashFilter.ts`, `animationTiming.activeTimingEffects`, `05-poses-motion.css` |
+| 적 정보 카드(rm2000) | 이름표 + 상태 + HP 를 유리 카드 하나(40px)로 묶어 스프라이트 밑동(-22px)에 올림 | `_rm2000.css` |
 
 **결정과 함정(실측):**
 - 넉백을 정적 클래스로 걸면 두 번 진다 — 스킨의 `.battle-enemy { transform }` 특정도(0,4,0)와 juice `animation`. 그래서 넉백·찌그러짐을 juice 키프레임에 넣고 방향만 `--hit-dir-x/y` 로 바꾼다.
@@ -148,4 +150,7 @@ interface BattleAnimationSheet {
 - 후속 애니메이션 노드는 `position: absolute; inset: 0` — 없으면 본체 시트(240px) 아래로 밀린다.
 - 숨쉬기 일시정지(히트스톱·넉백)는 `.defeated` 를 제외 — 같은 animation 슬롯의 dissolve 까지 멎는다.
 - 라운드는 파티 전원이 명령을 넣은 뒤 풀리고, 게이지 흐름의 적 턴은 자동 명령을 멈춘 뒤 온다 — 프로브 `--beats-confirms`.
+- 대상 플래시 상자: 노드 상자(rm2000 적 160×180, 대부분 투명)를 밝히면 슬라임 둘레에 희끄무레한 사각형이 뜬다(캡처 05 프레임). CSS 만으로는 요소 자신의 알파로 오려낼 수 없다 — mask 는 정적 원본이라 idle 스트립(영상 키드 프레임)과 어긋나고, blend 는 투명 배경 위에서 원색이 남는다. SVG 필터 `feFlood → feComposite(in, SourceAlpha) → feComposite(over, SourceGraphic)` 가 유일하게 그려진 알파를 따른다. `feFlood` 의 `var(--battle-flash-color)` 는 필터가 걸린 이미지가 아니라 feFlood 의 조상(씬 루트)에서 풀린다.
+- 플래시·흔들림 클래스는 시작 프레임에만 걸려 있었다 — 32종 전부 `durationFrames` 4~8 인데 한 프레임만 보였다. `activeTimingEffects` 가 창을 계산한다.
+- 뒷모습 파티를 세우자 적 발밑의 이름표 + HP 카드(60px)가 아군 머리(필드 78%)에 얹혔다(홀수 자리 적, 발 y=112). 적 y 는 접지 띠 게이트(`battleEnemyFeetRatios.json`, 발 ≥ 60%)로 못 박혀 올릴 수 없어 카드를 40px 로 묶고 스프라이트 투명 여백에 겹쳐 올렸다.
 - 증거: `verify-shots/battle-anim-overhaul/choreo-*/…/beats/` (표식 변화마다 한 장), `compare/choreo-*.png`.
