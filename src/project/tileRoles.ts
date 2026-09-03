@@ -30,6 +30,12 @@ export interface RoleCapabilities {
   terrainTag?: "water";
   /** 샘플 배경에 잔디를 깔아야 하는가. 출처: groupSampleBuilder.backdropTile:199 */
   needsBackdrop: boolean;
+  /**
+   * 통행 가능하면 '지어진 것'이 아니라 자연 바닥으로 볼 수 있는 역할인가 — 밑그림 게이트의 구조물 보호가
+   * 잔디 리터럴 대신 이 능력으로 바닥을 판정한다(buildSpec.groundProfileFor, 2026-09-03). 물·벽·소품은
+   * 통행 여부와 무관하게 지어진 것으로 남는다.
+   */
+  naturalGround: boolean;
 }
 
 const BASE: RoleCapabilities = {
@@ -37,6 +43,7 @@ const BASE: RoleCapabilities = {
   requiresPatternGrammar: false,
   autotile: false,
   needsBackdrop: false,
+  naturalGround: false,
 };
 
 /**
@@ -46,7 +53,7 @@ const BASE: RoleCapabilities = {
  */
 export const LEGACY_ROLE_CAPABILITIES: Record<string, RoleCapabilities> = {
   // ── TileGroupRole ──────────────────────────────────────────────
-  terrain: { ...BASE, layerHome: "lower", requiresPatternGrammar: true },
+  terrain: { ...BASE, layerHome: "lower", requiresPatternGrammar: true, naturalGround: true },
   water: { ...BASE, layerHome: "lower", requiresPatternGrammar: true, autotile: true, terrainTag: "water" },
   wall: { ...BASE, layerHome: "lower", sampleAs: "nineSlice", expectedPassage: "solid", requiresPatternGrammar: true },
   building: { ...BASE, layerHome: "lower" },
@@ -65,8 +72,8 @@ export const LEGACY_ROLE_CAPABILITIES: Record<string, RoleCapabilities> = {
   // 애초에 도달하지 못한다. 즉 현행 동작에서 이들의 답은 "없음"이고,
   // 유추한 값을 적어 두면 A-3 에서 역할이 열리는 순간 없던 잔디 배경이
   // 생긴다(동작 변화 0 위반).
-  ground: { ...BASE, layerHome: "lower" },
-  path: { ...BASE, layerHome: "lower", expectedPassage: "passable" },
+  ground: { ...BASE, layerHome: "lower", naturalGround: true },
+  path: { ...BASE, layerHome: "lower", expectedPassage: "passable", naturalGround: true },
   decor: { ...BASE, layerHome: "perCell" },
   boundary: { ...BASE, layerHome: "upper" },
   furniture: { ...BASE, layerHome: "perCell" },

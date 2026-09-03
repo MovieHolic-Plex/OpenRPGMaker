@@ -2,8 +2,11 @@
 // 스펙 게이트 순수 헬퍼: 모델이 낸 밑그림(BuildSpec)을 코드가 검증하고,
 // 공간 쓰기 툴 호출이 그 할당 영역 안에 있는지 판정한다. 브라우저/API 의존 없음.
 
-import type { GameMap, Project } from "@/project/types";
+import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { TILE } from "@/project/defaults/constants";
+import { tilePassability } from "@/project/collision";
+import { roleCapabilities } from "@/project/tileRoles";
+import { parseContextFooter } from "./contextFooter";
 
 export interface SpecAsset {
   id: string; kind: string;
@@ -66,26 +69,43 @@ interface CheckedAsset {
   overExisting?: "clear" | "keep";
 }
 
-// v3 공정 프리미티브(build_wall 등 6종)는 여기 넣지 않는다(2026-07-07 타일 시공 흐름 재설계 §2.1.1):
-// v3는 승인 어휘 자체가 명세이므로 set_build_spec 게이트가 불필요하고, 시공 프리미티브는
-// resolveVocabForBuild soft-allow(미승인 재료도 맵에 그린 뒤 목업 확인으로 합의)를 그대로 탄다.
-// 단, fill_region은 넓은 지형 쓰기라 스펙 자동 확장/구조물 보호 관례를 탄다.
+// 게이트는 두 계약으로 갈린다(2026-09-03): **스코프**(밑그림 필수 + 빈 땅 자동 확장)는 이 목록만 받고,
+// **기존 내용 보호**(기준선 맵의 구조물·물·절벽을 선언 없이 덮지 않음)는 타일을 쓰는 모든 툴이 받는다
+// (아래 TILE_WRITE_TOOLS 포함). v3 공정 프리미티브(build_wall 등)는 승인 어휘 자체가 명세라 스코프는 요구하지
+// 않고(2026-07-07 타일 시공 흐름 재설계 §2.1.1, resolveVocabForBuild soft-allow) 보호만 받는다.
+// 단, fill_region은 넓은 지형 쓰기라 스펙 자동 확장 관례를 탄다. 레지스트리에 없는 이름은 두지 않는다 —
+// 옛 tile_* v2 4종이 여기 남아 있어 목록이 살아 있는 것처럼 보였다.
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
   "clear_region", "place_npc", "place_battle_blocker",
   // canonical construction facades
   "author_house", "author_village",
-  // 타일 v2 (2026-07-07 재구축)
-  "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   // 타일 v3 영역 채우기
   "fill_region",
 ]);
+
+// 밑그림(스코프)은 요구하지 않지만 **기존 내용 보호**는 받는 타일 쓰기 툴 — v3 시공 프리미티브.
+// v3 는 승인 어휘가 곧 명세라 set_build_spec 없이 빈 땅에 그릴 수 있어야 한다(soft-allow). 그러나
+// 기준선(사용자 맵)에 이미 있는 구조물·물·절벽을 선언 없이 덮는 것은 밑그림 툴과 같은 기준으로 막는다.
+// 2026-09-03 실측: 시스템 프롬프트가 정리용으로 권하는 tile_erase 가 게이트 밖이라 절벽 능선 6칸을
+// 아무 검사 없이 바닥으로 바꿨고, 구조물 보호는 deprecated 된 clear_region 에만 걸려 있었다.
+export const TILE_WRITE_TOOLS: ReadonlySet<string> = new Set([
+  "tile_erase", "place_props", "build_wall", "lay_path", "place_door", "place_window", "build_roof",
+]);
+
+// 밑그림 툴 중 타일을 덮어쓰지 않는 점 배치 — 기존 내용 보호 대상이 아니다.
+const NON_TILE_SPATIAL_TOOLS: ReadonlySet<string> = new Set(["place_npc", "place_battle_blocker"]);
+
+/** 이 툴 호출이 맵 타일을 덮어쓰는가 — 기존 내용 보호를 적용할지 정한다. */
+export function toolWritesTiles(toolName: string): boolean {
+  if (TILE_WRITE_TOOLS.has(toolName)) return true;
+  return SPATIAL_BUILD_TOOLS.has(toolName) && !NON_TILE_SPATIAL_TOOLS.has(toolName);
+}
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
   "author_house", "author_village",
   "place_npc", "place_battle_blocker",
-  "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   "fill_region",
 ]);
 
@@ -106,6 +126,33 @@ export function orderedAssets(spec: BuildSpec): SpecAsset[] {
     .map((asset, index) => ({ asset, index, rank: kindOrder.get(asset.kind) ?? unlistedRank }))
     .sort((left, right) => left.rank - right.rank || left.index - right.index)
     .map(({ asset }) => asset);
+}
+
+/**
+ * 검증을 통과한 밑그림을 세션이 **저장하기 전에** 좌표를 정수로 굳힌다.
+ *
+ * set_build_spec 은 세션이 직접 처리해 runTool 의 스키마 정규화를 안 거치므로 모델이 좌표를 "22" 같은
+ * 문자열로 보낼 수 있다. 검증기(checkAsset)는 그 값을 수용하지만, 원본을 그대로 activeSpec 에 두면
+ * 게이트의 `x + w` 가 문자열 결합("2"+"4"="24")이 되어 4칸짜리 에셋이 24칸을 덮는 것으로 계산됐다 —
+ * 밑그림 밖 구조물 정리가 그대로 통과했다(2026-09-03 적대적 리뷰 P1). 경계에서 한 번 파싱한다.
+ */
+export function normalizeBuildSpec(spec: BuildSpec): BuildSpec {
+  const assets = spec.assets.map((asset) => ({
+    ...asset,
+    x: coerceCoordinate(asset.x),
+    y: coerceCoordinate(asset.y),
+    w: coerceCoordinate(asset.w),
+    h: coerceCoordinate(asset.h),
+  }));
+  const plannedMap = spec.plannedMap
+    ? { ...spec.plannedMap, width: coerceCoordinate(spec.plannedMap.width), height: coerceCoordinate(spec.plannedMap.height) }
+    : undefined;
+  return plannedMap === undefined ? { ...spec, assets } : { ...spec, assets, plannedMap };
+}
+
+function coerceCoordinate(value: number): number {
+  const coerced = coerceInteger(value);
+  return typeof coerced === "number" ? coerced : value;
 }
 
 export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] {
@@ -181,11 +228,13 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
   // "집 주변 청소"가 집 자체를 지워버린 사고 방지 — 맵의 실제 내용을 근거로 판정한다.
   if (map !== undefined) {
     const currentMap = map;
+    const tileset = project.tilesets[currentMap.tilesetId];
+    const ground = groundProfileFor(currentMap, tileset);
     const clearAssets = checkedAssets.filter((asset) => asset.kind === "clear");
     for (const asset of checkedAssets) {
       if (asset.kind === "clear") {
         if (asset.confirmDestroy) continue;
-        const built = builtCellsInRegions(currentMap, [{ mapId: currentMap.id, x: asset.x, y: asset.y, w: asset.w, h: asset.h }]);
+        const built = builtCellsInRegions(currentMap, [{ mapId: currentMap.id, x: asset.x, y: asset.y, w: asset.w, h: asset.h }], tileset);
         if (built.count >= STRUCTURE_MIN_CELLS) {
           const at = built.sample ? ` 예: (${built.sample.x},${built.sample.y})` : "";
           issues.push({
@@ -200,7 +249,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
       }
       // 배치(비-clear) 에셋: 자리+주변에 기본 타일이 아닌 것이 있으면 overExisting으로 정리 방침을 선언해야 한다.
       if (asset.overExisting || NON_TILE_ASSET_KINDS.has(asset.kind)) continue;
-      const conflict = placementConflict(currentMap, asset, clearAssets);
+      const conflict = placementConflict(currentMap, asset, clearAssets, ground);
       if (conflict.count >= PLACEMENT_CONFLICT_MIN) {
         const at = conflict.sample ? ` 예: (${conflict.sample.x},${conflict.sample.y})` : "";
         issues.push({
@@ -216,12 +265,12 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
 
 // 배치 에셋 자리 + 1칸 테두리에서 '지어진'(기본-아닌) 칸 수를 센다. 단, 같은 스펙의 clear 에셋이
 // 덮는 칸은 정리될 예정이므로 제외한다. 계획된 다른 에셋은 맵에 아직 없으므로 세지 않는다(오탐 방지).
-function placementConflict(map: GameMap, asset: CheckedAsset, clearAssets: readonly CheckedAsset[]): { count: number; sample?: { x: number; y: number } } {
+function placementConflict(map: GameMap, asset: CheckedAsset, clearAssets: readonly CheckedAsset[], ground: GroundProfile): { count: number; sample?: { x: number; y: number } } {
   let count = 0;
   let sample: { x: number; y: number } | undefined;
   for (let y = Math.max(0, asset.y - 1); y <= Math.min(map.height - 1, asset.y + asset.h); y += 1) {
     for (let x = Math.max(0, asset.x - 1); x <= Math.min(map.width - 1, asset.x + asset.w); x += 1) {
-      if (!isBuiltCell(map, x, y)) continue;
+      if (!isBuiltCell(map, x, y, ground)) continue;
       if (clearAssets.some((clear) => containsCell(clear, x, y))) continue;
       count += 1;
       sample ??= { x, y };
@@ -276,6 +325,14 @@ export function affectedRegions(toolName: string, args: Record<string, unknown>)
 
   const rectArg = rectFromObject(mapId, args.rect);
   if (rectArg !== null) return [rectArg];
+
+  // v3 시공 프리미티브의 좌표 wrapper — place_props(area) · build_roof(wallRect) · place_door/place_window(at).
+  // 이 키를 읽지 않으면 면적 0 폴백으로 떨어져 기존 내용 보호 검사를 통째로 건너뛴다.
+  const areaRect = rectFromObject(mapId, args.area);
+  if (areaRect !== null) return [areaRect];
+  const wallRect = rectFromObject(mapId, args.wallRect);
+  if (wallRect !== null) return [wallRect];
+  if (isPoint(args.at)) return [{ mapId, x: args.at.x, y: args.at.y, w: 1, h: 1 }];
 
   const xyRect = rectFromXY(mapId, args);
   if (xyRect !== null) return [xyRect];
@@ -362,15 +419,16 @@ export function checkRegionsAgainstSpecBoundary(
 }
 
 // 영역 안에서 '지어진'(자연 지형이 아닌) 칸 수를 센다. 구조물 존재의 근거 —
-// 상위 타일이 비어있지 않거나, 하위 타일이 잔디/빈칸이 아니면 무언가 지어진 것으로 본다.
-export function builtCellsInRegions(map: GameMap, regions: readonly AffectedRegion[]): { count: number; sample?: { x: number; y: number } } {
+// 상위 타일이 비어있지 않거나, 하위 타일이 그 맵의 자연 바닥이 아니면 무언가 지어진 것으로 본다.
+export function builtCellsInRegions(map: GameMap, regions: readonly AffectedRegion[], tileset?: TilesetDef): { count: number; sample?: { x: number; y: number } } {
+  const ground = groundProfileFor(map, tileset);
   let count = 0;
   let sample: { x: number; y: number } | undefined;
   for (const region of regions) {
     if (region.w <= 0 || region.h <= 0) continue;
     for (let y = Math.max(0, region.y); y < Math.min(map.height, region.y + region.h); y += 1) {
       for (let x = Math.max(0, region.x); x < Math.min(map.width, region.x + region.w); x += 1) {
-        if (!isBuiltCell(map, x, y)) continue;
+        if (!isBuiltCell(map, x, y, ground)) continue;
         count += 1;
         sample ??= { x, y };
       }
@@ -379,36 +437,130 @@ export function builtCellsInRegions(map: GameMap, regions: readonly AffectedRegi
   return sample === undefined ? { count } : { count, sample };
 }
 
-function isBuiltCell(map: GameMap, x: number, y: number): boolean {
-  // 맵 바깥 가장자리는 생성 옵션/기본 맵별 테두리와 무관하게 구조물 판정에서 제외한다.
-  if (x <= 0 || y <= 0 || x >= map.width - 1 || y >= map.height - 1) return false;
+/**
+ * 호출 영역 안에서 **기준선(사용자 맵)에 이미 있던** 지어진 칸 중, 밑그림이 덮어쓰기를 허가하지 않은 칸.
+ *
+ * 허가는 에셋의 선언이다 — `clear` 에셋의 `confirmDestroy:true`(철거) 또는 배치 에셋의 `overExisting`
+ * (정리하고 배치 / 그대로 위에 배치). 밑그림 안이라도 선언이 없으면 기존 내용은 덮지 않는다.
+ * 2026-09-03 적대적 리뷰: 구조물 보호가 제출 시점에만 돌아 밑그림 안에 지은 집을 같은 턴의 clear 가
+ * 무검사로 지웠고, 밑그림 확정 뒤 사용자가 판 호수를 다음 턴의 채우기가 덮었다.
+ */
+export function protectedCellsInRegions(
+  baselineMap: GameMap,
+  regions: readonly AffectedRegion[],
+  assets: readonly SpecAsset[],
+  tileset?: TilesetDef,
+): { count: number; sample?: { x: number; y: number } } {
+  const ground = groundProfileFor(baselineMap, tileset);
+  const permits = assets.filter(assetPermitsOverwrite);
+  let count = 0;
+  let sample: { x: number; y: number } | undefined;
+  for (const region of regions) {
+    if (region.w <= 0 || region.h <= 0) continue;
+    for (let y = Math.max(0, region.y); y < Math.min(baselineMap.height, region.y + region.h); y += 1) {
+      for (let x = Math.max(0, region.x); x < Math.min(baselineMap.width, region.x + region.w); x += 1) {
+        if (!isBuiltCell(baselineMap, x, y, ground)) continue;
+        if (permits.some((asset) => containsCell(asset, x, y))) continue;
+        count += 1;
+        sample ??= { x, y };
+      }
+    }
+  }
+  return sample === undefined ? { count } : { count, sample };
+}
+
+function assetPermitsOverwrite(asset: SpecAsset): boolean {
+  // 사용자가 맵에서 직접 지목한 선택 영역(암묵 스펙, 이 턴 한정)은 그 안의 기존 내용을 고쳐도 좋다는 뜻이다 —
+  // 「이 침실 가구 배치 좀 고쳐줘」의 지우고 다시 놓기가 여기 해당한다(test/assistantMapPreservationGuard).
+  if (asset.kind === SELECTION_ASSET_KIND) return true;
+  if (asset.kind === "clear") return asset.confirmDestroy === true;
+  return asset.overExisting === "clear" || asset.overExisting === "keep";
+}
+
+/** 맵의 '자연 바닥' 판정 — 타일셋 어휘로 정한다. */
+interface GroundProfile {
+  readonly isGround: (lower: number) => boolean;
+  /** 최외곽 링이 전부 WALL 인 생성 테두리면 링은 구조물 판정에서 제외한다. */
+  readonly ringIsGeneratedBorder: boolean;
+}
+
+/**
+ * 어떤 하위 타일이 '지어진 것'이 아니라 자연 바닥인가.
+ *
+ * 잔디(240) 리터럴만 바닥으로 보던 시절에는 모래·눈·실내 바닥·짙은 잔디 맵의 모든 칸이 구조물이 되어
+ * 모든 배치가 overExisting, 모든 정리가 confirmDestroy 를 요구했다(얼음 대평원 62×62 = 3844칸 전부).
+ * 실제 턴에서 눈밭 위 집·길이 「기존 구조물 N칸」으로 5회 차단됐고, 모델은 통과하려고 28×22 파괴
+ * 선언을 냈다(2026-09-03 실측). 타일셋 그룹 역할의 능력이 `naturalGround`(tileRoles 표: terrain·ground·path)이고
+ * 통행 가능한 하위 타일이 바닥이다 — 물(water)·벽·절벽(wall)·나무(prop)·통행 불가 미분류 타일은 그대로 지어진
+ * 것으로 남는다. 역할 이름을 직접 비교하지 않는 이유는 A-2 게이트(test/roleNameComparisonGate)다.
+ * 타일셋을 모르면 예전 판정(빈칸·잔디)으로 물러난다.
+ */
+function groundProfileFor(map: GameMap, tileset: TilesetDef | undefined): GroundProfile {
+  const terrainTiles = new Set<number>();
+  if (tileset) {
+    for (const group of tileset.tileGroups ?? []) {
+      if (!roleCapabilities(tileset, group.role).naturalGround) continue;
+      for (const tile of group.tileIds ?? []) terrainTiles.add(tile);
+    }
+  }
+  const passableCache = new Map<number, boolean>();
+  const isPassable = (lower: number): boolean => {
+    if (!tileset) return false;
+    const cached = passableCache.get(lower);
+    if (cached !== undefined) return cached;
+    const pass = tilePassability(tileset, lower, TILE.EMPTY);
+    const passable = pass.up && pass.down && pass.left && pass.right;
+    passableCache.set(lower, passable);
+    return passable;
+  };
+  return {
+    isGround: (lower) => lower === TILE.EMPTY || lower === TILE.GRASS || (terrainTiles.has(lower) && isPassable(lower)),
+    ringIsGeneratedBorder: ringIsUniformWall(map),
+  };
+}
+
+function ringIsUniformWall(map: GameMap): boolean {
+  if (map.width < 3 || map.height < 3) return false;
+  for (let x = 0; x < map.width; x += 1) {
+    if (map.lowerTiles[x] !== TILE.WALL || map.lowerTiles[(map.height - 1) * map.width + x] !== TILE.WALL) return false;
+  }
+  for (let y = 0; y < map.height; y += 1) {
+    if (map.lowerTiles[y * map.width] !== TILE.WALL || map.lowerTiles[y * map.width + map.width - 1] !== TILE.WALL) return false;
+  }
+  return true;
+}
+
+function isBuiltCell(map: GameMap, x: number, y: number, ground: GroundProfile): boolean {
+  // 생성된 WALL 테두리(옛 create_map 기본값)는 구조물이 아니다. 사용자가 가장자리에 세운 벽은 보호한다.
+  if (ground.ringIsGeneratedBorder && (x <= 0 || y <= 0 || x >= map.width - 1 || y >= map.height - 1)) return false;
   const index = y * map.width + x;
   const upper = map.upperTiles[index] ?? TILE.EMPTY;
   if (upper !== TILE.EMPTY) return true;
   const lower = map.lowerTiles[index] ?? TILE.EMPTY;
-  return lower !== TILE.EMPTY && lower !== TILE.GRASS;
+  return !ground.isGround(lower);
 }
 
+/** 암묵 스펙(사용자 선택 영역) 에셋의 kind — 게이트는 이 영역 안의 기존 내용 덮어쓰기를 사용자 허가로 본다. */
+export const SELECTION_ASSET_KIND = "selection";
+
 export function implicitSpecFromContext(text: string): BuildSpec | null {
-  const footerPattern =
-    /^\[컨텍스트\] 현재 맵: .+ \(([^)]+)\)(?: · 사용자 선택 영역: \((-?\d+),(-?\d+)\) ([1-9]\d*)×([1-9]\d*))?$/gm;
-  let lastMatch: RegExpExecArray | null = null;
-  let match = footerPattern.exec(text);
-  while (match !== null) {
-    lastMatch = match;
-    match = footerPattern.exec(text);
-  }
-  if (lastMatch === null) return null;
-
-  const [mapId, xText, yText, wText, hText] = lastMatch.slice(1);
-  if (mapId === undefined || xText === undefined || yText === undefined || wText === undefined || hText === undefined) {
-    return null;
-  }
-
+  const footer = parseContextFooter(text);
+  if (footer === null || footer.mapId === null || footer.selection === null) return null;
+  const { x, y, w, h } = footer.selection;
   return {
-    mapId,
+    mapId: footer.mapId,
     title: "사용자 선택 영역",
-    assets: [{ id: "선택 영역", kind: "selection", x: Number.parseInt(xText, 10), y: Number.parseInt(yText, 10), w: Number.parseInt(wText, 10), h: Number.parseInt(hText, 10) }],
+    assets: [{ id: "선택 영역", kind: SELECTION_ASSET_KIND, x, y, w, h }],
+  };
+}
+
+/** 패널이 구조화해 넘긴 선택 영역(sendUserMessage opts.scope)을 암묵 스펙으로. */
+export function implicitSpecFromScope(scope: { readonly mapId: string; readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number } } | null | undefined): BuildSpec | null {
+  if (!scope || scope.region.width < 1 || scope.region.height < 1) return null;
+  return {
+    mapId: scope.mapId,
+    title: "사용자 선택 영역",
+    assets: [{ id: "선택 영역", kind: SELECTION_ASSET_KIND, x: scope.region.x, y: scope.region.y, w: scope.region.width, h: scope.region.height }],
   };
 }
 
@@ -551,6 +703,8 @@ function insideMap(asset: CheckedAsset, width: number, height: number): boolean 
 
 function overlapAllowed(a: CheckedAsset, b: CheckedAsset, buildOrder: readonly string[] | null): boolean {
   return (
+    // 타일을 쓰지 않는 점 에셋(주민·이벤트·이동)은 길 위·집 문앞에 서는 게 정상이다 — 교차가 아니다.
+    NON_TILE_ASSET_KINDS.has(a.kind) || NON_TILE_ASSET_KINDS.has(b.kind) ||
     (a.layer === "upper") !== (b.layer === "upper") ||
     (a.kind === "road" && b.kind === "road") ||
     clearThenBuildOverlapAllowed(a, b, buildOrder)
