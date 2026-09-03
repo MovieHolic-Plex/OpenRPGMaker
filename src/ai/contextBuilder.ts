@@ -30,6 +30,7 @@ import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { aiInstructionsSection } from "./projectInstructions";
+import { worldCanonPromptSection } from "./worldCanonContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
 import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
@@ -682,11 +683,21 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 감독 지침도 능력 색인·성향 기억과 같은 **예산 밖 고정분**이다. 예산 안에 두면 tokenBudget 보정이
   // 예산을 6,000자까지 줄인 세션에서 슬라이싱에 통째로 잘려, 사용자가 박아 둔 규칙이 조용히
   // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
-  return withProjectInstructions(withFixedBlocks(assembled, options.preferenceMemorySection), project.aiInstructions);
+  return withProjectInstructions(
+    withWorldCanon(withFixedBlocks(assembled, options.preferenceMemorySection), project.worldCanon),
+    project.aiInstructions,
+  );
 }
 
 function withProjectInstructions(assembled: string, instructions: string | undefined): string {
   const section = aiInstructionsSection(instructions);
+  return section ? `${assembled}\n\n${section}` : assembled;
+}
+
+// 세계관 한 장도 감독 지침과 같은 예산 밖 고정분이다. 예전 엔티티 다이제스트(최대 700토큰, 코드카드 덤프)는
+// 배제했고(worldAiExclusion), 이것은 이름·전제·금지·법칙 + 본문 600자 상한의 한 장이다.
+function withWorldCanon(assembled: string, canon: Project["worldCanon"]): string {
+  const section = worldCanonPromptSection(canon);
   return section ? `${assembled}\n\n${section}` : assembled;
 }
 

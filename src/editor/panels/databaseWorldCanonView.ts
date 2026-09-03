@@ -42,9 +42,9 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
             children: WORLD_CANON_LAW_KINDS.map((kind) => lawRow(kind, canon.laws[kind], canon.laws, rerender)),
           }),
           sectionCard({
-            title: "설정집",
-            hint: "역사·지형·문화·비밀 — 형식 없음",
-            testid: "db-world-canon-codex",
+            title: "본문",
+            hint: "역사·지형·문화·비밀 — 형식 없음. 조수는 앞 600자를 항상 본다",
+            testid: "db-world-canon-body-card",
             children: [bodyField(canon.body)],
           }),
         ],
