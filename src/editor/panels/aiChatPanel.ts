@@ -2629,16 +2629,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       applyHistoryOpen(false);
     }
   };
+  const fillStudioInput = (text: string): void => {
+    input.value = text;
+    input.dispatchEvent(new Event("input"));
+    refreshSendEnabled();
+    input.focus();
+  };
   studioShell = createStudioShell({
     onExit: () => applyStudio(false),
     onFontZoom: (delta) => setLogFontSize(delta),
     onUseTool: (tool) => {
       const lead = tool.description.split(/[.\n]/u)[0]?.trim() || tool.name;
-      input.value = `${lead} (${tool.name})`;
-      input.dispatchEvent(new Event("input"));
-      refreshSendEnabled();
-      input.focus();
+      fillStudioInput(`${lead} (${tool.name})`);
     },
+    // 브리핑 제안은 보내지 않고 입력줄만 채운다 — 사용자가 문장을 고쳐 보낼 여지를 남긴다.
+    onSuggest: (instruction) => fillStudioInput(instruction),
   });
   studioButton.addEventListener("click", () => applyStudio(!studio));
   const onStudioToggleRequest = (): void => applyStudio(!studio);

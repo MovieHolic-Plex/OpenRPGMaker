@@ -98,7 +98,7 @@ describe("스튜디오 셸 단독", () => {
       }],
     }, true);
     expect(shell.root.textContent).toContain("광장 비우기");
-    expect(shell.root.textContent).toContain("됨");
+    expect(shell.root.textContent).toContain("완료"); // 2026-09-03: 「됨/중」 단음절 라벨을 「완료/진행 중」으로 바꿨다.
     expect(shell.root.textContent).toContain("우물");
 
     shell.detach();
@@ -176,5 +176,164 @@ describe("패널 스튜디오 모드", () => {
 
     findByTestId(panel, "ai-studio-toggle")?.click();
     expect(body.querySelector("[data-testid=edit-canvas]")).toBeTruthy();
+  });
+});
+
+// ── 2026-09-03 재개편(「장면 콘솔」) — docs/superpowers/specs/2026-09-03-ai-studio-console-design.md ──
+function standaloneShell(options: Partial<Parameters<typeof createStudioShell>[0]> = {}) {
+  const host = new FakeElement("div");
+  const log = new FakeElement("div");
+  log.className = "ai-history-log-mount";
+  const chatLog = new FakeElement("div");
+  chatLog.className = "ai-chat-log";
+  chatLog.dataset.testid = "ai-chat-log";
+  log.append(chatLog);
+  const bar = new FakeElement("div");
+  bar.className = "ai-command-bar";
+  bar.dataset.testid = "ai-command-bar";
+  host.append(log, bar);
+  const shell = createStudioShell({ onExit: () => {}, onFontZoom: () => {}, ...options });
+  shell.attach(host as unknown as HTMLElement, {
+    historyLogMount: log as unknown as HTMLElement,
+    commandBar: bar as unknown as HTMLElement,
+  });
+  const root = shell.root as unknown as FakeElement;
+  return { shell, root, host, chatLog };
+}
+
+function fire(target: FakeElement, type: string, value?: string): void {
+  if (value !== undefined) (target as unknown as { value: string }).value = value;
+  target.dispatchEvent(new Event(type));
+}
+
+describe("스튜디오 콘솔(재개편)", () => {
+  it("장면 행은 썸네일·크기·시작 배지를 달고, 검색이 행을 걸러낸다", () => {
+    const { root } = standaloneShell();
+    const startId = store.getCurrent().startMapId;
+    const thumb = findByTestId(root, `ai-studio-thumb-${startId}`);
+    expect(thumb?.tagName).toBe("CANVAS");
+    const row = findByTestId(root, "ai-studio-scene");
+    expect(row?.textContent).toContain("빈 맵");
+    expect(row?.textContent).toMatch(/\d+×\d+/u);
+    expect(row?.textContent).toContain("시작");
+
+    const search = findByTestId(root, "ai-studio-scene-search");
+    expect(search).toBeTruthy();
+    fire(search!, "input", "zzz-없는-이름");
+    expect(findByTestId(root, "ai-studio-scene")).toBeNull();
+    expect(root.textContent).toContain("맞는 장면이 없습니다");
+    fire(search!, "input", "빈");
+    expect(findByTestId(root, "ai-studio-scene")?.textContent).toContain("빈 맵");
+  });
+
+  it("「새 장면」은 맵을 만들어 곧바로 선택한다", () => {
+    const { root } = standaloneShell();
+    const before = Object.keys(store.getCurrent().maps).length;
+    findByTestId(root, "ai-studio-scene-add")?.click();
+    const maps = store.getCurrent().maps;
+    expect(Object.keys(maps).length).toBe(before + 1);
+    const current = editorState.get().currentMapId;
+    expect(current && maps[current]?.name).toContain("새 장면");
+    expect(findByTestId(root, "ai-studio-monitor-label")?.textContent).toContain("새 장면");
+  });
+
+  it("모니터 머리띠에 장면 이름과 크기 칩이 있고 「편집기로」가 onExit 를 부른다", () => {
+    let exited = 0;
+    const { root } = standaloneShell({ onExit: () => { exited += 1; } });
+    expect(findByTestId(root, "ai-studio-monitor-label")?.textContent).toContain("빈 맵");
+    expect(findByTestId(root, "ai-studio-monitor-meta")?.textContent).toMatch(/\d+×\d+/u);
+    findByTestId(root, "ai-studio-exit")?.click();
+    expect(exited).toBe(1);
+  });
+
+  it("조수 상태는 유휴면 「대기 중」, 일할 때는 문장을 그대로 보인다", () => {
+    const { shell, root } = standaloneShell();
+    const status = findByTestId(root, "ai-studio-status");
+    shell.setStatus("대기");
+    expect(status?.textContent).toBe("대기 중");
+    expect(status?.dataset.state).toBe("idle");
+    shell.setStatus("맵 짓는 중…");
+    expect(status?.textContent).toBe("맵 짓는 중…");
+    expect(status?.dataset.state).toBe("busy");
+  });
+
+  it("활동 탭은 도구 호출 줄을 최신순으로 보이고 배지로 개수를 센다", () => {
+    const { shell, root } = standaloneShell();
+    shell.setToolLines(["paint_road → 길 12칸", "place_npc → 상인"]);
+    const tab = findByTestId(root, "ai-studio-tab-activity");
+    expect(tab?.textContent).toContain("2");
+    tab?.click();
+    const pane = findByTestId(root, "ai-studio-activity");
+    expect(pane?.textContent).toContain("paint_road");
+    expect(pane?.textContent).toContain("place_npc");
+    expect(pane?.textContent?.indexOf("paint_road")).toBeLessThan(pane?.textContent?.indexOf("place_npc") ?? -1);
+  });
+
+  it("덱은 접고 펼 수 있다", () => {
+    const { root } = standaloneShell();
+    const deck = findByTestId(root, "ai-studio-deck");
+    const toggle = findByTestId(root, "ai-studio-deck-collapse");
+    expect(toggle?.getAttribute("aria-expanded")).toBe("true");
+    toggle?.click();
+    expect(deck?.className).toContain("is-collapsed");
+    expect(toggle?.getAttribute("aria-expanded")).toBe("false");
+    toggle?.click();
+    expect(deck?.className).not.toContain("is-collapsed");
+  });
+
+  it("작업 판은 진행률을 세고 탭 배지에도 적는다", () => {
+    const { shell, root } = standaloneShell();
+    shell.setWorkPlan({
+      id: "plan",
+      goal: "광장을 꾸민다",
+      createdAt: "0",
+      currentLayerIndex: 0,
+      currentItemId: "b",
+      layers: [{
+        id: "l1",
+        title: "광장",
+        items: [
+          { id: "a", title: "광장 비우기", instruction: "", status: "done" },
+          { id: "b", title: "우물 놓기", instruction: "", status: "in_progress" },
+          { id: "c", title: "벤치", instruction: "", status: "pending" },
+        ],
+      }],
+    }, true);
+    expect(findByTestId(root, "ai-studio-tab-work")?.textContent).toContain("1/3");
+    expect(findByTestId(root, "ai-studio-work-progress")).toBeTruthy();
+    expect(findByTestId(root, "ai-studio-work")?.textContent).toContain("광장을 꾸민다");
+  });
+
+  it("빈 대화에는 「지금 이 장면」 브리핑이 뜨고, 제안을 누르면 onSuggest 가 받는다", () => {
+    const received: string[] = [];
+    const { shell, root, chatLog } = standaloneShell({ onSuggest: (text) => received.push(text) });
+    const briefing = findByTestId(root, "ai-studio-briefing");
+    expect(briefing).toBeTruthy();
+    expect(briefing?.hidden).toBe(false);
+    expect(briefing?.textContent).toContain("빈 맵");
+    const suggest = findByTestId(root, "ai-studio-suggest");
+    expect(suggest).toBeTruthy();
+    suggest?.click();
+    expect(received.length).toBe(1);
+    expect(received[0]?.length).toBeGreaterThan(0);
+
+    chatLog.append(new FakeElement("div"));
+    shell.refreshMonitor();
+    expect(findByTestId(root, "ai-studio-briefing")?.hidden).toBe(true);
+  });
+
+  it("도구 판은 「자주 쓰는」 절로 시작하고 필터가 카드를 걸러낸다", () => {
+    const { root } = standaloneShell();
+    expect(findByTestId(root, "ai-studio-tool-card")?.textContent).toContain("NPC 놓기");
+    expect(root.textContent).toContain("자주 쓰는");
+    const filter = findByTestId(root, "ai-studio-tool-filter");
+    const total = root.querySelectorAll("[data-testid=ai-studio-tool-card]").length;
+    fire(filter!, "input", "NPC");
+    const cards = root.querySelectorAll("[data-testid=ai-studio-tool-card]");
+    expect(cards.length).toBeGreaterThan(0);
+    expect(cards.length).toBeLessThan(total);
+    expect(cards.some((card) => card.dataset.tool === "place_npc")).toBe(true);
+    fire(filter!, "input", "zzz-없는-도구");
+    expect(root.textContent).toContain("맞는 도구가 없습니다");
   });
 });
