@@ -172,6 +172,10 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number, chain?: 
     // 한 프레임에 한 번만 이어 붙인다(재귀 호출에는 chain 을 넘기지 않는다).
     if (chain && overshootMs > 0 && canChainStep(scene, chain)) {
       tryStartMove(scene, chain.input);
+      // chain.input 은 deferTaps 로 **들여다만 본** 탭 래치를 담고 있다. 여기서 걸음을 시작했으면 그 탭은
+      // 소비된 것이므로 비운다. 비우지 않으면 이어 붙인 걸음이 매 프레임 moving 을 유지해 래치가
+      // 영영 take 되지 않고, 키를 전부 뗀 뒤에도 벽에 닿을 때까지 혼자 걷는다(실측: 15칸).
+      scene.input_.clearDirectionTaps();
       if (scene.moving) updatePlayerMovement(scene, overshootMs);
     }
     return;

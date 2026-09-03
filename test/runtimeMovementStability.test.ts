@@ -216,6 +216,62 @@ describe("주인공 걷기 연속성", () => {
   });
 });
 
+describe("걷는 중 들어온 방향 탭이 걸음을 이어 붙인 뒤에는 소비된다", () => {
+  // 회귀: 이어 붙인 걸음이 매 프레임 moving 을 유지해 래치가 peek 만 되고 take 되지 않아, 키를 전부 뗀 뒤에도
+  // 벽에 닿을 때까지 걸었다(브라우저 실측: 아래 유지 중 위로 바꾼 뒤 전부 뗌 → y 18→7 계속 이동).
+  function realInputHarness(): MovementHarness & { down(key: string): void; up(key: string): void } {
+    const harness = movementHarness();
+    (harness.scene as { input_: Input }).input_ = new Input(keyboardStubScene());
+    return {
+      ...harness,
+      down: (key) => document.dispatchEvent(new KeyboardEvent("keydown", { key })),
+      up: (key) => document.dispatchEvent(new KeyboardEvent("keyup", { key })),
+    };
+  }
+
+  it("오른쪽 유지 중 아래를 눌렀다 떼고 오른쪽도 떼면 한 칸 안에 멈춘다", () => {
+    const harness = realInputHarness();
+    harness.down("ArrowRight");
+    harness.tick(15);
+    harness.down("ArrowDown");
+    harness.tick(3);
+    harness.up("ArrowDown");
+    harness.up("ArrowRight");
+    harness.tick(120);
+    expect(harness.scene.moving).toBe(false);
+    expect(harness.scene.tileY).toBeLessThanOrEqual(7);
+    expect(harness.scene.tileX).toBeLessThanOrEqual(9);
+  });
+
+  it("오른쪽 유지 중 아래 탭 한 번은 정확히 한 칸이다", () => {
+    const harness = realInputHarness();
+    harness.down("ArrowRight");
+    harness.tick(15);
+    harness.down("ArrowDown");
+    harness.up("ArrowDown");
+    harness.tick(60);
+    expect(harness.scene.tileY).toBe(6);
+    harness.up("ArrowRight");
+    harness.tick(30);
+    expect(harness.scene.moving).toBe(false);
+  });
+
+  it("아래 유지 중 위로 바꾼 뒤 전부 떼면 멈춘다", () => {
+    const harness = realInputHarness();
+    harness.down("ArrowDown");
+    harness.tick(20);
+    harness.down("ArrowUp");
+    harness.up("ArrowDown");
+    harness.tick(20);
+    harness.up("ArrowUp");
+    harness.tick(60);
+    expect(harness.scene.moving).toBe(false);
+    const restingY = harness.scene.tileY;
+    harness.tick(60);
+    expect(harness.scene.tileY).toBe(restingY);
+  });
+});
+
 describe("카메라 재추적 멱등성", () => {
   class CameraStub {
     _follow: unknown = null;
