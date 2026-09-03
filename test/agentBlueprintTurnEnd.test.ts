@@ -143,17 +143,22 @@ const READ_ARGS = { mapId: MAP_ID, x: 0, y: 0, w: 6, h: 5 } as const;
  * 훔치면 1라운드 툴콜 대본이 미러에게 배달되고 모델은 «끝» 응답을 받는다(실측: 툴 0건, 청사진
  * 0칸으로 다섯 케이스가 한꺼번에 빨감). 라운드 대본은 LLM 요청에만 답한다.
  */
-function isLlmRequest(input: unknown): boolean {
+function isLlmRequest(input: unknown, init?: unknown): boolean {
   const url = typeof input === "string" ? input : String((input as { url?: unknown })?.url ?? input);
-  return url.includes("/chat/completions");
+  if (!url.includes("/chat/completions")) return false;
+  // 패널은 턴 앞에 의도 선언 LLM 호출(createLlmIntentDeclarer — response_format json, 툴 없음)을 하나 더 보낸다.
+  // 그 호출이 1라운드 툴콜 대본을 가져가면 본 턴은 «끝» 응답만 받는다. 툴이 실린 요청(턴 루프)만 라운드로 센다 —
+  // 의도 선언은 `{}` 를 받아 문장 휴리스틱 폴백으로 동작한다.
+  const body = (init as { body?: unknown } | undefined)?.body;
+  return typeof body === "string" && body.includes("\"tools\"");
 }
 
 const okResponse = (): Response => new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } });
 
 function scriptTurn(afterFirstRound: () => Response | never): void {
   let round = 0;
-  vi.stubGlobal("fetch", vi.fn(async (input: unknown) => {
-    if (!isLlmRequest(input)) return okResponse();
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown, init?: unknown) => {
+    if (!isLlmRequest(input, init)) return okResponse();
     round += 1;
     if (round === 1) {
       return sseToolCallsResponse([
@@ -168,8 +173,8 @@ function scriptTurn(afterFirstRound: () => Response | never): void {
 /** 라운드별 응답을 그대로 지정한다 — 마지막 응답은 남은 라운드에서 되쓴다. */
 function scriptRounds(rounds: readonly (() => Response | never)[]): void {
   let round = 0;
-  vi.stubGlobal("fetch", vi.fn(async (input: unknown) => {
-    if (!isLlmRequest(input)) return okResponse();
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown, init?: unknown) => {
+    if (!isLlmRequest(input, init)) return okResponse();
     const step = rounds[Math.min(round, rounds.length - 1)];
     round += 1;
     return step();
@@ -221,13 +226,13 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
 
     await runTurn(panel);
 
-    // 오류 분기는 적용 경로를 그대로 통과한다(제안이 0건이 아니다) — 시공이 실제로 들어갔다.
+    // 오류 분기는 적용 경로를 그대로 통과한다(제안이 0건이 아니다) — 시공이 실제로 들어갔고,
+    // 들어간 계획은 착공 안내 역할을 다 했으므로 캔버스에서 물러난다.
     expect(store.getCurrent()).not.toBe(before);
-    expect(getAgentBlueprintState().entries).toHaveLength(1);
-    expect(statusById()).toEqual({ house_a: "done" });
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
   });
 
-  it("정상 종료 + 적용에서만 done 과 저장소 변경이 함께 간다", async () => {
+  it("정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다", async () => {
     const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
     const before = store.getCurrent();
     scriptTurn(() => sseTextResponse("집을 지었습니다."));
@@ -235,7 +240,37 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     await runTurn(panel);
 
     expect(store.getCurrent()).not.toBe(before);
-    expect(statusById()).toEqual({ house_a: "done" });
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
+  });
+
+  // 실측 결함: 조수와의 대화가 끝난 뒤에도 밑그림이 맵에 남았다. 전 칸 done 이면 읽기 경로가 감추지만
+  // 모델이 에셋 하나를 건너뛰면 그 칸은 planned 로 남고, 스펙이 세션에 살아 있어 다음 턴 시작의
+  // 재동기화가 계획을 다시 깔았다 — 질문 한 번에도 시공이 끝난 맵 위에 파랑 칸이 되살았다.
+  it("일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다", async () => {
+    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    const twoAssets = {
+      ...SPEC,
+      assets: [...SPEC.assets, { id: "house_b", kind: "house", x: 12, y: 4, w: 6, h: 5 }],
+    };
+    // 1턴: 집 듑 채를 계획하고 한 채만 짓고 끝낸다 — house_b 는 planned 로 남을 칸이다.
+    scriptRounds([
+      () => sseToolCallsResponse([{ name: "set_build_spec", args: twoAssets }, { name: "fill_region", args: FILL_ARGS }]),
+      () => sseTextResponse("집 한 채를 지었습니다."),
+    ]);
+    const before = store.getCurrent();
+    await runTurn(panel, "야외에 집 두 채 지어줘");
+    expect(store.getCurrent()).not.toBe(before);
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
+
+    // 2턴: 스펙은 세션에 그대로 있다 — 턴 시작 재동기화가 물러난 칸을 다시 그리지 않아야 한다.
+    scriptRounds([
+      () => sseToolCallsResponse([{ name: "get_map_region", args: READ_ARGS }]),
+      () => sseTextResponse("지어진 집을 확인했습니다."),
+    ]);
+    await runTurn(panel, "야외 맵 상태가 지금 어떤지 알려줘");
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
+    const status = findByTestId(panel, "ai-status") as unknown as FakeElement;
+    expect(status.textContent ?? "").not.toContain("밑그림 확정");
   });
 
   // 4차 리뷰 N4-7: 위 세 케이스는 전송이 **던지는** 중단만 태운다 — 즉 catch 안의 중단 분기다.
@@ -274,8 +309,8 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
     // 1턴: 계획을 세우고 집을 실제로 지어 적용까지 간다.
     scriptTurn(() => sseTextResponse("집을 지었습니다."));
     await runTurn(panel);
-    expect(statusById()).toEqual({ house_a: "done" });
-    expect(getAgentBlueprintState().entries).toHaveLength(1);
+    // 시공이 적용된 턴이 끝났으므로 계획은 물러났다.
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
 
     // 2턴: 스펙은 세션에 그대로 살아 있고(턴 간 유지) 쓰기 제안은 0건인 조회 턴.
     scriptRounds([
@@ -287,8 +322,8 @@ describe("중단·오류로 끝난 턴의 청사진 정산", () => {
 
     const status = findByTestId(panel, "ai-status") as unknown as FakeElement;
     expect(status.textContent ?? "").not.toContain("밑그림 확정");
-    // 계획은 다 지어졌으므로 캔버스에서도 물러난 상태다 — 두 표면이 같은 말을 한다.
-    expect(statusById()).toEqual({ house_a: "done" });
+    // 계획은 물러났고 재동기화도 되살리지 않았다 — 두 표면이 같은 말을 한다.
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
   });
 
   // 4차 리뷰 N4-7: 쓰기 제안이 0건인 종료(변경 없음 분기)도 정산을 부른다. 그 분기가 정산을

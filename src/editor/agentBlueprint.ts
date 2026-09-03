@@ -16,7 +16,9 @@
 //
 // 다만 **표시**의 수명은 스펙보다 짧다: 계획에 남은 일이 없으면(전 칸 done) 읽기 경로
 // `agentBlueprintForMap` 이 빈 목록을 내어 캔버스에서 물러난다 — 상태는 진실을 그대로 들고
-// 있으므로 물려받기·정산은 불변이다. 사유는 그 함수 주석에 있다.
+// 있으므로 물려받기·정산은 불변이다. 사유는 그 함수 주석에 있다. 시공이 저장소에 들어간 턴이 끝나면 패널이
+// `retireAgentBlueprint()` 로 칸을 물러나게 하고, 물러난 칸은 같은 스펙의 재동기화가 되살리지 않는다(전 칸
+// done 이 아니어도 — 건너뛴 에셋·자동 확장 칸이 계획을 영구히 남기던 결함, 2026-09-03).
 
 import { orderedAssets, type AffectedRegion, type BuildSpec, type SpecAsset } from "@/ai/buildSpec";
 import { blueprintRegionsForToolCall, type AppliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
@@ -68,6 +70,18 @@ let revision = 0;
  * 앞 턴에 확정된 done 은 여기 없으므로 정산이 건드리지 않는다.
  */
 let turnAdvanced = new Set<string>();
+/**
+ * 시공이 저장소에 들어간 뒤 물러난 칸(entryShapeKey) 과 그 맵 — 턴 시작 재동기화가 되살리지 않는다.
+ *
+ * 실측 결함: 조수와의 대화가 끝난(시공이 적용된) 뒤에도 밑그림이 맵 위에 남았다. 청사진의 수명이
+ * 세션의 활성 BuildSpec 에 매여 있고 스펙은 세션이 죽을 때까지 살기 때문이다 — 계획 칸 중 하나라도
+ * done 이 아니면(모델이 건너뛴 에셋, 자동 확장으로 덧붙은 칸) 전 칸 완료 판정에 걸리지 않아 회색
+ * ✓ 와 파랑 계획이 다음 질문·조회 턴마다 syncAgentBlueprintWithSpec 으로 되깔렸다. 밑그림은 착공
+ * 전의 안내다: 그 턴의 시공이 저장소에 들어갔으면 할 일을 다 했으므로 물러나고(retireAgentBlueprint),
+ * 물러난 칸은 같은 스펙이 다시 와도 그리지 않는다. 새 set_build_spec 은 새 계획이므로 기록을 비운다.
+ */
+let retiredMapId: MapId | null = null;
+let retiredKeys = new Set<string>();
 
 /**
  * 재제출된 밑그림이 진행을 물려받는 겹침 하한 — 새 칸 면적의 이 비율 이상을 같은 종류의 옛 칸이 덮어야 한다.
@@ -185,7 +199,15 @@ export function agentBlueprintForMap(state: AgentBlueprintState, currentMapId: M
  * `orderedAssets` 를 쓰므로 화면 순번이 모델이 선언한 시공 순서와 같다.
  */
 export function setAgentBlueprintFromSpec(spec: BuildSpec): void {
+  // 새 계획이다 — 물러난 기록은 옛 계획의 것이다.
+  retiredMapId = null;
+  retiredKeys = new Set();
+  applySpec(spec);
+}
+
+function applySpec(spec: BuildSpec): void {
   const previous = spec.mapId === mapId ? entries : [];
+  const retired = spec.mapId === retiredMapId ? retiredKeys : null;
   const inherited = new Map<string, BlueprintEntryStatus>();
   for (const entry of previous) inherited.set(entryShapeKey(entry), entry.status);
   const next: BlueprintEntry[] = [];
@@ -206,6 +228,7 @@ export function setAgentBlueprintFromSpec(spec: BuildSpec): void {
       ...(asset.shape === undefined ? {} : { shape: asset.shape }),
     };
     const key = entryShapeKey(candidate);
+    if (retired?.has(key)) continue;
     const exact = inherited.get(key);
     if (exact !== undefined) {
       next.push({ ...candidate, status: exact });
@@ -258,7 +281,26 @@ export function syncAgentBlueprintWithSpec(spec: BuildSpec | null): void {
     clearAgentBlueprint();
     return;
   }
-  setAgentBlueprintFromSpec(spec);
+  applySpec(spec);
+}
+
+/**
+ * 이번 턴의 시공이 저장소에 들어갔다 — 밑그림은 할 일을 다 했으므로 캔버스에서 물러난다.
+ *
+ * 지금 깔린 칸을 전부(진행 상태와 무관하게) 물러난 것으로 기록한다. 모델이 건너뛴 에셋은 채팅의
+ * 「⚠ 미이행」 경고가 이미 말하고 있고, 시공이 끝난 맵 위에 파랑 계획을 계속 두는 것은 사용자가
+ * 결과물을 보는 데 방해만 된다. 다음 턴이 같은 스펙을 다시 맞춰도(syncAgentBlueprintWithSpec) 이
+ * 칸들은 그려지지 않는다 — 그 턴에 새로 덧붙은 칸(자동 확장)만 계획으로 나온다.
+ * 적용되지 않은 턴(중단·오류·게이트 거부)은 부르지 않는다: 계획은 아직 유효하다.
+ */
+export function retireAgentBlueprint(): void {
+  turnAdvanced = new Set();
+  if (entries.length === 0 || mapId === null) return;
+  if (retiredMapId !== mapId) retiredKeys = new Set();
+  retiredMapId = mapId;
+  for (const entry of entries) retiredKeys.add(entryShapeKey(entry));
+  entries = [];
+  emit();
 }
 
 /**
@@ -412,6 +454,8 @@ export function commitAgentBlueprintProgress(): void {
 
 export function clearAgentBlueprint(): void {
   turnAdvanced = new Set();
+  retiredMapId = null;
+  retiredKeys = new Set();
   if (entries.length === 0 && mapId === null) return;
   mapId = null;
   entries = [];
