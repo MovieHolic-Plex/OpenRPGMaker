@@ -1,0 +1,196 @@
+{
+  "base": "http://127.0.0.1:9861",
+  "at": "2026-09-03T10:29:34.945Z",
+  "states": [
+    {
+      "name": "focused",
+      "shot": "contrast-focused.png",
+      "rows": [
+        {
+          "label": "레일 이름",
+          "color": "rgb(15, 23, 42)",
+          "bg": "rgb(253,252,246)",
+          "fontSize": 13,
+          "ratio": 17.37,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "레일 맵",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(255,253,247)",
+          "fontSize": 13,
+          "ratio": 7.45,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "추천 힌트",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(242,246,238)",
+          "fontSize": 12.5,
+          "ratio": 6.93,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "추천 문장",
+          "color": "rgb(15, 23, 42)",
+          "bg": "rgb(242,247,238)",
+          "fontSize": 13.5,
+          "ratio": 16.42,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "추천 근거",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(255,253,247)",
+          "fontSize": 12,
+          "ratio": 7.45,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "입력 플레이스홀더",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(240,246,237)",
+          "fontSize": 14.5,
+          "ratio": 6.9,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "모드 옵션(비선택)",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(230,225,223)",
+          "fontSize": 12.5,
+          "ratio": 5.85,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "모델 칩",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(245,241,237)",
+          "fontSize": 12,
+          "ratio": 6.74,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "컨텍스트 핀",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(255,253,251)",
+          "fontSize": 12.5,
+          "ratio": 7.47,
+          "threshold": 4.5,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "conversation",
+      "shot": "contrast-conversation.png",
+      "rows": [
+        {
+          "label": "레일 이름",
+          "color": "rgb(15, 23, 42)",
+          "bg": "rgb(241,242,236)",
+          "fontSize": 13,
+          "ratio": 15.86,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "레일 맵",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(239,242,235)",
+          "fontSize": 13,
+          "ratio": 6.7,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "사용자 말풍선",
+          "color": "rgb(15, 23, 42)",
+          "bg": "rgb(233,233,243)",
+          "fontSize": 14,
+          "ratio": 14.8,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "조수 산문",
+          "color": "rgb(15, 23, 42)",
+          "bg": "rgb(242,247,238)",
+          "fontSize": 14,
+          "ratio": 16.42,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "작업 헤더",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(249,252,247)",
+          "fontSize": 12.5,
+          "ratio": 7.32,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "입력 플레이스홀더",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(240,246,237)",
+          "fontSize": 14.5,
+          "ratio": 6.9,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "모드 옵션(비선택)",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(230,225,223)",
+          "fontSize": 12.5,
+          "ratio": 5.85,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "모델 칩",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(245,241,237)",
+          "fontSize": 12,
+          "ratio": 6.74,
+          "threshold": 4.5,
+          "pass": true
+        },
+        {
+          "label": "컨텍스트 핀",
+          "color": "rgb(71, 85, 105)",
+          "bg": "rgb(255,253,251)",
+          "fontSize": 12.5,
+          "ratio": 7.47,
+          "threshold": 4.5,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "collapsed",
+      "shot": "contrast-collapsed.png",
+      "rows": [
+        {
+          "label": "알약 이름",
+          "color": "rgb(15, 23, 42)",
+          "bg": "rgb(255,253,247)",
+          "fontSize": 13.5,
+          "ratio": 17.55,
+          "threshold": 4.5,
+          "pass": true
+        }
+      ]
+    }
+  ],
+  "failures": []
+}

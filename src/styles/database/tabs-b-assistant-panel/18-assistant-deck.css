@@ -67,12 +67,14 @@
   position: absolute;
   right: 12px;
   transition: width 200ms ease;
-  width: min(var(--ai-float-bar-width, var(--ai-deck-open-width)), calc(100vw - 24px));
+  /* 폭 상한은 뷰포트가 아니라 패널(=캔버스 영역) 기준이다 — 100vw 로 재면 좁은 창에서 데크가 좌측 도구
+     기둥 위로 넘어간다(e2e assistant-single-dock 900px 실측: x 248 < 캔버스 304). */
+  width: min(var(--ai-float-bar-width, var(--ai-deck-open-width)), calc(100% - 24px));
 }
 
 /* 유휴·빈 대화·포커스 없음 = 컴포저만 좁게. 포커스·턴·대화가 있으면 열린 폭. */
 .ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-composer-focused):not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
-  width: min(var(--ai-float-compact-width), calc(100vw - 24px));
+  width: min(var(--ai-float-compact-width), calc(100% - 24px));
 }
 
 .ai-chat-panel.chat-dock-float.is-collapsed > .ai-deck,
