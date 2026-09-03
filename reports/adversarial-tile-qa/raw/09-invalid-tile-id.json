@@ -1,0 +1,159 @@
+{
+  "id": "invalid-tile-id",
+  "title": "잘못된 타일 id",
+  "expect": "변경 0, 존재하지 않는 id 라고 알림. 다른 타일로 몰래 대체 금지.",
+  "boot": "fresh",
+  "provider": "google-antigravity",
+  "map": {
+    "id": "map_village_30_100x100",
+    "name": "이슬 장터 마을",
+    "size": "100x100",
+    "tileset": "easyrpg_chipset_combined_town",
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "events": 20
+  },
+  "visibleTiles": {
+    "x": 30,
+    "y": 37,
+    "w": 40,
+    "h": 28
+  },
+  "region": null,
+  "chipVisible": false,
+  "chip": null,
+  "chipClearedOk": null,
+  "prompt": "타일 id 99999 를 (3,3) 에 칠해줘",
+  "turns": [
+    {
+      "text": "타일 id 99999 를 (3,3) 에 칠해줘",
+      "elapsedMs": 11791,
+      "timedOut": false,
+      "llmCalls": 2,
+      "toolCalls": 1,
+      "failedTools": 1,
+      "toolNames": [
+        "tile_query✗"
+      ],
+      "tools": [
+        {
+          "name": "tile_query",
+          "summary": "'tile_query' 실행 실패: 타일 인덱스 범위 밖: 99999 (0~479)",
+          "args": "{}"
+        }
+      ],
+      "statuses": [
+        "생각 중… 1초",
+        "생각 중… 3초",
+        "타일을 살펴보는 중 · 4초 · 도구 1",
+        "생각 중… 5초 · 도구 1",
+        "변경 없음(린트 경고 1건)"
+      ],
+      "assistantTexts": [
+        "",
+        "요청하신 타일 ID `99999`는 현재 타일셋의 유효 범위(0~479)를 벗어나 존재하지 않는 타일입니다.\n\n칠하고자 하는 타일의 정확한 ID나 지형/소품 이름(예: 잔디, 흙길, 모래, 물 등)을 알려주시면 `(3, 3)` 위치에 바로 배치해 드리겠습니다."
+      ],
+      "scopeNotes": [
+        "status: intent:llm mode=modify space=none target=map_village_30_100x100 single tools=fill_region 1933ms",
+        "status: 오케스트레이션 주입: [의도] 있는 것을 고치는 요청이다. 대상 맵은 `map_village_30_100x100` 이다. get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. create_map·duplicate_map·start_interior_room_session·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 furnish_interior_space."
+      ],
+      "diffAfterThisTurn": {
+        "total": 0,
+        "lower": 0,
+        "upper": 0,
+        "inside": null,
+        "outside": null,
+        "regionCells": null,
+        "upperCleared": 0,
+        "distinctTiles": 0,
+        "hist": {},
+        "bbox": null
+      }
+    }
+  ],
+  "diff": {
+    "total": 0,
+    "lower": 0,
+    "upper": 0,
+    "inside": null,
+    "outside": null,
+    "regionCells": null,
+    "upperCleared": 0,
+    "distinctTiles": 0,
+    "hist": {},
+    "bbox": null
+  },
+  "changedCells": [],
+  "lowerFourConnected": true,
+  "passability": {
+    "area": {
+      "x": 48,
+      "y": 50,
+      "w": 5,
+      "h": 5
+    },
+    "before": 23,
+    "after": 23
+  },
+  "start": {
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "startCellChanged": false,
+    "neighbours": [
+      {
+        "x": 51,
+        "y": 52
+      },
+      {
+        "x": 49,
+        "y": 52
+      },
+      {
+        "x": 50,
+        "y": 53
+      },
+      {
+        "x": 50,
+        "y": 51
+      }
+    ],
+    "neighbourPassableAfter": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "eventsCovered": [],
+  "chatTail": "2026년 9월 3일 목\n@>\n타일 id 99999 를 (3,3) 에 칠해줘\n여기서 다시\n작업 1 ▸\n@>\n\n요청하신 타일 ID 99999는 현재 타일셋의 유효 범위(0~479)를 벗어나 존재하지 않는 타일입니다.\n\n칠하고자 하는 타일의 정확한 ID나 지형/소품 이름(예: 잔디, 흙길, 모래, 물 등)을 알려주시면 (3, 3) 위치에 바로 배치해 드리겠습니다.\n\n@>\n\n토큰 미보고 · LLM 2회 · 6초\n\n@>\n\n변경 제안 없음(0건) — 완성도 린트:\n⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건).",
+  "mapsAfter": [
+    "map_village_30_100x100",
+    "map_house_interior_30_map_village_30_100x100_1",
+    "map_house_interior_30_map_village_30_100x100_2",
+    "map_house_interior_30_map_village_30_100x100_3",
+    "map_house_interior_30_map_village_30_100x100_4",
+    "map_house_interior_30_map_village_30_100x100_5",
+    "map_house_interior_30_map_village_30_100x100_6",
+    "map_house_interior_30_map_village_30_100x100_7",
+    "map_house_interior_30_map_village_30_100x100_8",
+    "map_house_interior_30_map_village_30_100x100_9",
+    "map_house_interior_30_map_village_30_100x100_10",
+    "map_house_interior_30_map_village_30_100x100_11",
+    "map_house_interior_30_map_village_30_100x100_12",
+    "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+    "map_mine_entrance",
+    "map_bell_shrine"
+  ],
+  "undo": null,
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
+}

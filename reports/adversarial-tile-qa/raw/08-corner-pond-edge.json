@@ -1,0 +1,879 @@
+{
+  "id": "corner-pond-edge",
+  "title": "맵 가장자리 연못 — 범위 클램프",
+  "expect": "범위 밖 오류로 공회전하지 않고 클램프/조정. 가장자리 규칙 설명.",
+  "boot": "fresh",
+  "provider": "google-antigravity",
+  "map": {
+    "id": "map_village_30_100x100",
+    "name": "이슬 장터 마을",
+    "size": "100x100",
+    "tileset": "easyrpg_chipset_combined_town",
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "events": 20
+  },
+  "visibleTiles": {
+    "x": 30,
+    "y": 37,
+    "w": 40,
+    "h": 28
+  },
+  "region": null,
+  "chipVisible": false,
+  "chip": null,
+  "chipClearedOk": null,
+  "prompt": "맵 오른쪽 아래 구석에 10x10 연못 만들어줘",
+  "turns": [
+    {
+      "text": "맵 오른쪽 아래 구석에 10x10 연못 만들어줘",
+      "elapsedMs": 27821,
+      "timedOut": false,
+      "llmCalls": 5,
+      "toolCalls": 4,
+      "failedTools": 4,
+      "toolNames": [
+        "get_map_region✗",
+        "set_build_spec✗",
+        "set_build_spec✗",
+        "fill_region✗"
+      ],
+      "tools": [
+        {
+          "name": "get_map_region",
+          "summary": "이슬 장터 마을(map_village_30_100x100) 영역 (50,50)~(71,65) — 이벤트 3개, 물 0칸",
+          "args": "{}"
+        },
+        {
+          "name": "set_build_spec",
+          "summary": "밑그림 검증 실패(1회)",
+          "args": "{}"
+        },
+        {
+          "name": "set_build_spec",
+          "summary": "밑그림 확정: 연못 조성 밑그림 — 에셋 1개(terrain)",
+          "args": "{}"
+        },
+        {
+          "name": "fill_region",
+          "summary": "이슬 장터 마을 (60,53) 10×10 shape=circle을 '애니메이션 물 오토타일'로 채움 — 84/100칸(마스크 84), 오토타일 재계산 0칸.",
+          "args": "{}"
+        }
+      ],
+      "statuses": [
+        "생각 중… 1초",
+        "생각 중… 3초",
+        "생각 중… 4초",
+        "생각 중… 5초",
+        "생각 중… 6초 · 도구 1",
+        "생각 중… 7초 · 도구 1",
+        "생각 중… 9초 · 도구 1",
+        "설정을 조정하는 중 · 10초 · 도구 2",
+        "생각 중… 11초 · 도구 2",
+        "생각 중… 12초 · 도구 2",
+        "생각 중… 13초 · 도구 2",
+        "생각 중… 14초 · 도구 3",
+        "생각 중… 16초 · 도구 4",
+        "생각 중… 17초 · 도구 4",
+        "토큰 미보고 · LLM 5회 · 18초",
+        "대기"
+      ],
+      "assistantTexts": [
+        "",
+        "",
+        "",
+        "",
+        "현재 보고 계신 화면 기준 오른쪽 아래 구역(좌표 60, 53 위치)에 10×10 크기의 둥근 연못을 조성했습니다. 주변 NPC와 건물 동선을 해치지 않도록 자연스러운 원형 수역으로 배치되었습니다."
+      ],
+      "scopeNotes": [
+        "status: intent:llm mode=modify space=none target=map_village_30_100x100 single tools=fill_region,place_props 2102ms",
+        "status: 오케스트레이션 주입: [의도] 있는 것을 고치는 요청이다. 대상 맵은 `map_village_30_100x100` 이다. get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. create_map·duplicate_map·start_interior_room_session·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 furnish_interior_space."
+      ],
+      "diffAfterThisTurn": {
+        "total": 84,
+        "lower": 84,
+        "upper": 0,
+        "inside": null,
+        "outside": null,
+        "regionCells": null,
+        "upperCleared": 0,
+        "distinctTiles": 1,
+        "hist": {
+          "lower:120": 84
+        },
+        "bbox": {
+          "x": 60,
+          "y": 53,
+          "w": 10,
+          "h": 11
+        }
+      }
+    }
+  ],
+  "diff": {
+    "total": 84,
+    "lower": 84,
+    "upper": 0,
+    "inside": null,
+    "outside": null,
+    "regionCells": null,
+    "upperCleared": 0,
+    "distinctTiles": 1,
+    "hist": {
+      "lower:120": 84
+    },
+    "bbox": {
+      "x": 60,
+      "y": 53,
+      "w": 10,
+      "h": 11
+    }
+  },
+  "changedCells": [
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 53,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 53,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 53,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 53,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 61,
+      "y": 54,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 62,
+      "y": 54,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 54,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 54,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 54,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 54,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 67,
+      "y": 54,
+      "from": 423,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 68,
+      "y": 54,
+      "from": 425,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 61,
+      "y": 55,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 62,
+      "y": 55,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 55,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 55,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 55,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 55,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 67,
+      "y": 55,
+      "from": 423,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 68,
+      "y": 55,
+      "from": 425,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 60,
+      "y": 56,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 61,
+      "y": 56,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 62,
+      "y": 56,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 56,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 56,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 56,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 56,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 67,
+      "y": 56,
+      "from": 423,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 68,
+      "y": 56,
+      "from": 425,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 69,
+      "y": 56,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 60,
+      "y": 57,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 61,
+      "y": 57,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 62,
+      "y": 57,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 57,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 57,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 57,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 57,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 67,
+      "y": 57,
+      "from": 423,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 68,
+      "y": 57,
+      "from": 425,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 69,
+      "y": 57,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 60,
+      "y": 58,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 61,
+      "y": 58,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 62,
+      "y": 58,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 58,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 58,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 58,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 58,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 67,
+      "y": 58,
+      "from": 423,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 68,
+      "y": 58,
+      "from": 425,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 69,
+      "y": 58,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 60,
+      "y": 59,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 61,
+      "y": 59,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 62,
+      "y": 59,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 59,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 59,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 59,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 59,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 67,
+      "y": 59,
+      "from": 423,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 68,
+      "y": 59,
+      "from": 425,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 69,
+      "y": 59,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 61,
+      "y": 60,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 62,
+      "y": 60,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 60,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 60,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 60,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 60,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 67,
+      "y": 60,
+      "from": 423,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 68,
+      "y": 60,
+      "from": 425,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 61,
+      "y": 61,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 62,
+      "y": 61,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 61,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 61,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 61,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 61,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 67,
+      "y": 61,
+      "from": 423,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 68,
+      "y": 61,
+      "from": 425,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 62,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 62,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 62,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 62,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 63,
+      "y": 63,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 64,
+      "y": 63,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 65,
+      "y": 63,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 66,
+      "y": 63,
+      "from": 240,
+      "to": 120,
+      "inside": null
+    }
+  ],
+  "lowerFourConnected": true,
+  "passability": {
+    "area": {
+      "x": 48,
+      "y": 50,
+      "w": 5,
+      "h": 5
+    },
+    "before": 23,
+    "after": 23
+  },
+  "start": {
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "startCellChanged": false,
+    "neighbours": [
+      {
+        "x": 51,
+        "y": 52
+      },
+      {
+        "x": 49,
+        "y": 52
+      },
+      {
+        "x": 50,
+        "y": 53
+      },
+      {
+        "x": 50,
+        "y": 51
+      }
+    ],
+    "neighbourPassableAfter": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "eventsCovered": [],
+  "chatTail": "2026년 9월 3일 목\n@>\n맵 오른쪽 아래 구석에 10x10 연못 만들어줘\n여기서 다시\n작업 3 · 조회 1 ▸\n📐 밑그림 확정 — 연못 조성 밑그림 · 에셋 1개\n@>\n적용됨\n\n현재 보고 계신 화면 기준 오른쪽 아래 구역(좌표 60, 53 위치)에 10×10 크기의 둥근 연못을 조성했습니다. 주변 NPC와 건물 동선을 해치지 않도록 자연스러운 원형 수역으로 배치되었습니다.\n\n@>\n\n토큰 미보고 · LLM 5회 · 18초\n\n@>\n\n변경 1건을 프로젝트에 적용했습니다. 되돌리려면 되돌리기.\n\n변경\n강\n넓게 보기\n타일 84\n이전\n→\n이후\n강\n되돌리기",
+  "mapsAfter": [
+    "map_village_30_100x100",
+    "map_house_interior_30_map_village_30_100x100_1",
+    "map_house_interior_30_map_village_30_100x100_2",
+    "map_house_interior_30_map_village_30_100x100_3",
+    "map_house_interior_30_map_village_30_100x100_4",
+    "map_house_interior_30_map_village_30_100x100_5",
+    "map_house_interior_30_map_village_30_100x100_6",
+    "map_house_interior_30_map_village_30_100x100_7",
+    "map_house_interior_30_map_village_30_100x100_8",
+    "map_house_interior_30_map_village_30_100x100_9",
+    "map_house_interior_30_map_village_30_100x100_10",
+    "map_house_interior_30_map_village_30_100x100_11",
+    "map_house_interior_30_map_village_30_100x100_12",
+    "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+    "map_mine_entrance",
+    "map_bell_shrine"
+  ],
+  "undo": null,
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+  ]
+}

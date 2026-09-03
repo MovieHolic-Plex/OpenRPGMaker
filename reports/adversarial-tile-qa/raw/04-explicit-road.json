@@ -1,0 +1,297 @@
+{
+  "id": "explicit-road",
+  "title": "좌표 명시 직선 흙길",
+  "expect": "y 고정 10칸 연속 변경, 그 줄 ±1 밖 변경 0(오토타일 이웃 제외).",
+  "boot": "fresh",
+  "provider": "google-antigravity",
+  "map": {
+    "id": "map_village_30_100x100",
+    "name": "이슬 장터 마을",
+    "size": "100x100",
+    "tileset": "easyrpg_chipset_combined_town",
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "events": 20
+  },
+  "visibleTiles": {
+    "x": 30,
+    "y": 37,
+    "w": 40,
+    "h": 28
+  },
+  "region": null,
+  "chipVisible": false,
+  "chip": null,
+  "chipClearedOk": null,
+  "prompt": "(38,52) 에서 (47,52) 까지 흙길 깔아줘",
+  "turns": [
+    {
+      "text": "(38,52) 에서 (47,52) 까지 흙길 깔아줘",
+      "elapsedMs": 22597,
+      "timedOut": false,
+      "llmCalls": 5,
+      "toolCalls": 4,
+      "failedTools": 4,
+      "toolNames": [
+        "set_build_spec✗",
+        "set_build_spec✗",
+        "paint_road✗",
+        "show_map_region✗"
+      ],
+      "tools": [
+        {
+          "name": "set_build_spec",
+          "summary": "밑그림 검증 실패(1회)",
+          "args": "{}"
+        },
+        {
+          "name": "set_build_spec",
+          "summary": "밑그림 확정: map_village_30_100x100 — 에셋 1개(road)",
+          "args": "{}"
+        },
+        {
+          "name": "paint_road",
+          "summary": "이슬 장터 마을에 dirt 도로 11칸 — 자연도 0 / 경로 11칸",
+          "args": "{}"
+        },
+        {
+          "name": "show_map_region",
+          "summary": "맵 미리보기: (36,48) 14×10 (이슬 장터 마을)",
+          "args": "{}"
+        }
+      ],
+      "statuses": [
+        "생각 중… 1초",
+        "생각 중… 3초",
+        "생각 중… 4초",
+        "생각 중… 5초 · 도구 1",
+        "밑그림 확정 — 에셋 1개",
+        "생각 중… 8초 · 도구 2",
+        "생각 중… 9초 · 도구 3",
+        "생각 중… 10초 · 도구 3",
+        "생각 중… 11초 · 도구 4",
+        "생각 중… 12초 · 도구 4",
+        "대기"
+      ],
+      "assistantTexts": [
+        "",
+        "",
+        "",
+        "",
+        "**이슬 장터 마을**의 (38, 52)부터 (47, 52) 구간에 흙길을 깔았습니다. \n\n길이 자연스럽게 이어지도록 연결부를 깔끔하게 정리했습니다. 맵 뷰에서 시공된 흙길을 확인하실 수 있습니다."
+      ],
+      "scopeNotes": [
+        "status: intent:llm mode=modify space=none target=map_village_30_100x100 single tools=lay_path,paint_road 1978ms",
+        "status: 오케스트레이션 주입: [의도] 있는 것을 고치는 요청이다. 대상 맵은 `map_village_30_100x100` 이다. get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. create_map·duplicate_map·start_interior_room_session·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 furnish_interior_space."
+      ],
+      "diffAfterThisTurn": {
+        "total": 10,
+        "lower": 10,
+        "upper": 0,
+        "inside": null,
+        "outside": null,
+        "regionCells": null,
+        "upperCleared": 0,
+        "distinctTiles": 3,
+        "hist": {
+          "lower:390": 1,
+          "lower:391": 8,
+          "lower:392": 1
+        },
+        "bbox": {
+          "x": 38,
+          "y": 52,
+          "w": 10,
+          "h": 1
+        }
+      }
+    }
+  ],
+  "diff": {
+    "total": 10,
+    "lower": 10,
+    "upper": 0,
+    "inside": null,
+    "outside": null,
+    "regionCells": null,
+    "upperCleared": 0,
+    "distinctTiles": 3,
+    "hist": {
+      "lower:390": 1,
+      "lower:391": 8,
+      "lower:392": 1
+    },
+    "bbox": {
+      "x": 38,
+      "y": 52,
+      "w": 10,
+      "h": 1
+    }
+  },
+  "changedCells": [
+    {
+      "layer": "lower",
+      "x": 38,
+      "y": 52,
+      "from": 394,
+      "to": 390,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 39,
+      "y": 52,
+      "from": 394,
+      "to": 391,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 40,
+      "y": 52,
+      "from": 394,
+      "to": 391,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 41,
+      "y": 52,
+      "from": 394,
+      "to": 391,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 42,
+      "y": 52,
+      "from": 394,
+      "to": 391,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 43,
+      "y": 52,
+      "from": 394,
+      "to": 391,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 44,
+      "y": 52,
+      "from": 394,
+      "to": 391,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 45,
+      "y": 52,
+      "from": 394,
+      "to": 391,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 46,
+      "y": 52,
+      "from": 394,
+      "to": 391,
+      "inside": null
+    },
+    {
+      "layer": "lower",
+      "x": 47,
+      "y": 52,
+      "from": 394,
+      "to": 392,
+      "inside": null
+    }
+  ],
+  "lowerFourConnected": true,
+  "passability": {
+    "area": {
+      "x": 48,
+      "y": 50,
+      "w": 5,
+      "h": 5
+    },
+    "before": 23,
+    "after": 23
+  },
+  "start": {
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "startCellChanged": false,
+    "neighbours": [
+      {
+        "x": 51,
+        "y": 52
+      },
+      {
+        "x": 49,
+        "y": 52
+      },
+      {
+        "x": 50,
+        "y": 53
+      },
+      {
+        "x": 50,
+        "y": 51
+      }
+    ],
+    "neighbourPassableAfter": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "eventsCovered": [
+    "ev_noah@(47,52)"
+  ],
+  "chatTail": "2026년 9월 3일 목\n@>\n(38,52) 에서 (47,52) 까지 흙길 깔아줘\n여기서 다시\n작업 3 · 조회 1 ▸\n📐 밑그림 확정 — map_village_30_100x100 · 에셋 1개\n@>\n적용됨\n\n이슬 장터 마을의 (38, 52)부터 (47, 52) 구간에 흙길을 깔았습니다. \n\n길이 자연스럽게 이어지도록 연결부를 깔끔하게 정리했습니다. 맵 뷰에서 시공된 흙길을 확인하실 수 있습니다.\n\n@>\n\n토큰 미보고 · LLM 5회 · 13초\n\n@>\n\n변경 1건을 프로젝트에 적용했습니다. 되돌리려면 되돌리기.\n\n변경\n길 11\n넓게 보기\n타일 10\n이전\n→\n이후\n길 11\n되돌리기",
+  "mapsAfter": [
+    "map_village_30_100x100",
+    "map_house_interior_30_map_village_30_100x100_1",
+    "map_house_interior_30_map_village_30_100x100_2",
+    "map_house_interior_30_map_village_30_100x100_3",
+    "map_house_interior_30_map_village_30_100x100_4",
+    "map_house_interior_30_map_village_30_100x100_5",
+    "map_house_interior_30_map_village_30_100x100_6",
+    "map_house_interior_30_map_village_30_100x100_7",
+    "map_house_interior_30_map_village_30_100x100_8",
+    "map_house_interior_30_map_village_30_100x100_9",
+    "map_house_interior_30_map_village_30_100x100_10",
+    "map_house_interior_30_map_village_30_100x100_11",
+    "map_house_interior_30_map_village_30_100x100_12",
+    "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+    "map_mine_entrance",
+    "map_bell_shrine"
+  ],
+  "undo": null,
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "id": "upper-flowers-only",
+  "title": "상위 레이어만(꽃) — 바닥 불변",
+  "expect": "lower 변경 0, upper 변경 >0, 밖 0칸.",
+  "boot": "fresh",
+  "provider": "google-antigravity",
+  "map": {
+    "id": "map_village_30_100x100",
+    "name": "이슬 장터 마을",
+    "size": "100x100",
+    "tileset": "easyrpg_chipset_combined_town",
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "events": 20
+  },
+  "visibleTiles": {
+    "x": 30,
+    "y": 37,
+    "w": 40,
+    "h": 28
+  },
+  "region": {
+    "x": 52,
+    "y": 52,
+    "width": 8,
+    "height": 6
+  },
+  "chipVisible": false,
+  "chip": {
+    "inDom": 1,
+    "visible": false,
+    "hostDisplay": "none",
+    "text": "선택 (52,52) 8×6×"
+  },
+  "chipClearedOk": null,
+  "prompt": "여기 꽃 좀 뿌려줘. 바닥 타일은 건드리지 말고",
+  "turns": [
+    {
+      "text": "여기 꽃 좀 뿌려줘. 바닥 타일은 건드리지 말고",
+      "elapsedMs": 24578,
+      "timedOut": false,
+      "llmCalls": 1,
+      "toolCalls": 3,
+      "failedTools": 3,
+      "toolNames": [
+        "set_build_spec✗",
+        "place_props✗",
+        "show_map_region✗"
+      ],
+      "tools": [
+        {
+          "name": "set_build_spec",
+          "summary": "밑그림 확정: 선택 영역 꽃 소품 산포 — 에셋 1개(prop)",
+          "args": "{}"
+        },
+        {
+          "name": "place_props",
+          "summary": "이슬 장터 마을 (52,52) 8×6에 소품(Flowers) 5/7개 산포 — 자연도 0.6.",
+          "args": "{}"
+        },
+        {
+          "name": "show_map_region",
+          "summary": "맵 미리보기: (50,50) 12×10 (이슬 장터 마을)",
+          "args": "{}"
+        }
+      ],
+      "statuses": [
+        "대기",
+        "요청을 읽는 중…",
+        "생각 중… 1초",
+        "생각 중… 2초",
+        "설정을 조정하는 중 · 4초 · 도구 1",
+        "생각 중… 5초 · 도구 1",
+        "생각 중… 6초 · 도구 1",
+        "오브젝트를 흩어 놓는 중 · 6초 · 도구 2",
+        "생각 중… 8초 · 도구 2",
+        "생각 중… 9초 · 도구 3",
+        "생각 중… 10초 · 도구 3",
+        "생각 중… 11초 · 도구 3",
+        "생각 중… 12초 · 도구 3",
+        "대기"
+      ],
+      "assistantTexts": [
+        "선택하신 영역의 기존 잔디 바닥을 그대로 유지한 채, 상위 레이어에 꽃 소품을 자연스럽게 산포했습니다. 바닥 타일이나 주변 지형 변경 없이 꽃 장식만 추가되었습니다. 화면을 통해 원하는 느낌으로 잘 배치되었는지 확인해 보세요."
+      ],
+      "scopeNotes": [],
+      "diffAfterThisTurn": {
+        "total": 5,
+        "lower": 0,
+        "upper": 5,
+        "inside": 5,
+        "outside": 0,
+        "regionCells": 48,
+        "upperCleared": 0,
+        "distinctTiles": 1,
+        "hist": {
+          "upper:288": 5
+        },
+        "bbox": {
+          "x": 54,
+          "y": 54,
+          "w": 6,
+          "h": 4
+        }
+      }
+    }
+  ],
+  "diff": {
+    "total": 5,
+    "lower": 0,
+    "upper": 5,
+    "inside": 5,
+    "outside": 0,
+    "regionCells": 48,
+    "upperCleared": 0,
+    "distinctTiles": 1,
+    "hist": {
+      "upper:288": 5
+    },
+    "bbox": {
+      "x": 54,
+      "y": 54,
+      "w": 6,
+      "h": 4
+    }
+  },
+  "changedCells": [
+    {
+      "layer": "upper",
+      "x": 56,
+      "y": 54,
+      "from": -1,
+      "to": 288,
+      "inside": true
+    },
+    {
+      "layer": "upper",
+      "x": 59,
+      "y": 54,
+      "from": -1,
+      "to": 288,
+      "inside": true
+    },
+    {
+      "layer": "upper",
+      "x": 54,
+      "y": 55,
+      "from": -1,
+      "to": 288,
+      "inside": true
+    },
+    {
+      "layer": "upper",
+      "x": 57,
+      "y": 56,
+      "from": -1,
+      "to": 288,
+      "inside": true
+    },
+    {
+      "layer": "upper",
+      "x": 54,
+      "y": 57,
+      "from": -1,
+      "to": 288,
+      "inside": true
+    }
+  ],
+  "lowerFourConnected": true,
+  "passability": {
+    "area": {
+      "x": 52,
+      "y": 52,
+      "w": 8,
+      "h": 6
+    },
+    "before": 48,
+    "after": 48
+  },
+  "start": {
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "startCellChanged": false,
+    "neighbours": [
+      {
+        "x": 51,
+        "y": 52
+      },
+      {
+        "x": 49,
+        "y": 52
+      },
+      {
+        "x": 50,
+        "y": 53
+      },
+      {
+        "x": 50,
+        "y": 51
+      }
+    ],
+    "neighbourPassableAfter": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "eventsCovered": [],
+  "chatTail": "2026년 9월 3일 목\n@>\n여기 꽃 좀 뿌려줘. 바닥 타일은 건드리지 말고\n작업 2 · 조회 1 ▸\n@>\n\n선택하신 영역의 기존 잔디 바닥을 그대로 유지한 채, 상위 레이어에 꽃 소품을 자연스럽게 산포했습니다. 바닥 타일이나 주변 지형 변경 없이 꽃 장식만 추가되었습니다. 화면을 통해 원하는 느낌으로 잘 배치되었는지 확인해 보세요.",
+  "mapsAfter": [
+    "map_village_30_100x100",
+    "map_house_interior_30_map_village_30_100x100_1",
+    "map_house_interior_30_map_village_30_100x100_2",
+    "map_house_interior_30_map_village_30_100x100_3",
+    "map_house_interior_30_map_village_30_100x100_4",
+    "map_house_interior_30_map_village_30_100x100_5",
+    "map_house_interior_30_map_village_30_100x100_6",
+    "map_house_interior_30_map_village_30_100x100_7",
+    "map_house_interior_30_map_village_30_100x100_8",
+    "map_house_interior_30_map_village_30_100x100_9",
+    "map_house_interior_30_map_village_30_100x100_10",
+    "map_house_interior_30_map_village_30_100x100_11",
+    "map_house_interior_30_map_village_30_100x100_12",
+    "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+    "map_mine_entrance",
+    "map_bell_shrine"
+  ],
+  "undo": null,
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+  ]
+}
