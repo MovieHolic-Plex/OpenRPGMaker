@@ -161,20 +161,24 @@ describe("새 대화 진입점", () => {
 
     const float = renderPanel("float");
     expect(findByTestId(float, "ai-command-menu-new-chat")).toBeNull();
-    expect(findByTestId(float, "ai-new-chat")?.textContent).toBe("+");
+    // 데크(2026-09-03): 글리프 "+" 대신 SVG 아이콘 + aria-label.
+    const newChat = findByTestId(float, "ai-new-chat");
+    expect(newChat?.getAttribute("aria-label")).toBe("새 대화 시작");
+    expect(newChat?.childNodes.some((child) => (child as { tagName?: string }).tagName?.toLowerCase() === "svg")).toBe(true);
   });
 
   it("Given any dock When the composer renders Then its fixed action row owns the visible new-chat control", async () => {
     for (const dock of ["glass", "side", "float"] as const) {
       const panel = renderPanel(dock);
       await whenAiChatPanelSettled();
-      const composer = findByTestId(panel, "ai-composer");
+      const rail = findByTestId(panel, "ai-deck-rail");
       const newChat = findByTestId(panel, "ai-new-chat");
 
       expect(newChat).toBeTruthy();
       expect(newChat?.getAttribute("title")).toBe("새 대화");
       expect(newChat?.getAttribute("aria-label")).toBe("새 대화 시작");
-      expect(findByTestId(composer!, "ai-new-chat")).toBe(newChat);
+      // 데크(2026-09-03): 새 대화는 컴포저 행이 아니라 상태 레일의 아이콘 슬롯에 산다.
+      expect(findByTestId(rail!, "ai-new-chat")).toBe(newChat);
       expect(findByTestId(panel, "ai-chat-toolbar")?.inert).toBe(true);
     }
   });
@@ -289,12 +293,12 @@ describe("이전 대화 진입점", () => {
     for (const dock of ["glass", "side", "float"] as const) {
       const panel = renderPanel(dock);
       await whenAiChatPanelSettled();
-      const composer = findByTestId(panel, "ai-composer");
+      const rail = findByTestId(panel, "ai-deck-rail");
       const open = findByTestId(panel, "ai-open-conversations");
 
       expect(open, dock).toBeTruthy();
       expect(open?.getAttribute("aria-label")).toBe("이전 대화 열기");
-      expect(findByTestId(composer!, "ai-open-conversations")).toBe(open);
+      expect(findByTestId(rail!, "ai-open-conversations")).toBe(open);
     }
   });
 });

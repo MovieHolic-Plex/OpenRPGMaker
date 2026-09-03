@@ -459,3 +459,17 @@ describe("세션 설정 반영", () => {
     expect(JSON.parse(session.exportAudit()).model).toBe("custom/free-form-model");
   });
 });
+
+describe("대기 화면 3분기는 설정 모달의 절이다 (데크 D6)", () => {
+  it("☰ → 설정 을 누르면 모달에 ai-command-temperature-* 가 있고 메뉴에는 없다", () => {
+    // Break: 대기 화면 세그먼트가 ☰ 메뉴 최상단으로 돌아오거나 설정 절이 빠진다.
+    const panel = renderPanel();
+    const menu = findByTestId(panel, "ai-command-menu")!;
+    expect(findByTestId(menu, "ai-command-temperature-quiet-gold")).toBeNull();
+    findByTestId(menu, "ai-command-menu-settings")!.click();
+    const modal = document.querySelector("[data-testid='ai-settings-modal']") as unknown as FakeElement | null;
+    expect(modal).not.toBeNull();
+    expect(findByTestId(modal!, "ai-settings-section-temperature")).not.toBeNull();
+    expect(findByTestId(modal!, "ai-command-temperature-map-first")).not.toBeNull();
+  });
+});

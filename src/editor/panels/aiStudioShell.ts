@@ -23,6 +23,8 @@ import {
   openToolBrowserModal,
 } from "@/editor/panels/toolBrowserModal";
 import type { ToolDefinition } from "@/editor/tools/types";
+import { TOOL_LABELS, toolGroup, toolIconKey, toolLabel, type ToolGroup } from "./aiToolLabels";
+import { deckIcon } from "./aiDeckIcons";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
@@ -72,51 +74,6 @@ const DECK_TABS: readonly { readonly id: StudioDeckTab; readonly label: string; 
   { id: "changes", label: "변경", icon: "image" },
   { id: "activity", label: "활동", icon: "clock" },
 ];
-
-const TOOL_SHORT: Record<string, string> = {
-  place_npc: "NPC 놓기",
-  author_house: "집 짓기",
-  build_wall: "벽",
-  paint_road: "길",
-  fill_region: "영역 채우기",
-  place_props: "소품",
-  place_door: "문",
-  generate_map: "맵 만들기",
-  tile_query: "타일 보기",
-  create_map: "새 맵",
-  resize_map: "맵 크기",
-  author_village: "마을 짓기",
-  paint_tiles: "타일 칠하기",
-  stamp_structure: "건물 찍기",
-  find_events: "이벤트 찾기",
-  run_lint: "맵 검사",
-  get_map_region: "영역 보기",
-  create_quest: "퀘스트",
-  link_maps: "맵 연결",
-};
-
-/** 카드 아이콘 — 장식이다(aria-hidden). 뜻은 라벨이 진다. */
-const TOOL_ICON: Record<string, EditorIconName> = {
-  place_npc: "person",
-  author_house: "tool",
-  build_wall: "lines",
-  paint_road: "route",
-  fill_region: "image",
-  place_props: "star",
-  place_door: "door",
-  generate_map: "spark",
-  tile_query: "search",
-  create_map: "plus",
-  resize_map: "expand",
-  author_village: "party",
-  paint_tiles: "pencil",
-  stamp_structure: "copy",
-  find_events: "search",
-  run_lint: "check",
-  get_map_region: "info",
-  create_quest: "branch",
-  link_maps: "switch",
-};
 
 const STUDIO_EXTRA_TOOLS = [
   "create_map",
@@ -786,20 +743,16 @@ function countMaps(node: MapTreeNode): number {
 }
 
 function toolShortLabel(tool: ToolDefinition): string {
-  const mapped = TOOL_SHORT[tool.name];
-  if (mapped) return mapped;
+  // 사전(aiToolLabels)에 있으면 로그 행과 같은 이름. 없으면 설명 첫 절을 잘라 쓴다.
+  if (TOOL_LABELS[tool.name]) return toolLabel(tool.name);
   const cut = tool.description.split(/[.\n(]/u)[0]?.trim() ?? tool.name;
   return cut.length > 10 ? `${cut.slice(0, 9)}…` : cut;
 }
 
-function toolIcon(tool: ToolDefinition): EditorIconName {
-  return TOOL_ICON[tool.name] ?? (tool.mode === "write" ? "pencil" : "info");
-}
-
 function renderToolCard(tool: ToolDefinition, onUseTool?: (tool: ToolDefinition) => void): HTMLElement {
-  const write = tool.mode === "write";
+  // 데크(2026-09-03): 아이콘 타일. 「편집/조회」 반복 라벨은 정보가 0 이라 걷었다 — 묶음 헤더가 대신 말한다.
   return el("button", {
-    class: write ? "ai-studio-tool-card is-write" : "ai-studio-tool-card",
+    class: `ai-studio-tool-card is-${toolGroup(tool.name)}`,
     attrs: {
       type: "button",
       title: tool.description,
@@ -809,17 +762,17 @@ function renderToolCard(tool: ToolDefinition, onUseTool?: (tool: ToolDefinition)
       click: () => onUseTool?.(tool),
     },
     children: [
-      el("span", { class: "ai-studio-tool-icon", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon(toolIcon(tool))] }),
-      el("span", {
-        class: "ai-studio-tool-text",
-        children: [
-          el("b", { text: toolShortLabel(tool) }),
-          el("span", { class: "ai-studio-tool-mode", text: write ? "편집" : "조회" }),
-        ],
-      }),
+      deckIcon(toolIconKey(tool.name), { size: 22 }),
+      el("b", { text: toolShortLabel(tool) }),
     ],
   });
 }
+
+const STUDIO_TOOL_GROUPS: readonly { readonly id: ToolGroup; readonly title: string; readonly includes: readonly ToolGroup[] }[] = [
+  { id: "build", title: "짓기", includes: ["build", "world"] },
+  { id: "people", title: "사람·이야기", includes: ["people"] },
+  { id: "inspect", title: "보기·검사", includes: ["inspect", "system"] },
+];
 
 function studioDeckTools(): ToolDefinition[] {
   const byName = new Map(
@@ -847,7 +800,18 @@ function toolGrid(tools: readonly ToolDefinition[], onUseTool?: (tool: ToolDefin
   return el("div", {
     class: "ai-studio-tool-grid",
     dataset: { testid: "ai-studio-tool-grid" },
-    children: tools.map((tool) => renderToolCard(tool, onUseTool)),
+    children: STUDIO_TOOL_GROUPS.flatMap((group) => {
+      const members = tools.filter((tool) => group.includes.includes(toolGroup(tool.name)));
+      if (members.length === 0) return [];
+      return [el("section", {
+        class: "ai-studio-tool-group",
+        dataset: { group: group.id },
+        children: [
+          el("h5", { class: "ai-studio-tool-group-title", text: group.title }),
+          el("div", { class: "ai-studio-tool-tiles", children: members.map((tool) => renderToolCard(tool, onUseTool)) }),
+        ],
+      })];
+    }),
   });
 }
 

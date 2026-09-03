@@ -5,14 +5,10 @@
 // vitest 환경은 "node" — 돔 대신 storage(globalThis.localStorage)만 스텁한다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-  clampLogHeight,
   clampPanelSize,
   clampPanelSizeToViewport,
-  loadLogHeight,
-  LOG_HEIGHT_LIMITS,
   loadPanelBarSize,
   PANEL_SIZE_LIMITS,
-  saveLogHeight,
   savePanelBarSize,
   savePanelSize,
   stepAiFontSize,
@@ -91,20 +87,6 @@ describe("캡슐 폭 저장/복원", () => {
   it("저장된 쓰레기 값은 예외 없이 null을 돌려준다", () => {
     storage.set("oprn:ai-panel-size", '{"width":"wide"}');
     expect(loadPanelBarSize()).toBeNull();
-  });
-});
-
-describe("기록 카드 높이 저장/클램프", () => {
-  it("저장한 높이를 왕복하고, 없으면 null 이다", () => {
-    expect(loadLogHeight()).toBeNull();
-    saveLogHeight(420);
-    expect(loadLogHeight()).toBe(420);
-    expect(storage.get("oprn:ai-log-height")).toBe("420");
-  });
-
-  it("뷰포트가 짧으면 입력줄 위 남은 칸 안으로 줄인다", () => {
-    expect(clampLogHeight(900, { width: 1280, height: 700 }, 120)).toBe(556);
-    expect(clampLogHeight(40, { width: 1280, height: 900 }, 110)).toBe(LOG_HEIGHT_LIMITS.min);
   });
 });
 

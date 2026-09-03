@@ -38,7 +38,7 @@ import {
 } from "@/editor/agentBlueprint";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
-import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
+import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
@@ -86,10 +86,15 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudioMode";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
-import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
+import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover } from "./aiComposer";
+import { deckIcon } from "./aiDeckIcons";
+import { createDeckRail, deckStateOfTone, type DeckState } from "./aiDeckRail";
+import { regionFromToolCall, renderMapChip } from "./aiMapChip";
+import { toolIconKey } from "./aiToolLabels";
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
-import { createCollapsedUndoButton, createDirectorRestoreButton } from "./aiDirectorChrome";
-import { openAiSettingsModal } from "./aiSettingsModal";
+import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
+import { getEditorUiMode } from "@/editor/editorUiMode";
+import { openAiSettingsModal, type AiSettingsExtraSection } from "./aiSettingsModal";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   directorStartPrompts,
@@ -97,7 +102,7 @@ import {
   nextStepHint,
   readAgentBrief,
 } from "./aiAgentBrief";
-import { AI_AUTHORING_EXAMPLES, buildAiAuthoringExamples } from "./aiStartScreenCards";
+import { AI_AUTHORING_EXAMPLES, buildSuggestionRows, rankAuthoringExamples } from "./aiStartScreenCards";
 import {
   isAiAssistantBridgeConnected,
   registerAiAssistantBridge,
@@ -109,7 +114,6 @@ import {
 import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import { createChatResizeChrome } from "./aiChatResizeChrome";
 import {
-  AI_FONT_SIZE_PERCENT,
   applyAiFontSize,
   loadAiFontSize,
   loadPanelCollapsed,
@@ -151,21 +155,16 @@ export {
   AI_FONT_SIZE_PERCENT,
   AI_FONT_SIZE_SCALE,
   AUTO_COLLAPSE_AFTER_AI_MS,
-  DEFAULT_LOG_HEIGHT,
-  LOG_HEIGHT_LIMITS,
   MAP_FIRST_MIGRATION_KEY,
   PANEL_SIZE_LIMITS,
   applyAiFontSize,
-  clampLogHeight,
   clampPanelSize,
   clampPanelSizeToViewport,
   loadAiFontSize,
-  loadLogHeight,
   loadPanelBarSize,
   loadPanelCollapsed,
   loadPanelSize,
   saveAiFontSize,
-  saveLogHeight,
   savePanelBarSize,
   savePanelCollapsed,
   savePanelSize,
@@ -366,6 +365,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     status.dataset.statusTone = statusToneOf(text);
     setAiBridgeLastStatus(text);
     studioShell?.setStatus(text);
+    syncDeckState();
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
@@ -445,9 +445,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const sendButton = el("button", {
     class: "ai-assistant-action ai-chat-send",
-    text: "↑ 전송",
-    attrs: { type: "button", title: "보낼 지시를 입력하세요" },
+    attrs: { type: "button", title: "보낼 지시를 입력하세요", "aria-label": "보내기" },
     dataset: { testid: "ai-send" },
+    children: [deckIcon("arrow-up")],
   }) as HTMLButtonElement;
 
   // 컴포저 셸은 파일 하단에서 조립된다(입력·전송·칩이 모두 있어야 하므로).
@@ -456,22 +456,30 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let openComposerPopover: (kind: ComposerPopover | null) => void = () => {};
   let composerPopoverKind: () => ComposerPopover | null = () => null;
   let syncCommandBarClearance: () => void = () => {};
-  let refreshLogZoomChrome: () => void = () => {};
+  /** 데크 상태(idle|run|attention|done|error)를 레일·패널·알약에 함께 바른다. 데크 조립 뒤 바인딩. */
+  let syncDeckState: () => void = () => {};
+  /** 레일의 「· 현재 맵」 문구. 컨텍스트 칩과 같은 구독에서 갱신한다. */
+  let syncRailContext: () => void = () => {};
+  /** 컴포저 모드(지시/질문/계획). 모델에게 가는 [컨텍스트] 꼬리에 한 줄로 실린다. */
+  let composerMode: ComposerMode = "do";
   const applyPanelFontSize = (size: AiFontSize): void => {
     applyAiFontSize(panel, size);
-    refreshLogZoomChrome();
   };
 
   // 설정은 전용 모달로 연다(채팅 본문 인라인 폼 제거 — UX P0/P1).
   // 저장 시 진행 중 세션 config도 즉시 갱신한다.
+  // 설정 모달에 실리는 패널 소유 절(대기 화면 3분기 — 제안서 D6). 데크 조립 뒤 채운다.
+  let settingsExtraSections: readonly AiSettingsExtraSection[] = [];
   const openAiSettings = (focusTarget: "first" | "apiKey" = "first"): void => {
     openAiSettingsModal({
       focusTarget,
       fontRoot: panel,
       onSaved: (config) => {
         controller.session?.updateConfig(config);
+        composerShell.setModelLabel(modelChipLabel());
       },
       onFontSizeChange: (size) => applyPanelFontSize(size),
+      extraSections: settingsExtraSections,
     });
   };
 
@@ -487,6 +495,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const conversationLog = createConversationLogHost({
     log,
     removeStartScreen,
+    // 행 앞 맵 칩 — 툴 인자/결과의 좌표를 현재 프로젝트에서 잘라 그린다(제안서 「show the work」).
+    renderChip: (name, args, result) => {
+      const region = regionFromToolCall(args, result);
+      if (!region) return null;
+      const project = store.getCurrent();
+      const argMapId = typeof args?.mapId === "string" ? args.mapId : null;
+      const mapId = argMapId && project.maps[argMapId] ? argMapId : (mapContext().mapId ?? project.startMapId);
+      if (!mapId || !project.maps[mapId]) return null;
+      return renderMapChip({ project, mapId, region, icon: toolIconKey(name) });
+    },
   });
   const {
     appendBubble,
@@ -529,9 +547,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const row = el("div", {
       class: "ai-activity-live",
       attrs: { role: "status", "aria-live": "polite" },
-      dataset: { testid: "ai-activity-live" },
+      dataset: { testid: "ai-activity-live", tool: toolName },
       children: [
-        el("span", { class: "ai-activity-live-spinner", attrs: { "aria-hidden": "true" } }),
+        el("span", { class: "ai-activity-live-spinner ai-deck-spin", attrs: { "aria-hidden": "true" } }),
         line,
       ],
     });
@@ -548,12 +566,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   ): void => {
     const matchedLiveActivity = runningActivity?.toolName === toolName;
     if (!matchedLiveActivity) bumpToolProgress();
-    const before = new Set(log.querySelectorAll(".ai-tool-activity-line"));
+    const before = new Set<Element>(log.querySelectorAll(".ai-tool-activity-line"));
     studioToolLines.unshift(formatToolActivityLine(toolName, result));
     if (studioToolLines.length > 40) studioToolLines.length = 40;
     studioShell?.setToolLines(studioToolLines);
-    appendToolLine(toolName, result, args);
-    const rendered = [...log.querySelectorAll(".ai-tool-activity-line")].find((entry) => !before.has(entry))
+    appendToolLine(toolName, result, args, { live: true });
+    const rendered = [...log.querySelectorAll<HTMLElement>(".ai-tool-activity-line")].find((entry) => !before.has(entry))
       ?? renderToolActivityEntry(toolName, result);
     if (!runningActivity || runningActivity.toolName !== toolName) return;
 
@@ -570,11 +588,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     rendered.remove();
     const finalize = (): void => {
       if (result.ok) {
+        // 라이브 행이 완료 행의 모양(칩 · 라벨/요약 · 상태)을 그대로 이어받는다 — textContent 로 평탄화하면
+        // 데크 타임라인 행의 세 칸 구조가 사라진다.
         liveRow.className = rendered.className;
         liveRow.dataset.testid = "ai-tool-entry";
+        if (rendered.dataset.tool) liveRow.dataset.tool = rendered.dataset.tool;
+        if (rendered.title) liveRow.title = rendered.title;
         liveRow.removeAttribute("role");
         liveRow.removeAttribute("aria-live");
-        liveRow.textContent = rendered.textContent ?? "";
+        liveRow.replaceChildren(...Array.from(rendered.childNodes));
       } else {
         liveRow.className = "ai-activity-completed";
         liveRow.dataset.testid = "ai-tool-entry";
@@ -1171,6 +1193,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const inBounds = !map || (sel.x >= 0 && sel.y >= 0 && sel.x < map.width && sel.y < map.height);
       if (inBounds) parts.push(`사용자 선택 영역: (${sel.x},${sel.y}) ${sel.width}×${sel.height}`);
     }
+    // 컴포저 모드(제안서 D4·§06). 지시(기본)는 아무 것도 덧붙이지 않는다 — 기계 텍스트가 사용자
+    // 채널에 실리던 「도구 규칙」 사고(2026-09-03 의도 라우터 감사)를 되풀이하지 않기 위해 한 절만.
+    if (composerMode === "ask") parts.push("모드: 질문 — 맵을 바꾸지 말고 조회 도구로만 답한다");
+    else if (composerMode === "plan") parts.push("모드: 계획 — 실행 전에 단계 계획을 먼저 보인다");
     return `[컨텍스트] ${parts.join(" · ")}`;
   };
 
@@ -1700,7 +1726,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         dataset: { testid: "ai-next-steps-hint" },
         text: nextStepHint(brief),
       }),
-      buildAiAuthoringExamples({ examples: AI_AUTHORING_EXAMPLES, onPick: pickExample }),
+      // 단어 칩 6개 → 맵 진단 순서의 실행 문장 3행(제안서 D5). 힌트(맵 진단)가 그 위에 선다.
+      buildSuggestionRows({ examples: rankAuthoringExamples(brief, AI_AUTHORING_EXAMPLES), onPick: pickExample }),
     );
   };
   // 추천 칩 팝오버는 입력창이 비어 있고 포커스가 있을 때만 뜬다. 흐름 밖이라 열림/닫힘이
@@ -1824,6 +1851,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 안 보이면 사용자는 스코프가 붙는지 모르고 ×도 누를 수 없다(2026-09-03 실측 7건 전부 display:none).
     contextChips.classList.toggle("has-selection-scope", selection !== null);
     contextChips.replaceChildren(...chips);
+    syncRailContext();
   };
   refreshContextChips();
   refreshComposerChips();
@@ -2064,8 +2092,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   abortButton = el("button", {
     class: "ai-assistant-action ai-abort-button",
-    text: "중단",
-    attrs: { type: "button", title: "진행 중인 AI 응답을 중단합니다", "aria-label": "AI 응답 중단" },
+    attrs: { type: "button", title: "멈추기 (Esc) — 진행 중인 AI 응답을 중단합니다", "aria-label": "AI 응답 중단" },
+    children: [deckIcon("stop")],
     dataset: { testid: "ai-abort" },
     on: { click: abortActiveTurn },
   }) as HTMLButtonElement;
@@ -2246,6 +2274,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 하단 컴포저: 입력 + 고정 액션 행 한 줄(세로 레일 없음).
   // 추천 칩·액션 메뉴·성향은 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
+  let deckRoot: HTMLElement | null = null;
+  // 모델 칩(제안서 D4): 초보 모드에서는 숨기고 표준·전문가에서 현재 모델 id 를 보인다.
+  const modelChipLabel = (): string | null => {
+    if (getEditorUiMode() === "beginner") return null;
+    const model = loadAiConfig().model.trim();
+    return model.length > 0 ? model : null;
+  };
   const composerShell: ComposerElements = createComposerElements({
     input,
     collapseButton,
@@ -2265,6 +2300,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     preferenceContent: preferenceMemory.element,
     // 대화 중 증류가 목록을 바꾼다 — 열 때마다 다시 읽어야 방금 배운 성향이 보인다.
     onPreferenceOpen: () => preferenceMemory.refresh(),
+    // 바깥 클릭 판정은 데크 전체 — 레일의 ⋯ 가 바 밖에 있다(데크 조립 전엔 바 기준).
+    isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
+    modeChips: { initial: "do", onChange: (mode) => { composerMode = mode; } },
+    modelLabel: modelChipLabel(),
   });
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;
@@ -2294,67 +2333,45 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-main",
     children: [glassLogMount, historyLogMount, chipsHost],
   });
-  const logZoomOut = el("button", {
-    class: "ai-log-zoom-btn",
-    text: "−",
-    attrs: { type: "button", title: "기록 축소", "aria-label": "기록 글자 축소" },
-    dataset: { testid: "ai-log-zoom-out" },
-  }) as HTMLButtonElement;
-  const logZoomLabel = el("span", {
-    class: "ai-log-zoom-label",
-    text: AI_FONT_SIZE_PERCENT.normal,
-    attrs: { "aria-live": "polite" },
-    dataset: { testid: "ai-log-zoom-label" },
-  });
-  const logZoomIn = el("button", {
-    class: "ai-log-zoom-btn",
-    text: "+",
-    attrs: { type: "button", title: "기록 확대", "aria-label": "기록 글자 확대" },
-    dataset: { testid: "ai-log-zoom-in" },
-  }) as HTMLButtonElement;
-  const logZoom = el("div", {
-    class: "ai-log-zoom",
-    attrs: { role: "group", "aria-label": "기록 글자 크기" },
-    dataset: { testid: "ai-log-zoom" },
-    children: [logZoomOut, logZoomLabel, logZoomIn],
-  });
-  const logChrome = el("div", {
-    class: "ai-log-chrome",
-    dataset: { testid: "ai-log-chrome" },
-    children: [
-      el("span", { class: "ai-log-grip", attrs: { "aria-hidden": "true" } }),
-      logZoom,
-    ],
-  });
   const body = el("div", {
     class: "ai-chat-body",
     dataset: { testid: "ai-chat-body" },
-    children: [logChrome, mainColumn],
+    children: [mainColumn],
   });
   const setLogFontSize = (delta: number): void => {
     const next = stepAiFontSize(loadAiFontSize(), delta);
     saveAiFontSize(next);
     applyPanelFontSize(next);
   };
-  logZoomOut.addEventListener("click", (event) => {
-    event.preventDefault();
-    setLogFontSize(-1);
-  });
-  logZoomIn.addEventListener("click", (event) => {
-    event.preventDefault();
-    setLogFontSize(1);
-  });
+  // 기록 줌 스테퍼(− 100% +)는 데크에서 걷었다(제안서 §01-4). 글자 크기는 설정 모달과 Ctrl+휠.
   body.addEventListener("wheel", (event: WheelEvent) => {
     if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();
     setLogFontSize(event.deltaY < 0 ? 1 : -1);
   }, { passive: false });
-  refreshLogZoomChrome = (): void => {
-    const size = loadAiFontSize();
-    logZoomLabel.textContent = AI_FONT_SIZE_PERCENT[size];
-    logZoomOut.disabled = size === "small";
-    logZoomIn.disabled = size === "large";
-  };
+
+  // ── 데크: 레일 → 기록 → 컴포저를 한 유리 표면에 담는다(제안서 A, D1) ──
+  const rail = createDeckRail();
+  // 레일 아이콘 슬롯 — 컴포저가 만든 버튼을 옮긴다(두 벌 금지). 순서: 맥락 % · 새 대화 · 이전 대화 · 성향 · 더보기 · 접기.
+  rail.actions.append(
+    contextMeter.button,
+    composerShell.newChatButton,
+    ...(composerShell.conversationsButton ? [composerShell.conversationsButton] : []),
+    ...(composerShell.preferenceToggle ? [composerShell.preferenceToggle] : []),
+    composerShell.menuToggle,
+    collapseButton,
+  );
+  // 상태 문장은 레일이 든다 — 컴포저 행의 상태 그룹은 멈추기 버튼 자리만 남는다.
+  rail.statusSlot.append(status);
+  // ⋯ 메뉴·성향·맥락 팝오버는 토글이 있는 레일 아래 오른쪽에 붙는다 — 열림/닫힘 기계는 컴포저 것 그대로.
+  // 컴포저 위로 띄우면 기록과 레일을 덮어 토글 자신이 가려진다(실측 2026-09-03).
+  rail.root.append(commandMenu, composerShell.preferencePopover, contextMeter.popover);
+  const deck = el("div", {
+    class: "ai-deck",
+    dataset: { testid: "ai-deck" },
+    children: [rail.root, body, commandBar],
+  });
+  deckRoot = deck;
 
   const panel = el("aside", {
     class: "ai-chat-panel",
@@ -2366,26 +2383,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       temperature: readTemperature(),
       aiConversation: "empty",
     },
-    children: [toolbar, body, collapsedRestore, collapsedUndo, stickyProposalZone, commandBar],
+    children: [toolbar, deck, collapsedRestore, collapsedUndo, stickyProposalZone],
   });
   panelRoot = panel;
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
   // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
   // 하단 여백(--ai-command-bar-inset)도 같은 실측에서 나온다 — 144px 하드코딩은 실제
   // 바 높이와 어긋나 있었고, 두 값이 서로 다른 소스를 보면 반드시 갈라진다.
+  // 데크가 표면 하나이므로 clearance 도 데크 사각형 하나에서 나온다(열린 팝오버 포함).
   syncCommandBarClearance = (): void => {
-    const rect = commandBar.getBoundingClientRect();
+    const rect = deck.getBoundingClientRect();
     if (rect.height <= 0 || typeof window === "undefined") return;
-    const clearance = Math.max(60, Math.ceil(window.innerHeight - composerShell.measuredTop()) + 12);
+    const top = Math.min(rect.top, composerShell.measuredTop());
+    const clearance = Math.max(60, Math.ceil(window.innerHeight - top) + 12);
     panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
     document.body?.style.setProperty("--ai-command-bar-inset", `${Math.max(72, Math.ceil(rect.height) + 24)}px`);
   };
   const commandBarClearanceObserver =
     typeof ResizeObserver !== "undefined" ? new ResizeObserver(syncCommandBarClearance) : null;
-  commandBarClearanceObserver?.observe(commandBar);
+  commandBarClearanceObserver?.observe(deck);
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
-  refreshLogZoomChrome();
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__oprnAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
   const harnessAccessor = () => controller.session?.getHarnessSnapshot() ?? null;
   if (typeof window !== "undefined") {
@@ -2403,13 +2421,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 접힘·유리 접힘 같은 가변 플래그는 여기 `let` 이 계속 소유하므로 게터로 준다.
   const resizeChrome = createChatResizeChrome({
     panel,
-    commandBar,
-    logBody: body,
+    deck,
     resizable: resizableDock,
-    logResizable: () =>
-      resizableDock()
-      && panel.classList.contains("is-assistant-log-open")
-      && !panel.classList.contains("is-history-open"),
   });
   const applySize = resizeChrome.applySize;
   const mountResizeHandle = resizeChrome.mountHandle;
@@ -2478,7 +2491,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     panel.classList.toggle("is-assistant-log-open", !idle);
     syncComposerFocus();
     refreshNextSteps();
+    syncDeckState();
   };
+  // 데크 상태 하나가 레일 점·문장, 패널 data-ai-state, 접힘 알약을 함께 움직인다(제안서 P4).
+  // 「확인 필요」 는 상태 배지 톤이 아니라 승인 대기·질문 대기·접힘 중 알림 점에서 나온다.
+  syncDeckState = (): void => {
+    const pendingApproval = proposalApi.pendingProposalMessage !== null || hasPendingQuestion();
+    const attention = pendingApproval || panel.classList.contains("is-turn-attention");
+    const state: DeckState = panel.classList.contains("is-turn-error")
+      ? "error"
+      : attention
+        ? "attention"
+        : deckStateOfTone(statusToneOf(status.textContent ?? ""));
+    rail.setState(state);
+    panel.dataset.aiState = state;
+    setRestoreButtonState(collapsedRestore, state, status.textContent ?? "", pendingApproval ? 1 : 0);
+  };
+  syncRailContext = (): void => {
+    rail.setContext(mapContext().mapName);
+  };
+  syncRailContext();
+  syncDeckState();
   refreshTemperatureChrome = (): void => {
     const current = readTemperature();
     panel.dataset.temperature = current;
@@ -2498,7 +2531,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const syncCollapseButtonChrome = (): void => {
     const shut = collapsed;
     const label = shut ? "AI 패널 펼치기" : "AI 패널 접기";
-    collapseButton.textContent = shut ? "▸" : "▾";
+    collapseButton.replaceChildren(deckIcon(shut ? "chevron-right" : "chevron-down"));
     collapseButton.setAttribute("title", label);
     collapseButton.setAttribute("aria-label", label);
     collapseButton.setAttribute("aria-expanded", String(!shut));
@@ -2514,6 +2547,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapsedRestore.setAttribute("aria-expanded", String(!collapsed));
     if (typeof document !== "undefined" && document.body) document.body.classList.add("ai-command-bar-active");
     applySize(); // 접힘 상태에서는 커스텀 크기를 해제한다.
+    syncDeckState();
   };
   clearAutoCollapseTimer = (): void => {
     if (autoCollapseTimer !== null && typeof window !== "undefined") window.clearTimeout(autoCollapseTimer);
@@ -2666,16 +2700,29 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (composerPopoverKind() === "menu") openComposerPopover(null);
   };
   const composerMenu = createAiActionMenuItems({
+    meta: {
+      compact: () => contextMeter.button.textContent?.trim() || null,
+      tools: () => String(filterToolCategories("").reduce((count, category) => count + category.tools.length, 0)),
+      settings: () => modelChipLabel(),
+    },
     variant: "composer",
     close: closeCommandMenu,
     actions: sharedMenuActions,
   });
+  // 대기 화면 3분기(추천 함께 / 조수만 / 입력창만)는 취향 설정이다 — ☰ 메뉴 최상단이 아니라 설정 모달의
+  // 한 절로 옮겼다(제안서 D6). testid(ai-command-temperature-*)와 동작은 그대로다.
   const composerTemperatureSection = createAssistantTemperatureMenuSection({
     variant: "composer",
     current: readTemperature,
-    close: closeCommandMenu,
+    close: () => {},
     onChange: applyTemperature,
   });
+  settingsExtraSections = [{
+    id: "temperature",
+    title: "대기 화면",
+    description: "조수가 쉬는 동안 무엇을 보일지 정합니다.",
+    content: composerTemperatureSection,
+  }];
   // 구 이름은 `refreshDockLabels` 였다 — 도크별 버튼 라벨을 다시 계산하는 일이 본업이었고,
   // 그 일이 없어진 지금 남은 것은 "패널 표면을 현재 상태에 맞춰 다시 그린다" 하나다.
   applyAssistantViewPolicy = (): void => {
@@ -2687,7 +2734,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     mountResizeHandle();
   };
   applyAssistantViewPolicy();
-  commandMenu.replaceChildren(composerTemperatureSection, ...composerMenu.items);
+  commandMenu.replaceChildren(...composerMenu.items);
   refreshTemperatureChrome();
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.

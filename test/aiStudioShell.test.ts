@@ -73,7 +73,9 @@ describe("스튜디오 셸 단독", () => {
       .toContain(bar);
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-tools")?.className).toContain("is-on");
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-grid")).toBeTruthy();
-    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-card")?.textContent).toContain("NPC 놓기");
+    // 데크(2026-09-03): 타일은 묶음(짓기 / 사람·이야기 / 보기·검사)으로 나뉘어 첫 카드가 NPC 가 아닐 수 있다 — 전체에서 찾는다.
+    const toolCardTexts = (shell.root as unknown as FakeElement).querySelectorAll("[data-testid=ai-studio-tool-card]").map((card) => card.textContent);
+    expect(toolCardTexts).toContain("NPC 배치");
     expect(shell.root.textContent).not.toContain("Canonical");
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-monitor-thumb")).toBeNull();
 
@@ -148,7 +150,8 @@ describe("패널 스튜디오 모드", () => {
     expect(panel.dataset.logSlot).toBe("glass");
     const logParent = findByTestId(panel, "ai-chat-log")?.parentNode;
     expect(logParent instanceof FakeElement ? logParent.className : "").toContain("ai-glass-log");
-    expect(findByTestId(panel, "ai-command-bar")?.parentElement).toBe(panel);
+    // 데크(2026-09-03): 입력줄은 패널 직속이 아니라 데크(레일·기록·컴포저 한 표면) 안으로 돌아온다.
+    expect(findByTestId(panel, "ai-command-bar")?.parentElement).toBe(findByTestId(panel, "ai-deck"));
     expect(storage.get("oprn:ai-studio")).toBe("0");
   });
 
@@ -324,7 +327,8 @@ describe("스튜디오 콘솔(재개편)", () => {
 
   it("도구 판은 「자주 쓰는」 절로 시작하고 필터가 카드를 걸러낸다", () => {
     const { root } = standaloneShell();
-    expect(findByTestId(root, "ai-studio-tool-card")?.textContent).toContain("NPC 놓기");
+    const npcCard = root.querySelectorAll("[data-testid=ai-studio-tool-card]").find((card) => card.dataset.tool === "place_npc");
+    expect(npcCard?.textContent).toContain("NPC 배치");
     expect(root.textContent).toContain("자주 쓰는");
     const filter = findByTestId(root, "ai-studio-tool-filter");
     const total = root.querySelectorAll("[data-testid=ai-studio-tool-card]").length;
@@ -335,5 +339,23 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(cards.some((card) => card.dataset.tool === "place_npc")).toBe(true);
     fire(filter!, "input", "zzz-없는-도구");
     expect(root.textContent).toContain("맞는 도구가 없습니다");
+  });
+});
+
+describe("스튜디오 도구 덱 — 묶음 + 아이콘 (데크 P3)", () => {
+  it("타일은 짓기 / 사람·이야기 / 보기·검사 세 묶음이고 「편집/조회」 반복 라벨이 없다", () => {
+    // Break: 17장이 한 격자에 흰 카드로 늘어서고 카드마다 「편집」 이 붙어 정보가 0 이 된다.
+    const { root } = standaloneShell();
+    const grid = findByTestId(root, "ai-studio-tool-grid");
+    expect(grid).toBeTruthy();
+    const groups = grid?.querySelectorAll(".ai-studio-tool-group") ?? [];
+    expect(groups.map((group) => group.querySelector(".ai-studio-tool-group-title")?.textContent)).toEqual(["짓기", "사람·이야기", "보기·검사"]);
+    const cards = grid?.querySelectorAll("[data-testid=ai-studio-tool-card]") ?? [];
+    expect(cards.length).toBeGreaterThan(0);
+    for (const card of cards) {
+      expect(card.querySelector(".ai-studio-tool-mode")).toBeNull();
+      expect(card.childNodes.some((child) => (child as { tagName?: string }).tagName?.toLowerCase() === "svg")).toBe(true);
+    }
+    expect(cards.map((card) => card.textContent)).toContain("NPC 배치");
   });
 });

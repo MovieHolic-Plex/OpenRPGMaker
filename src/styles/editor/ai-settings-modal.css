@@ -102,19 +102,22 @@
   display: contents;
 }
 
+/* 데크(2026-09-03): 3단 중첩 상자 → 헤어라인 절. 테두리가 정보보다 많던 설정 모달을 정리한다. */
 .ai-settings-section {
-  background: var(--bg-raised);
-  border: var(--stroke-1) solid var(--border-default);
-  border-radius: var(--radius-l);
-  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-top: var(--stroke-1) solid var(--border-subtle);
+  border-radius: 0;
+  overflow: visible;
+  padding-top: var(--space-3);
 }
 
 .ai-settings-section-header {
-  background: var(--bg-inset);
-  border-bottom: var(--stroke-1) solid var(--border-subtle);
+  background: transparent;
+  border-bottom: 0;
   display: grid;
-  gap: var(--space-1);
-  padding: var(--space-3) var(--space-4);
+  gap: 2px;
+  padding: 0 var(--space-2) var(--space-2);
 }
 
 .ai-settings-section-header h3,
@@ -139,7 +142,7 @@
 
 .ai-settings-section-body {
   display: grid;
-  padding: 0 var(--space-4);
+  padding: 0 var(--space-2);
 }
 
 .ai-settings-form .ai-config-row {

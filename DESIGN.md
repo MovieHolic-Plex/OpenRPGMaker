@@ -285,37 +285,19 @@ All spacing derives from 4px.
 - **Structure (studio bar)**: left `✦ brand · [project name ▾] (menu-project: 새 프로젝트/열기/저장본 다시 불러오기/예제 ▸/가져오기/내보내기 3종) · 💾 save (toolbar-save, autosave dot: saved=success · pending/saving=warning · error=danger) · [자료집] [소재] (toolbar-database / toolbar-resource-manager, standard+expert only) · tools` — standard shows 「도구 ▾」 (menu-tools: 세계관/음악·효과음/맵·이벤트 찾기), expert (`toolStrip`) shows the same three as inline icon buttons (toolbar-world / toolbar-sound-test / toolbar-search) and has **no** 도구 menu; beginner has no 자료집/소재 buttons and its 도구 menu carries them instead. Center: command palette chip `명령 · 맵 이동  Ctrl K` (workspace-command-palette-button). Right: run group `[▶ 테스트 | ⚔]` (mode-play + topbar-battle-test), 「스튜디오」, 「보기 ▾」 (workspace-panels-button: 패널 toggles + 편집 모드 radios 초보/표준/전문가 with one-line hints — **no 밀도 group**, it was the same axis under another name), then the icon cluster ? (menu-help) · 기록 · 신원 · ⚙ AI 설정 (topbar-ai-settings) · ⤢ 전체화면. One home per action: there is no 게임 menu, no 맵 menu, no authoring-task chips, no 툴바 접기, no classic toolbar row. The selected-event test moved to the event editor's 「테스트」 button and the event-layer context menu 「이 이벤트 테스트」 (event-layer-test-event).
 - **Shortcuts**: F5/F6/F7 layers, 1–7 tools, +/- zoom, Ctrl+S save, Ctrl+Z/Y undo/redo, Ctrl+C/V copy/paste (see `src/editor/hotkeys.ts`). Hotkeys are disabled while a form control or modal has focus. Ctrl+K opens the integrated palette covering tools, layers, Test Play, save, Database, World, Resources, 음악·효과음, 맵·이벤트 찾기, current-map PNG, build-palette toggle, panel open/close/move, 편집 모드 (`editor-ui-mode-*`), Help, and map navigation. The old 「밀도」 and dock-preset commands are gone with the surfaces they mirrored.
 
-### AI director plate — removed (2026-08-28)
+### AI assistant — the deck (2026-09-03)
 
-- The header plate (`ai-director-plate`: 48px face + `조수` + presence line) **no longer exists**. #163 dropped the assistant header and face; measured before-state (`verify-shots/assistant-glass/before/metrics.json`) showed a 518×73px header spending 12% of the 620px panel on chrome that carried only ☰ and ▾.
-- `src/editor/panels/aiDirectorChrome.ts` now holds one thing: the collapsed restore button, labelled with text (`조수`), not a face.
-- Primary actions (보내기, 이 맵에 넣기) and `@>` still use `--gold`, not indigo.
-- Note for anyone reviving a face here: faces are one file per image (`easyrpg-faceset-actor1-00`), not a 4×4 sheet plus a cell index. The sheet + index model is gone.
+The float assistant is **one glass instrument**, `div.ai-deck` inside the transparent `aside.ai-chat-panel` (canvas-wide, `inset:0`). Owner CSS: `src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css` (shell · rail · transcript · timeline · composer · popovers · pill) and `19-assistant-cards.css` (receipt card · autonomous checklist · wide viewer). The five stacked layers 13–17 are gone; do not add a 20th "repair" layer — edit 18/19.
 
-### AI conversation column — Cursor 3-band (locked 2026-08-25)
-
-Glass/side assistant is three bands only:
-1. **Plate** — removed by #163 (see above). The band is gone; overflow actions (dock/new-session/settings) moved off the header. No faceset, no `+`, no dock word, no detach.
-2. **Stream** — conversation and tool rows. This band owns scroll. Empty stream may show a one-line hint + at most two chips. No visual gallery.
-3. **Composer** — inset well + indigo `전송`, always at the bottom.
-Proposal cards float over the map (imposter), not inside these three bands.
-
-### AI conversation column (2026-08-25)
-
-Spatial contract (StyleGallery `scroll-body-shell` + `media-object` + `feed` + `imposter`):
-- The assistant is a cream **conversation column**, not a watery 260px billboard. Glass overlay is `360px` (`min(360px, 34%)`), left-inset `12px`. Side dock keeps the same column language at `minmax(320px, 36%)`.
-- **Scroll owner**: `.ai-chat-log` (or `.ai-glass-log` on glass). Header plate and composer stay put. Do not scroll the whole card.
-- Header is a `media-object`: 40px faceset + stacked `조수` / one-line presence. Actions are a 32px icon cluster (dock / more / collapse). No sentence-length dock labels on the plate.
-- Log is a `feed`: user turns sit in an inset well; assistant turns sit on `--bg-raised` with a 1px `--studio-line`. Tool/system rows stay `@>` mono. No indigo, no three-card visual gallery as the boot empty surface.
-- Composer is an inset well (`--bg-inset`) with a gold filled `보내기`. Focus ring uses `--gold`, not indigo.
-- A pending proposal does **not** stay a thin strip inside the 380px column. It floats as an `imposter` over the canvas: `min(520px, 92vw)` cream card, gold filled `이 맵에 넣기`, map ghost still visible around it. Tile-changing proposals (including `author_house`) always show a **지금 / 적용 후** pair.
-
-### AI idle hints
-
-- Quiet Gold idle on glass/side shows at most two `@>` hint rows (`ai-idle-hints`). Click sends. Composer chips stay empty.
-- Placeholder is `formatComposerPlaceholder(readAgentBrief())`.
-- Ink Only hides gold hint color. Map First hides the card and keeps one command line, left-offset by `--editor-left-safe`.
-- The overlay empty kit (`ai-start-visual-gallery`, `ai-empty-cta`, start-history stack) is not the boot empty surface.
+- **Geometry**: anchored bottom-right (`right:12px; bottom:14px`), radius 20, glass `color-mix(--bg-raised 90%)` + `blur(20px) saturate(1.08)`, three-layer shadow. Idle/empty/unfocused = composer only at `--ai-float-compact-width` 480; focus/turn/conversation = `--ai-deck-open-width` 760 (640 under 1300px). Saved width `--ai-float-bar-width` (`oprn:ai-panel-size`) overrides. Transcript `max-height: min(660px, 62vh)`, scrolls inside. Log-height axis and `− 100% +` zoom stepper were deleted; font size lives in settings and Ctrl+wheel.
+- **Rail** (`.ai-deck-rail`, 38px, always present when open): status dot + `조수` + `· <map>` + status sentence + icon slot (context %, new chat, history, preferences, more, collapse). State is one value on `panel[data-ai-state]` / rail / pill: `idle | run | attention | done | error` — accent / warning / success / danger tokens; running paints a 2px sweeping hairline on the deck's top edge.
+- **Transcript**: `.ai-command-row` keeps the two-track grid contract (04), but the `@>` prefix is hidden; user turns are right-aligned `--accent-muted` bubbles (max 78%), assistant turns are left-aligned sans prose 14px/1.55, system rows are 12px meta. Mono only for coordinates.
+- **Work timeline** (`.ai-tool-activity`): a card with header `작업 N단계` (open while running) / `작업 N단계 · 라벨 → 라벨` (collapsed when the turn ends) / `조회 N건`. Rows are `map chip 46×32 · Korean label (aiToolLabels) / summary · ✓`. Map chips crop the touched region from the project (aiMapChip → renderRegionSnapshot). Function names are `title` only.
+- **Receipt card** (`.ai-change-card`): badge `적용됨`, title `우물 1 · 상인 2 · 바닥 9칸`, chips, `지금 → 적용 후` pair with tag labels on the shots, footer `넓게 보기` / `되돌리기`.
+- **Composer**: borderless textarea 14.5px + one 36px row: mode segment `지시 / 질문 / 계획` (ask/plan append one `[컨텍스트]` line), context pins (map · selection), undo pill, model chip (standard/expert only), 34px round send (indigo) that becomes a black round stop while running. Suggestions render **inside** the deck above the composer: `맵 진단` hint + three sentence rows (ranked by the brief). No detached popover box, no key-hint text (it is the textarea `title`).
+- **Menu** `⋯`: 248px, icon + label + right meta (context %, tool count, model), opens **upward** from the rail. The idle-screen choice (`ai-command-temperature-*`) lives in the settings modal section `대기 화면`, not in the menu.
+- **Collapsed pill** (`.ai-collapsed-restore`, 44px): dot + `조수` + state sentence + pending-count badge; carries the same five states.
+- **Locks kept**: no face, no header plate, single float dock, popovers are `hidden` when closed (no transparent full layers), glass alpha ≥ .78, saturate ≤ 1.08, secondary text on glass uses `--text-2`.
 
 ### Left palette & map tree
 

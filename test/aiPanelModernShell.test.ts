@@ -59,7 +59,7 @@ describe("조수 패널 모던 셸", () => {
     expect(panel.dataset.aiConversation).toBe("empty");
   });
 
-  it("시작 추천은 추천 팝오버 한 곳에 모인다 — 감독 칩 3개 + 저작 예제 6개", () => {
+  it("시작 추천은 추천 팝오버 한 곳에 모인다 — 감독 칩 3개 + 실행 문장 행 3개", () => {
     // Break: 추천이 두 군데(팝오버 + 카드 본문)로 갈라지거나, 컴포저 칩이 비어
     // 빈 화면에 아무 진입점도 남지 않는다.
     const panel = renderPanel();
@@ -73,7 +73,8 @@ describe("조수 패널 모던 셸", () => {
     expect(examples).toBeTruthy();
     expect(popover?.contains(examples!)).toBe(true);
     expect(popover?.contains(chipsHost!)).toBe(true);
-    expect(examples?.querySelectorAll(".ai-authoring-example-chip").length).toBe(6);
+    // 데크(2026-09-03, D5): 예제는 칩 6개가 아니라 문장 행 3개다.
+    expect(examples?.querySelectorAll(".ai-suggest-row").length).toBe(3);
     expect(expected.length).toBe(3);
     expect(chips.length).toBe(expected.length);
     expect(chips.map((chip) => chip.dataset.testid)).toEqual(

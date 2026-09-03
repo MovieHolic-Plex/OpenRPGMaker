@@ -29,7 +29,7 @@
 
      ⚠ 알파를 더 내리지 마라: --text-3(#626E89) 은 **순백 위에서도 4.75:1** 뿐이라
      반투명 여유가 거의 없다. 유리 위 보조 텍스트는 --text-2 를 써야 한다
-     (17-assistant-modern-shell.css 의 .ai-authoring-examples-title 참고). */
+     (18-assistant-deck.css 의 유리 위 보조 글자 규칙 참고). */
   --bg-glass-panel: rgba(255, 255, 255, 0.78);
   --glass-blur-panel: blur(24px) saturate(1.08);
   --bg-scrim: rgba(15, 23, 42, 0.40);

@@ -106,37 +106,6 @@ export function saveDockWidth(width: number): void {
   localStorage.setItem(DOCK_WIDTH_KEY, String(clampDockWidth(width)));
 }
 
-// ── 기록 카드 높이 ─────────────────────────────────────────────
-// 입력줄 폭은 `oprn:ai-panel-size`.height 를 쓰지 않는다 — 그 필드는 구 유리 카드
-// 높이(400~880)라서 기록 카드에 물리면 뷰포트를 삼킨다. 기록 높이는 별 키.
-const LOG_HEIGHT_KEY = "oprn:ai-log-height";
-export const LOG_HEIGHT_LIMITS = { min: 140, max: 720 } as const;
-export const DEFAULT_LOG_HEIGHT = 360;
-
-export function clampLogHeight(
-  height: number,
-  viewport: { readonly width: number; readonly height: number },
-  clearancePx: number,
-): number {
-  const remaining = (Number.isFinite(viewport.height) && viewport.height > 0 ? viewport.height : 900)
-    - Math.max(72, Number.isFinite(clearancePx) ? clearancePx : 110)
-    - 24;
-  const max = Math.max(LOG_HEIGHT_LIMITS.min, Math.min(LOG_HEIGHT_LIMITS.max, remaining));
-  if (!Number.isFinite(height)) return LOG_HEIGHT_LIMITS.min;
-  return Math.round(Math.min(max, Math.max(LOG_HEIGHT_LIMITS.min, height)));
-}
-
-export function loadLogHeight(): number | null {
-  if (typeof localStorage === "undefined") return null;
-  const raw = Number(localStorage.getItem(LOG_HEIGHT_KEY));
-  return Number.isFinite(raw) && raw > 0 ? raw : null;
-}
-
-export function saveLogHeight(height: number): void {
-  if (typeof localStorage === "undefined") return;
-  localStorage.setItem(LOG_HEIGHT_KEY, String(Math.round(height)));
-}
-
 // ── 글자 크기 3단(V3C 채팅 관측성) ──────────────────────────────
 // 채팅 로그·프로포절 카드·도구 로그가 패널의 data-ai-font-size + CSS 변수(--ai-font-scale)로 함께 스케일된다.
 export const AI_FONT_SIZE_KEY = "oprn:ai-font-size";

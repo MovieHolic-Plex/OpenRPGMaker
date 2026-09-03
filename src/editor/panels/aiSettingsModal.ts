@@ -33,12 +33,21 @@ import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
 export type AiSettingsFocus = "first" | "apiKey";
 
+/** 패널이 소유하는 컨트롤을 설정 모달의 한 절로 싣는다(예: 대기 화면 3분기 — 제안서 D6). */
+export type AiSettingsExtraSection = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly content: HTMLElement;
+};
+
 export type OpenAiSettingsModalOptions = {
   readonly focusTarget?: AiSettingsFocus;
   readonly onSaved?: (config: AiConfig) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
   /** 패널 루트 — 글자 크기 즉시 반영용(선택). */
   readonly fontRoot?: HTMLElement | null;
+  readonly extraSections?: readonly AiSettingsExtraSection[];
 };
 
 let activeAiSettingsClose: (() => void) | null = null;
@@ -59,6 +68,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
       options.onFontSizeChange?.(size);
       if (options.fontRoot) applyAiFontSize(options.fontRoot, size);
     },
+    ...(options.extraSections ? { extraSections: options.extraSections } : {}),
   });
 
   const closeButton = el("button", {
@@ -119,6 +129,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
 export function renderAiSettingsForm(options: {
   readonly onSaved?: (config: AiConfig) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
+  readonly extraSections?: readonly AiSettingsExtraSection[];
 }): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void; dispose: () => void } {
   const onSaved = options.onSaved ?? (() => undefined);
   const onFontSizeChange = options.onFontSizeChange ?? (() => undefined);
@@ -403,6 +414,8 @@ export function renderAiSettingsForm(options: {
         "AI 패널의 읽기 환경을 조정합니다.",
         [fontSizeRow],
       ),
+      ...(options.extraSections ?? []).map((section) =>
+        settingsSection(section.id, section.title, section.description, [section.content])),
       el("div", { class: "ai-config-actions", children: [savedHint, saveButton] }),
     ],
   });
@@ -431,7 +444,7 @@ export function renderAiSettingsForm(options: {
 }
 
 function settingsSection(
-  id: "connection" | "model" | "behavior" | "display",
+  id: string,
   title: string,
   description: string,
   children: readonly HTMLElement[],

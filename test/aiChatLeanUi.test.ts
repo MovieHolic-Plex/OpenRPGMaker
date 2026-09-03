@@ -72,8 +72,11 @@ describe("AI 채팅 lean UI 정책", () => {
         )
       ) as FakeElement;
       expect(node.tagName).toBe("DIV");
-      expect(node.textContent).toBe("✓ 길 12칸");
+      // 데크(2026-09-03): 한 줄 텍스트 「✓ 요약」 → 라벨/요약/상태 세 칸 행. 함수 이름은 title 로만.
+      expect(node.querySelector?.(".ai-act-label")?.textContent).toBe("길 놓기");
+      expect(node.querySelector?.(".ai-act-sum")?.textContent).toBe("길 12칸");
       expect(node.textContent).not.toContain("paint_road");
+      expect(node.getAttribute("title")).toContain("paint_road");
       expect(node.querySelector?.("pre")).toBeFalsy();
     } finally {
       restore();

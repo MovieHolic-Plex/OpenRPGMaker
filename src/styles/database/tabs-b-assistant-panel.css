@@ -24,12 +24,7 @@
 
 /* 컴포저는 구 `.ai-chat-input-row` 잔여 규칙(04번)을 이긴다. */
 @import "./assistant-composer.css";
-/* Modern cream conversation column — after composer so glass/side chrome wins. */
-@import "./tabs-b-assistant-panel/13-assistant-modern.css";
-/* 조수 UX 수리 — 가장 나중에 불어 기존 도크 규칙을 이긴다(힌트 visibility 등). */
-@import "./tabs-b-assistant-panel/14-assistant-ux-repair.css";
-@import "./tabs-b-assistant-panel/15-assistant-readable.css";
-/* 변경 우선 모던 스타일 — 마지막에 불어 툴 활동 후경화와 카드 규칙이 09/13/14/15 를 이긴다. */
-@import "./tabs-b-assistant-panel/16-modern-change-first.css";
-/* 조수 셸 기하 — 토큰으로 여백·리듬을 한곳에서 잡고 앞 레이어의 상충 기하를 이긴다. */
-@import "./tabs-b-assistant-panel/17-assistant-modern-shell.css";
+/* 조수 데크(2026-09-03) — float 표면의 단일 소유자. 13~17 다섯 레이어(modern·ux-repair·readable·
+   change-first·modern-shell)를 걷고 여기 둘로 합쳤다. 앞 레이어의 같은 선택자는 특이도로 이긴다. */
+@import "./tabs-b-assistant-panel/18-assistant-deck.css";
+@import "./tabs-b-assistant-panel/19-assistant-cards.css";

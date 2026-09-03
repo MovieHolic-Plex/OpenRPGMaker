@@ -34,14 +34,14 @@ describe("편집기 z 층 순서", () => {
   });
 
   it("토스트가 AI 넓은 비교 오버레이(app-modal + 20)보다 위다", () => {
-    // 16-modern-change-first.css:285 가 calc(var(--z-app-modal) + 20) 을 쓴다.
+    // 19-assistant-cards.css(넓은 비교 뷰어)가 calc(var(--z-app-modal) + 20) 을 쓴다.
     const wideOverlay = tokenValue(tokens, "z-app-modal") + 20;
     expect(tokenValue(tokens, "z-toast")).toBeGreaterThan(wideOverlay);
   });
 
   it("그 계산식이 여전히 app-modal 기준이다 — 하드코딩으로 바뀌면 위 단정이 거짓이 된다", () => {
     const wide = readFileSync(
-      resolve(ROOT, "src/styles/database/tabs-b-assistant-panel/16-modern-change-first.css"),
+      resolve(ROOT, "src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css"),
       "utf8",
     );
     expect(wide).toContain("calc(var(--z-app-modal) + 20)");

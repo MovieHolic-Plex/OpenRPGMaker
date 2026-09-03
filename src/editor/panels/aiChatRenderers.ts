@@ -6,6 +6,8 @@ import type { ToolResult } from "@/editor/tools";
 import { getGrammarProfile, type VocabularyProposalCard } from "@/editor/tools/v3";
 import type { Project, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
+import { deckIcon } from "./aiDeckIcons";
+import { toolIconKey, toolLabel } from "./aiToolLabels";
 
 const AI_PROGRESS_TOOL_LIMIT = 30;
 const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group", "reset_project"]);
@@ -279,13 +281,48 @@ export function renderToolCallDetail(name: string, result: ToolResult, detail: T
   });
 }
 
-export function renderToolActivityEntry(name: string, result: ToolResult, detail?: ToolDetailSource): HTMLElement {
+export interface ToolActivityEntryOptions {
+  /** 행 앞의 맵 칩(aiMapChip). 없으면 툴 계열 아이콘 칩. */
+  readonly chip?: HTMLElement | null;
+}
+
+/**
+ * 작업 타임라인 행(데크 2026-09-03). 성공은 `칩 · 한국어 라벨/요약 · 상태` 세 칸 격자이고, 함수 이름은
+ * title 로만 남긴다 — 사용자는 「NPC 배치 · 상인 「두리」 (27,15)」 를 읽고 함수 이름은 호버로 본다.
+ * 실패는 그대로 details(요약 + 원문)다: 진단 정보라 이름을 감추지 않는다.
+ */
+export function renderToolActivityEntry(
+  name: string,
+  result: ToolResult,
+  detail?: ToolDetailSource,
+  options: ToolActivityEntryOptions = {},
+): HTMLElement {
   if (result.ok) {
-    // 성공한 호출은 한 줄 요약만 — JSON 인자/결과 원문은 실패·디버그 때만.
+    const rejection = ruleToolRejectionText(name, result);
+    const summary = result.summary.trim();
+    const draftPrefix = isDraftDestructiveTool(name) ? "(초안) " : "";
+    const sum = rejection ?? `${draftPrefix}${summary.length > 0 ? summary : toolLabel(name)}`;
+    const chip = options.chip
+      ?? el("span", { class: "ai-act-chip is-icon", attrs: { "aria-hidden": "true" }, children: [deckIcon(toolIconKey(name), { size: 15 })] });
     return el("div", {
-      class: "ai-tool-activity-line",
-      dataset: { testid: "ai-tool-entry" },
-      text: formatToolActivityLine(name, result),
+      class: "ai-tool-activity-line ai-act",
+      attrs: { title: `${name} — ${summary.length > 0 ? summary : "완료"}` },
+      dataset: { testid: "ai-tool-entry", tool: name },
+      children: [
+        chip,
+        el("span", {
+          class: "ai-act-what",
+          children: [
+            el("span", { class: "ai-act-label", text: toolLabel(name) }),
+            el("span", { class: "ai-act-sum", text: sum, attrs: { title: sum } }),
+          ],
+        }),
+        el("span", {
+          class: "ai-act-status",
+          attrs: { "aria-label": "완료" },
+          children: [deckIcon("check", { size: 15 })],
+        }),
+      ],
     });
   }
   const draftPrefix = isDraftDestructiveTool(name) ? "(초안) " : "";

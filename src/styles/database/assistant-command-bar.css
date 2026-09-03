@@ -42,14 +42,8 @@ body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
   z-index: 42;
 }
 
-.ai-chat-panel.chat-dock-float .ai-command-bar {
-  bottom: 14px;
-  left: auto;
-  max-width: var(--ai-float-bar-width, 640px);
-  position: absolute;
-  right: 12px;
-  width: min(var(--ai-float-bar-width, 640px), calc(100vw - 24px));
-}
+/* float 도크의 바 절대 배치 규칙은 데크(18-assistant-deck.css)로 흡수됐다 — 바는 `.ai-deck` 안에서
+   흐름으로 선다(2026-09-03). */
 
 /* 대기/새 대화 등 idle 상태는 하단 점유를 줄인다 */
 .ai-command-bar .ai-assistant-status[data-status-tone="idle"] {

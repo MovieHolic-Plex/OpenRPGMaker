@@ -11,9 +11,17 @@
 // 라벨이 없으면 무엇을 여는 점인지 알 수 없다. 얼굴이 아니라 글자다.
 
 import { el } from "@/util/dom";
+import type { DeckState } from "./aiDeckRail";
 
 const DIRECTOR_NAME = "조수";
 
+/**
+ * 접힘 알약. 점 + 「조수」 + 상태 문장 + 확인 필요 개수.
+ *
+ * 데크(2026-09-03): 접어 둔 동안에도 진행·확인 필요·완료·오류가 보여야 한다 — 이전에는
+ * `is-turn-running` 에서만 점이 켜져 승인 대기가 접힘 뒤로 사라졌다. 상태는 데크 레일과
+ * 같은 `data-ai-state` 다섯 값이고 패널이 `setRestoreButtonState` 로 밀어넣는다.
+ */
 export function createDirectorRestoreButton(): HTMLButtonElement {
   return el("button", {
     class: "ai-collapsed-restore",
@@ -22,12 +30,35 @@ export function createDirectorRestoreButton(): HTMLButtonElement {
       title: "조수 열기",
       "aria-label": DIRECTOR_NAME,
     },
-    dataset: { testid: "ai-collapsed-restore" },
+    dataset: { testid: "ai-collapsed-restore", aiState: "idle" },
     children: [
       el("span", { class: "ai-collapsed-restore-dot", attrs: { "aria-hidden": "true" } }),
       el("span", { class: "ai-collapsed-restore-name", text: DIRECTOR_NAME }),
+      el("span", { class: "ai-collapsed-restore-state", dataset: { testid: "ai-collapsed-restore-state" } }),
+      el("span", {
+        class: "ai-collapsed-restore-count",
+        attrs: { hidden: "" },
+        dataset: { testid: "ai-collapsed-restore-count" },
+      }),
     ],
   }) as HTMLButtonElement;
+}
+
+/** 알약의 상태 점·문장·개수 배지를 한 번에 갱신한다. 유휴에서는 문장을 비운다. */
+export function setRestoreButtonState(
+  button: HTMLElement,
+  state: DeckState,
+  label: string,
+  pendingCount: number,
+): void {
+  button.dataset.aiState = state;
+  const stateNode = button.querySelector<HTMLElement>(".ai-collapsed-restore-state");
+  if (stateNode) stateNode.textContent = state === "idle" ? "" : label;
+  const countNode = button.querySelector<HTMLElement>(".ai-collapsed-restore-count");
+  if (countNode) {
+    countNode.hidden = pendingCount <= 0;
+    countNode.textContent = pendingCount > 0 ? String(pendingCount) : "";
+  }
 }
 
 /**

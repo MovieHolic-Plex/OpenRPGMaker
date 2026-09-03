@@ -15,7 +15,7 @@ import { recordSupabaseConversation, type SupabaseConversationInput } from "@/pr
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
-export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; }
+export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; /** 마지막 조수(없으면 사용자) 발화 80자 — 목록에서 고를 근거(데크 2026-09-03). */ readonly preview?: string; }
 /**
  * 저장 결과 — `saveConversation` 은 **던지지 않는다.**
  * - `ok`: 이 세션에서 다시 읽을 수 있게 저장됐다(메모리 폴백 포함). false 면 IndexedDB 쓰기가 실패해 어디에도 없다.
@@ -301,13 +301,34 @@ export async function saveConversation(record: ConversationRecord): Promise<Conv
   return outcome;
 }
 
+const PREVIEW_LIMIT = 80;
+
+/** 마지막 조수 발화, 없으면 마지막 사용자 발화. 80자를 넘으면 잘라 … 를 붙인다. */
+export function conversationPreview(entries: readonly AuditEntry[]): string | null {
+  const pick = (kind: "assistant" | "user"): string | null => {
+    for (let index = entries.length - 1; index >= 0; index -= 1) {
+      const entry = entries[index];
+      if (entry && entry.kind === kind && entry.text.trim().length > 0) {
+        // 마크다운 강조 표식(** * `)은 미리보기 한 줄에서는 소음이다.
+        return entry.text.replace(/[*`_]{1,2}/gu, "").replace(/\s+/gu, " ").trim();
+      }
+    }
+    return null;
+  };
+  const text = pick("assistant") ?? pick("user");
+  if (text === null) return null;
+  return text.length > PREVIEW_LIMIT ? `${text.slice(0, PREVIEW_LIMIT)}…` : text;
+}
+
 function toSummary(conversation: ConversationRecord): ConversationSummary {
+  const preview = conversationPreview(conversation.entries);
   return {
     id: conversation.id,
     title: conversation.title,
     model: conversation.model,
     savedAt: conversation.savedAt,
     turnCount: conversation.entries.filter((entry) => entry.kind === "user").length,
+    ...(preview === null ? {} : { preview }),
     ...(conversation.projectContextKey ? { projectContextKey: conversation.projectContextKey } : {}),
   };
 }

@@ -93,24 +93,22 @@ describe("글자 크기 3단 (V3C ①)", () => {
     expect(target.style["--ai-font-scale"]).toBe("0.85");
   });
 
-  it("기록 카드의 − / 100% / + 가 글자 크기를 바꾸고 영속한다", () => {
+  it("기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다", () => {
+    // Break: − 100% + 크롬이 되살아나거나, Ctrl+휠 경로가 저장·데이터 속성을 안 바꾼다.
     const panel = renderPanel();
-    const zoomOut = findByTestId(panel, "ai-log-zoom-out") as unknown as FakeElement;
-    const zoomIn = findByTestId(panel, "ai-log-zoom-in") as unknown as FakeElement;
-    const label = findByTestId(panel, "ai-log-zoom-label") as unknown as FakeElement;
-    expect(zoomOut && zoomIn && label).toBeTruthy();
-    expect(label.textContent).toBe("100%");
-
-    zoomIn.click();
+    expect(findByTestId(panel, "ai-log-zoom")).toBeNull();
+    const body = findByTestId(panel, "ai-chat-body") as unknown as FakeElement;
+    const wheel = (deltaY: number): Event => {
+      const event = new Event("wheel", { cancelable: true });
+      Object.defineProperties(event, { ctrlKey: { value: true }, deltaY: { value: deltaY } });
+      return event;
+    };
+    body.dispatchEvent(wheel(-100));
     expect(storage.get(AI_FONT_SIZE_KEY)).toBe("large");
     expect(panel.dataset.aiFontSize).toBe("large");
     expect(panel.style["--ai-font-scale"]).toBe("1.2");
-    expect(label.textContent).toBe("120%");
-    expect((zoomIn as { disabled?: boolean }).disabled).toBe(true);
-
-    zoomOut.click();
+    body.dispatchEvent(wheel(100));
     expect(panel.dataset.aiFontSize).toBe("normal");
-    expect(label.textContent).toBe("100%");
   });
 });
 
