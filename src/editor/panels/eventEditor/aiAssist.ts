@@ -73,6 +73,8 @@ type PanelState = {
   staged: StagedDraft | null;
   status: string;
   statusKind: StatusKind;
+  // 마지막 초안을 목록에 반영했고 그 뒤로 입력을 고치지 않았다. 칩이 「반영됨」을 말하는 근거.
+  applied: boolean;
 };
 
 const panelStates = new Map<string, PanelState>();
@@ -136,7 +138,7 @@ function stateOf(projectKey: string, key: string): PanelState {
   }
   const existing = panelStates.get(key);
   if (existing) return existing;
-  const fresh: PanelState = { open: false, draft: "", staged: null, status: "", statusKind: "" };
+  const fresh: PanelState = { open: false, draft: "", staged: null, status: "", statusKind: "", applied: false };
   panelStates.set(key, fresh);
   return fresh;
 }
@@ -165,6 +167,8 @@ function chipStatusOf(state: PanelState): { text: string; kind: string; quiet: b
   if (state.staged) {
     return { text: stagedDiffSummary(state.staged.rows, state.staged.excluded), kind: "ready", quiet: false };
   }
+  // 반영 직후 입력이 그대로 남아 있다고 「작성 중」이라 말하면 거짓이다 — 방금 한 일을 말한다.
+  if (state.applied) return { text: "반영됨", kind: "applied", quiet: false };
   if (state.draft.trim().length > 0) return { text: "작성 중", kind: "idle", quiet: false };
   return { text: "", kind: "idle", quiet: true };
 }
@@ -259,6 +263,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
 
   input.addEventListener("input", () => {
     state.draft = input.value;
+    state.applied = false;
     // 사용자가 고치는 중이면 지난 오류는 유효하지 않다. 예전에는 «생성할 내용을
     // 입력하세요» 가 입력을 다 쓴 뒤에도 빨간 글씨로 남아 있었다.
     if (state.statusKind === "error") setStatus("");
@@ -272,7 +277,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   const resultMeta = el("span", { class: "ai-event-result-meta", dataset: { testid: "ai-event-result-meta" } });
   const resultTitle = el("h4", {
     class: "ai-event-result-title",
-    text: "위 목록에 표시했어요",
+    text: "위 목록이 초안이에요",
     attrs: { id: resultTitleId },
     dataset: { testid: "ai-event-result-title" },
   });
@@ -308,28 +313,42 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     }));
     const counts = countCommandDiff(staged.rows, staged.excluded);
     const changing = hasCommandDiffChanges(staged.rows, staged.excluded);
-    resultTitle.textContent = staged.scope === "page" ? "위 목록에 표시했어요" : "위 목록 끝에 표시했어요";
+    // 요약 숫자는 칩이 이미 말한다. 여기서는 「지금 무엇을 할 수 있는가」만 — 세 곳이 같은 숫자를
+    // 되풀이하던 것을 걷어냈다.
+    resultTitle.textContent = staged.scope === "page" ? "위 목록이 초안이에요" : "위 목록 끝에 초안을 붙였어요";
     resultMeta.textContent = changing
-      ? `${stagedDiffSummary(staged.rows, staged.excluded)} · 「이대로 하기」를 누르면 반영돼요`
+      ? `${stagedDiffSummary(staged.rows, staged.excluded)} · 빼고 싶은 줄은 「빼기」로 제외할 수 있어요`
       : "적용할 것을 모두 뺐어요";
     applyBtn.disabled = !changing;
     applyBtn.textContent = counts.removed > 0 ? "이대로 하기(지우는 것 포함)" : "이대로 하기";
+    refreshGenerateLabel();
     refreshChip();
     refreshListVisibility();
   };
 
+  const generateLabel = el("span", {
+    class: "ai-event-generate-label",
+    text: state.staged ? "다시 만들기" : "초안 만들기",
+  });
+  const generateSpinner = el("span", { class: "ai-event-spinner", attrs: { "aria-hidden": "true" } });
+  generateSpinner.hidden = true;
   const generateBtn = el("button", {
     class: "ai-event-btn primary ai-event-generate",
     attrs: { type: "button", title: "초안 만들기 (Ctrl+Enter)" },
     dataset: { testid: "ai-event-generate" },
-    children: [
-      el("span", {
-        class: "ai-event-generate-label",
-        text: state.staged ? "다시 만들기" : "초안 만들기",
-      }),
-      el("kbd", { class: "ai-event-kbd", text: "Ctrl↵" }),
-    ],
+    children: [generateSpinner, generateLabel, el("kbd", { class: "ai-event-kbd", text: "Ctrl↵" })],
   }) as HTMLButtonElement;
+  // 초안이 생기면 같은 버튼이 「다시 만들기」가 된다. 예전엔 렌더 시점에만 정해져 생성 뒤에도
+  // 「초안 만들기」로 남았다.
+  const refreshGenerateLabel = (): void => {
+    generateLabel.textContent = state.staged ? "다시 만들기" : "초안 만들기";
+  };
+  const setGenerating = (busy: boolean): void => {
+    generateBtn.disabled = busy;
+    generateBtn.setAttribute("aria-busy", String(busy));
+    generateSpinner.hidden = !busy;
+    root.classList.toggle("is-generating", busy);
+  };
 
   const generate = async (): Promise<void> => {
     if (generateBtn.disabled) return;
@@ -349,7 +368,8 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       );
       return;
     }
-    generateBtn.disabled = true;
+    setGenerating(true);
+    state.applied = false;
     setStatus("명령 초안을 만들고 있어요…", "busy");
     const beforeCommands = JSON.stringify(page.commands);
     try {
@@ -391,8 +411,9 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       const rows = diffCommandLists(liveBefore, after);
       state.staged = { rows, excluded: new Set<string>(), scope: result.scope };
       const fixedNote = result.attempts > 1 ? ` (스스로 ${result.attempts - 1}번 고쳤습니다)` : "";
+      // 숫자는 칩과 결과 줄이 말한다 — 상태줄은 다음 행동만.
       state.status = hasCommandDiffChanges(rows)
-        ? `${stagedDiffSummary(rows, new Set())} — 위 목록에서 확인하세요.${fixedNote}`
+        ? `초안을 만들었어요. 위 목록에서 확인하고 「이대로 하기」를 누르세요.${fixedNote}`
         : `바뀌는 것이 없었어요. 요청을 더 구체적으로 적어 보세요.${fixedNote}`;
       state.statusKind = "";
       const settled = liveDock && liveDock.key === key ? liveDock : null;
@@ -419,7 +440,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       // 이 클로저의 버튼은 문서에서 떨어져 나간 옛 도크 것이고, 새 도크는 `statusKind === "busy"`
       // 를 보고 자기 버튼을 잠갔다. 상태 쓰기는 재렌더를 부르지 않으므로 여기서 직접 풀지 않으면
       // 사용자가 다시 생성할 방법이 영구히 없어진다.
-      generateBtn.disabled = false;
+      setGenerating(false);
       const active = liveDock && liveDock.key === key ? liveDock : null;
       if (active) active.setGenerating(false);
     }
@@ -441,6 +462,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     const summary = stagedDiffSummary(staged.rows, staged.excluded);
     // 적용 전에 초안을 비워, 스토어 갱신으로 재생성될 패널이 목록을 다시 보이게 한다.
     state.staged = null;
+    state.applied = true;
     state.status = `${summary} 반영했어요. 되돌리려면 툴바의 ↶ 되돌리기 한 번.`;
     state.statusKind = "";
     // 명령 하나씩 넣지 않고 목록을 통째로 교체한다 — 되돌리기 스냅샷이 정확히 한 칸 쌓인다.
@@ -542,12 +564,12 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
   renderStaged();
   // 생성 중에 본문이 다시 그려진 경우 새 도크도 「생성 중」을 이어받는다 — 안 그러면 버튼이
   // 다시 활성돼 같은 원으로 둘째 호출을 또 넣을 수 있다.
-  if (state.statusKind === "busy") generateBtn.disabled = true;
+  if (state.statusKind === "busy") setGenerating(true);
   liveDock = {
     key,
     renderStaged,
     setStatus,
-    setGenerating: (busy) => { generateBtn.disabled = busy; },
+    setGenerating,
   };
   return root;
 }

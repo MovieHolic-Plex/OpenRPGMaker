@@ -196,6 +196,45 @@
   margin-left: auto;
 }
 
+/* 생성 중 — 채움 버튼 안에서 표식만 돌고(transform 만 움직인다) 글자는 그대로다. */
+.ai-event-spinner {
+  animation: ai-event-spin 0.8s linear infinite;
+  border: 2px solid color-mix(in srgb, var(--on-accent) 45%, transparent);
+  border-radius: 50%;
+  border-top-color: var(--on-accent);
+  box-sizing: border-box;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 12px;
+  width: 12px;
+}
+
+.ai-event-spinner[hidden] {
+  display: none;
+}
+
+@keyframes ai-event-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-event-spinner {
+    animation: none;
+  }
+}
+
+.ai-event-assist.is-generating .ai-event-input {
+  cursor: progress;
+}
+
+/* 반영 직후 칩 — 초록으로 「끝난 일」을 말한다(작성 중·오류와 구분). */
+.event-aux-chip-status[data-kind="applied"] {
+  border-color: color-mix(in srgb, var(--success) 45%, transparent);
+  color: var(--success);
+}
+
 .ai-event-kbd {
   border: 1px solid var(--accent-border);
   border-radius: var(--radius-s);
@@ -242,11 +281,17 @@
   flex-basis: 0;
 }
 
+/* 결과 줄은 한 줄이다 — 제목·안내가 왼쪽, 「이대로 하기·취소」가 오른쪽. 두 줄(헤더 + 버튼 행)로
+   쌓으면 도크가 목록에서 40px 을 더 가져갔다. 좁으면 flex-wrap 으로 내려간다. */
 .ai-event-result {
+  align-items: center;
   border-top: 1px solid var(--border-subtle);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px var(--space-3);
   min-height: 0;
+  padding: 8px 14px 10px;
 }
 
 .ai-event-result[hidden] {
@@ -256,9 +301,12 @@
 .ai-event-result-header {
   align-items: baseline;
   display: flex;
-  gap: var(--space-2);
-  justify-content: space-between;
-  padding: 9px 14px 7px;
+  flex: 1 1 320px;
+  flex-wrap: wrap;
+  gap: 2px var(--space-2);
+  justify-content: flex-start;
+  min-width: 0;
+  padding: 0;
 }
 
 .ai-event-result-title {
@@ -281,7 +329,8 @@
   flex: 0 0 auto;
   gap: var(--space-2);
   justify-content: flex-end;
-  padding: 9px 14px 12px;
+  margin-left: auto;
+  padding: 0;
 }
 
 /* ── 초안을 목록 자리에 겹쳐 보이기 ───────────────────────────────────────────
@@ -300,9 +349,15 @@
   display: none;
 }
 
+/* 실제 목록(.cmd-list, balanced.css 「행은 줄이다」)과 같은 여백·들여쓰기 — 초안이 목록 자리에서
+   같은 기하로 보여야 「넣으면 어떻게 보일지」가 예측된다. 예전엔 여백 0 이라 행이 칼럼 가장자리에
+   붙어 다른 표면처럼 읽혔다. */
 .cmd-staged {
+  --blk-indent: 28px;
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  padding: 6px 12px 24px;
 }
 
 .cmd-staged-row {
@@ -314,7 +369,8 @@
   align-items: center;
   display: flex;
   gap: var(--space-2);
-  padding-left: calc(var(--cmd-depth, 0) * var(--blk-indent, 16px));
+  min-height: 34px;
+  padding: 0 6px 0 calc(6px + var(--cmd-depth, 0) * var(--blk-indent, 16px));
 }
 
 .cmd-staged-mark {
@@ -394,14 +450,16 @@
   opacity: 0.72;
 }
 
+/* 행마다 붙는 토글은 조용해야 한다 — 9줄이면 알약 9개가 글자와 경쟁했다. 글자는 보조 12px,
+   테두리는 hover·focus 에서만. 되돌린 행(aria-pressed)만 액센트로 「결정을 취소했다」를 남긴다. */
 .cmd-staged-toggle {
-  background: var(--control-bg);
-  border: 1px solid var(--border-default);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 999px;
   color: var(--text-2);
   cursor: pointer;
   flex: 0 0 auto;
-  font: 600 10px/1 var(--font-ui);
+  font: 500 12px/1 var(--font-ui);
   margin-left: auto;
   padding: 4px 8px;
   transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
