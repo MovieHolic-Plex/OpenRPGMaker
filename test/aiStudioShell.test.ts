@@ -1,7 +1,9 @@
 // 스튜디오 셸: 장면 | 모니터 | 오른쪽 채팅 + 아래 덱.
 // 기본 입력줄 캡슐은 건드리지 않고, is-studio 일 때만 이 레이아웃이 산다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { addChildMap } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
+import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createStudioShell } from "@/editor/panels/aiStudioShell";
 import { renderTopbar } from "@/editor/panels/menu";
@@ -282,6 +284,48 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(toggle?.getAttribute("aria-expanded")).toBe("false");
     toggle?.click();
     expect(deck?.className).not.toContain("is-collapsed");
+  });
+
+  it("장면 레일과 조수 열을 접으면 셸에 접힘 클래스가 붙는다", () => {
+    const { root } = standaloneShell();
+    const scenesToggle = findByTestId(root, "ai-studio-scenes-collapse");
+    const chatToggle = findByTestId(root, "ai-studio-chat-collapse");
+    expect(scenesToggle?.getAttribute("aria-expanded")).toBe("true");
+    expect(chatToggle?.getAttribute("aria-expanded")).toBe("true");
+    scenesToggle?.click();
+    expect(root.className).toContain("is-scenes-collapsed");
+    expect(scenesToggle?.getAttribute("aria-expanded")).toBe("false");
+    chatToggle?.click();
+    expect(root.className).toContain("is-chat-collapsed");
+    expect(chatToggle?.getAttribute("aria-expanded")).toBe("false");
+    scenesToggle?.click();
+    chatToggle?.click();
+    expect(root.className).not.toContain("is-scenes-collapsed");
+    expect(root.className).not.toContain("is-chat-collapsed");
+  });
+
+  it("실내 장면은 부모 아래에 접혀 있고, 펼치면 보이며 검색은 평탄화한다", () => {
+    const parentId = store.getCurrent().startMapId;
+    addChildMap(parentId, "안채", { width: 8, height: 6 });
+    const { root, shell } = standaloneShell();
+    const names = () => root.querySelectorAll("[data-testid=ai-studio-scene]").map((row) => row.textContent ?? "");
+    expect(names().some((text) => text.includes("빈 맵"))).toBe(true);
+    expect(names().some((text) => text.includes("안채"))).toBe(false);
+    findByTestId(root, "ai-studio-scene-fold")?.click();
+    expect(names().some((text) => text.includes("안채"))).toBe(true);
+    findByTestId(root, "ai-studio-scene-fold")?.click();
+    expect(names().some((text) => text.includes("안채"))).toBe(false);
+
+    const search = findByTestId(root, "ai-studio-scene-search");
+    fire(search!, "input", "안채");
+    expect(names().some((text) => text.includes("안채"))).toBe(true);
+    fire(search!, "input", "");
+
+    const childId = Object.keys(store.getCurrent().maps).find((id) => store.getCurrent().maps[id]?.name === "안채");
+    expect(childId).toBeTruthy();
+    selectEditorMap(childId!);
+    shell.refreshScenes();
+    expect(names().some((text) => text.includes("안채"))).toBe(true);
   });
 
   it("작업 판은 진행률을 세고 탭 배지에도 적는다", () => {
