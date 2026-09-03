@@ -1,4 +1,5 @@
 import { isPassable } from "@/project/collision";
+import { roleCapabilities } from "@/project/tileRoles";
 import { TILE } from "@/project/defaults/constants";
 import {
   resolveMaterialByLabel,
@@ -34,6 +35,9 @@ export type PlacePropsInput = {
   readonly origins?: readonly { readonly x: number; readonly y: number }[];
 };
 
+/** 산포 거절 문구용 역할 라벨(UI 표시용) — 판정은 roleCapabilities().scatterAsProp 이 한다. */
+const NON_PROP_ROLE_LABELS: Readonly<Record<string, string>> = { wall: "벽", roof: "지붕", building: "건물·바닥", castle: "성채", water: "수역" };
+
 export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolExecResult {
   const map = draft.maps[input.mapId];
   if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${input.mapId}`, { code: "missing-map", mapId: input.mapId });
@@ -64,6 +68,15 @@ export function placePropsOnDraft(draft: Project, input: PlacePropsInput): ToolE
     throw new ToolError(`${access.message}${hint} — 다시 보낼 형식 예시: ${JSON.stringify(PROPS_EXAMPLE)}`, { code: "material-not-found", mapId: map.id });
   }
 
+  // 소품 툴은 소품만 놓는다 — 바닥·벽·건물·수역 그룹이 들어오면 면/벽 툴로 보낸다.
+  // 2026-09-03 실측: fill_region 이 「돌바닥」을 거절한 뒤 모델이 place_props 로 우회해 통행 불가 바닥 타일을 산포했다.
+  if (access.kind === "group" && !roleCapabilities(tileset, access.group.role).scatterAsProp) {
+    throw new ToolError(
+      `「${input.material}」은(는) ${NON_PROP_ROLE_LABELS[access.group.role] ?? access.group.role} 재료라 소품으로 산포할 수 없습니다. `
+        + "바닥·지형 면은 fill_region(오토타일 재료) 또는 paint_tiles, 벽은 build_wall 을 쓰세요.",
+      { code: "material-not-prop", mapId: map.id },
+    );
+  }
   if (access.kind === "group" && access.group.patternGrammar) {
     const soft = access.status === "soft" ? access.softConfirm : undefined;
     const scattered = runScatterObject(draft, {
