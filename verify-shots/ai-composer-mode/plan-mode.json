@@ -1,0 +1,9 @@
+{
+  "before": 240,
+  "log": {
+    "toolRounds": 0,
+    "writeToolNamesSeen": [],
+    "callsWithTools": 0,
+    "callsWithoutTools": 2
+  }
+}
