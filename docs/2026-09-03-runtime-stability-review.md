@@ -78,6 +78,10 @@
   HTML 을 만들어 `node scripts/qa-standalone-boot.mjs` 로 `file://` 부팅: 타이틀 → 진입 → 방향키 이동
   모두 통과, 네트워크 실패 0 · 콘솔 에러 0.
 - 계측 훅(`__oprnPerf`)은 QA 계측 부팅에서만 설치된다. 계수기 자체는 정수 증가만 하므로 출하 비용은 없다.
+- 실행형 HTML 빌드가 「읽지 못한 에셋 24개」(`enemy-art-06.png` …)를 냈다. 몬스터 리소스 id `…-enemy_extra_06`
+  의 숫자를 그대로 파일명에 붙였는데 디스크 파일은 `enemy-art-001…120.png`(세 자리)다 — 예전 프로젝트·픽스처의
+  두 자리 id 는 전투에서 몬스터 그림이 404 였다. `generatedAssetResourceResolver` 가 세 자리로 채운다
+  (`test/generatedAssetResourceResolver.test.ts`). 고친 뒤 빌드: 에셋 142 → 166개, 못 읽은 에셋 0.
 
 ## 검증
 - 단위: `test/runtimeMovementStability.test.ts`(16) · `test/editorGameSuspension.test.ts`(6) — 고치기 전
