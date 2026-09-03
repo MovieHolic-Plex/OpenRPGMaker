@@ -33,12 +33,8 @@ async function seedFarmingDemo(page: Page): Promise<void> {
 }
 
 async function openDatabaseAtAnyWidth(page: Page): Promise<void> {
-  const toolbar = page.getByTestId("toolbar-database");
-  if (await toolbar.isVisible().catch(() => false)) {
-    await toolbar.click();
-  } else {
-    await page.getByTestId("authoring-task-data").click();
-  }
+  // 자료집 버튼(toolbar-database)은 표준·전문가 스튜디오 바에 폭과 무관하게 있다(좁으면 아이콘만 남는다).
+  await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
 }
 

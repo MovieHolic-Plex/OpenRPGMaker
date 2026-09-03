@@ -1,14 +1,19 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  // 클래식 툴바(도움말 버튼 포함)는 전문가 모드에서만 노출된다.
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
+
+/** 도움말은 스튜디오 바 오른쪽 ? 아이콘 메뉴(menu-help → 단축키 · 도움말)로 연다(2026-09-03 클래식 툴바 행 삭제). */
+async function openHelpFromTopbar(page: import("@playwright/test").Page): Promise<void> {
+  await page.getByTestId("menu-help").click();
+  await page.getByTestId("menu-help-shortcuts").click();
+}
 
 test("help button opens a wiki-style editor guide", async ({ page }, testInfo) => {
   await page.goto("/?freshProject=1");
 
-  await page.getByTestId("toolbar-help").click();
+  await openHelpFromTopbar(page);
 
   const modal = page.getByTestId("help-modal");
   await expect(modal).toBeVisible();
@@ -39,7 +44,7 @@ test("help button opens a wiki-style editor guide", async ({ page }, testInfo) =
   await expect(modal).toBeHidden();
 
   // 다시 열고 닫기 버튼으로도 닫힌다.
-  await page.getByTestId("toolbar-help").click();
+  await openHelpFromTopbar(page);
   await expect(modal).toBeVisible();
   await page.getByTestId("help-modal-dismiss").click();
   await expect(modal).toBeHidden();

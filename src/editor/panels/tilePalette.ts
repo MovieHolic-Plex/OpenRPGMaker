@@ -8,6 +8,7 @@ import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
+import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeCustomPalette, makeGridPalette, gridPaletteDisplayTile } from "@/editor/panels/tilePaletteGrid";
@@ -128,8 +129,21 @@ export function renderTilePalette(container: HTMLElement): void {
   }
 }
 
-/** 선택 타일 + 타일셋 이름을 한 줄 칩으로 — 구 palette-tileset-badge(별도 줄)를 흡수했다. */
-function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTMLElement {
+/**
+ * 선택 타일 + 타일셋 이름을 한 줄 칩으로 — 구 palette-tileset-badge(별도 줄)를 흡수했다.
+ *
+ * 칩의 두 글자 조각은 둘 다 **눌리는 것**이다(2026-09-03). 그전에는 ⚙ 만 버튼이고 나머지는
+ * 텍스트여서, 버튼처럼 테두리 친 칩에서 타일셋 이름을 눌러도 아무 일이 없었다 — 사용자가
+ * "타일 세트를 눌러도 반응이 없다"고 한 그 자리다.
+ *  · 타일 이름 → 시트를 그 타일 위치로 스크롤(스포이트와 같은 리빌).
+ *  · 타일셋 이름 → 「맵 설정」을 열고 「타일 그림판」 선택에 초점. 타일셋을 바꾸는 집은 그 창
+ *    하나이므로(헤더 IA 「한 동작에 집 하나」) 여기서 두 번째 선택기를 만들지 않는다.
+ */
+function makeSelectedTileStatus(
+  selectedTile: number,
+  tileset: TilesetDef,
+  map: { readonly id: string; readonly name: string },
+): HTMLElement {
   const hasTile = selectedTile >= 0 && selectedTile < tileset.count;
   // 기본 타일 그림판 라벨(tileDisplayLabelForIndex)은 이미 "360 흙길 중심"처럼 번호로 시작 — 번호 중복 표기를 막는다.
   const name = hasTile ? quickTileName(tileset, selectedTile) : "";
@@ -148,13 +162,30 @@ function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTML
       })
     );
   }
-  chip.append(el("span", { class: "selected-tile-label", text: label }));
   chip.append(
-    el("span", {
+    el("button", {
+      class: "selected-tile-label",
+      text: label,
+      attrs: {
+        type: "button",
+        title: hasTile ? "팔레트에서 이 타일 위치로 이동" : "선택된 타일이 없습니다",
+        "aria-label": hasTile ? `선택 타일 ${label} — 팔레트에서 위치 보기` : "선택 타일 없음",
+      },
+      dataset: { testid: "selected-tile-reveal" },
+      on: { click: () => { if (hasTile) revealPaletteTileFromMap(selectedTile); } },
+    })
+  );
+  chip.append(
+    el("button", {
       class: "selected-tile-tileset",
       text: tileset.name,
-      attrs: { title: tileset.name },
+      attrs: {
+        type: "button",
+        title: `타일 그림판: ${tileset.name} — 맵 설정에서 바꿉니다`,
+        "aria-label": `타일 그림판 ${tileset.name} — 맵 설정에서 바꾸기`,
+      },
       dataset: { testid: "palette-tileset-name" },
+      on: { click: () => openMapPropertiesDialog(map.id, map.name, { focus: "tileset" }) },
     })
   );
   // 속성 진입 — 예전 「속성」 탭의 자리. 창으로 열어 팔레트 높이를 건드리지 않는다.
@@ -180,7 +211,7 @@ function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTML
  * → 붓 보조 → 이 타일의 속성 → 구조 킷.
  */
 function makePaletteSurface(input: {
-  readonly map: { readonly id: string; readonly tilesetId: string };
+  readonly map: { readonly id: string; readonly name: string; readonly tilesetId: string };
   readonly state: ReturnType<typeof editorState.get>;
   readonly tileLayer: Exclude<Layer, "event">;
   readonly tileset: TilesetDef;
@@ -191,7 +222,7 @@ function makePaletteSurface(input: {
     dataset: { testid: "palette-work-pane-paint" },
   });
 
-  root.append(makeSelectedTileStatus(state.selectedTile, tileset));
+  root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
   root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   // 도구 → 레이어 가 사이드바 최상단 순서다(사용 번도 순). 상단 「도구」 메뉴에 있었던
   // 레이어 항목을 이리로 옷긴 것이다 — test/editorMenuSidebarIa.test.ts 가 이 순서를 고정한다.

@@ -95,11 +95,10 @@ for (const size of SIZES) {
         await expect(name).toBeVisible();
         const nameBox = await name.boundingBox();
         expect(nameBox && nameBox.width).toBeGreaterThan(20);
-        // 5) 클래식 툴바 오버플로우: 1024px에서는 ⋯ 토글이 실제로 나타나야 한다
-        if (size.width === 1024) {
-          const overflowToggle = page.locator("[data-testid='toolbar-overflow-toggle']").first();
-          await expect(overflowToggle).toBeVisible();
-        }
+        // 5) 스튜디오 바는 한 줄이다 — 1024px 에서도 두 번째 툴바 행이 생기지 않는다(2026-09-03).
+        await expect(page.getByTestId("oprn-toolbar")).toHaveCount(0);
+        const barBox = await page.getByTestId("oprn-menu-bar").boundingBox();
+        expect(barBox && barBox.height).toBeLessThanOrEqual(49);
       } else {
         // 기본 모드: 아이콘 레일 존재 + 폭 72
         const rail = page.locator("[data-testid='basic-left-rail']");

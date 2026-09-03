@@ -85,13 +85,13 @@ describe("editorUiMode", () => {
     const expert = chromeForMode("expert");
 
     expect(beginner.mapTree).toBe(false);
-    expect(beginner.classicToolbar).toBe(false);
+    expect(beginner.toolStrip).toBe(false);
     expect(beginner.canvasChromeDense).toBe(false);
     expect(standard.mapTree).toBe(true);
-    expect(standard.classicToolbar).toBe(false);
+    expect(standard.toolStrip).toBe(false);
     expect(standard.canvasChromeDense).toBe(true);
     expect(expert.mapTree).toBe(true);
-    expect(expert.classicToolbar).toBe(true);
+    expect(expert.toolStrip).toBe(true);
     expect(expert.canvasChromeDense).toBe(true);
     expect(expert.helpMenu).toBe(true);
     expect(beginner.paletteRail).toBe(true);
@@ -141,10 +141,9 @@ describe("editorUiMode", () => {
     const beginner = chromeForMode("beginner");
     const expected = [
       "mapTree",
-      "classicToolbar",
+      "toolStrip",
       "canvasChromeDense",
       "helpMenu",
-      "gameMenuLabel",
       "paletteRail",
       "leftPanelMaxWidthPx",
       "layerTermStyle",

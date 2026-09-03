@@ -1,8 +1,12 @@
+// 저작 작업(runAuthoringTask) — Ctrl+K 「작업: …」 명령의 실제 동작 경계.
+//
+// 2026-09-03: 톱바의 작업 칩 4개(맵/이벤트/데이터/테스트)는 걷었다 — 사이드바 레이어 전환·자료집 버튼·
+// ▶ 테스트의 두 번째 자리였다. 함수는 팔레트를 위해 남고, 칩이 함께 바꾸던 도크 프리셋 결합도 풀렸다
+// (「데이터 중심」이 자료집 모달 뒤에서 좌측 도크를 비워, 모달을 닫으면 팔레트가 사라진 채 남는 함정).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { getEditorUiMode, resetEditorUiModeForTests } from "@/editor/editorUiMode";
-import { uiLabel } from "@/editor/uiCopy";
-import { resetWorkspaceForTests, setWorkspacePreset } from "@/editor/workspace/workspaceStore";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
+import { getWorkspaceLayout, resetWorkspaceForTests } from "@/editor/workspace/workspaceStore";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -12,9 +16,11 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/editor/panels/databaseModal", () => ({
   openDatabaseModal: mocks.openDatabaseModal,
 }));
-vi.mock("@/editor/panels/commandPalette", () => ({ requestCommandPalette: vi.fn() }));
+// app/mode 는 모듈 상단에서 workspaceStore 를 동적 import 해 구독한다 — 이 테스트가 workspaceBar 를
+// 통해 그 순환을 밟으면 초기화 전 `listeners` 접근(TDZ)이 unhandled rejection 으로 새어 나온다.
 vi.mock("@/app/mode", () => ({ getMode: () => "edit", toggleMode: vi.fn() }));
 
+const { AUTHORING_TASKS, runAuthoringTask } = await import("@/editor/authoringTasks");
 const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
 
 class MemoryStorage implements Storage {
@@ -47,12 +53,13 @@ beforeEach(() => {
     configurable: true,
     value: {
       localStorage: storage,
+      innerWidth: 1440,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
       dispatchEvent,
     },
   });
-  resetEditorUiModeForTests("beginner");
+  resetEditorUiModeForTests("standard");
   resetWorkspaceForTests();
   editorState.set({ layer: "lower", tool: "paint" });
   mocks.openDatabaseModal.mockClear();
@@ -66,81 +73,58 @@ afterEach(() => {
   resetWorkspaceForTests();
 });
 
-describe("genre-neutral authoring task launcher", () => {
-  // Break caught: a topbar control that looks like a task launcher but exposes only layout presets.
-  it("renders four direct task actions instead of three pretend task presets", () => {
-    const root = renderBar();
-    for (const id of ["map", "event", "data", "test"]) {
-      expect(findByTestId(root, `authoring-task-${id}`), id).toBeTruthy();
-    }
-    expect(findByTestId(root, "workspace-preset-toggle")).toBeNull();
+describe("저작 작업 명령", () => {
+  it("네 작업이 팔레트용 표에 남아 있다", () => {
+    expect(AUTHORING_TASKS.map((task) => task.id)).toEqual(["map", "event", "data", "test"]);
   });
 
   // Break caught: Event changes panel geometry but leaves the paint tool active.
-  it("starts Event by activating the real event layer and tool", () => {
-    const root = renderBar();
-    findByTestId(root, "authoring-task-event")?.click();
+  it("이벤트는 실제 이벤트 레이어와 도구를 켠다", () => {
+    runAuthoringTask("event");
     expect(editorState.get().layer).toBe("event");
     expect(editorState.get().tool).toBe("event");
   });
 
-  // Break caught: Data clears the left dock but never opens the database work window.
-  it("starts Data by opening the real database modal", () => {
-    const root = renderBar();
-    findByTestId(root, "authoring-task-data")?.click();
-    expect(mocks.openDatabaseModal).toHaveBeenCalledTimes(1);
+  it("맵은 이벤트 레이어에서 바닥으로 돌아오고 타일 레이어는 그대로 둔다", () => {
+    editorState.set({ layer: "event", tool: "event" });
+    runAuthoringTask("map");
+    expect(editorState.get().layer).toBe("lower");
+    expect(editorState.get().tool).toBe("paint");
+    editorState.set({ layer: "upper", tool: "erase" });
+    runAuthoringTask("map");
+    expect(editorState.get().layer).toBe("upper");
   });
 
-  // Break caught: Test is omitted from the common tasks or merely changes layout state.
-  it("starts Test by dispatching the real test-play request", () => {
-    const root = renderBar();
-    findByTestId(root, "authoring-task-test")?.click();
+  // Break caught: Data clears the left dock but never opens the database work window.
+  it("데이터는 자료집 모달을 열고 좌측 도크는 건드리지 않는다", () => {
+    const before = getWorkspaceLayout().docks;
+    runAuthoringTask("data");
+    expect(mocks.openDatabaseModal).toHaveBeenCalledTimes(1);
+    expect(getWorkspaceLayout().docks).toEqual(before);
+    expect(getWorkspaceLayout().docks.left).toEqual(["tiles", "maps"]);
+  });
+
+  // Break caught: Test merely changes layout state.
+  it("테스트는 실제 테스트 실행 요청을 보낸다", () => {
+    runAuthoringTask("test");
     expect(dispatchEvent).toHaveBeenCalledTimes(1);
     expect(dispatchEvent.mock.calls[0]?.[0]).toMatchObject({ type: "oprn:test-play-window" });
   });
 
-  // Break: ▤ 패널 메뉴가 같은 프리셋 3개를 「레이아웃」 이라는 두 번째 이름으로 다시 내놓는다.
-  // 그 줄들은 authoringTasks 가 대체한 「작업 런처처럼 보이지만 레이아웃 프리셋만 내놓는 컨트롤」
-  // 이었고, 톱바 한 줄 안에서 맵/이벤트/데이터를 두 번 말하게 만들었다.
-  it("패널 메뉴에 작업 프리셋을 두 번째 이름으로 다시 내놓지 않는다", () => {
-    const root = renderBar();
-    for (const preset of ["map", "event", "data"]) {
-      expect(findByTestId(root, `workspace-layout-${preset}`), preset).toBeNull();
-    }
-    // 밀도·편집 모드는 이 메뉴가 계속 소유한다 — 지운 것은 중복된 프리셋 줄뿐이다.
-    expect(findByTestId(root, "workspace-density-comfortable")).toBeTruthy();
-    expect(findByTestId(root, "workspace-ui-mode-standard")).toBeTruthy();
-  });
-
-  // Break: 프리셋 줄의 상호배타 선택을 aria-pressed 독립 토글로 옮기고, 단순 배치 변경을
-  // 「데이터 작업 중」처럼 읽었다. bare setWorkspacePreset도 거짓말하지 않는 문구를 고정한다.
-  it("현재 레이아웃 프리셋만 aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는다", () => {
-    setWorkspacePreset("data");
-    expect(mocks.openDatabaseModal).not.toHaveBeenCalled();
-
-    const root = renderBar();
-    const data = findByTestId(root, "authoring-task-data");
-    const map = findByTestId(root, "authoring-task-map");
-    const test = findByTestId(root, "authoring-task-test");
-    expect(data?.getAttribute("aria-current")).toBe("true");
-    expect(data?.getAttribute("aria-label")).toContain("현재 레이아웃 프리셋");
-    expect(data?.getAttribute("title")).toContain("현재 레이아웃 프리셋");
-    expect(map?.getAttribute("aria-current")).toBeNull();
-    expect(test?.getAttribute("aria-current")).toBeNull();
-    expect(test?.getAttribute("aria-label")).not.toContain("작업 열기");
-    expect(test?.getAttribute("aria-label")).toBe(test?.getAttribute("title"));
-    expect(test?.getAttribute("aria-label")).toContain(uiLabel("testPlay"));
-    for (const button of [data, map, test]) expect(button?.getAttribute("aria-pressed")).toBeNull();
-  });
-
-  // Break caught: selecting Data silently upgrades guided users to dense/expert chrome.
-  it("preserves the current density while switching among all four tasks", () => {
+  it("「보기」 메뉴는 작업 칩·프리셋·밀도를 다시 내놓지 않고 편집 모드만 소유한다", () => {
+    // Break: 작업 칩이나 밀도(안내/보통/촘촘) 라디오가 두 번째 이름으로 되살아난다.
     const root = renderBar();
     for (const id of ["map", "event", "data", "test"]) {
-      const button = findByTestId(root, `authoring-task-${id}`);
-      expect(button, id).toBeTruthy();
-      button!.click();
-      expect(getEditorUiMode(), id).toBe("beginner");
+      expect(findByTestId(root, `authoring-task-${id}`), id).toBeNull();
+      expect(findByTestId(root, `workspace-layout-${id}`), id).toBeNull();
     }
+    for (const density of ["guided", "comfortable", "dense"]) {
+      expect(findByTestId(root, `workspace-density-${density}`), density).toBeNull();
+    }
+    expect(findByTestId(root, "authoring-task-launcher")).toBeNull();
+    for (const mode of ["beginner", "standard", "expert"]) {
+      expect(findByTestId(root, `workspace-ui-mode-${mode}`), mode).not.toBeNull();
+    }
+    expect(findByTestId(root, "workspace-ui-mode-standard")?.getAttribute("aria-checked")).toBe("true");
   });
 });

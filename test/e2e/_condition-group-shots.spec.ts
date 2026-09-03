@@ -15,8 +15,8 @@ async function openEditor(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1440, height: 900 });
   const seed = mockupProject();
   await seedProjectFromSupabaseCanonical(page, seed.project);
-  const launcher = page.getByTestId("authoring-task-event");
-  if (await launcher.count()) await launcher.click();
+  const eventLayer = page.getByTestId("layer-event");
+  if (await eventLayer.count()) await eventLayer.click();
   const row = page.getByTestId(`event-list-row-${seed.eventId}`);
   if (await row.count()) {
     await row.click();

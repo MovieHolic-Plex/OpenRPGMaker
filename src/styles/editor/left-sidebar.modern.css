@@ -131,9 +131,28 @@
   width: 24px;
 }
 
+/* 두 글자 조각은 버튼이다 — 타일 이름은 시트 스크롤, 타일셋 이름은 맵 설정(타일 그림판).
+   버튼 기본 크롬을 지우고 글자만 남긴 뒤, 눌린다는 신호는 hover 색과 점선 밑줄로 낸다. */
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-label,
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0;
+  padding: 2px 3px;
+  text-align: left;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
 .editor-layout .left-panel-stack .selected-tile-status .selected-tile-label {
   color: var(--text-1);
   font: 700 12px/1.2 var(--font-ui);
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-label:hover {
+  background: var(--control-bg-hover);
 }
 
 .editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset {
@@ -141,6 +160,22 @@
   font: 500 11px/1.2 var(--font-ui);
   margin-left: auto;
   max-width: 40%;
+  text-align: right;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 2px;
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset:hover {
+  background: var(--control-bg-hover);
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-label:focus-visible,
+.editor-layout .left-panel-stack .selected-tile-status .selected-tile-tileset:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
 }
 
 .editor-layout .left-panel-stack .selected-tile-props-button {

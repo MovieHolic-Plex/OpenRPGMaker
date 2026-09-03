@@ -81,14 +81,14 @@ async function assertCommonPersonaContract(page: Page, mode: Persona): Promise<v
   expect(leftBox.x, "left tool chrome must stay at the viewport's left edge allowance").toBeLessThanOrEqual(8);
   expect(leftBox.x, "left tool chrome must begin left of the canvas").toBeLessThan(canvasBox.x);
 
-  for (const task of ["map", "event", "data", "test"]) {
-    await expect(page.getByTestId(`authoring-task-${task}`)).toBeVisible();
-  }
+  // 작업 칩(맵/이벤트/데이터/테스트)은 2026-09-03 에 걷었다 — 레이어 전환·자료집 버튼·▶ 테스트의 복제였다.
+  await expect(page.getByTestId("authoring-task-launcher")).toHaveCount(0);
   await expect(page.getByTestId("workspace-command-palette-button")).toBeVisible();
+  await expect(page.getByTestId("mode-play")).toBeVisible();
 
   const commandBox = await rect(page.getByTestId("ai-command-bar"));
-  const launcherBox = await rect(page.getByTestId("authoring-task-launcher"));
-  expect(intersectionArea(commandBox, launcherBox), "AI command bar must not intersect the authoring task launcher").toBe(0);
+  const topbarBox = await rect(page.getByTestId("oprn-menu-bar"));
+  expect(intersectionArea(commandBox, topbarBox), "AI command bar must not intersect the studio bar").toBe(0);
 
   const world = await openPaletteResult(page, "world", "open-world");
   await expect(world).toContainText("세계관");
@@ -132,10 +132,17 @@ for (const mode of PERSONAS) {
       await bootPersona(page, mode, width, height);
       await assertCommonPersonaContract(page, mode);
       if (mode === "beginner") await assertBeginnerContract(page);
+      if (mode === "beginner") {
+        await expect(page.getByTestId("toolbar-database")).toHaveCount(0);
+      } else {
+        const database = page.getByTestId("toolbar-database");
+        await expect(database).toBeVisible();
+        await expect(database).toBeEnabled();
+      }
       if (mode === "expert") {
-        const toolbarNew = page.getByTestId("toolbar-new");
-        await expect(toolbarNew).toBeVisible();
-        await expect(toolbarNew).toBeEnabled();
+        // 전문가는 세계관·음악·찾기가 인라인 아이콘 버튼이고 도구 메뉴는 없다.
+        await expect(page.getByTestId("toolbar-world")).toBeVisible();
+        await expect(page.getByTestId("menu-tools")).toHaveCount(0);
       }
       await page.screenshot({
         path: path.join(EVIDENCE_DIR, `persona-${mode}-${width}x${height}.png`),

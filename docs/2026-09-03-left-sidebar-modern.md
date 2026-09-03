@@ -59,6 +59,15 @@
 - e2e(`DEV_SERVER_PORT` 를 명령에 박고 내 서버로): `map-panel-modern`(16) · `map-tree-thumbnails` · `palette-tiles-come-first` 통과, 부팅 타임아웃 재시도로 통과한 flaky 1~2건은 부하(동시 `npm run gates`) 탓. `editor-map-focused-shell` 은 삭제된 `menu-map` 을 기대하는 선행 실패.
 - `npm run gates`: typecheck 0 · vitest 기준선 대비 새 실패 0 · 회귀로 보고된 2건(css 예산 래칫, 이벤트 편집기 표면 스냅샷 3축)은 깨끗한 HEAD 워크트리(`/tmp/mb-base`)에서도 같은 3축이 실패해 선행 상태로 확정.
 
+## 5-1. 후속 (같은 날, 사용자 지적 두 건)
+
+| 지적 | 실측 | 수정 |
+|---|---|---|
+| 「표준·전문가·초보 모드 진입점이 없다」 | 진입점은 톱바 「▤」 글리프 하나뿐인 버튼(35×34px, 라벨 없음) 안의 「편집 모드」 그룹. 장식으로 읽혔다 (`before-topbar-glyph-only.png`) | 버튼에 글자 「보기」(uiCopy `viewMenu`)를 붙였다. aria-label·title(패널/화면 배치와 밀도)은 그대로 (`after-topbar-view-menu-label.png`, `after-view-menu-open.png`) |
+| 「사이드바의 타일셋을 눌러도 반응이 없다」 | 선택 칩의 타일셋 이름(「합본 마을 · EasyRPG (CC0)」)은 span. 클릭 후 열리는 창·메뉴 0 (main 실측) | 버튼으로 바꾸고 누르면 **맵 설정**을 열어 「타일 그림판」 선택에 초점(+1.6초 링). 타일셋을 바꾸는 집은 그 창 하나이므로 두 번째 선택기를 만들지 않았다. 타일 이름도 버튼 — 누르면 시트가 그 타일 위치로 스크롤 (`after-tileset-name-opens-map-settings.png`) |
+
+공용 진입점 `src/editor/panels/mapPropertiesDialog.ts`(맵 트리 더블클릭·⋯ 메뉴도 같은 함수). 계약: `test/tilePaletteChip.test.ts`, `test/leftDockPanels.test.ts`(「보기」 라벨).
+
 ## 6. 남긴 것
 
 - 초보 모드 맵 플라이아웃을 열면 캔버스(WebGL) 하단 가운데에 150×150 흰 사각형이 그려진다(변경 전부터, DOM 요소 아님). 이 변경과 무관해 손대지 않았다.

@@ -4,7 +4,11 @@ type SvgIconName =
   | "map" | "hand" | "collision" | "more"
   | "terrain" | "structure" | "polish" | "npc" | "chest" | "combat" | "mood"
   | "composite" | "pin" | "save" | "warning" | "door" | "sign" | "shop"
-  | "close" | "check";
+  | "close" | "check"
+  // 스튜디오 바(톱바) 세트 — 2026-09-03 표준·전문가 셸 개편. 클래식 툴바의 CSS 배경 아이콘
+  // (components/icons.css 의 .oprn-icon-*) 대신 사이드바와 같은 22px 스트로크 규격을 쓴다.
+  | "database" | "image" | "globe" | "music" | "docSearch" | "command" | "play" | "gear"
+  | "history" | "user" | "help" | "expand" | "chevronDown" | "panels";
 type SvgTag = "path" | "rect" | "circle";
 type SvgNodeSpec = {
   readonly tag: SvgTag;
@@ -186,6 +190,72 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
   ],
   check: [
     { tag: "path", attrs: { d: "M5 12l4 4 8-9" } },
+  ],
+  database: [
+    { tag: "path", attrs: { d: "M4 6c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3z" } },
+    { tag: "path", attrs: { d: "M4 6v10c0 1.7 3.1 3 7 3s7-1.3 7-3V6" } },
+    { tag: "path", attrs: { d: "M4 11c0 1.7 3.1 3 7 3s7-1.3 7-3" } },
+  ],
+  image: [
+    { tag: "rect", attrs: { x: "3.5", y: "4.5", width: "15", height: "13", rx: "1.5" } },
+    { tag: "path", attrs: { d: "M3.5 15l4.5-4.5 3.5 3.5 2.5-2.5 4.5 4.5" } },
+    { tag: "circle", attrs: { cx: "14.5", cy: "8.5", r: "1.3", fill: "currentColor" } },
+  ],
+  globe: [
+    { tag: "circle", attrs: { cx: "11", cy: "11", r: "7.5" } },
+    { tag: "path", attrs: { d: "M3.5 11h15" } },
+    { tag: "path", attrs: { d: "M11 3.5c2.3 2.2 3.4 4.7 3.4 7.5s-1.1 5.3-3.4 7.5c-2.3-2.2-3.4-4.7-3.4-7.5S8.7 5.7 11 3.5z" } },
+  ],
+  music: [
+    { tag: "path", attrs: { d: "M8.5 16.5V5l9-2v11.5" } },
+    { tag: "circle", attrs: { cx: "6", cy: "16.5", r: "2.5" } },
+    { tag: "circle", attrs: { cx: "15", cy: "14.5", r: "2.5" } },
+  ],
+  docSearch: [
+    { tag: "path", attrs: { d: "M12 3.5H6.5A1.5 1.5 0 0 0 5 5v12a1.5 1.5 0 0 0 1.5 1.5H10" } },
+    { tag: "path", attrs: { d: "M12 3.5V8h4.5" } },
+    { tag: "path", attrs: { d: "M8 12h3" } },
+    { tag: "circle", attrs: { cx: "14.5", cy: "14.5", r: "2.8" } },
+    { tag: "path", attrs: { d: "M16.6 16.6L19 19" } },
+  ],
+  command: [
+    { tag: "circle", attrs: { cx: "10", cy: "10", r: "5.5" } },
+    { tag: "path", attrs: { d: "M14 14l4.5 4.5" } },
+  ],
+  play: [
+    { tag: "path", attrs: { d: "M7 4.5v13l10-6.5z", fill: "currentColor", stroke: "none" } },
+  ],
+  gear: [
+    { tag: "circle", attrs: { cx: "11", cy: "11", r: "2.6" } },
+    { tag: "path", attrs: { d: "M11 3.2l1.3 2.2 2.5-.5.7 2.5 2.4 1-1 2.4 1.6 2-2 1.6-.1 2.6-2.5.3-1.5 2.1-2.4-1.1-2.4 1.1-1.5-2.1-2.5-.3-.1-2.6-2-1.6 1.6-2-1-2.4 2.4-1 .7-2.5 2.5.5z" } },
+  ],
+  history: [
+    { tag: "path", attrs: { d: "M4.5 11a6.5 6.5 0 1 0 1.9-4.6" } },
+    { tag: "path", attrs: { d: "M4 3.5v3.5h3.5" } },
+    { tag: "path", attrs: { d: "M11 7.5V11l2.5 1.8" } },
+  ],
+  user: [
+    { tag: "circle", attrs: { cx: "11", cy: "7.5", r: "3.3" } },
+    { tag: "path", attrs: { d: "M4.5 18.5c0-3.4 2.9-6 6.5-6s6.5 2.6 6.5 6" } },
+  ],
+  help: [
+    { tag: "circle", attrs: { cx: "11", cy: "11", r: "7.5" } },
+    { tag: "path", attrs: { d: "M8.6 8.6a2.4 2.4 0 1 1 3.4 2.2c-.7.4-1 .9-1 1.6" } },
+    { tag: "circle", attrs: { cx: "11", cy: "15.3", r: "0.9", fill: "currentColor" } },
+  ],
+  expand: [
+    { tag: "path", attrs: { d: "M13 4h5v5" } },
+    { tag: "path", attrs: { d: "M18 4l-5.5 5.5" } },
+    { tag: "path", attrs: { d: "M9 18H4v-5" } },
+    { tag: "path", attrs: { d: "M4 18l5.5-5.5" } },
+  ],
+  chevronDown: [
+    { tag: "path", attrs: { d: "M6.5 9l4.5 4.5L15.5 9" } },
+  ],
+  panels: [
+    { tag: "rect", attrs: { x: "3.5", y: "4.5", width: "15", height: "13", rx: "1.5" } },
+    { tag: "path", attrs: { d: "M9 4.5v13" } },
+    { tag: "path", attrs: { d: "M3.5 12H9" } },
   ],
 };
 

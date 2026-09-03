@@ -15,13 +15,8 @@ function project(): Project {
 
 async function openTitlePlayWindow(page: Page): Promise<void> {
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15000 });
-  const modeButton = page.getByTestId("mode-play");
-  if ((await modeButton.count()) > 0 && (await modeButton.isVisible())) {
-    await modeButton.click();
-  } else {
-    await page.getByTestId("menu-game").click();
-    await page.getByTestId("menu-game-play").click();
-  }
+  // ▶ 테스트(mode-play)는 모든 편집 모드의 스튜디오 바에 있다(2026-09-03 게임 메뉴 삭제).
+  await page.getByTestId("mode-play").click();
   const modal = page.getByTestId("test-play-window");
   await page.waitForTimeout(250);
   if (!(await modal.isVisible())) {

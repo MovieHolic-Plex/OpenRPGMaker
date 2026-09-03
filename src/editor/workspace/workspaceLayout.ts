@@ -129,11 +129,6 @@ function isPresetId(value: unknown): value is WorkspacePresetId {
   return value === "map" || value === "event" || value === "data";
 }
 
-/** 메뉴 dataset 처럼 문자열로 들어오는 밀도값 검증용. */
-export function isWorkspaceDensity(value: unknown): value is WorkspaceDensity {
-  return value === "guided" || value === "comfortable" || value === "dense";
-}
-
 /**
  * 저장값 파싱. 깨진 값은 조용히 기본으로 되돌린다 — 레이아웃이 부팅을 막을 이유가 없다.
  * 밀도는 저장값을 **읽지 않는다**: 항상 `mode`(=`editorUiMode`)에서 파생시켜, 쓰던 3단

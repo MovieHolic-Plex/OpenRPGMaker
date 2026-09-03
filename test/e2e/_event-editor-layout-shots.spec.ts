@@ -27,8 +27,8 @@ const SHOTS: readonly Shot[] = [
 test.setTimeout(150_000);
 
 async function openEventEditorAnyMode(page: Page, eventId: string, tile: { x: number; y: number }): Promise<void> {
-  const launcher = page.getByTestId("authoring-task-event");
-  if (await launcher.count()) await launcher.click();
+  const eventLayer = page.getByTestId("layer-event");
+  if (await eventLayer.count()) await eventLayer.click();
   const row = page.getByTestId(`event-list-row-${eventId}`);
   if (await row.count()) {
     await row.click();

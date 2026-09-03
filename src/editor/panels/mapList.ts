@@ -7,10 +7,9 @@ import { mapTreeDropRelation, type MapTreeDropRelation } from "@/editor/mapTreeD
 import { openMapCreateDialog, openMapCreateUnder } from "@/editor/panels/mapCreateDialog";
 import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
 import { openTestPlayModal } from "@/editor/panels/testPlayModal";
-import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
 import { openMapContextMenu, type MapContextMenuItem, type MapContextMenuPoint } from "@/editor/panels/mapContextMenu";
 import { renderMapInspector, type MapInspectorAction, type MapInspectorView } from "@/editor/panels/mapInspectorPane";
-import { renderMapProps } from "@/editor/panels/mapProps";
+import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { openMapShiftDialog } from "@/editor/panels/mapShiftDialog";
 import { collectMapInspection, type MapInspection } from "@/project/mapInspection";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
@@ -996,14 +995,7 @@ function deleteRecursiveAndSelectNext(mapId: MapId): void {
 }
 
 function openMapProperties(mapId: MapId, mapName: string): void {
-  selectEditorMap(mapId);
-  openEventSubdialog({
-    render: (body) => renderMapProps(body),
-    testId: `map-properties-modal-${mapId}`,
-    title: "맵 설정",
-    subtitle: mapName,
-    width: "narrow",
-  });
+  openMapPropertiesDialog(mapId, mapName);
 }
 
 function openMapActions(context: MapActionContext, point: MapContextMenuPoint): void {

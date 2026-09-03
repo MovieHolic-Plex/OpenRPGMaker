@@ -137,7 +137,7 @@ afterEach(() => {
 });
 
 describe("에디터 헤더 복구", () => {
-  it("기존 메뉴·작업 프리셋·테스트·클래식 툴바를 유지한다", () => {
+  it("스튜디오 바의 정해진 집들을 유지한다", () => {
     // Break: a bottom-bar cleanup accidentally removes established top/editor chrome again.
     resetEditorUiModeForTests("expert");
     const topbar = document.createElement("div");
@@ -148,22 +148,26 @@ describe("에디터 헤더 복구", () => {
     expect(findByTestId(surface, "editor-product-brand")).not.toBeNull();
     for (const testId of [
       "menu-project",
-      // 맵 메뉴는 2026-08-26 에 사라졌다 — 상태 세 항목이 모두 좌측 맵 트리와 중복이었다.
-      "menu-tools",
-      "menu-game",
+      // 맵 메뉴는 2026-08-26 에, 게임 메뉴·클래식 툴바 행·작업 칩은 2026-09-03 에 사라졌다 —
+      // 전부 다른 자리에 이미 있는 동작의 복제였다.
+      "toolbar-save",
+      "toolbar-database",
+      "toolbar-resource-manager",
+      "toolbar-world",
+      "toolbar-sound-test",
+      "toolbar-search",
       "menu-help",
-      // 구 `workspace-preset-toggle` — 진짜 testid 는 `authoring-task-launcher` 다.
-      // indexOf/-1 로 공허하게 통과하던 오해를 고치기 위해 이름을 바롬다.
-      "authoring-task-launcher",
       "workspace-panels-button",
       "workspace-command-palette-button",
       "topbar-test-play",
       "topbar-battle-test",
-      "oprn-toolbar",
-      "toolbar-new",
-      "toolbar-map-copy",
+      "topbar-ai-studio",
+      "window-fullscreen",
     ]) {
       expect(findByTestId(surface, testId), testId).not.toBeNull();
+    }
+    for (const gone of ["menu-game", "oprn-toolbar", "toolbar-new", "toolbar-map-copy", "authoring-task-launcher", "window-toolbar-collapse"]) {
+      expect(findByTestId(surface, gone), gone).toBeNull();
     }
   });
 

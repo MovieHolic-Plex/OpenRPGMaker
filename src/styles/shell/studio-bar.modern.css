@@ -1,0 +1,776 @@
+/* src/styles/shell/studio-bar.modern.css
+   ─────────────────────────────────────────────────────────────────────────────────────────
+   스튜디오 바 — 표준·전문가(그리고 초보) 셸의 톱바 한 줄, 그 메뉴 팝업, 「보기」 메뉴, 캔버스 플로팅 툴바.
+   2026-09-03 개편의 마지막 발언자다. 앞선 세대(figma-editor/01·02·05·07, editor-ui-modes,
+   shell-density, responsive-a, database/tabs-b-shell-layout)가 같은 선택자에 남긴 값은 여기서 덮는다.
+
+   원칙
+   · 토큰만 쓴다(hex 0 · !important 0). 색은 tokens.css 의 cool white + indigo 사다리.
+   · 32px 컨트롤 하나의 리듬. 글자 버튼(메뉴·도구)도, 아이콘 버튼도, 명령 팔레트도 32px.
+   · 무게는 셋뿐 — 채운 인디고(▶ 테스트) / 테두리(스튜디오·명령 팔레트) / 고스트(나머지).
+   · 그리드 3열: 왼쪽(파일·자료) | 가운데(명령 팔레트) | 오른쪽(실행·화면·세션).
+   ───────────────────────────────────────────────────────────────────────────────────────── */
+
+/* ── 1. 바 ─────────────────────────────────────────────────────────────────────────────── */
+.topbar {
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.oprn-menu-bar.studio-bar {
+  align-items: center;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-subtle);
+  box-sizing: border-box;
+  column-gap: 12px;
+  display: grid;
+  flex-wrap: nowrap;
+  /* 양 끝은 내용 폭(max-content) — 왼쪽 묶음이 길어져도 가운데 칩 밑으로 흘러들지 않는다.
+     (1280 전문가에서 찾기 버튼 위에 명령 팔레트가 얹혀 클릭을 가로챈 실측 — 2026-09-03.)
+     가운데 칩은 남는 폭 안에서 중앙, 폭이 모자라면 칩이 먼저 줄어든다. */
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  height: 48px;
+  min-height: 48px;
+  min-width: 0;
+  padding: 0 12px;
+}
+
+.studio-bar-lead,
+.studio-bar .editor-topbar-trailing {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+}
+
+.studio-bar-lead {
+  justify-self: start;
+}
+
+.studio-bar-center {
+  display: flex;
+  justify-content: center;
+  justify-self: stretch;
+  min-width: 0;
+}
+
+.studio-bar .editor-topbar-trailing {
+  gap: 6px;
+  justify-self: end;
+}
+
+/* ── 2. 브랜드 ─────────────────────────────────────────────────────────────────────────── */
+.studio-bar .editor-product-brand {
+  color: var(--text-1);
+  font: 700 13px/1 var(--font-ui);
+  gap: 6px;
+  letter-spacing: 0;
+  margin-right: 4px;
+  padding: 0 4px;
+}
+
+.studio-bar .editor-product-brand-mark {
+  color: var(--accent);
+  font-size: 15px;
+}
+
+/* ── 3. 글자 버튼(메뉴 트리거·도구) ───────────────────────────────────────────────────────── */
+.studio-bar .oprn-menu-item,
+.studio-tool-button {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 13px/1 var(--font-ui);
+  gap: 6px;
+  height: 32px;
+  margin: 0;
+  min-height: 32px;
+  padding: 0 10px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.studio-bar .oprn-menu-item:hover,
+.studio-bar .oprn-menu-item:focus-visible,
+.studio-tool-button:hover,
+.studio-tool-button:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+  outline: none;
+}
+
+.studio-bar .oprn-menu-item:focus-visible,
+.studio-tool-button:focus-visible,
+.studio-icon-button:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.studio-bar .oprn-menu-item[aria-expanded="true"] {
+  background: var(--bg-active);
+}
+
+.studio-bar .oprn-menu-item-chevron {
+  align-items: center;
+  color: var(--text-3);
+  display: inline-flex;
+  margin-left: -2px;
+}
+
+.studio-bar .oprn-menu-item-chevron svg {
+  height: 14px;
+  width: 14px;
+}
+
+.studio-tool-button svg,
+.studio-bar .oprn-menu-item > svg {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
+}
+
+.studio-tool-button {
+  padding: 0 10px 0 8px;
+}
+
+/* 프로젝트 이름 — 굵게, 길면 말줄임. 톱바가 「지금 어느 프로젝트인가」를 말하는 유일한 자리다. */
+.studio-project-button .oprn-menu-item-label {
+  font-weight: 700;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 자료 묶음은 저장 버튼 뒤 헤어라인 하나로 나눈다. */
+.studio-bar-lead > [data-testid="toolbar-database"],
+.studio-bar-lead > [data-testid="menu-tools"]:first-of-type {
+  margin-left: 10px;
+  position: relative;
+}
+
+.studio-bar-lead > [data-testid="toolbar-database"]::before,
+.studio-bar-lead > [data-testid="menu-tools"]:first-of-type::before {
+  background: var(--border-subtle);
+  bottom: 8px;
+  content: "";
+  left: -7px;
+  position: absolute;
+  top: 8px;
+  width: 1px;
+}
+
+/* ── 4. 아이콘 버튼 ────────────────────────────────────────────────────────────────────── */
+.studio-icon-button,
+.studio-bar .team-history-button,
+.studio-bar .team-identity-button {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0;
+  height: 32px;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 32px;
+}
+
+.studio-icon-button:hover,
+.studio-icon-button:focus-visible,
+.studio-icon-button[aria-expanded="true"],
+.studio-bar .team-history-button:hover,
+.studio-bar .team-history-button:focus-visible,
+.studio-bar .team-history-button[aria-expanded="true"],
+.studio-bar .team-identity-button:hover,
+.studio-bar .team-identity-button:focus-visible,
+.studio-bar .team-identity-button[aria-expanded="true"] {
+  background: var(--bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+  outline: none;
+}
+
+.studio-icon-button svg,
+.studio-bar .team-topbar-icon {
+  height: 18px;
+  width: 18px;
+}
+
+.studio-icon-button[aria-pressed="true"] {
+  background: var(--bg-active);
+  color: var(--text-1);
+}
+
+/* 저장 버튼 + 자동 저장 점. 점의 폭은 고정이라 어떤 상태에서도 옆 버튼이 움직이지 않는다. */
+.studio-save-button {
+  position: relative;
+}
+
+.studio-save-dot {
+  background: var(--text-3);
+  border-radius: 50%;
+  bottom: 6px;
+  box-shadow: 0 0 0 2px var(--bg-base);
+  height: 7px;
+  position: absolute;
+  right: 6px;
+  transition: background var(--transition-fast);
+  width: 7px;
+}
+
+.studio-save-button[data-autosave-kind="saved"] .studio-save-dot {
+  background: var(--success);
+}
+
+.studio-save-button[data-autosave-kind="pending"] .studio-save-dot,
+.studio-save-button[data-autosave-kind="saving"] .studio-save-dot {
+  background: var(--warning);
+}
+
+.studio-save-button[data-autosave-kind="error"] .studio-save-dot {
+  background: var(--danger);
+}
+
+.studio-bar .topbar-save-status {
+  margin-left: 2px;
+}
+
+/* ── 5. 명령 팔레트(가운데) ───────────────────────────────────────────────────────────── */
+.studio-bar .studio-command-center {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-3);
+  flex: 0 1 240px;
+  font: 500 12.5px/1 var(--font-ui);
+  gap: 8px;
+  justify-content: flex-start;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 8px 0 10px;
+}
+
+.studio-bar .studio-command-center:hover,
+.studio-bar .studio-command-center:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--border-strong);
+  color: var(--text-2);
+}
+
+.studio-command-center .workspace-command-chip-icon {
+  align-items: center;
+  display: inline-flex;
+  font-size: inherit;
+}
+
+.studio-command-center .workspace-command-chip-icon svg {
+  height: 16px;
+  width: 16px;
+}
+
+.studio-command-center .workspace-command-chip-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio-command-center .workspace-command-chip-key {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-3);
+  font: 600 10.5px/1 var(--font-mono);
+  padding: 3px 5px;
+}
+
+/* ── 6. 실행 묶음: ▶ 테스트 | ⚔ ─────────────────────────────────────────────────────── */
+.studio-run-group {
+  align-items: stretch;
+  display: inline-flex;
+  height: 32px;
+}
+
+.studio-run-group .topbar-test-play-wrap {
+  display: inline-flex;
+}
+
+.studio-run-group .topbar-test-play {
+  border: 0;
+  border-radius: var(--radius-s) 0 0 var(--radius-s);
+  font: 700 13px/1 var(--font-ui);
+  height: 32px;
+  padding: 0 12px;
+}
+
+.studio-run-group .topbar-test-play:hover,
+.studio-run-group .topbar-test-play:focus-visible {
+  filter: none;
+  background: var(--accent-hover);
+  outline: none;
+}
+
+.studio-run-group .topbar-test-play:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.studio-run-group .topbar-test-play-glyph {
+  font-size: 10px;
+}
+
+.studio-run-group .quick-battle-test-button {
+  background: var(--accent-muted);
+  border: 0;
+  border-left: 1px solid var(--bg-base);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+  color: var(--accent);
+}
+
+.studio-run-group .quick-battle-test-button:hover,
+.studio-run-group .quick-battle-test-button:focus-visible {
+  background: var(--accent-border);
+  border-color: var(--bg-base);
+  color: var(--accent);
+}
+
+/* 스튜디오 토글 — 테두리 무게. 켜지면 인디고(01-shell-topbar-team.css 의 .is-on 유지). */
+.studio-bar .topbar-ai-studio {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  font: 600 13px/1 var(--font-ui);
+  height: 32px;
+  padding: 0 10px;
+}
+
+.studio-bar .topbar-ai-studio:hover,
+.studio-bar .topbar-ai-studio:focus-visible {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+/* ── 7. 「보기 ▾」 버튼 ────────────────────────────────────────────────────────────────── */
+.studio-bar .workspace-panels-button {
+  gap: 5px;
+  padding: 0 8px;
+}
+
+.workspace-panels-icon {
+  align-items: center;
+  color: var(--text-2);
+  display: inline-flex;
+}
+
+.workspace-panels-icon svg {
+  height: 18px;
+  width: 18px;
+}
+
+/* 세션 묶음(도움말·기록·신원·AI 설정·전체화면)은 헤어라인으로 나눈다. */
+.studio-icon-cluster {
+  align-items: center;
+  border-left: 1px solid var(--border-subtle);
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 2px;
+  padding-left: 8px;
+}
+
+/* ── 8. 메뉴 팝업 ─────────────────────────────────────────────────────────────────────── */
+.oprn-menu-popup {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  box-sizing: border-box;
+  color: var(--text-1);
+  max-height: calc(100vh - 24px);
+  max-width: calc(100vw - 24px);
+  min-width: 232px;
+  overflow: auto;
+  padding: 6px;
+  z-index: var(--z-popover);
+}
+
+.oprn-menu-popup.open {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.oprn-menu-command {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: 500 13px/1.3 var(--font-ui);
+  gap: 10px;
+  min-height: 32px;
+  overflow-wrap: normal;
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.oprn-menu-command:hover:not(:disabled),
+.oprn-menu-command:focus-visible:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+  outline: none;
+}
+
+.oprn-menu-command:focus-visible:not(:disabled) {
+  box-shadow: var(--focus-ring);
+}
+
+.oprn-menu-command:disabled {
+  color: var(--text-disabled);
+  cursor: default;
+}
+
+.oprn-menu-command-icon {
+  align-items: center;
+  color: var(--text-3);
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.oprn-menu-command-icon svg {
+  height: 16px;
+  width: 16px;
+}
+
+.oprn-menu-command-label {
+  flex: 1 1 auto;
+}
+
+/* 하위 메뉴(예제 프로젝트 ▸) */
+.oprn-menu-command[aria-haspopup="menu"]::after {
+  color: var(--text-3);
+  content: "›";
+  font-size: 15px;
+  line-height: 1;
+  margin-left: auto;
+}
+
+.oprn-menu-separator {
+  background: var(--border-subtle);
+  border: 0;
+  box-shadow: none;
+  height: 1px;
+  margin: 4px 6px;
+}
+
+/* ── 9. 「보기」 메뉴 — 패널 토글 + 편집 모드 라디오 ────────────────────────────────────── */
+.workspace-panels-menu {
+  gap: 1px;
+  min-width: 296px;
+}
+
+.workspace-menu-group {
+  color: var(--text-3);
+  font: 700 11px/1 var(--font-ui);
+  letter-spacing: 0.02em;
+  padding: 8px 10px 4px;
+  text-transform: none;
+}
+
+.workspace-menu-group + .workspace-menu-group,
+.workspace-ui-mode-item + .workspace-menu-group,
+.workspace-panel-row + .workspace-menu-group {
+  margin-top: 6px;
+}
+
+.workspace-panel-row {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.workspace-panel-row .workspace-panel-toggle {
+  flex: 1 1 auto;
+}
+
+.workspace-panel-check {
+  align-items: center;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: var(--on-accent);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.workspace-panel-toggle.is-active .workspace-panel-check {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.workspace-panel-check svg {
+  height: 12px;
+  width: 12px;
+}
+
+.workspace-panel-dock-chip {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 600 11px/1 var(--font-ui);
+  margin-right: 4px;
+  padding: 5px 8px;
+}
+
+.workspace-panel-dock-chip:hover,
+.workspace-panel-dock-chip:focus-visible {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+  color: var(--text-1);
+  outline: none;
+}
+
+.workspace-ui-mode-item {
+  align-items: flex-start;
+  padding: 8px 10px;
+  white-space: normal;
+}
+
+.workspace-ui-mode-radio {
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  height: 16px;
+  margin-top: 1px;
+  position: relative;
+  width: 16px;
+}
+
+.workspace-ui-mode-item.is-active .workspace-ui-mode-radio {
+  border-color: var(--accent);
+}
+
+.workspace-ui-mode-item.is-active .workspace-ui-mode-radio::after {
+  background: var(--accent);
+  border-radius: 50%;
+  content: "";
+  height: 8px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+}
+
+.workspace-ui-mode-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.workspace-ui-mode-label {
+  font-weight: 600;
+}
+
+.workspace-ui-mode-item.is-active .workspace-ui-mode-label {
+  color: var(--accent);
+}
+
+.workspace-ui-mode-hint {
+  color: var(--text-3);
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+/* ── 10. 캔버스 플로팅 툴바(배율 · ⋯ · AI 빠른 작업 · 맵 저장) ──────────────────────────── */
+.canvas-toolbar {
+  align-items: center;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  gap: 4px;
+  padding: 5px;
+}
+
+.canvas-toolbar .oprn-tool-button,
+.canvas-toolbar .canvas-toolbar-expand {
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-1);
+  font: 600 12.5px/1 var(--font-ui);
+  height: 32px;
+  min-width: 32px;
+  padding: 0 8px;
+}
+
+.canvas-toolbar .oprn-tool-button:hover:not(:disabled),
+.canvas-toolbar .oprn-tool-button:focus-visible,
+.canvas-toolbar .canvas-toolbar-expand:hover,
+.canvas-toolbar .canvas-toolbar-expand:focus-visible {
+  background: var(--bg-hover);
+  border-color: transparent;
+  outline: none;
+}
+
+.canvas-toolbar .zoom-stepper-current {
+  background: var(--bg-inset);
+  min-width: 44px;
+}
+
+.canvas-toolbar .zoom-stepper-btn {
+  color: var(--text-2);
+  font-size: 15px;
+}
+
+.canvas-toolbar .oprn-tool-button.active,
+.canvas-toolbar .oprn-tool-button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--on-accent);
+}
+
+.canvas-toolbar .canvas-toolbar-save-group {
+  border-left: 1px solid var(--border-subtle);
+  margin-left: 2px;
+  padding-left: 6px;
+}
+
+.canvas-toolbar .canvas-ai-workbench {
+  border-left: 1px solid var(--border-subtle);
+  gap: 2px;
+  margin-left: 2px;
+  padding-left: 6px;
+}
+
+.canvas-toolbar .canvas-ai-action {
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: 600 12.5px/1 var(--font-ui);
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 9px;
+}
+
+.canvas-toolbar .canvas-ai-action svg {
+  color: var(--text-2);
+}
+
+.canvas-toolbar .canvas-ai-action:hover {
+  background: var(--bg-hover);
+  border-color: transparent;
+}
+
+.canvas-toolbar .canvas-ai-action.is-ask {
+  background: var(--accent-muted);
+  border: 0;
+  color: var(--accent);
+}
+
+.canvas-toolbar .canvas-ai-action.is-ask svg {
+  color: var(--accent);
+}
+
+.canvas-toolbar .canvas-ai-action.is-ask:hover {
+  background: var(--accent-border);
+}
+
+/* ── 11. 전문가 = 촘촘하게 ───────────────────────────────────────────────────────────── */
+body.editor-ui-expert .oprn-menu-bar.studio-bar {
+  column-gap: 8px;
+}
+
+body.editor-ui-expert .studio-bar-lead {
+  gap: 2px;
+}
+
+body.editor-ui-expert .studio-bar .oprn-menu-item,
+body.editor-ui-expert .studio-tool-button {
+  font-size: 12.5px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+body.editor-ui-expert .studio-bar .editor-topbar-trailing {
+  gap: 4px;
+}
+
+/* ── 12. 좁은 뷰포트(1024~1279) — 폭은 줄이고 클릭 경로는 남긴다 ───────────────────────── */
+@media (max-width: 1279px) {
+  .studio-bar .editor-product-brand-text {
+    display: none;
+  }
+
+  .studio-bar .editor-product-brand {
+    margin-right: 0;
+  }
+
+  .studio-project-button .oprn-menu-item-label {
+    max-width: 140px;
+  }
+
+  .studio-bar .studio-command-center {
+    flex: 0 0 32px;
+    justify-content: center;
+    min-width: 32px;
+    padding: 0;
+    width: 32px;
+  }
+
+  .studio-command-center .workspace-command-chip-label,
+  .studio-command-center .workspace-command-chip-key {
+    display: none;
+  }
+}
+
+@media (max-width: 1119px) {
+  .studio-tool-button .studio-tool-button-label,
+  .studio-bar .workspace-panels-label {
+    display: none;
+  }
+
+  .studio-tool-button {
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+  }
+
+  .studio-bar .workspace-panels-button {
+    padding: 0 6px;
+  }
+}
