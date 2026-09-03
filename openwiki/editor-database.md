@@ -688,6 +688,54 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 Tests: `test/aiDatabaseGeneration.test.ts`, `test/generatedArtworkAlpha.test.ts`,
 `test/imageGenerationClient.test.ts`.
 
+### AI 어시스턴트 바 — 진행·결과가 바 안에 보인다 (2026-09-03)
+
+헤더 `AI 어시스턴트`(`database-ai-toggle`) 가 여는 바는 `src/editor/panels/databaseAiBar.ts` 가 소유한다
+(`databaseModal.ts` 는 `createDatabaseAiBar` 를 부르고 `element`/`toggle` 을 놓기만 한다).
+
+- **왜 다시 만들었나(실측):** 예전 바는 `sendAiAssistantMessage` 를 fire-and-forget 으로 던지고 토스트
+  「채팅 패널에서 제안을 확인하세요」만 남겼다. DB 창은 모달이라 채팅 패널이 **뒤에 가려지고**, AI 가
+  `tune_enemy` 로 몬스터 HP 를 64→300 으로 바꿔도 화면에는 흔적이 없었다.
+- **같은 채팅 세션을 쓴다.** 별도 LLM 파이프라인이 아니다. 진행은 `aiAssistantBridge` 의 읽기 API
+  (`getAiAssistantStatus` · `getAiAssistantAudit` · `abortAiAssistantTurn`)를 400ms 폴링해 그 턴의 감사
+  항목만(`startIndex` 이후) 그린다: 요청 원문 → 상태줄(`data-phase` thinking/working/done/error) →
+  바꾼 것(쓰기 툴 요약, 실패는 「실패 —」 접두어) → 답변(마크다운 강조 제거) → 행동(중단·되돌리기·채팅에서
+  이어가기·지우기). 읽기 툴(`find_tools`·조회)은 「바꾼 것」에서 뺀다 — 브리지 감사 항목이 `mode`/`ok` 를
+  실어 준다(`aiChatPanel.ts collectAudit`).
+- **되돌리기는 `undoMapEdit`** 이고 라벨에 되돌릴 항목 이름을 적는다(승인 게이트가 없으므로 복구 경로가
+  이것이다 — `approvalPolicy.ts`).
+- **컨텍스트 풋터는 그대로다:** `[컨텍스트] 에디터 전체 요청 · 현재 화면: 데이터베이스 DB 탭 <라벨>,
+  선택 레코드: <이름>(<id>)` (`databaseAiContextFooter`). buildSpec 정규식과 도구 노출 키워드가 이 형식을
+  읽는다. `window.__oprnDbAiLastRequest` 훅도 유지.
+- **제안 칩은 탭·선택 레코드로 만든다**(`databaseAiSuggestions`): 레코드 탭이면 「선택 레코드 다듬기」·
+  「비슷한 것 하나 더」, 그룹별 밸런스 문장 하나(파티=성장 곡선, 몬스터=난이도, 시스템=스위치·변수…),
+  「이 탭 점검」. 개요처럼 레코드가 없으면 「다음 할 일」. 범용 맵·이벤트 문장은 없다.
+- **레이아웃:** `ai-bar.css`(index.css 에서 studio-v2 **뒤**에 읽는다 — light-theme 의 옛 오버라이드는 삭제).
+  창(`@container db-modal`) 폭 1100px 이상에서 턴이 보이면 두 열(왼쪽 입력·제안, 오른쪽 턴,
+  `grid-template-rows: auto 1fr`), 그 아래는 한 열. 턴 상자는 `min(30vh, 260px)`, 창 높이 820px 이하면
+  150px. 행이 있는 목록은 `min-height: 0`(studio-v2) — 예전 220px 최소 높이 때문에 바가 열린 1024×900
+  에서 목록이 1fr 행을 넘쳐 발 단추가 행 위에 올라탔다.
+- **입력에서 Escape 는 바만 접는다**(stopPropagation) — 문서 층 모달 스택이 받으면 DB 창이 닫혔다.
+- Tests: `test/databaseAiBar.test.ts`(happy-dom: 제안·풋터·턴 요약·DOM 계약·폴링·되돌리기·Escape),
+  `test/databaseModalAiConnection.test.ts`(모달 통합), e2e `test/e2e/qa-db-ai-dock.spec.ts`.
+  증거: `.omo/evidence/ai-surfaces-ux/{before,after}/`(`scripts/capture-ai-surfaces.mjs`).
+
+### AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+
+`databaseAiGenerateDialog.ts` 는 더 이상 `db-enemy-dialog` 껍데기를 빌리지 않는다(Win98 식 파란 헤더·
+MS PGothic·420px 창이 30탭 스튜디오 안에서 유일하게 다른 시대였다). 자체 클래스 `db-ai-generate-*`
+(`ai-bar.css` — 파일 수 래칫 때문에 같은 시트)로 흰 면·12px 라운딩·14px 읽는 글자.
+
+- **단계가 보인다:** `aiDatabaseGeneration.ts` 의 `deps.onPhase("text"|"artwork"|"apply")` 를 상태줄
+  `data-phase` 로 노출. 그림 76초 동안 「그리는 중… 30초 이상」이 읽힌다.
+- **완료 카드**(`db-ai-generate-result`): 이름·id·핵심 수치(몬스터 HP/공격/방어/민첩/경험치/골드, 아이템
+  가격/종류/사용/HP 회복 — `recordFacts`) + 그림. 주 단추는 「하나 더 만들기」로 바뀐다(설명을 비우고
+  같은 대화상자에서 이어 만든다).
+- 예시 칩 3개(입력만 채움), 실행 중엔 입력·옵션·예시 잠금 + 닫기가 「취소」(AbortSignal), 바깥 클릭은
+  실행 중 무시, 닫으면 「AI로 생성」 단추로 포커스 복귀. 상태 접두어 「완료」/「실패」 와 testid 는
+  `scripts/capture-ai-db-generate.mts` 가 읽으므로 유지. 테스트 주입: `deps.generate`/`loadConfig`/`readRecord`.
+- Tests: `test/databaseAiGenerateDialog.test.ts`, `test/databaseAiGenerateLazyImport.test.ts`(동적 import 유지).
+
 ## Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
 
 `src/styles/database/studio-v2.css` 한 층이 30탭이 이미 발행하는 클래스(`.db-field` · `fieldset/legend` ·
