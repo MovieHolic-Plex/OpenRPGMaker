@@ -1557,7 +1557,7 @@ export class AssistantSession {
   private finishPlanOnlyTurn(onEvent: (event: SessionEvent) => void): TurnResult {
     const plan = this.workPlan;
     if (!plan) throw new Error("finishPlanOnlyTurn: 계획이 없다");
-    const assistantText = `계획을 세워두었습니다. 이대로 실행하려면 **「계속」** 이라고 보내고, 고칠 게 있으면 그대로 말해 주세요.\n\n---\n${formatWorkPlanUserVisible(plan)}`;
+    const assistantText = "계획을 세워두었습니다. 이대로 실행하려면 「계속」이라고 보내고, 고칠 게 있으면 그대로 말해 주세요.";
     this.messages.push({ role: "assistant", content: assistantText });
     onEvent({ type: "assistant_message", content: assistantText });
     this.pushAudit({ kind: "assistant", text: assistantText });
@@ -2277,19 +2277,15 @@ export class AssistantSession {
 
   private withWorkPlanResult(result: TurnResult): TurnResult {
     if (!this.workPlan) return result;
-    const board = formatWorkPlanUserVisible(this.workPlan);
     const hitCap =
       !isWorkPlanComplete(this.workPlan) &&
       this.workPlanAutoStepsThisUserMessage >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN;
-    const suffix = isWorkPlanComplete(this.workPlan)
-      ? `\n\n---\n${board}`
-      : hitCap
-        ? `\n\n---\n${board}\n\n(안전 상한 ${MAX_WORK_PLAN_AUTO_STEPS_PER_TURN}단계) 이어서 진행하려면 **「계속」** 이라고 보내세요.`
-        : `\n\n---\n${board}`;
-    const assistantText = result.assistantText.includes("📋 작업 계획")
-      ? result.assistantText
-      : `${result.assistantText.trim()}${suffix}`;
-    return { ...result, assistantText, workPlan: structuredClone(this.workPlan) };
+    const suffix = hitCap ? "\n\n이어서 진행하려면 「계속」이라고 보내세요." : "";
+    return {
+      ...result,
+      assistantText: `${result.assistantText.trim()}${suffix}`,
+      workPlan: structuredClone(this.workPlan),
+    };
   }
 
   // 직전 턴이 LLM 오류로 끊긴 경우에만 재개 가능(도그푸딩 결함 ⑥ — 수동 재시도).

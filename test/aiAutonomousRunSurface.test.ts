@@ -12,6 +12,8 @@ import {
 } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { closeWorkPlanBook } from "@/editor/panels/aiWorkPlanModal";
+import { resetModalStackForTest } from "@/editor/ui/modalStack";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
 import type { WorkPlan } from "@/ai/workPlan";
 
@@ -219,6 +221,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  closeWorkPlanBook();
+  resetModalStackForTest();
   vi.useRealTimers();
   restoreWindow?.();
   restoreWindow = null;
@@ -241,18 +245,16 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     const checklist = findByTestId(panel, "ai-work-plan-checklist");
     expect(checklist).not.toBeNull();
     expect(checklist?.textContent).toContain("RPG 만들어줘");
-    // 항목별 진행 상태: done / in_progress / pending 마커.
-    const items = panel.querySelectorAll("[data-testid='ai-autonomous-item']");
+    expect(document.querySelector("[data-testid='ai-plan-book']")).not.toBeNull();
+    expect(findByTestId(panel, "ai-plan-book-open")?.textContent).toBe("계획 보기");
+    const items = document.querySelectorAll("[data-testid='ai-autonomous-item']");
     expect(items).toHaveLength(4);
-    expect(items.map((item) => item.dataset.status)).toEqual(["done", "in_progress", "pending", "pending"]);
-    // 현재 레이어(L1) 마커.
-    const layers = panel.querySelectorAll("[data-testid='ai-autonomous-layer']");
+    expect([...items].map((item) => (item as HTMLElement).dataset.status)).toEqual(["done", "in_progress", "pending", "pending"]);
+    const layers = document.querySelectorAll("[data-testid='ai-autonomous-layer']");
     expect(layers).toHaveLength(2);
-    expect(layers[0]?.dataset.current).toBe("true");
-    expect(layers[1]?.dataset.current).toBe("false");
-    // 진행 요약 1/4.
+    expect((layers[0] as HTMLElement | undefined)?.dataset.current).toBe("true");
+    expect((layers[1] as HTMLElement | undefined)?.dataset.current).toBe("false");
     expect(findByTestId(panel, "ai-autonomous-progress")?.textContent).toBe("1/4");
-    // 자율 런 칩 + 예산 표시.
     expect(findByTestId(panel, "ai-autonomous-chip")?.textContent).toContain("자율 실행");
     expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("0/48");
     expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("집 3채 중");
@@ -261,12 +263,6 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(findByTestId(panel, "ai-run-details-toggle")?.textContent).toContain("자세히");
     expect(findByTestId(panel, "ai-run-whisper")?.textContent).not.toContain("예산");
     expect(findByTestId(panel, "ai-run-details")?.contains(findByTestId(panel, "ai-autonomous-budget"))).toBe(true);
-    // 항목 체크리스트는 서랍 밖에 항상 보인다 — 「뭔가 하고 있다」가 전달되는 본체다.
-    const list = findByTestId(panel, "ai-work-list");
-    expect(list).not.toBeNull();
-    expect(findByTestId(panel, "ai-run-details")?.contains(list)).toBe(false);
-    expect(list?.contains(items[0] ?? null)).toBe(true);
-    // 진행 중 항목 아래에는 활동 줄이 붙고 tool_started 가 오면 툴 라벨로 갈아 끼운다.
     expect(findByTestId(panel, "ai-work-item-activity")?.textContent).toBe("진행 중…");
     expect(checklist?.dataset.active).toBe("true");
     expect(panel.classList.contains("is-autonomous-run")).toBe(true);
@@ -401,7 +397,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(settled).not.toBeNull();
     expect(settled?.dataset.active).toBe("false");
     expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("집 3채 — 대기 중");
-    expect(panel.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
+    expect(document.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
 
     // 다음 턴: 다른 목표의 계획 — 이전 항목이 남지 않는다.
     assistantMock.setEmitter((onEvent) => {
@@ -413,7 +409,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     const checklist = findByTestId(panel, "ai-work-plan-checklist");
     expect(checklist?.textContent).toContain("던전 하나");
     expect(checklist?.textContent).not.toContain("RPG 만들어줘");
-    expect(panel.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(0);
+    expect(document.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(0);
     assistantMock.releaseHeldTurn();
     await secondRun;
     await flushAsync();
@@ -438,7 +434,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(checklist?.dataset.complete).toBe("true");
     expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("모두 완료");
     expect(findByTestId(panel, "ai-autonomous-progress")?.textContent).toBe("4/4");
-    expect(panel.querySelectorAll("[data-testid='ai-autonomous-item']").map((item) => item.dataset.status))
+    expect([...document.querySelectorAll("[data-testid='ai-autonomous-item']")].map((item) => (item as HTMLElement).dataset.status))
       .toEqual(["done", "done", "done", "done"]);
 
     // 계획 없는 다음 턴: 끝난 계획은 이어받지 않고, 새 계획도 안 오면 목록이 없다.
@@ -504,7 +500,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(findByTestId(panel, "ai-work-plan-checklist")).not.toBeNull();
     expect(findByTestId(panel, "ai-autonomous-budget")).toBeNull();
     expect(findByTestId(panel, "ai-autonomous-chip")?.textContent).toBe("할 일 목록");
-    expect(panel.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
+    expect(document.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(4);
     // 패널은 autonomous 와 함께 사용자 원문(instruction)·선택 스코프를 사실로 넘긴다.
     expect(assistantMock.getLastOpts()).toMatchObject({ autonomous: false, instruction: "안녕", scope: null });
   });

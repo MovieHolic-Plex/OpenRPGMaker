@@ -181,9 +181,9 @@
   color: var(--danger);
 }
 
-/* ── 할 일 목록 — 항목은 항상 보이고, 체크는 눈에 띄게 붙는다 (2026-09-03) ──
+/* ── 할 일 목록 앞면 — 항목 본문은 책 모달 (2026-09-03) ──
    DOM(aiChatRenderers.renderWorkPlanChecklist):
-   .ai-autonomous-checklist[data-active][data-complete] > .ai-run-whisper + .ai-autonomous-layers + .ai-run-details */
+   .ai-autonomous-checklist[data-active][data-complete] > .ai-run-whisper + .ai-run-details */
 .ai-autonomous-item-body {
   display: flex;
   flex-direction: column;

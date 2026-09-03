@@ -124,6 +124,7 @@ import {
 } from "./aiPanelLayout";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
 import { formatAiRunningStatus, formatToolActivityLine, renderToolActivityEntry, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
+import { closeWorkPlanBook, openWorkPlanBook, updateWorkPlanBook } from "./aiWorkPlanModal";
 import {
   createConversationLogHost,
 } from "./aiConversationLog";
@@ -1239,6 +1240,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const clearWorkPlanSurface = (): void => {
     workPlanSurfaceState = null;
     workPlanActivity = "";
+    closeWorkPlanBook();
     removeWorkPlanSurfaceDom();
     studioShell?.setWorkPlan(null, false);
   };
@@ -1281,7 +1283,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     panel.classList.add("is-autonomous-run");
     return workPlanSurface;
   };
-  // 계획 도착 시마다 체크리스트를 갱신한다(진행 요약/현재 레이어가 이벤트마다 재계산된다).
+  const bookInput = (): {
+    plan: WorkPlan;
+    active: boolean;
+    activity: string;
+    onStop: () => void;
+  } | null => {
+    const state = workPlanSurfaceState;
+    if (!state?.plan) return null;
+    return {
+      plan: state.plan,
+      active: state.active,
+      activity: workPlanActivity,
+      onStop: () => abortActiveTurn(),
+    };
+  };
+  const openPlanBook = (): void => {
+    const input = bookInput();
+    if (!input) return;
+    openWorkPlanBook(input);
+  };
+  // 계획 도착 시마다 앞면과(열려 있으면) 책 모달을 갱신한다.
   const refreshWorkPlanSurface = (): void => {
     if (!workPlanSurfaceState || !workPlanSurfaceState.plan) return;
     const surface = ensureWorkPlanSurface();
@@ -1290,22 +1312,30 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       budget: workPlanSurfaceState.budget ?? undefined,
       activity: workPlanActivity,
       onStop: () => abortActiveTurn(),
+      onOpenBook: openPlanBook,
     });
     checklist.querySelector<HTMLElement>("[data-testid='ai-run-details']")?.append(workPlanFeedHost!);
     surface.replaceChildren(checklist);
     studioShell?.setWorkPlan(workPlanSurfaceState.plan, workPlanSurfaceState.active);
+    const input = bookInput();
+    if (input) updateWorkPlanBook(input);
   };
   /** work_plan 이벤트 — 어느 모드의 턴이든 계획이 오면 보인다. 턴 밖에서 오면(소유권 없는 늦은 이벤트) 무시한다. */
   const showWorkPlan = (plan: WorkPlan): void => {
     if (!workPlanSurfaceState) return;
+    const previousId = workPlanSurfaceState.plan?.id;
     workPlanSurfaceState.plan = plan;
     refreshWorkPlanSurface();
+    if (previousId !== plan.id) openPlanBook();
   };
   /** tool_started — 진행 중 항목의 활동 줄만 갱신. 목록이 아직 없으면 다음 렌더가 가져가게 기억만 해 둔다. */
   const noteWorkPlanActivity = (label: string): void => {
     workPlanActivity = label;
-    const note = workPlanSurface?.querySelector<HTMLElement>("[data-testid='ai-work-item-activity']");
-    if (note) note.textContent = label;
+    const notes = [
+      ...(workPlanSurface?.querySelectorAll<HTMLElement>("[data-testid='ai-work-item-activity']") ?? []),
+      ...document.querySelectorAll<HTMLElement>("[data-testid='ai-plan-book'] [data-testid='ai-work-item-activity']"),
+    ];
+    for (const note of notes) note.textContent = label;
   };
   // 마일스톤 자동 적용/적용 실패 — 목록의 「자세히」 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
   const appendMilestoneFeedLine = (kind: "applied" | "apply-failed", title: string, detail: string): void => {

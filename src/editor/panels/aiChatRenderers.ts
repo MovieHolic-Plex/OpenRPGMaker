@@ -1,6 +1,7 @@
 import { ruleToolRejectionText, type ProposedCall } from "@/ai/assistantSession";
 import { AGENT_RUN_MAX_TOTAL_STEPS } from "@/ai/assistantSession";
-import type { WorkItem, WorkLayer, WorkPlan } from "@/ai/workPlan";
+import type { WorkItem, WorkPlan } from "@/ai/workPlan";
+import { isItemFinished, layerItems, planLayers } from "./aiWorkPlanPages";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { ToolResult } from "@/editor/tools";
 import { getGrammarProfile, type VocabularyProposalCard } from "@/editor/tools/v3";
@@ -98,35 +99,6 @@ export function parseAutonomousRunBudget(text: string): AutonomousRunBudget | nu
   return null;
 }
 
-const WORK_ITEM_MARKS: Record<WorkItem["status"], string> = {
-  pending: "○",
-  in_progress: "●",
-  done: "✓",
-  skipped: "⊘",
-  blocked: "!",
-};
-
-const WORK_ITEM_STATUS_LABELS: Record<WorkItem["status"], string> = {
-  pending: "대기",
-  in_progress: "진행 중",
-  done: "완료",
-  skipped: "건너뜀",
-  blocked: "막힘",
-};
-
-/** 항목/레이어 배열을 방어적으로 읽는다 — 망가진(필드 누락) 페이로드도 안전하게 렌더. */
-function planLayers(plan: WorkPlan): WorkLayer[] {
-  return Array.isArray(plan.layers) ? plan.layers : [];
-}
-
-function layerItems(layer: WorkLayer): WorkItem[] {
-  return Array.isArray(layer.items) ? layer.items : [];
-}
-
-function isItemFinished(item: WorkItem): boolean {
-  return item.status === "done" || item.status === "skipped";
-}
-
 function currentRunItemTitle(plan: WorkPlan): string {
   const items = planLayers(plan).flatMap(layerItems);
   const current = items.find((item) => item.status === "in_progress")
@@ -156,14 +128,8 @@ function workItemActivityNode(activity: string | undefined): HTMLElement {
 }
 
 /**
- * 할 일 목록 — 조수가 지금 무엇을 하고 있는지 사용자에게 보여주는 표면.
- *
- * 앞줄(한 문장 + 개수 + 진행 막대 + 중지)과 **항목 체크리스트는 항상 보인다** — 항목이 서랍 안에 숨어 있으면
- * 「뭔가 하고 있다」가 전달되지 않는다(2026-09-03). 자율 런 칩·예산·목표·마일스톤 피드만 「자세히」 서랍이다.
- * 다크 자율 박스 금지 — 크림 카드 언어 그대로.
- *
- * `active` 는 「지금 턴이 이 계획을 실행 중인가」 — 중지 버튼·진행 중 항목의 활동 줄이 그때만 붙는다.
- * `activity` 는 진행 중 항목 아래 보일 현재 툴 라벨(패널이 tool_started 마다 덧쓴다).
+ * 할 일 목록 앞면 — 상태 한 줄 + 진행 + 계획 보기. 항목 본문은 페이지 책 모달(aiWorkPlanModal).
+ * `active` 일 때만 중지와 활동 줄이 붙는다. 칩·예산·목표·피드는 「자세히」 서랍.
  */
 export function renderWorkPlanChecklist(
   plan: WorkPlan,
@@ -171,23 +137,23 @@ export function renderWorkPlanChecklist(
     readonly active?: boolean;
     readonly budget?: AutonomousRunBudget;
     readonly onStop?: () => void;
+    readonly onOpenBook?: () => void;
     readonly activity?: string;
   } = {}
 ): HTMLElement {
-  const layers = planLayers(plan);
-  const items = layers.flatMap(layerItems);
+  const items = planLayers(plan).flatMap(layerItems);
   const done = items.filter(isItemFinished).length;
   const active = opts.active !== false;
   const budget = opts.budget;
   const complete = isPlanComplete(items);
   const percent = items.length === 0 ? 0 : Math.round((done / items.length) * 100);
   const statusLine = workPlanStatusLine(plan, items, active);
+  const running = active && items.some((item) => item.status === "in_progress");
   const progressFill = el("span", { class: "ai-run-progress-fill" });
   progressFill.style.width = `${percent}%`;
   const head = el("div", {
     class: "ai-autonomous-head",
     children: [
-      // 예산이 있으면 자율 런(드라이버가 턴을 이어 보낸다), 없으면 보통 턴의 할 일 목록이다.
       el("span", {
         class: "ai-autonomous-chip",
         dataset: { testid: "ai-autonomous-chip" },
@@ -204,49 +170,15 @@ export function renderWorkPlanChecklist(
         : []),
     ],
   });
-  const currentLayerIndex = Number.isFinite(plan.currentLayerIndex) ? plan.currentLayerIndex : 0;
-  const showLayerTitles = layers.length > 1;
-  const layerRows = layers.map((layer, index) => {
-    const layerDone = layerItems(layer).filter(isItemFinished).length;
-    const unfinished = layerItems(layer).some((item) => item.status === "pending" || item.status === "in_progress");
-    const isCurrent = index === currentLayerIndex && unfinished;
-    return el("div", {
-      class: "ai-autonomous-layer",
-      dataset: { testid: "ai-autonomous-layer", layerId: layer.id ?? "", current: String(isCurrent) },
-      children: [
-        ...(showLayerTitles
-          ? [
-              el("div", {
-                class: "ai-autonomous-layer-title",
-                text: `${layer.title ?? "(레이어)"} — ${layerDone}/${layerItems(layer).length}`,
-              }),
-            ]
-          : []),
-        el("ul", {
-          class: "ai-autonomous-items",
-          children: layerItems(layer).map((item) => {
-            const status = item.status ?? "pending";
-            const running = active && status === "in_progress";
-            return el("li", {
-              class: `ai-autonomous-item is-${status}`,
-              dataset: { testid: "ai-autonomous-item", itemId: item.id ?? "", status },
-              attrs: { "aria-label": `${WORK_ITEM_STATUS_LABELS[status] ?? status}: ${item.title ?? ""}` },
-              children: [
-                el("span", { class: "ai-autonomous-item-mark", attrs: { "aria-hidden": "true" }, text: WORK_ITEM_MARKS[status] ?? "○" }),
-                el("span", {
-                  class: "ai-autonomous-item-body",
-                  children: [
-                    el("span", { class: "ai-autonomous-item-title", text: item.title ?? "(제목 없음)" }),
-                    ...(running ? [workItemActivityNode(opts.activity)] : []),
-                  ],
-                }),
-              ],
-            });
-          }),
-        }),
-      ],
-    });
-  });
+  const openBook = opts.onOpenBook
+    ? el("button", {
+        class: "ai-plan-book-open",
+        text: "계획 보기",
+        attrs: { type: "button", title: "작업 계획을 페이지로 엽니다" },
+        dataset: { testid: "ai-plan-book-open" },
+        on: { click: () => opts.onOpenBook?.() },
+      })
+    : null;
   const stop = active
     ? el("button", {
         class: "ai-run-stop",
@@ -275,9 +207,11 @@ export function renderWorkPlanChecklist(
                 attrs: { title: "완료한 항목 / 전체 항목" },
                 text: `${done}/${items.length}`,
               }),
+              ...(openBook ? [openBook] : []),
               ...(stop ? [stop] : []),
             ],
           }),
+          ...(running ? [workItemActivityNode(opts.activity)] : []),
           el("div", {
             class: "ai-run-progress",
             dataset: { testid: "ai-run-progress" },
@@ -286,8 +220,6 @@ export function renderWorkPlanChecklist(
           }),
         ],
       }),
-      // 항목 체크리스트 — 서랍 밖. 이게 「할 일 목록」의 본체다.
-      el("div", { class: "ai-autonomous-layers", dataset: { testid: "ai-work-list" }, children: layerRows }),
       el("details", {
         class: "ai-run-details",
         dataset: { testid: "ai-run-details" },

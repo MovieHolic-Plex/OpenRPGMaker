@@ -102,37 +102,35 @@ describe("자율 실행 예산 표시 (todo 6)", () => {
   });
 });
 
-describe("작업 계획 체크리스트 렌더 (todo 6)", () => {
-  it("항목별 상태 마커와 현재 레이어, 진행 요약, 예산을 렌더한다", () => {
+describe("작업 계획 앞면 렌더", () => {
+  it("상태·진행·중지·계획 보기와 예산을 렌더하고 항목 본문은 두지 않는다", () => {
     const restore = installFakeDom();
     try {
+      let opened = 0;
       const node = renderWithFakeDom(() =>
         renderWorkPlanChecklist(samplePlan(), {
           active: true,
           budget: { used: 3, total: 48 },
+          onOpenBook: () => {
+            opened += 1;
+          },
         })
       ) as FakeElement;
       expect(node.dataset.testid).toBe("ai-work-plan-checklist");
-      expect(node.textContent).toContain("마을 광장");
+      expect(node.textContent).toContain("마을 광장 중");
       expect(node.textContent).toContain("예산 3/48");
-      const items = node.querySelectorAll("[data-testid='ai-autonomous-item']");
-      expect(items.map((item) => item.dataset.status)).toEqual(["in_progress", "pending"]);
-      const layer = node.querySelector("[data-testid='ai-autonomous-layer']");
-      expect(layer?.dataset.current).toBe("true");
+      expect(node.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(0);
       expect(node.querySelector("[data-testid='ai-autonomous-progress']")?.textContent).toBe("0/2");
       expect(node.querySelector("[data-testid='ai-run-status']")?.textContent).toBe("마을 광장 중");
       expect(node.querySelector("[data-testid='ai-run-stop']")?.textContent).toBe("중지");
+      expect(node.querySelector("[data-testid='ai-plan-book-open']")?.textContent).toBe("계획 보기");
       expect(node.querySelector("[data-testid='ai-run-details-toggle']")?.textContent).toContain("자세히");
       expect(node.querySelector("[data-testid='ai-run-whisper']")?.textContent).not.toContain("예산");
-      expect(node.querySelector("[data-testid='ai-run-details']")?.getAttribute("open")).toBeNull();
-      // 항목 체크리스트는 서랍 밖에 항상 보인다(할 일 목록). 서랍에는 칩·예산·목표만 남는다.
-      const list = node.querySelector("[data-testid='ai-work-list']");
-      expect(list).not.toBeNull();
-      expect(node.querySelector("[data-testid='ai-run-details']")?.contains(list)).toBe(false);
-      expect(list?.contains(items[0] ?? null)).toBe(true);
       expect(node.dataset.active).toBe("true");
       expect(node.dataset.complete).toBe("false");
       expect(node.querySelector("[data-testid='ai-work-item-activity']")?.textContent).toBe("진행 중…");
+      node.querySelector("[data-testid='ai-plan-book-open']")?.click();
+      expect(opened).toBe(1);
     } finally {
       restore();
     }
@@ -149,14 +147,14 @@ describe("작업 계획 체크리스트 렌더 (todo 6)", () => {
         ],
       } as unknown as WorkPlan;
       const node = renderWithFakeDom(() => renderWorkPlanChecklist(malformed)) as FakeElement;
-      expect(node.textContent).toContain("항목");
-      expect(node.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(1);
+      expect(node.textContent).toContain("목표");
+      expect(node.dataset.testid).toBe("ai-work-plan-checklist");
     } finally {
       restore();
     }
   });
 
-  it("layers 가 아예 없는 페이로드는 빈 체크리스트로 안전하게 렌더한다", () => {
+  it("layers 가 아예 없는 페이로드는 빈 앞면으로 안전하게 렌더한다", () => {
     const restore = installFakeDom();
     try {
       const node = renderWithFakeDom(() =>
@@ -164,7 +162,7 @@ describe("작업 계획 체크리스트 렌더 (todo 6)", () => {
       ) as FakeElement;
       expect(node.dataset.testid).toBe("ai-work-plan-checklist");
       expect(node.textContent).toContain("던전 하나");
-      expect(node.querySelectorAll("[data-testid='ai-autonomous-item']")).toHaveLength(0);
+      expect(node.querySelector("[data-testid='ai-autonomous-progress']")?.textContent).toBe("0/0");
     } finally {
       restore();
     }
