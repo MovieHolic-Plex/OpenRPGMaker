@@ -17,6 +17,8 @@ type FakeBrowserGlobals = {
 // 이 테스트는 "DOM 순서 = 그룹 파생 순서" 계약을 TAB_GROUPS 로부터 직접 파생해 고정한다.
 const TAB_TESTID: Record<string, string> = {
   overview: "db-tab-overview",
+  worldCanon: "db-tab-world-canon",
+  worldCodex: "db-tab-world-codex",
   actors: "db-tab-actors",
   classes: "db-tab-classes",
   skills: "db-tab-skills",

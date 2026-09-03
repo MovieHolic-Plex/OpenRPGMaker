@@ -35,6 +35,12 @@ describe("worldPanel", () => {
     expect(findByTestId(panel, "world-card-w_concept")).toBeTruthy();
   });
 
+  it("drops the dialog title when embedded in the database", () => {
+    const panel = renderWithFakeDom(() => renderWorldPanel({ embedded: true }));
+    expect(panel.classList.contains("world-panel-embedded")).toBe(true);
+    expect(panel.querySelector("h2")).toBeNull();
+  });
+
   it("filters the character tab to character cards", () => {
     const panel = renderPanel();
 

@@ -1,6 +1,7 @@
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
 import { STORY_FLAG_ID_PATTERN } from "../storyFlags";
+import { normalizeWorldCanon } from "../world/canonNormalize";
 import { normalizeWorld } from "../world/guards";
 import { normalizeProjectFactions } from "../factions";
 import type { ProjectWorld } from "../world/types";
@@ -99,6 +100,11 @@ export function validateProjectV4(data: JsonRecord): Project {
   normalizeStoryFlags(project);
   normalizeTilesetPalettePresets(project);
   if (data.world !== undefined) project.world = normalizeWorld(data.world);
+  if (data.worldCanon !== undefined) {
+    const canon = normalizeWorldCanon(data.worldCanon);
+    if (canon !== undefined) project.worldCanon = canon;
+    else delete project.worldCanon;
+  }
   if (data.factions !== undefined) project.factions = normalizeProjectFactions(project.factions);
   if (data.worldGraph !== undefined) project.worldGraph = normalizeWorldGraph(data.worldGraph);
   migrateVillageInfoDocumentsToWorld(project);

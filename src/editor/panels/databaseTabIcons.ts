@@ -158,7 +158,22 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "15.4", cy: "9.7", r: "0.9" } },
   ],
 
-  // ── 세계 ──
+  // ── 세계관 ──
+  // 이 세계 — 지구본
+  worldCanon: [
+    { tag: "circle", attrs: { cx: "11", cy: "11", r: "7.4" } },
+    { tag: "path", attrs: { d: "M11 3.6c2.4 2.2 3.8 4.8 3.8 7.4s-1.4 5.2-3.8 7.4C8.6 16.2 7.2 13.6 7.2 11s1.4-5.2 3.8-7.4z" } },
+    { tag: "path", attrs: { d: "M3.6 11h14.8" } },
+  ],
+  // 설정집 — 줄 있는 책
+  worldCodex: [
+    { tag: "path", attrs: { d: "M11 6.2v11.2" } },
+    { tag: "path", attrs: { d: "M11 6.2C9.4 4.9 7 4.3 4.2 4.3v10.8c2.8 0 5.2.6 6.8 1.9" } },
+    { tag: "path", attrs: { d: "M11 6.2c1.6-1.3 4-1.9 6.8-1.9v10.8c-2.8 0-5.2.6-6.8 1.9" } },
+    { tag: "path", attrs: { d: "M6.2 8.6h2.6M6.2 11.2h2.6" } },
+  ],
+
+  // ── 맵 ──
   // 생성 규칙 — 물결 위 나무(지형을 깔아 주는 규칙)
   worldGen: [
     { tag: "path", attrs: { d: "M2.8 15.6c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0" } },

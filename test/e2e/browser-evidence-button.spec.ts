@@ -28,7 +28,8 @@ test("worldview toolbar button opens the world panel", async ({ page }) => {
   await page.screenshot({ path: `${evidenceDir}/desktop-entry.png`, fullPage: true });
 
   await page.getByTestId("toolbar-world").click();
-  await expect(page.getByTestId("world-panel")).toBeVisible();
+  await expect(page.getByTestId("database-modal")).toBeVisible();
+  await expect(page.getByTestId("db-world-canon-workspace")).toBeVisible();
   await page.screenshot({ path: `${evidenceDir}/desktop-after-click.png`, fullPage: true });
 
   const projectExport = await page.getByTestId("project-export-json").textContent();

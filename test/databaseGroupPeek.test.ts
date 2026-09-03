@@ -18,10 +18,16 @@ import { TAB_GROUPS } from "@/editor/panels/database";
 const CSS = readFileSync(resolve(__dirname, "../src/styles/database/sidebar.css"), "utf8");
 
 describe("접힌 그룹 헤더 부제", () => {
-  it("구조물이 「세계」 그룹에 있다 — 이 보고의 실제 원인 지점", () => {
+  it("구조물이 「맵」 그룹에 있다 — 이 보고의 실제 원인 지점", () => {
     const world = TAB_GROUPS.find((group) => group.slug === "world");
-    expect(world, "세계 그룹이 사라졌다").toBeTruthy();
+    expect(world, "맵 그룹이 사라졌다").toBeTruthy();
+    expect(world?.label).toBe("맵");
     expect(world!.tabs).toContain("structureKits");
+  });
+
+  it("세계관 그룹이 레일 맨 앞에 있다", () => {
+    expect(TAB_GROUPS[0]?.slug).toBe("lore");
+    expect(TAB_GROUPS[0]?.tabs).toEqual(["worldCanon", "worldCodex"]);
   });
 
   it("모든 탭이 정확히 한 그룹에 속한다 — 어느 그룹도 안 여는 탭은 닿을 수 없다", () => {

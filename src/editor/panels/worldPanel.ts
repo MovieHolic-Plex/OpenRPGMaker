@@ -1,4 +1,3 @@
-import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import type { WorldRef } from "@/project/world/types";
@@ -13,33 +12,11 @@ import {
 } from "./worldManager";
 import { renderHeader, renderMain } from "./worldPanelViews";
 
-export function openWorldPanel(): HTMLElement {
-  document.querySelector("[data-testid='world-panel-modal']")?.remove();
-
-  let closed = false;
-  const backdrop = el("div", {
-    class: "database-modal-backdrop world-panel-backdrop",
-    attrs: { role: "presentation" },
-    dataset: { testid: "world-panel-modal" },
+/** 톱바·도구 메뉴·단축키의 세계관 입구. 자료집 「이 세계」 탭으로 점프한다. */
+export function openWorldPanel(): void {
+  void import("./databaseModal").then(({ openDatabaseModal }) => {
+    openDatabaseModal("worldCanon");
   });
-  const close = (): void => {
-    if (closed) return;
-    closed = true;
-    unregisterModal(backdrop);
-    backdrop.remove();
-  };
-
-  const panel = renderWorldPanel({ onClose: close });
-  backdrop.append(panel);
-  backdrop.addEventListener("mousedown", (event) => {
-    if (event.target === backdrop) close();
-  });
-  document.body.append(backdrop);
-  // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
-  // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
-  registerModal(backdrop, close);
-  panel.querySelector<HTMLElement>("[data-testid='world-search']")?.focus();
-  return panel;
 }
 
 export function renderWorldPanel(options: WorldPanelOptions = {}): HTMLElement {
@@ -52,8 +29,8 @@ export function renderWorldPanel(options: WorldPanelOptions = {}): HTMLElement {
     editError: "",
   };
   const root = el("section", {
-    class: "world-panel",
-    attrs: { role: "dialog", "aria-label": "세계관" },
+    class: options.embedded ? "world-panel world-panel-embedded" : "world-panel",
+    attrs: { role: options.embedded ? "region" : "dialog", "aria-label": "설정집" },
     dataset: { testid: "world-panel" },
   });
 
