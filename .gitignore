@@ -21,6 +21,7 @@ dist/
 !.omo/evidence/ai-apply-without-approval/
 !.omo/evidence/action-battle/
 !.omo/evidence/battle-flash-map/
+!.omo/evidence/ai-surfaces-ux/
 !.omo/rules/
 !.omo/rules/**
 artifacts/

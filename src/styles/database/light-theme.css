@@ -202,28 +202,6 @@
   background: var(--db-light-accent-muted);
 }
 
-/* ── AI 바 (헤더 아래 인라인 바) ------------------------------------------- */
-
-.database-modal-backdrop .database-modal-window .database-ai-bar {
-  background: var(--db-light-bg-surface);
-  border-bottom: 1px solid var(--db-light-border-default);
-}
-
-.database-modal-backdrop .database-modal-window .database-ai-input {
-  background: var(--db-light-bg-raised);
-  border: 1px solid var(--db-light-border-default);
-  color: var(--db-light-text-1);
-}
-
-.database-modal-backdrop .database-modal-window .database-ai-run,
-.database-modal-backdrop .database-modal-window .database-ai-close {
-  background: var(--db-light-bg-raised);
-  border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
-  border-style: solid;
-  border-width: 1px;
-  color: var(--db-light-text-1);
-}
-
 /* ── 본문 + 탭 스트립 ------------------------------------------------------ */
 
 .database-modal-backdrop .database-modal-window .database-modal-body {

@@ -205,7 +205,7 @@ function renderToggle(
   options: StagedDiffViewOptions,
 ): HTMLElement {
   // 버튼 글자는 "지금 누르면 무엇이 되는가" 를 적는다. 상태 이름을 적으면 매번 헷갈린다.
-  const label = reverted ? "다시 적용" : "이건 빼기";
+  const label = reverted ? "되살리기" : "빼기";
   const aria = reverted
     ? `이 ${STATUS_WORD[row.status]}을 다시 적용`
     : `이 ${STATUS_WORD[row.status]}을 적용하지 않기`;

@@ -1,0 +1,288 @@
+[
+  {
+    "key": "shot",
+    "value": "10-event-editor-default",
+    "at": "2026-09-03T07:23:03.242Z"
+  },
+  {
+    "key": "shot",
+    "value": "11-event-dock-open",
+    "at": "2026-09-03T07:23:07.397Z"
+  },
+  {
+    "key": "event-dock-open-box",
+    "value": {
+      "x": 268,
+      "y": 623.6875,
+      "width": 1171,
+      "height": 236.3125
+    },
+    "at": "2026-09-03T07:23:08.386Z"
+  },
+  {
+    "key": "shot",
+    "value": "12-event-dock-busy",
+    "at": "2026-09-03T07:23:12.221Z"
+  },
+  {
+    "key": "event-status-busy",
+    "value": "명령 초안을 만들고 있어요…",
+    "at": "2026-09-03T07:23:12.456Z"
+  },
+  {
+    "key": "llm",
+    "value": "200 /v1/chat/completions",
+    "at": "2026-09-03T07:23:14.657Z"
+  },
+  {
+    "key": "event-generate-ms",
+    "value": 2419,
+    "at": "2026-09-03T07:23:14.875Z"
+  },
+  {
+    "key": "shot",
+    "value": "13-event-dock-result",
+    "at": "2026-09-03T07:23:16.291Z"
+  },
+  {
+    "key": "event-status-result",
+    "value": "초안을 만들었어요. 위 목록에서 확인하고 「이대로 하기」를 누르세요.",
+    "at": "2026-09-03T07:23:16.547Z"
+  },
+  {
+    "key": "event-chip-result",
+    "value": "새로 5개 · 없어짐 2개",
+    "at": "2026-09-03T07:23:16.851Z"
+  },
+  {
+    "key": "event-result-title",
+    "value": "위 목록이 초안이에요",
+    "at": "2026-09-03T07:23:17.094Z"
+  },
+  {
+    "key": "event-result-meta",
+    "value": "새로 5개 · 없어짐 2개 · 빼고 싶은 줄은 「빼기」로 제외할 수 있어요",
+    "at": "2026-09-03T07:23:17.359Z"
+  },
+  {
+    "key": "event-generate-label",
+    "value": "다시 만들기\nCtrl↵",
+    "at": "2026-09-03T07:23:17.676Z"
+  },
+  {
+    "key": "event-staged-toggle-labels",
+    "value": [
+      "빼기"
+    ],
+    "at": "2026-09-03T07:23:17.993Z"
+  },
+  {
+    "key": "shot",
+    "value": "14-event-dock-applied",
+    "at": "2026-09-03T07:23:22.490Z"
+  },
+  {
+    "key": "event-status-applied",
+    "value": "새로 5개 · 없어짐 2개 반영했어요. 되돌리려면 툴바의 ↶ 되돌리기 한 번.",
+    "at": "2026-09-03T07:23:22.806Z"
+  },
+  {
+    "key": "event-chip-applied",
+    "value": "반영됨",
+    "at": "2026-09-03T07:23:23.089Z"
+  },
+  {
+    "key": "shot",
+    "value": "20-db-ai-bar-open",
+    "at": "2026-09-03T07:23:37.756Z"
+  },
+  {
+    "key": "db-bar-box",
+    "value": {
+      "x": 13,
+      "y": 57,
+      "width": 1414,
+      "height": 101
+    },
+    "at": "2026-09-03T07:23:38.394Z"
+  },
+  {
+    "key": "db-bar-text",
+    "value": "보내기\n지금 보는 곳\n몬스터 › 슬라임\n선택 레코드 다듬기\n비슷한 것 하나 더\n난이도 맞추기\n이 탭 점검",
+    "at": "2026-09-03T07:23:38.620Z"
+  },
+  {
+    "key": "db-bar-suggestions",
+    "value": [
+      "선택 레코드 다듬기",
+      "비슷한 것 하나 더",
+      "난이도 맞추기",
+      "이 탭 점검"
+    ],
+    "at": "2026-09-03T07:23:38.864Z"
+  },
+  {
+    "key": "llm",
+    "value": "200 /v1/chat/completions",
+    "at": "2026-09-03T07:23:44.321Z"
+  },
+  {
+    "key": "shot",
+    "value": "21-db-ai-sent",
+    "at": "2026-09-03T07:23:44.325Z"
+  },
+  {
+    "key": "db-toast",
+    "value": [],
+    "at": "2026-09-03T07:23:44.807Z"
+  },
+  {
+    "key": "db-turn-status-early",
+    "value": "생각하는 중…",
+    "at": "2026-09-03T07:23:45.309Z"
+  },
+  {
+    "key": "llm",
+    "value": "200 /v1/chat/completions",
+    "at": "2026-09-03T07:23:48.171Z"
+  },
+  {
+    "key": "llm",
+    "value": "200 /v1/chat/completions",
+    "at": "2026-09-03T07:23:53.224Z"
+  },
+  {
+    "key": "shot",
+    "value": "22-db-ai-working",
+    "at": "2026-09-03T07:23:55.812Z"
+  },
+  {
+    "key": "llm",
+    "value": "200 /v1/chat/completions",
+    "at": "2026-09-03T07:23:56.365Z"
+  },
+  {
+    "key": "llm",
+    "value": "200 /v1/chat/completions",
+    "at": "2026-09-03T07:23:59.149Z"
+  },
+  {
+    "key": "db-turn-done",
+    "value": {
+      "phase": "done",
+      "text": "완료 · 바꾼 것 2개 — 화면에 바로 반영됐어요",
+      "ms": 8071
+    },
+    "at": "2026-09-03T07:24:03.883Z"
+  },
+  {
+    "key": "shot",
+    "value": "23-db-ai-done",
+    "at": "2026-09-03T07:24:04.870Z"
+  },
+  {
+    "key": "db-turn-text",
+    "value": "선택한 몬스터를 중반 난이도에 맞춰 스탯과 보상을 조정해줘\n완료 · 바꾼 것 2개 — 화면에 바로 반영됐어요\n적 '슬라임' 튜닝: maxHp 18→336, attack 10→55\n적 '슬라임' 수정\n\n선택하신 슬라임 몬스터의 스탯과 보상을 중반 난이도(기준 레벨 12)에 맞춰 재조정했습니다.\n\n능력치: 최대 체력 336, 공격력 55, 방어력 42, 마법방어 28, 민첩성 24로 상향되었습니다.\n처치 보상: 획득 경험치 45 EXP, 골드 35G로 증가했습니다.\n\n전투 밸런스 공식에 따라 4회 정도의 유효 공격으로 처치할 수 있는 튼튼한 중반 몬스터로 설정되었습니다.\n\n되돌리기: AI: 적 '슬라임' 튜닝: maxHp 18→336, at… 외 1건\n채팅에서 이어가기\n지우기",
+    "at": "2026-09-03T07:24:05.125Z"
+  },
+  {
+    "key": "db-turn-box",
+    "value": {
+      "x": 665.90625,
+      "y": 67,
+      "width": 745.078125,
+      "height": 234
+    },
+    "at": "2026-09-03T07:24:05.719Z"
+  },
+  {
+    "key": "db-undo-visible",
+    "value": true,
+    "at": "2026-09-03T07:24:05.835Z"
+  },
+  {
+    "key": "db-list-geometry",
+    "value": {
+      "list": {
+        "y": 530,
+        "bottom": 743
+      },
+      "toolbar": {
+        "y": 751,
+        "bottom": 823
+      },
+      "overlap": 0
+    },
+    "at": "2026-09-03T07:24:05.982Z"
+  },
+  {
+    "key": "shot",
+    "value": "30-db-generate-dialog",
+    "at": "2026-09-03T07:24:08.372Z"
+  },
+  {
+    "key": "db-generate-dialog-box",
+    "value": {
+      "x": 450,
+      "y": 269.125,
+      "width": 540,
+      "height": 361.75
+    },
+    "at": "2026-09-03T07:24:08.930Z"
+  },
+  {
+    "key": "db-generate-dialog-text",
+    "value": "AI로 몬스터 만들기\n\n설명 한두 문장으로 몬스터 레코드를 만들어 바로 등록합니다.\n\n어떤 몬스터인가요?\n서슬 늑대\n습지 두꺼비\n폐광 감시자\n몬스터 그림도 함께 만들기\n그림은 30초 이상 걸릴 수 있어요. 끄면 정보만 몇 초 안에 만들어요.\n닫기\n만들기",
+    "at": "2026-09-03T07:24:09.140Z"
+  },
+  {
+    "key": "shot",
+    "value": "31-db-generate-filled",
+    "at": "2026-09-03T07:24:12.021Z"
+  },
+  {
+    "key": "shot",
+    "value": "32-db-generate-busy",
+    "at": "2026-09-03T07:24:14.807Z"
+  },
+  {
+    "key": "db-generate-busy",
+    "value": "몬스터 정보를 만드는 중…",
+    "at": "2026-09-03T07:24:15.014Z"
+  },
+  {
+    "key": "llm",
+    "value": "200 /v1/chat/completions",
+    "at": "2026-09-03T07:24:15.433Z"
+  },
+  {
+    "key": "db-generate-ms",
+    "value": 2689,
+    "at": "2026-09-03T07:24:17.704Z"
+  },
+  {
+    "key": "shot",
+    "value": "33-db-generate-done",
+    "at": "2026-09-03T07:24:19.623Z"
+  },
+  {
+    "key": "db-generate-status",
+    "value": "완료 · 「서슬 늑대」을 만들었어요",
+    "at": "2026-09-03T07:24:20.052Z"
+  },
+  {
+    "key": "db-generate-result",
+    "value": "서슬 늑대\nenemy_ai_1\nHP\n220\n공격\n58\n방어\n28\n민첩\n64\n경험치\n65\n골드\n42\n\n목록에서 선택된 상태로 등록됐어요. 닫으면 바로 편집할 수 있어요.",
+    "at": "2026-09-03T07:24:20.273Z"
+  },
+  {
+    "key": "shot",
+    "value": "34-db-after-generate",
+    "at": "2026-09-03T07:24:22.627Z"
+  },
+  {
+    "key": "page-errors",
+    "value": [],
+    "at": "2026-09-03T07:24:22.628Z"
+  }
+]

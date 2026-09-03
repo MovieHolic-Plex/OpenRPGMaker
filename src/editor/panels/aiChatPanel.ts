@@ -89,6 +89,7 @@ import { createComposerElements, type ComposerElements, type ComposerPopover } f
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton } from "./aiDirectorChrome";
 import { openAiSettingsModal } from "./aiSettingsModal";
+import { getTool } from "@/editor/tools/toolRegistry";
 import {
   directorStartPrompts,
   formatComposerPlaceholder,
@@ -2763,7 +2764,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     return merged.map((entry) => {
       const kind = entry.kind;
       if (kind === "tool") {
-        return { kind: "tool", name: entry.name, summary: entry.summary, at: entry.at };
+        // 브리지 소비자(DB AI 바)가 읽기·쓰기와 성공·실패를 가를 수 있게 모드와 결과를 실어 준다.
+        return { kind: "tool", name: entry.name, summary: entry.summary, at: entry.at, mode: getTool(entry.name)?.mode, ok: entry.ok };
       }
       if (kind === "assistant" || kind === "user" || kind === "status") {
         return { kind, text: "text" in entry ? entry.text : undefined, at: entry.at };
