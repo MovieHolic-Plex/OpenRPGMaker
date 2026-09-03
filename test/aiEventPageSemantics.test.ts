@@ -341,11 +341,11 @@ describe("make_villager does not ship dead pages of its own", () => {
     expect(findShadowedPages(pages)).toEqual([]);
   });
 
-  it("still greets when no unconditional dialogue was given", () => {
+  it("keeps an unconditional base page without inventing a greeting when no unconditional dialogue was given", () => {
     const { event } = villager([{ when: { timePhase: "night" }, text: "밤" }]);
     const pages = event?.pages ?? [];
     expect(pages[0]?.conditions).toEqual([]);
-    expect((pages[0]?.commands ?? []).some((command) => command.kind === "text")).toBe(true);
+    expect((pages[0]?.commands ?? []).some((command) => command.kind === "text")).toBe(false);
     expect(findShadowedPages(pages)).toEqual([]);
   });
 

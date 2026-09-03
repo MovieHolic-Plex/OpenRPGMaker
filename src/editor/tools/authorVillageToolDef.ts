@@ -126,6 +126,22 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
         groundTheme: { type: "string", enum: ["grass", "snow"], description: "Whole-settlement ground preset. theme remains descriptive." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
         npcCount: { type: "integer", minimum: 0, maximum: 512, description: "Exact requested village NPC population." },
+        residents: {
+          type: "array",
+          description:
+            "주민 이름·역할·대사 [{name, role?, lines?}] — 순서대로 소비된다(집 주인 → 광장). 테마에 맞는 이름, 서로를 언급하는 대사, 세계관 개체 언급을 넣어라. "
+            + "생략하면 주민은 대사 없이 놓이고 세션의 캐스트 라이터가 한 번에 써서 채운다(코드는 대사를 지어내지 않는다).",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              role: { type: "string" },
+              lines: { type: "array", items: { type: "string" } },
+            },
+            required: ["name"],
+            additionalProperties: false,
+          },
+        },
         theme: { type: "string" },
         forestDensity: {
           type: "string",

@@ -111,6 +111,7 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
         }
       }
 
+      // 문지기·성주는 대사 없이 놓인다 — 캐스트 라이터가 성채 테마·세계관에 맞춰 쓴다(고정 대사 삭제, 2026-09-03).
       if (npcsEnabled) {
         try {
           placeNpcTool.run(draft, {
@@ -120,7 +121,7 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
             name: "문지기",
             graphic: { query: "warrior" },
             movement: "fixed",
-            pages: [{ lines: ["성채에 오신 것을 환영하오. 무기는 문 앞에 두고 들어가시오."] }],
+            pages: [{}],
           });
         } catch (err) {
           warnings.push(`문지기 배치 실패: ${err instanceof Error ? err.message : String(err)}`);
@@ -135,7 +136,7 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
             name: "성주",
             graphic: { query: "old man" },
             movement: "fixed",
-            pages: [{ lines: ["이 성은 옛 왕조의 보루였소. 여장 위 바람을 느껴 보시오."] }],
+            pages: [{}],
           });
         } catch (err) {
           warnings.push(`성주 배치 실패: ${err instanceof Error ? err.message : String(err)}`);

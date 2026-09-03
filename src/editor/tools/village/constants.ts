@@ -250,8 +250,13 @@ export interface Plaza {
   readonly centerX: number;
 }
 
+/**
+ * 주민 이름·역할·대사. 코드는 기본 대사를 갖지 않는다 — lines 가 비면 주민은 대사 없는 '대기' 페이지로
+ * 놓이고 세션의 캐스트 라이터(ai/npcCast)가 테마·이웃·세계관에 맞춰 채운다(2026-09-03 결정).
+ */
 export interface NpcText {
   readonly name: string;
+  readonly role?: string;
   readonly lines: readonly string[];
 }
 
@@ -277,18 +282,6 @@ export const HOUSE_TEMPLATES: readonly HouseTemplate[] = HOUSE_TEMPLATE_DEFS.map
   wingsAt: (x: number, y: number) => houseTemplateWingsAt(def, x, y),
 }));
 
-export const DEFAULT_NPCS: readonly NpcText[] = [
-  { name: "민재", lines: ["소라가 아침마다 우물가를 챙겨 줘요.", "이 길만 따라가면 광장까지 금방입니다."] },
-  { name: "소라", lines: ["민재가 고친 지붕 덕분에 비가 새지 않아요.", "오늘은 장터에 풋고추가 많이 나왔대요."] },
-  { name: "대길", lines: ["새벽에 닭이 울면 남쪽 밭으로 나갑니다.", "광장 대로가 이어져서 짐 나르기가 편해졌어요."] },
-  { name: "연화", lines: ["집집마다 창문을 닦아 두니 마을이 밝아졌네요."] },
-  { name: "준호", lines: ["동쪽 길은 해 질 무렵에도 잘 보여요.", "아이들이 광장에서 술래잡기를 합니다."] },
-  { name: "다솜", lines: ["저녁 국거리로 무를 썰어 두었어요.", "촌장님은 늘 마을 길부터 살피세요."] },
-  { name: "태식", lines: ["보라가 부탁한 장작은 광장 옆에 쌓아 두었습니다."] },
-  { name: "보라", lines: ["태식 아저씨가 장작을 챙겨 줘서 오늘 밤은 따뜻하겠어요."] },
-  { name: "한결", lines: ["서쪽 끝부터 동쪽 끝까지 길이 하나로 이어졌습니다.", "이제 손님도 헤매지 않겠군요."] },
-  { name: "미선", lines: ["광장에 두 사람이 더 있으니 장터가 북적이는 것 같아요.", "필요한 물건이 있으면 해 지기 전에 들르세요."] },
-];
 
 export function requireTool(tools: readonly ToolDefinition[], name: string): ToolDefinition {
   const tool = tools.find((candidate) => candidate.name === name);
