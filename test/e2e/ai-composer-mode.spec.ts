@@ -167,6 +167,7 @@ test.describe("컴포저 모드가 실제로 세션을 바꾼다", () => {
 
     await sendViaComposer(page, "plan", "광장에 연못을 두 단계로 만들어줘");
     await expect(page.getByTestId("ai-work-plan-checklist")).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId("ai-plan-book")).toBeVisible({ timeout: 60_000 });
     await waitFinal(page, "계속");
 
     // 툴 없는 호출은 의도 선언자 + 플래너 두 번이다. 핵심은 tools 가 실린 호출(툴 루프)이 0회라는 것.
@@ -190,7 +191,7 @@ test.describe("컴포저 모드가 실제로 세션을 바꾼다", () => {
 
     const checklist = page.getByTestId("ai-work-plan-checklist");
     await expect(checklist).toBeVisible({ timeout: 60_000 });
-    // 항목은 서랍 밖에 바로 보인다.
+    await expect(page.getByTestId("ai-plan-book")).toBeVisible({ timeout: 60_000 });
     const items = page.getByTestId("ai-autonomous-item");
     await expect(items).toHaveCount(2, { timeout: 60_000 });
     // 첫 툴이 성공하면 첫 항목에 체크가 붙는다(라이브).
