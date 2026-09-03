@@ -391,7 +391,7 @@ try {
       if (!parent || !vis(parent)) continue;
       const cs = getComputedStyle(parent);
       fontSizes.set(cs.fontSize, (fontSizes.get(cs.fontSize) ?? 0) + 1);
-      if (!["12px", "13px", "15px", "18px"].includes(cs.fontSize)) offSizeSamples.push(`${cs.fontSize} ${parent.tagName.toLowerCase()}.${String(parent.className).split(" ").slice(0, 2).join(".")}`);
+      if (!["12px", "13px", "14px", "15px", "18px"].includes(cs.fontSize)) offSizeSamples.push(`${cs.fontSize} ${parent.tagName.toLowerCase()}.${String(parent.className).split(" ").slice(0, 2).join(".")}`);
       const r = ratio(cs.color, opaqueBg(parent));
       if (r != null && r < 4.5) textColorsBelow.push({ text: node.textContent.trim().slice(0, 24), cls: String(parent.className).slice(0, 40), ratio: Math.round(r * 100) / 100, fontSize: cs.fontSize });
     }
@@ -420,12 +420,12 @@ try {
       svgIcons: root.querySelectorAll("svg").length,
     };
   });
-  const allowedSizes = new Set(["12px", "13px", "15px", "18px"]);
+  const allowedSizes = new Set(["12px", "13px", "14px", "15px", "18px"]);
   const offSizes = grammar.fontSizes.filter(([size]) => !allowedSizes.has(size));
   const allowedRadii = new Set(["6px", "4px", "50%"]);
   const offRadii = grammar.radii.filter(([radius]) => !allowedRadii.has(radius));
   record("C7", "버튼 스타일 시그니처 ≤ 12", grammar.signatureCount <= 12, { count: grammar.signatureCount, signatures: grammar.signatures.slice(0, 30) });
-  record("C8", "글자 크기는 12·13·15·18 만", offSizes.length === 0, { offSizes, samples: grammar.offSizeSamples, all: grammar.fontSizes });
+  record("C8", "글자 크기는 12·13·14·15·18 만 (14 = 읽는 글자)", offSizes.length === 0, { offSizes, samples: grammar.offSizeSamples, all: grammar.fontSizes });
   record("C9", "라운딩은 6·4px 과 50% 만", offRadii.length === 0, { offRadii, samples: grammar.offRadiusSamples, all: grammar.radii });
   record("C10", "이모지·글리프 아이콘 버튼 없음", grammar.glyphButtons.length === 0, { glyphButtons: grammar.glyphButtons.slice(0, 12), svgIcons: grammar.svgIcons });
   record("C11", "대비 4.5:1 미만 텍스트 없음", grammar.lowContrast.length === 0, { count: grammar.lowContrast.length, sample: grammar.lowContrast.slice(0, 12) });
@@ -448,6 +448,173 @@ try {
   }
   record("C12", "툴바 팝오버가 바깥 클릭에 닫힘", popover?.openAfterClick === true && popover?.openAfterOutside === false, popover);
 
+
+  // ── 가독성 기준 C13~C16 (2026-09-03 후속 «가독성이 여전히 떨어진다»). 목록 보기 · 선택 없음 · 1440.
+  //    읽는 글자(명령 요약)는 14px 이상, 대비 7:1 이상이 대부분, 행마다 상자를 두르지 않고,
+  //    분기 구조는 들여쓰기 폭과 마커 줄의 글자 무게로 읽힌다.
+  // 읽기 측정은 명령이 하나뿐인 게이트 기본 이벤트로는 뜻이 없다(첫 실측: 행 1 · 마커 0 · 글자 39).
+  // 지금 열려 있는 이벤트(모달 dataset 의 mapId/eventId)에 선택지·조건 분기가 든 13줄을 더 심는다 —
+  // 모달이 store 를 구독하므로 그 자리에서 다시 그려진다. 닫고 다시 여는 길은 「취소(삭제)」 확인창에 막혔다.
+  // C12 의 마지막 Escape 는 팝오버가 이미 닫힌 뒤라 편집기 층에 닿아 「적용하지 않은 변경」 확인창을 띄운다 —
+  // 「계속 편집」으로 물리고 잰다(확인창은 지표엔 영향 없지만 증거 사진을 가린다).
+  await page.getByTestId("app-modal-cancel").click({ timeout: 1200 }).catch(() => {});
+  await page.waitForTimeout(300);
+  const injected = await page.evaluate(() => {
+    const store = window.__oprnEditorStore;
+    const modal = document.querySelector("[data-testid=event-editor-modal]");
+    if (!store || !modal) return { ok: false, reason: "no store/modal" };
+    const { mapId, eventId } = modal.dataset;
+    const project = store.getCurrent();
+    let switchId = null; let variableId = null; let itemIds = []; let otherMapId = null;
+    const walk = (cmds) => {
+      for (const c of cmds ?? []) {
+        if (!c) continue;
+        if (c.kind === "setSwitch" && !switchId) switchId = c.switchId;
+        if (c.kind === "setVariable" && !variableId) variableId = c.variableId;
+        if (c.kind === "shop" && !itemIds.length && Array.isArray(c.itemIds)) itemIds = c.itemIds.slice(0, 4);
+        if (c.kind === "fork") { if (c.condition?.kind === "switch" && !switchId) switchId = c.condition.switchId; walk(c.then); walk(c.else); }
+        if (c.kind === "choices") for (const o of c.options ?? []) walk(o.branch);
+      }
+    };
+    for (const m of Object.values(project.maps)) {
+      if (m.id !== mapId && !otherMapId) otherMapId = m.id ?? null;
+      for (const ev of m.events ?? []) { for (const p of ev.pages ?? []) walk(p.commands); walk(ev.commands); }
+    }
+    if (!otherMapId) otherMapId = Object.keys(project.maps).find((id) => id !== mapId) ?? mapId;
+    const speaker = "대장장이 하몬";
+    const extra = [
+      { kind: "choices", prompt: "무엇을 하겨나?", options: [
+        { text: "철광석을 판다", branch: [{ kind: "changeGold", op: "+=", amount: 120 }, { kind: "text", speaker, body: "좋은 물건이군. 120G 를 주지." }] },
+        { text: "무기를 산다", branch: [{ kind: "shop", itemIds, allowSell: true }] },
+        { text: "그냥 구경한다", branch: [{ kind: "text", body: "하몬은 다시 망치를 들었다." }] },
+      ] },
+      { kind: "fork", condition: { kind: "switch", switchId, value: true },
+        then: [{ kind: "text", speaker, body: "축제 준비는 잘 되고 있나? 광장에 등불을 달아야 해." }],
+        else: [{ kind: "setSwitch", switchId, value: true }, { kind: "text", speaker, body: "다음에 오면 축제 이야기를 해 주지." }] },
+      { kind: "setVariable", variableId, op: "+=", value: 1 },
+      { kind: "moveEvent", eventId, route: { moves: [{ kind: "move", dir: "left" }, { kind: "move", dir: "left" }, { kind: "turn", dir: "down" }, { kind: "wait" }], repeat: false, wait: true } },
+      { kind: "wait", ms: 600 },
+      { kind: "transfer", mapId: otherMapId, x: 4, y: 6 },
+    ];
+    let where = null;
+    store.update((draft) => {
+      const ev = draft.maps[mapId]?.events.find((e) => e.id === eventId);
+      if (!ev) return;
+      const target = ev.pages?.length ? ev.pages[0].commands : ev.commands;
+      target.push(...extra);
+      where = ev.pages?.length ? "pages[0]" : "commands";
+    });
+    return { ok: where !== null, where, mapId, eventId, added: extra.length };
+  });
+  await page.waitForTimeout(900);
+  await page.getByTestId("event-view-toggle-list").click().catch(() => {});
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: `${evidenceDir}/09-readability-1440.png` });
+  const readability = await editor.evaluate(() => {
+    const root = document.querySelector(".event-editor-modal-window") ?? document.querySelector("[data-testid=event-editor-modal]");
+    const list = root.querySelector(".cmd-list");
+    if (!list) return { missing: true };
+    const vis = (el) => {
+      const r = el.getBoundingClientRect();
+      const cs = getComputedStyle(el);
+      return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none" && el.closest("[hidden]") === null;
+    };
+    const lum = (rgb) => {
+      const m = rgb.match(/[\d.]+/g);
+      if (!m) return null;
+      const [r, g, b] = m.slice(0, 3).map((v) => { const c = Number(v) / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const alphaOf = (rgb) => { const m = rgb.match(/[\d.]+/g); return m && m.length >= 4 ? Number(m[3]) : (rgb === "transparent" ? 0 : 1); };
+    const opaqueBg = (el) => {
+      let n = el;
+      while (n && n !== document.documentElement) {
+        const bg = getComputedStyle(n).backgroundColor;
+        if (bg && alphaOf(bg) >= 0.5) return bg;
+        n = n.parentElement;
+      }
+      return "rgb(255, 255, 255)";
+    };
+    const ratio = (fg, bg) => {
+      const a = lum(fg); const b = lum(bg);
+      if (a == null || b == null) return null;
+      const [hi, lo] = a > b ? [a, b] : [b, a];
+      return (hi + 0.05) / (lo + 0.05);
+    };
+    // 글자 수 가중 — 한 글자가 한 표. 요약 본문이 많고 번호·배지가 적으니 「읽는 글자」가 지표를 지배한다.
+    const sizeChars = new Map();
+    let chars = 0;
+    let charsAA7 = 0;
+    const lowSamples = [];
+    const walker = document.createTreeWalker(list, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const text = node.textContent.trim();
+      if (!text) continue;
+      const parent = node.parentElement;
+      if (!parent || !vis(parent)) continue;
+      const cs = getComputedStyle(parent);
+      const n = text.length;
+      chars += n;
+      sizeChars.set(cs.fontSize, (sizeChars.get(cs.fontSize) ?? 0) + n);
+      const r = ratio(cs.color, opaqueBg(parent));
+      if (r != null && r >= 7) charsAA7 += n;
+      else if (r != null && lowSamples.length < 12) lowSamples.push({ text: text.slice(0, 20), cls: String(parent.className).slice(0, 40), ratio: Math.round(r * 100) / 100 });
+    }
+    const sorted = [...sizeChars.entries()].map(([k, v]) => [parseFloat(k), v]).sort((a, b) => a[0] - b[0]);
+    let acc = 0; let median = 0;
+    for (const [size, n] of sorted) { acc += n; if (acc >= chars / 2) { median = size; break; } }
+    // 상자 밀도 — 눈에 보이는 테두리를 두른 요소(면적 200px² 이상) / 보이는 명령 행.
+    const items = [...list.querySelectorAll(".cmd-item")].filter(vis);
+    const boxed = [];
+    for (const el of list.querySelectorAll("*")) {
+      if (!vis(el)) continue;
+      const cs = getComputedStyle(el);
+      // 네 변이 모두 보이는 테두리만 「상자」다 — 한 변만 있는 구분선·왼쪽 막대는 세지 않는다.
+      const sides = [["Top", cs.borderTopWidth, cs.borderTopColor, cs.borderTopStyle], ["Right", cs.borderRightWidth, cs.borderRightColor, cs.borderRightStyle], ["Bottom", cs.borderBottomWidth, cs.borderBottomColor, cs.borderBottomStyle], ["Left", cs.borderLeftWidth, cs.borderLeftColor, cs.borderLeftStyle]];
+      if (!sides.every(([, w, c, st]) => (parseFloat(w) || 0) > 0 && alphaOf(c) >= 0.08 && st !== "none")) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width * r.height < 200) continue;
+      boxed.push(`${el.tagName.toLowerCase()}.${String(el.className).split(" ").slice(0, 2).join(".")}`);
+    }
+    const boxedCount = new Map();
+    for (const b of boxed) boxedCount.set(b, (boxedCount.get(b) ?? 0) + 1);
+    // 구조 표식 — 깊이 1 행과 깊이 0 행의 왼쪽 차이(들여쓰기 폭) · 마커 줄의 글자 무게.
+    const headLeft = (depth) => {
+      const item = items.find((i) => i.dataset.cmdDepth === String(depth));
+      const head = item?.querySelector(":scope > .cmd-head");
+      return head ? head.getBoundingClientRect().left : null;
+    };
+    const l0 = headLeft(0); const l1 = headLeft(1);
+    const indent = l0 != null && l1 != null ? Math.round(l1 - l0) : null;
+    const markers = [...list.querySelectorAll(".cmd-line-marker")].filter(vis).map((m) => {
+      const cs = getComputedStyle(m);
+      return { text: (m.textContent ?? "").trim().slice(0, 16), weight: Number(cs.fontWeight), size: cs.fontSize, italic: cs.fontStyle === "italic" };
+    });
+    return {
+      chars,
+      medianSize: median,
+      sizeShare: sorted.map(([size, n]) => [size, Math.round((n / chars) * 1000) / 10]),
+      aa7Share: chars ? Math.round((charsAA7 / chars) * 1000) / 10 : 0,
+      lowSamples,
+      rows: items.length,
+      boxed: boxed.length,
+      boxesPerRow: items.length ? Math.round((boxed.length / items.length) * 100) / 100 : null,
+      boxedKinds: [...boxedCount.entries()],
+      indent,
+      markers,
+    };
+  });
+  record("C13", "읽는 글자(명령 요약) 글자 수 가중 중앙값 ≥ 14px", readability.medianSize >= 14, { median: readability.medianSize, share: readability.sizeShare, chars: readability.chars, injected });
+  record("C14", "명령 영역 글자의 80% 이상이 대비 7:1", readability.aa7Share >= 80, { aa7Share: readability.aa7Share, low: readability.lowSamples });
+  record("C15", "행당 테두리 상자 ≤ 0.3", readability.boxesPerRow != null && readability.boxesPerRow <= 0.3, { boxesPerRow: readability.boxesPerRow, boxed: readability.boxed, rows: readability.rows, kinds: readability.boxedKinds });
+  record(
+    "C16",
+    "분기 구조가 읽힌다 — 들여쓰기 ≥ 24px, 마커 줄은 굵기 600 이상·이탤릭 없음",
+    readability.indent != null && readability.indent >= 24 && readability.markers.length > 0 && readability.markers.every((m) => m.weight >= 600 && !m.italic),
+    { indent: readability.indent, markers: readability.markers },
+  );
+
   await writeFile(`${evidenceDir}/results.json`, `${JSON.stringify({ label, baseUrl, results }, null, 2)}\n`, "utf8");
 } finally {
   await context.close();
@@ -467,7 +634,14 @@ async function openEventEditor(page) {
   // 로직 생산적으로: locator 가시성 대기 대슱 DOM 질의로 진짜 부팅을 폴링한다(워크트리 병렬 실행 시 부팅이 느리다).
   const bootDeadline = Date.now() + 240000;
   let booted = false;
+  // 공유 머신에서 net::ERR_NETWORK_CHANGED 로 모듈 로드가 통째로 죽어 빈 문서(body 0자)로 4분을 기다린 적이 있다 —
+  // 45초 안에 부팅이 안 보이면 다시 읽는다.
+  let lastReload = Date.now();
   while (Date.now() < bootDeadline) {
+    if (Date.now() - lastReload > 45000) {
+      await page.reload({ waitUntil: "domcontentloaded", timeout: 60000 }).catch(() => {});
+      lastReload = Date.now();
+    }
     booted = await page.evaluate(() => {
       const host = document.querySelector("[data-testid=edit-canvas]");
       const c = host?.querySelector("canvas");

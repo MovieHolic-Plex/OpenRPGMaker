@@ -97,14 +97,25 @@ Retired literal RM blues/teals (`#004bff` / `#f07f00` / `#008c8c` / `#e8f2f7` / 
 
 | Rule | Value |
 |------|-------|
-| Type scale | 12px 보조(종류 · 힌트 · 번호 · 칩) · 13px 본문(요약 · 폼 값 · 버튼) · 15px 제목(인스펙터 · 칼럼 머리) · 18px 이벤트 이름. Form controls set `font-size: 13px` explicitly (UA default is 13.333px). |
+| Type scale | 12px 보조(종류 · 힌트 · 번호 · 칩) · 13px 컨트롤(버튼 · 탭 · 레일 · 폼 값) · 14px 읽는 글자(요약 · 값 · 인스펙터 입력 — 아래 follow-up) · 15px 제목(인스펙터 · 칼럼 머리) · 18px 이벤트 이름. Form controls set `font-size: 13px` explicitly (UA default is 13.333px). |
 | Radius | 6px 바깥(카드 · 입력 · 버튼 · 필드셋) · 4px 안쪽(칩 · 알약 · 배지 · 아이콘 상자) · 50% 만 점(dot)에. No 999px pills inside the event editor. |
 | Contrast | `--text-3` only on pure white at 12px+; secondary text on tinted surfaces uses `--text-2`. The choice token is `--warning` on `--control-bg` (5.6:1), not on a warning tint (3.67:1). |
 | Buttons | Six groups: filled (`.btn.primary`, toolbar `.event-editor-command-tool.primary`, `.ai-event-btn.primary`) · bordered (`.btn`, toolbar tools, page tabs and page actions — white, `--border-strong`, 30px) · ghost (`.btn.ghost`, view toggle, segments, empty line) · icon (28×28: close, fullscreen, inspector close, storyboard row actions, picker favorite) · danger text · chip (`.ai-event-example`, 24px). Rail group headers reset the UA button face explicitly. |
 | Icons | One SVG set, `src/editor/panels/eventEditor/editorIcons.ts` on the repo builder `buildSvgIcon` (22×22, 1.8 stroke, currentColor), 16px in place. Glyph characters (↑ ↓ ✎ ✕ ⛶ ❝ ◇ ➤ ¤ ★ △ …) are not icons; `data-glyph` stays only as a compatibility attribute and its `::before` is switched off. |
 | Category colors | `--cmdcat-*` is six colors: dialogue `--accent`, flow `--warning`, reward `--success`, map `#0F7490`, screen/sound `#7A3E9D`, system/battle/actor/modern `--text-3`. Used on rails, icons and palette chips only — never on text. |
 
-Guards: `scripts/qa-event-editor-ux.mjs` C7 (≤ 12 button signatures), C8 (font sizes ⊆ {12, 13, 15, 18}), C9 (radii ⊆ {6px, 4px, 50%}), C10 (0 glyph icon buttons), C11 (0 text nodes under 4.5:1), C12 (toolbar popover closes on outside pointerdown). Escape closes only the top layer; the close-guard dialog names the real footer buttons (「적용」 · 「저장하고 닫기」). The header shows map name · coords, hides the NPC chip when nothing is linked, and no longer repeats the page count. Command summaries and the move-route target resolve event IDs to display names (`eventNameForSummary`); branch-end marker rows (「분기 끝」) are gone.
+Guards: `scripts/qa-event-editor-ux.mjs` C7 (≤ 12 button signatures), C8 (font sizes ⊆ {12, 13, 14, 15, 18}), C9 (radii ⊆ {6px, 4px, 50%}), C10 (0 glyph icon buttons), C11 (0 text nodes under 4.5:1), C12 (toolbar popover closes on outside pointerdown). Escape closes only the top layer; the close-guard dialog names the real footer buttons (「적용」 · 「저장하고 닫기」). The header shows map name · coords, hides the NPC chip when nothing is linked, and no longer repeats the page count. Command summaries and the move-route target resolve event IDs to display names (`eventNameForSummary`); branch-end marker rows (「분기 끝」) are gone.
+
+**Reading text and decoration (2026-09-03, follow-up).** After the grammar fix the editor still read badly, and the measurement said why: the command summary — the text an author reads most — was 12px (72–78% of visible characters in the list), every row carried two four-sided boxes (row border + category pill, 32 boxes for 14 rows), label / value / body competed in three colors of equal weight, and nested rows were indented 18px with marker rows set like ordinary text. The fix is one more section (「가독성」) at the end of `src/styles/editor/event-editor.balanced.css`:
+
+| Rule | Value |
+|------|-------|
+| Reading text | 14px / 20px, `--text-1`: command summary body and values, choice chips, story detail, inspector title, inspector inputs and textareas. Long dialogue clamps at 2 lines instead of truncating at 1. |
+| Decoration | 12px, `--text-2`: step numbers (600), category labels (600), branch markers (700), hints. The command label (「문장 표시」) is decoration — `--text-2` 500 — so the body and value carry the weight. |
+| Rows are lines | White list surface (`--bg-raised`), no row border or tint, 34px min height. The 3px category bar and 28px indent guides say the structure. States are backgrounds: hover `--bg-hover`, selected `--accent-muted` + inset 3px accent. The category label is text with a colored icon, not a bordered pill. Chips and badges are borderless tints. |
+| Branch markers | 12px 700 `--text-2`, standing at the child indent, with a 2px tone tick (fork `--accent`, choices `--warning`, shop `--success`) at the head of the indent guide. Markers and rows are `flex: 0 0 auto` — the list is a flex column and shrinking rows clipped the markers. |
+
+Guards: `scripts/qa-event-editor-ux.mjs` C13 (character-weighted median font size in the command list ≥ 14px), C14 (≥ 80% of characters at 7:1 or better), C15 (≤ 0.3 four-sided boxes per command row), C16 (indent ≥ 24px per depth, markers ≥ 600 and not italic); C8 now allows 14px as the reading size. Measured on a 14-row event with choices and a conditional branch: median 12 → 14px, 7:1 share 43% → 98%, boxes 2.29 → 0 per row, indent 18 → 28px.
 
 ### Database state editor tokens
 
