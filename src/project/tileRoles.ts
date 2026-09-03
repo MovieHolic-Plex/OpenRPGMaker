@@ -36,6 +36,16 @@ export interface RoleCapabilities {
    * 통행 여부와 무관하게 지어진 것으로 남는다.
    */
   naturalGround: boolean;
+  /**
+   * 면 채우기(fill_region)가 덮어쓰면 안 되는 저작물인가 — 벽·지붕·건물·성채.
+   * 출처: 2026-09-03 적대적 리뷰 07(8×6 모래 채움이 집 한 채를 지움) → constructionTools.splitStructureCells.
+   */
+  structure: boolean;
+  /**
+   * place_props 가 소품으로 산포할 수 있는 재료인가. 벽·지붕·건물·수역은 아니다.
+   * 출처: 2026-09-03 적대적 리뷰 01(fill 거절 뒤 place_props 로 통행 불가 바닥 타일 산포) → placePropsDomain.
+   */
+  scatterAsProp: boolean;
 }
 
 const BASE: RoleCapabilities = {
@@ -44,6 +54,8 @@ const BASE: RoleCapabilities = {
   autotile: false,
   needsBackdrop: false,
   naturalGround: false,
+  structure: false,
+  scatterAsProp: true,
 };
 
 /**
@@ -54,12 +66,12 @@ const BASE: RoleCapabilities = {
 export const LEGACY_ROLE_CAPABILITIES: Record<string, RoleCapabilities> = {
   // ── TileGroupRole ──────────────────────────────────────────────
   terrain: { ...BASE, layerHome: "lower", requiresPatternGrammar: true, naturalGround: true },
-  water: { ...BASE, layerHome: "lower", requiresPatternGrammar: true, autotile: true, terrainTag: "water" },
-  wall: { ...BASE, layerHome: "lower", sampleAs: "nineSlice", expectedPassage: "solid", requiresPatternGrammar: true },
-  building: { ...BASE, layerHome: "lower" },
-  castle: { ...BASE, layerHome: "lower" },
+  water: { ...BASE, layerHome: "lower", requiresPatternGrammar: true, autotile: true, terrainTag: "water", scatterAsProp: false },
+  wall: { ...BASE, layerHome: "lower", sampleAs: "nineSlice", expectedPassage: "solid", requiresPatternGrammar: true, structure: true, scatterAsProp: false },
+  building: { ...BASE, layerHome: "lower", structure: true, scatterAsProp: false },
+  castle: { ...BASE, layerHome: "lower", structure: true, scatterAsProp: false },
   fence: { ...BASE, layerHome: "upper" },
-  roof: { ...BASE, layerHome: "perCell", sampleAs: "roof" },
+  roof: { ...BASE, layerHome: "perCell", sampleAs: "roof", structure: true, scatterAsProp: false },
   prop: { ...BASE, layerHome: "perCell", sampleLayer: "upper", sampleAs: "verticalPair", needsBackdrop: true },
 
   // ── PaletteSlotRole 전용 (낱개 타일·팔레트 슬롯) ────────────────

@@ -1,0 +1,391 @@
+{
+  "id": "keep-trees-sand",
+  "title": "바닥만 모래로, 나무는 유지",
+  "expect": "upper 변경 0(나무 보존), lower 만 바뀜, 밖 0칸.",
+  "boot": "fresh",
+  "provider": "google-antigravity",
+  "map": {
+    "id": "map_village_30_100x100",
+    "name": "이슬 장터 마을",
+    "size": "100x100",
+    "tileset": "easyrpg_chipset_combined_town",
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "events": 20
+  },
+  "visibleTiles": {
+    "x": 30,
+    "y": 37,
+    "w": 40,
+    "h": 28
+  },
+  "region": {
+    "x": 31,
+    "y": 38,
+    "width": 8,
+    "height": 6
+  },
+  "chipVisible": true,
+  "chip": {
+    "inDom": 1,
+    "visible": true,
+    "hostDisplay": "flex",
+    "text": "선택 (31,38) 8×6×"
+  },
+  "chipClearedOk": null,
+  "prompt": "이 영역 바닥을 모래로 바꿔줘. 나무는 그대로 두고",
+  "turns": [
+    {
+      "text": "이 영역 바닥을 모래로 바꿔줘. 나무는 그대로 두고",
+      "elapsedMs": 22919,
+      "timedOut": false,
+      "llmCalls": 1,
+      "toolCalls": 3,
+      "failedTools": 3,
+      "toolNames": [
+        "set_build_spec✗",
+        "set_build_spec✗",
+        "fill_region✗"
+      ],
+      "tools": [
+        {
+          "name": "set_build_spec",
+          "summary": "밑그림 검증 실패(1회)",
+          "args": "{}"
+        },
+        {
+          "name": "set_build_spec",
+          "summary": "밑그림 확정: 모래 지형 변경 — 에셋 1개(terrain)",
+          "args": "{}"
+        },
+        {
+          "name": "fill_region",
+          "summary": "이슬 장터 마을 (31,38) 8×6을 '모래'로 채움 — 22/48칸, 오토타일 재계산 22칸, 보호 26칸 제외.",
+          "args": "{}"
+        }
+      ],
+      "statuses": [
+        "대기",
+        "생각 중… 1초",
+        "생각 중… 2초",
+        "생각 중… 3초 · 도구 1",
+        "생각 중… 4초 · 도구 1",
+        "생각 중… 5초 · 도구 1",
+        "생각 중… 6초 · 도구 1",
+        "생각 중… 7초 · 도구 1",
+        "생각 중… 8초 · 도구 2",
+        "생각 중… 9초 · 도구 2",
+        "영역을 채우는 중 · 10초 · 도구 3",
+        "생각 중… 11초 · 도구 3",
+        "대기"
+      ],
+      "assistantTexts": [
+        "선택하신 영역의 바닥을 모래 지형으로 교체했습니다. 기존의 나무와 상위 소품들은 그대로 유지되도록 하위 레이어만 변경하여 적용했습니다. 추가로 다듬거나 변경하고 싶은 부분이 있으시면 말씀해 주세요!"
+      ],
+      "scopeNotes": [],
+      "diffAfterThisTurn": {
+        "total": 22,
+        "lower": 22,
+        "upper": 0,
+        "inside": 22,
+        "outside": 0,
+        "regionCells": 48,
+        "upperCleared": 0,
+        "distinctTiles": 8,
+        "hist": {
+          "lower:393": 4,
+          "lower:395": 1,
+          "lower:423": 7,
+          "lower:455": 2,
+          "lower:453": 3,
+          "lower:394": 2,
+          "lower:425": 1,
+          "lower:454": 2
+        },
+        "bbox": {
+          "x": 31,
+          "y": 38,
+          "w": 8,
+          "h": 6
+        }
+      }
+    }
+  ],
+  "diff": {
+    "total": 22,
+    "lower": 22,
+    "upper": 0,
+    "inside": 22,
+    "outside": 0,
+    "regionCells": 48,
+    "upperCleared": 0,
+    "distinctTiles": 8,
+    "hist": {
+      "lower:393": 4,
+      "lower:395": 1,
+      "lower:423": 7,
+      "lower:455": 2,
+      "lower:453": 3,
+      "lower:394": 2,
+      "lower:425": 1,
+      "lower:454": 2
+    },
+    "bbox": {
+      "x": 31,
+      "y": 38,
+      "w": 8,
+      "h": 6
+    }
+  },
+  "changedCells": [
+    {
+      "layer": "lower",
+      "x": 31,
+      "y": 38,
+      "from": 240,
+      "to": 393,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 32,
+      "y": 38,
+      "from": 240,
+      "to": 395,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 34,
+      "y": 38,
+      "from": 240,
+      "to": 393,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 38,
+      "y": 38,
+      "from": 240,
+      "to": 393,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 31,
+      "y": 39,
+      "from": 240,
+      "to": 423,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 32,
+      "y": 39,
+      "from": 240,
+      "to": 455,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 34,
+      "y": 39,
+      "from": 240,
+      "to": 453,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 38,
+      "y": 39,
+      "from": 240,
+      "to": 423,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 31,
+      "y": 40,
+      "from": 240,
+      "to": 423,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 38,
+      "y": 40,
+      "from": 240,
+      "to": 423,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 31,
+      "y": 41,
+      "from": 240,
+      "to": 423,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 38,
+      "y": 41,
+      "from": 240,
+      "to": 423,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 31,
+      "y": 42,
+      "from": 240,
+      "to": 423,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 35,
+      "y": 42,
+      "from": 240,
+      "to": 393,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 36,
+      "y": 42,
+      "from": 240,
+      "to": 394,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 37,
+      "y": 42,
+      "from": 240,
+      "to": 394,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 38,
+      "y": 42,
+      "from": 240,
+      "to": 425,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 31,
+      "y": 43,
+      "from": 240,
+      "to": 453,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 35,
+      "y": 43,
+      "from": 240,
+      "to": 453,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 36,
+      "y": 43,
+      "from": 240,
+      "to": 454,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 37,
+      "y": 43,
+      "from": 240,
+      "to": 454,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 38,
+      "y": 43,
+      "from": 240,
+      "to": 455,
+      "inside": true
+    }
+  ],
+  "lowerFourConnected": false,
+  "passability": {
+    "area": {
+      "x": 31,
+      "y": 38,
+      "w": 8,
+      "h": 6
+    },
+    "before": 6,
+    "after": 6
+  },
+  "start": {
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "startCellChanged": false,
+    "neighbours": [
+      {
+        "x": 51,
+        "y": 52
+      },
+      {
+        "x": 49,
+        "y": 52
+      },
+      {
+        "x": 50,
+        "y": 53
+      },
+      {
+        "x": 50,
+        "y": 51
+      }
+    ],
+    "neighbourPassableAfter": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "eventsCovered": [],
+  "chatTail": "2026년 9월 3일 목\n@>\n이 영역 바닥을 모래로 바꿔줘. 나무는 그대로 두고\n작업 3 ▸\n@>\n\n선택하신 영역의 바닥을 모래 지형으로 교체했습니다. 기존의 나무와 상위 소품들은 그대로 유지되도록 하위 레이어만 변경하여 적용했습니다. 추가로 다듬거나 변경하고 싶은 부분이 있으시면 말씀해 주세요!",
+  "mapsAfter": [
+    "map_village_30_100x100",
+    "map_house_interior_30_map_village_30_100x100_1",
+    "map_house_interior_30_map_village_30_100x100_2",
+    "map_house_interior_30_map_village_30_100x100_3",
+    "map_house_interior_30_map_village_30_100x100_4",
+    "map_house_interior_30_map_village_30_100x100_5",
+    "map_house_interior_30_map_village_30_100x100_6",
+    "map_house_interior_30_map_village_30_100x100_7",
+    "map_house_interior_30_map_village_30_100x100_8",
+    "map_house_interior_30_map_village_30_100x100_9",
+    "map_house_interior_30_map_village_30_100x100_10",
+    "map_house_interior_30_map_village_30_100x100_11",
+    "map_house_interior_30_map_village_30_100x100_12",
+    "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+    "map_mine_entrance",
+    "map_bell_shrine"
+  ],
+  "undo": null,
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+  ]
+}

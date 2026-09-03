@@ -13,6 +13,17 @@
   display: none;
 }
 
+/* 선택 스코프 칩은 대기 중에도 보인다 — 스코프가 붙는지 보여야 × 로 끌 수 있다. 맵 칩은 그대로 숨긴다. */
+.ai-chat-panel.is-assistant-idle .ai-context-chips.has-selection-scope {
+  display: flex;
+  /* 대기 중엔 스코프가 가장 중요한 맥락이다 — 가로 스크롤 줄의 맨 앞에 두어 × 까지 온전히 보이게 한다. */
+  order: -1;
+}
+
+.ai-chat-panel.is-assistant-idle .ai-context-chips.has-selection-scope .ai-context-chip:not(.ai-selection-chip) {
+  display: none;
+}
+
 .ai-more-menu-label,
 .ai-command-menu-label {
   color: var(--text-3);

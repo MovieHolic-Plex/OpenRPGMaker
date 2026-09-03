@@ -196,6 +196,20 @@ export function pendingApprovalText(
   return body ? `${notice}\n\n${body}` : notice;
 }
 
+/**
+ * 클립이 제안을 전부 버린 턴의 조수 문장 앞에 사실을 박는다 — pendingApprovalText 와 같은 원칙.
+ * 모델은 툴 요약(「25칸 채움」)만 보고 「채웠습니다」라고 말하지만, 하드 클립 뒤 맵은 그대로다.
+ */
+export function clippedNoticeText(
+  assistantText: string,
+  result: Pick<RegionTaskResult, "applied" | "changedCells" | "changedEvents" | "mapsAdded" | "clippedCells">,
+): string {
+  if (result.applied || hasRegionTaskChanges(result) || result.clippedCells <= 0) return assistantText;
+  const notice = `맵은 바뀌지 않았습니다 — 제안 ${result.clippedCells}칸이 모두 선택 영역 밖이라 차단했습니다. 영역 밖을 편집하려면 선택 칩의 ×로 해제하거나 그 자리를 다시 선택하세요.`;
+  const body = assistantText.trim();
+  return body ? `${notice}\n\n${body}` : notice;
+}
+
 export function describeRegionTaskResult(result: RegionTaskResult): string {
   if (!result.ok) return `오류: ${result.error ?? "알 수 없는 오류"}`;
   // 이음새는 사용자가 허용한 "경계 1칸 변형" 이다 — 클립 수치와 섞이지 않게 따로 밝힌다.
@@ -207,8 +221,12 @@ export function describeRegionTaskResult(result: RegionTaskResult): string {
   if (!result.applied) {
     // hasRegionTaskChanges 가 참이면 "만들어 두고 반영하지 않은 변경" 이 있다는 뜻이다.
     // 이전 판은 두 문구가 뒤집혀 있어서, 313칸이 대기 중일 때 "적용할 변경이 없습니다" 라고 답했다.
-    return hasRegionTaskChanges(result)
-      ? `반영하지 않았습니다 — ${formatRegionTaskChangeParts(result).join(" · ")} 변경안을 버렸습니다.`
+    if (hasRegionTaskChanges(result)) {
+      return `반영하지 않았습니다 — ${formatRegionTaskChangeParts(result).join(" · ")} 변경안을 버렸습니다.`;
+    }
+    // 0칸의 이유가 클립이면 그 사실을 말한다 — 2026-09-03 실측: 툴은 「25/25칸 채움」, 맵은 0칸, 조수는 「채웠습니다」.
+    return result.clippedCells > 0
+      ? `이 영역에서 바뀐 것이 없습니다 — 제안 ${result.clippedCells}칸이 모두 영역 밖이라 차단했습니다. 영역 밖을 편집하려면 선택 칩의 ×로 해제하거나 그 자리를 다시 선택하세요.`
       : "이 영역에서 바뀐 것이 없습니다.";
   }
   const parts = formatRegionTaskChangeParts(result);

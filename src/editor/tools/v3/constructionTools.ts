@@ -6,7 +6,8 @@
 // 공정 순서: build_wall → place_door/place_window → build_roof → lay_path → place_props.
 
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
-import { isPassable } from "@/project/collision";
+import { isPassable, tilePassability } from "@/project/collision";
+import { roleCapabilities } from "@/project/tileRoles";
 import { TILE } from "@/project/defaults/constants";
 import {
   resolveMaterialByLabel,
@@ -157,11 +158,15 @@ function requireMaterialGroup(
     const suggestions = access.suggestions.length > 0
       ? access.suggestions
       : suggestMaterialsByLabel(tileset, material, 5);
-    const hint = suggestions.length > 0
-      ? ` 비슷한 라벨: ${suggestions.map((s) => `"${s.label}"`).join(", ")} — material에 이 문자열을 넣으세요.`
-      : ` tile_query ask:"labels" 로 타일 라벨/설명을 조회하세요.`;
-    // 레거시 테스트/로그 호환 키워드 "비슷한 그룹" 도 함께 표기
-    throw new ToolError(`${access.message}${hint.replace("비슷한 라벨", "비슷한 라벨(그룹)")} — 다시 보낼 형식 예시: ${JSON.stringify(example)}`, { code: "material-not-found" });
+    const labels = suggestions.map((s) => `"${s.label}"`).join(", ");
+    // 있는 라벨인데 채울 수 없는 재료였다면 「비슷한 라벨」로 같은 문자열을 되돌려 주지 않는다 —
+    // 그 순환이 모델을 같은 실패로 되돌리고 결국 place_props 같은 우회로 몰았다(2026-09-03 실측).
+    const hint = suggestions.length === 0
+      ? ` tile_query ask:"labels" 로 타일 라벨/설명을 조회하세요.`
+      : access.suggestionKind === "fillable"
+        ? ` 채울 수 있는 재료: ${labels} — material에 이 문자열을 넣거나, 바닥 마감이면 paint_tiles(단일 타일)를 쓰세요.`
+        : ` 비슷한 라벨(그룹): ${labels} — material에 이 문자열을 넣으세요.`;
+    throw new ToolError(`${access.message}${hint} — 다시 보낼 형식 예시: ${JSON.stringify(example)}`, { code: "material-not-found" });
   }
   if (access.kind !== "group") {
     throw new ToolError(
@@ -290,6 +295,93 @@ function protectedSkipWarnings(skipped: readonly ProtectedCell[]): string[] | un
 
 function pointKey(point: Point): string {
   return `${point.x},${point.y}`;
+}
+
+// 채우기가 덮어쓰면 안 되는 저작물 — 역할 능력 `structure`(벽·지붕·건물·성채). 2026-09-03 실측: 8×6 모래 채움이
+// 집 한 채의 벽(lower)을 모래로 바꾸고 지붕(upper)을 지웠는데 조수는 「오브젝트는 그대로」라고 답했다.
+function structureGroupNameForTile(tileset: TilesetDef, tile: number): string | null {
+  for (const group of tileset.tileGroups ?? []) {
+    if (roleCapabilities(tileset, group.role).structure && group.tileIds.includes(tile)) return group.name;
+  }
+  return null;
+}
+
+function splitStructureCells(
+  tileset: TilesetDef,
+  map: GameMap,
+  cells: readonly Point[],
+): { cells: Point[]; skipped: ProtectedCell[] } {
+  const kept: Point[] = [];
+  const skipped: ProtectedCell[] = [];
+  for (const cell of cells) {
+    const lower = map.lowerTiles[cell.y * map.width + cell.x];
+    const structure = lower >= 0 ? structureGroupNameForTile(tileset, lower) : null;
+    if (structure === null) kept.push(cell);
+    else skipped.push({ ...cell, reason: `구조물(${structure})` });
+  }
+  return { cells: kept, skipped };
+}
+
+/** 이벤트(NPC·간판·문)가 서 있는 칸. 통행 불가 재료가 그 위를 덮으면 이벤트가 물속·벽속에 갇힌다. */
+function splitEventCells(map: GameMap, cells: readonly Point[]): { cells: Point[]; skipped: ProtectedCell[] } {
+  const occupied = new Map<string, string>();
+  for (const event of map.events) occupied.set(`${event.x},${event.y}`, `이벤트(${event.id})`);
+  if (occupied.size === 0) return { cells: [...cells], skipped: [] };
+  const kept: Point[] = [];
+  const skipped: ProtectedCell[] = [];
+  for (const cell of cells) {
+    const reason = occupied.get(pointKey(cell));
+    if (reason === undefined) kept.push(cell);
+    else skipped.push({ ...cell, reason });
+  }
+  return { cells: kept, skipped };
+}
+
+/** 타일 혼자 놓였을 때(상위 없음) 어느 방향으로도 지나갈 수 없는가. */
+function tileBlocksPassage(tileset: TilesetDef, tile: number): boolean {
+  const pass = tilePassability(tileset, tile, TILE.EMPTY);
+  return !(pass.up || pass.down || pass.left || pass.right);
+}
+
+/**
+ * 통행 불가 채움이 시작 위치를 사방으로 막으면, 채움 집합에서 한 줄을 빼 밖으로 나가는 통로를 남긴다.
+ * 시작 칸 하나만 보호하면 플레이어는 첫 프레임부터 갇힌다(2026-09-03 실측: 5×5 물, 이웃 통행 0).
+ * 방향은 채움 밖 통행 가능 칸까지 가장 짧은 쪽을 고른다. 통로 칸은 현재 타일 그대로 둔다.
+ */
+function reserveStartExit(project: Project, map: GameMap, cells: readonly Point[]): { cells: Point[]; corridor: Point[] } {
+  if (project.startMapId !== map.id) return { cells: [...cells], corridor: [] };
+  const start = project.startPos;
+  const fill = new Set(cells.map(pointKey));
+  // 이벤트(NPC·간판)가 선 칸은 타일이 통행 가능해도 플레이어가 지나갈 수 없다 — 출구로 세지 않는다.
+  const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
+  const walkable = (x: number, y: number): boolean =>
+    inMapBounds(map, x, y) && !occupied.has(`${x},${y}`) && isPassable(project, map, x, y);
+  const openAfterFill = (x: number, y: number): boolean => !fill.has(`${x},${y}`) && walkable(x, y);
+  const dirs = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }];
+  if (dirs.some((dir) => openAfterFill(start.x + dir.x, start.y + dir.y))) return { cells: [...cells], corridor: [] };
+  let best: Point[] | null = null;
+  for (const dir of dirs) {
+    const path: Point[] = [];
+    let x = start.x + dir.x;
+    let y = start.y + dir.y;
+    let reachesOutside = false;
+    while (inMapBounds(map, x, y)) {
+      if (!fill.has(`${x},${y}`)) {
+        reachesOutside = walkable(x, y);
+        break;
+      }
+      // 통로가 될 칸은 지금도 지나갈 수 있어야 한다(나무·벽·이벤트 위는 비워도 통로가 안 된다).
+      if (!walkable(x, y)) break;
+      path.push({ x, y });
+      x += dir.x;
+      y += dir.y;
+    }
+    if (!reachesOutside || path.length === 0) continue;
+    if (!best || path.length < best.length) best = path;
+  }
+  if (!best) return { cells: [...cells], corridor: [] };
+  const corridor = new Set(best.map(pointKey));
+  return { cells: cells.filter((cell) => !corridor.has(pointKey(cell))), corridor: best };
 }
 
 function collectTransferTargets(value: unknown, mapId: string, out: Point[]): void {
@@ -764,6 +856,10 @@ const fillRegion: ToolDefinition = {
         enum: ["rect", "ellipse", "circle"],
         description: "기본 rect. 원형 호수/둥근 연못=circle, 타원 호수=ellipse. '원형' 요청에 rect 금지",
       },
+      clearUpper: {
+        type: "boolean",
+        description: "채운 칸의 상위 레이어(나무·소품)를 비울지. 기본: 물처럼 통행 불가 재료면 true(물 위에 소품을 둘 수 없다), 모래·잔디 같은 통행 가능 재료면 false(그대로 둔다). 사용자가 「나무는 그대로」라 했으면 false 를 명시",
+      },
     },
     required: ["mapId", "rect", "material"],
   },
@@ -784,43 +880,66 @@ const fillRegion: ToolDefinition = {
     }
 
     const bboxCells = cellsInRect(map, rect);
-    const allCells = expandCellsAgainstWalls(draft, map, cellsInFillShape(map, rect, shape));
+    const maskCells = cellsInFillShape(map, rect, shape);
+    const allCells = expandCellsAgainstWalls(draft, map, maskCells);
+    const gapCells = allCells.length - maskCells.length;
     if (allCells.length === 0) {
       throw new ToolError(
         `shape=${shape} 마스크에 포함될 칸이 없습니다. rect를 키우거나 shape를 확인하세요`,
         { code: "fill-empty-shape", mapId: map.id },
       );
     }
-    const filtered = filterPassageProtectedCells(draft, map, allCells, (cell) => {
+    // 채우기는 면만 바꾼다 — 벽·지붕·건물 칸은 건너뛰고, 통행 불가 재료는 이벤트 칸도 건너뛴다.
+    const structure = splitStructureCells(tileset, map, allCells);
+    const blocksPassage = layer === "lower" && tileBlocksPassage(tileset, body);
+    // 상위 소품 처리 기본값은 재료가 정한다 — 물 위 소품은 배치 검증이 error 로 잡으니 비우고,
+    // 모래·잔디 위 나무는 남긴다(「나무는 그대로 두고」). 인자가 있으면 그것을 따른다.
+    const clearUpper = typeof args.clearUpper === "boolean" ? args.clearUpper : blocksPassage;
+    const events = blocksPassage ? splitEventCells(map, structure.cells) : { cells: structure.cells, skipped: [] as ProtectedCell[] };
+    const paintCell = (cell: Point): void => {
       const index = cell.y * map.width + cell.x;
       if (layer === "upper") map.upperTiles[index] = body;
       else {
         map.lowerTiles[index] = body;
-        map.upperTiles[index] = TILE.EMPTY;
+        if (clearUpper) map.upperTiles[index] = TILE.EMPTY;
       }
-    });
-    for (const cell of filtered.cells) {
-      const index = cell.y * map.width + cell.x;
-      if (layer === "upper") map.upperTiles[index] = body;
-      else {
-        map.lowerTiles[index] = body;
-        map.upperTiles[index] = TILE.EMPTY;
-      }
+    };
+    const filtered = filterPassageProtectedCells(draft, map, events.cells, paintCell);
+    const exit = blocksPassage ? reserveStartExit(draft, map, filtered.cells) : { cells: filtered.cells, corridor: [] as Point[] };
+    let upperCleared = 0;
+    for (const cell of exit.cells) {
+      if (clearUpper && layer === "lower" && map.upperTiles[cell.y * map.width + cell.x] !== TILE.EMPTY) upperCleared += 1;
+      paintCell(cell);
     }
-    const reshaped = layer === "lower" && autotile ? resolveAutotile(autotile, filtered.cells, map) : 0;
-    const skipped = filtered.skipped.length;
+    const reshaped = layer === "lower" && autotile ? resolveAutotile(autotile, exit.cells, map) : 0;
+    const skippedAll = [...structure.skipped, ...events.skipped, ...filtered.skipped];
     const shapeNote = shape === "rect" ? "" : ` shape=${shape}`;
+    const gapNote = gapCells > 0 ? ` (벽 틈 메움 ${gapCells}칸)` : "";
+    const skipNote = skippedAll.length > 0 ? `, 보호 ${skippedAll.length}칸 제외` : "";
+    const upperNote = upperCleared > 0 ? `, 상위 ${upperCleared}칸 비움` : "";
+    const exitNote = exit.corridor.length > 0 ? `, 시작 위치 통로 ${exit.corridor.length}칸 비움` : "";
+    const warnings = [
+      ...(protectedSkipWarnings(skippedAll) ?? []),
+      ...(exit.corridor.length > 0
+        ? [`시작 위치 (${draft.startPos.x},${draft.startPos.y})가 사방으로 막혀 밖으로 나가는 통로 ${exit.corridor.length}칸((${exit.corridor[0].x},${exit.corridor[0].y})~(${exit.corridor[exit.corridor.length - 1].x},${exit.corridor[exit.corridor.length - 1].y}))을 비워 두었습니다`]
+        : []),
+    ];
     return withSoftConfirm({
-      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h}${shapeNote}을 '${group.name}'로 채움 — ${filtered.cells.length}/${bboxCells.length}칸(마스크 ${allCells.length}), 오토타일 재계산 ${reshaped}칸${skipped > 0 ? `, 보호 ${skipped}칸 제외` : ""}.`,
-      warnings: protectedSkipWarnings(filtered.skipped),
+      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h}${shapeNote}을 '${group.name}'로 채움 — ${exit.cells.length}/${maskCells.length}칸${gapNote}, 오토타일 재계산 ${reshaped}칸${skipNote}${upperNote}${exitNote}.`,
+      ...(warnings.length > 0 ? { warnings } : {}),
       data: {
-        filled: filtered.cells.length,
+        filled: exit.cells.length,
         requested: allCells.length,
         bboxCells: bboxCells.length,
+        maskCells: maskCells.length,
+        gapCells,
         shape,
         reshaped,
         groupId: group.id,
         layer,
+        upperCleared,
+        skipped: { structure: structure.skipped.length, events: events.skipped.length, passage: filtered.skipped.length },
+        exitCorridor: exit.corridor,
       },
     }, softConfirm);
   },

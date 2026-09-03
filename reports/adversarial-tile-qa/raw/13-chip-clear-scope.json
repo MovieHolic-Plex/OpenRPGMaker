@@ -1,0 +1,252 @@
+{
+  "id": "chip-clear-scope",
+  "title": "칩 × 로 해제한 뒤 — 스코프 잔존 결함",
+  "expect": "선택을 해제했으니 영역 제약 없이 심어야 한다. 옛 영역 안에만 몰리면 결함.",
+  "boot": "fresh",
+  "provider": "google-antigravity",
+  "map": {
+    "id": "map_village_30_100x100",
+    "name": "이슬 장터 마을",
+    "size": "100x100",
+    "tileset": "easyrpg_chipset_combined_town",
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "events": 20
+  },
+  "visibleTiles": {
+    "x": 30,
+    "y": 37,
+    "w": 40,
+    "h": 28
+  },
+  "region": {
+    "x": 54,
+    "y": 44,
+    "width": 6,
+    "height": 6
+  },
+  "chipVisible": false,
+  "chip": {
+    "inDom": 1,
+    "visible": false,
+    "hostDisplay": "none",
+    "text": "선택 (54,44) 6×6×"
+  },
+  "chipClearedOk": true,
+  "prompt": "나무 세 그루 심어줘",
+  "turns": [
+    {
+      "text": "나무 세 그루 심어줘",
+      "elapsedMs": 19063,
+      "timedOut": false,
+      "llmCalls": 1,
+      "toolCalls": 3,
+      "failedTools": 3,
+      "toolNames": [
+        "set_build_spec✗",
+        "place_props✗",
+        "show_map_region✗"
+      ],
+      "tools": [
+        {
+          "name": "set_build_spec",
+          "summary": "밑그림 검증 실패(1회)",
+          "args": "{}"
+        },
+        {
+          "name": "place_props",
+          "summary": "이슬 장터 마을에 침엽수 3개 = 6타일(클러스터 동반 배치 포함) 배치(poisson, 자연도 0.5, 간격 1~3)",
+          "args": "{}"
+        },
+        {
+          "name": "show_map_region",
+          "summary": "맵 미리보기: (52,42) 10×10 (이슬 장터 마을)",
+          "args": "{}"
+        }
+      ],
+      "statuses": [
+        "요청을 읽는 중…",
+        "생각 중… 1초",
+        "생각 중… 2초",
+        "생각 중… 3초",
+        "생각 중… 5초 · 도구 2",
+        "생각 중… 6초 · 도구 3",
+        "생각 중… 7초 · 도구 3",
+        "생각 중… 8초 · 도구 3",
+        "대기"
+      ],
+      "assistantTexts": [
+        "이슬 장터 마을의 선택하신 영역에 침엽수 3그루를 자연스럽게 심었습니다. 주변 지형과 조화를 이루도록 적절한 간격으로 배치되었습니다. 원하시는 추가 장식이나 지형 작업이 있다면 언제든 말씀해 주세요!"
+      ],
+      "scopeNotes": [],
+      "diffAfterThisTurn": {
+        "total": 6,
+        "lower": 3,
+        "upper": 3,
+        "inside": 6,
+        "outside": 0,
+        "regionCells": 36,
+        "upperCleared": 0,
+        "distinctTiles": 2,
+        "hist": {
+          "lower:290": 3,
+          "upper:260": 3
+        },
+        "bbox": {
+          "x": 55,
+          "y": 44,
+          "w": 5,
+          "h": 2
+        }
+      }
+    }
+  ],
+  "diff": {
+    "total": 6,
+    "lower": 3,
+    "upper": 3,
+    "inside": 6,
+    "outside": 0,
+    "regionCells": 36,
+    "upperCleared": 0,
+    "distinctTiles": 2,
+    "hist": {
+      "lower:290": 3,
+      "upper:260": 3
+    },
+    "bbox": {
+      "x": 55,
+      "y": 44,
+      "w": 5,
+      "h": 2
+    }
+  },
+  "changedCells": [
+    {
+      "layer": "lower",
+      "x": 55,
+      "y": 45,
+      "from": 240,
+      "to": 290,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 57,
+      "y": 45,
+      "from": 240,
+      "to": 290,
+      "inside": true
+    },
+    {
+      "layer": "lower",
+      "x": 59,
+      "y": 45,
+      "from": 240,
+      "to": 290,
+      "inside": true
+    },
+    {
+      "layer": "upper",
+      "x": 55,
+      "y": 44,
+      "from": -1,
+      "to": 260,
+      "inside": true
+    },
+    {
+      "layer": "upper",
+      "x": 57,
+      "y": 44,
+      "from": -1,
+      "to": 260,
+      "inside": true
+    },
+    {
+      "layer": "upper",
+      "x": 59,
+      "y": 44,
+      "from": -1,
+      "to": 260,
+      "inside": true
+    }
+  ],
+  "lowerFourConnected": false,
+  "passability": {
+    "area": {
+      "x": 54,
+      "y": 44,
+      "w": 6,
+      "h": 6
+    },
+    "before": 33,
+    "after": 30
+  },
+  "start": {
+    "startPos": {
+      "x": 50,
+      "y": 52
+    },
+    "startCellChanged": false,
+    "neighbours": [
+      {
+        "x": 51,
+        "y": 52
+      },
+      {
+        "x": 49,
+        "y": 52
+      },
+      {
+        "x": 50,
+        "y": 53
+      },
+      {
+        "x": 50,
+        "y": 51
+      }
+    ],
+    "neighbourPassableAfter": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "eventsCovered": [],
+  "chatTail": "2026년 9월 3일 목\n@>\n나무 세 그루 심어줘\n작업 2 · 조회 1 ▸\n@>\n\n이슬 장터 마을의 선택하신 영역에 침엽수 3그루를 자연스럽게 심었습니다. 주변 지형과 조화를 이루도록 적절한 간격으로 배치되었습니다. 원하시는 추가 장식이나 지형 작업이 있다면 언제든 말씀해 주세요!",
+  "mapsAfter": [
+    "map_village_30_100x100",
+    "map_house_interior_30_map_village_30_100x100_1",
+    "map_house_interior_30_map_village_30_100x100_2",
+    "map_house_interior_30_map_village_30_100x100_3",
+    "map_house_interior_30_map_village_30_100x100_4",
+    "map_house_interior_30_map_village_30_100x100_5",
+    "map_house_interior_30_map_village_30_100x100_6",
+    "map_house_interior_30_map_village_30_100x100_7",
+    "map_house_interior_30_map_village_30_100x100_8",
+    "map_house_interior_30_map_village_30_100x100_9",
+    "map_house_interior_30_map_village_30_100x100_10",
+    "map_house_interior_30_map_village_30_100x100_11",
+    "map_house_interior_30_map_village_30_100x100_12",
+    "map_b4967d0a-7784-4f0e-8021-8b9e7a2f402f",
+    "map_mine_entrance",
+    "map_bell_shrine"
+  ],
+  "undo": null,
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+  ]
+}

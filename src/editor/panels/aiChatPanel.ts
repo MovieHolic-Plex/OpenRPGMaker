@@ -1367,6 +1367,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 이 턴이 손댈 범위 — 현재 맵의 선택 사각형(사실). 그 안에서 작업할지, 새 맵 시공이라 참고용인지는
   // 세션의 의도 선언(useSelection)이 정한다. 예전에는 실내 낱말 정규식으로 스코프를 버렸다.
   const resolveTurnScope = (): SessionTurnScope | null => {
+    // 칩을 ×로 끈 선택은 스코프가 아니다 — 끄고 보낸 「나무 세 그루」가 옛 영역 안에만 심기던 결함(2026-09-03).
+    if (!selectionTaskActive) return null;
     const state = editorState.get();
     const selection = state.selection;
     if (!selection) return null;
@@ -1809,6 +1811,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (selection) {
       chips.push(renderSelectionTaskChip(selection));
     }
+    // idle 상태는 컨텍스트 칩을 숨기지만, 선택 스코프가 붙어 있으면 그 칩만은 보여야 한다 —
+    // 안 보이면 사용자는 스코프가 붙는지 모르고 ×도 누를 수 없다(2026-09-03 실측 7건 전부 display:none).
+    contextChips.classList.toggle("has-selection-scope", selection !== null);
     contextChips.replaceChildren(...chips);
   };
   refreshContextChips();
