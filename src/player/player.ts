@@ -51,6 +51,7 @@ import {
   isInputCapturingSurfaceActive,
   isMenuKey,
   isRuntimeMenuKey as isRuntimeMenuKeyBinding,
+  isTextEntryTarget,
 } from "@/player/keyBindings";
 import { cycleHandSlot, selectHandSlot } from "@/player/handSlot";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
@@ -629,6 +630,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const onKeyDown = (event: KeyboardEvent): void => {
+    // 텍스트 입력 컨트롤(런타임 디버그 패널의 숫자 입력 등)에 치는 글자는 게임 키가 아니다. 여기서
+    // 걸러야 손 슬롯 숫자키가 preventDefault 로 글자를 삼키지 않고, Escape 가 메뉴를 열지 않는다.
+    if (isTextEntryTarget(event.target)) return;
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     const menu = currentStatusMenu(layout);
     if (menu && event.key === "Tab") {
