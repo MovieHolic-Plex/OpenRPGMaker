@@ -105,6 +105,33 @@ describe("AI 패널 크롬", () => {
     expect(panel.querySelector(".ai-director-face")).toBeNull();
   });
 
+  it("데크 하나가 레일·기록·컴포저를 담고, 레일이 진입점 아이콘과 상태 글자를 든다", () => {
+    // Break: 데크 래퍼가 없어 기록 카드와 입력줄이 다시 형제로 뜨거나, 레일 슬롯에 버튼이 비거나,
+    // 상태 글자(ai-status)가 컴포저 행에 남는다.
+    const panel = renderPanel();
+    expandPanel(panel);
+
+    const deck = findByTestId(panel, "ai-deck");
+    const rail = findByTestId(panel, "ai-deck-rail");
+    const body = findByTestId(panel, "ai-chat-body");
+    const bar = findByTestId(panel, "ai-command-bar");
+    expect(deck && rail && body && bar).toBeTruthy();
+    expect(deck?.contains(rail!)).toBe(true);
+    expect(deck?.contains(body!)).toBe(true);
+    expect(deck?.contains(bar!)).toBe(true);
+    for (const testid of ["ai-context-meter", "ai-new-chat", "ai-open-conversations", "ai-preference-toggle", "ai-command-menu-toggle", "ai-collapse", "ai-status"]) {
+      expect(rail?.contains(findByTestId(panel, testid)!), testid).toBe(true);
+    }
+    // 상태는 세 표면이 같은 값을 든다.
+    expect(panel.dataset.aiState).toBe("idle");
+    expect(rail?.dataset.aiState).toBe("idle");
+    expect(findByTestId(panel, "ai-collapsed-restore")?.dataset.aiState).toBe("idle");
+    // ⋯ 메뉴는 레일에 붙는다(닫힘 = hidden).
+    const menu = findByTestId(panel, "ai-command-menu");
+    expect(rail?.contains(menu!)).toBe(true);
+    expect(menu?.hidden).toBe(true);
+  });
+
   it("존재 줄 문구는 여전히 계산되지만 화면에 심지 않는다", () => {
     // 헤더가 사라졌다고 aiAgentBrief 계약까지 죽은 것은 아니다 — 컴포저 플레이스홀더와
     // 시작 화면 힌트가 같은 브리프를 쓴다. 순수 함수 계약만 남기고 DOM 단언은 걷었다.
@@ -153,7 +180,10 @@ describe("AI 패널 크롬", () => {
     const restore = findByTestId(panel, "ai-collapsed-restore");
     if (!collapse || !actions || !toolbar || !restore) throw new Error("collapse fixtures missing");
 
-    expect(actions.contains(collapse)).toBe(true);
+    // 데크(2026-09-03): 접기는 컴포저 행이 아니라 상태 레일에 산다.
+    const rail = findByTestId(panel, "ai-deck-rail");
+    expect(rail?.contains(collapse)).toBe(true);
+    expect(actions.contains(collapse)).toBe(false);
     expect(toolbar.contains(collapse)).toBe(false);
     expect(collapse.getAttribute("type")).toBe("button");
     expect(collapse.getAttribute("aria-label")).toBe("AI 패널 접기");

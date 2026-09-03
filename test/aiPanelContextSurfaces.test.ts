@@ -53,16 +53,16 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("맥락 게이지가 컴포저 액션 행에 산다", () => {
-  it("Given 패널 렌더 When 액션 행 확인 Then 게이지 버튼이 스크롤되는 칩들 앞에 있다", () => {
+describe("맥락 게이지가 데크 상태 레일에 산다", () => {
+  it("Given 패널 렌더 When 레일 확인 Then 게이지 버튼이 아이콘 슬롯 맨 앞에 있다", () => {
+    // 데크(2026-09-03): 컴포저 lead 행의 가로 스크롤 함정에서 벗어나 레일 슬롯 첫 자리에 고정된다.
     const panel = renderPanel();
 
-    const lead = findByTestId(panel, "ai-composer-actions")!.querySelector(".ai-composer-actions-lead")!;
-    const order = lead.children.map((child) => (child as FakeElement).dataset.testid ?? "");
-    expect(order).toContain("ai-context-meter");
-    // 컨텍스트 칩보다 앞이어야 한다 — lead 는 overflow-x:auto 라 뒤에 두면 좁은 도크에서
-    // 꼬리표가 길어질 때 게이지가 스크롤 밖으로 밀려 사실상 사라진다.
-    expect(order.indexOf("ai-context-meter")).toBeLessThan(order.indexOf("ai-context-chips"));
+    const actions = findByTestId(panel, "ai-deck-rail")!.querySelector(".ai-deck-rail-actions")!;
+    const order = actions.children.map((child) => (child as FakeElement).dataset.testid ?? "");
+    expect(order[0]).toBe("ai-context-meter");
+    expect(order).toContain("ai-command-menu-toggle");
+    expect(findByTestId(findByTestId(panel, "ai-composer-actions")!, "ai-context-meter")).toBeNull();
   });
 
   it("Given 세션 없음 When 게이지 확인 Then 0% 가 아니라 빗금으로 모른다고 말한다", () => {

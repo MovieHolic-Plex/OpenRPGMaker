@@ -1,11 +1,11 @@
 // 조수 크기 조절 회귀 (감독 지시 2026-08-25: "조수의 크기를 좀 자연스럽게 키울 수 있게").
 //
-// 2026-08-31: 도크 축이 삭제됐다. glass/side/float 3분기가 사라지고 표면은 하나 —
-// 컴포저 캡슐(ai-command-bar)의 **폭**이다. 그래서 계약도 하나로 줄었다:
-//   · 소유 프로퍼티: commandBar 의 CSS 변수 `--ai-float-bar-width` (패널 인라인 크기는 안 쓴다)
+// 2026-08-31: 도크 축이 삭제됐다. glass/side/float 3분기가 사라지고 표면은 하나다.
+// 2026-09-03 데크: 그 표면은 컴포저 캡슐이 아니라 레일·기록·컴포저를 담은 `.ai-deck` 이다.
+//   · 소유 프로퍼티: deck 의 CSS 변수 `--ai-float-bar-width` (패널 인라인 크기는 안 쓴다)
 //   · 저장 키: `oprn:ai-panel-size` (최초 1회 레거시 `oprn:ai-panel-size:float` 을 물려받는다)
-//   · 핸들: 캡슐 왼쪽 끝(`is-edge-start`) — 왼쪽으로 끌면 넓어진다
-//   · 높이는 어떤 경로로도 바뀌지 않는다
+//   · 핸들: 데크 왼쪽 끝(`is-edge-start`) — 왼쪽으로 끌면 넓어진다
+//   · 높이는 어떤 경로로도 바뀌지 않는다 — 기록 높이 축(상단 핸들·oprn:ai-log-height)도 걷었다
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
@@ -51,22 +51,22 @@ function installFakeWindow(innerWidth = 1600, innerHeight = 1000): void {
 
 interface Surface {
   readonly panel: FakeElement;
-  readonly commandBar: FakeElement;
+  readonly deck: FakeElement;
   readonly handle: FakeElement;
 }
 
 /** 패널을 띄우고 크기 계약에 관여하는 세 노드를 뽑는다. */
 function renderSurface(): Surface {
   const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-  const commandBar = findByTestId(panel, "ai-command-bar");
+  const deck = findByTestId(panel, "ai-deck");
   const handle = findByTestId(panel, "ai-resize-handle");
-  if (!commandBar || !handle) throw new Error("resize fixtures missing");
-  return { panel, commandBar, handle };
+  if (!deck || !handle) throw new Error("resize fixtures missing");
+  return { panel, deck, handle };
 }
 
-/** 캡슐이 실제로 쓰는 폭. fake DOM 의 style 은 Record 라 커스텀 프로퍼티를 인덱스로 읽는다. */
-function barWidth(commandBar: FakeElement): string {
-  return commandBar.style["--ai-float-bar-width"] ?? "";
+/** 데크가 실제로 쓰는 폭. fake DOM 의 style 은 Record 라 커스텀 프로퍼티를 인덱스로 읽는다. */
+function barWidth(deck: FakeElement): string {
+  return deck.style["--ai-float-bar-width"] ?? "";
 }
 
 /** 패널 자체에는 크기용 인라인 스타일이 남지 않아야 한다. */
@@ -125,9 +125,9 @@ describe("컴포저 캡슐은 저장된 폭으로 열린다", () => {
     installFakeWindow();
     storage.set(SIZE_KEY, JSON.stringify({ width: 520, height: 700 }));
 
-    const { panel, commandBar } = renderSurface();
+    const { panel, deck } = renderSurface();
 
-    expect(barWidth(commandBar)).toBe("520px");
+    expect(barWidth(deck)).toBe("520px");
     expect(panel.style["--ai-float-bar-width"]).toBe("520px");
     expectNoInlinePanelSize(panel);
   });
@@ -135,29 +135,29 @@ describe("컴포저 캡슐은 저장된 폭으로 열린다", () => {
   it("저장값이 없으면 CSS 기본폭에 맡기고 변수를 쓰지 않는다", () => {
     installFakeWindow();
 
-    const { commandBar } = renderSurface();
+    const { deck } = renderSurface();
 
     // 변수를 안 쓰면 assistant-command-bar.css 의 `var(--ai-float-bar-width, 640px)` 폴백이 산다.
-    expect(barWidth(commandBar)).toBe("");
+    expect(barWidth(deck)).toBe("");
   });
 
   it("레거시 float 키만 있어도 사용자가 맞춰 둔 폭을 물려받는다", () => {
     installFakeWindow();
     storage.set(LEGACY_FLOAT_SIZE_KEY, JSON.stringify({ width: 700, height: 400 }));
 
-    const { commandBar } = renderSurface();
+    const { deck } = renderSurface();
 
-    expect(barWidth(commandBar)).toBe("700px");
+    expect(barWidth(deck)).toBe("700px");
   });
 
   it("뷰포트보다 큰 저장값은 화면 안으로 줄여서 적용한다", () => {
     installFakeWindow(800, 700);
     storage.set(SIZE_KEY, JSON.stringify({ width: 900, height: 900 }));
 
-    const { commandBar } = renderSurface();
+    const { deck } = renderSurface();
 
     // 캡슐 상한 = min(PANEL_SIZE_LIMITS.maxWidth, 뷰포트폭 − 24) = 776.
-    expect(barWidth(commandBar)).toBe("776px");
+    expect(barWidth(deck)).toBe("776px");
   });
 });
 
@@ -167,9 +167,9 @@ describe("핸들은 캡슐 왼쪽 끝의 세로 분리자다", () => {
     installFakeWindow();
     storage.set(SIZE_KEY, JSON.stringify({ width: 520, height: 700 }));
 
-    const { commandBar, handle } = renderSurface();
+    const { deck, handle } = renderSurface();
 
-    expect(handle.parentElement).toBe(commandBar);
+    expect(handle.parentElement).toBe(deck);
     expect(handle.className).toContain("is-edge-start");
     expect(handle.className).not.toContain("is-corner-end");
     expect(handle.getAttribute("role")).toBe("separator");
@@ -188,13 +188,13 @@ describe("드래그는 폭만 바꾼다", () => {
   it("왼쪽으로 끌면 넓어지고 놓을 때 저장된다 — 높이는 그대로", () => {
     installFakeWindow();
     storage.set(SIZE_KEY, JSON.stringify({ width: 640, height: 400 }));
-    const { panel, commandBar, handle } = renderSurface();
+    const { panel, deck, handle } = renderSurface();
 
     handle.dispatchEvent(pointerEvent("pointerdown", 500, 300));
     globalThis.window.dispatchEvent(pointerEvent("pointermove", 340, 450));
 
     // 핸들이 캡슐 왼쪽 끝이므로 dx 부호가 반전된다: 640 + (500 − 340) = 800.
-    expect(barWidth(commandBar)).toBe("800px");
+    expect(barWidth(deck)).toBe("800px");
 
     globalThis.window.dispatchEvent(pointerEvent("pointerup", 340, 450));
 
@@ -208,27 +208,27 @@ describe("드래그는 폭만 바꾼다", () => {
   it("오른쪽으로 끌면 좁아진다", () => {
     installFakeWindow();
     storage.set(SIZE_KEY, JSON.stringify({ width: 640, height: 400 }));
-    const { commandBar, handle } = renderSurface();
+    const { deck, handle } = renderSurface();
 
     handle.dispatchEvent(pointerEvent("pointerdown", 500, 300));
     globalThis.window.dispatchEvent(pointerEvent("pointermove", 660, 300));
     globalThis.window.dispatchEvent(pointerEvent("pointerup", 660, 300));
 
-    expect(barWidth(commandBar)).toBe("480px");
+    expect(barWidth(deck)).toBe("480px");
     expect(savedSize()).toEqual({ width: 480, height: 400 });
   });
 
   it("과하게 끌어도 뷰포트·한계 범위 안에서 멈춘다", () => {
     installFakeWindow(800, 700);
     storage.set(SIZE_KEY, JSON.stringify({ width: 640, height: 400 }));
-    const { commandBar, handle } = renderSurface();
+    const { deck, handle } = renderSurface();
 
     handle.dispatchEvent(pointerEvent("pointerdown", 500, 300));
     globalThis.window.dispatchEvent(pointerEvent("pointermove", -4000, 300));
-    expect(barWidth(commandBar)).toBe("776px"); // 뷰포트폭 − 24
+    expect(barWidth(deck)).toBe("776px"); // 뷰포트폭 − 24
 
     globalThis.window.dispatchEvent(pointerEvent("pointermove", 4000, 300));
-    expect(barWidth(commandBar)).toBe("280px"); // PANEL_SIZE_LIMITS.minWidth
+    expect(barWidth(deck)).toBe("280px"); // PANEL_SIZE_LIMITS.minWidth
 
     globalThis.window.dispatchEvent(pointerEvent("pointerup", 4000, 300));
     expect(savedSize()).toEqual({ width: 280, height: 400 });
@@ -241,32 +241,32 @@ describe("키보드는 폭만 조절한다", () => {
   it("ArrowLeft는 넓히고 ArrowRight는 좁히며 즉시 저장한다", () => {
     installFakeWindow();
     storage.set(SIZE_KEY, JSON.stringify({ width: 400, height: 600 }));
-    const { commandBar, handle } = renderSurface();
+    const { deck, handle } = renderSurface();
 
     handle.dispatchEvent(keyEvent("ArrowLeft"));
 
-    expect(barWidth(commandBar)).toBe("408px");
+    expect(barWidth(deck)).toBe("408px");
     expect(handle.getAttribute("aria-valuenow")).toBe("408");
     expect(savedSize()).toEqual({ width: 408, height: 600 });
 
     // Shift 는 32px 스텝.
     handle.dispatchEvent(keyEvent("ArrowRight", true));
 
-    expect(barWidth(commandBar)).toBe("376px");
+    expect(barWidth(deck)).toBe("376px");
     expect(savedSize()).toEqual({ width: 376, height: 600 });
   });
 
   it("위/아래 화살표는 아무 일도 하지 않는다 — 높이는 조절 축이 아니다", () => {
     installFakeWindow();
     storage.set(SIZE_KEY, JSON.stringify({ width: 400, height: 600 }));
-    const { panel, commandBar, handle } = renderSurface();
+    const { panel, deck, handle } = renderSurface();
 
     const up = keyEvent("ArrowUp", true);
     const down = keyEvent("ArrowDown", true);
     handle.dispatchEvent(up);
     handle.dispatchEvent(down);
 
-    expect(barWidth(commandBar)).toBe("400px");
+    expect(barWidth(deck)).toBe("400px");
     expect(savedSize()).toEqual({ width: 400, height: 600 });
     // 소비하지 않으므로 기본 스크롤 동작을 막지도 않는다.
     expect(up.defaultPrevented).toBe(false);
@@ -275,58 +275,17 @@ describe("키보드는 폭만 조절한다", () => {
   });
 });
 
-describe("기록 카드 높이는 상단 핸들로 조절한다", () => {
-  const LOG_HEIGHT_KEY = "oprn:ai-log-height";
-
-  function logHandleOf(panel: FakeElement): FakeElement {
-    const handle = findByTestId(panel, "ai-log-resize-handle");
-    if (!handle) throw new Error("ai-log-resize-handle missing");
-    return handle;
-  }
-
-  it("저장된 기록 높이를 패널 CSS 변수로 적용한다 — 입력줄 폭 키의 height 는 쓰지 않는다", () => {
+describe("기록 높이 축은 없다 — 데크가 한 표면이다", () => {
+  it("기록 높이 핸들·기록 줌 크롬이 렌더되지 않는다", () => {
+    // Break: 데크 안에 옛 기록 카드 상단 핸들이나 − 100% + 스테퍼가 되살아난다.
     installFakeWindow();
-    storage.set(SIZE_KEY, JSON.stringify({ width: 520, height: 880 }));
-    storage.set(LOG_HEIGHT_KEY, "280");
-    const { panel, commandBar } = renderSurface();
-    expect(barWidth(commandBar)).toBe("520px");
-    expect(panel.style["--ai-float-log-height"]).toBe("280px");
-    expectNoInlinePanelSize(panel);
-  });
-
-  it("기록 핸들은 카드 상단의 가로 분리자이고, 위로 끌면 높아진다", () => {
-    installFakeWindow();
-    storage.set(LOG_HEIGHT_KEY, "360");
-    const { panel } = renderSurface();
-    panel.classList.add("is-assistant-log-open");
-    const logHandle = logHandleOf(panel);
-
-    expect(logHandle.className).toContain("is-log-top");
-    expect(logHandle.getAttribute("aria-orientation")).toBe("horizontal");
-    expect(logHandle.getAttribute("aria-label")).toBe("조수 기록 높이 조절");
-
-    logHandle.dispatchEvent(pointerEvent("pointerdown", 400, 300));
-    globalThis.window.dispatchEvent(pointerEvent("pointermove", 400, 200));
-    globalThis.window.dispatchEvent(pointerEvent("pointerup", 400, 200));
-
-    expect(panel.style["--ai-float-log-height"]).toBe("460px");
-    expect(storage.get(LOG_HEIGHT_KEY)).toBe("460");
-  });
-
-  it("위 화살표는 기록을 키우고 아래 화살표는 줄인다 — 입력줄 폭은 그대로", () => {
-    installFakeWindow();
-    storage.set(SIZE_KEY, JSON.stringify({ width: 520, height: 400 }));
-    storage.set(LOG_HEIGHT_KEY, "360");
-    const { panel, commandBar } = renderSurface();
-    panel.classList.add("is-assistant-log-open");
-    const logHandle = logHandleOf(panel);
-
-    logHandle.dispatchEvent(keyEvent("ArrowUp"));
-    expect(panel.style["--ai-float-log-height"]).toBe("368px");
-    expect(barWidth(commandBar)).toBe("520px");
-
-    logHandle.dispatchEvent(keyEvent("ArrowDown", true));
-    expect(panel.style["--ai-float-log-height"]).toBe("336px");
-    expect(savedSize()).toEqual({ width: 520, height: 400 });
+    const { panel, deck } = renderSurface();
+    expect(findByTestId(panel, "ai-log-resize-handle")).toBeNull();
+    expect(findByTestId(panel, "ai-log-zoom")).toBeNull();
+    expect(findByTestId(panel, "ai-log-chrome")).toBeNull();
+    // 데크는 레일 → 기록 → 컴포저 순서다.
+    const order = deck.children.map((child) => (child as FakeElement).dataset.testid ?? (child as FakeElement).className);
+    expect(order.indexOf("ai-deck-rail")).toBeLessThan(order.indexOf("ai-chat-body"));
+    expect(order.indexOf("ai-chat-body")).toBeLessThan(order.indexOf("ai-command-bar"));
   });
 });
