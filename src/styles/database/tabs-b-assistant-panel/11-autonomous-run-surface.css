@@ -181,6 +181,75 @@
   color: var(--danger);
 }
 
+/* ── 할 일 목록 — 항목은 항상 보이고, 체크는 눈에 띄게 붙는다 (2026-09-03) ──
+   DOM(aiChatRenderers.renderWorkPlanChecklist):
+   .ai-autonomous-checklist[data-active][data-complete] > .ai-run-whisper + .ai-autonomous-layers + .ai-run-details */
+.ai-autonomous-item-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ai-autonomous-item-note {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ai-autonomous-item.is-in_progress .ai-autonomous-item-mark {
+  color: var(--gold-deep);
+}
+
+.ai-autonomous-checklist[data-active="true"] .ai-autonomous-item.is-in_progress .ai-autonomous-item-mark {
+  animation: ai-work-item-pulse 1.2s ease-in-out infinite;
+}
+
+.ai-autonomous-item.is-done .ai-autonomous-item-mark {
+  animation: ai-work-item-check 220ms ease-out;
+  color: var(--success);
+}
+
+.ai-autonomous-checklist[data-complete="true"] .ai-run-status {
+  color: var(--success);
+}
+
+.ai-autonomous-checklist[data-active="false"][data-complete="false"] .ai-run-status {
+  color: var(--text-3);
+}
+
+@keyframes ai-work-item-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes ai-work-item-check {
+  0% {
+    transform: scale(0.4);
+  }
+
+  60% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-autonomous-checklist .ai-autonomous-item-mark {
+    animation: none;
+  }
+}
+
 .ai-autonomous-feed {
   display: flex;
   flex-direction: column;

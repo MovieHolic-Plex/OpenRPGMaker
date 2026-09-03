@@ -34,6 +34,15 @@ const assistantMock = vi.hoisted(() => {
       return null;
     }
 
+
+    // 패널은 턴마다 미완료 계획을 이어받으려 세션의 계획을 읽는다 — 더블은 계획 없음.
+
+    getWorkPlan(): null {
+
+      return null;
+
+    }
+
     // 패널이 새 턴 직전 저장소 기준 동기화를 부른다 — 더블은 제안 없음(false)으로 답한다.
     syncBaselineFromStoreIfClean(_project: unknown): boolean {
       return false;
