@@ -91,6 +91,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   });
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
+    // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
+    showcase: selectedCommand !== "to-title" && !isStatusMenuGroupEntryId(selectedCommand),
   });
   detailPanel.dataset.statusMenuPresentation = selectedCommand === "to-title"
     ? "confirmation-card"

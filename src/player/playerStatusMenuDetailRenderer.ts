@@ -5,6 +5,9 @@ import { el } from "@/util/dom";
 
 export type StatusMenuDetailPanelOptions = {
   readonly selectedActionIndex?: number;
+  /** 작업 패널(아이템·스킬·장뱄)에서 커서가 올라간 항목을 목록 옆 쇼케이스(큰 그림 + 이름 + 설명)로 보여준다.
+      트레이·확인 카드는 거짓을 넘긴다. */
+  readonly showcase?: boolean;
 };
 
 export function renderStatusMenuDetailPanel(
@@ -34,6 +37,7 @@ export function renderStatusMenuDetailPanel(
     }));
   }
   let enabledActionIndex = 0;
+  let selectedEntry: StatusMenuDetailEntry | undefined;
   if (detail.tabs?.length) {
     const tabs = el("div", {
       class: "life-ledger-tabs",
@@ -93,10 +97,19 @@ export function renderStatusMenuDetailPanel(
     list.append(row);
     if (actionIndex === selectedActionIndex) {
       list.setAttribute("aria-activedescendant", detailEntryId(entry, actionIndex));
+      selectedEntry = entry;
     }
     if (actionIndex !== undefined) enabledActionIndex += 1;
   }
   panel.append(list);
+  // 쇼케이스는 목록 바깥의 별도 영역이다 — 행 안에 설명을 다시 넣으면 행 높이가 두 배가 되는 전력이 있다(위 주석).
+  if (options.showcase && interactiveList && selectedEntry) {
+    const showcase = renderDetailShowcase(project, selectedEntry);
+    if (showcase) {
+      panel.classList.add("has-showcase");
+      panel.append(showcase);
+    }
+  }
   // 조작 가능한 목록에서는 힌트 줄을 그리지 않는다 — 힌트가 행 하나 몫(14px)을 먹어
   // 장비 슬롯 5개 중 3.5개만 보이고 넷째 행이 가로로 잘렸다(실측). 안내는 푸터가 맡는다.
   if (detail.hint && !interactiveList) {
@@ -156,6 +169,42 @@ function renderDetailEntry(options: {
   }
   row.append(...renderDetailTextChildren(entry, inlineDescription));
   return row;
+}
+
+/** 선택된 항목의 그림(아이콘/얼굴)을 크게, 이름·수치·설명 전문을 그린다. 그릴 것이 없으면(동작 확인문 등) null. */
+function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): HTMLElement | null {
+  if (!entry.icon && !entry.face && !entry.description) return null;
+  const art = entry.icon
+    ? renderDetailEntryIcon(project, { ...entry.icon, testId: "status-menu-showcase-art" })
+    : entry.face
+      ? renderDetailFace(project, { ...entry.face, testId: "status-menu-showcase-art" })
+      : null;
+  const children: HTMLElement[] = [];
+  if (art) {
+    art.classList.add("status-menu-showcase-art");
+    children.push(el("div", { class: "status-menu-showcase-frame", children: [art] }));
+  }
+  children.push(el("div", {
+    class: "status-menu-showcase-name",
+    text: entry.label,
+    dataset: { testid: "status-menu-showcase-name" },
+  }));
+  if (entry.value) {
+    children.push(el("div", { class: "status-menu-showcase-value", text: entry.value }));
+  }
+  if (entry.description) {
+    children.push(el("p", {
+      class: "status-menu-showcase-description",
+      text: entry.description,
+      dataset: { testid: "status-menu-showcase-description" },
+    }));
+  }
+  return el("aside", {
+    class: "status-menu-detail-showcase",
+    attrs: { "aria-live": "polite" },
+    dataset: { testid: "status-menu-detail-showcase" },
+    children,
+  });
 }
 
 function detailEntryId(entry: StatusMenuDetailEntry, actionIndex?: number): string {
