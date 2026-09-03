@@ -384,3 +384,147 @@ describe("place_concept 구성과 칩 집행", () => {
     expect(mapHasObject(built.map, "piano")).toBe(false);
   });
 });
+
+describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03)", () => {
+  type PlanData = { planned: boolean; seed: number; rooms: { placeId: string; role: string }[]; used: { placeId: string; things: { objectId: string }[] }[]; floors: { level: number; mapId: string }[] };
+  function template(context: ToolContext, query = "여관") {
+    const result = runTool(context, "get_concept_facility", { query }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    return result.data as { facilities: string[]; template: { plan: { wall?: string; places: unknown[]; things: { objectId: string; required?: boolean }[] } } | null; vocabulary: { id: string; label: string; snap: string }[] };
+  }
+
+  it("get_concept_facility 는 템플릿을 plan 모양으로, 물건 어휘를 id 목록으로 돌려준다", () => {
+    const data = template(ctx());
+    expect(data.facilities).toContain("여관");
+    expect(data.template?.plan.places.length).toBe(3);
+    expect(data.template?.plan.things.map((thing) => thing.objectId)).toContain("bed_h");
+    expect(data.vocabulary.map((entry) => entry.id)).toEqual(expect.arrayContaining(["bed_h", "stove", "barrel", "bookshelf"]));
+  });
+
+  it("객실 3개·주방을 설계해 넘기면 그 장소·물건대로 짓는다 (템플릿은 객실 2·주방 없음)", () => {
+    const context = ctx();
+    const result = runTool(context, "place_concept", {
+      query: "여관",
+      mapId: "map_inn_planned",
+      plan: {
+        places: [
+          { id: "bedroom", label: "객실", role: "room", size: "s", count: 3 },
+          { id: "kitchen", label: "주방", role: "room", size: "s", floor: "plank" },
+          { id: "corridor", label: "복도", role: "walkway" },
+          { id: "hall", label: "홀", role: "entrance", size: "l" },
+        ],
+        things: [
+          { objectId: "bed_h", placeIds: ["bedroom"], chips: ["block", "event", "sleep"], required: true },
+          { objectId: "stove", placeIds: ["kitchen"], chips: ["block", "event"], required: true },
+          { objectId: "barrel", placeIds: ["kitchen", "hall"], chips: ["block"] },
+          { objectId: "table_chairs", placeIds: ["hall"], chips: ["block"] },
+          { objectId: "stairs", placeIds: ["corridor"], chips: ["pass", "transfer"] },
+        ],
+      },
+    }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as PlanData;
+    expect(data.planned).toBe(true);
+    expect(data.rooms.filter((room) => room.placeId === "bedroom")).toHaveLength(3);
+    expect(data.rooms.some((room) => room.placeId === "kitchen")).toBe(true);
+    const map = context.project.maps.map_inn_planned!;
+    expect(mapHasObject(map, "stove")).toBe(true);
+    expect(mapHasObject(map, "piano")).toBe(false);
+  });
+
+  it("템플릿 필수 물건(피아노·긴 탁자)을 설계에서 빼면 경고를 남기되 시공은 한다", () => {
+    const context = ctx();
+    const result = runTool(context, "place_concept", {
+      query: "여관",
+      mapId: "map_inn_no_piano",
+      plan: {
+        places: [{ id: "hall", role: "entrance", size: "l" }],
+        things: [{ objectId: "table_chairs", placeIds: ["hall"], chips: ["block"] }],
+      },
+    }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
+    expect(warnings.some((line) => line.includes("템플릿 필수 물건") && line.includes("piano"))).toBe(true);
+    expect(context.project.maps.map_inn_no_piano).toBeDefined();
+  });
+
+  it("어휘에 없는 objectId 는 invalid-plan 으로 거절한다", () => {
+    const result = runTool(ctx(), "place_concept", {
+      query: "여관",
+      mapId: "map_inn_bad",
+      plan: { places: [{ id: "hall", role: "entrance" }], things: [{ objectId: "hot_tub", placeIds: ["hall"], chips: ["block"] }] },
+    }, { dryRun: false });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.some((issue) => issue.code === "invalid-plan")).toBe(true);
+  });
+
+  it("모르는 칩·장소 참조도 invalid-plan 이다", () => {
+    const badChip = runTool(ctx(), "place_concept", {
+      query: "여관", mapId: "map_inn_bad_chip",
+      plan: { places: [{ id: "hall", role: "entrance" }], things: [{ objectId: "barrel", placeIds: ["hall"], chips: ["explode"] }] },
+    }, { dryRun: false });
+    expect(badChip.issues?.some((issue) => issue.code === "invalid-plan")).toBe(true);
+    const badPlace = runTool(ctx(), "place_concept", {
+      query: "여관", mapId: "map_inn_bad_place",
+      plan: { places: [{ id: "hall", role: "entrance" }], things: [{ objectId: "barrel", placeIds: ["cellar"], chips: ["block"] }] },
+    }, { dryRun: false });
+    expect(badPlace.issues?.some((issue) => issue.code === "invalid-plan")).toBe(true);
+  });
+
+  it("템플릿에 없는 시설도 plan 이 있으면 짓는다", () => {
+    const context = ctx();
+    const result = runTool(context, "place_concept", {
+      query: "목욕탕",
+      mapId: "map_bath",
+      plan: { places: [{ id: "bath", role: "entrance", size: "l", floor: "stone" }], things: [{ objectId: "bucket", placeIds: ["bath"], chips: ["block"] }] },
+    }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    expect((result.data as { facilityLabel: string }).facilityLabel).toBe("목욕탕");
+  });
+
+  it("2층 장소를 설계하면 위층 맵이 서고 계단으로 이어진다", () => {
+    const context = ctx();
+    const result = runTool(context, "place_concept", {
+      query: "여관",
+      mapId: "map_inn_2f",
+      plan: {
+        places: [
+          { id: "hall", role: "entrance", size: "l" },
+          { id: "corridor", role: "walkway" },
+          { id: "bedroom", role: "room", size: "s", count: 2, level: 2 },
+          { id: "upper_hall", role: "walkway", level: 2 },
+        ],
+        things: [
+          { objectId: "stairs", placeIds: ["corridor", "upper_hall"], chips: ["pass", "transfer"], required: true },
+          { objectId: "bed_h", placeIds: ["bedroom"], chips: ["block", "event", "sleep"], required: true },
+        ],
+      },
+    }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as PlanData;
+    expect(data.floors.map((floor) => floor.level)).toEqual([1, 2]);
+    expect(context.project.maps.map_inn_2f_2f).toBeDefined();
+  });
+
+  it("seed 가 다르면 같은 설계라도 배치가 달라질 수 있고, 같은 mapId 는 seed 없이도 같은 결과다", () => {
+    const tiles = (seed: number | undefined, mapId = "map_inn_seed") => {
+      const context = ctx();
+      const result = runTool(context, "place_concept", { query: "여관", mapId, ...(seed === undefined ? {} : { seed }) }, { dryRun: false });
+      expect(result.ok, result.summary).toBe(true);
+      const map = context.project.maps[mapId]!;
+      return [...map.lowerTiles, ...map.upperTiles].join(",");
+    };
+    const variants = new Set([1, 2, 3, 4, 5, 6, 7, 8].map((seed) => tiles(seed)));
+    expect(variants.size).toBeGreaterThan(1);
+    expect(tiles(undefined)).toBe(tiles(undefined));
+  });
+
+  it("어느 seed 로 지어도 초안 여관의 물건은 전부 자리를 얻는다", () => {
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8, 11, 22, 33]) {
+      const result = runTool(ctx(), "place_concept", { query: "여관", mapId: "map_inn_seed_fit", seed }, { dryRun: false });
+      expect(result.ok).toBe(true);
+      const unplaced = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])].filter((line) => line.includes("자리 없음"));
+      expect(unplaced, `seed ${seed}: ${unplaced.join(" / ")}`).toEqual([]);
+    }
+  });
+});

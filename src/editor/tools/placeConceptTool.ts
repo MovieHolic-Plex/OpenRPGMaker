@@ -6,32 +6,111 @@ import {
   listLiveConceptFacilityLabels,
   resolveConceptFacility,
   type ConceptRoomLayout,
+  type ResolvedConceptFacility,
 } from "@/editor/conceptBundleResolve";
+import {
+  CONCEPT_PLAN_ENUMS,
+  ConceptPlanError,
+  conceptVocabulary,
+  facilityAsPlan,
+  missingRequiredFromTemplate,
+  parseConceptPlan,
+} from "@/editor/conceptPlan";
+import { INTERIOR_OBJECT_CATALOG, interiorObjectById } from "@/editor/interiorObjectCatalog";
 import {
   convertEntranceToDescent,
   linkConceptTransfers,
   listConceptConnections,
   type ConceptTransferTarget,
 } from "@/editor/interiorConceptEvents";
-import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
+import { INTERIOR_ROOM_TILESET_ID, interiorVocabFromTileset } from "@/editor/interiorRoomPipeline";
 import { runRoomPipeline } from "@/editor/roomHarness/engine";
 import { INTERIOR_ROOM_KIT } from "@/editor/roomHarness/interiorKit";
 import { CONCEPT_CHIP_LABELS } from "@/project/types/conceptBundle";
-import type { GameMap } from "@/project/types";
+import type { GameMap, Project } from "@/project/types";
+import { deterministicRng } from "@/util/rng";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
 
 const KIT = INTERIOR_ROOM_KIT.kitId;
+
+const PLAN_SCHEMA = {
+  type: "object",
+  description:
+    "모델이 설계한 시설. get_concept_facility(query) 가 돌려준 템플릿을 요청에 맞게 고쳐 그대로 넘기라 — 방 수(count)·크기(size)·바닥·벽·층·물건 추가/제외. "
+    + "좌표는 코드가 정한다. objectId 는 vocabulary[].id 에서만. 템플릿의 required 물건을 뾄으면 경고(거부 아님). 생략하면 템플릿 그대로.",
+  properties: {
+    wall: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.walls], description: "벽 재질. 생략=cream" },
+    places: {
+      type: "array",
+      description: "장소 목록. entrance(정문 홈) 하나, walkway(복도) 0~1, 나밸지 room. 도면은 남→북 홈 → 복도 → 방 줄.",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          label: { type: "string" },
+          role: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.roles], description: "생략=room" },
+          size: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.sizes], description: "s 5×3 · m 7×4 · l 9×5. 생략=m" },
+          count: { type: "integer", description: `같은 장소 개수 1..${CONCEPT_PLAN_ENUMS.countMax}(객실 ×3). 생략=1` },
+          floor: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.floors], description: "생략=wood" },
+          level: { type: "integer", description: `층 1..${CONCEPT_PLAN_ENUMS.levelMax}. 2 이상은 <mapId>_<n>f 별도 맵 + 계단. 생략=1` },
+        },
+        required: ["id"],
+      },
+    },
+    things: {
+      type: "array",
+      description: "물건 목록. 각 물건은 어느 장소(placeIds)에 놓이는지와 능력 칩(chips)을 가진다.",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          label: { type: "string" },
+          objectId: { type: "string", description: "get_concept_facility 의 vocabulary[].id" },
+          placeIds: { type: "array", items: { type: "string" } },
+          chips: {
+            type: "array",
+            items: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.chips] },
+            description: Object.entries(CONCEPT_PLAN_ENUMS.chipLabels).map(([id, label]) => `${id}=${label}`).join(" · "),
+          },
+          required: { type: "boolean", description: "자리가 없으면 경고를 내는 핵심 물건" },
+        },
+        required: ["objectId", "placeIds"],
+      },
+    },
+  },
+  required: ["places"],
+} as const;
+
+function seedFromMapId(mapId: string): number {
+  return Math.floor(deterministicRng(1, "place_concept", mapId)() * 0x7fffffff);
+}
+
+function resolveObjectFor(draft: Project, tilesetId: string) {
+  const vocab = interiorVocabFromTileset(draft.tilesets[tilesetId]);
+  return (objectId: string) => vocab.objectsById.get(objectId) ?? interiorObjectById(objectId);
+}
+
+function parsePlanOrThrow(raw: unknown, options: Parameters<typeof parseConceptPlan>[1]): ReturnType<typeof parseConceptPlan> {
+  try {
+    return parseConceptPlan(raw, options);
+  } catch (error) {
+    if (error instanceof ConceptPlanError) throw new ToolError(error.message, { code: error.code });
+    throw error;
+  }
+}
 
 export const PLACE_CONCEPT_TOOL: ToolDefinition = {
   name: "place_concept",
   // 설명의 시설 단어(여관 · 민가 · 상점 · 술집 · 주막 · 서재 · 도서관 · 대장간 · 교회 · 성당 · 창고 · 길드)와
   // 「지어줘 · 만들어줘」는 자연어 승격(capabilityEscalation, matchScore ≥ 20) 용이다 — 지우면 승격이 죽는다.
   description:
-    "타일셋 개념 꾸러미로 시설 실내를 시공한다. 여관 지어줘 · 상점 만들어줘 · 술집 · 주막 · 민가 · 서재 · 도서관 · "
-    + "대장간 · 교회 · 성당 · 창고 · 길드 처럼 시설명을 부르면 "
-    + "사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 나무가 정본이다. "
-    + "query 는 시설명(여관·상점·대장간…) 또는 꾸러미 id. 장소·물건·칩·바닥·벽 재질·층은 그 나무를 따른다. "
+    "시설 실내를 설계대로 시공한다. 여관 지어줘 · 상점 만들어줘 · 술집 · 주막 · 민가 · 서재 · 도서관 · "
+    + "대장간 · 교회 · 성당 · 창고 · 길드 처럼 시설명을 부르는 요청에 쓴다. "
+    + "순서: get_concept_facility(query) 로 템플릿(사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 고친 장소·물건)과 물건 어휘를 읽고, "
+    + "요청(방 수·크기·분위기·층·내용물)에 맞게 고친 plan 을 넘기라. 수식어가 없어도 템플릿을 그대로 복사하지 말고 설계를 다듬어라. "
+    + "plan 을 생략하면 템플릿 그대로 짓는다. 좌표·벽·문·이벤트는 코드가 정한다(방 bbox 를 찍지 마라). "
+    + "query 는 시설명(여관·상점·대장간…) 또는 꾸러미 id — 템플릿에 없는 시설도 plan 이 있으면 짓는다. "
     + "장소에 2층 이상이 있으면 층마다 맵(<mapId>_2f)을 짓고 계단으로 잇는다(data.floors). "
     + "방 종류 requiredRoles 로 시설을 합성하지 마라. 새 mapId 가 필요하다. "
     + "기존 실내 맵을 고치는 요청에는 쓰지 마라. "
@@ -51,7 +130,8 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
         type: "string",
         description: "꾸러미를 읽을 타일셋. 생략 시 실내 칩셋 easyrpg_chipset_interior",
       },
-      seed: { type: "integer", description: "가구 배치 난수 시드" },
+      plan: PLAN_SCHEMA,
+      seed: { type: "integer", description: "가구 배치 변주 시드. 생략 시 mapId 에서 파생(같은 mapId 는 같은 배치)" },
       replaceExisting: REPLACE_EXISTING_SCHEMA,
     },
     required: ["query", "mapId"],
@@ -67,21 +147,39 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
       : INTERIOR_ROOM_TILESET_ID;
     ensureConceptBundles(draft, tilesetId);
     const tileset = draft.tilesets[tilesetId];
-    if (tileset?.scratchConceptBundles?.length === 0) {
+    const hasPlan = args.plan !== undefined && args.plan !== null;
+    if (!hasPlan && tileset?.scratchConceptBundles?.length === 0) {
       throw new ToolError(
-        "이 타일셋의 개념 꾸러미가 비어 있다. 데이터베이스 「임시 → 개념 꾸러미」에서 시설을 만들거나 초안(여관·민가·상점…)을 넣어라.",
+        "이 타일셋의 개념 꾸러미가 비어 있다. plan 을 설계해 넘기거나, 데이터베이스 「임시 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣어라.",
         { code: "concept-bundle-empty" },
       );
     }
-    const resolved = resolveConceptFacility(draft, query, tilesetId)
+    const template = resolveConceptFacility(draft, query, tilesetId)
       ?? resolveConceptFacility(draft, query);
-    if (!resolved) {
+    if (!template && !hasPlan) {
       const available = listLiveConceptFacilityLabels(draft);
       throw new ToolError(
         `개념 꾸러미에서 "${query}" 시설을 찾지 못했다. 지금 부를 수 있는 시설: ${available.join(" · ") || "없음"}. `
-        + "다른 시설은 데이터베이스 「임시 → 개념 꾸러미」에서 초안을 넣거나 만들어라.",
+        + "템플릿에 없는 시설은 get_concept_facility 로 어휘를 읽고 plan 을 설계해 넘기라.",
         { code: "concept-not-found" },
       );
+    }
+    const planWarnings: string[] = [];
+    let resolved: ResolvedConceptFacility;
+    if (hasPlan) {
+      const facilityLabel = String(args.name ?? "").trim() || template?.facility.label || query;
+      const parsed = parsePlanOrThrow(args.plan, {
+        facilityId: template?.facility.id ?? "planned",
+        facilityLabel,
+        bundleId: template?.bundle.id ?? "planned",
+        resolveObject: resolveObjectFor(draft, template?.tilesetId ?? tilesetId),
+      });
+      if (template) planWarnings.push(...missingRequiredFromTemplate(template.bundle, template.facility, parsed.bundle));
+      resolved = { tilesetId: template?.tilesetId ?? tilesetId, bundle: parsed.bundle, facility: parsed.facility };
+    } else if (template) {
+      resolved = template;
+    } else {
+      throw new ToolError(`"${query}" 시설을 풀 수 없다`, { code: "concept-not-found" });
     }
     const name = String(args.name ?? "").trim() || resolved.facility.label;
     // 층: 장소 `level` 이 둘 이상이면 층마다 맵을 짓는다. 1층 = mapId, 위층 = `<mapId>_<n>f`.
@@ -101,7 +199,7 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
       name: index === 0 ? name : `${name} ${level}층`,
       layout: layoutConceptFacility(resolved.bundle, resolved.facility, multi ? { level, minBandWidth: bandWidth } : {}),
     }));
-    const seed = args.seed !== undefined ? Math.floor(Number(args.seed)) : 7;
+    const seed = args.seed !== undefined ? Math.floor(Number(args.seed)) : seedFromMapId(mapId);
     const results: ToolExecResult[] = [];
     for (const floor of floors) {
       const overlay = conceptOverlayFor(resolved.bundle, resolved.facility, floor.layout);
@@ -182,7 +280,10 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
       ...(multi ? { level: floor.level, mapId: floor.mapId } : {}),
     })));
     // 층이 둘 이상이면 시공 중 나온 「연결 대상이 없다」 경고는 위에서 이었으므로 뺀다.
-    const mergedWarnings = results.flatMap((entry) => entry.warnings ?? []).filter((line) => !multi || !line.includes("맵 연결 대상이 없다"));
+    const mergedWarnings = [
+      ...planWarnings,
+      ...results.flatMap((entry) => entry.warnings ?? []).filter((line) => !multi || !line.includes("맵 연결 대상이 없다")),
+    ];
     const roomCount = floors.reduce((sum, floor) => sum + floor.layout.rooms.length, 0);
     const floorNote = multi ? `, ${floors.slice(1).map((floor) => `${floor.level}층 ${floor.mapId}`).join(" · ")}` : "";
     return {
@@ -196,6 +297,8 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
         facilityId: resolved.facility.id,
         facilityLabel: resolved.facility.label,
         tilesetId: resolved.tilesetId,
+        planned: hasPlan,
+        seed,
         used,
         rooms,
         floors: floors.map((floor) => ({ level: floor.level, mapId: floor.mapId, name: floor.name })),
@@ -213,6 +316,57 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
 function upperLanding(layout: ConceptRoomLayout, mapId: string): ConceptTransferTarget {
   return { mapId, x: layout.door.x, y: layout.door.y - 1 };
 }
+
+export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
+  name: "get_concept_facility",
+  description:
+    "시설 실내를 지으려면 이것을 먼저 부른다. 여관·상점·대장간·술집·민가·교회·창고·길드·서재 시설의 "
+    + "템플릿(사용자가 데이터베이스 「임시 → 개념 꾸러미」에서 정해 둔 장소·물건)과 이 타일셋에서 쓸 수 있는 물건 어휘(vocabulary)를 돌려준다. "
+    + "이 응답의 plan 을 요청에 맞게 고쳐 place_concept({query, mapId, plan}) 에 넘기라 — 그래야 장소 수·크기·내용물이 다른 시설이 생긴다. "
+    + "query 를 생략하면 지금 부를 수 있는 시설 라벨과 어휘만 돌려준다. 읽기 전용 — 맵을 건들지 않는다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: {
+      query: { type: "string", description: "시설 이름 또는 id. 예: 여관 · 상점 · 대장간" },
+      tilesetId: { type: "string", description: "생략 시 실내 칩셋 easyrpg_chipset_interior" },
+    },
+  },
+  invalidArgsExample: { query: "여관" },
+  run(draft, args): ToolExecResult {
+    const tilesetId = args.tilesetId !== undefined ? String(args.tilesetId).trim() : INTERIOR_ROOM_TILESET_ID;
+    ensureConceptBundles(draft, tilesetId);
+    const query = String(args.query ?? "").trim();
+    const vocabulary = conceptVocabulary(interiorVocabFromTileset(draft.tilesets[tilesetId]), INTERIOR_OBJECT_CATALOG);
+    const facilities = listLiveConceptFacilityLabels(draft);
+    const resolved = query
+      ? resolveConceptFacility(draft, query, tilesetId) ?? resolveConceptFacility(draft, query)
+      : undefined;
+    if (!resolved) {
+      return {
+        summary: query
+          ? `템플릿에 "${query}" 시설이 없다 — plan 을 직접 설계해 place_concept 에 넘길 수 있다. 물건 어휘 ${vocabulary.length}종`
+          : `시설 템플릿 ${facilities.length}종 · 물건 어휘 ${vocabulary.length}종`,
+        data: { query, facilities, template: null, vocabulary },
+      };
+    }
+    const plan = facilityAsPlan(resolved.bundle, resolved.facility);
+    return {
+      summary: `시설 「${resolved.facility.label}」 템플릿 — 장소 ${plan.places.length}·물건 ${plan.things.length} · 물건 어휘 ${vocabulary.length}종`,
+      data: {
+        query,
+        facilities,
+        template: {
+          facilityId: resolved.facility.id,
+          facilityLabel: resolved.facility.label,
+          tilesetId: resolved.tilesetId,
+          plan,
+        },
+        vocabulary,
+      },
+    };
+  },
+};
 
 /** 아래층 계단 앞 — 첫 계단(transfer 칩) 이벤트의 남쪽 한 칸(같은 방 안이면), 아니면 계단 칸. 계단이 없으면 null. */
 function stairArrival(map: GameMap, layout: ConceptRoomLayout, mapId: string): ConceptTransferTarget | null {
