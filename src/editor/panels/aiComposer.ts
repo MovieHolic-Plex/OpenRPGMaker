@@ -24,6 +24,7 @@
 // 뜨므로 확인·삭제도 같은 표면에 있어야 한다. 팝오버 기계의 한 종류로 들어 배타적 열림·바깥 클릭·
 // Escape 를 공짜로 얻는다.
 
+import { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode } from "@/ai/composerMode";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
 
@@ -32,15 +33,7 @@ export type ComposerPopover = "suggest" | "menu" | "preference" | "context";
 
 const POPOVER_KINDS = ["suggest", "menu", "preference", "context"] as const;
 
-/** 컴포저 모드 — 지시(편집)·질문(조회만)·계획(실행 전 계획 카드). */
-export const COMPOSER_MODES = ["do", "ask", "plan"] as const;
-export type ComposerMode = (typeof COMPOSER_MODES)[number];
-
-export const COMPOSER_MODE_LABEL: Readonly<Record<ComposerMode, string>> = {
-  do: "지시",
-  ask: "질문",
-  plan: "계획",
-};
+export { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode };
 
 export interface ComposerElements {
   /** 패널에 마운트되는 바 루트(기존 `.ai-command-bar` testid 유지). */
