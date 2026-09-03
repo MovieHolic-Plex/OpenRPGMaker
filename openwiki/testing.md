@@ -525,6 +525,14 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   매 실행 재생성되며 gitignore 대상이다.
 - 시나리오는 `scripts/qa/runtime/<name>.scenario.mjs`. 좌표 기대치는 추측하지 말고
   `scripts/_dump-event-tiles.mjs` 로 실물에서 읽어라.
+- **소리는 스크린샷에 안 잡힌다 — `expect.audioObservedIncludes`** (2026-09-04). 오디오 엔진이 재생 지시를
+  받은 리소스 id 를 `window.__oprnAudioObserved`(`src/player/audio/audioEngine.ts`)에 쌓고,
+  `runtimeQaRun.mjs` 가 버트번 `audioObserved` 로 읽어 온다. 관측 배열이 없으므로(훅 설치 전) 실패다.
+  첫 사용자는 `chest-open` 시나리오 — 픽스처는 `scripts/qa/runtime/chest-open-fixture.mts` 가 **실물
+  `place_chest` 도구로** 굽는다(`npx vite-node --script … --out /tmp/chest-open.json` 다음
+  `--project /tmp/chest-open.json`). 개방 SE·아이템 징글·동전 SE 세 개가 도달하고 `gold` 0→50, 열린 상자
+  프레임이 03 샷에 남아야 통과다. 대사청 스크린샷은 타자기 첫 글자에서 잡힐 수 있다 — 문장은
+  유닛 테스트(`test/placeChestSavepoint.test.ts`)가 재고 하네스는 소지금·오디오·프레임을 재다.
 - 체공(점프·낙하) 시나리오와 그 전용 op/expect 는 위 "체공 런타임 QA" 절에 있다. 거기서
   얻은 일반 교훈: **오브젝트가 존재한다는 검사는 그것이 그려졌다는 뜻이 아니다.**
 - **`testidPresent` 만 쓴 비트는 이빨이 없다** (2026-08-30 실측). `item-care`·`item-equipment`

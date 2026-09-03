@@ -92,6 +92,12 @@ export type RuntimeQaExpect = {
   /** y 의 부등 기대치. {@link RuntimeQaExpect.xNot} 참조. */
   readonly yNot?: number;
   readonly gold?: number;
+  /**
+   * 이 버트까지 오디오 엔진이 **재생 지시를 받은** 리소스 id 가 전부 포함되어야 한다
+   * (`window.__oprnAudioObserved`). 스크린샷은 소리를 못 잡으므로 SE 경로가 실제로 도달했는지는 이 축만이 증명한다.
+   * 관측 배열이 없으므로 실패다.
+   */
+  readonly audioObservedIncludes?: readonly string[];
   /** 직전 전투 처리 결과(session.battleResult). */
   readonly battleResult?: "victory" | "defeat" | "escape" | null;
   readonly testidPresent?: readonly string[];

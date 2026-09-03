@@ -49,6 +49,21 @@ describe("evaluateExpect", () => {
     expect(failures).toEqual(["testid 잔존: dialogue-window"]);
   });
 
+  it("audioObservedIncludes: 재생 지시가 기록된 리소스는 통과, 없는 리소스는 보고한다", () => {
+    const withAudio = { ...observed, audioObserved: ["cc0-bgm-town", "cc0-se-osx-wooded-box-open"] };
+
+    expect(evaluateExpect({ audioObservedIncludes: ["cc0-se-osx-wooded-box-open"] }, withAudio)).toEqual([]);
+    expect(evaluateExpect({ audioObservedIncludes: ["cc0-se-orp-inventory-coin"] }, withAudio)).toEqual([
+      "audio 미재생: cc0-se-orp-inventory-coin (관측: cc0-bgm-town, cc0-se-osx-wooded-box-open)",
+    ]);
+  });
+
+  it("audioObservedIncludes: 관측 배열이 없으면 조용히 통과시키지 않는다", () => {
+    const failures = evaluateExpect({ audioObservedIncludes: ["cc0-se-orp-inventory-coin"] }, observed);
+
+    expect(failures).toEqual(["audio 미재생: cc0-se-orp-inventory-coin (관측: 없음)"]);
+  });
+
   it("플레이어 스프라이트 리소스가 비면 보고한다", () => {
     const failures = evaluateExpect(
       { playerSpriteResourceNonEmpty: true },

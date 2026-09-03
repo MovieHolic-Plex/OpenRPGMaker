@@ -5,6 +5,7 @@ import { layoutConceptFacility } from "@/editor/conceptBundleResolve";
 import { OUTSIDE_VOID_TILE } from "@/editor/interiorConceptCompose";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { interiorObjectById } from "@/editor/interiorObjectCatalog";
+import { CHEST_OPEN_SE, LOOT_GOLD_SE } from "@/editor/lootFeedback";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -353,6 +354,27 @@ describe("place_concept 구성과 칩 집행", () => {
     expect(loot!.pages![0]!.conditions).toEqual([{ kind: "selfSwitch", key: "A", value: false }]);
     expect(loot!.pages![0]!.commands.some((command) => command.kind === "changeGold")).toBe(true);
     expect(loot!.pages![1]!.conditions).toEqual([{ kind: "selfSwitch", key: "A", value: true }]);
+  });
+
+  it("loot 칩은 뒤지는 소리 →사이 → 동전 소리 → 금화 → 문장 순으로 소리가 보상에 앞서다", () => {
+    const { map } = build();
+    const loot = map.events.find((event) => event.id.includes("_display_"))!;
+    const commands = loot.pages![0]!.commands;
+    expect(commands.map((command) => command.kind)).toEqual([
+      "playAudio",
+      "wait",
+      "playAudio",
+      "changeGold",
+      "text",
+      "setSelfSwitch",
+    ]);
+    const audio = commands.filter((command) => command.kind === "playAudio") as { resourceId: string; loop: boolean }[];
+    expect(audio.map((command) => command.resourceId)).toEqual([CHEST_OPEN_SE, LOOT_GOLD_SE]);
+    expect(audio.every((command) => command.loop === false)).toBe(true);
+    const gold = commands.find((command) => command.kind === "changeGold") as { amount: number };
+    const text = commands.find((command) => command.kind === "text") as { body: string };
+    expect(text.body).toContain(`${gold.amount}G`);
+    expect(loot.pages![1]!.commands.map((command) => command.kind)).toEqual(["text"]);
   });
 
   it("event 칩 카운터는 조사 문장을 가진다", () => {
