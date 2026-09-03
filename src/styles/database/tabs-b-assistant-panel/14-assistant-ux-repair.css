@@ -47,19 +47,20 @@
 }
 
 /* ── 컴포저: 스킬 진입점과 포커스 전용 힌트 ────────────────────
-   액션 행은 고정 높이다. 힌트를 display 로 빼면 행 높이가 흔들려
-   "바 높이 = f(textarea 줄 수)" 불변식과 clearance 실측이 깨지므로 visibility 로 숨긴다. */
+   액션 행은 고정 높이다(버튼 30px 이 행 높이를 정하고 힌트 16px 은 그 안에 든다). 힌트는 display 로
+   숨긴다 — 예전의 visibility:hidden 은 156px 자리를 남겨 왼쪽 칩 줄을 눌렀다(아래 실측). */
 .ai-composer-skill-btn {
   font-size: 15px;
 }
 
+/* 숨긴 힌트가 자리를 차지하면 안 된다 — visibility:hidden 은 156px 를 먹어 왼쪽 칩 줄을 139px 로 눌렀고
+   선택 칩·맥락 게이지가 가로 스크롤 밖으로 밀려 보이지 않았다(2026-09-03 실측). */
 .ai-composer-actions .ai-composer-hint {
-  transition: opacity 120ms ease;
-  visibility: hidden;
+  display: none;
 }
 
 .ai-composer-actions.is-input-focused .ai-composer-hint {
-  visibility: visible;
+  display: block;
 }
 
 /* 보낼 게 없을 때의 전송 버튼 — 클릭·초점은 살아 있고(눌리면 이유를 말한다) 시각적으로만 물러난다.
