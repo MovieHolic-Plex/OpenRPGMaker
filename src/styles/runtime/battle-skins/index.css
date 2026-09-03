@@ -5,6 +5,8 @@
    or every override would lose to battle.css (unlayered beats layered). */
 @import "./_pokemon.css";
 @import "./_rm2000.css";
+/* _rm2003.css 는 _rm2000.css 바로 뒤 — 같은 유리 묶음(family glass)의 규칙을 같은 특정도로 덮으므로 순서가 권위다. */
+@import "./_rm2003.css";
 @import "./_octopath.css";
 @import "./_chrono.css";
 @import "./_bravely.css";

@@ -124,7 +124,7 @@ export type BattleFlow = "gauge" | "strict";
 export type BattleUiStyle =
   | "pokemon" | "rm2000" | "octopath" | "chrono"
   | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace"
-  | "rm2003" // legacy id, remapped by resolveSkinId → rm2000
+  | "rm2003" // 측면 전투(2026-09-03 되살림 — 그 전 몇 시간은 rm2000 의 옛 id 였다)
   | "classic"; // legacy alias, remapped by resolveSkinId → rm2000
 
 /** 전투 아군측 배틀러 소스 — actors: 파티 액터가 직접 싸움(기본),
