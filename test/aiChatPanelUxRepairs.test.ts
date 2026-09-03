@@ -8,17 +8,7 @@ import {
   type ChatRequest,
   type ChatResult,
 } from "@/ai/llmClient";
-import {
-  failedToolRetrySummary,
-  failedToolVisibleSummary,
-  formatAiRunningStatus,
-  formatToolActivityLine,
-  isAiConfigReady,
-  reasoningToggleText,
-  renderAiChatPanel,
-  renderToolActivityEntry,
-  teardownAiChatPanel,
-} from "@/editor/panels/aiChatPanel";
+import { failedToolRetrySummary, failedToolVisibleSummary, formatAiRunningStatus, formatToolActivityLine, isAiConfigReady, reasoningToggleText, renderAiChatPanel, renderToolActivityEntry, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { editorState } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
@@ -90,12 +80,12 @@ beforeEach(() => {
   installFakeLocalStorage();
 });
 
-afterEach(() => {
+afterEach(async () => {
   // 패널을 살려두면 진행 중 턴이 restoreDom 이후에도 죽은 DOM 에 버블을 쓰고(실측: 이 파일에서
   // "document is not defined" unhandled rejection 4건), dispose 의 persistConversation 이 다음
   // 테스트의 clearConversations 뒤에 대화를 되살려 내보내기 버튼 상태까지 오염시켰다.
   teardownAiChatPanel();
-  clearConversations();
+  await clearConversations();
   setInlineProposalActions(null);
   restoreWindow?.();
   restoreDom?.();
@@ -178,7 +168,8 @@ describe("선택 영역 AI 직결 칩", () => {
     expect(logText).not.toContain("적용 여부를 선택하세요");
     expect(findByTestId(panel, "ai-status")?.textContent).toBe("적용됨");
 
-    const userEntry = loadLatestConversation()?.entries.find((entry) => entry.kind === "user");
+    await whenAiChatPanelSettled();
+    const userEntry = (await loadLatestConversation())?.entries.find((entry) => entry.kind === "user");
     expect(userEntry?.kind).toBe("user");
     if (userEntry?.kind !== "user") throw new Error("region user audit entry missing");
     expect(userEntry.context).toMatchObject({
@@ -189,7 +180,7 @@ describe("선택 영역 AI 직결 칩", () => {
       selection: { mapId, x: 1, y: 2, width: 3, height: 4 },
     });
     teardownAiChatPanel();
-    clearConversations();
+    await clearConversations();
   });
 });
 
@@ -274,8 +265,8 @@ describe("도구 로그와 추론 표시", () => {
 });
 
 describe("대화 복원과 내보내기", () => {
-  it("같은 프로젝트 컨텍스트의 직전 대화는 부팅 시 자동 복원된다", () => {
-    saveConversation({
+  it("같은 프로젝트 컨텍스트의 직전 대화는 부팅 시 자동 복원된다", async () => {
+    await saveConversation({
       id: "conv_same",
       title: "마을",
       model: "m",
@@ -288,6 +279,7 @@ describe("대화 복원과 내보내기", () => {
     });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     expect(findByTestId(panel, "ai-start-screen")).toBeNull();
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
@@ -296,9 +288,9 @@ describe("대화 복원과 내보내기", () => {
     expect(findByTestId(panel, "ai-export")?.disabled).toBe(false);
   });
 
-  it("다른 프로젝트 컨텍스트의 직전 대화는 자동 복원하지 않고 빈 키트도 안 붙인다", () => {
+  it("다른 프로젝트 컨텍스트의 직전 대화는 자동 복원하지 않고 빈 키트도 안 붙인다", async () => {
     // Break: other-project latest conv remounts start-screen / resume CTA, or auto-restores the log.
-    saveConversation({
+    await saveConversation({
       id: "conv_other",
       title: "다른 프로젝트",
       model: "m",
@@ -308,6 +300,7 @@ describe("대화 복원과 내보내기", () => {
     });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     expect(findByTestId(panel, "ai-start-screen")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
@@ -316,9 +309,10 @@ describe("대화 복원과 내보내기", () => {
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).not.toContain("다른 요청");
   });
 
-  it("내보내기는 빈 대화에서 비활성화되고 라벨은 내보내기다", () => {
-    clearConversations();
+  it("내보내기는 빈 대화에서 비활성화되고 라벨은 내보내기다", async () => {
+    await clearConversations();
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     const button = findByTestId(panel, "ai-export");
     expect(button?.textContent).toBe("내보내기");
     expect(button?.disabled).toBe(true);

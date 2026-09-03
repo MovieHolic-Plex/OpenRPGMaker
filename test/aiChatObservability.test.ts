@@ -1,14 +1,6 @@
 // V3C 채팅 관측성 회귀: 글자 크기 3단(영속) / 병합 추론 원문 전체 / 도구 호출 상세 아코디언.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  AI_FONT_SIZE_KEY,
-  applyAiFontSize,
-  loadAiFontSize,
-  renderAiChatPanel,
-  renderToolActivityEntry,
-  saveAiFontSize,
-  teardownAiChatPanel,
-} from "@/editor/panels/aiChatPanel";
+import { AI_FONT_SIZE_KEY, applyAiFontSize, loadAiFontSize, renderAiChatPanel, renderToolActivityEntry, saveAiFontSize, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 
 import { clearConversations, conversationScopeKey, saveConversation } from "@/ai/conversationStore";
@@ -22,7 +14,7 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 
-beforeEach(() => {
+beforeEach(async () => {
   clearAgentGhostPreview();
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
@@ -39,13 +31,13 @@ beforeEach(() => {
       clear: () => storage.clear(),
     },
   });
-  clearConversations();
+  await clearConversations();
 });
 
-afterEach(() => {
+afterEach(async () => {
   // 진행 중 턴이 패널보다 오래 살아 죽은 DOM 에 쓰는 것을 막는다(위 uxRepairs 와 동일 이유).
   teardownAiChatPanel();
-  clearConversations();
+  await clearConversations();
   clearAgentGhostPreview();
   restoreDom?.();
   restoreDom = null;
@@ -160,8 +152,8 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
     expect(text).toContain('"id": "dup"');
   });
 
-  it("복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다", () => {
-    saveConversation({
+  it("복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다", async () => {
+    await saveConversation({
       id: "conv_tool",
       title: "복원",
       model: "m",
@@ -173,6 +165,7 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
       ],
     });
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
     const activity = findByTestId(panel, "ai-tool-activity");
     expect(activity).toBeTruthy();
     // 복원 경로도 실시간 경로와 같은 렌더러를 쓴다 — 요약 한 줄, 도구 id·JSON 없음.

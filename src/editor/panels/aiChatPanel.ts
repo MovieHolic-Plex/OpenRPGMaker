@@ -48,6 +48,7 @@ import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { renderAssistantAnswer } from "@/editor/panels/aiAnswerLinkRender";
 import { genId } from "@/util/id";
+import { createPendingWorkTracker } from "@/util/pendingWork";
 import { toast } from "@/util/toast";
 import {
   AssistantSession,
@@ -268,6 +269,14 @@ export interface AiChatPanelOptions {
 
 let cleanupAiAssistBridge: (() => void) | null = null;
 let activeAiChatPanelCleanup: (() => void) | null = null;
+// 패널이 띄운 비동기 저장·복원 작업. 대화 기록이 IndexedDB 로 가면서 «렌더 직후» 에는 아직 복원이
+// 안 끝나 있다 — 테스트·헤드리스 하네스는 이걸로 정착을 기다린다.
+const panelPendingWork = createPendingWorkTracker();
+
+/** 패널의 비동기 저장·복원·프로젝트 전환 처리가 모두 끝날 때까지 기다린다. */
+export function whenAiChatPanelSettled(): Promise<void> {
+  return panelPendingWork.settled();
+}
 
 export function teardownAiChatPanel(): void {
   const cleanup = activeAiChatPanelCleanup;
@@ -299,12 +308,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let disposed = false;
   const initialProjectIdentity = store.getProjectIdentity();
   const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
-  // 이 프로젝트 범위의 최신 대화를 이어받는다. 전역 최신 하나만 집어 스코프를 대조하는 예전 방식은,
-  // 다른 프로젝트의 대화가 더 최근이면 내 대화가 있어도 복원을 포기해 새 세션이 강요되는 것처럼 보였다.
-  const autoRestoreConversation = loadLatestConversationForScope(currentProjectContextKey);
   // 이 패널(대화 세션) 전체를 하나의 기록으로 저장할 id — 매 턴 끝에 누적 감사 로그를 저장한다.
-  // '새 대화' 시 재발급된다.
-  let conversationId = autoRestoreConversation?.id ?? genId("conv");
+  // '새 대화' 시 재발급되고, 부팅 복원(패널 조립 끝의 restoreLatestForBoot)이 이어받은 대화의 id 로 바꾼다.
+  let conversationId = genId("conv");
   // 이 대화가 속한 프로젝트. 저장 시점의 store 를 다시 읽으면, 프로젝트를 바꾼 직후 저장되는
   // 이전 대화가 **새 프로젝트 키로** 기록돼 다음 부팅에서 남의 프로젝트에 복원된다.
   let conversationScope = currentProjectContextKey;
@@ -328,18 +334,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // saveConversation 은 던지지 않는다(실측 2026-09-03: localStorage quota 예외가 툴콜 스트리밍 도중
     // 여기서 터져 「오류: Failed to execute 'setItem' …」 말풍선과 함께 턴이 끊겼다). 최신 1건도 못
     // 남긴 완전 실패만 사용자에게 알린다 — 조용히 메모리에만 남으면 새로 고친 뒤 대화가 사라진 이유를 모른다.
-    const outcome = saveConversation({
-      id: target?.id ?? conversationId,
-      title: deriveTitle(entries),
-      model: loadAiConfig().model,
-      savedAt: Date.now(),
-      entries: [...entries],
-      projectContextKey: target?.scope ?? conversationScope,
-    });
-    if (!outcome.ok && !storageFailureToasted) {
-      storageFailureToasted = true;
-      toast("대화 기록을 이 브라우저에 저장할 수 없습니다(저장 공간 부족). 이번 대화는 화면에만 남고 새로 고치면 사라집니다.", "error");
-    }
+    void panelPendingWork.track(
+      saveConversation({
+        id: target?.id ?? conversationId,
+        title: deriveTitle(entries),
+        model: loadAiConfig().model,
+        savedAt: Date.now(),
+        entries: [...entries],
+        projectContextKey: target?.scope ?? conversationScope,
+      }).then((outcome) => {
+        // IndexedDB 가 있는 브라우저인데 거기 남지 않았다 — 새로 고치면 사라진다는 사실을 한 번 알린다.
+        // IndexedDB 자체가 없는 환경(Node 테스트)은 알릴 곳도, 잃을 것도 없다.
+        const lostOnReload = !outcome.ok || (!outcome.durable && typeof indexedDB !== "undefined");
+        if (lostOnReload && !storageFailureToasted) {
+          storageFailureToasted = true;
+          toast("대화 기록을 이 브라우저에 저장할 수 없습니다. 이번 대화는 화면에만 남고 새로 고치면 사라집니다.", "error");
+        }
+      }),
+    );
     refreshExportButton();
   };
 
@@ -855,11 +867,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 원격 durable id)도 전환으로 보이므로, 방금 자동 복원한 대화가 부팅마다 다시 비워졌다.
    * 새 스코프의 저장본이 있으면 그것을 열고, 없을 때만 빈 대화로 남는다.
    */
-  const adoptConversationForCurrentProject = (): void => {
+  let adoptGeneration = 0;
+  const adoptConversationForCurrentProject = async (): Promise<void> => {
     // 새 스코프를 먼저 읽어 이어받을 대화를 정한다 — 리셋이 그 사실을 알아야 버릴 id·시작 화면·
     // 거짓 계측을 만들지 않는다. 리셋 자체는 여전히 **옛** scope/id 로 닫히는 대화를 보관한다.
+    // 조회는 비동기(IndexedDB)다. 그 사이 또 전환됐으면 뒤의 전환이 처리한다 — 낡은 결과로 리셋하지 않는다.
+    const generation = ++adoptGeneration;
     const nextScope = conversationScopeKey(store.getProjectIdentity(), store.getCurrent());
-    const resumed = loadLatestConversationForScope(nextScope);
+    const resumed = await loadLatestConversationForScope(nextScope);
+    if (disposed || generation !== adoptGeneration) return;
     const hadConversation = resetConversationState("project-switch", resumed);
     if (resumed) {
       restoreConversationRecord(resumed, "auto");
@@ -1601,14 +1617,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // Overlay empty kit dropped — idle prompts live in the composer as director chips.
   const ensureStartScreen = (): void => {};
-  let autoRestoreReplayText: string | null = null;
-  if (autoRestoreConversation) {
-    const entries = autoRestoreConversation.entries;
-    const lastSpeak = [...entries].reverse().find((entry) => entry.kind === "user" || entry.kind === "assistant");
-    if (lastSpeak?.kind === "user" && lastSpeak.text.trim()) {
-      autoRestoreReplayText = displayUserAuditText(lastSpeak.text);
-    }
-  }
 
   // 여러 줄 입력 자동 성장 — 고정 높이 창에 30줄이 갇혀 끝부분만 보이던 결함(적대 평가 P1).
   // 내용 높이에 맞춰 늘리고, 상한(요소 max-height)부터는 스크롤로 전환한다.
@@ -1844,7 +1852,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       projectIdentityId = identity.id;
       return;
     }
-    adoptConversationForCurrentProject();
+    // 스토어가 로드 중 여러 번 알리므로 표식을 먼저 갱신해 같은 전환이 여러 번 채택되지 않게 한다.
+    projectIdentityId = identity.id;
+    void panelPendingWork.track(adoptConversationForCurrentProject());
   });
   const activateSelectionTaskContext = (focus = true): void => {
     if (!editorState.get().selection) return;
@@ -2890,12 +2900,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       void sendText(text);
     },
   });
-  // 복원된 마지막 사용자 메시지는 모든 panel/collapse 콜백이 초기화된 뒤 재생한다.
-  // 패널 조립 중 sendText를 호출하면 panel·collapsed TDZ를 건드려 복원이 실패한다.
-  if (autoRestoreConversation) restoreConversationRecord(autoRestoreConversation, "auto");
-  if (autoRestoreReplayText) {
-    void sendText(autoRestoreReplayText, undefined, { replay: true });
-  }
+  // 부팅 복원 — 이 프로젝트 범위의 최신 대화를 이어받는다. 전역 최신 하나만 집어 스코프를 대조하는
+  // 예전 방식은, 다른 프로젝트의 대화가 더 최근이면 내 대화가 있어도 복원을 포기해 새 세션이 강요되는
+  // 것처럼 보였다. 조회는 비동기(IndexedDB)라 패널 조립이 끝난 뒤 도착한다 — 그 사이 사용자가 먼저
+  // 움직였으면(입력·전송·프로젝트 전환) 복원하지 않는다. 진행 중인 새 대화를 덮어쓰는 것이 더 나쁘다.
+  // 복원된 마지막 사용자 메시지(응답 없이 끊긴 턴)는 모든 panel/collapse 콜백이 초기화된 뒤 재생한다.
+  const restoreLatestForBoot = async (): Promise<void> => {
+    const record = await loadLatestConversationForScope(currentProjectContextKey);
+    if (disposed || !record) return;
+    if (conversationScope !== currentProjectContextKey) return; // 프로젝트가 바뀌었다 — adopt 가 처리했다.
+    if (turnBusy || controller.session !== null || controller.auditHistory.length > 0 || input.value.trim().length > 0) return;
+    restoreConversationRecord(record, "auto");
+    const lastSpeak = [...record.entries].reverse().find((entry) => entry.kind === "user" || entry.kind === "assistant");
+    if (lastSpeak?.kind === "user" && lastSpeak.text.trim()) {
+      void sendText(displayUserAuditText(lastSpeak.text), undefined, { replay: true });
+    }
+  };
+  void panelPendingWork.track(restoreLatestForBoot());
 
   activeAiChatPanelCleanup = () => {
     if (disposed) return;

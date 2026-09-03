@@ -26,7 +26,7 @@ const DOCK_CSS = path.resolve("src/styles/database/tabs-b-assistant-panel/02-cha
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 
-beforeEach(() => {
+beforeEach(async () => {
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
@@ -41,12 +41,12 @@ beforeEach(() => {
       clear: () => storage.clear(),
     },
   });
-  clearConversations();
+  await clearConversations();
 });
 
-afterEach(() => {
+afterEach(async () => {
   teardownAiChatPanel();
-  clearConversations();
+  await clearConversations();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");

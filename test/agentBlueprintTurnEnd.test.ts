@@ -42,7 +42,7 @@ const FILL_ARGS = { mapId: MAP_ID, rect: { x: 4, y: 4, w: 6, h: 5 }, material: "
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 
-beforeEach(() => {
+beforeEach(async () => {
   clearAgentBlueprint();
   clearAgentGhostPreview();
   store.replace(createBlankProject());
@@ -61,7 +61,7 @@ beforeEach(() => {
       clear: () => storage.clear(),
     },
   });
-  clearConversations();
+  await clearConversations();
   clearAiActivityLogs(); // 턴 결과(stoppedReason)를 이 링버퍼로 읽으므로 앞 케이스의 기록을 지운다.
   // chat 모드 = 턴 1개(플래너 라운드 없음). 스크립트 라운드 수를 예측 가능하게 만든다.
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", agentMode: "chat", maxToolCalls: 4 }));

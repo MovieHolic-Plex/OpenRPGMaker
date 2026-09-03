@@ -3,7 +3,7 @@
 // (갑갑한 패널 재디자인 — 빈 로그 껍데기 접기 + 시작 블록 중앙 정렬이 이 속성에 걸려 있다.)
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { directorStartPrompts, readAgentBrief } from "@/editor/panels/aiAgentBrief";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
 import { saveConversation, conversationScopeKey } from "@/ai/conversationStore";
 import { store } from "@/project/store";
@@ -82,8 +82,8 @@ describe("조수 패널 모던 셸", () => {
     expect(chipsHost?.hidden).toBe(false);
   });
 
-  it("복원된 대화가 있으면 active 다 — 턴 행 testid 가 없다고 로그를 수집하면 안 된다", () => {
-    saveConversation({
+  it("복원된 대화가 있으면 active 다 — 턴 행 testid 가 없다고 로그를 수집하면 안 된다", async () => {
+    await saveConversation({
       id: "conv_shell",
       title: "마을",
       model: "m",
@@ -96,6 +96,7 @@ describe("조수 패널 모던 셸", () => {
     });
 
     const panel = renderPanel();
+    await whenAiChatPanelSettled();
 
     expect(panel.dataset.aiConversation).toBe("active");
   });
