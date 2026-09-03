@@ -22,11 +22,12 @@ import type { WorkPlan } from "@/ai/workPlan";
 import type { BuildSpec } from "@/ai/buildSpec";
 import type { AiDocument } from "@/project/types";
 import {
+  agentBlueprintForMap,
   beginAgentBlueprintTurn,
   commitAgentBlueprintProgress,
   getAgentBlueprintState,
-  isAgentBlueprintComplete,
   markAgentBlueprintProgress,
+  retireAgentBlueprint,
   setAgentBlueprintFromSpec,
   settleAgentBlueprintTurn,
   syncAgentBlueprintWithSpec,
@@ -495,6 +496,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 적용 결과가 나온 다음에 청사진을 정산한다 — 배치 검증·커밋 게이트가 거부하면
         // (applied === false) 저장소는 그대로이므로 done 은 거짓이다.
         settleBlueprintForTurnEnd(applied ? result.proposedCalls : null);
+        // 시공이 저장소에 들어간 턴이 끝났다 — 밑그림은 착공 전 안내이므로 여기서 물러난다.
+        // 물러난 칸은 다음 턴의 재동기화가 되살리지 않는다(agentBlueprint.retireAgentBlueprint).
+        if (applied) retireAgentBlueprint();
         deps.surface.setStatus(applied ? "대기" : "적용 실패");
         // 변경 카드는 proposalApi.onApplied 가 한 장만 남긴다. 여기서 또 emitChangeCard 를 부르면
         // 한 턴에 카드가 두 장 붙는다(e2e 로 잡혔다).
@@ -523,8 +527,8 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       // 상태줄과 맵이 서로 다른 말을 한다. 이 분기는 쓰기 제안 0건인 턴에서만 달리므로(시공이
       // 끝난 뒤의 질문·조회 턴) 그대로 두면 오해만 남는다.
       const activeSpec = session.getActiveSpec();
-      const planFullyBuilt = isAgentBlueprintComplete(getAgentBlueprintState().entries);
-      if (activeSpec && !planFullyBuilt && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
+      const planVisible = activeSpec !== null && agentBlueprintForMap(getAgentBlueprintState(), activeSpec.mapId).length > 0;
+      if (activeSpec && planVisible && result.proposedCalls.length === 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error") {
         deps.surface.setStatus(`밑그림 확정 — 에셋 ${activeSpec.assets.length}개`);
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
