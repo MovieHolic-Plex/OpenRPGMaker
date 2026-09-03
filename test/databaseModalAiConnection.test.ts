@@ -112,7 +112,7 @@ function storeListenerCount(): number {
 }
 
 describe("database modal AI bar (M7-①)", () => {
-  it("presents an editor-wide assistant with cross-editor starter actions", () => {
+  it("opens as a database-aware assistant: context chip + suggestions for the current tab", () => {
     registerAiAssistantBridge({
       send: () => Promise.resolve(turnResultStub()),
       getStatus: () => turnResultStub().status,
@@ -129,20 +129,26 @@ describe("database modal AI bar (M7-①)", () => {
     toggle?.click();
 
     const assistant = findByTestId(modal, "database-ai-bar");
-    expect(assistant?.textContent).toContain("프로젝트 전체를 함께 살펴봅니다");
+    // 무엇이 AI 에게 전달되는지 보인다 — 숨은 컨텍스트가 아니다.
+    expect(findByTestId(assistant ?? modal, "database-ai-context")?.textContent).toContain("개요");
+    // 개요(레코드 없음)에서는 프로젝트 우선순위 + 이 탭 점검만. 범용 맵·이벤트 문장은 없다.
     expect(findByTestId(assistant ?? modal, "database-ai-suggestion-project")).toBeTruthy();
-    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-map")).toBeTruthy();
-    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-event")).toBeTruthy();
-    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-data")).toBeTruthy();
+    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-review")).toBeTruthy();
+    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-tune")).toBeNull();
+    expect(findByTestId(assistant ?? modal, "database-ai-suggestion-map")).toBeNull();
   });
 
-  it("sends the request through the chat pipeline with the DB context footer and opens the chat dock", () => {
+  it("sends the request through the chat pipeline with the DB context footer and shows the turn in place", async () => {
     const sent: string[] = [];
     const openPanel = vi.fn();
     registerAiAssistantBridge({
       send: (text: string) => {
         sent.push(text);
-        return Promise.resolve(turnResultStub());
+        return Promise.resolve({
+          ...turnResultStub(),
+          audit: [{ kind: "tool", name: "tune_enemy", summary: "적 '슬라임' 튜닝: maxHp 18→40" }],
+          lastAssistantText: "슬라임을 다듬었습니다.",
+        });
       },
       getStatus: () => turnResultStub().status,
       getAudit: () => [],
@@ -161,6 +167,9 @@ describe("database modal AI bar (M7-①)", () => {
     toggle?.click();
     expect(bar?.hidden).toBe(false);
     expect(toggle?.attrs["aria-expanded"]).toBe("true");
+    // 몬스터 탭에서는 선택 레코드 기반 제안이 앞선다.
+    expect(findByTestId(bar ?? modal, "database-ai-suggestion-tune")).toBeTruthy();
+    expect(findByTestId(bar ?? modal, "database-ai-suggestion-balance")?.textContent).toContain("난이도");
 
     const input = findByTestId(modal, "database-ai-input");
     if (!input) throw new Error("missing ai input");
@@ -177,11 +186,20 @@ describe("database modal AI bar (M7-①)", () => {
     if (firstEnemy) {
       expect(message).toContain(`선택 레코드: ${firstEnemy.name || "(이름 없음)"}(${firstEnemy.id})`);
     }
-    // 채팅 도크(패널)를 연다 + 입력은 비운다.
-    expect(openPanel).toHaveBeenCalledTimes(1);
+    // 입력은 비고, 요청 원문과 진행 상태가 **바 안에** 뜬다. 채팅 패널은 모달 뒤라 열지 않는다.
     expect(input.value).toBe("");
+    expect(openPanel).not.toHaveBeenCalled();
+    const turn = findByTestId(modal, "database-ai-turn");
+    expect(turn?.hidden).toBe(false);
+    expect(findByTestId(modal, "database-ai-turn-request")?.textContent).toBe("이 몬스터 스탯을 중반 밸런스로");
     // E2E 훅: 실 LLM 호출 없이 전송 도달을 검증할 수 있게 마지막 요청을 남긴다.
     expect(window.__oprnDbAiLastRequest?.message).toBe(message);
+
+    // 브리지 runSend 는 async 래퍼라 마이크로태스크가 몇 번 더 돈다 — 기다린다.
+    const status = findByTestId(modal, "database-ai-turn-status");
+    await vi.waitFor(() => expect(status?.dataset.phase).toBe("done"));
+    expect(findByTestId(modal, "database-ai-turn-tools")?.textContent).toContain("maxHp 18→40");
+    expect(findByTestId(modal, "database-ai-turn-answer")?.textContent).toContain("슬라임을 다듬었습니다.");
 
     // 빈 입력은 전송하지 않는다.
     findByTestId(modal, "database-ai-run")?.click();

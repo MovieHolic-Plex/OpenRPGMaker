@@ -22,6 +22,10 @@ export type AiBridgeAuditEntry = {
   readonly name?: string;
   readonly summary?: string;
   readonly at?: string;
+  /** 툴 항목 전용 — 읽기 툴(find_tools·tile_query…)은 「바꾼 것」이 아니다. 패널이 레지스트리로 채운다. */
+  readonly mode?: "read" | "write";
+  /** 툴 항목 전용 — 실패한 호출은 바꾼 것으로 세지 않는다. */
+  readonly ok?: boolean;
 };
 
 export type AiBridgeTurnResult = {
@@ -102,6 +106,21 @@ export function openAiAssistantPanel(): boolean {
   if (!handlers?.openPanel) return false;
   handlers.openPanel();
   return true;
+}
+
+// DB 모달 AI 바처럼 채팅 패널 **밖**에서 진행 중인 턴을 그리는 표면용 읽기 API.
+// 브리지 명령(status/audit)과 같은 스냅샷을 돌려준다 — 폴링해서 도구 결과·답변을 제자리에 보인다.
+export function getAiAssistantStatus(): AiBridgeStatus {
+  return getStatusSnapshot();
+}
+
+export function getAiAssistantAudit(): readonly AiBridgeAuditEntry[] {
+  return handlers?.getAudit() ?? [];
+}
+
+/** 진행 중인 턴을 중단한다. 패널 미마운트면 아무 일도 하지 않는다. */
+export function abortAiAssistantTurn(): void {
+  handlers?.abort();
 }
 
 function getStatusSnapshot(): AiBridgeStatus {
