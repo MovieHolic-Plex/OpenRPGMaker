@@ -13,6 +13,7 @@ import {
 } from "@/editor/panels/aiChangePreview";
 import { filterToolCategories, FREQUENT_TOOL_NAMES } from "@/editor/panels/toolBrowserModal";
 import type { ToolDefinition } from "@/editor/tools/types";
+import { TOOL_LABELS, toolLabel } from "./aiToolLabels";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
@@ -60,27 +61,6 @@ const DECK_TABS: readonly { readonly id: StudioDeckTab; readonly label: string }
   { id: "changes", label: "변경" },
 ];
 
-const TOOL_SHORT: Record<string, string> = {
-  place_npc: "NPC 놓기",
-  author_house: "집 짓기",
-  build_wall: "벽",
-  paint_road: "길",
-  fill_region: "영역 채우기",
-  place_props: "소품",
-  place_door: "문",
-  generate_map: "맵 만들기",
-  tile_query: "타일 보기",
-  create_map: "새 맵",
-  resize_map: "맵 크기",
-  author_village: "마을 짓기",
-  paint_tiles: "타일 칠하기",
-  stamp_structure: "건물 찍기",
-  find_events: "이벤트 찾기",
-  run_lint: "맵 검사",
-  get_map_region: "영역 보기",
-  create_quest: "퀘스트",
-  link_maps: "맵 연결",
-};
 
 const STUDIO_EXTRA_TOOLS = [
   "create_map",
@@ -461,8 +441,8 @@ function walkScenes(
 }
 
 function toolShortLabel(tool: ToolDefinition): string {
-  const mapped = TOOL_SHORT[tool.name];
-  if (mapped) return mapped;
+  // 사전(aiToolLabels)에 있으면 로그 행과 같은 이름. 없으면 설명 첫 절을 잘라 쓴다.
+  if (TOOL_LABELS[tool.name]) return toolLabel(tool.name);
   const cut = tool.description.split(/[.\n(]/u)[0]?.trim() ?? tool.name;
   return cut.length > 10 ? `${cut.slice(0, 9)}…` : cut;
 }

@@ -73,7 +73,7 @@ describe("스튜디오 셸 단독", () => {
       .toContain(bar);
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tab-tools")?.className).toContain("is-on");
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-grid")).toBeTruthy();
-    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-card")?.textContent).toContain("NPC 놓기");
+    expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-tool-card")?.textContent).toContain("NPC 배치");
     expect(shell.root.textContent).not.toContain("Canonical");
     expect(findByTestId(shell.root as unknown as FakeElement, "ai-studio-monitor-thumb")).toBeNull();
 
