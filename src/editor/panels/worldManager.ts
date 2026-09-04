@@ -30,10 +30,11 @@ import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 
-export type WorldTabKey = "overview" | "character" | "place-faction" | "event" | "guideline";
+export type WorldTabKey = "overview" | "character" | "place-faction" | "event" | "item-concept" | "guideline";
 
 export type WorldPanelOptions = {
   readonly initialEntityId?: string;
+  readonly initialTab?: WorldTabKey;
   readonly onClose?: () => void;
   /** 자료집 탭 안에 심을 때. 제목/닫기를 빼고 셸 크기를 따른다. */
   readonly embedded?: boolean;
@@ -68,11 +69,27 @@ export type WorldLintSummary = {
   readonly global: readonly LintIssue[];
 };
 
+/** 모달 리렌더를 넘겨 살아남는 설정집 보기 상태(탭·선택). 저장할 때마다 새 패널이
+ * 태어나 선택이 풀리고 탭이 개요로 돌아가던 문제를 막는다. world가 바뀌면
+ * ensureSelectedEntity·tab 유효성 검사에서 정리된다. */
+let persistedCodexTab: WorldTabKey = "overview";
+let persistedCodexSelectedId: string | null = null;
+
+export function getPersistedCodexView(): { tab: WorldTabKey; selectedId: string | null } {
+  return { tab: persistedCodexTab, selectedId: persistedCodexSelectedId };
+}
+
+export function setPersistedCodexView(tab: WorldTabKey, selectedId: string | null): void {
+  persistedCodexTab = tab;
+  persistedCodexSelectedId = selectedId;
+}
+
 export const TABS: readonly { readonly key: WorldTabKey; readonly label: string }[] = [
   { key: "overview", label: "개요" },
   { key: "character", label: "인물" },
   { key: "place-faction", label: "장소·세력" },
   { key: "event", label: "사건" },
+  { key: "item-concept", label: "아이템·개념" },
   { key: "guideline", label: "제작 노트" },
 ];
 
@@ -169,6 +186,13 @@ export function jumpToWorldRefTarget(ref: WorldRef, project: Project = store.get
 export function saveDraft(state: WorldPanelState, world: ProjectWorld): void {
   const draft = state.editDraft;
   if (!draft) return;
+  if (!draft.isNew) {
+    const stored = world.entities.find((entry) => entry.id === normalizeWorldEntityId(draft.id));
+    if (stored?.locked === true && draft.locked) {
+      state.editError = "잠긴 카드는 잠금을 푼 뒤에 편집할 수 있습니다.";
+      return;
+    }
+  }
   const entity: WorldEntity = {
     id: normalizeWorldEntityId(draft.id),
     type: draft.type,
@@ -193,6 +217,7 @@ export function saveDraft(state: WorldPanelState, world: ProjectWorld): void {
     state.selectedId = entity.id;
     state.editDraft = null;
     state.editError = "";
+    setPersistedCodexView(state.tab, state.selectedId);
   } catch (error) {
     state.editError = error instanceof Error ? error.message : "세계관 저장에 실패했습니다.";
   }
@@ -214,6 +239,7 @@ export function toggleEntityLock(entityId: string): void {
 export function startNewDraft(state: WorldPanelState, world: ProjectWorld, type: WorldEntityType): void {
   const id = nextWorldId(world);
   state.selectedId = id;
+  setPersistedCodexView(state.tab, state.selectedId);
   state.editDraft = {
     id,
     type,
@@ -429,6 +455,7 @@ export function ensureSelectedEntity(state: WorldPanelState, world: ProjectWorld
   if (state.editDraft) return;
   if (state.selectedId && world.entities.some((entity) => entity.id === state.selectedId)) return;
   state.selectedId = null;
+  setPersistedCodexView(state.tab, null);
 }
 
 export function relationsForEntity(world: ProjectWorld, entityId: string): readonly WorldRelation[] {
@@ -519,6 +546,8 @@ function entityInTab(entity: WorldEntity, tab: WorldTabKey): boolean {
       return entity.type === "place" || entity.type === "faction";
     case "event":
       return entity.type === "event";
+    case "item-concept":
+      return entity.type === "item" || entity.type === "concept";
     case "guideline":
       return entity.type === "guideline";
   }

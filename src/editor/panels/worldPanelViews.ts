@@ -22,6 +22,7 @@ import {
   relationsForEntity,
   renderFactionMaterialization,
   saveDraft,
+  setPersistedCodexView,
   SEVERITY_LABELS,
   startNewDraft,
   TABS,
@@ -34,7 +35,7 @@ import { renderRelationEditor } from "./worldRelationEditor";
 export function renderHeader(state: WorldPanelState, refresh: () => void, options: WorldPanelOptions): HTMLElement {
   const search = el("input", {
     class: "world-search-input",
-    attrs: { type: "search", placeholder: "세계관 검색", "aria-label": "세계관 검색" },
+    attrs: { type: "search", placeholder: "설정집 검색", "aria-label": "설정집 검색" },
     value: state.search,
     dataset: { testid: "world-search" },
   }) as HTMLInputElement;
@@ -74,7 +75,7 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
       el("button", {
         class: "database-modal-close world-panel-close",
         text: "x",
-        attrs: { type: "button", title: "닫기", "aria-label": "세계관 닫기" },
+        attrs: { type: "button", title: "닫기", "aria-label": "설정집 닫기" },
         on: { click: options.onClose },
       }),
     );
@@ -124,7 +125,7 @@ export function renderMain(
 function renderTabs(state: WorldPanelState, refresh: () => void): HTMLElement {
   return el("nav", {
     class: "world-tabs",
-    attrs: { "aria-label": "세계관 탭" },
+    attrs: { "aria-label": "설정집 탭" },
     children: TABS.map((tab) =>
       el("button", {
         class: `world-tab${state.tab === tab.key ? " active" : ""}`,
@@ -134,6 +135,7 @@ function renderTabs(state: WorldPanelState, refresh: () => void): HTMLElement {
         on: {
           click: () => {
             state.tab = tab.key;
+            setPersistedCodexView(state.tab, state.selectedId);
             refresh();
           },
         },
@@ -163,6 +165,7 @@ function renderOverview(world: ProjectWorld, state: WorldPanelState, refresh: ()
                   click: () => {
                     state.selectedId = entity.id;
                     state.editDraft = null;
+                    setPersistedCodexView(state.tab, state.selectedId);
                     refresh();
                   },
                 },
@@ -221,16 +224,24 @@ function renderWorldCard(
     })
     : null;
 
-  return el("button", {
+  const selectCard = (): void => {
+    state.selectedId = entity.id;
+    state.editDraft = null;
+    state.editError = "";
+    setPersistedCodexView(state.tab, state.selectedId);
+    refresh();
+  };
+  return el("article", {
     class: `world-card${state.selectedId === entity.id ? " active" : ""}`,
-    attrs: { type: "button", title: entity.name || "(이름 없음)" },
+    attrs: { title: entity.name || "(이름 없음)", tabindex: "0", role: "button", "aria-label": entity.name || "(이름 없음)" },
     dataset: { testid: `world-card-${entity.id}`, entityId: entity.id, entityType: entity.type },
     on: {
-      click: () => {
-        state.selectedId = entity.id;
-        state.editDraft = null;
-        state.editError = "";
-        refresh();
+      click: selectCard,
+      keydown: (event) => {
+        if (event instanceof KeyboardEvent && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          selectCard();
+        }
       },
     },
     children: [
@@ -524,6 +535,7 @@ function renderRelationChips(
                 state.selectedId = otherId;
                 state.editDraft = null;
                 state.editError = "";
+                setPersistedCodexView(state.tab, state.selectedId);
                 refresh();
               },
             },

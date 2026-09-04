@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderWorldPanel } from "@/editor/panels/worldPanel";
+import { getPersistedCodexView, setPersistedCodexView } from "@/editor/panels/worldManager";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
@@ -11,6 +12,7 @@ let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
+  setPersistedCodexView("overview", null);
   const project = worldProject();
   store.replace(project);
   editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
@@ -127,6 +129,51 @@ describe("worldPanel", () => {
 
     expect(findByTestId(panel, "world-card-w_event")).toBeTruthy();
     expect(findByTestId(panel, "world-card-w_char")).toBeNull();
+  });
+
+  it("shows item and concept cards on their own tab", () => {
+    const panel = renderPanel();
+
+    requireTestId(panel, "world-tab-item-concept").click();
+
+    expect(findByTestId(panel, "world-card-w_item")).toBeTruthy();
+    expect(findByTestId(panel, "world-card-w_concept")).toBeTruthy();
+    expect(findByTestId(panel, "world-card-w_char")).toBeNull();
+  });
+
+  it("locked cards keep their stored content on manual save", () => {
+    const panel = renderPanel();
+
+    requireTestId(panel, "world-card-w_char").click();
+    requireTestId(panel, "world-edit-toggle").click();
+    requireTestId(panel, "world-edit-name").value = "바뀐 이름";
+    requireTestId(panel, "world-edit-save").click();
+    findByTestId(panel, "world-lock-toggle")?.click();
+    requireTestId(panel, "world-edit-toggle").click();
+    requireTestId(panel, "world-edit-name").value = "무단 변경";
+    requireTestId(panel, "world-edit-save").click();
+
+    expect(requireTestId(panel, "world-edit-error").textContent).toContain("잠금");
+    expect(currentEntity("w_char")?.name).toBe("바뀐 이름");
+  });
+
+  it("remembers tab and selection for the next codex render", () => {
+    const panel = renderPanel();
+
+    requireTestId(panel, "world-tab-item-concept").click();
+    requireTestId(panel, "world-card-w_item").click();
+
+    expect(getPersistedCodexView()).toEqual({ tab: "item-concept", selectedId: "w_item" });
+
+    const revived = renderWithFakeDom(() =>
+      renderWorldPanel({
+        embedded: true,
+        initialTab: getPersistedCodexView().tab,
+        initialEntityId: getPersistedCodexView().selectedId ?? undefined,
+      })
+    );
+    expect(requireTestId(revived, "world-tab-item-concept").className).toContain("active");
+    expect(requireTestId(revived, "world-wiki-view").dataset.entityId).toBe("w_item");
   });
 
   it("filters the guideline tab to production notes", () => {
