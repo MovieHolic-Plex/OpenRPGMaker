@@ -229,7 +229,7 @@ const utilityRecordSchema: JsonSchema = {
 
 const upsertDatabaseUtility: ToolDefinition = {
   name: "upsert_database_utility",
-  description: "데이터베이스의 속성(elements), 지형(terrains), 전투 명령(battleCommands) 레코드를 id 기준으로 등록·교체한다.",
+  description: "데이터베이스의 속성(elements), 지형 효과(terrains), 전투 명령(battleCommands) 레코드를 id 기준으로 등록·교체한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -273,7 +273,7 @@ const upsertDatabaseUtility: ToolDefinition = {
       };
       draft.database.terrains ??= [];
       const outcome = upsertById(draft.database.terrains, next);
-      return { summary: `지형 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
+      return { summary: `지형 효과 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
     }
     if (collection === "battleCommands") {
       const allowed = new Set(["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"]);

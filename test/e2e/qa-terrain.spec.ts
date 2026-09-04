@@ -84,7 +84,7 @@ test.describe("QA sweep: terrain tab", () => {
     await expect(nameField).toHaveValue("QA_UNDO_TERRAIN_NAME");
 
     // blur so Ctrl+Z hits the app-level history instead of native text-undo
-    await page.getByRole("heading", { name: "지형" }).click();
+    await page.getByRole("heading", { name: "지형 효과" }).click();
     await page.keyboard.press("Control+z");
     await expect(nameField).toHaveValue(original);
   });

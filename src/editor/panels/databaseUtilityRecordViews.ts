@@ -106,7 +106,11 @@ export function renderTerrainTab(host: HTMLElement): void {
     dataset: { testid: "db-detail-form" },
   });
   form.append(
-    battleStudioHeading("terrain", "지형", "필드의 이동 규칙과 전투 분위기를 하나의 프리셋으로 관리합니다."),
+    battleStudioHeading(
+      "terrain",
+      "지형 효과",
+      "그리는 타일이 아닙니다 — 발밑 칸을 밟았을 때 일어나는 일(피해·조우·전투 배경·발소리·탈것 통행)을 정합니다. 타일셋 탭에서 붙인 지형 태그 번호와 1:1로 짝을 이룹니다.",
+    ),
     workspaceShell({
       list: terrainListPane(terrains, selectedIndex, rerender),
       detail: terrainDetailPane(terrains, selected, selectedIndex, rerender),
@@ -138,7 +142,7 @@ function terrainListPane(
     }));
   }
   // 제목/카드 제목에 "지형" 을 쓰지 않는다 — qa-terrain 이
-  // getByRole("heading", { name: "지형" }) 로 스튜디오 헤딩 하나만 집는다(부분 일치).
+  // getByRole("heading", { name: "지형 효과" }) 로 스튜디오 헤딩 하나만 집는다(부분 일치).
   return listPane({
     title: "프리셋",
     count: terrains.length,
@@ -182,7 +186,7 @@ function terrainDetailPane(
   }
   return detailPane({
     hero: detailHero({
-      eyebrow: "지형",
+      eyebrow: "지형 효과",
       title: selected.name,
       subtitle: `태그 ${selectedIndex + 1} · ${selected.id}`,
       tags: [
@@ -216,7 +220,7 @@ function terrainDetailPane(
 function terrainBasicsCard(terrain: DatabaseTerrainRecord, index: number): HTMLElement {
   return sectionCard({
     title: "기본",
-    hint: "이 태그를 밟았을 때의 규칙",
+    hint: "이 태그 번호의 칸을 밟았을 때 일어나는 일",
     children: [
       textField("이름", `db-field-terrain-name-${index}`, terrain.name, (value) => {
         recordCoalescedSnapshot(`db-utility:terrain:${index}:name`);
@@ -240,7 +244,7 @@ function terrainBasicsCard(terrain: DatabaseTerrainRecord, index: number): HTMLE
 function terrainSceneCard(terrain: DatabaseTerrainRecord, index: number, rerender: () => void): HTMLElement {
   return sectionCard({
     title: "전투 · 표시",
-    hint: "적 그룹이 배경을 지정하지 않으면 이 배경이 쓰입니다",
+    hint: "적 그룹이 배경을 지정하지 않으면 이 배경이 쓰입니다. 우선순위: 적 그룹 → 지형 → 기본 전장",
     children: [
       resourcePickerControl({
         label: "전투 배경",
@@ -294,7 +298,7 @@ function terrainSceneCard(terrain: DatabaseTerrainRecord, index: number, rerende
 function terrainVehicleCard(terrain: DatabaseTerrainRecord, index: number): HTMLElement {
   return sectionCard({
     title: "탈것 통행",
-    hint: "끄면 그 탈것은 이 지형에 들어갈 수 없습니다",
+    hint: "끄면 그 탈것은 이 지형 태그의 칸에 들어갈 수 없습니다",
     children: [
       toggleSwitch("보트", `db-field-terrain-boat-${index}`, terrain.vehiclePassage.boat, (checked) => {
         recordProjectSnapshot();

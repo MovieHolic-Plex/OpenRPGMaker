@@ -49,6 +49,12 @@
   white-space: nowrap;
 }
 
+.database-modal-backdrop .database-modal-window .db-battle-studio-description {
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.5 "Malgun Gothic", system-ui, sans-serif;
+  margin: 2px 0 0;
+}
+
 .database-modal-backdrop .database-modal-window .db-battle-studio-nav {
   align-self: end;
   display: flex;

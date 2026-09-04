@@ -204,7 +204,7 @@ The Database modal was modernized in six waves while keeping every hard contract
 
 `세계` 레일은 `생성 규칙`(프로젝트 전역) 다음에 **타일셋 폴더**를 둔다. 폴더 자식은
 통행(`db-tab-tilesets`, testid 유지 — e2e 가 이 버튼을 누른다) · 오토타일 설정 ·
-미분류 모아보기 · 구조물 · 공간 종류. 마을·지형·공용 이벤트는 폴더 밖 형제다.
+미분류 모아보기 · 구조물 · 공간 종류. 마을·지형 효과·공용 이벤트는 폴더 밖 형제다.
 
 칩셋 선택은 `oprn:database.selectedTilesetId` 한 키를 공유한다. 「방」 단독 탭은 없다 —
 공간 종류는 통행과 같은 층의 이 칩셋 면이다. 폴더 버튼 testid `db-tileset-folder` 는
@@ -608,7 +608,7 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 
 마을 생성의 값은 전부 코드 상수였다. 집 형태 34종은 `HOUSE_TEMPLATES` 의 `wingsAt()` 함수였고, 길 폭·광장 모양·마당 스타일은 씨앗값과 테마 문자열에서 파생됐다. 사용자가 바꿀 자리가 없었고, AI 도 코드 요약만 읽었으므로 "내가 정한 대로 깔아 줘" 가 성립하지 않았다. 이 탭이 그 입력단이다.
 
-- **레일 위치**: 세계 그룹, 타일셋 폴더(`공간 종류`)와 `지형` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.
+- **레일 위치**: 세계 그룹, 타일셋 폴더(`공간 종류`)와 `지형 효과` 사이. `id: "villages"`, `data-testid="db-tab-villages"`. 배지 숫자는 사용자 레코드 수(`villageTemplates.length + villagePresets.length`)이며 **내장 34종은 세지 않는다**.
 - **두 종류를 한 탭에서 저작한다.** 목록 창 칩(`db-village-kind-template` / `db-village-kind-preset`)이 축이고, 오른쪽 상세는 고른 종류를 편집한다. 저장 위치는 `project.villageTemplates` / `project.villagePresets` — 프로젝트에 있으면 **전부 사용자 저작**이다(내장 카탈로그는 코드에 남고 레코드가 되지 않는다).
 - **제로 부트스트랩**: 탭을 열기만 해서는 아무 레코드도 생기지 않는다. 두 배열은 그대로 `undefined` 다.
 - **화면의 선택지와 하네스가 받는 값은 같은 상수에서 나온다.** select 옵션은 `village/authoringData.ts` 의 `VILLAGE_PATH_STYLES` · `VILLAGE_PLAZA_LAYOUTS` · `VILLAGE_RANGE` 등을 그대로 쓴다. 예전에 화면과 하네스가 갈라졌던 항목(`roadWidth` 2~3, `roadNaturalness` 하한 0.35)이 여기 있다 — 갈라지면 사용자가 고른 값이 조용히 무시된다.

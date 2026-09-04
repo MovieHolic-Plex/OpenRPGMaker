@@ -33,7 +33,7 @@ export function normalizeTerrainRecords(records: readonly Partial<DatabaseTerrai
     )
     .map((record) => ({
       id: record.id,
-      name: record.name.trim().length > 0 ? record.name : "지형",
+      name: record.name.trim().length > 0 ? record.name : "지형 효과",
       damage: clampInteger(record.damage ?? 0, 0, 9999),
       encounterRatePercent: clampInteger(record.encounterRatePercent ?? 100, 0, 500),
       battleBackgroundResourceId: cleanOptionalId(record.battleBackgroundResourceId),
