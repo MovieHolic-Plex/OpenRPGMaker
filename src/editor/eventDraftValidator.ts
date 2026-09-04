@@ -10,6 +10,7 @@ import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { hasCharacterId } from "@/project/socialKey";
 import { collectNpcActivitySuggestions } from "@/editor/panels/eventEditor/options";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import type {
   Command,
   Condition,
@@ -1261,7 +1262,7 @@ function commandBranches(command: Command): readonly { readonly branchIndex: num
 
 function commandHasEffect(command: Command): boolean {
   if (command.kind === "label" || command.kind === "breakLoop") return false;
-  if (command.kind === "text") return command.body.trim().length > 0;
+  if (command.kind === "text") return textBodyOf(command).trim().length > 0;
   if (command.kind === "m2Command" && command.commandId.endsWith("comment")) return false;
   if (command.kind === "loop") return command.body.some(commandHasEffect);
   if (command.kind === "fork") return command.then.some(commandHasEffect) || (command.else?.some(commandHasEffect) ?? false);

@@ -2,6 +2,7 @@ import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
 import type { Command } from "@/project/types";
 import { commandKindLabel } from "./options";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 
 export function renderEventEditorInline(
   host: HTMLElement,
@@ -59,7 +60,7 @@ function renderInlineItem(
   );
   if (cmd.kind === "text") {
     const body = el("textarea", {}) as HTMLTextAreaElement;
-    body.value = cmd.body;
+    body.value = textBodyOf(cmd);
     body.addEventListener("change", () => {
       working[index] = { kind: "text", body: body.value };
       onChange(structuredClone(working));

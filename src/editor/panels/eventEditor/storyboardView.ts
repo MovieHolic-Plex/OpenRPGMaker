@@ -4,6 +4,7 @@ import { el } from "@/util/dom";
 import { commandCategoryVisual } from "./commandCategoryIcons";
 import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { commandSummary } from "./commandSummary";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { commandKindLabel } from "./options";
 
 export type StoryboardMode = "storyboard" | "list" | "preview" | "flow";
@@ -91,7 +92,7 @@ type CommandDigest = {
 function summarizeCommand(cmd: Command): CommandDigest {
   const compactSummary = (() => { try { return commandSummary(cmd); } catch { return cmd.kind; } })();
   const detail = cmd.kind === "text"
-    ? `문장 표시: ${cmd.body.replace(/\s+/g, " ").trim()}`
+    ? `문장 표시: ${textBodyOf(cmd).replace(/\s+/g, " ").trim()}`
     : compactSummary;
   // 카테고리 시각 언어는 목록·피커와 같은 출처를 쓴다. 예전에는 여기에만 있던
   // 하드코딩 색표를 계산했는데 아무도 읽지 않는 죽은 값이었다.

@@ -15,6 +15,7 @@ import type { ConceptPlacement } from "@/editor/interiorConceptCompose";
 import type { InteriorObjectDef } from "@/editor/interiorObjectCatalog";
 import { lootGrantCommands, lootRummageCommands } from "@/editor/lootFeedback";
 import type { Command, EventPage, EventPageCondition, GameEvent, GameMap } from "@/project/types";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 
 export type ConceptTransferTarget = { readonly mapId: string; readonly x: number; readonly y: number };
 
@@ -258,8 +259,8 @@ export function linkConceptTransfers(
       commands[index] = { kind: "transfer", mapId: target.mapId, x: target.x, y: target.y, fade: "black" };
       for (let i = 0; i < commands.length; i += 1) {
         const command = commands[i]!;
-        if (command.kind === "text" && command.body.endsWith(UNLINKED_SUFFIX)) {
-          commands[i] = { ...command, body: command.body.slice(0, -UNLINKED_SUFFIX.length) };
+        if (command.kind === "text" && textBodyOf(command).endsWith(UNLINKED_SUFFIX)) {
+          commands[i] = { ...command, body: textBodyOf(command).slice(0, -UNLINKED_SUFFIX.length) };
         }
       }
       linked += 1;

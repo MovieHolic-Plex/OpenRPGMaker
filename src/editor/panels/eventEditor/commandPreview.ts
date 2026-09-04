@@ -25,6 +25,7 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
 import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { clampMs } from "@/player/interpreter/commandCatalog";
 import { isRecognizedTintValue, isVisibleTint, parseTintColor, rgbaToCss } from "@/player/screen/tintModel";
@@ -104,7 +105,7 @@ type VisualPreviewHandlers = {
 
 const visualPreviewHandlers: VisualPreviewHandlers = {
   text: (cmd, context) =>
-    messageWindowMock(cmd.speaker, cmd.body, false, context?.face, {
+    messageWindowMock(cmd.speaker, textBodyOf(cmd), false, context?.face, {
       emotion: cmd.emotion,
       replay: context?.replayPresentation === true,
     }),
