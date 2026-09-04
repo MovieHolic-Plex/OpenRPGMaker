@@ -357,14 +357,15 @@ const FLOOR_DARK_GRASS: readonly number[] = [245, 275, 335];
  * 왜 (2026-08-31 사용자 지적): 잔디만 깔린 숲은 나무를 아무리 심어도 평평하다.
  * `skyStairMaps.ts` 가 이미 적어 둔 교훈이고, 밀도 작업이 그걸 놓쳤다.
  *
- * 세 층으로 엮는다:
+ * 전체 파이프라인은 `plantForestComposition` 이 정한다: 나무 심기 → 틈 닫기/가장자리
+ * 다듬기 → 여기 바닥 칠하기(톤 → 잡동사니 → 짙은 수풀 → 웅덩이). 그러므로:
  * 1. **바닥 톤** — 짙은 풀을 저주파 얼룩으로 깔아 밝고 어두운 결을 만든다. 칸마다 독립 난수를
  *    쓰면 소금후추처럼 지저분하고, 넓게 채우면 점무늬 벽지가 된다 — 얼룩 임계로 덩어리를 만든다.
  * 2. **잡동사니** — 통나무·그루터기·돌·들꽃을 상위 레이어에 드물게 얹는다. 상위가 빈 칸에만
  *    얹어 수관·덤불을 지우지 않고, 보호셀(시작칸·이벤트)은 반드시 건너뛴다 — 여기서 막는 칩을
  *    올리면 시공 제안이 통째로 반려된다(단일 타일 경로에서 이미 겪은 결함이다).
  * 3. **짙은 수풀 오토타일**(앵커 9) — 키큰 풀 톤과 다른 바닥. 드물게 작은 덩어리로만 깐다.
- * 4. **작은 물웅덩이** — 빈 상위 칸에만 찍어 나무·덤불을 지우지 않는다.
+ * 4. **작은 물웅덩이** — 맨바닥에만 찍어 기존 것을 지우지 않으므로 안 나올 수도 있다.
  */
 function paintForestFloor(draft: Project, map: GameMap, area: Rect, seed: number): number {
   const tileset = draft.tilesets[map.tilesetId];
@@ -457,9 +458,11 @@ function shuffledPatchOrigins(area: Rect, patchW: number, patchH: number, inset:
 }
 
 /**
- * 숲 속 2×2 물웅덩이. 빈 상위 칸(잡동사니는 비워도 됨)에만 찍어 덤불·수관·밑동을
+ * 숲 속 2×2 물웅덩이. 땅이 보이는 맨바닥에만 찍어 나무·덤불·잡동사니를 하나도
  * 건드리지 않는다 — 좁은 숲 띠의 안쪽 덤불 비율 계약을 깨지 않기 위해서다.
  * 20×20급 이상에서만 한 덩어리(큰 숲은 둘)라 밀도 계약도 유지한다.
+ * 합성 숲은 빈 상위 칸이 거의 없으므로 웅덩이가 안 나올 수도 있다 — 그래도
+ * “약간”이라 자리를 비우려고 기존 것을 지우지는 않는다.
  */
 function scatterForestPuddles(draft: Project, map: GameMap, area: Rect, seed: number): number {
   const cells = Math.max(0, area.w) * Math.max(0, area.h);

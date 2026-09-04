@@ -42,7 +42,7 @@ function counts(map: GameMap, area: Area) {
   let undergrowth = 0;
   let water = 0;
   let waterOnTrunk = 0;
-  let waterCells = 0;
+  let waterOnBush = 0;
   let cells = 0;
   for (let y = area.y; y < area.y + area.h; y += 1) {
     for (let x = area.x; x < area.x + area.w; x += 1) {
@@ -56,14 +56,15 @@ function counts(map: GameMap, area: Area) {
         if (TRUNKS.has(upper) || TRUNKS.has(lower) || isTreeTrunkTileId(lower) || isTreeTrunkTileId(upper)) {
           waterOnTrunk += 1;
         }
+        if (BUSHES.has(upper) || BUSHES.has(lower)) waterOnBush += 1;
       }
     }
   }
-  return { undergrowth, water, waterOnTrunk, waterCells, cells };
+  return { undergrowth, water, waterOnTrunk, waterOnBush, cells };
 }
 
 describe("forest floor mix", () => {
-  it("dense 합성: 짙은 수풀 오토타일과 물웅덩이를 드물게 섞는다", () => {
+  it("dense 합성: 짙은 수풀이 드물게 깔리고 수관·밑동·덤불이 살아남는다", () => {
     const { ctx, mapId } = setup();
     const area = { x: 2, y: 2, w: 20, h: 20 };
     const result = runTool(ctx, "place_props", {
@@ -76,9 +77,14 @@ describe("forest floor mix", () => {
     expect(c.undergrowth).toBeLessThan(c.cells * 0.35);
     expect(c.water).toBeLessThanOrEqual(8);
     expect(c.waterOnTrunk).toBe(0);
+    expect(c.waterOnBush).toBe(0);
+    const s = snapshot(map, area);
+    expect(s.trunks).toBeGreaterThan(0);
+    expect(s.canopies).toBeGreaterThan(0);
+    expect(s.bushes).toBeGreaterThan(0);
   });
 
-  it("impassable 합성: 물웅덩이가 밑동을 덮지 않는다", () => {
+  it("impassable 합성: 물웅덩이가 밑동·덤불을 덮지 않는다", () => {
     const { ctx, mapId } = setup();
     const area = { x: 2, y: 2, w: 20, h: 20 };
     const result = runTool(ctx, "place_props", {
@@ -89,8 +95,10 @@ describe("forest floor mix", () => {
     const c = counts(map, area);
     expect(c.undergrowth).toBeGreaterThan(0);
     expect(c.waterOnTrunk).toBe(0);
+    expect(c.waterOnBush).toBe(0);
     const s = snapshot(map, area);
     expect(s.trunks).toBeGreaterThan(0);
     expect(s.canopies).toBeGreaterThan(0);
+    expect(s.bushes).toBeGreaterThan(0);
   });
 });
