@@ -469,6 +469,12 @@ describe("build_village", () => {
   it("스케치가 이긴 집 배치는 격자 열에 서지 않는다", () => {
     // Given: plaza-ring(7,42)과 street-grid(3,21) 시드
     // When: build_village로 8채를 찍고 layoutPlan bbox를 읽는다
+    const plazas: Record<number, { readonly x: number; readonly y: number; readonly w: number; readonly h: number }> = {
+      7: { x: 22, y: 23, w: 7, h: 5 },
+      42: { x: 22, y: 22, w: 6, h: 6 },
+      3: { x: 22, y: 22, w: 6, h: 6 },
+      21: { x: 22, y: 22, w: 6, h: 6 },
+    };
     for (const seed of [7, 42, 3, 21]) {
       const { context, data } = buildVillage(seed);
       const map = context.project.maps[data.mapId];
@@ -480,7 +486,8 @@ describe("build_village", () => {
       const perX = new Map<number, number>();
       for (const region of regions) perX.set(region.x, (perX.get(region.x) ?? 0) + 1);
       for (const count of perX.values()) expect(count, `seed=${seed} per-x`).toBeLessThanOrEqual(2);
-      const sites = sketchHouseSites({ area: { x: 0, y: 0, w: 50, h: 50 }, plaza: { rect: { x: 22, y: 22, w: 6, h: 6 }, centerRow: 25, centerX: 25 }, seed, targetHouses: 8, boulevard: null });
+      const rect = plazas[seed]!;
+      const sites = sketchHouseSites({ area: { x: 0, y: 0, w: 50, h: 50 }, plaza: { rect, centerRow: rect.y + Math.floor(rect.h / 2), centerX: rect.x + Math.floor(rect.w / 2) }, seed, targetHouses: 8, boulevard: null });
       const nearSketch = regions.filter((region) =>
         sites.some((site) =>
           Math.abs(site.x - (region.x + Math.floor(region.w / 2))) <= 2 && Math.abs(site.y - region.y) <= 2
