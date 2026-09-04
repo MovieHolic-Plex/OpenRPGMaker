@@ -66,10 +66,10 @@ footer{margin-top:3em;color:var(--ink-3);font-size:.85rem;border-top:1px solid v
 <body>
 <main>
 <h1>착수 보고 — 집 장식 배선 + 파라메트릭 스탬프 통합 1단계</h1>
-<p class="meta">2026-07-20 · 전 이미지 실산출(목업 없음): <code>build_house_kit</code>·<code>stamp_structure_kit</code> 실호출 렌더 + Playwright 실에디터 스크린샷 · 신규 테스트 14건 통과 · 회귀 0(기준선 stash 왕복 대조)</p>
+<p class="meta">2026-07-20 · 전 이미지 실산출(목업 없음): <code>author_house</code> 실호출 렌더 + Playwright 실에디터 스크린샷 · 신규 테스트 14건 통과 · 회귀 0(기준선 stash 왕복 대조)</p>
 
 <p class="lead">전 턴에서 확인한 두 격차를 배선했다:
-① 굴뚝 326을 <b>지붕 문법에 채택</b>하고 울타리·깃발과 함께 <code>build_house_kit</code> 옵션으로 노출,
+① 굴뚝 326을 <b>지붕 문법에 채택</b>하고 울타리·깃발과 함께 <code>author_house</code> 옵션으로 노출,
 ② <code>StructureKitDef</code>를 유니언으로 확장해 <b>파라메트릭 집 킷이 팔레트 스탬프 선반에 올라갔다</b> —
 이제 사용자가 채팅 없이 팔레트에서 집을 골라 캔버스에 찍는다.</p>
 
@@ -98,10 +98,10 @@ ${fig(RENDER_DIR, "1-after", "fence+banner+chimney", `같은 호출에 옵션 3�
 </section>
 
 <section>
-<h2>2. build_house_kit 장식 옵션 — 마을 데코 문법을 집 단독 시공에서 <span class="tag">배선 완료</span></h2>
+<h2>2. author_house 장식 옵션 — 마을 데코 문법을 집 단독 시공에서 <span class="tag">배선 완료</span></h2>
 <p>울타리는 마을 파이프라인 정본 <code>placeHouseLotFences</code>를 그대로 재사용(게이트 3칸·모서리 강등 규칙 포함),
 깃발은 <code>village/decor.ts</code> 문법(문 양옆 최상단 벽 행 208/209)을 도메인에 이식했다.
-스펙 게이트는 경계 슬랙 2칸이라 울타리(+1칸 확장)가 그대로 통과한다. 아래 6컷 전부 <code>runTool("build_house_kit", …)</code> 실호출.</p>
+스펙 게이트는 경계 슬랙 2칸이라 울타리(+1칸 확장)가 그대로 통과한다. 아래 6컷 전부 <code>runTool("author_house", …)</code> 실호출.</p>
 <div class="trio">
 ${fig(RENDER_DIR, "2-kit-blue-stone", "blue-stone", meta["2-kit-blue-stone"] ?? "")}
 ${fig(RENDER_DIR, "2-kit-bright-plaster", "bright-plaster", meta["2-kit-bright-plaster"] ?? "")}
@@ -123,7 +123,7 @@ chimney: { type: "boolean", description: "우측 사선 지붕에 굴뚝 326(기
 <b>유니언</b>(<code>section</code> 행렬 | <code>house</code> 파라메트릭)이 됐고, <code>learnedFrom</code>도
 유니언(<code>user-paint | builtin-parametric</code>)으로 확장됐다. house 킷은 행렬이 아니라
 <b>시공 파라미터</b>(houseKitId·wings·stories·windows·chimney)를 저장하고, 찍는 순간
-정본 <code>stampFootprintHouseKit</code>이 전개한다 — 팔레트·AI(<code>stamp_structure_kit</code>)·DB 탭이 같은 전개 계층을 쓴다.</p>
+정본 <code>stampFootprintHouseKit</code>이 전개한다 — 팔레트·DB 탭이 같은 전개 계층을 쓴다.</p>
 <pre><code>// types/base.ts
 export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric";
 export interface HouseStructureKitDef {
@@ -145,9 +145,9 @@ ${fig(EDITOR_DIR, "2-stamped", "클릭 한 번 = 집 한 채", "bright-plaster �
 </div>
 ${fig(EDITOR_DIR, "3-two-kits", "킷 바꿔 연속 시공", "blue-stone 추가 — 맵 데이터 검증: 회벽 43·문 146·굴뚝 326 실재 확인(스펙 단언)")}
 
-<h3>AI 쪽 절반 — stamp_structure_kit이 같은 킷을 쓴다</h3>
+<h3>사람 스탬프 절반 — 등록 킷을 쓴다</h3>
 <div class="shots">
-${fig(RENDER_DIR, "4-stamped-kits", "stamp_structure_kit ×2", `repeat=5를 넘겨도 집 킷은 1채(완결 단위 규약). <code>${(meta["4-stamped-kits"] ?? "").slice(0, 160)}…</code>`)}
+${fig(RENDER_DIR, "4-stamped-kits", "사람 스탬프 ×2", `사람 팔레트 스탬프 경로. <code>${(meta["4-stamped-kits"] ?? "").slice(0, 160)}…</code>`)}
 ${fig(RENDER_DIR, "5-palette-stamp-aframe", "paletteStampFromKit 전개", meta["5-palette-stamp-aframe"] ?? "")}
 </div>
 </section>
@@ -168,7 +168,7 @@ ${fig(RENDER_DIR, "5-palette-stamp-aframe", "paletteStampFromKit 전개", meta["
 <li><b>파라미터 편집 UI</b> — 선반에서 킷을 고른 뒤 크기(wings)·재질·창문을 조절하는 표면. 지금은 내장 6종 고정 몸체(9×8).</li>
 <li><b>사용자 파생 저장</b> — 내장 킷을 복제해 <code>tileset.structureKits</code>에 등록(이름·파라미터 수정) → DB 탭 관리 편입. 스키마는 준비됨.</li>
 <li><b>마을 파이프라인 굴뚝 채택</b> — <code>build_village</code> 집들에 chimney 확률 적용.</li>
-<li><b>stories·lowWall 도구 노출</b> — 엔진엔 있고 <code>build_house_kit</code> 스키마엔 아직 없다(전 보고서 C섹션).</li>
+<li><b>stories·lowWall 도구 노출</b> — 엔진엔 있고 <code>author_house</code> 스키마엔 아직 없다(전 보고서 C섹션).</li>
 </ul>
 </section>
 

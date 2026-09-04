@@ -5,9 +5,9 @@ import {
   renameStructureKit,
 } from "@/editor/harnessSuggestion/structureKitActions";
 import { store } from "@/project/store";
-import type { StructureKitDef } from "@/project/types";
+import type { SectionStructureKitDef } from "@/project/types";
 
-function bedKit(id: string): StructureKitDef {
+function bedKit(id: string): SectionStructureKitDef {
   return {
     id,
     kind: "section",

@@ -9,7 +9,7 @@ export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   // paint_road 는 활성 유지 (흙길 오토타일 본선) — 여기 넣지 않음
   ["scatter_object", "place_props"],
   // build_house, preview_house: construction route manifest에서 관리 (toolRegistry.ts)
-  ["stamp_structure", "build_house_kit"],
+  ["stamp_structure", "author_house"],
   // 지식 쓰기: 승인 어휘
   ["set_tile_metadata", "propose_tile_vocabulary"],
   ["set_tile_rules", "propose_tile_vocabulary"],
@@ -33,5 +33,6 @@ export const REMOVED_V2_PLACE_TOOLS: ReadonlyMap<string, string> = new Map([
   ["tile_paint", "fill_region"],
   ["tile_road", "paint_road"],
   ["tile_scatter", "place_props"],
-  ["tile_structure", "build_house_kit"],
+  ["tile_structure", "author_house"],
+  ["stamp_structure_kit", "author_house"],
 ]);

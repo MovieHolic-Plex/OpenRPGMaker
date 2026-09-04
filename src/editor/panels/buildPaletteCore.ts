@@ -223,15 +223,20 @@ function stampHouse(
   options: BuildPaletteApplyOptions,
   run: (name: string, args: Record<string, unknown>) => boolean
 ): boolean {
+  const wings = houseKitWingsFromSelection(rect, shapeId);
+  const windows = options.windows === undefined ? {} : normalizeWindowsArg(options.windows);
   const args: Record<string, unknown> = {
+    kind: "single",
     mapId: rect.mapId,
     kitId,
-    wings: houseKitWingsFromSelection(rect, shapeId),
+    wings,
+    interior: options.interior === false ? "exterior-only" : "linked-interior",
+    door: true,
+    windows,
+    yard: [],
   };
-  if (options.doorEvent !== undefined) args.doorEvent = options.doorEvent;
-  if (options.interior !== undefined) args.interior = options.interior;
-  if (options.windows !== undefined) args.windows = normalizeWindowsArg(options.windows);
-  return run("build_house_kit", args);
+  if (options.doorEvent === false) args.doorEvent = false;
+  return run("author_house", args);
 }
 
 function stampVillage(

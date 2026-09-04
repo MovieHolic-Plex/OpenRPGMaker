@@ -3,8 +3,6 @@ import { parseAuthorHouseRequest } from "@/editor/construction/parseHouseRequest
 import { parseConstructionOutcome } from "@/editor/construction/parseConstructionOutcome";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
 import { CONSTRUCTION_ROUTE_MANIFEST_PHASE, CONSTRUCTION_WRITE_ROUTE_MANIFEST, PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS } from "@/editor/construction/routeManifest";
-import { HOUSE_KIT_TOOLS } from "@/editor/tools/houseKitTools";
-import { HOUSE_LOT_TOOLS } from "@/editor/tools/houseLotTools";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { TOOL_REGISTRY } from "@/editor/tools/toolRegistry";
 import { ToolError } from "@/editor/tools/types";
@@ -99,8 +97,6 @@ describe("canonical construction contract baseline", () => {
     // Given: construction tools from their real registry source arrays.
     const sourceTools = [
       ...MAP_TOOLS.filter((tool) => tool.name.endsWith("_house")),
-      ...HOUSE_KIT_TOOLS,
-      ...HOUSE_LOT_TOOLS,
       ...VILLAGE_TOOLS,
       ...VILLAGE_SESSION_TOOLS,
     ];
@@ -117,6 +113,13 @@ describe("canonical construction contract baseline", () => {
     });
     const liveByName = new Map(TOOL_REGISTRY.map((tool) => [tool.name, tool]));
     const stateMismatches = classifications.flatMap((route) => {
+      // 등록 제거된 이름은 레지스트리에 정의가 없다 — manifest 의 removed 상태와 대조한다.
+      if (route.currentRegistry.registered === false) {
+        const matches = liveByName.get(route.name) === undefined
+          && route.currentRegistry.deprecated === true
+          && route.currentRegistry.supersededBy === "author_house";
+        return matches ? [] : [route.name];
+      }
       const live = liveByName.get(route.name);
       const state = route.currentRegistry;
       const matches = state.registered === (live !== undefined)
@@ -140,7 +143,7 @@ describe("canonical construction contract baseline", () => {
       .toEqual(["author_house", "author_village"]);
     expect(CONSTRUCTION_WRITE_ROUTE_MANIFEST.filter((route) => route.defaultToolBrowserExposed).map((route) => route.name))
       .toEqual(["author_house", "author_village"]);
-    expect(CONSTRUCTION_WRITE_ROUTE_MANIFEST.every((route) => route.directExecution)).toBe(true);
+    expect(CONSTRUCTION_WRITE_ROUTE_MANIFEST.filter((route) => route.currentRegistry.registered).every((route) => route.directExecution)).toBe(true);
     expect(PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS.every((route) =>
       route.llmExposed && route.defaultToolBrowserExposed && route.directExecution)).toBe(true);
   });

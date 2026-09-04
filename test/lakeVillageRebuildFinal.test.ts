@@ -268,14 +268,15 @@ describe("natural lake village (editor tools only)", () => {
 
     for (const house of houses) {
       logs.push(
-        runOk(ctx, "build_house_kit", {
+        runOk(ctx, "author_house", {
+          kind: "single",
           mapId: MAP_ID,
           kitId: house.kitId,
           wings: house.wings,
           door: true,
-          doorEvent: house.interior === true,
-          interior: house.interior === true,
+          interior: house.interior === true ? "linked-interior" : "exterior-only",
           ownerName: house.ownerName,
+          yard: [],
         }),
       );
     }

@@ -274,20 +274,24 @@ describe("house kit — 창문 자동 배치", () => {
   });
 });
 
-describe("build_house_kit AI 툴", () => {
-  it("에이전트 채팅 경로(runTool)로 하네싱 집을 짓는다", async () => {
+describe("author_house single", () => {
+  it("정본 경로(runTool)로 집을 짓는다", async () => {
     const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
     const ctx = { project };
     const mapId = project.startMapId;
     project.maps[mapId].lowerTiles.fill(G);
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId,
       kitId: "blue-stone",
       wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+      interior: "linked-interior",
+      door: true,
+      yard: [],
     });
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
-    expect(result.summary).toContain("집 키트");
+    expect(result.summary).toContain("집");
     const map = ctx.project.maps[mapId];
     expect(map.lowerTiles[3 * map.width + 7]).toBe(407); // 몸통행 우측 끝
     expect(map.upperTiles[2 * map.width + 2]).toBe(356); // NW 대각
@@ -296,68 +300,76 @@ describe("build_house_kit AI 툴", () => {
     expect(map.lowerTiles[7 * map.width + 4]).not.toBe(146);
     expect(map.lowerTiles[6 * map.width + 4]).not.toBe(116);
     expect(map.lowerTiles[7 * map.width + 4]).not.toBe(TILE.EMPTY); // 벽은 남아 구멍이 아니다
-    const data = result.data as { interiorMapId: string; doorEventId: string; exitEventId: string };
-    expect(data.interiorMapId).toMatch(/^map_house_interior_/);
-    expect(data.doorEventId).toMatch(/^ev_house_door_/);
-    const interior = ctx.project.maps[data.interiorMapId];
+    const data = result.data as { houses: readonly { interior?: { interiorMapId: string; doorEventId: string; exitEventId: string } }[] };
+    const house = data.houses[0]!.interior!;
+    expect(house.interiorMapId).toMatch(/^map_house_interior_/);
+    expect(house.doorEventId).toMatch(/^ev_house_door_/);
+    const interior = ctx.project.maps[house.interiorMapId];
     expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
     expect(interior.width).toBe(20);
     expect(interior.height).toBe(20); // 천장 정본 v2: +1행(벽 위 천장) + 수평 벽 3행 갭
-    expect(treeContains(ctx.project.mapTree, data.interiorMapId)).toBe(true);
-    const door = map.events.find((event) => event.id === data.doorEventId);
-    const entry = (result.data as { entry?: { x: number; y: number }; exit?: { x: number; y: number } }).entry
-      ?? { x: 10, y: 15 };
-    const exitPt = (result.data as { exit?: { x: number; y: number } }).exit ?? { x: 10, y: 16 };
-    expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({ kind: "transfer", mapId: data.interiorMapId, x: entry.x, y: entry.y });
-    const exit = interior.events.find((event) => event.id === data.exitEventId);
-    expect(exit?.x).toBe(exitPt.x);
-    expect(exit?.y).toBe(exitPt.y);
+    expect(treeContains(ctx.project.mapTree, house.interiorMapId)).toBe(true);
+    const door = map.events.find((event) => event.id === house.doorEventId);
+    expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({ kind: "transfer", mapId: house.interiorMapId });
+    const exit = interior.events.find((event) => event.id === house.exitEventId);
     expect(exit?.pages?.[0]?.trigger.kind).toBe("playerTouch");
     expect(exit?.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId, x: 4, y: 8, fade: "black" }]);
   });
 
-  it("windows:false 인자로 창문 자동 배치를 끈다", async () => {
+  it("windows {enabled:false} 로 창문 자동 배치를 끈다", async () => {
     const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
     const ctx = { project };
     const mapId = project.startMapId;
     project.maps[mapId].lowerTiles.fill(G);
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId,
       kitId: "bright-plaster",
-      windows: false,
+      windows: { enabled: false },
       wings: [{ x: 2, y: 2, w: 10, h: 6 }],
+      interior: "linked-interior",
+      door: true,
+      yard: [],
     });
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
     expect(countUpper(ctx.project.maps[mapId], 85)).toBe(0);
   });
 
-  it("알 수 없는 키트는 학습되지 않은 재질로 거부한다", async () => {
+  it("알 수 없는 키트는 거부한다", async () => {
     const { runTool } = await import("@/editor/tools");
     const ctx = { project: createBlankProject() };
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId: ctx.project.startMapId,
       kitId: "thatched",
       wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+      interior: "exterior-only",
+      door: true,
+      yard: [],
     });
     expect(result.ok).toBe(false);
   });
 
-  it("interior:false는 내부 맵과 문 이벤트를 만들지 않는다", async () => {
+  it("exterior-only는 내부 맵과 문 이벤트를 만들지 않는다", async () => {
     const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
     const ctx = { project };
     const mapId = project.startMapId;
     const beforeMapCount = Object.keys(project.maps).length;
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId,
       kitId: "blue-stone",
-      interior: false,
+      interior: "exterior-only",
+      door: true,
       wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+      yard: [],
     });
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
     expect(Object.keys(ctx.project.maps)).toHaveLength(beforeMapCount);
-    expect(result.data).not.toHaveProperty("interiorMapId");
+    const data = result.data as { houses: readonly unknown[] };
+    expect(data.houses).toHaveLength(1);
     expect(ctx.project.maps[mapId].events.some((event) => event.id.startsWith("ev_house_door_"))).toBe(false);
   });
 
@@ -378,15 +390,20 @@ describe("build_house_kit AI 툴", () => {
     map.upperTiles[front.y * map.width + front.x] = 260;
     const ctx = { project };
 
-    const result = runTool(ctx, "build_house_kit", {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
       mapId,
       kitId: "blue-stone",
       wings: [{ x: 18, y: 15, w: 6, h: 7 }],
+      interior: "linked-interior",
+      door: true,
+      yard: [],
     });
 
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
     const built = ctx.project.maps[mapId];
-    expect((result.data as { doorAt: { x: number; y: number } }).doorAt).toEqual({ x: 20, y: 21 });
+    const house = (result.data as { houses: readonly { doorAt: { x: number; y: number } }[] }).houses[0]!;
+    expect(house.doorAt).toEqual({ x: 20, y: 21 });
     expect(built.lowerTiles[front.y * built.width + front.x]).toBe(G);
     expect(built.upperTiles[front.y * built.width + front.x]).toBe(E);
     expect(result.diff?.warnings).toContain("문 앞 (20,22) 통행 확보 — 지면으로 정리");
@@ -396,10 +413,14 @@ describe("build_house_kit AI 툴", () => {
   it("문 앞이 맵 밖이면 남쪽 여유 안내와 함께 실패한다", async () => {
     const { runTool } = await import("@/editor/tools");
     const project = createBlankProject();
-    const result = runTool({ project }, "build_house_kit", {
+    const result = runTool({ project }, "author_house", {
+      kind: "single",
       mapId: project.startMapId,
       kitId: "blue-stone",
       wings: [{ x: 2, y: 9, w: 6, h: 6 }],
+      interior: "exterior-only",
+      door: true,
+      yard: [],
     });
 
     expect(result.ok).toBe(false);

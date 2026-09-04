@@ -26,8 +26,6 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   // ── 짓기 ──
   author_house: build("집 짓기", "house"),
   build_house: build("집 세우기", "house"),
-  build_house_kit: build("집 키트 세우기", "house"),
-  build_house_lots: build("집터 잡기", "house"),
   build_castle: build("성 짓기", "house"),
   build_wall: build("벽 쌓기", "wall"),
   paint_road: build("길 놓기", "road"),
@@ -42,7 +40,6 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   place_trap: build("함정 놓기", "box"),
   place_concept: build("개념 배치", "spark"),
   stamp_structure: build("건물 찍기", "house"),
-  stamp_structure_kit: build("구조 키트 찍기", "house"),
   furnish_interior_space: build("실내 꾸미기", "box"),
   plant_tree_clusters: build("나무 심기", "tree"),
   scatter_object: build("흩어 놓기", "tree"),

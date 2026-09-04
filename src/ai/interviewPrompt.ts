@@ -24,7 +24,7 @@ export function buildInterviewKickoff(mapId: string | null): string {
     "8. 매 질문에 진행률을 표시하세요: (설명됨 n/전체 m)",
     "9. 내가 '중단'/'그만'이라고 하면 지금까지 기록한 내용을 요약하고 종료하세요.",
     "10. 여러 타일이 구조물(집/울타리/다리 등)을 이루고 있으면 show_tile_grid로 영역을 그림으로 보여주고,",
-    "    타일 의미/그룹 규칙만 메타데이터로 보강하세요. 집 구조 문법은 집 키트(build_house_kit)가 담당하므로 별도 템플릿을 저장하지 않습니다.",
+    "    타일 의미/그룹 규칙만 메타데이터로 보강하세요. 집 구조 문법은 author_house(집 외장 정본)가 담당하므로 별도 템플릿을 저장하지 않습니다.",
     "",
     "기록 툴콜과 다음 질문은 같은 턴에 이어서 해도 됩니다. 지금 1번부터 시작하세요.",
   ].join("\n");
@@ -38,12 +38,12 @@ export function buildStructureLearnKickoff(
 ): string {
   const rect = `x=${region.x}, y=${region.y}, w=${region.width}, h=${region.height}`;
   return [
-    `내가 맵(mapId="${mapId}")에서 영역(${rect})을 선택했습니다. 이 영역을 집 키트/타일 메타 관점으로 분석하세요.`,
+    `내가 맵(mapId="${mapId}")에서 영역(${rect})을 선택했습니다. 이 영역을 집 외장/타일 메타 관점으로 분석하세요.`,
     "",
     "절차(반드시 이 순서로):",
     `1. show_tile_grid(mapId="${mapId}", ${rect})로 영역을 채팅에 그림으로 먼저 보여주세요.`,
     `2. highlight_map_region으로 같은 영역을 맵에서도 강조하세요.`,
-    "3. 영역이 집이면 build_house_kit의 기존 키트(blue-stone/bright-plaster)로 재현 가능한지 판단하고, 없는 재질은 학습되지 않았다고 말하세요.",
+    "3. 영역이 집이면 author_house의 기존 키트(blue-stone/bright-plaster)로 재현 가능한지 판단하고, 없는 재질은 학습되지 않았다고 말하세요.",
     "4. 저장이 필요한 것은 타일 의미(set_tile_metadata)나 그룹 규칙(upsert_tile_group)뿐입니다. 지형 템플릿은 만들지 마세요.",
     "5. 좌표/타일 번호/행 목록을 길게 나열하지 말고, 핵심 타일을 show_tiles로 확인한 뒤 필요한 질문만 하세요.",
   ].join("\n");

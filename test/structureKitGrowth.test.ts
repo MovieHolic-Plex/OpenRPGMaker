@@ -1,8 +1,4 @@
 // 구조물의 증분 축·홈 레이어 판정 — 순수 모델 계층.
-//
-// 왜 별 파일인가: 이 두 함수가 세 소비자(편집기 배지 · contextBuilder 프롬프트 ·
-// stamp_structure_kit 반복 횟수)의 공통 근거다. 판정이 흔들리면 "화면에는 세로 증분이라
-// 적혀 있는데 시공은 1회" 같은 어긋남이 생기고, 그건 어느 소비자의 테스트로도 안 잡힌다.
 
 import { describe, expect, it } from "vitest";
 import {
@@ -10,7 +6,6 @@ import {
   structureKitLayerHome,
   structureKitRepeatable,
 } from "@/editor/harnessSuggestion/structureKitModel";
-import { BUILTIN_HOUSE_STRUCTURE_KITS } from "@/editor/harnessSuggestion/builtinHouseStructureKits";
 import { TILE } from "@/project/defaults/constants";
 import type { SectionStructureKitDef, StructureKitAiMeta } from "@/project/types";
 
@@ -38,8 +33,8 @@ describe("structureKitGrowthAxes", () => {
     expect(structureKitGrowthAxes(wall())).toEqual({ x: true, y: false });
   });
 
-  it("집 킷은 한 채가 완결 단위라 두 축 모두 닫혀 있다", () => {
-    expect(structureKitGrowthAxes(BUILTIN_HOUSE_STRUCTURE_KITS[0]!)).toEqual({ x: false, y: false });
+  it("fixed 는 두 축을 닫는다", () => {
+    expect(structureKitGrowthAxes(wall(meta({ repeatability: "fixed" })))).toEqual({ x: false, y: false });
   });
 
   it("growthAxis 가 repeatability 를 이긴다 — 세로 벽은 가로로 늘어나지 않는다", () => {

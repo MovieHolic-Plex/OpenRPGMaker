@@ -845,11 +845,11 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
   {
     name: "build_village",
     description:
-      "집 키트 기반 마을을 한 번에 시공한다(제약 시공기). " +
+      "집 외장 정본 기반 마을을 한 번에 시공한다(제약 시공기). " +
       "**권장:** plan_village 후 build_village({ planId }) 또는 build_village({ plan }). " +
       "또는 theme·housePlans·npcs 등 의도 필드를 직접 전달. " +
       "코드가 광장/길/집/울타리/소품/NPC를 시공하고, data.critique에 문 연결·도달 요약을 넣는다. " +
-      "집 좌표를 직접 찍으려면 build_house_lots.",
+      "집 좌표를 직접 찍으려면 author_house kind=lots.",
     mode: "write",
     parameters: {
       type: "object",
@@ -933,7 +933,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
           description:
             "LLM 집 단위 의도 [{kitId?, yard: 태그[]}]. 길이=집 수. " +
             "yard: firewood|mailbox|pot|jar|bench_h|bench_v|flowers|fruit_box|wood_box|table_h|sign|barrel. " +
-            "좌표(wings)는 코드가 잡는다 — 좌표까지 직접 찍으려면 build_house_lots.",
+            "좌표(wings)는 코드가 잡는다 — 좌표까지 직접 찍으려면 author_house kind=lots.",
           items: {
             type: "object",
             properties: {

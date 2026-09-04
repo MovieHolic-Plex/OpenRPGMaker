@@ -16,7 +16,6 @@ import {
   tileAt,
   updatePart,
 } from "@/editor/harnessSuggestion/structureKitRasterModel";
-import { BUILTIN_HOUSE_STRUCTURE_KITS } from "@/editor/harnessSuggestion/builtinHouseStructureKits";
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { TILE } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
@@ -240,9 +239,8 @@ describe("bakeCellsToRows", () => {
 });
 
 describe("bakeStructureKit", () => {
-  it("집 킷을 section 으로 굳힌다", () => {
-    const house = BUILTIN_HOUSE_STRUCTURE_KITS[0]!;
-    const baked = bakeStructureKit(house, "kit_baked", "통나무집 사본");
+  it("section 킷을 굳히고 id·이름을 새로 붙인다", () => {
+    const baked = bakeStructureKit(kit3x3(), "kit_baked", "통나무집 사본");
     expect(baked.kind).toBe("section");
     expect(baked.id).toBe("kit_baked");
     expect(baked.name).toBe("통나무집 사본");

@@ -76,7 +76,7 @@ interface CheckedAsset {
 // 단, fill_region은 넓은 지형 쓰기라 스펙 자동 확장 관례를 탄다. 레지스트리에 없는 이름은 두지 않는다 —
 // 옛 tile_* v2 4종이 여기 남아 있어 목록이 살아 있는 것처럼 보였다.
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
-  "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
+  "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure",
   "clear_region", "place_npc", "place_battle_blocker",
   // canonical construction facades
   "author_house", "author_village",
@@ -103,7 +103,7 @@ export function toolWritesTiles(toolName: string): boolean {
 }
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
-  "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
+  "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure",
   "author_house", "author_village",
   "place_npc", "place_battle_blocker",
   "fill_region",
@@ -304,15 +304,6 @@ export function affectedRegions(toolName: string, args: Record<string, unknown>)
   }
 
   if (mapId === null) return [];
-
-  if (toolName === "build_house_lots") {
-    const lotWings = houseLotWings(args.houses);
-    const lotRegions = wingsRegions(mapId, lotWings, "yard");
-    if (lotRegions !== null) return lotRegions;
-  }
-
-  const wingRegionsForKit = wingsRegions(mapId, args.wings, toolName === "build_house_kit" ? "door" : false);
-  if (wingRegionsForKit !== null) return wingRegionsForKit;
 
   const cellRegions = pointRegions(mapId, args.cells);
   if (cellRegions !== null) return cellRegions;
@@ -654,7 +645,7 @@ function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegio
   return { mapId, x: args.x, y: args.y, w: 1, h: 1 };
 }
 
-/** build_house_lots.houses[].wings 를 flat wings 배열로. */
+/** author_house kind=lots 의 houses[].wings 를 flat wings 배열로. */
 function houseLotWings(houses: unknown): unknown[] {
   if (!Array.isArray(houses)) return [];
   const wings: unknown[] = [];
@@ -682,7 +673,7 @@ function wingsRegions(
     if (front === "door") {
       regions.push({ mapId, x: record.x + Math.floor((record.w - 1) / 2), y: record.y + record.h, w: 1, h: 1 });
     } else if (front === "yard") {
-      // 문 앞 마당 깊이 3칸 (build_house_lots 산포 영역)
+      // 문 앞 마당 깊이 3칸 (author_house lots 마당 산포 영역)
       regions.push({ mapId, x: record.x, y: record.y + record.h, w: record.w, h: 3 });
     }
   }

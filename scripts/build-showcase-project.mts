@@ -28,7 +28,6 @@ import {
   DUNGEON_TILESET_ID,
   type DungeonTheme,
 } from "../src/project/defaults/dungeonThemedLayouts.ts";
-import { buildHouseKit } from "../src/editor/tools/houseKitDomain.ts";
 import { createHouseInteriorMap, registerInteriorMaps } from "../src/editor/houseInteriors.ts";
 import {
   evaluateInteriorRoom,
@@ -228,26 +227,26 @@ const KIT_SPECS: {
   { kitId: "aframe-stone", x: 32, y: 15, ownerName: "석조 저택", chimney: true, fence: true, banner: true },
 ];
 const kitDoors: Record<string, { x: number; y: number }> = {};
-for (const spec of KIT_SPECS) {
-  try {
-    const res = buildHouseKit(ctx.project, {
-      mapId: KIT_MAP_ID as MapId,
-      kitId: spec.kitId as never,
+  for (const spec of KIT_SPECS) {
+    const result = runTool(ctx, "author_house", {
+      kind: "single",
+      mapId: KIT_MAP_ID,
+      kitId: spec.kitId,
       wings: [{ x: spec.x, y: spec.y, w: 9, h: 8 }],
       door: true,
-      doorEvent: false,
-      interior: false,
+      interior: "exterior-only",
       ownerName: spec.ownerName,
+      yard: [],
       ...(spec.chimney ? { chimney: true } : {}),
-      ...(spec.fence ? { fence: true } : {}),
-      ...(spec.banner ? { banner: true } : {}),
     });
-    if (res.data.doorAt) kitDoors[spec.kitId] = res.data.doorAt;
-    console.log(`  ${spec.ownerName}(${spec.kitId}): ${res.summary}`);
-  } catch (err) {
-    console.log(`  [skip] ${spec.kitId}: ${(err as Error).message}`);
+    if (!result.ok) {
+      console.log(`  [skip] ${spec.kitId}: ${result.summary}`);
+      continue;
+    }
+    const doorAt = (result.data as { houses: readonly { doorAt: { x: number; y: number } | null }[] }).houses[0]?.doorAt;
+    if (doorAt) kitDoors[spec.kitId] = doorAt;
+    console.log(`  ${spec.ownerName}(${spec.kitId}): ${result.summary}`);
   }
-}
 const kitMapRef = ctx.project.maps[KIT_MAP_ID]!;
 const fallbackDoor = { x: 6, y: 10 };
 

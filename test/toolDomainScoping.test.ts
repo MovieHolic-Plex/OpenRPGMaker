@@ -75,7 +75,10 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
     const exposed = exposedNames();
 
     // When: canonical, compatibility, and read-only construction routes are inspected.
-    const legacyWrites = CONSTRUCTION_WRITE_ROUTE_MANIFEST.filter((route) => route.supersededBy !== null);
+    // 등록 제거된 이름(build_house_kit/lots)은 레지스트리에 정의가 없으므로 제외한다.
+    const legacyWrites = CONSTRUCTION_WRITE_ROUTE_MANIFEST.filter(
+      (route) => route.supersededBy !== null && route.currentRegistry.registered,
+    );
 
     // Then: canonical writes are public first-class tools, legacy writes are hidden but executable,
     // and read diagnostics remain public. Independent interior tools are unaffected.

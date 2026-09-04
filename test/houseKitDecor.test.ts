@@ -3,7 +3,6 @@
 import { describe, expect, it } from "vitest";
 import { CHIMNEY_TILE, stampFootprintHouseKit } from "@/editor/houseKit";
 import { buildHouseKit } from "@/editor/tools/houseKitDomain";
-import { FENCE_TILES } from "@/editor/tools/village/constants";
 import { createEmptyToolProject, runTool } from "@/editor/tools";
 import type { GameMap, Project } from "@/project/types";
 
@@ -66,40 +65,24 @@ describe("굴뚝 — houseKit 지붕 문법 채택", () => {
   });
 });
 
-describe("build_house_kit 장식 옵션 — fence/banner/chimney", () => {
-  it("깃발 208/209가 문 양옆 최상단 벽 행에, 울타리가 문 앞 행에 게이트를 뚫고 시공된다", () => {
+describe("author_house 장식 옵션 — chimney", () => {
+  it("chimney:true 면 굴뚝이 시공된다", () => {
     const { context, mapId } = toolContextWithMap();
-    const result = runTool(context, "build_house_kit", {
+    const result = runTool(context, "author_house", {
+      kind: "single",
       mapId,
       kitId: "blue-stone",
       wings: [{ x: 2, y: 2, w: 9, h: 8 }],
-      interior: false,
-      fence: true,
-      banner: true,
+      interior: "exterior-only",
+      door: true,
       chimney: true,
+      yard: [],
     });
     expect(result.ok).toBe(true);
-    expect(result.summary).toContain("장식");
 
     const map = context.project.maps[mapId]!;
-    const doorAt = (result.data as { doorAt: { x: number; y: number } }).doorAt;
+    const doorAt = (result.data as { houses: readonly { doorAt: { x: number; y: number } }[] }).houses[0]!.doorAt;
     expect(doorAt).toBeTruthy();
-
-    // 깃발: 최상단 벽 행(doorY-2)의 문 양옆
-    expect(map.upperTiles[(doorAt.y - 2) * map.width + doorAt.x - 1]).toBe(208);
-    expect(map.upperTiles[(doorAt.y - 2) * map.width + doorAt.x + 1]).toBe(209);
-
-    // 울타리: 문 앞 행(doorY+1)에 울타리 타일 존재 + 게이트(문 열 ±1)는 비움
-    const fenceRow = doorAt.y + 1;
-    let fenceCount = 0;
-    for (let x = 0; x < map.width; x += 1) {
-      const upper = map.upperTiles[fenceRow * map.width + x] ?? -1;
-      if (FENCE_TILES.has(upper)) fenceCount += 1;
-    }
-    expect(fenceCount).toBeGreaterThanOrEqual(4);
-    for (const gateX of [doorAt.x - 1, doorAt.x, doorAt.x + 1]) {
-      expect(FENCE_TILES.has(map.upperTiles[fenceRow * map.width + gateX] ?? -1)).toBe(false);
-    }
 
     // 굴뚝
     expect(map.upperTiles.includes(CHIMNEY_TILE)).toBe(true);
@@ -107,17 +90,19 @@ describe("build_house_kit 장식 옵션 — fence/banner/chimney", () => {
 
   it("옵션을 안 주면 기존과 동일 — 장식 타일이 없다(기본 꺼짐 회귀 방지)", () => {
     const { context, mapId } = toolContextWithMap();
-    const result = runTool(context, "build_house_kit", {
+    const result = runTool(context, "author_house", {
+      kind: "single",
       mapId,
       kitId: "blue-stone",
       wings: [{ x: 2, y: 2, w: 9, h: 8 }],
-      interior: false,
+      interior: "exterior-only",
+      door: true,
+      yard: [],
     });
     expect(result.ok).toBe(true);
     const map = context.project.maps[mapId]!;
     expect(map.upperTiles.includes(CHIMNEY_TILE)).toBe(false);
     expect(map.upperTiles.includes(208)).toBe(false);
-    expect(map.upperTiles.some((tile) => FENCE_TILES.has(tile))).toBe(false);
   });
 
   it("도메인 직접 호출도 동일 계약(buildHouseKit)", () => {

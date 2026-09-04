@@ -136,12 +136,14 @@ for (const house of [
   { kitId: "bright-plaster" as const, wings: [{ x: 5, y: 28, w: 6, h: 6 }] },
   { kitId: "blue-stone" as const, wings: [{ x: 29, y: 28, w: 6, h: 6 }] },
 ]) {
-  runOk(ctx, "build_house_kit", {
+  runOk(ctx, "author_house", {
+    kind: "single",
     mapId,
     kitId: house.kitId,
     wings: house.wings,
-    doorEvent: false,
-    interior: false,
+    interior: "exterior-only",
+    door: true,
+    yard: [],
   });
 }
 

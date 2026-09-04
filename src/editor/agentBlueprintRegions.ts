@@ -5,7 +5,7 @@
 // fail-closed 계약을 갖는다 — 사각형을 못 뽑으면 `{x:0,y:0,w:0,h:0}` 을 내고 게이트는 면적 0 을
 // 건너뛴다(checkRegionsAgainstSpecBoundary). 게이트에는 그게 맞다(모르는 호출을 막지 않는다).
 // 그런데 좌표를 wrapper 키에 담는 쓰기 툴이 많다 — place_props 의 `area`, place_door/place_window 의
-// `at`, build_roof 의 `wallRect`, build_castle 의 `bounds`, stamp_structure_kit 의 `origin`,
+// `at`, build_roof 의 `wallRect`, build_castle 의 `bounds`, stamp_structure 의 `origin`,
 // place_examine_hotspots 의 `hotspots[].at`. 청사진이 그 폴백을 그대로 받으면 "위치를 모르면
 // 침묵한다" 규칙에 걸려 진행이 한 칸도 움직이지 않는다.
 //
@@ -51,7 +51,7 @@ export interface BlueprintCallRegions {
  * 짓는 중으로 올린다(agentBlueprint.advanceAllPlanned). 실제로 그 호출이 한 일과 같다.
  *
  * 레거시 마을 파사드(build_village/plan_village/run_village_pipeline …)는 전부
- * CONSTRUCTION_WRITE_SUPERSEDED = deprecated 라 tool_call 이벤트로 올 수 없으므로 넣지 않는다.
+ * deprecated 라 tool_call 이벤트로 올 수 없으므로 넣지 않는다.
  */
 const WHOLE_TARGET_FACADES: ReadonlySet<string> = new Set(["author_village"]);
 
@@ -71,7 +71,7 @@ const RECT_KEYS: readonly string[] = [
  * - `hotspots`: place_examine_hotspots(쓰기, 최상위 mapId + `{at:{x,y},…}[]`). 항목 안의 좌표
  *   wrapper 를 벗겨야 읽힌다(아래 rectFromEntry) — 벗기지 않던 시절에는 전량 포기 규칙에 걸려
  *   `regions: []` 로 조용히 떨어졌다.
- * - `wings`: 게이트(affectedRegions)가 author_house/build_house_* 에서 먼저 소비하므로 오늘은
+ * - `wings`: 게이트(affectedRegions)가 author_house 에서 먼저 소비하므로 오늘은
  *   이 폴백까지 오지 않는다. 모양이 맞는 유일한 예비 항목이라 새 집 파사드용으로 남긴다.
  *
  * 빼낸 것: `spots`(configure_fishing) · `areas`(configure_seasonal_forage) 는 최상위 mapId 가
@@ -187,9 +187,9 @@ function rectFromEntry(mapId: string, entry: unknown): AffectedRegion | null {
  * 풍부한 추출이 필요했던 쓰기 툴은 전부 정산에서 "아무것도 안 들어갔다" 로 판정돼 planned 로
  * 되돌아갔다. 실측(같은 호출을 진행 → 정산까지 통과시켰다):
  *   place_examine_hotspots  진행영역 2 · 정산영역 0 → grove   building → **planned**
- *   stamp_structure_kit     진행영역 1 · 정산영역 0 → house_a building → **planned**
+ *   stamp_structure         진행영역 1 · 정산영역 0 → house_a building → **planned**
  *   build_castle            진행영역 1 · 정산영역 0 → house_a building → **planned**
- * 레지스트리 훑기로 같은 함정에 빠지는 쓰기 툴이 11종이다 — build_castle · stamp_structure_kit ·
+ * 레지스트리 훑기로 같은 함정에 빠지는 쓰기 툴이 11종이다 — build_castle · stamp_structure ·
  * plant_tree_clusters · create_farm_plot · make_hunting_ground · make_gallery_room ·
  * make_horror_loop · place_examine_hotspots · set_lighting_volume · author_story_arc ·
  * compile_puzzle. 앞의 셋은 핵심 공간 시공이다. 사용자가 보는 것: `plant_tree_clusters` 로 숲을

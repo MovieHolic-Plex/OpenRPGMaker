@@ -2,15 +2,12 @@
 // 구조 킷 순수 변환 계층 — 감지 패턴 ↔ 저장 스키마 ↔ 팔레트 스탬프. store 의존 없음(유닛 테스트 대상).
 
 import { sectionPatternSignature, type DetectedSectionPattern } from "@/editor/harnessSuggestion/patternDetect";
-import { isHouseKitId, stampFootprintHouseKit } from "@/editor/houseKit";
 import type { PaletteStamp, PaletteStampCell } from "@/editor/tilePaletteStamp";
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import type {
   GameMap,
-  HouseStructureKitDef,
   SectionStructureKitDef,
-  StructureKitDef,
   TilesetDef,
 } from "@/project/types";
 
@@ -26,7 +23,7 @@ export interface MapRegion {
 export function structureKitFromPattern(
   pattern: DetectedSectionPattern,
   options: { readonly id?: string; readonly name?: string } = {},
-): StructureKitDef {
+): SectionStructureKitDef {
   const rows = [];
   for (let row = 0; row < pattern.unit.height; row += 1) {
     const tiles: number[] = [];
@@ -86,60 +83,13 @@ export function structureKitFromMapRegion(
   };
 }
 
-const HOUSE_DOOR_TOP_TILE = 116;
-const HOUSE_DOOR_BOTTOM_TILE = 146;
-
-/** 킷 단위 크기 — section은 저장된 width/height, house는 날개 bbox. */
-export function structureKitSize(kit: StructureKitDef): { readonly width: number; readonly height: number } {
-  if (kit.kind === "house") {
-    const width = Math.max(...kit.wings.map((wing) => wing.x + wing.w), 1);
-    const height = Math.max(...kit.wings.map((wing) => wing.y + wing.h), 1);
-    return { width, height };
-  }
+/** 킷 단위 크기 — 저장된 width/height. */
+export function structureKitSize(kit: SectionStructureKitDef): { readonly width: number; readonly height: number } {
   return { width: kit.width, height: kit.height };
 }
 
-/** house 킷 전개 — 정본 stampFootprintHouseKit을 스크래치 맵에 실행해 셀 목록으로. */
-export function expandHouseStructureKit(kit: HouseStructureKitDef): PaletteStampCell[] {
-  if (!isHouseKitId(kit.houseKitId)) return [];
-  const { width, height } = structureKitSize(kit);
-  const scratch = {
-    id: `scratch_${kit.id}`,
-    name: kit.name ?? "집 킷",
-    width,
-    height,
-    lowerTiles: new Array<number>(width * height).fill(TILE.EMPTY),
-    upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
-    events: [],
-  } as unknown as GameMap;
-  const result = stampFootprintHouseKit(scratch, {
-    wings: kit.wings,
-    kitId: kit.houseKitId,
-    ...(kit.stories ? { stories: kit.stories } : {}),
-    ...(kit.lowWall ? { lowWall: true } : {}),
-    ...(kit.windows !== undefined ? { windows: kit.windows } : {}),
-    ...(kit.chimney ? { chimney: true } : {}),
-  });
-  if (!result.ok) return [];
-  if (kit.door !== false && result.doorAt) {
-    scratch.lowerTiles[(result.doorAt.y - 1) * width + result.doorAt.x] = HOUSE_DOOR_TOP_TILE;
-    scratch.lowerTiles[result.doorAt.y * width + result.doorAt.x] = HOUSE_DOOR_BOTTOM_TILE;
-  }
-  const cells: PaletteStampCell[] = [];
-  for (let index = 0; index < width * height; index += 1) {
-    const dx = index % width;
-    const dy = Math.floor(index / width);
-    const lower = scratch.lowerTiles[index] ?? TILE.EMPTY;
-    const upper = scratch.upperTiles[index] ?? TILE.EMPTY;
-    if (lower !== TILE.EMPTY) cells.push({ dx, dy, layer: "lower", tile: lower });
-    if (upper !== TILE.EMPTY) cells.push({ dx, dy, layer: "upper", tile: upper });
-  }
-  return cells;
-}
-
-/** 킷 단위 셀 목록 — section은 행렬 그대로, house는 정본 시공 전개. */
-export function structureKitUnitCells(kit: StructureKitDef): PaletteStampCell[] {
-  if (kit.kind === "house") return expandHouseStructureKit(kit);
+/** 킷 단위 셀 목록 — 저장된 행렬 그대로. */
+export function structureKitUnitCells(kit: SectionStructureKitDef): PaletteStampCell[] {
   const cells: PaletteStampCell[] = [];
   for (let row = 0; row < kit.rows.length; row += 1) {
     const rowDef = kit.rows[row];
@@ -156,9 +106,8 @@ export function structureKitUnitCells(kit: StructureKitDef): PaletteStampCell[] 
 
 /**
  * 반복(가로 이어 찍기) 가능 여부. 가로 축 하나만 보는 짧은 물음 — 정본은 structureKitGrowthAxes.
- * 기존 호출부(팔레트 선반·인스펙터·contextBuilder)가 이 이름을 쓰고 있으므로 남긴다.
  */
-export function structureKitRepeatable(kit: StructureKitDef): boolean {
+export function structureKitRepeatable(kit: SectionStructureKitDef): boolean {
   return structureKitGrowthAxes(kit).x;
 }
 
@@ -173,12 +122,12 @@ export interface StructureGrowthAxes {
  *
  *   ① `ai.growthAxis`  사람이 새로 적어 준 축. 벽은 vertical, 울타리는 horizontal.
  *   ② `ai.repeatability`  사람이 "한 채 완결"이라 표시한 우물·간판을 가로 3번 반복하는 것을 막는다.
- *   ③ `kind`  아무 메타도 없는 상태의 예전 동작 — section 은 가로 반복, house 는 한 채.
+ *   ③ `kind` — section 은 가로 반복.
  *
  * 어느 지점에서도 세로 반복은 **사람이 명시한 경우에만** 켜진다 — 집이 세로로 3채 쌓이는 사고는
  * 눈에 잘 띄지도 않고 되돌리기도 번거롭다.
  */
-export function structureKitGrowthAxes(kit: StructureKitDef): StructureGrowthAxes {
+export function structureKitGrowthAxes(kit: SectionStructureKitDef): StructureGrowthAxes {
   const axis = kit.ai?.growthAxis;
   if (axis) return { x: axis !== "vertical", y: axis !== "horizontal" };
   if (kit.ai?.repeatability === "fixed") return { x: false, y: false };
@@ -190,7 +139,7 @@ export function structureKitGrowthAxes(kit: StructureKitDef): StructureGrowthAxe
  * 홈 레이어 — 사람이 선언했으면 그것, 없으면 실제 칸에서 유도한다.
  * 타일이 하나도 없는 빈 킷은 "lower" — 그 킷은 아직 그림이 없으므로 기본값이 필요하다.
  */
-export function structureKitLayerHome(kit: StructureKitDef): "lower" | "upper" | "perCell" {
+export function structureKitLayerHome(kit: SectionStructureKitDef): "lower" | "upper" | "perCell" {
   if (kit.ai?.layerHome) return kit.ai.layerHome;
   let hasLower = false;
   let hasUpper = false;
@@ -203,7 +152,7 @@ export function structureKitLayerHome(kit: StructureKitDef): "lower" | "upper" |
 }
 
 /** 킷 → 팔레트 스탬프(기존 드래그 스탬프 페인트 경로 재사용 — TilePaintEngine.applyPaletteStamp). */
-export function paletteStampFromKit(kit: StructureKitDef): PaletteStamp {
+export function paletteStampFromKit(kit: SectionStructureKitDef): PaletteStamp {
   const cells = structureKitUnitCells(kit);
   const { width, height } = structureKitSize(kit);
   const firstTile = cells[0]?.tile ?? 0;
@@ -216,20 +165,11 @@ export function paletteStampFromKit(kit: StructureKitDef): PaletteStamp {
   };
 }
 
-/** 킷의 결정적 서명 — 감지 패턴 서명과 같은 규약(재제안 차단·중복 등록 차단).
- * house 킷은 전개 결과(셀 행렬)로 서명한다 — 같은 모양이면 출처가 달라도 같은 서명. */
-export function structureKitSignature(kit: StructureKitDef): string {
+/** 킷의 결정적 서명 — 감지 패턴 서명과 같은 규약(재제안 차단·중복 등록 차단). */
+export function structureKitSignature(kit: SectionStructureKitDef): string {
   const { width, height } = structureKitSize(kit);
   const lower: number[] = new Array<number>(width * height).fill(TILE.EMPTY);
   const upper: number[] = new Array<number>(width * height).fill(TILE.EMPTY);
-  if (kit.kind === "house") {
-    for (const cell of expandHouseStructureKit(kit)) {
-      const index = cell.dy * width + cell.dx;
-      if (cell.layer === "lower") lower[index] = cell.tile;
-      else upper[index] = cell.tile;
-    }
-    return sectionPatternSignature({ width, height, lower, upper });
-  }
   for (let row = 0; row < height; row += 1) {
     const rowDef = kit.rows[row];
     for (let column = 0; column < width; column += 1) {
@@ -243,6 +183,7 @@ export function structureKitSignature(kit: StructureKitDef): string {
 export function registeredKitSignatures(tileset: TilesetDef | undefined): ReadonlySet<string> {
   const signatures = new Set<string>();
   for (const kit of tileset?.structureKits ?? []) {
+    if (kit.kind !== "section") continue;
     signatures.add(structureKitSignature(kit));
   }
   return signatures;

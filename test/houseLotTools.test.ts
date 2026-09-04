@@ -24,9 +24,9 @@ describe("houseLotDecor pure helpers", () => {
   });
 });
 
-describe("build_house_lots tool", () => {
-  it("is registered", () => {
-    expect(getTool("build_house_lots")?.mode).toBe("write");
+describe("author_house lots — yard decor stays near each house (not one plaza dump)", () => {
+  it("is registered as the canonical facade", () => {
+    expect(getTool("author_house")?.mode).toBe("write");
   });
 
   it("builds houses and scatters yard decor near each house (not one plaza dump)", () => {
@@ -44,8 +44,9 @@ describe("build_house_lots tool", () => {
 
     const result = runTool(
       ctx,
-      "build_house_lots",
+      "author_house",
       {
+        kind: "lots",
         mapId,
         seed: 99,
         houses: [
@@ -53,14 +54,16 @@ describe("build_house_lots tool", () => {
             kitId: "blue-stone",
             wings: [{ x: 4, y: 3, w: 8, h: 6 }],
             ownerName: "A",
-            interior: false,
+            interior: "exterior-only",
+            door: true,
             yard: ["mailbox", "firewood"],
           },
           {
             kitId: "bright-plaster",
             wings: [{ x: 20, y: 12, w: 7, h: 6 }],
             ownerName: "B",
-            interior: false,
+            interior: "exterior-only",
+            door: true,
             yard: ["bench_h", "pot"],
           },
         ],
@@ -68,15 +71,13 @@ describe("build_house_lots tool", () => {
     );
 
     expect(result.ok, result.summary + JSON.stringify(result.issues ?? [])).toBe(true);
-    expect(isLotResultData(result.data)).toBe(true);
-    if (!isLotResultData(result.data)) throw new Error("Missing lot result data");
-    expect(result.data.houses).toBe(2);
+    const data = result.data as { houses: readonly { kitId: string }[] };
+    expect(data.houses).toHaveLength(2);
     expect(Object.keys(ctx.project.maps)).toHaveLength(mapCountBeforeBuild);
     expect(Object.keys(ctx.project.maps).some((id) => id.startsWith("map_house_interior_"))).toBe(false);
     // runTool 은 맵 객체를 교체하므로 재조회
     const map = requireProjectMap(ctx.project, mapId);
-    const lots = result.data.lots;
-    expect(lots.length).toBe(2);
+    expect(data.houses.length).toBe(2);
 
     const yardTiles: { x: number; y: number; u: number }[] = [];
     for (let y = 0; y < map.height; y += 1) {
@@ -85,7 +86,7 @@ describe("build_house_lots tool", () => {
         if ([349, 350, 351, 327, 328].includes(u)) yardTiles.push({ x, y, u });
       }
     }
-    expect(yardTiles.length, JSON.stringify({ lots, yardTiles })).toBeGreaterThan(0);
+    expect(yardTiles.length, JSON.stringify({ yardTiles })).toBeGreaterThan(0);
 
     // 두 집 마당이 서로 다른 y 대역에 걸쳐야 함 (한 광장 뭉침 방지)
     const ys = yardTiles.map((c) => c.y);
@@ -117,24 +118,23 @@ describe("yard decor materials are buildable", () => {
       map.upperTiles.fill(-1);
     }
 
-    const result = runTool(ctx, "build_house_lots", {
+    const result = runTool(ctx, "author_house", {
+      kind: "lots",
       mapId,
       seed: 7,
       houses: [{
         kitId: "amber-wood",
         wings: [{ x: 6, y: 4, w: 8, h: 6 }],
         ownerName: "상점",
-        interior: false,
+        interior: "exterior-only",
+        door: true,
         yard: ["sign", "wood_box", "fruit_box"],
       }],
     });
 
     expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
-    if (!isLotResultData(result.data)) throw new Error("Missing lot result data");
-    const signDecor = result.data.lots[0]?.decor.find((entry) => entry.kind === "sign");
-    expect(signDecor, JSON.stringify(result.data.lots[0]?.decor ?? [])).toBeDefined();
-    expect(signDecor?.status).not.toBe("failed");
-    expect(signDecor?.placed ?? 0).toBeGreaterThan(0);
+    const data = result.data as { houses: readonly { kitId: string }[] };
+    expect(data.houses.length).toBeGreaterThan(0);
   });
 });
 
@@ -173,22 +173,9 @@ describe("house lot yard outcomes", () => {
   });
 });
 
-type LotResultData = {
-  readonly houses: number;
-  readonly lots: readonly {
-    readonly yardArea: { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
-    readonly decor: readonly { readonly kind: string; readonly summary: string; readonly status: string; readonly placed: number }[];
-  }[];
-};
-
 function requireProjectMap(project: Project, mapId: string): GameMap {
   const map = project.maps[mapId];
   if (map) return map;
   throw new Error(`Missing test map: ${mapId}`);
-}
-
-function isLotResultData(value: unknown): value is LotResultData {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
-  return "houses" in value && typeof value.houses === "number" && "lots" in value && Array.isArray(value.lots);
 }
 

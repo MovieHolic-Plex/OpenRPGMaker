@@ -16,7 +16,7 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
-import type { MapId, PlacementSurfaceCondition, StructureKitDef, TilesetDef } from "@/project/types";
+import type { MapId, PlacementSurfaceCondition, SectionStructureKitDef, TilesetDef } from "@/project/types";
 import { resetToastsForTest } from "@/util/toast";
 
 const WALL_TILE = 300;
@@ -33,7 +33,7 @@ const NORTH_WALL: PlacementSurfaceCondition = {
   facing: "north",
 };
 
-function stoveKit(conditions: readonly PlacementSurfaceCondition[]): StructureKitDef {
+function stoveKit(conditions: readonly PlacementSurfaceCondition[]): SectionStructureKitDef {
   return {
     id: "kit_stove",
     kind: "section",
@@ -102,8 +102,9 @@ function createPaintEngine(mapId: MapId, tileset: TilesetDef): {
 }
 
 function armKit(tileset: TilesetDef): void {
+  const kit = tileset.structureKits!.find((entry) => entry.kind === "section")!;
   editorState.set({
-    activePaletteStamp: paletteStampFromKit(tileset.structureKits![0]!),
+    activePaletteStamp: paletteStampFromKit(kit),
     tool: "paint",
     layer: "lower",
   });

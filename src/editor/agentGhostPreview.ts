@@ -300,9 +300,6 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "build_house":
       pushArea(rectArea(project, mapId, rectFromOriginSize(args), "build_house", "집 건설"));
       break;
-    case "build_house_kit":
-      pushArea(rectArea(project, mapId, rectFromWings(args.wings), "build_house_kit", "집 키트"));
-      break;
     case "author_house": {
       const houseMapId = stringValue(args.mapId) ?? nestedTargetMapId(args.target);
       if (args.kind === "lots" && Array.isArray(args.houses)) {
@@ -320,15 +317,6 @@ export function summarizeAgentGhostPreviewForToolCall(
       const villageMapId = nestedTargetMapId(args.target);
       const bounds = nestedTargetGhostBounds(args.target);
       pushArea(rectArea(project, villageMapId, bounds, "author_village", "마을 시공"));
-      break;
-    }
-    case "build_house_lots": {
-      const houses = Array.isArray(args.houses) ? args.houses : [];
-      for (const house of houses) {
-        if (!house || typeof house !== "object") continue;
-        const wings = (house as { wings?: unknown }).wings;
-        pushArea(rectArea(project, mapId, rectFromWings(wings), "build_house_lots", "집 부지"));
-      }
       break;
     }
     case "stamp_structure":

@@ -58,7 +58,7 @@ describe("AI 채팅 lean UI 정책", () => {
     expect(isReadOnlyToolNoise("list_resources")).toBe(true);
     expect(isReadOnlyToolNoise("show_tiles")).toBe(true);
     expect(isReadOnlyToolNoise("paint_road")).toBe(false);
-    expect(isReadOnlyToolNoise("build_house_kit")).toBe(false);
+    expect(isReadOnlyToolNoise("build_house" as string)).toBe(false);
   });
 
   it("성공 툴 항목은 JSON 상세 없이 한 줄이다", () => {

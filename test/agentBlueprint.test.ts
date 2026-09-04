@@ -43,9 +43,8 @@ const SPEC: BuildSpec = {
 
 /**
  * SPEC.house_a 를 그대로 덮는 실제 build_wall 인자(required: mapId, rect, material).
- * 종전 테스트는 여기에 `build_house {mapId,x,y,w,h}` 를 썼는데 그 툴은 (1) 스키마가
- * origin+width/height 라 이 모양을 낼 수 없고 (2) CONSTRUCTION_WRITE_SUPERSEDED 로 deprecated 라
- * 모델이 부를 수도 없다 — `rectFromXY` 가 범용이라 통과하던 유령 인자였다.
+ * 종전 테스트는 여기에 `build_house {mapId,x,y,w,h}` 를 썼는데 그 툴은 스키마가
+ * origin+width/height 라 이 모양을 낼 수 없어 `rectFromXY` 가 범용이라 통과하던 유령 인자였다.
  */
 const HOUSE_WALL_ARGS = { mapId: "m1", rect: { x: 10, y: 10, w: 6, h: 5 }, material: "흰 집 벽" } as const;
 
@@ -267,9 +266,9 @@ describe("markAgentBlueprintProgress — 좌표를 wrapper 키에 담는 쓰기 
 
   it("origin + width/height(구조물 스탬프 계열)도 사각형으로 귀속된다", () => {
     setAgentBlueprintFromSpec(VILLAGE_SPEC);
-    // stamp_structure_kit 은 origin + repeat 만 받는다 — 발자국 크기가 인자에 없으므로 1×1 점으로
+    // stamp_structure 는 origin + repeat 만 받는다 — 발자국 크기가 인자에 없으므로 1×1 점으로
     // 귀속된다(repeat 는 읽지 않는다). 점이 두 칸에 들어가면 IoU 가 작은 칸을 고르므로 안전하다.
-    markAgentBlueprintProgress("stamp_structure_kit", { mapId: "m1", kitId: "kit_x", origin: { x: 4, y: 4 }, repeat: 6 }, WRITE);
+    markAgentBlueprintProgress("stamp_structure", { mapId: "m1", template: "l", origin: { x: 4, y: 4 } }, WRITE);
     expect(statusById().house_a).toBe("building");
   });
 

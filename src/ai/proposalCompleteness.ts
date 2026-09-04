@@ -147,8 +147,7 @@ function interiorCompletenessWarnings(
   if (!intent || intent.space !== "interior" || intent.mode !== "create") return [];
   const okCalls = calls.filter((call) => call.result.ok);
   if (okCalls.some((call) => INTERIOR_ROOM_TOOL_NAMES.has(call.name))) return [];
-  const usedOutdoorHouse = okCalls.some((call) =>
-    call.name === "author_house" || call.name === "build_house_kit" || call.name === "build_house_lots");
+  const usedOutdoorHouse = okCalls.some((call) => call.name === "author_house");
   if (usedOutdoorHouse) {
     return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 외장(author_house)만 시공했습니다. 새 실내 맵이 필요하면 start_interior_room_session/run_interior_room_pipeline(새 mapId), 기존 실내 맵을 고치는 것이면 furnish_interior_space({mapId, roomId})를 쓰세요.`];
   }
@@ -223,8 +222,6 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   if (call.name === "place_props") return scatterRegions(mapId, call.args, call.result.data);
   if (call.name === "fill_region" || call.name === "tile_erase") return rectRegion(mapId, call.args.rect);
   if (call.name === "build_house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
-  if (call.name === "build_house_kit") return wingRegions(mapId, call.args.wings);
-  if (call.name === "build_house_lots") return houseLotRegions(mapId, call.args.houses);
   // canonical construction facades
   if (call.name === "author_house") {
     const effectiveMapId = mapId ?? nestedTargetMapId(call.args.target);
@@ -426,7 +423,7 @@ function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
     const actual = counts && typeof counts.actual === "number" ? counts.actual : 0;
     return actual > 0 ? actual : 1;
   }
-  if (call.name === "build_house" || call.name === "build_house_kit" || call.name === "build_house_lots" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
+  if (call.name === "build_house" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
   if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
 }

@@ -212,8 +212,6 @@ describe("toolRegistry", () => {
 
 // 노출 상한(40) 핀 목록의 무효 핀 방지 가드.
 // toOpenAiTools()가 deprecated를 먼저 걸러내므로, deprecated 툴을 핀해도 노출은 되지 않는다.
-// 즉 그 핀은 "보장됐다"는 착각만 남기고 실제로는 죽은 항목이다 —
-// build_house_kit/build_house_lots(→author_house)가 실제로 이 상태였다.
 describe("PINNED_TOOLS_BY_DOMAIN", () => {
   it("핀된 툴은 모두 실존하고 deprecated가 아니다", () => {
     for (const [domain, names] of PINNED_TOOLS_BY_DOMAIN) {

@@ -189,14 +189,15 @@ const houses: readonly HouseSpec[] = [
 ];
 for (const house of houses) {
   logs.push(
-    runOk(ctx, "build_house_kit", {
+    runOk(ctx, "author_house", {
+      kind: "single",
       mapId: MAP_ID,
       kitId: house.kitId,
       wings: house.wings,
       door: true,
-      doorEvent: house.interior === true,
-      interior: house.interior === true,
+      interior: house.interior === true ? "linked-interior" : "exterior-only",
       ownerName: house.ownerName,
+      yard: [],
     }),
   );
 }
@@ -390,7 +391,7 @@ project.mapTree = {
 const layoutIssues = validateLayoutPlacement(project, {
   mapId: MAP_ID,
   instruction: "NW 호수 + 동쪽 마을 + 남쪽 광장 가구 + 서남 묘지 (이전 중앙링 레이아웃 아님)",
-  toolNames: ["fill_region", "place_props", "paint_road", "build_house_kit", "place_npc"],
+  toolNames: ["fill_region", "place_props", "paint_road", "author_house", "place_npc"],
 });
 const blocking = layoutValidationBlocking(layoutIssues);
 if (blocking.length > 0) {

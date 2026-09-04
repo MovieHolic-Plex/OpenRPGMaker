@@ -214,14 +214,14 @@ const AXIS_NOTES: readonly AxisNote[] = [
   {
     axis: "wallOutline",
     whoDoesItInProduct: "코드",
-    harnessCode: "houseKit.stampRectHouseKit (나인슬라이스 확장) · v3 build_wall",
+    harnessCode: "houseKit 엔진(나인슬라이스 확장) · v3 build_wall",
     measures: "벽은 좌·중앙 반복·우 + 상/중/하단의 나인슬라이스다. 모델이 그 문법으로 외곽을 마감하는가, 아니면 한 타일로 사각형을 채우는가.",
     items: ["identity", "footprintFilled", "wallBandIsWall", "wallBandSolid", "roofBandIsRoof", "nineSlice", "×outsideClean", "×layerDiscipline", "×paletteClean"],
   },
   {
     axis: "roofDiagonal",
     whoDoesItInProduct: "코드",
-    harnessCode: "houseKit.stampRectHouseKit (aframe 분기)",
+    harnessCode: "houseKit 엔진(aframe 분기)",
     measures: "A자 지붕은 행마다 좌우 1칸씩 좁아지는 피라미드이고, 사선 캡은 투명이라 상위·꼭짓점은 불투명이라 하위다. 이 계단과 레이어 분담을 모델이 재현하는가.",
     items: ["identity", "stepInward", "diagonalCapsOnUpper", "apexOnLower", "eavesFullWidth", "nineSlice", "×outsideClean"],
   },
@@ -610,7 +610,7 @@ ${(await Promise.all(probeTasks.map(async (task) =>
   <thead><tr><th>문항</th><th>정답을 만드는 엔진</th></tr></thead>
   <tbody>
     <tr><td class="c">1 · 4</td><td><code>autotileEngine.autotileVariantForMask</code> × <code>DEFAULT_ROAD_AUTOTILE_GROUP</code></td></tr>
-    <tr><td class="c">5 · 6 · 9</td><td><code>houseKit.stampRectHouseKit</code> — 나인슬라이스 / A자 피라미드 문법</td></tr>
+    <tr><td class="c">5 · 6 · 9</td><td><code>houseKit 엔진</code> — 나인슬라이스 / A자 피라미드 문법</td></tr>
     <tr><td class="c">7</td><td><code>village/houses.ts</code> 문 규약 — 하위 레이어 상단 ${inlineRef(116)} / 하단 ${inlineRef(146)}</td></tr>
     <tr><td class="c">8</td><td><code>village/fences.ts placeHouseLotFences</code> — 모서리 강등 로직 포함</td></tr>
     <tr><td class="c">3</td><td><code>benchmark/groundTruth.deriveTreePairs()</code></td></tr>

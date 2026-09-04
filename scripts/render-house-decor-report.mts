@@ -1,14 +1,11 @@
 /**
- * 장식 배선·파라메트릭 스탬프 착수 보고 렌더 — 전부 실경로:
- * build_house_kit(runTool)·stamp_structure_kit(runTool)·paletteStampFromKit 산출을 그대로 그린다.
+ * 장식 배선 보고 렌더 — 전부 실경로: author_house(runTool) 산출을 그대로 그린다.
  * 실행: npx tsx scripts/render-house-decor-report.mts
  * 산출: output/evidence/house-decor-report/*.png + meta.json
  */
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
-import { BUILTIN_HOUSE_STRUCTURE_KITS } from "../src/editor/harnessSuggestion/builtinHouseStructureKits.ts";
-import { paletteStampFromKit } from "../src/editor/harnessSuggestion/structureKitModel.ts";
 import { ALL_HOUSE_KIT_IDS, HOUSE_KITS } from "../src/editor/houseKit.ts";
 import { createEmptyToolProject, runTool } from "../src/editor/tools/index.ts";
 import type { GameMap, Project } from "../src/project/types.ts";
@@ -70,29 +67,30 @@ function saveMap(file: string, map: GameMap, scale = 4): void {
 // ── 1. before/after — 같은 호출, 장식 옵션만 추가 ────────────────────────────
 {
   const bare = toolContext(15, 14);
-  const r1 = runTool(bare.context, "build_house_kit", {
-    mapId: bare.mapId, kitId: "blue-stone", wings: [{ x: 3, y: 2, w: 9, h: 8 }], interior: false,
+  const r1 = runTool(bare.context, "author_house", {
+    kind: "single", mapId: bare.mapId, kitId: "blue-stone", wings: [{ x: 3, y: 2, w: 9, h: 8 }],
+    interior: "exterior-only", door: true, yard: [],
   });
   if (!r1.ok) throw new Error(r1.summary);
   saveMap("1-before", bare.context.project.maps[bare.mapId]!);
   meta["1-before"] = r1.summary;
 
   const decorated = toolContext(15, 14);
-  const r2 = runTool(decorated.context, "build_house_kit", {
-    mapId: decorated.mapId, kitId: "blue-stone", wings: [{ x: 3, y: 2, w: 9, h: 8 }], interior: false,
-    fence: true, banner: true, chimney: true,
+  const r2 = runTool(decorated.context, "author_house", {
+    kind: "single", mapId: decorated.mapId, kitId: "blue-stone", wings: [{ x: 3, y: 2, w: 9, h: 8 }],
+    interior: "exterior-only", door: true, yard: [], fence: true, banner: true, chimney: true,
   });
   if (!r2.ok) throw new Error(r2.summary);
   saveMap("1-after", decorated.context.project.maps[decorated.mapId]!);
   meta["1-after"] = r2.summary;
 }
 
-// ── 2. 킷 6종 × 풀장식 — 전부 build_house_kit 실호출 ─────────────────────────
+// ── 2. 킷 6종 × 풀장식 ─────────────────────────────────────────────────
 for (const kitId of ALL_HOUSE_KIT_IDS) {
   const { context, mapId } = toolContext(15, 14);
-  const result = runTool(context, "build_house_kit", {
-    mapId, kitId, wings: [{ x: 3, y: 2, w: 9, h: 8 }], interior: false,
-    fence: true, banner: true, chimney: true,
+  const result = runTool(context, "author_house", {
+    kind: "single", mapId, kitId, wings: [{ x: 3, y: 2, w: 9, h: 8 }],
+    interior: "exterior-only", door: true, yard: [], fence: true, banner: true, chimney: true,
   });
   if (!result.ok) throw new Error(`${kitId}: ${result.summary}`);
   saveMap(`2-kit-${kitId}`, context.project.maps[mapId]!);
@@ -102,48 +100,14 @@ for (const kitId of ALL_HOUSE_KIT_IDS) {
 // ── 3. L자 평면 + 풀장식 (조합 실증) ─────────────────────────────────────────
 {
   const { context, mapId } = toolContext(20, 17);
-  const result = runTool(context, "build_house_kit", {
-    mapId, kitId: "amber-wood",
+  const result = runTool(context, "author_house", {
+    kind: "single", mapId, kitId: "amber-wood",
     wings: [{ x: 2, y: 2, w: 6, h: 12 }, { x: 2, y: 7, w: 14, h: 7 }],
-    interior: false, fence: true, banner: true, chimney: true,
+    interior: "exterior-only", door: true, yard: [], fence: true, banner: true, chimney: true,
   });
   if (!result.ok) throw new Error(result.summary);
   saveMap("3-lplan-decor", context.project.maps[mapId]!);
   meta["3-lplan-decor"] = result.summary;
-}
-
-// ── 4. stamp_structure_kit — 내장 파라메트릭 집 킷 시공(AI/팔레트와 동일 전개) ──
-{
-  const { context, mapId } = toolContext(30, 14);
-  const first = runTool(context, "stamp_structure_kit", {
-    mapId, kitId: "kit_house_blue-stone", origin: { x: 2, y: 2 }, repeat: 5,
-  });
-  if (!first.ok) throw new Error(first.summary);
-  const second = runTool(context, "stamp_structure_kit", {
-    mapId, kitId: "kit_house_timber-hall", origin: { x: 14, y: 2 },
-  });
-  if (!second.ok) throw new Error(second.summary);
-  saveMap("4-stamped-kits", context.project.maps[mapId]!, 3);
-  meta["4-stamped-kits"] = `${first.summary} / ${second.summary}`;
-}
-
-// ── 5. 팔레트 스탬프 전개 검증 — paletteStampFromKit 셀을 그대로 그린 미니맵 ──
-{
-  const kit = BUILTIN_HOUSE_STRUCTURE_KITS.find((entry) => entry.houseKitId === "aframe-stone")!;
-  const stamp = paletteStampFromKit(kit);
-  const map = {
-    id: "m", name: "m", width: stamp.width + 2, height: stamp.height + 2,
-    lowerTiles: new Array((stamp.width + 2) * (stamp.height + 2)).fill(GRASS),
-    upperTiles: new Array((stamp.width + 2) * (stamp.height + 2)).fill(-1),
-    events: [],
-  } as unknown as GameMap;
-  for (const cell of stamp.cells) {
-    const index = (cell.dy + 1) * map.width + cell.dx + 1;
-    if (cell.layer === "lower") map.lowerTiles[index] = cell.tile;
-    else map.upperTiles[index] = cell.tile;
-  }
-  saveMap("5-palette-stamp-aframe", map, 5);
-  meta["5-palette-stamp-aframe"] = `paletteStampFromKit(${kit.id}) — ${stamp.cells.length}셀, ${stamp.width}×${stamp.height}`;
 }
 
 fs.writeFileSync(path.join(OUT, "meta.json"), JSON.stringify(meta, null, 2));

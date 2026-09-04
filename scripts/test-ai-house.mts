@@ -51,24 +51,6 @@ const TOOLS: Tool[] = [
   {
     type: "function",
     function: {
-      name: "build_house_kit",
-      description: "하네스 규칙으로 집 키트를 시공한다. 내부 맵 생성 옵션 포함.",
-      parameters: {
-        type: "object",
-        properties: {
-          mapId: { type: "string", description: "대상 맵 ID" },
-          kitId: { type: "string", description: "킷 ID: cottage-l, cottage2, cottage3, mansion" },
-          x: { type: "number", description: "시작 X" },
-          y: { type: "number", description: "시작 Y" },
-          interior: { type: "boolean", description: "실내 맵 생성 여부(기본 true)" },
-        },
-        required: ["mapId", "kitId", "x", "y"],
-      },
-    },
-  },
-  {
-    type: "function",
-    function: {
       name: "place_props",
       description: "나무, 바위, 꽃 등 소품을 배치한다.",
       parameters: {
@@ -122,8 +104,8 @@ const TOOLS: Tool[] = [
 const SYSTEM_PROMPT = `당신은 RPG 맵 에디터의 AI 어시스턴트다. 사용자 요청을 받으면 적절한 도구(tool)를 호출하여 맵에 건물, 소품, 지형 등을 배치한다.
 
 도구 규칙:
-- 집/건물 시공: author_house 또는 build_house_kit 사용. 벽 타일로 직사각형 채우기 금지.
-- 야외 집 한 채: author_house { mapId, x, y, width, height, style, material } 또는 build_house_kit { mapId, kitId, x, y }
+- 집/건물 시공: author_house 사용. 벽 타일로 직사각형 채우기 금지.
+- 야외 집 한 채: author_house { kind, mapId, kitId, wings, interior, door, yard }
 - 소품 배치: place_props
 - 시공 전 set_build_spec으로 명세 제출 가능
 - 영역 확인: get_map_region
@@ -180,9 +162,7 @@ function mockToolResult(name: string, args: Record<string, unknown>): string {
     case "get_map_region":
       return JSON.stringify({ ok: true, mapId: args.mapId, region: args, tiles: "대부분 잔디, 일부 물", events: 0 });
     case "author_house":
-      return JSON.stringify({ ok: true, mapId: args.mapId, x: args.x, y: args.y, width: args.width, height: args.height, placed: true, message: `${args.style ?? "cottage"} 스타일 집 시공 완료` });
-    case "build_house_kit":
-      return JSON.stringify({ ok: true, mapId: args.mapId, kitId: args.kitId, x: args.x, y: args.y, interior: args.interior ?? true, message: `${args.kitId} 킷 시공 완료` });
+      return JSON.stringify({ ok: true, mapId: args.mapId, kind: args.kind, kitId: args.kitId, placed: true, message: "집 시공 완료" });
     case "place_props":
       return JSON.stringify({ ok: true, placed: args.count ?? 0, material: args.material, message: `${args.material} ${args.count}개 배치` });
     default:

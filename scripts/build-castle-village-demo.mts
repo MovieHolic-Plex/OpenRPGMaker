@@ -1,5 +1,5 @@
 /**
- * 타일 하네스(create_map + build_castle + build_house_kit)로 "성채 마을" 맵을 만들고
+ * 타일 하네스(create_map + build_castle + author_house)로 "성채 마을" 맵을 만들고
  * Supabase에 저장 → 재로드로 존재 증명 → PNG 스크린샷 렌더.
  *
  *   bun scripts/build-castle-village-demo.mts
@@ -107,14 +107,16 @@ const houses: Array<{ kitId: string; wing: { x: number; y: number; w: number; h:
 ];
 for (const h of houses) {
   console.log(
-    runOk(ctx, "build_house_kit", {
+    runOk(ctx, "author_house", {
+      kind: "single",
       mapId: MAP_ID,
       kitId: h.kitId,
       wings: [h.wing],
       door: true,
-      interior: false,
+      interior: "exterior-only",
       ownerName: h.owner,
-      windows: { enabled: true, spacing: 2 },
+      windows: { spacing: 2 },
+      yard: [],
     }),
   );
 }

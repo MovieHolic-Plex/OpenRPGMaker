@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1420KB / 약 401,541 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1421KB / 약 401,751 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,8 +16,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 245KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 416 | ~70,948 |
-| `openwiki/editor-ai-tools.md` | 72KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 167 | ~20,520 |
-| `openwiki/editor-database.md` | 170KB | 49KB | 816 | ~48,579 |
+| `openwiki/editor-ai-tools.md` | 73KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 181 | ~20,919 |
+| `openwiki/editor-database.md` | 169KB | 49KB | 816 | ~48,340 |
 | `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 557 | ~34,046 |
 | `openwiki/editor-pre-edit-routing.md` | 68KB | 50KB ⚠상한 초과 — 절을 더 쪼개라 | 196 | ~19,371 |
 | `openwiki/runtime-battle.md` | 114KB | 31KB | 339 | ~32,706 |
@@ -133,15 +133,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L135` 6. 업스트림(Senpi) 대비 설계 및 의도적 차이점
 - `L154` 7. 계약 테스트 및 검증 스크립트
 
-### `openwiki/ai-tools-deprecation-roadmap.md` — 3KB · 52줄 · ~1,016 토큰
+### `openwiki/ai-tools-deprecation-roadmap.md` — 4KB · 55줄 · ~1,066 토큰
 
-- `L5` 현황
-- `L18` 왜 지금 당장 지우지 않는가
-- `L25` 제거 단계
-  - `L27` 1단계 — 호출 계측 (즉시 가능)
-  - `L32` 2단계 — 실행 차단 + 안내 오류 (관측 후)
-  - `L37` 3단계 — 이름 삭제 (메이저 정리)
-- `L42` 개별 판단 메모
+- `L5` 현황 (2026-09-04 갱신)
+- `L21` 왜 지금 당장 지우지 않는가
+- `L28` 제거 단계
+  - `L30` 1단계 — 호출 계측 (즉시 가능)
+  - `L35` 2단계 — 실행 차단 + 안내 오류 (관측 후)
+  - `L40` 3단계 — 이름 삭제 (메이저 정리)
+- `L45` 개별 판단 메모
 
 ### `openwiki/ai-workflow.md` — 19KB · 108줄 · ~5,306 토큰
 
@@ -232,13 +232,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L357` 제공자 · OAuth · 동반 서비스
 - `L385` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
-### `openwiki/editor-ai-tools.md` — 72KB · 167줄 · ~20,520 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 73KB · 181줄 · ~20,919 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L95` Project-wide quality evaluation
 - `L101` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
 - `L137` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L168` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
 
-### `openwiki/editor-database.md` — 170KB · 816줄 · ~48,579 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 169KB · 816줄 · ~48,340 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` Database Studio chrome (2026-08-24)
   - `L15` Actor data-table slice (2026-08-25)
@@ -255,7 +256,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L217` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
 - `L238` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
 - `L257` 임시 → 개념 꾸러미 (2026-09-02)
-- `L277` '구조물' 탭 — 세 출처 앨범 + 방 종류 문법 (2026-08-28)
+- `L277` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
 - `L289` '구조물' 편집기와 파일 입출력 (2026-08-29)
 - `L308` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
 - `L328` '진영' 탭과 몬스터 소속 진영 (2026-08-29)

@@ -26,6 +26,7 @@ const WINDOWS_SCHEMA = {
   type: "object",
   description: "창문 옵션. false=창문 없음. true는 불가 — {} 또는 {spacing:N}만 유효.",
   properties: {
+    enabled: { type: "boolean", description: "창문 배치 여부(기본 true)" },
     spacing: { type: "integer", minimum: 0, description: "창문 간격 (생략 시 기본값)" },
   },
 } as const;

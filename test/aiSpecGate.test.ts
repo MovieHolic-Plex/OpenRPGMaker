@@ -213,10 +213,14 @@ describe("affectedRegions — 툴 인자에서 영향 영역 추출", () => {
       .toEqual([{ mapId: "m1", x: 0, y: 9, w: 1, h: 1 }, { mapId: "m1", x: 19, y: 9, w: 1, h: 1 }]);
   });
 
-  it("build_house_kit wings는 합집합 bounding rect가 아니라 날개별 영역과 문 앞 1칸으로 추출한다", () => {
-    expect(affectedRegions("build_house_kit", {
+  it("author_house wings는 합집합 bounding rect가 아니라 날개별 영역과 문 앞 1칸으로 추출한다", () => {
+    expect(affectedRegions("author_house", {
+      kind: "single",
       mapId: "m1",
       kitId: "blue-stone",
+      interior: "exterior-only",
+      door: true,
+      yard: [],
       wings: [
         { x: 2, y: 2, w: 5, h: 5 },
         { x: 9, y: 2, w: 5, h: 5 },
@@ -548,7 +552,7 @@ describe("세션 스펙 게이트", () => {
     }));
   });
 
-  it("16×16 맵에서 스펙과 동일한 3개 wings build_house_kit은 bounding rect 오차단 없이 통과한다", async () => {
+  it("16×16 맵에서 스펙과 동일한 3개 wings author_house는 bounding rect 오차단 없이 통과한다", async () => {
     const spec = {
       mapId: "m1",
       title: "작은 집 3채",
@@ -562,7 +566,7 @@ describe("세션 스펙 게이트", () => {
     const chat = scriptedChat([
       toolCallMsg("create_map", { id: "m1", name: "작은 맵", width: 16, height: 16 }, "c1"),
       toolCallMsg("set_build_spec", spec, "c2"),
-      toolCallMsg("build_house_kit", { mapId: "m1", kitId: "blue-stone", wings, interior: false, windows: false }, "c3"),
+      toolCallMsg("author_house", { kind: "lots", mapId: "m1", seed: 1, houses: wings.map((wing) => ({ kitId: "blue-stone", wings: [wing], interior: "exterior-only", door: true, yard: [] })) }, "c3"),
       finalMsg("집 3채를 배치했습니다."),
     ]);
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
@@ -570,7 +574,7 @@ describe("세션 스펙 게이트", () => {
     await session.sendUserMessage("작은 야외 집 3개 만들어줘", (e) => {
       if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
     });
-    const house = events.find((event) => event.name === "build_house_kit")!;
+    const house = events.find((event) => event.name === "author_house")!;
     expect(house.ok, house.summary).toBe(true);
     expect(house.summary).not.toContain("할당 영역 밖");
   });

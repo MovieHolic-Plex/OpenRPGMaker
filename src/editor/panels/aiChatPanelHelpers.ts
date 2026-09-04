@@ -39,7 +39,7 @@ export const MAP_TILE_TOOLS = new Set([
   "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "build_house", "clear_region", "resize_map",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase",
-  "author_house", "author_village", "build_house_kit", "build_house_lots",
+  "author_house", "author_village",
 ]);
 
 export function isWriteTool(name: string): boolean {
