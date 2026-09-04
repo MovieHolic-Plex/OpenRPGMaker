@@ -9,6 +9,7 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
 import { assertMapIdAvailable, inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
+import { assignCreatedMapBgm } from "./mapTools";
 import {
   applyMapGenerationPassage,
   requireMapGenerationProfile,
@@ -147,6 +148,7 @@ const generateMap: ToolDefinition = {
   name: "generate_map",
   description:
     "테마(village/forest/cave) 맵을 생성한다(기본은 테두리 없는 평지, 최대 256×256). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). "
+    + "테마에 맞는 BGM을 CC0 카탈로그에서 고른다(같은 seed면 같은 곡, bgm/bgmResourceId가 있으면 그걸 쓴다). "
     + "동굴/던전처럼 외곽이 막혀야 할 때만 border:\"wall\"을 지정한다 — 지정하면 맵 4변이 통행 불가 장애물로 봉인된다.",
   mode: "write",
   parameters: {
@@ -161,7 +163,17 @@ const generateMap: ToolDefinition = {
       entrance: { ...COORD_SCHEMA, description: "{x,y} 입구(생략 시 좌측 중앙)" },
       pois: { type: "array", description: "[{x,y}] 관심 지점", items: COORD_SCHEMA },
       chokepoints: { type: "integer", description: "장애물 밀도(0~100, 기본 12)" },
-      seed: { type: "integer" },
+      seed: { type: "integer", description: "타일 산포·BGM 선택 시드(BGM은 별도 네임스페이스, 생략 시 1)" },
+      bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
+      bgm: {
+        type: "object",
+        description: "명시적 BGM 설정. 있으면 자동 선택을 건너뛴다.",
+        properties: {
+          mode: { type: "string", enum: ["parent", "none", "custom"] },
+          resourceId: { type: "string" },
+          fadeInMs: { type: "integer" },
+        },
+      },
       id: { type: "string" },
     },
     required: ["theme", "width", "height"],
@@ -241,6 +253,8 @@ const generateMap: ToolDefinition = {
       }
     }
 
+    const bgmResourceId = assignCreatedMapBgm(map, args, { themeOrName: theme, defaultSeed: 1 });
+
     draft.maps[id] = map;
     if (!draft.maps[draft.mapTree.mapId]) {
       draft.mapTree = { mapId: id, children: [] };
@@ -253,7 +267,7 @@ const generateMap: ToolDefinition = {
     }
 
     return {
-      summary: `${theme}/${generationProfile.layout} 맵 '${map.name}'(${width}x${height}) 생성 — POI ${pois.length}개, 통로 수리 ${repairs}회, 테두리 ${border === "wall" ? "벽" : "없음"}`,
+      summary: `${theme}/${generationProfile.layout} 맵 '${map.name}'(${width}x${height}) 생성 — POI ${pois.length}개, 통로 수리 ${repairs}회, 테두리 ${border === "wall" ? "벽" : "없음"}, BGM ${bgmResourceId}`,
       data: {
         mapId: id,
         entrance,
@@ -261,6 +275,7 @@ const generateMap: ToolDefinition = {
         border,
         generationProfile: generationProfile.tilesetId,
         generationLayout: generationProfile.layout,
+        bgmResourceId,
       },
     };
   },
