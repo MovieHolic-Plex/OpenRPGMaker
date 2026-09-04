@@ -1,0 +1,100 @@
+{
+  "base": "http://127.0.0.1:9841",
+  "errors": [
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 {message: 이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요., retryCount: 0}"
+  ],
+  "layout": {
+    "canon-empty": {
+      "window": {
+        "w": 1416,
+        "h": 876
+      },
+      "body": {
+        "clientH": 778,
+        "scrollH": 778
+      },
+      "firstChild": {
+        "cls": "db-ws-frame",
+        "clientH": 778,
+        "scrollH": 778
+      },
+      "nestedScrollers": [
+        "div.db-ws-detail-body"
+      ],
+      "overflowing": []
+    },
+    "canon-filled": {
+      "window": {
+        "w": 1416,
+        "h": 876
+      },
+      "body": {
+        "clientH": 778,
+        "scrollH": 778
+      },
+      "firstChild": {
+        "cls": "db-ws-frame",
+        "clientH": 778,
+        "scrollH": 778
+      },
+      "nestedScrollers": [
+        "div.db-ws-detail-body"
+      ],
+      "overflowing": []
+    },
+    "codex-empty": {
+      "window": {
+        "w": 1416,
+        "h": 876
+      },
+      "body": {
+        "clientH": 777,
+        "scrollH": 801
+      },
+      "firstChild": {
+        "cls": "db-ws-card-hint db-world-codex-lead",
+        "clientH": 16,
+        "scrollH": 16
+      },
+      "nestedScrollers": [
+        "article.world-wiki-view"
+      ],
+      "overflowing": []
+    },
+    "codex-filled": {
+      "window": {
+        "w": 1416,
+        "h": 876
+      },
+      "body": {
+        "clientH": 777,
+        "scrollH": 801
+      },
+      "firstChild": {
+        "cls": "db-ws-card-hint db-world-codex-lead",
+        "clientH": 16,
+        "scrollH": 16
+      },
+      "nestedScrollers": [
+        "article.world-wiki-view"
+      ],
+      "overflowing": []
+    }
+  }
+}

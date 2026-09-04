@@ -1,9 +1,12 @@
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { field, segmentedControl, textControl } from "@/editor/panels/databaseControls";
+import { renderMarkdown } from "@/util/markdown";
+import { toast } from "@/util/toast";
 import { store } from "@/project/store";
 import {
   compactWorldCanon,
   resolveWorldCanon,
+  WORLD_CANON_BOUNDS,
   WORLD_CANON_TONES,
   type ResolvedWorldCanon,
   type ResolvedWorldCanonLaws,
@@ -13,7 +16,7 @@ import {
 } from "@/project/world/canon";
 import { el } from "@/util/dom";
 
-const TONE_LABELS: Record<WorldCanonTone, string> = {
+export const WORLD_CANON_TONE_LABELS: Record<WorldCanonTone, string> = {
   hopeful: "희망",
   grim: "우울",
   comic: "코믹",
@@ -64,7 +67,7 @@ export function toneRow(selected: readonly WorldCanonTone[], rerender: () => voi
         return el("button", {
           class: `db-world-canon-chip${on ? " is-on" : ""}`,
           attrs: { type: "button", "aria-pressed": on ? "true" : "false" },
-          text: TONE_LABELS[tone],
+          text: WORLD_CANON_TONE_LABELS[tone],
           dataset: { testid: `db-world-canon-tone-${tone}` },
           on: {
             click: () => {
@@ -83,12 +86,24 @@ export function toneRow(selected: readonly WorldCanonTone[], rerender: () => voi
 export function absenceEditor(absences: readonly string[], rerender: () => void): HTMLElement {
   const input = el("input", {
     class: "db-world-canon-absence-input",
-    attrs: { type: "text", placeholder: "예: 총, 엘프, 부활", "aria-label": "없는 것 추가" },
+    attrs: { type: "text", placeholder: "예: 총, 엘프, 부활", "aria-label": "없는 것 추가", maxlength: String(WORLD_CANON_BOUNDS.absence) },
     dataset: { testid: "db-world-canon-absence-input" },
   });
   const add = (): void => {
     const next = input.value.trim();
-    if (!next || absences.includes(next)) return;
+    if (!next) return;
+    if (absences.includes(next)) {
+      toast("이미 있는 금기입니다", "info");
+      return;
+    }
+    if (next.length > WORLD_CANON_BOUNDS.absence) {
+      toast(`금기는 ${WORLD_CANON_BOUNDS.absence}자까지 적을 수 있습니다`, "error");
+      return;
+    }
+    if (absences.length >= WORLD_CANON_BOUNDS.absenceCount) {
+      toast(`금기는 ${WORLD_CANON_BOUNDS.absenceCount}개까지 적을 수 있습니다`, "error");
+      return;
+    }
     recordProjectSnapshot("세계관 없는 것");
     writeCanon({ absences: [...absences, next] });
     rerender();
@@ -174,7 +189,12 @@ export function lawRow(
   });
 }
 
-export function bodyField(body: string): HTMLElement {
+// 미리보기가 펼쳐져 있는지를 탭 리렌더 너머로 유지한다 — 본문 타이핑이 남긴 보류 갱신이
+// grace 창 뒤에 탭을 다시 그려 펼쳐진 미리보기를 닫아버리는 경쟁을 막는다.
+let canonPreviewOpen = false;
+
+export function bodyField(body: string, onBodyInput?: () => void): HTMLElement {
+  const wrap = el("div", { class: "db-world-canon-body-wrap" });
   const area = el("textarea", {
     class: "db-world-canon-body",
     attrs: {
@@ -185,6 +205,49 @@ export function bodyField(body: string): HTMLElement {
     value: body,
     dataset: { testid: "db-world-canon-body" },
   });
-  area.addEventListener("input", () => writeCanon({ body: area.value }, "db-world-canon-body"));
-  return area;
+  area.addEventListener("input", () => {
+    writeCanon({ body: area.value }, "db-world-canon-body");
+    onBodyInput?.();
+  });
+  const preview = el("button", {
+    class: "btn small db-world-canon-preview-toggle",
+    attrs: { type: "button", "aria-expanded": "false" },
+    text: "미리보기",
+    dataset: { testid: "db-world-canon-preview-toggle" },
+  });
+  const pane = el("section", {
+    class: "world-markdown db-world-canon-preview",
+    ...(!canonPreviewOpen ? { attrs: { hidden: "" } } : {}),
+    dataset: { testid: "db-world-canon-preview" },
+  });
+  const showPreview = (): void => {
+    while (pane.firstChild) pane.firstChild.remove();
+    // 스토어에 남은 본문이 아니라 지금 눈앞의 textarea 값을 렌더한다 — 미리보기를 여는
+    // 클릭 자체가 grace 창(400ms) 안의 갱신을 보류시켜 탭이 다시 그려지기 전이기 때문이다.
+    pane.append(renderMarkdown(area.value.trim() ? area.value : "*아직 본문이 없습니다.*"));
+    pane.removeAttribute("hidden");
+    area.setAttribute("hidden", "");
+    preview.textContent = "편집으로";
+    preview.setAttribute("aria-expanded", "true");
+    canonPreviewOpen = true;
+  };
+  const hidePreview = (): void => {
+    pane.setAttribute("hidden", "");
+    area.removeAttribute("hidden");
+    preview.textContent = "미리보기";
+    preview.setAttribute("aria-expanded", "false");
+    canonPreviewOpen = false;
+  };
+  preview.addEventListener("click", () => {
+    if (pane.getAttribute("hidden") === null) {
+      hidePreview();
+      return;
+    }
+    showPreview();
+    // 본문 카드 아래에 열리는 미리보기는 상세 창 스크롤 밖에 있을 수 있다 — 펼치면 그리로 데려간다.
+    if (typeof pane.scrollIntoView === "function") pane.scrollIntoView({ block: "nearest" });
+  });
+  if (canonPreviewOpen) showPreview();
+  wrap.append(area, preview, pane);
+  return wrap;
 }

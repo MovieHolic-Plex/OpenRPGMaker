@@ -23,6 +23,7 @@ import {
 } from "@/editor/panels/databaseBalanceCompute";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { store } from "@/project/store";
+import { resolveWorldCanon, worldCanonHasContent } from "@/project/world/canon";
 import { clearChildren, el } from "@/util/dom";
 
 // DatabaseRecords 의 9개 컬렉션 — DatabaseCollection(= keyof DatabaseRecords)과 동일한 집합.
@@ -112,7 +113,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
           }),
         ],
       }),
-      renderGamePulse(project),
+      renderGamePulse(project, host),
     ],
   });
   const statsRow = el("div", { class: "db-overview-stats" });
@@ -155,7 +156,27 @@ function overviewIconChip(label: string, tab: DatabaseTab): HTMLElement {
   });
 }
 
-function renderGamePulse(project: ReturnType<typeof store.getCurrent>): HTMLElement {
+function renderCanonCard(project: ReturnType<typeof store.getCurrent>, host: HTMLElement): HTMLElement {
+  const authored = worldCanonHasContent(project.worldCanon);
+  const canon = resolveWorldCanon(project.worldCanon);
+  return el("button", {
+    class: "db-overview-pulse-card db-overview-canon",
+    attrs: { type: "button", title: "자료집 「이 세계」 탭 열기" },
+    dataset: { testid: "db-overview-canon" },
+    on: { click: () => jumpToTab(host, "worldCanon") },
+    children: [
+      el("span", { text: "세계관" }),
+      el("strong", { text: authored ? (canon.name || "이름 없는 세계") : "이 세계를 적어 보세요" }),
+      el("p", {
+        text: authored
+          ? (canon.premise || `없는 것 ${canon.absences.length} · 톤 ${canon.tones.length}`)
+          : "이름·전제·없는 것 — 조수가 이 한 장에 맞춰 만든다",
+      }),
+    ],
+  });
+}
+
+function renderGamePulse(project: ReturnType<typeof store.getCurrent>, host: HTMLElement): HTMLElement {
   const maps = Object.values(project.maps);
   const events = maps.reduce((sum, map) => sum + map.events.length, 0) + project.commonEvents.length;
   const cast = project.database.actors.length + Object.keys(project.characters ?? {}).length;
@@ -174,7 +195,8 @@ function renderGamePulse(project: ReturnType<typeof store.getCurrent>): HTMLElem
   return el("section", {
     class: "db-overview-pulse-grid",
     children: [
-      card("db-overview-world", "세계", `${maps.length}개 맵`, `${project.mapConnections?.length ?? 0}개 이동 연결`),
+      renderCanonCard(project, host),
+      card("db-overview-world", "맵", `${maps.length}개 맵`, `${project.mapConnections?.length ?? 0}개 이동 연결`),
       card("db-overview-story", "이야기", `${events}개 이벤트`, `${project.quests?.length ?? 0}개 퀘스트 · ${project.endings?.length ?? 0}개 엔딩`),
       card("db-overview-cast", "등장인물", `${cast}명`, `플레이어 ${project.database.actors.length}명 · 주민 ${Object.keys(project.characters ?? {}).length}명`),
       card("db-overview-systems", "게임 데이터", `${databaseRecords}개 레코드`, `전투, 아이템, 성장, 생활 규칙`),

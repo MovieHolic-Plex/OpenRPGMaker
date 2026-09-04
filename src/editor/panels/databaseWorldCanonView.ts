@@ -4,9 +4,11 @@ import {
   bodyField,
   lawRow,
   toneRow,
+  WORLD_CANON_TONE_LABELS,
   writeCanon,
 } from "@/editor/panels/databaseWorldCanonFields";
-import { detailPane, sectionCard, workspaceShell } from "@/editor/panels/databaseWorkspace";
+import { detailHero, detailPane, sectionCard, workspaceShell } from "@/editor/panels/databaseWorkspace";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import {
   isWorldCanonStatus,
@@ -18,9 +20,33 @@ import { el } from "@/util/dom";
 
 export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): void {
   const canon = resolveWorldCanon(store.getCurrent().worldCanon);
+  const bodyCard = sectionCard({
+    title: "본문",
+    hint: "역사·지형·문화·비밀",
+    testid: "db-world-canon-body-card",
+    children: [bodyField(canon.body, hintLine)],
+  });
+  // 본문 타이핑마다 힌트 줄의 발췌 카운터를 갱신한다 — 다시 렌더하지 않고 숫자만 바꾼다.
+  function hintLine(): void {
+    const filled = (bodyCard.querySelector("[data-testid='db-world-canon-body']") as HTMLTextAreaElement | null)
+      ?.value.trim().length ?? canon.body.trim().length;
+    const hint = bodyCard.querySelector(".db-ws-card-hint");
+    if (hint) hint.textContent = excerptHint(filled);
+  }
+  hintLine();
   host.append(
     workspaceShell({
       testid: "db-world-canon-workspace",
+      header: detailHero({
+        eyebrow: "세계관 · AI가 항상 읽는 한 장",
+        title: canon.name || "이름 없는 세계",
+        subtitle: "이 세계에 적는 것이 조수·개요·장르 시드가 읽는 정본이다. 낱장 카드는 「설정집」 탭에 둔다.",
+        tags: [
+          ...canon.tones.map((tone) => WORLD_CANON_TONE_LABELS[tone]),
+          ...(canon.absences.length > 0 ? [`없는 것 ${canon.absences.length}`] : []),
+        ],
+        testid: "db-world-canon-hero",
+      }),
       detail: detailPane({
         body: [
           identityCard(canon),
@@ -41,16 +67,18 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
             testid: "db-world-canon-laws",
             children: WORLD_CANON_LAW_KINDS.map((kind) => lawRow(kind, canon.laws[kind], canon.laws, rerender)),
           }),
-          sectionCard({
-            title: "설정집",
-            hint: "역사·지형·문화·비밀 — 형식 없음",
-            testid: "db-world-canon-codex",
-            children: [bodyField(canon.body)],
-          }),
+          bodyCard,
         ],
       }),
     }),
   );
+}
+
+export function excerptHint(filled: number): string {
+  const excerptLen = Math.min(600, filled);
+  return filled > 600
+    ? `역사·지형·문화·비밀 — 조수는 앞 600자를 본다 (뒤 ${filled - 600}자는 발췌 밖)`
+    : `역사·지형·문화·비밀 — 조수는 앞 600자 중 ${excerptLen}자를 본다`;
 }
 
 function identityCard(canon: ResolvedWorldCanon): HTMLElement {
@@ -92,6 +120,8 @@ function identityCard(canon: ResolvedWorldCanon): HTMLElement {
         ],
         (value) => {
           if (!isWorldCanonStatus(value)) return;
+          // 톤·없는 것·법칙과 같은 이산 편집 — 되돌리기 한 장을 먼저 남긴다.
+          recordProjectSnapshot("세계관 상태");
           writeCanon({ status: value });
         },
       ),
