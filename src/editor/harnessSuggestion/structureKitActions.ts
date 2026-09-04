@@ -63,6 +63,27 @@ export function deleteStructureKit(tilesetId: TilesetId, kitId: string): void {
   });
 }
 
+/**
+ * Phase 2 소유권 계약: 구조물은 그림 레지스트리 — 꾸러미 물건(thing.objectId)이 여기를 가리킨다.
+ * 킷을 지우기 전 이 함수로 참조를 세어, 0이 아니면 삭제 UI가 고아 경고를 띄운다.
+ * 카탈로그 폴백(interiorObjectById)이 있으면 시공은 되되 저작된 그림은 깨진다 — "깨짐"이 아니라 "고아"다.
+ */
+export function conceptThingsReferencingKit(
+  tilesetId: TilesetId,
+  kitId: string,
+): { readonly bundleId: string; readonly bundleLabel: string; readonly thingId: string; readonly thingLabel: string }[] {
+  const tileset = store.getCurrent().tilesets[tilesetId];
+  const out: { bundleId: string; bundleLabel: string; thingId: string; thingLabel: string }[] = [];
+  for (const bundle of tileset?.scratchConceptBundles ?? []) {
+    for (const thing of bundle.things) {
+      if (thing.objectId === kitId) {
+        out.push({ bundleId: bundle.id, bundleLabel: bundle.label, thingId: thing.id, thingLabel: thing.label });
+      }
+    }
+  }
+  return out;
+}
+
 /** DB 편집기: 킷을 통째로 갈아끼운다. 없는 id 면 아무것도 하지 않는다(유령 킷 생성 방지). */
 export function replaceStructureKit(tilesetId: TilesetId, kit: SectionStructureKitDef): void {
   store.update((project) => {
