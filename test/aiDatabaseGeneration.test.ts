@@ -293,3 +293,28 @@ describe("generateDatabaseRecordWithAi", () => {
     expect(outcome.recordId).toBe("item_ai_bread-2");
   });
 });
+
+describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
+  const CANON = { name: "화약 없는 왕국", absences: ["총", "화약"] };
+
+  it("캐논이 있으면 시스템 프롬프트에 캐논 블록과 금지 목록이 실린다", () => {
+    const messages = buildRecordPrompt("enemy", "늑대", [], CANON);
+    expect(String(messages[0]!.content)).toContain("## 이 세계(세계관 고정)");
+    expect(String(messages[0]!.content)).toContain("총");
+  });
+
+  it("캐논이 없으면 캐논 블록 없이 기존처럼 동작한다", () => {
+    const messages = buildRecordPrompt("item", "회복약", ["약초"]);
+    expect(String(messages[0]!.content)).not.toContain("## 이 세계(세계관 고정)");
+  });
+
+  it("금지어가 든 이름·설명은 거부한다", () => {
+    expect(() => parseGeneratedRecord("item", '{"name":"화약 폭탄","price":10}', CANON)).toThrow(/화약/);
+    expect(() => parseGeneratedRecord("item", '{"name":"폭탄","description":"화약을 가득 채웠다"}', CANON)).toThrow(/화약/);
+    expect(() => parseGeneratedRecord("enemy", '{"name":"총잡이 늑대"}', CANON)).toThrow(/총/);
+  });
+
+  it("금지어가 없으면 통과한다", () => {
+    expect(parseGeneratedRecord("item", '{"name":"빵","price":10}', CANON)).toEqual({ name: "빵", price: 10 });
+  });
+});

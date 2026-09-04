@@ -1,4 +1,6 @@
 import { chatCompletion, type AiConfig, type ChatMessage, type ChatResult } from "@/ai/llmClient";
+import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "@/ai/worldCanonContext";
+import type { WorldCanon } from "@/project/world/canon";
 import { generateAiImage, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
 import { applyToolSequenceToStore } from "@/editor/tools/applyChangesetToStore";
 import { store } from "@/project/store";
@@ -85,9 +87,15 @@ export function generatedRecordId(kind: AiDatabaseKind, name: string, taken: rea
   return `${prefix}_ai_${index}`;
 }
 
-export function buildRecordPrompt(kind: AiDatabaseKind, brief: string, existingNames: readonly string[]): ChatMessage[] {
+export function buildRecordPrompt(
+  kind: AiDatabaseKind,
+  brief: string,
+  existingNames: readonly string[],
+  canon?: WorldCanon,
+): ChatMessage[] {
   const contract = kind === "item" ? ITEM_CONTRACT : ENEMY_CONTRACT;
   const role = kind === "item" ? "아이템" : "몬스터(적)";
+  const canonSection = worldCanonPromptSection(canon);
   return [
     {
       role: "system",
@@ -97,6 +105,7 @@ export function buildRecordPrompt(kind: AiDatabaseKind, brief: string, existingN
         `스키마: ${contract}`,
         "모르는 필드를 추가하지 마라. 수치는 초반~중반 난이도에 맞는 상식적인 값으로 정한다.",
         existingNames.length > 0 ? `이미 있는 이름(중복 금지): ${existingNames.slice(0, 40).join(", ")}` : "",
+        canonSection ?? "",
       ].filter(Boolean).join("\n"),
     },
     { role: "user", content: brief },
@@ -143,7 +152,7 @@ function firstJsonObject(text: string): string {
   return "";
 }
 
-export function parseGeneratedRecord(kind: AiDatabaseKind, raw: string): Record<string, unknown> {
+export function parseGeneratedRecord(kind: AiDatabaseKind, raw: string, canon?: WorldCanon): Record<string, unknown> {
   const json = firstJsonObject(raw);
   if (!json) throw new AiDatabaseGenerationError("AI 응답에서 JSON 객체를 찾지 못했습니다.");
   let parsed: unknown;
@@ -164,6 +173,13 @@ export function parseGeneratedRecord(kind: AiDatabaseKind, raw: string): Record<
   const name = typeof patch.name === "string" ? patch.name.trim() : "";
   if (!name) throw new AiDatabaseGenerationError("AI 응답에 name 이 없습니다.");
   patch.name = name;
+  // 허용 필드 화이트리스트가 자르기 전 원시 응답 기준으로 검사한다 — 적 스키마에는
+  // description 이 없어서 필터 뒤에는 금지어가 이미 사라져 있다.
+  const rawDescription = typeof source.description === "string" ? source.description : "";
+  const hits = findWorldCanonAbsenceHits(`${name} ${rawDescription}`, canon);
+  if (hits.length > 0) {
+    throw new AiDatabaseGenerationError(`「이 세계」에 없는 것을 썼습니다 — 빼고 다시 만드세요: ${hits.join(", ")}`);
+  }
   return patch;
 }
 
@@ -225,13 +241,13 @@ export async function generateDatabaseRecordWithAi(
   const project = currentProject();
   notify("text");
   const result = await complete(input.config, {
-    messages: buildRecordPrompt(input.kind, brief, existingNamesOf(project, input.kind)),
+    messages: buildRecordPrompt(input.kind, brief, existingNamesOf(project, input.kind), project.worldCanon),
     signal: input.signal,
   });
   const answer = typeof result.message.content === "string"
     ? result.message.content
     : (result.message.content ?? []).map((part) => (part.type === "text" ? part.text : "")).join("");
-  const patch = parseGeneratedRecord(input.kind, answer);
+  const patch = parseGeneratedRecord(input.kind, answer, project.worldCanon);
   const name = String(patch.name);
 
   const takenIds = (input.kind === "item" ? project.database.items : project.database.enemies).map((entry) => entry.id);

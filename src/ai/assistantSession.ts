@@ -2915,6 +2915,7 @@ export class AssistantSession {
         requestText: this.currentTurnRequestText,
         worldDigest,
         worldNames,
+        worldCanon: this.ctx.project.worldCanon,
         existingCast: existingCastOnMap(this.ctx.project, mapId, new Set(residents.map((npc) => npc.eventId))),
         residents,
       };

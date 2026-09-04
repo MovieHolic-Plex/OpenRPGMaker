@@ -55,6 +55,13 @@ export function worldCanonPromptSection(value: WorldCanon | undefined): string |
   return lines.join("\n");
 }
 
+/** 캐논 금지어(absences)가 텍스트에 그대로 들어 있으면 그 금지어들을 돌려준다. 빈 캐논이면 항상 빈 배열. */
+export function findWorldCanonAbsenceHits(text: string, value: WorldCanon | undefined): readonly string[] {
+  if (!text || !worldCanonHasContent(value)) return [];
+  const absences = resolveWorldCanon(value).absences;
+  return absences.filter((absence) => absence.length > 0 && text.includes(absence));
+}
+
 function excerpt(body: string): string {
   const flat = body.trim();
   if (flat.length <= BODY_EXCERPT_CHARS) return flat;

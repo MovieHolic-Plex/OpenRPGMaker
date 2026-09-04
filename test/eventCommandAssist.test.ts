@@ -867,3 +867,42 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(harness.replaced).toHaveLength(0);
   });
 });
+
+describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
+  const CANON = { name: "화약 없는 왕국", absences: ["총", "화약"] };
+
+  function canonProject(): Project {
+    const project = testProject();
+    project.worldCanon = CANON;
+    return project;
+  }
+
+  it("캐논이 있으면 프롬프트에 캐논 블록과 금지 목록이 실린다", () => {
+    const prompt = buildEventAssistPrompt({ project: canonProject(), mapId: testProject().startMapId, page: testPage() });
+    expect(prompt).toContain("## 이 세계(세계관 고정)");
+    expect(prompt).toContain("총");
+  });
+
+  it("캐논이 없으면 캐논 블록 없이 기존처럼 동작한다", () => {
+    const prompt = buildEventAssistPrompt({ project: testProject(), mapId: testProject().startMapId, page: testPage() });
+    expect(prompt).not.toContain("## 이 세계(세계관 고정)");
+  });
+
+  it("text 커맨드 body에 금지어가 있으면 거부한다 — 중첩 fork 안도 본다", () => {
+    const project = canonProject();
+    const bad = JSON.stringify([
+      { kind: "text", speaker: "", body: "화약 창고를 열어라" },
+      { kind: "fork", condition: { kind: "switch", switchId: "sw_0001", value: true },
+        then: [{ kind: "text", speaker: "", body: "총을 들어라" }], else: [] },
+    ]);
+    const parsed = parseAndValidate(project, bad, { allowEmpty: true });
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.errors.join("\n")).toMatch(/화약|총|금지/);
+  });
+
+  it("금지어가 없으면 통과한다", () => {
+    const parsed = parseAndValidate(canonProject(), JSON.stringify([{ kind: "text", speaker: "", body: "마을에 온 걸 환영하네." }]), { allowEmpty: true });
+    expect(parsed.ok).toBe(true);
+  });
+});
