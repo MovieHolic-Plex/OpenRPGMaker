@@ -11,7 +11,9 @@
 // 브라우저·Phaser·세션 비의존. 프로젝트를 읽기만 하고 바꾸지 않는다(적용은 툴이 한다).
 
 import type { ChatMessage } from "@/ai/llmClient";
+import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import { normalizeProjectWorld } from "@/project/world/guards";
+import type { WorldCanon } from "@/project/world/canon";
 import type { ProjectWorld, WorldEntity, WorldRelation } from "@/project/world/types";
 import type { EventPage, EventPageCondition, GameEvent, Project } from "@/project/types";
 
@@ -39,6 +41,8 @@ export interface CastContext {
   readonly requestText: string;
   readonly worldDigest: string;
   readonly worldNames: readonly string[];
+  /** 「이 세계」 캐논 — 있으면 프롬프트에 고정 블록으로 실리고 금지어가 검증된다. */
+  readonly worldCanon?: WorldCanon;
   readonly existingCast: readonly { readonly name: string; readonly line: string }[];
   readonly residents: readonly PendingNpc[];
 }
@@ -160,12 +164,14 @@ export function existingCastOnMap(project: Project, mapId: string, exclude: Read
 }
 
 export function buildCastWriterMessages(ctx: CastContext): ChatMessage[] {
+  const canonSection = worldCanonPromptSection(ctx.worldCanon);
   const system = [
     `${CAST_WRITER_MARKER}: RPG 마을 주민의 이름·역할·관계·대사를 한 장의 캐스트 시트(JSON)로 쓴다.`,
     "규칙:",
     "- 모든 대기 페이지(pageId)에 1~3줄의 대사를 쓴다. 빈 페이지·생략 금지.",
     "- 주민끼리 엮는다: 절반 이상의 주민이 다른 주민(새 주민 또는 기존 주민)의 **이름**을 대사에서 언급한다. knows 에 그 주민의 eventId 를 적는다.",
     "- 세계관과 엮는다: 세계관 개체가 있으면 최소 한 줄은 그 개체의 **이름**을 그대로 언급한다(세력·장소·사건).",
+    ...(canonSection ? ["- 「이 세계」에 없는 것(금지 목록)에 적힌 말은 대사에 절대 쓰지 않는다."] : []),
     "- 테마에 맞는 한국어 구어체. 도구명·좌표·id 를 대사에 쓰지 않는다. 인사말만 있는 대사 금지 — 구체적인 일·소문·관계를 말한다.",
     "- 조건이 붙은 페이지는 그 조건(활동·시간대·호감도)에 맞는 말을 한다.",
     "- 상점 주인은 파는 것과 손님을 말하되 상점 UI 는 코드가 붙이므로 언급하지 않는다.",
@@ -184,6 +190,7 @@ export function buildCastWriterMessages(ctx: CastContext): ChatMessage[] {
     `## 사용자 요청\n${ctx.requestText}`,
     `## 맵\n${ctx.mapName} (${ctx.mapId})`,
     `## 세계관 다이제스트\n${ctx.worldDigest}`,
+    ...(canonSection ? [canonSection] : []),
     `## 이미 대사가 있는 주민\n${existing}`,
     `## 대사를 써야 할 주민(대기)\n${residents}`,
   ].join("\n\n");
@@ -234,6 +241,17 @@ export function parseCastSheet(raw: string, ctx: CastContext): ParseCastSheetRes
   if (ctx.worldNames.length > 0) {
     const mentionsWorld = residents.some((resident) => resident.pages.some((page) => page.lines.some((line) => ctx.worldNames.some((name) => line.includes(name)))));
     if (!mentionsWorld) issues.push(`세계관과 엮이지 않았습니다 — 다음 이름 중 하나를 대사에 그대로 언급하세요: ${ctx.worldNames.slice(0, 8).join(", ")}`);
+  }
+  const absenceHits = new Set<string>();
+  for (const resident of residents) {
+    for (const page of resident.pages) {
+      for (const line of page.lines) {
+        for (const hit of findWorldCanonAbsenceHits(line, ctx.worldCanon)) absenceHits.add(hit);
+      }
+    }
+  }
+  if (absenceHits.size > 0) {
+    issues.push(`「이 세계」에 없는 것을 썼습니다 — 대사에서 빼세요: ${[...absenceHits].join(", ")}`);
   }
   if (issues.length > 0) return { ok: false, issues };
   return { ok: true, sheet: { residents } };

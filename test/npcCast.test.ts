@@ -205,3 +205,45 @@ describe("castSheetToWorldPatch — 주민은 세계관 개체가 되고 서로 
     expect(normalized.entities.some((entity) => entity.id === "w_faction_river")).toBe(true);
   });
 });
+
+describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
+  function canonContext(project: Project): CastContext {
+    return {
+      ...contextFor(project),
+      worldCanon: { name: "화약 없는 왕국", absences: ["총", "화약"] },
+    };
+  }
+
+  it("캐논이 있으면 프롬프트에 캐논 블록과 금지 목록이 실린다", () => {
+    const project = projectWithPendingNpcs();
+    const messages = buildCastWriterMessages(canonContext(project));
+    expect(String(messages[1]!.content)).toContain("## 이 세계(세계관 고정)");
+    expect(String(messages[1]!.content)).toContain("총");
+    expect(String(messages[0]!.content)).toContain("없는 것");
+  });
+
+  it("캐논이 없으면 캐논 블록 없이 기존처럼 동작한다", () => {
+    const project = projectWithPendingNpcs();
+    const messages = buildCastWriterMessages(contextFor(project));
+    expect(String(messages[1]!.content)).not.toContain("## 이 세계(세계관 고정)");
+  });
+
+  it("금지어를 쓴 대사는 재킥 사유로 거부한다", () => {
+    const project = projectWithPendingNpcs();
+    const sheet = {
+      residents: [
+        { eventId: "ev_a", name: "은호", role: "어부", summary: "새벽 그물을 걷는 청년", knows: ["ev_b"],
+          pages: [{ pageId: "ev_a_p0", lines: ["다래 가게에 총을 팔러 갔어요. 강물지기단 얘기 들었어요?"] }] },
+        { eventId: "ev_b", name: "다래", role: "잡화점 주인", summary: "장터를 지키는 상인", knows: ["ev_a"],
+          pages: [
+            { pageId: "ev_b_p0", lines: ["은호가 가져온 은어가 오늘의 특산이에요."] },
+            { pageId: "ev_b_p1", lines: ["장터 소식? 은호가 큰 물고기를 잡았대요."] },
+          ] },
+      ],
+    };
+    const parsed = parseCastSheet(JSON.stringify(sheet), canonContext(project));
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.issues.join("\n")).toMatch(/총|금지/);
+  });
+});

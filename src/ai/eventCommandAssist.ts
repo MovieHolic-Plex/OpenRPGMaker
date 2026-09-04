@@ -37,6 +37,7 @@ import {
 } from "./eventResourceCatalog";
 import { chatCompletion, type AiConfig, type ChatMessage } from "./llmClient";
 import { composeSystemPrompt } from "./systemPromptEnvelope";
+import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "./worldCanonContext";
 
 export interface EventAssistContext {
   readonly project: Project;
@@ -315,6 +316,8 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
     ].join("\n")
   );
 
+  const canonSection = worldCanonPromptSection(project.worldCanon);
+  if (canonSection) sections.push(canonSection);
   sections.push(existingCommandsSection(page, scope));
   sections.push(resourceSlotSection(project, kinds));
   sections.push(outputContractSection(scope));
@@ -390,7 +393,13 @@ export function parseAndValidate(
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
 
-  // 3) 참조 검증 — 존재하지 않는 itemId/switchId 등을 잡는다.
+  // 3) 세계관 금지어 검증 — text 대사(중첩 포함)에 「이 세계」에 없는 말이 있으면 자가수정 루프가 고친다.
+  const canonHits = collectCanonAbsenceHits(commands, project.worldCanon);
+  if (canonHits.length > 0) {
+    return { ok: false, errors: [`「이 세계」에 없는 것을 썼습니다 — 대사에서 빼세요: ${canonHits.join(", ")}`] };
+  }
+
+  // 4) 참조 검증 — 존재하지 않는 itemId/switchId 등을 잡는다.
   const referenceContext = buildReferenceContext(project);
   try {
     validateCommands(commands, referenceContext);
@@ -403,6 +412,21 @@ export function parseAndValidate(
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
   return { ok: true, commands };
+}
+
+/** text 커맨드 body(중첩 분기 포함)에 든 캐논 금지어를 모은다. 캐논이 비었으면 항상 빈 배열. */
+function collectCanonAbsenceHits(commands: readonly Command[], canon: Project["worldCanon"]): readonly string[] {
+  const hits = new Set<string>();
+  const visit = (list: readonly Command[]): void => {
+    for (const command of list) {
+      if (command.kind === "text" && typeof command.body === "string") {
+        for (const hit of findWorldCanonAbsenceHits(command.body, canon)) hits.add(hit);
+      }
+      for (const branch of commandBranches(command)) visit(branch.commands);
+    }
+  };
+  visit(commands);
+  return [...hits];
 }
 
 // transfer 의 좌표는 맵 밖으로 나갈 수 있다. 프롬프트에 맵 크기를 실어도 모델은 (0,0) 같은
