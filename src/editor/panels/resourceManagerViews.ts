@@ -152,32 +152,22 @@ function resourceCommandPanel(options: ResourceWorkbenchOptions): HTMLElement {
       }),
       el("button", { class: "rm-command-button", text: "내보내기...", attrs: { type: "button", disabled: "true" } }),
       el("button", { class: "rm-command-button", text: "삭제", attrs: { type: "button", disabled: "true" } }),
-      importFormatBox(),
+      importFormatNote(),
       el("div", { class: "rm-preview-well", attrs: { "aria-label": "미리보기" } }),
     ],
   });
 }
 
-function importFormatBox(): HTMLElement {
-  return el("fieldset", {
+function importFormatNote(): HTMLElement {
+  return el("div", {
     class: "rm-import-format",
     dataset: { testid: "resource-import-format" },
     children: [
-      el("legend", { text: "가져오기 형식" }),
-      labelWithInput("PNG·JPEG (표준)", "png-standard", true),
-      labelWithInput("WebP·GIF (PNG로 자동 변환)", "webp-gif-normalize", false),
+      el("div", { class: "rm-import-format-title", text: "가져오기 형식" }),
+      el("div", { text: "PNG·JPEG (표준)" }),
+      el("div", { text: "WebP·GIF (PNG 첫 프레임으로 자동 변환)" }),
     ],
   });
-}
-
-function labelWithInput(label: string, value: string, checked: boolean): HTMLElement {
-  const input = document.createElement("input");
-  input.type = "radio";
-  input.name = "resource-import-format";
-  input.value = value;
-  input.checked = checked;
-  input.disabled = value !== "png-standard";
-  return el("label", { class: "rm-radio-row", children: [input, label] });
 }
 
 function uploadedAssetRow(asset: UploadedAsset, actions: UploadedAssetActions): HTMLElement {

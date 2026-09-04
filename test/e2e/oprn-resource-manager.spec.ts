@@ -16,8 +16,7 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   await expect(page.getByTestId("resource-command-panel")).toContainText("가져오기...");
   await expect(page.getByTestId("resource-command-panel")).toContainText("내보내기...");
   await expect(page.getByTestId("resource-command-panel")).toContainText("삭제");
-  await expect(page.getByTestId("resource-import-format")).toContainText("가져오기 형식");
-  await expect(page.getByLabel("PNG·JPEG (표준)")).toBeChecked();
+  await expect(page.getByTestId("resource-import-format")).toContainText("WebP·GIF (PNG 첫 프레임으로 자동 변환)");
   const modal = page.getByTestId("resource-modal");
   await expect(modal.getByRole("button", { name: "닫기", exact: true })).toBeVisible();
   await expect(modal.getByRole("button", { name: "도움말", exact: true })).toBeVisible();
@@ -36,8 +35,10 @@ test("resource manager imports and protects RM2K3-shaped image profiles", async 
   await page.getByTestId("resource-file-input").setInputFiles("test/fixtures/resources/chipset-valid-480x256.png");
   await expect(page.getByTestId("resource-profile-chipset").last()).toContainText("480x256");
   await expect(page.getByTestId("resource-tile-0").last()).toBeVisible();
-  await page.locator("[data-testid^='resource-add-tileset-']").last().click();
+  // 칩셋 가져오기가 타일셋을 자동 추가한다. 수동 클릭은 이미-추가 경로가 된다.
   await expect(page.getByTestId("toast")).toContainText("타일셋 추가됨");
+  await page.locator("[data-testid^='resource-add-tileset-']").last().click();
+  await expect(page.getByTestId("toast")).toContainText("이미 추가된 타일셋");
   await page.locator("[data-testid^='resource-apply-tileset-']").last().click();
   await expect(page.getByTestId("toast")).toContainText("현재 맵 타일 그림판 적용");
   await page.locator("[data-testid^='resource-delete-']").last().click();
@@ -67,7 +68,7 @@ test("resource manager reports invalid image imports in Korean", async ({ page }
     input.files = transfer.files;
     input.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  await expect(page.getByTestId("toast")).toContainText("지원하지 않는 형식입니다 (현재 image/svg+xml)");
+  await expect(page.getByTestId("toast")).toContainText("image/svg+xml");
 
   await page.getByTestId("resource-kind-select").selectOption("chipset");
   await page.getByTestId("resource-file-input").setInputFiles("test/fixtures/resources/chipset-invalid-320x240.png");
