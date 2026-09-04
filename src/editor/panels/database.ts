@@ -82,7 +82,7 @@ export type DatabaseTab =
 const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = [
   { id: "overview", label: "개요", testid: "db-tab-overview" },
   { id: "elements", label: "속성", testid: "db-tab-elements" },
-  { id: "terrain", label: "지형", testid: "db-tab-terrain" },
+  { id: "terrain", label: "지형 효과", testid: "db-tab-terrain" },
   { id: "battleScreen", label: "전투 화면", testid: "db-tab-battle-screen" },
   { id: "battleCommands", label: "전투 명령", testid: "db-tab-battle-commands" },
   { id: "actors", label: "주인공", testid: "db-tab-actors" },

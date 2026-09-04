@@ -11,7 +11,7 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
 
   const parityTabs = [
     { id: "db-tab-elements", marker: "속성" },
-    { id: "db-tab-terrain", marker: "지형" },
+    { id: "db-tab-terrain", marker: "지형 효과" },
     { id: "db-tab-battle-screen", marker: "전투 화면" },
     { id: "db-tab-battle-commands", marker: "전투 명령" },
     { id: "db-tab-battler-animations", marker: "배틀러 애니메이션" },

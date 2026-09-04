@@ -9,7 +9,7 @@ const BATTLE_STUDIO_TABS: readonly { readonly id: BattleStudioTab; readonly labe
   { id: "animations", label: "애니메이션" },
   { id: "battleScreen", label: "전투 화면" },
   { id: "battleCommands", label: "전투 명령" },
-  { id: "terrain", label: "지형" },
+  { id: "terrain", label: "지형 효과" },
 ];
 
 export function battleStudioNav(active: BattleStudioTab): HTMLElement {
@@ -27,7 +27,10 @@ export function battleStudioHeading(active: BattleStudioTab, title: string, desc
     children: [
       el("div", {
         class: "db-battle-studio-title-block",
-        children: [el("h3", { text: title }), el("p", { class: "db-battle-studio-sub", text: description })],
+        children: [
+          el("h3", { text: title }),
+          ...(description ? [el("p", { class: "db-battle-studio-sub", text: description })] : []),
+        ],
       }),
       battleStudioNav(active),
     ],
