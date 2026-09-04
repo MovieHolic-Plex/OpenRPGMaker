@@ -85,15 +85,24 @@ function stubChat(): { chat: (config: AiConfig, req: ChatRequest) => Promise<Cha
 function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (content: string) => void } {
   const rounds: unknown[] = [];
   const pending: Array<(response: Response) => void> = [];
+  // 턴 시작의 의도 선언(의도 라우터)은 모델 호출 1회다 — 본문 라운드가 아니라 즉시 유효 JSON 으로
+  // 답해 라운드 계측·대기열에 섞이지 않게 한다. 본문에 messages 가 있다는 이유만으로 세면
+  // 선언 호출까지 잡혀 턴 수 단정이 무너진다.
+  const INTENT_JSON = JSON.stringify({ mode: "other", needsPlan: false });
   vi.stubGlobal("fetch", vi.fn((_url: unknown, init?: RequestInit) => {
-    let body: { messages?: unknown } = {};
+    let body: { messages?: unknown; response_format?: unknown } = {};
     try {
-      body = JSON.parse(String(init?.body ?? "{}")) as { messages?: unknown };
+      body = JSON.parse(String(init?.body ?? "{}")) as { messages?: unknown; response_format?: unknown };
     } catch {
       body = {};
     }
     if (!Array.isArray(body.messages)) {
       return Promise.resolve(new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } }));
+    }
+    if (body.response_format !== undefined) {
+      return Promise.resolve(new Response(JSON.stringify({
+        choices: [{ message: { role: "assistant", content: INTENT_JSON }, finish_reason: "stop" }],
+      }), { status: 200, headers: { "Content-Type": "application/json" } }));
     }
     rounds.push(body);
     return new Promise<Response>((resolve) => pending.push(resolve));
