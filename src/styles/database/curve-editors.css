@@ -182,10 +182,13 @@
   width: 100%;
 }
 
-.database-modal-backdrop .db-class-dialog-number input:focus-visible {
+/* 다이얼로그는 document.body 직속 마운트라 .database-modal-backdrop 스코프가 닿지 않는다
+   (PR #540 후속, ultrabrain 리뷰) — unscoped 선택자 + :root 토큰으로 건다
+   (backdrop 스코프 --db-studio-* 는 여기서 상속되지 않는다). */
+.db-class-dialog-number input:focus-visible {
   outline: none;
-  border-color: var(--db-studio-accent);
-  box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-muted);
 }
 
 .database-modal-backdrop .db-class-dialog-side .db-advanced-panel {

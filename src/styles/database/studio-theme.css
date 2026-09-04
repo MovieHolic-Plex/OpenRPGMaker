@@ -427,6 +427,14 @@
   border-radius: 4px;
 }
 
+/* 주인공 스튜디오 표의 얼굴은 36px 예외 — 13-actor-studio.css 의 비-important 규칙은
+   위 24px !important 를 이기지 못해 36x24 로 찌그러지므로 예외는 여기서 둔다
+   (공유 리셋에 예외를 두는 것이 index.css 정책, PR #540 후속). */
+.database-modal-backdrop .database-modal-window .db-actor-studio-workspace .db-actor-identity-cell .db-list-thumb {
+  height: 36px !important;
+  width: 36px !important;
+}
+
 /* empty state card */
 .database-modal-backdrop .database-modal-window .db-empty-state,
 .database-modal-backdrop .database-modal-window .empty-state {
