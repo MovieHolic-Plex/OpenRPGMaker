@@ -107,9 +107,11 @@ describe("decideImageDataUrl", () => {
     expect(
       decideImageDataUrl("data:;base64,AAAA", { format: "webp", normalizeToPng: true })
     ).toEqual({ ok: true, format: "webp", normalizeToPng: true });
+    // 일반 헤더는 파일 판정이 png 여도 PNG 로 다시 그린다 — 그대로 저장하면
+    // safeUploadedResourceUrl 화이트리스트에 걸려 플레이에서 보이지 않는다.
     expect(
       decideImageDataUrl("data:application/octet-stream;base64,AAAA", { format: "png", normalizeToPng: false })
-    ).toEqual({ ok: true, format: "png", normalizeToPng: false });
+    ).toEqual({ ok: true, format: "png", normalizeToPng: true });
   });
 
   it("still rejects non-image data URLs without a fallback", () => {
