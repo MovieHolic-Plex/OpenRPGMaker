@@ -140,7 +140,7 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("야외 집=author_house");
     expect(text).toContain("마을=author_village");
     expect(text).toContain('target:{kind:"existing",mapId}');
-    expect(text).toContain('target:{kind:"new",mapId,name,width,height,plannedMap}');
+    expect(text).toContain('target:{kind:"new",mapId,name,width,height}');
     expect(text).toContain('countPolicy:"exact"');
     expect(text).toContain("start_interior_room_session");
     expect(text).not.toMatch(/야외 집[^\n]*(build_house_kit|build_house_lots|build_wall|place_door|build_roof)/);

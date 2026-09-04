@@ -334,7 +334,7 @@ export function formatScopeNote(scope: ScopeNoteInput, intent: IntentDeclaration
     return [
       `[선택 영역] 이 작업의 대상은 ${where} 사각형이다.`,
       "- 영역 밖 타일·이벤트는 수정하지 말 것. create_map·duplicate_map 으로 새 맵을 만들지 말고 이 맵 안에서 끝낸다.",
-      `- 마을 시공이면 author_village { target:{kind:"existing",mapId:"${mapId}",bounds:{x:${region.x},y:${region.y},w:${region.width},h:${region.height}}} } — 새 맵 금지.`,
+      `- 마을 시공이면 author_village { target:{kind:"existing",mapId:"${mapId}",bounds:{x:${region.x},y:${region.y},w:${region.width},h:${region.height}}} } — 새 맵 금지. 선택이 16×16 미만이면 그 주변으로 넓혀 16 이상으로 맞출 것.`,
       `- tile_query ask:"labels" 는 mapId:"${mapId}" 를 넣어 이 맵 타일셋 라벨만 조회.`,
     ].join("\n");
   }

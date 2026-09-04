@@ -53,6 +53,7 @@ import {
   MAX_ROAD_WIDTH,
   MAX_SIZE,
   MIN_HOUSES,
+  MIN_BOUNDS_SIZE,
   MIN_SIZE,
   ROAD_TILES,
   uniqueId,
@@ -137,6 +138,16 @@ export function buildVillageDomain(
     presetValues.templateIds && presetValues.templateIds.length > 0
       ? [...new Set([...presetValues.templateIds, ...forcedTemplateIds])]
       : presetValues.templateIds;
+  // 프리셋 화이트리스트 확장 통보 — 명시 형태가 프리셋 후보 밖이면 합집합으로 넓힌다.
+  // 합집합 자체는 house-template-unplaced 전체 중단을 막기 위한 의도적 선택이지만,
+  // 프리셋 저작자의 미적 의도가 넓혀진 것은 별도 사건이라 경고에 남긴다.
+  const presetIdSet = new Set(presetValues.templateIds ?? []);
+  const expandedByForced = forcedTemplateIds.filter((id) => !presetIdSet.has(id));
+  if (preset && expandedByForced.length > 0) {
+    warnings.push(
+      `마을 프리셋 '${preset.name || preset.id}'의 형태 후보를 명시 지정(${expandedByForced.join(", ")})으로 넓혔다.`,
+    );
+  }
   const catalog = villageTemplateCatalog(draft, allowedTemplateIds);
   warnings.push(...catalog.warnings);
   if (preset) {
@@ -178,14 +189,16 @@ export function buildVillageDomain(
     ? { ...inferredRequirements, forestDensity: intent.forestDensity }
     : inferredRequirements;
   const baseArea = villageBuildArea(map, createArgs.bounds);
-  assertBuildAreaSize(map, baseArea);
+  // 명시 bounds가 있으면 하한 16(모델이 화면·선택 크기를 그대로 넘긴다),
+  // 맵 전체 시공이면 기존 하한 20을 유지한다 — 19×19 전체맵 거부 계약 그대로.
+  assertBuildAreaSize(map, baseArea, createArgs.bounds !== undefined);
   // E 하이브리드: requirements → 제약 마스크 → buildable 영역 + 물/숲 셀 회피
   const terrainMasks = requirements && requirements.landmarks.length > 0
     ? buildTerrainConstraintMasks(map, requirements, baseArea, worldGenRules)
     : undefined;
   const reserved = terrainMasks?.buildableRect ?? { x: 0, y: 0, w: map.width, h: map.height };
   const area = intersectRects(baseArea, reserved);
-  assertBuildAreaSize(map, area);
+  assertBuildAreaSize(map, area, createArgs.bounds !== undefined);
   if (requirements && requirements.landmarks.length > 0) {
     warnings.push(`상식 스펙 적용: ${requirements.mustExist.join(", ")}`);
   }
@@ -248,6 +261,8 @@ export function buildVillageDomain(
     }
   }
   // 길 시공 강제 훅 — 시공→침범 점검→롤백 재시도(최대 100회), 시뮬레이션식.
+  // 재시도 리포트는 기계 가독으로 warnings에 남겨 맹목 재시도를 막는다.
+  const roadRetryBox: { report: import("./roads").RoadRetryReport | undefined } = { report: undefined };
   paintVillageRoadsChecked({
     draft,
     map,
@@ -261,7 +276,15 @@ export function buildVillageDomain(
     throughBlocked,
     forbidden: roadForbidden,
     boulevard,
+    retryReport: roadRetryBox,
   });
+  if (roadRetryBox.report && (roadRetryBox.report.attempts > 0 || roadRetryBox.report.fallbackStraight)) {
+    const trace = roadRetryBox.report.violationTrace.join("→");
+    warnings.push(
+      `길 재시도 리포트: 시도 ${roadRetryBox.report.attempts}회(직선폴백 ${roadRetryBox.report.fallbackStraight ? "예" : "아니오"}), ` +
+        `침범 추이 [${trace}], 잔존 금지 ${roadRetryBox.report.residualForbidden}/영역밖 ${roadRetryBox.report.residualOutside}`,
+    );
+  }
   perfLap("roads");
   // 문 하단/상단 안전 복구 (진입로 폭 확장·오프셋 대비)
   restoreHouseDoors(map, houses);
@@ -1066,15 +1089,17 @@ function villageBuildArea(map: GameMap, value: unknown): Rect {
   return { x: bounds.x as number, y: bounds.y as number, w: bounds.w as number, h: bounds.h as number };
 }
 
-function assertBuildAreaSize(map: GameMap, area: Rect): void {
+function assertBuildAreaSize(map: GameMap, area: Rect, explicitBounds: boolean): void {
   if (area.x < 0 || area.y < 0 || area.x + area.w > map.width || area.y + area.h > map.height) {
     throw new ToolError(`build_village bounds가 맵 경계를 벗어납니다: ${area.x},${area.y},${area.w}x${area.h}`, {
       code: "bounds-out-of-map",
       mapId: map.id,
     });
   }
-  if (area.w < MIN_SIZE || area.h < MIN_SIZE) {
-    throw new ToolError(`build_village는 최소 ${MIN_SIZE}x${MIN_SIZE} 영역이 필요합니다: ${area.w}x${area.h}`, {
+  // 명시 bounds 16×16 허용(파서 MIN_BOUNDS_SIZE), 맵 전체는 기존 20 하한 유지.
+  const floor = explicitBounds ? MIN_BOUNDS_SIZE : MIN_SIZE;
+  if (area.w < floor || area.h < floor) {
+    throw new ToolError(`build_village는 최소 ${floor}x${floor} 영역이 필요합니다: ${area.w}x${area.h}`, {
       code: area.w === map.width && area.h === map.height ? "map-too-small" : "bounds-too-small",
       mapId: map.id,
     });

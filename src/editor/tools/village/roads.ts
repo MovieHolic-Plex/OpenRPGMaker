@@ -80,6 +80,18 @@ function shapeRoadStyle(map: GameMap, style: RoadStyle, cells: readonly Point[])
  * 바꿔 재시도, 최대 100회 → ⑤ 전부 실패하면 지터를 끈 직선 시공으로 폴백.
  * 침범 판정은 "이번 시공이 새로 만든 길 칸"만 본다(기존 맵 잔존물 무시).
  */
+/** 길 재시도 기계 리포트 — 맹목 재시도 대신 원인을 기계 가독으로 남긴다. */
+export type RoadRetryReport = {
+  /** 0=첫 시도 통과, 1..99=롤백 재시도 후 통과, 100=직선 폴백 통과 */
+  readonly attempts: number;
+  /** 시도별 잔존 침범 칸 수(마지막이 0이면 통과) */
+  readonly violationTrace: readonly number[];
+  /** 침범 종류별 잔존(마지막 시도 기준): 집/수역·데크 vs 영역 밖 */
+  readonly residualForbidden: number;
+  readonly residualOutside: number;
+  readonly fallbackStraight: boolean;
+};
+
 export function paintVillageRoadsChecked(args: {
   readonly draft: Project;
   readonly map: GameMap;
@@ -93,8 +105,10 @@ export function paintVillageRoadsChecked(args: {
   readonly throughBlocked: ReadonlySet<string>;
   readonly forbidden: ReadonlySet<string>;
   readonly boulevard?: Boulevard | null;
+  /** 재시도 리포트 수집용 — 주면 시도별 침범 추이와 잔존 분류가 기록된다. */
+  readonly retryReport?: { readonly report: RoadRetryReport | undefined };
 }): number {
-  const { draft, map, plaza, area, houses, intent, seed, warnings, hardBlocked, throughBlocked, forbidden, boulevard } = args;
+  const { draft, map, plaza, area, houses, intent, seed, warnings, hardBlocked, throughBlocked, forbidden, boulevard, retryReport } = args;
   const MAX_RETRY = 100;
   const baseLower = [...map.lowerTiles];
   const baseUpper = [...map.upperTiles];
@@ -124,26 +138,44 @@ export function paintVillageRoadsChecked(args: {
       map.upperTiles[i] = baseUpper[i]!;
     }
   };
-  const countViolations = (): number => {
-    let count = 0;
+  const countViolations = (): { total: number; forbidden: number; outside: number } => {
+    let total = 0;
+    let forbiddenCount = 0;
+    let outsideCount = 0;
     for (let y = 0; y < map.height; y += 1) {
       for (let x = 0; x < map.width; x += 1) {
         const index = y * map.width + x;
         const lower = map.lowerTiles[index] ?? TILE.EMPTY;
         if (!ROAD_TILES.has(lower) || baseLower[index] === lower) continue; // 이번 시공분만
         const outside = x < area.x || y < area.y || x >= area.x + area.w || y >= area.y + area.h;
-        if (outside || forbidden.has(coordKey(x, y))) count += 1;
+        if (!outside && !forbidden.has(coordKey(x, y))) continue;
+        total += 1;
+        if (forbidden.has(coordKey(x, y))) forbiddenCount += 1;
+        if (outside) outsideCount += 1;
       }
     }
-    return count;
+    return { total, forbidden: forbiddenCount, outside: outsideCount };
+  };
+  const recordReport = (trace: readonly number[], last: { total: number; forbidden: number; outside: number }, attempts: number, fallbackStraight: boolean): void => {
+    if (!retryReport) return;
+    (retryReport as { report: RoadRetryReport | undefined }).report = {
+      attempts,
+      violationTrace: [...trace],
+      residualForbidden: last.forbidden,
+      residualOutside: last.outside,
+      fallbackStraight,
+    };
   };
 
+  const violationTrace: number[] = [];
   for (let attempt = 0; attempt < MAX_RETRY; attempt += 1) {
     if (attempt > 0) restore();
     paintOnce(intent, seed + attempt * 7919);
     const violations = countViolations();
-    if (violations === 0) {
+    violationTrace.push(violations.total);
+    if (violations.total === 0) {
       if (attempt > 0) warnings.push(`길 침범 점검: ${attempt}회 롤백 재시도 후 통과`);
+      recordReport(violationTrace, violations, attempt, false);
       return attempt;
     }
   }
@@ -151,14 +183,17 @@ export function paintVillageRoadsChecked(args: {
   restore();
   paintOnce({ ...intent, roadNaturalness: 0 }, seed);
   const residual = countViolations();
-  if (residual === 0) {
+  violationTrace.push(residual.total);
+  if (residual.total === 0) {
     warnings.push(`길 침범 점검: ${MAX_RETRY}회 실패 → 직선 폴백으로 통과`);
+    recordReport(violationTrace, residual, MAX_RETRY, true);
     return MAX_RETRY;
   }
   // 금지선 하드 게이트(2026-09-04) — 직선 폴백에도 집/수역 침범이 남으면 성공 반환 금지.
   // 기존 "수동 확인 필요" 경고는 성공 결과에 묻혀 아무도 안 봤다.
+  recordReport(violationTrace, residual, MAX_RETRY, true);
   throw new ToolError(
-    `길 금지선 침범: 직선 폴백에도 침범 ${residual}칸 잔존 — 집 footprint·수역·데크 마스크와 area가 겹친다. bounds를 넓히거나 houses를 줄여라.`,
+    `길 금지선 침범: 직선 폴백에도 침범 ${residual.total}칸 잔존(금지 ${residual.forbidden}/영역밖 ${residual.outside}) — 집 footprint·수역·데크 마스크와 area가 겹친다. bounds를 넓히거나 houses를 줄여라.`,
     { code: "road-forbidden-residual" },
   );
 }

@@ -73,6 +73,12 @@ export type ExistingVillageTarget = {
   readonly kind: "existing";
   readonly mapId: string;
   readonly bounds?: ConstructionRect;
+  /**
+   * bounds 생략 시 맵 전체 시공에 대한 명시 확인 — 기존 맵이 비어 있지 않으면
+   * bounds 또는 fullMap:true 없이는 파사드가 거부한다(village-requires-scope).
+   * 최상위 fullMap:true도 여기로 합쳐진다.
+   */
+  readonly fullMap?: boolean;
 };
 
 export type NewVillageTarget = {
@@ -81,6 +87,7 @@ export type NewVillageTarget = {
   readonly name: string;
   readonly width: number;
   readonly height: number;
+  /** 선택 — 생략하면 target 값으로 채운다. 주면 mapId·width·height가 일치해야 한다. */
   readonly plannedMap: PlannedMapDescriptor;
 };
 
