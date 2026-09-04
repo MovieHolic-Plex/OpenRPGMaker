@@ -41,12 +41,18 @@ describe("database faction authoring view", () => {
     expect(host.querySelectorAll(".db-list-pane")).toHaveLength(1);
     expect(findByTestId(host, "db-faction-search")?.getAttribute("type")).toBe("search");
 
+    const relation = findByTestId(host, "db-faction-relation-enemy");
+    expect(relation?.textContent).toContain("-1 적");
+    expect(relation?.textContent).toContain("이쪽이 먼저 공격");
+    expect(relation?.textContent).toContain("상대가 먼저 공격");
+    expect(findByTestId(host, "db-faction-pick-enemy--1")?.getAttribute("aria-pressed")).toBe("true");
+
     const cell = findByTestId(host, "db-faction-stance-player-enemy");
     expect(cell?.tagName).toBe("BUTTON");
     expect(cell?.textContent).toContain("-1");
     expect(cell?.textContent).toContain("적");
     expect(cell?.textContent).toContain("기본");
-    expect(cell?.getAttribute("aria-label")).toContain("기본값");
+    expect(cell?.getAttribute("aria-label")).toContain("기본");
   });
 
   it("creates factions and disables deletion for reserved ids", () => {
@@ -57,6 +63,26 @@ describe("database faction authoring view", () => {
     expect(store.getCurrent().factions?.defs).toEqual([{ id: "faction_1", name: "새 진영" }]);
     expect(findByTestId(host, "db-faction-delete")?.getAttribute("disabled")).toBeNull();
     expect(findByTestId(host, "db-faction-stance-faction_1-player")?.textContent).toContain("중립");
+  });
+
+  it("changes a relation from the per-faction list and marks only the non-default value", () => {
+    const project = createBlankProject();
+    project.factions = { defs: [{ id: "guard", name: "경비병" }], relations: [] };
+    store.replace(project);
+    const host = renderView();
+
+    const pick = findByTestId(host, "db-faction-pick-guard-1");
+    expect(pick?.getAttribute("aria-pressed")).toBe("false");
+    expect(findByTestId(host, "db-faction-relation-label-guard")?.textContent).toContain("기본");
+    pick?.click();
+
+    expect(store.getCurrent().factions?.relations).toEqual([{ a: "player", b: "guard", stance: 1 }]);
+    expect(findByTestId(host, "db-faction-pick-guard-1")?.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(host, "db-faction-relation-label-guard")?.textContent).toContain("바꿈");
+
+    findByTestId(host, "db-faction-pick-guard-0")?.click();
+    expect(store.getCurrent().factions?.relations).toEqual([]);
+    expect(findByTestId(host, "db-faction-relation-label-guard")?.textContent).toContain("기본");
   });
 
   it("cycles a matrix cell and marks only the non-default value as authored", () => {
