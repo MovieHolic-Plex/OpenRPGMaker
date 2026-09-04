@@ -155,6 +155,30 @@ describe("NPC 그래픽 선택 다이얼로그 — 이미지 리치화", () => {
     }
   });
 
+  it("칸 이름을 가르치면 project.charsetLabels 에 저장된다", () => {
+    const project = store.getCurrent();
+    const previous = project.charsetLabels;
+    project.charsetLabels = undefined;
+    try {
+      const root = renderPicker();
+      expect(findByTestId(root, "npc-charset-teach")).not.toBeNull();
+      const input = findByTestId(root, "npc-charset-label-input");
+      expect(input).not.toBeNull();
+      if (input) input.value = "우리 마을 촌장";
+      findByTestId(root, "npc-charset-teach-save")?.click();
+      expect(store.getCurrent().charsetLabels).toEqual([
+        expect.objectContaining({
+          textureKey: "tex_easyrpg_charset_people1",
+          characterIndex: 0,
+          label: "우리 마을 촌장",
+          origin: "user",
+        }),
+      ]);
+    } finally {
+      project.charsetLabels = previous;
+    }
+  });
+
   it("uploaded가 아닌 kind(tileset 등)은 charset 목록에 나타나지 않는다", () => {
     const project = store.getCurrent();
     const tilesetId = "uploaded-tileset-x";

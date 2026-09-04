@@ -5,7 +5,7 @@ import {
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { store } from "@/project/store";
-import { charsetSemanticsForTexture } from "@/assets/charsetSemantics";
+import { applyCharsetLabelOverrides, charsetSemanticsForTexture } from "@/assets/charsetSemantics";
 import { charsetFollowerGraphic } from "@/project/followers";
 import { editorState } from "@/editor/editorState";
 import { el } from "@/util/dom";
@@ -413,7 +413,10 @@ function addFollowerBody(
   const refreshCharacters = (): void => {
     const selected = character.value;
     character.replaceChildren();
-    const labels = charsetSemanticsForTexture(graphicId.value.trim());
+    const labels = applyCharsetLabelOverrides(
+      charsetSemanticsForTexture(graphicId.value.trim()),
+      store.getCurrent().charsetLabels,
+    );
     for (let index = 0; index < 8; index += 1) {
       const label = labels.find((entry) => entry.characterIndex === index)?.label;
       character.append(el("option", { text: label ? `${index}. ${label}` : `${index}번 칸`, attrs: { value: String(index) } }));

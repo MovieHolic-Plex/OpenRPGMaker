@@ -239,3 +239,49 @@ export function findCharsetSemantic(textureKey: string, characterIndex: number):
 export function charsetSemanticsForTexture(textureKey: string): readonly CharsetSemanticEntry[] {
   return CHARSET_SEMANTICS.filter((entry) => entry.textureKey === textureKey);
 }
+
+export function applyCharsetLabelOverrides(
+  base: readonly CharsetSemanticEntry[],
+  overrides: readonly { readonly textureKey: string; readonly characterIndex: number; readonly label: string; readonly tags?: readonly string[]; readonly origin?: "user" | "ai" }[] | undefined,
+): CharsetSemanticEntry[] {
+  if (!overrides || overrides.length === 0) return [...base];
+  const bySlot = new Map<string, { readonly label: string; readonly tags?: readonly string[] }>();
+  for (const override of overrides) {
+    const label = override.label.trim();
+    if (!label) continue;
+    bySlot.set(`${override.textureKey}#${override.characterIndex}`, { label, tags: override.tags });
+  }
+  if (bySlot.size === 0) return [...base];
+  return base.map((entry) => {
+    const override = bySlot.get(`${entry.textureKey}#${entry.characterIndex}`);
+    if (!override) return entry;
+    const tags = override.tags && override.tags.length > 0 ? [...override.tags] : entry.tags;
+    return { ...entry, label: override.label, tags: [override.label, ...tags.filter((tag) => tag !== override.label)] };
+  });
+}
+
+export function upsertCharsetLabelOverride(
+  existing: readonly { readonly textureKey: string; readonly characterIndex: number; readonly label: string; readonly tags?: readonly string[]; readonly origin?: "user" | "ai" }[] | undefined,
+  next: { readonly textureKey: string; readonly characterIndex: number; readonly label: string; readonly tags?: readonly string[]; readonly origin?: "user" | "ai" },
+): { textureKey: string; characterIndex: number; label: string; tags?: string[]; origin?: "user" | "ai" }[] {
+  const list = (existing ?? [])
+    .filter((entry) => entry.textureKey !== next.textureKey || entry.characterIndex !== next.characterIndex)
+    .map((entry) => ({
+      textureKey: entry.textureKey,
+      characterIndex: entry.characterIndex,
+      label: entry.label,
+      ...(entry.tags ? { tags: [...entry.tags] } : {}),
+      ...(entry.origin ? { origin: entry.origin } : {}),
+    }));
+  const label = next.label.trim();
+  if (!label) return list;
+  const tags = (next.tags ?? []).map((tag) => tag.trim()).filter((tag) => tag.length > 0);
+  list.push({
+    textureKey: next.textureKey,
+    characterIndex: next.characterIndex,
+    label,
+    ...(tags.length > 0 ? { tags } : {}),
+    origin: next.origin ?? "user",
+  });
+  return list;
+}

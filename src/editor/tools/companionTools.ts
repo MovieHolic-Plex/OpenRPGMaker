@@ -65,7 +65,7 @@ function resolveWho(project: Project, value: unknown): CompanionWho {
 
   if (typeof record.query === "string" && record.query.trim().length > 0) {
     const query = record.query.trim();
-    const entry = pickNpcGraphic(query, {});
+    const entry = pickNpcGraphic(query, { overrides: project.charsetLabels });
     if (!entry) {
       throw new ToolError(
         `동료 그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}". list_npc_graphics 또는 list_resources(kind:"charset")로 후보를 조회하거나 who 를 {textureKey, characterIndex}로 지정하세요.`,
