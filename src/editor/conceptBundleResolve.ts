@@ -1,12 +1,15 @@
 // 타일셋에 붙은 개념 꾸러미를 시공 입력으로 푼다.
 // 정본은 프로젝트가 들고 있는 값이다. 사용자가 데이터베이스에서 고친 나무가 그대로 쓰인다.
 //
+// 소유권: 시설 구성(어떤 장소·물건)은 개념 꾸러미가 갖는다. 방 종류(interiorRoomKinds)의
+// requiredRoles 로 시설을 합성하지 않는다 — 도면은 꾸러미의 role/size/count/floor/level/zone 만 읽는다.
+// 그림의 정본은 구조물(structureKits)이다 — 꾸러미 물건은 objectId 로 그림을 빌려 쓴다.
+//
 // 도면(layoutConceptFacility)은 장소의 역할(entrance·walkway·room)·크기·개수만 읽는다.
 // 남→북으로 홀(정문) → 복도 → 방들이 서고, 파티션은 파이프라인 벽 문법(가로 인접 1열·세로 인접 3행)을 따른다.
 // 이 모듈은 interiorRoomPipeline 을 import 하지 않는다(순환). 실내 칩셋 id 는 문자열로 둔다.
 import { layoutConceptFacilityDoubleRow } from "@/editor/conceptLayoutDoubleRow";
 import { CONCEPT_FACILITY_TEMPLATES, cloneConceptFacilityTemplates } from "@/project/defaults/conceptFacilityTemplates";
-import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
 import {
   CONCEPT_PLACE_COUNT_MAX,
   type ConceptBundleRecord,
@@ -23,10 +26,6 @@ import {
 import type { Project } from "@/project/types";
 
 const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
-
-const WALKWAY_IDS = new Set(
-  BUILTIN_INTERIOR_ROOM_KINDS.filter((kind) => kind.walkway).map((kind) => kind.id),
-);
 
 export type ResolvedConceptFacility = {
   readonly tilesetId: string;
@@ -383,13 +382,16 @@ export function layoutConceptFacility(
 }
 
 function isWalkway(place: ConceptPlaceRecord): boolean {
-  if (WALKWAY_IDS.has(place.id)) return true;
+  // role 이 없는데 도면이 복도로 판정해야 하는 낡은 장소 — id 하위호환 + 라벨 추측만 쓴다.
+  // 방 종류 테이블(BUILTIN/저작값)은 보지 않는다: 이 모듈은 bundle+facility 만 받는 순수 도면기다.
+  if (place.id === "corridor") return true;
   return /복도|통로|corridor|hall/i.test(place.label);
 }
 
 function roomTheme(placeId: string, role: ConceptPlaceRole): string {
   if (role === "walkway") return "corridor";
-  return BUILTIN_INTERIOR_ROOM_KINDS.some((kind) => kind.id === placeId) ? placeId : "storage";
+  // placeId 그대로 — 저작된 방 종류 매칭은 파이프라인(resolveInteriorRoomVocab)이 맡는다.
+  return placeId;
 }
 
 function foldQuery(query: string): string {
