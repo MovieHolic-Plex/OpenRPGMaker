@@ -1139,6 +1139,46 @@ body.region-task-modal-open .ai-authoring-examples {
   color: var(--editor-text);
 }
 
+/* ── 검토 단계: wide 결정 레이아웃 (review-only) ───────────────────────────────
+   JS 는 data-stage 만 바꾼다(파일 원칙) — wide 진입도 CSS 가 data-stage 로 판단한다.
+   compose/running 은 픽셀 동일. 단일 A/B 토글 계약은 유지하고, 넓어진 폭은 큰
+   미리보기·체크리스트 카드·단축키 힌트에 쓴다. 팝오버 경로의 최종 폭은 JS 인라인
+   (positionRegionTaskPopover, stage-aware)이 정하고, 이 규칙은 중앙 모달을 덮는다. */
+.region-task-modal[data-stage="review"] {
+  max-width: min(960px, calc(100vw - 32px));
+}
+.region-task-modal[data-stage="review"] .region-task-compare-canvas {
+  max-width: 480px;
+}
+/* 체크리스트 카드 — 변경 행·이슈 행을 결정용 항목으로 읽히게 한다. */
+.region-task-modal[data-stage="review"] .region-task-change-list.is-checklist .region-task-change-row,
+.region-task-modal[data-stage="review"] .region-task-review-issues.is-checklist .region-task-review-issue {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  padding: var(--space-1) var(--space-2);
+}
+.region-task-modal[data-stage="review"] .region-task-change-list.is-checklist .region-task-change-row::before {
+  color: var(--success);
+  content: "✓";
+  flex: 0 0 auto;
+}
+.region-task-modal[data-stage="review"] .region-task-review-issues.is-checklist .region-task-review-issue {
+  border-left-width: 3px;
+}
+.region-task-modal[data-stage="review"] .region-task-review-issues.is-checklist .region-task-review-issue.is-error {
+  border-left-color: var(--danger);
+}
+.region-task-modal[data-stage="review"] .region-task-review-issues.is-checklist .region-task-review-issue.is-warning {
+  border-left-color: var(--warning);
+}
+.region-task-modal[data-stage="review"] .region-task-kbd-hints {
+  color: var(--editor-text-muted);
+  display: flex;
+  font-size: 11px;
+  gap: var(--space-2);
+}
+
 /* ── 생성 모드 스위치 ──
    조수(문장) 와 생성기(파라미터) 는 입력 방식이 달라 한 화면에 겹쳐 두면 지금 어느 쪽에
    말하는지 잃는다. 세그먼트 하나로 갈라 놓고, 조수 쪽 화면은 그대로 둔다. */
