@@ -25,6 +25,7 @@ import {
   type RoadStyle,
 } from "../villagePlan";
 import {
+  countMarketCells,
   countTreeCells,
   countWaterCells,
   evaluateVillageLook,
@@ -330,6 +331,19 @@ export function buildVillageDomain(
         throw new ToolError(
           `필수 숲 미시공: 실측 나무 ${treeCells}칸 < 15 — place_props(침엽수/활엽수)가 실패했다. 쿼리「${requirements.query}」`,
           { code: "landmark-forest-missing", mapId },
+        );
+      }
+    }
+    // market 필수 게이트(2026-09-04) — 물/숲과 같은 실측 기준.
+    // decor의 placeMarketDeckProps가 plazaStyle=market이면 데크 소품을 보장하므로
+    // 미달이면 decor 실패다. farm은 조경(대형맵 전용)에 묶여 기본 50×50에서 달성 불가라
+    // 빌더 게이트에서 제외 — look 평가 지적만 남긴다.
+    if (requirements.landmarks.includes("market") && decorEnabled) {
+      const marketCells = countMarketCells(map, baseArea);
+      if (marketCells < 3) {
+        throw new ToolError(
+          `필수 장터 미시공: 실측 장터 소품 ${marketCells}칸 < 3 — placeMarketDeckProps가 실패했거나 광장이 막혔다. 쿼리「${requirements.query}」`,
+          { code: "landmark-market-missing", mapId },
         );
       }
     }

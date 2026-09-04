@@ -22,6 +22,7 @@ import {
   type Rect,
   type VillageIntent,
 } from "./constants";
+import { ToolError } from "../types";
 import { paintMarketDeck } from "./plaza";
 
 /**
@@ -150,12 +151,16 @@ export function paintVillageRoadsChecked(args: {
   restore();
   paintOnce({ ...intent, roadNaturalness: 0 }, seed);
   const residual = countViolations();
-  warnings.push(
-    residual === 0
-      ? `길 침범 점검: ${MAX_RETRY}회 실패 → 직선 폴백으로 통과`
-      : `길 침범 점검: ${MAX_RETRY}회 실패 → 직선 폴백에도 침범 ${residual}칸 잔존(수동 확인 필요)`,
+  if (residual === 0) {
+    warnings.push(`길 침범 점검: ${MAX_RETRY}회 실패 → 직선 폴백으로 통과`);
+    return MAX_RETRY;
+  }
+  // 금지선 하드 게이트(2026-09-04) — 직선 폴백에도 집/수역 침범이 남으면 성공 반환 금지.
+  // 기존 "수동 확인 필요" 경고는 성공 결과에 묻혀 아무도 안 봤다.
+  throw new ToolError(
+    `길 금지선 침범: 직선 폴백에도 침범 ${residual}칸 잔존 — 집 footprint·수역·데크 마스크와 area가 겹친다. bounds를 넓히거나 houses를 줄여라.`,
+    { code: "road-forbidden-residual" },
   );
-  return MAX_RETRY;
 }
 
 export function paintPlazaAndAvenue(
