@@ -367,6 +367,18 @@ function tileSemanticsSection(project: Project): string {
   return ["## 타일 지식(사용자가 가르침 — 타일 깔 때 최우선 근거)", ...lines].join("\n");
 }
 
+function charsetLabelSection(project: Project): string {
+  const taught = (project.charsetLabels ?? []).filter((entry) => entry.label.trim().length > 0);
+  if (taught.length === 0) return "";
+  const lines = ["## 캐릭터 칩 지식(사용자가 가르침 — NPC 외형 고를 때 최우선 근거)"];
+  for (const entry of taught.slice(0, 24)) {
+    const tags = entry.tags && entry.tags.length > 0 ? ` [${[...entry.tags].slice(0, 6).join(", ")}]` : "";
+    lines.push(`- ${entry.textureKey}#${entry.characterIndex}: ${entry.label.trim()}${tags}`);
+  }
+  if (taught.length > 24) lines.push(`- …외 ${taught.length - 24}개(list_npc_graphics로 조회)`);
+  return lines.join("\n");
+}
+
 // 사람이 등록한 구조 킷은 팔레트 스탬프 전용이다. 목록을 시공 재료로 주면
 // 모델이 구조물 스탬프로 집을 찍는다(2026-08-31 실측).
 function structureKitSection(project: Project, mapId: string | undefined): string {
@@ -646,6 +658,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   const currentMapId = resolveContextMapId(options);
   const tileSemantics = tileSemanticsSection(project);
   if (tileSemantics) sections.push(tileSemantics);
+  const charsetLabelKnowledge = charsetLabelSection(project);
+  if (charsetLabelKnowledge) sections.push(charsetLabelKnowledge);
   const tileVocabulary = tileVocabularySection(project, currentMapId);
   if (tileVocabulary) sections.push(tileVocabulary);
   const structureKits = structureKitSection(project, currentMapId);

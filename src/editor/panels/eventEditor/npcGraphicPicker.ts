@@ -1,5 +1,6 @@
 import { projectCharsetAssets, type CharsetPickerAsset } from "@/assets/charsetCatalog";
 import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
+import { findCharsetSemantic, upsertCharsetLabelOverride } from "@/assets/charsetSemantics";
 import {
   CHARSET_CHARACTER_COUNT,
   charsetFrameIndex,
@@ -91,7 +92,10 @@ export function renderNpcGraphicPicker(
 
   const optionArea = document.createElement("div");
   optionArea.className = "event-graphic-option-area";
-  optionArea.append(directionGroup.root, patternGroup.root);
+  const teach = renderCharsetTeachForm(() => selection, () => {
+    refresh();
+  });
+  optionArea.append(directionGroup.root, patternGroup.root, teach.root);
 
   const directBox = document.createElement("div");
   directBox.className = "event-graphic-direct-box";
@@ -146,7 +150,11 @@ export function renderNpcGraphicPicker(
       const slot = Number(button.dataset.slot ?? "-1");
       setClass(button, "active", slot === selection.characterIndex);
       applyPreviewStyle(button, { ...selection, characterIndex: slot }, SLOT_SCALE);
+      const taught = slotTeachState(selection.asset.textureKey, slot);
+      button.title = taught.label;
+      button.setAttribute("aria-label", taught.label);
     }
+    teach.sync();
   }
 }
 
@@ -207,4 +215,80 @@ function graphicForConfirmedSelection(
 
 function graphicWithoutSprite(graphic: EventPageGraphic): EventPageGraphic {
   return graphic.transparent === undefined ? {} : { transparent: graphic.transparent };
+}
+
+function slotTeachState(textureKey: string, characterIndex: number): { label: string; tags: string; taught: boolean } {
+  const override = store.getCurrent().charsetLabels?.find(
+    (entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex,
+  );
+  if (override?.label.trim()) {
+    return {
+      label: override.label.trim(),
+      tags: (override.tags ?? []).join(", "),
+      taught: true,
+    };
+  }
+  const bundled = findCharsetSemantic(textureKey, characterIndex);
+  return {
+    label: bundled?.label ?? `칸 ${characterIndex}`,
+    tags: (bundled?.tags ?? []).filter((tag) => tag !== bundled?.label).join(", "),
+    taught: false,
+  };
+}
+
+function renderCharsetTeachForm(
+  current: () => NpcGraphicSelection,
+  onSaved: () => void,
+): { readonly root: HTMLElement; readonly sync: () => void } {
+  let syncedKey = "";
+  const root = document.createElement("div");
+  root.className = "npc-charset-teach";
+  root.dataset.testid = "npc-charset-teach";
+  const heading = document.createElement("p");
+  heading.className = "npc-charset-teach-heading";
+  heading.textContent = "이 칸 이름 (AI가 이 이름으로 찾습니다)";
+  const labelInput = document.createElement("input");
+  labelInput.type = "text";
+  labelInput.dataset.testid = "npc-charset-label-input";
+  labelInput.placeholder = "예: 우리 마을 촌장";
+  const tagsInput = document.createElement("input");
+  tagsInput.type = "text";
+  tagsInput.dataset.testid = "npc-charset-tags-input";
+  tagsInput.placeholder = "태그, 쉼표로 구분";
+  const status = document.createElement("p");
+  status.className = "npc-charset-teach-status";
+  status.dataset.testid = "npc-charset-teach-status";
+  const save = document.createElement("button");
+  save.type = "button";
+  save.className = "btn";
+  save.dataset.testid = "npc-charset-teach-save";
+  save.textContent = "이름 가르치기";
+  save.addEventListener("click", () => {
+    const selection = current();
+    store.update((project) => {
+      project.charsetLabels = upsertCharsetLabelOverride(project.charsetLabels, {
+        textureKey: selection.asset.textureKey,
+        characterIndex: selection.characterIndex,
+        label: labelInput.value,
+        tags: tagsInput.value.split(/[,，]/u).map((tag) => tag.trim()).filter((tag) => tag.length > 0),
+        origin: "user",
+      });
+    }, { scope: "project", label: "캐릭터 칩 이름" });
+    syncedKey = "";
+    onSaved();
+  });
+  root.append(heading, labelInput, tagsInput, save, status);
+  return {
+    root,
+    sync: () => {
+      const selection = current();
+      const key = `${selection.asset.textureKey}#${selection.characterIndex}`;
+      if (key === syncedKey) return;
+      syncedKey = key;
+      const taught = slotTeachState(selection.asset.textureKey, selection.characterIndex);
+      labelInput.value = taught.label;
+      tagsInput.value = taught.tags;
+      status.textContent = taught.taught ? "가르친 이름 · 저장됨" : "번들 기본 이름";
+    },
+  };
 }

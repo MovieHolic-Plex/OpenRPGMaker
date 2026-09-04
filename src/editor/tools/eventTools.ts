@@ -541,6 +541,7 @@ const placeNpc: ToolDefinition = {
     const graphic = resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
+      overrides: draft.charsetLabels,
     });
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
@@ -761,6 +762,7 @@ const makeVillager: ToolDefinition = {
     const graphic = resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${home.x},${home.y}`,
+      overrides: draft.charsetLabels,
     });
     const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
     const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()

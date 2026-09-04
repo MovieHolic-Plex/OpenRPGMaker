@@ -8,6 +8,7 @@ import type {
   MonsterInstanceId,
   ResourceProfile,
   SCHEMA_VERSION,
+  CharsetLabelOverride,
   SwitchDef,
   Terms,
   TilesetDef,
@@ -515,6 +516,9 @@ export interface Project {
   // Optional identity package keyed by GameEvent.characterId. Opt-in; no migration.
   // Gift/birthday resolution: event-local fields override profile defaults (see characterProfiles.ts).
   characters?: Record<string, CharacterProfile>;
+  // 사용자가 에디터에서 고친 캐릭터 칩 라벨. 번들 CHARSET_SEMANTICS 위에 덮어
+  // 검색·AI 질의·피커 표시가 전부 이 값을 우선으로 읽는다. optional이라 마이그레이션 불필요.
+  charsetLabels?: CharsetLabelOverride[];
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

@@ -78,6 +78,14 @@ export interface TileAiMetadata {
 
 export type TileMetadataSource = "ai" | "bundled-default" | "imported" | "unknown" | "user";
 
+export interface CharsetLabelOverride {
+  readonly textureKey: string;
+  readonly characterIndex: number;
+  readonly label: string;
+  readonly tags?: readonly string[];
+  readonly origin?: "user" | "ai";
+}
+
 export type TileGroupRole = "building" | "castle" | "fence" | "roof" | "terrain" | "water" | "wall" | "prop";
 
 export type TileGroupLayer = "lower" | "upper" | "event" | "mixed";

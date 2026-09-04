@@ -78,3 +78,22 @@
 .npc-graphic-picker .npc-advanced-sprite > .event-graphic-direct-box {
   margin-top: 4px;
 }
+
+.npc-graphic-picker .npc-charset-teach {
+  display: grid;
+  gap: 6px;
+  grid-column: 1 / -1;
+  margin-top: 8px;
+}
+
+.npc-graphic-picker .npc-charset-teach-heading,
+.npc-graphic-picker .npc-charset-teach-status {
+  color: var(--event-rm-text);
+  font: 400 12px/16px "Malgun Gothic", sans-serif;
+  margin: 0;
+}
+
+.npc-graphic-picker .npc-charset-teach input {
+  min-width: 0;
+  width: 100%;
+}
