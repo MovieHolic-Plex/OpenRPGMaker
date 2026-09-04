@@ -92,6 +92,7 @@ import {
   wipeAttemptMaps,
 } from "./pipeline";
 import { villagePlaza } from "./plaza";
+import { sketchHouseSites } from "./sketch";
 import {
   boulevardCells,
   paintVillageRoadsChecked,
@@ -231,6 +232,14 @@ export function buildVillageDomain(
   const coreArea = boulevard
     ? intersectRects(area, { x: plaza.centerX - 30, y: plaza.centerRow - 30, w: 61, h: 61 })
     : area;
+  // 스케치 프리패스 — 솔버 격자 전에 유기적 후보점을 뽑아 buildHouses에 넘긴다.
+  const sketchSites = sketchHouseSites({
+    area: coreArea,
+    plaza,
+    seed,
+    targetHouses,
+    boulevard: boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : null,
+  });
   // 자연 시공 순서: 집 배치 → 광장·대로·집 연결 길(얽기설기) → 문 복구 → 울타리
   // (예전엔 길→집이라 길이 집 자리를 선점하는 느낌이 났음)
   const houses = buildHouses(
@@ -238,6 +247,7 @@ export function buildVillageDomain(
     houseBlockedIdx.size > 0 ? houseBlockedIdx : undefined,
     boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol } : undefined,
     !doorEventsPlanned,
+    sketchSites,
   );
   perfLap("houses");
   if (houses.length === 0) {
@@ -378,6 +388,7 @@ export function buildVillageDomain(
   const requestedNpcCount = integerArg(merged, "npcCount", houses.length + 2);
   placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings, requestedNpcCount);
   paintGroundThemeStrip(map, area, merged.groundTheme);
+  clearHouseRidgeRowProps(map, houses);
   setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
 
   // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.

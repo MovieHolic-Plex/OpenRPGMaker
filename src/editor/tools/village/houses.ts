@@ -7,6 +7,7 @@ import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { ToolError } from "../types";
 import type { TerrainConstraintMasks } from "../villageTerrainPass";
+import type { VillageSketchSite } from "./sketch";
 import {
   clamp,
   coordKey,
@@ -134,26 +135,24 @@ export function clearHouseRidgeRowProps(map: GameMap, houses: readonly BuiltHous
         }
       }
     }
-    // 파랑 키트: 지붕 최상행(bbox.y)이 좌우 1칸 인셋이라 어깨 칸이 잔디로 남는다 —
-    // 여기 심긴 나무 밑동은 사후 나무 짝 보정(toolRunner)이 수관을 용마루 행(y-1)에
-    // 재부착하므로, 어깨 칸의 밑동(lower/upper)을 걷어낸다 (2026-07-17).
-    if (kit.roof.kind === "blue") {
-      const shoulderY = house.bbox.y;
-      for (const x of [house.bbox.x, lastX]) {
-        if (!pointInMap(map, { x, y: shoulderY })) continue;
-        const index = shoulderY * map.width + x;
-        if (TREE_BOTTOM_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) {
-          map.lowerTiles[index] = TILE.GRASS;
-          cleared += 1;
-        }
-        if (TREE_BOTTOM_TILES.has(map.upperTiles[index] ?? TILE.EMPTY)) {
-          map.upperTiles[index] = TILE.EMPTY;
-          cleared += 1;
-        }
-        if (shoulderY > 0 && TREE_TOP_TILES.has(map.upperTiles[index - map.width] ?? TILE.EMPTY)) {
-          map.upperTiles[index - map.width] = TILE.EMPTY;
-          cleared += 1;
-        }
+    // 지붕 최상행(bbox.y)의 나무 밑동을 걷어낸다. toolRunner 짝 보정이 밑동을 보면
+    // 수관을 용마루 행(y-1)에 재부착한다. 예전엔 파랑 키트 어깨만 막았는데,
+    // 스케치 배치가 다른 킷·중간 열에도 밑동을 남긴다.
+    const roofY = house.bbox.y;
+    for (let x = house.bbox.x; x <= lastX; x += 1) {
+      if (!pointInMap(map, { x, y: roofY })) continue;
+      const index = roofY * map.width + x;
+      if (TREE_BOTTOM_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) {
+        map.lowerTiles[index] = TILE.GRASS;
+        cleared += 1;
+      }
+      if (TREE_BOTTOM_TILES.has(map.upperTiles[index] ?? TILE.EMPTY)) {
+        map.upperTiles[index] = TILE.EMPTY;
+        cleared += 1;
+      }
+      if (roofY > 0 && TREE_TOP_TILES.has(map.upperTiles[index - map.width] ?? TILE.EMPTY)) {
+        map.upperTiles[index - map.width] = TILE.EMPTY;
+        cleared += 1;
       }
     }
   }
@@ -206,10 +205,12 @@ export function buildHouses(
    * 문 이벤트를 만들지 않는 시공(interior:false / doorEvent:false)에서만 true 로 넘긴다.
    */
   paintDoorTiles = false,
+  sketchSites?: readonly VillageSketchSite[],
 ): BuiltHouse[] {
-  const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard);
+  const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard, sketchSites);
   const candidates = [
-    ...shuffled(available.filter((candidate) => candidate.organic), rng),
+    ...shuffled(available.filter((candidate) => candidate.sketch === true), rng),
+    ...shuffled(available.filter((candidate) => candidate.organic && candidate.sketch !== true), rng),
     ...shuffled(available.filter((candidate) => !candidate.organic), rng),
   ];
   const houses: BuiltHouse[] = [];
@@ -227,6 +228,7 @@ export function buildHouses(
       if (terrainBlocked && bboxTouchesBlocked(candidate.bbox, terrainBlocked, map.width)) continue;
       const forced = intent.houseKits[houses.length];
       const forcedTemplateId = intent.houseTemplates[houses.length];
+      if (forced && candidate.template.kitId && candidate.template.kitId !== forced) continue;
       if (!forcedTemplateId && target >= 4 && houses.length === 0 && hasMultiStoryCandidate && (candidate.template.stories ?? 1) === 1) continue;
       if (!forcedTemplateId && usedTemplateIds.size < requiredTemplateKinds && usedTemplateIds.has(candidate.template.id)) continue;
       const unusedKits = HOUSE_KITS.filter((id) => !usedKitIds.has(id));
@@ -339,6 +341,7 @@ function houseCandidates(
   catalog: readonly HouseTemplate[],
   settlement: SettlementLayout = "plaza-ring",
   boulevard?: HouseBoulevardHint,
+  sketchSites?: readonly VillageSketchSite[],
 ): HouseCandidate[] {
   const minTemplateWidth = Math.min(...catalog.map((template) => template.w));
   const wantedColumns = Math.ceil(target / 2);
@@ -353,6 +356,26 @@ function houseCandidates(
   const span = columns * slotWidth + (columns - 1) * HOUSE_MARGIN * 2;
   const xStart = area.x + Math.max(HOUSE_MARGIN, Math.floor((area.w - span) / 2));
   const candidates: HouseCandidate[] = [];
+
+  // 스케치 프리패스(유기적 후보 우선) — 격자보다 먼저 깔아 organic-first 셔플이 뽑게 한다.
+  // 기존 분수 슬롯·밴드·격자는 그대로 둔다(스케치가 못 채우면 폴백이 메운다).
+  if (sketchSites !== undefined) {
+    for (const site of sketchSites) {
+      for (const template of templates) {
+        const rawX = site.x - Math.floor(template.w / 2);
+        const rawY = site.y;
+        const x = clamp(rawX, area.x + HOUSE_MARGIN, area.x + area.w - HOUSE_MARGIN - template.w);
+        const y = clamp(rawY, area.y + HOUSE_MARGIN, area.y + area.h - HOUSE_MARGIN - template.h);
+        if (Math.abs(x - rawX) > 1 || Math.abs(y - rawY) > 1) continue;
+        candidates.push({
+          template,
+          bbox: { x, y, w: template.w, h: template.h },
+          organic: true,
+          sketch: true,
+        });
+      }
+    }
+  }
 
   if (settlement !== "street-grid") {
     const naturalSlots = [
