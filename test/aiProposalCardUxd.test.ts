@@ -175,15 +175,14 @@ describe("제안 결과 요약", () => {
 });
 
 describe("AI 변경 즉시 적용", () => {
-  it.each(["remove_event", "reset_project", "propose_tile_vocabulary"])(
-    "%s가 포함된 턴도 승인 UI 없이 즉시 적용한다",
+  it.each(["remove_event", "reset_project"])(
+    "%s가 포함된 턴은 중간 확인 뒤 적용한다",
     async (toolName) => {
       const after = structuredClone(store.getCurrent());
       after.meta.title = `applied:${toolName}`;
       const calls = [{
         ...proposed(toolName, {}, { systemChanged: true }, `${toolName} 적용`),
-        destructive: toolName !== "propose_tile_vocabulary",
-        requiresApproval: true,
+        destructive: true,
       }];
       vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(calls));
       vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
@@ -192,6 +191,11 @@ describe("AI 변경 즉시 적용", () => {
       const input = findByTestId(panel, "ai-input") as FakeElement;
       input.value = `${toolName} 실행`;
       findByTestId(panel, "ai-send")?.click();
+      await flushAsync();
+      const root = document.body as unknown as Parameters<typeof findByTestId>[0];
+      const confirmButton = findByTestId(root, "app-modal-confirm");
+      expect(confirmButton, "중간 확인 모달이 떠야 한다").not.toBeNull();
+      confirmButton?.dispatchEvent(new Event("click"));
       await flushAsync();
 
       expect(store.getCurrent().meta.title).toBe(`applied:${toolName}`);
@@ -210,6 +214,29 @@ describe("AI 변경 즉시 적용", () => {
       }
     },
   );
+
+  it("승인 메타데이터만 있는 재료 제안은 확인 없이 적용한다", async () => {
+    const after = structuredClone(store.getCurrent());
+    after.meta.title = "applied:propose_tile_vocabulary";
+    const calls = [{
+      ...proposed("propose_tile_vocabulary", {}, { systemChanged: true }, "재료 합의"),
+      destructive: false,
+      requiresApproval: true,
+      approvalWarning: "재료 합의",
+    }];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(calls));
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
+
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "재료 합의 실행";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    const root = document.body as unknown as Parameters<typeof findByTestId>[0];
+    expect(findByTestId(root, "app-confirm-modal"), "승인 메타데이터만으로 확인 모달이 뜨면 안 된다").toBeNull();
+    expect(store.getCurrent().meta.title).toBe("applied:propose_tile_vocabulary");
+  });
 
   it("안전 분류 불통과와 완성도 경고도 적용을 막지 않는다", async () => {
     const baseline = store.getCurrent();

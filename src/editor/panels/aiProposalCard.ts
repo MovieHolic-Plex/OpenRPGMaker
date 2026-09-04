@@ -13,7 +13,9 @@ import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
 import { summarizeChanges } from "@/editor/tools";
 import { commitGateNotice } from "@/ai/aiGateNotice";
+import { reviewOverInsertion } from "@/ai/overInsertionReview";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
+import { showConfirm } from "@/editor/ui/modal";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import {
   formatLayoutValidationSummary,
@@ -200,13 +202,15 @@ export interface ProposalAppliedResult {
   readonly summary: string;
 }
 
+export type ProposalApplyOutcome = "applied" | "rejected" | "cancelled";
+
 export interface ProposalHostApi {
   pendingProposalMessage: ProposalMessageState | null;
   lastAppliedProposalMessage: ProposalMessageState | null;
   /** 변경 0건 턴의 안내(완성도 린트 경고 포함) — 적용할 것이 없을 때만 부른다. */
   noteNoChanges: (result: TurnResult, extraWarnings?: readonly string[]) => void;
-  /** 실제로 적용되었을 때만 true — 호출자가 "적용됨" 로그를 붙이기 전에 이것을 기다린다. */
-  applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<boolean>;
+  /** applied=반영됨, rejected=게이트 반려, cancelled=중간 검토 취소 — 호출자가 상태·정산을 가르기 위해 셋을 구분한다. */
+  applyProposal: (calls: readonly ProposedCall[], assistantBubble?: HTMLElement | null) => Promise<ProposalApplyOutcome>;
 }
 
 export function createProposalHost(options: {
@@ -233,14 +237,35 @@ export function createProposalHost(options: {
   const applyProposal = async (
     calls: readonly ProposedCall[],
     assistantBubble: HTMLElement | null = null,
-  ): Promise<boolean> => {
+  ): Promise<ProposalApplyOutcome> => {
     const session = controller.session;
-    if (!session || calls.length === 0) return false;
+    if (!session || calls.length === 0) return "rejected";
     ensureGuestIdentityForAiSurface();
-    const humanSummary = proposalHumanSummaryLine(calls);
-    pendingProposalMessage = { calls, assistantBubble, summary: humanSummary };
     const before = store.getCurrent();
     const proposed = session.getProposedProject();
+    const review = reviewOverInsertion({
+      calls,
+      beforeMapCount: Object.keys(before.maps).length,
+      afterMapCount: Object.keys(proposed.maps).length,
+    });
+    if (review.needsReview) {
+      const approved = await showConfirm({
+        title: review.destructive ? "파괴적 변경 확인" : "대량 변경 확인",
+        message: `${review.reasons.join("\n")}\n\n위 내용을 확인하고 적용할까요?`,
+        confirmLabel: review.destructive ? "확인 후 적용" : "적용",
+        danger: review.destructive,
+      });
+      if (!approved) {
+        pendingProposalMessage = null;
+        clearAgentGhostPreview();
+        session.rebaseProject(store.getCurrent());
+        setStatus("대기");
+        appendBubble("system", "중간 검토에서 취소했습니다 — 프로젝트는 그대로입니다.");
+        return "cancelled";
+      }
+    }
+    const humanSummary = proposalHumanSummaryLine(calls);
+    pendingProposalMessage = { calls, assistantBubble, summary: humanSummary };
     // 재료(어휘) 합의도 AI 가 마무리한다 — 사람이 확정할 버튼이 없어졌고, 미합의로 남기면
     // 다음 턴이 같은 재료를 다시 제안한다. 되돌리면 배치와 함께 합의도 원복된다.
     const softList = collectVocabSoftConfirms(calls);
@@ -291,7 +316,7 @@ export function createProposalHost(options: {
       // 예전에는 이 게이트만 채팅에 아무 기록도 남기지 않았다 — 토스트가 사라지면 흔적이 없다.
       appendBubble("system", `❌ 무결성 검사에 막혀 적용하지 않았습니다: ${applied.issue ?? "무결성 오류"}`);
       showAiGateNotice(commitGateNotice(applied.issues ?? (applied.issue ? [applied.issue] : [])));
-      return false;
+      return "rejected";
     }
     setStatus("대기");
     setAssistantMessageBadge(assistantBubble, "applied");
@@ -315,7 +340,7 @@ export function createProposalHost(options: {
       });
     }
     onProposalSettled?.();
-    return true;
+    return "applied";
   };
 
   const noteNoChanges = (result: TurnResult, extraWarnings: readonly string[] = []): void => {
