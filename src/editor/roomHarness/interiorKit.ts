@@ -18,6 +18,15 @@ import {
   type Wing,
 } from "@/editor/interiorRoomPipeline";
 import type { ConceptOverlayRoom, ConceptOverlayThing } from "@/editor/conceptBundleResolve";
+import {
+  resolveHouseInteriorProgram,
+  resolveHouseInteriorScale,
+  wallMaterialForKit,
+  type HouseExteriorHint,
+  type HouseInteriorProgram,
+  type HouseInteriorScale,
+} from "@/editor/houseInteriors";
+import { ALL_HOUSE_KIT_IDS, isHouseKitId } from "@/editor/houseKit";
 import { isConceptChipId, isConceptPlaceRole } from "@/project/types/conceptBundle";
 import type { Project } from "@/project/types";
 import { ToolError } from "@/editor/tools/types";
@@ -35,12 +44,101 @@ function parseThemeModifiers(value: unknown, label: string): InteriorThemeModifi
   return modifiers;
 }
 
-export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPlan {
+const HOUSE_INTERIOR_PROGRAMS = ["dwelling", "shop", "inn", "workshop", "study", "manor"] as const;
+
+function isHouseInteriorProgram(value: string): value is HouseInteriorProgram {
+  return (HOUSE_INTERIOR_PROGRAMS as readonly string[]).includes(value);
+}
+
+function parseRequiredTrimmedString(value: unknown, label: string): string {
+  if (typeof value !== "string") {
+    throw new ToolError(`${label} must be a non-empty string`, { code: "invalid-args" });
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    throw new ToolError(`${label} must be a non-empty string`, { code: "invalid-args" });
+  }
+  return trimmed;
+}
+
+function parseExteriorHint(value: unknown): HouseExteriorHint | undefined {
+  if (value === undefined) return undefined;
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw new ToolError("exterior must be an object", { code: "invalid-args" });
+  }
+  const rec = value as Record<string, unknown>;
+
+  let stories: HouseExteriorHint["stories"];
+  if (rec.stories !== undefined) {
+    if (rec.stories !== 1 && rec.stories !== 2 && rec.stories !== 3) {
+      throw new ToolError("exterior.stories must be 1|2|3", { code: "invalid-args" });
+    }
+    stories = rec.stories;
+  }
+
+  let kitId: HouseExteriorHint["kitId"];
+  if (rec.kitId !== undefined) {
+    const raw = parseRequiredTrimmedString(rec.kitId, "exterior.kitId");
+    if (!isHouseKitId(raw)) {
+      throw new ToolError(`exterior.kitId must be ${ALL_HOUSE_KIT_IDS.join("|")}`, { code: "invalid-args" });
+    }
+    kitId = raw;
+  }
+
+  let templateId: string | undefined;
+  if (rec.templateId !== undefined) {
+    templateId = parseRequiredTrimmedString(rec.templateId, "exterior.templateId");
+  }
+
+  let footprintArea: number | undefined;
+  if (rec.footprintArea !== undefined) {
+    if (typeof rec.footprintArea !== "number" || !Number.isFinite(rec.footprintArea)) {
+      throw new ToolError("exterior.footprintArea must be a number", { code: "invalid-args" });
+    }
+    footprintArea = rec.footprintArea;
+  }
+
+  let program: HouseInteriorProgram | undefined;
+  if (rec.program !== undefined) {
+    const raw = parseRequiredTrimmedString(rec.program, "exterior.program");
+    if (!isHouseInteriorProgram(raw)) {
+      throw new ToolError(`exterior.program must be ${HOUSE_INTERIOR_PROGRAMS.join("|")}`, { code: "invalid-args" });
+    }
+    program = raw;
+  }
+
+  let ownerName: string | undefined;
+  if (rec.ownerName !== undefined) {
+    ownerName = parseRequiredTrimmedString(rec.ownerName, "exterior.ownerName");
+  }
+
+  return {
+    ...(stories !== undefined ? { stories } : {}),
+    ...(kitId !== undefined ? { kitId } : {}),
+    ...(templateId !== undefined ? { templateId } : {}),
+    ...(footprintArea !== undefined ? { footprintArea } : {}),
+    ...(program !== undefined ? { program } : {}),
+    ...(ownerName !== undefined ? { ownerName } : {}),
+  };
+}
+
+/** InteriorRoomPlan plus non-breaking exterior echo fields that downstream code ignores. */
+export type ParsedInteriorRoomPlan = InteriorRoomPlan & {
+  readonly exterior?: HouseExteriorHint;
+  readonly exteriorScale?: HouseInteriorScale;
+  readonly exteriorProgram?: HouseInteriorProgram;
+};
+
+export function parseInteriorPlan(args: Record<string, unknown>): ParsedInteriorRoomPlan {
   const mapId = String(args.mapId ?? "").trim();
   const name = String(args.name ?? mapId).trim();
   const width = Math.floor(Number(args.width ?? 16));
   const height = Math.floor(Number(args.height ?? 13));
-  const theme = String(args.theme ?? "bedroom").trim();
+  const seed = args.seed !== undefined ? Math.floor(Number(args.seed)) : Date.now() % 1_000_000;
+  const exterior = parseExteriorHint(args.exterior);
+  const exteriorProgram = exterior ? resolveHouseInteriorProgram(exterior, seed) : undefined;
+  const exteriorScale = exterior ? resolveHouseInteriorScale(exterior, seed) : undefined;
+  const theme = String(args.theme ?? exteriorProgram ?? "bedroom").trim();
   if (!theme) {
     throw new ToolError("theme 이 비어 있다 — 타일셋 방 종류 id 또는 bedroom|study|dining|kitchen|storage|tavern|corridor", {
       code: "invalid-args",
@@ -87,9 +185,12 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
   const innerDoors = Array.isArray(innerDoorsRaw)
     ? innerDoorsRaw.map((d) => ({ x: Math.floor(Number(d.x)), y: Math.floor(Number(d.y)) }))
     : undefined;
-  const wallMaterial = args.wallMaterial !== undefined ? String(args.wallMaterial) : undefined;
+  let wallMaterial = args.wallMaterial !== undefined ? String(args.wallMaterial) : undefined;
   if (wallMaterial !== undefined && !["cream", "gold-brick", "stone-brick"].includes(wallMaterial)) {
     throw new ToolError(`wallMaterial must be cream|gold-brick|stone-brick`, { code: "invalid-args" });
+  }
+  if (wallMaterial === undefined && exterior) {
+    wallMaterial = wallMaterialForKit(exterior.kitId);
   }
   return {
     mapId,
@@ -103,11 +204,18 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
     theme,
     themeModifiers: parseThemeModifiers(args.themeModifiers, "themeModifiers"),
     // seed 미지정 시 매번 새 판을 뽑는다(구버그: 상수 1 고정 → 재생성 항상 동일).
-    seed: args.seed !== undefined ? Math.floor(Number(args.seed)) : Date.now() % 1_000_000,
+    seed,
     floorTile: args.floorTile !== undefined ? Math.floor(Number(args.floorTile)) : undefined,
     wallMaterial: wallMaterial as InteriorRoomPlan["wallMaterial"],
     ...(tilesetId ? { tilesetId } : {}),
     ...parseConceptOverlay(args.concept),
+    ...(exterior
+      ? {
+          exterior,
+          ...(exteriorScale !== undefined ? { exteriorScale } : {}),
+          ...(exteriorProgram !== undefined ? { exteriorProgram } : {}),
+        }
+      : {}),
   };
 }
 
