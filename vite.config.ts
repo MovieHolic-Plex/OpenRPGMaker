@@ -176,7 +176,7 @@ function devCorsOrigin(req: { headers: { origin?: string | string[] } }): string
 function aiActivityDiskPlugin(): Plugin {
   const dir = join(process.cwd(), "output", "ai-activity");
   // dev 와 preview 양쪽에 같은 미들웨어를 단다. configureServer 만 있던 동안 `vite preview`
-  // (9888/9988)로 접속한 에디터의 AI 활동 로그는 POST 가 404 로 떨어지고 클라이언트가 catch{} 로
+  // (9888)로 접속한 에디터의 AI 활동 로그는 POST 가 404 로 떨어지고 클라이언트가 catch{} 로
   // 삼켜서 디스크에 한 줄도 남지 않았다(2026-08-28 실측: 사용자가 실제로 친 지시가 유실).
   function attachActivityMirror(server: ViteDevServer | PreviewServer) {
     server.middlewares.use((req, res, next) => {

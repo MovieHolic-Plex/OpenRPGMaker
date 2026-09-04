@@ -3,7 +3,7 @@
 import { chromium } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 
-const PORT = process.env.PORT ?? "9988";
+const PORT = process.env.PORT ?? "9888";
 const OUT = "verify-shots/shell-consistency";
 mkdirSync(OUT, { recursive: true });
 

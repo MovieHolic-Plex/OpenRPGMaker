@@ -2,7 +2,7 @@
 import { chromium } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 
-const PORT = process.env.PORT ?? "9988";
+const PORT = process.env.PORT ?? "9888";
 const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
 await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "basic"));

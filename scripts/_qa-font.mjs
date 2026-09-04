@@ -2,7 +2,7 @@ import { chromium } from "@playwright/test";
 const b = await chromium.launch({ args: ["--no-sandbox","--use-gl=swiftshader","--disable-gpu"] });
 const p = await b.newPage({ viewport: { width: 1600, height: 1000 } });
 await p.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode","basic"));
-await p.goto("http://127.0.0.1:9988/?freshProject=1", { waitUntil:"domcontentloaded", timeout:60000 });
+await p.goto("http://127.0.0.1:9888/?freshProject=1", { waitUntil:"domcontentloaded", timeout:60000 });
 const g = p.getByTestId("login-guest"); if (await g.isVisible().catch(()=>false)) await g.click();
 await p.getByTestId("edit-canvas").waitFor({state:"visible",timeout:90000}).catch(()=>{});
 for (const l of ["건너뛰기","닫기","그만 보기"]) { const x=p.getByRole("button",{name:l}).first(); if (await x.isVisible().catch(()=>false)) await x.click().catch(()=>{}); }

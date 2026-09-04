@@ -1,9 +1,9 @@
 // 진단용 — AI 채팅 패널 현 상태 실브라우저 캡처.
-// 실행: PORT=9988 node scripts/_qa-chat-probe.mjs
+// 실행: PORT=9888 node scripts/_qa-chat-probe.mjs
 import { chromium } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 
-const PORT = process.env.PORT ?? "9988";
+const PORT = process.env.PORT ?? "9888";
 const BASE = `http://127.0.0.1:${PORT}`;
 const OUT = process.env.OUT ?? "verify-shots/chat-probe";
 mkdirSync(OUT, { recursive: true });
