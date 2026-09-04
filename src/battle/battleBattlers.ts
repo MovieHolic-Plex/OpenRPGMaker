@@ -7,6 +7,7 @@ import { classLearnedSkillIdsUpToLevel, effectiveActorClassId, hasActorClassOver
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
+import { classicEnemyFormation } from "@/battle/battlerPlacements";
 import type { TroopRecord } from "@/project/types/database";
 import { effectiveActorEquipment, logicalEquipmentIds } from "@/project/equipmentRules";
 
@@ -68,6 +69,8 @@ export interface MutableBattler {
   readonly enemyActions?: readonly EnemyActionPattern[];
   readonly battleX?: number;
   readonly battleY?: number;
+  readonly authoredX?: number;
+  readonly authoredY?: number;
   hidden: boolean;
   captured?: boolean;
   hp: number;
@@ -370,9 +373,7 @@ export const monsterBattlers = monsterPartyBattlers;
  * RM2k3 side-view 적 진형 좌표. 에디터 미리보기·기본 멤버 좌표와 런타임이
  * 같은 식을 쓰도록 여기서만 정의한다(중복 정의 금지).
  */
-export function classicEnemyFormation(index: number): { x: number; y: number } {
-  return { x: 84 + (index % 2) * 44, y: 52 + index * 36 };
-}
+export { classicEnemyFormation } from "@/battle/battlerPlacements";
 
 export function enemyBattlers(project: Project, troop: TroopRecord): MutableBattler[] {
   const members = troop.members?.length
@@ -412,6 +413,8 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
       chargeRate: chargeRateFor(stats.agility),
       battleX: needsClassicFormation ? formationX : recenteredX!,
       battleY: needsClassicFormation ? formationY : authoredY!,
+      authoredX,
+      authoredY,
       gauge: 0,
       stateIds: [],
       stateTurns: {},
@@ -456,6 +459,8 @@ export function battlerSnapshot(
     gauge: battler.gauge,
     battleX: position?.battleX ?? battler.battleX,
     battleY: position?.battleY ?? battler.battleY,
+    authoredX: battler.authoredX,
+    authoredY: battler.authoredY,
     defeated: battler.hp <= 0,
     defending: battler.defending,
     stateIds: [...battler.stateIds],

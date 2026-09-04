@@ -195,6 +195,8 @@ export interface BattleBattlerSnapshot {
   readonly gauge: number;
   readonly battleX?: number;
   readonly battleY?: number;
+  readonly authoredX?: number;
+  readonly authoredY?: number;
   readonly defeated: boolean;
   readonly defending: boolean;
   /** Side-view pose for the current resolve beat (idle/attack/hit/defend/dead). */

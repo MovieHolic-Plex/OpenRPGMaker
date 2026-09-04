@@ -38,8 +38,9 @@ import type { EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/type
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { classicEnemyFormation } from "@/battle/battleBattlers";
-import { resolveSkinEnemyPosition } from "@/player/battleFieldDom";
 import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLER_PLACEMENTS, resolveSkinEnemyPositions } from "@/battle/battlerPlacements";
+import type { BattleSkinId } from "@/battle/skins/types";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { simulateBattle } from "@/battle/simulate";
 import { applyMagentaChromaKeyToImageData } from "./chromaKey";
@@ -468,9 +469,14 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
   const skinId = resolveSkinId(project.system.battleUiStyle);
   const layout = BATTLE_SKINS[skinId]?.layout;
   const members = record.members ?? [];
+  const positions = resolveSkinEnemyPositions(
+    skinId,
+    members.map((member) => ({ x: member.x, y: member.y })),
+    record.autoAlign,
+  );
   const sprites = members.map((member, index) => {
     const enemy = project.database.enemies.find((entry) => entry.id === member.enemyId);
-    const skinPos = resolveSkinEnemyPosition(skinId, { x: member.x, y: member.y }, index, members.length, record.autoAlign);
+    const skinPos = positions[index] ?? { x: 160, y: 96 };
     const sprite = enemySprite(enemy, member, skinPos, record.id, index, index === selectedIndex, rerender);
     sprite.dataset.memberIndex = String(index);
     return sprite;
@@ -480,8 +486,8 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
     class: "db-troop-battle-preview-stage",
     dataset: { testid: "db-troop-preview-stage" },
     children: layout === "sideview" || layout === "active"
-      ? [recenterGuideLine(), ...partyMarkers(), ...children]
-      : [...children],
+      ? [recenterGuideLine(), ...partyMarkers(skinId), ...children]
+      : [...partyMarkers(skinId), ...children],
   });
   const backgroundUrl = resolveAssetResourceUrl(record.previewBackgroundResourceId, { project });
   if (backgroundUrl) {
@@ -502,7 +508,12 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
               legendChip("db-troop-legend-party", "① ~ ④ 아군 진형 (읽기 전용)"),
               legendChip("db-troop-legend-recenter", "점선 = 재배치 경계 (x > 150)"),
             ]
-            : [legendChip("db-troop-legend-party", "현재 전투 스킨 기준 배치 미리보기")],
+            : [
+              legendChip("db-troop-legend-party", "현재 전투 스킨 기준 배치 미리보기"),
+              ...(manualDivergenceCount(record) > 0
+                ? [legendChip("db-troop-legend-recenter", "표시 위치가 저작 좌표와 다릅니다")]
+                : []),
+            ],
       }),
     ],
     testid: "db-troop-preview-card",
@@ -530,19 +541,28 @@ function recenterGuideLine(): HTMLElement {
   return line;
 }
 
-/** 아군 진형(battleX 252, battleY 96+36i) 읽기 전용 마커. 권위: battleBattlers.ts */
-function partyMarkers(): HTMLElement[] {
+/** 아군 진형 읽기 전용 마커. 적 스프라이트와 같은 0..160 표시 공간에 둔다. */
+function partyMarkers(skinId: BattleSkinId): HTMLElement[] {
   return [0, 1, 2, 3].map((index) => {
+    const seat = BATTLER_PLACEMENTS[skinId].party(index, 4);
     const marker = el("div", {
       class: "db-troop-preview-party-marker",
       dataset: { testid: `db-troop-preview-party-marker-${index + 1}` },
       text: String(index + 1),
     });
-    marker.style.left = `${(252 / 320) * 100}%`;
-    marker.style.top = `${((96 + index * 36) / 240) * 100}%`;
+    marker.style.left = `${(Math.max(0, Math.min(320, seat.x)) / 320) * 100}%`;
+    marker.style.top = `${(Math.max(0, Math.min(160, seat.y)) / 160) * 100}%`;
     marker.title = "아군 진형 위치(읽기 전용)";
     return marker;
   });
+}
+
+function manualDivergenceCount(record: TroopRecord): number {
+  if (record.autoAlign) return 0;
+  return (record.members ?? []).filter((member) => {
+    if (member.x == null || !Number.isFinite(member.x)) return false;
+    return member.x > 150;
+  }).length;
 }
 
 function enemySprite(
