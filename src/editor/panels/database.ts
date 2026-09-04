@@ -143,18 +143,18 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   // 지형은 전투 데이터가 아니라 맵 데이터다 — 타일셋·구조물과 같은 그룹에 둔다.
-  { label: "맵", slug: "world", tabs: ["worldGen", "tilesets", "tilesetAutotile", "tilesetUnlabeled", "structureKits", "tilesetSpaces", "villages", "terrain", "commonEvents"] },
-  { label: "임시", slug: "scratch", tabs: ["scratchConcepts"] },
+  { label: "맵", slug: "world", tabs: ["worldGen", "tilesets", "tilesetAutotile", "tilesetUnlabeled", "structureKits", "tilesetSpaces", "scratchConcepts", "villages", "terrain", "commonEvents"] },
   { label: "시스템", slug: "system", tabs: ["system", "terms", "switches", "variables"] },
 ];
 
-/** 세계 그룹 안에서 타일셋 폴더로 묶는 자식 탭 — 통행·오토타일·미분류·구조물·공간 종류. */
+/** 세계 그룹 안에서 타일셋 폴더로 묶는 자식 탭 — 통행·오토타일·미분류·구조물·공간 종류·개념 꾸러미. */
 export const TILESET_FOLDER_TAB_IDS: readonly DatabaseTab[] = [
   "tilesets",
   "tilesetAutotile",
   "tilesetUnlabeled",
   "structureKits",
   "tilesetSpaces",
+  "scratchConcepts",
 ];
 
 function isTilesetFolderTab(id: DatabaseTab): boolean {

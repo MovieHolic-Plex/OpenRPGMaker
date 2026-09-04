@@ -2,7 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { TAB_GROUPS } from "@/editor/panels/database";
-import { interiorObjectById } from "@/editor/interiorObjectCatalog";
+import { INTERIOR_OBJECT_CATALOG, interiorObjectById } from "@/editor/interiorObjectCatalog";
+import { resolveInteriorRoomVocab } from "@/editor/interiorRoomVocab";
+import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
 import {
   ensureThingKitForEdit,
   renderScratchConceptTab,
@@ -14,6 +16,7 @@ import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scrat
 import { validateTileset } from "@/project/io/shapeResourceFields";
 import { store } from "@/project/store";
 import type { ConceptBundleRecord } from "@/project/types";
+import type { TilesetDef } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | undefined;
@@ -45,10 +48,10 @@ function renderOnTileset(tilesetId: string): FakeElement {
 }
 
 describe("scratchConceptTab 레일", () => {
-  it("임시 그룹에 개념 꾸러미 탭이 있다", () => {
-    const scratch = TAB_GROUPS.find((group) => group.slug === "scratch");
-    expect(scratch?.label).toBe("임시");
-    expect(scratch?.tabs).toEqual(["scratchConcepts"]);
+  it("맵 그룹 타일셋 폴더에 개념 꾸러미 탭이 있다 — 임시 그룹은 졸업", () => {
+    expect(TAB_GROUPS.some((group) => group.slug === "scratch")).toBe(false);
+    const world = TAB_GROUPS.find((group) => group.slug === "world");
+    expect(world?.tabs).toContain("scratchConcepts");
   });
 
   it("제목은 개념 꾸러미이고 구조물 앨범이 아니다", () => {
@@ -502,5 +505,38 @@ describe("scratchConceptBundles 스키마", () => {
     };
     expect(() => validateTileset(tileset.id, badChars)).toThrow(/칩 id는 영문·숫자/);
 
+  });
+});
+
+describe("Phase 4 마이그레이션 계약 — 세 필드 공존", () => {
+  it("structureKits·interiorRoomKinds·scratchConceptBundles가 함께 저장·검증을 통과한다", () => {
+    const tileset = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!;
+    const valid = {
+      ...tileset,
+      structureKits: tileset.structureKits ?? [],
+      interiorRoomKinds: [{ id: "mine", label: "내 방", requiredRoles: ["bed"] }],
+      scratchConceptBundles: [cloneConceptBundle(SCRATCH_INN_BUNDLE)],
+    };
+    expect(() => validateTileset(tileset.id, valid)).not.toThrow();
+    // 저작값이 있으면 파생을 타지 않는다 — 마이그레이션 전후 어휘가 같다.
+    const before = resolveInteriorRoomVocab(valid as TilesetDef, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
+    expect(before.kindsById.get("mine")?.requiredRoles).toEqual(["bed"]);
+    expect(before.kindsById.has("bedroom")).toBe(false);
+  });
+
+  it("저작값 없는 구 프로젝트는 파생+폴백 합집합으로 읽힌다", () => {
+    const tileset = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!;
+    const legacy = {
+      ...tileset,
+      interiorRoomKinds: undefined,
+      scratchConceptBundles: [cloneConceptBundle(SCRATCH_INN_BUNDLE)],
+    };
+    delete (legacy as { interiorRoomKinds?: unknown }).interiorRoomKinds;
+    expect(() => validateTileset(tileset.id, legacy)).not.toThrow();
+    const vocab = resolveInteriorRoomVocab(legacy as TilesetDef, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
+    // 꾸러미 장소(여관 초안: bedroom/corridor/dining). 같은 id면 꾸러미 정의가 폴백을 이긴다.
+    expect(vocab.kindsById.size).toBe(BUILTIN_INTERIOR_ROOM_KINDS.length);
+    // 여관 초안 bedroom은 라벨이 "침실"로 같지만 유도 정의(requiredRoles 빈 배열)다.
+    expect(vocab.kindsById.get("bedroom")?.requiredRoles).toEqual([]);
   });
 });
