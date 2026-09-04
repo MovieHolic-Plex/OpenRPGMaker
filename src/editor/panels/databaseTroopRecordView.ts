@@ -21,6 +21,8 @@
 
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
@@ -391,6 +393,7 @@ function memberEditor(
             updateSelectedMember(record, selectedIndex, enemyId ? { ...member, enemyId } : undefined);
             rerender();
           }),
+          openEnemyButton(member.enemyId),
           el("div", {
             class: "db-troop-xy-row",
             children: [
@@ -756,6 +759,50 @@ function selectedMemberIndex(record: TroopRecord): number {
   if (members.length === 0) return 0;
   const selected = selectedMemberIndexes.get(record.id) ?? 0;
   return Math.max(0, Math.min(selected, members.length - 1));
+}
+
+/**
+ * 선택 슬롯의 적을 몬스터 탭에서 바로 연다. 거울 패턴: databaseEnemyRecordView 의
+ * "종족 열기" 버튼과 동일하게 setSelectedRecordId + switchDatabaseActiveTab.
+ */
+function openEnemyButton(enemyId: string): HTMLElement {
+  const enemy = store.getCurrent().database.enemies.find((entry) => entry.id === enemyId);
+  return el("div", {
+    class: "db-troop-enemy-nav-actions",
+    dataset: { testid: "db-troop-enemy-nav-actions" },
+    children: [
+      el("button", {
+        class: "db-ws-btn db-ws-btn-ghost",
+        text: enemy ? `“${enemy.name}” 수정하기` : "몬스터 탭 열기",
+        attrs: { type: "button", title: "몬스터 탭에서 이 적을 바로 수정합니다" },
+        dataset: { testid: "db-troop-open-enemy" },
+        on: {
+          click: (event) => {
+            if (!enemyId) return;
+            const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+            setSelectedRecordId("enemies", enemyId);
+            if (!panelRoot) {
+              toast("몬스터 탭에서 적을 선택했습니다", "ok");
+              return;
+            }
+            switchDatabaseActiveTab("enemies", panelRoot);
+          },
+        },
+      }),
+    ],
+  });
+}
+
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
 }
 
 function updateSelectedMember(record: TroopRecord, selectedIndex: number, nextMember: TroopMemberRecord | undefined): void {

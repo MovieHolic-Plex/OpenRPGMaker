@@ -411,6 +411,13 @@
   margin: 0;
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-enemy-nav-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-xy-row {
   display: grid;
   gap: 8px;
