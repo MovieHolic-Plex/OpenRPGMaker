@@ -492,6 +492,127 @@
   50% { opacity: 0.72; }
 }
 
+/* ---- AI 그림 생성 큐 (aiImageGenerateField) ---- */
+/* 단발 버튼 대신 작업 목록: 만드는 동안에도 프롬프트를 계속 쌓고, 실패해도 프롬프트가
+   증발하지 않으며, 취소·재시도를 그 자리에서 한다. 전역 .page3-resource-row 레이아웃은
+   그대로 두고 목록 부분만 이 시트가 맡는다. 토큰만 쓰고 hex·!important 없음. */
+.ai-image-queue {
+  align-items: stretch;
+  display: grid;
+  gap: 8px;
+}
+
+.ai-image-queue-list {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ai-image-queue-empty {
+  color: var(--text-3);
+  font: 400 12px/1.5 var(--font-ui);
+  margin: 0;
+}
+
+.ai-image-queue-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.ai-image-queue-count {
+  color: var(--text-2);
+  font: 600 12px/1.4 var(--font-ui);
+}
+
+.ai-image-queue-clear {
+  background: transparent;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 12px/1.4 var(--font-ui);
+  padding: 2px 4px;
+  text-decoration: underline;
+}
+
+.ai-image-queue-clear:hover {
+  color: var(--text-1);
+}
+
+.ai-image-queue-items {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-image-queue-item {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px 6px 10px;
+}
+
+.ai-image-queue-item.is-running {
+  border-color: var(--accent-border);
+}
+
+.ai-image-queue-item.is-error {
+  border-color: var(--danger);
+}
+
+.ai-image-queue-label {
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: 500 12.5px/1.4 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-image-queue-status {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font: 500 12px/1.4 var(--font-ui);
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-image-queue-item.is-done .ai-image-queue-status {
+  color: var(--success);
+}
+
+.ai-image-queue-item.is-error .ai-image-queue-status {
+  color: var(--danger);
+}
+
+.ai-image-queue-cancel,
+.ai-image-queue-retry {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 600 12px/1 var(--font-ui);
+  height: 26px;
+  padding: 0 8px;
+}
+
+.ai-image-queue-cancel:hover,
+.ai-image-queue-retry:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .page3-anim-fallback-flash {
     animation: none;
