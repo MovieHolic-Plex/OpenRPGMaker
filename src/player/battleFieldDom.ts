@@ -356,10 +356,11 @@ export function syncSceneBackdropVar(field: HTMLElement): void {
 function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   const group = field.querySelector(".battle-enemy-group");
   if (!group) return;
+  const positions = resolveEnemyRowPositions(snapshot, snapshot.enemies);
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     if (!node) {
-      group.append(enemyButton(enemy, snapshot, index));
+      group.append(enemyButton(enemy, snapshot, index, positions[index]));
       node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     }
     if (!node) continue;
@@ -641,12 +642,12 @@ function enemyButton(
   enemy: BattleBattlerSnapshot,
   snapshot: BattleSnapshot,
   index = 0,
-  position?: { readonly x: number; readonly y: number },
+  position: { readonly x: number; readonly y: number },
 ): HTMLButtonElement {
   const enemyNode = document.createElement("button");
   enemyNode.type = "button";
   enemyNode.className = "battle-enemy";
-  const ep = position ?? { x: enemy.battleX ?? 160, y: enemy.battleY ?? 96 };
+  const ep = position;
   positionBattleNode(enemyNode, ep.x, ep.y);
   // 겹칠 때 화면 아래(가까운) 적이 앞에 오도록 — z 는 CSS 변수로만 소비해
   // 모션 클래스(z-index 상승)가 인라인에 눌리지 않게 한다.

@@ -513,7 +513,7 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
             ]
             : [
               legendChip("db-troop-legend-party", "현재 전투 스킨 기준 배치 미리보기"),
-              ...(manualDivergenceCount(record) > 0
+              ...(manualDivergenceCount(record, skinId) > 0
                 ? [legendChip("db-troop-legend-recenter", "표시 위치가 저작 좌표와 다릅니다")]
                 : []),
             ],
@@ -527,7 +527,7 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
 
 function previewHint(record: TroopRecord, skinId: string): string {
   if (record.autoAlign) return `현재 전투 스킨(${skinId})의 자동 진형으로 싸웁니다.`;
-  return `현재 전투 스킨(${skinId}) 기준 미리보기 — 수동 좌표는 측면 스킨에서 그대로, 정면 스킨에서 중앙 기준 오프셋으로 반영됩니다.`;
+  return `현재 전투 스킨(${skinId}) 기준 미리보기 — 수동 좌표는 측면 스킨에서 좌측 진형(x>150 재배치)으로, 정면 스킨에서 행 전체 오프셋으로 반영됩니다.`;
 }
 
 function legendChip(className: string, text: string): HTMLElement {
@@ -560,11 +560,19 @@ function partyMarkers(skinId: BattleSkinId): HTMLElement[] {
   });
 }
 
-function manualDivergenceCount(record: TroopRecord): number {
+function manualDivergenceCount(record: TroopRecord, skinId: BattleSkinId): number {
   if (record.autoAlign) return 0;
-  return (record.members ?? []).filter((member) => {
+  const members = record.members ?? [];
+  const positions = resolveSkinEnemyPositions(
+    skinId,
+    members.map((member) => ({ x: member.x, y: member.y })),
+    false,
+  );
+  return members.filter((member, index) => {
     if (member.x == null || !Number.isFinite(member.x)) return false;
-    return member.x > 150;
+    const rendered = positions[index]?.x;
+    if (rendered == null) return false;
+    return Math.abs(rendered - member.x) >= 1;
   }).length;
 }
 
