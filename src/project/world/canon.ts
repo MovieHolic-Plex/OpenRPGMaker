@@ -104,7 +104,7 @@ export function resolveWorldCanon(value: WorldCanon | undefined): ResolvedWorldC
   return {
     name: value?.name ?? "",
     premise: value?.premise ?? "",
-    tones: value?.tones ?? [],
+    tones: uniqueTones(value?.tones ?? []),
     era: value?.era ?? "",
     techCeiling: value?.techCeiling ?? "",
     absences: value?.absences ?? [],
@@ -144,7 +144,11 @@ export function compactWorldCanon(canon: ResolvedWorldCanon): WorldCanon | undef
 }
 
 export function worldCanonHasContent(value: WorldCanon | undefined): boolean {
-  return compactWorldCanon(resolveWorldCanon(value)) !== undefined;
+  // 상태 껍데기({status:"canon"}만)까지 "저작됨"으로 세면 개요 카드가 거짓 저작을
+  // 알리고 장르 시드가 건너뛰며 빈 프롬프트 블록이 나간다 — 상태는 내용으로 세지 않는다.
+  if (!value) return false;
+  const { status: _status, ...rest } = value;
+  return compactWorldCanon(resolveWorldCanon(rest)) !== undefined;
 }
 
 function resolveLaw(value: WorldCanonLaw | undefined): WorldCanonLawState {

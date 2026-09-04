@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
-import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -57,6 +57,70 @@ describe("database world canon view", () => {
     setInput(host, "db-world-canon-absence-input", "총");
     findByTestId(host, "db-world-canon-absence-add")?.click();
     expect(store.getCurrent().worldCanon?.absences).toEqual(["총"]);
+  });
+
+  it("leaves an undo snapshot for the draft/canon/secret switch", () => {
+    store.update((draft) => {
+      draft.worldCanon = { name: "안개 해안" };
+    });
+    resetMapEditHistory();
+    const host2 = renderTab();
+    // segmentedControl 은 change 이벤트로 동작한다.
+    const group = findByTestId(host2, "db-world-canon-status");
+    const canonOption = group?.querySelectorAll("[data-testid='db-world-canon-status-option']")
+      .find((node) => node.attrs.value === "canon");
+    expect(canonOption).toBeTruthy();
+    (canonOption as FakeElement & { checked: boolean }).checked = true;
+    canonOption?.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().worldCanon?.status).toBe("canon");
+    expect(getMapEditHistoryState().canUndo).toBe(true);
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().worldCanon?.status).toBeUndefined();
+  });
+
+  it("renders a markdown preview of the authored body", () => {
+    const host = renderTab();
+    setInput(host, "db-world-canon-body", "## 역사\n- 왕위는 비어 있다.");
+    const toggle = findByTestId(host, "db-world-canon-preview-toggle");
+    const area = findByTestId(host, "db-world-canon-body");
+    expect(toggle).toBeTruthy();
+    toggle?.click();
+    const preview = findByTestId(host, "db-world-canon-preview");
+    expect(preview).toBeTruthy();
+    expect(preview?.textContent).toContain("역사");
+    // 미리보기가 열리면 편집기는 가려지고, 닫으면 돌아온다.
+    expect(area?.getAttribute("hidden")).toBe("");
+    toggle?.click();
+    expect(area?.getAttribute("hidden")).toBeNull();
+  });
+
+  it("keeps the preview open across a tab rerender", () => {
+    const host = renderTab();
+    setInput(host, "db-world-canon-body", "## 역사\n- 왕위는 비어 있다.");
+    findByTestId(host, "db-world-canon-preview-toggle")?.click();
+    const rerendered = renderTab();
+    expect(findByTestId(rerendered, "db-world-canon-preview")?.textContent).toContain("역사");
+    // 다음 테스트에 열린 미리보기가 새지 않게 닫는다.
+    findByTestId(rerendered, "db-world-canon-preview-toggle")?.click();
+  });
+
+  it("updates the excerpt counter while typing the body", () => {
+    const host = renderTab();
+    const hint = findByTestId(host, "db-world-canon-body-card")?.querySelector(".db-ws-card-hint");
+    expect(hint?.textContent).toContain("0자를 본다");
+    setInput(host, "db-world-canon-body", "가".repeat(700));
+    expect(hint?.textContent).toContain("뒤 100자는 발췌 밖");
+  });
+
+  it("rejects an absence past the cap with feedback instead of silently dropping", () => {
+    const full = Array.from({ length: 32 }, (_, index) => `금기${index}`);
+    store.update((draft) => {
+      draft.worldCanon = { name: "꽉 찬 세계", absences: full };
+    });
+    const host2 = renderTab();
+    setInput(host2, "db-world-canon-absence-input", "하나 더");
+    findByTestId(host2, "db-world-canon-absence-add")?.click();
+    expect(store.getCurrent().worldCanon?.absences).toHaveLength(32);
   });
 
   it("drops worldCanon when the last authored field is cleared", () => {

@@ -628,13 +628,34 @@
   }
 
   .db-world-canon-chip.is-on {
-    border-color: var(--accent, currentColor);
-    background: var(--bg-overlay);
+    border-color: var(--accent);
+    background: var(--accent-muted);
+    color: var(--success);
   }
 
   .db-world-canon-law {
     display: grid;
     gap: 8px;
+  }
+
+  .db-world-canon-body-wrap {
+    display: grid;
+    gap: 8px;
+  }
+
+  .db-world-canon-preview-toggle {
+    justify-self: start;
+  }
+
+  .db-world-canon-preview {
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: var(--bg-overlay);
+  }
+
+  .db-world-codex-lead {
+    margin: 0 0 8px;
   }
 
   @media (max-width: 820px) {
