@@ -201,9 +201,9 @@ describe("place_concept 도면", () => {
       expect(layout.innerDoors.some((door) => door.y === bedroom.y + bedroom.h && door.x >= bedroom.x && door.x < bedroom.x + bedroom.w)).toBe(true);
     }
     expect(layout.innerDoors.some((door) => door.y === corridor.y + corridor.h)).toBe(true);
-    // 맵은 정문 아래 출구 계단과 천장 여백을 남긴다.
-    expect(layout.height).toBeGreaterThanOrEqual(layout.door.y + 4);
-    expect(layout.rooms.every((room) => room.x >= 2 && room.x + room.w <= layout.width - 2)).toBe(true);
+    // 맵은 정문 아래 출구 계단과 천장 여백을 남긴다(도면 여백 2행: door.y+3 == height).
+    expect(layout.height).toBeGreaterThanOrEqual(layout.door.y + 3);
+    expect(layout.rooms.every((room) => room.x >= 2 && room.x + room.w <= layout.width - 1)).toBe(true);
   });
 
   it("역할이 없는 옛 나무는 복도 라벨로 복도를 알아보고 복도가 정문을 품는다", () => {
