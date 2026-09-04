@@ -20,6 +20,7 @@ afterEach(() => {
   store.update((project) => {
     for (const tileset of Object.values(project.tilesets)) {
       delete tileset.interiorRoomKinds;
+      delete tileset.scratchConceptBundles;
     }
   });
 });
@@ -50,6 +51,31 @@ describe("tilesetSpacesTab 은 구조물 앨범이 아니다", () => {
     expect(host.querySelector("[data-testid='tileset-spaces-kind-bedroom']")).toBeNull();
     expect(host.querySelector("[data-testid='tileset-spaces-seed-builtin']")).toBeNull();
     expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.interiorRoomKinds).toBeUndefined();
+  });
+
+  it("저작값이 없고 꾸러미가 있으면 파생 칩과 읽기 전용 행을 보여준다", () => {
+    const tilesetId = INTERIOR_ROOM_TILESET_ID;
+    store.update((project) => {
+      const tileset = project.tilesets[tilesetId]!;
+      delete tileset.interiorRoomKinds;
+      tileset.scratchConceptBundles = [{
+        id: "bundle_t",
+        label: "시험",
+        facilities: [{ id: "facility_t", label: "시험", placeIds: ["hall_t"] }],
+        places: [{ id: "hall_t", label: "시험 홀", role: "entrance" }],
+        things: [],
+      }];
+    });
+    const host = renderOnTileset(tilesetId);
+    // 자동 시드하지 않는다 — 파생 칩이 뜬다.
+    expect(store.getCurrent().tilesets[tilesetId]?.interiorRoomKinds).toBeUndefined();
+    const chip = host.querySelector("[data-testid='tileset-spaces-derived-chip']");
+    expect(chip).not.toBeNull();
+    expect(chip!.textContent).toContain("개념 꾸러미에서 유도됨");
+    // 파생 행 카드가 뜨고, 인스펙터 대신 읽기 전용 안내가 뜬다.
+    expect(host.querySelector("[data-testid='tileset-spaces-kind-hall_t']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='tileset-spaces-derived-note-hall_t']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='tileset-spaces-inspector-hall_t']")).toBeNull();
   });
 });
 
