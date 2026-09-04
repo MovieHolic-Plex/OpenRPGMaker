@@ -90,21 +90,49 @@ type CommandDigest = {
 };
 
 function summarizeCommand(cmd: Command): CommandDigest {
-  const compactSummary = (() => { try { return commandSummary(cmd); } catch { return cmd.kind; } })();
-  const detail = cmd.kind === "text"
-    ? `문장 표시: ${textBodyOf(cmd).replace(/\s+/g, " ").trim()}`
-    : compactSummary;
-  // 카테고리 시각 언어는 목록·피커와 같은 출처를 쓴다. 예전에는 여기에만 있던
-  // 하드코딩 색표를 계산했는데 아무도 읽지 않는 죽은 값이었다.
-  const visual = commandCategoryVisual(cmd);
+  // 카드 하나가 죽어도 이벤트 전체가 안 보이던 흰 화면으로 번지지 않게 — 요약은 절대 던지지 않는다.
+  try {
+    const compactSummary = (() => { try { return commandSummary(cmd); } catch { return cmd.kind; } })();
+    const detail = cmd.kind === "text"
+      ? `문장 표시: ${textBodyOf(cmd).replace(/\s+/g, " ").trim()}`
+      : compactSummary;
+    // 카테고리 시각 언어는 목록·피커와 같은 출처를 쓴다. 예전에는 여기에만 있던
+    // 하드코딩 색표를 계산했는데 아무도 읽지 않는 죽은 값이었다.
+    const visual = commandCategoryVisual(cmd);
+    return {
+      title: kindLabel(cmd.kind),
+      detail,
+      category: visual.key,
+      categoryLabel: visual.label,
+      glyph: visual.glyph,
+      icon: visual.icon,
+    };
+  } catch (error) {
+    console.error("[event-editor] failed to summarize command", cmd?.kind, error);
+    return brokenCommandDigest(cmd);
+  }
+}
+
+// 요약조차 못 뽑는 명령의 자리 표시자. 카드 위치를 지키고 원시값을 펼쳐 보여준다.
+export function brokenCommandDigest(cmd: Command): CommandDigest {
   return {
-    title: kindLabel(cmd.kind),
-    detail,
-    category: visual.key,
-    categoryLabel: visual.label,
-    glyph: visual.glyph,
-    icon: visual.icon,
+    title: `표시할 수 없는 명령(${(cmd as { kind?: unknown })?.kind ?? "알 수 없음"})`,
+    detail: rawCommandPreview(cmd),
+    category: "flow",
+    categoryLabel: "흐름",
+    glyph: "!",
+    icon: "warning",
   };
+}
+
+function rawCommandPreview(cmd: Command): string {
+  try {
+    const raw = JSON.stringify(cmd) ?? "";
+    const oneLine = raw.replace(/\s+/g, " ").trim();
+    return oneLine.length > 160 ? `${oneLine.slice(0, 157).trimEnd()}…` : oneLine;
+  } catch {
+    return "원시값을 읽지 못했습니다.";
+  }
 }
 
 function kindLabel(kind: string): string {
@@ -248,14 +276,53 @@ export function renderStoryboard(
     });
   };
 
+  // 분기 안 명령 하나가 터져도 형제·부모 카드는 살아남는다. 실패한 잎만 자리 표시자로 그린다.
+  const renderBrokenLeaf = (command: Command, path: number[]): HTMLElement => {
+    const info = brokenCommandDigest(command);
+    const leaf = el("div", {
+      class: "leaf event-storyboard-branch-command is-broken",
+      attrs: {
+        role: "button",
+        tabindex: "0",
+        title: "이 명령은 표시할 수 없어 원시값으로 보여줍니다",
+        "aria-label": `표시할 수 없는 명령: ${info.detail}`,
+      },
+      dataset: { testid: `event-storyboard-broken-${path.join("-")}`, cmdPath: JSON.stringify(path), commandCategory: info.category },
+      children: [
+        el("span", { class: "kind", text: info.title }),
+        el("span", { class: "line", text: info.detail }),
+        ...(opts?.onDelete ? [el("button", {
+          class: "event-storyboard-row-action is-danger",
+          text: "삭제",
+          attrs: { type: "button", "aria-label": "표시할 수 없는 명령 삭제" },
+          dataset: { testid: `event-storyboard-broken-delete-${path.join("-")}` },
+          on: { click: (event: Event) => { event.stopPropagation(); opts.onDelete!(path); } },
+        })] : []),
+      ],
+    });
+    attachRowBehaviour(leaf, path);
+    return el("div", {
+      class: "event-storyboard-branch-command-tree",
+      children: [leaf],
+    });
+  };
   const renderBranchCommands = (branchCommands: readonly Command[], pathPrefix: number[]): HTMLElement[] =>
     branchCommands.map((command, commandIndex) => {
-      const info = summarizeCommand(command);
       const path = [...pathPrefix, commandIndex];
-      const descendants = branchesOf(command);
-      const actions = rowActions(path);
-      const leaf = el("div", {
-        class: "leaf event-storyboard-branch-command",
+      try {
+        return renderBranchLeaf(command, path);
+      } catch (error) {
+        console.error("[event-editor] failed to render branch command", path, error);
+        return renderBrokenLeaf(command, path);
+      }
+    });
+  const renderBranchLeaf = (command: Command, path: number[]): HTMLElement => {
+    const commandIndex = path[path.length - 1] ?? 0;
+    const info = summarizeCommand(command);
+    const descendants = branchesOf(command);
+    const actions = rowActions(path);
+    const leaf = el("div", {
+      class: "leaf event-storyboard-branch-command",
         attrs: {
           role: "button",
           tabindex: "0",
@@ -271,41 +338,41 @@ export function renderStoryboard(
           }),
           el("span", { class: "kind", text: info.title }),
           el("span", { class: "line", text: info.detail }),
-          ...(actions ? [actions] : []),
-        ],
-      });
-      attachRowBehaviour(leaf, path);
-      if (samePath(path, opts?.selectedPath)) {
-        leaf.classList.add("selected", "sel", "is-selected");
-        leaf.setAttribute("aria-current", "step");
-      }
-      return el("div", {
-        class: "event-storyboard-branch-command-tree",
-        children: [
-          leaf,
-          ...(descendants.length > 0
-            ? [el("div", {
-                class: "branch event-storyboard-branch-descendants",
-                children: descendants.map((branch) => el("section", {
-                  class: "event-storyboard-branch-panel",
-                  children: [
-                    el("div", { class: "branch-h event-storyboard-branch-label", text: branch.label || "이름 없는 분기" }),
-                    ...(branch.commands.length > 0
-                      ? renderBranchCommands(branch.commands, [...path, branch.pathSegment])
-                      : [el("button", {
-                          class: "event-storyboard-branch-empty",
-                          text: branchEmptyActionLabel,
-                          attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
-                          dataset: { testid: `event-storyboard-branch-empty-${[...path, branch.pathSegment].join("-")}` },
-                          on: { click: () => opts?.onAddToBranch?.([...path, branch.pathSegment]) },
-                        })]),
-                  ],
-                })),
-              })]
-            : []),
-        ],
-      });
+        ...(actions ? [actions] : []),
+      ],
     });
+    attachRowBehaviour(leaf, path);
+    if (samePath(path, opts?.selectedPath)) {
+      leaf.classList.add("selected", "sel", "is-selected");
+      leaf.setAttribute("aria-current", "step");
+    }
+    return el("div", {
+      class: "event-storyboard-branch-command-tree",
+      children: [
+        leaf,
+        ...(descendants.length > 0
+          ? [el("div", {
+              class: "branch event-storyboard-branch-descendants",
+              children: descendants.map((branch) => el("section", {
+                class: "event-storyboard-branch-panel",
+                children: [
+                  el("div", { class: "branch-h event-storyboard-branch-label", text: branch.label || "이름 없는 분기" }),
+                  ...(branch.commands.length > 0
+                    ? renderBranchCommands(branch.commands, [...path, branch.pathSegment])
+                    : [el("button", {
+                        class: "event-storyboard-branch-empty",
+                        text: branchEmptyActionLabel,
+                        attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
+                        dataset: { testid: `event-storyboard-branch-empty-${[...path, branch.pathSegment].join("-")}` },
+                        on: { click: () => opts?.onAddToBranch?.([...path, branch.pathSegment]) },
+                      })]),
+                ],
+              })),
+            })]
+          : []),
+      ],
+    });
+  };
 
   if (commands.length === 0) {
     host.append(el("div", {
@@ -332,68 +399,103 @@ export function renderStoryboard(
     }));
   } else {
     commands.forEach((cmd, idx) => {
-      const info = summarizeCommand(cmd);
-      // 분기 이름은 바로 아래 `branchPanels` 가 전부 펼쳐 보여준다. 예전에는 카드 안에도
-      // 앞 2개만 12자로 자른 «칩 줄» 을 같이 찍어, 같은 목록이 40px 간격으로 두 번 나왔다
-      // (분기가 1개인 반복 명령은 «반복할 내용» 이 연달아 두 번). 열등한 사본이라 지웠다.
-      const branches = branchesOf(cmd);
-      const actions = rowActions([idx]);
-
-      const row = el("div", {
-        class: "row event-storyboard-card",
-        attrs: {
-          role: "button",
-          tabindex: "0",
-          title: "한 번 클릭하면 선택, 두 번 클릭하면 편집",
-          "aria-label": `${idx + 1}번째 명령, ${info.title}: ${info.detail}`,
-        },
-        dataset: {
-          testid: `event-storyboard-card-${idx}`,
-          cmdPath: JSON.stringify([idx]),
-          commandCategory: info.category,
-        },
-        children: [
-          el("span", { class: "n event-storyboard-card-thumb", text: String(idx + 1) }),
-          el("span", {
-            class: "event-storyboard-card-cat",
-            attrs: { "aria-hidden": "true", title: `${info.categoryLabel} 명령` },
-            dataset: { glyph: info.glyph, label: info.categoryLabel },
-            children: [renderEditorIcon(info.icon)],
-          }),
-          el("span", { class: "kind event-storyboard-card-title", text: info.title }),
-          el("span", { class: "line event-storyboard-card-detail", text: info.detail }),
-          ...(actions ? [actions] : []),
-        ],
-      });
-      attachRowBehaviour(row, [idx]);
-      if (samePath([idx], opts?.selectedPath)) {
-        row.classList.add("selected", "sel", "is-selected");
-        row.setAttribute("aria-current", "step");
+      // 카드 하나가 터져도 형제는 살아남는다. 카드 본문도 try 안에 넣는다.
+      try {
+        for (const node of renderTopCard(cmd, idx)) host.append(node);
+      } catch (error) {
+        console.error("[event-editor] failed to render storyboard card", [idx], error);
+        host.append(renderBrokenCard(cmd, idx));
       }
+    });
+  }
 
-      const branchPanels = branches.length > 0
-        ? el("div", {
-            class: "branch event-storyboard-branches",
-            children: branches.flatMap((branch) => [
-              el("div", {
-                class: "branch-h event-storyboard-branch-label",
-                text: branch.label || "이름 없는 분기",
-              }),
-              ...(branch.commands.length > 0
-                ? renderBranchCommands(branch.commands, [idx, branch.pathSegment])
-                : [el("button", {
-                    class: "event-storyboard-branch-empty",
-                    text: branchEmptyActionLabel,
-                    attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
-                    dataset: { testid: `event-storyboard-branch-empty-${idx}-${branch.pathSegment}` },
-                    on: { click: () => opts?.onAddToBranch?.([idx, branch.pathSegment]) },
-                  })]),
-            ]),
-          })
-        : null;
-
-      host.append(row);
-      if (branchPanels) host.append(branchPanels);
+  function renderTopCard(cmd: Command, idx: number): HTMLElement[] {
+    const info = summarizeCommand(cmd);
+    // 분기 이름은 바로 아래 `branchPanels` 가 전부 펼쳐 보여준다. 예전에는 카드 안에도
+    // 앞 2개만 12자로 자른 «칩 줄» 을 같이 찍어, 같은 목록이 40px 간격으로 두 번 나왔다
+    // (분기가 1개인 반복 명령은 «반복할 내용» 이 연달아 두 번). 열등한 사본이라 지웠다.
+    const branches = branchesOf(cmd);
+    const actions = rowActions([idx]);
+    const row = el("div", {
+      class: "row event-storyboard-card",
+      attrs: {
+        role: "button",
+        tabindex: "0",
+        title: "한 번 클릭하면 선택, 두 번 클릭하면 편집",
+        "aria-label": `${idx + 1}번째 명령, ${info.title}: ${info.detail}`,
+      },
+      dataset: {
+        testid: `event-storyboard-card-${idx}`,
+        cmdPath: JSON.stringify([idx]),
+        commandCategory: info.category,
+      },
+      children: [
+        el("span", { class: "n event-storyboard-card-thumb", text: String(idx + 1) }),
+        el("span", {
+          class: "event-storyboard-card-cat",
+          attrs: { "aria-hidden": "true", title: `${info.categoryLabel} 명령` },
+          dataset: { glyph: info.glyph, label: info.categoryLabel },
+          children: [renderEditorIcon(info.icon)],
+        }),
+        el("span", { class: "kind event-storyboard-card-title", text: info.title }),
+        el("span", { class: "line event-storyboard-card-detail", text: info.detail }),
+        ...(actions ? [actions] : []),
+      ],
+    });
+    attachRowBehaviour(row, [idx]);
+    if (samePath([idx], opts?.selectedPath)) {
+      row.classList.add("selected", "sel", "is-selected");
+      row.setAttribute("aria-current", "step");
+    }
+    const branchPanels = branches.length > 0
+      ? el("div", {
+          class: "branch event-storyboard-branches",
+          children: branches.flatMap((branch) => [
+            el("div", {
+              class: "branch-h event-storyboard-branch-label",
+              text: branch.label || "이름 없는 분기",
+            }),
+            ...(branch.commands.length > 0
+              ? renderBranchCommands(branch.commands, [idx, branch.pathSegment])
+              : [el("button", {
+                  class: "event-storyboard-branch-empty",
+                  text: branchEmptyActionLabel,
+                  attrs: { type: "button", title: "이 분기에 명령을 하나 넣어줍니다" },
+                  dataset: { testid: `event-storyboard-branch-empty-${idx}-${branch.pathSegment}` },
+                  on: { click: () => opts?.onAddToBranch?.([idx, branch.pathSegment]) },
+                })]),
+          ]),
+        })
+      : null;
+    return branchPanels ? [row, branchPanels] : [row];
+  }
+  function renderBrokenCard(cmd: Command, idx: number): HTMLElement {
+    const info = brokenCommandDigest(cmd);
+    return el("div", {
+      class: "row event-storyboard-card is-broken",
+      attrs: {
+        role: "button",
+        tabindex: "0",
+        title: "이 명령은 표시할 수 없어 원시값으로 보여줍니다",
+        "aria-label": `${idx + 1}번째 명령, ${info.title}: ${info.detail}`,
+      },
+      dataset: {
+        testid: `event-storyboard-broken-${idx}`,
+        cmdPath: JSON.stringify([idx]),
+        commandCategory: info.category,
+      },
+      children: [
+        el("span", { class: "n event-storyboard-card-thumb", text: String(idx + 1) }),
+        el("span", { class: "kind event-storyboard-card-title", text: info.title }),
+        el("span", { class: "line event-storyboard-card-detail", text: info.detail }),
+        ...(opts?.onDelete ? [el("button", {
+          class: "event-storyboard-row-action is-danger",
+          text: "삭제",
+          attrs: { type: "button", "aria-label": "표시할 수 없는 명령 삭제" },
+          dataset: { testid: `event-storyboard-broken-delete-${idx}` },
+          on: { click: (event: Event) => { event.stopPropagation(); opts.onDelete!([idx]); } },
+        })] : []),
+      ],
     });
   }
 

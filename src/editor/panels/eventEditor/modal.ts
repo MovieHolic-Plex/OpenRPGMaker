@@ -209,13 +209,17 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
         renderEventEditorStable(stableBody, request.mapId, request.eventId);
         stableRendered = true;
       }
+      // 새 본문을 별도 버퍼에 먼저 그린다. 렌더가 던져도 기존 화면은 살아남는다 —
+      // 예전에는 clearChildren 뒤에 그려서 명령 하나가 터지면 이벤트 전체가 흰 화면이 됐다.
+      const staged = document.createElement("div");
+      renderEventEditorDynamic(staged, request.mapId, request.eventId);
       clearChildren(dynamicBody);
-      renderEventEditorDynamic(dynamicBody, request.mapId, request.eventId);
+      dynamicBody.append(...Array.from(staged.childNodes));
     } catch (error) {
-      // clearChildren 뒤에 던지면 헤더/푸터만 남은 흰 본문이 된다. 원인을 본문에 남긴다.
+      // 스테이징이 터지면 기존 본문은 그대로 두고 배너만 얹는다. 읽기와 멀쩡한 부분의
+      // 편집은 계속 된다 — "다시 그리기" 전에도 내용은 볼 수 있어야 한다.
       console.error("[event-editor] failed to render body", error);
-      clearChildren(dynamicBody);
-      dynamicBody.append(renderEventEditorCrash(error, refresh));
+      dynamicBody.prepend(renderEventEditorCrash(error, refresh));
       return;
     }
     try {
