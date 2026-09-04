@@ -333,7 +333,7 @@ function systemSectionNodes(
           });
           return select;
         })()),
-        field("배틀 모델", (() => {
+        field("규칙 모델", (() => {
           // 전투 규칙 엔진 선택. rm2k3(기본/생략) 또는 gen1(포켓몬 레드 스타일).
           // 기본은 JSON 에 생략하고 gen1 만 보존한다(normalizeSystemRecords 와 동일 계약).
           // Gen1 규칙 엔진은 아직 미구현이다(데미지 공식·상태·포획은 계획서 task 2+). 현재 gen1 을
