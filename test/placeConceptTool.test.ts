@@ -480,12 +480,12 @@ describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (
     expect(result.issues?.some((issue) => issue.code === "invalid-plan")).toBe(true);
   });
 
-  it("모르는 칩·장소 참조도 invalid-plan 이다", () => {
-    const badChip = runTool(ctx(), "place_concept", {
-      query: "여관", mapId: "map_inn_bad_chip",
-      plan: { places: [{ id: "hall", role: "entrance" }], things: [{ objectId: "barrel", placeIds: ["hall"], chips: ["explode"] }] },
+  it("자유 칩은 plan 을 통과하고 모르는 장소 참조는 invalid-plan 이다", () => {
+    const customChip = runTool(ctx(), "place_concept", {
+      query: "여관", mapId: "map_inn_custom_chip",
+      plan: { places: [{ id: "hall", role: "entrance" }], things: [{ objectId: "barrel", placeIds: ["hall"], chips: ["guest-only"] }] },
     }, { dryRun: false });
-    expect(badChip.issues?.some((issue) => issue.code === "invalid-plan")).toBe(true);
+    expect(customChip.ok).toBe(true);
     const badPlace = runTool(ctx(), "place_concept", {
       query: "여관", mapId: "map_inn_bad_place",
       plan: { places: [{ id: "hall", role: "entrance" }], things: [{ objectId: "barrel", placeIds: ["cellar"], chips: ["block"] }] },

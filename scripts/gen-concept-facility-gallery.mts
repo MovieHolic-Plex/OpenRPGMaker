@@ -30,7 +30,7 @@ import { CONCEPT_FACILITY_TEMPLATES } from "../src/project/defaults/conceptFacil
 import { createBlankProject } from "../src/project/defaults.ts";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "../src/project/defaults/scratchInnBundle.ts";
 import {
-  CONCEPT_CHIP_LABELS,
+  conceptChipLabel,
   CONCEPT_FLOOR_MATERIAL_LABELS,
   CONCEPT_PLACE_ROLE_LABELS,
   CONCEPT_PLACE_SIZE_LABELS,
@@ -214,7 +214,7 @@ function thingsTable(built: Built): string {
       rows.push(`<tr class="${status}">
         <td>${object ? objectSprite(object, 2) : "?"}</td>
         <td>${esc(thing.label)}${thing.required ? ' <span class="pill req">필수</span>' : ""}</td>
-        <td>${thing.chips.map((chip) => `<span class="pill ${chip}">${esc(CONCEPT_CHIP_LABELS[chip])}</span>`).join(" ")}</td>
+        <td>${thing.chips.map((chip) => `<span class="pill ${chip}">${esc(conceptChipLabel(chip))}</span>`).join(" ")}</td>
         <td>${esc(eventLabelFor(built.map, thing.id))}</td>
         <td>${placedIn}/${rooms.length}</td>
       </tr>`);

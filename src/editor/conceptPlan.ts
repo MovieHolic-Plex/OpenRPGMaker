@@ -16,7 +16,6 @@ import {
   CONCEPT_PLACE_SIZES,
   CONCEPT_PLACE_ZONES,
   CONCEPT_WALL_MATERIALS,
-  isConceptChipId,
   isConceptFloorMaterial,
   isConceptLayoutKind,
   isConceptPlaceLevel,
@@ -144,13 +143,14 @@ function parsePlace(raw: unknown, index: number): ConceptPlaceRecord {
 }
 
 function parseChips(raw: unknown, where: string): ConceptChipId[] {
-  if (!Array.isArray(raw)) throw new ConceptPlanError(`plan.${where}.chips 는 배열이어야 한다 — 허용: ${CONCEPT_CHIP_IDS.join("|")}`);
+  if (!Array.isArray(raw)) throw new ConceptPlanError(`plan.${where}.chips 는 배열이어야 한다 — 내장: ${CONCEPT_CHIP_IDS.join("|")} · 자유 칩(영문·숫자·-_·1~32자)도 된다`);
   const chips: ConceptChipId[] = [];
   for (const entry of raw) {
-    if (typeof entry !== "string" || !isConceptChipId(entry)) {
-      throw new ConceptPlanError(`plan.${where}.chips 에 모르는 칩 "${String(entry)}" — 허용: ${CONCEPT_CHIP_IDS.join("|")}`);
+    if (typeof entry !== "string" || entry.trim().length === 0) {
+      throw new ConceptPlanError(`plan.${where}.chips 는 빈 문자열 아닌 칩 id 배열이어야 한다`);
     }
-    if (!chips.includes(entry)) chips.push(entry);
+    const chip = entry.trim();
+    if (!chips.includes(chip)) chips.push(chip);
   }
   return chips;
 }
