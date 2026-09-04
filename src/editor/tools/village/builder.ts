@@ -388,6 +388,7 @@ export function buildVillageDomain(
   const requestedNpcCount = integerArg(merged, "npcCount", houses.length + 2);
   placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings, requestedNpcCount);
   paintGroundThemeStrip(map, area, merged.groundTheme);
+  clearHouseRidgeRowProps(map, houses);
   setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
 
   // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.

@@ -465,6 +465,38 @@ describe("build_village", () => {
     expect(new Set(entries.map((entry) => entry?.age).filter(Boolean)).size).toBeGreaterThanOrEqual(3);
   });
 
+  it("스케치가 이긴 집 배치는 격자 열에 서지 않는다", () => {
+    // Given: plaza-ring(1,7,42)과 street-grid(3) 시드
+    // When: build_village로 8채를 찍고 layoutPlan bbox를 읽는다
+    const slotWidth = 8;
+    const margin = 2;
+    const columns = 4;
+    const span = columns * slotWidth + (columns - 1) * margin * 2;
+    const xStart = Math.max(margin, Math.floor((50 - span) / 2));
+    const columnXs = new Set(
+      Array.from({ length: columns }, (_, col) => xStart + col * (slotWidth + margin * 2)),
+    );
+    for (const seed of [7, 42, 3, 1]) {
+      const { context, data } = buildVillage(seed);
+      const map = context.project.maps[data.mapId];
+      const regions = (map.layoutPlan?.regions ?? []).filter((region) => region.role === "house");
+      // Then: 8채, 고유 x/y, 열당 2채 이하, 과반이 옛 격자 열 x가 아니다
+      expect(regions.length, `seed=${seed}`).toBe(8);
+      expect(new Set(regions.map((region) => region.x)).size, `seed=${seed} unique x`).toBeGreaterThanOrEqual(6);
+      expect(new Set(regions.map((region) => region.y)).size, `seed=${seed} unique y`).toBeGreaterThanOrEqual(6);
+      const perX = new Map<number, number>();
+      for (const region of regions) perX.set(region.x, (perX.get(region.x) ?? 0) + 1);
+      for (const count of perX.values()) expect(count, `seed=${seed} per-x`).toBeLessThanOrEqual(2);
+      const onColumn = regions.filter((region) => {
+        for (const columnX of columnXs) {
+          if (region.x === columnX || region.x === columnX + Math.floor((slotWidth - region.w) / 2)) return true;
+        }
+        return false;
+      });
+      expect(onColumn.length, `seed=${seed} grid columns`).toBeLessThan(regions.length / 2);
+    }
+  });
+
   it("집 8채에 Object1 문 이벤트와 자식 내부 맵을 생성한다", () => {
     const { context, data } = buildVillage(7);
     const map = context.project.maps[data.mapId];

@@ -6,7 +6,7 @@ import {
   type Plaza,
   type Rect,
 } from "@/editor/tools/village/constants";
-import { sketchHouseSites } from "@/editor/tools/village/sketch";
+import { SKETCH_MIN_GAP, sketchHouseSites } from "@/editor/tools/village/sketch";
 
 const AREA: Rect = { x: 0, y: 0, w: 50, h: 50 };
 const PLAZA: Plaza = { rect: { x: 21, y: 22, w: 8, h: 6 }, centerRow: 25, centerX: 25 };
@@ -49,7 +49,22 @@ describe("village sketch pre-pass", () => {
     expect(new Set(sites.map((site) => site.y)).size).toBeGreaterThanOrEqual(6);
     const perX = new Map<number, number>();
     for (const site of sites) perX.set(site.x, (perX.get(site.x) ?? 0) + 1);
-    for (const count of perX.values()) expect(count).toBeLessThanOrEqual(3);
+    for (const count of perX.values()) expect(count).toBeLessThanOrEqual(2);
+  });
+
+  it("사이트끼리 8폭 집+마진이 겹치지 않게 떨어진다", () => {
+    // Given: seed 7 스케치 결과
+    // When: 모든 쌍의 거리를 잰다
+    const sites = sketchHouseSites({ area: AREA, plaza: PLAZA, seed: 7, targetHouses: TARGET });
+    // Then: 중심 간격이 SKETCH_MIN_GAP 이상이다
+    expect(sites.length).toBeGreaterThanOrEqual(TARGET);
+    for (let i = 0; i < sites.length; i += 1) {
+      for (let j = i + 1; j < sites.length; j += 1) {
+        const dx = sites[i]!.x - sites[j]!.x;
+        const dy = sites[i]!.y - sites[j]!.y;
+        expect(Math.hypot(dx, dy)).toBeGreaterThanOrEqual(SKETCH_MIN_GAP);
+      }
+    }
   });
 
   it("대로 밴드 1칸 이내에는 사이트를 두지 않는다", () => {
