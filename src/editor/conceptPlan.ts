@@ -9,16 +9,20 @@ import {
   CONCEPT_CHIP_IDS,
   CONCEPT_CHIP_LABELS,
   CONCEPT_FLOOR_MATERIALS,
+  CONCEPT_LAYOUT_KINDS,
   CONCEPT_PLACE_COUNT_MAX,
   CONCEPT_PLACE_LEVEL_MAX,
   CONCEPT_PLACE_ROLES,
   CONCEPT_PLACE_SIZES,
+  CONCEPT_PLACE_ZONES,
   CONCEPT_WALL_MATERIALS,
   isConceptChipId,
   isConceptFloorMaterial,
+  isConceptLayoutKind,
   isConceptPlaceLevel,
   isConceptPlaceRole,
   isConceptPlaceSize,
+  isConceptPlaceZone,
   isConceptWallMaterial,
   type ConceptBundleRecord,
   type ConceptChipId,
@@ -70,6 +74,8 @@ export const CONCEPT_PLAN_ENUMS = {
   walls: CONCEPT_WALL_MATERIALS,
   chips: CONCEPT_CHIP_IDS,
   chipLabels: CONCEPT_CHIP_LABELS,
+  layouts: CONCEPT_LAYOUT_KINDS,
+  zones: CONCEPT_PLACE_ZONES,
   countMax: CONCEPT_PLACE_COUNT_MAX,
   levelMax: CONCEPT_PLACE_LEVEL_MAX,
 } as const;
@@ -128,6 +134,11 @@ function parsePlace(raw: unknown, index: number): ConceptPlaceRecord {
     const level = Number(raw.level);
     if (!isConceptPlaceLevel(level)) throw new ConceptPlanError(`plan.${where}.level=${String(raw.level)} — 1..${CONCEPT_PLACE_LEVEL_MAX} 정수`);
     place.level = level;
+  }
+  if (raw.zone !== undefined) {
+    const zone = readString(raw.zone, "zone", where);
+    if (!isConceptPlaceZone(zone)) throw new ConceptPlanError(`plan.${where}.zone="${zone}" — 허용: ${CONCEPT_PLACE_ZONES.join("|")}`);
+    place.zone = zone;
   }
   return place;
 }
@@ -221,6 +232,11 @@ export function parseConceptPlan(
     if (!isConceptWallMaterial(wall)) throw new ConceptPlanError(`plan.wall="${wall}" — 허용: ${CONCEPT_WALL_MATERIALS.join("|")}`);
     facility.wall = wall;
   }
+  if (raw.layout !== undefined) {
+    const layout = readString(raw.layout, "layout", "facility");
+    if (!isConceptLayoutKind(layout)) throw new ConceptPlanError(`plan.layout="${layout}" — 허용: ${CONCEPT_LAYOUT_KINDS.join("|")}`);
+    facility.layout = layout;
+  }
   const bundle: ConceptBundleRecord = {
     id: options.bundleId,
     label: options.facilityLabel,
@@ -243,6 +259,7 @@ export function missingRequiredFromTemplate(template: ConceptBundleRecord, templ
 /** 템플릿 시설을 plan 과 같은 모양으로 — get_concept_facility 응답. 모델이 이걸 고쳐 그대로 되돌려 보낸다. */
 export function facilityAsPlan(bundle: ConceptBundleRecord, facility: ConceptFacilityRecord): {
   readonly wall: ConceptFacilityRecord["wall"];
+  readonly layout: ConceptFacilityRecord["layout"];
   readonly places: readonly ConceptPlaceRecord[];
   readonly things: readonly ConceptThingRecord[];
 } {
@@ -253,5 +270,5 @@ export function facilityAsPlan(bundle: ConceptBundleRecord, facility: ConceptFac
   const things = bundle.things
     .filter((thing) => thing.placeIds.some((placeId) => placeIds.has(placeId)))
     .map((thing) => ({ ...thing, placeIds: thing.placeIds.filter((placeId) => placeIds.has(placeId)) }));
-  return { wall: facility.wall, places, things };
+  return { wall: facility.wall, layout: facility.layout, places, things };
 }

@@ -21,12 +21,14 @@ async function bootEditor(page: Page): Promise<void> {
   });
   await page.setViewportSize({ width: 1440, height: 980 });
   page.on("dialog", (dialog) => { void dialog.accept(); });
-  await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
+  await page.goto("/?blankProject=1", { waitUntil: "load" });
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();
-  await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 60_000 });
   const start = page.getByTestId("standard-welcome-start");
-  if (await start.isVisible().catch(() => false)) await start.click();
+  if (await start.isVisible({ timeout: 3_000 }).catch(() => false)) await start.click();
+  const skip = page.getByTestId("coach-mark-skip");
+  if (await skip.isVisible({ timeout: 1_000 }).catch(() => false)) await skip.click();
+  await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 180_000 });
 }
 
 test.describe("개념 시설 — 실 모델 설계 실체 덤프", () => {
@@ -65,11 +67,13 @@ test.describe("개념 시설 — 실 모델 설계 실체 덤프", () => {
               tileHash: hash([...map.lowerTiles, ...map.upperTiles]),
               seed: plan?.seed,
               wallMaterial: plan?.wallMaterial ?? "cream",
-              rooms: (plan?.rooms ?? []).map((room) => ({ id: room.id, w: room.w, h: room.h, theme: room.theme, floorTile: room.floorTile })),
+              rooms: (plan?.rooms ?? []).map((room) => ({ id: room.id, x: room.x, y: room.y, w: room.w, h: room.h, theme: room.theme, floorTile: room.floorTile })),
               facility: plan?.concept?.facilityLabel,
               things: Object.fromEntries(Object.entries(plan?.concept?.rooms ?? {}).map(([roomId, room]) => [
                 roomId, `${room.placeLabel}[${room.role}]: ${room.things.map((thing) => thing.objectId + (thing.required ? "*" : "")).join(",")}`,
               ])),
+              lowerTiles: map.lowerTiles,
+              upperTiles: map.upperTiles,
             }];
           }))
         : null;

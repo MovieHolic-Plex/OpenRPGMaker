@@ -549,4 +549,20 @@ describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (
       expect(unplaced, `seed ${seed}: ${unplaced.join(" / ")}`).toEqual([]);
     }
   });
+
+  it("get_concept_facility 여관 응답에 variants 가 둘 이상 있고 하나는 double-row 다", () => {
+    const full = runTool(ctx(), "get_concept_facility", { query: "여관" }, { dryRun: false }).data as {
+      variants?: { id: string; plan: { layout?: string } }[];
+      designHint?: { rule: string };
+    };
+    expect((full.variants ?? []).length).toBeGreaterThanOrEqual(2);
+    expect(full.variants?.some((variant) => variant.plan.layout === "double-row")).toBe(true);
+    expect(full.designHint?.rule).toMatch(/수식어/);
+  });
+
+  it("plan 을 생략하면 designNote 가 템플릿 복사를 알린다", () => {
+    const result = runTool(ctx(), "place_concept", { query: "여관", mapId: "map_inn_copy", seed: 7 }, { dryRun: false });
+    expect(result.ok).toBe(true);
+    expect((result.data as { designNote?: string }).designNote).toMatch(/템플릿/);
+  });
 });

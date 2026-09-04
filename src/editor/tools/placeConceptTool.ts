@@ -8,6 +8,7 @@ import {
   type ConceptRoomLayout,
   type ResolvedConceptFacility,
 } from "@/editor/conceptBundleResolve";
+import { innDesignVariants } from "@/editor/conceptInnVariants";
 import {
   CONCEPT_PLAN_ENUMS,
   ConceptPlanError,
@@ -16,6 +17,7 @@ import {
   missingRequiredFromTemplate,
   parseConceptPlan,
 } from "@/editor/conceptPlan";
+import { plansStructurallyEqual, scoreConceptFacility } from "@/editor/conceptFacilityScore";
 import { INTERIOR_OBJECT_CATALOG, interiorObjectById } from "@/editor/interiorObjectCatalog";
 import {
   convertEntranceToDescent,
@@ -40,10 +42,15 @@ const PLAN_SCHEMA = {
     "모델이 설계한 시설. get_concept_facility(query) 가 돌려준 템플릿을 요청에 맞게 고쳐 그대로 넘기라 — 방 수(count)·크기(size)·바닥·벽·층·물건 추가/제외. "
     + "좌표는 코드가 정한다. objectId 는 vocabulary[].id 에서만. 템플릿의 required 물건을 뾄으면 경고(거부 아님). 생략하면 템플릿 그대로.",
   properties: {
+    layout: {
+      type: "string",
+      enum: [...CONCEPT_PLAN_ENUMS.layouts],
+      description: "도면 문법. row=방 줄→복도→홀(기본). double-row=객실은 복도 북쪽, 날개(주방·창고)는 홀 옆.",
+    },
     wall: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.walls], description: "벽 재질. 생략=cream" },
     places: {
       type: "array",
-      description: "장소 목록. entrance(정문 홈) 하나, walkway(복도) 0~1, 나밸지 room. 도면은 남→북 홈 → 복도 → 방 줄.",
+      description: "장소 목록. entrance(정문 홀) 하나, walkway(복도) 0~1, 나머지 room. row 는 홀→복도→방 줄, double-row 는 북 방 줄→복도→홀+남쪽 날개.",
       items: {
         type: "object",
         properties: {
@@ -54,6 +61,7 @@ const PLAN_SCHEMA = {
           count: { type: "integer", description: `같은 장소 개수 1..${CONCEPT_PLAN_ENUMS.countMax}(객실 ×3). 생략=1` },
           floor: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.floors], description: "생략=wood" },
           level: { type: "integer", description: `층 1..${CONCEPT_PLAN_ENUMS.levelMax}. 2 이상은 <mapId>_<n>f 별도 맵 + 계단. 생략=1` },
+          zone: { type: "string", enum: [...CONCEPT_PLAN_ENUMS.zones], description: "double-row 에서 north=복도 위 객실, south=홀 옆 날개. 생략 시 주방·창고 라벨은 south" },
         },
         required: ["id"],
       },
@@ -286,6 +294,28 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     ];
     const roomCount = floors.reduce((sum, floor) => sum + floor.layout.rooms.length, 0);
     const floorNote = multi ? `, ${floors.slice(1).map((floor) => `${floor.level}층 ${floor.mapId}`).join(" · ")}` : "";
+    const builtMap = draft.maps[mapId];
+    const overlay = conceptOverlayFor(resolved.bundle, resolved.facility, layout);
+    const templatePlan = template ? facilityAsPlan(template.bundle, template.facility) : undefined;
+    const plannedPlan = hasPlan ? facilityAsPlan(resolved.bundle, resolved.facility) : undefined;
+    let designNote: string | undefined;
+    if (!hasPlan) {
+      designNote = "plan 을 생략해 템플릿 그대로 시공했다. get_concept_facility 의 variants 를 보고 설계를 넘겨라.";
+    } else if (templatePlan && plannedPlan && plansStructurallyEqual(templatePlan, plannedPlan)) {
+      designNote = "설계가 템플릿과 같다. 장소 수·크기·물건 중 둘 이상을 바꿔라.";
+    }
+    const review = builtMap
+      ? scoreConceptFacility({
+          map: builtMap,
+          rooms: rooms.filter((room) => room.level === undefined || room.level === floors[0]!.level),
+          door: layout.door,
+          warnings: [...mergedWarnings, ...linkWarnings],
+          levels,
+          overlay,
+          template: templatePlan,
+          planned: plannedPlan,
+        })
+      : undefined;
     return {
       ...res,
       warnings: [...mergedWarnings, ...linkWarnings],
@@ -304,9 +334,9 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
         floors: floors.map((floor) => ({ level: floor.level, mapId: floor.mapId, name: floor.name })),
         wallMaterial: layout.wallMaterial ?? "cream",
         door: layout.door,
-        // 계단·문의 맵 연결 지점. target 이 이 맵의 정문이면 아직 미연결 — create_transfer_pair 로 잇는다.
-        // 층이 둘 이상이면 층 사이는 코드가 이미 이었다.
         connections,
+        ...(review ? { review } : {}),
+        ...(designNote ? { designNote } : {}),
       },
     };
   },
@@ -351,15 +381,17 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
       };
     }
     const plan = facilityAsPlan(resolved.bundle, resolved.facility);
+    const variants = resolved.facility.label === "여관" || resolved.facility.id === "inn" ? innDesignVariants() : [];
     return {
       summary: `시설 「${resolved.facility.label}」 템플릿 — 장소 ${plan.places.length}·물건 ${plan.things.length} · 물건 어휘 ${vocabulary.length}종. `
+        + (variants.length > 0 ? `variants ${variants.length}종. ` : "")
         + "이건 출발점이다 — 그대로 넘기지 말고 사용자 문장과 배경(미을 규모·분위기)에 맞게 장소 수·크기·바닥·물건 구성을 고쳐 plan 으로 넘기라.",
       data: {
         query,
         designHint: {
-          rule: "템플릿을 그대로 복사해 넘기지 마라. 요청에 수식어가 없어도 이 시설에 어울리는 설계를 직접 정해라 — 장소 개수/크기(count·size), 바닥(floor), 벽(wall), 물건 추가·제외 중 둘 이상은 바꾸고, 바꾼 이유를 마무리 말에 한 줄 적어라.",
+          rule: "템플릿을 그대로 복사해 넘기지 마라. 수식어가 없어도 규모·분위기·layout 을 네가 정해라. variants[] 중 하나를 고르거나 섞어 장소 수·크기·layout·물건을 바꿔 plan 으로 넘겨라.",
           keep: plan.things.filter((thing) => thing.required).map((thing) => thing.objectId),
-          levers: ["places[].count 1..4", "places[].size s|m|l", "places[].floor wood|stone|plank|mat", "wall cream|gold-brick|stone-brick", "things[] 에 vocabulary[].id 추가/제거", "places[].level 2 로 위층"],
+          levers: ["plan.layout row|double-row", "places[].zone north|south", "places[].count 1..4", "places[].size s|m|l", "places[].floor wood|stone|plank|mat", "wall cream|gold-brick|stone-brick", "things[] 에 vocabulary[].id 추가/제거", "places[].level 2 로 위층"],
         },
         facilities,
         template: {
@@ -368,6 +400,7 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
           tilesetId: resolved.tilesetId,
           plan,
         },
+        variants,
         vocabulary,
       },
     };
