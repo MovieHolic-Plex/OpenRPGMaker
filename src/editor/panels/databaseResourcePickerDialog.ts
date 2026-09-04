@@ -31,6 +31,7 @@ import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
+import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { store } from "@/project/store";
 import type { Project, ResourceKind } from "@/project/types";
 import { el } from "@/util/dom";
@@ -211,6 +212,12 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   ], actions);
 }
 
+const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop" | "monster">> = {
+  title: "title",
+  backdrop: "backdrop",
+  monster: "monster",
+};
+
 export function resourcePickerControl(input: {
   readonly label: string;
   readonly resourceId: string | undefined;
@@ -274,6 +281,34 @@ export function resourcePickerControl(input: {
       },
     });
   };
+  const aiKind = AI_GENERATABLE_PICKER_KINDS[input.kind];
+  const metaChildren: HTMLElement[] = [
+    el("span", {
+      class: "db-resource-picker-inline-name",
+      text: displayName,
+      attrs: { title: rawName || input.resourceId || "" },
+    }),
+    idInput,
+    el("button", {
+      class: "btn small",
+      text: "설정...",
+      attrs: { type: "button", "aria-label": `${input.label} 리소스 선택` },
+      dataset: { testid: `${input.testid}-set` },
+      on: { click: pick },
+    }),
+  ];
+  if (aiKind) {
+    metaChildren.push(
+      aiImageGenerateField({
+        kind: aiKind,
+        testidPrefix: `${input.testid}-ai`,
+        onInserted: (resourceId) => {
+          input.onChange({ resourceId });
+          input.rerender();
+        },
+      }),
+    );
+  }
   return el("div", {
     class: "db-resource-picker-control",
     children: [
@@ -284,21 +319,7 @@ export function resourcePickerControl(input: {
           preview,
           el("div", {
             class: "db-resource-picker-control-meta",
-            children: [
-              el("span", {
-                class: "db-resource-picker-inline-name",
-                text: displayName,
-                attrs: { title: rawName || input.resourceId || "" },
-              }),
-              idInput,
-              el("button", {
-                class: "btn small",
-                text: "설정...",
-                attrs: { type: "button", "aria-label": `${input.label} 리소스 선택` },
-                dataset: { testid: `${input.testid}-set` },
-                on: { click: pick },
-              }),
-            ],
+            children: metaChildren,
           }),
         ],
       }),

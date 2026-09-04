@@ -283,6 +283,7 @@
  },
  "changeFace": {
   "reactions": {
+   "event-command-face-ai-prompt": "no-change",
    "event-command-face-flip-horizontal": "컨트롤 값 변경 1개 [event-command-face-flip-horizontal: input[checkbox]{}→input[checkbox]{checked}] | 클래스 신규 1개 [flipped]",
    "event-command-face-position": "no-change",
    "event-command-face-resource": "검증텍스트 변경 2개 [event-command-face-preview: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\", event-command-face-preview-host: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\"]"
@@ -290,6 +291,8 @@
   "initial": {
    "testids": [
     "event-command-edit-summary",
+    "event-command-face-ai-generate",
+    "event-command-face-ai-prompt",
     "event-command-face-bust-preset",
     "event-command-face-crop",
     "event-command-face-editor",
@@ -448,9 +451,12 @@
     "faceset-crop-box",
     "faceset-crop-sheet",
     "inline-field",
+    "page3-resource-row",
     "small"
    ],
    "controls": {
+    "event-command-face-ai-generate": "button{}",
+    "event-command-face-ai-prompt": "input[text]{}",
     "event-command-face-bust-preset": "button{}",
     "event-command-face-flip-horizontal": "input[checkbox]{}",
     "event-command-face-full-preset": "button{}",
@@ -579,6 +585,7 @@
     ]
    },
    "labels": [
+    "AI로 만들기",
     "얼굴 고르기…",
     "전신",
     "좌우 반전",
@@ -587,10 +594,10 @@
     "흉상"
    ],
    "tags": {
-    "button": 117,
-    "div": 128,
+    "button": 118,
+    "div": 129,
     "img": 113,
-    "input": 2,
+    "input": 3,
     "label": 2,
     "option": 2,
     "p": 1,
@@ -600,6 +607,8 @@
    },
    "tagByTestid": {
     "event-command-edit-summary": "div",
+    "event-command-face-ai-generate": "button",
+    "event-command-face-ai-prompt": "input",
     "event-command-face-bust-preset": "button",
     "event-command-face-crop": "div",
     "event-command-face-editor": "div",
@@ -734,8 +743,8 @@
     "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
     "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
    },
-   "testidCount": 129,
-   "controlCount": 120
+   "testidCount": 131,
+   "controlCount": 122
   },
   "classes": [
    "btn",
@@ -767,9 +776,10 @@
    "faceset-crop-sheet",
    "flipped",
    "inline-field",
+   "page3-resource-row",
    "small"
   ],
-  "probeCount": 3,
+  "probeCount": 4,
   "reactingCount": 2
  },
  "choices": {
@@ -7480,6 +7490,7 @@
  },
  "showPicture": {
   "reactions": {
+   "show-picture-ai-prompt": "no-change",
    "show-picture-duration-input": "검증텍스트 변경 1개 [show-picture-preview: \"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #%res#\"→\"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #% · #\"]",
    "show-picture-id-input": "검증텍스트 변경 3개 [show-picture-preview: \"자리 pic#그림 · 위치 (#, #) · #% · 불투명도 #%res#\"→\"자리 __probe__그림 · 위치 (#, #) · #% · 불투명도 #\", show-picture-preview-marker: \"자리 pic#\"→\"자리 __probe__\", show-picture-preview-stage: \"자리 pic#\"→\"자리 __probe__\"]",
    "show-picture-opacity-input": "no-change",
@@ -7492,6 +7503,8 @@
   "initial": {
    "testids": [
     "event-command-edit-summary",
+    "show-picture-ai-generate",
+    "show-picture-ai-prompt",
     "show-picture-command-body",
     "show-picture-duration-input",
     "show-picture-id-input",
@@ -7551,6 +7564,8 @@
     "visually-hidden"
    ],
    "controls": {
+    "show-picture-ai-generate": "button{}",
+    "show-picture-ai-prompt": "input[text]{}",
     "show-picture-duration-input": "input[number]{}",
     "show-picture-id-input": "input[text]{}",
     "show-picture-opacity-input": "input[number]{}",
@@ -7568,6 +7583,7 @@
    },
    "selectOptions": {},
    "labels": [
+    "AI로 만들기",
     "그림 선택…",
     "상단",
     "우",
@@ -7577,16 +7593,18 @@
     "회전 · 서서히"
    ],
    "tags": {
-    "button": 6,
+    "button": 7,
     "details": 1,
-    "div": 28,
-    "input": 8,
+    "div": 31,
+    "input": 9,
     "p": 3,
     "span": 2,
     "summary": 1
    },
    "tagByTestid": {
     "event-command-edit-summary": "div",
+    "show-picture-ai-generate": "button",
+    "show-picture-ai-prompt": "input",
     "show-picture-command-body": "div",
     "show-picture-duration-input": "input",
     "show-picture-id-input": "input",
@@ -7616,8 +7634,8 @@
     "show-picture-preview-marker": "자리 pic#",
     "show-picture-preview-stage": "자리 pic#"
    },
-   "testidCount": 22,
-   "controlCount": 14
+   "testidCount": 24,
+   "controlCount": 16
   },
   "classes": [
    "actor-m2-chip",
@@ -7655,7 +7673,7 @@
    "small",
    "visually-hidden"
   ],
-  "probeCount": 8,
+  "probeCount": 9,
   "reactingCount": 4
  },
  "erasePicture": {

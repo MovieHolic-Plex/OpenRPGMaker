@@ -88,3 +88,14 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 - Command rows and page tabs receive aggregate issue badges from `eventDraftValidator.ts`. Issue buttons navigate to the affected page and nested command path (or a known field testid). Apply, OK, and selected-event Test all share the same fatal-error gate; warnings are visible but non-blocking.
 - The auxiliary surface is deliberately labelled `스크립트 둘러보기`, not runtime preview. It expands loops once, lists all choice branches, and does not execute label/goto jumps; those limits must remain visible in `event-script-preview-disclaimer`. Actual behavior is verified only through `이 이벤트 테스트`, which enters the real player/interpreter path.
 - Focused coverage: `test/eventDraftValidator.test.ts`, `test/eventEditorTrustLoop.test.ts`, `test/eventBeginnerTemplates.test.ts`, and `test/selectedEventTestModal.test.ts`.
+
+## 회상 스틸과 AI 그림 (2026-09-03)
+
+- `script_cutscene_preset` `memory_opening` 은 카메라 팬만이 아니다. `recollectionBeats` 가
+  페이드 아웃 → 회상 BGM(`cc0-bgm-rtp-emo-001`) → 틴트 → `showPicture` → 대사 → 그림 지우기 →
+  틴트/페이드 복원 → BGM 정지로 컴파일한다. 새 Command.kind 는 없다.
+- 빈 이벤트 「회상 오프닝」 CTA 가 그 프리셋을 현재 페이지에 심는다.
+- `showPicture` 폼에 `AI로 만들기` 가 있다. Google Antigravity OAuth 로 그림을 만들고
+  `project.assets.uploaded` 그림 리소스 id 를 `resourceId` 에 넣는다.
+- 커버: `test/recollectionBeats.test.ts`, `test/showPictureForm.test.ts`,
+  `test/eventEditorMemoryOpeningTemplate.test.ts`, `test/scriptCutsceneIntegration.test.ts`.

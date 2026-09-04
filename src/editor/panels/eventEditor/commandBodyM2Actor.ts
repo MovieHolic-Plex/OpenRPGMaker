@@ -1,3 +1,4 @@
+import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { store } from "@/project/store";
@@ -850,6 +851,18 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
               el("div", {
                 class: "actor-m2-inline",
                 children: [resourceSelect, pickBtn],
+              })
+            ),
+            fieldBlock(
+              "AI로 만들기",
+              aiImageGenerateField({
+                kind: "faceset",
+                testidPrefix: "change-actor-faceset-ai",
+                onInserted: (id) => {
+                  resourceId = id;
+                  resourceSelect.value = id;
+                  commit();
+                },
               })
             ),
             facePreview,

@@ -158,4 +158,52 @@ describe("그림 표시 폼", () => {
 
     expect(Number(findByTestId(body, "show-picture-preview-marker")?.style.opacity)).toBeCloseTo(0.5, 3);
   });
+
+  it("AI로 만들기 칸이 있다", () => {
+    const { context } = stagedContext(BASE);
+    const body = renderWithFakeDom(() => showPictureBody(context, BASE));
+    expect(findByTestId(body, "show-picture-ai-prompt"), "프롬프트 칸").not.toBeNull();
+    expect(findByTestId(body, "show-picture-ai-generate"), "생성 버튼").not.toBeNull();
+  });
+
+  it("프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다", async () => {
+    const png =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFHAP/q842iQAAAABJRU5ErkJggg==";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(
+          JSON.stringify({
+            image: { dataUrl: png, mimeType: "image/png", model: "gemini-3.8-flash", provider: "google-antigravity" },
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+      ),
+    );
+    const { context, current } = stagedContext(BASE);
+    const body = renderWithFakeDom(() => showPictureBody(context, BASE));
+    const prompt = findByTestId(body, "show-picture-ai-prompt");
+    expect(prompt).not.toBeNull();
+    if (prompt) prompt.value = "달빛 창가";
+    findByTestId(body, "show-picture-ai-generate")?.click();
+    await vi.waitFor(() => {
+      expect(current().resourceId.length).toBeGreaterThan(0);
+    });
+    const resourceId = current().resourceId;
+    expect(store.getCurrent().assets.uploaded[resourceId]?.kind).toBe("picture");
+    expect(store.getCurrent().assets.uploaded[resourceId]?.dataUrl).toBe(png);
+    vi.unstubAllGlobals();
+  });
+
+  it("빈 프롬프트는 요청하지 않는다", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const { context, current } = stagedContext(BASE);
+    const body = renderWithFakeDom(() => showPictureBody(context, BASE));
+    findByTestId(body, "show-picture-ai-generate")?.click();
+    await Promise.resolve();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(current().resourceId).toBe("");
+    vi.unstubAllGlobals();
+  });
 });

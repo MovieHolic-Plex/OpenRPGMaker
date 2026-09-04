@@ -23,7 +23,13 @@ describe("narrative/horror template tools", () => {
     const event = ctx.project.maps[mapId]?.events.find((e) => e.id === data.eventId);
     expect(event?.pages?.length).toBeGreaterThan(0);
     const commands = event?.pages?.[0]?.commands ?? [];
-    expect(commands.some((c) => c.kind === "text" || c.kind === "camera" || c.kind === "cutsceneControl")).toBe(true);
+    expect(commands.some((c) => c.kind === "text" || c.kind === "cutsceneControl")).toBe(true);
+    expect(commands.some((c) => c.kind === "showPicture")).toBe(true);
+    expect(commands.some((c) => c.kind === "erasePicture")).toBe(true);
+    expect(commands.some((c) => c.kind === "playAudio")).toBe(true);
+    expect(
+      commands.some((c) => c.kind === "m2Command" && String(c.fields.effect ?? "").toLowerCase().includes("fade")),
+    ).toBe(true);
   });
 
   it("script_cutscene_preset ending_fade also defines ending", () => {

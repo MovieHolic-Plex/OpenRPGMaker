@@ -24,6 +24,7 @@ import {
   resolveMovieResourceUrl,
 } from "./playMoviePreview";
 import { LAYER_OPTIONS, pictureSlotCaption } from "./options";
+import { showPictureAiField } from "./showPictureAiField";
 import type { CommandEditContext } from "./types";
 
 const ANCHOR_SEGMENTS = [
@@ -1149,6 +1150,16 @@ export function showPictureBody(
                 class: "page3-resource-row",
                 children: [resourceName, resourceId, pick],
               })
+            ),
+            fieldBlock(
+              "AI로 그림 만들기",
+              showPictureAiField({
+                onInserted: (id) => {
+                  resourceId.value = id;
+                  syncResourceName();
+                  commit();
+                },
+              }),
             ),
             fieldBlock(
               "위치",

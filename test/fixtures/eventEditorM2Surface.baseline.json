@@ -745,6 +745,8 @@
   "testids": [
    "change-actor-faceset-actor-select",
    "change-actor-faceset-actor-select-card",
+   "change-actor-faceset-ai-generate",
+   "change-actor-faceset-ai-prompt",
    "change-actor-faceset-command-body",
    "change-actor-faceset-face-grid",
    "change-actor-faceset-face-preview",
@@ -892,6 +894,7 @@
    "event-command-face-gallery-cell",
    "faceset-crop-box",
    "faceset-crop-sheet",
+   "page3-resource-row",
    "party-member-intent",
    "party-member-intent-body",
    "party-member-intent-title",
@@ -905,6 +908,8 @@
   ],
   "controls": {
    "change-actor-faceset-actor-select": "select{}",
+   "change-actor-faceset-ai-generate": "button{}",
+   "change-actor-faceset-ai-prompt": "input[text]{}",
    "change-actor-faceset-resource-picker": "button{}",
    "change-actor-faceset-resource-select": "select{}",
    "event-command-face-option-easyrpg-faceset-actor1-00": "button{}",
@@ -1036,12 +1041,14 @@
    ]
   },
   "labels": [
+   "AI로 만들기",
    "그림 고르기…"
   ],
   "tags": {
-   "button": 114,
-   "div": 129,
+   "button": 115,
+   "div": 132,
    "img": 113,
+   "input": 1,
    "option": 8,
    "p": 3,
    "select": 2,
@@ -1050,6 +1057,8 @@
   "tagByTestid": {
    "change-actor-faceset-actor-select": "select",
    "change-actor-faceset-actor-select-card": "span",
+   "change-actor-faceset-ai-generate": "button",
+   "change-actor-faceset-ai-prompt": "input",
    "change-actor-faceset-command-body": "div",
    "change-actor-faceset-face-grid": "div",
    "change-actor-faceset-face-preview": "div",
@@ -1181,8 +1190,8 @@
    "change-actor-faceset-preview": "주인공 선택 · (선택 없음)얼굴 그림 한 장을 고르면 그 얼굴이 저장됩니다.",
    "event-command-edit-summary": "기타 명령"
   },
-  "testidCount": 126,
-  "controlCount": 116
+  "testidCount": 128,
+  "controlCount": 118
  },
  "m2-026-change-vehicle-graphic": {
   "testids": [
@@ -3872,6 +3881,8 @@
  },
  "m2-069-change-parallax-back": {
   "testids": [
+   "change-parallax-back-ai-generate",
+   "change-parallax-back-ai-prompt",
    "change-parallax-back-command-body",
    "change-parallax-back-intent",
    "change-parallax-back-preview",
@@ -3899,6 +3910,7 @@
    "change-parameters-field-label",
    "cream-command-form-head",
    "page3-command-body",
+   "page3-resource-row",
    "party-member-intent",
    "party-member-intent-body",
    "party-member-intent-title",
@@ -3906,6 +3918,8 @@
    "small"
   ],
   "controls": {
+   "change-parallax-back-ai-generate": "button{}",
+   "change-parallax-back-ai-prompt": "input[text]{}",
    "change-parallax-back-resource-picker": "button{}",
    "change-parallax-back-resource-select": "select{}"
   },
@@ -3921,16 +3935,20 @@
    ]
   },
   "labels": [
+   "AI로 만들기",
    "그림 고르기…"
   ],
   "tags": {
-   "button": 1,
-   "div": 12,
+   "button": 2,
+   "div": 15,
+   "input": 1,
    "option": 7,
    "p": 4,
    "select": 1
   },
   "tagByTestid": {
+   "change-parallax-back-ai-generate": "button",
+   "change-parallax-back-ai-prompt": "input",
    "change-parallax-back-command-body": "div",
    "change-parallax-back-intent": "div",
    "change-parallax-back-preview": "div",
@@ -3947,8 +3965,8 @@
    "change-parallax-back-preview-image": "먼 배경을 선택하면 여기에 표시됩니다.",
    "event-command-edit-summary": "기타 명령"
   },
-  "testidCount": 8,
-  "controlCount": 2
+  "testidCount": 10,
+  "controlCount": 4
  },
  "m2-070-set-encounter-rate": {
   "testids": [

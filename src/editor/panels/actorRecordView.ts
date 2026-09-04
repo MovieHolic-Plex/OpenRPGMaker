@@ -12,6 +12,7 @@ import {
   selectRecord,
   textControl,
 } from "@/editor/panels/actorRecordControls";
+import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openActorResourceDialog } from "@/editor/panels/databaseActorResourceDialog";
 import { switchDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
 import {
@@ -539,6 +540,14 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
       updateDatabaseRecord("actors", actor.id, { faceResourceId: emptyToUndefined(faceResourceId) }),
       () => openActorResourceDialog(actor, "faceResourceId", rerender)
     ),
+    aiImageGenerateField({
+      kind: "faceset",
+      testidPrefix: "db-actor-face-ai",
+      onInserted: (resourceId) => {
+        updateDatabaseRecord("actors", actor.id, { faceResourceId: resourceId });
+        rerender();
+      },
+    }),
     graphicPreview("캐릭터셋", actor.characterResourceId ?? "(없음)", "charset", actor.characterIndex ?? 0),
     resourceControl("캐릭터셋", "db-field-character-resource", actor.characterResourceId ?? "", (characterResourceId) =>
       updateDatabaseRecord("actors", actor.id, { characterResourceId: emptyToUndefined(characterResourceId) }),
