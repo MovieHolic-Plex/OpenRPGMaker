@@ -160,6 +160,14 @@
   flex: none;
 }
 
+/* 화이트리스트 행 썸네일 — 카드 기본 96px 를 행 높이에 맞게 줄인다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-option .db-village-house-shot.is-card {
+  border-radius: 4px;
+  flex: none;
+  height: 48px;
+  width: 48px;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-village-template-name {
   flex: 1;
   min-width: 0;

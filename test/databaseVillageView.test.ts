@@ -364,6 +364,16 @@ describe("데이터베이스 「마을」탭 — 배치 프리셋", () => {
     const picker = findByTestId(host, "db-village-preset-template-picker");
     expect(picker?.querySelectorAll("input")).toHaveLength(HOUSE_TEMPLATE_DEFS.length + 1);
 
+    // 각 선택지에 집 그림 캔버스가 붙는다 — fakeDom 은 getContext()=null 이라
+    // previewState 는 nocontext 가 된다. 픽셀은 e2e 가 보고, 여기서는 자리만 본다.
+    const catalog = villageTemplateCatalog(store.getCurrent()).templates;
+    expect(catalog).toHaveLength(HOUSE_TEMPLATE_DEFS.length + 1);
+    for (const template of catalog) {
+      const shot = findByTestId(host, `db-village-preset-template-${template.id}-shot`);
+      expect(shot?.tagName, template.id).toBe("CANVAS");
+      expect(findByTestId(host, `db-village-preset-template-${template.id}`), template.id).not.toBeNull();
+    }
+
     toggle(findByTestId(host, "db-village-preset-template-my-house"), true);
     toggle(findByTestId(host, "db-village-preset-template-rect-small"), true);
     expect(store.getCurrent().villagePresets?.[0]?.templateIds?.sort()).toEqual(["my-house", "rect-small"]);
