@@ -456,8 +456,8 @@
 }
 
 /* ── 변경 칸 하이라이트 (이후 썸네일 위) ──
-   캔버스는 targetWidth 240 이라 컨테이너(max-width 240)와 정확히 같은 크기다 —
-   크롭이 없으므로 inset:0 오버레이 격자가 타일과 1:1 로 맞는다. */
+   캔버스는 찍은 폭 그대로 그리고 컨테이너(max-width: 지시/생성 240·검토 480)는
+   CSS 로 내려가므로 크롭이 없다 — inset:0 오버레이 격자가 타일과 1:1 로 맞는다. */
 .region-task-compare-canvas {
   background: var(--bg-surface);
   border: 1px solid var(--editor-line);
@@ -1149,6 +1149,10 @@ body.region-task-modal-open .ai-authoring-examples {
 }
 .region-task-modal[data-stage="review"] .region-task-compare-canvas {
   max-width: 480px;
+}
+/* 클릭 확대(is-zoomed)는 480 상한을 풀어 scale(2)가 넘치지 않게 한다. */
+.region-task-modal[data-stage="review"] .region-task-compare-canvas.is-zoomed {
+  max-width: none;
 }
 /* 체크리스트 카드 — 변경 행·이슈 행을 결정용 항목으로 읽히게 한다. */
 .region-task-modal[data-stage="review"] .region-task-change-list.is-checklist .region-task-change-row,
