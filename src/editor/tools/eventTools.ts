@@ -31,7 +31,7 @@ import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
-import { snapFlushToWall } from "./wallFlush";
+import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import {
   COMMAND_SCHEMA,
   COORD_SCHEMA,
@@ -1159,16 +1159,34 @@ function transferEndpoint(
   // 벽에서 1칸 안쪽·벽 칸 위 요청은 벽과 맞닿은 통행 칸으로 먼저 당긴다.
   // playerTouch+below 는 벽 위에서 발동하지 않는다.
   const origin = snapFlushToWall(project, map, requestedX, requestedY, occupied);
-  for (let radius = 0; radius <= maxRadius; radius += 1) {
+  const cleanSnap = snapFlushToWall(project, map, requestedX, requestedY);
+  // 스냅이 점유 때문에 밀려난 자리(origin != cleanSnap)는 gate 후보에서 제외한다.
+  // 그렇지 않으면 문 자리(8,1)가 막혔을 때 1칸 안쪽(8,2)이 radius=0에서
+  // 그대로 gate로 확정돼 "벽에서 1칸 띄운 출구"가 된다. 옆 flush 칸을 먼저 찾는다.
+  const snapBlocked = cleanSnap.x !== origin.x || cleanSnap.y !== origin.y;
+  const isFlushGate = (x: number, y: number): boolean => isFlushPassable(project, map, x, y);
+  const landingFree = (gate: Point): Point | null => {
+    const landing = passableLanding(project, map, gate.x, gate.y);
+    if (!landing || (landing.x === gate.x && landing.y === gate.y)) return null;
+    if (occupied.has(`${landing.x},${landing.y}`)) return null;
+    return landing;
+  };
+  for (let radius = snapBlocked ? 1 : 0; radius <= maxRadius; radius += 1) {
+    const flushGates: Point[] = [];
+    const innerGates: Point[] = [];
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
         const gate = { x: origin.x + dx, y: origin.y + dy };
         if (!inMapBounds(map, gate.x, gate.y) || occupied.has(`${gate.x},${gate.y}`)) continue;
-        const landing = passableLanding(project, map, gate.x, gate.y);
-        if (!landing || (landing.x === gate.x && landing.y === gate.y)) continue;
-        return { gate, landing };
+        if (!isPassable(project, map, gate.x, gate.y)) continue;
+        (isFlushGate(gate.x, gate.y) ? flushGates : innerGates).push(gate);
       }
+    }
+    for (const gate of [...flushGates, ...innerGates]) {
+      const landing = landingFree(gate);
+      if (!landing) continue;
+      return { gate, landing };
     }
   }
   return null;
@@ -1205,8 +1223,9 @@ function transferEndpointFailure(
         continue;
       }
       // transferEndpoint 와 같은 판정: 착지 칸이 있고 출입구 칸과 달라야 쓸 수 있다.
+      // 착지가 이벤트에 점유돼 있으면 재전이 루프이므로 쓸 수 없다.
       const landing = passableLanding(project, map, x, y);
-      if (landing && !(landing.x === x && landing.y === y)) usable += 1;
+      if (landing && !(landing.x === x && landing.y === y) && !occupied.has(`${landing.x},${landing.y}`)) usable += 1;
       else noLanding += 1;
     }
   }
