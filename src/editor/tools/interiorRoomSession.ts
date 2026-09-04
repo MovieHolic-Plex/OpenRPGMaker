@@ -69,6 +69,16 @@ const HOUSE_EXTERIOR_HINT_SCHEMA: JsonSchema = {
   },
 };
 
+/** Outdoor landing for the entrance transfer. Parser passthrough; omitted = same-map dummy landing. */
+const RETURN_TARGET_PROPERTIES = {
+  returnMapId: {
+    type: "string",
+    description: "입구 전이가 돌아갈 맵 id. 생략 시 같은 실내 맵.",
+  },
+  returnX: { type: "integer", description: "돌아갈 칸 x. 생략 시 문 x." },
+  returnY: { type: "integer", description: "돌아갈 칸 y. 생략 시 문 아래 칸." },
+} as const;
+
 // 엔진 data에 실내 advance 툴 이름 next 힌트를 얹는다.
 function withNext(res: ToolExecResult, sessionId: string): ToolExecResult {
   const data = res.data as { done?: boolean } | undefined;
@@ -86,7 +96,8 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       "이어서 advance_interior_room_build 반복 또는 run_interior_room_pipeline 원샷. " +
       "**기존 실내 맵을 고치는 요청에는 쓰지 마라** — 그 맵을 대상으로 furnish_interior_space / " +
       "fill_region / tile_erase / place_props 를 써라. 이미 있는 mapId 를 넘기면 map-exists 로 거부된다. " +
-      "exterior가 있으면 벽재질·용도가 외관에 맞춰 기본값으로 들어간다; 명시 인자가 우선한다.",
+      "exterior가 있으면 벽재질·용도가 외관에 맞춰 기본값으로 들어간다; 명시 인자가 우선한다. " +
+      "returnMapId/returnX/returnY가 있으면 입구 전이가 그 맵·칸으로 돌아간다.",
     mode: "write",
     parameters: {
       type: "object",
@@ -140,6 +151,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         },
         replaceExisting: REPLACE_EXISTING_SCHEMA,
         exterior: HOUSE_EXTERIOR_HINT_SCHEMA,
+        ...RETURN_TARGET_PROPERTIES,
       },
       required: ["mapId", "door"],
     },
@@ -190,7 +202,8 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
       "침대는 355|356 hard 쌍, 벽면 장식과 바닥 잔해(깨진 유리 등)를 구분한다. " +
       "**기존 실내 맵 수정에는 쓰지 마라** — 이미 있는 mapId 는 map-exists 로 거부되고, " +
       "고치려면 furnish_interior_space / fill_region / tile_erase / place_props 를 그 맵에 직접 쓴다. " +
-      "exterior가 있으면 벽재질·용도가 외관에 맞춰 기본값으로 들어간다; 명시 인자가 우선한다.",
+      "exterior가 있으면 벽재질·용도가 외관에 맞춰 기본값으로 들어간다; 명시 인자가 우선한다. " +
+      "returnMapId/returnX/returnY가 있으면 입구 전이가 그 맵·칸으로 돌아간다.",
     mode: "write",
     parameters: {
       type: "object",
@@ -218,6 +231,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         },
         replaceExisting: REPLACE_EXISTING_SCHEMA,
         exterior: HOUSE_EXTERIOR_HINT_SCHEMA,
+        ...RETURN_TARGET_PROPERTIES,
       },
     },
     invalidArgsExample: { demo: "bedroom" },

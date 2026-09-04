@@ -499,22 +499,37 @@ export function buildHouseInteriorPlan(input: {
   readonly floor?: "ground" | "upper";
   readonly themeHint?: InteriorRoomTheme;
   readonly wallMaterial?: InteriorWallMaterial;
+  readonly returnMapId?: MapId;
+  readonly returnX?: number;
+  readonly returnY?: number;
 }): InteriorRoomPlan {
   const program = input.program ?? "dwelling";
   const floor = input.floor ?? "ground";
+  const finish = (plan: InteriorRoomPlan): InteriorRoomPlan => {
+    const shifted = shiftPlanForCeiling(plan);
+    if (input.returnMapId === undefined && input.returnX === undefined && input.returnY === undefined) {
+      return shifted;
+    }
+    return {
+      ...shifted,
+      ...(input.returnMapId !== undefined ? { returnMapId: input.returnMapId } : {}),
+      ...(input.returnX !== undefined ? { returnX: input.returnX } : {}),
+      ...(input.returnY !== undefined ? { returnY: input.returnY } : {}),
+    };
+  };
   if (floor === "upper") {
-    return shiftPlanForCeiling(upperFloorPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
+    return finish(upperFloorPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
   }
   switch (input.scale) {
     case "mansion":
-      return shiftPlanForCeiling(mansionPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
+      return finish(mansionPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
     case "cottage-l":
-      return shiftPlanForCeiling(cottageLPlan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
+      return finish(cottageLPlan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
     case "cottage3":
-      return shiftPlanForCeiling(cottage3Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
+      return finish(cottage3Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
     case "cottage2":
     default:
-      return shiftPlanForCeiling(cottage2Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
+      return finish(cottage2Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
   }
 }
 

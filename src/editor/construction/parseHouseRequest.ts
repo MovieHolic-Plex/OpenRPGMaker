@@ -226,6 +226,8 @@ function parseWings(values: readonly unknown[], scope: string): readonly HouseWi
 }
 
 function parseInteriorMode(value: unknown, scope: string): HouseInteriorMode {
+  // 생략하면 들어가서 걷는 집이 기본 — 외장만은 명시적으로 exterior-only.
+  if (value === undefined || value === null) return "linked-interior";
   if (value === "exterior-only" || value === "linked-interior") return value;
   throw new ToolError(`${scope}.interior must be exterior-only or linked-interior.`, { code: "invalid-args" });
 }

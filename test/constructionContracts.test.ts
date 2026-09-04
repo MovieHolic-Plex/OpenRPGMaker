@@ -158,6 +158,18 @@ describe("canonical construction contract baseline", () => {
     // Then: its discriminant is preserved without route inference.
     expect(parsed.kind).toBe(expectedKind);
   });
+  it("omitted interior defaults to linked-interior", () => {
+    const parsed = parseAuthorHouseRequest({
+      kind: "single",
+      mapId: "map_1",
+      kitId: "blue-stone",
+      wings: [{ x: 4, y: 3, w: 8, h: 7 }],
+      door: true,
+    });
+    expect(parsed.kind).toBe("single");
+    if (parsed.kind === "single") expect(parsed.interior).toBe("linked-interior");
+  });
+
   it("accepts yard tags on a single house instead of rejecting the call", () => {
     const parsed = parseAuthorHouseRequest({
       ...singleHouseRequest,
