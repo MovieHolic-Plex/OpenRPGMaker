@@ -92,8 +92,8 @@ function parseExteriorHint(value: unknown): HouseExteriorHint | undefined {
 
   let footprintArea: number | undefined;
   if (rec.footprintArea !== undefined) {
-    if (typeof rec.footprintArea !== "number" || !Number.isFinite(rec.footprintArea)) {
-      throw new ToolError("exterior.footprintArea must be a number", { code: "invalid-args" });
+    if (typeof rec.footprintArea !== "number" || !Number.isInteger(rec.footprintArea) || rec.footprintArea < 0) {
+      throw new ToolError("exterior.footprintArea must be a non-negative integer", { code: "invalid-args" });
     }
     footprintArea = rec.footprintArea;
   }

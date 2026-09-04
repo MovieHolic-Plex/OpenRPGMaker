@@ -401,6 +401,31 @@ describe("parseInteriorPlan exterior hints", () => {
     expect(() => parseInteriorPlan(interiorArgs({ theme: "bedroom", exterior: { kitId: "unknown-kit" } }))).toThrowError(
       expect.objectContaining({ code: "invalid-args" }),
     );
+    expect(() => parseInteriorPlan(interiorArgs({ theme: "bedroom", exterior: { program: "castle" } }))).toThrowError(
+      expect.objectContaining({ code: "invalid-args" }),
+    );
+    expect(() => parseInteriorPlan(interiorArgs({ theme: "bedroom", exterior: { footprintArea: -1 } }))).toThrowError(
+      expect.objectContaining({ code: "invalid-args" }),
+    );
+    expect(() => parseInteriorPlan(interiorArgs({ theme: "bedroom", exterior: { footprintArea: 42.5 } }))).toThrowError(
+      expect.objectContaining({ code: "invalid-args" }),
+    );
+    expect(() => parseInteriorPlan(interiorArgs({ theme: "bedroom", exterior: { ownerName: "   " } }))).toThrowError(
+      expect.objectContaining({ code: "invalid-args" }),
+    );
+    for (const bad of [null, [{ kitId: "blue-stone" }]]) {
+      expect(() => parseInteriorPlan(interiorArgs({ theme: "bedroom", exterior: bad }))).toThrowError(
+        expect.objectContaining({ code: "invalid-args" }),
+      );
+    }
+  });
+
+  it("ignores unknown exterior keys", () => {
+    const plan = parseInteriorPlan(
+      interiorArgs({ theme: "bedroom", exterior: { kitId: "blue-stone", custom: "x", nested: { a: 1 } } }),
+    );
+    expect(plan.wallMaterial).toBe("stone-brick");
+    expect(plan.exterior).toEqual({ kitId: "blue-stone" });
   });
 
   it("leaves wallMaterial undefined when no exterior unless given", () => {
