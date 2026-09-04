@@ -88,6 +88,32 @@ const STUDIO_EXTRA_TOOLS = [
   "link_maps",
 ] as const;
 
+const STUDIO_LAYOUT_KEY = "oprn:ai-studio-layout";
+const STUDIO_SPLITTER_MIN = { scenes: 180, chat: 280, deck: 140 } as const;
+const STUDIO_SPLITTER_MAX = { scenes: 480, chat: 640, deck: 560 } as const;
+
+interface StudioLayoutSizes {
+  scenes: number;
+  chat: number;
+  deck: number;
+}
+
+function readStudioLayout(): Partial<StudioLayoutSizes> {
+  try {
+    const raw = localStorage.getItem(STUDIO_LAYOUT_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Partial<StudioLayoutSizes>;
+    const out: Partial<StudioLayoutSizes> = {};
+    for (const key of ["scenes", "chat", "deck"] as const) {
+      const value = parsed[key];
+      if (typeof value === "number" && Number.isFinite(value)) out[key] = value;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 const DEFAULT_SCENE_SIZE = { width: 20, height: 15 } as const;
 const ACTIVITY_LIMIT = 40;
 
@@ -116,6 +142,23 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   let parked: ParkedNode[] = [];
   let fitObserver: ResizeObserver | null = null;
   let logObserver: MutationObserver | null = null;
+  let splitterCleanup: (() => void) | null = null;
+  const SPLITTER_DEFAULTS: StudioLayoutSizes = { scenes: 252, chat: 400, deck: 236 };
+  const savedLayout = readStudioLayout();
+  const layoutSizes: StudioLayoutSizes = {
+    scenes: savedLayout.scenes ?? SPLITTER_DEFAULTS.scenes,
+    chat: savedLayout.chat ?? SPLITTER_DEFAULTS.chat,
+    deck: savedLayout.deck ?? SPLITTER_DEFAULTS.deck,
+  };
+  const clampInit = (key: keyof StudioLayoutSizes, value: number): number => {
+    const min = STUDIO_SPLITTER_MIN[key];
+    const max = STUDIO_SPLITTER_MAX[key];
+    if (!Number.isFinite(value)) return SPLITTER_DEFAULTS[key];
+    return Math.min(max, Math.max(min, Math.round(value)));
+  };
+  layoutSizes.scenes = clampInit("scenes", layoutSizes.scenes);
+  layoutSizes.chat = clampInit("chat", layoutSizes.chat);
+  layoutSizes.deck = clampInit("deck", layoutSizes.deck);
 
   // ── 장면 레일 ─────────────────────────────────────────────────────────────
   const sceneCount = el("span", {
@@ -339,6 +382,131 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     dataset: { testid: "ai-studio-shell" },
     children: [scenesPane, monitorPane, chatPane, deckPaneRoot],
   });
+
+  // ── 스플리터(리사이즈) ────────────────────────────────────────────────────
+  // 장면 레일 | 모니터 | 조수 3열 + 하단 덱. 좌·우 열 너비와 덱 높이를 드래그/키보드로
+  // 조절한다. 접힘(is-*-collapsed)과는 독립 — 접힌 동안은 손잡이를 숨기고, 펼치면
+  // 마지막 사용자 크기로 돌아온다. 크기는 CSS 변수 3개로만 말하고 localStorage에 둔다.
+  const clampSize = (key: keyof StudioLayoutSizes, value: number): number => {
+    const min = STUDIO_SPLITTER_MIN[key];
+    const max = STUDIO_SPLITTER_MAX[key];
+    if (!Number.isFinite(value)) return min;
+    return Math.min(max, Math.max(min, Math.round(value)));
+  };
+
+  const applySplitterSize = (key: keyof StudioLayoutSizes, value: number, persist: boolean): void => {
+    const px = clampSize(key, value);
+    layoutSizes[key] = px;
+    root.style.setProperty(
+      key === "scenes" ? "--studio-scenes-w" : key === "chat" ? "--studio-chat-w" : "--studio-deck-h",
+      `${px}px`,
+    );
+    if (persist) {
+      try {
+        localStorage.setItem(STUDIO_LAYOUT_KEY, JSON.stringify(layoutSizes));
+      } catch {
+        // 저장 실패는 무시 — 다음 드래그에서 다시 쓴다.
+      }
+    }
+  };
+
+  const resetSplitterSize = (key: keyof StudioLayoutSizes): void => {
+    applySplitterSize(key, SPLITTER_DEFAULTS[key], true);
+    requestCanvasFit();
+  };
+
+  const splitterCleanups: Array<() => void> = [];
+
+  const createSplitter = (
+    key: keyof StudioLayoutSizes,
+    orientation: "vertical" | "horizontal",
+    testId: string,
+    label: string,
+  ): HTMLDivElement => {
+    const splitter = el("div", {
+      class: `ai-studio-splitter is-${orientation}`,
+      attrs: {
+        role: "separator",
+        tabindex: "0",
+        "aria-label": label,
+        "aria-orientation": orientation,
+        title: `${label} — 드래그하거나 ←→↑↓ 키로 조절, 더블클릭이면 되돌리기`,
+      },
+      dataset: { testid: testId },
+    }) as HTMLDivElement;
+    const STEP = 16;
+    const onKeyDown = (event: KeyboardEvent): void => {
+      const horizontal = orientation === "vertical";
+      const dec = horizontal ? ["ArrowLeft", "ArrowUp"] : ["ArrowUp", "ArrowLeft"];
+      const inc = horizontal ? ["ArrowRight", "ArrowDown"] : ["ArrowDown", "ArrowRight"];
+      if (dec.includes(event.key)) {
+        event.preventDefault();
+        applySplitterSize(key, layoutSizes[key] - (event.shiftKey ? STEP * 4 : STEP), true);
+        requestCanvasFit();
+      } else if (inc.includes(event.key)) {
+        event.preventDefault();
+        applySplitterSize(key, layoutSizes[key] + (event.shiftKey ? STEP * 4 : STEP), true);
+        requestCanvasFit();
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        applySplitterSize(key, STUDIO_SPLITTER_MIN[key], true);
+        requestCanvasFit();
+      } else if (event.key === "End") {
+        event.preventDefault();
+        applySplitterSize(key, STUDIO_SPLITTER_MAX[key], true);
+        requestCanvasFit();
+      }
+    };
+    const onDblClick = (): void => resetSplitterSize(key);
+    const onPointerDown = (event: PointerEvent): void => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      const startPos = orientation === "vertical" ? event.clientX : event.clientY;
+      const startSize = layoutSizes[key];
+      // 덱 스플리터는 위로 당길수록 높아진다(부호 반전), 좌·우 열은 오른쪽/왼쪽으로 당길수록 넓어진다.
+      const sign = key === "deck" ? -1 : key === "chat" ? -1 : 1;
+      const move = (moveEvent: PointerEvent): void => {
+        const pos = orientation === "vertical" ? moveEvent.clientX : moveEvent.clientY;
+        applySplitterSize(key, startSize + sign * (pos - startPos), false);
+      };
+      const up = (): void => {
+        document.removeEventListener("pointermove", move as EventListener);
+        document.removeEventListener("pointerup", up as EventListener);
+        document.removeEventListener("pointercancel", up as EventListener);
+        try {
+          localStorage.setItem(STUDIO_LAYOUT_KEY, JSON.stringify(layoutSizes));
+        } catch {
+          // 저장 실패는 무시.
+        }
+        requestCanvasFit();
+      };
+      document.addEventListener("pointermove", move as EventListener);
+      document.addEventListener("pointerup", up as EventListener);
+      document.addEventListener("pointercancel", up as EventListener);
+    };
+    splitter.addEventListener("keydown", onKeyDown as EventListener);
+    splitter.addEventListener("dblclick", onDblClick);
+    splitter.addEventListener("pointerdown", onPointerDown as EventListener);
+    splitterCleanups.push(() => {
+      splitter.removeEventListener("keydown", onKeyDown as EventListener);
+      splitter.removeEventListener("dblclick", onDblClick);
+      splitter.removeEventListener("pointerdown", onPointerDown as EventListener);
+    });
+    return splitter;
+  };
+
+  const scenesSplitter = createSplitter("scenes", "vertical", "ai-studio-split-scenes", "장면 레일 너비");
+  const deckSplitter = createSplitter("deck", "horizontal", "ai-studio-split-deck", "도구 덱 높이");
+  const chatSplitter = createSplitter("chat", "vertical", "ai-studio-split-chat", "조수 너비");
+  splitterCleanup = (): void => {
+    for (const fn of splitterCleanups.splice(0)) fn();
+  };
+  // 그리드 자식으로 끼워 넣는다 — 순서가 열 배치(장면 | 손잡이 | 모니터 | 손잡이 | 조수 | 덱)다.
+  // 덱 손잡이는 덱 섹션 첫 자식으로 넣어 머리띠 바로 위에만 앉힌다(탭 클릭 가로채기 방지).
+  // FakeDom(test/fakeDom.ts)에는 insertBefore가 없어 children 한 번에 박는다.
+  deckPaneRoot.prepend(deckSplitter);
+  root.replaceChildren(scenesPane, scenesSplitter, monitorPane, chatSplitter, chatPane, deckPaneRoot);
+  for (const key of ["scenes", "chat", "deck"] as const) applySplitterSize(key, layoutSizes[key], false);
 
   // ── 덱 상태 ───────────────────────────────────────────────────────────────
   const setBadge = (tab: StudioDeckTab, text: string | null): void => {
@@ -654,6 +822,8 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     setDeckTab: showTab,
     dispose() {
       detach();
+      splitterCleanup?.();
+      splitterCleanup = null;
     },
   };
 }

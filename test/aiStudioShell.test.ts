@@ -286,6 +286,38 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(deck?.className).not.toContain("is-collapsed");
   });
 
+  it("좌·우·하단 손잡이가 있고 키보드로 크기를 조절한다", () => {
+    // Break: 손잡이가 없거나 키 입력이 크기에 닿지 않아 고정 폭으로 굳는다.
+    const { root } = standaloneShell();
+    const shell = root;
+    const scenes = findByTestId(root, "ai-studio-split-scenes");
+    const chat = findByTestId(root, "ai-studio-split-chat");
+    const deck = findByTestId(root, "ai-studio-split-deck");
+    expect(scenes?.getAttribute("role")).toBe("separator");
+    expect(chat?.getAttribute("role")).toBe("separator");
+    expect(deck?.getAttribute("role")).toBe("separator");
+    const before = shell?.style.getPropertyValue("--studio-scenes-w");
+    expect(before).toContain("px");
+    // FakeDom에는 KeyboardEvent 생성자가 없어 일반 Event에 key를 얹는다.
+    const key = (name: string): Event => Object.assign(new Event("keydown", { bubbles: true }), { key: name });
+    scenes?.dispatchEvent(key("ArrowRight"));
+    const after = shell?.style.getPropertyValue("--studio-scenes-w");
+    expect(after).not.toBe(before);
+    expect(Number.parseInt(after ?? "0", 10)).toBeGreaterThan(Number.parseInt(before ?? "0", 10));
+    chat?.dispatchEvent(key("Home"));
+    expect(shell?.style.getPropertyValue("--studio-chat-w")).toBe("280px");
+    deck?.dispatchEvent(key("End"));
+    expect(shell?.style.getPropertyValue("--studio-deck-h")).toBe("560px");
+    // 더블클릭이면 기본값(장면 252 / 조수 400 / 덱 236)으로 돌아온다.
+    scenes?.dispatchEvent(new Event("dblclick", { bubbles: true }));
+    expect(shell?.style.getPropertyValue("--studio-scenes-w")).toBe("252px");
+    // 크기는 localStorage에 남아 다음 부팅에도 산다.
+    const saved = JSON.parse(storage.get("oprn:ai-studio-layout") ?? "{}") as Record<string, unknown>;
+    expect(typeof saved.scenes).toBe("number");
+    expect(typeof saved.chat).toBe("number");
+    expect(typeof saved.deck).toBe("number");
+  });
+
   it("장면 레일과 조수 열을 접으면 셸에 접힘 클래스가 붙는다", () => {
     const { root } = standaloneShell();
     const scenesToggle = findByTestId(root, "ai-studio-scenes-collapse");

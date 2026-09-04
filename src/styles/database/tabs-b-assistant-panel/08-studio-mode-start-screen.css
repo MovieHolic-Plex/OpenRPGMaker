@@ -73,19 +73,82 @@ body.ai-studio-open .authoring-journey-host {
 .ai-studio-shell {
   --studio-scenes-col: 252px;
   --studio-chat-col: 400px;
+  --studio-scenes-w: var(--studio-scenes-col);
+  --studio-chat-w: var(--studio-chat-col);
+  --studio-deck-h: 236px;
+  --studio-splitter: 8px;
   background: var(--bg-inset);
   color: var(--text-1);
   display: grid;
   flex: 1 1 auto;
   font-variant-numeric: tabular-nums;
   gap: 10px;
-  grid-template-columns: var(--studio-scenes-col) minmax(0, 1fr) var(--studio-chat-col);
+  /* 열: 장면 | 손잡이 | 모니터 | 손잡이 | 조수 — 손잡이는 소음을 내지 않는 8px 기둥 */
+  grid-template-columns: var(--studio-scenes-w) var(--studio-splitter) minmax(0, 1fr) var(--studio-splitter) var(--studio-chat-w);
   grid-template-rows: minmax(0, 1fr) auto;
   min-height: 0;
   min-width: 0;
   padding: 10px;
   pointer-events: auto;
   transition: grid-template-columns var(--transition-med);
+}
+
+/* 리사이즈 손잡이 — 평소엔 투명 기둥, 호버·포커스 때만 얇은 선 */
+.ai-studio-splitter {
+  align-self: stretch;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: col-resize;
+  justify-self: stretch;
+  min-height: 24px;
+  min-width: var(--studio-splitter);
+  padding: 0;
+  position: relative;
+  touch-action: none;
+  z-index: 1;
+}
+
+.ai-studio-splitter.is-horizontal {
+  cursor: row-resize;
+  min-height: var(--studio-splitter);
+  min-width: 24px;
+}
+
+.ai-studio-splitter::after {
+  background: transparent;
+  border-radius: 2px;
+  content: "";
+  inset: 0;
+  position: absolute;
+  transition: background var(--transition-fast);
+}
+
+.ai-studio-splitter:hover::after,
+.ai-studio-splitter:focus-visible::after {
+  background: var(--accent);
+}
+
+.ai-studio-splitter:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.ai-studio-splitter[data-testid="ai-studio-split-scenes"] {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+.ai-studio-splitter[data-testid="ai-studio-split-chat"] {
+  grid-column: 4;
+  grid-row: 1 / 3;
+}
+
+.ai-studio-splitter[data-testid="ai-studio-split-deck"] {
+  /* 덱 머리띠 바로 위 8px 띠 — 덱 섹션 첫 자식이라 탭 클릭을 가로채지 않는다 */
+  height: var(--studio-splitter);
+  position: relative;
+  z-index: 2;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -237,6 +300,7 @@ body.ai-studio-open .authoring-journey-host {
   flex-direction: column;
   grid-column: 1;
   grid-row: 1 / 3;
+  width: var(--studio-scenes-w);
 }
 
 .ai-studio-scene-list {
@@ -424,7 +488,7 @@ body.ai-studio-open .authoring-journey-host {
 .ai-studio-monitor {
   box-shadow: var(--shadow-pop);
   display: grid;
-  grid-column: 2;
+  grid-column: 3;
   grid-row: 1;
   grid-template-rows: auto minmax(0, 1fr);
   position: relative;
@@ -605,9 +669,10 @@ body.ai-studio-open .coach-mark-card {
 /* ── 조수 ─────────────────────────────────────────────────────────────────── */
 .ai-studio-chat {
   display: grid;
-  grid-column: 3;
+  grid-column: 5;
   grid-row: 1 / 3;
   grid-template-rows: auto minmax(0, 1fr) auto;
+  width: var(--studio-chat-w);
 }
 
 .ai-studio-chat-head {
@@ -839,9 +904,11 @@ body.ai-studio-open .coach-mark-card {
 /* ── 덱 ───────────────────────────────────────────────────────────────────── */
 .ai-studio-deck {
   display: grid;
-  grid-column: 2;
+  grid-column: 3;
   grid-row: 2;
-  grid-template-rows: 40px minmax(0, auto);
+  /* 첫 행은 덱 손잡이(8px) — 머리띠 바로 위 띠 */
+  grid-template-rows: var(--studio-splitter) 40px var(--studio-deck-h);
+  position: relative;
 }
 
 .ai-studio-deck-head {
@@ -981,7 +1048,7 @@ body.ai-studio-open .coach-mark-card {
 }
 
 .ai-studio-deck-pane {
-  height: 236px;
+  height: var(--studio-deck-h);
   min-height: 0;
   overflow: auto;
   padding: 12px;
@@ -1298,10 +1365,7 @@ body.ai-studio-open .coach-mark-card {
   .ai-studio-shell {
     --studio-scenes-col: 228px;
     --studio-chat-col: 360px;
-  }
-
-  .ai-studio-deck-pane {
-    height: 200px;
+    --studio-deck-h: 200px;
   }
 
   .ai-studio-scene {
@@ -1318,12 +1382,9 @@ body.ai-studio-open .coach-mark-card {
   .ai-studio-shell {
     --studio-scenes-col: 196px;
     --studio-chat-col: 320px;
+    --studio-deck-h: 176px;
     gap: 8px;
     padding: 8px;
-  }
-
-  .ai-studio-deck-pane {
-    height: 176px;
   }
 
   .ai-studio-monitor-meta,
@@ -1332,14 +1393,25 @@ body.ai-studio-open .coach-mark-card {
   }
 }
 
-/* 장면·조수 열 접기 — 모니터가 사이드바에 먹히지 않게. 변수 덮어쓰기는
-   한 클래스라 미디어쿼리(한 클래스)보다 특이성이 높다. */
+/* 장면·조수 열 접기 — 모니터가 사이드바에 먹히지 않게. 접힘 폭은 열 너비 변수에 직접
+   덮어쓴다(미디어쿼리 한 클래스보다 특이성이 높다). 펼치면 저장된 사용자 크기가
+   인라인 스타일로 살아 있어 그대로 돌아온다. */
 .ai-studio-shell.is-scenes-collapsed {
-  --studio-scenes-col: 52px;
+  --studio-scenes-w: 52px;
 }
 
 .ai-studio-shell.is-chat-collapsed {
-  --studio-chat-col: 52px;
+  --studio-chat-w: 52px;
+}
+
+/* 접힌 열·접힌 덱의 손잡이는 숨긴다 — 52px 기둥 옆 8px 여백은 소음이다 */
+.ai-studio-shell.is-scenes-collapsed .ai-studio-splitter[data-testid="ai-studio-split-scenes"],
+.ai-studio-shell.is-chat-collapsed .ai-studio-splitter[data-testid="ai-studio-split-chat"] {
+  visibility: hidden;
+}
+
+.ai-studio-deck.is-collapsed + .ai-studio-splitter[data-testid="ai-studio-split-deck"] {
+  visibility: hidden;
 }
 
 .ai-studio-shell.is-scenes-collapsed .ai-studio-pane-title,
