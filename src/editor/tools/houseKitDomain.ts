@@ -139,6 +139,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
       const ownerName = input.ownerName?.trim() || map.name;
       const footprintArea = input.wings.reduce((sum, wing) => sum + wing.w * wing.h, 0);
       const stories = houseInteriorStories(input.stories, input.wings);
+      const interiorSeed = seedFromString(base);
       const interior = createHouseInteriorMap({
         id: interiorMapId,
         name: `${ownerName}의 집 내부`,
@@ -146,7 +147,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         returnX: x,
         returnY: y + 1,
         exitEventId,
-        seed: seedFromString(base),
+        seed: interiorSeed,
         exterior: { stories, kitId: input.kitId, footprintArea, ownerName },
       });
       registerInteriorMaps(draft, interior);
@@ -166,6 +167,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
         name: `${ownerName}의 집 문`,
         entryX: interior.entry.x,
         entryY: interior.entry.y,
+        seed: interiorSeed,
       }));
       // 열린 문 기본값: 문 앞 통행 칸에 밟으면 열리는 발판 — 문 칸은 벽이라 밟히지 않는다.
       // 문 앞이 맵 밖이면 발판을 생략한다(문 스프라이트만 남는다).

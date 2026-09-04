@@ -20,7 +20,7 @@ import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp"
 import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
-import { SE_CATALOG } from "@/assets/seCatalog";
+import { SE_CATALOG, SE_CATALOG_CATEGORIES } from "@/assets/seCatalog";
 import { listMovieResources } from "@/editor/panels/eventEditor/playMoviePreview";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import type { Project } from "@/project/types";
@@ -45,6 +45,79 @@ export const EVENT_RESOURCE_SLOT_LABELS: Record<EventResourceSlot, string> = {
 /** 흉상·전신 대형 초상 id 의 공통 접두사(`generated-face-actor1-bust` 등). */
 const GENERATED_FACE_PREFIX = "generated-face-";
 
+/**
+ * 프롬프트가 실을 장면 축. 카탈로그 머리 40곡을 그대로 자르면 모델이 항상 같은
+ * 40곡만 보고, 마을/필드/숲/던전/밤/전투/타이틀이 한두 곡씩만 섞인 채 끝난다.
+ * 검증 집합은 카탈로그 전체를 그대로 받는다 — 여기는 절단 앞에 살아남을 순서만 바꾼다.
+ */
+const BGM_PROMPT_SCENES = ["village", "field", "forest", "dungeon", "night", "battle", "title"] as const;
+type BgmPromptScene = (typeof BGM_PROMPT_SCENES)[number];
+
+/**
+ * Phase 1 `THEME_RULES.categoryNeedles` (bgmThemeRecommendation.ts) 그대로.
+ * 맵 자동 BGM 과 프롬프트 머리가 같은 곡을 장면으로 보게 한다.
+ * cave 는 프롬프트 7축에 없어서 dungeon 으로 접고, title 만 프롬프트 전용이다.
+ */
+const BGM_PROMPT_SCENE_RULES: readonly { scene: BgmPromptScene; needles: readonly string[] }[] = [
+  { scene: "title", needles: ["타이틀", "메뉴"] },
+  { scene: "battle", needles: ["전투", "보스"] },
+  { scene: "night", needles: ["야간 · 휴식", "밤"] },
+  { scene: "dungeon", needles: ["던전", "유적", "동굴", "광산", "광물"] },
+  {
+    scene: "village",
+    needles: ["마을", "광장", "길드", "회관", "시장 · 아침 생활", "축제", "과수원", "어촌", "찻집", "공원", "양봉"],
+  },
+  { scene: "forest", needles: ["숲 · 탐험", "잎다리", "소나무", "양치식물", "사과꽃"] },
+  { scene: "field", needles: ["필드", "초원", "장거리"] },
+];
+
+function bgmPromptScene(category: string): BgmPromptScene | null {
+  for (const rule of BGM_PROMPT_SCENE_RULES) {
+    if (rule.needles.some((needle) => category.includes(needle))) return rule.scene;
+  }
+  return null;
+}
+
+function addRoundRobin<T>(
+  items: readonly T[],
+  keys: readonly string[],
+  keyOf: (item: T) => string | null,
+  addItem: (item: T) => void,
+): void {
+  const buckets = new Map<string, T[]>();
+  for (const key of keys) buckets.set(key, []);
+  for (const item of items) {
+    const key = keyOf(item);
+    if (key === null) continue;
+    buckets.get(key)?.push(item);
+  }
+  let index = 0;
+  for (;;) {
+    let addedAny = false;
+    for (const key of keys) {
+      const item = buckets.get(key)?.[index];
+      if (!item) continue;
+      addItem(item);
+      addedAny = true;
+    }
+    if (!addedAny) break;
+    index += 1;
+  }
+}
+
+/**
+ * 상자·동전·징글·문·발소리. SE 카탈로그 머리는 UI 클릭이라 MAX_REF_ENTRIES(40) 에
+ * 잘리면 맵 이벤트에 쓸 기능음이 프롬프트에서 사라진다. id 는 seCatalog 에 있다.
+ */
+const PROMPT_SE_HEAD_IDS = [
+  "cc0-se-osx-wooded-box-open",
+  "cc0-se-orp-inventory-coin",
+  "cc0-se-kjg-8-bit-jingles-jingles-nes09",
+  "cc0-se-kra-dooropen-1",
+  "cc0-se-kra-doorclose-1",
+  "cc0-se-kis-footstep-wood-000",
+] as const;
+
 function collect(
   slot: EventResourceSlot,
   project: Pick<Project, "assets" | "resourceProfiles">,
@@ -68,13 +141,34 @@ function collect(
       // 시트를 얼굴 한 장으로 지정하면 대화창에 엉뚱한 칸이 뜬다.
       for (const asset of FACESET_FACE_ASSETS) add(asset.id, asset.name);
       break;
-    case "music":
+    case "music": {
+      // 장면 축을 라운드로빈으로 **맨 앞에** 둔다. 카탈로그 순서를 그대로 실으면
+      // slice(0, 40) 이 항상 같은 머리 40곡이다. add 는 중복을 건너뛰므로 아래
+      // 전체 카탈로그 add 가 검증 집합을 그대로 채운다.
+      addRoundRobin(
+        BGM_CATALOG,
+        BGM_PROMPT_SCENES,
+        (track) => bgmPromptScene(track.category),
+        (track) => add(track.id, bgmTrackLabel(track)),
+      );
       // 카탈로그(281곡)가 이 에디터의 기본 BGM 세트다.
       for (const track of BGM_CATALOG) add(track.id, bgmTrackLabel(track));
       for (const asset of CC0_MUSIC_ASSETS) add(asset.id, asset.name);
       for (const asset of EASYRPG_MUSIC_ASSETS) add(asset.id, asset.name);
       break;
+    }
     case "sound":
+      for (const id of PROMPT_SE_HEAD_IDS) {
+        const entry = SE_CATALOG.find((item) => item.id === id);
+        if (entry) add(entry.id, `${entry.title} — ${entry.category}`);
+      }
+      // 카탈로그 머리는 UI 클릭이라 그대로 실으면 나머지 34개가 한 분류다.
+      addRoundRobin(
+        SE_CATALOG,
+        SE_CATALOG_CATEGORIES,
+        (entry) => entry.category,
+        (entry) => add(entry.id, `${entry.title} — ${entry.category}`),
+      );
       for (const entry of SE_CATALOG) add(entry.id, `${entry.title} — ${entry.category}`);
       for (const asset of CC0_SOUND_ASSETS) add(asset.id, asset.name);
       for (const asset of EASYRPG_SOUND_ASSETS) add(asset.id, asset.name);
