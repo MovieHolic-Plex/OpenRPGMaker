@@ -59,6 +59,13 @@ function toggle(node: FakeElement | null, checked: boolean): void {
   node.dispatchEvent(new Event("change"));
 }
 
+/** visualSelect 카드 클릭 — 빈 값은 `${testid}-unset`. */
+function pick(host: FakeElement, testid: string, value: string): void {
+  const card = findByTestId(host, value === "" ? `${testid}-unset` : `${testid}-${value}`);
+  if (!card) throw new Error(`card not found: ${testid} ${JSON.stringify(value)}`);
+  card.click();
+}
+
 describe("데이터베이스 「마을」탭 — 뼈대", () => {
   it("공용 워크스페이스 빌더를 쓰고 두 분류 칩을 낸다", () => {
     const host = renderView();
@@ -156,26 +163,24 @@ describe("데이터베이스 「마을」탭 — 집 형태", () => {
     expect(findByTestId(host, "db-village-template-warning")?.textContent).toContain("5칸 이상");
   });
 
-  // 공용 selectField 는 빈 값 항목을 항상 맨 앞에 넣는다. 뷰가 하나 더 얹으면 값이 같은
-  // 항목이 둘이 되고, 브라우저는 앞선 것을 고르므로 뒤 라벨은 화면에 안 뜨는 죽은 문구다.
+  // 킷은 비움 카드가 하나, 층수는 필수라 비움 카드가 없다.
   it("빈 값 선택지가 중복되지 않는다", () => {
     const host = renderView();
     findByTestId(host, "db-village-create")?.click();
-    for (const testid of ["db-village-template-kit", "db-village-template-stories"]) {
-      const options = findByTestId(host, testid)?.querySelectorAll("option") ?? [];
-      const empty = options.filter((option) => (option.getAttribute("value") ?? "") === "");
-      expect(empty.length, testid).toBeLessThanOrEqual(1);
-    }
+    const kitUnset = findByTestId(host, "db-village-template-kit")?.querySelectorAll("[data-testid='db-village-template-kit-unset']") ?? [];
+    expect(kitUnset.length, "db-village-template-kit").toBe(1);
+    const storiesUnset = findByTestId(host, "db-village-template-stories")?.querySelectorAll("[data-testid='db-village-template-stories-unset']") ?? [];
+    expect(storiesUnset.length, "db-village-template-stories").toBe(0);
   });
 
   it("재료 킷을 「지정 안 함」으로 되돌리면 키가 사라진다", () => {
     const host = renderView();
     findByTestId(host, "db-village-create")?.click();
 
-    change(findByTestId(host, "db-village-template-kit"), "timber-hall");
+    pick(host, "db-village-template-kit", "timber-hall");
     expect(store.getCurrent().villageTemplates?.[0]?.kitId).toBe("timber-hall");
 
-    change(findByTestId(host, "db-village-template-kit"), "");
+    pick(host, "db-village-template-kit", "");
     expect(store.getCurrent().villageTemplates?.[0]).not.toHaveProperty("kitId");
   });
 });

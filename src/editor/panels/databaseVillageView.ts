@@ -31,9 +31,11 @@ import {
   createHousePreview,
   createMapShot,
   houseKitTileset,
+  previewKitFor,
   villageArchetypeShotUrl,
   type HousePreviewSize,
 } from "@/editor/panels/villageHousePreview";
+import { visualSelect } from "@/editor/panels/villageVisualSelect";
 import { PRESET_PREVIEW_SIZE, buildPresetPreview } from "@/editor/panels/villagePresetPreview";
 import {
   detailHero,
@@ -49,7 +51,7 @@ import {
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { ALL_HOUSE_KIT_IDS, HOUSE_KITS, MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
+import { ALL_HOUSE_KIT_IDS, HOUSE_KITS, MIXABLE_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import {
   VILLAGE_ARCHETYPES,
   VILLAGE_EDGE_TREE_STYLES,
@@ -464,7 +466,7 @@ function templateDetail(
           sectionCard({
             title: "크기와 재료",
             hint: "폭 3~8 · 높이 4~24칸",
-            children: templateSizeFields(record, rerender),
+            children: templateSizeFields(project, record, rerender),
             testid: "db-village-template-size",
           }),
           span(sectionCard({
@@ -536,10 +538,39 @@ function templateBasicFields(
   ];
 }
 
-function templateSizeFields(record: VillageHouseTemplateRecord, rerender: () => void): HTMLElement[] {
+/**
+ * 층수 카드용 미리보기 레코드.
+ * 보통은 8×9 한 날개(1·2·3층 열 최소 5/7/9 를 모두 통과)에 지금 킷을 찍는다.
+ * A자 킷은 높이가 폭에 묶여 8×9 스탬프가 거절되므로, 그 레코드의 날개를 그대로 쓴다.
+ */
+function storiesCardRecord(
+  record: VillageHouseTemplateRecord,
+  stories: 1 | 2 | 3,
+  kitId: HouseKitId,
+): VillageHouseTemplateRecord {
+  if (kitId === "aframe-stone") return { ...record, stories, kitId };
+  return {
+    id: record.id,
+    name: record.name,
+    w: 8,
+    h: 9,
+    stories,
+    kitId,
+    wings: [{ x: 0, y: 0, w: 8, h: 9 }],
+    ...(record.clonedFrom ? { clonedFrom: record.clonedFrom } : {}),
+    ...(record.lowWall ? { lowWall: true } : {}),
+    ...(record.roofDeck ? { roofDeck: true } : {}),
+  };
+}
+
+function templateSizeFields(
+  project: Project,
+  record: VillageHouseTemplateRecord,
+  rerender: () => void,
+): HTMLElement[] {
   const { templateW, templateH } = VILLAGE_RANGE;
-  // 빈 값 항목은 `baseSelect` 가 넣는다 — 여기서 또 넣으면 값이 같은 항목이 둘이 된다.
   const kitOptions = ALL_HOUSE_KIT_IDS.map((id) => ({ id, name: HOUSE_KITS[id].name }));
+  const storiesKitId = previewKitFor(record);
   return [
     requiredNumber("폭 (칸)", "db-village-template-w", record.w, templateW, (value) => {
       recordCoalescedSnapshot(`village-template-w:${record.id}`, "집 형태 폭 변경");
@@ -551,19 +582,50 @@ function templateSizeFields(record: VillageHouseTemplateRecord, rerender: () => 
       patchTemplate(record.id, () => ({ h: value }));
       rerender();
     }),
-    selectField("층수", "db-village-template-stories", String(record.stories ?? 1), [
-      { id: "1", name: "1층" },
-      { id: "2", name: "2층" },
-      { id: "3", name: "3층" },
-    ], (value) => {
-      recordProjectSnapshot("집 형태 층수 변경");
-      patchTemplate(record.id, () => ({ stories: Number(value) === 3 ? 3 : Number(value) === 2 ? 2 : 1 }));
-      rerender();
+    visualSelect({
+      label: "층수",
+      testid: "db-village-template-stories",
+      value: String(record.stories ?? 1),
+      options: [
+        { id: "1", name: "1층" },
+        { id: "2", name: "2층" },
+        { id: "3", name: "3층" },
+      ],
+      mediaFor: (id) => {
+        const stories = Number(id) === 3 ? 3 : Number(id) === 2 ? 2 : 1;
+        return createHousePreview(storiesCardRecord(record, stories, storiesKitId), project, "card", {
+          testid: `db-village-template-stories-${stories}-shot`,
+          label: `${stories}층 집 그림`,
+        });
+      },
+      onChange: (value) => {
+        recordProjectSnapshot("집 형태 층수 변경");
+        patchTemplate(record.id, () => ({ stories: Number(value) === 3 ? 3 : Number(value) === 2 ? 2 : 1 }));
+        rerender();
+      },
     }),
-    selectField("재료 킷", "db-village-template-kit", record.kitId ?? UNSET, kitOptions, (value) => {
-      recordProjectSnapshot("집 형태 재료 킷 변경");
-      patchTemplate(record.id, () => ({ kitId: value === UNSET ? undefined : value }));
-      rerender();
+    visualSelect({
+      label: "재료 킷",
+      testid: "db-village-template-kit",
+      value: record.kitId ?? UNSET,
+      options: kitOptions,
+      allowUnset: true,
+      unsetLabel: "프리셋/씨앗값이 고름",
+      mediaFor: (id) => createHousePreview(
+        { ...record, kitId: id },
+        project,
+        "card",
+        {
+          testid: id ? `db-village-template-kit-${id}-shot` : "db-village-template-kit-unset-shot",
+          label: isHouseKitId(id) ? `${HOUSE_KITS[id].name} 집 그림` : "프리셋/씨앗값이 고름",
+        },
+      ),
+      onChange: (value) => {
+        recordProjectSnapshot("집 형태 재료 킷 변경");
+        // 비움은 키를 지운다 — "" 가 남아 있으면 왕복에서 kitId:"" 로 살아남는다.
+        patchTemplate(record.id, () => ({ kitId: value || undefined }));
+        rerender();
+      },
     }),
     checkboxField("낮은 벽", "db-village-template-low-wall", record.lowWall === true, "벽 밴드를 한 단 낮춘다", (checked) => {
       recordProjectSnapshot("집 형태 낮은 벽 변경");
