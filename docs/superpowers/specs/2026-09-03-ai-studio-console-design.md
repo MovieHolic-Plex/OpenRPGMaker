@@ -96,3 +96,12 @@ grid-template-rows:    minmax(0,1fr) | auto(덱)
 - `test/aiStudioShell.test.ts` 확장(검색·새 장면·나가기·상태·활동·접기·진행률·브리핑).
 - `npm run typecheck:app` 0 · `npm run gates -- --only css` 기준선 대비 새 실패 0.
 - 스크린샷 1440×900 · 1280×720 · 1920×1080 전후 비교(`/tmp/studio-shots/{before,after}`), 잘림·겹침 실측.
+
+## 8. Phase 1 (2026-09-04) — 접힘 공간 회수 · 부팅 모니터 입양
+
+P0 두 건. 새 hex · 새 `!important` 없음.
+
+1. **덱 접힘이 공간을 돌려준다.** `.ai-studio-deck` 그리드가 접혀도 `var(--studio-deck-h)` 행을 남겨 모니터 아래가 빈 섬이 됐다. `.ai-studio-deck.is-collapsed` 가 `grid-template-rows` 를 손잡이+40px 머리로 줄인다. 덱 손잡이는 `deckPaneRoot.prepend` 로 덱 **안** 첫 자식이라 형제 선택자 `.ai-studio-deck.is-collapsed + .ai-studio-splitter` 는 죽어 있었고, 자손 선택자로 고친다(그리드 아이템을 남겨 머리가 8px 행에 앉지 않게 `visibility:hidden`). 접힌 장면·조수 손잡이는 `visibility:hidden` 이 8px 열+gap 을 남겨 `display:none`.
+2. **부팅 모니터 입양.** persist `oprn:ai-studio=1` 로 켜진 채 부팅하면 attach 시점에 `edit-canvas` 노드가 아직 document 에 없다(`renderEditor` 가 `renderAiChatPanel` 뒤에 layout 을 main 에 붙인다). `refreshMonitor` 가 빈 자리(`ai-studio-monitor-empty`)를 본 뒤 document 에 `edit-canvas` / `editor-zoom-controls` 가 있으면 `adoptLiveMap` 을 다시 부른다. attach 는 그 재시도를 현재 턴 다음 microtask 로 한 번 건다. attach/detach 재부모화 계약은 그대로다.
+
+검증: `test/aiStudioShell.test.ts`(접힘 클래스 · attach 이후 캔버스 입양) · `npm run typecheck:app` · 캡처 `scripts/capture-ai-studio.mjs` 의 `*-05-deck-collapsed.png`.

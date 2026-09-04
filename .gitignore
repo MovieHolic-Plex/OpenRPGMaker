@@ -226,3 +226,7 @@ verify-shots/battle-anim-overhaul/hero-after/
 verify-shots/battle-anim-overhaul/choreo-*/
 verify-shots/battle-anim-overhaul/trio-*/
 verify-shots/battle-skin-trio/
+
+# 스튜디오 P1 — 덱 접힘 공간 회수 전후. 마지막 규칙이 이긴다(`.omo/evidence/*` + `evidence/`).
+!.omo/evidence/studio-p1-collapse/
+!.omo/evidence/studio-p1-collapse/**
