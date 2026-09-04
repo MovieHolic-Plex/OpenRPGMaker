@@ -429,8 +429,11 @@
 
 /* 주인공 스튜디오 표의 얼굴은 36px 예외 — 13-actor-studio.css 의 비-important 규칙은
    위 24px !important 를 이기지 못해 36x24 로 찌그러지므로 예외는 여기서 둔다
-   (공유 리셋에 예외를 두는 것이 index.css 정책, PR #540 후속). */
+   (공유 리셋에 예외를 두는 것이 index.css 정책, PR #540 후속).
+   flex 도 함께 둔다: record-list-modern 의 flex:0 0 24px(0,5,1, 비-important)이
+   short rule 의 flex:0 0 36px(0,2,0)을 이겨 basis 24px 가 남기 때문이다. */
 .database-modal-backdrop .database-modal-window .db-actor-studio-workspace .db-actor-identity-cell .db-list-thumb {
+  flex: 0 0 36px !important;
   height: 36px !important;
   width: 36px !important;
 }
