@@ -3,6 +3,7 @@ import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3";
 import { passableCellCount } from "@/editor/tools/mapHelpers";
 import { forestCoverageTarget } from "@/editor/tools/forestDensity";
 import { createBlankProject } from "@/project/defaults";
+import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { GameMap } from "@/project/types";
 
@@ -27,8 +28,11 @@ describe("narrow dense forest", () => {
     let covered = 0;
     for (let y = 0; y < 15; y += 1) {
       for (let x = 0; x < 5; x += 1) {
-        const u = map.upperTiles[y * map.width + x] ?? -1;
-        if (u >= 0) covered += 1;
+        const i = y * map.width + x;
+        const u = map.upperTiles[i] ?? -1;
+        const l = map.lowerTiles[i] ?? -1;
+        // 밑동(290/292/293)은 lower 정위치 — upper 점유만 세면 나무 칸을 놓친다.
+        if (u >= 0 || isTreeTrunkTileId(l)) covered += 1;
       }
     }
     expect(covered / 75).toBeGreaterThanOrEqual(forestCoverageTarget("dense") - 0.05);

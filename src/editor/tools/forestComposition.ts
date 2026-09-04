@@ -164,7 +164,10 @@ export function plantForestComposition(draft: Project, input: {
     }
   }
 
-  const lifted = liftTrunksToUpper(map, input.area);
+  // 밑동 리프트 없음 — 밑동(290/292/293)은 lower solid 가 정위치다. 상위로 들어올리면
+  // 런타임 렌더러의 lower 투명-밑동 잔디 받침(playSceneMapRuntime)이 빗나가 투명 픽셀 구멍이
+  // 생긴다. 벤치마크 계약(trunkCellsOf)도 lower 밑동을 기대한다.
+  const lifted = 0;
   // impassable 만 남은 틈을 닫는다 — dense 는 "지나갈 수 있는 두꺼운 숲", impassable 은 "못 지나감".
   const closedGaps = input.density === "impassable"
     ? closeGapsWithBushes(draft, map, input.area, input.seed)
@@ -209,33 +212,6 @@ function featherForestEdge(draft: Project, map: GameMap, area: Rect, seed: numbe
     }
   }
   return feathered;
-}
-
-/**
- * 밑동을 하위→상위 레이어로 옮기고 그 칸에 지면을 되돌린다.
- *
- * 왜 필요한가 (렌더 실측): 재료 상 밑동(290/292/293)은 solid 이라 어효 layerHome 이 하위이다.
- * 하위에 올리면 밑동 칩의 **투몥 화소가 그냥 구멍**이 된다 — 수관을 올리지 않자마자
- * 밑동 자리마다 헬 바닥이 드러나 학 상자로 보여다. 예전 디자인이 수관을 밑동 위에 곹치던
- * 진짜 이유가 이것이다(그 대가로 나무가 안 보이게 됐다).
- * `skyStairMaps.ts` 가 이밌 배운 방식이 정답이다 — 나무는 상위로, 하위에는 지면을 남긴다.
- * 통행은 그대로다 — 상위 solid 이 합성 passability 를 지배한다.
- */
-function liftTrunksToUpper(map: GameMap, area: Rect): number {
-  let lifted = 0;
-  for (let y = area.y; y < area.y + area.h; y += 1) {
-    for (let x = area.x; x < area.x + area.w; x += 1) {
-      if (!inMapBounds(map, x, y)) continue;
-      const index = y * map.width + x;
-      const lower = map.lowerTiles[index] ?? TILE.EMPTY;
-      if (!isTreeTrunkTileId(lower)) continue;
-      if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
-      map.upperTiles[index] = lower;
-      map.lowerTiles[index] = TILE.GRASS;
-      lifted += 1;
-    }
-  }
-  return lifted;
 }
 
 /**
