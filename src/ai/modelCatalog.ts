@@ -58,6 +58,7 @@ const ANTIGRAVITY_MODELS: readonly string[] = [
   "gemini-3.5-flash",
   "gemini-3.6-flash",
   "gemini-3.7-flash-tiered",
+  "gemini-3.8-flash",
   "gpt-oss-120b",
   "tab_flash_lite_preview",
   "tab_jump_flash_lite_preview",

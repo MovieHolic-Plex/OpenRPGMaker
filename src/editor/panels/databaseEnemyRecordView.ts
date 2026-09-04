@@ -5,6 +5,7 @@ import { databaseFieldSupport, databaseFieldSupportNotice } from "@/editor/datab
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
+import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
@@ -645,6 +646,14 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     textField("리소스", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
       updateDatabaseRecord("enemies", record.id, { monsterResourceId: emptyToUndefined(monsterResourceId) })
     ),
+    aiImageGenerateField({
+      kind: "monster",
+      testidPrefix: "db-enemy-graphic-ai",
+      onInserted: (resourceId) => {
+        updateDatabaseRecord("enemies", record.id, { monsterResourceId: resourceId });
+        rerender();
+      },
+    }),
     databaseFieldSupportNotice("transparent", "flying", "graphicHue"),
   ];
 }

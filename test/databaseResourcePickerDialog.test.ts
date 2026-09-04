@@ -3,6 +3,7 @@ import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetF
 import {
   listDatabaseResourceOptionsForTest,
   openDatabaseResourcePickerDialog,
+  resourcePickerControl,
 } from "@/editor/panels/databaseResourcePickerDialog";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -65,6 +66,35 @@ describe("faceset picker dialog", () => {
     expect(findByTestId(body, "face-pick-option-easyrpg-faceset-people1-15")).not.toBeNull();
     expect(findByTestId(body, "face-pick-option-easyrpg-faceset-actor1")).toBeNull();
     expect(findByTestId(body, "face-pick-face-index")).toBeNull();
+  });
+
+  it("title/backdrop/monster 피커 행에 AI 만들기 칸이 붙는다", () => {
+    store.replace(createBlankProject());
+    for (const [kind, prefix] of [["title", "title-pick"], ["backdrop", "backdrop-pick"], ["monster", "monster-pick"]] as const) {
+      const row = resourcePickerControl({
+        label: "배경",
+        resourceId: undefined,
+        kind,
+        testid: prefix,
+        onChange: () => {},
+        rerender: () => {},
+      }) as unknown as FakeNode;
+      expect(findByTestId(row, `${prefix}-ai-prompt`), `${kind} AI 프롬프트 칸`).not.toBeNull();
+      expect(findByTestId(row, `${prefix}-ai-generate`), `${kind} AI 생성 버튼`).not.toBeNull();
+    }
+  });
+
+  it("charset 피커 행에는 AI 칸이 붙지 않는다", () => {
+    store.replace(createBlankProject());
+    const row = resourcePickerControl({
+      label: "캐릭터셋",
+      resourceId: undefined,
+      kind: "charset",
+      testid: "charset-pick",
+      onChange: () => {},
+      rerender: () => {},
+    }) as unknown as FakeNode;
+    expect(findByTestId(row, "charset-pick-ai-prompt")).toBeNull();
   });
 
   it("confirms the picked face id alone", () => {

@@ -115,10 +115,13 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
 계약 테스트: `test/refactorTools.test.ts` «prune_unused 참조 수집 누락» (inputNumber/inputWait/wait
 각각 단독 참조 + moveEvent 경로 setSwitch + 진짜 미참조 변수는 여전히 보고되는 회귀 케이스).
 
-- **이미지 생성은 Antigravity 한 경로뿐이다 (2026-08-30, 실측):** 동반 서비스에
+- **이미지 생성은 Antigravity 한 경로뿐이다 (2026-08-30, 2026-09-03 갱신):** 동반 서비스에
   `POST /v1/images/generations` 가 붙었다(`ohMyPiHttp.mjs` → 어댑터 `generateImage` →
   Bun 워커 `/image` → `scripts/lib/ohMyPiImageRuntime.ts`). 브라우저 클라이언트는
   `src/ai/imageGenerationClient.ts` 이고 `/v1/chat/completions` 와 같은 같은-오리진 규약을 쓴다.
+  요청 모델은 `gemini-3.8-flash`. 카탈로그에 없으면 워커가 `gemini-3.1-flash-image` 로 떨어진다.
+  이벤트 「그림 표시」 폼의 `AI로 만들기`(`showPictureAiField`)가 같은 경로를 타고
+  `insertGeneratedPictureAsset` 으로 업로드 그림 리소스를 심는다.
   실측 결과: `google-antigravity` + `gemini-3.1-flash-image` 에 `generationConfig.responseModalities`
   = `["TEXT","IMAGE"]` 를 pi-ai 의 `onPayload` 훅으로 주입하면 `v1internal:streamGenerateContent`
   가 `inlineData`(image/jpeg, 약 360KB base64) 를 200 으로 돌려준다.

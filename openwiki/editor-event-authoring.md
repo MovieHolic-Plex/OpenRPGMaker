@@ -372,6 +372,13 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - Dialogue command previews use the runtime `--runtime-dialogue-*` dark-glass tokens for `.ecp-message-window`, speaker tabs, faces, and choices. Preserve the preview DOM/testids and keep transparent, face-left/right, bust/full, position, and choice states visually aligned with `src/styles/dialogue.css`.
 - Reactive modal renders preserve settings/command scroll, focused testid/command row, text selection, selected command, and open details. The command picker shortcut is Ctrl/Cmd+K. Focus restoration and draft Cancel behavior are covered by `test/eventEditorTrustLoop.test.ts`; pure starter safety is covered by `test/eventBeginnerTemplates.test.ts`.
 
+## 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
+
+- `script_cutscene_preset` `memory_opening` 은 `src/editor/recollectionBeats.ts` 의 `recollectionBeats()` 가 만든다: 페이드 아웃 → 회상 BGM(`cc0-bgm-rtp-emo-001`) → 틴트(`#c4a070`) → `showPicture`(`pic_memory`) → 대사 → 그림 지우기 → 틴트/페이드 복원 → BGM 정지. 새 `Command.kind` 는 없다 — 기존 showPicture/playAudio/fade/tint 조합이므로 인터프리터를 손대지 않는다.
+- `pictureResourceId`·`bgmResourceId` 인자로 스틸/BGM 을 바꿀 수 있고, 비우면 기본값(구름 스틸 + CC0 BGM)이 들어간다.
+- 빈 이벤트의 「회상 오프닝」 CTA(`memoryOpeningTemplate.ts`)는 별도 「컷신」 페이지를 만들지 않고 보고 있던 빈 페이지에 그 프리셋을 심는다.
+- 계약: `test/recollectionBeats.test.ts`, `test/eventEditorMemoryOpeningTemplate.test.ts`, `test/scriptCutsceneIntegration.test.ts`(장면 테스트로 스틸 표시 + 종료 후 입력 잠금 해제까지 검증).
+
 ## Guided story arc facade
 
 `author_story_arc` is the deterministic high-level path for bounded tutorial objectives, executable choice branches, and an optional twist reveal. It compiles only to existing event text/choices/fork/setSwitch/setVariable commands plus quest graphs and story-flag metadata, reports the created identifiers, and rejects empty objectives or branch bodies. It is a structural authoring aid, not an automatic prose-quality or story-quality judge.

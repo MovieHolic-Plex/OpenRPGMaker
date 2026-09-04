@@ -14,6 +14,10 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 describe("imageGenerationClient", () => {
+  it("요청 모델은 gemini-3.8-flash 다", () => {
+    expect(IMAGE_GENERATION_MODEL).toBe("gemini-3.8-flash");
+  });
+
   it("동반 서비스의 같은 오리진 /v1 경로를 친다", () => {
     expect(imageGenerationEndpoint()).toBe("/v1/images/generations");
   });

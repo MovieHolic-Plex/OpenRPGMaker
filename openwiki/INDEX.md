@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **43쪽 / 1411KB / 약 398,912 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **43쪽 / 1416KB / 약 400,135 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,10 +15,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 242KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 412 | ~70,336 |
-| `openwiki/editor-ai-tools.md` | 67KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 132 | ~19,213 |
+| `openwiki/editor-ai-panel.md` | 245KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 416 | ~70,948 |
+| `openwiki/editor-ai-tools.md` | 68KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 135 | ~19,304 |
 | `openwiki/editor-database.md` | 169KB | 49KB | 815 | ~48,389 |
-| `openwiki/editor-event-authoring.md` | 116KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 550 | ~33,750 |
+| `openwiki/editor-event-authoring.md` | 117KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 557 | ~34,046 |
 | `openwiki/editor-pre-edit-routing.md` | 68KB | 50KB ⚠상한 초과 — 절을 더 쪼개라 | 196 | ~19,371 |
 | `openwiki/runtime-battle.md` | 114KB | 31KB | 339 | ~32,706 |
 | `openwiki/runtime-project-schema.md` | 53KB | 42KB | 174 | ~14,276 |
@@ -219,7 +219,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 242KB · 412줄 · ~70,336 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 245KB · 416줄 · ~70,948 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L9` 패널 셸 · 도크 · 접기 · 컴포저
 - `L126` 세션 수명 · 대화 컨텍스트
@@ -230,9 +230,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L323` 타일셋 이해 · 검토 위저드 (T1a/T1b)
 - `L349` 저장 · 내보내기 · 프로젝트 생성
 - `L357` 제공자 · OAuth · 동반 서비스
-- `L381` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L385` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
 
-### `openwiki/editor-ai-tools.md` — 67KB · 132줄 · ~19,213 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 68KB · 135줄 · ~19,304 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L95` Project-wide quality evaluation
 - `L101` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
@@ -276,7 +276,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L734` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
 - `L750` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
 
-### `openwiki/editor-event-authoring.md` — 116KB · 550줄 · ~33,750 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 117KB · 557줄 · ~34,046 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
 - `L16` 이벤트 편집기 문법 고정 — P0 (2026-09-03)
@@ -291,32 +291,34 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L142` Event Authoring
 - `L357` Condition / Loop / Variable command trust fixes (2026-08-07)
 - `L367` Event draft trust loop (2026-07-30)
-- `L375` Guided story arc facade
-- `L379` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L384` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L392` Companion roster in the command picker (2026-08-27)
-- `L398` Presentation and system M2 command bodies
-- `L405` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L423` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L433` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L468` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L502` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L513` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L521` 참조를 비워도 조건을 삭제하지 않는다
-  - `L528` 조건 미리보기는 모르면 모른다고 말한다
-  - `L537` 조건 문구에 내부 토큰을 넣지 마라
+- `L375` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
+- `L382` Guided story arc facade
+- `L386` 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- `L391` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L399` Companion roster in the command picker (2026-08-27)
+- `L405` Presentation and system M2 command bodies
+- `L412` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L430` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L440` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L475` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L509` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L520` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L528` 참조를 비워도 조건을 삭제하지 않는다
+  - `L535` 조건 미리보기는 모르면 모른다고 말한다
+  - `L544` 조건 문구에 내부 토큰을 넣지 마라
 
 ### `openwiki/editor-event-command-fixes.md` — 12KB · 33줄 · ~3,122 토큰 · 깨진 줄 11
 
 - `L25` Page 3 canonical fields and staged commits (2026-07-30)
 - `L30` Show Picture preview opacity unit (2026-08-29)
 
-### `openwiki/editor-event-commands.md` — 41KB · 91줄 · ~10,954 토큰 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 42KB · 102줄 · ~11,178 토큰 · 깨진 줄 6
 
 - `L7` Roguelike run control (2026-08-24)
 - `L47` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
 - `L78` Staged edit, history, and nested drag invariants (2026-07-30)
 - `L85` Command picker, validation, and preview trust (2026-07-30)
+- `L92` 회상 스틸과 AI 그림 (2026-09-03)
 
 ### `openwiki/editor-genre-packs.md` — 7KB · 42줄 · ~1,837 토큰
 

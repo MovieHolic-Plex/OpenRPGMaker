@@ -5,9 +5,12 @@ import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
  * 이미지 생성이 실측으로 통과하는 제공자는 Antigravity 하나다. Codex(Responses) 는
  * 호스팅 `image_generation` 툴을 요청할 경로가 pi-ai 에 없다(`Tool.native` 가 computer 만
  * 받는다). 그래서 텍스트 제공자가 무엇이든 그림은 이 제공자로 넘긴다.
+ *
+ * 요청 모델은 gemini-3.8-flash. 동반 서비스 카탈로그에 없으면
+ * getBundledModel 이 gemini-3.1-flash-image 로 떨어진다(IMAGE 모달리티 실측 ID).
  */
 export const IMAGE_GENERATION_PROVIDER_ID = ANTIGRAVITY_PROVIDER_ID;
-export const IMAGE_GENERATION_MODEL = "gemini-3.1-flash-image";
+export const IMAGE_GENERATION_MODEL = "gemini-3.8-flash";
 
 const IMAGE_REQUEST_TIMEOUT_MS = 180_000;
 

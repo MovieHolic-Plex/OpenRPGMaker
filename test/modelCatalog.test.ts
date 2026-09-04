@@ -29,6 +29,7 @@ const ANTIGRAVITY_BUNDLED = [
   "gemini-3.6-flash",
   "gemini-3.7-flash",
   "gemini-3.7-flash-tiered",
+  "gemini-3.8-flash",
   "gpt-oss-120b",
   "tab_flash_lite_preview",
   "tab_jump_flash_lite_preview",
@@ -119,6 +120,13 @@ describe("isModelValidForAuthMode — 선택된 제공자 기준", () => {
   it("Antigravity 는 번들링 밖 gemini 변형을 직접 입력할 수 있다(카탈로그는 화이트리스트가 아니다)", async () => {
     const { isModelValidForAuthMode } = await loadCatalog();
     expect(isModelValidForAuthMode("chatgpt", "gemini-9-experimental", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
+  });
+
+  it("Gemini 3.8 Flash 를 Antigravity 목록에서 고를 수 있다", async () => {
+    const { isModelValidForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
+    const models = modelCatalogForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID).flatMap((g) => g.models);
+    expect(models).toContain("gemini-3.8-flash");
+    expect(isModelValidForAuthMode("chatgpt", "gemini-3.8-flash", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
   });
 
   it("사고 강도 변형(-high/-medium/-low)은 거부한다", async () => {

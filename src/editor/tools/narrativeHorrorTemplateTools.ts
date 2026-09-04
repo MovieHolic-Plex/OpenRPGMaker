@@ -11,6 +11,7 @@ import { ensureNamedSwitch } from "./flagHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project } from "@/project/types";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
+import { recollectionBeats } from "@/editor/recollectionBeats";
 
 const INNER_TOOLS = new Map<string, ToolDefinition>(
   [...EVENT_TOOLS, ...INVESTIGATION_TOOLS, ...LIGHTING_TOOLS, ...ENDING_TOOLS].map((tool) => [tool.name, tool]),
@@ -105,6 +106,8 @@ export const scriptCutscenePreset: ToolDefinition = {
       endingName: { type: "string" },
       endingSwitchId: { type: "string", description: "엔딩 조건 스위치 (기본 sw_ending_<id>)" },
       skippable: { type: "boolean" },
+      pictureResourceId: { type: "string", description: "memory_opening 스틸 그림 리소스" },
+      bgmResourceId: { type: "string", description: "memory_opening 회상 BGM 리소스" },
     },
     required: ["mapId", "preset"],
   },
@@ -129,7 +132,9 @@ export const scriptCutscenePreset: ToolDefinition = {
             ? ["끝이다.", "그래도 기억은 남는다."]
             : ["그날을 기억한다.", "창밖의 달빛."];
 
-    let beats: RecordValue[] = memoryBeats(speaker, lines);
+    const pictureResourceId = typeof args.pictureResourceId === "string" ? args.pictureResourceId.trim() : "";
+    const bgmResourceId = typeof args.bgmResourceId === "string" ? args.bgmResourceId.trim() : "";
+    let beats: RecordValue[];
     if (preset === "bedside_monologue") {
       beats = [
         { kind: "tint", color: "#1a2030", durationMs: 600, wait: true },
@@ -144,6 +149,13 @@ export const scriptCutscenePreset: ToolDefinition = {
         { kind: "tint", color: "#000000", durationMs: 900, wait: true },
         { kind: "wait", ms: 400 },
       ];
+    } else {
+      beats = recollectionBeats({
+        speaker,
+        lines,
+        ...(pictureResourceId ? { pictureResourceId } : {}),
+        ...(bgmResourceId ? { bgmResourceId } : {}),
+      }).map((beat) => ({ ...beat }));
     }
 
     const lint = lintCutsceneBeats(beats);

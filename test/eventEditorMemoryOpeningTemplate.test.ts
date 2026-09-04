@@ -72,6 +72,8 @@ describe("empty-event 회상 오프닝 template", () => {
     expect(commands.length).toBeGreaterThan(3);
     expect(commands.some((command) => command.kind === "text")).toBe(true);
     expect(commands.some((command) => command.kind === "wait" && command.ms >= 100)).toBe(true);
+    expect(commands.some((command) => command.kind === "showPicture")).toBe(true);
+    expect(commands.some((command) => command.kind === "playAudio")).toBe(true);
     // 프리셋이 만든 별도 「컷신」 페이지는 남기지 않는다 — 보고 있던 빈 페이지가 채워진다.
     expect(store.getCurrent().maps[mapId].events[0]?.pages?.length).toBe(1);
   });

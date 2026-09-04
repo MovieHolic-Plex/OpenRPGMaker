@@ -11,6 +11,7 @@ import { labelBody } from "./commandBodyLabels";
 import { loopBody } from "./commandBodyLoop";
 import { setVariableBody } from "./commandBodyVariable";
 import { conditionForm, databasePicker, selfSwitchControl } from "./conditionForm";
+import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { faceDisplayModeOf, renderFaceGallery, renderFacesetPreview } from "./facesetPreview";
 import { renderConditionEvalPreview } from "./conditionEvalPreview";
 import { renderCommandPreview } from "./commandPreview";
@@ -662,6 +663,14 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
         }),
         gridHost,
       ],
+    }),
+    aiImageGenerateField({
+      kind: "faceset",
+      testidPrefix: "event-command-face-ai",
+      onInserted: (id) => {
+        resource.value = id;
+        apply();
+      },
     }),
     optionsRow,
     el("p", {

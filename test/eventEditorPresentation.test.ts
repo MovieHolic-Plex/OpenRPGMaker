@@ -501,4 +501,25 @@ it("explains missing face graphic previews instead of leaving a blank slot", () 
     expect(findByTestId(conditions, "event-page-advanced-condition-variable-picker-1")).not.toBeNull();
     expect(findByTestId(conditions, "event-page-advanced-condition-add")).not.toBeNull();
   });
+
+  it("얼굴 바꾸기 폼에 AI 얼굴 만들기 칸이 있다", () => {
+    const staged: Command = { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false };
+    const body = renderWithFakeDom(() => renderCommandBody(
+      {
+        path: [0],
+        lockKind: true,
+        actions: {
+          addCommand: () => undefined,
+          deleteCommand: () => undefined,
+          insertCommand: () => undefined,
+          moveCommand: () => undefined,
+          moveCommandTo: () => undefined,
+          replaceCommand: () => undefined,
+        },
+      },
+      staged,
+    ));
+    expect(findByTestId(body, "event-command-face-ai-prompt"), "얼굴 AI 프롬프트 칸").not.toBeNull();
+    expect(findByTestId(body, "event-command-face-ai-generate"), "얼굴 AI 생성 버튼").not.toBeNull();
+  });
 });
