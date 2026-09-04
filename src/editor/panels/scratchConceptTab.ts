@@ -512,7 +512,7 @@ function renderPlaceCard(
 
   const row = el("div", { class: "scratch-concept-things", dataset: { testid: `scratch-concept-things-${place.id}` } });
   for (const entry of things) {
-    row.append(renderThingChip(tileset, entry, selectedThing?.id === entry.id, host, rerender));
+    row.append(renderThingChip(tileset, bundle, entry, selectedThing?.id === entry.id, host, rerender));
   }
   row.append(
     el("button", {
@@ -651,6 +651,7 @@ function renderPlacePlanRow(
 
 function renderThingChip(
   tileset: TilesetDef,
+  bundle: ConceptBundleRecord,
   thing: ConceptThingRecord,
   active: boolean,
   host: HTMLElement,
@@ -660,9 +661,9 @@ function renderThingChip(
   const thumb = object
     ? decorateThumb(interiorObjectCanvas(tileset, object, 3), "scratch-concept-thumb")
     : el("span", { class: "scratch-concept-missing", text: "?" });
-  return el("button", {
+  // 버튼 안에 버튼을 넣지 않으려 칩 외곽은 div — 칠하기는 안의 버튼, 선택은 칩 클릭.
+  return el("div", {
     class: `scratch-concept-thing${active ? " active" : ""}${thing.required ? " required" : ""}`,
-    attrs: { type: "button" },
     dataset: { testid: `scratch-concept-thing-${thing.id}` },
     children: [
       thumb,
@@ -670,6 +671,24 @@ function renderThingChip(
       el("span", {
         class: "scratch-concept-thing-chips",
         text: thing.chips.map((chip) => conceptChipLabel(chip)).join(" · "),
+      }),
+      el("button", {
+        class: "db-mini-btn scratch-concept-thing-paint",
+        attrs: {
+          type: "button",
+          title: object
+            ? "이 그림의 타일을 직접 칠한다 — 카탈로그 그림이면 사본을 만들어 이 물건에 붙이고, 타일셋 그림이면 그 그림을 바로 고친다"
+            : "그림이 없어 칠할 수 없다",
+          ...(object ? {} : { disabled: "" }),
+        },
+        dataset: { testid: `scratch-concept-thing-paint-${thing.id}` },
+        text: storedKitId(tileset, thing.objectId) ? "칠하기" : "사본 칠하기",
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            paintThingGraphic(tileset, bundle, thing, host, rerender);
+          },
+        },
       }),
     ],
     on: {
@@ -1238,10 +1257,27 @@ function storedKitId(tileset: TilesetDef, objectId: string): string | null {
 }
 
 /**
- * 물건 그림을 타일 에디터로 직접 칠한다 — 구조물 탭과 같은 다이얼로그(`openStructureKitEditor`).
- * 타일셋 저장 그림이면 그 킷을 바로 열고, 카탈로그 그림이면 사본을 만들어 이 물건에 붙인 뒤 연다.
- * 저장은 에디터가 즉시 하고, 닫히면 이 인스펙터를 다시 그린다. 순환 import 를 피하려 다이얼로그는 동적 import.
+ * 물건 그림을 칠 수 있는 타일셋 킷 id 를 확보한다 — UI 없음.
+ * 저장 section 킷이면 그 id, 카탈로그면 사본을 만들어 thing.objectId 를 붙인 뒤 사본 id.
+ * 물건을 풀 수 없으면 null.
  */
+export function ensureThingKitForEdit(tilesetId: string, bundleId: string, thingId: string): string | null {
+  const tileset = store.getCurrent().tilesets[tilesetId];
+  if (!tileset) return null;
+  const bundle = (tileset.scratchConceptBundles ?? []).find((entry) => entry.id === bundleId);
+  if (!bundle) return null;
+  const thing = bundle.things.find((entry) => entry.id === thingId);
+  if (!thing) return null;
+  const object = resolveThingObject(tileset, thing.objectId);
+  if (!object) return null;
+  const existing = storedKitId(tileset, thing.objectId);
+  if (existing) return existing;
+  const copy = duplicateIntoTileset(tilesetId, object);
+  patchThing(tilesetId, bundleId, thingId, { objectId: copy.id });
+  return copy.id;
+}
+
+/** `ensureThingKitForEdit` 뒤 구조물 타일 에디터를 연다. 카탈로그 사본이면 화면을 한 번 다시 그린다. */
 function paintThingGraphic(
   tileset: TilesetDef,
   bundle: ConceptBundleRecord,
@@ -1249,24 +1285,14 @@ function paintThingGraphic(
   host: HTMLElement,
   rerender: () => void,
 ): void {
-  const object = resolveThingObject(tileset, thing.objectId);
-  if (!object) return;
-  const existing = storedKitId(tileset, thing.objectId);
-  const openAfter = (kitId: string): void => {
-    void import("@/editor/panels/structureKitEditorDialog").then(({ openStructureKitEditor }) => {
-      openStructureKitEditor(tileset.id, kitId, () => {
-        refresh(host, rerender);
-      });
+  const kitId = ensureThingKitForEdit(tileset.id, bundle.id, thing.id);
+  if (!kitId) return;
+  if (kitId !== thing.objectId) refresh(host, rerender);
+  void import("@/editor/panels/structureKitEditorDialog").then(({ openStructureKitEditor }) => {
+    openStructureKitEditor(tileset.id, kitId, () => {
+      refresh(host, rerender);
     });
-  };
-  if (existing) {
-    openAfter(existing);
-    return;
-  }
-  const copy = duplicateIntoTileset(tileset.id, object);
-  patchThing(tileset.id, bundle.id, thing.id, { objectId: copy.id });
-  refresh(host, rerender);
-  openAfter(copy.id);
+  });
 }
 
 function mutateBundle(
