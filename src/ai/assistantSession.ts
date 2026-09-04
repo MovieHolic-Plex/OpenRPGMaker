@@ -14,6 +14,15 @@ import {
   isUsableToolReason,
   splitToolCallReason,
 } from "@/ai/toolReason";
+import {
+  buildCastWriterMessages,
+  collectPendingNpcs,
+  existingCastOnMap,
+  parseCastSheet,
+  worldEntityNames,
+  type CastContext,
+} from "@/ai/npcCast";
+import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { isDestructiveOutcome } from "@/ai/approvalPolicy";
 import { contextFooterMapId, stripContextFooter } from "@/ai/contextFooter";
@@ -2833,8 +2842,14 @@ export class AssistantSession {
         y: asset.y,
         name,
         graphic: { query: name },
-        pages: [specNpcPage(name)],
+        // 대사 없는 대기 페이지 — 코드가 "${name}입니다." 류를 지어내지 않는다. 라운드 끝의 캐스트 라이터가
+        // 테마·이웃·세계관에 맞춰 채운다(authorPendingNpcCast). 상점 역할이어도 빈 shop 커맨드는 꽂지 않는다
+        // (eventDraftValidator 가 shop.items.empty 로 막는다) — 재고는 set_shop_stock 이 맡는다는 사실만 감사에 남긴다.
+        pages: [{}],
       };
+      if (SHOP_ROLE_NAME.test(name)) {
+        this.pushAudit({ kind: "status", text: `spec-npc:shop-stock-missing ${name} — 상점 재고는 set_shop_stock 으로 채워야 상점이 열린다` });
+      }
       this.emitToolStarted(onEvent, "place_npc");
       const reason = harnessToolReason("spec-npc", name);
       const result = runTool(this.ctx, "place_npc", args, { dryRun: false });
@@ -2862,6 +2877,118 @@ export class AssistantSession {
       placed += 1;
     }
     return placed;
+  }
+
+
+  /**
+   * 캐스트 라이터 — 이번 라운드가 남긴 **대사 없는 NPC**(기준선에 없던 이벤트, text 커맨드 0)를 맵별로 모아
+   * lite 모델에게 한 장의 캐스트 시트를 받아 `author_npc_cast` 로 적용한다.
+   *
+   * 왜 코드가 대사를 안 쓰는가(2026-09-03 사용자 결정): 생성 코드에 박힌 고정 대사(DEFAULT_NPCS·"안녕하세요."·
+   * "${name}입니다.")가 모든 마을을 같게 만들었다. 대사는 테마·이웃·세계관에 매여야 하므로 모델이 쓰고,
+   * 코드는 검증(전원 대사·상호 언급·세계관 언급 — ai/npcCast.parseCastSheet)과 적용만 한다.
+   * 왜 턴 끝인가: 라운드마다 쓰면 한 명씩 놓는 모델은 옆집 이름을 모른 채 대사를 받는다. 모델이 배치를 마친
+   * 뒤(최종 응답·검수 종료·예산 종료 직전) 대기 NPC 전원을 한 번에 넘겨야 서로를 언급하고, 세계관 다이제스트도
+   * 한 번만 실린다. 최종 응답 분기에서 실패하면 한 라운드를 더 돌려 모델이 직접 쓰게 한다(1회).
+   * 실패(JSON 깨짐·검증 2회 실패·툴 거부)는 **대체 문구가 아니라 재킥**이다 — 모델에게 place_npc {id, dialogue}
+   * 로 직접 쓰라는 오케스트레이션 메시지를 넣고 감사에 `npc-cast:failed` 를 남긴다. 이 메서드는 던지지 않는다.
+   */
+  private async authorPendingNpcCast(
+    onEvent: (event: SessionEvent) => void,
+    signal: AbortSignal | undefined,
+    proposedByKey: Map<string, ProposedCall>,
+    theme: string,
+  ): Promise<"none" | "applied" | "rekick"> {
+    if (signal?.aborted) return "none";
+    const pending = collectPendingNpcs(this.ctx.project, this.baselineProject);
+    if (pending.length === 0) return "none";
+    let outcome: "none" | "applied" | "rekick" = "none";
+    const byMap = new Map<string, typeof pending>();
+    for (const npc of pending) byMap.set(npc.mapId, [...(byMap.get(npc.mapId) ?? []), npc]);
+    const worldDigest = buildWorldDigest(normalizeProjectWorld(this.ctx.project), { maxTokens: 600 });
+    const worldNames = worldEntityNames(this.ctx.project);
+    for (const [mapId, residents] of byMap) {
+      const ctx: CastContext = {
+        mapId,
+        mapName: this.ctx.project.maps[mapId]?.name ?? mapId,
+        theme,
+        requestText: this.currentTurnRequestText,
+        worldDigest,
+        worldNames,
+        existingCast: existingCastOnMap(this.ctx.project, mapId, new Set(residents.map((npc) => npc.eventId))),
+        residents,
+      };
+      onEvent({ type: "status", text: `주민 ${residents.length}명의 이름·대사를 쓰는 중…` });
+      const sheet = await this.requestCastSheet(ctx, signal);
+      if (!sheet.ok) {
+        this.rekickPendingNpcDialogue(onEvent, mapId, residents.map((npc) => npc.eventId), sheet.issues);
+        outcome = "rekick";
+        continue;
+      }
+      const args: Record<string, unknown> = { mapId, residents: sheet.sheet.residents };
+      this.emitToolStarted(onEvent, "author_npc_cast");
+      const reason = harnessToolReason("npc-cast", `${ctx.mapName} 주민 ${residents.length}명`);
+      const result = runTool(this.ctx, "author_npc_cast", args, { dryRun: false });
+      onEvent({ type: "tool_call", name: "author_npc_cast", args, result, reason });
+      this.pushAudit({
+        kind: "tool",
+        name: "author_npc_cast",
+        args,
+        ok: result.ok,
+        summary: `${result.summary} (캐스트 라이터)`,
+        reason,
+        ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
+      });
+      if (!result.ok || !result.diff) {
+        this.rekickPendingNpcDialogue(onEvent, mapId, residents.map((npc) => npc.eventId), [result.summary]);
+        outcome = "rekick";
+        continue;
+      }
+      this.recordSuccessfulTool("author_npc_cast");
+      this.upsertProposal(proposedByKey, { name: "author_npc_cast", args, summary: result.summary, result, destructive: false, requiresApproval: false, reason });
+      this.pushAudit({ kind: "status", text: `npc-cast:applied map=${mapId} residents=${sheet.sheet.residents.map((resident) => resident.name).join(",")}` });
+      if (outcome === "none") outcome = "applied";
+    }
+    return outcome;
+  }
+
+  /** lite 모델에 시트를 요청한다 — 검증 실패면 사유를 붙여 1회 재요청. 어떤 예외도 밖으로 내지 않는다. */
+  private async requestCastSheet(ctx: CastContext, signal: AbortSignal | undefined): Promise<ReturnType<typeof parseCastSheet>> {
+    const messages = buildCastWriterMessages(ctx);
+    let issues: readonly string[] = [];
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const result = await this.chat(configForLiteModel(this.config), {
+          messages: issues.length === 0
+            ? messages
+            : [...messages, { role: "user", content: `이전 시트는 거부되었습니다. 아래를 고쳐 JSON 전체를 다시 쓰세요:\n- ${issues.join("\n- ")}` }],
+          response_format: { type: "json_object" },
+          temperature: 0.8,
+          signal,
+          disableTransientRetry: true,
+        });
+        const text = typeof result.message.content === "string" ? result.message.content : "";
+        const parsed = parseCastSheet(text, ctx);
+        if (parsed.ok) return parsed;
+        issues = parsed.issues;
+        this.pushAudit({ kind: "status", text: `npc-cast:rejected attempt=${attempt + 1} — ${issues.join(" / ").slice(0, 600)}` });
+      } catch (cause) {
+        issues = [cause instanceof Error ? cause.message : String(cause)];
+        this.pushAudit({ kind: "status", text: `npc-cast:error attempt=${attempt + 1} — ${issues[0]}` });
+        if (signal?.aborted) break;
+      }
+    }
+    return { ok: false, issues };
+  }
+
+  private rekickPendingNpcDialogue(onEvent: (event: SessionEvent) => void, mapId: string, eventIds: readonly string[], issues: readonly string[]): void {
+    this.pushAudit({ kind: "status", text: `npc-cast:failed map=${mapId} pending=${eventIds.join(",")} — ${issues.join(" / ").slice(0, 400)}` });
+    this.pushOrchestrationMessage(
+      `HARNESS: 대사 없는 NPC ${eventIds.length}명이 남았습니다(map=${mapId}: ${eventIds.join(", ")}). 코드는 대사를 지어내지 않습니다 — `
+      + `각 NPC 에 place_npc {mapId, id, name, home, dialogue:[{text}]} 로 이름과 대사를 직접 쓰세요. `
+      + `테마에 맞고, 주민끼리 서로의 이름을 언급하고, 세계관 개체(세력·장소·사건)를 언급해야 합니다. 인사말 한 줄은 안 됩니다.`,
+    );
+    onEvent({ type: "status", text: `주민 대사 생성 실패 — 모델이 직접 씁니다 (${eventIds.length}명)` });
   }
 
   private reviewBuildSpecForProposal(calls: readonly ProposedCall[]): BuildSpec | null {
@@ -2996,6 +3123,8 @@ export class AssistantSession {
     let zeroChangeRekickUsed = false;
     let reviewRepairUsed = false;
     let reviewMissingWarnings: string[] = [];
+    let npcCastRekickUsed = false;
+    let turnTheme = "";
     if (orchestrated) this.emitPhase(onEvent, phase);
     if (this.workPlan) this.addExecutionHintIfNeeded();
     // 에이전틱 예산: 사용자 제한은 출력 토큰 하나뿐. 루프 깊이는 사실상 무제한이고
@@ -3123,6 +3252,7 @@ export class AssistantSession {
         }
         // 레이어 검증(자문): 지적을 감사에 남기되 최종화를 막지 않는다.
         await this.sweepFinishedLayers(onEvent);
+        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
         assistantText = sanitizeAssistantText(stripReviewCompletePrefix(reviewText));
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
@@ -3229,6 +3359,16 @@ export class AssistantSession {
           if (orchestrated || this.workPlan) this.emitPhase(onEvent, "execute");
           continue;
         }
+        // 캐스트 라이터: 이 턴이 남긴 대사 없는 NPC 를 한 장의 시트로 채운다. 실패하면 모델에게 한 번 되돌린다.
+        if (!npcCastRekickUsed) {
+          const cast = await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
+          if (cast === "rekick") {
+            npcCastRekickUsed = true;
+            phase = "execute";
+            executionStarted = true;
+            continue;
+          }
+        }
         // 레이어 검증(자문): 최종 응답 전에 1회 돌려 지적을 근거로 남긴다. 런은 멈추지 않는다.
         await this.sweepFinishedLayers(onEvent);
         // 최종 응답.
@@ -3251,6 +3391,7 @@ export class AssistantSession {
         const args = split.args;
         const callReason = split.reason;
         const tool = getTool(name);
+        if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name);
         await this.yieldForUi(signal);
         if (tool?.mode === "write") writeToolAttempts += 1;
@@ -3508,6 +3649,7 @@ export class AssistantSession {
 
       // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.
       if (spentOutputTokens >= this.config.maxTokens) {
+        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
         onEvent({
           type: "status",
           text: TOKEN_BUDGET_STATUS_TEXT,
@@ -3522,6 +3664,7 @@ export class AssistantSession {
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
+    await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
     onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
     return {
@@ -3604,27 +3747,6 @@ function specNpcName(asset: SpecAsset): string {
   if (style) return style;
   const note = asset.note?.trim();
   return note && note.length > 0 ? note : "주민";
-}
-
-/**
- * 밑그림 npc 에셋의 기본 대사 페이지.
- *
- * 상점 역할 이름이면 빈 shop 커맨드를 꽂지 않는다 — eventDraftValidator가
- * shop.items.empty 에러를 내고, 사용자는 "성공한 빈 가게"를 얻기 때문이다(P0-1).
- * 대신 상점 대사와 함께 재고를 채우라는 안내를 남긴다. AI가 stock을 채워
- * place_npc shop 옵션으로 호출하면 eventTools가 정상 상점으로 컴파일한다.
- */
-function specNpcPage(name: string): Record<string, unknown> {
-  if (SHOP_ROLE_NAME.test(name)) {
-    return {
-      lines: [
-        "어서 오세요. 필요한 게 있으신가요?",
-        "※ 상점 재고가 비어 있어 상점 처리를 열 수 없습니다 — AI에게 '상점에 <아이템>을 넣어줘'라고 하거나 이벤트 편집기에서 상점 재고를 채워 주세요.",
-      ],
-      commands: [],
-    };
-  }
-  return { lines: [`${name}입니다.`] };
 }
 
 function buildSpecPlanLabel(spec: BuildSpec): string {

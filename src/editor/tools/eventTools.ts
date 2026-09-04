@@ -723,6 +723,11 @@ const makeVillager: ToolDefinition = {
       characterId: { type: "string", description: "공유 호감/선물 키. 생략 시 name slug 또는 생성 id" },
       talkFriendship: { type: "boolean", description: "일일 대화 호감 opt-in" },
       friendshipUnlock: { type: "integer", description: "호감 임계 페이지 추가 (D0 패턴)" },
+      friendshipLines: {
+        type: "object",
+        description: "friendshipUnlock 페이지의 대사 {unlock, after}. 생략하면 그 페이지는 대사 없이 만들어지고 캐스트 라이터가 채운다 — 코드는 대사를 지어내지 않는다.",
+        properties: { unlock: { type: "string" }, after: { type: "string" } },
+      },
     },
     required: ["mapId", "name", "home"],
   },
@@ -800,6 +805,7 @@ const makeVillager: ToolDefinition = {
     const unlockAt = typeof args.friendshipUnlock === "number" && Number.isFinite(args.friendshipUnlock)
       ? Math.max(1, Math.trunc(args.friendshipUnlock))
       : undefined;
+    const friendshipLines = parseFriendshipLines(args.friendshipLines);
     if (unlockAt !== undefined) {
       pages.push({
         id: genId("page_friend"),
@@ -811,7 +817,7 @@ const makeVillager: ToolDefinition = {
         overlapForbidden: true,
         movement: PASSIVE,
         commands: [
-          { kind: "text", speaker: name, body: "고마워. 이제 더 이야기할 수 있겠어." },
+          ...(friendshipLines?.unlock ? [{ kind: "text", speaker: name, body: friendshipLines.unlock } as Command] : []),
           { kind: "setSelfSwitch", key: "A", value: true },
         ],
       });
@@ -827,7 +833,7 @@ const makeVillager: ToolDefinition = {
         priority: "same",
         overlapForbidden: true,
         movement: PASSIVE,
-        commands: [{ kind: "text", speaker: name, body: "또 와줘서 기뻐." }],
+        commands: friendshipLines?.after ? [{ kind: "text", speaker: name, body: friendshipLines.after }] : [],
       });
     }
     const talkFriendship = args.talkFriendship === true ? true : undefined;
@@ -1355,12 +1361,14 @@ function villagerPages(rawDialogue: unknown, schedule: readonly NpcScheduleEntry
       else conditional.push(page);
     });
   }
-  // 조건 없는 대사가 하나도 없을 때만 기본 인사를 쓴다 — 저작자가 준 대사를 인사가 덮지 않게.
-  const basePage: SimplePage = { lines: defaultLines.length > 0 ? defaultLines : ["안녕하세요."] };
+  // 조건 없는 대사가 없으면 기본 페이지는 **대사 없이** 만든다 — 인사말을 대신 넣지 않는다. 대사 없는
+  // 페이지는 세션의 캐스트 라이터(ai/npcCast)가 테마·이웃·세계관에 맞춰 채우고, 그마저 실패하면 모델에게
+  // 되돌아간다. 고정 인사·"일하는 중이야" 류가 모든 마을을 같게 만들었다(2026-09-03).
+  const basePage: SimplePage = { lines: defaultLines };
   const pages: SimplePage[] = [basePage, ...conditional];
   if (pages.length === 1) {
     for (const activity of activityLabels(schedule)) {
-      pages.push({ conditions: [{ kind: "npcActivity", activity }], lines: [defaultActivityLine(activity)] });
+      pages.push({ conditions: [{ kind: "npcActivity", activity }], lines: [] });
     }
   }
   return pages;
@@ -1457,15 +1465,15 @@ function activityLabels(schedule: readonly NpcScheduleEntry[]): string[] {
   return [...new Set(schedule.map((entry) => entry.activity).filter((activity): activity is string => typeof activity === "string" && activity.trim().length > 0))];
 }
 
-function defaultActivityLine(activity: string): string {
-  switch (activity) {
-    case "home":
-      return "집에서 쉬는 중이야.";
-    case "work":
-      return "일하는 중이야.";
-    default:
-      return `${activity} 중이야.`;
+function parseFriendshipLines(raw: unknown): { unlock?: string; after?: string } | undefined {
+  if (raw === undefined) return undefined;
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new ToolError("friendshipLines는 {unlock?, after?} 객체여야 합니다.", { code: "friendship-lines" });
   }
+  const record = raw as Record<string, unknown>;
+  const unlock = cleanOptionalString(record.unlock);
+  const after = cleanOptionalString(record.after);
+  return { ...(unlock ? { unlock } : {}), ...(after ? { after } : {}) };
 }
 
 function assertPassableSchedulePoint(project: Project, mapId: string, x: number, y: number, label: string): void {

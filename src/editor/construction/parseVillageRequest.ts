@@ -16,6 +16,7 @@ import {
   VILLAGE_GROUND_THEMES,
   VILLAGE_SETTLEMENT_LAYOUTS,
   type AuthorVillageRequest,
+  type VillageResidentPlan,
   type AuthorVillageTarget,
   type ConstructionCountPolicy,
   type ConstructionRect,
@@ -25,11 +26,12 @@ import {
   type VillageSettlementLayout,
 } from "./contracts";
 
-const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "theme", "forestDensity", "seed", "interior", "presetId"] as const;
+const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId"] as const;
 const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
 const HOUSE_PLAN_KEYS = ["kitId", "yard", "ownerName", "templateId", "program"] as const;
+const RESIDENT_KEYS = ["name", "role", "lines"] as const;
 const MIN_HOUSES = 1;
 const MAX_HOUSES = 32;
 const MIN_MAP_SIZE = 20;
@@ -56,6 +58,7 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
   const groundTheme = parseOptionalEnum(request["groundTheme"], VILLAGE_GROUND_THEMES, "authorVillage.groundTheme");
   const settlementLayout = parseOptionalEnum(request["settlementLayout"], VILLAGE_SETTLEMENT_LAYOUTS, "authorVillage.settlementLayout");
   const npcCount = optionalInteger(request, "npcCount", "authorVillage");
+  const residents = parseResidents(request["residents"]);
   if (npcCount !== undefined && (npcCount < 0 || npcCount > MAX_NPCS)) {
     throw new ToolError(`authorVillage.npcCount must be between 0 and ${MAX_NPCS}.`, { code: "invalid-args" });
   }
@@ -67,6 +70,7 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
     ...(groundTheme === undefined ? {} : { groundTheme: groundTheme as VillageGroundTheme }),
     ...(settlementLayout === undefined ? {} : { settlementLayout: settlementLayout as VillageSettlementLayout }),
     ...(npcCount === undefined ? {} : { npcCount }),
+    ...(residents === undefined ? {} : { residents }),
     ...(theme === undefined ? {} : { theme }),
     ...(forestDensity === undefined ? {} : { forestDensity }),
     ...(presetId === undefined ? {} : { presetId }),
@@ -200,6 +204,21 @@ function parseHousePlan(value: unknown, index: number): VillageHousePlan {
     ...(templateId === undefined ? {} : { templateId }),
     ...(program === undefined ? {} : { program }),
   };
+}
+
+function parseResidents(value: unknown): readonly VillageResidentPlan[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) throw new ToolError("authorVillage.residents must be an array.", { code: "invalid-args" });
+  return value.map((entry, index) => {
+    const scope = `authorVillage.residents[${index}]`;
+    const resident = requireRecord(entry, scope);
+    rejectUnknownKeys(resident, RESIDENT_KEYS, scope);
+    const name = optionalString(resident, "name", scope);
+    if (name === undefined) throw new ToolError(`${scope}.name is required.`, { code: "invalid-args" });
+    const role = optionalString(resident, "role", scope);
+    const lines = resident["lines"] === undefined ? undefined : parseStringArray(requiredArray(resident, "lines", scope), `${scope}.lines`);
+    return { name, ...(role === undefined ? {} : { role }), ...(lines === undefined ? {} : { lines }) };
+  });
 }
 
 function parseStringArray(values: readonly unknown[], scope: string): readonly string[] {

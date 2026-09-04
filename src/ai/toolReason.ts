@@ -12,7 +12,7 @@ export const TOOL_REASON_KEY = "reason";
 export const TOOL_REASON_DESCRIPTION =
   "이 툴을 지금 호출하는 이유. 한 줄. 사용자 지시의 어느 부분을 이 호출로 처리하는지.";
 
-export type ToolReasonKind = "verification" | "spec-npc" | "ui-click" | "human-edit" | "tool-direct";
+export type ToolReasonKind = "verification" | "spec-npc" | "npc-cast" | "ui-click" | "human-edit" | "tool-direct";
 
 export type SplitToolCallReason = {
   readonly reason: string;
@@ -88,6 +88,8 @@ export function harnessToolReason(kind: ToolReasonKind, detail: string): string 
       return `레이어 검증: ${detail}`;
     case "spec-npc":
       return `밑그림 NPC 에셋 자동 배치: ${detail}`;
+    case "npc-cast":
+      return `캐스트 라이터 대사 적용: ${detail}`;
     case "ui-click":
       return `사용자 클릭: ${detail}`;
     case "human-edit":

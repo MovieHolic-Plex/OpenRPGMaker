@@ -1,0 +1,175 @@
+{
+  "npcs": [
+    {
+      "id": "ev_cast_a",
+      "name": "은호",
+      "lines": [
+        "다래 아주머니 가게에 오늘 잡은 은어를 넘겼어요.",
+        "강물지기단이 상류를 막은 뒤로 물고기가 줄었지요."
+      ]
+    },
+    {
+      "id": "ev_cast_b",
+      "name": "다래",
+      "lines": [
+        "은호가 가져온 은어가 오늘의 특산이에요.",
+        "무영 영감은 강물지기단 얘기만 나오면 입을 닫아요."
+      ]
+    },
+    {
+      "id": "ev_cast_c",
+      "name": "무영",
+      "lines": [
+        "다래 가게 앞 벤치가 내 자리지."
+      ]
+    }
+  ],
+  "world": {
+    "entities": [
+      {
+        "id": "w_faction_river",
+        "type": "faction",
+        "name": "강물지기단",
+        "summary": "상류를 다스리는 길드",
+        "origin": "user"
+      },
+      {
+        "id": "w_place_map_blank_start",
+        "type": "place",
+        "name": "빈 맵",
+        "summary": "빈 맵 — 주민들이 사는 마을",
+        "refs": [
+          {
+            "kind": "map",
+            "id": "map_blank_start"
+          }
+        ],
+        "origin": "ai"
+      },
+      {
+        "id": "w_npc_ev_cast_a",
+        "type": "character",
+        "name": "은호",
+        "summary": "어부 — 새벽 그물을 걷는 청년",
+        "tags": [
+          "어부"
+        ],
+        "refs": [
+          {
+            "kind": "event",
+            "id": "ev_cast_a"
+          },
+          {
+            "kind": "map",
+            "id": "map_blank_start"
+          }
+        ],
+        "origin": "ai"
+      },
+      {
+        "id": "w_npc_ev_cast_b",
+        "type": "character",
+        "name": "다래",
+        "summary": "잡화점 주인 — 장터를 지키는 상인",
+        "tags": [
+          "잡화점 주인"
+        ],
+        "refs": [
+          {
+            "kind": "event",
+            "id": "ev_cast_b"
+          },
+          {
+            "kind": "map",
+            "id": "map_blank_start"
+          }
+        ],
+        "origin": "ai"
+      },
+      {
+        "id": "w_npc_ev_cast_c",
+        "type": "character",
+        "name": "무영",
+        "summary": "은퇴한 뱃사공 — 강물지기단과 얽힌 과거가 있다",
+        "tags": [
+          "은퇴한 뱃사공"
+        ],
+        "refs": [
+          {
+            "kind": "event",
+            "id": "ev_cast_c"
+          },
+          {
+            "kind": "map",
+            "id": "map_blank_start"
+          }
+        ],
+        "origin": "ai"
+      }
+    ],
+    "relations": [
+      {
+        "a": "w_npc_ev_cast_a",
+        "b": "w_place_map_blank_start",
+        "kind": "locatedIn"
+      },
+      {
+        "a": "w_npc_ev_cast_a",
+        "b": "w_npc_ev_cast_b",
+        "kind": "knows"
+      },
+      {
+        "a": "w_npc_ev_cast_b",
+        "b": "w_place_map_blank_start",
+        "kind": "locatedIn"
+      },
+      {
+        "a": "w_npc_ev_cast_b",
+        "b": "w_npc_ev_cast_c",
+        "kind": "knows"
+      },
+      {
+        "a": "w_npc_ev_cast_c",
+        "b": "w_place_map_blank_start",
+        "kind": "locatedIn"
+      }
+    ]
+  },
+  "proposals": [
+    {
+      "name": "place_npc",
+      "summary": "빈 맵에 NPC '주민 1' 배치 (3, 3) — 페이지 1개 — SimplePage 정규화 경고 1건",
+      "diff": {
+        "eventsModified": 0,
+        "worldEntitiesAdded": 0
+      }
+    },
+    {
+      "name": "place_npc",
+      "summary": "빈 맵에 NPC '주민 2' 배치 (6, 3) — 페이지 1개 — SimplePage 정규화 경고 1건",
+      "diff": {
+        "eventsModified": 0,
+        "worldEntitiesAdded": 0
+      }
+    },
+    {
+      "name": "place_npc",
+      "summary": "빈 맵에 NPC '주민 3' 배치 (9, 3) — 페이지 1개 — SimplePage 정규화 경고 1건",
+      "diff": {
+        "eventsModified": 0,
+        "worldEntitiesAdded": 0
+      }
+    },
+    {
+      "name": "author_npc_cast",
+      "summary": "빈 맵 주민 3명 캐스트 적용 (은호·다래·무영) — 대사 페이지 3개, 세계관 등록",
+      "diff": {
+        "eventsModified": 3,
+        "worldEntitiesAdded": 4
+      }
+    }
+  ],
+  "audit": [
+    "npc-cast:applied map=map_blank_start residents=은호,다래,무영"
+  ]
+}

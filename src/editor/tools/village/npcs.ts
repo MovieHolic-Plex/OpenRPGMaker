@@ -12,7 +12,6 @@ import { ToolError } from "../types";
 import { resolveTimeSystem } from "@/project/gameTime";
 import {
   coordKey,
-  DEFAULT_NPCS,
   pointInMap,
   pointInRect,
   requireTool,
@@ -230,13 +229,14 @@ function uniqueEventId(draft: Project, mapId: string, seed: number, index: numbe
 
 export function npcOverrides(value: unknown): Partial<NpcText>[] {
   if (value === undefined) return [];
-  if (!Array.isArray(value)) throw new ToolError("npcs는 [{name, lines}] 배열이어야 합니다.", { code: "invalid-args" });
+  if (!Array.isArray(value)) throw new ToolError("npcs는 [{name, role?, lines?}] 배열이어야 합니다.", { code: "invalid-args" });
   return value.map((entry, index) => {
     if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
       throw new ToolError(`npcs[${index}]는 객체여야 합니다.`, { code: "invalid-args" });
     }
     const record = entry as Record<string, unknown>;
     const name = record.name;
+    const role = record.role;
     const lines = record.lines;
     if (name !== undefined && (typeof name !== "string" || name.trim().length === 0)) {
       throw new ToolError(`npcs[${index}].name은 비어 있지 않은 문자열이어야 합니다.`, { code: "invalid-args" });
@@ -244,17 +244,27 @@ export function npcOverrides(value: unknown): Partial<NpcText>[] {
     if (lines !== undefined && (!Array.isArray(lines) || !lines.every((line) => typeof line === "string" && line.length > 0))) {
       throw new ToolError(`npcs[${index}].lines는 문자열 배열이어야 합니다.`, { code: "invalid-args" });
     }
+    if (role !== undefined && typeof role !== "string") {
+      throw new ToolError(`npcs[${index}].role은 문자열이어야 합니다.`, { code: "invalid-args" });
+    }
     return {
       ...(typeof name === "string" ? { name: name.trim() } : {}),
+      ...(typeof role === "string" && role.trim() ? { role: role.trim() } : {}),
       ...(Array.isArray(lines) ? { lines: lines as string[] } : {}),
     };
   });
 }
 
+/**
+ * 슬롯 index 의 주민 텍스트. 오버라이드가 없으면 이름은 임시 라벨(`주민 N`)이고 대사는 **비어 있다** —
+ * 캐스트 라이터가 이름과 대사를 함께 채운다. 예전의 고정 10인 명단(DEFAULT_NPCS)은 테마와 무관한
+ * 같은 마을을 매번 만들어 삭제했다.
+ */
 export function npcText(index: number, overrides: readonly Partial<NpcText>[]): NpcText {
-  const base = DEFAULT_NPCS[index % DEFAULT_NPCS.length] as NpcText;
   const override = overrides[index];
-  const name = override?.name ?? (index < DEFAULT_NPCS.length ? base.name : `${base.name}${Math.floor(index / DEFAULT_NPCS.length) + 1}`);
-  const lines = override?.lines && override.lines.length > 0 ? override.lines : base.lines;
-  return { name, lines };
+  return {
+    name: override?.name ?? `주민 ${index + 1}`,
+    ...(override?.role === undefined ? {} : { role: override.role }),
+    lines: override?.lines ?? [],
+  };
 }

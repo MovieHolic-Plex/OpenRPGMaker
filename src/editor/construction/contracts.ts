@@ -100,6 +100,12 @@ export type VillageGroundTheme = (typeof VILLAGE_GROUND_THEMES)[number];
 export const VILLAGE_SETTLEMENT_LAYOUTS = ["plaza-ring", "street-grid", "clusters"] as const;
 export type VillageSettlementLayout = (typeof VILLAGE_SETTLEMENT_LAYOUTS)[number];
 
+export type VillageResidentPlan = {
+  readonly name: string;
+  readonly role?: string;
+  readonly lines?: readonly string[];
+};
+
 export type AuthorVillageRequest = {
   readonly target: AuthorVillageTarget;
   readonly houseCount: number;
@@ -108,6 +114,8 @@ export type AuthorVillageRequest = {
   readonly groundTheme?: VillageGroundTheme;
   readonly settlementLayout?: VillageSettlementLayout;
   readonly npcCount?: number;
+  /** 주민 이름·역할·대사 — 순서대로 소비된다. 없으면 주민은 대사 없이 놓이고 세션의 캐스트 라이터가 채운다. */
+  readonly residents?: readonly VillageResidentPlan[];
   readonly theme?: string;
   /**
    * 숲 밀도. 모델이 enum으로 넣는다. 생략하면 생성 규칙 저작 개수.
