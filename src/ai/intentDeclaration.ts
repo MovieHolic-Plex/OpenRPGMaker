@@ -367,7 +367,7 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
   } else if (intent.mode === "create" && !intent.clarify) {
     if (intent.space === "interior" || intent.space === "both") {
       const how = intent.facility
-        ? `개념 꾸러미 시설 「${intent.facility}」는 get_concept_facility(query:"${intent.facility}") 로 템플릿을 읽고, 요청에 맞게 고친 plan 을 place_concept(query:"${intent.facility}", plan) 로 새 mapId 에 시공한다`
+        ? `개념 꾸러미 시설 「${intent.facility}」는 get_concept_facility(query:"${intent.facility}") 로 템플릿과 variants 를 읽고, 수식어가 없어도 규모·layout 을 정한 plan 을 place_concept(query:"${intent.facility}", plan) 로 새 mapId 에 시공한다`
         : "start_interior_room_session(새 mapId) 로 실내를 시공한다";
       lines.push(
         `[의도] ${intent.space === "both" ? "야외 외장과 실내 둘 다" : "실내 시공"}이다. ${how}. `

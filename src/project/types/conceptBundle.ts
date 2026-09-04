@@ -42,6 +42,18 @@ export interface ConceptThingRecord {
 }
 
 /** 장소의 도면 역할 — 정문을 품는 홀 / 방을 잇는 복도 / 일반 방. 생략 시 room. */
+export const CONCEPT_LAYOUT_KINDS = ["row", "double-row"] as const;
+export type ConceptLayoutKind = (typeof CONCEPT_LAYOUT_KINDS)[number];
+export function isConceptLayoutKind(value: string): value is ConceptLayoutKind {
+  return (CONCEPT_LAYOUT_KINDS as readonly string[]).includes(value);
+}
+
+export const CONCEPT_PLACE_ZONES = ["north", "south"] as const;
+export type ConceptPlaceZone = (typeof CONCEPT_PLACE_ZONES)[number];
+export function isConceptPlaceZone(value: string): value is ConceptPlaceZone {
+  return (CONCEPT_PLACE_ZONES as readonly string[]).includes(value);
+}
+
 export const CONCEPT_PLACE_ROLES = ["entrance", "walkway", "room"] as const;
 export type ConceptPlaceRole = (typeof CONCEPT_PLACE_ROLES)[number];
 export const CONCEPT_PLACE_ROLE_LABELS: Record<ConceptPlaceRole, string> = {
@@ -113,6 +125,8 @@ export interface ConceptPlaceRecord {
   floor?: ConceptFloorMaterial;
   /** 층. 생략 시 1. 2층 이상 장소는 별도 맵으로 선다. */
   level?: number;
+  /** double-row 에서 복도 북쪽(객실) / 남쪽(홀 옆 날개). 생략 시 라벨로 추론. */
+  zone?: ConceptPlaceZone;
 }
 
 /** 시설 — 여관처럼 꺼내는 꾸러미의 뿌리. */
@@ -122,6 +136,8 @@ export interface ConceptFacilityRecord {
   placeIds: string[];
   /** 벽면 재질. 생략 시 크림 벽. */
   wall?: ConceptWallMaterial;
+  /** 도면 문법. 생략 시 row (방 줄 → 복도 → 홀). */
+  layout?: ConceptLayoutKind;
 }
 
 /** 한 타일셋의 개념 꾸러미 하나. */
