@@ -221,16 +221,15 @@ export class RuntimeKeyHoldTracker {
     return [...this.directions];
   }
 
-  /** 마지막 소비 이후 눌린 방향을 꺼내고 비운다. 뗀 키도 한 번은 나온다. */
+  /**
+   * 마지막 소비 이후 눌린 방향을 꺼내고 비운다. 뗀 키도 한 번은 나온다.
+   * 보관하는 경로는 없다 — RPG Maker 처럼 걷는 중에 온 탭은 그 프레임에 소비되고 버려진다.
+   * (예전 peek/미루기 경로는 걸음 이어 붙이기와 겹쳐 래치가 영영 남아 키를 떼도 걷게 했다.)
+   */
   takeTappedDirections(): readonly Dir[] {
     const tapped = [...this.tappedDirections];
     this.tappedDirections.clear();
     return tapped;
-  }
-
-  /** 비우지 않고 본다 — 주인공이 걷는 중이라 이번 프레임에는 걸음을 시작할 수 없을 때. */
-  peekTappedDirections(): readonly Dir[] {
-    return [...this.tappedDirections];
   }
 
   clearTappedDirections(): void {
@@ -334,11 +333,9 @@ export class Input {
     this.runtimeKeys.setAttackMode(enabled);
   }
 
-  // 매 프레임 호출. 엣지 이벤트 갱신.
-  //
-  // deferTaps: 주인공이 걷는 중(이번 프레임에 걸음을 시작할 수 없음)이면 탭 래치를 소비하지 않고
-  // 남겨 둔다. 걸음이 끝난 프레임에서 소비되어 「걷는 중에 한 번 누른 키」가 정확히 한 걸음이 된다.
-  update(options: { readonly deferTaps?: boolean } = {}): InputState {
+  // 매 프레임 호출. 엣지 이벤트 갱신. RPG Maker 의 Input.update 처럼 「지금 눌림」을 읽고, 프레임 사이에
+  // 시작하고 끝난 탭만 한 번 눌림으로 보충한다. 미루기는 없다 — 걷는 중에 온 입력은 그 프레임에 소비된다.
+  update(): InputState {
     if (!this.enabled) {
       this.runtimeKeys.clearPendingActionEdge();
       this.runtimeKeys.clearTappedDirections();
@@ -354,11 +351,8 @@ export class Input {
     for (const dir of this.runtimeKeys.heldDirections()) {
       downSet.add(dir);
     }
-    // 눌렀다 뗀 방향도 한 번은 눌림으로 친다(래치). 걷는 중이면 소비하지 않고 다음 정지 프레임에 넘긴다.
-    const tapped = options.deferTaps === true
-      ? this.runtimeKeys.peekTappedDirections()
-      : this.runtimeKeys.takeTappedDirections();
-    for (const dir of tapped) downSet.add(dir);
+    // 눌렀다 뗀 방향도 이번 프레임에서는 눌림으로 친다(1회 엣지).
+    for (const dir of this.runtimeKeys.takeTappedDirections()) downSet.add(dir);
     // 자동화 주입 방향 병합.
     if (this.injectedDir) downSet.add(this.injectedDir);
 

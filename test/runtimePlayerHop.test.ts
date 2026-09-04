@@ -93,6 +93,7 @@ function hopScene(): { readonly scene: PlaySceneContext; readonly player: Player
     moving: false,
     moveProgress: 0,
     moveDurationMs: 160,
+    logicTickAccumulatorMs: 0,
     dashing: false,
     facing: "right",
     walkFrame: 0,
@@ -121,22 +122,28 @@ function route(scene: PlaySceneContext, moves: MoveCommand[]): void {
   startPlayerRoute(scene, moves, false);
 }
 
+/** 논리 프레임(60Hz). 점프·낙하도 걸음과 같은 틱으로 진행되므로 시간이 아니라 프레임 수로 말한다. */
+const FRAME_MS = 1000 / 60;
+const frames = (count: number): number => count * FRAME_MS;
+const framesFor = (durationMs: number): number => Math.round(durationMs / FRAME_MS);
+
 describe("주인공 점프", () => {
   it("바라보는 방향으로 두 칸을 아크로 건너뛴다", () => {
     const { scene, player } = hopScene();
     route(scene, [{ kind: "jump", dx: 0, dy: 0 }]);
+    const total = framesFor(DEFAULT_JUMP_DURATION_MS);
 
-    updatePlayScene(scene, 0);
+    updatePlayScene(scene, frames(1));
     expect(scene.moving).toBe(true);
     expect(scene.movingTo).toEqual({ x: 6, y: 4 });
     expect(scene.playerHop).not.toBeNull();
 
-    updatePlayScene(scene, DEFAULT_JUMP_DURATION_MS / 2);
+    updatePlayScene(scene, frames(total / 2 - 1));
     expect(liftPx(player)).toBeCloseTo(DEFAULT_JUMP_PEAK_PX, 6);
     // 접지 y 는 아크 내내 타일 경계에 남는다(depth·카메라·조명이 이 값을 읽는다).
     expect(player.y).toBe(5 * 16);
 
-    updatePlayScene(scene, DEFAULT_JUMP_DURATION_MS / 2);
+    updatePlayScene(scene, frames(total / 2));
     expect(scene.moving).toBe(false);
     expect(scene.playerHop).toBeNull();
     expect(liftPx(player)).toBe(0);
@@ -148,12 +155,13 @@ describe("주인공 점프", () => {
   it("저작 좌표·높이를 그대로 쓴다", () => {
     const { scene, player } = hopScene();
     route(scene, [{ kind: "jump", dx: -1, dy: 2, heightPx: 40, durationMs: 400 }]);
+    const total = framesFor(400);
 
-    updatePlayScene(scene, 0);
+    updatePlayScene(scene, frames(1));
     expect(scene.movingTo).toEqual({ x: 3, y: 6 });
-    updatePlayScene(scene, 200);
+    updatePlayScene(scene, frames(total / 2 - 1));
     expect(liftPx(player)).toBeCloseTo(40, 6);
-    updatePlayScene(scene, 200);
+    updatePlayScene(scene, frames(total / 2));
     expect(scene.tileX).toBe(3);
     expect(scene.tileY).toBe(6);
     expect(liftPx(player)).toBe(0);
@@ -163,7 +171,7 @@ describe("주인공 점프", () => {
     const { scene } = hopScene();
     route(scene, [{ kind: "jump", dx: 0, dy: -99 }, { kind: "turn", dir: "up" }]);
 
-    updatePlayScene(scene, 0);
+    updatePlayScene(scene, frames(1));
     expect(scene.moving).toBe(false);
     expect(scene.playerHop).toBeNull();
     expect(scene.tileY).toBe(4);
@@ -175,19 +183,21 @@ describe("주인공 낙하 등장", () => {
   it("타일 이동 없이 위에서 떨어진다", () => {
     const { scene, player } = hopScene();
     route(scene, [{ kind: "dropIn" }]);
+    const total = framesFor(DEFAULT_FALL_DURATION_MS);
 
-    updatePlayScene(scene, 0);
+    updatePlayScene(scene, frames(1));
     expect(scene.moving).toBe(false);
     expect(scene.playerHop).not.toBeNull();
-    expect(liftPx(player)).toBe(DEFAULT_FALL_HEIGHT_PX);
+    // 곡선 자체는 characterHop.test.ts 가 잠근다 — 여기서는 런타임이 그 곡선을 프레임 진행률로 쓰는지만 본다.
+    expect(liftPx(player)).toBe(Math.round(fallLiftPx(1 / total, DEFAULT_FALL_HEIGHT_PX)));
 
-    updatePlayScene(scene, DEFAULT_FALL_DURATION_MS / 2);
-    // 곡선 자체는 characterHop.test.ts 가 잠근다 — 여기서는 런타임이 그 곡선을 쓰는지만 본다.
-    expect(liftPx(player)).toBe(Math.round(fallLiftPx(0.5, DEFAULT_FALL_HEIGHT_PX)));
+    const midpoint = Math.floor(total / 2);
+    updatePlayScene(scene, frames(midpoint - 1));
+    expect(liftPx(player)).toBe(Math.round(fallLiftPx(midpoint / total, DEFAULT_FALL_HEIGHT_PX)));
     expect(scene.tileX).toBe(4);
     expect(scene.tileY).toBe(4);
 
-    updatePlayScene(scene, DEFAULT_FALL_DURATION_MS / 2);
+    updatePlayScene(scene, frames(total - midpoint));
     expect(scene.playerHop).toBeNull();
     expect(liftPx(player)).toBe(0);
     expect(player.origin).toEqual([0.5, 1]);
@@ -196,16 +206,17 @@ describe("주인공 낙하 등장", () => {
   it("낙하가 끝날 때까지 다음 이동 명령을 소비하지 않는다", () => {
     const { scene } = hopScene();
     route(scene, [{ kind: "dropIn", durationMs: 200 }, { kind: "move", dir: "right" }]);
+    const total = framesFor(200);
 
-    updatePlayScene(scene, 0);
-    updatePlayScene(scene, 100);
+    updatePlayScene(scene, frames(1));
+    updatePlayScene(scene, frames(total / 2 - 1));
     // 아직 공중이므로 다음 걸음이 시작되지 않았다.
     expect(scene.moving).toBe(false);
     expect(scene.tileX).toBe(4);
 
-    updatePlayScene(scene, 100);
+    updatePlayScene(scene, frames(total / 2));
     expect(scene.playerHop).toBeNull();
-    updatePlayScene(scene, 0);
+    updatePlayScene(scene, frames(1));
     expect(scene.moving).toBe(true);
     expect(scene.movingTo).toEqual({ x: 5, y: 4 });
   });
