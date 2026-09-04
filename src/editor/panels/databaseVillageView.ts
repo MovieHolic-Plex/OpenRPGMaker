@@ -1496,6 +1496,22 @@ function presetTemplateWhitelist(
           attrs: { title: `${template.id} · ${template.w}×${template.h}` },
           children: [
             input,
+            // 그림은 덧붙임이다 — 칩셋이 없거나 스탬프가 거절되면 canvas 가 previewState=none
+            // 으로 남을 뿐, 체크박스·이름은 그대로 동작한다.
+            createHousePreview({
+              id: template.id,
+              name: template.name,
+              w: template.w,
+              h: template.h,
+              stories: template.stories ?? 1,
+              ...(template.lowWall ? { lowWall: true } : {}),
+              ...(template.kitId ? { kitId: template.kitId } : {}),
+              ...(template.roofDeck ? { roofDeck: true } : {}),
+              wings: template.wings.map((wing) => ({ x: wing.x, y: wing.y, w: wing.w, h: wing.h })),
+            }, project, "card", {
+              testid: `db-village-preset-template-${template.id}-shot`,
+              label: `${template.name} 집 그림`,
+            }),
             el("span", { class: "db-village-template-name", text: template.name }),
             el("span", { class: "db-village-template-meta", text: userIds.has(template.id) ? "내 형태" : `${template.w}×${template.h}` }),
           ],
