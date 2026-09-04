@@ -736,6 +736,34 @@ function renderThingInspector(
     ? decorateThumb(interiorObjectCanvas(tileset, object, 5), "scratch-concept-preview")
     : el("span", { class: "scratch-concept-missing", text: "그림 없음" });
 
+  const graphic = el("select", {
+    class: "scratch-concept-plan-select",
+    attrs: { title: "그림 — 같은 타일셋 가구를 가리킨다. 픽셀을 복제하지 않는다" },
+    dataset: { testid: "scratch-concept-thing-graphic" },
+    on: {
+      change: (event) => {
+        const next = (event.target as HTMLSelectElement).value;
+        if (!next || next === thing.objectId) return;
+        patchThing(tileset.id, bundle.id, thing.id, { objectId: next });
+        refresh(host, rerender);
+      },
+    },
+  }) as HTMLSelectElement;
+  const candidates = objectsForTileset(tileset);
+  if (!candidates.some((candidate) => candidate.id === thing.objectId)) {
+    graphic.append(el("option", {
+      attrs: { value: thing.objectId, selected: "" },
+      text: `${thing.objectId} — 그림 없음`,
+    }));
+  }
+  for (const candidate of candidates) {
+    graphic.append(el("option", {
+      attrs: { value: candidate.id, ...(candidate.id === thing.objectId ? { selected: "" } : {}) },
+      text: candidate.id === thing.objectId ? `${candidate.label} — 지금 그림` : candidate.label,
+    }));
+  }
+  graphic.value = thing.objectId;
+
   const name = el("input", {
     attrs: { type: "text", value: thing.label },
     dataset: { testid: "scratch-concept-thing-name" },
@@ -793,6 +821,7 @@ function renderThingInspector(
       el("div", { class: "scratch-concept-inspector-title", text: thing.label }),
       el("div", { class: "scratch-concept-raster", children: [preview] }),
       field("이름", name),
+      field("그림", graphic),
       el("p", {
         class: "scratch-concept-line",
         dataset: { testid: "scratch-concept-line" },
@@ -1015,6 +1044,7 @@ function patchThing(
     const thing = bundle.things.find((entry) => entry.id === thingId);
     if (!thing) return;
     if (patch.label !== undefined) thing.label = patch.label;
+    if (patch.objectId !== undefined) thing.objectId = patch.objectId;
     if ("required" in patch) {
       if (patch.required) thing.required = true;
       else delete thing.required;

@@ -202,6 +202,18 @@ describe("scratchConceptTab 편집", () => {
     expect(after.things.find((thing) => thing.id === "bed_h")?.chips).not.toContain("block");
   });
 
+  it("그림을 바꾸면 물건의 objectId가 저장된다", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    const graphic = host.querySelector("[data-testid='scratch-concept-thing-graphic']") as unknown as { value: string; dispatchEvent: (event: Event) => void };
+    expect(graphic.value).toBe("bed_h");
+    graphic.value = "bed_v";
+    graphic.dispatchEvent(new Event("change"));
+    const thing = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!.things.find((entry) => entry.id === "bed_h");
+    expect(thing?.objectId).toBe("bed_v");
+    const again = host.querySelector("[data-testid='scratch-concept-thing-graphic']") as unknown as { value: string };
+    expect(again.value).toBe("bed_v");
+  });
+
   it("장소 이름을 바꾸면 저장된다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     const input = host.querySelector("[data-testid='scratch-concept-place-name-bedroom']") as { value: string; dispatchEvent: (event: Event) => void };
