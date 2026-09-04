@@ -174,6 +174,17 @@ describe("개념 꾸러미 초안 묶음 — 시공", () => {
     });
   }
 
+  it("도면은 불필요한 바깥 여백 없이 구조물에 딱 맞는다 — 축소 회귀 계약", () => {
+    for (const bundle of CONCEPT_FACILITY_TEMPLATES) {
+      const layout = layoutConceptFacility(bundle, bundle.facilities[0]!);
+      const right = Math.max(...layout.rooms.map((room) => room.x + room.w));
+      // 구조물 오른쪽 끝에서 맵 오른쪽 끝까지 2열 이하 (벽+천장 보더 1 + 여유 1).
+      expect(layout.width - right, `${bundle.id} 가로 여백`).toBeLessThanOrEqual(2);
+      // 정문 아래는 출구 계단+천장 여백 2행이면 충분하다.
+      expect(layout.height - layout.door.y, `${bundle.id} 세로 여백`).toBeLessThanOrEqual(3);
+    }
+  });
+
   it("도면은 시설마다 다르다 — 방 수·정문·너비가 한 가지로 수렴하지 않는다", () => {
     const shapes = new Set(CONCEPT_FACILITY_TEMPLATES.map((bundle) => {
       const layout = layoutConceptFacility(bundle, bundle.facilities[0]!);

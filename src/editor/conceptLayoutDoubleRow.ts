@@ -15,8 +15,8 @@ const ROOM_FOOTPRINT: Readonly<Record<ConceptPlaceSize, { readonly w: number; re
   l: { w: 9, h: 5 },
 };
 const WALKWAY_H = 3;
-const ORIGIN_Y = 4;
-const MARGIN_X = 3;
+const ORIGIN_Y = 3;
+const MARGIN_X = 2;
 const V_GAP = 3;
 const H_GAP = 1;
 const MIN_BAND_W = 8;
@@ -193,13 +193,13 @@ export function layoutConceptFacilityDoubleRow(
     };
     laid.push(fallback);
     const door = { x: fallback.x + Math.floor(fallback.w / 2), y: fallback.y + fallback.h - 1 };
-    return { width: fallback.x + fallback.w + MARGIN_X, height: door.y + 4, door, rooms: laid, innerDoors };
+    return { width: fallback.x + fallback.w + MARGIN_X - 1, height: door.y + 3, door, rooms: laid, innerDoors };
   }
   const door = { x: doorRoom.x + Math.floor(doorRoom.w / 2), y: doorRoom.y + doorRoom.h - 1 };
   const right = Math.max(...laid.map((room) => room.x + room.w));
   return {
-    width: right + MARGIN_X,
-    height: door.y + 4,
+    width: right + MARGIN_X - 1,
+    height: door.y + 3,
     door,
     rooms: laid,
     innerDoors,

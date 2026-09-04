@@ -245,9 +245,10 @@ const ROOM_FOOTPRINT: Readonly<Record<ConceptPlaceSize, { readonly w: number; re
   l: { w: 9, h: 5 },
 };
 const WALKWAY_H = 3;
-/** 위로 천장 1행 + 벽면 2행 + 여백 1행. 데모 「여관 1층」과 같은 y=4 시작. */
-const ORIGIN_Y = 4;
-const MARGIN_X = 3;
+/** 방 줄 시작 y — 천장 보더 1행 + 벽 문법 여유 1행. 방 바닥은 y=3부터도 천장·벽이 온전히 선다. */
+const ORIGIN_Y = 3;
+/** 좌우 마진 — 구조물 끝에서 벽+천장 보더 1열 + 여유 1열. */
+const MARGIN_X = 2;
 /** 세로 인접 방 사이 파티션(트림 + 벽면 2행). */
 const V_GAP = 3;
 /** 가로 인접 방 사이 파티션(천장 1열). */
@@ -367,8 +368,8 @@ export function layoutConceptFacility(
 
   const door = { x: doorRoom.x + Math.floor(doorRoom.w / 2), y: doorRoom.y + doorRoom.h - 1 };
   const right = Math.max(...rooms.map((room) => room.x + room.w));
-  const width = right + MARGIN_X;
-  const height = door.y + 4;
+  const width = right + MARGIN_X - 1;
+  const height = door.y + 3;
   const wallMaterial = conceptFacilityWall(facility);
   return {
     width,
