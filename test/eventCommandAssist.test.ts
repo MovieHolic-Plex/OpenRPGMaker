@@ -905,4 +905,33 @@ describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
     const parsed = parseAndValidate(canonProject(), JSON.stringify([{ kind: "text", speaker: "", body: "마을에 온 걸 환영하네." }]), { allowEmpty: true });
     expect(parsed.ok).toBe(true);
   });
+
+  it("선택지 질문·문구에 금지어가 있어도 거부한다", () => {
+    const bad = JSON.stringify([
+      { kind: "choices", prompt: "총을 고르겠나?", options: [{ text: "화약으로 산다", branch: [] }, { text: "그냥 간다", branch: [] }], cancelBehavior: "disallow" },
+    ]);
+    const parsed = parseAndValidate(canonProject(), bad, { allowEmpty: true });
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.errors.join("\n")).toMatch(/총|화약/);
+  });
+
+  it("숫자 입력 안내 문구의 금지어도 거부한다", () => {
+    const parsed = parseAndValidate(canonProject(),
+      JSON.stringify([{ kind: "inputNumber", variableId: "v1", digits: 2, prompt: "화약 개수 입력" }]), { allowEmpty: true });
+    expect(parsed.ok).toBe(false);
+  });
+
+  it("깊은 중첩(loop>선택지>text) 안의 금지어도 잡는다", () => {
+    const deep = JSON.stringify([{ kind: "loop", body: [{ kind: "choices", prompt: "고르시오", options: [{ text: "간다", branch: [{ kind: "text", speaker: "", body: "총을 들어라" }] }], branch: [] }], cancelBehavior: "disallow" }]);
+    const parsed = parseAndValidate(canonProject(), deep, { allowEmpty: true });
+    expect(parsed.ok).toBe(false);
+    if (parsed.ok) return;
+    expect(parsed.errors.join("\n")).toContain("총");
+  });
+
+  it("플레이어에게 안 보이는 필드(label 이름)는 검사하지 않는다", () => {
+    const parsed = parseAndValidate(canonProject(), JSON.stringify([{ kind: "label", name: "화약고" }]), { allowEmpty: true });
+    expect(parsed.ok).toBe(true);
+  });
 });

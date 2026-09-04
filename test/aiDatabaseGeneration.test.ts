@@ -317,4 +317,12 @@ describe("worldCanon 강제 — 캐논 주입과 금지어 검증", () => {
   it("금지어가 없으면 통과한다", () => {
     expect(parseGeneratedRecord("item", '{"name":"빵","price":10}', CANON)).toEqual({ name: "빵", price: 10 });
   });
+
+  it("적 레코드 원시 description의 금지어도 거부한다 — 스키마에 description이 없어도", () => {
+    expect(() => parseGeneratedRecord("enemy", '{"name":"늑대","description":"총을 든 늑대"}', CANON)).toThrow(/총/);
+  });
+
+  it("합성어 속 부분일치(화약고)도 잡는다", () => {
+    expect(() => parseGeneratedRecord("item", '{"name":"화약고 열쇠","price":10}', CANON)).toThrow(/화약/);
+  });
 });
