@@ -4,7 +4,7 @@
 // 판정은 DOM 없이 테스트하고, 캔버스 변환만 브라우저에 맡긴다.
 
 export const IMAGE_IMPORT_MAX_BYTES = 4 * 1024 * 1024;
-export const IMAGE_IMPORT_FORMAT_HINT = "PNG·JPEG·WebP·GIF";
+export const IMAGE_IMPORT_FORMAT_HINT = "PNG·JPEG·WebP·GIF (WebP·GIF는 PNG 첫 프레임으로 변환)";
 export const IMAGE_IMPORT_ACCEPT = "image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif";
 export const IMAGE_IMPORT_CANVAS_ERROR = "이미지를 PNG로 변환하지 못했습니다. PNG로 저장한 뒤 다시 가져와 주세요.";
 
@@ -25,10 +25,12 @@ const FORMAT_BY_EXT: Readonly<Record<string, ImageImportFormat>> = {
 const FORMAT_BY_MIME: Readonly<Record<string, ImageImportFormat>> = {
   "image/png": "png",
   "image/jpeg": "jpeg",
-  "image/jpg": "jpeg",
   "image/webp": "webp",
   "image/gif": "gif",
 };
+
+/** 비표준 jpeg 별칭. 저장 화이트리스트(data:image/jpeg)에 못 들어가므로 PNG 정규화한다. */
+const JPEG_MIME_ALIAS = "image/jpg";
 
 function extensionOf(fileName: string): string | null {
   const match = /\.([^.]+)$/.exec(fileName);
@@ -69,7 +71,9 @@ export function decideImageImport(input: {
     };
   }
   const mime = input.mimeType.trim().toLowerCase();
-  const ext = extensionOf(input.fileName);
+  if (mime === JPEG_MIME_ALIAS) {
+    return { ok: true, format: "jpeg", normalizeToPng: true };
+  }
   const fromMime = FORMAT_BY_MIME[mime];
   if (fromMime) {
     return { ok: true, format: fromMime, normalizeToPng: needsPngNormalize(fromMime) };
@@ -77,6 +81,9 @@ export function decideImageImport(input: {
   if (mime.startsWith("image/")) {
     return { ok: false, reason: "format", actual: mime, message: formatImageImportFormatError(mime) };
   }
+  // 빈 MIME·일반 MIME(octet-stream)은 확장자로 판정한다. FileReader dataUrl 헤더도
+  // 같은 값이므로 dataUrl 게이트에서 다시 막지 않는다 (브라우저가 바이트를 판별).
+  const ext = extensionOf(input.fileName);
   const fromExt = ext ? FORMAT_BY_EXT[ext] : undefined;
   if (fromExt) {
     return { ok: true, format: fromExt, normalizeToPng: needsPngNormalize(fromExt) };
@@ -85,11 +92,24 @@ export function decideImageImport(input: {
   return { ok: false, reason: "format", actual, message: formatImageImportFormatError(actual) };
 }
 
-export function decideImageDataUrl(dataUrl: string): ImageImportDecision {
+export const GENERIC_DATA_URL_MIMES: readonly string[] = ["", "application/octet-stream"];
+
+export function decideImageDataUrl(
+  dataUrl: string,
+  fallback?: { readonly format: ImageImportFormat; readonly normalizeToPng: boolean }
+): ImageImportDecision {
   const mime = mediaTypeFromDataUrl(dataUrl);
+  if (mime === JPEG_MIME_ALIAS) {
+    return { ok: true, format: "jpeg", normalizeToPng: true };
+  }
   const format = FORMAT_BY_MIME[mime];
   if (format) {
     return { ok: true, format, normalizeToPng: needsPngNormalize(format) };
+  }
+  // 파일 수준 판정이 ok 였는데 dataUrl 헤더가 비어 있거나 일반 MIME 이면
+  // 파일 판정을 따른다 — 둘은 같은 필드(File.type)에서 나온다.
+  if (fallback && GENERIC_DATA_URL_MIMES.includes(mime)) {
+    return { ok: true, format: fallback.format, normalizeToPng: fallback.normalizeToPng };
   }
   return { ok: false, reason: "format", actual: mime, message: formatImageImportFormatError(mime) };
 }

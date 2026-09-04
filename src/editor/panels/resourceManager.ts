@@ -152,7 +152,7 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
   const reader = new FileReader();
   reader.onload = () => {
     const rawDataUrl = String(reader.result);
-    const urlDecision = decideImageDataUrl(rawDataUrl);
+    const urlDecision = decideImageDataUrl(rawDataUrl, { format: decision.format, normalizeToPng });
     if (!urlDecision.ok) {
       toast(urlDecision.message, "error");
       return;
@@ -197,8 +197,9 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
             assetId: id,
           });
         });
-        const converted = dataUrl !== rawDataUrl ? " (WebP/GIF→PNG 변환)" : "";
-        toast(`${spec.label} 가져오기 완료: ${width}x${height}${converted}`, "ok");
+        const convertedNote =
+          dataUrl !== rawDataUrl ? " (WebP·GIF→PNG 변환, 첫 프레임만)" : "";
+        toast(`${spec.label} 가져오기 완료: ${width}x${height}${convertedNote}`, "ok");
         if (kind === "chipset") {
           const tileset = ensureTilesetFromUpload(asset);
           if (tileset.created) toast(`타일셋 추가됨: ${asset.name}`, "ok");

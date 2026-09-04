@@ -3,7 +3,6 @@ import {
   decideImageDataUrl,
   decideImageImport,
   formatImageImportDimensionError,
-  formatImageImportFormatError,
   formatImageImportSizeError,
 } from "@/editor/panels/resourceManagerImageImport";
 
@@ -58,6 +57,36 @@ describe("decideImageImport", () => {
       decideImageImport({ fileName: "shot.webp", mimeType: "", sizeBytes: 100 })
     ).toEqual({ ok: true, format: "webp", normalizeToPng: true });
   });
+
+  it("falls back to extension for generic octet-stream MIME", () => {
+    expect(
+      decideImageImport({ fileName: "tile.png", mimeType: "application/octet-stream", sizeBytes: 100 })
+    ).toEqual({ ok: true, format: "png", normalizeToPng: false });
+    expect(
+      decideImageImport({ fileName: "shot.webp", mimeType: "application/octet-stream", sizeBytes: 100 })
+    ).toEqual({ ok: true, format: "webp", normalizeToPng: true });
+  });
+
+  it("prefers MIME over a conflicting extension for image types", () => {
+    expect(
+      decideImageImport({ fileName: "renamed-svg.png", mimeType: "image/svg+xml", sizeBytes: 100 }).ok
+    ).toBe(false);
+    expect(
+      decideImageImport({ fileName: "photo.webp", mimeType: "image/png", sizeBytes: 100 })
+    ).toEqual({ ok: true, format: "png", normalizeToPng: false });
+  });
+
+  it("accepts uppercase extensions", () => {
+    expect(
+      decideImageImport({ fileName: "SHOT.WEBP", mimeType: "", sizeBytes: 100 })
+    ).toEqual({ ok: true, format: "webp", normalizeToPng: true });
+  });
+
+  it("normalizes the non-standard image/jpg alias to PNG", () => {
+    expect(
+      decideImageImport({ fileName: "photo.jpg", mimeType: "image/jpg", sizeBytes: 100 })
+    ).toEqual({ ok: true, format: "jpeg", normalizeToPng: true });
+  });
 });
 
 describe("decideImageDataUrl", () => {
@@ -74,19 +103,34 @@ describe("decideImageDataUrl", () => {
     });
   });
 
-  it("rejects non-image data URLs", () => {
-    const decision = decideImageDataUrl("data:image/svg+xml;base64,AAAA");
+  it("follows the file-level decision for empty or generic data-URL headers", () => {
+    expect(
+      decideImageDataUrl("data:;base64,AAAA", { format: "webp", normalizeToPng: true })
+    ).toEqual({ ok: true, format: "webp", normalizeToPng: true });
+    expect(
+      decideImageDataUrl("data:application/octet-stream;base64,AAAA", { format: "png", normalizeToPng: false })
+    ).toEqual({ ok: true, format: "png", normalizeToPng: false });
+  });
+
+  it("still rejects non-image data URLs without a fallback", () => {
+    const decision = decideImageDataUrl("data:;base64,AAAA");
     expect(decision.ok).toBe(false);
+  });
+
+  it("normalizes the image/jpg data-URL alias", () => {
+    expect(decideImageDataUrl("data:image/jpg;base64,AAAA")).toEqual({
+      ok: true,
+      format: "jpeg",
+      normalizeToPng: true,
+    });
   });
 });
 
 describe("error message helpers", () => {
-  it("names unknown format explicitly", () => {
-    expect(formatImageImportFormatError("")).toContain("알 수 없음");
-  });
-
   it("shows actual megabytes in size errors", () => {
-    expect(formatImageImportSizeError(2.5 * 1024 * 1024)).toContain("2.5MB");
+    const message = formatImageImportSizeError(2.5 * 1024 * 1024);
+    expect(message).toContain("2.5MB");
+    expect(message).toContain("4MB");
   });
 
   it("appends actual dimensions when the validator message lacks them", () => {
